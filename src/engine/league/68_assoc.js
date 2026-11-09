@@ -18,7 +18,7 @@ function asMk(y,st){ return {name:genName(),age:ri(58,72),stance:st||pick(Object
 function asInit(){ if(G.assoc){ const A=G.assoc; if(A.next&&G.year>=A.next.since){ A.head=A.next; delete A.next; } /* 당선자는 다음 해 취임(검수 11-07: 12월에 바로 바뀜) */ return A; } const h=asMk(2025); h.since=2026; h.until=2028; G.assoc={head:h,cmt:[],els:[],rel:50,cur:null,el:null}; return G.assoc; }
 function asHead(){ return asInit().head; }
 /* 확장형 협회장은 중계권 계약을 키운다 */
-function asRev(){ try{ const H=G&&G.assoc&&G.assoc.head; if(!H||H.stance!=='grow')return 1; return (H.since??0)<=sponSeason()?1.03:1; }catch(e){ return 1; } } /* 새 협회장 효과는 임기 시작 시즌부터(검수 11-06) */
+function asRev(){ try{ const A=G&&G.assoc; const H=A&&(A.next&&A.next.since<=sponSeason()?A.next:A.head); /* 당선이 확정된 차기 협회장은 취임 시즌 예산부터(검수 11-09y) */ if(!H||H.stance!=='grow')return 1; return (H.since??0)<=sponSeason()?1.03:1; }catch(e){ return 1; } } /* 새 협회장 효과는 임기 시작 시즌부터(검수 11-06) */
 function asRelLabel(){ const r=asInit().rel; return r>=62?'우호적':r>=45?'무난함':'냉랭함'; }
 const asEmp=()=>!G.unemp&&G.user!=null;
 

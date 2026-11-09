@@ -10037,18 +10037,18 @@ function payYear(tid,y){ return Math.round(((G.payGone&&G.payGone[y]&&G.payGone[
 function capBAt(p,s){ const x=p.extNext, b=x&&x.terms&&x.terms.bonus; if(b>0&&s>G.year)return Math.round(b/Math.max(1,x.years)); return p.capB&&p.ctT===p.team&&p.capB.until>=s?p.capB.a:0; }
 function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; { const C=G.contract, n=C&&!C.done&&C.neg&&C.neg[p.id]; if(n&&n.st==='open'&&n.cur!=null)return n.cur; if(n&&n.st==='arb'&&n.arb)return n.arb.club; } /* 조정 중: 판정 전까지 구단안(양측 제시액 중 하나, 검수 11-06) */ /* 협상 중이면 마지막 제시액(확정 미리보기와 같게) */ return p.newSal??p.sal; }
 /* 트레이드 뒤 상위 40명 연봉 합계(받는 선수는 옛 계약 조건의 상한 반영액이 끝난다) */
-function capPayAs(tid,inIds,outIds){ const fid=franId(tid,outIds,inIds); const out=new Set(outIds||[]);
+function capPayAs(tid,inIds,outIds){ const y0=sponSeason(); const fid=franId(tid,outIds,inIds,y0>G.year||preSeason(y0)?p=>salNext(p)+capBAt(p,y0):null); /* 겨울에는 다음 시즌 금액으로 예외 대상을 고른다(capPayNext와 같게, 검수 11-09y) */ const out=new Set(outIds||[]);
   { const y=sponSeason(); if(y>G.year||preSeason(y)){ /* 1월(개막 전)도 합의한 연봉으로(검수 11-08) */ const L=domPayNext(tid,y).filter(p=>!out.has(p.id)&&!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+capBAt(p,y),fid)); for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||(p.draft&&p.draft.y===y-1)||(milServing(p)&&p.mil.until>=dnum(y+1,1,1)))continue; /* 복무 선수는 실제 합계(domPayNext)와 같게(검수 11-09g) */ const wc=p.wv&&p.team==null?p.wv.c:null; L.push(capAmt(p,tid,wc?(wc.extNext?wc.extNext.annual:wc.sal)+(wc.capB&&wc.capB.until>=y?wc.capB.a:0):salNext(p),fid)); } /* 웨이버 양수: 승계하는 다음 시즌 계약과 계약금 반영액(검수 11-07·11-08) */ return sum(L.sort((a,b)=>b-a).slice(0,40)); } } /* 결산 뒤 겨울: 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06) */ const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid));
   for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||isRookie(p)||milServing(p))continue; /* 복무 중인 선수는 상한에 들어가지 않는다(ownedOf와 같게, 검수 11-09g) */ const wc=p.wv&&p.team==null?p.wv.c:null; L.push(capAmt(p,tid,wc?wc.sal+(wc.capB&&wc.capB.until>=G.year?wc.capB.a:0):p.newSal??p.sal,fid)); } /* 웨이버 양수는 계약금 상한 반영액까지 승계하므로 미리보기에도 넣는다(검수 11-06) */ /* 재계약 합의 연봉은 이적 때 확정되므로 그 금액으로(mvLog) */ return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */
-function capPayNext(tid){ const fid=franId(tid,null,null,salNext), y=sponSeason(); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+capBAt(p,y),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
+function capPayNext(tid){ const y=sponSeason(), fid=franId(tid,null,null,p=>salNext(p)+capBAt(p,y)); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+capBAt(p,y),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 /* 계약 하나를 바꿨을 때의 상한 합계: 실제 샐러리캡과 같은 방식(선수별 금액 정렬 → 상위 40명). s는 계약이 적용되는 시즌.
    지금 시즌(sponSeason)이면 지금 연봉 기준, 그 뒤 시즌이면 다음 시즌 기준(합의한 다음 시즌 계약·재계약 중 금액, 그 시즌까지 남는 계약금 상한 반영) */
-function capPayWith(tid,pid,amt,s){ const fid=franId(tid,null,pid!=null?[pid]:null), y0=sponSeason(); s=s??y0; const nxt=s>y0||preSeason(s); /* 개막 전이면 합의한 인상분까지 */ const L=[];
+function capPayWith(tid,pid,amt,s){ const y0=sponSeason(); s=s??y0; const nxt=s>y0||preSeason(s); /* 개막 전이면 합의한 인상분까지 */ const fid=franId(tid,null,pid!=null?[pid]:null,nxt?p=>salNext(p)+capBAt(p,s):null); const L=[];
   for(const p of (nxt?domPayNext(tid,s):domPayOf(tid))){ if(p.id===pid)continue; if(nxt){ if(p.draft&&p.draft.y===s-1)continue; L.push(capAmt(p,tid,salNext(p)+capBAt(p,s),fid)); } else { if(isRookie(p))continue; L.push(capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)); } }
   const so=[...L].sort((a,b)=>b-a); const base=sum(so.slice(0,40)), k40=so.length>=40?so[39]:0; const pp=pid!=null?G.players[pid]:null; if(amt!=null&&!(pp&&!nxt&&isRookie(pp))&&!(pp&&nxt&&pp.draft&&pp.draft.y===s-1))L.push(pid===fid?amt*.5:amt); /* 신인 제외 조건은 바꾸려는 선수에게도 똑같이(검수 11-06) */ const tot=sum(L.sort((a,b)=>b-a).slice(0,40)); const room0=capOf(s)-base+k40; return {tot,base,cap:capOf(s),s,room:pid!=null&&pid===fid?room0*2:room0}; } /* 프랜차이즈 예외 선수는 보수의 절반만 들어가니 쓸 수 있는 연봉은 두 배(검수 11-06) */ /* room: 이 선수 금액으로 쓸 수 있는 최대(40번째 선수를 밀어내는 몫 포함) */
 /* 프랜차이즈 예외(KBO 2025-09 의결, 2026~): 구단마다 한 해 1명, 그 구단 소속 7시즌 이상인 국내 선수 보수의 50%를 상한 산정에서 뺀다. 가장 많이 받는 대상자를 자동으로 지정한다 */
-let _franC={k:null}; function franId(tid,outIds,inIds,sf){ const sv=p=>sf?sf(p):p.sal; /* sf: 다음 시즌 합계는 다음 시즌 연봉으로 고른다(검수 11-07) */ if(G.year<2026)return null; const out=new Set(outIds||[]); const pool=domPayOf(tid).filter(p=>!out.has(p.id)); for(const id of inIds||[]){ const p=G.players[id]; if(p&&!p.foreign&&!pool.includes(p))pool.push(p); } /* 데려올 선수도 예외 대상 후보(예상 계산이 실제 소속 뒤 계산과 같게) */ const k=(sf?'n':'c')+G.year+':'+G.day+':'+tid+':'+pool.map(p=>p.id+':'+sv(p)+':'+(p.hist||[]).filter(h=>h.t===tid).map(h=>h.y).join(',')).join(';'); if(_franC.k===k)return _franC.v; let b=null; for(const p of pool){ const ys=new Set((p.hist||[]).filter(h=>h.t===tid).map(h=>h.y)); if(ys.size<7)continue; if(!b||sv(p)>sv(b))b=p; } _franC={k,v:b?b.id:null}; return _franC.v; }
+let _franC={k:null}; function franId(tid,outIds,inIds,sf){ const sv=p=>sf?sf(p):p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0); /* 상한 반영액(연봉+계약금 연 반영액)이 가장 큰 선수(검수 11-09y). sf: 다음 시즌 합계는 다음 시즌 금액으로(검수 11-07) */ if(G.year<2026)return null; const out=new Set(outIds||[]); const pool=domPayOf(tid).filter(p=>!out.has(p.id)); for(const id of inIds||[]){ const p=G.players[id]; if(p&&!p.foreign&&!pool.includes(p))pool.push(p); } /* 데려올 선수도 예외 대상 후보(예상 계산이 실제 소속 뒤 계산과 같게) */ const k=(sf?'n':'c')+G.year+':'+G.day+':'+tid+':'+pool.map(p=>p.id+':'+sv(p)+':'+(p.hist||[]).filter(h=>h.t===tid).map(h=>h.y).join(',')).join(';'); if(_franC.k===k)return _franC.v; let b=null; for(const p of pool){ const ys=new Set((p.hist||[]).filter(h=>h.t===tid).map(h=>h.y)); if(ys.size<7)continue; if(!b||sv(p)>sv(b))b=p; } _franC={k,v:b?b.id:null}; return _franC.v; }
 const capAmt=(p,tid,a,fid=franId(tid))=>p.id===fid?a*.5:a; /* 합계 한 번당 예외 대상도 한 번만 조회 */
 function capPay(tid){ const fid=franId(tid); const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign&&!p.frehab); /* 재활 선수 명단에 오른 외국인은 등록 인원·총액에서 빠진다(대체 선수가 그 자리) */
@@ -10931,7 +10931,7 @@ function finMonth(m){ if(G.unemp||G.gameOver||(G.fd&&!G.fd.done))return; const n
   const D=finDiff(p,now); const dr=now.room-p.room; G.finLog=(G.finLog||[]).concat([{m,y:now.y,tid:now.tid,room0:p.room,room1:now.room,cash0:p.cash,cash1:now.cash,top:D.slice(0,6)}]).slice(-14);
   if(!D.length&&Math.abs(dr)<50&&Math.abs(now.cash-p.cash)<50)return;
   const ln=D.slice(0,5).map(x=>`${x.kind==='지출'?'지출':x.kind==='수입'?'수입':'지원'} · ${x.l}: ${money(x.v0)} → ${money(x.v1)} (전망 ${x.eff>=0?'+':''}${money(x.eff)})`); /* 항목 전망 변화: 확정 예산(잠긴 수입)과 다를 수 있어 '예산 여유'로 부르지 않는다(검수 11-08) */
-  const flat=Math.abs(dr)<50; mail('재무팀',`${m}월 재정 보고: 예산 여유 ${money(now.room)} · ${flat?'전월과 같음':`전월 대비 ${money(Math.abs(dr))} ${dr>=0?'증가':'감소'}`}`,`${flat?`올해 예산 여유는 지난달과 같은 ${money(now.room)}입니다.`:`지난달 대비 올해 예산 여유가 ${money(p.room)}에서 ${money(now.room)}(으)로 ${dr>=0?'늘었':'줄었'}습니다.`} 보유 현금은 ${money(p.cash)} → ${money(now.cash)}입니다(올해 수입·지출은 시즌 결산 때 현금에 반영됩니다). /* 변화 0을 '증가'로 적지 않는다(리뷰 11-08) */\n\n${ln.length?'바뀐 항목\n'+ln.join('\n'):'항목별 변화는 크지 않습니다.'}\n\n항목별 숫자는 전망 변화이고, 확정된 수입은 예산 여유에 바로 더해지지 않을 수 있습니다. 예산 여유는 올해 예상 수입과 구단주 지원 목표에서 올해 예상 지출을 뺀 값입니다. 선수 영입·코치 고용·시설 공사가 지출 예상을 늘리고, 성적과 관중이 수입 예상을 바꿉니다.`,{kind:'재정',acts:[{l:'재정 보기',a:'go',v:'club:fin'}]}); }
+  const flat=Math.abs(dr)<50; mail('재무팀',`${m}월 재정 보고: 예산 여유 ${money(now.room)} · ${flat?'전월과 같음':`전월 대비 ${money(Math.abs(dr))} ${dr>=0?'증가':'감소'}`}`,`${flat?`올해 예산 여유는 지난달과 같은 ${money(now.room)}입니다.`:`지난달 대비 올해 예산 여유가 ${money(p.room)}에서 ${money(now.room)}(으)로 ${dr>=0?'늘었':'줄었'}습니다.`} 보유 현금은 ${money(p.cash)} → ${money(now.cash)}입니다(올해 수입·지출은 시즌 결산 때 현금에 반영됩니다).\n\n${ln.length?'바뀐 항목\n'+ln.join('\n'):'항목별 변화는 크지 않습니다.'}\n\n항목별 숫자는 전망 변화이고, 확정된 수입은 예산 여유에 바로 더해지지 않을 수 있습니다. 예산 여유는 올해 예상 수입과 구단주 지원 목표에서 올해 예상 지출을 뺀 값입니다. 선수 영입·코치 고용·시설 공사가 지출 예상을 늘리고, 성적과 관중이 수입 예상을 바꿉니다.`,{kind:'재정',acts:[{l:'재정 보기',a:'go',v:'club:fin'}]}); }
 function monthReport(m){
   const S=G.sea; const r=S.rec[G.user]; const prev=S.mark||{w:0,l:0,t:0};
   try{ pactMonth(m); }catch(e){} try{ rolePromCheck(m); }catch(e){}
@@ -12317,14 +12317,16 @@ function capWarnUser(){ const pay=capPayNext(G.user), cap=capOf(sponSeason()), c
 /* 군 입대·부상 이탈로 시즌 중 상위 40명 연봉이 줄어드므로 5% 여유를 두고 맞춘다. 시즌 막판(9월 1일·정규시즌 종료)에도 한 번 더 확인한다 */
 function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.year); let gap=fl*1.05-capPay(tid); if(gap<=0)return; const t=team(tid); if((t.cash||0)<-3000)return; /* 빚이 큰 구단은 연봉을 억지로 올리지 않고 하한 미달 발전기금을 낸다 */
   const ps=domestic(tid).filter(p=>!isRookie(p)&&!p.ys&&!(p.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,8); const tot=sum(ps.map(p=>ovr(p)));
-  for(const p of ps){ const s0=p.sal, y0=p.yrs||0, multi=!p.faC; const add=round5(gap*ovr(p)/tot); p.sal=round5(p.sal+add); if(!p.faC){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); p.cyrs=p.yrs; }
-    if(p.sal!==s0||multi)story(p,`연봉 하한 맞추기 계약 조정: 연봉 ${money(s0)} → ${money(p.sal)}, 계약 ${multi?`${y0||1}년 → ${p.yrs}년(다년계약 전환)`:`${p.yrs}년 유지`}`,'move'); } /* 구단이 하한을 맞추려 올린 계약도 선수 이력(이적·계약)에 남긴다 */
+  const s0=new Map(ps.map(p=>[p.id,p.sal]));
+  for(let k=0;k<4&&gap>0;k++){ for(const p of ps)p.sal=round5(p.sal+round5(gap*ovr(p)/tot)); gap=fl*1.05-capPay(tid); } /* 올린 뒤 다시 잰다: 프랜차이즈 예외 선수는 인상분의 절반만 들어가 한 번으로는 모자랄 수 있다(검수 11-09y) */
+  for(const p of ps){ const y0=p.yrs||0, multi=!p.faC; if(!p.faC){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); p.cyrs=p.yrs; }
+    if(p.sal!==s0.get(p.id)||multi)story(p,`연봉 하한 맞추기 계약 조정: 연봉 ${money(s0.get(p.id))} → ${money(p.sal)}, 계약 ${multi?`${y0||1}년 → ${p.yrs}년(다년계약 전환)`:`${p.yrs}년 유지`}`,'move'); } /* 구단이 하한을 맞추려 올린 계약도 선수 이력(이적·계약)에 남긴다 */
   wire('구단',`${t.city} ${t.nick}, 연봉 하한 맞추려 주축 선수들과 다년계약`,{tid}); }
 /* 빚이 깊은 AI 구단(현금 -40억 아래): 모기업이 허리띠를 졸라맨다. 고액 베테랑을 여유 있는 구단에 넘겨 상위 40명 연봉을 상한의 80%까지 낮춘다(방출 위약금은 빚을 늘리므로 트레이드만) */
 function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME()||t.cash>=-4000)continue; t.mode='rebuild'; n+=aiCapFix(t.id,.8,true,3); } return n; }
 function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} let n=0; for(const t of G.teams)if(t.id!==ME())n+=aiCapFix(t.id,frac); return n; }
 /* 경쟁균형세 상한 결정(capCouncil)은 68_assoc.js의 실행위원회·이사회로 옮겼다 */
-function capInfo(tid){ const pay=preSeason(sponSeason())?capPayNext(tid):capPay(tid), /* 겨울: 합의한 다음 시즌 연봉 기준 */ cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:floorOf(sponSeason()),over:Math.max(0,pay-cap)}; }
+function capInfo(tid){ const pay=preSeason(sponSeason())?capPayNext(tid):capPay(tid), /* 겨울: 합의한 다음 시즌 연봉 기준 */ cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:sponSeason()>=2027?floorOf(sponSeason()):0 /* 하한 제재는 2027년부터(검수 11-09y) */,over:Math.max(0,pay-cap)}; }
 
 /* ===== 연봉 ===== */
 function perfOf(h,isP){
@@ -12990,17 +12992,16 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   { const P=G.ps; if(!settled&&P&&P.champ!=null&&P.res){ try{ const ord=P.order||[]; const pool=Math.round(14500*.6), rest=pool*.8; const tid=G.user; let sh=0; if(ord[0]&&ord[0].tid===tid)sh+=Math.round(pool*.2); const w=[[P.champ,.5],[P.runner,.24],[P.res.po&&P.res.po[1],.14],[P.res.spo&&P.res.spo[1],.09],[P.res.wc&&P.res.wc[1],.03]]; for(const [x,f] of w)if(x===tid)sh+=Math.round(rest*f); if(sh)inc.push(['포스트시즌 배당금(예상)',sh]); /* 입장 수익 평균으로 추정, 결산 때 확정(검수 11-07) */
     if(P.champ===tid&&!t.indie)inc.push(['모기업 우승 보너스(예상)',Math.round(pool*.5*(t.owner==='profit'?.6:1))]); }catch(e){} } if(!settled)try{ const sb=sponBonusEst(G.year,P&&P.champ); if(sb)inc.push(['스폰서 성과 보너스',sb]); }catch(e){} } /* 가을야구 확정·진출만으로도 진출 보너스는 전망에(우승팀 확정 전에도, 검수 11-09i) */ { const ct=!settled&&G.sea&&G.sea.cut&&G.sea.cut[G.user]; if(ct>0)inc.push(['연봉 감액(고액 연봉 선수 2군 체류)',Math.round(ct)]); } /* 이미 생긴 감액은 결산 때 돌려받는다 */ /* 결산과 같은 항목 */
   const E=sum(exp.map(x=>x[1])), I=sum(inc.map(x=>x[1])); const gap=E-I; const cap=supportCap(t);
-  const g=G.goals&&G.goals.y===G.year&&!settled?G.goals:null; const plan=!g&&!settled&&G.supPlan&&G.supPlan.y===G.year?G.supPlan.gf:null; const gf=g?g.sup:plan!=null?plan:settled?(G.goals&&G.goals.sup!=null?G.goals.sup:.6):clamp((cap?Math.max(0,gap)/cap:0)*(t.owner==='profit'?.85:t.owner==='pr'?1:1.15)+.05,.2,1); const goalSup=t.indie?0:Math.round(gf*cap);
+  const g=G.goals&&G.goals.y===G.year&&!settled?G.goals:null; const plan=!g&&!settled&&G.supPlan&&G.supPlan.y===G.year?G.supPlan.gf:null; const gf=g?g.sup:plan!=null?plan:settled?(G.goals&&G.goals.sup!=null?G.goals.sup:.6):clamp((cap?Math.max(0,gap)/cap:0)*(t.owner==='profit'?.85:t.owner==='pr'?1:1.15)+.05,.2,1); const fy=sponSeason(); const grantNow=t.grant&&t.grant.y===fy?t.grant.amt:0; const goalSup=t.indie?0:Math.round(gf*(cap-grantNow))+grantNow; /* 목표율은 기본 한도에, 추가 지원은 그 위에 더한다(확정 기준과 같게, 검수 11-09y) */
   const selfC=gap>0?Math.min(gap,Math.max(0,t.cash-3000)*.5):0, need=gap-selfC; /* 결산처럼 보유 현금 30억 초과분의 절반으로 적자를 먼저 메운다 */
   const support=t.indie?0:clamp(need,0,cap);
   /* 시즌 예산 확정: 구단주 지원(신뢰에 따른 한도·목표)과 예상 수입(입장·중계·광고·스폰서)은 시즌을 시작할 때(목표 확정·1월 1일 계획·결산 직후) 그해 몫으로 정한다.
      시즌 중에 신뢰가 오르거나 수입이 늘어도 단장이 쓸 수 있는 돈(예산 여유)은 늘지 않는다. 늘어난 수입은 구단(모기업) 몫이고, 구단주에게 추가 지원을 요청할 근거가 된다.
      예산을 늘리는 길은 구단주 승인(추가 지원)뿐이다. 실제 결산(적자 보전)은 실제 수입·지출로 한다 */
-  const fy=sponSeason(); const grantNow=t.grant&&t.grant.y===fy?t.grant.amt:0;
-  const LK=G.bLocks=G.bLocks||{}; if(G.bLock){ if(!LK[G.bLock.tid])LK[G.bLock.tid]=G.bLock; delete G.bLock; } /* 확정 기준은 구단별로 보관한다: 다른 구단을 거쳐 돌아와도 그 시즌 기준이 바뀌지 않게(검수 11-06) */ let lock=LK[G.user]&&LK[G.user].fy===fy?LK[G.user]:null; if(!lock&&!G.unemp)lock=LK[G.user]={fy,tid:G.user,I,capB:cap-grantNow,gf,d:G.day};
+  const LK=G.bLocks=G.bLocks||{}; if(G.bLock){ if(!LK[G.bLock.tid])LK[G.bLock.tid]=G.bLock; delete G.bLock; } /* 확정 기준은 구단별로 보관한다: 다른 구단을 거쳐 돌아와도 그 시즌 기준이 바뀌지 않게(검수 11-06) */ let lock=LK[G.user]&&LK[G.user].fy===fy?LK[G.user]:null; if(!lock&&!G.unemp)lock=LK[G.user]={fy,tid:G.user,I,capB:cap-grantNow,gf,d:G.day,eco:ecoIdx(fy)}; if(lock&&lock.eco&&lock.eco!==ecoIdx(fy)){ lock.capB=Math.round(lock.capB*ecoIdx(fy)/lock.eco); lock.eco=ecoIdx(fy); } /* 12월 이사회가 상한을 정하면 확정 한도도 그 경제 지수로 맞춘다(검수 11-09y) */
   const IL=lock?lock.I:I, capL=lock?lock.capB+grantNow:cap, goalL=t.indie?0:(lock?Math.round(lock.gf*lock.capB)+grantNow:goalSup);
   const gapL=E-IL, selfCL=gapL>0?Math.min(gapL,Math.max(0,t.cash-3000)*.5):0, needL=gapL-selfCL;
-  return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,cash:t.cash,endCash:(c0=>t.indie&&c0>8000?c0-Math.round((c0-8000)*.5):c0)(t.cash+I+support-E),divEst:(c0=>t.indie&&c0>8000?Math.round((c0-8000)*.5):0)(t.cash+I+support-E), /* 독립구단은 결산 뒤 80억 초과분의 절반을 투자사가 배당으로 가져간다(검수 11-07) */
+  return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,grant:t.indie?0:grantNow,cash:t.cash,endCash:(c0=>t.indie&&c0>8000?c0-Math.round((c0-8000)*.5):c0)(t.cash+I+support-E),divEst:(c0=>t.indie&&c0>8000?Math.round((c0-8000)*.5):0)(t.cash+I+support-E), /* 독립구단은 결산 뒤 80억 초과분의 절반을 투자사가 배당으로 가져간다(검수 11-07) */
     lockI:IL, extra:Math.round(I-IL), lockD:lock?lock.d:null, capLock:capL, goalLive:goalSup,
     roomGoal:goalL-needL, roomCap:capL-needL, roomMax:capL-gapL+Math.max(0,t.cash), rem, indie:!!t.indie, trust:t.trust,
     fR,fRoom:Math.max(0,fR-fs),fUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='용병').map(fCommit)), fCap:fCap(G.user), aUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='아시아').map(p=>p.sal)), ci}; }
@@ -15533,16 +15534,19 @@ function stadGame(day,h,a){ const cap=stadCap(h); let att=attOf(h,a,day); const 
 function stadYr(S){ return {prem:(stadPower(S.lv.prem)-2)*600,ad:(stadPower(S.lv.vis)-2)*400+(S.dome?2500:0),up:sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2]))}; }
 function stadHG(tid){ const c=G.cal, H=G.sea.hg=G.sea.hg||{}; if(H[tid]==null)H[tid]=c&&c.sched?Math.max(1,homeGames(tid,c.open,c.end).length):72; return H[tid]; }
 function homeGames(tid,from,to){ const L=[]; for(let d=from;d<=to;d++){ const gs=G.cal.sched[d]; if(!gs)continue; for(const [h,a] of gs)if(h===tid)L.push([d,a]); } return L; }
+/* d날 경기 때 시설 단계: 그날까지 끝나는 공사는 완공 단계로(완공 전 경기는 지금 단계) */
+function stadLvAt(S,d,base){ const L={...(base||S.lv)}; for(const b of S.build||[])if(b.done<=d&&b.lv>(L[b.k]||0))L[b.k]=b.lv; return L; }
 /* 시즌 관중·구장 수입 전망: 지금까지 실제 + 남은 홈경기 예상 */
 function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal; if(!next&&c&&c.sched&&G.day<c.open&&S.proj&&S.proj.stage==='build'&&S.proj.done<=c.open)return stadProj(tid,true); /* 개막 전 새해: 개막 전에 문을 여는 신구장은 그 구장 기준(검수 11-08) */
   /* 시즌이 끝난 뒤 예산 전망(next): 지난 일정에 지금 가격·시설을 넣어 다음 시즌 기대 관중을 낸다 */
   if(next&&c&&c.sched){ const N=S.proj, y1=dobj(G.day).m>=10?G.year+1:G.year; const nw=N&&N.stage==='build'&&N.done<=dnum(y1,4,1); /* 다음 시즌 전에 문을 여는 신구장: 그 구장 기준으로 본다(검수 11-06) */
-    const keep={cap:S.cap,dome:S.dome,lv:S.lv,built:S.built,proj:S.proj}; S.lv={...S.lv}; for(const b of (S.build||[]))if(b.done<=dnum(y1,4,1)&&b.lv>(S.lv[b.k]||0))S.lv[b.k]=b.lv; /* 개막 전에 끝나는 시설 공사는 완공 단계로(검수 11-09j) */ if(nw){ S.lv=Object.fromEntries(Object.entries(S.lv).map(([k,v])=>[k,Math.max(v,4)])); S.cap=N.cap+(stadPower(S.lv.prem)-2)*300; S.dome=N.k==='dome'; S.built=y1; S.proj=null; } /* 개장 연도 기준 구장 나이(검수 11-07) */ /* 개장 첫해와 같은 구장 나이(0년)·공사 중 감소 없음 */
-    try{ _stY=y1; let att=0,n=0; for(const [d,a] of homeGames(tid,c.open,c.end)){ att+=attOf(tid,a,d,null); n++; } att=Math.round(att);
-    return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(att*TICKET*ecoIdx(y1)*PRICE[S.price].m), /* 다음 시즌 표값·구장 나이(검수 11-06) */fnb:Math.round(att*.0003*(stadPower(S.lv.fnb)-2)),prem:(stadPower(S.lv.prem)-2)*600,ad:(stadPower(S.lv.vis)-2)*400+(S.dome?2500:0),up:sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2]))}; } finally{ _stY=null; Object.assign(S,keep); } }
+    const keep={cap:S.cap,dome:S.dome,lv:S.lv,built:S.built,proj:S.proj}; S.lv={...S.lv}; if(nw){ S.lv=Object.fromEntries(Object.entries(S.lv).map(([k,v])=>[k,Math.max(v,4)])); S.cap=N.cap+(stadPower(S.lv.prem)-2)*300; S.dome=N.k==='dome'; S.built=y1; S.proj=null; } /* 개장 연도 기준 구장 나이(검수 11-07) */ /* 개장 첫해와 같은 구장 나이(0년)·공사 중 감소 없음 */
+    const off=(c.open>G.day&&dobj(c.open).y===y1?c.open:onOrAfter(y1,3,25,6))-c.open; /* 지난 일정을 다음 시즌 개막일(buildCalendar와 같은 식)로 옮겨 공사 완공일과 맞춘다(검수 11-09y: 개막 뒤 완공도 개막 전처럼 셈) */ const lv0=S.lv;
+    try{ _stY=y1; let att=0,n=0,fb=0,pm=0,ad=0,up=0; for(const [d,a] of homeGames(tid,c.open,c.end)){ S.lv=stadLvAt(S,d+off,lv0); const x=attOf(tid,a,d,null), v=stadYr(S); att+=x; fb+=x*.0003*(stadPower(S.lv.fnb)-2); pm+=v.prem; ad+=v.ad; up+=v.up; n++; } att=Math.round(att);
+    return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(att*TICKET*ecoIdx(y1)*PRICE[S.price].m), /* 다음 시즌 표값·구장 나이(검수 11-06) */fnb:Math.round(fb),prem:Math.round(n?pm/n:0),ad:Math.round(n?ad/n:0),up:Math.round(n?up/n:0)}; } finally{ _stY=null; Object.assign(S,keep); } }
   const A=(G.sea&&G.sea.att&&G.sea.att[tid])||{n:0,sum:0}; let rest=0, rn=0;
   let done=A.sum, dn=A.n;
-  if(c&&c.sched){ for(const [d,a] of homeGames(tid,Math.max(G.day+1,c.open),c.end)){ rest+=attOf(tid,a,d,null); rn++; }
+  let restFb=0; if(c&&c.sched){ const lv0=S.lv; try{ for(const [d,a] of homeGames(tid,Math.max(G.day+1,c.open),c.end)){ S.lv=stadLvAt(S,d,lv0); const x=attOf(tid,a,d,null); rest+=x; restFb+=x*.0003*(stadPower(S.lv.fnb)-2); rn++; } } finally{ S.lv=lv0; } /* 공사 중인 관람석·전광판·프리미엄석(좌석 감소)·매점은 완공 뒤 경기부터(검수 11-09y) */
     /* 예전 저장본처럼 시즌 중간부터 집계된 경우: 이미 치른 홈경기 수에 맞춰 늘린다 */
     const played=homeGames(tid,c.open,Math.min(G.day,c.end)).length; if(played>dn){ if(dn>0){ done=A.sum/dn*played; } else { done=0; for(const [d,a] of homeGames(tid,c.open,Math.min(G.day,c.end)))done+=attOf(tid,a,d,null); } dn=played; } }
   const att=Math.round(done+rest); const n=dn+rn;
@@ -15550,8 +15554,8 @@ function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal; if(!next&&c&&c.
   const tkNow=TICKET*ecoIdx()*PRICE[S.price].m, fbNow=.0003*(stadPower(S.lv.fnb)-2); const sc=A.n>0?done/A.sum:1; const hasR=A.tk!=null&&A.n>0&&A.sum>0;
   const tkDone=hasR?A.tk*sc:done*tkNow, fbDone=hasR?(A.fb||0)*sc:done*fbNow;
   const v=stadYr(S); let yr=v; if(A.pn!=null){ const hg=stadHG(tid), left=Math.max(0,hg-A.pn); yr={prem:A.pm+v.prem*left/hg,ad:A.ad+v.ad*left/hg,up:A.up+v.up*left/hg}; } /* 치른 경기는 그때 단계, 남은 경기는 지금 단계 */
-  if(c&&c.sched)for(const b of (S.build||[])){ const l0=S.lv[b.k]; if(!(b.lv>l0))continue; S.lv[b.k]=b.lv; const v2=stadYr(S); S.lv[b.k]=l0; const m=homeGames(tid,Math.max(b.done,G.day+1,c.open),c.end).length/stadHG(tid); yr={prem:yr.prem+(v2.prem-v.prem)*m,ad:yr.ad+(v2.ad-v.ad)*m,up:yr.up+(v2.up-v.up)*m}; } /* 공사 중인 시설은 완공 뒤 홈경기 몫만큼(검수 11-08). shortcut: 매점(fnb) 완공 효과는 빼고 셈, 매점 공사가 흔해지면 관중 기준으로 더한다 */
-  return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(tkDone+rest*tkNow),fnb:Math.round(fbDone+rest*fbNow),prem:Math.round(yr.prem),ad:Math.round(yr.ad),up:Math.round(yr.up)}; }
+  if(c&&c.sched)for(const b of (S.build||[])){ const l0=S.lv[b.k]; if(!(b.lv>l0))continue; S.lv[b.k]=b.lv; const v2=stadYr(S); S.lv[b.k]=l0; const m=homeGames(tid,Math.max(b.done,G.day+1,c.open),c.end).length/stadHG(tid); yr={prem:yr.prem+(v2.prem-v.prem)*m,ad:yr.ad+(v2.ad-v.ad)*m,up:yr.up+(v2.up-v.up)*m}; } /* 공사 중인 시설은 완공 뒤 홈경기 몫만큼(검수 11-08) */
+  return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(tkDone+rest*tkNow),fnb:Math.round(fbDone+restFb),prem:Math.round(yr.prem),ad:Math.round(yr.ad),up:Math.round(yr.up)}; }
 /* 구장 공사 시작 가능 기간: 정규시즌이 끝난 뒤부터 2월 말까지(3월은 개막 준비) */
 function stadWindow(){ const per=period(); if(per==='season'||per==='post')return false; return !(per==='pre'&&dobj(G.day).m>=3); }
 function stadStart(k){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===k); if(!it)return '없는 시설입니다.'; const lv=S.lv[k];
@@ -18046,7 +18050,7 @@ function asMk(y,st){ return {name:genName(),age:ri(58,72),stance:st||pick(Object
 function asInit(){ if(G.assoc){ const A=G.assoc; if(A.next&&G.year>=A.next.since){ A.head=A.next; delete A.next; } /* 당선자는 다음 해 취임(검수 11-07: 12월에 바로 바뀜) */ return A; } const h=asMk(2025); h.since=2026; h.until=2028; G.assoc={head:h,cmt:[],els:[],rel:50,cur:null,el:null}; return G.assoc; }
 function asHead(){ return asInit().head; }
 /* 확장형 협회장은 중계권 계약을 키운다 */
-function asRev(){ try{ const H=G&&G.assoc&&G.assoc.head; if(!H||H.stance!=='grow')return 1; return (H.since??0)<=sponSeason()?1.03:1; }catch(e){ return 1; } } /* 새 협회장 효과는 임기 시작 시즌부터(검수 11-06) */
+function asRev(){ try{ const A=G&&G.assoc; const H=A&&(A.next&&A.next.since<=sponSeason()?A.next:A.head); /* 당선이 확정된 차기 협회장은 취임 시즌 예산부터(검수 11-09y) */ if(!H||H.stance!=='grow')return 1; return (H.since??0)<=sponSeason()?1.03:1; }catch(e){ return 1; } } /* 새 협회장 효과는 임기 시작 시즌부터(검수 11-06) */
 function asRelLabel(){ const r=asInit().rel; return r>=62?'우호적':r>=45?'무난함':'냉랭함'; }
 const asEmp=()=>!G.unemp&&G.user!=null;
 
@@ -22369,8 +22373,8 @@ function capCard(ci){
   const pct=Math.min(100,ci.pay/ci.cap*100), fl=ci.floor/ci.cap*100;
   return `<section class="card">
     <div class="row between"><h2 class="sec">샐러리캡</h2><span class="pill ${ci.over?'bad':'good'}">${ci.over?'초과 '+money(ci.over):'여유 '+money(ci.cap-ci.pay)}</span></div>
-    <div class="bar"><i class="${ci.over?'over':''}" style="width:${pct}%"></i><b style="left:${fl}%"></b></div>
-    <p class="small muted">외국인과 신인을 뺀 연봉 상위 40명 합계 ${money(ci.pay)} · 상한 ${money(ci.cap)} · 하한 ${money(ci.floor)}(세로선). 넘기면 초과분의 30%, 2년 연속이면 50%를 야구발전기금으로 냅니다.${G.year>2028?' 2029년 이후 상한액은 연 3% 인상으로 가정했습니다.':''}</p>
+    <div class="bar"><i class="${ci.over?'over':''}" style="width:${pct}%"></i>${ci.floor?`<b style="left:${fl}%"></b>`:''}</div>
+    <p class="small muted">외국인과 신인을 뺀 연봉 상위 40명 합계 ${money(ci.pay)} · 상한 ${money(ci.cap)}${ci.floor?` · 하한 ${money(ci.floor)}(세로선)`:' · 하한은 2027년부터 적용'}. 넘기면 초과분의 30%, 2년 연속이면 50%를 야구발전기금으로 냅니다.${(y=>y>2028&&!(G.capY&&G.capY[y])?` ${y}년 상한은 아직 이사회가 정하지 않아 연 3% 인상으로 가정했습니다.`:'')(sponSeason())}</p>
   </section>`;
 }
 function scoutBody(){
@@ -27447,15 +27451,15 @@ function teamsView(){
 /* ---------- 재정 탭 ---------- */
 function moneyView(){
   const t=team(G.user); const ci=capInfo(G.user);
-  const f=G.last&&G.last.fins?G.last.fins[G.user]:null; const hs=G.history.filter(h=>h.user);
+  const lme=G.last?(G.last.tid??G.user):G.user; /* 시즌 결산 화면과 같은 구단(결산한 구단, 검수 11-09y) */ const f=G.last&&G.last.fins?G.last.fins[lme]:null; const hs=G.history.filter(h=>h.user);
   const it=inTabs('fin',[['bud','올해 예산'],['flow','수입·지출'],['lim','한도·캡'],['last','지난 결산'],...(fmOn()?[['star','선수 홍보']]:[])]); /* PC 구단주 화면은 FM식 한 화면이라 선수 홍보 카드는 재정 쪽 탭으로 */
   if(it.cur==='star')return it.bar+starPanel();
   if(it.cur==='bud'&&fmOn())return it.bar+finDash();
   if(it.cur==='flow'||it.cur==='lim'){ const parts=budgetCards().split('<section class="card'); const pick=it.cur==='flow'?parts.find(x=>x.includes('어디에 쓰고 어디서 버나')):parts.find(x=>x.includes('용도별 한도')); return it.bar+(pick?'<section class="card'+pick:'')+(it.cur==='lim'?capCard(ci):''); }
-  if(it.cur==='last')return it.bar+(f?`<section class="card"><h2 class="sec">${G.last.y} 결산</h2>${finTable(f)}</section>`:'<section class="card"><p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p></section>')+`<section class="card"><h2 class="sec">재임 기록</h2>${hs.length?`<div class="tw"><table><thead><tr><th>시즌</th><th>성적</th><th>순위</th><th>순이익</th><th>신뢰</th></tr></thead><tbody>${hs.map(h=>`<tr><td>${h.y}</td><td>${h.user.w}-${h.user.l}${h.user.t?'-'+h.user.t:''}</td><td>${h.user.rank}</td><td>${money(h.user.net)}</td><td>${h.user.trust}</td></tr>`).join('')}</tbody></table></div>`:'<p class="small muted">첫 시즌을 마치면 기록이 쌓입니다.</p>'}</section>`;
+  if(it.cur==='last')return it.bar+(f?`<section class="card"><h2 class="sec">${G.last.y} 결산${lme!==G.user?` · ${esc(tname(lme))}`:''}</h2>${finTable(f)}</section>`:'<section class="card"><p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p></section>')+`<section class="card"><h2 class="sec">재임 기록</h2>${hs.length?`<div class="tw"><table><thead><tr><th>시즌</th><th>성적</th><th>순위</th><th>순이익</th><th>신뢰</th></tr></thead><tbody>${hs.map(h=>`<tr><td>${h.y}</td><td>${h.user.w}-${h.user.l}${h.user.t?'-'+h.user.t:''}</td><td>${h.user.rank}</td><td>${money(h.user.net)}</td><td>${h.user.trust}</td></tr>`).join('')}</tbody></table></div>`:'<p class="small muted">첫 시즌을 마치면 기록이 쌓입니다.</p>'}</section>`;
   { const parts=budgetCards().split('<section class="card'); return it.bar+finMonthCard()+parts.filter(x=>x&&!x.includes('어디에 쓰고 어디서 버나')&&!x.includes('용도별 한도')).map(x=>'<section class="card'+x).join('')+csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 마케팅 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`); }
 }
-function finMonthCard(){ const L=(G.finLog||[]).filter(x=>x.y===G.year&&(x.tid??G.user)===G.user); const x=L[L.length-1]; const p=G.finSnap; const now=p&&p.y===G.year&&(p.tid??G.user)===G.user?finSnapNow():null; /* 이직하면 전 구단 월간 기록은 쓰지 않는다(검수 11-09h) */ const dr=now?now.room-p.room:null;
+function finMonthCard(){ const L=(G.finLog||[]).filter(x=>x.y===G.year&&(x.tid??G.user)===G.user); const x=L[L.length-1]; const p=G.finSnap; const now=p&&p.y===G.year&&(p.tid??G.user)===G.user&&p.st===!!(G.last&&G.last.y>=G.year)?finSnapNow():null; /* 결산을 사이에 두면 다른 시즌 예산이라 비교하지 않는다(월간 메일과 같게, 검수 11-09y) */ /* 이직하면 전 구단 월간 기록은 쓰지 않는다(검수 11-09h) */ const dr=now?now.room-p.room:null;
   const lk=!!(G.bLocks&&G.bLocks[G.user]&&G.bLocks[G.user].fy===sponSeason()); /* 확정 예산: 수입 전망이 늘어도 예산 여유는 그대로(검수 11-08) */
   const row=z=>{ const neu=lk&&z.kind==='수입'; return `<div class="tsb-r"><span>${z.kind} · ${esc(z.l)}${neu?' <i class="muted">(전망만, 예산 여유와 무관)</i>':''}</span><span>${money(z.v0)} → ${money(z.v1)} <b class="${neu?'muted':z.eff>=0?'good':'bad'}">${z.eff>=0?'+':''}${money(z.eff)}</b></span></div>`; };
   if(!x&&dr==null)return '';
@@ -27469,7 +27473,7 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
   const segs=[['in',b.I,'예상 수입'],['sup',Math.min(b.goalSup,b.cap),'지원(목표 안)'],['sup2',Math.max(0,b.cap-b.goalSup),'지원(목표 초과)'],['cash',Math.max(0,b.cash),'보유 현금']];
   const big=b.roomGoal>=0?`<b class="ok">${money(b.roomGoal)}</b>`:`<b class="bad">목표 초과 ${money(-b.roomGoal)}</b>`;
   const supTxt=b.indie?'독립구단이라 모기업 지원이 없습니다. 수입 안에서 운영해야 하고, 모자라면 보유 현금이 줄어듭니다.'
-    :`모기업이 적자를 <b>${money(b.cap)}</b>까지 메워 줍니다(구단주 신뢰 ${b.trust}에 비례). 구단주 목표는 한도의 <b>${Math.round((b.goalFrac??.5)*100)}%(${money(b.goalSup)})</b> 이하만 쓰는 것입니다. 많이 받을수록 구단주 평가가 깎입니다.`;
+    :`모기업이 적자를 <b>${money(b.cap)}</b>까지 메워 줍니다(구단주 신뢰 ${b.trust}에 비례). 구단주 목표는 ${b.grant?`기본 한도의 ${Math.round((b.goalFrac??.5)*100)}%에 추가 지원 ${money(b.grant)}을 더한 <b>${money(b.goalSup)}</b>`:`한도의 <b>${Math.round((b.goalFrac??.5)*100)}%(${money(b.goalSup)})</b>`} 이하만 쓰는 것입니다. 많이 받을수록 구단주 평가가 깎입니다.`;
   const yb=fStayOf(G.user).filter(p=>p.foreign==='용병'); const as=fStayOf(G.user).filter(p=>p.foreign==='아시아');
   const mm=(G.mmarket||[]).map(x=>x.sal); const pay=m&&!m.interim?mgrSevPay(m).pay:0;
   const row=(l,v,max,cls)=>`<div class="bud-r"><span>${l}</span><i><em class="${cls||''}" style="width:${Math.min(100,v/max*100).toFixed(1)}%"></em></i><b>${money(v)}</b></div>`;
@@ -27516,7 +27520,7 @@ function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=(G.finLog||[]).
     ['외국인 선수 총액',b.fUsed<=b.fCap,`${fStayOf(G.user).filter(p=>p.foreign==='용병').length}명 총액 ${Math.round(b.fUsed/USD)}만 달러 · 한도 ${Math.round(b.fCap/USD)}만 달러`],
     ...(b.indie?[]:[['구단주 지원 목표',b.support<=b.goalSup,`적자 보전 예상 ${money(b.support)} · 목표 ${money(b.goalSup)} 이하`]])];
   const bud=`<section class="card fmd-bud"><h3 class="fmd-h">예산</h3>
-    <div class="fmd-s"><span class="fmd-k">구단주 목표 안 예산 여유</span><b class="fmd-big ${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</b>${b.indie?'<p>독립구단 · 모기업 지원 없음</p>':`<p>모기업 지원 예상 ${money(b.support)} · 목표 ${money(b.goalSup)}(한도의 ${Math.round(b.goalFrac*100)}%) · 한도 ${money(b.cap)}</p>${fmBar(b.support,b.cap,b.support>b.goalSup)}`}<p>${b.lockD!=null?dsh(b.lockD)+'에 시즌 예산 확정':'시즌 시작 때 예산 확정'}${b.extra?` · 예상보다 수입 ${b.extra>0?'+':''}${money(b.extra)}`:''}</p></div>
+    <div class="fmd-s"><span class="fmd-k">구단주 목표 안 예산 여유</span><b class="fmd-big ${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</b>${b.indie?'<p>독립구단 · 모기업 지원 없음</p>':`<p>모기업 지원 예상 ${money(b.support)} · 목표 ${money(b.goalSup)}(${b.grant?`기본 한도의 ${Math.round(b.goalFrac*100)}% + 추가 지원 ${money(b.grant)}`:`한도의 ${Math.round(b.goalFrac*100)}%`}) · 한도 ${money(b.cap)}</p>${fmBar(b.support,b.cap,b.support>b.goalSup)}`}<p>${b.lockD!=null?dsh(b.lockD)+'에 시즌 예산 확정':'시즌 시작 때 예산 확정'}${b.extra?` · 예상보다 수입 ${b.extra>0?'+':''}${money(b.extra)}`:''}</p></div>
     <div class="fmd-s"><span class="fmd-k">국내 선수 연봉 (샐러리캡)</span><b>${money(ci.pay)} / ${money(ci.cap)}</b>${fmBar(ci.pay,ci.cap,ci.over)}<p>${ci.over?`초과 ${money(ci.over)} · 경쟁균형세 부과`:`여유 ${money(ci.cap-ci.pay)}`}</p></div>
     <div class="fmd-s"><span class="fmd-k">외국인 선수 (${fStayOf(G.user).filter(p=>p.foreign==='용병').length}명)</span><b>${b.fUsed?`${Math.round(b.fUsed/USD)}만 / ${Math.round(b.fCap/USD)}만 달러`:`계약 없음 · 한도 ${Math.round(b.fCap/USD)}만 달러`}</b>${fmBar(b.fUsed,b.fCap,b.fUsed>b.fCap)}<p>배정 예산 남음 ${money(b.fRoom)}${b.aUsed?` · 아시아쿼터 ${Math.round(b.aUsed/USD)}만 달러`:''}</p></div>
     <div class="fmd-s"><span class="fmd-k">마케팅 예산</span>${period()==='pre'?marketingBody():`<b>${money(G.marketing)}</b><p>개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`}</div>
