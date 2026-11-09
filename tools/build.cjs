@@ -23,7 +23,11 @@ function build({ root = path.resolve(__dirname, '..'), manifest = loadManifest(r
   new vm.Script(ui, { filename: '화면 번들' });
   const vendor = manifest.vendor;
   const match3d = buildMatch3d(root, manifest, {embedded:embedded3d});
+  /* 서드파티 라이선스 전문: 단일 HTML 배포판에도 함께 실리게 넣는다. 게임 크레딧의 '라이선스 전문 보기'가 읽는다 */
+  const licenses = fs.readdirSync(path.join(root, 'docs/licenses')).filter(f => f.endsWith('.txt')).sort()
+    .map(f => `===== ${f} =====\n\n` + read(`docs/licenses/${f}`)).join('\n\n').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html = read(manifest.html.head) + concatenate(manifest.bundles.styles) + read(manifest.html.body)
+    + '<template id="lic-text">' + licenses + '</template>\n'
     + '<script id="faces">\n'
     + '/* 선수 얼굴: faces.js (c) ZenGM, Apache License 2.0 — https://github.com/zengm-games/facesjs */\n'
     + read(vendor.faces) + '</script>\n<script id="lz">\n'

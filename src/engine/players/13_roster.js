@@ -46,7 +46,7 @@ function stanceOf(t){ return t.mode==='rebuild'?'rebuild':t.stance||'win'; }
 function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx(sponSeason())*(.5+t.trust/100)*(1+((austOn(t)||{}).d||0)))-(t.supCut&&t.supCut.y===sponSeason()?t.supCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
 /* 상한 초과 제재(2025년 개정 규정): 1회 초과분 30%, 2회 연속 50%, 3회 연속 100% + 다음 해 1라운드 지명권 9단계 하락 */
 /* 경쟁균형세(KBO 2025-09 개정, 2026~): 초과분 1회 30%·2회 연속 50%·3회 연속 100% + 3회 연속이면 다음 해 1라운드 지명 9단계 하락.
-   AI 구단의 상한 감각: 지난해 넘은 구단은 2회 연속을 피하려고 더 아낀다(실제 LG 2024 초과 뒤 FA 포기 사례). 가끔 한 구단은 세금을 감수하고 우승에 올인한다 */
+   AI 구단의 상한 감각: 지난해 넘은 구단은 2회 연속을 피하려고 더 아낀다(실제로 초과 다음 해 FA 영입을 포기한 사례가 있다). 가끔 한 구단은 세금을 감수하고 우승에 올인한다 */
 function aiCapMul(t){ if(!t||t.id===ME())return 1; if(t.allIn===sponSeason())return t.capOver>=2?1.02:1.12; return t.capOver>=1?.97:1; }
 /* FA 시장이 열릴 때 올인 구단을 고른다: 구단주가 우승형·현금 여유·전력 상위·최근 3년 올인 없음·연속 초과 2회 미만. 한 해 많아야 한 구단 */
 function allInPick(){ const sy=sponSeason(); if(G.teams.some(t=>t.allIn===sy))return; const ord=(G.last&&G.last.order)||[]; const rk=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?6:i+1; };

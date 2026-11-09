@@ -19,13 +19,13 @@ function newSalary(p){
   if(p.foreign&&p.kept&&p.kept.y===G.year)return p.kept.sal;
   if(p.foreign){ if(p.foreign==='아시아')return round5(clamp(100+(base-44)*16,p.sal*.8,p.sal+10*USD)); return round5(clamp(300+(base-46)*62,p.sal*.7,Math.max(p.sal,Math.min(p.sal*1.3,200*USD)))); }
   /* FA 전에는 보류권 때문에 시장가보다 훨씬 낮다(NONFA_F). 실제 KBO: 3년차 필승조 평균자책점 1점대 → 1억2천, 첫 주전 시즌 → 1억 안팎,
-     4년차 MVP급(김도영) → 5억이 최고 기록. 연차별 상한(PRE_CAP)은 그 최고 기록 수준이다 */
+     4년차 MVP급 → 5억이 최고 기록. 연차별 상한(PRE_CAP)은 그 최고 기록 수준이다 */
   /* FA 자격이 있어도 신청하지 않고 남은 선수는 여전히 보류 선수다: 인상 50% 이내, 7억 상한 */
   const skip=p.svc>=faSvc(p)&&!p.faC&&!p.ext;
   const f=nonFaF(p,skip);
-  /* FA·다년계약이 끝난 뒤 첫 연봉은 계약 연봉이 아니라 지금 시장가(성적·나이, faAsk)로 다시 매긴다. 올리지는 않는다(윤석민 2019: FA 끝나고 12억5천→2억, 84% 삭감) */
+  /* FA·다년계약이 끝난 뒤 첫 연봉은 계약 연봉이 아니라 지금 시장가(성적·나이, faAsk)로 다시 매긴다. 올리지는 않는다(실제 FA 종료 뒤 84% 삭감 사례가 있다) */
   if(salReset(p))return round5(Math.max(MIN_SAL,Math.min(p.sal,faAsk(p).annual)));
-  /* 삭감 폭: KBO 규약의 삭감 제한은 2008년에 없어졌다. 구단 관행상 3억 이상은 최대 50%(김도영 5억→2.5억), 그 아래는 최대 40% */
+  /* 삭감 폭: KBO 규약의 삭감 제한은 2008년에 없어졌다. 구단 관행상 3억 이상은 최대 50%(5억→2.5억), 그 아래는 최대 40% */
   const lo=p.sal*(p.sal>=300?.5:.6);
   /* 올해 1군 표본이 적으면(120타석·25이닝 미만) 시장가가 아니라 올해 기여로 소폭만 움직인다 */
   const h=seasonTotal(p,G.year,'1군'); const enough=h&&(p.isP?h.outs>=75:h.pa>=120); const war=h?warOf(h,p):0;
@@ -38,7 +38,7 @@ function newSalary(p){
   if(skip)return round5(Math.min(v,Math.max(p.sal,Math.min(700,p.sal*1.5))));
   return p.svc<faSvc(p)&&!p.faC?Math.min(v,Math.max(p.sal,preCap(p))):v;
 }
-/* 보류권 선수 연봉 상한(다음 시즌 기준). FA 전에는 5억을 넘기 어렵다(김도영 4년차 5억이 최고 수준). 마지막 해만 6~7억까지 */
+/* 보류권 선수 연봉 상한(다음 시즌 기준). FA 전에는 5억을 넘기 어렵다(4년차 5억이 최고 수준). 마지막 해만 6~7억까지 */
 const PRE_CAP=[30,80,150,300,400,500,600,700];
 /* 예비 FA: 다음 시즌을 마치면 FA 자격을 얻는 보류권 선수 */
 /* FA·다년계약이 이번 겨울 끝난 보류 선수(카페 11-09c: 30억 FA가 끝나도 27억으로 남았다). 예전 저장본은 FA 이력(lastFA)으로 한 번 인정 */
@@ -46,7 +46,7 @@ function salReset(p){ if(!p||p.foreign||p.faC||p.ext)return false; const y=G.con
 function preFA(p){ return !!p&&!p.foreign&&!p.faC&&!p.ext&&(p.svc||0)===faSvc(p)-1; }
 /* 예비 FA 프리미엄: 실제 KBO 구단들은 FA를 앞둔 핵심 선수의 마지막 보류 시즌 연봉을 크게 올린다.
    잡고 싶다는 신호이기도 하고, 떠나면 받는 보상금(직전 연봉의 150~300%)을 키워 다른 구단이 쉽게 데려가지 못하게 하려는 계산이다
-   (2015년 오재원 1.7억→4억, 박정권 2.35억→4억, 김현수 7.5억 등). 연차 상한(7억)은 넘지 않는다 */
+   (2015년 1.7억→4억, 2.35억→4억 사례 등). 연차 상한(7억)은 넘지 않는다 */
 function preFAPremium(p,base){ return round5(Math.max(base,Math.min(preCap(p),Math.max(base*1.5,p.sal*1.3)))); }
 /* 보류권 연봉 비율: 시장가(marketSal) 대비. 3년 미만 18%, 6년 미만 30%, FA 직전 42%, FA 미신청 잔류 55% */
 const NONFA_F=[.18,.3,.42,.55];

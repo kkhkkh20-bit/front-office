@@ -48,8 +48,8 @@ const TEAM_DEF=[
   {city:'창원',nick:'앵커스',code:'CA',hue:217,market:.8,region:'영남'},
 ];
 /* 구단 색: 구단 배지(assets/badges/v1/teams.json)와 같은 지역 실제 프로야구단의 상징색 (주색·보조색·어두운 바탕·밝은 강조)
-   서울 코메츠=LG(빨강·검정), 서울 하운즈=두산(네이비·빨강), 인천=SSG(카디널 레드), 수원=kt(검정·빨강), 고양=키움(버건디),
-   대전=한화(오렌지), 광주=KIA(빨강·남색·금색), 대구=삼성(파랑), 부산=롯데(네이비), 창원=NC(마린 블루·금색). 배지 바탕색을 주색으로 맞춘다(사용자 2026-11-02) */
+   서울 코메츠(빨강·검정), 서울 하운즈(네이비·빨강), 인천(카디널 레드), 수원(검정·빨강), 고양(버건디),
+   대전(오렌지), 광주(빨강·남색·금색), 대구(파랑), 부산(네이비), 창원(마린 블루·금색). 배지 바탕색을 주색으로 맞춘다(사용자 2026-11-02) */
 const TPAL={SC:['#A50034','#111111','#2b000e','#ff3f78'],SH:['#131230','#ED1C24','#09091a','#4b5fd6'],IS:['#CE0E2D','#ffffff','#34040c','#ff4a5c'],SS:['#141414','#ED1C24','#000000','#ff3c3c'],GS:['#570514','#ffffff','#1f0207','#c23a52'],
   DR:['#F37321','#282828','#3f1606','#ff8a45'],GB:['#EA0029','#091330','#3b0507','#ff4048'],DT:['#074CA1','#A1A0A4','#002340','#2e92ec'],BW:['#041E42','#ffffff','#020c1a','#3d72d9'],CA:['#1D467B','#C6A269','#0f1b2f','#5d8ad6']};
 function tpal(t){ if(t==null)return ['#4b5b6c','#e3e9ee','#26313c','#8a99aa']; if(typeof t==='number')t=(typeof G!=='undefined'&&G&&G.teams&&G.teams[t])||TEAM_DEF[t]; if(t&&t.logo&&t.logo.c1){ const b=(t&&TPAL[t.code])||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; const L=t.logo; return [L.c1||b[0],L.c2||b[1],L.c3||b[2],L.c4||L.c1||b[3]]; } return (t&&TPAL[t.code])||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; }
@@ -194,7 +194,7 @@ let _franC={k:null}; function franId(tid,outIds,inIds,sf,s){ const sv=p=>sf?sf(p
 const capAmt=(p,tid,a,fid=franId(tid))=>p.id===fid?a*.5:a; /* 합계 한 번당 예외 대상도 한 번만 조회 */
 function capPay(tid){ const fid=franId(tid); const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign&&!p.frehab); /* 재활 선수 명단에 오른 외국인은 등록 인원·총액에서 빠진다(대체 선수가 그 자리) */
-/* 시장가(연 환산, 백만원): 능력 60까지는 제곱으로 오르고, 그 위는 완만하게(최상위 FA 연평균 20~25억: 2026 강백호 4년 100억, 박찬호 4년 80억) */
+/* 시장가(연 환산, 백만원): 능력 60까지는 제곱으로 오르고, 그 위는 완만하게(최상위 FA 연평균 20~25억: 2026 최상위 계약 4년 80억~100억) */
 function marketSal(o){ const x=Math.max(0,o-37); const v=o<=60?30+x*x*3.0:1617+(o-60)*95; return Math.round(Math.min(3000,v)*capOf(G.year)/15117); }
 const round5=v=>Math.max(MIN_SAL,Math.round(v/5)*5);
 /* 직구 평균 구속(km): 리그 평균 146 안팎(KBO 2025~26년 146.0·146.3), 구위 90(원래 능력 약 69.5)이면 155 안팎·최고 160 가까이.

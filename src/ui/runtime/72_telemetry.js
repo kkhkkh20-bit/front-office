@@ -1,6 +1,6 @@
 /* ---------- 플레이 기록(익명, 테스트용) ----------
  테스트 배포 때 '단장을 만들고 어디까지, 몇 년 차까지 하는지'와 어느 기능을 쓰는지, 어디서 막히는지를 보기 위한 기록.
- - TELE.ph에 PostHog 프로젝트 키(phc_…)를 넣어야 켜진다. 비어 있으면 아무것도 보내지 않는다(GA4 측정 ID도 넣을 수 있다).
+ - TELE.ga(GA4 측정 ID)가 들어 있어 웹 배포판은 기본으로 켜진다(사용자 결정 11-09). TELE.ph(PostHog)는 비어 있어 꺼져 있다. 둘 다 비면 아무것도 보내지 않는다.
  - 이름·얼굴·저장 내용은 보내지 않는다. 기기마다 무작위 익명 번호만 쓴다. 세션 녹화에서는 입력칸을 가린다.
  - 설정 > 게임 설정에서 언제든 끌 수 있다.
  기록하는 것
@@ -72,8 +72,11 @@ function teleHooks(){ if(window._teleH)return; window._teleH=1; const ev=teleEv,
   window.addEventListener('pagehide',end); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')end(); else if(TS.ended){ TS.ended=false; TS.t0=Date.now(); TS.reads=TS.adv=TS.acts=0; } });
   teleSession(); ev('title_view',{returning:!!(G||(typeof anySave==='function'&&anySave()))}); }
 function teleSession(){ if(TS.sess)return; TS.sess=1; teleEv('session_start',{}); }
+/* 개인정보 처리 안내(설정 카드·크레딧 공용). 보내는 항목이 바뀌면 이 문구와 docs/privacy.md를 같이 고친다 */
+function telePrivacyTxt(){ const by=[TELE.ga&&'Google Analytics(Google)',TELE.ph&&'PostHog'].filter(Boolean).join('와 ');
+  return `웹판은 게임을 다듬기 위해 ${by}로 플레이 기록을 보냅니다: 기기마다 무작위로 만든 번호, 화면 이동과 머문 시간, 기능 사용(트레이드·FA 금액 같은 게임 수치 포함), 게임 날짜·연차·구단, 오류 메시지. ${TELE.ga?'Google은 접속 IP·쿠키·브라우저 정보를 함께 처리합니다. ':''}이름·얼굴·저장 내용은 보내지 않습니다.${TELE.ph&&TELE.replay?' 화면 녹화에서는 입력칸을 가립니다.':''} 내려받은 파일이나 내 컴퓨터에서 실행하면 보내지 않습니다. 설정의 '플레이 기록' 카드에서 언제든 끌 수 있습니다.`; }
 function teleCard(){ if(!TELE.ph&&!TELE.ga)return ''; const on=teleOn();
-  return `<section class="card"><div class="row between"><h2 class="sec">익명 플레이 기록</h2><button class="btn small" data-a="teleTog">${on?'끄기':'켜기'}</button></div><p class="small muted">게임을 다듬기 위해 시작한 구단, 몇 년 차까지 했는지, 어떤 기능을 쓰는지, 오류가 난 화면 같은 기록을 익명으로 보냅니다. 이름·얼굴·저장 내용은 보내지 않고, 화면 녹화에서는 입력칸을 가립니다. 지금: <b>${on?'켜짐':'꺼짐'}</b></p></section>`; }
-Object.assign(A,{ teleTog(){ const m=meta(); m.tele=!teleOn(); setMeta(m); try{ if(!m.tele&&window.posthog&&window.posthog.opt_out_capturing)window.posthog.opt_out_capturing(); }catch(e){} render(); } });
+  return `<section class="card"><div class="row between"><h2 class="sec">플레이 기록</h2><button class="btn small" data-a="teleTog">${on?'끄기':'켜기'}</button></div><p class="small muted">${telePrivacyTxt()} 지금: <b>${on?'켜짐':'꺼짐'}</b></p></section>`; }
+Object.assign(A,{ licShow(){ UI.licOpen=!UI.licOpen; render(); }, teleTog(){ const m=meta(); m.tele=!teleOn(); setMeta(m); try{ if(!m.tele&&window.posthog&&window.posthog.opt_out_capturing)window.posthog.opt_out_capturing(); }catch(e){} render(); } });
 /* 부팅 뒤 걸어 둔다(다른 파일의 함수가 모두 정의된 다음) */
 setTimeout(()=>{ try{ if(TELE.ph||TELE.ga)teleHooks(); }catch(e){} },0);

@@ -216,7 +216,7 @@ function tsArchive(y){ const T=G.teams.map(t=>({b:Object.assign({},ZB),p:Object.
   const tl=(G.sea&&G.sea.tl)||[]; T.forEach((x,i)=>{ const L=tl[i]||[]; x.rs=sum(L.map(z=>z[1])); x.ra=sum(L.map(z=>z[2])); x.g=L.length; });
   G.tsArch=G.tsArch||{}; G.tsArch[y]=T; }
 /* ===== 부실 구단 정리(100년 플레이, 사용자 11-05) =====
- 시즌 결산 뒤 AI 구단 현금이 -40억 아래로 2년 넘게 이어지면, KBO가 개입해 새 주인을 찾는다(실제: 해태→KIA 매각, 현대 해체→히어로즈 재창단).
+ 시즌 결산 뒤 AI 구단 현금이 -40억 아래로 2년 넘게 이어지면, KBO가 개입해 새 주인을 찾는다(실제 리그에도 모기업 매각, 해체 뒤 재창단 사례가 있다).
  - 구단 매각: 새 모기업이 인수해 부채를 떠안고 운영 자금을 넣는다. 선수단·구장·이름·상징(팬)은 그대로
  - 재창단: 모기업을 못 찾으면 협회가 기존 구단을 정리하고 투자사가 세운 신생 구단(독립구단)이 선수단을 그대로 이어받는다
  지금 맡은 구단은 대상이 아니다(우리 구단 적자는 구단주 신뢰·경질로 다룬다) */
@@ -228,6 +228,6 @@ function clubRescue(y){ for(const t of G.teams){ if(t.id===ME())continue; /* 야
   try{ t.gm=mkGM(t.id); }catch(e){}
   (G.rescues=G.rescues||[]).push({y,tid:t.id,k:rebirth?'re':'sale',debt,old,nw:nb.own.name});
   const tl=`${t.city} ${t.nick}`;
-  if(rebirth){ news('리그',`${tl} 재창단… 투자사가 선수단 인수`,`누적 적자 ${money(debt)}를 감당하지 못한 기존 운영 법인이 KBO 이사회 결정으로 정리됐습니다. 투자사(대표 ${nb.own.name})가 세운 신생 법인이 선수단·구장·이름을 그대로 이어받아 ${y+1}시즌에 참가합니다. 모기업 지원이 없는 독립구단으로 운영됩니다.`,4,{fanW:2,tid:t.id}); wire('구단',`${tl}, KBO 승인 아래 재창단 (투자사 인수 · 부채 ${money(debt)} 정리)`,{tid:t.id}); }
+  if(rebirth){ news('리그',`${tl} 재창단… 투자사가 선수단 인수`,`누적 적자 ${money(debt)}를 감당하지 못한 기존 운영 법인이 리그 이사회 결정으로 정리됐습니다. 투자사(대표 ${nb.own.name})가 세운 신생 법인이 선수단·구장·이름을 그대로 이어받아 ${y+1}시즌에 참가합니다. 모기업 지원이 없는 독립구단으로 운영됩니다.`,4,{fanW:2,tid:t.id}); wire('구단',`${tl}, 리그 승인 아래 재창단 (투자사 인수 · 부채 ${money(debt)} 정리)`,{tid:t.id}); }
   else { news('리그',`${tl} 매각… 새 모기업 인수`,`${old} 구단주 시절 쌓인 적자 ${money(debt)}를 정리하기 위해 구단이 매각됐습니다. 새 구단주 ${nb.own.name}는 부채를 떠안고 운영 자금을 넣기로 했습니다. 선수단과 이름은 그대로입니다.`,4,{fanW:2,tid:t.id}); wire('구단',`${tl} 매각 · 새 구단주 ${nb.own.name} (부채 ${money(debt)} 인수)`,{tid:t.id}); }
   try{ chron('lg',`${tl} ${rebirth?'재창단':'매각'}(누적 적자 ${money(debt)})`,null,t.id); }catch(e){} } }

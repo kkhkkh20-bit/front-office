@@ -1,0 +1,25 @@
+Map data, artwork and 3D asset sources
+
+Maps
+- Korea (9 regions): Statistics Korea (KOSTAT, 통계청) 2013 census administrative
+  boundaries, simplified version from southkorea/southkorea-maps
+  ("KOSTAT: free to share or remix"). Regions merged and lines simplified for this game.
+- Japan: Natural Earth 1:50m (public domain), via world-atlas 2.0.2.
+- United States (state borders): U.S. Census Bureau 2017 cartographic boundaries
+  (public domain), via us-atlas 3.0.1.
+
+2D artwork
+- Kenney Sports Pack (https://kenney.nl), CC0 1.0. Body, arm and bat paths were
+  extracted and recolored for the card broadcast field.
+
+3D players and stadium
+- Claudeball by Taylor Beeston (MIT, see match3d.txt). Commit 424b1b5.
+  - Human base mesh, hair, eyes and skin textures: MakeHuman / MPFB2 assets, CC0 1.0.
+  - Material textures (fabric, leather, turf, clay, concrete, wood, metal): ambientCG, CC0 1.0.
+  - Animations: keyframed by the Claudeball author with Blender Python scripts.
+    Bone names follow the Mixamo naming convention only; no Mixamo animation is used.
+  CC0 1.0 legal text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+Generated artwork
+- Player, staff and fan portraits, uniforms, crowd art and other illustrations
+  were made for this game with an image generation tool and depict fictional people.
