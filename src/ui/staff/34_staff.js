@@ -28,8 +28,8 @@ function coachTag(c){ const m=G.mgr[G.user]; if(!c||!c.clan)return ''; if(m&&c.c
 function coachAbBox(c){ if(!c)return ''; const a=cAb(c); const D=CDOM[c.role]||[]; const S=cStrong(c), W=cWeak(c); const order=[...new Set([...D,'yng','com','ana'])],all=[...order,...Object.keys(CAB).filter(k=>!order.includes(k))];
   return `<div class="cab-t">${S.map(k=>`<span class="pill good">${CAB[k]} 강점</span>`).join('')}${W.map(k=>`<span class="pill warn">${CAB[k]} 약함</span>`).join('')}</div>
   <div class="staff-primary-grid">${[...new Set([...D,'yng'])].map(k=>`<span><i>${CAB[k]}</i>${rchip(a[k])}</span>`).join('')}</div><details class="cab"><summary class="small">세부 능력</summary><div class="cab-g">${all.map((k,i)=>`<span class="cab-r${i<D.length?' dom':''}"><span>${CAB[k]}${i<D.length?' ·':''}</span>${rchip(a[k])}</span>`).join('')}</div><p class="small muted">· 표시는 이 자리에서 쓰는 능력입니다. 지도력은 그 능력과 데이터 분석, 육성력은 그 능력과 유망주 육성에서 나옵니다. 선수 훈련은 집중 항목의 지도 능력이 속도를 바꿉니다.</p></details>`; }
-function coachStats(c,tid){ const e=k=>effC(c,tid,k); const m=G.mgr[tid]; const why=v=>v>0?`${m?m.name+' ':''}감독 사단이라 손발이 맞아 +${v}(이미 반영된 값)`:`고집 센 ${m?m.name+' ':''}감독과 사단이 아니라 ${v}(이미 반영된 값, 기본 능력보다 낮게 일함)`; const d=k=>{ const v=e(k)-c[k]; return v?`<i class="${v>0?'up':'dn'}" title="${esc(why(v))}">${v>0?'+':''}${v}</i>`:''; };
-  return `<span class="cst"><span>지도</span>${rchip(e('sk'))}${d('sk')}</span><span class="cst"><span>육성</span>${rchip(e('dv'))}${d('dv')}</span>`; }
+function coachStats(c,tid){ const e=k=>effC(c,tid,k,1); const m=G.mgr[tid]; const why=v=>v>0?`${m?m.name+' ':''}감독 사단이라 손발이 맞아 +${v}(이미 반영된 값)`:`고집 센 ${m?m.name+' ':''}감독과 사단이 아니라 ${v}(이미 반영된 값, 기본 능력보다 낮게 일함)`; const away=c.sisAway>G.day; const d=k=>{ if(away)return ''; const v=e(k)-c[k]; return v?`<i class="${v>0?'up':'dn'}" title="${esc(why(v))}">${v>0?'+':''}${v}</i>`:''; };
+  return `<span class="cst"><span>지도</span>${rchip(e('sk'))}${d('sk')}</span><span class="cst"><span>육성</span>${rchip(e('dv'))}${d('dv')}</span>${away?`<span class="pill warn" title="해외 연수 중에는 이 자리가 빈자리처럼 돌아갑니다">해외 연수 중 · ${dmd(c.sisAway)} 복귀</span>`:c.jy>G.year?`<span class="pill" title="표시 값은 합류한 뒤 일할 능력입니다. 올해는 아직 일하지 않습니다">${c.jy}시즌 합류</span>`:''}`; }
 /* 우리 코치 연장·승격 */
 function coachDealRow(k,c){ const E=[1,2].map(a=>coachExtTerms(k,a)).filter(T=>T&&!T.why); const P=promoteTerms(k); let h='';
   if(E.length)h+=E.map(T=>`<button class="btn small" data-a="extCoach" data-v="${k}:${T.add}">${T.add}년 연장<i class="pc-s">연 ${money(T.sal)}</i></button>`).join('');
@@ -63,7 +63,7 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
   const chips=`<div class="chips coach-role-buttons">${[['all','전체'],...CKEYS.map(k=>[k,CROLE[k].l])].map(([k,l])=>`<button data-a="crole" data-v="${k}" class="${role===k?'on':''}">${l} <i class="cnt">${k==='all'?M.length:M.filter(c=>c.role===k).length}</i>${k!=='all'&&!C[k]?' <i class="cnt" style="background:var(--bad);color:#fff">빈자리</i>':''}</button>`).join('')}</div>
     <div class="chips">${[['tot','종합순'],['sk','지도력순'],['dv','육성력순'],['sal','연봉 낮은 순']].map(([k,l])=>`<button data-a="csort" data-v="${k}" class="${srt===k?'on':''}">${l}</button>`).join('')}</div>
     <p class="small muted">자리마다 4~5명이 있고, 매달 초 새 후보가 들어오고 일부는 떠납니다. 겨울에는 다른 구단에서 정리된 코치도 시장에 나옵니다.</p>`;
-  const cmpT=(c,cur)=>{ const f=(x,k)=>dv(effC(x,G.user,k)); const a=f(c,'sk')-f(cur,'sk'), b=f(c,'dv')-f(cur,'dv'); const s=v=>`${v>0?'+':''}${v}`; return `현 ${esc(cur.name)} 대비 지도 ${s(a)} · 육성 ${s(b)}`; }; /* 우리 팀에 왔을 때 실효값끼리 같은 척도로 */
+  const cmpT=(c,cur)=>{ const f=(x,k)=>dv(effC(x,G.user,k,1)); const a=f(c,'sk')-f(cur,'sk'), b=f(c,'dv')-f(cur,'dv'); const s=v=>`${v>0?'+':''}${v}`; return `현 ${esc(cur.name)} 대비 지도 ${s(a)} · 육성 ${s(b)}`; }; /* 우리 팀에 왔을 때 실효값끼리 같은 척도로 */
   const card=c=>{ const cur=C[c.role];
     const kind=c.dv-c.sk>=12?'유망주 성장에 강한 후보':c.sk-c.dv>=12?'즉시 전력(경기력) 지도에 강한 후보':c.sal<=Math.min(...(G.cmarket||[]).filter(x=>x.role===c.role).map(x=>x.sal))?'낮은 비용으로 자리를 메우는 후보':'';
     return `<div class="csl"><div class="csl-h"><b>${CROLE[c.role].l}</b>${cur?`<span class="small muted">${cmpT(c,cur)}</span>`:'<span class="pill bad">빈자리</span>'}</div>${kind?`<p class="small muted" style="margin:2px 0">${kind}${CROLE[c.role].g===2?' · 2군 코치의 육성력은 2군에서 뛰는 선수 성장에, 지도력은 2군 경기력에 쓰입니다':''}</p>`:''}
@@ -81,11 +81,11 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
 /* 스태프 한 줄(시장·우리 코치진 공용) */
 const stHead=()=>`<div class="st-r st-h"><span>코치</span><span>지도</span><span>육성</span><span>연봉</span><span>이 자리 핵심 능력</span></div>`;
 function stRow(o){ const c=o.c, a=cAb(c), cur=o.cur;
-  const dl=k=>{ if(!cur||cur===c)return ''; const v=dv(effC(c,G.user,k))-dv(effC(cur,G.user,k)); return `<em class="${v>0?'good':v<0?'bad':'muted'}">${v>0?'+':''}${v}</em>`; };
+  const dl=k=>{ if(!cur||cur===c)return ''; const v=dv(effC(c,G.user,k,1))-dv(effC(cur,G.user,k,1)); return `<em class="${v>0?'good':v<0?'bad':'muted'}">${v>0?'+':''}${v}</em>`; };
   const ca=cur&&cur!==c?cAb(cur):null; /* 핵심 능력도 지금 그 자리 코치와의 차이(카페 11-08: 화면을 오가며 비교하던 불편) */
   const ab=[...new Set([...(CDOM[c.role]||[]),'yng'])].map(k=>{ const v=ca&&a[k]!=null&&ca[k]!=null?dv(a[k])-dv(ca[k]):null; return `<span class="st-ab"><i>${CAB[k].replace(' 지도','').replace(' 관리','').replace('유망주 육성','유망주')}</i>${rchip(a[k])}${v?`<em class="${v>0?'good':'bad'}">${v>0?'+':''}${v}</em>`:''}</span>`; }).join('');
   return `<div class="st-r${o.open?' on':''}"><button class="st-n" data-a="${o.openA}" data-v="${o.key??c.id}">${avImg(o.face)}<span><b>${esc(c.name)}${o.tag?' '+o.tag:''}</b><i>${o.sub}</i></span></button>
-    <span class="st-v"><i>지도</i>${rchip(effC(c,G.user,'sk'))}${dl('sk')}</span><span class="st-v"><i>육성</i>${rchip(effC(c,G.user,'dv'))}${dl('dv')}</span><span class="st-sal">${money(c.sal)}${o.yrs!=null?`<i>${o.ct||`잔여 ${o.yrs}년`}</i>`:''}</span>
+    <span class="st-v"><i>지도</i>${rchip(effC(c,G.user,'sk',1))}${dl('sk')}</span><span class="st-v"><i>육성</i>${rchip(effC(c,G.user,'dv',1))}${dl('dv')}</span><span class="st-sal">${money(c.sal)}${o.yrs!=null?`<i>${o.ct||`잔여 ${o.yrs}년`}</i>`:''}</span>
     <span class="st-act">${o.acts}</span><span class="st-abs">${ab}</span></div>${o.open?`<div class="st-x">${o.detail()}</div>`:''}`; }
 /* 우리 코치진 표: 보직마다 한 줄, 빈자리는 후보 보기. 이름을 누르면 그 줄 아래에 능력 카드(연장·승격·해지 버튼 포함) */
 function coachTable(){ const C=coachesOf(G.user); const slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];
@@ -126,7 +126,7 @@ function axSec(){ const n=axSlots(), X=G.coachX||[]; const rows=X.map(c=>`<div c
   return csec('보조 코치',`<p class="small muted">세부 훈련 시설이 4단계 이상인 곳마다 보조 코치 1자리(최대 3)가 열립니다. 보조 코치는 투수 또는 타자 성장에 1명당 최대 +2.5%를 보탭니다.</p>${rows||(n?'':'<p class="small muted">아직 열린 자리가 없습니다.</p>')}${cand?`<div class="eyebrow">후보</div>${cand}`:''}`,`<span class="small muted">${X.length}/${n}자리</span>`); }
 
 /* 코치 시장: 보직을 고르면 지금 우리 코치 카드를 옆(휴대폰은 위)에 붙여 후보와 나란히 비교(카페 11-08) */
-function cmkCmp(role,inner){ if(role==='all')return inner; const c=coachesOf(G.user)[role]; return `<div class="cmk-split"><aside class="cmk-cur">${cmkFold(`지금 우리 ${CROLE[role].l}`,c?`${esc(c.name)} · 지도 ${dv(effC(c,G.user,'sk'))} · 육성 ${dv(effC(c,G.user,'dv'))}`:'빈자리',coachSlot(role))}</aside><div class="cmk-list">${inner}</div></div>`; }
+function cmkCmp(role,inner){ if(role==='all')return inner; const c=coachesOf(G.user)[role]; return `<div class="cmk-split"><aside class="cmk-cur">${cmkFold(`지금 우리 ${CROLE[role].l}`,c?`${esc(c.name)} · 지도 ${dv(effC(c,G.user,'sk',1))} · 육성 ${dv(effC(c,G.user,'dv',1))}`:'빈자리',coachSlot(role))}</aside><div class="cmk-list">${inner}</div></div>`; }
 /* 휴대폰은 접힌 한 줄(요약)로 시작해 후보 목록 자리를 지킨다. PC는 펼친 채(사용자 11-08) */
 function cmkFold(title,sum,body){ const mob=typeof matchMedia==='function'&&matchMedia('(max-width:899px)').matches; return `<details class="cmk-det"${mob&&!UI.cmkFoldOpen?'':' open'}><summary data-a="cmkFold"><b class="eyebrow">${title}</b><span class="small muted">${sum}</span></summary>${body}</details>`; }
 
