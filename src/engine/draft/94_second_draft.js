@@ -63,7 +63,7 @@ function sdRegCheck(day){ if(!G.cal||day!==G.cal.end+1)return;
   for(const p of Object.values(G.players)){ const o=p.sd2; if(!o||o.y>=G.year||o.ly===G.year)continue; if(p.team==null||p.team===o.from){ delete p.sd2; continue; } /* 방출되거나 원소속으로 돌아가면 의무도 끝 */
     o.reg+=sdRegN(p,o); o.ly=G.year; o.to=p.team; /* 제3 구단으로 옮겨도 의무는 선수를 따라가 새 구단이 진다. 원소속 구단의 복귀 권리는 남는다(검수 11-09f) */
     if(o.reg>=o.need){ delete p.sd2; sdObMark(p,o,'ok'); continue; } if(G.year<o.y+2)continue; delete p.sd2;
-    if(o.from===G.user&&!G.unemp){ evNew('sd2back',`${p.name} 2차 드래프트 복귀 여부`,`${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})이(가) ${tname(o.to)}에서 의무 등록(두 시즌 1군 ${o.need}일)을 채우지 못했습니다. 원소속 구단으로서 복귀를 받을지 정해야 합니다.`,[{l:'복귀를 받는다',fx:`양도금 절반 ${money(Math.round(o.fee/2))}을(를) ${tshort(o.to)}에 돌려줍니다.`},{l:'받지 않는다',fx:'선수는 자유계약으로 풀립니다.'}],{def:0,exp:5,from:'운영팀',ref:p.id,data:{pid:p.id,o}}); continue; } /* 우리 구단으로 돌아오는 선수는 단장이 정한다 */
+    if(o.from===G.user&&!G.unemp){ evNew('sd2back',`${p.name} 2차 드래프트 복귀 여부`,`${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})이(가) ${tname(o.to)}에서 의무 등록(두 시즌 1군 ${o.need}일)을 채우지 못했습니다. 원소속 구단으로서 복귀를 받을지 정해야 합니다.`,[{l:'복귀를 받는다',fx:`양도금 절반 ${money(Math.round(o.fee/2))}을(를) ${tshort(o.to)}에 돌려줍니다.`},{l:'받지 않는다',fx:'선수는 자유계약으로 풀립니다.'}],{def:0,exp:5,from:'운영팀',cat:'must',ref:p.id,data:{pid:p.id,o}}); continue; } /* 우리 구단으로 돌아오는 선수는 단장이 정한다 */
     sdBackDo(p,o,sdBackAI(p,o)); } } /* 야인이면 전 구단도 AI 기준(검수 11-09f) */
 function sdBackDo(p,o,back){
   sdObMark(p,o,back?'back':'free');

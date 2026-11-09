@@ -226,7 +226,7 @@ function firedFlow(y,msg,kind){ try{ if(typeof teleEv==='function')teleEv('gm_ou
 function unempAuto(){ if(!G.unemp)return; if(G._unD===G.day)return; G._unD=G.day; /* 하루 한 번 */ const u=G.user;
   for(const e of (G.evs||[]))if(!e.done){ try{ evPick(e.id,e.def,true); }catch(x){ e.done=true; } }
   if(G.offers&&G.offers.length){ for(const o of [...G.offers])try{ answerOffer(o.id,false); }catch(x){} }
-  if(!G.mgr[u]&&(G.mmarket||[]).length)try{ hireMgr(G.mmarket[0].id,2); }catch(x){}
+  if(!G.mgr[u])try{ const n=mgrNew(u,false); wire('감독',`${tname(u)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:u,x:{mid:n.id,hire:1}}); }catch(x){} /* 야인은 hireMgr을 쓸 수 없다: 전 구단(AI)이 직접 선임(검수 11-09z) */
   if(G.contract&&!G.contract.done&&G.day>=KD(12,10))try{ { let g=0; while(fReCapInfo().over>0&&g++<4){ const C=G.contract; const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>b.newSal-a.newSal)[0]; if(!k)break; C.foreignDrop.push(k.id); } } confirmContracts(true); }catch(x){}
   (G.comp||[]).forEach(c=>{ try{ if(c.stage!=='done')compAuto(c); }catch(x){} });
   if(G.draft&&!G.draft.done)try{ advanceDraft(false); }catch(x){}

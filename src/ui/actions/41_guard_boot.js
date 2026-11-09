@@ -45,7 +45,7 @@ const GUARD={
   nsPick(v){ const o=NEWSTAD.find(x=>x.k===v); if(!o)return null; return {subj:`신구장 ${o.l}(${o.cap.toLocaleString('ko-KR')}석) 착공`,kind:'구장',lines:[`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자).`,'공사 3년 · 개장 후 시설 4단계 이상 · 개장 초 관중 크게 증가'],warn:'착공하면 되돌릴 수 없습니다.'}; },
   relNow(v){ const p=G.players[+v]; if(!p)return null; const rc=relCost(p), cost=rc.tot; return {subj:`${p.name} 방출`,kind:'선수',lines:[pnm(p.id),...(p.foreign&&period()==='season'?[G.day>foreignDL()?`대체 외국인 등록 마감(${dsh(foreignDL())})이 지나 올해는 대체 선수를 데려올 수 없습니다.`:fReplLeft(G.user,p.foreign)<=0?`이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 써서 대체 선수를 데려올 수 없습니다.`:`대체 외국인을 데려올 수 있습니다(남은 교체 ${fReplLeft(G.user,p.foreign)}회, ${dsh(foreignDL())}까지).`]:[]),...(p.foreign?['올해 연봉은 이미 지출로 잡혀 있어 돌려받지 못합니다.']:cost?[`현재 계약 정산금 ${money(rc.cur)}`,...(rc.next?[`다음 시즌 확정 계약 정산금 ${money(rc.next)}(${p.extNext.years}년 연 ${money(p.extNext.annual)}의 50%)`]:[]),`총 방출 비용 ${money(cost)}`]:['정산금 없음'])],warn:'방출하면 되돌릴 수 없습니다.'}; },
   advTo(){ return pendDoc(); }, matchSim(v,el){ return el?pendDoc():null; }, watchNext(v,el){ return el?pendDoc():null; }, /* 달력 진행·결과만 보기·다음 경기 관전도 미결 결정을 확인(검수 11-08) */
-  adv(v){ const pd=pendDoc(); if(pd)return pd; if(G.fOkY===G.year||period()!=='pre'||G.day<G.cal.open-35||blocker()||!G.mgr[G.user])return null; const f=foreignOf(G.user); const m=f.filter(p=>p.foreign==='용병').length, as=f.filter(p=>p.foreign==='아시아').length; if(m>=3&&as>=1)return null;
+  adv(v,el){ if(el&&G.advAsk&&!advBlk())return advAskDoc(v); /* '매번 묻기'는 버튼 진행에도(검수 11-09z) */ const pd=pendDoc(); if(pd)return pd; if(G.fOkY===G.year||period()!=='pre'||G.day<G.cal.open-35||blocker()||!G.mgr[G.user])return null; const f=foreignOf(G.user); const m=f.filter(p=>p.foreign==='용병').length, as=f.filter(p=>p.foreign==='아시아').length; if(m>=3&&as>=1)return null;
     UI._advT=0; return {subj:'외국인 선수 자리가 비어 있습니다',kind:'외국인',lines:[`외국인 ${m}/3 · 아시아쿼터 ${as}/1`,'빈 자리는 시즌 중에도 채울 수 있지만, 좋은 후보는 다른 구단이 먼저 데려갑니다.','그대로 진행하려면 진행, 먼저 채우려면 취소 후 영입 → 외국인 시장으로 가세요.'],warn:'이번 시즌에는 다시 묻지 않습니다.',onOk:()=>{ G.fOkY=G.year; }}; }, /* 외국인 공석 확인만 이번 시즌 끄기(다른 진행 확인으로 꺼지지 않게, 검수 11-08) */
   fdAuto(){ const F=G.fd; if(!F||F.done)return null; const n=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; if(n<2||fdManDone())return null;
     return {subj:`남은 ${n}번 지명을 자동으로`,kind:'드래프트',lines:[`우리 남은 지명 ${n}번을 스카우트 추천대로 뽑습니다.`,'관심 선수(★)가 남아 있으면 먼저 고릅니다.','끝나면 지명 결과를 소식함으로 보고합니다.'],warn:'자동 지명은 되돌릴 수 없습니다.'}; },
@@ -91,7 +91,9 @@ function pendItems(){ const L=[]; const ev=pendEvents(); const key=ev.filter(e=>
   const of=pendOffers(); if(of.length)L.push({id:'o'+of.map(o=>o.id).join(','),t:`트레이드 제안 ${of.length}건(답하지 않으면 만료)`});
   const im=ibNeedList(); if(im.length)L.push({id:'m'+im.map(m=>m.id).join(','),t:`확인할 중요 소식 ${im.length}건: ${im.slice(0,2).map(m=>m.subj).join(', ')}${im.length>2?' 외':''}`});
   return L; }
-function pendDoc(){ if(G.unemp||blocker())return null; const L=pendItems(); if(!L.length)return null; const sig=L.map(x=>x.id).join('|'); if(UI._pendAck===sig)return null;
+/* 진행 버튼이 지울 경기 결과(G.res)는 막는 이유로 보지 않는다: 진행 전 확인을 건너뛰지 않게(검수 11-09z) */
+function advBlk(){ const r=G.res; if(!G.live)G.res=null; try{ return blocker(); }finally{ G.res=r; } }
+function pendDoc(){ if(G.unemp||advBlk())return null; const L=pendItems(); if(!L.length)return null; const sig=L.map(x=>x.id).join('|'); if(UI._pendAck===sig)return null;
   UI._advT=0; return {subj:'확인하지 않은 일이 있습니다',kind:'진행',head:'진행 전 확인',lines:[...L.map(x=>x.t),'그대로 진행하면 기한이 지난 결정은 기본안으로 처리됩니다.'],ok:'그대로 진행',no:'확인하러 가기',noGo:()=>{ const id=pendMailId(); if(id){ UI.mf='all'; A.openMail(id); return; } UI.pendGo=1; UI.tab='home'; UI.mail=null; render(); setTimeout(()=>{ const el=document.getElementById('todoCard'); if(el)el.scrollIntoView({block:'start'}); },60); } /* 확인하러 가기: 그 소식을 소식함에서 연다 */,onOk:()=>{ UI._pendAck=sig; },noMail:true}; }
 /* 확인할 일이 담긴 소식: 안 읽은 확인할 소식 → 끝나지 않은 결정 → 살아 있는 트레이드 제안 순 */
 function pendMailId(){ const n=ibNeedList(); if(n.length)return (n.find(m=>!m.read)||n[0]).id; /* 안 읽은 확인할 소식 먼저(검수 11-09za) */
@@ -105,9 +107,10 @@ function advTargetTxt(v){ const per=period();
   if(v==='week')return `${dmd(G.day+7)}까지 최대 1주일 자동 진행합니다. 직접 예약한 경기와 우리 팀 포스트시즌 경기는 중계로 보며 중요한 소식이나 결정이 생기면 먼저 멈춥니다.`;
   if(v==='day')return `${dmd(G.day+1)}(${WD[dobj(G.day+1).w]}) 하루를 진행합니다.`;
   const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?` 비시즌·시즌 준비 기간에는 한 번에 최대 7일(${dmd(G.day+7)})까지 진행합니다.`:''}`; }
-function advAsk(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
+function advAskDoc(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
   const sig=P.map(x=>x.id).join('|');
-  UI.cfm={k:'advSpace',v,doc:{subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true,onOk:()=>{ if(P.length)UI._pendAck=sig; }}}; cfmRender(); } /* 확인은 진행을 눌렀을 때만(취소하면 다음 진행 때 다시 묻는다, 검수 11-08) */
+  return {subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true,onOk:()=>{ if(P.length)UI._pendAck=sig; }}; }
+function advAsk(v){ UI.cfm={k:'advSpace',v,doc:advAskDoc(v)}; cfmRender(); } /* 확인은 진행을 눌렀을 때만(취소하면 다음 진행 때 다시 묻는다, 검수 11-08) */
 function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); }
   const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;
   el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3>${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
@@ -192,6 +195,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   if(UI.matchPreview&&e.key==='Escape'){e.preventDefault();A.matchLater();return;}
+  if(UI.matchPreview&&e.key===' '){ if(!(e.target.closest&&e.target.closest('#sheet .match-entry button')))e.preventDefault(); return; } /* 경기 선택창: 스페이스바로 진행하지 않는다. 창 안 버튼에 초점이 있을 때만 그 버튼(검수 11-09z) */
   if(UI.fmKeys&&e.key==='Escape'){ UI.fmKeys=false; render(); return; }
   try{ if(fmHotkey(e))return; }catch(x){} /* PC 단축키(FM식) */
   if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }

@@ -24,7 +24,7 @@ function todoCard(limit,compact=false){
   return `<section class="card" id="todoCard"><div class="row between"><h2 class="sec">처리할 일${it.length?` <span class="cntb">${it.length}</span>`:''}</h2><button class="btn small" data-a="tab" data-v="inbox">소식함${unread?` ${unread}`:''}</button></div>${body}</section>`;
 }
 function nextGames(n){
-  const c=G.cal; const L=[]; for(let d=G.day+(G.res?1:1);d<=c.end&&L.length<n;d++){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(G.user)); if(m)L.push({d,home:m[0]===G.user,op:m[0]===G.user?m[1]:m[0]}); }
+  const c=G.cal; const L=[]; { const d=G.day+1, x=(G.makeup||[]).find(x=>x.y===G.year&&(x.h===G.user||x.a===G.user)); if(x&&ourGameOn(d))L.push({d,home:x.h===G.user,op:x.h===G.user?x.a:x.h}); } /* 미룬 경기는 다음 경기일에 먼저 치른다(playDay와 같은 순서, 검수 11-09z) */ for(let d=G.day+(G.res?1:1);d<=c.end&&L.length<n;d++){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(G.user)); if(m)L.push({d,home:m[0]===G.user,op:m[0]===G.user?m[1]:m[0]}); }
   if(G.ps&&G.ps.cur){ const s=G.ps.cur; if(s.hi===G.user||s.lo===G.user){ for(let i=s.gi;i<s.days.length;i++){ const d=s.days[i]; if(d>G.day&&!L.some(x=>x.d===d))L.push({d,home:(s.homes?s.homes[i]:s.hi)===G.user,op:s.hi===G.user?s.lo:s.hi,ps:`${ROUNDK[s.round]} ${i+1}차전`}); } L.sort((a,b)=>a.d-b.d); } } /* 시리즈 남은 일정 전부, 홈은 실제 일정(s.homes)대로(검수 11-07) */
   return L.slice(0,n);
 }
