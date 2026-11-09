@@ -67,7 +67,7 @@ function moraleWeek(){
         if(r){ dd+=5; if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
         else { dd-=12; if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
         delete p.promise; }
-      const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*.08,0,100);
+      const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*(per==='season'?.08:.03),0,100); /* 비시즌에는 기분이 천천히 평소로 돌아온다(카페 11-09: 시즌 끝 100이 개막 때 60이 되던 문제). 시즌 중에는 그대로 */
       if(t.id===G.user)requestCheck(p);
     }
   }

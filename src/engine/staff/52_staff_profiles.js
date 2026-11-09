@@ -11,8 +11,9 @@ function staffProfile(s,kind){
   const profile={v:1,identity:s.id,mental,office,pref,rels:{}};STAFF_BIOS.set(s,{kind,id:s.id,profile});return profile;
 }
 function staffAttach(s,kind){if(s)s.staff=staffProfile(s,kind);return s;}
-function staffRel(s,tid,who){const key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';return s?.staff?.rels?.[tid]?.[key]??50;}
-function staffRelAdd(s,kind,tid,who,delta){staffAttach(s,kind);const P=s.staff,key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';P.rels[tid]=P.rels[tid]||{};P.rels[tid][key]=clamp((P.rels[tid][key]??50)+delta,0,100);}
+/* 단장과의 관계는 사람 사이의 관계라 구단이 바뀌어도 따라간다(rels.me, 카페 11-09: 전 구단에서 쌓은 관계가 다시 영입하면 초기화). 감독 관계는 그 구단 감독 기준 그대로 */
+function staffRel(s,tid,who){if(who!=='mgr'&&tid===G.user){const R0=s?.staff?.rels;if(R0){if(R0.me!=null)return R0.me;const V=Object.keys(R0).map(k=>R0[k]&&R0[k].gm).filter(v=>v!=null);if(V.length)return Math.max(...V);}} /* 옛 저장: 구단별로 남은 단장 관계 중 가장 높은 값 */const key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';return s?.staff?.rels?.[tid]?.[key]??50;}
+function staffRelAdd(s,kind,tid,who,delta){staffAttach(s,kind);const P=s.staff;if(who!=='mgr'&&tid===G.user){P.rels.me=clamp(staffRel(s,tid,'gm')+delta,0,100);return;}const key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';P.rels[tid]=P.rels[tid]||{};P.rels[tid][key]=clamp((P.rels[tid][key]??50)+delta,0,100);}
 function staffQuality(s,kind,tid){if(!s)return 1;const P=staffProfile(s,kind),M=P.mental;return clamp(1+(M.pro-50)/2000+(M.adapt-50)/5000+(M.pat-50)/6000+(staffRel(s,tid,'mgr')-50)/5000+(staffRel(s,tid,'gm')-50)/10000-(P.pref!==(s.role||(kind==='scout'?'am':'opp'))?(100-M.adapt)/5000:0),.94,1.06);}
 function staffOfficeV(s,kind,key){const P=staffProfile(s,kind);return clamp(25+s.skill*11+(P.office[key]||0),20,90);}
 function staffScoutFactor(s,p,tid){if(!G.coach)return 1;const P=staffProfile(s,'scout'),key=p?.isP?'pitch':'bat',type=P.office[key]||0,pot=P.office.potential||0;return clamp((1-(type*(p?.prospect ? .45 : .8)+pot*(p?.prospect ? .55 : .2))/200)/staffQuality(s,'scout',tid??G.user),.88,1.12);}

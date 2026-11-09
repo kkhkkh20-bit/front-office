@@ -3612,6 +3612,11 @@ T('[검수 11-09zzc] 만료 결정은 직접 고를 수 없고, 같은 날 두 �
   const S={gk:{d,h:first.home,a:first.away,gid:first.gid}}; G.games.unshift(Object.assign({},first,{gid:first.gid+100,hs:first.hs+5})); ok(cwGame(S)&&cwGame(S).gid===first.gid,'같은 대진 더블헤더의 동석 보고가 다른 경기에 연결됨');
   const D=G.day+3; G.ps={done:false,cur:{days:[D,D+1],gi:0}}; G.gmPlan={[D]:{k:'attend',x:'owner',done:false},[D+1]:{k:'attend',x:null,done:false}}; G.watchPlanned={day:D}; psCatchUp(D+2);
   ok(G.ps.cur.days[0]===D+2,'준비 실패: 차전이 옮겨지지 않음'); ok(G.gmPlan[D+2]&&G.gmPlan[D+2].x==='owner'&&G.gmPlan[D+3]&&!G.gmPlan[D]&&!G.gmPlan[D+1],'옮긴 차전의 직관 예약이 옛 날짜에 남음: '+Object.keys(G.gmPlan)); ok(G.watchPlanned.day===D+2,'관전 예약이 옛 날짜에 남음'); G.ps=null; });
+T('[카페 11-09] 단장과의 관계는 구단을 옮겨도 따라가고, 비시즌 기분은 천천히 평소로 돌아온다',()=>{ fresh(); const C=coachesOf(G.user); const k=CKEYS.find(r=>C[r]); const c=C[k]; staffRelAdd(c,'coach',G.user,'gm',30); const r0=staffRel(c,G.user,'gm'); ok(r0>=80,'관계 올리기 '+r0);
+  const nt=G.teams.find(t=>t.id!==G.user).id; switchTeam(nt); ok(staffRel(c,G.user,'gm')===r0,'옮긴 뒤 같은 사람과 관계가 초기화 '+staffRel(c,G.user,'gm'));
+  const P=c.staff; delete P.rels.me; P.rels[3]={gm:77}; ok(staffRel(c,G.user,'gm')>=77,'옛 저장의 구단별 관계를 잃음');
+  G.day=G.cal.end+10; const p=domestic(G.user)[0]; initPers(p); p.mor=100; for(let i=0;i<20;i++)moraleWeek(); ok(p.mor>=75,'비시즌 20주 뒤 기분 '+p.mor); });
+
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

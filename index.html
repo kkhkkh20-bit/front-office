@@ -14584,7 +14584,7 @@ function moraleWeek(){
         if(r){ dd+=5; if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
         else { dd-=12; if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
         delete p.promise; }
-      const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*.08,0,100);
+      const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*(per==='season'?.08:.03),0,100); /* 비시즌에는 기분이 천천히 평소로 돌아온다(카페 11-09: 시즌 끝 100이 개막 때 60이 되던 문제). 시즌 중에는 그대로 */
       if(t.id===G.user)requestCheck(p);
     }
   }
@@ -16976,8 +16976,9 @@ function staffProfile(s,kind){
   const profile={v:1,identity:s.id,mental,office,pref,rels:{}};STAFF_BIOS.set(s,{kind,id:s.id,profile});return profile;
 }
 function staffAttach(s,kind){if(s)s.staff=staffProfile(s,kind);return s;}
-function staffRel(s,tid,who){const key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';return s?.staff?.rels?.[tid]?.[key]??50;}
-function staffRelAdd(s,kind,tid,who,delta){staffAttach(s,kind);const P=s.staff,key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';P.rels[tid]=P.rels[tid]||{};P.rels[tid][key]=clamp((P.rels[tid][key]??50)+delta,0,100);}
+/* 단장과의 관계는 사람 사이의 관계라 구단이 바뀌어도 따라간다(rels.me, 카페 11-09: 전 구단에서 쌓은 관계가 다시 영입하면 초기화). 감독 관계는 그 구단 감독 기준 그대로 */
+function staffRel(s,tid,who){if(who!=='mgr'&&tid===G.user){const R0=s?.staff?.rels;if(R0){if(R0.me!=null)return R0.me;const V=Object.keys(R0).map(k=>R0[k]&&R0[k].gm).filter(v=>v!=null);if(V.length)return Math.max(...V);}} /* 옛 저장: 구단별로 남은 단장 관계 중 가장 높은 값 */const key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';return s?.staff?.rels?.[tid]?.[key]??50;}
+function staffRelAdd(s,kind,tid,who,delta){staffAttach(s,kind);const P=s.staff;if(who!=='mgr'&&tid===G.user){P.rels.me=clamp(staffRel(s,tid,'gm')+delta,0,100);return;}const key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';P.rels[tid]=P.rels[tid]||{};P.rels[tid][key]=clamp((P.rels[tid][key]??50)+delta,0,100);}
 function staffQuality(s,kind,tid){if(!s)return 1;const P=staffProfile(s,kind),M=P.mental;return clamp(1+(M.pro-50)/2000+(M.adapt-50)/5000+(M.pat-50)/6000+(staffRel(s,tid,'mgr')-50)/5000+(staffRel(s,tid,'gm')-50)/10000-(P.pref!==(s.role||(kind==='scout'?'am':'opp'))?(100-M.adapt)/5000:0),.94,1.06);}
 function staffOfficeV(s,kind,key){const P=staffProfile(s,kind);return clamp(25+s.skill*11+(P.office[key]||0),20,90);}
 function staffScoutFactor(s,p,tid){if(!G.coach)return 1;const P=staffProfile(s,'scout'),key=p?.isP?'pitch':'bat',type=P.office[key]||0,pot=P.office.potential||0;return clamp((1-(type*(p?.prospect ? .45 : .8)+pot*(p?.prospect ? .55 : .2))/200)/staffQuality(s,'scout',tid??G.user),.88,1.12);}
@@ -26629,7 +26630,7 @@ function draftPool(){ const live=G.draft&&!G.draft.done; return ((live?G.draft.c
 /* 담당 스카우트 주장 표시: 정답 배지가 아니라 스카우트 의견. 틀릴 수 있다 */
 function dclaimTag(p){ const c=draftClaim(p); if(!c)return ''; return `<b class="${c.k==='up'?'good':'warn'}" title="${esc(draftClaimTxt(c))}">${c.k==='up'?'강력 추천':'신중론'}(확신도 ${c.conf})</b> · `; }
 /* 잠재력은 한 숫자 대신 스카우트 추정 범위로 */
-function dpotChip(rp){ if(rp.ofp==null)return '<span class="small muted">?</span>'; const T=potTier(potVal(rp),rp.cur); const unsure=(rp.sd||6)>=7; return `<span class="ptier t${T.n}" data-tip="${esc(`스카우트 추정: ${T.l}${unsure?' · 관찰이 적어 오차가 큽니다':''}. 부상·출전 기회·훈련 환경에 따라 그렇게 크지 못할 수 있습니다.\n\n${POT_HELP}`)}">${potStars(T.st)}${unsure?'?':''}</span>`; }
+function dpotChip(rp){ if(rp.ofp==null)return '<span class="small muted">?</span>'; const T=potTier(potVal(rp),rp.cur); const unsure=(rp.sd||6)>=7; return `<span class="ptier t${T.n}" data-tip="${esc(`스카우트 추정: ${T.l}${unsure?' · 관찰이 적어 오차가 큽니다':''}. 부상·출전 기회·훈련 환경에 따라 그렇게 크지 못할 수 있습니다.\n\n${POT_HELP}`)}">${potStars(T.st)}</span>`; }
 function drow(p,rp,rk,mine){ const star=(G.shortlist||[]).includes(p.id);
   const tag=dclaimTag(p); const fit=draftFit(p,draftPolK())?' · <b class="acc">감독 추천</b>':'';
   return `<div class="drw${star?' star':''}"><span class="drw-k num">${rk}</span><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.college?'대졸':'고졸'}</small></b><i>${tag}${esc(p.school||'')} · ${p.region} · 언론 #${p.press||'-'}${fit}${rp.eta?` · 1군까지 약 ${rp.eta}년`:''}${p.amInj?' · <b class="bad">부상 이력</b>':''}</i></span></button><span class="trw-r">${rchip(rp.cur)}${dpotChip(rp)}</span><button class="tc-i drw-s${star?' on':''}" data-a="star" data-v="${p.id}" aria-pressed="${star}" aria-label="관심">${star?'★':'☆'}</button>${mine?`<button class="tc-i go drw-p" data-a="pick" data-v="${p.id}">지명</button>`:''}</div>`; }
