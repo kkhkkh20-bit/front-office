@@ -4,7 +4,7 @@
 function pcH(g,k,s){ const t='pc'+g.day+':'+g.home+':'+k+':'+s; let h=2166136261; for(let i=0;i<t.length;i++){ h^=t.charCodeAt(i); h=Math.imul(h,16777619); } h^=h>>>13; h=Math.imul(h,1274126177); h^=h>>>16; return (h>>>0)/4294967296; } /* 고르게 퍼진 고정 난수 */
 function pcPick(g,k,s,arr){ return arr[Math.floor(pcH(g,k,s)*arr.length)]; }
 const PC_POS={P:'투수','C':'포수','1B':'1루수','2B':'2루수','3B':'3루수',SS:'유격수',LF:'좌익수',CF:'중견수',RF:'우익수'};
-function pcFielder(g,half,pos,k){const side=half%2?'a':'h',def=g.box[side];if(!def)return '';k=k??g.pbp.length;if(pos==='P'){const id=typeof cPit==='function'?cPit(g,k):def.pit?.[0]?.id;return G.players[id]?.name||def.pit?.find(p=>p.id===id)?.n||'';}const rows=typeof castLineup==='function'?castLineup(g,side,k):def.bat;const player=rows.find(p=>p.pos===pos);return player?(G.players[player.id]?.name||player.n||''):'';}
+function pcFielder(g,half,pos,k){const side=half%2?'a':'h',def=g.box[side];if(!def)return '';k=k??g.pbp.length;if(pos==='P'){const id=typeof cPit==='function'?cPit(g,k):def.pit?.[0]?.id;return def.pit?.find(p=>p.id===id)?.n||G.players[id]?.name||'';}const rows=typeof castLineup==='function'?castLineup(g,side,k):def.bat;const player=rows.find(p=>p.pos===pos);return player?(player.n||G.players[player.id]?.name||''):'';} /* 경기 당시 이름 먼저(개명, 검수 11-09zu) */
 /* k번째 기록 직전 상태 */
 function pcBefore(g,k){ const L=g.pbp, x=L[k]; if(k<=0)return {outs:0,bases:[0,0,0],sa:0,sh:0};
   const p=L[k-1]; const s=pbpState(g,k-1); if(p[0]!==x[0])return {outs:0,bases:[0,0,0],sa:s.sa,sh:s.sh}; return {outs:s.outs>=3?0:s.outs,bases:s.outs>=3?[0,0,0]:s.bases.slice(),sa:s.sa,sh:s.sh}; }
@@ -22,14 +22,14 @@ function pbpCallBase(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; cons
   if(x[1]==='PC'){ const p=G.players[x[2]]; const st=pbpState(g,k); const diff=top?st.sh-st.sa:st.sa-st.sh; /* 수비 팀 기준 */
     const c=`${tshort(dfT)} 마운드 교체. ${nm(x[2])} 투수가 올라옵니다.${p?` 시즌 평균자책점 ${eraAt(g,k,x[2])}.`:''}`;
     let a=''; if(p){ const cd=p.ld?consecDays(p,g.day):0; const role=posLabel(p);
-      if(cd>=2)a=`${p.name}은(는) ${cd+1}일 연속 등판입니다. ${mgrOf(dfT).name} 감독이 이 경기를 꼭 잡겠다는 뜻이지만 팔 부담이 큽니다.`;
-      else if(inn>=8&&Math.abs(diff)<=2)a=pk('pa',[`승부처에 ${role} ${p.name}을(를) 올립니다. 여기서 막아야 합니다.`,`${inn}회 접전, 벤치가 아껴 둔 카드를 꺼냅니다.`]);
+      if(cd>=2)a=`${nm(p.id)}은(는) ${cd+1}일 연속 등판입니다. ${mgrOf(dfT).name} 감독이 이 경기를 꼭 잡겠다는 뜻이지만 팔 부담이 큽니다.`;
+      else if(inn>=8&&Math.abs(diff)<=2)a=pk('pa',[`승부처에 ${role} ${nm(p.id)}을(를) 올립니다. 여기서 막아야 합니다.`,`${inn}회 접전, 벤치가 아껴 둔 카드를 꺼냅니다.`]);
       else if(inn<=5)a=pk('pb',['선발이 일찍 내려갑니다. 불펜 소모가 커지겠네요.','예상보다 빠른 교체입니다. 벤치가 흐름을 끊으려 합니다.']); }
     return {c,a}; }
   const pre=pcBefore(g,k);
   if(x[1]==='SB'||x[1]==='CS'){ const r=G.players[x[2]]; const from=pre.bases.indexOf(x[2]); const to=from>=0?['2루','3루','홈'][from]:'다음 베이스'; const cat=pcFielder(g,half,'C',k);
-    if(x[1]==='SB')return {c:`${nm(x[2])}, ${to} 도루 성공!${cat?` 포수 ${cat}의 송구가 늦었습니다.`:''}`,a:r&&r.r.spd>=68?pk('sb',[`${r.name}의 발은 리그에서도 손꼽힙니다.`,'투수가 견제를 더 신경 써야 했습니다.']):''};
-    const c0=pcFAt(g,half,'C',k); return {c:`${nm(x[2])}, ${to} 도루 실패!${cat?` 포수 ${cat}의 정확한 송구에 걸렸습니다.`:''}`,a:c0&&catArm(c0)>=60?`${c0.name} 포수 어깨가 좋습니다. 함부로 뛸 수 없는 포수입니다.`:pk('cs',['무리한 주루였습니다. 흐름이 끊깁니다.','타이밍을 빼앗겼습니다.'])}; }
+    if(x[1]==='SB')return {c:`${nm(x[2])}, ${to} 도루 성공!${cat?` 포수 ${cat}의 송구가 늦었습니다.`:''}`,a:r&&r.r.spd>=68?pk('sb',[`${nm(r.id)}의 발은 리그에서도 손꼽힙니다.`,'투수가 견제를 더 신경 써야 했습니다.']):''};
+    const c0=pcFAt(g,half,'C',k); return {c:`${nm(x[2])}, ${to} 도루 실패!${cat?` 포수 ${cat}의 정확한 송구에 걸렸습니다.`:''}`,a:c0&&catArm(c0)>=60?`${nm(c0.id)} 포수 어깨가 좋습니다. 함부로 뛸 수 없는 포수입니다.`:pk('cs',['무리한 주루였습니다. 흐름이 끊깁니다.','타이밍을 빼앗겼습니다.'])}; }
   const pitches=storedPitchSequence(x),lastPitch=pitches?.at(-1);
   const b=G.players[x[1]], p=G.players[x[2]], o=x[3], runs=x[6]||0, outsA=x[4];
   const sa=x[7], sh=x[8], befA=pre.sa, befH=pre.sh; const myB=top?sa:sh, opB=top?sh:sa, myB0=top?befA:befH, opB0=top?befH:befA;
@@ -53,8 +53,8 @@ function pbpCallBase(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; cons
       if(runs>0&&(x[13]||x.length<=10)){ c=`${BN}, ${fld(pk('sf',['LF','CF','RF']))} 쪽 뜬공, 3루 주자 홈인! 희생플라이로 ${runs}점.`; break; }
       if(runs>0){ c=`${BN}, ${fld(pk('gp',['SS','2B','3B','1B']))} 땅볼! 1루에서 아웃되는 사이 3루 주자 홈인, ${runs}점.`; break; } /* 득점 땅볼은 희생플라이가 아니다: 엔진 기록(희생플라이 칸)대로(검수 11-08) */
       const r=pcH(g,k,'ot'), gb=p?gbT(p)*.08:0; if(r<.45+gb){ const pos=pk('gp',['SS','2B','3B','1B','SS','2B','P']); const f=pcFAt(g,half,pos,k); const nice=f&&pos!=='P'&&fieldV(f,pos)>=63&&pcH(g,k,'gn')<.35;
-        c=nice?`${BN}, ${fld(pos)} 옆으로 빠지는 땅볼! 몸을 날려 잡고 1루 송구, 아웃!`:pos==='1B'?`${BN}, ${fld(pos)} 앞 땅볼, 직접 베이스를 밟습니다. 아웃.`:`${BN}, ${fld(pos)} ${pk('gt',['앞 땅볼. 1루에서 아웃.','정면 땅볼, 가볍게 처리합니다.','쪽 평범한 땅볼. 아웃.','앞 느린 땅볼, 달려 나와 1루로. 아웃.'])}`; if(nice)a=`${f.name}의 수비가 안타 하나를 지웠습니다.`; }
-      else if(r<.85){ const pos=pk('fp',['LF','CF','RF','CF']); c=`${BN}, ${fld(pos)} ${pk('ft',['쪽 높이 뜬 공. 잡아냅니다.','쪽 뜬공, 여유 있게 잡습니다.','쪽으로 뻗어 가는 타구... 워닝 트랙에서 잡힙니다!','앞 얕은 뜬공, 달려 나와 잡습니다.'])}`; const f=pcFAt(g,half,pos,k); if(f&&fieldV(f,pos)>=64&&pcH(g,k,'fr')<.4)a=`${f.name}, 수비 범위가 넓습니다. 쉽게 잡았습니다.`; }
+        c=nice?`${BN}, ${fld(pos)} 옆으로 빠지는 땅볼! 몸을 날려 잡고 1루 송구, 아웃!`:pos==='1B'?`${BN}, ${fld(pos)} 앞 땅볼, 직접 베이스를 밟습니다. 아웃.`:`${BN}, ${fld(pos)} ${pk('gt',['앞 땅볼. 1루에서 아웃.','정면 땅볼, 가볍게 처리합니다.','쪽 평범한 땅볼. 아웃.','앞 느린 땅볼, 달려 나와 1루로. 아웃.'])}`; if(nice)a=`${nm(f.id)}의 수비가 안타 하나를 지웠습니다.`; }
+      else if(r<.85){ const pos=pk('fp',['LF','CF','RF','CF']); c=`${BN}, ${fld(pos)} ${pk('ft',['쪽 높이 뜬 공. 잡아냅니다.','쪽 뜬공, 여유 있게 잡습니다.','쪽으로 뻗어 가는 타구... 워닝 트랙에서 잡힙니다!','앞 얕은 뜬공, 달려 나와 잡습니다.'])}`; const f=pcFAt(g,half,pos,k); if(f&&fieldV(f,pos)>=64&&pcH(g,k,'fr')<.4)a=`${nm(f.id)}, 수비 범위가 넓습니다. 쉽게 잡았습니다.`; }
       else c=`${BN}, 잘 맞은 타구! 그러나 ${fld(pk('lp',['SS','2B','3B','1B']))} 정면 직선타.`; break; }
     default: c=`${BN} ${OUTK[o]||o}`; }
   /* 득점 상황 */
