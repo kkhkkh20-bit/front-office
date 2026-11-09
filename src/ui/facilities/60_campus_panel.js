@@ -77,8 +77,8 @@ function cpFacPanel(S,k){ const t=team(G.user);
   const act=b?`<div class="eyebrow">공사 중: ${esc(D.lv[b.lv])}</div>${cpBar(b)}`
     :lv>=FAC_MAX?'<p class="small good">최고 단계입니다.</p>'
     :`<dl class="cpdl"><div><dt>다음 단계</dt><dd><b>${esc(D.lv[nx])}</b></dd></div><div><dt>공사비</dt><dd class="num">${money(D.c[nx])}</dd></div><div><dt>기간</dt><dd>${D.days[nx]}일</dd></div><div><dt>유지비</dt><dd>연 ${money(D.up[nx])}</dd></div></dl>
-      <div class="cpbtns"><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||t.cash<D.c[nx]?'disabled':''}>구단 현금으로 · ${money(D.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''}>모기업 투자 요청 · ${Math.round(capexOdds('fac',D.c[nx])*100)}%</button>`}</div>
-      ${nb>=2?'<p class="small muted">동시 공사는 2곳까지입니다.</p>':t.cash<D.c[nx]?`<p class="small bad">현금 부족(보유 ${money(t.cash)})</p>`:''}`;
+      <div class="cpbtns"><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||sdCash(G.user)<D.c[nx]?'disabled':''}>구단 현금으로 · ${money(D.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''}>모기업 투자 요청 · ${Math.round(capexOdds('fac',D.c[nx])*100)}%</button>`}</div>
+      ${nb>=2?'<p class="small muted">동시 공사는 2곳까지입니다.</p>':sdCash(G.user)<D.c[nx]?`<p class="small bad">현금 부족(보유 ${money(t.cash)}${sdCash(G.user)<t.cash?`, 트레이드 약정분 빼면 ${money(Math.max(0,sdCash(G.user)))}`:''})</p>`:''}`;
   return `<div class="cpph"><span class="cpnm sm">${esc(D.l)}</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
     <div class="cplv">${cpPips(lv,FAC_MAX,b)} <span>${esc(D.lv[lv])}</span></div>
     <p class="small">${esc(D.d)} 4단계부터는 전문화 투자로 효과 증가폭이 완만해지고 공사 기간·유지비가 커집니다.</p>${(()=>{ const t=facGainTxt(k,lv); return t?`<p class="small"><b>${esc(t)}</b></p>`:''; })()}
