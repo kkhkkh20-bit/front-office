@@ -2706,6 +2706,26 @@ T('[검수 11-09m] 감독 지시와 약속: 같은 요청 거절 중복 없음, 
   hireMgr(G.mmarket[0].id,2); m=G.mgr[G.user]; G.mgrDir={arm:{ok:true,mid:m.id,day:G.day}}; G._push=null; const op=G.teams.find(t=>t.id!==G.user).id; let mx=0;
   for(let i=0;i<3;i++){ const day=G.day+1+i; for(const p of depth(G.user).pen)p.lastApp=day; const gg=simGame(day,G.user,op,false); const x=gg.S.h.box.get(gg.S.h.sp.id); mx=Math.max(mx,x.pc||0); }
   ok(mx<=95,'불펜이 모두 등판한 날 혹사 금지 선발 '+mx+'구'); });
+T('[검수 11-09u] 대표팀 소집 전날 예측은 소집일 검사와 같은 규칙(구단당 3명·의료 제외 대체 발탁)이고, 예측 못 한 대체 발탁으로 모자라면 그날 경기를 미룬다',()=>{ fresh(); G.year=2026; G.day=KD(6,11); ntAnnounce('ag'); const N=G.nt; const d1=KD(9,16);
+  const hit=N.ids.map(id=>G.players[id]).filter(p=>p&&!p.isP&&p.team!==G.user); hit.slice(0,4).forEach(p=>{ p.team=G.user; }); const c=N.ids.map(id=>G.players[id]).find(p=>p&&p.pos==='C'&&p.team!==G.user); ok(c,'준비 실패: 포수'); c.injOut=30;
+  G.day=d1-1; const s0=JSON.stringify(N), h0=JSON.stringify(c.story||null); const P=ntCallIds(N,d1); ok(JSON.stringify(N)===s0,'예측이 실제 명단을 바꿈'); ok(G.day===d1-1,'날짜 복구 안 됨'); ok(JSON.stringify(c.story||null)===h0,'예측이 선수 이력을 남김');
+  ok(!P.has(c.id),'다친 포수가 예측에 남음'); const mine=[...P].filter(id=>G.players[id].team===G.user).length; ok(mine<=3,'예측에서 우리 선수 '+mine+'명'); try{ blocker(); }catch(e){ ok(false,'진행 검사 오류 '+e.message); }
+  G.day=d1; ntMedCheck(N); ok([...P].sort().join()===N.ids.slice().sort().join(),'예측과 실제 소집 명단이 다름');
+  ok(period()==='season','준비 실패: 시즌 아님'); const op=G.teams.find(t=>t.id!==G.user).id; G.cal.sched[d1]=[[G.user,op]]; G.makeup=[]; G.stops=[]; const B=Object.values(G.players).filter(p=>p.team===G.user&&!p.isP);
+  ntShortGuard(d1); ok(G.cal.sched[d1].length===1&&!G.makeup.length,'인원이 충분한데 경기를 미룸'); B.slice(8).forEach(p=>{ p.injOut=20; }); ntShortGuard(d1);
+  ok(!G.cal.sched[d1].length&&G.makeup.some(x=>x.h===G.user&&x.a===op),'야수 8명인데 경기를 치름'); ok(G.stops.length>0,'멈춤 안내 없음'); });
+T('[검수 11-09u] 대표팀 선발: 미래 대회는 그해 나이, 회복 못 하는 선수 추천 차단, 대체 발탁 미필 가산, 같은 구단 와일드카드 교체, 육성선수 올스타 제외',()=>{ fresh(); G.year=2026; G.day=KD(4,20);
+  const p=domestic(G.user).find(q=>!q.prospect); p.age=25; p.draft={y:G.year-10}; ok(ntU25(p,G.year)&&!ntU25(p,G.year+1),'대회 연도 나이로 자격을 보지 않음');
+  const y4=G.year+4, S4=ntSquad('ag',null,{y:y4}); ok(S4.every(x=>x.wild||ntU25(G.players[x.id],y4)),'미래 대회 일반 선수에 나이 초과');
+  p.injOut=300; const r=ntRecToggle('ag',p.id); ok(r.includes('회복')&&!ntRecIds('ag').has(p.id),'회복 못 하는 선수 추천: '+r); p.injOut=0;
+  const v=ntVal('ag'); p.mil=null; const a=v(p); p.mil={done:true}; ok(Math.abs(a-v(p)-8)<1e-9,'미필 가산 '+(a-v(p))); p.mil=null;
+  const S=ntSquad('ag'), sel=new Set(S.map(x=>x.id)), per={}; S.forEach(x=>{ const q=G.players[x.id]; (per[q.team]=per[q.team]||[]).push(q); });
+  const T3=Object.keys(per).find(t=>per[t].length===3&&per[t].some(q=>q.isP&&!S.find(x=>x.id===q.id).wild)); ok(T3!=null,'준비 실패: 3명 구단');
+  const w=ntPool().find(q=>String(q.team)===T3&&q.isP&&!sel.has(q.id)); ok(w,'준비 실패: 후보'); w.age=28; w.draft={y:G.year-9}; w.r.stf=w.r.ctl=w.r.sta=99;
+  const S2=ntSquad('ag'); ok(S2.some(x=>x.id===w.id&&x.wild),'같은 구단 선수와 바꾸면 되는 와일드카드 탈락'); ok(S2.filter(x=>G.players[x.id].team===w.team).length<=3,'구단당 3명 초과');
+  G.day=G.cal.asg-14; for(const q of Object.values(G.players)){ if(q.team!=null)Object.assign(lineFor(q,G.year,q.team,'1군'),q.isP?{g:20,gs:8,outs:180,er:20,so:60,w:6}:{g:60,pa:240,ab:200,h:65,hr:10}); }
+  const ysP=Object.values(G.players).find(q=>q.team!=null); ysP.ys=true; ok(!allStarPool(G.year).some(x=>x.p.id===ysP.id),'육성선수가 올스타 후보'); ysP.ys=false;
+  allStarDaily(); const A=G.allStars[G.year], m=G.players[A.teams.나눔[0].id]; m.ys=true; G.day=G.cal.asg-1; allStarDaily(); ok(!A.teams.나눔.some(x=>x.id===m.id),'육성선수가 확정 명단에 남음'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
