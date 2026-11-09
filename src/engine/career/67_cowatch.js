@@ -47,7 +47,7 @@ function cwRaceOn(){ const st=standingsNow(); const i=st.findIndex(x=>x.tid===G.
   if(i<=4&&st[5]&&cwGb(me,st[5])<=2)return true; if(i>4&&cwGb(st[4],me)<=2)return true; if(i<=2&&Math.abs(cwGb(st[0],me))<=2)return true; return false; }
 
 /* ---------- 초대: 하루 처리에서 ---------- */
-function cwDaily(){ if(!cwOn()||!G.cal)return; try{ cwInvite(); }catch(e){} try{ cwOrdDaily(); }catch(e){} if(dobj(G.day).w===1)try{ cwRapWeek(); }catch(e){}
+function cwDaily(){ if(!cwOn()||!G.cal)return; try{ cwInvite(); }catch(e){} if(dobj(G.day).w===1)try{ cwRapWeek(); }catch(e){}
   const S=G.cwS; if(S&&!S.done&&G.day>S.until)S.done=true; /* 건의 기회는 사흘 뒤 사라진다 */ }
 function cwInvOpen(){ return (G.evs||[]).some(e=>e.k==='cwInv'&&!e.done)||Object.keys(gmPlans()).some(d=>{ const q=G.gmPlan[d]; return +d>G.day&&q.k==='attend'&&q.cw&&!q.done; }); }
 function cwInvite(){ const c=cwSt(); const per=period(); const C=G.cal; if(!(per==='season'||(per==='pre'&&G.day>=C.open-6)))return; if(G.day>C.end||c.n>=CW_MAX||cwInvOpen())return;
@@ -159,7 +159,7 @@ function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const l
     L.push(['pay:1500','연봉 재원 15억 요청(다년계약·연봉 인상분)',`모기업 지원 한도에 더해짐 · ${od(ownOdds(1500,null))} · 반려되면 신뢰 -1`,noL]);
     if(fac)L.push(['fac:'+fac.k,`${FACI[fac.k].l} 시설 투자 결재 요청`,`공사비 ${money(fac.c)} 모기업 부담 · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 -1`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
   else { L.push(['ops:1000','운영비 10억 증액 요청',`${od(ownOdds(1000,null))} · 반려되면 신뢰 -1`,noL]);
-    const fa=G.fa&&G.fa.open&&!G.fa.closed?G.fa.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null).sort((a,b)=>ovr(b)-ovr(a))[0]:null;
+    const fa=ownWhyFA()[0]; /* 계약할 수 있는 FA만(외부 FA 한도, 검수 11-09zzd) */
     if(fa)L.push(['fa:'+fa.id,`FA ${fa.name} 영입 자금 요청`,`${money(fa.ask.annual)} · ${od(ownOdds(fa.ask.annual,{k:'fa',pid:fa.id}))} · 목적대로 못 쓰면 신뢰 -3`,noL]);
     const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 -2, 감독 관계 -5`,(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]||{w:0,l:0}, gp=r.w+r.l; return gp<20?'시즌 20경기를 치른 뒤 성적을 보고 건의할 수 있습니다':uRank()>=6||m.rel<40||r.w/Math.max(1,gp)<.45?'':'성적 부진(6위 아래·승률 4할 5푼 미만)이나 감독과의 갈등(관계 40 미만)이 있을 때 건의할 수 있습니다'; })()]); /* 사용자 피드백 11-05: 새 감독 첫 경기 패배 직후에도 교체 건의가 떴다 */
     if(fac)L.push(['fac:'+fac.k,`대형 투자: ${FACI[fac.k].l} 모기업 투자 요청`,`공사비 ${money(fac.c)} · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 -1`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
