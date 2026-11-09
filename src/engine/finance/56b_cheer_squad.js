@@ -17,7 +17,7 @@ const CHEER_AT=[['vis','비주얼'],['pop','인기'],['svc','팬서비스'],['da
 const CHEER_FN=['서연','지민','예린','하은','수아','다인','유나','채원','시은','가윤','나연','민지','소율','지우','하린','예서','아린','서아','윤서','다은','세은','유진','보람','혜원'];
 function cheerMk(S,rook){ const q=CHEER_AG[S.ag].q, g=(b)=>clamp(Math.round(N(b+q,3)),3,20);
   const L=S.L||[]; let name=''; for(let i=0;i<30&&(!name||L.some(m=>m.name===name));i++)name=surAt(R())+pick(CHEER_FN);
-  const yrs=rook?0:ri(1,7), m={id:(S.nid=(S.nid||0)+1),name,age:rook?ri(20,23):clamp(21+yrs+ri(0,3),21,31),yrs,vis:g(11),pop:g(rook?7:10),svc:g(10),dance:g(rook?9:11),sta:g(11),dil:g(11),fat:0,on:true,inj:0,sl:0,app:0};
+  const yrs=rook?0:ri(1,7), m={id:(S.nid=(S.nid||0)+1),name,age:rook?ri(20,23):clamp(20+yrs+ri(0,2),21,27) /* 사진 풀(v15)이 20~26세라 단원 나이도 젊게 */,yrs,vis:g(11),pop:g(rook?7:10),svc:g(10),dance:g(rook?9:11),sta:g(11),dil:g(11),fat:0,on:true,inj:0,sl:0,app:0};
   m.fol=Math.round(m.pop*m.pop*rnd(300,700)); return m; }
 function cheerFee(m,ag){ return Math.max(1,Math.round(CHEER_AG[ag||'han'].fee*(.5+(m.pop+m.dance)/20))); } /* 월 수수료(100만 원 단위, 대행사에 낸다) */
 function cheerNeed(){ return CHEER_STAGE[(G.fanOps&&G.fanOps.cheer)||0]; }
