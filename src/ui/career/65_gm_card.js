@@ -7,10 +7,10 @@ function gmCardView(){ if(G.unemp)return ''; const C=myCInit(); if(!C)return '';
       <div><span class="muted">연봉</span><b>${money(C.sal)}</b></div>
       <div><span class="muted">계약</span><b>${C.y0}~${C.y1}</b><i class="small ${left<=0?'warn':'muted'}">${left<=0?'올해 만료':`${left}년 남음`}</i></div>
       <div><span class="muted">명성</span><b>${G.rep??50}</b><i class="small muted">${esc(repLabel(G.rep??50))}</i></div>
-      <div><span class="muted">통산(마친 시즌)</span><b>${S.n}시즌</b><i class="small muted">${S.w}승 ${S.l}패 · 승률 ${fmt3(S.pct)}${(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; return r&&(r.w+r.l)&&!G.unemp?` · 올해 ${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''} 진행 중`:''; })()}</i></div>
+      <div><span class="muted">통산(마친 시즌)</span><b>${S.n}시즌</b><i class="small muted">${S.w}승 ${S.l}패${S.t?` ${S.t}무`:''} · 승률 ${fmt3(S.pct)}${S.now?` · 올해 ${S.now.w}승 ${S.now.l}패${S.now.t?` ${S.now.t}무`:''} 진행 중`:''}</i></div>
       <div><span class="muted">우승</span><b>${S.ch}회</b><i class="small muted">준우승 ${S.ru} · 가을야구 ${S.ps}</i></div>
       <div><span class="muted">통산 연봉</span><b>${money(C.earn)}</b><i class="small muted">맡은 구단 ${Math.max(1,S.teams)}곳</i></div>
-      <div><span class="muted">개인 잔액</span><b>${money(personalState().cash)}</b><i class="small muted">월급 ${money(Math.round(C.sal/12))} · ${esc(PERSONAL_LIFE[personalState().life||0].l)}</i></div>
+      <div><span class="muted">개인 잔액</span><b>${pmoney(personalState().cash)}</b><i class="small muted">월급 ${money(Math.round(C.sal/12))} · ${esc(PERSONAL_LIFE[personalState().life||0].l)}</i></div>
       <div><span class="muted">말투</span><b>${myVoice()?esc(GMV[myVoice()].l):'담백'}</b><i class="small muted">${myVoice()?esc(GMV[myVoice()].d):'단장 정보 고치기에서 정합니다'}</i></div>
     </div>${chT}
     <p class="small muted">계약 마지막 해 시즌이 끝나면 구단주가 재계약 여부를 정합니다(구단주 신뢰 45 이상이면 제안). 명성 58 이상이면 그때 다른 구단 제의도 올 수 있습니다. 경질되면 남은 기간 연봉은 구단이 정산합니다. 연봉은 매달 개인 지갑으로 들어오고, 우승하면 연봉의 30%, 준우승 15%, 가을야구 5%를 성과급으로 받습니다.</p>
@@ -22,7 +22,7 @@ function gmProfileView(){ const s=meStats(), M=s.M, T=s.T; const tags=meTags(); 
   const st=(l,v,sub)=>`<div><span class="muted">${l}</span><b>${v}</b>${sub?`<i class="small muted">${sub}</i>`:''}</div>`;
   const grid=`<div class="gmc-grid">${st('트레이드',`${T.n}건`,T.n?`WAR 차 ${T.net>=0?'+':''}${T.net.toFixed(1)}`:'')}${st('언론 플레이',`${M.pp||0}회`,'')}${st('인터뷰',`${M.iv||0}회`,`거절 ${M.ivSkip||0}`)}${st('외부 FA 영입',`${M.fa||0}명`,M.faBig?`대형 ${M.faBig}건`:'')}${st('감독 경질',`${M.mgrFire||0}회`,'')}${st('외국인 시즌 중 교체',`${M.fRep||0}회`,'')}</div>`;
   const tr=meTrades().slice().reverse().slice(0,8).map(t=>{ const r=tradeReport(t); return `<div class="trr"><div><b>${t.y} · ${badge(t.with,14)} ${esc(tshort(t.with))}</b><span>받음 ${esc(trSide(t,'get'))} · 보냄 ${esc(trSide(t,'give'))}</span></div>${r?`<span class="trw ${r.net>=.5?'up':r.net<=-.5?'dn':''}">${r.net>=0?'+':''}${r.net.toFixed(1)} WAR</span>`:''}</div>`; }).join('');
-  const seas=(G.myC&&G.myC.seas||[]).slice().reverse().slice(0,12).map(x=>`<div class="row between small"><span>${x.y} · ${badge(x.tid,14)} ${esc(tshort(x.tid))}</span><span>${x.w}승 ${x.l}패${x.part?' · 시즌 중 이직':` · ${x.rank}위`}${x.ch===1?' · <b class="good">우승</b>':x.ch===2?' · 준우승':''}</span></div>`).join('');
+  const seas=(G.myC&&G.myC.seas||[]).slice().reverse().slice(0,12).map(x=>`<div class="row between small"><span>${x.y} · ${badge(x.tid,14)} ${esc(tshort(x.tid))}</span><span>${x.w}승 ${x.l}패${x.t?` ${x.t}무`:''}${x.part?` · 시즌 중 ${esc(x.how||'이직')}`:` · ${x.rank}위`}${x.ch===1?' · <b class="good">우승</b>':x.ch===2?' · 준우승':''}</span></div>`).join('');
   return `<section class="card gmcard"><div class="row between"><h2 class="sec">단장 프로필</h2>${nick?`<span class="small muted">언론이 부르는 별명: <b>${esc(nick)}</b></span>`:''}</div>
     <div class="eyebrow">스타일</div>${tg}
     <div class="eyebrow" style="margin-top:8px">행동 기록</div>${grid}
