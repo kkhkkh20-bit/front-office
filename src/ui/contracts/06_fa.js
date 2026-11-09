@@ -80,7 +80,7 @@ const tfKpi=L=>`<section class="card tf-top">${L.filter(Boolean).map(x=>typeof x
 const tfBox=(cls,title,em,body,act)=>`<section class="card ${cls||''}"><div class="row between"><h3>${title}${em!=null&&em!==''?` <em>${em}</em>`:''}</h3>${act||''}</div>${body}</section>`;
 const tfT=(head,rows,empty)=>`<div class="sf-tw"><table class="sf-t tf-t"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')||`<tr><td colspan="${head.length}" class="muted wrap">${empty||'없습니다.'}</td></tr>`}</tbody></table></div>`;
 const tfP=(p,sub)=>`<button class="pm-n" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)}</b>${sub?`<i>${sub}</i>`:''}</span></button>`;
-const tfPot=(rp,p)=>rp.ofp==null?'<span class="muted" title="그 지역 프로 담당 스카우트가 있어야 알 수 있습니다">?</span>':(T=>potStars(T.st)+' '+esc(T.s))(potTierP(rp,p));
+const tfPot=(rp,p)=>rp.ofp==null?'<span class="muted" title="그 지역 프로 담당 스카우트가 있어야 알 수 있습니다">?</span>':(T=>`<span title="${esc(T.s)}">${potStars(T.st)}</span>`)(potTierP(rp,p));
 const tfChips=(a,cur,opts)=>`<div class="chips tf-ch">${opts.map(([k,l])=>`<button data-a="${a}" data-v="${k}" class="${cur===k?'on':''}">${l}</button>`).join('')}</div>`;
 const tfWrap=(top,L,R,lr,rr)=>`<div class="tf ws-own">${top}<div class="tf-l" style="grid-template-rows:${lr||'minmax(0,1fr)'}">${L}</div><div class="tf-r" style="grid-template-rows:${rr||'minmax(0,1fr)'}">${R}</div></div>`;
 function tfRec(p){ const h=curLine(p); return !h?'<span class="muted">기록 없음</span>':yrTag(h)+' '+(p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr||0}홈런`:'-')); }
