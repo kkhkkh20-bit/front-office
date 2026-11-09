@@ -27,6 +27,8 @@ function roleOf(ofp,p){
 const sdConf=sd=>sd<=2.5?'매우 높음':sd<=4.5?'높음':sd<=7?'보통':'낮음';
 function halfK(){ return dobj(G.day).m>=7?'h':''; }
 function ownObs(p){ const y0=G.startY??G.year; return new Set((p.hist||[]).filter(h=>h.t===G.user&&h.y>=y0&&(h.pa||h.outs)).map(h=>h.y)).size; }
+/* 우리 팀을 떠난 지 며칠(2년 안이면), 아니면 null. 이적 기록(tLog)의 마지막 '우리 팀에서 나감' 기준 */
+function exOwnD(p){ const x=[...(p.tLog||[])].reverse().find(z=>z.f===G.user); if(!x||x.d==null)return null; const d=G.day-x.d; return d>=0&&d<=730?d:null; }
 function ownSd(p,sc){ const b=sc?scSd(sc,p):SCOUT_SD[0]; return clamp(b*anaEff(G.user).sdm*(1-Math.min(.45,ownObs(p)*.15)),1.5,8); }
 /* 겉 포장: 외국인은 1년 보고 뽑으므로 '장래'를 말하지 않고 올해 기량만 말한다. 갓 지명한 우리 신인은 첫 실전 전까지 지명 당시 스카우트 평가를 유지한다 */
 function scoutReport(p){ let r=scoutReport1(p); if(!r)return r;
@@ -36,7 +38,7 @@ function scoutReport(p){ let r=scoutReport1(p); if(!r)return r;
 function scoutReport1(p){ // KBO 소속 선수는 현재 능력(오버롤)을 정확히 보여 준다. 잠재력은 우리 선수, 또는 프로 담당 스카우트가 있는 지역 구단 선수만
   const r=scoutReport0(p); if(p.prospect||(p.foreign&&p.team==null)||r.unseen)return r; /* 관찰하지 못한 2군 선수는 목록과 같은 기준으로 상세에서도 평가 없음(검수 11-07) */
   const ref=p.team!=null?p.team:p.faFrom; if(ref==null)return r;
-  const own=ref===G.user; const cur=Math.round(ovr(p)); let ofp=own?r.ofp:null, who=r.who, sc=r.sc, psd=own?r.sd:99;
+  const own=ref===G.user||exOwnD(p)!=null /* 떠난 지 2년 안의 우리 선수는 우리 팀 시절 자료 */; const cur=Math.round(ovr(p)); let ofp=own?r.ofp:null, who=r.who, sc=r.sc, psd=own?r.sd:99;
   if(!own){ const cv=coverOf(ref); if(cv.sc){ const sd=scSd(cv.sc,p)*anaEff(G.user).sdm; psd=sd; ofp=clamp(r5(p.pot-hidPen(p,cv.sc)+hn('pf'+cv.sc.id+G.year+halfK(),p.id)*sd),20,80); who=`${cv.sc.name} 스카우트(${cv.reg} 프로 담당)`; sc=cv.sc; }
     /* 그 지역 프로 스카우트가 없어도 트래킹 분석원이 1군 경기 데이터로 거칠게 추정한다(오차 큼) */
     else if(anaPow('trk',G.user)>=2&&publicP(p)){ const sd=9.5*anaEff(G.user).sdm; psd=sd; ofp=clamp(r5(p.pot-hidPen(p,null)+hn('pa'+G.year+halfK(),p.id)*sd),20,80); who=`전력분석팀 데이터 추정(${cv.reg} 프로 스카우트 없음)`; }
@@ -57,6 +59,7 @@ function scoutReport0(p){
   else if(own){ sc=bestScout(); const o=ownObs(p); sd=ownSd(p,sc); who=`전력분석팀·${sc?`${sc.name} 스카우트`:'코치진'} 합동 · 우리 팀에서 ${o?`${o}시즌 관찰`:'관찰 시작'}`; }
   else if(p.foreign&&p.team==null){ const r=origOf(p), lv=intlLv(r); const mf=fMineFind(p); const isc0=G.scouts.filter(s=>s.role==='intl'&&s.region===r).sort((a,b)=>effSkill(b)-effSkill(a))[0]; /* 같은 나라에 여럿이면 가장 뛰어난 사람 기준(검수 11-08) */ sd=INET[lv].sd*(1-fwatchK(p.id)/100*.7)*(mf?.7:1)*(p.fsis?.8:1)*(isc0?1-(effSkill(isc0)-1)*.06:1); /* 파견 스카우트 능력도 즉시 평가에 반영(능력 5면 오차 24% 감소, 적응 기간엔 한 단계 낮게, 검수 11-07) */ futKnown=mf||lv>=1||fwatchK(p.id)>=40; const isc=isc0; who=`${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 스카우트 파견`:''}${mf?' · 우리 스카우트가 직접 찾아 관찰':''}`; sc={id:'intl'+r+lv,skill:lv+1,name:IREG[r].l};
     /* 툴 평가는 실전 감각(p.sx)을 못 본다. 현지 사무소와 오래 지켜본 관찰 명단 선수, 우리가 직접 찾은 선수만 일부 보인다 */ bias=-(p.sx||0)*(lv>=3?.6:1)*(1-fwatchK(p.id)/100*.6)*(mf?.6:1); }
+  else if(p.team!=null&&exOwnD(p)!=null){ const dd=exOwnD(p); sc=bestScout(); sd=clamp(ownSd(p,sc)*(1+dd/365*.6),1.5,8); who=`우리 팀 시절 자료 · 떠난 지 ${dd<60?`${dd}일`:`${Math.round(dd/30)}개월`}(시간이 지날수록 오차가 커집니다)`; } /* 우리 팀에 있던 선수는 떠난 뒤에도 2년 동안 그때 자료로 본다(카페 11-09: 보상선수로 떠난 우리 선수가 바로 '평가 없음') */
   else if(p.team!=null){ const cv=coverOf(p.team); const pub=publicP(p);
     if(!pub&&(!cv.sc||cv.sc.skill<3))return {who:cv.sc?`${cv.sc.name} 스카우트(${cv.reg})`:`${cv.reg} 담당 스카우트 없음`,sc:null,sd:99,conf:'없음',cur:null,ofp:null,tools:[],arch:'평가 없음',role:null,notes:[cv.sc?'1군 기록이 없는 2군 선수라 능력 3 이상 스카우트만 파악할 수 있습니다.':`${cv.reg} 지역을 맡은 스카우트가 없어 이 구단 선수는 평가하지 못했습니다. 기록만 볼 수 있습니다.`],risk:'판단 불가',eta:null,unseen:true};
     sc=cv.sc; sd=(sc?scSd(sc,p)*.8:SCOUT_SD[0])*anaEff(G.user).sdm; futKnown=false; who=sc?`${sc.name} 스카우트(${cv.reg} 프로 담당)`:`${cv.reg} 프로 담당 스카우트 없음 · 1군 기록으로 현재 능력만`; } /* 1군 공개 선수는 담당이 없어도 평가를 지우지 않고, 잠재력은 분석원 추정 경로로 넘긴다(검수 11-08) */

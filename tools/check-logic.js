@@ -3695,6 +3695,8 @@ T('[피드백 11-09q] 예산 세 칸: 선수 영입 자금은 spendable, 연봉 
   const s1=chk('영입 지출 뒤'); ok(s1.buy.spent-s0.buy.spent===1000,'영입 지출이 트레이드 현금·보상금·계약금 합으로 늘지 않음: '+(s1.buy.spent-s0.buy.spent));
   ok(s1.ops.spent===s0.ops.spent&&s1.ops.yr===s0.ops.yr,'트레이드 현금이 운영 예산에도 잡힘(이중 계산)'); ok(s1.pay.yr===s0.pay.yr,'보상금·계약금이 연봉 칸에도 잡힘(이중 계산)');
   const iv=t.indie; try{ t.indie=true; const s=budgetSplit(); ok(s.indie&&s.buy.room===0&&s.buy.avail===Math.max(0,Math.round(sdCash(G.user)-newStadDue(G.user))),'독립구단 영입 자금은 현금만: '+s.buy.avail); } finally{ t.indie=iv; } });
+T('[카페 11-09] 보상선수 등으로 떠난 우리 선수는 2년 동안 우리 팀 시절 자료로 평가가 보인다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.ys&&!q.foreign); const o=G.teams.find(t=>t.id!==G.user).id; const r0=scoutReport(p); mvLog('보상선수',p,G.user,o,'',0); p.team=o; const r=scoutReport(p); ok(r.cur!=null&&!r.unseen,'떠난 우리 선수 평가 없음: '+r.who); ok(/우리 팀 시절/.test(r.who),'출처 안내 '+r.who); G.day+=800; const r2=scoutReport0(p); ok(!/우리 팀 시절/.test(r2.who||''),'2년 넘게 지나도 옛 자료'); });
+
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
