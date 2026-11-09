@@ -7,7 +7,7 @@ function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenE
 if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
-function render(){const app=document.getElementById('app');try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
+function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
@@ -83,18 +83,40 @@ function exportCard(){ return `<section class="card"><h2 class="sec">내보내�
   <textarea class="code" id="impCode" placeholder="내보낸 코드를 여기에 붙여 넣으세요"></textarea>
   <div class="row"><button class="btn" data-a="impPaste">붙여넣기</button><button class="btn primary" data-a="impCode">코드로 불러오기 (현재 슬롯에 덮어씀)</button></div>
   ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`; }
-function importText(t){
+/* 가져올 세이브 검사: 게임이 바로 읽는 필수 항목이 없으면 아무것도 바꾸기 전에 거절한다(검수 11-09: 시즌 기록·사용자 구단이 빠진 백업이 정상 세이브를 덮어씀) */
+function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
+  if(!o(g)||g.ver!==4)return '저장 형식';
+  if(!Array.isArray(g.teams)||!g.teams.length||!g.teams.every(o))return '구단 정보';
+  if(!o(g.players)||!Object.keys(g.players).length)return '선수 정보';
+  if(!o(g.cal)||!Number.isFinite(g.day)||!Number.isFinite(g.year))return '날짜·일정';
+  if(!g.teams.some(t=>t.id===g.user))return '사용자 구단';
+  if(!o(g.sea)||!g.sea.rec||!o(g.sea.rec[g.user]))return '시즌 기록';
+  if(g.games!=null&&!Array.isArray(g.games))return '경기 기록';
+  return ''; }
+/* 세이브가 바뀌면(G 객체가 달라지면) 이전 게임에서 하던 화면 상태를 비운다(검수 11-09: 백업 코드·훈련 대기·드래프트 타이머·비교 목록이 다른 세이브에 남음) */
+let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0; }
+/* to: 파일을 고른 시점의 대상({title,slot,g}). 읽는 사이 슬롯이 바뀌면 가져오지 않는다(검수 11-09: 다른 슬롯에 덮어씀) */
+function importText(t,to){
  let g=null;t=String(t||'').trim().replace(/^\uFEFF/,'');
  /* 메신저·메모 앱이 긴 코드에 줄바꿈·띄어쓰기를 넣거나 '+'를 띄어쓰기로 바꾸는 경우가 있다: 차례로 고쳐 본다 */
  if(t[0]==='{'){try{g=JSON.parse(t);}catch(e){}}
  else for(const v of [t,t.replace(/[\r\n\t]/g,''),t.replace(/\s+/g,''),t.replace(/[\r\n\t]/g,'').replace(/ /g,'+')]){ try{ const j=LZString.decompressFromBase64(v); if(j){ g=JSON.parse(j); break; } }catch(e){} }
- if(!g||g.ver!==4||!Array.isArray(g.teams)||!g.teams.length||!g.players||!g.cal||!Number.isFinite(g.day)||!Number.isFinite(g.year)){UI.impMsg=t&&t[0]!=='{'&&t.length>100?`코드를 읽지 못했습니다(붙여 넣은 길이 ${t.length.toLocaleString()}자). 코드가 끝까지 복사되지 않았을 가능성이 큽니다. 저장 코드는 수십만 자라 메신저로 보내면 잘리기 쉽습니다. 기기를 옮길 때는 '파일로 내보내기'로 받은 .txt 파일을 불러오기에 넣어 주세요.`:'저장 파일을 읽지 못했습니다. 게임에서 내보낸 .txt 또는 .json 파일인지 확인해 주세요.';render();return;}
- const m=meta(),fromTitle=UI.title,slot=fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot();
+ if(!g||g.ver!==4||!Array.isArray(g.teams)||!g.players){UI.impMsg=t&&t[0]!=='{'&&t.length>100?`코드를 읽지 못했습니다(붙여 넣은 길이 ${t.length.toLocaleString()}자). 코드가 끝까지 복사되지 않았을 가능성이 큽니다. 저장 코드는 수십만 자라 메신저로 보내면 잘리기 쉽습니다. 기기를 옮길 때는 '파일로 내보내기'로 받은 .txt 파일을 불러오기에 넣어 주세요.`:'저장 파일을 읽지 못했습니다. 게임에서 내보낸 .txt 또는 .json 파일인지 확인해 주세요.';render();return;}
+ { const bad=saveCheck(g); if(bad){ UI.impMsg=`백업의 ${bad}이(가) 없거나 손상돼 가져오지 않았습니다. 기존 세이브와 진행 중인 게임은 그대로입니다.`; render(); return; } }
+ if(to&&(to.title!==!!UI.title||to.g!==G||(!to.title&&to.slot!==curSlot()))){ UI.impMsg='파일을 읽는 사이 슬롯(게임)이 바뀌어 가져오지 않았습니다. 가져올 곳에서 파일을 다시 골라 주세요.'; render(); return; }
+ const m=meta(),fromTitle=!!UI.title,slot=fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot();
  if(fromTitle&&!slot){UI.impMsg='빈 저장 슬롯이 없습니다. 보관할 저장을 내보내고 슬롯을 비운 뒤 불러와 주세요.';render();return;}
- const old=G;try{G=g;migrateDraft();}catch(e){G=old;UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.';render();return;}
- const cur0=CUR_SLOT, rev0=SLOT_REV; CUR_SLOT=slot; if(fromTitle)slotRevSync(slot,m); /* 가져온 게임은 새 슬롯에만 쓴다. 활성 슬롯은 저장이 성공한 뒤에만 바꾼다(검수 11-07: 실패하면 빈 슬롯이 활성으로 남아 이어하기가 사라짐) */
- const ok=saveNow(), confl=!ok&&SAVE_CONFL, body=!ok&&!confl&&(()=>{ try{ const h=unpack(localStorage.getItem(slotKey(slot))); return !!h&&h.year===G.year&&h.day===G.day&&h.user===G.user; }catch(e){ return false; } })(); /* 본문은 쓰이고 목록만 실패한 경우 */
- if(fromTitle){ if(ok||body){ const m2=meta(); m2.active=slot; setMeta(m2); } else { G=old; CUR_SLOT=cur0; SLOT_REV=rev0; try{ if(G)migrateDraft(); }catch(e){} UI.impMsg=`슬롯 ${slot}에 저장하지 못해 가져오지 않았습니다. 기존 세이브는 그대로입니다. ${SAVE_ERR||''}`.trim(); render(); return; } } /* 가져온 게임은 새 슬롯에만 쓴다(검수 11-06: 활성 기록 실패 때 기존 슬롯을 덮어씀) */ closeSheets();UI.title=false;UI.sstep='main';UI.tab='home';UI.readingOpen={};UI.readingScroll={};UI.impMsg=ok?'불러왔습니다.':body?'불러와 슬롯에 저장했지만 저장 목록을 갱신하지 못했습니다. 다시 열어도 가져온 백업이 열립니다.':confl?'불러왔지만 다른 탭(창)이 이 슬롯을 더 최근에 저장해 슬롯에 저장하지 못했습니다. 다시 열면 이전 세이브가 열립니다. 처음 화면에서 빈 슬롯으로 다시 가져오세요.':'불러왔지만 저장 공간이 부족해 슬롯에 저장하지 못했습니다. 이대로 닫으면 이전 세이브가 열립니다. 다른 슬롯을 지운 뒤 다시 가져오세요.'; /* 충돌로 막히면 본문은 그대로다: 같은 구단·날짜라도 복원됐다고 하지 않는다(검수 11-08) */ /* 본문이 실제로 바뀌었는지 보고 안내(검수 11-07) */render(); /* 저장까지 확인한 뒤 성공 안내(검수 11-06) */
+ const old=G, cur0=CUR_SLOT, rev0=SLOT_REV, cf0=SAVE_CONFL;
+ if(old){ try{ saveFlush(); }catch(e){} } /* 기다리던 저장을 먼저 끝낸다: 가져오기를 되돌릴 때 그 진행이 사라지지 않게 */
+ const back=()=>{ G=old; CUR_SLOT=cur0; SLOT_REV=rev0; SAVE_CONFL=cf0; try{ worldReset(); syncMinSal(); }catch(e){} }; /* 기존 게임은 다시 고치지 않고 그대로 돌려놓고, 연도별 기준(최저 연봉)·캐시만 다시 맞춘다(검수 11-09) */
+ try{ G=g; migrateDraft(); slotInfo(); }catch(e){ back(); UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.'; render(); return; } /* 복원과 저장 정보 생성까지 확인한 뒤에만 저장한다 */
+ CUR_SLOT=slot; if(fromTitle)slotRevSync(slot,m); /* 가져온 게임은 새 슬롯에만 쓴다. 활성 슬롯은 저장이 성공한 뒤에만 바꾼다(검수 11-07: 실패하면 빈 슬롯이 활성으로 남아 이어하기가 사라짐) */
+ let ok=false; try{ ok=saveNow(); }catch(e){ ok=false; }
+ const confl=!ok&&SAVE_CONFL, body=!ok&&!confl&&(()=>{ try{ const h=unpack(localStorage.getItem(slotKey(slot))); return !!h&&JSON.stringify(h)===prepG(); }catch(e){ return false; } })(); /* 본문은 쓰이고 목록만 실패한 경우: 다시 읽은 내용 전체가 같을 때만(검수 11-09: 같은 구단·날짜의 기존 본문을 새 본문으로 착각) */
+ let act=true;
+ if(fromTitle){ if(ok||body){ const m2=meta(); m2.active=slot; act=setMeta(m2); } else { back(); UI.impMsg=`슬롯 ${slot}에 저장하지 못해 가져오지 않았습니다. 기존 세이브는 그대로입니다. ${SAVE_ERR||''}`.trim(); render(); return; } } /* 가져온 게임은 새 슬롯에만 쓴다(검수 11-06: 활성 기록 실패 때 기존 슬롯을 덮어씀) */ closeSheets();UI.title=false;UI.sstep='main';UI.tab='home';UI.readingOpen={};UI.readingScroll={};
+ const actMsg=act?'':` 다만 다음에 열 슬롯 기록을 바꾸지 못했습니다. 다시 열면 처음 화면의 불러오기에서 슬롯 ${slot}을(를) 고르세요.`; /* 활성 슬롯 변경도 확인해 알린다(검수 11-09) */
+ UI.impMsg=(ok?'불러왔습니다.':body?'불러와 슬롯에 저장했지만 저장 목록을 갱신하지 못했습니다. 다시 열어도 가져온 백업이 열립니다.':confl?'불러왔지만 다른 탭(창)이 이 슬롯을 더 최근에 저장해 슬롯에 저장하지 못했습니다. 다시 열면 이전 세이브가 열립니다. 처음 화면에서 빈 슬롯으로 다시 가져오세요.':'불러왔지만 저장 공간이 부족해 슬롯에 저장하지 못했습니다. 이대로 닫으면 이전 세이브가 열립니다. 다른 슬롯을 지운 뒤 다시 가져오세요.')+actMsg; /* 충돌로 막히면 본문은 그대로다: 같은 구단·날짜라도 복원됐다고 하지 않는다(검수 11-08) */ /* 본문이 실제로 바뀌었는지 보고 안내(검수 11-07) */render(); /* 저장까지 확인한 뒤 성공 안내(검수 11-06) */
 }
 
 function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G; try{ G.fdOrd=fdOrder(); }catch(e){} /* 창단 드래프트 순서는 구단을 고르기 전에 한 번 정해 두고(구단 카드와 실제가 같고 겹치지 않게) 시작 때 그대로 쓴다 */
