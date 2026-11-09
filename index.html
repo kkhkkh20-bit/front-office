@@ -13486,7 +13486,7 @@ function awardsCompact(){ const A=G.awards; if(!A)return; for(const y in A){ if(
   if(a.ggVote){ delete a.ggVote.ballots; delete a.ggVote.news; } a.cmp=1; } }
 /* ===== 예고 선발 · 순위 기록 · 트레이드 비교 · 모의 지명 · 스태프 의견 ===== */
 /* 앞으로의 경기: 엔진이 치를 순서 그대로(미룬 경기·같은 날 두 경기·지금 포스트시즌 시리즈의 남은 차전). 다음 경기 목록·예고 선발이 같은 목록을 읽어 상대가 어긋나지 않게(검수 11-09zo) */
-function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; for(let d=from;d<=c.end&&L.length<n;d++)for(const m of dayGames(d))if(m.includes(tid))L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0]});
+function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; for(let d=from;d<=c.end&&L.length<n;d++){ const D=dayGames(d), nm=D.length-((c.sched[d]||[]).length); D.forEach((m,i)=>{ if(m.includes(tid))L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0],...(i<nm?{mk:true}:{})}); }); } /* mk: 미룬 보충 경기(dayGames 앞쪽) */
   const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&(s.hi===tid||s.lo===tid))for(let i=s.gi;i<s.days.length;i++){ const d=s.days[i]; if(d>=from)L.push({d,home:(s.homes?s.homes[i]:s.hi)===tid,op:s.hi===tid?s.lo:s.hi,ps:`${ROUNDK[s.round]} ${i+1}차전`}); }
   return L.sort((a,b)=>a.d-b.d).slice(0,n); }
 let _spC={k:null};
