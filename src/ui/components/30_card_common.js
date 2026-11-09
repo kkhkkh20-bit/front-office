@@ -21,10 +21,18 @@ function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); 
     <div class="sheet-head"><div><div class="eyebrow">구단 정보</div><h2 class="sec">${esc(tname(tid))}</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${teamCard(t).replace(/ data-a="[a-zA-Z]+" data-v="[^"]*" role="button" tabindex="0"/,'').replace(/<button[^>]*data-a="tpartnerGo"[^>]*>[^<]*<\/button>/g,'')}
     <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${t.rel}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd></dl>
+    ${teamPeople(tid)}
     <div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}
     <div class="eyebrow" style="margin-top:10px">우승 트로피</div>${trophyCase(tid,true)}
     <div class="row" style="margin-top:10px"><button class="btn primary" data-a="lteam" data-v="${tid}">선수단 보기</button>${tradeOpen()?`<button class="btn" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button>`:''}</div>
   </div></div>`; }
+/* 다른 구단 사람들(카페 11-09c): 구단주 성향·시즌 목표, 감독, 코치진. 감독·OB 출신 코치는 누르면 인물 창 */
+function teamPeople(tid){ const t=team(tid); if(!t||tid===G.user)return ''; const B=bossOf(tid), m=G.mgr[tid], C=coachesOf(tid), ow=OWNER[t.owner];
+  const it=(av,nm,sub,rt,at)=>`<div class="item wa"${at||' style="cursor:default"'}>${av}<span class="nm">${nm}</span><span class="sub">${sub}</span>${rt?`<span class="rt">${rt}</span>`:''}</div>`;
+  const own=it('',`구단주 ${esc(B.own.name)} <span class="pill">${esc(ow.label)}</span>`,esc(OWNTRAIT[t.owner]||ow.msg),`<span class="small">목표 ${goalRankOf(tid)}위 이내</span><br><span class="small muted">${t.mode==='contend'?'우승 경쟁':'리빌딩'}</span>`);
+  const mg=m?(mgrFix(m),it(avImg({persona:'mgr',pid:m.id,team:tid,age:m.age,name:m.name}),`감독 ${esc(m.name)} <span class="small muted">${m.age}세</span>${obTag(m.ob)}`,esc(mgrType(m).n+(m.career?' · '+m.career:'')),'',` data-a="person" data-v="omgr:${tid}" role="button" tabindex="0"`)):it('','감독 빈자리','','');
+  const cs=CKEYS.filter(k=>C[k]).map(k=>{ const c=C[k]; return it(avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:tid}),`${esc(c.name)} <span class="small muted">${c.age}세</span>${obTag(c.ob)}`,`${esc(CROLE[k].l)} · 지도력 ${Math.round(c.sk)} · 육성 ${Math.round(c.dv)}`,'',c.ob&&obOf(c.ob)?` data-a="person" data-v="ob:${c.ob}" role="button" tabindex="0"`:''); });
+  return `<div class="eyebrow" style="margin-top:10px">구단주 · 감독</div><div class="list">${own}${mg}</div><div class="eyebrow" style="margin-top:10px">코치진 ${cs.length}명</div>${cs.length?`<div class="list">${cs.join('')}</div>`:'<p class="small muted">코치가 없습니다.</p>'}`; }
 function teamCard(t){
   const live=period()==='season'||period()==='post'; const st=live?standingsNow():(G.history[G.history.length-1]||{}).order||[];
   const rk=tieRank(st,t.id); const rec=st.find(o=>o.tid===t.id);

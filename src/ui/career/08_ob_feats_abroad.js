@@ -1,6 +1,6 @@
 /* ---------- OB·레전드 ---------- */
 function obOf(id){ return id&&G.ob?G.ob.find(o=>o.id===id):null; }
-function obTag(id){ const o=obOf(id); if(!o)return ''; return obMine(o)?` <span class="pill good">우리 구단 출신</span>`:` <span class="pill">${esc(tshort(o.team))} 출신</span>`; }
+function obTag(id){ const o=obOf(id); if(!o)return ''; const k=o.retNo?` · ${o.no}번 영구결번`:o.hof?' · 명예의 전당':(o.fame||0)>=70?' · 레전드':''; /* 레전드 출신을 이름만으로 알아보기 어렵다(카페 11-09c) */ return obMine(o)?` <span class="pill good">우리 구단 출신${k}</span>`:` <span class="pill">${esc(tshort(o.team))} 출신${k}</span>`; }
 function obAv(ob,w,big){ return avImg(obAvO(ob,w),big); }
 function obAvO(ob,w){ const per=w.k==='mgr'?'mgr':w.k==='coach'?'coach':w.k==='gm'?'gm':w.k==='scout'||w.k==='front'?'staff':ob.path==='media'?'agent':'staff'; const pid='obv'+ob.id+per; G.obFace=G.obFace||{}; G.obFace[pid]=ob.fid;
   return {persona:per,pid,team:w.tid??null,age:ob.age,name:ob.name}; }

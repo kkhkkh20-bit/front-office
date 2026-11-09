@@ -51,7 +51,7 @@ function personGone(kind,a,k){ const P=s=>`<p class="small">${s}</p>`, L=a=>a.le
     const av=G.players[r.id]||pj||{id:r.id,name:r.name,age:r.age,isP:r.isP,foreign:r.foreign};
     const info=P(`${r.from!=null?`${esc(tshort(r.from))} · `:''}${r.y}년 ${esc(r.how)} → <b>${esc(r.club)}(${esc(r.lg)})</b> ${r.yrs}년 ${r.amt*r.yrs}만 달러${r.fee?` · 포스팅 비용 ${money(r.fee)}`:''}`)
       +(r.back?P(`${r.backY}년 KBO 복귀`):'')+`<div class="ps-s"><div class="eyebrow">해외 성적</div>${r.lines.length?L(r.lines.map(l=>`${l.y} ${esc(l.lvl)}: ${lineTxt(l,r.isP)}`)):'<p class="small muted">아직 해외 시즌 기록이 없습니다.</p>'}</div>`;
-    return {k,name:r.name,role:r.back?`${r.backY}년 KBO 복귀`:`${r.lg} ${r.club}`,av,rel:null,lab:r.back?'복귀':r.foreign?'역수출':`해외 ${Math.max(0,yrs)}년차`,sub:`${r.pos} · ${r.age+(G.year-r.y)}세${r.foreign?' · 외국인':''}`,info,
+    return {k,name:r.name,role:r.back?`${r.backY}년 KBO 복귀`:`${r.lg} ${r.club}`,av,rel:null,lab:r.back?'복귀':r.foreign?'역수출':`해외 ${Math.max(0,yrs)}년차`,sub:`${r.pos} · ${r.foreign?r.age+(G.year-r.y):av.age}세${r.foreign?' · 외국인':''}`,info,
       acts:[pgRecBtn(r.id,G.players[r.id]?'선수 정보':'KBO 시절 기록')].filter(Boolean)}; }
   if(kind==='xmgr'){ const m=exMgrOf(a); if(!m)return null; mgrFix(m); const inM=(G.mmarket||[]).includes(m);
     return {k,name:m.name,role:inM?'감독 후보':'쉬고 있는 전 감독',av:{persona:'mgr',pid:m.id,age:m.age,name:m.name},rel:null,lab:mgrType(m).n,sub:`${m.age}세 · ${m.career||''}`,
@@ -59,5 +59,7 @@ function personGone(kind,a,k){ const P=s=>`<p class="small">${s}</p>`, L=a=>a.le
       acts:inM?[`<button class="btn primary" data-a="go" data-v="staff:mgr">감독 후보 보기</button>`]:[]}; }
   return null; }
 /* 리그를 떠난 선수 줄을 누르면: OB면 인물 창, 해외파면 해외파 창, 보관 기록만 있으면 기록 창 */
+/* 선수 줄 공통: 지금 리그에 있으면 선수 창, 떠났으면 해외파·OB·보관 기록 창(카페 11-09c: 포스팅 간 선수가 메일·이동 기록에서 안 열렸다) */
+function pAttr(pid){ return pid!=null&&G.players[pid]?` data-a="player" data-v="${pid}" role="button" tabindex="0"`:goneAttr(pid); }
 function goneAttr(pid,ob){ if(pid==null)return ''; const v=ob?`ob:${ob.id}`:abrOf(pid)?`abr:${pid}`:null; const at=(a,x)=>` data-a="${a}" data-v="${x}" role="button" tabindex="0"`;
   return v?at('person',v):G.arch&&G.arch[pid]?at('player',pid):''; }
