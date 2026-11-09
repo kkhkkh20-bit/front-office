@@ -2651,6 +2651,7 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .ow-box{background:var(--bg2,rgba(127,127,127,.08));border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px}
 .ow-odds{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin:0}.ow-odds b{font-size:16px}
 .ow-f{margin:0;padding-left:0;list-style:none}.ow-f li.good{color:var(--good)}.ow-f li.bad{color:var(--bad)}.ow-my{margin:0;font-style:italic}
+.mko-act{gap:8px;flex-wrap:nowrap;margin-top:6px}.mko-act>.btn{flex:1;min-width:0;white-space:nowrap}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -23577,7 +23578,7 @@ function tcFind(mode="buy"){ const tg=UI.findT&&G.players[UI.findT]&&G.players[U
   let B='';
   if(mine){ const L=open?marketFor(mine.id):[]; UI._mkt=L;
     B=`<section class="card"><div class="row between"><h2 class="sec">${esc(mine.name)}의 시장 가치</h2><button class="tc-i" data-a="findMine" data-v="">다른 선수</button></div>${pMini(mine)}
-      ${!open?'<p class="small muted">트레이드 기간이 아닙니다.</p>':L.length?L.map((x,i)=>`<div class="mko"><div class="mko-h">${gmAv(x.tid)}<b>${badge(x.tid,14)} ${esc(tshort(x.tid))}</b><span class="small muted">${esc(GMT[gmOf(x.tid).trait].l)}</span></div><div class="mko-b">${x.give.map(id=>pMini(G.players[id])).join('')}</div>${dealMoney([mine.id],x.give)}<button class="btn small primary" data-a="mktGo" data-v="${i}">이 조건으로 보내기</button></div>`).join(''):'<p class="small muted">지금 이 선수를 원하는 구단이 없습니다.</p>'}</section>`; }
+      ${!open?'<p class="small muted">트레이드 기간이 아닙니다.</p>':L.length?L.map((x,i)=>`<div class="mko"><div class="mko-h">${gmAv(x.tid)}<b>${badge(x.tid,14)} ${esc(tshort(x.tid))}</b><span class="small muted">${esc(GMT[gmOf(x.tid).trait].l)}</span></div><div class="mko-b">${x.give.map(id=>pMini(G.players[id])).join('')}</div>${dealMoney([mine.id],x.give)}<div class="row mko-act"><button class="btn small" data-a="mktEdit" data-v="${i}">조건 고치기</button><button class="btn small primary" data-a="mktGo" data-v="${i}">이 조건으로 보내기</button></div></div>`).join(''):'<p class="small muted">지금 이 선수를 원하는 구단이 없습니다.</p>'}</section>`; }
   else B=`<section class="card"><h2 class="sec">우리 선수 시장 가치 보기</h2>${(()=>{ const P=pager('mval',domestic(G.user).filter(p=>!p.ys&&!(p.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a)),innerWidth<700?tradeListSize():8); return `<div class="fl" data-pg="mval">${P.items.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">${money(p.sal)}</span><button class="tc-i" data-a="findMine" data-v="${p.id}">가치 보기</button></div>`).join('')}</div>${P.bar}`; })()}</section>`;
   return (UI.deskMsg?`<div class="note ${UI.deskOk?'':'bad'}">${esc(UI.deskMsg)}</div>`:'')+(mode==='sell'?B:A); }
 function tcGms(){ return `<section class="card"><div class="row between"><h2 class="sec">상대 단장</h2><span class="small muted">안부 연락 2주 1회 · 식사 한 달 1회</span></div>${UI.gmMsg?`<div class="note">${esc(UI.gmMsg)}</div>`:''}${(()=>{ const P=pager('gms',G.teams.filter(t=>t.id!==G.user),innerWidth<700?1:3); return `<div class="gmg" data-pg="gms">${P.items.map(t=>gmCard(t,true)).join('')}</div>${P.bar}`; })()}</section>`; }
@@ -28393,6 +28394,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   blkOff(v){ blockRemove(+v); save(); render(); },
   blkUrg(v){ const p=G.players[+v]; if(p){ p.urgent=!p.urgent; save(); render(); } },
   blkF(v){ UI.blkF=v; render(); },
+  mktEdit(v){ const x=(UI._mkt||[])[+v], m=UI.findM; if(!x||m==null)return; const q=G.players[x.give[0]]; UI.trade={tid:x.tid,give:[m],get:[...x.give],cash:0,msg:'시장 가치 조건을 담았습니다. 선수·현금·지명권을 바꿔 제안해 보세요.',seg:q&&q.isP?'pit':'bat',side:'give',sort:'cur'}; A.go('trade:table'); }, /* 시장 가치 조건을 출발점으로 협상(사용자 요청 11-09) */
   blkSwap(v){ const [a,b]=v.split(':').map(Number); const q=G.players[a], m=G.players[b]; if(!q||!m)return; UI.trade={tid:q.team,give:[m.id],get:[q.id],msg:'',seg:q.isP?'pit':'bat',side:'give',sort:'cur'}; A.go('trade:table'); },
   offerMore(v){ UI.blkMsg={id:v,t:offerMore(v)}; save(); render(); },
   sangmu(v){ UI.milMsg=sangmuApply(+v)||`${G.players[+v].name} 상무 지원 완료. 합격자는 ${sangmuWave()==='dec'?'10월 15일':'4월 15일'}에 발표됩니다.`; save(); render(); },

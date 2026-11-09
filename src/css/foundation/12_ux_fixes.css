@@ -707,3 +707,4 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .ow-box{background:var(--bg2,rgba(127,127,127,.08));border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px}
 .ow-odds{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin:0}.ow-odds b{font-size:16px}
 .ow-f{margin:0;padding-left:0;list-style:none}.ow-f li.good{color:var(--good)}.ow-f li.bad{color:var(--bad)}.ow-my{margin:0;font-style:italic}
+.mko-act{gap:8px;flex-wrap:nowrap;margin-top:6px}.mko-act>.btn{flex:1;min-width:0;white-space:nowrap}
