@@ -4,8 +4,8 @@ function cerStages(A,k){ if(k==='mvp')return [['MVP',A.cand.mvp||[],1,'mvp'],['�
   return P.filter(([,c])=>A.cand.gg[c]&&A.cand.gg[c].length).map(([l,c])=>[l,A.cand.gg[c],c==='OF'?3:1,c]); }
 /* 3년 지난 시상은 상위 후보만 보관한다: 생략한 후보 수·표를 밝힌다(검수 11-09zf) */
 function cerCut(A,k,st,tot){ if(!A.cmp)return ''; const cn=A.cn&&(k==='mvp'?A.cn[st[3]]:(A.cn.gg||{})[st[3]]), om=cn?cn-st[1].length:0, miss=st[2]===1?tot-sum(st[1].map(c=>c.v||0)):0; return om>0||miss>0?`<p class="small muted">기록 보관 정리로 하위 후보${om>0?` ${om}명`:''}${miss>0?`(${miss}표)`:''}은(는) 표시하지 않습니다.</p>`:''; }
-function cerQuote(c,lab,k){ const p=G.players[c.id]; const mine=c.t===G.user; const m=mgrOf(c.t);
-  const L=[`"${lab}은(는) 혼자 받는 상이 아닙니다. 함께 뛴 동료들 덕분입니다."`,`"${m&&!m.interim?m.name+' 감독님이 믿고 기회를 주셨습니다. ':''}더 잘하라는 뜻으로 알겠습니다."`,`"응원해 주신 ${tshort(c.t)} 팬들께 이 상을 바칩니다."`];
+function cerQuote(c,lab,k){ const p=G.players[c.id]; const mine=c.t===G.user; const m=mgrOf(c.t), mn=c.mg!==undefined?c.mg:m&&!m.interim?m.name:''; /* 시상 당시 감독(검수 11-09zq) */
+  const L=[`"${lab}은(는) 혼자 받는 상이 아닙니다. 함께 뛴 동료들 덕분입니다."`,`"${mn?mn+' 감독님이 믿고 기회를 주셨습니다. ':''}더 잘하라는 뜻으로 알겠습니다."`,`"응원해 주신 ${tshort(c.t)} 팬들께 이 상을 바칩니다."`];
   if(mine&&!G.unemp)L.push(`"단장님과 프런트가 뒤에서 많이 챙겨 주셨습니다. 감사합니다."`); if(p&&p.age<=23)L.push('"어릴 때 꿈꾸던 무대입니다. 아직 실감이 안 납니다."'); if(p&&p.age>=33)L.push('"이 나이에 이 상을 받을 줄 몰랐습니다. 후배들에게 길을 보여 주고 싶습니다."');
   return L[Math.floor(u01('cq'+c.id,lab)*L.length)]; }
 /* 후보 카드: 발표 전에는 모두 같은 밝기(이름순), 발표 뒤에는 득표순 목록과 수상자 무대 */
@@ -32,7 +32,7 @@ function cerSheet(){ const C=UI.cer; const A=G.awards&&G.awards[C.y]; if(!A)retu
     body=`<div class="cer-stage"><div class="cer-lab"><span class="eyebrow">${C.i+1} / ${S.length} 부문</span><h3 class="cer-ttl">${st[0]}${st[2]>1?` <small>${st[2]}명</small>`:''}</h3><span class="muted">${rev?'수상자 발표':`후보 ${n}명 · 이름순`}</span></div>${mid}
       <div class="cer-ft"><button class="btn" data-a="cerAll">결과 한눈에</button>${rev?`<button class="btn primary" data-a="cerNext">${C.i+1<S.length?'다음 부문':'전체 결과'}</button>`:`<button class="btn primary cer-go" data-a="cerRev">수상자 발표</button>`}</div></div>`; }
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut cer" data-stop="1" role="dialog" aria-label="${esc(title)}"><div class="sheet-head"><div><div class="eyebrow">${C.k==='mvp'?'MVP · 신인왕':'포지션별 최고 선수'}</div><h2 class="sec">${esc(title)}</h2></div>${prog}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>${body}</div></div>`; }
-function cerHomeCard(){ const c=G.cerNew; if(!c||c.seen||!G.awards||!G.awards[c.y])return ''; if(c.d!=null?G.day-c.d>7:(dobj(G.day).m>=2&&dobj(G.day).m<=10))return ''; /* 지난 행사는 홈에서 내리고 시상 기록·소식함에서 본다 */ return `<section class="card cer-home"><div class="row between"><div><div class="eyebrow">오늘의 행사</div><b>${c.y} ${c.k==='mvp'?`${ASSOC.s} 시상식`:'골든글러브 시상식'}</b></div><button class="btn primary" data-a="cerOpen" data-v="${c.y}:${c.k}">시상식 보기</button></div></section>`; }
+function cerHomeCard(){ const c=G.cerNew; if(!c||c.seen||!G.awards||!G.awards[c.y])return ''; if(c.d!=null?G.day-c.d>7:(dobj(G.day).m>=2&&dobj(G.day).m<=10))return ''; /* 지난 행사는 홈에서 내리고 시상 기록·소식함에서 본다 */ return `<section class="card cer-home"><div class="row between"><div><div class="eyebrow">${c.d===G.day?'오늘의 행사':'지난 시상식'}</div><b>${c.y} ${c.k==='mvp'?`${ASSOC.s} 시상식`:'골든글러브 시상식'}</b></div><button class="btn primary" data-a="cerOpen" data-v="${c.y}:${c.k}">시상식 보기</button></div></section>`; }
 /* 골든글러브 수상자 그림: 시상식 무대(에셋 v3) 위 야구장, 자리마다 금색 아치 카드(포지션·얼굴·구단 마크·이름·구단), 위 금색 리본 제목, 오른쪽 아래 황금 글러브 트로피.
    자리(%): 외야 3명 위, 내야, 투수 가운데, 포수 아래, 지명타자 왼쪽 아래. 오른쪽 아래는 트로피 자리로 비운다 */
 const GG_SPOT={OF0:[19,31],OF1:[50,25],OF2:[81,31],SS:[34,47],'2B':[66,47],'3B':[16,63],'1B':[84,61],P:[50,62],C:[50,86],DH:[23,87]};
