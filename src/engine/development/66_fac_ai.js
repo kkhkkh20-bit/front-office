@@ -37,7 +37,9 @@ function facAiRec(tid){ return tid==null?1:1-facImpact(facLvK(tid,'rehab'))*.07;
 function facAiFat(tid){ return tid==null?1:1+facImpact(facLvK(tid,'rehab'))*.06; } /* 우리 구단과 같은 식(사용자 결정 11-07) */
 function facAiFut(tid){ return tid==null?0:(facImpact(facLvK(tid,'fut'))-2)*.05; }
 /* 증설분 유지비: 시작 때보다 늘어난 유지비만 결산에 붙인다(기본 시설 유지비는 구단 운영비에 들어 있다) */
-function aiFacUpExtra(t){ const bus=t.bus!=null?Math.max(0,BUS[t.bus].up-BUS[1].up):0; /* 우리가 산 리무진의 추가 운영비(다른 구단 기본은 우등 버스, 검수 11-06) */ if(!t.fi||!t.fi.it)return bus; const up=sum(FACK.map(k=>{ const l=t.fi.it[k]||0, cur=FACI[k].up[l], d=t.fi.dn&&t.fi.dn[k]; if(d!=null&&dobj(d).y===G.year&&l>0){ const pv=FACI[k].up[l-1]; return pv+(cur-pv)*clamp((G.day-d)/365,0,1); } return cur; })); return Math.max(0,Math.round(up)-(t.fi.up0||0))+bus; } /* 올해 완공한 증설분은 쓴 기간만(우리 구단처럼 일할, 검수 11-08) */
+/* 야인 기간 전 구단은 아직 G.fac·G.bus에 있다(검수 11-09zza). 우리가 떠난 날(hoD)이 이번 결산 기간이면 그 전 유지비는 인계 장부에 이미 냈으므로 떠난 뒤 몫만(검수 11-09zza) */
+function aiFacUpExtra(t){ const me=t.id===G.user, F=me?G.fac:t.fi, bl=me?G.bus:t.bus; const s0=F&&F.hoD!=null&&F.hoD>G.day-365?F.hoD:G.day-365, f=clamp((G.day-s0)/365,0,1);
+  const bus=bl!=null?Math.round(Math.max(0,BUS[bl].up-BUS[1].up)*f):0; /* 우리가 산 리무진의 추가 운영비(다른 구단 기본은 우등 버스, 검수 11-06) */ if(!F||!F.it)return bus; const up=sum(FACK.map(k=>{ const l=F.it[k]||0, cur=FACI[k].up[l], d=F.dn&&F.dn[k]; if(d!=null&&d>s0&&l>0){ const pv=FACI[k].up[l-1]; return pv*f+(cur-pv)*clamp((G.day-d)/365,0,1); } return cur*f; })); return Math.max(0,Math.round(up-(F.up0||0)*f))+bus; } /* 올해 완공한 증설분은 쓴 기간만(우리 구단처럼 일할, 검수 11-08) */ /* 올해 완공한 증설분은 쓴 기간만(우리 구단처럼 일할, 검수 11-08) */
 /* 구단 이동: 떠나는 구단에 시설을 그대로 남기고, 가는 구단의 시설을 그대로 가져온다 */
 function facMoveTeam(oldTid,newTid){ if(oldTid===newTid)return; const ot=team(oldTid), nt=team(newTid); facInit();
   const S=G.fac; S.dn=S.dn||{}; S.hist=S.hist||[]; if(S.up0==null)S.up0=Math.min(facUpOf(S.it),facUpOf(facAlloc(ot,2).it)); /* 예전 저장: 증설된 현재 단계가 아니라 리그 기본(2단계) 기준(검수 11-06) */ if(!S.pf)S.pf=facAlloc(ot,ot.fac||3).pf;
@@ -51,7 +53,7 @@ function aiFacDaily(){ if(!G||!G.teams)return; const o=dobj(G.day); const plan=(
     if(plan)try{ aiFacPlan(t,S,o.m===6); }catch(e){} } }
 function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)return null;
   const key='fai'+facWK()+':'+t.id+':'+G.year+(summer?'s':'w'); const tr=gmTrait(t.id);
-  const tight=t.cash<1500||(t.indie&&t.cash<3000), rich=!tight&&(t.cash>=6000||(t.market>=1.1&&t.cash>=4500));
+  const cash=spendable(t.id); /* 독립구단은 결산 때 낼 신구장 분담금을 남긴다(검수 11-09zza) */ const tight=cash<1500||(t.indie&&cash<3000), rich=!tight&&(cash>=6000||(t.market>=1.1&&cash>=4500));
   let p=tight?.15:rich?.7:.5; p+={win:.08,pr:.03,profit:-.08}[t.owner]||0; if(t.mode==='contend')p+=.04; if(tr==='miser')p*=.6; if(summer)p*=.3; if(nb)p*=.5;
   if(facU(key,'go')>=p)return null;
   const maps=[]; if(rich)maps.push({lab:2.2,rehab:1.8}); if(tight)maps.push({weight:1.8,rehab:1.3});
@@ -63,9 +65,9 @@ function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)ret
   if(!C.length)return null;
   /* 먼저 하고 싶은 공사를 고르고, 돈은 그다음에 본다: 적립금으로 되면 바로, 크면 모기업에 한 번 요청, 안 되면 작은 공사로 바꾸거나 올해는 접는다 */
   let r=facU(key,'pick')*sum(C.map(x=>x.w)), x=C[C.length-1]; for(const y of C){ r-=y.w; if(r<=0){ x=y; break; } }
-  const cashOk=t.cash-x.c>=reserve, capOk=facU(key,'cap')<capP-x.c/30000;
+  const cashOk=cash-x.c>=reserve, capOk=facU(key,'cap')<capP-x.c/30000;
   let src=capOk&&(x.c>=2500||!cashOk)?'cap':cashOk?'cash':null;
-  if(!src){ const sm=C.filter(y=>t.cash-y.c>=reserve).sort((a,b)=>a.c-b.c)[0]; if(!sm||facU(key,'fb')>=.5)return null; x=sm; src='cash'; } /* 큰 공사가 막히면 절반은 적립금으로 되는 작은 공사로 바꾼다 */
+  if(!src){ const sm=C.filter(y=>cash-y.c>=reserve).sort((a,b)=>a.c-b.c)[0]; if(!sm||facU(key,'fb')>=.5)return null; x=sm; src='cash'; } /* 큰 공사가 막히면 절반은 적립금으로 되는 작은 공사로 바꾼다 */
   if(src==='cash')t.cash-=x.c;
   S.bld[x.k]={lv:x.lv+1,done:G.day+FACI[x.k].days[x.lv+1],c:x.c}; if(src==='cap')S.bld[x.k].cap=true;
   S.inv=(S.inv||0)+x.c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k:x.k,lv:x.lv+1,c:x.c,src}); if(S.hist.length>40)S.hist.shift();

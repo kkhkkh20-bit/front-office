@@ -113,7 +113,7 @@ function invFM(){ facInit(); try{ aiFacAll(); }catch(e){} const tid=G.user, t=te
   const H=[]; for(const i of tids){ if(i===tid)continue; const s=facSt(i); for(const h of ((s&&s.hist)||[]))H.push({...h,i}); } H.sort((a,b)=>b.d-a.d);
   const det=`<section class="card fvx-det"><div class="fvx-db">${dh}${msg}
     ${lgL}<h3>공사 현황 <em>${bl2.length}건</em></h3>${bl2.length?bl2.map(([d,l])=>`<div class="fvx-li"><span>${esc(l)}</span><b>${dmd(d)} 완공</b></div>`).join(''):'<p class="muted">진행 중인 공사가 없습니다.</p>'}
-    <h3>최근 다른 구단 시설 투자</h3>${H.length?H.slice(0,8).map(h=>`<div class="fvx-li"><span>${esc(team(h.i).nick)} · ${esc(facHistLbl(h))}${h.src==='cap'?' · 모기업 투자':''}</span><b>${dobj(h.d).y}년 ${dmd(h.d)}</b></div>`).join(''):'<p class="muted">기록이 없습니다.</p>'}</div></section>`;
+    <h3>최근 다른 구단 시설 투자</h3>${H.length?H.slice(0,8).map(h=>`<div class="fvx-li"><span>${esc(team(h.i).nick)} · ${esc(facHistLbl(h))}${h.src==='cap'?' · 모기업 투자':h.sup?' · 구단주 지원 '+money(h.sup):''}</span><b>${dobj(h.d).y}년 ${dmd(h.d)}</b></div>`).join(''):'<p class="muted">기록이 없습니다.</p>'}</div></section>`;
   return `<div class="fvx ws-own">${tr}${st}${det}${sd}${cmp}</div>`; }
 function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Object.keys(F.bld).length;
   const league=G.teams.map(x=>({x,lv:facLv(x.id)})); const rk=league.filter(q=>q.lv>F.lv).length+1;
