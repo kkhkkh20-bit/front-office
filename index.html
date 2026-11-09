@@ -10968,7 +10968,7 @@ function openingDay(){
   rs.forEach(x=>team(x.id).expW=clamp(.5+(x.r-a)*.03,.36,.64));
   G.proj=rs.map(x=>({id:x.id,r:x.r+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
   note('일정',`${G.year} 시즌 개막입니다. 전력분석팀 예상 순위 ${G.proj.indexOf(G.user)+1}위.`);
-  if(!(G.goals&&G.goals.y===G.year&&G.goals.fd))setGoals(); news('분석',`${G.year} 시즌 전망: ${tshort(G.user)} ${G.proj.indexOf(G.user)+1}위 예상`,`전문가들은 ${tname(G.user)}을(를) ${G.proj.indexOf(G.user)+1}위 전력으로 봅니다.`,0);
+  if(!(G.goals&&G.goals.y===G.year&&G.goals.fd))setGoals(); news('분석',`${G.year} 시즌 전망: ${tshort(G.user)} ${G.proj.indexOf(G.user)+1}위 예상`,`${tname(G.user)}의 시즌 전 전력은 ${G.proj.indexOf(G.user)+1}위로 꼽힙니다.`,0);
 }
 function recoverAll(n){ const rb=1+facImpact(facOf('rehab'))*.06; for(const p of Object.values(G.players)){ if(p.team==null||!p.fat)continue; p.fat=Math.max(0,p.fat-n*(p.isP?15.4+(p.r.sta-45)*.2:2.5+(p.r.vit||52)*.08)*(p.team===G.user?rb:facAiFat(p.team))); } }
 const FORM_K=.4; /* 시즌 컨디션·타구 운의 크기(능력과 무관한 한 해의 흔들림). 1이면 타구 운(확률상 어쩔 수 없는 흔들림) 위에 한 해 컨디션이 크게 얹혀 능력과 기록이 너무 어긋났다 */
@@ -11439,7 +11439,7 @@ function confirmContracts(force){ /* force: 1월 31일 마감·이직 정리(조
   const C=G.contract; if(!C||C.done)return; if(C.tid!=null&&C.tid!==G.user){ C.done=true; return; } /* 이직 전 구단의 계약은 확정하지 않는다 */
   { const own=id=>{ const p=G.players[id]; return p&&p.team===G.user; }; C.ended=C.ended.filter(own); C.foreignEnd=C.foreignEnd.filter(own); } /* 그사이 떠난 선수는 빼고 */ { const f=fReCapInfo(); if(f&&f.over>0)return `외국인 3명 연봉 총액이 한도를 ${money(f.over)} 넘습니다. 한 명과 재계약하지 않거나 금액을 낮춰 협상하세요.`; }
   if(fReMixBad()){ if(!force)return '재계약 선수까지 합치면 일반 외국인 3명이 모두 투수(또는 타자)입니다. 한 명과 결별하세요.'; const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>b.newSal-a.newSal)[0]; if(k){ C.foreignDrop.push(k.id); addLog(`외국인 3명이 모두 ${k.isP?'투수':'타자'}가 돼 ${k.name}와(과)는 재계약하지 않았습니다.`); } } /* 마감 확정은 재계약 선수 중 가장 비싼 한 명과 결별 */
-  if(!force&&C.neg&&G.day<dnum((C.y??G.year)+1,1,20)&&Object.entries(C.neg).some(([id,n])=>n.st==='arb'&&G.players[id]&&G.players[id].team===G.user))return '연봉조정 중인 선수가 있어 1월 20일 결정 뒤에 확정할 수 있습니다. 그 전에 선수안을 받아들이면 바로 확정할 수 있습니다.'; /* 일괄 확정으로 조정이 앞당겨 끝나지 않게(검수 11-06) */
+  if(!force&&C.neg&&G.day<dnum((C.y??G.year)+1,1,20)&&Object.entries(C.neg).some(([id,n])=>n.st==='arb'&&G.players[id]&&G.players[id].team===G.user))return '연봉조정 중인 선수가 있어 1월 20일 결정이 나온 뒤에 확정됩니다. 그 전에 선수안을 받아들이면 바로 확정할 수 있습니다.'; /* 일괄 확정으로 조정이 앞당겨 끝나지 않게(검수 11-06) */
   salTalkClose();
   for(const id of C.ended){ const p=G.players[id]; if(p&&p.newSal!=null){p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal;} }
   fReFinish(C,G.user);
@@ -11835,7 +11835,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
   const mine=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const ci=capInfo(G.user);
   try{ G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); const pr=G.proj.indexOf(G.user)+1;
     setGoals(`창단 드래프트로 선수단이 꾸려졌습니다. 전력분석팀은 외국인 선수 영입 전 기준으로 우리를 10개 구단 중 ${pr}위 전력으로 봅니다. 창단 첫해이니 구단주도 무리한 목표는 잡지 않았습니다.`,true); G.goals.fd=true;
-    news('분석',`창단 드래프트 평가: ${tshort(G.user)} ${pr}위 전력`,`전문가들은 창단 드래프트를 마친 ${tname(G.user)}을(를) ${pr}위 전력으로 봅니다. 외국인 선수 영입이 남았습니다.`,0); }catch(err){}
+    news('분석',`창단 드래프트 평가: ${tshort(G.user)} ${pr}위 전력`,`창단 드래프트를 마친 ${tname(G.user)}의 전력은 ${pr}위로 꼽힙니다. 외국인 선수 영입이 남았습니다.`,0); }catch(err){}
   try{ const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&G.players[x.pid]); const P=L.map(x=>G.players[x.pid]); const nP=domestic(G.user).filter(p=>p.isP).length, nB=domestic(G.user).length-nP;
     mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; const r=fdRange(p); return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세) 현재 능력 ${fdRangeTxt(r)} · 지명 때 추정 ${dv(fdE0(p,x))} · ${x.role||fdRole(p,fdE0(p,x))}`; }).join('\n')}\n\n능력은 100점 기준으로 63이 1군 평균, 69가 주전급입니다. 현재 능력은 우리 선수라 정확하고, 잠재력은 추정입니다. 7월 1일 중간 평가와 정규시즌 뒤 첫해 평가에서 이 지명을 돌아봅니다.${(()=>{ const n=draftNo(G.user); return n&&G.cal&&G.cal.draft?`\n\n다음은 신인 드래프트입니다. ${dmd(G.cal.draft)}에 열리고, 지난 시즌(${n.y}) 성적 역순이라 우리는 1라운드 ${n.r1}순위입니다. 3월부터 스카우트가 고교·대학 선수를 관찰합니다.`:''; })()}`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
   try{ if(G.tut&&!G.tut.done){ G.tut.step=0; sendTut(); } }catch(err){}
@@ -12719,7 +12719,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드 대상에서 뺐습니다(게임 단순화).'};
   { const pe=pkCheck(tid,give,get,pk); if(pe)return {ok:false,msg:pe}; }
   const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);
-  { const cd=tradeCool(tid,get); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)})에 대한 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
+  { const cd=tradeCool(tid,get); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)}) 뒤 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
   const oc0=tradeOwnerCheck(give,get,cash); if(oc0&&!oc0.ok)return {ok:false,owner:true,msg:oc0.msg};
   const isCtr=!!(nt.ctr&&nt.ctr[sig]!=null&&G.day-nt.ctr[sig]<=7); /* 상대가 직접 낸 역제안·보완안은 일주일 동안 횟수·중복 제한 없이 받는다 */
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};
@@ -12931,7 +12931,7 @@ function prTrade(give,get,partner){ prInit(); const v=ids=>sum(ids.map(id=>{cons
     `${tname(G.user)}이(가) ${tname(partner)}와(과) 트레이드했습니다. ${gn||'없음'}을(를) 보내고 ${tn||'없음'}을(를) 받았습니다. ${tone>=1?'당장 전력에 도움이 되는 거래라는 평가입니다.':tone<=-1?'기록상으로는 손해라는 시각이 많습니다. 숨은 의도가 있는지 지켜봐야 합니다.':'득실은 시간이 지나야 알 수 있다는 평가입니다.'}`,tone,{mail:true});
 }
 function prFA(rec){ if(rec.to!==G.user||rec.from===G.user)return; const big=rec.annual>=1500; news('FA',`${tshort(G.user)}, FA ${rec.name} 영입`,`${tname(G.user)}이(가) FA ${rec.name}와(과) ${rec.years}년 연 ${money(rec.annual)}에 계약했습니다.${big?' 대형 계약으로 팬들의 기대가 큽니다.':''}`,big?3:1,{fanW:big?2:1}); }
-function prLeak(kind,p,txt){ news('선수',kind==='mgr'?`${txt}`:`${tshort(G.user)} ${p.name}, 출전 기회 불만 토로`,kind==='mgr'?`감독과 프런트 사이 엇박자가 감지됩니다. 구단 내부 소통에 문제가 있다는 지적입니다.`:`${p.name}이(가) 측근을 통해 현재 상황에 대한 불만을 드러냈다는 소식입니다. 구단 분위기가 흔들릴 수 있다는 우려가 나옵니다.`,-2,{ref:p?p.id:null}); }
+function prLeak(kind,p,txt){ news('선수',kind==='mgr'?`${txt}`:`${tshort(G.user)} ${p.name}, 출전 기회 불만 토로`,kind==='mgr'?`감독과 프런트 사이 엇박자가 감지됩니다. 구단 내부 소통에 문제가 있다는 지적입니다.`:`${p.name}이(가) 측근을 통해 지금 처지에 불만을 드러냈다는 소식입니다. 구단 분위기가 흔들릴 수 있다는 우려가 나옵니다.`,-2,{ref:p?p.id:null}); }
 /* 구단주: 시즌 목표와 월간 평가 */
 function setGoals(intro,first){ prInit(); delete G.bLock; if(G.bLocks)delete G.bLocks[G.user]; /* 목표가 정해지면 시즌 예산을 다시 확정한다 */ const t=team(G.user); const proj=G.proj?G.proj.indexOf(G.user)+1:5; const ow=t.owner;
   /* 창단 첫해는 구단주도 기대를 낮춘다: 예상 순위 기준으로 성적 우선 그대로, 홍보 우선 1계단 아래, 수익 우선 2계단 아래(최대 8위) */
@@ -13533,17 +13533,17 @@ function amNotes(p){ const Y=p.amY; if(!Y||!Y.length)return []; const L=[];
     if(b9s.length>=2&&b9s.every(v=>v<=3))L.push(`학년 내내 볼넷이 적었습니다(9이닝당 ${b9.toFixed(1)}개). 제구는 프로에서도 비슷하게 이어지는 편입니다.`);
     else if(b9s.length>=2&&b9s.every(v=>v>=5))L.push(`학년 내내 볼넷이 많았습니다(9이닝당 ${b9.toFixed(1)}개). 제구 불안이 꾸준합니다.`);
     if(k9>=10)L.push(`탈삼진이 9이닝당 ${k9.toFixed(1)}개로 많습니다. 구위가 통한다는 신호입니다.`);
-    if(era<=2&&k9<6)L.push('평균자책점에 비해 탈삼진이 적습니다. 수비와 타구 결과의 영향이 섞였을 수 있어 함께 확인할 필요가 있습니다.'); }
+    if(era<=2&&k9<6)L.push('평균자책점에 비해 탈삼진이 적습니다. 수비와 타구 결과의 영향이 섞였을 수 있어 함께 봐야 합니다.'); }
   return L.slice(0,2); }
 function statNotes(p){ // 프로 기록에서 읽히는 신호
   const h=seasonTotal(p,G.year,'1군')||seasonTotal(p,G.year-1,'1군'); if(!h)return [];
   const L=[]; const yy=h.y===G.year?'올해':'지난해';
   if(!p.isP&&h.pa>=150){ const b=babipOf(h); const bk=h.so?h.bb/h.so:h.bb;
     if(b!=null&&b>=.37)L.push(`${yy} 인플레이 타구 타율(BABIP)이 ${fmt3(b)}로 높습니다. 타구 특성·주력·표본을 함께 확인해야 이 타율이 이어질지 판단할 수 있습니다.`);
-    else if(b!=null&&b<=.25)L.push(`${yy} BABIP ${fmt3(b)}로 낮습니다. 타구 특성·주력·표본을 함께 확인할 필요가 있습니다. 타율이 오를 가능성은 있으나 지금 기록만으로 확정하기 어렵습니다.`);
+    else if(b!=null&&b<=.25)L.push(`${yy} BABIP ${fmt3(b)}로 낮습니다. 타구 특성·주력·표본을 함께 봐야 합니다. 타율이 오를 수는 있지만 지금 기록만으로 확정하기 어렵습니다.`);
     if(bk>=.9)L.push(`볼삼비 ${bk.toFixed(2)}. 선구안이 좋아 슬럼프가 길지 않은 유형입니다.`); else if(bk<=.3)L.push(`볼삼비 ${bk.toFixed(2)}. 삼진이 많아 기복이 클 수 있습니다.`); }
   if(p.isP&&h.outs>=120){ const k9=h.so*27/h.outs, b9=h.bb*27/h.outs, era=h.er*27/h.outs;
-    if(era<=3.2&&k9-b9<4)L.push(`${yy} 평균자책점(${era.toFixed(2)})에 비해 탈삼진·볼넷 차이가 작습니다. 수비와 타구 결과의 영향이 있었는지 함께 확인할 필요가 있습니다.`);
+    if(era<=3.2&&k9-b9<4)L.push(`${yy} 평균자책점(${era.toFixed(2)})에 비해 탈삼진·볼넷 차이가 작습니다. 수비와 타구 결과의 영향이 있었는지 함께 봐야 합니다.`);
     else if(era>=5&&k9-b9>=5)L.push(`${yy} 평균자책점(${era.toFixed(2)})은 나쁘지만 탈삼진·볼넷 내용은 좋습니다. 수비와 타구 결과의 영향을 함께 확인해 보세요. 나아질 가능성은 있으나 지금 기록만으로 확정하기 어렵습니다.`); }
   return L; }
 
@@ -13775,7 +13775,7 @@ const EVH={
       if(i===0){ const r=reqEntry(p.id,true); if(p.e1){ G.pr.fan=clamp(G.pr.fan+2,0,100); const h=seasonTotal(p,G.year,'1군'); evFollow(30,'call',{pid:p.id,ev:e.id,pa:h?h.pa:0,outs:h?h.outs:0}); } return r; }
       G.pr.fan=clamp(G.pr.fan-2,0,100); initPers(p); if(p.pers.amb>=13){ p.mor=clamp(p.mor-6,0,100); return `팬 여론 -2. ${p.name}은(는) 실망한 기색입니다(기분 -6).`; } return '팬 여론 -2. 선수는 묵묵히 준비하겠다고 합니다.'; },
     follow(d){ const p=evP(d.pid); if(!p||p.team!==G.user)return; const h=seasonTotal(p,G.year,'1군');
-      const t=h?`${p.name} 콜업 한 달: 1군 ${statLine(h,p)}${p.e1?'':' · 지금은 2군로 내려가 있습니다'}`:`${p.name} 콜업 한 달: 1군 기회를 거의 얻지 못했습니다.`; evResult(d.ev,t); note('엔트리',t,p.id); } },
+      const t=h?`${p.name} 콜업 한 달: 1군 ${statLine(h,p)}${p.e1?'':' · 지금은 2군으로 내려가 있습니다'}`:`${p.name} 콜업 한 달: 1군 기회를 거의 얻지 못했습니다.`; evResult(d.ev,t); note('엔트리',t,p.id); } },
   /* 감독의 보강 요청 */
   reinf:{ w:1, check(){ const m=G.mgr[G.user]; if(!m||G.day>KD(7,24))return null; if(G.day-(G.mgrReqD??-99)<45)return null; /* 감독 보강 요청(자리 요청)과 겹치지 않게 */
       const all=G.teams.map(t=>({t:t.id,d:depth(t.id)})); const rk=f=>{ const vs=all.map(x=>({t:x.t,v:f(x.d)})).sort((a,b)=>b.v-a.v); return vs.findIndex(x=>x.t===G.user)+1; };
@@ -14297,11 +14297,11 @@ function note(kind,t,ref){ mail(FROM[kind]||'프런트',headline(t),t,{ref,kind,
 const TUT=[
   {k:'welcome',title:'취임 인사',subj:'단장님, 취임을 축하드립니다',body:`비서 ${SEC}입니다. 구단에 보고되는 모든 소식은 이 소식함으로 옵니다. 일은 소식함에서 시작해 소식함에서 끝납니다.\n\n하루 흐름은 이렇습니다. 첫째, 새 소식을 읽습니다. 버튼이 있는 소식은 눌러서 처리하세요. 다른 화면으로 가면 제목 옆 '◀ 소식함으로'를 눌러 돌아오면 됩니다. 둘째, 다 읽었으면 스페이스바(또는 오른쪽 위 '진행하기')로 시간을 넘깁니다. 진행 전에 어디까지 갈지 한 번 묻습니다. 셋째, 시즌 중에는 중요한 소식이 생기거나 한 주가 끝날 때까지 경기를 몰아서 진행하고, 그 기간 경기 정리를 소식으로 남깁니다. 한 경기씩 보려면 '1경기 진행'을 누르세요.\n\n스페이스바만 눌러도 소식을 차례로 읽고 진행할 수 있습니다.`,check:()=>true},
   {k:'mgr',title:'감독 선임',subj:'감독 자리가 비어 있습니다',body:'사령탑이 빈자리입니다. 외국인 선수보다 감독을 먼저 정하시길 권합니다. 감독이 와야 어떤 외국인이 필요한지 함께 상의할 수 있습니다. 개막 전까지는 반드시 선임해야 합니다.\n\n감독마다 성향이 다릅니다. 스몰볼 감독은 도루와 작전을 많이 쓰고, 불펜을 적극 쓰는 감독은 선발을 일찍 내립니다. 육성형 감독은 젊은 선수 성장을 돕고, 장악력이 강한 감독은 선수단 분위기를 안정시킵니다. 연봉이 높을수록 경기 운영 능력이 좋은 편입니다. 감독을 뽑은 뒤에는 홈의 감독실에서 팀 상황과 원하는 외국인 선수를 자주 물어보세요. 감독이 원한 유형은 외국인 시장에 "감독 선호"로 표시됩니다.',btn:'감독 후보 보기',go:['goWork','감독'],check:()=>!!G.mgr[G.user]},
-  {k:'foreign',title:'외국인 선수 구성',subj:'외국인 선수를 구성하세요',body:'외국인 선수 네 자리가 모두 비어 있습니다. 외국인 선수 3명과 아시아쿼터 1명을 채울 수 있습니다.\n\n감독실에 들러 어떤 유형이 필요한지 먼저 물어보세요. 후보 카드의 감독 의견 버튼을 누르면 감독이 그 선수를 어떻게 보는지 들을 수 있습니다.\n\n보통은 선발 투수 2명과 타자 1명으로 구성합니다. 규정상 3명을 모두 투수나 모두 타자로 채울 수는 없습니다. 신규 계약은 1인 100만 달러, 아시아쿼터는 20만 달러까지이고, 외국인 선수 3명 합계는 400만 달러를 넘을 수 없습니다.\n\n화면 위쪽에서 외국인과 아시아쿼터 탭이 나뉩니다. 후보 정보가 얼마나 정확한지는 그 나라에 우리 스카우트망이 얼마나 있느냐에 달려 있습니다. 지금은 미국에만 현지 통신원이 있고, 나머지 지역은 에이전트 자료뿐입니다. 스카우팅 메뉴의 해외 스카우트망에서 지역별로 늘릴 수 있습니다.\n\n지난 리그 기록은 리그 수준 차이를 감안해서 보세요.',btn:'외국인 후보 보기',go:['goWork','외국인선수'],check:()=>{const f=foreignOf(G.user); return f.filter(p=>p.foreign==='용병').length>=3&&f.some(p=>p.foreign==='아시아');},prog:()=>{const f=foreignOf(G.user); return `외국인 ${f.filter(p=>p.foreign==='용병').length}/3 · 아시아쿼터 ${f.filter(p=>p.foreign==='아시아').length}/1`;}},
+  {k:'foreign',title:'외국인 선수 구성',subj:'외국인 선수를 구성하세요',body:'외국인 선수 네 자리가 모두 비어 있습니다. 외국인 선수 3명과 아시아쿼터 1명을 채울 수 있습니다.\n\n감독실에 들러 어떤 유형이 필요한지 먼저 물어보세요. 후보 카드의 감독 의견 버튼을 누르면 감독이 그 선수를 어떻게 보는지 알려 줍니다.\n\n보통은 선발 투수 2명과 타자 1명으로 구성합니다. 규정상 3명을 모두 투수나 모두 타자로 채울 수는 없습니다. 신규 계약은 1인 100만 달러, 아시아쿼터는 20만 달러까지이고, 외국인 선수 3명 합계는 400만 달러를 넘을 수 없습니다.\n\n화면 위쪽에서 외국인과 아시아쿼터 탭이 나뉩니다. 후보 정보가 얼마나 정확한지는 그 나라에 우리 스카우트망이 얼마나 있느냐에 달려 있습니다. 지금은 미국에만 현지 통신원이 있고, 나머지 지역은 에이전트 자료뿐입니다. 스카우팅 메뉴의 해외 스카우트망에서 지역별로 늘릴 수 있습니다.\n\n지난 리그 기록은 리그 수준 차이를 감안해서 보세요.',btn:'외국인 후보 보기',go:['goWork','외국인선수'],check:()=>{const f=foreignOf(G.user); return f.filter(p=>p.foreign==='용병').length>=3&&f.some(p=>p.foreign==='아시아');},prog:()=>{const f=foreignOf(G.user); return `외국인 ${f.filter(p=>p.foreign==='용병').length}/3 · 아시아쿼터 ${f.filter(p=>p.foreign==='아시아').length}/1`;}},
   {k:'med',from:'팀 닥터 · 의무팀',title:'부상 관리 체계',subj:'부상 방지 프로그램과 병원 제휴를 정해 주세요',body:'의무팀에서 올 시즌 운영안을 올렸습니다. 부상 방지 프로그램 단계가 높을수록 부상이 줄고, 제휴 병원이 좋을수록 재활 기간이 짧아집니다. 종합 스포츠의학센터와 제휴하면 정밀 검진으로 선수의 부상 체질도 알 수 있습니다.\n\n비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.',btn:'의무 운영안 보기',go:['goWork','부상방지·병원'],check:()=>!!G.medSet},
   {k:'dev',from:'육성팀',title:'선수 육성',subj:'훈련 방향과 해외 연수 안내',body:'육성팀입니다. 선수들의 훈련 주안점(구위·제구·장타·수비 등)은 감독과 코치진이 상의해 정합니다. 단장님은 선수 정보의 육성 탭이나 스태프·육성 > 훈련·육성에서 바꿔 달라고 요청할 수 있습니다.\n\n성장 속도는 1군 출장, 잠재력과 성장 의지, 훈련 시설, 코치 수준에 따라 다릅니다.\n\n가을에는 교육리그(일본 미야자키·국내 울산)와 호주리그 파견, 미국·일본 단기 연수 같은 해외 연수를 보낼 수 있습니다. 돈이 들고 결과는 선수마다 크게 갈립니다.',btn:'선수 육성 보기',go:['goWork','2군연수'],check:()=>Object.keys(G.trn||{}).length>=1},
   {k:'scout',from:'스카우트팀장',title:'스카우트 공백',subj:'스카우트 담당 지역에 공백이 있습니다',get body(){ return '스카우트팀장입니다. 스카우트는 한 사람이 한 가지 업무만 맡습니다. 아마추어(지역 고교·대학 선수), 프로(그 지역 연고 구단 선수), 해외(외국인 선수 시장) 중 하나입니다. 최대 '+scoutMax()+'명까지 고용할 수 있습니다. 드래프트 시즌에는 수도권·영남·호남·충청 세 지역의 아마추어 담당을 확보하고, 겨울에는 해외·프로 관찰을 우선합니다. 스카우트팀장에게 배치를 맡기면 시기에 맞게 자동 조정합니다. 업무를 바꾸면 30일 동안 적응 기간이 있습니다.'; } /* 한도는 실제 값으로(검수 11-09e #25) */,btn:'스카우트 팀 보기',go:['goWork','스카우트팀'],check:()=>!scoutWorkStatus().needs},
-  {k:'lineup',from:'코칭스태프',title:'배치 확인',subj:'감독이 정한 선수단 배치를 확인해 주세요',body:'선수단 탭에서 야구장 그림으로 포지션별 주전을 볼 수 있습니다. 주전 기용과 타순, 투수 운용은 감독 권한입니다. 단장은 선수 구성과 감독 선임으로 팀을 바꿉니다. 자리를 누르면 그 포지션 후보를 비교해 볼 수 있습니다.',btn:'선수단 보기',go:['tab','roster'],check:()=>!!(G.tutFlags&&G.tutFlags.roster)||(G.cal&&G.day>G.cal.open+7)},
+  {k:'lineup',from:'코칭스태프',title:'배치 확인',subj:'감독이 정한 선수단 배치를 확인해 주세요',body:'선수단 탭의 야구장 그림에 포지션별 주전이 나옵니다. 주전 기용과 타순, 투수 운용은 감독 권한입니다. 단장은 선수 구성과 감독 선임으로 팀을 바꿉니다. 자리를 누르면 그 포지션 후보를 비교합니다.',btn:'선수단 보기',go:['tab','roster'],check:()=>!!(G.tutFlags&&G.tutFlags.roster)||(G.cal&&G.day>G.cal.open+7)},
   {k:'go',title:'캠프 준비',subj:'개막 준비가 끝났습니다',body:'기본 업무 안내는 여기까지입니다. 소식함의 확인할 소식과 홈의 처리할 일(코치 빈자리 등)을 마저 정리하고 스페이스바로 시간을 넘겨 보세요. 1월 25일에 스프링캠프가 시작되면 훈련 방향을 정해 주셔야 합니다.\n\n그 밖에 비FA 다년계약과 트레이드는 영입·계약 메뉴, 마케팅 예산은 구단·재정 메뉴에서 언제든 볼 수 있습니다.',btn:'캠프까지 넘기기',go:['adv','next'],check:()=>G.day>=G.cal.camp},
 ];
 function sendTut(){ const s=TUT[G.tut.step]; mail(s.from||`비서 ${SEC}`,s.subj,s.body,{kind:'업무',acts:s.btn?[{l:s.btn,a:s.go[0],v:s.go[1]}]:[],face:s.from?null:'sec'}); }
@@ -16022,13 +16022,13 @@ const MV_DISCUSS={
   pitch:{data:['선발과 불펜을 한데 묶어 보면 원인을 놓칩니다. 등판별 이닝과 볼넷을 나눠 보겠습니다.','승패보다 주자를 얼마나 내보냈는지부터 보겠습니다. 짧은 기간의 평균자책점만으로 역할을 바꾸기는 이릅니다.','삼진을 잡는 투수와 맞혀 잡는 투수는 필요한 수비도 다릅니다. 같은 기준으로 줄 세우지는 않겠습니다.'],fire:['필요한 순간에 승부를 피하지 않는 투수가 중요합니다. 다만 한 경기 흔들렸다고 바로 신뢰를 거두지는 않겠습니다.','위기에서 누구에게 맡길 수 있는지가 제일 궁금합니다. 이름값만으로 중요한 이닝을 보장할 생각은 없습니다.'],warm:['던지는 선수도 자기 차례를 알아야 준비할 수 있습니다. 보직을 너무 자주 흔드는 건 피하고 싶습니다.','잘 던진 날만 챙기지 않고, 어려운 이닝을 맡는 투수도 봐야 합니다. 그 부담이 쌓이면 팀이 흔들립니다.'],old:['볼넷으로 위기를 만드는지, 타자를 상대하다 맞는지 구분해야 합니다. 스트라이크를 던지는 게 먼저입니다.','선발은 자기 이닝을, 불펜은 정해진 상황을 책임지는 게 기본입니다. 보직보다 준비가 먼저입니다.'],calm:['한 번의 호투나 부진보다 등판 사이의 회복까지 보겠습니다. 급하게 역할을 바꾸지는 않겠습니다.','선발을 길게 끌지, 불펜으로 넘길지는 그날 내용도 봐야 합니다. 성적표만으로 답을 정하기는 어렵습니다.']},
   bat:{data:['타율만 보지 않고 출루와 장타를 나눠 보겠습니다. 안타가 줄어도 볼넷과 강한 타구가 유지되는지 확인해야 합니다.','상대 투수 유형과 타석 수를 같이 봐야 합니다. 작은 표본의 성적을 타자의 새 실력으로 단정하지 않겠습니다.'],fire:['유리한 공에 자기 스윙을 하는 타자가 필요합니다. 결과가 나빴다는 이유만으로 소극적으로 치게 하고 싶지는 않습니다.','한 방을 기다릴지 연결할지, 타선의 장점을 살리는 쪽으로 가겠습니다. 이름값 때문에 타순을 고정하지는 않겠습니다.'],warm:['부진한 선수에게 매일 타순이 바뀔 거라는 불안을 주고 싶지는 않습니다. 그래도 다른 선수의 기회도 같이 봐야겠지요.','주전의 반등을 기다리는 시간과 벤치 선수에게 줄 기회 사이에서 균형을 잡아야 합니다.'],old:['공을 골라야 할 때와 쳐야 할 때를 구분하는 게 먼저입니다. 타석의 역할을 분명히 하겠습니다.','큰 타구만 노리다가 쉬운 득점 기회를 버리지 않았는지 봐야 합니다. 타순마다 할 일이 다릅니다.'],calm:['타격은 오르내림이 있습니다. 바꿀 근거가 생기기 전에는 한 경기로 판단하지 않겠습니다.','좌우 상대와 최근 타석 내용을 더 보겠습니다. 반등을 기다리는 것과 그냥 방치하는 건 구분해야겠지요.']},
   defense:{data:['수비는 실책 개수만으로 평가하기 어렵습니다. 포지션별 수비 능력과 투수에게 필요한 수비를 함께 보겠습니다.','실책이 없었다고 지킬 수 있는 타구를 다 잡았다는 뜻은 아닙니다. 기록과 자리 적합성을 나눠 보겠습니다.'],fire:['공격을 살리려고 수비를 감수할 때도 있습니다. 다만 중요한 이닝에는 그 위험까지 계산해야 합니다.','수비 한 번에 경기 흐름을 넘겨주면 아쉽지요. 공격 때문에 쓰는 선수라면 어느 자리까지 맡길지 선을 정해야 합니다.'],warm:['낯선 자리에 세울 때는 준비할 시간을 줘야 합니다. 선수가 못하는 일만 요구하지는 않겠습니다.','백업도 자기 역할을 알아야 경기 후반에 준비할 수 있습니다. 주전만으로 수비를 꾸릴 수는 없습니다.'],old:['포구와 송구가 안정돼야 투수도 자기 공을 던집니다. 기본 동작부터 보겠습니다.','접전에서 수비가 흔들리면 작전도 의미가 없습니다. 자리마다 지켜야 할 기준은 분명히 하겠습니다.'],calm:['타격 이득과 수비 손실을 함께 보겠습니다. 수비가 약하다는 이유만으로 타자를 모두 뺄 수는 없지요.','포지션을 자주 바꾸기보다는 선수에게 맞는 자리를 찾는 게 먼저입니다. 전환에는 시간이 필요합니다.']},
-  run:{data:['도루 성공 개수보다 실패로 잃는 아웃을 같이 보겠습니다. 홈까지 보낼 판단도 주자 속도와 상대 송구에 달렸습니다.','빠르다는 이유만으로 매번 보내지는 않겠습니다. 아웃카운트와 다음 타자까지 봐야 합니다.'],fire:['상대가 편하게 수비하게 두고 싶지는 않습니다. 그렇다고 기세만 믿고 홈으로 보내면 공격이 끊깁니다.','한 베이스를 더 노릴 수는 있어도 무리한 승부와는 구분해야 합니다. 주루코치 판단도 함께 듣겠습니다.'],warm:['발 빠른 선수에게 무조건 뛰라고 하기보다 언제 멈춰야 하는지도 분명히 해 줘야 합니다.','주루 실수 한 번으로 선수가 위축되지 않게 하되, 같은 판단을 반복하지 않도록 준비가 필요합니다.'],old:['스타트와 귀루가 먼저입니다. 도루뿐 아니라 3루에서 홈으로 들어오는 판단도 기본 주루입니다.','작전이 걸렸을 때만 주루하는 게 아닙니다. 타구를 보고 한 베이스 더 갈 준비가 돼 있어야 합니다.'],calm:['한 점이 급한지, 큰 이닝을 기다릴지에 따라 판단이 달라집니다. 늘 공격적이거나 늘 소극적일 필요는 없습니다.','추가 진루는 가능한 기회와 무리한 기회를 나누는 게 중요합니다. 발만 빠르다고 답이 나오는 건 아닙니다.']},
+  run:{data:['도루 성공 개수보다 실패로 잃는 아웃을 같이 보겠습니다. 홈까지 보낼 판단도 주자 속도와 상대 송구에 달렸습니다.','빠르다는 이유만으로 매번 보내지는 않겠습니다. 아웃카운트와 다음 타자까지 봐야 합니다.'],fire:['상대가 편하게 수비하게 두고 싶지는 않습니다. 그렇다고 기세만 믿고 홈으로 보내면 공격이 끊깁니다.','한 베이스를 더 노릴 수는 있어도 무리한 승부와는 구분해야 합니다. 주루코치 판단도 함께 듣겠습니다.'],warm:['발 빠른 선수에게 무조건 뛰라고 하기보다 언제 멈춰야 하는지도 분명히 해 줘야 합니다.','주루 실수 한 번으로 선수가 위축되지 않게 하되, 같은 판단을 반복하지 않도록 준비가 필요합니다.'],old:['스타트와 귀루가 먼저입니다. 도루뿐 아니라 3루에서 홈으로 들어오는 판단도 기본 주루입니다.','작전이 걸렸을 때만 주루하는 게 아닙니다. 타구를 보고 한 베이스 더 갈 준비가 돼 있어야 합니다.'],calm:['한 점이 급한지, 큰 이닝을 기다릴지에 따라 판단이 달라집니다. 늘 공격적이거나 늘 소극적일 필요는 없습니다.','추가 진루는 가능한 기회와 무리한 기회를 나눠야 합니다. 발만 빠르다고 답이 나오는 건 아닙니다.']},
   workload:{data:['피로 수치와 최근 등판을 함께 보겠습니다. 성적이 좋다는 이유로 회복 시간을 빼앗으면 나중에 더 큰 비용이 됩니다.','피로가 쌓인 선수와 단순히 성적이 나쁜 선수를 나눠야 합니다. 같은 휴식 처방으로 해결되지는 않습니다.'],fire:['중요한 경기에는 좋은 선수가 필요합니다. 그래도 이미 지친 선수를 계속 밀어붙이는 게 승부수는 아니지요.','승부처에 쓸 힘을 남겨야 합니다. 버틸 수 있느냐와 지금 써야 하느냐는 다른 문제입니다.'],warm:['지쳤다는 말을 선수가 먼저 꺼내기는 어렵습니다. 상태를 보고 쉴 기회를 주는 게 코칭스태프의 일입니다.','주전이 쉬어도 팀이 돌아가야 합니다. 벤치와 불펜의 부담을 고르게 나눌 수 있는지도 같이 보겠습니다.'],old:['준비와 회복도 선수의 일입니다. 무리한 기용을 정신력으로 포장하지는 않겠습니다.','쉴 선수는 쉬어야 합니다. 대체 선수도 평소 준비가 돼 있어야 그 원칙을 지킬 수 있습니다.'],calm:['하루 더 쓰는 이득과 다음 주에 잃을 전력을 같이 봐야 합니다. 당장 경기만 보고 결정하지 않겠습니다.','휴식이 필요한 선수를 구분해 두고 대안을 준비하는 쪽이 좋겠습니다. 피로를 부상과 같은 말로 보지는 않겠습니다.']},
-  clubhouse:{data:['분위기도 숫자 하나로 끝내지 않겠습니다. 어떤 선수의 불만인지, 기회와 역할의 문제인지부터 나눠 봐야 합니다.','평균 기분이 괜찮아도 불만 있는 선수가 있을 수 있습니다. 선수별 사유를 확인하는 게 먼저입니다.'],fire:['진다고 고개부터 숙이는 팀은 만들고 싶지 않습니다. 그렇다고 불만을 말하지 못하게 할 생각도 없습니다.','경쟁은 필요합니다. 다만 선수가 왜 자기 차례가 없는지 이해할 수 있어야 합니다.'],warm:['고참과 어린 선수에게 똑같이 말해서 통하지는 않습니다. 역할을 납득시키는 과정이 필요합니다.','주장의 역할도 중요하지만 선수 관리까지 떠넘길 수는 없습니다. 기회를 못 받는 선수부터 이야기를 들어야겠지요.'],old:['규칙은 이름값에 따라 달라지면 안 됩니다. 설명은 하되 기준을 흐리지는 않겠습니다.','성과와 별개로 지켜야 할 준비와 태도가 있습니다. 고참부터 같은 기준을 적용해야 합니다.'],calm:['당장 보이는 불만과 오래 쌓인 문제를 구분하겠습니다. 조용하다고 문제가 없다는 뜻은 아닙니다.','프런트와 현장이 다른 약속을 하지 않는 게 중요합니다. 해결할 수 있는 것부터 설명하겠습니다.']},
+  clubhouse:{data:['분위기도 숫자 하나로 끝내지 않겠습니다. 어떤 선수의 불만인지, 기회와 역할의 문제인지부터 나눠 봐야 합니다.','평균 기분이 괜찮아도 불만 있는 선수가 있을 수 있습니다. 선수별 사유를 확인하는 게 먼저입니다.'],fire:['진다고 고개부터 숙이는 팀은 만들고 싶지 않습니다. 그렇다고 불만을 말하지 못하게 할 생각도 없습니다.','경쟁은 필요합니다. 다만 선수가 왜 자기 차례가 없는지 이해할 수 있어야 합니다.'],warm:['고참과 어린 선수에게 똑같이 말해서 통하지는 않습니다. 역할을 납득시키는 과정이 필요합니다.','주장의 역할도 중요하지만 선수 관리까지 떠넘길 수는 없습니다. 기회를 못 받는 선수부터 이야기를 들어야겠지요.'],old:['규칙은 이름값에 따라 달라지면 안 됩니다. 설명은 하되 기준을 흐리지는 않겠습니다.','성과와 별개로 지켜야 할 준비와 태도가 있습니다. 고참부터 같은 기준을 적용해야 합니다.'],calm:['당장 보이는 불만과 오래 쌓인 문제를 구분하겠습니다. 조용하다고 문제가 없다는 뜻은 아닙니다.','프런트와 현장이 서로 다른 약속을 하면 안 됩니다. 해결할 수 있는 것부터 설명하겠습니다.']},
   plan:{data:['보강 후보를 보기 전에 내부 대안과 차이를 비교하고 싶습니다. 기록이 쌓이면 우선순위도 다시 점검하겠습니다.','모든 약점을 한 번에 메울 수는 없습니다. 한 자리 보강이 다른 자리의 부담을 얼마나 줄일지 먼저 보겠습니다.'],fire:['해야 할 일을 미루고 싶지는 않습니다. 다만 움직이기 전에 우리 쪽에서 내줄 전력까지 따져 봐야 합니다.','즉시 전력이 필요하더라도 맞지 않는 선수를 급하게 데려오고 싶지는 않습니다. 우선순위를 맞추시죠.'],warm:['새 선수를 데려오는 일과 지금 선수에게 역할을 설명하는 일이 함께 가야 합니다. 내부 기회도 놓치고 싶지는 않습니다.','내보낼 선수부터 정하기보다는 누구에게 어떤 기회를 줄 수 있는지 같이 보고 싶습니다.'],old:['보강 기준을 정했으면 흔들리지 말아야 합니다. 필요한 자리를 두고 이름값부터 좇지는 않겠습니다.','영입만 기다릴 수는 없습니다. 지금 선수로 할 수 있는 준비도 분명히 해 두겠습니다.'],calm:['당장 움직일 일과 표본을 더 볼 일을 구분합시다. 단기 성적 때문에 장기 계획을 매번 뒤집지는 않겠습니다.','한 가지 대안에만 매달리지 않겠습니다. 내부 기용과 외부 보강을 함께 놓고 비교하시죠.']}
 };
 function mvDetailed(m,topic){const S=mgrSit(),D=depth(G.user),P=playersOf(G.user),v=mgrVoice(m);let facts='',style='';
-  if(topic==='pitch'){const L=D.sp.slice(0,2).map(p=>{const h=seasonTotal(p,G.year,'1군');return `${p.name}${h?.outs>=30?`(${ipStr(h.outs)}이닝, ERA ${pRate(h).era.toFixed(2)})`:'(시즌 기록 표본 부족)'}`;});facts=`현재 선발진에서는 ${L.join(', ')||'선수 구성을 더 확인할 필요가 있습니다'}.`+(S.spBad?` ${S.spBad.p.name}은(는) ERA ${pRate(S.spBad.h).era.toFixed(2)}로 내용 점검이 필요합니다.`:'');style=m.pen>=65?'불펜을 적극 쓰는 쪽이 제 방식이지만, 구원진의 회복 상태도 같이 보겠습니다.':m.pen<=35?'선발에게 이닝을 맡기는 편입니다. 그래도 내용이 무너졌는데 이름만 믿고 끌지는 않겠습니다.':'';}
+  if(topic==='pitch'){const L=D.sp.slice(0,2).map(p=>{const h=seasonTotal(p,G.year,'1군');return `${p.name}${h?.outs>=30?`(${ipStr(h.outs)}이닝, ERA ${pRate(h).era.toFixed(2)})`:'(시즌 기록 표본 부족)'}`;});facts=`현재 선발진에서는 ${L.join(', ')||'선수 구성을 더 봐야 합니다'}.`+(S.spBad?` ${S.spBad.p.name}은(는) ERA ${pRate(S.spBad.h).era.toFixed(2)}로 내용 점검이 필요합니다.`:'');style=m.pen>=65?'불펜을 적극 쓰는 쪽이 제 방식이지만, 구원진의 회복 상태도 같이 보겠습니다.':m.pen<=35?'선발에게 이닝을 맡기는 편입니다. 그래도 내용이 무너졌는데 이름만 믿고 끌지는 않겠습니다.':'';}
   if(topic==='bat'){facts=S.hot?`${S.hot.p.name}은(는) OPS ${fmt3(bRate(S.hot.h).ops)}로 좋은 흐름입니다.`:'아직 확실한 상승세라고 부를 만한 타격 표본은 없습니다.';facts+=S.cold.length?` ${S.cold.map(x=>`${x.p.name}(OPS ${fmt3(bRate(x.h).ops)})`).join(', ')}의 반등 여부도 보고 있습니다.`:'';style=m.dfn<=35?'저는 수비 부담이 있더라도 공격력을 살릴 자리를 찾는 편입니다.':'';}
   if(topic==='defense'){const k=S.weak.find(x=>!['SP','RP'].includes(x.k));const p=k&&D.ln[k.k];facts=k?`선수단 전력 비교에서 ${SLOTK[k.k]} 자리는 리그 ${k.rank}위${p?`, 현재 ${p.name}이(가) 맡고 있습니다`:''}. 이 순위는 공격까지 포함한 자리 전력이지, 수비 성적만의 순위는 아닙니다.`:'자리별 수비 능력과 백업 구성을 함께 봐야 합니다.';style=m.dfn>=65?'저는 수비 안정성을 기용에서 우선하는 편입니다.':m.dfn<=35?'공격력 때문에 감수하는 수비 부담도 있습니다. 그 손실까지 보고 결정해야 합니다.':'';}
   if(topic==='run'){const L=P.filter(p=>!p.isP&&!p.prospect&&healthy(p)).sort((a,b)=>b.r.spd-a.r.spd).slice(0,2);facts=L.length?`기동력 자원으로는 ${L.map(p=>p.name).join(', ')}을(를) 볼 수 있습니다.`:'지금 쓸 수 있는 기동력 자원부터 확인해야 합니다.';style=m.small>=65?'저는 번트와 도루로 압박하는 야구를 선호합니다.':m.small<=35?'저는 아웃을 아끼고 장타를 기다리는 쪽에 무게를 둡니다.':'작전은 상황에 따라 섞는 편입니다.';}
@@ -16853,7 +16853,7 @@ const MQ={data:{w:['"숫자대로 갔고, 숫자대로 나왔습니다."','"상�
   calm:{w:['"계획한 대로 됐습니다. 다음 경기 준비하겠습니다."','"선수들이 각자 할 일을 했습니다."'],l:['"이런 날도 있습니다. 차분하게 다시 하겠습니다."','"잘못된 부분은 정리하고 넘어가겠습니다."']}};
 /* 경기 뒤 감독 한마디: 말투(감독 성향)별 첫마디 + 그 경기에서 실제로 있었던 일(역전·연장·선발 호투·붕괴·영웅 타자·불펜·빈타·연승·연패) + 맺음말.
    최근 한 말(14개)은 피한다. 예전에는 말투·승패마다 두 문장뿐이라 기사가 복붙처럼 보였다 */
-const MQ2={data:{w:['결과는 따라왔습니다.','예상한 흐름대로 갔습니다.','숫자가 말해 주는 경기였습니다.','준비한 대로 확률 싸움을 이겼습니다.'],l:['과정은 나쁘지 않았습니다.','확률 싸움에서 이번엔 졌습니다.','한 경기 표본으로 판단하지 않겠습니다.','타구 질은 나쁘지 않았는데 결과가 안 따라왔습니다.'],e:['데이터로 다시 보고 오겠습니다.','다음 상대 분석은 이미 끝났습니다.','매치업만 맞추면 됩니다.']},
+const MQ2={data:{w:['결과는 따라왔습니다.','예상한 흐름대로 갔습니다.','기록대로 흘러간 경기였습니다.','준비한 대로 확률 싸움을 이겼습니다.'],l:['과정은 나쁘지 않았습니다.','확률 싸움에서 이번엔 졌습니다.','한 경기 표본으로 판단하지 않겠습니다.','타구 질은 나쁘지 않았는데 결과가 안 따라왔습니다.'],e:['데이터로 다시 보고 오겠습니다.','다음 상대 분석은 이미 끝났습니다.','매치업만 맞추면 됩니다.']},
   fire:{w:['이게 우리 야구입니다!','선수들이 미쳤습니다!','오늘 같은 날이 계속돼야 합니다!','끝까지 물고 늘어졌습니다!'],l:['이런 경기는 용납 못 합니다.','변명하지 않겠습니다.','정신 차려야 합니다.','오늘은 할 말이 없습니다.'],e:['내일은 다를 겁니다.','팬들께 이런 야구 보여 드리겠습니다!','이 기세 그대로 갑니다!']},
   warm:{w:['애들이 정말 고생했습니다.','오늘은 칭찬만 하고 싶습니다.','서로 믿고 했더니 결과가 나왔습니다.','다들 끝까지 집중해 줬습니다.'],l:['선수들 탓하지 마십시오.','끝까지 잘 버텨 줬습니다.','오늘은 제가 부족했습니다.','다들 힘들었을 텐데 고생했습니다.'],e:['오늘은 푹 쉬게 하겠습니다.','선수들 믿고 갑니다.','고개 숙일 필요 없습니다.']},
   old:{w:['기본을 지키니 이겼습니다.','들뜨지 않겠습니다.','야구는 기본입니다.','오래 하다 보면 이런 날도 옵니다.'],l:['기본이 안 됐습니다.','한두 경기로 시즌 안 끝납니다.','수비, 주루부터 다시 하겠습니다.','기본기에서 졌습니다.'],e:['내일도 기본부터 하겠습니다.','시즌은 깁니다.','한 경기 한 경기 하겠습니다.']},
@@ -18794,7 +18794,7 @@ function gmAutoSucc(){ return {name:(()=>{ try{ return genName(); }catch(e){ ret
 /* 1월 1일: 65세부터 해마다 묻고, 78세면 구단이 정한 후임에게 넘긴다(시즌 밖이라 바로 넘길 수 있다) */
 function gmAgeYear(){ if(G.unemp||!G.gmP)return; const a=meAge(); if(a==null)return;
   if(a>=GM_SUCC_FORCE){ const r=gmSucceed(gmAutoSucc(),'정년'); if(!r)return; }
-  if(a>=GM_SUCC_ASK)mail('구단주실',`세대 교체를 생각해 볼 때입니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 이번 겨울(3월 개막 전까지) 후임을 직접 정하고 물러날 수 있습니다. 선수단·시설·재정은 그대로 후임에게 이어집니다.\n${GM_SUCC_FORCE}세가 되는 해에는 구단이 정한 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
+  if(a>=GM_SUCC_ASK)mail('구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 이번 겨울(3월 개막 전까지) 후임을 직접 정하고 물러날 수 있습니다. 선수단·시설·재정은 그대로 후임에게 이어집니다.\n${GM_SUCC_FORCE}세가 되는 해에는 구단이 정한 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
 
 /* 단장 재임 이정표(사용자 11-08): 이 구단에서 지휘한 경기 수(500·1000·1500…)와 재임 햇수(5·10·15…년). 구단 연대기·뉴스에 남는다 */
 function gmTenTick(){ if(G.unemp||G.user==null||!G.gmP)return; const T=G.gmTen=G.gmTen&&G.gmTen.tid===G.user?G.gmTen:{tid:G.user,g:0}; T.g++;
@@ -20305,7 +20305,7 @@ function dataLines(){ const me=teamRuns(G.user); if(me.g<10)return [];
   for(const p of playersOf(G.user)){ const h=seasonTotal(p,y,'1군'); if(!pctQual(!!p.isP,h))continue; const V=pctVals(p,h); for(const [k,l,,trk] of (p.isP?PCT_P:PCT_B)){ if(trk)continue; const pc=pctOf(p,k,V[k],y); if(pc==null)continue; if(pc>=90)hits.push({p,l,pc}); if(pc<=10)lows.push({p,l,pc}); } }
   hits.sort((a,b)=>b.pc-a.pc); lows.sort((a,b)=>a.pc-b.pc);
   return [`득실(정규시즌 ${me.g}경기): 경기당 득점 ${rs.toFixed(2)}(리그 ${rk(s=>s.rs/s.g,true)}위) · 실점 ${ra.toFixed(2)}(${rk(s=>s.ra/s.g,false)}위) · 득실차 ${me.rs-me.ra>0?'+':''}${me.rs-me.ra}`,
-    `피타고리안 기대 승수 ${me.exW.toFixed(1)}승, 실제 ${me.w}승(${d>=0?'+':''}${d.toFixed(1)}). ${Math.abs(d)<1.5?'득실점만큼 이기고 있습니다.':d>0?'득실점보다 더 이기고 있습니다. 접전 승패가 쏠린 결과로, 불펜·작전 영향과 함께 볼 필요가 있습니다. 시즌이 길어지면 득실차 쪽으로 가까워지는 경향이 있으나 확정할 수는 없습니다.':'득실점보다 덜 이기고 있습니다. 접전에서 진 경기가 많았습니다. 불펜·작전 영향과 함께 볼 필요가 있습니다.'}`,
+    `피타고리안 기대 승수 ${me.exW.toFixed(1)}승, 실제 ${me.w}승(${d>=0?'+':''}${d.toFixed(1)}). ${Math.abs(d)<1.5?'득실점만큼 이기고 있습니다.':d>0?'득실점보다 더 이기고 있습니다. 접전 승패가 한쪽으로 쏠렸습니다. 불펜·작전 영향과 함께 봐야 합니다. 시즌이 길어지면 득실차 쪽으로 돌아오는 경우가 많지만 확정할 수는 없습니다.':'득실점보다 덜 이기고 있습니다. 접전에서 진 경기가 많았습니다. 불펜·작전 영향과 함께 봐야 합니다.'}`,
     `최근 10경기 ${w10}승 ${l10}패${t10?` ${t10}무`:''}`,
     `리그 백분위 상위 10%: ${hits.length?hits.slice(0,5).map(x=>`${x.p.name} ${x.l} ${x.pc}`).join(', '):'없음'}`,
     `리그 백분위 하위 10%: ${lows.length?lows.slice(0,5).map(x=>`${x.p.name} ${x.l} ${x.pc}`).join(', '):'없음'} (1군 기준 이상 선수 중. 시즌 초에는 크게 움직입니다)`]; }
@@ -22327,7 +22327,7 @@ function dealGuar(p){ return guarLeft(p); } /* 다음 시즌 시작 다년계약
 function dealMoney(give,get,cash){ cash=cash||0; /* 받는 현금(음수)도 반영(검수 11-06) */ const P=id=>G.players[id]; const inS=sum(get.map(id=>P(id)?P(id).sal:0)), outS=sum(give.map(id=>P(id)?P(id).sal:0)); const d=inS-outS; const ra=roomAfter(give,get); const cost=ra.before-ra.after;
   const nx=a=>a.map(id=>dealNext(P(id))); const NI=nx(get), NO=nx(give); const dNext=sum(NI.map(x=>x.v))-sum(NO.map(x=>x.v)); const open=[...NI,...NO].filter(x=>!x.fix&&!x.f).length;
   const guar=sum(get.map(id=>dealGuar(P(id))))-sum(give.map(id=>dealGuar(P(id)))); const dc=ra.cash1-ra.cash0;
-  const why=ra.after===ra.before&&d!==0?(dc?`예산 여유는 그대로입니다: 올해 적자를 구단 보유 현금으로 먼저 메우는 중이라 연봉 변화는 연말 예상 현금으로 갑니다(${money(ra.cash0)} → ${money(ra.cash1)}).`:'예산 여유는 그대로입니다.'):'';
+  const why=ra.after===ra.before&&d!==0?(dc?`예산 여유는 그대로입니다. 올해 적자를 구단 보유 현금으로 먼저 메우는 중이라 연봉 변화는 연말 예상 현금으로 갑니다(${money(ra.cash0)} → ${money(ra.cash1)}).`:'예산 여유는 그대로입니다.'):'';
   const after=ra.after-cash; const oc=tradeOwnerCheck(give,get,cash); /* 현금은 한 번 내는 돈이라 올해 예산에서 바로 빠진다 */
   return `<div class="deal-m"><span>연간 선수 연봉 ${d>=0?'+':''}${money(d)}/년</span>${cash?`<span>${cash>0?`일회성 현금 ${money(cash)} 지출`:`일회성 현금 ${money(-cash)} 받음`} <span class="small muted">(이번 한 번${cash<0?', 결산 수입':''})</span></span><span><b>올해 총부담 ${money(d+cash)}</b> <span class="small muted">연봉 변화 + 현금</span></span>`:''}<span class="small muted">내년 ${dNext>=0?'+':''}${money(dNext)}${open?` · ${open}명은 연봉 협상 대상이라 지금 연봉 기준(성적 따라 바뀜)`:''}</span><span class="small muted">확정 잔여 보장액 ${guar>=0?'+':''}${money(guar)} <span title="다년·FA 계약으로 이미 정해진 남은 연봉만. 해마다 협상하는 선수는 넣지 않습니다">(다년·FA 계약만)</span></span><span class="pill ${after>=0?(cost+cash>0?'warn':'good'):'bad'}" title="경쟁균형세 변화${cash?'·현금':''} 포함">거래 후 예산 여유 ${money(ra.before)} → ${money(after)}</span>${oc?`<span class="small ${oc.ok?'muted':'bad'}">${oc.ok?`예산을 ${money(oc.over)} 넘지만 구단주가 허용하는 폭(${money(oc.lim)}) 안입니다(승인 시 신뢰 -2).`:'구단주 승인 필요: 허용 폭을 넘습니다. 아래 안내를 보세요.'}</span>`:''}${why?`<span class="small muted">${esc(why)}</span>`:''}</div>`; }
 /* 거래가 다른 자리에 만드는 공백과 거래 성격 */
@@ -24184,9 +24184,9 @@ function digAnalysis(gs){ let so=0,se=0,ro=0,re=0,rs=0; const by={}; for(const g
   let core, act='', base=`선발 ${ipStr(so)}이닝 ERA ${sE.toFixed(2)} · 불펜 ${ipStr(ro)}이닝 ERA ${rE.toFixed(2)} · 경기당 ${rpg.toFixed(1)}득점`;
   let rk=null; try{ rk=slotRanks(G.user).RP.rank; }catch(e){} const n=(G.games||[]).filter(g=>g.box&&(g.home===G.user||g.away===G.user)&&dobj(g.day).y===G.year).length;
   if(rE>=5.5&&rE>sE+1.5){ core='선발은 버텼는데 불펜에서 실점이 많았습니다.'; const st=typeof gmStage==='function'?gmStage(Math.min(n,10),rk):{s:'점검'};
-    act=share>=.4&&top?`${st.s} · 불펜 전체 교체보다 ${top.n} 점검을 먼저 권합니다(이 기간 불펜 자책의 ${Math.round(share*100)}%).`:`${st.s} · 실점이 여러 투수에 퍼져 있어 한 명 문제라기보다 불펜 운용을 지켜볼 때입니다.`; }
-  else if(sE>=5.5){ core='선발이 일찍 무너진 경기가 많았습니다.'; act='선발 로테이션의 최근 투구를 점검할 때입니다(표본이 적으면 관찰).'; }
-  else if(rpg<3){ core='마운드는 버텼지만 점수를 내지 못했습니다.'; act='타선 부진이 일시적인지 지켜볼 때입니다(관찰).'; }
+    act=share>=.4&&top?`${st.s} · 불펜 전체 교체보다 ${top.n} 점검을 먼저 권합니다(이 기간 불펜 자책의 ${Math.round(share*100)}%).`:`${st.s} · 실점이 여러 투수에 퍼져 있습니다. 특정 투수보다 불펜 운용을 지켜보겠습니다.`; }
+  else if(sE>=5.5){ core='선발이 일찍 무너진 경기가 많았습니다.'; act='선발 로테이션의 최근 투구를 점검하겠습니다(표본이 적으면 관찰).'; }
+  else if(rpg<3){ core='마운드는 버텼지만 점수를 내지 못했습니다.'; act='타선 부진이 일시적인지 지켜보겠습니다(관찰).'; }
   else core=digWin(gs)?'투타가 고르게 제 몫을 했습니다.':'뚜렷하게 한쪽이 무너지지는 않았습니다.';
   return {core,act,base}; }
 const digWin=gs=>gs.filter(g=>g.res==='승').length>gs.length/2;

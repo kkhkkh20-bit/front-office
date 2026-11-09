@@ -80,7 +80,7 @@ function gmAutoSucc(){ return {name:(()=>{ try{ return genName(); }catch(e){ ret
 /* 1월 1일: 65세부터 해마다 묻고, 78세면 구단이 정한 후임에게 넘긴다(시즌 밖이라 바로 넘길 수 있다) */
 function gmAgeYear(){ if(G.unemp||!G.gmP)return; const a=meAge(); if(a==null)return;
   if(a>=GM_SUCC_FORCE){ const r=gmSucceed(gmAutoSucc(),'정년'); if(!r)return; }
-  if(a>=GM_SUCC_ASK)mail('구단주실',`세대 교체를 생각해 볼 때입니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 이번 겨울(3월 개막 전까지) 후임을 직접 정하고 물러날 수 있습니다. 선수단·시설·재정은 그대로 후임에게 이어집니다.\n${GM_SUCC_FORCE}세가 되는 해에는 구단이 정한 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
+  if(a>=GM_SUCC_ASK)mail('구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 이번 겨울(3월 개막 전까지) 후임을 직접 정하고 물러날 수 있습니다. 선수단·시설·재정은 그대로 후임에게 이어집니다.\n${GM_SUCC_FORCE}세가 되는 해에는 구단이 정한 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
 
 /* 단장 재임 이정표(사용자 11-08): 이 구단에서 지휘한 경기 수(500·1000·1500…)와 재임 햇수(5·10·15…년). 구단 연대기·뉴스에 남는다 */
 function gmTenTick(){ if(G.unemp||G.user==null||!G.gmP)return; const T=G.gmTen=G.gmTen&&G.gmTen.tid===G.user?G.gmTen:{tid:G.user,g:0}; T.g++;

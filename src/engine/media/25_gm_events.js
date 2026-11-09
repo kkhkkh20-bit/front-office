@@ -96,7 +96,7 @@ const EVH={
       if(i===0){ const r=reqEntry(p.id,true); if(p.e1){ G.pr.fan=clamp(G.pr.fan+2,0,100); const h=seasonTotal(p,G.year,'1군'); evFollow(30,'call',{pid:p.id,ev:e.id,pa:h?h.pa:0,outs:h?h.outs:0}); } return r; }
       G.pr.fan=clamp(G.pr.fan-2,0,100); initPers(p); if(p.pers.amb>=13){ p.mor=clamp(p.mor-6,0,100); return `팬 여론 -2. ${p.name}은(는) 실망한 기색입니다(기분 -6).`; } return '팬 여론 -2. 선수는 묵묵히 준비하겠다고 합니다.'; },
     follow(d){ const p=evP(d.pid); if(!p||p.team!==G.user)return; const h=seasonTotal(p,G.year,'1군');
-      const t=h?`${p.name} 콜업 한 달: 1군 ${statLine(h,p)}${p.e1?'':' · 지금은 2군로 내려가 있습니다'}`:`${p.name} 콜업 한 달: 1군 기회를 거의 얻지 못했습니다.`; evResult(d.ev,t); note('엔트리',t,p.id); } },
+      const t=h?`${p.name} 콜업 한 달: 1군 ${statLine(h,p)}${p.e1?'':' · 지금은 2군으로 내려가 있습니다'}`:`${p.name} 콜업 한 달: 1군 기회를 거의 얻지 못했습니다.`; evResult(d.ev,t); note('엔트리',t,p.id); } },
   /* 감독의 보강 요청 */
   reinf:{ w:1, check(){ const m=G.mgr[G.user]; if(!m||G.day>KD(7,24))return null; if(G.day-(G.mgrReqD??-99)<45)return null; /* 감독 보강 요청(자리 요청)과 겹치지 않게 */
       const all=G.teams.map(t=>({t:t.id,d:depth(t.id)})); const rk=f=>{ const vs=all.map(x=>({t:x.t,v:f(x.d)})).sort((a,b)=>b.v-a.v); return vs.findIndex(x=>x.t===G.user)+1; };

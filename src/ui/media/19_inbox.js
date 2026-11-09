@@ -172,9 +172,9 @@ function digAnalysis(gs){ let so=0,se=0,ro=0,re=0,rs=0; const by={}; for(const g
   let core, act='', base=`선발 ${ipStr(so)}이닝 ERA ${sE.toFixed(2)} · 불펜 ${ipStr(ro)}이닝 ERA ${rE.toFixed(2)} · 경기당 ${rpg.toFixed(1)}득점`;
   let rk=null; try{ rk=slotRanks(G.user).RP.rank; }catch(e){} const n=(G.games||[]).filter(g=>g.box&&(g.home===G.user||g.away===G.user)&&dobj(g.day).y===G.year).length;
   if(rE>=5.5&&rE>sE+1.5){ core='선발은 버텼는데 불펜에서 실점이 많았습니다.'; const st=typeof gmStage==='function'?gmStage(Math.min(n,10),rk):{s:'점검'};
-    act=share>=.4&&top?`${st.s} · 불펜 전체 교체보다 ${top.n} 점검을 먼저 권합니다(이 기간 불펜 자책의 ${Math.round(share*100)}%).`:`${st.s} · 실점이 여러 투수에 퍼져 있어 한 명 문제라기보다 불펜 운용을 지켜볼 때입니다.`; }
-  else if(sE>=5.5){ core='선발이 일찍 무너진 경기가 많았습니다.'; act='선발 로테이션의 최근 투구를 점검할 때입니다(표본이 적으면 관찰).'; }
-  else if(rpg<3){ core='마운드는 버텼지만 점수를 내지 못했습니다.'; act='타선 부진이 일시적인지 지켜볼 때입니다(관찰).'; }
+    act=share>=.4&&top?`${st.s} · 불펜 전체 교체보다 ${top.n} 점검을 먼저 권합니다(이 기간 불펜 자책의 ${Math.round(share*100)}%).`:`${st.s} · 실점이 여러 투수에 퍼져 있습니다. 특정 투수보다 불펜 운용을 지켜보겠습니다.`; }
+  else if(sE>=5.5){ core='선발이 일찍 무너진 경기가 많았습니다.'; act='선발 로테이션의 최근 투구를 점검하겠습니다(표본이 적으면 관찰).'; }
+  else if(rpg<3){ core='마운드는 버텼지만 점수를 내지 못했습니다.'; act='타선 부진이 일시적인지 지켜보겠습니다(관찰).'; }
   else core=digWin(gs)?'투타가 고르게 제 몫을 했습니다.':'뚜렷하게 한쪽이 무너지지는 않았습니다.';
   return {core,act,base}; }
 const digWin=gs=>gs.filter(g=>g.res==='승').length>gs.length/2;
