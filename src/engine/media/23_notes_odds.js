@@ -135,7 +135,7 @@ function storyGame(p,x,day,opp,dec,game){ // 1군 경기 하나가 끝난 뒤
   else { if(x.hr&&!f.hr1){ f.hr1=1; story(p,`1군 첫 홈런 · ${vs}`,'first'); } if(x.hr>=3)story(p,`한 경기 ${x.hr}홈런 · ${vs}`,'mile'); if(x.h>=5&&(!f.h5||x.h>=6)){ f.h5=1; story(p,`한 경기 ${x.h}안타 · ${vs}`,'mile'); } add('h',x.h||0); add('hr',x.hr||0); try{ featBat(p,x,vs); }catch(e){} }
 }
 function storySeason(y){ // 시즌이 끝나면: 커리어 하이와 규정 이상 시즌
-  for(const p of Object.values(G.players)){ if(p.team==null)continue; const h=seasonTotal(p,y,'1군'); if(!h)continue;
+  for(const p of Object.values(G.players)){ if(p.team==null&&!isFree(p))continue; /* 시즌 중 방출돼 무적이 된 선수도 그해 성적으로(검수 11-09zz) */ const h=seasonTotal(p,y,'1군'); if(!h)continue;
     const q=p.isP?h.outs>=300:h.pa>=300; if(!q)continue;
     const w=warOf(h,p); const prev=p.hist.filter(x=>x.lvl==='1군'&&x.y<y).map(x=>x.y); const best=[...new Set(prev)].map(yy=>warOf(seasonTotal(p,yy,'1군'),p));
     if(best.length&&w>Math.max(...best)+.3&&w>=2)story(p,`커리어 하이 시즌 · ${statLine(h,p)}`,'high'); } }
