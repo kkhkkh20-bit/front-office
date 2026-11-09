@@ -82,8 +82,8 @@ function stadWindow(){ const per=period(); if(per==='season'||per==='post')retur
 function stadStart(k){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===k); if(!it)return '없는 시설입니다.'; const lv=S.lv[k];
   if(lv>=STAD_MAX)return '이미 최고 단계입니다.'; if((S.build||[]).some(b=>b.k===k))return '이미 공사 중입니다.';
   if(!stadWindow())return '구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.';
-  const c=STAD_COST[lv+1]; const t=team(G.user); const rsv=t.indie?newStadDue(G.user):0; /* 독립구단: 결산 때 낼 신구장 분담금은 쓸 수 없는 돈(검수 11-09j) */ if(spendable(G.user)-rsv<c)return `자금이 부족합니다(${spendTxt()}). 공사비 ${money(c)}이 필요합니다.${rsv?` (결산 때 낼 신구장 분담금 ${money(rsv)}은 따로 남겨 둡니다)`:''}`;
-  S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c}); G.spend.stad=(G.spend.stad||0)+spendPay(c);
+  const c=STAD_COST[lv+1]; const t=team(G.user); if(spendable(G.user)<c)return `자금이 부족합니다(${spendTxt()}). 공사비 ${money(c)}이 필요합니다.`; /* 독립구단의 결산 때 낼 신구장 분담금은 spendable이 뺀다 */
+  const k0=spendPay(c); S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c,sup:c-k0,ep:G.spEp}); G.spend.stad=(G.spend.stad||0)+k0; /* 구단주 지원 몫(sup)과 장부 회차: 취소 환급 때 현금이 아니라 장부로 되돌린다(검수 11-09zza) */
   addLog(`${stadName(G.user)} ${it.l} ${lv+1}단계 공사를 시작했습니다(공사비 ${money(c)}, ${STAD_DAYS[lv+1]}일).`); return ''; }
 function stadDaily(){ for(const t of G.teams){ const S=t.stad; if(!S||!S.build||!S.build.length)continue; S.build=S.build.filter(b=>{ if(G.day<b.done)return true; if((S.lv[b.k]||0)>=b.lv)return false; /* 이미 더 높은 단계(신구장 개장 등)면 낮추지 않는다 */ S.lv[b.k]=b.lv; if(t.id===G.user){ const it=STAD_ITEMS.find(x=>x.k===b.k); chron('stad',`${it.l} ${b.lv}단계 완공`); note('구장',`${it.l} ${b.lv}단계 공사가 끝났습니다.`); news('구단',`${t.city} ${t.nick}, ${it.l} 새단장`,`${stadName(t.id)}의 ${it.l}이(가) ${b.lv}단계로 바뀌었습니다. 팬들의 관람 환경이 좋아졌습니다.`,1); } return false; }); } }
 function stadSeasonNote(){ const A=G.sea.att&&G.sea.att[G.user]; if(!A||!A.n)return; const cap=stadCap(G.user); const avg=Math.round(A.sum/A.n);
@@ -101,27 +101,29 @@ function newStadTalk(){ const S=stadOf(G.user); if(!newStadCan())return S.retry&
 /* 신구장 사업은 구단 몫이다: 단장이 떠나도 협상·공사는 그 구단(AI)이 이어서 마친다 */
 function newStadDaily(){ for(const t of G.teams){ if(t.stad&&t.stad.proj)try{ newStadTeam(t.id); }catch(e){} } }
 function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; const t=team(tid); const me=tid===ME();
-  if(!me&&N.stage==='plan'){ const o=NEWSTAD[0]; if(t.indie&&(t.cash||0)<Math.round(o.cost/3)){ S.proj=null; S.retry=G.year+1; wire('구장',`${t.city} ${t.nick}, 신구장 착공 자금 부족으로 보류`,{tid}); return; } /* 독립구단은 단장이 있든 없든 첫 분담금을 낼 현금이 있어야 착공(검수 11-06) */ N.stage='build'; N.k=o.k; N.cap=o.cap; N.cost=o.cost; N.paid=N.paid||0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); wire('구장',`${t.city} ${t.nick}, 신구장 ${o.l} 규모로 착공`,{tid}); return; } /* 단장이 없는 구단은 실속형으로 정한다 */
+  if(!me&&N.stage==='plan'){ const o=NEWSTAD[0]; if(t.indie&&spendable(tid)<Math.round(o.cost/3)){ S.proj=null; S.retry=G.year+1; wire('구장',`${t.city} ${t.nick}, 신구장 착공 자금 부족으로 보류`,{tid}); return; } /* 독립구단은 단장이 있든 없든 첫 분담금을 낼 현금이 있어야 착공(검수 11-06) */ N.stage='build'; N.k=o.k; N.cap=o.cap; N.cost=o.cost; N.paid=N.paid||0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); wire('구장',`${t.city} ${t.nick}, 신구장 ${o.l} 규모로 착공`,{tid}); return; } /* 단장이 없는 구단은 실속형으로 정한다 */
   if(N.stage==='talk'&&G.day>=N.res){ const pr=clamp(.35+(t.trust-50)/100+(t.market-1)*.6+((me?G.rep:50)-50)/200,.15,.85);
     if(!me){ if(R()<pr)N.stage='plan'; else { S.proj=null; S.retry=G.year+1; } return; }
     if(R()<pr){ N.stage='plan'; stop('구장',`${t.city}시가 신구장 건립에 합의했습니다. 시가 공사비 대부분을 내고 구단이 일부를 분담합니다. 구단·재정 → 시설 투자 → 신구장에서 규모를 고르세요.`); news('구단',`${t.city}시-${t.nick}, 신구장 건립 합의`,'새 야구장 시대가 열립니다.',2); }
     else { S.proj=null; S.retry=G.year+1; stop('구장',`${t.city}시와의 신구장 협상이 결렬됐습니다. 시 재정 여건이 이유입니다. 내년에 다시 시도할 수 있습니다.`); } }
   if(N.stage==='build'&&G.day>=N.done){ S.cap=N.cap; S.built=G.year; (S.names=S.names||[]).push({until:G.day,n:stadName(t.id)}); /* 옛 구장 이름: 지난 경기 장소 표시용 */ S.name=N.k==='dome'?`${t.city} 돔구장`:`${t.city} 새 야구장`; S.dome=N.k==='dome'; /* 돔이 아닌 신구장으로 바꾸면 돔 효과도 끝 */ for(const k of Object.keys(S.lv))S.lv[k]=Math.max(S.lv[k],4);
     /* 옛 구장에서 진행 중이던 시설 공사: 새 구장 기본 단계(4) 이하가 목표면 취소하고 남은 공사 기간만큼 환급, 그보다 높으면 새 구장에서 이어서 진행 */
-    { const can=[], go=[]; S.build=(S.build||[]).filter(b=>{ if(b.lv>S.lv[b.k]){ go.push(b); return true; } const c=b.c??STAD_COST[b.lv]; const r=Math.round(c*clamp((b.done-G.day)/Math.max(1,STAD_DAYS[b.lv]),0,1)); t.cash+=r; can.push([b,r]); return false; });
+    { const can=[], go=[]; S.build=(S.build||[]).filter(b=>{ if(b.lv>S.lv[b.k]){ go.push(b); return true; } const c=b.c??STAD_COST[b.lv]; const r=Math.round(c*clamp((b.done-G.day)/Math.max(1,STAD_DAYS[b.lv]),0,1)); stadRefund(t,b,r); can.push([b,r]); return false; });
       if(me&&(can.length||go.length)){ const nm=b=>STAD_ITEMS.find(x=>x.k===b.k).l; mail('운영팀','신구장 개장: 옛 구장 공사 정리',`${can.length?`새 구장 시설(4단계 이상)에 포함돼 취소한 공사: ${can.map(([b,r])=>`${nm(b)} ${b.lv}단계(남은 공사분 ${money(r)} 환급)`).join(', ')}.`:''}${go.length?`${can.length?'\n':''}새 구장에서 이어서 진행하는 공사: ${go.map(b=>`${nm(b)} ${b.lv}단계(${dmd(b.done)} 완공)`).join(', ')}.`:''}`,{kind:'구장'}); } }
     S.cap=N.cap+(stadPower(S.lv.prem)-2)*300; /* 고를 때 안내한 좌석 수 = 개장 때 실제 수용(프리미엄석 4단계로 줄어드는 일반석만큼 기준을 늘려 둔다). 이후 프리미엄석을 더 늘리면 그만큼 줄어든다 */ if((N.paid||0)<N.cost)S.debt={cost:N.cost,paid:N.paid||0}; /* 개장 때 남은 분담금은 계속 낸다(검수 11-06) */ S.proj=null; t.pop=clamp(t.pop+.08,.7,1.45);
     if(!me){ wire('구장',`${S.name} 개장 (${N.cap.toLocaleString('ko-KR')}석)`,{tid}); return; }
     chron('stad',`${S.name} 개장 (${N.cap.toLocaleString('ko-KR')}석)`);
     stop('구장',`${S.name}이(가) 문을 열었습니다. ${N.cap.toLocaleString('ko-KR')}석, 시설은 모두 4단계 이상입니다. 개장 첫 몇 해는 관중이 크게 늡니다.`); news('구단',`${S.name} 개장`,`${t.city} ${t.nick}의 새 홈구장이 문을 열었습니다.`,3); } }
-function newStadPick(k){ const S=stadOf(G.user); const N=S.proj; const o=NEWSTAD.find(x=>x.k===k); if(!N||N.stage!=='plan'||!o)return '선택할 수 없습니다.'; { const t=team(G.user), first=Math.round(o.cost/3); if(t.indie&&(t.cash||0)<first)return `모기업 출자가 없는 독립구단은 첫 회차 분담금 ${money(first)}을(를) 구단 현금으로 낼 수 있어야 착공할 수 있습니다(지금 현금 ${money(t.cash||0)}). 분담금은 결산 때 3년에 나눠 냅니다.`; } /* 검수 11-06 */
+/* 취소한 공사 환급: 지원 예산으로 낸 몫은 아직 결산 전 같은 장부면 장부에서 빼고, 나머지만 현금으로(검수 11-09zza: 지원 예산 공사를 취소하면 현금이 생기던 것) */
+function stadRefund(t,b,r){ const sr=b.sup>0&&t.id===ME()&&b.ep===G.spEp?Math.min(G.spend.etc||0,Math.round(r*b.sup/Math.max(1,b.c))):0; if(sr)G.spend.etc-=sr; t.cash+=r-sr; }
+function newStadPick(k){ const S=stadOf(G.user); const N=S.proj; const o=NEWSTAD.find(x=>x.k===k); if(!N||N.stage!=='plan'||!o)return '선택할 수 없습니다.'; { const t=team(G.user), first=Math.round(o.cost/3); if(t.indie&&spendable(G.user)<first)return `모기업 출자가 없는 독립구단은 첫 회차 분담금 ${money(first)}을(를) 구단 현금으로 낼 수 있어야 착공할 수 있습니다(${spendTxt()}). 분담금은 결산 때 3년에 나눠 냅니다.`; } /* 검수 11-06 */
   N.stage='build'; N.k=k; N.cap=o.cap; N.cost=o.cost; N.paid=0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); addLog(`신구장 ${o.l} 규모로 착공했습니다. ${dmd(N.done)} ${y}년 개장 예정.`); return ''; }
 /* 분담금은 결산 때 3년에 나눠 낸다 */
 function newStadAcct(tid){ const S=stadOf(tid); const N=S.proj; return N&&N.stage==='build'?N:S.debt&&S.debt.paid<S.debt.cost?S.debt:null; }
 function newStadDue(tid){ const N=newStadAcct(tid); if(!N)return 0; const n=Math.round(N.cost/3), left=N.cost-(N.paid||0); return left<=n*1.5?left:n; } /* 마지막 회차는 반올림 잔액까지(검수 11-06: 160억 중 100만 원이 남아 사라졌다) */
 
 /* AI 구단: 돈이 넉넉하면 비시즌에 시설 하나를 손본다 */
-function stadAI(){ for(const t of G.teams){ if(t.id===G.user)continue; const S=stadOf(t.id); if(t.cash<6000||R()>.35)continue; const k=pick(['seat','fnb','vis','prem','turf']); if((S.build||[]).some(b=>b.k===k))continue; /* 진행 중인 공사가 있으면 같은 시설은 다시 발주하지 않는다 */ const lv=S.lv[k]; if(lv>=(t.cash>=15000?8:t.cash>=9000?6:4))continue; /* 돈이 많은 구단은 더 높게(우리 상한 12) */ const c=STAD_COST[lv+1]; t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1]}); } }
+function stadAI(){ for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간 전 구단도 AI가 운영(검수 11-09zza) */ const S=stadOf(t.id), cash=spendable(t.id); /* 독립구단은 결산 때 낼 신구장 분담금을 남긴다(검수 11-09zza) */ if(cash<6000||R()>.35)continue; const k=pick(['seat','fnb','vis','prem','turf']); if((S.build||[]).some(b=>b.k===k))continue; /* 진행 중인 공사가 있으면 같은 시설은 다시 발주하지 않는다 */ const lv=S.lv[k]; if(lv>=(cash>=15000?8:cash>=9000?6:4))continue; /* 돈이 많은 구단은 더 높게(우리 상한 12) */ const c=STAD_COST[lv+1]; if(cash-c<0)continue; t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1]}); } }
 function starIncome(tid){ return Math.round(teamStar(tid).v*14*team(tid??G.user).market)+smBonus(tid??G.user); } /* 스타 마케팅 캠페인 몫 포함 */
 
 function starAwardsNews(){ const T=teamStar(G.user); const L=T.L.filter(x=>x.s>=25); if(!L.length)return; prInit(); const t=team(G.user);
