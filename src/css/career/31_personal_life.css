@@ -2,7 +2,8 @@
 .pl-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 8px}
 .pl-stats>div{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;min-width:0}
 .pl-stats i{display:block;font-style:normal;font-size:var(--ui-caption);color:var(--muted)}
-.pl-stats b{display:block;font:600 20px/26px var(--f-num);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-stats b{display:block;font:600 20px/26px var(--f-num);overflow-wrap:anywhere}
+.pl-stats div:last-child b{font:600 15px/20px var(--f-ui)}
 .pl-stats .plb{margin-top:4px}
 @media (max-width:560px){.pl-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .pls{margin-top:14px}
