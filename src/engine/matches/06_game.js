@@ -121,9 +121,9 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
     let outs=0, runs=0, hh=0, eOuts=0, ph=null; /* ph: 실책 플레이로만 홈에 들어온 3루 주자의 책임 투수. 실책이 없었다면 아직 3루에 있다(자책점 재구성, 야구규칙 9.16) */ const ueR=new Set(); const eAt={}; /* 투수별 등판 때까지의 실책 아웃: 구원투수 개인 자책점은 등판 뒤 실책만으로 이닝을 다시 센다(KBO 기록규칙) */ const base=[null,null,null]; const resp=new Map(); /* 주자별 책임 투수(승계주자 자책점). 자책점: 실책이 없었다고 보고 이닝을 다시 세운다(eOuts: 실책이 아니었으면 아웃, ueR: 실책으로 나간 주자) */
     while(outs<3){
       /* 도루: KBO 2024~25 구단 평균 시즌 120~140개, 성공률 72~75%, 1위 50~65개 수준에 맞춘다. 2루 도루가 대부분이고 빠른 주자는 3루도 노린다 */
-      if(base[1]&&!base[2]&&outs<2&&base[1].r.spd>=60&&R()<(base[1].r.spd-57)*.0045*(.65+mgrOf(bs.tid).small/100*.9)*stealTry(fs)){
+      if(base[1]&&!base[2]&&base[1].r.spd>=60&&R()<(base[1].r.spd-57)*.0045*(.65+mgrOf(bs.tid).small/100*.9)*stealTry(fs)*(outs<2?1:.3)){ /* 2아웃 3루 도루는 드물다(안타 하나면 2루에서도 홈인), 검수 11-09zt */
         const r=base[1], rb=bs.box.get(r.id); if(R()<clamp(.6+(r.r.spd-60)*.008+coachRunAdj(bs.tid)+stealAdj(r,fs),.4,.92)){rb.sb++;base[2]=r;base[1]=null; if(pbp.length<1000)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[1]=null;outs++; fs.box.get(fs.cur.id).outs++; if(pbp.length<1000)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
-      if(base[0]&&!base[1]&&outs<2&&base[0].r.spd>=45&&R()<Math.min(.36,(base[0].r.spd-41)*.0105)*(.65+mgrOf(bs.tid).small/100*.9)*stealTry(fs)){
+      if(base[0]&&!base[1]&&base[0].r.spd>=45&&R()<Math.min(.36,(base[0].r.spd-41)*.0105)*(.65+mgrOf(bs.tid).small/100*.9)*stealTry(fs)*(outs<2?.85:.45) /* 2아웃 도루도 시도(검수 11-09zt). 시즌 도루 수는 전과 같게 무게를 나눴다 */){
         const r=base[0], rb=bs.box.get(r.id); if(R()<clamp(.65+(r.r.spd-50)*.007+coachRunAdj(bs.tid)+stealAdj(r,fs),.35,.92)){rb.sb++;base[1]=r;base[0]=null; if(pbp.length<1000)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[0]=null;outs++; fs.box.get(fs.cur.id).outs++; if(pbp.length<1000)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
       const b=bs.order[bs.idx%bs.order.length]; bs.idx++;
       const p=fs.cur; const xb=bs.box.get(b.id), xp=fs.box.get(p.id);
