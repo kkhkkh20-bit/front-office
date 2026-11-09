@@ -175,7 +175,7 @@ function marketDaily(){ if(G.gameOver)return; gmInit(); const per=period(); try{
   if(per==='season'&&G.day===tradeDL()){ for(let i=0;i<2;i++){ try{ if((G.offers||[]).length<4)aiOffer(); }catch(e){} } for(let i=0;i<3;i++)if((G.lgTrades||[]).filter(t=>t.y===G.year).length<20)aiTradeTry(); /* 마감일 막판 거래 */  }
   jobsDaily(); }
 /* ===== 단장 경력: 명성과 다른 구단 제의 ===== */
-function repSeason(y,rank,champ,runner,trustD){ G.rep=G.rep??50; let d=0; if(champ)d+=10; else if(runner)d+=6; else if(rank<=5)d+=3; else if(rank>=8)d-=4; d+=clamp(trustD/3,-3,3);
+function repSeason(y,rank,champ,runner,trustD){ G.rep=G.rep??50; { const J=G.gmJoin; if(J&&J.y===y&&J.tid===G.user&&J.psDone)return 0; } /* 시즌이 끝난 뒤 부임: 그해 성적은 전임 몫(검수 11-09zb) */ let d=0; if(champ)d+=10; else if(runner)d+=6; else if(rank<=5)d+=3; else if(rank>=8)d-=4; d+=clamp(trustD/3,-3,3);
   const net=sum((G.trades||[]).filter(t=>t.y===y&&t.gi&&(t.me==null||t.me===G.user)).map(t=>{ const r=tradeReport(t); return r?r.net:0; })); d+=clamp(net,-4,4);
   G.rep=clamp(Math.round(G.rep+d),0,100); return d; }
 function repLabel(r){ return r>=80?'리그 최고의 단장':r>=65?'유능한 단장':r>=45?'평범한 단장':r>=30?'흔들리는 단장':'평판이 나쁜 단장'; }
@@ -189,7 +189,7 @@ function jobOffer(tid,fired,terms,exp0){ const t=team(tid); terms=terms||myCOffe
     {imp:true,kind:'경력',acts:[{l:`수락: ${t.city} ${t.nick}로 이동`,a:'jobYes',v:tid},{l:'거절',a:'jobNo',v:tid}]}); }
 function jobsDaily(){ for(const j of G.jobs||[]){ if(j.done||G.day<j.exp)continue; jobAnswer(j.tid,false,true); } }
 function jobAnswer(tid,yes,auto){ const j=(G.jobs||[]).find(x=>x.tid===tid&&!x.done); if(!j)return '제의가 없습니다.'; if(yes&&G.day>=j.exp){ jobAnswer(tid,false,true); return '제의 기한이 지났습니다.'; } /* 일일 처리 전에 눌러도 만료 제의는 받지 않는다(검수 11-06) */ j.done=true; const t=team(tid);
-  if(yes){ const wasU=!!G.unemp; if(!G.unemp&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); delete G.myC.offer; for(const e of (G.evs||[]))if(!e.done&&e.k==='gmRenew'){ e.done=true; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.imp=false; } } }
+  if(yes){ const wasU=!!G.unemp; if(!G.unemp&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); }
     G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid); try{ myCStart(tid,j.terms,wasU?'':'이직'); }catch(e){} for(const o of [...G.jobs])if(!o.done&&o.tid!==tid)jobAnswer(o.tid,false,true); return `${tname(tid)} 단장으로 취임했습니다. 연봉 ${money(G.myC.sal)}, ${G.myC.y0}~${G.myC.y1}년.`; }
   if(t.gm&&t.gm.interim){ t.gm=mkGM(tid); t.rel=50; wire('단장',`${t.city} ${t.nick}, ${t.gm.name} 단장 선임 (${GMT[t.gm.trait].l})`,{tid}); }
   return auto?'':`${t.city} ${t.nick}의 제의를 거절했습니다.`; }

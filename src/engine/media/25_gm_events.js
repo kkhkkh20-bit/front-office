@@ -5,6 +5,7 @@ function evInit(){ G.evs=G.evs||[]; G.evf=G.evf||[]; G.evlog=G.evlog||[]; }
 function evOpen(){ evInit(); return G.evs.filter(e=>!e.done); }
 /* 핵심 결정: 나타나면 진행을 멈추고, 기한 하루 전에 한 번 더 멈춘다. 나머지 일상 결정은 알림 뒤 기한이 지나면 기본안으로 처리하고 결과를 보고한다 */
 const EV_KEY=new Set(['scandal','reinf','clash','agent','fx','dline','fovs','post','mreq','mpick','inj']);
+const EV_GM=new Set(['gmRenew','cmt','asEl']); /* 단장 계약·협회 표결: 비서에게 넘길 수 없고 진행 멈춤 설정과 상관없이 멈춘다(검수 11-09zb) */
 const EV_NAME={lead:'기강 문제',pt:'출전 기회 면담',call:'콜업 여론',press:'연패 기자회견',vet:'베테랑 제안',fan:'팬 행사',slump:'부진 선수 면담',ret:'은퇴 행사'};
 function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   const e={id:'e'+(G.evSeq=(G.evSeq||0)+1),k,day:G.day,exp:G.day+(o.exp||5),title,sit,opts:opts.map(x=>({l:x.l,fx:x.fx})),def:o.def??opts.length-1,data:o.data||{},ref:o.ref??null,from:o.from||'운영팀',done:false};
@@ -12,7 +13,7 @@ function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   G.evs.push(e); for(let i=0;G.evs.length>40&&i<G.evs.length;)if(G.evs[i].done)G.evs.splice(i,1); else i++; /* 한도는 끝난 결정부터 지운다. 미결 결정은 남긴다(검수 11-09za) */ { const rid=e.ref!=null?e.ref:(e.data&&e.data.pid); if(rid!=null){ G.evRecent=G.evRecent||{}; G.evRecent[k+':'+rid]=G.day; G.evRecent['p:'+rid]=G.day; } }
   const lines=opts.map((x,i)=>`${i+1}. ${x.l}: ${x.fx}`).join('\n');
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',cat:o.cat,ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
-  e.mid=m.id; if((!EV_KEY.has(k)&&G.deleg&&G.deleg[k])||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); } return e; }
+  e.mid=m.id; if(EV_GM.has(k))m.cat='must'; if((!EV_KEY.has(k)&&G.deleg&&G.deleg[k])||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); } return e; }
 function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.';
   if(!Number.isInteger(i)||i<0||i>=e.opts.length)return '선택할 수 없는 항목입니다.';
   if(e.pt!=null){ const q=G.players[e.data.pid]; if(!q||q.team!==e.pt||G.user!==e.pt){ e.done=true; e.void=true; e.res='선수가 우리 구단을 떠나 결정이 끝났습니다.'; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.read=true; m.imp=false; m.body+=`\n\n[종료] ${q?q.name:'선수'}이(가) 우리 구단을 떠나 이 결정은 적용하지 않았습니다.`; } return e.res; } } /* 실행 시점 소속 재검사: 떠난 선수에게 옛 결정(징계·면담 등)을 적용하지 않는다 */

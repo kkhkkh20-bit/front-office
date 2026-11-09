@@ -10,7 +10,7 @@ function authView(){ const evK=Object.keys(EV_NAME); const dl=evK.filter(k=>G.de
         +(X.length?`<section class="card"><h2 class="sec">답하지 않아 기본안이 적용된 일</h2><p class="small muted">맡기지 않은 결정인데 응답 기한이 지나 기본안(굵게 쓴 선택)이 적용됐습니다. 같은 종류를 앞으로 맡길 수 있습니다.</p><div class="list">${X.slice(0,10).map(x=>`<div class="item"><span class="small"><b>${esc(x.t)}</b> · 기본안: <b>${esc(x.c)}</b>${x.r?` <span class="muted">${esc(String(x.r).slice(0,80))}</span>`:''}</span><span class="row" style="gap:4px"><span class="small muted">${dsh(x.d)}</span>${x.k&&EV_NAME[x.k]&&!(G.deleg&&G.deleg[x.k])?`<button class="btn small" data-a="evGive" data-v="${x.k}">이 종류 앞으로 맡기기</button>`:''}</span></div>`).join('')}</div></section>`:''); })()}`; }
 /* 메일 아래 버튼: 이 알림이 속한 업무를 비서에게 넘긴다(아직 직접 하는 업무만) */
 function handOffBtns(m){ if(G.unemp||mailDone(m))return ''; let h='';
-  if(m.kind==='결정'){ const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(e)h+=`<button class="btn small" data-a="evHand" data-v="${e.id}">비서에게 넘기기(이번 건)</button>`; }
+  if(m.kind==='결정'){ const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(e&&!EV_GM.has(e.k))h+=`<button class="btn small" data-a="evHand" data-v="${e.id}">비서에게 넘기기(이번 건)</button>`; }
   for(const k of (m.auto||[])){ if(autoOn(k))continue; if(k==='tro'&&m.oid&&!(G.offers||[]).some(o=>o.id===m.oid))continue; const a=AUTO_AREAS.find(x=>x[0]===k); if(a)h+=`<button class="btn small" data-a="handOff" data-v="${k}">${a[1]}: ${AUTO_WHO[k]||'비서'}에게 넘기기</button>`; }
   return h?`<div class="ibm-acts hand">${h}</div>`:''; }
 Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v){ toast(takeBack(v)); save(); render(); },
