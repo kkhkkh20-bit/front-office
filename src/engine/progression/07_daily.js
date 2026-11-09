@@ -158,7 +158,7 @@ function specialKind(day,hid,aid){
 let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','fat','l10','hist'];
 function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of playersOf(t)){ const o={}; for(const k of SPOIL_K)o[k]=p[k]===undefined?undefined:JSON.parse(JSON.stringify(p[k])); P[p.id]=o; } SPOIL_SNAP={day,y:G.year,P}; }
 function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
-  let userRec=null; const mk=(G.makeup||[]).filter(x=>x.y===G.year); G.makeup=[];
+  let userRec=null; const mk=(G.makeup||[]).filter(x=>x.y===G.year&&!(x.d>=day)); G.makeup=(G.makeup||[]).filter(x=>x.y===G.year&&x.d>=day); /* 오늘 미룬 경기(소집일 인원 부족)는 오늘 다시 치르지 않고 다음 경기일에(검수 11-09zj) */
   for(const [h,a] of [...mk.map(x=>[x.h,x.a]),...(G.cal.sched[day]||[])]){
     const kind=specialKind(day,h,a); if(h===G.user||a===G.user)try{ spoilSnapTake(day,[h,a]); }catch(e){}
     let g; try{ g=simGame(day,h,a,false); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,false); }catch(e2){ G.makeup.push({y:G.year,h,a,d:day}); if(G.cal.end0==null)G.cal.end0=G.cal.end; if(day>=G.cal.end&&day<G.cal.end0+14)G.cal.end=day+1; /* 마지막 날 미룬 경기: 정규시즌을 하루 늘려 치른 뒤 순위·시드를 정한다(검수 11-09k). shortcut: 2주 넘게 실패하면 포기, 반복 오류가 생기면 원인부터 고칠 것 */ try{ console.error('경기 처리 실패, 다음 경기일로 미룸',dmd(day),h,a,e2); }catch(x){} continue; } } /* 한 경기 오류로 같은 날 다른 경기·날짜만 반영되고 이 경기가 사라지지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 다음 경기일에 치른다(검수 11-08) */ applyGame(day,h,a,g,false); try{ gtAdd(gameMin(g)); }catch(e){} rivalAfterGame(day,h,a,g,false); let st=null; try{ st=stadGame(day,h,a); }catch(e){}

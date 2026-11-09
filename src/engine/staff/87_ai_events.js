@@ -6,7 +6,7 @@
  리그 소식(구단 사정)에 쌓이고, 우리 전략에 쓸 만한 큰 일(트레이드 요청, 불화설)은 소식함으로도 온다 */
 function aiTeamWeek(){ if(period()!=='season'||!G.cal||G.day<G.cal.open+14)return; for(const t of G.teams){ if(t.id===ME())continue; try{ aiDisc(t); }catch(e){} try{ aiGripe(t); }catch(e){} try{ aiRift(t); }catch(e){} } }
 function aiDisc(t){ const cl=climateOf(t.id); const ch=cl.band==='loose'?.04+.1*(40-cl.S)/40:clamp(.01+(62-cl.S)*.0015,.006,.035); if(R()>=ch)return; /* 느슨할수록 잦고, 보통 구단도 한 시즌에 한두 번은 생긴다 */
-  const ps=domestic(t.id).filter(p=>!p.ys&&healthy(p)&&((p.pers&&p.pers.pro)||10)<=11); const p=ps.length?pick(ps):null; if(!p)return;
+  const ps=domestic(t.id).filter(p=>!p.ys&&healthy(p)&&!isAway(p)&&((p.pers&&p.pers.pro)||10)<=11); const p=ps.length?pick(ps):null; if(!p)return;
   const k=pick([['늦은 귀가','벌금'],['SNS 논란','벌금'],['훈련 불참','3일 출장 정지']]); p.mor=clamp((p.mor??60)-4,0,100); if(k[1]!=='벌금')p.susp=Math.max(p.susp||0,G.day+gDays(3));
   story(p,`${G.year} ${k[0]}로 구단 징계(${k[1]})`,'inj'); wire('구단 사정',`${tshort(t.id)} ${p.name}, ${k[0]}로 구단 징계(${k[1]}) · 선수단 기강 ${cl.S}`,{tid:t.id,ref:p.id}); }
 function aiGripe(t){ const d=depth(t.id); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));

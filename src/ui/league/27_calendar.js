@@ -14,7 +14,9 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   for(const [m,dd,ck,l] of CAL_CER){ const A=G.awards&&G.awards[o.y], cd=(A&&A.cd&&A.cd[ck])??(G.cerNew&&G.cerNew.y===o.y&&G.cerNew.k===ck?G.cerNew.d:null); if(cd!=null?d===cd:o.m===m&&o.d===dd)out.push({k:'lg',t:l(),cer:o.y+':'+ck}); } /* 시상식이 밀리면 실제로 연 날에(검수 11-09l) */
   if(c&&c.y===o.y){ const L=[[c.camp,'스프링캠프 시작','lg'],[c.campEnd,'캠프 종료','lg'],[c.exh,'시범경기 시작','lg'],[c.open,'정규시즌 개막','lg'],[c.asg,'올스타전','lg'],[c.draft,'신인 드래프트','dl'],[c.end,'정규시즌 종료','lg']]; for(const [n,t,k] of L)if(n===d)out.push({k,t}); }
   /* 국가대표 소집: 최종 명단 전에는 '소집 예정', 발표 뒤에는 우리 선수 이탈 수 */
-  try{ for(const x of ntUpcoming(4)){ if(d<x.from||d>=x.to)continue; /* 복귀일은 소집 기간이 아니다(엔진과 같게, 검수 11-06) */ const N=G.nt&&G.nt.k===x.k&&G.nt.y===x.y?G.nt:null; const n=N?N.ids.filter(id=>G.players[id]&&G.players[id].team===G.user).length:null;
+  try{ for(const x of ntUpcoming(4)){ const e=NT_EV[x.k], D=a=>dnum(x.y,a[0],a[1]); const N=G.nt&&G.nt.k===x.k&&G.nt.y===x.y?G.nt:null; const n=N?N.ids.filter(id=>G.players[id]&&G.players[id].team===G.user).length:null;
+      for(const [a,t] of [[e.pre,'예비 명단 발표'],[e.ann,'최종 명단 발표'],[e.res,'결과 발표']])if(a&&d===D(a))out.push({k:'lg',t:`${x.n} ${t}`}); if(d===x.to)out.push({k:'lg',t:`${x.n} 대표 복귀${N&&n?` · 우리 ${n}명`:''}`}); /* 대회별 주요 날짜(검수 11-09zj) */
+      if(d<x.from||d>=x.to)continue; /* 복귀일은 소집 기간이 아니다(엔진과 같게, 검수 11-06) */
       out.push({k:'lg',t:d===x.from?`${x.n} 소집${N?` · 우리 선수 ${n}명 이탈`:' 예정'}`:`${x.n} 대표 소집 중${N&&n?` · 우리 ${n}명 이탈`:''}`}); } }catch(e){}
   /* 우리 일: 결정 기한, 트레이드 제안 기한, 우선 제안·라스트 룩 기한 */
   for(const e of (G.evs||[]))if(!e.done&&e.exp===d)out.push({k:'me',t:`결정 기한: ${e.title}`});
