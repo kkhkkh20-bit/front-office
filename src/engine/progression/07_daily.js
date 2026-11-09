@@ -69,7 +69,7 @@ function seriesEnd(d){ const S=G.cal&&G.cal.sched; if(!S)return true; const op=x
   for(let k=d+1;k<=d+5;k++){ const m=(S[k]||[]).find(x=>x.includes(G.user)); if(m)return op(m)!==cur; } return true; }
 function userRank(){ try{ return rankOf(G.user); }catch(e){ return 0; } }
 /* 공식 순위: 공동 순위, 순위 결정전을 치른 뒤에는 그 결과(결정전 전에는 공동 그대로, 검수 11-09zn) */
-function rankOf(tid){ const P=G.ps; if(P&&P.order){ const i=P.order.findIndex(x=>x.tid===tid); const pend=P.round==='tb'?[P.tbPos,...(P.tbq||[]).map(q=>q[0])]:[]; if(i>=0)return pend.some(k=>i===k||i===k+1)?tieRank(P.order,tid):i+1; } return tieRank(standingsNow(),tid); } /* 정규시즌이 끝나면 공식 순위(KBO: 1·5위 동률은 결정전, 그 외는 상대 전적 → 다득점 → 전년 순위 = 결산 order와 같음). 시즌 중과 결정전 대기 중에는 공동 순위(검수 11-09zzd) */ /* 공동 순위 기준(검수 11-08: 같은 순위인데 3위 → 1위로 보임) */
+function rankOf(tid){ const P=G.ps; if(P&&P.order){ const i=P.order.findIndex(x=>x.tid===tid); if(i>=0){ for(const x of P.tbRes||[]){ if(x.w===tid)return x.pos; if(x.l===tid)return x.pos+1; } const r=tieRank(P.order,tid); return (r===1||r===5)&&P.order.filter(x=>tieRank(P.order,x.tid)===r).length===2?r:i+1; } } return tieRank(standingsNow(),tid); } /* 정규시즌이 끝나면 공식 순위(KBO: 1·5위 동률은 결정전, 그 외는 상대 전적 → 다득점 → 전년 순위 = 결산 order와 같음). 시즌 중과 결정전(1·5위 두 팀 동률)을 치르기 전에는 공동 순위(검수 11-09zzd) */ /* 공동 순위 기준(검수 11-08: 같은 순위인데 3위 → 1위로 보임) */
 /* 시즌 제한(현재 꺼 둠): 켜면 첫 시즌을 마치고 스토브리그 직전에서 멈춘다 */
 const GAME_VER='0.9'; const DEMO={on:false,seasons:1}; /* 무료 정식 공개: 시즌 제한 없음 */
 function demoOver(){ return DEMO.on&&G.year>=(G.startY||2026)+DEMO.seasons-1&&!G.unemp; }
