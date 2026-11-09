@@ -230,7 +230,7 @@ function injure(p,day,ctx){ ctx=ctx||{}; day=day??G.day;
   const reg=p.team===G.user&&period()==='season'&&!(p.injOut>0)&&isRegular(p); /* 주전 여부는 부상으로 라인업에서 빠지기 전에 본다(검수 11-09t) */
   const k=injPick(p,ctx); const I=INJ[k]; let days=ri(I.d[0],I.d[1]); days=Math.max(3,Math.round(days*(I.d[0]>=240?Math.sqrt(recMult(p)):recMult(p))));
   { const h0=(p.injHist||[]).slice(-1)[0]; if(h0&&h0.bk==null&&p.injOut>0)h0.bk=day; } /* 재활 중 새 부상: 앞 부상의 결장은 여기서 끊는다 */
-  p.injOut=Math.max(1,days-(G.day-day)); p.injK=k; delete p.injB; (p.injHist=p.injHist||[]).push({y:G.year,days,d:day,k,t:p.team}); /* 퓨처스 이틀 전 등판 부상: 다친 날로 기록하고 재활도 그날부터(검수 11-09t) */ /* t: 다친 때 소속(구단별 부상 건수, 검수 11-08) */ if(days>=40)p.inj=Math.min(.45,p.inj+.02); /* 큰 부상은 재발 위험을 남긴다 */
+  p.injOut=Math.max(1,days-(G.day-day)); p.injK=k; delete p.injB; p.injC=milServing(p)?null:p.team; /* 재활 기간을 정한 구단(hospOwn) */ (p.injHist=p.injHist||[]).push({y:G.year,days,d:day,k,t:p.team}); /* 퓨처스 이틀 전 등판 부상: 다친 날로 기록하고 재활도 그날부터(검수 11-09t) */ /* t: 다친 때 소속(구단별 부상 건수, 검수 11-08) */ if(days>=40)p.inj=Math.min(.45,p.inj+.02); /* 큰 부상은 재발 위험을 남긴다 */
   if(I.ucl)p.ucl=1; if(I.tj)delete p.ucl; delete p.reInj;
   const fx=injApply(p,k,days);
   const ret=injRetTxt(p), seasonOut=period()==='season'&&G.day+days>(G.cal.end||KD(10,5));

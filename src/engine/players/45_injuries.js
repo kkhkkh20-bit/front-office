@@ -55,7 +55,7 @@ function injPick(p,ctx){ ctx=ctx||{}; const col=!p.isP?2:ctx.sp?0:1;
     L.push([k,w]); }
   let s=sum(L.map(x=>x[1])), r=R()*s; for(const [k,w] of L){ r-=w; if(r<=0)return k; } return L[0][0]; }
 /* 능력 손실을 실제로 적용하고, 되찾을 수 있는 몫을 기록한다 */
-function injApply(p,k,days){ const I=INJ[k]; const hosp=p.team===G.user?({a:.6,b:.8,c:.9}[G.med.hosp]||1):1;
+function injApply(p,k,days){ const I=INJ[k]; const hosp=p.team===G.user&&!milServing(p)?( /* 상무 복무 중에는 원소속 병원 몫 없음(검수 11-09zy) */{a:.6,b:.8,c:.9}[G.med.hosp]||1):1;
   const fx={k,n:I.n,y:G.year,L:{},P:{},need:I.need||0,got:0,v:0};
   const hit=(s,a,permF)=>{ if(p.r[s]==null||a<=0)return; const b=p.r[s]; p.r[s]=clamp(b-a,20,80); const real=b-p.r[s]; const pm=real*permF; fx.L[s]=(fx.L[s]||0)+real-pm; fx.P[s]=(fx.P[s]||0)+pm; };
   if(I.tj){ /* 토미존: 구속은 새 기준선이 되고, 제구·구위는 복귀 첫해에 실전을 던지며 되찾는다 */
