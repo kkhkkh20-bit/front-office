@@ -28,7 +28,11 @@ test('부임 전후 승패와 우승을 각 단장에 귀속',()=>{ fresh(); con
   ok(!legAt(legMeK(),u).s&&legAt('g-before',u).c===1&&legAt('g-before',u).w===79,'시즌 종료 뒤 부임에도 우승이 후임에게 귀속'); });
 test('사장 제안은 15시즌 기준이고 후임이 답할 수 없다',()=>{ fresh(); const u=G.user;
   team(u).indie=false; team(u).trust=80; G.gmRec={y:G.year,L:[{k:legMeK(),u:1,n:'전임',t:u,s:15,y0:G.year-14,y1:G.year,w:300,l:300,c:0}]};
-  myCInit(); const offer=legOwnerOffer(); ok(offer&&offer.s===15,'15시즌 제안 누락');
+  myCInit();
+  G.gmJoin={tid:u,y:G.year,psDone:true};
+  ok(!legOwnerOffer(),'시즌이 끝난 뒤 복귀한 단장에게 이전 재임으로 제안');
+  G.gmJoin=null;
+  const offer=legOwnerOffer(); ok(offer&&offer.s===15,'15시즌 제안 누락');
   const m=G.mail.find(m=>m.acts.some(a=>a.a==='legPres'));
   ok(mailLiveAct(m,m.acts[0]),'미결 제안 소식이 보존되지 않음');
   myCClose('용퇴'); G.gmLine=[{}]; ok(offer.void&&legPresAns(true)&&offer.ans==null,'전임의 제안에 후임이 응답');
