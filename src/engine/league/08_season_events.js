@@ -60,13 +60,26 @@ function psOursAt(d){ const P=G.ps; const s=P&&!P.done&&P.cur; if(!s||!(s.hi===G
 function psOursTxt(){ const s=G.ps&&G.ps.cur; if(!s)return '우리 경기'; const op=s.hi===G.user?s.lo:s.hi; return `${ROUNDK[s.round]} ${s.gi+1}차전(${tshort(op)}전)`; }
 const ROUNDK={tb:'순위 결정전',wc:'와일드카드 결정전',spo:'준플레이오프',po:'플레이오프',ks:'한국시리즈'};
 /* 오류·저장 상태로 지나간 차전은 다음 진행일부터 다시 잡는다(검수 11-09k). 진행 전에 미리 옮겨 두어 경기 전 확인·중계 대기·일정 화면이 그 날짜를 본다(검수 11-09zo) */
-function psCatchUp(day){ const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&s.days&&s.days[s.gi]<day){ const sh=day-s.days[s.gi], old=s.days.slice(s.gi); s.days=s.days.map((d,i)=>i>=s.gi?d+sh:d);
-  /* 옮긴 차전의 직관·관전 예약도 새 날짜로(검수 11-09zzc #19) */ const P=G.gmPlan||{}, mv=old.filter(d=>P[d]&&!P[d].done&&P[d].k==='attend').map(d=>[d+sh,P[d]]); for(const [d] of mv)delete P[d-sh]; for(const [d,q] of mv)P[d]=q; for(const k of ['watchPlanned','simPlanned'])if(G[k]&&old.includes(G[k].day))G[k]={...G[k],day:G[k].day+sh}; } }
+/* 시리즈 일정과 그 경기를 고른 예약을 함께 옮긴다. 같은 날짜의 다른 상대/업무 예약은 건드리지 않는다. */
+function psShiftDays(s,sh){ if(!s||!sh)return; const old=s.days.slice(s.gi), op=s.hi===G.user?s.lo:s.hi, ours=s.hi===G.user||s.lo===G.user;
+  const booked=(d,q)=>{ if(!ours||!q||q.done||q.tid!=null&&q.tid!==G.user)return false; const games=dayGames(d).filter(g=>g.includes(G.user)), chosen=q.op??(games.length?(games[0][0]===G.user?games[0][1]:games[0][0]):op); return chosen===op&&!games.some(g=>g.includes(op)); }; /* 날짜만 있는 관전 예약은 그날 첫 경기. 정규·순연 경기가 먼저면 PS로 바꾸지 않는다. */
+  const P=G.gmPlan||{}, mv=[...new Set(old)].filter(d=>P[d]?.k==='attend'&&booked(d,P[d])).map(d=>({from:d,to:d+sh,q:P[d]}));
+  const planned=['watchPlanned','simPlanned','matchAwait'].filter(k=>G[k]&&old.includes(G[k].day)&&booked(G[k].day,G[k]));
+  s.days=s.days.map((d,i)=>i>=s.gi?d+sh:d);
+  /* 먼저 모두 수집·삭제한 뒤 재배치해야 연속 차전의 예약이 서로 덮이지 않는다. */
+  for(const {from} of mv)delete P[from];
+  for(const {from,to,q} of mv){ if(q.mid){ G.mail=(G.mail||[]).filter(m=>m.id!==q.mid); G.stops=(G.stops||[]).filter(m=>m.id!==q.mid); } delete q.mid; delete q.warned;
+    if(P[to]&&!P[to].done){ q.done=true;q.cancelled='연기 일정 충돌';note('일정',`${dmd(from)} 직관 경기가 ${dmd(to)}로 미뤄졌지만 그날 기존 일정이 있어 직관 예약을 취소했습니다. 기존 일정은 유지되며 다시 예약할 수 있습니다.`); }
+    else P[to]=q;
+  }
+  for(const k of planned)G[k]={...G[k],day:G[k].day+sh};
+}
+function psCatchUp(day){ const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&s.days&&s.days[s.gi]<day)psShiftDays(s,day-s.days[s.gi]); }
 function psDay(day){
   psCatchUp(day); const P=G.ps, s=P.cur; if(!s||s.days[s.gi]!==day)return;
   const h=s.homes[s.gi], a=h===s.hi?s.lo:s.hi;
   const hiL=s.need[0]-s.wh, loL=s.need[1]-s.wl; /* 남은 승수: 한쪽이 1승만 남으면 다른 쪽은 탈락 위기, 둘 다 1승이면 최종전 */
-  const gx={elim:hiL===1||loL===1,fin:hiL===1&&loL===1,elimT:[...(hiL===1?[s.lo]:[]),...(loL===1?[s.hi]:[])],noTie:s.round!=='wc'&&s.gi+hiL+loL-1>=PS_MAXG}; /* 남은 경기를 모두 승부로 치러도 40경기를 넘을 수 있으면 이 경기부터 무승부 없이: 필요한 승수(한국시리즈 4승)를 채운 팀만 이기고 40경기 안에서 끝난다(검수 11-09zo) */ /* 탈락 위기는 팀마다(검수 11-07) */ if(h===G.user||a===G.user)try{ spoilSnapTake(day,[h,a]); }catch(e){} /* 중계 전 선수 화면은 경기 직전 기록으로(정규시즌과 같게, 검수 11-09zo) */ let g; try{ g=simGame(day,h,a,gx); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,gx); }catch(e2){ s.days=s.days.map((d,i)=>i>=s.gi?d+1:d); console.error('포스트시즌 경기 처리 실패, 하루 미룸',dmd(day),h,a,e2); if(h===G.user||a===G.user)note('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전이 사정으로 하루 미뤄져 ${dmd(s.days[s.gi])}에 열립니다.`); return; } } /* 한 경기 오류로 시리즈가 멈추지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 남은 차전을 하루씩 미룬다(검수 11-09k) */ { const back=boxSnap(g); try{ applyGame(day,h,a,g,true); }catch(e){ back(); s.days=s.days.map((d,i)=>i>=s.gi?d+1:d); console.error('포스트시즌 경기 반영 실패, 되돌리고 하루 미룸',dmd(day),h,a,e); return; } } try{ rivalAfterGame(day,h,a,g,true); }catch(e){ console.error(e); } /* 반영 실패: 등판 부하를 되돌린 뒤 다음 날 같은 차전을 다시(검수 11-09zn) */
+  const gx={elim:hiL===1||loL===1,fin:hiL===1&&loL===1,elimT:[...(hiL===1?[s.lo]:[]),...(loL===1?[s.hi]:[])],noTie:s.round!=='wc'&&s.gi+hiL+loL-1>=PS_MAXG}; /* 남은 경기를 모두 승부로 치러도 40경기를 넘을 수 있으면 이 경기부터 무승부 없이: 필요한 승수(한국시리즈 4승)를 채운 팀만 이기고 40경기 안에서 끝난다(검수 11-09zo) */ /* 탈락 위기는 팀마다(검수 11-07) */ if(h===G.user||a===G.user)try{ spoilSnapTake(day,[h,a]); }catch(e){} /* 중계 전 선수 화면은 경기 직전 기록으로(정규시즌과 같게, 검수 11-09zo) */ let g; try{ g=simGame(day,h,a,gx); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,gx); }catch(e2){ psShiftDays(s,1); console.error('포스트시즌 경기 처리 실패, 하루 미룸',dmd(day),h,a,e2); if(h===G.user||a===G.user)note('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전이 사정으로 하루 미뤄져 ${dmd(s.days[s.gi])}에 열립니다.`); return; } } /* 한 경기 오류로 시리즈가 멈추지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 남은 차전을 하루씩 미룬다(검수 11-09k) */ { const back=boxSnap(g); try{ applyGame(day,h,a,g,true); }catch(e){ back(); psShiftDays(s,1); console.error('포스트시즌 경기 반영 실패, 되돌리고 하루 미룸',dmd(day),h,a,e); return; } } try{ rivalAfterGame(day,h,a,g,true); }catch(e){ console.error(e); } /* 반영 실패: 등판 부하를 되돌린 뒤 다음 날 같은 차전을 다시(검수 11-09zn) */
   try{ cheerGame(day,h); }catch(e){} /* 포스트시즌 홈경기도 응원단 무대(검수 11-09zza) */
   let win=g.score.h>g.score.a?h:g.score.a>g.score.h?a:null;
   if(win===s.hi)s.wh++; else if(win===s.lo)s.wl++;

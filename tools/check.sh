@@ -48,6 +48,10 @@ step "추가 검수 63–95: 저장·관찰·학교·시장·기록·동행"
 for audit in draft-data scouting schools staff-market records ownership ui coach-layout; do
  node "tools/check-feedback-${audit}-6395.cjs" || fail=1
 done
+step "추가 검수 96–125: 저장·중계·연기·퓨처스·병역·기록 보존"
+for audit in save broadcast spoiler match futures military archive links; do
+ node "tools/check-feedback-${audit}-96125.cjs" || fail=1
+done
 step "캠프 예약 표시·경기 수 선택"; node tools/check-feedback-camp-ui-20261110.cjs || fail=1
 step "검색표 잠재력 반별·글리프 높이"; node tools/check-rating-stars-tables.cjs || fail=1
 step "타 구단 공개 프로필·통산 기록·연대기·재정 장부"; CLUB_PROFILE_HTML="$PWD/index.html" node tests/tools/check-club-profile-ui.cjs || fail=1

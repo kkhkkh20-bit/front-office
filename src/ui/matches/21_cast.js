@@ -250,21 +250,8 @@ function castJump(k,play){ const c=UI.cast; if(c.pre)cPrepClose(c); const L=G.ga
 
 
 /* ---------- 투구 연출: 타석 결과에 맞는 볼카운트 순서를 투수의 실제 구종표로 만든다(해설과 같은 결정을 쓴다) ---------- */
-function cPitchSpd(p,t,r){ const v=veloOf(p), vm=veloMax(p); const off={'직구':0,'투심':-3,'커터':-5,'슬라이더':-12,'스위퍼':-14,'체인지업':-15,'포크':-13,'커브':-22}[t]??-10; return Math.min(vm,Math.round(v+off+(r()-.5)*4)); }
-function cPitchSeq(g,k){ const x=g.pbp[k]; if(!x||typeof x[1]!=='number')return [];const saved=storedPitchSequence(x);if(saved)return saved; const p=G.players[x[2]]; if(!p)return []; const o=x[3]; const r=mulberry((g.day*613+k*97+(x[1]||0))|0);
-  let ars=['직구']; try{ ars=arsenal(p,p.r.stf).map(a=>a[0]); }catch(e){} const best=(()=>{ try{ return pcBest(p)||ars[ars.length-1]; }catch(e){ return ars[ars.length-1]; } })();
-  const pickT=(fin)=>fin&&r()<.6?best:r()<.5?'직구':ars[Math.floor(r()*ars.length)];
-  let bN, sN; if(o==='BB'){ bN=3; let ph=''; try{ ph=pcPick(g,k,'bb',['볼넷으로 걸어 나갑니다.','풀카운트 끝에 볼넷.','공 네 개가 모두 빠집니다. 스트레이트 볼넷.','끈질기게 커트하더니 볼넷을 얻어 냅니다.']); }catch(e){} sN=/스트레이트/.test(ph)?0:/풀카운트|커트/.test(ph)?2:Math.floor(r()*3); }
-  else if(o==='K'){ sN=2; bN=[0,0,1,1,2,3][Math.floor(r()*6)]; } else { bN=[0,0,1,1,2,3][Math.floor(r()*6)]; sN=Math.floor(r()*3); }
-  const pre=[...Array(bN).fill('B'),...Array(sN).fill('S')].sort(()=>r()-.5); let fouls=sN===2&&o!=='BB'?Math.floor(r()*3):0; if(o==='BB'&&sN===2)fouls=1+Math.floor(r()*3);
-  const out=[]; let b=0,s=0; const add=(res,fin)=>{ const t=pickT(fin); out.push({t,v:cPitchSpd(p,t,r),res,b,s}); };
-  for(const e of pre){ if(e==='B'){ add('볼'); b++; } else { add(r()<.5?'스트라이크':'헛스윙'); s++; } }
-  for(let i=0;i<fouls;i++)add('파울');
-  let look=false; try{ look=pcH(g,k,'kl')<.28; }catch(e){}
-  const fin=o==='K'?(look?'루킹 삼진':'헛스윙 삼진'):o==='BB'?'볼넷':o==='HBP'?'몸에 맞는 공':o==='SAC'?'번트':'타격';
-  add(fin,o==='K'); if(o==='K'&&!look){ try{ if(pcH(g,k,'kb')<.6)out[out.length-1].t=best; }catch(e){} out[out.length-1].v=cPitchSpd(p,out[out.length-1].t,r); }
-  const loc=mulberry((g.day*2017+k*71+x[1])|0);return out.map(q=>({...q,...FrontOfficeCore.pitchLocation(q.res,loc),...(q.res==='몸에 맞는 공'?{x:bSide(G.players[x[1]],p)==='L'?2.699:-1.699,y:.268}:{})})); }
+function cPitchSeq(g,k){const row=g?.pbp?.[k];return storedPitchSequence(row)||legacyPitchSequence(g,k);}
 /* 볼카운트 신호등: 이 공 결과 뒤 카운트. 볼넷·삼진·타격으로 끝나는 마지막 공 뒤에는 다음 타자 때 0-0으로 돌아간다 */
 function cCountAfter(q){ let b=q.b, s=q.s; if(q.res==='볼')b=Math.min(3,b+1); else if(q.res==='파울')s=Math.min(2,s+1); else if(q.res==='스트라이크'||q.res==='헛스윙')s=Math.min(2,s+1); return {b,s}; }
 function cCount(b,s){ const set=(id,n)=>{ const el=document.getElementById(id); if(el)el.querySelectorAll('i').forEach((x,i)=>x.classList.toggle('on',i<n)); }; set('cs-B',b); set('cs-S',s);const summary=document.getElementById('cs-count-summary'),outs=document.getElementById('cs-bso')?.dataset.outs||0;if(summary)summary.textContent=b+'볼 · '+s+'스트라이크 · '+outs+'아웃'; }
-function cPitchTxt(q,i){ return `<span class="md-pitch-main"><b>${i+1}구 · ${esc(q.t)}</b><strong>${q.v}<small> km/h</small></strong></span><em class="${cPitchClass(q)}">${esc(q.res)}</em><small class="md-pitch-location">${esc(cPitchLocationText(q))}</small>`; }
+function cPitchTxt(q,i){ return `<span class="md-pitch-main"><b>${i+1}구 · ${esc(q.t)}</b><strong>${Number.isFinite(q.v)?q.v+'<small> km/h</small>':'<small>구속 미기록</small>'}</strong></span><em class="${cPitchClass(q)}">${esc(q.res)}</em><small class="md-pitch-location">${q.legacy?'추정 재현 · ':''}${esc(cPitchLocationText(q))}</small>`; }

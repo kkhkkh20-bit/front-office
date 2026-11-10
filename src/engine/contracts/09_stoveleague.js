@@ -280,6 +280,7 @@ function compactPlayers(){ const y=G.year; let n=0;
     if(p.hist&&p.hist.length>3){ const old=p.hist.filter(h=>h.lvl==='퓨처스'&&!h.y2&&h.y<y-2); if(old.length>=2){ const by={};
         for(const h of old){ const k=h.t; const m=by[k]=by[k]||Object.assign({},p.isP?ZP:ZB,{y:h.y,y2:h.y,t:h.t,lvl:'퓨처스'}); for(const f in (p.isP?ZP:ZB))m[f]=(m[f]||0)+(h[f]||0); m.y=Math.min(m.y,h.y); m.y2=Math.max(m.y2,h.y); }
         const prevAgg=p.hist.filter(h=>h.lvl==='퓨처스'&&h.y2); for(const a of prevAgg){ const m=by[a.t]; if(m){ for(const f in (p.isP?ZP:ZB))m[f]+=(a[f]||0); m.y=Math.min(m.y,a.y); m.y2=Math.max(m.y2,a.y2); } }
+        futLeagueCarry(p,old); /* 원본 연도 행을 없애기 전에 리그 평균의 분자·분모를 보존한다. */
         p.hist=p.hist.filter(h=>!(h.lvl==='퓨처스'&&(old.includes(h)||(h.y2&&by[h.t])))).concat(Object.values(by)); n++; } }
     if(p.amY&&!p.prospect&&p.draft&&p.draft.y<y-2){ delete p.amY; n++; }
     if(p.story&&p.story.length>45)p.story.splice(1,p.story.length-45);

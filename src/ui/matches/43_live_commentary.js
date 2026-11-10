@@ -4,8 +4,8 @@ function pcName(g,id){ for(const sd of ['h','a'])for(const k of ['bat','pit']){ 
 function pcMoment(g,k){const x=g.pbp[k],pre=pcBefore(g,k),top=x[0]%2===0,before=top?pre.sa-pre.sh:pre.sh-pre.sa,after=top?x[7]-x[8]:x[8]-x[7],inn=Math.floor(x[0]/2)+1;return {x,pre,top,inn,before,after,runs:x[6]||0,risp:!!(pre.bases[1]||pre.bases[2]),loaded:pre.bases.every(Boolean),walkoff:!top&&inn>=9&&before<=0&&after>0,team:top?g.away:g.home};}
 function pcScoreFinish(g,k){const m=pcMoment(g,k);if(!m.runs)return '';if(m.walkoff)return ` 끝내기! ${tshort(m.team)}, 승부를 끝냅니다!`;if(m.before<0&&m.after>0)return ` 역전입니다! ${m.x[7]}:${m.x[8]}!`;if(m.before<0&&m.after===0)return ` 다시 동점! ${m.x[7]}:${m.x[8]}!`;return ` ${m.x[7]}:${m.x[8]}.`;}
 function pcKnownTotals(g,k,id,key,pitcher=false){
- const base=g.broadcast?.regular&&g.broadcast.players?.[id];if(!base)return null;
- let add=0;for(const x of g.pbp.slice(0,k))if(typeof x[1]==='number'&&x[pitcher?2:1]===id){if(key==='hr'&&x[3]==='HR'||key==='h'&&['1B','2B','3B','HR'].includes(x[3])||key==='so'&&x[3]==='K')add++;}
+ const base=g.broadcast?.players?.[id];if(!base)return null;
+ let add=0;for(const x of (g.broadcast?.regular?g.pbp.slice(0,k):[]))if(typeof x[1]==='number'&&x[pitcher?2:1]===id){if(key==='hr'&&x[3]==='HR'||key==='h'&&['1B','2B','3B','HR'].includes(x[3])||key==='so'&&x[3]==='K')add++;}
  return {season:(base.season?.[key]||0)+add,career:(base.career?.[key]||0)+add};
 }
 function pcPitchingRun(g,k,attack){
@@ -39,7 +39,7 @@ function pcRecords(g,k){
   if(!todayHit&&form?.streak>=19&&(form.streak+1)%5===0)add('streak',`${name}, ${form.streak+1}경기 연속 안타! 오늘도 이어갑니다!`,75);
  }
  if(o==='HR'){const n=prior.filter(r=>r[3]==='HR').length+1;if(n>=2)add('multihr',`${name}, 오늘 ${n}홈런! ${n>=3?'엄청납니다!':'멀티홈런!'}`,65);}
- const milestones=(id,key,pitcher,label,seasonMarks,step)=>{const n=pcKnownTotals(g,k,id,key,pitcher);if(!n)return;const who=pcName(g,id);if(seasonMarks.includes(n.season+1))add('season',`${who}, 시즌 ${n.season+1}${label}!`,70);if(n.career+1>=step&&(n.career+1)%step===0)add('career',`${who}, 통산 ${n.career+1}${label}!`,85);};
+ const milestones=(id,key,pitcher,label,seasonMarks,step)=>{const n=pcKnownTotals(g,k,id,key,pitcher);if(!n||!g.broadcast?.regular)return;const who=pcName(g,id);if(seasonMarks.includes(n.season+1))add('season',`${who}, 시즌 ${n.season+1}${label}!`,70);if(n.career+1>=step&&(n.career+1)%step===0)add('career',`${who}, 통산 ${n.career+1}${label}!`,85);};
  if(hit)milestones(x[1],'h',false,'안타',[100,150,200,250],500);
  if(o==='HR')milestones(x[1],'hr',false,'호 홈런',[10,20,30,40,50,60],100);
  if(o==='K'){const n=g.pbp.slice(0,k+1).filter(r=>typeof r[1]==='number'&&r[2]===x[2]&&r[3]==='K').length;if([15,18,20].includes(n))add('strikeouts',`${pcName(g,x[2])}, 한 경기 ${n}탈삼진! 타선을 압도합니다!`,75);milestones(x[2],'so',true,'탈삼진',[100,150,200,250],500);}

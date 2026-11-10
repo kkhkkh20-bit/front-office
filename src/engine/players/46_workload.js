@@ -19,11 +19,12 @@ function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 기록: applyGame에서 투수마다 호출 */
 /* 등판 하나를 1군·퓨처스 공통으로 남긴다: 부하 기록(날짜순) + 마지막 등판일·선발일·투구 수. 선발 선택·불펜 가용 판단이 어느 리그 등판이든 같은 이력을 본다 */
 function pitchApp(p,day,pc,isStart){ const cd=loadLog(p,day,pc,isStart); if(p.lastApp==null||day>=p.lastApp){ if(day!==p.lastApp)p.prevApp=p.lastApp; p.lastPc=day===p.lastApp?(p.lastPc||0)+pc:pc; p.lastApp=day; } /* 같은 날 두 번 던지면 합친다: 다음 날 불펜 가용 판정이 그날 전체 투구 수를 보게(검수 11-09) */ else if(p.prevApp==null||day>p.prevApp)p.prevApp=day; if(isStart&&(p.lastStart==null||day>p.lastStart))p.lastStart=day; return cd; }
-function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.ld||[]; { const same=L.find(x=>x[0]===day); if(same){ same[1]+=pc; same[2]=(same[2]||1)+1; } else { L.push([day,pc]); L.sort((a,b)=>a[0]-b[0]); } } if(L.length>10)L.shift(); /* 날짜순 유지·같은 날은 합친다(퓨처스 주간 기록이 1군 기록 뒤에 들어와도 연투 계산이 맞게) */
-  const prevS=p.lsS; let add=pc*(cd>=2?1.8:cd>=1?1.3:1);
-  if(isStart){ const past=prevS!=null&&day<prevS; /* 늦게 들어온 과거 선발 기록: 짧은 휴식 가산·마지막 선발일을 거꾸로 바꾸지 않는다(검수 11-07) */ if(pc>105)add+=(pc-105)*3; const SD=p.lsD=(p.lsD||[]).filter(d=>d!==day); const nb=SD.filter(d=>Math.abs(d-day)<5).length; if(nb)add+=pc*.4; SD.push(day); SD.sort((a,b)=>a-b); if(SD.length>6)SD.shift(); if(!past)p.lsS=day; } /* 짧은 휴식은 앞뒤 선발과 비교: 기록이 늦게 들어와도 같은 부하(검수 11-08) */
-  if(!isStart&&pc>=35)add+=(pc-35)*1.5; /* 불펜 멀티이닝 */
-  p.armw=(p.armw||0)+add;
+/* 최근 실제 등판들의 부하기여만 비교한다. 이미 쌓인 시즌 부하·일일 회복은 되돌리지 않는다. */
+function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d,pc]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=row[3]||[[pc,starts.includes(d)?1:0]];for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;}else if(n>=35)v+=(n-35)*1.5;total+=v;}}return total;}
+function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day),L=p.ld=p.ld||[],SD=(p.lsD||[]).slice(),before=loadSpan(L,SD);const same=L.find(x=>x[0]===day);
+  if(same){const apps=same[3]||(same[3]=[[same[1],SD.includes(day)?1:0]]);apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
+  if(isStart){if(!SD.includes(day))SD.push(day);SD.sort((a,b)=>a-b);if(p.lsS==null||day>p.lsS)p.lsS=day;}
+  p.armw=Math.max(0,(p.armw||0)+loadSpan(L,SD)-before);while(L.length>10)L.shift();if(isStart)p.lsD=SD.slice(-6);
   if(cd>=2&&p.team===G.user&&period()==='season'){ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
   return cd; }
 /* 부상 위험 배수: 연투(급성)와 누적 부하(만성) */

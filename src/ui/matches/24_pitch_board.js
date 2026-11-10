@@ -13,14 +13,14 @@ function cPitchClass(q){return /볼|몸에 맞는 공/.test(q.res)?'ball':/타�
 function cPitchPanel(g,k,seq,shown){
   const x=g.pbp[k],q=seq[shown-1],saved=!!storedPitchSequence(x),source=document.getElementById('cs-pitch-source'),info=document.getElementById('cs-pitch');
   if(!info)return;
-  if(source){source.textContent=!x?'경기 종료':typeof x[1]!=='number'?'투구 대기':saved?'투구 기록':'투구 재현';source.title=saved?'시뮬레이션에서 생성·저장한 투구 기록입니다. 타석 결과에 맞춰 구성한 좌표이며 실측 자료는 아닙니다.':'기존 경기에는 공별 기록이 없어 타석 결과를 바탕으로 재현합니다.';}
+  if(source){source.textContent=!x?'경기 종료':typeof x[1]!=='number'?'투구 대기':saved?'투구 기록':'투구 재현';source.title=saved?'시뮬레이션에서 생성·저장한 투구 기록입니다. 타석 결과에 맞춰 구성한 좌표이며 실측 자료는 아닙니다.':'기존 경기에는 공별 구종·구속 측정 기록이 없습니다. 보존된 타석 결과에 맞춰 순서·카운트·좌표만 추정 재현하며 현재 선수 능력은 사용하지 않습니다.';}
   const list=seq.slice(0,shown),start=Math.max(0,list.length-6);
-  mdSet('md-pitch-dots',list.slice(start).map((p,i)=>`<span class="md-pitch-dot ${cPitchClass(p)}${i===list.length-start-1?' latest':''}" style="left:${p.res==='몸에 맞는 공'?(p.x<0?5:95):20+60*p.x}%;top:${15+70*p.y}%" title="${esc((start+i+1)+'구 '+p.t+' '+p.v+'km/h · '+p.res+' · '+cPitchLocationText(p))}" data-index="${start+i+1}" data-x="${p.x}" data-y="${p.y}">${start+i+1}</span>`).join(''));
-  mdSet('md-pitch-history',list.slice(-4).map((p,i)=>`<li><i>${list.length-Math.min(4,list.length)+i+1}</i><b>${esc(p.t)}</b><span>${p.v}<small> km/h</small></span><em class="${cPitchClass(p)}">${esc(p.res)}</em></li>`).join(''));
+  mdSet('md-pitch-dots',list.slice(start).map((p,i)=>`<span class="md-pitch-dot ${cPitchClass(p)}${i===list.length-start-1?' latest':''}" style="left:${p.res==='몸에 맞는 공'?(p.x<0?5:95):20+60*p.x}%;top:${15+70*p.y}%" title="${esc((start+i+1)+'구 '+p.t+' '+(Number.isFinite(p.v)?p.v+'km/h':'구속 미기록')+' · '+p.res+' · '+cPitchLocationText(p))}" data-index="${start+i+1}" data-x="${p.x}" data-y="${p.y}">${start+i+1}</span>`).join(''));
+  mdSet('md-pitch-history',list.slice(-4).map((p,i)=>`<li><i>${list.length-Math.min(4,list.length)+i+1}</i><b>${esc(p.t)}</b><span>${Number.isFinite(p.v)?p.v+'<small> km/h</small>':'구속 미기록'}</span><em class="${cPitchClass(p)}">${esc(p.res)}</em></li>`).join(''));
   const history=document.getElementById('md-pitch-history');if(history)history.scrollTop=history.scrollHeight;
-  const map=document.querySelector('.md-zone-map');if(map)map.setAttribute('aria-label',q?`${shown}구 ${q.t} ${q.v}km/h · ${q.res} · ${cPitchLocationText(q)}`:'9칸 스트라이크존 · 투구 대기');
+  const map=document.querySelector('.md-zone-map');if(map)map.setAttribute('aria-label',q?`${shown}구 ${q.t} ${Number.isFinite(q.v)?q.v+'km/h':'구속 미기록'} · ${q.res} · ${cPitchLocationText(q)}`:'9칸 스트라이크존 · 투구 대기');
   info.innerHTML=q?cPitchTxt(q,shown-1):`<span class="md-pitch-wait">${x?typeof x[1]==='number'?'첫 공을 기다립니다':x[1]==='PC'?'투수 교체':'주루 상황':'경기 종료'}</span>`;info.className='cs-pitch'+(q?' on':'');
-  if(q){const terminal=shown===seq.length,n=terminal?{b:q.b,s:q.s}:cCountAfter(q);cCount(n.b,n.s);if(c3DActive())Match3D.scoreboard({b:n.b,s:n.s,pitch:{t:q.t,v:q.v},playText:q.res});}
+  if(q){const terminal=shown===seq.length,n=terminal?{b:q.b,s:q.s}:cCountAfter(q);cCount(n.b,n.s);if(c3DActive())Match3D.scoreboard({b:n.b,s:n.s,pitch:Number.isFinite(q.v)?{t:q.t,v:q.v}:null,playText:q.res});}
   else cCount(0,0);
   const count=document.getElementById('cs-pitcher-count');if(count&&x&&typeof x[1]==='number'){const total=cPitchTotalBefore(g,k,x[2]);count.textContent=total==null?'투구 수 미기록':(total+shown)+'구';}
 }

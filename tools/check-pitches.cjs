@@ -2,7 +2,7 @@
 /* 실제 저장된 공을 DOM·애니메이션·일시정지·이전 저장에서 검증한다. */
 const assert=require('node:assert/strict'),path=require('node:path');
 const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
-(async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;const errors=[];
+(async()=>{const server=await startHtmlServer(process.env.PITCHES_HTML||path.resolve(__dirname,'../index.html'));let browser;const errors=[];
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium',args:['--disable-webgl']});const page=await browser.newPage({viewport:{width:1366,height:768}});page.on('pageerror',e=>errors.push(e.message));
 await page.goto(server.url);await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open;for(const t of G.teams)setEntry(t.id);const other=G.teams.find(t=>t.id!==G.user).id,g=simGame(G.day,G.user,other,false);applyGame(G.day,G.user,other,g,false);G.games=[gameRecord(G.day,G.user,other,g,'')];UI.title=false;UI.tab='home';render();A.cast(0);castJump(0,false);});
 const k=await page.evaluate(()=>G.games[0].pbp.findIndex(x=>typeof x[1]==='number'&&x[15].pitches.length>=6));assert.ok(k>=0,'긴 타석 준비');
@@ -21,7 +21,11 @@ for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1920,h
  }
  const dock=document.querySelector('.md-pitch-dock').getBoundingClientRect(),bso=document.querySelector('#cs-bso').getBoundingClientRect(),field=document.querySelector('#cs-stage').getBoundingClientRect(),duel=document.querySelector('#cs-vs').getBoundingClientRect(),host=document.querySelector('.cast').getBoundingClientRect();
  const bases=[...document.querySelectorAll('#cs-bases .md-base-pill')],state=cBefore(g,k);if(bases.length!==3||bases.some((e,i)=>e.classList.contains('occupied')!==!!state.bases[i]))failures.push('현재 주자 표시');
- if(bso.bottom>dock.bottom||bso.right>dock.right||bso.top<dock.top+(innerWidth<=600?0:dock.height/2))failures.push('우측 하단 카운트');
+ /* mdBug moves the mobile count panel into the field; desktop keeps it in the pitch dock. */
+ const countPanel=document.querySelector('#cs-bso').closest('.md-count-panel'),count=countPanel.getBoundingClientRect(),floating=countPanel.parentElement?.id==='cs-stage';
+ if(!bso.width||!bso.height||bso.left<count.left-1||bso.right>count.right+1||bso.top<count.top-1||bso.bottom>count.bottom+1)failures.push('카운트 패널 내부 표시');
+ if(floating){if(count.left<field.left-1||count.right>field.right+1||count.top<field.top-1||count.bottom>field.bottom+1)failures.push('구장 내 모바일 카운트');}
+ else if(bso.bottom>dock.bottom+1||bso.right>dock.right+1||bso.top<dock.top+dock.height/2)failures.push('우측 하단 카운트');
  if(field.height<160||field.width<200||duel.bottom>innerHeight||host.right>innerWidth+1)failures.push('구장·카드 배치');
  return {failures,record:document.querySelector('#cs-pitch-source').textContent,pitcher:document.querySelector('#cs-pitcher-count').textContent};},k);
  assert.deepEqual(result.failures,[],size.width+' 투구판');assert.equal(result.record,'투구 기록');assert.match(result.pitcher,/구$/);

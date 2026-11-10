@@ -21,7 +21,7 @@ function posGain(p,pos,x){ if(pos===p.pos||!POS_F.includes(pos))return; const E=
 function posWeek(){ const per=period(); const y=G.year; const done=[];
   for(const p of Object.values(G.players)){ if(p.isP||p.team==null)continue; const u=p.use;
     if(u&&u.y===y&&u.pos){ const seen=p.useSeen&&p.useSeen.y===y?p.useSeen.pos:{}; for(const k in u.pos){ const n=u.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*posLearnRate(p)); } p.useSeen={y,pos:Object.assign({},u.pos)}; }
-    const f=p.fuse; if(f&&f.y===y&&f.pos){ const seen=p.fuseSeen&&p.fuseSeen.y===y?p.fuseSeen.pos:{}; for(const k in f.pos){ const n=f.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*.75*posLearnRate(p)*(p.team!=null?posCoachF(p.team):1)); } p.fuseSeen={y,pos:Object.assign({},f.pos)}; }
+    const f=p.fuse; if(f&&f.y===y&&f.pos){ const prev=p.fuseSeen&&p.fuseSeen.y===y?p.fuseSeen:{},seen=prev.pos||{},milSeen=prev.milPos||{}; for(const k in f.pos){ const n=f.pos[k]-(seen[k]||0),mn=f.milPos?Math.min(n,Math.max(0,(f.milPos[k]||0)-(milSeen[k]||0))):(milServing(p)?n:0); if(n>0&&k!==p.pos){const weighted=mn+(n-mn)*(p.team!=null?posCoachF(p.team):1);posGain(p,k,weighted*.9*.75*posLearnRate(p));} } p.fuseSeen={y,pos:Object.assign({},f.pos),milPos:Object.assign({},f.milPos||{})}; }
     const C=p.pconv; if(!C)continue; if(p.joinY>G.year){ delete p.pconv; continue; } /* 합류 전 신인은 구단 훈련으로 포지션이 바뀌지 않는다(검수 11-06) */
     if((per==='pre'||per==='season')&&!(p.injOut>0||milServing(p)||isAway(p)||p.hold||ovsAbroad(p))) /* 해외 연수 중에도 구단 전환 훈련은 없다(검수 11-09o) */ /* 군 복무·대표팀·미계약 중에는 구단 훈련을 받지 못한다 */
     posGain(p,C.pos,1.5*posLearnRate(p)*(p.e1?1:posCoachF(p.team))); /* 전환 완료 검사는 비시즌에도 한다: 마무리캠프에서 기준을 넘길 수 있다(검수 11-06) */ /* 훈련(2군에서는 2군 코치진 육성력만큼 빠르거나 느리다). 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
@@ -36,8 +36,13 @@ function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP
   if(p.age>=33)return `${who}: "이 나이에 새 자리를 익히기는 어렵습니다."`;
   p.pconv={pos,d:G.day}; let tail='';
   if(m&&!m.interim&&m.ego>=70&&!mplOn('listen')&&isRegular(p)){ m.rel=clamp(m.rel-1,0,100); tail=` ${who}이 주전을 흔드는 게 썩 내키지 않아 합니다(관계 -1).`; }
-  let wk=posEtaW(p,pos,p.e1,p.team);
-  return `${p.name}: ${POSK[pos]} 전환 훈련을 시작합니다. ${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가면 그 자리로 경기에도 나갑니다.':'2군에서 그 자리로 경기에도 나갑니다.'} ${wk?`지금 속도면 약 ${wk}주 뒤 주 포지션으로 바꿀 수 있습니다.`:'다만 현재 훈련량으로는 도달 어려움: 숙련이 전환 기준(90)까지 오르지 않습니다.'}${tail}`; }
+  return `${p.name}: ${POSK[pos]} 전환 훈련을 계획했습니다. ${posConvStatus(p,pos)}${tail}`; }
+/* ETA는 실제로 훈련할 수 있는 주 수다. 부상·차출·비시즌 대기는 따로 알린다. */
+function posConvStatus(p,pos=p.pconv?.pos){if(!pos)return '';const reasons=[];if(p.injOut>0)reasons.push(`부상 재활 ${p.injOut}일 남음(현재 예상 회복일 ${dmd(G.day+p.injOut)})`);if(milServing(p))reasons.push('군 복무');else if(isAway(p))reasons.push('대표팀·파견');if(p.hold)reasons.push('연봉 미계약');if(ovsAbroad(p))reasons.push('해외 연수');if(!['pre','season'].includes(period()))reasons.push('비시즌');
+  const wk=posEtaW(p,pos,p.e1,p.team),eta=wk?`훈련 가능한 기간 기준 약 ${wk}주가 필요합니다`:'현재 훈련량으로는 숙련 90 도달이 어렵습니다';
+  if(reasons.length)return `현재 ${reasons.join(' · ')} 때문에 구단 전환 훈련은 대기합니다. 부상·복무·차출 등 출전 불가 기간에는 구단의 2군 실전도 없습니다. 회복·복귀 후 훈련 재개가 가능할 때부터 ${eta}. 대기 기간은 예상 훈련 주 수에 포함하지 않으며, 회복 경과·출전·시즌 일정에 따라 완료일은 달라집니다.`;
+  return `${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가 출전하면 그 자리 실전에서도 배웁니다.':'2군 출전이 가능할 때 그 자리 실전에서도 배웁니다.'} 지금부터 ${eta}. 부상·차출·비시즌 대기 기간은 별도입니다.`;
+}
 function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }
 /* 자리 정착: 지난 시즌 1군 선발의 6할 이상을 다른 자리에서 뛰었고(50경기 이상) 그 자리 숙련이 75를 넘으면, 감독이 그 자리를 주 포지션으로 바꾼다.
    유격↔2루, 3루→1루, 코너 외야 거포→1루, 우익→중견처럼 성적을 내려고 옮긴 자리가 그대로 굳는다. 포수는 바뀌지 않는다 */
@@ -101,7 +106,7 @@ function futLineupE(tid,list){ const used=new Set(), ln={};
     const sc=p=>(k==='DH'?offV(p):posScore(p,k))+(p.age<=24?3:0)-(k!=='DH'&&k!==p.pos&&posExp(p,k)<50?6:0)-(k==='C'&&p.pos!=='C'&&posExp(p,'C')<40?30:0)+nz.get(p.id); /* 포수 경험이 거의 없는 선수는 전문 포수를 제치지 못한다 */
     const c=free.sort((a,b)=>sc(b)-sc(a))[0]; ln[k]=c; used.add(c.id); }
   return ln; }
-function futUse(p,pos,g){ const y=G.year; if(!p.fuse||p.fuse.y!==y)p.fuse={y,g:0,pos:{}}; p.fuse.g+=g; if(pos)p.fuse.pos[pos]=(p.fuse.pos[pos]||0)+g; }
+function futUse(p,pos,g,opts={}){ const y=G.year; if(!p.fuse||p.fuse.y!==y)p.fuse={y,g:0,pos:{}}; p.fuse.g+=g; if(pos){p.fuse.pos[pos]=(p.fuse.pos[pos]||0)+g;const mil=opts.mil??(milServing(p)&&milPeriod(p).unit==='상무');if(mil){const M=p.fuse.milPos=p.fuse.milPos||{};M[pos]=(M[pos]||0)+g;}} }
 function futText(p){ const u=p.fuse&&p.fuse.y===G.year?p.fuse:null; if(!u||!u.g)return ''; const L=Object.entries(u.pos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${POSK[k]||k} ${n}`); return `2군 ${u.g}경기${L.length?' · '+L.join(' · '):''}`; }
 /* 해마다 1월 1일(겨울 성장 뒤) 능력치를 남겨 둔다: 선수 화면에서 지난 시즌과 비교 */
 /* 우리 선수 능력치 기록(FM '최근 능력치 변화'·능력치 기록 그래프처럼, 사용자 11-08): 매달 1일과 창단·이직 때 남긴다. 최근 14개만 */

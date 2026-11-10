@@ -166,8 +166,8 @@ function specialKind(day,hid,aid){
   return null;
 }
 /* 중계로 볼 우리 경기 직전 선수 기록(저장하지 않는 메모리 사본): 중계 중 선수 화면에서 그 경기 결과(투구 수·세이브·좌우·타구 분포)가 먼저 보이지 않게(검수 11-08) */
-let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','fat','l10','hist','injOut','injK','injB','injC','injHist','inj','ucl','reInj']; /* 당일 부상도 경기 전 상태로(검수 11-09zzc #13) */
-const spoilLite=k=>!['gl','hist','spl','spr','l10'].includes(k); /* 저장본에 남기는 가벼운 항목(새로고침 뒤 중계 재개용, 검수 11-09zzc #3). 기록·경기 로그는 박스스코어로 빼 준다 */
+let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','splP','sprP','fat','l10','hist','injOut','injK','injB','injC','injHist','inj','ucl','reInj']; /* 당일 부상도 경기 전 상태로(검수 11-09zzc #13) */
+const spoilLite=k=>!['gl','hist','l10'].includes(k); /* 좌우·타구 분포는 박스에서 역산할 수 없어 경기 전 사본을 함께 저장한다. 시즌·경기 로그는 박스로 빼 준다. */
 function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of playersOf(t)){ const o={}; for(const k of SPOIL_K)o[k]=p[k]===undefined?undefined:JSON.parse(JSON.stringify(p[k])); P[p.id]=o; } SPOIL_SNAP={day,y:G.year,P}; }
 /* 경기 반영(applyGame) 도중 오류가 나면 그 경기에 나온 선수 상태(투구 부하·기록·피로)를 경기 전으로 되돌린다: 다시 치를 때 부하가 두 번 쌓이지 않게(검수 11-09zn) */
 function boxSnap(g){ const L=[]; for(const k of ['h','a'])for(const id of g.S[k].box.keys()){ const p=G.players[id]; if(p)L.push([p,JSON.stringify(p)]); } return ()=>{ for(const [p,j] of L){ for(const k of Object.keys(p))delete p[k]; Object.assign(p,JSON.parse(j)); } }; }
@@ -205,7 +205,7 @@ function futuresWeek(){
     for(const k in ln)futBat(ln[k],t.id,k,3); for(const p of B)if(!st.has(p.id))futBat(p,t.id,null,1);
     const FP=d.futP.filter(p=>healthy(p)&&!futUpToday(p)); /* 오늘 말소·등판한 투수는 퓨처스에 나가지 않으므로 로테이션에서도 뺀다(검수 11-09zx) */ const rot=FP.slice().sort((a,b)=>(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,Math.max(5,FP.filter(p=>rpPlanOf(t.id,p)==='sp2').length)); /* 선발 수업 투수는 모두 2군 로테이션에 든다: 수업 표기인데 구원만 나가지 않게(검수 11-09zi) */ for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
     G.futLn[t.id]={d:G.day,ln:Object.fromEntries(Object.entries(ln).map(([k,p])=>[k,p.id])),rot:rot.map(p=>p.id)}; /* 2군 화면은 실제 배정을 읽는다(검수 11-09zi) */
-    for(const p of d.futP)if(healthy(p))futPit(p,t.id);
+    for(const p of FP)futPit(p,t.id); /* 로테이션을 정한 실제 가용 명단과 기록 생성 명단을 같게 유지한다. */
   }
   /* 상무 복무 선수: 상무 야구단으로 퓨처스리그에 나간다(기록은 원소속 구단 퓨처스 기록에 합쳐 남는다). 현역은 야구를 못 한다 */
   for(const p of Object.values(G.players)){ if(p.team==null||!milServing(p)||p.mil.unit!=='상무'||!healthy(p)||(p.ntAway>G.day&&p.ntFrom<=G.day))continue; /* 대표팀 소집 중이면 상무 경기에 나가지 않는다(검수 11-07) */ if(p.isP)futPit(p,p.team); else futBat(p,p.team,p.pos,3); }

@@ -57,15 +57,26 @@ function fieldV(p,pos){ return defAt(p,pos)+(trt(p,'rng')+trt(p,'fld'))*.5; }
 /* ===== 퓨처스(2군) 주간 경기: 같은 확률식에 부상·투구 부하·후유증 회복까지 적용 ===== */
 function futBoost(p){ try{ return boostOf(p)*.6; }catch(e){ return 0; } }
 const futUpToday=p=>p.downDay===G.day||!!(p.gl&&p.gl.y===G.year&&p.gl.g.some(x=>x[0]===G.day));
-function futBat(p,t,pos,games){ games=games||3; if(futUpToday(p))return; /* 오늘 1군에서 뛰었거나 오늘 말소된 선수는 이번 주 1군에 있었다(검수 11-09t) */ const pa=games>=3?ri(9,14):ri(3,6); const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
+/* 주간 소급 기록도 그 날짜에 이 구단에서 실제 참가할 수 있었는지 확인한다. */
+function futEligibleDay(p,t,d){if(!p||p.team!==t||p.prospect||p.joinY>G.year||!healthy(p)||ovsAbroad(p)||G.cal&&d<G.cal.open)return false;
+  let joined=-Infinity;if(p.acq&&p.acq.tid===t&&p.acq.d!=null)joined=p.acq.d;
+  for(const m of p.tLog||[])if(m.t===t&&m.f!==t&&m.d!=null)joined=Math.max(joined,m.d);
+  for(const m of G.moves||[])if(m.pid===p.id&&m.to===t&&m.from!==t&&m.d!=null)joined=Math.max(joined,m.d);
+  if(joined===-Infinity){const m=(p.story||[]).filter(x=>x.k==='move'&&x.y===G.year&&/이적|입단|복귀/.test(x.t)).pop();if(m)joined=m.d;}
+  if(d<joined||p.downDay!=null&&d<=p.downDay||p.susp>d||p.ntFrom!=null&&p.ntFrom<=d&&p.ntAway>d)return false;
+  if(p.gl&&p.gl.y===G.year&&p.gl.g.some(x=>x[0]===d))return false;
+  const m=milPeriod(p);if(milServing(p)){if(m.unit!=='상무'||!milOn(p,d))return false;}else if(milOn(p,d))return false;
+  for(const h of p.injHist||[])if(h.d!=null&&h.d<=d&&d<(h.bk??(p.injOut>0&&h===(p.injHist||[]).at(-1)?Infinity:h.d+h.days)))return false;
+  const a=p.sisFlAway;if(a&&a.from<=d&&d<a.until)return false;if(d===G.day&&typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))return false;
+  return true;}
+function futBat(p,t,pos,games){ games=games||3; if(futUpToday(p))return;const days=Array.from({length:games},(_,i)=>G.day-games+1+i).filter(d=>futEligibleDay(p,t,d));if(!days.length)return;games=days.length;const pa=games>=3?ri(9,14):games===2?ri(6,10):ri(3,6);
+  const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games,{mil:milServing(p)&&milPeriod(p).unit==='상무',days}); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
   if(p.injFx)injRecover(p,pa);
   if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1}); }
 function futPit(p,t){ const sp=isSPr(p);
   const had=d=>(p.ld||[]).some(x=>x[0]===d); /* 그날 이미(1군 등) 던졌으면 퓨처스 등판을 겹쳐 넣지 않는다(검수 11-07) */
   const days=sp?[G.day]:(p.downDay!=null&&p.downDay>G.day-2)?[G.day]:[G.day-2,G.day]; /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */
-  const mv=(p.story||[]).filter(x=>x.k==='move'&&x.y===G.year&&/이적|입단|복귀/.test(x.t)).pop(), ih=(p.injHist||[]).slice(-1)[0];
-  const okD=d=>d===G.day||(!(mv&&mv.d>d)&&!(p.ntFrom!=null&&p.ntFrom<=d&&p.ntAway>d)&&!(ih&&ih.d<=d&&(ih.bk??(p.injOut>0?Infinity:ih.d+ih.days))>d)&&!(p.susp>d)&&!(p.mil&&p.mil.unit!=='상무'&&p.mil.from<=d&&p.mil.until>d)); /* 작년 부상도 실제 복귀일까지, 출장 정지·현역 복무 중인 날도 빼고(검수 11-09t) */ /* 이적 전·대표팀 소집 중·부상 복귀 전 날짜에는 등판을 만들지 않는다(검수 11-08) */
-  const D=days.filter(d=>!had(d)&&!(d===G.day&&futUpToday(p))&&okD(d)&&!(G.cal&&d<G.cal.open)); /* 개막 전 날짜에는 정규 등판을 만들지 않는다(검수 11-09) */ if(!D.length)return; /* 실제로 던질 날을 먼저 정하고 기록·재활을 그만큼만(검수 11-08: 중복 막고도 성적·재활 진척이 들어감, 1회 등판이 2경기로 기록) */
+  const D=days.filter(d=>!had(d)&&!(d===G.day&&futUpToday(p))&&futEligibleDay(p,t,d)); if(!D.length)return; /* 실제로 던질 날을 먼저 정하고 기록·재활을 그만큼만(검수 11-08: 중복 막고도 성적·재활 진척이 들어감, 1회 등판이 2경기로 기록) */
   let outs=sp?ri(12,18):ri(4,8); if(!sp)outs=Math.max(1,Math.round(outs*D.length/2)); let o=simPit(p,outs,7+futBoost(p)); o.g=sp?1:D.length; o.gs=sp?1:0;
   /* 투구 수 = 상대 타자 수 × 타석당 3.9구(KBO 평균 수준). 예전 식(아웃당 5.4구 + 출루당 4구)은 출루를 두 번 세어 퓨처스 선발이 130~200구를 던진 것으로 잡혔다 */
   const pc=Math.min(sp?110:45,Math.round((outs+(o.h||0)+(o.bb||0)+(o.hbp||0))*3.9));

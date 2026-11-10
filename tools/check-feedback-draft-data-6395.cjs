@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..'),baseline=process.argv.includes('--baseli
 let engine=require('./build.cjs').build({root,write:false}).engine;
 if(baseline)engine=engine.replace(fs.readFileSync(path.join(root,'src/engine/draft/10_draft.js'),'utf8'),()=>fs.readFileSync(process.env.DRAFT_DATA_BASELINE||'/tmp/draft-data-6395-before.js','utf8'));
 const uiPart=(file,names)=>{const source=fs.readFileSync(path.join(root,file),'utf8');return acorn.parse(source,{ecmaVersion:2022}).body.filter(n=>n.type==='FunctionDeclaration'&&names.includes(n.id.name)||n.type==='VariableDeclaration'&&n.declarations.some(d=>names.includes(d.id.name))).map(n=>source.slice(n.start,n.end)).join('\n');};
-const ui=uiPart('src/ui/draft/31_draft_board.js',['DCHK','draftPool','dmemoOf','myBoard'])+'\n'+uiPart('src/ui/staff/33_scouting_train.js',['draftYears','draftHist'])+'\n'+uiPart('src/ui/runtime/00_core.js',['unpack']);
+const ui=uiPart('src/ui/draft/31_draft_board.js',['DCHK','draftPool','dmemoOf','myBoard'])+'\n'+uiPart('src/ui/staff/33_scouting_train.js',['draftYears','draftHist'])+'\n'+uiPart('src/ui/runtime/00_core.js',['unpack'])+'\n'+uiPart('src/ui/shell/01_layout.js',['saveCheck']);
 new Function('assert','baseline',engine+'\n'+ui+String.raw`
 const UI={};function esc(s){return String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));}function csec(t,b){return t+b;}function badge(){return '';}function rchip(v){return String(v);}
 DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let runs=0;while(G.fd&&!G.fd.done&&runs++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.nmFix=1;G.r68=true;const initial=JSON.stringify(G),results=[];

@@ -1,0 +1,230 @@
+{
+  "date": "2026-11-10",
+  "baseline": "c372fd88b726c05c86ca739316788e55e04ae219",
+  "items": [
+    {
+      "n": 96,
+      "status": "수정",
+      "result": "로컬 복원과 파일 가져오기가 같은 시즌 기록 검증을 사용한다."
+    },
+    {
+      "n": 97,
+      "status": "수정",
+      "result": "슬롯 복원에 성공한 뒤에만 기존 중계·선수 상세를 닫는다."
+    },
+    {
+      "n": 98,
+      "status": "수정",
+      "result": "가져오기 저장 실패 시 기존 게임 객체와 상세·비교·일시정지 중계를 보존한다."
+    },
+    {
+      "n": 99,
+      "status": "수정",
+      "result": "삭제 실패 시 자신이 예약한 판번호만 되돌리고 다른 탭 갱신은 보존한다."
+    },
+    {
+      "n": 100,
+      "status": "수정",
+      "result": "본문만 남은 정상 슬롯을 읽으면 목록 정보를 복구한다."
+    },
+    {
+      "n": 101,
+      "status": "수정",
+      "result": "복구 목록에 연도뿐 아니라 실제 날짜와 일자를 보존한다."
+    },
+    {
+      "n": 102,
+      "status": "수정",
+      "result": "본문·판번호가 바뀌면 손상 슬롯 캐시를 무효화해 다시 읽는다."
+    },
+    {
+      "n": 103,
+      "status": "수정",
+      "result": "동일 내용 저장 성공에도 이전 저장 실패 경고를 해제한다."
+    },
+    {
+      "n": 104,
+      "status": "수정",
+      "result": "가져온 주간 요약을 복원하고 후속 저장에도 보존한다."
+    },
+    {
+      "n": 105,
+      "status": "수정",
+      "result": "경기 전 좌우 상대·타구 분포를 저장하고 중계 종료 전 최종 결과 노출을 차단한다."
+    },
+    {
+      "n": 106,
+      "status": "수정",
+      "result": "경기 전 라인업이 당시 선수 기록 스냅샷을 사용하며 은퇴 후에도 유지한다."
+    },
+    {
+      "n": 107,
+      "status": "수정",
+      "result": "과거 연도 재생은 당시 팀 전적을 사용하고 없는 자료를 첫 경기로 단정하지 않는다."
+    },
+    {
+      "n": 108,
+      "status": "수정",
+      "result": "더블헤더 2차전 해설에 같은 날 먼저 끝난 경기만 포함한다."
+    },
+    {
+      "n": 109,
+      "status": "수정",
+      "result": "구단 번호 0을 유효한 승자로 처리한다."
+    },
+    {
+      "n": 110,
+      "status": "수정",
+      "result": "포스트시즌 중계에서 정규시즌 누계를 표시하고 두 대회 기록은 구분한다."
+    },
+    {
+      "n": 111,
+      "status": "수정",
+      "result": "희생플라이·희생번트 기록을 보존해 실시간과 복원 연속 안타 판정을 일치시킨다."
+    },
+    {
+      "n": 112,
+      "status": "수정",
+      "result": "옛 투구 재현은 현재 선수 능력·현역 여부에 의존하지 않는다. 측정 없는 구속·구종은 미기록으로 표시한다."
+    },
+    {
+      "n": 113,
+      "status": "수정",
+      "result": "연기된 포스트시즌 경기와 연결된 예약을 함께 옮긴다. 겹치는 직관은 명시적으로 취소 안내한다."
+    },
+    {
+      "n": 114,
+      "status": "수정",
+      "result": "투수 실책을 정식 박스스코어와 시즌 기록에 반영한다."
+    },
+    {
+      "n": 115,
+      "status": "조건부 목표 명시",
+      "result": "건강한 등록 선발·계투를 모두 활용한다. 대체 투수 소진 시 비상 계속투구를 실제 구수대로 기록한다. 아래 한계 참조."
+    },
+    {
+      "n": 116,
+      "status": "수정",
+      "result": "등판을 역순 입력해도 최근 실제 등판의 연투·짧은 휴식 부하기여를 재계산한다."
+    },
+    {
+      "n": 117,
+      "status": "수정",
+      "result": "입단 전 날짜에는 새 구단 퓨처스 등판을 생성하지 않는다."
+    },
+    {
+      "n": 118,
+      "status": "수정",
+      "result": "전역 뒤에도 복무 경계를 보존해 복무 중 가짜 등판을 차단한다."
+    },
+    {
+      "n": 119,
+      "status": "수정",
+      "result": "월간 2군 선발 수업 리포트는 현 구단 기록만 합산한다."
+    },
+    {
+      "n": 120,
+      "status": "수정",
+      "result": "전역한 야수의 실제 출전 가능 일수만큼 경기·타석·수비 경험을 반영한다."
+    },
+    {
+      "n": 121,
+      "status": "수정",
+      "result": "실제 상무 접수 기간과 입대 연령에 따라 권유·대안을 구분한다."
+    },
+    {
+      "n": 122,
+      "status": "수정",
+      "result": "복무 기관에서 쌓은 포지션 경험에 원 구단 코치 보정을 적용하지 않는다."
+    },
+    {
+      "n": 123,
+      "status": "수정",
+      "result": "부상 중 포지션 전환은 대기 계획으로 안내하고 예상 기간에 남은 재활을 포함한다."
+    },
+    {
+      "n": 124,
+      "status": "수정",
+      "result": "같은 날 구단 별칭·선수 이름 변경과 세이브 교체 시 소식 링크 캐시를 갱신한다."
+    },
+    {
+      "n": 125,
+      "status": "수정",
+      "result": "개인 퓨처스 기록 압축·삭제 전에 연도별 리그 평균 원장을 보존한다."
+    }
+  ],
+  "artifacts": {
+    "index.html": {
+      "bytes": 57938510,
+      "sha256": "2a9b4e149530a932a00d5e5d5c0f5e54e8368a75ed9348bee10e726e6a3b0d60"
+    },
+    "dist/engine.js": {
+      "bytes": 2248642,
+      "sha256": "a671d5909486fa68dea40c1e95c48cd2de925a919592047d1465ee51f26ccac3"
+    }
+  },
+  "checks": {
+    "memoryRebuildMatches": true,
+    "saveFocused": {
+      "passed": 9,
+      "additionalFailedActiveMetaBoundary": true
+    },
+    "saveChromiumTwoTabs": {
+      "passed": 8
+    },
+    "broadcastFocused": {
+      "passed": 16
+    },
+    "matchFocused": {
+      "passed": 16
+    },
+    "futuresFocused": {
+      "passed": 13
+    },
+    "militaryFocused": {
+      "passed": 12
+    },
+    "archiveFocused": {
+      "passed": 5
+    },
+    "spoilerAndLinksChromium": {
+      "passed": true,
+      "widths": [
+        390,
+        768,
+        1366
+      ]
+    },
+    "pitchBoardChromium": {
+      "passed": true,
+      "widths": [
+        390,
+        1280,
+        1366,
+        1920
+      ],
+      "baselineMobileTestExpectationFailureConfirmed": true
+    },
+    "priorRegressions": {
+      "saveSlots": "pass",
+      "draftData6395": "pass",
+      "records6395": "pass",
+      "clubRecords": "pass",
+      "matchEntry": "pass"
+    },
+    "unit": {
+      "passed": 34
+    },
+    "strictSimulation": {
+      "command": "STRICT=1 SEED=7 node tools/check-sim.js 2028",
+      "passed": true,
+      "end": "2028-01-01"
+    },
+    "static": "pass",
+    "fullCheckShRun": false
+  },
+  "limits": [
+    "115 is a conditional 95-pitch target; actual exhausted-pitcher emergency totals remain accurate.",
+    "Previously lost annual history and unmeasured legacy pitches are not fabricated."
+  ]
+}

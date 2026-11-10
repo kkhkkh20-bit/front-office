@@ -28,6 +28,13 @@ export function buildPitchSequence({outcome,target=4,profile},random){
     const after=pitchCountAfter(q);b=after.b;s=after.s;return q;
   });
 }
+/* Old plate appearances kept outcomes, not pitch measurements. Reconstruct only
+   a deterministic count/location sequence; never invent a measured velocity. */
+export function buildLegacyPitchSequence({outcome,batterHand},random){
+  const target=Math.max(outcome==='BB'?4:outcome==='K'?3:1,2+Math.floor(random()*5));
+  const profile={pitches:[{name:'구종 미기록',value:0}],velo:0,max:0,batterHand};
+  return buildPitchSequence({outcome,target,profile},random).map(q=>({...q,v:null,legacy:true}));
+}
 export function pitchCountAfter(q){
   let {b,s}=q;
   if(q.res==='볼'||q.res==='볼넷')b++;

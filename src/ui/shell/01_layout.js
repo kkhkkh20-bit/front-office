@@ -113,15 +113,15 @@ function importText(t,to){
  const m=meta(),fromTitle=!!UI.title,slot=fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot();
  if(fromTitle&&!slot){UI.impMsg='빈 저장 슬롯이 없습니다. 보관할 저장을 내보내고 슬롯을 비운 뒤 불러와 주세요.';render();return;}
  if(G){ try{ saveFlush(); }catch(e){} } /* 기다리던 저장을 먼저 끝낸다: 가져오기를 되돌릴 때 그 진행이 사라지지 않게 */
- const old=G, cur0=CUR_SLOT, rev0=SLOT_REV, cf0=SAVE_CONFL, nw0=SLOT_NEW, err0=SAVE_ERR; /* 저장을 끝낸 뒤의 판번호를 기억한다(검수 11-09zr #3: 먼저 기억하면 되돌릴 때 이 탭 저장을 다른 탭 충돌로 오인) */
- const back=()=>{ G=old; CUR_SLOT=cur0; SLOT_REV=rev0; SAVE_CONFL=cf0; SLOT_NEW=nw0; if(!fromTitle)SAVE_ERR=err0; try{ worldReset(); syncMinSal(); }catch(e){} }; /* 기존 게임은 다시 고치지 않고 그대로 돌려놓고, 연도별 기준(최저 연봉)·캐시만 다시 맞춘다(검수 11-09) */
- try{ G=g; migrateDraft(); uiSaveSync(); slotInfo(); }catch(e){ back(); UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.'; render(); return; } /* 복원과 저장 정보 생성까지 확인한 뒤에만 저장한다 */
+ const old=G, cur0=CUR_SLOT, rev0=SLOT_REV, cf0=SAVE_CONFL, nw0=SLOT_NEW, err0=SAVE_ERR, stage0=_saveGStage; /* 저장을 끝낸 뒤의 판번호를 기억한다(검수 11-09zr #3: 먼저 기억하면 되돌릴 때 이 탭 저장을 다른 탭 충돌로 오인) */
+ const back=()=>{ _saveGStage=stage0; G=old; CUR_SLOT=cur0; SLOT_REV=rev0; SAVE_CONFL=cf0; SLOT_NEW=nw0; if(!fromTitle)SAVE_ERR=err0; try{ worldReset(); syncMinSal(); }catch(e){} }; /* 기존 게임은 다시 고치지 않고 그대로 돌려놓고, 연도별 기준(최저 연봉)·캐시만 다시 맞춘다(검수 11-09) */
+ try{ _saveGStage=true; G=g; migrateDraft(); slotInfo(); }catch(e){ back(); UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.'; render(); return; } /* 복원과 저장 정보 생성까지 확인한 뒤에만 저장한다 */
  CUR_SLOT=slot; if(fromTitle)slotRevSync(slot,m); SLOT_NEW=true; /* 가져온 게임은 새 슬롯에만 쓴다. 활성 슬롯은 저장이 성공한 뒤에만 바꾼다(검수 11-07: 실패하면 빈 슬롯이 활성으로 남아 이어하기가 사라짐) */
  let ok=false; try{ ok=saveNow(); }catch(e){ ok=false; }
  const confl=!ok&&SAVE_CONFL, body=!ok&&!confl&&(()=>{ try{ const h=unpack(localStorage.getItem(slotKey(slot))); return !!h&&JSON.stringify(h)===prepG(); }catch(e){ return false; } })(); /* 본문은 쓰이고 목록만 실패한 경우: 다시 읽은 내용 전체가 같을 때만(검수 11-09: 같은 구단·날짜의 기존 본문을 새 본문으로 착각) */
  let act=true;
  if(fromTitle){ if(ok||body){ const m2=meta(); m2.active=slot; act=setMeta(m2); } else { back(); UI.impMsg=`슬롯 ${slot}에 저장하지 못해 가져오지 않았습니다. 기존 세이브는 그대로입니다. ${SAVE_ERR||''}`.trim(); try{ toast(UI.impMsg); }catch(e){} render(); return; } }
- else if(!ok&&!body){ const why=SAVE_ERR; back(); UI.impMsg=`${confl?'다른 탭(창)이 이 슬롯을 더 최근에 저장해':'저장 공간이 부족해'} 슬롯 ${slot}에 쓰지 못해 가져오지 않았습니다. 진행 중이던 게임은 그대로입니다. ${G&&SAVE_CONFL?'이 탭의 진행을 남기려면 저장 슬롯의 "빈 슬롯에 따로 저장"을 누르세요. ':''}백업은 처음 화면의 불러오기에서 빈 슬롯으로 가져올 수 있습니다.`; if(!SAVE_ERR)SAVE_ERR=why; try{ toast(UI.impMsg); }catch(e){} render(); return; } /* 슬롯에 쓰지 못하면 메모리의 게임도 바꾸지 않는다(검수 11-09zr #4·#7: 미저장 진행이 사라지고, 경고는 설정 화면에만) */ /* 가져온 게임은 새 슬롯에만 쓴다(검수 11-06: 활성 기록 실패 때 기존 슬롯을 덮어씀) */ closeSheets();UI.title=false;UI.sstep='main';UI.tab='home';UI.readingOpen={};UI.readingScroll={};
+ else if(!ok&&!body){ const why=SAVE_ERR; back(); UI.impMsg=`${confl?'다른 탭(창)이 이 슬롯을 더 최근에 저장해':'저장 공간이 부족해'} 슬롯 ${slot}에 쓰지 못해 가져오지 않았습니다. 진행 중이던 게임은 그대로입니다. ${G&&SAVE_CONFL?'이 탭의 진행을 남기려면 저장 슬롯의 "빈 슬롯에 따로 저장"을 누르세요. ':''}백업은 처음 화면의 불러오기에서 빈 슬롯으로 가져올 수 있습니다.`; if(!SAVE_ERR)SAVE_ERR=why; try{ toast(UI.impMsg); }catch(e){} render(); return; } /* 슬롯에 쓰지 못하면 메모리의 게임도 바꾸지 않는다(검수 11-09zr #4·#7: 미저장 진행이 사라지고, 경고는 설정 화면에만) */ /* 가져온 게임은 새 슬롯에만 쓴다(검수 11-06: 활성 기록 실패 때 기존 슬롯을 덮어씀) */ _saveGStage=stage0; try{ G=old; closeSheets(); }finally{ G=g; } UI.title=false; uiSaveSync(); UI.sstep='main';UI.tab='home';UI.readingOpen={};UI.readingScroll={};
  const actMsg=act?'':` 다만 다음에 열 슬롯 기록을 바꾸지 못했습니다. 다시 열면 처음 화면의 불러오기에서 슬롯 ${slot}을(를) 고르세요.`; /* 활성 슬롯 변경도 확인해 알린다(검수 11-09) */
  UI.impMsg=(ok?'불러왔습니다.':'불러와 슬롯에 저장했지만 저장 목록을 갱신하지 못했습니다. 다시 열어도 가져온 백업이 열립니다.')+actMsg; if(!ok||actMsg){ try{ toast(UI.impMsg); }catch(e){} } /* 홈으로 옮기므로 경고는 알림으로도(검수 11-09zr #7) */ /* 충돌로 막히면 본문은 그대로다: 같은 구단·날짜라도 복원됐다고 하지 않는다(검수 11-08) */ /* 본문이 실제로 바뀌었는지 보고 안내(검수 11-07) */render(); /* 저장까지 확인한 뒤 성공 안내(검수 11-06) */
 }

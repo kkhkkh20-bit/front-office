@@ -16,11 +16,13 @@ function revOf(m,n){ return (m.slots[n]&&m.slots[n].rev)||0; }
 function revNext(r0){ return Math.max(Math.floor(r0)+1,Date.now())+Math.random(); }
 function slotHas(n){ try{ return localStorage.getItem(slotKey(n))!=null; }catch(e){ return false; } }
 /* 이번 실행에서 열지 못한 슬롯(본문 손상·복원 실패): 이어하기 대상에서 뺀다(검수 11-09 #16) */
-const SLOT_BAD={};
+const SLOT_BAD={}, SLOT_BAD_AT={};
+function slotBad(n,why){ SLOT_BAD[n]=why; try{ SLOT_BAD_AT[n]={body:localStorage.getItem(slotKey(n)),rev:revOf(meta(),n)}; }catch(e){ SLOT_BAD_AT[n]=null; } }
+function slotBadCurrent(n,m){ if(!SLOT_BAD[n])return false; const old=SLOT_BAD_AT[n]; try{ if(old&&(old.rev!==revOf(m,n)||old.body!==localStorage.getItem(slotKey(n)))){ delete SLOT_BAD[n]; delete SLOT_BAD_AT[n]; return false; } }catch(e){} return true; }
 /* 이어하기 대상: 활성 슬롯에 본문이 있으면 그것, 없으면(지워짐·첫 저장 실패·목록 유실) 본문이 남은 다른 슬롯(검수 11-09 #9·#11·#12) */
-function contSlot(m){ m=m||meta(); return [m.active,...SLOT_IDS].find(n=>SLOT_IDS.includes(n)&&!SLOT_BAD[n]&&slotHas(n))??null; }
+function contSlot(m){ m=m||meta(); return [m.active,...SLOT_IDS].find(n=>SLOT_IDS.includes(n)&&!slotBadCurrent(n,m)&&slotHas(n))??null; }
 function setActive(n){ const m=meta(); m.active=n; return setMeta(m); } /* 목록을 새로 읽어 활성 번호만 바꾼다(검수 11-09 #4: 예전에 읽은 목록 전체를 다시 써 다른 탭 판번호를 되돌림) */
-function slotInfoOf(g){ const t=(g.teams||[]).find(x=>x.id===g.user); return {tid:g.user,name:t?`${t.city} ${t.nick}`:'',date:'',y:g.year,at:Date.now()}; }
+function slotInfoOf(g){ const t=(g.teams||[]).find(x=>x.id===g.user); return {tid:g.user,name:t?`${t.city} ${t.nick}`:'',date:Number.isFinite(g.day)?dstr(g.day):'',day:g.day,y:g.year,at:Date.now()}; }
 /* 다른 탭과 겹쳐 저장하지 못한 진행을 버리기 전 한 번 묻는다(불러오기와 같은 방식). 같은 것을 다시 누르면 true(검수 11-09zr #5: 새 게임 준비만 열어도 진행이 사라짐) */
 function confDrop(k){ if(!G||!SAVE_CONFL||UI.confDrop===k){ UI.confDrop=null; return true; } UI.confDrop=k; UI.slotMsg=`이 탭의 진행(${dstr(G.day)})은 다른 탭과 겹쳐 저장되지 않았습니다. 새 게임을 시작하면 이 진행은 사라집니다. 남기려면 먼저 "빈 슬롯에 따로 저장"을 누르세요. 그래도 시작하려면 한 번 더 누르세요.`; try{ toast(UI.slotMsg); }catch(e){} try{ render(); }catch(e){} return false; }
 /* 화면을 옮기기 전 저장: 다른 탭과 겹쳐 저장을 막은 상태면 이미 안내했으니 그대로 옮긴다 */
@@ -42,18 +44,19 @@ function castHoldSync(){ const c=UI.cast||UI.castRet, g=G&&c&&c.hold&&G.games[c.
   const ps=S&&S.day===g.day&&S.y===dobj(g.day).y?Object.fromEntries(ids.filter(id=>S.P[id]).map(id=>[id,Object.fromEntries(SPOIL_K.filter(spoilLite).map(k=>[k,S.P[id][k]]))])):H0&&H0.gid===g.gid&&H0.ps||null;
   G.castHold={g:c.g,gid:g.gid,k:c.k||0,play:UI.cast===c?!!c.play:!!c.wasPlay,pre:c.pre?1:0,spd:c.spd||1,mode:c.mode==='all'?'all':'hl',...(c.pitch&&c.pitch.k===c.k&&c.pitch.shown>0?{pi:c.pitch.shown}:{}),...(UI.cwAfter?{cw:UI.cwAfter}:{}),...(ps?{ps}:{})}; }
 /* 저장 전 화면 상태가 이 세이브(G) 것인지 먼저 맞춘다(검수 11-09zzc #1: 가져온 백업에 이전 게임의 중계 위치가 저장됨) */
-function prepG(){ try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } return JSON.stringify(G); } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
+let _saveGStage=false; /* 가져오기 저장 확인 전에는 현재 화면 상태를 건드리거나 새 게임에 섞지 않는다 */
+function prepG(){ if(_saveGStage)return JSON.stringify(G); try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } return JSON.stringify(G); } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
 function packJ(j){ if(ZOK){ try{ return z15(fflate.deflateSync(new TextEncoder().encode(j),{level:6})); }catch(e){ ZERR=String(e&&e.message||e); } } return LZString.compressToUTF16(j); } /* deflate가 실패하면 예전 LZ로 저장 */
 async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
 function packG(){ return packJ(prepG()); }
-function unpack(s){ if(!s)return null; try{ const txt=s[0]==='{'?s:s[0]===ZMK?new TextDecoder().decode(fflate.inflateSync(unz15(s))):LZString.decompressFromUTF16(s); const g=JSON.parse(txt); return g&&g.ver===4?g:null; }catch(e){ return null; } }
+function unpack(s){ if(!s)return null; try{ const txt=s[0]==='{'?s:s[0]===ZMK?new TextDecoder().decode(fflate.inflateSync(unz15(s))):LZString.decompressFromUTF16(s); const g=JSON.parse(txt); return g&&!saveCheck(g)?g:null; }catch(e){ return null; } }
 let SAVE_ERR='';
 /* 저장은 몰아서 한다: 저장 한 번에 압축(LZ)이 수백 ms 걸리고 시즌이 쌓일수록 길어져, 하루 진행·버튼마다 바로 저장하면 게임이 굼떠졌다.
    save()는 0.7초 안에 들어온 요청을 한 번으로 묶고, 슬롯 바꾸기·내보내기·처음 화면 같은 곳은 saveNow()로 바로 저장한다.
    탭을 닫거나 숨기면(pagehide·visibilitychange) 남은 저장을 바로 끝낸다 */
 let _svT=null;
 function save(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(!G)return; if(_svT)clearTimeout(_svT); _svT=setTimeout(()=>{ _svT=null; saveStoreAsync(); },700); }
-function saveNow(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(_svT){ clearTimeout(_svT); _svT=null; } return saveStore(); } /* 저장 성공 여부를 돌려준다 */
+function saveNow(){ if(G&&!_saveGStage){ G.stops=G.stops||[]; tutTick(); } if(_svT){ clearTimeout(_svT); _svT=null; } return saveStore(); } /* 저장 성공 여부를 돌려준다 */
 function saveFlush(){ const h0=G&&JSON.stringify(G.castHold||null); try{ castHoldSync(); }catch(e){} if(_svT||_svBusy||_svFail||(G&&JSON.stringify(G.castHold||null)!==h0)){ /* 자동 재생으로 지나간 중계 장면도 탭을 숨길 때 저장(검수 11-09zzc #4·#5) */ if(_svT)clearTimeout(_svT); _svT=null; saveStore(); } } /* 몰아 저장이 압축 중이어도 탭을 닫을 땐 바로 저장한다. 실패한 저장은 다음 마감 때 다시 시도한다(검수 11-09zr #8) */
 try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')saveFlush(); }); window.addEventListener('beforeunload',saveFlush); }catch(e){}
 /* 저장 순번: 늦게 끝난 몰아 저장(비동기)이 그사이 바로 저장한 더 새 상태를 덮지 않게 한다 */
@@ -82,17 +85,24 @@ function slotFix(n,r){ try{ const m=meta(); if(revOf(m,n)!==r)return; const h=un
 /* 바뀐 것이 없으면 쓰지 않는다: 진행 없이 처음 화면으로 나간 탭이 판번호를 올려 다른 탭 저장을 막지 않게(검수 11-09 #7) */
 let _svJ=null, _svN=null, _svWarn=false; function svMark(){ _svJ=G?prepG():null; _svN=curSlot(); }
 function svSame(n,j){ return j===_svJ&&n===_svN&&slotHas(n); }
-function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; const j=prepG(); if(svSame(n,j)){ _svFail=false; return true; } const ok=writeSlot(n,packJ(j),slotInfo()); if(ok){ _svJ=j; _svN=n; } _svFail=!ok; return ok; }
-async function saveStoreAsync(){ if(!G)return; const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(), j=prepG(); if(svSame(n,j))return; _svBusy=true; let data=null;
+function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; const j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } const ok=writeSlot(n,packJ(j),slotInfo()); if(ok){ _svJ=j; _svN=n; } _svFail=!ok; return ok; }
+async function saveStoreAsync(){ if(!G)return; const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(), j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } _svBusy=true; let data=null;
   try{ data=await packJAsync(j); }catch(e){ data=null; }
   if(seq!==_svSeq||G!==g)return; _svBusy=false; let ok; if(data==null)ok=saveStore(); else if((ok=writeSlot(n,data,info))){ _svJ=j; _svN=n; }
   _svFail=!ok; if(ok)_svWarn=false; else if(!SAVE_CONFL&&!_svWarn){ _svWarn=true; try{ toast(`자동 저장에 실패했습니다. ${SAVE_ERR}`); }catch(e){} } } /* 자동 저장 실패를 바로 알린다(검수 11-09 #10). 실패가 이어지는 동안은 한 번만 */
+function slotRecover(n,g,body,m0){ if(m0.slots[n])return m0; try{ const m=meta(); if(m.slots[n]||localStorage.getItem(slotKey(n))!==body)return m0;
+  const r=revNext(0); m.slots[n]=Object.assign(slotInfoOf(g),{rev:r}); if(!slotHas(m.active))m.active=n;
+  if(!setMeta(m))return m0;
+  if(revOf(meta(),n)!==r)return m0;
+  if(localStorage.getItem(slotKey(n))!==body){ slotFix(n,r); return m0; }
+  return m;
+ }catch(e){ return m0; } }
 function load(){ const m=meta();
   try{ const old=localStorage.getItem(SAVE); if(old&&!SLOT_IDS.some(n=>m.slots[n]&&slotHas(n))){ const g=unpack(old); if(g){ /* 목록에 본문 없는 항목만 남아 있어도 구형 세이브를 옮긴다(검수 11-09zr #11) */ /* 목록만 비고 슬롯 본문이 남아 있으면 그 본문을 목록에 다시 올리고, 구형 세이브는 빈 슬롯으로 옮긴다(검수 11-07: 슬롯 1을 덮어씀) */ let act=null; for(const n of SLOT_IDS){ if(!slotHas(n))continue; const h=unpack(localStorage.getItem(slotKey(n))); if(h){ if(!m.slots[n])m.slots[n]=slotInfoOf(h); if(act==null)act=n; } }
     const to=SLOT_IDS.find(n=>!slotHas(n)); if(act!=null&&!slotHas(m.active))m.active=act; try{ if(to==null)throw 0; localStorage.setItem(slotKey(to),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(localStorage.getItem(slotKey(to)))){ m.slots[to]=slotInfoOf(g); if(act==null)m.active=to; if(setMeta(m))localStorage.removeItem(SAVE); } }catch(e){ if(act!=null)setMeta(m); }
     if(act==null){ CUR_SLOT=m.slots[m.active]?m.active:(to||1); slotRevSync(CUR_SLOT,m); return g; } } } }catch(e){} /* 새 슬롯을 읽을 수 있을 때만 원본을 지우고, 못 옮겨도 읽은 원본으로 이어서 시작한다(검수 11-06) */
   /* 활성 슬롯 본문이 없거나 손상됐으면 본문이 남은 다른 슬롯을 연다. 못 연 슬롯은 이유를 처음 화면에 보인다(검수 11-09 #9·#11·#12·#14) */
-  CUR_SLOT=null; for(let n;(n=contSlot(m))!=null;){ let g=null; try{ g=unpack(localStorage.getItem(slotKey(n))); }catch(e){} if(g){ CUR_SLOT=n; slotRevSync(n,m); return g; } SLOT_BAD[n]='저장 본문을 읽을 수 없습니다'; UI.slotMsg=`슬롯 ${n}을(를) 불러오지 못했습니다. 저장 본문이 손상됐습니다. 내보내기 백업이 있으면 그걸로 가져오세요.`; } return null; }
+  CUR_SLOT=null; for(let n;(n=contSlot(m))!=null;){ let g=null,body=null; try{ body=localStorage.getItem(slotKey(n)); g=unpack(body); }catch(e){} if(g){ const fixed=slotRecover(n,g,body,m); CUR_SLOT=n; slotRevSync(n,fixed); return g; } slotBad(n,'저장 본문을 읽을 수 없습니다'); UI.slotMsg=`슬롯 ${n}을(를) 불러오지 못했습니다. 저장 본문이 손상됐습니다. 내보내기 백업이 있으면 그걸로 가져오세요.`; } return null; }
 function slotSize(n){ try{ const s=localStorage.getItem(slotKey(n)); return s?Math.round(s.length*2/1024):0; }catch(e){ return 0; } }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=s=>document.querySelector(s);
@@ -127,7 +137,7 @@ const wide=()=>typeof matchMedia!=='undefined'&&matchMedia('(min-width:980px)').
 function rcol(v){ return v>=75?'var(--r75)':v>=65?'var(--r65)':v>=55?'var(--r55)':v>=50?'var(--r50)':v>=45?'var(--r45)':v>=35?'var(--r35)':'var(--r20)'; }
 /* 글 속 선수·구단 이름을 누를 수 있게 */
 let _lk={k:null};
-function linkMap(){ const n=Object.keys(G.players).length; const k=G.year+':'+G.day+':'+n+':'+G.user; if(_lk.k===k)return _lk;
+function linkMap(){ const ps=Object.values(G.players); const k=G.year+':'+G.day+':'+G.user+':'+JSON.stringify(G.teams.map(t=>[t.id,t.city,t.nick]))+':'+JSON.stringify(ps.map(p=>[p.id,p.name,p.team,!!p.prospect])); if(_lk.g===G&&_lk.k===k)return _lk;
   const names={}; const sc=p=>(p.team===G.user?3:p.team!=null?2:p.foreign?1:0);
   for(const p of Object.values(G.players)){ if(!p.name||p.name.length<2||p.prospect&&!(G.draft&&!G.draft.done))continue; const c=names[p.name]; if(c==null||sc(p)>sc(G.players[c]))names[p.name]=p.id; }
   const teams={}; for(const t of G.teams){ teams[t.city+' '+t.nick]=t.id; teams[t.nick]=t.id; }
@@ -138,7 +148,7 @@ function linkMap(){ const n=Object.keys(G.players).length; const k=G.year+':'+G.
     const C=G.coach&&G.coach[t.id]; if(C)for(const r of CKEYS)if(C[r])addP(C[r].name,t.id===G.user?'person':'lteam',t.id===G.user?'c:'+r:t.id); }
   for(const m of [...(G.mmarket||[]),...(G.exMgr||[])])addP(m.name,'person','xmgr:'+m.id); for(const a of G.abroad||[])if(!a.back)addP(a.name,'person','abr:'+a.id); for(const o of G.ob||[])addP(o.name,'person','ob:'+o.id); /* 떠난 사람도 소식 속 이름을 누르면 인물 창(현역 이름이 먼저) */
   const er=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); const tk=Object.keys(teams).sort((a,b)=>b.length-a.length).map(er); const pk=[...Object.keys(names),...Object.keys(ppl)].sort((a,b)=>b.length-a.length).map(er);
-  const src=`(${tk.join('|')})|(?<![가-힣A-Za-z])(${pk.join('|')})`; _lk={k,names,teams,ppl,re:new RegExp(src,'g'),re1:new RegExp(src)}; return _lk; }
+  const src=`(${tk.join('|')})|(?<![가-힣A-Za-z])(${pk.join('|')})`; _lk={g:G,k,names,teams,ppl,re:new RegExp(src,'g'),re1:new RegExp(src)}; return _lk; }
 function linkify(h){ if(!G||!h)return h; const L=linkMap(); return h.replace(L.re,(m,t,pn)=>{ if(t)return `<a class="tl" data-a="lteam" data-v="${L.teams[t]}">${t}</a>`; if(L.names[pn]!=null)return `<a class="pl" data-a="player" data-v="${L.names[pn]}">${pn}</a>`; const q=L.ppl[pn]; return q?`<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`:pn; }); }
 /* 조사 자동 맞춤: 화면에 "을(를)·이(가)·은(는)·와(과)·(으)로·(이)라"가 남으면 앞 글자 받침을 보고 고른다 */
 const JOSA_RE=/을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|\(이\)라/g;
