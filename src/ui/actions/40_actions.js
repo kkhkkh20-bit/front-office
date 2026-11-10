@@ -361,6 +361,11 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   slotCopy(){ if(!G)return; if(!saveNow()&&!SAVE_CONFL){ UI.slotMsg=`지금 상황(${dstr(G.day)})을 먼저 저장하지 못해 복사하지 않았습니다. ${SAVE_ERR}`; render(); return; } /* 다른 탭과 겹쳐 원래 슬롯에 못 쓴 진행도 빈 슬롯에는 남길 수 있다(검수 11-09 #6) */ const confl=SAVE_CONFL, m=meta(); const to=SLOT_IDS.find(n=>!slotUsed(n,m)); if(!to){ UI.slotMsg=`빈 슬롯이 없습니다. 슬롯 하나를 지운 뒤 다시 누르세요.`; render(); return; }
     /* 메모리의 진행을 그대로 쓴다. 판번호는 writeSlot이 새로 만들어, 같은 번호 슬롯을 지우고 다시 복사해도 옛 탭이 덮지 못한다(검수 11-09 #1) */ const memo=(m.slots[curSlot()]||{}).memo; if(!writeSlot(to,packG(),Object.assign(slotInfo(),memo!=null?{memo}:{}),0)){ UI.slotMsg=`따로 저장하지 못했습니다. ${SAVE_ERR}`.trim(); render(); return; }
     UI.slotMsg=confl?`슬롯 ${to}에 이 탭의 진행(${dstr(G.day)})을 따로 저장했습니다. 슬롯 ${curSlot()}에는 다른 탭의 더 최근 저장이 남아 있습니다. 이 진행을 이어 하려면 슬롯 ${to}을(를) 여세요.`:`슬롯 ${to}에 지금 상황(${dstr(G.day)})을 따로 저장했습니다. 계속 진행하는 곳은 슬롯 ${curSlot()}입니다.`; render(); },
+  /* 지금 진행을 이미 쓰는 다른 슬롯에 덮어 저장(커뮤니티 제보 11-11): 한 번 더 눌러야 덮는다. 계속 진행하는 곳은 지금 슬롯 */
+  slotOver(v){ if(!G)return; const n=+v, m=meta(); if(n===curSlot()||!SLOT_IDS.includes(n))return; if(UI.overAsk!==n){ UI.overAsk=n; UI.slotMsg=`슬롯 ${n}의 저장(${(m.slots[n]||{}).name||''})을 지우고 지금 진행(${dstr(G.day)})으로 덮어씁니다. 되돌릴 수 없습니다. 한 번 더 누르면 덮어씁니다.`; render(); return; } UI.overAsk=null;
+    if(!saveNow()&&!SAVE_CONFL){ UI.slotMsg=`지금 상황(${dstr(G.day)})을 먼저 저장하지 못해 덮어쓰지 않았습니다. ${SAVE_ERR}`; render(); return; }
+    const memo=(m.slots[curSlot()]||{}).memo; if(!writeSlot(n,packG(),Object.assign(slotInfo(),memo!=null?{memo}:{}),revOf(meta(),n))){ UI.slotMsg=`덮어쓰지 못했습니다. ${SAVE_ERR}`.trim(); render(); return; }
+    UI.slotMsg=`슬롯 ${n}에 지금 상황(${dstr(G.day)})을 덮어 저장했습니다. 계속 진행하는 곳은 슬롯 ${curSlot()}입니다.`; render(); },
   slotAll(){ UI.slotAll=!UI.slotAll; render(); },
   dview(v){ UI.dview=v; render(); },
   tpOpen(v,el){ const c=el&&el.closest('.tmk'); if(c){ c.classList.toggle('open');const open=c.classList.contains('open');(UI.teamOpen=UI.teamOpen||{})[v]=open;el.textContent=open?'접기':'자세히';el.setAttribute('aria-expanded',String(open)); } },

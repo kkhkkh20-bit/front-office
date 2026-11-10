@@ -48,6 +48,7 @@ node tools/check-coach-display-scale.cjs || fail=1
 node tools/check-trade-listing-feedback.cjs || fail=1
 node tools/check-free-agent-workspace.cjs || fail=1
 node tools/check-inbox-reading-feedback.cjs || fail=1
+step "검수 126~157: 결산·시상 성과의 주인·업적 조건·통산·구장 재정·개인 활동"; node tools/check-feedback-126157.cjs || fail=1
 step "기사 본문·댓글·발행 당시 맥락 일치"
 node tools/check-news-comment-context.cjs || fail=1
 node tools/check-news-comment-boundaries.cjs || fail=1

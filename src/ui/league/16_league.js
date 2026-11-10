@@ -9,8 +9,9 @@ function standView0(){
   const msg=live&&period()==='season'?(mi<=4?`가을야구권 ${stRank(order,G.user)}위 · 6위와 ${Math.max(0,gbOf(me,order[5])).toFixed(1)}경기 차`:`5위 ${tshort(fifth.tid)}와(과) ${gbOf(fifth,me).toFixed(1)}경기 차`):'';
   // 상대 전적
   const h2h=hasTl?`<div class="tw"><table class="h2h"><thead><tr><th>상대</th>${G.teams.filter(t=>t.id!==G.user).map(t=>`<th>${badge(t.id,16)}</th>`).join('')}</tr></thead><tbody><tr class="me"><td>${tshort(G.user)}</td>${G.teams.filter(t=>t.id!==G.user).map(t=>{ const r=h2hOf(G.user,t.id); return `<td class="${r.w>r.l?'pos':r.w<r.l?'neg':''}">${r.w+r.l+r.t?`${r.w}-${r.l}${r.t?'-'+r.t:''}`:'-'}</td>`; }).join('')}</tr></tbody></table></div>`:'';
-  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),['map','구단 전력'],['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
+  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
   if(tt.cur==='teams')return tt.bar+teamsView();
+  if(tt.cur==='last')return tt.bar+lastStandCard();
   if(tt.cur==='tbl'&&fmOn())return tt.bar+standFm(order,live,y);
   if(tt.cur==='tbl')return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">${live?`${G.year} 정규시즌 순위`:`${y} 최종 순위`}</h2>${msg?`<span class="small">${msg}</span>`:''}</div>
     <div class="tw"><table class="stt"><thead><tr><th class="stk">순위 · 구단</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th>${cols}</tr></thead><tbody>${rows}</tbody></table></div>
@@ -23,6 +24,10 @@ function standView0(){
   const myC=G.history.filter(h=>h.champ===G.user).length;
   return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">역대 우승</h2><span class="trow">${myC?`${tname(G.user)} 우승 ${myC}회 ${[...Array(Math.min(myC,8))].map(()=>trophyImg(22)).join('')}`:''}</span></div><div class="list">${[...G.history].filter(h=>h.champ!=null).reverse().map(h=>`<div class="item champ${h.champ===G.user?' me':''}" style="cursor:default">${ART.trophy(28)}<span class="nm">${h.y} ${badge(h.champ,18)} ${tname(h.champ)}</span><span class="sub">준우승 ${tname(h.runner)}</span></div>`).join('')}</div></section>`;
 }
+/* 지난 시즌 최종 순위(커뮤니티 제안 11-11): 시즌 중에도 지난해 순위를 본다. 신인 드래프트 지명 순서를 가늠할 때 쓴다 */
+function lastStandCard(){ const H=[...(G.history||[])].reverse().find(h=>h.order&&h.order.length); if(!H)return ''; /* 가장 최근에 끝난 시즌 */
+  const rows=H.order.map((o,i)=>{ const tid=o.tid??o, w=o.w, l=o.l, t=o.t||0; const res=H.champ===tid?'우승':H.runner===tid?'준우승':''; return `<tr class="${tid===G.user?'me':''}"><td class="num">${i+1}</td><td style="text-align:left">${badge(tid,16)} ${esc(tshort(tid))}</td><td class="num">${w!=null?`${w}승 ${l}패${t?` ${t}무`:''}`:'-'}</td><td class="num">${w!=null&&w+l?fmt3(w/(w+l)):'-'}</td><td>${res}</td></tr>`; }).join('');
+  return `<section class="card"><div class="row between"><h2 class="sec">${H.y} 시즌 최종 순위</h2><span class="small muted">결정전·포스트시즌 결과를 반영한 공식 순위</span></div><div class="tw"><table class="tbl"><thead><tr><th>순위</th><th style="text-align:left">구단</th><th>성적</th><th>승률</th><th>한국시리즈</th></tr></thead><tbody>${rows}</tbody></table></div></section>`; }
 function teamRecCard(){
   const per=period(); const y=per==='season'||per==='post'||(G.sea&&G.sea.y===G.year&&G.cal&&G.day>G.cal.open)?G.year:G.year-1; const T=teamStats(y);
   const cols=[{k:'tm',l:'구단',v:r=>tshort(r.tid),f:r=>`${badge(r.tid,16)} ${tshort(r.tid)}`,cls:'stk'},
