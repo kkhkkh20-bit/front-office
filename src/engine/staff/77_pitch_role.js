@@ -20,11 +20,14 @@ function mgrRolePlan(p,tid,ctx){ const m=mgrOf(tid); const thr=rpThr(tid); const
   const useful=penV(p)>=ctx.penMid; const room=trnRoom(p,'sta');
   if(p.age<=23&&room>=2&&p.r.stf>=40&&(youth>=60||!useful))return 'sp2'; /* 당장 불펜에서 쓸 만하지 않거나 육성을 중시하는 감독이면 2군 선발 수업 */
   return 'rp'; }
-function rpPlanOf(tid,p){ if(!p||!p.isP)return null; if(tid===G.user&&G.prole&&G.prole[p.id]&&(G.prole[p.id].tid??tid)===tid)return G.prole[p.id].k; /* 단장 요청은 요청한 구단 것만(검수 11-09: 이직 뒤 주간 처리에 따라 지워짐) */ const x=G.rplan&&G.rplan[p.id]; return x&&x.tid===tid?x.k:null; }
+/* 명시 구단이 있는 요청은 그 구단 운영 계획이다. 이직 뒤에도 남고, 선수 이적에는 따라가지 않는다. */
+function rpClubRequest(tid,p){if(!p||p.team!==tid)return null;const direct=G.prole&&G.prole[p.id],saved=G.clubT&&G.clubT[tid]&&G.clubT[tid].prole&&G.clubT[tid].prole[p.id];if(direct&&(direct.tid===tid||direct.tid==null&&tid===G.user))return direct;return saved&&(saved.tid??tid)===tid?saved:null;}
+function rpPlanOf(tid,p){ if(!p||!p.isP||p.team!==tid)return null;const request=rpClubRequest(tid,p);if(request)return request.k;const x=G.rplan&&G.rplan[p.id];return x&&x.tid===tid?x.k:null; }
 function rpBias(tid,p){ const k=rpPlanOf(tid,p); return k==='sp'?12:k==='rp'?-25:0; }
-function rpWhy(p,tid){ const thr=rpThr(tid), m=mgrOf(tid); const sm=m&&m.small!=null?m.small:50; const gap=p.r.sta-thr;
+const rpFitGap=(p,tid)=>p.r.sta+(p.rAdj||0)/.9-rpThr(tid);
+function rpWhy(p,tid){ const thr=rpThr(tid), m=mgrOf(tid); const sm=m&&m.small!=null?m.small:50; const gap=rpFitGap(p,tid);
   const st=gap>=3?'선발로 버틸 체력이 됩니다':gap>=-3?'선발 체력 기준에 거의 닿았습니다':gap>=-9?'선발로 던지기에는 체력이 조금 모자랍니다':'선발로 던지기에는 체력이 많이 모자랍니다';
-  return st+(sm>=65?' (짧게 끊어 가는 운영이라 체력 기준이 낮은 편)':(m&&m.pen>=65)?' (불펜 비중이 커서 선발 체력 기준이 높은 편)':''); }
+  return ((p.rAdj||0)?'선발 적성을 반영하면 ':'')+st+(sm>=65?' (짧게 끊어 가는 운영이라 체력 기준이 낮은 편)':(m&&m.pen>=65)?' (불펜 비중이 커서 선발 체력 기준이 높은 편)':''); }
 /* 매주(시즌 준비·정규시즌): 신인 계획을 세우고, 선발 수업을 마친 선수를 올리고, 2군 선발 수업 중인 투수는 2군에서 선발로 던지게 한다 */
 function rpWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return; G.rplan=G.rplan||{}; const y=G.year; const myNew=[], grad=[];
   for(const t of G.teams){ const ctx=rpCtx(t.id); const thr=rpThr(t.id);
@@ -45,7 +48,7 @@ function rpWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return; G.
 function rpMgrView(p){ const tid=p.team; const x=G.rplan&&G.rplan[p.id]; const k=x&&x.tid===tid?x.k:null; const thr=rpThr(tid);
   if(k==='sp2')return {k:'sp2',t:`2군에서 선발로 던지며 체력을 키우게 하겠습니다. ${rpWhy(p,tid)}.`};
   if(k==='rp')return {k:'rp',t:`신인이라 계투로 시작하겠습니다(1군 불펜 자리가 나면 올립니다). ${rpWhy(p,tid)}.`};
-  return {k:p.r.sta+(p.rAdj||0)/.9>=thr?'sp':'rp',t:`체력과 투구 내용으로 선발 5명을 정합니다. ${rpWhy(p,tid)}.`}; }
+  return {k:rpFitGap(p,tid)>=0?'sp':'rp',t:`체력과 투구 내용으로 선발 5명을 정합니다. ${rpWhy(p,tid)}.`}; }
 function rpNow(p){ if(!p.isP)return ''; if(rpPlanOf(p.team,p)==='sp2')return '2군 선발 수업'; if(!p.e1&&entryOn())return '2군'; return p.role==='SP'?'1군 선발':'1군 계투'; }
 /* 단장 요청 */
 function proleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.isP||G.unemp)return '우리 투수만 정할 수 있습니다.'; if(!PROLE[k])return ''; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년 합류 예정이라 아직 보직을 정할 수 없습니다.`; /* 훈련·포지션 전환과 같게(검수 11-06) */ G.prole=G.prole||{};

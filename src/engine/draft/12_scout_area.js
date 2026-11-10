@@ -59,6 +59,6 @@ function areaVisitAdd(L){ const c={}; for(const p of L||[]){ const k=areaOf(p); 
 function amRaw(p){ const h=p.am; if(!h)return null; if(p.isP){ const r=pRate(h); return 10-r.era+(h.so/Math.max(1,h.outs/3))*.8; } return bRate(h).ops*10; }
 /* 투수와 타자는 점수 척도가 달라 올해 후보 안에서 각각 표준점수로 맞춘다(검수 11-09e #28) */
 let _amZ=null;
-function amScore(p){ const x=amRaw(p); if(x==null)return -99; const ids=G.draftClass||[], k=G.year+':'+ids.length+':'+ids[0];
-  if(!_amZ||_amZ.k!==k){ const z={k}; for(const P of [true,false]){ const v=ids.map(id=>G.players[id]).filter(q=>q&&!!q.isP===P).map(amRaw).filter(y=>y!=null); const m=v.length?sum(v)/v.length:0; z[P]={m,s:Math.sqrt(v.length?sum(v.map(y=>(y-m)**2))/v.length:1)||1}; } _amZ=z; }
-  const s=_amZ[!!p.isP]; return (x-s.m)/s.s; }
+function amScore(p){ const x=amRaw(p); if(x==null)return -99; const rows=(G.draftClass||[]).map(id=>G.players[id]).filter(Boolean).map(q=>({id:q.id,isP:!!q.isP,v:amRaw(q)})),k=rows.map(q=>q.id+':'+q.isP+':'+q.v).join('|');
+  if(!_amZ||_amZ.g!==G||_amZ.k!==k){const z={g:G,k};for(const P of [true,false]){const v=rows.filter(q=>q.isP===P&&q.v!=null).map(q=>q.v),m=v.length?sum(v)/v.length:0;z[P]={m,s:Math.sqrt(v.length?sum(v.map(y=>(y-m)**2))/v.length:1)||1};}_amZ=z;}
+  const s=_amZ[!!p.isP];return (x-s.m)/s.s; }

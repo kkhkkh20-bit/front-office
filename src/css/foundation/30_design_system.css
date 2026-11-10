@@ -113,10 +113,15 @@
 
 /* 같은 보직 카드끼리 이름·능력·설명·계약 버튼의 행 경계를 공유한다. */
 :is(#app,#sheet) .cgrid:has(>.csl){align-items:stretch;grid-auto-rows:auto}
-:is(#app,#sheet) .cgrid>.csl{display:grid;grid-template-rows:subgrid;grid-row:span 9;align-self:stretch;align-content:stretch;gap:8px;padding:12px}
+:is(#app,#sheet) .cgrid>.csl{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:subgrid;grid-row:span 9;min-width:0;align-self:stretch;align-content:stretch;gap:8px;padding:12px}
 :is(#app,#sheet) .csl-h{min-height:24px;align-items:center}
 :is(#app,#sheet) .csl-n{min-height:40px;font-size:var(--ui-heading);line-height:24px;align-items:center}
-:is(#app,#sheet) .csl-s{min-height:24px;align-items:center}
+:is(#app,#sheet) .csl-s{min-height:24px;align-items:center;flex-wrap:wrap}
+:is(#app,#sheet) .csl-s>.cst{flex:none;white-space:nowrap}
+:is(#app,#sheet) .csl .rc{flex:none;white-space:nowrap}
+:is(#app,#sheet) .csl-s>.pill{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+:is(#app,#sheet) .csl .csl-note{min-width:0;margin:0;overflow-wrap:anywhere}
+:is(#app,#sheet) .csl>.pcb>.csl-note{flex-basis:100%}
 :is(#app,#sheet) .csl>.small{font-size:var(--ui-caption);line-height:16px;min-height:32px}
 :is(#app,#sheet) .csl>.row:last-child{grid-row:9}
 /* 연장·승격 줄과 인물 카드·교체·해지 줄은 한 칸에 묶어 겹치지 않게 쌓는다 */

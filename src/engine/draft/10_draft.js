@@ -80,10 +80,26 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   if(G.formY!==G.year&&G.day>=G.cal.camp)rollForm();
   for(const p of Object.values(G.players)) if(p.foreign){ if(!p.orig)p.orig=origOf(p); if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80)); }
   /* 외국인 후보 채우기는 다음 날짜 진행(07_daily)에 맡긴다: 같은 저장을 두 번 열면 후보가 달라졌다(검수 11-09zr #13) */
-  if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 지워진 후보의 메모(검수 11-09ze) */
-  if(!(G.draft&&!G.draft.done)&&!(G.draft&&G.draft.done&&G.draft.y===G.year)&&(!G.draftClass||G.draftClass.length<DRAFT_POOL-10||G.draftClass.some(id=>G.players[id]&&!G.players[id].school))){
-    for(const id of (G.draftClass||[])){ const p=G.players[id]; if(p&&p.prospect&&!p.ovsRet)delete G.players[id]; } /* 해외파 복귀자는 남겨 새 명단에 다시 넣는다(검수 11-09ze) */
-    if(G.draft&&G.draft.done&&G.draft.cls)G.draft.cls=[]; makeDraftClass(); }
+  migrateDraftPool(); /* 학교 정보 하나가 없거나 풀이 작다는 이유로 저장한 후보를 다시 뽑지 않는다 */
+  if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
+  recoverDraftLogs();
+}
+/* 예전 후보는 인물·능력·관찰·메모를 그대로 두고 학교/권역 표시만 보완한다. */
+function migrateDraftPool(){
+  const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&d.y===G.year);
+  const valid=L=>[...new Set((Array.isArray(L)?L:[]).filter(id=>G.players[id]&&typeof G.players[id]==='object').map(id=>G.players[id].id??id))];
+  const prospects=Object.values(G.players).filter(p=>p&&p.prospect).map(p=>p.id);
+  const source=Array.isArray(G.draftClass)&&G.draftClass.length?G.draftClass:live&&Array.isArray(d.cls)?d.cls:prospects;
+  G.draftClass=valid(source);
+  if(!G.draftClass.length&&!live&&!done){ if(prospects.length)G.draftClass=valid(prospects); else makeDraftClass(); }
+  if(live)d.cls=valid(Array.isArray(d.cls)?d.cls:G.draftClass);
+  for(const id of new Set([...G.draftClass,...(live?d.cls:[])])){ const p=G.players[id]; if(!p||!p.prospect)continue;
+    const school=typeof p.school==='string'&&p.school.trim(), known=school&&AREA.find(a=>a.hs.includes(school)||a.un.includes(school));
+    const area=areaDef(p.area)||known||areaDef(areaOf(p));
+    if(!p.area&&area)p.area=area.k; if(!p.region&&area)p.region=area.reg;
+    if(!school)p.school='학교 정보 없음'; /* 근거 없는 학교·아마 성적을 새로 만들지 않는다 */
+    if(p.schoolHue==null)p.schoolHue=Math.floor(u01('sh',p.school)*360);
+  }
 }
 /* 그해 신인 드래프트 지명 순서: 지난 시즌 순위의 역순(r2: 2라운드부터). 경쟁균형세 3회 연속 초과 구단은 1라운드(r1)에서 9단계 내려간다.
    드래프트 날 전에도 같은 순서를 미리 알려 줄 수 있게 따로 계산한다 */
@@ -114,12 +130,23 @@ function startDraft(){
 }
 /* 드래프트 성적표: 한 해 지명자 전체의 현재 모습 */
 function draftTidOf(p){ const st=(p.story||[]).find(x=>x.k==='draft'); if(!st)return null; const t=G.teams.find(t=>st.t.includes(tname(t.id))); return t?t.id:null; }
-function draftClass(y){ const L=(G.dlog&&G.dlog[y])||Object.values(G.players).filter(p=>p.draft&&p.draft.y===y).map(p=>({id:p.id,nm:p.name,t:p.draft.tid??draftTidOf(p),rd:p.draft.rd,no:p.draft.no,pos:posLabel(p),pr:p.press||null}));
-  return L.map(x=>{ const p=G.players[x.id]; const c=p?careerOf(p):null; const a=!p&&G.arch&&G.arch[x.id]; /* 은퇴해도 지명 성과는 보관 기록으로 */ return Object.assign({},x,{p,war:c?c.war:a?a.rows.reduce((s,r)=>s+(r.war||0),0):0,now:p?p.team:null,ovr:p?Math.round(ovr(p)):null,n:(x.rd-1)*10+x.no}); }); }
+/* 누락된 지명 장부만 현역/보관 기록의 명시적 지명 정보로 복원한다. 팀 소속·이름으로는 추정하지 않는다. */
+function draftRecoveredRows(y){ const L=[],seen=new Set(),add=(p,a)=>{ const d=p.draft||{}, year=d.y??(a?p.dy:null); if(year!==y||p.id==null||seen.has(String(p.id)))return;
+    const tid=d.tid??(a?p.dt:draftTidOf(p)); if(tid==null||!team(tid))return;
+    seen.add(String(p.id)); L.push({id:p.id,nm:p.name,t:tid,rd:d.rd??'?',no:d.no??'?',pos:a?(p.isP?p.pos:POSK[p.pos]||p.pos):posLabel(p),pr:p.press||null}); };
+  for(const p of Object.values(G.players))if(p)add(p,false);
+  for(const p of Object.values(G.arch||{}))if(p&&!seen.has(String(p.id)))add(p,true);
+  return L;
+}
+function recoverDraftLogs(){ const years=new Set(); for(const p of Object.values(G.players).concat(Object.values(G.arch||{}))){ if(!p)continue; const y=p.draft&&p.draft.y!=null?p.draft.y:p.dy; if(Number.isInteger(y)&&y<=G.year)years.add(y); }
+  for(const y of years)if(!Array.isArray(G.dlog&&G.dlog[y])){ const L=draftRecoveredRows(y); if(L.length)(G.dlog=G.dlog||{})[y]=L; }
+}
+function draftClass(y){ const L=Array.isArray(G.dlog&&G.dlog[y])?G.dlog[y]:draftRecoveredRows(y), seen=new Set();
+  return L.filter(x=>x&&x.id!=null&&!seen.has(String(x.id))&&seen.add(String(x.id))).map(x=>{ const p=G.players[x.id]; const c=p?careerOf(p):null; const a=!p&&G.arch&&G.arch[x.id]; /* 은퇴해도 지명 성과는 보관 기록으로 */ return Object.assign({},x,{p,war:c?c.war:a?(a.rows||[]).reduce((s,r)=>s+(r.war||0),0):0,now:p?p.team:null,ovr:p?Math.round(ovr(p)):null,n:Number.isInteger(x.rd)&&Number.isInteger(x.no)?(x.rd-1)*10+x.no:null}); }); }
 function draftGrades(y){ const L=draftClass(y); const by={}; for(const x of L){ const t=x.t??(x.p&&x.p.draft?null:null); if(t==null)continue; by[t]=(by[t]||0)+x.war; } const arr=Object.entries(by).map(([t,v])=>({t:+t,v})).sort((a,b)=>b.v-a.v); return arr; }
 /* 지명 3년·5년 뒤 돌아보기: 스틸픽과 실패한 상위 지명 */
 function draftRetro(){ const now=G.year; for(const back of [3,5]){ const y=now-back; const L=draftClass(y); if(L.length<20)continue; /* 은퇴 선수도 보관 기록으로 넣는다: 성적표(draftGrades)와 같은 합계(검수 11-06) */
-  const top=[...L].sort((a,b)=>b.war-a.war); const steal=top.find(x=>x.n>=15&&x.war>=3&&top.indexOf(x)<5); const bust=L.filter(x=>x.n<=3&&x.war<.5).sort((a,b)=>a.war-b.war)[0];
+  const top=[...L].sort((a,b)=>b.war-a.war); const steal=top.find(x=>x.n!=null&&x.n>=15&&x.war>=3&&top.indexOf(x)<5); const bust=L.filter(x=>x.n!=null&&x.n<=3&&x.war<.5).sort((a,b)=>a.war-b.war)[0];
   if(steal)news('분석',`${y} 드래프트 ${back}년 뒤: ${steal.n}순위 ${steal.nm}, 최고의 스틸픽`,`${tname(steal.t)}이(가) ${steal.rd}라운드 ${steal.no}순위로 뽑은 ${steal.nm}이(가) 통산 WAR ${steal.war.toFixed(1)}로 같은 해 지명자 중 ${top.indexOf(steal)+1}위입니다.`,steal.t===G.user?2:0,{ref:steal.id});
   if(bust)news('분석',`${y} 드래프트 ${back}년 뒤: ${bust.n}순위 ${bust.nm}, 아직 물음표`,`${tname(bust.t)}이(가) 전체 ${bust.n}순위로 뽑은 ${bust.nm}의 통산 WAR는 ${bust.war.toFixed(1)}입니다. 같은 해 최고는 ${top[0].nm}(${top[0].war.toFixed(1)}).`,bust.t===G.user?-2:0,{ref:bust.id});
   const mine=L.filter(x=>x.t===G.user); if(mine.length){ const g=draftGrades(y); const rk=g.findIndex(x=>x.t===G.user)+1; note('드래프트',`${y} 드래프트 ${back}년 뒤 성적표: 우리 지명자 통산 WAR 합 ${mine.reduce((a,x)=>a+x.war,0).toFixed(1)}, 리그 ${rk||'-'}위. 영입·계약 → 신인 드래프트 → 성적표에서 자세히 볼 수 있습니다.`); } } }

@@ -20,7 +20,7 @@ function cwH(s){ let h=2166136261>>>0; s=String(s); for(let i=0;i<s.length;i++){
 function cwSec(){ const B=bossOf(G.user); return ['youth','star','crowd','money'][Math.floor(cwH('cwsec:'+B.own.id+':'+B.own.name)*4)]; }
 function cwSt(){ const c=G.cw||(G.cw={}); if(c.y!==G.year){ c.y=G.year; c.n=0; c.last={}; c.lastD=-99; c.gift=0; } c.hist=c.hist||[]; return c; }
 function cwOn(){ return !!(G&&!G.unemp&&!G.gameOver&&G.user!=null&&!team(G.user).indie); }
-function cwActorMatches(who,tid,person){return (tid==null||tid===G.user)&&(person==null||bossOf(tid??G.user)[who==='ceo'?'ceo':'own'].id===person);}
+function cwActorMatches(who,tid,person){const actor=gmCompanion(who==='ceo'?'ceo':'owner',tid??G.user);return !!actor&&(tid==null||tid===G.user)&&(person==null||actor.id===person);}
 function cwNm(who){ const B=bossOf(G.user); return who==='ceo'?`${B.ceo.name} 사장`:`${B.own.name} 회장`; }
 function cwFrom(who){ return who==='ceo'?'사장실':'구단주실'; }
 const cwPct=x=>Math.floor(x*1000+1e-6)/10+'%'; /* 반올림하면 89.5%가 90%로 보여 목표를 넘은 것처럼 보인다(검수 11-09zzd) */

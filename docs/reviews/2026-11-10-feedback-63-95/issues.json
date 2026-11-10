@@ -1,0 +1,171 @@
+{
+  "base": "6652118e",
+  "reportedBase": "13b9639",
+  "issues": [
+    {
+      "id": 63,
+      "status": "existing_fix",
+      "subject": "흑자 결산 연속 부채 초기화"
+    },
+    {
+      "id": 64,
+      "status": "intentional",
+      "subject": "승인된 회사 지원 약정 승계"
+    },
+    {
+      "id": 65,
+      "status": "fixed",
+      "subject": "구형 매각 장부 영구 연대기 복원"
+    },
+    {
+      "id": 66,
+      "status": "existing_fix",
+      "subject": "인수 후 고유 인물 ID"
+    },
+    {
+      "id": 67,
+      "status": "clarified_and_hardened",
+      "subject": "독립구단 소유주 동행 유지·인물 부재 안전 처리"
+    },
+    {
+      "id": 68,
+      "status": "fixed",
+      "subject": "이직 후 직관 알림 종료"
+    },
+    {
+      "id": 69,
+      "status": "fixed",
+      "subject": "후보·메모·관찰 저장 데이터 보존"
+    },
+    {
+      "id": 70,
+      "status": "fixed",
+      "subject": "아카이브 지명 성적표 복원"
+    },
+    {
+      "id": 71,
+      "status": "fixed",
+      "subject": "추천 주체 출처"
+    },
+    {
+      "id": 72,
+      "status": "fixed",
+      "subject": "당일 친분과 주장 캐시"
+    },
+    {
+      "id": 73,
+      "status": "fixed",
+      "subject": "저장별 아마 성적 정렬 캐시"
+    },
+    {
+      "id": 74,
+      "status": "rule_consistency",
+      "subject": "구단별 귀띔 수신"
+    },
+    {
+      "id": 75,
+      "status": "fixed",
+      "subject": "무소속 전환 시 최근 관찰 자료 유지"
+    },
+    {
+      "id": 76,
+      "status": "clarified_and_hardened",
+      "subject": "관찰 전 추정과 미확인 잠재력 구분"
+    },
+    {
+      "id": 77,
+      "status": "fixed",
+      "subject": "과거 지명 평가와 현재 구단 판단 구분"
+    },
+    {
+      "id": 78,
+      "status": "fixed",
+      "subject": "직접 관전 횟수 누적"
+    },
+    {
+      "id": 79,
+      "status": "fixed",
+      "subject": "이적 실패 시 원 소속 계약 보존"
+    },
+    {
+      "id": 80,
+      "status": "fixed",
+      "subject": "AI 고급 채용 월간 공통 한도"
+    },
+    {
+      "id": 81,
+      "status": "fixed",
+      "subject": "교체 후 예산으로 후보 판정"
+    },
+    {
+      "id": 82,
+      "status": "fixed",
+      "subject": "원 영입 구단 학교 친분 귀속"
+    },
+    {
+      "id": 83,
+      "status": "fixed",
+      "subject": "학교 감독 양시장 중복 제거"
+    },
+    {
+      "id": 84,
+      "status": "fixed",
+      "subject": "은퇴 후보 무효화와 나이 동기화"
+    },
+    {
+      "id": 85,
+      "status": "fixed",
+      "subject": "잔여 연봉 실제 현금·장부 정산"
+    },
+    {
+      "id": 86,
+      "status": "existing_path_hardened",
+      "subject": "당일 학교 퇴임 검증·영입 구단 명시"
+    },
+    {
+      "id": 87,
+      "status": "fixed",
+      "subject": "일괄 연장에서 미합류 계약 제외"
+    },
+    {
+      "id": 88,
+      "status": "fixed",
+      "subject": "시장 후보·감독대행 중복 제거"
+    },
+    {
+      "id": 89,
+      "status": "fixed",
+      "subject": "합류 전 코치 영입 차단"
+    },
+    {
+      "id": 90,
+      "status": "fixed",
+      "subject": "진기록 실제 구단 귀속"
+    },
+    {
+      "id": 91,
+      "status": "fixed",
+      "subject": "연속 기록 갱신 최신순"
+    },
+    {
+      "id": 92,
+      "status": "fixed",
+      "subject": "연타석 기록 기사·중복 보상 처리"
+    },
+    {
+      "id": 93,
+      "status": "rule_consistency",
+      "subject": "이직 후 구단 보직 계획 적용"
+    },
+    {
+      "id": 94,
+      "status": "fixed",
+      "subject": "보정 체력 분류·설명 일치"
+    },
+    {
+      "id": 95,
+      "status": "fixed",
+      "subject": "당일 주장 변경 분위기 재계산"
+    }
+  ]
+}

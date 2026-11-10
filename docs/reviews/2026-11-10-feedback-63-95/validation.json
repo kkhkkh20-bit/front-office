@@ -1,0 +1,49 @@
+{
+  "base": "6652118e",
+  "reportedBase": "13b9639",
+  "date": "2026-11-10",
+  "engineSHA256": "9aeb7d82932a860b2289780760475a43026acbefa2dc8c7c44b546d71c8d57ce",
+  "htmlSHA256": "1dba675b7cb162a713a7cdf8c432d2d32ee41b42ab9c1865a322cf24e211aa51",
+  "sourceAndBuildIdentical": true,
+  "classification": {
+    "fixed": 25,
+    "rulesOrBoundariesHardened": 5,
+    "alreadyFixed": 2,
+    "intentional": 1,
+    "total": 33
+  },
+  "checks": {
+    "draftData": "passed: JSON unpack/migration, real board and archive results",
+    "scouting": 15,
+    "schools": 13,
+    "staffMarket": 19,
+    "recordsAndRoles": 8,
+    "ownership": "passed: 63–68 engine, save/reload, all three widths",
+    "feedbackUI": "passed: 1366/768/390, actual player click, memo input, pending hire guard, archived draft",
+    "coachCardGeometry": "passed: 1366/768/390, actual free/candidate controls, internal text bounds, 100 single line, PC shared rows",
+    "unit": 34,
+    "static": "passed",
+    "clubArchive": 7,
+    "clubStaffHistory": 17,
+    "ownershipEngine": 18,
+    "ownershipPeople": 16,
+    "legacyHighSchoolLogic": 10,
+    "featureAndCareerRules": "passed"
+  },
+  "actualBaseballSimulation": {
+    "strict": true,
+    "seed": 7,
+    "end": "2028-01-01",
+    "result": "passed",
+    "seconds": 54
+  },
+  "evidence": {
+    "ui": "/tmp/feedback-6395-ui-final/results.json",
+    "coach": "/tmp/feedback-coach-layout-6395/results.json",
+    "ownership": "/tmp/feedback-ownership-6395"
+  },
+  "fullCheckShRun": false,
+  "eventFrequencyChanged": false,
+  "independentClubConversionAdded": false,
+  "multiYearOwnershipNegotiationAdded": false
+}

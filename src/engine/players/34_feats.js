@@ -8,11 +8,24 @@ function featNth(k){ const N=G.featN=G.featN||{}; if(N[k]==null)N[k]=(G.feats||[
 /* 선수별 기록(프로필용, 최근 40건). 옛 저장은 리그 연표에 남은 그 선수 기록으로 시작한다 */
 function pFeats(p){ if(!p.feats)p.feats=(G.feats||[]).filter(x=>x.pid===p.id).slice(0,40).map(x=>({i:x.id,y:x.y,d:x.d,k:x.k,txt:x.txt,vs:x.vs||'',n:x.n})); return p.feats; }
 const FEAT_PONLY=new Set(['gs','woh']); /* 한 시즌 수십 번 나오는 기록은 리그 연표(600건)를 밀어내지 않게 선수 기록과 누계만 */
+function featFront(list,row){const i=list&&list.indexOf(row);if(i>0){list.splice(i,1);list.unshift(row);}}
+/* 계속되는 한 기록은 ID·통산 회차를 유지하고 최신 달성 날짜의 위치로 옮긴다. */
+function featTouch(p,f,pf){if(f)featFront(G.feats,f);if(pf)featFront(pFeats(p),pf);}
+/* 같은 날의 속보는 정정하고, 다음 날 연장은 새 소식으로 보도한다. 과거 기사는 보존한다. */
+function featStreakNews(f,p,previous){if(!f||G.user==null)return;const nth=f.n?` · 리그 통산 ${f.n}번째`:'';
+  const text=`${p.name} ${f.txt}${f.vs?` (${f.vs})`:''}${nth}`,w=(G.wire||[]).find(x=>x.d===G.day&&x.tid===f.tid&&(x.x&&x.x.feat===f.id||!x.x&&x.ref===p.id&&x.k==='기록'&&x.t.includes(previous)));
+  if(w){w.t=text;w.x=Object.assign({},w.x,{feat:f.id});featFront(G.wire,w);}else wire('기록',text,{tid:f.tid,ref:p.id,x:{feat:f.id}});
+  if(f.tid!==G.user||!G.pr||period()==='pre')return;
+  const title=`${p.name}, ${f.txt}${f.n&&f.maj?` (리그 ${f.n}번째)`:''}`,body=`${f.txt}${f.vs?' · '+f.vs:''}${nth}`;
+  const article=(G.news||[]).find(x=>x.d===G.day&&x.ref===p.id&&(x.feat===f.id||x.feat==null&&x.b.includes(previous)&&x.t.includes(FEATK.hrc)));
+  if(article){article.t=title;article.b=body;article.feat=f.id;article.featTid=f.tid;featFront(G.news,article);}
+  else{const n=news('선수',title,body,f.maj?3:1,{ref:p.id,fanW:f.maj?2:1});if(n){n.feat=f.id;n.featTid=f.tid;}}
+}
 function featAdd(k,p,txt,o){ o=o||{}; G.feats=G.feats||[]; const tid=o.tid??(p?(p.team??(G._fsT&&G._fsT[p.id])??null):null); /* 시즌 기록 집계 중 방출된 선수는 기록을 낸 구단으로(검수 11-08) */ const n=k==='mile'||k==='srec'||k==='hs'?null:featNth(k); const f={id:(G.featSeq=(G.featSeq||0)+1),y:G.year,d:G.day,k,pid:p?p.id:null,name:p?p.name:(o.name||''),tid,txt,vs:o.vs||'',maj:FEATMAJ.has(k)||!!o.maj,v:o.v??null}; if(n)f.n=n;
   if(p){ const L=pFeats(p); L.unshift({i:f.id,y:f.y,d:f.d,k,txt,vs:f.vs,n}); if(L.length>40)L.length=40; }
   if(!FEAT_PONLY.has(k)){ G.feats.unshift(f); if(G.feats.length>600)G.feats.length=600; }
   o.wire=o.wire&&G.user!=null; /* 개막 전 가상 2025시즌(구단 선택 전)에는 잦은 기록 소식을 내지 않는다 */ const nth=n&&(f.maj||o.wire)?` · 리그 통산 ${n}번째`:'';
-  if(f.maj||o.wire){ wire('기록',`${p?p.name+' ':''}${txt}${o.vs?` (${o.vs})`:''}${nth}`,{tid,ref:p?p.id:null}); if(tid===G.user&&G.pr&&period()!=='pre'){ news('선수',`${p?p.name+', ':''}${FEATK[k]}${n&&f.maj?` (리그 ${n}번째)`:''}`,`${txt}${o.vs?` · ${o.vs}`:''}${nth}`,f.maj?3:1,{ref:p?p.id:null,fanW:f.maj?2:1}); } }
+  if(f.maj||o.wire){ wire('기록',`${p?p.name+' ':''}${txt}${o.vs?` (${o.vs})`:''}${nth}`,{tid,ref:p?p.id:null,x:{feat:f.id}}); if(tid===G.user&&G.pr&&period()!=='pre'){ const article=news('선수',`${p?p.name+', ':''}${k==='hrc'?txt:FEATK[k]}${n&&f.maj?` (리그 ${n}번째)`:''}`,`${txt}${o.vs?` · ${o.vs}`:''}${nth}`,f.maj?3:1,{ref:p?p.id:null,fanW:f.maj?2:1});if(article){article.feat=f.id;article.featTid=tid;} } }
   if(tid===G.user&&p&&G.pr&&period()!=='pre')try{ memoAsk(f,p); }catch(e){} /* 우리 선수 대기록이면 기념 유니폼 결정 */
   return f; }
 /* 타석 기록(pbp)에서: 만루 홈런, 연타석 홈런(3연타석 이상, 경기를 넘어 이어짐), 끝내기 홈런·안타. 조회만 하고 난수는 쓰지 않는다 */
@@ -20,7 +33,7 @@ function featPbp(day,g){ const P=g.pbp||[]; const sideOf=id=>g.S.h.box.has(id)?'
   const B=P.filter(r=>typeof r[1]==='number'); const cut=P.length>=1000; /* 경기 엔진 보존 상한(1000줄)과 같게(검수 11-06) */ /* 기록 상한에 걸려 뒤 타석이 빠진 경기는 연타석을 끊는다 */
   for(const r of B){ const p=G.players[r[1]]; if(!p)continue; const k=sideOf(p.id);
     if(r[3]==='HR'&&r[6]===4)featAdd('gs',p,'만루 홈런',{vs:vsOf(k)});
-    if(r[3]==='HR'){ p.hrab=(p.hrab||0)+1; if(p.hrab>=3){ const L=pFeats(p), f0=L.find(x=>x.i===p.hrabF); const txt=`${p.hrab}연타석 홈런`; if(f0){ f0.txt=txt; f0.y=G.year; f0.d=G.day; if('vs' in f0)f0.vs=vsOf(k); const lf=(G.feats||[]).find(x=>x.id===f0.i); if(lf){ lf.txt=txt; lf.v=p.hrab; lf.maj=p.hrab>=4; lf.y=G.year; lf.d=G.day; lf.vs=vsOf(k); lf.tid=g.S[k].tid; } } /* 해를 넘기거나 이적해 갱신하면 그 연도·구단으로(검수 11-09zz) */ /* 기록이 갱신된 날짜·상대로 리그·선수 연표를 같게(검수 11-06) */ else p.hrabF=featAdd('hrc',p,txt,{vs:vsOf(k),v:p.hrab,wire:1}).id; } }
+    if(r[3]==='HR'){ p.hrab=(p.hrab||0)+1; if(p.hrab>=3){ const L=pFeats(p), f0=L.find(x=>x.i===p.hrabF); const txt=`${p.hrab}연타석 홈런`; if(f0){ const previous=f0.txt;f0.txt=txt; f0.y=G.year; f0.d=G.day; if('vs' in f0)f0.vs=vsOf(k); const lf=(G.feats||[]).find(x=>x.id===f0.i); if(lf){ lf.txt=txt; lf.v=p.hrab; lf.maj=p.hrab>=4; lf.y=G.year; lf.d=G.day; lf.vs=vsOf(k); lf.tid=g.S[k].tid; } featTouch(p,lf,f0);if(lf)featStreakNews(lf,p,previous); } /* 해를 넘기거나 이적해 갱신하면 그 연도·구단으로(검수 11-09zz) */ /* 기록이 갱신된 날짜·상대로 리그·선수 연표를 같게(검수 11-06) */ else p.hrabF=featAdd('hrc',p,txt,{vs:vsOf(k),v:p.hrab,wire:1}).id; } }
     else if(p.hrab){ delete p.hrab; delete p.hrabF; } }
   if(cut)for(const r of B){ const p=G.players[r[1]]; if(p){ delete p.hrab; delete p.hrabF; } }
   if(g.walk){ const r=B[B.length-1]; const p=r&&G.players[r[1]]; if(p&&!cut&&['HR','1B','2B','3B'].includes(r[3])){ const k=sideOf(p.id), hr=r[3]==='HR'; featAdd(hr?'wohr':'woh',p,hr?`끝내기 ${r[6]===4?'만루 홈런':'홈런'} (${g.inn}회말)`:`끝내기 ${({'1B':'안타','2B':'2루타','3B':'3루타'})[r[3]]} (${g.inn}회말)`,{vs:vsOf(k),wire:hr}); } } }
@@ -37,23 +50,24 @@ function featBat(p,x,vs){ const sg=(x.h||0)-(x.d||0)-(x.tr||0)-(x.hr||0);
   if(x.hr>=4)featAdd('hr4',p,`한 경기 ${x.hr}홈런`,{vs}); else if(x.hr===3)featAdd('hr3',p,'한 경기 3홈런',{vs});
   if(x.h>=6)featAdd('h6',p,`한 경기 ${x.h}안타`,{vs}); else if(x.h===5)featAdd('h5',p,'한 경기 5안타',{vs});
   if((x.rbi||0)>=8)featAdd('rbi8',p,`한 경기 ${x.rbi}타점`,{vs,maj:x.rbi>=10});
-  if((x.ab||0)+(x.bb||0)+(x.sf||0)>0){ if(x.h>0){ p.hstk=(p.hstk||0)+1; if(p.hstk>=20){ const f=(G.feats||[]).find(z=>z.id===p.hstkF); if(f&&f.pid===p.id){ f.v=p.hstk; f.txt=`${p.hstk}경기 연속 안타`; f.y=G.year; f.d=G.day; f.vs=vs||''; f.maj=p.hstk>=28; const pf=pFeats(p).find(z=>z.i===f.id); if(pf){ pf.txt=f.txt; pf.y=f.y; pf.d=G.day; pf.vs=f.vs; } } /* 갱신한 날의 연도·상대로(검수 11-09zz) */ else p.hstkF=featAdd('hs',p,`${p.hstk}경기 연속 안타`,{vs,v:p.hstk}).id; } } else if(x.ab>0||(x.sf||0)>0){ p.hstk=0; p.hstkF=null; } } } /* 희생플라이는 연속 경기 안타를 끊는다(희생번트·볼넷·사구만 친 경기는 이어진다) */
+  if((x.ab||0)+(x.bb||0)+(x.sf||0)>0){ if(x.h>0){ p.hstk=(p.hstk||0)+1; if(p.hstk>=20){ const f=(G.feats||[]).find(z=>z.id===p.hstkF); if(f&&f.pid===p.id){ f.v=p.hstk; f.txt=`${p.hstk}경기 연속 안타`; f.y=G.year; f.d=G.day; f.vs=vs||''; f.maj=p.hstk>=28; const pf=pFeats(p).find(z=>z.i===f.id); if(pf){ pf.txt=f.txt; pf.y=f.y; pf.d=G.day; pf.vs=f.vs; } featTouch(p,f,pf); } /* 갱신한 날의 연도·상대로(검수 11-09zz) */ else p.hstkF=featAdd('hs',p,`${p.hstk}경기 연속 안타`,{vs,v:p.hstk}).id; } } else if(x.ab>0||(x.sf||0)>0){ p.hstk=0; p.hstkF=null; } } } /* 희생플라이는 연속 경기 안타를 끊는다(희생번트·볼넷·사구만 친 경기는 이어진다) */
 /* 시즌 기록: 정규시즌이 끝날 때 */
 const SBK={hr:['홈런',1],rbi:['타점',1],h:['안타',1],sb:['도루',1],w:['승',1],sv:['세이브',1],so:['탈삼진',1]};
-function featSeason(y){ const B=[], P=[]; G._fsT={}; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(!h)continue; if(p.team==null){ const L=(p.hist||[]).filter(r=>r.y===y&&r.lvl==='1군'&&r.t!=null); if(L.length)G._fsT[p.id]=awTeamOf(p,h,y); } /* 타이틀과 같은 소속 기준(검수 11-09zz) */ (p.isP?P:B).push({p,h}); }
+function featSeason(y){ const B=[], P=[]; G._fsT={}; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(!h)continue; G._fsT[p.id]=awTeamOf(p,h,y); /* 타이틀과 같은 소속 기준(검수 11-09zz) */ (p.isP?P:B).push({p,h}); }
   for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)continue; const h={}; for(const r of R)for(const k of ARCH_K)h[k]=(h[k]||0)+(r[k]||0); (a.isP?P:B).push({p:{id:a.id,name:a.name,isP:a.isP,team:awTeamOf({arch:a},h,y),arch:a,hist:[],r:new Proxy({},{get:()=>50})},h}); } /* 시즌 중 리그를 떠난 선수 기록도 진기록·최고 기록에 넣는다(타이틀과 같은 기준) */
+  const seasonFeat=(k,p,txt)=>featAdd(k,p,txt,{tid:G._fsT[p.id]??p.team??null});
   const qPA=x=>qualPA(x.p,x.h,y), qB=B.filter(qPA), qP=P.filter(x=>qualIP(x.p,x.h,y)); /* 규정타석은 타격왕과 같은 팀 경기 수 기준(검수 11-09zq) */
-  for(const x of B){ const {p,h}=x, r=bRate(h); if(h.hr>=40&&h.sb>=40)featAdd('s4040',p,`40-40 (${h.hr}홈런 ${h.sb}도루)`); else if(h.hr>=30&&h.sb>=30)featAdd('s3030',p,`30-30 (${h.hr}홈런 ${h.sb}도루)`);
-    if(h.hr>=50)featAdd('hr50',p,`시즌 ${h.hr}홈런`); else if(h.hr>=40)featAdd('hr40',p,`시즌 ${h.hr}홈런`); if(qPA(x)&&r.avg>=.3&&h.hr>=30&&h.rbi>=100)featAdd('s330',p,`타율 ${fmt3(r.avg)} · ${h.hr}홈런 · ${h.rbi}타점`); if(h.h>=200)featAdd('h200',p,`시즌 ${h.h}안타`); if(qPA(x)&&r.avg>=.4)featAdd('avg400',p,`시즌 타율 ${fmt3(r.avg)}`); }
-  if(qB.length){ const ma=Math.max(...qB.map(x=>bRate(x.h).avg)), mh=Math.max(...B.map(x=>x.h.hr)), mr=Math.max(...B.map(x=>x.h.rbi)); for(const {p,h} of qB)if(bRate(h).avg===ma&&h.hr===mh&&h.rbi===mr)featAdd('tcB',p,`타격 3관왕 (타율 ${fmt3(ma)} · ${mh}홈런 · ${mr}타점)`); }
-  for(const {p,h} of P){ const qi=qualIP(p,h,y); if(h.w>=20)featAdd('w20',p,`시즌 ${h.w}승`); if(h.sv>=40)featAdd('sv40',p,`시즌 ${h.sv}세이브`); if(h.so>=200)featAdd('k200',p,`시즌 ${h.so}탈삼진`); if(qi&&pRate(h).era<1)featAdd('era0',p,`평균자책점 ${pRate(h).era.toFixed(2)}`); else if(qi&&pRate(h).era<2)featAdd('era1',p,`평균자책점 ${pRate(h).era.toFixed(2)}`); }
-  if(qP.length){ const me=Math.min(...qP.map(x=>pRate(x.h).era)), mw=Math.max(...P.map(x=>x.h.w)), mk=Math.max(...P.map(x=>x.h.so)); for(const {p,h} of qP)if(pRate(h).era===me&&h.w===mw&&h.so===mk)featAdd('tcP',p,`투수 3관왕 (${mw}승 · 평균자책점 ${me.toFixed(2)} · ${mk}탈삼진)`); }
+  for(const x of B){ const {p,h}=x, r=bRate(h); if(h.hr>=40&&h.sb>=40)seasonFeat('s4040',p,`40-40 (${h.hr}홈런 ${h.sb}도루)`); else if(h.hr>=30&&h.sb>=30)seasonFeat('s3030',p,`30-30 (${h.hr}홈런 ${h.sb}도루)`);
+    if(h.hr>=50)seasonFeat('hr50',p,`시즌 ${h.hr}홈런`); else if(h.hr>=40)seasonFeat('hr40',p,`시즌 ${h.hr}홈런`); if(qPA(x)&&r.avg>=.3&&h.hr>=30&&h.rbi>=100)seasonFeat('s330',p,`타율 ${fmt3(r.avg)} · ${h.hr}홈런 · ${h.rbi}타점`); if(h.h>=200)seasonFeat('h200',p,`시즌 ${h.h}안타`); if(qPA(x)&&r.avg>=.4)seasonFeat('avg400',p,`시즌 타율 ${fmt3(r.avg)}`); }
+  if(qB.length){ const ma=Math.max(...qB.map(x=>bRate(x.h).avg)), mh=Math.max(...B.map(x=>x.h.hr)), mr=Math.max(...B.map(x=>x.h.rbi)); for(const {p,h} of qB)if(bRate(h).avg===ma&&h.hr===mh&&h.rbi===mr)seasonFeat('tcB',p,`타격 3관왕 (타율 ${fmt3(ma)} · ${mh}홈런 · ${mr}타점)`); }
+  for(const {p,h} of P){ const qi=qualIP(p,h,y); if(h.w>=20)seasonFeat('w20',p,`시즌 ${h.w}승`); if(h.sv>=40)seasonFeat('sv40',p,`시즌 ${h.sv}세이브`); if(h.so>=200)seasonFeat('k200',p,`시즌 ${h.so}탈삼진`); if(qi&&pRate(h).era<1)seasonFeat('era0',p,`평균자책점 ${pRate(h).era.toFixed(2)}`); else if(qi&&pRate(h).era<2)seasonFeat('era1',p,`평균자책점 ${pRate(h).era.toFixed(2)}`); }
+  if(qP.length){ const me=Math.min(...qP.map(x=>pRate(x.h).era)), mw=Math.max(...P.map(x=>x.h.w)), mk=Math.max(...P.map(x=>x.h.so)); for(const {p,h} of qP)if(pRate(h).era===me&&h.w===mw&&h.so===mk)seasonFeat('tcP',p,`투수 3관왕 (${mw}승 · 평균자책점 ${me.toFixed(2)} · ${mk}탈삼진)`); }
   // 리그 단일 시즌 최고 기록 갱신
-  G.sbest=G.sbest||{}; const first=!Object.keys(G.sbest).length; const tOf=q=>q.team??G._fsT[q.id]??null; /* 방출 선수도 기록을 낸 구단(featAdd와 같게, 검수 11-09zz) */
+  G.sbest=G.sbest||{}; const first=!Object.keys(G.sbest).length; const tOf=q=>G._fsT[q.id]??q.team??null; /* 방출 선수도 기록을 낸 구단(featAdd와 같게, 검수 11-09zz) */
   for(const k in SBK){ const L=(k==='w'||k==='sv'||k==='so')?P:B; let best=null; for(const x of L){ const v=x.h[k]||0; if(!best||v>best.v)best={v,p:x.p}; } if(!best||!best.v)continue;
-    const cur=G.sbest[k]; if(!cur||best.v>cur.v){ G.sbest[k]={v:best.v,name:best.p.name,pid:best.p.id,tid:tOf(best.p),y}; if(!first&&cur)featAdd('srec',best.p,`시즌 최다 ${SBK[k][0]} 신기록 ${best.v} (종전 ${cur.v}, ${cur.name} ${cur.y})`); } }
-  const ab=qB.map(x=>({v:bRate(x.h).avg,p:x.p})).sort((a,b)=>b.v-a.v)[0]; if(ab&&(!G.sbest.avg||ab.v>G.sbest.avg.v)){ const cur=G.sbest.avg; G.sbest.avg={v:ab.v,name:ab.p.name,pid:ab.p.id,tid:tOf(ab.p),y}; if(cur&&!first)featAdd('srec',ab.p,`시즌 최고 타율 신기록 ${fmt3(ab.v)} (종전 ${fmt3(cur.v)})`); }
-  const eb=qP.map(x=>({v:pRate(x.h).era,p:x.p})).sort((a,b)=>a.v-b.v)[0]; if(eb&&(!G.sbest.era||eb.v<G.sbest.era.v)){ const cur=G.sbest.era; G.sbest.era={v:eb.v,name:eb.p.name,pid:eb.p.id,tid:tOf(eb.p),y}; if(cur&&!first)featAdd('srec',eb.p,`시즌 최저 평균자책점 신기록 ${eb.v.toFixed(2)} (종전 ${cur.v.toFixed(2)})`); } }
+    const cur=G.sbest[k]; if(!cur||best.v>cur.v){ G.sbest[k]={v:best.v,name:best.p.name,pid:best.p.id,tid:tOf(best.p),y}; if(!first&&cur)seasonFeat('srec',best.p,`시즌 최다 ${SBK[k][0]} 신기록 ${best.v} (종전 ${cur.v}, ${cur.name} ${cur.y})`); } }
+  const ab=qB.map(x=>({v:bRate(x.h).avg,p:x.p})).sort((a,b)=>b.v-a.v)[0]; if(ab&&(!G.sbest.avg||ab.v>G.sbest.avg.v)){ const cur=G.sbest.avg; G.sbest.avg={v:ab.v,name:ab.p.name,pid:ab.p.id,tid:tOf(ab.p),y}; if(cur&&!first)seasonFeat('srec',ab.p,`시즌 최고 타율 신기록 ${fmt3(ab.v)} (종전 ${fmt3(cur.v)})`); }
+  const eb=qP.map(x=>({v:pRate(x.h).era,p:x.p})).sort((a,b)=>a.v-b.v)[0]; if(eb&&(!G.sbest.era||eb.v<G.sbest.era.v)){ const cur=G.sbest.era; G.sbest.era={v:eb.v,name:eb.p.name,pid:eb.p.id,tid:tOf(eb.p),y}; if(cur&&!first)seasonFeat('srec',eb.p,`시즌 최저 평균자책점 신기록 ${eb.v.toFixed(2)} (종전 ${cur.v.toFixed(2)})`); } }
 
 function retWarT(){ return (G&&G.cfg&&G.cfg.retWar)||60; }
 

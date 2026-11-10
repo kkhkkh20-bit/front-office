@@ -9,14 +9,14 @@ function amConflict(p,k){ const h=p.am; if(!h)return null;
   const pa=h.pa||0; if(pa<60)return null; const bk=h.so?h.bb/h.so:h.bb; const avg=h.ab?h.h/h.ab:0;
   if(k==='eye'&&bk<.4)return `기록은 반대로 볼넷이 적었습니다(볼삼비 ${bk.toFixed(2)})`; if(k==='con'&&(avg<.27||h.so/pa>.25))return `기록은 반대로 타율 ${fmt3(avg)} · 삼진 ${h.so}개(${pa}타석)입니다`;
   if(k==='pow'&&h.hr/pa<.012)return `기록은 반대로 홈런이 ${h.hr}개(${pa}타석)뿐입니다`; return null; }
-function draftView(p,rp){ rp=rp||scoutReport(p); const cl=draftClaim(p); const obsN=cl?cl.obs:dcObs(p,rp.sc); const conf=DC_CONF(rp.sd||9);
+function draftView(p,rp){ rp=rp||scoutReport(p); const cl=draftClaim(p); const obsN=dcObs(p,rp.sc); const conf=DC_CONF(rp.sd||9);
   const h=p.am; let rec='기록 없음';
   if(h){ const nt=amNotes(p)[0]; if(p.isP){ const o=h.outs||0; rec=o?`${ipStr(o)}이닝 ERA ${((h.er||0)*27/o).toFixed(2)} · 탈삼진 ${h.so} · 볼넷 ${h.bb}`:'등판 기록 없음'; } else { const r=bRate(h); rec=`${h.pa}타석 타율 ${fmt3(r.avg)} · OPS ${fmt3(r.ops)} · ${h.hr}홈런 · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'}`; } if(nt)rec+=`. ${nt}`; }
   let obs; if(!rp.sc&&p.gmSeen!==G.year)obs='담당 스카우트가 없어 직접 본 의견이 없습니다.';
   else if(!obsN)obs='담당 스카우트가 아직 이 선수를 보지 못했습니다(관찰 0회).'; /* 배치 첫날(검수 11-09ze) */
   else { const top=[...(rp.tools||[])].sort((a,b)=>b.cur-a.cur)[0]; const c=top&&amConflict(p,top.k);
     obs=top?(c?`관찰에서는 ${TOOLK[top.k]}이(가) 좋아 보였다는 의견이지만, ${c}. 관찰 ${obsN}회로는 이 차이를 설명할 근거가 부족합니다.`:`${GOOD[top.k]} (관찰 ${obsN}회)`):'관찰 의견 없음'; }
-  let fut; if(rp.ofp==null)fut='잠재력은 판단하지 못했습니다(담당 스카우트 없음).';
+  let fut; if(rp.ofp==null)fut=!obsN?'관찰 전 임시 현재능력 추정입니다. 잠재력은 첫 관찰 이후 판단합니다.':'잠재력은 판단하지 못했습니다(담당 스카우트 없음).';
   else { const grow=(rp.notes||[]).find(n=>/자랄 여지/.test(n)); fut=`성장 상한 전망: ${rp.role} · 확신 ${conf}${rp.eta?` · 1군까지 약 ${rp.eta}년(예상)`:''}${grow?`. ${grow}`:''}${conf==='낮음'?'. 관찰이 적어 이 상한까지 크지 못할 가능성도 큽니다.':''}`; }
   return {rec,obs,fut,conf}; }
 /* 위험 원인: 건강 · 평가 불확실 · 긴 육성 · 기술 약점 */
