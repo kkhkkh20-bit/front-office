@@ -20,6 +20,8 @@ reset();const p=domestic(G.user)[0];p.draft={y:G.year-5,tid:G.user,rd:3,no:22};p
 reset();const endTid=finals(),oldK=legMeK();myCInit();assert.equal(gmSucceed({name:'승계 단장',age:42,bg:'corp'}),'');settlement();assert.ok(G.gmRec.L.some(x=>x.k===oldK&&x.t===endTid&&x.c===1));assert.ok(!G.gmRec.L.some(x=>x.k===legMeK()&&x.t===endTid));console.log('추가: 결산 전 세대교체도 전임 우승 귀속 통과');
 // #11: even 260 protected lineage rows respect the advertised 240-row limit.
 reset();const D={y:G.year,L:Array.from({length:260},(_,i)=>({k:'u'+i,n:'단장'+i,t:0,y0:1900+i,y1:1900+i,s:1,w:70,l:74,c:0,u:1}))};legTrim(D);assert.equal(D.L.length,LEG_MAX);console.log('#11 계보만 260행이어도 240행 상한 통과');
+// Permanent archive must remain visible in the actual legacy timeline after recent-feed pruning.
+reset();G.myC.seas=[{y:G.year,tid:G.user,w:80,l:64,ch:0}];chron('star','영구스타보존검사',null,G.user);chron('gm','영구공로자보존검사',null,G.user);const ai=G.teams.find(t=>t.id!==G.user).id;chron('gm','AI공로자혼입금지',null,ai);for(let i=0;i<1000;i++)chron('coach','AI일상'+i,null,ai);assert.ok(!G.chron.some(c=>c.t==='영구스타보존검사'));const timeline=lgTimeline();assert.match(timeline,/영구스타보존검사/);assert.match(timeline,/영구공로자보존검사/);assert.doesNotMatch(timeline,/AI공로자혼입금지/);console.log('추가: 최근소식 정리 후에도 실제 단장 연표의 스타·공로자 보존, AI 제외 통과');
 console.log('레거시 독립 감사: 11개 제보 재현 회귀 통과');
 }
 `)(assert,{}, {},x=>String(x??''),(h,b)=>h+b,()=>'<badge>');

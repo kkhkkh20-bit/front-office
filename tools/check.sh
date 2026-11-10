@@ -27,6 +27,12 @@ step "캘린더 기간·실제 진행·중도 중단"; node tools/check-calendar
 step "시즌 말 국내 선수 보충"; node tools/check-roster-recovery.cjs || fail=1
 step "인원 부족 안내·국내 선수 계약·경기 재개"; node tools/check-roster-recovery-ui.cjs || fail=1
 step "AI 구단 자동 영구결번"; node tools/check-ai-retired-numbers.cjs || fail=1
+step "전 구단 영구 연대기·인사·이적·시설·개인 기록"
+for audit in archive executives staff-history player-history facilities-history records; do
+ node "tools/check-club-${audit}.cjs" || fail=1
+done
+step "전력분석원 정원·보강 요청"; node tools/check-analyst-capacity.cjs || fail=1
+step "타 구단 공개 프로필·통산 기록·연대기·재정 장부"; CLUB_PROFILE_HTML="$PWD/index.html" node tests/tools/check-club-profile-ui.cjs || fail=1
 step "3경기 진행·중계 선택"; node tools/check-match-entry.cjs || fail=1
 step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
 step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1

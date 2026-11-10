@@ -2,7 +2,8 @@
 /* 전력분석·데이터팀: 분석원을 사람으로 뽑아 배치한다(스카우트처럼). 역할 3가지
    상대 전력분석: 상대 타자별 수비 위치·투구 계획 → 실점 억제 / 트래킹 데이터: 장비 운용 → 선수 평가 정확도·랩 성장 / 영상 분석: 상대 투수 공략 → 타격 */
 const AROLE={opp:{l:'상대 전력분석',d:'상대 타자별 수비 위치와 투구 계획을 짭니다. 실점이 줄어듭니다.'},trk:{l:'트래킹 데이터',d:'PTS·트랙맨·랩소도 자료를 다룹니다. 우리·다른 구단 선수의 잠재력 추정이 정확해지고 피칭·타격 랩 효과가 커집니다.'},vid:{l:'영상 분석',d:'상대 투수의 버릇과 볼 배합을 분석합니다. 타자들의 공략이 좋아집니다.'}};
-const ANA_SAL=[0,30,50,80,120,170], ANA_MAX=6;
+/* 역할별 상위 3명의 100/60/30% 가중치는 그대로, 세 역할을 갖출 수 있는 총 정원. */
+const ANA_SAL=[0,30,50,80,120,170], ANA_MAX=9;
 const ANA_CAR={opp:['전 프로 포수','전력분석팀 10년차','전 불펜 코치','기록원 출신'],trk:['통계학 석사','데이터 엔지니어 출신','트래킹 장비 회사 출신','바이오메카닉스 연구원'],vid:['방송 중계 PD 출신','전 프로 타자','영상 편집 전문','전 타격 코치']};
 function mkAnalyst(skill,role){ role=role||pick(Object.keys(AROLE)); return staffAttach({id:'a'+Math.floor(R()*1e9),name:genName(),age:ri(26,55),skill,role,sal:ANA_SAL[skill],since:G.day,car:pick(ANA_CAR[role])},'analyst'); }
 function anaList(){ if(!G.analysts){ const lv=G.data&&G.data.lv!=null?G.data.lv:1; G.analysts=[]; const add=(r,k)=>G.analysts.push(Object.assign(mkAnalyst(k,r),{since:-999})); if(lv>=1){ add('opp',lv>=3?4:lv>=2?3:2); add('trk',lv>=3?4:lv>=2?3:2); add('vid',lv>=3?3:2); } } return G.analysts; }
@@ -13,8 +14,8 @@ function anaEff(tid){if(tid==null)tid=G.user; const o=anaPow('opp',tid)*anaRoleQ
 function dataLv(tid){ return anaEff(tid).rep; }
 function anaSal(){ return sum(anaList().map(a=>a.sal)); }
 function anaMarket(){ const mk=G.year*100+dobj(G.day).m; if(!G.amarket||G.amarketM!==mk){ const keep=(G.amarket||[]).filter(s=>(s.bid&&s.bid.exp>=G.day)||R()<.4); /* 재제안 기한이 남은 후보는 월초 교체에서 빼지 않는다 */ G.amarket=keep; while(G.amarket.length<12){ const sk=R()<.05?5:R()<.17?4:R()<.42?3:R()<.75?2:1; G.amarket.push(mkAnalyst(sk)); } G.amarketM=mk; } return G.amarket; }
-function hireAna(id){ const a=anaMarket().find(x=>x.id===id); if(!a)return '후보가 없습니다.'; if(anaList().length>=ANA_MAX)return `분석원은 ${ANA_MAX}명까지입니다.`; a.since=G.day; G.analysts.push(a); G.amarket=G.amarket.filter(x=>x.id!==id); addLog(`${AROLE[a.role].l} 분석원 ${a.name}(능력 ${a.skill})을(를) 연 ${money(a.sal)}에 채용했습니다.`); return ''; }
-function fireAna(id){ const a=anaList().find(x=>x.id===id); if(!a)return ''; G.analysts=G.analysts.filter(x=>x.id!==id); addLog(`분석원 ${a.name}과(와) 계약을 정리했습니다.`); return ''; }
+function hireAna(id){ const a=anaMarket().find(x=>x.id===id); if(!a)return '후보가 없습니다.'; if(anaList().length>=ANA_MAX)return `분석원은 ${ANA_MAX}명까지입니다.`; a.since=G.day; G.analysts.push(a); G.amarket=G.amarket.filter(x=>x.id!==id); staffHistory('analyst',a,'영입',G.user,`연 ${money(a.sal)}`); addLog(`${AROLE[a.role].l} 분석원 ${a.name}(능력 ${a.skill})을(를) 연 ${money(a.sal)}에 채용했습니다.`); return ''; }
+function fireAna(id){ const a=anaList().find(x=>x.id===id); if(!a)return ''; G.analysts=G.analysts.filter(x=>x.id!==id); staffHistory('analyst',a,'계약 종료',G.user,'단장 결정'); addLog(`분석원 ${a.name}과(와) 계약을 정리했습니다.`); return ''; }
 function setAnaRole(id,role){ const a=anaList().find(x=>x.id===id); if(!a||!AROLE[role])return ''; if(a.role!==role){staffAttach(a,'analyst'); a.role=role; a.since=G.day; } return ''; } /* 역할을 바꾸면 다시 30일 적응 */
 function dataReport(m){ if(G.unemp||!anaList().length)return; const lv=dataLv(G.user); const T=G.teams.map(t=>({tid:t.id,b:Object.assign({},ZB),p:Object.assign({},ZP,{roe:0})}));
   for(const z of y1Rows(G.year)){ const h=z.h; if(h.t==null||!T[h.t])continue; const X=z.isP?T[h.t].p:T[h.t].b; for(const k in X)X[k]+=h[k]||0; } /* 떠난 선수가 이미 쌓은 기록도 그 구단 기록으로 */

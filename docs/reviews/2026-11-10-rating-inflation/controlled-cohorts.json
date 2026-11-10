@@ -1,0 +1,348 @@
+{
+  "seed": 7,
+  "displayMap": [
+    {
+      "raw": 45,
+      "display": 58
+    },
+    {
+      "raw": 51,
+      "display": 63
+    },
+    {
+      "raw": 52.4,
+      "display": 65
+    },
+    {
+      "raw": 58,
+      "display": 73
+    },
+    {
+      "raw": 65,
+      "display": 84
+    },
+    {
+      "raw": 72,
+      "display": 95
+    },
+    {
+      "raw": 78,
+      "display": 100
+    }
+  ],
+  "initialDomestic": {
+    "n": 520,
+    "rawMean": 42.71,
+    "displayMean": 57.28,
+    "rawP90": 53.21,
+    "rawMax": 66.46,
+    "raw65": 1,
+    "display65": 73,
+    "display80": 4,
+    "rawPotential": 46.75
+  },
+  "freshRookies": {
+    "n": 420,
+    "rawMean": 23.87,
+    "displayMean": 37.47,
+    "rawP90": 30.7,
+    "rawMax": 59.99,
+    "raw65": 0,
+    "display65": 4,
+    "display80": 0,
+    "rawPotential": 41.26
+  },
+  "freshForeignMarket": {
+    "n": 400,
+    "rawMean": 51.83,
+    "displayMean": 65.53,
+    "rawP90": 59.3,
+    "rawMax": 66.45,
+    "raw65": 4,
+    "display65": 196,
+    "display80": 17,
+    "rawPotential": 52.43
+  },
+  "scenarios": [
+    {
+      "mode": "winter_unattached",
+      "samples": [
+        {
+          "step": 0,
+          "n": 420,
+          "rawMean": 23.87,
+          "displayMean": 37.47,
+          "rawP90": 30.7,
+          "rawMax": 59.99,
+          "raw65": 0,
+          "display65": 4,
+          "display80": 0,
+          "rawPotential": 41.26
+        },
+        {
+          "step": 5,
+          "n": 420,
+          "rawMean": 28.46,
+          "displayMean": 44.64,
+          "rawP90": 37.72,
+          "rawMax": 62.41,
+          "raw65": 0,
+          "display65": 2,
+          "display80": 1,
+          "rawPotential": 39.81
+        },
+        {
+          "step": 10,
+          "n": 420,
+          "rawMean": 32.6,
+          "displayMean": 48.29,
+          "rawP90": 44.29,
+          "rawMax": 55.09,
+          "raw65": 0,
+          "display65": 2,
+          "display80": 0,
+          "rawPotential": 37.48
+        }
+      ]
+    },
+    {
+      "mode": "winter_AI_full_play",
+      "samples": [
+        {
+          "step": 0,
+          "n": 420,
+          "rawMean": 23.87,
+          "displayMean": 37.47,
+          "rawP90": 30.7,
+          "rawMax": 59.99,
+          "raw65": 0,
+          "display65": 4,
+          "display80": 0,
+          "rawPotential": 41.26
+        },
+        {
+          "step": 5,
+          "n": 420,
+          "rawMean": 30.79,
+          "displayMean": 47.06,
+          "rawP90": 40.27,
+          "rawMax": 60.74,
+          "raw65": 0,
+          "display65": 6,
+          "display80": 0,
+          "rawPotential": 40.2
+        },
+        {
+          "step": 10,
+          "n": 420,
+          "rawMean": 35.92,
+          "displayMean": 51.22,
+          "rawP90": 48.08,
+          "rawMax": 60.52,
+          "raw65": 0,
+          "display65": 19,
+          "display80": 0,
+          "rawPotential": 39.02
+        }
+      ]
+    },
+    {
+      "mode": "winter_plus_two_camps",
+      "samples": [
+        {
+          "step": 0,
+          "n": 420,
+          "rawMean": 23.87,
+          "displayMean": 37.47,
+          "rawP90": 30.7,
+          "rawMax": 59.99,
+          "raw65": 0,
+          "display65": 4,
+          "display80": 0,
+          "rawPotential": 41.26
+        },
+        {
+          "step": 5,
+          "n": 420,
+          "rawMean": 29.82,
+          "displayMean": 46.14,
+          "rawP90": 39.22,
+          "rawMax": 66.06,
+          "raw65": 1,
+          "display65": 6,
+          "display80": 1,
+          "rawPotential": 39.94
+        },
+        {
+          "step": 10,
+          "n": 420,
+          "rawMean": 33.64,
+          "displayMean": 49.4,
+          "rawP90": 45.25,
+          "rawMax": 65.74,
+          "raw65": 1,
+          "display65": 17,
+          "display80": 1,
+          "rawPotential": 37.88
+        }
+      ]
+    }
+  ],
+  "foreignScenarios": [
+    {
+      "mode": "foreign_winter_only",
+      "samples": [
+        {
+          "step": 0,
+          "n": 100,
+          "rawMean": 52.39,
+          "displayMean": 66.2,
+          "rawP90": 60.09,
+          "rawMax": 66.19,
+          "raw65": 2,
+          "display65": 51,
+          "display80": 6,
+          "rawPotential": 53.09
+        },
+        {
+          "step": 1,
+          "n": 100,
+          "rawMean": 52.12,
+          "displayMean": 65.92,
+          "rawP90": 60.12,
+          "rawMax": 65.96,
+          "raw65": 2,
+          "display65": 49,
+          "display80": 4,
+          "rawPotential": 53.12
+        },
+        {
+          "step": 2,
+          "n": 100,
+          "rawMean": 51.59,
+          "displayMean": 65.43,
+          "rawP90": 60.54,
+          "rawMax": 65.87,
+          "raw65": 1,
+          "display65": 45,
+          "display80": 4,
+          "rawPotential": 52.8
+        },
+        {
+          "step": 3,
+          "n": 100,
+          "rawMean": 50.92,
+          "displayMean": 64.88,
+          "rawP90": 60.42,
+          "rawMax": 66.67,
+          "raw65": 2,
+          "display65": 43,
+          "display80": 4,
+          "rawPotential": 52.04
+        },
+        {
+          "step": 4,
+          "n": 100,
+          "rawMean": 49.79,
+          "displayMean": 63.93,
+          "rawP90": 60.09,
+          "rawMax": 67.38,
+          "raw65": 2,
+          "display65": 43,
+          "display80": 3,
+          "rawPotential": 50.88
+        },
+        {
+          "step": 5,
+          "n": 100,
+          "rawMean": 48.7,
+          "displayMean": 62.79,
+          "rawP90": 59.41,
+          "rawMax": 65.94,
+          "raw65": 1,
+          "display65": 36,
+          "display80": 3,
+          "rawPotential": 49.73
+        }
+      ]
+    },
+    {
+      "mode": "foreign_weekly_plus_winter",
+      "samples": [
+        {
+          "step": 0,
+          "n": 100,
+          "rawMean": 52.39,
+          "displayMean": 66.2,
+          "rawP90": 60.09,
+          "rawMax": 66.19,
+          "raw65": 2,
+          "display65": 51,
+          "display80": 6,
+          "rawPotential": 53.09
+        },
+        {
+          "step": 1,
+          "n": 100,
+          "rawMean": 52.18,
+          "displayMean": 66,
+          "rawP90": 59.91,
+          "rawMax": 67.72,
+          "raw65": 2,
+          "display65": 52,
+          "display80": 4,
+          "rawPotential": 53.14
+        },
+        {
+          "step": 2,
+          "n": 100,
+          "rawMean": 51.63,
+          "displayMean": 65.44,
+          "rawP90": 59.54,
+          "rawMax": 67.37,
+          "raw65": 2,
+          "display65": 48,
+          "display80": 4,
+          "rawPotential": 53
+        },
+        {
+          "step": 3,
+          "n": 100,
+          "rawMean": 51.14,
+          "displayMean": 65.02,
+          "rawP90": 59.57,
+          "rawMax": 69.22,
+          "raw65": 2,
+          "display65": 45,
+          "display80": 4,
+          "rawPotential": 52.43
+        },
+        {
+          "step": 4,
+          "n": 100,
+          "rawMean": 50.41,
+          "displayMean": 64.47,
+          "rawP90": 59.88,
+          "rawMax": 72.48,
+          "raw65": 2,
+          "display65": 42,
+          "display80": 5,
+          "rawPotential": 51.49
+        },
+        {
+          "step": 5,
+          "n": 100,
+          "rawMean": 49.31,
+          "displayMean": 63.54,
+          "rawP90": 59.9,
+          "rawMax": 71.06,
+          "raw65": 3,
+          "display65": 40,
+          "display80": 4,
+          "rawPotential": 50.24
+        }
+      ]
+    }
+  ],
+  "note": "420 generated prospects, retained cohort without retirement/roster selection; winter only or specified added camps, not a league simulation. full-play histories are fixtures. Camps lack club multipliers in unattached scenario."
+}

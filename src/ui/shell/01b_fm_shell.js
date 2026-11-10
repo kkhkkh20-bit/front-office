@@ -31,18 +31,18 @@ function fmSide(unread){ const ic=i=>ICO[i]||ICO2[i]||ICO3[i]||'';
   return `<aside class="fmside" aria-label="주 메뉴">${groups}</aside>`;
 }
 /* 뒤로·앞으로: 메뉴와 하위 탭 이동을 기억한다(최근 40개) */
-function fmKey(){ const t=UI.tab; return SUBS[t]?t+':'+curSub(t):t; }
+function fmKey(){ if(UI.tab==='club'&&UI.clubInspect!=null)return 'clubInspect:'+UI.clubInspect+':'+(UI.clubInspectTab||'overview'); const t=UI.tab; return SUBS[t]?t+':'+curSub(t):t; }
 function fmNavRec(){ const H=UI.navH=UI.navH||[]; if(UI.navI==null)UI.navI=-1; const k=fmKey(); if(UI._navSkip){ UI._navSkip=false; return; } if(H[UI.navI]===k)return; H.length=UI.navI+1; H.push(k); if(H.length>40)H.shift(); UI.navI=H.length-1; }
-function fmGoKey(k){ const [t,s]=k.split(':'); UI.tab=t; if(s){ if(t==='league')UI.lseg=s; else { UI.sub=UI.sub||{}; UI.sub[t]=s; } } UI._navSkip=true; closeSheets(); render(); try{ scrollTo(0,0); }catch(e){} }
+function fmGoKey(k){ const [t,s,p]=k.split(':'); if(t==='clubInspect'){ UI.clubInspect=+s; UI.clubInspectTab=p||'overview'; UI.clubInspectTabs=UI.clubInspectTabs||{}; UI.clubInspectTabs[s]=UI.clubInspectTab; UI.tab='club'; UI._navSkip=true; closeSheets(); render(); return; } UI.clubInspect=null; UI.tab=t; if(s){ if(t==='league')UI.lseg=s; else { UI.sub=UI.sub||{}; UI.sub[t]=s; } } UI._navSkip=true; closeSheets(); render(); try{ scrollTo(0,0); }catch(e){} }
 function fmBack(){ if(UI.meet){A.detailBack();return;}if(document.documentElement.classList.contains('detail-page-open')){ A.detailBack(); return; } const H=UI.navH||[]; if(!(UI.navI>0))return; UI.navI--; fmGoKey(H[UI.navI]); }
 function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)return; UI.navI++; fmGoKey(H[UI.navI]); }
 /* 카드가 세로로 길게 쌓이는 화면은 PC에서 두 칸으로(FM 대시보드처럼). 표가 넓은 화면에는 쓰지 않는다 */
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
-function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;if(UI.cast)return '<span class="fm-ttl">경기 중계</span>'; /* 중계 중에는 홈 하위 탭(눌러도 중계가 그대로)을 숨긴다 */ const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
+function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;if(UI.cast)return '<span class="fm-ttl">경기 중계</span>'; /* 중계 중에는 홈 하위 탭(눌러도 중계가 그대로)을 숨긴다 */ const tab=UI.tab; if(tab==='club'&&UI.clubInspect!=null)return '<span class="fm-ttl">'+esc(tname(UI.clubInspect))+' · 공개 구단 기록</span>'; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
   if(SUBS[tab])return back+subTabsRaw(tab);
   return back+`<span class="fm-ttl">${esc(TITLE[tab]||'')}</span>`; }
 function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||[];
-  const location=UI.cast?'경기 중계':TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
+  const location=UI.cast?'경기 중계':UI.tab==='club'&&UI.clubInspect!=null?tname(UI.clubInspect)+' · 공개 구단 기록':TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
   const ico=(a,v,i,l,on,n)=>`<button class="fm-i${on?' on':''}" data-a="${a}"${v?` data-v="${v}"`:''} aria-label="${l}" title="${l}">${ic(i)}${n?`<i>${n>99?'99+':n}</i>`:''}</button>`;
   const d=dobj(G.day);
   return `<div class="shell fmsh${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
@@ -52,7 +52,7 @@ function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||
     <div class="fm-context" data-club="${esc(G.unemp?'자유 계약 단장':tshort(G.user))}" data-loc="${esc(location)}"><small>${esc(G.unemp?'자유 계약 단장':tshort(G.user))}${G.gmP&&meAge()?`<span class="fm-age"> · ${esc(G.gmP.name)} 단장 ${meAge()}세</span>`:''}</small><strong>${esc(location)}</strong></div>
     <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` · 확인할 중요 소식 ${unread}건`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필'+(G.gmP&&!G.unemp?` · ${G.gmP.name} ${meAge()}세`:''),UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}${fullOk()?ico('fullTg','','full','전체 화면 켜기·끄기',fullOn()):''}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
       <div class="fm-date"><b>${WD[d.w]} ${d.m}월 ${d.d}일</b><span>${d.y} · ${esc(G.unemp?`야인 · 명성 ${G.rep}`:PERIOD[per])}</span></div>${goSet(per,b)}</div>
-  </div><div class="fm2"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
+  </div><div class="fm2"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${UI.tab==='club'&&UI.clubInspect!=null?'<span class="small muted">공개 구단 자료</span>':metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
   <div class="fmbody">${fmSide(unread)}<div class="fmmain">${UI.meet?'':topBlocks(b)}
   <div class="gut"><div class="wrap fmwrap"><main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()}</div></div></div></div>
   </div>`; }

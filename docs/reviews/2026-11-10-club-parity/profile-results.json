@@ -1,0 +1,59 @@
+[
+  {
+    "width": 1366,
+    "readOnly": true,
+    "former": {
+      "h": 13,
+      "hr": 7,
+      "n": 1
+    },
+    "retired": {
+      "h": 17
+    },
+    "formerFan": {
+      "old": 6,
+      "current": 1,
+      "stored": 17,
+      "unchanged": true
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "readOnly": true,
+    "former": {
+      "h": 13,
+      "hr": 7,
+      "n": 1
+    },
+    "retired": {
+      "h": 17
+    },
+    "formerFan": {
+      "old": 6,
+      "current": 1,
+      "stored": 17,
+      "unchanged": true
+    },
+    "errors": []
+  },
+  {
+    "width": 768,
+    "readOnly": true,
+    "former": {
+      "h": 13,
+      "hr": 7,
+      "n": 1
+    },
+    "retired": {
+      "h": 17
+    },
+    "formerFan": {
+      "old": 6,
+      "current": 1,
+      "stored": 17,
+      "unchanged": true
+    },
+    "errors": []
+  }
+]

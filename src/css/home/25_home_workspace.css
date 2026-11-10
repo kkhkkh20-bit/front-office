@@ -214,3 +214,9 @@
 /* 낮은 PC 화면(1366x768 등)에서 패널 내용이 잘려 버튼·목록이 안 보이던 문제: 잘라 내지 않고 패널 안에서 스크롤(리뷰 11-08) */
 .home-workspace[data-device="desktop"] .hw-panel,.home-workspace[data-device="desktop"][data-rows="3"] .hw-panel{overflow-y:auto;scrollbar-width:thin}
 .home-workspace[data-device="desktop"] .hw-panel>header{position:sticky;top:0;z-index:1;background:var(--panel)}
+/* 태블릿 홈: 머리줄을 뺀 카드 높이에 10개 구단을 모두 배치한다. */
+@media(min-width:700px) and (max-width:1099px){
+ #app .home-workspace[data-device="tablet"] .hw-stand>table{height:auto;min-height:0}
+ #app .home-workspace[data-device="tablet"] .hw-stand :is(td,th){height:20px}
+ #app .home-workspace[data-device="tablet"] .hw-stand td button{height:18px;min-height:0;line-height:18px}
+}

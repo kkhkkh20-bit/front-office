@@ -1,0 +1,225 @@
+## archive
+PASS 최근900건과분리된모든구단의영구기록
+PASS 조회는legacy변환전에도읽기만하며확실한옛근거만사용
+PASS 동일사건source멱등성과당시이름보존
+PASS AI인사·퍼레이드·반지는사용자단장도전과제가아님
+PASS AI수상·프랜차이즈·주장·은퇴이력명시귀속
+PASS 이직후이전구단사건·저장복원내용불변
+PASS PS진출은순위추정대신실제대진표
+7 club archive checks passed
+
+
+## executives
+PASS AI 단장 재계약 실제 이름·구단·조건, 중복 실행 방지
+PASS AI 단장 실제 경질·후임 선임 영속 기록
+PASS 제의 거절 후 대행 대신 실제 후임 기록
+PASS 이직 후 옛 구단 후임과 현 구단 취임, 저장 복원 보존
+PASS AI 한국시리즈 우승·퍼레이드 1회 기록, 사용자 상태 무변경
+PASS 전 구단 시즌 승패·순위·우승 기록
+PASS 연간 AI 감독 실제 만료·후임·사단교체 구단 귀속
+PASS 사용자 만료 감독 재계약 실행 이력·중복 방지
+PASS 연간 AI 감독 잔류 재계약 기록
+PASS 사용자 감독 중도 연장 기록
+10 executive history checks, 0 failed
+
+
+## staff
+PASS AI manager dismissal and successor each recorded once
+PASS AI acting manager promotion is not dismissal
+PASS AI acting manager departure records end of assignment
+PASS user manager dismissal and acting appointment are distinct
+PASS coach hire fire and extension actual paths
+PASS AI coach contract expiry and actual market replacement
+PASS AI coach contract renewal retains same person
+PASS coach accepted transfer records both clubs and displaced incumbent
+PASS AI monthly coach hire is permanently recorded below wire threshold
+PASS scout and analyst AI joins each recorded once without wire duplication
+PASS outbid proposal has no hire record until settlement
+PASS staff transfer and retirement records survive actual removals
+PASS unemployed former club hires keep explicit original club
+PASS former club assistant expiry and analyst scout direct removal
+PASS staff history survives market deletion wire clearing and save restoration
+PASS AI monthly staff hires low profile employees into club history
+PASS user poaching scout records both clubs after actual agreement
+17 club staff history checks passed
+
+
+## players
+창단 지명·추가 배분 전 구단 기록 통과
+AI 간 트레이드 양쪽 구단·이름/원인 스냅숏 통과
+FA·보상·웨이버·2차드래프트 양 구단, 잔류 1회 통과
+현금 지급 방향·트레이드 승계 계약 조건 스냅숏 통과
+실제 방출→국내 무적 영입의 올바른 소속·조건 기록 통과
+실제 FA 미계약·외국인 재계약 결렬의 원소속 기록 통과
+해외 진출·복귀는 무소속과 구분하고 당시 계약조건 기록 통과
+실제 AI 4라운드·유저 8라운드 지명·계약금·차년도 합류 기록 통과
+AI 실제 입대·전역 기록, 예약 제외 통과
+군 복무 이벤트 중복 방지·600건 장부 초과·이직/야인 후 AI 연대기 보존 통과
+이동·지명·병역 구단 기록 JSON 저장/복원 통과
+전 구단 선수 이동·지명 이력 검사 통과
+
+
+## facilities
+PASS cash training construction and completion retain cost level and dates
+PASS training capex rejection is not a construction and approval is
+PASS AI training actual construction and completion are both permanent
+PASS former club training completes after team handover
+PASS unemployed former club training completes exactly once
+PASS bus replacement records actual purchase and rejected duplicate adds none
+PASS cash stadium construction completion after resignation is attributed once
+PASS stadium municipal approval records full cost and shared funding
+PASS AI stadium starts store paid cost and completion snapshot
+PASS new stadium plan is distinct from actual start and opening after departure
+PASS AI new stadium actual construction and opening remain after wire cleared
+11 club facilities history checks passed
+
+
+## records
+PASS 같은 해 A→B→A 구단 기록·통산 합계
+PASS 선수 현재 소속으로 전 구단 기여를 덮어쓰지 않음
+PASS 은퇴 아카이브·복원·다팀 WAR·시상 시즌 소속 보존
+PASS 은퇴 기록과 선수 보관본 중복 합산 금지
+PASS 구단 통계 연도·은퇴 후 보존·현재연도 경기수 혼입 금지
+PASS 정규 실전 1경기 vs PS 실전 1경기 통계 분리
+PASS 저장 복원·이직 후 특정 구단 조회 불변
+PASS 순위 표기 연도는 보관 시즌, 개막 전 새 연도는 별도
+PASS 무타석 주루·아웃 없는 실점도 은퇴 보관과 팀 합계 유지
+PASS 시상 후보 스냅숏·은퇴 후 수상 이력·저장 보존
+PASS AI 은퇴선수 901명 이상의 개인 기록 영속 보존
+PASS 영결 공통 기본 기준·AI와 유저 실제 WAR60/10시즌·우승 미필수
+PASS 영결 설정 WAR40/8시즌을 유저와 AI에 같은 기준 적용
+PASS 영결 심사에서 누락 연차 추정 WAR를 AI와 유저 모두 배제
+PASS 영결 심사에서 창단 이전·타 구단·퓨처스 기록 제외
+15 club record checks, 0 failed
+
+
+## retired
+{
+  "passed": 15,
+  "checks": [
+    "공통 기준 실제 WAR 60·10시즌 자동 지정·우승 참고 이력 / 저장필드 / 여론·평판 불변",
+    "60 미만 WAR와 추정 보정은 자동 심사 불가",
+    "9시즌·빈 1군 연도는 공통 10시즌 조건 미달",
+    "우승 미필수·타구단/재임 밖/귀속 불명 우승은 참고 이력에서 제외",
+    "명시적 우승 이벤트와 당해 포스트시즌 우승은 참고 이력 보존",
+    "동일 번호 충돌은 소유자 유지, 현재 번호 사용자는 회수",
+    "현재 사용자 구단은 기존 수동 지정 유지",
+    "이직 전 구단 자동 지정과 취임/복귀 후 목록 복원",
+    "명시된 옛 구단 번호는 인정, 귀속 없는 번호는 추정 제외",
+    "무적 은퇴 실제 경로와 해외복귀 후 은퇴 공통 경로",
+    "야인일 때 전 구단도 AI 심사·전용 목록 동기화",
+    "서로 다른 두 AI 구단은 각자 실제 기여와 번호로 독립 지정",
+    "투수의 실제 성적 WAR도 동일하게 심사",
+    "전 구단 7번 결번·마지막 구단 55번: 배지/OB목록/인물카드 및 아들 요청 정합성",
+    "복수 구단 결번은 각각 구단과 번호 표기, 옛 단일 결번과 0번 호환"
+  ]
+}
+
+
+## analysts
+실제 UI 제안·채용 6→7명, 감독 요청 완료·연봉·중복 인원 없음 통과
+실제 UI 8·9명 허용, 10번째 제안/직접채용 차단·시장/급여 유지 통과
+직접 채용 6→9명·모든 추가 분석원 실제 일일 연봉 비용 반영 통과
+AI/유저 역할 상위3명 100/60/30% 동일·4번째 무효·기존 효과 상한 유지 통과
+AI도 6→9명·10명 증원 금지, 만석 교체와 스태프 예산 한도 유지 통과
+만석에서 불가능한 추가 요청 차단·옛 불가능 요청 무벌점 종료 통과
+분석원 정원 검사 통과
+
+
+## legacy
+#1 readonly 화면과 실제 결산의 부임 후 승패 일치 통과
+#2 시즌 종료 후 이직해도 전임 성적·우승 귀속 통과
+#3~6 제안 구단·인물 귀속, 독립구단 제외, 15시즌 기준 통과
+#7~8 같은 해 복귀도 별도 임기, 과거 임기는 재임 중 아님 통과
+#9 5년 순위는 겹치는 구간 포함 통과
+#10 은퇴·보관 프랜차이즈 스타 집계 통과
+추가: 결산 전 세대교체도 전임 우승 귀속 통과
+#11 계보만 260행이어도 240행 상한 통과
+추가: 최근소식 정리 후에도 실제 단장 연표의 스타·공로자 보존, AI 제외 통과
+레거시 독립 감사: 11개 제보 재현 회귀 통과
+
+
+## unit
+✔ 강화 스윙은 실제 접촉 자세를 보존하고 허리·몸통의 큰 팔로스루까지 이어진다 (386.964241ms)
+✔ 포수는 낮은 포구에서 일어나 측면을 만들고 실제 송구 릴리스 자세로 연결한다 (8.952316ms)
+✔ 투구 팔로스루는 릴리스 자세를 그대로 두고 그 뒤 상체를 홈 쪽으로 숙인다 (12.209784ms)
+✔ 장타 멘트는 다양하고 같은 표현을 연속 반복하지 않으며 결과와 난수를 보존한다 (16.955239ms)
+✔ 홈런·끝내기·밀어내기는 실제 점수에 반응하고 없는 비거리나 투구 정보를 말하지 않는다 (2.368248ms)
+✔ 타석 도입은 미래 결과를 숨기고 공별 해설은 기록된 카운트·구종을 따른다 (1.900083ms)
+✔ 타석 도입의 표현 선택도 아직 공개하지 않은 결과와 무관하다 (2.941802ms)
+✔ 수비 이름은 교체가 발생한 재생 시점의 실제 라인업을 읽는다 (1.467521ms)
+✔ 멀티홈런과 부진 탈출은 경기 전 사실과 공개된 타석만 읽는 캐스터 한 줄이다 (2.007093ms)
+✔ 사이클링은 네 종류 안타를 채운 그 타석에만 알린다 (1.766892ms)
+✔ 노히트 도전과 달성을 구별하고 사구·실책 출루를 퍼펙트로 부르지 않는다 (1.700261ms)
+✔ 팀 합작과 비자책 실점, 노히트가 깨지는 안타를 구분한다 (1.722254ms)
+✔ 기록 알림도 미래 선수 수치와 무관하며 좁은 화면에서는 내용을 한 줄씩 모두 이어간다 (1.623336ms)
+✔ 정규시즌 부진을 포스트시즌 기록으로 부르지 않고 야수선택을 실책으로 단정하지 않는다 (1.634582ms)
+✔ 1500탈삼진도 통산 이정표로 알린다 (3.614125ms)
+✔ 마지막 아웃이 도루자여도 노히트 노런 달성을 알린다 (1.547602ms)
+✔ 외야수와 중계수는 포구 직후 송구를 잇고 최종 세이프는 주루 완료 후 표시한다 (8.468518ms)
+✔ 벤치 클리어링은 실제 몸쪽 볼에서 드물게 기록되고 경기 난수·원본 경기를 바꾸지 않는다 (14.675208ms)
+✔ 소스 목록은 중복·누락·경로 이탈·부팅 순서 변경을 거절한다 (45.071581ms)
+✔ 공용 모듈은 순환 참조·외부 영역 참조·사용하지 않는 등록을 거절한다 (2.553777ms)
+✔ 빌드는 결정적이며 실패 시 기존 결과물을 변경하지 않는다 (5235.827518ms)
+✔ 공용 계산 모듈은 브라우저나 게임 상태 없이 같은 값을 계산한다 (20.747547ms)
+✔ 새 파일과 다른 확장자의 소스도 누락을 감지하며 저장소 밖 링크를 거절한다 (3.257538ms)
+✔ 화면 검사 서버는 포트 충돌 없이 HTML 하나만 제공하고 직접 종료한다 (53.574652ms)
+✔ 투구와 스윙의 준비·디딤·임팩트 시간을 맞추고 원본 클립은 보존한다 (206.554024ms)
+✔ 타석 이동으로 즉시 정지할 때 앞선 투구·달리기 혼합 동작을 모두 끊는다 (93.217925ms)
+✔ 낮은 프레임에서도 동작 전환을 마치고 정지 자세의 좌표에 도달한다 (79.981454ms)
+✔ 사구는 좌우 타자의 몸쪽에서 타석을 끝내며 볼·스트라이크를 더하지 않는다 (9.678852ms)
+✔ 공별 기록: 모든 타석 결과에서 합법적인 카운트·최종 공·투구 수를 구성한다 (33.503043ms)
+✔ 공별 기록: 볼은 존 밖, 루킹 스트라이크는 존 안이며 같은 시드·능력은 같은 기록이다 (9.41272ms)
+✔ 주루·송구는 실제 거리와 선수 속도를 함께 반영한다 (1.507512ms)
+✔ 타구 처리 시점은 공과 수비수의 도착 이후이며 뜬공은 수비수가 따라잡는다 (0.363838ms)
+✔ Cloudflare 배포 파일은 25 MiB 이하이고 버전별 모델·라이선스·새로고침 정책을 포함한다 (1515.472343ms)
+✔ 시야가 넓어지거나 화각이 바뀌면 같은 카메라 위치에서도 관중을 다시 판정한다 (171.786549ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8620.595356
+
+
+## static
+정적 점검: 문제 없음 (최상위 선언 4464개)
+
+
+## sim
+시뮬 점검(SEED 7): 문제 없음 · 2027년 1월 1일 금요일까지 38초
+
+
+## calendar
+390×844 기간 일정·실제 하루 진행·버튼/키보드 중단·저장·7일·필수 소식 통과
+768×1024 기간 일정·실제 하루 진행·버튼/키보드 중단·저장·7일·필수 소식 통과
+1366×768 기간 일정·실제 하루 진행·버튼/키보드 중단·저장·7일·필수 소식 통과
+
+
+## retired-ui
+390×664 전체구단 결번·이직·복귀·저장복원 통과
+768×1024 전체구단 결번·이직·복귀·저장복원 통과
+1366×768 전체구단 결번·이직·복귀·저장복원 통과
+
+
+## profiles
+1366 public club tabs, exact team records, archive paging/filter, internal scroll, back/exit passed
+390 public club tabs, exact team records, archive paging/filter, internal scroll, back/exit passed
+768 public club tabs, exact team records, archive paging/filter, internal scroll, back/exit passed
+
+
+## final-home-fit
+홈 화면 1280 600 3열 화면 내 카드/페이지 통과
+홈 화면 1366 768 3열 화면 내 카드/페이지 통과
+홈 화면 1366 900 3열 화면 내 카드/페이지 통과
+홈 화면 1920 1080 3열 화면 내 카드/페이지 통과
+홈 화면 1024 768 2열 화면 내 카드/페이지 통과
+홈 화면 768 1024 2열 화면 내 카드/페이지 통과
+홈 화면 390 844 1열 화면 내 카드/페이지 통과
+홈 화면 390 667 1열 화면 내 카드/페이지 통과
+
+
+## final-build
+index.html 생성: 57860478 bytes

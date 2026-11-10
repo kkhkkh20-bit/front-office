@@ -21,7 +21,7 @@ function champSeriesMvp(y,tid){ tid=tid??G.user; const R=(G.games||[]).filter(r=
   const best=Object.values(sc).sort((a,b)=>b.v-a.v)[0]; if(!best)return null;
   const line=best.p&&best.p.outs>=9&&(!best.b||best.b.ab<6)?`${best.p.w}승${best.p.sv?` ${best.p.sv}세이브`:''} · ${ipStr(best.p.outs)}이닝 ${best.p.er}자책 · 탈삼진 ${best.p.so}`:best.b?`${best.b.ab}타수 ${best.b.h}안타 ${best.b.hr}홈런 ${best.b.rbi}타점`:'';
   return {id:best.id,n:best.n,line,games:R.length}; }
-function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.year; const record=champSchedule(P.champ,y);
+function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.year; const record=champSchedule(P.champ,y);if(!record.chron){const H=typeof clubChron==='function'?clubChron(P.champ):(G.chron||[]);if(!H.some(x=>x.tid===P.champ&&x.y===y&&x.k==='champ'&&/한국시리즈.*우승/.test(x.t)))chron('champ',`${y} 한국시리즈 우승 · 상대 ${tname(P.runner)}${P.res?.ks?` · ${P.res.ks[2]}승 ${P.res.ks[3]}패`:''}`,null,P.champ);record.chron=1;}
   /* 우승 구단 효과(인기·선수단 기분·구단주 신뢰)는 플레이어가 맡았는지와 상관없이 같게(검수 11-09zo) */ if(!record.fx){ record.fx=1; const tc=team(P.champ); for(const p of playersOf(P.champ))p.mor=clamp((p.mor??60)+8,0,100); tc.pop=clamp(tc.pop+.1,.7,1.5); tc.trust=clamp(tc.trust+3,0,100); }
   if(!record.mvpDone&&!record.news){ record.mvpDone=1; const m=champSeriesMvp(y,P.champ), q=m&&G.players[m.id]; if(q){ try{ addAward(q,`${y} 한국시리즈 최우수선수`,P.champ); }catch(e){} q.mor=clamp((q.mor??60)+5,0,100); } } /* AI 구단이 우승해도 시리즈 최우수선수를 뽑는다(검수 11-09zz). 정규시즌 MVP 집계와 섞이지 않게 'MVP' 글자를 쓰지 않는다 */
   if(G.unemp||P.champ!==G.user)return; if(record.news)return; const t=team(G.user);
@@ -44,7 +44,7 @@ function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.
   try{ sponInit(); const S=G.spon; const made=[]; for(const k of Object.keys(SPON_SLOT)){ if(SPON_SLOT[k].indie&&!t.indie)continue; const c=S.c[k]; if(c&&c.until>y)continue; if(made.length>=3)break; const o=sponMake(k); o.amt=round5(o.amt*1.18); o.exp=G.day+30; S.off.push(o); made.push(o); }
     if(made.length)mail('마케팅팀',`우승 효과: 스폰서 제안 ${made.length}건`,`우승 소식이 나가자마자 기업들의 연락이 몰려들었습니다. 평소보다 18% 높은 조건입니다.\n${made.map(o=>`${o.co}(${SPON_SLOT[o.slot].l}) 연 ${money(o.amt)}`).join('\n')}`,{kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }catch(e){}
   G.parade=record.parade; G.ringY=y+1; G.ringT=G.user; /* 행사는 우승 구단 몫(단장이 이직해도 따라가지 않는다) */ /* 사흘 뒤 퍼레이드, 다음 시즌 홈 개막전에 반지 수여식 */
-  addLog(`${y} 한국시리즈 우승 (${tag})`); try{ chron('champ',`${y} 한국시리즈 우승`,null,G.user); }catch(e){} }
+  addLog(`${y} 한국시리즈 우승 (${tag})`); }
 /* 우승 포상 선택지. 모기업이 없는 구단은 모기업 부담 보너스·시설 투자를 받을 수 없고(투자사 지원금만), 시설 투자는 3년에 한 번(연속 우승 때마다 시설이 두 칸씩 오르던 문제, 커뮤니티 피드백 11-07) */
 /* 시설 투자 포상을 받은 해: 단장이 아니라 구단 기록(옛 저장의 전역 값은 그해 우승 구단 몫, 검수 11-09zo) */
 function champFacYOf(t){ return t.champFacY??(G.champFacY!=null&&champOwner(G.champFacY)===t.id?G.champFacY:null); }
@@ -63,7 +63,7 @@ EVH.champGift={ pick(e,i){ const t=team(G.user); const y=G.year;
 /* FA 특별 자금: 2월 1일까지 FA를 한 명도 데려오지 않으면 절반 회수 */
 /* 우승 퍼레이드(우승 사흘 뒤): 연고 도시 카퍼레이드. 팬 여론·인기가 한 번 더 오른다 */
 function champParade(){ champEventsInit(); for(const r of Object.values(G.champEvents||{}))champParadeRun(r.parade); }
-function champParadeRun(P){ if(!P||P.done||G.day<P.d)return; const tid=P.tid;
+function champParadeRun(P){ if(!P||P.done||G.day<P.d)return; const tid=P.tid;chron('champ',`${P.y} 우승 퍼레이드 개최`,null,tid);
   if(tid!==G.user||G.unemp){ P.done=true; const t=team(tid); t.pop=clamp(t.pop+.02,.7,1.5); wire('구단',`${t.city} ${t.nick}, 도심 우승 퍼레이드`,{tid}); return; } /* 우승 뒤 단장이 떠났으면 우승 구단이 퍼레이드를 하고, 새 구단에는 아무 일도 없다 */
   P.done=true; const t=team(G.user); prInit(); const n=Math.round(4+t.market*7+(G.pr.fan-50)/8); P.n=n;
   news('구단',`${t.city} 도심 우승 퍼레이드…팬 ${n}만 명 운집`,`${tname(G.user)} 선수단이 오픈카를 타고 ${t.city} 도심을 돌았습니다. 거리를 메운 팬들이 선수 이름을 연호했고, 단장도 손을 흔들며 화답했습니다.`,3,{fanW:3});

@@ -35,7 +35,7 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
      ${fullOk()?`<button class="mailbtn fullbtn${fullOn()?' on':''}" data-a="fullTg" aria-label="전체 화면" title="전체 화면 켜기·끄기">${ICO.full}</button>`:''}${dk&&!UI.fromMail?`<button class="mailbtn tophelp${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button>`:''}${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` · 확인할 중요 소식 ${unread}건`:''}" title="소식함${unread?` · 확인할 중요 소식 ${unread}건`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}${dk?draftGo():goSet(per,b)}
    </div></div>${topBlocks(b)}</header>
    <div class="gut"><div class="wrap">
-     ${dk&&!UI.fromMail?'':`<div class="subhead${!wide()&&UI.tab!=='home'&&!UI.fromMail?' notitle':''}">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>`}
+     ${dk&&!UI.fromMail?'':`<div class="subhead${!wide()&&UI.tab!=='home'&&!UI.fromMail?' notitle':''}">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${UI.tab==='club'&&UI.clubInspect!=null?'<span class="small muted">공개 구단 자료</span>':metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>`}
      <main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
    </div></div>
   </div>
@@ -61,6 +61,7 @@ function draftGo(){ const mine=G.draft.picks[G.draft.cur].tid===G.user, on=!!(UI
 function topBlocks(b){ return `${SAVE_ERR?`<div class="blk gut"><div class="wrap">${esc(SAVE_ERR)}<button data-a="tab" data-v="cfg">저장 설정</button></div></div>`:''}${wide()&&!fmOn()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b&&!(G.draft&&!G.draft.done&&UI.tab==='transfer'&&curSub('transfer')==='draft')?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}${needBackup()?`<div class="blk bkn gut"><div class="wrap">itch처럼 다른 사이트 안에서 하면 브라우저 정리나 게임 업데이트로 저장이 지워질 수 있습니다. 가끔 파일로 내보내 두세요.<button data-a="expFile">파일로 내보내기</button><button data-a="bkLater">나중에</button></div></div>`:''}`; }
 function tabBody(){
   if(UI.meet)return meetPage();
+  if(UI.tab==='club'&&UI.clubInspect!=null)return teamProfile(UI.clubInspect);
   if(G.gameOver&&(UI.tab==='inbox'||UI.tab==='home'))return gameOverView();
   if(UI.tab==='roster')G.tutFlags.roster=true;
   if(!TITLE[UI.tab])UI.tab='home';

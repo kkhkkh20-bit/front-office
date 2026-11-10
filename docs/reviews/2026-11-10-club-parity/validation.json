@@ -1,0 +1,205 @@
+{
+  "date": "2026-11-10",
+  "base_commit": "69f146b91cef95f4554e5fd023e417f48b2aacdd",
+  "scope": "club histories, public profiles, actual individual record preservation, common retired-number criteria, analyst capacity",
+  "build": {
+    "output": "index.html",
+    "passed": true,
+    "sha256": "bec88ec7d6341f2d9bd0234a697406d2642f676ca4d31173feb02ffdb31589eb",
+    "engine_sha256": "d1e6e04403eefff5f0856e3dee63a600f20cbcc43a35967f93be6bf0e75ba3ee"
+  },
+  "focused_engine_checks": [
+    {
+      "tool": "tools/check-club-archive.cjs",
+      "count": 7,
+      "passed": true
+    },
+    {
+      "tool": "tools/check-club-executives.cjs",
+      "count": 10,
+      "passed": true,
+      "includes": "real settlement and deep-copied all-club annual financial books"
+    },
+    {
+      "tool": "tools/check-club-staff-history.cjs",
+      "count": 17,
+      "passed": true
+    },
+    {
+      "tool": "tools/check-club-player-history.cjs",
+      "count": 11,
+      "passed": true
+    },
+    {
+      "tool": "tools/check-club-facilities-history.cjs",
+      "count": 11,
+      "passed": true
+    },
+    {
+      "tool": "tools/check-club-records.cjs",
+      "count": 15,
+      "passed": true,
+      "includes": "actual regular and postseason games, fixtures for team split and 901 archived AI players"
+    },
+    {
+      "tool": "tools/check-ai-retired-numbers.cjs",
+      "count": 15,
+      "passed": true
+    },
+    {
+      "tool": "tools/check-analyst-capacity.cjs",
+      "groups": 6,
+      "passed": true
+    },
+    {
+      "tool": "tools/check-audit-legacy.cjs",
+      "passed": true,
+      "includes": "actual lgTimeline after 1000 unrelated AI events and AI honor isolation"
+    }
+  ],
+  "unit": {
+    "command": "node --test --test-concurrency=1 tools/test/*.test.cjs",
+    "count": 34,
+    "passed": true,
+    "note": "Parallel final run had one process-level test failure without cause detail; isolated modules 6/6 and sequential full suite 34/34 passed."
+  },
+  "static": {
+    "tool": "tools/check-static.js",
+    "passed": true
+  },
+  "actual_season_simulation": {
+    "tool": "tools/check-sim.js",
+    "seed": 7,
+    "strict": true,
+    "end": "2027-01-01",
+    "seconds": 38,
+    "passed": true
+  },
+  "browser": [
+    {
+      "tool": "tests/tools/check-club-profile-ui.cjs",
+      "html": "index.html",
+      "viewports": [
+        [
+          1366,
+          768
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          768,
+          844
+        ]
+      ],
+      "passed": true,
+      "checks": [
+        "G.user remains actual club",
+        "all profile reads leave G identical",
+        "real former-club fan snapshot survives switching",
+        "exact club contribution and archived player totals",
+        "finance snapshots and legacy last fallback",
+        "filters, pages, internal scroll, back/forward and exit"
+      ]
+    },
+    {
+      "tool": "tools/check-retired-navigation.cjs",
+      "html": "index.html",
+      "viewports": [
+        [
+          390,
+          664
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          1366,
+          768
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "tool": "tools/check-calendar-progress.cjs",
+      "html": "index.html",
+      "viewports": [
+        [
+          390,
+          844
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          1366,
+          768
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "tool": "tools/check-home-fit.cjs",
+      "html": "index.html",
+      "viewports": [
+        [
+          1280,
+          600
+        ],
+        [
+          1366,
+          768
+        ],
+        [
+          1366,
+          900
+        ],
+        [
+          1920,
+          1080
+        ],
+        [
+          1024,
+          768
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          390,
+          667
+        ]
+      ],
+      "passed": true
+    }
+  ],
+  "independent_review": {
+    "confirmed_findings": 2,
+    "fixed": [
+      "legacy timeline read recent feed instead of permanent archive",
+      "former club fan snapshot read wrong storage object"
+    ],
+    "home_fit": "Existing main tablet issue reproduced; table-only CSS fixed; all 8 final production HTML viewports passed, existing font size retained."
+  },
+  "rating_balance": {
+    "modified": false,
+    "status": "diagnostic only; growth balance adjustment not completed",
+    "separate_report": "../2026-11-10-rating-inflation-status.md",
+    "frozen_engine_ana_max": 6,
+    "not_current_analyst_capacity_patch": true
+  },
+  "limitations": [
+    "No invented missing historical personnel, dates or finances",
+    "No reconstruction of individual records deleted in older saves",
+    "Public AI club profile does not grant management controls or fabricate private player-only interactions",
+    "Not the complete tools/check.sh suite"
+  ]
+}

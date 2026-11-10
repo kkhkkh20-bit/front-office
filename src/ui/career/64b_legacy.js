@@ -35,11 +35,11 @@ function lgDynView(){ const W=legWins5(), me=W.me; const row=(x,mine)=>`<div cla
 function lgTimeline(){ const C=G.myC||{}, S=(C.seas||[]).slice().sort((a,b)=>a.y-b.y); const ev={}; const add=(y,k,t)=>{ if(y==null)return; (ev[y]=ev[y]||[]).push({k,t}); };
   let prev=null; for(const s of S){ if(s.tid!==prev)add(s.y,'구단',`${tname(s.tid)} 단장 취임`); prev=s.tid; if(s.ch===1)add(s.y,'우승',`${tshort(s.tid)} 한국시리즈 우승 (${s.w}승 ${s.l}패)`); else if(s.ch===2)add(s.y,'가을',`${tshort(s.tid)} 준우승`); }
   for(const st of (C.stints||[]))if(st.how&&!/재계약/.test(st.how))add(st.y1,'구단',`${tshort(st.tid)} ${st.how}`);
-  const yT=new Map(S.map(s=>[s.y,s.tid])); const mineAt=(tid,y)=>yT.get(y)===tid;
+  const H=G.teams.flatMap(t=>clubChron(t.id)); const yT=new Map(S.map(s=>[s.y,s.tid])); const mineAt=(tid,y)=>yT.get(y)===tid;
   for(const [tid,R] of [[G.user,G.retNos||[]],...Object.entries(G.orgT||{}).map(([k,o])=>[+k,(o&&o.retNos)||[]])])for(const r of R)if(mineAt(tid,r.y))add(r.y,'결번',`${tshort(tid)} ${r.no}번 ${r.name} 영구결번`);
   for(const f of (G.feats||[]))if(mineAt(f.tid,f.y))add(f.y,'대기록',`${f.name} ${f.txt}`);
-  for(const c of (G.chron||[]))if(c.gm&&mineAt(c.tid,c.y)&&(c.k==='star'||(c.k==='award'&&/MVP/.test(c.t))))add(c.y,'스타',c.t);
-  for(const c of (G.chron||[]))if(c.k==='gm'&&/공로자|제안을/.test(c.t))add(c.y,'레거시',c.t);
+  for(const c of H)if(c.gm&&mineAt(c.tid,c.y)&&(c.k==='star'||(c.k==='award'&&/MVP/.test(c.t))))add(c.y,'스타',c.t);
+  for(const c of H)if(c.gm!==0&&c.k==='gm'&&/공로자|제안을/.test(c.t))add(c.y,'레거시',c.t);
   for(const a of ACH)if(a.r&&a.r.title&&G.ach&&G.ach[a.id])add(G.ach[a.id].y,'칭호',`도전과제 '${a.n}' · 칭호 ${a.r.title}`);
   const ys=Object.keys(ev).map(Number).sort((a,b)=>a-b); let st=null; try{ st=myCStats(); }catch(e){} const P=legPeople(), rk=P.findIndex(p=>p.u&&p.k===legMeK());
   const head=`<div class="lgtl-h">${typeof avImg==='function'&&typeof meAv==='function'?avImg(meAv(),true):''}<div><div class="eyebrow">단장 연대기</div><h2 class="sec">${esc(legMeName())}</h2><p class="small muted keep">${S.length?`${S[0].y}~${S[S.length-1].y}`:G.year} · ${G.unemp?'야인':esc(tname(G.user))+' 단장'}${achTitle()?` · ${esc(achTitle())}`:''}${rk>=0?` · 단장 명예의 전당 ${rk+1}위`:''}</p></div></div>

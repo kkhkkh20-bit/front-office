@@ -15,9 +15,9 @@ function achMetaSave(){ try{ if(typeof localStorage!=='undefined')localStorage.s
 function achT(){ if(!G.achT){ G.achT={seasons:0,teams:[],titles:{},profit:0,taxed:false,fired:false,ggMine:0,psRun:0,psBest:0}; achBackfill(G.achT); } const T=G.achT;
   if(G.user!=null&&!T.teams.length)T.teams.push(G.user); return T; }
 /* 도전과제가 생기기 전 저장: 연대기(취임·경질·우승)로 경력을 되살린다. 시즌 수는 첫 취임 뒤 치른 시즌에서 야인으로 보낸 해를 대략 뺀다 */
-function achBackfill(T){ const C=G.chron||[]; const J=C.filter(c=>c.k==='join'); for(const c of J)if(!T.teams.includes(c.tid))T.teams.push(c.tid);
-  for(const c of C.filter(c=>c.k==='champ'&&c.gm!==0))(T.titles[c.tid]=T.titles[c.tid]||[]).push(c.y);
-  T.fired=C.some(c=>c.k==='fired'&&/^단장 경질/.test(c.t||'')); /* 사임·고사·만료는 경질이 아니다 */ const y0=J.length?Math.min(...J.map(c=>c.y)):G.year; T.seasons=Math.max(0,(G.history||[]).filter(h=>h.user&&h.y>=y0).length-C.filter(c=>c.k==='fired').length); }
+function achBackfill(T){ const C=(G.chron||[]).filter(c=>c.gm!==0); const J=C.filter(c=>c.k==='join'&&c.gm!==0); for(const c of J)if(!T.teams.includes(c.tid))T.teams.push(c.tid);
+  for(const c of C.filter(c=>c.k==='champ'&&/한국시리즈.*우승/.test(c.t||''))){const a=T.titles[c.tid]=T.titles[c.tid]||[];if(!a.includes(c.y))a.push(c.y);}
+  T.fired=C.some(c=>c.k==='fired'&&/^(?:.+? 단장 · )?단장 경질:/.test(c.t||'')); /* 사임·고사·만료는 경질이 아니다 */ const y0=J.length?Math.min(...J.map(c=>c.y)):G.year; T.seasons=Math.max(0,(G.history||[]).filter(h=>h.user&&h.y>=y0).length-C.filter(c=>c.k==='fired').length); }
 function achTitlesN(T){ return sum(Object.values(T.titles).map(a=>a.length)); }
 function achTeamsWon(T){ return Object.keys(T.titles).filter(k=>T.titles[k].length).map(Number); }
 /* 단장 통산 정규시즌 승수(지금 단장): 개인 시즌 기록, 없는 옛 저장은 부임 뒤 재임 기록 */

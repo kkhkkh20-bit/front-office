@@ -53,7 +53,7 @@ const MSCN=[
    {l:'거품 아닐까요?',r:['표본이 아직 작긴 합니다. 그런데 보고서에 안 쓴 게 하나 있어요.'],n:{t:[`${nm(X.hot)}이(가) 요즘 경기 끝나고 영상실에서 한 시간씩 남습니다. 숫자가 오른 이유가 거기 있어요. 그런 선수는 쉽게 안 떨어집니다.`],c:[
      {l:'좋은 정보네요',r:['다음에도 이런 게 보이면 바로 말씀드리죠.'],fx:{rel:3,pm:['hot',3]}},
      {l:'계약 얘기를 해야겠네요',r:['그건 단장님 영역입니다. 다만 지금 묶으면 쌉니다. 이 숫자면 내년엔 값이 뛰어요.'],fx:{rel:2}}]}}]})},
- {id:'data_lose',s:'data',w:X=>X.season&&X.st<=-3?4:0,b:X=>({o:['연패 기간 우리 인플레이 타구 안타율이 리그 꼴찌입니다. 단장님, 이건 상당 부분 운입니다. 저는 아무것도 안 바꿀 생각입니다.',`${-X.st}연패지만 득실점만 보면 그렇게 나쁜 팀이 아닙니다. 이럴 때 감독이 흔들리면 진짜 나쁜 팀이 됩니다.`],c:[
+ {id:'data_lose',s:'data',w:X=>X.season&&X.st<=-3&&anaList().length<ANA_MAX?4:0,b:X=>({o:['연패 기간 우리 인플레이 타구 안타율이 리그 꼴찌입니다. 단장님, 이건 상당 부분 운입니다. 저는 아무것도 안 바꿀 생각입니다.',`${-X.st}연패지만 득실점만 보면 그렇게 나쁜 팀이 아닙니다. 이럴 때 감독이 흔들리면 진짜 나쁜 팀이 됩니다.`],c:[
    {l:'그 말 믿겠습니다',r:['고맙습니다. 그리고 하나 부탁드려도 될까요? 분석팀 인원이 모자랍니다. 상대 투수 영상을 다 못 봐요.'],fx:{rel:2},n:{t:['전력분석원 한 명만 더 있으면 됩니다. 한 달 안에 구해 주시면 그만큼 돌려드리겠습니다.'],c:[
      {l:'알아보겠습니다',r:['감사합니다. 기다리겠습니다.'],fx:{req:'an',rel:1}},
      {l:'지금은 예산이 없습니다',r:['그렇다면... 제가 밤을 좀 더 새우죠. 결과가 늦어도 이해해 주십시오.'],fx:{rel:-2}}]}},
@@ -233,7 +233,7 @@ const MSQ=[
    {l:['주전으로 써 주십시오','주전으로 나가야 데려온 값이 나옵니다','매일 나가게 해 주세요. 새 팀에 빨리 붙어야죠','바로 주전입니다. 그러려고 데려왔습니다','주전이면 좋겠네요, 허허. 물론 감독님 마음이지만요','주전입니다'],r:['그렇게 하겠습니다. 다만 첫 주에 못 치면 저도 고민 좀 하겠습니다.'],fx:{pm:['trade',5],rel:1}},
    {l:['감독님 판단에 맡기겠습니다','기용은 감독님 영역입니다','감독님이 제일 잘 아시죠','이기는 데 쓰시면 됩니다','감독님 마음에 들 선수라 데려왔습니다, 허허','알아서 쓰세요'],r:['맡겨 주시니 편합니다. 대타부터 써 보고 자리 잡히면 올리겠습니다.'],fx:{rel:3,pm:['trade',1]}}]},
  {id:'budget',w:()=>1,q:X=>[X.room>0?'요즘 구단 살림은 좀 어떻습니까? 여유가 있다는 소문이 돌던데요.':'구단 살림이 빠듯하다는 얘기가 들립니다. 사실입니까?'],a:X=>[
-   X.room>0?{l:['여유가 조금 있습니다',`예산 여유가 ${money(X.room)} 정도 됩니다`,'조금 있습니다. 감독님 필요한 데 쓰시죠','있습니다. 쓸 데가 생기면 크게 쓰죠','있긴 한데 다 임자가 있는 돈입니다, 허허','조금 있습니다'],r:['그럼 하나 부탁합시다. 전력분석원 한 명만 더 주십시오.'],fx:{rel:1,req:'an'}}
+   X.room>0?{l:['여유가 조금 있습니다',`예산 여유가 ${money(X.room)} 정도 됩니다`,'조금 있습니다. 감독님 필요한 데 쓰시죠','있습니다. 쓸 데가 생기면 크게 쓰죠','있긴 한데 다 임자가 있는 돈입니다, 허허','조금 있습니다'],r:[anaList().length<ANA_MAX?'그럼 하나 부탁합시다. 전력분석원 한 명만 더 주십시오.':'분석팀은 정원을 채웠으니 지금 인원으로 자료를 더 잘 활용해 보겠습니다.'],fx:{rel:1,...(anaList().length<ANA_MAX?{req:'an'}:{})}}
     :{l:['빠듯합니다',`예산 여유가 ${money(X.room)}입니다. 모자라요`,'빠듯합니다. 미안합니다','빠듯해도 필요한 데는 씁니다','다들 그렇게 사는 거죠, 허허','없습니다'],r:['...그렇군요. 그럼 있는 걸로 해 보겠습니다. 말해 주셔서 고맙습니다.'],fx:{rel:2}},
    {l:['그건 제가 신경 쓸 일입니다','감독님은 야구만 보세요. 장부는 제가 봅니다','돈 걱정은 제가 하겠습니다','돈은 제가 구합니다','살림 얘기는 회장님 앞에서만 하는 걸로 하죠, 허허','신경 쓰지 마세요'],r:{d:['...그러시죠. 모르는 게 편할 때도 있으니까요.'],data:['숫자를 안 주시면 저도 계획을 못 세웁니다. 다음엔 꼭 알려 주십시오.']},fx:{rel:-1}}]},
  {id:'seat',w:X=>X.season&&(X.st<=-3||X.rank>=7)?3:0,q:()=>['단장님, 하나만 물어봅시다. 이대로 가면 저 자르실 겁니까?','밖에서 감독 교체설이 돈답니다. 단장님 생각을 직접 듣고 싶습니다.'],a:()=>[
@@ -265,13 +265,15 @@ function mgrScnFx(m,fx,X){ const out=[]; const P=w=>X[w]&&X[w].team===G.user?X[w
   if(fx.hint){ const p=P(fx.hint); if(p){ mgrAttr(m); const err=hn('mgrhint'+m.id,p.id)*Math.max(0,90-(m.eye||50))/8; const v=Math.round(clamp((p.pot||ovr(p))+err,20,99)/5)*5; out.push(`감독 귀띔: ${p.name}(${p.age}세) 잠재력 추정 ${dv(v)}점 안팎으로 봅니다(지금 능력 ${dv(ovr(p))}점, 감독 눈 기준).`); } }
   if(fx.cash){ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+fx.cash; out.push(`구단 지출 ${money(fx.cash)}`); }
   if(fx.wire){ try{ wire('감독',`${tshort(G.user)} ${fx.wire}`,{tid:G.user}); }catch(e){} out.push(`리그 소식: ${fx.wire}`); }
-  if(fx.req&&MREQ[fx.req]){ if(G.mgrReq&&G.mgrReq.until>=G.day)out.push('감독 요청이 이미 하나 진행 중이라 이번 부탁은 기억만 해 둡니다.');
+  if(fx.req&&MREQ[fx.req]){ if(fx.req==='an'&&anaList().length>=ANA_MAX)out.push(`전력분석원 정원 ${ANA_MAX}명을 채워 추가 채용 요청은 하지 않습니다.`);
+    else if(G.mgrReq&&G.mgrReq.until>=G.day)out.push('감독 요청이 이미 하나 진행 중이라 이번 부탁은 기억만 해 둡니다.');
     else { const R0=G.mgrReq={k:fx.req,mid:m.id,d:G.day,until:G.day+30,ids:playersOf(G.user).map(p=>p.id),n0:anaList().length,min:mreqMin(fx.req)}; out.push(`감독 요청: ${dmd(R0.until)}까지 ${MREQ[fx.req]} 보강(들어주면 관계 +6, 못 들어주면 -3)`); } }
   return out; }
 const mreqOk=(k,p)=>k==='rp'?p.isP&&!isSPr(p):k==='sp'?isSPr(p):k==='def'?!p.isP&&['C','SS','2B','CF'].includes(p.pos):k==='bat'?!p.isP:false;
 /* 보강으로 인정하는 최소 능력: 지금 우리 그 유형 선수 중간값(45~68) */
 function mreqMin(k){ const L=playersOf(G.user).filter(p=>mreqOk(k,p)).map(ovr).sort((a,b)=>b-a); return Math.round(clamp(L.length?L[Math.floor(L.length/2)]:50,45,68)); }
 function mgrReqDaily(){ const Q=G.mgrReq; if(!Q)return; const m=G.mgr&&G.mgr[G.user]; if(G.unemp||!m||m.id!==Q.mid){ delete G.mgrReq; return; }
+  if(Q.k==='an'&&Q.n0>=ANA_MAX){ delete G.mgrReq; mail('감독실',`${m.name} 감독의 분석원 보강 요청을 정리했습니다`,`요청 당시 이미 전력분석원 정원 ${ANA_MAX}명을 채워 추가 채용이 불가능했습니다. 요청을 종료하며 감독 관계는 변하지 않습니다.`,{kind:'감독'}); return; }
   const done=Q.k==='an'?anaList().length>Q.n0:playersOf(G.user).some(p=>!Q.ids.includes(p.id)&&mreqOk(Q.k,p)&&ovr(p)>=Q.min);
   if(done){ m.rel=clamp(m.rel+6,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독: "부탁 들어주셔서 고맙습니다"`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강을 반겼습니다. 감독 관계 +6.`,{kind:'감독'}); return; }
   if(G.day>Q.until){ m.rel=clamp(m.rel-3,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독의 부탁이 흐지부지됐습니다`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강이 기한 안에 이뤄지지 않았습니다. 감독 관계 -3.`,{kind:'감독'}); } }

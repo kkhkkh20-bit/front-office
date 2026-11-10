@@ -191,12 +191,13 @@ function settlement(){
     ['홀드',top(pits,x=>x.h.hld,()=>true),x=>x.h.hld+'개'],
   ].filter(l=>l[1]).map(l=>({k:l[0],id:l[1].p.id,v:l[2](l[1]),nm:l[1].p.name,t:l[1].h.t??l[1].p.team}));
   const rank=order.findIndex(o=>o.tid===G.user)+1;
-  if(!G.unemp){ const psr=ps.champ===G.user?' · 한국시리즈 우승':ps.runner===G.user?' · 한국시리즈 준우승':ps.poLose===G.user?' · 플레이오프 진출':ps.spoLose===G.user?' · 준플레이오프 진출':ps.wcLose===G.user?' · 와일드카드 진출':''; chron('season',`${uo.w}승 ${uo.l}패${uo.t?` ${uo.t}무`:''} ${rank}위${psr}`); }
+  for(const [i,o] of order.entries()){const tid=o.tid,H=typeof clubChron==='function'?clubChron(tid):(G.chron||[]);if(H.some(x=>x.tid===tid&&x.y===y&&x.k==='season'))continue;const psr=ps.champ===tid?' · 한국시리즈 우승':ps.runner===tid?' · 한국시리즈 준우승':ps.poLose===tid?' · 플레이오프 진출':ps.spoLose===tid?' · 준플레이오프 진출':ps.wcLose===tid?' · 와일드카드 진출':'';chron('season',`${o.w}승 ${o.l}패${o.t?` ${o.t}무`:''} ${i+1}위${psr}`,null,tid);}
   try{ if(!G.unemp&&typeof teleEv==='function')teleEv('season_end',{rank,champ:ps.champ===G.user?1:0,ps:P.seeds&&P.seeds.includes(G.user)?1:0,trust:team(G.user).trust}); }catch(e){}
   try{ franchiseCheck(); }catch(e){}
   try{ if(!G.unemp)seasonReview(y); }catch(e){}
   storySeason(y); const awards=seasonAwards(y); try{ seasonTitles(y); }catch(e){} try{ featSeason(y); mgrEyeReport(); }catch(e){} try{ ivPromCheck('season'); }catch(e){}
-  G.history.push({y,order,champ:ps.champ,runner:ps.runner,ps:{wc:ps.wc,spo:ps.spo,po:ps.po,ks:ps.ks,days:P.days,tbRes:P.tbRes} /* 순위 결정전도 지난 대진표에 남긴다(검수 11-08) */,user:{w:uo.w,l:uo.l,t:uo.t,rank,net:fin.net,trust:u.trust}});
+  G.history.push({y,d:G.day,fins:JSON.parse(JSON.stringify(fins)),order,champ:ps.champ,runner:ps.runner,ps:{wc:ps.wc,spo:ps.spo,po:ps.po,ks:ps.ks,days:P.days,tbRes:P.tbRes} /* 순위 결정전도 지난 대진표에 남긴다(검수 11-08) */,user:{w:uo.w,l:uo.l,t:uo.t,rank,net:fin.net,trust:u.trust}});
+  for(const t of G.teams){const f=fins[t.id];if(f)chron('finance',`${y} 결산 · 수입 ${money(sum(f.inc.map(x=>x[1])))} · 지출 ${money(sum(f.exp.map(x=>x[1])))} · 손익 ${money(f.net)} · 기말 현금 ${money(f.cash)}`,null,t.id,{source:'finance:'+y});}
   { const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(G.cal.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 마지막 달(9·10월) 잔여 경기도 결산에 넣는다 */
   try{ tsArchive(y); }catch(e){}
   G.last={y,d:G.day,tid:G.user /* 이 결산의 우리 구단: 결산 뒤 이직해도 결산 화면은 이 구단 기준(검수 11-09h) */,order,ps,fins,trust:{before,after:u.trust,delta},notes,leaders,gate,pool,months:G.sea.months,goals:gy.lines,awards,pr:G.pr?{fan:Math.round(G.pr.fan),press:Math.round(G.pr.press)}:null};

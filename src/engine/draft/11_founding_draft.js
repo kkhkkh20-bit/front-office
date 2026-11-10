@@ -116,6 +116,7 @@ function fdPick(pid){ const F=G.fd; if(!F||F.done)return '드래프트가 없습
   if(pk.tid===G.user&&!pk.auto&&fdManDone())return `${F.man}라운드 직접 지명을 마쳤습니다. 상황판에서 맡기기나 더 뽑기를 고르세요.`; /* 연장 버튼 없이 다음 라운드를 직접 뽑던 문제(검수 11-09zd) */
   /* 지명 순간 우리 스카우트 추정을 남겨 둔다: 지명 직후 화면과 나중의 지명 평가가 이 값을 쓴다(실제 능력은 바로 공개하지 않는다) */ try{ fdEsd(); pk.e0=Math.round(fdSeenBy(G.user,p).sc*10)/10; if(pk.tid===G.user)pk.role=fdRole(p,pk.e0); }catch(e){}
   p.team=pk.tid; p.fdPool=false; delete p.role; p.rAdj=0; pk.pid=pid; pk.o0=Math.round(ovr(p)); pk.age0=p.age; acqStamp(p,'fd',pk.tid,Object.assign({rd:pk.rd,no:pk.no},pk.tid===G.user?{how:pk.auto?'auto':'gm',e0:pk.e0}:{})); F.pool=F.pool.filter(x=>x!==pid); F.cur++; story(p,`${G.year} 창단 드래프트 ${pk.rd}라운드 ${pk.no}번째 · ${tname(pk.tid)} 지명`,'move');
+  chron('draft',`창단 ${pk.rd}라운드 ${pk.no}순위 ${p.name}(${posLabel(p)}, ${p.age}세) 지명 · 연봉 ${money(p.sal)}`,p.id,pk.tid,{source:'fd:'+G.year+':'+pk.tid+':'+pk.rd+':'+pk.no});
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid))(F.lost=F.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,nm:p.name});
   if(F.cur>=F.picks.length)fdFinish(); return ''; }
 /* 창단 드래프트 뒤 AI 구단 연봉 맞추기: 드래프트는 연봉을 따라가므로 어떤 구단은 상한의 50%대에 머문다.
@@ -144,7 +145,7 @@ function fdMoney(){ const F=G.fd; if(!F)return null; const key=G.day+':'+G.user;
   const autoN=Math.max(0,52-mine.length-left); const W=Math.round(autoN*avgC); const room=lim-spent; const per=left?Math.max(0,(room-W)/left):0;
   const fr=(f.otherRows||[]).find(x=>/외국인/.test(x[0])); return {spent,lim,room,left,autoN,W,per,capBound:f.avail>=f.cap,fres:fr?fr[1]:0,res:f.res}; }
 function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동 배분: 구단 국내 선수 52명까지 지그재그 */
-  let r=0, guard=0; while(F.pool.length&&guard++<80){ const seq=r%2?[...F.order].reverse():F.order; let any=false; for(const tid of seq){ if(domestic(tid).length>=52)continue; const id=fdBest(tid,true); if(id==null)break; const p=G.players[id]; p.team=tid; p.fdPool=false; acqStamp(p,'fd',tid,{auto:true}); F.pool=F.pool.filter(x=>x!==id); any=true; } if(!any)break; r++; }
+  let r=0, guard=0; while(F.pool.length&&guard++<80){ const seq=r%2?[...F.order].reverse():F.order; let any=false; for(const tid of seq){ if(domestic(tid).length>=52)continue; const id=fdBest(tid,true); if(id==null)break; const p=G.players[id]; p.team=tid; p.fdPool=false; acqStamp(p,'fd',tid,{auto:true}); chron('draft',`창단 추가 지명 ${p.name}(${posLabel(p)}, ${p.age}세) · 연봉 ${money(p.sal)}`,p.id,tid,{source:'fd:'+G.year+':extra:'+p.id}); F.pool=F.pool.filter(x=>x!==id); any=true; } if(!any)break; r++; }
   for(const id of F.pool){ const p=G.players[id]; if(p)retireOut(p,'창단 드래프트에서 지명받지 못해 은퇴'); } /* 일반 은퇴 절차: 기존 1군 기록을 보관(G.arch)에 남긴다(검수 11-09zd) */
   F.pool=[]; F.done=true; for(const p of Object.values(G.players)){ delete p.fdPool; delete p.fdFrom; } try{ tbTakeSnap(); }catch(e){}
   for(const t of G.teams){ if(rosterN(t.id)>ROSTER_MAX)trimRoster(t.id,ROSTER_MAX); } try{ aiCapAll(); }catch(e){} try{ fdStrengthen(); }catch(e){} try{ fdAiPayFill(); }catch(e){} try{ foundDefaults(); }catch(err){}
@@ -224,7 +225,7 @@ function doPick(pid){
   if(mine){ try{ rp0=scoutReport(p); if(rp0.ofp!=null)p.dEst={ofp:rp0.ofp,sd:rp0.sd,who:rp0.who}; }catch(e){} }
   p.prospect=false; p.team=pk.tid; p.joinY=G.year+1; p.sal=MIN_SAL; p.svc=0; p.draft={y:G.year,rd:pk.rd,no:pk.no,tid:pk.tid,bonus:bonusOf(pk.rd,pk.no,p),...(pk.from!=null?{from:pk.from}:{})}; /* from: 넘겨받은 지명권의 원래 구단(거래 성과 집계) */ acqStamp(p,'draft',pk.tid,Object.assign({rd:pk.rd,no:pk.no},mine?{how:pk.rule?'rule':pk.auto?'auto':'gm'}:{})); if(mine&&rp0)try{ p.acq.e0=rp0.cur; if(rp0.ofp!=null)p.acq.ep=rp0.ofp; }catch(e){} story(p,`${G.year} 신인 드래프트 ${pk.rd}라운드 ${pk.no}순위 · ${tname(pk.tid)} 지명 (${p.school||''})`,'draft');
   { G.sea.bonus=G.sea.bonus||{}; G.sea.bonus[pk.tid]=(G.sea.bonus[pk.tid]||0)+p.draft.bonus; } pk.pid=pid; d.cur++;
-  if(pk.tid===G.user&&pk.rd<=2&&!G.unemp)chron('draft',`신인 ${pk.rd}라운드 ${pk.no}순위 ${p.name}(${posLabel(p)}) 지명`,p.id);
+  chron('draft',`신인 ${pk.rd}라운드 ${pk.no}순위 ${p.name}(${posLabel(p)}, ${p.age}세) 지명 · 계약금 ${money(p.draft.bonus)} · ${p.joinY}년 합류`,p.id,pk.tid,{source:'draft:'+d.y+':'+pk.no+':'+pk.rd+':'+pk.tid});
   if(mine&&p.father)try{ sonDrafted(p); }catch(e){} /* 옛 선수의 아들(11-09r) */
   if(mine)addLog(`${pk.rd}라운드 ${pk.no}순위로 ${p.name}(${p.college?'대졸':'고졸'}·${posLabel(p)})을(를) 지명했습니다.`);
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid)){ (d.lost=d.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,no:pk.no,nm:p.name}); }

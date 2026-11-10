@@ -175,7 +175,6 @@ function faSign(p,offers){
       if(gone.length)stop('FA',`외부 FA 영입 한도(${faCapN()}명)를 채웠습니다. 다른 구단 FA에게 낸 제안 ${gone.length}건(${gone.map(x=>G.players[x].name).join(', ')})은 효력이 없어 거둬들였습니다. 우리 FA 잔류 협상은 계속할 수 있습니다.`); }
     try{ compStart(p,from,best.tid,rec); }catch(e){}
   }
-  if(best.tid===G.user&&!G.unemp)chron('fa',from===G.user?`FA ${p.name} 잔류 (${ctRecShort(rec)})`:`FA ${p.name} 영입 (${ctRecShort(rec)})`,p.id); else if(from===G.user&&best.tid!==G.user&&!G.unemp)chron('fa',`FA ${p.name}, ${tshort(best.tid)}로 이적`,p.id);
   if(best.tid!==from)try{ homeReturn(p,best.tid,ht); }catch(e){} /* 고향 팀 귀향(11-09d) */
   const uo0=G.fa.offers[p.id]; const userOffered=!!uo0; const whyLost=!uo0?'':uo0.rej?' 우리 제안은 선수가 이미 거절한 조건이었습니다.':faOutBlocked(G.user,p)?` 우리 구단은 외부 FA 영입 한도(${faCapN()}명)를 채워 계약할 수 없었습니다.`:' 우리 제안은 밀렸습니다.';
   delete G.fa.offers[p.id]; G.fa.pool=G.fa.pool.filter(x=>x!==p.id); G.fa.results.unshift(rec); prFA(rec); try{ if(rec.to===G.user&&from!==G.user&&rec.annual>=700)ivRequest('fa_sign',{pid:p.id}); else if(from===G.user&&rec.to!==G.user&&rec.annual>=500)ivRequest('fa_lost',{pid:p.id}); }catch(e){} mvLog('FA',p,from,rec.to,`${from===rec.to?'잔류 ':''}${ctRecShort(rec)}`,rec.terms?ctRecMoney(rec).tot:rec.annual*rec.years);
@@ -205,7 +204,7 @@ function faClose(){
       if(lt&&p.age<=35&&ovr(p)>=42){ const an=round5(Math.max(low,Math.min(p.ask.annual,(fl-capPay(lt.id))*.6))); faSign(p,[{tid:lt.id,annual:an,years:p.age<=31?2:1}]); if(p.team===lt.id)floorN++; continue; } }
     /* 아무도 찾지 않은 선수: 유니폼을 벗는다 */
     F.pool=F.pool.filter(x=>x!==id);
-    if(p.age<=35&&ovr(p)>=33){ toFree(p,'FA 미계약 · 무적 선수'); gone++; continue; } /* 2년 동안 다른 구단을 기다린다 */
+    if(p.age<=35&&ovr(p)>=33){ mvLog('FA 미계약',p,from,null,'FA 시장 종료 · 무적 선수'); toFree(p,'FA 미계약 · 무적 선수'); gone++; continue; } /* 2년 동안 다른 구단을 기다린다 */
     wire('FA',`${p.name}(${p.age}세)이(가) 새 팀을 찾지 못하고 은퇴했습니다.`,{ref:p.id}); if(from===G.user)note('FA',`우리 구단 출신 FA ${p.name}이(가) 계약하지 못하고 은퇴했습니다.`);
     { let rec=null; try{ rec=retireRecord(p); }catch(e){} try{ p.team=from; obFromPlayer(p,rec); p.team=null; }catch(e){} } dropP(id); gone++; } /* 정상 은퇴와 같이 통산 기록·명예의 전당 심사 */
   F.closed=true; F.cheapN=cheap; F.retN=gone;
@@ -256,6 +255,7 @@ function fReFinish(C,tid){ const me=tid===G.user;
   for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||p.team!==tid)continue;
     if(!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok)){ const O=fReIdleOut(p); if(O){ const rel=(C.fFree||[]).includes(id)||p.fRel; /* 계약에 보류권 해제 조항이 있으면 그대로 지킨다(검수 11-06) */ if(me)addLog(`외국인 선수 ${p.name}이(가) 재계약 협상 없이 ${O.k} 구단 제안(${usdT(O.v)})을 받아들여 떠났습니다(${rel?'계약 조항대로 보류권 해제':'보류권 유지: 5년간 국내 다른 구단 입단 불가'}).`); if(!rel)try{ foResAdd(p,tid); }catch(e){} { const lg=O.k==='미국'?'MLB':O.k==='일본'?'NPB':'CPBL'; ovsLeave(p,lg,lg==='MLB'?pick(MLBT):lg==='NPB'?pick(NPBT):'타이베이',1,Math.round(O.v/USD),'외국인'); } /* 해외파 이력에도 남긴다(검수 11-09b) */ continue; } }
     if(C.foreignDrop.includes(id)){ const free=((C.fFree||[]).includes(id)||p.fRel); /* 조항은 누가 결렬시켰든 지킨다(선수가 거절해도 보류권을 다시 잡지 않음, 검수 11-06) */ /* 계약 때 보류권 해제 조항을 넣었으면 약속대로 푼다 */ const mkt=free&&ovr(p)>=50&&p.age<=34; if(me)addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다(${!free?'보류권 유지: 5년간 국내 다른 구단 입단 불가':mkt?'보류권 해제: 다른 구단과 계약 가능':'보류권은 풀었지만 국내에서 찾는 구단이 없어 해외로 떠났습니다'}).`);
+      mvLog('외국인 계약 종료',p,tid,null,!free?'재계약 결렬 · 보류권 유지(5년)':mkt?'재계약 결렬 · 보류권 해제 · 다른 구단과 계약 가능':'재계약 결렬 · 보류권 해제 · 국내 활동 종료');
       if(mkt){ delete p.newSal; delete p.fInc; delete p.fRel; delete p.fleft; termsClear(p); /* 옛 계약 조항은 새 계약으로 따라가지 않는다 */ p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); p.ask0=p.ask; G.fmarket=(G.fmarket||[]).concat(p.id); wire('외국인',`${tshort(tid)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid}); } else { if(!free)try{ foResAdd(p,tid); }catch(e){} dropP(id); } }
     else { if(p.newSal!=null)p.sal=p.newSal; delete p.newSal; p.rsy=(p.rsy||0)+1; p.fCtY=C.y+1; delete p.fleft; if(p.fInc){ p.ctT=p.team; p.opt={a:p.fInc,from:C.y+1,until:C.y+1,c:optCrit(p)}; delete p.fInc; } } } }
 /* 이직할 때: 떠나는 구단의 남은 연봉 협상은 그 구단(이제 AI)이 정리하고, 새 구단은 이미 연봉을 마친 상태로 시작한다 */
@@ -289,7 +289,7 @@ function newYear(){
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){}
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
-  if(G.mgr[G.user]&&G.mgr[G.user].yrs<=0&&!G.mgr[G.user].interim){ const m=G.mgr[G.user]; G.mgr[G.user]=null; try{ mreqCloseOld(); }catch(e){} mail('운영팀','감독 계약 종료',`${m.name} 감독과의 계약이 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.`,{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
+  if(G.mgr[G.user]&&G.mgr[G.user].yrs<=0&&!G.mgr[G.user].interim){ const m=G.mgr[G.user]; staffHistory('mgr',m,'계약 만료',G.user); G.mgr[G.user]=null; try{ mreqCloseOld(); }catch(e){} mail('운영팀','감독 계약 종료',`${m.name} 감독과의 계약이 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.`,{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.mgr[G.user]&&G.mgr[G.user].interim){ G.mgr[G.user]=null; mail('운영팀','감독대행 체제 종료','감독대행 체제가 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.',{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.tut&&!G.tut.done)G.tut.done=true; /* 비서 업무 안내는 창단 첫해에만 */
   try{ warFreeze(G.year); }catch(e){} /* 능력치가 바뀌기 전에 올해 WAR을 고정 */
@@ -380,11 +380,10 @@ function answerOffer(id,yes){
   for(const k in G.lineup) if(o.get.includes(G.lineup[k]))delete G.lineup[k];
   const diff=sum(o.give.map(id=>trueVal(G.players[id])))-sum(o.get.map(id=>trueVal(G.players[id])))-cashVal(t,cash)+cashCost(t,cash);
   try{ frBacklash(o.get); }catch(e){}
-  chron('trade',`${tshort(o.from)}와(과) 트레이드: ${o.get.map(id=>G.players[id]?G.players[id].name:'').join('·')} 보내고 ${o.give.map(id=>G.players[id]?G.players[id].name:'').join('·')} 받음`);
   G.trades.push({me:G.user,y:G.year,d:G.day,with:o.from,gw:(team(o.from).gm||{}).id,give:o.get.map(id=>G.players[id].name),get:o.give.map(id=>G.players[id].name),diff,revealed:false,gi:[...o.give],go:[...o.get],snap,grade,...(cash?{cash}:{})});
   if(cash>0){payOut(G.user,cash,'etc');payIn(o.from,cash);G.spend.trC=(G.spend.trC||0)+cash;}else if(cash<0){payOut(o.from,-cash,'etc');payIn(G.user,-cash,'tradeIn');}
   if(pk.give.length||pk.get.length){pkMove(pk,o.from);const T=G.trades[G.trades.length-1];T.pk={give:pk.give.map(pkName),get:pk.get.map(pkName)};T.pkk={y:pk.y,give:[...pk.give],get:[...pk.get]};}
-  t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); const tr=mvTr(); o.give.forEach(id=>mvLog('트레이드',G.players[id],o.from,G.user,'',0,tr)); try{ if(o.get.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} o.get.forEach(id=>mvLog('트레이드',G.players[id],G.user,o.from,'',0,tr)); offerDropMoved([...o.get,...o.give]);
+  t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); const tr=mvTr(),trNote=mvTradeNote(G.user,o.from,cash,pk); o.give.forEach(id=>mvLog('트레이드',G.players[id],o.from,G.user,trNote,0,tr)); try{ if(o.get.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} o.get.forEach(id=>mvLog('트레이드',G.players[id],G.user,o.from,trNote,0,tr)); offerDropMoved([...o.get,...o.give]);
   mgrTradeApply(mv); churnCheck(); mpickTraded(o.get); addLog(`${tname(o.from)}의 제안을 받아들였습니다: ${o.get.map(id=>G.players[id].name).join(', ')} ↔ ${o.give.map(id=>G.players[id].name).join(', ')}`);
   offerDropCool(); return {ok:true,grade,msg:'트레이드가 성사되었습니다.'};
 }

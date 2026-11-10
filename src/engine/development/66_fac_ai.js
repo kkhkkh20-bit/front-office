@@ -49,7 +49,7 @@ function facMoveTeam(oldTid,newTid){ if(oldTid===newTid)return; const ot=team(ol
 function aiFacDaily(){ if(!G||!G.teams)return; const o=dobj(G.day); const plan=(o.m===12&&o.d===1)||(o.m===6&&o.d===15);
   for(const t of G.teams){ const mine=t.id===G.user; if(mine&&!G.unemp)continue; const S=mine?facSt(t.id):aiFacInit(t); if(!S)continue;
     if(!mine)for(const k of Object.keys(S.bld)){ const b=S.bld[k]; if(G.day<b.done)continue; S.it[k]=Math.max(S.it[k]||0,b.lv); S.dn[k]=G.day; delete S.bld[k]; S.lv=facCalcLv(S.it); t.fac=S.lv;
-      wire('시설',`${t.city} ${FAC_NEWS[k][b.lv]} 완공`,{tid:t.id}); }
+      clubFacilityHistory('fac',t.id,FACI[k].l,'완공',b); wire('시설',`${t.city} ${FAC_NEWS[k][b.lv]} 완공`,{tid:t.id}); }
     if(plan)try{ aiFacPlan(t,S,o.m===6); }catch(e){} } }
 function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)return null;
   const key='fai'+facWK()+':'+t.id+':'+G.year+(summer?'s':'w'); const tr=gmTrait(t.id);
@@ -71,7 +71,7 @@ function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)ret
   if(src==='cash')t.cash-=x.c;
   S.bld[x.k]={lv:x.lv+1,done:G.day+FACI[x.k].days[x.lv+1],c:x.c}; if(src==='cap')S.bld[x.k].cap=true;
   S.inv=(S.inv||0)+x.c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k:x.k,lv:x.lv+1,c:x.c,src}); if(S.hist.length>40)S.hist.shift();
-  if(x.c>=4000)wire('시설',`${t.city} ${t.nick}, ${FAC_NEWS[x.k][x.lv+1]} 착공(${money(x.c)}${src==='cap'?', 모기업 투자':''})`,{tid:t.id});
+  clubFacilityHistory('fac',t.id,FACI[x.k].l,'착공',{...S.bld[x.k],src:src==='cap'?'모기업 투자':'구단 현금'}); if(x.c>=4000)wire('시설',`${t.city} ${t.nick}, ${FAC_NEWS[x.k][x.lv+1]} 착공(${money(x.c)}${src==='cap'?', 모기업 투자':''})`,{tid:t.id});
   return x.k; }
 
 /* 유지·보수를 못 해 시설이 낡는다: 가장 높은 시설 하나가 한 단계 내려간다(공사 중인 시설은 제외) */

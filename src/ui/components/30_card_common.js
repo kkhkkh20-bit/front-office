@@ -29,7 +29,7 @@ function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); 
     ${teamPeople(tid)}
     <div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}
     <div class="eyebrow" style="margin-top:10px">우승 트로피</div>${trophyCase(tid,true)}
-    <div class="row" style="margin-top:10px"><button class="btn primary" data-a="lteam" data-v="${tid}">선수단 보기</button>${tradeOpen()?`<button class="btn" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button>`:''}</div>
+    <div class="row" style="margin-top:10px"><button class="btn primary" data-a="teamInspect" data-v="${tid}">구단 정보·연대기</button><button class="btn" data-a="lteam" data-v="${tid}">선수단 보기</button>${tradeOpen()?`<button class="btn" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button>`:''}</div>
   </div></div>`; }
 /* 다른 구단 사람들(카페 11-09c): 구단주 성향·시즌 목표, 감독, 코치진. 감독·OB 출신 코치는 누르면 인물 창 */
 function teamPeople(tid){ const t=team(tid); if(!t||tid===G.user)return ''; const B=bossOf(tid), m=G.mgr[tid], C=coachesOf(tid), ow=OWNER[t.owner];
