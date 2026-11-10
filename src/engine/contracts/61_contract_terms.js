@@ -96,15 +96,24 @@ function mgrUseView(p){ const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 �
 function mgrUseAsk(pid,c){ const p=G.players[pid], m=G.mgr[G.user]; if(!p||p.team!==G.user||G.unemp||!m)return {me:'',a:'...',sys:'건의할 수 없는 선수입니다.'}; mgrFix(m);
   const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 로테이션':k==='RP'?'필승조':'주전'; const {c:cp,gap}=useComp(p,k);
   const me=c==='role'?`계약 때 약속한 ${r?r.l.replace(' 보장',''):role} 자리대로 ${p.name}을(를) 써 주십시오.`:c==='alt'?`${r?`${role}이 어렵다면 `:''}${p.name}에게 ${p.isP?'롱릴리프·스윙맨으로라도':'대타·선발 몇 경기로라도'} 출전 기회를 주십시오.`:`성적이 안 되면 감독님 판단을 존중하겠습니다. 다만 ${p.name} 사정은 알아 주십시오.`;
-  if(c==='respect'){ const first=p.useResp!==G.year; if(first){ p.useResp=G.year; m.rel=clamp(m.rel+1,0,100); } return {me,a:`알겠습니다. 내용이 올라오면 바로 쓰겠습니다. 믿어 주셔서 고맙습니다.`,sys:`${first?'감독 관계 +1 · ':''}약속 판정은 그대로입니다`}; }
+  if(c==='respect'){ const first=p.useResp!==G.year&&m.useRespDay!==G.day; if(first){ p.useResp=G.year; m.useRespDay=G.day; m.rel=clamp(m.rel+1,0,100); } return {me,a:`알겠습니다. 내용이 올라오면 바로 쓰겠습니다. 믿어 주셔서 고맙습니다.`,sys:`${first?'감독 관계 +1 · ':''}약속 판정은 그대로입니다`}; }
   if(c==='role'&&(!r||rpromK(G.user,p)))return {me,a:`${r?'이미 그렇게 하기로 했습니다.':'계약 때 약속한 역할이 없는 선수입니다.'}`,sys:''};
   if(c==='alt'&&p.promise)return {me,a:`지난번 말씀하신 출전 기회부터 챙기고 있습니다.`,sys:`${dmd(p.promise.until)}까지 출전 기회 약속이 이미 있습니다`};
+  if(p.hold||p.ys||p.joinY>G.year||p.susp>G.day||!healthy(p)||isAway(p)||ovsAbroad(p)
+    ||(entryOn()&&(!psOk(p)||(!p.e1&&!canUp(p)))))return {me,a:'지금은 경기에 기용하기 어렵습니다.',sys:upWhy(p)};
   const no=G.useNo&&G.useNo[pid]; if(no&&no.u>G.day&&no.mid===m.id)return {me,a:`며칠 전에 말씀드렸습니다. 당분간은 지금대로 가겠습니다.`,sys:`${dmd(no.u)}부터 다시 건의할 수 있습니다`};
   if(useScore(m,gap)+(c==='alt'?5:0)<0){ m.rel=clamp(m.rel-1,0,100); (G.useNo=G.useNo||{})[pid]={u:G.day+7,mid:m.id};
     return {me,a:`${cp?`${p.name}은(는) 지금 ${cp.name}보다 처집니다.`:''} 약속은 프런트 사정이고, 저는 이기는 쪽으로 쓰겠습니다. 내용으로 보여 주면 그때 쓰겠습니다.`,sys:'건의 거절 · 감독 관계 -1 · 7일 뒤 다시 건의할 수 있습니다'}; }
-  const cost=m.ego>=65&&!mplOn('listen'); if(cost)m.rel=clamp(m.rel-1,0,100);
-  if(c==='role'){ r.ok={tid:G.user,mid:m.id,y:G.year,d:G.day}; if(k==='SP'&&G.prole&&G.prole[pid]&&G.prole[pid].k!=='sp')delete G.prole[pid]; try{ entryUpgrade(G.user,[p],'약속 보직'); roleSync(G.user); }catch(e){} p.mor=clamp((p.mor??60)+4,0,100);
+  const cost=m.ego>=65&&!mplOn('listen');
+  if(c==='role'){
+    const prev=r.ok; r.ok={tid:G.user,mid:m.id,y:G.year,d:G.day};
+    entryUpgrade(G.user,[p],'약속 보직');
+    if(entryOn()&&!p.e1){ if(prev)r.ok=prev; else delete r.ok; return {me,a:'지금은 1군 엔트리에 자리를 내기 어렵습니다.',sys:'기용 약속 보류'}; }
+    if(cost)m.rel=clamp(m.rel-1,0,100);
+    if(k==='SP'&&G.prole&&G.prole[pid]&&G.prole[pid].k!=='sp')delete G.prole[pid];
+    roleSync(G.user); p.mor=clamp((p.mor??60)+4,0,100);
     return {me,a:`알겠습니다. 계약 때 한 약속이니 이번 시즌은 ${role}에 넣겠습니다. 대신 결과는 선수가 책임져야 합니다.`,sys:`수락: 이번 시즌 ${role}${k==='SP'?'으로':'로'} 기용(감독이 바뀌면 다시 건의) · ${p.name} 기분 +4${cost?' · 감독 관계 -1':''}`}; }
+  if(cost)m.rel=clamp(m.rel-1,0,100);
   p.promise=mkPromise(p,30); if(r)r.soft=G.day+30; p.mor=clamp((p.mor??60)+3,0,100);
   return {me,a:`그 정도는 해 보겠습니다. 한 달 안에 기회를 주겠습니다.`,sys:`수락: 30일 안에 출전 기회 · ${p.name} 기분 +3${r?' · 그동안 약속 위반 기분 하락 절반(약속 위반은 그대로)':''}${cost?' · 감독 관계 -1':''}`}; }
 /* 건의할 만한 선수: 역할 약속을 못 지키는 선수 먼저, 다음은 출전 시간에 불만인 주축·고참 */

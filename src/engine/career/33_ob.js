@@ -72,7 +72,7 @@ function obYear(){ obInit(); for(const ob of G.ob)try{ if(ob.retY!==G.year)ob.ag
       if(ob.alt&&ob.alt.k==='front'){ ob.fy++; if(ob.path==='scout'){ ob.sy++; ob.fy--; } } }
     if(ob.path==='media'&&ob.my>=3&&R()<.25){ ob.path='coach'; ob.log.push({y:G.year,t:'해설을 접고 지도자의 길을 택했습니다'}); } }catch(e){} /* 한 사람의 오류가 뒤 사람의 연간 처리를 멈추지 않게(검수 11-09zv #1) */
   /* OB 명단 정리: 75세 이상, 또는 66세 이상이면서 지금 자리가 없고 우리 구단 출신·명예의 전당이 아니면 명단에서 내린다(명단이 끝없이 커지지 않게) */
-  const keep=ob=>{ if(ob.age>=75)return false; if(ob.age<66)return true; const w=obWhere(ob); if(w.k==='coach'||w.k==='mgr'||w.k==='scout')return true; if(obMine(ob)||ob.hof||ob.retNo)return true; return false; };
+  const fathers=obFathers(); const keep=ob=>{ if(fathers.has(ob.id))return true; if(ob.age>=75)return false; if(ob.age<66)return true; const w=obWhere(ob); if(w.k==='coach'||w.k==='mgr'||w.k==='scout')return true; if(obMine(ob)||ob.hof||ob.retNo)return true; return false; };
   G.ob=G.ob.filter(keep); }
 /* AI 구단이 OB를 쓰는 곳 */
 function obAiCoach(tid,role){ const L=obCands('coach',CROLE[role].g===2) /* 짧은 경력 OB는 2군·잔류군 자리만 */.filter(o=>!(G.cmarket||[]).some(c=>c.ob===o.id&&(c.role!==role||c.res===G.user||(c.from===ME()&&c.fromY===G.year)))); /* 우리 우선 협상 후보는 데려가지 않는다(검수 11-09zw #22) */ /* 이번 겨울 우리와 계약이 끝난 코치는 단장이 먼저 볼 수 있게 AI가 같은 날 바로 데려가지 않는다 */ const own=L.filter(o=>o.team===tid&&o.ys>=5); const ob=own.length&&R()<.7?own.sort((a,b)=>b.fame-a.fame)[0]:L.length&&R()<.85?pick(L):null; /* 빈자리는 대부분 은퇴 선수로 채운다(사용자 11-08c: 우리 풀 안에서) */ if(!ob)return null; const c=obCoach(ob); /* 자기 구단 출신을 먼저 부른다(레전드의 친정 복귀, 사용자 11-08) */ c.role=role; try{ coachSync(c); }catch(e){} c.yrs=ri(1,3);
@@ -107,6 +107,7 @@ function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec
  아들에게는 아버지 OB id(p.father) 하나만 저장한다 */
 const SON_Z=-1.75; /* hn은 표준정규 해시라 이보다 작을 확률이 약 4%(u01은 고르지 않아 쓰지 않는다) */
 function sonDue(o){ return !o.minor&&(o.seasons>=5||o.war>=8)&&hn('son',o.id)<SON_Z&&o.retY+15+Math.floor(u01('sonY',o.id)*11)===G.year; }
+const obFathers=()=>new Set(Object.values(G.players).map(p=>p.father).filter(Boolean));
 function fatherOf(p){ return p&&p.father&&(G.ob||[]).find(o=>o.id===p.father)||null; }
 /* 드래프트 풀에서 아버지와 같은 투수·야수(야수는 60%가 같은 포지션)인 신인 하나를 아들로 삼는다: 신인 생성(makeDraftClass)을 그대로 쓰고 성·투타·체격·잠재력만 손본다 */
 function sonMake(cls){ for(const o of (G.ob||[]).filter(sonDue).slice(0,2)){ const L=cls.map(id=>G.players[id]).filter(q=>q&&!q.father&&!!q.isP===!!o.isP); const same=L.filter(q=>posLabel(q)===o.pos); const b=pick(same.length&&R()<.6?same:L); if(!b)continue;
@@ -118,11 +119,24 @@ function sonMake(cls){ for(const o of (G.ob||[]).filter(sonDue).slice(0,2)){ con
 function sonDrafted(p){ const o=fatherOf(p); if(!o)return; const home=obMine(o); /* 팬 여론은 기사 논조로 소폭 오른다(우리 출신이면 조금 더) */
   news('드래프트',`${o.name}의 아들 ${p.name}, ${tshort(G.user)} 지명`,`${home?`우리 유니폼을 입고 ${obMineC(o).ys}시즌을 뛴`:`${tshort(o.team)} 출신`} ${o.name}의 아들 ${p.name}(${posLabel(p)})이(가) ${p.draft.rd}라운드 ${p.draft.no}순위로 ${tname(G.user)}에 지명됐습니다. 팬들이 대를 잇는 인연을 반깁니다.`,home?2:1,{fanW:1,ref:p.id});
   const fp=G.players[o.fid]||(G.arch&&G.arch[o.fid]&&archP(G.arch[o.fid])); if(fp&&fp.draft&&fp.draft.tid===G.user)achUnlock('gen2',`${o.name}${fp.draft.y!=null?`(${fp.draft.y}년 지명)`:''} → ${p.name}(${G.year}년 지명).`);
-  const n=o.no; if(n==null)return; const rn=(G.retNos||[]).find(r=>r.no===n); const own=!!rn&&(rn.ob===o.id||rn.name===o.name); if(rn&&!own)return; if(!rn&&teamNos(G.user,p).has(n))return; /* 다른 사람 결번이거나 지금 누가 쓰면 묻지 않는다 */
-  evNew('son2',`${p.name}, 아버지 등번호 ${n}번`,`${p.name}이(가) 아버지 ${o.name}의 ${n}번을 달고 싶어 합니다.${own?` ${n}번은 아버지의 영구결번이라 구단이 허락해야 쓸 수 있습니다.`:''}`,[{l:own?`아버지 결번 ${n}번 허락`:`${n}번 물려주기`,fx:own?'결번은 그대로 두고, 아들에게만 이 번호를 허락합니다. 팬 여론이 조금 오릅니다.':'아버지의 번호를 이어 답니다.'},{l:'새 번호로 시작',fx:'아들은 자기 번호로 시작합니다.'}],{data:{pid:p.id,no:n,rn:own},def:1,exp:7}); }
-EVH.son2={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||i!==0)return ''; const n=e.data.no;
-    if(!e.data.rn){ const r=setPlayerNo(p.id,n); return r||`${p.name}이(가) ${n}번을 답니다.`; }
-    jno(p); p.no=n; p.noT=p.team; /* 결번은 남기고 아들에게만 예외로 허락한다 */
+  const n=o.no; if(n==null)return; const rn=(G.retNos||[]).find(r=>r.no===n); const own=!!rn&&(rn.ob!=null?rn.ob===o.id:rn.name===o.name); if(rn&&!own)return; if(Object.values(G.players).some(q=>q!==p&&q.team===G.user&&jno(q)===n))return; /* 다른 사람 결번이거나 지금 누가 쓰면 묻지 않는다 */
+  evNew('son2',`${p.name}, 아버지 등번호 ${n}번`,`${p.name}이(가) 아버지 ${o.name}의 ${n}번을 달고 싶어 합니다.${own?` ${n}번은 아버지의 영구결번이라 구단이 허락해야 쓸 수 있습니다.`:''}`,[{l:own?`아버지 결번 ${n}번 허락`:`${n}번 물려주기`,fx:own?'결번은 그대로 두고, 아들에게만 이 번호를 허락합니다. 팬 여론이 조금 오릅니다.':'아버지의 번호를 이어 답니다.'},{l:'새 번호로 시작',fx:'아들은 자기 번호로 시작합니다.'}],{data:{pid:p.id,tid:G.user,no:n,rn:own},def:1,exp:7}); }
+EVH.son2={
+  can(e,i){
+    if(i!==0)return '';
+    const p=G.players[e.data.pid], tid=e.data.tid??G.user, n=e.data.no;
+    if(!p||G.unemp||tid!==G.user||p.team!==tid)return '이제 이 선수의 등번호를 정할 수 없습니다.';
+    const rn=retNosOf(tid).find(r=>r.no===n), father=fatherOf(p);
+    if(rn&&(!e.data.rn||!father||(rn.ob!=null?rn.ob!==father.id:rn.name!==father.name)))return '이 등번호는 영구결번입니다.';
+    const q=Object.values(G.players).find(q=>q!==p&&q.team===tid&&jno(q)===n);
+    return q?`${n}번은 ${q.name} 선수가 쓰고 있습니다.`:'';
+  },
+  pick(e,i){ const p=G.players[e.data.pid]; if(!p||i!==0)return ''; const n=e.data.no;
+    const father=fatherOf(p), rn=retNosOf(p.team).find(r=>r.no===n);
+    if(!rn){ const r=setPlayerNo(p.id,n); return r||`${p.name}이(가) ${n}번을 답니다.`; }
+    p.sonNo={tid:p.team,no:n,father:father.id,name:father.name};
+    const msg=setPlayerNo(p.id,n);
+    if(msg){ delete p.sonNo; return msg; }
     news('구단',`${p.name}, 아버지의 영구결번 ${n}번 단다`,`구단이 영구결번 ${n}번을 아들 ${p.name}에게만 허락했습니다.`,1,{fanW:1,ref:p.id}); return `${p.name}이(가) 아버지의 결번 ${n}번을 답니다.`; } };
 
 function obHireBonus(obid,role){ if(!obid||!G.ob)return; const ob=G.ob.find(o=>o.id===obid); if(!ob)return; ob.log.push({y:G.year,t:`${tshort(G.user)} ${role}`}); if(!obMine(ob))return; prInit(); const f=ob.fame>=70?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);

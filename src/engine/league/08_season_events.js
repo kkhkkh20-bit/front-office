@@ -10,7 +10,7 @@ function openingDay(){
   note('일정',`${G.year} 시즌 개막입니다. 전력분석팀 예상 순위 ${G.proj.indexOf(G.user)+1}위.`);
   if(!(G.goals&&G.goals.y===G.year&&G.goals.fd))setGoals(); news('분석',`${G.year} 시즌 전망: ${tshort(G.user)} ${G.proj.indexOf(G.user)+1}위 예상`,`${tname(G.user)}의 시즌 전 전력은 ${G.proj.indexOf(G.user)+1}위로 꼽힙니다.`,0);
 }
-function recoverAll(n){ const rb=1+facImpact(facOf('rehab'))*.06; for(const p of Object.values(G.players)){ if(!p.fat)continue; const tm=milServing(p)?null:p.team; /* 무적 선수도 쉬면서 회복, 상무 복무 중에는 원소속 시설 없이(검수 11-09zy) */ p.fat=Math.max(0,p.fat-n*(p.isP?15.4+(p.r.sta-45)*.2:2.5+(p.r.vit||52)*.08)*(tm!=null&&tm===G.user?rb*trnIFat(p):facAiFat(tm))); } } /* 훈련 강도: 강할수록 피로가 덜 풀린다 */
+function recoverAll(n){ const rb=1+facImpact(facOf('rehab'))*.06, trn=trnActive(); for(const p of Object.values(G.players)){ if(!p.fat)continue; const tm=milServing(p)?null:p.team; /* 무적 선수도 쉬면서 회복, 상무 복무 중에는 원소속 시설 없이(검수 11-09zy) */ p.fat=Math.max(0,p.fat-n*(p.isP?15.4+(p.r.sta-45)*.2:2.5+(p.r.vit||52)*.08)*(tm!=null&&tm===G.user?rb*(trn?trnIFat(p):1):facAiFat(tm))); } } /* 훈련 강도: 강할수록 피로가 덜 풀린다 */
 const FORM_K=.4; /* 시즌 컨디션·타구 운의 크기(능력과 무관한 한 해의 흔들림). 1이면 타구 운(확률상 어쩔 수 없는 흔들림) 위에 한 해 컨디션이 크게 얹혀 능력과 기록이 너무 어긋났다 */
 function rollForm(){ G.formY=G.year; for(const p of Object.values(G.players)){ if(p.team==null)continue; const sd=p.foreign?3.0:p.age>=33?2.4:2.0; const x=R(); /* 9%는 한 해 크게 부진하고 6%는 커리어 하이를 찍는다 */ const v0=x<.09?N(-4.2,1.1):x<.15?N(3.4,1):N(0,sd); p.sf={y:G.year,v:clamp(v0*FORM_K,-6.5,6),m:0,lk:clamp(N(0,.012)*FORM_K,-.03,.03)}; p.wear=0; p.fat=0; p.l10=[]; } }
 function campSnap(){ const o={}; for(const p of domestic(G.user).concat(foreignOf(G.user)))o[p.id]={o:Math.round(ovr(p)*10)/10,r:Object.assign({},p.r)}; return o; }
@@ -94,6 +94,7 @@ function capOverOwner(u,y){ const ci=capInfo(u.id); if(!(ci.over>0)||u.indie||G.
   const cut=Math.round(ci.over*.5); const prev=u.supCut&&u.supCut.y===y+1?u.supCut.amt:0; u.supCut={y:y+1,amt:prev+cut};
   mail('구단주실',`상한 초과: 다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`상위 40명 연봉이 상한을 ${money(ci.over)}(${Math.round(r*100)}%) 넘었습니다. 경쟁균형세와 별도로, 모기업은 "규정을 넘겨 가며 쓴 돈은 구단이 책임지라"며 ${y+1}시즌 지원 한도를 ${money(cut)} 줄입니다. 구단주 신뢰 ${pen}.`,{kind:'구단주'}); return pen; }
 function settlement(){
+  const leg=legSeasonContext();
   try{ asSnap(); }catch(e){} /* 시즌 연봉 규모 기록: 실행위원회 소집 요건은 시즌을 치른 연봉으로 본다 */
   const y=G.year; const P=G.ps; const prePop=G.teams.map(t=>t.pop);
   const order=P.order.map(x=>({tid:x.tid,w:G.sea.rec[x.tid].w,l:G.sea.rec[x.tid].l,t:G.sea.rec[x.tid].t||0}));
@@ -202,6 +203,7 @@ function settlement(){
   G.last={y,d:G.day,tid:G.user /* 이 결산의 우리 구단: 결산 뒤 이직해도 결산 화면은 이 구단 기준(검수 11-09h) */,order,ps,fins,trust:{before,after:u.trust,delta},notes,leaders,gate,pool,months:G.sea.months,goals:gy.lines,awards,pr:G.pr?{fan:Math.round(G.pr.fan),press:Math.round(G.pr.press)}:null};
   if(!G.unemp)try{ G.last.rep=repSeason(y,rank,ps.champ===G.user,ps.runner===G.user,delta); }catch(e){}
   if(!G.unemp)try{ myCRecord(y,rank,ps,uo); }catch(e){}
+  try{ legSeason(leg); }catch(e){ console.error(e); }
   if(u.trust<12&&!G.unemp){ firedFlow(y,`구단주 신뢰가 ${u.trust}까지 떨어져 ${y}시즌을 끝으로 경질되었습니다.`); }
   else if(!G.unemp)try{ myCSeasonEnd(y,ps); }catch(e){} /* 계약 마지막 해: 재계약 제안 또는 결별, 다른 구단 제의 */
   stop('결산',`${y}시즌 결산이 나왔습니다. ${uo.w}승 ${uo.l}패 ${rank}위, 구단주 신뢰 ${before}→${u.trust}. 신뢰 변화 내역: ${why.filter(x=>Math.abs(x[1])>=.5).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).map(x=>`${x[0]} ${x[1]>0?'+':''}${Math.round(x[1])}`).join(', ')||'변화 없음'}.`);

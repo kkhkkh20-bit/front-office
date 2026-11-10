@@ -25,7 +25,8 @@ function myCClose(how){ const C=G.myC; if(!C||C.tid==null)return; const per=peri
         team(C.tid).cash-=C.sal; hoBook(C.tid,[],[['단장 연봉',C.sal]]); C.earn+=C.sal; personalSettle(C.sal);
         const b=myCBonus({champ:G.ps.champ,runner:G.ps.runner},G.ps.order); team(C.tid).cash-=b; if(b>0)hoBook(C.tid,[],[['단장 성과급',b]]);
         const rk=G.ps.order.findIndex(x=>x.tid===C.tid)+1; repSeason(G.year,rk,G.ps.champ===C.tid,G.ps.runner===C.tid,0); }
-      else { const adv=S.advance[ak]??S.advance[fy]??0; /* 옛 저장은 연도 키만 있다: 지금 계약(떠나는 구단) 것으로 본다 */ if(adv>0&&!S.settled[fy]){ team(C.tid).cash-=adv; hoBook(C.tid,[],[['단장 연봉',adv]]); C.earn+=adv; } /* 결산 명세에도(검수 11-09x) */ delete S.advance[ak]; delete S.advance[fy]; } }catch(e){} /* 이 구단에서 이미 받은 월급은 이 구단이 낸다(검수 11-07) */ }
+      else { const adv=S.advance[ak]??S.advance[fy]??0; /* 옛 저장은 연도 키만 있다: 지금 계약(떠나는 구단) 것으로 본다 */ if(adv>0&&!S.settled[fy]){ team(C.tid).cash-=adv; hoBook(C.tid,[],[['단장 연봉',adv]]); C.earn+=adv; } /* 결산 명세에도(검수 11-09x) */ delete S.advance[ak]; delete S.advance[fy]; } }catch(e){} /* 이 구단에서 이미 받은 월급은 이 구단이 낸다(검수 11-07) */
+    try{ legClose(C.tid); }catch(e){ console.error(e); } }
 /* 진행 중인 재계약 제안 닫기(이직·세대 교체) */
 function myCRenewClose(){ if(G.myC)delete G.myC.offer; for(const e of (G.evs||[]))if(!e.done&&e.k==='gmRenew'){ e.done=true; e.void=true; const m=(G.mail||[]).find(x=>x.id===e.mid); if(m){ m.acts=[]; m.imp=false; } } }
 function myCEnd(how,y){ const C=G.myC; if(!C)return; if(C.tid!=null)myCClose(how);

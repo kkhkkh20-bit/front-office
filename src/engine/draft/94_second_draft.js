@@ -19,7 +19,7 @@ function sdCands(tid){ const S=G.sd2; const taken=new Set(S.seq.map(s=>s.pid).fi
   return G.teams.filter(t=>t.id!==tid&&sdLost(t.id)<SD_LOSS).flatMap(t=>sdPool(t.id).filter(q=>!taken.has(q.id)&&!(S.prot[t.id]||[]).includes(q.id)&&(!S.pool||(S.pool[t.id]||[]).includes(q.id)))); } /* 지명 시작 뒤 영입한 선수는 새 구단이 보호할 기회가 없었다: 시작 때 명단 대상만(검수 11-08) */
 function sdCash(tid){ let c=team(tid).cash||0; if(tid===ME()){ const P=G.spend||{}; c+=(P.compIn||0)-(P.comp||0)-(P.trC||0); } return c; } /* 우리 양도금·보상금은 결산 장부에 쌓이고 트레이드 약정 현금도 이미 쓴 돈이다. 이직 때 장부는 옛 구단 현금으로 정산되므로 장부만 보면 이중 계산이 없다(검수 11-09f) */
 /* 쓸 수 있는 돈: 모기업 구단은 보유 현금 + 구단주 지원 목표 안의 예산 여유(실제 KBO처럼 모기업이 예산 안에서 대 준다). 약정 현금·양도금 장부는 이미 예산 여유에 들어 있다. 독립구단은 현금만(피드백 11-09j) */
-function spendable(tid){ const t=team(tid); if(tid!==ME()||t.indie)return sdCash(tid)-(t.indie?newStadDue(tid):0); /* 독립구단은 결산 때 낼 신구장 분담금도 쓸 수 없는 돈(AI 포함, 검수 11-09zza) */ const b=budget(); return (t.cash||0)+Math.max(0,b.roomGoal)+Math.min(0,b.roomCap); }
+function spendable(tid){ const t=team(tid); if(tid!==ME()||t.indie)return sdCash(tid)-(t.indie?newStadDue(tid):0)-(tid===ME()?(G.spend?.eventReserve||0):0); /* 독립구단은 결산 때 낼 신구장 분담금도 쓸 수 없는 돈(AI 포함, 검수 11-09zza) */ const b=budget(); return (t.cash||0)+Math.max(0,b.roomGoal)+Math.min(0,b.roomCap); }
 function spendRoom(){ const t=team(G.user); return t.indie?0:Math.max(0,spendable(G.user)-(t.cash||0)); } /* 그중 구단주 지원 여유(화면 안내용) */
 /* 지출: 보유 현금에서 먼저, 모자란 몫은 단장 결정 지출로 장부에 올려 결산 때 구단주 지원(적자 보전)이 메운다 */
 function spendTxt(){ const t=team(G.user), a=Math.max(0,spendable(G.user)); return t.indie?`선수 영입 자금(보유 현금만) ${money(a)}, 트레이드 약정분${newStadDue(G.user)?'·결산 때 낼 신구장 분담금':''} 제외`:`선수 영입 자금 ${money(a)} = 보유 현금 ${money(Math.max(0,t.cash||0))} + 구단주 지원 여유 ${money(spendRoom())}`; }

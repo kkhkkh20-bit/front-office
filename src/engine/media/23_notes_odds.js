@@ -69,9 +69,9 @@ function mgrTradeView(tid,give,get){ const m=G.mgr[G.user]; if(!m||m.interim)ret
 function mgrTradeApply(v){ const m=G.mgr[G.user]; if(!m||!v)return; const r=v.ra??v.r; if(!r)return; m.rel=clamp(m.rel+r,0,100); note('감독',`${v.txt} (감독 관계 ${r>0?'+':''}${r})`); }
 function estVal(p){ const rp=scoutReport(p); const cur=rp.cur??45; const fut=rp.ofp??cur; const eff=p.age<=25?cur+Math.max(0,fut-cur)*.6:p.age>=32?cur-(p.age-31)*1.3:cur; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
 function asstOpinion(tid,give,get,cash,pk){ // 우리 부단장 의견: 스카우트 평가 기준(실제 능력과 다를 수 있음)
-  if(!give.length&&!get.length)return [];
-  const gv=give.map(id=>G.players[id]), gt=get.map(id=>G.players[id]); const L=[];
-  const U=team(G.user); pk=pkNorm(pk); const diff=stackIn(gt.map(p=>tval(U,p,'in')))-sum(gv.map(p=>tval(U,p,'out')))-(cash||0)/250+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); /* 현금·지명권도 언론 평점(tradeGrade)과 같은 기준으로(검수 11-09v) */
+  if(!give.length&&!get.length&&!cash&&!pk?.give?.length&&!pk?.get?.length)return [];
+  const gv=give.map(id=>G.players[id]), gt=get.map(id=>G.players[id]), L=[];
+  const diff=tradeValueDiff(give,get,cash,pk); /* 현금·지명권도 언론 평점(tradeGrade)과 같은 기준으로(검수 11-09v) */
   L.push(diff>=3?'우리 평가로는 우리에게 유리한 거래입니다.':diff>=-1?'우리 평가로는 대체로 공정한 거래입니다.':diff>=-5?'우리가 조금 더 내주는 거래입니다.':'우리가 많이 손해 보는 거래로 봅니다.');
   const c=tradeCompare(tid,give,get); const lab=k=>k==='SP'?'선발진':k==='RP'?'불펜':POSK[k];
   const keys=FIELDK.concat(['SP','RP']);

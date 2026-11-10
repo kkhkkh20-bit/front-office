@@ -29,7 +29,7 @@ function frBacklash(ids){ if(G.unemp)return; const L=(ids||[]).map(id=>G.players
   news('팬',`프랜차이즈 스타 ${nm} 트레이드… 팬들 거센 반발`,`${tshort(G.user)}에서 오래 뛴 ${nm}을(를) 내보냈습니다. "구단의 얼굴을 보냈다"는 비판이 쏟아집니다.`,-3,{fanW:2});
   mail('홍보팀',`팬 반발: ${nm} 트레이드`,`프랜차이즈 스타를 트레이드한 데 대한 팬 반발이 큽니다. 팬 여론 -${d}, 언론 논조 -2.`,{kind:'언론'}); }
 /* 은퇴하는 프랜차이즈 스타: 은퇴식, 통산 WAR 25 이상이면 영구결번 */
-function legendRetire(p){ if(!isFranchise(p))return; const tid=p.team; const T=teamTenure(p,tid); G.frLeg=G.frLeg||[]; G.frLeg.push({tid,name:p.name,pos:posLabel(p),y:G.year,n:T.n,war:+T.war.toFixed(1)});
+function legendRetire(p){ if(!isFranchise(p))return; const tid=p.team; const T=teamTenure(p,tid); G.frLeg=G.frLeg||[]; G.frLeg.push({tid,pid:p.id,name:p.name,pos:posLabel(p),y:G.year,n:T.n,war:+T.war.toFixed(1)});
   wire('은퇴',`${tname(tid)} 프랜차이즈 스타 ${p.name} 은퇴`,{tid}); if(tid===G.user){ stop('선수',`${p.name}이(가) 은퇴합니다. ${T.n}시즌 동안 우리 팀에서 통산 WAR ${T.war.toFixed(1)}. 은퇴식은 따로 정합니다.`); chron('legend',`${p.name} 은퇴 (${T.n}시즌, WAR ${T.war.toFixed(1)})`); news('선수',`${p.name} 은퇴… ${tshort(tid)} 팬들 눈물`,`${T.n}시즌 동안 ${tshort(tid)}을(를) 지킨 ${p.name}이(가) 유니폼을 벗습니다.`,2); } }
 /* ===== 선수단 리더십: 선수들이 투표로 주장을 뽑는다. 주장의 엄격함(기강)과 영향력이 선수단 분위기를 정한다 =====
    기강 지수 S(0~100) = 주장 엄격함 60% + 감독 규율 40% (+단장 요청 보정). 45~65가 알맞고,
@@ -172,11 +172,20 @@ function jno(p){ if(!p)return null; if(p.no!=null&&(p.noT===p.team||p.team==null
   const used=teamNos(p.team,p); let n=p.no!=null&&!used.has(p.no)?p.no:1+Math.floor(u01('jno',p.id)*99); let g=0; while(used.has(n)&&g++<100)n=(n+1)%100; /* 0번까지 돌아본다(KBO 0~99, 검수 11-09zz) */ if(p.team!=null){ if(p.noT!=null&&p.no!=null)(p.noBy=p.noBy||{})[p.noT]=p.no; p.no=n; p.noT=p.team; } return n; }
 /* 이름·등번호 고치기(유저 편집). 등번호 0~99, 같은 구단 선수와 겹치면 안 되고 우리 구단 영구결번은 쓸 수 없다 */
 function setPlayerName(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const nm=String(v??'').replace(/[<>&"'`]/g,'').replace(/\s+/g,' ').trim(); if(!nm)return '이름을 입력하세요.'; if(nm.length>12)return '이름은 12자까지 쓸 수 있습니다.'; if(nm===p.name)return ''; const old=p.name; p.name=nm; (p.renamed=p.renamed||[]).push({y:G.year,from:old}); if(p.renamed.length>5)p.renamed.shift(); return ''; }
-function setPlayerNo(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const s=String(v??'').trim(); if(!/^\d{1,2}$/.test(s))return '등번호는 0~99 숫자로 입력하세요.'; const n=+s; if(p.team==null)return '소속 구단이 있는 선수만 등번호를 정할 수 있습니다.'; if(retNosOf(p.team).some(r=>r.no===n))return `${n}번은 ${p.team===G.user?'우리 구단':tshort(p.team)} 영구결번입니다.`;
+function sonRetNoAllowed(p,r){
+  const grant=p.sonNo;
+  return !!grant&&grant.tid===p.team&&grant.no===r.no&&grant.father===p.father
+    &&(r.ob!=null?r.ob===grant.father:r.name===grant.name);
+}
+function setPlayerNo(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const s=String(v??'').trim(); if(!/^\d{1,2}$/.test(s))return '등번호는 0~99 숫자로 입력하세요.'; const n=+s; if(p.team==null)return '소속 구단이 있는 선수만 등번호를 정할 수 있습니다.'; if(!p.sonNo&&p.father&&p.noT===p.team){
+    const father=fatherOf(p), rn=retNosOf(p.team).find(r=>r.no===p.no);
+    if(father&&rn&&(rn.ob!=null?rn.ob===father.id:rn.name===father.name))p.sonNo={tid:p.team,no:p.no,father:father.id,name:father.name};
+  }
+  if(retNosOf(p.team).some(r=>r.no===n&&!sonRetNoAllowed(p,r)))return `${n}번은 ${p.team===G.user?'우리 구단':tshort(p.team)} 영구결번입니다.`;
   const o=Object.values(G.players).find(q=>q!==p&&q.team===p.team&&jno(q)===n); if(o)return `${n}번은 ${o.name} 선수가 쓰고 있습니다.`; jno(p); /* 옛 구단 번호를 noBy에 남긴 뒤 바꾼다 */ p.no=n; p.noT=p.team; return ''; }
 /* 영구결번 후보: 지금 맡은 구단 후보만(이직하면 옛 구단 후보는 그 구단 것, 검수 11-09zp) */
 function retNoCands(){ return (G.legends||[]).map((r,i)=>({r,i})).filter(x=>x.r.canRetNo&&!x.r.retNo&&(x.r.tid==null||x.r.tid===G.user)); }
-function retireNumber(i){ const L=G.legends||[]; const r=typeof i==='string'&&i[0]==='p'?L.find(x=>'p'+x.pid===i):L[+i]; /* 위치 대신 선수 id로 찾는다(목록이 잘려 위치가 밀려도 맞는 선수) */ if(!r||!r.canRetNo||r.retNo||(r.tid!=null&&r.tid!==G.user)||G.unemp)return '대상이 아닙니다.'; { const d=(G.retNos||[]).find(x=>x.no===r.no); if(d)return `${r.no}번은 이미 ${d.name}의 영구결번입니다. 같은 번호는 한 번만 지정할 수 있습니다.`; } /* 검수 11-08 */ r.retNo=true; (G.retNos=G.retNos||[]).push({name:r.name,no:r.no,y:G.year}); { const o=(G.ob||[]).find(o=>o.fid===r.pid); if(o){ o.retNo=true; o.no=r.no; } } /* OB 카드도 같은 결번(검수 11-09zp) */ const mv=[]; for(const q of Object.values(G.players))if(q.team===G.user&&q.id!==r.pid&&q.no===r.no){ q.noT=null; jno(q); mv.push(`${q.name} ${q.no}번`); } /* 그 번호를 쓰던 현역은 새 번호로 */ news('선수',`${tshort(G.user)}, ${r.name}의 ${r.no}번 영구결번`,`구단 역사에 길이 남을 이름이 됐습니다.`,3,{fanW:3}); return `${r.no}번을 영구결번으로 지정했습니다.${mv.length?` 그 번호를 쓰던 선수는 바꿨습니다: ${mv.join(', ')}.`:''}`; }
+function retireNumber(i){ const L=G.legends||[]; const r=typeof i==='string'&&i[0]==='p'?L.find(x=>'p'+x.pid===i):L[+i]; /* 위치 대신 선수 id로 찾는다(목록이 잘려 위치가 밀려도 맞는 선수) */ if(!r||!r.canRetNo||r.retNo||(r.tid!=null&&r.tid!==G.user)||G.unemp)return '대상이 아닙니다.'; { const d=(G.retNos||[]).find(x=>x.no===r.no); if(d)return `${r.no}번은 이미 ${d.name}의 영구결번입니다. 같은 번호는 한 번만 지정할 수 있습니다.`; } /* 검수 11-08 */ r.retNo=true; (G.retNos=G.retNos||[]).push({name:r.name,no:r.no,y:G.year}); { const o=(G.ob||[]).find(o=>o.fid===r.pid); if(o){ o.retNo=true; o.no=r.no; G.retNos[G.retNos.length-1].ob=o.id; } } /* OB 카드도 같은 결번(검수 11-09zp) */ const mv=[]; for(const q of Object.values(G.players))if(q.team===G.user&&q.id!==r.pid&&q.no===r.no){ q.noT=null; jno(q); mv.push(`${q.name} ${q.no}번`); } /* 그 번호를 쓰던 현역은 새 번호로 */ news('선수',`${tshort(G.user)}, ${r.name}의 ${r.no}번 영구결번`,`구단 역사에 길이 남을 이름이 됐습니다.`,3,{fanW:3}); return `${r.no}번을 영구결번으로 지정했습니다.${mv.length?` 그 번호를 쓰던 선수는 바꿨습니다: ${mv.join(', ')}.`:''}`; }
 
 /* 100년 저장 크기(사용자 11-05 "100년은 즐기기 좋게"): 3년 지난 시상은 후보 명단을 상위권만 남긴다.
  30시즌 시뮬에서 시상 기록이 한 해 약 30KB씩 늘었고 대부분이 골든글러브 후보 전원의 세부 점수였다. 수상자·상위 후보·한 줄 기록은 그대로 */

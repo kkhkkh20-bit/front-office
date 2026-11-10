@@ -22,7 +22,7 @@ function obCycle(ob,p){ if(!ob)return ob;
 function obYoungCoach(k){ try{ if(!G.ob)return null; const L=obCands('coach',true).filter(o=>o.minor&&o.age>=27&&!(G.cmarket||[]).some(c=>c.ob===o.id)); if(!L.length)return null;
   const ob=L.find(obMine)||pick(L); const c=obCoach(ob); c.role=k; c.ab=obAb(ob,k); coachSync(c); c.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.am||'은퇴 뒤 지도자 연수'}`; c.sal=round5(Math.max(40,c.sal*.7)); return c; }catch(e){ return null; } }
 /* 겨울 정리: 5년 넘게 자리를 못 찾은 짧은 경력 OB는 야구계를 떠난다. 그래도 150명을 넘으면 오래 쉰 사람부터 */
-function obMinorPrune(){ if(!G.ob)return; const idle=o=>{ const k=obWhere(o).k; return k==='free'||k==='wait'; };
+function obMinorPrune(){ if(!G.ob)return; const fathers=obFathers(); const idle=o=>{ const k=obWhere(o).k; return !fathers.has(o.id)&&(k==='free'||k==='wait'); };
   const gone=new Set(G.ob.filter(o=>o.minor&&idle(o)&&G.year-o.retY>=OB_MINOR_WAIT&&!obMine(o)).map(o=>o.id));
   const M=G.ob.filter(o=>o.minor&&!gone.has(o.id)); if(M.length>OB_MINOR_MAX)M.filter(idle).sort((a,b)=>a.retY-b.retY).slice(0,M.length-OB_MINOR_MAX).forEach(o=>gone.add(o.id));
   if(!gone.size)return; G.ob=G.ob.filter(o=>!gone.has(o.id)); G.cmarket=(G.cmarket||[]).filter(c=>!gone.has(c.ob)); G.scoutMarket=(G.scoutMarket||[]).filter(s=>!gone.has(s.ob)); }

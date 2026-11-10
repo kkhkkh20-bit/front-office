@@ -47,8 +47,10 @@ function truckFire(sev,kind,K){ const S=truckState(); S.n++; S.last=G.day; const
     {l:'팬 간담회 열기',fx:`비용 ${money(F.cost)}, 팬 여론 +${F.fan[1]}. 단장이 직접 팬 대표를 만납니다`},
     {l:'무대응',fx:`팬 여론 ${F.fan[2]}, 구단주 신뢰 ${F.own[2]}. "특별한 입장 없다"`}],{def:2,exp:3,from:sev===3&&!t.indie?'구단주실':'홍보팀',data:{sev,F,line}});
   if(R()<.1)evFollow(20+Math.floor(R()*20),'truck',{fund,line}); }
-EVH.truck={ pick(e,i){ const {F}=e.data; prInit();
+EVH.truck={
+  can(e,i){ if(i===1&&team(G.user).indie&&spendable(G.user)<e.data.F.cost)return '간담회 비용을 낼 수 있는 현금이 부족합니다.'; return ''; },
+  pick(e,i){ const {F}=e.data; prInit();
     if(i===0){ G.pr.fan=clamp(G.pr.fan+F.fan[0],0,100); G.pr.press=clamp(G.pr.press+1,0,100); return '입장문이 나갔습니다. "팬 여러분의 질책을 무겁게 받아들입니다." 시위대는 일단 해산했습니다.'; }
-    if(i===1){ G.spend.etc=(G.spend.etc||0)+F.cost; G.pr.fan=clamp(G.pr.fan+F.fan[1],0,100); return '팬 대표들과 두 시간 넘게 이야기했습니다. 다 풀리지는 않았지만 "들어 주긴 했다"는 반응입니다.'; }
+    if(i===1){ if(team(G.user).indie)G.spend.eventReserve=(G.spend.eventReserve||0)+F.cost; G.spend.etc=(G.spend.etc||0)+F.cost; G.pr.fan=clamp(G.pr.fan+F.fan[1],0,100); return '팬 대표들과 두 시간 넘게 이야기했습니다. 다 풀리지는 않았지만 "들어 주긴 했다"는 반응입니다.'; }
     G.pr.fan=clamp(G.pr.fan+F.fan[2],0,100); { const t=team(G.user); t.trust=clamp((t.trust??50)+F.own[2],0,100); } /* 구단주 신뢰(평가)에서 깎는다 */ return '구단은 입장을 내지 않았습니다. 커뮤니티에서는 "역시 무시한다"는 글이 쏟아지고 있습니다.'; },
   follow(d){ news('구단',`트럭 시위 모금액 정산 논란`,`지난 트럭 시위("${d.line}")에 쓰인 팬 모금 ${d.fund}만 원의 사용 내역이 공개되지 않아 일부 참여자가 문제를 제기했습니다. 구단과는 무관한 일입니다.`,0); } };
