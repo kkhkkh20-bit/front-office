@@ -119,10 +119,12 @@ const EVH={
     make(x){ evNew('clash',`더그아웃 충돌: ${x.a.name}`,`${x.a.name}이(가) ${x.b.name}와(과) 더그아웃에서 언성을 높였습니다. 기사로 나가기 전에 정리해야 합니다.`,
       [{l:'경고로 끝낸다',fx:'조용히 넘어갑니다. 언론에 새어 나갈 수 있습니다.'},
        {l:'출장 정지 5일',fx:`${x.a.name}은(는) 5일간 못 뛰고 기분이 크게 떨어집니다. 기강이 서서 2주간 팀 분위기가 오릅니다.`},
-       {l:'트레이드 명단에 올리기',fx:tradeOpen()?'갈등을 정리합니다. 다른 구단이 싸게 보려 할 수 있습니다.':'갈등을 정리합니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'}],{ref:x.a.id,face:x.a.id,from:'수석코치',data:{a:x.a.id,b:x.b.id},def:0}); },
+       x.a.foreign?{l:'벌금 징계(구단 내규)',fx:`${x.a.name}에게 구단 내규로 벌금을 매깁니다. 출전은 그대로이고 기분이 떨어집니다. 외국인 선수는 트레이드할 수 없어 매물로 올리지 않습니다.`}
+        :{l:'트레이드 명단에 올리기',fx:tradeOpen()?'갈등을 정리합니다. 다른 구단이 싸게 보려 할 수 있습니다.':'갈등을 정리합니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'}],{ref:x.a.id,face:x.a.id,from:'수석코치',data:{a:x.a.id,b:x.b.id},def:0}); },
     pick(e,i){ const a=evP(e.data.a); if(!a||a.team!==G.user)return '';
       if(i===0){ a.mor=clamp(a.mor-3,0,100); if(R()<.4){ news('선수',`${tshort(G.user)} 더그아웃 불화설`,`${a.name}이(가) 동료와 충돌했다는 이야기가 흘러나왔습니다. 구단은 "별일 아니다"라고 밝혔습니다.`,-2,{ref:a.id}); return '경고로 마무리했지만 이야기가 언론에 새어 나갔습니다(언론 논조 하락).'; } return '조용히 마무리했습니다.'; }
       if(i===1){ a.susp=G.day+5; a.mor=clamp(a.mor-12,0,100); G.form={until:G.day+14,b:.5}; for(const p of playersOf(G.user))if(p.id!==a.id&&p.pers&&p.pers.pro>=13)p.mor=clamp(p.mor+2,0,100); return `${a.name} 5일 출장 정지(기분 -12). 2주간 팀 분위기 상승.`; }
+      if(a.foreign){ a.mor=clamp(a.mor-6,0,100); for(const p of playersOf(G.user))if(p.id!==a.id&&p.pers&&p.pers.pro>=13)p.mor=clamp(p.mor+1,0,100); return `${a.name}에게 구단 내규에 따라 벌금을 매겼습니다(기분 -6). 출전은 그대로입니다.`; } /* 외국인 선수는 트레이드 대상이 아니다(커뮤니티 제보 11-11) */
       listPlayer(a.id); return `${a.name}을(를) 트레이드 명단에 올렸습니다.`; } },
   /* 연패 기자회견 */
   press:{ w:1.3, check(){ const L=(G.sea.tl&&G.sea.tl[G.user])||[]; if(L.length<6)return null; const last=L.slice(-5); return last.every(x=>x[0]<0)?{n:(()=>{ let n=0; for(let i=L.length-1;i>=0&&L[i][0]<0;i--)n++; return n; })()}:null; },

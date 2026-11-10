@@ -166,7 +166,7 @@ function talk(id,kind){
   line=personalTalkReply(p,kind,line);if(d){const C=contactRecord('pl:'+p.id);C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
   return {msg:`${p.name}: "${line}"`,d};
 }
-function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; p.listed=true; const req=p.treq&&!p.treq.done; if(req){ p.treq.done=true; p.mor=clamp(p.mor+6,0,100); } /* 기분은 트레이드 요청에 응했을 때 한 번만 */ note('면담',`${p.name}을(를) 트레이드 명단에 올렸습니다. 다른 구단이 관심을 보이면 제안이 올 수 있습니다.`,id); }
+function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(p.foreign)return; /* 외국인 선수는 트레이드 대상이 아니다(커뮤니티 제보 11-11) */ p.listed=true; const req=p.treq&&!p.treq.done; if(req){ p.treq.done=true; p.mor=clamp(p.mor+6,0,100); } /* 기분은 트레이드 요청에 응했을 때 한 번만 */ note('면담',`${p.name}을(를) 트레이드 명단에 올렸습니다. 다른 구단이 관심을 보이면 제안이 올 수 있습니다.`,id); }
 function keepPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(!(p.treq&&!p.treq.done)){ note('면담',`${p.name}: "이미 말씀 나눴습니다."`,id); return; } p.treq.done=true; const ok=p.pers.loy>=11||R()<.35; p.mor=clamp(p.mor+(ok?8:-6),0,100); note('면담',ok?`${p.name}: "단장님 말씀을 믿고 한 번 더 해 보겠습니다."`:`${p.name}: "생각은 달라지지 않았습니다."`,id); }
 /* 후보 선수의 트레이드 요청(피드백 11-09k): 실력은 주전과 비슷한데 출전이 적은 백업이 단장실을 찾아온다. 구단 전체로 30일에 한 번, 한 해 3번까지.
    시즌 중에는 evWeek가 check()로 고르고, 시즌 밖(스토브리그·캠프)에는 treqWeek가 따로 본다 */

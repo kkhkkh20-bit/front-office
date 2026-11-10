@@ -75,7 +75,7 @@ function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal; if(!next&&c&&c.
   let done=A.sum, dn=A.n;
   let restFb=0; if(c&&c.sched){ const lv0=S.lv; try{ for(const [d,a] of homeGames(tid,Math.max(G.day+1,c.open),c.end)){ S.lv=stadLvAt(S,d,lv0); const x=attOf(tid,a,d,null); rest+=x; restFb+=x*.0003*(stadPower(S.lv.fnb)-2); rn++; } } finally{ S.lv=lv0; } /* 공사 중인 관람석·전광판·프리미엄석(좌석 감소)·매점은 완공 뒤 경기부터(검수 11-09y) */
     /* 예전 저장본처럼 시즌 중간부터 집계된 경우: 이미 치른 홈경기 수에 맞춰 늘린다 */
-    const played=homeGames(tid,c.open,Math.min(G.day,c.end)).length; if(played>dn){ if(dn>0){ done=A.sum/dn*played; } else { done=0; for(const [d,a] of homeGames(tid,c.open,Math.min(G.day,c.end)))done+=attOf(tid,a,d,null); } dn=played; } }
+    const to=Math.min(G.day,c.end), pend=(G.makeup||[]).filter(x=>x.y===G.year&&x.h===tid&&x.d>=c.open&&x.d<=to&&(c.sched[x.d]||[]).some(([h,a])=>h===x.h&&a===x.a)).length; /* 미룬 경기: 원래 날짜 일정에 남아 있지만 아직 열리지 않았다. 재편성 경기로 따로 세므로 치른 경기에서 뺀다(검수 150) */ const played=homeGames(tid,c.open,to).length-pend; if(played>dn){ if(dn>0){ done=A.sum/dn*played; } else { done=0; for(const [d,a] of homeGames(tid,c.open,Math.min(G.day,c.end)))done+=attOf(tid,a,d,null); } dn=played; } }
   const att=Math.round(done+rest); const n=dn+rn;
   /* 수입 = 이미 치른 경기에서 그때 가격으로 번 돈 + 남은 경기 예상(지금 가격). 경기별 수입 기록이 없는 예전 저장은 지금 가격으로 본다 */
   const tkNow=TICKET*ecoIdx()*PRICE[S.price].m, fbNow=.0003*(stadPower(S.lv.fnb)-2); const sc=A.n>0?done/A.sum:1; const hasR=A.tk!=null&&A.n>0&&A.sum>0;
@@ -120,7 +120,7 @@ function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; co
     clubFacilityHistory('stad',tid,S.name,'개장',{c:N.cost,costLabel:'구단 분담금',done:N.done,cap:N.cap}); if(!me){ wire('구장',`${S.name} 개장 (${N.cap.toLocaleString('ko-KR')}석)`,{tid}); return; }
     stop('구장',`${S.name}이(가) 문을 열었습니다. ${N.cap.toLocaleString('ko-KR')}석, 시설은 모두 4단계 이상입니다. 개장 첫 몇 해는 관중이 크게 늡니다.`); news('구단',`${S.name} 개장`,`${t.city} ${t.nick}의 새 홈구장이 문을 열었습니다.`,3); } }
 /* 취소한 공사 환급: 지원 예산으로 낸 몫은 아직 결산 전 같은 장부면 장부에서 빼고, 나머지만 현금으로(검수 11-09zza: 지원 예산 공사를 취소하면 현금이 생기던 것) */
-function stadRefund(t,b,r){ const sr=b.sup>0&&t.id===ME()&&b.ep===G.spEp?Math.min(G.spend.etc||0,Math.round(r*b.sup/Math.max(1,b.c))):0; if(sr)G.spend.etc-=sr; t.cash+=r-sr; }
+function stadRefund(t,b,r){ const sr=b.sup>0&&t.id===ME()&&b.ep===G.spEp?Math.min(G.spend.etc||0,Math.round(r*b.sup/Math.max(1,b.c))):0; if(sr)G.spend.etc-=sr; t.cash+=r-sr; if(t.id===ME()&&G.spend&&G.spend.stad>0)G.spend.stad=Math.max(0,G.spend.stad-Math.min(r-sr,Math.round(r*(1-(b.sup||0)/Math.max(1,b.c))))); } /* 현금으로 돌려받은 몫은 재정 화면의 현금 투자액에서도 뺀다(검수 151) */
 function newStadPick(k){ const S=stadOf(G.user); const N=S.proj; const o=NEWSTAD.find(x=>x.k===k); if(!N||N.stage!=='plan'||!o)return '선택할 수 없습니다.'; { const t=team(G.user), first=Math.round(o.cost/3); if(t.indie&&spendable(G.user)<first)return `모기업 출자가 없는 독립구단은 첫 회차 분담금 ${money(first)}을(를) 구단 현금으로 낼 수 있어야 착공할 수 있습니다(${spendTxt()}). 분담금은 결산 때 3년에 나눠 냅니다.`; } /* 검수 11-06 */
   N.stage='build'; N.k=k; N.cap=o.cap; N.cost=o.cost; N.paid=0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); clubFacilityHistory('stad',G.user,`신구장 ${o.l}`,'착공',{c:N.cost,costLabel:'구단 분담금',done:N.done,cap:N.cap}); addLog(`신구장 ${o.l} 규모로 착공했습니다. ${dmd(N.done)} ${y}년 개장 예정.`); return ''; }
 /* 분담금은 결산 때 3년에 나눠 낸다 */

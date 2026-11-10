@@ -112,4 +112,6 @@ const startIn=(t,slot,day)=>{ t.UI.smode='take'; t.UI.newSlot=slot; t.UI.newSlot
 { fresh(); const a=tab('A'); startIn(a,1,3); store.set('danjang-meta','{"active":1}'); let c=null; try{ c=tab('C'); }catch(e){ ok(0,'#15 부팅 예외: '+e.message); } ok(c&&c.G&&c.G.day===3,'#15 정상 슬롯 1을 열지 못함'); }
 /* #16 부팅 복원 실패 세이브는 이어하기 대상이 아니다 */
 { fresh(); const a=tab('A'); startIn(a,1,3); a.G.broken=1; a.G.day=4; a.saveNow(); const c=tab('C'); ok(!c.G,'#16 복원 실패 세이브를 메모리에 유지'); ok(!/data-a="tsCont"/.test(c.startScreen())&&/복원하다 오류/.test(c.startScreen()),'#16 복원 실패 세이브가 이어하기 대상'); }
+/* 커뮤니티 제보 11-11: 쓰고 있는 다른 슬롯에 덮어 저장(두 번 눌러야), 진행은 지금 슬롯에서 계속 */
+{ fresh(); const a=tab('A'); startIn(a,1,3); a.A.slotCopy(); ok(body(2)&&body(2).day===3,'#over 준비'); a.G.day=9; ok(/여기에 덮어 저장/.test(a.slotsCard(false)),'#over 버튼 없음'); a.A.slotOver(2); ok(body(2).day===3,'#over 한 번에 덮어씀'); a.A.slotOver(2); ok(body(2)&&body(2).day===9,'#over 덮어쓰지 못함'); ok(a.curSlot()===1,'#over 진행 슬롯이 바뀜'); a.G.day=10; a.saveNow(); ok(body(1).day===10&&body(2).day===9,'#over 뒤 자동 저장 위치'); }
 console.log(fails.length?'저장 슬롯 점검 실패\n- '+fails.join('\n- '):'저장 슬롯 점검 통과(16개 항목 + 검수 11-09zr #1~#11·#14~#17)'); process.exit(fails.length?1:0); })();
