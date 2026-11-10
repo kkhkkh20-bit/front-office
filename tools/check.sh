@@ -40,6 +40,10 @@ step "감독 요청·약속의 실제 이행 조건"
 for audit in dialogue event promises; do
  node "tools/check-manager-${audit}-conditions.cjs" || fail=1
 done
+step "개인 인맥·선수 은퇴·지도자 경력 관계 계승"
+for audit in personal-network personal-network-boundaries personal-network-ui; do
+ node "tools/check-${audit}.cjs" || fail=1
+done
 step "코치 구단 지원 연수·성장·잔류 선호"
 for audit in training training-loyalty training-boundaries training-ui; do
  node "tools/check-coach-${audit}.cjs" || fail=1

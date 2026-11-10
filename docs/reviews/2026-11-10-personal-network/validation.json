@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-10",
+  "baseline": "d3260465",
+  "artifacts": {
+    "index.html": {
+      "bytes": 57991592,
+      "sha256": "7c89e989ffb29d42d3290ed54701b69a9dc32fb0b87ed68c1193509a9f5c84a1"
+    },
+    "dist/engine.js": {
+      "bytes": 2270874,
+      "sha256": "8cf8385ed978ad662496cee7ca65856d9d21805f6fe583aa2e37e1c01841ddf0"
+    }
+  },
+  "checks": {
+    "engine": 14,
+    "independentBoundaries": 17,
+    "browser": {
+      "widths": [
+        1366,
+        390,
+        768
+      ],
+      "passed": true,
+      "flow": "actual meals/talk → player transfer → retireOut → coach candidate/hire → manager candidate/hire → save/reload"
+    },
+    "coachTrainingRegressions": {
+      "engine": 14,
+      "loyalty": 14,
+      "boundaries": 20
+    },
+    "prior": {
+      "clubStaffHistory": 17,
+      "careerRules": "pass",
+      "featureRules": "pass",
+      "staffCards": "pass",
+      "peopleNavigation": {
+        "passed": true,
+        "widths": [
+          1366,
+          768,
+          390,
+          568
+        ]
+      }
+    },
+    "unit": 34,
+    "strictSimulation": {
+      "seed": 7,
+      "end": "2027-01-01",
+      "passed": true
+    },
+    "static": "pass",
+    "memoryRebuildMatches": true,
+    "fullCheckShRun": false,
+    "navigationGuard": "view-only network and training navigation exempt from double-action guard; payment remains guarded"
+  },
+  "limits": [
+    "Previously lost dialogue beyond old rolling history is not fabricated.",
+    "Personal network membership does not bypass hiring budgets, career qualifications, existing clan contracts or the person’s decision.",
+    "Personal bond and workplace relationship remain separate; club-funded training loyalty stays with its funding employer."
+  ]
+}
