@@ -8,7 +8,7 @@
 const CM_TIER={hc:4,pc:3,bc:3,fm:3,bp:2,ab:2,cc:2,rc:2,dc:2,cn:2,fp:1,fb:1,fd:1,fc:1};
 const cmVal=c=>c?(c.sk||45)+(c.dv||45):80;
 /* 코치가 어느 구단·보직 제안을 더 좋게 보는가: 스태프 공통 점수(연봉·구단 위상·야망·충성도) + 보직 승격 */
-function cmScore(c,tid,sal,role,cur){ stAttr(c); return stScore(c,tid,sal,cur)+((CM_TIER[role]||2)-(CM_TIER[c.role]||2))*14; }
+function cmScore(c,tid,sal,role,cur){ if(!c||typeof c!=='object'||!CKEYS.includes(c.role))return -Infinity; stAttr(c); return stScore(c,tid,sal,cur,coachLoyalty(c,tid))+((CM_TIER[role]||2)-(CM_TIER[c.role]||2))*14; }
 /* AI 구단이 이 코치를 원할까: 그 자리 현직보다 확실히 낫고, 연봉을 감당할 수 있어야 한다 */
 function cmCanPay(t,c,cur){ const P=stAiPlan(t); return (c.sal||0)<=Math.max(140,170+P.rich*90+(cur?cur.sal*.5:0)); }
 function cmRivals(c){ if(!c||c.res===G.user||c.age>=66)return []; const out=[]; for(const t of G.teams){ if(t.id===ME()||(c.from===t.id&&c.fromY===G.year))continue; const C=G.coach&&G.coach[t.id]; if(!C)continue; const cur=C[c.role]; /* 월간 AI 영입(cmAiMonthly)이 실제로 데려갈 수 있는 구단만(검수 11-09zw #23) */
@@ -35,10 +35,10 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
   return moved; }
 /* 다른 구단이 우리 코치를 노린다(11월 20일·12월 20일). 감독 사단 코치는 감독 곁에 남는다 */
 function cmRaid(){ if(G.unemp||!G.coach||!G.coach[G.user])return []; const C=G.coach[G.user], um=G.mgr[G.user]; G.cmRaid=G.cmRaid||[]; const out=[];
-  const L=CKEYS.map(k=>[k,C[k]]).filter(([k,c])=>c&&cmVal(c)>=112&&!(um&&c.clan&&c.clan===um.id)&&!G.cmRaid.some(r=>r.id===c.id)).filter(([k,c])=>{ stAttr(c); return R()<clamp((cmVal(c)-105)/90,0,.5)*(c.amb/55)*(1-c.loy/150); });
+  const L=CKEYS.map(k=>[k,C[k]]).filter(([k,c])=>c&&cmVal(c)>=112&&!(um&&c.clan&&c.clan===um.id)&&!G.cmRaid.some(r=>r.id===c.id)).filter(([k,c])=>{ stAttr(c); return R()<clamp((cmVal(c)-105)/90,0,.5)*(c.amb/55)*(1-coachLoyalty(c,G.user)/150); });
   for(const [k,c] of L.slice(0,2)){ const opts=[]; for(const t of G.teams){ if(t.id===G.user)continue; const TC=G.coach[t.id]; if(!TC)continue; const to=PROMO[k]&&cmVal(TC[PROMO[k]])<cmVal(c)?PROMO[k]:k; if(to===k&&cmVal(TC[k])>=cmVal(c))continue; if(clubPrestige(t.id)<clubPrestige(G.user)-12&&to===k)continue; opts.push({t,to}); }
     if(!opts.length)continue; const {t,to}=pick(opts); const sal=round5(c.sal*(to!==k?1.2:rnd(1.25,1.4))); const r={id:c.id,role:k,tid:t.id,to,sal,exp:G.day+7,from:G.user}; G.cmRaid.push(r); out.push(r);
-    mail('운영팀',`${tshort(t.id)}, 우리 ${CROLE[k].l} ${c.name}에게 영입 제안`,`${tname(t.id)}이(가) ${c.name}(지도 ${c.sk} · 육성 ${c.dv})에게 ${to!==k?`${CROLE[to].l} 자리(승격)와 `:''}연 ${money(sal)}을 제시했습니다(현재 ${money(c.sal)}).\n구단 위상: 우리 ${clubPrestige(G.user)} · ${tshort(t.id)} ${clubPrestige(t.id)}. 충성도 ${Math.round(c.loy)}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,
+    mail('운영팀',`${tshort(t.id)}, 우리 ${CROLE[k].l} ${c.name}에게 영입 제안`,`${tname(t.id)}이(가) ${c.name}(지도 ${c.sk} · 육성 ${c.dv})에게 ${to!==k?`${CROLE[to].l} 자리(승격)와 `:''}연 ${money(sal)}을 제시했습니다(현재 ${money(c.sal)}).\n구단 위상: 우리 ${clubPrestige(G.user)} · ${tshort(t.id)} ${clubPrestige(t.id)}. 충성도 ${Math.round(coachLoyalty(c,G.user))}${coachSupportView(c,G.user).bonus>0?`(구단 연수 지원 +${coachSupportView(c,G.user).bonus})`:''}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,
       {imp:true,kind:'코치',acts:[{l:`연봉 맞춰 붙잡기(연 ${money(sal)})`,a:'cmKeep',v:`${c.id}:1:${r.exp}`},{l:'조금 올려 설득(+10%)',a:'cmKeep',v:`${c.id}:0:${r.exp}`},{l:'보내 주기',a:'cmLet',v:`${c.id}::${r.exp}`}]}); }
   return out; }
 function cmRaidFind(id){ return (G.cmRaid||[]).find(r=>r.id===id); }
@@ -57,7 +57,7 @@ function cmKeep(id,full){ const r=cmRaidFind(id); if(!r||G.unemp||!cmOurs(r))ret
   return `${c.name}: "${r.to!==r.role?`${CROLE[r.to].l} 자리는 쉽게 오지 않는 기회라서요.`:'죄송합니다. 마음이 이미 기울었습니다.'}" `+cmLeave(r); }
 function cmLet(id){ const r=cmRaidFind(id); return r&&cmOurs(r)?cmLeave(r):'이미 끝난 일입니다.'; }
 /* 우리가 다른 구단 코치를 빼 올 때의 역제안: poachCoach가 성공 판정을 받은 뒤 원 소속 구단이 붙잡으려 할 수 있다 */
-function cmCounter(tid,c,T){ const t=team(tid), P=stAiPlan(t); stAttr(c); if(T.ctr||cmVal(c)<110||P.rich<-.3)return null; if(R()>clamp(.25+P.rich*.1+(c.loy-20)/200,.1,.5))return null;
+function cmCounter(tid,c,T){ const t=team(tid), P=stAiPlan(t); stAttr(c); if(T.ctr||cmVal(c)<110||P.rich<-.3)return null; if(R()>clamp(.25+P.rich*.1+(coachLoyalty(c,tid)-20)/200,.1,.5))return null;
   const keep=round5(c.sal*1.12); c.sal=keep; const need=round5(T.sal*1.15); (G.poachCtr=G.poachCtr||{})[c.id]={tid,need,exp:G.day+5,by:G.user,to:T.toRole}; /* 역제안은 그 구단·그 보직 제의에만(검수 11-09zv #15·16) */ t.rel=clamp((t.rel??50)-1,0,100);
   return `${tshort(tid)}이(가) ${c.name} 코치에게 연 ${money(keep)}로 역제안해 붙잡으려 합니다. ${dmd(G.day+5)}까지 연 ${money(need)}로 다시 제의하면 우리 쪽으로 옵니다.`; }
 function cmCtrOf(c){ const X=G.poachCtr&&c&&G.poachCtr[c.id]; return X&&X.exp>=G.day?X:null; }

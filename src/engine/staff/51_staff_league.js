@@ -33,8 +33,8 @@ function clubPrestige(tid){ const v=sum(clubPrestigeParts(tid).map(x=>x[1])); re
 const prestigeStars=v=>v>=80?5:v>=67?4:v>=54?3:v>=40?2:1;
 const starTxt=n=>'★'.repeat(n)+'☆'.repeat(5-n);
 /* 후보가 제안을 비교하는 점수 */
-function stScore(s,tid,sal,cur){ const pr=clubPrestige(tid); let v=(sal/Math.max(1,s.sal)-1)*120+pr*(.35+s.amb/200);
-  if(s.region&&team(tid).region===s.region)v+=10; if(cur)v+=s.loy*.45+8; return v+hn('stc'+G.year+':'+tid,s.id)*6; }
+function stScore(s,tid,sal,cur,loyalty){ if(!s||typeof s!=='object'||!Number.isFinite(s.sal)||!Number.isFinite(sal)||s.sal<0||sal<0)return -Infinity; const pr=clubPrestige(tid), amb=Number.isFinite(s.amb)?s.amb:50, loy=Number.isFinite(loyalty)?loyalty:Number.isFinite(s.loy)?s.loy:20; let v=(sal/Math.max(1,s.sal)-1)*120+pr*(.35+amb/200);
+  if(s.region&&team(tid).region===s.region)v+=10; if(cur)v+=clamp(loy,0,100)*.45+8; return v+hn('stc'+G.year+':'+tid,s.id)*6; } /* 코치만 공통 지원 원장으로 계산한 충성도를 5번째 인자로 전달. 다른 직원은 기존 충성도 그대로. */
 /* 후보 관심 구단: 매달 정한다(능력이 높을수록 여러 구단이 노린다) */
 /* 달마다 고정된 해시로 정해 조회가 시뮬레이션 난수와 저장 상태를 건드리지 않는다(검수 11-09zw #28). 스태프 예산이 남은 구단만 */
 function stInterest(s){ const h=k=>hn('sti'+(G.year*100+dobj(G.day).m)+':'+k,s.id), x=h('n'); const n=s.skill>=5?(x>0?3:2):s.skill>=4?(x>0?2:1):s.skill>=3?(x>0?1:0):0;

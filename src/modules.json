@@ -210,6 +210,7 @@
       "src/ui/shell/46_dash.js",
       "src/ui/staff/47_staff_league.js",
       "src/ui/staff/48_staff_profiles.js",
+      "src/ui/staff/48b_coach_study.js",
       "src/ui/media/48_interview.js",
       "src/ui/career/49_person_cards.js",
       "src/ui/market/50_offer_consult.js",

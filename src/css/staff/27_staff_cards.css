@@ -217,3 +217,14 @@ button.st-n:hover b{text-decoration:underline}
 .smk-raid .row{flex-wrap:wrap;gap:6px}
 .smk-news{margin:0;padding-left:16px;display:grid;gap:2px;font-size:13px}
 .smk-news li{overflow-wrap:anywhere}
+/* 코치 개인의 구단 지원 연수: 목록 고정 패널 없이 인물 카드 안에서 진행한다. */
+.coach-study{display:grid;gap:12px;min-width:0;margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--panel);scroll-margin-top:12px;overflow-wrap:anywhere}
+.coach-study>header{display:flex;align-items:center;justify-content:space-between;gap:8px}.coach-study h3,.coach-study p{margin:0}.coach-study h3{font-size:16px}
+.coach-study-programs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.coach-study-programs>.btn{display:grid;justify-items:start;align-content:start;white-space:normal;text-align:left;gap:4px;padding:10px}.coach-study-programs span{font-size:12px;line-height:1.5}
+.coach-study-fields{display:grid;gap:8px}.coach-study-fields .chips{display:flex;flex-wrap:wrap;gap:6px}.coach-study-fields .chips button{min-height:36px;white-space:normal}
+.coach-study-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}.coach-study-facts>div{display:grid;gap:3px;padding:9px;background:var(--panel2,#1b252e);border-radius:5px}.coach-study-facts dt{font-size:12px;color:var(--muted)}.coach-study-facts dd{margin:0;font-size:14px;font-weight:600}
+.coach-study-active,.coach-study-support{display:grid;gap:6px;padding:10px;border-left:3px solid var(--acc);background:var(--panel2,#1b252e)}.coach-study-active span,.coach-study-support p{font-size:13px;line-height:1.6}
+.coach-study-history summary{cursor:pointer;font-size:13px}.coach-study-history article{display:grid;gap:4px;margin-top:8px;padding:9px;border-bottom:1px solid var(--line);font-size:13px}.coach-study-summary{display:block;white-space:normal;margin-top:4px;font-size:11px}.coach-study-submit{justify-self:start;white-space:normal}
+@media(max-width:600px){.coach-study{padding:10px;gap:10px}.coach-study-programs{grid-template-columns:1fr}.coach-study-programs>.btn{grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:10px}.coach-study-programs span{text-align:right}.coach-study>header{align-items:flex-start}.coach-study>header>span{font-size:11px}.coach-study-fields .chips button{min-height:40px}.coach-study-submit{width:100%}.coach-study-facts dd{font-size:13px}}
+.st-act:has(.coach-study-entry){flex-wrap:wrap}.st-act .coach-study-entry{white-space:normal}.staff-bio>.coach-study{grid-column:1/-1}
+@media(min-width:761px) and (max-width:1099px){.st-list:has(.coach-study-entry)>.st-h{display:none}.st-r:has(.coach-study-entry){grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-areas:"n n n act" "sk dv sal sal" "abs abs abs abs";gap:6px 8px}.st-r:has(.coach-study-entry) .st-v>i{display:inline}.st-r:has(.coach-study-entry) .st-sal{display:flex;gap:6px;align-items:center;justify-content:flex-end}}

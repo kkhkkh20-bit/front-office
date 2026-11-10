@@ -1,0 +1,77 @@
+{
+  "baseline": "5e6745c3c2b00af86c9c9ea77898eb8a0de212ee",
+  "date": "2026-11-10",
+  "artifacts": {
+    "index.html": {
+      "bytes": 57965616,
+      "sha256": "22b7ec289fc32bb54e6227a73045f154dbc46426584bd8a29b90153057c40368"
+    },
+    "dist/engine.js": {
+      "bytes": 2260068,
+      "sha256": "bfcab191c2f469d91eb026d331215f414469ae50d9e32764163fefa0a80d6270"
+    }
+  },
+  "checks": {
+    "training": 14,
+    "loyalty": 14,
+    "independentBoundaries": 20,
+    "actualChromium": {
+      "widths": [
+        390,
+        768,
+        1366
+      ],
+      "passed": true,
+      "flow": "open → program/focus → single confirmation/payment → real date progression → completion → JSON restoration → support/assistant/scroll"
+    },
+    "sisterRegression": {
+      "engine": 13,
+      "widths": [
+        390,
+        768,
+        1366
+      ],
+      "passed": true
+    },
+    "prior": {
+      "featureRules": "pass",
+      "staffMarket6395": 19,
+      "clubStaffHistory": 17,
+      "operations": "pass",
+      "oldBoundaries": 4,
+      "coachLayout": {
+        "widths": [
+          390,
+          768,
+          1366
+        ],
+        "passed": true
+      },
+      "staffCards": {
+        "widths": [
+          390,
+          1366
+        ],
+        "passed": true,
+        "oldClosedRowExpectationFailedOnBaseline": true
+      }
+    },
+    "unit": {
+      "passed": 34
+    },
+    "strictSimulation": {
+      "seed": 7,
+      "end": "2027-01-01",
+      "passed": true
+    },
+    "static": "pass",
+    "memoryRebuildMatches": true,
+    "fullCheckShRun": false
+  },
+  "limits": [
+    "Pending future hires and current acting managers cannot be dispatched.",
+    "The ability limit concerns actual increases from paid training; normal existing experience rules are retained.",
+    "Corporate support is employer-specific; personal GM friendship is separate.",
+    "Promoted managers retain coach-learning snapshots without invented tactical gains."
+  ]
+}
