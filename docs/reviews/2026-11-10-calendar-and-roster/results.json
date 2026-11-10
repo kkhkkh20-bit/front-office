@@ -1,0 +1,53 @@
+[
+  {
+    "width": 390,
+    "height": 844,
+    "pass": true,
+    "checks": [
+      "phase periods",
+      "no upcoming duplication",
+      "live dates/schedules",
+      "button pause freezes date",
+      "partial save/reload",
+      "normal 7 days",
+      "target date pause",
+      "mandatory stop",
+      "reduced motion and Space",
+      "no pageerror/overflow"
+    ]
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "pass": true,
+    "checks": [
+      "phase periods",
+      "no upcoming duplication",
+      "live dates/schedules",
+      "button pause freezes date",
+      "partial save/reload",
+      "normal 7 days",
+      "target date pause",
+      "mandatory stop",
+      "reduced motion and Space",
+      "no pageerror/overflow"
+    ]
+  },
+  {
+    "width": 1366,
+    "height": 768,
+    "pass": true,
+    "checks": [
+      "phase periods",
+      "no upcoming duplication",
+      "live dates/schedules",
+      "button pause freezes date",
+      "partial save/reload",
+      "normal 7 days",
+      "target date pause",
+      "mandatory stop",
+      "reduced motion and Space",
+      "no pageerror/overflow"
+    ]
+  }
+]

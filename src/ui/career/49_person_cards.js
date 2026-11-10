@@ -41,8 +41,8 @@ function personGone(kind,a,k){ const P=s=>`<p class="small">${s}</p>`, L=a=>a.le
   if(kind==='ob'){ const o=obOf(a); if(!o)return null; const w=obWhere(o);
     const tys=Object.entries(o.tys||{}).filter(([,v])=>v&&v.ys).map(([t,v])=>`${esc(tshort(+t))} ${v.ys}시즌${v.war?` · WAR ${v.war}`:''}`);
     const job=[o.cy?`지도자 ${o.cy}년`:'',o.sy?`스카우트 ${o.sy}년`:'',o.fy?`프런트 ${o.fy}년`:'',o.my?`해설 ${o.my}년`:''].filter(Boolean).join(' · ');
-    const m=w.k==='mgr'?G.mgr[w.tid]:null;
-    const info=P(`선수 시절: ${tys.length?tys.join(' / '):`${esc(tshort(o.team))} ${o.ys}시즌`}`)+P(`통산 1군 ${o.seasons}시즌 · WAR ${o.war}${o.awards?` · 수상 ${o.awards}회`:''}${o.hof?' · 명예의 전당':''}${o.retNo?` · ${o.no}번 영구결번`:''}`)
+    const m=w.k==='mgr'?G.mgr[w.tid]:null, rn=obRetNoText(o);
+    const info=P(`선수 시절: ${tys.length?tys.join(' / '):`${esc(tshort(o.team))} ${o.ys}시즌`}`)+P(`통산 1군 ${o.seasons}시즌 · WAR ${o.war}${o.awards?` · 수상 ${o.awards}회`:''}${o.hof?' · 명예의 전당':''}${rn?` · ${esc(rn)}`:''}`)
       +P(`${o.retY}년 은퇴 · ${OBPATH[o.path]}의 길${o.aim?` · ${o.aim==='mgr'?'감독':'단장'}을 꿈꿈`:''}${job?` · 은퇴 뒤 ${job}`:''}`)+(m?P(`감독: ${esc(m.career||'')}`):'')
       +((o.log||[]).length?`<div class="ps-s"><div class="eyebrow">발자취</div>${L((o.log||[]).slice(-6).reverse().map(x=>`${x.y} · ${esc(x.t)}`))}</div>`:'');
     return {k,name:o.name,role:w.t,av:obAvO(o,w),rel:null,lab:obMine(o)?'우리 구단 출신':`${tshort(o.team)} 출신`,sub:`${o.pos} · ${o.retY}년 은퇴 · ${o.age}세`,info,

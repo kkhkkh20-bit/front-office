@@ -1,6 +1,11 @@
 /* ---------- OB·레전드 ---------- */
 function obOf(id){ return id&&G.ob?G.ob.find(o=>o.id===id):null; }
-function obTag(id){ const o=obOf(id); if(!o)return ''; const k=o.retNo?` · ${o.no}번 영구결번`:o.hof?' · 명예의 전당':(o.fame||0)>=70?' · 레전드':''; /* 레전드 출신을 이름만으로 알아보기 어렵다(카페 11-09c) */ return obMine(o)?` <span class="pill good">우리 구단 출신${k}</span>`:` <span class="pill">${esc(tshort(o.team))} 출신${k}</span>`; }
+/* 마지막 현역 번호와 결번은 다를 수 있다. 구단·번호가 명시된 결번 이력을 먼저 쓴다. */
+function obRetNoText(o){ const L=[],seen=new Set(),add=(tid,no)=>{ if(tid==null||!Number.isInteger(no))return; const k=tid+':'+no; if(!seen.has(k)){ seen.add(k); L.push(`${tshort(tid)} ${no}번 영구결번`); } };
+  for(const r of o.retNos||[])add(r.tid,r.no);
+  for(const t of G.teams)for(const r of retNosOf(t.id))if((o.id!=null&&r.ob===o.id)||(r.pid!=null&&r.pid===o.fid))add(t.id,r.no);
+  return L.length?L.join(' / '):o.retNo&&o.no!=null?`${o.no}번 영구결번`:''; }
+function obTag(id){ const o=obOf(id); if(!o)return ''; const rn=obRetNoText(o), k=rn?` · ${esc(rn)}`:o.hof?' · 명예의 전당':(o.fame||0)>=70?' · 레전드':''; /* 레전드 출신을 이름만으로 알아보기 어렵다(카페 11-09c) */ return obMine(o)?` <span class="pill good">우리 구단 출신${k}</span>`:` <span class="pill">${esc(tshort(o.team))} 출신${k}</span>`; }
 function obAv(ob,w,big){ return avImg(obAvO(ob,w),big); }
 function obAvO(ob,w){ const per=w.k==='mgr'?'mgr':w.k==='coach'?'coach':w.k==='gm'?'gm':w.k==='scout'||w.k==='front'?'staff':ob.path==='media'?'agent':'staff'; const pid='obv'+ob.id+per; G.obFace=G.obFace||{}; G.obFace[pid]=ob.fid;
   return {persona:per,pid,team:w.tid??null,age:ob.age,name:ob.name}; }
@@ -15,7 +20,7 @@ function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
       if(w.k==='free'&&o.path==='scout')return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:scout" ${G.scouts.length>=scoutMax()?'disabled':''}>스카우트로 영입</button>`;
       if(w.k==='free'&&o.path==='front')return `<button class="btn small" data-a="obAct" data-v="${o.id}:front">프런트로 채용</button>`; }
     if(w.k==='front'&&w.tid!==G.user&&o.path!=='media')return `<button class="btn small" data-a="obAct" data-v="${o.id}:front">우리 프런트로</button>`; return ''; };
-  const row=({o,w,m})=>`<div class="obc" data-a="person" data-v="ob:${o.id}" role="button" tabindex="0">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${o.retNo?` <span class="pill acc">${o.no||''}번 영구결번</span>`:''}${o.hof?' <span class="pill warn">명예의 전당</span>':''}</b>
+  const row=({o,w,m})=>`<div class="obc" data-a="person" data-v="ob:${o.id}" role="button" tabindex="0">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${obRetNoText(o)?` <span class="pill acc">${esc(obRetNoText(o))}</span>`:''}${o.hof?' <span class="pill warn">명예의 전당</span>':''}</b>
       <i>${esc(o.pos)} · ${o.retY}년 은퇴 · ${o.age}세 · 우리 구단 ${m.ys}시즌${m.war?` · WAR ${m.war}`:''}</i>
       <span class="obc-w ${w.k}">${esc(w.t)}${w.k==='coach'||w.k==='mgr'?` · 지도자 ${o.cy}년차`:w.k==='scout'||w.k==='front'?` · ${o.sy+o.fy}년차`:''}</span>
       <em>${OBPATH[o.path]}의 길${o.aim?` · ${o.aim==='mgr'?'감독':'단장'}을 꿈꿈`:''}${o.bond>=20?' · 구단과 각별함':''}</em></div><div class="obc-a">${act(o,w)}</div></div>`;

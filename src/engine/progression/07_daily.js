@@ -22,7 +22,9 @@ function blocker(){
 /* 그날 엔진(playDay)이 치를 정규시즌 경기 쌍을 같은 순서로: 미룬 경기 먼저, 정규 편성 다음. 미룬 경기는 다음 진행일(내일)에 열린다. 캘린더·다음 경기·예고 선발·직관·관중 전망이 같은 목록을 읽는다(검수 11-09zo) */
 function dayGames(day){ const c=G.cal; if(!c||!c.sched)return []; const mk=day===G.day+1&&day>=c.open&&day<=c.end?(G.makeup||[]).filter(x=>x.y===G.year&&!(x.d>=day)).map(x=>[x.h,x.a]):[]; return [...mk,...(c.sched[day]||[])]; }
 function ourGameOn(day){return !G.unemp&&(dayGames(day).some(pair=>pair.includes(G.user))||psOursOn(day));} /* 내일 열릴 우리 연기 경기도 경기일: 휴식일이어도 경기 전 선수단 검사(검수 11-09k) */
-function advance(mode,options={}){
+/* 화면은 하루마다 제어권을 돌려받는다. 엔진 호출은 같은 절차를 끝까지 동기 실행한다. */
+function advance(mode,options={}){ const it=advanceSteps(mode,options); let r; do{r=it.next();}while(!r.done);return r.value; }
+function* advanceSteps(mode,options={}){
   G.matchAwait=null; // 이전 버전에서 모든 경기마다 남긴 대기는 이어받지 않는다.
   const start=G.day; const o=dobj(start);
   let target=mode==='day'?start+1:mode==='week'?start+7:mode==='month'?dnum(o.m===12?o.y+1:o.y,o.m===12?1:o.m+1,1):start+400;
@@ -33,7 +35,7 @@ function advance(mode,options={}){
   const gameBatch=mode==='event'&&!G.unemp&&(period()==='season'||Array.from({length:7},(_,i)=>start+i+1).some(ourGameOn));
   /* 기본 계속은 3경기. 휴식일은 세지 않고, 경기 없는 비시즌과 명시한 1주일 진행은 7일이다. */
   if(weekly){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+(gameBatch?21:7); } else if(mode!=='watch')G.dig=null; /* 예약한 중계로 넘어갈 때는 앞 경기 진행 요약을 남긴다(검수 11-06) */
-  while(G.day<target){
+  try{ while(G.day<target){
     try{ psCatchUp(G.day+1); }catch(e){} /* 지난 포스트시즌 차전도 경기 전 확인·중계 대기를 거친다(검수 11-09zo) */
     if(G.unemp)unempAuto();
     if(/^건강한/.test(blocker()))try{ entryManage(G.user,false); }catch(e){} /* 부족하면 감독이 먼저 2군에서 채운다 */
@@ -52,14 +54,15 @@ function advance(mode,options={}){
       { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ if(evLastWarn())break; if(stopOn({kind:'트레이드'})&&(G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
       if(D.games.length===0&&days>=7&&period()!=='season')break; /* 비시즌: 한 번에 최대 7일 */
       if(G.unemp&&days>=14)break;
-      continue; }
+      if(G.day<target)yield G.day; continue; }
     if(G.stops.length||G.live||G.res||(G.draft&&!G.draft.done)||G.gameOver)break;
     if(evLastWarn())break; /* 한 달 진행 등 다른 버튼도 핵심 결정 기한 하루 전에 멈춘다(검수 11-06) */
-  }
+    if(G.day<target)yield G.day;
+  }}finally{
   if(weekly&&G.dig&&!G.dig.games.length)G.dig=null;
   const r1=G.sea.rec[G.user];
   G.lastAdv={days,from:start,to:G.day,w:r1.w-(G.sea.y===sea0?w0:0),l:r1.l-(G.sea.y===sea0?l0:0)};
-  return G.lastAdv;
+  }return G.lastAdv;
 }
 /* 주간 요약용: 우리 선수 시즌 누적 기록 스냅숏 */
 const DIGK=['pa','ab','h','bb','hr','rbi','d','tr','sb','outs','er','so','w','l','sv','hld','g','gs','sf','hbp'];

@@ -7,6 +7,12 @@ const CAL_K={dl:{c:'#ff6b6b',l:'마감'},lg:{c:'#5aa9ff',l:'리그'},me:{c:'#ffb
 const CAL_FIX=[[1,8,'연봉 미계약 점검','me'],[1,10,'연봉조정 신청 마감','dl'],[1,20,'연봉조정 결정 · 입대일','lg'],[1,24,'FA 시장 사실상 마감','dl'],[1,31,'연봉 계약 마감(미확정은 자동 확정)','dl'],[7,31,'트레이드 마감','dl'],[8,15,'외국인 등록 마감','dl'],[11,2,'FA 공시','lg'],[11,6,'FA 협상 시작','lg'],[12,1,'연봉 협상 시작','me'],[3,1,'상무 지원 시작(6월 입대)','me'],[4,14,'상무 지원 마감(6월 입대)','dl'],[9,1,'상무 지원 시작(12월 입대)','me'],[10,14,'상무 지원 마감(12월 입대)','dl']];
 /* 시상식: 엔진이 이 날 발표한다(07_daily.js KD(11,24)·KD(12,9)). 발표 뒤에는 그날을 눌러 시상식 화면으로 */
 const CAL_CER=[[11,24,'mvp',()=>`${ASSOC.s} 시상식(MVP·신인왕)`],[12,9,'gg',()=>'골든글러브 시상식']];
+/* 기간 일정은 시작/종료일뿐 아니라 그 안의 매일에도 표시한다. */
+function calPhases(d){ const o=dobj(d),c=G.cal,L=[], add=(a,b,t)=>{if(a!=null&&b!=null&&d>=a&&d<b)L.push({k:'lg',t,span:true});};
+  if(c&&c.y===o.y){add(c.camp,c.campEnd,'스프링캠프 기간');add(c.exh,c.open,'시범경기 기간');add(c.asg-2,c.asg+2,'올스타 휴식기');}
+  add(dnum(o.y,11,5),dnum(o.y,11,25),'마무리캠프 기간');
+  if(o.m===12||o.m===1)L.push({k:'me',t:'연봉 협상 기간',span:true});
+  const F=G.fa;if(F&&!F.closed&&F.openDay!=null)add(F.openDay,dnum((F.y0??G.year)+1,1,25),'FA 협상 기간');return L; }
 function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   const F=G.fa&&G.fa.y0===o.y&&(G.fa.annDay!=null||!G.fa.closed)?G.fa:null; /* 그해 FA 일정은 실제 날짜로: 결산이 늦어 공시·개장이 밀릴 수 있다(검수 11-08) */
   for(const [m,dd,l,k] of CAL_FIX)if(o.m===m&&o.d===dd&&!(F&&m===11&&(dd===2||dd===6)))out.push({k,t:l});
@@ -17,7 +23,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   try{ for(const x of ntUpcoming(4)){ const e=NT_EV[x.k], D=a=>dnum(x.y,a[0],a[1]); const N=G.nt&&G.nt.k===x.k&&G.nt.y===x.y?G.nt:null; const n=N?N.ids.filter(id=>G.players[id]&&G.players[id].team===G.user).length:null;
       for(const [a,t] of [[e.pre,'예비 명단 발표'],[e.ann,'최종 명단 발표'],[e.res,'결과 발표']])if(a&&d===D(a))out.push({k:'lg',t:`${x.n} ${t}`}); if(d===x.to)out.push({k:'lg',t:`${x.n} 대표 복귀${N&&n?` · 우리 ${n}명`:''}`}); /* 대회별 주요 날짜(검수 11-09zj) */
       if(d<x.from||d>=x.to)continue; /* 복귀일은 소집 기간이 아니다(엔진과 같게, 검수 11-06) */
-      out.push({k:'lg',t:d===x.from?`${x.n} 소집${N?` · 우리 선수 ${n}명 이탈`:' 예정'}`:`${x.n} 대표 소집 중${N&&n?` · 우리 ${n}명 이탈`:''}`}); } }catch(e){}
+      out.push({k:'lg',span:d!==x.from,t:d===x.from?`${x.n} 소집${N?` · 우리 선수 ${n}명 이탈`:' 예정'}`:`${x.n} 대표 소집 중${N&&n?` · 우리 ${n}명 이탈`:''}`}); } }catch(e){}
   /* 우리 일: 결정 기한, 트레이드 제안 기한, 우선 제안·라스트 룩 기한 */
   for(const e of (G.evs||[]))if(!e.done&&e.exp===d)out.push({k:'me',t:`결정 기한: ${e.title}`});
   for(const of of (G.offers||[]))if(of.exp===d)out.push({k:'me',t:`트레이드 제안 기한: ${tshort(of.from)}`});
@@ -29,7 +35,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   /* 우리 선수: 부상 복귀 예정, 전역 */
   if(d>G.day&&d-G.day<=120)for(const p of ownedOf(G.user)){ /* 대표팀 차출 중 재활 선수도(검수 11-09t) */ if(p.injOut>0&&G.day+p.injOut===d)out.push({k:'pl',t:`${p.name} 복귀 예정(${injNow(p)})`}); }
   for(const p of Object.values(G.players)){ if(p.team!==G.user&&!(p.mil&&p.mil.tid===G.user))continue; const m=p.mil; if(!m)continue; if(m.until&&m.from===d||m.pf===d)out.push({k:'pl',t:`${p.name} ${m.unit||'군'} 입대`}); if(m.until===d||m.pu===d)out.push({k:'pl',t:`${p.name} 전역${m.exempt?'(병역 특례 조기 전역)':''}`}); } /* 예약 입대와 지난 전역(특례 조기 전역 포함)도(검수 11-09zk) */
-  return out; }
+  return [...calPhases(d),...out]; }
 /* 그날 우리 경기 */
 function calGame(d){ const c=G.cal; let m=null, kind='';
   if(c&&c.sched)m=dayGames(d).find(x=>x.includes(G.user))||null; /* 내일 미룬 경기도(엔진과 같은 목록, 검수 11-09zo) */
@@ -63,10 +69,23 @@ function calDetail(d){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d
     ${d>G.day?gmPlanBox(d,g):''}
     ${d>G.day?`<div class="row"><button class="btn primary" data-a="advTo" data-v="${d}" ${blockNow()?'disabled':''}>이 날까지 진행</button><span class="small muted">중요한 소식이나 결정할 일이 생기면 그 전에 멈춥니다.</span></div>`:''}</section>`; }
 /* 다가오는 주요 일정 30일: 마감은 빨간 D-day */
-function calUpcomingList(n,days){ const L=[]; for(let d=G.day+1;d<=G.day+(days||60)&&L.length<(n||10);d++){ for(const e of calEvents(d))if((e.k==='dl'||e.k==='lg'||e.k==='me')&&L.length<(n||10))L.push({d,...e}); } return L; }
+function calUpcomingList(n,days){ const L=[]; for(let d=G.day+1;d<=G.day+(days||60)&&L.length<(n||10);d++){ for(const e of calEvents(d))if(!e.span&&(e.k==='dl'||e.k==='lg'||e.k==='me')&&L.length<(n||10))L.push({d,...e}); } return L; }
 function calUpRows(L){ return L.length?`<div class="cal-up">${L.map(x=>`<button class="cal-ur" data-a="calJump" data-v="${x.d}"><span class="ticker" style="${x.k==='dl'?'color:#ff6b6b':''}">D-${x.d-G.day}</span><span>${dmd(x.d)}</span><b>${esc(x.t)}</b></button>`).join('')}</div>`:''; }
 function calUpcoming(days){ const L=calUpcomingList(10,days);
   return L.length?`<section class="card"><h2 class="sec">다가오는 일정</h2>${calUpRows(L)}</section>`:''; }
+/* 실제 하루 진행 사이에 브라우저로 돌아와 사용자 중단을 받는다. */
+function advProgressPaint(){ const R=UI.advRun;if(!R||R.game!==G)return;let el=document.getElementById('adv-progress');if(!el){el=document.createElement('section');el.id='adv-progress';el.setAttribute('aria-label','날짜 진행과 일정');document.body.appendChild(el);}
+  const cols=innerWidth>=1100?7:innerWidth>=700?5:3, first=G.day-1, ds=Array.from({length:cols},(_,i)=>first+i);
+  el.style.setProperty('--ap-cols',cols);const h=document.querySelector('#app .fmtop,#app .top,#app .dtop');el.style.top=((h?.getBoundingClientRect().bottom||56)/uiZ())+'px';
+  el.innerHTML=`<div class="ap-top"><div><b>일정 진행 중</b><span role="status" aria-live="polite">${esc(dstr(G.day))}</span></div><button class="btn" data-a="advStop">진행 멈추기</button></div><div class="ap-days">${ds.map(d=>{const o=dobj(d),g=calGame(d),ev=calEvents(d);return `<div class="ap-day${d===G.day?' cur':''}${d<G.day?' past':''}"><div class="ap-date"><b>${o.m}/${o.d}</b><span>${WD[o.w]}${d===G.day?' · 오늘':''}</span></div>${g?`<div class="ap-game">${badge(g.op,22)}<span>${esc(tshort(g.op))}<small>${g.home?'홈':'원정'}${g.kind?' · '+esc(g.kind):''}</small></span></div>`:''}${ev.slice(0,4).map(e=>`<div class="ap-event" style="--ec:${CAL_K[e.k].c}">${esc(e.t)}</div>`).join('')}${ev.length>4?`<small>외 ${ev.length-4}건</small>`:''}${!g&&!ev.length?'<span class="small muted">예정된 일정 없음</span>':''}</div>`;}).join('')}</div><p class="ap-note">진행 버튼을 다시 누르거나 Space·Esc를 누르면 현재 날짜에서 멈춥니다.</p>`;
+  document.querySelectorAll('.goset [data-a=advStop] .cl i').forEach(e=>e.textContent=dmd(G.day)+' · 일정 진행 중');
+  const date=document.querySelector('.fmtop .fm-date b,.top .tbar .club>div>span');if(date){const o=dobj(G.day);date.textContent=fmOn()?`${WD[o.w]} ${o.m}월 ${o.d}일`:`${o.m}/${o.d} ${WD[o.w]}`;}
+}
+function advRunEnd(R,paused=false,error=null){if(UI.advRun!==R)return;clearTimeout(R.timer);if(paused||error)R.it.return();UI.advRun=null;document.getElementById('adv-progress')?.remove();tkDone();try{R.finish(paused);}catch(e){console.error(e);save();render();}if(error){console.error(error);toast('진행 중 오류가 발생해 현재 날짜에서 멈췄습니다.');}else if(paused)toast(`${dmd(G.day)}에서 진행을 멈췄습니다.`);R.resolve(G.lastAdv);}
+function advRunPulse(R){if(UI.advRun!==R)return;if(R.game!==G){clearTimeout(R.timer);UI.advRun=null;document.getElementById('adv-progress')?.remove();R.resolve(null);return;}try{const before=G.day,r=R.it.next();save();advProgressPaint();tkShow(G.day);if(r.done){if(G.day===before)advRunEnd(R);else R.timer=setTimeout(()=>advRunEnd(R),220);}else R.timer=setTimeout(()=>advRunPulse(R),260);}catch(e){advRunEnd(R,false,e);}}
+function advRunStart(it,finish){if(UI.advRun){advRunEnd(UI.advRun,true);return Promise.resolve(null);}(dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);dayTick._until=0;document.getElementById('fmadv')?.classList.remove('on');document.getElementById('dtick')?.classList.remove('on');tkDone();closeSheets();return new Promise(resolve=>{const R=UI.advRun={it,finish,resolve,game:G,timer:null};render();advProgressPaint();advRunPulse(R);});}
+function* advToSteps(T){const d0=G.day,r0=G.sea.rec[G.user],w0=r0.w,l0=r0.l,sea0=G.sea.y;let n=0;const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length;try{while(G.day<T&&n++<200){if(blocker())break;const d=G.day;advance('day');if(G.matchAwait||G.stops.length||(G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0||G.live)break;if(G.res)G.res=null;if(G.day===d)break;if(G.day<T&&n<200)yield G.day;}}finally{const r=G.sea.rec[G.user];G.lastAdv={from:d0,to:G.day,days:G.day-d0,w:r.w-(G.sea.y===sea0?w0:0),l:r.l-(G.sea.y===sea0?l0:0)};}}
+
 /* 진행 표시(모션): 계속을 누르면 상단 날짜가 하루씩 넘어가고(달력 넘기듯), 아래에 지나간 날짜 띠가 하루씩 불이 켜진다.
    경기한 날은 상대 로고와 승패가 함께 지나간다. 화면을 막지 않고 끝나면 사라진다 */
 /* 날짜가 넘어가는 동안: 아직 지나가지 않은 날의 경기 결과·소식은 숨겼다가 그날이 지나갈 때 하나씩 보여 준다 */
@@ -104,7 +123,7 @@ function fmAdvPanel(d0,d1,st){ let el=document.getElementById('fmadv'); if(!el){
     <div class="fa-strip"><div class="fa-in" style="--faw:${FMADV_W}px;transition-duration:${Math.round(st*.85)}ms">${days.map(col).join('')}</div></div>`;
   el._n=0; el._d0=d0; el.className='on'; clearTimeout(fmAdvPanel._t); fmAdvPanel._t=setTimeout(()=>el.classList.remove('on'),st*(d1-d0)+1400); }
 function fmAdvStep(i){ const el=document.getElementById('fmadv'); if(!el||!el.classList.contains('on'))return; const inn=el.querySelector('.fa-in'); if(!inn)return; inn.style.transform=`translateX(${-i*FMADV_W}px)`; const cs=[...inn.children]; cs.forEach((c,k)=>{ c.classList.toggle('cur',k===i+1); if(k<=i+1)c.classList.add('done'); }); el.querySelectorAll('.fa-r').forEach(r=>{ if(+r.dataset.d<=el._d0+i)r.textContent=r.dataset.r; }); }
-function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } { const sg=spoilG(); if(sg&&sg.day>d0&&sg.day<=d1)UI._spoilD=sg.day; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
+function dayTick(d0){ if(UI.advRun)return;const d1=G.day; if(!(d1>d0)){ tkDone(); return; } { const sg=spoilG(); if(sg&&sg.day>d0&&sg.day<=d1)UI._spoilD=sg.day; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
   (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);
   /* '동작 줄이기'를 켠 기기(아이폰 설정 등)도 날짜가 넘어간 것은 보여 준다: 움직임 없이 지나간 날짜 띠를 잠깐 띄운다 */
   /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '진행하기' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */

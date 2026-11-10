@@ -161,7 +161,33 @@ function retireRecord(p){ const c=careerOf(p); const aw=p.aw||[]; const awP=awPe
   const hof=rec.war>=38||rec.mvp>=2||rec.gg>=6||(rec.war>=30&&rec.mvp>=1);
   if(hof){ rec.hof=true; mail('홍보팀',`${rec.name}, 명예의 전당 헌액`,`${rec.name}이(가) 은퇴와 함께 명예의 전당에 올랐습니다. 통산 ${rec.seasons}시즌 · WAR ${rec.war}${rec.isP?` · ${rec.w}승 ${rec.sv}세이브`:` · ${rec.h}안타 ${rec.hr}홈런`}${rec.mvp?` · MVP ${rec.mvp}회`:''}${rec.gg?` · 골든글러브 ${rec.gg}회`:''}.`,{kind:'기록'}); if(rec.mine&&rec.mine.ys>=5)news('선수',`${tshort(G.user)} 레전드 ${rec.name}, 명예의 전당으로`,`구단 역사에 남을 선수가 명예의 전당에 올랐습니다.`,2,{fanW:2}); }
   if(rec.mine&&rec.mine.ys>=(retWarT()>=60?10:8)&&rec.mine.war>=retWarT()){ rec.canRetNo=true; rec.tid=G.user; rec.pid=rec.pid??p.id; rec.no=noAt(p,G.user)??rec.no; /* 결번은 그 구단에서 단 번호(검수 11-09zp) */ if(!G.ob){ mail('홍보팀',`${rec.name} 영구결번 검토`,`${rec.name}이(가) 우리 구단에서 ${rec.mine.ys}시즌 동안 WAR ${rec.mine.war}를 남기고 은퇴합니다. 등번호 ${rec.no}번을 영구결번으로 지정하면 팬들이 크게 반길 것입니다.`,{imp:true,kind:'기록',acts:[{l:`${rec.no}번 영구결번 지정`,a:'retNo',v:'p'+rec.pid}]}); }  }
+  aiRetireNumbers(p,c,rec);
   return rec; }
+/* AI도 실제 구단별 공헌으로만 결번을 지정한다. 통산 추정 WAR·귀속 불명 번호는 심사에 쓰지 않는다. */
+function aiRetireNumbers(p,c,rec){
+  const wins=new Map(); const win=(tid,y)=>{ if(tid==null||!Number.isInteger(y))return; if(!wins.has(tid))wins.set(tid,new Set()); wins.get(tid).add(y); };
+  for(const h of G.history||[])win(h.champ,h.y);
+  for(const h of Object.values(G.champEvents||{}))win(h.tid,h.y); /* 구단·연도가 명시된 우승만 */
+  if(G.ps&&G.ps.champ!=null)win(G.ps.champ,G.year);
+  for(const key in c.byTeam){ const tid=+key, T=c.byTeam[key];
+    if(!Number.isInteger(tid)||!team(tid)||tid===ME()||!Number.isFinite(T.war)||T.war<60||T.ys.size<8)continue;
+    const years=new Set((p.hist||[]).filter(h=>h.t===tid&&h.lvl==='1군'&&((h.pa||0)>0||(h.outs||0)>0)).map(h=>h.y)); if(years.size<8)continue;
+    const cy=[...(wins.get(tid)||[])].filter(y=>years.has(y)).sort((a,b)=>a-b);
+    const no=noAt(p,tid); if(!cy.length||!Number.isInteger(no)||no<0||no>99)continue;
+    const O=G.orgT=G.orgT||{}, state=O[tid]=O[tid]||{};
+    const L=tid===G.user?(G.retNos=G.retNos||[]):(state.retNos=state.retNos||[]);
+    if(L.some(r=>r.no===no||r.pid===p.id))continue; /* 동일 번호의 중복 결번·동일 인물 재지정 금지 */
+    if(tid===G.user)state.retNos=L; /* 야인일 때도 옛 구단 목록과 같은 장부 */
+    const ob=(G.ob||[]).find(o=>o.fid===p.id), row={tid,no,name:p.name,pid:p.id,ob:ob?ob.id:null,y:G.year,war:+T.war.toFixed(1),ys:years.size,champYears:cy,auto:true}; L.push(row);
+    (rec.retNos=rec.retNos||[]).push({tid,no,y:G.year});
+    if(ob){ ob.retNo=true; (ob.retNos=ob.retNos||[]).push({tid,no,y:G.year}); }
+    for(const q of Object.values(G.players))if(q.team===tid&&q.id!==p.id&&q.no===no){ q.noT=null; jno(q); }
+    const title=`${tshort(tid)}, ${p.name}의 ${no}번 영구결번`;
+    wire('영구결번',title,{tid,ref:p.id});
+    chron('retNo',`${title} (${years.size}시즌 · WAR ${T.war.toFixed(1)} · 한국시리즈 우승 ${cy.join('·')}년)`,p.id,tid);
+    const event=G.chron[G.chron.length-1]; if(event&&event.ref===p.id&&event.tid===tid)event.gm=0;
+  }
+}
 /* 등번호: 선수마다 하나(p.no). 처음 볼 때 정해 두고, 같은 구단 안에서는 겹치지 않으며 우리 구단 영구결번은 쓰지 않는다. 팀을 옮겨 겹치면 새 구단에서 다시 고른다 */
 function teamNos(tid,exc){ const S=new Set(); if(tid==null)return S; for(const q of Object.values(G.players))if(q.team===tid&&q!==exc&&q.no!=null)S.add(q.no); for(const r of retNosOf(tid))S.add(r.no); return S; }
 /* 구단의 영구결번: 맡고 있으면 G.retNos, 떠난 구단은 G.orgT에 둔 것. 누가 맡든 그 구단 번호는 쓰지 않는다(검수 11-09zp) */

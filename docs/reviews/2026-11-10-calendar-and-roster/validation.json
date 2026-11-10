@@ -1,0 +1,45 @@
+{
+  "baseline": "b593e026",
+  "source_engine_sha256": "3ad2d9ae06994b3618a705e0952ebf4fd393810d9bf9d0dc7cfeb9b9c8c34d24",
+  "html_sha256": "007f8e9e2328319b8fca2f2a3223bddc2cc911b82c493a881b529f28b2b23b9a",
+  "calendar_viewports": [
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1366,
+      "height": 768
+    }
+  ],
+  "checks": {
+    "calendar_progress_pause_save": "pass",
+    "advance_sync_vs_steps": [
+      "day",
+      "week",
+      "event",
+      "month"
+    ],
+    "cancel_partial_statistics": "pass",
+    "continue_rotation_and_reduced_motion": "pass (8 configurations)",
+    "match_entry_batch_and_reservation": "pass",
+    "roster_recovery_engine": "pass (6 groups)",
+    "roster_recovery_ui": "pass (390/768/1366)",
+    "ai_retired_numbers": "pass (15 cases)",
+    "unit_tests": "34 passed",
+    "static": "pass",
+    "season_simulation": "pass (STRICT=1, seed7, through2027-01-01)",
+    "touch_phone_subgroup": "pass",
+    "touch_tablet_rerun": "pass"
+  },
+  "limits": [
+    "Chromium device emulation; physical Safari not tested.",
+    "Rare roster/retirement conditions prepared as fixtures; original reporter save unavailable.",
+    "AI retired numbers apply on future retirements; no historical backfill.",
+    "Public deployment not verified."
+  ]
+}

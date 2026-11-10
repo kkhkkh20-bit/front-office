@@ -22,6 +22,11 @@ END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1
 step "계속·날짜 표시·스카우트 위임"; node tools/check-continue.cjs || fail=1
+step "동기·분할 진행 결과 일치"; node tools/check-advance-steps.cjs || fail=1
+step "캘린더 기간·실제 진행·중도 중단"; node tools/check-calendar-progress.cjs || fail=1
+step "시즌 말 국내 선수 보충"; node tools/check-roster-recovery.cjs || fail=1
+step "인원 부족 안내·국내 선수 계약·경기 재개"; node tools/check-roster-recovery-ui.cjs || fail=1
+step "AI 구단 자동 영구결번"; node tools/check-ai-retired-numbers.cjs || fail=1
 step "3경기 진행·중계 선택"; node tools/check-match-entry.cjs || fail=1
 step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
 step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1
