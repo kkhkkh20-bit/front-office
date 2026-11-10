@@ -26,8 +26,8 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-fm-key{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px}.pf-fm-key>div{display:grid;justify-items:center;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:6px 4px}
 .pf-fm-key span{font-size:11px;color:var(--muted)}.pf-fm-key b{font:700 26px/1.1 var(--f-num)}.pf-fm-key b.pf-fm-pot{font:700 15px/1.6 var(--f-ui)}.pf-fm-key small{font-size:10px;color:var(--muted)}
 .current-rating-stars{display:inline-flex;justify-content:center;align-items:center;line-height:1.6;white-space:nowrap}.pf-fm-key>div{align-content:start;gap:3px}.pf-contract-head>span:has(>.current-rating-stars){flex-wrap:wrap}.pf-contract-head>span>.current-rating-stars{flex-basis:100%;align-self:center}.kbar .current-rating-stars{display:block}
-/* 별의 두 층은 같은 글꼴·줄 높이·원점을 쓴다. .kb i의 설명문 여백·글꼴이 금색 층에 섞이지 않게 한다. */
-.pst{font-family:var(--f-ui);font-weight:400;padding:0;border:0;isolation:isolate}.pst>.pst-fill{position:absolute;left:0;top:0;display:block;height:100%;max-width:100%;margin:0;padding:0;border:0;font:inherit;line-height:inherit;letter-spacing:inherit;color:#ffc94d;text-align:left;white-space:nowrap;overflow:hidden}
+/* 별의 두 층은 같은 글꼴·줄 높이·원점을 쓴다. 1.5줄로 글리프 높이를 확보해 금색 층만 위아래가 잘리지 않게 한다. */
+.pst{font-family:var(--f-ui);font-weight:400;line-height:1.5;padding:0;border:0;isolation:isolate}.pst>.pst-fill{position:absolute;left:0;top:0;display:block;height:100%;max-width:100%;margin:0;padding:0;border:0;font:inherit;line-height:inherit;letter-spacing:inherit;color:#ffc94d;text-align:left;white-space:nowrap;overflow:hidden}
 .pf-fm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0 10px}.pf-fm-stats>div{display:grid;justify-items:center;padding:4px 2px;border-top:2px solid var(--pt2,var(--team-hi));background:#ffffff08}
 .pf-fm-stats span{font-size:11px;color:var(--muted)}.pf-fm-stats b{font:700 17px var(--f-num)}
 .pf-fm-pay{display:grid;justify-items:center;gap:1px;padding:0 10px 10px;font-size:12px;color:var(--muted)}.pf-fm-pay b{color:var(--ink);font-size:14px}

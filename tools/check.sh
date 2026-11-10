@@ -32,6 +32,16 @@ for audit in archive executives staff-history player-history facilities-history 
  node "tools/check-club-${audit}.cjs" || fail=1
 done
 step "전력분석원 정원·보강 요청"; node tools/check-analyst-capacity.cjs || fail=1
+step "감독 요청·약속의 실제 이행 조건"
+for audit in dialogue event promises; do
+ node "tools/check-manager-${audit}-conditions.cjs" || fail=1
+done
+step "후속 50건·연수/계약 경계 검증"
+for audit in sister camp records operations boundaries; do
+ node "tools/check-feedback-${audit}-20261110.cjs" || fail=1
+done
+step "캠프 예약 표시·경기 수 선택"; node tools/check-feedback-camp-ui-20261110.cjs || fail=1
+step "검색표 잠재력 반별·글리프 높이"; node tools/check-rating-stars-tables.cjs || fail=1
 step "타 구단 공개 프로필·통산 기록·연대기·재정 장부"; CLUB_PROFILE_HTML="$PWD/index.html" node tests/tools/check-club-profile-ui.cjs || fail=1
 step "3경기 진행·중계 선택"; node tools/check-match-entry.cjs || fail=1
 step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1

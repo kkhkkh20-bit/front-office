@@ -1,13 +1,13 @@
 /* ---------- 스태프·육성 > 훈련·육성 > 스프링캠프: 장소 예약 · 훈련 강도 · 연습경기 · 시범경기 기록 ---------- */
 function sprcSiteBtns(lvl){ const T=lvl===1?SPRC1:SPRC2, P=sprcPlan(G.user), cur=P[lvl===1?'s1':'s2'], open=sprcOpen();
-  return `<div class="talk sprc-sites">${Object.entries(T).map(([k,D])=>{ const left=D.sl-sprcTaken(lvl,k), mine=cur===k, o=sprcOdds(G.user,lvl,k); const full=left<=0&&!mine&&!o.sb;
+  return `<div class="talk sprc-sites">${Object.entries(T).map(([k,D])=>{ const left=Math.max(0,D.sl-sprcTaken(lvl,k)), mine=cur===k, o=sprcOdds(G.user,lvl,k); const full=left<=0&&!mine&&!o.sb;
     const odds=k==='home'?'':o.q>=.8?' · 성사 높음':o.q>=.55?' · 성사 보통':' · 성사 낮음';
-    return `<button class="btn small ${mine?'on':''}" data-a="sprcBook" data-v="${lvl}:${k}" ${!open||full?'disabled':''}><b>${esc(D.l)}</b> <span class="small">${mine?'예약됨':full?'마감':`+${money(o.c)} · ${left}자리 남음${odds}`}${o.pv&&!mine?' · 지난해 사용':''}${o.sb?' · 자매구단':''}</span></button>`; }).join('')}</div>`; }
-function sprcStatTable(st,isP){ const rows=Object.entries(st||{}).map(([id,a])=>({p:G.players[id],a})).filter(x=>x.p&&x.p.team===G.user&&!!x.p.isP===isP&&x.a.length===(isP?6:8)).sort((x,y)=>isP?y.a[1]-x.a[1]:y.a[1]-x.a[1]).slice(0,14);
-  if(!rows.length)return '';
+    return `<button class="btn small ${mine?'on':''}" data-a="sprcBook" data-v="${lvl}:${k}" ${!open||full?'disabled':''}><b>${esc(D.l)}</b> <span class="small">${mine?'예약됨':full?'마감':`+${money(o.c)} · ${!left&&o.sb?'일반 예약 마감 · 자매구단 우선 예약':left+'자리 남음'}${odds}`}${o.pv&&!mine?' · 지난해 사용':''}${o.sb?' · 자매구단':''}</span></button>`; }).join('')}</div>`; }
+function sprcStatTable(st,isP){ const rows=lightRows(st,G.user).filter(x=>!!x.p.isP===isP&&x.a.length===(isP?6:8)).sort((x,y)=>y.a[1]-x.a[1]).slice(0,14),legacy=!isP&&lightLegacyCount(st)?'<p class="small muted">이전 형식의 합계 기록은 출전 구단을 확인할 수 없어 별도 보관합니다. 아래 구단별 기록에는 합산하지 않습니다.</p>':'';
+  if(!rows.length)return legacy;
   const ip=o=>`${Math.floor(o/3)}${o%3?'.'+o%3:''}`;
-  return `<div class="tw"><table class="mst"><thead><tr>${isP?'<th>투수</th><th>경기</th><th>이닝</th><th>ERA</th><th>삼진</th><th>볼넷</th>':'<th>타자</th><th>타석</th><th>타율</th><th>홈런</th><th>OPS</th>'}</tr></thead><tbody>${rows.map(({p,a})=>isP?`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${a[0]}</td><td>${ip(a[1])}</td><td>${exhEra(a).toFixed(2)}</td><td>${a[5]}</td><td>${a[4]}</td></tr>`:`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${a[1]}</td><td>${exhF3(exhAvg(a))}</td><td>${a[4]}</td><td>${exhF3(exhOps(a))}</td></tr>`).join('')}</tbody></table></div>`; }
-function sprcView(){ if(G.unemp)return csec('스프링캠프','<p class="small muted">구단을 맡고 있지 않습니다.</p>'); const c=G.cal; const pre=G.day<c.camp, inCamp=G.day>=c.camp&&G.day<c.campEnd; const out=[];
+  return legacy+`<div class="tw"><table class="mst"><thead><tr>${isP?'<th>투수</th><th>경기</th><th>이닝</th><th>ERA</th><th>삼진</th><th>볼넷</th>':'<th>타자</th><th>타석</th><th>타율</th><th>홈런</th><th>OPS</th>'}</tr></thead><tbody>${rows.map(({p,a})=>isP?`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${a[0]}</td><td>${ip(a[1])}</td><td>${exhEra(a).toFixed(2)}</td><td>${a[5]}</td><td>${a[4]}</td></tr>`:`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${a[1]}</td><td>${exhF3(exhAvg(a))}</td><td>${a[4]}</td><td>${exhF3(exhOps(a))}</td></tr>`).join('')}</tbody></table></div>`; }
+function sprcView(){ if(G.unemp)return csec('스프링캠프','<p class="small muted">구단을 맡고 있지 않습니다.</p>'); const c=sprcCal(); const pre=G.day<c.camp, inCamp=G.day>=c.camp&&G.day<c.campEnd; const out=[];
   const m=G.mgr[G.user]; const P=(pre&&!sprcOpen())?null:sprcPlan(G.user);
   if(pre&&!sprcOpen())out.push(csec('스프링캠프 계획','<p class="small">캠프 장소 예약은 시즌 결산이 끝난 뒤(11월)부터 1월 24일까지 합니다. 좋은 곳은 다른 구단이 11~12월에 먼저 채웁니다.</p>'));
   if(pre&&P){ const pref=sprcMgrPref(m), cap=sprcPgCap(P); const S=G.scp; const mates={}; for(const t of G.teams){ if(t.id===G.user)continue; const Q=S.t[t.id]; if(Q&&Q.s2)(mates[Q.s2]=mates[Q.s2]||[]).push(tshort(t.id)); }
@@ -19,10 +19,10 @@ function sprcView(){ if(G.unemp)return csec('스프링캠프','<p class="small m
       <div class="eyebrow">훈련 강도 · 감독과 함께</div><div class="talk">${SPRC_INTK.map(k=>`<button class="btn small ${P.int===k?'on':''}" data-a="sprcInt" data-v="${k}">${SPRC_INT[k].l}${k===pref?' · 감독 희망':''}</button>`).join('')}</div>
       <p class="small muted">${esc(SPRC_INT[P.int].d)}</p>
       ${m&&!m.interim?`<div class="mop"><b>${esc(m.name)} 감독</b><span>"${pref==='hard'?'캠프는 빡세게 가야 시즌을 버팁니다.':pref==='easy'?'선수들이 알아서 몸을 만들게 두는 게 맞습니다.':'정해진 일정대로 무리 없이 가겠습니다.'}"</span>${P.int!==pref?`<span class="small warn">감독 희망과 다릅니다. 캠프 시작 때 감독 관계가 깎이고 캠프 효과도 조금 줄어듭니다.</span>`:''}</div>`:''}
-      <div class="eyebrow">연습경기</div><div class="talk">${SPRC_PGN.map(n=>`<button class="btn small ${P.pgN===n?'on':''}" data-a="sprcPg" data-v="${n}:">${n}경기</button>`).join('')}</div>
+      <div class="eyebrow">연습경기</div><div class="talk">${[...new Set(SPRC_PGN.concat(cap))].sort((a,b)=>a-b).map(n=>`<button class="btn small ${P.pgN===n?'on':''}" data-a="sprcPg" data-v="${n}:" ${!P.s1||!P.s2||n>cap?'disabled':''}>${n}경기</button>`).join('')}</div>
       <div class="talk">${Object.entries(SPRC_LV).map(([k,l])=>`<button class="btn small ${P.pgLv===k?'on':''}" data-a="sprcPg" data-v=":${k}">${l}</button>`).join('')}</div>
       <p class="small muted">${P.s1&&P.s2?`지금 장소로 잡을 수 있는 연습경기는 최대 ${cap}경기입니다.`:'장소를 정하면 잡을 수 있는 연습경기 수가 나옵니다.'} 상대 구단 사정에 따라 몇 경기는 못 잡을 수 있습니다. 일본 1군 상대는 2차가 일본일 때만 잡힙니다.</p>
-      <p class="small">${left>0?`예약 마감까지 ${left}일`:'오늘 예약 마감'} · 올해 추가 비용 ${money((P.c1||0)+(P.c2||0))}</p>`));
+      <p class="small">${left>0?`예약 마감까지 ${left}일`:'오늘 예약 마감'} · ${c.y}년 캠프 추가 비용 ${money((P.c1||0)+(P.c2||0))}</p>`));
     out.push(csec('다른 구단 예약 현황',`<div class="list">${[...Object.entries(SPRC1).map(([k,D])=>[1,k,D]),...Object.entries(SPRC2).map(([k,D])=>[2,k,D])].map(([lvl,k,D])=>{ const L=G.teams.filter(t=>(S.t[t.id]||{})[lvl===1?'s1':'s2']===k).map(t=>tshort(t.id)); return L.length?`<div class="small"><b>${lvl}차 ${esc(D.l)}</b> ${esc(L.join(', '))} (${L.length}/${D.sl})</div>`:''; }).join('')||'<p class="small muted">아직 예약한 구단이 없습니다.</p>'}</div>`)); }
   if(!pre&&G.scp&&G.scp.y===G.year&&G.scp.t[G.user]&&G.scp.t[G.user].s1){ const Q=G.scp.t[G.user]; const R0=Q.pgR||[]; const w=R0.filter(x=>x.us>x.op).length, l=R0.filter(x=>x.us<x.op).length;
     const wx=v=>v>=1.04?'맑고 따뜻함':v>=.97?'무난함':'쌀쌀하고 비가 잦음';

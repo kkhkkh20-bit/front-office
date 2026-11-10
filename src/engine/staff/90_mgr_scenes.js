@@ -16,7 +16,7 @@ function mgrScnCtx(){ const S=mgrSit(), P=playersOf(G.user); const X={S,st:S.str
   X.hot=S.hot?S.hot.p:null; X.cold=S.cold&&S.cold[0]?S.cold[0].p:null; X.inj=S.inj&&S.inj[0]||null; X.tired=(S.tired||[]).sort((a,b)=>(b.fat||0)-(a.fat||0))[0]||null;
   X.young=P.filter(p=>p.age<=23&&!p.foreign&&!(p.injOut>0)).sort((a,b)=>(b.pot||0)-(a.pot||0))[0]||null;
   const tr=(G.trades||[]).filter(t=>t.me===G.user&&G.day-t.d<=21&&(t.gi||[]).length).slice(-1)[0]; X.trade=tr?G.players[tr.gi[0]]:null; if(X.trade&&X.trade.team!==G.user)X.trade=null;
-  const w=S.weak&&S.weak[0]; X.weak=w?SLOTK[w.k]:null; X.weakReq=!w?'rp':w.k==='SP'?'sp':w.k==='RP'?'rp':['C','SS','2B','CF'].includes(w.k)?'def':'bat';
+  const w=S.weak&&S.weak[0]; X.weak=w&&w.rank>=8?SLOTK[w.k]:null; X.weakReq=!X.weak?null:w.k==='SP'?'sp':w.k==='RP'?'rp':['C','SS','2B','CF'].includes(w.k)?'def':'bat';
   try{ const st=standingsNow(); const i=st.findIndex(x=>x.tid===G.user); const o=st[i>0?i-1:1]; X.rival=o?tshort(o.tid):'상대'; }catch(e){ X.rival='상대'; }
   /* 상대가 단장에게 물을 거리(11-09e): 곧 FA가 되는 주전, 예산 여유, 팬 여론, 연봉 1위 */
   X.fa=P.filter(p=>!p.foreign&&!p.ys&&(p.faC?(p.yrs||0)<=1:(p.svc||0)>=faSvc(p)-1)).sort((a,b)=>ovr(b)-ovr(a))[0]||null; if(X.fa&&ovr(X.fa)<55)X.fa=null;
@@ -92,7 +92,7 @@ const MSCN=[
      {l:'그건 너무 가혹합니다',r:['...단장님이 그렇게까지 말하면 하루만 더 봅니다. 하루만입니다.'],fx:{rel:-1,pm:['cold',2]}},
      {l:'감독님 뜻대로 하세요',r:['고맙습니다. 이게 약이 될 겁니다.'],fx:{rel:2,pm:['cold',-6]}}]}:null},
    {l:'진정하시고 앉으시죠',r:['...(한숨) 네, 앉죠. 단장님 앞에서까지 이러면 안 되는데.'],fx:{rel:1},n:{t:['불펜이 못 버팁니다. 쓸 만한 팔 하나만 구해 주십시오. 그거면 제가 다시 웃겠습니다.'],c:[
-     {l:'한 달 안에 구해 보겠습니다',r:['그 말 믿겠습니다. 한 달 뒤에 제가 먼저 여쭙겠습니다.'],fx:{req:'rp',rel:2}},
+     {l:'가능한 기한 안에 구해 보겠습니다',r:['그 말 믿겠습니다. 한 달 뒤에 제가 먼저 여쭙겠습니다.'],fx:{req:'rp',rel:2}},
      {l:'있는 전력으로 버텨야 합니다',r:['...알겠습니다. 지면 다 제 탓입니다. 핑계 안 댑니다.'],fx:{rel:-2,mor:-1}}]}},
    {l:'연패 끊으면 소원 하나 들어드리죠',r:['소원이요? 하하! 좋습니다. 그럼 이기는 날 단장님이 덕아웃에서 응원가 한 소절 부르는 겁니다.'],fx:{rel:2,mor:3}}]})},
  {id:'fire_win',s:'fire',w:X=>X.season&&X.st>=3?3:0,b:X=>({o:[`보셨죠? ${X.st}연승! 제가 뭐랬습니까, 우리 팀 할 만하다고 했잖아요!`,'어제 9회 역전 보셨습니까? 덕아웃에서 의자를 차는 바람에 발가락이 아직도 아픕니다. 하하!'],c:[
@@ -165,7 +165,7 @@ const MSCN=[
 const MSCN_OFF={old:['겨울 캠프는 제 방식대로 갑니다. 새벽 러닝부터요. 단장님, 막지 마십쇼.',{rel:2,pref:['small',3]},'새벽 러닝은 제가 맨 앞에서 뜁니다. 그럼 아무도 말 못 하죠.','...허, 단장님까지 그러시면. 러닝은 아침 7시로 늦추죠. 그 이상은 안 됩니다.'],
   data:['겨울 동안 선수별 개선 목표를 숫자 하나씩으로 정해 주려 합니다. 다 적어 왔어요.',{rel:2,hint:'young'},'고맙습니다. 그리고 이 표에서 제일 기대되는 이름 하나만 미리 알려 드리죠.','숫자 하나로 사람을 묶지 말자는 말씀이군요. ...일리 있습니다. 목표는 범위로 바꾸겠습니다.'],
   warm:['겨울엔 애들 가족도 좀 챙기고 싶어요. 캠프 가기 전에 가족 초청 행사 어떠세요?',{rel:2,mor:3,cash:10},'애들 부모님들이 제일 좋아하실 겁니다. 단장님도 꼭 오세요.','그럼 작게라도 하죠. 케이크 하나에 사진 한 장이면 충분합니다.'],
-  fire:['내년엔 무조건 가을야구입니다. 아니, 우승입니다. 단장님도 각오하십쇼.',{rel:2,req:'@weak'},'그럼 첫 번째 숙제 드립니다. 제가 말한 자리, 캠프 전에 메워 주십쇼.','목표를 낮추자고요? ...단장님 앞에선 낮추죠. 기자 앞에선 우승이라고 할 겁니다.'],
+  fire:['내년엔 무조건 가을야구입니다. 아니, 우승입니다. 단장님도 각오하십쇼.',{rel:2,req:'@weak'},'그럼 필요한 자리와 가능한 영입 기간을 함께 맞춰 봅시다.','목표를 낮추자고요? ...단장님 앞에선 낮추죠. 기자 앞에선 우승이라고 할 겁니다.'],
   fun:['단장님, 겨울에 뭐 하세요? 저는 낚시 갑니다. 대어 잡으면 구단 식당에 기증하겠습니다.',{rel:3,mor:1},'그럼 단장님 몫으로 제일 큰 놈 남겨 두겠습니다. 못 잡으면 마트에서 사 오죠.','낚시 대신 전력 회의요? 하하, 그럼 회의실에 어항이라도 두시죠.'],
   media:['겨울 동안 팬 행사 몇 개 잡아 두었습니다. 감독이 직접 나가면 시즌권이 더 팔리지 않겠습니까?',{rel:2,mor:1,wire:'감독, 겨울 팬 행사 직접 나선다'},'좋습니다. 사인 연습 좀 해 둬야겠네요.','행사는 줄이고 캠프에 집중하자... 네, 기자들한텐 \'감독은 훈련 중\'이라고 하죠. 그것도 그림이 됩니다.'],
   calm:['겨울은 준비하는 시간이죠. 내년 구상은 반쯤 정했습니다. 나머지 반은 단장님과 정하고 싶습니다.',{rel:3,pref:['youth',2]},'그럼 젊은 선수 두세 명은 캠프부터 1군과 같이 굴리겠습니다. 시즌 중에 서두르지 않으려고요.','네, 단장님 생각부터 더 듣겠습니다. 다음 주에 다시 오죠.']};
@@ -174,20 +174,44 @@ MSCN.push({id:'off',s:'*',w:X=>X.season?0:3,b:(X,s)=>{ const D=MSCN_OFF[s]||MSCN
 const MSCN_BYE={old:'오늘은 할 얘기 다 했습니다. 내일 봅시다.',data:'오늘 숫자는 여기까지입니다. 새 숫자가 나오면 다시 오죠.',warm:'오늘은 이만 애들 보러 가 볼게요. 또 들르세요.',fire:'오늘은 더 얘기하면 제가 또 흥분합니다. 내일 하시죠!',fun:'오늘 개그는 품절입니다. 내일 신상으로 준비해 오겠습니다.',media:'오늘 멘트는 다 썼습니다. 기자들 만나고 내일 다시 오죠.',calm:'오늘은 여기까지 하시죠. 생각을 정리해 두겠습니다.'};
 const MPREF={youth:'젊은 선수 기용',small:'작전 야구(번트·도루)',pen:'불펜 조기 투입',arm:'투수 무리한 기용',dfn:'수비 중시'};
 const MREQ={rp:'불펜 투수',sp:'선발 투수',bat:'주전급 타자',def:'수비형 야수(포수·유격수·2루수·중견수)',an:'전력분석원'};
+/* 즉시 전력 보강은 실제로 합류해 출전할 수 있는 선수만 인정한다. */
+function mgrReinforceReady(p,tid=G.user){return !!p&&p.team===tid&&!p.prospect&&!p.ys&&!(p.joinY>G.year)&&healthy(p)&&!isAway(p)&&!ovsAbroad(p)&&!milServing(p)&&psOk(p)&&!(p.isP&&rpPlanOf(tid,p)==='sp2');}
+const MREQ_SLOTS={rp:['RP'],sp:['SP'],bat:['C','1B','2B','3B','SS','LF','CF','RF','DH'],def:['C','SS','2B','CF']};
+function mgrReqNeed(k){const rk=slotRanks(G.user);return (MREQ_SLOTS[k]||[]).map(slot=>({slot,...rk[slot]})).filter(x=>x.rank>=8&&!Object.values(G.players).some(p=>p.team===G.user&&!p.ys&&!(p.joinY>G.year)&&pSlot(p)===x.slot&&p.injOut>0&&p.injOut<=30&&ovr(p)>=x.v+3)).sort((a,b)=>b.rank-a.rank)[0]||null;}
+function mgrReqUntil(k){return k!=='an'&&period()==='season'?Math.min(G.day+30,G.cal.end):G.day+30;}
+/* 생성·수락 조건. 수락 후 예산이나 정원을 소비해 약속을 취소할 수는 없다. */
+function mgrReqBlock(k){
+  const m=G.mgr&&G.mgr[G.user];if(!MREQ[k])return '지금은 추가 보강을 약속할 대상이 없습니다.';
+  if(G.unemp||G.gameOver||!m||m.interim)return '현재 감독과 보강을 약속할 수 없습니다.';
+  if(k==='an'&&anaList().length>=ANA_MAX)return `전력분석원 정원 ${ANA_MAX}명을 이미 채웠습니다.`;
+  if(G.mgrReq&&(G.mgrReq.tid==null||G.mgrReq.tid===G.user)&&G.mgrReq.mid===m.id)return '이미 수락한 감독 보강 요청이 진행 중입니다.';
+  if(k!=='an'&&(G.mreq||[]).some(r=>(r.st==='ask'||r.st==='open')&&(r.tid==null||r.tid===G.user)&&r.mid===m.id&&['fit','slot','fa','frep'].includes(r.k)))return '이미 감독과 다른 선수 보강을 논의하고 있습니다.';
+  const seen=(G.mgrReqSeen||{})[G.user+':'+m.id+':'+k];if(seen!=null&&G.day-seen<30)return '같은 보강 요청은 한 달 동안 다시 하지 않습니다.';
+  if(k==='an'){if(budget().roomGoal<ANA_SAL[1])return '추가 분석원의 최저 연봉을 감당할 예산 여유가 없습니다.';return '';}
+  if(rosterN(G.user)>=ROSTER_MAX)return `정식 선수 정원 ${ROSTER_MAX}명이 가득 찼습니다. 먼저 기존 선수단을 정리해야 합니다.`;
+  if(period()==='post'||preSettle()||!(freeOpen()||tradeOpen()||G.fa?.open&&!G.fa.closed))return '지금은 선수 영입·등록을 진행할 수 있는 기간이 아닙니다.';
+  if(mgrReqUntil(k)-G.day<7)return '정규시즌 종료까지 보강을 협의할 시간이 부족합니다.';
+  const need=mgrReqNeed(k);if(!need)return '해당 자리는 리그 하위권이 아니거나 곧 돌아올 내부 대안이 있습니다.';
+  if(entryOn()&&playersOf(G.user).some(p=>!p.e1&&canUp(p)&&mreqOk(k,p)&&pSlot(p)===need.slot&&ovr(p)>=Math.max(mreqMin(k),need.v+3)))return '먼저 2군의 출전 가능한 내부 대안을 검토하겠습니다.';
+  return '';
+}
+/* 요청을 포함한 분기는 대사를 보여 주기 전에 거른다. 저장된 대화도 선택 시 재검사한다. */
+function mgrReqChoiceBlock(c){if(c.fx&&Object.prototype.hasOwnProperty.call(c.fx,'req')){const why=mgrReqBlock(c.fx.req);if(why)return why;}for(const n of c.n?.c||[]){const why=mgrReqChoiceBlock(n);if(why)return why;}return '';}
+function mgrReqTree(T){let why='';const c=(T.c||[]).filter(x=>{const reason=mgrReqChoiceBlock(x);if(reason)why=why||reason;return !reason;});if(why)c.unshift({l:'현재 조건에서 가능한 운영을 논의하죠',r:[why+' 추가 보강 약속 없이 현재 인원을 활용하겠습니다.'],fx:{}});return {...T,c};}
 function mscnMem(m){ return m.scn=m.scn||{d:-1,u:{},n:0}; }
 /* 장면 고르기: 지금 상황에 맞는 것 중 최근 30일에 안 나온 것, 가중치 추첨 */
 function mgrScenePick(m,X){ const s=mgrTalkSty(m), M=mscnMem(m); const L=MSCN.filter(c=>(c.s===s||c.s==='*')&&c.w(X)>0);
   const fresh=L.filter(c=>!(M.u[c.id]>G.day-30)); const pool=fresh.length?fresh:L.sort((a,b)=>(M.u[a.id]||0)-(M.u[b.id]||0)).slice(0,1); if(!pool.length)return null;
   let t=sum(pool.map(c=>c.w(X))), r=R()*t; for(const c of pool){ r-=c.w(X); if(r<=0)return c; } return pool[pool.length-1]; }
 /* 대화 시작: 하루 한 번 */
-function mgrTalkStart(m){ if(!m||m.interim)return {say:['지금은 이야기할 감독이 없습니다.'],st:null}; const s=mgrTalkSty(m), M=mscnMem(m);
+function mgrTalkStart(m){ if(!m||m.interim||G.unemp||G.mgr?.[G.user]?.id!==m.id)return {say:['지금은 이야기할 감독이 없습니다.'],st:null}; const s=mgrTalkSty(m), M=mscnMem(m);
   if(M.d===G.day)return {say:[MSCN_BYE[s]],st:null};
   const X=mgrScnCtx(), sc=mgrScenePick(m,X); if(!sc)return {say:[MSCN_BYE[s]],st:null}; M.d=G.day; M.u[sc.id]=G.day; M.n++;
-  const T=sc.b(X,s); const pre=m.rel<35?'(표정이 딱딱하다) ':''; const st=talkSt(sc.id,X,T,'mg'+m.id);
+  const T=mgrReqTree(sc.b(X,s)); const pre=m.rel<35?'(표정이 딱딱하다) ':''; const st=talkSt(sc.id,X,T,'mg'+m.id);st.tid=G.user;st.mid=m.id;
   return {say:[pre+mvFresh(m,'scn:'+sc.id+':o',T.o)],st,ch:talkChoices(st)}; }
 const mgrTalkChoices=st=>talkChoices(st);
-const mgrTD=m=>({mem:m,sty:mgrTalkSty(m),qs:MSQ,qm:(mscnMem(m).q=mscnMem(m).q||{}),fx:(fx,X)=>mgrScnFx(m,fx,X)});
-function mgrTalkPick(m,st,i){ return talkPick(mgrTD(m),st,i); }
+const mgrTD=m=>({mem:m,sty:mgrTalkSty(m),qs:MSQ.map(q=>({...q,a:(X,s)=>mgrReqTree({c:q.a(X,s)}).c})),qm:(mscnMem(m).q=mscnMem(m).q||{}),fx:(fx,X)=>mgrScnFx(m,fx,X)});
+function mgrTalkPick(m,st,i){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id||(st?.tid!=null&&st.tid!==G.user)||(st?.mid!=null&&st.mid!==m.id))return {me:'',say:['요청한 감독 또는 구단이 바뀌어 이전 대화를 종료합니다.'],sys:[],st:null,ch:[]};const ch=st?.node?.c?.[i];if(ch){const why=mgrReqChoiceBlock(ch);if(why){st.node=null;return {me:gvL(ch.me||ch.l),say:[why+' 추가 보강 약속은 만들지 않습니다.'],sys:[],st:null,ch:[]};}}return talkPick(mgrTD(m),st,i);}
 
 /* ===== 주고받는 대화(11-09e: 감독·구단주 대화가 티키타카가 되게) =====
    한 장면은 3~5마디. 장면에 준비된 마디가 끝났는데 목표 마디 수(3~4)에 못 미치면, 상대가 지금 상황(순위·연패·부상·최근 영입·예산·곧 FA)을 두고
@@ -227,7 +251,7 @@ const MSQ=[
      {l:['제가 하겠습니다','제가 기록을 들고 설명하겠습니다','제가 한 명씩 만나겠습니다','제가 하죠. 불만 있으면 저한테 오라고 하세요','감독님이 하시면 더 자연스럽지 않을까요, 허허','제가 합니다'],r:{d:['고맙습니다. 그게 제일 어려운 일인데.'],fun:['오, 단장님이 총대를. 저는 뒤에서 박수만 치겠습니다.']},fx:{rel:3}},
      {l:['감독님이 맡아 주시죠','감독님 말이 선수들한테 더 무겁습니다','감독님이 애들을 더 잘 아시잖아요','감독님 몫입니다','해 주시면 제가 밥 사겠습니다, 허허','감독님이 하세요'],r:['...그럴 줄 알았습니다. 하겠습니다. 대신 원망은 반반입니다.'],fx:{rel:-1}}]}}]},
  {id:'inj',w:X=>X.inj?3:0,q:X=>[`${nm(X.inj)} 빠진 자리 말입니다. 단장님은 밖에서 사람을 데려올 생각이 있으십니까?`],a:X=>[
-   {l:['찾아보겠습니다','대체 선수 후보를 추려 보겠습니다','감독님 고생 덜게 한 명 구해 보죠','이참에 더 좋은 선수로 메웁니다','시장에 싸게 나온 선수가 있을 겁니다, 허허','구해 오겠습니다'],r:['그 말이면 됐습니다. 한 달만 버티면 되니까요.'],fx:{rel:2,req:X.weakReq}},
+   {l:['찾아보겠습니다','대체 선수 후보를 추려 보겠습니다','감독님 고생 덜게 한 명 구해 보죠','이참에 더 좋은 선수로 메웁니다','시장에 싸게 나온 선수가 있을 겁니다, 허허','구해 오겠습니다'],r:['그 말이면 됐습니다. 정한 기한까지 현재 전력으로 버텨 보겠습니다.'],fx:{rel:2,req:X.weakReq}},
    {l:['안에서 메워 보시죠','2군 대체 선수 기록이 나쁘지 않습니다','이럴 때 2군 애들한테 기회가 가는 거죠','안에서 하나 터질 겁니다','돈 안 쓰고 메우면 그게 이기는 거죠, 허허','안에서 메웁니다'],r:{d:['안에서라... 알겠습니다. 2군 보고서를 다시 보겠습니다.'],fire:['안에서요? 그 자리 구멍 나면 제 머리도 구멍 납니다. ...알겠습니다, 해 보죠.']},fx:{pref:['youth',3],rel:-1}}]},
  {id:'trade',w:X=>X.trade?4:0,q:X=>[`${nm(X.trade)} 데려오신 거 말인데요, 단장님은 그 친구를 어디에 쓰고 싶으셨습니까?`],a:X=>[
    {l:['주전으로 써 주십시오','주전으로 나가야 데려온 값이 나옵니다','매일 나가게 해 주세요. 새 팀에 빨리 붙어야죠','바로 주전입니다. 그러려고 데려왔습니다','주전이면 좋겠네요, 허허. 물론 감독님 마음이지만요','주전입니다'],r:['그렇게 하겠습니다. 다만 첫 주에 못 치면 저도 고민 좀 하겠습니다.'],fx:{pm:['trade',5],rel:1}},
@@ -256,7 +280,7 @@ const MSQ=[
    {l:['우승하면 하겠다고 전해 주세요','시즌 끝나고 성적 보고 하죠','지금 하면 애들이 들뜹니다. 끝나고 하죠','우승하면 제대로 쏩니다','기대하게 두는 게 더 효과가 좋죠, 허허','우승하면'],r:['하하, 그 말 그대로 전하겠습니다. 애들이 이를 갈겠네요.'],fx:{rel:1}}]}
 ];
 /* 결과를 실제로 남긴다. 돌려주는 값: 대화 아래에 보일 한 줄들 */
-function mgrScnFx(m,fx,X){ const out=[]; const P=w=>X[w]&&X[w].team===G.user?X[w]:null;
+function mgrScnFx(m,fx,X){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id)return ['현재 구단의 감독과 나눈 대화가 아니라 아무것도 변경하지 않습니다.'];if(Object.prototype.hasOwnProperty.call(fx,'req')){const why=mgrReqBlock(fx.req);if(why)return [why+' 추가 보강 약속은 만들지 않습니다.'];}const out=[]; const P=w=>X[w]&&X[w].team===G.user?X[w]:null;
   if(fx.rel){ m.rel=clamp(m.rel+fx.rel,0,100); out.push(`감독 관계 ${fx.rel>0?'+':''}${fx.rel}`); }
   if(fx.mor){ for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+fx.mor,0,100); out.push(`선수단 기분 ${fx.mor>0?'+':''}${fx.mor}`); }
   if(fx.pm){ const p=P(fx.pm[0]); if(p){ p.mor=clamp((p.mor??60)+fx.pm[1],0,100); out.push(`${p.name} 기분 ${fx.pm[1]>0?'+':''}${fx.pm[1]}`); } }
@@ -265,15 +289,13 @@ function mgrScnFx(m,fx,X){ const out=[]; const P=w=>X[w]&&X[w].team===G.user?X[w
   if(fx.hint){ const p=P(fx.hint); if(p){ mgrAttr(m); const err=hn('mgrhint'+m.id,p.id)*Math.max(0,90-(m.eye||50))/8; const v=Math.round(clamp((p.pot||ovr(p))+err,20,99)/5)*5; out.push(`감독 귀띔: ${p.name}(${p.age}세) 잠재력 추정 ${dv(v)}점 안팎으로 봅니다(지금 능력 ${dv(ovr(p))}점, 감독 눈 기준).`); } }
   if(fx.cash){ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+fx.cash; out.push(`구단 지출 ${money(fx.cash)}`); }
   if(fx.wire){ try{ wire('감독',`${tshort(G.user)} ${fx.wire}`,{tid:G.user}); }catch(e){} out.push(`리그 소식: ${fx.wire}`); }
-  if(fx.req&&MREQ[fx.req]){ if(fx.req==='an'&&anaList().length>=ANA_MAX)out.push(`전력분석원 정원 ${ANA_MAX}명을 채워 추가 채용 요청은 하지 않습니다.`);
-    else if(G.mgrReq&&G.mgrReq.until>=G.day)out.push('감독 요청이 이미 하나 진행 중이라 이번 부탁은 기억만 해 둡니다.');
-    else { const R0=G.mgrReq={k:fx.req,mid:m.id,d:G.day,until:G.day+30,ids:playersOf(G.user).map(p=>p.id),n0:anaList().length,min:mreqMin(fx.req)}; out.push(`감독 요청: ${dmd(R0.until)}까지 ${MREQ[fx.req]} 보강(들어주면 관계 +6, 못 들어주면 -3)`); } }
+  if(fx.req&&MREQ[fx.req]){const need=fx.req==='an'?null:mgrReqNeed(fx.req),R0=G.mgrReq={v:2,tid:G.user,k:fx.req,mid:m.id,d:G.day,until:mgrReqUntil(fx.req),an:G.acqSeq||0,ids:Object.values(G.players).filter(p=>p.team===G.user).map(p=>p.id),sids:anaList().map(a=>a.id),n0:anaList().length,min:Math.max(mreqMin(fx.req),need?Math.ceil(need.v+3):0),slot:need?.slot};(G.mgrReqSeen=G.mgrReqSeen||{})[G.user+':'+m.id+':'+fx.req]=G.day;out.push(`감독 요청: ${dmd(R0.until)}까지 ${MREQ[fx.req]} 보강(들어주면 관계 +6, 못 들어주면 -3)`);}
   return out; }
 const mreqOk=(k,p)=>k==='rp'?p.isP&&!isSPr(p):k==='sp'?isSPr(p):k==='def'?!p.isP&&['C','SS','2B','CF'].includes(p.pos):k==='bat'?!p.isP:false;
 /* 보강으로 인정하는 최소 능력: 지금 우리 그 유형 선수 중간값(45~68) */
 function mreqMin(k){ const L=playersOf(G.user).filter(p=>mreqOk(k,p)).map(ovr).sort((a,b)=>b-a); return Math.round(clamp(L.length?L[Math.floor(L.length/2)]:50,45,68)); }
-function mgrReqDaily(){ const Q=G.mgrReq; if(!Q)return; const m=G.mgr&&G.mgr[G.user]; if(G.unemp||!m||m.id!==Q.mid){ delete G.mgrReq; return; }
+function mgrReqDaily(){ const Q=G.mgrReq; if(!Q)return; const m=G.mgr&&G.mgr[G.user]; if(G.unemp||!m||m.interim||m.id!==Q.mid||(Q.tid!=null&&Q.tid!==G.user)||!MREQ[Q.k]){ delete G.mgrReq; return; }
   if(Q.k==='an'&&Q.n0>=ANA_MAX){ delete G.mgrReq; mail('감독실',`${m.name} 감독의 분석원 보강 요청을 정리했습니다`,`요청 당시 이미 전력분석원 정원 ${ANA_MAX}명을 채워 추가 채용이 불가능했습니다. 요청을 종료하며 감독 관계는 변하지 않습니다.`,{kind:'감독'}); return; }
-  const done=Q.k==='an'?anaList().length>Q.n0:playersOf(G.user).some(p=>!Q.ids.includes(p.id)&&mreqOk(Q.k,p)&&ovr(p)>=Q.min);
+  const done=Q.k==='an'?anaList().length>Q.n0&&anaList().some(a=>(!Q.sids||!Q.sids.includes(a.id))&&a.since>=Q.d&&a.since<=Q.until):Object.values(G.players).some(p=>{const a=p.acq;return mgrReinforceReady(p)&&!(Q.ids||[]).includes(p.id)&&mreqOk(Q.k,p)&&(!Q.slot||pSlot(p)===Q.slot)&&ovr(p)>=Q.min&&a&&a.tid===G.user&&a.d>=Q.d&&a.d<=Q.until&&(Q.an==null||a.n>Q.an);});
   if(done){ m.rel=clamp(m.rel+6,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독: "부탁 들어주셔서 고맙습니다"`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강을 반겼습니다. 감독 관계 +6.`,{kind:'감독'}); return; }
   if(G.day>Q.until){ m.rel=clamp(m.rel-3,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독의 부탁이 흐지부지됐습니다`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강이 기한 안에 이뤄지지 않았습니다. 감독 관계 -3.`,{kind:'감독'}); } }

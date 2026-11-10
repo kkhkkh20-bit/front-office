@@ -86,12 +86,16 @@ function requestCheck(p){
 }
 const TALK={praise:'칭찬하기',push:'분발 촉구',promise:'출전 기회 건의',contract:'계약 이야기',ask:'고민 묻기'};
 /* 감독과의 대화: 단장이 자주 묻고, 감독이 현황과 원하는 보강을 말한다 */
-function mgrWantForeign(){ const m=G.mgr[G.user]; if(!m)return null; const rk=slotRanks(G.user); const f=foreignOf(G.user).filter(p=>p.foreign==='용병'); const fp=f.filter(p=>p.isP).length, fb=f.length-fp;
+function mgrForeignAvailable(p){ if(!p||p.team!=null||p.foreign!=='용병'||!foreignOpen()||!fKnows(G.user,p))return false; const ask=period()==='season'?Math.min(p.ask,fNewCap()):p.ask; return !foreignCheck(G.user,ask===p.ask?p:{...p,ask}); }
+function mgrWantForeign(){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)return null; const rk=slotRanks(G.user); const f=fStayOf(G.user).filter(p=>p.foreign==='용병'); const fp=f.filter(p=>p.isP).length, fb=f.length-fp;
   const fieldW=PSLOTS.filter(k=>k!=='SP'&&k!=='RP').sort((a,b)=>rk[b].rank-rk[a].rank)[0];
   let want; if(f.length>=3)want=null; else if(fp<2&&(rk.SP.rank>=4||fp===0))want={isP:true,k:'SP'}; else if(fb<1||rk[fieldW].rank>=6)want={isP:false,k:fieldW}; else want={isP:true,k:rk.RP.rank>rk.SP.rank?'RP':'SP'};
   if(!want)return {want:null,txt:'외국인 세 자리는 다 찼습니다. 지금 선수들로 가겠습니다.'};
+  if(!foreignOpen())return {want:null,txt:'지금은 외국인 영입·등록 기간이 아닙니다. 다음 시장에서 필요한 자리를 다시 의논하겠습니다.'};
+  if(period()==='season'&&fReplLeft(G.user,'용병')<=0)return {want:null,txt:'일반 외국인 교체 횟수를 다 써 이번 시즌은 새로 등록할 수 없습니다. 지금 선수들로 가겠습니다.'};
+  const blocked=rosterN(G.user)-(foreignOf(G.user).length-fStayOf(G.user).length)>=ROSTER_MAX?'선수단 정원이 차 있어 먼저 자리를 비워야 영입할 수 있습니다. ':'';
   const style=want.isP?(m.pen>=60&&want.k==='RP'?'구위로 윽박지르는 불펜':m.arm>=60?'이닝을 길게 먹어 주는 선발':'제구가 되는 선발'):(m.small>=60?'출루와 주루가 되는 타자':'담장을 넘길 수 있는 거포');
-  want.style=style; return {want,txt:want.isP?`${SLOTK[want.k]}이(가) 급합니다. ${style}이면 좋겠습니다. 우리 ${SLOTK[want.k]}은(는) 리그 ${rk[want.k].rank}위입니다.`:`${SLOTK[want.k]} 쪽 타자를 원합니다. ${style}이면 좋겠습니다. 지금 우리 ${SLOTK[want.k]}은(는) 리그 ${rk[want.k].rank}위입니다.`}; }
+  want.style=style; return {want,blocked,txt:blocked+(want.isP?`${SLOTK[want.k]}이(가) 급합니다. ${style}이면 좋겠습니다. 우리 ${SLOTK[want.k]}은(는) 리그 ${rk[want.k].rank}위입니다.`:`${SLOTK[want.k]} 쪽 타자를 원합니다. ${style}이면 좋겠습니다. 지금 우리 ${SLOTK[want.k]}은(는) 리그 ${rk[want.k].rank}위입니다.`)}; }
 function mgrFitF(p,W){ if(!W||!W.want||!p)return false; if(W.want.isP!==!!p.isP)return false; if(p.isP)return W.want.k==='SP'?isSPr(p):true; return p.pos===W.want.k||(W.want.k==='DH'&&['1B','LF','RF'].includes(p.pos))||subsOf(p).includes(W.want.k); }
 /* 감독은 직접 본 만큼만 안다. 우리 선수는 함께 지낸 날·1군 출장으로 알아 가고, 외국인 후보는 영상과 스카우트 보고서뿐이다.
    안목이 낮거나 아직 못 본 선수일수록 판단이 빗나가고, 스카우트와 다르게 볼 때도 있다 */
@@ -104,8 +108,8 @@ function mgrTalk(topic){ const m=G.mgr[G.user]; if(!m||m.interim)return {a:'감�
   if(cached)a=previous.a;
   else if(topic==='now'){ a=mgrNowTalk(m); }
   else if(MV_DETAIL_TOPICS.includes(topic)){a=mvDetailed(m,topic);}
-  else if(topic==='foreign'){ const W=mgrWantForeign(); a=W?W.txt:''; G.mgrWant=W&&W.want?{y:G.year,day:G.day,...W.want}:null;
-    const L=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign==='용병'&&fKnows(G.user,p)&&mgrFitF(p,W)).sort((x,y)=>{ const v=r=>(r.ofp??r.cur+6)+r.cur*.2; return v(scoutReport(y))-v(scoutReport(x)); }).slice(0,3);
+  else if(topic==='foreign'){ const W=mgrWantForeign(); a=W?W.txt:''; G.mgrWant=W&&W.want&&!W.blocked?{y:G.year,tid:G.user,mid:m.id,day:G.day,...W.want}:null;
+    const L=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>mgrForeignAvailable(p)&&mgrFitF(p,W)).sort((x,y)=>{ const v=r=>(r.ofp??r.cur+6)+r.cur*.2; return v(scoutReport(y))-v(scoutReport(x)); }).slice(0,3);
     if(L.length)a+=` 시장에서 눈에 띄는 건 ${L.map(p=>`${p.name}(${posLabel(p)}, ${p.nat||''})`).join(', ')} 정도입니다.`; }
   else if(topic==='need'){ const R=slotRanks(G.user); const k=PSLOTS.filter(x=>x!=='DH').sort((x,y)=>R[y].rank-R[x].rank)[0]; const d=depth(G.user); const cur=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln[k];
     const ce=cur?mgrEst(m,cur):null; const cv=ce==null?'':ce>=ovr(cur)+3?' 그래도 저는 좀 더 해 줄 선수라고 봅니다':ce<=ovr(cur)-3?' 제가 보기엔 그 이상은 어렵습니다':'';

@@ -466,7 +466,7 @@ T('[감사] 트레이드 제안: 그 구단 선수만 받을 수 있고 우리 �
 T('[감사] 야인 기간 하루 처리는 한 번만(월초 명성이 두 번 오르지 않음)',()=>{ fresh(); simTo(()=>period()==='season'&&dobj(G.day).d>=5); firedFlow(G.year,'테스트 해임'); G.rep=30; G.jobs=[]; let n=0;
   while(n++<60){ const r0=G.rep; advance('day'); for(const j of (G.jobs||[]))j.done=true; if(dobj(G.day).d===2)break; } const rep1=G.rep; ok(rep1<=31,'한 달에 명성이 '+(rep1-30)+' 오름(기대 1)'); });
 
-T('[감사] 유망주 기회 합의는 바로 다시 제안해 감독 판단을 다시 굴릴 수 없다',()=>{ fresh(); const m=G.mgr[G.user]; const p=playersOf(G.user).find(q=>!q.isP&&q.age<=24)||playersOf(G.user).find(q=>!q.isP); pactPropose([p.id]); const t1=JSON.stringify(G.pact.t); const r=pactPropose([p.id]);
+T('[감사] 유망주 기회 합의는 바로 다시 제안해 감독 판단을 다시 굴릴 수 없다',()=>{ fresh(); const m=G.mgr[G.user]; G.day=G.cal.open; for(const t of G.teams)setEntry(t.id); const p=playersOf(G.user).find(q=>!q.isP&&pactCandidate(q)); ok(p,'준비 실패: 출전 가능한 비주전 유망주 없음'); pactPropose([p.id]); ok(G.pact&&G.pact.t.length===1,'첫 합의가 생성되지 않음'); const t1=JSON.stringify(G.pact.t); const r=pactPropose([p.id]);
   ok(JSON.stringify(G.pact.t)===t1&&/얼마 전|다시/.test(r||''),'곧바로 다시 제안해 합의를 새로 굴림: '+(r||'').slice(0,60)); });
 
 T('[감사] 영구결번 메일 버튼은 목록 위치가 아니라 선수로 찾는다',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.foreign); p.aw=[]; G.legends=[]; for(let i=0;i<299;i++)G.legends.push({name:'옛선수'+i,war:9,aw:[],y:G.year-5,no:i%99+1}); const n0=G.mail.length;
@@ -2324,7 +2324,7 @@ T('[피드백 11-08e] 스프링캠프 장소: 자리 수·예약 성사·다른 
   for(const t of G.teams.filter(t=>t.id!==G.user).slice(0,2))sprcPlan(t.id).s1='az'; ok(sprcBook(1,'az').includes('꽉'),'자리가 찬 곳이 예약됨');
   let n=0; while(P.s1!=='au'&&n++<40){ sprcBook(1,'au'); P.fail={}; } ok(P.s1==='au','호주 예약 실패');
   const e0=G.spend.etc||0; n=0; while(P.s2!=='oki'&&n++<40){ sprcBook(2,'oki'); P.fail={}; } ok(P.s2==='oki'&&(G.spend.etc||0)>e0,'오키나와 예약·비용 '+P.s2+' '+G.spend.etc);
-  sprcAiBook(true); ok(G.teams.every(t=>sprcPlan(t.id).s1&&sprcPlan(t.id).s2),'예약 못 한 구단'); ok(Object.keys(SPRC1).every(k=>sprcTaken(1,k)<=SPRC1[k].sl)&&Object.keys(SPRC2).every(k=>sprcTaken(2,k)<=SPRC2[k].sl),'자리 수 초과');
+  sprcAiBook(true); ok(G.teams.every(t=>sprcPlan(t.id).s1&&sprcPlan(t.id).s2),'예약 못 한 구단'); ok([[1,SPRC1],[2,SPRC2]].every(([lvl,T])=>Object.keys(T).every(k=>{const booked=G.teams.filter(t=>sprcPlan(t.id)[lvl===1?'s1':'s2']===k);return booked.filter(t=>!sisSite(t.id,lvl,k)).length<=T[k].sl;})),'자매구단 우선권 없는 구단의 일반 정원 초과');
   const m=G.mgr[G.user]; m.disc=80; m.rel=60; ok(sprcMgrPref(m)==='hard','규율 높은 감독은 빡센 캠프'); ok(sprcSetInt('easy')===''&&P.int==='easy','강도 설정'); P.pgN=10; P.pgLv='hard';
   G.day=G.cal.camp; sprcCampStart(); ok(m.rel===54,'강도 두 단계 차이: 관계 -6이어야 '+m.rel); ok(P.eff<.85,'감독과 다른 자율 훈련 효과 '+P.eff); ok(G.mail.some(x=>x.subj.includes('제 생각과는 다릅니다')),'감독 메일');
   ok(P.pg.length>0&&P.pg.length<=Math.min(10,sprcPgCap(P)),'연습경기 수 '+P.pg.length+'/'+sprcPgCap(P)); ok(P.pg.every(g=>g.d>G.cal.camp&&g.d<G.cal.campEnd),'연습경기 날짜');

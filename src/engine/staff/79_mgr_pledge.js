@@ -11,11 +11,11 @@ function mplStance(m,k){ mgrAttr(m); mgrFix(m); const e=m.ego;
   return v<55?'ok':v<78?'pay':'no'; }
 const MPL_ST={ok:'수용',pay:'연봉 10% 더 주면 수용',no:'거절'};
 function mplOn(k){ const m=G.mgr&&G.mgr[G.user]; return !!(m&&!m.interim&&m.pl&&m.pl[k]); }
-function mplApply(m,ks){ ks=(ks||[]).filter(k=>MPL[k]); if(!ks.length)return ''; const bad=ks.filter(k=>mplStance(m,k)==='no'); if(bad.length)return `${m.name} 감독은 '${bad.map(k=>MPL[k].l).join("', '")}' 약속을 받아들이지 않습니다.`;
+function mplApply(m,ks){ ks=[...new Set(ks||[])].filter(k=>MPL[k]); if(!ks.length)return ''; const bad=ks.filter(k=>mplStance(m,k)==='no'); if(bad.length)return `${m.name} 감독은 '${bad.map(k=>MPL[k].l).join("', '")}' 약속을 받아들이지 않습니다.`;
   const pay=ks.filter(k=>mplStance(m,k)==='pay').length; if(pay)m.sal=round5(m.sal*(1+.1*pay)); m.pl={}; for(const k of ks)m.pl[k]=true;
   const d=mgrDir(); for(const k of ks)if(k==='arm'||k==='rest')d[k]={ok:true,mid:m.id,day:G.day}; G._push=null; return ''; }
 /* 1군에 올려 달라는 2군 선수: 2군에서 잘 치거나 잘 던지고, 1군 같은 자리와 비교해 해볼 만하며, 욕심이 있거나 나이가 찬 선수 */
-function callWish(p,rk){ if(!entryOn()||p.team!==G.user||p.e1||p.ys||!healthy(p)||p.foreign||(p.joinY>G.year))return null; if(p.isP&&rpPlanOf(G.user,p)==='sp2')return null; if(p.downDay!=null&&G.day-p.downDay<10)return null; /* 재등록 가능일 전에는 요청하지 않는다(검수 11-09) */
+function callWish(p,rk){ if(!entryOn()||p.team!==G.user||p.prospect||p.foreign||!canUp(p))return null; if(p.isP&&rpPlanOf(G.user,p)==='sp2')return null; if(p.downDay!=null&&G.day-p.downDay<10)return null; /* 재등록 가능일 전에는 요청하지 않는다(검수 11-09) */
   const h=seasonTotal(p,G.year,'퓨처스'); if(!h)return null; initPers(p);
   const good=p.isP?(h.outs>=45&&pRate(h).era<=3.3):(h.pa>=50&&bRate(h).ops>=.82); if(!good)return null;
   if(!(p.pers.amb>=11||p.age>=26))return null; let gap=0; try{ rk=rk||slotRanks(G.user); const sl=rk[pSlot(p)]; const worst=sl&&sl.ps&&sl.ps.length?Math.min(...sl.ps.map(q=>ovr(q))):0; gap=ovr(p)-worst; }catch(e){} if(gap<-4)return null;
@@ -40,4 +40,4 @@ function mplMonth(){ const m=G.mgr[G.user]; if(!m||m.interim||!m.pl||G.unemp||pe
   for(const k of ['arm','rest']){ if(!m.pl[k])continue; const x=d[k];
     if(x&&x.brk&&!P){ x.ok=true; delete x.brk; note('감독',`${m.name} 감독이 다시 '${MPL[k].l}' 약속대로 운영합니다.`); }
     else if(P&&x&&x.ok&&R()<.3){ x.ok=false; x.brk=G.day; x.rel0=m.rel; /* 재논의 기준은 위반 시점 관계(검수 11-09m) */ mplViol(k,`${m.name} 감독이 성적 압박 속에 이번 달은 ${k==='arm'?'투수를 본래 방식대로 몰아 쓰겠다':'주전을 쉬게 하지 않겠다'}고 합니다.`); } }
-  if(m.pl.youth&&P){ const L=playersOf(G.user).filter(p=>p.age<=24&&(p.wishW||0)>=4&&!p.e1&&!(p.injOut>0)&&!p.ys&&!milServing(p)&&!isAway(p)&&!p.hold&&!(p.susp>G.day)&&!p.frehab&&psOk(p)&&(p.downDay==null||G.day-p.downDay>=10)); /* 미계약·정지·등록 불가 선수도 감독 탓이 아니다(검수 11-07) */ /* 콜업할 수 있는 선수만(부상·복무·차출·육성선수는 감독 탓이 아니다, 검수 11-06) */ const ym=G.year*100+dobj(G.day).m; if(L.length&&m.plvY!==ym){ m.plvY=ym; /* 같은 달 중복만 막는다: 연도까지 비교 */ mplViol('youth',`${L.slice(0,3).map(p=>p.name).join(', ')}이(가) 2군에서 잘하며 올려 달라고 한 지 한 달이 넘었지만, ${m.name} 감독은 성적 압박 속에 경험 많은 선수를 씁니다.`); } } }
+  if(m.pl.youth&&P){ const L=playersOf(G.user).filter(p=>p.age<=24&&(p.wishW||0)>=4&&!p.prospect&&canUp(p)); /* 미계약·정지·등록 불가 선수도 감독 탓이 아니다(검수 11-07) */ /* 콜업할 수 있는 선수만(부상·복무·차출·육성선수는 감독 탓이 아니다, 검수 11-06) */ const ym=G.year*100+dobj(G.day).m; if(L.length&&m.plvY!==ym){ m.plvY=ym; /* 같은 달 중복만 막는다: 연도까지 비교 */ mplViol('youth',`${L.slice(0,3).map(p=>p.name).join(', ')}이(가) 2군에서 잘하며 올려 달라고 한 지 한 달이 넘었지만, ${m.name} 감독은 성적 압박 속에 경험 많은 선수를 씁니다.`); } } }

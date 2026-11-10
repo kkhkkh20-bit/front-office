@@ -1,0 +1,268 @@
+## build
+index.html 생성: 57882834 bytes
+
+
+## static
+정적 점검: 문제 없음 (최상위 선언 4497개)
+
+
+## unit
+✔ 강화 스윙은 실제 접촉 자세를 보존하고 허리·몸통의 큰 팔로스루까지 이어진다 (2069.983011ms)
+✔ 포수는 낮은 포구에서 일어나 측면을 만들고 실제 송구 릴리스 자세로 연결한다 (89.819503ms)
+✔ 투구 팔로스루는 릴리스 자세를 그대로 두고 그 뒤 상체를 홈 쪽으로 숙인다 (77.830895ms)
+✔ 장타 멘트는 다양하고 같은 표현을 연속 반복하지 않으며 결과와 난수를 보존한다 (84.992883ms)
+✔ 홈런·끝내기·밀어내기는 실제 점수에 반응하고 없는 비거리나 투구 정보를 말하지 않는다 (2.425884ms)
+✔ 타석 도입은 미래 결과를 숨기고 공별 해설은 기록된 카운트·구종을 따른다 (25.46675ms)
+✔ 타석 도입의 표현 선택도 아직 공개하지 않은 결과와 무관하다 (13.492633ms)
+✔ 수비 이름은 교체가 발생한 재생 시점의 실제 라인업을 읽는다 (14.907003ms)
+✔ 멀티홈런과 부진 탈출은 경기 전 사실과 공개된 타석만 읽는 캐스터 한 줄이다 (7.509052ms)
+✔ 사이클링은 네 종류 안타를 채운 그 타석에만 알린다 (12.132956ms)
+✔ 노히트 도전과 달성을 구별하고 사구·실책 출루를 퍼펙트로 부르지 않는다 (1.448662ms)
+✔ 팀 합작과 비자책 실점, 노히트가 깨지는 안타를 구분한다 (33.643617ms)
+✔ 기록 알림도 미래 선수 수치와 무관하며 좁은 화면에서는 내용을 한 줄씩 모두 이어간다 (2.033423ms)
+✔ 정규시즌 부진을 포스트시즌 기록으로 부르지 않고 야수선택을 실책으로 단정하지 않는다 (12.227948ms)
+✔ 1500탈삼진도 통산 이정표로 알린다 (13.893398ms)
+✔ 마지막 아웃이 도루자여도 노히트 노런 달성을 알린다 (1.536455ms)
+✔ 외야수와 중계수는 포구 직후 송구를 잇고 최종 세이프는 주루 완료 후 표시한다 (27.794837ms)
+✔ 벤치 클리어링은 실제 몸쪽 볼에서 드물게 기록되고 경기 난수·원본 경기를 바꾸지 않는다 (25.006296ms)
+✔ 소스 목록은 중복·누락·경로 이탈·부팅 순서 변경을 거절한다 (170.170448ms)
+✔ 공용 모듈은 순환 참조·외부 영역 참조·사용하지 않는 등록을 거절한다 (4.71385ms)
+✔ 빌드는 결정적이며 실패 시 기존 결과물을 변경하지 않는다 (16246.330952ms)
+✔ 공용 계산 모듈은 브라우저나 게임 상태 없이 같은 값을 계산한다 (67.860165ms)
+✔ 새 파일과 다른 확장자의 소스도 누락을 감지하며 저장소 밖 링크를 거절한다 (5.004128ms)
+✔ 화면 검사 서버는 포트 충돌 없이 HTML 하나만 제공하고 직접 종료한다 (169.95217ms)
+✔ 투구와 스윙의 준비·디딤·임팩트 시간을 맞추고 원본 클립은 보존한다 (462.94719ms)
+✔ 타석 이동으로 즉시 정지할 때 앞선 투구·달리기 혼합 동작을 모두 끊는다 (130.259927ms)
+✔ 낮은 프레임에서도 동작 전환을 마치고 정지 자세의 좌표에 도달한다 (262.117481ms)
+✔ 사구는 좌우 타자의 몸쪽에서 타석을 끝내며 볼·스트라이크를 더하지 않는다 (33.437221ms)
+✔ 공별 기록: 모든 타석 결과에서 합법적인 카운트·최종 공·투구 수를 구성한다 (101.851276ms)
+✔ 공별 기록: 볼은 존 밖, 루킹 스트라이크는 존 안이며 같은 시드·능력은 같은 기록이다 (53.548799ms)
+✔ 주루·송구는 실제 거리와 선수 속도를 함께 반영한다 (1.804688ms)
+✔ 타구 처리 시점은 공과 수비수의 도착 이후이며 뜬공은 수비수가 따라잡는다 (0.4582ms)
+✔ Cloudflare 배포 파일은 25 MiB 이하이고 버전별 모델·라이선스·새로고침 정책을 포함한다 (4218.469699ms)
+✔ 시야가 넓어지거나 화각이 바뀌면 같은 카메라 위치에서도 관중을 다시 판정한다 (529.048904ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 27555.61682
+
+
+## two-season-sim
+시뮬 점검(SEED 7): 문제 없음 · 2028년 1월 1일 토요일까지 70초
+
+
+## dialogue
+PASS 정상 요청 생성과 실제 즉시전력 영입 완료·중복 보상 방지
+PASS 즉시 보강으로 인정하지 않음: injured
+PASS 즉시 보강으로 인정하지 않음: ys
+PASS 즉시 보강으로 인정하지 않음: hold
+PASS 즉시 보강으로 인정하지 않음: mil
+PASS 즉시 보강으로 인정하지 않음: next
+PASS 즉시 보강으로 인정하지 않음: nt
+PASS 즉시 보강으로 인정하지 않음: sp2
+PASS 즉시 보강으로 인정하지 않음: frehab
+PASS 요청 당시 복무 중인 기존선수 복귀는 신규 영입 아님
+PASS 요청 뒤 마감일 지난 영입은 성공 아님
+PASS 정원 만석 직접 효과는 관계·기분·지출 보상까지 막음
+PASS 8/16 국내 무적 보강 가능, PS와 종료 임박은 생성 금지
+PASS 상위권 자리에는 부족 요청을 하지 않음
+PASS 30일 내 더 좋은 주전 부상복귀가 있으면 대체 요청 안 함
+PASS 즉시 콜업 가능한 내부 선수가 있으면 영입 약속 안 함
+PASS 상세 요청과 중복 차단
+PASS 성공/실패 뒤 동일 종류 30일 쿨다운 유지
+PASS 현재 감독 또는 구단이 바뀌면 기존 약속은 무벌점 종료
+PASS 실제 대화 시작→선택으로 가능한 불펜 약속 생성
+PASS 실제 대화 시작 후 정원이 차면 낡은 선택 재검증
+PASS 전임 감독 객체의 직접 효과·대화 시작은 무효
+PASS 대화 도중 소속 구단·감독 표식이 달라지면 낡은 선택 종료
+PASS PS 등록 마감 뒤 취득 선수의 즉시 전력 판정 제외
+PASS 불가한 요청이 후속으로 달린 부모 분기도 대사 전 제거
+PASS 후속 일반 질문도 현재 조건에 맞춰 분석원 요청 제거
+PASS 분석원은 새 id·채용일·순증을 모두 충족해야 완료
+PASS 분석원 역할 변경으로 since만 갱신해도 새 채용으로 안 셈
+28 manager dialogue checks, 0 failed
+
+
+## event
+PASS 공통 즉시전력 판정 제공
+PASS 7/31·8/1·8/16 및 PS 시장 실제 차이
+PASS 정원 만석이면 직접 보강 요청 생성 안 함
+PASS 실제로 부족한 역할의 정상 요청 생성·수락·중복응답 방지
+PASS 주간 요청도 정원·기간 가드를 통과해야 생성
+PASS 트레이드 종료 뒤 직접 slot/fit 요청 차단
+PASS 요청 후 수락 전 만석이면 무벌점 종료
+PASS 타 구단·전임 감독 요청 응답 차단
+PASS 90 단순 보강 요청과 36 상세 보강 요청 중복 차단
+PASS 분석원 요청은 선수 보강 요청과 별도로 유지
+PASS 이미 충족한 역할은 요청 안 함
+PASS slot 보강 완료 제외: injured
+PASS slot 보강 완료 제외: ys
+PASS slot 보강 완료 제외: hold
+PASS slot 보강 완료 제외: next
+PASS slot 보강 완료 제외: mil
+PASS slot 보강 완료 제외: ps
+PASS 요청 이전 소속 선수 복귀는 새 영입 아님
+PASS 요청 후 기한 안의 실제 출전가능 영입만 완료
+PASS 기한 뒤 영입은 보강 완료 아님
+PASS 약속 뒤 스스로 정원 소비해도 자동 면책 없음
+PASS 외국인 교체 기한 뒤 등록은 완료 아님
+PASS 기존 외국인 삭제 뒤 다른 쿼터 영입으로 교체 완료 안 됨
+PASS 약속 뒤 다른 외국인 교체로 횟수를 써도 기존 약속은 유지
+PASS 이미 2군인 선수나 트레이드 종료 후 정리 요청 생성 안 함
+PASS 겨울 FA 다음 시즌 합류 약속은 즉시전력 규정과 구분
+26 manager event checks, 0 failed
+
+
+## promises
+PASS injured youth is rejected by pact execution and UI candidates
+PASS registration constraints prevent new youth promises
+PASS regular and over age players are not youth pact targets
+PASS valid youth agreement deduplicates ids and retains same month cooldown
+PASS offseason proposal is refused without consuming a new agreement
+PASS agreement belongs to its club and manager
+PASS monthly opportunity counts only this club appearances
+PASS national duty is reported as unavailable rather than lost competition
+PASS callup wishes respect postseason eligibility and national duty
+PASS farm starter training is not a youth promise breach but eligible neglected youth is
+PASS closed foreign window and spent replacement quota are explicit
+PASS winter nonrenewals free foreign slots for an actual manager visit
+PASS roster capacity is a prerequisite rather than a false vacancy invite
+PASS foreign suggestions filter held candidates and refresh after same day quota changes
+PASS foreign preference tags require the actual club and manager identity
+PASS repeated pledge keys are charged only once
+16 manager promise condition checks passed
+
+
+## sister
+sister engine #1 passed
+sister engine #2 passed
+sister engine #3 passed
+sister engine #4 passed
+sister engine #5 passed
+sister engine #6 passed
+sister engine #7 passed
+sister engine #8 passed
+sister engine #9 passed
+sister engine #10 passed
+sister engine #11 passed
+sister engine #12 passed
+sister engine #4-return passed
+Sister feedback #1–15 passed: engine, club handoff/refund, actual 1366/390/768 UI
+
+
+## camp
+#16 11월 예약·다음 해 출국일·실제 새해 전환 시 예약 보존 통과
+#17 독립구단 무자금 유료 예약 차단 통과
+#18 실제 A→B→A 이직 뒤 원 구단 환불·중복 환불 방지 통과
+#18 같은 장부 환급은 원 지출 차감 통과
+#19 출국은 캠프지 +5만, 실제 경기 후 +2·당일 중복 실행 방지 통과
+#20 AI 실제 예약도 자매 할인·시기별 확정 가격으로 결제 통과
+#21 실제 시범경기 뒤 이적해도 출전 구단별 기록·화면 유지 통과
+#21 구형 합계는 구단 귀속 추정 금지·원본 별도 보관·새 기록만 구단 집계 통과
+#22 현금 없는 AI 유료 캠프 예약 차단 통과
+#23 국내 연습경기 양쪽 결과·기록·선발 순번 1회, 정규 기록 분리 통과
+#23 대진 조정 후 확정 경기 수로 출국 안내문 생성 통과
+#24 동일 40개 난수: 1차 자매결연은 2차 국내 성사율에 영향 없음 통과
+#25·26 AI/유저 자매 우선 예약 동일·일반 마감과 우선 예약 분리 표시 통과
+#27 2경기 장소에서 12경기 실제 액션 차단·버튼 비활성·2경기 선택 통과
+#47 호주 파견 선수는 시범경기 제외, 귀국 후 정상 출전 통과
+캠프·시범경기 후속 제보 검사 통과
+
+
+## records
+#28 PASS
+#29 PASS
+#30 PASS
+#31 PASS
+#32 PASS
+#33 PASS
+#34 PASS
+#35 PASS
+#36 PASS
+#37 PASS
+#38 PASS
+#39 PASS
+#40 PASS
+#41 PASS
+#42 PASS
+#extra-hero-hype PASS
+호환성·수동 취소·순증 WAR·소집 예측 불변 추가 검증 PASS
+{"checked":16,"failed":0,"results":[{"id":28,"pass":true},{"id":29,"pass":true},{"id":30,"pass":true},{"id":31,"pass":true},{"id":32,"pass":true},{"id":33,"pass":true},{"id":34,"pass":true},{"id":35,"pass":true},{"id":36,"pass":true},{"id":37,"pass":true},{"id":38,"pass":true},{"id":39,"pass":true},{"id":40,"pass":true},{"id":41,"pass":true},{"id":42,"pass":true},{"id":"extra-hero-hype","pass":true}]}
+
+
+## operations
+추가 회귀: 현금예약/모기업지원, 만료제안, 출국탈락, 건강선수참가, 예산/저장/이직청구 통과
+{
+  "mode": "current",
+  "results": [
+    {
+      "n": 43,
+      "status": "수정 확인",
+      "detail": "독립구단 잔액0 영업비 승인"
+    },
+    {
+      "n": 44,
+      "status": "수정 확인",
+      "detail": "직접영업 자리별 제안3건 초과"
+    },
+    {
+      "n": 45,
+      "status": "수정 확인",
+      "detail": "연수 신청/취소4회 무료 사기 상승"
+    },
+    {
+      "n": 46,
+      "status": "설계차이",
+      "detail": "원래 소식 스냅숏100일 / 현재 결정92일 / 실제 효과55일"
+    },
+    {
+      "n": 48,
+      "status": "수정 확인",
+      "detail": "장기재활 선수 팬사인회 참가"
+    },
+    {
+      "n": 49,
+      "status": "수정 확인",
+      "detail": "연말 재계약의 부상/슬럼프 초기화"
+    },
+    {
+      "n": 50,
+      "status": "수정 확인",
+      "detail": "월말 대행사 변경으로 직전 월 수수료 감소"
+    }
+  ]
+}
+
+
+## boundaries
+PASS reserved US training survives handover without overlapping Australia assignment
+PASS AI can still dispatch another eligible player while respecting existing reservation
+PASS reservation does not grant departure morale early and departure still grants it
+PASS domestic free signing stores the agreed salary and one year term in permanent move snapshots
+4 feedback boundary checks passed
+
+
+## stars
+1366x768 검색표·99별 글꼴/반별/줄높이·프로필 통과
+768x1024 검색표·99별 글꼴/반별/줄높이·프로필 통과
+390x664 검색표·99별 글꼴/반별/줄높이·프로필 통과
+568x320 검색표·99별 글꼴/반별/줄높이·프로필 통과
+
+
+## camp-ui
+[{"width":1366,"max12Disabled":true,"cap2Enabled":true,"cap2Action":true,"priorityEnabled":true,"noNegativeSeats":true,"errors":[]},{"width":390,"max12Disabled":true,"cap2Enabled":true,"cap2Action":true,"priorityEnabled":true,"noNegativeSeats":true,"errors":[]},{"width":768,"max12Disabled":true,"cap2Enabled":true,"cap2Action":true,"priorityEnabled":true,"noNegativeSeats":true,"errors":[]}]
+
+
+## legacy-pact
+통과  [감사] 유망주 기회 합의는 바로 다시 제안해 감독 판단을 다시 굴릴 수 없다
+규칙 점검: 1개 모두 통과
+
+
+## legacy-camp
+통과  스프링캠프: 모든 구단 젊은 선수가 크고, 투수는 새 구종을 익혀 오기도 한다(구종이 늘면 탈삼진 힘이 바뀐다)
+통과  [피드백 11-08e] 스프링캠프 장소: 자리 수·예약 성사·다른 구단 예약·감독과 다른 강도는 관계와 효과가 깎인다
+규칙 점검: 2개 모두 통과

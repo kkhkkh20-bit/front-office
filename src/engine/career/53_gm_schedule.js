@@ -26,9 +26,9 @@ function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P
 function gmPlanDaily(){ if(G.unemp)return; const P=gmPlans(); const tm=P[G.day+1];
   if(tm&&!tm.done&&tm.k==='attend'&&!tm.warned)gmAttendWarn(tm);
   /* 우천 순연 등으로 열리지 않은 직관 일정은 취소한다(구단주 동행 한도를 계속 차지하지 않게). 오늘 할 일이 없어도 먼저 정리한다 */
-  for(const d in P){ const q=P[d]; if(+d<G.day&&!q.done&&q.k==='attend'){ q.done=true; q.miss=true; note('일정',`${dmd(+d)} 직관하려던 경기가 열리지 않아 일정을 취소했습니다.`); } }
+  for(const d in P){ const q=P[d]; if(+d<G.day&&!q.done&&q.k==='attend'){ q.done=true; q.miss=true; if(q.mid){G.mail=G.mail.filter(m=>m.id!==q.mid);G.stops=(G.stops||[]).filter(m=>m.id!==q.mid);} note('일정',`${dmd(+d)} 직관하려던 경기가 열리지 않아 일정을 취소했습니다.`); } }
   /* 앞으로의 직관 중 그 경기가 사라졌거나(시리즈가 일찍 끝남) 상대가 바뀐 예약은 바로 취소(검수 11-09zo) */
-  for(const d in P){ const q=P[d]; if(+d>G.day&&!q.done&&q.k==='attend'&&!gmPlanLive(d,q)){ const L=gmOpsOn(+d); q.done=true; q.miss=true; if(q.mid)G.mail=G.mail.filter(m=>m.id!==q.mid); note('일정',L.length?`${dmd(+d)} 직관하려던 ${tshort(q.op)}전이 그날 열리지 않고 상대가 ${L.map(tshort).join('·')}(으)로 바뀌어 직관 일정을 취소했습니다. 다시 잡을 수 있습니다.`:`${dmd(+d)} 직관하려던 경기가 열리지 않아(시리즈 종료 등) 직관 일정을 취소했습니다.`); } }
+  for(const d in P){ const q=P[d]; if(+d>=G.day&&!q.done&&q.k==='attend'&&!gmPlanLive(d,q)){ const L=gmOpsOn(+d); q.done=true; q.miss=true; if(q.mid){G.mail=G.mail.filter(m=>m.id!==q.mid);G.stops=(G.stops||[]).filter(m=>m.id!==q.mid);} note('일정',L.length?`${dmd(+d)} 직관하려던 ${tshort(q.op)}전이 그날 열리지 않고 상대가 ${L.map(tshort).join('·')}(으)로 바뀌어 직관 일정을 취소했습니다. 다시 잡을 수 있습니다.`:`${dmd(+d)} 직관하려던 경기가 열리지 않아(시리즈 종료 등) 직관 일정을 취소했습니다.`); } }
   for(const d in P)if(+d<G.day-40)delete P[d];
   const p=P[G.day]; if(!p||p.done)return;
   if(p.k==='scout'){ p.done=true; gmScoutTrip(p.x); }

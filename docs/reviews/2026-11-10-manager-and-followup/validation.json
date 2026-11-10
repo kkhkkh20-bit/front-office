@@ -1,0 +1,233 @@
+{
+  "base": "3967df1f51b8d93a56c8cb8bdf5d9da168b1677c",
+  "date": "2026-11-10",
+  "artifacts": {
+    "index_sha256": "1e23a3684dc098257c76f80f6fa833d2570a1fefb773bdc9f519f9543a4ab23c",
+    "engine_sha256": "b21a961408a720269bd270b3330f742be83d2a32c8bc567a1b48c0a2c25038cb"
+  },
+  "manager_checks": {
+    "dialogue": 28,
+    "events": 26,
+    "promises": 16,
+    "passed": true
+  },
+  "followup50": {
+    "fixed_errors": 44,
+    "aligned_rules": 2,
+    "clarified_rule": 1,
+    "normal_behavior": 1,
+    "policy_or_feature_review": 2,
+    "deferred": [
+      29,
+      38
+    ],
+    "normal": [
+      46
+    ],
+    "all_reported_as_fixed": false
+  },
+  "extra_boundary_fixes": [
+    "double overseas allocation after switching clubs",
+    "domestic free signing salary/term snapshot timing",
+    "NT hero boost retaining public promise baseline"
+  ],
+  "focused_checks": [
+    "check-feedback-sister-20261110",
+    "check-feedback-camp-20261110",
+    "check-feedback-records-20261110",
+    "check-feedback-operations-20261110",
+    "check-feedback-boundaries-20261110"
+  ],
+  "unit": {
+    "passed": 34,
+    "failed": 0,
+    "sequential": true
+  },
+  "static": {
+    "passed": true
+  },
+  "actual_simulation": {
+    "seed": 7,
+    "strict": true,
+    "through": "2028-01-01",
+    "seconds": 70,
+    "passed": true
+  },
+  "stars_browser": [
+    {
+      "width": 1366,
+      "height": 768,
+      "matrixStars": 99,
+      "clipped": 0,
+      "profile": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "matrixStars": 99,
+      "clipped": 0,
+      "profile": true
+    },
+    {
+      "width": 390,
+      "height": 664,
+      "matrixStars": 99,
+      "clipped": 0,
+      "profile": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "matrixStars": 99,
+      "clipped": 0,
+      "profile": true
+    }
+  ],
+  "camp_browser": [
+    {
+      "width": 1366,
+      "max12Disabled": true,
+      "cap2Enabled": true,
+      "cap2Action": true,
+      "priorityEnabled": true,
+      "noNegativeSeats": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "max12Disabled": true,
+      "cap2Enabled": true,
+      "cap2Action": true,
+      "priorityEnabled": true,
+      "noNegativeSeats": true,
+      "errors": []
+    },
+    {
+      "width": 768,
+      "max12Disabled": true,
+      "cap2Enabled": true,
+      "cap2Action": true,
+      "priorityEnabled": true,
+      "noNegativeSeats": true,
+      "errors": []
+    }
+  ],
+  "sister_browser": [
+    {
+      "id": 1,
+      "pass": true
+    },
+    {
+      "id": 2,
+      "pass": true
+    },
+    {
+      "id": 3,
+      "pass": true
+    },
+    {
+      "id": 4,
+      "pass": true
+    },
+    {
+      "id": 5,
+      "pass": true
+    },
+    {
+      "id": 6,
+      "pass": true
+    },
+    {
+      "id": 7,
+      "pass": true
+    },
+    {
+      "id": 8,
+      "pass": true
+    },
+    {
+      "id": 9,
+      "pass": true
+    },
+    {
+      "id": 10,
+      "pass": true
+    },
+    {
+      "id": 11,
+      "pass": true
+    },
+    {
+      "id": 12,
+      "pass": true
+    },
+    {
+      "id": "4-return",
+      "pass": true
+    },
+    {
+      "id": "13-15-ui",
+      "width": 1366,
+      "eligible": 23,
+      "selected": 369,
+      "cancelled": true,
+      "destination": true,
+      "errors": []
+    },
+    {
+      "id": "13-15-ui",
+      "width": 390,
+      "eligible": 23,
+      "selected": 362,
+      "cancelled": true,
+      "destination": true,
+      "errors": []
+    },
+    {
+      "id": "13-15-ui",
+      "width": 768,
+      "eligible": 23,
+      "selected": 356,
+      "cancelled": true,
+      "destination": true,
+      "errors": []
+    }
+  ],
+  "national_browser": {
+    "widths": [
+      1366,
+      390
+    ],
+    "candidates": 52,
+    "eleventh_candidate_select_cancel": true,
+    "pageerrors": 0
+  },
+  "legacy_trade_warning_browser": {
+    "legacy": [
+      true,
+      true
+    ],
+    "new": [
+      false,
+      false
+    ],
+    "pageerrors": 0
+  },
+  "baseline_issue19": {
+    "modules": "HEAD3967df1f 97/98/20 loaded in memory",
+    "relation_from": 50,
+    "relation_to": 57,
+    "actual_games": 0
+  },
+  "selected_existing_logic": {
+    "youth_pact": 1,
+    "spring_camp": 2,
+    "passed": true
+  },
+  "limits": [
+    "Not the full tools/check.sh or full check-logic suite",
+    "Fixed conditions and player stats fixtures are distinguished from natural two-season play",
+    "Old missing trade/team/pick metadata is not invented",
+    "New ownership events are a proposal, not implemented in this patch"
+  ]
+}
