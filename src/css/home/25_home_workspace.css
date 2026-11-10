@@ -134,7 +134,7 @@
 .home-workspace[data-device="desktop"][data-rows="3"] .home-grid{grid-template-rows:repeat(3,minmax(0,1fr));gap:8px}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel{min-height:0;overflow:hidden}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header{min-height:30px;padding:3px 10px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header h2{font-size:14px}
-#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:11px}
+#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:var(--ui-caption)}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-match .hw-match-main{padding:4px 10px;gap:3px}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face,.home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face .av{width:88px!important;height:88px!important} /* 선발 사진 크게(사용자 11-07, 예전 54px) */
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-match-main>.btn{min-height:26px;padding-block:3px}
@@ -188,16 +188,22 @@
 /* 연봉 정렬표 */
 .sal-t td.sal-n{text-align:left}.sal-t .candidate-name{display:flex;align-items:center;gap:8px}.sal-t .candidate-name img,.sal-t .candidate-name svg{width:32px;height:32px;border-radius:50%}.sal-t .candidate-name small{display:block;color:var(--muted);font-size:11px}.sal-t th.sortable{cursor:pointer}
 
-@media (max-width:699px){.hw-sp-face{width:104px;height:104px}.hw-sp-face .av,.hw-sp-face img.av{width:104px!important;height:104px!important}}
+@media (max-width:699px){
+ .home-workspace[data-device="mobile"][data-rows="2"] .home-grid.home-dashboard{grid-template-rows:repeat(2,minmax(0,1fr))}
+ .hw-match-main{container-type:size}
+ /* 카드의 남은 높이로 사진을 줄여 중계 버튼이 카드 아래에 잘리지 않게 한다. */
+ .hw-match-main .hw-sp-face{width:clamp(48px,calc(100cqh - 92px),104px);height:clamp(48px,calc(100cqh - 92px),104px)}
+ .hw-sp-face .av,.hw-sp-face img.av{width:100%!important;height:100%!important}
+}
 
 /* 선수단 현황: 글씨를 키우고 칸 높이에 맞춰 줄을 고르게 나눈다(사용자 11-07) */
 #app .home-workspace .hw-rs{gap:16px;padding:10px 14px}
 #app .home-workspace .hw-rs dl{grid-auto-rows:1fr;align-content:stretch;gap:2px}
 #app .home-workspace .hw-rs dl>*{display:flex;align-items:center;justify-content:space-between}
 #app .home-workspace .hw-panel .hw-rs dl>dt.hd,#app .home-workspace .hw-panel .hw-rs dl>dt.hd b{font-size:16px!important;padding-bottom:4px}
-#app .home-workspace .hw-panel .hw-rs :is(.hw-rs-b,dl>div)>dt.x0,#app .home-workspace .hw-panel .hw-rs dl :is(.hw-rs-b,div)>dt{font-size:14px!important}
+#app .home-workspace .hw-panel .hw-rs :is(.hw-rs-b,dl>div)>dt.x0,#app .home-workspace .hw-panel .hw-rs dl :is(.hw-rs-b,div)>dt{font-size:var(--ui-body)!important}
 #app .home-workspace .hw-panel .hw-rs dd{font-size:16px!important}
-#app .home-workspace .hw-panel .hw-rs dl>div{font-size:14px!important}
+#app .home-workspace .hw-panel .hw-rs dl>div{font-size:var(--ui-body)!important}
 /* 선수 마우스 오버: 행은 밝게, 얼굴은 살짝 키운다 */
 #app .home-workspace :is(.hw-lr,.fx-pl,.hw-sp,.hw-rs-b,.hw-pl){transition:background .15s,transform .15s;border-radius:8px;cursor:pointer}
 #app .home-workspace :is(.hw-lr,.fx-pl,.hw-rs-b):hover{background:color-mix(in srgb,var(--team-hi,#4fa3ff) 14%,transparent)}

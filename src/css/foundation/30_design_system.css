@@ -246,3 +246,20 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 
 /* 낮은 가로 화면: 버튼 줄들을 위아래로 쌓지 않고 한 줄에 나란히(목록 높이 확보) */
 @media(max-height:599px) and (min-width:500px){.ws-navigation,#app .roster-navigation.ws-navigation{flex-direction:row;align-items:center}.ws-navigation>*,#app .roster-navigation.ws-navigation>*{flex:1 1 0;min-width:0}}
+
+/* 뒤에 추가된 요약·채용·프로필도 같은 역할별 글꼴 단계를 따른다. */
+#app .home-workspace{--hw-t:var(--ui-heading);--hw-b:var(--ui-body);--hw-s:var(--ui-caption);--hw-n:var(--ui-title)}
+#app .bsp-big,#app .home-workspace .bsp-big{font-size:var(--ui-title)!important}
+#app :is(.sf-sum h2,.fmd-big,.fmd-big>span){font-size:var(--ui-title)}
+#app :is(.sf-leg,.tf-k span,.scn-s,.fmc-y,.fmc-x,.fmd-note,.fmd-k,.fmd-st>span,.fmd-s>p,.fmd-chg .small>span,.ibs-li>span){font-size:var(--ui-caption)}
+#app :is(.sf-t,.sf-t td,.sf-t td .lnk,.sf-t .sf-st,.sf-t .sf-st i,.tf-t,.tf-t td,.tf-t td span,.tf-t td b,.st-n b,.fr-r .st-n b){font-size:var(--ui-body)}
+#app :is(.sf-t th,.tf-t th,.tf-t .scn-s,.tf-t .small,.st-h>span,.st-n i,.st-v i,.st-sal i,.st-ab i,.fr-est i,.fr-ask i,.fr-rec,.fr-rec b,.fr-rec span){font-size:var(--ui-caption)}
+#app :is(.tf-k b,.fmd-st>b,.fmd-s>b){font-size:var(--ui-heading)}
+#sheet :is(.pf-fm-no,.pf-fm-key b){font-size:var(--ui-display)}
+#sheet :is(.pf-fm-ovn,.pf-fm-ovn .pl){font-size:var(--ui-title)}
+#sheet :is(.pf-fm-stats b,.pf-fm-key b.pf-fm-pot){font-size:var(--ui-heading)}
+:is(#app,#sheet) :is(.pst,.pst i,.pf-fm-key span,.pf-rp-why){font-size:var(--ui-caption)}
+#sheet :is(.pf-rp-mop .mop span,.pf-rp-mop .mop b){font-size:var(--ui-body)}
+#app :is(.home-workspace .hw-panel dt,.bsp-r span,.bsp-r b,.tf-k i,.tf-t .pm-n i,.fmd-chg span){font-size:var(--ui-caption)}
+#sheet :is(.pf-fm-stats span,.pf-fm-role span){font-size:var(--ui-caption)}
+#app .fmd-st>b>span{font-size:inherit}

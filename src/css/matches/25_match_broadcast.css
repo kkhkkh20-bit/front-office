@@ -78,9 +78,25 @@
 
   .match-dashboard .cs-sit{top:calc(8% + 10px);left:12px;font-size:12px}
 }
-@media(max-height:560px){.detail-page-open #sheet .cast.match-dashboard{height:640px;min-height:640px}}
-/* 작은 휴대폰(360×640)·휴대폰 가로: 경기장이 납작해지지 않게 중계 판 높이를 확보하고 페이지를 내려 본다 */
-@media(max-width:1000px) and (max-height:759px){.detail-page-open #sheet .cast.match-dashboard{height:760px;min-height:760px}}
+/* 모바일 경기장 보기는 2D 대체 화면도 같은 밀도를 쓴다. 경기장 안 자막과 중복되는 줄·선수 목록은 별도 보기로. */
+@media(max-width:1000px){
+ .detail-page-open #sheet .cast.match-dashboard[data-view="field"]{grid-template-rows:auto minmax(0,1fr) 28px}
+ .match-dashboard[data-view="field"]>.md-comment,.match-dashboard[data-view="field"]>.md-dugout{display:none}
+}
+/* 낮은 가로 화면: 중계만 화면을 채우고 투구판을 오른쪽에 두어 경기장 높이를 유지한다. 나가면 기존 탐색 화면으로 복귀한다. */
+@media(max-width:1000px) and (max-height:599px){
+ html.cast-page-open #sheet{inset:0;z-index:80;scrollbar-gutter:auto;overflow:hidden}
+ html.cast-page-open #sheet .cast.match-dashboard{height:calc(100dvh / var(--z,1));min-height:0}
+ .match-dashboard .cs-top{flex-wrap:wrap}.match-dashboard .cs-board{flex-basis:auto;justify-content:flex-start;margin-right:auto}
+ .match-dashboard .md-more-btn{display:inline-flex}
+ .match-dashboard:not([data-more]) :is([data-a="castBox"],.md-mobile-nav){display:none}
+ .match-dashboard[data-view="field"] .md-play-grid{grid-template-columns:minmax(0,1fr) 210px;grid-template-rows:minmax(0,1fr)}
+ .match-dashboard[data-view="field"] .md-field-panel{grid-template-rows:minmax(0,1fr) auto}
+ .match-dashboard[data-view="field"] .md-field-panel>header{display:none}
+ .match-dashboard[data-view="field"] .md-duel{padding:3px 5px}.match-dashboard[data-view="field"] .md-duel-player :is(.av,i){display:none}
+ .match-dashboard[data-view="field"] .md-duel-player b{font-size:13px}
+ .match-dashboard .md-pitch-dock{overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+}
 
 /* 2D 플레이 좌표 위에 관중석 이미지와 구장 재질만 합성한다. */
 .match-dashboard .cs-bg .g1{fill:url(#cs-grass)}

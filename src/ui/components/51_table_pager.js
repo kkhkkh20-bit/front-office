@@ -13,7 +13,7 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const rows=[...tb.rows].filter(r=>r.cells.length===n); /* 그룹 제목처럼 칸이 합쳐진 줄은 그대로 둔다 */
     const w=H.map(c=>c.getBoundingClientRect().width); const pin=H[n-1].textContent.trim()==='행동'?n-1:-1; /* 지명 같은 행동 버튼 열은 어느 쪽을 넘겨도 보이게 */ let avail=tw.clientWidth-w[0]-2-(pin>0?w[pin]:0), pages, key, pg;
     /* 열을 숨기면 남은 열이 넓어져 표가 칸보다 넓어질 수 있다(옆으로 밀림). 넘친 만큼 묶음을 다시 나눈다 */
-    for(let k=0;k<3;k++){ pages=[]; let cur=[],sum=0;
+    for(let k=0;k<=n;k++){ pages=[]; let cur=[],sum=0;
     for(let i=1;i<n;i++){ if(i===pin)continue; if(cur.length&&sum+w[i]>avail){ pages.push(cur); cur=[]; sum=0; } cur.push(i); sum+=w[i]; } if(cur.length)pages.push(cur);
     if(pages.length<2){ tw.classList.remove('twp'); return; }
     key=(UI.sheet!=null&&tw.closest('#sheet')?'s':UI.tab)+':'+ix+':'+n; pg=Math.min(UI.twPg[key]||0,pages.length-1);
@@ -22,7 +22,10 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     for(const r of rows)[...r.cells].forEach((c,i)=>{ if(!show.has(i))c.classList.add('twh'); });
     /* '빈자리'처럼 이름 칸 뒤를 한 칸으로 합친 줄: 지금 보이는 열 수만큼만 차지하고 줄바꿈한다(표 밖으로 삐져나가지 않게) */
     for(const r of tb.rows){ const c=r.cells; if(c.length===2&&c[0].colSpan===1&&c[1].colSpan===n-1){ c[1].dataset.cs0=c[1].colSpan; c[1].colSpan=pages[pg].length+(pin>0?1:0); c[1].classList.add('twspan'); } }
-    const over=tb.getBoundingClientRect().width-tw.clientWidth; if(over<=2||pages[pg].length<2)break; avail-=over; }
+    const over=tb.getBoundingClientRect().width-tw.clientWidth; if(over<=2||pages[pg].length<2)break;
+    /* 열을 숨긴 뒤 행동 버튼·고정 이름 열이 넓어진 실제 폭으로 다시 묶는다. 세 번의 추측만으로는 휴대폰에서 마지막 버튼이 잘렸다. */
+    for(const i of show)w[i]=Math.max(w[i],H[i].getBoundingClientRect().width);
+    avail=Math.min(avail-over,tw.clientWidth-w[0]-2-(pin>0?w[pin]:0)); }
     tw.classList.add('twp');
     const hn0=c=>{ const e=c.querySelector('button')||c; const t=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim(); return (t||e.innerText.split('\n')[0]).replace(/[▲▼]/g,'').trim(); };
     const lab=i=>{ const a=hn0(H[pages[i][0]]), b=hn0(H[pages[i][pages[i].length-1]]); return a===b||!b?a:`${a} ~ ${b}`; };
@@ -112,7 +115,8 @@ function workspaceFit(host){
   let page=clamp(UI.workspacePages[key]||0,0,pages-1);
   // 패널을 넘길 때도 다시 측정한다. 처음 숨겨진 보고는 크기가 0이라 미리 판단할 수 없다.
   function fitPanel(panel,index){
-    const scroll=panel.querySelector(':scope > .ws-scroll');if(!scroll||scroll.clientHeight>=Math.min(160,panel.clientHeight*.55)||panel.clientHeight<60||panel.matches('.roster-list'))return;
+    const scroll=panel.querySelector(':scope > .ws-scroll'),need=wsMobile()?panel.clientHeight*.75:Math.min(160,panel.clientHeight*.55);
+    if(!scroll||scroll.clientHeight>=need||panel.clientHeight<60||panel.matches('.roster-list'))return; /* 휴대폰은 큰 필터·설명을 목록과 함께 읽어 실제 후보 공간을 확보한다. */
     const footer=[...panel.children].filter(el=>el.matches('.pgr')).reduce((n,el)=>n+el.offsetHeight,0);
     const headerRoom=panel.clientHeight-footer-16-Math.min(120,panel.clientHeight*.5);
     const keep=el=>el.matches('.pgr')||(el.matches('h1,h2,h3,header')||el===panel.firstElementChild&&el.querySelector('h2,h3,.sec'))&&el.offsetHeight<=headerRoom;

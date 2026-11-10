@@ -3348,6 +3348,8 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 @media (max-width:699px){.fm-age{display:none}} /* 휴대폰은 이름이 잘리지 않게 단장 나이는 프로필에서 */
 /* 설정 한 페이지(사용자 11-08) */
 .setx{display:grid;gap:10px;align-content:start}.setx .setc{display:grid;gap:10px;align-content:start;min-width:0}.setx .setc>.card{margin:0}
+/* 직접 높이를 나누는 설정 화면도 휴대폰·태블릿에서는 이 영역 안을 스크롤한다. */
+main.ws-frame>.setx.ws-own{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
 @media(min-width:1100px){.setx{grid-template-columns:repeat(3,minmax(0,1fr));height:100%;min-height:0;overflow-y:auto;scrollbar-width:thin}}
 /* 스카우트 지역 정보망 지도(사용자 11-08) */
 .scm{display:grid;gap:10px;align-content:start}.scm>.card{margin:0;min-width:0}
@@ -4100,9 +4102,25 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 
   .match-dashboard .cs-sit{top:calc(8% + 10px);left:12px;font-size:12px}
 }
-@media(max-height:560px){.detail-page-open #sheet .cast.match-dashboard{height:640px;min-height:640px}}
-/* 작은 휴대폰(360×640)·휴대폰 가로: 경기장이 납작해지지 않게 중계 판 높이를 확보하고 페이지를 내려 본다 */
-@media(max-width:1000px) and (max-height:759px){.detail-page-open #sheet .cast.match-dashboard{height:760px;min-height:760px}}
+/* 모바일 경기장 보기는 2D 대체 화면도 같은 밀도를 쓴다. 경기장 안 자막과 중복되는 줄·선수 목록은 별도 보기로. */
+@media(max-width:1000px){
+ .detail-page-open #sheet .cast.match-dashboard[data-view="field"]{grid-template-rows:auto minmax(0,1fr) 28px}
+ .match-dashboard[data-view="field"]>.md-comment,.match-dashboard[data-view="field"]>.md-dugout{display:none}
+}
+/* 낮은 가로 화면: 중계만 화면을 채우고 투구판을 오른쪽에 두어 경기장 높이를 유지한다. 나가면 기존 탐색 화면으로 복귀한다. */
+@media(max-width:1000px) and (max-height:599px){
+ html.cast-page-open #sheet{inset:0;z-index:80;scrollbar-gutter:auto;overflow:hidden}
+ html.cast-page-open #sheet .cast.match-dashboard{height:calc(100dvh / var(--z,1));min-height:0}
+ .match-dashboard .cs-top{flex-wrap:wrap}.match-dashboard .cs-board{flex-basis:auto;justify-content:flex-start;margin-right:auto}
+ .match-dashboard .md-more-btn{display:inline-flex}
+ .match-dashboard:not([data-more]) :is([data-a="castBox"],.md-mobile-nav){display:none}
+ .match-dashboard[data-view="field"] .md-play-grid{grid-template-columns:minmax(0,1fr) 210px;grid-template-rows:minmax(0,1fr)}
+ .match-dashboard[data-view="field"] .md-field-panel{grid-template-rows:minmax(0,1fr) auto}
+ .match-dashboard[data-view="field"] .md-field-panel>header{display:none}
+ .match-dashboard[data-view="field"] .md-duel{padding:3px 5px}.match-dashboard[data-view="field"] .md-duel-player :is(.av,i){display:none}
+ .match-dashboard[data-view="field"] .md-duel-player b{font-size:13px}
+ .match-dashboard .md-pitch-dock{overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+}
 
 /* 2D 플레이 좌표 위에 관중석 이미지와 구장 재질만 합성한다. */
 .match-dashboard .cs-bg .g1{fill:url(#cs-grass)}
@@ -4543,7 +4561,7 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .home-workspace[data-device="desktop"][data-rows="3"] .home-grid{grid-template-rows:repeat(3,minmax(0,1fr));gap:8px}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel{min-height:0;overflow:hidden}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header{min-height:30px;padding:3px 10px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header h2{font-size:14px}
-#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:11px}
+#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:var(--ui-caption)}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-match .hw-match-main{padding:4px 10px;gap:3px}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face,.home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face .av{width:88px!important;height:88px!important} /* 선발 사진 크게(사용자 11-07, 예전 54px) */
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-match-main>.btn{min-height:26px;padding-block:3px}
@@ -4597,16 +4615,22 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 /* 연봉 정렬표 */
 .sal-t td.sal-n{text-align:left}.sal-t .candidate-name{display:flex;align-items:center;gap:8px}.sal-t .candidate-name img,.sal-t .candidate-name svg{width:32px;height:32px;border-radius:50%}.sal-t .candidate-name small{display:block;color:var(--muted);font-size:11px}.sal-t th.sortable{cursor:pointer}
 
-@media (max-width:699px){.hw-sp-face{width:104px;height:104px}.hw-sp-face .av,.hw-sp-face img.av{width:104px!important;height:104px!important}}
+@media (max-width:699px){
+ .home-workspace[data-device="mobile"][data-rows="2"] .home-grid.home-dashboard{grid-template-rows:repeat(2,minmax(0,1fr))}
+ .hw-match-main{container-type:size}
+ /* 카드의 남은 높이로 사진을 줄여 중계 버튼이 카드 아래에 잘리지 않게 한다. */
+ .hw-match-main .hw-sp-face{width:clamp(48px,calc(100cqh - 92px),104px);height:clamp(48px,calc(100cqh - 92px),104px)}
+ .hw-sp-face .av,.hw-sp-face img.av{width:100%!important;height:100%!important}
+}
 
 /* 선수단 현황: 글씨를 키우고 칸 높이에 맞춰 줄을 고르게 나눈다(사용자 11-07) */
 #app .home-workspace .hw-rs{gap:16px;padding:10px 14px}
 #app .home-workspace .hw-rs dl{grid-auto-rows:1fr;align-content:stretch;gap:2px}
 #app .home-workspace .hw-rs dl>*{display:flex;align-items:center;justify-content:space-between}
 #app .home-workspace .hw-panel .hw-rs dl>dt.hd,#app .home-workspace .hw-panel .hw-rs dl>dt.hd b{font-size:16px!important;padding-bottom:4px}
-#app .home-workspace .hw-panel .hw-rs :is(.hw-rs-b,dl>div)>dt.x0,#app .home-workspace .hw-panel .hw-rs dl :is(.hw-rs-b,div)>dt{font-size:14px!important}
+#app .home-workspace .hw-panel .hw-rs :is(.hw-rs-b,dl>div)>dt.x0,#app .home-workspace .hw-panel .hw-rs dl :is(.hw-rs-b,div)>dt{font-size:var(--ui-body)!important}
 #app .home-workspace .hw-panel .hw-rs dd{font-size:16px!important}
-#app .home-workspace .hw-panel .hw-rs dl>div{font-size:14px!important}
+#app .home-workspace .hw-panel .hw-rs dl>div{font-size:var(--ui-body)!important}
 /* 선수 마우스 오버: 행은 밝게, 얼굴은 살짝 키운다 */
 #app .home-workspace :is(.hw-lr,.fx-pl,.hw-sp,.hw-rs-b,.hw-pl){transition:background .15s,transform .15s;border-radius:8px;cursor:pointer}
 #app .home-workspace :is(.hw-lr,.fx-pl,.hw-rs-b):hover{background:color-mix(in srgb,var(--team-hi,#4fa3ff) 14%,transparent)}
@@ -4659,17 +4683,18 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 @media(max-width:600px){.ps .staff-mental{grid-template-columns:repeat(2,minmax(0,1fr))}.staff-network{grid-template-columns:30px 22px minmax(45px,1fr) 22px minmax(45px,1fr)}}
 /* PC 스태프 개요(34b_staff_fm.js): FM '스탭 기본 정보'처럼 세 칸 × (인원 현황 · 리그 비교 막대 · 명단 표), 화면 높이에 딱 맞춤 */
 @media(min-width:1100px){
-  .sf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto minmax(200px,34%) minmax(0,1fr);gap:0 10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
+  .sf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,.9fr) minmax(0,1fr) minmax(0,1.2fr);gap:0 10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
   main.ws-frame>.sf{height:auto}
   .sf-c{display:grid;grid-row:span 3;grid-template-rows:subgrid;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
   .sf-c>section{padding:10px 12px;min-height:0;border-top:1px solid var(--line)}.sf-c>section:first-child{border-top:0}
   .sf-c h3{margin:0 0 6px;font-size:13px;color:var(--team-hi,#4fa3ff)}
-  .sf-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px}
+  .sf-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  .sf-head>*{min-width:0}.sf-head .sf-note{white-space:normal;overflow-wrap:anywhere}.sf-head .sf-sum h2{overflow-wrap:anywhere}
   .sf-roles>div{font-size:12px;line-height:1.7;color:var(--muted)}.sf-roles>div b{font-family:var(--f-num);color:var(--ink)}.sf-roles>div.miss,.sf-roles>div.miss b{color:var(--warn)}
   .sf-note{margin:0;font-size:12px;color:var(--muted);line-height:1.5}
   .sf-sum{display:flex;flex-direction:column;gap:8px;min-width:0}.sf-sum h2{margin:0;font-size:18px}.sf-sum>.btn{align-self:flex-start}
   .sf-dots{display:flex;flex-wrap:wrap;gap:5px}.sf-dots i{width:10px;height:16px;border-radius:5px 5px 2px 2px}.sf-dots i.emp{border:1px solid var(--muted)}
-  .sf-cmp{display:flex;flex-direction:column}
+  .sf-cmp{display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
   .sf-rows{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-around;gap:4px}
   .sf-r{display:grid;grid-template-columns:76px minmax(0,1fr) 44px 34px;gap:8px;align-items:center;font-size:12px}.sf-r>span{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-r>b{text-align:right;font:700 13px var(--f-num)}.sf-r>em{font-style:normal;text-align:right;color:var(--muted)}.sf-r>em.good{color:var(--good)}.sf-r>em.bad{color:var(--bad)}
   .sf-trk{height:10px;background:var(--panel2);border-radius:2px;overflow:hidden}.sf-trk>i{display:block;height:100%;background:#5b8fc7;border-radius:2px}.sf-trk>i.good{background:var(--good)}.sf-trk>i.bad{background:var(--bad)}
@@ -4681,7 +4706,8 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
   .sf-col>i{position:absolute;left:6px;right:6px;bottom:0;background:#5b8fc7;border-radius:2px 2px 0 0}.sf-col>i.good{background:var(--good)}.sf-col>i.bad{background:var(--bad)}
   .sf-col>u,.sf-leg u{position:absolute;left:0;right:0;height:2px;text-decoration:none}.sf-col>u.hi,.sf-leg u.hi{background:var(--good)}.sf-col>u.lo,.sf-leg u.lo{background:var(--bad)}.sf-col>u.av,.sf-leg u.av{background:#fff;left:3px;right:3px}
   .sf-leg{display:flex;gap:12px;margin:6px 0 0;font-size:11px;color:var(--muted)}.sf-leg span{display:inline-flex;align-items:center;gap:4px}.sf-leg u{position:static;display:inline-block;width:12px}
-  .sf-list{display:flex;flex-direction:column;min-height:0}
+  .sf-list{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .sf-list>h3,.sf-list>.row{flex:none}.sf-list>.row>.btn{max-width:100%;white-space:normal}
   .sf-tw{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}
   .sf-t{width:100%;border-collapse:collapse;font-size:12px}.sf-t th{position:sticky;top:0;background:var(--panel);text-align:left;font-weight:500;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
   .sf-t td{padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap}.sf-t td.wrap{white-space:normal}.sf-t td.bad{color:var(--bad)}.sf-t tr.miss td{color:var(--warn)}
@@ -5396,6 +5422,23 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 
 /* 낮은 가로 화면: 버튼 줄들을 위아래로 쌓지 않고 한 줄에 나란히(목록 높이 확보) */
 @media(max-height:599px) and (min-width:500px){.ws-navigation,#app .roster-navigation.ws-navigation{flex-direction:row;align-items:center}.ws-navigation>*,#app .roster-navigation.ws-navigation>*{flex:1 1 0;min-width:0}}
+
+/* 뒤에 추가된 요약·채용·프로필도 같은 역할별 글꼴 단계를 따른다. */
+#app .home-workspace{--hw-t:var(--ui-heading);--hw-b:var(--ui-body);--hw-s:var(--ui-caption);--hw-n:var(--ui-title)}
+#app .bsp-big,#app .home-workspace .bsp-big{font-size:var(--ui-title)!important}
+#app :is(.sf-sum h2,.fmd-big,.fmd-big>span){font-size:var(--ui-title)}
+#app :is(.sf-leg,.tf-k span,.scn-s,.fmc-y,.fmc-x,.fmd-note,.fmd-k,.fmd-st>span,.fmd-s>p,.fmd-chg .small>span,.ibs-li>span){font-size:var(--ui-caption)}
+#app :is(.sf-t,.sf-t td,.sf-t td .lnk,.sf-t .sf-st,.sf-t .sf-st i,.tf-t,.tf-t td,.tf-t td span,.tf-t td b,.st-n b,.fr-r .st-n b){font-size:var(--ui-body)}
+#app :is(.sf-t th,.tf-t th,.tf-t .scn-s,.tf-t .small,.st-h>span,.st-n i,.st-v i,.st-sal i,.st-ab i,.fr-est i,.fr-ask i,.fr-rec,.fr-rec b,.fr-rec span){font-size:var(--ui-caption)}
+#app :is(.tf-k b,.fmd-st>b,.fmd-s>b){font-size:var(--ui-heading)}
+#sheet :is(.pf-fm-no,.pf-fm-key b){font-size:var(--ui-display)}
+#sheet :is(.pf-fm-ovn,.pf-fm-ovn .pl){font-size:var(--ui-title)}
+#sheet :is(.pf-fm-stats b,.pf-fm-key b.pf-fm-pot){font-size:var(--ui-heading)}
+:is(#app,#sheet) :is(.pst,.pst i,.pf-fm-key span,.pf-rp-why){font-size:var(--ui-caption)}
+#sheet :is(.pf-rp-mop .mop span,.pf-rp-mop .mop b){font-size:var(--ui-body)}
+#app :is(.home-workspace .hw-panel dt,.bsp-r span,.bsp-r b,.tf-k i,.tf-t .pm-n i,.fmd-chg span){font-size:var(--ui-caption)}
+#sheet :is(.pf-fm-stats span,.pf-fm-role span){font-size:var(--ui-caption)}
+#app .fmd-st>b>span{font-size:inherit}
 /* Compact workspaces retain one clear route and touch-sized controls. */
 .trade-workspace{min-width:0}.trade-modes{display:flex;gap:6px;margin:8px 0 12px}.trade-modes button{font-family:inherit;font-size:13px;flex:1;min-width:0;min-height:40px;padding:7px 10px;border:1px solid var(--line2);border-radius:6px;background:var(--panel2);color:var(--muted);font-weight:650}.trade-modes button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .trade-back,.trade-basket,.trade-partner{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0}.trade-partner>label{display:flex;align-items:center;gap:8px;flex:1;min-width:0;font-size:12px;color:var(--muted)}.trade-partner select{min-width:0;flex:1;max-width:420px}.trade-steps{display:flex;gap:12px;list-style:none;padding:0;margin:10px 0;font-size:12px;color:var(--muted)}.trade-steps .on{color:var(--ink);font-weight:700}
@@ -5457,7 +5500,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .roster-navigation>.rseg{display:none}
  #app .roster-caption{flex-wrap:nowrap;gap:6px;margin-bottom:2px}
  #app .roster-caption .rseg-cap{display:flex;flex:none;margin:0}#app .roster-caption .rseg-cap button{padding-inline:10px;white-space:nowrap}
- #app .roster-caption>h2.sec{flex:1;min-width:0;font-size:0;margin:0}#app .roster-caption>h2.sec .hi-i{font-size:11px}
+ #app .roster-caption>h2.sec{order:-1;flex:1;min-width:0;font-size:var(--ui-heading);margin:0}#app .roster-caption>h2.sec .hi-i{font-size:var(--ui-caption)}
  #app .roster-tools{display:flex;align-items:center;gap:6px;min-width:0;flex:none}
  #app .roster-tools>.roster-filters{flex:1 1 0;min-width:0}#app .roster-tools>.roster-filters[open]{flex-basis:100%}
  #app .roster-tools:has(>.roster-filters[open]){flex-wrap:wrap}
@@ -5472,21 +5515,14 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app main.ws-up .ws-panels>.card{padding-block:4px}#app main.ws-up .ws-panel>.pgr{margin:2px 0 0}#app main.ws-up .ws-panel>.pgr .btn{min-height:32px!important;padding-block:4px} /* 접힌 동안 패널 위아래 여백·페이지 넘김 줄을 줄여 목록 몫을 늘린다 */
 }
 /* 휴대폰 선수 명단 첫 묶음에 종합·포지션·나이·잠재력이 함께 들어가게: 칸 여백을 줄이고 부포지션은 아랫줄로(카페 11-09b) */
-@media(max-width:600px){#app .roster-list .rt :is(td,th):not(:first-child){padding-inline:5px}#app .roster-list .rt td.rtpos i.f{display:block}#app .roster-list .rt .pst{font-size:11px;letter-spacing:0}#app .roster-list .rt .ptier{padding:0 3px}#app .roster-list .rt .pn .av{width:30px;height:30px}}
+@media(max-width:600px){#app .roster-list .rt :is(td,th):not(:first-child){padding-inline:5px}#app .roster-list .rt td.rtpos i.f{display:block}#app .roster-list .rt .pst{font-size:var(--ui-caption);letter-spacing:0}#app .roster-list .rt .ptier{padding:0 3px}#app .roster-list .rt .pn .av{width:30px;height:30px}}
 /* 협상 상대 구단 카드: PC는 칸 높이를 채우고 주요 선수, 휴대폰은 촘촘히 */
 .tp-st{display:grid;gap:3px;font-size:12px}.tp-st>span{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px;align-items:center}.tp-st i{font-style:normal;color:var(--muted)}.tp-st>i{font-size:11px}
 @media(min-width:1100px){.ws-scroll:has(>.tp-grid){display:flex;flex-direction:column}}
 @media(max-width:699px){.tp-grid{gap:5px;margin:2px 0}.tp-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:6px 9px}.tp-card>.tp-h{grid-column:1/-1}.tp-card .tp-h{grid-template-columns:32px minmax(0,1fr) auto}.tp-card .tp-h .av{width:32px;height:32px}.tp-card>.tp-rel{grid-column:1}.tp-card>em{grid-column:2;grid-row:2;align-self:center}.tp-card>.tp-meta{grid-column:1/-1}}
-/* 휴대폰 감독 채용·신인 드래프트: 칸 안 스크롤이면 위 안내·탭·필터가 자리를 차지해 후보 카드 일부(감독 240px)나 후보 2~3줄(드래프트)만 보였다.
-   작업 공간 전체를 한 번에 스크롤해 안내·탭·필터는 위로 밀려 나가고 후보 목록이 화면의 70% 넘게 쓰게 한다 */
-@media(max-width:599px){
- main.ws-frame:has(.mgrg),main.ws-frame:has(.draft-page){overflow-y:auto!important;overscroll-behavior:contain}
- main.ws-frame:has(.mgrg)>.ws-panels,main.ws-frame:has(.draft-page)>.ws-panels{flex:none;display:block}
- main.ws-frame:has(.mgrg)>.ws-panels>.ws-panel,main.ws-frame:has(.draft-page)>.ws-panels>.ws-panel{overflow:visible}
- main.ws-frame:has(.mgrg) .ws-panel>.ws-scroll,main.ws-frame:has(.draft-page) .ws-panel>.ws-scroll{flex:none;overflow:visible!important}
-}
-
+/* 감독·드래프트 후보도 공통 작업 칸의 내부 스크롤을 사용한다. 긴 머리는 workspaceFit이 내용과 함께 접는다. */
 @media(max-width:699px) and (min-height:600px){ #app main.ws-frame,#app main.inbox-workspace{position:relative;z-index:1;background:var(--bg,#0d1117);will-change:margin-top} #app .wrap:has(>main.ws-slid){overflow:hidden} } /* 머리가 밀려 올라가는 동안 위 제목 줄 위로 덮는다 */
+@media(max-width:699px) and (min-height:600px){#app main.ws-slid .ws-panels>.card{padding-block:4px}} /* 읽는 동안 패널의 위아래 여백도 줄여 후보 목록 공간을 확보한다. */
 /* 스스로 스크롤하는 칸 안의 표 머리는 칸 맨 위에 붙는다(화면 머리 높이만큼 내려 붙어 줄 사이에 뜨던 문제, 사용자 11-08 연봉 순위) */
 #app main.ws-frame :is(.ws-scroll,.ws-own,.tw) :is(.tw,.fdt-w).twp thead th,#app main.ws-frame :is(.tw,.fdt-w).twp thead th{top:0}
 /* 휴대폰: 목록 칸 전체가 옆으로 밀리지 않게(넓은 표는 열 묶음 넘기기·표 자체 가로 스크롤로 본다, 사용자 11-08 연봉 순위) */
@@ -26811,8 +26847,9 @@ function cPrepDone(ok){const c=UI.cast;if(!c?.pre)return;if(!ok){cPrepClose(c);r
 function cPrepClose(c){c.pre=0;document.getElementById('cs-3d')?.removeAttribute('data-pre');}
 /* 휴대폰 중계는 화면 세로에 딱 맞춘다(사용자 11-05: 드래그하지 않게): 중계 판 위쪽부터 아래 탭바 위까지 */
 function castFit(){ try{ const el=document.querySelector('.cast.match-dashboard'); if(!el)return; if(innerWidth>1000){ if(el.style.height){ el.style.height=''; el.style.minHeight=''; } return; }
-  const bn=document.querySelector('.bnav'), bh=bn&&getComputedStyle(bn).display!=='none'?bn.getBoundingClientRect().height:0; const top=el.getBoundingClientRect().top+scrollY;
-  const h=Math.max(420,Math.floor(innerHeight-top-bh-4))+'px'; if(el.style.height!==h){ el.style.height=h; el.style.minHeight=h; } }catch(e){} }
+  const host=el.closest('#sheet'),bn=document.querySelector('.bnav'),bh=bn&&getComputedStyle(bn).display!=='none'?bn.getBoundingClientRect().height:0;
+  const room=host?host.clientHeight:innerHeight-el.getBoundingClientRect().top-bh;
+  const h=Math.max(0,Math.floor(room))+'px'; if(el.style.height!==h||el.style.minHeight!=='0px'){el.style.height=h;el.style.minHeight='0px';} /* 가로 모드의 420px 최소 높이가 재생 탐색 줄을 화면 아래로 밀지 않게 */ }catch(e){} }
 addEventListener('resize',castFit); setInterval(castFit,400);
 
 /* 3D가 늦으면 기다리지 않고 기본 중계로 먼저 시작한다(사용자 11-06: 재생을 누르지 않아도 재생). 3D 준비가 끝나면 그때부터 3D로 바뀐다 */
@@ -27463,13 +27500,13 @@ function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } { const 
   (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);
   /* '동작 줄이기'를 켠 기기(아이폰 설정 등)도 날짜가 넘어간 것은 보여 준다: 움직임 없이 지나간 날짜 띠를 잠깐 띄운다 */
   /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '진행하기' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */
-  if(fmOn()||document.querySelector('.top .goset')){ /* 윈도우 '애니메이션 효과 끄기'(동작 줄이기)여도 PC는 FM식으로(사용자 11-08: 가운데 날짜 띠가 뜸). 휴대폰도 같은 방식: 위 날짜가 넘어가고 진행하기 버튼에 막대(사용자 11-09) */ const mob=!fmOn(), de=mob?document.querySelector('.top .tbar .club>div>span'):document.querySelector('.fmtop .fm-date'), bt=mob?(document.querySelector('.top .goset>button.continue')||document.querySelector('.top .goset>button:last-child')):(document.querySelector('.fmtop .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child')); const L=[]; for(let d=d0+1;d<=d1;d++)L.push(d);
+  if(fmOn()||document.querySelector('.top .goset')){ /* 윈도우 '애니메이션 효과 끄기'(동작 줄이기)여도 PC는 FM식으로(사용자 11-08: 가운데 날짜 띠가 뜸). 휴대폰도 같은 방식: 위 날짜가 넘어가고 진행하기 버튼에 막대(사용자 11-09) */ const mob=!fmOn(), bt=mob?(document.querySelector('.top .goset>button.continue')||document.querySelector('.top .goset>button:last-child')):(document.querySelector('.fmtop .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child')); const L=[]; for(let d=d0+1;d<=d1;d++)L.push(d);
     const st=Math.max(180,Math.min(420,2400/L.length)), tot=st*L.length; /* 날짜 칸이 지나가는 게 보이게 하루 0.18~0.42초 */
     dayTick._until=Date.now()+tot; if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',tot+'ms'); }
-    const put=d=>{ const de=mob?document.querySelector('.top .tbar .club>div>span'):document.querySelector('.fmtop .fm-date'); if(!de)return; /* 중간에 다시 그려지면 새 요소에 쓴다 */ const o=dobj(d), g=calGame(d); de.classList.remove('fm-flip'); void de.offsetWidth; de.classList.add('fm-flip'); if(mob){ de.innerHTML=`<b>${o.m}/${o.d} ${WD[o.w]}</b>`; } else { const b=de.querySelector('b'); if(b)b.textContent=`${WD[o.w]} ${o.m}월 ${o.d}일`; } let r=de.querySelector('.fm-dres'); if(!r){ r=document.createElement('i'); r.className='fm-dres'; de.appendChild(r); } r.innerHTML=g&&g.res?`${badge(g.op,14)} <em class="${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r} ${g.res.my}:${g.res.op}</em>`:''; };
+    const put=d=>{ const mob=!fmOn(),de=mob?document.querySelector('.top .tbar .club>div>span'):document.querySelector('.fmtop .fm-date'); if(!de)return; /* 다시 그리거나 회전하면 현재 화면의 날짜 요소와 형식을 쓴다 */ const o=dobj(d), g=calGame(d); de.classList.remove('fm-flip'); void de.offsetWidth; de.classList.add('fm-flip'); if(mob){ de.innerHTML=`<b>${o.m}/${o.d} ${WD[o.w]}</b>`; } else { const b=de.querySelector('b'); if(b)b.textContent=`${WD[o.w]} ${o.m}월 ${o.d}일`; } let r=de.querySelector('.fm-dres'); if(!r){ r=document.createElement('i'); r.className='fm-dres'; de.appendChild(r); } r.innerHTML=g&&g.res?`${badge(g.op,14)} <em class="${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r} ${g.res.my}:${g.res.op}</em>`:''; };
     put(d0); if(!mob)try{ fmAdvPanel(d0,d1,st); }catch(e){} dayTick._steps=L.map((d,i)=>setTimeout(()=>{ put(d); tkShow(d); if(!mob)fmAdvStep(i+1); },(i+1)*st));
     if(UI._tk)UI._tk.until=Date.now()+tot+200; dayTick._t2=setTimeout(tkDone,tot+50);
-    dayTick._t=setTimeout(()=>{ if(bt)bt.classList.remove('fm-busy'); const r=de&&de.querySelector('.fm-dres'); if(r)setTimeout(()=>r.remove(),900); },tot+250); return; }
+    dayTick._t=setTimeout(()=>{ dayTick._until=0; /* 진행 중 render로 교체된 버튼도 마친 상태로 정리한다. */ document.querySelectorAll('.goset .fm-busy').forEach(b=>{b.classList.remove('fm-busy');b.style.removeProperty('--fmdur');}); const r=document.querySelector('.fmtop .fm-date .fm-dres,.top .tbar .club>div>span .fm-dres'); if(r)setTimeout(()=>r.remove(),900); },tot+250); return; }
   let el=document.getElementById('dtick'); if(!el){ el=document.createElement('div'); el.id='dtick'; el.setAttribute('aria-hidden','true'); document.body.appendChild(el); }
   let days=[]; for(let d=d0+1;d<=d1;d++)days.push(d); if(days.length>10)days=days.slice(0,4).concat([null],days.slice(-5));
   el.innerHTML=`<div class="dt-big"><span class="dt-flip" id="dtFlip"></span></div><div class="dt-in">${days.map(d=>{ if(d==null)return '<span class="dt-c gap">…</span>'; const o=dobj(d); const g=calGame(d); const ev=calEvents(d).filter(e=>e.k==='dl'||e.k==='lg');
@@ -29458,7 +29495,7 @@ function spoilMask(){ const g=UI.sheet!=null&&spoilG(), p=g&&G.players[UI.sheet]
 function spoilMask0(g,p){ /* 경기 직전 사본이 있으면 통째로 그 시점(세이브·선발·상대 타자·좌우·타구 분포·최근 등판까지, 검수 11-08) */ if(/차전/.test(g.kind||''))return ()=>{}; const q=['h','a'].map(sd=>g.box[sd]&&(g.box[sd][p.isP?'pit':'bat']||[]).find(x=>x.id===p.id)).find(Boolean); if(!q)return ()=>{};
   const y=dobj(g.day).y, i=p.hist.map((h,j)=>[h,j]).filter(([h])=>h.y===y&&h.lvl==='1군'&&!h.y2).map(x=>x[1]).pop(); const H0=p.hist, GL0=p.gl; if(i!=null){ const h=Object.assign({},H0[i]); for(const k in q)if(k!=='id'&&typeof q[k]==='number'&&typeof h[k]==='number')h[k]=Math.max(0,h[k]-q[k]); if(typeof h.g==='number')h.g=Math.max(0,h.g-1); if(p.isP&&typeof h.w==='number'&&q.d==='승')h.w--; if(p.isP&&typeof h.l==='number'&&q.d==='패')h.l--; if(p.isP){ if(h.sv&&q.d==='세')h.sv--; if(h.hld&&q.d==='홀')h.hld--; if(h.gs&&['h','a'].some(sd=>g.box[sd]&&g.box[sd].pit&&g.box[sd].pit[0]&&g.box[sd].pit[0].id===p.id))h.gs--; } p.hist=H0.slice(); p.hist[i]=h; }
   if(GL0&&GL0.g&&GL0.y===y){ const has=x=>['h','a'].some(sd=>x.box&&x.box[sd]&&(x.box[sd][p.isP?'pit':'bat']||[]).some(z=>z.id===p.id)), pre=(G.games||[]).filter(x=>x!==g&&x.day===g.day&&(x.gid||0)<(g.gid||0)&&has(x)).length; let n=-1; p.gl={y,g:GL0.g.filter(r=>r[0]!==g.day||++n!==pre)}; } /* 같은 날 두 경기: 숨길 경기의 로그 한 줄만 뺀다(검수 11-09zzc #16) */ return ()=>{ p.hist=H0; p.gl=GL0; }; }
-function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); twPager(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -29481,7 +29518,7 @@ function renderSheet0(){
   if(UI.person&&UI.sheet==null){ el.innerHTML=personSheet(UI.person); return; }
   if(UI.game!=null){ el.innerHTML=gameSheet(UI.game); return; }
   if(UI.posSheet){ el.innerHTML=UI.posSheet.includes(':')?teamPosSheet(UI.posSheet):posSheet(UI.posSheet); return; }
-  if(UI.wkres&&UI.sheet==null&&!UI.menu){ el.innerHTML=wkResSheet(); return; } /* 경기 결과 정리(박스스코어·선수 정보는 그 위에 뜨고, 닫으면 돌아온다) */
+  if(UI.wkres&&UI.sheet==null&&!UI.menu){ el.innerHTML=UI.title?'':wkResSheet(); return; } /* 저장된 결과 요약은 이어하기 뒤에 연다. 시작 화면의 버튼을 가리지 않는다. */
   if(UI.sheet==null){ el.innerHTML=''; return; }
   if(UI.sheet!=null&&!G.players[UI.sheet]&&G.arch&&G.arch[UI.sheet]){ el.innerHTML=archSheet(G.arch[UI.sheet]); return; } /* 리그를 떠난 선수: 보관된 1군 기록 */
   const p=G.players[UI.sheet]; if(!p){UI.sheet=null; el.innerHTML=''; return;}
@@ -31048,7 +31085,7 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const rows=[...tb.rows].filter(r=>r.cells.length===n); /* 그룹 제목처럼 칸이 합쳐진 줄은 그대로 둔다 */
     const w=H.map(c=>c.getBoundingClientRect().width); const pin=H[n-1].textContent.trim()==='행동'?n-1:-1; /* 지명 같은 행동 버튼 열은 어느 쪽을 넘겨도 보이게 */ let avail=tw.clientWidth-w[0]-2-(pin>0?w[pin]:0), pages, key, pg;
     /* 열을 숨기면 남은 열이 넓어져 표가 칸보다 넓어질 수 있다(옆으로 밀림). 넘친 만큼 묶음을 다시 나눈다 */
-    for(let k=0;k<3;k++){ pages=[]; let cur=[],sum=0;
+    for(let k=0;k<=n;k++){ pages=[]; let cur=[],sum=0;
     for(let i=1;i<n;i++){ if(i===pin)continue; if(cur.length&&sum+w[i]>avail){ pages.push(cur); cur=[]; sum=0; } cur.push(i); sum+=w[i]; } if(cur.length)pages.push(cur);
     if(pages.length<2){ tw.classList.remove('twp'); return; }
     key=(UI.sheet!=null&&tw.closest('#sheet')?'s':UI.tab)+':'+ix+':'+n; pg=Math.min(UI.twPg[key]||0,pages.length-1);
@@ -31057,7 +31094,10 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     for(const r of rows)[...r.cells].forEach((c,i)=>{ if(!show.has(i))c.classList.add('twh'); });
     /* '빈자리'처럼 이름 칸 뒤를 한 칸으로 합친 줄: 지금 보이는 열 수만큼만 차지하고 줄바꿈한다(표 밖으로 삐져나가지 않게) */
     for(const r of tb.rows){ const c=r.cells; if(c.length===2&&c[0].colSpan===1&&c[1].colSpan===n-1){ c[1].dataset.cs0=c[1].colSpan; c[1].colSpan=pages[pg].length+(pin>0?1:0); c[1].classList.add('twspan'); } }
-    const over=tb.getBoundingClientRect().width-tw.clientWidth; if(over<=2||pages[pg].length<2)break; avail-=over; }
+    const over=tb.getBoundingClientRect().width-tw.clientWidth; if(over<=2||pages[pg].length<2)break;
+    /* 열을 숨긴 뒤 행동 버튼·고정 이름 열이 넓어진 실제 폭으로 다시 묶는다. 세 번의 추측만으로는 휴대폰에서 마지막 버튼이 잘렸다. */
+    for(const i of show)w[i]=Math.max(w[i],H[i].getBoundingClientRect().width);
+    avail=Math.min(avail-over,tw.clientWidth-w[0]-2-(pin>0?w[pin]:0)); }
     tw.classList.add('twp');
     const hn0=c=>{ const e=c.querySelector('button')||c; const t=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim(); return (t||e.innerText.split('\n')[0]).replace(/[▲▼]/g,'').trim(); };
     const lab=i=>{ const a=hn0(H[pages[i][0]]), b=hn0(H[pages[i][pages[i].length-1]]); return a===b||!b?a:`${a} ~ ${b}`; };
@@ -31147,7 +31187,8 @@ function workspaceFit(host){
   let page=clamp(UI.workspacePages[key]||0,0,pages-1);
   // 패널을 넘길 때도 다시 측정한다. 처음 숨겨진 보고는 크기가 0이라 미리 판단할 수 없다.
   function fitPanel(panel,index){
-    const scroll=panel.querySelector(':scope > .ws-scroll');if(!scroll||scroll.clientHeight>=Math.min(160,panel.clientHeight*.55)||panel.clientHeight<60||panel.matches('.roster-list'))return;
+    const scroll=panel.querySelector(':scope > .ws-scroll'),need=wsMobile()?panel.clientHeight*.75:Math.min(160,panel.clientHeight*.55);
+    if(!scroll||scroll.clientHeight>=need||panel.clientHeight<60||panel.matches('.roster-list'))return; /* 휴대폰은 큰 필터·설명을 목록과 함께 읽어 실제 후보 공간을 확보한다. */
     const footer=[...panel.children].filter(el=>el.matches('.pgr')).reduce((n,el)=>n+el.offsetHeight,0);
     const headerRoom=panel.clientHeight-footer-16-Math.min(120,panel.clientHeight*.5);
     const keep=el=>el.matches('.pgr')||(el.matches('h1,h2,h3,header')||el===panel.firstElementChild&&el.querySelector('h2,h3,.sec'))&&el.offsetHeight<=headerRoom;

@@ -1,0 +1,2 @@
+AssertionError [ERR_ASSERTION]: 실제 채용 후보에서 스카우트 정원 충원
+    at /workspace/front-office/tools/check-continue.cjs:11:9

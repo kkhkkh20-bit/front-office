@@ -1,0 +1,119 @@
+{
+  "baseline": "442131c1dc2d49a4ca38a423e67914751b61b880",
+  "engine_changed": false,
+  "save_schema_changed": false,
+  "index_sha256": "236d01b0063f8ac1b855d4ca7b9872eab8494339ff7cc663f87c3cd9432c830e",
+  "tests": [
+    {
+      "name": "unit-final",
+      "command": "node --test --test-reporter=tap tools/test/*.test.cjs",
+      "status": "passed",
+      "log": "checks/unit-final.txt"
+    },
+    {
+      "name": "static-final",
+      "command": "node tools/check-static.js",
+      "status": "passed",
+      "log": "checks/static-final.txt"
+    },
+    {
+      "name": "viewport-final",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node tools/check-viewport.cjs",
+      "status": "passed",
+      "log": "checks/viewport-final.txt"
+    },
+    {
+      "name": "workspace-final",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node tools/check-workspace.cjs",
+      "status": "passed",
+      "log": "checks/workspace-final.txt"
+    },
+    {
+      "name": "design-final",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node tools/check-design-system.cjs",
+      "status": "passed",
+      "log": "checks/design-final.txt"
+    },
+    {
+      "name": "experience-final",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node tools/check-experience.cjs",
+      "status": "passed",
+      "log": "checks/experience-final.txt"
+    },
+    {
+      "name": "save-final",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node tools/check-save-import.cjs",
+      "status": "passed",
+      "log": "checks/save-final.txt"
+    },
+    {
+      "name": "touch-final",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium TOUCH_DEVICES=phone,tablet node tools/check-touch.cjs",
+      "status": "passed",
+      "log": "checks/touch-final.txt"
+    },
+    {
+      "name": "match-entry-final",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node tools/check-match-entry.cjs",
+      "status": "passed",
+      "log": "checks/match-entry-final.txt"
+    },
+    {
+      "name": "match3d-state",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node tools/check-match3d-state.cjs",
+      "status": "passed",
+      "log": "checks/match3d-state.txt"
+    },
+    {
+      "name": "operations-final",
+      "command": "CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node tools/check-operations-art.cjs",
+      "status": "passed",
+      "log": "checks/operations-final.txt"
+    },
+    {
+      "name": "military",
+      "command": "ONLY='상무 복무 선수는 퓨처스' node tools/check-logic.js",
+      "status": "passed",
+      "log": "checks/military.txt"
+    }
+  ],
+  "coverage": {
+    "viewport": {
+      "sizes": 9,
+      "views_per_size": 39,
+      "total": 351,
+      "extra_check": "cast bottom stays in viewport; controls on clipped boundary are excluded from hit testing"
+    },
+    "workspace": {
+      "sizes": 4,
+      "routes_per_size": 35
+    },
+    "font_scale": [
+      12,
+      13,
+      16,
+      20,
+      24
+    ],
+    "touch_devices": [
+      "iPhone 13 Chromium emulation: portrait/landscape/reduced motion/rotation/reconnect",
+      "iPad Mini Chromium emulation: portrait/landscape/reduced motion/rotation/reconnect"
+    ],
+    "manual_3d_landscape": {
+      "viewport": [
+        844,
+        390
+      ],
+      "cast_bottom": 390,
+      "replay_bottom": 385,
+      "field_height": 252,
+      "page_errors": 0
+    }
+  },
+  "limits": [
+    "No physical Safari device test",
+    "Full check.sh and multi-season simulations were not run",
+    "Existing check-continue.cjs still fails its outdated scout hiring scenario; not reported as a full-suite pass"
+  ],
+  "screenshots": "README.md"
+}

@@ -12,17 +12,18 @@
 @media(max-width:600px){.ps .staff-mental{grid-template-columns:repeat(2,minmax(0,1fr))}.staff-network{grid-template-columns:30px 22px minmax(45px,1fr) 22px minmax(45px,1fr)}}
 /* PC 스태프 개요(34b_staff_fm.js): FM '스탭 기본 정보'처럼 세 칸 × (인원 현황 · 리그 비교 막대 · 명단 표), 화면 높이에 딱 맞춤 */
 @media(min-width:1100px){
-  .sf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto minmax(200px,34%) minmax(0,1fr);gap:0 10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
+  .sf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,.9fr) minmax(0,1fr) minmax(0,1.2fr);gap:0 10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
   main.ws-frame>.sf{height:auto}
   .sf-c{display:grid;grid-row:span 3;grid-template-rows:subgrid;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
   .sf-c>section{padding:10px 12px;min-height:0;border-top:1px solid var(--line)}.sf-c>section:first-child{border-top:0}
   .sf-c h3{margin:0 0 6px;font-size:13px;color:var(--team-hi,#4fa3ff)}
-  .sf-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px}
+  .sf-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  .sf-head>*{min-width:0}.sf-head .sf-note{white-space:normal;overflow-wrap:anywhere}.sf-head .sf-sum h2{overflow-wrap:anywhere}
   .sf-roles>div{font-size:12px;line-height:1.7;color:var(--muted)}.sf-roles>div b{font-family:var(--f-num);color:var(--ink)}.sf-roles>div.miss,.sf-roles>div.miss b{color:var(--warn)}
   .sf-note{margin:0;font-size:12px;color:var(--muted);line-height:1.5}
   .sf-sum{display:flex;flex-direction:column;gap:8px;min-width:0}.sf-sum h2{margin:0;font-size:18px}.sf-sum>.btn{align-self:flex-start}
   .sf-dots{display:flex;flex-wrap:wrap;gap:5px}.sf-dots i{width:10px;height:16px;border-radius:5px 5px 2px 2px}.sf-dots i.emp{border:1px solid var(--muted)}
-  .sf-cmp{display:flex;flex-direction:column}
+  .sf-cmp{display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
   .sf-rows{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-around;gap:4px}
   .sf-r{display:grid;grid-template-columns:76px minmax(0,1fr) 44px 34px;gap:8px;align-items:center;font-size:12px}.sf-r>span{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-r>b{text-align:right;font:700 13px var(--f-num)}.sf-r>em{font-style:normal;text-align:right;color:var(--muted)}.sf-r>em.good{color:var(--good)}.sf-r>em.bad{color:var(--bad)}
   .sf-trk{height:10px;background:var(--panel2);border-radius:2px;overflow:hidden}.sf-trk>i{display:block;height:100%;background:#5b8fc7;border-radius:2px}.sf-trk>i.good{background:var(--good)}.sf-trk>i.bad{background:var(--bad)}
@@ -34,7 +35,8 @@
   .sf-col>i{position:absolute;left:6px;right:6px;bottom:0;background:#5b8fc7;border-radius:2px 2px 0 0}.sf-col>i.good{background:var(--good)}.sf-col>i.bad{background:var(--bad)}
   .sf-col>u,.sf-leg u{position:absolute;left:0;right:0;height:2px;text-decoration:none}.sf-col>u.hi,.sf-leg u.hi{background:var(--good)}.sf-col>u.lo,.sf-leg u.lo{background:var(--bad)}.sf-col>u.av,.sf-leg u.av{background:#fff;left:3px;right:3px}
   .sf-leg{display:flex;gap:12px;margin:6px 0 0;font-size:11px;color:var(--muted)}.sf-leg span{display:inline-flex;align-items:center;gap:4px}.sf-leg u{position:static;display:inline-block;width:12px}
-  .sf-list{display:flex;flex-direction:column;min-height:0}
+  .sf-list{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .sf-list>h3,.sf-list>.row{flex:none}.sf-list>.row>.btn{max-width:100%;white-space:normal}
   .sf-tw{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}
   .sf-t{width:100%;border-collapse:collapse;font-size:12px}.sf-t th{position:sticky;top:0;background:var(--panel);text-align:left;font-weight:500;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
   .sf-t td{padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap}.sf-t td.wrap{white-space:normal}.sf-t td.bad{color:var(--bad)}.sf-t tr.miss td{color:var(--warn)}

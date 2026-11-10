@@ -59,7 +59,7 @@
  #app .roster-navigation>.rseg{display:none}
  #app .roster-caption{flex-wrap:nowrap;gap:6px;margin-bottom:2px}
  #app .roster-caption .rseg-cap{display:flex;flex:none;margin:0}#app .roster-caption .rseg-cap button{padding-inline:10px;white-space:nowrap}
- #app .roster-caption>h2.sec{flex:1;min-width:0;font-size:0;margin:0}#app .roster-caption>h2.sec .hi-i{font-size:11px}
+ #app .roster-caption>h2.sec{order:-1;flex:1;min-width:0;font-size:var(--ui-heading);margin:0}#app .roster-caption>h2.sec .hi-i{font-size:var(--ui-caption)}
  #app .roster-tools{display:flex;align-items:center;gap:6px;min-width:0;flex:none}
  #app .roster-tools>.roster-filters{flex:1 1 0;min-width:0}#app .roster-tools>.roster-filters[open]{flex-basis:100%}
  #app .roster-tools:has(>.roster-filters[open]){flex-wrap:wrap}
@@ -74,21 +74,14 @@
  #app main.ws-up .ws-panels>.card{padding-block:4px}#app main.ws-up .ws-panel>.pgr{margin:2px 0 0}#app main.ws-up .ws-panel>.pgr .btn{min-height:32px!important;padding-block:4px} /* 접힌 동안 패널 위아래 여백·페이지 넘김 줄을 줄여 목록 몫을 늘린다 */
 }
 /* 휴대폰 선수 명단 첫 묶음에 종합·포지션·나이·잠재력이 함께 들어가게: 칸 여백을 줄이고 부포지션은 아랫줄로(카페 11-09b) */
-@media(max-width:600px){#app .roster-list .rt :is(td,th):not(:first-child){padding-inline:5px}#app .roster-list .rt td.rtpos i.f{display:block}#app .roster-list .rt .pst{font-size:11px;letter-spacing:0}#app .roster-list .rt .ptier{padding:0 3px}#app .roster-list .rt .pn .av{width:30px;height:30px}}
+@media(max-width:600px){#app .roster-list .rt :is(td,th):not(:first-child){padding-inline:5px}#app .roster-list .rt td.rtpos i.f{display:block}#app .roster-list .rt .pst{font-size:var(--ui-caption);letter-spacing:0}#app .roster-list .rt .ptier{padding:0 3px}#app .roster-list .rt .pn .av{width:30px;height:30px}}
 /* 협상 상대 구단 카드: PC는 칸 높이를 채우고 주요 선수, 휴대폰은 촘촘히 */
 .tp-st{display:grid;gap:3px;font-size:12px}.tp-st>span{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px;align-items:center}.tp-st i{font-style:normal;color:var(--muted)}.tp-st>i{font-size:11px}
 @media(min-width:1100px){.ws-scroll:has(>.tp-grid){display:flex;flex-direction:column}}
 @media(max-width:699px){.tp-grid{gap:5px;margin:2px 0}.tp-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:6px 9px}.tp-card>.tp-h{grid-column:1/-1}.tp-card .tp-h{grid-template-columns:32px minmax(0,1fr) auto}.tp-card .tp-h .av{width:32px;height:32px}.tp-card>.tp-rel{grid-column:1}.tp-card>em{grid-column:2;grid-row:2;align-self:center}.tp-card>.tp-meta{grid-column:1/-1}}
-/* 휴대폰 감독 채용·신인 드래프트: 칸 안 스크롤이면 위 안내·탭·필터가 자리를 차지해 후보 카드 일부(감독 240px)나 후보 2~3줄(드래프트)만 보였다.
-   작업 공간 전체를 한 번에 스크롤해 안내·탭·필터는 위로 밀려 나가고 후보 목록이 화면의 70% 넘게 쓰게 한다 */
-@media(max-width:599px){
- main.ws-frame:has(.mgrg),main.ws-frame:has(.draft-page){overflow-y:auto!important;overscroll-behavior:contain}
- main.ws-frame:has(.mgrg)>.ws-panels,main.ws-frame:has(.draft-page)>.ws-panels{flex:none;display:block}
- main.ws-frame:has(.mgrg)>.ws-panels>.ws-panel,main.ws-frame:has(.draft-page)>.ws-panels>.ws-panel{overflow:visible}
- main.ws-frame:has(.mgrg) .ws-panel>.ws-scroll,main.ws-frame:has(.draft-page) .ws-panel>.ws-scroll{flex:none;overflow:visible!important}
-}
-
+/* 감독·드래프트 후보도 공통 작업 칸의 내부 스크롤을 사용한다. 긴 머리는 workspaceFit이 내용과 함께 접는다. */
 @media(max-width:699px) and (min-height:600px){ #app main.ws-frame,#app main.inbox-workspace{position:relative;z-index:1;background:var(--bg,#0d1117);will-change:margin-top} #app .wrap:has(>main.ws-slid){overflow:hidden} } /* 머리가 밀려 올라가는 동안 위 제목 줄 위로 덮는다 */
+@media(max-width:699px) and (min-height:600px){#app main.ws-slid .ws-panels>.card{padding-block:4px}} /* 읽는 동안 패널의 위아래 여백도 줄여 후보 목록 공간을 확보한다. */
 /* 스스로 스크롤하는 칸 안의 표 머리는 칸 맨 위에 붙는다(화면 머리 높이만큼 내려 붙어 줄 사이에 뜨던 문제, 사용자 11-08 연봉 순위) */
 #app main.ws-frame :is(.ws-scroll,.ws-own,.tw) :is(.tw,.fdt-w).twp thead th,#app main.ws-frame :is(.tw,.fdt-w).twp thead th{top:0}
 /* 휴대폰: 목록 칸 전체가 옆으로 밀리지 않게(넓은 표는 열 묶음 넘기기·표 자체 가로 스크롤로 본다, 사용자 11-08 연봉 순위) */
