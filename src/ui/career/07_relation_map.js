@@ -11,7 +11,7 @@ function relPeople(){
   const field=[];
   if(m)field.push({k:'mgr',name:m.name,role:m.interim?'감독대행':'1군 감독',av:{persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name},rel:m.rel,rl:'관계',lab:relLabel(m.rel),sub:m.fame>=70?'스타 감독':m.ego>=70?'고집 센 편':'무난한 성격'});
   for(const r of CKEYS){ const c=C[r]; if(!c)continue; const clan=m&&c.clan===m.id;
-    field.push({k:'c:'+r,name:c.name,role:CROLE[r].l,av:{persona:'coach',pid:c.id,team:G.user,age:c.age,name:c.name},rel:staffRel(c,G.user,'gm'),rl:'단장 관계',lab:clan?'감독 사단':relLabel(staffRel(c,G.user,'gm')),sub:`지도 ${dv(effC(c,G.user,'sk',1))} · 육성 ${dv(effC(c,G.user,'dv',1))}`}); }
+    field.push({k:'c:'+r,name:c.name,role:CROLE[r].l,av:{persona:'coach',pid:c.id,team:G.user,age:c.age,name:c.name},rel:staffRel(c,G.user,'gm'),rl:'단장 관계',lab:clan?'감독 사단':relLabel(staffRel(c,G.user,'gm')),sub:`${staffPending(c)?'합류 후':'현재'} 지도 ${dv(effC(c,G.user,'sk',1))} · 육성 ${dv(effC(c,G.user,'dv',1))}`}); }
   for(const [kind,L] of [['scout',G.scouts||[]],['analyst',anaList()]])for(const s of L){const rel=staffRel(s,G.user,'gm');field.push({k:(kind==='scout'?'sc:':'an:')+s.id,name:s.name,role:kind==='scout'?'스카우트 · '+staffRoleLabel(kind,s.role||'am'):'데이터팀 · '+staffRoleLabel(kind,s.role),av:{persona:'staff',role:kind==='scout'?'scout':'ana',pid:s.id,team:G.user,age:s.age,name:s.name},rel,rl:'단장 관계',lab:relLabel(rel),sub:'희망 '+staffRoleLabel(kind,staffProfile(s,kind).pref)});}
   const mine=playersOf(G.user).filter(p=>!p.ys);
   const core=[...mine].sort((a,b)=>ovr(b)-ovr(a)).slice(0,6); const sad=mine.filter(p=>(p.mor??60)<40&&!core.includes(p)).sort((a,b)=>(a.mor??60)-(b.mor??60)).slice(0,4);
@@ -60,6 +60,7 @@ function relView(){ const groups=relPeople();
   const G2=groups.filter(([,L])=>L.length); const it=inTabs('relv',[['map','지도'],['network','내 인맥'],...G2.map(([h,L])=>[h,`${h} ${L.length}`])],'map'); /* 지도와 사람 묶음을 안쪽 탭으로 */
   const W=warn.length?`<div class="note bad">${warn.map(esc).join('<br>')}</div>`:''; const g=G2.find(([h])=>h===it.cur);
   if(it.cur==='network')return it.bar+personalNetworkUI();
+  const bulk=g&&relBulkKind(g[0]);if(bulk)return it.bar+csec(g[0],relBulkGroup(bulk,g[1]),relBulkModeButton(bulk)).replace('<section class="card">','<section class="card rel-bulk-group">');
   return it.bar+(g?csec(g[0],`${g[0]==='선수단'?'<p class="small muted keep">이 목록의 수치는 선수 기분(사기)입니다. 단장 개인 친밀도와 교류 기록은 ‘내 인맥’에서 확인하세요.</p>':''}<div class="rpg">${g[1].map(relCard).join('')}</div>`):csec('관계 지도',relMap(groups))+W); }
 /* 홈: 핵심 관계 한 줄 */
 function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); const pick2=k=>{ for(const [,L] of gs)for(const x of L)if(x.k===k)return x; return null; };

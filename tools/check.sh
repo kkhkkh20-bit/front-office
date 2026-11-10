@@ -40,6 +40,14 @@ step "감독 요청·약속의 실제 이행 조건"
 for audit in dialogue event promises; do
  node "tools/check-manager-${audit}-conditions.cjs" || fail=1
 done
+step "커뮤니티 제보: 일괄면담·성장·척도·급매·목록·읽기"
+node tools/check-bulk-talk.cjs || fail=1
+node tools/check-bulk-relations-ui.cjs || fail=1
+node tools/check-young-development-feedback.cjs || fail=1
+node tools/check-coach-display-scale.cjs || fail=1
+node tools/check-trade-listing-feedback.cjs || fail=1
+node tools/check-free-agent-workspace.cjs || fail=1
+node tools/check-inbox-reading-feedback.cjs || fail=1
 step "기사 본문·댓글·발행 당시 맥락 일치"
 node tools/check-news-comment-context.cjs || fail=1
 node tools/check-news-comment-boundaries.cjs || fail=1

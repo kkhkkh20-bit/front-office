@@ -130,6 +130,7 @@
     "ui": [
       "src/ui/runtime/00_core.js",
       "src/ui/runtime/52_reading_state.js",
+      "src/ui/runtime/53_context_navigation.js",
       "src/ui/assets/00a_badges_data.js",
       "src/ui/assets/00b_assets_data.js",
       "src/ui/assets/00d_faces_data.js",
@@ -200,6 +201,7 @@
       "src/ui/actions/40_actions.js",
       "src/ui/career/83_personal_life.js",
       "src/ui/career/84_personal_network.js",
+      "src/ui/career/85_bulk_relations.js",
       "src/ui/actions/41_guard_boot.js",
       "src/ui/matches/42_commentary.js",
       "src/ui/matches/43_live_commentary.js",
@@ -292,6 +294,7 @@
       "src/css/shell/30_mobile_workspace.css",
       "src/css/career/31_personal_life.css",
       "src/css/career/84_personal_network.css",
+      "src/css/career/85_bulk_relations.css",
       "src/css/staff/32_operations_art.css"
     ],
     "graphics": [

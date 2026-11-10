@@ -126,10 +126,10 @@ function entryForm(p){
 function growthCard(p){
   if(p.prospect||p.team!==G.user||!p.oh||!p.oh.length)return '';
   const pts=p.oh.map(x=>({y:x.y,v:clamp(r5(x.o+hn('gh'+x.y,p.id)*1.5),20,80)}));
-  const lg=p.devLog; const pl=lg?(lg.play>=1.08?'주전급 출전':lg.play>=1?'충분한 출전':lg.play>=.92?'출전 부족':'거의 못 뜀'):'';
+  const lg=p.devLog,whyLabels={slump:'겨울 기량 퇴보','potential-reassessment':'잠재력 기대 재평가','training-opportunity':'집중훈련 성장기회 조정',aging:'노화에 따른 변화',military:'현역 복무 중 훈련 공백'},why=lg&&lg.tid===G.user&&Array.isArray(lg.reasons)?[...new Set(lg.reasons)].map(k=>whyLabels[k]).filter(Boolean):[]; const pl=lg?(lg.play>=1.08?'주전급 출전':lg.play>=1?'충분한 출전':lg.play>=.92?'출전 부족':'거의 못 뜀'):'';
   return `<section class="card"><div class="row between"><span class="eyebrow">연도별 코치진 평가</span><span class="small muted">매년 겨울 성장 반영</span></div>
     <div class="growth">${pts.map(x=>`<div><i style="height:${Math.max(6,(x.v-20)*1.6)}px;background:${rcol(x.v)}"></i><b>${dv(x.v)}</b><span>${String(x.y).slice(2)}</span></div>`).join('')}</div>
-    ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${G.mgr[G.user]?` · ${esc(G.mgr[G.user].name)} 감독 육성 ${G.mgr[G.user].youth}`:''}</p>`:''}</section>`;
+    ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${lg.tid===G.user&&lg.manager?` · ${esc(lg.manager.name)} 감독 육성 ${lg.manager.youth}`:''}</p>`:''}${why.length?`<p class="small muted">실제 반영 요인: ${why.map(esc).join(' · ')}. 잠재력 평가는 성장 보장이 아니며, 시즌 폼·일시적 컨디션과 기본 기량의 변화는 다릅니다.</p>`:''}</section>`;
 }
 /* 이름·등번호 고치기 */
 function pEditBox(p){ const e=UI.pEditErr; return `<div class="pe-box"><label>이름<input id="pe-nm" maxlength="12" value="${esc(p.name)}" autocomplete="off"></label>${p.team!=null?`<label>등번호<input id="pe-no" inputmode="numeric" maxlength="2" value="${jno(p)}" autocomplete="off"></label>`:''}<div class="row"><button class="btn small" data-a="pEditSave" data-v="${p.id}">저장</button><button class="btn small" data-a="pEditOpen" data-v="">취소</button></div>${e?`<p class="small bad">${esc(e)}</p>`:''}${p.renamed&&p.renamed.length?`<p class="small muted">이전 이름: ${p.renamed.map(r=>esc(r.from)).join(', ')}</p>`:''}<p class="small muted">기사·이야기에 이미 적힌 이름은 그대로 남습니다.</p></div>`; }

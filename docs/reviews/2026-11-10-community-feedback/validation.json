@@ -1,0 +1,151 @@
+{
+  "date": "2026-11-10",
+  "baseline": "a83db607c2e13053782185f1b3a523a1ca9d7f1e",
+  "artifacts": {
+    "index.html": {
+      "bytes": 58034548,
+      "sha256": "fdbad0d6ae92e468f12a9c33b8d13ad2d01ba19b30de0c0ae4067a728ce17a4f"
+    },
+    "dist/engine.js": {
+      "bytes": 2286956,
+      "sha256": "afef41efde281846d45fac41b9378e93746078e1c0746440130f82e17fec0b5a"
+    }
+  },
+  "items": [
+    {
+      "id": "list_separation",
+      "status": "implemented"
+    },
+    {
+      "id": "bulk_relations",
+      "status": "implemented"
+    },
+    {
+      "id": "young_development",
+      "status": "confirmed_training_cost_bug_fixed_existing_decline_policy_retained"
+    },
+    {
+      "id": "free_agent_tab",
+      "status": "implemented"
+    },
+    {
+      "id": "inbox_navigation_and_progress_scores",
+      "status": "implemented",
+      "pageJump": "not_reproduced"
+    },
+    {
+      "id": "urgent_trade_terms",
+      "status": "confirmed_active_urgent_premium_bug_fixed"
+    },
+    {
+      "id": "coach_display_scale",
+      "status": "implemented"
+    }
+  ],
+  "checks": {
+    "bulkTalk": 12,
+    "youngDevelopment": 8,
+    "coachDisplay": 8,
+    "tradeListings": 22,
+    "browser": {
+      "freeWorkspace": {
+        "widths": [
+          1366,
+          768,
+          390
+        ],
+        "passed": true,
+        "includes": "82 candidates; beyond rank60 search; real contract/cooldown/PS/protect/pick/detail-return; waiver/second draft row geometry"
+      },
+      "bulkRelations": {
+        "widths": [
+          1366,
+          390,
+          768
+        ],
+        "passed": true
+      },
+      "coachDisplay": {
+        "widths": [
+          390,
+          768,
+          1366
+        ],
+        "passed": true
+      },
+      "inboxNavigationAndScores": {
+        "viewports": [
+          [
+            1024,
+            5085
+          ],
+          [
+            1366,
+            900
+          ],
+          [
+            768,
+            1024
+          ],
+          [
+            390,
+            844
+          ]
+        ],
+        "passed": true,
+        "includes": "long body/delayed photos; arrow navigation; input/dialog/live protection; actual opening-day scores and spoiler concealment"
+      }
+    },
+    "regressions": {
+      "rosterRecoveryUI": {
+        "widths": [
+          390,
+          768,
+          1366
+        ],
+        "passed": true
+      },
+      "calendarProgress": {
+        "widths": [
+          390,
+          768,
+          1366
+        ],
+        "passed": true
+      },
+      "coachLayout": {
+        "widths": [
+          1366,
+          768,
+          390
+        ],
+        "passed": true
+      },
+      "syncAndSteppedAdvance": "pass",
+      "personalNetwork": 14,
+      "personalNetworkBoundaries": 17,
+      "staffMarket6395": 19
+    },
+    "unit": 34,
+    "strictSimulation": {
+      "seed": 7,
+      "end": "2028-01-01",
+      "passed": true
+    },
+    "static": "pass",
+    "memoryRebuildMatches": true,
+    "fullCheckShRun": false
+  },
+  "open": [
+    {
+      "id": "whole_page_scroll_jump",
+      "reproduced": false,
+      "checked": "1024x5085 plus long 300-line body, delayed image, lower-list selection, same-message rerender and reading restore; do not announce this symptom as fixed."
+    }
+  ],
+  "limits": [
+    "High estimated potential is not guaranteed growth; original winter regression/reassessment probabilities remain.",
+    "Undated legacy urgent listings retain existing discounts without a new historical date or automatic premium exemption.",
+    "Completed/held live games continue hiding unrevealed scores."
+  ]
+}

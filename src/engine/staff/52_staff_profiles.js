@@ -19,15 +19,28 @@ function staffOfficeV(s,kind,key){const P=staffProfile(s,kind);return clamp(25+s
 function staffScoutFactor(s,p,tid){if(!G.coach)return 1;const P=staffProfile(s,'scout'),key=p?.isP?'pitch':'bat',type=P.office[key]||0,pot=P.office.potential||0;return clamp((1-(type*(p?.prospect ? .45 : .8)+pot*(p?.prospect ? .55 : .2))/200)/staffQuality(s,'scout',tid??G.user),.88,1.12);}
 function anaRoleQuality(tid,role){if(!G.coach)return 1;const L=tid===G.user&&!G.unemp?anaList():(G.lgStaff?.[tid]?.an||[]),S=L.filter(s=>s.role===role).sort((a,b)=>anaNow(b)-anaNow(a));let sumV=0,w=0;S.slice(0,3).forEach((s,i)=>{const z=[1,.6,.3][i]*anaNow(s);sumV+=z*(1+(staffProfile(s,'analyst').office[role]||0)/200)*staffQuality(s,'analyst',tid);w+=z;});return w?clamp(sumV/w,.9,1.1):1;}
 function staffOwned(kind,id){const L=kind==='coach'?Object.values(coachesOf(G.user)).concat(G.coachX||[]):kind==='scout'?G.scouts:kind==='analyst'?anaList():[];return (L||[]).find(s=>s&&s.id===id);}
-function staffTalk(kind,id,topic){
-  if(G.unemp||!['listen','coord'].includes(topic))return '지금은 면담할 수 없습니다.';
-  const s=staffOwned(kind,id);if(!s)return '우리 구단 직원만 면담할 수 있습니다.';
-  if(topic==='coord'&&!G.mgr[G.user])return '먼저 감독을 선임해 주세요.';
+/* 일괄 처리도 단일 면담과 같은 조건을 실행 시 다시 확인한다. */
+function staffTalkCheck(kind,id,topic,expectedTid=G.user){
+  if(G.unemp)return '지금은 면담할 수 없습니다.';
+  if(expectedTid!==G.user)return '선택한 뒤 소속 구단이 바뀌었습니다. 명단을 다시 선택하세요.';
+  if(!['listen','coord'].includes(topic))return '지금은 면담할 수 없습니다.';
+  const L=kind==='coach'?Object.values(G.coach?.[G.user]||{}).concat(G.coachX||[]):kind==='scout'?G.scouts||[]:kind==='analyst'?G.analysts||[]:[],s=L.find(s=>s&&s.id===id);
+  if(!s)return '우리 구단 직원만 면담할 수 있습니다.';
+  if(topic==='coord'&&!G.mgr?.[G.user])return '먼저 감독을 선임해 주세요.';
   if(s.staff?.talk?.tid===G.user&&G.day-s.staff.talk.day<14)return '다음 면담은 '+dmd(s.staff.talk.day+14)+'부터 가능합니다.';
+  return '';
+}
+function staffTalk(kind,id,topic){
+  const why=staffTalkCheck(kind,id,topic);if(why)return why;const s=staffOwned(kind,id);
   staffAttach(s,kind);s.staff.talk={tid:G.user,day:G.day,topic};staffRelAdd(s,kind,G.user,'gm',topic==='listen'?4:2);
   if(topic==='coord')staffRelAdd(s,kind,G.user,'mgr',3);
   const msg=s.name+' 직원과 '+(topic==='listen'?'업무·희망 보직을 논의했습니다. 단장 관계 +4.':'감독과의 업무 조율을 진행했습니다. 단장 관계 +2 · 감독 관계 +3.');addLog(msg);return msg;
 }
+function bulkTalkResult(kind,topic,expectedTid,rows){const success=rows.filter(r=>r.ok),skipped=rows.filter(r=>!r.ok);return {kind,topic,day:G.day,tid:G.user,expectedTid,rows,results:rows,success,skipped,counts:{selected:rows.length,success:success.length,skipped:skipped.length},cost:0};}
+function bulkTalkRecord(result){const id='bulkTalk'+(G.bulkTalkSeq=(G.bulkTalkSeq||0)+1);result.id=id;const row={id,kind:result.kind,topic:result.topic,day:G.day,y:G.year,tid:G.user,expectedTid:result.expectedTid,counts:{...result.counts},cost:result.cost,results:result.results.map(r=>({...r}))};(G.bulkTalkHistory=G.bulkTalkHistory||[]).push(row);return result;}
+function staffTalkBulkView(targets,topic,expectedTid=G.user){const seen=new Set(),rows=(Array.isArray(targets)?targets:[]).map((t,index)=>{const kind=t?.kind,id=t?.id,key='staff:'+kind+':'+id,L=kind==='coach'?Object.values(G.coach?.[G.user]||{}).concat(G.coachX||[]):kind==='scout'?G.scouts||[]:kind==='analyst'?G.analysts||[]:[],s=L.find(s=>s&&s.id===id);let reason='';if(!t||id==null||!['coach','scout','analyst'].includes(kind))reason='면담 대상을 다시 선택하세요.';else if(seen.has(id))reason='중복 선택한 직원은 한 번만 면담합니다.';else {seen.add(id);reason=staffTalkCheck(kind,id,topic,t.tid??expectedTid);if(expectedTid!==G.user)reason='선택한 뒤 소속 구단이 바뀌었습니다. 명단을 다시 선택하세요.';}const talk=s?.staff?.talk;return {key,kind,id:id??null,tid:t?.tid??expectedTid,name:s?.name||t?.name||'선택한 직원',topic,ok:!reason,reason,msg:reason,cost:0,...(talk?.tid===G.user&&G.day-talk.day<14?{nextDay:talk.day+14}:{})};});return bulkTalkResult('staff',topic,expectedTid,rows);}
+function staffTalkBulk(targets,topic,expectedTid=G.user){const rows=staffTalkBulkView(targets,topic,expectedTid).rows;for(const row of rows){if(!row.ok)continue;const why=staffTalkCheck(row.kind,row.id,topic,row.tid);if(why){row.ok=false;row.reason=row.msg=why;continue;}try{row.msg=staffTalk(row.kind,row.id,topic);}catch(e){row.ok=false;row.reason=row.msg='이 직원의 면담을 처리하지 못했습니다. 다른 대상은 계속 처리했습니다.';}}return bulkTalkRecord(bulkTalkResult('staff',topic,expectedTid,rows));}
+
 /* 분야별 지도: 1·2군 출전 비중과 담당 코치의 실제 세부 능력으로 계산한다. */
 function coachToolV(p,k){
   if(p.team==null||!G.coach)return 55;const tid=p.team,C=coachesOf(tid),a=seasonTotal(p,G.year,'1군'),f=seasonTotal(p,G.year,'퓨처스'),n=p.isP?'outs':'pa';

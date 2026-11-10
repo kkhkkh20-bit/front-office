@@ -209,3 +209,7 @@ main.ws-frame>.setx.ws-own{flex:1;min-height:0;overflow:auto;overscroll-behavior
 .champ-moment img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#111}
 .champ-moment .cm-cap b{font-size:20px}.champ-moment .cm-cap p{margin:4px 0 0;color:#dfe6ee;font-size:14px}
 .champ-moment .cm-nav{display:flex;align-items:center;gap:8px}.champ-moment .cm-dots{display:flex;gap:6px;margin-right:auto}.champ-moment .cm-dots i{width:8px;height:8px;border-radius:50%;background:#ffffff44}.champ-moment .cm-dots i.on{background:#ffd24d}
+
+/* 실제 날짜 진행 중에는 모바일 날짜 옆에 점수를 두어 머리의 잘림 영역을 벗어나지 않는다. */
+.top .fm-dres.ap-dres{position:static;display:inline-flex;vertical-align:baseline;margin:0 0 0 3px;padding:0;background:none;font-size:10px;gap:0}
+#app .top .club b.ap-date-label{display:inline;font:inherit;line-height:inherit}

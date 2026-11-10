@@ -1,7 +1,7 @@
 /* 훈련 > 코치 배정(FM '훈련 - 코치진'처럼): 훈련 항목마다 지도하는 코치·그 항목 지도 능력(별)·
    그 항목에 집중하는 선수·코치 부담을 한 장씩. 선수 집중 항목은 trnPlan(p)(76_dev_plan.js), 담당 코치는 TRN의 c 역할 */
 const TC_GROUPS=[['타격',[['con','B','bc'],['pow','B','bc'],['eye','B','bc']]],['투구',[['stf','P','pc'],['ctl','P','cc'],['sta','P','pc']]],['수비·주루',[['def','B','dc'],['spd','B','rc'],['cat','C','cc']]],['2군',[['f:B','F','fb'],['f:P','F','fp'],['f:all','F','fm']]]];
-const tcStars=v=>{ const n=clamp(Math.round((v-20)/12),0,5); return `<span class="tc-st" title="지도 능력 ${Math.round(v)}">${'★'.repeat(n)}<i>${'★'.repeat(5-n)}</i></span>`; };
+const tcStars=v=>{ const n=clamp(Math.round((v-20)/12),0,5); return `<span class="tc-st" title="지도 능력 ${dv(v)}">${'★'.repeat(n)}<i>${'★'.repeat(5-n)}</i></span>`; };
 function trainCoachView(){ const C=coachesOf(G.user), ps=playersOf(G.user).filter(p=>!p.ys), on=ps.filter(p=>p.e1), off=ps.filter(p=>!p.e1);
   const who=(k,g)=>g==='C'?on.filter(p=>p.pos==='C'):g==='F'?off.filter(p=>k==='f:all'||(k==='f:P')===!!p.isP):on.filter(p=>(g==='P')===!!p.isP&&trnPlan(p)===k);
   const load={}; for(const [,L] of TC_GROUPS)for(const [k,g,r] of L)load[r]=(load[r]||0)+(r==='fm'?0:who(k,g).length);
