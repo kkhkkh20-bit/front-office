@@ -262,7 +262,7 @@ function mgrScnFx(m,fx,X){ const out=[]; const P=w=>X[w]&&X[w].team===G.user?X[w
   if(fx.pm){ const p=P(fx.pm[0]); if(p){ p.mor=clamp((p.mor??60)+fx.pm[1],0,100); out.push(`${p.name} 기분 ${fx.pm[1]>0?'+':''}${fx.pm[1]}`); } }
   if(fx.pref&&MPREF[fx.pref[0]]){ const [k,d]=fx.pref; mgrAttr(m); m[k]=clamp((m[k]??50)+d,20,90); out.push(`감독 기용 성향: ${MPREF[k]} ${d>0?'늘림':'줄임'}`); }
   if(fx.rest){ const p=P(fx.rest); if(p){ const f0=p.fat||0; p.fat=Math.max(0,f0-20); out.push(`${p.name} 휴식(피로 ${Math.round(f0)} → ${Math.round(p.fat)})`); } }
-  if(fx.hint){ const p=P(fx.hint); if(p){ mgrAttr(m); const err=hn('mgrhint'+m.id,p.id)*Math.max(0,90-(m.eye||50))/8; const v=Math.round(clamp((p.pot||ovr(p))+err,20,99)/5)*5; out.push(`감독 귀띔: ${p.name}(${p.age}세) 잠재력 ${v} 안팎으로 봅니다(지금 능력 ${Math.round(ovr(p))}, 감독 눈 기준).`); } }
+  if(fx.hint){ const p=P(fx.hint); if(p){ mgrAttr(m); const err=hn('mgrhint'+m.id,p.id)*Math.max(0,90-(m.eye||50))/8; const v=Math.round(clamp((p.pot||ovr(p))+err,20,99)/5)*5; out.push(`감독 귀띔: ${p.name}(${p.age}세) 잠재력 추정 ${dv(v)}점 안팎으로 봅니다(지금 능력 ${dv(ovr(p))}점, 감독 눈 기준).`); } }
   if(fx.cash){ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+fx.cash; out.push(`구단 지출 ${money(fx.cash)}`); }
   if(fx.wire){ try{ wire('감독',`${tshort(G.user)} ${fx.wire}`,{tid:G.user}); }catch(e){} out.push(`리그 소식: ${fx.wire}`); }
   if(fx.req&&MREQ[fx.req]){ if(G.mgrReq&&G.mgrReq.until>=G.day)out.push('감독 요청이 이미 하나 진행 중이라 이번 부탁은 기억만 해 둡니다.');

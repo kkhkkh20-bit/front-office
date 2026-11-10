@@ -1,0 +1,65 @@
+{
+  "base": "e6c255e404e25767fe97edddfa24974a25a3e95f",
+  "index_sha256": "89996149d09533bfff603732e0ea865a65a30e4851bb718eab96123fd78a1e2f",
+  "index_bytes": 57794434,
+  "stars": {
+    "result": "passed",
+    "viewports": [
+      [
+        1366,
+        768
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        390,
+        664
+      ],
+      [
+        568,
+        320
+      ]
+    ],
+    "includes": [
+      "current/potential same star scale",
+      "unknown current remains unknown",
+      "hidden potential does not affect supplied estimate",
+      "foreign current matches visible score",
+      "prospect star font/geometry alignment"
+    ]
+  },
+  "cleanup": {
+    "result": "passed",
+    "viewports": [
+      [
+        1366,
+        768
+      ],
+      [
+        390,
+        664
+      ],
+      [
+        568,
+        320
+      ]
+    ],
+    "includes": [
+      "two-player batch release",
+      "confirmation cancel/commit",
+      "duplicate settlement prevented",
+      "exit to roster",
+      "over-limit exit retains roster rule",
+      "roster tab exits cleanup"
+    ]
+  },
+  "military_advice_regression": "passed",
+  "static": "passed",
+  "limits": [
+    "Touch devices were emulated in Chromium; physical iOS Safari not tested.",
+    "Full check.sh not run for this UI patch.",
+    "Production deployment not verified."
+  ]
+}

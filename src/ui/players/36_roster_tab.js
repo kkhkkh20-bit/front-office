@@ -45,6 +45,7 @@ function fieldSVG(tid,interactive,inline){
 }
 function rosterView(){
   const tid=UI.rosterTeam??G.user; const own=tid===G.user; const t=team(tid);
+  if(own&&(UI.trimOn||trimNeed()&&!UI.trimHidden))return trimCard(); /* 정리는 단일 작업 패널: 일반 선수 명단·탭이 후보 공간을 나눠 갖지 않는다. */
   const d=depth(tid); const rv=UI.rlayout||(UI.rview==='card'?'card':'table');
   const vis0=p=>tid===G.user||!scoutReport(p).unseen||publicP(p);
   /* 포지션별 리그 전력 진단은 전력 구성 아래에서 독립 탭으로 분리한다. */
@@ -60,7 +61,7 @@ function rosterView(){
   const cover=own?'':`<section class="card covc"><div class="row between"><div class="row">${badge(tid,32)}<div><b>${tname(tid)}</b><div class="small muted">${t.mode==='contend'?'우승 경쟁':'리빌딩'} · 구단주 ${OWNER[t.owner].label} · 단장 관계 ${t.rel}</div></div></div><span class="row"><button class="btn small" data-a="lteamGo" data-v="${tid}">구단주·코치진</button><button class="btn small" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button></span></div>
     <p class="small">${cv.sc?`<b>${esc(cv.sc.name)} 스카우트</b>(${cv.reg} · 능력 ${'★'.repeat(cv.sc.skill)})가 담당합니다. ${cv.sc.skill>=3?'1군과 2군 선수까지 현재 능력을 평가합니다.':'1군 선수만 평가합니다. 2군까지 보려면 능력 3 이상 스카우트가 필요합니다.'}`:`<b>${cv.reg}</b> 지역을 맡은 스카우트가 없습니다. 1군 기록만 볼 수 있고 능력 평가는 없습니다.`} 다른 구단 선수의 잠재력은 알 수 없습니다.${hidden?` 파악하지 못한 2군 선수 ${hidden}명은 명단에서 빠졌습니다.`:''}</p></section>`;
   const eN=playersOf(tid).filter(p=>p.e1).length;
-  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own&&!trimNeed()?`<button class="btn small" data-a="trimOn" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 모드 끄기':'정리 모드'}</button>`:''}</div></div>`+cover;
+  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small keep fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
   if(it.cur==='depth')return head+it.bar+fmCols(fieldC+csec(`1군 야수 · 투수진 · 벤치 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,glancePitch(tid)))+futSquadView(tid);
   if(it.cur==='plan'&&own)return head+it.bar+(fmOn()?planFM():plannerCard()); /* PC: FM식 선수단 계획표(25_squad_glance.js) */
