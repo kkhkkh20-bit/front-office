@@ -10,7 +10,9 @@ step "빌드"; bash build.sh || exit 1
 step "모듈·빌드 계약"; node --test tools/test/*.test.cjs || fail=1
 step "문법"; node -e "const fs=require('fs');const h=fs.readFileSync('index.html','utf8');const s=[...h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');new Function(s);console.log('문법 OK')" || fail=1
 step "정적 점검"; node tools/check-static.js || fail=1
-step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
+if [ "${SKIP_RULE_CHECK:-0}" != "1" ]; then
+  step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
+fi
 step "개인 활동·시설·해외연수·저장 규칙"; node tools/check-feature-rules.cjs || fail=1
 step "개인 인맥·단장 교체·상황별 면담 규칙"; node tools/check-career-rules.cjs || fail=1
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027

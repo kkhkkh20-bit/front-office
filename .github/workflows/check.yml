@@ -6,9 +6,31 @@ on:
   pull_request:
 
 jobs:
-  check:
+  rules:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 점검 도구 설치
+        working-directory: tools
+        run: npm ci --no-audit --no-fund
+      - name: 규칙 점검
+        env:
+          RULE_SHARD: ${{ matrix.shard }}/8
+          NODE_PATH: tools/node_modules
+        run: |
+          bash build.sh --engine-out dist/engine.js
+          node tools/check-logic.js
+  browser-and-sim:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,8 +41,19 @@ jobs:
         run: |
           npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
-      - name: 전체 점검(빠르게)
+      - name: 빌드·브라우저·시즌 시뮬레이션
         env:
           QUICK: "1"
+          SKIP_RULE_CHECK: "1"
           NODE_PATH: tools/node_modules
         run: bash tools/check.sh
+  check:
+    if: always()
+    needs: [rules, browser-and-sim]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 전체 점검 결과
+        env:
+          RULES_RESULT: ${{ needs.rules.result }}
+          BROWSER_RESULT: ${{ needs.browser-and-sim.result }}
+        run: test "$RULES_RESULT" = success && test "$BROWSER_RESULT" = success

@@ -313,8 +313,15 @@ T('포스트시즌 경기도 부상 후유증 회복에 들어간다(4213e4e 리
   const g=simGame(G.day,G.user,op,true); applyGame(G.day,G.user,op,g,true); const got=sum(st.map(q=>q.injFx&&q.injFx[0]?q.injFx[0].got:0));
   ok(got>0,'포스트시즌 경기를 뛰었는데 후유증 회복 누적이 0'); });
 
-T('상무 복무 선수는 퓨처스 경기에 나간다(4213e4e 리뷰)',()=>{ fresh(); simTo(()=>period()==='season'); const p=playersOf(G.user).find(q=>!q.isP&&!q.foreign); p.mil={unit:'상무',from:G.day-1,until:G.day+500}; ok(isAway(p),'준비 실패: 복무 중 아님');
-  const pa=()=>{ const h=seasonTotal(p,G.year,'퓨처스'); return h?h.pa:0; }; const a0=pa(); for(let i=0;i<4;i++)futuresWeek(); ok(pa()>a0,'상무 복무 4주 동안 퓨처스 타석 0'); });
+T('상무 복무 선수는 퓨처스 경기에 나간다(4213e4e 리뷰)',()=>{ fresh(); simTo(()=>period()==='season'); const p=playersOf(G.user).find(q=>!q.isP&&!q.foreign&&healthy(q)); ok(p,'준비 실패: 건강한 국내 야수 없음');
+  enlist(p,'상무',G.day);
+  const pa=()=>seasonTotal(p,G.year,'퓨처스')?.pa||0;
+  for(let i=0;i<4;i++){
+    G.day+=7;
+    ok(isAway(p),'준비 실패: 복무 중 아님');
+    const before=pa(); futuresWeek();
+    ok(pa()>before,'상무 복무 '+(i+1)+'주 차 퓨처스 타석 0');
+  } });
 
 T('보상선수: 다른 구단으로 옮겨도 남은 다년계약은 그대로다(ae93216 리뷰)',()=>{ fresh(); const [A,B]=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); const q=domestic(B).find(x=>!x.ys&&!x.foreign);
   q.sal=900; q.faC=true; q.ext=false; q.yrs=3; q.cyrs=4; const c={id:'cpT',pid:-1,name:'테스트',grade:'A',from:A,to:B,prev:500,day:G.day,stage:'pick',prot:[]}; compResolve(c,q.id);
@@ -3929,6 +3936,17 @@ T('[공통 점검] 구장: 공사 중 이직 뒤 AI가 같은 시설을 다시 �
   S.dome=true; S.proj={stage:'build',k:'value',cap:21000,cost:3000,paid:3000,done:G.day}; G.user=t.id; try{ newStadDaily&&newStadDaily(); }catch(e){} ok(S.proj||S.dome===false,'돔 아닌 신구장인데 돔 효과'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
+const shard=process.env.RULE_SHARD;
+if(shard){
+  const m=/^(\d+)\/(\d+)$/.exec(shard);
+  const index=Number(m?.[1]), count=Number(m?.[2]);
+  if(!m||index<1||index>count||count>results.length){
+    console.error('RULE_SHARD: 1부터 시작하는 번호/전체 조각 수가 필요합니다. 예: 1/8');
+    process.exit(1);
+  }
+  const selected=results.filter((_,i)=>i%count===index-1);
+  results.splice(0,results.length,...selected);
+}
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); if(!L.length){ console.log('실패  ONLY='+ONLY+' 에 해당하는 시나리오가 없습니다(0개 실행은 통과가 아님)'); process.exit(1); } } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ const nameSeed=n=>{ let h=2166136261>>>0; for(let i=0;i<n.length;i++){ h^=n.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h|0; }; /* 시나리오마다 이름으로 난수 시작점을 정한다: 앞에 시나리오를 더해도 뒤 시나리오의 세계가 바뀌지 않게 */
 for(const t of results){ try{ globalThis.__seed(nameSeed(t.name)); t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+(process.env.STK?String(e.stack).slice(0,600):'')+String(e.message).slice(0,300)); } }
 console.error=oe;
