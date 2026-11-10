@@ -20,6 +20,11 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .people-position{display:grid;justify-items:center;min-width:48px;max-width:150px;line-height:1.3}
 .people-position>span{max-width:100%;font-size:var(--ui-caption,12px);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .people-position>b{font-size:var(--ui-body,13px);font-variant-numeric:tabular-nums}
+.retired-numbers{border-top:1px solid var(--line2);margin-top:12px;padding-top:10px}.retired-number{display:grid;gap:3px;justify-items:center;padding:10px 14px;background:var(--panel2);border:1px solid var(--line2);border-radius:5px}.retired-number>b{font:700 28px var(--f-num);color:var(--team-hi)}.retired-number>small{color:var(--muted)}
+.coach-grade-help{padding:8px 0;font-size:var(--ui-caption,12px)}.coach-grade-help summary{cursor:pointer;color:var(--team-hi)}.coach-grade-help td:last-child{white-space:normal;min-width:190px}.coach-grade-help .tw{max-height:220px;overflow:auto}
+.sf-cmp:has(>.coach-grade-help)>*{flex-shrink:0}.sf-cmp:has(>.coach-grade-help)>.sf-rows{flex:1 0 auto}.coach-grade-explanation{margin:8px 0;line-height:1.6;color:var(--muted)}
+.ibm-photo:empty{display:none}.ibm-photo .cimg-b{flex-wrap:wrap;margin-top:5px}
+.fo-ev{display:grid;grid-template-columns:64px minmax(0,1fr);align-content:start}.fo-ev>div{grid-column:1/-1}.fo-ev:has(>.scene-im)>div{grid-column:2}.fo-ev>.scene-im{grid-column:1;grid-row:1;width:64px}.fo-ev>.btn{grid-column:1/-1;width:100%;white-space:normal}
 @media(max-width:699px){.people-navigation .detail-back{padding-inline:8px}.people-navigation>.ps-nav{gap:4px}.people-position{max-width:90px}}
 .detail-page .sheet-head{margin-inline:-20px;padding-inline:20px}
 .detail-page .pf-topnav{position:relative;top:auto}

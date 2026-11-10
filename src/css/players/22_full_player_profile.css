@@ -17,7 +17,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 @media(min-width:1100px) and (max-height:800px){.pf-screen .pf-masthead{min-height:72px;padding-block:8px}.pf-name>.av{width:52px;height:52px}.pf-screen .pf-attribute-row{min-height:25px;padding-block:2px}.pf-attribute-group{margin-bottom:10px}.pf-screen .pf-overview .card{padding:10px}.pf-core-cell strong{font-size:24px}.pf-topnav{margin-bottom:10px}.pf-radar .radar{max-height:170px}.pf-screen .pf-attribute-row.text{grid-template-columns:minmax(0,1fr) auto}.pf-attribute-row.text .pf-score{max-width:100px;text-align:right}.pf-attribute-legend{font-size:9px}.pf-screen .pf-attribute-group h3{padding-bottom:5px;font-size:12px;margin-bottom:2px}}
 
 /* FM 상황판식 선수 정보(PC): 왼쪽 인물 상자, 오른쪽 장점·약점·수비 위치, 주요 행동은 오른쪽 아래 행동 줄 */
-.pf-fmcard{display:grid!important;gap:8px;padding:0!important;overflow:hidden;border-color:var(--pt2,var(--team-hi))!important}
+.pf-fmcard{display:grid!important;align-content:start;gap:8px;padding:0!important;overflow:hidden;border-color:var(--pt2,var(--team-hi))!important}
 .pf-fm-face{position:relative;background:linear-gradient(160deg,var(--pt,var(--team-dk)),#0d1217 85%);display:grid;place-items:center;padding:14px 10px 8px}
 .pf-fm-face>.av{width:120px;height:120px;border:0;background:none}
 .pf-fm-no{position:absolute;left:10px;top:10px;font:700 26px/1 var(--f-num);color:#fff;text-shadow:0 2px 6px #000}
@@ -182,7 +182,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-fmcard.ph .pf-fm-face>.av{width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;display:block;border-radius:0}
 .pf-fmcard.ph .pf-fm-face::after{content:"";position:absolute;inset:auto 0 0;height:38%;background:linear-gradient(transparent,rgba(5,8,12,.88));pointer-events:none}
 .pf-fm-ovn{position:absolute;left:0;right:0;bottom:8px;z-index:1;text-align:center;font:700 22px/1.1 var(--f-ui);letter-spacing:.02em;color:#f3d68a;text-shadow:0 2px 6px #000}
-.pf-fmcard.ph .pf-fm-name b{font-size:0}.pf-fmcard.ph .pf-fm-name b .pe-b{font-size:12px}
+.pf-fmcard.ph .pf-fm-name b{font-size:var(--ui-heading,16px)}.pf-fmcard.ph .pf-fm-name b .pe-b{font-size:12px}
 .pf-fmcard.ph .pf-fm-no,.pf-fmcard.ph .pf-fm-team{z-index:1}
 /* 휴대폰·좁은 화면 선수 상세: 실사 얼굴이면 머리말 사진을 크게(PC는 왼쪽 큰 카드) */
 @media(max-width:1099px){.pf-screen .pf-name>img.av:is([src^="data:image/webp"],[src^="data:image/jpeg"],[src^="data:image/png"]){width:112px!important;height:112px!important;border-radius:8px;object-fit:cover;border:1px solid var(--pt2,var(--line2))}}
@@ -190,6 +190,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-fm-face .cimg-b{position:absolute;left:6px;bottom:6px;z-index:3;display:flex;gap:4px;opacity:.9}
 .cimg-b .btn{min-height:22px;padding:2px 8px;font-size:11px}
 .sheet-head .cimg-b{display:flex;flex-direction:column;gap:3px;margin-left:6px}
+.pf-photo-actions{display:flex;justify-content:center;padding:0 8px}.pf-name>div>.cimg-b{flex-direction:row;flex-wrap:wrap;margin:5px 0}
 /* 선수 상황판(PC): 상자 안에 스크롤바(드래그)가 생기지 않게 한다. 상자는 내용만큼 커지고, 줄 높이는 같은 줄 상자끼리 맞춘다.
    화면이 넉넉하면 남는 높이를 줄끼리 나누고, 모자라면 화면 전체가 한 번에 내려간다(사용자 11-08). 창 높이와 상관없이 PC 전체에 적용(상자마다 스크롤하던 보통 높이 배치는 없앰, 사용자 11-09) */
 @media(min-width:1100px){

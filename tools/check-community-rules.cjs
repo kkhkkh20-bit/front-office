@@ -1,0 +1,23 @@
+/* 커뮤니티 제보: 시즌 행사 예약·짧은 FA 계약 만료·미확인 신인 자동 패스 방지. */
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+new Function('assert',fs.readFileSync(path.resolve(__dirname,'../dist/engine.js'),'utf8')+`
+{
+DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);for(const t of G.teams)depth(t.id);const base=JSON.stringify(G),reset=()=>{G=JSON.parse(base);worldReset();};
+// 예약은 비시즌에도 가능하고 요금은 실제 홈경기 진행 때만. 저장 복원·중복 호출·다음 시즌·이직 후에도 같은 기준.
+reset();const cash=team(G.user).cash;assert.match(fanPlanSet('pitch',true),/자동 운영/);fanPlanSet('theme',true);assert.equal(G.spend.fan||0,0);G=JSON.parse(JSON.stringify(G));G.day=G.cal.open;fanPlansGame(G.teams.find(t=>t.id!==G.user).id);assert.equal(G.spend.fan||0,0,'원정 구단 행사 비용을 우리에게 부과하지 않음');fanPlansGame(G.user);assert.equal(G.spend.fan,80);assert.equal(G.fanOps.boost.until,G.day+7);assert.equal(team(G.user).cash,cash,'기존 비용 장부 모델 유지');fanPlansGame(G.user);assert.equal(G.spend.fan,80,'더블헤더 중복 없음');G.day+=20;fanPlansGame(G.user);assert.equal(G.spend.fan,110,'시구만 간격 충족');fanPlanSet('pitch',false);G.day+=10;fanPlansGame(G.user);assert.equal(G.spend.fan,160,'시구 중단·테마만 재진행');G.year++;G.day=dnum(G.year,4,1);G.cal.open=G.day-1;G.cal.end=G.day+100;fanPlansGame(G.user);assert.equal(G.spend.fan,160,'다음 시즌 자동 갱신 없음');
+reset();const tid=G.teams.find(t=>t.id!==G.user).id;G.fanYrT={[tid]:{cheer:0,yt:0,last:{},yr:{},log:[],plans:{pitch:G.year}}};G.day=G.cal.open;const own=team(G.user).cash,other=team(tid).cash;fanPlansGame(tid);assert.equal(team(tid).cash,other-30);assert.equal(team(G.user).cash,own);assert.equal(G.spend.fan||0,0);fanPlansGame(tid);assert.equal(team(tid).cash,other-30,'떠난 구단 장부도 중복 없음');
+reset();fanPlanSet('pitch',true);G.day=G.cal.open;const pairs=G.cal.sched[G.day];assert.ok(pairs?.length);const home=pairs.find(([h])=>h===G.user)?.[0];if(home==null){G.cal.sched[G.day]=[[G.user,tid]];}for(const t of G.teams)setEntry(t.id);playDay(G.day);assert.equal(G.spend.fan,30,'실제 playDay에서 성공한 홈경기와 예약 연결');
+console.log('시즌 마케팅: 예약·실제 경기·중복·중단·저장·만료·구단별 장부 통과');
+// FA 계약 만료는 연봉조정으로 돌아가지 않는다. 남은 보장 계약·미자격 비FA 다년계약은 유지.
+reset();const L=domestic(G.user).filter(p=>!p.ys&&!p.mil),p=L[0],ext=L[1],keep=L[2];for(const q of [p,ext,keep]){q.age=34;q.svc=12;q.faC=true;q.yrs=1;q.cyrs=1;q.lastFA=G.year-1;q.sal=1800;for(const k in q.r)q.r[k]=60;termsClear(q);}p.ext=false;ext.ext=true;ext.svc=0;ext.age=28;keep.ext=false;keep.yrs=3;G.day=dnum(G.year,10,31);assert.equal(faUpcoming().find(x=>x.p.id===p.id)?.dp,1,'짧은 FA 만료도 예정자 표시');offseason();assert.ok(G.fa.pool.includes(p.id),'직전 FA가 1년 전이어도 만료 후 FA');assert.equal(p.team,null);assert.ok(!G.fa.pool.includes(ext.id),'자격 미달 비FA 계약은 자동 FA 아님');assert.equal(keep.yrs,2);assert.equal(keep.team,G.user);contractStart();assert.ok(!G.contract.ended.includes(p.id));assert.ok(G.contract.ended.includes(ext.id));
+console.log('FA 만료: 고액 베테랑 재시장·짧은 계약·다년 보장·비FA 자격·연봉협상 분리 통과');
+// 미확인을 낮은 별로 취급해 모든 지명권을 버리면 안 된다.
+reset();const ids=G.draftClass.slice(0,3);G.scouts=[];for(const id of ids)delete G.players[id].gmSeen;G.draft={cls:ids,picks:[{tid:G.user,rd:1,no:1},{tid:G.user,rd:2,no:1}],cur:0,done:false,y:G.year};draftRestSet('cond',4);const S=draftCondSummary(4);assert.equal(S.unknown,3);assert.ok(!S.full);assert.equal(draftRestPick(),null);assert.equal(G.draft.cur,0);assert.ok(!G.draft.picks[0].pass);assert.match(G.draft.ruleMsg,/미확인/);assert.equal(draftRestOf(),null);
+// 직접 관찰한 고잠재력 후보는 스카우트가 없어도 3성 기준으로 지명 가능.
+const q=G.players[ids[1]];q.gmSeen=G.year;q.pot=78;q.pv=0;for(const k in q.r)q.r[k]=45;draftRestSet('cond',4);assert.ok(draftCondSummary(4).fit>0);const pick=draftRestPick();assert.equal(pick.pid,q.id);assert.equal(G.draft.cur,1);
+// 명시적 패스는 그대로 동작하고 이유가 저장된다.
+draftRestSet('pass',0);draftRestPick();assert.equal(G.draft.picks[1].pass,true);assert.match(G.draft.picks[1].passReason,/직접 설정/);
+reset();G.scouts=[];const lowIds=G.draftClass.slice(0,2);for(const id of lowIds){const q=G.players[id];q.gmSeen=G.year;q.pot=20;for(const k in q.r)q.r[k]=20;}G.draft={cls:lowIds,picks:[{tid:G.user,rd:1,no:1},{tid:G.user,rd:2,no:1}],cur:0,done:false,y:G.year};draftRestSet('cond',4);assert.equal(draftCondSummary(4).unknown,0);assert.equal(draftRestPick().pass,true);assert.match(G.draft.picks[0].passReason,/기준/,'확인된 기준 미달은 설정대로 패스');
+console.log('자동 드래프트: 미확인 중지·지명권 보존·관찰 후보 3성 선별·명시적 패스 이유 통과');
+}
+`)(assert);

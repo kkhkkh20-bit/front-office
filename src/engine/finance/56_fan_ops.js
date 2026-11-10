@@ -33,10 +33,13 @@ function fanLog(t){ const F=fanOps(); F.log.unshift({d:G.day,t}); F.log.length=M
 function fanSet(k,lv){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const O=FAN_OPS[k]; lv=+lv; if(!O||!(lv>=0&&lv<O.lv.length))return '고를 수 없는 단계입니다.'; const F=fanOps(); if(F[k]===lv)return `이미 ${O.lv[lv]}입니다.`;
   F.mx=F.mx||{}; F.mx[k]=Math.max(F.mx[k]||0,F[k]||0,lv); F[k]=lv; if(k==='cheer'&&F.cs)cheerFill(F.cs); /* 단원 수를 새 단계에 맞춘다 */ fanLog(`${O.l}: ${O.lv[lv]}`); return `${O.l}을(를) '${O.lv[lv]}'(으)로 바꿨습니다.${O.m[lv]?` 매달 ${money(O.m[lv])}이 듭니다.`:' 추가 비용은 없습니다.'}`; }
 function fanEvLeft(k){ const E=FAN_EV[k], F=fanOps(); if(E.yr)return F.yr[k]===sponSeason()||(k!=='sup'&&F.yr[k]===G.year&&sponSeason()===G.year)?(k==='sup'?`${sponSeason()} 시즌 서포터즈는 이미 모집했습니다.`:`${sponSeason()} 시즌에는 이미 했습니다.`):''; /* 시즌 1회: 결산 시즌 기준(결산 뒤 11월과 1월에 두 번 안 되게, 검수 11-08) */ const l=F.last[k]; return l!=null&&G.day-l<E.cd?`${E.cd-(G.day-l)}일 뒤 다시 할 수 있습니다.`:''; }
-function fanEvent(k){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const E=FAN_EV[k]; if(!E)return '없는 이벤트입니다.'; const left=fanEvLeft(k); if(left)return `${E.l}: ${left}`;
+function fanPlanSet(k,on){ const E=FAN_EV[k];if(G.unemp)return '지금은 구단 단장이 아닙니다.';if(!E?.cd)return '시즌 자동 운영 대상이 아닙니다.';const F=fanOps();F.plans=F.plans||{};if(on)F.plans[k]=sponSeason();else delete F.plans[k];const msg=on?`${sponSeason()} 시즌 ${E.l} 자동 운영을 켰습니다. 홈경기일에 최소 ${E.cd}일 간격으로 열고, 행사마다 ${money(E.c)}을 팬 마케팅 비용으로 청구합니다. 시즌 종료 후 자동 운영이 끝납니다.`:`${E.l} 자동 운영을 중단했습니다. 이미 진행한 행사 비용과 효과는 유지됩니다.`;fanLog(msg);return msg; }
+/* 경기 반영에 성공한 홈경기에서만 실행: 연기·원정·휴식일과 더블헤더 중복 청구를 피한다. */
+function fanPlansGame(tid){ const run=()=>{const F=G.fanOps;if(G.unemp||!F?.plans||!G.cal||G.day<G.cal.open||G.day>G.cal.end||period()!=='season')return;for(const k of Object.keys(F.plans)){if(F.plans[k]!==G.year||!FAN_EV[k]?.cd||fanEvLeft(k))continue;fanEvent(k,true);}};if(tid===G.user&&!G.unemp)run();else fanAway(tid,run,true); }
+function fanEvent(k,scheduled){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const E=FAN_EV[k]; if(!E)return '없는 이벤트입니다.'; const left=fanEvLeft(k); if(left)return `${E.l}: ${left}`;
   const per=period(); if(['pitch','theme','meet'].includes(k)&&per!=='season')return `${E.l}은(는) 정규시즌 홈경기 기간에만 열 수 있습니다.`;
-  if(k==='pitch'&&!homeGames(G.user,G.day+1,G.day+1).length)return `${E.l}: 내일 우리 홈경기가 없습니다. 홈경기 전날 준비하세요.`; /* 시구는 다음 홈경기에서(검수 11-08) */
-  if(k==='theme'&&!homeGames(G.user,G.day+1,G.day+7).length)return `${E.l}: 앞으로 7일 동안 우리 홈경기가 없습니다. 홈경기 주간에 여세요.`; /* 효과를 받을 경기가 없으면 비용을 받지 않는다(검수 11-08) */
+  if(k==='pitch'&&!scheduled&&!homeGames(G.user,G.day+1,G.day+1).length)return `${E.l}: 내일 우리 홈경기가 없습니다. 홈경기 전날 준비하거나 시즌 자동 운영을 켜세요.`;
+  if(k==='theme'&&!scheduled&&!homeGames(G.user,G.day+1,G.day+7).length)return `${E.l}: 앞으로 7일 동안 우리 홈경기가 없습니다. 홈경기 주간에 열거나 시즌 자동 운영을 켜세요.`;
   const F=fanOps(), t=team(G.user); prInit(); G.spend.fan=(G.spend.fan||0)+E.c; if(E.yr)F.yr[k]=sponSeason(); else F.last[k]=G.day; const pop=clamp(t.pop,.4,1.6); let msg='';
   if(k==='pitch'){ const up=R()<.25*pop?3:R()<.6?2:1; G.pr.fan=clamp(G.pr.fan+up,0,100); news('구단',`${tshort(G.user)} 홈경기 시구, 화제의 스타 등장`,`초청 스타의 시구 영상이 온라인에서 화제가 됐습니다.`,1,{fanW:1}); msg=`시구 행사를 열었습니다. 팬 여론 +${up}.`; }
   if(k==='theme'){ F.boost={from:G.day,until:G.day+7}; G.pr.fan=clamp(G.pr.fan+1,0,100); msg=`테마 데이를 열었습니다. ${dmd(G.day+7)}까지 홈 관중이 늘어납니다. 팬 여론 +1.`; }

@@ -13,7 +13,9 @@ const errs=[], bad=[]; const oe=console.error; console.error=(...a)=>{ errs.push
 /* 숨은 오류: 엔진 곳곳의 빈 catch(e){}가 삼키는 예외를 점검할 때만 드러낸다(소스는 그대로) */
 const hidden={}; globalThis.__sw=e=>{ try{ const m=(e&&e.stack||String(e)).split('\n'); const at=(m.find(l=>/at /.test(l))||'').trim().replace(/\(.*?:(\d+):\d+\)/,'(줄 $1)'); const k=(e&&e.message||String(e)).slice(0,120)+' · '+at.slice(0,120); hidden[k]=(hidden[k]||0)+1; }catch(x){} };
 let SRC=fs.readFileSync(ENGINE,'utf8'); let nSw=0; SRC=SRC.replace(/catch\((\w+)\)\{\s*\}/g,(m,v)=>{ nSw++; return `catch(${v}){__sw(${v})}`; });
-const run=new Function('errs','bad','END','TEAM','ACTF',SRC+`
+const ratingRows=[]; const ratingFile=process.env.RATINGS_FILE;
+const collectRatings=ratingFile?row=>{ ratingRows.push(row); fs.writeFileSync(ratingFile,JSON.stringify({seed:SEED,end:END,samples:ratingRows},null,2)+'\n'); console.log('능력치 분포 '+JSON.stringify(row)); }:null;
+const run=new Function('errs','bad','END','TEAM','ACTF','collectRatings',SRC+`
 DEMO.on=false; newGame(TEAM); fdStart(); fdAdvance(false); let g0=0; while(G.fd&&!G.fd.done&&g0++<500)fdAdvance(true); G.tut={done:true,step:99}; hireMgr(G.mmarket[0].id,3); G.medSet=true;
 for(const id of [...(G.fmarket||[])]){ const p=G.players[id]; try{ if(p&&!foreignCheck(G.user,p))signForeign(G.user,id); }catch(e){} }
 /* ===== 불변식: 경기·하루마다 항상 참이어야 하는 규칙(오류 없이 결과만 틀린 버그를 잡는다) ===== */
@@ -71,12 +73,15 @@ const step=()=>{ G.live=null; G.res=null; G.stops=[];
   try{ const n=rosterN(G.user), up=Math.max(0,rosterN(G.user,G.day+1)-n); if(n+up>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX-up); }catch(e){ errs.push('trim '+e.message); } /* 내일 전역해 돌아오는 선수 자리도 미리 비운다(blocker의 전역일 검사와 같은 기준, 실제 게임은 7일 전 경고 메일) */
   try{ if(!G.unemp&&!G.mgr[G.user]){ if(!G.mmarket||!G.mmarket.length)refreshMgrMarket(); hireMgr(G.mmarket[0].id,2); } }catch(e){ errs.push('mgr '+e.message); }
   try{ advance('day'); }catch(e){ errs.push('advance '+dstr(G.day)+' '+e.message); G.day++; } try{ invDay(); }catch(e){ INV('검사 오류',e.message); } };
-let g=0; const T0=Date.now(); let lastD=G.day, same=0;
-while(G.year<END&&g++<90000){ step(); if(G.day===lastD){ if(++same>=40){ let why=''; try{ why=blocker()||''; }catch(e){ why='blocker 오류 '+e.message; } bad.push('진행 멈춤 '+dstr(G.day)+(why?' · '+why:'')+(G.gameOver?' · 게임 끝':'')); break; } } else { lastD=G.day; same=0; }
+/* 옵션: 신인·기존 선수·외국인을 분리해 같은 시점(매년 1월 1일) 능력치 분포를 기록한다. 조회는 난수를 쓰지 않는다. */
+const _simInitialIds=collectRatings?new Set(Object.values(G.players).filter(p=>p.team!=null).map(p=>p.id)):null;
+const _simRatingSample=()=>{if(!collectRatings)return;const C=Object.values(G.players).filter(p=>p.team!=null&&!p.prospect&&!(p.joinY>G.year)&&!p.ys),stat=L=>{const V=L.map(ovr).sort((a,b)=>a-b),q=x=>V[Math.min(V.length-1,Math.floor(V.length*x))]||0;return {n:L.length,mean:+avg(V).toFixed(2),displayMean:+avg(V.map(dv)).toFixed(2),p90:+q(.9).toFixed(2),p99:+q(.99).toFixed(2),max:+q(1).toFixed(2),raw65:V.filter(v=>v>=65).length,display80:V.filter(v=>dv(v)>=80).length,display90:V.filter(v=>dv(v)>=90).length,potential:+avg(L.map(p=>p.pot)).toFixed(2),age:+avg(L.map(p=>p.age)).toFixed(2)};};collectRatings({year:G.year,day:dstr(G.day),domestic:stat(C.filter(p=>!p.foreign)),first:stat(C.filter(p=>!p.foreign&&p.e1)),newgen:stat(C.filter(p=>!p.foreign&&!_simInitialIds.has(p.id))),oldgen:stat(C.filter(p=>!p.foreign&&_simInitialIds.has(p.id))),foreign:stat(C.filter(p=>p.foreign))});};
+let g=0; const T0=Date.now(); let lastD=G.day, same=0, ratingYear=G.year;_simRatingSample();
+while(G.year<END&&g++<90000){ step();if(G.year!==ratingYear){ratingYear=G.year;_simRatingSample();} if(G.day===lastD){ if(++same>=40){ let why=''; try{ why=blocker()||''; }catch(e){ why='blocker 오류 '+e.message; } bad.push('진행 멈춤 '+dstr(G.day)+(why?' · '+why:'')+(G.gameOver?' · 게임 끝':'')); break; } } else { lastD=G.day; same=0; }
   if(G.day%30===0){ for(const p of Object.values(G.players)){ if(!Number.isFinite(p.sal)||p.sal<0)bad.push(G.year+' 연봉 '+p.name+' '+p.sal); for(const k in p.r)if(!Number.isFinite(p.r[k]))bad.push(G.year+' 능력치 NaN '+p.name+' '+k); if(p.team!=null&&(p.age>46||p.age<16))bad.push(G.year+' 나이 '+p.name+' '+p.age); }
     for(const t of G.teams)if(!Number.isFinite(t.cash))bad.push(G.year+' 현금 '+t.id); } }
 const mv={}; for(const m of (G.moves||[]))mv[m.t]=(mv[m.t]||0)+1; return {end:dstr(G.day),sec:(Date.now()-T0)/1000,unemp:!!G.unemp,mv,sw:((G.myC&&G.myC.stints)||[]).length};`);
-let r; try{ r=run(errs,bad,END,TEAM,process.env.ACT==='1'); }catch(e){ errs.push('중단 '+e.stack.slice(0,300)); }
+let r; try{ r=run(errs,bad,END,TEAM,process.env.ACT==='1',collectRatings); }catch(e){ errs.push('중단 '+e.stack.slice(0,300)); }
 console.error=oe;
 const B=[...new Set(bad)];
 const H=Object.entries(hidden).sort((a,b)=>b[1]-a[1]);

@@ -13,6 +13,7 @@ step "정적 점검"; node tools/check-static.js || fail=1
 step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
 step "개인 활동·시설·해외연수·저장 규칙"; node tools/check-feature-rules.cjs || fail=1
 step "개인 인맥·단장 교체·상황별 면담 규칙"; node tools/check-career-rules.cjs || fail=1
+step "커뮤니티·시즌 행사·FA 만료·자동 지명 규칙"; node tools/check-community-rules.cjs || fail=1
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1
@@ -24,6 +25,7 @@ step "선수 카드·모바일 읽기·검색 공간·파일 불러오기"; node
 step "백업 가져오기·슬롯 전환·itch 이전"; node tools/check-save-import.cjs || fail=1
 step "개인 활동 상대·검색·빠른 설정 변경"; node tools/check-career-review.cjs || fail=1
 step "인물 이전·다음·연속 면담"; node tools/check-people-navigation.cjs || fail=1
+step "사진·소식함·코치 표시·시즌 행사·영구결번"; node tools/check-community-ui.cjs || fail=1
 step "긴 대화·관전 보고·읽기 위치"; node tools/check-reading-navigation.cjs || fail=1
 step "트레이드 제안 카드 레이아웃"; node tools/check-trade-layout.cjs || fail=1
 step "공통 글꼴·패널 정렬"; node tools/check-design-system.cjs || fail=1

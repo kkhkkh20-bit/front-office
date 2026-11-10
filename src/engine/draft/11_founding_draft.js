@@ -243,13 +243,16 @@ function advanceDraft(stopAtUser){
    cond: 스카우트 추천 후보의 잠재력 추정 등급이 기준(min) 이상일 때만 지명하고, 아니면 건너뛴다. 로스터가 한도에 차면 더 뽑지 않는다.
    KBO 규약상 지명권 패스는 라운드 제한이 없어 1·2라운드도 기준 미달이면 건너뛴다(카페 피드백 11-09v).
    드래프트가 열리기 전에 정하면 drestPre에 두었다가 startDraft가 이어 받는다 */
-function draftRestSet(mode,min){ const d=G.draft; const r=mode?{mode,min:min||3,tid:G.user}:null; if(!d||d.done){ G.drestPre=r&&Object.assign({y:G.year},r); return; } d.rest=r; }
+function draftRestSet(mode,min){ const d=G.draft; const r=mode?{mode,min:min||3,tid:G.user}:null; if(!d||d.done){ G.drestPre=r&&Object.assign({y:G.year},r); return; } d.rest=r; delete d.ruleMsg; }
 function draftRestPre(){ const P=G.drestPre; return P&&P.y===G.year&&P.tid===G.user&&!G.unemp?P:null; }
 /* 일괄 처리는 설정한 구단에만: 이직하면 새 구단 지명에 쓰지 않는다(검수 11-09d) */
 function draftRestOf(){ const d=G.draft; return d&&!d.done&&d.rest&&d.rest.tid===G.user&&!G.unemp?d.rest:null; }
+function draftCondSummary(min){ const d=G.draft, ids=d&&!d.done?d.cls:G.draftClass||[]; let total=0,fit=0,unknown=0;for(const id of ids){const p=G.players[id];if(!p?.prospect)continue;total++;const T=potTierP(scoutReport(p),p);if(!T)unknown++;else if(T.n>=min)fit++;}return {total,fit,unknown,full:rosterProj(G.user)>=ROSTER_MAX}; }
 function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null;
+  const S=R0.mode==='cond'?draftCondSummary(R0.min):null;if(S&&!S.full&&!S.fit&&S.unknown){d.ruleMsg=`기준 충족 후보가 확인되지 않았고 잠재력 미확인 후보가 ${S.unknown}명 남아 자동 지명을 멈췄습니다. 미확인을 기준 미달로 처리하지 않습니다. 스카우트 배치·직접 관찰을 확인하거나 직접 지명하세요.`;d.rest=null;return null;}
   const cond=R0.mode==='cond'; const fit=p=>{ const T=potTierP(scoutReport(p),p); return !!T&&T.n>=R0.min; }; const id=cond&&rosterProj(G.user)<ROSTER_MAX?userAutoPick(fit):null; const ok=!!id; /* 기준을 채운 후보 중 추천 1위(종합 1위가 미달이어도 2위 이하에서 찾는다) */
   if(ok){ pk.rule=true; doPick(id); return {pk,pid:id,me:true}; }
+  pk.passReason=!cond?'직접 설정: 남은 지명 건너뛰기':S.full?`정식 로스터 한도 ${ROSTER_MAX}명`:'잠재력 추정 기준을 충족한 후보 없음';
   passCurrent(); return {pk,pass:true}; }
 function userAutoPick(ok){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect&&(!ok||ok(G.players[id]))); let best=null,bs=-1; /* ok: 조건(등급 등)을 채운 후보 중에서만 */ const pol=draftPolK();
   for(const id of av){ const rp=scoutReport(G.players[id]); const v=draftVal(rp)+(pol&&draftFit(G.players[id],pol)?4:0); if(v>bs){bs=v;best=id;} } return best; }

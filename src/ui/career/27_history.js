@@ -40,12 +40,13 @@ function histView(){
    옛 저장도 G.history만 있으면 그대로 그린다. 우리 구단과 상대 구단을 같은 모양으로 보여 준다 */
 function trophyOf(tid){ const H=(G.history||[]).filter(h=>h.order); const ys=f=>H.filter(f).map(h=>h.y);
   return {c:ys(h=>h.champ===tid),r:ys(h=>h.runner===tid),f:ys(h=>h.order[0]&&h.order[0].tid===tid),y0:H.length?H[0].y:null,y1:H.length?H[H.length-1].y:null}; }
+function retiredNumbers(tid){ const L=[...retNosOf(tid)].sort((a,b)=>a.no-b.no); return `<section class="retired-numbers" aria-label="${esc(tname(tid))} 영구결번"><h3>영구결번 <span class="small muted">${L.length}명</span></h3>${L.length?`<div class="row wrapr">${L.map(r=>`<div class="retired-number"><b>${r.no}</b><span>${esc(r.name)}</span><small>${r.y}년 지정</small></div>`).join('')}</div>`:'<p class="small muted">아직 지정된 영구결번이 없습니다.</p>'}</section>`; }
 function trophyCase(tid,compact){ const T=trophyOf(tid), last=T.c.length?T.c[T.c.length-1]:null;
   let streak=0; if(last!=null&&last===T.y1)for(let y=last;T.c.includes(y);y--)streak++;
   const note=T.y0==null?'아직 끝난 시즌이 없습니다.':last==null?`${T.y0}년 기록 이후 아직 우승이 없습니다.`:last===T.y1?(streak>=2?`${streak}년 연속 우승 · 디펜딩 챔피언`:'디펜딩 챔피언'):`마지막 우승 ${last}년 · ${T.y1-last}시즌째 무관`;
   const shelf=[...T.c.map(y=>[y,'c']),...T.r.map(y=>[y,'r']),...T.f.map(y=>[y,'f'])].sort((a,b)=>b[0]-a[0]||'cfr'.indexOf(a[1])-'cfr'.indexOf(b[1]));
   const ic=k=>cupImg(k,compact?30:38), lab={c:'우승',r:'준우승',f:'정규 1위'};
-  return `<div class="trc${tid===G.user?' me':''}${compact?' sm':''}"><div class="trc-h">${badge(tid,compact?22:28)}<b>${esc(tname(tid))}</b><span class="num">우승 ${T.c.length} · 준우승 ${T.r.length} · 정규 1위 ${T.f.length}</span></div><p class="trc-n">${note}</p>${compact?'':trophyYears(tid)}<div class="trc-s">${shelf.length?shelf.map(([y,k])=>`<span class="trc-t ${k}" title="${y} ${k==='f'?'정규시즌 1위':'한국시리즈 '+lab[k]}">${ic(k)}<i>${y}</i><em>${lab[k]}</em></span>`).join(''):'<span class="trc-e">진열장이 비어 있습니다</span>'}</div></div>`; }
+  return `<div class="trc${tid===G.user?' me':''}${compact?' sm':''}"><div class="trc-h">${badge(tid,compact?22:28)}<b>${esc(tname(tid))}</b><span class="num">우승 ${T.c.length} · 준우승 ${T.r.length} · 정규 1위 ${T.f.length}</span></div><p class="trc-n">${note}</p>${compact?'':trophyYears(tid)}<div class="trc-s">${shelf.length?shelf.map(([y,k])=>`<span class="trc-t ${k}" title="${y} ${k==='f'?'정규시즌 1위':'한국시리즈 '+lab[k]}">${ic(k)}<i>${y}</i><em>${lab[k]}</em></span>`).join(''):'<span class="trc-e">진열장이 비어 있습니다</span>'}</div>${retiredNumbers(tid)}</div>`; }
 /* 연도별 정규시즌 순위와 가을야구 결과(최근 8시즌) */
 function trophyYears(tid){ const H=(G.history||[]).filter(h=>h.order).slice(-8).reverse(); if(!H.length)return '';
   return `<div class="trc-y">${H.map(h=>{ const i=h.order.findIndex(o=>o.tid===tid), r=h.champ===tid?'우승':h.runner===tid?'준우승':i>=0&&i<5?'가을야구':''; return `<span class="${h.champ===tid?'c':r?'p':''}"><i>${h.y}</i><b>${i+1}위</b><em>${r||'-'}</em></span>`; }).join('')}</div>`; }

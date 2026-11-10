@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-10",
+  "base": "126428488e4590216486a843b38159b05d1e384d",
+  "index_sha256": "02c5e88eac072c3682be9763ebc8b6d3cff04d1671388fa6c31c0dd068f00569",
+  "index_bytes": 57790229,
+  "result": "passed",
+  "viewports": [
+    [
+      1366,
+      768
+    ],
+    [
+      3440,
+      1305
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      390,
+      664
+    ],
+    [
+      568,
+      320
+    ]
+  ],
+  "browser": "Chromium Playwright; touch emulation for tablet and phone",
+  "checks": {
+    "community_rules": "passed",
+    "community_ui": "5 viewports passed",
+    "prior_logic_selected": 5,
+    "node_tests": {
+      "pass": 34,
+      "fail": 0
+    },
+    "viewport_cases": 20,
+    "save_import": "passed",
+    "people_navigation": "4 viewports passed",
+    "features": "passed",
+    "career": "passed",
+    "static": "passed"
+  },
+  "simulations": [
+    {
+      "seed": 7,
+      "start": 2026,
+      "end": 2036,
+      "error_summary": "none",
+      "samples": 11
+    },
+    {
+      "seed": 21,
+      "start": 2026,
+      "end": 2036,
+      "error_summary": "none",
+      "samples": 11
+    }
+  ],
+  "limits": [
+    "Physical iOS Safari was not tested.",
+    "No original user save was supplied. Ratings findings are from two new games with default autopilot.",
+    "The full 1077-case logic run was stopped after more than 140 passing cases; five relevant existing scenarios and the new regression checks were completed. Full check.sh was not run.",
+    "No broad ratings rebalance or retroactive rewrite of existing player ratings was applied.",
+    "Production deployment was not verified."
+  ],
+  "screenshots": [
+    "photo-1366.webp",
+    "photo-390.webp",
+    "photo-768.webp",
+    "photo-568.webp",
+    "inbox-390.webp",
+    "coach-1366.webp",
+    "coach-3440.webp",
+    "marketing-390.webp",
+    "marketing-1366.webp"
+  ]
+}
