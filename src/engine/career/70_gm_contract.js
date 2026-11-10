@@ -19,7 +19,9 @@ function myCClose(how){ const C=G.myC; if(!C||C.tid==null)return; const per=peri
     /* 시즌 중 떠나면 그 구단에서 쌓은 그해 승패를 통산에 남긴다(검수 11-07: 이직하면 사라짐). 순위·우승은 시즌을 마친 구단 기준이라 part 표시 */
     const J0=G.gmJoin&&G.gmJoin.y===G.year&&G.gmJoin.tid===C.tid?G.gmJoin:null, late=!!(J0&&J0.psDone); /* 시즌이 끝난 뒤 부임했으면 그해 몫이 없다 */
     if((per==='season'||per==='post'||over&&!late)&&r&&!(J0&&J0.rec)&&!(C.seas||[]).some(s=>s.y===G.year&&s.tid===C.tid&&(!s.part||!J0))){ const J=J0; if(J)J.rec=true; /* 같은 해 같은 구단 두 번째 재임도 그 기간 승패로 남긴다(검수 11-08) */ let rk=null; try{ rk=over?G.ps.order.findIndex(x=>x.tid===C.tid)+1||null:tieRank(standingsNow(),C.tid)||null; /* 동률이면 순위표와 같은 공동 순위(검수 11-09zc) */ }catch(e){}
-      (C.seas=C.seas||[]).push({y:G.year,tid:C.tid,rank:rk,w:Math.max(0,(r.w||0)-(J?J.w:0)),l:Math.max(0,(r.l||0)-(J?J.l:0)),t:Math.max(0,(r.t||0)-(J?J.t||0:0)),...(over?{ch:G.ps.champ===C.tid?1:G.ps.runner===C.tid?2:0}:{ch:0,part:1,how})}); }
+      const st={y:G.year,tid:C.tid,rank:rk,w:Math.max(0,(r.w||0)-(J?J.w:0)),l:Math.max(0,(r.l||0)-(J?J.l:0)),t:Math.max(0,(r.t||0)-(J?J.t||0:0)),...(over?{ch:G.ps.champ===C.tid?1:G.ps.runner===C.tid?2:0}:{ch:0,part:1,how})};
+      try{ if(J&&!J.legPrev)legEnter(J); legSegment(C.tid,{k:legMeK(),n:legMeName(),u:1},st.w,st.l,over,st.ch===1,!!J); }catch(e){ console.error(e); }
+      (C.seas=C.seas||[]).push(st); }
     try{ const S=personalState(), fy=fyNow(), ak=fy+':'+C.tid;
       if(over&&!late&&C.tid===G.user&&C.y0<=fy&&!S.settled[fy]){ /* 끝난 시즌 연봉 전액·확정된 성과급·명성은 떠나는 단장 몫. 구단 현금에서 바로 낸다 */
         team(C.tid).cash-=C.sal; hoBook(C.tid,[],[['단장 연봉',C.sal]]); C.earn+=C.sal; personalSettle(C.sal);

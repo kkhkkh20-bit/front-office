@@ -40,6 +40,7 @@ function mailPrune(){ for(const m of G.mail)if(!m.read&&G.day-(m.day??G.day)>14&
 function mailLiveAct(m,a){ const c=m.ctx||{}, id=String(a.v??'').split(':')[0];
   if(a.a==='stKeep'||a.a==='stLet')return (G.stRaid||[]).some(r=>r.id===id&&(c.raid==null||r.exp===c.raid));
   if(a.a==='cmKeep'||a.a==='cmLet')return (G.cmRaid||[]).some(r=>r.id===id&&r.exp===+String(a.v).split(':')[2]);
+  if(a.a==='legPres')return legPresOpen();
   if(a.a==='jobYes'||a.a==='jobNo')return (G.jobs||[]).some(j=>!j.done&&j.tid===+a.v&&(c.job==null||j.exp===c.job));
   return false; }
 function headline(t){ const i=t.search(/[.!?](\s|$)/); return i>0&&i<46?t.slice(0,i):t.length>40?t.slice(0,38)+'…':t; }

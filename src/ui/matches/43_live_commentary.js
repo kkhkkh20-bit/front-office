@@ -47,10 +47,10 @@ function pcRecords(g,k){
  return out.sort((a,b)=>b.priority-a.priority);
 }
 function pbpCall(g,k){
- const x=g.pbp[k];if(!x)return {c:'',a:''};const raw=pbpCallBase(g,k),pick=(key,lines)=>pcVoice(g,k,key,lines);
+ const x=g.pbp[k];if(!x)return {c:'',a:''};const pick=(key,lines)=>pcVoice(g,k,key,lines);
  if(x[1]==='PC')return {c:`${pcName(g,x[2])}, 마운드를 이어받습니다!`,a:''};
  if(x[1]==='SB'||x[1]==='CS'){const from=pcBefore(g,k).bases.indexOf(x[2]),base=from>=0?['2루','3루','홈'][from]:'다음 베이스',name=pcName(g,x[2]);return {c:x[1]==='SB'?`${name}, 공보다 먼저 들어갑니다! ${base} 도루 성공!`:`아, 잡혔어요! ${name}, ${base}에서 도루자!`,a:'',records:pcRecords(g,k)};}
- if(typeof x[1]!=='number')return {c:raw.c,a:''};
+ if(typeof x[1]!=='number')return {c:pbpCallBase(g,k).c,a:''};
  const name=pcName(g,x[1]),o=x[3],m=pcMoment(g,k),today=pcToday(g,k,x[1]),form=g.broadcast?.players?.[x[1]],hit=['1B','2B','3B','HR'].includes(o);let c='';
  switch(o){
   case 'HR':{const kind=m.runs===4?'만루 홈런':m.runs>1?m.runs+'점 홈런':'솔로 홈런';c=today.hr?`또 홈런을 쳤어요! ${today.hr===1?'멀티홈런':`오늘 ${today.hr+1}홈런`}, ${name}!`:pick('homer-result',[`${name}, 넘어갑니다! ${kind}!`,`아, 이게 뭔가요! ${name}의 ${kind}!`,`담장 밖으로! ${name}, ${kind}!`,`이 한 방에 구장이 들썩입니다! ${name}, ${kind}!`,`제대로 후렸어요! ${name}, ${kind}!`,`잡을 수 없는 곳으로! ${name}, ${kind}!`]);break;}
@@ -62,7 +62,7 @@ function pbpCall(g,k){
   case 'K':{const q=storedPitchSequence(x)?.at(-1);c=q?`${name}, ${q.t}에 ${q.res==='루킹 삼진'?'루킹':'헛스윙'} 삼진!`:`${name}, 삼진! 마운드가 웃습니다!`;break;}
   case 'DP':c=`아, 이게 뭔가요! ${name}, 병살타! ${x[4]===3?'이닝이 끝납니다!':'아웃 두 개를 내줍니다!'}`;break;
   case 'SAC':c=`${name}, 짧게 댔습니다! 희생번트로 주자를 보냅니다.`;break;
-  default:c=x[16]?`${name}, 번트 실패! 앞선 주자가 포스아웃됩니다!`:x[9]?`아, 이게 뭔가요! 수비 실책! ${name}, 살아 나갑니다!`:x[5].includes(x[1])?`${name}, 1루에서 살아남습니다!`:raw.c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');
+  default:c=x[16]?`${name}, 번트 실패! 앞선 주자가 포스아웃됩니다!`:x[9]?`아, 이게 뭔가요! 수비 실책! ${name}, 살아 나갑니다!`:x[5].includes(x[1])?`${name}, 1루에서 살아남습니다!`:pbpCallBase(g,k).c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');
  }
  if(hit&&!today.h&&g.broadcast?.regular&&form?.hitless>=3)c=`${name}, ${form.hitless+1}경기 만의 안타! 긴 침묵을 깹니다!${o==='HR'?' 홈런이에요!':o==='2B'?' 2루타!':o==='3B'?' 3루타!':''}`;
  if(hit&&m.runs&&m.pre.outs===2&&o!=='HR')c+=` 2아웃 적시타!`;
