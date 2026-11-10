@@ -1,0 +1,18 @@
+PASS #39 winter FA deadline
+PASS #40 investment next opening
+PASS #41 late investment article
+PASS #42 acquired then released retains promise credit
+PASS #43 retired target waits until deadline and keeps name
+PASS #44 postseason game application counts hype sample
+PASS #45 cash receiving offer matches grade
+PASS #46 changing good filter handles existing bad offer
+PASS #47 injury prevents stale role request
+PASS #48 reregistration lock prevents role and alternative promises
+PASS #49 respect relationship reward once per manager season
+PASS #50 truck cash checks and exactly one cash payment
+PASS extra: promise from another club is void
+PASS extra: future entrant and national duty cannot receive role promises
+PASS extra: truck does not reserve trade payment twice
+PASS extra: received offer transfers pick ownership once
+PASS extra: unfunded received cash offers leave players and money unchanged
+17 focused audit checks passed

@@ -176,7 +176,7 @@ function ivNewsWeekly(){ if(G.unemp)return; const sad=playersOf(G.user).filter(p
   if(sad&&R()<.5){ initPers(sad); const t=sad.pers.amb>=12?'"뛸 수 있는 팀에서 뛰고 싶습니다."':'"요즘 마음이 편하지 않습니다. 구단과 얘기해 보겠습니다."'; news('선수',`${sad.name}, 공개 불만 "${t.replace(/^"|"$/g,'').slice(0,20)}…"`,`${sad.name}이(가) 인터뷰에서 ${t}라고 말했습니다. 구단 내부 분위기에 물음표가 붙습니다.`,-1,{ref:sad.id}); }
   if(period()==='season'&&R()<.35){ const t=pick(G.teams.filter(x=>x.id!==G.user)); const m=mgrOf(t.id); if(m&&!m.interim){ const ty=mgrType(m); news('경기',`${tshort(t.id)} ${m.name} 감독 "${pick(ty.k==='small'||ty.k==='combo_d'?['한 점씩 짜내는 우리 야구를 하겠다','번트 하나, 도루 하나가 순위를 바꾼다','작은 야구가 강한 야구다']:ty.k==='big'||ty.k==='combo_o'?['시원하게 치는 야구로 간다','점수는 방망이로 낸다','홈런 군단 소리 듣게 하겠다']:['우리 페이스를 지키겠다','순위표는 9월에 보겠다','부상만 없으면 충분히 올라간다','불펜 운용이 남은 시즌의 열쇠다'])}"`,`${tname(t.id)}의 ${m.name} 감독(${ty.n})이 취재진에게 남은 시즌 운영 방향을 밝혔습니다.`,0); } } }
 /* 정기 인터뷰 요청 일정 */
-function ivDaily(){ const o=dobj(G.day); if(G.unemp)return;
+function ivDaily(){ const o=dobj(G.day); if(G.unemp){ try{ mdDaily(); }catch(e){} return; }
   if(G.iv&&!G.iv.done&&G.iv.exp<G.day){ ivSkip(); G.iv.lapse=true; } /* 기한 안에 응하지 않으면 거절과 같게 처리(단장 침묵 기사) */
   try{ ivNewsPub(); }catch(e){} try{ ivFollowDaily(); }catch(e){}
   try{ mdDaily(); }catch(e){} /* 미디어데이(감독·선수 참석): 80_media_day.js */

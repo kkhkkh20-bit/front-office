@@ -4,7 +4,7 @@ const lgPct=x=>x.w+x.l?(x.w/(x.w+x.l)).toFixed(3).replace(/^0/,''):'-';
 function lgStars(){ const L=[], seen=new Set(), hof=new Set(); try{ for(const r of hofList())hof.add(String(r.pid??r.id)); }catch(e){}
   const add=(p,aw,fr)=>{ const d=p&&p.draft; if(!d||d.tid==null||d.y==null||seen.has(String(p.id)))return; seen.add(String(p.id)); if(fr||hof.has(String(p.id))||(aw||[]).some(a=>/MVP|골든/.test(a)))L.push({id:p.id,name:p.name,t:d.tid,y:d.y}); };
   for(const p of Object.values(G.players))add(p,p.aw,p.fr&&p.fr.tid===(p.draft&&p.draft.tid));
-  for(const id in (G.arch||{})){ const a=G.arch[id]; if(a&&a.dy!=null&&a.dt!=null)add({id:a.id,name:a.name,draft:{y:a.dy,tid:a.dt}},a.aw,false); }
+  for(const id in (G.arch||{})){ const a=G.arch[id]; if(a&&a.dy!=null&&a.dt!=null)add({id:a.id,name:a.name,draft:{y:a.dy,tid:a.dt}},a.aw,a.fr&&a.fr.tid===a.dt); }
   return L; }
 const lgStarsOf=(S,x)=>S.filter(s=>s.t===x.t&&s.y>=x.y0&&s.y<=x.y1);
 function legacyView(){ const it=inTabs('lgv',[['club','역대 단장'],['hof','단장 전당'],['dyn','왕조 비교'],['tl','연대기 한 장']],'club');
@@ -18,7 +18,7 @@ function lgClubView(){ const tid=UI.lgT!=null&&team(UI.lgT)?UI.lgT:(G.user??0); 
   return csec(`${esc(tname(tid))} 역대 단장`,pick+(L.length?`<div class="list">${L.map(row).join('')}</div>`:'<p class="small muted">아직 기록이 없습니다. 시즌을 마치면 그해 단장이 쌓입니다.</p>')
     +`<p class="small muted">기록은 ${D.L.length?Math.min(...D.L.map(x=>x.y0)):G.year}년부터 남아 있습니다. 배출 스타는 그 단장 재임 중 지명한 선수 가운데 MVP·골든글러브·프랜차이즈 스타·명예의 전당 선수입니다.</p>`)
    +csec('구단이 공로를 기리는 방법',`<p class="small">실제 한국 프로야구에는 단장을 구단 레전드로 올리는 공식 제도가 뚜렷하지 않습니다. 이 게임에서는 한 구단에서 ${LEG_HON.s}시즌 이상 일하며 우승 ${LEG_HON.c}회 이상, 또는 그 구단 우승 ${LEG_HON.c5}회를 이룬 단장이 구단을 떠나거나 물러나면 '구단 공로자'로 구단 역사에 이름이 남고 기사가 납니다.</p>
-    <p class="small">한 구단을 ${LEG_PRES.s}시즌 넘게 이어서 맡고 구단주 신뢰가 ${LEG_PRES.trust} 이상이면 구단주가 대표이사(사장)나 고문 자리를 한 번 제안합니다. 답은 기록으로만 남고 단장 업무는 그대로 이어집니다.${P?` <b>${P.y}년 ${esc(P.role)} 제안 · ${P.ans==null?'답하지 않음':P.ans?'수락':'사양'}</b>`:''}</p>
+    <p class="small">한 구단을 ${LEG_PRES.s}시즌 이상 연속해서 맡고 구단주 신뢰가 ${LEG_PRES.trust} 이상이면 모기업이 있는 구단의 구단주가 대표이사(사장)나 고문 자리를 한 번 제안합니다. 답은 기록으로만 남고 단장 업무는 그대로 이어집니다.${P?` <b>${P.y}년 ${esc(P.role)} 제안 · ${P.ans==null?'답하지 않음':P.ans?'수락':'사양'}</b>`:''}</p>
     ${(G.gmLeg&&G.gmLeg.hon||[]).length?`<p class="small">내 계보의 구단 공로자: ${G.gmLeg.hon.map(h=>`${esc(h.n)}(${esc(tshort(h.t))} ${h.y0}~${h.y1}, 우승 ${h.c}회)`).join(', ')}</p>`:''}`); }
 function lgHofView(){ const L=legPeople(), me=L.findIndex(p=>p.u&&p.k===legMeK());
   const row=(p,i)=>`<div class="item${p.u?' lg-me':''}" style="cursor:default"><span class="nm"><b class="num">${i+1}</b> ${esc(p.n)}${p.u&&p.k===legMeK()?' <span class="pill acc">나</span>':p.u?' <span class="pill">내 계보</span>':''}${p.cur?' <span class="pill">재임 중</span>':''}</span>

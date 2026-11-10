@@ -355,7 +355,12 @@ function offerBlockMsg(o){
   { const nt=ntcOf(o.give); if(nt)return `${tname(o.from)} ${nt.name}은(는) 트레이드 거부권이 있어 데려올 수 없습니다.`; }
   if([...o.give,...o.get].some(id=>!G.players[id]))return '선수 상황이 바뀌어 성사되지 않았습니다.';
   if(o.give.some(id=>G.players[id].team!==o.from)||o.get.some(id=>G.players[id].team!==G.user))return '선수 상황이 바뀌어 성사되지 않았습니다.';
-  const ev=evalTrade(o.from,o.get,o.give,0); const t0=team(o.from);
+  const cash=o.cash==null?0:+o.cash,pk=pkNorm(o.pk); const t0=team(o.from);
+  if(!Number.isSafeInteger(cash)||Math.abs(cash)>3000)return '현금 조건이 올바르지 않습니다(최대 30억 원).';
+  if(cash>0&&spendable(G.user)<cash)return '우리 구단의 트레이드 현금 여유가 부족합니다.';
+  if(cash<0&&(t0.cash||0)<-cash)return '상대 구단의 트레이드 현금 여유가 부족합니다.';
+  {const why=pkCheck(o.from,o.get,o.give,pk);if(why)return why;}
+  const ev=evalTrade(o.from,o.get,o.give,cash,pk);
   if(ev.theirN>ROSTER_MAX||ev.theirN<ROSTER_MIN)return `${t0.city} ${t0.nick} 로스터 사정이 바뀌어 성사되지 않았습니다(정식 ${ev.theirN}명).`;
   { const cy=sponSeason(); if(ev.theirPay>capOf(cy)&&ev.theirPay>(preSeason(cy)?capPayNext(o.from):capPay(o.from)))return `${t0.city} ${t0.nick} 단장: 그사이 샐러리캡 여유가 줄어 이 제안을 지킬 수 없습니다.`; } /* 양쪽 모두 같은 시즌 기준(검수 11-08b) */
   return null;
@@ -369,14 +374,16 @@ function answerOffer(id,yes){
   /* 성사 여부(거부권·소속)를 먼저 보고, 구단주 승인(신뢰 비용)은 실제로 성사될 때만 반영한다 */
   { const why=offerBlockMsg(o); if(why)return {ok:false,msg:why}; }
   { const cd=tradeCool(o.from,o.give); if(cd){ offerMailDone(o.id); /* 거래 한도·간격에 걸린 제안은 다시 받을 수 없으니 목록에 되돌리지 않는다(카페 11-09) */ return {ok:false,msg:cd.cap?`올해 ${tshort(o.from)}와(과)는 이미 ${cd.n}번 거래해 더 거래할 수 없습니다.`:`${tshort(o.from)}와(과)는 ${dmd(cd.until)}까지 다시 거래할 수 없습니다(거래 뒤 ${TRADE_COOL}일).`}; } } /* 받아 둔 제안도 수락할 때 거래 간격을 다시 본다 */
-  { const oc=tradeOwnerCheck(o.get,o.give,0); if(oc&&!oc.ok){ G.offers.unshift(o); return {ok:false,owner:true,msg:oc.msg}; } if(oc&&oc.ok)tradeOwnerOk(oc); } /* AI 제안은 우리가 o.get을 보내고 o.give를 받는다 */
-  const t=team(o.from); const mv=mgrTradeView(o.from,o.get,o.give); const snap=tradeSnap([...o.give,...o.get]); const grade=tradeGrade(o.from,o.get,o.give,0,o.pk);
+  { const oc=tradeOwnerCheck(o.get,o.give,+(o.cash||0)); if(oc&&!oc.ok){ G.offers.unshift(o); return {ok:false,owner:true,msg:oc.msg}; } if(oc&&oc.ok)tradeOwnerOk(oc); } /* AI 제안은 우리가 o.get을 보내고 o.give를 받는다 */
+  const t=team(o.from); const mv=mgrTradeView(o.from,o.get,o.give); const snap=tradeSnap([...o.give,...o.get]); const cash=+(o.cash||0),pk=pkNorm(o.pk); const grade=tradeGrade(o.from,o.get,o.give,cash,pk);
   o.give.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); o.get.forEach(id=>{tradeTerms(G.players[id]); G.players[id].team=o.from; delete G.players[id].listed; /* 트레이드로 옮기면 계약한 구단에만 걸린 조건은 끝난다(돌아와도 되살아나지 않음) */ story(G.players[id],`트레이드로 ${tname(o.from)} 이적`,'move');});
   for(const k in G.lineup) if(o.get.includes(G.lineup[k]))delete G.lineup[k];
-  const diff=sum(o.give.map(id=>trueVal(G.players[id])))-sum(o.get.map(id=>trueVal(G.players[id])));
+  const diff=sum(o.give.map(id=>trueVal(G.players[id])))-sum(o.get.map(id=>trueVal(G.players[id])))-cashVal(t,cash)+cashCost(t,cash);
   try{ frBacklash(o.get); }catch(e){}
   chron('trade',`${tshort(o.from)}와(과) 트레이드: ${o.get.map(id=>G.players[id]?G.players[id].name:'').join('·')} 보내고 ${o.give.map(id=>G.players[id]?G.players[id].name:'').join('·')} 받음`);
-  G.trades.push({me:G.user,y:G.year,d:G.day,with:o.from,gw:(team(o.from).gm||{}).id,give:o.get.map(id=>G.players[id].name),get:o.give.map(id=>G.players[id].name),diff,revealed:false,gi:[...o.give],go:[...o.get],snap,grade});
+  G.trades.push({me:G.user,y:G.year,d:G.day,with:o.from,gw:(team(o.from).gm||{}).id,give:o.get.map(id=>G.players[id].name),get:o.give.map(id=>G.players[id].name),diff,revealed:false,gi:[...o.give],go:[...o.get],snap,grade,...(cash?{cash}:{})});
+  if(cash>0){payOut(G.user,cash,'etc');payIn(o.from,cash);G.spend.trC=(G.spend.trC||0)+cash;}else if(cash<0){payOut(o.from,-cash,'etc');payIn(G.user,-cash,'tradeIn');}
+  if(pk.give.length||pk.get.length){pkMove(pk,o.from);const T=G.trades[G.trades.length-1];T.pk={give:pk.give.map(pkName),get:pk.get.map(pkName)};T.pkk={y:pk.y,give:[...pk.give],get:[...pk.get]};}
   t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); const tr=mvTr(); o.give.forEach(id=>mvLog('트레이드',G.players[id],o.from,G.user,'',0,tr)); try{ if(o.get.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} o.get.forEach(id=>mvLog('트레이드',G.players[id],G.user,o.from,'',0,tr)); offerDropMoved([...o.get,...o.give]);
   mgrTradeApply(mv); churnCheck(); mpickTraded(o.get); addLog(`${tname(o.from)}의 제안을 받아들였습니다: ${o.get.map(id=>G.players[id].name).join(', ')} ↔ ${o.give.map(id=>G.players[id].name).join(', ')}`);
   offerDropCool(); return {ok:true,grade,msg:'트레이드가 성사되었습니다.'};

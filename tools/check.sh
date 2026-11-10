@@ -14,6 +14,10 @@ step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
 step "개인 활동·시설·해외연수·저장 규칙"; node tools/check-feature-rules.cjs || fail=1
 step "개인 인맥·단장 교체·상황별 면담 규칙"; node tools/check-career-rules.cjs || fail=1
 step "커뮤니티·시즌 행사·FA 만료·자동 지명 규칙"; node tools/check-community-rules.cjs || fail=1
+step "독립 감사: 레거시·훈련·결번/상품·미디어·약속/위임"
+for audit in legacy training family media-day promises; do
+ node "tools/check-audit-${audit}.cjs" || fail=1
+done
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1

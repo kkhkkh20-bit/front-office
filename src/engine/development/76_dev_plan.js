@@ -79,18 +79,22 @@ function trnIAuto(p){ const pol=trnPol(), o=TRNPOL[pol].o; if(p.injOut>0)return 
   const d=trnDur(p), n=trnInjN(p), f=p.fat||0; const W=[[(d-50)/10,d>=60?'내구성 높음':d<42?'내구성 낮음':''],[p.age<=24?1:0,'젊은 선수'],[-(p.age>=34?2:p.age>=31?1:0),'30대 체력 관리'],[-Math.min(3,n),'최근 부상'],[-(f>=60?2:f>=40?1:0),'피로 누적'],[(trnCn(p.team)-55)/20,'']];
   const s=W.reduce((a,x)=>a+x[0],0)+o; let i=s>=3?3:s>=1.2?2:s>=-2.5?1:0; /* 균형 방침에서 보통이 대부분이 되게(리그 기본과 비슷) */ if(pol==='bal')i=Math.min(i,2); if(pol==='rec')i=Math.min(i,1);
   const top=W.filter(x=>x[1]).sort((a,b)=>Math.abs(b[0])-Math.abs(a[0]))[0]; return {i,w:top&&Math.abs(top[0])>=.5?top[1]:'무난한 몸 상태'}; }
-function trnI(p){ if(p.team!==G.user)return 1; const v=G.trnI&&G.trnI[p.id]; return TRNI[v]?v:trnIAuto(p).i; }
-const trnIByGm=p=>p.team===G.user&&!!(G.trnI&&TRNI[G.trnI[p.id]]);
+/* 지시는 현재 영입 회차에만 귀속한다. 같은 선수를 재영입해도 예전 강도 건의가 되살아나지 않는다. */
+function trnICommand(p){ const v=G.trnI&&G.trnI[p.id];if(!TRNI[v])return null;const key=G.user+':'+(p.acq?.n??0),S=G.trnIS=G.trnIS||{};if(S[p.id]!=null&&S[p.id]!==key){delete G.trnI[p.id];delete S[p.id];return null;}if(S[p.id]==null)S[p.id]=key;return v; }
+function trnI(p){ if(!p||G.unemp||p.team!==G.user)return 1;const v=trnICommand(p);if(p.injOut>0)return trnPol()==='rec'||v===0?0:1;return v!=null?v:trnIAuto(p).i; }
+const trnIByGm=p=>!!p&&!G.unemp&&p.team===G.user&&trnICommand(p)!=null&&(!(p.injOut>0)||trnICommand(p)===0);
+/* 부하 효과는 실제 구단 훈련이 있는 기간·대상에만. 겨울·PS·차출·합류 전 선수의 경기/회복에 저장된 강도를 얹지 않는다. */
+function trnActive(p){ const per=period();return !!p&&p.team!=null&&!(p.team===G.user&&G.unemp)&&!p.prospect&&!(p.joinY>G.year)&&!p.hold&&!isAway(p)&&!ovsAbroad(p)&&(per==='pre'||per==='season'); }
 function trnIF(p){ const vf=clamp((85-trnDur(p))/50,.1,1.3), af=p.age>=34?1.5:p.age>=32?1.2:1, cq=clamp(1.1-(trnCn(p.team)-55)/150,.9,1.2); return vf*af*cq; } /* 위험 증가분 배율 */
-function trnIRisk(p,i){ i=i??trnI(p); const T=TRNI[i]; return T.inj<=0?1+T.inj:1+T.inj*trnIF(p); }
-function trnIFat(p,i){ i=i??trnI(p); const T=TRNI[i]; return T.fat<=0?1-T.fat:1/(1+T.fat*trnIF(p)); } /* 피로 회복 속도 배수 */
+function trnIRisk(p,i){ if(!trnActive(p))return 1;i=i??trnI(p); const T=TRNI[i]||TRNI[1]; return T.inj<=0?1+T.inj:1+T.inj*trnIF(p); }
+function trnIFat(p,i){ if(!trnActive(p))return 1;i=i??trnI(p); const T=TRNI[i]||TRNI[1]; return T.fat<=0?1-T.fat:1/(1+T.fat*trnIF(p)); } /* 피로 회복 속도 배수 */
 /* 팀 육성 방침(단장) */
-function trnPolSet(k){ if(!TRNPOL[k]||trnPol()===k)return ''; G.trnPol=k; return `육성 방침을 ${TRNPOL[k].l}(으)로 정했습니다. 코치진이 선수마다 강도를 다시 나눕니다. ${trnIMgr(k==='grow'?2:k==='rec'?0:1,domestic(G.user).filter(p=>trnI(p)>=2))}`; }
+function trnPolSet(k){ if(G.unemp)return '구단을 맡고 있지 않습니다.';if(!TRNPOL[k]||trnPol()===k)return ''; G.trnPol=k; return `육성 방침을 ${TRNPOL[k].l}(으)로 정했습니다. 코치진이 선수마다 강도를 다시 나눕니다. 재활 중인 선수는 회복 상태를 우선합니다. ${trnIMgr(k==='grow'?2:k==='rec'?0:1,domestic(G.user).filter(p=>trnI(p)>=2))}`; }
 /* 특정 선수 강도 건의(예외). 'coach'면 코치진 판단으로 돌린다 */
-function trnISet(pid,i){ const p=G.players[pid]; if(!p||p.team!==G.user)return '우리 선수만 건의할 수 있습니다.'; G.trnI=G.trnI||{};
-  if(i==='coach'){ if(!trnIByGm(p))return ''; delete G.trnI[pid]; const a=trnIAuto(p); return `${p.name}의 훈련 강도를 코치진 판단으로 돌렸습니다(${TRNI[a.i].l}, ${a.w}).`; }
-  i=+i; if(!TRNI[i])return ''; if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`; if(trnIByGm(p)&&G.trnI[pid]===i)return '';
-  G.trnI[pid]=i; const r=trnIRisk(p,i); return `${p.name}: 코치진에 훈련 강도 ${TRNI[i].l}을(를) 건의했습니다(성장 ×${TRNI[i].g.toFixed(2)}, 부상 위험 ×${r.toFixed(2)}). ${trnIMgr(i,[p])}`; }
+function trnISet(pid,i){ const p=G.players[pid]; if(G.unemp)return '구단을 맡고 있지 않습니다.';if(!p||p.team!==G.user)return '우리 선수만 건의할 수 있습니다.'; G.trnI=G.trnI||{};
+  if(i==='coach'){ if(G.trnI[pid]==null)return ''; delete G.trnI[pid];if(G.trnIS)delete G.trnIS[pid];const a=trnIAuto(p); return `${p.name}의 훈련 강도를 코치진 판단으로 돌렸습니다(${TRNI[a.i].l}, ${a.w}).`; }
+  i=+i; if(!TRNI[i])return ''; if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`;if(p.joinY>G.year||p.prospect)return `${p.name}은(는) 아직 구단에 합류하지 않아 훈련 강도를 건의할 수 없습니다.`;if(isAway(p)||ovsAbroad(p))return `${p.name}은(는) 차출·해외 연수 중이라 구단 훈련 강도를 건의할 수 없습니다.`;if(p.hold)return `${p.name}은(는) 연봉 미계약 상태라 구단 훈련에 참여하지 않습니다.`;if(p.injOut>0&&i>=2)return `${p.name}은(는) 재활 중이라 고강도 훈련을 건의할 수 없습니다.`; if(trnIByGm(p)&&G.trnI[pid]===i)return '';
+  G.trnI[pid]=i;(G.trnIS=G.trnIS||{})[pid]=G.user+':'+(p.acq?.n??0); const r=trnIRisk(p,i); return `${p.name}: 코치진에 훈련 강도 ${TRNI[i].l}을(를) 건의했습니다(훈련 기간 성장 ×${TRNI[i].g.toFixed(2)}, 부상 위험 ×${r.toFixed(2)}). ${trnIMgr(i,[p])}`; }
 /* 감독 반응: 메모만(관계 변화 없음). 규율형은 강훈련을 반기고 회복 위주를 못마땅해한다. 관리형(휴식 중시)은 강훈련을 걱정한다 */
 function trnIMgr(i,ps){ const m=G.mgr[G.user]; if(!m||m.interim)return '코치진이 그렇게 진행합니다.'; mgrAttr(m); const d=m.disc??45, rs=m.rest??50; const weak=ps.filter(p=>trnIRisk(p,i)>=1.45);
   if(i>=2&&rs>=65)return `${m.name} 감독은 관리형이라 걱정합니다. "경기 뛰는 선수는 피로를 보면서 조절하겠습니다."${weak.length?` 특히 ${weak.slice(0,3).map(p=>p.name).join(', ')}은(는) 몸이 버틸지 모르겠다고 합니다.`:''}`;
@@ -99,7 +103,7 @@ function trnIMgr(i,ps){ const m=G.mgr[G.user]; if(!m||m.interim)return '코치�
   return weak.length?`코치진이 ${weak.slice(0,3).map(p=>p.name).join(', ')}의 부상 위험을 걱정하지만 그렇게 진행합니다.`:`${m.name} 감독과 코치진이 그렇게 진행합니다.`; }
 /* 매주: 모든 구단 국내 선수(부상·군 복무·대표팀·미계약·합류 전 제외) */
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
-  for(const p of Object.values(G.players)){ if(p.injOut>1&&trnI(p)===0&&!milServing(p))p.injOut--; /* 회복 위주(회복 우선 방침에서 재활 중이거나 단장 건의): 한 주에 하루씩 복귀가 당겨진다 */
+  for(const p of Object.values(G.players)){ if(!trnActive(p))continue;if(p.injOut>1&&trnI(p)===0)p.injOut--; /* 구단 훈련에 참여하는 재활 선수만 회복 우선의 주간 단축 */
     if(p.team==null||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 외국인도 구단 집중 훈련을 한다(지시를 받아 놓고 빠지지 않게, 검수 11-06) */ /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)||ovsAbroad(p))continue; /* 해외 연수 중이면 구단 훈련 없음 */
     const ti=trnI(p); if(p.team===G.user){ if(!p.trI||p.trI.y!==G.year)p.trI={y:G.year,s:0,n:0}; p.trI.s+=TRNI[ti].g; p.trI.n++; } /* 그 시즌 훈련한 주의 평균 강도 → 겨울 성장(develop). 우리 구단 선수만 */
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; { const T=G.trn&&G.trn[p.id]; if(T&&T.by==='gm'&&T.f===f&&T.aw!=null)T.aw++; } /* 회고·보고의 훈련 주수: 비시즌·부상·연수 주는 빼고 실제 훈련한 주만(검수 11-09o) */ const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];

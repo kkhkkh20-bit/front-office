@@ -93,10 +93,12 @@ function useComp(p,k){ const d=depth(p.team); const v=k==='SP'?spV:k==='RP'?penV
 function useScore(m,gap){ const ego=m.interim?40:m.ego; return 4-gap-(ego-50)/10+(m.rel-60)/10-(m.disc>=62?1:0)+(mplOn('listen')?3:0); }
 function mgrUseView(p){ const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 로테이션':k==='RP'?'필승조':'주전'; if(r&&promKept(p,r))return `${p.name}은(는) 지금 약속대로 ${roleNowTxt(p)}(으)로 쓰고 있습니다.`;
   const {c,gap}=useComp(p,k); return `${p.name} 말씀이군요. 지금은 ${roleNowTxt(p)}(으)로 쓰고 있습니다. ${c?`${role} 마지막 자리는 ${c.name}인데, ${gap>2?`${p.name}이(가) 아직 처집니다`:gap>=-2?'둘이 비슷합니다':`${p.name}이(가) 더 낫습니다`}.`:`${role} 자리에 여유가 있습니다.`}${r?` 계약 때 ${r.l} 약속이 있었던 건 압니다.`:''}`; }
+function useUnavailable(p){ if(!healthy(p)||isAway(p)||p.ys||p.joinY>G.year||p.hold||!psOk(p))return upWhy({...p,e1:false}); if(entryOn()&&!p.e1&&!canUp(p))return upWhy(p); return ''; }
 function mgrUseAsk(pid,c){ const p=G.players[pid], m=G.mgr[G.user]; if(!p||p.team!==G.user||G.unemp||!m)return {me:'',a:'...',sys:'건의할 수 없는 선수입니다.'}; mgrFix(m);
+  const why=useUnavailable(p); if(why)return {me:'',a:'지금은 출전 기용을 약속할 수 없습니다.',sys:why};
   const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 로테이션':k==='RP'?'필승조':'주전'; const {c:cp,gap}=useComp(p,k);
   const me=c==='role'?`계약 때 약속한 ${r?r.l.replace(' 보장',''):role} 자리대로 ${p.name}을(를) 써 주십시오.`:c==='alt'?`${r?`${role}이 어렵다면 `:''}${p.name}에게 ${p.isP?'롱릴리프·스윙맨으로라도':'대타·선발 몇 경기로라도'} 출전 기회를 주십시오.`:`성적이 안 되면 감독님 판단을 존중하겠습니다. 다만 ${p.name} 사정은 알아 주십시오.`;
-  if(c==='respect'){ const first=p.useResp!==G.year; if(first){ p.useResp=G.year; m.rel=clamp(m.rel+1,0,100); } return {me,a:`알겠습니다. 내용이 올라오면 바로 쓰겠습니다. 믿어 주셔서 고맙습니다.`,sys:`${first?'감독 관계 +1 · ':''}약속 판정은 그대로입니다`}; }
+  if(c==='respect'){ const first=m.useResp!==G.year; if(first){ m.useResp=G.year; m.rel=clamp(m.rel+1,0,100); } return {me,a:`알겠습니다. 내용이 올라오면 바로 쓰겠습니다. 믿어 주셔서 고맙습니다.`,sys:`${first?'감독 관계 +1 · ':''}약속 판정은 그대로입니다`}; }
   if(c==='role'&&(!r||rpromK(G.user,p)))return {me,a:`${r?'이미 그렇게 하기로 했습니다.':'계약 때 약속한 역할이 없는 선수입니다.'}`,sys:''};
   if(c==='alt'&&p.promise)return {me,a:`지난번 말씀하신 출전 기회부터 챙기고 있습니다.`,sys:`${dmd(p.promise.until)}까지 출전 기회 약속이 이미 있습니다`};
   const no=G.useNo&&G.useNo[pid]; if(no&&no.u>G.day&&no.mid===m.id)return {me,a:`며칠 전에 말씀드렸습니다. 당분간은 지금대로 가겠습니다.`,sys:`${dmd(no.u)}부터 다시 건의할 수 있습니다`};
@@ -108,7 +110,7 @@ function mgrUseAsk(pid,c){ const p=G.players[pid], m=G.mgr[G.user]; if(!p||p.tea
   p.promise=mkPromise(p,30); if(r)r.soft=G.day+30; p.mor=clamp((p.mor??60)+3,0,100);
   return {me,a:`그 정도는 해 보겠습니다. 한 달 안에 기회를 주겠습니다.`,sys:`수락: 30일 안에 출전 기회 · ${p.name} 기분 +3${r?' · 그동안 약속 위반 기분 하락 절반(약속 위반은 그대로)':''}${cost?' · 감독 관계 -1':''}`}; }
 /* 건의할 만한 선수: 역할 약속을 못 지키는 선수 먼저, 다음은 출전 시간에 불만인 주축·고참 */
-function useCands(){ if(G.unemp)return []; const d=depth(G.user); const L=playersOf(G.user).filter(p=>!p.ys&&healthy(p)&&!isAway(p)&&!(p.joinY>G.year));
+function useCands(){ if(G.unemp)return []; const d=depth(G.user); const L=playersOf(G.user).filter(p=>!useUnavailable(p));
   const bad=L.filter(p=>rpLive(p)&&!promKept(p,p.roleProm,d)); return [...bad,...L.filter(p=>!bad.includes(p)&&ptWhyP(p)&&(p.mor??60)<55).sort((a,b)=>ovr(b)-ovr(a))].slice(0,4); }
 /* 에이전트에게 양해 구하기(계약당 한 번): KBO에서는 구단이 사정을 설명하면 에이전트가 한동안 지켜봐 준다. 대신 그 자리에서 신뢰가 깎이고(관계 -2, 큰 에이전시는 -3) 선수도 서운해한다(기분 -2).
    60일 동안은 매달 약속 위반 기분 하락이 절반, 에이전트 관계 감점은 없다. 약속 자체가 없어지지는 않는다 */

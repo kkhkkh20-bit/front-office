@@ -220,6 +220,7 @@ function applyGame(day,hid,aid,g,ps){
       }
     }
   }
+  if(ps)hypePostGame(g); /* 공개 띄우기 평가는 포스트시즌 실전 기록도 포함 */
   for(const [f,...a] of g.W||[])f(...a); for(const k of ['h','a'])if(g.S[k].rot!=null)team(g.S[k].tid).rot=g.S[k].rot; /* 좌우·타구 기록과 선발 순번은 선수 반영이 끝난 뒤: 반영 중 오류로 미룬 경기(boxSnap 되돌림)에 남지 않게(검수 11-09zt) */
   if(!ps){ try{ featGame(day,g); }catch(e){} }
   if(!ps){ const r=G.sea.rec; if(g.score.h>g.score.a){r[hid].w++;r[aid].l++;} else if(g.score.a>g.score.h){r[aid].w++;r[hid].l++;} else {r[hid].t++;r[aid].t++;}

@@ -1,0 +1,252 @@
+[
+  {
+    "width": 1366,
+    "checks": [
+      {
+        "name": "newgame",
+        "pass": true,
+        "state": {
+          "tab": "inbox",
+          "ib": null,
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "inbox-detail-back",
+        "pass": true,
+        "state": {
+          "tab": "inbox",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m27",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "roster-detail-back",
+        "pass": true,
+        "state": {
+          "tab": "roster",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m27",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "roster-cleanup",
+        "pass": true,
+        "state": {
+          "tab": "roster",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m27",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "contract-form",
+        "pass": true,
+        "state": {
+          "tab": "transfer",
+          "sub": {
+            "staff": "mgr",
+            "transfer": "contract"
+          },
+          "ib": "m27",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "delegation-save-restore",
+        "pass": true,
+        "state": {
+          "tab": "home",
+          "roster": 58,
+          "overflow": 0
+        }
+      }
+    ],
+    "errors": [],
+    "contractFixture": "Open available domestic extension form via A.ngtOpen; no player/contract mutation",
+    "restoredDelegationKey": "sal"
+  },
+  {
+    "width": 390,
+    "checks": [
+      {
+        "name": "newgame",
+        "pass": true,
+        "state": {
+          "tab": "inbox",
+          "ib": null,
+          "ibOpen": null,
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "inbox-detail-back",
+        "pass": true,
+        "state": {
+          "tab": "inbox",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m18",
+          "ibOpen": "m18",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "roster-detail-back",
+        "pass": true,
+        "state": {
+          "tab": "roster",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m18",
+          "ibOpen": "m18",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "roster-cleanup",
+        "pass": true,
+        "state": {
+          "tab": "roster",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m18",
+          "ibOpen": "m18",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "contract-form",
+        "pass": true,
+        "state": {
+          "tab": "roster",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m18",
+          "ibOpen": "m18",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "delegation-save-restore",
+        "pass": true,
+        "state": {
+          "tab": "home",
+          "roster": 58,
+          "overflow": 0
+        }
+      }
+    ],
+    "errors": [],
+    "contractFixture": "Open available domestic extension form via A.ngtOpen; no player/contract mutation",
+    "authNavigationFixture": "Keyboard navigation unavailable; A.go(cfg:auth) used to enter screen",
+    "restoredDelegationKey": "sal"
+  },
+  {
+    "width": 768,
+    "checks": [
+      {
+        "name": "newgame",
+        "pass": true,
+        "state": {
+          "tab": "inbox",
+          "ib": null,
+          "ibOpen": null,
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "inbox-detail-back",
+        "pass": true,
+        "state": {
+          "tab": "inbox",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m20",
+          "ibOpen": "m20",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "roster-detail-back",
+        "pass": true,
+        "state": {
+          "tab": "roster",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m20",
+          "ibOpen": "m20",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "roster-cleanup",
+        "pass": true,
+        "state": {
+          "tab": "roster",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m20",
+          "ibOpen": "m20",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "contract-form",
+        "pass": true,
+        "state": {
+          "tab": "roster",
+          "sub": {
+            "staff": "mgr"
+          },
+          "ib": "m20",
+          "ibOpen": "m20",
+          "roster": 58,
+          "overflow": 0
+        }
+      },
+      {
+        "name": "delegation-save-restore",
+        "pass": true,
+        "state": {
+          "tab": "home",
+          "roster": 58,
+          "overflow": 0
+        }
+      }
+    ],
+    "errors": [],
+    "contractFixture": "Open available domestic extension form via A.ngtOpen; no player/contract mutation",
+    "authNavigationFixture": "Keyboard navigation unavailable; A.go(cfg:auth) used to enter screen",
+    "restoredDelegationKey": "sal"
+  }
+]

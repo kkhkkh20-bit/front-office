@@ -10,7 +10,7 @@ const AUTO_AREAS=[
   ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다(모두 거절, 또는 우리 평가로 공정에 가까운 제안(손해 1 이내)만 올리기). 주간 요약에 남깁니다.'],
   ['raid','스태프 빼가기 대응','별 4개 이상(★★★★, 5개 만점) 스카우트·분석원은 상대 제시액에 맞춰 붙잡고, 그 아래는 보내 줍니다. 상대 제시액이 지금 연봉의 1.5배를 넘으면 붙잡기 전에 단장 승인을 받습니다.']];
 function autoOn(k){ if(!G)return false; if(k==='scout')return !!G.scoutAuto; if(k==='ev')return !!(G.deleg&&Object.keys(EV_NAME).every(e=>G.deleg[e])); return !!(G.auto&&G.auto[k]); }
-function autoSet(k,v){ G.auto=G.auto||{}; const prev=G.auto[k]; G.auto[k]=k==='tro'&&v==='good'?'good':!!v; if(k==='tro'&&G.auto.tro===true&&prev!==true)for(const o of [...(G.offers||[])])try{ autoTradeOffer(o); }catch(e){} /* '모두 거절'로 바꾸면 이미 올라온 제안도 정리(검수 11-07) */
+function autoSet(k,v){ G.auto=G.auto||{}; const prev=G.auto[k]; G.auto[k]=k==='tro'&&v==='good'?'good':!!v; if(k==='tro'&&G.auto.tro&&prev!==G.auto.tro)for(const o of [...(G.offers||[])])try{ autoTradeOffer(o); }catch(e){} /* 새 필터는 이미 받은 제안에도 적용한다. */
   if(k==='ev'){ G.deleg=G.deleg||{}; for(const e in EV_NAME)G.deleg[e]=!!v; }
   if(k==='scout'){ G.scoutAuto=!!v; G._scErr=null; if(v)try{ scoutPlanApply(true); }catch(e){ G._scErr=String(e&&e.message||e); } } }
 function autoAll(v){ for(const [k] of AUTO_AREAS)autoSet(k,v); G.autoMode=v?'easy':'self'; }
@@ -51,7 +51,7 @@ function autoDaily(day){ if(!G.auto||G.unemp)return;
   if(dobj(day).m<=2&&day>=KD(1,5))try{ autoConfirm(); }catch(e){} } /* 확정일이 지난 뒤 위임하거나 대기 사유가 풀려도 다음 날부터 다시 확인 */
 /* 받은 트레이드 제안: 맡겼으면 부단장이 바로 거절한다 */
 /* 우리 평가(부단장 의견과 같은 기준)로 받는 쪽 가치 - 주는 쪽 가치 */
-function troDiff(off){ const U=team(G.user); const P=id=>G.players[id]; return stackIn(off.give.map(P).filter(Boolean).map(p=>tval(U,p,'in')))-sum(off.get.map(P).filter(Boolean).map(p=>tval(U,p,'out'))); }
+function troDiff(off){ const U=team(G.user); const P=id=>G.players[id]; const pk=pkNorm(off.pk); return stackIn(off.give.map(P).filter(Boolean).map(p=>tval(U,p,'in')))-sum(off.get.map(P).filter(Boolean).map(p=>tval(U,p,'out')))-(off.cash||0)/250+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); }
 function autoTradeOffer(off){ if(!autoOn('tro'))return false;
   if(G.auto.tro==='good'){ let df=-99; try{ df=troDiff(off); }catch(e){} if(df>=-1){ off.asst=`부단장 1차 검토: 우리 평가로 ${df>=0?'공정 이상':'공정에 가까운(손해 1 이내)'} 제안이라 직접 보시도록 올립니다.`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장이 올림','유망한 제안'); return false; } } G.offers=(G.offers||[]).filter(x=>x.id!==off.id); const d=`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 주고 ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 원한 제안`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',d); if(!off.blk)mail('부단장',`${tshort(off.from)} 트레이드 제안: 부단장이 거절`,`${tname(off.from)}이(가) ${d}을 보냈고, 맡기신 대로 부단장이 정중히 거절했습니다. 직접 검토하려면 설정 · 권한에서 '받은 트레이드 제안'을 가져오세요.`,{kind:'트레이드'}); /* 매물 제안은 매일 올 수 있어 메일 없이 위임 기록만 */ return true; }
 /* 스태프 빼가기: 맡겼으면 바로 정한다 */

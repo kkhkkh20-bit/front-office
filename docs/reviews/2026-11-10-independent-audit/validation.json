@@ -1,0 +1,42 @@
+{
+  "baseline": "01ffefcf605acb29774a698389c3053f4956b5ae",
+  "reported_baseline": "8b4b902",
+  "report_items_reviewed": 50,
+  "report_item_status": "Addressed; evidence strength and controlled fixtures are documented per item. Item 45 is conditional, not a naturally generated cash offer.",
+  "source_build_sha256": "365b046d5eb66314e306e311bc1b297d632217a8d443a8edd7226fbd3f17d6f9",
+  "html_sha256": "fb3ad1e6100baa29617a806c6f85e418df1dc42bd6edaa89bb2df6514a4b2b97",
+  "engine_suites": {
+    "legacy": "pass",
+    "training": "pass",
+    "family": "pass",
+    "media-day": "pass",
+    "promises": "pass (17 cases)"
+  },
+  "existing_unit_tests": {
+    "passed": 34,
+    "failed": 0
+  },
+  "static": "pass",
+  "ui": {
+    "widths": [
+      1366,
+      390,
+      768
+    ],
+    "passed": 18,
+    "failed": 0,
+    "pageerrors": 0
+  },
+  "simulation": {
+    "seed": 7,
+    "strict": true,
+    "through": "2027-01-01",
+    "status": "pass"
+  },
+  "scope_limits": [
+    "Rare-event fixtures were used; not all 50 issues were reproduced through natural UI gameplay.",
+    "Synthetic cash/pick incoming offers used; current AI generator produces player-only offers.",
+    "Old already-lost/corrupted historical values are not reconstructed.",
+    "No public deployment check."
+  ]
+}

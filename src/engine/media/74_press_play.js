@@ -47,7 +47,7 @@ function pressPlay(repId,kind,pid,via){ if(G.unemp)return '지금은 구단 단�
     const v=fr==='good'?12:fr==='flat'?8:5; p.fond={tid:G.user,v,until:G.day+150};
     const fd=fanD(star?4:2); let other='';
     if(!fa&&p.team!=null){ const ot=team(p.team); ot.rel=clamp((ot.rel??50)-6,0,100); p.pledged={tid:G.user,until:G.day+60}; other=` ${tshort(p.team)} ${gmOf(p.team)?gmOf(p.team).name+' 단장':'구단'}은 "남의 선수를 공개적으로 거론하는 건 결례"라며 불쾌해합니다(친분 -6). 60일 동안 우리와의 트레이드에서 이 선수 값을 더 부릅니다.`; }
-    const until=fa?(KD(1,24)>G.day?KD(1,24):G.day+60):G.day+120; G.pledges.unshift({k:'sign',pid,day:G.day,until,rep:r.id,done:false,tid:G.user});
+    const jan=dnum(dobj(G.day).y,1,24), until=fa?(jan>=G.day?jan:dnum(dobj(G.day).y+1,1,24)):G.day+120; G.pledges.unshift({k:'sign',pid,name:p.name,an:G.acqSeq||0,day:G.day,until,rep:r.id,done:false,tid:G.user});
     const title=fr==='bad'?`${meCall()}, "${p.name} 데려온다" 큰소리…현실성은?`:`${meCall()} "${p.name}, 꼭 데려오겠다"`;
     news('언론',title,`${r.outlet} ${r.name} 기자 단독. ${tname(G.user)} 단장이 ${p.team!=null?`${tshort(p.team)} `:'FA '}${p.name}(${posLabel(p)}, ${p.age}세) 영입 의지를 밝혔습니다.${fr==='bad'?' 다만 기사 논조는 회의적입니다.':''}`,fr==='bad'?-1:fr==='good'?2:1,{outlet:r.outlet,by:r.name,ref:p.id});
     if(fr==='bad')G.pr.press=clamp(G.pr.press-2,0,100);
@@ -59,7 +59,7 @@ function pressPlay(repId,kind,pid,via){ if(G.unemp)return '지금은 구단 단�
     news('언론',title,`${r.outlet} ${r.name} 기자. ${tname(G.user)} 단장이 ${p.name}(${posLabel(p)}, ${p.age}세)을(를) 구단의 얼굴로 키우겠다고 밝혔습니다.${fr==='bad'?' 다만 기사 논조는 회의적입니다.':''}`,fr==='bad'?0:1,{outlet:r.outlet,by:r.name,ref:p.id});
     return `${r.outlet} ${r.name} 기자를 통해 ${p.name}을(를) 띄웠습니다(${fr==='good'?'호의적으로 실림':fr==='flat'?'그대로 실림':'비꼬듯 실림'}). 스타성 +${v}, 팬 여론 ${fd>=0?'+':''}${fd}, 선수 기분 ${fr==='bad'?'-2':'+4'}. 45일 뒤 성적으로 평가받습니다: 잘하면 진짜 스타로, 부진하면 '거품' 역풍이 붑니다.`; }
   if(kind==='invest'){ const base=capPay(G.user); const fd=fanD(5); G.pr.press=clamp(G.pr.press+(fr==='bad'?-1:1),0,100);
-    const open=G.cal&&G.cal.open>G.day?G.cal.open:G.day+150; G.pledges.unshift({k:'invest',base,day:G.day,until:open,rep:r.id,done:false,tid:G.user});
+    const open=G.cal&&G.cal.open>G.day?G.cal.open:onOrAfter(dobj(G.day).y+1,3,25,6); G.pledges.unshift({k:'invest',base,day:G.day,until:open,rep:r.id,done:false,tid:G.user});
     let own=''; if(!t.indie){ if(t.owner==='profit'){ t.trust=clamp(t.trust-4,0,100); own=`구단주 신뢰 -4. ${B.own.name} 회장: "돈 이야기는 내가 먼저 합니다. 지갑은 단장 것이 아닙니다."`; }
       else if(t.owner==='pr'){ t.trust=clamp(t.trust+1,0,100); own=`구단주 신뢰 +1. ${B.own.name} 회장: "화제가 되는 건 좋습니다. 말한 만큼 보여 주세요."`; }
       else { own=`${B.own.name} 회장: "성적으로 돌려받겠다는 뜻이라면 좋습니다. 그 말 책임지세요."`; }
@@ -69,19 +69,21 @@ function pressPlay(repId,kind,pid,via){ if(G.unemp)return '지금은 구단 단�
   return ''; }
 /* 약속 점검: 매일 */
 function ppDaily(){ if(!G.pledges||G.unemp)return; prInit(); for(const g of G.pledges){ if(g.done)continue; if(g.tid!=null&&g.tid!==G.user){ g.done=true; g.void=true; continue; } /* 다른 구단에서 한 약속은 이 구단과 상관없다 */ const r=repById(g.rep);
-    if(g.k==='sign'){ const p=G.players[g.pid]; const ok=p&&p.team===G.user&&!(p.acq&&(p.acq.tid!==G.user||p.acq.d>g.until)); /* 실제 영입일이 기한 안이어야 이행(검수 11-06) */ if(!ok&&G.day<=g.until&&p)continue; g.done=true; g.ok=ok;
-      if(ok){ G.pr.fan=clamp(G.pr.fan+3,0,100); G.rep=clamp((G.rep??50)+1,0,100); if(r)repRel(r,2,'약속 이행'); news('언론',`${meCall()}, ${p.name} 영입 약속 지켰다`,`공개적으로 원했던 ${p.name}을(를) 결국 데려왔습니다.`,2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined,ref:p.id}); }
-      else { G.pr.fan=clamp(G.pr.fan-5,0,100); G.pr.press=clamp(G.pr.press-2,0,100); if(r)repRel(r,-3,'약속 불이행'); news('언론',`'${p?p.name:'영입'} 데려온다'던 ${meCall()}, 결국 빈손`,`공개적으로 영입 의지를 밝혔지만 성사되지 않았습니다. 말만 앞선다는 비판이 나옵니다.`,-2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined}); } }
+    if(g.k==='sign'){ const p=G.players[g.pid], acquired=o=>o&&o.tid===G.user&&o.d>=g.day&&o.d<=g.until&&(g.an==null||o.n>g.an); const ok=!!((p&&acquired(p.acq))||(G.mineL||[]).some(x=>x.id===g.pid&&acquired(x.o))||(p&&p.team===G.user&&!p.acq)); /* 실제 영입일이 기한 안이어야 이행(검수 11-06) */ if(!ok&&G.day<=g.until)continue; g.done=true; g.ok=ok;
+      if(ok){ G.pr.fan=clamp(G.pr.fan+3,0,100); G.rep=clamp((G.rep??50)+1,0,100); if(r)repRel(r,2,'약속 이행'); news('언론',`${meCall()}, ${p?p.name:g.name||'선수'} 영입 약속 지켰다`,`공개적으로 원했던 ${p?p.name:g.name||'선수'}을(를) 결국 데려왔습니다.`,2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined,ref:g.pid}); }
+      else { G.pr.fan=clamp(G.pr.fan-5,0,100); G.pr.press=clamp(G.pr.press-2,0,100); if(r)repRel(r,-3,'약속 불이행'); news('언론',`'${p?p.name:g.name||(G.arch&&G.arch[g.pid]&&G.arch[g.pid].name)||'선수'} 데려온다'던 ${meCall()}, 결국 빈손`,`공개적으로 영입 의지를 밝혔지만 성사되지 않았습니다. 말만 앞선다는 비판이 나옵니다.`,-2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined}); } }
     else if(g.k==='hype'){ if(G.day<g.until)continue; const p=G.players[g.pid]; if(!p||p.team!==G.user||!p.hype){ g.done=true; g.void=true; continue; } const f=hypeForm(p,p.hype); if(f==='few'){ if(G.day<g.until+90&&G.day<=p.hype.until)continue; g.done=true; g.void=true; continue; } /* 표본이 모자라면 판정을 미루고, 끝내 모자라면 평가 없이 닫는다(완료·성공으로 남기지 않는다, 검수 11-06) */ g.done=true; g.ok=f!=='bad';
-      if(f==='good'){ p.hype.v+=6; p.hype.until=Math.max(p.hype.until,G.day+120); G.pr.fan=clamp(G.pr.fan+2,0,100); p.mor=clamp((p.mor??60)+3,0,100); if(r)repRel(r,2,'띄운 선수 활약'); news('언론',`${p.name}, 기대를 증명했다`,`${tshort(G.user)}이(가) 띄운 ${p.name}이(가) 그 뒤 ${hypeLine(p,p.hype)}로 활약하며 이름값을 증명했습니다.`,2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined,ref:p.id}); }
+      if(f==='good'){ p.hype.v+=6; p.hype.until=Math.max(p.hype.until,G.day+120); G.pr.fan=clamp(G.pr.fan+2,0,100); p.mor=clamp((p.mor??60)+3,0,100); if(r)repRel(r,2,'띄운 선수 활약'); news('언론',`${p.name}, 기대를 증명했다`,`${tshort(G.user)}이(가) 띄운 ${p.name}이(가) 그 뒤 ${hypeLine(p,p.hype)}로 활약하며 이름값을 증명했습니다.`,2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined,ref:g.pid}); }
       else if(f==='bad'){ p.hype.v=0; p.hype.until=G.day-1; G.pr.fan=clamp(G.pr.fan-4,0,100); G.pr.press=clamp(G.pr.press-1,0,100); p.mor=clamp((p.mor??60)-5,0,100); if(r)repRel(r,-2,'띄운 선수 부진'); news('언론',`'${p.name} 띄우기'는 거품이었나`,`${tshort(G.user)}이(가) 대대적으로 띄운 ${p.name}이(가) 그 뒤 ${hypeLine(p,p.hype)}에 그쳤습니다. 기대만 키웠다는 비판이 나옵니다.`,-2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined,ref:p.id}); } }
     else if(g.k==='invest'){ if(G.day<g.until)continue; g.done=true; const now=capPay(G.user); g.ok=now>=g.base*1.05; const t=team(G.user);
-      if(g.ok){ G.pr.fan=clamp(G.pr.fan+2,0,100); news('언론',`${tshort(G.user)}, 투자 선언 지켰다`,`연봉 규모를 ${Math.round((now/g.base-1)*100)}% 늘려 개막을 맞습니다.`,1,{outlet:r?r.outlet:undefined,by:r?r.name:undefined}); }
+      if(g.ok){ G.pr.fan=clamp(G.pr.fan+2,0,100); news('언론',`${tshort(G.user)}, 투자 선언 지켰다`,`연봉 규모를 ${Math.round((now/g.base-1)*100)}% 늘려 투자 약속을 이행했습니다.`,1,{outlet:r?r.outlet:undefined,by:r?r.name:undefined}); }
       else { G.pr.fan=clamp(G.pr.fan-7,0,100); t.trust=clamp(t.trust-2,0,100); news('언론',`'투자하겠다'던 ${tshort(G.user)}, 연봉 규모는 제자리`,`단장의 투자 선언과 달리 연봉 규모가 거의 늘지 않았습니다.`,-2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined}); } } }
   G.pledges=G.pledges.filter(g=>!g.done||G.day-g.until<120).slice(0,12); }
 /* 띄우기 평가: 띄운 날 기록과 비교한 그 뒤 성적(표본이 적으면 판정 보류) */
+/* 공개 약속의 실전 성적: 정규시즌 누계와 띄운 뒤 포스트시즌 기록을 합산한다. */
+function hypePostGame(g){ for(const side of Object.values(g.S||{}))for(const [id,x] of side.box||[]){ const p=G.players[id], H=p&&p.hype; if(!H||H.d>G.day||H.until<G.day)continue; const post=H.post&&H.post.y===G.year?H.post:(H.post={y:G.year,v:DIGK.map(()=>0)}); DIGK.forEach((k,i)=>post.v[i]+=(typeof x[k]==='number'?x[k]:0)); } }
 function hypeSnap(p){ const h=seasonTotal(p,G.year,'1군'); return {y:G.year,v:DIGK.map(k=>h?(h[k]||0):0)}; }
-function hypeDiff(p,H){ const h=seasonTotal(p,G.year,'1군'); const d={}; DIGK.forEach((k,i)=>d[k]=(h?(h[k]||0):0)-(H.base&&H.base.y===G.year?(H.base.v[i]??(h?(h[k]||0):0)):0)); return d; }
+function hypeDiff(p,H){ const h=seasonTotal(p,G.year,'1군'); const d={}; DIGK.forEach((k,i)=>d[k]=(h?(h[k]||0):0)-(H.base&&H.base.y===G.year?(H.base.v[i]??(h?(h[k]||0):0)):0)+(H.post&&H.post.y===G.year?(H.post.v[i]||0):0)); return d; }
 function hypeForm(p,H){ const d=hypeDiff(p,H); if(p.isP){ if(d.outs<45)return 'few'; const era=d.er*27/d.outs; return era<=3.5?'good':era>=5.5?'bad':'flat'; }
   if(d.pa<40)return 'few'; const ops=obpOf(d)+(d.ab?(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0); /* 타수가 0이어도 출루율은 OPS에 들어간다 */ return ops>=.8?'good':ops<=.65?'bad':'flat'; }
 function hypeLine(p,H){ const d=hypeDiff(p,H); if(p.isP)return d.outs?`${ipStr(d.outs)}이닝 평균자책점 ${(d.er*27/d.outs).toFixed(2)}`:'등판 없음'; const ops=obpOf(d)+(d.ab?(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0); return `${d.pa}타석 ${d.hr}홈런 OPS ${fmt3(ops)}`; }
