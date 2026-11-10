@@ -6,7 +6,7 @@ function fRng(key){ let h=1779033703^key.length; for(let i=0;i<key.length;i++){ 
 const fPick=(r,a)=>a[Math.floor(r()*a.length)];
 const FNICK_A=['직관','외야석','치맥','퇴근길','주말','9회말','불펜','2군','만루','삼진','도루','번트','홈런','개막전','올드','야알못','통계','유니폼','응원가','우천취소','더블헤더','끝내기','대타','마무리','에이스','포수','외국인','신인','FA','엔트리'];
 const FNICK_B=['러','요정','장인','지킴이','전문가','소식통','단골','덕후','매니아','개근','수집가','관찰자','중독','사랑','고인물','뉴비','팬','아재','청년'];
-function fNick(r,tid){ const t=tid!=null?team(tid):null; const x=r();
+function fNick(r,tid,profile){ const t=profile||(tid!=null?team(tid):null); const x=r();
   if(t&&x<.32)return t.city+fPick(r,['토박이','사람','직관러','올드팬','지킴이','청년','아재','댁'])+(r()<.4?Math.floor(r()*99):'');
   if(t&&x<.5)return t.nick+fPick(r,['빠','사랑','만세','덕후','외길','평생팬','지킴이'])+(r()<.5?Math.floor(r()*999):'');
   return fPick(r,FNICK_A)+fPick(r,FNICK_B)+(r()<.35?Math.floor(r()*99):''); }
@@ -129,15 +129,16 @@ const FMOOD_W={pos:{pos:.67,mix:.2,neg:.03,fun:.1},neg:{neg:.63,mix:.25,pos:.02,
 function fFill(t,v){ let bad=false; const s=t.replace(/\{(\w+)\}/g,(m,k)=>{ if(v[k]==null||v[k]===''){ bad=true; return ''; } return v[k]; }); return bad?null:s.replace(/\s+/g,' ').trim(); }
 /* 갤러리식 닉: 대부분 유동 'ㅇㅇ(118.235)', 가끔 고정닉 */
 const FIP1=[1,14,27,39,58,59,61,106,110,112,115,117,118,121,175,211,220,222,223];
-function fNickDC(r,tid){ const ip=()=>'('+fPick(r,FIP1)+'.'+Math.floor(r()*256)+')'; if(r()<.78)return 'ㅇㅇ'+ip();
-  const t=tid!=null?team(tid):null; return (t&&r()<.5?t.nick.slice(0,1)+'갤러':fPick(r,FNICK_A)+fPick(r,['갤러','러','장인','맨']))+(r()<.4?ip():''); }
+function fNickDC(r,tid,profile){ const ip=()=>'('+fPick(r,FIP1)+'.'+Math.floor(r()*256)+')'; if(r()<.78)return 'ㅇㅇ'+ip();
+  const t=profile||(tid!=null?team(tid):null); return (t&&r()<.5?t.nick.slice(0,1)+'갤러':fPick(r,FNICK_A)+fPick(r,['갤러','러','장인','맨']))+(r()<.4?ip():''); }
 /* 사이트: 한 묶음은 갤러리식(유동 닉·IP) 또는 엠팍식(평범한 닉) 하나. 추천·비추, 베스트, 답글(└)까지 */
-function fComments(key,bank,mood,vars,n,tid,fanAdj){ const r=fRng(key); const B=FB[bank]||FB.newsNeu; const W={...(FMOOD_W[mood]||FMOOD_W.mix)};
+function fComments(key,bank,mood,vars,n,tid,fanAdj,options){ const r=fRng(key); const B=options?.bank||FB[bank]||FB.newsNeu; const W={...(FMOOD_W[mood]||FMOOD_W.mix)};
   if(fanAdj){ W.pos=(W.pos||0)*(1+fanAdj); W.neg=(W.neg||0)*(1-fanAdj); }
-  const dc=r()<.55, site=dc?'dc':'mp', nick=t=>dc?fNickDC(r,t):fNick(r,t), gen=!FB_NOGEN.has(bank), tot=Object.values(W).reduce((a,b)=>a+b,0);
+  if(options?.strict)for(const k of Object.keys(W))if(!Array.isArray(B[k])||!B[k].length)delete W[k];
+  const dc=r()<.55, site=dc?'dc':'mp', nick=t=>dc?fNickDC(r,t,options?.subject):fNick(r,t,options?.subject), gen=!options?.strict&&!FB_NOGEN.has(bank), tot=Object.values(W).reduce((a,b)=>a+b,0);
   const out=[]; const used=new Set();
   const say=(L,vv)=>{ for(let a=0;a<8;a++){ const c=fPick(r,L); if(used.has(c))continue; const s=fFill(c,vv); if(!s||/^[,.]/.test(s))continue; used.add(c); return s; } return null; };
-  const vOf=ftid=>{ const T=vars.T||(ftid!=null?team(ftid).nick:''); return {...vars,T,t:T?T.slice(0,1):''}; };
+  const vOf=ftid=>{ const T=options?.strict?(vars.T??''):(vars.T||(ftid!=null?team(ftid).nick:'')); return {...vars,T,t:T?T.slice(0,1):''}; };
   for(let i=0;i<n;i++){ let x=r()*tot, cat='mix'; for(const [k,w] of Object.entries(W)){ if((x-=w)<=0){ cat=k; break; } }
     const ftid=vars.rivalTid!=null&&r()<.3?vars.rivalTid:tid; const vv=vOf(ftid);
     let L=gen&&FB_GEN[cat]&&r()<.3?FB_GEN[cat]:B[cat]||B.mix||B.pos||B.neg; if(!L||!L.length)L=FB.newsNeu.mix;
@@ -152,13 +153,58 @@ function fComments(key,bank,mood,vars,n,tid,fanAdj){ const r=fRng(key); const B=
       res.push({nick:nk,tid:c.tid,t,like:Math.floor(Math.pow(r(),2)*c.like*.6),dis:Math.floor(r()*(k==='disagree'?c.like*.3+4:4)),cat,ago:Math.floor(r()*c.ago),site,re:true}); } }
   return res; }
 function fanAdj(){ const f=G.pr?G.pr.fan:50; return clamp((f-50)/80,-.45,.45); }
-/* 기사 내용으로 반응 묶음 고르기: 우승·시상은 전용 반응(우승 기사에 '제목 과장 아님?' 같은 댓글이 달리던 문제, 사용자 11-08) */
-function newsBank(n,p){ const t=(n.t||'')+' '+(n.b||''); if(/우승|퍼레이드|정상 등극|챔피언/.test(t))return n.v>=0&&(t.includes(team(G.user).nick)||(G.ps&&G.ps.champ===G.user))?'champ':'champOther';
-  if(/MVP|신인왕|골든글러브|수상/.test(t)&&n.v>=0)return 'awardB';
-  /* 부상·FA·트레이드·드래프트·감독·단장·기록·은퇴·트럭 시위·구설은 그 상황 반응으로(사용자 11-08: 맥락 있는 댓글) */
-  if(/트럭/.test(t))return 'truck'; if(/은퇴/.test(t))return 'retire'; if(/부상|수술|이탈|재활/.test(t)&&n.v<=0)return 'injury';
-  if(/불화|파문|징계|논란/.test(t)&&n.v<=0)return 'scandal';
-  if(n.k==='FA'||/FA .{0,12}(영입|계약)/.test(n.t||''))return 'faSign'; if(n.k==='트레이드'||n.k==='이적')return n.v>=1?'tradeG':n.v<=-1?'tradeB':'tradeE';
-  if(n.k==='드래프트')return 'drSum'; if(/경질|사퇴/.test(t))return 'mgrFire'; if(/감독.{0,8}선임|새 감독/.test(t))return 'mgrHire';
-  if(n.k==='기록'||/노히트|대기록|사이클링|홈런 폭발/.test(n.t||''))return 'feat'; if(/단장/.test(n.t||''))return 'gm';
-  return n.k==='선수'&&p&&p.foreign?(n.v<0?'forBad':'forGood'):n.v>=1?'newsPos':n.v<=-1?'newsNeg':'newsNeu'; }
+/* 기사 반응은 기사에 기록된 사실에만 붙인다. 현재 단장·선수 소속·우승팀·팬 여론을 역으로 끌어오지 않는다. */
+const NEWS_REACTIONS={
+  champ:{pos:['{T} 우승 축하합니다','우승 소식은 읽어도 또 좋다','선수단 모두 고생 많았습니다','이 순간 기다린 팬들 많았겠다','우승한 팀에 박수를 보냅니다','기사에 담긴 기쁨이 전해진다'],mix:['우승 과정도 더 자세히 보고 싶다','시즌을 마친 선수들 모두 수고했습니다']},
+  runnerUp:{mix:['준우승도 쉽지 않은 결과다','마지막까지 뛰어 준 선수들 수고했습니다','아쉬움은 남지만 여기까지 온 과정도 기억하자','기사 읽으니 아쉬움이 느껴진다','다음 도전을 응원합니다','한 시즌 고생 많았습니다']},
+  awardB:{pos:['{p} 수상 축하합니다','수상 소식 반갑네요','상을 받은 선수에게 박수를','기사에 나온 수상자 모두 축하합니다','노력에 보답받는 순간이네','기록과 함께 오래 기억될 소식이다'],mix:['수상 과정도 더 자세히 보고 싶다','축하할 소식이네요']},
+  injury:{mix:['{p} 건강하게 회복하길','무엇보다 몸부터 잘 챙겼으면','회복 과정에 무리가 없길 바랍니다','당사자도 많이 답답하겠다','추가 소식 기다리겠습니다','건강이 먼저다'],neg:['부상 소식은 언제 봐도 안타깝다','다친 선수 잘 치료받길 바랍니다']},
+  newsReturn:{pos:['복귀 소식 반갑습니다','{p} 앞으로도 응원합니다','다시 합류했다니 반갑네','무리 없이 이어 갔으면 좋겠다','돌아온 사람에게 응원을 보냅니다','앞으로의 소식도 기다려 봅니다'],mix:['이후 일정도 차근차근 보면 되겠다','꾸준히 응원하겠습니다']},
+  faSign:{mix:['계약 내용부터 차분히 살펴보자','발표된 조건으로 어떤 모습을 보여 줄지 궁금하다','앞으로의 활약을 응원합니다','계약 소식 확인했습니다','선수와 구단 모두 잘 풀리길','새 계약 뒤의 모습도 지켜보자']},
+  contract:{mix:['계약 소식 확인했습니다','계약한 당사자들 모두 잘 풀리길','앞으로의 계획도 궁금하다','발표된 조건부터 살펴보자','다음 소식 기다려 보겠습니다','응원하겠습니다']},
+  tradeE:{mix:['기사에 나온 거래 내용을 먼저 살펴보자','거래 평가는 시간을 두고 보면 되겠다','구단의 설명도 더 들어 보고 싶다','당사자들 앞으로 잘 풀렸으면','이후 소식도 지켜보겠습니다','조건을 보고 차분히 이야기하자']},
+  mgrHire:{mix:['새 감독의 운영 구상이 궁금하다','새 출발 응원합니다','선수단과 잘 맞춰 가길','선임 소식 확인했습니다','앞으로의 운영을 지켜보자','새 감독의 설명도 들어 보고 싶다']},
+  mgrFire:{mix:['감독 교체 뒤 운영 방향도 설명해 줬으면','당사자들 입장도 더 들어 보자','기사에 나온 결정의 배경이 궁금하다','이후 구단 운영을 지켜보겠습니다','변화 뒤 계획도 중요하겠다','구단의 후속 설명을 기다립니다']},
+  retire:{mix:['{p} 그동안 수고 많았습니다','새로운 앞날도 응원합니다','선수로 보낸 시간에 박수를','은퇴 소식을 읽으니 여러 생각이 드네','당사자에게 응원을 보냅니다','다음 길도 잘 풀리길 바랍니다']},
+  drSum:{mix:['지명된 선수들 앞으로 잘 성장하길','신인들의 시작을 응원합니다','성장 과정도 꾸준히 지켜보자','기사에 나온 지명 결과 확인했습니다','구단의 육성 계획도 궁금하다','새로 출발하는 선수들 잘 풀리길']},
+  feat:{pos:['기록 소식 반갑습니다','발표된 기록을 차근차근 읽어 봤다','{p} 기록 남긴 것 축하합니다','선수의 노력에 박수를 보냅니다','이런 기록은 오래 기억되겠다','자세한 기록 기사 좋네요'],mix:['기록의 과정도 더 알고 싶다','다음 기록 소식도 기다려 봅니다']},
+  win:{pos:['승리 소식 반갑습니다','이긴 경기 소식은 기분 좋다','승리한 선수단 수고했습니다','기사에 나온 경기 잘 읽었습니다','다음 경기도 응원하겠습니다','팬들에게 반가운 결과다'],mix:['승리 이후 준비도 잘하길','이후 경기도 차근차근 지켜보자']},
+  loss:{neg:['패배 소식은 아쉽다','선수단도 아쉬움이 크겠다','다음 경기를 잘 준비했으면','기사 읽으니 아쉬움이 남네','오늘 결과는 아쉽지만 응원하겠습니다','이후 경기에서 잘 풀리길'],mix:['지는 경기도 있는 만큼 다음을 준비하자','선수들 수고했습니다']},
+  draw:{mix:['무승부라 아쉬움도 남네','끝까지 뛴 선수들 수고했습니다','승부를 가리지 못한 경기였네','다음 경기 준비 잘하길','기사에 나온 결과 확인했습니다','다음 경기도 응원합니다']},
+  newsNeu:{mix:['기사 내용 확인했습니다','추가 소식 기다려 보겠습니다','이 사안은 좀 더 지켜보자','관련 설명이 더 나오면 좋겠다','기사 잘 읽었습니다','내용부터 차분히 살펴보자','당사자들의 후속 이야기도 궁금하다','자료를 더 보고 이야기하자']}
+};
+function newsContextStamp(n){const key=JSON.stringify([n?.id??null,n?.d??null,n?.k??'',n?.tid??null,n?.ref??null,n?.t??'',n?.b??'',n?.o??'']);return Math.floor(fRng('article-context:'+key)()*4294967296).toString(36);}
+function newsBankFromText(n){const t=String(n?.t||''),lead=String(n?.b||'').split(/[.!?。\n]/)[0];
+  if(/[?？]|초읽기|좌절|미수상|수상(?:을)?\s*(?:못|취소)/.test(t))return 'newsNeu';
+  if(/우승|정상|MVP|신인왕|수상|복귀|영입|계약/.test(t)&&/정해지지|확정되지|미확정|미합의|논의 중|협상 중|결과.{0,20}기다리|될 수 있을지|오를지|복귀.{0,15}예정|아직.{0,30}(?:남아|남았|미정|없)/.test(lead))return 'newsNeu';
+  if(/감독.*(?:경질|해임|사퇴)|(?:경질|해임|사퇴).*감독/.test(t)&&!/(?:경질|해임|사퇴)(?:설|론| 요구)|검토|촉구|논의|지난|과거/.test(t))return 'mgrFire';
+  if(/목표|도전|후보|예상|전망|협상|미합의|논의|추진|검토|관심|예정|준비|계획|앞두|임박|노린|향한|꿈|다짐|공약|MVP급|신인왕급|복귀할|복귀설|은퇴설|영입설|재계약설|가능성|유력|실패|불발|결렬|수상자 없|수상.*탈락|누가|누구|지난|과거|회고|통산|경력|우승팀 출신/.test(t))return 'newsNeu';
+  if(/준우승/.test(t))return 'runnerUp';
+  if(/우승(?:[!….,]|$)|한국시리즈 정상|정상 등극|우승 (?:확정|달성)|우승을 차지/.test(t))return 'champ';
+  if(/MVP|신인왕|골든글러브|수상/.test(t))return 'awardB';
+  if(/복귀|회복/.test(t))return 'newsReturn';
+  if(/부상|수술|재활|장기 이탈/.test(t))return 'injury';
+  if(/은퇴(?: 발표| 선언|식|[!….,]|$)|현역 은퇴/.test(t))return 'retire';
+  if(/새 감독|감독.*(?:선임|취임)/.test(t))return 'mgrHire';
+  if(n?.k==='드래프트'&&/지명|드래프트/.test(t))return 'drSum';
+  if(/트레이드/.test(t)||n?.k==='트레이드')return 'tradeE';
+  if(/영입(?:[!….,]|$)|(?:계약|재계약).*(?:체결|완료|성사|확정|사인)|(?:계약|재계약)(?:[!….,]|$)/.test(t))return n?.k==='FA'||/FA/.test(t)?'faSign':'contract';
+  if(n?.k==='기록'||/노히트|대기록|사이클링/.test(t))return 'feat';
+  if(n?.k==='경기'){if(/무승부/.test(t))return 'draw';if(/패배|대패|연패|졌/.test(t))return 'loss';if(/승리|대승|연승|이겼/.test(t))return 'win';}
+  return 'newsNeu';
+}
+/* 이름 일부나 더 긴 다른 단어에 같은 글자가 들어간 경우를 당사자 언급으로 취급하지 않는다. */
+function newsPersonMention(name,text){if(typeof name!=='string'||name.length<2)return false;for(let i=text.indexOf(name);i>=0;i=text.indexOf(name,i+name.length)){if(i>0&&/[가-힣A-Za-z0-9]/.test(text[i-1]))continue;const tail=text.slice(i+name.length);if(!tail||!/^[가-힣A-Za-z0-9]/.test(tail))return true;const rest=tail.replace(/^(선수|투수|타자|코치|감독)/,'');if(/^(은|는|이|가|을|를|의|와|과|도|에게|으로|로|에서|부터|까지)?(?=$|[^가-힣A-Za-z0-9])/.test(rest))return true;}return false;}
+function newsContext(n,publication){n=n&&typeof n==='object'?n:{};const source=newsContextStamp(n),saved=n.fanCtx;
+  if(saved?.v===1&&saved.source===source&&Object.prototype.hasOwnProperty.call(NEWS_REACTIONS,saved.bank)){ const text=String(n.t||'')+' '+String(n.b||''); return {...saved,bank:newsBankFromText(n),tid:Number.isInteger(saved.tid)&&team(saved.tid)?saved.tid:null,teamNick:typeof saved.teamNick==='string'?saved.teamNick:'',teamCity:typeof saved.teamCity==='string'?saved.teamCity:'',playerName:newsPersonMention(saved.playerName,text)?saved.playerName:''}; }
+  const title=String(n.t||''),body=String(n.b||''),text=title+' '+body,catalog=publication?(G.teams||[]):TEAM_DEF.map((t,id)=>({...t,id})),has=(s,t)=>typeof s==='string'&&s.length>1&&t.includes(s),matches=t=>catalog.filter(x=>has(x.nick,t)||has(x.city+' '+x.nick,t)||has(x.city+x.nick,t));
+  const names=matches(title),fallback=names.length?names:matches(body);let tid=Number.isInteger(n.tid)&&team(n.tid)?n.tid:fallback.length===1?fallback[0].id:null;
+  const found=tid!=null?catalog.find(t=>t.id===tid):null,subject=publication?found:found&&(has(found.nick,text)||has(found.city+' '+found.nick,text)||has(found.city+found.nick,text))?found:null,ref=n.ref??null,p=publication&&ref!=null?(G.players?.[ref]||G.arch?.[ref]):null;
+  /* 옛 기사는 현재 ref 선수의 이름·소속으로 당시 인물을 추정하지 않는다. 저장된 이름 또는 발행 순간 기사 속 이름만 사용한다. */
+  const playerName=newsPersonMention(n.refName,text)?n.refName:p&&newsPersonMention(p.name,text)?p.name:'';
+  return {v:1,source,bank:newsBankFromText(n),tid,teamNick:subject?.nick||'',teamCity:subject?.city||'',playerId:ref,playerName,kind:String(n.k||'')};
+}
+function newsBank(n){return newsContext(n).bank;}
+function newsComments(n){const c=newsContext(n),key='article:'+JSON.stringify([n?.id??null,n?.d??null,n?.k??'',n?.t??'',n?.b??'',c.source]),mood=['champ','awardB','newsReturn','feat','win'].includes(c.bank)?'pos':c.bank==='loss'?'neg':'mix';
+  return fComments(key,c.bank,mood,{p:c.playerName,T:c.teamNick},5,c.tid,0,{strict:true,bank:NEWS_REACTIONS[c.bank],subject:c.tid!=null?{nick:c.teamNick,city:c.teamCity||''}:null});
+}

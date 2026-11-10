@@ -7,6 +7,8 @@ function news(kind,title,body,tone,o){ if(G._away)return null; /* 떠난 구단 
   if((G.news||[]).some(x=>x.t===title&&G.day-x.d<30))return null; /* 같은 제목 기사는 한 달 안에 다시 내지 않는다 */
   const it={d:G.day,o:outlet,t:title,b:body,v:tone,k:kind,ref:o.ref??null,id:(G.newsSeq=(G.newsSeq||0)+1)};
   try{ const ut=tshort(G.user); if(o.tid!=null&&o.tid!==G.user)it.oth=true; else if(!title.includes(ut)&&!title.includes(team(G.user).nick)&&G.teams.some(x=>x.id!==G.user&&title.includes(tshort(x.id))))it.oth=true; }catch(e){} /* 다른 구단 기사: 우리 구단 기사 묶음에서 뺀다 */
+  /* 기사 댓글은 발행 당시 주체·본문에 고정한다. 현재 단장/선수/리그 상태로 재해석하지 않는다. */
+  if(o.tid!=null)it.tid=o.tid; const fc=newsContext(it,true); it.tid=fc.tid; it.fanCtx={...fc,source:newsContextStamp(it)}; if(it.tid!=null)it.oth=it.tid!==G.user;
   if(o.img)it.img=o.img; /* 기사 사진 대신 그림(예: 트럭 시위 LED 전광판) */
   if(o.by)it.by=o.by; else { const rp0=kind==='팬'?null:outletRep(outlet); if(rp0)it.by=rp0.name; }
   G.news.unshift(it); if(G.news.length>80)G.news.length=80;

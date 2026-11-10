@@ -40,6 +40,10 @@ step "감독 요청·약속의 실제 이행 조건"
 for audit in dialogue event promises; do
  node "tools/check-manager-${audit}-conditions.cjs" || fail=1
 done
+step "기사 본문·댓글·발행 당시 맥락 일치"
+node tools/check-news-comment-context.cjs || fail=1
+node tools/check-news-comment-boundaries.cjs || fail=1
+node tools/check-news-comment-context-ui.cjs || fail=1
 step "개인 인맥·선수 은퇴·지도자 경력 관계 계승"
 for audit in personal-network personal-network-boundaries personal-network-ui; do
  node "tools/check-${audit}.cjs" || fail=1

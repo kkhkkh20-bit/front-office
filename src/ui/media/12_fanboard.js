@@ -57,19 +57,14 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
       cm:fComments('ltc'+x.d+x.a,'rival',aw,{O:team(x.a).nick,p:A[0].name,q:B[0].name},3,x.a,0).concat(fComments('ltd'+x.d+x.b,'rival',aw==='pos'?'neg':aw==='neg'?'pos':'mix',{O:team(x.b).nick,p:B[0].name,q:A[0].name},3,x.b,0))}); }
   /* 7) 리그 소식: 감독·기록·외국인 */
   for(const w of (G.wire||[]).slice(0,60)){
-    if(w.k==='감독'){ const fire=w.x&&w.x.fire; const m=w.tid!=null?G.mgr[w.tid]:null; const good=m&&!fire&&((m.fame||0)>=65||(m.tac||0)>=66||m.ob); const bad=m&&!fire&&(m.fame||0)<45&&(m.tac||0)<55;
-      const ours=w.tid===me; add({id:'mg'+w.d+w.tid+(fire?'f':''),d:w.d,cat:'감독',title:fire?`[속보] ${w.t}`:`${w.t.replace(/가 (.+) 감독을 새로 선임했습니다\./,' 새 감독 $1')} 어떻게 봄?`,body:m&&!fire?`${m.name} 감독 · ${m.career||'경력 정보 없음'}`:'',tid:w.tid,hot:ours,
-        cm:fComments('mgc'+w.d+w.tid,fire?'mgrFire':'mgrHire',fire?'mix':good?'pos':bad?'neg':'mix',{m:m?m.name:'',ob:m&&m.ob?'우리 팀 출신 레전드 귀환 ㄷㄷ':''},ours?7:4,w.tid,ours?fa:0)}); }
+    if(w.k==='감독'){ const text=String(w.t||''); if(!text)continue; const fire=!!w.x?.fire, article={id:'wire:manager:'+w.d+':'+w.tid+':'+text,d:w.d,k:'감독',t:text,b:text,v:0,tid:w.tid??null,ref:null};
+      const ours=w.tid===me; add({id:'mg'+w.d+w.tid+(fire?'f':''),d:w.d,cat:'감독',title:fire?`[속보] ${text}`:`${text} 어떻게 봄?`,body:text,tid:w.tid,hot:ours,cm:newsComments(article)}); }
     else if(w.k==='기록'){ const p=w.ref!=null?G.players[w.ref]:null; const nm=p?p.name:(w.t.split(' ')[0]); add({id:'ft'+w.d+w.t.length,d:w.d,cat:'기록',title:`ㄷㄷ ${w.t}`,body:'',tid:p?p.team:null,ref:p?p.id:null,hot:true,cm:fComments('ftc'+w.d+nm,'feat','pos',{p:nm},5,p?p.team:null,0)}); }
     else if(w.k==='외국인'&&w.tid===me){ add({id:'fo'+w.d+w.t.length,d:w.d,cat:'외국인',title:w.t,body:'',tid:me,cm:fComments('foc'+w.d,'forChg','mix',{},4,me,fa)}); } }
-  /* 8) 우리 구단 기사 */
-  for(const n of (G.news||[]).slice(0,14)){ if(n.k==='경기')continue; const p=n.ref!=null?G.players[n.ref]:null;
-    const bank=newsBank(n,p);
-    add({id:'n'+n.id,d:n.d,cat:'기사',title:`[${n.o}] ${n.t}`,body:n.b||'',tid:me,ref:n.ref,nid:n.id,cm:fComments('nc'+n.id,bank,bank==='champ'||bank==='awardB'?'pos':n.v>=1?'pos':n.v<=-1?'neg':'mix',{p:p?p.name:'',T:team(me).nick},5,me,fa)}); }
+  /* 8) 기사와 본문 옆 반응은 같은 엔진 경로를 사용한다. */
+  for(const n of (G.news||[]).slice(0,14)){ if(n.k==='경기')continue; const c=newsContext(n);
+    add({id:'n'+(n.id??('legacy:'+newsContextStamp(n))),d:n.d,cat:'기사',title:`[${n.o}] ${n.t}`,body:n.b||'',tid:c.tid,ref:n.ref,nid:n.id,cm:newsComments(n)}); }
   const seen=new Set(); return T.filter(t=>{ if(seen.has(t.id))return false; seen.add(t.id); return true; }).sort((a,b)=>b.d-a.d||(b.hot?1:0)-(a.hot?1:0)).slice(0,40); }
-/* 기사 하나의 댓글 */
-function newsComments(n){ const p=n.ref!=null?G.players[n.ref]:null; const b0=newsBank(n,p); const bank=b0==='newsPos'||b0==='newsNeg'||b0==='newsNeu'?(n.k==='경기'?(n.v>=0?'win':'loss'):b0):b0;
-  return fComments('nc'+n.id,bank,bank==='champ'||bank==='awardB'?'pos':bank==='champOther'?'neg':n.v>=1?'pos':n.v<=-1?'neg':'mix',{p:p?p.name:'',r:p?p.name:'',O:'',T:team(G.user).nick},5,G.user,fanAdj()); }
 /* 최근 우리 트레이드 반응 두 줄 (트레이드 성사 도장에 붙인다) */
 function tradeFanLines(){ const t=(G.trades||[])[G.trades.length-1]; if(!t)return []; const th=fanThreads().find(x=>x.id==='tr'+t.d+(t.gi||[]).join('.')); return th?th.cm.filter(c=>!c.re).slice(0,3):[]; }
 function gameFanLines(g){ if(!g)return []; const th=fanThreads().find(x=>x.id==='g'+g.day); return th?th.cm.filter(c=>!c.re).slice(0,2):[]; }

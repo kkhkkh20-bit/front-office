@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-10",
+  "baseline": "5cc5f8ec",
+  "artifacts": {
+    "index.html": {
+      "bytes": 58001134,
+      "sha256": "963168a80227725d535109c842bcabcf7d825ef8b2e4b659b75abf8fd04c602b"
+    },
+    "dist/engine.js": {
+      "bytes": 2280707,
+      "sha256": "35ed40b6aa6a007cbd783d5dad88036b3b9eb74089c48c6f30776fec1ee62cb8"
+    }
+  },
+  "checks": {
+    "context": 33,
+    "baselineFailed": 28,
+    "independentBoundaries": 8,
+    "browser": {
+      "widths": [
+        390,
+        768,
+        1366
+      ],
+      "passed": true,
+      "articles": 8,
+      "includes": "uncertainty, original club/person, fold/filter, same fan-thread comments, JSON restore, later club rename/city/person/fan/champion changes"
+    },
+    "communityRules": "pass",
+    "unit": 34,
+    "strictSimulation": {
+      "seed": 7,
+      "end": "2027-01-01",
+      "passed": true
+    },
+    "static": "pass",
+    "memoryRebuildMatches": true,
+    "fullCheckShRun": false
+  },
+  "limits": [
+    "Legacy article subjects are used only when preserved or identifiable from the article; unknown historical names are not guessed.",
+    "Fixed contextual templates are reactions/opinions rather than simulated real forum users."
+  ]
+}
