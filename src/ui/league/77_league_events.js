@@ -19,6 +19,7 @@ Object.assign(A,{
   leagueEvents(v){if(v)UI.asgY=+v;UI.it=UI.it||{};UI.it.histv='events';A.go('league:hist');},
   asgY(v){UI.asgY=+v;render();},
   asgV(v){UI.asgV=v;render();},
+  retiredGo(){UI.it=UI.it||{};UI.it.histv='ret';A.go('league:hist');},
   trophyGo(){UI.it=UI.it||{};UI.it.histv='tro';closeSheets();A.go('league:hist');}
 });
 /* 올스타 베스트12를 야구장 그림 위 선발 라인업으로 보여 준다. 드림(하운즈·시걸스·스파크스·썬더스·웨이브스)·나눔 배정은 엔진 ALL_STAR_DREAM을 따른다.

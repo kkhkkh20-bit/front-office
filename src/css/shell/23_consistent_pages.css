@@ -263,3 +263,10 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 /* 정리 모드: 실행·종료를 후보 목록 스크롤 밖 footer에 보존한다. */
 .trimc>.trim-a{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-start;margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line2)}.trimc>.trim-a .btn{min-height:32px;white-space:normal}.trimc>.trim-a>.danger{flex:1 1 160px}.trimc>.trim-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex-shrink:0}.trimc>.trim-h .sec{margin:0 auto 0 0}
 #app main.ws-up .trimc.ws-panel>.trim-a{display:flex!important}#app main.ws-up .trimc.ws-panel>.trim-h{display:flex!important}
+
+/* 결번 전용 목록: 빈 트로피 높이를 상속하지 않고 패널 안에서 읽는다. */
+.ws-frame>.rn-page{flex:1 1 auto;min-height:0;overflow:auto}
+.rn-page{display:flex;flex-direction:column;gap:10px;min-width:0}.rn-intro p{margin:4px 0 0}
+.rn-teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:8px;align-items:start}
+.rn-team{min-width:0;padding:10px 12px;background:var(--panel2);border:1px solid var(--line2);border-radius:5px}.rn-team.me{border-color:var(--team-hi)}
+.rn-team>p{margin:6px 0 0}.rn-team .retired-numbers{margin-top:8px;padding-top:8px}.rn-team .retired-numbers h3{margin:0 0 8px;font-size:var(--fs-body,14px)}

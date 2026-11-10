@@ -30,6 +30,7 @@ step "백업 가져오기·슬롯 전환·itch 이전"; node tools/check-save-im
 step "개인 활동 상대·검색·빠른 설정 변경"; node tools/check-career-review.cjs || fail=1
 step "인물 이전·다음·연속 면담"; node tools/check-people-navigation.cjs || fail=1
 step "사진·소식함·코치 표시·시즌 행사·영구결번"; node tools/check-community-ui.cjs || fail=1
+step "전체 구단 영구결번·이직·모바일 이동"; node tools/check-retired-navigation.cjs || fail=1
 step "현재·잠재력 별과 드래프트 별 배치"; node tools/check-player-stars.cjs || fail=1
 step "선수단 정리 모드 실행·종료"; node tools/check-roster-cleanup.cjs || fail=1
 step "긴 대화·관전 보고·읽기 위치"; node tools/check-reading-navigation.cjs || fail=1
