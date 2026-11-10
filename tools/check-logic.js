@@ -1580,9 +1580,8 @@ T('[100년] 단장 세대 교체: 시즌 밖에서 후임에게 넘기면 구단
   ok(G.user===tid&&domestic(G.user).length===n0&&team(G.user).cash===cash,'구단이 바뀜'); ok((G.gmLine||[]).length===1&&G.gmLine[0].name==='원조단장','계보 '+JSON.stringify(G.gmLine));
   ok(G.myC&&G.myC.tid===G.user&&G.myC.y1>=G.year,'계약 없음'); ok(G.rep>=30&&G.rep<=55,'명성 '+G.rep);
   G.gmP.age=90; gmAgeYear(); ok(G.gmP.name!=='둘째단장'&&G.gmLine.length===2,'정년 자동 교체 안 됨'); });
-T('[100년] 부실 구단: AI 구단이 2년 넘게 -40억 아래면 매각·재창단으로 새 주인이 오고 선수단·이름은 그대로, 우리 구단은 대상이 아니다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const n0=domestic(t.id).length, nick=t.nick, o0=bossOf(t.id).own.name; const u=team(G.user);
-  t.cash=-9000; u.cash=-9000; const R0=Math.random; let ok2=false; for(let i=0;i<8&&!ok2;i++){ t.cash=Math.min(t.cash,-9000); clubRescue(G.year+i); ok2=t.cash>0; }
-  ok(ok2,'정리 안 됨 '+t.cash); ok(domestic(t.id).length===n0&&t.nick===nick,'선수단·이름이 바뀜'); ok(bossOf(t.id).own.name!==o0||(G.rescues||[]).length,'구단주 그대로'); ok(u.cash===-9000,'우리 구단이 정리됨'); ok((G.rescues||[]).length===1,'기록 '+JSON.stringify(G.rescues)); });
+T('[100년] 구단 매각: 인수 협상을 거쳐 새 주인이 오고 선수단·이름·단장은 보존한다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user), n0=domestic(t.id).length,nick=t.nick,gm=t.gm;const own=bossOf(t.id).own.id;const O=ownershipInit(),S=O.clubs[t.id];O.since=G.year-12;S.parent.since=G.year-12;S.parent.health=40;S.debtYears=2;t.cash=-9000;
+  ok(ownershipStart(t.id,'crisis',{outcome:'sale',seed:'logic-sale'}),'매각 검토 시작 실패');let n=0;while(S.pending&&n++<8){G.day=S.pending.nextD;ownershipDaily();}ok(t.cash>0,'운영자금 미출자');ok(domestic(t.id).length===n0&&t.nick===nick&&t.gm===gm,'선수단·이름·단장이 바뀜');ok(bossOf(t.id).own.id!==own,'구단주 ID 그대로');ok((G.rescues||[]).length===1,'인수 장부 중복'); });
 T('[검수 11-05] 부상 대체 외국인이 방출돼도 원 선수가 재활 명단에서 풀린다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3);
   const o=foreignOf(G.user).find(p=>p.foreign==='용병'); ok(o,'준비 실패: 외국인 없음'); o.injOut=50; const q=(G.fmarket||[]).map(id=>G.players[id]).find(x=>x&&x.team==null&&x.foreign==='용병'&&!fTmpErr(G.user,o,x)); ok(q,'준비 실패: 대체 후보 없음');
   ok(signTempForeign(G.user,o.id,q.id)==='','대체 등록 실패'); ok(o.frehab===q.id,'재활 명단 표시 없음'); releaseForeign(q.id); ok(!o.frehab,'대체 선수를 내보냈는데 원 선수가 재활 명단에 남음'); });
@@ -1637,8 +1636,8 @@ T('[검수 11-06e] 수상: 실제 홈런 1위가 떠나도 2위에게 타이틀 
   const A2=seasonAwards(y); ok((A2.cand.gg.OF||[]).some(c=>c.id===r.id),'외야 90경기 선수가 외야 후보에서 빠짐'); });
 T('[검수 11-06e] 함께 밀어주기로 한 선수 트레이드: 감독 관계는 안내대로 -6만 깎인다',()=>{ fresh(); const m=G.mgr[G.user]; const p=domestic(G.user).find(q=>!q.foreign); G.mpick={y:G.year,back:true,ids:[p.id]}; m.rel=60;
   const v=mgrTradeView(G.teams.find(t=>t.id!==G.user).id,[p.id],[]); const rv=v.ra; mgrTradeApply(v); mpickTraded([p.id]); ok(m.rel===clamp(60+rv,0,100)-6||m.rel===0,'감독 관계 '+(m.rel-60)+'(평가분 '+rv+' + 약속 -6 기대)'); });
-T('[검수 11-06e] 다른 구단 매각 기사는 우리 여론을 바꾸지 않는다',()=>{ fresh(); prInit(); G.pr.fan=50; G.pr.press=50; const t=G.teams.find(x=>x.id!==G.user); t.cash=-9000; t.debtY=5; let n=0; while(!(G.rescues||[]).length&&n++<50){ t.debtY=5; clubRescue(G.year); }
-  ok((G.rescues||[]).length,'준비 실패'); ok(G.pr.fan===50&&G.pr.press===50,'여론 '+G.pr.fan+'/'+G.pr.press); });
+T('[검수 11-06e] 다른 구단 매각 기사는 우리 여론을 바꾸지 않는다',()=>{ fresh(); prInit(); G.pr.fan=50;G.pr.press=50;const t=G.teams.find(x=>x.id!==G.user),O=ownershipInit(),S=O.clubs[t.id];O.since=G.year-12;S.parent.since=G.year-12;S.parent.health=40;S.debtYears=2;t.cash=-9000;
+  ok(ownershipStart(t.id,'crisis',{outcome:'sale',seed:'logic-pr'}),'준비 실패');let n=0;while(S.pending&&n++<8){G.day=S.pending.nextD;ownershipDaily();}ok((G.rescues||[]).length,'인수 실패');ok(G.pr.fan===50&&G.pr.press===50,'여론 '+G.pr.fan+'/'+G.pr.press); });
 T('[검수 11-06e] 언론 플레이: 이미 띄우는 중이라 거절되면 30일 대기가 생기지 않는다',()=>{ fresh(); const r=pressInit()[0]; r.rel=90; const p=domestic(G.user).find(q=>!q.isP); p.hype={v:5,until:G.day+30}; G.ppLast=null;
   const m=pressPlay(r.id,'hype',p.id); ok(/이미 띄우는 중/.test(m),'준비 실패: '+m); ok(G.ppLast==null,'대기 시간 기록됨'); });
 T('[검수 11-06e] 언론에 띄운 타자 평가 기록에 사구가 들어간다',()=>{ ok(DIGK.includes('hbp'),'평가 기록 항목에 사구 없음'); });
@@ -2577,7 +2576,7 @@ T('[검수 11-09g] 웨이버: 같은 날 마감되고 빈자리가 하나면 신
   { const [x,y]=run(true); ok(x.team===u&&y.team!==u,'위로 올린 선수가 배정되지 않음'); } });
 T('[검수 11-09h] 한국시리즈 뒤 부임해 다음 시즌부터 시작하는 단장 계약은 올해 연봉·우승 성과급을 받지 않는다',()=>{ fresh(); const C=myCInit(); C.y0=G.year+1; C.y1=G.year+3; C.tid=G.user; const e0=C.earn; ok(myCPay()===0,'계약 시작 전 연봉 지급'); ok(myCBonus({champ:G.user},[{tid:G.user}])===0,'계약 시작 전 우승 성과급'); ok(C.earn===e0,'경력 수입 증가'); ok(!budget().exp.some(x=>x[0]==='단장 연봉'&&x[1]>0),'예산에 시작 전 단장 연봉');
   C.y0=G.year; G.gmJoin={y:G.year,tid:G.user,w:0,l:0,psDone:true}; ok(myCBonus({champ:G.user},[{tid:G.user}])===0,'가을야구가 끝난 뒤 부임했는데 우승 성과급'); G.gmJoin=null; });
-T('[검수 11-09h] 야인이면 마지막으로 맡았던 구단도 부실 구단 매각 심사 대상이다',()=>{ fresh(); const A=G.user, t=team(A); G.unemp={y:G.year,msg:'',since:G.day,from:A,k:'resign'}; let n=0; while(n++<40&&(n===1||t.cash<0)){ t.cash=-16000; t.debtY=5; clubRescue(G.year); } ok(t.cash>0,'전 소속 구단 현금 '+t.cash+'(매각·재창단 없음)'); G.unemp=null; });
+T('[검수 11-09h] 야인이면 마지막으로 맡았던 구단도 동일한 매각 심사 대상이다',()=>{fresh();const A=G.user,t=team(A);G.unemp={y:G.year,msg:'',since:G.day,from:A,k:'resign'};const O=ownershipInit(),S=O.clubs[A];O.since=G.year-12;S.parent.health=40;S.debtYears=2;t.cash=-16000;ok(ownershipStart(A,'crisis',{outcome:'sale',seed:'logic-unemp'}),'전 소속 심사 제외');let n=0;while(S.pending&&n++<8){G.day=S.pending.nextD;ownershipDaily();}ok(t.cash>0,'전 소속 인수 실패');G.unemp=null;});
 T('[검수 11-09h] 시즌 중 사임해도 그 구단 결산은 후임이 이어받은 스카우트 비용과 그해 마케팅 설정으로 계산한다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>G.cal.open+3); const A=G.user; G.marketing=4500; firedFlow(G.year,'테스트 사임','resign'); const L=G.lgStaff&&G.lgStaff[A]; ok(L&&L.sc.length>0,'준비: 인계된 스카우트 없음');
   simTo(()=>G.last&&G.last.y===G.year); const f=G.last.fins[A], sc=f.exp.find(x=>x[0]==='스카우트 운영'), mk=f.exp.find(x=>x[0]==='마케팅'); ok(sc&&sc[1]>600,'스카우트 비용 '+(sc&&sc[1])+'(인계 명단 연봉 빠짐)'); ok(mk&&mk[1]===4500,'마케팅 '+(mk&&mk[1])+'(기대 4500)'); });
 T('[검수 11-09h] 공통 점검: A→B→A로 옮겨도 A의 확정 예산·이직 정산 항목이 유지되고, 결산표의 모든 지표가 같은 구단·시즌을 가리킨다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>G.cal.open+3); const A=G.user, B=G.teams.find(t=>t.id!==A).id, C=G.teams.find(t=>t.id!==A&&t.id!==B).id;

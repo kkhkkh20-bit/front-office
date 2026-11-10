@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-10",
+  "engineSHA256": "a4676b1aebddff5025b074a97e8ad38a03ba0a209d35235da01342c1d5fca59b",
+  "builtHTMLSHA256": "772ad75d198bf617dbf12f60de4521d20dabf642bdc954f68e6e4f4c0267c349",
+  "ownershipEngineChecks": 18,
+  "ownershipPeopleChecks": 16,
+  "unitChecks": 34,
+  "executiveHistoryChecks": 10,
+  "clubArchiveChecks": 7,
+  "static": "passed",
+  "actualBaseballSimulation": {
+    "seed": 7,
+    "strict": true,
+    "end": "2028-01-01",
+    "result": "passed"
+  },
+  "releaseHTMLBrowser": {
+    "widths": [
+      1366,
+      390,
+      768
+    ],
+    "actualOwnershipFlowsPerWidth": 10,
+    "result": "passed",
+    "evidence": "/tmp/ownership-ui-release/results.json"
+  },
+  "syntheticOwnershipFrequency": {
+    "leagueYears": 20000,
+    "result": "passed",
+    "data": "2026-11-10-ownership-frequency.json"
+  },
+  "fullCheckShRun": false
+}

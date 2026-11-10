@@ -57,7 +57,7 @@ function staffReport(when){ if(G.unemp||!G.mgr[G.user])return; const tid=G.user;
   { const nx=PSLOTS.filter(k=>{ if(k==='SP'||k==='RP')return false; const p=d.ln[k]; return p&&!p.foreign&&ctrlYears(p)<=1; }); if(nx.length)items.push(`[내년] 주전 중 ${nx.map(k=>SLOTK[k]).join(', ')} 자리 선수가 이번 시즌 뒤 FA입니다. 선수단 화면의 선수단 계획에서 내년 공백을 확인하세요.`); }
   if(!items.length)return; if(acts.length<3)acts.push({l:'선수단 계획',a:'go',v:'roster:plan'});
   mail('코치진',`${when} 코치진 보고: 단장 확인 ${items.length}건`,`${items.join('\n\n')}\n\n버튼을 누르면 해당 화면으로 바로 갑니다.`,{kind:'업무',acts:acts.slice(0,3)}); }
-function ownerMonth(m,rk){ const t=team(G.user); const g=G.goals; if(!g)return; const ow=t.owner; const w=OWNER[ow].w;
+function ownerMonth(m,rk){ const t=team(G.user); const g=G.goals; if(!g)return; const ow=g.owner||t.owner; const w=OWNER[ow].w;
   /* 경기 수가 적을 때는 순위로 판단하지 않는다: 30경기 전에는 평가 보류, 70경기까지 순위 비중을 서서히 올린다 */
   const rr=G.sea&&G.sea.rec&&G.sea.rec[G.user]; const days=G.cal&&G.cal.open!=null?G.day-G.cal.open:999; const gp=Math.min(rr?rr.w+rr.l+(rr.t||0):0,Math.max(0,Math.round(days*.85))); const early=gp<30; const rkW=clamp((gp-30)/40,0,1);
   let s=0; s+=(g.rank-rk)*.6*w[0]*rkW; s+=(G.pr.press-50)/14*(w[3]*.6+.4); s+=(G.pr.fan-g.fan)/12*(w[3]*.7+.3); const ps=projSupport(); s+=(g.sup-ps)*4*w[2];
@@ -71,7 +71,7 @@ function ownerMonth(m,rk){ const t=team(G.user); const g=G.goals; if(!g)return; 
   G.ownerLog.unshift({d:G.day,m,mood,delta:d,trust:t.trust,txt}); if(G.ownerLog.length>20)G.ownerLog.length=20;
   mail('구단주실',`${m}월 구단주 보고: ${mood}`,`${txt}\n\n현재 ${rk}위(목표 ${g.rank}위 이내) · 팬 여론 ${Math.round(G.pr.fan)}(목표 ${g.fan}) · 언론 논조 ${Math.round(G.pr.press)} · 예상 적자 보전 ${Math.round(ps*100)}%(목표 ${Math.round(g.sup*100)}% 이하)\n구단주 신뢰 ${t.trust} (${d>=0?'+':''}${d})`,{imp:mood==='격노',kind:'구단주',acts:[{l:'목표 보기',a:'go',v:'club:owner'}]});
 }
-function goalYearEnd(rank,fin){ const s=goalStatus(); if(!s)return {d:0,lines:[]}; s.rank.cur=rank; s.rank.ok=rank<=s.rank.t; if(fin&&fin.supCap){ s.sup.cur=fin.support/fin.supCap; s.sup.ok=s.sup.cur<=s.sup.t; } const w=OWNER[team(G.user).owner].w; let d=0; const lines=[];
+function goalYearEnd(rank,fin){ const s=goalStatus(); if(!s)return {d:0,lines:[]}; s.rank.cur=rank; s.rank.ok=rank<=s.rank.t; if(fin&&fin.supCap){ s.sup.cur=fin.support/fin.supCap; s.sup.ok=s.sup.cur<=s.sup.t; } const w=OWNER[(G.goals&&G.goals.owner)||team(G.user).owner].w; let d=0; const lines=[];
   const f=(ok,label,wt)=>{ const v=Math.round((ok?3:-4)*wt); d+=v; lines.push(`${label} ${ok?'달성':'미달'} (${v>=0?'+':''}${v})`); };
   f(s.rank.ok,`순위 목표(${s.rank.t}위 이내)`,w[0]); f(s.sup.ok,'재정 목표',w[2]); f(s.fan.ok,`여론 목표(${s.fan.t})`,w[3]); if(s.youth)f(s.youth.ok,'육성 목표',.8);
   return {d,lines}; }

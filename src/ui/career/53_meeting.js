@@ -2,7 +2,7 @@
    상대 얼굴과 대화 말풍선, 아래에 꺼낼 이야기(화제)를 고른다. 결과(승인·반려, 관계·기분 변화)는 대화 속에 한 줄로 남는다 */
 const MEET_PL={praise:'요즘 정말 잘해 주고 있어. 고맙다.',push:'솔직히 지금보다 더 해 줘야 한다.',promise:'감독님께 출전 기회를 건의해 보겠네.',contract:'계약 이야기를 좀 해 볼까.',ask:'요즘 고민 있나? 편하게 말해 봐.'};
 function meetWho(M){ const t=team(G.user);
-  if(M.k==='own'){ const B=bossOf(G.user); return {name:B.own.name,role:'구단주 · 모기업 회장',place:'구단주 집무실',av:avImg({persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name}),rel:`신뢰 ${Math.round(t.trust)} · 친밀도 ${cwRap('own')}(${cwRapLbl(cwRap('own'))})`}; }
+  if(M.k==='own'){ const B=bossOf(G.user); if((M.tid!=null&&M.tid!==G.user)||(M.person!=null&&M.person!==B.own.id)||(M.log&&M.person==null))return null; return {name:B.own.name,role:'구단주 · 모기업 회장',place:'구단주 집무실',av:avImg({persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name}),rel:`신뢰 ${Math.round(t.trust)} · 친밀도 ${cwRap('own')}(${cwRapLbl(cwRap('own'))})`}; }
   if(M.k==='gm'){const t=team(M.id),m=gmOf(M.id);if(!t||M.id===G.user)return null;return {name:m?.name||t.nick+' 단장',role:tname(M.id)+' 단장',place:'단장 간 면담',av:avImg({persona:'gm',pid:m?.id||M.id,team:M.id,age:m?.age||50,name:m?.name||'단장'}),rel:'양 구단 관계 '+Math.round(t.rel??50)+' · 개인 친밀도 '+Math.round(personalGMContact(M.id)?.bond??30)};}
   if(M.k==='mgr'){ const m=G.mgr[G.user]; if(!m||(M.mid&&M.mid!==m.id))return null; return {name:`${m.name} 감독`,role:`${mgrType(m).n} · ${MTSTY[mgrTalkSty(m)].l}`,place:M.visit?'단장실':'감독실',av:avImg({persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name}),rel:`관계 ${m.rel}`}; }
   const p=G.players[M.id]; if(!p)return null; return {name:p.name,role:`${posLabel(p)} · ${p.age}세`,place:'선수 면담실',av:avImg(p),rel:`기분 ${Math.round(p.mor??60)} · ${friendshipLabel(p)}`}; }
@@ -11,7 +11,7 @@ function meetGreet(M){ const t=team(G.user);
   if(M.k==='gm')return gmPersonalReply(M.id,'check');
   if(M.k==='mgr')return mvGreeting(G.mgr[G.user],M);
   const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
-function meetOpen(k,id,o){ if(k==='pl'||k==='gm')peopleCapture((k==='pl'?'p:':'gm:')+id);o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit,returnY:document.documentElement.classList.contains('detail-page-open')?sheetScrollY():scrollY,returnDetail:document.documentElement.classList.contains('detail-page-open'),mid:k==='mgr'?G.mgr[G.user]?.id:null,bs:UI.sheet??null,bp:UI.person??null}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
+function meetOpen(k,id,o){ if(k==='pl'||k==='gm')peopleCapture((k==='pl'?'p:':'gm:')+id);o=o||{}; const M={k,...(k==='own'?{tid:G.user,person:bossOf(G.user).own.id}:{}),id:id??null,log:[],first:!!o.first,visit:!!o.visit,returnY:document.documentElement.classList.contains('detail-page-open')?sheetScrollY():scrollY,returnDetail:document.documentElement.classList.contains('detail-page-open'),mid:k==='mgr'?G.mgr[G.user]?.id:null,bs:UI.sheet??null,bp:UI.person??null}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
   meetKeep(); UI.sheet=null; UI.person=null; /* 면담 전에 보던 상세는 M.bs·M.bp에 두었다가 면담을 마치면 다시 연다 */
   const H=meetHeld(k); if(H&&!o.ask&&H.mid===M.mid){ UI.meetHold=null; Object.assign(H,{returnY:M.returnY,returnDetail:M.returnDetail,bs:M.bs,bp:M.bp,logCount:-1}); H.log.push({w:'sys',t:'하던 이야기를 이어 합니다'}); UI.meet=H; render(); return; }
   if(k==='pl'){ const p=G.players[M.id]; const TL=(p&&p.talkLog)||[]; if(TL.length)M.log.push({w:'sys',t:`최근 면담 · ${TL.slice(0,3).map(x=>`${dmd(x.d)} ${TALK[x.k]||x.k}: "${x.a}"`).join(' / ')}`}); if(p&&p.promise)M.log.push({w:'sys',t:`약속: 출전 기회 건의 · ${dmd(p.promise.until)}까지 감독이 기회를 주는지 확인`}); }
@@ -20,7 +20,7 @@ function meetOpen(k,id,o){ if(k==='pl'||k==='gm')peopleCapture((k==='pl'?'p:':'g
 const meetOver=()=>!!UI.meet&&(UI.sheet!=null||UI.person!=null);
 /* 끝나지 않은 장면(감독·구단주 대화)은 다른 화면에 다녀와도 같은 날 안에는 이어 한다. shortcut: 화면 상태라 새로고침하면 사라진다, 필요하면 G로 옮긴다 */
 function meetKeep(){ const M=UI.meet; if(M&&M.sc&&M.sc.node)UI.meetHold=Object.assign(M,{g:G,day:G.day}); }
-function meetHeld(k){ const H=UI.meetHold; return H&&H.g===G&&H.day===G.day&&H.k===k&&H.sc&&H.sc.node?H:null; }
+function meetHeld(k){ const H=UI.meetHold; return H&&H.g===G&&H.day===G.day&&H.k===k&&H.sc&&H.sc.node&&(k!=='own'||meetWho(H))?H:null; }
 /* 장면 대답 한 번: 내 말 → 상대 반응 → 결과 한 줄 → 상대의 다음 말(질문) 순서로 남긴다(11-09e) */
 function meetScn(M,r){ if(r.me)M.log.push({w:'me',t:r.me}); if(r.say[0])M.log.push({w:'them',t:r.say[0]}); if(r.sys.length)M.log.push({w:'sys',t:r.sys.join(' · ')}); r.say.slice(1).forEach(t=>M.log.push({w:'them',t})); M.sc=r.st; }
 function meetBadF(){ return foreignOf(G.user).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=60&&pRate(h).era>5):(h.pa>=100&&bRate(h).ops<.700)); }); }
@@ -40,7 +40,7 @@ function meetTopics(M){ const t=team(G.user);
   const p=G.players[M.id]; return Object.entries(TALK).map(([k,l])=>[k,l,k==='ask'?'언제든 물어볼 수 있습니다':talkUsed(p,k)?'이번 주에는 했습니다':null,talkUsed(p,k)]); }
 function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const say=(w,x)=>M.log.push({w,t:x});
   if(M.k==='gm'){say('me',meetTopics(M).find(x=>x[0]===v)?.[1]||'근황이 어떻습니까?');say('them',gmPersonalReply(M.id,v));save();return;}
-  if(M.k==='own'){ if(v==='talk'){ say('me','회장님, 잠깐 말씀 나누시죠.'); const r=ownTalkStart(); r.say.forEach(x=>say('them',x)); M.sc=r.st; save(); return; }
+  if(M.k==='own'){ if(!meetWho(M)){say('sys','면담 상대가 자리를 떠나 이야기를 마칩니다.');M.sc=null;return;} if(v==='talk'){ say('me','회장님, 잠깐 말씀 나누시죠.'); const r=ownTalkStart(); r.say.forEach(x=>say('them',x)); M.sc=r.st; save(); return; }
     if(v.startsWith('sc:')){ const r=ownTalkPick(M.sc,+v.slice(3)); meetScn(M,r); save(); return; }
     if(v==='rep'){ const g=goalStatus(); say('me','회장님, 요즘 상황을 보고드리러 왔습니다.'); say('them',ownerPersonalReport()); return; }
     const [k,x]=v.split(':'); const p=k==='gen'?null:G.players[+x]; const amt=k==='gen'?+x:k==='fa'?p.ask.annual:frepAmt(p); const tr0=t.trust;

@@ -65,7 +65,7 @@ function setGoals(intro,first){ prInit(); delete G.bLock; if(G.bLocks)delete G.b
   const rank=first?Math.min(8,ow==='win'?proj:ow==='profit'?proj+2:proj+1):goalRankOf(G.user);
   const base=projSupport(); const sup=G.supPlan&&G.supPlan.y===G.year?Math.round(G.supPlan.gf*100)/100:Math.round(clamp(base*(ow==='profit'?.85:ow==='pr'?1:1.15)+.05,.2,1)*100)/100; /* 1월에 정한 지원 목표를 그대로 쓴다 */ const fan=ow==='pr'?60:ow==='win'?45:50;
   const youth=t.mode==='rebuild'||ow==='profit'?1:0;
-  G.goals={y:G.year,rank,sup,fan,youth,v:2,...(first?{fd:true}:{})}; /* 첫해 표시를 목표와 함께 저장(월간 평가 완화, 검수 11-09zzd) */
+  G.goals={y:G.year,owner:ow,rank,sup,fan,youth,v:2,...(first?{fd:true}:{})}; /* 첫해 표시를 목표와 함께 저장(월간 평가 완화, 검수 11-09zzd) */
   /* FA 영입 자금을 받으며 약속한 목표가 있으면 올 시즌 목표에 얹는다 */
   { const P=(G.pitchCommit||[]).filter(c=>c.y===G.year); for(const c of P){ if(c.k==='rank')G.goals.rank=Math.max(1,G.goals.rank-c.v); if(c.k==='fan')G.goals.fan=Math.min(80,G.goals.fan+c.v); if(c.k==='sup')G.goals.sup=Math.max(.1,Math.round((G.goals.sup-c.v)*100)/100); } if(P.length)G.goals.pitch=P.map(c=>c.l); } { const LK=G.bLocks&&G.bLocks[G.user]; if(LK&&LK.fy===G.year)LK.gf=G.goals.sup; } /* 확정 예산 기준은 목표를 정하기 전에(projSupport) 잡히므로, 정한 목표(재정 약속 포함)로 맞춘다(예산 화면·여유가 구단주 메일과 같게, 검수 11-08·11-09x) */
   const lines=[`정규시즌 ${G.goals.rank}위 이내`,`모기업 적자 보전을 한도의 ${Math.round(G.goals.sup*100)}% 이하로`,`팬 여론 ${G.goals.fan} 이상 유지`]; if(G.goals.pitch)lines.push(`(FA 영입 때 약속: ${G.goals.pitch.join(', ')})`); if(youth)lines.push('24세 이하 선수 1명 이상을 1군 주전급(규정 타석 절반 또는 80이닝)으로');

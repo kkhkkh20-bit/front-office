@@ -20,6 +20,7 @@ function cwH(s){ let h=2166136261>>>0; s=String(s); for(let i=0;i<s.length;i++){
 function cwSec(){ const B=bossOf(G.user); return ['youth','star','crowd','money'][Math.floor(cwH('cwsec:'+B.own.id+':'+B.own.name)*4)]; }
 function cwSt(){ const c=G.cw||(G.cw={}); if(c.y!==G.year){ c.y=G.year; c.n=0; c.last={}; c.lastD=-99; c.gift=0; } c.hist=c.hist||[]; return c; }
 function cwOn(){ return !!(G&&!G.unemp&&!G.gameOver&&G.user!=null&&!team(G.user).indie); }
+function cwActorMatches(who,tid,person){return (tid==null||tid===G.user)&&(person==null||bossOf(tid??G.user)[who==='ceo'?'ceo':'own'].id===person);}
 function cwNm(who){ const B=bossOf(G.user); return who==='ceo'?`${B.ceo.name} 사장`:`${B.own.name} 회장`; }
 function cwFrom(who){ return who==='ceo'?'사장실':'구단주실'; }
 const cwPct=x=>Math.floor(x*1000+1e-6)/10+'%'; /* 반올림하면 89.5%가 90%로 보여 목표를 넘은 것처럼 보인다(검수 11-09zzd) */
@@ -63,7 +64,7 @@ function cwInvite(){ const c=cwSt(); const per=period(); const C=G.cal; if(!(per
   let who='own'; try{ const b=budget(); const iss=b.roomGoal<0||(G.fac&&G.fac.bld&&Object.keys(G.fac.bld).length); if(why!=='open'&&R()<(iss?.45:.2))who='ceo'; /* 사장은 예산·시설 이슈가 있으면 더 자주, 없어도 가끔 */ }catch(e){}
   c.n++; c.lastD=G.day; const g=(C.sched[nh]||[]).find(m=>m[0]===G.user); const op=g?tname(g[1]):'상대';
   const ev=evNew('cwInv',`${who==='ceo'?'사장':'구단주'}의 초대: ${dmd(nh)} ${op}전 함께 보기`,`${cwNm(who)}: "${cwInvLine(why,who,nh,op)}"\n\n${dmd(nh)} 홈경기입니다(사유: ${CW_WHY[why]}). 함께 보면 친밀도가 오르고, 경기 뒤에 보고를 나누며 한 가지를 건의할 수 있습니다. 사양해도 불이익은 없습니다.`,
-    [{l:'함께 보겠습니다',fx:'그날 직관 일정에 동석으로 잡힘 · 친밀도 상승 · 경기 뒤 보고와 건의 기회'},{l:'이번에는 어렵습니다',fx:'변화 없음'}],{exp:Math.max(1,nh-1-G.day),def:1,from:cwFrom(who),data:{d:nh,who,why}});
+    [{l:'함께 보겠습니다',fx:'그날 직관 일정에 동석으로 잡힘 · 친밀도 상승 · 경기 뒤 보고와 건의 기회'},{l:'이번에는 어렵습니다',fx:'변화 없음'}],{exp:Math.max(1,nh-1-G.day),def:1,from:cwFrom(who),data:{d:nh,who,why,tid:G.user,person:bossOf(G.user)[who].id}});
   G.stops=(G.stops||[]).filter(x=>x.id!==ev.mid); /* 진행을 막지 않는다 */ }
 function cwInvLine(why,who,d,op){ const ow=team(G.user).owner;
   if(who==='ceo')return `단장님, ${dmd(d)} 홈경기에 가려고 합니다. 올해 예산 이야기도 할 겸 같이 보시겠습니까?`;
@@ -73,15 +74,15 @@ function cwInvLine(why,who,d,op){ const ow=team(G.user).owner;
   if(why==='race')return '순위 싸움이 한창이라던데, 직접 보고 싶소. 같이 가겠소?';
   if(why==='last')return '올해 마지막 홈경기요. 한 해를 같이 마무리합시다.';
   return '같이 경기 봅시다.'; }
-EVH.cwInv={ pick(e,i){ const d=e.data; if(i!==0)return `${d.who==='ceo'?'사장':'구단주'}에게 사정을 전했습니다. "다음에 봅시다." 변화는 없습니다.`;
-  const P=gmPlans(); if(d.d<=G.day)return '경기 날짜가 지났습니다.'; P[d.d]={k:'attend',x:d.who==='ceo'?'ceo':'owner',cw:d.why,done:false};
+EVH.cwInv={ pick(e,i){ const d=e.data; if(!cwActorMatches(d.who,d.tid,d.person))return '초대한 인물이 자리를 떠나 이 초대는 종료됐습니다.'; if(i!==0)return `${d.who==='ceo'?'사장':'구단주'}에게 사정을 전했습니다. "다음에 봅시다." 변화는 없습니다.`;
+  const P=gmPlans(); if(d.d<=G.day)return '경기 날짜가 지났습니다.'; P[d.d]={k:'attend',x:d.who==='ceo'?'ceo':'owner',cw:d.why,tid:d.tid??G.user,person:d.person??bossOf(G.user)[d.who==='ceo'?'ceo':'own'].id,done:false};
   return `${dmd(d.d)} 홈경기 직관 일정을 ${d.who==='ceo'?'사장':'구단주'} 동석으로 잡았습니다. 전날 다시 알려 드립니다.`; } };
 
 /* ---------- 경기 뒤 보고 (gmAttendResult에서 부른다) ---------- */
-function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=plan.x==='ceo'?'ceo':'own'; const why=plan.cw||'self'; plan.done=true;
+function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=plan.x==='ceo'?'ceo':'own'; const why=plan.cw||'self'; plan.done=true; if(!cwActorMatches(who,plan.tid,plan.person)){plan.cancelled='인물 교체';return true;}
   const t=team(G.user); const me=rec.home===G.user?'h':'a'; const ms=me==='h'?rec.hs-rec.as:rec.as-rec.hs; const tr0=t.trust;
   const L=cwUlog(); const tags=cwTags(rec,me,ms,cwStreak(L.slice(0,-1)));
-  const S={tid:G.user,id:'cw'+rec.day+':'+rec.home+':'+rec.away,day:rec.day,gk:{d:rec.day,h:rec.home,a:rec.away,gid:rec.gid},who,why,ms,res:rec.res,tags,tr0,until:G.day+3,done:false,sugg:null,gift:null};
+  const S={tid:G.user,person:bossOf(G.user)[who].id,actor:JSON.parse(JSON.stringify(bossOf(G.user)[who])),id:'cw'+rec.day+':'+rec.home+':'+rec.away,day:rec.day,gk:{d:rec.day,h:rec.home,a:rec.away,gid:rec.gid},who,why,ms,res:rec.res,tags,tr0,until:G.day+3,done:false,sugg:null,gift:null};
   S.lines=cwRemarks(rec,me,who,ms,tags); try{ S.live=cwLive(rec,who); }catch(e){ S.live=[]; }
   /* 결과에 따른 신뢰 소폭 변화: 이기면 +1(5점 차 이상 +1.5), 5점 차 이상 지면 -1. 사장과 보면 절반이 구단주에게 전해진다 */
   const d0=ms>=5?1.5:ms>0?1:ms<=-5?-1:0; const dv=who==='ceo'?d0/2:d0; t.trust=clamp(Math.round((t.trust+dv)*10)/10,0,100); S.trD=Math.round((t.trust-tr0)*10)/10;
@@ -89,7 +90,7 @@ function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=p
   const m=G.mgr[G.user]; if(m&&!m.interim)m.rel=clamp(m.rel+1,0,100); for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+1,0,100); /* 단장 직관 효과(기존과 같음) */
   if(ms>0)S.gift=cwGift(tags);
   S.ord=cwOrdIssue(who); /* 구단주 지시(이미 진행 중이면 새로 내리지 않는다) */
-  G.cwS=S; const c=cwSt(); c.hist.push({d:S.day,y:G.year,why,who,res:rec.res,ms,trD:S.trD,rapD:S.rapD,gift:S.gift?S.gift.k:null,tags,ord:S.ord?S.ord.k:null}); if(c.hist.length>40)c.hist.splice(0,c.hist.length-40);
+  G.cwS=S; const c=cwSt(); c.hist.push({d:S.day,y:G.year,tid:G.user,person:S.person,name:S.actor.name,why,who,res:rec.res,ms,trD:S.trD,rapD:S.rapD,gift:S.gift?S.gift.k:null,tags,ord:S.ord?S.ord.k:null}); if(c.hist.length>40)c.hist.splice(0,c.hist.length-40);
   const O=cwOrd(); const cm=mail(cwFrom(who),`${who==='ceo'?'사장과':'구단주와'} 함께 본 경기: ${rec.res==='승'?'승리':rec.res==='패'?'패배':'무승부'}${S.gift?' · 구단주 선물':''}`,`${cwNm(who)}와(과) ${dmd(rec.day)} ${me==='h'?'홈경기':'원정경기'}를 함께 봤습니다(${CW_WHY[why]}).\n\n${S.lines.map(x=>'"'+x+'"').join('\n')}\n\n구단주 신뢰 ${S.trD>=0?'+':''}${S.trD} · ${who==='ceo'?'사장':'구단주'} 친밀도 +${S.rapD}(${cwRap(who)})${S.gift?`\n${S.gift.t}`:''}\n감독 관계 +1 · 1군 선수단 기분 +1(단장 직관)${O?`\n\n구단주 지시: ${O.t} (${dmd(O.until)}까지, ${O.crit})`:''}\n\n${dmd(S.until)}까지 경기 보고 화면에서 한 가지를 건의할 수 있습니다.`,{kind:'구단주',acts:[{l:'경기 보고 · 건의',a:'cwOpen'}]}); if(cm&&cm.id)cm.sgid=rec.gid; /* 결과가 든 소식: 그 경기 중계를 마칠 때까지 소식함에서 감춘다(검수 11-09zzc #11) */
   return true; }
 /* 함께 본 경기 중 반응: 리드를 잡거나 빼앗긴 순간, 동점, 우리 홈런, 한 번에 3점 이상 내준 순간. 최대 4번, 구단주 성향별 말투(사장은 수익 쪽) */
@@ -164,7 +165,7 @@ function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const l
     const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 -2, 감독 관계 -5`,(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]||{w:0,l:0}, gp=r.w+r.l; return gp<20?'시즌 20경기를 치른 뒤 성적을 보고 건의할 수 있습니다':uRank()>=6||m.rel<40||r.w/Math.max(1,gp)<.45?'':'성적 부진(6위 아래·승률 4할 5푼 미만)이나 감독과의 갈등(관계 40 미만)이 있을 때 건의할 수 있습니다'; })()]); /* 사용자 피드백 11-05: 새 감독 첫 경기 패배 직후에도 교체 건의가 떴다 */
     if(fac)L.push(['fac:'+fac.k,`대형 투자: ${FACI[fac.k].l} 모기업 투자 요청`,`공사비 ${money(fac.c)} · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 -1`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
   return L; }
-function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||(S.tid!=null&&S.tid!==G.user))return '건의할 수 있는 때가 아닙니다.'; const o=cwSuggOpts(S).find(x=>x[0]===v); if(!o)return '지금은 건의할 수 없는 일입니다.'; if(o[3])return o[3];
+function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||!cwActorMatches(S.who,S.tid,S.person))return '건의할 수 있는 때가 아닙니다.'; const o=cwSuggOpts(S).find(x=>x[0]===v); if(!o)return '지금은 건의할 수 없는 일입니다.'; if(o[3])return o[3];
   const t=team(G.user); const tr0=t.trust; const mod=cwMod(S); const [k,x]=v.split(':'); let ok=false, txt='';
   if(k==='ops'||k==='pay'){ const r=cwWithMod(80,mod,()=>ownerAsk(+x,null)); ok=/^승인/.test(r); txt=r; }
   else if(k==='fa'){ const r=cwWithMod(80,mod,()=>ownerAsk(G.players[+x].ask.annual,{k:'fa',pid:+x})); ok=/^승인/.test(r); txt=r; }
@@ -192,7 +193,7 @@ function cwOrdCands(){ const t=team(G.user); const sec=cwSec(); const C=G.cal; c
   return L; }
 function cwYoungSnap(){ const o={}; for(const p of playersOf(G.user)){ if(p.foreign||p.age>23)continue; const h=seasonTotalT(p,G.year,'1군',G.user); o[p.id]=[(h&&h.pa)||0,(h&&h.outs)||0]; } return o; }
 function cwOrdIssue(who){ if(cwOrd())return null; const L=cwOrdCands(); if(!L.length)return null; let x=R()*sum(L.map(c=>c.w)); let c=L[0]; for(const y of L){ x-=y.w; if(x<=0){ c=y; break; } }
-  const O={k:c.k,t:c.t,crit:c.crit,until:c.until,base:c.base,d0:G.day,who,st:'open',say:cwOrdSay(c.k)}; G.ownOrder=O; return O; }
+  const O={k:c.k,t:c.t,crit:c.crit,until:c.until,base:c.base,d0:G.day,tid:G.user,person:bossOf(G.user)[who==='ceo'?'ceo':'own'].id,who,st:'open',say:cwOrdSay(c.k)}; G.ownOrder=O; return O; }
 function cwOrdSay(k){ const ow=team(G.user).owner; return {win:ow==='win'?'이기는 게 먼저요. 앞으로 3주는 5할 밑으로 떨어지지 마시오.':'성적도 좀 챙기시오. 3주 동안 5할은 하시오.',att:'관중석이 차야 그룹 체면이 서오. 홈 관중을 늘려 보게.',cut:'적자는 줄이시오. 한 달 뒤에 숫자로 봅시다.',keep:'지금처럼 예산 안에서 운영하시오. 적자는 안 되오.',young:'젊은 선수 하나쯤은 1군에서 크는 걸 보고 싶소. 한 명 써 보게.',ext:'저런 선수는 놓치면 안 되오. 계약을 매듭지으시오.'}[k]||''; }
 function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
   if(O.k==='win'){ const L=cwUlog().filter(u=>u.d>O.d0&&u.d<=O.until&&u.res!=='무'); const w=L.filter(u=>u.res==='승').length; const ok=L.length?w/L.length>=.5:false; return {done:end,ok,txt:`${w}승 ${L.length-w}패`}; }
@@ -202,9 +203,50 @@ function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
     const ok=!!best&&best.sc>=1; return {done:ok||end,ok,txt:best&&best.sc>0?`${best.p.name} ${best.p.isP&&best.ou>=best.pa?`${ipStr(best.ou)}이닝`:`${best.pa}타석`}`:'아직 없음'}; }
   if(O.k==='ext'){ const p=G.players[O.base.pid]; const gone=!p||p.team!==G.user; const ok=!!(p&&p.extNext)&&!gone; /* 합의 뒤 트레이드로 보냈으면 붙잡은 게 아니다(검수 11-09zzd) */ return {done:ok||end||gone,ok,txt:ok?'다년계약 합의':gone?'팀을 떠났습니다':'아직 합의 전'}; }
   void C; return {done:true,ok:false,txt:''}; }
-function cwOrdDaily(){ const O=cwOrd(); if(!O)return; const e=cwOrdEval(O); if(!e.done)return; const t=team(G.user); O.st=e.ok?'ok':'fail'; O.end=G.day; O.txt=e.txt;
+function cwOrdDaily(){ const O=cwOrd(); if(!O)return; if(!cwActorMatches(O.who,O.tid,O.person)){O.st='cancelled';O.end=G.day;O.txt='지시한 인물이 자리를 떠나 종료';return;} const e=cwOrdEval(O); if(!e.done)return; const t=team(G.user); O.st=e.ok?'ok':'fail'; O.end=G.day; O.txt=e.txt;
   if(e.ok){ t.trust=clamp(t.trust+2,0,100); cwRapAdd('own',3); mail('구단주실',`구단주 지시 달성: ${O.t}`,`${cwNm('own')}: "말한 대로 해냈군. 그런 단장이 좋소."\n\n${e.txt}. 구단주 신뢰 +2 · 구단주 친밀도 +3.`,{kind:'구단주'}); }
   else { t.trust=clamp(t.trust-1,0,100); mail('구단주실',`구단주 지시 미달: ${O.t}`,`${cwNm('own')}: "지난번에 한 말, 잊지는 않았겠지요."\n\n${e.txt}. 구단주 신뢰 -1.`,{kind:'구단주'}); }
   const h=cwSt().hist.find(z=>z.d===O.d0); if(h)h.ordRes=O.st; }
 /* 홈 신뢰 설명용 한 줄 */
 function cwOrdLine(){ const O=cwOrd(); if(!O)return ''; let e=null; try{ e=cwOrdEval(O); }catch(err){ return ''; } return `구단주 지시: ${O.t}(${dmd(O.until)}까지, 지금 ${e.txt})`; }
+
+/* 소유권 전환의 개인 관계 정리. 구단의 금전 약정·공사·계약과 이미 열린 경기는 그대로 둔다. */
+function ownershipPeopleChanged(tid,oldBoss,newBoss,{ownerChanged=false,ceoChanged=false}={}){
+  const roles=['own','ceo'].filter(k=>(k==='own'?ownerChanged:ceoChanged)&&oldBoss?.[k]&&newBoss?.[k]&&oldBoss[k].id!==newBoss[k].id);
+  if(!roles.length)return null;
+  const H=G.ownershipPeopleHistory||(G.ownershipPeopleHistory=[]),key=tid+':'+roles.map(k=>k+':'+oldBoss[k].id+'>'+newBoss[k].id).join('|');
+  if(H.some(h=>h.key===key))return null;
+  const copy=x=>JSON.parse(JSON.stringify(x)),A={key,tid,day:G.day,year:G.year,oldBoss:{},newPeople:{},contacts:{},invitations:[],plans:[],meetings:[]};
+  const changed=who=>roles.includes(who==='ceo'?'ceo':'own');
+  for(const k of roles){
+    A.oldBoss[k]=copy(oldBoss[k]);A.newPeople[k]={id:newBoss[k].id,name:newBoss[k].name};
+    newBoss[k].rap=30;newBoss[k].rapD=G.day;delete newBoss[k].scn;delete newBoss[k].dialogue;
+    const contacts=G.personal?.contacts,ck=k+':'+tid,C=contacts?.[ck];
+    if(C){C.person=C.person??oldBoss[k].id;contacts[k+'-person:'+C.person]=C;A.contacts[k]=copy(C);delete contacts[ck];}
+  }
+  /* 현직 단장의 화면 상태는 다른 구단의 교체로 닫지 않는다. */
+  if(tid===G.user){
+    const endMail=mid=>{if(mid==null)return;const m=(G.mail||[]).find(m=>m.id===mid);if(m){m.acts=[];m.imp=false;m.read=true;m.body=(m.body||'')+'\n\n[종료] 동행 인물의 교체로 개인에게 받은 일정을 취소했습니다.';}G.stops=(G.stops||[]).filter(m=>m.id!==mid);};
+    for(const e of G.evs||[])if(e.k==='cwInv'&&!e.done&&changed(e.data?.who)&&(e.data?.tid==null||e.data.tid===tid)){
+      A.invitations.push(copy(e));e.done=true;e.void=true;e.res='초대한 인물이 자리를 떠나 불이익 없이 종료됐습니다.';endMail(e.mid);
+    }
+    for(const [d,p] of Object.entries(G.gmPlan||{}))if(p.k==='attend'&&!p.done&&['owner','ceo'].includes(p.x)&&changed(p.x==='ceo'?'ceo':'own')&&(p.tid==null||p.tid===tid)){
+      A.plans.push({day:+d,...copy(p)});p.done=true;p.cancelled='인물 교체';endMail(p.mid);
+    }
+    const S=G.cwS;
+    if(S&&changed(S.who)&&(S.tid==null||S.tid===tid)){
+      S.person=S.person??oldBoss[S.who==='ceo'?'ceo':'own'].id;S.actor=S.actor||copy(oldBoss[S.who==='ceo'?'ceo':'own']);A.cwS=copy(S);delete G.cwS;
+      if(G.castHold?.cw===S.id)delete G.castHold.cw;
+    }
+    const O=G.ownOrder;
+    if(O&&O.st==='open'&&changed(O.who)&&(O.tid==null||O.tid===tid)){A.ownOrder=copy(O);O.st='cancelled';O.end=G.day;O.txt='지시한 인물이 자리를 떠나 불이익 없이 종료';}
+    if(roles.includes('own')&&G.ownReq&&(G.ownReq.tid==null||G.ownReq.tid===tid)){A.ownReq=copy(G.ownReq);delete G.ownReq;}
+    for(const h of G.cw?.hist||[])if(changed(h.who)&&h.person==null&&(h.tid==null||h.tid===tid)){const p=oldBoss[h.who==='ceo'?'ceo':'own'];h.tid=tid;h.person=p.id;h.name=p.name;}
+    if(typeof UI!=='undefined'&&UI){
+      for(const k of ['meet','meetHold']){const M=UI[k];if(roles.includes('own')&&M?.k==='own'&&(M.tid==null||M.tid===tid)){A.meetings.push(copy({kind:k,person:M.person??oldBoss.own.id,log:M.log||[],sc:M.sc||null}));UI[k]=null;}else if(M&&((M.bp==='own'&&roles.includes('own'))||(M.bp==='ceo'&&roles.includes('ceo'))))M.bp=null;}
+      if((UI.person==='own'&&roles.includes('own'))||(UI.person==='ceo'&&roles.includes('ceo'))){UI.person=null;UI.personMsg='';}
+      if(A.cwS){UI.cw=null;UI.cwAfter=null;UI.cwAuto=null;if(UI.cfm?.k==='cwSuggGo')UI.cfm=null;}
+    }
+  }
+  H.push(A);return A;
+}

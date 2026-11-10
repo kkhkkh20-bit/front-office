@@ -19,7 +19,7 @@ function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P
   if(k==='scout'&&!REG.includes(x))return '지역을 고르세요.';
   if(k==='farm'&&!(dobj(d).m>=4&&dobj(d).m<=9))return '2군 경기가 없는 시기입니다.';
   if(k==='attend'&&x==='owner'){ const n=Object.entries(P).filter(([dd,p])=>p.k==='attend'&&p.x==='owner'&&!p.done&&+dd>G.day&&+dd!==+d&&gmPlanLive(dd,p)).length; /* 열리지 않을 경기(일찍 끝난 시리즈의 남은 차전) 예약은 세지 않는다(검수 11-09zo) */ /* 같은 날을 다시 잡는 것은 새 예약이 아니다 */ /* 앞으로 유효한 일정만 센다 */ if(n>=2)return '구단주와의 직관은 한 번에 두 경기까지만 잡을 수 있습니다.'; }
-  drop(); P[d]={k,x:x||null,done:false,...(k==='attend'?{op:ops[0]}:{})};
+  drop(); P[d]={k,x:x||null,done:false,...(k==='attend'?{op:ops[0],tid:G.user,...(['owner','ceo'].includes(x)?{person:bossOf(G.user)[x==='ceo'?'ceo':'own'].id}:{})}:{})};
   if(k==='attend'&&+d===G.day+1)gmAttendWarn(P[d]); /* 내일 경기를 오늘 잡으면 전날 알림을 바로 보낸다(검수 11-06) */
   return k==='attend'?`${dmd(d)} 경기 직관을 잡았습니다${x==='owner'?'(구단주 동행)':x==='ceo'?'(사장 동행)':''}. 전날 알려 드립니다.`:k==='scout'?`${dmd(d)} ${x} ${gmTourn(d)} 관전 출장을 잡았습니다.`:`${dmd(d)} 2군 방문을 잡았습니다.`; }
 /* 전날: 직관 알림(진행을 멈춘다). 당일: 출장·방문 결과 */

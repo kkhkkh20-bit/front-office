@@ -31,6 +31,10 @@ step "전 구단 영구 연대기·인사·이적·시설·개인 기록"
 for audit in archive executives staff-history player-history facilities-history records; do
  node "tools/check-club-${audit}.cjs" || fail=1
 done
+step "구단 소유권·인물 승계·발생 간격"
+for audit in ownership ownership-people ownership-frequency ownership-ui; do
+ node "tools/check-${audit}.cjs" || fail=1
+done
 step "전력분석원 정원·보강 요청"; node tools/check-analyst-capacity.cjs || fail=1
 step "감독 요청·약속의 실제 이행 조건"
 for audit in dialogue event promises; do

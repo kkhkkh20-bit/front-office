@@ -75,9 +75,9 @@ function ownTalkStart(){ const t=team(G.user), M=ownScnMem(), s=t.owner, B=bossO
   if(G.day-M.d<7)return {say:[OSCN_BYE[s]||OSCN_BYE.win],st:null};
   const X=ownScnCtx(); const L=OSCN.filter(c=>(c.s===s||c.s==='*')&&c.w(X)>0); const fr=L.filter(c=>!(M.u[c.id]>G.day-30)); const P=fr.length?fr:L; if(!P.length)return {say:[OSCN_BYE[s]],st:null};
   let r=R()*sum(P.map(c=>c.w(X))), sc=P[P.length-1]; for(const c of P){ r-=c.w(X); if(r<=0){ sc=c; break; } }
-  M.d=G.day; M.u[sc.id]=G.day; const T=sc.b(X); const st=talkSt(sc.id,X,T,'own'); const pre=t.trust<30?'(팔짱을 낀 채) ':'';
+  M.d=G.day; M.u[sc.id]=G.day; const T=sc.b(X); const st=talkSt(sc.id,X,T,'own'); st.tid=G.user;st.person=B.own.id; const pre=t.trust<30?'(팔짱을 낀 채) ':'';
   return {say:[pre+mvFresh(B.own,'scn:'+sc.id+':o',T.o)],st,ch:talkChoices(st)}; }
-function ownTalkPick(st,i){ return talkPick(ownTD(),st,i); }
+function ownTalkPick(st,i){ if(!st||st.tid!==G.user||st.person!==bossOf(G.user).own.id)return {say:['면담 상대가 자리를 떠나 이야기를 마칩니다.'],sys:[],st:null}; return talkPick(ownTD(),st,i); }
 /* 결과: 구단주 신뢰·친밀도·팬 여론·감독 관계·선수 기분·구단주 주문 */
 function ownScnFx(fx,X){ const t=team(G.user), out=[];
   if(fx.tr){ t.trust=clamp(t.trust+fx.tr,0,100); out.push(`구단주 신뢰 ${fx.tr>0?'+':''}${fx.tr}`); }
@@ -86,11 +86,11 @@ function ownScnFx(fx,X){ const t=team(G.user), out=[];
   if(fx.mrel){ const m=G.mgr&&G.mgr[G.user]; if(m&&!m.interim){ m.rel=clamp(m.rel+fx.mrel,0,100); out.push(`감독 관계 ${fx.mrel>0?'+':''}${fx.mrel}(구단주 이야기가 전해짐)`); } }
   out.push(...mgrScnFx(null,{pm:fx.pm,mor:fx.mor,cash:fx.cash},X));
   if(fx.oreq&&OREQ[fx.oreq]){ if(G.ownReq&&G.ownReq.until>=G.day)out.push('구단주 주문이 이미 하나 있어 이번 말은 기억만 해 둡니다.');
-    else { const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:0,l:0}; prInit(); const Q=G.ownReq={k:fx.oreq,tid:G.user,d:G.day,until:G.day+(fx.oreq==='win'?14:30),w0:r.w,l0:r.l,f0:Math.round(G.pr.fan)};
+    else { const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:0,l:0}; prInit(); const Q=G.ownReq={k:fx.oreq,tid:G.user,person:bossOf(G.user).own.id,d:G.day,until:G.day+(fx.oreq==='win'?14:30),w0:r.w,l0:r.l,f0:Math.round(G.pr.fan)};
       out.push(`구단주 주문: ${dmd(Q.until)}까지 ${OREQ[Q.k]}(지키면 신뢰 +3, 못 지키면 -2)`); } }
   return out; }
 /* 매일: 구단주 주문 판정(감독 요청과 같은 자리에서 부른다) */
-function ownReqDaily(){ const Q=G.ownReq; if(!Q)return; if(G.unemp||Q.tid!==G.user){ delete G.ownReq; return; } if(G.day<=Q.until)return; const t=team(G.user), B=bossOf(G.user);
+function ownReqDaily(){ const Q=G.ownReq; if(!Q)return; if(G.unemp||Q.tid!==G.user||(Q.person!=null&&Q.person!==bossOf(G.user).own.id)){ delete G.ownReq; return; } if(G.day<=Q.until)return; const t=team(G.user), B=bossOf(G.user);
   let ok; if(Q.k==='win'){ const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:Q.w0,l:Q.l0}; const w=r.w-Q.w0, l=r.l-Q.l0; ok=w+l>0&&w>=l; } else { prInit(); ok=G.pr.fan>=Q.f0+2; }
   t.trust=clamp(t.trust+(ok?3:-2),0,100); delete G.ownReq;
   mail('구단주실',ok?`${B.own.name} 회장: "약속을 지켰군"`:`${B.own.name} 회장: "말한 것과 다르군"`,`면담 때 받은 주문(${OREQ[Q.k]})을 ${ok?'지켰습니다':'지키지 못했습니다'}. 구단주 신뢰 ${ok?'+3':'-2'}.`,{kind:'구단주'}); }
