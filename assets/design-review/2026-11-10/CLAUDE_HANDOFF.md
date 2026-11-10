@@ -1,5 +1,8 @@
 # Claude 인계 — 플레이 리뷰 기반 운영·육성 사진 8장
 
+> 사용자 요청으로 연수·의료 에셋과 모바일 필수 탭 수정이 실제 게임에 연결됐습니다. 아래 내용은 연결 전 리뷰·인계 기록이며, 최신 연결 내용은 `docs/updates/2026-11-10-operations-art/README.md`를 참고하세요.
+
+
 - 리뷰 브랜치: `assets/gameplay-design-review`
 - 루트: `assets/design-review/2026-11-10/`
 - 기준 게임: main `8b4b902`

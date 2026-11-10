@@ -5,7 +5,7 @@
   "baseline_commit": "8b4b902",
   "delivery_branch": "assets/gameplay-design-review",
   "path_base": "assets/design-review/2026-11-10/",
-  "status": "ASSET_AND_STANDALONE_PREVIEW_VALIDATED_GAME_INTEGRATION_PENDING",
+  "status": "INTEGRATED_RUNTIME_VALIDATED",
   "new_photographs": 8,
   "runtime_variants": 16,
   "sizes": [
@@ -21,8 +21,8 @@
   "codec": "RGB lossy WebP q84 method6",
   "total_runtime_bytes": 798960,
   "no_game_code_changes": true,
-  "game_connected": false,
-  "main_merged": false,
+  "game_connected": true,
+  "main_merged": true,
   "assets": [
     {
       "id": "ovs_abl_game",
@@ -438,5 +438,11 @@
   "proposal": "DESIGN_PROPOSAL.md",
   "handoff": "CLAUDE_HANDOFF.md",
   "asset_validation_passed": true,
-  "validation": "validation.json"
+  "validation": "validation.json",
+  "integration": {
+    "delivery_branch": "main",
+    "update_notes": "../../../docs/updates/2026-11-10-operations-art/README.md",
+    "runtime_test": "tools/check-operations-art.cjs",
+    "deployment": "tools/build-site.cjs operationsPhotos: 16 runtime WebP files, no review artifacts"
+  }
 }

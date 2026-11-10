@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "status": "ASSET_AND_STANDALONE_PREVIEW_VALIDATED_GAME_INTEGRATION_PENDING",
+  "status": "ASSET_AND_RUNTIME_INTEGRATION_VALIDATED",
   "new_photographs": 8,
   "variants": 16,
   "image_checks": [
@@ -309,8 +309,22 @@
     "browser": "Chromium; mobile/tablet emulation, not physical Safari/iPad validation"
   },
   "runtime_bytes": 798960,
-  "game_connected": false,
-  "game_code_changed": false,
-  "main_merged": false,
-  "scope": "Image/package/standalone preview verification. Existing game was explored as recorded in review/gameplay_review.json; no broad unit/build or full-season verification performed."
+  "game_connected": true,
+  "game_code_changed": true,
+  "main_merged": true,
+  "scope": "Image/package/standalone preview verification. Existing game was explored as recorded in review/gameplay_review.json; no broad unit/build or full-season verification performed.",
+  "integration_validation": {
+    "script": "tools/check-operations-art.cjs",
+    "result": "passed",
+    "checks": [
+      "16 runtime photo files deployed without review artifacts",
+      "1440/1024/390 actual website build",
+      "essential navigation visible outside filters",
+      "enroll charges actual amount once, cancel refunds through original engine",
+      "recent-return record uses actual return date",
+      "internal scrolling without outer-page overflow",
+      "photos missing leaves amounts and navigation usable"
+    ],
+    "baseline_caveat": "Full suite is not green: unchanged main also fails military/futures, commentary/contact timing, and existing viewport/layout/obsolete selector checks. Final results: docs/updates/2026-11-10-operations-art/checks/runtime-summary.json"
+  }
 }

@@ -1,0 +1,57 @@
+/* 운영·육성: 비교 목록과 선택 상세만 스크롤. 사진이 화면 밖으로 표를 밀지 않게 한다. */
+.ops-photo{display:block;object-fit:cover;object-position:50% 50%;max-width:100%;border-radius:3px;background:var(--panel2)}
+.ops-photo[hidden],.ovs-visual:has(>.ops-photo[hidden]){display:none!important}
+.card.ovs-page{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;overflow:hidden;gap:8px}
+.ovs-page>.row,.ovs-page>.seg,.ovs-center>.seg{flex:none;margin:0}
+.ovs-center{display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;gap:8px}
+.ovs-center>.seg{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.ovs-center>.seg button{flex:none;min-height:36px}
+.ovs-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;flex:1;min-height:0;min-width:0}
+.ovs-list,.ovs-detail{min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.ovs-list-head{font-size:12px;font-weight:700;padding:10px 12px;background:var(--panel2);border-bottom:1px solid var(--line)}
+.ovs-choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:12px;min-height:94px;color:var(--ink);font:inherit}
+.ovs-choice.on{background:color-mix(in srgb,var(--team-hi) 14%,var(--panel));box-shadow:inset 3px 0 var(--team-hi)}
+.ovs-choice:focus-visible{outline:2px solid var(--team-hi);outline-offset:-2px}
+.ops-thumb{width:88px;height:50px;flex:none}
+.ovs-choice-text{display:grid;gap:4px;min-width:0;flex:1}
+.ovs-choice-text b{font-size:var(--ui-body,13px);line-height:1.4;overflow-wrap:anywhere}
+.ovs-choice-text>span,.ovs-choice-text small{font-size:12px;color:var(--muted);line-height:1.5}
+.ovs-list-note{padding:10px 12px;margin:0}
+.ovs-detail-head{padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--panel2)}
+.ovs-back{display:none}
+.ops-hero{width:100%;height:auto;aspect-ratio:16/9;max-height:260px;object-fit:cover;border-radius:0}
+.ovs-detail-body{padding:12px;display:grid;gap:12px;min-width:0}
+.ovs-detail-body>h3{font-size:var(--ui-heading,16px);margin:0;line-height:1.4}
+.ovs-detail-body>p{margin:0;line-height:1.65}
+.ovs-targets{font-size:12px;padding:8px 10px;border-left:2px solid var(--team-hi);background:var(--panel2)}
+.ovs-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin:0;font-size:12px}
+.ovs-facts>div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding-bottom:5px;min-width:0}
+.ovs-facts dt{color:var(--muted)}.ovs-facts dd{margin:0;text-align:right;font-weight:600}
+.ovs-assigned h3,.ovs-candidates h3{font-size:var(--ui-body,13px);margin:0 0 8px}
+.ovs-detail .item{flex-wrap:wrap;gap:6px}.ovs-detail .item>.nm{min-width:0;white-space:normal}
+.ovs-support{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.ops-med-photo{width:96px;height:54px;flex:none}
+.ops-med-heading{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex:none}
+.ops-med-heading h3{margin:0}
+.md-sum>.ops-med-photo{width:96px;height:54px}
+.med-art-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 12px}
+.med-art-summary figure{margin:0;min-width:0;background:var(--panel2);border-radius:4px;overflow:hidden}
+.med-art-summary .ops-photo{width:100%;height:auto;aspect-ratio:16/9;border-radius:0}
+.med-art-summary figcaption{display:grid;gap:2px;padding:6px 8px;font-size:12px}
+.med-art-summary figcaption span{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+@media(max-width:1099px){
+ .ovs-choice{padding:10px;gap:8px}.ops-thumb{width:72px;height:41px}.ovs-choice-text b{font-size:13px}
+ .ovs-choice-text>span,.ovs-choice-text small{font-size:12px}.ovs-grid{gap:8px}
+}
+@media(max-width:699px){
+ .ovs-grid{display:block;position:relative}.ovs-list{height:100%}.ovs-detail{display:none;position:absolute;inset:0;background:var(--panel)}
+ .ovs-grid.detail-open>.ovs-list{visibility:hidden}.ovs-grid.detail-open>.ovs-detail{display:block}
+ .ovs-back{display:inline-block;min-height:36px}.ovs-choice{min-height:94px}.ops-thumb{width:76px;height:43px}
+ .ops-hero{max-height:210px}.ovs-detail-body{padding:12px}.ovs-facts{gap:8px}
+ .med-art-summary{gap:6px}.med-art-summary figcaption{padding:6px}
+}
+.ovs-program>header{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}.ovs-program>header h3{margin:0;flex:1;min-width:120px}
+@media(max-width:1099px),(max-height:599px){
+ main:has(>.ovs-page)>.seg.itabs,main:has(>.ovs-page)>nav.subtabs{display:flex;flex-wrap:nowrap;flex:none;overflow-x:auto;scrollbar-width:thin}
+ main:has(>.ovs-page)>.seg.itabs button,main:has(>.ovs-page)>nav.subtabs button{flex:none;min-height:36px;white-space:nowrap}
+}

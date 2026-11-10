@@ -1,0 +1,4 @@
+글꼴 5단계·패널·표·코치 카드 정렬 1366 768 검사 완료
+글꼴 5단계·패널·표·코치 카드 정렬 1024 768 검사 완료
+AssertionError [ERR_ASSERTION]: 선수단 제목과 첫 열 시작점
+    at /tmp/ops-integration/baseline-check-design-system.cjs:15:322

@@ -1,0 +1,120 @@
+TAP version 13
+# Subtest: 장타 멘트는 다양하고 같은 표현을 연속 반복하지 않으며 결과와 난수를 보존한다
+ok 1 - 장타 멘트는 다양하고 같은 표현을 연속 반복하지 않으며 결과와 난수를 보존한다
+  ---
+  duration_ms: 13.318761
+  type: 'test'
+  ...
+# Subtest: 홈런·끝내기·밀어내기는 실제 점수에 반응하고 없는 비거리나 투구 정보를 말하지 않는다
+ok 2 - 홈런·끝내기·밀어내기는 실제 점수에 반응하고 없는 비거리나 투구 정보를 말하지 않는다
+  ---
+  duration_ms: 1.876225
+  type: 'test'
+  ...
+# Subtest: 타석 도입은 미래 결과를 숨기고 공별 해설은 기록된 카운트·구종을 따른다
+ok 3 - 타석 도입은 미래 결과를 숨기고 공별 해설은 기록된 카운트·구종을 따른다
+  ---
+  duration_ms: 1.526539
+  type: 'test'
+  ...
+# Subtest: 타석 도입의 표현 선택도 아직 공개하지 않은 결과와 무관하다
+ok 4 - 타석 도입의 표현 선택도 아직 공개하지 않은 결과와 무관하다
+  ---
+  duration_ms: 2.216479
+  type: 'test'
+  ...
+# Subtest: 수비 이름은 교체가 발생한 재생 시점의 실제 라인업을 읽는다
+ok 5 - 수비 이름은 교체가 발생한 재생 시점의 실제 라인업을 읽는다
+  ---
+  duration_ms: 1.114999
+  type: 'test'
+  ...
+# Subtest: 멀티홈런과 부진 탈출은 경기 전 사실과 공개된 타석만 읽는 캐스터 한 줄이다
+ok 6 - 멀티홈런과 부진 탈출은 경기 전 사실과 공개된 타석만 읽는 캐스터 한 줄이다
+  ---
+  duration_ms: 1.869441
+  type: 'test'
+  ...
+# Subtest: 사이클링은 네 종류 안타를 채운 그 타석에만 알린다
+ok 7 - 사이클링은 네 종류 안타를 채운 그 타석에만 알린다
+  ---
+  duration_ms: 1.508211
+  type: 'test'
+  ...
+# Subtest: 노히트 도전과 달성을 구별하고 사구·실책 출루를 퍼펙트로 부르지 않는다
+ok 8 - 노히트 도전과 달성을 구별하고 사구·실책 출루를 퍼펙트로 부르지 않는다
+  ---
+  duration_ms: 1.233198
+  type: 'test'
+  ...
+# Subtest: 팀 합작과 비자책 실점, 노히트가 깨지는 안타를 구분한다
+ok 9 - 팀 합작과 비자책 실점, 노히트가 깨지는 안타를 구분한다
+  ---
+  duration_ms: 1.583054
+  type: 'test'
+  ...
+# Subtest: 기록 알림도 미래 선수 수치와 무관하며 좁은 화면에서는 내용을 한 줄씩 모두 이어간다
+ok 10 - 기록 알림도 미래 선수 수치와 무관하며 좁은 화면에서는 내용을 한 줄씩 모두 이어간다
+  ---
+  duration_ms: 1.465137
+  type: 'test'
+  ...
+# Subtest: 정규시즌 부진을 포스트시즌 기록으로 부르지 않고 야수선택을 실책으로 단정하지 않는다
+ok 11 - 정규시즌 부진을 포스트시즌 기록으로 부르지 않고 야수선택을 실책으로 단정하지 않는다
+  ---
+  duration_ms: 1.214799
+  type: 'test'
+  ...
+# Subtest: 1500탈삼진도 통산 이정표로 알린다
+ok 12 - 1500탈삼진도 통산 이정표로 알린다
+  ---
+  duration_ms: 1.098244
+  type: 'test'
+  ...
+# Subtest: 마지막 아웃이 도루자여도 노히트 노런 달성을 알린다
+not ok 13 - 마지막 아웃이 도루자여도 노히트 노런 달성을 알린다
+  ---
+  duration_ms: 1.089591
+  type: 'test'
+  location: '/tmp/ops-main-baseline/tools/test/commentary.test.cjs:49:1'
+  failureType: 'testCodeFailure'
+  error: 'pNmAny is not defined'
+  code: 'ERR_TEST_FAILURE'
+  name: 'ReferenceError'
+  stack: |-
+    nm (evalmachine.<anonymous>:20:90)
+    pbpCallBase (evalmachine.<anonymous>:32:48)
+    Object.pbpCall (evalmachine.<anonymous>:50:54)
+    TestContext.<anonymous> (/tmp/ops-main-baseline/tools/test/commentary.test.cjs:50:368)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: 외야수는 주자의 2루 도착을 기다리지 않고 포구 즉시 중계하며 최종 세이프는 주루 후 표시한다
+not ok 14 - 외야수는 주자의 2루 도착을 기다리지 않고 포구 즉시 중계하며 최종 세이프는 주루 후 표시한다
+  ---
+  duration_ms: 4.210492
+  type: 'test'
+  location: '/tmp/ops-main-baseline/tools/test/contact-timing.test.cjs:2:1'
+  failureType: 'testCodeFailure'
+  error: 'Match3D.carom is not a function'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    Object.c3DContact (evalmachine.<anonymous>:24:80)
+    TestContext.<anonymous> (/tmp/ops-main-baseline/tools/test/contact-timing.test.cjs:6:1149)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 12
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 91.09047

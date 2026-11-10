@@ -2,18 +2,18 @@
   "files": [
     {
       "path": "CLAUDE_HANDOFF.md",
-      "bytes": 3316,
-      "sha256": "4fba63fbeb046ea394b8a4ee5e31575e9f434340cfcb2c8d8e7dbccb43fa8887"
+      "bytes": 3588,
+      "sha256": "6822a2843b5d7ed495c99e8cce2afcfc4e880354357c4a83045c774bf3842b57"
     },
     {
       "path": "DESIGN_PROPOSAL.md",
-      "bytes": 6755,
-      "sha256": "c56e933846d04b91984099d7e16e2e0620d029f96e96284badd78285af8fe765"
+      "bytes": 7027,
+      "sha256": "4fec067017d6ff5c7aec4e3bf0ce2e9455e4ea335a714440a07367ff02362206"
     },
     {
       "path": "README.md",
-      "bytes": 1969,
-      "sha256": "c033c6f38172a9d3cc2d35573396790caf2fd8e6fabf15a7da90c84074dcfcb9"
+      "bytes": 2166,
+      "sha256": "b8a2e57c9e9124994e907f3c832309ec5db70e80cb729f08294648d240003f06"
     },
     {
       "path": "content_spec.json",
@@ -22,8 +22,8 @@
     },
     {
       "path": "manifest.json",
-      "bytes": 26525,
-      "sha256": "a65681578a2b3696eed92e5de63eed6f5dbbd624e274bce458cdcb9959fd662f"
+      "bytes": 26780,
+      "sha256": "f507f8d881d5a828e5b84967f0adf2a8848fd95c91fcfa0764b0a30e837f1ae7"
     },
     {
       "path": "photos/480/med_rehab.webp",
@@ -237,9 +237,9 @@
     },
     {
       "path": "validation.json",
-      "bytes": 8217,
-      "sha256": "c9f7b6fd4c2e4c9a23787a447d8daeb5d04f8cc2099acfb9268c91884b3e4abf"
+      "bytes": 8995,
+      "sha256": "84bcececa4ceb03238e07a50783853c2956df93a4a84a4de47495cb9f77701fe"
     }
   ],
-  "total_bytes": 2738075
+  "total_bytes": 2739849
 }

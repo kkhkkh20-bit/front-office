@@ -5531,6 +5531,63 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .plb{display:block;height:3px;border-radius:2px;background:var(--line2);overflow:hidden}
 .plb i{display:block;height:100%;background:var(--good)}
 .chips.pl-who button.on .plb{background:rgba(255,255,255,.25)}.chips.pl-who button.on .plb i{background:#fff}
+/* 운영·육성: 비교 목록과 선택 상세만 스크롤. 사진이 화면 밖으로 표를 밀지 않게 한다. */
+.ops-photo{display:block;object-fit:cover;object-position:50% 50%;max-width:100%;border-radius:3px;background:var(--panel2)}
+.ops-photo[hidden],.ovs-visual:has(>.ops-photo[hidden]){display:none!important}
+.card.ovs-page{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;overflow:hidden;gap:8px}
+.ovs-page>.row,.ovs-page>.seg,.ovs-center>.seg{flex:none;margin:0}
+.ovs-center{display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;gap:8px}
+.ovs-center>.seg{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.ovs-center>.seg button{flex:none;min-height:36px}
+.ovs-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;flex:1;min-height:0;min-width:0}
+.ovs-list,.ovs-detail{min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.ovs-list-head{font-size:12px;font-weight:700;padding:10px 12px;background:var(--panel2);border-bottom:1px solid var(--line)}
+.ovs-choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:12px;min-height:94px;color:var(--ink);font:inherit}
+.ovs-choice.on{background:color-mix(in srgb,var(--team-hi) 14%,var(--panel));box-shadow:inset 3px 0 var(--team-hi)}
+.ovs-choice:focus-visible{outline:2px solid var(--team-hi);outline-offset:-2px}
+.ops-thumb{width:88px;height:50px;flex:none}
+.ovs-choice-text{display:grid;gap:4px;min-width:0;flex:1}
+.ovs-choice-text b{font-size:var(--ui-body,13px);line-height:1.4;overflow-wrap:anywhere}
+.ovs-choice-text>span,.ovs-choice-text small{font-size:12px;color:var(--muted);line-height:1.5}
+.ovs-list-note{padding:10px 12px;margin:0}
+.ovs-detail-head{padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--panel2)}
+.ovs-back{display:none}
+.ops-hero{width:100%;height:auto;aspect-ratio:16/9;max-height:260px;object-fit:cover;border-radius:0}
+.ovs-detail-body{padding:12px;display:grid;gap:12px;min-width:0}
+.ovs-detail-body>h3{font-size:var(--ui-heading,16px);margin:0;line-height:1.4}
+.ovs-detail-body>p{margin:0;line-height:1.65}
+.ovs-targets{font-size:12px;padding:8px 10px;border-left:2px solid var(--team-hi);background:var(--panel2)}
+.ovs-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin:0;font-size:12px}
+.ovs-facts>div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding-bottom:5px;min-width:0}
+.ovs-facts dt{color:var(--muted)}.ovs-facts dd{margin:0;text-align:right;font-weight:600}
+.ovs-assigned h3,.ovs-candidates h3{font-size:var(--ui-body,13px);margin:0 0 8px}
+.ovs-detail .item{flex-wrap:wrap;gap:6px}.ovs-detail .item>.nm{min-width:0;white-space:normal}
+.ovs-support{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.ops-med-photo{width:96px;height:54px;flex:none}
+.ops-med-heading{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex:none}
+.ops-med-heading h3{margin:0}
+.md-sum>.ops-med-photo{width:96px;height:54px}
+.med-art-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 12px}
+.med-art-summary figure{margin:0;min-width:0;background:var(--panel2);border-radius:4px;overflow:hidden}
+.med-art-summary .ops-photo{width:100%;height:auto;aspect-ratio:16/9;border-radius:0}
+.med-art-summary figcaption{display:grid;gap:2px;padding:6px 8px;font-size:12px}
+.med-art-summary figcaption span{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+@media(max-width:1099px){
+ .ovs-choice{padding:10px;gap:8px}.ops-thumb{width:72px;height:41px}.ovs-choice-text b{font-size:13px}
+ .ovs-choice-text>span,.ovs-choice-text small{font-size:12px}.ovs-grid{gap:8px}
+}
+@media(max-width:699px){
+ .ovs-grid{display:block;position:relative}.ovs-list{height:100%}.ovs-detail{display:none;position:absolute;inset:0;background:var(--panel)}
+ .ovs-grid.detail-open>.ovs-list{visibility:hidden}.ovs-grid.detail-open>.ovs-detail{display:block}
+ .ovs-back{display:inline-block;min-height:36px}.ovs-choice{min-height:94px}.ops-thumb{width:76px;height:43px}
+ .ops-hero{max-height:210px}.ovs-detail-body{padding:12px}.ovs-facts{gap:8px}
+ .med-art-summary{gap:6px}.med-art-summary figcaption{padding:6px}
+}
+.ovs-program>header{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}.ovs-program>header h3{margin:0;flex:1;min-width:120px}
+@media(max-width:1099px),(max-height:599px){
+ main:has(>.ovs-page)>.seg.itabs,main:has(>.ovs-page)>nav.subtabs{display:flex;flex-wrap:nowrap;flex:none;overflow-x:auto;scrollbar-width:thin}
+ main:has(>.ovs-page)>.seg.itabs button,main:has(>.ovs-page)>nav.subtabs button{flex:none;min-height:36px;white-space:nowrap}
+}
 </style>
 </head>
 <body>
@@ -23829,6 +23886,12 @@ function devBody(){
   const dv=inTabs('devv',[['trn','훈련 방향'],['ovs',`해외 연수${(G.ovs||[]).length?' '+(G.ovs||[]).length+'명':''}`]],'trn');
   return dv.bar+(dv.cur==='ovs'?ovsBody():trnListBody());
 }
+function devPage(){
+  if(G.camp&&!G.camp.done)G.camp.seen=true;
+  const dv=inTabs('devv',[['trn','훈련 방향'],['ovs',`해외 연수${(G.ovs||[]).length?' '+(G.ovs||[]).length+'명':''}`]],'trn');
+  return dv.cur==='ovs'?`<section class="card ovs-page ws-own"><div class="row between"><h2 class="sec">선수 육성</h2><span class="small muted">해외 연수 ${(G.ovs||[]).length}명</span></div>${dv.bar}${ovsBody()}</section>`
+    :campCard()+csec('선수 육성',dv.bar+trnListBody());
+}
 function marketingBody(){
   return `<div class="row between"><span class="small">올 시즌 예산</span><b class="num" id="mktv">${money(G.marketing)}</b></div>
     <input type="range" id="mkt" min="500" max="6000" step="250" value="${G.marketing}" data-a="mkt" aria-label="마케팅 예산">
@@ -28036,12 +28099,12 @@ function scoutView(){ return transferView(); }
 /* ---------- 스태프·육성 ---------- */
 function trainView(){ /* 예전 '훈련' 메뉴: 스태프·육성 > 훈련·육성으로 옮김 */ const s=curSub('train'); UI.tab='staff'; UI.sub=UI.sub||{}; UI.sub.staff=s; UI.it=UI.it||{}; UI.it.mg_staff_train=s; return staffView();
   /* 아래는 쓰지 않음 */
-  const H={camp:campView,dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">${(G.ovs||[]).length?`해외 연수 ${(G.ovs||[]).length}명`:''}</span>`),lead:leadCard};
+  const H={camp:campView,dev:devPage,lead:leadCard};
   return subTabs('train')+(H[s]||campView)(); }
 function staffView(){
   const s=curSub('staff'); const m=G.mgr[G.user];
   const H0={mgr:()=>csec('감독',mgrBody(),`<span class="small muted">${m?esc(m.name):'빈자리'}</span>`),
-    dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">${(G.ovs||[]).length?`해외 연수 ${(G.ovs||[]).length}명`:''}</span>`),
+    dev:devPage,
     coach:coachView,
     scouts:scoutTeamPage,
     smkt:staffMarketView,
@@ -28053,7 +28116,7 @@ function staffView(){
     fac:facView,
     lead:leadCard,
     mil:milView,
-    med:()=>fmOn()?medFM():csec('부상 방지·병원',medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
+    med:()=>fmOn()?medFM():csec('부상 방지·병원',medArtSummary()+medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
   return subTabs('staff')+h;
 }
 /* ---------- 코치진 ---------- */
@@ -28230,6 +28293,9 @@ function staffFM(){ const tids=G.teams.map(t=>t.id), C=coachesOf(G.user), m=G.mg
 function medRisk(p){ const sp=p.isP, cd=sp?consecDays(p,G.day+1):0, lm=sp?loadMult(p,cd,G.day+1):1;
   const f={inj:p.inj||0, mult:injMult(p), sta:staI(p), fat:1+Math.max(0,(p.fat||0)-60)/50, load:lm};
   return {p,f,cd,arm:sp?armRatio(p):null,v:f.inj*f.mult*f.sta*f.fat*f.load}; }
+function medRecentBack(){ const bkD=x=>x.bk??(x.d+x.days);return ownedOf(G.user).flatMap(p=>(p.injHist||[]).filter(x=>bkD(x)<=G.day&&G.day-bkD(x)<=30&&!(p.injOut>0)).map(x=>({p,x}))).sort((a,b)=>bkD(b.x)-bkD(a.x)); }
+function medArtSummary(){ const n=injNowList().filter(x=>x.st==='out').length, back=new Set(medRecentBack().map(x=>x.p.id)).size;
+  return `<div class="med-art-summary">${[['med_screening','상태 평가','피로·투수 부하 점검'],['med_rehab','치료·재활',`부상 ${n}명`],['med_return_bullpen','최근 복귀',`30일 내 ${back}명`]].map(([id,t,d])=>`<figure>${opsPhoto(id,'',true)}<figcaption><b>${t}</b><span>${d}</span></figcaption></figure>`).join('')}</div>`; }
 function medFM(){ const ps=playersOf(G.user).filter(p=>!p.ys&&!(p.injOut>0)), R=ps.map(medRisk), med=[...R].map(x=>x.v).sort((a,b)=>a-b)[Math.floor(R.length/2)]||1;
   const tier=v=>v>=med*2.2?3:v>=med*1.5?2:v>=med*.85?1:0, TL=['낮음','보통','높음','매우 높음'], TC=['good','','warn','bad'];
   const why=x=>{ const L=[]; if(x.f.inj>=.25)L.push('부상이 잦은 체질'); if(x.f.fat>1.05)L.push('피로 누적'); if(x.p.isP&&(x.cd>=2||(x.arm||0)>=.9||x.f.load>1.6))L.push(x.cd>=2?`${x.cd}연투`:(x.arm||0)>=.9?'누적 팔 부하':'최근 7일 투구 많음'); if(x.p.rush&&G.day<=x.p.rush)L.push('조기 복귀 후'); if(x.p.reInj&&x.p.reInj.left>0)L.push('재발 주의 기간'); if(x.f.sta>1.08)L.push('체력 낮음'); return L.slice(0,2).join(' · ')||'특이 요인 없음'; };
@@ -28242,12 +28308,12 @@ function medFM(){ const ps=playersOf(G.user).filter(p=>!p.ys&&!(p.injOut>0)), R=
     <td><div class="md-risk r${t}"><b>부상 위험 ${TL[t]}</b><span>${esc(why(x))}</span></div></td></tr>`; }).join('');
   const IL=injNowList().filter(x=>x.st==='out').map(x=>x.p) /* 공통 의무 명단과 같은 대상(육성·상무·대표팀 차출 재활 선수, 검수 11-09zy) */, sev=d=>d>=60?3:d>=21?2:d>=8?1:0, SN=['경미','가벼움','보통','심각'], SC=['','','warn','bad'];
   const cnt=[0,1,2,3].map(i=>IL.filter(p=>sev(p.injOut)===i).length);
-  const bkD=x=>x.bk??(x.d+x.days); /* 실제 복귀일이 있으면 그것으로(검수 11-08: 조기 복귀가 목록에 안 뜸) */ const back=ownedOf(G.user).flatMap(p=>(p.injHist||[]).filter(x=>bkD(x)<=G.day /* 해를 넘긴 부상도 실제 복귀일로(검수 11-09t) */&&G.day-bkD(x)<=30&&!(p.injOut>0)).map(x=>({p,x}))).sort((a,b)=>bkD(b.x)-bkD(a.x)).slice(0,8);
+  const bkD=x=>x.bk??(x.d+x.days); /* 실제 복귀일·해를 넘긴 부상도 같은 기준으로 */ const back=medRecentBack().slice(0,8);
   const tids=G.teams.map(t=>t.id), yc=t=>sum(Object.values(G.players).map(p=>(p.injHist||[]).filter(x=>x.y===G.year&&injTm(p,x)===t).length)) /* 다친 때 구단으로 센다: 트레이드로 보내도 빠지지 않게(검수 11-09t) */, lg=avg(tids.map(yc)), me=yc(G.user);
-  const head=`<section class="card md-sum"><div class="md-doc">${avImg({persona:'staff',pid:'doc'+G.user,team:G.user,age:48,name:'팀 닥터'})}<div><b>팀 닥터</b><span>의무팀</span></div></div><div class="md-txt"><p>${hi.length?`지금 부상 위험이 높은 선수는 ${hi.slice(0,6).map(x=>esc(x.p.name)).join(', ')}${hi.length>6?` 등 ${hi.length}명`:''}입니다. 피로와 투수 부하를 보고 휴식을 검토해 주십시오.`:'지금 부상 위험이 특별히 높은 선수는 없습니다.'}</p><p>올해 우리 부상 ${me}건, 리그 구단 평균 ${lg.toFixed(1)}건${lg>0?` · 평균보다 ${Math.abs(Math.round((me/lg-1)*100))}% ${me<=lg?'적습니다':'많습니다'}`:''}.</p></div></section>`;
+  const head=`<section class="card md-sum">${opsPhoto('med_screening','ops-med-photo',true)}<div class="md-doc">${avImg({persona:'staff',pid:'doc'+G.user,team:G.user,age:48,name:'팀 닥터'})}<div><b>팀 닥터</b><span>의무팀</span></div></div><div class="md-txt"><p>${hi.length?`지금 부상 위험이 높은 선수는 ${hi.slice(0,6).map(x=>esc(x.p.name)).join(', ')}${hi.length>6?` 등 ${hi.length}명`:''}입니다. 피로와 투수 부하를 보고 휴식을 검토해 주십시오.`:'지금 부상 위험이 특별히 높은 선수는 없습니다.'}</p><p>올해 우리 부상 ${me}건, 리그 구단 평균 ${lg.toFixed(1)}건${lg>0?` · 평균보다 ${Math.abs(Math.round((me/lg-1)*100))}% ${me<=lg?'적습니다':'많습니다'}`:''}.</p></div></section>`;
   const risk=`<section class="card md-rk"><div class="row between"><h3>위험 평가 <em>${top.length}명</em></h3><span class="small muted">경기 중 부상 확률을 정하는 요인(체질·피로·체력·투수 부하·부상 방지)으로 계산 · 우리 선수 중간값 대비</span></div><div class="sf-tw"><table class="sf-t md-t"><thead><tr><th>선수</th><th>올해 1군</th><th>피로</th><th>부상 체질</th><th>투수 부하</th><th>종합 위험</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
-  const now=`<section class="card md-in"><h3>부상 <em>${IL.length}명</em> ${SN.map((l,i)=>`<span class="md-sv ${SC[i]}">${l} ${cnt[i]}명</span>`).reverse().join('')}</h3><div class="sf-tw"><table class="sf-t"><thead><tr><th>정도</th><th>선수</th><th>부상</th><th>남은 기간</th></tr></thead><tbody>${IL.length?IL.map(p=>`<tr><td><span class="md-tag s${sev(p.injOut)}">${SN[sev(p.injOut)]}</span></td><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${p.e1?'':' <span class="small muted">2군</span>'}</td><td>${esc(injNow(p))}</td><td>${p.injOut}일 · ${dmd(G.day+p.injOut)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">지금 부상자가 없습니다.</td></tr>'}</tbody></table></div></section>`;
-  const ret=`<section class="card md-in"><h3>최근 부상에서 복귀 <em>${back.length}명</em></h3><div class="sf-tw"><table class="sf-t"><thead><tr><th>선수</th><th>지난 부상</th><th>복귀</th><th>피로</th></tr></thead><tbody>${back.length?back.map(({p,x})=>`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${x.k?esc(injName(x.k)):'부상'} · ${x.days}일</td><td>${dmd(bkD(x))}</td><td>${word(p.fat||0,35,60)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">최근 30일 안에 복귀한 선수가 없습니다.</td></tr>'}</tbody></table></div></section>`;
+  const now=`<section class="card md-in"><div class="ops-med-heading">${opsPhoto('med_rehab','ops-med-photo',true)}<h3>부상 <em>${IL.length}명</em> ${SN.map((l,i)=>`<span class="md-sv ${SC[i]}">${l} ${cnt[i]}명</span>`).reverse().join('')}</h3></div><div class="sf-tw"><table class="sf-t"><thead><tr><th>정도</th><th>선수</th><th>부상</th><th>남은 기간</th></tr></thead><tbody>${IL.length?IL.map(p=>`<tr><td><span class="md-tag s${sev(p.injOut)}">${SN[sev(p.injOut)]}</span></td><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${p.e1?'':' <span class="small muted">2군</span>'}</td><td>${esc(injNow(p))}</td><td>${p.injOut}일 · ${dmd(G.day+p.injOut)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">지금 부상자가 없습니다.</td></tr>'}</tbody></table></div></section>`;
+  const ret=`<section class="card md-in"><div class="ops-med-heading">${opsPhoto('med_return_bullpen','ops-med-photo',true)}<h3>최근 부상에서 복귀 <em>${back.length}명</em></h3></div><div class="sf-tw"><table class="sf-t"><thead><tr><th>선수</th><th>지난 부상</th><th>복귀</th><th>피로</th></tr></thead><tbody>${back.length?back.map(({p,x})=>`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${x.k?esc(injName(x.k)):'부상'} · ${x.days}일</td><td>${dmd(bkD(x))}</td><td>${word(p.fat||0,35,60)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">최근 30일 안에 복귀한 선수가 없습니다.</td></tr>'}</tbody></table></div></section>`;
   const ctl=medBody().replace(/^<div class="eyebrow">지금 부상[\s\S]*?(?=<div class="eyebrow">부상 방지 프로그램)/,'');
   return `<div class="md ws-own">${head}${risk}<div class="md-bt">${now}${ret}</div><section class="card md-ctl"><h3>부상 방지 · 병원</h3><div class="md-ctl-b">${ctl}</div></section></div>`; }
 /* PC 데이터 허브(FM '데이터 허브'처럼): 왼쪽 리그 팀 지표 표와 주요 발견·승패 추이, 가운데 전반·공격·수비 리그 비교, 오른쪽 전력분석팀·분석 보고.
@@ -30263,7 +30329,7 @@ document.addEventListener('click',e=>{
   /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
      예) 인터뷰 답을 누르고 손가락을 한 번 더 대면 다음 질문의 같은 자리 답이 나가던 문제(커뮤니티 제보 2026-10-31). 같은 버튼(＋/− 등)의 빠른 연타는 그대로 */
   { const now=performance.now(), L=UI._clk, sig=a+'|'+(el.dataset.v||'')+'|'+(el.textContent||'').trim().slice(0,40);
-    const navigation=['tab','sub','go','itab','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tsideGo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive'].includes(a);
+    const navigation=['tab','sub','go','itab','ovsPick','ovsList','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tsideGo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive'].includes(a);
     if(!navigation&&L&&now-L.t<400&&Math.hypot((e.clientX||0)-L.x,(e.clientY||0)-L.y)<30&&L.r!==UI._rN&&L.sig!==sig){ e.preventDefault(); return; }
     UI._clk={t:now,x:e.clientX||0,y:e.clientY||0,r:UI._rN,sig}; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
@@ -31013,7 +31079,7 @@ function workspaceFit(host){
   const main=host||document.querySelector('#app main.content');
   if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
-  if(main.querySelector(':scope > .ws-own,:scope > .fmd'))return; /* 화면이 스스로 칸을 나눠 높이를 채우는 경우(PC FM식 스태프·의료·일정·재정·구단주): 틀 높이만 주고 패널로 다시 묶지 않는다 */
+  if(main.querySelector(':scope > .ws-own,:scope > .fmd'))return; /* 직접 높이를 나누는 화면은 패널 재포장을 생략한다. */
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭을 한 줄 버튼 줄로 접는다. 넘치면 옆으로 밀고(선택 상자처럼 아래 창을 가리지 않음) 지금 화면 버튼을 가운데로.
@@ -31070,7 +31136,7 @@ function workspaceFit(host){
     scroller.addEventListener('scroll',()=>{if(!panel.hidden)positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true});
     if(workspaceCompact()&&!panel.matches('.roster-list')){
       const before=[...panel.children].slice(0,[...panel.children].indexOf(scroller));
-      const controls=before.filter(el=>!el.matches('h1,h2,h3,header,.row:first-child')&&el.matches('.chips,.seg,.row:has(input,select,button),label:has(input,select),input,select,.rcp,.trade-search-main,.trade-pool-options'));
+      const controls=before.filter(el=>!el.matches('h1,h2,h3,header,.row:first-child,.itabs,.ws-tab-row,nav')&&el.matches('.chips,.seg,.row:has(input,select,button),label:has(input,select),input,select,.rcp,.trade-search-main,.trade-pool-options'));
       if(controls.length){const disclosure=document.createElement('details'),summary=document.createElement('summary'),options=document.createElement('div');disclosure.className='ws-filter-controls';disclosure.dataset.k='workspace-filter:'+key+':'+index;disclosure.open=!!UI.open[disclosure.dataset.k];summary.textContent='검색·필터 설정';options.className='ws-filter-options';controls[0].before(disclosure);controls.forEach(el=>options.append(el));disclosure.append(summary,options);}
     }
   });
@@ -32227,18 +32293,28 @@ function ovsBody(){ const y=G.year; const T={big:'크게 늘어 옴',good:'성�
     <p class="small">25세 이하 선수 20명 안팎이 10월 중순부터 한 달 실전을 치릅니다. 대부분 작은 성장이고, 가끔 눈에 띄게 좋아지는 선수가 나옵니다.</p>
     ${fo?`<div class="talk">${Object.entries(FALL).map(([k,v])=>`<button class="btn small ${fk===k?'on':''}" data-a="fallSet" data-v="${k}">${v.l} ${money(v.c)}</button>`).join('')}<button class="btn small ${fk===null?'on':''}" data-a="fallSet" data-v="">불참(자체 마무리 훈련)</button></div>`:`<p class="small muted">올해: ${fk?FALL[fk].l:fk===null?'불참':'정하지 않음(불참)'}</p>`}
     <p class="small muted">${Object.values(FALL).map(v=>`${v.l}: ${v.d}`).join(' ')}</p></section>`;
-  const used=new Set((G.ovs||[]).map(x=>x.pid));
-  const prog=Object.entries(OVS).map(([k,o])=>{ const mine=(G.ovs||[]).filter(x=>x.prog===k); const open=ovsOpen(k);
-    const cands=open&&mine.length<ovsLim(o)?domestic(G.user).filter(p=>ovsElig(p)&&p.age<=27&&!used.has(p.id)&&(k!=='us'||p.isP||p.r.pow<60)).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,6):[];
-    return `<section class="card"><div class="row between"><span class="eyebrow">${o.l}</span><span class="small muted">1인 ${money(o.c)} · 동행 ${money(o.fix)} · ${ovsLim(o)}명까지</span></div>
-      <p class="small">${o.d} 투수 목표: ${o.P.map(k=>OVS_TOOLN[k]).join('·')} / 타자 목표: ${o.B.map(k=>OVS_TOOLN[k]).join('·')}. 개인별 성공·부상 확률은 선수 카드 → 훈련·해외연수에서 확인하세요.</p>
-      ${mine.length?`<div class="list">${mine.map(x=>{ const p=G.players[x.pid]; return p?`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${x.go?'연수 중':'출발 대기'}</span>${x.go?'':`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`}</div>`:''; }).join('')}</div>`:''}
-      ${cands.length?`<div class="eyebrow">추천 후보(더 클 여지가 큰 순)</div><div class="list">${cands.map(p=>`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><button class="btn small" data-a="ovsSet" data-v="${p.id}:${k}">보내기</button></div>`).join('')}</div>`:open?'':`<p class="small muted">신청 기간: 9월 1일~${o.close[0]}월 ${o.close[1]}일</p>`}</section>`; }).join('');
+  const mode=inTabs('ovsMode',[['program','연수 프로그램'],['support','교육리그·지원'],['history','지난 연수']], 'program');
+  const message=UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:'';
   const A=G.ovsAi&&G.ovsAi.y===y?G.ovsAi:null;
   const lg=A?`<section class="card"><span class="eyebrow">올해 다른 구단</span>${G.teams.filter(t=>t.id!==G.user).map(t=>{ const f=A.fall[t.id]; const SH={abl:'호주',us:'미국 랩',jpl:'일본 연수',cnd:'미국 컨디셔닝',kac:'국내 아카데미'}; const L=[f?(f==='jp'?'미야자키':'울산'):'교육리그 불참',...OVSK.map(k=>{ const n=((A[k]||{})[t.id]||[]).length; return n?`${SH[k]||OVS[k].l} ${n}명`:''; })].filter(Boolean); return `<div class="small"><b>${esc(tshort(t.id))}</b> ${L.join(' · ')}</div>`; }).join('')}</section>`:'';
   const past=domestic(G.user).filter(p=>(p.ovsH||[]).length).flatMap(p=>p.ovsH.map(h=>({p,h}))).sort((a,b)=>b.h.y-a.h.y).slice(0,10);
   const ps=past.length?`<section class="card"><span class="eyebrow">지난 연수 결과</span>${past.map(({p,h})=>`<div class="small">${h.y} ${esc(h.k)} · ${esc(p.name)}: ${T[h.t]||''}</div>`).join('')}</section>`:'';
-  return `${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}${acadCard()}<p class="small muted">해외 연수는 돈이 드는 프로젝트입니다. 모든 구단이 보내지는 않고, 결과도 선수마다 크게 갈립니다. 어린 선수, 배우는 속도가 빠른 선수, 더 클 여지가 큰 선수일수록 크게 늘 가능성이 높고, 부상 체질이면 다칠 위험이 큽니다.</p>${fall}${prog}${lg}${ps}`; }
+  if(mode.cur!=='program')return `<div class="ovs-center">${mode.bar}<div class="ovs-support ws-scroll" tabindex="0" role="region" aria-label="${mode.cur==='support'?'교육리그·지원':'지난 연수'} 내용">${message}${mode.cur==='support'?campCard()+acadCard()+fall:ps||'<p class="small muted">아직 기록된 연수 결과가 없습니다.</p>'}${lg}</div></div>`;
+  const key=OVS[UI.ovsProgram]?UI.ovsProgram:OVSK[0], o=OVS[key], mine=(G.ovs||[]).filter(x=>x.prog===key), open=ovsOpen(key), used=new Set((G.ovs||[]).map(x=>x.pid));
+  const cands=open&&mine.length<ovsLim(o)?domestic(G.user).filter(p=>ovsElig(p)&&p.age<=27&&!used.has(p.id)&&(key!=='us'||p.isP||p.r.pow<60)).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,6):[];
+  const photo=k=>OPS_OVS_ART[k], targets=v=>`투수 ${v.P.map(k=>OVS_TOOLN[k]).join('·')} / 타자 ${v.B.map(k=>OVS_TOOLN[k]).join('·')}`;
+  const list=Object.entries(OVS).map(([k,v])=>{ const n=(G.ovs||[]).filter(x=>x.prog===k).length;return `<button class="ovs-choice${k===key?' on':''}" data-a="ovsPick" data-v="${k}" aria-pressed="${k===key}">${opsPhoto(photo(k),'ops-thumb',true)}<span class="ovs-choice-text"><b>${esc(v.l)}</b><span>${targets(v)}</span><small>1인 ${money(v.c)} · ${n}/${ovsLim(v)}명${ovsOpen(k)?' · 신청 가능':''}</small></span><span aria-hidden="true">›</span></button>`; }).join('');
+  const assigned=mine.length?`<section class="ovs-assigned"><h3>신청 선수 ${mine.length}/${ovsLim(o)}명</h3><div class="list">${mine.map(x=>{ const p=G.players[x.pid];return p?`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${x.go?'연수 중':'출발 대기'}</span>${x.go?'':`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`}</div>`:''; }).join('')}</div></section>`:'';
+  const candidates=cands.length?`<section class="ovs-candidates"><h3>추천 후보 <span class="small muted">더 클 여지가 큰 순</span></h3><div class="list">${cands.map(p=>`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><button class="btn small" data-a="ovsSet" data-v="${p.id}:${key}">보내기</button></div>`).join('')}</div></section>`:!open?`<p class="small muted">신청 기간: 9월 1일~${o.close[0]}월 ${o.close[1]}일</p>`:mine.length>=ovsLim(o)?'<p class="small muted">이 프로그램의 신청 정원이 찼습니다.</p>':'<p class="small muted">지금 추천할 선수가 없습니다. 선수 정보의 훈련·해외연수에서 참가 조건을 확인할 수 있습니다.</p>';
+  return `<div class="ovs-center">${mode.bar}<div class="ovs-grid${UI.ovsDetail?' detail-open':''}"><section class="ovs-list ws-scroll" tabindex="0" role="region" aria-label="연수 프로그램 목록"><div class="ovs-list-head">프로그램 · ${OVSK.length}종</div>${list}<p class="small muted ovs-list-note">특수 아카데미 제휴와 가을 교육리그는 ‘교육리그·지원’에서 정합니다.</p></section>
+    <article class="ovs-detail ws-scroll" tabindex="0" role="region" aria-label="선택한 연수 상세"><div class="ovs-detail-head"><button class="btn small ovs-back" data-a="ovsList">‹ 목록으로</button><span class="small muted">선택한 연수 상세</span></div><div class="ovs-visual">${opsPhoto(photo(key),'ops-hero')}</div><div class="ovs-detail-body">${message}<h3>${esc(o.l)}</h3><p class="ovs-targets">${targets(o)}</p><p class="small">${esc(o.d)}</p><dl class="ovs-facts"><div><dt>1인 참가비</dt><dd>${money(o.c)}</dd></div><div><dt>프로그램 동행비</dt><dd>${money(o.fix)}</dd></div><div><dt>현재 신청</dt><dd>${mine.length}/${ovsLim(o)}명</dd></div><div><dt>신청 마감</dt><dd>${o.close[0]}월 ${o.close[1]}일</dd></div><div><dt>출발</dt><dd>${o.go[0]}월 ${o.go[1]}일</dd></div><div><dt>귀국</dt><dd>${o.end[0]<o.go[0]?'다음 해 ':''}${o.end[0]}월 ${o.end[1]}일</dd></div></dl><p class="small muted">성장은 보장되지 않습니다. 개인별 성장·부상·폼 변화 확률은 선수 정보 → 훈련·해외연수에서 확인하세요.</p>${assigned}${candidates}</div></article></div></div>`;
+}
+/* 선택·목록 복귀는 화면 상태만 바꾼다. 신청·환급은 기존 ovsSet 엔진을 사용한다. */
+function ovsRestoreList(){ const list=document.querySelector('.ovs-list');if(list)list.scrollTop=UI.ovsListScroll||0; }
+Object.assign(A,{
+  ovsPick(k){ if(!OVS[k])return;const list=document.querySelector('.ovs-list');UI.ovsListScroll=list?list.scrollTop:UI.ovsListScroll||0;UI.ovsProgram=k;UI.ovsDetail=true;render();ovsRestoreList(); },
+  ovsList(){ UI.ovsDetail=false;render();ovsRestoreList();document.querySelector('.ovs-choice.on')?.focus({preventScroll:true}); }
+});
 /* 투수 보직(선수 화면 육성 탭) */
 function roleCard(p){ if(!p.isP||p.team!==G.user||(p.joinY>G.year))return ''; const g=G.prole&&G.prole[p.id]; const cur=g?g.k:'auto'; const m=G.mgr[G.user]; const v=m&&!m.interim?rpMgrView(p):null;
   const chips=Object.entries(PROLE).filter(([k])=>k!=='sp2'||p.age<=27).map(([k,l])=>`<button class="btn small ${cur===k?'on':''}" data-a="proleSet" data-v="${p.id}:${k}">${l}</button>`).join('');
@@ -32317,7 +32393,7 @@ function cmpCard(p){ if(p.team!==G.user||p.prospect||!p.rh)return ''; const y0=p
   <div class="cmpt">${ks.map(k=>`<div><span>${OVS_TOOLN[k]}</span>${ar(k)}</div>`).join('')}</div></section>`; }
 /* 선수 화면 '육성' 탭: 보직·훈련 방향·포지션 전환·해외 연수·성장 기록을 한곳에 */
 function devTab(p){ const mt=milTrainTxt(p); return `${mt?`<p class="note small">${esc(mt)}</p>`:''}${cmpCard(p)}${p.isP?roleCard(p):''}${trnCard(p)}${!p.isP?posCard(p):''}${!p.foreign&&p.age<=30?devForm(p):''}${growthCard(p)}`; }
-function overseasProgramDetails(p){const current=(G.ovs||[]).find(x=>x.pid===p.id),C=G.coach?.[G.user];return Object.entries(OVS).map(([k,o])=>{const coach=k==='abl'?(C?.fm||C?.fp)?.dv:C?.pc?.dv,F=ovsForecast(p,o,coach),tools=o[p.isP?'P':'B'].map(x=>OVS_TOOLN[x]),open=ovsOpen(k),eligible=ovsElig(p),active=current?.prog===k;return `<section class="ovs-program"><header><h3>${o.l}</h3><span class="pill">${tools.join('·')} 훈련</span></header><p class="small">${o.d}</p><dl class="kv"><dt>기간</dt><dd>${o.go[0]}/${o.go[1]} ~ ${o.end[0]<o.go[0]?'다음 해 ':''}${o.end[0]}/${o.end[1]}</dd><dt>비용</dt><dd>선수당 ${money(o.c)} + 프로그램 공통 ${money(o.fix)}</dd><dt>현재 선수 기준</dt><dd>큰 성장 ${Math.round(F.big*100)}% · 성장 ${Math.round(F.good*100)}% · 변화 없음 ${Math.round(F.flat*100)}%</dd><dt>위험</dt><dd>부상 ${Math.round(F.inj*100)}% · 폼 저하 ${Math.round(F.form*100)}%</dd></dl><p class="small muted">성공은 보장되지 않습니다. 나이·학습 성향·성장 여유·코치에 따라 달라지며, 부상 때는 재활이 필요합니다. 목표 능력은 ${tools.join('·')}입니다.</p>${current?.go?`<p class="small">${active?'현재 참가 중':'다른 연수 참가 중'}</p>`:`<button class="btn ${active?'primary':''}" data-a="ovsSet" data-v="${p.id}:${k}" ${!open||!eligible?'disabled':''}>${active?'신청됨':open&&eligible?'이 프로그램 신청':!open?`신청 9/1 ~ ${o.close[0]}/${o.close[1]}`:'참가 조건 미충족'}</button>`}</section>`;}).join('');}
+function overseasProgramDetails(p){const current=(G.ovs||[]).find(x=>x.pid===p.id),C=G.coach?.[G.user];return Object.entries(OVS).map(([k,o])=>{const coach=k==='abl'?(C?.fm||C?.fp)?.dv:C?.pc?.dv,F=ovsForecast(p,o,coach),tools=o[p.isP?'P':'B'].map(x=>OVS_TOOLN[x]),open=ovsOpen(k),eligible=ovsElig(p),active=current?.prog===k;return `<section class="ovs-program"><header>${opsPhoto(OPS_OVS_ART[k],'ops-thumb',true)}<h3>${o.l}</h3><span class="pill">${tools.join('·')} 훈련</span></header><p class="small">${o.d}</p><dl class="kv"><dt>기간</dt><dd>${o.go[0]}/${o.go[1]} ~ ${o.end[0]<o.go[0]?'다음 해 ':''}${o.end[0]}/${o.end[1]}</dd><dt>비용</dt><dd>선수당 ${money(o.c)} + 프로그램 공통 ${money(o.fix)}</dd><dt>현재 선수 기준</dt><dd>큰 성장 ${Math.round(F.big*100)}% · 성장 ${Math.round(F.good*100)}% · 변화 없음 ${Math.round(F.flat*100)}%</dd><dt>위험</dt><dd>부상 ${Math.round(F.inj*100)}% · 폼 저하 ${Math.round(F.form*100)}%</dd></dl><p class="small muted">성공은 보장되지 않습니다. 나이·학습 성향·성장 여유·코치에 따라 달라지며, 부상 때는 재활이 필요합니다. 목표 능력은 ${tools.join('·')}입니다.</p>${current?.go?`<p class="small">${active?'현재 참가 중':'다른 연수 참가 중'}</p>`:`<button class="btn ${active?'primary':''}" data-a="ovsSet" data-v="${p.id}:${k}" ${!open||!eligible?'disabled':''}>${active?'신청됨':open&&eligible?'이 프로그램 신청':!open?`신청 9/1 ~ ${o.close[0]}/${o.close[1]}`:'참가 조건 미충족'}</button>`}</section>`;}).join('');}
 function overseasHistory(p){return (p.ovsH||[]).slice(-5).reverse().map(x=>`<section class="ovs-result"><b>${x.y} · ${esc(x.k)}</b><p class="small">${esc(x.text||({big:'큰 성장',good:'성장 확인',flat:'큰 변화 없음',inj:'부상',form:'폼 저하'}[x.t]||x.t))}</p>${x.before&&x.after?`<div class="ovs-deltas">${Object.keys(x.before).map(k=>{const from=dv(x.before[k]),to=dv(x.after[k]);return `<span>${OVS_TOOLN[k]} <b>${from} → ${to}</b> (${to-from>0?'+':''}${to-from})</span>`;}).join('')}</div>`:'<p class="small muted">이전 저장 기록은 능력 변화량을 따로 남기지 않았습니다.</p>'}</section>`).join('');}
 /* ===== 협상 창: 선수 정보와 따로 띄운다 =====
  선수 정보 화면에는 협상 상태 한 줄과 '협상 창 열기'만 두고, 길어지는 협상 패널(FA·외국인 영입·외국인 재계약)은 별도 창에서 한다.
@@ -32618,6 +32694,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-10-operations',d:'11월 10일',t:'연수 프로그램 비교와 의료·재활 사진',items:[
+    '스태프·육성 > 훈련·육성 > 육성의 해외 연수를 프로그램 목록과 선택 상세로 나눴습니다. 실전 경기·데이터 랩·메커니즘 교정·컨디셔닝·국내 아카데미 사진과 함께 목표 능력, 실제 참가비·동행비·정원·기간을 비교할 수 있습니다.',
+    '휴대폰에서는 프로그램을 눌러 상세를 보고 목록으로 돌아옵니다. 교육리그·아카데미 지원과 지난 연수 결과도 내부 탭에서 확인할 수 있습니다.',
+    '의료 화면에 상태 평가·재활·최근 복귀 장면을 더했습니다. 선수의 실제 부상 기록과 복귀일, 위험 평가와 함께 볼 수 있습니다.'
+  ]},
   {id:'2026-11-09x',d:'11월 9일',t:'훈련 강도와 육성 방침',items:[
     "선수마다 훈련 강도(회복 위주·보통·강하게·아주 강하게)가 생겼습니다. 강도는 코치진이 내구성(투수는 체력)·나이·피로·최근 부상을 보고 정하고, 컨디셔닝코치가 좋을수록 위험을 덜 키웁니다.",
     "단장은 스태프·육성 > 훈련·육성에서 팀 육성 방침(회복 우선·균형·성장 우선) 하나만 정합니다. 처음과 예전 저장은 균형입니다. 규율을 중시하는 감독은 성장 우선을 반기고, 관리형 감독은 걱정을 전합니다.",
@@ -33931,6 +34012,12 @@ function sceneImg(id,alt,cls){ sceneProbe(); if(SCENE_OK!==true)return ''; retur
 function mailScene(m){ if(!/스카우트/.test(m.from||''))return ''; const t=(m.subj||'')+' '+(m.body||'').slice(0,120), mo=dobj(m.day).m;
   const g=/드래프트|지명 회의|지명 순위/.test(t)?'scout_draft_meeting':/감독|면담|귀띔/.test(t)?'scout_dugout':mo===12||mo<=2?'scout_winter':/대회|봉황|청룡|황금사자|대통령배|협회장기/.test(t)?'scout_tournament':'scout_weekend';
   return sceneImg(sceneOf(g,m.id),'스카우트 출장','ibm-scene'); }
+
+/* 운영·육성 실사 장면: 같은 경로를 사이트 패키지에 포함한다. 단일 HTML에 폴더가 없으면 사진만 생략한다. */
+const OPS_ART={"ovs_abl_game":{"title":"호주리그 실전 파견","v":{"480":"f2bb83fc1f9c","960":"0b76f5d573dc"}},"ovs_us_lab":{"title":"미국 피칭·타격 랩","v":{"480":"c9a98fa9ce3e","960":"04e2e427487c"}},"ovs_jpl_mechanics":{"title":"일본 대학·연구소 메커니즘","v":{"480":"e8a25d415f68","960":"885e611aaba6"}},"ovs_cnd_performance":{"title":"미국 컨디셔닝 센터","v":{"480":"6c675551ec92","960":"5f0b4cf8330e"}},"ovs_kac_academy":{"title":"국내 피칭·타격 아카데미","v":{"480":"c716a423f8fe","960":"c705d3f20517"}},"med_screening":{"title":"상태 평가·부하 점검","v":{"480":"70973390416b","960":"e393c6cc7738"}},"med_rehab":{"title":"재활·회복 훈련","v":{"480":"be535b329237","960":"c46aac7f473a"}},"med_return_bullpen":{"title":"복귀 전 실전 점검","v":{"480":"96ce02d839ed","960":"b5707ed8d6b8"}}};
+const OPS_OVS_ART={abl:'ovs_abl_game',us:'ovs_us_lab',jpl:'ovs_jpl_mechanics',cnd:'ovs_cnd_performance',kac:'ovs_kac_academy'};
+function opsPhoto(id,cls,small){ const a=OPS_ART[id]; if(!a)return ''; const n=small?480:960, path=w=>`assets/design-review/2026-11-10/photos/${w}/${id}.webp?v=${a.v[w]}`;
+  return `<img class="ops-photo ${cls||''}" src="${path(n)}" ${small?'':`srcset="${path(480)} 480w, ${path(960)} 960w" sizes="(max-width:699px) calc(100vw - 50px), (max-width:1099px) 45vw, 38vw"`} width="${n}" height="${n*9/16}" alt="${esc(a.title)} 설명용 사진" loading="${small?'eager':'lazy'}" decoding="async" onerror="this.hidden=true">`; }
 /* ---------- 스태프·육성 > 훈련·육성 > 스프링캠프: 장소 예약 · 훈련 강도 · 연습경기 · 시범경기 기록 ---------- */
 function sprcSiteBtns(lvl){ const T=lvl===1?SPRC1:SPRC2, P=sprcPlan(G.user), cur=P[lvl===1?'s1':'s2'], open=sprcOpen();
   return `<div class="talk sprc-sites">${Object.entries(T).map(([k,D])=>{ const left=D.sl-sprcTaken(lvl,k), mine=cur===k, o=sprcOdds(G.user,lvl,k); const full=left<=0&&!mine&&!o.sb;

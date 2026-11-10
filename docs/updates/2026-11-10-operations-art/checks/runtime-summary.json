@@ -1,0 +1,35 @@
+{
+  "baseline": "8b4b9026",
+  "main_engine_changes": false,
+  "operations_art_test": "passed",
+  "save_import_final": "passed (test runner now uses HTTP server and CHROMIUM_EXECUTABLE_PATH)",
+  "static_check": "passed",
+  "unit_tests": {
+    "passed": 32,
+    "failed": 2,
+    "module_contracts_passed": 6,
+    "baseline_failed_tests": [
+      "마지막 아웃이 도루자여도 노히트 노런 달성을 알린다",
+      "외야수는 주자의 2루 도착을 기다리지 않고 포구 즉시 중계하며 최종 세이프는 주루 후 표시한다"
+    ]
+  },
+  "other_passed": [
+    "desktop-fit",
+    "mobile-workspace",
+    "site packaging, lazy loading, missing-photo fallback"
+  ],
+  "baseline_failures": {
+    "design": "390px roster alignment",
+    "workspace": "1024px settings overflow",
+    "workspace_space": "existing broad layout issues and candidate-help selector timeout",
+    "viewport": "existing home/draft/cast/league history/coach overlaps; coach-label counts vary with fixture",
+    "experience": "outdated personal-player selector",
+    "engine_rules": "military player futures appearances 0"
+  },
+  "original_full_run": "Stopped after baseline engine failure was confirmed. Full suite is not claimed green.",
+  "scoped_log": "relevant.txt (earlier save-import environment failure is superseded by save-import-final.txt)",
+  "browser_manual": {
+    "page_errors": 0,
+    "http_errors": 0
+  }
+}

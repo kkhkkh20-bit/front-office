@@ -1,0 +1,54 @@
+공간 부족 320 568 transfer:draft 0 {"outer":false,"main":470,"overflow":true,"selectors":[{"height":37,"panel":false},{"height":38,"panel":false}],"panels":[{"label":"로스터·순위 안내","height":1350,"body":1350,"content":1350,"overflow":false}]}
+공간 진단 [{"bound":true,"children":[{"cls":"ws-scroll","height":1350,"flex":"0 0 auto"}],"scroll":"ws-scroll"}]
+공간 부족 320 568 transfer:draft dr:now 0 {"outer":false,"main":470,"overflow":true,"selectors":[{"height":37,"panel":false},{"height":38,"panel":false}],"panels":[{"label":"로스터·순위 안내","height":1350,"body":1350,"content":1350,"overflow":false}]}
+공간 진단 [{"bound":true,"children":[{"cls":"ws-scroll","height":1350,"flex":"0 0 auto"}],"scroll":"ws-scroll"}]
+공간 부족 320 568 staff:mgr mgrv:cand 0 {"outer":false,"main":470,"overflow":true,"selectors":[{"height":37,"panel":false},{"height":38,"panel":false}],"panels":[{"label":"감독i","height":2783,"body":2643,"content":2643,"overflow":false}]}
+공간 진단 [{"bound":true,"children":[{"cls":"row between","height":39,"flex":"0 0 auto"},{"cls":"ws-filter-controls","height":32,"open":false,"flex":"0 0 auto"},{"cls":"ws-scroll","height":2643,"flex":"0 0 auto"},{"cls":"pgr","height":36,"flex":"0 0 auto"}],"scroll":"ws-scroll"}]
+필터 공간 부족 320 568 staff:mgr mgrv:cand 0 {"outer":false,"main":470,"overflow":true,"selectors":[{"height":37,"panel":false},{"height":38,"panel":false}],"panels":[{"label":"감독i","height":2837,"body":2643,"content":2643,"overflow":false}]}
+공간 부족 320 568 staff:scouts scoutpg:map 0 {"outer":false,"main":470,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 320 568 staff:scouts scoutpg:ovs 0 {"outer":false,"main":470,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 320 568 staff:smkt 0 {"outer":false,"main":470,"overflow":true,"selectors":[{"height":37,"panel":false}],"panels":[{"label":"스태프 시장i","height":2783,"body":2643,"content":2643,"overflow":false}]}
+공간 진단 [{"bound":true,"children":[{"cls":"row between","height":39,"flex":"0 0 auto"},{"cls":"ws-filter-controls","height":32,"open":false,"flex":"0 0 auto"},{"cls":"ws-scroll","height":2643,"flex":"0 0 auto"},{"cls":"pgr","height":36,"flex":"0 0 auto"}],"scroll":"ws-scroll"}]
+필터 공간 부족 320 568 staff:smkt 0 {"outer":false,"main":470,"overflow":true,"selectors":[{"height":37,"panel":false}],"panels":[{"label":"스태프 시장i","height":2849,"body":2643,"content":2643,"overflow":false}]}
+공간 부족 320 568 league:hist histv:tro 0 {"outer":false,"main":470,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 320 568 league:hist histv:events 0 {"outer":false,"main":470,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 320 568 cfg:set 0 {"outer":false,"main":470,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 320 568 market:mgr 0 {"outer":false,"main":470,"overflow":true,"selectors":[{"height":37,"panel":false}],"panels":[{"label":"스태프 시장i","height":2783,"body":2643,"content":2643,"overflow":false}]}
+공간 진단 [{"bound":true,"children":[{"cls":"row between","height":39,"flex":"0 0 auto"},{"cls":"ws-filter-controls","height":32,"open":false,"flex":"0 0 auto"},{"cls":"ws-scroll","height":2643,"flex":"0 0 auto"},{"cls":"pgr","height":36,"flex":"0 0 auto"}],"scroll":"ws-scroll"}]
+필터 공간 부족 320 568 market:mgr 0 {"outer":false,"main":470,"overflow":true,"selectors":[{"height":37,"panel":false}],"panels":[{"label":"스태프 시장i","height":2849,"body":2643,"content":2643,"overflow":false}]}
+화면 공간 320 568 222 개 경로·모드·보고 묶음 검사
+공간 부족 1024 768 staff:scouts 0 {"outer":false,"main":555,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 1024 768 staff:scouts scoutpg:map 0 {"outer":false,"main":555,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 1024 768 staff:scouts scoutpg:ovs 0 {"outer":false,"main":555,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 1024 768 league:hist histv:tro 0 {"outer":false,"main":555,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+공간 부족 1024 768 cfg:set 0 {"outer":false,"main":555,"overflow":true,"selectors":[],"panels":[]}
+공간 진단 []
+화면 공간 1024 768 165 개 경로·모드·보고 묶음 검사
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.ws-panel:not([hidden]) .candidate-help>summary')[22m
+[2m    - locator resolved to <summary class="small muted">예상 능력·조사 단계 읽는 법</summary>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    58 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is not visible[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+
+    at /tmp/ops-main-baseline/tools/check-workspace-space.cjs:37:100

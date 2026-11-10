@@ -1,8 +1,8 @@
 # 플레이 리뷰 기반 운영·육성 에셋
 
-2026-11-10(KST). 최신 main `8b4b902`를 로컬 Chromium으로 실행하고 새 게임의 1월 2일부터 3월 29일 중계까지 진행한 뒤 만든 디자인 검토 묶음입니다. 브랜치: `assets/gameplay-design-review`.
+2026-11-10(KST). main `8b4b902`를 직접 플레이한 뒤 제작했고, 사용자 요청으로 연수·의료 화면에 실제 연결했습니다. 최초 에셋 리뷰 브랜치는 `assets/gameplay-design-review`이며, 게임 연결은 main에 반영했습니다.
 
-**새 사진 8장, 960×540·480×270 RGB WebP q84 각 1벌**, 연수 5종·의료 3종입니다. 기존 게임의 코드·index.html·빌드·검사 파일은 수정하지 않았습니다. 실제 게임 연결 전의 리뷰 에셋입니다.
+**새 사진 8장, 960×540·480×270 RGB WebP q84 각 1벌**, 연수 5종·의료 3종입니다. 실제 게임에는 연수 목록/상세, 의료 사진, 모바일 필수 탭 노출을 적용했습니다. `preview.html`은 최초의 별도 디자인 시안으로 남겨 두었습니다. 연결 검증은 저장소의 `docs/updates/2026-11-10-operations-art/README.md`에서 확인할 수 있습니다.
 
 - [8장 비교판](previews/contact_8.jpg)
 - [PC 배치 시안](previews/mock-desktop-training.webp), [태블릿](previews/mock-tablet-training.webp), [모바일 목록](previews/mock-mobile-list.webp), [모바일 상세](previews/mock-mobile-detail.webp)

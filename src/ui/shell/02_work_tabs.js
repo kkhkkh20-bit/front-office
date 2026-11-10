@@ -151,6 +151,12 @@ function devBody(){
   const dv=inTabs('devv',[['trn','훈련 방향'],['ovs',`해외 연수${(G.ovs||[]).length?' '+(G.ovs||[]).length+'명':''}`]],'trn');
   return dv.bar+(dv.cur==='ovs'?ovsBody():trnListBody());
 }
+function devPage(){
+  if(G.camp&&!G.camp.done)G.camp.seen=true;
+  const dv=inTabs('devv',[['trn','훈련 방향'],['ovs',`해외 연수${(G.ovs||[]).length?' '+(G.ovs||[]).length+'명':''}`]],'trn');
+  return dv.cur==='ovs'?`<section class="card ovs-page ws-own"><div class="row between"><h2 class="sec">선수 육성</h2><span class="small muted">해외 연수 ${(G.ovs||[]).length}명</span></div>${dv.bar}${ovsBody()}</section>`
+    :campCard()+csec('선수 육성',dv.bar+trnListBody());
+}
 function marketingBody(){
   return `<div class="row between"><span class="small">올 시즌 예산</span><b class="num" id="mktv">${money(G.marketing)}</b></div>
     <input type="range" id="mkt" min="500" max="6000" step="250" value="${G.marketing}" data-a="mkt" aria-label="마케팅 예산">

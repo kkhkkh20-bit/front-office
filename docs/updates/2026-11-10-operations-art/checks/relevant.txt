@@ -1,0 +1,22 @@
+index.html 생성: 57770639 bytes
+START check-operations-art.cjs
+PASS check-operations-art.cjs
+START check-design-system.cjs
+FAIL check-design-system.cjs
+START check-workspace.cjs
+FAIL check-workspace.cjs
+START check-workspace-space.cjs
+FAIL check-workspace-space.cjs
+START check-desktop-fit.cjs
+PASS check-desktop-fit.cjs
+START check-viewport.cjs
+FAIL check-viewport.cjs
+START check-mobile-workspace.cjs
+PASS check-mobile-workspace.cjs
+START check-experience.cjs
+FAIL check-experience.cjs
+START check-save-import.cjs
+FAIL check-save-import.cjs
+START check-site.cjs
+PASS check-site.cjs
+RESULT 1

@@ -1,8 +1,8 @@
 /* 백업 가져오기·슬롯 전환·itch 이전 점검(검수 11-09 #17~#30): 잘못된 백업은 저장소와 진행 중 게임을 건드리지 않고, 저장 실패는 실패로 알리고, itch 이전은 기존 본문을 지우지 않는다.
    사용: bash build.sh 뒤 node tools/check-save-import.cjs */
-const {chromium}=require('playwright');
-(async()=>{ const b=await chromium.launch(); const pg=await (await b.newContext({viewport:{width:390,height:844}})).newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
- await pg.goto('file://'+require('path').resolve(__dirname,'../index.html')); await pg.waitForTimeout(800);
+const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
+(async()=>{ const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));let b;try{ b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{}); const pg=await (await b.newContext({viewport:{width:390,height:844}})).newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
+ await pg.goto(server.url); await pg.waitForTimeout(800);
  await pg.click('[data-a="tsGo"][data-v="mode"]'); await pg.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pg.waitForSelector('.tmk',{timeout:120000}); await pg.click('.tmk [data-a="start"].btn'); await pg.fill('#gp-name','점검'); await pg.click('[data-a="gpStart"]'); await pg.waitForTimeout(1500);
  const bad=await pg.evaluate(async()=>{ const bad=[], LS=Storage.prototype, si=LS.setItem; const block=f=>{ LS.setItem=function(k,v){ if(f(k))throw new Error('quota'); return si.call(this,k,v); }; }, unblock=()=>{ LS.setItem=si; };
   if(!saveNow())bad.push('준비: 첫 저장 실패');
@@ -69,4 +69,4 @@ const {chromium}=require('playwright');
   /* #26: 기한 지난 결정은 홈 카드에서도 실행 버튼이 없다 */
   const ev=evNew('cwInv','시험 결정','본문',[{l:'가',fx:''},{l:'나',fx:''}],{exp:1,def:1,data:{d:G.day+9,who:'own',why:'self'}}); G.day+=2; if(decisionCard().includes(ev.id+':'))bad.push('#26 만료 결정이 홈 결정 카드에서 실행 가능'); G.day-=2;
   return bad; }));
- const ok=!bad.length&&!errs.length; console.log(ok?'가져오기·슬롯 전환·itch 이전 점검 통과':'가져오기 점검 실패\n- '+bad.concat(errs).join('\n- ')); await b.close(); process.exit(ok?0:1); })();
+ const ok=!bad.length&&!errs.length; console.log(ok?'가져오기·슬롯 전환·itch 이전 점검 통과':'가져오기 점검 실패\n- '+bad.concat(errs).join('\n- ')); process.exitCode=ok?0:1; }finally{await b?.close();await server.close();} })().catch(e=>{console.error(e);process.exitCode=1;});

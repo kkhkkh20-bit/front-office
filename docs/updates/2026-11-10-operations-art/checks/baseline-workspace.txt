@@ -1,0 +1,4 @@
+고정 작업 화면 1366 768 35 개 메뉴 및 모든 보고 묶음 통과
+고정 작업 화면 1920 1080 35 개 메뉴 및 모든 보고 묶음 통과
+AssertionError [ERR_ASSERTION]: 1024 cfg:set group 0 {"ready":true,"outer":false,"overflow":true,"parent":0,"panels":[]}
+    at /tmp/ops-integration/baseline-check-workspace.cjs:16:11
