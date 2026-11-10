@@ -1,6 +1,9 @@
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
+.meet-tools{display:flex;align-items:center;gap:10px;flex:none}.meet-tools>.btn{white-space:nowrap}
+@media(max-width:600px) and (min-height:501px){.meet-heading:has(.ps-nav){flex-wrap:wrap}.meet-heading:has(.ps-nav) .meet-tools{width:100%;justify-content:space-between}.meet-tools .ps-nav{margin-left:0}}
+@media(max-height:500px){.meet-tools{gap:6px}.meet-tools .people-position>span{display:none}.meet-tools .ps-nav>.btn{padding-inline:7px;min-width:48px}.meet-tools>.btn{padding-inline:7px}}
 .meet-heading .mt-h>.av{width:48px;height:48px}.meet-heading .mt-h>div{min-width:0}.meet-heading h2{font-size:17px}.meet-heading .small{font-size:11px}.meet-heading .eyebrow{font-size:10px}.meet-heading>.btn{white-space:nowrap}
 .meet-workspace{display:grid;grid-template-columns:minmax(0,1fr) 280px;flex:1;min-height:0;min-width:0}
 .meet-conversation{display:flex;flex-direction:column;min-height:0;min-width:0}

@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-10",
+  "base": "a7e4efb12fd2b474bdff8b1ecb0edd7959bd78de",
+  "index_sha256": "17f3891d4bff7fdadf91eaa2285f457781d7fa4984066fc8a497cf6245722979",
+  "index_bytes": 57781088,
+  "result": "passed",
+  "browser": "Chromium / Playwright device emulation",
+  "viewports": [
+    [
+      1366,
+      768
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      390,
+      664
+    ],
+    [
+      568,
+      320
+    ]
+  ],
+  "navigation_cases": [
+    "originating list order and singleton filter boundary",
+    "sticky previous/next and current identity/count",
+    "reading position and player tab retained",
+    "staff work interview and per-person cooldown retained",
+    "fast reverse and wraparound",
+    "departed colleague skipped",
+    "GM order retained after relationship sorting changes",
+    "reporter navigation",
+    "player and GM meeting switch and final detail return",
+    "no JavaScript page errors"
+  ],
+  "regression": {
+    "node_tests": {
+      "pass": 34,
+      "fail": 0
+    },
+    "viewport_cases": 15,
+    "reading_navigation": "passed",
+    "design_system": "passed",
+    "save_import": "passed",
+    "static": "passed"
+  },
+  "limits": [
+    "Physical iOS Safari was not tested.",
+    "Full check.sh and multi-season simulations were not rerun for this UI change.",
+    "Production deployment was not verified."
+  ],
+  "screenshots": [
+    "staff-1366.webp",
+    "staff-390.webp",
+    "staff-568.webp",
+    "meeting-390.webp",
+    "meeting-568.webp",
+    "coach-next-mobile.webp"
+  ],
+  "logs": [
+    "logs/people-navigation.log",
+    "logs/people-reading.log",
+    "logs/people-design.log",
+    "logs/people-viewport.log",
+    "logs/people-unit.log",
+    "logs/people-static.log",
+    "logs/people-save.log"
+  ]
+}

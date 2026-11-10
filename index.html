@@ -3734,6 +3734,14 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .detail-navigation{display:flex;align-items:center;gap:12px;grid-column:1/-1;min-height:40px;border-bottom:1px solid var(--line2);margin:0 -20px 10px;padding:4px 20px;background:var(--panel2)}
 .detail-navigation>span{font-size:11px;color:var(--muted)}
 .detail-navigation .btn{min-height:28px;padding:3px 12px;font-size:12px}
+.detail-navigation.people-navigation{position:sticky;top:0;z-index:12;flex-wrap:wrap;gap:8px;background:var(--panel2)}
+.people-navigation>span{display:none}
+.ps-nav{display:flex;align-items:center;gap:6px;min-width:0;margin-left:auto}
+.ps-nav>.btn{flex:none;min-height:36px;min-width:56px;font-size:var(--ui-body,13px);white-space:nowrap}
+.people-position{display:grid;justify-items:center;min-width:48px;max-width:150px;line-height:1.3}
+.people-position>span{max-width:100%;font-size:var(--ui-caption,12px);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.people-position>b{font-size:var(--ui-body,13px);font-variant-numeric:tabular-nums}
+@media(max-width:699px){.people-navigation .detail-back{padding-inline:8px}.people-navigation>.ps-nav{gap:4px}.people-position{max-width:90px}}
 .detail-page .sheet-head{margin-inline:-20px;padding-inline:20px}
 .detail-page .pf-topnav{position:relative;top:auto}
 .detail-page .sheet-head .x{display:none}
@@ -4891,6 +4899,9 @@ button.st-n:hover b{text-decoration:underline}
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
+.meet-tools{display:flex;align-items:center;gap:10px;flex:none}.meet-tools>.btn{white-space:nowrap}
+@media(max-width:600px) and (min-height:501px){.meet-heading:has(.ps-nav){flex-wrap:wrap}.meet-heading:has(.ps-nav) .meet-tools{width:100%;justify-content:space-between}.meet-tools .ps-nav{margin-left:0}}
+@media(max-height:500px){.meet-tools{gap:6px}.meet-tools .people-position>span{display:none}.meet-tools .ps-nav>.btn{padding-inline:7px;min-width:48px}.meet-tools>.btn{padding-inline:7px}}
 .meet-heading .mt-h>.av{width:48px;height:48px}.meet-heading .mt-h>div{min-width:0}.meet-heading h2{font-size:17px}.meet-heading .small{font-size:11px}.meet-heading .eyebrow{font-size:10px}.meet-heading>.btn{white-space:nowrap}
 .meet-workspace{display:grid;grid-template-columns:minmax(0,1fr) 280px;flex:1;min-height:0;min-width:0}
 .meet-conversation{display:flex;flex-direction:column;min-height:0;min-width:0}
@@ -23497,7 +23508,7 @@ function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
   return ''; }
 /* 세이브가 바뀌면(G 객체가 달라지면) 이전 게임에서 하던 화면 상태를 비운다(검수 11-09: 백업 코드·훈련 대기·드래프트 타이머·비교 목록이 다른 세이브에 남음) */
 /* 슬롯 전환·백업 가져오기·새로고침의 공통 지점(render·저장 직전 prepG가 부른다): 중계 위치·경기 전 사본·경기 요약·소식함 돌아가기·확인 절차·동석 자동 열기도 이전 게임 것을 버린다(검수 11-09zzc #1·#2·#21·#28·#29·#30) */
-let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0;
+let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; UI.peopleBrowse=null;UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0;
   if(UI.cast||UI.castRet){ try{ CT.tok++; CT.run=false; }catch(e){} } UI.cast=null; UI.castRet=null; UI._castHold=0; UI.cwAfter=null; UI.cwAuto=null; UI.cw=null; UI.game=null; UI.sheet=null; UI.posSheet=null; UI.fromMail=null; UI._ibJumpSig=null; UI._spoilD=null; try{ SPOIL_SNAP=null; }catch(e){}
   UI.wkres=G&&G.wkHold?Object.assign({},G.wkHold):null; /* 확인 전의 경기 요약 창은 그 세이브 것으로 다시 연다(검수 11-09zzc #20) */
   if(G&&Array.isArray(G.stops)&&Array.isArray(G.mail)){ const M=[...G.mail,...(G._mh||[])]; G.stops=G.stops.filter(x=>!(x&&/^m\d+$/.test(x.id||''))||M.some(m=>m.id===x.id)).map(x=>x&&x.id&&M.find(m=>m.id===x.id)||x); } } /* 저장하면 정지 알림이 원본 소식의 복사본이 된다: 원본으로 다시 잇고, 지워진 소식은 뺀다(검수 11-09zzc #25·#27) */
@@ -24474,7 +24485,40 @@ function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); con
     <div class="rs">${L.map(x=>{ const [a,v]=relKey(x); return `<button data-a="${a}" data-v="${v}">${avImg(x.av)}<b>${esc(x.k==='own'?'구단주':x.k==='mgr'?'감독':x.k==='fan'?'팬':x.k==='press'?'언론':tshort(x.tid)+' 단장')}</b><span style="color:${relCol(x.rel)}">${x.rel}${dChip(x.k)}</span></button>`; }).join('')}</div></section>`; }
 /* 인물 카드 시트 */
 /* 같은 묶음(코치·스카우트·데이터팀, 선수단, 다른 구단 단장, 기자단 등) 안에서 이전·다음 사람으로 바로 넘긴다(카페 11-10) */
-function relNav(k,gs){ const L=(gs.find(([,L])=>L.some(y=>y.k===k))||[])[1]; if(!L||L.length<2)return ''; const i=L.findIndex(y=>y.k===k); const b=(d,l,t)=>{ const y=L[(i+d+L.length)%L.length]; return `<button class="btn small" style="min-width:36px;font-size:18px;line-height:1" data-a="relGo" data-v="${esc(y.k)}" title="${t}: ${esc(y.name)}" aria-label="${t}: ${esc(y.name)}">${l}</button>`; }; return `<div class="row ps-nav" style="flex-wrap:nowrap;gap:4px;margin-left:auto">${b(-1,'‹','이전 사람')}<span class="small muted" style="white-space:nowrap">${i+1}/${L.length}</span>${b(1,'›','다음 사람')}</div>`; }
+function peopleGroup(k,groups){
+  if(k.startsWith('p:')){const p=G.players[+k.slice(2)];if(!p)return null;const L=p.team!=null?Object.values(G.players).filter(q=>q.team===p.team):Object.values(G.players).filter(q=>q.team==null&&!!q.prospect===!!p.prospect&&!!q.fdPool===!!p.fdPool);return ['선수 목록',L.map(p=>({k:'p:'+p.id,name:p.name}))];}
+  return (groups||relPeople()).find(([,L])=>L.some(p=>p.k===k))||null;
+}
+/* 목록에서 열린 순서를 보관한다. 관계 수치가 변해도 면담 도중 줄이 재정렬되지 않는다. */
+function peopleCapture(k,el){
+  if(!el&&(UI.person||UI.sheet!=null||UI.meet)&&UI.peopleBrowse?.g===G&&UI.peopleBrowse.keys.includes(k))return;
+  const group=peopleGroup(k);if(!group){UI.peopleBrowse=null;return;}
+  const root=el?.closest('#app main.content')&&el.closest('.rpg,tbody,.tgrid,.cgrid,.fl,.st-list,.relmap');
+  const allowed=new Set(group[1].map(p=>p.k)),keys=root?[...root.querySelectorAll('[data-a="person"],[data-a="player"]')].map(e=>e.dataset.a==='player'?'p:'+e.dataset.v:e.dataset.v).filter(k=>allowed.has(k)):[];
+  const list=[...new Set(keys)];UI.peopleBrowse={g:G,label:root?'현재 목록':group[0],keys:list.includes(k)?list:group[1].map(p=>p.k)};
+}
+function peopleInfo(k,groups){
+  const group=peopleGroup(k,groups);if(!group)return null;const by=new Map(group[1].map(p=>[p.k,p]));
+  const saved=UI.peopleBrowse,keys=saved?.g===G&&saved.keys.includes(k)?saved.keys:group[1].map(p=>p.k),L=keys.filter(k=>by.has(k)).map(k=>by.get(k)),i=L.findIndex(p=>p.k===k);
+  return i>=0?{L,i,label:saved?.g===G&&saved.keys.includes(k)?saved.label:group[0]}:null;
+}
+function peopleCurrent(){return UI.sheet!=null?'p:'+UI.sheet:UI.person||((UI.meet?.k==='pl'?'p:':UI.meet?.k==='gm'?'gm:':'')+(UI.meet?.id??''));}
+function relNav(k,gs){const info=peopleInfo(k,gs);if(!info||info.L.length<2)return '';const {L,i,label}=info;
+  const button=(d,text)=>{const p=L[(i+d+L.length)%L.length];return `<button type="button" class="btn small" data-a="peopleStep" data-v="${d}" title="${text}: ${esc(p.name)}" aria-label="${text}: ${esc(p.name)}">${d<0?'‹ ':''}${text}${d>0?' ›':''}</button>`;};
+  return `<nav class="ps-nav" aria-label="같은 목록 인물 이동">${button(-1,'이전')}<span class="people-position"><span title="${esc(label)}">${esc(L[i].name)}</span><b>${i+1} / ${L.length}</b></span>${button(1,'다음')}</nav>`;
+}
+function peopleStep(d){
+  d=+d;if(d!==1&&d!==-1)return;const k=peopleCurrent(),info=peopleInfo(k);if(!info||info.L.length<2)return;
+  const next=info.L[(info.i+d+info.L.length)%info.L.length].k;UI.peopleBrowse={g:G,label:info.label,keys:info.L.map(p=>p.k)};
+  if(UI.meet&&!meetOver()){
+    const old=UI.meet,kind=next.startsWith('p:')?'pl':next.startsWith('gm:')?'gm':null;if(!kind)return;
+    meetOpen(kind,+next.split(':')[1]);if(UI.meet!==old){UI.meet.bs=old.bs!=null&&kind==='pl'?+next.slice(2):null;UI.meet.bp=old.bp?(kind==='gm'?next:old.bp):null;UI.meet.returnDetail=old.returnDetail;UI.meet.returnY=old.returnY;}return;
+  }
+  const tab=UI.ptab,y=sheetScrollY();UI.relK=next;
+  if(next.startsWith('p:')){A.player(next.slice(2));if(tab&&[...document.querySelectorAll('#sheet [data-a="ptab"]')].some(b=>b.dataset.v===tab)){UI.ptab=tab;renderSheet();}}
+  else A.person(next);
+  sheetScrollTo(y);
+}
 function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)for(const y of L)if(y.k===k)x=y; if(!x)x=personX(k); if(!x)return '';
   const t=team(G.user); const sec=(h,b)=>b?`<div class="ps-s"><div class="eyebrow">${h}</div>${b}</div>`:''; const li=a=>`<ul class="ps-l">${a.map(s=>`<li>${s}</li>`).join('')}</ul>`;
   const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
@@ -24531,7 +24575,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     acts=[btn('협상실','faOpen',id,1)]; }
   const d=relDelta(k);
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
-    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div>${relNav(k,gs)}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${x.rel}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${d>0?'+':''}${d}`:''}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span></div>`}
     ${personTop(k)}${info}${sec('관계를 움직이는 것',moves.length?li(moves.map(esc)):'')}${sec('관계가 주는 영향',fx.length?li(fx.map(esc)):'')}${sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
@@ -29477,6 +29521,7 @@ function detailPageSync(el){
     const scrim=sh.closest('.scrim'); if(scrim){scrim.classList.add('detail-page-wrap');scrim.removeAttribute('data-a');}
     const bar=document.createElement('nav');bar.className='detail-navigation';bar.setAttribute('aria-label','상세 화면 이동');
     bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로 · Esc</span>';
+    if(!cast&&(sh.matches('.ps,.psh'))){const nav=relNav(peopleCurrent());if(nav){bar.classList.add('people-navigation');bar.insertAdjacentHTML('beforeend',nav);}}
     { const qa=sh.querySelector('.pf-topnav .qacts'); if(qa){ const c=qa.cloneNode(true); c.classList.add('detail-acts'); bar.appendChild(c); } } /* PC(FM 탭)는 머리 줄(pf-topnav)을 숨기므로 면담·시장 가치·트레이드·매물·연장 버튼을 뒤로 줄 오른쪽에 둔다 */
     if(!cast)sh.prepend(bar);
     if(UI.stamp){ document.querySelectorAll('#app .stamp-w').forEach(x=>x.remove()); el.insertAdjacentHTML('beforeend',stampView()); }
@@ -29560,7 +29605,7 @@ function renderSheet0(){
   const tabBar=`<div class="seg ptabs">${tabs.map(([k,l])=>`<button data-a="ptab" data-v="${k}" class="${T===k?'on':''}">${l}</button>`).join('')}</div>`;
   el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut psh pf-screen${T==='sum'||T==='abil'?' psh2':''}" style="${pst}" role="dialog" aria-modal="true" aria-label="${esc(p.name)} 선수 정보" data-stop="1">
    ${fullProfile?'<div class="pf-topnav">':''}
-   ${UI.relK==='p:'+p.id?`<div class="row" style="justify-content:flex-end;padding:4px 8px 0">${relNav(UI.relK,relPeople())}</div>`:''}   ${fullProfile?playerFullscreenHeader(p,rp,where,isFA):`   <div class="sheet-head"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${avImg(p,true)}<div><div class="eyebrow">${where}${isFA?' · FA':''}${p.foreign&&p.team!=null?` · ${p.foreign==='아시아'?'아시아쿼터':'외국인'} · ${p.nat}`:''}</div>
+   ${fullProfile?playerFullscreenHeader(p,rp,where,isFA):`   <div class="sheet-head"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${avImg(p,true)}<div><div class="eyebrow">${where}${isFA?' · FA':''}${p.foreign&&p.team!=null?` · ${p.foreign==='아시아'?'아시아쿼터':'외국인'} · ${p.nat}`:''}</div>
     <h2 class="sec" style="font-size:24px">${p.team!=null?`<span class="pno" title="등번호">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></h2>${UI.pEdit===p.id?pEditBox(p):''}${p.aw&&p.aw.length?`<div class="row" style="gap:4px;margin:2px 0">${p.aw.slice(-6).map(a=>`<span class="awp">${awArt(a,18)}${esc(a)}</span>`).join('')}</div>`:''}
     <p class="pinfo keep"><b class="pinfo-pos">${posLabel(p)}</b>${!p.isP&&typeof subsOf==='function'&&subsOf(p).length?`<span class="pinfo-sub">(${subsOf(p).map(k=>POSK[k]||k).join('·')} 가능)</span>`:''} · <b>${p.age}세</b> · ${hand(p)}${p.foreign?'':` · ${p.college?'대졸':'고졸'} · ${esc(milText(p))}`}${p.draft?` · ${p.draft.y} ${p.draft.rd}R ${p.draft.no}순위`:''}${p.dev?' · 육성선수 출신':''}${p.father?` · ${sonTag(p)}`:''}</p></div></div><button class="tc-i pcmp-b${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}" title="같은 시즌·같은 군 기준으로 2~3명을 나란히 비교">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':`비교에 담기${(UI.pcmp||[]).length?` (${(UI.pcmp||[]).length}/3)`:''}`}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i go" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
    ${keyBar(p,rp,isFA,isFM)}${posValLine(p,rp)}${playerReadout(p,rp)}
@@ -29906,7 +29951,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   dset(v){const [k,x]=v.split(':'); UI.df=UI.df||{pos:'all',typ:'all',reg:'all',sort:'rk',seg:'board',more:20}; UI.df[k]=k==='more'?+x:x; if(k!=='more')UI.df.more=30; render();},
   autoPick(){const id=userAutoPick(); if(id)return A.pick(id); save();render();},
   pick(v){ const id=+v; const pk0=G.draft&&G.draft.picks[G.draft.cur]; { const e=userPick(id); if(e){ toast(e); return; } } if(pk0)dlFeedAdd('am',pk0,id); UI.sheet=null; const p=G.players[id]; if(p&&p.team===G.user&&p.draft&&p.draft.rd<=3){ const f=draftFan(p); UI.stamp={title:f.bank==='drSteal'?'스틸 지명':'지명',msg:`${p.draft.rd}라운드 ${p.draft.no}순위 · ${p.name} (${posLabel(p)}, ${p.school||''}) · 언론 순위 ${p.press||'-'}위`,fans:f.lines}; } save(); render(); if(G.draft&&!G.draft.done&&G.draft.picks[G.draft.cur]&&G.draft.picks[G.draft.cur].tid!==G.user)setTimeout(()=>dliveStart('am'),UI.stamp?1600:350); },
-  player(v){UI.myRos=false;UI.drawer=false;UI.mail=null;UI.posSheet=null;if(UI.fpos){ UI.fpos=null; document.querySelectorAll('.fdd').forEach(e=>e.remove()); } /* 전력 구성의 포지션 펼침도 닫는다. 선수 창은 화면 위에만 그려 아래 펼침이 남으므로 바로 지운다(유저 제보 11-07: 선수 창 위에 떠서 닫히지 않음) */UI.game=null;if(UI.sheet!==+v)UI.ptab=(UI.tab==='staff'&&curSub('staff')==='train'&&(UI.it||{}).mg_staff_train==='dev'&&G.players[+v]&&G.players[+v].team===G.user)?'dev':(G.fa&&G.fa.open&&!G.fa.closed&&G.fa.pool.includes(+v)&&G.players[+v]&&G.players[+v].team==null)?'sum':G.players[+v]&&!G.players[+v].prospect&&!G.players[+v].fdPool?'abil':'sum';UI.sheet=+v;UI.talkMsg=null;UI.devMsg=null;UI.offer=null;UI.fmsg='';UI.confirmRel=null;if(!UI.ext||UI.ext.id!==+v)UI.ext=null;renderSheet();},
+  player(v,el){peopleCapture('p:'+v,el);UI.myRos=false;UI.drawer=false;UI.mail=null;UI.posSheet=null;if(UI.fpos){ UI.fpos=null; document.querySelectorAll('.fdd').forEach(e=>e.remove()); } /* 전력 구성의 포지션 펼침도 닫는다. 선수 창은 화면 위에만 그려 아래 펼침이 남으므로 바로 지운다(유저 제보 11-07: 선수 창 위에 떠서 닫히지 않음) */UI.game=null;if(UI.sheet!==+v)UI.ptab=(UI.tab==='staff'&&curSub('staff')==='train'&&(UI.it||{}).mg_staff_train==='dev'&&G.players[+v]&&G.players[+v].team===G.user)?'dev':(G.fa&&G.fa.open&&!G.fa.closed&&G.fa.pool.includes(+v)&&G.players[+v]&&G.players[+v].team==null)?'sum':G.players[+v]&&!G.players[+v].prospect&&!G.players[+v].fdPool?'abil':'sum';UI.sheet=+v;UI.talkMsg=null;UI.devMsg=null;UI.offer=null;UI.fmsg='';UI.confirmRel=null;if(!UI.ext||UI.ext.id!==+v)UI.ext=null;renderSheet();},
   fpos(v){ UI.fpos=(v&&UI.fpos!==v)?v:null; render(); if(UI.fpos){ const el=document.querySelector('.fdd'); if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'}); } },
   posSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
@@ -30117,8 +30162,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(k==='scout'){ if(G.scouts.length>=scoutMax())return; const s=(G.scoutMarket||[]).find(x=>x.ob===id)||obScout(ob); G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.ob!==id); s.since=G.day; G.scouts.push(s); obHireBonus(id,'스카우트'); addLog(`OB ${ob.name}을(를) 스카우트로 영입했습니다.`); save(); render(); return; }
     if(k==='front'){ ob.alt={k:'front',tid:G.user,t:`${tshort(G.user)} 프런트`}; ob.bond+=5; obHireBonus(id,'프런트'); addLog(`OB ${ob.name}이(가) 우리 프런트에 합류했습니다.`); save(); render(); } },
   reroll(){ UI.world=null; render(); },
-  person(v){ UI.sheet=null; UI.person=v; UI.personMsg=null; UI.teamSh=null; renderSheet(); }, /* 선수 정보 안의 인물 링크(11-09r)와 구단 정보 창의 감독·코치(카페 11-09c)도 인물 창으로 */
-  relGo(v){ const [a,id]=relKey({k:v}); UI.relK=v; A[a](id); }, /* 관계도 인물·선수 이전/다음(카페 11-10) */
+  person(v,el){ peopleCapture(v,el);UI.sheet=null; UI.person=v; UI.personMsg=null; UI.teamSh=null; renderSheet(); }, /* 선수 정보 안의 인물 링크(11-09r)와 구단 정보 창의 감독·코치(카페 11-09c)도 인물 창으로 */
+  peopleStep(v){peopleStep(v);},
+  relGo(v){ peopleCapture(v);const [a,id]=relKey({k:v}); UI.relK=v; A[a](id); }, /* 관계도 인물·선수 이전/다음(카페 11-10) */
   gmCall(v){ const r=gmContact(+v,'call'); UI.gmRes={t:+v,m:r.msg,ok:r.ok}; UI.personMsg=r.msg; if(r.ok)sfx('confirm',.5); save(); render(); },
   gmMeal(v){ const r=gmContact(+v,'meal'); UI.gmRes={t:+v,m:r.msg,ok:r.ok}; UI.personMsg=r.msg; if(r.ok)sfx('confirm',.5); save(); render(); },
   findT(v){ UI.findT=v===''?null:+v; UI.deskMsg=null; A.go('trade:find'); },
@@ -30366,7 +30412,7 @@ document.addEventListener('click',e=>{
   /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
      예) 인터뷰 답을 누르고 손가락을 한 번 더 대면 다음 질문의 같은 자리 답이 나가던 문제(커뮤니티 제보 2026-10-31). 같은 버튼(＋/− 등)의 빠른 연타는 그대로 */
   { const now=performance.now(), L=UI._clk, sig=a+'|'+(el.dataset.v||'')+'|'+(el.textContent||'').trim().slice(0,40);
-    const navigation=['tab','sub','go','itab','ovsPick','ovsList','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tsideGo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive'].includes(a);
+    const navigation=['tab','sub','go','itab','ovsPick','ovsList','peopleStep','relGo','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tsideGo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive'].includes(a);
     if(!navigation&&L&&now-L.t<400&&Math.hypot((e.clientX||0)-L.x,(e.clientY||0)-L.y)<30&&L.r!==UI._rN&&L.sig!==sig){ e.preventDefault(); return; }
     UI._clk={t:now,x:e.clientX||0,y:e.clientY||0,r:UI._rN,sig}; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
@@ -31309,7 +31355,7 @@ function meetGreet(M){ const t=team(G.user);
   if(M.k==='gm')return gmPersonalReply(M.id,'check');
   if(M.k==='mgr')return mvGreeting(G.mgr[G.user],M);
   const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
-function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit,returnY:document.documentElement.classList.contains('detail-page-open')?sheetScrollY():scrollY,returnDetail:document.documentElement.classList.contains('detail-page-open'),mid:k==='mgr'?G.mgr[G.user]?.id:null,bs:UI.sheet??null,bp:UI.person??null}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
+function meetOpen(k,id,o){ if(k==='pl'||k==='gm')peopleCapture((k==='pl'?'p:':'gm:')+id);o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit,returnY:document.documentElement.classList.contains('detail-page-open')?sheetScrollY():scrollY,returnDetail:document.documentElement.classList.contains('detail-page-open'),mid:k==='mgr'?G.mgr[G.user]?.id:null,bs:UI.sheet??null,bp:UI.person??null}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
   meetKeep(); UI.sheet=null; UI.person=null; /* 면담 전에 보던 상세는 M.bs·M.bp에 두었다가 면담을 마치면 다시 연다 */
   const H=meetHeld(k); if(H&&!o.ask&&H.mid===M.mid){ UI.meetHold=null; Object.assign(H,{returnY:M.returnY,returnDetail:M.returnDetail,bs:M.bs,bp:M.bp,logCount:-1}); H.log.push({w:'sys',t:'하던 이야기를 이어 합니다'}); UI.meet=H; render(); return; }
   if(k==='pl'){ const p=G.players[M.id]; const TL=(p&&p.talkLog)||[]; if(TL.length)M.log.push({w:'sys',t:`최근 면담 · ${TL.slice(0,3).map(x=>`${dmd(x.d)} ${TALK[x.k]||x.k}: "${x.a}"`).join(' / ')}`}); if(p&&p.promise)M.log.push({w:'sys',t:`약속: 출전 기회 건의 · ${dmd(p.promise.until)}까지 감독이 기회를 주는지 확인`}); }
@@ -31361,7 +31407,7 @@ function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const s
   const p=G.players[M.id]; say('me',MEET_PL[v]||TALK[v]); const r=talk(M.id,v); say('them',(r.msg||'').replace(/^[^:]+: "(.*)"$/,'$1')); if(r.d)say('sys',`${p.name} 기분 ${r.d>0?'+':''}${Math.round(r.d)}`); save(); }
 function meetPage(){ const M=UI.meet,W=meetWho(M); if(!W)return `<section class="card"><p>면담 상대가 자리를 떠났습니다.</p><button class="btn" data-a="meetClose">이전 화면으로</button></section>`;const T=meetTopics(M),own=M.k==='own'&&!team(G.user).indie,left=own?ownAskLeft():1;
   const log=M.log.map(x=>x.w==='sys'?`<div class="mt-sys">${esc(x.t)}</div>`:`<div class="mt-l ${x.w}">${x.w==='them'?`<span class="mt-av">${W.av}</span>`:''}<div><small>${x.w==='them'?esc(W.name):'단장'}</small><p>${esc(x.t)}</p></div></div>`).join('');
-  return `<section class="meet-page" aria-label="${esc(W.place)} 면담"><header class="meet-heading"><div class="mt-h">${W.av}<div><span class="eyebrow">${esc(W.place)} · 면담</span><h2 class="sec">${esc(W.name)}</h2><span class="small muted">${esc(W.role)} · ${esc(W.rel)}</span></div></div><button class="btn small" data-a="meetClose">면담 마치기</button></header>
+  return `<section class="meet-page" aria-label="${esc(W.place)} 면담"><header class="meet-heading"><div class="mt-h">${W.av}<div><span class="eyebrow">${esc(W.place)} · 면담</span><h2 class="sec">${esc(W.name)}</h2><span class="small muted">${esc(W.role)} · ${esc(W.rel)}</span></div></div><div class="meet-tools">${M.k==='pl'||M.k==='gm'?relNav((M.k==='pl'?'p:':'gm:')+M.id):''}<button class="btn small" data-a="meetClose">면담 마치기</button></div></header>
   <div class="meet-workspace"><div class="meet-conversation"><div class="meet-log-label">대화 기록<span>${dmd(G.day)}</span></div><div class="mt-log" id="mt-log" role="log" aria-live="polite">${log}</div></div>
   <aside class="mt-opts${M.sc?' scene':''}" aria-label="${M.sc?'단장 대답':'면담 화제'}"><span class="eyebrow">${M.sc?`대답 고르기 · ${M.sc.beat+1}번째`:'꺼낼 이야기'}${own&&!left?' · 이번 달 지원 요청 완료':''}${M.k==='pl'&&T.some(x=>x[3])?' · 이번 주 면담 제한 적용':''}</span>${T.map(([k,l,sub,dis])=>`<button class="mt-o${M.topic===k?' selected':''}" data-a="meetDo" data-v="${k}" ${dis?'disabled':''}><b>${esc(l)}</b>${sub?`<i>${esc(sub)}</i>`:''}</button>`).join('')}</aside></div></section>`; }
 function meetWire(){const box=document.querySelector('.meet-page'),M=UI.meet;if(!box||!M)return;document.querySelector('#app main.content')?.classList.add('ws-frame','meeting-workspace');const nav=document.querySelector('.bnav'),nr=nav?.getBoundingClientRect(),bottom=nr&&nr.height&&getComputedStyle(nav).display!=='none'?Math.max(0,innerHeight-nr.top):0;box.style.height=Math.max(100,(innerHeight-box.getBoundingClientRect().top-bottom-12)/uiZ())+'px';
@@ -32735,6 +32781,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-10-people-navigation',d:'11월 10일',t:'인물 연속 확인과 면담 상대 이동',items:[
+    '인물·선수 정보 상단의 이전·다음으로 열었던 목록의 사람을 바로 넘깁니다. 내용을 내려 읽는 동안에도 현재 이름·순번과 이동 버튼이 보이며, 넘길 때 읽던 위치를 유지합니다.',
+    '코치·스카우트·분석원, 선수, 다른 구단 단장, 기자를 연속해서 확인할 수 있습니다. 선수는 보고 있던 기록·육성·관리 탭을 유지합니다.',
+    '선수·다른 구단 단장 면담에서도 상대를 바로 바꿀 수 있습니다. 각 인물의 면담 결과와 재면담 기한은 개별로 유지됩니다.'
+  ]},
   {id:'2026-11-10-operations',d:'11월 10일',t:'연수 프로그램 비교와 의료·재활 사진',items:[
     '스태프·육성 > 훈련·육성 > 육성의 해외 연수를 프로그램 목록과 선택 상세로 나눴습니다. 실전 경기·데이터 랩·메커니즘 교정·컨디셔닝·국내 아카데미 사진과 함께 목표 능력, 실제 참가비·동행비·정원·기간을 비교할 수 있습니다.',
     '휴대폰에서는 프로그램을 눌러 상세를 보고 목록으로 돌아옵니다. 교육리그·아카데미 지원과 지난 연수 결과도 내부 탭에서 확인할 수 있습니다.',

@@ -67,7 +67,40 @@ function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); con
     <div class="rs">${L.map(x=>{ const [a,v]=relKey(x); return `<button data-a="${a}" data-v="${v}">${avImg(x.av)}<b>${esc(x.k==='own'?'구단주':x.k==='mgr'?'감독':x.k==='fan'?'팬':x.k==='press'?'언론':tshort(x.tid)+' 단장')}</b><span style="color:${relCol(x.rel)}">${x.rel}${dChip(x.k)}</span></button>`; }).join('')}</div></section>`; }
 /* 인물 카드 시트 */
 /* 같은 묶음(코치·스카우트·데이터팀, 선수단, 다른 구단 단장, 기자단 등) 안에서 이전·다음 사람으로 바로 넘긴다(카페 11-10) */
-function relNav(k,gs){ const L=(gs.find(([,L])=>L.some(y=>y.k===k))||[])[1]; if(!L||L.length<2)return ''; const i=L.findIndex(y=>y.k===k); const b=(d,l,t)=>{ const y=L[(i+d+L.length)%L.length]; return `<button class="btn small" style="min-width:36px;font-size:18px;line-height:1" data-a="relGo" data-v="${esc(y.k)}" title="${t}: ${esc(y.name)}" aria-label="${t}: ${esc(y.name)}">${l}</button>`; }; return `<div class="row ps-nav" style="flex-wrap:nowrap;gap:4px;margin-left:auto">${b(-1,'‹','이전 사람')}<span class="small muted" style="white-space:nowrap">${i+1}/${L.length}</span>${b(1,'›','다음 사람')}</div>`; }
+function peopleGroup(k,groups){
+  if(k.startsWith('p:')){const p=G.players[+k.slice(2)];if(!p)return null;const L=p.team!=null?Object.values(G.players).filter(q=>q.team===p.team):Object.values(G.players).filter(q=>q.team==null&&!!q.prospect===!!p.prospect&&!!q.fdPool===!!p.fdPool);return ['선수 목록',L.map(p=>({k:'p:'+p.id,name:p.name}))];}
+  return (groups||relPeople()).find(([,L])=>L.some(p=>p.k===k))||null;
+}
+/* 목록에서 열린 순서를 보관한다. 관계 수치가 변해도 면담 도중 줄이 재정렬되지 않는다. */
+function peopleCapture(k,el){
+  if(!el&&(UI.person||UI.sheet!=null||UI.meet)&&UI.peopleBrowse?.g===G&&UI.peopleBrowse.keys.includes(k))return;
+  const group=peopleGroup(k);if(!group){UI.peopleBrowse=null;return;}
+  const root=el?.closest('#app main.content')&&el.closest('.rpg,tbody,.tgrid,.cgrid,.fl,.st-list,.relmap');
+  const allowed=new Set(group[1].map(p=>p.k)),keys=root?[...root.querySelectorAll('[data-a="person"],[data-a="player"]')].map(e=>e.dataset.a==='player'?'p:'+e.dataset.v:e.dataset.v).filter(k=>allowed.has(k)):[];
+  const list=[...new Set(keys)];UI.peopleBrowse={g:G,label:root?'현재 목록':group[0],keys:list.includes(k)?list:group[1].map(p=>p.k)};
+}
+function peopleInfo(k,groups){
+  const group=peopleGroup(k,groups);if(!group)return null;const by=new Map(group[1].map(p=>[p.k,p]));
+  const saved=UI.peopleBrowse,keys=saved?.g===G&&saved.keys.includes(k)?saved.keys:group[1].map(p=>p.k),L=keys.filter(k=>by.has(k)).map(k=>by.get(k)),i=L.findIndex(p=>p.k===k);
+  return i>=0?{L,i,label:saved?.g===G&&saved.keys.includes(k)?saved.label:group[0]}:null;
+}
+function peopleCurrent(){return UI.sheet!=null?'p:'+UI.sheet:UI.person||((UI.meet?.k==='pl'?'p:':UI.meet?.k==='gm'?'gm:':'')+(UI.meet?.id??''));}
+function relNav(k,gs){const info=peopleInfo(k,gs);if(!info||info.L.length<2)return '';const {L,i,label}=info;
+  const button=(d,text)=>{const p=L[(i+d+L.length)%L.length];return `<button type="button" class="btn small" data-a="peopleStep" data-v="${d}" title="${text}: ${esc(p.name)}" aria-label="${text}: ${esc(p.name)}">${d<0?'‹ ':''}${text}${d>0?' ›':''}</button>`;};
+  return `<nav class="ps-nav" aria-label="같은 목록 인물 이동">${button(-1,'이전')}<span class="people-position"><span title="${esc(label)}">${esc(L[i].name)}</span><b>${i+1} / ${L.length}</b></span>${button(1,'다음')}</nav>`;
+}
+function peopleStep(d){
+  d=+d;if(d!==1&&d!==-1)return;const k=peopleCurrent(),info=peopleInfo(k);if(!info||info.L.length<2)return;
+  const next=info.L[(info.i+d+info.L.length)%info.L.length].k;UI.peopleBrowse={g:G,label:info.label,keys:info.L.map(p=>p.k)};
+  if(UI.meet&&!meetOver()){
+    const old=UI.meet,kind=next.startsWith('p:')?'pl':next.startsWith('gm:')?'gm':null;if(!kind)return;
+    meetOpen(kind,+next.split(':')[1]);if(UI.meet!==old){UI.meet.bs=old.bs!=null&&kind==='pl'?+next.slice(2):null;UI.meet.bp=old.bp?(kind==='gm'?next:old.bp):null;UI.meet.returnDetail=old.returnDetail;UI.meet.returnY=old.returnY;}return;
+  }
+  const tab=UI.ptab,y=sheetScrollY();UI.relK=next;
+  if(next.startsWith('p:')){A.player(next.slice(2));if(tab&&[...document.querySelectorAll('#sheet [data-a="ptab"]')].some(b=>b.dataset.v===tab)){UI.ptab=tab;renderSheet();}}
+  else A.person(next);
+  sheetScrollTo(y);
+}
 function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)for(const y of L)if(y.k===k)x=y; if(!x)x=personX(k); if(!x)return '';
   const t=team(G.user); const sec=(h,b)=>b?`<div class="ps-s"><div class="eyebrow">${h}</div>${b}</div>`:''; const li=a=>`<ul class="ps-l">${a.map(s=>`<li>${s}</li>`).join('')}</ul>`;
   const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
@@ -124,7 +157,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     acts=[btn('협상실','faOpen',id,1)]; }
   const d=relDelta(k);
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
-    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div>${relNav(k,gs)}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${x.rel}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${d>0?'+':''}${d}`:''}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span></div>`}
     ${personTop(k)}${info}${sec('관계를 움직이는 것',moves.length?li(moves.map(esc)):'')}${sec('관계가 주는 영향',fx.length?li(fx.map(esc)):'')}${sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
