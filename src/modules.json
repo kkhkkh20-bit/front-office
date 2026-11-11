@@ -120,6 +120,7 @@
       "src/engine/media/91_league_events.js",
       "src/engine/league/87_club_identity.js",
       "src/engine/league/88_league_rules.js",
+      "src/engine/league/89_league_expansion.js",
       "src/engine/media/92_gg_voting.js",
       "src/engine/career/83_personal_life.js",
       "src/engine/career/84_person_network.js",

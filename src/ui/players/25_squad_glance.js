@@ -132,7 +132,7 @@ function planFM(){ const Y=G.year; if(!G.plEx||G.plEx.y!==Y)G.plEx={y:Y,ids:[]};
       <td>${sk?`<button class="pl-x" data-a="plEx" data-v="${p.id}" title="${Y+1}년 이후 계획에서 빼기" aria-label="${esc(p.name)} 계획에서 빼기">×</button>`:''}</td></tr>`; };
   /* 리그 비교: 포지션 진단(posDiag)과 같은 기준, 지금 주전 능력으로 10개 구단 순위 */
   const LD=G.teams.map(t=>depth(t.id)), lgv=(d,k)=>k==='SP'?avg(d.sp.slice(0,5).map(spV)):k==='RP'?avg(d.pen.slice(0,5).map(penV)):d.ln[k]?posScore(d.ln[k],k):0;
-  const lg=sfChart('지금 주전 전력 · 리그 10개 구단',PSLOTS.map(k=>({l:SLOTS_S[k]+(k===pos?' ◀':''),v:lgv(LD[G.teams.findIndex(t=>t.id===G.user)],k),all:LD.map(d=>lgv(d,k))})),0,0,v=>dv(v));
+  const lg=sfChart(`지금 주전 전력 · 리그 ${G.teams.length}개 구단`,PSLOTS.map(k=>({l:SLOTS_S[k]+(k===pos?' ◀':''),v:lgv(LD[G.teams.findIndex(t=>t.id===G.user)],k),all:LD.map(d=>lgv(d,k))})),0,0,v=>dv(v));
   const det=`<section class="card spn-pos"><h3 title="프런트 예상 배치입니다. 감독의 실제 기용과 다를 수 있습니다.${sk?' ×로 내년 이후 계획에서 빼면 빈자리와 연봉 전망이 다시 계산됩니다(실제 기용·기분에는 영향 없음).':''}">${SLOTS_S[pos]} 후보 <em>${Y+sk} ${YL[sk]}</em>${wtag(W0)}</h3>
     <div class="sf-tw"><table class="sf-t spn-dt"><thead><tr><th>역할</th><th>선수</th><th>그해 예상</th><th>잠재력</th><th>연봉 · FA</th><th>병역</th><th></th></tr></thead><tbody>${R.length?R.map(row).join(''):'<tr><td colspan="7" class="muted">이 자리를 볼 선수가 없습니다.</td></tr>'}</tbody></table></div>
     ${exL.length?`<p class="spn-leg">${Y+1}년 이후 계획에서 뺀 선수: ${exL.map(p=>esc(p.name)).join(', ')} <button class="tc-i" data-a="plExClear">되돌리기</button></p>`:''}${lg}</section>`;

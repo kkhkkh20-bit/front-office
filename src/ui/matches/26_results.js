@@ -88,8 +88,8 @@ function invFM(){ facInit(); try{ aiFacAll(); }catch(e){} const tid=G.user, t=te
     <div class="fvx-pr"><span>티켓 가격</span><div class="seg">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div></div><p class="fvx-note">${esc(PRICE[S.price].d)} 홈런 지수 100 = 리그 평균.</p>${fenceBox(tid)}</section>`;
   /* 리그 비교 */
   const att=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?x.sum/x.n:0; }, occ=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?Math.min(100,x.sum/(x.cap||x.n*stadCap(i))*100):0; }, sTot=i=>sum(STAD_ITEMS.map(x=>stadOf(i).lv[x.k]||0));
-  const cmp=`<section class="card fvx-cmp">${sfChart('훈련 시설 · 리그 10개 구단',[...FACK.map(k=>({l:FACI[k].l,v:F.it[k],all:fAll(k)})),{l:'종합 등급',v:F.lv,all:lgLv}],0,FAC_MAX)}
-    ${sfChart('구장 · 리그 10개 구단',[{l:'수용 인원',v:cap,all:tids.map(stadCap)},{l:'홈 평균 관중',v:att(tid),all:tids.map(att)},{l:'좌석 점유율 %',v:occ(tid),all:tids.map(occ)},{l:'구장 시설 합계',v:sTot(tid),all:tids.map(sTot)},{l:'구단 버스',v:bl,all:tids.map(busLv)}],0,0,v=>Math.round(v).toLocaleString('ko-KR'))}</section>`;
+  const cmp=`<section class="card fvx-cmp">${sfChart(`훈련 시설 · 리그 ${G.teams.length}개 구단`,[...FACK.map(k=>({l:FACI[k].l,v:F.it[k],all:fAll(k)})),{l:'종합 등급',v:F.lv,all:lgLv}],0,FAC_MAX)}
+    ${sfChart(`구장 · 리그 ${G.teams.length}개 구단`,[{l:'수용 인원',v:cap,all:tids.map(stadCap)},{l:'홈 평균 관중',v:att(tid),all:tids.map(att)},{l:'좌석 점유율 %',v:occ(tid),all:tids.map(occ)},{l:'구장 시설 합계',v:sTot(tid),all:tids.map(sTot)},{l:'구단 버스',v:bl,all:tids.map(busLv)}],0,0,v=>Math.round(v).toLocaleString('ko-KR'))}</section>`;
   /* 오른쪽: 고른 시설 */
   const [kind,k]=sel.split(':'); let dh='';
   if(kind==='fac'&&FACI[k]){ const D0=FACI[k], lv=F.it[k], b=F.bld[k], nx=lv+1;

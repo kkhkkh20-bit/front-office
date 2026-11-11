@@ -1,7 +1,7 @@
 /* 포지션별 리그 순위 칸: click이면 누르면 전력 비교로 간다 */
 /* 리그 주전 평균과 우리 주전 비교(화면 100점 척도) */
 function startAvgBox(tid){ tid=tid??G.user; let A; try{ A=lgStartAvg(); }catch(e){ return ''; } const cell=(k,l)=>{ const lg=A[k], me=teamStartAvg(tid,k==='BAT'?'BAT':k); if(lg==null)return ''; const d=me==null?null:dv(me)-dv(lg); return `<span class="sa-c" title="${esc(l)}: 리그 주전 평균 ${dv(lg)}${me!=null?` · 우리 ${dv(me)}`:''}"><i>${esc(l)}</i><b>${dv(lg)}</b>${d==null?'':`<em class="${d>=0?'up':'dn'}">${d>=0?'+':''}${d}</em>`}</span>`; };
-  return `<div class="eyebrow">리그 주전 평균 능력 <span class="muted">(10개 구단 주전 · 초록/빨강은 우리 주전과의 차이)</span></div><div class="sa-box">${cell('BAT','야수 전체')}${PSLOTS.map(k=>cell(k,SLOTS_S[k]||SLOTK[k])).join('')}</div>`; }
+  return `<div class="eyebrow">리그 주전 평균 능력 <span class="muted">(${G.teams.length}개 구단 주전 · 초록/빨강은 우리 주전과의 차이)</span></div><div class="sa-box">${cell('BAT','야수 전체')}${PSLOTS.map(k=>cell(k,SLOTS_S[k]||SLOTK[k])).join('')}</div>`; }
 function slotBar(rk,click){ return `<div class="slotbar">${PSLOTS.map(k=>click?`<button class="sl ${rkCls(rk[k].rank)}" data-a="cmpGo" data-v="${k}"><span>${SLOTS_S[k]}</span><b>${rk[k].rank}위</b></button>`:`<span class="sl ${rkCls(rk[k].rank)}"><span>${SLOTS_S[k]}</span><b>${rk[k].rank}위</b></span>`).join('')}</div>`; }
 /* ---------- 카드 공용 ---------- */
 function rosterFoot(p){ const m=p.mor??60; const own=p.team===G.user;

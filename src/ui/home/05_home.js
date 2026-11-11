@@ -134,4 +134,4 @@ function cmpView(T0,mini){ const L=nextGames(1); const def=L.length?L[0].op:stan
   if(mini)return `<div class="cmp cmp-mini"><div class="cmp-hd"><span>${badge(G.user,18)} ${esc(tshort(G.user))} <b class="ok">우위 ${w}</b></span><span>${badge(T,18)} ${esc(tshort(T))} <b class="bad">우위 ${l}</b></span></div><div class="cmp-rows">${rows}</div></div>`;
   return `<section class="card cmp"><div class="row between"><h2 class="sec">전력 비교</h2><span class="small muted">상대 전적 ${hh.w}승 ${hh.l}패${hh.t?` ${hh.t}무`:''}</span></div>${chips}
     <div class="cmp-hd"><span>${badge(G.user,22)} ${esc(tshort(G.user))} <b class="ok">우위 ${w}</b></span><span>${badge(T,22)} ${esc(tshort(T))} <b class="bad">우위 ${l}</b></span></div>
-    <div class="cmp-rows">${rows}</div><p class="small muted">숫자는 자리별 전력(현재 능력 기준), 순위는 10개 구단 중 순위입니다. 자리를 누르면 그 자리 보강 트레이드를 찾습니다.</p></section>${help}`; }
+    <div class="cmp-rows">${rows}</div><p class="small muted">숫자는 자리별 전력(현재 능력 기준), 순위는 ${G.teams.length}개 구단 중 순위입니다. 자리를 누르면 그 자리 보강 트레이드를 찾습니다.</p></section>${help}`; }
