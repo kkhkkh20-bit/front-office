@@ -37,7 +37,7 @@ function fTmpConvert(q){ const e=fTmpConvertErr(q); if(e)return e; const tid=q.t
   return fTmpConvertDo(q,tid); }
 function fTmpConvertErr(q){ const tid=q.team, o=G.players[q.ftmp.o];
   if(fReplLeft(tid)<=0||G.day>foreignDL())return '교체 횟수가 없거나 8월 15일이 지나 정식 계약할 수 없습니다.';
-  { const yb=foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==o&&x!==q), cap=F_TOTAL_CAP+10*USD*sum(yb.map(x=>x.rsy||0)), tot=sum(yb.map(fCommit))+q.sal; if(q.foreign==='용병'&&tot>cap)return `${o?o.name+'을(를) 내보내면 ':''}외국인 총액 한도가 ${money(cap)}(으)로 줄어 ${q.name}과(와) 정식 계약하면 ${money(tot-cap)} 넘습니다.`;
+  { const yb=foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==o&&x!==q), cap=fTotCap()+10*USD*sum(yb.map(x=>x.rsy||0)), tot=sum(yb.map(fCommit))+q.sal; if(q.foreign==='용병'&&tot>cap)return `${o?o.name+'을(를) 내보내면 ':''}외국인 총액 한도가 ${money(cap)}(으)로 줄어 ${q.name}과(와) 정식 계약하면 ${money(tot-cap)} 넘습니다.`;
     if(yb.length>=3||(yb.length===2&&yb.every(x=>x.isP===q.isP)))return `정식 계약하면 일반 외국인 3명이 모두 ${q.isP?'투수':'타자'}가 됩니다.`; } /* 일반 영입과 같은 구성 제한(검수 11-06) */ /* 원 선수 재계약 가산분이 빠진 한도로 다시 확인(검수 11-06) */
   return ''; }
 function fTmpConvertDo(q,tid){
