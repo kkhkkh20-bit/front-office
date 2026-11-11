@@ -1,3 +1,7 @@
+/* 구형 모바일 브라우저 보완(iOS 15.3 이하 등): Array/String .at() */
+if(!Array.prototype.at)Object.defineProperty(Array.prototype,'at',{value:function(i){ i=Math.trunc(i)||0; if(i<0)i+=this.length; return i<0||i>=this.length?undefined:this[i]; },writable:true,configurable:true});
+if(!Object.hasOwn)Object.hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k); /* iOS 15.3 이하 */
+if(!String.prototype.at)Object.defineProperty(String.prototype,'at',{value:function(i){ i=Math.trunc(i)||0; if(i<0)i+=this.length; return i<0||i>=this.length?undefined:this.charAt(i); },writable:true,configurable:true});
 'use strict';
 /* ===== 기본 도구 ===== */
 const FO_RANDOM=FrontOfficeCore.createRandom(Math.random);
