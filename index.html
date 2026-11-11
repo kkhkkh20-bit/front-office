@@ -2756,6 +2756,12 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .fence-l{display:flex;flex-direction:column;font-size:12.5px}.fence-l i{font-style:normal;color:var(--muted,#9aa7b4);font-size:11.5px}.fence-l em{font-style:normal;color:#4f9dff;font-weight:600}
 .fence-seg{display:flex;flex-wrap:wrap;gap:4px}.fc-b{min-width:38px;height:28px;padding:0 6px;border:1px solid var(--line,#2f3a46);border-radius:6px;background:var(--panel2,#1b2129);color:inherit;font-size:12.5px;cursor:pointer}.fc-b.on{background:#3b82f6;border-color:#3b82f6;color:#fff;font-weight:600}.fc-b:disabled{opacity:.3;cursor:default}
 @media(max-width:600px){.fence-r{grid-template-columns:1fr}}
+/* 등번호 한 번에 바꾸기 */
+.ne-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 10px;max-height:60vh;overflow-y:auto;margin:8px 0}
+.ne-h{grid-column:1/-1;font-size:12px;font-weight:700;color:var(--muted,#9aa7b4);margin-top:6px}
+.ne-r{display:flex;align-items:center;gap:8px;padding:3px 6px;border-radius:6px;border:1px solid transparent}.ne-r.ch{border-color:#3b82f6}.ne-r.dup{border-color:#e06464}
+.ne-in{width:46px;text-align:center;font-weight:700;font-size:15px}.ne-r span{display:flex;flex-direction:column;min-width:0}.ne-r i{font-style:normal;font-size:11.5px;color:var(--muted,#9aa7b4)}.ne-r em{font-style:normal;font-size:11px;color:#e06464;margin-left:auto}
+.ne-foot{justify-content:flex-end;gap:8px}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -14850,6 +14856,13 @@ function setPlayerRatings(id,o){ const p=G.players[id]; if(!p)return '선수를 
 function playerNoPermit(p,r){ const a=p.retNoPermit; return !!(a&&a.tid===p.team&&a.no===r.no&&a.ob===p.father&&sonRetOwn(r,fatherOf(p))); }
 function setPlayerNo(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const s=String(v??'').trim(); if(!/^\d{1,2}$/.test(s))return '등번호는 0~99 숫자로 입력하세요.'; const n=+s; if(p.team==null)return '소속 구단이 있는 선수만 등번호를 정할 수 있습니다.'; if(retNosOf(p.team).some(r=>r.no===n&&!playerNoPermit(p,r)))return `${n}번은 ${p.team===G.user?'우리 구단':tshort(p.team)} 영구결번입니다.`;
   const o=Object.values(G.players).find(q=>q!==p&&q.team===p.team&&jno(q)===n); if(o)return `${n}번은 ${o.name} 선수가 쓰고 있습니다.`; jno(p); /* 옛 구단 번호를 noBy에 남긴 뒤 바꾼다 */ p.no=n; p.noT=p.team; return ''; }
+/* 등번호 한 번에 바꾸기(커뮤니티 피드백 11-11): 바꿀 번호를 모두 받아, 바꾼 뒤 모습 전체로 겹침·영구결번을 확인하고 한꺼번에 적용한다(서로 맞바꾸기 가능) */
+function setPlayerNos(M){ const tid=G.user; if(G.unemp||tid==null)return {err:'맡은 구단이 없습니다.'}; const L=playersOf(tid); const fin=new Map(L.map(p=>[p.id,jno(p)])); const errs=[]; let n=0;
+  for(const k in M){ const p=G.players[k]; if(!p||p.team!==tid)continue; const s=String(M[k]??'').trim(); if(s==='')continue; if(!/^\d{1,2}$/.test(s)){ errs.push(`${p.name}: 0~99 숫자로 입력하세요.`); continue; } const v=+s; if(v===jno(p))continue;
+    if(retNosOf(tid).some(r=>r.no===v&&!playerNoPermit(p,r))){ errs.push(`${p.name}: ${v}번은 영구결번입니다.`); continue; } fin.set(p.id,v); n++; }
+  const by=new Map(); for(const [id,v] of fin){ if(!by.has(v))by.set(v,[]); by.get(v).push(id); } for(const [v,ids] of by)if(ids.length>1)errs.push(`${v}번이 겹칩니다: ${ids.map(id=>G.players[id].name).join(', ')}`);
+  if(errs.length)return {err:errs.join('\n')}; if(!n)return {err:'바뀐 번호가 없습니다.'};
+  for(const p of L){ const v=fin.get(p.id); if(v!==jno(p)){ p.no=v; p.noT=tid; } } return {n}; }
 /* 영구결번 후보: 지금 맡은 구단 후보만(이직하면 옛 구단 후보는 그 구단 것, 검수 11-09zp) */
 function retNoCands(){ return (G.legends||[]).map((r,i)=>({r,i})).filter(x=>x.r.canRetNo&&!x.r.retNo&&(x.r.tid==null||x.r.tid===G.user)); }
 function retireNumber(i){ const L=G.legends||[]; const r=typeof i==='string'&&i[0]==='p'?L.find(x=>'p'+x.pid===i):L[+i]; /* 위치 대신 선수 id로 찾는다(목록이 잘려 위치가 밀려도 맞는 선수) */ if(!r||!r.canRetNo||r.retNo||(r.tid!=null&&r.tid!==G.user)||G.unemp)return '대상이 아닙니다.'; { const d=(G.retNos||[]).find(x=>x.no===r.no); if(d)return `${r.no}번은 이미 ${d.name}의 영구결번입니다. 같은 번호는 한 번만 지정할 수 있습니다.`; } /* 검수 11-08 */ r.retNo=true; (G.retNos=G.retNos||[]).push({name:r.name,no:r.no,y:G.year,pid:r.pid,...(()=>{const o=(G.ob||[]).find(o=>o.fid===r.pid);return o?{ob:o.id}:{};})()}); { const o=(G.ob||[]).find(o=>o.fid===r.pid); if(o){ o.retNo=true; o.no=r.no; } } /* OB 카드도 같은 결번(검수 11-09zp) */ const mv=[]; for(const q of Object.values(G.players))if(q.team===G.user&&q.id!==r.pid&&q.no===r.no){ q.noT=null; jno(q); mv.push(`${q.name} ${q.no}번`); } /* 그 번호를 쓰던 현역은 새 번호로 */ chron('retNo',`${r.name} ${r.no}번 영구결번 지정`,r.pid??null,G.user,{source:'retNo:'+G.year+':'+r.no});news('선수',`${tshort(G.user)}, ${r.name}의 ${r.no}번 영구결번`,`구단 역사에 길이 남을 이름이 됐습니다.`,3,{fanW:3}); return `${r.no}번을 영구결번으로 지정했습니다.${mv.length?` 그 번호를 쓰던 선수는 바꿨습니다: ${mv.join(', ')}.`:''}`; }
@@ -30088,7 +30101,7 @@ function rosterView(){
   const cover=own?'':`<section class="card covc"><div class="row between"><div class="row">${badge(tid,32)}<div><b>${tname(tid)}</b><div class="small muted">${t.mode==='contend'?'우승 경쟁':'리빌딩'} · 구단주 ${OWNER[t.owner].label} · 단장 관계 ${t.rel}</div></div></div><span class="row"><button class="btn small" data-a="lteamGo" data-v="${tid}">구단주·코치진</button><button class="btn small" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button></span></div>
     <p class="small">${cv.sc?`<b>${esc(cv.sc.name)} 스카우트</b>(${cv.reg} · 능력 ${'★'.repeat(cv.sc.skill)})가 담당합니다. ${cv.sc.skill>=3?'1군과 2군 선수까지 현재 능력을 평가합니다.':'1군 선수만 평가합니다. 2군까지 보려면 능력 3 이상 스카우트가 필요합니다.'}`:`<b>${cv.reg}</b> 지역을 맡은 스카우트가 없습니다. 1군 기록만 볼 수 있고 능력 평가는 없습니다.`} 다른 구단 선수의 잠재력은 알 수 없습니다.${hidden?` 파악하지 못한 2군 선수 ${hidden}명은 명단에서 빠졌습니다.`:''}</p></section>`;
   const eN=playersOf(tid).filter(p=>p.e1).length;
-  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
+  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small keep fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
   if(it.cur==='depth')return head+it.bar+fmCols(fieldC+csec(`1군 야수 · 투수진 · 벤치 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,glancePitch(tid)))+futSquadView(tid);
   if(it.cur==='plan'&&own)return head+it.bar+(fmOn()?planFM():plannerCard()); /* PC: FM식 선수단 계획표(25_squad_glance.js) */
@@ -30244,6 +30257,16 @@ function salView(tid){ const nx=sponSeason()>G.year||(G.contract&&!G.contract.do
   return `<section class="card"><div class="row between"><h2 class="sec">연봉 순위 · ${G.year}</h2><span class="small muted">${L.length}명</span></div>
     <dl class="tsum"><div><dt>전체 합계</dt><dd>${money(tot)}</dd></div><div><dt>국내 상위 40명(상한 기준)</dt><dd class="${top40>cap?'bad':''}">${money(top40)} / ${money(cap)}</dd></div><div><dt>국내 평균</dt><dd>${money(Math.round(dom.length?sum(dom.map(x=>x.s))/dom.length:0))}</dd></div><div><dt>국내 중간값</dt><dd>${money(med)}</dd></div></dl>
     <div class="tw"><table class="sqt candidate-table sal-t"><thead><tr><th>#</th>${th('name','선수')}${th('s','올해 연봉','num')}${nx?th('n','다음 시즌','num'):''}<th>계약</th>${th('o','능력','num')}${th('a','나이','num')}</tr></thead><tbody>${rows}</tbody></table></div></section>`; }
+
+/* 등번호 한 번에 바꾸기 화면 */
+function noEditSheet(){ const tid=G.user; const L=playersOf(tid).filter(p=>!p.foreign||true).slice(); const grp=p=>p.isP?0:p.pos==='C'?1:['1B','2B','3B','SS'].includes(p.pos)?2:3; L.sort((a,b)=>grp(a)-grp(b)||jno(a)-jno(b)); const G4=['투수','포수','내야수','외야수·지명'];
+  const D=UI.noDraft||{}; const val=p=>D[p.id]!=null?D[p.id]:jno(p); const cnt={}; for(const p of L){ const v=String(val(p)); cnt[v]=(cnt[v]||0)+1; } const ret=new Set(retNosOf(tid).map(r=>r.no));
+  let html='',g=-1; for(const p of L){ if(grp(p)!==g){ g=grp(p); html+=`<div class="ne-h">${G4[g]}</div>`; } const v=String(val(p)), dup=cnt[v]>1, ch=+v!==jno(p);
+    html+=`<label class="ne-r${dup?' dup':''}${ch?' ch':''}"><input class="ne-in" data-pid="${p.id}" inputmode="numeric" maxlength="2" value="${esc(v)}" autocomplete="off"><span><b>${esc(p.name)}</b><i>${posLabel(p)} · ${p.age}세${p.e1?' · 1군':''}${ch?` · 지금 ${jno(p)}번`:''}</i></span>${dup?'<em>겹침</em>':''}</label>`; }
+  return `<div class="scrim" data-a="noEditClose"><div class="sheet gut ne-sheet" data-stop="1" role="dialog" aria-label="등번호 정리"><div class="sheet-head"><div><div class="eyebrow">${esc(tname(tid))}</div><h2 class="sec">등번호 한 번에 바꾸기</h2></div><button class="x" data-a="noEditClose" aria-label="닫기">×</button></div>
+    <p class="small muted">번호를 고친 뒤 '모두 저장'을 누르면 한꺼번에 바뀝니다. 서로 번호를 맞바꿀 수 있고, 겹치는 번호와 영구결번(${[...ret].sort((a,b)=>a-b).join(', ')||'없음'})은 저장되지 않습니다.</p>
+    ${UI.noErr?`<p class="small bad" style="white-space:pre-line">${esc(UI.noErr)}</p>`:''}<div class="ne-list">${html}</div>
+    <div class="row ne-foot"><button class="btn small" data-a="noEditClose">취소</button><button class="btn small primary" data-a="noEditSave">모두 저장</button></div></div></div>`; }
 /* ---------- 리그 탭 ---------- */
 /* 예전 하위 탭 이름 → 지금 자리 */
 function lsegFix(s){ if(s==='board'||!s)return 'stand'; if(s==='sched'){ UI.it=UI.it||{}; UI.it.sres='cal'; return 'score'; } if(s==='games')return 'score'; if(s==='lead')return 'rec'; return s; }
@@ -30822,6 +30845,7 @@ function renderSheet0(){
   if(UI.cmpSh&&UI.sheet==null&&!UI.menu){ el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="전력 비교"><div class="sheet-head"><h2 class="sec">전력 비교</h2><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>${cmpView()}</div></div>`; return; }
   if(UI.menu){ el.innerHTML=menuSheet(); return; }
   if(UI.teamSh!=null&&UI.sheet==null){ el.innerHTML=teamSheet(UI.teamSh); return; }
+  if(UI.noEdit){ el.innerHTML=noEditSheet(); return; } /* 등번호 한 번에 바꾸기 */
   if(UI.myRos&&UI.sheet==null){ G.tutFlags=G.tutFlags||{}; G.tutFlags.roster=true; el.innerHTML=myRosterSheet(); return; }
   if(UI.person&&UI.sheet==null){ el.innerHTML=personSheet(UI.person); return; }
   if(UI.game!=null){ el.innerHTML=gameSheet(UI.game); return; }
@@ -31256,6 +31280,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   retNo(v){ note('기록',retireNumber(v)); save(); render(); },
   pEditOpen(v){ UI.pEdit=v===''||v==null?null:+v; UI.pEditErr=''; renderSheet(); },
   pFace(v){ if(!EDITOR_ON)return; const [id,i]=String(v).split(':').map(Number), p=G.players[id]; if(!p||p.team==null||!face6Pool(p).includes(i))return; G.f6=G.f6||{}; G.f6r=G.f6r||{}; const k=p.team+':'+i, prev=G.f6r[k]; if(prev!=null&&prev!==id)delete G.f6[prev]; if(G.f6[id]!=null)delete G.f6r[p.team+':'+G.f6[id]]; G.f6[id]=i; G.f6r[k]=id; save(); render(); try{ renderSheet(); }catch(e){} },
+  noEditOpen(){ UI.noEdit=true; UI.noDraft={}; UI.noErr=''; render(); },
+  noEditClose(){ UI.noEdit=false; UI.noDraft=null; UI.noErr=''; render(); },
+  noEditSave(){ const M={}; document.querySelectorAll('.ne-in').forEach(el=>{ M[el.dataset.pid]=el.value; }); UI.noDraft=M; const r=setPlayerNos(M); if(r.err){ UI.noErr=r.err; render(); return; } UI.noEdit=false; UI.noDraft=null; UI.noErr=''; note('선수',`등번호 ${r.n}명을 바꿨습니다.`); save(); render(); },
   pEditSave(v){ const id=+v, p=G.players[id]; if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); let e=nm?setPlayerName(id,nm.value):''; if(!e&&no&&String(no.value).trim()!==String(jno(p)))e=setPlayerNo(id,no.value);
     if(!e&&EDITOR_ON&&$('#pe-age')){ const rv=k=>{ const el=$('#pe-r-'+k); if(!el)return null; const t=String(el.value).trim(); return t===''||+t===dv(p.r[k])?null:dvInv(t); }; const r={}; for(const k of ED_RK[p.isP?'P':'B']){ const x=rv(k); if(x!=null)r[k]=x; } const pt=String($('#pe-pot').value).trim(); e=setPlayerRatings(id,{r,pot:pt===''||+pt===dv(p.pot)?null:dvInv(pt),age:$('#pe-age').value}); }
     if(e){ UI.pEditErr=e; renderSheet(); return; } UI.pEdit=null; UI.pEditErr=''; note('선수',`${p.name} · ${p.team!=null?jno(p)+'번':''} 저장했습니다.`); save(); render(); },
