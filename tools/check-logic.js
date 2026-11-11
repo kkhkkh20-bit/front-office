@@ -176,7 +176,7 @@ T('이직: 전임 단장이 데려온 선수는 내가 데려온 선수가 아�
 
 T('외국인 재계약 위임: 이미 합의한 선수를 다시 처리해도 "떠남"으로 보고하지 않는다(1b82f85 리뷰)',()=>{ fresh(); simTo(()=>G.contract&&!G.contract.done&&G.contract.foreignEnd&&G.contract.foreignEnd.length&&G.day>=KD(12,1));
   const C=G.contract; ok(C&&C.foreignEnd.length,'외국인 재계약 대상이 없음(시나리오 준비 실패)'); const id=C.foreignEnd.find(i=>!C.foreignDrop.includes(i)&&G.players[i].foreign==='용병')||C.foreignEnd.find(i=>!C.foreignDrop.includes(i)); const p=G.players[id]; /* 아시아쿼터는 재계약도 2.8억 상한이라 3배 제안이 성립하지 않는다 */
-  const r=foReOffer(id,Math.ceil(foReFloor(p)*3/USD)*USD,0); ok(r.ok,'넉넉한 제안에도 합의 실패: '+r.msg);
+  const r=foReOffer(id,Math.ceil(foReFloor(p)*1.5/USD)*USD,0); /* 넉넉하되 외국인 총액 한도 안(3배면 한도를 넘어 위임 처리에서 합의가 취소될 수 있다: 72_delegate 총액 한도) */ ok(r.ok,'넉넉한 제안에도 합의 실패: '+r.msg);
   const n0=G.mail.length; autoFre(); const m=G.mail.slice(0,G.mail.length-n0+1).find(x=>/외국인 재계약/.test(x.body)); const line=(m&&m.body||'').split('\\n').find(l=>l.startsWith(p.name+':'))||'';
   ok(line,'위임 보고에 그 선수 줄이 없음'); ok(!/떠남|거절/.test(line),'합의한 선수가 보고에 거절·떠남으로 나옴: '+line); ok(C.fre[id].ok&&!C.foreignDrop.includes(id),'합의 상태가 바뀜'); });
 

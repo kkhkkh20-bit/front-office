@@ -9,7 +9,7 @@ function standView0(){
   const msg=live&&period()==='season'?(mi<=4?`가을야구권 ${stRank(order,G.user)}위 · 6위와 ${Math.max(0,gbOf(me,order[5])).toFixed(1)}경기 차`:`5위 ${tshort(fifth.tid)}와(과) ${gbOf(fifth,me).toFixed(1)}경기 차`):'';
   // 상대 전적
   const h2h=hasTl?`<div class="tw"><table class="h2h"><thead><tr><th>상대</th>${G.teams.filter(t=>t.id!==G.user).map(t=>`<th>${badge(t.id,16)}</th>`).join('')}</tr></thead><tbody><tr class="me"><td>${tshort(G.user)}</td>${G.teams.filter(t=>t.id!==G.user).map(t=>{ const r=h2hOf(G.user,t.id); return `<td class="${r.w>r.l?'pos':r.w<r.l?'neg':''}">${r.w+r.l+r.t?`${r.w}-${r.l}${r.t?'-'+r.t:''}`:'-'}</td>`; }).join('')}</tr></tbody></table></div>`:'';
-  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
+  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],...(G.fl&&G.fl.games.length?[['fut','퓨처스리그']]:[]),['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
   if(tt.cur==='teams')return tt.bar+teamsView();
   if(tt.cur==='last')return tt.bar+lastStandCard();
   if(tt.cur==='tbl'&&fmOn())return tt.bar+standFm(order,live,y);
@@ -20,6 +20,7 @@ function standView0(){
   if(tt.cur==='h2h')return tt.bar+`${h2h?`<section class="card"><h2 class="sec">우리 팀 상대 전적</h2>${h2h}</section>`:''}`;
   if(tt.cur==='race')return tt.bar+raceCard();
   if(tt.cur==='map')return tt.bar+powerMap();
+  if(tt.cur==='fut')return tt.bar+futStandView();
   if(tt.cur==='ps')return tt.bar+psBracket();
   const myC=G.history.filter(h=>h.champ===G.user).length;
   return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">역대 우승</h2><span class="trow">${myC?`${tname(G.user)} 우승 ${myC}회 ${[...Array(Math.min(myC,8))].map(()=>trophyImg(22)).join('')}`:''}</span></div><div class="list">${[...G.history].filter(h=>h.champ!=null).reverse().map(h=>`<div class="item champ${h.champ===G.user?' me':''}" style="cursor:default">${ART.trophy(28)}<span class="nm">${h.y} ${badge(h.champ,18)} ${tshort(h.champ,h.y)}</span><span class="sub">준우승 ${tshort(h.runner,h.y)}</span></div>`).join('')}</div></section>`;
@@ -308,3 +309,19 @@ function wireFm(){ const all=G.wire||[], ks=[...new Set(all.map(w=>w.k))], W=UI.
   const kc=ks.length>1?`<div class="chips fx-chips"><button data-a="wk" data-v="" class="${!UI.wk?'on':''}">전체 ${all.length}</button>${ks.map(k=>`<button data-a="wk" data-v="${esc(k)}" class="${UI.wk===k?'on':''}">${esc(k)} ${all.filter(w=>w.k===k).length}</button>`).join('')}</div>`:'';
   const side=(cls,t,g,none)=>{ const L=all.filter(w=>WIRE_G[g].includes(w.k)); return fxBox(cls,fxHead(t,L.length?`${L.length}건 · 최근 순`:'소식 없음'),L.length?`<div class="fx-scr">${L.slice(0,40).map(line).join('')}</div>`:`<p class="fx-none">${none}</p>`); };
   return `<div class="fmx fmx-fit fmx-wire nolink ws-own">${fxBox('fxw-all',fxHead('리그 소식',`${W.length}건${UI.wk?' · '+esc(UI.wk):''} · 최근 150건 보관`),kc+(W.length?`<div class="fx-scr">${W.slice(0,150).map(line).join('')}</div>`:'<p class="fx-none">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>'),fxBtn('go','transfer:moves','이적 현황')+fxBtn('go','club:fans','우리 구단 기사'))}${side('fxw-mv','이적·계약','mv','트레이드·FA·외국인 계약 소식이 쌓입니다.')}${side('fxw-st','감독·스태프','st','감독 선임·코치·스태프 변동 소식이 쌓입니다.')}</div>`; }
+
+/* ===== 퓨처스리그 화면(92_futures_league): 북부·남부 순위, 우리 2군 최근 경기와 박스스코어 ===== */
+function flTeamCell(t){ return t==='sm'?`<span class="tname"><b>상무</b></span>`:`<button class="lnk tname" data-a="lteamGo" data-v="${t}">${badge(t,16)}${esc(tshort(t))}</button>`; }
+function futStandView(){ const F=G.fl; if(!F)return '<p class="small muted">퓨처스리그 기록이 아직 없습니다.</p>';
+  const tbl=div=>{ const L=flStand(div); const top=L[0]; return `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${div==='N'?'북부리그':'남부리그'}</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>승차</th><th>득점</th><th>실점</th></tr></thead><tbody>${L.map((r,i)=>`<tr class="${r.t===G.user?'me':''}"><td>${i+1} ${flTeamCell(r.t)}</td><td>${r.w+r.l+r.d}</td><td>${r.w}</td><td>${r.l}</td><td>${r.d}</td><td class="key">${r.w+r.l?(r.w/(r.w+r.l)).toFixed(3).replace(/^0/,''):'-'}</td><td>${i&&top?(((top.w-r.w)+(r.l-top.l))/2).toFixed(1):'-'}</td><td>${r.rs}</td><td>${r.ra}</td></tr>`).join('')}</tbody></table></div>`; };
+  return csec(`${F.y} 퓨처스리그`,tbl('N')+tbl('S')+`<p class="small muted">2군 경기는 1군과 같은 경기 엔진으로 한 타석씩 계산합니다. 북부리그는 수도권 구단, 남부리그는 그 밖의 구단과 상무입니다. 화·수·목·토·일에 열리고 순위는 승률(무승부 제외) 순입니다.</p>`)+flRecent(12); }
+function flRecent(n){ const F=G.fl; if(!F)return ''; const L=F.games.filter(x=>x.h===G.user||x.a===G.user).slice(-n).reverse(); if(!L.length)return '';
+  return csec(`우리 2군 최근 경기 ${L.length}경기`,`<div class="fl-g">${L.map(flGameRow).join('')}</div>`); }
+function flGameRow(x){ const me=x.h===G.user?'h':'a', ms=me==='h'?x.hs:x.as, os=me==='h'?x.as:x.hs, opp=me==='h'?x.a:x.h; const r=ms>os?'승':ms<os?'패':'무';
+  const nm=id=>esc((G.players[id]||{}).name||''); const dec=[x.w!=null?`승 ${nm(x.w)}`:'',x.l!=null?`패 ${nm(x.l)}`:'',x.sv!=null?`세 ${nm(x.sv)}`:''].filter(Boolean).join(' · '); const hr=(x.hr||[]).map(([id,n])=>`${nm(id)}${n>1?' '+n:''}`).join(', ');
+  return `<details class="fl-r"><summary><span class="pill ${r==='승'?'good':r==='패'?'bad':''}">${r}</span> <b>${dmd(x.d)}</b> ${me==='h'?'홈':'원정'} vs ${esc(flName(opp))} <b>${ms}:${os}</b>${x.inn>9?` <span class="small muted">(${x.inn}회)</span>`:''} <span class="small muted">${dec}${hr?` · 홈런 ${hr}`:''}</span></summary>${x.box?flBox(x):'<p class="small muted">박스스코어는 최근 경기만 보관합니다.</p>'}</details>`; }
+function flBox(x){ const side=k=>{ const B=x.box[k]; const nm=(id,n)=>G.players[id]&&!G.players[id].flTemp?`<button class="lnk" data-a="player" data-v="${id}">${esc(G.players[id].name)}</button>`:esc(n||'육성 선수');
+    return `<div class="fl-bx"><h4>${esc(flName(x[k]))} ${k==='h'?x.hs:x.as}점</h4><table class="tbl small"><thead><tr><th>타자</th><th>위치</th><th>타수</th><th>득점</th><th>안타</th><th>타점</th><th>홈런</th><th>볼넷</th><th>삼진</th></tr></thead><tbody>${B.bat.map(r=>`<tr><td>${nm(r[0],r[9])}</td><td>${esc(POSS[r[1]]||r[1]||'-')}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td><td>${r[8]}</td></tr>`).join('')}</tbody></table>
+    <table class="tbl small"><thead><tr><th>투수</th><th>이닝</th><th>피안타</th><th>실점</th><th>자책</th><th>볼넷</th><th>삼진</th><th>투구 수</th></tr></thead><tbody>${B.pit.map(r=>`<tr><td>${nm(r[0],r[8])}</td><td>${ipStr(r[1])}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td></tr>`).join('')}</tbody></table></div>`; };
+  const ln=k=>(x.box[k].line||[]).map(v=>v==null?'-':v).join(' '); 
+  return `<div class="fl-box"><p class="small mono">${esc(flName(x.a))} ${ln('a')}<br>${esc(flName(x.h))} ${ln('h')}</p>${side('a')}${side('h')}</div>`; }

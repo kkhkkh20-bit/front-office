@@ -247,7 +247,7 @@ function renderSheet0(){
   const status=p.injOut>0?`<span class="pill bad">${esc(injNow(p))} · 복귀까지 약 ${p.injOut>=300?Math.round(p.injOut/30)+'개월':p.injOut+'일'} (${injRetTxt(p)})</span>`:'';
   const injFx=injFxText(p); const injBox=injFx.length?`<div class="injfx"><b>${p.injOut>0?'부상 · 재활 중':'부상 후유증'}</b>${injFx.map(x=>`<div class="small">${x.y}년 ${esc(x.n)}: ${esc(x.t)}</div>`).join('')}<div class="small muted">회복 중인 능력은 1군·2군 실전을 뛰면서 되찾습니다. 1년 이상 걸린 부상과 수술은 일부가 돌아오지 않을 수 있습니다.</div></div>`:'';
   const meas=p.isP?`직구 평균 ${veloOf(p)}km/h · 최고 ${veloMax(p)}km/h`:`타구속도 평균 ${evOf(p)}km/h · 홈→1루 ${runOf(p)}초`;
-  const tiles=h?(p.isP?[['ERA',h.outs?pRate(h).era.toFixed(2):'-',1],['WAR',wOf(h,p).toFixed(1),1],['이닝',ipStr(h.outs)],['탈삼진',h.so],[h.sv?'세이브':h.hld?'홀드':'승',h.sv||h.hld||h.w]]
+  const tiles=h?(p.isP?[['ERA',h.outs?pRate(h).era.toFixed(2):'-',1],['FIP',h.outs?((13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*(h.so||0))/(h.outs/3)+3.2).toFixed(2):'-',1] /* 카페 11-11: 요약 탭까지 가지 않고 FIP를 본다 */,['WAR',wOf(h,p).toFixed(1),1],['이닝',ipStr(h.outs)],['탈삼진',h.so],[h.sv?'세이브':h.hld?'홀드':'승',h.sv||h.hld||h.w]]
     :[['OPS',h.pa?fmt3(bRate(h).ops):'-',1],['wRC+',h.pa?(wrcPlus(h,h.y)??'-'):'-',1],['WAR',wOf(h,p).toFixed(1),1],['타율',fmt3(bRate(h).avg)],['홈런',h.hr]]):null;
   const where=p.prospect?`드래프트 대상 · ${p.region}`:p.fdPool?`창단 드래프트 후보${p.fdFrom!=null?` · 전 ${tshort(p.fdFrom)}`:''}`:p.foreign&&p.team==null?`외국인 영입 후보 · ${p.nat}`:p.joinY>G.year?`${tname(p.team)} 입단 예정`:tname(p.team??p.faFrom);
   const pt=p.team!=null?team(p.team):null; const pst=pt?`--pt:${tpal(pt)[2]};--pt2:${tpal(pt)[3]}`:'';
