@@ -156,7 +156,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     info=`<p class="small">${esc(ag.firm)} · ${AG_SIZE[ag.size]} · ${(AG_STYLE[ag.style]||AG_STYLE.rel).l}</p><p class="small muted">${esc((AG_STYLE[ag.style]||AG_STYLE.rel).d)}</p><p class="small">우리와 계약 ${(ag.deals&&ag.deals[G.user])||0}건${cl.length?` · 이번 겨울 고객 ${cl.map(p=>esc(p.name)).join(', ')}`:''}</p>${lg.length?`<p class="small muted">최근: ${lg.map(x=>`${esc(x.t)} ${x.v>0?'+':''}${x.v}`).join(' · ')}</p>`:''}`;
     moves=['요구에 가까운 제시, 역제안 수용, 계약 성사는 친분을 올립니다','낮은 제안, 역제안 무시, 협상 결렬은 친분을 깎습니다(대형 에이전시는 1.5배)'];
     fx=['요구 기준(친하면 낮게)','우선 제안·라스트 룩','다른 구단 제안을 얼마나 정확히 알려 주는지'];
-    acts=[btn('협상실','faOpen',id,1)]; }
+    acts=[cl.length?btn('협상실','faOpen',cl[0].id,1):btn('FA 시장','go','transfer:fa',1)]; } /* 협상실 버튼이 정의되지 않은 id를 넘기던 문제: 이번 겨울 첫 고객의 협상실로 */
   const d=relDelta(k);
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
     <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
