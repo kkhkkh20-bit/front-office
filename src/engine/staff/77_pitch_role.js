@@ -29,7 +29,7 @@ function rpWhy(p,tid){ const thr=rpThr(tid), m=mgrOf(tid); const sm=m&&m.small!=
   const st=gap>=3?'선발로 버틸 체력이 됩니다':gap>=-3?'선발 체력 기준에 거의 닿았습니다':gap>=-9?'선발로 던지기에는 체력이 조금 모자랍니다':'선발로 던지기에는 체력이 많이 모자랍니다';
   return ((p.rAdj||0)?'선발 적성을 반영하면 ':'')+st+(sm>=65?' (짧게 끊어 가는 운영이라 체력 기준이 낮은 편)':(m&&m.pen>=65)?' (불펜 비중이 커서 선발 체력 기준이 높은 편)':''); }
 /* 매주(시즌 준비·정규시즌): 신인 계획을 세우고, 선발 수업을 마친 선수를 올리고, 2군 선발 수업 중인 투수는 2군에서 선발로 던지게 한다 */
-function rpWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return; G.rplan=G.rplan||{}; const y=G.year; const myNew=[], grad=[];
+function rpWeek(){ if(G.bprole)for(const id in G.bprole){ const x=G.bprole[id], p=G.players[id]; if(!p||p.team!==x.tid||!p.isP)delete G.bprole[id]; } /* 떠난 선수의 불펜 역할 요청은 지운다 */ const per=period(); if(per!=='pre'&&per!=='season')return; G.rplan=G.rplan||{}; const y=G.year; const myNew=[], grad=[];
   for(const t of G.teams){ const ctx=rpCtx(t.id); const thr=rpThr(t.id);
     for(const p of playersOf(t.id)){ if(!p.isP||p.foreign)continue; let x=G.rplan[p.id]; if(x&&x.tid!==t.id){ delete G.rplan[p.id]; x=null; }
       if(!x&&isNewP(p)&&!(p.joinY>G.year)){ const k=mgrRolePlan(p,t.id,ctx); G.rplan[p.id]={k:k||'auto',tid:t.id,y}; if(t.id===G.user&&!G.unemp)myNew.push(p); continue; }
