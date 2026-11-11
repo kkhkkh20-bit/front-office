@@ -105,7 +105,17 @@ function gmMemo(g){ const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!m
     H+=sec('상대 팀에서 눈에 띈 선수',row(opp.p,opp.t,`${opp.p.isP?pLine(opp.p):bLine(opp.p)}`,`<div class="gm-b"><button class="tc-i${on?' on':''}" data-a="pwatch" data-v="${opp.p.id}">${on?'관심 중':'관심'}</button>${tradeOpen()?`<button class="tc-i go" data-a="findT" data-v="${opp.p.id}">얻을 조건</button>`:''}</div>`)); }
   return H?`<div class="gm-memo"><div class="gm-ttl">단장 메모</div>${H}</div>`:''; }
 /* 다른 구단 관심 선수 목록 */
-function pwatchToggle(id){ G.pwatch=G.pwatch||[]; const i=G.pwatch.indexOf(id); if(i>=0){ G.pwatch.splice(i,1); return false; } G.pwatch.unshift(id); G.pwatch=G.pwatch.slice(0,12); return true; }
+function pwatchToggle(id){ G.pwatch=G.pwatch||[]; const i=G.pwatch.indexOf(id); if(i>=0){ G.pwatch.splice(i,1); return false; } G.pwatch.unshift(id); G.pwatch=G.pwatch.slice(0,30); return true; } /* 30명까지(커뮤니티 건의 11-11) */
 function pwatchBox(){ const L=(G.pwatch||[]).map(id=>G.players[id]).filter(p=>p&&p.team!=null&&p.team!==G.user); if(!L.length)return '';
   return `<section class="card"><div class="row between"><h2 class="sec">관심 선수</h2><span class="small muted">경기·선수 정보에서 표시</span></div><div class="pwl">${L.map(p=>`<div class="pwr"><div class="pwm">${pMini(p)}<span class="small muted">${badge(p.team,14)} ${tshort(p.team)} · ${l10Text(p)||'최근 기록 없음'}</span></div><span class="pwb"><button class="tc-i go" data-a="findT" data-v="${p.id}">조건 찾기</button><button class="tc-i" data-a="pwatch" data-v="${p.id}">빼기</button></span></div>`).join('')}</div></section>`; }
 
+
+/* 타 구단 관심 선수 명단(커뮤니티 건의 11-11): 포지션별로 계약·이적 가능 여부를 한눈에 */
+function pwStatus(p){ const L=[]; if(p.team==null){ if(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id))L.push(['FA 시장','good']); else if(p.retired)L.push(['은퇴','bad']); else L.push(['무적','warn']); }
+  if((G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year))L.push(['포스팅','acc']); if(p.aiListed)L.push([p.aiUrg?'급매':'트레이드 매물','good']);
+  try{ if(p.team!=null&&!p.foreign&&faLeft(p)<=1)L.push(['FA 예정','warn']); }catch(e){} if(p.foreign)L.push(['외국인','']); return L; }
+function pwatchTable(){ const L=(G.pwatch||[]).map(id=>G.players[id]).filter(p=>p&&p.team!==G.user); const grp=p=>p.isP?(isSPr(p)?0:1):p.pos==='C'?2:['1B','2B','3B','SS'].includes(p.pos)?3:4, GN=['선발','불펜','포수','내야수','외야수·지명'];
+  L.sort((a,b)=>grp(a)-grp(b)||ovr(b)-ovr(a));
+  const row=p=>{ const r=scoutReport(p); let ct='-'; try{ ct=p.foreign?`${p.yrs||1}년 계약`:p.faC?`FA 계약 ${p.yrs}년 남음`:`FA까지 ${faLeft(p)}시즌`; }catch(e){} return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="scn-s">${esc(posLabel(p))} · ${p.age}세</span></td><td>${p.team!=null?`${badge(p.team,14)} ${esc(tshort(p.team))}`:'-'}</td><td>${r.cur!=null?rchip(r.cur):'-'}</td><td>${money(p.sal)}<span class="scn-s">${esc(ct)}</span></td><td>${pwStatus(p).map(([l,c])=>`<span class="pill ${c}">${l}</span>`).join(' ')||'<span class="muted small">-</span>'}</td><td><button class="btn small" data-a="pwatch" data-v="${p.id}">빼기</button></td></tr>`; };
+  let body='', g=-1; for(const p of L){ if(grp(p)!==g){ g=grp(p); body+=`<tr class="pw-g"><td colspan="6">${GN[g]}</td></tr>`; } body+=row(p); }
+  return `<section class="card scn-watch"><h3>타 구단 관심 선수 <em>${L.length}/30명 · 선수 화면의 '관심 선수'로 추가</em></h3><p class="small muted">FA 시장에 나오거나, 포스팅을 신청하거나, 소속 구단이 트레이드 매물로 내놓으면 소식함으로 알려 드립니다.</p><div class="sf-tw"><table class="sf-t scn-t"><thead><tr><th>선수</th><th>소속</th><th>현재</th><th>연봉·계약</th><th>상태</th><th></th></tr></thead><tbody>${body||'<tr><td colspan="6" class="muted">다른 구단 선수 화면에서 관심 선수 버튼을 누르면 이곳에 모입니다.</td></tr>'}</tbody></table></div></section>`; }

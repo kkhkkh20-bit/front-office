@@ -52,7 +52,7 @@ const ACH=[
   {id:'double',c:'우승',n:'통합 우승',d:'정규시즌 1위와 한국시리즈 우승을 같은 해에 해냅니다.',r:{trust:2}},
   {id:'dynasty',c:'우승',n:'왕조',d:'같은 구단으로 3년 연속 우승합니다.',r:{rep:3,title:'왕조 설계자'}},
   {id:'champ5',c:'우승',n:'우승 5회',d:'단장 통산 우승 5회.',r:{rep:3},p:T=>[achTitlesN(T),5]},
-  {id:'under',c:'우승',n:'언더독',d:'시즌 전 예상 순위 8위 이하였던 해에 우승합니다.',r:{title:'기적의 단장'}},
+  {id:'under',c:'우승',n:'언더독',d:'시즌 전 예상 순위(1월 1일 또는 개막 전망) 8위 이하였던 해에 우승합니다.',r:{title:'기적의 단장'}},
   {id:'indie',c:'우승',n:'모기업 없이',d:'모기업이 없는 구단으로 우승합니다.',r:{cash:500,title:'독립 구단의 영웅'}},
   {id:'noTax',c:'우승',n:'상한을 지키며',d:'이 게임에서 경쟁균형세를 한 번도 내지 않고 우승합니다.',r:{trust:2}},
   {id:'two',c:'경력',n:'두 구단 우승',d:'서로 다른 두 구단에서 우승합니다.',r:{rep:2},p:T=>[achTeamsWon(T).length,2]},
@@ -143,7 +143,7 @@ function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT();
     if(ps.champ===U){ (T.titles[U]=T.titles[U]||[]).push(y); const M=achMeta(); M.champ[U]=(M.champ[U]||0)+1; achMetaSave();
       achUnlock('champ1'); if(fy===y)achUnlock('firstYr'); /* 정규시즌이 끝난 뒤 부임하면 다음 시즌이 첫 시즌(이직한 구단도 인정, 검수 136) */ if(ps.first===U)achUnlock('double');
       const ys=T.titles[U]; if(ys.includes(y-1)&&ys.includes(y-2))achUnlock('dynasty');
-      const pr=G.proj?G.proj.indexOf(U)+1:0; if(pr>=8)achUnlock('under',`시즌 전 예상 ${pr}위.`);
+      const pr0=G.proj?G.proj.indexOf(U)+1:0, pj=G.projJan&&G.projJan.y===G.year?G.projJan.L.indexOf(U)+1:0, pr=Math.max(pr0,pj); if(pr>=8)achUnlock('under',`시즌 전 예상 ${pr}위${pj>pr0?'(1월 1일 전망)':''}.`); /* 1월 1일 전망도 인정: 겨울 보강으로 개막 전망이 올라가도 도전할 수 있게(커뮤니티 건의 11-11) */
       if(t.indie)achUnlock('indie'); if(!T.taxed)achUnlock('noTax');
       { const m=G.mgr[U], ob=m&&m.ob&&(G.ob||[]).find(o=>o.id===m.ob), id=ob&&ob.fid, p=id!=null&&(G.players[id]||(G.arch&&G.arch[id]&&archP(G.arch[id]))); if(p&&p.draft&&p.draft.tid===U)achUnlock('pupilMgr',`${m.name} 감독${p.draft.y!=null?`(${p.draft.y}년 지명)`:''}.`); } }
     { const w=O.w!=null?O.w:rec?rec.w:0; if(w>=90)achUnlock('w90',`${w}승.`); } /* 부임 뒤 내 승수만(검수 137) */
