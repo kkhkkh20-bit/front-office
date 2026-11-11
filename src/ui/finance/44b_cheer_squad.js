@@ -5,7 +5,7 @@ const shash=s=>[...String(s)].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7)>>>0;
 const F8_SKIP={ccap:[0,1,6]};
 const F8R=(r,f)=>{ if(typeof FACE8==='undefined')return []; const L=FACE8.ids.map((x,i)=>x.r===r&&(f==null||x.f===f)?i:-1).filter(i=>i>=0); const sk=F8_SKIP[r]; return sk&&f==null?L.filter((_,j)=>!sk.includes(j)):L; };
 /* 응원단장·치어리더 팀장 사진(v12): 팀장은 여성 팀장 사진, 응원단장은 남성 응원단장 사진에서 이름·번호로 고정. 갤러리 사진(G.cimg)이 있으면 그쪽이 먼저 */
-function crewPh(c){ const P=c.job==='cap'?F8R('ccap'):F8R('clead',0); /* 응원단장 이름은 남성 이름(genName)이라 남성 사진 */ return P.length?P[shash('cr'+c.id+c.name)%P.length]:null; }
+function crewPh(c){ const P=c.job==='cap'?F8R('ccap'):F8R('clead',0); /* 응원단장 이름은 남성 이름(genName)이라 남성 사진 */ const o=(G.crewPhO&&G.crewPhO[c.id])||0; /* 단장이 '다른 사진'으로 넘긴 만큼(커뮤니티 건의 11-11) */ return P.length?P[(shash('cr'+c.id+c.name)+o)%P.length]:null; }
 /* 단원 사진(v15 젊은 단원 40명, 11-09): 처음 볼 때 정해 저장(m.ph15 = FACE8 번호). 옛 저장의 m.ph(v14·v12 사진 번호)는 쓰지 않고 새로 배정. 팀장은 v12 팀장 사진 그대로(crewPh)
    shortcut: FACE8 앞쪽에 새 묶음을 끼워 넣으면 번호가 밀린다, 그때는 저장 키를 m.ph16처럼 바꿔 다시 배정 */
 function cheerPh(S,m){ const Q=F8R('cheer15'); if(!Q.length)return null;
@@ -14,7 +14,7 @@ function phImg(c,alt){ const u=c!=null&&typeof face8Src==='function'?face8Src(c)
 const fatCol=v=>v>=80?'var(--bad)':v>=60?'var(--warn)':'var(--good)';
 function cheerCard(S,m,up){ const st=m.inj?`<span class="pill bad">부상 ${m.inj}일</span>`:m.sl?`<span class="pill warn">슬럼프 ${m.sl}일</span>`:up?'<span class="pill good">다음 무대</span>':'<span class="pill">대기</span>';
   const fol=m.fol>=10000?(m.fol/10000).toFixed(m.fol>=100000?0:1)+'만':m.fol.toLocaleString('ko-KR');
-  return `<div class="chm${up?' up':''}${m.inj?' inj':''}"><div class="crew-h"><span class="crew-av">${phImg(cheerPh(S,m),m.name)}</span><div><b>${esc(m.name)}</b><span class="small muted">${m.age}세 · ${m.yrs?m.yrs+'년 차':'신인'} · 월 ${money(cheerFee(m,S.ag))}</span><span class="small">SNS 팔로워 ${fol}</span></div></div>
+  return `<div class="chm${up?' up':''}${m.inj?' inj':''}"><div class="crew-h"><span class="crew-av">${(G.cimg&&G.cimg['P:cheerm:'+m.id])?`<img src="${G.cimg['P:cheerm:'+m.id]}" alt="">`:phImg(cheerPh(S,m),m.name)}</span><div><b>${esc(m.name)}</b><span class="cimg-b"><button class="btn small" data-a="cheerPhNext" data-v="${m.id}" title="다른 템플릿 사진으로">다른 사진</button></span>${cimgBtns('P:cheerm:'+m.id)}<span class="small muted">${m.age}세 · ${m.yrs?m.yrs+'년 차':'신인'} · 월 ${money(cheerFee(m,S.ag))}</span><span class="small">SNS 팔로워 ${fol}</span></div></div>
     <div class="crew-at chm-at">${CHEER_AT.map(([k,l])=>`<span><i>${l}</i><b style="color:${m[k]>=15?'var(--good)':m[k]<=7?'var(--bad)':'var(--ink)'}">${m[k]}</b></span>`).join('')}</div>
     <div class="chm-f"><span class="small">피로 <b style="color:${fatCol(m.fat)}">${m.fat}</b></span><i><u style="width:${m.fat}%;background:${fatCol(m.fat)}"></u></i>${st}</div>
     <div class="row" style="gap:4px"><button class="btn small${!S.auto&&m.on?' primary':''}" data-a="cheerOn" data-v="${m.id}"${m.inj?' disabled':''}>${S.auto?(up?'휴식 주기':'선발로'):m.on?'선발':'휴식'}</button><span class="small muted">출연 ${m.app}회</span></div></div>`; }
@@ -31,3 +31,7 @@ function cheerView(){ if(G.unemp)return ''; if(!(G.fanOps&&G.fanOps.cs))return `
     ${UI.cheerMsg?`<div class="note">${esc(UI.cheerMsg)}</div>`:''}
     <div class="chm-g">${L.map(m=>cheerCard(S,m,up.has(m.id))).join('')}</div>`; }
 Object.assign(A,{ cheerOn(v){ UI.cheerMsg=cheerOn(v); save(); render(); }, cheerAuto(){ UI.cheerMsg=cheerAuto(); save(); render(); }, cheerAg(v){ UI.cheerMsg=cheerAg(v); save(); render(); }, cheerMeet(){ UI.cheerMsg=cheerMeet(); save(); render(); } });
+
+/* 응원단·치어리더 사진 바꾸기(커뮤니티 건의 11-11): 템플릿 사진을 다음 것으로 넘긴다. 갤러리 사진은 '사진' 버튼 */
+Object.assign(A,{ cheerPhNext(v){ const S=G.fanOps&&G.fanOps.cs; const m=S&&S.L.find(x=>String(x.id)===String(v)); if(!m)return; const Q=F8R('cheer15'); if(!Q.length)return; const used=new Set(S.L.filter(x=>x!==m).map(x=>x.ph15)); let i=Q.indexOf(m.ph15); for(let k=0;k<Q.length;k++){ i=(i+1)%Q.length; if(!used.has(Q[i]))break; } m.ph15=Q[i]; save(); render(); },
+  crewPhNext(v){ G.crewPhO=G.crewPhO||{}; G.crewPhO[v]=(G.crewPhO[v]||0)+1; save(); render(); } });
