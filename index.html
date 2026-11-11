@@ -11619,8 +11619,8 @@ function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, �
 }
 let PARK=null; /* 지금 경기 구장(홈 팀) */
 let LRULE={ball:1,zone:0};
-function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRULE={ball:1,zone:0}; } PARK=hid; SIMDAY=day; for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
-  const S={h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)};
+function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRULE={ball:1,zone:0}; } PARK=hid; SIMDAY=day; if(options&&options.sides){ for(const k of ['h','a']){ const s=options.sides[k]; for(const q of [...s.order,...s.bench,...s.pen,...(s.sp?[s.sp]:[])]){ q.gc=N(0,.55*volF(q)); q.gcD=day; } } } else for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
+  const S=options&&options.sides?options.sides:{h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)}; /* 퓨처스리그: 2군 라인업을 넘겨받는다(92_futures_league) */
   const broadcast=options?.pitchRecords===false?null:gameBroadcastContext(day,S,!ps);
   const psx=ps&&typeof ps==='object'?ps:null;
   const score={h:0,a:0}, line={h:[],a:[]}, hits={h:[],a:[]}, ev=[], pbp=[];
@@ -11993,6 +11993,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===c.draft)startDraft();
   if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); } for(const t of G.teams)try{ roleSync(t.id); }catch(e){} /* 하루 한 번 보직 확정(뎁스 조회는 보직을 바꾸지 않는다, 검수 11-09zh) */ try{ regDaily(); }catch(e){} /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
   if(c.sched[day]||(G.makeup||[]).length&&period()==='season')playDay(day);
+  try{ flPlayDay(day); }catch(e){ console.error(e); } /* 퓨처스리그(2군) 경기 */
   if(day===KD(9,1)){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} } /* 정규시즌이 끝난 뒤 올린 연봉은 그해 지급이 없어 하한 제재만 피했다: 시즌 뒤 보정은 하지 않는다(검수 11-09zzb) */ /* AI 구단은 시즌 막판 하한을 다시 확인해 주축과 연장계약으로 맞춘다 */
   if(day===c.end+1)seasonEnd();
   if(G.ps&&!G.ps.done)try{ psDay(day); }catch(e){ console.error('포스트시즌 경기 처리 실패',e); } /* 다음 날 psDay가 밀린 차전부터 다시 잡는다(검수 11-09k) */
@@ -12058,16 +12059,16 @@ function milestones(g,me){
     if(p.isP&&id===s.sp?.id&&x.outs>=27&&x.h===0&&g.score[me==='h'?'a':'h']===0&&sum([...g.S[me==='h'?'a':'h'].box.values()].map(b=>b.h||0))===0&&[...s.box].filter(([pid,b])=>pid!==id&&G.players[pid]?.isP&&((b.outs||0)+(b.bf||0)+(b.h||0))>0).length===0){ /* 노히트노런: 혼자 끝까지 던지고(완투) 팀이 안타·실점을 하나도 내주지 않아야. 연장에 구원이 안타를 맞으면 아님(검수 11-08) */ stop('기록',`${p.name}이(가) 노히트노런을 달성했습니다.`,id); if(s.tid===G.user)news('선수',`${p.name} 노히트노런 대기록`,`${p.name}이(가) 9이닝 동안 안타를 하나도 내주지 않았습니다.`,4,{ref:id,fanW:2}); } }
 }
 function futuresWeek(){
-  if(period()!=='season')return;
+  if(period()!=='season')return; const FLX=typeof flLive==='function'&&flLive()&&!G.flHist; /* 새 게임 과거 시즌 기록 만들기(G.flHist)는 빠른 주간 기록 그대로 */
   G.futLn=G.futLn||{};
   for(const t of G.teams){ const d=depth(t.id); const B=d.futB.filter(p=>healthy(p)&&!futUpToday(p)); /* 오늘 말소·1군 출전 선수는 경기 처리에서 빠지므로 명단을 짜기 전에 뺀다(검수 11-09zi) */ const ln=futLineupE(t.id,B); const st=new Set(Object.values(ln).map(p=>p.id));
-    for(const k in ln)futBat(ln[k],t.id,k,3); for(const p of B)if(!st.has(p.id))futBat(p,t.id,null,1);
+    if(!FLX)for(const k in ln)futBat(ln[k],t.id,k,3); if(!FLX)for(const p of B)if(!st.has(p.id))futBat(p,t.id,null,1); /* 퓨처스리그가 열리면 기록은 실제 2군 경기가 만든다 */
     const FP=d.futP.filter(p=>healthy(p)&&!futUpToday(p)); /* 오늘 말소·등판한 투수는 퓨처스에 나가지 않으므로 로테이션에서도 뺀다(검수 11-09zx) */ const rot=FP.slice().sort((a,b)=>(t.id===G.user?futReqOn(b)-futReqOn(a):0)||(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,Math.max(5,FP.filter(p=>rpPlanOf(t.id,p)==='sp2'||(t.id===G.user&&futReqOn(p))).length)); /* 선발 수업 투수는 모두 2군 로테이션에 든다: 수업 표기인데 구원만 나가지 않게(검수 11-09zi) */ for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
     G.futLn[t.id]={d:G.day,ln:Object.fromEntries(Object.entries(ln).map(([k,p])=>[k,p.id])),rot:rot.map(p=>p.id)}; /* 2군 화면은 실제 배정을 읽는다(검수 11-09zi) */
-    for(const p of FP)futPit(p,t.id); /* 로테이션을 정한 실제 가용 명단과 기록 생성 명단을 같게 유지한다. */
+    if(!FLX)for(const p of FP)futPit(p,t.id); /* 로테이션을 정한 실제 가용 명단과 기록 생성 명단을 같게 유지한다. */
   }
   /* 상무 복무 선수: 상무 야구단으로 퓨처스리그에 나간다(기록은 원소속 구단 퓨처스 기록에 합쳐 남는다). 현역은 야구를 못 한다 */
-  for(const p of Object.values(G.players)){ if(p.team==null||!milServing(p)||p.mil.unit!=='상무'||!healthy(p)||(p.ntAway>G.day&&p.ntFrom<=G.day))continue; /* 대표팀 소집 중이면 상무 경기에 나가지 않는다(검수 11-07) */ if(p.isP)futPit(p,p.team); else futBat(p,p.team,p.pos,3); }
+  if(!FLX)for(const p of Object.values(G.players)){ if(p.team==null||!milServing(p)||p.mil.unit!=='상무'||!healthy(p)||(p.ntAway>G.day&&p.ntFrom<=G.day))continue; /* 대표팀 소집 중이면 상무 경기에 나가지 않는다(검수 11-07) */ if(p.isP)futPit(p,p.team); else futBat(p,p.team,p.pos,3); }
 }
 /* 월간 재정 보고: 한 달 사이 올해 예산 여유가 왜 바뀌었는지 항목별로 알려 준다 */
 function finSnapNow(){ const b=budget(); const rows={}; for(const [l,v] of b.exp)rows['지출:'+l]=v; for(const [l,v] of b.inc)rows['수입:'+l]=v; rows['지원:구단주 지원 목표']=b.goalSup; return {d:G.day,y:G.year,tid:G.user,st:!!(G.last&&G.last.y>=G.year),room:b.roomGoal,cash:b.cash,rows}; }
@@ -13890,7 +13891,7 @@ function buildWorld(){ const userTid=0; worldReset();
   G.sea={y:2025,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},asiaRepl:{},mark:null};
   for(const t of G.teams){ for(const isP of [true,true,false]){ const p=newForeign('용병',{isP}); while(foreignCheck(t.id,p)&&p.ask>300)p.ask=round5(p.ask*.85); signForeign(t.id,p.id);} signForeign(t.id,newForeign('아시아').id); }
   G.stops=[]; rollForm(); /* 2025 시즌도 컨디션·타구 운이 걸린 채로 치른다 */
-  let pd=null; for(const d of Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b)){ if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false,{pitchRecords:false}); applyGame(d,h,a,g,false);} if(dobj(d).w===0)futuresWeek(); }
+  let pd=null; for(const d of Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b)){ if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false,{pitchRecords:false}); applyGame(d,h,a,g,false);} if(dobj(d).w===0){ G.flHist=1; futuresWeek(); delete G.flHist; } } /* 과거 시즌은 빠른 주간 2군 기록 */
   updateLg(2025); try{ featSeason(2025); }catch(e){} try{ genPastSeasons(); }catch(e){ console.error(e); } const st=standingsNow();
   G.history.push({y:2025,order:st,champ:null,runner:null}); /* 시작용 2025시즌은 정규시즌만 치렀다: 1·2위를 한국시리즈 우승·준우승으로 세지 않는다(검수 11-09zz) */ G.iv=null;
   for(const p of Object.values(G.players)){ p.svc++; p.injOut=0; /* 사전 시뮬의 진행 중 부상 상태는 지운다(부상 이력 injHist만 남긴다) */ delete p.injFx; delete p.injK; delete p.reInj; delete p.ld; delete p.armw; delete p.lsS; develop(p); delete p.lastStart; delete p.lastApp; delete p.prevApp; }
@@ -23199,6 +23200,81 @@ function rivalAttM(h,a){ try{ return 1+.12*rivalHeat(h,a); }catch(e){ return 1; 
 function rivalMove(p,from,to,type){ if(from==null||to==null||from===to||!team(from)||!team(to)||!p)return; if(dv(ovr(p))<68)return; const S=G.rivalries=G.rivalries||{pairs:{}}, key=rivalPair(from,to);
   const r=S.pairs[key]=S.pairs[key]||{a:Math.min(from,to),b:Math.max(from,to),label:'',games:0,close:0,post:0,seasons:[],wins:{},seen:[]}; r.inc=(r.inc||0)+1; r.heat=Math.min(.3,(r.heat||0)+.1); r.hy=G.year;
   if(r.label)news('구단',`${r.label} 열기 고조: ${p.name}, ${tshort(from)}에서 ${tshort(to)}(으)로`,`${type||'이적'}으로 ${p.name}(${posLabel(p)})이(가) 라이벌 구단 유니폼을 입습니다. 다음 맞대결 관중이 더 몰릴 전망입니다.`,0,{tid:[from,to].includes(G.user)?G.user:to,ref:p.id}); }
+/* ===== 퓨처스리그: 2군 경기를 실제 경기로 (사용자 11-11: "실제로 보지 않아도 기록이 남아야 한다", "KBO 잘 보고")
+   - 1군과 같은 경기 엔진(simGame)을 2군 라인업으로 돌린다. 박스스코어·투구 수·승패·세이브·홀드가 1군과 같은 방식으로 나온다.
+   - 북부리그(수도권 구단)·남부리그(그 밖의 구단 + 상무). 상무(국군체육부대)는 복무 중인 선수로 팀을 꾸리고 늘 원정으로 편성한다(구장 없음).
+   - 경기일: 1군 경기가 있는 날 가운데 화·수·목·토·일(금요일은 쉰다). 전체 리그 한 바퀴와 같은 리그 한 바퀴를 번갈아 돌려 같은 리그끼리 더 자주 만난다.
+   - 기록은 선수의 퓨처스 기록(lineFor ... '퓨처스')에 쌓인다. 상무 선수 기록은 원소속 구단 퓨처스 기록에 합친다(기존 방식 그대로).
+   - 2군 감독의 주간 라인업·선발 순번은 futuresWeek(07_daily)가 그대로 짜고, 시즌 중에는 가짜 주간 성적 대신 이 경기들이 기록을 만든다.
+   - 저장 크기: 순위·점수는 모두 남기고, 박스스코어는 우리 구단 경기 최근 40경기만 남긴다 */
+const FL_SM='sm';
+const FL_NORTH_REG=new Set(['수도권','강원']);
+function flTeams(){ return G.teams.map(t=>t.id).concat([FL_SM]); }
+function flName(t){ return t===FL_SM?'상무':tshort(t); }
+function flLive(){ return G.flOn!==false&&period()==='season'; }
+function flInit(){ const y=G.year; if(G.fl&&G.fl.y===y)return G.fl;
+  const ids=G.teams.map(t=>t.id); const N=ids.filter(id=>FL_NORTH_REG.has(team(id).region)), S=ids.filter(id=>!FL_NORTH_REG.has(team(id).region)).concat([FL_SM]);
+  const rec={}; for(const t of flTeams())rec[t]={w:0,l:0,d:0,rs:0,ra:0};
+  G.fl={y,div:{N,S},rec,games:[],rot:{},round:0}; try{ flSeedSM(); }catch(e){ console.error(e); } return G.fl; }
+/* 상무 선수단이 모자라면(새 게임 첫해 등) AI 구단 2군의 군 미필 21~26세를 상무에 입대시켜 채운다. 우리 구단 선수는 건드리지 않는다.
+   입대일을 지난 1년 사이로 흩어 전역도 나눠서 한다(복무 1년 6개월) */
+function flSeedSM(){ const sv=Object.values(G.players).filter(p=>p.team!=null&&milServing(p)&&milPeriod(p).unit==='상무'); let nb=sv.filter(p=>!p.isP).length, np=sv.filter(p=>p.isP).length; if(nb>=13&&np>=10)return 0;
+  const per={}; const C=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.prospect&&!p.e1&&!p.ys&&p.age>=21&&p.age<=26&&milFree(p)&&!(p.mil&&p.mil.app)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)); let n=0;
+  for(const p of C){ if(nb>=13&&np>=10)break; if(p.isP?np>=10:nb>=13)continue; if((per[p.team]||0)>=3)continue; per[p.team]=(per[p.team]||0)+1;
+    enlist(p,'상무',G.day-ri(0,300)); try{ story(p,`${G.year} 상무 입대`,'mil'); }catch(e){} if(p.isP)np++; else nb++; n++; }
+  return n; }
+function flDay(d){ const w=dobj(d).w; return w!==1&&w!==5; } /* 월·금 휴식 */
+/* 원 돌리기(circle method) 대진: 홀수면 '쉼'을 넣는다 */
+function flRR(L,r){ const a=L.slice(); if(a.length%2)a.push(null); const n=a.length, fix=a[0], rest=a.slice(1); const k=r%(n-1); const rot=rest.slice(k).concat(rest.slice(0,k)); const A=[fix,...rot]; const P=[]; for(let i=0;i<n/2;i++){ const x=A[i], y=A[n-1-i]; if(x!=null&&y!=null)P.push((r+i)%2?[x,y]:[y,x]); } return P; }
+function flPairs(F){ const all=flTeams(); const cyc=all.length+5, r=F.round++, i=r%cyc; let P;
+  if(i<all.length)P=flRR(all,Math.floor(r/cyc)*3+i); else { const j=i-all.length; P=flRR(F.div.N,j).concat(flRR(F.div.S,j)); }
+  return P.map(([h,a])=>h===FL_SM?[a,h]:[h,a]); } /* 상무는 원정 */
+/* 그날 나갈 수 있는 2군 선수 */
+function flPool(t,d){
+  if(t===FL_SM){ const L=Object.values(G.players).filter(p=>p.team!=null&&milServing(p)&&milPeriod(p).unit==='상무'&&healthy(p)&&!(p.ntAway>d&&p.ntFrom<=d)); return {B:L.filter(p=>!p.isP),P:L.filter(p=>p.isP)}; }
+  const dd=depth(t); const ok=p=>healthy(p)&&!futUpToday(p)&&futEligibleDay(p,t,d); return {B:dd.futB.filter(ok),P:dd.futP.filter(ok)}; }
+function flRested(p,d){ const L=p.ld||[]; const last=L.length?L[L.length-1][0]:null; return last==null||d-last>=(isSPr(p)?5:1); }
+/* 임시 육성 선수: 2군 인원이 모자란 날 그 경기에만 채운다(실제 KBO 구단은 정식 65명+육성 선수라 2군이 늘 9명 이상, 이 게임은 정원이 작다).
+   경기 동안만 선수 명단에 두고 끝나면 지운다. 기록·피로·부상에 남지 않고, 박스스코어에는 '육성 선수'로 남는다 */
+let FL_TMP=[];
+function flTemp(t,isP,pos){ const p=newPlayer({isP,pos,age:ri(19,23)}); for(const k in p.r)if(typeof p.r[k]==="number")p.r[k]=clamp(Math.round(N(44,4)),36,52); /* 2군 하위권 수준 */ p.team=t===FL_SM?null:t; p.flTemp=1; p.name='육성 '+p.name; FL_TMP.push(p.id); return p; }
+function flSide(t,d){ const F=G.fl, {B,P}=flPool(t,d); if(B.length<6||P.length<2)return null; /* 그래도 너무 적으면(6명·2명 미만) 경기 취소 */
+  const W=t!==FL_SM&&G.futLn&&G.futLn[t]; let ln=null;
+  if(W&&W.ln){ const L={}; let ok=true; for(const k in W.ln){ const p=B.find(q=>q.id===W.ln[k]); if(!p){ ok=false; break; } L[k]=p; } if(ok&&Object.keys(L).length>=9)ln=L; } /* 2군 감독의 주간 라인업 그대로 */
+  if(!ln)ln=futLineupE(t,B); for(const k of FGPOS)if(!ln[k])ln[k]=flTemp(t,false,k==='DH'?'1B':k); /* 빈 자리는 임시 육성 선수 */
+  const posOf={}; for(const k in ln)posOf[ln[k].id]=k; const start=Object.values(ln); const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),t===FL_SM?null:t);
+  const rotIds=(W&&W.rot)||P.slice().sort((a,b)=>spV(b)-spV(a)).slice(0,5).map(p=>p.id); const rot=rotIds.map(id=>P.find(p=>p.id===id)).filter(Boolean);
+  const ri0=F.rot[t]||0; let sp=null; for(let i=0;i<rot.length&&!sp;i++){ const p=rot[(ri0+i)%rot.length]; if(flRested(p,d)&&(p.fat||0)<70){ sp=p; F.rot[t]=(ri0+i+1)%rot.length; } }
+  if(!sp)sp=P.filter(p=>flRested(p,d)).sort((a,b)=>spV(b)-spV(a))[0]||null; if(!sp)sp=flTemp(t,true);
+  const pen=P.filter(p=>p!==sp&&!rot.includes(p)&&(p.fat||0)<80).sort((a,b)=>penV(b)-penV(a)).slice(0,8); if(pen.length<2)pen.push(...rot.filter(p=>p!==sp&&flRested(p,d)).slice(0,2)); while(pen.length<4)pen.push(flTemp(t,true));
+  const bench=B.filter(p=>!start.includes(p));
+  const s={tid:t,rot:null,order,posOf,bench,out:[],defv:teamDefV(ln),spAll:rot,short:false,pen,used:new Set([sp.id]),cur:sp,sp,curIsSP:true,idx:0,box:new Map(),pitchers:[sp.id],entry:{},exit:{},farm:true};
+  s.start=order.map((p,o)=>({id:p.id,n:p.name,o,pos:posOf[p.id]})); s.changes=[]; s.box.set(sp.id,pz()); order.forEach(p=>s.box.set(p.id,bz())); sideTraits(s); return s; }
+/* 경기 결과를 선수 퓨처스 기록·피로·부상·재활에 반영(applyGame의 2군판) */
+function applyFarm(d,g){ const y=G.year;
+  for(const k of ['h','a']){ const s=g.S[k];
+    for(const [id,x] of s.box){ const p=G.players[id]; if(!p||p.flTemp)continue; const t=p.team; if(t==null)continue; const mil=milServing(p)&&milPeriod(p).unit==='상무';
+      if(p.isP){ const sp=id===s.sp.id; const o={g:1,gs:sp?1:0,outs:x.outs,h:x.h,hr:x.hr,bb:x.bb,hbp:x.hbp||0,so:x.so,er:x.er,r:x.r||0,w:g.dec.w===id?1:0,l:g.dec.l===id?1:0,sv:g.dec.sv===id?1:0,hld:(g.dec.hld||[]).includes(id)?1:0,bf:x.bf||0};
+        addTo(lineFor(p,y,t,'퓨처스'),o); injRecover(p,x.outs); const cd=pitchApp(p,d,x.pc||0,sp); p.fat=clamp((p.fat||0)+pitFatGain(p,x.pc||0,sp),0,100);
+        if(!(p.injOut>0)&&R()<p.inj*(sp?.075*(x.pc||0)/95:.026*(x.pc||0)/17)*injMult(p)*loadMult(p,cd,d)/LOAD_NORM)injure(p,d,{sp,pc:x.pc||0,farm:1}); }
+      else { const h=lineFor(p,y,t,'퓨처스'); addTo(h,Object.assign({g:1},x)); const pos=s.posOf[id]||null; futUse(p,pos,1,{mil,days:[d]}); { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
+        const inLn=s.order.some(q=>q.id===id); if(inLn)p.fat=clamp((p.fat||0)+((pos==='C'?12:pos==='DH'?4:8)-(p.r.vit||52)*.04),0,100);
+        if(p.injFx)injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); if(R()<p.inj*.026*injMult(p)*(inLn?1:.3))injure(p,d,{farm:1}); } } } }
+function flRecord(F,d,h,a,g){ const hs=g.score.h, as=g.score.a; const R0=F.rec; const add=(t,w,l,tt,rs,ra)=>{ const r=R0[t]||(R0[t]={w:0,l:0,d:0,rs:0,ra:0}); r.w+=w; r.l+=l; r.d+=tt; r.rs+=rs; r.ra+=ra; };
+  if(hs>as){ add(h,1,0,0,hs,as); add(a,0,1,0,as,hs); } else if(as>hs){ add(a,1,0,0,as,hs); add(h,0,1,0,hs,as); } else { add(h,0,0,1,hs,as); add(a,0,0,1,as,hs); }
+  const nm=id=>(G.players[id]||{}).name||''; const x={d,h,a,hs,as,inn:g.inn,w:g.dec.w??null,l:g.dec.l??null,sv:g.dec.sv??null,hr:[]};
+  for(const k of ['h','a'])for(const [id,b] of g.S[k].box)if(!G.players[id]?.isP&&!G.players[id]?.flTemp&&b.hr)x.hr.push([id,b.hr,k]);
+  const mine=h===G.user||a===G.user; if(mine){ const S=k=>{ const s=g.S[k]; return {sp:s.sp.id,bat:s.order.map(p=>p.id).concat(s.bench.filter(p=>s.box.has(p.id)).map(p=>p.id)).filter((v,i,A)=>A.indexOf(v)===i).map(id=>{ const b=s.box.get(id)||bz(); return [id,s.posOf[id]||'',b.ab,b.r,b.h,b.rbi,b.hr,b.bb,b.so,(G.players[id]||{}).name||'']; }),pit:s.pitchers.map(id=>{ const b=s.box.get(id)||pz(); return [id,b.outs,b.h,b.r,b.er,b.bb,b.so,b.pc||0,(G.players[id]||{}).name||'']; }),line:g.line[k]}; }; x.box={h:S('h'),a:S('a')}; }
+  F.games.push(x); { let n=0; for(let i=F.games.length-1;i>=0;i--){ const q=F.games[i]; if(q.box){ n++; if(n>40)delete q.box; } } } void nm; }
+/* 하루치 퓨처스 경기 */
+function flPlayDay(d){ if(!flLive()||!flDay(d)||!G.cal.sched[d])return; const F=flInit(); const P=flPairs(F); let n=0;
+  for(const [h,a] of P){ let sh=null, sa=null; FL_TMP=[]; try{ sh=flSide(h,d); sa=flSide(a,d); }catch(e){ for(const id of FL_TMP)delete G.players[id]; FL_TMP=[]; (G.flErr=(G.flErr||[]).slice(-9)).push(String(e&&e.message).slice(0,80)); continue; } if(!sh||!sa){ for(const id of FL_TMP)delete G.players[id]; FL_TMP=[]; (G.flSkip=G.flSkip||{})[sh?a:h]=((G.flSkip||{})[sh?a:h]||0)+1; continue; }
+    let g=null; try{ g=simGame(d,h,a,false,{sides:{h:sh,a:sa},pitchRecords:false}); }catch(e){ (G.flErr=(G.flErr||[]).slice(-9)).push(String(e&&e.message).slice(0,80)); }
+    if(g){ try{ applyFarm(d,g); }catch(e){ console.error(e); } try{ flRecord(F,d,h,a,g); n++; }catch(e){ console.error(e); } }
+    for(const id of FL_TMP)delete G.players[id]; FL_TMP=[]; }
+  return n; }
+/* 순위: 리그별 승률(무승부 제외) */
+function flStand(div){ const F=G.fl; if(!F)return []; return (F.div[div]||[]).map(t=>({...(F.rec[t]||{w:0,l:0,d:0,rs:0,ra:0}),t})).map(r=>({...r,pct:r.w+r.l?r.w/(r.w+r.l):0})).sort((a,b)=>b.pct-a.pct||(b.rs-b.ra)-(a.rs-a.ra)); }
 /* ===== 구단 정체성: 매각 뒤 이름 변경 · 연고 이전 (장기 기획 11-11) =====
    - 새 운영 주체가 구단을 인수하면(ownershipReplace) 새 이름을 걸 때가 있다(AI 구단 55%). 우리 구단은 단장이 고른다.
    - 시장이 작은 지방 구단이 인수되면 드물게(12%) 리그 밖 도시로 연고를 옮긴다. 수도권·우리 구단은 옮기지 않는다.
