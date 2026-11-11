@@ -16,10 +16,14 @@ function champHomeCard(){ const c=G.champNew; if(!c||c.seen||G.unemp||(c.tid!=nu
 const CH16S={moment:['moment_01_final_out','moment_02_battery_hug','moment_03_dugout_rush','moment_04_stands_confetti','moment_05_day_mound','moment_06_day_dugout'],
   ceremony:['ceremony_01_lift','ceremony_02_captain_kiss','ceremony_03_manager_toss','ceremony_04_team_photo'],party:['party_01_champagne','party_02_goggles','party_03_front_office'],
   parade:['parade_01_open_bus','parade_02_city_square','parade_03_confetti'],banner:['banner_01','banner_02','banner_03']};
-const champPic=(g,y)=>{ const L=CH16S[g]; return `assets/v16/champ/${g}/${L[Math.abs(y|0)%L.length]}.webp`; };
+/* 끝내기 우승: 마운드·배터리 장면 대신 더그아웃에서 쏟아져 나오는 장면과 관중석 장면만 쓴다(카페 11-11 안토) */
+const CH16WO=['moment_03_dugout_rush','moment_04_stands_confetti','moment_06_day_dugout'];
+const champWo=y=>!!(G.champWo&&G.champWo[y]);
+const champPic=(g,y)=>{ const L=g==='moment'&&champWo(y)?CH16WO:CH16S[g]; return `assets/v16/champ/${g}/${L[Math.abs(y|0)%L.length]}.webp`; };
 const CM_STEP=[['moment','마지막 아웃','마지막 아웃이 잡히자 선수들이 마운드로 달려 나왔습니다.'],['ceremony','시상식','우승 트로피를 높이 들어 올렸습니다.'],
   ['party','라커룸','라커룸이 샴페인과 함성으로 가득 찼습니다.'],['parade','우승 퍼레이드','도심을 가득 메운 팬들과 함께 우승을 축하했습니다.']];
-function champMomentDraw(){ document.getElementById('champMoment')?.remove(); const M=UI.cm; if(!M)return; const [g,h,cap]=CM_STEP[M.i], last=M.i===CM_STEP.length-1;
+const CM_WO=['moment','끝내기','타석에서 방망이가 결승점을 뽑아낸 순간, 더그아웃의 선수들이 그라운드로 쏟아져 나왔습니다.'];
+function champMomentDraw(){ document.getElementById('champMoment')?.remove(); const M=UI.cm; if(!M)return; const [g,h,cap]=M.i===0&&champWo(M.y)?CM_WO:CM_STEP[M.i], last=M.i===CM_STEP.length-1;
   const el=document.createElement('div'); el.id='champMoment'; el.className='champ-moment'; el.setAttribute('role','dialog'); el.setAttribute('aria-label','우승 순간');
   el.innerHTML=`<div class="cm-box"><span class="cm-eye">${M.y} 한국시리즈 우승 · ${esc(tname(G.user))}</span><img src="${champPic(g,M.y)}" width="1600" height="900" alt="${esc(h)}" decoding="async">
     <div class="cm-cap"><b>${esc(h)}</b><p>${esc(cap)}</p></div><div class="cm-nav"><span class="cm-dots">${CM_STEP.map((_,i)=>`<i class="${i===M.i?'on':''}"></i>`).join('')}</span>
