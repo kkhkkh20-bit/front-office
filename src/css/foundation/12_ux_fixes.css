@@ -774,3 +774,12 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 /* 퓨처스리그 최근 경기·박스스코어 */
 .fl-g{display:grid;gap:6px}.fl-r{border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--panel)}.fl-r>summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .fl-box{display:grid;gap:8px;margin-top:8px}.fl-bx h4{margin:4px 0}.fl-bx .tbl{margin-bottom:6px}.fl-box .mono{font-family:ui-monospace,monospace}
+/* 팀 카드 공유 */
+.tcd{border-radius:14px;overflow:hidden;background:linear-gradient(180deg,var(--c1),var(--c3) 38%,#0b0f14);color:#fff;padding:20px;max-width:760px}
+.tcd-h{display:flex;gap:16px;align-items:center}.tcd-h h2{margin:2px 0;font-size:30px;color:#fff}.tcd-y{font-size:13px;opacity:.85}.tcd-rec{font-size:15px;opacity:.92}
+.tcd-em{width:56px;height:56px;border-radius:12px;background:rgba(255,255,255,.15);display:grid;place-items:center;font-weight:800}
+.tcd-meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin:14px 0;font-size:14px;opacity:.95}
+.tcd-g{display:grid;grid-template-columns:1fr 1fr;gap:14px}.tcd-g h3{margin:8px 0 4px;font-size:15px;color:#fff}
+.tcd-r{display:grid;grid-template-columns:62px 1fr auto;gap:2px 8px;align-items:baseline;padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.07);margin-bottom:4px;font-size:14px}
+.tcd-r .tcd-p{opacity:.7;font-size:12px}.tcd-r em{font-style:normal;color:#ffd166;font-weight:700}.tcd-r i{grid-column:2/4;font-style:normal;font-size:12px;opacity:.7}
+@media(max-width:700px){.tcd-g{grid-template-columns:1fr}.tcd-h h2{font-size:24px}}
