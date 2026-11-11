@@ -117,7 +117,7 @@ function faInterest(t,p){
   if(t.id!==p.faFrom&&t.cash<-3000)return 0;
   if(t.id!==p.faFrom&&ovr(p)<47)return 0;
   /* 보상 비용(보상금)을 계약 총액과 견준다: 몸값보다 보상금이 크면 외부 구단은 거의 손대지 않는다 */
-  let compF=1; if(t.id!==p.faFrom){ const ps=p.faPrevSal||p.sal||0; const cc=p.faGrade==='A'?ps*2:p.faGrade==='B'?ps:ps*1.5; compF=clamp(1-cc/Math.max(1,p.ask.annual*p.ask.years*.8),.08,1);
+  let compF=1; if(t.id!==p.faFrom){ const ps=p.faPrevSal||p.sal||0; const cc=p.faGrade==='A'?ps*2:p.faGrade==='B'?ps:ps*1.5; { const T=Math.max(1,p.ask.annual*p.ask.years); compF=p.faGrade==='C'?clamp(1.4*T/(T+cc)-.4,.08,1):clamp(1-cc/Math.max(1,T*.8),.08,1); } /* C등급(35세 이상 등, 보상선수 없이 연봉 150%)은 보상금을 계약 총액에 얹는 비용으로 본다: 노장 FA에게 외부 제안이 거의 없던 문제(카페 11-11) */
     if(t.id!==ME()&&t.cash-cc<-2500)return 0; } /* 보상금을 내면 현금이 크게 마이너스가 되는 AI 구단은 외부 FA를 포기한다 */
   const debt=t.id===p.faFrom&&t.id!==ME()&&(t.cash<-5000||capPay(t.id)>capOf(sponSeason())*1.1)?.35:1;
   if(t.cash<-8000&&t.id!==p.faFrom)return 0;

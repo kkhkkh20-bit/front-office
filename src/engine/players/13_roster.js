@@ -80,7 +80,7 @@ function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.
   const s0=new Map(ps.map(p=>[p.id,p.sal])), s0m=s0;
   for(let k=0;k<4&&gap>0;k++){ for(const p of ps)p.sal=round5(p.sal+round5(gap*ovr(p)/tot)); gap=fl*1.05-capPay(tid); } /* 올린 뒤 다시 잰다: 프랜차이즈 예외 선수는 인상분의 절반만 들어가 한 번으로는 모자랄 수 있다(검수 11-09y) */
   for(const p of ps){ const s0=s0m.get(p.id); if(p.sal>s0){ p.ysGap=(p.ysGap||[]).filter(g=>g.y>=G.year-1); p.ysGap.push({y:G.year,d0:-1e9,d1:G.day,s0:p.sal,s:s0,t:tid}); } } /* 올린 연봉은 오늘부터: 그 전 기간은 원래 연봉(지급 보정 ysAdj, 검수 11-09x) */
-  for(const p of ps){ const y0=p.yrs||0, multi=!p.faC; if(!p.faC){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); p.cyrs=p.yrs; }
+  for(const p of ps){ const y0=p.yrs||0, multi=!p.faC&&(p.svc||0)>=faSvc(p)-1; if(multi){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); p.cyrs=p.yrs; } /* FA까지 1년 넘게 남은 보류 선수는 다년계약으로 묶지 않고 연봉만 올린다(카페 11-11: 21세 선수가 하한 맞추기로 2년 다년계약) */
     if(p.sal!==s0.get(p.id)||multi)story(p,`연봉 하한 맞추기 계약 조정: 연봉 ${money(s0.get(p.id))} → ${money(p.sal)}, 계약 ${multi?`${y0||1}년 → ${p.yrs}년(다년계약 전환)`:`${p.yrs}년 유지`}`,'move'); } /* 구단이 하한을 맞추려 올린 계약도 선수 이력(이적·계약)에 남긴다 */
   wire('구단',`${t.city} ${t.nick}, 연봉 하한 맞추려 주축 선수들과 다년계약`,{tid}); }
 /* 빚이 깊은 AI 구단(현금 -40억 아래): 모기업이 허리띠를 졸라맨다. 고액 베테랑을 여유 있는 구단에 넘겨 상위 40명 연봉을 상한의 80%까지 낮춘다(방출 위약금은 빚을 늘리므로 트레이드만) */
