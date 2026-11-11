@@ -131,7 +131,7 @@ function depth(tid){
   const futB0=by(ps.filter(p=>!p.isP&&healthy(p)&&!actIds.has(p.id)),ovr), futP0=by(ps.filter(p=>p.isP&&healthy(p)&&!actIds.has(p.id)),ovr);
   const pit=act.filter(p=>p.isP&&healthy(p));
   const spF=p=>spV(p)+roleBias(tid,p)+pb(p)+rpB(tid,p,'SP')-rpB(tid,p,'RP'), sp=[...by(pit.filter(p=>rpPlanOf(tid,p)!=='rp'),spF),...by(pit.filter(p=>rpPlanOf(tid,p)==='rp'),spF)].slice(0,5); /* 계투로 정한 투수는 선발 자리가 남을 때만(검수 11-08: 계투 요청을 받아들였는데 선발 등판) */ /* 보직 저장은 roleSync에서만: 화면 조회가 보직·부하 한도를 바꾸지 않게(검수 11-09zh) */
-  const rest=by(pit.filter(p=>!sp.includes(p)),p=>penV(p)+pb(p)*.6+rpB(tid,p,'RP')); /* 감독이 받아들인 역할 약속(61_contract_terms mgrUseAsk) */
+  const rest=penArrange(tid,by(pit.filter(p=>!sp.includes(p)),p=>penV(p)+pb(p)*.6+rpB(tid,p,'RP'))); /* 단장이 정한 불펜 역할(마무리·필승조·추격조·롱릴리프) 순서 반영 */ /* 감독이 받아들인 역할 약속(61_contract_terms mgrUseAsk) */
   const start=ORDER.filter(k=>ln[k]).map(k=>ln[k]);
   const on=entryOn();
   return {ln,start,bench:on?bat:bat.slice(0,5),futB:on?futB0:bat.slice(5).concat(futB0),sp,pen:on?rest:rest.slice(0,7),futP:on?futP0:rest.slice(7).concat(futP0),inj:ps.filter(p=>!healthy(p))};

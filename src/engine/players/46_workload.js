@@ -41,8 +41,10 @@ function loadText(p){ if(!p.isP)return ''; const day=G.day+1; const cd=consecDay
 function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a));
   /* 같은 투수가 같은 단계(높음·위험)로 계속 남아 있으면 매주 되풀이하지 않는다: 새로 한도를 넘었거나 '위험'으로 올라간 투수가 있을 때만 */
   const lv=p=>armRatio(p)>=1.3?2:1; const prev=G.loadSig||{}; const cur={}; for(const p of hi)cur[p.id]=lv(p); G.loadSig=cur; if(!hi.length)return;
-  if(!hi.some(p=>(prev[p.id]||0)<cur[p.id]))return;
-  const m=G.mgr[G.user]; mail('의무팀',`투수 부하 주의 ${hi.length}명`,`누적 팔 부하가 한도를 넘은 투수입니다. 부하가 높을수록 팔꿈치·어깨 부상 위험이 커집니다.\n\n${hi.slice(0,6).map(p=>`${p.name}(${posLabel(p)}): ${loadText(p)}`).join('\n')}${m&&!m.interim?`\n\n${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}. 감독에게 '투수 관리(혹사 금지)'를 지시하면 줄일 수 있습니다.`:''}`,{kind:'의무',acts:[{l:'감독 지시',a:'goWork',v:'감독'}]}); }
+  /* 1군과 2군(퓨처스)을 나눈다: 2군 투수 운용은 1군 감독 지시와 무관하고, 2군 투수만 바뀐 주에는 보고하지 않는다(제보 11-12: 2군 혹사 보고가 계속 올라옴) */
+  const one=hi.filter(p=>p.e1), two=hi.filter(p=>!p.e1); if(!one.some(p=>(prev[p.id]||0)<cur[p.id]))return;
+  const m=G.mgr[G.user], fm=(coachesOf(G.user)||{}).fm; const line=p=>`${p.name}(${posLabel(p)}): ${loadText(p)}`;
+  mail('의무팀',`1군 투수 부하 주의 ${one.length}명`,`누적 팔 부하가 한도를 넘은 1군 투수입니다. 부하가 높을수록 팔꿈치·어깨 부상 위험이 커집니다.\n\n${one.slice(0,6).map(line).join('\n')}${m&&!m.interim?`\n\n${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}. 감독에게 '투수 관리(혹사 금지)'를 지시하면 줄일 수 있습니다.`:''}${two.length?`\n\n참고 · 2군(퓨처스) ${two.length}명: ${two.slice(0,4).map(p=>p.name).join(', ')}${two.length>4?' 외':''}. 2군 등판은 ${fm&&fm.name?fm.name+' 2군 감독':'2군 코치진'}이 정하며 1군 감독 지시와는 따로입니다.`:''}`,{kind:'의무',acts:[{l:'감독 지시',a:'goWork',v:'감독'}]}); }
 /* ===== 메디컬 체크 =====
    다른 구단 선수의 부상 체질은 우리 의무팀이 검진해야 알 수 있다. 제휴 병원 등급이 높을수록 정확하다.
    우리 선수는 매일 보기 때문에 정확히 안다. AI 구단은 자기 의무팀이 있어서 트레이드 때 실제 체질을 반영한다 */
