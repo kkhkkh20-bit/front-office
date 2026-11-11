@@ -22,7 +22,7 @@ function hidReveal(p){ if(!p.hidT||p.hidR||p.prospect)return; const L=(p.hist||[
 function declApply(){ for(const p of Object.values(G.players)){ const D=p.declP; if(!D)continue; for(const k in D)if(p.r[k]!=null)p.r[k]=clamp(p.r[k]+D[k],20,80); delete p.declP; roundR(p); } } /* 6월 1일: 미뤄 둔 노화 하락 나머지 */
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
-  if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; const pg=p.foreign?1:persGrowF(p); const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
+  if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
   /* 군 복무 중에는 우리 구단 시설·코치·감독이 아니라 상무 야구단(또는 군) 환경에서 지낸다. 현역은 야구 훈련을 하지 못한다 */
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
@@ -43,15 +43,15 @@ function develop(p){
   else { base=-(age-T.fall+1)*.6*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=36?-2.4:-3.6)-(age>=37?.8:0); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
-  if(age<=33&&!p.foreign){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.17:.11)+Math.max(0,10-pr)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
+  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.17:.11)+Math.max(0,10-pr)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
     if(x<dn){ const s=-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; p.devLog.reasons.push('slump'); } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
-  if(base>0&&!p.foreign&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
+  if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
   const tc=svc?(delete p.trD,null):typeof trnCost==='function'?trnCost(p):null; /* 복무 중 겨울에는 입대 전 집중 훈련 비용을 매기지 않는다(검수 11-09zy) */ /* 훈련 방향 비용: 한 항목에 집중한 만큼 다른 항목의 성장 기회가 준다 */
   const stam0=(p.isP?p.r.sta:p.r.vit)??50; initPers(p); const agK=clamp(1-(stam0-50)*.012-((p.pers.pro??10)-10)*.025,.55,1.4); /* 노화 하락 폭: 체력이 높고 프로의식이 강하면 덜 떨어진다(사용자 11-08). 부상 후유증 하락은 따로(injury) */
   for(const k in p.r){
-    let dk=base+N(0,(p.foreign?2.2:1.0)*(k==='eye'||k==='ctl'?.6:1));
+    let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1));
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
       dk-=PHYS[k]*(age-T.fall+2)*.24*fac.d;
       if(p.dt==='vet'&&PHYS[k]<=0&&age<=36)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
@@ -60,7 +60,7 @@ function develop(p){
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k]&&dk>0){dk=Math.max(0,dk-tc[k]);if(!p.devLog.reasons.includes('training-opportunity'))p.devLog.reasons.push('training-opportunity');} /* 성장 기회만 줄인다. 이미 퇴보 중인 능력은 더 깎지 않는다. */
     if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK;if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}
-    if(dk<0&&age>=T.fall-1&&svc!=='현역'&&!p.foreign){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
+    if(dk<0&&age>=T.fall-1&&svc!=='현역'){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }
   if(svc==='현역')p.devLog.reasons.push('military');
