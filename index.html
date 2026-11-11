@@ -2740,6 +2740,10 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 /* 담장 공사 */
 .fence-box{margin-top:10px}.fence-box>summary{cursor:pointer;font-weight:600;font-size:13px}
 .fence-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;margin:8px 0}.fence-in label{display:flex;flex-direction:column;gap:2px;font-size:12px}.fence-in input{width:100%;box-sizing:border-box}
+/* 스폰서 제안 자리별 묶음 */
+.spo-g{margin-bottom:12px;padding-left:8px;border-left:3px solid var(--spo-c,#5b6b7c)}.spo-gh{font-size:13px;margin:4px 0 6px}
+.spo-g[data-slot="main"]{--spo-c:#e0a43a}.spo-g[data-slot="kit"]{--spo-c:#4fa3e0}.spo-g[data-slot="sleeve"]{--spo-c:#5fc77a}.spo-g[data-slot="fence"]{--spo-c:#b07ce0}.spo-g[data-slot="helmet"]{--spo-c:#e06c6c}.spo-g[data-slot="back"]{--spo-c:#4cc2b5}
+.spo .num.best{color:#4f9dff;font-weight:700}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -31808,10 +31812,13 @@ function sponView(){ sponInit(); const S=G.spon, t=team(G.user); const y=sponSea
     return `<tr><td><b>${SPON_SLOT[k].l}</b><div class="small muted">기준 ${money(Math.round(SPON_SLOT[k].b*ecoIdx()*v))}</div></td>${live?`<td>${esc(c.co)} <span class="small muted">${esc(c.ind)}</span>${c.img?' <span class="pill warn" title="언론 논조가 30 밑이면 다음 해 20% 감액">이미지 조항</span>':''}${sponTerms(c,k,y)}</td><td class="num" data-l="연 금액">${money(c.amt)}</td><td data-l="기간">${c.y0>G.year?`${c.y0}년부터 `:''}${c.until}년까지${c.y0>G.year?' <span class="pill">다음 시즌 계약</span>':c.until===y?' <span class="pill warn">올해 만료</span>':''}</td><td class="small" data-l="보너스">${c.ps?`가을야구 +${money(c.ps)}`:''}${c.champ?`<br>우승 +${money(c.champ)}`:''}</td>`:`<td colspan="4" class="muted">빈자리${nOff?` · 제안 ${nOff}건 도착`:''} ${(S.pitch||[]).some(x=>x.slot===k&&!x.done)?'<span class="pill">영업 중</span>':`<button class="btn small" data-a="sponPitch" data-v="${k}">영업 지시 · 3천만</button>`}</td>`}</tr>`; };
   const tot=sponIncome(y);
   const offers=S.off.filter(x=>x.exp>=G.day).sort( /* 떠난 사이 만료된 제안은 보이지 않게(검수 11-08) */(a,b)=>a.slot.localeCompare(b.slot)||b.amt-a.amt);
+  /* 자리별 최고값(커뮤니티 건의 11-11): 같은 자리 제안끼리 연 금액·가을야구·우승 보너스 가장 높은 값을 표시 */
+  const best={}; for(const o of offers){ const B=best[o.slot]=best[o.slot]||{amt:0,ps:0,champ:0,n:0}; B.n++; for(const k of ['amt','ps','champ'])B[k]=Math.max(B[k],o[k]||0); }
+  const hi=(o,k)=>best[o.slot].n>1&&(o[k]||0)>0&&o[k]===best[o.slot][k]?' best':'';
   const card=o=>{ const cur=S.c[o.slot]; const tag={bonus:'성과형',safe:'안정형',long:'장기형',std:'표준'}[o.style];
-    return `<div class="spo"><div class="row between"><b>${esc(o.co)} <span class="small muted">${esc(o.ind)}</span></b><span class="pill">${tag}</span></div>
+    return `<div class="spo" data-slot="${o.slot}"><div class="row between"><b>${esc(o.co)} <span class="small muted">${esc(o.ind)}</span></b><span class="pill">${tag}</span></div>
       <div class="small">${SPON_SLOT[o.slot].l} · ${(y0=>o.yrs>1?`${y0}~${y0+o.yrs-1}시즌`:`${y0}시즌`)(sponFirstTerms().y0)} 계약${o.renew?' · 재계약 제안':''}${cur&&cur.until>=y?' · <span class="warn">계약 중인 자리</span>':''}</div>
-      <div class="spo-n"><span><i>연 금액</i><b class="num">${money(o.amt)}</b></span><span><i>기간</i><b>${o.yrs}년</b></span><span><i>가을야구</i><b class="num">+${money(o.ps)}</b></span><span><i>우승</i><b class="num">+${money(o.champ)}</b></span></div>${(()=>{ const f=sponFirstTerms(); return f.lateSign||f.psLock?`<div class="small muted">지금 계약하면 첫해 보너스: ${f.psLock?'가을야구 확정 뒤라 진출 보너스 없음, ':''}${f.lateSign?`남은 기간 비율 ${Math.round(f.first*100)}%만`:'우승 보너스 전액'}</div>`:''; })()}
+      <div class="spo-n"><span><i>연 금액</i><b class="num${hi(o,'amt')}">${money(o.amt)}</b></span><span><i>기간</i><b>${o.yrs}년</b></span><span><i>가을야구</i><b class="num${hi(o,'ps')}">+${money(o.ps)}</b></span><span><i>우승</i><b class="num${hi(o,'champ')}">+${money(o.champ)}</b></span></div>${(()=>{ const f=sponFirstTerms(); return f.lateSign||f.psLock?`<div class="small muted">지금 계약하면 첫해 보너스: ${f.psLock?'가을야구 확정 뒤라 진출 보너스 없음, ':''}${f.lateSign?`남은 기간 비율 ${Math.round(f.first*100)}%만`:'우승 보너스 전액'}</div>`:''; })()}
       ${o.img?'<div class="small warn">이미지 조항: 언론 논조가 30 밑으로 떨어지면 다음 해 금액 20% 감액</div>':''}
       <div class="small muted">${o.exp-G.day}일 안에 답해야 합니다.</div>
       <div class="row"><button class="btn primary small" data-a="sponAcc" data-v="${o.id}">수락</button>${o.cnt?'':`<button class="btn small" data-a="sponCnt" data-v="${o.id}:0.1">10% 올려 요청</button><button class="btn small" data-a="sponCnt" data-v="${o.id}:0.2">20% 올려 요청</button>`}<button class="btn small" data-a="sponRej" data-v="${o.id}">거절</button></div></div>`; };
@@ -31819,7 +31826,7 @@ function sponView(){ sponInit(); const S=G.spon, t=team(G.user); const y=sponSea
     <div class="chips">${parts||'<span class="small muted">평균 수준</span>'}</div>
     <p class="small muted">가을야구 보너스와 우승 보너스는 둘 다 받습니다(우승하면 두 보너스 합). 빈자리는 기업 제안을 기다리거나, 마케팅팀에 영업을 지시해 먼저 찾아갈 수 있습니다(영업비 3천만 원 · 1~2주 뒤 결과 · 같은 자리는 30일에 한 번 · 성공률은 가치 지수와 단장 평판에 따라 다름). 가치 지수 100이 리그 평균입니다. 시장 규모·구단 인기·지난 시즌 성적·팬 여론·언론 논조·스타 선수가 제안 금액을 정합니다. 경쟁 제안이 많고 가치가 높을수록 조건 상향 요청이 잘 통합니다.</p>
     <div class="spt-w"><table class="spt"><thead><tr><th>자리</th><th>스폰서</th><th>연 금액</th><th>기간</th><th>보너스</th></tr></thead><tbody>${slots.map(row).join('')}</tbody></table></div>`)
-   +'<div class="spo-side">'+csec(`받은 제안 ${offers.length}건`,offers.length?`<div class="spo-l">${offers.map(card).join('')}</div>`:'<p class="small muted">지금 받은 제안이 없습니다.</p>')
+   +'<div class="spo-side">'+csec(`받은 제안 ${offers.length}건`,offers.length?Object.keys(SPON_SLOT).filter(k=>best[k]).map(k=>`<div class="spo-g" data-slot="${k}"><h3 class="spo-gh">${esc(SPON_SLOT[k].l)} <span class="muted">${best[k].n}건</span></h3><div class="spo-l">${offers.filter(o=>o.slot===k).sort((a,b)=>b.amt-a.amt).map(card).join('')}</div></div>`).join('')+'<p class="small muted">자리별로 묶었습니다. 같은 자리 제안 가운데 가장 높은 연 금액·보너스는 파란색으로 표시합니다.</p>':'<p class="small muted">지금 받은 제안이 없습니다.</p>')
    +(S.hist.length?csec('지난 계약',`<div class="log">${S.hist.slice().reverse().slice(0,12).map(h=>`<p><span class="ticker">${h.y0}~${h.until}</span> ${esc(h.co)} · ${SPON_SLOT[h.slot].l} · 연 ${money(h.amt)}${!h.cut&&h.paidY!=null&&h.paidY!==h.amt?` · 마지막 해 수령 ${money(h.paidY)}`:''}${h.cut?` · <b>${dsh(h.cut.d)} 해지</b>(${esc(h.cut.why||'')}) · 해지 전 몫 ${money(Math.round(h.amt*(h.cutF||0)))}`:''}</p>`).join('')}</div>`):'')+'</div>'; }
 /* 팬 마케팅 · 구단 이벤트 화면(구단 > 팬·언론 맨 위) */
 function fanOpsCard(){ if(G.unemp)return ''; const F=fanOps(); const t=team(G.user);
