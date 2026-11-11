@@ -804,6 +804,26 @@ table.mst td.ppc{font-weight:700}
 .tile[data-a]:hover{border-color:var(--team-hi)}
 .mailbtn{flex:none}
 .sheet.noanim{animation:none}
+
+/* 타구장 소식 · 결정적 순간(경기 화면 연출 11-11) */
+.md-ticker{display:flex;align-items:center;gap:10px;margin:6px 0;padding:6px 10px;border:1px solid var(--line,#2a3442);border-radius:8px;background:var(--panel,#121a24);overflow:hidden;font-size:var(--ui-sm,12px)}
+.md-ticker:empty{display:none}
+.mdt-h{flex:none;font-weight:700;color:var(--acc,#6fb3ff)}
+.mdt-l{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}.mdt-l::-webkit-scrollbar{display:none}
+.mdt-g{display:inline-flex;align-items:center;gap:4px}.mdt-g em{font-style:normal;font-weight:800;font-variant-numeric:tabular-nums;min-width:1ch;text-align:center}
+.mdt-g i{font-style:normal;color:var(--muted)}.mdt-g small{color:var(--muted);margin-left:2px}.mdt-g.pre{opacity:.6}
+.md-clutch{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.9);z-index:30;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 26px;border-radius:14px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--cl,#335) 88%,#000),color-mix(in srgb,var(--cl,#335) 55%,#000));border:2px solid rgba(255,255,255,.75);box-shadow:0 10px 34px rgba(0,0,0,.55);
+  color:#fff;text-align:center;pointer-events:none;animation:mdcIn .35s cubic-bezier(.2,1.4,.4,1) forwards}
+.md-clutch b{font-size:clamp(26px,5vw,44px);font-weight:900;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.md-clutch.big b{font-size:clamp(32px,6.5vw,58px)}
+.md-clutch .mdc-tm{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;opacity:.92}
+.md-clutch .mdc-s{font-size:13px;opacity:.9}
+.md-clutch.out{animation:mdcOut .45s ease forwards}
+@keyframes mdcIn{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes mdcOut{to{opacity:0;transform:translate(-50%,-62%) scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.md-clutch,.md-clutch.out{animation:none}.md-clutch.out{opacity:0}}
+.md-clutch{max-width:88%}
 /* 소식함 페이지 */
 .ib-chips{align-items:center}.ib-n{margin-left:auto;padding:0 4px}
 .ib2{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;align-items:start}
@@ -12056,7 +12076,7 @@ function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of
 /* 경기 반영(applyGame) 도중 오류가 나면 그 경기에 나온 선수 상태(투구 부하·기록·피로)를 경기 전으로 되돌린다: 다시 치를 때 부하가 두 번 쌓이지 않게(검수 11-09zn) */
 function boxSnap(g){ const L=[]; for(const k of ['h','a'])for(const id of g.S[k].box.keys()){ const p=G.players[id]; if(p)L.push([p,JSON.stringify(p)]); } return ()=>{ for(const [p,j] of L){ for(const k of Object.keys(p))delete p[k]; Object.assign(p,JSON.parse(j)); } }; }
 function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
-  let userRec=null; const mk=(G.makeup||[]).filter(x=>x.y===G.year&&!(x.d>=day)); G.makeup=(G.makeup||[]).filter(x=>x.y===G.year&&x.d>=day); /* 오늘 미룬 경기(소집일 인원 부족)는 오늘 다시 치르지 않고 다음 경기일에(검수 11-09zj) */
+  let userRec=null; const others=[]; /* 타구장 소식(중계): 같은 날 다른 경기의 이닝별 득점 */ const mk=(G.makeup||[]).filter(x=>x.y===G.year&&!(x.d>=day)); G.makeup=(G.makeup||[]).filter(x=>x.y===G.year&&x.d>=day); /* 오늘 미룬 경기(소집일 인원 부족)는 오늘 다시 치르지 않고 다음 경기일에(검수 11-09zj) */
   for(const [h,a] of [...mk.map(x=>[x.h,x.a]),...(G.cal.sched[day]||[])]){
     const kind=specialKind(day,h,a); if((h===G.user||a===G.user)&&!(SPOIL_SNAP&&SPOIL_SNAP.day===day&&SPOIL_SNAP.y===G.year))try{ spoilSnapTake(day,[h,a]); }catch(e){} /* 같은 날 두 경기: 관전하는 첫 경기 직전 사본을 지킨다(검수 11-09zzc #14) */
     const later=e=>{ G.makeup.push({y:G.year,h,a,d:day}); if(G.cal.end0==null)G.cal.end0=G.cal.end; if(day>=G.cal.end)G.cal.end=day+1; /* 마지막 날 미룬 경기: 정규시즌을 하루씩 늘려 다 치른 뒤 순위·시드를 정한다. 미처리 경기를 남긴 채 시즌을 닫지 않는다(검수 11-09k, 11-09zn) */ try{ console.error('경기 처리 실패, 다음 경기일로 미룸',dmd(day),h,a,e); }catch(x){} };
@@ -12064,9 +12084,11 @@ function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
     if(short()){ for(const t of [h,a])if(t!==G.user)try{ entryManage(t,false,true); }catch(e){} if(short()){ later('야수 9명 미만'); continue; } }
     let g; try{ g=simGame(day,h,a,false); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,false); }catch(e2){ later(e2); continue; } } /* 한 경기 오류로 같은 날 다른 경기·날짜만 반영되고 이 경기가 사라지지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 다음 경기일에 치른다(검수 11-08) */
     { const r=G.sea.rec, n0=r[h].w+r[h].l+(r[h].t||0), back=boxSnap(g); try{ applyGame(day,h,a,g,false); }catch(e){ if(r[h].w+r[h].l+(r[h].t||0)===n0){ back(); later(e); continue; } console.error(e); } } /* 반영 도중 오류: 승패 전이면 선수 상태를 되돌려 미루고, 같은 날 남은 경기는 그대로 치른다(검수 11-09zn) */
+    if(h!==G.user&&a!==G.user)try{ others.push({h,a,lh:(g.line&&g.line.h||[]).slice(),la:(g.line&&g.line.a||[]).slice()}); }catch(e){}
     try{ gtAdd(gameMin(g)); }catch(e){} try{ rivalAfterGame(day,h,a,g,false); }catch(e){ console.error(e); } try{ cheerGame(day,h); }catch(e){} try{ fanPlansGame(h); }catch(e){} /* 실제로 열린 홈경기마다 응원단 무대(관중 계산 전, 검수 11-09zza) */ let st=null; try{ st=stadGame(day,h,a); }catch(e){}
     if(h===G.user||a===G.user)try{ if(userRec){ keepGame(userRec); ulog(userRec); try{ prAfterGame(userRec); }catch(e){} try{ campPitchHit(userRec); }catch(e){} try{ gmAttendResult(userRec); }catch(e){} } /* 더블헤더 첫 경기도 캠프 구종 활약 검사(검수 11-09zt) */ /* 직관 예약이 앞 경기 상대면 그 경기로(검수 11-09zo) */ /* 미룬 경기와 같은 날: 앞 경기도 기록 */ userRec=gameRecord(day,h,a,g,kind); try{ gmTenTick(); }catch(e){} if(st){ userRec.att=st.att; userRec.so=st.so; userRec.cap=st.cap; } /* 경기 당시 좌석 수(뒤에 공사로 좌석이 바뀌어도 지난 점유율 그대로, 검수 11-09zzd) */ milestones(g,h===G.user?'h':'a'); }catch(e){ console.error(e); } /* 우리 경기 기록 오류도 같은 날 남은 경기를 막지 않는다(검수 11-09zn) */
   }
+  if(userRec&&others.length)userRec.others=others;
   if(userRec){
     const me=userRec.home===G.user?'h':'a', op=me==='h'?'a':'h';
     // 노히트 도전: 7회까지 상대 무안타
@@ -27786,7 +27808,7 @@ function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
   <div class="md-layout">${mdTeamPanel(g,'a')}<main class="md-center"><div class="md-top-grid"><section class="md-panel"><header><b>경기 기록</b><span>현재 시점</span></header><div id="md-stats"></div></section><section class="md-panel"><header><b>주요 장면</b><span>다시 보기</span></header><div id="md-events"></div></section><section class="md-panel"><header><b>안타 흐름</b><span>원정 / 홈</span></header><div id="md-hits"></div></section></div>
     <div class="md-play-grid"><section class="md-field-panel md-panel"><header><b>${esc(tshort(g.away))} vs ${esc(tshort(g.home))}</b><span>구장 중계</span></header><div class="md-field-body"><div class="cs-stage" id="cs-stage" data-renderer="pending"><button class="cs-board-view" data-a="castBoard">전광판 보기</button><div id="cs-3d" class="cs-3d" data-state="pending"${c.pre?' data-pre="1"':''} aria-label="타자 뒤에서 보는 3D 경기장"><span class="cs-3d-status" role="status">선수들이 준비하고 있습니다 · 경기장 불러오는 중…</span>${matchPrepLineups(g)}<button class="cs-3d-retry" data-a="castRetry3d">3D 다시 시도</button></div>${fieldBg}<svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-shd" id="cs-shd"></div><div class="cs-ball" id="cs-ball"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><button class="btn primary cs-endbtn" id="cs-endbtn" data-a="castClose" hidden>나가기</button><div class="cs-bn" id="cs-bn"></div></div></div><div class="md-duel" id="cs-vs"></div></section>
     ${mdPitchDock()}<div class="md-charts"><section class="md-panel"><header><b>득점 흐름</b><span>실제 누적 득점</span></header><div id="md-flow"></div></section><section class="md-panel"><header><b>홈 승리 확률</b><span>상황 기반 추정</span></header><div id="md-prob"></div><div class="cs-wpw"><div class="cs-wp"><span class="wa" style="background:${mdColor(g,'a')}"></span><i id="cs-wpa" style="background:${mdColor(g,'h')}"></i><span class="cs-wpt" id="cs-wpt"></span></div></div></section></div></div></main>${mdTeamPanel(g,'h')}</div>
-  <div class="md-comment" id="md-comment" aria-live="polite"></div><div class="md-linescore" id="md-linescore"></div>
+  <div class="md-ticker" id="md-ticker" aria-label="타구장 소식"></div><div class="md-comment" id="md-comment" aria-live="polite"></div><div class="md-linescore" id="md-linescore"></div>
   <section class="md-dugout"><div class="md-roster-label"><b>출전 선수</b><div>${[['a',g.away],['h',g.home]].map(([k,tid])=>`<button data-a="castTeam" data-v="${k}">${esc(tshort(tid))}</button>`).join('')}</div></div><div class="md-roster" id="md-roster"></div></section>
   <nav class="md-replay" aria-label="중계 재생"><button class="md-control" data-a="castStep" data-v="-1">이전 타석</button><button class="md-control" data-a="castStep" data-v="1">다음 타석</button><span id="md-progress"></span><input id="md-seek" data-a="castSeek" type="range" min="0" max="${g.pbp.length}" value="${c.k}" aria-label="재생 시점"><button class="md-control" data-a="castWin">결승 장면</button></nav></div>`;
 }
@@ -27949,7 +27971,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
     await Promise.all(pr.slice(1));
     if(c.errPos){ const ef=G.players[x[9]]; cCap(`${POSK[c.errPos]||''} ${ef?ef.name:''} 실책 · 타자 출루`,'bad'); }
     else if(o!=='HR'&&o!=='DP'&&!['2B','3B'].includes(o))cFx(runs?`${kind} +${runs}`:kind,runs?'run':outPlay?'out':'hit'); else if(runs&&o!=='HR')cCap(`+${runs}점`,'good'); }
-  if(document.querySelector('.match-dashboard'))mdDuelResult(g,k);{ const r=paK(x); cAbRes(r[0],r[1]); }
+  if(document.querySelector('.match-dashboard'))mdDuelResult(g,k);{ const r=paK(x); cAbRes(r[0],r[1]); } try{ cClutch(g,k); }catch(e){}
   cBallHide();
   const st2={sa:x[7],sh:x[8],outs:outsA,bases:outsA>=3?[0,0,0]:after,half:x[0]};
   sndStop('chant',.9); if(runs){ cScorePop(x[0]%2?'h':'a'); cBurst(CHM,oc,12); if(o==='OUT'||o==='BB')sfx('cheer_hit',homeBat?.6:.25); }
@@ -28151,7 +28173,7 @@ function castDashboardUpdate(g,k){
   if(!document.querySelector('.match-dashboard'))return;
   const s=castSnapshot(g,k),c=UI.cast;
   for(const side of ['a','h']){const T=s.teams[side];mdSet('md-role-'+side,s.finished?'종료':side===s.attack?'공격':'수비');mdSet('md-field-'+side,mdMiniField(g,side,s));mdSet('md-lineup-'+side,mdLineup(g,side,s));mdSet('md-pitcher-'+side,`${s.legacy?'이전 기록 · 위치 일부 참고 · ':''}마운드 <b>${T.pitcher?esc(mdPlayer(g,T.pitcher).name):'기록 없음'}</b>`);}
-  mdSet('md-stats',mdStats(g,s));mdSet('md-events',mdEvents(g,s));mdSet('md-hits',mdHitBars(g,s));mdSet('md-flow',mdFlowChart(g,s,false));mdSet('md-prob',mdFlowChart(g,s,true));mdSet('md-linescore',mdScoreLine(g,s));
+  mdSet('md-ticker',mdTicker(g,s));  mdSet('md-stats',mdStats(g,s));mdSet('md-events',mdEvents(g,s));mdSet('md-hits',mdHitBars(g,s));mdSet('md-flow',mdFlowChart(g,s,false));mdSet('md-prob',mdFlowChart(g,s,true));mdSet('md-linescore',mdScoreLine(g,s));
   mdSet('cs-vs',mdDuel(g,s,c?.completed===k?castSnapshot(g,k+1):s));
   const team=c?.team||((g.away===G.user)?'a':'h'),roster=document.getElementById('md-roster');if(roster)roster.dataset.team=team;mdSet('md-roster',mdRoster(g,s,team));
   document.querySelectorAll('[data-a="castTeam"]').forEach(b=>b.classList.toggle('on',b.dataset.v===team));
@@ -28166,6 +28188,26 @@ function mdDuel(g,s,shown=s){
 }
 
 function mdDuelResult(g,k){if(UI.cast)UI.cast.completed=k;const before=castSnapshot(g,k),after=castSnapshot(g,k+1);mdSet('cs-vs',mdDuel(g,before,after));}
+
+/* 타구장 소식(경기 화면 연출 11-11): 같은 날 다른 구장 점수를 우리 경기 진행 이닝까지만 보여 준다. 우리 경기가 끝나면 최종 점수 */
+function mdTicker(g,s){ const O=g.others||[]; if(!O.length)return ''; const fin=s.finished, n=fin?99:Math.floor(((s.state&&s.state.half)||0)/2);
+  const sum=(L,m)=>(L||[]).slice(0,m).reduce((a,v)=>a+(+v||0),0);
+  const items=O.map(o=>{ const len=Math.max((o.lh||[]).length,(o.la||[]).length), m=Math.min(n,len), done=fin||m>=len&&len>0; const ra=sum(o.la,m), rh=sum(o.lh,m);
+    return `<span class="mdt-g${m===0?' pre':''}"><b>${esc(tshort(o.a))}</b><em>${m?ra:'-'}</em><i>:</i><em>${m?rh:'-'}</em><b>${esc(tshort(o.h))}</b><small>${done?'종료':m?m+'회':'경기 전'}</small></span>`; }).join('');
+  return `<span class="mdt-h">타구장</span><div class="mdt-l">${items}</div>`; }
+/* 결정적 순간(경기 화면 연출 11-11): 역전·동점·끝내기·만루 홈런·8회 이후 1점 차 득점권 위기 탈출(삼진·병살 또는 주자 둘 이상)이면 구장 위에 장면 카드를 잠깐 띄운다. 재생 중 실제로 그 타석이 끝났을 때만(되감기·건너뛰기에는 띄우지 않음) */
+function cClutchOf(g,k){ const m=pcMoment(g,k), x=m.x; if(!x||typeof x[1]!=='number')return null; const res=x[3];
+  const bName=pcName(g,x[1]), pName=pcName(g,x[2]); const sc=`${tshort(g.away)} ${x[7]} : ${x[8]} ${tshort(g.home)}`;
+  if(m.walkoff)return {t:'끝내기!',s:`${bName} · ${sc}`,tid:m.team,big:1};
+  if(res==='HR'&&m.pre.bases.every(Boolean))return {t:'만루 홈런!',s:`${bName} · ${sc}`,tid:m.team,big:1};
+  if(m.before<0&&m.after>0)return {t:'역전!',s:`${bName} · ${sc}`,tid:m.team,big:m.inn>=7?1:0};
+  if(m.before<0&&m.after===0&&m.inn>=6)return {t:'동점!',s:`${bName} · ${sc}`,tid:m.team};
+  if(m.inn>=8&&m.risp&&Math.abs(m.before)<=1&&!m.runs&&(res==='K'||res==='DP'||m.pre.bases.filter(Boolean).length>=2)){ const nb=g.pbp.slice(k+1).find(r=>typeof r[1]==='number'); const ended=!nb||nb[0]!==x[0]; if(ended&&['K','DP','OUT'].includes(res)){ const def=m.top?g.home:g.away; return {t:m.pre.bases.every(Boolean)?'만루 위기 탈출!':'위기 탈출!',s:`${pName} · ${res==='K'?'삼진으로':res==='DP'?'병살로':'범타로'} 이닝 종료`,tid:def}; } }
+  return null; }
+function cClutch(g,k){ const c=cClutchOf(g,k); if(!c)return; const st=document.getElementById('cs-stage'); if(!st)return; st.querySelectorAll('.md-clutch').forEach(e=>e.remove());
+  const el=document.createElement('div'); el.className='md-clutch'+(c.big?' big':''); el.style.setProperty('--cl',cTeamCol(c.tid)); el.setAttribute('role','status');
+  el.innerHTML=`<span class="mdc-tm">${badge(c.tid,22)} ${esc(tshort(c.tid))}</span><b>${esc(c.t)}</b><span class="mdc-s">${esc(c.s)}</span>`; st.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),450); },c.big?2600:1900); }
 /* 포수 시점: x=0..1은 존 왼쪽→오른쪽, y=0..1은 높음→낮음.
    공이 존 밖으로 빠진 위치도 표시한다. 공개되는 공은 재생한 순서까지만. */
 function mdPitchDock(){return `<section class="md-pitch-dock md-panel" aria-label="투구판과 볼카운트"><header><b>투구 위치 <small>포수 시점</small></b><span id="cs-pitch-source">포수 시점</span></header><div class="md-zone-map" role="img" aria-label="9칸 스트라이크존 · 투구 대기"><div class="md-zone-grid">${Array.from({length:9},()=>'<i></i>').join('')}</div><div id="md-pitch-dots"></div></div><div class="cs-pitch" id="cs-pitch" aria-live="polite"></div><ol class="md-pitch-history" id="md-pitch-history" aria-label="이번 타석 투구 기록"></ol><div class="md-count-panel"><div class="md-bug" id="md-bug" aria-hidden="true"></div><div class="md-base-state" id="cs-bases" aria-label="현재 주자"></div><div class="cs-bso" id="cs-bso" aria-label="볼카운트"><div><b>B</b><span id="cs-B"><i></i><i></i><i></i></span></div><div><b>S</b><span id="cs-S"><i></i><i></i></span></div><div><b>O</b><span id="cs-Ob"><i></i><i></i></span></div></div><div id="cs-count-summary">0볼 · 0스트라이크 · 0아웃</div></div></section>`;}
@@ -34586,6 +34628,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-cast-fx',d:'11월 11일',t:'경기 중계: 결정적 순간 · 타구장 소식',items:[
+    '중계 중 역전·동점(6회 이후)·끝내기·만루 홈런, 8회 이후 1점 차 득점권 위기를 삼진·병살 등으로 막은 장면에서 구장 위에 큰 장면 카드가 잠깐 뜹니다. 되감기·건너뛰기 때는 뜨지 않습니다.',
+    '중계 화면 아래에 같은 날 다른 구장 점수가 나옵니다. 우리 경기가 진행된 이닝까지만 보여 주고, 경기가 끝나면 최종 점수가 나옵니다.']},
   {id:'2026-11-11-sp-ramp',d:'11월 11일',t:'선발 빌드업 · 보직 왔다갔다 부담',items:[
     '불펜으로 던지던 투수를 선발로 돌리면 바로 100구를 던지지 못합니다. 최근 30일 가장 긴 등판보다 18구 많은 데까지(최소 60구) 던지고, 보통 세 번쯤 선발로 나와야 정상 투구 수가 됩니다. 시즌 초 선발진은 캠프에서 몸을 만든 것으로 봅니다. 선수 정보의 투수 부하 줄에 빌드업 상태가 나옵니다.',
     '선발과 구원을 짧은 간격으로 오가면 팔 부하가 더 쌓입니다. 선발 뒤 이틀 안에 구원으로 쓰면 그 등판 부하가 두 배, 구원으로 20구 이상 던지고 사흘 안에 선발로 내면 그 선발 부하가 30% 늘어 부상 위험이 커집니다. 체력 능력치는 던진 양으로 늘지 않습니다.']},
