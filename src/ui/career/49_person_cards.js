@@ -87,6 +87,14 @@ function personXExt(k){ const P=String(k).split(':'), kind=P[0];
       info:`<p class="small">${m.inj?`부상 ${m.inj}일 · `:''}${m.sl?`슬럼프 ${m.sl}일 · `:''}무대 ${m.app||0}회 · 피로 ${Math.round(m.fat||0)} · 월 수수료 ${money(cheerFee(m,S.ag))}</p>`,acts:[btn('응원단','go','club:fans',1)]}; }
   if(kind==='crew'){ const c=crewOf()[P[1]]; if(!c)return null; const ph=typeof crewPh==='function'?crewPh(c):null; const img=(G.cimg&&G.cimg['P:cheer:'+c.id])||(ph!=null&&typeof face8Src==='function'?face8Src(ph):null);
     return {k,name:c.name,role:`${tname(G.user)} ${CREW_JOB[c.job].l}`,av:{img,name:c.name},rel:null,lab:'',sub:`${c.age}세 · 월 ${money(c.sal)}`,acts:[btn('팬 운영','go','club:fans',1)]}; }
+  if(kind==='spn'){ const S=G.spon, c=S&&S.c&&S.c[P[1]]; if(!c||!c.co)return null; const H=(S.hist||[]).filter(h=>h.co===c.co);
+    return {k,name:c.co,role:`${SPON_SLOT[P[1]].l} 스폰서 · ${c.ind}`,av:{img:hsCrest(c.co),name:c.co},rel:null,lab:'',sub:`${c.y0}~${c.until} · 연 ${money(c.amt)}`,
+      info:`<p class="small">${c.ps?`가을야구 진출 보너스 ${money(c.ps)} · `:''}${c.champ?`우승 보너스 ${money(c.champ)} · `:''}${c.img?'언론 논조가 30 아래면 다음 해 20% 감액 조항':'이미지 조항 없음'}</p>${H.length?`<p class="small muted">지난 계약 ${H.length}건: ${H.map(h=>`${h.y0}~${h.until} ${SPON_SLOT[h.slot].l}`).join(', ')}</p>`:''}`,
+      acts:[btn('스폰서','go','club:spon',1)]}; }
+  if(kind==='doc'){ const d=teamDoc(); const H=HOSP[(G.med&&G.med.hosp)||'none'], IL=injNowList().filter(x=>x.st==='out');
+    return {k,name:d.name,role:`${tname(G.user)} 팀 닥터 · 의무팀장`,av:{persona:'staff',pid:'doc'+G.user,team:G.user,age:d.age,name:d.name},rel:null,lab:'',sub:`${d.age}세 · ${d.car}`,
+      info:`<p class="small">제휴 병원: <b>${esc(H.name)}</b> · ${esc(H.d)}</p><p class="small">지금 재활 중 ${IL.length}명${IL.length?`: ${IL.slice(0,6).map(x=>`<button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button>`).join(', ')}`:''}</p>`,
+      acts:[btn('부상 관리','go','staff:med',1)]}; }
   if(kind==='hs'||kind==='hsc'){ const n=P.slice(1).join(':'); const S=schList()[n]; if(!S)return null; const r=schRel(S);
     const Ls=Object.values(G.players).filter(p=>p.school===n);
     const pros=Ls.filter(p=>p.team!=null&&!p.prospect), cands=Ls.filter(p=>p.prospect);
@@ -105,7 +113,15 @@ function personTopExt(k){ const P=String(k).split(':'), kind=P[0]; let ab=[], pe
   else if(kind==='oc'){ const tid=+P[1]; const c=G.coach&&coachesOf(tid)[P[2]]; if(!c)return null; ab=[['기본 지도',dv(c.sk)],['기본 육성',dv(c.dv)]]; const h=u01('cpers',c.id); pe=[[h<.33?'원칙형':h<.66?'소통형':'열정형',h<.33?'규율을 중시합니다.':h<.66?'선수와 대화를 많이 합니다.':'훈련량이 많고 목소리가 큽니다.']]; li=[['감독',G.mgr[tid]?G.mgr[tid].name:'-']]; if(c.clan)li.push(['감독 사단','감독과 함께 온 코치입니다']); }
   else if(kind==='chm'){ const o=cheerOf(P[1]); if(!o)return null; const m=o.m, s=v=>v*5; ab=[['외모·무대 존재감',s(m.vis)],['인기',s(m.pop)],['팬 서비스',s(m.svc)],['댄스',s(m.dance)],['체력',s(m.sta)],['성실',s(m.dil)]]; pe=[[m.pop>=15?'스타 단원':m.yrs>=5?'고참':'성장 중',m.pop>=15?'관중과 SNS의 관심을 끕니다.':m.yrs>=5?'후배를 이끄는 경험이 있습니다.':'무대를 거듭하며 인기가 오릅니다.']]; li=[['대행사',(typeof CHEER_AG!=='undefined'&&CHEER_AG[o.S.ag]&&CHEER_AG[o.S.ag].l)||o.S.ag]]; }
   else if(kind==='crew'){ const c=crewOf()[P[1]]; if(!c)return null; ab=CREW_AT.map(([key,l])=>[l,c[key]*5]); pe=[[c.star>=15?'스타 응원단장':'현장형',c.star>=15?'이름만으로 관중을 부릅니다.':'관중석 분위기를 직접 끌어올립니다.']]; }
+  else if(kind==='spn'){ const c=G.spon&&G.spon.c&&G.spon.c[P[1]]; if(!c||!c.co)return null; const yrs=c.until-c.y0+1, left=Math.max(0,c.until-sponSeason()+1); ab=[['계약 규모(기준 대비)',clamp(c.amt/Math.max(1,SPON_SLOT[P[1]].b)*60,5,100)],['남은 기간',yrs?left/yrs*100:0]]; li=[['업종',c.ind],['계약',`${yrs}년 · 연 ${money(c.amt)}`],['남은 해',`${left}년`]]; }
+  else if(kind==='doc'){ const hk=(G.med&&G.med.hosp)||'none'; const tier={none:0,c:1,b:2,a:3}[hk]; const d=teamDoc();
+    const yc=t=>sum(Object.values(G.players).map(p=>(p.injHist||[]).filter(x=>x.y===G.year&&injTm(p,x)===t).length)); const me=yc(G.user), lg=avg(G.teams.map(t=>yc(t.id)));
+    ab=[['검진 정확도',40+tier*20],['재활 지원',35+tier*20],['경력',clamp((d.age-30)*3,20,95)]]; pe=[[d.sty,DOC_STY[d.sty]]]; li=[['올해 부상',`우리 ${me}건 · 리그 평균 ${lg.toFixed(1)}건`],['협업',`${G.mgr[G.user]?G.mgr[G.user].name+' 감독':'감독 공석'}과 선수 기용·휴식을 상의합니다`]]; }
   else if(kind==='hs'){ const S=schList()[P.slice(1).join(':')]; if(!S)return null; ab=[['팀 전력',S.lv],['우리 구단 친분',schRel(S)]]; pe=S.coach?[[S.coach.sty,HS_STY_D[S.coach.sty]||'']]:[]; li=[['권역',S.area],...(S.coach?[['감독',`${S.coach.name} (${S.coach.y0||G.year}년부터)`]]:[])]; }
   else if(kind==='hsc'){ const S=schList()[P.slice(1).join(':')]; const c=S&&S.coach; if(!c)return null; ab=[['지도자 명성',c.rep],['우리 구단 친분',schRel(S)]]; pe=[[c.sty,HS_STY_D[c.sty]||'']]; li=[['학교',`${S.n} · 전력 ${S.lv}`],...(c.from!=null&&team(c.from)?[['연고 구단',tname(c.from)]]:[])]; }
   else return null;
   return `<div class="pcard">${ab.length?`<div class="pc-sec"><div class="eyebrow">능력</div>${ab.map(([l,v])=>pcBar(l,v)).join('')}</div>`:''}${pe.length?`<div class="pc-sec"><div class="eyebrow">성격</div>${pe.map(([l,d])=>`<div class="pc-tr"><span class="pill">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}${li.length?`<div class="pc-sec"><div class="eyebrow">관계</div>${li.map(([l,d])=>`<div class="pc-li"><span class="muted small">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}</div>`; }
+
+/* 팀 닥터(의무팀장): 의료 효과는 제휴 병원·시설이 정하고, 이 사람은 그 정보를 보여 주는 얼굴이다. 이름·나이·경력은 구단마다 고정(저장 없이 같은 값) */
+const DOC_STY={보수형:'복귀를 서두르지 않습니다. 재발을 가장 경계합니다.',적극형:'선수가 빨리 돌아오도록 재활을 몰아붙입니다.',데이터형:'투구 수와 피로 기록을 꼼꼼히 봅니다.'};
+function teamDoc(tid){ tid=tid??G.user; const s='doc'+tid+':'+(team(tid).code||tid); return {name:nameH(s),age:40+Math.floor(u01(s,'da')*20),sty:Object.keys(DOC_STY)[Math.floor(u01(s,'ds')*3)],car:['정형외과 전문의','스포츠의학 전문의','재활의학 전문의','대학병원 스포츠의학센터 출신'][Math.floor(u01(s,'dc')*4)]}; }
