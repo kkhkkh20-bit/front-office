@@ -63,7 +63,7 @@ function buildWorld(){ const userTid=0; worldReset();
   G.fmarket=[]; refreshFMarket(12); updateModes(); makeDraftClass();
   G.stops=[]; G.games=[];
   for(const t of G.teams){ const rs=G.teams.map(x=>({id:x.id,r:teamRating(x.id)})); const a=avg(rs.map(x=>x.r)); t.expW=clamp(.5+(teamRating(t.id)-a)*.03,.36,.64); }
-  G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
+  G.proj=G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
   try{ G.preview=worldPreview(); }catch(e){ G.preview=null; }
 }
 /* 시작 자금은 시장 크기대로: 큰 구단 약 60억, 작은 구단 약 26억, 독립 구단 약 20억(사용자 11-08: 쉬운 구단·어려운 구단) */
