@@ -152,7 +152,7 @@ function foreignCheck(tid,p,excludeId,tmp){
   const fs=fStayOf(tid).filter(x=>x.id!==excludeId);
   if(p.foreign==='아시아'){ if(fs.filter(x=>x.foreign==='아시아').length>=1)return '아시아쿼터는 1명까지입니다. 먼저 한 명을 방출하세요.'; if((p.ask||0)>ASIA_CAP)return `아시아쿼터 연봉은 ${money(ASIA_CAP)}까지입니다.`; /* 기본 계약 경로도 상한(검수 11-06) */ return ''; }
   const yb=fs.filter(x=>x.foreign==='용병');
-  if(yb.length>=3)return '외국인 선수(아시아쿼터 제외)는 3명까지입니다. 먼저 한 명을 방출하세요.';
+  if(yb.length>=fMaxYB(tid))return `외국인 선수(아시아쿼터 제외)는 ${fMaxYB(tid)}명까지입니다. 먼저 한 명을 방출하세요.`;
   if(yb.length===2&&yb.every(x=>x.isP===p.isP))return `외국인 3명을 모두 ${p.isP?'투수':'타자'}로 채울 수 없습니다.`;
   if(tid===G.user&&G.contract&&!G.contract.done&&p.foreign==='용병'){ const f=fReCapInfo(); if(f&&f.tot+p.ask>f.cap)return `재계약 중인 선수 조건까지 합치면 외국인 총액이 한도를 ${money(f.tot+p.ask-f.cap)} 넘습니다.`; return ''; } /* 재계약 확정 검사와 같은 기준(재계약 연봉으로 본다. 아래 옛 연봉 검사는 하지 않음) */
   const cap=fCap(tid,tmp?null:excludeId); const tot=sum(yb.map(fCommit))+p.ask; /* 교체는 기존 선수를 뺀 한도로(부상 대체는 원 선수가 재활 명단에 남아 가산 유지) */ if(tot>cap)return `외국인 3명 연봉 총액이 한도 ${Math.round(cap/USD)}만 달러(약 ${money(cap)})를 넘습니다.`;
@@ -180,9 +180,9 @@ function fDeadAdd(tid,amt){ const y=sponSeason(); if(G.sea&&G.sea.y===y&&G.cal&&
 function fNextOwed(p){ if(sponSeason()===G.year)return true; /* 결산 뒤 겨울: 다음 시즌 계약(재계약 확정·이번 겨울 신규 계약)이 있는 선수만 연봉을 낸다 */ const C=G.contract; if(p.fy===sponSeason()||Math.max(p.fMulti||0,p.fCtY||0)>=sponSeason())return true; /* 2년 계약 둘째 해·확정된 재계약(AI 포함)도 보장(검수 11-09a) */ if(C&&C.y===G.year&&C.done&&(C.foreignEnd||[]).includes(p.id)&&!(C.foreignDrop||[]).includes(p.id))return true; return false; }
 function releaseForeign(id){ const p=G.players[id]; if(!p)return; if(p.team!=null&&!(p.joinY>sponSeason())&&fNextOwed(p))fDeadAdd(p.team,p.sal||0); { let oa=0; try{ if(p.team!=null&&G.sea&&G.sea.fspend&&optEarned(p)&&p.opt.paidY!==G.year)oa=p.opt.a; /* 결산에서 이미 준 옵션은 다시 주지 않는다(검수 11-08) */ }catch(e){} if(oa){ optPaid(p.team,oa); p.opt.paidY=G.year; /* 기본 연봉이 아니라 계약 옵션 지급으로(검수 11-09zzb) */ if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(oa)}도 지급합니다.`); } } /* 방출해도 달성한 옵션은 준다(검수 11-06) */ termsClear(p); mvLog('방출',p,p.team,null,'외국인 선수'); if(p.team===G.user)addLog(`외국인 선수 ${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 지급합니다.`); for(const k in G.lineup)if(G.lineup[k]===id)delete G.lineup[k]; dropP(id); }
 /* 외국인 시장은 10개 구단이 함께 쓴다. 구단마다 스카우트 오차를 안고 후보를 평가한다 */
-function fNeed(tid){ const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병'); if(yb.length<3&&fReplLeft(tid)>0){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1; return {kind:'용병',isP:needP?true:needB?false:null}; } if(!fs.some(x=>x.foreign==='아시아')&&fReplLeft(tid,'아시아')>0)return {kind:'아시아',isP:null};
+function fNeed(tid){ const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병'); if(yb.length<fMaxYB(tid)&&fReplLeft(tid)>0){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1; return {kind:'용병',isP:needP?true:needB?false:null}; } if(!fs.some(x=>x.foreign==='아시아')&&fReplLeft(tid,'아시아')>0)return {kind:'아시아',isP:null};
   /* 겨울 교체(사용자 피드백 11-05: AI가 약한 외국인을 그대로 두고, 시장 상위 후보는 경쟁 없이 우리에게 왔다): 자리가 다 찼어도 가장 약한 선수가 54 미만이면 더 나은 후보를 노린다 */
-  if(tid!==ME()&&period()!=='season'&&period()!=='post'&&yb.length>=3&&team(tid).cash>-2000){ const w=yb.slice().sort((a,b)=>ovr(a)-ovr(b))[0]; if(w&&ovr(w)<54)return {kind:'용병',isP:w.isP,up:w.id,upO:ovr(w)}; }
+  if(tid!==ME()&&period()!=='season'&&period()!=='post'&&yb.length>=fMaxYB(tid)&&team(tid).cash>-2000){ const w=yb.slice().sort((a,b)=>ovr(a)-ovr(b))[0]; if(w&&ovr(w)<54)return {kind:'용병',isP:w.isP,up:w.id,upO:ovr(w)}; }
   return null; }
 /* 우리 구단이 관찰(fwatch) 중인 후보는 소문이 나서 다른 구단도 더 눈여겨본다(경쟁) */
 function fScoreBy(tid,q){ const t=team(tid); return ovr(q)-(q.team==null?(q.sx||0)*.9:0)+hn('fv'+tid,q.id)*(t.scoutSd||6)*.6-q.ask/600+(q.team==null&&tid!==G.user&&fwatchOn(q.id)?2:0); }
@@ -204,7 +204,7 @@ function fBidWeek(){ try{ scoutFindWeek(); }catch(err){} if(!foreignOpen())retur
 function aiForeignFill(tid){
   { const q=aiForeignPick(tid); if(q){ aiForeignSign(tid,q); return; } }
   const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병');
-  if(yb.length<3&&fReplLeft(tid)>0){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1;
+  if(yb.length<fMaxYB(tid)&&fReplLeft(tid)>0){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1;
     const want=needP?true:needB?false:R()<.6;
     const p=newForeign('용병',{isP:want}); while(foreignCheck(tid,p)&&p.ask>300)p.ask=round5(p.ask*.85);
     if(!foreignCheck(tid,p))signForeign(tid,p.id); else dropP(p.id); return; }
