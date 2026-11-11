@@ -19,6 +19,7 @@ const dvRaw=FrontOfficeCore.dvRaw;
 const dv=FrontOfficeCore.dv;
 const dvSd=FrontOfficeCore.dvSd;
 function dvo(p){ return p?dv(ovr(p)):'-'; }
+function dvInv(d){ d=+d; if(!Number.isFinite(d))return null; const P=DV_PTS; if(d<=P[0][1])return P[0][0]; for(let i=1;i<P.length;i++){ const [a,b]=P[i-1],[c,e]=P[i]; if(d<=e)return a+(d-b)*(c-a)/(e-b); } return P[P.length-1][0]; } /* 화면 100점 척도 → 내부 20~80(에디터 입력용) */
 const hn=FrontOfficeCore.hn;
 
 

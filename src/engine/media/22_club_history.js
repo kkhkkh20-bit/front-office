@@ -231,6 +231,14 @@ function jno(p){ if(!p)return null; if(p.no!=null&&(p.noT===p.team||p.team==null
   const used=teamNos(p.team,p); let n=p.no!=null&&!used.has(p.no)?p.no:1+Math.floor(u01('jno',p.id)*99); let g=0; while(used.has(n)&&g++<100)n=(n+1)%100; /* 0번까지 돌아본다(KBO 0~99, 검수 11-09zz) */ if(p.team!=null){ if(p.noT!=null&&p.no!=null)(p.noBy=p.noBy||{})[p.noT]=p.no; p.no=n; p.noT=p.team; } return n; }
 /* 이름·등번호 고치기(유저 편집). 등번호 0~99, 같은 구단 선수와 겹치면 안 되고 우리 구단 영구결번은 쓸 수 없다 */
 function setPlayerName(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const nm=String(v??'').replace(/[<>&"'`]/g,'').replace(/\s+/g,' ').trim(); if(!nm)return '이름을 입력하세요.'; if(nm.length>12)return '이름은 12자까지 쓸 수 있습니다.'; if(nm===p.name)return ''; const old=p.name; p.name=nm; (p.renamed=p.renamed||[]).push({y:G.year,from:old}); if(p.renamed.length>5)p.renamed.shift(); return ''; }
+/* 에디터: 능력·잠재력·나이 고치기(커뮤니티 건의 11-11). 고치면 이 저장은 '에디터 사용'으로 남고 도전과제가 더 열리지 않는다 */
+const ED_RK={P:['stf','ctl','sta'],B:['con','pow','eye','def','spd']};
+function setPlayerRatings(id,o){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; o=o||{}; const ch=[];
+  for(const k of ED_RK[p.isP?'P':'B']){ const v=o.r&&o.r[k]; if(v==null||v==='')continue; const n=+v; if(!Number.isFinite(n))return '능력치는 숫자로 입력하세요.'; const raw=Math.round(clamp(n,20,80)*10)/10; if(Math.abs(raw-p.r[k])>=.05){ p.r[k]=raw; ch.push(k); } }
+  if(o.pot!=null&&o.pot!==''){ const n=+o.pot; if(!Number.isFinite(n))return '잠재력은 숫자로 입력하세요.'; const raw=Math.round(clamp(n,20,80)*10)/10; if(Math.abs(raw-p.pot)>=.05){ p.pot=raw; ch.push('pot'); } }
+  if(o.age!=null&&o.age!==''){ const n=Math.round(+o.age); if(!Number.isFinite(n)||n<16||n>45)return '나이는 16~45세로 입력하세요.'; if(n!==p.age){ p.age=n; ch.push('age'); } }
+  if(!ch.length)return ''; if(p.pot<ovr(p))p.pot=Math.round(ovr(p)*10)/10; /* 잠재력은 지금 능력 아래로 두지 않는다 */ roundR(p);
+  G.edited=G.edited||{d:G.day,n:0}; G.edited.n++; (p.edited=p.edited||[]).push({y:G.year,k:ch}); if(p.edited.length>5)p.edited.shift(); return ''; }
 function playerNoPermit(p,r){ const a=p.retNoPermit; return !!(a&&a.tid===p.team&&a.no===r.no&&a.ob===p.father&&sonRetOwn(r,fatherOf(p))); }
 function setPlayerNo(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const s=String(v??'').trim(); if(!/^\d{1,2}$/.test(s))return '등번호는 0~99 숫자로 입력하세요.'; const n=+s; if(p.team==null)return '소속 구단이 있는 선수만 등번호를 정할 수 있습니다.'; if(retNosOf(p.team).some(r=>r.no===n&&!playerNoPermit(p,r)))return `${n}번은 ${p.team===G.user?'우리 구단':tshort(p.team)} 영구결번입니다.`;
   const o=Object.values(G.players).find(q=>q!==p&&q.team===p.team&&jno(q)===n); if(o)return `${n}번은 ${o.name} 선수가 쓰고 있습니다.`; jno(p); /* 옛 구단 번호를 noBy에 남긴 뒤 바꾼다 */ p.no=n; p.noT=p.team; return ''; }
