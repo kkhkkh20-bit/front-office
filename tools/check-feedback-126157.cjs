@@ -81,5 +81,7 @@ test(156,()=>{prInit();G.pr.fan=99;const S=personalState();S.cash=1000;S.last={}
 test(157,()=>{const A=U0(),B=other(0),C=other(1);switchTeam(B);switchTeam(C);assert.ok(has('teams3'));assert.equal(achMeta().u.teams3.team,tshort(C),'달성 구단');});
 test('community-clash-foreign',()=>{const U=U0();const f=Object.values(G.players).find(p=>p.foreign&&p.team!=null);assert.ok(f);f.team=U;delete f.listed;const b=playersOf(U).find(p=>!p.foreign);G.evs=[];EVH.clash.make({a:f,b});const e=G.evs[G.evs.length-1];assert.ok(!e.opts.some(o=>/트레이드/.test(o.l)),'외국인 선수 트레이드 선택지');
   const t=EVH.clash.pick({data:{a:f.id,b:b.id}},2);assert.match(t,/벌금/);assert.ok(!f.listed);listPlayer(f.id);assert.ok(!f.listed);});
+test('community-trim-unsigned',()=>{const U=U0();const weak=domestic(U).filter(p=>!p.ys).sort((a,b)=>keepScore(a)-keepScore(b)).slice(0,3);G.contract={done:false,ended:weak.map(p=>p.id),foreignEnd:[],neg:{}};const pool=trimPool().map(p=>p.id);assert.ok(weak.every(p=>pool.includes(p.id)),'연봉 미계약 선수가 정리 후보에서 빠짐');
+  const n0=rosterN(U);releaseMany(weak.map(p=>p.id));assert.equal(rosterN(U),n0-3);assert.equal(G.contract.ended.length,0,'방출한 미계약 선수가 협상 목록에 남음');});
 console.log(JSON.stringify({checked:results.length,failed,fails:results.filter(r=>!r.pass).map(r=>r.id)}));if(failed&&!baseline)throw Error(failed+' failed');
 `)(assert,baseline);}finally{Math.random=old;}

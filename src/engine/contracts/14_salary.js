@@ -122,8 +122,9 @@ function offerExtension0(id,annual,years,acc,T){
   return {ok:false,st:'no',msg:`${who}: ${T?`${years}년이면 ${termsTxt(termsDemand(p,'ext',{annual:hint,years}),true)}${D&&D.ntc?' · 트레이드 거부권':''} 안팎`:`${years}년이면 연 ${money(hint)} 안팎`}은 되어야 생각해 보겠습니다.${ag&&ag.style==='hard'?' 그 아래로는 내려가지 않습니다.':''}`};
 }
 function keepScore(p){ return ovr(p)+Math.max(0,p.pot-ovr(p))*(p.age<=22?.4:p.age<=24?.28:.1)+(p.faC?3:0)+(p.age>=26&&p.age<=33?1.2:0); }
-/* 방출 후보 풀: 육성선수·연봉 협상 중(미계약) 선수는 빼고, 남길 가치가 낮은 순 */
-function trimPool(){ return domestic(G.user).filter(p=>!p.ys&&!(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id))).sort((a,b)=>keepScore(a)-keepScore(b)); }
+/* 방출 후보 풀: 육성선수는 빼고, 남길 가치가 낮은 순. 연봉 협상 중(미계약) 선수도 넣는다: 겨울에는 재계약 대상 대부분이 미계약이라 빼면 신입·주력만 남는다(커뮤니티 제보 11-11). 방출하면 협상 목록에서도 빠진다(toFree) */
+function trimPool(){ return domestic(G.user).filter(p=>!p.ys).sort((a,b)=>keepScore(a)-keepScore(b)); }
+const trimUnsigned=p=>!!(G.contract&&!G.contract.done&&(G.contract.ended||[]).includes(p.id));
 function trimCands(n){ return n>0?trimPool().slice(0,n):[]; } /* 한도 이하(음수)면 아무도 고르지 않는다: slice(0,-k)는 거의 전원을 돌려준다 */
 /* 일괄 방출(카페 피드백 11-09v): 후보 풀 안의 선수만, 한 명씩 방출과 같은 releasePlayer로(정산금·웨이버 그대로) */
 function relPick(ids){ const S=new Set((ids||[]).map(Number)); return trimPool().filter(p=>S.has(p.id)); }

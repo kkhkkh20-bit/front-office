@@ -59,17 +59,25 @@ function gameSheet(i){
 /* 순위 변동 그래프 */
 function rankChart(compact){
   const R=(G.sea&&G.sea.rh)||[]; if(R.length<3)return '';
-  const W=typeof innerWidth!=='undefined'&&innerWidth<=600?Math.max(300,innerWidth-44):600,H=compact?90:220,pl=compact?6:26,pr=compact?6:52,pt=8,pb=compact?6:20; const n=R.length;
-  const x=i=>pl+(W-pl-pr)*i/(n-1), y=r=>pt+(H-pt-pb)*(r-1)/9;
-  const tids=compact?[G.user]:G.teams.map(t=>t.id).sort((a,b)=>(a===G.user)-(b===G.user));
-  const lines=tids.map(tid=>{ const t=team(tid); const me=tid===G.user; const d=R.map((s,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(s[1][tid]).toFixed(1)}`).join(' ');
-    return `<path d="${d}" fill="none" stroke="${me?'var(--team-hi)':tpal(t)[3]}" stroke-width="${me?3:1.2}" stroke-opacity="${me?1:.55}" stroke-linejoin="round"/>`+(compact?'':`<text x="${W-pr+4}" y="${y(R[n-1][1][tid])+3}" class="rc-l${me?' me':''}">${esc(tshort(tid))}</text>`); }).join('');
+  /* 실제 크기(1:1) 기준으로 그린다: 작은 그림을 화면 폭만큼 늘리면 글자·선이 부풀고 이름이 잘린다(사용자 11-11) */
+  const W=compact?(typeof innerWidth!=='undefined'&&innerWidth<=600?Math.max(300,innerWidth-44):600):960, H=compact?90:360, pl=compact?6:40, pr=compact?6:132, pt=compact?8:16, pb=compact?6:30; const n=R.length, N=G.teams.length||10;
+  const x=i=>pl+(W-pl-pr)*i/(n-1), y=r=>pt+(H-pt-pb)*(r-1)/Math.max(1,N-1);
+  const me=G.user, tids=compact?[me]:G.teams.map(t=>t.id).sort((a,b)=>(a===me)-(b===me));
+  const path=tid=>{ const P=R.map((s,i)=>[x(i),y(s[1][tid])]); let d=`M${P[0][0].toFixed(1)} ${P[0][1].toFixed(1)}`; for(let i=1;i<P.length;i++){ const [x0,y0]=P[i-1],[x1,y1]=P[i], m=(x0+x1)/2; d+=` C${m.toFixed(1)} ${y0.toFixed(1)} ${m.toFixed(1)} ${y1.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}`; } return d; }; /* 점 사이를 수평 접선 곡선으로: 순위가 바뀐 날이 꺾은선보다 읽기 쉽다 */
+  const lines=tids.map(tid=>{ const t=team(tid), mine=tid===me, col=mine?'var(--team-hi)':tpal(t)[3];
+    return `<path d="${path(tid)}" fill="none" stroke="${col}" stroke-width="${mine?3.5:1.5}" stroke-opacity="${mine?1:.45}" stroke-linecap="round" stroke-linejoin="round"/>`+(mine&&!compact?`<circle cx="${x(n-1)}" cy="${y(R[n-1][1][tid])}" r="5" fill="${col}"/>`:''); }).join('');
+  if(compact)return `<div class="rcw"><svg class="rchart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="날짜별 순위 변화"><line x1="${pl}" x2="${W-pr}" y1="${(y(5)+y(6))/2}" y2="${(y(5)+y(6))/2}" class="rc-cut"/>${lines}</svg></div>`;
+  /* 오른쪽 구단 이름: 마지막 순위대로 세우고, 같은 순위(동률)는 겹치지 않게 아래로 민다. 이름과 선 끝은 가는 선으로 잇는다 */
+  const last=R[n-1][1], gap=15, L=G.teams.map(t=>({tid:t.id,r:last[t.id],y0:y(last[t.id])})).sort((a,b)=>a.y0-b.y0||(a.tid===me)-(b.tid===me)); let prev=-1e9; for(const o of L){ o.y=Math.max(o.y0,prev+gap); prev=o.y; } const over=prev-(H-pb+4); if(over>0)for(const o of L)o.y-=over;
+  const labels=L.map(o=>{ const mine=o.tid===me, tx=W-pr+18; return `<path d="M${x(n-1)+6} ${o.y0} L${tx-4} ${o.y}" class="rc-k"/><text x="${tx}" y="${o.y+4}" class="rc-l${mine?' me':''}"><tspan class="rc-r">${o.r}</tspan> ${esc(tshort(o.tid))}</text>`; }).join('');
   const months=[]; let lm=null; R.forEach((s,i)=>{ const m=dobj(s[0]).m; if(m!==lm){ lm=m; months.push([i,m]); } });
-  return `<div class="rcw"><svg class="rchart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="날짜별 순위 변화">
-    ${compact?'':[1,5,10].map(r=>`<text x="2" y="${y(r)+3}" class="rc-a">${r}위</text>`).join('')}
-    <line x1="${pl}" x2="${W-pr}" y1="${(y(5)+y(6))/2}" y2="${(y(5)+y(6))/2}" class="rc-cut"/>
-    ${compact?'':months.map(([i,m])=>`<line x1="${x(i)}" x2="${x(i)}" y1="${pt}" y2="${H-pb}" class="rc-g"/><text x="${x(i)+2}" y="${H-6}" class="rc-a">${m}월</text>`).join('')}
-    ${lines}</svg></div>`;
+  const cut=(y(5)+y(6))/2;
+  return `<div class="rcw"><svg class="rchart rchart-big" viewBox="0 0 ${W} ${H}" role="img" aria-label="날짜별 순위 변화">
+    ${Array.from({length:N},(_,i)=>i+1).map(r=>`<line x1="${pl}" x2="${W-pr}" y1="${y(r)}" y2="${y(r)}" class="rc-h"/><text x="${pl-10}" y="${y(r)+4}" class="rc-a" text-anchor="end">${r}</text>`).join('')}
+    <rect x="${pl}" y="${pt-6}" width="${W-pr-pl}" height="${cut-pt+6}" class="rc-ps"/>
+    <line x1="${pl}" x2="${W-pr}" y1="${cut}" y2="${cut}" class="rc-cut"/><text x="${W-pr-4}" y="${cut-5}" class="rc-a" text-anchor="end">가을야구권</text>
+    ${months.map(([i,m])=>`<line x1="${x(i)}" x2="${x(i)}" y1="${pt-6}" y2="${H-pb}" class="rc-g"/><text x="${x(i)+4}" y="${H-10}" class="rc-a">${m}월</text>`).join('')}
+    ${lines}${labels}</svg></div>`;
 }
 
 /* 뉴스: 얼굴과 종류 */

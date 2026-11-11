@@ -83,7 +83,7 @@ function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.us
       const auto=domestic(G.user).concat(awayOf(G.user)).filter(q=>!q.foreign&&autoProt(q)&&q.id!==c.pid);
       return `<section class="card cpbox"><div class="row between"><h2 class="sec">보호선수 명단 · ${esc(c.name)} 영입 보상</h2><span class="small muted">${dmd(c.exp)}까지</span></div>
         <p class="small">${tname(c.from)}에 보상해야 합니다(${c.grade}등급). 보호할 선수 <b>${S.size}/${g.prot}</b>명. 누르면 보호·해제됩니다. 명단 밖에서 상대가 1명을 데려가거나 돈으로 받습니다.</p>
-        <div class="prl">${pool.map(q=>`<button class="pr ${S.has(q.id)?'on':''}" data-a="protTog" data-v="${c.id}:${q.id}">${avImg(q)}<span><b>${esc(q.name)}</b><i>${posLabel(q)} · ${q.age}세 · ${money(q.sal)}</i></span>${rchip(Math.round(ovr(q)))}<em>${S.has(q.id)?'보호':'노출'}</em></button>`).join('')}</div>
+        <div class="prl">${pool.map(q=>`<button class="pr ${S.has(q.id)?'on':''}" data-a="protTog" data-v="${c.id}:${q.id}">${avImg(q)}<span><b>${esc(q.name)}</b><i>${posLabel(q)} · ${q.age}세 · ${money(q.sal)}</i></span>${rchip(Math.round(ovr(q)))}${(rp=>rp&&rp.ofp!=null?potChip(rp,q):'')(scoutReport(q))}<em>${S.has(q.id)?'보호':'노출'}</em></button>`).join('')}</div>
         ${auto.length?`<p class="small muted">저절로 보호: ${auto.map(q=>esc(q.name)).join(', ')}</p>`:''}
         <div class="btns"><button class="btn primary" data-a="protSubmit" data-v="${c.id}" ${S.size>g.prot?'disabled':''}>명단 제출 (${S.size}/${g.prot})</button><button class="btn" data-a="protAuto" data-v="${c.id}">운영팀 추천 순으로 다시 채우기</button><button class="btn" data-a="protAuto" data-v="${c.id}:ovr">종합 능력 순으로 다시 채우기</button></div>
         <p class="small muted">운영팀 추천은 능력에 나이·잠재력·연봉을 함께 따진 순서이고, 기한까지 내지 않으면 이 순서로 제출됩니다.</p></section>`; }
