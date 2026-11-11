@@ -2752,6 +2752,10 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .pt-l{list-style:none;margin:6px 0 0;padding:0}.pt-l li{display:grid;grid-template-columns:44px 18px 1fr;gap:6px;padding:4px 0;border-bottom:1px solid var(--line,#26303a);font-size:13px;align-items:baseline}
 .pt-l b{color:var(--muted,#9aa7b4);font-weight:600}.pt-l span{text-align:center;color:var(--muted,#9aa7b4)}.pt-l em{font-style:normal}
 .pt-l .pt-start em,.pt-l .pt-retire em{font-weight:600}.pt-l .pt-award em{color:#e8b923}
+.fence-rows{display:grid;gap:8px;margin:8px 0}.fence-rows .fence-r+.fence-r{border-top:1px solid var(--line,#26303a);padding-top:8px}.fence-r{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center}
+.fence-l{display:flex;flex-direction:column;font-size:12.5px}.fence-l i{font-style:normal;color:var(--muted,#9aa7b4);font-size:11.5px}.fence-l em{font-style:normal;color:#4f9dff;font-weight:600}
+.fence-seg{display:flex;flex-wrap:wrap;gap:4px}.fc-b{min-width:38px;height:28px;padding:0 6px;border:1px solid var(--line,#2f3a46);border-radius:6px;background:var(--panel2,#1b2129);color:inherit;font-size:12.5px;cursor:pointer}.fc-b.on{background:#3b82f6;border-color:#3b82f6;color:#fff;font-weight:600}.fc-b:disabled{opacity:.3;cursor:default}
+@media(max-width:600px){.fence-r{grid-template-columns:1fr}}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -23106,7 +23110,7 @@ function lgrDaily(day){ if(day===KD(12,18))try{ lgrDecide(); }catch(e){} }
 function lgrTxt(y){ const r=lgRuleOf(y); return `협회 규정: 공인구 홈런 지수 ${Math.round(r.ball*100)}(기준 100) · ABS 존 ${r.zone>0?'넓음(삼진↑)':r.zone<0?'좁음(볼넷↑)':'기본'} · 외국인 연봉 총액 상한 ${money(Math.round(F_TOTAL_CAP*r.fcap))}`; }
 /* ===== 리그 확장: 11·12구단 (장기 기획 11-11) =====
    흐름(게임 기준, 실제 KBO 9·10구단 창단 과정을 단순화):
-   1) 추진: 2030년 이후 해마다 12월 20일 12% 확률로 협회가 신생 구단 창단을 추진한다(마지막 확장 뒤 5년은 쉼). 연고 후보 도시는 리그 밖 도시.
+   1) 추진: 게임을 시작한 지 10년째(2026년 시작이면 2036년)부터 해마다 12월 20일 10% 확률로 협회가 신생 구단 창단을 추진한다(마지막 확장 뒤 6년은 쉼). 연고 후보 도시는 리그 밖 도시.
    2) 표결: 다음 해 6월 30일 구단 표결. 리그가 건강할수록(구단 평균 현금) 통과가 쉽다. 부결되면 3년 뒤 다시.
    3) 창단 단장: 승인 직후 명성이 높은(60 이상) 단장이거나 야인이면 창단 단장 제안이 온다.
    4) 특별지명(11월 20일): 기존 구단은 국내 선수 20명을 보호하고, 신생 구단은 구단마다 보호 밖 1명을 지명한다(구단마다 보상금 10억). 나머지는 신인·독립리그 선수로 채운다.
@@ -23115,7 +23119,7 @@ const EXP_NICK=['다이노스','위즈','히어로즈','레인저스','썬더스
 function expInit(){ return G.exp=G.exp||{stage:'idle',last:null,cool:null,hist:[]}; }
 function expDaily(day){ const E=expInit(); const o=dobj(day);
   if(o.m===12&&o.d===31)try{ expFBonusEnd(); }catch(e){}
-  if(o.m===12&&o.d===20&&E.stage==='idle'&&G.teams.length<12&&G.year>=2030&&!(E.cool&&G.year<E.cool)&&!(E.last&&G.year-E.last<5)&&R()<.12)expPropose();
+  if(o.m===12&&o.d===20&&E.stage==='idle'&&G.teams.length<12&&G.year>=(G.startY||2026)+10&&!(E.cool&&G.year<E.cool)&&!(E.last&&G.year-E.last<6)&&R()<.1)expPropose(); /* 사용자 11-11: 2030년보다 한참 뒤에. 게임 시작 10년째부터 해마다 10% */
   if(o.m===6&&o.d===30&&E.stage==='talk'&&E.y0<G.year)expVote();
   if(o.m===11&&o.d===20&&E.stage==='approved'&&E.ay===G.year)expDraft(); }
 function expPropose(){ const E=expInit(); const C=(typeof ciCityPool==='function'?ciCityPool():[]).filter(c=>!G.teams.some(t=>t.city===c.city)); if(!C.length)return; const c=pick(C);
@@ -28565,13 +28569,16 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
     <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 코치 수준과 감독의 육성 성향. 4) 잠재력과 성장 의지. 5) 훈련 방향과 해외 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 
 
-/* 담장 공사 상자: 치수를 넣고 '미리 보기'로 홈런 지수·공사비를 본 뒤 공사 */
-function fenceBox(tid){ if(tid!==G.user||G.unemp)return ''; const D=stadDim(tid), F=UI.fence||D, ok=stadWindow(), S=stadOf(tid), done=S.fenceY===sponSeason();
-  const inp=(k,l,st)=>`<label>${l}<input id="fc-${k}" type="number" step="${st}" min="${FENCE_LIM[k][0]}" max="${FENCE_LIM[k][1]}" value="${F[k]}"></label>`;
-  let pv=''; if(UI.fence){ const ix=fenceIdx(tid,UI.fence), c=fenceCost(D,UI.fence); pv=`<p class="small">공사 뒤 홈런 지수 <b>우타 ${Math.round(ix.R*100)} · 좌타 ${Math.round(ix.L*100)}</b> (지금 ${Math.round(parkHRM(tid,'R')*100)} · ${Math.round(parkHRM(tid,'L')*100)}) · 공사비 <b>${money(c)}</b></p>`; }
-  return `<details class="fence-box"${UI.fence?' open':''}><summary>담장 공사 <span class="muted">(거리·높이 조절)</span></summary><div class="fence-in">${inp('lf','좌측 거리(m)',.5)}${inp('cf','가운데 거리(m)',.5)}${inp('rf','우측 거리(m)',.5)}${inp('wl','좌측 높이(m)',.1)}${inp('wc','가운데 높이(m)',.1)}${inp('wr','우측 높이(m)',.1)}</div>${pv}${UI.fenceMsg?`<p class="small ${UI.fenceOk?'':'bad'}">${esc(UI.fenceMsg)}</p>`:''}
-    <div class="row"><button class="btn small" data-a="fencePrev">미리 보기</button><button class="btn small primary" data-a="fenceGo" ${ok&&!done?'':'disabled'}>공사하기</button></div>
-    <p class="small muted">담장이 1m 가까우면 그 방향 홈런이 약 4% 늘고, 1m 높으면 약 4% 줄어듭니다. 높은 담장에 막힌 타구는 2루타가 됩니다. 우타자는 좌측, 좌타자는 우측으로 당겨 친 홈런이 많습니다. 거리 좌우 ${FENCE_LIM.lf[0]}~${FENCE_LIM.lf[1]}m · 가운데 ${FENCE_LIM.cf[0]}~${FENCE_LIM.cf[1]}m · 높이 ${FENCE_LIM.wl[0]}~${FENCE_LIM.wl[1]}m. ${done?'올해 공사를 이미 했습니다.':ok?'비시즌에 한 해 한 번 할 수 있습니다.':'시즌이 끝난 뒤(10월~2월)에 할 수 있습니다.'}</p></details>`; }
+/* 담장 공사 상자: 자리마다 '몇 m 옮길지/높일지'를 선택지에서 고른다(숫자 입력 대신, 사용자 11-11). 고르는 즉시 공사 뒤 홈런 지수·공사비를 보여 준다 */
+const FENCE_STEP={d:[-5,-3,-2,-1,0,1,2,3,5],h:[-2,-1,-.5,0,.5,1,2]};
+const FENCE_ROW=[['lf','좌측 담장 거리','d'],['cf','가운데 담장 거리','d'],['rf','우측 담장 거리','d'],['wl','좌측 담장 높이','h'],['wc','가운데 담장 높이','h'],['wr','우측 담장 높이','h']];
+function fenceTarget(tid){ const D=stadDim(tid), Z=UI.fenceD||{}; const o={}; for(const [k] of FENCE_ROW)o[k]=Math.round((D[k]+(Z[k]||0))*10)/10; return o; }
+function fenceBox(tid){ if(tid!==G.user||G.unemp)return ''; const D=stadDim(tid), Z=UI.fenceD||{}, ok=stadWindow(), S=stadOf(tid), done=S.fenceY===sponSeason(), T=fenceTarget(tid), any=FENCE_ROW.some(([k])=>Z[k]);
+    const row=([k,l,t])=>{ const L=FENCE_LIM[k]; return `<div class="fence-r"><span class="fence-l"><b>${l}</b><i>지금 ${D[k]}m${Z[k]?` → <em>${T[k]}m</em>`:''}</i></span><div class="fence-seg">${FENCE_STEP[t].map(v=>{ const x=Math.round((D[k]+v)*10)/10, bad=x<L[0]||x>L[1]; return `<button class="fc-b${(Z[k]||0)===v?' on':''}" data-a="fenceD" data-v="${k}:${v}" ${bad?'disabled':''} title="${x}m">${v>0?'+'+v:v<0?'−'+(-v):'0'}</button>`; }).join('')}</div></div>`; };
+  let pv=''; if(any){ const ix=fenceIdx(tid,T), c=fenceCost(D,T); pv=`<p class="small fence-pv">공사 뒤 홈런 지수 <b>우타 ${Math.round(ix.R*100)} · 좌타 ${Math.round(ix.L*100)}</b> (지금 ${Math.round(parkHRM(tid,'R')*100)} · ${Math.round(parkHRM(tid,'L')*100)}) · 공사비 <b>${money(c)}</b></p>`; }
+  return `<details class="fence-box"${any||UI.fenceMsg?' open':''}><summary>담장 공사 <span class="muted">(거리·높이 조절)</span></summary><p class="small muted">담장을 앞(−)으로 당기거나 뒤(+)로 밀고, 높이를 낮추거나(−) 높이세요(+).</p><div class="fence-rows">${FENCE_ROW.map(row).join('')}</div>${pv}${UI.fenceMsg?`<p class="small ${UI.fenceOk?'':'bad'}">${esc(UI.fenceMsg)}</p>`:''}
+    <div class="row"><button class="btn small" data-a="fenceReset" ${any?'':'disabled'}>처음으로</button><button class="btn small primary" data-a="fenceGo" ${ok&&!done&&any?'':'disabled'}>공사하기</button></div>
+    <p class="small muted">담장이 1m 가까우면 그 방향 홈런이 약 4% 늘고, 1m 높으면 약 4% 줄어듭니다. 높은 담장에 막힌 타구는 2루타가 됩니다. 우타자는 좌측, 좌타자는 우측으로 당겨 친 홈런이 많습니다. 거리 좌우 ${FENCE_LIM.lf[0]}~${FENCE_LIM.lf[1]}m · 가운데 ${FENCE_LIM.cf[0]}~${FENCE_LIM.cf[1]}m · 높이 ${FENCE_LIM.wl[0]}~${FENCE_LIM.wl[1]}m 안에서만 고를 수 있습니다. ${done?'올해 공사를 이미 했습니다.':ok?'비시즌에 한 해 한 번 할 수 있습니다.':'시즌이 끝난 뒤(10월~2월)에 할 수 있습니다.'}</p></details>`; }
 /* ===== 구단 캘린더 (FM 일정 화면 방식) =====
    한 달을 월~일 격자로 보여 준다. 칸마다 우리 경기(상대·홈원정·결과)와 마감·리그 행사·우리 일(결정 기한, 부상 복귀 등)을 표시하고,
    날짜를 누르면 아래에 그날의 자세한 내용과 '이 날까지 진행' 버튼이 나온다.
@@ -29714,7 +29721,7 @@ function stadView(part){ const tid=G.user, S=stadOf(tid), cap=stadCap(tid), P=st
       <div class="row between"><span class="small">${b?`${b.lv}단계 공사 중 · ${dmd(b.done)} 완공`:lv>=STAD_MAX?'최고 단계':`${nx}단계 공사비 <b class="num">${money(STAD_COST[nx])}</b> · ${STAD_DAYS[nx]}일 · 유지비 연 +${money(STAD_UP[nx]-STAD_UP[lv])} · 효과: ${gtxt(it.k)}`}</span>${!b&&lv<STAD_MAX?`<span class="row" style="gap:4px;flex-direction:column;align-items:flex-end"><button class="btn small${can?' primary':''}" data-a="stadBuild" data-v="${it.k}" ${can?'':'disabled'}>구단 현금으로 · ${money(STAD_COST[nx])}</button><button class="btn small" data-a="capex" data-v="stad:${it.k}" ${stadWindow()?'':'disabled title="공사는 10월~2월에만 할 수 있어 협의도 그때 합니다"'}>지자체 분담 협의 · ${Math.round(capexOdds('stad',STAD_COST[nx])*100)}%</button>${can?'':`<span class="small muted">${!stadWindow()?'공사는 10월~2월에만':spendable(G.user)<STAD_COST[nx]?'자금 부족':'공사 불가'}</span>`}</span>`:''}</div></div>`; }).join('');
   const lgT=`<table class="tbl"><thead><tr><th>구단</th><th class="num">평균</th><th class="num">점유율</th><th class="num">매진</th></tr></thead><tbody>${lg.map(x=>`<tr class="${x.t.id===tid?'me':''}"><td>${badge(x.t.id,16)} ${esc(tshort(x.t.id))}</td><td class="num">${x.n?x.avg.toLocaleString('ko-KR'):'-'}</td><td class="num">${x.n?Math.round(x.occ*100)+'%':'-'}</td><td class="num">${x.so}</td></tr>`).join('')}</tbody></table>`;
   const sv={cur:part||'now',bar:''};
-  if(sv.cur==='now')return sv.bar+csec(esc(stadName(tid)),stadIsoPic(tid)+top+price);
+  if(sv.cur==='now')return sv.bar+csec(esc(stadName(tid)),stadIsoPic(tid)+top+price+fenceBox(tid));
   if(sv.cur==='fac')return sv.bar+csec('구장 시설',`<p class="small muted">구장은 시 소유이고 구단이 임대해 운영합니다. 공사는 시즌이 끝난 뒤(10월~2월)에 시작할 수 있고, 공사비는 보유 현금에서 먼저 나가고, 모기업 구단은 모자란 몫을 구단주 지원 여유 안에서 결산 때 메웁니다.</p><p class="small">${esc(spendTxt())}${can?'':' · 지금은 시즌 중이라 공사를 시작할 수 없습니다.'}</p>${UI.stadMsg?`<div class="note bad">${esc(UI.stadMsg)}</div>`:''}<div class="stad-l">${premise}${items}</div>`);
   if(sv.cur==='new')return sv.bar+csec('신구장',(()=>{ const N=S.proj; const age=G.year-stadBuilt(tid); const head=(N?stadIsoPic(tid):'')+`<p class="small">${esc(stadName(tid))} · ${stadBuilt(tid)}년 개장(${age}년째)${age>=30?' · <b class="bad">노후 구장: 관중 수요 -4%</b>':age<3?' · 새 구장 효과로 관중 증가':''}</p>`;
       if(!N){ if(age<20)return head+'<p class="small sdesc">개장 20년이 지나야 신구장을 추진할 수 있습니다.</p>'; if(S.retry&&G.year<S.retry)return head+`<p class="small sdesc">협상이 결렬됐습니다. ${S.retry}년에 다시 시도할 수 있습니다.</p>`;
@@ -33905,8 +33912,9 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
 Object.assign(A,{
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
-  fencePrev(){ const d={}; for(const k in FENCE_LIM){ const el=$('#fc-'+k); d[k]=el?el.value:stadDim(G.user)[k]; } const n=fenceNorm(d); if(!n){ UI.fenceMsg='숫자로 입력하세요.'; UI.fenceOk=false; } else { UI.fence=n; UI.fenceMsg=''; } render(); },
-  fenceGo(){ A.fencePrev(); if(!UI.fence)return; const e=fenceSet(UI.fence); UI.fenceMsg=e||'담장 공사를 마쳤습니다. 다음 경기부터 반영됩니다.'; UI.fenceOk=!e; if(!e){ UI.fence=null; save(); } render(); },
+  fenceD(v){ const [k,x]=String(v).split(':'); UI.fenceD=UI.fenceD||{}; UI.fenceD[k]=+x; UI.fenceMsg=''; render(); },
+  fenceReset(){ UI.fenceD={}; UI.fenceMsg=''; render(); },
+  fenceGo(){ const e=fenceSet(fenceTarget(G.user)); UI.fenceMsg=e||'담장 공사를 마쳤습니다. 다음 경기부터 반영됩니다.'; UI.fenceOk=!e; if(!e){ UI.fenceD={}; save(); } render(); },
   start(v){ if(UI.smode!=='take'&&UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
   gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; delete g.img; render(); },
@@ -34128,7 +34136,7 @@ Object.assign(A,{
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
   {id:'2026-11-11-expansion',d:'11월 11일',t:'리그 확장(11·12구단)과 창단 단장',items:[
-    '2030년 이후 협회가 신생 구단 창단을 추진할 수 있습니다. 이듬해 6월 구단 표결로 승인되면 11월 특별지명(구단마다 보호선수 20명 밖 1명, 보상금 10억)을 거쳐 다음 시즌 1군에 들어옵니다. 부결되면 3년 뒤 다시 논의합니다.',
+    '게임을 시작하고 10년이 지나면(2026년 시작이면 2036년부터) 협회가 신생 구단 창단을 추진할 수 있습니다. 이듬해 6월 구단 표결로 승인되면 11월 특별지명(구단마다 보호선수 20명 밖 1명, 보상금 10억)을 거쳐 다음 시즌 1군에 들어옵니다. 부결되면 3년 뒤 다시 논의합니다.',
     '구단 수에 따라 일정이 바뀝니다: 11구단은 상대별 14경기(140경기, 라운드마다 한 구단이 쉼), 12구단은 상대별 12경기(132경기). 신생 구단은 첫 신인 드래프트에서 1번 순번을 받습니다.',
     '신생 구단은 1군 첫 두 시즌 동안 일반 외국인 선수를 4명까지 보유할 수 있고 외국인 연봉 총액 한도도 100만 달러 더 큽니다.',
     '창단이 승인될 때 명성이 높거나(60 이상) 야인인 단장에게 창단 단장 제안이 옵니다. 수락하면 특별지명 날 신생 구단 단장으로 옮깁니다.'

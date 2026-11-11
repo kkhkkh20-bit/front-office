@@ -1,6 +1,6 @@
 /* ===== 리그 확장: 11·12구단 (장기 기획 11-11) =====
    흐름(게임 기준, 실제 KBO 9·10구단 창단 과정을 단순화):
-   1) 추진: 2030년 이후 해마다 12월 20일 12% 확률로 협회가 신생 구단 창단을 추진한다(마지막 확장 뒤 5년은 쉼). 연고 후보 도시는 리그 밖 도시.
+   1) 추진: 게임을 시작한 지 10년째(2026년 시작이면 2036년)부터 해마다 12월 20일 10% 확률로 협회가 신생 구단 창단을 추진한다(마지막 확장 뒤 6년은 쉼). 연고 후보 도시는 리그 밖 도시.
    2) 표결: 다음 해 6월 30일 구단 표결. 리그가 건강할수록(구단 평균 현금) 통과가 쉽다. 부결되면 3년 뒤 다시.
    3) 창단 단장: 승인 직후 명성이 높은(60 이상) 단장이거나 야인이면 창단 단장 제안이 온다.
    4) 특별지명(11월 20일): 기존 구단은 국내 선수 20명을 보호하고, 신생 구단은 구단마다 보호 밖 1명을 지명한다(구단마다 보상금 10억). 나머지는 신인·독립리그 선수로 채운다.
@@ -9,7 +9,7 @@ const EXP_NICK=['다이노스','위즈','히어로즈','레인저스','썬더스
 function expInit(){ return G.exp=G.exp||{stage:'idle',last:null,cool:null,hist:[]}; }
 function expDaily(day){ const E=expInit(); const o=dobj(day);
   if(o.m===12&&o.d===31)try{ expFBonusEnd(); }catch(e){}
-  if(o.m===12&&o.d===20&&E.stage==='idle'&&G.teams.length<12&&G.year>=2030&&!(E.cool&&G.year<E.cool)&&!(E.last&&G.year-E.last<5)&&R()<.12)expPropose();
+  if(o.m===12&&o.d===20&&E.stage==='idle'&&G.teams.length<12&&G.year>=(G.startY||2026)+10&&!(E.cool&&G.year<E.cool)&&!(E.last&&G.year-E.last<6)&&R()<.1)expPropose(); /* 사용자 11-11: 2030년보다 한참 뒤에. 게임 시작 10년째부터 해마다 10% */
   if(o.m===6&&o.d===30&&E.stage==='talk'&&E.y0<G.year)expVote();
   if(o.m===11&&o.d===20&&E.stage==='approved'&&E.ay===G.year)expDraft(); }
 function expPropose(){ const E=expInit(); const C=(typeof ciCityPool==='function'?ciCityPool():[]).filter(c=>!G.teams.some(t=>t.city===c.city)); if(!C.length)return; const c=pick(C);
