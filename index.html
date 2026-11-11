@@ -12445,7 +12445,9 @@ function lifeTags(p){ const T=[]; if(!p||p.foreign)return T; try{ const R=(p.his
 function retTalkP(p){ return clamp(.3+((p.mor??60)-60)/150+(ovr(p)>=48?.15:0)-(p.age>=39?.2:p.age>=37?.1:0),.08,.75); }
 function retireNotice(){ if(G.unemp)return; const L=playersOf(G.user).filter(retireLikely); if(!L.length)return; mail('운영팀',`시즌 뒤 은퇴가 유력한 선수 ${L.length}명`,L.map(p=>`· ${p.name}(${posLabel(p)}, ${p.age}세, 연봉 ${money(p.sal)})`).join('\n')+'\n\n나이와 능력으로 보아 이번 시즌이 끝나면 유니폼을 벗을 가능성이 큽니다. 다음 시즌 연봉 계획과 전력 구성에 참고하세요.',{kind:'선수'});
   const star=L.filter(p=>{ const ys=new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)); return ys.size>=8||p.fr; }).sort((a,b)=>(b.svc||0)-(a.svc||0))[0];
-  { const q=L.filter(p=>p.age<=40&&p.retDelay!==G.year).sort((a,b)=>ovr(b)-ovr(a))[0]; if(q&&!(G.evlog||[]).some(x=>x.k==='retTalk'&&x.y===G.year)){ const pr=retTalkP(q); evNew('retTalk',`${q.name} 은퇴 면담`,`${q.name}(${posLabel(q)}, ${q.age}세)이(가) 시즌 뒤 은퇴를 생각하고 있습니다. 단장이 직접 만나 볼까요? (설득 가능성 약 ${Math.round(pr*100)}% · 선수 기분과 능력, 나이에 따라 다름)`,[{l:'한 해 더 뛰자고 설득',fx:'성공하면 이번 겨울 은퇴하지 않습니다. 실패하면 기분 -5'},{l:'은퇴를 존중한다',fx:'선수 기분 +5, 시즌 뒤 예정대로 은퇴'}],{def:1,exp:14,data:{pid:q.id},from:'운영팀'}); } } /* 은퇴 면담(사용자 11-11) */
+  { const ten=p=>new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)).size; /* 선수가 먼저 은퇴 의사를 밝힌다(사용자 11-11): 우리 구단 1군 3시즌 이상 뛴 선수, 많아야 3명 */
+    for(const q of L.filter(p=>p.age<=40&&p.retDelay!==G.year&&ten(p)>=3).sort((a,b)=>ten(b)-ten(a)).slice(0,3)){ if((G.evs||[]).some(x=>x.k==='retTalk'&&!x.done&&x.data&&x.data.pid===q.id))continue; const pr=retTalkP(q);
+      evNew('retTalk',`${q.name}: "이번 시즌을 끝으로 은퇴하고 싶습니다"`,`${q.name}(${posLabel(q)}, ${q.age}세, 우리 구단 ${ten(q)}시즌)이(가) 면담을 청해 이번 시즌을 끝으로 유니폼을 벗고 싶다고 말했습니다. 말려 볼 수도 있고, 뜻을 존중할 수도 있습니다. (말리면 마음을 바꿀 가능성 약 ${Math.round(pr*100)}% · 기분·능력·나이에 따라 다름)`,[{l:'한 해 더 뛰자고 말린다',fx:'마음을 바꾸면 이번 겨울 은퇴하지 않습니다. 실패하면 기분 -5'},{l:'뜻을 존중한다',fx:'선수 기분 +5. 시즌 뒤 은퇴하고, 은퇴식은 그때 다시 묻습니다'}],{def:1,exp:14,data:{pid:q.id},from:q.name,ref:q.id}); } } /* 은퇴 면담 */
   if(star&&!(G.evlog||[]).some(x=>x.k==='retTour'&&x.y===G.year)){ const c=Math.round(150*ecoIdx()); evNew('retTour',`${star.name} 은퇴 투어를 열까요?`,`${star.name}(${star.age}세)이(가) 이번 시즌을 끝으로 은퇴를 고민하고 있습니다. 구단에서 오래 뛴 선수라 마지막 원정 경기마다 상대 구단과 함께 작별 행사를 여는 은퇴 투어를 제안합니다.`,[{l:'은퇴 투어',fx:`행사비 ${money(c)} · 팬 여론 +3 · 선수 기분 +10`},{l:'시즌 뒤 은퇴식만',fx:'따로 행사를 열지 않습니다'}],{def:1,exp:10,data:{pid:star.id,c},from:'홍보팀'}); } }
 function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)fdReview(); }catch(e){} for(const t of G.teams){ if(t.id!==G.user&&t.cash<-5000)t.mode='rebuild'; }
   const retired=[], declared=[], obs=[];
@@ -16607,7 +16609,7 @@ function obAiGM(tid){ const L=obGMCands(); if(!L.length||R()>.45)return null; co
 /* 우리 선수 은퇴: 은퇴식·영구결번·구단에 남기기 */
 function obRetireEvents(list){ const L=list.filter(o=>o&&o.mine&&(o.ys>=3)).sort((a,b)=>b.mineWar-a.mineWar).slice(0,3);
   for(const ob of L){ const leg=ob.mineWar>=12||ob.ys>=8; const rn=ob.canRetNo!=null; const stay=ob.path==='media'?null:ob.path==='coach'?'코치 우선 협상 후보로 등록':ob.path==='scout'?'스카우트로 채용':'프런트 직원으로 채용';
-    const opts=[{l:rn?'은퇴식과 영구결번 (1억)':`은퇴식 열어 주기 (${leg?'5천만':'2천만'})`,fx:rn?`${ob.no}번 영구결번. 팬 여론이 크게 오르고, 훗날 구단으로 돌아올 가능성이 커집니다.`:'팬 여론이 오르고, 훗날 구단으로 돌아올 가능성이 커집니다.'}];
+    const opts=[{l:rn?'레전드 은퇴식과 영구결번 (1억)':leg?'레전드 은퇴식 (5천만)':'은퇴식 열어 주기 (2천만)',fx:rn?`${ob.no}번 영구결번. 팬 여론이 크게 오르고, 훗날 구단으로 돌아올 가능성이 커집니다.`:'팬 여론이 오르고, 훗날 구단으로 돌아올 가능성이 커집니다.'}];
     if(stay)opts.push({l:`은퇴식 + ${stay}`,fx:`은퇴식을 열어 주고(비용 같음) 구단에 남깁니다.${ob.path==='scout'?' 스카우트 자리가 꽉 차 있으면 한 자리를 비워 둘 때까지 후보 맨 앞에 둡니다.':''}`}); /* 둘 다(커뮤니티 요청 11-07) */
     if(stay)opts.push({l:stay,fx:ob.path==='coach'?'코치 후보에 우선 협상 대상으로 올라옵니다(연봉 20% 할인).':ob.path==='scout'?'빈자리가 있으면 바로 스카우트로 합류합니다.':'우리 프런트에서 일하며 경력을 쌓습니다. 언젠가 다른 구단 단장이 될 수도 있습니다.'});
     opts.push({l:'조용히 보내 주기',fx:`${OBPATH[ob.path]}의 길을 스스로 찾습니다.`});
@@ -16615,7 +16617,7 @@ function obRetireEvents(list){ const L=list.filter(o=>o&&o.mine&&(o.ys>=3)).sort
 EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)return ''; if(e.data.combo){ if(i===1){ const a=EVH.ret.pick({...e,data:{...e.data,combo:false}},0), b=EVH.ret.pick({...e,data:{...e.data,combo:false}},1); return a+' '+b; } if(i>=2)i--; } const t=team(G.user); const L=e.opts.length;
     if(i===0){ let r=''; const n0=(G.retNos||[]).length; if(e.data.rn!=null)r=retireNumber(e.data.rn); const rn=(G.retNos||[]).length>n0; /* 지정이 거절되면(이미 쓰인 번호 등) 일반 은퇴식 비용만, 결번 표시 없이(검수 11-09zz) */ const cost=rn?100:e.data.leg?50:20; G.spend.etc=(G.spend.etc||0)+cost; ob.bond+=rn?30:20; ob.ceremony=G.year;
       if(rn)ob.retNo=true; const f=rn?5:e.data.leg?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);
-      news('선수',`${t.city} ${t.nick} ${ob.name} 은퇴식${rn?`, ${ob.no}번 영구결번`:''}`,`${ob.ys}시즌 동안 뛴 ${ob.name}이(가) 팬들 앞에서 마지막 인사를 했습니다.`,rn?3:2,{fanW:1});
+      const lg=rn||e.data.leg; news('선수',`${t.city} ${t.nick} ${ob.name} ${lg?'레전드 ':''}은퇴식${rn?`, ${ob.no}번 영구결번`:''}`,lg?`만원 관중이 홈구장을 채운 가운데 ${ob.ys}시즌 동안 뛴 ${ob.name}의 레전드 은퇴식이 열렸습니다. 동료들의 헹가래와 은퇴 기념 영상, 가족과 함께한 시구 속에 마지막 인사를 했습니다.`:`${ob.ys}시즌 동안 뛴 ${ob.name}이(가) 팬들 앞에서 마지막 인사를 했습니다.`,rn?3:2,{fanW:1}); if(lg)try{ chron('honor',`${ob.name} 레전드 은퇴식${rn?` · ${ob.no}번 영구결번`:''}`,null,G.user,{source:'legcer:'+ob.id}); }catch(x){} /* 레전드 급은 제대로(사용자 11-11) */
       return `${r?r+' ':''}은퇴식 비용 ${money(cost)}. 팬 여론 +${f}.`; }
     if(i===1&&e.data.stay){ ob.bond+=15; ob.readyY=G.year;
       if(ob.path==='coach'){ const c=obCoach(ob); c.sal=round5(c.sal*.8); c.res=G.user; G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==ob.id); G.cmarket.unshift(c); return `${ob.name}이(가) 코치 후보 맨 앞에 올라왔습니다(${CROLE[c.role].l}, 연 ${money(c.sal)}).`; }
@@ -22406,7 +22408,7 @@ function pwatchDaily(){ if(G.unemp||!G.pwatch||!G.pwatch.length)return; const S=
 
 /* 은퇴 면담 결정 */
 EVH.retTalk={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; (G.evlog=G.evlog||[]).push({k:'retTalk',y:G.year});
-  if(i!==0){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 은퇴 면담: 구단이 은퇴 결정을 존중`,'move'); return `${p.name}의 은퇴 결정을 존중하기로 했습니다.`; }
+  if(i!==0){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 은퇴 의사를 밝혀 구단이 뜻을 존중`,'move'); return `${p.name}의 뜻을 존중하기로 했습니다. 시즌 뒤 은퇴식 여부를 다시 여쭙겠습니다.`; }
   if(R()<retTalkP(p)){ p.retDelay=G.year; p.mor=clamp((p.mor??60)+3,0,100); story(p,`${G.year} 은퇴 면담: 한 해 더 뛰기로`,'move'); news('구단',`${tshort(G.user)} ${p.name}, 은퇴 미루고 한 시즌 더`,`단장과 면담한 뒤 다음 시즌에도 뛰기로 했습니다.`,1,{tid:G.user,ref:p.id}); return `${p.name}이(가) 한 시즌 더 뛰기로 했습니다.`; }
   p.mor=clamp((p.mor??60)-5,0,100); return `${p.name}은(는) 마음을 바꾸지 않았습니다. 시즌 뒤 은퇴합니다.`; } };
 /* ===== 감독과 이야기 나누기: 스타일이 이끄는 대화 (사용자 11-08c: 대화 흐름이 뻔하다. 선택지 수보다 감독 스타일에 따른 재미난 흐름) =====
@@ -34252,7 +34254,7 @@ const PATCH=[
   {id:'2026-11-11-squad-tools',d:'11월 11일',t:'등번호 정리·관심 선수 명단·선수 상태 표시·시설 연식',items:[
     '선수단 화면의 등번호 정리에서 우리 선수 등번호를 한 번에 바꿀 수 있습니다. 서로 맞바꿀 수 있고, 겹치는 번호와 영구결번은 저장 전에 알려 줍니다.',
     '스카우트 화면에 타 구단 관심 선수 명단(30명까지)을 포지션별로 보여 주고 연봉·계약·FA 예정·트레이드 매물·포스팅 상태를 함께 표시합니다. 관심 선수가 FA 시장에 나오거나, 포스팅을 신청하거나, 트레이드 매물로 나오거나, 이적하면 소식함으로 알립니다.',
-    '선수단 명단에 원클럽맨·FA 예정·은퇴 유력·포스팅 후보 표시를 넣었습니다. 9월 1일에는 시즌 뒤 은퇴가 유력한 우리 선수를 미리 알리고, 은퇴 면담으로 한 해 더 뛰자고 설득하거나 오래 뛴 선수의 은퇴 투어를 열 수 있습니다.',
+    '선수단 명단에 원클럽맨·FA 예정·은퇴 유력·포스팅 후보 표시를 넣었습니다. 9월 1일에는 시즌 뒤 은퇴가 유력한 우리 선수를 미리 알립니다. 우리 구단에서 오래 뛴 선수는 먼저 은퇴하고 싶다고 면담을 청해 오고, 한 해 더 뛰자고 말리거나 뜻을 존중할 수 있습니다. 오래 뛴 선수의 은퇴 투어, 레전드 급 선수의 레전드 은퇴식도 열 수 있습니다.',
     '훈련 시설에 연식이 생겼습니다. 짓거나 고친 지 10년이 넘으면 해마다 낡아 한 단계씩 내려갈 수 있고, 9년째에 미리 알립니다. 시설 화면의 보수 공사로 연식을 새로 셀 수 있습니다.',
     '스카우트 명단과 배치 화면에 스카우트 고향(연줄 권역)을 보여 주고, 고향 우선 자동 배치 버튼으로 아마추어 스카우트를 고향 지역에 한 번에 보낼 수 있습니다.',
     '응원단장·치어리더 사진을 다른 템플릿 사진으로 바꾸거나 갤러리 사진을 넣을 수 있습니다. 언더독 도전과제는 1월 1일 전망이 8위 이하여도 인정합니다.'
