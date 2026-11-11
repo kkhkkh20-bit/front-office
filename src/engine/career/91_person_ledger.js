@@ -51,6 +51,6 @@ function pwatchDaily(){ if(G.unemp||!G.pwatch||!G.pwatch.length)return; const S=
 
 /* 은퇴 면담 결정 */
 EVH.retTalk={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; (G.evlog=G.evlog||[]).push({k:'retTalk',y:G.year});
-  if(i!==0){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 은퇴 면담: 구단이 은퇴 결정을 존중`,'move'); return `${p.name}의 은퇴 결정을 존중하기로 했습니다.`; }
+  if(i!==0){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 은퇴 의사를 밝혀 구단이 뜻을 존중`,'move'); return `${p.name}의 뜻을 존중하기로 했습니다. 시즌 뒤 은퇴식 여부를 다시 여쭙겠습니다.`; }
   if(R()<retTalkP(p)){ p.retDelay=G.year; p.mor=clamp((p.mor??60)+3,0,100); story(p,`${G.year} 은퇴 면담: 한 해 더 뛰기로`,'move'); news('구단',`${tshort(G.user)} ${p.name}, 은퇴 미루고 한 시즌 더`,`단장과 면담한 뒤 다음 시즌에도 뛰기로 했습니다.`,1,{tid:G.user,ref:p.id}); return `${p.name}이(가) 한 시즌 더 뛰기로 했습니다.`; }
   p.mor=clamp((p.mor??60)-5,0,100); return `${p.name}은(는) 마음을 바꾸지 않았습니다. 시즌 뒤 은퇴합니다.`; } };
