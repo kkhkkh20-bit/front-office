@@ -3535,7 +3535,7 @@ T('[피드백 11-09j] 모기업 구단은 현금이 적어도 구단주 지원 �
   const r0=budget().roomGoal; ok(r0>=3000,'준비 실패: 예산 여유 '+r0); ok(spendable(G.user)===200+r0,'쓸 수 있는 돈 '+spendable(G.user)+' / 현금 200 + 여유 '+r0); ok(spendTxt().includes('구단주 지원 여유'),'안내에 구성이 없음: '+spendTxt());
   const op=G.teams.find(x=>x.id!==G.user).id; const g=domestic(G.user).find(q=>!q.foreign&&!hasNtc(q)), q=domestic(op).find(x=>!x.foreign&&!hasNtc(x));
   const r=proposeTrade(op,[g.id],[q.id],1000); ok(r.ok,'현금 200으로 10억 현금 트레이드가 막힘: '+r.msg); const r1=budget().roomGoal; /* 선수 맞교환으로 연봉 합계도 바뀌므로 공사 전 여유를 다시 잰다 */
-  facInit(); G.fac.bld={}; const k=FACK.find(x=>G.fac.it[x]<FAC_MAX&&FACI[x].c[G.fac.it[x]+1]>200&&FACI[x].c[G.fac.it[x]+1]<=spendable(G.user)); ok(k,'준비 실패: 맞는 공사 없음'); const c=FACI[k].c[G.fac.it[k]+1], e0=G.spend.etc||0;
+  facInit(); G.fac.bld={}; const k=FACK.filter(x=>G.fac.it[x]<FAC_MAX&&FACI[x].c[G.fac.it[x]+1]>200&&FACI[x].c[G.fac.it[x]+1]<=spendable(G.user)).sort((a,b)=>FACI[a].c[G.fac.it[a]+1]-FACI[b].c[G.fac.it[b]+1])[0]; /* 가장 싼 공사: 지원 한도를 다 쓰면 시즌 결과에 따라 현금이 음수가 될 수 있어(난수 경로에 따라 흔들림) 여유를 남긴다 */ ok(k,'준비 실패: 맞는 공사 없음'); const c=FACI[k].c[G.fac.it[k]+1], e0=G.spend.etc||0;
   ok(buildFacItem(k)===''&&G.fac.bld[k],'예산 여유로 공사를 못 함'); ok(t.cash===200&&(G.spend.etc||0)-e0===c,'현금 200은 10억 트레이드 약정에 묶여 공사비는 모두 결산 지출로(검수 11-09zza): 현금 '+t.cash+' · 장부 '+((G.spend.etc||0)-e0)+'/'+c);
   ok(r1<r0&&budget().roomGoal<r1-(c-200)+5,'지출이 예산 여유에서 빠지지 않음: '+budget().roomGoal+' / r0 '+r0+' r1 '+r1+' c '+c);
   const u=G.teams.find(x=>x.indie); if(u){ const iv=t.indie; t.indie=true; ok(spendable(G.user)===sdCash(G.user),'독립구단도 예산 여유를 씀'); t.indie=iv; }

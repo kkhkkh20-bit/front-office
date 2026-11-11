@@ -47,6 +47,13 @@ function areaNet(tid,k){ const a=areaDef(k); if(!a)return 0; const home=teamArea
 const netLbl=v=>v>=75?'촘촘함':v>=55?'좋음':v>=35?'보통':v>=20?'약함':'거의 없음';
 /* 스카우트 고향(연줄) 권역: 배치와 상관없이 고정. 그 권역 학교 감독·코치와 아는 사이 */
 function scHome(s){ if(!s)return null; if(s.area)return s.area; const tot=AREA.reduce((a,x)=>a+x.w,0); let x=u01('sh',s.id)*tot; for(const a of AREA){ x-=a.w; if(x<=0)return a.k; } return AREA[0].k; }
+function scHomeReg(s){ const k=scHome(s); const a=AREA.find(x=>x.k===k); return a?a.reg:null; }
+function scHomeTxt(s){ const k=scHome(s); const r=scHomeReg(s); return k?`${k}${r?` (${r})`:''}`:'-'; }
+/* 고향 우선 자동 배치(커뮤니티 건의 11-11): 아마추어 스카우트를 고향 권역이 든 지역으로. 빈 지역이 생기면 남는 스카우트가 메운다 */
+function scHomeAuto(){ const am=(G.scouts||[]).filter(s=>(s.role||'am')==='am'); if(!am.length)return '아마추어 스카우트가 없습니다.'; let n=0;
+  for(const s of am){ const r=scHomeReg(s); if(r&&s.region!==r){ s.region=r; s.since=G.day; n++; } }
+  for(const r of REG){ if(am.some(s=>s.region===r))continue; const by={}; for(const s of am)by[s.region]=(by[s.region]||0)+1; const d=am.filter(s=>by[s.region]>1).sort((a,b)=>a.skill-b.skill)[0]; if(d){ d.region=r; d.since=G.day; n++; } } /* 담당이 없는 지역은 후보 잠재력을 못 보니, 겹친 지역의 스카우트 한 명을 보낸다 */
+  return n?`${n}명을 옮겼습니다.`:'이미 고향 지역에 배치돼 있습니다.'; }
 /* 평가 오차 배수: 정보망 100이면 0.75배, 0이면 1.3배 */
 function netSdM(p,tid){ if(!p||!p.prospect)return 1; const k=areaOf(p); if(!k)return 1; return (1.3-areaNet(tid??G.user,k)*.0055)*((tid??G.user)===G.user?schSdM(p):1); } /* 학교 감독 친분(91_schools.js) */
 /* 권역 요약(지도·목록): 올해 드래프트 후보 */
