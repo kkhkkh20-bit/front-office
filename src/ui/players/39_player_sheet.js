@@ -292,7 +292,7 @@ function renderSheet0(){
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
-   ${p.prospect||p.fdPool?'':careerHub(p)}${st}
+   ${p.prospect||p.fdPool?'':careerHub(p)}${personTimelineBox('pl:'+p.id)}${st}
    `:''}
    ${T==='mgmt'?`
    <div id="s-bond"></div>${p.team===G.user&&!(p.joinY>G.year)?bondCard(p):''}${personalAdviceBox(p,'contract')}
@@ -388,3 +388,7 @@ function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
   return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${(()=>{ const v=fdPotEst(p); return v==null?'':box('장래성',`<span style="color:${rcol(v)}">${GRD(v)}</span>`,`최대 예상(${fdPeakAge(p)>p.age?fdPeakAge(p)+'세 무렵 전성기':'이미 전성기'}) · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':''}`); })()}${box('연봉',money(p.sal||0),tContract(p))}</div>
     <div class="fdop">${S.L.map(t=>`<span class="fdtg" style="--c:${fdGc(t.g)}">${t.l} <b>${t.g}</b> <i class="fdtv" title="스카우트 추정치(실제와 다를 수 있음)">${dv(t.raw)}</i></span>`).join('')}</div>`; }
+
+/* 인물 이력부(91_person_ledger): 선수 시절 구단·이적·수상·은퇴·지도자/프런트 경력을 연도순으로 */
+function personTimelineBox(key,title){ let L=[]; try{ L=personTimeline(key); }catch(e){} if(!L.length)return ''; const ic={play:'⚾',move:'↔',award:'★',retire:'■',start:'▶',end:'◀'};
+  return `<section class="card pt-box"><h3 class="sec">${esc(title||'인물 이력')}</h3><ol class="pt-l">${L.map(x=>`<li class="pt-${x.k}"><b>${x.y}</b><span>${ic[x.k]||''}</span><em>${esc(x.t)}</em></li>`).join('')}</ol></section>`; }
