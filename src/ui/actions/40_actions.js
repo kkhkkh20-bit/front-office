@@ -251,7 +251,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   fmBack(){ fmBack(); }, fmFwd(){ fmFwd(); }, fmKeysX(){ UI.fmKeys=false; render(); }, fmKeysOpen(){ UI.fmKeys=true; render(); }, fmPlan(){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; UI.it.rdepth='glance'; closeSheets(); render(); },
   retNo(v){ note('기록',retireNumber(v)); save(); render(); },
   pEditOpen(v){ UI.pEdit=v===''||v==null?null:+v; UI.pEditErr=''; renderSheet(); },
+  pFace(v){ const [id,i]=String(v).split(':').map(Number), p=G.players[id]; if(!p||p.team==null||!face6Pool(p).includes(i))return; G.f6=G.f6||{}; G.f6r=G.f6r||{}; const k=p.team+':'+i, prev=G.f6r[k]; if(prev!=null&&prev!==id)delete G.f6[prev]; if(G.f6[id]!=null)delete G.f6r[p.team+':'+G.f6[id]]; G.f6[id]=i; G.f6r[k]=id; save(); render(); try{ renderSheet(); }catch(e){} },
   pEditSave(v){ const id=+v, p=G.players[id]; if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); let e=nm?setPlayerName(id,nm.value):''; if(!e&&no&&String(no.value).trim()!==String(jno(p)))e=setPlayerNo(id,no.value);
+    if(!e&&$('#pe-age')){ const rv=k=>{ const el=$('#pe-r-'+k); if(!el)return null; const t=String(el.value).trim(); return t===''||+t===dv(p.r[k])?null:dvInv(t); }; const r={}; for(const k of ED_RK[p.isP?'P':'B']){ const x=rv(k); if(x!=null)r[k]=x; } const pt=String($('#pe-pot').value).trim(); e=setPlayerRatings(id,{r,pot:pt===''||+pt===dv(p.pot)?null:dvInv(pt),age:$('#pe-age').value}); }
     if(e){ UI.pEditErr=e; renderSheet(); return; } UI.pEdit=null; UI.pEditErr=''; note('선수',`${p.name} · ${p.team!=null?jno(p)+'번':''} 저장했습니다.`); save(); render(); },
   blkOn(v){ const q=G.players[+v]; if(q&&hasNtc(q)){ toast(`${q.name}은(는) 트레이드 거부권이 있어 매물로 올릴 수 없습니다(${q.ntc}년까지).`); return; } blockAdd(+v,'any'); UI.sheet=null; save(); A.go('trade:block'); },
   blkOff(v){ blockRemove(+v); save(); render(); },
