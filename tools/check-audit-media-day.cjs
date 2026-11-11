@@ -5,6 +5,7 @@ try {
 const baseline=process.argv.includes('--baseline');
 let engine=require('./build.cjs').build({root,write:false}).engine;
 if(baseline){const media='src/engine/media/80_media_day.js';engine=engine.replace(fs.readFileSync(path.join(root,media),'utf8'),fs.readFileSync(process.argv[3],'utf8'));}
+engine=engine.replace('createRandom(Math.random)','createRandom(()=>Math.random())'); /* 엔진이 매번 현재 Math.random을 부르게: 아래 시나리오가 Math.random을 0으로 고정해 감독 수락을 재현한다 */
 new Function('assert','baseline',engine+`
 DEMO.on=false; newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);for(const t of G.teams)depth(t.id);
 const base=JSON.stringify(G), reset=()=>{G=JSON.parse(base);worldReset();G.day=G.cal.open-9;mdPlan();};

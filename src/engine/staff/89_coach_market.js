@@ -29,7 +29,7 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
     for(const o of ids){ if(o===tid)continue; const OC=G.coach[o]; if(!OC)continue; for(const k in OC){ const c=OC[k]; const to=PROMO[k]; if(!c||!to||staffPending(c)||(c.clan&&G.mgr[o]&&c.clan===G.mgr[o].id))continue; /* 막 계약해 아직 합류 전인 코치는 빼 가지 않는다 */ if(cmVal(c)>=cmVal(C[to])+6)pool.push([o,k,to,c]); } }
     const tg=pool.sort((a,b)=>cmVal(b[3])-cmVal(a[3]))[0]; if(!tg)continue; const [o,k,to,c]=tg; const sal=round5(c.sal*1.2);
     if(cmScore(c,tid,sal,to,false)<=cmScore(c,o,c.sal*1.05,k,true))continue;
-    const cur=C[to]; if(cur){ staffHistory('coach',cur,'계약 종료',tid,'후임 코치 영입'); coachPaySev(tid,cur); cur.yrs=0; cur.clan=null; cur.from=tid; cur.fromY=G.year; if(cur.age<64&&!cur.ob)G.cmarket.push(cur); }
+    const cur=C[to]; if(cur&&staffPending(cur))continue; /* 그 자리에 막 계약해 합류를 기다리는 코치가 있으면(같은 달 시장 영입 포함) 바로 밀어내지 않는다 */ if(cur){ staffHistory('coach',cur,'계약 종료',tid,'후임 코치 영입'); coachPaySev(tid,cur); cur.yrs=0; cur.clan=null; cur.from=tid; cur.fromY=G.year; if(cur.age<64&&!cur.ob)G.cmarket.push(cur); }
     G.coach[o][k]=obAiCoach(o,k)||mkCoach(k); staffCt(G.coach[o][k],ri(1,3),G.year+1); c.role=to; coachSync(c); c.sal=sal; c.clan=null; c.from=o; c.loy=15; staffCt(c,2,G.year+1); C[to]=c; staffHistory('coach',{...c,role:k},'이적',o,`${tshort(tid)} ${CROLE[to].l}로 승격 영입`); staffHistory('coach',c,'영입',tid,`${tshort(o)}에서 ${CROLE[to].l}로 승격 · 연 ${money(sal)}`); staffHistory('coach',G.coach[o][k],'영입',o,`${c.name} 코치 이적에 따른 후임 선임`);
     const txt=`${tshort(tid)}, ${tshort(o)} ${CROLE[k].l} ${c.name}을(를) ${CROLE[to].l}로 영입`; moved.push(txt); try{ wire('코치',txt,{tid}); }catch(e){} }
   return moved; }
