@@ -14017,7 +14017,7 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk);
   _evOut=new Set(get.map(id=>P(id)).filter(q=>{ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(q)]; return sl&&sl.ps.some(x=>x.id===q.id); }).map(pSlot));
   let inV, outV, premiumV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)))+cashVal(t,cash)+sum(pk.give.map(k=>pkVal(t,k))); const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=null; }
   const theirN=rosterN(tid)+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
-  let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?1.5:0)-(hit.length?.6:0); /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-.9:-.3); /* 급매는 손해를 조금 보더라도 넘긴다 */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
+  const ov=Math.max(0,outV); let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?Math.min(1.5,ov*.3):0)-(hit.length?Math.min(.6,.2+ov*.1):0); /* 양보 폭은 선수 값에 비례(커뮤니티 피드백 11-11: 값 0.6짜리 급매 유망주를 1.5 고정 양보로 거의 공짜에 넘겼다) */ /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-Math.min(.9,ov*.3):-Math.min(.3,ov*.12)); /* 급매는 손해를 조금 보더라도 넘긴다(받을 값의 30%까지) */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
   const theirPay=capPayAs(tid,give,get); /* 연봉 차액을 더하지 않고 상위 40명을 다시 고른다 */
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ if(tradeUrgent(tid,P(id)))continue; const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,premiumV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
@@ -30534,7 +30534,9 @@ function growthCard(p){
     ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${lg.tid===G.user&&lg.manager?` · ${esc(lg.manager.name)} 감독 육성 ${lg.manager.youth}`:''}</p>`:''}${why.length?`<p class="small muted">실제 반영 요인: ${why.map(esc).join(' · ')}. 잠재력 평가는 성장 보장이 아니며, 시즌 폼·일시적 컨디션과 기본 기량의 변화는 다릅니다.</p>`:''}</section>`;
 }
 /* 이름·등번호 고치기 */
-function pEditBox(p){ const e=UI.pEditErr; return `<div class="pe-box"><label>이름<input id="pe-nm" maxlength="12" value="${esc(p.name)}" autocomplete="off"></label>${p.team!=null?`<label>등번호<input id="pe-no" inputmode="numeric" maxlength="2" value="${jno(p)}" autocomplete="off"></label>`:''}<div class="row"><button class="btn small" data-a="pEditSave" data-v="${p.id}">저장</button><button class="btn small" data-a="pEditOpen" data-v="">취소</button></div>${e?`<p class="small bad">${esc(e)}</p>`:''}${p.renamed&&p.renamed.length?`<p class="small muted">이전 이름: ${p.renamed.map(r=>esc(r.from)).join(', ')}</p>`:''}<p class="small muted">기사·이야기에 이미 적힌 이름은 그대로 남습니다.</p>${pEditFace(p)}${pEditAbil(p)}</div>`; }
+function pEditBox(p){ const e=UI.pEditErr; return `<div class="pe-box"><label>이름<input id="pe-nm" maxlength="12" value="${esc(p.name)}" autocomplete="off"></label>${p.team!=null?`<label>등번호<input id="pe-no" inputmode="numeric" maxlength="2" value="${jno(p)}" autocomplete="off"></label>`:''}<div class="row"><button class="btn small" data-a="pEditSave" data-v="${p.id}">저장</button><button class="btn small" data-a="pEditOpen" data-v="">취소</button></div>${e?`<p class="small bad">${esc(e)}</p>`:''}${p.renamed&&p.renamed.length?`<p class="small muted">이전 이름: ${p.renamed.map(r=>esc(r.from)).join(', ')}</p>`:''}<p class="small muted">기사·이야기에 이미 적힌 이름은 그대로 남습니다.</p>${EDITOR_ON?pEditFace(p)+pEditAbil(p):''}</div>`; }
+/* 선수 에디터(사진 고르기·능력 고치기)는 따로 판매할 기능이라 지금은 꺼 둔다(사용자 11-11). 켜려면 true */
+const EDITOR_ON=false;
 /* 에디터(커뮤니티 건의 11-11): 템플릿 사진 고르기 · 능력/잠재력/나이 고치기 */
 function pEditFace(p){ if(p.team==null||typeof face6Pool!=='function'||typeof FACE6==='undefined'||!FACE6.sheet[String(p.team)]||G.f6off)return ''; let cur=null; try{ cur=face6Idx(p); }catch(e){}
   const L=face6Pool(p).slice().sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||a-b);
@@ -31041,9 +31043,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   fmBack(){ fmBack(); }, fmFwd(){ fmFwd(); }, fmKeysX(){ UI.fmKeys=false; render(); }, fmKeysOpen(){ UI.fmKeys=true; render(); }, fmPlan(){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; UI.it.rdepth='glance'; closeSheets(); render(); },
   retNo(v){ note('기록',retireNumber(v)); save(); render(); },
   pEditOpen(v){ UI.pEdit=v===''||v==null?null:+v; UI.pEditErr=''; renderSheet(); },
-  pFace(v){ const [id,i]=String(v).split(':').map(Number), p=G.players[id]; if(!p||p.team==null||!face6Pool(p).includes(i))return; G.f6=G.f6||{}; G.f6r=G.f6r||{}; const k=p.team+':'+i, prev=G.f6r[k]; if(prev!=null&&prev!==id)delete G.f6[prev]; if(G.f6[id]!=null)delete G.f6r[p.team+':'+G.f6[id]]; G.f6[id]=i; G.f6r[k]=id; save(); render(); try{ renderSheet(); }catch(e){} },
+  pFace(v){ if(!EDITOR_ON)return; const [id,i]=String(v).split(':').map(Number), p=G.players[id]; if(!p||p.team==null||!face6Pool(p).includes(i))return; G.f6=G.f6||{}; G.f6r=G.f6r||{}; const k=p.team+':'+i, prev=G.f6r[k]; if(prev!=null&&prev!==id)delete G.f6[prev]; if(G.f6[id]!=null)delete G.f6r[p.team+':'+G.f6[id]]; G.f6[id]=i; G.f6r[k]=id; save(); render(); try{ renderSheet(); }catch(e){} },
   pEditSave(v){ const id=+v, p=G.players[id]; if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); let e=nm?setPlayerName(id,nm.value):''; if(!e&&no&&String(no.value).trim()!==String(jno(p)))e=setPlayerNo(id,no.value);
-    if(!e&&$('#pe-age')){ const rv=k=>{ const el=$('#pe-r-'+k); if(!el)return null; const t=String(el.value).trim(); return t===''||+t===dv(p.r[k])?null:dvInv(t); }; const r={}; for(const k of ED_RK[p.isP?'P':'B']){ const x=rv(k); if(x!=null)r[k]=x; } const pt=String($('#pe-pot').value).trim(); e=setPlayerRatings(id,{r,pot:pt===''||+pt===dv(p.pot)?null:dvInv(pt),age:$('#pe-age').value}); }
+    if(!e&&EDITOR_ON&&$('#pe-age')){ const rv=k=>{ const el=$('#pe-r-'+k); if(!el)return null; const t=String(el.value).trim(); return t===''||+t===dv(p.r[k])?null:dvInv(t); }; const r={}; for(const k of ED_RK[p.isP?'P':'B']){ const x=rv(k); if(x!=null)r[k]=x; } const pt=String($('#pe-pot').value).trim(); e=setPlayerRatings(id,{r,pot:pt===''||+pt===dv(p.pot)?null:dvInv(pt),age:$('#pe-age').value}); }
     if(e){ UI.pEditErr=e; renderSheet(); return; } UI.pEdit=null; UI.pEditErr=''; note('선수',`${p.name} · ${p.team!=null?jno(p)+'번':''} 저장했습니다.`); save(); render(); },
   blkOn(v){ const q=G.players[+v]; if(q&&hasNtc(q)){ toast(`${q.name}은(는) 트레이드 거부권이 있어 매물로 올릴 수 없습니다(${q.ntc}년까지).`); return; } blockAdd(+v,'any'); UI.sheet=null; save(); A.go('trade:block'); },
   blkOff(v){ blockRemove(+v); save(); render(); },
@@ -33931,12 +33933,13 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
-  {id:'2026-11-11-editor-draft',d:'11월 11일',t:'리그 주전 평균·선수 에디터·같은 순서 창단 드래프트',items:[
+  {id:'2026-11-11-editor-draft',d:'11월 11일',t:'리그 주전 평균·담장 공사·같은 순서 창단 드래프트',items:[
+    '구장 화면에서 담장 공사로 좌·중·우 담장 거리와 높이를 바꿀 수 있습니다(비시즌 한 해 한 번, 공사비). 담장이 가깝고 낮을수록 홈런이 늘고, 높은 담장에 막힌 타구는 2루타가 됩니다. 공사 전에 바뀔 홈런 지수와 공사비를 미리 볼 수 있습니다.',
+    '받은 스폰서 제안을 자리별로 묶어 보여 주고, 같은 자리 제안 가운데 가장 높은 연 금액·보너스를 파란색으로 표시합니다.',
     '우리 팀 현황·전력 요약·선수 화면에 리그 주전 평균 능력을 보여 줍니다. 10개 구단 주전(야수 9자리·선발 5명·불펜 상위 4명) 평균과 우리 주전의 차이를 자리별로 비교합니다.',
-    '선수 이름 고치기 화면에서 템플릿 사진을 고르고, 능력·잠재력·나이를 고칠 수 있습니다. 능력·잠재력·나이를 고친 저장은 도전과제가 더 열리지 않습니다.',
     '창단 드래프트에서 지명 방식을 고를 수 있습니다. 같은 순서 방식은 모든 라운드를 같은 순번으로 뽑고, 대신 순번별 조건(긴축·보너스)이 두 배입니다.',
     '해외 진출 선수가 원소속 구단에서 영구결번 후보가 될 때 MLB WAR(그대로)와 NPB WAR(70%)를 더해 판단합니다.',
-    '리그 국내 선수 평균 능력이 시작 때보다 오르면 그만큼 겨울 성장과 신인 잠재력을 줄여, 시즌이 지날수록 능력치가 함께 부풀지 않게 했습니다.'
+    '리그 국내 상위 선수들의 평균 능력이 시작 때보다 오르면 그만큼 겨울 성장과 신인 잠재력을 줄여, 시즌이 지날수록 능력치가 함께 부풀지 않게 했습니다(10시즌 시험: 화면 80 이상 선수 4명→11명이던 것이 7명).'
   ]},
   {id:'2026-11-11-pitch-asia',d:'11월 11일',t:'투수 능력 반영 강화·감독 요청 조건·해외 진출 조기 복귀',items:[
     '경기 엔진에서 투수 능력(구위·제구 등)이 삼진·볼넷·피안타 결과에 더 크게 반영됩니다. 좋은 투수와 나쁜 투수의 평균자책점 차이가 커집니다.',
