@@ -12,7 +12,7 @@ function obAvO(ob,w){ const per=w.k==='mgr'?'mgr':w.k==='coach'?'coach':w.k==='g
 function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
   const wall=(`<div class="row"><button class="btn small" data-a="retiredGo">전체 구단 영구결번 보기</button></div>`)+(RN.length?`<div class="rnw">${RN.map(r=>`<div class="rn"><b>${r.no}</b><span>${esc(r.name)}</span><i>${r.y}년 지정</i></div>`).join('')}</div>`:`<p class="small muted">아직 영구결번이 없습니다. 우리 구단에서 ${retWarT()>=60?10:8}시즌 이상 뛰고 WAR ${retWarT()} 이상을 남긴 선수가 은퇴하면 지정할 수 있습니다.</p>`);
   const cand=retNoCands();
-  const candH=cand.length?`<div class="eyebrow" style="margin-top:10px">영구결번 후보</div>${cand.map(({r,i})=>`<div class="obr"><b class="num">${r.no}</b><span><b>${esc(r.name)}</b><i>${r.pos} · ${r.y}년 은퇴 · 우리 구단 ${r.mine.ys}시즌 WAR ${r.mine.war}</i></span><button class="btn small primary" data-a="retNo" data-v="${i}">영구결번 지정</button></div>`).join('')}`:'';
+  const candH=cand.length?`<div class="eyebrow" style="margin-top:10px">영구결번 후보</div>${cand.map(({r,i})=>`<div class="obr"><b class="num">${r.no}</b><span><b>${esc(r.name)}</b><i>${r.pos} · ${r.y}년 은퇴 · 우리 구단 ${r.mine.ys}시즌 WAR ${r.mine.war}${r.mine.ovs?` (해외 ${r.mine.ovs} 포함)`:''}</i></span><button class="btn small primary" data-a="retNo" data-v="${i}">영구결번 지정</button></div>`).join('')}`:'';
   const mine=G.ob.filter(obMine).map(o=>({o,w:obWhere(o),m:obMineC(o)})).sort((a,b)=>(b.o.retNo?1:0)-(a.o.retNo?1:0)||b.m.war-a.m.war||b.o.war-a.o.war);
   const mgrC=new Set(obMgrCands().map(o=>o.id));
   const act=(o,w)=>{ if(w.k==='free'||w.k==='wait'&&o.path==='media'){ if(mgrC.has(o.id))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:mgr">감독 후보로</button>`;
