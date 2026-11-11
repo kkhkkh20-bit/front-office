@@ -752,3 +752,7 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .spo-g{margin-bottom:12px;padding-left:8px;border-left:3px solid var(--spo-c,#5b6b7c)}.spo-gh{font-size:13px;margin:4px 0 6px}
 .spo-g[data-slot="main"]{--spo-c:#e0a43a}.spo-g[data-slot="kit"]{--spo-c:#4fa3e0}.spo-g[data-slot="sleeve"]{--spo-c:#5fc77a}.spo-g[data-slot="fence"]{--spo-c:#b07ce0}.spo-g[data-slot="helmet"]{--spo-c:#e06c6c}.spo-g[data-slot="back"]{--spo-c:#4cc2b5}
 .spo .num.best{color:#4f9dff;font-weight:700}
+/* 리그 연감 */
+.yb-y{padding:10px 0;border-bottom:1px solid var(--line,#2a3440)}.yb-y h3{margin:0 0 6px;font-size:16px}
+.yb-g{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}.yb-g i{font-style:normal;color:var(--muted,#9aa7b4);margin-right:6px;font-size:12px}
+.yb-ev{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted,#b8c2cc)}.yb-ev li{margin:2px 0}

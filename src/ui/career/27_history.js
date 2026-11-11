@@ -12,7 +12,8 @@ function histView(){
   const board=(label,f,fmt,flt)=>`<div class="ldr"><div class="eyebrow">${label}</div>${all.filter(flt||(()=>true)).sort((a,b)=>f(b)-f(a)).slice(0,8).map((x,i)=>`<div class="ldr-r"><i>${i+1}</i><span>${open(x)?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.name)}</button>`:esc(x.name)} <span class="small muted">${x.act?tshort(x.t):x.lab}</span></span><b class="num">${fmt(f(x))}</b></div>`).join('')}</div>`;
   const hof=hofList();
   const champs=G.history.filter(h=>h.champ===G.user).map(h=>h.y);
-  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['ret','영구결번'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['abroad','해외파']],'sum');
+  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['ret','영구결번'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['abroad','해외파'],['book','리그 연감']],'sum');
+  if(hv.cur==='book')return hv.bar+yearbookView();
   if(hv.cur==='abroad')return hv.bar+abroadView();
   if(hv.cur==='events')return hv.bar+leagueEventsView();
   if(hv.cur==='tro')return hv.bar+trophyRoom();
@@ -57,3 +58,12 @@ function trophyRoom(){ const L=G.teams.map(t=>({t,T:trophyOf(t.id)})).sort((a,b)
 /* 전체 구단 결번은 트로피 진열장과 별도로, 기록이 있는 구단부터 바로 보여 준다. */
 function retiredNumberRoom(){ const L=G.teams.map(t=>({t,n:retNosOf(t.id).length})).sort((a,b)=>Number(b.n>0)-Number(a.n>0)||(b.t.id===G.user)-(a.t.id===G.user)||a.t.id-b.t.id), total=sum(L.map(x=>x.n));
   return `<div class="rn-page ws-own"><div class="rn-intro"><h2 class="sec">전체 구단 영구결번</h2><p class="small muted keep">${L.length}개 구단 · 총 ${total}명. 이직 전 구단의 기록도 함께 표시합니다.</p></div><div class="rn-teams">${L.map(({t,n})=>`<article class="rn-team${t.id===G.user?' me':''}" data-team="${t.id}"><div class="row wrapr">${badge(t.id,22)}<b>${esc(tname(t.id))}</b>${t.id===G.user?'<span class="pill">우리 구단</span>':''}<span class="small muted">${n}명</span></div>${n?retiredNumbers(t.id):'<p class="small muted">아직 지정된 영구결번이 없습니다.</p>'}</article>`).join('')}</div></div>`; }
+
+/* ===== 리그 연감(장기 기획 11-11): 해마다 우승·1위·시상·규정 변화·구단 변화(이름·연고·구장)·라이벌 탄생을 한 장에 =====
+   이름은 그해 이름(tshort(id,y))으로 보인다 */
+function yearbookView(){ const H=[...(G.history||[])].filter(h=>h.y!=null).sort((a,b)=>b.y-a.y); if(!H.length)return csec('리그 연감','<p class="small muted">첫 시즌이 끝나면 연감이 쌓입니다.</p>');
+  const ev=y=>{ const L=[]; for(const t of G.teams){ let C=[]; try{ C=clubChron(t.id); }catch(e){} for(const x of C)if(x.y===y&&['rebrand','honor','retNo'].includes(x.k))L.push(`${badge(t.id,14)} ${esc(x.t)}`); }
+    for(const r of Object.values((G.rivalries&&G.rivalries.pairs)||{}))if(r.emerged!=null&&dobj(r.emerged).y===y)L.push(`라이벌 탄생: ${esc(r.label)}`);
+    for(const x of (G.lgr&&G.lgr.hist)||[])if(x.y===y+1)L.push(`${y+1}시즌 규정: ${esc(x.why.join(' · '))}`); return L; };
+  return csec('리그 연감',`<p class="small muted">시즌마다 우승 구단·정규시즌 1위·MVP·신인왕과 리그의 큰 변화(구단 이름·연고·구장, 라이벌, 협회 규정)를 모았습니다. 구단 이름은 그해 이름입니다.</p>`+H.map(h=>{ const y=h.y, A=G.awards&&G.awards[y], top=h.order&&h.order[0], L=ev(y), sh=A&&awShown(A,'mvp');
+    return `<div class="yb-y"><h3>${y}</h3><div class="yb-g">${h.champ!=null?`<span><i>우승</i>${badge(h.champ,16)} ${esc(tshort(h.champ,y))}</span>`:''}${h.runner!=null?`<span><i>준우승</i>${esc(tshort(h.runner,y))}</span>`:''}${top?`<span><i>정규시즌 1위</i>${esc(tshort(top.tid,y))}${top.w!=null?` (${top.w}승 ${top.l}패)`:''}</span>`:''}${sh&&A.mvp?`<span><i>MVP</i>${esc(A.mvp.name)}</span>`:''}${sh&&A.roy?`<span><i>신인왕</i>${esc(A.roy.name)}</span>`:''}</div>${L.length?`<ul class="yb-ev">${L.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}</div>`; }).join('')); }
