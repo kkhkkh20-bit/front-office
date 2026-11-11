@@ -34,7 +34,7 @@ if(!process.env.WEBKIT){
  await p.setViewportSize({width:390,height:664});await p.waitForTimeout(200);
  for(const route of ['trade:market','transfer:foreign','staff:coach']){
   await p.evaluate(v=>{UI.open={};UI.readingOpen={};UI.it={};UI.workspacePages={};UI.pg={};UI.ff={t:'yb',r:'all',s:'rk'};A.go(v);},route);await p.waitForTimeout(100);
-  if(route==='transfer:foreign')await p.locator('.ws-panel:not([hidden]) .candidate-help>summary').click();
+  if(route==='transfer:foreign'){ const h=p.locator('.ws-panel:not([hidden]) .candidate-help>summary'); if(await h.isVisible())await h.click(); } /* 휴대폰(700px 이하)에서는 읽는 법 안내를 숨기는 설계(10_fa_and_patches.css) */
   const list=p.locator('.ws-panel:not([hidden])>.ws-scroll').first(),box=await list.boundingBox();
   const scrollable=await list.evaluate(el=>el.scrollHeight>el.clientHeight+10);assert.ok(scrollable,route+' 실제 터치로 확인할 긴 목록');
   const session=await p.context().newCDPSession(p),x=box.x+box.width*.8,y=box.y+box.height-12;
@@ -47,7 +47,7 @@ if(!process.env.WEBKIT){
 }
 for(const width of [390,1366]){
  await p.setViewportSize({width,height:768});await p.waitForTimeout(180);await p.evaluate(()=>{UI.workspacePages={};A.go('league:nt');});await p.waitForTimeout(100);
- const list=p.locator('.ws-panel:not([hidden])>.ws-scroll').first();
+ const list=p.locator('.ws-panel:not([hidden])>.ws-scroll, main .fmx .fx-scr:has(table thead)').first(); /* PC는 FM식 배치(.fmx)의 표 스크롤 칸 */
  // A long report fixture exercises the heading after the illustration has scrolled away.
  await list.evaluate(el=>{const body=el.querySelector('table tbody'),row=body.rows[0];while(body.rows.length<30)body.append(row.cloneNode(true));el.scrollTop=600;});
  const heading=await list.evaluate(el=>({top:el.getBoundingClientRect().top,head:el.querySelector('thead th').getBoundingClientRect().top,y:el.scrollTop}));

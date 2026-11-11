@@ -292,3 +292,5 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 /* 검수 11-12: 우승 트로피·올스타 화면은 자체 스크롤이 있어야 한다(공통 '줄지 않음' 규칙이 덮어 1024×768에서 아래가 잘림). 5열은 넓은 화면에서만 */
 #app main.ws-frame>.trc-page,#app main.ws-frame>.asg-page{flex:1 1 auto;flex-shrink:1;min-height:0;overflow:auto}
 @media(min-width:1001px) and (max-width:1399px){.trc-room{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}}
+/* 검수 11-12: 높이가 아주 낮은 화면(가로 휴대폰 320 등)에서는 여러 줄로 접히는 안쪽 탭을 한 줄 가로 넘김으로(역사 탭 10개가 130px을 차지해 내용이 잘림) */
+@media (max-height:420px){#app main .seg.itabs.wrapt{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;grid-template-columns:none}#app main .seg.itabs.wrapt>button{flex:0 0 auto;white-space:nowrap}#app main .seg.itabs.wrapt::-webkit-scrollbar{display:none}}

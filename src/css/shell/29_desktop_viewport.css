@@ -254,7 +254,7 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
  .fmx-hi{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);grid-template-areas:"sm ch aw" "sm me ld"}
  .fxh-sm{grid-area:sm}.fxh-ch{grid-area:ch}.fxh-me{grid-area:me}.fxh-aw{grid-area:aw}.fxh-ld{grid-area:ld}
  .fx-yrs{margin:-2px 0 4px 42px!important;font-size:11px!important}
- .fx-scr>.tw{margin:0}.fxn-sq .sqt :is(td,th){text-align:left}.fxn-sq .sqt :is(td,th).n{text-align:right}
+ .fx-scr>.tw{margin:0;overflow:visible} /* 안쪽 .tw가 스크롤 칸이 되면 머리글 고정이 .fx-scr 기준으로 동작하지 않음 */.fxn-sq .sqt :is(td,th){text-align:left}.fxn-sq .sqt :is(td,th).n{text-align:right}
  .fxa-cap .fx-odd,.fxn-tm .fx-odd{flex:1 0 auto!important}
  .fx-mst td{padding-block:2px}.fx-mst td:nth-child(2){font-family:var(--f-ui)}.fx-mst td img{vertical-align:middle}
 }
