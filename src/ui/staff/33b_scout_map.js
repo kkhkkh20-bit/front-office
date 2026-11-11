@@ -26,5 +26,6 @@ function scoutMapPage(){ const S=areaSummary(G.user), home=teamArea(G.user); con
     <p class="small muted">정보망이 높을수록 이 권역 후보의 평가 오차가 줄고(최대 25%), 숨은 재능을 알아볼 확률이 오릅니다. ${A.reg} 담당 스카우트를 오래 둘수록, 이 권역이 고향인 스카우트가 있을수록, 단장이 이 권역 대회를 직접 볼수록 올라갑니다. 학교마다 감독과의 친분도 따로 있어, 친할수록 그 학교 선수 평가가 정확해지고 감독이 좋은 선수를 먼저 귀띔합니다(스카우트 방문·대회 관전·그 학교 선수 지명·후원으로 오름).</p>
     <h4 class="small">학교 · 올해 드래프트 후보 ${A.n}명</h4><div class="scm-schs">${schools.map(rowS).join('')}</div></div>`;
   return `<div class="scm ws-own"><section class="card scm-l">${map}${list}</section><section class="card scm-r">${det}</section></div>`; }
-function scoutPage2(base){ const it=inTabs('scoutpg',[['team','스카우트 팀'],['map','지역 정보망'],['ovs','해외 네트워크']]); return it.bar+(it.cur==='map'?scoutMapPage():it.cur==='ovs'?sisPage():base()); }
+function scoutPage2(base){ const nW=(G.pwatch||[]).filter(id=>G.players[id]&&G.players[id].team!==G.user).length; /* 타 구단 관심 선수는 하위 탭으로 따로(울브즈 11-11) */
+  const it=inTabs('scoutpg',[['team','스카우트 팀'],['map','지역 정보망'],['ovs','해외 네트워크'],['watch',`타구단 관심 선수${nW?' '+nW:''}`]]); return it.bar+(it.cur==='map'?scoutMapPage():it.cur==='ovs'?sisPage():it.cur==='watch'?pwatchTable(false):base()); }
 Object.assign(A,{ schGift(v){ toast(schGift(v)); save(); render(); }, scArea(v){ UI.scArea=v; UI.it=Object.assign(UI.it||{},{scoutpg:'map'}); render(); } });
