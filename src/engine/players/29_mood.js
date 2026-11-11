@@ -84,7 +84,7 @@ function requestCheck(p){
   if(p.mor<22&&p.pers.amb>=13&&!p.listed&&!p.foreign){ p.treq={day:G.day}; } if(p.mor<22&&p.pers.amb>=13&&!p.listed&&!p.foreign) mail(p.name,'트레이드 요청',`${why} 이대로라면 다른 팀에서 뛰고 싶습니다. 트레이드를 요청드립니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'트레이드 명단에 올리기',a:'listP',v:p.id},{l:'남아 달라고 설득',a:'keepP',v:p.id},{l:'선수 보기',a:'player',v:p.id}]});
   else mail(p.name,'면담 요청',`${why} 단장님과 이야기하고 싶습니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'면담하기',a:'player',v:p.id},...(!isRegular(p)&&healthy(p)?[{l:'감독에게 기용 건의',a:'meetOpen',v:`mgr|use:${p.id}`}]:[])]});
 }
-const TALK={praise:'칭찬하기',push:'분발 촉구',promise:'출전 기회 건의',contract:'계약 이야기',ask:'고민 묻기'};
+const TALK={praise:'칭찬하기',push:'분발 촉구',promise:'출전 기회 건의',futreq:'2군 주전 기용 요청',contract:'계약 이야기',ask:'고민 묻기'};
 /* 감독과의 대화: 단장이 자주 묻고, 감독이 현황과 원하는 보강을 말한다 */
 function mgrForeignAvailable(p){ if(!p||p.team!=null||p.foreign!=='용병'||!foreignOpen()||!fKnows(G.user,p))return false; const ask=period()==='season'?Math.min(p.ask,fNewCap()):p.ask; return !foreignCheck(G.user,ask===p.ask?p:{...p,ask}); }
 function mgrWantForeign(){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)return null; const rk=slotRanks(G.user); const f=fStayOf(G.user).filter(p=>p.foreign==='용병'); const fp=f.filter(p=>p.isP).length, fb=f.length-fp;
@@ -132,8 +132,9 @@ function mgrOnForeign(p,short){ const m=G.mgr[G.user]; if(!m||!p)return '...'; m
   const age=p.age>=34?' 다만 나이가 있어서 한 시즌을 버틸지 걱정입니다.':p.age<=26?' 젊어서 적응만 하면 더 좋아질 수 있습니다.':'';
   return short?`${fit?'원하던 유형, ':''}${lv}`:`${src}${head}${sty}${opin}${age}\n\n${mvForeignView(m,p,fit)}`; }
 /* 면담 제한: 고민 묻기(상태 확인)는 언제든, 칭찬·분발 촉구는 함께 한 주에 한 번, 출전 건의·계약 이야기는 각자 한 주에 한 번 */
-const TALK_GRP={praise:'pp',push:'pp',promise:'promise',contract:'contract',ask:null};
-const TALK_GRPL={pp:'칭찬·분발 촉구',promise:'출전 기회 건의',contract:'계약 이야기'};
+const TALK_MOR_CAP=85;
+const TALK_GRP={praise:'pp',push:'pp',promise:'promise',futreq:'futreq',contract:'contract',ask:null};
+const TALK_GRPL={pp:'칭찬·분발 촉구',promise:'출전 기회 건의',futreq:'2군 주전 기용 요청',contract:'계약 이야기'};
 function talkUsed(p,kind){ const g=TALK_GRP[kind]; return !!(g&&p&&p.tk&&p.tk[g]===Math.floor(G.day/7)); }
 /* 최근 사건: 이 선수가 나온 우리 팀 마지막 경기(2일 안)에서 눈에 띈 일 */
 function talkEvent(p){ const L=G.games||[]; for(let i=0;i<L.length;i++){ const g=L[i]; /* G.games는 최근 경기가 앞 */ if(g.home!==p.team&&g.away!==p.team)continue; if(G.day-g.day>2||!g.box)return null; const B=g.box[g.home===p.team?'h':'a']; if(!B)return null;
@@ -155,6 +156,10 @@ function talk(id,kind){
   if(kind==='praise'){ if(good===true){d=rnd(6,10);line='고맙습니다. 계속 잘하겠습니다.';} else if(good===false){ if(p.pers.temp>=14){d=-3;line='요즘 못하는 건 저도 압니다. 빈말은 괜찮습니다.';} else {d=2;line='감사합니다. 분발하겠습니다.';} } else {d=3;line='감사합니다. 힘이 됩니다.';} }
   if(kind==='push'){ if(good===false){ if(p.pers.pro>=12){d=4;p.form={until:G.day+21,b:1};line='맞는 말씀입니다. 훈련량을 늘리겠습니다.';} else {d=-7;line='저도 최선을 다하고 있습니다.';} } else {d=-9;line='제가 뭘 더 해야 합니까? 납득하기 어렵습니다.';} }
   if(kind==='promise'){ if(isRegular(p)){d=0;line='이미 주전으로 뛰고 있습니다. 마음만 받겠습니다.';} else if(p.promise){d=-2;line='지난번 약속부터 지켜 주세요.';} else {d=8;p.promise=mkPromise(p,30);line='감독님께 말씀해 주신다니 감사합니다. 기회가 오면 보여 드리겠습니다.';} }
+  if(kind==='futreq'){ const n=futReqList(G.user).filter(q=>q.id!==p.id).length;
+    if(p.e1){ d=0; line='지금은 1군에 있습니다. 2군 감독님께 따로 말씀하실 필요는 없을 것 같습니다.'; }
+    else if(n>=FUTREQ_MAX){ d=0; line=`(2군 주전 기용 요청은 한 번에 ${FUTREQ_MAX}명까지입니다. 다른 선수의 요청이 끝난 뒤 다시 해 주세요.)`; }
+    else { p.futReq={until:G.day+42}; d=3; line=`2군에서 꾸준히 ${p.isP?'선발로 던지면서':'주전으로 나가면서'} 보여 드리겠습니다.`; } }
   if(kind==='contract'){ d=1;
     if(p.foreign)line='재계약은 성적으로 말씀드리겠습니다.';
     else if(p.faC&&p.yrs>1)line='계약 기간이 남았으니 야구에만 집중하겠습니다.';
@@ -163,8 +168,14 @@ function talk(id,kind){
   if(kind==='ask'){ d=askAgain?0:2; const ev=talkEvent(p); const why=moraleWhy(p); const plain=/즐겁습니다|특별한 고민은 없습니다/.test(why);
     if(ev){ line=eventLine(p,ev)+(plain?'':` 그리고 ${why}`); if(ev.k==='bad'&&p.pers.temp>=15&&d)d=1; } else line=why; }
   if(d<0&&p.pers.temp>=15)d*=1.4;
+  /* 면담만으로 기분 100 만들기 막기(카페 11-11 고양스톰 20년차): 칭찬·고민 묻기의 기분 상승은 최근 4주 안에 기분이 오른 면담 횟수만큼 줄고(1·0.6·0.35·0.2배), 85를 넘기지 못한다.
+     출전 기회 건의는 감독 요청·약속 이행이 따르는 일이라 그대로 둔다 */
+  let soft='';
+  if(d>0&&(kind==='praise'||kind==='ask')){ p.tkH=(p.tkH||[]).filter(x=>G.day-x<28); const n=p.tkH.length; const f=[1,.6,.35,.2][Math.min(n,3)]; const cap=TALK_MOR_CAP;
+    let d2=Math.round(d*f*10)/10; if(p.mor>=cap)d2=0; else d2=Math.min(d2,cap-p.mor); if(d2>0)p.tkH.push(G.day);
+    if(d2<d)soft=p.mor>=cap?` (면담만으로는 기분이 ${cap}을 넘지 않습니다)`:n?` (최근 4주 면담 ${n}번째라 효과가 줄었습니다)`:''; d=d2; }
   line=personalTalkReply(p,kind,line);if(d){const C=contactRecord('pl:'+p.id);C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
-  return {msg:`${p.name}: "${line}"`,d};
+  return {msg:`${p.name}: "${line}"${soft}`,d};
 }
 function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(p.foreign)return; /* 외국인 선수는 트레이드 대상이 아니다(커뮤니티 제보 11-11) */ p.listed=true; const req=p.treq&&!p.treq.done; if(req){ p.treq.done=true; p.mor=clamp(p.mor+6,0,100); } /* 기분은 트레이드 요청에 응했을 때 한 번만 */ note('면담',`${p.name}을(를) 트레이드 명단에 올렸습니다. 다른 구단이 관심을 보이면 제안이 올 수 있습니다.`,id); }
 function keepPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(!(p.treq&&!p.treq.done)){ note('면담',`${p.name}: "이미 말씀 나눴습니다."`,id); return; } p.treq.done=true; const ok=p.pers.loy>=11||R()<.35; p.mor=clamp(p.mor+(ok?8:-6),0,100); note('면담',ok?`${p.name}: "단장님 말씀을 믿고 한 번 더 해 보겠습니다."`:`${p.name}: "생각은 달라지지 않았습니다."`,id); }
@@ -205,3 +216,9 @@ EVH.treq={ w:.7, check(){ const T=G.treqLog||{}; if(T.last!=null&&G.day-T.last<3
     if(p.listed||(p.mor??60)>=45){ evResult(d.ev,`${p.name}은(는) 묵묵히 훈련하고 있습니다.`); return; }
     if(R()<(d.hard||p.pers.temp>=13?.6:.35)){ prLeak('p',p); evResult(d.ev,`${p.name}의 불만이 기사로 새어 나갔습니다.`); } else evResult(d.ev,`${p.name}은(는) 아직 불만이 있지만 말을 아끼고 있습니다.`); } };
 
+
+/* 2군 주전 기용 요청(카페 11-11 고양스톰 20년차): 단장이 2군 감독에게 6주 동안 이 선수를 꾸준히 써 달라고 한다.
+   타자는 2군 라인업에 먼저 넣고(제 포지션, 이미 찬 자리면 다음으로 잘 맞는 자리), 투수는 2군 선발 로테이션에 먼저 넣는다. 한 번에 4명까지 */
+const FUTREQ_MAX=4;
+function futReqOn(p){ return !!(p&&p.futReq&&p.futReq.until>=G.day&&!p.e1); }
+function futReqList(tid){ return playersOf(tid).filter(futReqOn); }

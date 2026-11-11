@@ -203,7 +203,7 @@ function futuresWeek(){
   G.futLn=G.futLn||{};
   for(const t of G.teams){ const d=depth(t.id); const B=d.futB.filter(p=>healthy(p)&&!futUpToday(p)); /* 오늘 말소·1군 출전 선수는 경기 처리에서 빠지므로 명단을 짜기 전에 뺀다(검수 11-09zi) */ const ln=futLineupE(t.id,B); const st=new Set(Object.values(ln).map(p=>p.id));
     for(const k in ln)futBat(ln[k],t.id,k,3); for(const p of B)if(!st.has(p.id))futBat(p,t.id,null,1);
-    const FP=d.futP.filter(p=>healthy(p)&&!futUpToday(p)); /* 오늘 말소·등판한 투수는 퓨처스에 나가지 않으므로 로테이션에서도 뺀다(검수 11-09zx) */ const rot=FP.slice().sort((a,b)=>(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,Math.max(5,FP.filter(p=>rpPlanOf(t.id,p)==='sp2').length)); /* 선발 수업 투수는 모두 2군 로테이션에 든다: 수업 표기인데 구원만 나가지 않게(검수 11-09zi) */ for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
+    const FP=d.futP.filter(p=>healthy(p)&&!futUpToday(p)); /* 오늘 말소·등판한 투수는 퓨처스에 나가지 않으므로 로테이션에서도 뺀다(검수 11-09zx) */ const rot=FP.slice().sort((a,b)=>(t.id===G.user?futReqOn(b)-futReqOn(a):0)||(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,Math.max(5,FP.filter(p=>rpPlanOf(t.id,p)==='sp2'||(t.id===G.user&&futReqOn(p))).length)); /* 선발 수업 투수는 모두 2군 로테이션에 든다: 수업 표기인데 구원만 나가지 않게(검수 11-09zi) */ for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
     G.futLn[t.id]={d:G.day,ln:Object.fromEntries(Object.entries(ln).map(([k,p])=>[k,p.id])),rot:rot.map(p=>p.id)}; /* 2군 화면은 실제 배정을 읽는다(검수 11-09zi) */
     for(const p of FP)futPit(p,t.id); /* 로테이션을 정한 실제 가용 명단과 기록 생성 명단을 같게 유지한다. */
   }
