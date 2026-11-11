@@ -44,8 +44,7 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 .fmsh:has(.ws-frame) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
 .ws-frame,.ws-page{display:flex!important;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;gap:8px}
 .ws-frame{height:100%;box-sizing:border-box}
-.ws-frame:not(:has(>:is(.ws-scroll,.ws-panels,.ws-page,.ws-own,.setx))){overflow-y:auto;overscroll-behavior:contain} /* 스크롤 상자가 없는 화면(영구결번 탭 등)은 틀이 직접 스크롤: 휴대폰에서 아래 내용이 잘려 안 내려가던 문제(커뮤니티 제보 11-11) */
-.ws-frame>*:not(.ws-panels,.ws-page,.ws-scroll,.ws-own),.ws-page>*:not(.ws-panels,.ws-scroll,.ws-own){flex-shrink:0} /* ws-own(자체 스크롤 화면)은 줄어들어야 자기 스크롤이 생긴다 */
+.ws-frame>*:not(.ws-panels,.ws-page,.ws-scroll,.rn-page),.ws-page>*:not(.ws-panels,.ws-scroll,.rn-page){flex-shrink:0} /* 기록 화면(rn-page)은 줄어들어야 자기 스크롤이 생긴다: 휴대폰 영구결번 탭이 안 내려가던 문제(커뮤니티 제보 11-11) */
 .ws-panels{flex:1;min-height:0;min-width:0;display:grid;grid-template-columns:repeat(var(--ws-columns,1),minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:10px;overflow:hidden}
 .ws-panels>.ws-panel{display:flex!important;flex-direction:column;min-width:0;min-height:0;margin:0;overflow:hidden;box-sizing:border-box}
 .ws-panels>.ws-panel[hidden]{display:none!important}
