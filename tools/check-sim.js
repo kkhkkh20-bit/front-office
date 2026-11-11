@@ -15,9 +15,10 @@ const hidden={}; globalThis.__sw=e=>{ try{ const m=(e&&e.stack||String(e)).split
 let SRC=fs.readFileSync(ENGINE,'utf8'); let nSw=0; SRC=SRC.replace(/catch\((\w+)\)\{\s*\}/g,(m,v)=>{ nSw++; return `catch(${v}){__sw(${v})}`; });
 const ratingRows=[]; const ratingFile=process.env.RATINGS_FILE;
 const collectRatings=ratingFile?row=>{ ratingRows.push(row); fs.writeFileSync(ratingFile,JSON.stringify({seed:SEED,end:END,samples:ratingRows},null,2)+'\n'); console.log('능력치 분포 '+JSON.stringify(row)); }:null;
-const run=new Function('errs','bad','END','TEAM','ACTF','collectRatings',SRC+`
+const run=new Function('errs','bad','END','TEAM','ACTF','collectRatings','EXPAND',SRC+`
 DEMO.on=false; newGame(TEAM); fdStart(); fdAdvance(false); let g0=0; while(G.fd&&!G.fd.done&&g0++<500)fdAdvance(true); G.tut={done:true,step:99}; hireMgr(G.mmarket[0].id,3); G.medSet=true;
 for(const id of [...(G.fmarket||[])]){ const p=G.players[id]; try{ if(p&&!foreignCheck(G.user,p))signForeign(G.user,id); }catch(e){} }
+if(typeof EXPAND!=='undefined'&&EXPAND){ for(let k=0;k<EXPAND;k++){ const E=expInit(); Object.assign(E,{stage:'approved',ay:G.year,city:['청주','전주'][k],region:'충청',market:.88,nick:['다이노스','위즈'][k],parent:'시험 기업'}); const tid=expDraft(); console.log('확장 시험: '+tshort(tid)+' 국내 '+domestic(tid).length+'명'); E.stage='idle'; E.last=null; } G.cal=buildCalendar(G.year); for(const t of G.teams)if(!G.sea.rec[t.id])G.sea.rec[t.id]={w:0,l:0,t:0}; } /* EXPAND=1·2: 시작하자마자 11·12구단으로 늘려 한 시즌 이상 돌린다 */
 /* ===== 불변식: 경기·하루마다 항상 참이어야 하는 규칙(오류 없이 결과만 틀린 버그를 잡는다) ===== */
 const INV=(k,t)=>{ bad.push('불변식 · '+k+' · '+t); };
 const _sg=simGame; simGame=function(day,h,a,ps){ const g=_sg.apply(this,arguments); try{
@@ -81,7 +82,7 @@ while(G.year<END&&g++<90000){ step();if(G.year!==ratingYear){ratingYear=G.year;_
   if(G.day%30===0){ for(const p of Object.values(G.players)){ if(!Number.isFinite(p.sal)||p.sal<0)bad.push(G.year+' 연봉 '+p.name+' '+p.sal); for(const k in p.r)if(!Number.isFinite(p.r[k]))bad.push(G.year+' 능력치 NaN '+p.name+' '+k); if(p.team!=null&&(p.age>46||p.age<16))bad.push(G.year+' 나이 '+p.name+' '+p.age); }
     for(const t of G.teams)if(!Number.isFinite(t.cash))bad.push(G.year+' 현금 '+t.id); } }
 const mv={}; for(const m of (G.moves||[]))mv[m.t]=(mv[m.t]||0)+1; return {end:dstr(G.day),sec:(Date.now()-T0)/1000,unemp:!!G.unemp,mv,sw:((G.myC&&G.myC.stints)||[]).length};`);
-let r; try{ r=run(errs,bad,END,TEAM,process.env.ACT==='1',collectRatings); }catch(e){ errs.push('중단 '+e.stack.slice(0,300)); }
+let r; try{ r=run(errs,bad,END,TEAM,process.env.ACT==='1',collectRatings,+process.env.EXPAND||0); }catch(e){ errs.push('중단 '+e.stack.slice(0,300)); }
 console.error=oe;
 const B=[...new Set(bad)];
 const H=Object.entries(hidden).sort((a,b)=>b[1]-a[1]);

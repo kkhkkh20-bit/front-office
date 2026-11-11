@@ -199,7 +199,7 @@ function posDiag(seg){
       cell('불펜',rpR,`${me.pen.length}명`,`ERA ${era(me.pen)}`,`필승조 ${me.pen.slice(1,4).map(p=>esc(p.name)).join(', ')}`),
       cell('마무리',clR,me.pen[0]?esc(me.pen[0].name):'없음',me.pen[0]?`${rchip(scoutReport(me.pen[0]).cur)} ${(curLine(me.pen[0])||{}).sv||0}세이브`:'',' ')];
   }
-  return `<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 포지션 진단</h2><span class="small muted">주전 기준 10개 구단 중 순위 · 초록 상위 / 노랑 중위 / 빨강 하위</span></div><div class="dgrid2">${cells.join('')}</div></section>`;
+  return `<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 포지션 진단</h2><span class="small muted">주전 기준 ${G.teams.length}개 구단 중 순위 · 초록 상위 / 노랑 중위 / 빨강 하위</span></div><div class="dgrid2">${cells.join('')}</div></section>`;
 }
 function playerRow(p,showTeam){
   const h=curLine(p); const rp=scoutReport(p);

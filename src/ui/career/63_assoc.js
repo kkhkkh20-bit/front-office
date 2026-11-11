@@ -7,7 +7,7 @@ function assocView(){ const A=asInit(); const H=A.head; const S=AS_STANCE[H.stan
     <div><span class="muted">임기</span>${H.since}~${H.until}년${H.terms>1?` (${H.terms}선)`:''}</div>
     ${G.unemp?'':`<div><span class="muted">우리 구단과</span>${asRelLabel()}</div>`}</div>
     <p class="small">${elTxt}</p>`);
-  const rule=csec(`실행위원회(단장 회의) ${hiI(`10개 구단 단장이 안건을 먼저 심의합니다. 과반이 지지한 안만 이사회(사장단)에 올라가고, 이사회는 대부분 그대로 의결합니다.\n경쟁균형세 상한은 ${G.year+1<=2028?'2028년까지 매년 5%로 정해져 있고, 2029년부터':''} 시즌을 마친 시점에 연봉이 상한의 90% 이상인(또는 상한을 넘긴) 구단이 5곳 이상일 때만 회의가 열려 조정됩니다(동결·3%·5%·8%). 요건이 안 되면 회의 없이 물가 연동으로 3% 오릅니다.`)}`,`
+  const rule=csec(`실행위원회(단장 회의) ${hiI(`${G.teams.length}개 구단 단장이 안건을 먼저 심의합니다. 과반이 지지한 안만 이사회(사장단)에 올라가고, 이사회는 대부분 그대로 의결합니다.\n경쟁균형세 상한은 ${G.year+1<=2028?'2028년까지 매년 5%로 정해져 있고, 2029년부터':''} 시즌을 마친 시점에 연봉이 상한의 90% 이상인(또는 상한을 넘긴) 구단이 5곳 이상일 때만 회의가 열려 조정됩니다(동결·3%·5%·8%). 요건이 안 되면 회의 없이 물가 연동으로 3% 오릅니다.`)}`,`
     <div class="tiles"><div class="tile"><span class="g">${near.length}곳</span><span class="l">${asInit().snap&&asInit().snap.y===G.year?'올 시즌':'지금'} 상한 90% 이상</span></div><div class="tile"><span class="g">${money(cap)}</span><span class="l">${G.year}년 상한</span></div><div class="tile"><span class="g">${money(floorOf(G.year))}</span><span class="l">하한</span></div></div>
     ${near.length?`<p class="small muted">${near.map(t=>`${tshort(t.id)} ${cmtPct(cmtRatio(t))}`).join(' · ')}</p>`:''}`);
   const rows=A.cmt.map(r=>!r.held?`<div class="item"><b>${r.y}년</b> ${r.idx?"물가 연동 +3%":"동결"} <span class="small muted">· 소집 요건 미달(90% 이상 ${r.n}곳)</span></div>`:

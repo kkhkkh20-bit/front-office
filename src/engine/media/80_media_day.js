@@ -78,7 +78,7 @@ function mdPub(){ const D=G.md; if(!D||!D.out||D.pubd||G.day<D.pub)return; D.pub
   const n0=news('언론',`${tshort(tid)} ${O.L[0][0]} "${O.L[0][1].replace(/^"|"$/g,'').split('.')[0].slice(0,26)}"`,`개막 미디어데이에서 ${O.L.map(([w,t])=>`${w}: ${t}`).join(' ')}`,O.prom==='champ'?1:0,{tid});
   if(O.L[2])news('선수',`${O.L[2][0]} "${O.L[2][1].replace(/^"|"$/g,'').split('.')[0].slice(0,26)}"`,`개막 미디어데이 대표 선수로 나선 ${O.L[2][0]}: ${O.L[2][1]} 팬 질문 '${O.fq[0]}'에는 ${O.fq[1]}라고 답했습니다.`,1,{ref:O.rep,tid});
   if(O.jab)news('경기',`${tshort(O.jab.tid)} 감독, ${team(tid).nick} 겨냥 "${O.jab.t.replace(/^"|"$/g,'').split('.')[0].slice(0,24)}"`,`개막 미디어데이에서 ${tname(O.jab.tid)} 감독이 ${tname(tid)}을(를) 겨냥했습니다. ${O.jab.t} ${tshort(tid)} 선수단은 자극을 받았습니다.`,0,{tid});
-  news('언론',`10개 구단 사령탑 출사표`,`개막 미디어데이에서 각 구단 감독이 목표를 밝혔습니다. ${O.others.join(' · ')} · ${tshort(tid)} ${O.g}.`,0,{tid});
+  news('언론',`${G.teams.length}개 구단 사령탑 출사표`,`개막 미디어데이에서 각 구단 감독이 목표를 밝혔습니다. ${O.others.join(' · ')} · ${tshort(tid)} ${O.g}.`,0,{tid});
   if(own)mail('홍보팀','[기사] 개막 미디어데이 기사가 나왔습니다',`${O.L.map(([w,t])=>`${w}: ${t}`).join('\n')}\n\n팬 질문 '${O.fq[0]}' → ${O.fq[1]}\n\n반응: 팬 여론 +${O.fan}. 나간 선수들은 기분이 올랐습니다.${(O.riv||[]).length?`\n\n다른 구단\n${O.riv.map(([w,t])=>`${w}: ${t}`).join('\n')}${O.jab?'\n상대 감독의 도발에 우리 선수단이 자극을 받았습니다(기분 +1).':''}`:''}${O.prom?`\n감독이 '${O.prom==='champ'?'우승':'가을야구'}'를 공언했습니다. 시즌 뒤 지켰는지 다시 기사가 납니다(전력분석팀 예상 ${O.r}위).`:''}${fpNewsReact(n0)}`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'club:news'}]}); }
 /* 포스트시즌 미디어데이: 준플레이오프부터, 1차전 하루 전 */
 function mdPsRun(s){ if(!s||!['spo','po','ks'].includes(s.round)||!(s.hi===G.user||s.lo===G.user))return; const op=s.hi===G.user?s.lo:s.hi; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'감독대행';

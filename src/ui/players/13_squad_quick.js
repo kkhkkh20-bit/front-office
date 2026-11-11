@@ -19,7 +19,7 @@ function myRosterSheet(){ const d=depth(G.user); const tro=tradeOpen(); const rk
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut mros" data-stop="1" role="dialog" aria-label="우리 선수단">
     <div class="sheet-head"><div><div class="eyebrow">${esc(tname(G.user))}</div><h2 class="sec">우리 팀 현황</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${teamStatusBox()}
-    <div class="eyebrow">포지션별 리그 순위 <span class="muted">(10개 구단 중)</span></div>
+    <div class="eyebrow">포지션별 리그 순위 <span class="muted">(${G.teams.length}개 구단 중)</span></div>
     ${slotBar(rk)}
     ${startAvgBox()}
     ${tro?'<p class="small muted">선수 옆 "트레이드"를 누르면 트레이드 협상 화면에 내줄 선수로 올라갑니다.</p>':''}
