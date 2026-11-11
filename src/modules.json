@@ -118,6 +118,7 @@
       "src/engine/runtime/95_audit.js",
       "src/engine/media/90_player_analysis.js",
       "src/engine/media/91_league_events.js",
+      "src/engine/league/92_futures_league.js",
       "src/engine/league/87_club_identity.js",
       "src/engine/league/88_league_rules.js",
       "src/engine/league/89_league_expansion.js",

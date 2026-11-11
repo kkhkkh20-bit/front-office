@@ -88,8 +88,8 @@ function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, �
 }
 let PARK=null; /* 지금 경기 구장(홈 팀) */
 let LRULE={ball:1,zone:0};
-function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRULE={ball:1,zone:0}; } PARK=hid; SIMDAY=day; for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
-  const S={h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)};
+function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRULE={ball:1,zone:0}; } PARK=hid; SIMDAY=day; if(options&&options.sides){ for(const k of ['h','a']){ const s=options.sides[k]; for(const q of [...s.order,...s.bench,...s.pen,...(s.sp?[s.sp]:[])]){ q.gc=N(0,.55*volF(q)); q.gcD=day; } } } else for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
+  const S=options&&options.sides?options.sides:{h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)}; /* 퓨처스리그: 2군 라인업을 넘겨받는다(92_futures_league) */
   const broadcast=options?.pitchRecords===false?null:gameBroadcastContext(day,S,!ps);
   const psx=ps&&typeof ps==='object'?ps:null;
   const score={h:0,a:0}, line={h:[],a:[]}, hits={h:[],a:[]}, ev=[], pbp=[];
