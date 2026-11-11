@@ -3,7 +3,7 @@
    같은 카드 형식으로 연다. 카드 위쪽에 능력(막대), 성격(특징), 관계(단장과의 수치와 주변 인물)를 공통으로 보여 준다 */
 function pcBar(l,v,inv){ const c=Math.round(clamp(v,0,100)); return `<div class="pab"><span>${esc(l)}</span><i><b style="width:${c}%;background:${inv?rcol(20+(100-c)*.6):rcol(20+c*.6)}"></b></i><em class="num">${c}</em></div>`; }
 const sk100=s=>Math.round(20+s*16); /* 별 1~5 → 100점 척도 */
-function personX(k){ const [kind,a,b]=String(k).split(':');
+function personX(k){ { const e=personXExt(k); if(e)return e; } const [kind,a,b]=String(k).split(':');
   if(kind==='sc'||kind==='an'){ const s=(kind==='sc'?G.scouts:anaList()).find(x=>x.id===a); if(!s)return null; stAttr(s);
     return {k,name:s.name,role:kind==='sc'?`스카우트 · ${SROLE[s.role||'am']} ${s.role==='intl'?IREG[s.region].l:s.region||''}`:`전력분석원 · ${AROLE[s.role].l}`,av:{persona:'staff',role:kind==='sc'?'scout':'ana',pid:s.id,team:G.user,age:s.age,name:s.name},rel:staffRel(s,G.user,'gm'),rl:'단장 관계',lab:relLabel(staffRel(s,G.user,'gm')),sub:`${s.age}세 · 연 ${money(s.sal)}${s.car?' · '+s.car:''}`}; }
   if(kind==='c'){const s=coachesOf(G.user)[a]||staffOwned('coach',String(k).slice(2));if(!s)return null;return {k,name:s.name,role:(s.ax?'보조 ':'')+(CROLE[s.role]?.l||'코치'),av:{persona:'coach',pid:s.id,name:s.name,age:s.age,team:G.user},rel:staffRel(s,G.user,'gm'),rl:'단장 관계',lab:relLabel(staffRel(s,G.user,'gm')),sub:`${s.age}세 · 연 ${money(s.sal)}`};}
@@ -14,7 +14,7 @@ function personX(k){ const [kind,a,b]=String(k).split(':');
     return {k,name:s.name,role:`${tname(+b)} ${a==='sc'?'스카우트':'전력분석원'}`,av:{persona:'staff',role:a==='sc'?'scout':'ana',pid:s.id,team:+b,age:s.age,name:s.name},rel:null,lab:`구단 충성도 ${Math.round(s.loy)}`,sub:`${s.age}세 · 연 ${money(s.sal)}`}; }
   return null; }
 /* 카드 공통 상단: 능력·성격·관계 */
-function personTop(k){const staff=staffPerson(k);if(staff)return (staff.kind==='coach'?coachBaseStats(staff.s)+coachAbBox(staff.s):'')+staffBioBox(staff.s,staff.kind,staff.tid,true)+networkPersonBlock(staff.s,staff.kind); const [kind,a]=String(k).split(':'); const t=team(G.user); let ab=[], pe=[], li=[], sty='';
+function personTop(k){ { const e=personTopExt(k); if(e!=null)return e; }const staff=staffPerson(k);if(staff)return (staff.kind==='coach'?coachBaseStats(staff.s)+coachAbBox(staff.s):'')+staffBioBox(staff.s,staff.kind,staff.tid,true)+networkPersonBlock(staff.s,staff.kind); const [kind,a]=String(k).split(':'); const t=team(G.user); let ab=[], pe=[], li=[], sty='';
   if(kind==='own'){ const w=OWNER[t.owner].w; ab=[['순위 중시',w[0]*100],['재정 중시',w[2]*100],['여론 중시',w[3]*100]]; pe=[[OWNER[t.owner].label,OWNTRAIT[t.owner]]]; li=[['사장',bossOf(G.user).ceo.name+' (예산 집행 창구)'],['단장',`신뢰 ${Math.round(t.trust)}`]]; }
   else if(kind==='ceo'){ const B=bossOf(G.user); const c=u01('ceoP',B.ceo.id); ab=[['예산 재량',40+c*40],['현장 이해',30+u01('ceoQ',B.ceo.id)*50]]; pe=[[c>.5?'진취적':'보수적',c>.5?'투자에 비교적 열려 있습니다.':'지출 하나하나를 따집니다.']]; li=[['구단주',bossOf(G.user).own.name+'의 뜻을 전합니다']]; }
   else if(kind==='mgr'||kind==='omgr'||kind==='xmgr'){ const m=kind==='mgr'?G.mgr[G.user]:kind==='xmgr'?exMgrOf(a):G.mgr[+a]; if(m){ mgrAttr(m); const ty=mgrType(m);
@@ -65,3 +65,47 @@ function personGone(kind,a,k){ const P=s=>`<p class="small">${s}</p>`, L=a=>a.le
 function pAttr(pid){ return pid!=null&&G.players[pid]?` data-a="player" data-v="${pid}" role="button" tabindex="0"`:goneAttr(pid); }
 function goneAttr(pid,ob){ if(pid==null)return ''; const v=ob?`ob:${ob.id}`:abrOf(pid)?`abr:${pid}`:null; const at=(a,x)=>` data-a="${a}" data-v="${x}" role="button" tabindex="0"`;
   return v?at('person',v):G.arch&&G.arch[pid]?at('player',pid):''; }
+
+/* ===== 모든 것의 카드화(사용자 11-11, FM처럼): 다른 구단 구단주·사장·코치, 치어리더·응원단장·치어리더 팀장, 고등학교와 고교 감독도 같은 인물 창으로 연다 =====
+   키: oown:<tid> · oceo:<tid> · oc:<tid>:<역할> · chm:<단원id> · crew:<lead|cap> · hs:<학교> · hsc:<학교>
+   creature는 기존 personSheet(07_relation_map)가 그대로 그린다: 이름·역할·사진(av)·한 줄 설명(sub)·정보(info)·버튼(acts) + 위쪽 능력·성격·관계(personTopExt) */
+const HS_STY_D={엄격형:'규율과 반복 훈련을 중시합니다. 기본기가 탄탄한 선수가 나옵니다.',자율형:'선수에게 맡기는 편입니다. 개성 있는 선수가 자랍니다.',데이터형:'기록과 영상을 꼼꼼히 봅니다. 귀띔이 구체적입니다.',육성형:'저학년부터 길게 키웁니다. 잠재력 있는 선수를 잘 알아봅니다.'};
+function hsCrest(n){ const h=shash('hs'+n)%360; const ch=esc(String(n).slice(0,1)); return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M32 3 58 12v20c0 15-11 25-26 29C17 57 6 47 6 32V12z" fill="hsl(${h} 45% 32%)" stroke="hsl(${h} 50% 70%)" stroke-width="2.5"/><text x="32" y="41" text-anchor="middle" font-size="24" font-weight="700" fill="#fff" font-family="sans-serif">${ch}</text></svg>`); }
+function cheerOf(id){ const F=G.fanOps; const S=F&&F.cs; const m=S&&(S.L||[]).find(x=>x.id===+id); return m?{S,m}:null; }
+function personXExt(k){ const P=String(k).split(':'), kind=P[0];
+  const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
+  if(kind==='oown'||kind==='oceo'){ const tid=+P[1]; if(!team(tid))return null; if(tid===G.user)return null; const B=bossOf(tid), t=team(tid), x=kind==='oown'?B.own:B.ceo, ow=OWNER[t.owner];
+    return {k,name:x.name,role:`${tname(tid)} ${kind==='oown'?'구단주':'사장'}`,av:{persona:kind==='oown'?'own':'staff',pid:x.id,team:tid,age:x.age,name:x.name},rel:null,lab:kind==='oown'?ow.label:'',sub:`${x.age}세${kind==='oceo'&&x.car?' · '+x.car:''}`,
+      info:kind==='oown'?`<p>${esc(OWNTRAIT[t.owner]||ow.msg)}</p><p class="small">올해 목표 ${goalRankOf(tid)}위 이내 · ${t.mode==='contend'?'우승 경쟁':'리빌딩'} · ${t.indie?'독립구단(투자사)':'모기업 구단'}</p>`:`<p class="small">${esc(x.car||'')}. ${esc(B.own.name)} 구단주의 뜻을 단장에게 전하고 예산 집행을 맡습니다.</p>`,
+      acts:[btn('구단 정보','lteamGo',tid,1),btn('단장','person','gm:'+tid)]}; }
+  if(kind==='oc'){ const tid=+P[1], role=P[2]; const c=G.coach&&coachesOf(tid)[role]; if(!c)return null;
+    return {k,name:c.name,role:`${tname(tid)} ${CROLE[role]?.l||'코치'}`,av:{persona:'coach',pid:c.id,team:tid,age:c.age,name:c.name},rel:null,lab:'',sub:`${c.age}세${c.ob?' · OB':''}`,
+      acts:[btn('구단 정보','lteamGo',tid,1),...(c.ob&&obOf(c.ob)?[btn('선수 시절','person','ob:'+c.ob)]:[])]}; }
+  if(kind==='chm'){ const o=cheerOf(P[1]); if(!o)return null; const {S,m}=o; const img=(G.cimg&&G.cimg['P:cheerm:'+m.id])||(typeof face8Src==='function'&&cheerPh(S,m)!=null?face8Src(cheerPh(S,m)):null);
+    const fol=m.fol>=10000?(m.fol/10000).toFixed(1)+'만':String(m.fol);
+    return {k,name:m.name,role:`${tname(G.user)} 치어리더`,av:{img,name:m.name},rel:null,lab:'',sub:`${m.age}세 · ${m.yrs?m.yrs+'년차':'신인'} · 팔로워 ${fol}`,
+      info:`<p class="small">${m.inj?`부상 ${m.inj}일 · `:''}${m.sl?`슬럼프 ${m.sl}일 · `:''}무대 ${m.app||0}회 · 피로 ${Math.round(m.fat||0)} · 월 수수료 ${money(cheerFee(m,S.ag))}</p>`,acts:[btn('응원단','go','club:fans',1)]}; }
+  if(kind==='crew'){ const c=crewOf()[P[1]]; if(!c)return null; const ph=typeof crewPh==='function'?crewPh(c):null; const img=(G.cimg&&G.cimg['P:cheer:'+c.id])||(ph!=null&&typeof face8Src==='function'?face8Src(ph):null);
+    return {k,name:c.name,role:`${tname(G.user)} ${CREW_JOB[c.job].l}`,av:{img,name:c.name},rel:null,lab:'',sub:`${c.age}세 · 월 ${money(c.sal)}`,acts:[btn('팬 운영','go','club:fans',1)]}; }
+  if(kind==='hs'||kind==='hsc'){ const n=P.slice(1).join(':'); const S=schList()[n]; if(!S)return null; const r=schRel(S);
+    const Ls=Object.values(G.players).filter(p=>p.school===n);
+    const pros=Ls.filter(p=>p.team!=null&&!p.prospect), cands=Ls.filter(p=>p.prospect);
+    const plist=L=>L.slice(0,8).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${p.team!=null&&!p.prospect?`<i class="small muted">(${esc(tshort(p.team))})</i>`:''}`).join(' · ');
+    if(kind==='hs')return {k,name:n,role:`고교 야구부 · ${S.area}`,av:{img:hsCrest(n),name:n},rel:r,rl:'우리 구단 친분',lab:schRelLbl(r),sub:`전력 ${S.lv} · 감독 ${S.coach?S.coach.name:'공석'}`,
+      info:`${cands.length?`<p class="small">올해 드래프트 후보: ${plist(cands)}</p>`:''}${pros.length?`<p class="small">프로에 있는 졸업생 ${pros.length}명: ${plist(pros)}</p>`:'<p class="small muted">아직 프로에 있는 졸업생이 없습니다.</p>'}`,
+      acts:[...(S.coach?[btn('고교 감독','person','hsc:'+n,1)]:[]),btn('지역 정보망','go','staff:scouts')]};
+    const c=S.coach; if(!c)return null;
+    return {k,name:c.name,role:`${n} 감독`,av:{persona:'coach',pid:c.id,age:c.age,name:c.name},rel:r,rl:'우리 구단 친분',lab:schRelLbl(r),sub:`${c.age}세 · ${c.sty}${c.alma?' · 모교 출신':''}`,
+      info:`<p class="small">${esc(c.car||'')}</p><p class="small muted">친분은 스카우트 방문·단장 대회 관전·그 학교 선수 지명·후원으로 오릅니다. 높을수록 이 학교 후보 평가 오차가 줄고 귀띔 메일이 옵니다.</p>`,
+      acts:[btn('학교','person','hs:'+n,1),...(c.ob&&obOf(c.ob)?[btn('선수 시절','person','ob:'+c.ob)]:[])]}; }
+  return null; }
+function personTopExt(k){ const P=String(k).split(':'), kind=P[0]; let ab=[], pe=[], li=[];
+  if(kind==='oown'){ const tid=+P[1]; if(tid===G.user)return null; const t=team(tid); if(!t)return null; const w=OWNER[t.owner].w; ab=[['순위 중시',w[0]*100],['재정 중시',w[2]*100],['여론 중시',w[3]*100]]; pe=[[OWNER[t.owner].label,OWNTRAIT[t.owner]||'']]; li=[['사장',bossOf(tid).ceo.name],['단장',gmOf(tid)?gmOf(tid).name:'-']]; }
+  else if(kind==='oceo'){ const tid=+P[1]; if(tid===G.user)return null; const B=bossOf(tid); const c=u01('ceoP',B.ceo.id); ab=[['예산 재량',40+c*40],['현장 이해',30+u01('ceoQ',B.ceo.id)*50]]; pe=[[c>.5?'진취적':'보수적',c>.5?'투자에 비교적 열려 있습니다.':'지출 하나하나를 따집니다.']]; li=[['구단주',B.own.name]]; }
+  else if(kind==='oc'){ const tid=+P[1]; const c=G.coach&&coachesOf(tid)[P[2]]; if(!c)return null; ab=[['기본 지도',dv(c.sk)],['기본 육성',dv(c.dv)]]; const h=u01('cpers',c.id); pe=[[h<.33?'원칙형':h<.66?'소통형':'열정형',h<.33?'규율을 중시합니다.':h<.66?'선수와 대화를 많이 합니다.':'훈련량이 많고 목소리가 큽니다.']]; li=[['감독',G.mgr[tid]?G.mgr[tid].name:'-']]; if(c.clan)li.push(['감독 사단','감독과 함께 온 코치입니다']); }
+  else if(kind==='chm'){ const o=cheerOf(P[1]); if(!o)return null; const m=o.m, s=v=>v*5; ab=[['외모·무대 존재감',s(m.vis)],['인기',s(m.pop)],['팬 서비스',s(m.svc)],['댄스',s(m.dance)],['체력',s(m.sta)],['성실',s(m.dil)]]; pe=[[m.pop>=15?'스타 단원':m.yrs>=5?'고참':'성장 중',m.pop>=15?'관중과 SNS의 관심을 끕니다.':m.yrs>=5?'후배를 이끄는 경험이 있습니다.':'무대를 거듭하며 인기가 오릅니다.']]; li=[['대행사',(typeof CHEER_AG!=='undefined'&&CHEER_AG[o.S.ag]&&CHEER_AG[o.S.ag].l)||o.S.ag]]; }
+  else if(kind==='crew'){ const c=crewOf()[P[1]]; if(!c)return null; ab=CREW_AT.map(([key,l])=>[l,c[key]*5]); pe=[[c.star>=15?'스타 응원단장':'현장형',c.star>=15?'이름만으로 관중을 부릅니다.':'관중석 분위기를 직접 끌어올립니다.']]; }
+  else if(kind==='hs'){ const S=schList()[P.slice(1).join(':')]; if(!S)return null; ab=[['팀 전력',S.lv],['우리 구단 친분',schRel(S)]]; pe=S.coach?[[S.coach.sty,HS_STY_D[S.coach.sty]||'']]:[]; li=[['권역',S.area],...(S.coach?[['감독',`${S.coach.name} (${S.coach.y0||G.year}년부터)`]]:[])]; }
+  else if(kind==='hsc'){ const S=schList()[P.slice(1).join(':')]; const c=S&&S.coach; if(!c)return null; ab=[['지도자 명성',c.rep],['우리 구단 친분',schRel(S)]]; pe=[[c.sty,HS_STY_D[c.sty]||'']]; li=[['학교',`${S.n} · 전력 ${S.lv}`],...(c.from!=null&&team(c.from)?[['연고 구단',tname(c.from)]]:[])]; }
+  else return null;
+  return `<div class="pcard">${ab.length?`<div class="pc-sec"><div class="eyebrow">능력</div>${ab.map(([l,v])=>pcBar(l,v)).join('')}</div>`:''}${pe.length?`<div class="pc-sec"><div class="eyebrow">성격</div>${pe.map(([l,d])=>`<div class="pc-tr"><span class="pill">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}${li.length?`<div class="pc-sec"><div class="eyebrow">관계</div>${li.map(([l,d])=>`<div class="pc-li"><span class="muted small">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}</div>`; }
