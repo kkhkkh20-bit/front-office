@@ -17282,7 +17282,7 @@ function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; co
     if(!me){ if(R()<pr)N.stage='plan'; else { S.proj=null; S.retry=G.year+1; } return; }
     if(R()<pr){ N.stage='plan'; stop('구장',`${t.city}시가 신구장 건립에 합의했습니다. 시가 공사비 대부분을 내고 구단이 일부를 분담합니다. 구단·재정 → 시설 투자 → 신구장에서 규모를 고르세요.`); news('구단',`${t.city}시-${t.nick}, 신구장 건립 합의`,'새 야구장 시대가 열립니다.',2); }
     else { S.proj=null; S.retry=G.year+1; stop('구장',`${t.city}시와의 신구장 협상이 결렬됐습니다. 시 재정 여건이 이유입니다. 내년에 다시 시도할 수 있습니다.`); } }
-  if(N.stage==='build'&&G.day>=N.done){ S.cap=N.cap; S.built=G.year; (S.names=S.names||[]).push({until:G.day,n:stadName(t.id)}); /* 옛 구장 이름: 지난 경기 장소 표시용 */ S.name=N.k==='dome'?`${t.city} 돔구장`:`${t.city} 새 야구장`; S.dome=N.k==='dome'; /* 돔이 아닌 신구장으로 바꾸면 돔 효과도 끝 */ for(const k of Object.keys(S.lv))S.lv[k]=Math.max(S.lv[k],4);
+  if(N.stage==='build'&&G.day>=N.done){ S.cap=N.cap; S.built=G.year; (S.names=S.names||[]).push({until:G.day,n:stadName(t.id)}); /* 옛 구장 이름: 지난 경기 장소 표시용 */ S.name=N.k==='dome'?`${t.city} 돔구장`:`${t.city} 새 야구장`; { const H=G.gmLeg&&G.gmLeg.stad; if(H&&H.n&&H.tid===t.id)S.name=H.n; } /* 단장 이름을 붙인 구장은 신구장도 그 이름을 잇는다 */ S.dome=N.k==='dome'; /* 돔이 아닌 신구장으로 바꾸면 돔 효과도 끝 */ for(const k of Object.keys(S.lv))S.lv[k]=Math.max(S.lv[k],4);
     /* 옛 구장에서 진행 중이던 시설 공사: 새 구장 기본 단계(4) 이하가 목표면 취소하고 남은 공사 기간만큼 환급, 그보다 높으면 새 구장에서 이어서 진행 */
     { const can=[], go=[]; S.build=(S.build||[]).filter(b=>{ if(b.lv>S.lv[b.k]){ go.push(b); return true; } const c=b.c??STAD_COST[b.lv]; const r=Math.round(c*clamp((b.done-G.day)/Math.max(1,STAD_DAYS[b.lv]),0,1)); stadRefund(t,b,r); can.push([b,r]); return false; });
       if(me&&(can.length||go.length)){ const nm=b=>STAD_ITEMS.find(x=>x.k===b.k).l; mail('운영팀','신구장 개장: 옛 구장 공사 정리',`${can.length?`새 구장 시설(4단계 이상)에 포함돼 취소한 공사: ${can.map(([b,r])=>`${nm(b)} ${b.lv}단계(남은 공사분 ${money(r)} 환급)`).join(', ')}.`:''}${go.length?`${can.length?'\n':''}새 구장에서 이어서 진행하는 공사: ${go.map(b=>`${nm(b)} ${b.lv}단계(${dmd(b.done)} 완공)`).join(', ')}.`:''}`,{kind:'구장'}); } }
@@ -22196,7 +22196,7 @@ function legSeason(owners){ const L=G.last; if(!L||!L.order)return; const D=legE
     else if(tid===G.user&&!G.unemp){const J=G.gmJoin;if(J&&J.y===y&&J.tid===tid&&J.psDone)continue;k=legMeK();n=legMeName();u=1;const mine=(G.myC?.seas||[]).find(s=>s.y===y&&s.tid===tid&&!s.part);w=mine?mine.w:Math.max(0,w-(J?.w||0));l=mine?mine.l:Math.max(0,l-(J?.l||0));}
     else{const g=team(tid).gm;if(!g||g.interim)continue;k=g.id;n=g.name;}
     let r=D.L.find(x=>x.k===k&&x.t===tid&&(!x.endD||owner?.endD===x.endD)&&x.y1>=y-1);if(!r){r={k,n,t:tid,y0:y,y1:y,s:0,w:0,l:0,c:0};if(u)r.u=1;if(owner?.endD)r.endD=owner.endD;D.L.push(r);}r.n=n;r.y1=y;r.s++;r.w+=w;r.l+=l;r.c+=c;
-  }if(G.gmLegFinish?.y===y)delete G.gmLegFinish;legTrim(D);try{legOwnerOffer();}catch(e){} }
+  }if(G.gmLegFinish?.y===y)delete G.gmLegFinish;legTrim(D);try{legOwnerOffer();}catch(e){} try{legStadOffer();}catch(e){} }
 function legOwners(){legTrack();const O={},St=G.gmSt||{};for(const t of G.teams){if(t.id===G.user&&!G.unemp){const J=G.gmJoin&&G.gmJoin.y===G.year&&G.gmJoin.tid===t.id?G.gmJoin:null;O[t.id]={k:legMeK(),n:legMeName(),u:1,w:J?.w||0,l:J?.l||0,psDone:!!J?.psDone};}else if(t.gm){const x=St[t.id],y=G.sea&&G.sea.y;const st=x&&x.k===t.gm.id&&x.y===y?x:null;O[t.id]={k:t.gm.id,n:t.gm.name,w:st?st.w0:0,l:st?st.l0:0,...(t.gm.interim?{i:1}:{})};}}return O;}
 /* 구단별 지금 단장의 재임 시작점(그해 부임 때 팀 승패). 시즌 도중 단장이 바뀌면 떠난 단장에게 그때까지 승패를 남긴다(검수 131·132: 경질 전 정식 단장 몫이 대행·후임에게 넘어가거나 사라짐) */
 function legTrack(){ const S=G.sea; if(!S||!S.rec||!G.teams)return; const St=G.gmSt=G.gmSt||{}; const y=S.y??G.year; const over=G.ps&&G.ps.done&&!(G.last&&G.last.y>=y);
@@ -22254,6 +22254,20 @@ function legPeople(){ const M=new Map(); for(const x of legRec().L){ let p=M.get
   /* 맡은 구단을 떠나는 모든 길(이직·사임·경질·계약 만료·세대 교체)이 지나는 곳 */
   wrap('myCClose',(r,a,b)=>{if(b?.tid!=null){const D=legEnsure();for(const x of D.L)if(x.k===b.k&&x.t===b.tid&&!x.endD)x.endD=G.day;legHonor(b.tid);legPresVoid(b.tid,b.k);}},()=>{legEnsure();const tid=G.myC&&G.myC.tid,J=G.gmJoin;if(tid!=null&&myCOver()&&!(J&&J.y===G.year&&J.tid===tid&&J.psDone)){const F=G.gmLegFinish?.y===G.year?G.gmLegFinish:(G.gmLegFinish={y:G.year,by:{}});F.by[tid]={k:legMeK(),n:legMeName(),u:1,w:J?.w||0,l:J?.l||0,endD:G.day};}return {tid,k:legMeK()};});
 })();
+
+/* ===== 내 이름의 구장 (장기 기획 11-11) =====
+   한 구단에서 12시즌 이상 + 우승 2회 이상(또는 15시즌 이상 + 우승 1회 이상)이면, 구단주와 연고 도시가 단장의 공로를 기려 구장 이름에 단장 이름을 붙이자고 제안한다(게임 기준, 실제 제도 근거 없음).
+   한 게임에 한 번. 받아들이면 구장 이름이 바뀌고, 그 뒤 신구장이 열려도 같은 이름을 잇는다. 옛 이름은 구장 이름 이력에 남는다 */
+const LEG_STAD={s:12,c:2,s2:15,c2:1};
+function legStadQ(tid){ const a=legAt(legMeK(),tid); return (a.s>=LEG_STAD.s&&a.c>=LEG_STAD.c)||(a.s>=LEG_STAD.s2&&a.c>=LEG_STAD.c2); }
+function legStadOffer(){ G.gmLeg=G.gmLeg||{hon:[],pres:null}; if(G.gmLeg.stad||G.gmLeg.stadAsk||G.unemp||G.user==null||G.gameOver)return null; const tid=G.user; if(!legStadQ(tid))return null;
+  const a=legAt(legMeK(),tid), nm=legMeName(), t=team(tid); G.gmLeg.stadAsk={tid,y:G.year};
+  evNew('stadNm',`${t.city}시와 구단, '${nm} 구장' 명명을 제안합니다`,`구단주 ${bossOf(tid).own.name}: "단장님이 ${a.s}시즌 동안 우승 ${a.c}회를 이끌었습니다. ${t.city}시와 뜻을 모아 구장에 단장님 이름을 붙이고 싶습니다."`,
+    [{l:`${nm} 필드`,fx:`구장 이름이 '${nm} 필드'가 됩니다. 팬 여론 +3`},{l:`${nm} 기념구장`,fx:`구장 이름이 '${nm} 기념구장'이 됩니다. 팬 여론 +3`},{l:'사양한다',fx:'지금 이름을 지킵니다. 구단주 신뢰 +2'}],{def:0,exp:21,data:{tid,nm},from:'구단주'}); return true; }
+function legStadSet(tid,n){ const S=stadOf(tid); (S.names=S.names||[]).push({until:G.day,n:stadName(tid)}); S.name=n; G.gmLeg.stad={tid,y:G.year,n,k:legMeK()};
+  try{ chron('honor',`구장 이름을 '${n}'(으)로 바꿈 · ${legMeName()} 단장 공로 기념`,null,tid,{source:'stadNm:'+tid}); }catch(e){} news('구단',`${tshort(tid)} 홈구장, '${n}'(으)로 새 이름`,`${legMeName()} 단장의 공로를 기려 구단과 ${team(tid).city}시가 구장 이름을 바꿨습니다.`,2,{tid}); }
+EVH.stadNm={ pick(e,i){ const {tid,nm}=e.data; if(tid!==G.user)return '이제 우리 구단이 아닙니다.'; if(i===2){ team(tid).trust=clamp((team(tid).trust||50)+2,0,100); G.gmLeg.stad={tid,y:G.year,n:null,declined:1}; return '정중히 사양했습니다.'; }
+  legStadSet(tid,i===0?`${nm} 필드`:`${nm} 기념구장`); if(G.pr)G.pr.fan=clamp(G.pr.fan+3,0,100); return `구장 이름이 '${stadName(tid)}'(으)로 바뀌었습니다.`; } };
 /* ===== 감독과 이야기 나누기: 스타일이 이끄는 대화 (사용자 11-08c: 대화 흐름이 뻔하다. 선택지 수보다 감독 스타일에 따른 재미난 흐름) =====
    감독마다 대화 스타일 하나(올드스쿨 고집형·데이터형·선수 친화형·다혈질·유머러스·언론 플레이형·신중형)를 갖는다. 기존 말투(mgrVoice)에서 나오고,
    신중파·형님 리더십 일부는 명성·고집·규율에 따라 언론 플레이형·유머러스로 갈라진다.
@@ -33994,6 +34008,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-league-world',d:'11월 11일',t:'구단 매각 뒤 이름 변경·연고 이전, 협회 규정 변화, 라이벌 효과',items:[
+    '새 운영 주체가 구단을 인수하면 구단 이름을 바꾸거나, 드물게 지방 구단이 리그 밖 도시로 연고를 옮깁니다. 우리 구단이 인수되면 새 구단주가 이름 변경을 묻고 단장이 고릅니다. 지난 시즌 우승·순위 기록은 그때 이름으로 남습니다.',
+    '해마다 12월 18일 협회 규칙위원회가 다음 시즌 규정을 정합니다. 공인구 반발계수(홈런), ABS 존(삼진·볼넷), 외국인 선수 연봉 총액 상한이 바뀔 수 있고 실제 경기와 계약에 반영됩니다. 새 공인구가 도입되면 타고투저·투고타저 시대가 오기도 합니다.',
+    '라이벌 맞대결은 관중이 더 들고(최대 12%), 우리 구단 라이벌전 승패는 팬 여론에 더 크게 남습니다. 주전급 선수가 두 구단 사이를 트레이드·FA로 옮기면 맞대결 열기가 오르고, 이런 사건이 쌓이면 새 라이벌이 생깁니다.'
+  ]},
   {id:'2026-11-11-editor-draft',d:'11월 11일',t:'리그 주전 평균·담장 공사·같은 순서 창단 드래프트',items:[
     '구장 화면에서 담장 공사로 좌·중·우 담장 거리와 높이를 바꿀 수 있습니다(비시즌 한 해 한 번, 공사비). 담장이 가깝고 낮을수록 홈런이 늘고, 높은 담장에 막힌 타구는 2루타가 됩니다. 공사 전에 바뀔 홈런 지수와 공사비를 미리 볼 수 있습니다.',
     '받은 스폰서 제안을 자리별로 묶어 보여 주고, 같은 자리 제안 가운데 가장 높은 연 금액·보너스를 파란색으로 표시합니다.',
