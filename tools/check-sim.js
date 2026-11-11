@@ -45,6 +45,13 @@ const invDay=()=>{ const per=period();
   if(G.fa&&!G.fa.closed)for(const id of (G.fa.pool||[])){ const p=G.players[id]; if(p&&p.team!=null&&!G.fa.results?.some?.(r=>r.id===id))INV('FA 명단','소속이 있는데 FA 명단에 '+p.name); }
   for(const id of (G.fmarket||[])){ const p=G.players[id]; if(p&&p.team!=null)INV('외국인 시장','소속이 있는데 시장에 '+p.name); }
   for(const t of G.teams){ const C=G.contract; const dr=t.id===G.user&&C&&!C.done?(C.foreignDrop||[]):[]; const fs=foreignOf(t.id).filter(p=>!dr.includes(p.id)); /* 재계약 기간에 결별하기로 한 선수는 계약 확정 때 떠난다 */ if(fs.filter(p=>p.foreign==='용병').length>Math.max(fMaxYB(t.id),fMaxYB(t.id,G.year))||fs.filter(p=>p.foreign==='아시아').length>1)INV('외국인 수',tshort(t.id)+' 용병 '+fs.filter(p=>p.foreign==='용병').length+' · 아시아 '+fs.filter(p=>p.foreign==='아시아').length);
+  /* 11-11~12 추가 기능 불변식: 코치 OB 중복, 분기 성장 몫, 득점권·맞대결 기록, 퓨처스 순위 */
+  { const seen={}; for(const t of G.teams){ const C=G.coach&&G.coach[t.id]; if(!C)continue; for(const k of CKEYS){ const c=C[k]; if(c&&c.ob){ if(seen[c.ob]!=null&&seen[c.ob]!==t.id)INV('코치 중복',c.name+' '+tshort(seen[c.ob])+'·'+tshort(t.id)); seen[c.ob]=t.id; } } } }
+  for(const p of Object.values(G.players)){ const Q=p.devQ; if(Q){ if(!(Q.i>=0&&Q.i<3)||!Array.isArray(Q.w)||Q.w.length!==3||Math.abs(Q.w.reduce((a,v)=>a+v,0)-1)>.02||Q.y<G.year||Q.y>G.year+1)INV('분기 성장',p.name+' '+JSON.stringify({i:Q.i,y:Q.y,w:Q.w})); for(const k in Q.D)if(!Number.isFinite(Q.D[k]))INV('분기 성장',p.name+' '+k+' NaN'); }
+    const rs=p.spl&&p.spl.RS; if(rs&&!(rs[0]>=rs[1]&&rs[1]>=rs[2]&&rs[2]>=0))INV('득점권 기록',p.name+' '+rs.slice(0,3).join('/'));
+    if(p.vs&&p.vs.m){ for(const id in p.vs.m){ const a=p.vs.m[id]; if(!(a[0]>=a[1]&&a[1]>=a[2]&&a[2]>=a[3]&&a[3]>=0&&a[0]>=a[4]+a[1]-0))INV('맞대결 기록',p.name+' vs '+id+' '+a.join('/')); } }
+    for(const k in p.r)if(!(p.r[k]>=20-1e-6&&p.r[k]<=99.0001))INV('능력 범위',p.name+' '+k+' '+p.r[k]); }
+  if(G.fl&&G.fl.rec)try{ for(const id in G.fl.rec){ const x=G.fl.rec[id]; if(x&&(x.w<0||x.l<0||!Number.isFinite(x.w+x.l)))INV('퓨처스 순위',id+' '+JSON.stringify(x)); } }catch(e){ INV('검사 오류','퓨처스 '+e.message); }
     if(t.id!==ME()&&(per==='season'||per==='post')&&rosterN(t.id)>ROSTER_MAX)INV('로스터',tshort(t.id)+' '+rosterN(t.id)+'명 '+dstr(G.day));
     if(entryOn()&&(per==='season'||per==='post')){ const n=playersOf(t.id).filter(p=>p.e1).length; if(n>entryLimit())INV('1군 엔트리',tshort(t.id)+' '+n+'명 > '+entryLimit()+' '+dstr(G.day)+' '+per); } }
   for(const k in (G.spend||{}))if(!Number.isFinite(G.spend[k]))INV('지출','G.spend.'+k+' '+G.spend[k]); };
