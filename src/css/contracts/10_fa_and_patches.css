@@ -242,3 +242,9 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 /* 모바일 무적 선수 화면(카페 11-11 바람소리): 검색·필터가 화면을 차지해 목록 칸이 두세 줄만 남고 그 안에서만 스크롤됐다.
    좁은 화면에서는 작업 화면 전체가 세로로 스크롤되고, 표는 가로로만 스크롤한다 */
 @media(max-width:700px){.free-workspace{overflow-y:auto;overflow-x:hidden;overscroll-behavior:auto;-webkit-overflow-scrolling:touch}.free-list{flex:none;min-height:0;overflow-x:auto;overflow-y:visible;overscroll-behavior-x:contain}.free-pages{flex:none}}
+
+/* 보호명단 보기 편하게(리아네트 11-11): 현재·잠재 라벨, 큰 별, 정렬·필터 칩 */
+.pr-ctl{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 2px}.pr-ctl .chips{margin:0}
+.prl .pr-v{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1}.prl .pr-v small{font-size:var(--ui-xs,11px);color:var(--muted)}
+.prl .pr-pot .ptier{padding:2px 6px}.prl .pr-pot .pst{font-size:16px;letter-spacing:1px}.prl .pr-pot .pst-fill{color:#ffcf4a}
+.prl{grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}

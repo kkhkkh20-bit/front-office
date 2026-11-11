@@ -8,7 +8,8 @@ try{new Function('assert','mode','hash',engine+'\n'+oldEval+String.raw`
 DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.day=dnum(G.year,6,15);G.trades=[];G.gmc={};G.ps=null;G.makeup=[];G.cal.sched[G.day]=[[G.user,1]];G.cal.sched[G.day+1]=[[G.user,1]];worldReset();
 const base=JSON.stringify(G),results=[],measurements={};const reset=()=>{G=JSON.parse(base);worldReset();};
 const test=(name,fn)=>{reset();try{fn();results.push({name,pass:true});console.log('PASS '+name);}catch(e){results.push({name,pass:false,error:e.message});console.log('FAIL '+name+': '+e.message);}};
-const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,a+' != '+b),target=()=>domestic(0).filter(p=>!p.ys&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a))[0];
+const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,a+' != '+b),target=()=>{ const L=domestic(0).filter(p=>!p.ys&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)); /* 현금만으로 살 수 있는(급매 기준 25억 이하) 가장 좋은 선수: 세계 생성이 바뀌어 최고 선수 값이 현금 한도 30억을 넘는 일이 생겼다(11-11) */
+  for(const p of L){ const k={l:p.aiListed,u:p.aiUrg,d:p.aiLd}; list(p); let c=Infinity; try{ const e=evalTrade(0,[],[p.id],0); c=cashFor(team(0),e.outV+e.need); }catch(x){} p.aiListed=k.l; p.aiUrg=k.u; p.aiLd=k.d; if(k.l===undefined)delete p.aiListed; if(k.u===undefined)delete p.aiUrg; if(k.d===undefined)delete p.aiLd; if(c>0&&c<=2500)return p; } return L[0]; };
 const list=(p,urgent=true)=>{p.aiListed=true;p.aiUrg=urgent;p.aiLd=G.day;return p;};
 const hist=()=>{G.trades=[{y:G.year,d:G.day-2,with:0,me:G.user},{y:G.year,d:G.day-1,with:0,me:G.user}];};
 const quote=(p,fn=evalTrade,pk,cash=0)=>{const e=fn(0,[],[p.id],cash,pk);return {outV:e.outV,need:e.need,required:e.outV+e.need,ok:e.ok};};
