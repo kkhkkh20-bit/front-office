@@ -102,3 +102,23 @@ table.mst td.ppc{font-weight:700}
 .tile[data-a]:hover{border-color:var(--team-hi)}
 .mailbtn{flex:none}
 .sheet.noanim{animation:none}
+
+/* 타구장 소식 · 결정적 순간(경기 화면 연출 11-11) */
+.md-ticker{display:flex;align-items:center;gap:10px;margin:6px 0;padding:6px 10px;border:1px solid var(--line,#2a3442);border-radius:8px;background:var(--panel,#121a24);overflow:hidden;font-size:var(--ui-sm,12px)}
+.md-ticker:empty{display:none}
+.mdt-h{flex:none;font-weight:700;color:var(--acc,#6fb3ff)}
+.mdt-l{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}.mdt-l::-webkit-scrollbar{display:none}
+.mdt-g{display:inline-flex;align-items:center;gap:4px}.mdt-g em{font-style:normal;font-weight:800;font-variant-numeric:tabular-nums;min-width:1ch;text-align:center}
+.mdt-g i{font-style:normal;color:var(--muted)}.mdt-g small{color:var(--muted);margin-left:2px}.mdt-g.pre{opacity:.6}
+.md-clutch{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.9);z-index:30;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 26px;border-radius:14px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--cl,#335) 88%,#000),color-mix(in srgb,var(--cl,#335) 55%,#000));border:2px solid rgba(255,255,255,.75);box-shadow:0 10px 34px rgba(0,0,0,.55);
+  color:#fff;text-align:center;pointer-events:none;animation:mdcIn .35s cubic-bezier(.2,1.4,.4,1) forwards}
+.md-clutch b{font-size:clamp(26px,5vw,44px);font-weight:900;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.md-clutch.big b{font-size:clamp(32px,6.5vw,58px)}
+.md-clutch .mdc-tm{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;opacity:.92}
+.md-clutch .mdc-s{font-size:13px;opacity:.9}
+.md-clutch.out{animation:mdcOut .45s ease forwards}
+@keyframes mdcIn{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes mdcOut{to{opacity:0;transform:translate(-50%,-62%) scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.md-clutch,.md-clutch.out{animation:none}.md-clutch.out{opacity:0}}
+.md-clutch{max-width:88%}
