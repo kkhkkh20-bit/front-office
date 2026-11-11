@@ -11673,9 +11673,11 @@ const TALENT_W=1;
 const TWB={k:1.1,bb:.72,hr:.69,babip:1.1}, TWP={k:.95,bb:.95,hr:1.25,babip:.9};
 const QCB={k:.207,bb:.0825,hr:.0248,babip:.320}, QCP={k:.204,bb:.0818,hr:.025,babip:.310}, QOF={babip:-.003,hr:-.0004,bb:.001,k:-.001};
 function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip']){ const c=C?C[k]:LGP[k]; o[k]=clamp(c+(q[k]-c)*TALENT_W*(W?W[k]:1)+(F&&F[k]||0),.002,.6); } return o; }
+/* 홈 어드밴티지 크기(능력 보정 단위). 같은 전력이면 홈 승률 약 53~54%(MLB 장기 평균 약 .54, KBO도 비슷한 수준)에 맞춘 값 */
+let HOME_ADV=1.5;
 function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */
-  const lead=fs?((fs.cLead??CL0)-CL0)*.28+chemOf(p,fs.cId)+coachBatteryPlan(fs.tid):0; /* 포수 리드·블로킹·배터리 호흡 */ const cb=CLUTCH?CLUTCH*2.0*mentalOf(b):0, cp=CLUTCH?CLUTCH*2.0*mentalOf(p):0; /* 승부처: 멘탈 */
-  const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5+cb),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5-(fp||0)+lead+cp),TWP,QCP,QOF);
+  const lead=fs?((fs.cLead??CL0)-CL0)*.28+chemOf(p,fs.cId)+coachBatteryPlan(fs.tid):0; /* 포수 리드·블로킹·배터리 호흡 */ const cb=CLUTCH?CLUTCH*2.0*mentalOf(b):0, cp=CLUTCH?CLUTCH*2.0*mentalOf(p):0; /* 승부처: 멘탈 */ const ha=fs&&PARK!=null&&HOME_ADV?(fs.tid===PARK?-HOME_ADV:HOME_ADV):0; /* 홈 어드밴티지(사용자 11-11): 수비 쪽이 홈이면 투수에, 아니면 타자에 */
+  const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5+cb+Math.max(0,ha)),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5-(fp||0)+lead+cp+Math.max(0,-ha)),TWP,QCP,QOF);
   const bb=comb(qb.bb,qp.bb,LGP.bb)*(1-LRULE.zone*.06), k=comb(qb.k,qp.k,LGP.k)*(1+LRULE.zone*.04), /* ABS 존(88_league_rules) */ hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
   LBIP=null; const pm=parkHRM(PARK,bipSide(b,p))*LRULE.ball, hrA=hr*pm; /* 공인구 반발계수(88_league_rules)도 홈런 지수에 곱한다 */ /* 구장: 담장 거리·높이에 따른 홈런 지수 */ const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hrA){ LBIP=bipHR(b,p); return 'HR'; }
   const hbp=clamp(.0085+(50-(p.r.ctl||50))*.00010+(fp||0)*.00008,.004,.014);
@@ -34650,6 +34652,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-home-adv',d:'11월 11일',t:'홈 어드밴티지',items:[
+    '홈 경기에서는 타자와 투수가 조금 더 잘합니다. 전력이 같으면 홈팀 승률이 약 53%가 되도록 맞췄습니다(실제 리그의 홈 승률 수준). 리그 전체 득점 수준은 그대로입니다.']},
   {id:'2026-11-11-dev-q',d:'11월 11일',t:'분기 성장',items:[
     '선수 성장·노화가 겨울 한 번에 모두 반영되지 않습니다. 겨울에는 일부(크는 능력 35%, 떨어지는 능력 50%)만 반영하고, 나머지는 시즌 중 5월 1일·6월 20일·8월 10일 세 번에 나눠 들어옵니다.',
     '분기마다 비중이 달라 어떤 분기는 크게 오르고, 어떤 분기는 정체되거나 잠시 떨어졌다가 다음 분기에 되찾기도 합니다. 1년 최종 변화량은 같습니다. 분기마다 우리 팀 성장 보고가 소식함에 옵니다.']},

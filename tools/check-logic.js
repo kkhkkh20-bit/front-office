@@ -3785,7 +3785,7 @@ T('[피드백 11-09t] 스타 효과: 스타와 대기록 도전 선수가 있으
   const p=playersOf(o).find(q=>!q.isP); p.aw=[G.year+' MVP']; p.hstk=30; _saC.k=null; const m1=starAttM(o), hi=attOf(o,a,d,null);
   ok(m1>=m0*1.08&&m1<=1.14,'스타 효과 배수 '+m0+' '+m1); ok(hi>lo,'스타 효과로 관중이 늘지 않음 '+lo+' '+hi); });
 T('[피드백 11-09t] 기념 유니폼: 우리 선수 대기록이면 제작 결정이 오고, 만들면 결산 수입 항목에 기념 유니폼 판매가 잡힌다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>G.cal.open+20);
-  const p=playersOf(G.user).find(q=>!q.isP); p.aw=[G.year+' MVP']; G.pr.fan=80; featAdd('hr50',p,'시즌 50홈런'); const e=(G.evs||[]).find(x=>!x.done&&x.k==='memo'); ok(e,'기념 유니폼 결정 없음');
+  (G.evs||[]).forEach(x=>{ if(!x.done&&x.k==='memo')x.done=true; }); /* 시뮬 중 실제 대기록으로 이미 온 결정은 정리(11-11) */ const p=playersOf(G.user).find(q=>!q.isP); p.aw=[G.year+' MVP']; G.pr.fan=80; featAdd('hr50',p,'시즌 50홈런'); const e=(G.evs||[]).find(x=>!x.done&&x.k==='memo'); ok(e,'기념 유니폼 결정 없음');
   ok(/예상 판매 약/.test(e.sit),'예상 판매가 안 보임'); featAdd('hr4',p,'한 경기 4홈런'); ok(G.evs.filter(x=>!x.done&&x.k==='memo').length===1,'결정이 겹쳐 옴');
   const f0=G.spend.fan||0, i0=G.spend.fanIn||0; const r=evPick(e.id,0); ok((G.spend.fan||0)>f0,'제작비가 안 나감 '+r); ok((G.spend.goods||0)>0&&(G.spend.fanIn||0)-i0===G.spend.goods,'판매 수입 기록 안 됨 '+r);
   ok(G.spend.goods<=Math.round(1e4*MEMO_U*ecoIdx()),'1만 벌 판매 수입이 상한을 넘음 '+G.spend.goods); const B=budget(); const row=B.inc.find(x=>x[0]==='기념 유니폼 판매'); ok(row&&row[1]===Math.round(G.spend.goods),'수입 명세에 기념 유니폼 판매 없음');
