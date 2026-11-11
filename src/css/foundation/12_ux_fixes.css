@@ -719,7 +719,7 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .card.champ .tro16{flex:none;filter:drop-shadow(0 6px 18px rgba(255,210,77,.45))}
 @media(max-width:480px){.card.champ .ch-top .tro16{width:84px;height:84px}}
 .ptier[data-tip]{cursor:pointer}
-.pst{position:relative;display:inline-block;color:#4a5562;font-size:13px;letter-spacing:.5px;line-height:1;vertical-align:0;white-space:nowrap;font-style:normal}.pst i{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#ffc94d;font-style:normal}
+.pst{position:relative;display:inline-block;color:#667383;font-size:13px;letter-spacing:1.5px;line-height:1;vertical-align:0;white-space:nowrap;font-style:normal}.pst i{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#ffc94d;font-style:normal}
 /* 단장 레거시(피드백 11-09p): 내 줄 강조, 연대기 한 장 */
 .item.lg-me{background:color-mix(in srgb,var(--acc,#3b82f6) 10%,transparent)!important}
 .lg-tm{margin-bottom:8px}
