@@ -26,7 +26,7 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
         const FM_SIDE_N=await page.evaluate(()=>FM_SIDE.flat().length);const side=await page.evaluate(()=>{const s=document.querySelector('.fmside');return {count:s.querySelectorAll('button').length,fits:s.scrollHeight<=s.clientHeight+2};});
         check(side.count===FM_SIDE_N&&side.fits,`${size.width}: 사이드바가 FM식 ${FM_SIDE_N}개 메뉴가 아니거나 세로로 넘침 (${side.count}개)`);
       }
-      if(size.width>=1100){const p=await page.evaluate(()=>({todo:document.querySelector('.home-priority #todoCard')?.getBoundingClientRect().top,next:document.querySelector('.home-priority .hw-match')?.getBoundingClientRect().top,compare:!!document.querySelector('.home-priority details[data-k="nxCmp"][open]')}));check(p.todo<350&&p.next<350&&!p.compare,`${size.width}: 할 일·다음 경기 우선 배치 실패`);}
+      if(size.width>=1100){const p=await page.evaluate(()=>({todo:document.querySelector('.home-priority #todoCard')?.getBoundingClientRect().top,next:document.querySelector('.home-priority .hw-match')?.getBoundingClientRect().top,compare:!!document.querySelector('.home-priority details[data-k="nxCmp"][open]')}));check(p.next<350&&!p.compare,`${size.width}: 다음 경기 우선 배치 실패`); /* 할 일은 홈에서 빼고 소식함·계속 버튼으로 옮겼다(사용자 11-08) */}
       await page.evaluate(()=>A.tab('roster'));await page.waitForTimeout(200);
       r=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+2,top:document.querySelector('.rt tbody tr.click')?.getBoundingClientRect().top,pager:!!document.querySelector('.roster-list .twpg')}));
       check(!r.overflow,`${size.width}: 명단 가로 넘침`);
@@ -72,7 +72,9 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
     check(dr.frame&&dr.top<440&&dr.width>800,'신인 드래프트 후보 표 비율·첫 화면 배치 실패 '+JSON.stringify(dr));
     if(process.env.CAPTURE)await page.screenshot({path:'/workspace/front-office-amateur-draft-final.png'});
     await page.evaluate(()=>{for(const p of Object.values(G.players)){if(p.team!=null)Object.assign(lineFor(p,G.year,p.team,'1군'),p.isP?{g:20,gs:8,outs:180,er:20,so:60,w:6}:{g:60,pa:240,ab:200,h:65,hr:10});}G.day=G.cal.asg-14;allStarDaily();A.leagueEvents();});
-    check(await page.locator('.league-event-grid .candidate-table tbody tr').count()===52,'올스타 선정 명단이 화면과 연결되지 않음');
+    check(await page.locator('.league-event-grid .asf-card').count()===2,'올스타 선발 라인업 그림이 두 진영 모두 나오지 않음'); /* 기본 보기: 라인업 그림 */
+    await page.evaluate(()=>A.asgV('list'));
+    check(await page.locator('.league-event-grid .candidate-table tbody tr').count()===52,'올스타 선정 명단이 화면과 연결되지 않음'); /* 전체 명단 보기 */
     await page.evaluate(()=>{UI.it.histv='aw';G.day=KD(11,25);const p=playersOf(G.user).find(p=>!p.isP);const C=[ggCandidate({p,h:seasonTotal(p,G.year,'1군'),w:5},'1B')];ggReporterVote(C,288,1,G.year);G.awards={[G.year]:{y:G.year,gg:{},cand:{gg:{'1B':C}},pend:{mvp:true,gg:true},ggVote:{voters:288,start:KD(11,25),end:KD(12,5),news:{}}}};render();});
     check(await page.locator('.candidate-list').filter({hasText:'기자단 투표 중'}).count()===1,'골든글러브 투표 진행 화면 누락');
     if(process.env.CAPTURE){await page.evaluate(()=>{G.day=KD(1,2);A.tab('home');});await page.screenshot({path:'/workspace/front-office-home-laptop.png',fullPage:true});await page.evaluate(()=>A.tab('roster'));await page.screenshot({path:'/workspace/front-office-roster-laptop.png'});await page.evaluate(()=>A.player(playersOf(G.user).find(p=>!p.isP).id));await page.screenshot({path:'/workspace/front-office-profile-laptop.png'});await page.evaluate(()=>{closeSheets();A.go('staff:smkt');A.mgrCandidate(G.mmarket[0].id);});await page.screenshot({path:'/workspace/front-office-manager-laptop.png'});}
