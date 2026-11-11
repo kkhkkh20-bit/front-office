@@ -9,7 +9,8 @@ function projStarters(tid,n){ // 지금 로테이션 순번과 휴식일로 다�
   const pk=playersOf(tid).filter(p=>p.isP).map(p=>[p.id,p.name,p.e1?1:0,p.injOut||0,p.susp||0,rpPlanOf(tid,p)||'',p.lastApp,p.lastStart,p.role||''].join('|')).join(','), ck=tid+':'+n; if(_spC[ck]&&_spC[ck].pk===pk)return _spC[ck].v; /* 투수 이름·등록·부상·출장정지·보직 계획·마지막 등판이 바뀌면 다시 계산(검수 11-09zh) */
   const dp=depth(tid), sp=dp.sp; const games=teamGames(tid,G.day+1,n); const last={}; sp.forEach(p=>last[p.id]=p.lastStart); let rot=t.rot||0; const out=[]; const fr=(p,d)=>!(p.lastApp!=null&&p.lastApp!==p.lastStart&&last[p.id]===p.lastStart&&d-p.lastApp<2); /* 실제 선발 선택처럼 어제·그제 구원 등판한 투수는 순번을 넘긴다(검수 11-08) */
   for(const g of games){ let pick=null;
-    if(sp.length){ for(let i0=0;i0<sp.length;i0++){ const i=(rot+i0)%sp.length; const p=sp[i]; if((last[p.id]==null||g.d-last[p.id]>=5)&&fr(p,g.d)){ rot=(i+1)%sp.length; pick=p; break; } }
+    if(sp.length&&(g.ps||period()==='post')){ const rest=p=>last[p.id]==null?99:g.d-last[p.id]; const top=[...sp].filter(healthy).sort((a,b)=>spV(b)-spV(a)); pick=top.slice(0,3).find(p=>fr(p,g.d)&&rest(p)>=4)||top.slice(0,3).find(p=>fr(p,g.d)&&rest(p)>=3)||top.find(p=>fr(p,g.d)&&rest(p)>=4)||null; if(pick)last[pick.id]=g.d; } /* 포스트시즌: 실제 선발 선택(psStarter)처럼 상위 선발 3명 중 쉬어 온 투수. 정규시즌 순번으로 보면 시리즈 내내 같은 선발이 나왔다(카페 11-11 리아네트) */
+    if(!pick&&sp.length){ for(let i0=0;i0<sp.length;i0++){ const i=(rot+i0)%sp.length; const p=sp[i]; if((last[p.id]==null||g.d-last[p.id]>=5)&&fr(p,g.d)){ rot=(i+1)%sp.length; pick=p; break; } }
       if(!pick){ const pool=[...sp].sort((a,b)=>(last[a.id]||0)-(last[b.id]||0)); pick=pool.find(p=>fr(p,g.d))||dp.pen.find(p=>!last[p.id]&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&g.d-p.lastApp<2))||pool[0]; } /* 선발 전원이 연투 제한이면 실제처럼 쉬어 온 불펜(검수 11-09zh) */ last[pick.id]=g.d; }
     out.push(Object.assign({},g,{sp:pick,la:pick?pick.lastApp:null})); }
   _spC[ck]={pk,v:out}; return out; }
