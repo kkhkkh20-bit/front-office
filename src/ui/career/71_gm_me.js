@@ -52,6 +52,7 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
   return csec('세대 교체 · 단장 계보',body+line); }
 Object.assign(A,{
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
+  dr1Pk(v){ UI.dr1Pk=+v||0; render(); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
   scHomeAuto(){ toast(scHomeAuto()); save(); render(); },
   facRefurb(v){ const e=facRefurb(v); toast(e||'보수 공사를 마쳤습니다. 연식을 새로 셉니다.'); if(!e)save(); render(); },

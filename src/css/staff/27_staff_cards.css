@@ -230,3 +230,4 @@ button.st-n:hover b{text-decoration:underline}
 @media(min-width:761px) and (max-width:1099px){.st-list:has(.coach-study-entry)>.st-h{display:none}.st-r:has(.coach-study-entry){grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-areas:"n n n act" "sk dv sal sal" "abs abs abs abs";gap:6px 8px}.st-r:has(.coach-study-entry) .st-v>i{display:inline}.st-r:has(.coach-study-entry) .st-sal{display:flex;gap:6px;align-items:center;justify-content:flex-end}}
 /* 스카우팅 센터 관심 명단 칸: 드래프트·외국인·타 구단 관심 선수 표를 한 칸 안에서 스크롤 */
 .scn-watch>.sf-tw{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}.scn-watch .pw-h{margin:12px 0 4px}
+.scn-watch .pw-g td{text-align:left;font-weight:700;color:var(--muted)} /* 하위 탭 단독 표시(11-11) */

@@ -38,3 +38,8 @@ function GRD(v){ const c=grdCuts(); if(!c)return v>=75?'S':v>=65?'A':v>=55?'B':v
 function worldReset(){ const L=x=>{ try{ return x(); }catch(e){ return null; } };
   L(()=>{ _spC={k:null}; _poC={k:null}; _dcc=null; _ftr=null; _xhrC=null; _ak.clear(); _lgbC={k:'',m:{}}; _subC.clear(); _pvC.clear(); _slC={k:null}; _grdC={k:null}; _franC={k:null}; _pjC={}; _faCtx=null; _intC={}; _lkC={k:'',m:new Map()}; _tcC={k:null,m:{}}; _evOut=null; _stC={k:'',m:{}}; _ldC.clear(); _nmSet=null; _nmDay=null; _pctC={k:null}; });
   if(typeof _lk!=='undefined')L(()=>{ _lk={k:null}; _psC={k:null}; _tsC=null; _prC=null; _fdAllSet=null; }); }
+
+/* 이름 뒤에 보이지 않는 선수 번호 표시(⁣ + 0/1 비트 + ⁤). 화면에서 이름을 링크할 때 동명이인 대신 그 선수로 잇는다(네오클라우드 11-11: 단장 식사에서 동명이인 링크) */
+const PNM_A='\u2063', PNM_Z='\u2064';
+function pidName(p){ if(!p||!p.name)return ''; if(typeof p.id!=='number')return p.name; return p.name+PNM_A+p.id.toString(2).replace(/0/g,'\u200b').replace(/1/g,'\u200c')+PNM_Z; }
+function pnmId(m){ if(!m)return null; const b=m.slice(1,-1).replace(/\u200b/g,'0').replace(/\u200c/g,'1'); return b?parseInt(b,2):null; }
