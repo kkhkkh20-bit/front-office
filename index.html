@@ -2766,6 +2766,9 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .ne-in{width:46px;text-align:center;font-weight:700;font-size:15px}.ne-r span{display:flex;flex-direction:column;min-width:0}.ne-r i{font-style:normal;font-size:11.5px;color:var(--muted,#9aa7b4)}.ne-r em{font-style:normal;font-size:11px;color:#e06464;margin-left:auto}
 .ne-foot{justify-content:flex-end;gap:8px}
 .scn-home{display:block;font-size:10.5px;font-weight:500;color:var(--muted,#9aa7b4)}.scn-home.on{color:#5fc77a}
+/* 퓨처스리그 최근 경기·박스스코어 */
+.fl-g{display:grid;gap:6px}.fl-r{border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--panel)}.fl-r>summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fl-box{display:grid;gap:8px;margin-top:8px}.fl-bx h4{margin:4px 0}.fl-bx .tbl{margin-bottom:6px}.fl-box .mono{font-family:ui-monospace,monospace}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -16185,7 +16188,7 @@ function mgrFix(m){ if(!m)return m; if(m.ego==null)m.ego=ri(20,85); if(m.fame==n
 const POL={win:{l:'성적 우선',lean:-1,d:'지금 이기는 데 집중합니다. 검증된 선수가 우선 출전합니다.'},bal:{l:'균형',lean:0,d:'성적과 육성을 함께 봅니다.'},youth:{l:'육성 우선',lean:1,d:'젊은 유망주에게 출전 기회를 줍니다. 당장 성적은 떨어질 수 있습니다.'}};
 function mgrLean(m){ return clamp((m.youth-50)/40,-1,1); }
 function teamLean(tid){ const m=mgrOf(tid);
-  if(tid!==G.user){ const want=team(tid).mode==='rebuild'?.6:-.5; return clamp(want*.5+mgrLean(m)*.5,-1,1); }
+  if(tid!==G.user){ const T=team(tid); const want=T&&T.mode==='rebuild'?.6:-.5; /* 상무(퓨처스리그)처럼 구단이 아닌 팀은 기본 성향 */ return clamp(want*.5+mgrLean(m)*.5,-1,1); }
   if(!G.policy)return mgrLean(m); const f=G.policy.follow??1; return clamp(POL[G.policy.k].lean*f+mgrLean(m)*(1-f),-1,1); }
 function polBonus(tid,p,lean){ return polBonus0(tid,p,lean)+mgrFitB(tid,p)+promB(tid,p); }
 /* 출전 기회 약속(선수 면담·감독 상의): 약속 기간에는 1군 등록·라인업·불펜 기용에 가산. 기강을 중시하는 감독은 덜 따른다(사용자 제보 11-07: 약속해도 한 번도 안 뜀) */
@@ -23241,7 +23244,11 @@ function flTemp(t,isP,pos){ const p=newPlayer({isP,pos,age:ri(19,23)}); for(cons
 function flSide(t,d){ const F=G.fl, {B,P}=flPool(t,d); if(B.length<6||P.length<2)return null; /* 그래도 너무 적으면(6명·2명 미만) 경기 취소 */
   const W=t!==FL_SM&&G.futLn&&G.futLn[t]; let ln=null;
   if(W&&W.ln){ const L={}; let ok=true; for(const k in W.ln){ const p=B.find(q=>q.id===W.ln[k]); if(!p){ ok=false; break; } L[k]=p; } if(ok&&Object.keys(L).length>=9)ln=L; } /* 2군 감독의 주간 라인업 그대로 */
-  if(!ln)ln=futLineupE(t,B); for(const k of FGPOS)if(!ln[k])ln[k]=flTemp(t,false,k==='DH'?'1B':k); /* 빈 자리는 임시 육성 선수 */
+  if(!ln&&t===FL_SM&&B.length>10){ const gp=q=>(seasonTotal(q,G.year,'퓨처스')||{}).g||0; const S=B.slice().sort((x,y)=>gp(y)-gp(x)); const rest=new Set(S.slice(0,B.length-10)); const B2=B.filter(q=>!rest.has(q)); if(B2.length>=9)ln=futLineupE(t,B2); } /* 상무: 복무 선수가 고르게 뛰도록 많이 뛴 선수부터 번갈아 쉰다 */
+  if(!ln)ln=futLineupE(t,B);
+  if(t===FL_SM){ const gp=q=>(seasonTotal(q,G.year,'퓨처스')||{}).g||0; const inL=new Set(Object.values(ln)); const low=B.filter(q=>!inL.has(q)).sort((x,y)=>gp(x)-gp(y))[0]; const lo=Object.values(ln).reduce((m,q)=>Math.min(m,gp(q)),1e9);
+    if(low&&gp(low)<=lo-3){ ln.DH=low; } } /* 상무: 오래 못 뛴 선수는 지명타자로라도 내보낸다 */
+  for(const k of FGPOS)if(!ln[k])ln[k]=flTemp(t,false,k==='DH'?'1B':k); /* 빈 자리는 임시 육성 선수 */
   const posOf={}; for(const k in ln)posOf[ln[k].id]=k; const start=Object.values(ln); const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),t===FL_SM?null:t);
   const rotIds=(W&&W.rot)||P.slice().sort((a,b)=>spV(b)-spV(a)).slice(0,5).map(p=>p.id); const rot=rotIds.map(id=>P.find(p=>p.id===id)).filter(Boolean);
   const ri0=F.rot[t]||0; let sp=null; for(let i=0;i<rot.length&&!sp;i++){ const p=rot[(ri0+i)%rot.length]; if(flRested(p,d)&&(p.fat||0)<70){ sp=p; F.rot[t]=(ri0+i+1)%rot.length; } }
@@ -26581,7 +26588,7 @@ function standView0(){
   const msg=live&&period()==='season'?(mi<=4?`가을야구권 ${stRank(order,G.user)}위 · 6위와 ${Math.max(0,gbOf(me,order[5])).toFixed(1)}경기 차`:`5위 ${tshort(fifth.tid)}와(과) ${gbOf(fifth,me).toFixed(1)}경기 차`):'';
   // 상대 전적
   const h2h=hasTl?`<div class="tw"><table class="h2h"><thead><tr><th>상대</th>${G.teams.filter(t=>t.id!==G.user).map(t=>`<th>${badge(t.id,16)}</th>`).join('')}</tr></thead><tbody><tr class="me"><td>${tshort(G.user)}</td>${G.teams.filter(t=>t.id!==G.user).map(t=>{ const r=h2hOf(G.user,t.id); return `<td class="${r.w>r.l?'pos':r.w<r.l?'neg':''}">${r.w+r.l+r.t?`${r.w}-${r.l}${r.t?'-'+r.t:''}`:'-'}</td>`; }).join('')}</tr></tbody></table></div>`:'';
-  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
+  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],...(G.fl&&G.fl.games.length?[['fut','퓨처스리그']]:[]),['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
   if(tt.cur==='teams')return tt.bar+teamsView();
   if(tt.cur==='last')return tt.bar+lastStandCard();
   if(tt.cur==='tbl'&&fmOn())return tt.bar+standFm(order,live,y);
@@ -26592,6 +26599,7 @@ function standView0(){
   if(tt.cur==='h2h')return tt.bar+`${h2h?`<section class="card"><h2 class="sec">우리 팀 상대 전적</h2>${h2h}</section>`:''}`;
   if(tt.cur==='race')return tt.bar+raceCard();
   if(tt.cur==='map')return tt.bar+powerMap();
+  if(tt.cur==='fut')return tt.bar+futStandView();
   if(tt.cur==='ps')return tt.bar+psBracket();
   const myC=G.history.filter(h=>h.champ===G.user).length;
   return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">역대 우승</h2><span class="trow">${myC?`${tname(G.user)} 우승 ${myC}회 ${[...Array(Math.min(myC,8))].map(()=>trophyImg(22)).join('')}`:''}</span></div><div class="list">${[...G.history].filter(h=>h.champ!=null).reverse().map(h=>`<div class="item champ${h.champ===G.user?' me':''}" style="cursor:default">${ART.trophy(28)}<span class="nm">${h.y} ${badge(h.champ,18)} ${tshort(h.champ,h.y)}</span><span class="sub">준우승 ${tshort(h.runner,h.y)}</span></div>`).join('')}</div></section>`;
@@ -26880,6 +26888,22 @@ function wireFm(){ const all=G.wire||[], ks=[...new Set(all.map(w=>w.k))], W=UI.
   const kc=ks.length>1?`<div class="chips fx-chips"><button data-a="wk" data-v="" class="${!UI.wk?'on':''}">전체 ${all.length}</button>${ks.map(k=>`<button data-a="wk" data-v="${esc(k)}" class="${UI.wk===k?'on':''}">${esc(k)} ${all.filter(w=>w.k===k).length}</button>`).join('')}</div>`:'';
   const side=(cls,t,g,none)=>{ const L=all.filter(w=>WIRE_G[g].includes(w.k)); return fxBox(cls,fxHead(t,L.length?`${L.length}건 · 최근 순`:'소식 없음'),L.length?`<div class="fx-scr">${L.slice(0,40).map(line).join('')}</div>`:`<p class="fx-none">${none}</p>`); };
   return `<div class="fmx fmx-fit fmx-wire nolink ws-own">${fxBox('fxw-all',fxHead('리그 소식',`${W.length}건${UI.wk?' · '+esc(UI.wk):''} · 최근 150건 보관`),kc+(W.length?`<div class="fx-scr">${W.slice(0,150).map(line).join('')}</div>`:'<p class="fx-none">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>'),fxBtn('go','transfer:moves','이적 현황')+fxBtn('go','club:fans','우리 구단 기사'))}${side('fxw-mv','이적·계약','mv','트레이드·FA·외국인 계약 소식이 쌓입니다.')}${side('fxw-st','감독·스태프','st','감독 선임·코치·스태프 변동 소식이 쌓입니다.')}</div>`; }
+
+/* ===== 퓨처스리그 화면(92_futures_league): 북부·남부 순위, 우리 2군 최근 경기와 박스스코어 ===== */
+function flTeamCell(t){ return t==='sm'?`<span class="tname"><b>상무</b></span>`:`<button class="lnk tname" data-a="lteamGo" data-v="${t}">${badge(t,16)}${esc(tshort(t))}</button>`; }
+function futStandView(){ const F=G.fl; if(!F)return '<p class="small muted">퓨처스리그 기록이 아직 없습니다.</p>';
+  const tbl=div=>{ const L=flStand(div); const top=L[0]; return `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${div==='N'?'북부리그':'남부리그'}</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>승차</th><th>득점</th><th>실점</th></tr></thead><tbody>${L.map((r,i)=>`<tr class="${r.t===G.user?'me':''}"><td>${i+1} ${flTeamCell(r.t)}</td><td>${r.w+r.l+r.d}</td><td>${r.w}</td><td>${r.l}</td><td>${r.d}</td><td class="key">${r.w+r.l?(r.w/(r.w+r.l)).toFixed(3).replace(/^0/,''):'-'}</td><td>${i&&top?(((top.w-r.w)+(r.l-top.l))/2).toFixed(1):'-'}</td><td>${r.rs}</td><td>${r.ra}</td></tr>`).join('')}</tbody></table></div>`; };
+  return csec(`${F.y} 퓨처스리그`,tbl('N')+tbl('S')+`<p class="small muted">2군 경기는 1군과 같은 경기 엔진으로 한 타석씩 계산합니다. 북부리그는 수도권 구단, 남부리그는 그 밖의 구단과 상무입니다. 화·수·목·토·일에 열리고 순위는 승률(무승부 제외) 순입니다.</p>`)+flRecent(12); }
+function flRecent(n){ const F=G.fl; if(!F)return ''; const L=F.games.filter(x=>x.h===G.user||x.a===G.user).slice(-n).reverse(); if(!L.length)return '';
+  return csec(`우리 2군 최근 경기 ${L.length}경기`,`<div class="fl-g">${L.map(flGameRow).join('')}</div>`); }
+function flGameRow(x){ const me=x.h===G.user?'h':'a', ms=me==='h'?x.hs:x.as, os=me==='h'?x.as:x.hs, opp=me==='h'?x.a:x.h; const r=ms>os?'승':ms<os?'패':'무';
+  const nm=id=>esc((G.players[id]||{}).name||''); const dec=[x.w!=null?`승 ${nm(x.w)}`:'',x.l!=null?`패 ${nm(x.l)}`:'',x.sv!=null?`세 ${nm(x.sv)}`:''].filter(Boolean).join(' · '); const hr=(x.hr||[]).map(([id,n])=>`${nm(id)}${n>1?' '+n:''}`).join(', ');
+  return `<details class="fl-r"><summary><span class="pill ${r==='승'?'good':r==='패'?'bad':''}">${r}</span> <b>${dmd(x.d)}</b> ${me==='h'?'홈':'원정'} vs ${esc(flName(opp))} <b>${ms}:${os}</b>${x.inn>9?` <span class="small muted">(${x.inn}회)</span>`:''} <span class="small muted">${dec}${hr?` · 홈런 ${hr}`:''}</span></summary>${x.box?flBox(x):'<p class="small muted">박스스코어는 최근 경기만 보관합니다.</p>'}</details>`; }
+function flBox(x){ const side=k=>{ const B=x.box[k]; const nm=(id,n)=>G.players[id]&&!G.players[id].flTemp?`<button class="lnk" data-a="player" data-v="${id}">${esc(G.players[id].name)}</button>`:esc(n||'육성 선수');
+    return `<div class="fl-bx"><h4>${esc(flName(x[k]))} ${k==='h'?x.hs:x.as}점</h4><table class="tbl small"><thead><tr><th>타자</th><th>위치</th><th>타수</th><th>득점</th><th>안타</th><th>타점</th><th>홈런</th><th>볼넷</th><th>삼진</th></tr></thead><tbody>${B.bat.map(r=>`<tr><td>${nm(r[0],r[9])}</td><td>${esc(POSS[r[1]]||r[1]||'-')}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td><td>${r[8]}</td></tr>`).join('')}</tbody></table>
+    <table class="tbl small"><thead><tr><th>투수</th><th>이닝</th><th>피안타</th><th>실점</th><th>자책</th><th>볼넷</th><th>삼진</th><th>투구 수</th></tr></thead><tbody>${B.pit.map(r=>`<tr><td>${nm(r[0],r[8])}</td><td>${ipStr(r[1])}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td></tr>`).join('')}</tbody></table></div>`; };
+  const ln=k=>(x.box[k].line||[]).map(v=>v==null?'-':v).join(' '); 
+  return `<div class="fl-box"><p class="small mono">${esc(flName(x.a))} ${ln('a')}<br>${esc(flName(x.h))} ${ln('h')}</p>${side('a')}${side('h')}</div>`; }
 /* ---------- A: 하루 흐름 ---------- */
 function nextLabel(){ // 계속 버튼 아래 작은 글씨: 다음에 일어날 일
   if(blockNow())return '막힌 일 먼저';
@@ -28636,7 +28660,7 @@ function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap()
   const glt=inTabs('gl'+(own?'':'o'),[...(own?[['st','현황']]:[]),['one','1군'],['two','2군'],...(own?[['plan','선수단 계획']]:[])],own?'st':'one');
   if(own&&glt.cur==='st')return glt.bar+`<section class="card"><h2 class="sec">우리 팀 현황</h2>${teamStatusBox()}</section>`+(awayT?csec('빠진 선수',awayT):'')+teamGrowCard();
   if(own&&glt.cur==='plan')return glt.bar+plannerCard();
-  if(glt.cur==='two')return glt.bar+csec('2군',two+`<p class="small sdesc">${FL?`${dobj(FL.d).y}년 ${dmd(FL.d)} 2군 라인업입니다. 2군 감독이 매주 짭니다: 전환 훈련 중인 선수는 그 자리에 먼저 넣고, 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다. 라인업에 든 선수는 한 주 3경기, 나머지는 1경기 정도 나갑니다.`:'2군 라인업은 1군에 없는 선수 중 자리별로 가장 나은 선수로 짠 예상입니다(정규시즌에는 실제 2군 라인업).'}</p>`);
+  if(glt.cur==='two')return glt.bar+(own&&typeof flRecent==='function'?flRecent(6):'')+csec('2군',two+`<p class="small sdesc">${FL?`${dobj(FL.d).y}년 ${dmd(FL.d)} 2군 라인업입니다. 2군 감독이 매주 짭니다: 전환 훈련 중인 선수는 그 자리에 먼저 넣고, 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다. 라인업에 든 선수는 한 주 3경기, 나머지는 1경기 정도 나갑니다.`:'2군 라인업은 1군에 없는 선수 중 자리별로 가장 나은 선수로 짠 예상입니다(정규시즌에는 실제 2군 라인업).'}</p>`);
   return glt.bar+csec(`1군 ${own?'감독 라인업':'예상 라인업'} <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독 · ':''}${entryOn()?playersOf(tid).filter(p=>p.e1).length+'명':''}</span>`,one,own?`<span class="small muted">왼쪽 ▲▼: 올해 들어 능력 변화</span>`:''); }
 /* 팀 성장 추이: 매달 1군 전력과 유망주 잠재를 기록 */
 function teamGrowCard(){ const T=(G.tgrow||[]).slice(-24); if(T.length<2)return '';
@@ -31086,7 +31110,7 @@ function renderSheet0(){
   const status=p.injOut>0?`<span class="pill bad">${esc(injNow(p))} · 복귀까지 약 ${p.injOut>=300?Math.round(p.injOut/30)+'개월':p.injOut+'일'} (${injRetTxt(p)})</span>`:'';
   const injFx=injFxText(p); const injBox=injFx.length?`<div class="injfx"><b>${p.injOut>0?'부상 · 재활 중':'부상 후유증'}</b>${injFx.map(x=>`<div class="small">${x.y}년 ${esc(x.n)}: ${esc(x.t)}</div>`).join('')}<div class="small muted">회복 중인 능력은 1군·2군 실전을 뛰면서 되찾습니다. 1년 이상 걸린 부상과 수술은 일부가 돌아오지 않을 수 있습니다.</div></div>`:'';
   const meas=p.isP?`직구 평균 ${veloOf(p)}km/h · 최고 ${veloMax(p)}km/h`:`타구속도 평균 ${evOf(p)}km/h · 홈→1루 ${runOf(p)}초`;
-  const tiles=h?(p.isP?[['ERA',h.outs?pRate(h).era.toFixed(2):'-',1],['WAR',wOf(h,p).toFixed(1),1],['이닝',ipStr(h.outs)],['탈삼진',h.so],[h.sv?'세이브':h.hld?'홀드':'승',h.sv||h.hld||h.w]]
+  const tiles=h?(p.isP?[['ERA',h.outs?pRate(h).era.toFixed(2):'-',1],['FIP',h.outs?((13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*(h.so||0))/(h.outs/3)+3.1).toFixed(2):'-',1] /* 카페 11-11: 요약 탭까지 가지 않고 FIP를 본다 */,['WAR',wOf(h,p).toFixed(1),1],['이닝',ipStr(h.outs)],['탈삼진',h.so],[h.sv?'세이브':h.hld?'홀드':'승',h.sv||h.hld||h.w]]
     :[['OPS',h.pa?fmt3(bRate(h).ops):'-',1],['wRC+',h.pa?(wrcPlus(h,h.y)??'-'):'-',1],['WAR',wOf(h,p).toFixed(1),1],['타율',fmt3(bRate(h).avg)],['홈런',h.hr]]):null;
   const where=p.prospect?`드래프트 대상 · ${p.region}`:p.fdPool?`창단 드래프트 후보${p.fdFrom!=null?` · 전 ${tshort(p.fdFrom)}`:''}`:p.foreign&&p.team==null?`외국인 영입 후보 · ${p.nat}`:p.joinY>G.year?`${tname(p.team)} 입단 예정`:tname(p.team??p.faFrom);
   const pt=p.team!=null?team(p.team):null; const pst=pt?`--pt:${tpal(pt)[2]};--pt2:${tpal(pt)[3]}`:'';
@@ -34449,6 +34473,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-futures',d:'11월 11일',t:'퓨처스리그(2군 경기) 개막',items:[
+    '2군도 실제 경기를 치릅니다. 1군과 같은 경기 엔진으로 한 타석씩 계산해, 보지 않아도 점수·박스스코어·투구 수·승패·세이브·홀드가 기록으로 남습니다.',
+    '북부리그(수도권 구단)와 남부리그(그 밖의 구단과 상무)로 나뉘고 화·수·목·토·일에 열립니다. 리그 → 순위 → 퓨처스리그에서 순위표와 우리 2군 최근 경기·박스스코어를 볼 수 있습니다.',
+    '상무는 복무 중인 선수로 팀을 꾸리고, 복무 선수가 고르게 출장합니다. 2군 인원이 모자란 날은 그 경기만 육성 선수가 채웁니다(기록에는 남지 않음).'
+  ]},
   {id:'2026-11-11-cards',d:'11월 11일',t:'모든 인물 카드화(1차)·노장 FA 시장',items:[
     '다른 구단 구단주·사장·코치, 치어리더와 응원단장·치어리더 팀장, 고등학교와 고교 감독, 팀 닥터, 스폰서 기업도 이름을 누르면 카드가 열립니다. 능력 막대·성격·관계와 함께 학교 카드에는 올해 드래프트 후보와 프로에 있는 졸업생이 나옵니다.',
     '35세 이상(C등급) FA에게도 다른 구단 제안이 들어옵니다.',
