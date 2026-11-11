@@ -154,3 +154,9 @@ function vetSelfTrain(young){ const out=[]; const V=domestic(G.user).filter(p=>p
 
 /* 지금 해외 연수·파견으로 나가 있는 선수(우리: 출발한 예약, AI: 그해 파견 명단) */
 /* ovsAbroad: 위(연수 기간 창으로 판정)로 옮김 */
+/* 신청 알림(질수없뜸 11-12: 매번 신청 기간을 놓침): 가을 교육리그는 신청이 열린 날(9/1)과 마감 사흘 전, 해외 연수는 신청이 열린 날과 프로그램마다 마감 사흘 전에 아직 아무도 안 보냈으면 알린다 */
+function devRemindDaily(){ if(G.unemp||G.user==null)return; const o=dobj(G.day), y=G.year, act=[{l:'해외 연수·교육리그 보기',a:'go',v:'staff:dev'}];
+  if(o.m===9&&o.d===1){ mail('육성팀',`${y} 가을 교육리그·해외 연수 신청 시작`,`가을 교육리그 신청이 오늘 열렸습니다(10월 10일까지). 해외 연수·아카데미 신청도 시작됐습니다. 프로그램마다 마감이 다릅니다: ${OVSK.map(k=>`${OVS[k].l} ${OVS[k].close[0]}/${OVS[k].close[1]}`).join(', ')}.`,{kind:'육성',acts:act}); return; }
+  if(o.m===10&&o.d===7&&!(G.fall&&G.fall.y===y)){ mail('육성팀','가을 교육리그 신청 마감 사흘 전',`가을 교육리그 신청이 10월 10일에 닫힙니다. 아직 참가 여부를 정하지 않았습니다(정하지 않으면 불참).`,{kind:'육성',imp:true,acts:act}); }
+  for(const k of OVSK){ const c=OVS[k].close; const dd=dnum(y,c[0],c[1])-G.day; if(dd!==3)continue; const n=(G.ovs||[]).filter(x=>x.prog===k).length; if(n>=ovsLim(OVS[k]))continue;
+    mail('육성팀',`${OVS[k].l} 신청 마감 사흘 전`,`${OVS[k].l} 신청이 ${c[0]}월 ${c[1]}일에 닫힙니다. 지금 ${n}/${ovsLim(OVS[k])}명 신청했습니다.`,{kind:'육성',acts:act}); } }

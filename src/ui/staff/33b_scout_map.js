@@ -27,5 +27,5 @@ function scoutMapPage(){ const S=areaSummary(G.user), home=teamArea(G.user); con
     <h4 class="small">학교 · 올해 드래프트 후보 ${A.n}명</h4><div class="scm-schs">${schools.map(rowS).join('')}</div></div>`;
   return `<div class="scm ws-own"><section class="card scm-l">${map}${list}</section><section class="card scm-r">${det}</section></div>`; }
 function scoutPage2(base){ const nW=(G.pwatch||[]).filter(id=>G.players[id]&&G.players[id].team!==G.user).length; /* 타 구단 관심 선수는 하위 탭으로 따로(울브즈 11-11) */
-  const it=inTabs('scoutpg',[['team','스카우트 팀'],['map','지역 정보망'],['ovs','해외 네트워크'],['watch',`타구단 관심 선수${nW?' '+nW:''}`]]); return it.bar+(it.cur==='map'?scoutMapPage():it.cur==='ovs'?sisPage():it.cur==='watch'?pwatchTable(false):base()); }
+  const it=inTabs('scoutpg',[['team','스카우트 팀'],['map','지역 정보망'],['ovs','해외 네트워크'],['watch',`타구단 관심 선수${nW?' '+nW:''}`]]); if(it.cur==='team')return it.bar+base(); return it.bar+`<div class="ws-scroll scout-sub-scroll" tabindex="0">${it.cur==='map'?scoutMapPage():it.cur==='ovs'?sisPage():pwatchTable(false)}</div>`; } /* 지역 정보망·해외 네트워크·관심 선수: 낮은 화면(휴대폰 가로)에서 작업 틀이 넘친 부분을 숨겨 아래가 안 보이던 문제(일고회장 11-12) → 하위 탭 내용 전체를 스크롤 칸으로 */
 Object.assign(A,{ schGift(v){ toast(schGift(v)); save(); render(); }, scArea(v){ UI.scArea=v; UI.it=Object.assign(UI.it||{},{scoutpg:'map'}); render(); } });

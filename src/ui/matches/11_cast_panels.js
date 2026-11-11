@@ -18,10 +18,11 @@ function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const b
   let pitch=''; try{ const d=detailOf(p,scoutReport(p)); const ars=d.groups.find(gx=>gx[0]==='구종'); const best=ars?[...ars[1]].sort((a,c)=>c[1]-a[1])[0]:null; pitch=`직구 평균 ${veloOf(p)}·최고 ${veloMax(p)}km${best?` · ${best[0].replace(' · 결정구','')}`:''}`; }catch(e){}
   const nx=cNext(g,x[0],bid,k).map(n=>{ const q=G.players[n.id]; return q?`${cOrderNo(g,x[0],n.id)}번 ${esc(fname(q))}`:''; }).filter(Boolean).join(' · ');
   const risp=!!(st.bases[1]||st.bases[2]); const late=st.half>=14&&Math.abs(st.sa-st.sh)<=2;
+  const story=(()=>{ try{ return cStory(g,k,b,p,risp); }catch(e){ return ''; } })();
   return `<div class="ab ${risp?'risp':''}${late?' late':''}"><button class="ab-b" data-a="castPlayer" data-v="${bid}"><span class="ab-f">${avImg(b,true)}<b class="ab-o" style="--c:${rcol(ov)}">${dv(ov??'-')}</b><span class="ab-res" id="cs-abr"></span></span>
       <span class="ab-t"><em>${no?no+'번 타자':'타자'} · ${posLabel(b)} · ${hand(b)} ${acqTag(b)}</em><b>${esc(b.name)}</b><span class="ab-s">${r?`타율 <strong>${fmt3(r.avg)}</strong> · ${h.hr}홈런 · OPS ${fmt3(r.ops)}`:'시즌 기록 없음'}</span><span class="ab-pk">${cChips(g,k,bid)}</span></span></button>
     <button class="ab-p" data-a="castPlayer" data-v="${pid}">${avImg(p)}<span><em>투수 · ${p.th==='좌'?'좌완':'우완'} ${acqTag(p)}</em><b>${esc(fname(p))}</b><span>${rchip(pv)} ERA ${eraAt(g,k,pid)}</span><span>${esc(pitch)}</span><span>오늘 ${cToday(g,k,pid,true)}</span></span></button>
-    ${nx?`<div class="ab-nx">대기 ${nx}</div>`:''}</div>`; }
+    ${story?`<div class="ab-story">${story}</div>`:''}${nx?`<div class="ab-nx">대기 ${nx}</div>`:''}</div>`; }
 function cAbRes(t,cls){ const el=document.getElementById('cs-abr'); if(!el)return; el.className='ab-res'; void el.offsetWidth; el.textContent=t; el.className='ab-res on '+(cls||''); }
 function cWp(g,st,prev){ const bar=document.getElementById('cs-wpa'); const tx=document.getElementById('cs-wpt'); if(!bar)return; const w=wpHome(st,wpMax(g)); bar.style.width=(w*100).toFixed(1)+'%';
   const mine=g.home===G.user||g.away===G.user; const fav=mine?G.user:(w>=.5?g.home:g.away); const wf=fav===g.home?w:1-w; const pct=Math.round(wf*100); let d=''; if(prev!=null){ const dd=Math.round((w-prev)*100); if(Math.abs(dd)>=8){ const who=dd>0?g.home:g.away; d=` <b class="wpd">${esc(tshort(who))} +${Math.abs(dd)}%</b>`; } }
@@ -120,3 +121,16 @@ function pwatchTable(inner){ const L=(G.pwatch||[]).map(id=>G.players[id]).filte
   let body='', g=-1; for(const p of L){ if(grp(p)!==g){ g=grp(p); body+=`<tr class="pw-g"><td colspan="6">${GN[g]}</td></tr>`; } body+=row(p); }
   const tb=`<table class="sf-t scn-t"><thead><tr><th>선수</th><th>소속</th><th>현재</th><th>연봉·계약</th><th>상태</th><th></th></tr></thead><tbody>${body||'<tr><td colspan="6" class="muted">다른 구단 선수 화면에서 관심 선수 버튼을 누르면 이곳에 모입니다.</td></tr>'}</tbody></table>`, head=`타 구단 관심 선수 <em>${L.length}/30명 · 선수 화면의 '관심 선수'로 추가</em>`, tip=`<p class="small muted">FA 시장에 나오거나, 포스팅을 신청하거나, 소속 구단이 트레이드 매물로 내놓으면 소식함으로 알려 드립니다.</p>`;
   return inner?`<h3 class="pw-h">${head}</h3>${tip}${tb}`:`<section class="card scn-watch"><h3>${head}</h3>${tip}<div class="sf-tw">${tb}</div></section>`; }
+
+/* 타석 스토리(경기 화면 연출 11-11): 이 투수와 올 시즌 맞대결, 득점권이면 시즌 득점권 타율. 저장된 시즌 누계에서 이번 경기 전체 몫을 빼고 이 타석 전까지만 더해 결과를 미리 보여 주지 않는다.
+   가장 최근 경기(그 뒤 다른 경기 기록이 쌓이지 않은 경기)에서만 보여 준다 */
+function cStory(g,k,b,p,risp){ if(!g||!g.pbp||(G.games||[])[0]!==g||g.kind&&/차전/.test(g.kind))return ''; const L=g.pbp, y=dobj(g.day).y; const HIT={'1B':1,'2B':1,'3B':1,HR:1}, NOAB={BB:1,HBP:1,SAC:1};
+  const rows=(lim,f)=>{ const a=[0,0,0,0,0,0]; for(let i=0;i<lim&&i<L.length;i++){ const x=L[i]; if(typeof x[1]!=='number'||!f(x,i))continue; a[0]++; if(!NOAB[x[3]]&&!x[16])a[1]++; if(HIT[x[3]])a[2]++; if(x[3]==='HR')a[3]++; if(x[3]==='BB'||x[3]==='HBP')a[4]++; if(x[3]==='K')a[5]++; } return a; };
+  const adj=(tot,f)=>{ const all=rows(L.length,f), now=rows(k,f); return tot.map((v,i)=>Math.max(0,(v||0)-all[i]+now[i])); };
+  const out=[];
+  const V=b.vs&&b.vs.y===y&&b.vs.m[p.id]; const vs=adj(V||[0,0,0,0,0,0],x=>x[1]===b.id&&x[2]===p.id);
+  if(vs[0]>0)out.push(`<span><em>${esc(fname(p))} 상대 올 시즌</em><b>${vs[1]}타수 ${vs[2]}안타</b>${vs[3]?` ${vs[3]}홈런`:''}${vs[4]?` · 볼넷 ${vs[4]}`:''}${vs[5]?` · 삼진 ${vs[5]}`:''}</span>`);
+  else out.push(`<span><em>${esc(fname(p))} 상대</em><b>올 시즌 첫 대결</b></span>`);
+  if(risp){ const S=b.spl&&b.spl.y===y&&b.spl.RS; const rs=adj(S?[S[0],S[1],S[2],0,0,0]:[0,0,0,0,0,0],(x,i)=>x[1]===b.id&&(()=>{ const st=cBefore(g,i); return !!(st.bases[1]||st.bases[2]); })());
+    if(rs[1]>=5)out.push(`<span><em>시즌 득점권</em><b>타율 ${fmt3(rs[2]/rs[1])}</b> (${rs[1]}타수 ${rs[2]}안타)</span>`); }
+  return out.join(''); }

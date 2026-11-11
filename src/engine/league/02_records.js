@@ -46,8 +46,12 @@ function simPit(p,outs,b){
 const ZB={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0,g:0,e:0,sf:0};
 const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,hbp:0,so:0,er:0,w:0,l:0,sv:0,hld:0,bf:0};
 /* 좌우 상대 기록(정규시즌 1군): 타자는 상대 투수 손, 투수는 상대 타자 쪽(양타는 투수 반대편). [타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런] */
-function splAdd(b,p,o,f){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='HBP'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='HBP')a[7]=(a[7]||0)+1; if(o==='SAC')a[8]=(a[8]||0)+1; /* 희생번트는 출루율 분모에서 뺀다 */ if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
-  row(b,p.th==='좌'?'L':'R'); const side=b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); row(p,side); }
+function splAdd(b,p,o,f,rsp){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='HBP'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='HBP')a[7]=(a[7]||0)+1; if(o==='SAC')a[8]=(a[8]||0)+1; /* 희생번트는 출루율 분모에서 뺀다 */ if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
+  row(b,p.th==='좌'?'L':'R'); const side=b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); row(p,side);
+  if(rsp){ row(b,'RS'); row(p,'RS'); } /* 득점권(타석 시작 때 2·3루 주자) */ try{ vsAdd(b,p,o,noAB,tb); }catch(e){} }
+/* 투수별 맞대결(이번 시즌, 타자 쪽에 저장): [타석, 타수, 안타, 홈런, 볼넷·사구, 삼진]. 많아지면 타석 적은 상대부터 지운다 */
+function vsAdd(b,p,o,noAB,tb){ const y=G.year; if(!b.vs||b.vs.y!==y)b.vs={y,m:{}}; const M=b.vs.m; const a=M[p.id]||(M[p.id]=[0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb)a[2]++; if(o==='HR')a[3]++; if(o==='BB'||o==='HBP')a[4]++; if(o==='K')a[5]++;
+  const ks=Object.keys(M); if(ks.length>80){ ks.sort((x,z)=>M[x][0]-M[z][0]); for(const k of ks.slice(0,ks.length-70))delete M[k]; } }
 /* 우리 선수 경기별 기록(이동 구간 추세용, 이번 시즌만): 타자 [날짜, 타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런], 투수 [날짜, 상대 타자, 아웃, 삼진, 볼넷, 피안타, 피홈런, 자책] */
 function glAdd(p,day,x){ const y=G.year; if(!p.gl||p.gl.y!==y)p.gl={y,g:[]}; p.gl.g.push(p.isP?[day,x.bf||0,x.outs||0,x.so||0,x.bb||0,x.h||0,x.hr||0,x.er||0,x.r??null]:[day,x.pa||0,x.ab||0,x.h||0,(x.h||0)+(x.d||0)+2*(x.tr||0)+3*(x.hr||0),x.bb||0,x.so||0,x.hr||0,x.hbp||0,x.sf||0,x.sh||0]); } /* 타자 끝 칸: 사구 */
 function lineFor(p,y,t,lvl){ let h=p.hist.find(x=>x.y===y&&x.t===t&&x.lvl===lvl); const j=p.hist.indexOf(h); if(h&&p.hist.some((x,i)=>i>j&&x.y===y&&x.lvl===lvl)){ p.hist.splice(j,1); p.hist.push(h); } /* A→B→A로 돌아와 뛰면 그 줄을 맨 뒤로: 시즌 합계 소속은 마지막으로 뛴 팀(검수 11-09l) */ if(!h){ h=Object.assign({y,t,lvl},p.isP?ZP:ZB); p.hist.push(h); if(!p.salYr)p.salYr={}; if(p.salYr[y]==null)p.salYr[y]=p.sal||0; } return h; }

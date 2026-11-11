@@ -3,7 +3,7 @@ const coachStudyScore=v=>typeof FrontOfficeCore.dvRaw==='function'?Number(FrontO
 const coachStudyRange=(a,b)=>Math.abs(a-b)<.01?String(a):`${a}~${b}`;
 function coachStudyDestination(T){return OCL_BY[T?.cid]?.n||COACH_STUDY[T?.program]?.l||(T?.cid?'자매구단 연수':'코치 연수');}
 function coachStudySummary(c){if(!c||typeof coachStudyOf!=='function')return '';const T=coachStudyOf(c.id),S=coachSupportView(c,G.user),last=coachStudyHistory(c.id).filter(h=>h.status==='completed').slice(-1)[0];
-  if(T)return `<span class="coach-study-summary small warn">${esc(coachStudyDestination(T))} · ${dmd(T.to)} 복귀</span>`;
+  if(T)return `<span class="coach-study-summary small warn">${esc(coachStudyDestination(T))}${CAB[T.focus]?` · ${esc(CAB[T.focus])} 연수`:''} · ${dmd(T.to)} 복귀</span>`; /* 어떤 분야를 연수 중인지(질수없뜸 11-12) */
   return last||S.bonus>0?`<span class="coach-study-summary small muted">${last?`${esc(CAB[last.focus]||'지도 분야')} 연수 완료`:''}${last&&S.bonus>0?' · ':''}${S.bonus>0?'구단 지원 인연':''}</span>`:'';}
 function coachStudyEntry(c,role){return `<button class="btn small coach-study-entry" data-a="coachStudyOpen" data-v="${role||c.id}">구단 지원 연수</button>`;}
 function coachStudyOutcome(h){const value=h.before?.value,after=h.after?.value;if(value==null||after==null)return '귀국 결과 기록';const lo=coachStudyScore(value),hi=coachStudyScore(after);return `${CAB[h.focus]||'선택 분야'} ${lo} → ${hi}${hi===lo&&h.gain>0?' · 표시 상한에 가까운 소폭 성장':h.gain>0?` (+${Number((hi-lo).toFixed(1))})`:' · 추가 상승 없음'}`;}
