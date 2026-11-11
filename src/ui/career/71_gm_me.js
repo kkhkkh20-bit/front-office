@@ -53,8 +53,9 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
 Object.assign(A,{
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
-  fencePrev(){ const d={}; for(const k in FENCE_LIM){ const el=$('#fc-'+k); d[k]=el?el.value:stadDim(G.user)[k]; } const n=fenceNorm(d); if(!n){ UI.fenceMsg='숫자로 입력하세요.'; UI.fenceOk=false; } else { UI.fence=n; UI.fenceMsg=''; } render(); },
-  fenceGo(){ A.fencePrev(); if(!UI.fence)return; const e=fenceSet(UI.fence); UI.fenceMsg=e||'담장 공사를 마쳤습니다. 다음 경기부터 반영됩니다.'; UI.fenceOk=!e; if(!e){ UI.fence=null; save(); } render(); },
+  fenceD(v){ const [k,x]=String(v).split(':'); UI.fenceD=UI.fenceD||{}; UI.fenceD[k]=+x; UI.fenceMsg=''; render(); },
+  fenceReset(){ UI.fenceD={}; UI.fenceMsg=''; render(); },
+  fenceGo(){ const e=fenceSet(fenceTarget(G.user)); UI.fenceMsg=e||'담장 공사를 마쳤습니다. 다음 경기부터 반영됩니다.'; UI.fenceOk=!e; if(!e){ UI.fenceD={}; save(); } render(); },
   start(v){ if(UI.smode!=='take'&&UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
   gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; delete g.img; render(); },
