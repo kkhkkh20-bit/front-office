@@ -1,6 +1,6 @@
 {
   "method": "Synthetic ownership annual/lifecycle tick; identical initial league snapshot with 100 independent annual-event RNG seeds × 100 years per scenario; 20000 league-years total. Normal: initial team cash=0, no generated financial stress, event capital retained. Stress: all teams assigned cash=-5000×ecoIdx each annual tick. No baseball, roster dynamics, income/expense settlement or full financial model simulated. Counts exclude ordinary CEO retirements (kind ceo).",
-  "engineSHA256": "99f8b345854178f23d01b9cc0e12df9a674707fffe70b88308957b2c2c402127",
+  "engineSHA256": "82ef483741801acfe49647493f698230dca40b24b29036bea8b4258af5e45c5f",
   "summary": {
     "normal": {
       "seeds": 100,
