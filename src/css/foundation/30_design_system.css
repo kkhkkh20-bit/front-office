@@ -250,7 +250,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 }
 
 /* 낮은 가로 화면: 버튼 줄들을 위아래로 쌓지 않고 한 줄에 나란히(목록 높이 확보) */
-@media(max-height:599px) and (min-width:500px){.ws-navigation,#app .roster-navigation.ws-navigation{flex-direction:row;align-items:center}.ws-navigation>*,#app .roster-navigation.ws-navigation>*{flex:1 1 0;min-width:0}}
+@media(max-height:599px) and (min-width:500px){.ws-navigation,#app .roster-navigation.ws-navigation{flex-direction:row;align-items:center}.ws-navigation>*,#app .roster-navigation.ws-navigation>*{flex:1 1 0;min-width:0}#app .roster-navigation.ws-navigation>.rseg{flex:none;min-width:0;width:auto}#app .roster-navigation.ws-navigation>.rseg button{white-space:nowrap}#app .roster-navigation.ws-navigation>.ws-tab-row{flex:1 1 0!important;width:auto!important;min-width:0!important}} /* 야수/투수 전환은 줄지 않게: 탭 줄이 남은 폭에서 가로로 넘긴다(검수 11-12: 568×320에서 폭 6px로 화면 밖) */
 
 /* 뒤에 추가된 요약·채용·프로필도 같은 역할별 글꼴 단계를 따른다. */
 #app .home-workspace{--hw-t:var(--ui-heading);--hw-b:var(--ui-body);--hw-s:var(--ui-caption);--hw-n:var(--ui-title)}

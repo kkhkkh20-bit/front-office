@@ -159,7 +159,7 @@ function josaFix(root){ if(!root)return; const W=document.createTreeWalker(root,
   while((n=W.nextNode())){ const v=n.nodeValue; if(v&&JOSA_RE.test(v)){ JOSA_RE.lastIndex=0; let out='', last=0, m; while((m=JOSA_RE.exec(v))){ const before=prev+v.slice(0,m.index); const r=josaPick(before.slice(-40),m[0]); out+=v.slice(last,m.index)+(r??m[0]); last=m.index+m[0].length; } out+=v.slice(last); n.nodeValue=out; }
     if(v&&v.trim())prev=(prev+n.nodeValue).slice(-60); } }
 /* 화면을 그린 뒤, 누를 수 없는 글자 속 이름을 찾아 링크로 바꾼다 */
-const NOLINK='a,button,[data-a],select,option,textarea,input,svg,script,style,.nolink,.kbar,.seg,.chips,.bnav,.sbar,.cast,label';
+const NOLINK='a,button,[data-a],select,option,textarea,input,svg,script,style,.nolink,.kbar,.seg,.chips,.bnav,.sbar,.cast,label,.tcd';
 function autoLink(root){ try{ josaFix(root); }catch(e){} if(!G||!root||UI.cast)return; const L=linkMap(); const W=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{ const v=n.nodeValue; if(!v||v.length<2||!/[가-힣A-Za-z]/.test(v))return NodeFilter.FILTER_REJECT; const pe=n.parentElement; if(!pe||pe.closest(NOLINK))return NodeFilter.FILTER_REJECT; return L.re1.test(v)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT; }});
   const list=[]; let n; while((n=W.nextNode()))list.push(n); for(const t of list){ const sp=document.createElement('span'); sp.innerHTML=linkify(esc(t.nodeValue)); const f=document.createDocumentFragment(); while(sp.firstChild)f.appendChild(sp.firstChild); t.parentNode.replaceChild(f,t); } }
 const lk=t=>linkify(esc(t));

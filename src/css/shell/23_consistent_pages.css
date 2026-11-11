@@ -287,3 +287,4 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 /* 공통 작업틀의 고정 자식 규칙보다 우선해 공개 페이지에 남은 높이를 배정한다. */
 #app main.ws-frame>.club-profile,#app main.ws-frame>.club-archive{flex:1 1 0;min-height:0;max-height:100%;overflow:hidden}
 .club-profile-records{margin-top:16px;padding-top:8px;border-top:1px solid var(--line2)}.club-profile-records h3{margin:0 0 8px;font-size:13px}
+.coach-grade-help th,.coach-grade-help td,.coach-grade-help td *{font-size:var(--ui-caption,12px)} /* 공통 글꼴 단계(검수 11-12) */

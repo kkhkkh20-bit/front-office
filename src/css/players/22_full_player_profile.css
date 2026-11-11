@@ -31,7 +31,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 :is(#app,#sheet,body) .pst>.pst-fill{font-size:inherit!important} /* 채움별은 늘 바탕별과 같은 크기: 표마다 span·i 글자 크기 규칙이 달라 반별이 조각나던 문제(사용자 11-11 FA 목록) */
 .pf-fm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0 10px}.pf-fm-stats>div{display:grid;justify-items:center;padding:4px 2px;border-top:2px solid var(--pt2,var(--team-hi));background:#ffffff08}
 .pf-fm-stats span{font-size:11px;color:var(--muted)}.pf-fm-stats b{font:700 17px var(--f-num)}
-.pf-fm-pay{display:grid;justify-items:center;gap:1px;padding:0 10px 10px;font-size:12px;color:var(--muted)}.pf-fm-pay b{color:var(--ink);font-size:14px}
+.pf-fm-pay{display:grid;justify-items:center;gap:1px;padding:0 10px 10px;font-size:12px;color:var(--muted)}.pf-fm-pay b{color:var(--ink);font-size:var(--ui-body,13px)}
 .pf-procon{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.pf-procon h3{margin:0 0 4px}.pf-procon p{display:flex;justify-content:space-between;font-size:12px;margin:2px 0}
 .pf-pro h3{color:var(--good)}.pf-con h3{color:var(--bad)}
 .pf-pos-mini>.card>p.small.muted:last-of-type{display:none}.pf-pos-mini .posfit{grid-template-columns:repeat(4,minmax(0,1fr))}

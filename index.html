@@ -3610,7 +3610,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 :is(#app,#sheet,body) .pst>.pst-fill{font-size:inherit!important} /* 채움별은 늘 바탕별과 같은 크기: 표마다 span·i 글자 크기 규칙이 달라 반별이 조각나던 문제(사용자 11-11 FA 목록) */
 .pf-fm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0 10px}.pf-fm-stats>div{display:grid;justify-items:center;padding:4px 2px;border-top:2px solid var(--pt2,var(--team-hi));background:#ffffff08}
 .pf-fm-stats span{font-size:11px;color:var(--muted)}.pf-fm-stats b{font:700 17px var(--f-num)}
-.pf-fm-pay{display:grid;justify-items:center;gap:1px;padding:0 10px 10px;font-size:12px;color:var(--muted)}.pf-fm-pay b{color:var(--ink);font-size:14px}
+.pf-fm-pay{display:grid;justify-items:center;gap:1px;padding:0 10px 10px;font-size:12px;color:var(--muted)}.pf-fm-pay b{color:var(--ink);font-size:var(--ui-body,13px)}
 .pf-procon{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.pf-procon h3{margin:0 0 4px}.pf-procon p{display:flex;justify-content:space-between;font-size:12px;margin:2px 0}
 .pf-pro h3{color:var(--good)}.pf-con h3{color:var(--bad)}
 .pf-pos-mini>.card>p.small.muted:last-of-type{display:none}.pf-pos-mini .posfit{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -4137,6 +4137,7 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 /* 공통 작업틀의 고정 자식 규칙보다 우선해 공개 페이지에 남은 높이를 배정한다. */
 #app main.ws-frame>.club-profile,#app main.ws-frame>.club-archive{flex:1 1 0;min-height:0;max-height:100%;overflow:hidden}
 .club-profile-records{margin-top:16px;padding-top:8px;border-top:1px solid var(--line2)}.club-profile-records h3{margin:0 0 8px;font-size:13px}
+.coach-grade-help th,.coach-grade-help td,.coach-grade-help td *{font-size:var(--ui-caption,12px)} /* 공통 글꼴 단계(검수 11-12) */
 /* 경기장은 하나의 화면, 주변 패널은 현재 재생 시점의 기록만 보여 준다. */
 .cast.match-dashboard{height:calc(100dvh / var(--z,1));box-sizing:border-box;padding:10px;gap:6px;grid-template-rows:50px minmax(0,1fr) 30px 45px 84px 32px;background:#0b1118;color:#dce5ec;overflow:hidden;--md-line:#303d48;--md-panel:#17212b}
 .match-dashboard .cs-top{padding:0 8px;background:#141e28;border:1px solid var(--md-line);border-radius:5px;gap:8px;min-width:0}
@@ -5619,7 +5620,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 }
 
 /* 낮은 가로 화면: 버튼 줄들을 위아래로 쌓지 않고 한 줄에 나란히(목록 높이 확보) */
-@media(max-height:599px) and (min-width:500px){.ws-navigation,#app .roster-navigation.ws-navigation{flex-direction:row;align-items:center}.ws-navigation>*,#app .roster-navigation.ws-navigation>*{flex:1 1 0;min-width:0}}
+@media(max-height:599px) and (min-width:500px){.ws-navigation,#app .roster-navigation.ws-navigation{flex-direction:row;align-items:center}.ws-navigation>*,#app .roster-navigation.ws-navigation>*{flex:1 1 0;min-width:0}#app .roster-navigation.ws-navigation>.rseg{flex:none;min-width:0;width:auto}#app .roster-navigation.ws-navigation>.rseg button{white-space:nowrap}#app .roster-navigation.ws-navigation>.ws-tab-row{flex:1 1 0!important;width:auto!important;min-width:0!important}} /* 야수/투수 전환은 줄지 않게: 탭 줄이 남은 폭에서 가로로 넘긴다(검수 11-12: 568×320에서 폭 6px로 화면 밖) */
 
 /* 뒤에 추가된 요약·채용·프로필도 같은 역할별 글꼴 단계를 따른다. */
 #app .home-workspace{--hw-t:var(--ui-heading);--hw-b:var(--ui-body);--hw-s:var(--ui-caption);--hw-n:var(--ui-title)}
@@ -24740,7 +24741,7 @@ function josaFix(root){ if(!root)return; const W=document.createTreeWalker(root,
   while((n=W.nextNode())){ const v=n.nodeValue; if(v&&JOSA_RE.test(v)){ JOSA_RE.lastIndex=0; let out='', last=0, m; while((m=JOSA_RE.exec(v))){ const before=prev+v.slice(0,m.index); const r=josaPick(before.slice(-40),m[0]); out+=v.slice(last,m.index)+(r??m[0]); last=m.index+m[0].length; } out+=v.slice(last); n.nodeValue=out; }
     if(v&&v.trim())prev=(prev+n.nodeValue).slice(-60); } }
 /* 화면을 그린 뒤, 누를 수 없는 글자 속 이름을 찾아 링크로 바꾼다 */
-const NOLINK='a,button,[data-a],select,option,textarea,input,svg,script,style,.nolink,.kbar,.seg,.chips,.bnav,.sbar,.cast,label';
+const NOLINK='a,button,[data-a],select,option,textarea,input,svg,script,style,.nolink,.kbar,.seg,.chips,.bnav,.sbar,.cast,label,.tcd';
 function autoLink(root){ try{ josaFix(root); }catch(e){} if(!G||!root||UI.cast)return; const L=linkMap(); const W=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{ const v=n.nodeValue; if(!v||v.length<2||!/[가-힣A-Za-z]/.test(v))return NodeFilter.FILTER_REJECT; const pe=n.parentElement; if(!pe||pe.closest(NOLINK))return NodeFilter.FILTER_REJECT; return L.re1.test(v)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT; }});
   const list=[]; let n; while((n=W.nextNode()))list.push(n); for(const t of list){ const sp=document.createElement('span'); sp.innerHTML=linkify(esc(t.nodeValue)); const f=document.createDocumentFragment(); while(sp.firstChild)f.appendChild(sp.firstChild); t.parentNode.replaceChild(f,t); } }
 const lk=t=>linkify(esc(t));
