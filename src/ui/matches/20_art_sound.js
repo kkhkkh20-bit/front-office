@@ -54,8 +54,8 @@ const ORG_WIN=[[72,.14],[76,.14],[79,.14],[84,.5],[0,.08],[79,.14],[84,.7]];
 function siren(){ const c=sndReady(); if(!c)return; const t=c.currentTime; const o=c.createOscillator(); o.type='sawtooth'; const g=c.createGain(); const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1400;
   o.frequency.setValueAtTime(380,t); o.frequency.linearRampToValueAtTime(620,t+.9); o.frequency.linearRampToValueAtTime(560,t+1.8);
   g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.12,t+.15); g.gain.setValueAtTime(.12,t+1.4); g.gain.linearRampToValueAtTime(0,t+1.9); o.connect(lp); lp.connect(g); g.connect(SND.master); o.start(t); o.stop(t+2); }
-/* 심판 콜(세이프·아웃·스트라이크 아웃): 브라우저 음성 합성으로 짧고 굵게. 소리를 끄면 나지 않는다(사용자 11-08) */
-function umpCall(w){ if(!sndOn())return; try{ const S=window.speechSynthesis; if(!S||typeof SpeechSynthesisUtterance==='undefined')return; S.cancel(); const u=new SpeechSynthesisUtterance(w); u.lang='ko-KR'; u.rate=1.15; u.pitch=.6; u.volume=1; const v=(S.getVoices()||[]).find(x=>/^ko/i.test(x.lang)&&/male|남/i.test(x.name))||(S.getVoices()||[]).find(x=>/^ko/i.test(x.lang)); if(v)u.voice=v; S.speak(u); }catch(e){} }
+/* 심판 콜: 한국어 음성 합성(스트라이크 아웃·아웃·세이프)은 쓰지 않는다. 판정은 화면 자막과 효과음으로만 전한다(사용자 11-11). 부르는 곳은 그대로 둔다 */
+function umpCall(){}
 function buzz(ms){ try{ if(navigator.vibrate)navigator.vibrate(ms); }catch(e){} }
 addEventListener('pointerdown',()=>{ if(sndOn())sndInit(); if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume(); },{passive:true});
 
