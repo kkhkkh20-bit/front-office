@@ -2748,6 +2748,10 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .yb-y{padding:10px 0;border-bottom:1px solid var(--line,#2a3440)}.yb-y h3{margin:0 0 6px;font-size:16px}
 .yb-g{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}.yb-g i{font-style:normal;color:var(--muted,#9aa7b4);margin-right:6px;font-size:12px}
 .yb-ev{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted,#b8c2cc)}.yb-ev li{margin:2px 0}
+/* 인물 이력부 */
+.pt-l{list-style:none;margin:6px 0 0;padding:0}.pt-l li{display:grid;grid-template-columns:44px 18px 1fr;gap:6px;padding:4px 0;border-bottom:1px solid var(--line,#26303a);font-size:13px;align-items:baseline}
+.pt-l b{color:var(--muted,#9aa7b4);font-weight:600}.pt-l span{text-align:center;color:var(--muted,#9aa7b4)}.pt-l em{font-style:normal}
+.pt-l .pt-start em,.pt-l .pt-retire em{font-weight:600}.pt-l .pt-award em{color:#e8b923}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -11962,7 +11966,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(12,1)){ contractStart(); aiCapAll(); try{ aiDebtDump(); }catch(e){} capWarnUser(); }
   try{ salTalkDaily(day); }catch(e){} try{ holdDaily(day); }catch(e){}
   if(day===KD(12,10)){ try{ capCouncil(); }catch(e){} }
-  try{ assocDaily(day); }catch(e){} try{ lgrDaily(day); }catch(e){} try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} if(od.d===1)try{ mplMonth(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
+  try{ assocDaily(day); }catch(e){} try{ lgrDaily(day); }catch(e){} try{ plogDaily(); }catch(e){} try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} if(od.d===1)try{ mplMonth(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();
   if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(m.imp&&m.kind==='일정'&&G.day-m.day>=3)m.imp=false; } /* 날짜가 지난 일정 안내는 '중요'만 내린다. 소식을 저절로 읽음 처리하지 않는다(단장이 읽거나 '모두 읽음'을 눌러야 읽음) */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} try{treqWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
@@ -18272,7 +18276,7 @@ function psClinched(tid){ const R=G.sea&&G.sea.rec; if(!R||!R[tid])return false;
 /* 결산 전 예상: 가을야구·우승 성과 보너스(결산 sponSettle과 같은 기준, 상태는 바꾸지 않는다) */
 function sponBonusEst(y,champ){ const S=G.spon; if(!S)return 0; const P=G.sea&&G.sea.y===y?G.ps:null; /* 지난 시즌 포스트시즌은 다음 시즌 전망에 넣지 않는다(검수 11-09zn) */ const si=P&&P.seeds?P.seeds.indexOf(G.user):-1; let inPS=si>=0&&(si<4||psSeedsNow(P)[4]!=null); /* 5위 결정전이 남았으면 잠정 5위·6위는 아직 진출 전(검수 11-09zn) */ if(!(P&&P.seeds)&&y===G.year)try{ inPS=psClinched(G.user); }catch(e){} /* 정규시즌 중 가을야구를 확정하면 진출 보너스를 바로 전망에(검수 11-09i) */ let b=0; for(const k in S.c){ const c=S.c[k]; if(!(c.y0<=y&&c.until>=y))continue; const eff=c.y0===y?(c.first??1):1; if(!(eff>0))continue; const bf=c.y0===y&&c.bf!=null?c.bf:1; if(inPS&&c.ps&&!(c.psNo&&c.y0===y))b+=Math.round(c.ps*bf); if(champ===G.user&&c.champ)b+=Math.round(c.champ*bf); } return b; }
 /* ===== 이적 기록: 리그 모든 선수 이동을 구조화해 남긴다(이적시장 요약·주간 정리·구단별 영입/이탈) ===== */
-function mvLog(type,p,from,to,note,amt,tr){ if(!p)return; if(/트레이드|FA/.test(type||''))try{ rivalMove(p,from,to,type); }catch(e){} G.mvN=(G.mvN||0)+1; if((from!=null||to!=null)&&from!==to&&!p.foreign){ /* 방출·무적 영입도 남긴다: 시즌 마지막 날 방출해도 그해 연봉은 그날까지 낸다 */ const L=p.tLog=(p.tLog||[]).filter(x=>x.y>=G.year-1); L.push({y:G.year,d:G.day,f:from,t:to,s:p.sal}); } /* s: 떠나기 전 연봉(옛 구단 몫은 그 연봉으로, 검수 11-08) */ /* 구단 사이 이동: 그해 연봉을 소속 기간대로 나눈다(payYear) */ /* 선수 이동 횟수: 전력표 캐시를 다시 계산하는 기준 */
+function mvLog(type,p,from,to,note,amt,tr){ if(!p)return; if(/트레이드|FA/.test(type||''))try{ rivalMove(p,from,to,type); }catch(e){} try{ if((from!=null||to!=null)&&from!==to)plogMove(p,from,to,type); }catch(e){} G.mvN=(G.mvN||0)+1; if((from!=null||to!=null)&&from!==to&&!p.foreign){ /* 방출·무적 영입도 남긴다: 시즌 마지막 날 방출해도 그해 연봉은 그날까지 낸다 */ const L=p.tLog=(p.tLog||[]).filter(x=>x.y>=G.year-1); L.push({y:G.year,d:G.day,f:from,t:to,s:p.sal}); } /* s: 떠나기 전 연봉(옛 구단 몫은 그 연봉으로, 검수 11-08) */ /* 구단 사이 이동: 그해 연봉을 소속 기간대로 나눈다(payYear) */ /* 선수 이동 횟수: 전력표 캐시를 다시 계산하는 기준 */
   { const C=G.contract; if(to!==from&&C&&!C.done&&from!=null&&from===(C.tid??G.user)&&(C.ended||[]).includes(p.id)){ const n=C.neg&&C.neg[p.id]; const v=n?(n.st==='ok'?p.newSal:(n.cur??n.off)):p.newSal; if(v!=null){ p.sal=Math.max(MIN_SAL,v); } delete p.newSal; if(C.neg)delete C.neg[p.id]; C.ended=C.ended.filter(x=>x!==p.id); } } /* 연봉 협상 중 떠나는 선수: 그때까지의 구단 제시액(합의했으면 합의액)으로 새 연봉을 확정 */ if(to!==from){ p.e1=false; delete p.downDay; /* 1군 등록은 새 구단이 다시 정한다(엔트리 한도 초과 방지). 말소 10일 규정은 같은 구단 재등록이라 새 구단은 바로 올릴 수 있다 */
     delete p.listed; delete p.lw; delete p.urgent; delete p.promise; delete p.pconv; delete p.treq; delete p.aiListed; /* 옛 구단·단장이 건 표시는 끝난다 */
     if(G.trnI&&from===G.user)delete G.trnI[p.id]; /* 우리가 내린 훈련 강도 건의는 떠난 선수에게 남지 않는다(돌아와도 옛 지시가 되살아나지 않게, PR #4 검수) */
@@ -22272,6 +22276,43 @@ function legStadSet(tid,n){ const S=stadOf(tid); (S.names=S.names||[]).push({unt
   try{ chron('honor',`구장 이름을 '${n}'(으)로 바꿈 · ${legMeName()} 단장 공로 기념`,null,tid,{source:'stadNm:'+tid}); }catch(e){} news('구단',`${tshort(tid)} 홈구장, '${n}'(으)로 새 이름`,`${legMeName()} 단장의 공로를 기려 구단과 ${team(tid).city}시가 구장 이름을 바꿨습니다.`,2,{tid}); }
 EVH.stadNm={ pick(e,i){ const {tid,nm}=e.data; if(tid!==G.user)return '이제 우리 구단이 아닙니다.'; if(i===2){ team(tid).trust=clamp((team(tid).trust||50)+2,0,100); G.gmLeg.stad={tid,y:G.year,n:null,declined:1}; return '정중히 사양했습니다.'; }
   legStadSet(tid,i===0?`${nm} 필드`:`${nm} 기념구장`); if(G.pr)G.pr.fan=clamp(G.pr.fan+3,0,100); return `구장 이름이 '${stadName(tid)}'(으)로 바뀌었습니다.`; } };
+/* ===== 인물 이력부 (장기 기획 11-11) =====
+   선수→코치→감독→단장으로 이어지는 한 사람의 경력을 한곳에 남긴다. 기존 기록(선수 시즌 기록·은퇴 보관·OB·역대 단장)은 그대로 쓰고,
+   빠져 있던 것만 G.plog에 영구히 쌓는다: 이적(이적 기록 p.tLog는 2년만 남는다), 감독·코치·단장 부임/퇴임, 은퇴 뒤 진로.
+   - 사람 키: 선수 출신은 'pl:선수ID'(코치가 OB면 OB의 fid), 감독 'mgr:ID', 코치 'staff:ID', AI 단장 'gm:ID', 내 단장 'me:계보'.
+   - 부임/퇴임은 날마다 각 구단 자리 주인을 비교해 바뀐 것만 적는다(채용·경질 경로가 많아 함수마다 걸지 않는다) */
+const PL_MAX=60; /* 한 사람당 줄 상한 */
+function plogInit(){ return G.plog=G.plog||{p:{},n:{},seat:null}; }
+function plogAdd(key,e){ if(!key)return; const L=plogInit(); const A=L.p[key]=L.p[key]||[]; A.push({y:G.year,d:G.day,...e}); if(A.length>PL_MAX)A.splice(0,A.length-PL_MAX); }
+function plogName(key,n){ if(key&&n)plogInit().n[key]=n; }
+function plKeyCoach(c){ if(!c)return null; const ob=c.ob!=null?(G.ob||[]).find(o=>o.id===c.ob):null; return ob&&typeof ob.fid==='number'?'pl:'+ob.fid:'staff:'+c.id; }
+function plKeyMgr(m){ if(!m)return null; return m.fid!=null?'pl:'+m.fid:'mgr:'+m.id; }
+/* 지금 자리 주인: {구단:자리 → {key,name}} */
+function plSeats(){ const S={}; for(const t of G.teams){ const m=G.mgr&&G.mgr[t.id]; if(m&&!m.interim)S[t.id+':mgr']={key:plKeyMgr(m),name:m.name};
+    const C=G.coach&&G.coach[t.id]; if(C)for(const r in C){ const c=C[r]; if(c&&typeof c==='object'&&c.id!=null)S[t.id+':c:'+r]={key:plKeyCoach(c),name:c.name}; }
+    if(t.id===G.user&&!G.unemp){ try{ S[t.id+':gm']={key:'me:'+legMeK(),name:legMeName()}; }catch(e){} } else if(t.gm&&!t.gm.interim)S[t.id+':gm']={key:'gm:'+t.gm.id,name:t.gm.name}; }
+  return S; }
+function plRoleL(seat){ const r=seat.split(':').slice(1); return r[0]==='mgr'?'감독':r[0]==='gm'?'단장':(CROLE[r[1]]||{}).l||'코치'; }
+function plogDaily(){ const L=plogInit(); const now=plSeats(); if(!L.seat){ L.seat={}; for(const s in now){ L.seat[s]=now[s]; plogName(now[s].key,now[s].name); } return; } /* 처음: 지금 상태만 기억(이전 이력은 모른다) */
+  const seen=new Set([...Object.keys(L.seat),...Object.keys(now)]);
+  for(const s of seen){ const a=L.seat[s], b=now[s]; if(a&&b&&a.key===b.key)continue; const tid=+s.split(':')[0], role=plRoleL(s);
+    if(a)plogAdd(a.key,{k:'end',role,tid}); if(b){ plogAdd(b.key,{k:'start',role,tid}); plogName(b.key,b.name); } if(b)L.seat[s]=b; else delete L.seat[s]; } }
+/* 선수 이동·은퇴 진로(영구) */
+function plogMove(p,from,to,type){ if(!p||p.foreign||from===to)return; plogName('pl:'+p.id,p.name); plogAdd('pl:'+p.id,{k:'move',f:from??null,t:to??null,why:type||''}); }
+function plogRetire(p,path){ if(!p)return; plogName('pl:'+p.id,p.name); plogAdd('pl:'+p.id,{k:'retire',tid:p.team??p.relT??null,path:path||null}); }
+/* 한 사람의 이력 줄(오래된 순): 선수 시즌(구단별로 묶음)·이적·은퇴·지도자/프런트 */
+function personTimeline(key){ const out=[]; const L=plogInit(); const A=L.p[key]||[];
+  if(key&&key.startsWith('pl:')){ const id=+key.slice(3), p=G.players[id]||(G.arch&&G.arch[id]?archP(G.arch[id]):null);
+    if(p){ const rows=(p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2).sort((a,b)=>a.y-b.y); let cur=null; for(const h of rows){ if(cur&&cur.tid===h.t&&h.y<=cur.y1+1){ cur.y1=h.y; cur.war+=warOf(h,p)||0; continue; } cur={y0:h.y,y1:h.y,tid:h.t,war:warOf(h,p)||0}; out.push({y:h.y,k:'play',ref:cur}); }
+      for(const x of out)if(x.k==='play'){ const c=x.ref; x.t=`선수 · ${tshort(c.tid,c.y0)} ${c.y0===c.y1?c.y0:c.y0+'~'+c.y1} (1군 WAR ${c.war.toFixed(1)})`; }
+      for(const a of (p.aw||[]).slice(-12))out.push({y:+String(a).slice(0,4)||null,k:'award',t:`수상 · ${a}`}); } }
+  for(const e of A){ if(e.k==='move')out.push({y:e.y,k:'move',t:`${e.why||'이동'} · ${e.f!=null?tshort(e.f,e.y):'무소속'} → ${e.t!=null?tshort(e.t,e.y):'무소속'}`});
+    else if(e.k==='retire')out.push({y:e.y,k:'retire',t:`현역 은퇴${e.tid!=null?' · '+tshort(e.tid,e.y):''}${e.path?' · 진로: '+({coach:'지도자',scout:'스카우트',media:'해설위원',front:'프런트'}[e.path]||e.path):''}`});
+    else if(e.k==='start')out.push({y:e.y,k:'start',t:`${tshort(e.tid,e.y)} ${e.role} 부임`});
+    else if(e.k==='end')out.push({y:e.y,k:'end',t:`${tshort(e.tid,e.y)} ${e.role} 퇴임`}); }
+  return out.filter(x=>x.y!=null).sort((a,b)=>a.y-b.y||(a.k==='play'?-1:0)); }
+/* 은퇴 진로: OB가 만들어질 때(obFromPlayer) 이력부에 남긴다 */
+(function(){ try{ const f=obFromPlayer; obFromPlayer=function(p,rec){ const r=f.apply(this,arguments); try{ const ob=(G.ob||[]).find(o=>o.fid===p.id); plogRetire(p,ob&&ob.path); }catch(e){} return r; }; }catch(e){} })();
 /* ===== 감독과 이야기 나누기: 스타일이 이끄는 대화 (사용자 11-08c: 대화 흐름이 뻔하다. 선택지 수보다 감독 스타일에 따른 재미난 흐름) =====
    감독마다 대화 스타일 하나(올드스쿨 고집형·데이터형·선수 친화형·다혈질·유머러스·언론 플레이형·신중형)를 갖는다. 기존 말투(mgrVoice)에서 나오고,
    신중파·형님 리더십 일부는 명성·고집·규율에 따라 언론 플레이형·유머러스로 갈라진다.
@@ -25600,9 +25641,12 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
     <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${x.rel}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${d>0?'+':''}${d}`:''}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span></div>`}
-    ${personTop(k)}${info}${sec('관계를 움직이는 것',moves.length?li(moves.map(esc)):'')}${sec('관계가 주는 영향',fx.length?li(fx.map(esc)):'')}${sec('최근',recent)}
+    ${personTop(k)}${info}${(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()}${sec('관계를 움직이는 것',moves.length?li(moves.map(esc)):'')}${sec('관계가 주는 영향',fx.length?li(fx.map(esc)):'')}${sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
 
+
+/* 관계 화면 사람 → 인물 이력부 키 */
+function relPlKey(k){ if(k==='mgr')return plKeyMgr(G.mgr[G.user]); if(k.startsWith('c:')){ const ref=k.slice(2), c=coachesOf(G.user)[ref]||staffOwned('coach',ref); return plKeyCoach(c); } if(k.startsWith('gm:')){ const g=gmOf(+k.slice(3)); return g?'gm:'+g.id:null; } return null; }
 /* ---------- OB·레전드 ---------- */
 function obOf(id){ return id&&G.ob?G.ob.find(o=>o.id===id):null; }
 /* 마지막 현역 번호와 결번은 다를 수 있다. 구단·번호가 명시된 결번 이력을 먼저 쓴다. */
@@ -30783,7 +30827,7 @@ function renderSheet0(){
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
-   ${p.prospect||p.fdPool?'':careerHub(p)}${st}
+   ${p.prospect||p.fdPool?'':careerHub(p)}${personTimelineBox('pl:'+p.id)}${st}
    `:''}
    ${T==='mgmt'?`
    <div id="s-bond"></div>${p.team===G.user&&!(p.joinY>G.year)?bondCard(p):''}${personalAdviceBox(p,'contract')}
@@ -30879,6 +30923,10 @@ function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
   return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${(()=>{ const v=fdPotEst(p); return v==null?'':box('장래성',`<span style="color:${rcol(v)}">${GRD(v)}</span>`,`최대 예상(${fdPeakAge(p)>p.age?fdPeakAge(p)+'세 무렵 전성기':'이미 전성기'}) · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':''}`); })()}${box('연봉',money(p.sal||0),tContract(p))}</div>
     <div class="fdop">${S.L.map(t=>`<span class="fdtg" style="--c:${fdGc(t.g)}">${t.l} <b>${t.g}</b> <i class="fdtv" title="스카우트 추정치(실제와 다를 수 있음)">${dv(t.raw)}</i></span>`).join('')}</div>`; }
+
+/* 인물 이력부(91_person_ledger): 선수 시절 구단·이적·수상·은퇴·지도자/프런트 경력을 연도순으로 */
+function personTimelineBox(key,title){ let L=[]; try{ L=personTimeline(key); }catch(e){} if(!L.length)return ''; const ic={play:'⚾',move:'↔',award:'★',retire:'■',start:'▶',end:'◀'};
+  return `<section class="card pt-box"><h3 class="sec">${esc(title||'인물 이력')}</h3><ol class="pt-l">${L.map(x=>`<li class="pt-${x.k}"><b>${x.y}</b><span>${ic[x.k]||''}</span><em>${esc(x.t)}</em></li>`).join('')}</ol></section>`; }
 /* ---------- 동작 ---------- */
 function roleLines(p){ const r=squadRole(p), k=keepWhy(p), o=oppSat(p); const L=[]; if(r)L.push(`<b>팀 내 역할</b> ${esc(r)}`); if(o)L.push(`<b>기회 만족</b> ${esc(o.lv)} · ${esc(o.why)}${o.gap?` <span class="muted">${esc(o.gap)}</span>`:''}`); if(k)L.push(`<b>보유 이유</b> ${esc(k)}`); return L.length?`<p class="small">${L.join('<br>')}</p>`:''; }
 function bondCard(p){
@@ -34025,6 +34073,8 @@ const PATCH=[
   {id:'2026-11-11-league-world',d:'11월 11일',t:'구단 매각 뒤 이름 변경·연고 이전, 협회 규정 변화, 라이벌 효과',items:[
     '새 운영 주체가 구단을 인수하면 구단 이름을 바꾸거나, 드물게 지방 구단이 리그 밖 도시로 연고를 옮깁니다. 우리 구단이 인수되면 새 구단주가 이름 변경을 묻고 단장이 고릅니다. 지난 시즌 우승·순위 기록은 그때 이름으로 남습니다.',
     '해마다 12월 18일 협회 규칙위원회가 다음 시즌 규정을 정합니다. 공인구 반발계수(홈런), ABS 존(삼진·볼넷), 외국인 선수 연봉 총액 상한이 바뀔 수 있고 실제 경기와 계약에 반영됩니다. 새 공인구가 도입되면 타고투저·투고타저 시대가 오기도 합니다.',
+    '한 구단에서 오래 일하며 우승을 이끈 단장(12시즌·우승 2회, 또는 15시즌·우승 1회)에게 구단주와 연고 도시가 구장 이름에 단장 이름을 붙이자고 제안합니다. 그 뒤 신구장이 열려도 이름을 잇습니다.',
+    '리그 → 역대에 리그 연감을 넣었습니다. 해마다 우승·정규시즌 1위·MVP·신인왕과 구단 이름·연고·구장 변화, 라이벌 탄생, 협회 규정 변화를 그해 이름으로 모아 봅니다.',
     '라이벌 맞대결은 관중이 더 들고(최대 12%), 우리 구단 라이벌전 승패는 팬 여론에 더 크게 남습니다. 주전급 선수가 두 구단 사이를 트레이드·FA로 옮기면 맞대결 열기가 오르고, 이런 사건이 쌓이면 새 라이벌이 생깁니다.'
   ]},
   {id:'2026-11-11-editor-draft',d:'11월 11일',t:'리그 주전 평균·담장 공사·같은 순서 창단 드래프트',items:[

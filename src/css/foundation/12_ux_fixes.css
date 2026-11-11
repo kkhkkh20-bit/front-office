@@ -756,3 +756,7 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .yb-y{padding:10px 0;border-bottom:1px solid var(--line,#2a3440)}.yb-y h3{margin:0 0 6px;font-size:16px}
 .yb-g{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}.yb-g i{font-style:normal;color:var(--muted,#9aa7b4);margin-right:6px;font-size:12px}
 .yb-ev{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted,#b8c2cc)}.yb-ev li{margin:2px 0}
+/* 인물 이력부 */
+.pt-l{list-style:none;margin:6px 0 0;padding:0}.pt-l li{display:grid;grid-template-columns:44px 18px 1fr;gap:6px;padding:4px 0;border-bottom:1px solid var(--line,#26303a);font-size:13px;align-items:baseline}
+.pt-l b{color:var(--muted,#9aa7b4);font-weight:600}.pt-l span{text-align:center;color:var(--muted,#9aa7b4)}.pt-l em{font-style:normal}
+.pt-l .pt-start em,.pt-l .pt-retire em{font-weight:600}.pt-l .pt-award em{color:#e8b923}
