@@ -121,6 +121,7 @@ function clubFm(){ const tid=G.user, t=team(tid), F=fxFact, H=G.history||[];
 function clubBody(s){
   const H0={auth:authView,rel:relView,ob:obView,owner:()=>fmOn()?ownerDash():fmCols(ownerView()+prestigeCard()+starPanel()+ownerAskView()),media:mediaView,fans:()=>fanOpsCard()+fanBoard(),crew:()=>G.unemp?'':csec('응원단장 · 치어리더 팀장',crewView())+csec('치어리더 단원',cheerView()),build:teamBuildView,news:ourNewsView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,ach:achView,legacy:legacyView,
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
+    share:()=>teamShareView(),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
     set:()=>{ /* 설정 한 페이지(사용자 11-08): 칸을 묶음으로 넘기지 않고 세 줄로. 패치 노트·크레딧은 접어 둔다 */

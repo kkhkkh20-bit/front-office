@@ -241,6 +241,7 @@
       "src/ui/career/64_ach.js",
       "src/ui/career/64b_legacy.js",
       "src/ui/career/65_gm_card.js",
+      "src/ui/career/66_team_card.js",
       "src/ui/contracts/66_foreign_neg.js",
       "src/ui/staff/33b_scout_map.js",
       "src/ui/staff/33c_sister_club.js",
