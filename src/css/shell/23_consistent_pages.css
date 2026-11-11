@@ -288,3 +288,7 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 #app main.ws-frame>.club-profile,#app main.ws-frame>.club-archive{flex:1 1 0;min-height:0;max-height:100%;overflow:hidden}
 .club-profile-records{margin-top:16px;padding-top:8px;border-top:1px solid var(--line2)}.club-profile-records h3{margin:0 0 8px;font-size:13px}
 .coach-grade-help th,.coach-grade-help td,.coach-grade-help td *{font-size:var(--ui-caption,12px)} /* 공통 글꼴 단계(검수 11-12) */
+.club-profile-grp{font-size:var(--ui-body,13px);margin:10px 0 6px;color:var(--muted)} /* 구단 프로필 포지션 묶음(11-12) */
+/* 검수 11-12: 우승 트로피·올스타 화면은 자체 스크롤이 있어야 한다(공통 '줄지 않음' 규칙이 덮어 1024×768에서 아래가 잘림). 5열은 넓은 화면에서만 */
+#app main.ws-frame>.trc-page,#app main.ws-frame>.asg-page{flex:1 1 auto;flex-shrink:1;min-height:0;overflow:auto}
+@media(min-width:1001px) and (max-width:1399px){.trc-room{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}}

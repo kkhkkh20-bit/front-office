@@ -12,7 +12,7 @@ function aiDisc(t){ const cl=climateOf(t.id); const ch=cl.band==='loose'?.04+.1*
 function aiGripe(t){ const d=depth(t.id); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
   const wasReg=q=>{ const h=seasonTotalT(q,G.year-1,'1군',t.id); return !!h&&((h.pa||0)>=300||(h.outs||0)>=240); }; /* 작년 주전이었는데 올해 밀린 선수, 또는 주전급 능력인데 기회가 없는 선수 */
   const p=domestic(t.id).filter(q=>!q.ys&&healthy(q)&&!reg.has(q.id)&&(ovr(q)>=55||wasReg(q))&&(q.mor??60)<45&&q.gripeY!==G.year).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!p||R()>.3)return;
-  p.gripeY=G.year; const big=ovr(p)>=58||(p.mor??60)<28; if(big&&!hasNtc(p)){ p.aiListed=true; p.aiWhy='mood'; p.aiLd=G.day; p.aiUrg=true; }
+  p.gripeY=G.year; const big=ovr(p)>=58||(p.mor??60)<28; if(big&&!hasNtc(p)&&!mvRecent(p,60)){ p.aiListed=true; p.aiWhy='mood'; p.aiLd=G.day; p.aiUrg=true; }
   wire('구단 사정',`${tshort(t.id)} ${p.name}(${posLabel(p)}, ${p.age}세), 출전 기회 불만${big?' · 트레이드 요청':''}`,{tid:t.id,ref:p.id});
   if(big&&!G.unemp&&hasNtc(p))mail('전력분석팀',`${tshort(t.id)} ${p.name} 트레이드 요청`,`${tname(t.id)}의 ${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dv(Math.round(ovr(p)))})이 주전 기회를 받지 못해 트레이드를 요청했습니다. 다만 트레이드 거부권이 있어 구단이 매물로 내놓지는 않았습니다. 데려오려면 본인 동의가 필요합니다.`,{kind:'트레이드',acts:[{l:'선수 보기',a:'player',v:p.id}]});
   else if(big&&!G.unemp)mail('전력분석팀',`${tshort(t.id)} ${p.name} 트레이드 요청`,`${tname(t.id)}의 ${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dv(Math.round(ovr(p)))})이 주전 기회를 받지 못해 트레이드를 요청했고, 구단도 매물로 내놓았습니다. 연봉 ${money(p.sal)}${p.faC?` · 남은 계약 ${p.yrs}년`:''}.\n상대가 팔아야 하는 처지라 평소보다 덜 주고 데려올 수 있습니다.`,{kind:'트레이드',acts:[{l:'선수 보기',a:'player',v:p.id}]}); }
