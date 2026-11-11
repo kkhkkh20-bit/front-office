@@ -36,6 +36,7 @@ function newForeign(kind,opts){
   lvl.push(...LG_ADJ[lvl[0]]);
   if(lvl[0]==='NPB 1군')base=clamp(base+5,40,66); if(lvl[0]==='일본 독립리그')base=clamp(base-1.5,40,60);
   if(lvl[0]==='더블A'||lvl[0]==='독립리그')base=clamp(base-2.5,40,72); if(lvl[0]==='MLB')base=clamp(base+2,44,72); /* KBO 시장 후보는 트리플A가 중심이고, 더블A·독립리그 출신은 드물고 한 수 아래다. MLB에서 뛰던 선수는 평균이 조금 높다 */
+  if(asia&&base>54)base=54+(base-54)*.5; /* 아시아쿼터(연봉 상한 20만 달러): 대부분 평범하고 용병보다 센 선수는 아주 드물게(커뮤니티 제안 11-11) */
   if(base>59)base=59+(base-59)*.55; /* 최상위 꼬리를 눌러 '폰세급' 에이스가 해마다 나오지 않게: 화면 80 이상은 몇 해에 한 번(커뮤니티 피드백 11-08) */
   /* 좋아 보이는 선수일수록 이유가 있다 */
   const fp=lvl[0]==='MLB'||base>=61?.7:base>=57?.28:.1; const flaw=R()<fp?pick(['inj','inj','age','adapt']):null;
