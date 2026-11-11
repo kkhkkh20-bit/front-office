@@ -122,3 +122,6 @@ table.mst td.ppc{font-weight:700}
 @keyframes mdcOut{to{opacity:0;transform:translate(-50%,-62%) scale(1.04)}}
 @media (prefers-reduced-motion:reduce){.md-clutch,.md-clutch.out{animation:none}.md-clutch.out{opacity:0}}
 .md-clutch{max-width:88%}
+/* 타석 스토리(11-11) */
+.ab-story{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:var(--ui-sm,12px);padding:4px 2px 0;border-top:1px dashed rgba(255,255,255,.15)}
+.ab-story span{display:inline-flex;gap:6px;align-items:baseline}.ab-story em{font-style:normal;color:var(--muted)}.ab-story b{font-weight:800}
