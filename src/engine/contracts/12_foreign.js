@@ -158,7 +158,7 @@ function foreignCheck(tid,p,excludeId,tmp){
   const cap=fCap(tid,tmp?null:excludeId); const tot=sum(yb.map(fCommit))+p.ask; /* 교체는 기존 선수를 뺀 한도로(부상 대체는 원 선수가 재활 명단에 남아 가산 유지) */ if(tot>cap)return `외국인 3명 연봉 총액이 한도 ${Math.round(cap/USD)}만 달러(약 ${money(cap)})를 넘습니다.`;
   return '';
 }
-function remainFrac(){ const c=G.cal; if(G.day<c.open)return 1; if(G.day>c.end)return 0; const left=Object.keys(c.sched).filter(d=>+d>G.day).length; return left/144; }
+function remainFrac(){ const c=G.cal; if(G.day<c.open)return 1; if(G.day>c.end)return 0; const left=Object.keys(c.sched).filter(d=>+d>G.day).length; return left/Math.max(1,Object.keys(c.sched).length); } /* 일정 날짜 수로 나눈다(구단 수에 따라 144·154·132일) */
 function signForeign(tid,id){
   const p=G.players[id];
   if(p&&(period()==='post'||(period()==='season'&&G.day>foreignDL())))return '8월 15일이 지나 이번 시즌에는 외국인 선수를 새로 등록할 수 없습니다.'; if(p&&!foreignOpen())return '지금은 외국인 선수 영입 기간이 아닙니다(12월부터).'; /* 시장이 닫힌 11월(검수 11-06) */ /* 기본 계약 함수도 등록 마감을 지킨다(검수 11-06) */

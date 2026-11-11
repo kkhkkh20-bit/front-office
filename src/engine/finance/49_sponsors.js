@@ -94,7 +94,7 @@ function sponPitchMake(S,slot,tid){ S.off=(S.off||[]).filter(o=>o.exp>=G.day); c
 /* 단장이 떠난 구단의 영업(돈은 이미 냈다)도 예정일에 결과를 낸다: 제안은 그 구단 계약서에 남아 돌아오면 볼 수 있다(검수 11-06) */
 function sponPitchOld(){ const L=Object.assign({},G.sponT||{}); if(G.unemp&&G.spon&&G.unemp.from!=null)L[G.unemp.from]=G.spon; /* 무직 중엔 G.spon이 떠난 구단 것 */ for(const tid in L){ const S=L[tid]; if(!S||!S.pitch)continue; for(const x of S.pitch){ if(x.done||x.due>G.day)continue; x.done=true; const c=S.c&&S.c[x.slot]; if(c&&c.until>=sponSeason())continue; S.off=(S.off||[]).filter(z=>z.exp>=G.day); /* 만료 제안은 중복 판정에서 뺀다(검수 11-09i) */ if(R()<sponPitchP(+tid))sponPitchMake(S,x.slot,+tid); /* 같은 자리 같은 기업 중복 없음(이직 뒤에도, 검수 11-08) */ } S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); } }
 /* 가을야구 확정(수학적): 남은 경기를 다 져도 우리 승률 이상을 아직 낼 수 있는 구단이 4곳 이하면 5위 안이 확정. 순위는 승률(무승부 제외)이라 승수만 보지 않는다. 동률은 보수적으로 위협으로 센다(검수 11-09zn) */
-function psClinched(tid){ const R=G.sea&&G.sea.rec; if(!R||!R[tid])return false; const gp=r=>r.w+r.l+(r.t||0), N=144; const me=R[tid], lo=me.w/Math.max(1,me.w+me.l+Math.max(0,N-gp(me)));
+function psClinched(tid){ const R=G.sea&&G.sea.rec; if(!R||!R[tid])return false; const gp=r=>r.w+r.l+(r.t||0), N=seasonG(); const me=R[tid], lo=me.w/Math.max(1,me.w+me.l+Math.max(0,N-gp(me)));
   return G.teams.filter(t=>{ const r=R[t.id]; if(t.id===tid||!r)return false; const left=Math.max(0,N-gp(r)); return (r.w+left)/Math.max(1,r.w+r.l+left)>=lo; }).length<=4; }
 
 /* 결산 전 예상: 가을야구·우승 성과 보너스(결산 sponSettle과 같은 기준, 상태는 바꾸지 않는다) */

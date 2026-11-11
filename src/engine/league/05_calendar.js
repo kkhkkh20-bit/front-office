@@ -13,15 +13,20 @@ const KD=(m,d)=>dnum(G.year,m,d);
 const tradeDL=()=>KD(7,31), foreignDL=()=>KD(8,15);
 
 /* ===== 시즌 일정: 3연전·2연전, 월요일 휴식, 올스타 휴식기 ===== */
+/* 구단당 정규시즌 경기 수(구단 수에 따라) */
+function seasonG(){ const n=typeof G!=='undefined'&&G&&G.teams?G.teams.length:10; return n<=10?144:n===11?140:132; }
 function buildCalendar(y){
   const open=onOrAfter(y,3,25,6);
   const asg=onOrAfter(y,7,8,6);
   const brk=new Set([asg-2,asg-1,asg,asg+1]);
   const rest=new Set(); while(rest.size<9){ const n=ri(open+10,dnum(y,9,5)); if(dobj(n).w!==1&&!brk.has(n))rest.add(n); }
-  const days=[]; for(let n=open;days.length<144;n++){ const o=dobj(n); if(o.w===1||brk.has(n)||rest.has(n))continue; days.push(n); }
-  const T=10; let arr=[...Array(T).keys()]; const rounds=[];
-  for(let r=0;r<T-1;r++){ const pr=[]; for(let i=0;i<T/2;i++)pr.push([arr[i],arr[T-1-i]]); rounds.push(pr); arr=[arr[0],arr[T-1],...arr.slice(1,T-1)]; }
-  const series=[]; rounds.forEach((pr,r)=>[3,3,3,3,2,2].forEach((len,k)=>series.push({r,len,flip:k%2})));
+  /* 구단 수에 따라(리그 확장, 88_league_expansion): 10개 구단 상대별 16경기(144), 11개 구단 14경기(140, 라운드마다 한 구단 휴식), 12개 구단 12경기(132) */
+  const NT=typeof G!=='undefined'&&G&&G.teams&&G.teams.length?G.teams.length:10, LEN=NT<=10?[3,3,3,3,2,2]:NT===11?[3,3,2,2,2,2]:[3,3,3,3];
+  const T=NT%2?NT+1:NT; let arr=[...Array(T).keys()]; const rounds=[];
+  for(let r=0;r<T-1;r++){ const pr=[]; for(let i=0;i<T/2;i++){ const x=arr[i], z=arr[T-1-i]; if(x<NT&&z<NT)pr.push([x,z]); } rounds.push(pr); arr=[arr[0],arr[T-1],...arr.slice(1,T-1)]; } /* 홀수면 가짜 구단(NT)과 짝지어진 구단이 그 라운드에 쉰다 */
+  const nDays=rounds.length*LEN.reduce((a,b)=>a+b,0);
+  const days=[]; for(let n=open;days.length<nDays;n++){ const o=dobj(n); if(o.w===1||brk.has(n)||rest.has(n))continue; days.push(n); }
+  const series=[]; rounds.forEach((pr,r)=>LEN.forEach((len,k)=>series.push({r,len,flip:k%2})));
   shuffle(series);
   // 같은 상대와 연속 시리즈가 붙지 않게 순서를 정한다
   const ord=[]; let l1=-1,l2=-1; while(series.length){ let i=series.findIndex(s=>s.r!==l1&&s.r!==l2); if(i<0)i=series.findIndex(s=>s.r!==l1); if(i<0)i=0; const s=series.splice(i,1)[0]; ord.push(s); l2=l1; l1=s.r; }
