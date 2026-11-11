@@ -265,6 +265,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   mktEdit(v){ const x=(UI._mkt||[])[+v], m=UI.findM; if(!x||m==null)return; const q=G.players[x.give[0]]; UI.trade={tid:x.tid,give:[m],get:[...x.give],cash:0,msg:'시장 가치 조건을 담았습니다. 선수·현금·지명권을 바꿔 제안해 보세요.',seg:q&&q.isP?'pit':'bat',side:'give',sort:'cur'}; A.go('trade:table'); }, /* 시장 가치 조건을 출발점으로 협상(사용자 요청 11-09) */
   blkSwap(v){ const [a,b]=v.split(':').map(Number); const q=G.players[a], m=G.players[b]; if(!q||!m)return; UI.trade={tid:q.team,give:[m.id],get:[q.id],msg:'',seg:q.isP?'pit':'bat',side:'give',sort:'cur'}; A.go('trade:table'); },
   offerMore(v){ UI.blkMsg={id:v,t:offerMore(v)}; save(); render(); },
+  offerRevert(v){ UI.blkMsg={id:v,t:offerRevert(v)}; save(); render(); },
   sangmu(v){ UI.milMsg=sangmuApply(+v)||`${G.players[+v].name} 상무 지원 완료. 합격자는 ${sangmuWave()==='dec'?'10월 15일':'4월 15일'}에 발표됩니다.`; save(); render(); },
   enlist(v){ UI.milMsg=enlistNow(+v)||`${G.players[+v].name} 현역 입대를 예약했습니다(2주 뒤 입대, 그 전까지 취소 가능).`; save(); render(); },
   enlistCancel(v){ UI.milMsg=enlistCancel(+v)||`${G.players[+v].name} 입대 예약을 취소했습니다.`; save(); render(); },

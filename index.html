@@ -14597,9 +14597,14 @@ function blockDaily(){ if(!tradeOpen())return; const got=[];
       { const bo={id:'o'+Math.floor(R()*1e9),from:t.id,give,get:[p.id],exp:period()==='season'?Math.min(G.day+7,tradeDL()):G.day+7,blk:true,day:G.day}; if(offerBlockMsg(bo))continue; /* 수락 때 막힐 제안(상대 정원·샐러리캡)은 보내지 않는다 */ try{ bo.pot=offScoutNote(bo); }catch(e){} G.offers=(G.offers||[]).concat(bo); if(autoTradeOffer(bo))break; } /* 받은 제안을 부단장에게 맡겼으면 매물 제안도 같은 기준으로(검수 11-09w) */ got.push(`${t.city} ${t.nick} → ${p.name}`); break; } }
   if(got.length)note('트레이드',`트레이드 매물에 새 제안이 왔습니다: ${got.join(', ')}. 트레이드 → 트레이드 매물에서 확인하세요.`); }
 function offerMore(id){ const o=(G.offers||[]).find(x=>x.id===id); if(!o)return '제안이 없습니다.'; const t=team(o.from); if(o.more)return `${t.city} ${t.nick} 단장: 이미 한 번 올렸습니다. 이게 마지막입니다.`;
-  o.more=true; const x=R(); if(x<.33+(t.rel-50)/100){ const p=G.players[o.get[0]]; const add=pickPackage(t.id,Math.max(1.5,tval(t,p,'in')*.35),'any',o.give); const ng=add&&o.give.concat(add.slice(0,1)); if(add&&!offerBlockMsg({...o,give:ng})){ o.give=ng; delete o.adv; delete o.pot; /* 정원 등으로 막히는 조건이면 얹지 않고 원래 제안을 둔다. 받는 선수가 바뀌었으니 의견·메디컬은 다시 받는다(검수 11-08c) */ o.exp=period()==="season"?Math.min(G.day+3,tradeDL()):G.day+3; /* 거래 마감을 넘기지 않는다(검수 11-05) */ return `${t.city} ${t.nick} 단장: 좋습니다. ${G.players[add[0]].name}을(를) 더 얹겠습니다.`; } }
+  o.more=true; const x=R(); if(x<.33+(t.rel-50)/100){ const p=G.players[o.get[0]]; const add=pickPackage(t.id,Math.max(1.5,tval(t,p,'in')*.35),'any',o.give); const ng=add&&o.give.concat(add.slice(0,1)); if(add&&!offerBlockMsg({...o,give:ng})){ o.prev={give:o.give.slice(),adv:o.adv,pot:o.pot}; /* 얹기 전 조건(되돌리기, 카페 11-11 리아네트) */ o.give=ng; delete o.adv; delete o.pot; /* 정원 등으로 막히는 조건이면 얹지 않고 원래 제안을 둔다. 받는 선수가 바뀌었으니 의견·메디컬은 다시 받는다(검수 11-08c) */ o.exp=period()==="season"?Math.min(G.day+3,tradeDL()):G.day+3; /* 거래 마감을 넘기지 않는다(검수 11-05) */ return `${t.city} ${t.nick} 단장: 좋습니다. ${G.players[add[0]].name}을(를) 더 얹겠습니다.`; } }
   if(x>.8){ G.offers=G.offers.filter(y=>y.id!==id); t.rel=clamp(t.rel-2,0,100); return `${t.city} ${t.nick} 단장: 그 조건이면 없던 일로 하겠습니다. (제안 철회)`; }
   return `${t.city} ${t.nick} 단장: 이게 저희가 낼 수 있는 최선입니다.`; }
+/* '더 올려 달라'로 얹은 선수가 마음에 들지 않으면 처음 제안으로 되돌린다: 상대가 먼저 낸 조건이라 그대로 유효하다 */
+function offerRevert(id){ const o=(G.offers||[]).find(x=>x.id===id); if(!o||!o.prev)return '되돌릴 이전 조건이 없습니다.'; const t=team(o.from); const back={...o,give:o.prev.give};
+  if(offerBlockMsg(back))return `이전 조건은 지금 성립하지 않습니다: ${offerBlockMsg(back)}`;
+  o.give=o.prev.give; if(o.prev.adv!==undefined)o.adv=o.prev.adv; else delete o.adv; if(o.prev.pot!==undefined)o.pot=o.prev.pot; else delete o.pot; delete o.prev;
+  return `${t.city} ${t.nick} 단장: 알겠습니다. 처음 제안한 조건대로 하죠.`; }
 /* 다른 구단 트레이드 매물: 이유가 있는 선수를 올리고 6주까지 둔다. 압박받는 단장·연봉 초과 구단은 급매 */
 const BLKWHY={reb:'리빌딩 정리',room:'자리 없음',dup:'중복 자원',sal:'연봉 정리'};
 function aiBlockWeekly(){ if(!tradeOpen())return;
@@ -29116,7 +29121,7 @@ function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
   /* 받은 제안 한 건: 구단·기한 / 받기·보내기 두 줄, 오른쪽에 수락·거절. 휴대폰은 누르면 거래 뒤 요약까지(PC는 펼침) */
   const nm=ids=>ids.map(id=>G.players[id]?`${esc(G.players[id].name)} ${rchip(Math.round(scoutReport(G.players[id]).cur))}`:'').join(' · ');
   const offs=OS.map(o=>`<div class="of-card"><div class="of-h">${badge(o.from,22)}<b>${esc(tshort(o.from))}${o.blk?' · 매물 제안':''}</b><i>${dmd(o.exp)}까지${gmHeat(o.from)>=.4?' · 단장이 급합니다':''}</i></div>${offerSum(o)}
-    <div class="of-btns">${(why=>why?`<span class="small bad">${esc(why)}</span>`:`<button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button>`)(offerBlockMsg(o))}${o.blk?`<button class="btn" data-a="offerMore" data-v="${o.id}" ${o.more?'disabled':''}>더 올려 달라</button>`:''}<button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div>${UI.blkMsg&&UI.blkMsg.id===o.id?`<div class="note">${esc(UI.blkMsg.t)}</div>`:''}</div>`).join(''); /* 받은 제안은 많지 않으니 늘 펼쳐서, 받는/보내는 선수를 나눠 보여 준다(사용자 11-06) */
+    <div class="of-btns">${(why=>why?`<span class="small bad">${esc(why)}</span>`:`<button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button>`)(offerBlockMsg(o))}${o.blk?`<button class="btn" data-a="offerMore" data-v="${o.id}" ${o.more?'disabled':''}>더 올려 달라</button>${o.prev?`<button class="btn" data-a="offerRevert" data-v="${o.id}" title="상대가 선수를 얹기 전 처음 제안으로 돌아갑니다">이전 조건으로</button>`:''}`:''}<button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div>${UI.blkMsg&&UI.blkMsg.id===o.id?`<div class="note">${esc(UI.blkMsg.t)}</div>`:''}</div>`).join(''); /* 받은 제안은 많지 않으니 늘 펼쳐서, 받는/보내는 선수를 나눠 보여 준다(사용자 11-06) */
   const mineRows=mine.map(p=>{ const n=OS.filter(o=>o.get.includes(p.id)).length; return pRow(p,`<div class="bk-act">${optRow('blkWant',p.lw||'any',Object.entries(WANT),p.id)}<button class="bk-u${p.urgent?' on':''}" data-a="blkUrg" data-v="${p.id}">${p.urgent?'급매 중':'급매'}</button><button class="tc-i" data-a="blkOff" data-v="${p.id}">내리기</button></div>`,n?`<span class="pill acc">제안 ${n}건</span>`:''); }).join('');
   /* 다른 구단 매물은 한 명을 한 줄로: 얼굴·이름·포지션·나이·계약 / 구단·사유·일수, 오른쪽에 종합·연봉과 제안 버튼 */
   const aiRowsA=ai.map(p=>{ const days=G.day-(p.aiLd||G.day); const s2=sw[p.id]||[];
@@ -31524,6 +31529,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   mktEdit(v){ const x=(UI._mkt||[])[+v], m=UI.findM; if(!x||m==null)return; const q=G.players[x.give[0]]; UI.trade={tid:x.tid,give:[m],get:[...x.give],cash:0,msg:'시장 가치 조건을 담았습니다. 선수·현금·지명권을 바꿔 제안해 보세요.',seg:q&&q.isP?'pit':'bat',side:'give',sort:'cur'}; A.go('trade:table'); }, /* 시장 가치 조건을 출발점으로 협상(사용자 요청 11-09) */
   blkSwap(v){ const [a,b]=v.split(':').map(Number); const q=G.players[a], m=G.players[b]; if(!q||!m)return; UI.trade={tid:q.team,give:[m.id],get:[q.id],msg:'',seg:q.isP?'pit':'bat',side:'give',sort:'cur'}; A.go('trade:table'); },
   offerMore(v){ UI.blkMsg={id:v,t:offerMore(v)}; save(); render(); },
+  offerRevert(v){ UI.blkMsg={id:v,t:offerRevert(v)}; save(); render(); },
   sangmu(v){ UI.milMsg=sangmuApply(+v)||`${G.players[+v].name} 상무 지원 완료. 합격자는 ${sangmuWave()==='dec'?'10월 15일':'4월 15일'}에 발표됩니다.`; save(); render(); },
   enlist(v){ UI.milMsg=enlistNow(+v)||`${G.players[+v].name} 현역 입대를 예약했습니다(2주 뒤 입대, 그 전까지 취소 가능).`; save(); render(); },
   enlistCancel(v){ UI.milMsg=enlistCancel(+v)||`${G.players[+v].name} 입대 예약을 취소했습니다.`; save(); render(); },
@@ -34474,6 +34480,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-trade-revert',d:'11월 11일',t:'트레이드 제안 되돌리기',items:[
+    '받은 트레이드 제안에서 \'더 올려 달라\'를 눌러 상대가 선수를 얹었을 때, \'이전 조건으로\' 버튼으로 처음 제안으로 돌아갈 수 있습니다.'
+  ]},
   {id:'2026-11-11-futures',d:'11월 11일',t:'퓨처스리그(2군 경기) 개막',items:[
     '2군도 실제 경기를 치릅니다. 1군과 같은 경기 엔진으로 한 타석씩 계산해, 보지 않아도 점수·박스스코어·투구 수·승패·세이브·홀드가 기록으로 남습니다.',
     '북부리그(수도권 구단)와 남부리그(그 밖의 구단과 상무)로 나뉘고 화·수·목·토·일에 열립니다. 리그 → 순위 → 퓨처스리그에서 순위표와 우리 2군 최근 경기·박스스코어를 볼 수 있습니다.',
