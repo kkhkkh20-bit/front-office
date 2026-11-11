@@ -73,7 +73,7 @@ const TALENT_W=1;
    5위 wRC+ 172~213, 1위 200~300, 평균자책점 1위 0.9~1.7이 흔했다. 지금 폭에서 측정(세계 3개 × 2~6시즌): wRC+ 1위 152~189·5위 138~161·10위 124~140·20위 114~125·30위 104~114,
    평균자책점 1위 2.0~2.6·5위 2.8~3.2·10위 3.2~3.4. 한 시즌 OPS를 능력 기대치가 설명하는 정도는 약 60%(실력 폭 wRC+ 약 24, 600타석 운 약 18 — KBO 실력 폭에서 나올 수 있는 수준).
    타자·투수 결합(log5)이 극단 대결에서 안타를 늘리는 만큼 QOF로 되돌려 리그 평균(타율 .265 안팎·경기당 득점 4.6 안팎)은 그대로 둔다 */
-const TWB={k:1.1,bb:.72,hr:.69,babip:1.1}, TWP={k:.85,bb:.85,hr:1.25,babip:.77};
+const TWB={k:1.1,bb:.72,hr:.69,babip:1.1}, TWP={k:.95,bb:.95,hr:1.25,babip:.9};
 const QCB={k:.207,bb:.0825,hr:.0248,babip:.320}, QCP={k:.204,bb:.0818,hr:.025,babip:.310}, QOF={babip:-.003,hr:-.0004,bb:.001,k:-.001};
 function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip']){ const c=C?C[k]:LGP[k]; o[k]=clamp(c+(q[k]-c)*TALENT_W*(W?W[k]:1)+(F&&F[k]||0),.002,.6); } return o; }
 function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */

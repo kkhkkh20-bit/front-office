@@ -5066,7 +5066,8 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 .fmsh:has(.ws-frame) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
 .ws-frame,.ws-page{display:flex!important;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;gap:8px}
 .ws-frame{height:100%;box-sizing:border-box}
-.ws-frame>*:not(.ws-panels,.ws-page,.ws-scroll),.ws-page>*:not(.ws-panels,.ws-scroll){flex-shrink:0}
+.ws-frame:not(:has(>:is(.ws-scroll,.ws-panels,.ws-page,.ws-own,.setx))){overflow-y:auto;overscroll-behavior:contain} /* 스크롤 상자가 없는 화면(영구결번 탭 등)은 틀이 직접 스크롤: 휴대폰에서 아래 내용이 잘려 안 내려가던 문제(커뮤니티 제보 11-11) */
+.ws-frame>*:not(.ws-panels,.ws-page,.ws-scroll,.ws-own),.ws-page>*:not(.ws-panels,.ws-scroll,.ws-own){flex-shrink:0} /* ws-own(자체 스크롤 화면)은 줄어들어야 자기 스크롤이 생긴다 */
 .ws-panels{flex:1;min-height:0;min-width:0;display:grid;grid-template-columns:repeat(var(--ws-columns,1),minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:10px;overflow:hidden}
 .ws-panels>.ws-panel{display:flex!important;flex-direction:column;min-width:0;min-height:0;margin:0;overflow:hidden;box-sizing:border-box}
 .ws-panels>.ws-panel[hidden]{display:none!important}
@@ -11535,7 +11536,7 @@ const TALENT_W=1;
    5위 wRC+ 172~213, 1위 200~300, 평균자책점 1위 0.9~1.7이 흔했다. 지금 폭에서 측정(세계 3개 × 2~6시즌): wRC+ 1위 152~189·5위 138~161·10위 124~140·20위 114~125·30위 104~114,
    평균자책점 1위 2.0~2.6·5위 2.8~3.2·10위 3.2~3.4. 한 시즌 OPS를 능력 기대치가 설명하는 정도는 약 60%(실력 폭 wRC+ 약 24, 600타석 운 약 18 — KBO 실력 폭에서 나올 수 있는 수준).
    타자·투수 결합(log5)이 극단 대결에서 안타를 늘리는 만큼 QOF로 되돌려 리그 평균(타율 .265 안팎·경기당 득점 4.6 안팎)은 그대로 둔다 */
-const TWB={k:1.1,bb:.72,hr:.69,babip:1.1}, TWP={k:.85,bb:.85,hr:1.25,babip:.77};
+const TWB={k:1.1,bb:.72,hr:.69,babip:1.1}, TWP={k:.95,bb:.95,hr:1.25,babip:.9};
 const QCB={k:.207,bb:.0825,hr:.0248,babip:.320}, QCP={k:.204,bb:.0818,hr:.025,babip:.310}, QOF={babip:-.003,hr:-.0004,bb:.001,k:-.001};
 function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip']){ const c=C?C[k]:LGP[k]; o[k]=clamp(c+(q[k]-c)*TALENT_W*(W?W[k]:1)+(F&&F[k]||0),.002,.6); } return o; }
 function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */
@@ -13308,6 +13309,7 @@ function newForeign(kind,opts){
   lvl.push(...LG_ADJ[lvl[0]]);
   if(lvl[0]==='NPB 1군')base=clamp(base+5,40,66); if(lvl[0]==='일본 독립리그')base=clamp(base-1.5,40,60);
   if(lvl[0]==='더블A'||lvl[0]==='독립리그')base=clamp(base-2.5,40,72); if(lvl[0]==='MLB')base=clamp(base+2,44,72); /* KBO 시장 후보는 트리플A가 중심이고, 더블A·독립리그 출신은 드물고 한 수 아래다. MLB에서 뛰던 선수는 평균이 조금 높다 */
+  if(asia&&base>54)base=54+(base-54)*.5; /* 아시아쿼터(연봉 상한 20만 달러): 대부분 평범하고 용병보다 센 선수는 아주 드물게(커뮤니티 제안 11-11) */
   if(base>59)base=59+(base-59)*.55; /* 최상위 꼬리를 눌러 '폰세급' 에이스가 해마다 나오지 않게: 화면 80 이상은 몇 해에 한 번(커뮤니티 피드백 11-08) */
   /* 좋아 보이는 선수일수록 이유가 있다 */
   const fp=lvl[0]==='MLB'||base>=61?.7:base>=57?.28:.1; const flaw=R()<fp?pick(['inj','inj','age','adapt']):null;
@@ -16746,7 +16748,8 @@ function abroadYear(){ for(const a of G.abroad||[]){ if(a.back||a.foreign)contin
     const b=a.lg==='MLB'?-6:-2; const ok=ovr(p)>=(a.lg==='MLB'?62:57); const inj=a.d!=null&&!(a.lines||[]).length?Math.max(0,(p.injOut||0)-Math.max(0,dnum(G.year,3,22)-a.d)):(p.injOut||0); const av=clamp(1-inj/365,0,1); /* 첫 시즌은 개막 전까지 지난 재활 기간을 빼고(검수 11-08) */ /* 재활 중인 기간만큼 못 뛴다(검수 11-06) */ const line=p.isP?simPit(p,Math.round((ok?ri(200,500):ri(30,150))*av),b):simBat(p,Math.round((ok?ri(250,560):ri(40,160))*av),b); line.y=G.year; line.lvl=ok?a.lg:(a.lg==='MLB'?'트리플A':'NPB 2군'); a.lines.push(line);
     if(p.injOut>0){ p.injOut=Math.max(0,p.injOut-365); if(!p.injOut)delete p.injK; } delete p.reInj;
     { const t0=p.team; p.team=null; injRecover(p,p.isP?line.outs:line.pa); /* 해외 실전으로 후유증 회복. 아직 해외 소속이라 옛 국내 구단에 알리지 않는다(검수 11-06) */ p.team=t0; } /* 성장·나이는 새해에 국내 선수와 함께(abroadDev) */ a.pj=JSON.stringify(p); const yrsIn=G.year-y1+1;
-    if(yrsIn>=a.yrs&&(!ok||p.age>=33||R()<.45)){ a.back=true; a.backY=G.year; a.age=p.age; a.pj=null; /* 돌아온 선수는 새해에 국내 선수와 같이 나이를 먹는다 */ p.svc=(p.svc||0)+(a.lines||[]).filter(l=>l.y>=y1&&((l.pa||0)+(l.outs||0))>0).length; /* 해외에서 실제로 뛴 시즌만 연차(검수 11-07: 0타석 시즌도 더함) */ G.players[p.id]=p; if(p.mil&&!p.mil.done&&p.mil.until&&p.mil.until<=G.day)p.mil={done:true,unit:p.mil.unit,pf:p.mil.from,pu:p.mil.until}; /* 해외에 있는 동안 지난 전역일: 복귀 때 전역 처리(검수 11-06) */ p.joinY=undefined; p.mor=70; delete p.ovsOffer;
+    const thr=a.lg==='MLB'?62:57, stayP=clamp(.55+(ovr(p)-thr)*.025,.55,.9), early=yrsIn<a.yrs&&!ok&&yrsIn>=1&&R()<.35; /* 계약을 마쳐도 잘하는 선수일수록 더 남고(최대 90%), 자리를 못 잡은 선수는 계약 중에도 방출돼 일찍 돌아온다(커뮤니티 제안 11-11) */
+    if(early||(yrsIn>=a.yrs&&(!ok||p.age>=33||R()>=stayP))){ if(early)a.early=1; a.back=true; a.backY=G.year; a.age=p.age; a.pj=null; /* 돌아온 선수는 새해에 국내 선수와 같이 나이를 먹는다 */ p.svc=(p.svc||0)+(a.lines||[]).filter(l=>l.y>=y1&&((l.pa||0)+(l.outs||0))>0).length; /* 해외에서 실제로 뛴 시즌만 연차(검수 11-07: 0타석 시즌도 더함) */ G.players[p.id]=p; if(p.mil&&!p.mil.done&&p.mil.until&&p.mil.until<=G.day)p.mil={done:true,unit:p.mil.unit,pf:p.mil.from,pu:p.mil.until}; /* 해외에 있는 동안 지난 전역일: 복귀 때 전역 처리(검수 11-06) */ p.joinY=undefined; p.mor=70; delete p.ovsOffer;
       /* 복귀 권리와 계약은 나눈다: 원소속 구단이 우선협상(요구 연봉·기간을 보고 계약하거나 거절), 거절하면 자유계약 선수 */
       if(a.from==null){ p.team=null; p.faC=false; p.ext=false; p.ovsWait=G.year+2; story(p,`${a.lg} ${yrsIn}년 마치고 귀국 · ${G.year+2}년 신인 드래프트 도전 예정`,'move'); wire('해외',`${p.name}, ${a.lg} ${yrsIn}년 마치고 귀국 · 2년 유예 뒤 국내 드래프트 도전`,{ref:p.id}); continue; } /* KBO 규약 107조: 국내 구단을 거치지 않고 해외 구단과 계약한 선수는 계약이 끝나고 2년 뒤에 신인 드래프트로만 들어온다(2026 최지만 사례) */
       p.team=null; p.faC=false; p.ext=false; p.retFrom=a.from; p.retAsk={sal:round5(Math.max(marketSal(ovr(p)),p.sal)),yrs:ri(1,3),lg:a.lg,n:yrsIn,exp:G.day+14};
@@ -22485,16 +22488,18 @@ function mgrScnFx(m,fx,X){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id)return ['�
   if(fx.hint){ const p=P(fx.hint); if(p){ mgrAttr(m); const err=hn('mgrhint'+m.id,p.id)*Math.max(0,90-(m.eye||50))/8; const v=Math.round(clamp((p.pot||ovr(p))+err,20,99)/5)*5; out.push(`감독 귀띔: ${p.name}(${p.age}세) 잠재력 추정 ${dv(v)}점 안팎으로 봅니다(지금 능력 ${dv(ovr(p))}점, 감독 눈 기준).`); } }
   if(fx.cash){ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+fx.cash; out.push(`구단 지출 ${money(fx.cash)}`); }
   if(fx.wire){ try{ wire('감독',`${tshort(G.user)} ${fx.wire}`,{tid:G.user}); }catch(e){} out.push(`리그 소식: ${fx.wire}`); }
-  if(fx.req&&MREQ[fx.req]){const need=fx.req==='an'?null:mgrReqNeed(fx.req),R0=G.mgrReq={v:2,tid:G.user,k:fx.req,mid:m.id,d:G.day,until:mgrReqUntil(fx.req),an:G.acqSeq||0,ids:Object.values(G.players).filter(p=>p.team===G.user).map(p=>p.id),sids:anaList().map(a=>a.id),n0:anaList().length,min:Math.max(mreqMin(fx.req),need?Math.ceil(need.v+3):0),slot:need?.slot};(G.mgrReqSeen=G.mgrReqSeen||{})[G.user+':'+m.id+':'+fx.req]=G.day;out.push(`감독 요청: ${dmd(R0.until)}까지 ${MREQ[fx.req]} 보강(들어주면 관계 +6, 못 들어주면 -3)`);}
+  if(fx.req&&MREQ[fx.req]){const need=fx.req==='an'?null:mgrReqNeed(fx.req),R0=G.mgrReq={v:2,tid:G.user,k:fx.req,mid:m.id,d:G.day,until:mgrReqUntil(fx.req),an:G.acqSeq||0,ids:Object.values(G.players).filter(p=>p.team===G.user).map(p=>p.id),sids:anaList().map(a=>a.id),n0:anaList().length,min:Math.max(mreqMin(fx.req),need?Math.ceil(need.v+3):0),slot:need?.slot};(G.mgrReqSeen=G.mgrReqSeen||{})[G.user+':'+m.id+':'+fx.req]=G.day;out.push(`감독 요청: ${dmd(R0.until)}까지 ${MREQ[fx.req]} 보강(들어주면 관계 +6, 못 들어주면 -3) · 조건: ${mgrReqCond(R0)}`);}
   return out; }
 const mreqOk=(k,p)=>k==='rp'?p.isP&&!isSPr(p):k==='sp'?isSPr(p):k==='def'?!p.isP&&['C','SS','2B','CF'].includes(p.pos):k==='bat'?!p.isP:false;
 /* 보강으로 인정하는 최소 능력: 지금 우리 그 유형 선수 중간값(45~68) */
+/* 보강 인정 조건 문구(커뮤니티 제안 11-11: 무엇을 데려와야 인정되는지 미리 알 수 있게) */
+function mgrReqCond(Q){ if(!Q)return ''; if(Q.k==='an')return '새 전력분석원 채용'; return `${dmd(Q.d)} 이후 새로 데려온(트레이드·FA·웨이버·외국인) ${Q.slot?SLOTK[Q.slot]+' 선수':MREQ[Q.k]}, 종합 ${dv(Q.min)} 이상, 1군에 바로 올릴 수 있는 상태(부상·군 복무·육성선수·합류 전 신인 제외)`; }
 function mreqMin(k){ const L=playersOf(G.user).filter(p=>mreqOk(k,p)).map(ovr).sort((a,b)=>b-a); return Math.round(clamp(L.length?L[Math.floor(L.length/2)]:50,45,68)); }
 function mgrReqDaily(){ const Q=G.mgrReq; if(!Q)return; const m=G.mgr&&G.mgr[G.user]; if(G.unemp||!m||m.interim||m.id!==Q.mid||(Q.tid!=null&&Q.tid!==G.user)||!MREQ[Q.k]){ delete G.mgrReq; return; }
   if(Q.k==='an'&&Q.n0>=ANA_MAX){ delete G.mgrReq; mail('감독실',`${m.name} 감독의 분석원 보강 요청을 정리했습니다`,`요청 당시 이미 전력분석원 정원 ${ANA_MAX}명을 채워 추가 채용이 불가능했습니다. 요청을 종료하며 감독 관계는 변하지 않습니다.`,{kind:'감독'}); return; }
   const done=Q.k==='an'?anaList().length>Q.n0&&anaList().some(a=>(!Q.sids||!Q.sids.includes(a.id))&&a.since>=Q.d&&a.since<=Q.until):Object.values(G.players).some(p=>{const a=p.acq;return mgrReinforceReady(p)&&!(Q.ids||[]).includes(p.id)&&mreqOk(Q.k,p)&&(!Q.slot||pSlot(p)===Q.slot)&&ovr(p)>=Q.min&&a&&a.tid===G.user&&a.d>=Q.d&&a.d<=Q.until&&(Q.an==null||a.n>Q.an);});
   if(done){ m.rel=clamp(m.rel+6,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독: "부탁 들어주셔서 고맙습니다"`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강을 반겼습니다. 감독 관계 +6.`,{kind:'감독'}); return; }
-  if(G.day>Q.until){ m.rel=clamp(m.rel-3,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독의 부탁이 흐지부지됐습니다`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강이 기한 안에 이뤄지지 않았습니다. 감독 관계 -3.`,{kind:'감독'}); } }
+  if(G.day>Q.until){ m.rel=clamp(m.rel-3,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독의 부탁이 흐지부지됐습니다`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강이 기한 안에 이뤄지지 않았습니다. 감독 관계 -3.\n인정 조건: ${mgrReqCond(Q)}`,{kind:'감독'}); } }
 /* ===== 고교 야구부와 고교 감독 (사용자 11-08c: 고등학교도 데이터로, 고교 감독과 친해져 스카우팅을 편하게, 은퇴 선수가 고교 감독으로) =====
    AREA(12_scout_area.js)의 고교마다 학교 객체(G.schools[이름])를 둔다: 권역·전력(lv)·감독(사람)·구단별 친분(rel).
    감독은 우리 풀에서 온다: 은퇴 선수(OB) 중 모교 > 같은 권역 > 그 밖의 순서. 새 게임 첫 세계와 OB가 모자랄 때만 선수 출신처럼 만든 사람을 앉힌다.
@@ -33844,6 +33849,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-pitch-asia',d:'11월 11일',t:'투수 능력 반영 강화·감독 요청 조건·해외 진출 조기 복귀',items:[
+    '경기 엔진에서 투수 능력(구위·제구 등)이 삼진·볼넷·피안타 결과에 더 크게 반영됩니다. 좋은 투수와 나쁜 투수의 평균자책점 차이가 커집니다.',
+    '감독의 영입 요청에 인정 조건(언제 이후 데려온 선수, 포지션, 종합 능력, 1군 등록 가능 여부)을 함께 보여 줍니다. 실패 소식에도 조건을 적습니다.',
+    '포스팅·해외 진출 선수가 계약 기간 전에 국내로 돌아오는 경우가 생깁니다. 아시아쿼터 선수의 최상위 능력치가 나오는 확률을 낮췄습니다.'
+  ]},
   {id:'2026-11-11-community-ui',d:'11월 11일',t:'능력 차트·순위 변동 그래프·잠재력 별·정리 모드',items:[
     '선수 화면 능력 차트가 위 칸 길이에 따라 작아지지 않게 크기를 고정했습니다. 순위 변동 그래프는 실제 크기로 다시 그리고, 구단 이름이 겹치지 않게 펼쳤습니다.',
     '선수단 위쪽의 다른 구단 버튼 줄을 없앴습니다. 다른 구단 선수단은 리그 화면에서 구단을 눌러 봅니다.',
