@@ -20,7 +20,7 @@ function contractMoneyValid(){
 function contractMoneyEdit(el,preview=true,commit=true){
   const [scope,field]=el.dataset.money.split(':');let draft,min=0,max;
   if(scope==='ngt'){draft=UI.ngt?.T;if(!['annual','bonus','opt'].includes(field))return;if(field==='annual')min=MIN_SAL;}
-  else {draft=UI.fo;if(!['g','i'].includes(field)||!draft)return;const p=G.players[draft.id];if(!p)return;min=field==='g'?MIN_SAL:0;max=(draft.re?Math.round(p.newSal*2):foCap(p))-(draft[field==='g'?'i':'g']||0);}
+  else {draft=UI.fo;if(!['g','i'].includes(field)||!draft)return;const p=G.players[draft.id];if(!p)return;min=field==='g'?MIN_SAL:0;const top=draft.re&&Number.isFinite(p.newSal)?Math.round(p.newSal*2):foCap(p);max=top-(draft[field==='g'?'i':'g']||0);} /* 재계약 기준액이 없으면 NaN 상한으로 검증이 통째로 빠졌다 */
   if(!draft)return;const result=contractMoneyRead(el.value,min,max);
   el.setCustomValidity(result.error||'');el.setAttribute('aria-invalid',String(!!result.error));const error=document.getElementById(el.id+'-error');if(error)error.textContent=result.error||'';
   if(result.error)return false;
