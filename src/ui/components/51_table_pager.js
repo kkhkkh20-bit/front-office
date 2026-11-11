@@ -153,7 +153,7 @@ if(typeof addEventListener!=='undefined'){
   addEventListener('scroll',e=>{ const el=e.target, main=wsMain(el); if(!main||!wsMobile())return; const st=el.scrollTop, last=el._wsLast??st; el._wsLast=st; let y=main._wsy||0;
     if(!y)main._wsMx=wsMax(main,el); const mx=main._wsMx||0;
     const dlt=st-last; if(dlt>0&&st>0&&y<mx){ const d=Math.min(mx-y,dlt); y+=d; wsSet(main,y); el.scrollTop=Math.max(0,st-d); el._wsLast=el.scrollTop; } /* 이번에 움직인 만큼만(누적 위치가 아니라 변화량): 휴대폰이 스크롤 위치 되돌리기를 무시해도 손가락 속도와 같게(사용자 11-08: 너무 빨리 밀려 들어감) */
-    else if(st<=0&&st<last&&y>0){ wsSet(main,Math.max(0,y-(last-st||8))); } },{capture:true,passive:true});
+    else if(st<=0&&st<last&&y>0){ wsSet(main,0); } /* 목록 맨 위에 닿으면 위 줄을 모두 펼친다: 올라온 거리만큼만 내리면 짧은 목록·관성 스크롤에서 반쯤 접힌 채 남았다(검수 11-11) */ },{capture:true,passive:true});
   let tY=null, tEl=null;
   addEventListener('touchstart',e=>{ const el=e.target.closest&&e.target.closest('.ws-scroll,.ws-own,.ibx-list,article.ibm'); tEl=el&&wsMain(el)?el:null; tY=e.touches[0].clientY; },{passive:true});
   addEventListener('touchmove',e=>{ if(!tEl||tY==null||!wsMobile())return; const cy=e.touches[0].clientY, dy=cy-tY; tY=cy; const main=wsMain(tEl); if(!main)return; const y=main._wsy||0;
