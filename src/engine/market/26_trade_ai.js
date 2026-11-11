@@ -4,6 +4,12 @@ const SLOTK={C:'포수','1B':'1루수','2B':'2루수','3B':'3루수',SS:'유격�
 function slotOf(tid){ const d=depth(tid); const o={}; for(const k of PSLOTS.slice(0,9)){ const p=d.ln[k]; o[k]={ps:p?[p]:[],v:p?posScore(p,k):30}; }
   const sp=d.sp.slice(0,5), rp=d.pen.slice(0,4); o.SP={ps:sp,v:sp.length?avg(sp.map(spV))*(Math.min(5,sp.length)/5):30}; o.RP={ps:rp,v:rp.length?avg(rp.map(penV)):30}; return o; }
 let _slC={k:null};
+/* 리그 주전 평균 능력(커뮤니티 건의 11-11: 어느 정도면 주전감인지 기준): 10개 구단 지금 뎁스의 주전(야수 9자리·선발 5명·불펜 상위 4명) 종합 평균 */
+let _lsaC={v:null,k:null};
+function lgStartAvg(){ const L=leagueSlots(); if(_lsaC.k===L)return _lsaC.v; const out={}; for(const k of PSLOTS){ const v=L.flatMap(s=>s[k].ps).map(ovr); out[k]=v.length?avg(v):null; }
+  const grp=ks=>{ const v=L.flatMap(s=>ks.flatMap(k=>s[k].ps)).map(ovr); return v.length?avg(v):null; }; out.BAT=grp(PSLOTS.slice(0,9)); out.ALL=grp(PSLOTS); _lsaC={k:L,v:out}; return out; }
+function teamStartAvg(tid,k){ const s=leagueSlots()[tid]; if(!s)return null; const ks=k==='BAT'?PSLOTS.slice(0,9):[k]; const v=ks.flatMap(x=>s[x].ps).map(ovr); return v.length?avg(v):null; }
+function slotStartAvgOf(p){ if(!p)return null; const k=p.isP?(isSPr(p)?'SP':'RP'):p.pos; return PSLOTS.includes(k)?k:null; }
 function leagueSlots(){ const k=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.mvN||0)+':'+Object.values(G.players).filter(p=>p.team!=null&&p.team>=0).map(p=>p.id+':'+p.team+(p.role||'')+(p.e1?'+':'')+(p.injOut>0?'i':'')).join(',')+':'+JSON.stringify(G.lineup||{})+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.rotOrd||G.rot||null); /* 보직·엔트리·라인업·투수 기용 계획이 바뀌면 다시 계산 */ if(_slC.k===k&&_slC.g===G)return _slC.v; /* 모든 구단 선수·세이브가 바뀌면 다시(상대 에이스 부상 반영, 검수 11-09zh) */ const v=G.teams.map(t=>slotOf(t.id)); _slC={k,v,g:G}; return v; }
 /* 트레이드 마감 주간: 사는 구단(상위권의 약한 자리)과 파는 구단(하위권의 베테랑) 루머 */
 function deadlineRumors(quiet){ const st=standingsNow(); const buyers=st.slice(0,5).map(x=>x.tid).filter(t=>t!==G.user); const sellers=st.slice(6).map(x=>x.tid).filter(t=>t!==G.user);

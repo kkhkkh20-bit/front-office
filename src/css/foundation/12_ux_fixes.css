@@ -733,3 +733,9 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .lgtl-y li i{font-style:normal;font-size:11px;padding:0 5px;margin-right:6px;border:1px solid var(--line);border-radius:3px;color:var(--muted)}
 .lgtl-y li.c i{border-color:var(--warn);color:var(--warn)}
 .lgtl-f{text-align:right;margin:8px 0 0}
+/* 리그 주전 평균 능력 상자(커뮤니티 건의 11-11) */
+.sa-box{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:4px;margin:4px 0 8px}
+.sa-c{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 2px;border:1px solid var(--line,#2a3440);border-radius:5px;background:var(--panel2,#1b2129);min-width:0}
+.sa-c i{font-style:normal;font-size:11px;color:var(--muted,#9aa7b4);white-space:nowrap}
+.sa-c b{font-size:15px;line-height:1.1}
+.sa-c em{font-style:normal;font-size:11px;font-weight:600}.sa-c em.up{color:#5fc77a}.sa-c em.dn{color:#e06464}

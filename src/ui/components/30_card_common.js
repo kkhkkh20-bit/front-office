@@ -1,4 +1,7 @@
 /* 포지션별 리그 순위 칸: click이면 누르면 전력 비교로 간다 */
+/* 리그 주전 평균과 우리 주전 비교(화면 100점 척도) */
+function startAvgBox(tid){ tid=tid??G.user; let A; try{ A=lgStartAvg(); }catch(e){ return ''; } const cell=(k,l)=>{ const lg=A[k], me=teamStartAvg(tid,k==='BAT'?'BAT':k); if(lg==null)return ''; const d=me==null?null:dv(me)-dv(lg); return `<span class="sa-c" title="${esc(l)}: 리그 주전 평균 ${dv(lg)}${me!=null?` · 우리 ${dv(me)}`:''}"><i>${esc(l)}</i><b>${dv(lg)}</b>${d==null?'':`<em class="${d>=0?'up':'dn'}">${d>=0?'+':''}${d}</em>`}</span>`; };
+  return `<div class="eyebrow">리그 주전 평균 능력 <span class="muted">(10개 구단 주전 · 초록/빨강은 우리 주전과의 차이)</span></div><div class="sa-box">${cell('BAT','야수 전체')}${PSLOTS.map(k=>cell(k,SLOTS_S[k]||SLOTK[k])).join('')}</div>`; }
 function slotBar(rk,click){ return `<div class="slotbar">${PSLOTS.map(k=>click?`<button class="sl ${rkCls(rk[k].rank)}" data-a="cmpGo" data-v="${k}"><span>${SLOTS_S[k]}</span><b>${rk[k].rank}위</b></button>`:`<span class="sl ${rkCls(rk[k].rank)}"><span>${SLOTS_S[k]}</span><b>${rk[k].rank}위</b></span>`).join('')}</div>`; }
 /* ---------- 카드 공용 ---------- */
 function rosterFoot(p){ const m=p.mor??60; const own=p.team===G.user;
@@ -27,7 +30,7 @@ function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); 
     ${teamCard(t).replace(/ data-a="[a-zA-Z]+" data-v="[^"]*" role="button" tabindex="0"/,'').replace(/<button[^>]*data-a="tpartnerGo"[^>]*>[^<]*<\/button>/g,'')}
     <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${t.rel}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd></dl>
     ${teamPeople(tid)}
-    <div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}
+    <div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}${startAvgBox(tid)}
     <div class="eyebrow" style="margin-top:10px">우승 트로피</div>${trophyCase(tid,true)}
     <div class="row" style="margin-top:10px"><button class="btn primary" data-a="teamInspect" data-v="${tid}">구단 정보·연대기</button><button class="btn" data-a="lteam" data-v="${tid}">선수단 보기</button>${tradeOpen()?`<button class="btn" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button>`:''}</div>
   </div></div>`; }
