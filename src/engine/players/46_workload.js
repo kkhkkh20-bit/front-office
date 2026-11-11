@@ -20,7 +20,7 @@ function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 하나를 1군·퓨처스 공통으로 남긴다: 부하 기록(날짜순) + 마지막 등판일·선발일·투구 수. 선발 선택·불펜 가용 판단이 어느 리그 등판이든 같은 이력을 본다 */
 function pitchApp(p,day,pc,isStart){ const cd=loadLog(p,day,pc,isStart); if(p.lastApp==null||day>=p.lastApp){ if(day!==p.lastApp)p.prevApp=p.lastApp; p.lastPc=day===p.lastApp?(p.lastPc||0)+pc:pc; p.lastApp=day; } /* 같은 날 두 번 던지면 합친다: 다음 날 불펜 가용 판정이 그날 전체 투구 수를 보게(검수 11-09) */ else if(p.prevApp==null||day>p.prevApp)p.prevApp=day; if(isStart&&(p.lastStart==null||day>p.lastStart))p.lastStart=day; return cd; }
 /* 최근 실제 등판들의 부하기여만 비교한다. 이미 쌓인 시즌 부하·일일 회복은 되돌리지 않는다. */
-function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d,pc]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=row[3]||[[pc,starts.includes(d)?1:0]];for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;}else if(n>=35)v+=(n-35)*1.5;total+=v;}}return total;}
+function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d,pc]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=row[3]||[[pc,starts.includes(d)?1:0]];for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;if(L.some(r=>r[0]<d&&d-r[0]<=3&&!starts.includes(r[0])&&r[1]>=20))v+=n*.3;}else{if(n>=35)v+=(n-35)*1.5;if(starts.some(s=>s<d&&d-s<=2))v+=n*1.0;}total+=v;}}return total;} /* 보직 왔다갔다(사용자 11-11: 오가게 하면 혹사): 구원 20구 이상 던진 뒤 3일 안에 선발이면 +30%, 선발 뒤 2일 안에 구원으로 쓰면 그 등판 부하 두 배 */
 function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day),L=p.ld=p.ld||[],SD=(p.lsD||[]).slice(),before=loadSpan(L,SD);const same=L.find(x=>x[0]===day);
   if(same){const apps=same[3]||(same[3]=[[same[1],SD.includes(day)?1:0]]);apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
   if(isStart){if(!SD.includes(day))SD.push(day);SD.sort((a,b)=>a-b);if(p.lsS==null||day>p.lsS)p.lsS=day;}
@@ -36,7 +36,7 @@ const LOAD_NORM=.76;
 function loadDaily(){ for(const p of Object.values(G.players)){ if(p.armw){ p.armw*=.985; if(p.armw<5)delete p.armw; } } }
 function loadText(p){ if(!p.isP)return ''; const day=G.day+1; const cd=consecDays(p,day); const r=armRatio(p);
   const n7=sum((p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).map(x=>x[2]||1)); /* 같은 날 두 경기 등판은 두 경기로(ld 3번째 칸, 검수 11-09zh) */
-  return `최근 7일 ${n7}경기 ${pc7(p,day)}구${cd?` · ${cd}일 연속 등판`:''} · 팔 부하 ${Math.round(r*100)}%${r>=1.3?' (위험)':r>=1.1?' (높음)':''}`; }
+  const rt=isSPr(p)&&period()==='season'?spRampText(p):''; return `최근 7일 ${n7}경기 ${pc7(p,day)}구${cd?` · ${cd}일 연속 등판`:''} · 팔 부하 ${Math.round(r*100)}%${r>=1.3?' (위험)':r>=1.1?' (높음)':''}${rt?` · ${rt}`:''}`; }
 /* 매주 월요일: 우리 팀 부하 보고 */
 function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a));
   /* 같은 투수가 같은 단계(높음·위험)로 계속 남아 있으면 매주 되풀이하지 않는다: 새로 한도를 넘었거나 '위험'으로 올라간 투수가 있을 때만 */
@@ -62,3 +62,9 @@ function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];
 /* 트레이드 가치에 반영할 몸 상태 계수(AI 의무팀은 실제 체질을 안다) */
 function medTradeF(p){ let f=1-clamp((p.inj-.14)*1.3,-.05,.3); f*=1-Math.min(.2,injDays2(p)/600); if(injFxNow(p).length)f*=.92; if(p.ucl)f*=.92; if(p.isP&&armRatio(p)>=1.1)f*=.95; return f; }
 function medRisky(p){ return medTradeF(p)<.82; }
+
+/* 선발 빌드업(사용자 11-11: 많이 던진다고 체력이 느는 게 아니라 선발의 몸을 만들어야 한다): 최근 30일 가장 긴 등판이 90구 미만이면 이번 선발은 그보다 18구 많은 데까지(최소 60구). 보통 60→80→95처럼 세 번쯤 걸려 정상 투구 수가 된다.
+   시즌 첫 35일의 선발 보직 투수는 스프링캠프에서 몸을 만든 것으로 본다. 1군·퓨처스 등판을 같이 센다. 제한이 없으면 null */
+function spRampCap(p,day){ if(!p||!p.isP)return null; const open=G.cal&&G.cal.open; if(open!=null&&day-open<35&&day>=open&&isSPr(p))return null;
+  const L=(p.ld||[]).filter(x=>x[0]<day&&x[0]>=day-30); const mx=L.reduce((a,x)=>Math.max(a,x[1]||0),0); if(mx>=90)return null; return Math.max(60,mx+18); }
+function spRampText(p){ try{ const c=spRampCap(p,G.day+1); return c==null?'':`선발 빌드업 중: 다음 선발은 약 ${Math.round(c)}구까지(최근 30일 가장 긴 등판 기준)`; }catch(e){ return ''; } }

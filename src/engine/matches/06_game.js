@@ -98,7 +98,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   const trace=(half,b,p,o,n)=>{if(options?.pitchRecords===false)return null;if(!pitchProfiles.has(p.id))pitchProfiles.set(p.id,pitchProfile(p));return gamePitchRecord(day,hid,aid,half,pbp.length,b.id,p.id,o,n,{...pitchProfiles.get(p.id),batterHand:b.bt==='양'?(p.th==='좌'?'우':'좌'):b.bt});};
   const opp=k=>k==='h'?'a':'h';
   /* 혹사 금지의 선발 목표는 95구. 교체 가능한 건강한 등록 투수가 소진되면 실제 경기 완료를 위해 명시된 비상 계속 투구로 전환한다. */
-  const lim=(fs)=>{ const mm=mgrOf(fs.tid); const ae=mgrPush(fs.tid); if(fs.curIsSP){ const v=PW.l0+fs.cur.r.sta*PW.ls+(50-mm.pen)/6+(ae-50)/5-(fs.short?15:0); /* 감독 성향 폭: KBO 구단별 선발 평균 80~91구 수준 */ return armDirOn(fs.tid)?Math.min(v,95):v; } return 18+fs.cur.r.sta*.3+(ae-50)/8+(fs.multi&&fs.multi[fs.cur.id]?12:0); };
+  const lim=(fs)=>{ const mm=mgrOf(fs.tid); const ae=mgrPush(fs.tid); if(fs.curIsSP){ let v=PW.l0+fs.cur.r.sta*PW.ls+(50-mm.pen)/6+(ae-50)/5-(fs.short?15:0); /* 감독 성향 폭: KBO 구단별 선발 평균 80~91구 수준 */ if(!ps){ const rc=spRampCap(fs.cur,day); if(rc!=null)v=Math.min(v,rc); } /* 선발 빌드업 */ return armDirOn(fs.tid)?Math.min(v,95):v; } return 18+fs.cur.r.sta*.3+(ae-50)/8+(fs.multi&&fs.multi[fs.cur.id]?12:0); };
   /* 교체 판단 여유: 보통은 한계에서 6구까지 더 본다. 혹사 금지(95구)면 다음 타자를 맞기 전 88구에서 끊어 타석이 길어져도 95구를 넘지 않게(검수 11-08) */
   const armM=fs=>fs.curIsSP&&armDirOn(fs.tid)?-8:6;
   function needChange(fs){ const x=fs.box.get(fs.cur.id); const mm=mgrOf(fs.tid);

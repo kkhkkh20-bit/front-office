@@ -11653,7 +11653,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   const trace=(half,b,p,o,n)=>{if(options?.pitchRecords===false)return null;if(!pitchProfiles.has(p.id))pitchProfiles.set(p.id,pitchProfile(p));return gamePitchRecord(day,hid,aid,half,pbp.length,b.id,p.id,o,n,{...pitchProfiles.get(p.id),batterHand:b.bt==='양'?(p.th==='좌'?'우':'좌'):b.bt});};
   const opp=k=>k==='h'?'a':'h';
   /* 혹사 금지의 선발 목표는 95구. 교체 가능한 건강한 등록 투수가 소진되면 실제 경기 완료를 위해 명시된 비상 계속 투구로 전환한다. */
-  const lim=(fs)=>{ const mm=mgrOf(fs.tid); const ae=mgrPush(fs.tid); if(fs.curIsSP){ const v=PW.l0+fs.cur.r.sta*PW.ls+(50-mm.pen)/6+(ae-50)/5-(fs.short?15:0); /* 감독 성향 폭: KBO 구단별 선발 평균 80~91구 수준 */ return armDirOn(fs.tid)?Math.min(v,95):v; } return 18+fs.cur.r.sta*.3+(ae-50)/8+(fs.multi&&fs.multi[fs.cur.id]?12:0); };
+  const lim=(fs)=>{ const mm=mgrOf(fs.tid); const ae=mgrPush(fs.tid); if(fs.curIsSP){ let v=PW.l0+fs.cur.r.sta*PW.ls+(50-mm.pen)/6+(ae-50)/5-(fs.short?15:0); /* 감독 성향 폭: KBO 구단별 선발 평균 80~91구 수준 */ if(!ps){ const rc=spRampCap(fs.cur,day); if(rc!=null)v=Math.min(v,rc); } /* 선발 빌드업 */ return armDirOn(fs.tid)?Math.min(v,95):v; } return 18+fs.cur.r.sta*.3+(ae-50)/8+(fs.multi&&fs.multi[fs.cur.id]?12:0); };
   /* 교체 판단 여유: 보통은 한계에서 6구까지 더 본다. 혹사 금지(95구)면 다음 타자를 맞기 전 88구에서 끊어 타석이 길어져도 95구를 넘지 않게(검수 11-08) */
   const armM=fs=>fs.curIsSP&&armDirOn(fs.tid)?-8:6;
   function needChange(fs){ const x=fs.box.get(fs.cur.id); const mm=mgrOf(fs.tid);
@@ -18101,7 +18101,7 @@ function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 하나를 1군·퓨처스 공통으로 남긴다: 부하 기록(날짜순) + 마지막 등판일·선발일·투구 수. 선발 선택·불펜 가용 판단이 어느 리그 등판이든 같은 이력을 본다 */
 function pitchApp(p,day,pc,isStart){ const cd=loadLog(p,day,pc,isStart); if(p.lastApp==null||day>=p.lastApp){ if(day!==p.lastApp)p.prevApp=p.lastApp; p.lastPc=day===p.lastApp?(p.lastPc||0)+pc:pc; p.lastApp=day; } /* 같은 날 두 번 던지면 합친다: 다음 날 불펜 가용 판정이 그날 전체 투구 수를 보게(검수 11-09) */ else if(p.prevApp==null||day>p.prevApp)p.prevApp=day; if(isStart&&(p.lastStart==null||day>p.lastStart))p.lastStart=day; return cd; }
 /* 최근 실제 등판들의 부하기여만 비교한다. 이미 쌓인 시즌 부하·일일 회복은 되돌리지 않는다. */
-function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d,pc]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=row[3]||[[pc,starts.includes(d)?1:0]];for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;}else if(n>=35)v+=(n-35)*1.5;total+=v;}}return total;}
+function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d,pc]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=row[3]||[[pc,starts.includes(d)?1:0]];for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;if(L.some(r=>r[0]<d&&d-r[0]<=3&&!starts.includes(r[0])&&r[1]>=20))v+=n*.3;}else{if(n>=35)v+=(n-35)*1.5;if(starts.some(s=>s<d&&d-s<=2))v+=n*1.0;}total+=v;}}return total;} /* 보직 왔다갔다(사용자 11-11: 오가게 하면 혹사): 구원 20구 이상 던진 뒤 3일 안에 선발이면 +30%, 선발 뒤 2일 안에 구원으로 쓰면 그 등판 부하 두 배 */
 function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day),L=p.ld=p.ld||[],SD=(p.lsD||[]).slice(),before=loadSpan(L,SD);const same=L.find(x=>x[0]===day);
   if(same){const apps=same[3]||(same[3]=[[same[1],SD.includes(day)?1:0]]);apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
   if(isStart){if(!SD.includes(day))SD.push(day);SD.sort((a,b)=>a-b);if(p.lsS==null||day>p.lsS)p.lsS=day;}
@@ -18117,7 +18117,7 @@ const LOAD_NORM=.76;
 function loadDaily(){ for(const p of Object.values(G.players)){ if(p.armw){ p.armw*=.985; if(p.armw<5)delete p.armw; } } }
 function loadText(p){ if(!p.isP)return ''; const day=G.day+1; const cd=consecDays(p,day); const r=armRatio(p);
   const n7=sum((p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).map(x=>x[2]||1)); /* 같은 날 두 경기 등판은 두 경기로(ld 3번째 칸, 검수 11-09zh) */
-  return `최근 7일 ${n7}경기 ${pc7(p,day)}구${cd?` · ${cd}일 연속 등판`:''} · 팔 부하 ${Math.round(r*100)}%${r>=1.3?' (위험)':r>=1.1?' (높음)':''}`; }
+  const rt=isSPr(p)&&period()==='season'?spRampText(p):''; return `최근 7일 ${n7}경기 ${pc7(p,day)}구${cd?` · ${cd}일 연속 등판`:''} · 팔 부하 ${Math.round(r*100)}%${r>=1.3?' (위험)':r>=1.1?' (높음)':''}${rt?` · ${rt}`:''}`; }
 /* 매주 월요일: 우리 팀 부하 보고 */
 function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a));
   /* 같은 투수가 같은 단계(높음·위험)로 계속 남아 있으면 매주 되풀이하지 않는다: 새로 한도를 넘었거나 '위험'으로 올라간 투수가 있을 때만 */
@@ -18143,6 +18143,12 @@ function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];
 /* 트레이드 가치에 반영할 몸 상태 계수(AI 의무팀은 실제 체질을 안다) */
 function medTradeF(p){ let f=1-clamp((p.inj-.14)*1.3,-.05,.3); f*=1-Math.min(.2,injDays2(p)/600); if(injFxNow(p).length)f*=.92; if(p.ucl)f*=.92; if(p.isP&&armRatio(p)>=1.1)f*=.95; return f; }
 function medRisky(p){ return medTradeF(p)<.82; }
+
+/* 선발 빌드업(사용자 11-11: 많이 던진다고 체력이 느는 게 아니라 선발의 몸을 만들어야 한다): 최근 30일 가장 긴 등판이 90구 미만이면 이번 선발은 그보다 18구 많은 데까지(최소 60구). 보통 60→80→95처럼 세 번쯤 걸려 정상 투구 수가 된다.
+   시즌 첫 35일의 선발 보직 투수는 스프링캠프에서 몸을 만든 것으로 본다. 1군·퓨처스 등판을 같이 센다. 제한이 없으면 null */
+function spRampCap(p,day){ if(!p||!p.isP)return null; const open=G.cal&&G.cal.open; if(open!=null&&day-open<35&&day>=open&&isSPr(p))return null;
+  const L=(p.ld||[]).filter(x=>x[0]<day&&x[0]>=day-30); const mx=L.reduce((a,x)=>Math.max(a,x[1]||0),0); if(mx>=90)return null; return Math.max(60,mx+18); }
+function spRampText(p){ try{ const c=spRampCap(p,G.day+1); return c==null?'':`선발 빌드업 중: 다음 선발은 약 ${Math.round(c)}구까지(최근 30일 가장 긴 등판 기준)`; }catch(e){ return ''; } }
 /* ===== 타구 모델: 인플레이 타구의 유형과 방향을 먼저 정하고, 그 방향을 맡은 야수의 수비로 안타·아웃을 가른다 =====
  - 유형: 땅볼·라인드라이브·뜬공·팝플라이. 타자 파워가 높을수록 뜬공, 컨택이 높을수록 라인드라이브, 투수 땅볼 성향(gbT)이 클수록 땅볼.
  - 방향: 당겨치기·가운데·밀어치기. 파워가 높을수록 당겨친다. 오른쪽 타석은 당기면 3루·좌익 쪽, 왼쪽 타석은 1루·우익 쪽(양타는 투수 반대편 타석).
@@ -34580,6 +34586,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-sp-ramp',d:'11월 11일',t:'선발 빌드업 · 보직 왔다갔다 부담',items:[
+    '불펜으로 던지던 투수를 선발로 돌리면 바로 100구를 던지지 못합니다. 최근 30일 가장 긴 등판보다 18구 많은 데까지(최소 60구) 던지고, 보통 세 번쯤 선발로 나와야 정상 투구 수가 됩니다. 시즌 초 선발진은 캠프에서 몸을 만든 것으로 봅니다. 선수 정보의 투수 부하 줄에 빌드업 상태가 나옵니다.',
+    '선발과 구원을 짧은 간격으로 오가면 팔 부하가 더 쌓입니다. 선발 뒤 이틀 안에 구원으로 쓰면 그 등판 부하가 두 배, 구원으로 20구 이상 던지고 사흘 안에 선발로 내면 그 선발 부하가 30% 늘어 부상 위험이 커집니다. 체력 능력치는 던진 양으로 늘지 않습니다.']},
   {id:'2026-11-11-dr1-watch',d:'11월 11일',t:'1년차 신인 드래프트 순번 선택 · 타구단 관심 선수 탭',items:[
     '새 게임에서 구단을 고를 때 1년차 신인 드래프트 순번(자동 또는 1~10순위)을 고를 수 있습니다. 첫 시즌 드래프트의 1·2라운드 모두 그 자리에서 지명하고, 2년차부터는 실제 순위 역순입니다.',
     '스카우트 화면에 타구단 관심 선수 탭을 따로 만들었습니다(스카우트 팀·지역 정보망·해외 네트워크 옆).']},
