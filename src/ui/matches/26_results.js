@@ -85,7 +85,7 @@ function invFM(){ facInit(); try{ aiFacAll(); }catch(e){} const tid=G.user, t=te
     <div class="fvx-kv">${kv('수용 인원',cap.toLocaleString('ko-KR')+'석')}${kv('올해 홈 평균',A.n?Math.round(A.sum/A.n).toLocaleString('ko-KR')+'명':P.n?'예상 '+P.avg.toLocaleString('ko-KR')+'명':'-')}${kv('좌석 점유율',A.n?Math.min(100,Math.round(A.sum/(A.cap||A.n*cap)*100))+'%':'-') /* 경기 당시 좌석 수 합으로(구장이 바뀌어도 100%를 넘지 않게) */}${kv('매진',`${A.so||0}회 / ${A.n}경기`)}
       ${kv('담장 거리',`좌 ${D.lf} · 중 ${D.cf} · 우 ${D.rf}m`)}${kv('담장 높이',`좌 ${D.wl} · 중 ${D.wc} · 우 ${D.wr}m`)}${kv('홈런 지수',`우타 ${Math.round(parkHRM(tid,'R')*100)} · 좌타 ${Math.round(parkHRM(tid,'L')*100)}`)}${kv('시즌 예상 관중',P.att.toLocaleString('ko-KR')+'명')}
       ${kv('표값 수입',money(P.ticket))}${kv('구장 부대 수입',money(P.fnb+P.prem+P.ad))}</div>
-    <div class="fvx-pr"><span>티켓 가격</span><div class="seg">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div></div><p class="fvx-note">${esc(PRICE[S.price].d)} 홈런 지수 100 = 리그 평균.</p></section>`;
+    <div class="fvx-pr"><span>티켓 가격</span><div class="seg">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div></div><p class="fvx-note">${esc(PRICE[S.price].d)} 홈런 지수 100 = 리그 평균.</p>${fenceBox(tid)}</section>`;
   /* 리그 비교 */
   const att=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?x.sum/x.n:0; }, occ=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?Math.min(100,x.sum/(x.cap||x.n*stadCap(i))*100):0; }, sTot=i=>sum(STAD_ITEMS.map(x=>stadOf(i).lv[x.k]||0));
   const cmp=`<section class="card fvx-cmp">${sfChart('훈련 시설 · 리그 10개 구단',[...FACK.map(k=>({l:FACI[k].l,v:F.it[k],all:fAll(k)})),{l:'종합 등급',v:F.lv,all:lgLv}],0,FAC_MAX)}
@@ -128,3 +128,11 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
     <div class="eyebrow" style="margin-top:8px">성장에 영향을 주는 것</div>
     <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 코치 수준과 감독의 육성 성향. 4) 잠재력과 성장 의지. 5) 훈련 방향과 해외 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 
+
+/* 담장 공사 상자: 치수를 넣고 '미리 보기'로 홈런 지수·공사비를 본 뒤 공사 */
+function fenceBox(tid){ if(tid!==G.user||G.unemp)return ''; const D=stadDim(tid), F=UI.fence||D, ok=stadWindow(), S=stadOf(tid), done=S.fenceY===sponSeason();
+  const inp=(k,l,st)=>`<label>${l}<input id="fc-${k}" type="number" step="${st}" min="${FENCE_LIM[k][0]}" max="${FENCE_LIM[k][1]}" value="${F[k]}"></label>`;
+  let pv=''; if(UI.fence){ const ix=fenceIdx(tid,UI.fence), c=fenceCost(D,UI.fence); pv=`<p class="small">공사 뒤 홈런 지수 <b>우타 ${Math.round(ix.R*100)} · 좌타 ${Math.round(ix.L*100)}</b> (지금 ${Math.round(parkHRM(tid,'R')*100)} · ${Math.round(parkHRM(tid,'L')*100)}) · 공사비 <b>${money(c)}</b></p>`; }
+  return `<details class="fence-box"${UI.fence?' open':''}><summary>담장 공사 <span class="muted">(거리·높이 조절)</span></summary><div class="fence-in">${inp('lf','좌측 거리(m)',.5)}${inp('cf','가운데 거리(m)',.5)}${inp('rf','우측 거리(m)',.5)}${inp('wl','좌측 높이(m)',.1)}${inp('wc','가운데 높이(m)',.1)}${inp('wr','우측 높이(m)',.1)}</div>${pv}${UI.fenceMsg?`<p class="small ${UI.fenceOk?'':'bad'}">${esc(UI.fenceMsg)}</p>`:''}
+    <div class="row"><button class="btn small" data-a="fencePrev">미리 보기</button><button class="btn small primary" data-a="fenceGo" ${ok&&!done?'':'disabled'}>공사하기</button></div>
+    <p class="small muted">담장이 1m 가까우면 그 방향 홈런이 약 4% 늘고, 1m 높으면 약 4% 줄어듭니다. 높은 담장에 막힌 타구는 2루타가 됩니다. 우타자는 좌측, 좌타자는 우측으로 당겨 친 홈런이 많습니다. 거리 좌우 ${FENCE_LIM.lf[0]}~${FENCE_LIM.lf[1]}m · 가운데 ${FENCE_LIM.cf[0]}~${FENCE_LIM.cf[1]}m · 높이 ${FENCE_LIM.wl[0]}~${FENCE_LIM.wl[1]}m. ${done?'올해 공사를 이미 했습니다.':ok?'비시즌에 한 해 한 번 할 수 있습니다.':'시즌이 끝난 뒤(10월~2월)에 할 수 있습니다.'}</p></details>`; }
