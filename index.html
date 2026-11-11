@@ -1836,7 +1836,7 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 @media (max-width:600px){.dtiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.dtl{padding:8px 10px}.dtl-v{font-size:17px}}
 /* 별점 */
 .stars{position:relative;display:inline-block;font-size:13px;line-height:1;letter-spacing:1px;margin:2px 0}
-.stars .st-b{color:var(--line,#3a3a3a)}.stars .st-f{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#e8b923}
+.stars .st-b{color:#667383}.stars .st-f{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#e8b923}
 .stt td{vertical-align:middle}.stt td:nth-child(3){color:#e8b923;letter-spacing:1px}
 /* 인터뷰 */
 .iv-q,.iv-a{max-width:88%;padding:10px 12px;border-radius:12px;margin:8px 0;line-height:1.5}
@@ -2711,7 +2711,7 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .card.champ .tro16{flex:none;filter:drop-shadow(0 6px 18px rgba(255,210,77,.45))}
 @media(max-width:480px){.card.champ .ch-top .tro16{width:84px;height:84px}}
 .ptier[data-tip]{cursor:pointer}
-.pst{position:relative;display:inline-block;color:#4a5562;font-size:13px;letter-spacing:.5px;line-height:1;vertical-align:0;white-space:nowrap;font-style:normal}.pst i{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#ffc94d;font-style:normal}
+.pst{position:relative;display:inline-block;color:#667383;font-size:13px;letter-spacing:1.5px;line-height:1;vertical-align:0;white-space:nowrap;font-style:normal}.pst i{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#ffc94d;font-style:normal}
 /* 단장 레거시(피드백 11-09p): 내 줄 강조, 연대기 한 장 */
 .item.lg-me{background:color-mix(in srgb,var(--acc,#3b82f6) 10%,transparent)!important}
 .lg-tm{margin-bottom:8px}
@@ -24230,12 +24230,12 @@ function blkLink(b){ if(/^건강한/.test(b))return '<button data-a="rosterRecov
 function readingContext(host){return host.id==='sheet'?'detail:'+(host.querySelector('.sheet,.cast')?.dataset.detailKey||UI.sheet||UI.person||''):JSON.stringify([UI.tab,UI.sub?.[UI.tab],UI.lseg,UI.it?.[UI.tab],UI.ibOpen||UI.ibSel,UI.homePanel,UI.homeFocus,UI.meet?[UI.meet.k,UI.meet.id,G.day]:null]);}
 function rememberReading(host){if(!host?.dataset.readingContext)return;const context=host.dataset.readingContext;UI.readingOpen=UI.readingOpen||{};UI.readingScroll=UI.readingScroll||{};
  host.querySelectorAll('details[data-reading-key]').forEach(d=>UI.readingOpen[d.dataset.readingKey]=d.open);
- host.querySelectorAll('.ws-scroll,.tf-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;if(el.scrollHeight>el.clientHeight+2)UI.readingScroll[context+':'+el.className+':'+i]=el.scrollTop;});
+ host.querySelectorAll('.ws-scroll,.tf-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log,.setx').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;if(el.scrollHeight>el.clientHeight+2)UI.readingScroll[context+':'+el.className+':'+i]=el.scrollTop;});
  const wf=host.querySelector('main.ws-frame');if(wf&&wf.scrollHeight>wf.clientHeight+2)UI.readingScroll[context+':frame']=wf.scrollTop;
 }
 function restoreReading(host){if(!host)return;const context=readingContext(host),seen={};host.dataset.readingContext=context;UI.readingOpen=UI.readingOpen||{};
  host.querySelectorAll('details').forEach(d=>{const summary=d.querySelector('summary')?.textContent.trim().replace(/\d+/g,'#')||'상세',index=seen[summary]||0;seen[summary]=index+1;const key=context+':'+(d.dataset.k||summary+':'+index);d.dataset.readingKey=key;if(Object.hasOwn(UI.readingOpen,key))d.open=UI.readingOpen[key];});
- host.querySelectorAll('.ws-scroll,.tf-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;const y=UI.readingScroll?.[context+':'+el.className+':'+i];if(y!=null)el.scrollTop=y;});
+ host.querySelectorAll('.ws-scroll,.tf-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log,.setx').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;const y=UI.readingScroll?.[context+':'+el.className+':'+i];if(y!=null)el.scrollTop=y;});
  /* 휴대폰 작업 공간 전체 스크롤(감독 채용·신인 드래프트): 다시 그려도 읽던 위치 유지. 드래프트는 처음 열 때 영입 탭 줄을 위로 밀어 후보 목록부터 보인다 */
  const wf=host.querySelector('main.ws-frame');if(wf){const y=UI.readingScroll?.[context+':frame'],d=wf.querySelector('.draft-page');if(y!=null)wf.scrollTop=y;else if(d&&innerWidth<600)wf.scrollTop=d.getBoundingClientRect().top-wf.getBoundingClientRect().top;}
 }
