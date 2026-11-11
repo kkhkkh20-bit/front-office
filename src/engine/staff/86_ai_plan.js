@@ -5,7 +5,7 @@
 function aiPlanBase(rk,age,owner,cash){ if(cash<-5000)return 'rebuild'; if(rk<=3||(rk<=5&&owner==='win'))return 'contend'; if(rk>=8&&(age>=29.5||cash<-2000))return 'rebuild'; return 'mid'; }
 function aiPlanRank(t,mid){ if(mid){ const st=standingsNow(); return st.findIndex(x=>x.tid===t.id)+1; } const L=G.teams.map(x=>({id:x.id,r:teamRating(x.id)})).sort((a,b)=>b.r-a.r); return L.findIndex(x=>x.id===t.id)+1; }
 function aiPlanApply(t,nw,why){ const old=t.mode; t.mode=nw; t.modeY=G.year; t.modeD=G.day; if(old===nw)return;
-  const L=nw==='rebuild'?domestic(t.id).filter(p=>p.age>=29&&!p.ys&&ovr(p)>=50&&!hasNtc(p)).sort((a,b)=>b.sal-a.sal).slice(0,2):[]; for(const p of L){ p.aiListed=true; p.aiWhy='reb'; p.aiLd=G.day; }
+  const L=nw==='rebuild'?domestic(t.id).filter(p=>p.age>=29&&!p.ys&&ovr(p)>=50&&!hasNtc(p)&&!mvRecent(p)).sort((a,b)=>b.sal-a.sal).slice(0,2):[]; for(const p of L){ p.aiListed=true; p.aiWhy='reb'; p.aiLd=G.day; }
   const lab={contend:'우승 도전',rebuild:'재건',mid:'전력 정비'}[nw]; const g=t.gm&&!t.gm.interim?t.gm.name:'단장대행';
   try{ news('리그',`${tshort(t.id)}, ${lab}으로 방향 전환`,`${tname(t.id)} ${g} 단장이 ${lab} 쪽으로 방향을 잡았습니다${why?`(${why})`:''}.${L.length?` ${L.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세)`).join(', ')}이(가) 시장에 나올 수 있습니다.`:nw==='contend'?' 마감 전 보강에 나설 전망입니다.':''}`,0); }catch(e){} }
 function aiPlanYear(mid){ for(const t of G.teams){ if(t.id===ME())continue; const rk=aiPlanRank(t,mid); const top=domestic(t.id).filter(p=>!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12); const age=top.length?top.reduce((a,p)=>a+p.age,0)/top.length:28;
