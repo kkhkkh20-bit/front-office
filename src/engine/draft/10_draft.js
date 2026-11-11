@@ -17,7 +17,9 @@ const AM_INJ_B=['손목 골절 이력','햄스트링 부상 반복','허리 디�
 /* 리그 수준 유지: 해마다 신인이 은퇴 선수보다 강하면 리그 전체 능력이 계속 오른다(12시즌에 평균 +4, 60 이상 5명→50명).
    게임 시작 때 리그 평균을 기준으로 삼고, 지금 평균이 그보다 높으면 신인 잠재력을 그만큼 낮춰(낮으면 높여) 리그 수준을 비슷하게 유지한다 */
 function lgMeanDom(){ const L=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)); return L.length?L.reduce((a,p)=>a+ovr(p),0)/L.length:null; }
-function draftLevelAdj(){ const m=lgMeanDom(); if(m==null)return 0; if(G.lgBase==null){ G.lgBase=+m.toFixed(2); return 0; } return clamp((m-G.lgBase)*1.6,-3,6); }
+function draftLevelAdj(){ const m=lgMeanDom(); if(m==null)return 0; if(G.lgBase==null){ G.lgBase=+m.toFixed(2); return 0; } return clamp((m-G.lgBase)*2.4,-3,8); } /* 1.6→2.4: 10시즌에 평균 표시 능력 57.3→58.9, 80 이상 4→11명(커뮤니티 피드백 11-11) */
+/* 성장 안정 장치: 리그 국내 평균이 시작 때보다 오른 만큼 그해 겨울 성장(플러스 쪽)을 줄인다. 원래 능력 1점에 12%, 최대 35%. 평균이 내려가면 최대 10% 더 큰다 */
+function growLevelF(){ const y=G.year; if(G.lvF&&G.lvF.y===y)return G.lvF.f; const m=lgMeanDom(); if(m!=null&&G.lgBase==null)G.lgBase=+m.toFixed(2); const f=m==null?1:clamp(1-(m-G.lgBase)*.12,.65,1.1); G.lvF={y,f:+f.toFixed(3)}; return G.lvF.f; }
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
   for(let i=0;i<DRAFT_POOL;i++){

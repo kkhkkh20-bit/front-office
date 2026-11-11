@@ -11,17 +11,20 @@ function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.y
 /* 창단 지명 순번은 단장이 먼저 고른다(구단 고르기 전). 앞 순번은 긴축, 뒤 순번은 지원 보너스. 3시즌 동안. 대가는 '전체 1번 스타 한 명' 값(3시즌 약 60억)에 맞춤(라운드마다 1→10, 10→1이라 나머지 지명 차이는 작다). 나머지 9개 구단은 돈이 적은 순서(fdOrder)로 남은 자리를 채운다
    d: 모기업 지원 한도 증감, cash: 시작 현금, strict: 구단주 수익 우선·승인 확률 낮음 */
 const FD_SLOT={1:{d:-.1,cash:3000,strict:1},2:{d:-.07,cash:3200,strict:1},3:{d:-.05,cash:3500,strict:1},4:{d:-.02,cash:3800},5:{d:0,cash:4000},6:{d:0,cash:4000},7:{d:.01,cash:4100},8:{d:.02,cash:4200},9:{d:.03,cash:4300},10:{d:.04,cash:4400}}, FD_AUST_Y=3;
-function fdAustApply(tid,k){ const A=FD_SLOT[k], O=G.fdOrd, t=team(tid); if(!A||!O)return; const i=O.indexOf(tid); if(i<0)return; O.splice(i,1); O.splice(k-1,0,tid); t.cash=A.cash; if(A.strict)t.owner='profit'; if(A.d||A.strict)t.aust={k,d:A.d,strict:!!A.strict,y0:G.year,y1:G.year+FD_AUST_Y-1}; }
+/* 같은 순서 방식(커뮤니티 건의 11-11): 라운드마다 1번부터 같은 순서. 앞 순번 이득이 라운드마다 쌓이므로 순번 조건(긴축·보너스)을 두 배로 */
+const FD_STR_M=2;
+function fdSlotA(k,str){ const A=FD_SLOT[k]; if(!A)return null; if(!(str??(typeof G!=='undefined'&&G&&G.fdStraight)))return A; return {...A,d:Math.round(A.d*FD_STR_M*1000)/1000,cash:4000+(A.cash-4000)*FD_STR_M}; }
+function fdAustApply(tid,k){ const A=fdSlotA(k), O=G.fdOrd, t=team(tid); if(!A||!O)return; const i=O.indexOf(tid); if(i<0)return; O.splice(i,1); O.splice(k-1,0,tid); t.cash=A.cash; if(A.strict)t.owner='profit'; if(A.d||A.strict)t.aust={k,d:A.d,strict:!!A.strict,y0:G.year,y1:G.year+FD_AUST_Y-1}; }
 function austOn(t){ return t&&t.aust&&sponSeason()<=t.aust.y1?t.aust:null; }
 function austTxt(a){ return a.d<0?`긴축 ${Math.round(-a.d*100)}% 감액`:a.d>0?`지원 ${Math.round(a.d*100)}% 증액`:'긴축'; }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
 function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
   G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */
-  for(let r=0;r<FD_ROUNDS;r++){ const seq=r%2?[...order].reverse():order; seq.forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null})); }
+  for(let r=0;r<FD_ROUNDS;r++){ const seq=r%2&&!G.fdStraight?[...order].reverse():order; seq.forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null})); }
   G.startY=G.year; G.fd={pool:ids,all:ids.slice(),order,picks,cur:0,done:false,y:G.year,open:false,man:FD_MAN};
   { for(let i=0;i<4;i++)scoutFindWeek(true); } /* 창단 때 찾은 후보도 소식 없이 외국인 시장에 '우리 스카우트 발굴'로 표시 */
   /* 다른 구단도 외국인을 새로 뽑는다: 약한 외국인(국내 주전급 아래)은 정리하고, 나머지도 일부 바꾼다. 같은 시장에서 경쟁 */ for(const t of G.teams){ if(t.id===G.user)continue; for(const p of foreignOf(t.id)){ if(ovr(p)<(p.foreign==='아시아'?50:56)||R()<.3){ delete G.players[p.id]; } } } try{ refreshFMarket(0); }catch(e){} fdEstAll();
-  mail(ASSOC.s,'창단 드래프트: 모든 선수를 새로 나눕니다',`리그 국내 선수 ${ids.length}명을 한데 모아 10개 구단이 ${FD_ROUNDS}라운드를 지명합니다. 순서는 예산 여유(국내 선수 연봉에 쓸 수 있는 돈)이 적은 구단부터이고, 라운드마다 뒤집힙니다(지그재그). 우리 구단 첫 지명은 ${order.indexOf(G.user)+1}번째입니다.\n\n선수의 연봉과 계약 기간은 그대로 따라옵니다. 상위 40명 연봉 합계가 샐러리캡(${money(capOf(G.year))})을 넘지 않게 고르세요. ${FD_ROUNDS}라운드가 끝나면 남은 선수는 구단마다 자동으로 나눠 받습니다. 외국인 선수는 드래프트 뒤에 따로 영입합니다.`,{imp:true,kind:'드래프트'}); }
+  mail(ASSOC.s,'창단 드래프트: 모든 선수를 새로 나눕니다',`리그 국내 선수 ${ids.length}명을 한데 모아 10개 구단이 ${FD_ROUNDS}라운드를 지명합니다. 순서는 예산 여유(국내 선수 연봉에 쓸 수 있는 돈)이 적은 구단부터이고, ${G.fdStraight?'모든 라운드가 같은 순서입니다(같은 순서 방식).':'라운드마다 뒤집힙니다(지그재그).'} 우리 구단 첫 지명은 ${order.indexOf(G.user)+1}번째입니다.\n\n선수의 연봉과 계약 기간은 그대로 따라옵니다. 상위 40명 연봉 합계가 샐러리캡(${money(capOf(G.year))})을 넘지 않게 고르세요. ${FD_ROUNDS}라운드가 끝나면 남은 선수는 구단마다 자동으로 나눠 받습니다. 외국인 선수는 드래프트 뒤에 따로 영입합니다.`,{imp:true,kind:'드래프트'}); }
 function fdCounts(tid){ const c={}; for(const p of playersOf(tid))if(!p.foreign){ const k=fdSlot(p); c[k]=(c[k]||0)+1; } return c; }
 function fdCtx(tid){ return {c:fdCounts(tid),cp:capPay(tid),cap:capOf(G.year)}; }
 /* 창단 드래프트: 어느 구단도 능력치를 모른다. 지난 시즌 기록(OPS·장타율·볼삼비, 투수는 FIP·WHIP·삼진/볼넷)으로 추정하고
