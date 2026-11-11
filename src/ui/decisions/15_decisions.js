@@ -26,7 +26,7 @@ function todoCard(limit,compact=false){
 function nextGames(n){ return teamGames(G.user,G.day+1,n); } /* 엔진 일정과 같은 목록(미룬 경기 두 건·포스트시즌 차전 포함, 검수 11-09zo) */
 /* 지금 전력 예상 순위(홈 상단 타일과 오른쪽 전력 예상이 같은 값을 쓴다) */
 /* 개막일 G.proj(언더독 도전과제 기준)와 같은 식: 전력 + 그 시즌 고정 잡음 */
-function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G){ const y=preSeasonY()||G.year; UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)+hn('proj'+y,t.id)*.7})).sort((a,b)=>b.r-a.r)}; } return UI._trk.R; }
+function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G){ const y=preSeasonY()||G.year; UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:projRating(t.id)+hn('proj'+y,t.id)*.7})).sort((a,b)=>b.r-a.r)}; } return UI._trk.R; }
 /* 승률이 같은 팀: 동률 표시(순서는 상대 전적 등 동률 기준) */
 function miniStand(){
   const {order,live,y}=standOrder(); if(!order||!order.length)return '';

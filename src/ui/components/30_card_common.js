@@ -48,7 +48,7 @@ function teamCard(t){
   const m=G.mgr[t.id]; const ci=capInfo(t.id); const me=t.id===G.user;
   return `<div class="tcard teamc${me?' me':''}" data-a="${me?'tab':'lteam'}" data-v="${me?'roster':t.id}" role="button" tabindex="0" style="--th:${tpal(t)[0]}">
     <div class="tc-top">${badge(t.id,46)}<div class="tc-id"><b>${esc(t.city)} ${esc(t.nick)}</b><span>${rk?`${live?'현재':'지난 시즌'} ${rk}위 · ${rec.w}승 ${rec.l}패${rec.t?` ${rec.t}무`:''}`:''}</span></div>
-      <div class="tc-rt"><div><span>전력</span>${(()=>{const k=[...G.teams].sort((x,y)=>teamRating(y.id)-teamRating(x.id)).findIndex(x=>x.id===t.id)+1; return `<b class="rc" style="--c:${k<=2?'var(--r65)':k<=5?'var(--r55)':k<=8?'var(--r45)':'var(--r35)'}">${k}위</b>`;})()}</div></div></div>
+      <div class="tc-rt"><div><span>전력</span>${(()=>{const k=[...G.teams].sort((x,y)=>projRating(y.id)-projRating(x.id)).findIndex(x=>x.id===t.id)+1; return `<b class="rc" style="--c:${k<=2?'var(--r65)':k<=5?'var(--r55)':k<=8?'var(--r45)':'var(--r35)'}">${k}위</b>`;})()}</div></div></div>
     <div class="tc-arch"><span class="pill ${t.mode==='contend'?'good':'warn'}">${t.mode==='contend'?'우승 경쟁':'리빌딩'}</span><span class="pill">구단주 ${OWNER[t.owner].label}</span>${me?'<span class="pill acc">우리 구단</span>':''}</div>
     <div class="teamc-top">${top.map(p=>`<span>${avImg(p)}<b>${esc(p.name)}</b><i>${posLabel(p)}</i></span>`).join('')}</div>
     <dl class="tsum"><div><dt>감독</dt><dd>${m?esc(m.name):'빈자리'}</dd></div><div><dt>캡 산정액</dt><dd class="num" style="color:${ci.over?'var(--bad)':'inherit'}">${money(ci.pay)}</dd></div><div><dt>${me?'현금':'단장 관계'}</dt><dd class="num">${me?money(t.cash):t.rel}</dd></div></dl>

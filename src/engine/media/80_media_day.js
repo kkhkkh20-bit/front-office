@@ -33,7 +33,7 @@ function mdSuggest(v){ const D=G.md; if(!D||D.y!==G.year||(D.tid!=null&&D.tid!==
 /* 추천 이후 상태 변화는 건의 시점과 행사 당일에 함께 확인한다. */
 function mdRefresh(D){ const cap=mdCaptain(G.user); D.cap=cap?cap.id:null; if(!mdAvailable(G.players[D.rep],G.user)||D.rep===D.cap){ const rep=mdRepPool(G.user).find(p=>p.id!==D.cap); D.rep=rep?rep.id:null; D.rec=D.rep; if(D.res==='acc'&&D.accepted==null)D.res='ok'; } }
 /* 예상 순위(개막 전 전문가 예상과 같은 방식) */
-function mdProj(){ return G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); }
+function mdProj(){ return G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); }
 const MD_STYLE={data:'"준비한 대로 숫자가 나오면 결과는 따라옵니다."',fire:'"올해는 독하게 붙겠습니다. 지는 데 익숙해지지 않겠습니다."',warm:'"선수들이 겨울 내내 정말 고생했습니다. 그 땀이 보답받았으면 합니다."',old:'"기본에 충실한 야구로 한 시즌 버티겠습니다."',calm:'"한 경기 한 경기 차분하게 쌓아 가겠습니다."'};
 /* 감독 목표 발언: 예상 순위 r, 성향 */
 function mdMgrGoal(tid,r){ const m=G.mgr[tid]; if(!m||m.interim)return {k:null,t:'"주어진 상황에서 최선을 다하겠습니다."',w:'최선'};

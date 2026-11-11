@@ -11375,6 +11375,11 @@ function depth(tid){
   return {ln,start,bench:on?bat:bat.slice(0,5),futB:on?futB0:bat.slice(5).concat(futB0),sp,pen:on?rest:rest.slice(0,7),futP:on?futP0:rest.slice(7).concat(futP0),inj:ps.filter(p=>!healthy(p))};
 }
 function roleSync(tid){ const d=depth(tid); for(const p of actOf(tid))if(p.isP&&healthy(p))p.role=d.sp.includes(p)?'SP':'RP'; return d; }
+/* 전력 예상용 전력(사용자 11-11): 시즌 준비 기간에는 AI 구단이 외국인을 아직 다 채우지 않아 우리 예상 순위가 높게 나왔다.
+   정규시즌·포스트시즌이 아니면 일반 외국인(fMaxYB)·아시아쿼터(1명) 빈자리를 채운다고 보고 한 자리마다 FSLOT_V를 더한다.
+   FSLOT_V: 개막일 구단별 '외국인 4명 있을 때 - 뺐을 때' 전력 차이 평균 약 1.8(0.8~2.9, 시드 3개 30구단) ÷ 4 */
+const FSLOT_V=.45;
+function projRating(tid){ const r=teamRating(tid); const per=period(); if(per==='season'||per==='post')return r; const F=foreignOf(tid); const yb=F.filter(x=>x.foreign==='용병').length, as=F.filter(x=>x.foreign==='아시아').length; let mx=3; try{ mx=fMaxYB(tid,per==='off'&&G.last&&G.last.y>=G.year?G.year+1:G.year); }catch(e){} return r+(Math.max(0,mx-yb)+Math.max(0,1-as))*FSLOT_V; }
 function teamRating(tid){
   const d=depth(tid);
   const off=avg(d.start.map(offV))*(Math.min(9,d.start.length)/9);
@@ -11931,7 +11936,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }
   if(o.m===9&&o.d===1){ try{ coachExpNote(); }catch(e){} }
   if(o.d===1&&o.m!==1)try{ rmSnap(); }catch(e){} /* 우리 선수 월별 능력치 기록(1월은 겨울 성장 뒤에) */
-  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ rhSnap(); rmSnap(); }catch(e){} try{ gmTenYear(); }catch(e){} try{ facAgeYear(); }catch(e){} try{ G.projJan={y:G.year,L:G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id)}; }catch(e){} /* 언더독 업적용 1월 1일 전망 */ try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} }
+  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ rhSnap(); rmSnap(); }catch(e){} try{ gmTenYear(); }catch(e){} try{ facAgeYear(); }catch(e){} try{ G.projJan={y:G.year,L:G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id)}; }catch(e){} /* 언더독 업적용 1월 1일 전망 */ try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} }
   else if(o.d===1&&foreignOpen())refreshFMarket(12,3);
   if(o.d===1)try{ freeAiMonthly(); sponMonthly(); }catch(e){}
   if(o.d===1)try{ scoutAutoMonthly(); }catch(e){}
@@ -13175,7 +13180,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
   /* 외국인은 먼저 계약하지 않는다: 1월 시장에서 값을 불러 경쟁한다(foRivals·aiForeignDaily) */
   planSup(); G.tsug=null; try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
   const mine=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const ci=capInfo(G.user);
-  try{ G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); const pr=G.proj.indexOf(G.user)+1;
+  try{ G.proj=G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); const pr=G.proj.indexOf(G.user)+1;
     setGoals(`창단 드래프트로 선수단이 꾸려졌습니다. 전력분석팀은 외국인 선수 영입 전 기준으로 우리를 10개 구단 중 ${pr}위 전력으로 봅니다. 창단 첫해이니 구단주도 무리한 목표는 잡지 않았습니다.`,true); G.goals.fd=true;
     news('분석',`창단 드래프트 평가: ${tshort(G.user)} ${pr}위 전력`,`창단 드래프트를 마친 ${tname(G.user)}의 전력은 ${pr}위로 꼽힙니다. 외국인 선수 영입이 남았습니다.`,0); }catch(err){}
   try{ const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&G.players[x.pid]); const P=L.map(x=>G.players[x.pid]); const nP=domestic(G.user).filter(p=>p.isP).length, nB=domestic(G.user).length-nP;
@@ -13907,7 +13912,7 @@ function buildWorld(){ const userTid=0; worldReset();
   G.fmarket=[]; refreshFMarket(12); updateModes(); makeDraftClass();
   G.stops=[]; G.games=[];
   for(const t of G.teams){ const rs=G.teams.map(x=>({id:x.id,r:teamRating(x.id)})); const a=avg(rs.map(x=>x.r)); t.expW=clamp(.5+(teamRating(t.id)-a)*.03,.36,.64); }
-  G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
+  G.proj=G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
   try{ G.preview=worldPreview(); }catch(e){ G.preview=null; }
 }
 /* 시작 자금은 시장 크기대로: 큰 구단 약 60억, 작은 구단 약 26억, 독립 구단 약 20억(사용자 11-08: 쉬운 구단·어려운 구단) */
@@ -21397,7 +21402,7 @@ function mdSuggest(v){ const D=G.md; if(!D||D.y!==G.year||(D.tid!=null&&D.tid!==
 /* 추천 이후 상태 변화는 건의 시점과 행사 당일에 함께 확인한다. */
 function mdRefresh(D){ const cap=mdCaptain(G.user); D.cap=cap?cap.id:null; if(!mdAvailable(G.players[D.rep],G.user)||D.rep===D.cap){ const rep=mdRepPool(G.user).find(p=>p.id!==D.cap); D.rep=rep?rep.id:null; D.rec=D.rep; if(D.res==='acc'&&D.accepted==null)D.res='ok'; } }
 /* 예상 순위(개막 전 전문가 예상과 같은 방식) */
-function mdProj(){ return G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); }
+function mdProj(){ return G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); }
 const MD_STYLE={data:'"준비한 대로 숫자가 나오면 결과는 따라옵니다."',fire:'"올해는 독하게 붙겠습니다. 지는 데 익숙해지지 않겠습니다."',warm:'"선수들이 겨울 내내 정말 고생했습니다. 그 땀이 보답받았으면 합니다."',old:'"기본에 충실한 야구로 한 시즌 버티겠습니다."',calm:'"한 경기 한 경기 차분하게 쌓아 가겠습니다."'};
 /* 감독 목표 발언: 예상 순위 r, 성향 */
 function mdMgrGoal(tid,r){ const m=G.mgr[tid]; if(!m||m.interim)return {k:null,t:'"주어진 상황에서 최선을 다하겠습니다."',w:'최선'};
@@ -26405,7 +26410,7 @@ function todoCard(limit,compact=false){
 function nextGames(n){ return teamGames(G.user,G.day+1,n); } /* 엔진 일정과 같은 목록(미룬 경기 두 건·포스트시즌 차전 포함, 검수 11-09zo) */
 /* 지금 전력 예상 순위(홈 상단 타일과 오른쪽 전력 예상이 같은 값을 쓴다) */
 /* 개막일 G.proj(언더독 도전과제 기준)와 같은 식: 전력 + 그 시즌 고정 잡음 */
-function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G){ const y=preSeasonY()||G.year; UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)+hn('proj'+y,t.id)*.7})).sort((a,b)=>b.r-a.r)}; } return UI._trk.R; }
+function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G){ const y=preSeasonY()||G.year; UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:projRating(t.id)+hn('proj'+y,t.id)*.7})).sort((a,b)=>b.r-a.r)}; } return UI._trk.R; }
 /* 승률이 같은 팀: 동률 표시(순서는 상대 전적 등 동률 기준) */
 function miniStand(){
   const {order,live,y}=standOrder(); if(!order||!order.length)return '';
@@ -29134,7 +29139,7 @@ function teamCard(t){
   const m=G.mgr[t.id]; const ci=capInfo(t.id); const me=t.id===G.user;
   return `<div class="tcard teamc${me?' me':''}" data-a="${me?'tab':'lteam'}" data-v="${me?'roster':t.id}" role="button" tabindex="0" style="--th:${tpal(t)[0]}">
     <div class="tc-top">${badge(t.id,46)}<div class="tc-id"><b>${esc(t.city)} ${esc(t.nick)}</b><span>${rk?`${live?'현재':'지난 시즌'} ${rk}위 · ${rec.w}승 ${rec.l}패${rec.t?` ${rec.t}무`:''}`:''}</span></div>
-      <div class="tc-rt"><div><span>전력</span>${(()=>{const k=[...G.teams].sort((x,y)=>teamRating(y.id)-teamRating(x.id)).findIndex(x=>x.id===t.id)+1; return `<b class="rc" style="--c:${k<=2?'var(--r65)':k<=5?'var(--r55)':k<=8?'var(--r45)':'var(--r35)'}">${k}위</b>`;})()}</div></div></div>
+      <div class="tc-rt"><div><span>전력</span>${(()=>{const k=[...G.teams].sort((x,y)=>projRating(y.id)-projRating(x.id)).findIndex(x=>x.id===t.id)+1; return `<b class="rc" style="--c:${k<=2?'var(--r65)':k<=5?'var(--r55)':k<=8?'var(--r45)':'var(--r35)'}">${k}위</b>`;})()}</div></div></div>
     <div class="tc-arch"><span class="pill ${t.mode==='contend'?'good':'warn'}">${t.mode==='contend'?'우승 경쟁':'리빌딩'}</span><span class="pill">구단주 ${OWNER[t.owner].label}</span>${me?'<span class="pill acc">우리 구단</span>':''}</div>
     <div class="teamc-top">${top.map(p=>`<span>${avImg(p)}<b>${esc(p.name)}</b><i>${posLabel(p)}</i></span>`).join('')}</div>
     <dl class="tsum"><div><dt>감독</dt><dd>${m?esc(m.name):'빈자리'}</dd></div><div><dt>캡 산정액</dt><dd class="num" style="color:${ci.over?'var(--bad)':'inherit'}">${money(ci.pay)}</dd></div><div><dt>${me?'현금':'단장 관계'}</dt><dd class="num">${me?money(t.cash):t.rel}</dd></div></dl>

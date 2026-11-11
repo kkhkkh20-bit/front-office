@@ -137,6 +137,11 @@ function depth(tid){
   return {ln,start,bench:on?bat:bat.slice(0,5),futB:on?futB0:bat.slice(5).concat(futB0),sp,pen:on?rest:rest.slice(0,7),futP:on?futP0:rest.slice(7).concat(futP0),inj:ps.filter(p=>!healthy(p))};
 }
 function roleSync(tid){ const d=depth(tid); for(const p of actOf(tid))if(p.isP&&healthy(p))p.role=d.sp.includes(p)?'SP':'RP'; return d; }
+/* 전력 예상용 전력(사용자 11-11): 시즌 준비 기간에는 AI 구단이 외국인을 아직 다 채우지 않아 우리 예상 순위가 높게 나왔다.
+   정규시즌·포스트시즌이 아니면 일반 외국인(fMaxYB)·아시아쿼터(1명) 빈자리를 채운다고 보고 한 자리마다 FSLOT_V를 더한다.
+   FSLOT_V: 개막일 구단별 '외국인 4명 있을 때 - 뺐을 때' 전력 차이 평균 약 1.8(0.8~2.9, 시드 3개 30구단) ÷ 4 */
+const FSLOT_V=.45;
+function projRating(tid){ const r=teamRating(tid); const per=period(); if(per==='season'||per==='post')return r; const F=foreignOf(tid); const yb=F.filter(x=>x.foreign==='용병').length, as=F.filter(x=>x.foreign==='아시아').length; let mx=3; try{ mx=fMaxYB(tid,per==='off'&&G.last&&G.last.y>=G.year?G.year+1:G.year); }catch(e){} return r+(Math.max(0,mx-yb)+Math.max(0,1-as))*FSLOT_V; }
 function teamRating(tid){
   const d=depth(tid);
   const off=avg(d.start.map(offV))*(Math.min(9,d.start.length)/9);
