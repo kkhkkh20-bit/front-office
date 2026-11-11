@@ -17202,7 +17202,7 @@ function stadTurfM(tid){ return turfM(stadOf(tid).lv.turf); }
 function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h); const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
   const o=dobj(day); const dow=o.w===6||o.w===0?1.28:o.w===5?1.08:.88; const opp=1+(team(a).market-1)*.35;
   const P=prOf(h), fan=P?(.9+P.fan/500):1; /* 떠난 구단도 그 구단 여론으로(검수 11-09zza) */ const late=o.m>=8&&wp<.44?.9:1;
-  const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(stadPower(S.lv.seat)-2)*.04)*(1+(stadPower(S.lv.vis)-2)*.015)*stadAgeF(h)*(S.dome?1.06:1)*fanAttM(day,h)*starAttM(h); /* 응원단·테마 데이·서포터즈·스타 선수 */
+  const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(stadPower(S.lv.seat)-2)*.04)*(1+(stadPower(S.lv.vis)-2)*.015)*stadAgeF(h)*(S.dome?1.06:1)*fanAttM(day,h)*starAttM(h)*rivalAttM(h,a); /* 라이벌전(91_league_events) */ /* 응원단·테마 데이·서포터즈·스타 선수 */
   if(noise===null){ /* 기대 관중: 3점 가우스-에르미트 근사로 매진 상한까지 반영 */ const z=1.732*.2; return Math.round(cap*(Math.min(1,f*Math.exp(-z))/6+Math.min(1,f)*2/3+Math.min(1,f*Math.exp(z))/6)); }
   const n=Math.exp(N(0,.2)); return Math.min(cap,Math.round(cap*f*n)); }
 /* 스타 효과(사용자 11-09: 스타가 관중을 부른다): 구단 상위 3명 스타 파워 합이 클수록 수요 최대 +5%, 정규시즌 중 대기록 도전(시즌 42홈런·180안타 이상, 25경기 연속 안타 이상)이면 +8% 더.
@@ -18268,7 +18268,7 @@ function psClinched(tid){ const R=G.sea&&G.sea.rec; if(!R||!R[tid])return false;
 /* 결산 전 예상: 가을야구·우승 성과 보너스(결산 sponSettle과 같은 기준, 상태는 바꾸지 않는다) */
 function sponBonusEst(y,champ){ const S=G.spon; if(!S)return 0; const P=G.sea&&G.sea.y===y?G.ps:null; /* 지난 시즌 포스트시즌은 다음 시즌 전망에 넣지 않는다(검수 11-09zn) */ const si=P&&P.seeds?P.seeds.indexOf(G.user):-1; let inPS=si>=0&&(si<4||psSeedsNow(P)[4]!=null); /* 5위 결정전이 남았으면 잠정 5위·6위는 아직 진출 전(검수 11-09zn) */ if(!(P&&P.seeds)&&y===G.year)try{ inPS=psClinched(G.user); }catch(e){} /* 정규시즌 중 가을야구를 확정하면 진출 보너스를 바로 전망에(검수 11-09i) */ let b=0; for(const k in S.c){ const c=S.c[k]; if(!(c.y0<=y&&c.until>=y))continue; const eff=c.y0===y?(c.first??1):1; if(!(eff>0))continue; const bf=c.y0===y&&c.bf!=null?c.bf:1; if(inPS&&c.ps&&!(c.psNo&&c.y0===y))b+=Math.round(c.ps*bf); if(champ===G.user&&c.champ)b+=Math.round(c.champ*bf); } return b; }
 /* ===== 이적 기록: 리그 모든 선수 이동을 구조화해 남긴다(이적시장 요약·주간 정리·구단별 영입/이탈) ===== */
-function mvLog(type,p,from,to,note,amt,tr){ if(!p)return; G.mvN=(G.mvN||0)+1; if((from!=null||to!=null)&&from!==to&&!p.foreign){ /* 방출·무적 영입도 남긴다: 시즌 마지막 날 방출해도 그해 연봉은 그날까지 낸다 */ const L=p.tLog=(p.tLog||[]).filter(x=>x.y>=G.year-1); L.push({y:G.year,d:G.day,f:from,t:to,s:p.sal}); } /* s: 떠나기 전 연봉(옛 구단 몫은 그 연봉으로, 검수 11-08) */ /* 구단 사이 이동: 그해 연봉을 소속 기간대로 나눈다(payYear) */ /* 선수 이동 횟수: 전력표 캐시를 다시 계산하는 기준 */
+function mvLog(type,p,from,to,note,amt,tr){ if(!p)return; if(/트레이드|FA/.test(type||''))try{ rivalMove(p,from,to,type); }catch(e){} G.mvN=(G.mvN||0)+1; if((from!=null||to!=null)&&from!==to&&!p.foreign){ /* 방출·무적 영입도 남긴다: 시즌 마지막 날 방출해도 그해 연봉은 그날까지 낸다 */ const L=p.tLog=(p.tLog||[]).filter(x=>x.y>=G.year-1); L.push({y:G.year,d:G.day,f:from,t:to,s:p.sal}); } /* s: 떠나기 전 연봉(옛 구단 몫은 그 연봉으로, 검수 11-08) */ /* 구단 사이 이동: 그해 연봉을 소속 기간대로 나눈다(payYear) */ /* 선수 이동 횟수: 전력표 캐시를 다시 계산하는 기준 */
   { const C=G.contract; if(to!==from&&C&&!C.done&&from!=null&&from===(C.tid??G.user)&&(C.ended||[]).includes(p.id)){ const n=C.neg&&C.neg[p.id]; const v=n?(n.st==='ok'?p.newSal:(n.cur??n.off)):p.newSal; if(v!=null){ p.sal=Math.max(MIN_SAL,v); } delete p.newSal; if(C.neg)delete C.neg[p.id]; C.ended=C.ended.filter(x=>x!==p.id); } } /* 연봉 협상 중 떠나는 선수: 그때까지의 구단 제시액(합의했으면 합의액)으로 새 연봉을 확정 */ if(to!==from){ p.e1=false; delete p.downDay; /* 1군 등록은 새 구단이 다시 정한다(엔트리 한도 초과 방지). 말소 10일 규정은 같은 구단 재등록이라 새 구단은 바로 올릴 수 있다 */
     delete p.listed; delete p.lw; delete p.urgent; delete p.promise; delete p.pconv; delete p.treq; delete p.aiListed; /* 옛 구단·단장이 건 표시는 끝난다 */
     if(G.trnI&&from===G.user)delete G.trnI[p.id]; /* 우리가 내린 훈련 강도 건의는 떠난 선수에게 남지 않는다(돌아와도 옛 지시가 되살아나지 않게, PR #4 검수) */
@@ -22885,7 +22885,8 @@ function rivalAfterGame(day,h,a,g,post){
   if(post)r.post++;
   if(margin){const win=margin>0?h:a;r.wins[win]=(r.wins[win]||0)+1;}
   r.last=day;
-  const born=!r.label&&r.seasons.length>=2&&r.games>=12&&r.close>=8&&r.post>=3;
+  const born=!r.label&&r.seasons.length>=2&&r.games>=12&&((r.close>=8&&r.post>=3)||(r.inc||0)>=2); /* 스타 이적 사건이 쌓여도 라이벌이 된다 */
+  if(r.label&&[h,a].includes(G.user)&&!G.unemp&&margin&&G.pr){ const won=(margin>0?h:a)===G.user; G.pr.fan=clamp(G.pr.fan+(won?1:-1)*(post?1.2:.35),0,100); } /* 라이벌전 승패는 팬 여론에 더 크게 남는다 */
   if(born){r.emerged=day;r.label=team(r.a).city+'·'+team(r.b).city+' 라이벌';}
   if(!r.label||(!born&&r.lastNews!=null&&day-r.lastNews<28))return;
   const title=born?`${r.label}, 맞대결이 쌓여 만든 새 이야기`:`${r.label}… ${tshort(h)} ${g.score.h}:${g.score.a} ${tshort(a)}`;
@@ -22978,6 +22979,16 @@ function titleNews(ch,ru){ const y=G.year, ks=G.ps&&G.ps.res&&G.ps.res.ks; if(!k
   if(ru===G.user){ const rn=titleYears(G.user,'runner').length+1; news('경기',`${nm}, 한국시리즈 준우승… 정상 문턱에서 멈췄다`,`${tname(G.user)}이(가) ${tname(ch)}에 ${ks[3]}승 ${ks[2]}패로 졌습니다. 이 리그 기록으로 ${rn}번째 준우승입니다. ${titleDrought(G.user)}.`,-1); return; }
   const r=((G.rivalries||{}).pairs||{})[rivalPair(ch,G.user)];
   if(r&&r.label)news('분석',`라이벌 ${tshort(ch)} 정상에… 지켜본 ${nm} 속앓이`,`${r.label}의 상대 ${tname(ch)}이(가) ${tag}을 차지했습니다. ${tname(G.user)}은(는) 올해 정상에 오르지 못했습니다. ${titleDrought(G.user)}. 이 게임에서 두 팀은 ${r.games}번 맞붙었습니다.`,0,{tid:G.user}); }
+
+/* ===== 라이벌 효과(장기 기획 11-11): 관중·여론·이적 사건 =====
+   열기 0~1: 이름 붙은 맞대결(전통 라이벌) 0.5에서, 포스트시즌 맞대결·접전·스타 이적 사건이 더한다. 해마다 사건 열기는 40% 식는다 */
+function rivalHeat(a,b){ const S=G.rivalries; const r=S&&S.pairs[rivalPair(a,b)]; if(!r||!r.label)return 0; if(r.hy!==G.year){ r.heat=(r.heat||0)*Math.pow(.6,Math.max(1,G.year-(r.hy??G.year))); r.hy=G.year; }
+  return clamp(.3+(r.post||0)*.05+(r.close||0)*.004+(r.heat||0),0,1); }
+function rivalAttM(h,a){ try{ return 1+.12*rivalHeat(h,a); }catch(e){ return 1; } } /* 라이벌전은 관중이 최대 12% 더 온다 */
+/* 주전급 선수가 두 구단 사이를 직접 옮기면(트레이드·FA) 맞대결 열기가 오른다 */
+function rivalMove(p,from,to,type){ if(from==null||to==null||from===to||!team(from)||!team(to)||!p)return; if(dv(ovr(p))<68)return; const S=G.rivalries=G.rivalries||{pairs:{}}, key=rivalPair(from,to);
+  const r=S.pairs[key]=S.pairs[key]||{a:Math.min(from,to),b:Math.max(from,to),label:'',games:0,close:0,post:0,seasons:[],wins:{},seen:[]}; r.inc=(r.inc||0)+1; r.heat=Math.min(.3,(r.heat||0)+.1); r.hy=G.year;
+  if(r.label)news('구단',`${r.label} 열기 고조: ${p.name}, ${tshort(from)}에서 ${tshort(to)}(으)로`,`${type||'이적'}으로 ${p.name}(${posLabel(p)})이(가) 라이벌 구단 유니폼을 입습니다. 다음 맞대결 관중이 더 몰릴 전망입니다.`,0,{tid:[from,to].includes(G.user)?G.user:to,ref:p.id}); }
 /* ===== 구단 정체성: 매각 뒤 이름 변경 · 연고 이전 (장기 기획 11-11) =====
    - 새 운영 주체가 구단을 인수하면(ownershipReplace) 새 이름을 걸 때가 있다(AI 구단 55%). 우리 구단은 단장이 고른다.
    - 시장이 작은 지방 구단이 인수되면 드물게(12%) 리그 밖 도시로 연고를 옮긴다. 수도권·우리 구단은 옮기지 않는다.

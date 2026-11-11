@@ -15,7 +15,8 @@ function rivalAfterGame(day,h,a,g,post){
   if(post)r.post++;
   if(margin){const win=margin>0?h:a;r.wins[win]=(r.wins[win]||0)+1;}
   r.last=day;
-  const born=!r.label&&r.seasons.length>=2&&r.games>=12&&r.close>=8&&r.post>=3;
+  const born=!r.label&&r.seasons.length>=2&&r.games>=12&&((r.close>=8&&r.post>=3)||(r.inc||0)>=2); /* 스타 이적 사건이 쌓여도 라이벌이 된다 */
+  if(r.label&&[h,a].includes(G.user)&&!G.unemp&&margin&&G.pr){ const won=(margin>0?h:a)===G.user; G.pr.fan=clamp(G.pr.fan+(won?1:-1)*(post?1.2:.35),0,100); } /* 라이벌전 승패는 팬 여론에 더 크게 남는다 */
   if(born){r.emerged=day;r.label=team(r.a).city+'·'+team(r.b).city+' 라이벌';}
   if(!r.label||(!born&&r.lastNews!=null&&day-r.lastNews<28))return;
   const title=born?`${r.label}, 맞대결이 쌓여 만든 새 이야기`:`${r.label}… ${tshort(h)} ${g.score.h}:${g.score.a} ${tshort(a)}`;
@@ -108,3 +109,13 @@ function titleNews(ch,ru){ const y=G.year, ks=G.ps&&G.ps.res&&G.ps.res.ks; if(!k
   if(ru===G.user){ const rn=titleYears(G.user,'runner').length+1; news('경기',`${nm}, 한국시리즈 준우승… 정상 문턱에서 멈췄다`,`${tname(G.user)}이(가) ${tname(ch)}에 ${ks[3]}승 ${ks[2]}패로 졌습니다. 이 리그 기록으로 ${rn}번째 준우승입니다. ${titleDrought(G.user)}.`,-1); return; }
   const r=((G.rivalries||{}).pairs||{})[rivalPair(ch,G.user)];
   if(r&&r.label)news('분석',`라이벌 ${tshort(ch)} 정상에… 지켜본 ${nm} 속앓이`,`${r.label}의 상대 ${tname(ch)}이(가) ${tag}을 차지했습니다. ${tname(G.user)}은(는) 올해 정상에 오르지 못했습니다. ${titleDrought(G.user)}. 이 게임에서 두 팀은 ${r.games}번 맞붙었습니다.`,0,{tid:G.user}); }
+
+/* ===== 라이벌 효과(장기 기획 11-11): 관중·여론·이적 사건 =====
+   열기 0~1: 이름 붙은 맞대결(전통 라이벌) 0.5에서, 포스트시즌 맞대결·접전·스타 이적 사건이 더한다. 해마다 사건 열기는 40% 식는다 */
+function rivalHeat(a,b){ const S=G.rivalries; const r=S&&S.pairs[rivalPair(a,b)]; if(!r||!r.label)return 0; if(r.hy!==G.year){ r.heat=(r.heat||0)*Math.pow(.6,Math.max(1,G.year-(r.hy??G.year))); r.hy=G.year; }
+  return clamp(.3+(r.post||0)*.05+(r.close||0)*.004+(r.heat||0),0,1); }
+function rivalAttM(h,a){ try{ return 1+.12*rivalHeat(h,a); }catch(e){ return 1; } } /* 라이벌전은 관중이 최대 12% 더 온다 */
+/* 주전급 선수가 두 구단 사이를 직접 옮기면(트레이드·FA) 맞대결 열기가 오른다 */
+function rivalMove(p,from,to,type){ if(from==null||to==null||from===to||!team(from)||!team(to)||!p)return; if(dv(ovr(p))<68)return; const S=G.rivalries=G.rivalries||{pairs:{}}, key=rivalPair(from,to);
+  const r=S.pairs[key]=S.pairs[key]||{a:Math.min(from,to),b:Math.max(from,to),label:'',games:0,close:0,post:0,seasons:[],wins:{},seen:[]}; r.inc=(r.inc||0)+1; r.heat=Math.min(.3,(r.heat||0)+.1); r.hy=G.year;
+  if(r.label)news('구단',`${r.label} 열기 고조: ${p.name}, ${tshort(from)}에서 ${tshort(to)}(으)로`,`${type||'이적'}으로 ${p.name}(${posLabel(p)})이(가) 라이벌 구단 유니폼을 입습니다. 다음 맞대결 관중이 더 몰릴 전망입니다.`,0,{tid:[from,to].includes(G.user)?G.user:to,ref:p.id}); }
