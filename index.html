@@ -14598,7 +14598,7 @@ function frBacklash(ids){ if(G.unemp)return; const L=(ids||[]).map(id=>G.players
   news('팬',`프랜차이즈 스타 ${nm} 트레이드… 팬들 거센 반발`,`${tshort(G.user)}에서 오래 뛴 ${nm}을(를) 내보냈습니다. "구단의 얼굴을 보냈다"는 비판이 쏟아집니다.`,-3,{fanW:2});
   mail('홍보팀',`팬 반발: ${nm} 트레이드`,`프랜차이즈 스타를 트레이드한 데 대한 팬 반발이 큽니다. 팬 여론 -${d}, 언론 논조 -2.`,{kind:'언론'}); }
 /* 은퇴하는 프랜차이즈 스타: 은퇴식, 통산 WAR 25 이상이면 영구결번 */
-function legendRetire(p){const tids=new Set([p.team,...(p.hist||[]).filter(h=>h.lvl==='1군').map(h=>h.t)].filter(t=>t!=null&&team(t)));for(const tid of tids){if(p.foreign||!frQual(p,tid))continue;G.frLeg=G.frLeg||[];if(G.frLeg.some(x=>x.tid===tid&&(x.pid===p.id||(x.pid==null&&x.name===p.name&&x.y===G.year))))continue;const T=teamTenure(p,tid);G.frLeg.push({pid:p.id,tid,name:p.name,pos:posLabel(p),y:G.year,n:T.n,war:+T.war.toFixed(1)});wire('은퇴',`${tname(tid)} 프랜차이즈 스타 ${p.name} 은퇴`,{tid,ref:p.id});chron('legend',`${p.name} 은퇴 (${T.n}시즌, WAR ${T.war.toFixed(1)})`,p.id,tid,{source:'legend:'+p.id+':'+G.year});if(tid===G.user&&p.team===tid&&!G.unemp){stop('선수',`${p.name}이(가) 은퇴합니다. ${T.n}시즌 동안 우리 팀에서 통산 WAR ${T.war.toFixed(1)}. 은퇴식은 따로 정합니다.`);news('선수',`${p.name} 은퇴… ${tshort(tid)} 팬들 눈물`,`${T.n}시즌 동안 ${tshort(tid)}을(를) 지킨 ${p.name}이(가) 유니폼을 벗습니다.`,2);}}}
+function legendRetire(p){const tids=new Set([p.team,p.fr&&p.fr.tid,...(p.hist||[]).filter(h=>h.lvl==='1군').map(h=>h.t)].filter(t=>t!=null&&team(t)));for(const tid of tids){if(p.foreign||!(frQual(p,tid)||(p.fr&&p.fr.tid===tid)))continue; /* 이미 프랜차이즈 스타로 인정된 선수: 오래된 기록이 보관 한도로 지워져도 그 구단 프랜차이즈 은퇴 */G.frLeg=G.frLeg||[];if(G.frLeg.some(x=>x.tid===tid&&(x.pid===p.id||(x.pid==null&&x.name===p.name&&x.y===G.year))))continue;const T=teamTenure(p,tid);G.frLeg.push({pid:p.id,tid,name:p.name,pos:posLabel(p),y:G.year,n:T.n,war:+T.war.toFixed(1)});wire('은퇴',`${tname(tid)} 프랜차이즈 스타 ${p.name} 은퇴`,{tid,ref:p.id});chron('legend',`${p.name} 은퇴 (${T.n}시즌, WAR ${T.war.toFixed(1)})`,p.id,tid,{source:'legend:'+p.id+':'+G.year});if(tid===G.user&&p.team===tid&&!G.unemp){stop('선수',`${p.name}이(가) 은퇴합니다. ${T.n}시즌 동안 우리 팀에서 통산 WAR ${T.war.toFixed(1)}. 은퇴식은 따로 정합니다.`);news('선수',`${p.name} 은퇴… ${tshort(tid)} 팬들 눈물`,`${T.n}시즌 동안 ${tshort(tid)}을(를) 지킨 ${p.name}이(가) 유니폼을 벗습니다.`,2);}}}
 /* ===== 선수단 리더십: 선수들이 투표로 주장을 뽑는다. 주장의 엄격함(기강)과 영향력이 선수단 분위기를 정한다 =====
    기강 지수 S(0~100) = 주장 엄격함 60% + 감독 규율 40% (+단장 요청 보정). 45~65가 알맞고,
    너무 느슨하면(40 미만) 집중력이 떨어지고 기행이 잦아지며, 너무 세면(70 초과) 경직된 플레이와 젊은 선수 불만이 생긴다 */
@@ -16989,7 +16989,7 @@ function ownWhy(k,amt,pid){ const t=team(G.user); const W=OWN_WHY[k]; if(!W)retu
       if(ow==='win')f(.08,'우승이라면 내가 마다할 리 있소.'); if(ow==='profit')f(-.06,'우승도 좋지만 돈은 돌아와야 하오.'); } }
   if(k==='fac'){ if(!inS)f(.06,'공사는 비시즌에 하는 게 맞소.'); else f(-.04,'시즌 한복판에 공사판을 벌이자는 거요?'); if(tr>=60)f(.06,'그동안 맡긴 일은 해냈으니 믿어 보겠소.'); if((t.cash||0)<0)f(-.12,'통장이 마이너스인데 시설부터 짓자는 거요?'); if(ow==='pr')f(.05,'팬들이 좋아할 시설이면 환영이오.'); if(ow==='profit')f(-.06,'시설은 돈 먹는 하마요.'); }
   if(k==='dev'){ if(t.mode==='rebuild'||rk>=7||lastRk>=7)f(.12,'멀리 보는 건 좋소. 이번엔 씨앗에 투자합시다.'); else if(ow==='win'&&rk<=3)f(-.06,'우승 경쟁 중에 2군 걱정이오?'); if(ow==='profit')f(.06,'적은 돈으로 오래 쓸 선수를 만든다니 마음에 드오.'); f(.04,'액수가 크지 않으니 부담은 덜하오.'); }
-  if(k==='deficit'){ const hole=(t.cash||0)<0||room<0; if(!hole)f(-.4,'적자도 아닌데 무슨 메울 구멍이 있다는 거요.'); else if(tr<40)f(-.3,'구멍을 낸 사람에게 또 돈을 맡기라는 거요?'); else if(tr>=65)f(.06,'살림 사정은 아오. 이번엔 막아 주겠소.'); if(ow==='profit')f(-.12,'적자는 메우는 게 아니라 안 내는 거요.'); if(ow==='pr')f(.04,'팬들 앞에서 구단이 휘청이는 건 보기 싫소.'); }
+  if(k==='deficit'){ const hole=(t.cash||0)<0||room<0; if(!hole)f(-.7,'적자도 아닌데 무슨 메울 구멍이 있다는 거요.'); /* 메울 적자가 없으면 사실상 반려(구단주 대사와 결과가 어긋나지 않게) */ else if(tr<40)f(-.3,'구멍을 낸 사람에게 또 돈을 맡기라는 거요?'); else if(tr>=65)f(.06,'살림 사정은 아오. 이번엔 막아 주겠소.'); if(ow==='profit')f(-.12,'적자는 메우는 게 아니라 안 내는 거요.'); if(ow==='pr')f(.04,'팬들 앞에서 구단이 휘청이는 건 보기 싫소.'); }
   /* 지난 1년 지원금의 결과: 목적을 지킨 돈은 믿음, 못 지킨 돈은 의심 */
   const past=grants().filter(g=>g.by==='gm'&&g.ok&&g.pur&&(g.tid==null||g.tid===G.user)&&g.d>G.day-365); const nf=past.filter(g=>g.st==='fail').length, nd=past.filter(g=>g.st==='done').length;
   if(nf)f(-Math.min(.3,nf*.12),`지난번 받아 간 돈은 목적대로 못 썼잖소(${nf}건).`); else if(nd)f(Math.min(.15,nd*.05),`지난번 돈은 제대로 썼더군(${nd}건).`);
@@ -21484,6 +21484,7 @@ const NEWS_REACTIONS={
   faSign:{mix:['계약 내용부터 차분히 살펴보자','발표된 조건으로 어떤 모습을 보여 줄지 궁금하다','앞으로의 활약을 응원합니다','계약 소식 확인했습니다','선수와 구단 모두 잘 풀리길','새 계약 뒤의 모습도 지켜보자']},
   contract:{mix:['계약 소식 확인했습니다','계약한 당사자들 모두 잘 풀리길','앞으로의 계획도 궁금하다','발표된 조건부터 살펴보자','다음 소식 기다려 보겠습니다','응원하겠습니다']},
   tradeE:{mix:['기사에 나온 거래 내용을 먼저 살펴보자','거래 평가는 시간을 두고 보면 되겠다','구단의 설명도 더 들어 보고 싶다','당사자들 앞으로 잘 풀렸으면','이후 소식도 지켜보겠습니다','조건을 보고 차분히 이야기하자']},
+  truck:{mix:['트럭 시위까지 나왔으니 구단이 답을 해야 할 것 같다','전광판 문구에 팬들 마음이 담겨 있네','구단 입장이 나오는지 지켜보자','방식은 몰라도 이유는 이해된다','이번 일로 구단과 팬이 대화를 했으면','결국 성적으로 보여 줘야 한다']}, /* 트럭 시위 기사(a83db60 재분류 때 빠짐) */
   mgrHire:{mix:['새 감독의 운영 구상이 궁금하다','새 출발 응원합니다','선수단과 잘 맞춰 가길','선임 소식 확인했습니다','앞으로의 운영을 지켜보자','새 감독의 설명도 들어 보고 싶다']},
   mgrFire:{mix:['감독 교체 뒤 운영 방향도 설명해 줬으면','당사자들 입장도 더 들어 보자','기사에 나온 결정의 배경이 궁금하다','이후 구단 운영을 지켜보겠습니다','변화 뒤 계획도 중요하겠다','구단의 후속 설명을 기다립니다']},
   retire:{mix:['{p} 그동안 수고 많았습니다','새로운 앞날도 응원합니다','선수로 보낸 시간에 박수를','은퇴 소식을 읽으니 여러 생각이 드네','당사자에게 응원을 보냅니다','다음 길도 잘 풀리길 바랍니다']},
@@ -21504,6 +21505,7 @@ function newsBankFromText(n){const t=String(n?.t||''),lead=String(n?.b||'').spli
   if(/우승(?:[!….,]|$)|한국시리즈 정상|정상 등극|우승 (?:확정|달성)|우승을 차지/.test(t))return 'champ';
   if(/MVP|신인왕|골든글러브|수상/.test(t))return 'awardB';
   if(/복귀|회복/.test(t))return 'newsReturn';
+  if(/트럭/.test(t)&&/시위|문구|전광판/.test(t))return 'truck'; /* 트럭 시위 기사는 시위 반응으로(피드백 11-08b) */
   if(/부상|수술|재활|장기 이탈/.test(t))return 'injury';
   if(/은퇴(?: 발표| 선언|식|[!….,]|$)|현역 은퇴/.test(t))return 'retire';
   if(/새 감독|감독.*(?:선임|취임)/.test(t))return 'mgrHire';
@@ -27169,8 +27171,8 @@ const ORG_WIN=[[72,.14],[76,.14],[79,.14],[84,.5],[0,.08],[79,.14],[84,.7]];
 function siren(){ const c=sndReady(); if(!c)return; const t=c.currentTime; const o=c.createOscillator(); o.type='sawtooth'; const g=c.createGain(); const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1400;
   o.frequency.setValueAtTime(380,t); o.frequency.linearRampToValueAtTime(620,t+.9); o.frequency.linearRampToValueAtTime(560,t+1.8);
   g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.12,t+.15); g.gain.setValueAtTime(.12,t+1.4); g.gain.linearRampToValueAtTime(0,t+1.9); o.connect(lp); lp.connect(g); g.connect(SND.master); o.start(t); o.stop(t+2); }
-/* 심판 콜(세이프·아웃·스트라이크 아웃): 브라우저 음성 합성으로 짧고 굵게. 소리를 끄면 나지 않는다(사용자 11-08) */
-function umpCall(w){ if(!sndOn())return; try{ const S=window.speechSynthesis; if(!S||typeof SpeechSynthesisUtterance==='undefined')return; S.cancel(); const u=new SpeechSynthesisUtterance(w); u.lang='ko-KR'; u.rate=1.15; u.pitch=.6; u.volume=1; const v=(S.getVoices()||[]).find(x=>/^ko/i.test(x.lang)&&/male|남/i.test(x.name))||(S.getVoices()||[]).find(x=>/^ko/i.test(x.lang)); if(v)u.voice=v; S.speak(u); }catch(e){} }
+/* 심판 콜: 한국어 음성 합성(스트라이크 아웃·아웃·세이프)은 쓰지 않는다. 판정은 화면 자막과 효과음으로만 전한다(사용자 11-11). 부르는 곳은 그대로 둔다 */
+function umpCall(){}
 function buzz(ms){ try{ if(navigator.vibrate)navigator.vibrate(ms); }catch(e){} }
 addEventListener('pointerdown',()=>{ if(sndOn())sndInit(); if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume(); },{passive:true});
 
