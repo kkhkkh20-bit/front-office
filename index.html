@@ -12266,8 +12266,8 @@ function settlement(){
       relief=Math.round(t.indie?Math.min(debt*.45,6000):Math.min(debt*.45,Math.max(0,supCap-support)+3000)); if(relief>0){ inc.push([t.indie?'투자사 증자(부채 정리)':'모기업 지원(부채 정리)',relief]); support+=t.indie?0:relief; } }
     const net=sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]));
     t.cash+=net;
-    /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(80억 초과분의 절반) */
-    let div=0; if(t.indie&&t.cash>8000){ div=Math.round((t.cash-8000)*.5); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
+    /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(INDIE_DIV_T 초과분의 INDIE_DIV_R, 49_sponsors) */
+    let div=0; if(t.indie&&t.cash>INDIE_DIV_T){ div=Math.round((t.cash-INDIE_DIV_T)*INDIE_DIV_R); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
     /* 모기업 지원 조정: 구단에 쓰지 않은 돈이 쌓여 있으면, 다음 시즌 모기업 지원 한도를 그만큼 줄인다(돈을 가져가지는 않는다).
        50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 줄인다. 쌓인 돈은 구단이 그대로 쓸 수 있다 */
     let cut0=t.supCut&&t.supCut.y===y?t.supCut.amt:0;
@@ -14395,7 +14395,7 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   const LK=G.bLocks=G.bLocks||{}; if(G.bLock){ if(!LK[G.bLock.tid])LK[G.bLock.tid]=G.bLock; delete G.bLock; } /* 확정 기준은 구단별로 보관한다: 다른 구단을 거쳐 돌아와도 그 시즌 기준이 바뀌지 않게(검수 11-06) */ let lock=LK[G.user]&&LK[G.user].fy===fy?LK[G.user]:null; if(!lock&&!G.unemp)lock=LK[G.user]={fy,tid:G.user,I,capB:cap-grantNow,gf,d:G.day,eco:ecoIdx(fy)}; if(lock&&lock.eco&&lock.eco!==ecoIdx(fy)){ lock.capB=Math.round(lock.capB*ecoIdx(fy)/lock.eco); lock.eco=ecoIdx(fy); } /* 12월 이사회가 상한을 정하면 확정 한도도 그 경제 지수로 맞춘다(검수 11-09y) */
   const IL=lock?lock.I:I, capL=lock?lock.capB+grantNow:cap, goalL=t.indie?0:(lock?Math.round(lock.gf*lock.capB)+grantNow:goalSup);
   const gapL=E-IL, selfCL=gapL>0?Math.min(gapL,Math.max(0,cash-3000)*.5):0, needL=gapL-selfCL;
-  return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,grant:t.indie?0:grantNow,cash:t.cash,endCash:(c0=>t.indie&&c0>8000?c0-Math.round((c0-8000)*.5):c0)(cash+I+support-E),divEst:(c0=>t.indie&&c0>8000?Math.round((c0-8000)*.5):0)(cash+I+support-E), /* 독립구단은 결산 뒤 80억 초과분의 절반을 투자사가 배당으로 가져간다(검수 11-07) */
+  return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,grant:t.indie?0:grantNow,cash:t.cash,endCash:(c0=>t.indie&&c0>INDIE_DIV_T?c0-Math.round((c0-INDIE_DIV_T)*INDIE_DIV_R):c0)(cash+I+support-E),divEst:(c0=>t.indie&&c0>INDIE_DIV_T?Math.round((c0-INDIE_DIV_T)*INDIE_DIV_R):0)(cash+I+support-E), /* 독립구단은 결산 뒤 80억 초과분의 절반을 투자사가 배당으로 가져간다(검수 11-07) */
     lockI:IL, extra:Math.round(I-IL), lockD:lock?lock.d:null, capLock:capL, goalLive:goalSup,
     roomGoal:goalL-needL, roomCap:capL-needL, roomMax:capL-gapL+Math.max(0,cash), rem, indie:!!t.indie, trust:t.trust,
     fR,fRoom:Math.max(0,fR-fs),fUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='용병').map(p=>fRe(p)?p.newSal+(p.fInc||0):fCommit(p))), fCap:fCap(G.user), aUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='아시아').map(p=>fRe(p)?p.newSal:p.sal)), ci}; }
@@ -18267,7 +18267,9 @@ function playerState(p){
    비시즌(11~1월)에 기업들이 제안을 보내고, 단장은 수락·조건 상향 요청·거절을 고른다.
    제안 금액은 시장 규모·인기·성적·팬 여론·언론 논조·스타 선수로 정한 '스폰서 가치'를 따른다.
    계약에는 연 금액, 기간, 가을야구·우승 보너스가 있고 일부는 이미지 조항(언론 논조가 나쁘면 감액)이 붙는다 */
-const SPON_SLOT={main:{l:'메인 스폰서(구단 명칭)',b:9000,indie:1},kit:{l:'공식 용품(유니폼 공급)',b:1400},sleeve:{l:'유니폼 소매 패치',b:1100},fence:{l:'외야 펜스 메인 보드',b:1000},helmet:{l:'헬멧',b:650},back:{l:'유니폼 등·바지',b:550}};
+/* 독립구단 재정(카페 11-11): 메인 스폰서 기준액과 투자사 배당(결산 뒤 현금이 기준을 넘으면 넘는 몫의 일부를 회수) */
+var INDIE_MAIN_B=6800, INDIE_DIV_T=4000, INDIE_DIV_R=.5; /* 11-11: 90억·80억이면 고양 시즌 예산 여유가 10개 구단 중 1위(시작 39.5억)라 독립구단이 오히려 넉넉했다. 68억이면 보통 성적일 때 개막 여유가 모기업 구단 중간 수준, 성적이 좋아 쌓인 흑자는 40억 기준으로 투자사가 절반 회수 */
+const SPON_SLOT={main:{l:'메인 스폰서(구단 명칭)',get b(){ return INDIE_MAIN_B; },indie:1},kit:{l:'공식 용품(유니폼 공급)',b:1400},sleeve:{l:'유니폼 소매 패치',b:1100},fence:{l:'외야 펜스 메인 보드',b:1000},helmet:{l:'헬멧',b:650},back:{l:'유니폼 등·바지',b:550}};
 const SPON_IND={kit:['스포츠용품'],main:['금융','통신','건설','게임','유통'],sleeve:['금융','통신','자동차','제약','게임','식품'],fence:['주류','식품','편의점','보험','가전'],helmet:['보험','제약','식품','자동차'],back:['편의점','식품','게임','여행']};
 const SPON_CO={스포츠용품:['스트라이드','에이스기어','배터박스','루키스포츠'],금융:['한결은행','미래로카드','새벽증권','든든캐피탈'],통신:['하나로텔레콤','오로라모바일'],건설:['대명건설','한빛이앤씨'],게임:['픽셀웍스','넥스타게임즈','라운드원'],유통:['모아마트','하루몰'],
   자동차:['한라모터스','세븐타이어'],제약:['참좋은제약','바른약품'],식품:['고소한식품','새참푸드','한입제과'],주류:['맑은맥주','청춘소주'],편의점:['24스테이','바로마트24'],보험:['든든생명','온누리화재'],가전:['빛가람전자'],여행:['떠나요투어']};
@@ -30096,7 +30098,7 @@ function resultBody0(){
 }
 function finTable(f){
   return `<dl class="kv">${f.inc.map(x=>`<dt>${x[0]}</dt><dd>+${money(x[1])}</dd>`).join('')}${f.exp.map(x=>`<dt>${x[0]}</dt><dd>-${money(x[1])}</dd>`).join('')}
-    <dt class="tot">순이익</dt><dd class="tot" style="color:${f.net>=0?'var(--good)':'var(--bad)'}">${f.net>=0?'+':''}${money(f.net)}</dd>${f.selfC?`<dt>적자 자체 충당(보유 현금)</dt><dd>${money(f.selfC)}</dd>`:''}${f.div?`<dt>투자사 배당(80억 초과분의 절반)</dt><dd>${money(f.div)}</dd>`:''}
+    <dt class="tot">순이익</dt><dd class="tot" style="color:${f.net>=0?'var(--good)':'var(--bad)'}">${f.net>=0?'+':''}${money(f.net)}</dd>${f.selfC?`<dt>적자 자체 충당(보유 현금)</dt><dd>${money(f.selfC)}</dd>`:''}${f.div?`<dt>투자사 배당(${money(INDIE_DIV_T)} 초과분의 ${Math.round(INDIE_DIV_R*100)}%)</dt><dd>${money(f.div)}</dd>`:''}
     <dt>관중</dt><dd>${Math.round(f.att/1e4)}만 명</dd>${f.supCap?`<dt>모기업 적자 보전 한도</dt><dd>${money(f.supCap)}${f.supCut?` <span class="small muted">(쌓인 현금 때문에 ${money(f.supCut)} 줄어든 한도)</span>`:''}</dd>`:''}<dt>시즌 후 보유 현금</dt><dd>${money(f.cash)}</dd></dl>`;
 }
 /* 국내 선수 연봉 협상 표: 직전 성적 → 구단 산정안 → 선수 요구 → 단장 제시 */
@@ -34301,6 +34303,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-indie-finance',d:'11월 11일',t:'독립구단 재정 조정',items:[
+    '독립구단(고양)의 메인 스폰서 기준액을 90억에서 68억으로 낮췄습니다. 성적이 보통이면 시즌 예산 여유가 모기업 구단과 비슷한 수준입니다.',
+    '투자사 배당 기준을 80억에서 40억으로 낮췄습니다. 결산 뒤 현금이 40억을 넘으면 넘는 몫의 절반을 투자사가 가져가므로, 흑자를 쌓아 두기 어렵습니다.'
+  ]},
   {id:'2026-11-11-walkoff-roy',d:'11월 11일',t:'끝내기 우승 장면·시상 투표 조정',items:[
     '한국시리즈를 끝내기로 우승하면 우승 순간 첫 장면이 마지막 아웃 대신 끝내기 장면과 문구로 나옵니다.',
     'MVP·신인왕 투표에서 홀드도 누적 기록으로 반영하고, 기자 표심의 흔들림을 줄여 성적(WAR)이 크게 앞선 후보가 밀리는 일이 줄었습니다.'
