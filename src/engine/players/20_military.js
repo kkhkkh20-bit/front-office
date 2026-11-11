@@ -55,7 +55,7 @@ function milDaily(){ const d=G.day;
     const mine=domPayOf(G.user).filter(p=>milFree(p)&&p.age<=27); /* 지원 승인 조건(sangmuApply)과 같게: 27세 이하 전부, 대표팀 차출 중인 선수도(검수 11-09zk) */
     if(mine.length)mail('운영팀',`상무 지원 기간입니다 (${w==='dec'?'12월':'6월'} 입대)`,`상무(국군체육부대) 야구단 지원을 받습니다. 복무는 1년 6개월이고, 복무 중에도 퓨처스리그에서 뛰며 기량을 유지할 수 있습니다. 현역으로 가면 1년 6개월 동안 야구를 거의 못 해 기량이 떨어집니다.\n\n${milAdviceTxt(mine)}\n\n우리 구단 미필 선수: ${mine.map(p=>`${p.name}(${p.age}세)`).join(', ')}\n\n${p28(mine)}지원은 ${dmd((w==='dec'?KD(10,15):KD(4,15))-1)}까지입니다(다음 날 합격자 발표).`,{imp:true,kind:'병역',acts:[{l:'병역 관리',a:'go',v:'staff:mil'}]}); }
   if(d===KD(10,15)||d===KD(4,15)){ const w=d===KD(10,15)?'dec':'jun'; const apps=Object.values(G.players).filter(p=>p.mil&&p.mil.app===w&&!(p.team==null&&(p.mil=null,true))); /* 방출돼 소속이 없는 지원자는 지원 무효(검수 11-07) */
-    const ranked=apps.map(p=>({p,s:ovr(p)+hn('sm'+G.year,p.id)*4+(p.injOut>30?-10:0)+smExp(p)})).sort((a,b)=>b.s-a.s); /* 1군 실적도 본다(카페 11-11: 1군 0경기 신인이 능력치만으로 합격) */ const from=sangmuFrom(w);
+    const ranked=apps.map(p=>({p,s:ovr(p)+hn('sm'+G.year,p.id)*4+(p.injOut>30?-10:0)+smExp(p)})).sort((a,b)=>b.s-a.s); /* 퓨처스 실적을 본다(카페 11-11: 기록 없는 신인이 능력치만으로 합격) */ const from=sangmuFrom(w);
     const ok=[],no=[]; ranked.forEach((x,i)=>{ if(i<SANGMU_SLOTS){ enlist(x.p,'상무',from); ok.push(x.p);} else { x.p.mil=null; no.push(x.p);} });
     const mo=ok.filter(p=>p.team===G.user), mn=no.filter(p=>p.team===G.user);
     if(mo.length||mn.length)mail('운영팀','상무 합격자 발표',`${mo.length?`합격: ${mo.map(p=>p.name).join(', ')} (${dmd(from)} 입대)`:'합격자 없음'}${mn.length?`\n불합격: ${mn.map(p=>p.name).join(', ')}. 다음 지원 기간에 다시 지원하거나 현역으로 입대해야 합니다.`:''}`,{imp:true,kind:'병역'});
@@ -108,5 +108,9 @@ function milState(p){ if(p.foreign)return {k:'done',l:'-'}; const m=p.mil; if(m&
 /* 실제 입대·복귀만 구단 연대기에 남긴다. 예약·취소는 소속 이력이 아니다. */
 function milChron(p,kind,unit,from,until){ if(!p||p.team==null)return; chron('mil',`${p.name} ${unit} ${kind} · 복무 ${dmd(from)}~${dmd(until)}${kind==='입대'?' · 전역 예정':''}`,p.id,p.team,{source:'mil:'+p.id+':'+from+':'+kind}); }
 
-/* 상무 합격 심사의 1군 실적: 통산 1군 경기 15경기마다 +1(최대 +8), 1군 경기가 없으면 -6 */
-function smExp(p){ const g=sum((p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2).map(h=>h.g||0)); return g<=0?-6:Math.min(8,g/15); }
+/* 상무 합격 심사의 실적: 상무는 퓨처스리그 팀이라 2군 기록을 주로 본다(사용자 11-11). 올해·지난해 퓨처스 합계(게임 기준값)
+   타자 100타석↑: (OPS-.700)×20, 투수 20이닝↑: (4.50-ERA)×1.5 (각 -4~+6) · 기록이 거의 없으면 -4 · 2군 출장 30경기마다 +1(최대 +3) · 1군 경험 30경기마다 +1(최대 +2) */
+function smExp(p){ const y=G.year, F={}; for(const yy of [y,y-1]){ const h=seasonTotal(p,yy,'퓨처스'); if(h)for(const k in h)if(typeof h[k]==='number')F[k]=(F[k]||0)+h[k]; }
+  let s=0; if(p.isP){ const o=F.outs||0; if(o>=60){ const era=(F.er||0)*27/o; s+=clamp((4.5-era)*1.5,-4,6); } else if(o<30)s-=4; }
+  else { const pa=F.pa||0; if(pa>=100){ try{ s+=clamp((bRate(F).ops-.7)*20,-4,6); }catch(e){} } else if(pa<30)s-=4; }
+  s+=Math.min(3,(F.g||0)/30); const g1=sum((p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2).map(h=>h.g||0)); s+=Math.min(2,g1/30); return s; }
