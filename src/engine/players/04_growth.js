@@ -80,3 +80,21 @@ function dtHint(p,sd){ // 스카우트·코치진이 보는 성장 유형 (정�
   const wrong=hn('dt'+p.id,G.year)*sd>5.2; const k=wrong?rollDTfix(p):p.dt;
   return {early:'일찍 완성되는 유형으로 봅니다. 20대 후반부터 하락에 대비해야 합니다.',late:'늦게 꽃피는 대기만성형으로 봅니다. 20대 중반 이후에도 기다릴 가치가 있습니다.',stall:'성장이 정체될 우려가 있습니다. 재능만큼 크지 못할 수 있습니다.',vet:'신체 능력은 떨어져도 기술로 버티는 유형입니다. 30대에도 경쟁력을 유지할 것으로 봅니다.',norm:null}[k]; }
 function rollDTfix(p){ return ['norm','early','late','stall','vet'][Math.floor(u01('dtw',p.id)*5)]; }
+
+/* ===== 분기 성장(사용자 11-11: 성장은 분기로 나눠 천천히 크기도, 정체·하락도 한다) =====
+   겨울에 한 해 변화량을 정하고(develop), 겨울에는 일부만 반영한다: 크는 능력 35%(비시즌 훈련), 떨어지는 능력 50%.
+   나머지는 시즌 중 세 번(5/1·6/20·8/10)에 나눠 반영하는데 분기마다 비중이 다르다. 15% 확률로 한 분기는 일시적으로 거꾸로 갔다가 다음 분기에 되찾는다.
+   1년 최종 변화량은 예전과 같고, 중간에 최종값을 넘지 않는다(거꾸로 가는 분기는 마지막 분기가 되지 않는다) */
+const DEVQ_D=[[5,1],[6,20],[8,10]];
+function devQWeights(){ const a=[0,1,2].map(()=>Math.max(.05,N(1,.6))); if(R()<.15){ const i=R()<.5?0:1; a[i]=-rnd(.15,.45); }
+  const S=a.reduce((x,y)=>x+y,0); return S>.3?a.map(x=>+(x/S).toFixed(3)):[.34,.33,.33]; }
+function devSplit(p,B){ if(!p||!B)return; const D={}; let any=false; for(const k in p.r){ if(B[k]==null)continue; const d=p.r[k]-B[k]; if(Math.abs(d)<.05)continue; const w0=d>0?.35:.5; p.r[k]=B[k]+d*w0; D[k]=+(d*(1-w0)).toFixed(3); any=true; }
+  if(!any){ delete p.devQ; return; } p.devQ={y:G.year+1,D,w:devQWeights(),i:0}; }
+function devQApply(p,i){ const Q=p.devQ; if(!Q||Q.i!==i)return 0; const o=ovr(p); const w=Q.w[i]; for(const k in Q.D){ if(p.r[k]==null)continue; p.r[k]=clamp(p.r[k]+Q.D[k]*w,20,99); } Q.i=i+1; if(Q.i>=3)delete p.devQ; return ovr(p)-o; }
+function devQDaily(){ const day=G.day; const i=DEVQ_D.findIndex(([m,d])=>KD(m,d)===day); if(i<0)return; const mine=[];
+  for(const p of Object.values(G.players)){ if(!p.devQ)continue; if(p.devQ.y!==G.year){ if(p.devQ.y<G.year){ for(let j=p.devQ.i;j<3;j++)devQApply(p,j); } continue; } /* 지난 해 남은 몫(예전 저장·날짜 건너뜀)은 한꺼번에 */
+    const dd=devQApply(p,i); if(p.team===G.user&&!G.unemp&&Math.abs(dd)>=.6)mine.push({p,dd}); }
+  if(G.unemp||!mine.length)return; const up=mine.filter(x=>x.dd>0).sort((a,b)=>b.dd-a.dd).slice(0,5), dn=mine.filter(x=>x.dd<0).sort((a,b)=>a.dd-b.dd).slice(0,5);
+  const ln=x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세) 종합 ${x.dd>0?'+':''}${(dv(ovr(x.p))-dv(ovr(x.p)-x.dd))}`;
+  mail('코치진',`${i+1}분기 성장 보고`,`시즌 중 성장이 반영됐습니다(${['5월','6월 말','8월 중순'][i]}).\n\n오른 선수: ${up.map(ln).join(', ')||'없음'}\n주춤한 선수: ${dn.map(ln).join(', ')||'없음'}\n\n겨울에 정해진 한 해 변화가 분기마다 나뉘어 들어오며, 어떤 분기는 정체되거나 잠시 떨어지기도 합니다.`,{kind:'선수'}); }
+function devQText(p){ const Q=p&&p.devQ; if(!Q||Q.y!==G.year)return ''; const left=DEVQ_D.slice(Q.i).map(([m,d])=>`${m}/${d}`).join('·'); const s=Object.values(Q.D).reduce((a,v)=>a+v,0); return left?`시즌 중 ${s>=0?'성장':'변화'} 남음(${left} 반영)`:''; }
