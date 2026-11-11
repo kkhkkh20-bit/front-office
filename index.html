@@ -11003,7 +11003,7 @@ const posLabel=p=>p.isP?(p.team==null||p.fdPool||p.prospect||!p.role?'투수':(p
 function roleBias(tid,p){ const thr=rpThr(tid); return clamp((p.r.sta-thr)*.9,-14,8)+(p.rAdj||0)+rpBias(tid,p); } /* 체력 기준은 감독 성향(불펜 의존·스몰볼), 보직 계획(신인 계투 시작·단장 요청)은 77_pitch_role.js */
 const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
-const tshort=id=>id==null?'-':team(id).city+' '+team(id).nick;
+const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return x.city+' '+x.nick; } return team(id).city+' '+team(id).nick; }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
 const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold; /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
 
@@ -12347,6 +12347,7 @@ function ownershipReplace(tid,q,buyer){
   s.lastEventY=G.year;s.pending=null;s.debtYears=0;t.debtY=0;
   const to=ownershipSnapshot(tid);
   ownershipRecord(tid,buyer?'acquired':'succeeded',buyer?'새 운영 주체의 구단 인수 완료':'신임 구단주 취임',`${buyer?from.parent+' → '+s.parent.name+' · ':''}${from.owner} → ${own.name}. ${fy}시즌부터 ${t.indie?'투자사 운영(모기업 지원 없음)':OWNER[t.owner].label+' · 기본 지원 한도 '+pct+'%'}. 기존 단장·감독·선수 계약, 연고·이름·상징과 모든 기록을 승계합니다.${capital?' 일회성 운영자금 '+money(capital.amount)+' 출자.':''}`,from,to,capital);
+  if(buyer)try{ ciOnSale(tid); }catch(e){} /* 새 운영 주체의 이름 변경·연고 이전(87_club_identity) */
   if(buyer)(G.rescues=G.rescues||[]).push({y:G.year,d:G.day,tid,k:'sale',old:from.owner,nw:own.name,parentFrom:from.parent,parentTo:s.parent.name,capital:capital&&capital.amount});
 }
 function ownershipStart(tid,kind,opts={}){
@@ -22976,6 +22977,31 @@ function titleNews(ch,ru){ const y=G.year, ks=G.ps&&G.ps.res&&G.ps.res.ks; if(!k
   if(ru===G.user){ const rn=titleYears(G.user,'runner').length+1; news('경기',`${nm}, 한국시리즈 준우승… 정상 문턱에서 멈췄다`,`${tname(G.user)}이(가) ${tname(ch)}에 ${ks[3]}승 ${ks[2]}패로 졌습니다. 이 리그 기록으로 ${rn}번째 준우승입니다. ${titleDrought(G.user)}.`,-1); return; }
   const r=((G.rivalries||{}).pairs||{})[rivalPair(ch,G.user)];
   if(r&&r.label)news('분석',`라이벌 ${tshort(ch)} 정상에… 지켜본 ${nm} 속앓이`,`${r.label}의 상대 ${tname(ch)}이(가) ${tag}을 차지했습니다. ${tname(G.user)}은(는) 올해 정상에 오르지 못했습니다. ${titleDrought(G.user)}. 이 게임에서 두 팀은 ${r.games}번 맞붙었습니다.`,0,{tid:G.user}); }
+/* ===== 구단 정체성: 매각 뒤 이름 변경 · 연고 이전 (장기 기획 11-11) =====
+   - 새 운영 주체가 구단을 인수하면(ownershipReplace) 새 이름을 걸 때가 있다(AI 구단 55%). 우리 구단은 단장이 고른다.
+   - 시장이 작은 지방 구단이 인수되면 드물게(12%) 리그 밖 도시로 연고를 옮긴다. 수도권·우리 구단은 옮기지 않는다.
+   - 옛 이름은 G.tnames에 남아, 그해 기록·연혁은 그때 이름으로 보인다(tshort(id,y)). 구단 기록·선수·계약·엠블럼은 그대로 이어진다 */
+const CI_NICK=['레인저스','썬더스','팰컨스','마린스','블루윙스','파이어볼츠','스타즈','와이번즈','타이탄즈','유니콘스','레드윙스','플라잉독스','스콜피언스','라이온하츠','드래곤즈'];
+const CI_CITY=[{city:'청주',region:'충청',market:.88},{city:'전주',region:'호남',market:.86},{city:'포항',region:'영남',market:.84},{city:'천안',region:'충청',market:.9},{city:'김해',region:'영남',market:.87},{city:'원주',region:'강원',market:.82},{city:'제주',region:'제주',market:.8},{city:'춘천',region:'강원',market:.8}];
+function ciHist(tid){ G.tnames=G.tnames||{}; const t=team(tid); if(!G.tnames[tid])G.tnames[tid]=[{y0:-Infinity,y1:null,city:t.city,nick:t.nick}]; return G.tnames[tid]; }
+function ciNickPool(){ const used=new Set(G.teams.map(t=>t.nick)); for(const k in (G.tnames||{}))for(const e of G.tnames[k])used.add(e.nick); return CI_NICK.filter(n=>!used.has(n)); }
+function ciCityPool(){ const used=new Set(G.teams.map(t=>t.city)); return CI_CITY.filter(c=>!used.has(c.city)); }
+/* 이름·연고 바꾸기: 이 시즌까지는 옛 이름(시즌 중 바뀌면 다음 시즌부터 새 이름 기록) */
+function clubRebrand(tid,o,why){ const t=team(tid); if(!t)return false; const L=ciHist(tid), cur=L[L.length-1]; const nick=o.nick||t.nick, city=o.city||t.city; if(nick===t.nick&&city===t.city)return false;
+  const old=tshort(tid), y=sponSeason(); cur.y1=y-1; L.push({y0:y,y1:null,city,nick,why:why||''}); /* 결산 뒤면 다음 시즌부터 새 이름 */
+  if(o.city&&o.city!==t.city){ const S=stadOf(tid), C=CI_CITY.find(c=>c.city===o.city); (S.names=S.names||[]).push({n:stadName(tid),until:G.day}); S.name=`${o.city} 야구장`; if(C){ t.market=C.market; t.region=C.region; } S.cap=Math.min(S.cap||STAD_CAP[tid]||20000,17000); }
+  t.city=city; t.nick=nick; const nw=tshort(tid);
+  try{ chron('rebrand',`${old} → ${nw}${o.city?' · 연고 이전':''}${why?' · '+why:''}`,null,tid,{source:'rebrand:'+tid+':'+y}); }catch(e){}
+  try{ wire('구단',`${old}, ${y}시즌부터 ${nw}(으)로${o.city?' 연고를 옮겨':' 이름을 바꿔'} 새 출발`,{tid}); }catch(e){} return true; }
+/* 인수 완료 뒤 호출: AI 구단은 확률로, 우리 구단은 단장에게 묻는다 */
+function ciOnSale(tid){ const t=team(tid); if(!t)return; const N=ciNickPool(); if(!N.length)return;
+  if(tid===G.user&&!G.unemp){ const a=pick(N), b=pick(N.filter(x=>x!==a))||a, own=bossOf(tid).own.name;
+    evNew('rebrand',`새 구단주가 구단 이름을 바꾸고 싶어 합니다`,`새 구단주 ${own}: "새 출발을 알리고 싶습니다. 연고와 기록은 그대로 두고 이름만 바꾸면 어떻겠습니까?"`,[{l:`${t.city} ${a}`,fx:'다음 시즌부터 새 이름. 구단주 신뢰 +3'},{l:`${t.city} ${b}`,fx:'다음 시즌부터 새 이름. 구단주 신뢰 +3'},{l:'지금 이름 유지',fx:'팬 여론은 반기지만 구단주 신뢰 -4'}],{def:2,exp:14,data:{tid,a,b},from:'구단주'}); return; }
+  if(tid===G.user)return; const C=ciCityPool(); const small=(t.market||1)<=1&&t.region!=='수도권'&&!t.indie;
+  if(small&&C.length&&R()<.12){ const c=pick(C); clubRebrand(tid,{city:c.city,nick:R()<.6?pick(N):null},'새 운영 주체의 연고 이전'); return; }
+  if(R()<.55)clubRebrand(tid,{nick:pick(N)},'새 운영 주체');
+}
+EVH.rebrand={ pick(e,i){ const t=team(e.data.tid); if(!t||e.data.tid!==G.user)return ''; if(i<2){ clubRebrand(e.data.tid,{nick:i===0?e.data.a:e.data.b},'새 구단주'); t.trust=clamp((t.trust||50)+3,0,100); return `${tshort(e.data.tid)}(으)로 새 출발합니다.`; } t.trust=clamp((t.trust||50)-4,0,100); return '지금 이름을 지키기로 했습니다.'; } };
 /* 기자 성향별 가상 투표 모형. 공식 배점이나 실제 기자의 국적 선호를 뜻하지 않는다.
    국내 선수의 작은 가산과 이정표 비중은 사용자 요청. 실제 기사 대조는 별도 검증 대상이다. */
 function ggCandidate(x,pos){
@@ -26184,7 +26210,7 @@ function standView0(){
   if(tt.cur==='map')return tt.bar+powerMap();
   if(tt.cur==='ps')return tt.bar+psBracket();
   const myC=G.history.filter(h=>h.champ===G.user).length;
-  return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">역대 우승</h2><span class="trow">${myC?`${tname(G.user)} 우승 ${myC}회 ${[...Array(Math.min(myC,8))].map(()=>trophyImg(22)).join('')}`:''}</span></div><div class="list">${[...G.history].filter(h=>h.champ!=null).reverse().map(h=>`<div class="item champ${h.champ===G.user?' me':''}" style="cursor:default">${ART.trophy(28)}<span class="nm">${h.y} ${badge(h.champ,18)} ${tname(h.champ)}</span><span class="sub">준우승 ${tname(h.runner)}</span></div>`).join('')}</div></section>`;
+  return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">역대 우승</h2><span class="trow">${myC?`${tname(G.user)} 우승 ${myC}회 ${[...Array(Math.min(myC,8))].map(()=>trophyImg(22)).join('')}`:''}</span></div><div class="list">${[...G.history].filter(h=>h.champ!=null).reverse().map(h=>`<div class="item champ${h.champ===G.user?' me':''}" style="cursor:default">${ART.trophy(28)}<span class="nm">${h.y} ${badge(h.champ,18)} ${tshort(h.champ,h.y)}</span><span class="sub">준우승 ${tshort(h.runner,h.y)}</span></div>`).join('')}</div></section>`;
 }
 /* 지난 시즌 최종 순위(커뮤니티 제안 11-11): 시즌 중에도 지난해 순위를 본다. 신인 드래프트 지명 순서를 가늠할 때 쓴다 */
 function lastStandCard(){ const H=[...(G.history||[])].reverse().find(h=>h.order&&h.order.length); if(!H)return ''; /* 가장 최근에 끝난 시즌 */
@@ -26382,7 +26408,7 @@ function standFm(order,live,y){
   /* 4. 부문별 1위와 역대 우승 */
   const L=leaderCats(R,y).filter(c=>!/wRC|WHIP|안타/.test(c[0])).map(([l,arr,v,f])=>{ const a=fxTop(arr,v); const tt=a&&(a.h.t??a.p.team); /* 스토브리그에는 FA·은퇴로 소속이 없을 수 있어 그 시즌 소속으로 */
     return a?`<button class="fx-ld${tt===me?' me':''}" data-a="player" data-v="${a.p.id}"><span>${l}</span>${avImg(a.p)}<b>${esc(a.p.name)}<i>${tt!=null?badge(tt,12)+' '+esc(team(tt).nick):'무소속'}</i></b><em>${(f||v)(a)}</em></button>`:''; }).join('');
-  const hist=[...G.history].filter(h=>h.champ!=null).reverse().slice(0,6).map(h=>`<div class="fx-li${h.champ===me?' me':''}"><b>${h.y}</b><span>${badge(h.champ,14)} ${esc(tshort(h.champ))}</span></div>`).join('');
+  const hist=[...G.history].filter(h=>h.champ!=null).reverse().slice(0,6).map(h=>`<div class="fx-li${h.champ===me?' me':''}"><b>${h.y}</b><span>${badge(h.champ,14)} ${esc(tshort(h.champ,h.y))}</span></div>`).join('');
   const lead=fxBox('fx-lead',fxHead(`${y} 부문별 1위`,'비율 기록은 규정 기준 이상'),(L||'<p class="fx-none">아직 기록이 없습니다.</p>')+(hist?`<h4>역대 한국시리즈 우승</h4>${hist}`:''),fxBtn('go','league:rec','기록')+fxBtn('go','league:hist','역사'));
   return `<div class="fmx fmx-fit fmx-league nolink ws-own">${reg}${ps}${sch}${lead}</div>`;
 }
@@ -28615,7 +28641,7 @@ function histView(){
     const W=[...all].sort((a,b)=>b.war-a.war).slice(0,10);
     const ldr=fxBox('fxh-ld',fxHead('통산 WAR 순위','현역·은퇴 · 이 리그 1군'),W.map((x,i)=>{ const p=open(x); return `<${p?`button data-a="player" data-v="${x.id}"`:'div'} class="fx-rk${x.act&&x.t===me?' me':''}"><i>${i+1}</i><b>${esc(x.name)}</b><span>${x.act?esc(tshort(x.t)):x.lab}</span><em>${x.war.toFixed(1)}</em></${p?'button':'div'}>`; }).join('')||'<p class="fx-none">기록 없음</p>',fxBtn('itab','histv:ldr','통산 순위')+fxBtn('itab','histv:hof','명예의 전당'));
     /* 지난 시즌 최종 순위: 시즌이 적을 때 왼쪽 칸이 비지 않게 */
-    const LH=G.history[G.history.length-1], lastOrd=LH&&LH.order&&LH.order[0]&&LH.order[0].w!=null?`<h4>${LH.y} 정규시즌 최종 순위</h4><table class="fx-t"><thead><tr><th>순위</th><th>구단</th><th>승-패-무</th><th>가을</th></tr></thead><tbody>${LH.order.map((o,i)=>`<tr class="${o.tid===me?'me':''}"><td>${i+1}</td><td>${badge(o.tid,14)} ${esc(tshort(o.tid))}</td><td>${o.w}-${o.l}-${o.t||0}</td><td>${o.tid===LH.champ?'우승':o.tid===LH.runner?'준우승':i<5?'진출':'-'}</td></tr>`).join('')}</tbody></table>`:'';
+    const LH=G.history[G.history.length-1], lastOrd=LH&&LH.order&&LH.order[0]&&LH.order[0].w!=null?`<h4>${LH.y} 정규시즌 최종 순위</h4><table class="fx-t"><thead><tr><th>순위</th><th>구단</th><th>승-패-무</th><th>가을</th></tr></thead><tbody>${LH.order.map((o,i)=>`<tr class="${o.tid===me?'me':''}"><td>${i+1}</td><td>${badge(o.tid,14)} ${esc(tshort(o.tid,LH.y))}</td><td>${o.w}-${o.l}-${o.t||0}</td><td>${o.tid===LH.champ?'우승':o.tid===LH.runner?'준우승':i<5?'진출':'-'}</td></tr>`).join('')}</tbody></table>`:'';
     return hv.bar+`<div class="fmx fmx-fit fmx-hi nolink ws-own">${fxBox('fxh-sm',fxHead('연도별 시즌 요약',`${G.history.length}시즌`),(seasonSummary(true)?`<div class="fx-scr">${seasonSummary(true)}</div>`:'<p class="fx-none">기록 없음</p>')+lastOrd)}${champ}${mine}${awb}${ldr}</div>`; }
   if(hv.cur==='sum')return hv.bar+seasonSummary();
   if(hv.cur==='aw')return hv.bar+ggVotingView(A)+csec('시즌 시상',aw);

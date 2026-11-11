@@ -284,6 +284,7 @@ function ownershipReplace(tid,q,buyer){
   s.lastEventY=G.year;s.pending=null;s.debtYears=0;t.debtY=0;
   const to=ownershipSnapshot(tid);
   ownershipRecord(tid,buyer?'acquired':'succeeded',buyer?'새 운영 주체의 구단 인수 완료':'신임 구단주 취임',`${buyer?from.parent+' → '+s.parent.name+' · ':''}${from.owner} → ${own.name}. ${fy}시즌부터 ${t.indie?'투자사 운영(모기업 지원 없음)':OWNER[t.owner].label+' · 기본 지원 한도 '+pct+'%'}. 기존 단장·감독·선수 계약, 연고·이름·상징과 모든 기록을 승계합니다.${capital?' 일회성 운영자금 '+money(capital.amount)+' 출자.':''}`,from,to,capital);
+  if(buyer)try{ ciOnSale(tid); }catch(e){} /* 새 운영 주체의 이름 변경·연고 이전(87_club_identity) */
   if(buyer)(G.rescues=G.rescues||[]).push({y:G.year,d:G.day,tid,k:'sale',old:from.owner,nw:own.name,parentFrom:from.parent,parentTo:s.parent.name,capital:capital&&capital.amount});
 }
 function ownershipStart(tid,kind,opts={}){
