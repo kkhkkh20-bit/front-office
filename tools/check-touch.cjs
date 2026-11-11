@@ -73,6 +73,7 @@ try{if(output)fs.mkdirSync(output,{recursive:true});browser=await chromium.launc
   for(const landscape of [false,true]){const viewport=landscape?{width:config.viewport.height,height:config.viewport.width}:config.viewport;await page.setViewportSize(viewport);await page.waitForTimeout(200);await restore(page,base);const label=name+(landscape?'-landscape':'-portrait');await page.waitForTimeout(180);
    assert.ok(await page.evaluate(()=>navigator.maxTouchPoints>0&&matchMedia('(pointer:coarse)').matches),'터치 기기 설정');
    for(const view of ['overview']){
+    await page.waitForFunction(()=>{const el=document.querySelector('.home-workspace');const c=el&&[...el.querySelectorAll('.home-grid>.hw-panel,.hw-work>.hw-panel')];return c&&c.length&&c.every(x=>x.clientHeight>0);},null,{timeout:3000}).catch(()=>{}); /* 부하가 큰 CI에서 카드 배치 전에 재는 경우 */
     const fit=await page.locator('.home-workspace').evaluate(el=>({overflow:el.scrollHeight>el.clientHeight+2,outer:document.documentElement.scrollHeight>innerHeight+2,cards:[...el.querySelectorAll('.home-grid>.hw-panel,.hw-work>.hw-panel')].map(c=>c.clientHeight)}));assert.ok(!fit.overflow&&!fit.outer&&fit.cards.every(h=>h>=80),label+' '+view+' '+JSON.stringify(fit));
     const next=page.locator('[data-a="homePage"][data-v="1"]');if(await next.isEnabled()){const before=await page.locator('.hw-pager').innerText();await next.tap();assert.notEqual(await page.locator('.hw-pager').innerText(),before);}
    }
