@@ -33,6 +33,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 기준 커밋과 비교하는 점검(git show)이 있어 전체 이력이 필요
       - uses: actions/setup-node@v4
         with:
           node-version: 20
