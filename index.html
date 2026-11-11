@@ -11523,6 +11523,24 @@ function dtHint(p,sd){ // 스카우트·코치진이 보는 성장 유형 (정�
   const wrong=hn('dt'+p.id,G.year)*sd>5.2; const k=wrong?rollDTfix(p):p.dt;
   return {early:'일찍 완성되는 유형으로 봅니다. 20대 후반부터 하락에 대비해야 합니다.',late:'늦게 꽃피는 대기만성형으로 봅니다. 20대 중반 이후에도 기다릴 가치가 있습니다.',stall:'성장이 정체될 우려가 있습니다. 재능만큼 크지 못할 수 있습니다.',vet:'신체 능력은 떨어져도 기술로 버티는 유형입니다. 30대에도 경쟁력을 유지할 것으로 봅니다.',norm:null}[k]; }
 function rollDTfix(p){ return ['norm','early','late','stall','vet'][Math.floor(u01('dtw',p.id)*5)]; }
+
+/* ===== 분기 성장(사용자 11-11: 성장은 분기로 나눠 천천히 크기도, 정체·하락도 한다) =====
+   겨울에 한 해 변화량을 정하고(develop), 겨울에는 일부만 반영한다: 크는 능력 35%(비시즌 훈련), 떨어지는 능력 50%.
+   나머지는 시즌 중 세 번(5/1·6/20·8/10)에 나눠 반영하는데 분기마다 비중이 다르다. 15% 확률로 한 분기는 일시적으로 거꾸로 갔다가 다음 분기에 되찾는다.
+   1년 최종 변화량은 예전과 같고, 중간에 최종값을 넘지 않는다(거꾸로 가는 분기는 마지막 분기가 되지 않는다) */
+const DEVQ_D=[[5,1],[6,20],[8,10]];
+function devQWeights(){ const a=[0,1,2].map(()=>Math.max(.05,N(1,.6))); if(R()<.15){ const i=R()<.5?0:1; a[i]=-rnd(.15,.45); }
+  const S=a.reduce((x,y)=>x+y,0); return S>.3?a.map(x=>+(x/S).toFixed(3)):[.34,.33,.33]; }
+function devSplit(p,B){ if(!p||!B)return; const D={}; let any=false; for(const k in p.r){ if(B[k]==null)continue; const d=p.r[k]-B[k]; if(Math.abs(d)<.05)continue; const w0=d>0?.35:.5; p.r[k]=B[k]+d*w0; D[k]=+(d*(1-w0)).toFixed(3); any=true; }
+  if(!any){ delete p.devQ; return; } p.devQ={y:G.year+1,D,w:devQWeights(),i:0}; }
+function devQApply(p,i){ const Q=p.devQ; if(!Q||Q.i!==i)return 0; const o=ovr(p); const w=Q.w[i]; for(const k in Q.D){ if(p.r[k]==null)continue; p.r[k]=clamp(p.r[k]+Q.D[k]*w,20,99); } Q.i=i+1; if(Q.i>=3)delete p.devQ; return ovr(p)-o; }
+function devQDaily(){ const day=G.day; const i=DEVQ_D.findIndex(([m,d])=>KD(m,d)===day); if(i<0)return; const mine=[];
+  for(const p of Object.values(G.players)){ if(!p.devQ)continue; if(p.devQ.y!==G.year){ if(p.devQ.y<G.year){ for(let j=p.devQ.i;j<3;j++)devQApply(p,j); } continue; } /* 지난 해 남은 몫(예전 저장·날짜 건너뜀)은 한꺼번에 */
+    const dd=devQApply(p,i); if(p.team===G.user&&!G.unemp&&Math.abs(dd)>=.6)mine.push({p,dd}); }
+  if(G.unemp||!mine.length)return; const up=mine.filter(x=>x.dd>0).sort((a,b)=>b.dd-a.dd).slice(0,5), dn=mine.filter(x=>x.dd<0).sort((a,b)=>a.dd-b.dd).slice(0,5);
+  const ln=x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세) 종합 ${x.dd>0?'+':''}${(dv(ovr(x.p))-dv(ovr(x.p)-x.dd))}`;
+  mail('코치진',`${i+1}분기 성장 보고`,`시즌 중 성장이 반영됐습니다(${['5월','6월 말','8월 중순'][i]}).\n\n오른 선수: ${up.map(ln).join(', ')||'없음'}\n주춤한 선수: ${dn.map(ln).join(', ')||'없음'}\n\n겨울에 정해진 한 해 변화가 분기마다 나뉘어 들어오며, 어떤 분기는 정체되거나 잠시 떨어지기도 합니다.`,{kind:'선수'}); }
+function devQText(p){ const Q=p&&p.devQ; if(!Q||Q.y!==G.year)return ''; const left=DEVQ_D.slice(Q.i).map(([m,d])=>`${m}/${d}`).join('·'); const s=Object.values(Q.D).reduce((a,v)=>a+v,0); return left?`시즌 중 ${s>=0?'성장':'변화'} 남음(${left} 반영)`:''; }
 /* ===== 날짜 ===== */
 const D0=FrontOfficeCore.D0;
 const dnum=FrontOfficeCore.dnum;
@@ -12055,7 +12073,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(12,1)){ contractStart(); aiCapAll(); try{ aiDebtDump(); }catch(e){} capWarnUser(); }
   try{ salTalkDaily(day); }catch(e){} try{ holdDaily(day); }catch(e){}
   if(day===KD(12,10)){ try{ capCouncil(); }catch(e){} }
-  try{ assocDaily(day); }catch(e){} try{ lgrDaily(day); }catch(e){} try{ plogDaily(); }catch(e){} try{ expDaily(day); }catch(e){} try{ pwatchDaily(); }catch(e){} try{ gmHofDaily(day); }catch(e){} { const od=dobj(day); if(od.m===9&&od.d===1)try{ retireNotice(); }catch(e){} } try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} if(od.d===1)try{ mplMonth(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
+  try{ assocDaily(day); }catch(e){} try{ lgrDaily(day); }catch(e){} try{ plogDaily(); }catch(e){} try{ expDaily(day); }catch(e){} try{ pwatchDaily(); }catch(e){} try{ devQDaily(); }catch(e){} try{ gmHofDaily(day); }catch(e){} { const od=dobj(day); if(od.m===9&&od.d===1)try{ retireNotice(); }catch(e){} } try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} if(od.d===1)try{ mplMonth(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();
   if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(m.imp&&m.kind==='일정'&&G.day-m.day>=3)m.imp=false; } /* 날짜가 지난 일정 안내는 '중요'만 내린다. 소식을 저절로 읽음 처리하지 않는다(단장이 읽거나 '모두 읽음'을 눌러야 읽음) */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} try{treqWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
@@ -12807,7 +12825,7 @@ function newYear(){
   try{ warFreeze(G.year); }catch(e){} /* 능력치가 바뀌기 전에 올해 WAR을 고정 */
   const before={}; for(const p of domestic(G.user))before[p.id]=ovr(p);
   try{ trnYearNote(G.year); }catch(e){} /* 집중훈련 회고는 겨울 성장·노화 전 능력으로 */
-  for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)) develop(p); } /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
+  for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)){ if(p.devQ)for(let j=p.devQ.i;j<3;j++)devQApply(p,j); /* 지난 시즌 남은 분기 몫 정리 */ const B={...p.r}; develop(p); try{ devSplit(p,B); }catch(e){} } } /* 분기 성장: 겨울엔 일부, 나머지는 시즌 중 세 번(04_growth) */ /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
   if(G.draftClass)for(const id of G.draftClass){ const p=G.players[id]; if(p&&p.prospect)dropP(id); }
   G.year++; try{ trnNewYear(); }catch(e){} try{ posYear(); }catch(e){} syncMinSal(); for(const p of Object.values(G.players))if(!p.foreign&&p.sal>0&&p.sal<MIN_SAL)p.sal=MIN_SAL; /* 군 복무·해외 등 소속이 잠시 비어 있는 선수도 함께 올린다 */
   milNewYear(); delete G.futLn; /* 지난 시즌 2군 라인업을 새 시즌에 보여 주지 않는다(검수 11-09zi) */
@@ -31088,7 +31106,7 @@ function growthCard(p){
   if(p.prospect||p.team!==G.user||!p.oh||!p.oh.length)return '';
   const pts=p.oh.map(x=>({y:x.y,v:clamp(r5(x.o+hn('gh'+x.y,p.id)*1.5),20,80)}));
   const lg=p.devLog,whyLabels={slump:'겨울 기량 퇴보','potential-reassessment':'잠재력 기대 재평가','training-opportunity':'집중훈련 성장기회 조정',aging:'노화에 따른 변화',military:'현역 복무 중 훈련 공백'},why=lg&&lg.tid===G.user&&Array.isArray(lg.reasons)?[...new Set(lg.reasons)].map(k=>whyLabels[k]).filter(Boolean):[]; const pl=lg?(lg.play>=1.08?'주전급 출전':lg.play>=1?'충분한 출전':lg.play>=.92?'출전 부족':'거의 못 뜀'):'';
-  return `<section class="card"><div class="row between"><span class="eyebrow">연도별 코치진 평가</span><span class="small muted">매년 겨울 성장 반영</span></div>
+  return `<section class="card"><div class="row between"><span class="eyebrow">연도별 코치진 평가</span><span class="small muted">겨울에 일부, 시즌 중 세 번(5/1·6/20·8/10) 나눠 반영</span></div>${(()=>{ const t=typeof devQText==='function'?devQText(p):''; return t?`<p class="small">${esc(t)}</p>`:''; })()}
     <div class="growth">${pts.map(x=>`<div><i style="height:${Math.max(6,(x.v-20)*1.6)}px;background:${rcol(x.v)}"></i><b>${dv(x.v)}</b><span>${String(x.y).slice(2)}</span></div>`).join('')}</div>
     ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${lg.tid===G.user&&lg.manager?` · ${esc(lg.manager.name)} 감독 육성 ${lg.manager.youth}`:''}</p>`:''}${why.length?`<p class="small muted">실제 반영 요인: ${why.map(esc).join(' · ')}. 잠재력 평가는 성장 보장이 아니며, 시즌 폼·일시적 컨디션과 기본 기량의 변화는 다릅니다.</p>`:''}</section>`;
 }
@@ -34632,6 +34650,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-dev-q',d:'11월 11일',t:'분기 성장',items:[
+    '선수 성장·노화가 겨울 한 번에 모두 반영되지 않습니다. 겨울에는 일부(크는 능력 35%, 떨어지는 능력 50%)만 반영하고, 나머지는 시즌 중 5월 1일·6월 20일·8월 10일 세 번에 나눠 들어옵니다.',
+    '분기마다 비중이 달라 어떤 분기는 크게 오르고, 어떤 분기는 정체되거나 잠시 떨어졌다가 다음 분기에 되찾기도 합니다. 1년 최종 변화량은 같습니다. 분기마다 우리 팀 성장 보고가 소식함에 옵니다.']},
   {id:'2026-11-11-cast-fx',d:'11월 11일',t:'경기 중계: 결정적 순간 · 타구장 소식',items:[
     '중계 중 역전·동점(6회 이후)·끝내기·만루 홈런, 8회 이후 1점 차 득점권 위기를 삼진·병살 등으로 막은 장면에서 구장 위에 큰 장면 카드가 잠깐 뜹니다. 되감기·건너뛰기 때는 뜨지 않습니다.',
     '중계 화면 아래에 같은 날 다른 구장 점수가 나옵니다. 우리 경기가 진행된 이닝까지만 보여 주고, 경기가 끝나면 최종 점수가 나옵니다.']},

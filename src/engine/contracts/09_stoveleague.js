@@ -313,7 +313,7 @@ function newYear(){
   try{ warFreeze(G.year); }catch(e){} /* 능력치가 바뀌기 전에 올해 WAR을 고정 */
   const before={}; for(const p of domestic(G.user))before[p.id]=ovr(p);
   try{ trnYearNote(G.year); }catch(e){} /* 집중훈련 회고는 겨울 성장·노화 전 능력으로 */
-  for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)) develop(p); } /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
+  for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)){ if(p.devQ)for(let j=p.devQ.i;j<3;j++)devQApply(p,j); /* 지난 시즌 남은 분기 몫 정리 */ const B={...p.r}; develop(p); try{ devSplit(p,B); }catch(e){} } } /* 분기 성장: 겨울엔 일부, 나머지는 시즌 중 세 번(04_growth) */ /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
   if(G.draftClass)for(const id of G.draftClass){ const p=G.players[id]; if(p&&p.prospect)dropP(id); }
   G.year++; try{ trnNewYear(); }catch(e){} try{ posYear(); }catch(e){} syncMinSal(); for(const p of Object.values(G.players))if(!p.foreign&&p.sal>0&&p.sal<MIN_SAL)p.sal=MIN_SAL; /* 군 복무·해외 등 소속이 잠시 비어 있는 선수도 함께 올린다 */
   milNewYear(); delete G.futLn; /* 지난 시즌 2군 라인업을 새 시즌에 보여 주지 않는다(검수 11-09zi) */
