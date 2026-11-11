@@ -106,7 +106,11 @@ function roleCard(p){ if(!p.isP||p.team!==G.user||(p.joinY>G.year))return ''; co
   <div class="talk">${chips}</div>
   ${v?`<div class="mop"><b>감독 의중${g?'':' · 지금 적용 중'}</b><span>"${esc(v.t)}"</span>${g?`<span class="small muted">단장 요청(${PROLE[g.k]})이 적용 중입니다.</span>`:''}</div>`:''}
   <p class="small muted">선발 5명은 감독이 체력과 투구 내용으로 고르고 매주 다시 봅니다. 선발 체력 기준은 감독 성향에 따라 다르고(스몰볼 감독은 낮게, 불펜 의존이 큰 감독은 높게), 신인은 보통 1군 계투나 2군 선발 수업으로 시작합니다. 2군 선발 수업 중인 투수는 2군에서 선발로 던지며 체력을 키우고 1군에 올라오지 않습니다.</p>
-  ${UI.roleMsg&&UI.roleMsg.id===p.id?`<div class="note">${esc(UI.roleMsg.t)}</div>`:''}</section>`; }
+  ${UI.roleMsg&&UI.roleMsg.id===p.id?`<div class="note">${esc(UI.roleMsg.t)}</div>`:''}${bpenCard(p)}</section>`; }
+/* 불펜 역할: 마무리·필승조·추격조·롱릴리프(일고회장 11-12) */
+function bpenCard(p){ if((p.role==='SP'||depth(G.user).sp.some(x=>x.id===p.id))&&!(G.bprole&&G.bprole[p.id]))return ''; /* 선발 5명에게는 보이지 않는다 */ const b=bproleOf(G.user,p)||'auto'; const chips=Object.entries(BROLE).map(([k,l])=>`<button class="btn small ${b===k?'on':''}" data-a="bproleSet" data-v="${p.id}:${k}">${l}</button>`).join('');
+  return `<div class="row between" style="margin-top:10px"><span class="eyebrow">불펜 역할</span><span class="small muted">지금: ${esc(squadRole(p)||'-')}</span></div><div class="talk">${chips}</div><p class="small muted">마무리는 9회 3점 차 이내 리드, 필승조는 7회 이후 박빙, 추격조는 지고 있거나 점수 차가 큰 경기, 롱릴리프는 선발이 5회 전에 내려가면 먼저 나와 여러 이닝을 던집니다. 감독에게 맡기면 감독이 구위·컨디션으로 정합니다. 마무리는 한 명입니다.</p>${UI.bpMsg&&UI.bpMsg.id===p.id?`<div class="note">${esc(UI.bpMsg.t)}</div>`:''}`; }
+Object.assign(A,{ bproleSet(v){ const [id,k]=v.split(':'); const t=bproleSet(+id,k); UI.bpMsg=t?{id:+id,t}:null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
 Object.assign(A,{ proleSet(v){ const [id,k]=v.split(':'); const t=proleSet(+id,k); UI.roleMsg=t?{id:+id,t}:null; if(UI.mail!=null&&t)toast(t); save(); if(UI.sheet!=null)renderSheet(); render(); } });
 /* 수비 위치(선수 화면 능력 탭 정보, 육성 탭 전환 훈련): 자리별 숙련도와 수비 평가, 전환 훈련 */
 /* FM처럼 세로로 본 야구장 위에 수비 위치를 점으로: 주 포지션은 큰 점, 익힌 자리는 평가 색, 못 맡는 자리는 흐린 점 */

@@ -14,7 +14,7 @@ function playedReg(p){ if(p.team==null)return false; const r=G.sea&&G.sea.rec[p.
 /* 팀 안에서의 역할 한 줄: 감독 배치(depth)와 능력 성향으로 */
 function squadRole(p){ if(!p||p.team==null||p.prospect)return ''; if(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)return '군 복무 중'; if(p.injOut>0)return `부상 회복 중(${p.injOut}일)`; if(isAway(p))return '국가대표 차출 중';
   let d=null; try{ d=depth(p.team); }catch(e){ return ''; } const has=L=>L.some(x=>x.id===p.id);
-  if(p.isP){ const i=d.sp.findIndex(x=>x.id===p.id); if(i>=0)return `${i+1}선발`; const j=d.pen.findIndex(x=>x.id===p.id); if(j===0)return '마무리'; if(j>0&&j<=3)return '필승조'; if(j>3)return p.r.sta>=55?'롱릴리프':'추격조'; return p.age<=24?'2군 육성(투수)':'2군 대기(투수)'; }
+  if(p.isP){ const i=d.sp.findIndex(x=>x.id===p.id); if(i>=0)return `${i+1}선발`; const j=d.pen.findIndex(x=>x.id===p.id); if(j===0)return '마무리'; if(j>0&&j<=3)return '필승조'; if(j>3){ const b=bproleOf(p.team,p); return b==='lr'?'롱릴리프':b==='mr'?'추격조':p.r.sta>=55?'롱릴리프':'추격조'; } return p.age<=24?'2군 육성(투수)':'2군 대기(투수)'; }
   if(has(d.start)){ const k=Object.keys(d.ln).find(k=>d.ln[k].id===p.id); return `주전 ${POSK[k]||posLabel(p)}`; } /* 실제 라인업 자리로(검수 11-09zi) */
   if(has(d.bench)){ if(p.pos==='C')return '백업 포수'; const r=p.r; const t=[[r.pow,'장타 대타 후보'],[r.con,'컨택 대타'],[r.spd,'대주자 요원'],[r.def,'수비 강화 요원']].sort((a,b)=>b[0]-a[0])[0]; return t[0]>=55?t[1]:`백업 ${posLabel(p)}`; }
   return p.age<=24?'2군 육성':'2군 대기'; }

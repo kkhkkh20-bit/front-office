@@ -118,6 +118,8 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
     let nxt=null;
     if(inn>=9&&lead>=1&&lead<=3) nxt=av.find(p=>p===closer);
     if(!nxt&&inn>=7&&lead>=0&&lead<=3) nxt=av.find(p=>setup.includes(p));
+    if(!nxt&&inn<=5&&fs.curIsSP){ const L=av.find(p=>bproleOf(fs.tid,p)==='lr'); if(L){ nxt=L; (fs.multi=fs.multi||{})[L.id]=1; } } /* 롱릴리프: 선발이 일찍 내려가면 먼저, 여러 이닝 */
+    if(!nxt&&lead<0&&lead>=-3){ const M=av.find(p=>bproleOf(fs.tid,p)==='mr'); if(M)nxt=M; } /* 추격조: 따라가는 경기 */
     if(!nxt&&(lead<-3||lead>4)) nxt=[...av].reverse().find(p=>p!==closer);
     if(!nxt) nxt=av.find(p=>mid.includes(p))||av.find(p=>p!==closer)||av[0];
     fs.exit[fs.cur.id]=lead; fs.cur=nxt; fs.curIsSP=false; fs.used.add(nxt.id); { const pu=mgrPush(fs.tid); if(nxt!==closer&&inn<=7&&R()<clamp((pu-52)/45,0,.6)*(Math.abs(lead)<=3?1:.5))(fs.multi=fs.multi||{})[nxt.id]=1; } /* 멀티이닝 */ fs.box.set(nxt.id,pz()); fs.entry[nxt.id]=lead; (fs.entryR=fs.entryR||{})[nxt.id]=nr||0; fs.pitchers.push(nxt.id);

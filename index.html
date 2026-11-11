@@ -11436,7 +11436,7 @@ function depth(tid){
   const futB0=by(ps.filter(p=>!p.isP&&healthy(p)&&!actIds.has(p.id)),ovr), futP0=by(ps.filter(p=>p.isP&&healthy(p)&&!actIds.has(p.id)),ovr);
   const pit=act.filter(p=>p.isP&&healthy(p));
   const spF=p=>spV(p)+roleBias(tid,p)+pb(p)+rpB(tid,p,'SP')-rpB(tid,p,'RP'), sp=[...by(pit.filter(p=>rpPlanOf(tid,p)!=='rp'),spF),...by(pit.filter(p=>rpPlanOf(tid,p)==='rp'),spF)].slice(0,5); /* 계투로 정한 투수는 선발 자리가 남을 때만(검수 11-08: 계투 요청을 받아들였는데 선발 등판) */ /* 보직 저장은 roleSync에서만: 화면 조회가 보직·부하 한도를 바꾸지 않게(검수 11-09zh) */
-  const rest=by(pit.filter(p=>!sp.includes(p)),p=>penV(p)+pb(p)*.6+rpB(tid,p,'RP')); /* 감독이 받아들인 역할 약속(61_contract_terms mgrUseAsk) */
+  const rest=penArrange(tid,by(pit.filter(p=>!sp.includes(p)),p=>penV(p)+pb(p)*.6+rpB(tid,p,'RP'))); /* 단장이 정한 불펜 역할(마무리·필승조·추격조·롱릴리프) 순서 반영 */ /* 감독이 받아들인 역할 약속(61_contract_terms mgrUseAsk) */
   const start=ORDER.filter(k=>ln[k]).map(k=>ln[k]);
   const on=entryOn();
   return {ln,start,bench:on?bat:bat.slice(0,5),futB:on?futB0:bat.slice(5).concat(futB0),sp,pen:on?rest:rest.slice(0,7),futP:on?futP0:rest.slice(7).concat(futP0),inj:ps.filter(p=>!healthy(p))};
@@ -11729,6 +11729,8 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
     let nxt=null;
     if(inn>=9&&lead>=1&&lead<=3) nxt=av.find(p=>p===closer);
     if(!nxt&&inn>=7&&lead>=0&&lead<=3) nxt=av.find(p=>setup.includes(p));
+    if(!nxt&&inn<=5&&fs.curIsSP){ const L=av.find(p=>bproleOf(fs.tid,p)==='lr'); if(L){ nxt=L; (fs.multi=fs.multi||{})[L.id]=1; } } /* 롱릴리프: 선발이 일찍 내려가면 먼저, 여러 이닝 */
+    if(!nxt&&lead<0&&lead>=-3){ const M=av.find(p=>bproleOf(fs.tid,p)==='mr'); if(M)nxt=M; } /* 추격조: 따라가는 경기 */
     if(!nxt&&(lead<-3||lead>4)) nxt=[...av].reverse().find(p=>p!==closer);
     if(!nxt) nxt=av.find(p=>mid.includes(p))||av.find(p=>p!==closer)||av[0];
     fs.exit[fs.cur.id]=lead; fs.cur=nxt; fs.curIsSP=false; fs.used.add(nxt.id); { const pu=mgrPush(fs.tid); if(nxt!==closer&&inn<=7&&R()<clamp((pu-52)/45,0,.6)*(Math.abs(lead)<=3?1:.5))(fs.multi=fs.multi||{})[nxt.id]=1; } /* 멀티이닝 */ fs.box.set(nxt.id,pz()); fs.entry[nxt.id]=lead; (fs.entryR=fs.entryR||{})[nxt.id]=nr||0; fs.pitchers.push(nxt.id);
@@ -15457,11 +15459,13 @@ const EVH={
       evNew('pt',`${p.name}-${m.name} 감독 갈등: 후속 조치`,`[기사] ${tn} ${p.name}이(가) 출전 시간 문제로 ${m.name} 감독과 ${hot?'언쟁을 벌였다':'부딪쳤다'}는 기사가 났습니다.\n선수 말: "${moraleWhy(p)}"\n감독 쪽: "${hot?'기용은 감독이 정합니다. 선수가 감독실에 와서 따질 일은 아닙니다.':'팀 사정상 지금은 어렵다고 설명했습니다.'}"\n올해 기록: ${evLine(p)}`,
       [{l:'감독 편에 서기',fx:'감독 관계가 오르고 기강이 섭니다. 선수 기분은 크게 떨어집니다.'},
        {l:'선수 면담 뒤 감독에게 기용 건의',fx:'선수 기분이 오르고 감독 관계는 내려갑니다. 한 달 안에 기회를 못 얻으면 선수가 크게 실망합니다.'},
-       {l:'트레이드 명단에 올리기',fx:tradeOpen()?'선수 기분이 조금 오르고, 다른 구단 제안이 올 수 있습니다.':'선수 기분이 조금 오릅니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'},
+       p.foreign?{l:'통역과 함께 따로 면담하기',fx:'선수 기분이 조금 오릅니다. 출전은 그대로입니다. 외국인 선수는 트레이드 명단에 올릴 수 없어 교체는 외국인 화면에서 직접 정합니다.'}
+        :{l:'트레이드 명단에 올리기',fx:tradeOpen()?'선수 기분이 조금 오르고, 다른 구단 제안이 올 수 있습니다.':'선수 기분이 조금 오릅니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'},
        {l:'지켜보기',fx:'둘이 알아서 풀게 둡니다. 선수 기분이 조금 떨어지고 언론은 프런트가 손 놓았다고 봅니다.'}],{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,hot},def:3}); },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; const m=G.mgr[G.user];
       if(i===0){ if(m)m.rel=clamp(m.rel+4,0,100); p.mor=clamp(p.mor-9,0,100); return `감독 관계 +4. ${p.name} 기분 -9. 선수단에는 감독 권한을 존중한다는 메시지가 갔습니다.`; }
       if(i===1){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 +8, 감독 관계 -${d}. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
+      if(i===2&&p.foreign){ p.mor=clamp(p.mor+3,0,100); return `${p.name}과(와) 통역을 두고 따로 이야기했습니다. 기분 +3. 출전은 감독 결정 그대로입니다.`; } /* 외국인은 트레이드 명단에 오르지 않는데 '올렸다'고만 나오던 문제(꺼끼꺼 11-12) */
       if(i===2){ listPlayer(p.id); p.mor=clamp(p.mor+3,0,100); return `${p.name}을(를) 트레이드 명단에 올렸습니다. 기분 +3.`; }
       p.mor=clamp(p.mor-4,0,100); prInit(); G.pr.press=clamp(G.pr.press-1,0,100); return `${p.name} 기분 -4, 언론 -1.`; } },
   /* 2군 유망주 콜업 여론 */
@@ -16064,7 +16068,7 @@ function playedReg(p){ if(p.team==null)return false; const r=G.sea&&G.sea.rec[p.
 /* 팀 안에서의 역할 한 줄: 감독 배치(depth)와 능력 성향으로 */
 function squadRole(p){ if(!p||p.team==null||p.prospect)return ''; if(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)return '군 복무 중'; if(p.injOut>0)return `부상 회복 중(${p.injOut}일)`; if(isAway(p))return '국가대표 차출 중';
   let d=null; try{ d=depth(p.team); }catch(e){ return ''; } const has=L=>L.some(x=>x.id===p.id);
-  if(p.isP){ const i=d.sp.findIndex(x=>x.id===p.id); if(i>=0)return `${i+1}선발`; const j=d.pen.findIndex(x=>x.id===p.id); if(j===0)return '마무리'; if(j>0&&j<=3)return '필승조'; if(j>3)return p.r.sta>=55?'롱릴리프':'추격조'; return p.age<=24?'2군 육성(투수)':'2군 대기(투수)'; }
+  if(p.isP){ const i=d.sp.findIndex(x=>x.id===p.id); if(i>=0)return `${i+1}선발`; const j=d.pen.findIndex(x=>x.id===p.id); if(j===0)return '마무리'; if(j>0&&j<=3)return '필승조'; if(j>3){ const b=bproleOf(p.team,p); return b==='lr'?'롱릴리프':b==='mr'?'추격조':p.r.sta>=55?'롱릴리프':'추격조'; } return p.age<=24?'2군 육성(투수)':'2군 대기(투수)'; }
   if(has(d.start)){ const k=Object.keys(d.ln).find(k=>d.ln[k].id===p.id); return `주전 ${POSK[k]||posLabel(p)}`; } /* 실제 라인업 자리로(검수 11-09zi) */
   if(has(d.bench)){ if(p.pos==='C')return '백업 포수'; const r=p.r; const t=[[r.pow,'장타 대타 후보'],[r.con,'컨택 대타'],[r.spd,'대주자 요원'],[r.def,'수비 강화 요원']].sort((a,b)=>b[0]-a[0])[0]; return t[0]>=55?t[1]:`백업 ${posLabel(p)}`; }
   return p.age<=24?'2군 육성':'2군 대기'; }
@@ -18190,8 +18194,10 @@ function loadText(p){ if(!p.isP)return ''; const day=G.day+1; const cd=consecDay
 function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a));
   /* 같은 투수가 같은 단계(높음·위험)로 계속 남아 있으면 매주 되풀이하지 않는다: 새로 한도를 넘었거나 '위험'으로 올라간 투수가 있을 때만 */
   const lv=p=>armRatio(p)>=1.3?2:1; const prev=G.loadSig||{}; const cur={}; for(const p of hi)cur[p.id]=lv(p); G.loadSig=cur; if(!hi.length)return;
-  if(!hi.some(p=>(prev[p.id]||0)<cur[p.id]))return;
-  const m=G.mgr[G.user]; mail('의무팀',`투수 부하 주의 ${hi.length}명`,`누적 팔 부하가 한도를 넘은 투수입니다. 부하가 높을수록 팔꿈치·어깨 부상 위험이 커집니다.\n\n${hi.slice(0,6).map(p=>`${p.name}(${posLabel(p)}): ${loadText(p)}`).join('\n')}${m&&!m.interim?`\n\n${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}. 감독에게 '투수 관리(혹사 금지)'를 지시하면 줄일 수 있습니다.`:''}`,{kind:'의무',acts:[{l:'감독 지시',a:'goWork',v:'감독'}]}); }
+  /* 1군과 2군(퓨처스)을 나눈다: 2군 투수 운용은 1군 감독 지시와 무관하고, 2군 투수만 바뀐 주에는 보고하지 않는다(제보 11-12: 2군 혹사 보고가 계속 올라옴) */
+  const one=hi.filter(p=>p.e1), two=hi.filter(p=>!p.e1); if(!one.some(p=>(prev[p.id]||0)<cur[p.id]))return;
+  const m=G.mgr[G.user], fm=(coachesOf(G.user)||{}).fm; const line=p=>`${p.name}(${posLabel(p)}): ${loadText(p)}`;
+  mail('의무팀',`1군 투수 부하 주의 ${one.length}명`,`누적 팔 부하가 한도를 넘은 1군 투수입니다. 부하가 높을수록 팔꿈치·어깨 부상 위험이 커집니다.\n\n${one.slice(0,6).map(line).join('\n')}${m&&!m.interim?`\n\n${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}. 감독에게 '투수 관리(혹사 금지)'를 지시하면 줄일 수 있습니다.`:''}${two.length?`\n\n참고 · 2군(퓨처스) ${two.length}명: ${two.slice(0,4).map(p=>p.name).join(', ')}${two.length>4?' 외':''}. 2군 등판은 ${fm&&fm.name?fm.name+' 2군 감독':'2군 코치진'}이 정하며 1군 감독 지시와는 따로입니다.`:''}`,{kind:'의무',acts:[{l:'감독 지시',a:'goWork',v:'감독'}]}); }
 /* ===== 메디컬 체크 =====
    다른 구단 선수의 부상 체질은 우리 의무팀이 검진해야 알 수 있다. 제휴 병원 등급이 높을수록 정확하다.
    우리 선수는 매일 보기 때문에 정확히 안다. AI 구단은 자기 의무팀이 있어서 트레이드 때 실제 체질을 반영한다 */
@@ -21293,6 +21299,31 @@ function proleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.isP
   G.prole[pid]={k,d:G.day,tid:G.user}; if(k==='sp2'){ p.role='SP'; if(p.e1){ p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); } } else if(k==='rp'){ p.role='RP'; } else if(k==='sp'){ try{ roleSync(G.user); }catch(e){} }
   const tail=same?'감독도 같은 생각입니다.':m&&mplOn('listen')?`${m.name} 감독이 약속대로 단장 건의를 받아들였습니다.`:m&&m.ego>=65?`${m.name} 감독이 썩 내켜하지 않지만 받아들였습니다(관계 -1).`:`${m?m.name+' 감독이':'코치진이'} 받아들였습니다.`;
   return `${p.name}: ${PROLE[k]}. ${tail}${k==='sp'&&!p.e1&&entryOn()?' 지금 2군이라 1군에 올라와야 선발로 나갑니다.':k==='sp'&&p.role!=='SP'?' 선발 경쟁에 가산점을 받지만 아직 선발 5명에 들지 못해 당분간 계투로 나갑니다.':''}`; }
+/* ===== 불펜 역할(일고회장 11-12): 단장이 마무리·필승조·추격조·롱릴리프를 요청한다 =====
+ - 기본은 감독이 정한 불펜 순서다(첫째 마무리, 둘째~넷째 필승조, 나머지 추격조).
+ - 요청은 선발·계투 요청과 같은 규칙으로 감독이 받아들이거나(대개) 거절한다(7일 뒤 다시). 마무리는 한 명만.
+ - 경기: 마무리는 9회 3점 차 이내 리드, 필승조는 7회 이후 박빙, 추격조는 지고 있거나 크게 벌어진 경기,
+   롱릴리프는 선발이 5회 이전에 내려가면 먼저 나와 여러 이닝을 던진다. */
+const BROLE={auto:'감독에게 맡김',cl:'마무리',su:'필승조',mr:'추격조',lr:'롱릴리프'};
+function bproleOf(tid,p){ const x=G.bprole&&p&&G.bprole[p.id]; return x&&x.tid===tid&&p.team===tid?x.k:null; }
+function penArrange(tid,rest){ if(!G.bprole||!rest.some(p=>bproleOf(tid,p)))return rest; const k=p=>bproleOf(tid,p);
+  const cl=rest.filter(p=>k(p)==='cl'), su=rest.filter(p=>k(p)==='su'), au=rest.filter(p=>!k(p)), mr=rest.filter(p=>k(p)==='mr'), lr=rest.filter(p=>k(p)==='lr');
+  const closer=cl[0]||au.shift()||su.shift(); const setup=[...cl.slice(1),...su]; while(setup.length<3&&au.length)setup.push(au.shift());
+  return [closer,...setup,...au,...lr,...mr].filter(Boolean); } /* 끝에서부터 고르는 큰 점수 차 경기는 추격조가 먼저, 롱릴리프는 선발 조기 강판 때 */
+function bproleNat(p){ const s=G.bprole; G.bprole=null; let d; try{ d=depth(G.user); }finally{ G.bprole=s; } const j=d.pen.findIndex(x=>x.id===p.id); return j<0?null:j===0?'cl':j<=3?'su':'mr'; }
+function bproleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.isP||G.unemp)return '우리 투수만 정할 수 있습니다.'; if(!BROLE[k])return ''; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년 합류 예정이라 아직 역할을 정할 수 없습니다.`; G.bprole=G.bprole||{};
+  if(k==='auto'){ delete G.bprole[pid]; return `${p.name}의 불펜 역할을 감독에게 맡겼습니다.`; }
+  const cur=bproleOf(G.user,p); if(cur===k)return ''; const m=G.mgr[G.user];
+  { const x=G.bproleNo&&G.bproleNo[pid]; if(x&&x.u>G.day&&!(m&&x.mid!==m.id))return `${m?m.name+' 감독':'감독'}이 얼마 전 거절했습니다. ${dmd(x.u)}부터 다시 요청할 수 있습니다.`; }
+  const nat=m&&!m.interim?bproleNat(p):null; const same=!m||m.interim||nat===k;
+  if(!same){ const br=mplBreakListen(`${p.name} ${BROLE[k]}`); if(br)return br; mgrFix(m); const far=k==='cl'&&nat!=='su'&&nat!=='cl'; const s=.9-(m.ego-50)/80+(m.rel-60)/100-(far?.2:0)+(mplOn('listen')?.3:0); const ok=R()<clamp(s,.3,.97);
+    if(!ok){ m.rel=clamp(m.rel-2,0,100); (G.bproleNo=G.bproleNo||{})[pid]={u:G.day+7,mid:m.id}; return `${m.name} 감독: "${k==='cl'||k==='su'?`${p.name}은(는) 아직 접전 막판을 맡길 공이 아닙니다`:`${p.name}은(는) 지금 접전에 필요한 투수입니다`}. 조금 더 지켜봐 주십시오." 요청을 받아들이지 않았습니다(관계 -2). 7일 뒤 다시 요청할 수 있습니다.`; }
+    if(m.ego>=65&&!mplOn('listen'))m.rel=clamp(m.rel-1,0,100); }
+  if(k==='cl')for(const id in G.bprole){ const x=G.bprole[id]; if(x.k==='cl'&&x.tid===G.user&&+id!==pid)x.k='su'; } /* 마무리는 한 명: 앞서 정한 마무리는 필승조로 */
+  G.bprole[pid]={k,d:G.day,tid:G.user};
+  const sp=p.role==='SP'||(G.prole&&G.prole[pid]&&G.prole[pid].k!=='rp'&&G.prole[pid].k!=='auto');
+  const tail=same?'감독도 같은 생각입니다.':m&&mplOn('listen')?`${m.name} 감독이 약속대로 단장 건의를 받아들였습니다.`:m&&m.ego>=65?`${m.name} 감독이 썩 내켜하지 않지만 받아들였습니다(관계 -1).`:`${m?m.name+' 감독이':'코치진이'} 받아들였습니다.`;
+  return `${p.name}: 불펜 ${BROLE[k]}. ${tail}${sp?' 지금은 선발 보직이라 계투로 나갈 때부터 적용됩니다.':!p.e1&&entryOn()?' 지금 2군이라 1군에 올라오면 적용됩니다.':''}`; }
 /* ===== 수비 포지션: 뛰면서 배운다 =====
  - 선수마다 포지션별 숙련도(0~100)가 있다. 주 포지션은 100. 처음에는 아마추어 때 함께 연습한 자리(예전 서브 포지션)만 50쯤 익숙하다.
  - 그 자리에서 경기를 뛰거나(1군 출전), 전환 훈련을 하면(2군에서는 그 자리로 경기도 나간다) 숙련도가 오른다.
@@ -22072,7 +22103,7 @@ function memoAsk(f,p){ if(G.unemp||p.team!==G.user||!(f.maj||['w20','sv40'].incl
   const D=memoDemand(p), e=ecoIdx(); const nm=`${p.name} ${f.k==='mile'?f.txt:FEATK[f.k]||'대기록'}`;
   evNew('memo',`${nm} 기념 유니폼 만들까요?`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) ${f.txt} 기록을 세웠습니다. 마케팅팀은 기념 유니폼을 내자고 합니다.\n스타 파워 ${starPower(p)} · 팬 여론 ${Math.round(G.pr.fan)} 기준 예상 판매 약 ${D.toLocaleString('ko-KR')}벌(운에 따라 절반~1.5배). 다 팔리면 구단 몫 한 벌 ${Math.round(MEMO_U*e*100)}만 원, 남은 재고는 손해입니다.`,
     MEMO_Q.map(q=>{ const c=Math.round((MEMO_FIX+q*MEMO_C)*e), s=Math.min(q,D); return {l:`${(q/1e4)}만 벌 제작`,fx:`제작비 ${money(c)}. 예상대로 팔리면 판매 수입 ${money(Math.round(s*MEMO_U*e))}(손익 ${money(Math.round(s*MEMO_U*e)-c)}).`}; }).concat([{l:'만들지 않는다',fx:'비용도 수입도 없습니다.'}]),{ref:p.id,face:p.id,from:'마케팅팀',data:{pid:p.id,nm},def:2,exp:7}); }
-EVH.memo={ can(e,i){ if(i>=MEMO_Q.length)return ''; const t=team(G.user), cost=Math.round((MEMO_FIX+MEMO_Q[i]*MEMO_C)*ecoIdx()); return t.indie&&spendable(G.user)-(G.spend.fan||0)-Math.max(0,(G.spend.etc||0)-(G.spend.trC||0))<cost?`독립구단 제작 자금이 부족합니다. 제작비 ${money(cost)} (${spendTxt()}).`:''; }, pick(e,i){ if(i>=MEMO_Q.length)return '기념 유니폼은 만들지 않았습니다.'; const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.';
+EVH.memo={ can(e,i){ if(i>=MEMO_Q.length)return ''; const t=team(G.user), cost=Math.round((MEMO_FIX+MEMO_Q[i]*MEMO_C)*ecoIdx()); if(!t.indie)return ''; const cash=Math.max(0,spendable(G.user)), fan=G.spend.fan||0, etc=Math.max(0,(G.spend.etc||0)-(G.spend.trC||0)), free=cash-fan-etc; return free<cost?`독립구단 제작 자금이 부족합니다. 제작비 ${money(cost)}, 지금 쓸 수 있는 돈 ${money(Math.max(0,free))} = 선수 영입 자금 ${money(cash)} − 결산 때 낼 팬 마케팅·구단 이벤트 비용 ${money(fan)}${etc?` − 결산 때 낼 기타 지출 ${money(etc)}`:''}.`:''; } /* 이미 쓴 마케팅비가 결산 때 빠지는 몫을 숨기고 보유 현금만 보여 줘 '돈이 있는데 없다'로 읽혔다(제보 11-12) */, pick(e,i){ if(i>=MEMO_Q.length)return '기념 유니폼은 만들지 않았습니다.'; const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.';
   const why=this.can(e,i); if(why)return why; const q=MEMO_Q[i], ec=ecoIdx(), cost=Math.round((MEMO_FIX+q*MEMO_C)*ec), D=Math.round(memoDemand(p)*clamp(Math.exp(N(0,.35)),.5,1.5)), sold=Math.min(q,D), inc=Math.round(sold*MEMO_U*ec); const S=G.spend;
   S.fan=(S.fan||0)+cost; S.fanIn=(S.fanIn||0)+inc; S.goods=(S.goods||0)+inc; const L=G.memoL=G.memoL||[]; L.unshift({y:G.year,d:G.day,pid:p.id,name:p.name,nm:e.data.nm,q,sold,inc,cost}); if(L.length>20)L.length=20;
   const boom=D>=q*1.2, flop=sold<q*.6;
@@ -24740,7 +24771,7 @@ function linkMap(){ const ps=Object.values(G.players); const k=G.year+':'+G.day+
   for(const m of [...(G.mmarket||[]),...(G.exMgr||[])])addP(m.name,'person','xmgr:'+m.id); for(const a of G.abroad||[])if(!a.back)addP(a.name,'person','abr:'+a.id); for(const o of G.ob||[])addP(o.name,'person','ob:'+o.id); /* 떠난 사람도 소식 속 이름을 누르면 인물 창(현역 이름이 먼저) */
   const er=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); const tk=Object.keys(teams).sort((a,b)=>b.length-a.length).map(er); const pk=[...Object.keys(names),...Object.keys(ppl)].sort((a,b)=>b.length-a.length).map(er);
   const src=`(${tk.join('|')})|(^|[^가-힣A-Za-z])(${pk.join('|')})(\u2063[\u200b\u200c]+\u2064)?`; /* 뒤쪽 확인((?<!…))은 iOS 16.3 이하 사파리에서 문법 오류라 앞 글자를 잡아 그대로 돌려준다(모바일 접속 불가 제보 11-11) */ _lk={g:G,k,names,teams,ppl,pplT,re:new RegExp(src,'g'),re1:new RegExp(src)}; return _lk; }
-function linkify(h){ if(!G||!h)return h; const L=linkMap(); return h.replace(L.re,(m,t,pre,pn,mk,off,str)=>{ if(t)return `<a class="tl" data-a="lteam" data-v="${L.teams[t]}">${t}</a>`; pre=pre||''; if(L.names[pn]!=null&&L.pplT[pn]&&!mk&&typeof off==='number'&&typeof str==='string'){ const after=str.slice(off+m.length,off+m.length+6), before=str.slice(Math.max(0,off-6),off+pre.length); if(/^\s?(단장|감독|코치|구단주|사장|스카우트|대행)/.test(after)||/(단장|감독|코치|구단주|사장|스카우트)\s?$/.test(before)){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } } { const id=pnmId(mk); if(id!=null&&G.players[id]&&G.players[id].name===pn)return `${pre}<a class="pl" data-a="player" data-v="${id}">${pn}</a>`; } if(L.names[pn]!=null)return `${pre}<a class="pl" data-a="player" data-v="${L.names[pn]}">${pn}</a>`; const q=L.ppl[pn]; return pre+(q?`<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`:pn); }); }
+function linkify(h,pp){ if(!G||!h)return h; const L=linkMap(); return h.replace(L.re,(m,t,pre,pn,mk,off,str)=>{ if(t)return `<a class="tl" data-a="lteam" data-v="${L.teams[t]}">${t}</a>`; pre=pre||''; if(pp&&L.names[pn]!=null&&L.pplT[pn]&&!mk){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } /* 감독·코치 화면(또는 data-person 안)에서는 표시 없는 동명이인 이름을 사람 쪽으로(꺼끼꺼 11-12) */ if(L.names[pn]!=null&&L.pplT[pn]&&!mk&&typeof off==='number'&&typeof str==='string'){ const after=str.slice(off+m.length,off+m.length+6), before=str.slice(Math.max(0,off-6),off+pre.length); if(/^\s?([가-힣]{0,3}코치|단장|감독|구단주|사장|스카우트|대행)/.test(after)||/(단장|감독|코치|구단주|사장|스카우트)\s?$/.test(before)){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } } { const id=pnmId(mk); if(id!=null&&G.players[id]&&G.players[id].name===pn)return `${pre}<a class="pl" data-a="player" data-v="${id}">${pn}</a>`; } if(L.names[pn]!=null)return `${pre}<a class="pl" data-a="player" data-v="${L.names[pn]}">${pn}</a>`; const q=L.ppl[pn]; return pre+(q?`<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`:pn); }); }
 /* 조사 자동 맞춤: 화면에 "을(를)·이(가)·은(는)·와(과)·(으)로·(이)라"가 남으면 앞 글자 받침을 보고 고른다 */
 const JOSA_RE=/을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|\(이\)라/g;
 function josaTail(s){ for(let i=s.length-1;i>=0;i--){ const c=s[i]; if(c===')'){ let d=1; for(i--;i>=0;i--){ if(s[i]===')')d++; else if(s[i]==='('&&--d===0)break; } continue; } if(/["'”’」』\]\s.·]/.test(c))continue; return c; } return ''; }
@@ -24752,7 +24783,7 @@ function josaFix(root){ if(!root)return; const W=document.createTreeWalker(root,
 /* 화면을 그린 뒤, 누를 수 없는 글자 속 이름을 찾아 링크로 바꾼다 */
 const NOLINK='a,button,[data-a],select,option,textarea,input,svg,script,style,.nolink,.kbar,.seg,.chips,.bnav,.sbar,.cast,label,.tcd';
 function autoLink(root){ try{ josaFix(root); }catch(e){} if(!G||!root||UI.cast)return; const L=linkMap(); const W=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{ const v=n.nodeValue; if(!v||v.length<2||!/[가-힣A-Za-z]/.test(v))return NodeFilter.FILTER_REJECT; const pe=n.parentElement; if(!pe||pe.closest(NOLINK))return NodeFilter.FILTER_REJECT; return L.re1.test(v)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT; }});
-  const list=[]; let n; while((n=W.nextNode()))list.push(n); for(const t of list){ const sp=document.createElement('span'); sp.innerHTML=linkify(esc(t.nodeValue)); const f=document.createDocumentFragment(); while(sp.firstChild)f.appendChild(sp.firstChild); t.parentNode.replaceChild(f,t); } }
+  const list=[]; let n; while((n=W.nextNode()))list.push(n); for(const t of list){ const sp=document.createElement('span'); const pe=t.parentElement; sp.innerHTML=linkify(esc(t.nodeValue),!!(pe&&(pe.closest('[data-person]')||(UI.tab==='staff'&&!pe.closest('[data-player-ctx]'))))); const f=document.createDocumentFragment(); while(sp.firstChild)f.appendChild(sp.firstChild); t.parentNode.replaceChild(f,t); } }
 const lk=t=>linkify(esc(t));
 /* 창단 드래프트 등급: 숫자 대신 색 구간만. 우리 스카우트 추정이라 틀릴 수 있다 */
 const GCOL={S:'var(--r75)',A:'var(--r65)',B:'var(--r55)',C:'var(--r50)',D:'var(--r45)',E:'var(--r35)',F:'var(--r20)'}; const rcolG=v=>GCOL[GRD(v)]; /* 등급 글자와 같은 색 */
@@ -34319,7 +34350,11 @@ function roleCard(p){ if(!p.isP||p.team!==G.user||(p.joinY>G.year))return ''; co
   <div class="talk">${chips}</div>
   ${v?`<div class="mop"><b>감독 의중${g?'':' · 지금 적용 중'}</b><span>"${esc(v.t)}"</span>${g?`<span class="small muted">단장 요청(${PROLE[g.k]})이 적용 중입니다.</span>`:''}</div>`:''}
   <p class="small muted">선발 5명은 감독이 체력과 투구 내용으로 고르고 매주 다시 봅니다. 선발 체력 기준은 감독 성향에 따라 다르고(스몰볼 감독은 낮게, 불펜 의존이 큰 감독은 높게), 신인은 보통 1군 계투나 2군 선발 수업으로 시작합니다. 2군 선발 수업 중인 투수는 2군에서 선발로 던지며 체력을 키우고 1군에 올라오지 않습니다.</p>
-  ${UI.roleMsg&&UI.roleMsg.id===p.id?`<div class="note">${esc(UI.roleMsg.t)}</div>`:''}</section>`; }
+  ${UI.roleMsg&&UI.roleMsg.id===p.id?`<div class="note">${esc(UI.roleMsg.t)}</div>`:''}${bpenCard(p)}</section>`; }
+/* 불펜 역할: 마무리·필승조·추격조·롱릴리프(일고회장 11-12) */
+function bpenCard(p){ if((p.role==='SP'||depth(G.user).sp.some(x=>x.id===p.id))&&!(G.bprole&&G.bprole[p.id]))return ''; /* 선발 5명에게는 보이지 않는다 */ const b=bproleOf(G.user,p)||'auto'; const chips=Object.entries(BROLE).map(([k,l])=>`<button class="btn small ${b===k?'on':''}" data-a="bproleSet" data-v="${p.id}:${k}">${l}</button>`).join('');
+  return `<div class="row between" style="margin-top:10px"><span class="eyebrow">불펜 역할</span><span class="small muted">지금: ${esc(squadRole(p)||'-')}</span></div><div class="talk">${chips}</div><p class="small muted">마무리는 9회 3점 차 이내 리드, 필승조는 7회 이후 박빙, 추격조는 지고 있거나 점수 차가 큰 경기, 롱릴리프는 선발이 5회 전에 내려가면 먼저 나와 여러 이닝을 던집니다. 감독에게 맡기면 감독이 구위·컨디션으로 정합니다. 마무리는 한 명입니다.</p>${UI.bpMsg&&UI.bpMsg.id===p.id?`<div class="note">${esc(UI.bpMsg.t)}</div>`:''}`; }
+Object.assign(A,{ bproleSet(v){ const [id,k]=v.split(':'); const t=bproleSet(+id,k); UI.bpMsg=t?{id:+id,t}:null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
 Object.assign(A,{ proleSet(v){ const [id,k]=v.split(':'); const t=proleSet(+id,k); UI.roleMsg=t?{id:+id,t}:null; if(UI.mail!=null&&t)toast(t); save(); if(UI.sheet!=null)renderSheet(); render(); } });
 /* 수비 위치(선수 화면 능력 탭 정보, 육성 탭 전환 훈련): 자리별 숙련도와 수비 평가, 전환 훈련 */
 /* FM처럼 세로로 본 야구장 위에 수비 위치를 점으로: 주 포지션은 큰 점, 익힌 자리는 평가 색, 못 맡는 자리는 흐린 점 */
@@ -34698,6 +34733,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-12-bpen',d:'11월 12일',t:'불펜 역할 지정',items:[
+    '선수 정보 육성 탭의 보직 카드에서 계투 투수의 불펜 역할을 마무리·필승조·추격조·롱릴리프 중에서 요청할 수 있습니다. 감독이 대개 받아들이지만 관계가 나쁘거나 고집이 세면 거절할 수 있습니다(7일 뒤 다시 요청).',
+    '마무리는 9회 3점 차 이내 리드, 필승조는 7회 이후 박빙, 추격조는 지고 있거나 점수 차가 큰 경기에 나옵니다. 롱릴리프는 선발이 5회 전에 내려가면 먼저 나와 여러 이닝을 던집니다. 마무리는 한 명이며, 새로 정하면 이전 마무리는 필승조가 됩니다.']},
   {id:'2026-11-12-pos',d:'11월 12일',t:'구단 선수단 포지션별 보기',items:[
     '다른 구단(우리 구단 포함) 정보의 선수단 탭에서 투수·포수·내야수·외야수·지명으로 묶어 보거나 한 포지션만 골라 볼 수 있습니다.']},
   {id:'2026-11-12-misc',d:'11월 12일',t:'타석 스토리 · 신청 알림 · OB 지도자 평가',items:[
