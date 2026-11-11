@@ -110,7 +110,7 @@ const posLabel=p=>p.isP?(p.team==null||p.fdPool||p.prospect||!p.role?'투수':(p
 function roleBias(tid,p){ const thr=rpThr(tid); return clamp((p.r.sta-thr)*.9,-14,8)+(p.rAdj||0)+rpBias(tid,p); } /* 체력 기준은 감독 성향(불펜 의존·스몰볼), 보직 계획(신인 계투 시작·단장 요청)은 77_pitch_role.js */
 const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
-const tshort=id=>id==null?'-':team(id).city+' '+team(id).nick;
+const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return x.city+' '+x.nick; } return team(id).city+' '+team(id).nick; }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
 const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold; /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
 

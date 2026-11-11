@@ -22,7 +22,7 @@ function standView0(){
   if(tt.cur==='map')return tt.bar+powerMap();
   if(tt.cur==='ps')return tt.bar+psBracket();
   const myC=G.history.filter(h=>h.champ===G.user).length;
-  return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">역대 우승</h2><span class="trow">${myC?`${tname(G.user)} 우승 ${myC}회 ${[...Array(Math.min(myC,8))].map(()=>trophyImg(22)).join('')}`:''}</span></div><div class="list">${[...G.history].filter(h=>h.champ!=null).reverse().map(h=>`<div class="item champ${h.champ===G.user?' me':''}" style="cursor:default">${ART.trophy(28)}<span class="nm">${h.y} ${badge(h.champ,18)} ${tname(h.champ)}</span><span class="sub">준우승 ${tname(h.runner)}</span></div>`).join('')}</div></section>`;
+  return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">역대 우승</h2><span class="trow">${myC?`${tname(G.user)} 우승 ${myC}회 ${[...Array(Math.min(myC,8))].map(()=>trophyImg(22)).join('')}`:''}</span></div><div class="list">${[...G.history].filter(h=>h.champ!=null).reverse().map(h=>`<div class="item champ${h.champ===G.user?' me':''}" style="cursor:default">${ART.trophy(28)}<span class="nm">${h.y} ${badge(h.champ,18)} ${tshort(h.champ,h.y)}</span><span class="sub">준우승 ${tshort(h.runner,h.y)}</span></div>`).join('')}</div></section>`;
 }
 /* 지난 시즌 최종 순위(커뮤니티 제안 11-11): 시즌 중에도 지난해 순위를 본다. 신인 드래프트 지명 순서를 가늠할 때 쓴다 */
 function lastStandCard(){ const H=[...(G.history||[])].reverse().find(h=>h.order&&h.order.length); if(!H)return ''; /* 가장 최근에 끝난 시즌 */
@@ -220,7 +220,7 @@ function standFm(order,live,y){
   /* 4. 부문별 1위와 역대 우승 */
   const L=leaderCats(R,y).filter(c=>!/wRC|WHIP|안타/.test(c[0])).map(([l,arr,v,f])=>{ const a=fxTop(arr,v); const tt=a&&(a.h.t??a.p.team); /* 스토브리그에는 FA·은퇴로 소속이 없을 수 있어 그 시즌 소속으로 */
     return a?`<button class="fx-ld${tt===me?' me':''}" data-a="player" data-v="${a.p.id}"><span>${l}</span>${avImg(a.p)}<b>${esc(a.p.name)}<i>${tt!=null?badge(tt,12)+' '+esc(team(tt).nick):'무소속'}</i></b><em>${(f||v)(a)}</em></button>`:''; }).join('');
-  const hist=[...G.history].filter(h=>h.champ!=null).reverse().slice(0,6).map(h=>`<div class="fx-li${h.champ===me?' me':''}"><b>${h.y}</b><span>${badge(h.champ,14)} ${esc(tshort(h.champ))}</span></div>`).join('');
+  const hist=[...G.history].filter(h=>h.champ!=null).reverse().slice(0,6).map(h=>`<div class="fx-li${h.champ===me?' me':''}"><b>${h.y}</b><span>${badge(h.champ,14)} ${esc(tshort(h.champ,h.y))}</span></div>`).join('');
   const lead=fxBox('fx-lead',fxHead(`${y} 부문별 1위`,'비율 기록은 규정 기준 이상'),(L||'<p class="fx-none">아직 기록이 없습니다.</p>')+(hist?`<h4>역대 한국시리즈 우승</h4>${hist}`:''),fxBtn('go','league:rec','기록')+fxBtn('go','league:hist','역사'));
   return `<div class="fmx fmx-fit fmx-league nolink ws-own">${reg}${ps}${sch}${lead}</div>`;
 }
