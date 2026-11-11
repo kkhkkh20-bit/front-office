@@ -8,6 +8,7 @@
 const EXP_NICK=['다이노스','위즈','히어로즈','레인저스','썬더스','팰컨스','마린스','블루윙스','스타즈','유니콘스'];
 function expInit(){ return G.exp=G.exp||{stage:'idle',last:null,cool:null,hist:[]}; }
 function expDaily(day){ const E=expInit(); const o=dobj(day);
+  if(o.m===12&&o.d===31)try{ expFBonusEnd(); }catch(e){}
   if(o.m===12&&o.d===20&&E.stage==='idle'&&G.teams.length<12&&G.year>=2030&&!(E.cool&&G.year<E.cool)&&!(E.last&&G.year-E.last<5)&&R()<.12)expPropose();
   if(o.m===6&&o.d===30&&E.stage==='talk'&&E.y0<G.year)expVote();
   if(o.m===11&&o.d===20&&E.stage==='approved'&&E.ay===G.year)expDraft(); }
@@ -42,3 +43,7 @@ function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid
   news('리그',`${tshort(tid)} 특별지명 결과`,`구단마다 보호선수 20명 밖에서 1명씩 지명했습니다(보상금 구단당 10억).\n`+L.join('\n'),2,{tid});
   if(E.userGm&&!G.gameOver){ try{ switchTeam(tid); mail(E.parent,`${tshort(tid)} 창단 단장 부임`,`특별지명으로 ${L.length}명을 데려왔습니다. 외국인 선수와 코칭스태프를 채우고 첫 시즌을 준비해 주십시오.\n\n`+L.join('\n'),{kind:'구단',imp:true}); }catch(e){} }
   return tid; }
+
+/* 신생 구단 외국인 혜택이 끝나는 겨울(12월 31일): 일반 외국인이 3명을 넘으면 가장 낮은 선수를 내보낸다(우리 구단이면 소식으로 알린다) */
+function expFBonusEnd(){ for(const t of G.teams){ const yb=foreignOf(t.id).filter(p=>p.foreign==='용병'); const max=fMaxYB(t.id); if(yb.length<=max)continue;
+  for(const p of yb.sort((a,b)=>ovr(a)-ovr(b)).slice(0,yb.length-max)){ const nm=p.name; try{ toFree(p,'신생 구단 외국인 혜택 종료'); }catch(e){ p.team=null; } if(t.id===G.user&&!G.unemp)mail(ASSOC.s,`신생 구단 외국인 혜택 종료: ${nm} 방출`,`신생 구단 혜택(일반 외국인 4명)이 끝나 3명 한도를 넘는 ${nm}을(를) 방출했습니다.`,{kind:'구단',imp:true}); } } }
