@@ -2737,6 +2737,9 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .pe-face{padding:0;border:2px solid transparent;border-radius:6px;background:none;cursor:pointer;aspect-ratio:1}.pe-face img{width:100%;height:100%;border-radius:4px;display:block}.pe-face.on{border-color:var(--acc,#3b82f6)}
 .pe-ab{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px;margin:6px 0}.pe-ab input{width:100%;box-sizing:border-box}
 .pe-box{flex-wrap:wrap}.pe-box>.pe-sec,.pe-box>p{flex-basis:100%}
+/* 담장 공사 */
+.fence-box{margin-top:10px}.fence-box>summary{cursor:pointer;font-weight:600;font-size:13px}
+.fence-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;margin:8px 0}.fence-in label{display:flex;flex-direction:column;gap:2px;font-size:12px}.fence-in input{width:100%;box-sizing:border-box}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -17232,6 +17235,17 @@ function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal; if(!next&&c&&c.
   return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(tkDone+rest*tkNow),fnb:Math.round(fbDone+restFb),prem:Math.round(yr.prem),ad:Math.round(yr.ad),up:Math.round(yr.up)}; }
 /* 구장 공사 시작 가능 기간: 정규시즌이 끝난 뒤부터 2월 말까지(3월은 개막 준비) */
 function stadWindow(){ const per=period(); if(per==='season'||per==='post')return false; return !(per==='pre'&&dobj(G.day).m>=3); }
+/* 담장 공사(사용자 요청 11-11): 좌·중·우 담장 거리와 높이를 바꾼다. 홈런 지수(parkHRM)로 실제 경기의 홈런·담장 맞는 2루타가 달라진다.
+   범위는 공인 야구규칙 권고(양 옆 99m·가운데 122m 안팎)를 중심으로 KBO 구장 실제 폭(좌우 95~101m, 가운데 120~125m, 높이 2.4~8m)을 넉넉히 감쌌다. 비시즌(10월~2월)에 한 해 한 번, 공사비를 낸다 */
+const FENCE_LIM={lf:[95,105],cf:[115,128],rf:[95,105],wl:[2,8],wc:[2,8],wr:[2,8]};
+function fenceNorm(d){ const o={}; for(const k in FENCE_LIM){ const v=+d[k]; if(!Number.isFinite(v))return null; o[k]=Math.round(clamp(v,FENCE_LIM[k][0],FENCE_LIM[k][1])*10)/10; } return o; }
+function fenceCost(from,to){ let c=1000; for(const k of ['lf','cf','rf'])c+=Math.abs(to[k]-from[k])*100; for(const k of ['wl','wc','wr'])c+=Math.abs(to[k]-from[k])*150; return Math.round(c*ecoIdx()/10)*10; } /* 기본 10억 + 거리 1m당 1억, 높이 1m당 1.5억 */
+function fenceIdx(tid,D){ const S=stadOf(tid), keep=S.dim; S.dim=D; _pkN={k:null}; const r={R:parkHRM(tid,'R'),L:parkHRM(tid,'L')}; if(keep)S.dim=keep; else delete S.dim; _pkN={k:null}; return r; }
+function fenceSet(d){ const tid=G.user, S=stadOf(tid); const to=fenceNorm(d); if(!to)return '숫자로 입력하세요.'; const from=stadDim(tid); if(Object.keys(to).every(k=>to[k]===from[k]))return '바뀐 치수가 없습니다.';
+  if(!stadWindow())return '담장 공사는 시즌이 끝난 뒤(10월~2월)에만 할 수 있습니다.'; if(S.fenceY===sponSeason())return '담장 공사는 한 해에 한 번만 할 수 있습니다.';
+  const c=fenceCost(from,to); if(spendable(tid)<c)return `자금이 부족합니다(${spendTxt()}). 공사비 ${money(c)}이 필요합니다.`;
+  const k0=spendPay(c); G.spend.stad=(G.spend.stad||0)+k0; S.dim=to; S.fenceY=sponSeason(); (S.fenceH=S.fenceH||[]).push({y:G.year,d:G.day,from,to,c}); _pkN={k:null};
+  const ix=fenceIdx(tid,to); try{ clubFacilityHistory('stad',tid,`${stadName(tid)} 담장`,'공사',{c}); }catch(e){} addLog(`${stadName(tid)} 담장 공사: 좌 ${to.lf}·중 ${to.cf}·우 ${to.rf}m, 높이 ${to.wl}·${to.wc}·${to.wr}m(공사비 ${money(c)}). 홈런 지수 우타 ${Math.round(ix.R*100)} · 좌타 ${Math.round(ix.L*100)}.`); return ''; }
 function stadStart(k){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===k); if(!it)return '없는 시설입니다.'; const lv=S.lv[k];
   if(lv>=STAD_MAX)return '이미 최고 단계입니다.'; if((S.build||[]).some(b=>b.k===k))return '이미 공사 중입니다.';
   if(!stadWindow())return '구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.';
@@ -28320,7 +28334,7 @@ function invFM(){ facInit(); try{ aiFacAll(); }catch(e){} const tid=G.user, t=te
     <div class="fvx-kv">${kv('수용 인원',cap.toLocaleString('ko-KR')+'석')}${kv('올해 홈 평균',A.n?Math.round(A.sum/A.n).toLocaleString('ko-KR')+'명':P.n?'예상 '+P.avg.toLocaleString('ko-KR')+'명':'-')}${kv('좌석 점유율',A.n?Math.min(100,Math.round(A.sum/(A.cap||A.n*cap)*100))+'%':'-') /* 경기 당시 좌석 수 합으로(구장이 바뀌어도 100%를 넘지 않게) */}${kv('매진',`${A.so||0}회 / ${A.n}경기`)}
       ${kv('담장 거리',`좌 ${D.lf} · 중 ${D.cf} · 우 ${D.rf}m`)}${kv('담장 높이',`좌 ${D.wl} · 중 ${D.wc} · 우 ${D.wr}m`)}${kv('홈런 지수',`우타 ${Math.round(parkHRM(tid,'R')*100)} · 좌타 ${Math.round(parkHRM(tid,'L')*100)}`)}${kv('시즌 예상 관중',P.att.toLocaleString('ko-KR')+'명')}
       ${kv('표값 수입',money(P.ticket))}${kv('구장 부대 수입',money(P.fnb+P.prem+P.ad))}</div>
-    <div class="fvx-pr"><span>티켓 가격</span><div class="seg">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div></div><p class="fvx-note">${esc(PRICE[S.price].d)} 홈런 지수 100 = 리그 평균.</p></section>`;
+    <div class="fvx-pr"><span>티켓 가격</span><div class="seg">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div></div><p class="fvx-note">${esc(PRICE[S.price].d)} 홈런 지수 100 = 리그 평균.</p>${fenceBox(tid)}</section>`;
   /* 리그 비교 */
   const att=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?x.sum/x.n:0; }, occ=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?Math.min(100,x.sum/(x.cap||x.n*stadCap(i))*100):0; }, sTot=i=>sum(STAD_ITEMS.map(x=>stadOf(i).lv[x.k]||0));
   const cmp=`<section class="card fvx-cmp">${sfChart('훈련 시설 · 리그 10개 구단',[...FACK.map(k=>({l:FACI[k].l,v:F.it[k],all:fAll(k)})),{l:'종합 등급',v:F.lv,all:lgLv}],0,FAC_MAX)}
@@ -28363,6 +28377,14 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
     <div class="eyebrow" style="margin-top:8px">성장에 영향을 주는 것</div>
     <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 코치 수준과 감독의 육성 성향. 4) 잠재력과 성장 의지. 5) 훈련 방향과 해외 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 
+
+/* 담장 공사 상자: 치수를 넣고 '미리 보기'로 홈런 지수·공사비를 본 뒤 공사 */
+function fenceBox(tid){ if(tid!==G.user||G.unemp)return ''; const D=stadDim(tid), F=UI.fence||D, ok=stadWindow(), S=stadOf(tid), done=S.fenceY===sponSeason();
+  const inp=(k,l,st)=>`<label>${l}<input id="fc-${k}" type="number" step="${st}" min="${FENCE_LIM[k][0]}" max="${FENCE_LIM[k][1]}" value="${F[k]}"></label>`;
+  let pv=''; if(UI.fence){ const ix=fenceIdx(tid,UI.fence), c=fenceCost(D,UI.fence); pv=`<p class="small">공사 뒤 홈런 지수 <b>우타 ${Math.round(ix.R*100)} · 좌타 ${Math.round(ix.L*100)}</b> (지금 ${Math.round(parkHRM(tid,'R')*100)} · ${Math.round(parkHRM(tid,'L')*100)}) · 공사비 <b>${money(c)}</b></p>`; }
+  return `<details class="fence-box"${UI.fence?' open':''}><summary>담장 공사 <span class="muted">(거리·높이 조절)</span></summary><div class="fence-in">${inp('lf','좌측 거리(m)',.5)}${inp('cf','가운데 거리(m)',.5)}${inp('rf','우측 거리(m)',.5)}${inp('wl','좌측 높이(m)',.1)}${inp('wc','가운데 높이(m)',.1)}${inp('wr','우측 높이(m)',.1)}</div>${pv}${UI.fenceMsg?`<p class="small ${UI.fenceOk?'':'bad'}">${esc(UI.fenceMsg)}</p>`:''}
+    <div class="row"><button class="btn small" data-a="fencePrev">미리 보기</button><button class="btn small primary" data-a="fenceGo" ${ok&&!done?'':'disabled'}>공사하기</button></div>
+    <p class="small muted">담장이 1m 가까우면 그 방향 홈런이 약 4% 늘고, 1m 높으면 약 4% 줄어듭니다. 높은 담장에 막힌 타구는 2루타가 됩니다. 우타자는 좌측, 좌타자는 우측으로 당겨 친 홈런이 많습니다. 거리 좌우 ${FENCE_LIM.lf[0]}~${FENCE_LIM.lf[1]}m · 가운데 ${FENCE_LIM.cf[0]}~${FENCE_LIM.cf[1]}m · 높이 ${FENCE_LIM.wl[0]}~${FENCE_LIM.wl[1]}m. ${done?'올해 공사를 이미 했습니다.':ok?'비시즌에 한 해 한 번 할 수 있습니다.':'시즌이 끝난 뒤(10월~2월)에 할 수 있습니다.'}</p></details>`; }
 /* ===== 구단 캘린더 (FM 일정 화면 방식) =====
    한 달을 월~일 격자로 보여 준다. 칸마다 우리 경기(상대·홈원정·결과)와 마감·리그 행사·우리 일(결정 기한, 부상 복귀 등)을 표시하고,
    날짜를 누르면 아래에 그날의 자세한 내용과 '이 날까지 진행' 버튼이 나온다.
@@ -33677,6 +33699,8 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
 Object.assign(A,{
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
+  fencePrev(){ const d={}; for(const k in FENCE_LIM){ const el=$('#fc-'+k); d[k]=el?el.value:stadDim(G.user)[k]; } const n=fenceNorm(d); if(!n){ UI.fenceMsg='숫자로 입력하세요.'; UI.fenceOk=false; } else { UI.fence=n; UI.fenceMsg=''; } render(); },
+  fenceGo(){ A.fencePrev(); if(!UI.fence)return; const e=fenceSet(UI.fence); UI.fenceMsg=e||'담장 공사를 마쳤습니다. 다음 경기부터 반영됩니다.'; UI.fenceOk=!e; if(!e){ UI.fence=null; save(); } render(); },
   start(v){ if(UI.smode!=='take'&&UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
   gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; delete g.img; render(); },
@@ -33897,6 +33921,13 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-11-editor-draft',d:'11월 11일',t:'리그 주전 평균·선수 에디터·같은 순서 창단 드래프트',items:[
+    '우리 팀 현황·전력 요약·선수 화면에 리그 주전 평균 능력을 보여 줍니다. 10개 구단 주전(야수 9자리·선발 5명·불펜 상위 4명) 평균과 우리 주전의 차이를 자리별로 비교합니다.',
+    '선수 이름 고치기 화면에서 템플릿 사진을 고르고, 능력·잠재력·나이를 고칠 수 있습니다. 능력·잠재력·나이를 고친 저장은 도전과제가 더 열리지 않습니다.',
+    '창단 드래프트에서 지명 방식을 고를 수 있습니다. 같은 순서 방식은 모든 라운드를 같은 순번으로 뽑고, 대신 순번별 조건(긴축·보너스)이 두 배입니다.',
+    '해외 진출 선수가 원소속 구단에서 영구결번 후보가 될 때 MLB WAR(그대로)와 NPB WAR(70%)를 더해 판단합니다.',
+    '리그 국내 선수 평균 능력이 시작 때보다 오르면 그만큼 겨울 성장과 신인 잠재력을 줄여, 시즌이 지날수록 능력치가 함께 부풀지 않게 했습니다.'
+  ]},
   {id:'2026-11-11-pitch-asia',d:'11월 11일',t:'투수 능력 반영 강화·감독 요청 조건·해외 진출 조기 복귀',items:[
     '경기 엔진에서 투수 능력(구위·제구 등)이 삼진·볼넷·피안타 결과에 더 크게 반영됩니다. 좋은 투수와 나쁜 투수의 평균자책점 차이가 커집니다.',
     '감독의 영입 요청에 인정 조건(언제 이후 데려온 선수, 포지션, 종합 능력, 1군 등록 가능 여부)을 함께 보여 줍니다. 실패 소식에도 조건을 적습니다.',

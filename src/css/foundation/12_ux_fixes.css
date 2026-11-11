@@ -745,3 +745,6 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .pe-face{padding:0;border:2px solid transparent;border-radius:6px;background:none;cursor:pointer;aspect-ratio:1}.pe-face img{width:100%;height:100%;border-radius:4px;display:block}.pe-face.on{border-color:var(--acc,#3b82f6)}
 .pe-ab{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px;margin:6px 0}.pe-ab input{width:100%;box-sizing:border-box}
 .pe-box{flex-wrap:wrap}.pe-box>.pe-sec,.pe-box>p{flex-basis:100%}
+/* 담장 공사 */
+.fence-box{margin-top:10px}.fence-box>summary{cursor:pointer;font-weight:600;font-size:13px}
+.fence-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;margin:8px 0}.fence-in label{display:flex;flex-direction:column;gap:2px;font-size:12px}.fence-in input{width:100%;box-sizing:border-box}

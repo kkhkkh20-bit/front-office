@@ -85,6 +85,17 @@ function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal; if(!next&&c&&c.
   return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(tkDone+rest*tkNow),fnb:Math.round(fbDone+restFb),prem:Math.round(yr.prem),ad:Math.round(yr.ad),up:Math.round(yr.up)}; }
 /* 구장 공사 시작 가능 기간: 정규시즌이 끝난 뒤부터 2월 말까지(3월은 개막 준비) */
 function stadWindow(){ const per=period(); if(per==='season'||per==='post')return false; return !(per==='pre'&&dobj(G.day).m>=3); }
+/* 담장 공사(사용자 요청 11-11): 좌·중·우 담장 거리와 높이를 바꾼다. 홈런 지수(parkHRM)로 실제 경기의 홈런·담장 맞는 2루타가 달라진다.
+   범위는 공인 야구규칙 권고(양 옆 99m·가운데 122m 안팎)를 중심으로 KBO 구장 실제 폭(좌우 95~101m, 가운데 120~125m, 높이 2.4~8m)을 넉넉히 감쌌다. 비시즌(10월~2월)에 한 해 한 번, 공사비를 낸다 */
+const FENCE_LIM={lf:[95,105],cf:[115,128],rf:[95,105],wl:[2,8],wc:[2,8],wr:[2,8]};
+function fenceNorm(d){ const o={}; for(const k in FENCE_LIM){ const v=+d[k]; if(!Number.isFinite(v))return null; o[k]=Math.round(clamp(v,FENCE_LIM[k][0],FENCE_LIM[k][1])*10)/10; } return o; }
+function fenceCost(from,to){ let c=1000; for(const k of ['lf','cf','rf'])c+=Math.abs(to[k]-from[k])*100; for(const k of ['wl','wc','wr'])c+=Math.abs(to[k]-from[k])*150; return Math.round(c*ecoIdx()/10)*10; } /* 기본 10억 + 거리 1m당 1억, 높이 1m당 1.5억 */
+function fenceIdx(tid,D){ const S=stadOf(tid), keep=S.dim; S.dim=D; _pkN={k:null}; const r={R:parkHRM(tid,'R'),L:parkHRM(tid,'L')}; if(keep)S.dim=keep; else delete S.dim; _pkN={k:null}; return r; }
+function fenceSet(d){ const tid=G.user, S=stadOf(tid); const to=fenceNorm(d); if(!to)return '숫자로 입력하세요.'; const from=stadDim(tid); if(Object.keys(to).every(k=>to[k]===from[k]))return '바뀐 치수가 없습니다.';
+  if(!stadWindow())return '담장 공사는 시즌이 끝난 뒤(10월~2월)에만 할 수 있습니다.'; if(S.fenceY===sponSeason())return '담장 공사는 한 해에 한 번만 할 수 있습니다.';
+  const c=fenceCost(from,to); if(spendable(tid)<c)return `자금이 부족합니다(${spendTxt()}). 공사비 ${money(c)}이 필요합니다.`;
+  const k0=spendPay(c); G.spend.stad=(G.spend.stad||0)+k0; S.dim=to; S.fenceY=sponSeason(); (S.fenceH=S.fenceH||[]).push({y:G.year,d:G.day,from,to,c}); _pkN={k:null};
+  const ix=fenceIdx(tid,to); try{ clubFacilityHistory('stad',tid,`${stadName(tid)} 담장`,'공사',{c}); }catch(e){} addLog(`${stadName(tid)} 담장 공사: 좌 ${to.lf}·중 ${to.cf}·우 ${to.rf}m, 높이 ${to.wl}·${to.wc}·${to.wr}m(공사비 ${money(c)}). 홈런 지수 우타 ${Math.round(ix.R*100)} · 좌타 ${Math.round(ix.L*100)}.`); return ''; }
 function stadStart(k){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===k); if(!it)return '없는 시설입니다.'; const lv=S.lv[k];
   if(lv>=STAD_MAX)return '이미 최고 단계입니다.'; if((S.build||[]).some(b=>b.k===k))return '이미 공사 중입니다.';
   if(!stadWindow())return '구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.';
