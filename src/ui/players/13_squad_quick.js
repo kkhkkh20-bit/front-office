@@ -21,6 +21,7 @@ function myRosterSheet(){ const d=depth(G.user); const tro=tradeOpen(); const rk
     ${teamStatusBox()}
     <div class="eyebrow">포지션별 리그 순위 <span class="muted">(10개 구단 중)</span></div>
     ${slotBar(rk)}
+    ${startAvgBox()}
     ${tro?'<p class="small muted">선수 옆 "트레이드"를 누르면 트레이드 협상 화면에 내줄 선수로 올라갑니다.</p>':''}
     <div class="mros-g"><section class="mros-s"><div class="eyebrow">타순</div>${order.map((p,i)=>row(p,`${i+1}번 ${POSS[posOf[p.id]]||''}`)).join('')}</section>
     <section class="mros-s"><div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>row(p,`${i+1}선발`)).join('')}
