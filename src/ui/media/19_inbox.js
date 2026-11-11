@@ -156,7 +156,8 @@ function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m)return; ibReadDup(
   if(!nb){ const d=document.querySelector('.bnav [data-v=inbox] .dot'); if(d)d.remove(); }
   clearTimeout(_ibSave); _ibSave=setTimeout(()=>save(),700); }
 /* 고른 소식을 목록에서 보이게: 칸 밖이면 가운데 쯤으로 옮기고 잠깐 빛낸다 */
-function ibShowCur(L,c,flash){ const lr=L.getBoundingClientRect(), cr=c.getBoundingClientRect(); const a=cr.top-lr.top+L.scrollTop, b=a+cr.height; if(a<L.scrollTop+4||b>L.scrollTop+L.clientHeight-4)L.scrollTop=Math.max(0,a-L.clientHeight/3); if(flash){ c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); } }
+function ibShowCur(L,c,flash){ const lr=L.getBoundingClientRect(), cr=c.getBoundingClientRect(); const a=cr.top-lr.top+L.scrollTop, b=a+cr.height, h=cr.height, pad=Math.min(48,h), top=L.scrollTop, bot=top+L.clientHeight;
+  if(a<top+4||b>bot-4){ const near=a>=top-2*h&&b<=bot+2*h; L.scrollTop=near?(a<top+4?Math.max(0,a-pad):b-L.clientHeight+pad):Math.max(0,a-L.clientHeight/3); } /* 바로 옆 소식(방향키·이전/다음)은 한 줄만큼만 따라가고, 멀리 건너뛸 때만 1/3 지점으로(사용자 제보 11-11: 넘길 때마다 목록이 크게 튐) */ if(flash){ c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); } }
 function ibTop(){ const t=document.querySelector('.top'); return t?t.offsetHeight:60; }
 /* 넓은 화면: 소식함이 창 아래 끝까지 딱 맞게(목록·본문이 각자 스크롤). 목록이 창 밖으로 잘려 보이지 않게 실제 위치로 높이를 잰다 */
 function ibFit(){ const main=document.querySelector('#app main.content');if(UI.tab!=='inbox'||!main)return;main.classList.add('inbox-workspace');const X=main.querySelector('.ibx');if(X)X.style.height=''; }

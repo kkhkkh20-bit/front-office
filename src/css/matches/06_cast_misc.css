@@ -21,6 +21,8 @@
 .rchart{width:100%;height:auto;display:block}
 .rchart .rc-a{font:500 11px var(--f-num);fill:var(--dim)}.rchart .rc-l{font:500 11px var(--f-ui);fill:var(--muted)}.rchart .rc-l.me{fill:var(--ink);font-weight:700}
 .rchart .rc-cut{stroke:var(--warn);stroke-dasharray:4 4;stroke-width:1;opacity:.7}.rchart .rc-g{stroke:var(--line);stroke-width:1}
+/* 순위 변동(큰 그림): 실제 크기 이상으로 늘리지 않는다 */
+.rchart-big{max-width:960px;margin:0 auto}.rcw:has(.rchart-big){overflow-x:auto}.rcw .rchart.rchart-big{min-width:720px} /* 좁은 화면은 글자가 읽히는 크기를 지키고 가로로 민다 */.rchart .rc-h{stroke:var(--line);stroke-width:1;opacity:.45}.rchart .rc-ps{fill:var(--warn);opacity:.05}.rchart .rc-k{stroke:var(--line);stroke-width:1;fill:none}.rchart .rc-l{font-size:12px}.rchart .rc-r{font:700 11px var(--f-num);fill:var(--dim)}.rchart .rc-l.me .rc-r{fill:var(--team-hi)}
 .rmini{display:grid;gap:2px;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:4px 8px}
 /* 뉴스 얼굴 */
 .news>div{display:grid;gap:3px;min-width:0}

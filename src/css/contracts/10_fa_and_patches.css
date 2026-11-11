@@ -80,7 +80,7 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .mop{display:grid;gap:3px;border:1px solid var(--team-hi);border-left-width:3px;background:var(--panel2);border-radius:4px;padding:9px 12px;margin-bottom:10px}.mop>span{font-size:14px}
 .pcb{display:grid;gap:6px;margin-top:6px}.pcb .btn{display:grid;justify-items:start;text-align:left;min-height:38px;line-height:1.25}.pc-s{font-style:normal;font-size:11px;font-weight:400;opacity:.85}
 
-.cpbox{border-color:var(--team-hi)}.prl{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px;margin:8px 0}
+.cpbox{border-color:var(--team-hi)}.prl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px;margin:8px 0}.prl .pr{grid-template-columns:auto minmax(0,1fr) auto auto auto}.prl .pr .pchip{white-space:nowrap} /* 보호명단: 종합 옆에 잠재력 별(커뮤니티 제안 11-11) */
 .pr{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:8px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:4px;padding:7px 9px;color:var(--ink);cursor:pointer;min-height:48px}
 .pr .av{width:32px;height:32px}.pr span{display:grid;min-width:0}.pr i{font-style:normal;font-size:12px;color:var(--muted)}.pr em{font-style:normal;font-size:12px;font-weight:700;color:#ff8a7a}.pr.on{border-color:#3fbf6a;background:rgba(63,191,106,.1)}.pr.on em{color:#6fe39a}
 

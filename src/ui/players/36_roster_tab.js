@@ -57,7 +57,7 @@ function rosterView(){
   const cv=own?null:coverOf(tid);
   const vis=p=>own||!scoutReport(p).unseen||publicP(p);
   const hidden=own?0:playersOf(tid).filter(p=>!vis(p)).length;
-  const sel=optRow('rosterTeam',tid,[...G.teams].sort((a,b)=>(b.id===G.user)-(a.id===G.user)).map(x=>[x.id,(x.id===G.user?'우리 구단':esc(x.nick))+(x.id!==G.user&&!coverOf(x.id).sc?' <i class="muted" title="담당 스카우트가 없어 능력은 추정치입니다">(추정)</i>':'')]),null,'wsx rteam');
+  const sel=own?'':`<button class="btn small" data-a="lteamGo" data-v="${G.user}">‹ 우리 구단 선수단</button>`; /* 선수단은 우리 구단 화면: 다른 구단 버튼 줄은 두지 않는다(사용자 11-11). 다른 구단은 리그 화면에서 구단을 눌러 연다 */
   const cover=own?'':`<section class="card covc"><div class="row between"><div class="row">${badge(tid,32)}<div><b>${tname(tid)}</b><div class="small muted">${t.mode==='contend'?'우승 경쟁':'리빌딩'} · 구단주 ${OWNER[t.owner].label} · 단장 관계 ${t.rel}</div></div></div><span class="row"><button class="btn small" data-a="lteamGo" data-v="${tid}">구단주·코치진</button><button class="btn small" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button></span></div>
     <p class="small">${cv.sc?`<b>${esc(cv.sc.name)} 스카우트</b>(${cv.reg} · 능력 ${'★'.repeat(cv.sc.skill)})가 담당합니다. ${cv.sc.skill>=3?'1군과 2군 선수까지 현재 능력을 평가합니다.':'1군 선수만 평가합니다. 2군까지 보려면 능력 3 이상 스카우트가 필요합니다.'}`:`<b>${cv.reg}</b> 지역을 맡은 스카우트가 없습니다. 1군 기록만 볼 수 있고 능력 평가는 없습니다.`} 다른 구단 선수의 잠재력은 알 수 없습니다.${hidden?` 파악하지 못한 2군 선수 ${hidden}명은 명단에서 빠졌습니다.`:''}</p></section>`;
   const eN=playersOf(tid).filter(p=>p.e1).length;
