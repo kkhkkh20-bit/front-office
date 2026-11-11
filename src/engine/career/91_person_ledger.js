@@ -54,3 +54,19 @@ EVH.retTalk={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)r
   if(i!==0){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 은퇴 의사를 밝혀 구단이 뜻을 존중`,'move'); return `${p.name}의 뜻을 존중하기로 했습니다. 시즌 뒤 은퇴식 여부를 다시 여쭙겠습니다.`; }
   if(R()<retTalkP(p)){ p.retDelay=G.year; p.mor=clamp((p.mor??60)+3,0,100); story(p,`${G.year} 은퇴 면담: 한 해 더 뛰기로`,'move'); news('구단',`${tshort(G.user)} ${p.name}, 은퇴 미루고 한 시즌 더`,`단장과 면담한 뒤 다음 시즌에도 뛰기로 했습니다.`,1,{tid:G.user,ref:p.id}); return `${p.name}이(가) 한 시즌 더 뛰기로 했습니다.`; }
   p.mor=clamp((p.mor??60)-5,0,100); return `${p.name}은(는) 마음을 바꾸지 않았습니다. 시즌 뒤 은퇴합니다.`; } };
+
+/* ===== 단장 명예의 전당·협회 공로상 (장기 기획 11-11) =====
+   명예의 전당: 해마다 12월 20일, 물러난 지 1년 넘은 단장(AI·내 계보 모두) 가운데 기준을 넘은 사람을 많아야 2명 헌액한다.
+   기준(게임 기준): 우승 3회 이상, 또는 15시즌 이상 + 우승 1회, 또는 10시즌 이상 + 승률 .560 이상.
+   협회 공로상: 현역인 우리 단장이 우승 3회 또는 15시즌을 넘기면 한 번 준다 */
+function gmHofQ(p){ const pct=p.w+p.l?p.w/(p.w+p.l):0; return p.c>=3||(p.s>=15&&p.c>=1)||(p.s>=10&&pct>=.56); }
+function gmHofYear(){ const H=G.gmHof=G.gmHof||[]; let L=[]; try{ L=legPeople(); }catch(e){ return; } const y=G.year;
+  const cand=L.filter(p=>!p.cur&&p.y1<=y-1&&!H.some(h=>h.k===p.k)&&gmHofQ(p)).slice(0,2);
+  for(const p of cand){ const h={k:p.k,n:p.n,y,ts:p.ts.slice(),s:p.s,w:p.w,l:p.l,c:p.c,y0:p.y0,y1:p.y1,u:p.u?1:0}; H.push(h);
+    news('리그',`${p.n} 전 단장, ${ASSOC.s} 단장 명예의 전당 헌액`,`${p.y0}~${p.y1} · ${p.ts.map(t=>tshort(t,p.y1)).join('·')} · ${p.s}시즌 ${p.w}승 ${p.l}패 · 우승 ${p.c}회`,p.u?3:1,{});
+    for(const t of p.ts)try{ chron('honor',`${p.n} 전 단장 명예의 전당 헌액`,null,t,{source:'gmhof:'+p.k+':'+t}); }catch(e){}
+    if(p.u&&!G.unemp)mail(ASSOC.s,`${p.n} 단장 명예의 전당 헌액`,`우리 계보의 ${p.n} 단장이 ${ASSOC.name} 단장 명예의 전당에 올랐습니다. 우승 ${p.c}회 · ${p.s}시즌.`,{kind:'리그',imp:true}); } }
+function gmMeritCheck(){ if(G.unemp||G.user==null)return; G.gmMerit=G.gmMerit||{}; const k=legMeK(); if(G.gmMerit[k])return; let a=null; try{ a=legPeople().find(p=>p.k===k); }catch(e){} if(!a||!(a.c>=3||a.s>=15))return;
+  G.gmMerit[k]={y:G.year,c:a.c,s:a.s}; const nm=legMeName(); news('리그',`${ASSOC.s}, ${nm} 단장에게 공로상`,`${a.s}시즌 동안 우승 ${a.c}회를 이끈 공로를 기려 ${ASSOC.name}이(가) 공로상을 수여했습니다.`,2,{tid:G.user}); try{ chron('honor',`${nm} 단장 ${ASSOC.s} 공로상`,null,G.user,{source:'merit:'+k}); }catch(e){}
+  G.rep=Math.min(100,(G.rep??50)+3); mail(ASSOC.s,`공로상 수여`,`${a.s}시즌 · 우승 ${a.c}회의 공로를 기려 공로상을 드립니다. 단장 명성 +3.`,{kind:'리그',imp:true}); }
+function gmHofDaily(day){ const o=dobj(day); if(o.m===12&&o.d===20){ try{ gmHofYear(); }catch(e){} try{ gmMeritCheck(); }catch(e){} } }
