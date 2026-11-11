@@ -22,7 +22,7 @@ function mgrSit(){ const tid=G.user; const per=period(); const r=G.sea&&G.sea.re
     const gb=(a,b)=>((a.w-a.l)-(b.w-b.l))/2; S.w=r.w; S.l=r.l; S.t=r.t||0; S.rank=i+1; S.gb1=gb(lead,me); S.gb5=i<5?gb(me,sixth):gb(fifth,me);
     const L=((G.sea.tl&&G.sea.tl[tid])||[]); const l10=L.slice(-10); S.l10w=l10.filter(x=>x[0]>0).length; S.l10l=l10.filter(x=>x[0]<0).length;
     let k=0; const s0=L.length?L[L.length-1][0]:0; for(let j=L.length-1;j>=0&&L[j][0]===s0&&s0!==0;j--)k++; S.streak=s0>0?k:s0<0?-k:0;
-    S.rd=sum(L.map(x=>x[1]-x[2])); S.left=144-S.g; }
+    S.rd=sum(L.map(x=>x[1]-x[2])); S.left=seasonG()-S.g; }
   const d=depth(tid); const R=slotRanks(tid); S.weak=PSLOTS.filter(k=>k!=='DH').sort((x,y)=>R[y].rank-R[x].rank).slice(0,2).map(k=>({k,rank:R[k].rank})); S.strong=PSLOTS.filter(k=>k!=='DH').sort((x,y)=>R[x].rank-R[y].rank)[0]; S.strongRank=R[S.strong].rank;
   S.inj=playersOf(tid).filter(p=>p.injOut>0&&ovr(p)>=48).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3);
   S.tired=per==='season'?playersOf(tid).filter(p=>(p.fat||0)>=60).slice(0,3):[];
