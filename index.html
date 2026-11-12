@@ -12694,7 +12694,14 @@ function aiExtensions(all){ const done=[];
       p.extNext={annual:d,years}; room-=d-p.sal; n++; story(p,`비FA 다년계약 ${years}년 연 ${money(d)} (${tshort(t.id)})`,'move'); done.push({p,t,d,years}); } }
   for(const x of done.filter(x=>x.d>=800).slice(0,4))wire('계약',`${tname(x.t.id)}, ${x.p.name}와(과) 비FA 다년계약 ${x.years}년 총 ${money(x.d*x.years)}`,{tid:x.t.id,ref:x.p.id});
   return done.length; }
-function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ return round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
+/* FA 기대 WAR(11-12, 커뮤니티 beeseo: AI가 능력치만 보고 1~2 WAR 선수에게 15억 넘게 썼다).
+   최근 3시즌 1군 WAR을 최근 해에 더 무게(5·4·3)로 평균내고 리그 평균 쪽으로 25% 당긴 뒤, 31세부터 해마다 7%씩 깎는다(계약 기간 평균 하락).
+   1군 기록이 거의 없으면(합계 1시즌 미만) null: 능력치 기준을 그대로 쓴다 */
+function faExpWar(p){ const y0=G.year; const by={}; let pa=0; for(const h of (p.hist||[])){ if(h.lvl!=='1군'||h.y<y0-3||h.y>y0)continue; by[h.y]=(by[h.y]||0)+(warOf(h,p)||0); pa+=p.isP?(h.outs||0)/3*4.3:(h.pa||0); }
+  if(pa<350)return null; const ys=Object.keys(by).map(Number).sort((a,b)=>b-a).slice(0,3); const W=[5,4,3]; let s=0,w=0; ys.forEach((y,i)=>{ s+=by[y]*W[i]; w+=W[i]; }); let e=w?s/w:0; e=e*.75+1*.25; if(p.age>=31)e*=Math.max(.5,1-(p.age-30)*.07); return Math.max(0,e); }
+/* AI가 내는 연봉 상한: 기대 WAR × WAR당 시장가(5.5억, 실제 KBO FA 연평균은 대략 WAR당 5~6억: 안치홍 4년 72억·채은성 6년 90억) × 물가, 우승 경쟁 구단은 15% 더 */
+function faWarCap(t,p){ const e=faExpWar(p); if(e==null)return null; return Math.max(MIN_SAL*2,round5(e*550*ecoIdx(sponSeason())*(t.mode==='contend'?1.15:1))); }
+function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); return wc==null?w0:Math.min(w0,wc); } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;
@@ -35009,6 +35016,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-12-faai',d:'11월 12일',t:'AI 구단 FA 영입: 성적(WAR) 기준 몸값',items:[
+    'AI 구단은 FA에게 최근 3시즌 1군 WAR(최근 해에 더 무게, 31세부터 하락 반영)로 본 기대 성적만큼만 연봉을 냅니다. WAR당 약 5.5억(물가 반영, 실제 KBO FA 시장 수준), 우승 경쟁 구단은 15% 더 냅니다.',
+    '능력치는 높아도 성적이 받쳐 주지 않는 선수에게 AI가 15억 넘게 쓰던 일이 줄어듭니다. 우리 구단은 그대로 원하는 만큼 제시할 수 있습니다.']},
   {id:'2026-11-12-trade',d:'11월 12일',t:'트레이드 AI: 유망주 가치 · 트레이드 불가 지정',items:[
     '다른 구단 단장이 젊은 고잠재 선수의 가치를 더 크게 봅니다. 리빌딩 구단은 5년, 중위권 구단은 4년 앞을 보고 성장 몫을 더 인정합니다(우승 경쟁 구단은 지금 전력 중심 그대로). 그래서 고잠재 유망주는 주전 한 명에 쉽게 넘어오지 않고, 반대로 우리 유망주로 좋은 선수를 데려오기도 쉬워집니다.',
     '선수 정보에서 우리 선수를 "트레이드 불가"로 지정할 수 있습니다. 다른 구단이 그 선수를 달라고 묻지 않습니다(우리가 직접 제안하는 것은 가능, 매물로 올리면 풀림).']},
