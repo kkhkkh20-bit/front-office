@@ -2496,7 +2496,7 @@ T('[검수 11-09a] 아시아쿼터는 해외 제안 잔류와 같은 겨울 재�
   ok(p&&p.sal===30*USD,'준비 실패: 잔류 설득 '+(p&&p.sal));
   G.contract={y:G.year,tid:G.user,ended:[],foreignEnd:[p.id],foreignDrop:[],released:[],done:false}; p.newSal=newSalary(p); initPers(p);
   ok(asiaReCap(p)===30*USD,'같은 겨울 재계약 상한이 다시 올라감 '+asiaReCap(p)/USD); const r=foReOffer(p.id,40*USD,0); ok(!r.ok&&r.msg.includes('까지입니다'),'40만 달러 재계약이 통과: '+r.msg);
-  G.contract.done=true; G.year++; ok(asiaReCap(p)===40*USD,'다음 겨울에는 새 연봉 기준이어야 함 '+asiaReCap(p)/USD); });
+  G.contract.done=true; G.year++; ok(asiaReCap(p)===Math.max(asiaCap(),30*USD+Math.round(10*USD*fEcoK())),'다음 겨울에는 새 연봉 기준이어야 함 '+asiaReCap(p)/USD); /* 11-12: 인상 한도도 리그 물가(fEcoK, 10% 단위)를 따른다 */ });
 T('[검수 11-09a] 2년 계약 둘째 해 보장 연봉은 첫해 뒤 겨울에 방출해도 방출 비용에 남는다',()=>{ fresh(); const f=foreignOf(G.user).find(q=>q.foreign==='용병'); f.age=30;
   G.contract={y:G.year,tid:G.user,ended:[],foreignEnd:[f.id],foreignDrop:[],released:[],done:false,fre:{[f.id]:{ok:true}}}; f.newSal=f.sal; fReMulti(f.id); ok(f.fMulti===G.year+2,'준비 실패: 2년 계약'); f.sal=f.newSal; delete f.newSal; G.contract.done=true;
   G.year++; G.last={y:G.year}; ok(sponSeason()===G.year+1,'준비 실패: 결산 뒤 겨울'); const d0=fDeadOf(G.user,G.year+1); releaseForeign(f.id);
