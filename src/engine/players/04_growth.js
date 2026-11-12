@@ -28,7 +28,12 @@ function develop(p){
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
   const club=p.team!=null&&!svc; const ti=club&&p.trI&&p.trI.n&&(p.trI.y===G.year||p.trI.y===G.year-1)?p.trI.s/p.trI.n:1; delete p.trI; /* 그 시즌 평균 훈련 강도(76_dev_plan) */ const devMgr=club&&G.mgr?mgrOf(p.team):null,yf=devMgr?1+(devMgr.youth-50)/150:1;
   p.devLog={y:G.year,tid:p.team,play,fac:fac.l,manager:devMgr&&devMgr.name?{id:devMgr.id??null,name:devMgr.name,youth:devMgr.youth}:null,reasons:[]};
-  const gap=Math.max(0,p.pot-o); let base=0;
+  /* 잠재력 실현율(숨김, 사용자 11-12: 잠재력만 믿고 모으면 망할 수도 있어야 한다. 잠재력만큼 크는 선수는 드물다).
+     처음 성장할 때 정한다: 약 30%는 불발(잠재력까지 남은 몫의 30~60%), 50%는 부분(60~90%), 20%만 거의 다(90~100%). 프로의식이 좋을수록 높다.
+     스카우트가 보는 잠재력(p.pot)은 그대로라 별 다섯 유망주도 안 터질 수 있다. 실현 상한 = 기준 능력 + (잠재력-기준)×실현율 */
+  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<.3?rnd(.3,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.015; p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; }
+  const potEff=p.realK!=null?p.potB+Math.max(0,p.pot-p.potB)*p.realK:p.pot;
+  const gap=Math.max(0,potEff-o); let base=0;
   if(age<=T.grow){
     const rate=clamp((p.dt==='early'?1.25:p.dt==='late'?(T.vl&&age<=28?.35:.85):p.dt==='stall'?.35:1)/(T.grow-age+1.5),.04,.65); /* 남은 성장 연수에 맞춰 조금씩: 18세 1순위도 20대 중반에 정점(예전엔 남은 잠재력의 20~34%를 해마다 채워 20~21세에 리그 정상급이 됐다) */
     const env=play*fac.g*yf*(club&&G.coach?coachDevMult(p):1)*(club?mpickMult(p):1)*pg*ti; base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */

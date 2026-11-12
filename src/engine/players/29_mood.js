@@ -1,5 +1,5 @@
 /* ===== 선수 기분과 성향 ===== */
-function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers)p.pers={pro:ri(4,20),amb:ri(4,20),loy:ri(4,20),temp:ri(4,20)}; }
+function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers){ const g=(m,sd)=>clamp(Math.round(N(m,sd)),3,20); p.pers={pro:g(9.5,3.5),amb:g(11,3.8),loy:g(10,3.8),temp:g(10.5,3.8)}; } /* 멘탈 좋은 선수는 드물다(사용자 11-12): 고른 분포(4~20) 대신 중간~낮음에 몰리게. 프로의식 15 이상 약 10%, 7 이하 약 25% */ }
 const moodLabel=m=>m>=80?'매우 좋음':m>=65?'좋음':m>=45?'보통':m>=30?'불만':'매우 불만';
 const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';
 function persText(p){ const s=p.pers; const t=[]; if(s.pro>=15)t.push('프로의식이 강함'); if(s.pro<=7)t.push('훈련 태도가 들쭉날쭉'); if(s.amb>=15)t.push('야망이 큼'); if(s.loy>=15)t.push('구단 충성심이 높음'); if(s.loy<=6)t.push('시장 평가를 중시'); if(s.temp>=15)t.push('예민한 편'); if(s.temp<=6)t.push('무던한 편'); return t.length?t.join(' · '):'평범한 성향'; }
