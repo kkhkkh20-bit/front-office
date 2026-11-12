@@ -1,3 +1,18 @@
+/* 능력치 설명(커뮤니티 11-12: 몸·성격 수치가 어디에 영향을 주는지 모호하다): 마우스를 올리면 보이고, 선수 상세 i에도 모은다 */
+const ATTR_HELP={
+  '컨택':'공을 맞히는 능력. 삼진이 줄고 안타·타율이 오릅니다.','파워':'장타력. 홈런·2루타가 늘어납니다.','선구안':'볼을 골라내는 능력. 볼넷이 늘고 삼진이 줄어 출루율이 오릅니다.','주루':'발 빠르기. 내야안타·도루·추가 진루가 늘어납니다.','수비':'포지션 수비 범위·처리. 실점을 막습니다(포지션마다 비중이 다름).',
+  '구위':'공의 힘. 탈삼진이 늘고 강한 타구를 덜 맞습니다.','제구':'원하는 곳에 던지는 능력. 볼넷이 줄어듭니다.','스태미나':'투수가 긴 이닝을 던지는 힘. 선발로 오래 버티고 등판 뒤 회복도 빠릅니다.',
+  '체력':'경기마다 쌓이는 피로가 적고 회복이 빨라 휴식이 덜 필요합니다. 높으면 30대 노화 하락도 덜합니다. 투수는 스태미나와 같습니다.',
+  '내구성':'부상을 잘 당하지 않는 정도. 낮으면 부상이 잦습니다.',
+  '프로의식':'훈련 태도. 높을수록 잠재력을 잘 실현하고, 슬럼프가 드물고 기복이 적으며, 30대 노화 하락도 덜합니다. 동료 분위기와 주장감에도 영향을 줍니다. 감독·코치진(우리 선수)이나 스카우트 소문(다른 구단)으로만 알 수 있습니다.',
+  '야망':'더 잘하고 더 크게 되려는 욕심. 높으면 성장 의욕이 커서 잠재력 실현에 조금 유리하지만, 출전 기회·연봉에 대한 요구도 커서 벤치에 두면 불만·언론 플레이·트레이드 요구가 잦습니다.',
+  '예민도':'낮을수록 좋습니다. 높으면 슬럼프가 잦고 잠재력 실현이 낮으며 승부처에서 흔들립니다. 불만을 밖으로 드러내기 쉬워 언론 플레이·감독과의 불화·훈련 거부로 번지기 쉽습니다.',
+  '충성심':'구단에 대한 애착. 높으면 FA·재계약 때 원소속 구단 조건을 더 좋게 보고, 불만이 있어도 트레이드 요구를 덜 합니다. 낮으면 시장 평가를 중시합니다.',
+  '승부처 집중':'득점권·7회 이후 접전·포스트시즌에서만 능력에 더해집니다(해결사·위기에 강한 투수). 프로의식이 높고 예민도가 낮을수록 조금 높습니다.',
+  '꾸준함':'경기마다의 컨디션 흔들림과 몇 주 단위 슬럼프·상승세의 폭. 높을수록 성적이 능력대로 고르게 나옵니다.',
+  '한국 적응력':'외국인 선수의 생활·리그 적응. 낮으면 첫해 능력만큼 성적이 안 나오고 향수병·불화가 잦습니다.','해외 진출 의지':'포스팅·해외 FA로 떠나려는 의지. 낮을수록 구단에 유리합니다.'};
+function attrHelp(l){ const k=String(l).replace(/\(.*?\)/g,'').replace(/·?\s*(결정구|보유.*)$/,'').trim(); for(const x in ATTR_HELP)if(k===x||k.startsWith(x))return ATTR_HELP[x]; return ''; }
+function attrHelpList(){ return `<dl class="attr-help">${Object.entries(ATTR_HELP).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`; }
 /* ---------- 세부 능력치 · 레이더 · 성장 차트 ---------- */
 function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t.cur; tf[t.k]=t.fut; } const id=p.id; const o=(k,s)=>hn('dt'+k,id)*(s||4);
   const c=v=>clamp(v,20,80); const pers=p.pers||{pro:12,amb:12,loy:12,temp:12}; const ps=v=>c(20+(v-4)/16*60);
@@ -56,7 +71,8 @@ function trackCard(p){ if(p.prospect)return ''; const T=trackOf(p); if(!T)return
 function detailCard(p){ const rp=scoutReport(p); if(hideOvr(p)||!rp.tools||!rp.tools.length)return ''; const shown=rp.exact?{...rp,tools:rp.tools.map(t=>({...t,cur:p.r[t.k]}))}:rp; const d=detailOf(p,shown); const fut=rp.ofp!=null&&rp.tools.some(t=>t.fut>t.cur);
   /* 능력치 변화(FM 화살표): 우리 선수는 약 6개월 전 능력과 비교해 오른 항목은 ▲와 막대의 밝은 부분, 떨어진 항목은 ▼ */
   const OLD={}; let RT=''; const DL=p.team===G.user&&rp.exact?rDelta(p):null; if(DL&&rp.tools.some(t=>Math.abs(DL.d[t.k]||0)>=.5)){ RT=`${dsh(DL.from)} 대비`; const od=detailOf(p,{...rp,tools:shown.tools.map(t=>({...t,cur:t.cur-(DL.d[t.k]||0)}))}); for(const [,L] of od.groups)for(const [l,v,t] of L)if(!t)OLD[String(l).split(' · ')[0]]=v; }
-  const bar=([l,v,t])=>t==='t'?`<div class="dt"><span>${esc(l)}</span><b class="dt-t">${esc(String(v))}</b></div>`:t==='n'||t==='i'?`<div class="dt" title="${t==='n'?'성향: 좋고 나쁨이 없습니다':'낮을수록 구단에 유리합니다'}"><span>${esc(l)}</span><b class="num" style="text-align:center;color:${t==='n'?'var(--ink)':rcol(100-v)}">${Math.round(v)}</b><span class="track"><span class="mid"></span><span class="now" style="width:${Math.round((v-20)/60*100)}%;--c:${t==='n'?'var(--dim)':rcol(100-v)}"></span></span></div>`:(()=>{ const o=OLD[String(l).split(' · ')[0]]; const dd=o!=null?dv(v)-dv(o):0; /* 화면에 보이는 숫자(rchip과 같은 기준)로 오르내림을 센다 */ const w=x=>Math.round((clamp(x,20,80)-20)/60*100);
+  const bar=r=>{ const h=bar0(r), t=attrHelp(r[0]); return t&&!h.startsWith('<div class="dt" title=')?h.replace('<div class="dt"','<div class="dt" title="'+esc(t)+'"'):h; };
+  const bar0=([l,v,t])=>t==='t'?`<div class="dt" title="${esc(attrHelp(l))}"><span>${esc(l)}</span><b class="dt-t">${esc(String(v))}</b></div>`:t==='n'||t==='i'?`<div class="dt" title="${esc(attrHelp(l)||(t==='n'?'성향: 좋고 나쁨이 없습니다':'낮을수록 구단에 유리합니다'))}"><span>${esc(l)}</span><b class="num" style="text-align:center;color:${t==='n'?'var(--ink)':rcol(100-v)}">${Math.round(v)}</b><span class="track"><span class="mid"></span><span class="now" style="width:${Math.round((v-20)/60*100)}%;--c:${t==='n'?'var(--dim)':rcol(100-v)}"></span></span></div>`:(()=>{ const o=OLD[String(l).split(' · ')[0]]; const dd=o!=null?dv(v)-dv(o):0; /* 화면에 보이는 숫자(rchip과 같은 기준)로 오르내림을 센다 */ const w=x=>Math.round((clamp(x,20,80)-20)/60*100);
     const ar=dd>=1?`<i class="dar up" title="${esc(RT)} ${dv(o)} → ${dv(v)}">▲${dd}</i>`:dd<=-1?`<i class="dar dn" title="${esc(RT)} ${dv(o)} → ${dv(v)}">▼${-dd}</i>`:'';
     const gb=dd>=1?`<span class="gain" style="left:${w(o)}%;width:${Math.max(1,w(v)-w(o))}%"></span>`:dd<=-1?`<span class="loss" style="left:${w(v)}%;width:${Math.max(1,w(o)-w(v))}%"></span>`:'';
     return `<div class="dt"><span>${esc(l)}</span><span class="dtv">${rchip(v)}${ar}</span><span class="track"><span class="mid"></span><span class="now" style="width:${w(dd>=1?o:v)}%;--c:${rcol(v)}"></span>${gb}</span></div>`; })();
@@ -67,4 +83,5 @@ function detailCard(p){ const rp=scoutReport(p); if(hideOvr(p)||!rp.tools||!rp.t
     ${RT?`<p class="small muted dleg"><i class="dar up">▲</i> 오른 항목 · <i class="dar dn">▼</i> 떨어진 항목 (${RT}, 막대의 밝은 부분이 오른 만큼)</p>`:''}
     ${gr?`<div class="eyebrow" style="margin-top:10px">성장 추이</div>${gr}`:''}
     <p class="small muted">세부 항목은 핵심 능력치(${p.isP?'구위·제구·스태미나':'컨택·파워·선구안·주루·수비·체력'})를 선수 특성에 따라 나눠 보여 주는 값입니다. 경기 계산은 핵심 능력치와 좌우 손잡이로 합니다. ${rp.exact?'':'영입 전 선수는 스카우트 추정이라 오차가 있습니다.'}</p></section>`; }
+
 

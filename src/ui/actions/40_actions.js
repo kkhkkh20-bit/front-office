@@ -530,3 +530,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
 };
 
 Object.assign(A,{ psy(v){ UI.psy=+v; render(); } }); /* 리그 역사 > 포스트시즌 기록 연도 */
+
+/* 능력치 설명 펼치기(선수 상세 i) */
+Object.assign(A,{attrHelp(){ UI.attrHelpOpen=!UI.attrHelpOpen; render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} }});
