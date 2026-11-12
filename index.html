@@ -466,6 +466,7 @@ textarea.code{width:100%;min-height:80px;background:#0b1014;color:var(--ink);bor
 .mile-r>span{display:grid;gap:2px}.mile-bar{display:block;height:4px;background:var(--panel2);border-radius:2px;overflow:hidden}.mile-bar b{display:block;height:100%;background:var(--acc)}.ldr-r.me{background:var(--team-soft,rgba(255,255,255,.04))}
 .pf-bars{display:grid;gap:6px;margin:8px 0 12px}.pf-bar{display:grid;grid-template-columns:44px minmax(0,1fr) 72px 96px;gap:8px;align-items:center}.pf-bar .fx-bar{margin:0;height:9px;background:var(--panel2);border-radius:2px;position:relative}.pf-bar .fx-bar i{display:block;height:100%;background:var(--acc);border-radius:2px}
 @media(max-width:520px){.pf-bar{grid-template-columns:40px minmax(0,1fr) 64px}.pf-bar em{display:none}}
+.spl-xs{display:grid;gap:3px;margin-top:8px}.spl-x{display:grid;grid-template-columns:64px 56px minmax(0,1fr);gap:8px;align-items:center;font-size:13px}
 /* 홈 대시보드 */
 .homeg{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:10px;align-items:start}
 .homeg .col{display:grid;gap:10px;min-width:0}
@@ -11236,9 +11237,9 @@ function simPit(p,outs,b){
 const ZB={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0,g:0,e:0,sf:0};
 const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,hbp:0,so:0,er:0,w:0,l:0,sv:0,hld:0,bf:0};
 /* 좌우 상대 기록(정규시즌 1군): 타자는 상대 투수 손, 투수는 상대 타자 쪽(양타는 투수 반대편). [타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런] */
-function splAdd(b,p,o,f,rsp){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='HBP'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='HBP')a[7]=(a[7]||0)+1; if(o==='SAC')a[8]=(a[8]||0)+1; /* 희생번트는 출루율 분모에서 뺀다 */ if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
+function splAdd(b,p,o,f,rsp,home){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='HBP'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='HBP')a[7]=(a[7]||0)+1; if(o==='SAC')a[8]=(a[8]||0)+1; /* 희생번트는 출루율 분모에서 뺀다 */ if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
   row(b,p.th==='좌'?'L':'R'); const side=b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); row(p,side);
-  if(rsp){ row(b,'RS'); row(p,'RS'); } /* 득점권(타석 시작 때 2·3루 주자) */ try{ vsAdd(b,p,o,noAB,tb); }catch(e){} }
+  if(rsp){ row(b,'RS'); row(p,'RS'); } /* 득점권(타석 시작 때 2·3루 주자) */ if(home!=null){ row(b,home?'H':'A'); row(p,home?'A':'H'); } /* 홈·원정(OOTP Splits 참고): 타자는 자기 구장 여부, 투수는 그 반대 */ try{ vsAdd(b,p,o,noAB,tb); }catch(e){} }
 /* 투수별 맞대결(이번 시즌, 타자 쪽에 저장): [타석, 타수, 안타, 홈런, 볼넷·사구, 삼진]. 많아지면 타석 적은 상대부터 지운다 */
 function vsAdd(b,p,o,noAB,tb){ const y=G.year; if(!b.vs||b.vs.y!==y)b.vs={y,m:{}}; const M=b.vs.m; const a=M[p.id]||(M[p.id]=[0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb)a[2]++; if(o==='HR')a[3]++; if(o==='BB'||o==='HBP')a[4]++; if(o==='K')a[5]++;
   const ks=Object.keys(M); if(ks.length>80){ ks.sort((x,z)=>M[x][0]-M[z][0]); for(const k of ks.slice(0,ks.length-70))delete M[k]; } }
@@ -11773,7 +11774,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
           else if(r<.8){ o='1B'; xb.ab++; xb.h++; xp.h++; hh++; base[2]=base[1]; base[1]=base[0]; base[0]=b; }
           else if(r<.9){ o='OUT'; xb.ab++; outs++; xp.outs++; }
           else { o='OUT'; xb.ab++; outs++; xp.outs++; const fo=base[1]||base[0], fb=base[1]?3:2; /* 번트 실패: 앞 주자가 포스아웃(1·2루면 3루에서, 1루만이면 2루에서) */ if(base[1]){ base[1]=base[0]; } base[0]=b; if(fo){ resp.set(b.id,resp.get(fo.id)??p.id); /* 야수선택으로 승계주자가 아웃되면 그 자리에 선 타자 주자가 앞 투수 책임(야구규칙 9.16(g), 검수 11-09zt) */ xFO=fo; xFB=fb; if(ev.length<400)ev.push({h:half,t:`${b.name} 번트 실패 · ${fo.name} ${fb}루 포스아웃`}); } } } }
-      if(o){ if(!ps){ W.push([splAdd,b,p,o==='SAC'?'SAC':o,null,RSP0],[sprAdd,b,p,o==='1B'?'1B':'OUT',{pos:'3B',t:'GB'}]); } /* 번트도 좌우 기록과 타구 분포에(번트 안타가 분포에서 빠지던 문제, 검수 11-08) */ const rec=trace(half,b,p,'SAC',xp.pc-pc0);if(rec)xp.pc=pc0+rec.pitches.length;if(pbp.length<1000){const row=[half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h];if(rec)row[15]=rec;if(xFO){ row[16]=xFO.id; row[14]=[{id:xFO.id,from:xFB-1,to:xFB,result:'out'}]; } pbp.push(row);} /* 번트 실패 포스아웃을 주자 이동에도(중계가 진루로 그리던 문제, 검수 11-08) */ if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+armM(fs))bringIn(fs,inn,-lead(),half,base.filter(Boolean).length); continue; }
+      if(o){ if(!ps){ W.push([splAdd,b,p,o==='SAC'?'SAC':o,null,RSP0,b.team===PARK],[sprAdd,b,p,o==='1B'?'1B':'OUT',{pos:'3B',t:'GB'}]); } /* 번트도 좌우 기록과 타구 분포에(번트 안타가 분포에서 빠지던 문제, 검수 11-08) */ const rec=trace(half,b,p,'SAC',xp.pc-pc0);if(rec)xp.pc=pc0+rec.pitches.length;if(pbp.length<1000){const row=[half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h];if(rec)row[15]=rec;if(xFO){ row[16]=xFO.id; row[14]=[{id:xFO.id,from:xFB-1,to:xFB,result:'out'}]; } pbp.push(row);} /* 번트 실패 포스아웃을 주자 이동에도(중계가 진루로 그리던 문제, 검수 11-08) */ if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+armM(fs))bringIn(fs,inn,-lead(),half,base.filter(Boolean).length); continue; }
       RSP0=!!(base[1]||base[2]); /* 득점권 기록(타석 시작 상황) */
       CLUTCH=Math.min(1.1,((base[1]||base[2])?.5:0)+(inn>=7&&Math.abs(before)<=2?.4:0)+(ps?.4:0)); /* 득점권 · 7회 이후 2점 차 이내 · 포스트시즌 */
       o=outcome(b,p,fs.defv,Math.max(0,xp.pc-(PW.ft0+p.r.sta*PW.fts))/PW.ftd-PW.fm+ttoPen(p,xp.bf),fs); /* 체력만큼 던진 뒤부터 9구마다 능력 1씩 떨어진다 */ let eFld=0; /* 타구 분포·좌우 기록은 타석 결과(희생플라이·끝내기 루타 조정)가 확정된 뒤 */
@@ -11798,7 +11799,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
         }
       }
       if(sc.length&&isBot&&inn>=9&&o!=='HR'){ const need=score[opp(bk)]-score[bk]+1; { const hb={'1B':1,'2B':2,'3B':3}[o], wr=need>=1&&sc[need-1], adv=wr?3-b0.indexOf(wr):9; if(hb>adv){ if(o==='2B')xb.d--; else xb.tr--; o=adv>=2?'2B':'1B'; if(o==='2B')xb.d++; const k=adv>=2?2:1, home=sc.slice(0,need); base[0]=base[1]=base[2]=null; b0.forEach((r,i)=>{ if(r&&!home.includes(r))base[Math.min(2,i+k)]=r; }); base[k-1]=b; for(const m of moves)if(m.to===4&&!home.includes(G.players[m.id]))m.to=Math.min(3,m.from+k); } } /* 타자는 정정한 루타의 베이스에, 뒤 주자는 같은 만큼만 진루(검수 11-09zt) */ /* 끝내기 안타: 결승 주자가 전진한 베이스 수까지만 타자 루타(KBO·MLB 기록규칙 9.06(f), 검수 11-09k) */ if(need>=1&&sc.length>need){ sc.length=need; const kept=new Set(sc.map(r=>r.id)); for(let i=moves.length-1;i>=0;i--){ const m=moves[i]; if(m.to===4&&m.result==='safe'&&!kept.has(m.id)){ m.to=Math.min(3,m.from+1); if(m.to<=m.from)moves.splice(i,1); } } } } /* 결승점 뒤 주자의 홈 질주 기록도 정리: 문자·그래픽 중계가 같은 경로(검수 11-08) */ /* 홈런이 아닌 끝내기는 결승점까지만 인정 */
-      if(!ps){ if(LBIP)W.push([sprAdd,b,p,o,LBIP]); W.push([splAdd,b,p,o,sfN?'SF':null,RSP0]); } /* 타구 지도도 끝내기 루타 조정 뒤(검수 11-09zf) */ /* 박스스코어와 같은 기준으로 좌우 기록(끝내기 루타 조정 뒤) */
+      if(!ps){ if(LBIP)W.push([sprAdd,b,p,o,LBIP]); W.push([splAdd,b,p,o,sfN?'SF':null,RSP0,b.team===PARK]); } /* 타구 지도도 끝내기 루타 조정 뒤(검수 11-09zf) */ /* 박스스코어와 같은 기준으로 좌우 기록(끝내기 루타 조정 뒤) */
       let phE=null; if(ph!=null&&['1B','2B','3B','HR'].includes(o)){ const q=ph, pb=fs.box.get(q); ph=null; if(pb&&pb.er<pb.r&&xo0-(eAt[q]||0)<3){ pb.er++; phE=q; } } /* 실책을 빼고 다시 세운 이닝에서 3루에 있던 주자가 이 안타로 득점: 그 투수의 비자책 1점을 자책으로(야구규칙 9.16, 검수 11-09zt) */
       if(sc.length){
         const n=sc.length; sc.forEach(r=>bs.box.get(r.id).r++); chg=sc.map(r=>resp.get(r.id)??p.id); const earned=r=>{ const q=resp.get(r.id)??p.id; return !(eRun||ueR.has(r.id)||xo0-(eAt[q]||0)>=3); }; /* 실책 출루 주자·실책으로 이어진 득점은 비자책, 그 밖은 책임 투수가 등판한 뒤의 실책만 빼고 센다 */ chgE=sc.filter(earned).map(r=>resp.get(r.id)??p.id); if(phE!=null)chgE.push(phE); rbiN=!dp&&!eRun?n:0; if(!dp&&!eRun)xb.rbi+=n; /* 실책으로 들어온 득점은 타점이 아니다 */ for(const r of sc){ const pb=fs.box.get(resp.get(r.id)??p.id)||xp; pb.r=(pb.r||0)+1; if(earned(r))pb.er++; ueR.delete(r.id); } /* 실점(r)도 따로: 프로필 최근 경기는 실점(검수 11-08) */ /* 자책점: 실책으로 나간 주자, 실책 플레이로 들어온 주자, 실책이 없었다면 이미 3아웃이었을 뒤의 득점만 비자책. 득점한 주자를 내보낸 투수의 자책 */ score[bk]+=n; runs+=n; PB();
@@ -12424,6 +12425,7 @@ function settlement(){
   try{ if(!G.unemp)seasonReview(y); }catch(e){}
   storySeason(y); const awards=seasonAwards(y); try{ seasonTitles(y); }catch(e){} try{ featSeason(y); mgrEyeReport(); }catch(e){} try{ ivPromCheck('season'); }catch(e){}
   G.history.push({y,d:G.day,fins:JSON.parse(JSON.stringify(fins)),order,champ:ps.champ,runner:ps.runner,ps:{wc:ps.wc,spo:ps.spo,po:ps.po,ks:ps.ks,days:P.days,tbRes:P.tbRes} /* 순위 결정전도 지난 대진표에 남긴다(검수 11-08) */,user:{w:uo.w,l:uo.l,t:uo.t,rank,net:fin.net,trust:u.trust}});
+  try{ histSnapSeason(G.history[G.history.length-1]); }catch(e){} /* 우승팀 명단·감독 시즌 기록(OOTP 참고) */
   for(const t of G.teams){const f=fins[t.id];if(f)chron('finance',`${y} 결산 · 수입 ${money(sum(f.inc.map(x=>x[1])))} · 지출 ${money(sum(f.exp.map(x=>x[1])))} · 손익 ${money(f.net)} · 기말 현금 ${money(f.cash)}`,null,t.id,{source:'finance:'+y});}
   { const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(G.cal.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 마지막 달(9·10월) 잔여 경기도 결산에 넣는다 */
   try{ tsArchive(y); }catch(e){}
@@ -15041,6 +15043,24 @@ const MILE_W=[['h','안타',[1000,1500,2000,2500,3000],120,false],['hr','홈런'
 function mileWatch(){ const out=[]; for(const p of Object.values(G.players)){ if(p.team==null||p.fdPool||!(p.hist||[]).some(h=>h.lvl==='1군'))continue; const c=careerOf(p);
     for(const [k,l,goals,near,isP] of MILE_W){ if(!!p.isP!==isP)continue; const v=c[k]||0, g=goals.find(x=>x>v); if(g==null||g-v>near)continue; out.push({p,k,l,v,g,left:g-v,near}); } }
   return out.sort((a,b)=>a.left/a.near-b.left/b.near); }
+/* ===== 시즌 결산 때 남기는 역사(OOTP Playoff History·Managers 참고) =====
+   우승팀: 그해 1군 WAR 상위 타자 9명·투수 6명과 주요 기록, 정규시즌 성적, 한국시리즈 MVP.
+   감독: 시즌을 마친 감독에게 그 시즌 성적을 붙인다(시즌 중 교체되면 마친 감독 기준, 대행 표시). 구단별 재임 구간으로 묶는다 */
+function histSnapSeason(h){ if(!h||h.y==null)return; const y=h.y;
+  if(h.champ!=null&&!h.cr){ const L=playersOf(h.champ).map(p=>({p,s:seasonTotal(p,y,'1군')})).filter(x=>x.s); const W=x=>{ try{ return warOf(x.s,x.p); }catch(e){ return 0; } };
+    const line=x=>x.p.isP?`${x.s.w||0}승 ${x.s.l||0}패${x.s.sv?` ${x.s.sv}세`:''}${x.s.hld?` ${x.s.hld}홀`:''} · ${ipStr(x.s.outs||0)}이닝 ERA ${((x.s.er||0)*27/Math.max(1,x.s.outs||0)).toFixed(2)}`:`${(x.s.ab?(x.s.h||0)/x.s.ab:0).toFixed(3).replace(/^0/,'')} ${x.s.hr||0}홈런 ${x.s.rbi||0}타점`;
+    const pick=(isP,n)=>L.filter(x=>!!x.p.isP===isP).map(x=>({x,w:W(x)})).sort((a,b)=>b.w-a.w).slice(0,n).map(({x,w})=>({id:x.p.id,name:x.p.name,pos:posLabel(x.p),w:Math.round(w*10)/10,l:line(x)}));
+    const o=(h.order||[]).find(o=>o.tid===h.champ), m=mgrOf(h.champ); let mvp=null; try{ mvp=champSeriesMvp(y,h.champ); }catch(e){}
+    h.cr={b:pick(false,9),p:pick(true,6),w:o?o.w:null,l:o?o.l:null,t:o?o.t||0:null,rk:(h.order||[]).findIndex(o=>o.tid===h.champ)+1,mg:m?m.name:'',mvp:mvp?{id:mvp.id,n:mvp.n,line:mvp.line}:null}; }
+  G.mgrH=G.mgrH||{}; for(const t of G.teams){ const m=mgrOf(t.id); if(!m)continue; const i=(h.order||[]).findIndex(o=>o.tid===t.id), o=h.order[i]; if(!o)continue; const H=G.mgrH[t.id]=G.mgrH[t.id]||[];
+    let st=H[H.length-1]; if(!st||st.id!==m.id||st.y1!==y-1){ st={id:m.id,name:m.name,y0:y,y1:y,w:0,l:0,t:0,ps:0,ch:0,ru:0,best:null,act:!!m.interim}; H.push(st); }
+    if(st.y1===y&&st.ys&&st.ys.includes(y))continue; st.y1=y; (st.ys=st.ys||[]).push(y); st.w+=o.w||0; st.l+=o.l||0; st.t+=o.t||0; if(i<5)st.ps++; if(h.champ===t.id)st.ch++; if(h.runner===t.id)st.ru++; if(!st.best||i+1<st.best.rk)st.best={y,rk:i+1}; if(!m.interim)st.act=false; } }
+/* 명예의 전당 예정(OOTP Upcoming Eligible 참고): 이 게임은 은퇴하면 기준(통산 WAR 38, MVP 2회, 골든글러브 6회, WAR 30+MVP 1회)으로 바로 헌액한다.
+   현역 중 이미 기준을 채운 선수와 가까운 선수(WAR 30 이상, 또는 MVP·골든글러브 1개 차) */
+function hofWatch(){ const out=[]; for(const p of Object.values(G.players)){ if(p.team==null||p.fdPool||!(p.hist||[]).some(h=>h.lvl==='1군'))continue; const c=careerOf(p); const aw=p.aw||[]; const mvp=aw.filter(a=>/MVP/.test(a)&&!/한국시리즈|올스타/.test(a)).length, gg=aw.filter(a=>/골든/.test(a)).length, war=c.war;
+    const met=war>=38||mvp>=2||gg>=6||(war>=30&&mvp>=1); const near=!met&&(war>=30||mvp===1&&war>=20||gg>=5);
+    if(met||near)out.push({p,war:Math.round(war*10)/10,mvp,gg,met,age:p.age,seasons:c.seasons.size}); }
+  return out.sort((a,b)=>(b.met-a.met)||b.war-a.war); }
 /* ===== 예고 선발 · 순위 기록 · 트레이드 비교 · 모의 지명 · 스태프 의견 ===== */
 /* 앞으로의 경기: 엔진이 치를 순서 그대로(미룬 경기·같은 날 두 경기·지금 포스트시즌 시리즈의 남은 차전). 다음 경기 목록·예고 선발이 같은 목록을 읽어 상대가 어긋나지 않게(검수 11-09zo) */
 function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; for(let d=from;d<=c.end&&L.length<n;d++){ const D=dayGames(d), nm=D.length-((c.sched[d]||[]).length); D.forEach((m,i)=>{ if(m.includes(tid))L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0],...(i<nm?{mk:true}:{})}); }); } /* mk: 미룬 보충 경기(dayGames 앞쪽) */
@@ -26787,7 +26807,7 @@ function standView0(){
   const msg=live&&period()==='season'?(mi<=4?`가을야구권 ${stRank(order,G.user)}위 · 6위와 ${Math.max(0,gbOf(me,order[5])).toFixed(1)}경기 차`:`5위 ${tshort(fifth.tid)}와(과) ${gbOf(fifth,me).toFixed(1)}경기 차`):'';
   // 상대 전적
   const h2h=hasTl?`<div class="tw"><table class="h2h"><thead><tr><th>상대</th>${G.teams.filter(t=>t.id!==G.user).map(t=>`<th>${badge(t.id,16)}</th>`).join('')}</tr></thead><tbody><tr class="me"><td>${tshort(G.user)}</td>${G.teams.filter(t=>t.id!==G.user).map(t=>{ const r=h2hOf(G.user,t.id); return `<td class="${r.w>r.l?'pos':r.w<r.l?'neg':''}">${r.w+r.l+r.t?`${r.w}-${r.l}${r.t?'-'+r.t:''}`:'-'}</td>`; }).join('')}</tr></tbody></table></div>`:'';
-  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...(G.pwr&&G.pwr.y===G.year?[['pwr','파워랭킹']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],...(G.fl&&G.fl.games.length?[['fut','퓨처스리그']]:[]),['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
+  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...((G.pwr&&G.pwr.y===G.year)||(G.proj&&G.proj.length&&period()!=='post')?[['pwr','파워랭킹']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],...(G.fl&&G.fl.games.length?[['fut','퓨처스리그']]:[]),['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
   if(tt.cur==='teams')return tt.bar+teamsView();
   if(tt.cur==='pwr')return tt.bar+pwrView();
   if(tt.cur==='last')return tt.bar+lastStandCard();
@@ -27106,7 +27126,8 @@ function flBox(x){ const side=k=>{ const B=x.box[k]; const nm=(id,n)=>G.players[
   return `<div class="fl-box"><p class="small mono">${esc(flName(x.a))} ${ln('a')}<br>${esc(flName(x.h))} ${ln('h')}</p>${side('a')}${side('h')}</div>`; }
 
 /* 주간 파워랭킹(OOTP Power Rankings 참고) */
-function pwrView(){ const P=G.pwr; if(!P||P.y!==G.year)return csec('파워랭킹','<p class="small muted">정규시즌 매주 월요일에 발표합니다.</p>');
+function pwrView(){ const P=G.pwr; if(!P||P.y!==G.year){ const R0=G.teams.map(t=>({t:t.id,r:(()=>{ try{ return projRating(t.id); }catch(e){ return 0; } })()})).sort((a,b)=>b.r-a.r); if(!R0.length)return csec('파워랭킹','<p class="small muted">정규시즌 매주 월요일에 발표합니다.</p>'); /* 지금 전력으로 다시 줄 세운다(저장된 개막 예상은 그때 기준이라 지수와 어긋날 수 있다) */
+    const J=R0.map(x=>x.t), rt=R0.map(x=>x.r); return csec('개막 전 전력 예상',`<p class="small muted">지금 선수단 전력으로 본 예상 순위입니다(외국인 빈자리는 채운다고 보고 계산). 구단주 목표의 기준이 된 예상 순위는 정할 때 전력이라 다를 수 있습니다. 개막하면 매주 월요일 파워랭킹으로 바뀝니다.</p><div class="tw"><table class="sqt"><thead><tr><th>예상</th><th class="stk">구단</th><th>전력 지수</th></tr></thead><tbody>${J.map((t,i)=>`<tr class="${t===G.user?'me':''}"><td>${i+1}</td><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${t}">${badge(t,16)} ${esc(tshort(t))}</button></td><td class="num">${rt[i].toFixed(1)}</td></tr>`).join('')}</tbody></table></div>`); }
   const arr=r=>r.prev==null?'<span class="small muted">new</span>':r.prev>r.rk?`<span class="pos">▲${r.prev-r.rk}</span>`:r.prev<r.rk?`<span class="neg">▼${r.rk-r.prev}</span>`:'<span class="small muted">-</span>';
   const rows=P.rows.map(r=>`<tr class="${r.tid===G.user?'me':''}"><td>${r.rk}</td><td>${arr(r)}</td><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${r.tid}">${badge(r.tid,16)} ${esc(tshort(r.tid))}</button></td><td class="key">${r.s.toFixed(1)}</td><td>${r.w}-${r.l}-${r.t}</td><td>${r.r10}</td><td class="${r.rd>0?'pos':r.rd<0?'neg':''}">${r.rd>0?'+':''}${r.rd}</td><td>${r.py.toFixed(3).replace(/^0/,'')}</td></tr>`).join('');
   return csec('파워랭킹',`<p class="small muted">${dmd(P.d)} 발표 · 시즌 승률, 득실점으로 본 기대 승률(피타고리안), 최근 10경기, 지금 전력을 합친 점수입니다. 시즌 초에는 전력 비중이 큽니다. 화살표는 지난주 대비 변동입니다.</p><div class="tw"><table class="sqt"><thead><tr><th>#</th><th>변동</th><th class="stk">구단</th><th>점수</th><th>승-패-무</th><th>최근10</th><th>득실</th><th>기대승률</th></tr></thead><tbody>${rows}</tbody></table></div>`); }
@@ -29262,9 +29283,11 @@ function histView(){
   const board=(label,f,fmt,flt)=>`<div class="ldr"><div class="eyebrow">${label}</div>${all.filter(flt||(()=>true)).sort((a,b)=>f(b)-f(a)).slice(0,8).map((x,i)=>`<div class="ldr-r"><i>${i+1}</i><span>${open(x)?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.name)}</button>`:esc(x.name)} <span class="small muted">${x.act?tshort(x.t):x.lab}</span></span><b class="num">${fmt(f(x))}</b></div>`).join('')}</div>`;
   const hof=hofList();
   const champs=G.history.filter(h=>h.champ===G.user).map(h=>h.y);
-  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['ret','영구결번'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['teams','구단 역대'],['mile','기록 도전'],['grec','한 경기 기록'],['abroad','해외파'],['book','리그 연감']],'sum');
+  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['ret','영구결번'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['teams','구단 역대'],['champs','우승팀'],['mgrs','역대 감독'],['mile','기록 도전'],['grec','한 경기 기록'],['abroad','해외파'],['book','리그 연감']],'sum');
   if(hv.cur==='book')return hv.bar+yearbookView();
   if(hv.cur==='teams')return hv.bar+teamAllTimeView();
+  if(hv.cur==='champs')return hv.bar+champTeamsView();
+  if(hv.cur==='mgrs')return hv.bar+mgrHistView();
   if(hv.cur==='mile')return hv.bar+mileWatchView();
   if(hv.cur==='grec')return hv.bar+gameRecView();
   if(hv.cur==='abroad')return hv.bar+abroadView();
@@ -29287,7 +29310,7 @@ function histView(){
   if(hv.cur==='sum')return hv.bar+seasonSummary();
   if(hv.cur==='aw')return hv.bar+ggVotingView(A)+csec('시즌 시상',aw);
   if(hv.cur==='ldr')return hv.bar+csec('통산 기록 순위',`<p class="small muted">현역과 은퇴 선수를 함께 비교합니다(1군 기록, 이 리그 기준).</p><div class="ldrs">${board('WAR',x=>x.war,v=>v.toFixed(1))}${board('안타',x=>x.h||0,v=>v,x=>!x.isP)}${board('홈런',x=>x.hr||0,v=>v,x=>!x.isP)}${board('승',x=>x.w||0,v=>v,x=>x.isP)}${board('세이브',x=>x.sv||0,v=>v,x=>x.isP)}</div>`);
-  return hv.bar+csec(`명예의 전당 ${hof.length}명`,hof.length?`<div class="list">${hof.map(r=>`<div class="item" style="cursor:default"><span class="nm">${v3Img('hall_of_fame_plaque',32,'hof-v3','명예의 전당 명패')}<b>${esc(r.name)}</b> <span class="small muted">${r.pos} · ${r.y} 은퇴 · ${r.seasons}시즌</span></span><span class="sub">WAR ${r.war}${r.isP?` · ${r.w}승 ${r.sv}세이브 ${r.so}탈삼진`:` · ${r.h}안타 ${r.hr}홈런 ${r.rbi}타점`}${r.mvp?` · MVP ${r.mvp}회`:''}${r.gg?` · 골든글러브 ${r.gg}회`:''}</span></div>`).join('')}</div>`:'<p class="small muted">아직 헌액자가 없습니다. 통산 WAR 38 이상, MVP 2회, 골든글러브 6회 등을 남기고 은퇴한 선수가 오릅니다(게임 기준).</p>')+gmHofSec()
+  return hv.bar+hofWatchView()+csec(`명예의 전당 ${hof.length}명`,hof.length?`<div class="list">${hof.map(r=>`<div class="item" style="cursor:default"><span class="nm">${v3Img('hall_of_fame_plaque',32,'hof-v3','명예의 전당 명패')}<b>${esc(r.name)}</b> <span class="small muted">${r.pos} · ${r.y} 은퇴 · ${r.seasons}시즌</span></span><span class="sub">WAR ${r.war}${r.isP?` · ${r.w}승 ${r.sv}세이브 ${r.so}탈삼진`:` · ${r.h}안타 ${r.hr}홈런 ${r.rbi}타점`}${r.mvp?` · MVP ${r.mvp}회`:''}${r.gg?` · 골든글러브 ${r.gg}회`:''}</span></div>`).join('')}</div>`:'<p class="small muted">아직 헌액자가 없습니다. 통산 WAR 38 이상, MVP 2회, 골든글러브 6회 등을 남기고 은퇴한 선수가 오릅니다(게임 기준).</p>')+gmHofSec()
    +`<section class="card"><div class="row between"><span class="small">우리 구단 우승 ${champs.length}회 · 영구결번 ${(G.retNos||[]).length}명</span><button class="btn small" data-a="go" data-v="club:chron">우리 구단 연대기</button></div></section>`;
 }
 
@@ -29340,6 +29363,18 @@ function mileWatchView(){ const L=mileWatch(); const byK={}; for(const x of L)(b
 function gameRecView(){ const B=G.gbest||{}; const ks=Object.keys(GBK).filter(k=>B[k]);
   const rows=ks.map(k=>{ const r=B[k], p=G.players[r.pid]||(G.arch&&G.arch[r.pid]); return `<tr class="${r.tid===G.user?'me':''}"><td>${GBK[k][0]}</td><td class="num"><b>${r.v}</b></td><td>${p?`<button class="lnk" data-a="player" data-v="${r.pid}">${esc(r.name)}</button>`:esc(r.name)}</td><td>${r.tid!=null&&G.teams[r.tid]?esc(tshort(r.tid,r.y)):'-'}</td><td>${r.y} · ${esc(r.vs||dmd(r.d))}</td><td>${r.tie?`${r.tie}번`:'-'}</td></tr>`; }).join('');
   return csec('한 경기 최다 기록',`<p class="small muted">1군 정규시즌 한 경기 최고 기록입니다. 같은 기록은 먼저 세운 선수를 남기고 타이 횟수를 셉니다. 이 기능이 들어간 뒤(2026-11-12 업데이트) 치른 경기부터 집계합니다.</p>${rows?`<div class="tw"><table class="sqt"><thead><tr><th>부문</th><th>기록</th><th>선수</th><th>당시 구단</th><th>경기</th><th>타이</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="small muted">아직 집계된 경기가 없습니다. 경기를 치르면 쌓입니다.</p>'}`); }
+/* 우승팀(OOTP Playoff History 참고) */
+function champTeamsView(){ const H=[...(G.history||[])].filter(h=>h.champ!=null).reverse(); if(!H.length)return csec('역대 우승팀','<p class="small muted">첫 한국시리즈가 끝나면 우승팀 기록이 쌓입니다.</p>');
+  const pl=x=>`<div class="fx-li"><b>${G.players[x.id]?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.name)}</button>`:esc(x.name)}</b><span class="small muted">${esc(x.pos)} · WAR ${x.w.toFixed(1)} · ${esc(x.l)}</span></div>`;
+  return H.map(h=>{ const c=h.cr; const head=`${h.y} ${badge(h.champ,16)} ${esc(tshort(h.champ,h.y))}`; const ks=h.ps&&h.ps.ks; const sub=`${c&&c.w!=null?`정규시즌 ${c.w}-${c.l}-${c.t} (${c.rk}위)`:''}${h.runner!=null?` · 상대 ${esc(tshort(h.runner,h.y))}`:''}${ks&&ks[2]!=null?` ${ks[2]}승 ${ks[3]}패`:''}${c&&c.mg?` · 감독 ${esc(c.mg)}`:''}`;
+    return csec(head,`<p class="small muted">${sub}${c&&c.mvp?` · 한국시리즈 MVP ${esc(c.mvp.n)}(${esc(c.mvp.line)})`:''}</p>${c?`<div class="ldrs"><div class="ldr"><div class="eyebrow">주요 타자</div>${c.b.map(pl).join('')}</div><div class="ldr"><div class="eyebrow">주요 투수</div>${c.p.map(pl).join('')}</div></div>`:'<p class="small muted">이 시즌은 우승 명단 기록이 남기 전(2026-11-12 업데이트 이전)에 끝났습니다.</p>'}`); }).join(''); }
+/* 역대 감독(OOTP Managers 참고) */
+function mgrHistView(){ const M=G.mgrH||{}; const tids=G.teams.map(t=>t.id).filter(t=>(M[t]||[]).length); if(!tids.length)return csec('역대 감독','<p class="small muted">시즌을 마치면 구단별 감독 재임 기록이 쌓입니다(이 업데이트 이후 시즌부터).</p>');
+  return tids.map(tid=>{ const L=[...M[tid]].reverse(); return csec(`${badge(tid,16)} ${esc(tshort(tid))} 역대 감독`,`<div class="tw"><table class="sqt"><thead><tr><th class="stk">감독</th><th>재임</th><th>승-패-무</th><th>승률</th><th>가을야구</th><th>우승</th><th>최고 순위</th></tr></thead><tbody>${L.map(s=>`<tr class="${tid===G.user?'me':''}"><td class="stk">${esc(s.name)}${s.act?' <span class="small muted">대행</span>':''}</td><td>${s.y0===s.y1?s.y0:`${s.y0}~${s.y1}`}</td><td>${s.w}-${s.l}-${s.t}</td><td>${(s.w/Math.max(1,s.w+s.l)).toFixed(3).replace(/^0/,'')}</td><td>${s.ps}</td><td>${s.ch}</td><td>${s.best?`${s.best.y} ${s.best.rk}위`:'-'}</td></tr>`).join('')}</tbody></table></div>`); }).join('')+'<p class="small muted">시즌 중 감독이 바뀌면 그 시즌을 마친 감독에게 한 시즌 성적을 붙입니다.</p>'; }
+/* 명예의 전당 예정(OOTP Upcoming Eligible 참고) */
+function hofWatchView(){ const L=hofWatch(); if(!L.length)return ''; const row=x=>`<div class="ldr-r${x.p.team===G.user?' me':''}"><i>${x.met?'✓':''}</i><span><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button> <span class="small muted">${esc(tshort(x.p.team))} · ${x.age}세 · ${x.seasons}시즌${x.mvp?` · MVP ${x.mvp}`:''}${x.gg?` · 골든글러브 ${x.gg}`:''}</span></span><b class="num">${x.war.toFixed(1)}</b></div>`;
+  const met=L.filter(x=>x.met), near=L.filter(x=>!x.met);
+  return csec('명예의 전당 예정',`<p class="small muted">은퇴하면 바로 헌액되는 기준(통산 WAR 38, MVP 2회, 골든글러브 6회, WAR 30+MVP 1회)을 이미 채운 현역(✓)과 가까운 현역입니다. 오른쪽은 통산 WAR(이 리그 1군).</p><div class="ldrs">${met.length?`<div class="ldr"><div class="eyebrow">기준 충족 ${met.length}명</div>${met.slice(0,12).map(row).join('')}</div>`:''}${near.length?`<div class="ldr"><div class="eyebrow">근접 ${near.length}명</div>${near.slice(0,12).map(row).join('')}</div>`:''}</div>`); }
 /* ---------- 트레이드 매물 ---------- */
 /* 트레이드 매물 센터: 받은 제안 → 우리 매물 → 다른 구단 매물. 매물끼리 맞교환 후보를 바로 보여 준다 */
 /* 받은 제안 한 줄 요약: 받는/보내는 선수 정보와 거래 뒤 변화 */
@@ -31193,7 +31228,8 @@ function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R)
   return `<div class="spl"><div class="row between"><span class="eyebrow">${S.y} 좌우 상대 비교</span>${p.splP?`<button class="tc-i" data-a="splP">${UI.splP?'이번 시즌':'지난 시즌'}</button>`:''}</div>
     <div class="spl-h"><span></span><span>${vs[0]} 상대 · ${L?L.pa:0}타석${sm(L)}</span><span>${vs[1]} 상대 · ${Rr?Rr.pa:0}타석${sm(Rr)}</span></div>
     ${M.map(([k,l])=>`<div class="spl-r"><span>${l}</span>${bar(L,k,'l')}${bar(Rr,k,'r')}</div>`).join('')}
-    <p class="small muted">실제 경기 기록입니다(능력치의 좌우 평가와 다를 수 있음). 40타석 미만은 적은 표본입니다. 실제 기용은 감독이 정합니다.</p></div>`; }
+    ${(()=>{ const H=splLine(S.H), Aw=splLine(S.A), Rs=splLine(S.RS); if(!H&&!Aw&&!Rs)return ''; const rowX=(l,x)=>`<div class="spl-x"><span>${l}</span><b>${x?fmt3(x.ops):'-'}</b><span class="small muted">${x?`${x.pa}타석 · 삼진 ${x.kp.toFixed(1)}%`:''}</span></div>`; return `<div class="spl-xs"><span class="eyebrow">${p.isP?'상황별 피OPS':'상황별 OPS'}</span>${rowX('홈',H)}${rowX('원정',Aw)}${rowX('득점권',Rs)}</div>`; })()}
+    <p class="small muted">실제 경기 기록입니다(능력치의 좌우 평가와 다를 수 있음). 40타석 미만은 적은 표본입니다. 실제 기용은 감독이 정합니다. 홈·원정은 이 업데이트 이후 경기부터 쌓입니다.</p></div>`; }
 /* 이동 구간 추세(최근 100타석·상대 100타자 창을 옮기며): 우리 선수만 경기별 기록을 보관 */
 /* 최근 W타석: 마지막에 걸친 경기는 W에 맞게 비율로 잘라 더한다(경기 통째로 더하면 102타석이 됐다). 올해 로그만(검수 11-06) */
 function rollSeries(p,W){ const G0=p.gl&&p.gl.y===G.year?p.gl.g||[]:[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j], f=g[1]>0?Math.min(1,(W-n)/g[1]):1; n+=g[1]*f; for(let k=0;k<8;k++)a[k]+=(g[k+1]||0)*f; } if(n<W-1e-9)continue; out.push({i,day:G0[i][0],a}); } return out; }
@@ -34811,6 +34847,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-12-history2',d:'11월 12일',t:'우승팀 · 역대 감독 · 명예의 전당 예정 · 홈/원정 기록 · 개막 전 예상',items:[
+    '리그 > 역사에 우승팀 화면이 생겼습니다. 해마다 우승 구단의 정규시즌 성적·감독·주요 타자 9명과 투수 6명(그해 WAR·기록)을 남깁니다(이번 시즌부터).',
+    '리그 > 역사 > 역대 감독: 구단별 감독 재임 기간, 통산 승패·승률, 가을야구·우승 횟수, 최고 순위(이번 시즌부터 쌓입니다).',
+    '명예의 전당 화면에 헌액 예정 현역이 나옵니다. 은퇴하면 바로 헌액되는 기준을 이미 채운 선수와 가까운 선수입니다.',
+    '선수 좌우 기록 카드에 홈·원정·득점권 OPS가 함께 나옵니다(홈·원정은 이번 업데이트 이후 경기부터).',
+    '개막 전에는 리그 > 순위 > 파워랭킹 자리에 지금 전력으로 본 예상 순위가 나옵니다.']},
   {id:'2026-11-12-records',d:'11월 12일',t:'파워랭킹 · 기록 도전 · 구단 역대 · 향후 연봉',items:[
     '리그 > 순위에 주간 파워랭킹이 생겼습니다. 정규시즌 매주 월요일, 시즌 승률·득실점으로 본 기대 승률·최근 10경기·지금 전력을 합쳐 순위를 매기고 지난주 대비 변동을 보여 줍니다.',
     '리그 > 역사에 세 화면이 추가됐습니다. 구단 역대(구단별 통산 승패·가을야구·우승·최고 시즌), 기록 도전(통산 2000안타·300홈런·300세이브 같은 이정표에 가까운 현역 선수와 남은 개수), 한 경기 기록(1군 정규시즌 한 경기 최다 안타·홈런·타점·득점·도루·탈삼진과 기록자).',
