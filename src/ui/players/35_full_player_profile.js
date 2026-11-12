@@ -83,7 +83,7 @@ function careerHub(p){
   const head=`<div class="ch-sum"><div class="ch-sum-i"><span>1군</span><b class="num">${c.seasons.size}</b><i>시즌</i></div><div class="ch-sum-i"><span>통산 WAR</span><b class="num">${c.war.toFixed(1)}</b></div><div class="ch-sum-i"><span>${p.isP?'승·세이브':'안타·홈런'}</span><b class="num">${p.isP?c.w+'·'+c.sv:c.h+'·'+c.hr}</b></div><div class="ch-sum-i"><span>소속 구단</span><b class="num">${new Set(seg.map(s=>s.t)).size}</b><i>곳</i></div><div class="ch-sum-i"><span>대기록</span><b class="num">${fe.length}</b><i>건</i></div></div>`;
   return `<div class="ch-grid${aw.length?'':' no-aw'}">
     <section class="card ch-top"><div class="ch-top-l"><h3>경력 요약</h3>${head}</div><div class="ch-top-r"><h3>트로피 진열장</h3><div class="ch-shelf">${shelf||'<p class="small muted keep">아직 수상이 없습니다.</p>'}</div></div></section>
-    ${aw.length?`<section class="card ch-aws"><h3>수상 연표</h3>${awT}</section>`:''}
+    ${aw.length?`<section class="card ch-aws"><h3>수상 연표</h3>${awT}</section>`:''}${(()=>{ try{ return ntCareerLine(p); }catch(e){ return ''; } })()}
     <section class="card ch-feats"><h3>대기록 <span class="small muted">${fe.length}건</span></h3>${featBox}</section>
     <section class="card ch-side"><h3>통산 이정표</h3>${mile}<h3>소속 구단</h3>${clubs||'<p class="small muted keep">소속 기록이 없습니다.</p>'}${mvT?`<div class="ch-mvl">${mvT}</div>`:''}${dr?`<h3>입단</h3>${dr}`:''}</section></div>`; }
 
