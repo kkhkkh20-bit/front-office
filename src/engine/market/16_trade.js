@@ -167,7 +167,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if(!give.length&&!get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'};
   { const m=faLockMsg([...give,...get]); if(m)return {ok:false,msg:m}; }
   if(give.some(id=>!G.players[id]||G.players[id].team!==G.user)||get.some(id=>!G.players[id]||G.players[id].team!==tid))return {ok:false,msg:'선수 소속이 바뀌었습니다. 목록을 다시 확인하세요.'}; /* 우리 선수만 보내고 그 구단 선수만 받는다 */
-  { const nt=ntcOf(give); if(nt)return {ok:false,msg:`${nt.name}은(는) 계약서에 트레이드 거부권이 있어 동의 없이 보낼 수 없습니다(${nt.ntc}년까지).`}; }
+  { const nt=ntcOfFor(give,tid); if(nt)return {ok:false,ntc:nt.id,msg:`${nt.name}은(는) 계약서에 트레이드 거부권이 있어 동의 없이 보낼 수 없습니다(${nt.ntc}년까지). 선수에게 ${tshort(tid)}행 동의를 구할 수 있습니다.`}; }
   { const nt=ntcOf(get); if(nt)return {ok:false,msg:`${tname(tid)} ${nt.name}은(는) 계약서에 트레이드 거부권이 있어 데려올 수 없습니다(${nt.ntc}년까지).`}; }
   if(Math.abs(cash)>3000)return {ok:false,msg:'현금은 한 번에 30억 원까지 주고받을 수 있습니다.'};
   if(cash<0&&!give.length)return {ok:false,msg:'선수를 보내지 않고 현금만 받는 거래는 할 수 없습니다.'};

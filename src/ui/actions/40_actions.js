@@ -414,6 +414,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   pkT(v){ const tr=UI.trade; const i=v.indexOf(':'), side=v.slice(0,i), k=v.slice(i+1); tr.pk=pkNorm(tr.pk); const L=tr.pk[side]; const j=L.indexOf(k); if(j>=0)L.splice(j,1); else L.push(k); render(); },
   treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.pk=null;UI.trade.cash=0;UI.trade.counters=null; /* 현금·지난 역제안도 비운다(검수 11-08c) */UI.trade.msg='';UI.trade.want=null;render();},
   tcash(v){ UI.trade.cash=+v||0; render(); },
+  ntcAsk(v){ const [id,tid,b]=String(v).split(':'); const r=ntcAsk(+id,+tid,b==='1'); toast(r); if(UI.trade)UI.trade.msg=r; save(); render(); },
   tpropose(){const tr=UI.trade;const r=proposeTrade(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);tr.msg=r.msg;tr.ok=r.ok;tr.want=r.want||null;tr.counters=r.counters||null;if(r.ok){tr.give=[];tr.get=[];tr.cash=0;tr.pk=null;UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade};sfx('cheer_hit',.5);sfx('confirm',.7);G.tsug=null;} else sfx('mitt',.4); save();render();},
   tcounter(v){ const tr=UI.trade; const c=(tr.counters||[])[+v]; if(!c)return; const bk={give:[...tr.give],get:[...tr.get],cash:tr.cash,pk:tr.pk,counters:tr.counters,msg:tr.msg,ok:tr.ok,want:tr.want}; tr.give=[...c.give]; tr.get=[...c.get]; if(c.cash!=null)tr.cash=c.cash; if(c.pk)tr.pk=c.pk; tr.counters=null; A.tpropose();
     if(UI.cfm&&UI.cfm.k==='tpropose')UI.cfm.doc.noGo=()=>{ Object.assign(UI.trade,bk); render(); }; }, /* 상대가 낸 조건 그대로(현금·지명권 포함). 결재를 취소하면 작성하던 안과 역제안 카드로 돌아간다(검수 11-09v) */
@@ -471,7 +472,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   jobYes(v){ const r=jobAnswer(+v,true); UI.tab='home'; closeSheets(); UI.calSel=null; UI.calYM=null; UI.mail=null; UI.game=null; /* 옛 구단 화면 상태(달력 선택·열린 경기)를 남기지 않는다 */ UI.gmMsg=r; save(); render(); window.scrollTo(0,0); },
   jobNo(v){ jobAnswer(+v,false); save(); render(); },
   toTrade(v,el){const p=G.players[+v]; if(UI.trade.tid!==p.team)UI.trade={tid:p.team,give:UI.trade.give||[],get:[],msg:'',sort:UI.trade.sort||'cur'}; else if(el&&el.closest&&el.closest('.bk-c'))UI.trade.get=[]; /* 매물 목록에서 누르면 새로 시작 */ if(!UI.trade.get.includes(p.id))UI.trade.get.push(p.id); UI.trade.seg=p.isP?'pit':'bat'; UI.trade.side='give'; UI.trade.msg=''; closeSheets(); A.go('trade:table');},
-  toTradeGive(v){const p=G.players[+v]; if(p&&hasNtc(p)){ toast(`${p.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다(${p.ntc}년까지).`); return; } if(!UI.trade.give.includes(p.id))UI.trade.give.push(p.id);UI.trade.seg=p.isP?'pit':'bat';UI.trade.side='get';closeSheets(); A.go('trade:table');},
+  toTradeGive(v){const p=G.players[+v]; if(p&&hasNtc(p))toast(`${p.name}은(는) 트레이드 거부권이 있습니다(${p.ntc}년까지). 상대 구단을 고른 뒤 선수에게 동의를 구해야 보낼 수 있습니다.`); if(!UI.trade.give.includes(p.id))UI.trade.give.push(p.id);UI.trade.seg=p.isP?'pit':'bat';UI.trade.side='get';closeSheets(); A.go('trade:table');},
   anF(v){ UI.anF=v; render(); },
   frF(v){ UI.frF=v; render(); }, ctF(v){ UI.ctF=v; render(); },
   signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
