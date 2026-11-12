@@ -2556,7 +2556,7 @@ T('[검수 11-09e] 스카우트 배치·보고서: 오차가 가장 작은 담�
   const A=mk(3,null,'am',p.region), B=mk(3,p.isP?'P':'B','am',p.region); G.scouts=[A,B]; ok(bestScout(p.region,p).id===B.id,'오차가 큰 담당을 고름'); const r=scoutReport(p); ok(r.who.includes(B.name)&&Math.abs(r.sd-prosSd(Object.assign({},B,{skill:effSkill(B)}),p))<1e-9,'보고서 오차가 최소 담당 기준이 아님');
   G.scouts=[mk(5,null,'intl','us')]; const own=playersOf(G.user).find(q=>!q.foreign); ok(!scoutReport(own).who.includes(G.scouts[0].name),'미국 파견 스카우트가 국내 선수 평가');
   G.scouts=REG.map(rg=>mk(3,null,'pro',rg)); G.scoutAuto=false; G.unemp=false; G.day=dnum(G.year,4,1); const P=scoutPlan().filter(x=>x.move); ok(P.length>0,'시험 준비: 제안 없음'); const m0=G.mail.length; scoutSuggest(); const m=G.mail.find(x=>x.subj.includes('배치 제안')); ok(m&&G.mail.length===m0+1,'제안 메일 없음'); const v=m.acts[0].v; ok(v.split('|').length===P.length&&P.every(x=>v.includes(x.s.id+':'+x.role+':'+x.key)),'메일 승인값이 메일 목록과 다름');
-  scoutSuggest(); ok(G.mail.length===m0+1,'같은 달 같은 제안이 중복'); G.day=dnum(G.year,5,1); scoutSuggest(); ok(G.mail.length===m0+2,'지난달 제안이 만료됐는데 새 제안이 오지 않음');
+  scoutSuggest(); ok(G.mail.length===m0+1,'같은 달 같은 제안이 중복'); G.day=dnum(G.year,5,1); scoutSuggest(); ok(G.mail.length===m0+1,'다음 달 같은 제안을 다시 보냄'); /* 같은 제안은 다시 보내지 않고 지난 메일로 그대로 적용한다(플레이 리뷰 11-12) */
   G.scouts=[...Array(10)].map((_,i)=>mk(2+(i%3),null,'am',REG[i%REG.length])); ok(scoutPlan().length===10,'배치안 인원 '+scoutPlan().length);
   ok(TUT.find(x=>x.k==='scout').body.includes('최대 '+scoutMax()+'명'),'튜토리얼 한도가 실제와 다름'); ok(DC_CONF(4.545)===sdConf(4.545)&&DC_CONF(4.4)===sdConf(4.4).replace('매우 ',''),'화면마다 확신도 경계가 다름');
   draftClaims(); ok(_dcc,'시험 준비: 캐시'); schGift(Object.keys(schList())[0]); ok(_dcc===null,'후원 뒤 추천 캐시가 남음'); });
