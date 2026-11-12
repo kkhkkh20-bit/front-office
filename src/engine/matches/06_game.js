@@ -119,8 +119,13 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
     let nxt=null;
     if(inn>=9&&lead>=1&&lead<=3) nxt=av.find(p=>p===closer);
     if(!nxt&&inn>=7&&lead>=0&&lead<=3) nxt=av.find(p=>setup.includes(p));
+    /* 가을야구 접전(3점 차 이내)은 총력전(커뮤니티 11-13 하꼼: 접전인데 추격조·롱릴리프만 썼다): 6회부터 지고 있어도 필승조, 선발이 일찍 무너지면 롱릴리프보다 4·5선발을 먼저 길게 */
+    const psClose=ps&&Math.abs(lead)<=3;
+    if(!nxt&&psClose&&inn>=6) nxt=av.find(p=>setup.includes(p))||(inn>=8?av.find(p=>p===closer):null);
+    if(!nxt&&psClose&&inn<=5&&fs.curIsSP){ const S=av.filter(p=>(fs.spAll||[]).includes(p)).sort((a,b)=>spV(b)-spV(a))[0]; if(S){ nxt=S; (fs.multi=fs.multi||{})[S.id]=1; } }
+    if(!nxt&&!ps&&inn>=8&&lead>=-1&&lead<0) nxt=av.find(p=>setup.includes(p)); /* 정규시즌도 8회 이후 1점 차로 지고 있으면 필승조 */
     if(!nxt&&inn<=5&&fs.curIsSP){ const L=av.find(p=>bproleOf(fs.tid,p)==='lr'); if(L){ nxt=L; (fs.multi=fs.multi||{})[L.id]=1; } } /* 롱릴리프: 선발이 일찍 내려가면 먼저, 여러 이닝 */
-    if(!nxt&&lead<0&&lead>=-3){ const M=av.find(p=>bproleOf(fs.tid,p)==='mr'); if(M)nxt=M; } /* 추격조: 따라가는 경기 */
+    if(!nxt&&lead<0&&lead>=-3&&!psClose){ const M=av.find(p=>bproleOf(fs.tid,p)==='mr'); if(M)nxt=M; } /* 추격조: 따라가는 경기(가을야구 접전은 제외) */
     if(!nxt&&(lead<-3||lead>4)) nxt=[...av].reverse().find(p=>p!==closer);
     if(!nxt) nxt=av.find(p=>mid.includes(p))||av.find(p=>p!==closer)||av[0];
     fs.exit[fs.cur.id]=lead; fs.cur=nxt; fs.curIsSP=false; fs.used.add(nxt.id); { const pu=mgrPush(fs.tid); if(nxt!==closer&&inn<=7&&R()<clamp((pu-52)/45,0,.6)*(Math.abs(lead)<=3?1:.5))(fs.multi=fs.multi||{})[nxt.id]=1; } /* 멀티이닝 */ fs.box.set(nxt.id,pz()); fs.entry[nxt.id]=lead; (fs.entryR=fs.entryR||{})[nxt.id]=nr||0; fs.pitchers.push(nxt.id);
