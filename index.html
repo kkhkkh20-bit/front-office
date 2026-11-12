@@ -12986,7 +12986,7 @@ function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.us
 /* 받은 제안이 지금 성사될 수 있는지(거부권·소속·상대 정원·샐러리캡). 막히면 사유, 되면 null.
    수락할 때와 AI가 제안을 만들 때 같은 판정을 쓴다: 예전에는 만들 때 이 검사를 안 해 수락하면 샐러리캡으로 취소되는 제안이 잦았다 */
 function offerBlockMsg(o){
-  { const nt=ntcOf(o.get); if(nt)return `${nt.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다.`; }
+  { const nt=ntcOfFor(o.get,o.from); if(nt)return `${nt.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다. 선수에게 ${tshort(o.from)}행 동의를 구할 수 있습니다.`; }
   { const nt=ntcOf(o.give); if(nt)return `${tname(o.from)} ${nt.name}은(는) 트레이드 거부권이 있어 데려올 수 없습니다.`; }
   if([...o.give,...o.get].some(id=>!G.players[id]))return '선수 상황이 바뀌어 성사되지 않았습니다.';
   if(o.give.some(id=>G.players[id].team!==o.from)||o.get.some(id=>G.players[id].team!==G.user))return '선수 상황이 바뀌어 성사되지 않았습니다.';
@@ -13671,9 +13671,14 @@ function fFindNote(p,rp){ if(!fMineFind(p))return ''; const T=(rp&&rp.tools||[])
 /* 이 구단이 이 후보를 아는가 */
 function fKnows(tid,p){ return !p||p.fsrc!=='scout'||G.day>=(p.fpub||0)||(p.fknow||[]).includes(tid); }
 function fScoutLv(tid){ if(tid===G.user)return null; const sd=team(tid).scoutSd||6; return clamp((9-sd)/1.6,0,3); }
+/* 해외 스카우트 포지션 지정(커뮤니티 11-13 마스터쉐프): 지역마다 찾을 포지션을 정하면 그 지역 우리 발굴의 약 75%가 그 포지션이다 */
+const FFOC=[['all','전체'],['P','투수'],['SP','선발'],['RP','불펜'],['C','포수'],['IF','내야수'],['OF','외야수'],['1B','1루수'],['2B','2루수'],['3B','3루수'],['SS','유격수'],['LF','좌익수'],['CF','중견수'],['RF','우익수']];
+function fFocusMatch(p,f){ if(!p||!f||f==='all')return true; if(f==='P')return !!p.isP; if(f==='SP')return !!p.isP&&isSPr(p); if(f==='RP')return !!p.isP&&!isSPr(p); if(p.isP)return false; if(f==='IF')return ['1B','2B','3B','SS'].includes(p.pos); if(f==='OF')return ['LF','CF','RF'].includes(p.pos); return p.pos===f; }
+function fFocusOpts(f){ if(!f||f==='all'||R()>=.75)return {}; if(f==='P'||f==='SP'||f==='RP')return {isP:true,_f:f}; return {isP:false,pos:f==='IF'?pick(['1B','2B','3B','SS']):f==='OF'?pick(['LF','CF','RF']):f}; }
+function setIntlFocus(r,f){ if(!IREG[r]||!FFOC.some(x=>x[0]===f))return; (G.intlFocus=G.intlFocus||{})[r]=f; if(f==='all')delete G.intlFocus[r]; }
 /* 매주 스카우트 발굴: 우리는 스카우트망 지역에서, 다른 구단은 스카우트 수준에 따라 */
 function scoutFindWeek(silent){ const o=dobj(G.day); if(!(foreignOpen()||o.m===10||o.m===11))return; G.fmarket=G.fmarket||[]; if(G.fmarket.length>=70)return; const found=[];
-  if(!G.unemp){ for(const r of Object.keys(IREG)){ const lv=intlLv(r); const isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r); const ch=lv>=1?.13*lv+(isc?isc.skill*.04:0):.03; if(R()<ch){ const asia=IREG[r].asia; const q=newForeign(asia?'아시아':'용병',{src:'scout',finder:G.user,flv:lv+(isc?isc.skill/3:0),reg:r}); G.fmarket.push(q.id); found.push(q); } } try{ sisLeadWeek(found); }catch(e){} }
+  if(!G.unemp){ for(const r of Object.keys(IREG)){ const lv=intlLv(r); const isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r); const ch=lv>=1?.13*lv+(isc?isc.skill*.04:0):.03; if(R()<ch){ const asia=IREG[r].asia; const fo=fFocusOpts((G.intlFocus||{})[r]); const q=newForeign(asia?'아시아':'용병',{src:'scout',finder:G.user,flv:lv+(isc?isc.skill/3:0),reg:r,...(fo.isP!=null?{isP:fo.isP}:{}),...(fo.pos?{pos:fo.pos}:{})}); if(fo._f==='SP'){ q.r.sta=Math.max(q.r.sta,60); q.role='SP'; } else if(fo._f==='RP'){ q.r.sta=Math.min(q.r.sta,44); q.role='RP'; } G.fmarket.push(q.id); found.push(q); } } try{ sisLeadWeek(found); }catch(e){} }
   for(const t of G.teams){ if(t.id===G.user)continue; const lv=fScoutLv(t.id); if(R()<.12+lv*.05){ const q=newForeign(R()<.25?'아시아':'용병',{src:'scout',finder:t.id,flv:lv}); G.fmarket.push(q.id); } }
   void silent; /* 발굴 소식은 보내지 않는다: 외국인 시장에서 '우리 스카우트 발굴'로 표시하고 관찰 메모를 자세히 보여 준다 */
   return found; }
@@ -14320,7 +14325,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if(!give.length&&!get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'};
   { const m=faLockMsg([...give,...get]); if(m)return {ok:false,msg:m}; }
   if(give.some(id=>!G.players[id]||G.players[id].team!==G.user)||get.some(id=>!G.players[id]||G.players[id].team!==tid))return {ok:false,msg:'선수 소속이 바뀌었습니다. 목록을 다시 확인하세요.'}; /* 우리 선수만 보내고 그 구단 선수만 받는다 */
-  { const nt=ntcOf(give); if(nt)return {ok:false,msg:`${nt.name}은(는) 계약서에 트레이드 거부권이 있어 동의 없이 보낼 수 없습니다(${nt.ntc}년까지).`}; }
+  { const nt=ntcOfFor(give,tid); if(nt)return {ok:false,ntc:nt.id,msg:`${nt.name}은(는) 계약서에 트레이드 거부권이 있어 동의 없이 보낼 수 없습니다(${nt.ntc}년까지). 선수에게 ${tshort(tid)}행 동의를 구할 수 있습니다.`}; }
   { const nt=ntcOf(get); if(nt)return {ok:false,msg:`${tname(tid)} ${nt.name}은(는) 계약서에 트레이드 거부권이 있어 데려올 수 없습니다(${nt.ntc}년까지).`}; }
   if(Math.abs(cash)>3000)return {ok:false,msg:'현금은 한 번에 30억 원까지 주고받을 수 있습니다.'};
   if(cash<0&&!give.length)return {ok:false,msg:'선수를 보내지 않고 현금만 받는 거래는 할 수 없습니다.'};
@@ -19984,7 +19989,27 @@ function agPardon(pid){ const p=G.players[pid], r=p&&rpLive(p); if(!p||p.team!==
   return `${ag?`${ag.name} 에이전트`:p.name}: "사정은 알겠습니다. 두 달은 지켜보겠습니다. 그 뒤에도 그대로면 다음 계약 때 다시 이야기하겠습니다." (${ag?`에이전트 관계 ${ag.size==='big'?-3:-2} · `:''}기분 -2 · ${dmd(r.grace)}까지 약속 위반 기분 하락 절반${ag?', 에이전트 관계 감점 없음':''})`; }
 /* 거부권은 계약한 구단에 있는 동안 유효하다(우리 선수든 상대 선수든) */
 function ntcOf(ids){ return ids.map(id=>G.players[id]).find(p=>p&&hasNtc(p))||null; }
-const hasNtc=p=>ctOn(p)&&p.ntc>=ctSeason(); /* 스토브리그 뒤에는 다음 시즌 계약 기준: 끝난 해까지인 거부권이 11월 거래를 막았다(검수 11-09zzb) */
+const hasNtc=p=>ctOn(p)&&p.ntc>=ctSeason();
+/* 거부권 선수의 동의(커뮤니티 11-13 마스터쉐프): 우리 선수가 특정 구단행에 동의하면 14일 동안 그 구단과의 트레이드에서만 거부권을 쓰지 않는다 */
+const ntcFor=(p,tid)=>hasNtc(p)&&!(p.ntcOk&&p.ntcOk.tid===tid&&p.ntcOk.until>=G.day);
+function ntcOfFor(ids,tid){ return ids.map(id=>G.players[id]).find(p=>p&&ntcFor(p,tid))||null; }
+/* 동의 확률: 충성심이 높으면 남고 싶어 하고, 야망이 크거나 기분이 나쁘면 떠날 마음이 있다. 가서 주전이 되거나 우승 경쟁 구단·고향 구단이면 끌린다. 지켜지지 않은 약속이 있으면 구단 말을 믿지 않는다. 포기 대가(연봉의 30%)를 주면 오른다 */
+const NTC_BONUS_F=.3;
+function ntcAskOdds(p,tid,bonus){ initPers(p); const s=p.pers; let x=.3-(s.loy-10)*.035+(s.amb-10)*.02+(60-(p.mor??60))/100; const why=[];
+  let reg=false; try{ reg=isRegular(p); }catch(e){} if(!reg){ x+=.12; why.push('여기선 출전 기회가 적다'); } else x-=.08;
+  try{ const L=leagueSlots()[tid], sl=L&&L[pSlot(p)]; if(sl&&sl.v!=null&&ovr(p)>sl.v+1){ x+=.12; why.push('그 팀에선 주전'); } }catch(e){}
+  try{ if(teamCtx(team(tid)).contend){ x+=.1; why.push('우승 경쟁 구단'); } }catch(e){}
+  try{ if(homeTie(p,tid)){ x+=.15; why.push('고향 구단'); } }catch(e){}
+  const pr=p.grv&&p.grv.prom||0; if(pr>0){ x-=Math.min(.2,pr*.02); why.push('지켜지지 않은 약속'); }
+  if(bonus){ x+=.2; why.push('포기 대가'); }
+  return {p:clamp(x,.03,.92),why}; }
+function ntcAsk(id,tid,bonus){ const p=G.players[+id]; tid=+tid; if(!p||p.team!==G.user||G.unemp)return '우리 선수가 아닙니다.'; if(!hasNtc(p))return `${p.name}은(는) 거부권이 없습니다.`; if(!team(tid)||tid===G.user)return '상대 구단을 먼저 고르세요.';
+  if(!ntcFor(p,tid))return `${p.name}은(는) 이미 ${tshort(tid)}행에 동의했습니다(${dmd(p.ntcOk.until)}까지).`;
+  const A=p.ntcAsk=p.ntcAsk||{}; if(A[tid]!=null&&G.day-A[tid]<30)return `${p.name}에게는 ${tshort(tid)}행을 ${dmd(A[tid])}에 이미 물었습니다. 30일 뒤에 다시 물을 수 있습니다.`;
+  const cost=bonus?round5(Math.max(MIN_SAL,p.sal*NTC_BONUS_F)):0; if(cost&&spendable(G.user)<cost)return `포기 대가 ${money(cost)}을(를) 낼 돈이 부족합니다(${spendTxt()}).`;
+  const o=ntcAskOdds(p,tid,!!bonus); A[tid]=G.day;
+  if(R()<o.p){ if(cost){ spendPay(cost); G.spend.etc=(G.spend.etc||0); story(p,`${G.year} 트레이드 거부권 포기 대가 ${money(cost)}`,'move'); } p.ntcOk={tid,until:G.day+14}; return `${p.name}: "${tshort(tid)}이라면 가겠습니다." ${dmd(G.day+14)}까지 ${tname(tid)}과의 트레이드에 동의했습니다.${cost?` 포기 대가 ${money(cost)}을(를) 지급했습니다.`:''}`; }
+  p.mor=clamp((p.mor??60)-3,0,100); return `${p.name}: "${tshort(tid)}행은 생각이 없습니다." 거부권을 지키겠다고 합니다. (기분 -3${o.why.length?` · 고려한 점: ${o.why.join(', ')}`:''})`; } /* 스토브리그 뒤에는 다음 시즌 계약 기준: 끝난 해까지인 거부권이 11월 거래를 막았다(검수 11-09zzb) */
 /* 계약 금액 표기 통일: 그 시즌 현금 지출(연봉 + 그 회계연도에 준 계약금) · 보장 총액(계약금 + 연봉×기간) · 연평균(상한 반영 = 연봉 + 계약금/기간) */
 function ctMoney(p){ if(!p||!p.faC||!ctOn(p))return null; const c=ctInfo(p); const yrs=c?c.tot:Math.max(1,p.yrs||1); const sy=ctSeason(); const B=p.capB&&p.capB.until>=sy?p.capB:null;
   const bTot=p.ctB?p.ctB.b:B?(B.b??B.a*yrs):0; const first=B?B.until-yrs+1:sy-(c?c.k-1:0); /* 계약금은 상한 반영 기간이 끝나도 계약 총액에 남는다 */
@@ -30749,7 +30774,7 @@ function foreignView(){
   const ff=Object.assign({t:'yb',r:'all',s:'rk'},UI.ff||{}); const asia=ff.t==='asia'; const kind=asia?'아시아':'용병', used=fReplUsed(G.user,kind), max=fReplMax(kind);
   const regs=Object.keys(IREG).filter(r=>IREG[r].asia===asia);
   let market=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&fKnows(G.user,p)&&(p.foreign==='아시아')===asia)
-    .filter(p=>ff.r==='all'||(ff.r==='p'?p.isP:ff.r==='b'?!p.isP:ff.r==='mine'?fMineFind(p):origOf(p)===ff.r))
+    .filter(p=>ff.r==='all'||(ff.r==='p'?p.isP:ff.r==='b'?!p.isP:ff.r==='mine'?fMineFind(p):origOf(p)===ff.r)).filter(p=>fFocusMatch(p,ff.pp||'all'))
     .map(p=>{ const rp=scoutReport(p); return {p,rp,fs:fScout(p,rp)}; });
   market.sort(fSortBy(ff.s)); /* 고른 기준 하나로만 줄 세운다. 우리 발굴 후보는 '우리 발굴' 칩으로 따로 본다 */
   const tabs=`<div class="seg fr-ty"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
@@ -30778,7 +30803,7 @@ function foreignView(){
   const mineS=`<section class="card"><div class="row between"><h2 class="sec">우리 ${asia?'아시아쿼터':'외국인 선수'}</h2><span class="small muted">${asia?as.length+'/1':yb.length+'/3'}</span></div>${mine?`<div class="tgrid">${mine}</div>`:'<p class="small muted">아직 없습니다.</p>'}</section>`;
   const PG=pager('fm'+(asia?'a':'')+ff.r+ff.s,cards,cardPageSize());
   const mkS=`<section class="card foreign-candidates" data-pg="${'fm'+(asia?'a':'')+ff.r+ff.s}"><div class="row between"><h2 class="sec">${asia?'아시아쿼터 후보':'외국인 후보'} <span class="small muted">${market.length}명</span></h2><div class="seg smk-vw"><button data-a="fview2" data-v="t" class="${UI.fview2!=='c'?'on':''}">목록</button><button data-a="fview2" data-v="c" class="${UI.fview2==='c'?'on':''}">카드</button></div></div>
-    <div class="chips fr-ctl1">${fchips.map(([k,l])=>`<button data-a="ffset" data-v="r:${k}" class="${ff.r===k?'on':''}">${l}</button>`).join('')}<i class="fpsep"></i>${[['rk','예상 능력순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']].map(([k,l])=>`<button data-a="ffset" data-v="s:${k}" class="${ff.s===k?'on':''}">${l}</button>`).join('')}</div>
+    <div class="chips fr-ctl1">${fchips.map(([k,l])=>`<button data-a="ffset" data-v="r:${k}" class="${ff.r===k?'on':''}">${l}</button>`).join('')}<i class="fpsep"></i><select data-a="ffpos" aria-label="포지션">${FFOC.map(([k,l])=>`<option value="${k}" ${(ff.pp||'all')===k?'selected':''}>${k==='all'?'모든 포지션':l}</option>`).join('')}</select><i class="fpsep"></i>${[['rk','예상 능력순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']].map(([k,l])=>`<button data-a="ffset" data-v="s:${k}" class="${ff.s===k?'on':''}">${l}</button>`).join('')}</div>
     <details class="candidate-help"><summary class="small muted">예상 능력·조사 단계 읽는 법</summary><p class="small muted">카드의 <b>예상</b>은 지난 리그 기록(리그 수준과 그 리그 기록이 믿을 만한지 감안)·MLB 경력·스카우트 평가를 합친 예상 능력이고, <b>예상 능력순</b>은 이 숫자 순서입니다. <b>범위</b>는 실제 능력이 10명 중 8명꼴로 들어가는 폭입니다. 조사 단계가 <b>조사 전 → 기초 조사 → 정밀 조사 → 확인 완료</b>로 오를수록 범위가 좁아집니다. 조사 전 후보는 추정보다 지난 리그 기록을 더 믿으세요(리그 수준 차이는 감안). <b>관찰</b>을 누르면 매주 조사가 쌓이고, 지역 스카우트망을 넓혀도 정확해집니다. 영입하면 코치진이 정확히 파악합니다.</p></details>
     ${UI.fview2==='c'?`<div class="tgrid">${PG.items.join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}</div>${PG.bar}`:fRows(market,open,mid)}</section>`;
   const ftb=asia?'':fTmpBox(market);
@@ -30791,12 +30816,13 @@ function intlView(){
   const card=r=>{ const lv=intlLv(r); return `<div class="tcard" style="cursor:default"><div class="row between" style="flex-wrap:nowrap;align-items:flex-start;gap:8px"><div style="min-width:0"><b style="font-size:16px">${IREG[r].l}</b><div class="small muted">${IREG[r].lg} · ${IREG[r].asia?'아시아쿼터':'외국인'} 후보</div></div><span class="pill net${lv}" style="flex:none">${INET[lv].l}</span></div>
     <div class="seg">${INET.map((x,i)=>`<button data-a="setIntl" data-v="${r}:${i}" class="${lv===i?'on':''}">${i}</button>`).join('')}</div>
     <p class="dnote">${esc(INET[lv].d)}</p>
+    <label class="small">찾을 포지션 <select data-a="intlFocus" data-r="${r}" aria-label="${IREG[r].l} 찾을 포지션">${FFOC.map(([k,l])=>`<option value="${k}" ${((G.intlFocus||{})[r]||'all')===k?'selected':''}>${l}</option>`).join('')}</select></label>
     <div class="tc-ft"><b class="num">${INET[lv].c?'연 '+money(INET[lv].c):'무료'}</b><span>현재 후보 ${cnt(r)}명</span>${G.scouts.some(s=>s.role==='intl'&&s.region===r)?'<span class="pill good">스카우트 파견 +1단계</span>':''}</div></div>`; };
   return csec('해외 스카우트망',`<p class="small muted">외국인 후보는 그 나라에 우리 정보망이 얼마나 있느냐에 따라 보이는 정도가 다릅니다. 단계를 올리면 그 지역 후보의 리포트가 바로 정확해지고, 다음 달 1일 후보 교체부터 그 지역에서 더 많고 좋은 후보가 들어옵니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.</p>
     <dl class="tsum"><div><dt>연간 비용</dt><dd class="num">${money(tot)}</dd></div><div><dt>지난 결산 이후</dt><dd class="num">${money(G.spend.intl||0)}</dd></div><div><dt>외국인 후보</dt><dd class="num">${(G.fmarket||[]).length}명</dd></div></dl>
     <div class="eyebrow">외국인 시장</div><div class="tgrid">${['us','la'].map(card).join('')}</div>
     <div class="eyebrow">아시아쿼터 시장</div><div class="tgrid">${['jp','tw','au'].map(card).join('')}</div>
-    <p class="small muted">단계: 0 에이전트 자료 · 1 현지 통신원 · 2 전담 스카우트(적응력 확인) · 3 현지 사무소. 스카우트 팀에서 스카우트를 해외 담당으로 보내면 그 나라 정보 수준이 한 단계 더 올라갑니다(최대 3).</p>`);
+    <p class="small muted">찾을 포지션을 정하면 그 지역에서 우리 스카우트가 새로 발굴하는 후보의 약 4분의 3이 그 포지션입니다(이미 시장에 있는 후보는 그대로). 단계: 0 에이전트 자료 · 1 현지 통신원 · 2 전담 스카우트(적응력 확인) · 3 현지 사무소. 스카우트 팀에서 스카우트를 해외 담당으로 보내면 그 나라 정보 수준이 한 단계 더 올라갑니다(최대 3).</p>`);
 }
 function contractPage(){
   if(fmOn())return contractFM();
@@ -30818,7 +30844,7 @@ function foreignFM(o){ const {asia,yb,as,tot,capT,mid,open,ff,regs,used,max,mark
       <td class="wrap">${n?`<b class="${n>=2?'bad':''}">${n}개 구단 관심</b>`:'<span class="muted">관심 구단 없음</span>'}<span class="scn-s">${err||repl?`<span class="pill bad" title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':fErrShort(err)}</span>`:fBudgetTag(pay)}</span></td>
       <td><button class="tc-i${fwatchOn(p.id)?' on':''}" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?`관찰 ${fwatchK(p.id)}%`:'관찰'}</button> <button class="tc-i ${err||repl?'':'go'}" data-a="negOpen" data-v="fm:${p.id}" ${err||repl?'disabled':''}>협상</button></td></tr>`; });
   const sorts=[['rk','예상 능력순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']];
-  const cand=tfBox('foreign-candidates',asia?'아시아쿼터 후보':'외국인 후보',`${market.length}명`,`<div class="row between tf-chr">${tfChips('ffset',`r:${ff.r}`,fchips.map(([k,l])=>[`r:${k}`,l]))}${tfChips('ffset',`s:${ff.s}`,sorts.map(([k,l])=>[`s:${k}`,l]))}</div>`
+  const cand=tfBox('foreign-candidates',asia?'아시아쿼터 후보':'외국인 후보',`${market.length}명`,`<div class="row between tf-chr">${tfChips('ffset',`r:${ff.r}`,fchips.map(([k,l])=>[`r:${k}`,l]))}${tfChips('ffset',`s:${ff.s}`,sorts.map(([k,l])=>[`s:${k}`,l]))}<select data-a="ffpos" aria-label="포지션">${FFOC.map(([k,l])=>`<option value="${k}" ${(ff.pp||'all')===k?'selected':''}>${k==='all'?'모든 포지션':l}</option>`).join('')}</select></div>`
     +(asia?'':(t=>t?`<div class="tf-tmp">${t}</div>`:'')(fTmpBox(market)))+(UI.fmsg2?`<div class="note bad">${esc(UI.fmsg2)}</div>`:'')+tfT(['선수','예상 능력 · 조사','지난 리그 기록','요구 연봉','영입 경쟁 · 예산',''],rows,'조건에 맞는 후보가 없습니다.')
     +'<p class="small muted tipme">예상 능력은 지난 리그 기록(리그 수준 감안)·MLB 경력·스카우트 평가를 합친 값이고, 옆 범위에 실제 능력이 10명 중 8명꼴로 들어갑니다. 조사 단계가 오를수록 범위가 좁아집니다. 관찰을 누르면 매주 조사가 쌓입니다.</p>');
   const our=tfBox('tf-our',`우리 ${asia?'아시아쿼터':'외국인 선수'}`,`${mine.length}/${cap}`,tfT(['선수','종합','연봉','계약',''],[...mine.map(p=>`<tr><td>${tfP(p,`${esc(posLabel(p))} · ${esc(p.nat)} · ${p.age}세`)}</td><td>${rchip(scoutReport(p).cur)}</td><td>${Math.round(p.sal/USD)}만 달러<span class="scn-s">${money(p.sal)}</span></td><td>${p.rsy?`재계약 ${p.rsy}년차`:'첫 계약'}${p.fy===G.year||p.fy===G.year+1?'<span class="scn-s">리그 첫 시즌</span>':''}</td><td><button class="tc-i" data-a="relNow" data-v="${p.id}">방출</button></td></tr>`),...Array(Math.max(0,cap-mine.length)).fill(`<tr class="miss"><td colspan="4">빈자리</td><td></td></tr>`)])
@@ -30826,7 +30852,7 @@ function foreignFM(o){ const {asia,yb,as,tot,capT,mid,open,ff,regs,used,max,mark
   const W=(G.fwatch||[]).map(w=>({w,p:G.players[w.id]})).filter(x=>x.p&&(x.p.foreign==='아시아')===asia);
   const watch=tfBox('tf-watch','관찰 명단',`${(G.fwatch||[]).length}/8명`,tfT(['선수','추정','현장 관찰',''],W.map(({w,p})=>{ const f=fScout(p); return `<tr><td>${tfP(p,`${esc(p.nat)} · ${esc(posLabel(p))} · ${money(p.ask)}`)}${w.auto?' <span class="pill">스카우트 추천</span>':''}</td><td>${f.mid!=null?`${f.lo}~${f.hi}`:'평가 전'}</td><td><span class="scn-pg"><i class="scn-k"><u style="width:${w.k}%"></u></i>${w.k}%</span></td><td><button class="tc-i" data-a="fwatch" data-v="${p.id}">빼기</button></td></tr>`; }),'후보 표에서 관찰을 누르면 매주 스카우트 보고가 쌓여 평가 오차가 줄어듭니다.'));
   const cnt=r=>(G.fmarket||[]).filter(id=>G.players[id]&&G.players[id].team==null&&origOf(G.players[id])===r).length;
-  const net=tfBox('tf-net','해외 스카우트망',`연 ${money(sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c)))}`,tfT(['지역 · 후보','단계','비용'],regs.map(r=>{ const lv=intlLv(r), sp=G.scouts.some(s=>s.role==='intl'&&s.region===r); return `<tr><td title="${esc(IREG[r].lg)}${sp?' · 스카우트 파견 +1단계':''}">${IREG[r].l} <span class="muted">${cnt(r)}명</span></td><td><span class="chips tf-lv">${INET.map((x,i)=>`<button data-a="setIntl" data-v="${r}:${i}" class="${lv===i?'on':''}" title="${esc(x.l)}">${i}</button>`).join('')}</span></td><td title="${esc(INET[lv].l)}">${INET[lv].c?money(INET[lv].c):'무료'}</td></tr>`; }))
+  const net=tfBox('tf-net','해외 스카우트망',`연 ${money(sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c)))}`,tfT(['지역 · 후보','단계','찾을 포지션','비용'],regs.map(r=>{ const lv=intlLv(r), sp=G.scouts.some(s=>s.role==='intl'&&s.region===r); return `<tr><td title="${esc(IREG[r].lg)}${sp?' · 스카우트 파견 +1단계':''}">${IREG[r].l} <span class="muted">${cnt(r)}명</span></td><td><span class="chips tf-lv">${INET.map((x,i)=>`<button data-a="setIntl" data-v="${r}:${i}" class="${lv===i?'on':''}" title="${esc(x.l)}">${i}</button>`).join('')}</span></td><td><select data-a="intlFocus" data-r="${r}" aria-label="${IREG[r].l} 찾을 포지션" title="그 지역 우리 발굴의 약 4분의 3이 이 포지션">${FFOC.map(([k,l])=>`<option value="${k}" ${((G.intlFocus||{})[r]||'all')===k?'selected':''}>${l}</option>`).join('')}</select></td><td title="${esc(INET[lv].l)}">${INET[lv].c?money(INET[lv].c):'무료'}</td></tr>`; }))
 +'<p class="small muted tipme">단계: 0 에이전트 자료 · 1 현지 통신원 · 2 전담 스카우트 · 3 현지 사무소. 올리면 그 지역 후보 평가가 바로 정확해지고, 다음 달 1일 후보 교체부터 더 많고 좋은 후보가 들어옵니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.</p>');
   return tfWrap(top,cand,our+watch+net,'','minmax(0,auto) minmax(110px,1fr) minmax(0,auto)'); }
 /* PC 계약(FM 계약 화면처럼): 위 연봉 요약, 왼쪽 우리 선수 계약 표(연봉 협상 기간에는 위에 협상 칸), 오른쪽 구단별 연봉 · 비FA 다년계약 */
@@ -31465,6 +31491,7 @@ function tradeView(){
     </div>
     <dl class="tsum"><div><dt>연봉 변화</dt><dd class="num" style="color:${dPay>0?'var(--warn)':dPay<0?'var(--good)':'inherit'}">${dPay>=0?'+':''}${money(dPay)}</dd></div><div><dt>트레이드 후 캡</dt><dd class="num" style="color:${capAfter>cap?'var(--bad)':'inherit'}">${money(capAfter)} / ${money(cap)}</dd></div><div><dt>선수 영입 자금</dt><dd class="num">${money(Math.max(0,spendable(G.user)))}</dd></div><div><dt>로스터</dt><dd class="num">우리 ${myN} · 상대 ${thN}</dd></div></dl>
     ${mood?`<div class="tmood"><div class="row between"><span class="small muted">상대 단장 반응 예상</span><b style="color:${mood.c}">${mood.l}</b></div><p class="small" style="margin:2px 0">${mood.s}</p><div class="tbarm"><span style="width:${mood.w}%;background:${mood.c}"></span><i></i></div><p class="small muted">관계 ${t.rel} 기준 예측입니다. ${mood.sd>3.5?'관계가 낮아 오차가 큽니다.':'비교적 정확합니다.'}</p>${gt.some(p=>tradeUrgent(tr.tid,p))?'<p class="small muted">급매 선수는 일반 매물보다 가치 평가를 더 낮추며, 그 선수 가치에는 거절 이력·거래 횟수에 따른 웃돈을 붙이지 않습니다. 함께 받는 일반 선수·지명권·현금은 별도로 평가합니다. 받는 선수가 모두 급매이면 같은 구단 연간 2건·30일 거래 간격 제한은 면제되지만, 월별 협상 잔여 횟수는 필요합니다(맞대결 기간·유효한 역제안은 예외). 선수 옆 금액은 연봉이며 이적료가 아닙니다.</p>':''}</div>`:''}
+    ${tr.tid!=null&&tr.tid!==G.user?(tr.give||[]).map(id=>G.players[id]).filter(p=>p&&hasNtc(p)).map(p=>ntcFor(p,tr.tid)?`<div class="note warn"><b>${esc(p.name)}</b>: 트레이드 거부권(${p.ntc}년까지) — ${esc(tshort(tr.tid))}행 동의가 필요합니다. <button class="btn small" data-a="ntcAsk" data-v="${p.id}:${tr.tid}:0">선수에게 동의 구하기</button> <button class="btn small" data-a="ntcAsk" data-v="${p.id}:${tr.tid}:1" title="연봉의 30%를 거부권 포기 대가로 주고 묻습니다. 동의할 때만 냅니다">포기 대가 ${money(round5(Math.max(MIN_SAL,p.sal*NTC_BONUS_F)))} 걸고 묻기</button></div>`:`<div class="note good"><b>${esc(p.name)}</b>: ${esc(tshort(tr.tid))}행 동의(${dmd(p.ntcOk.until)}까지)</div>`).join(''):''}
     ${tr.msg?`<div class="note ${tr.ok?'good':''}">${esc(tr.msg)}${want?` <button class="btn small" data-a="tpick" data-v="give:${want.id}">${esc(want.name)} 얹기</button>`:''}</div>`:''}
     ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>{ const nt=negTurn(tr.tid), d0=nt.ctr&&nt.ctr[tsig(c.give,c.get,c.cash||0)+pkSig(c.pk)], live=d0!=null&&G.day-d0<=7; const K=pkNorm(c.pk), cs=c.cash||0; /* 현금·지명권도 카드에서 보이게, 유효기간(엔진 isCtr와 같은 7일)이 지나면 수락 버튼을 내린다(검수 11-09v) */
       return `<div class="ctr-o"><p>${esc(c.why)}</p><span class="small muted">보냄 ${c.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}${cs>0?` + 현금 ${money(cs)}`:''}${K.give.length?` + 지명권 ${K.give.map(pkName).join(', ')}`:''} · 받음 ${c.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}${cs<0?` + 현금 ${money(-cs)}`:''}${K.get.length?` + 지명권 ${K.get.map(pkName).join(', ')}`:''}</span><span class="small ${live?'muted':'bad'}">${live?`${dsh(d0+7)}까지 유효`:'유효기간이 지났습니다. 다시 제안해야 합니다.'}</span>${live?`<button class="btn small primary" data-a="tcounter" data-v="${i}">이 조건 수락</button>`:''}</div>`; }).join('')}</div>`:''}
@@ -33015,6 +33042,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   pkT(v){ const tr=UI.trade; const i=v.indexOf(':'), side=v.slice(0,i), k=v.slice(i+1); tr.pk=pkNorm(tr.pk); const L=tr.pk[side]; const j=L.indexOf(k); if(j>=0)L.splice(j,1); else L.push(k); render(); },
   treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.pk=null;UI.trade.cash=0;UI.trade.counters=null; /* 현금·지난 역제안도 비운다(검수 11-08c) */UI.trade.msg='';UI.trade.want=null;render();},
   tcash(v){ UI.trade.cash=+v||0; render(); },
+  ntcAsk(v){ const [id,tid,b]=String(v).split(':'); const r=ntcAsk(+id,+tid,b==='1'); toast(r); if(UI.trade)UI.trade.msg=r; save(); render(); },
   tpropose(){const tr=UI.trade;const r=proposeTrade(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);tr.msg=r.msg;tr.ok=r.ok;tr.want=r.want||null;tr.counters=r.counters||null;if(r.ok){tr.give=[];tr.get=[];tr.cash=0;tr.pk=null;UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade};sfx('cheer_hit',.5);sfx('confirm',.7);G.tsug=null;} else sfx('mitt',.4); save();render();},
   tcounter(v){ const tr=UI.trade; const c=(tr.counters||[])[+v]; if(!c)return; const bk={give:[...tr.give],get:[...tr.get],cash:tr.cash,pk:tr.pk,counters:tr.counters,msg:tr.msg,ok:tr.ok,want:tr.want}; tr.give=[...c.give]; tr.get=[...c.get]; if(c.cash!=null)tr.cash=c.cash; if(c.pk)tr.pk=c.pk; tr.counters=null; A.tpropose();
     if(UI.cfm&&UI.cfm.k==='tpropose')UI.cfm.doc.noGo=()=>{ Object.assign(UI.trade,bk); render(); }; }, /* 상대가 낸 조건 그대로(현금·지명권 포함). 결재를 취소하면 작성하던 안과 역제안 카드로 돌아간다(검수 11-09v) */
@@ -33072,7 +33100,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   jobYes(v){ const r=jobAnswer(+v,true); UI.tab='home'; closeSheets(); UI.calSel=null; UI.calYM=null; UI.mail=null; UI.game=null; /* 옛 구단 화면 상태(달력 선택·열린 경기)를 남기지 않는다 */ UI.gmMsg=r; save(); render(); window.scrollTo(0,0); },
   jobNo(v){ jobAnswer(+v,false); save(); render(); },
   toTrade(v,el){const p=G.players[+v]; if(UI.trade.tid!==p.team)UI.trade={tid:p.team,give:UI.trade.give||[],get:[],msg:'',sort:UI.trade.sort||'cur'}; else if(el&&el.closest&&el.closest('.bk-c'))UI.trade.get=[]; /* 매물 목록에서 누르면 새로 시작 */ if(!UI.trade.get.includes(p.id))UI.trade.get.push(p.id); UI.trade.seg=p.isP?'pit':'bat'; UI.trade.side='give'; UI.trade.msg=''; closeSheets(); A.go('trade:table');},
-  toTradeGive(v){const p=G.players[+v]; if(p&&hasNtc(p)){ toast(`${p.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다(${p.ntc}년까지).`); return; } if(!UI.trade.give.includes(p.id))UI.trade.give.push(p.id);UI.trade.seg=p.isP?'pit':'bat';UI.trade.side='get';closeSheets(); A.go('trade:table');},
+  toTradeGive(v){const p=G.players[+v]; if(p&&hasNtc(p))toast(`${p.name}은(는) 트레이드 거부권이 있습니다(${p.ntc}년까지). 상대 구단을 고른 뒤 선수에게 동의를 구해야 보낼 수 있습니다.`); if(!UI.trade.give.includes(p.id))UI.trade.give.push(p.id);UI.trade.seg=p.isP?'pit':'bat';UI.trade.side='get';closeSheets(); A.go('trade:table');},
   anF(v){ UI.anF=v; render(); },
   frF(v){ UI.frF=v; render(); }, ctF(v){ UI.ctF=v; render(); },
   signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
@@ -33363,6 +33391,8 @@ function selApply(el,e){ const a=el.dataset.a;
   if(a==='psY'){UI.psY=+el.value;UI.psSel=null;render();return;}
   if(a==='personalTarget'||a==='personalGmTarget'){UI[a]=+el.value;render();return;}
   if(el.tagName==='SELECT'&&['crole','csort','coachSlot','findPos','tpartner','tcash','tseg','tsort'].includes(a)){if(A[a])A[a](el.value,el,e);return;}
+  if(a==='ffpos'){ UI.ff=Object.assign({t:'yb',r:'all',s:'rk'},UI.ff||{}); UI.ff.pp=el.value; render(); return; }
+  if(a==='intlFocus'){ setIntlFocus(el.dataset.r,el.value); save(); render(); return; }
   if(a==='castSeek'){A.castSeek(el.value);return;}
   if(a==='analysisY'){ A.analysisY(el.value); return; }
   if(a==='tsel'||a==='mkt')A[a](el.dataset.v,el,e);
@@ -35915,6 +35945,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-13-ntc',d:'11월 13일',t:'거부권 선수 동의 · 해외 스카우트 포지션 지정',items:[
+    '트레이드 거부권이 있는 우리 선수도 협상안에 올릴 수 있습니다. 협상 화면의 "선수에게 동의 구하기"로 그 구단행 동의를 물을 수 있고, 동의하면 14일 동안 그 구단과만 트레이드할 수 있습니다. 선수는 충성심·출전 기회·상대 구단(우승 경쟁·고향·주전 자리)·지켜지지 않은 약속을 따져 정하고, 연봉의 30%를 포기 대가로 걸면 더 잘 받아들입니다(동의할 때만 지급). 같은 구단행은 30일에 한 번 물을 수 있고, 거절하면 기분이 조금 떨어집니다.',
+    '해외 스카우트망(지역별)에서 찾을 포지션(투수·선발·불펜·포수·내야·외야·각 포지션)을 정할 수 있습니다. 그 지역에서 우리 스카우트가 새로 발굴하는 후보의 약 4분의 3이 그 포지션입니다. 외국인 후보 목록도 포지션으로 거를 수 있습니다.']},
   {id:'2026-11-12-quiet',d:'11월 12일',t:'진행 멈춤·알림 정리',items:[
     '부상은 1군 주전이 10일 이상 빠지거나 30일 이상 장기 부상일 때만 진행을 멈춥니다. 복귀는 1군 주전의 10일 이상 부상이나 45일 이상 장기 부상에서 돌아올 때만 멈춥니다. 나머지는 소식함에만 남습니다.',
     '연속 등판 알림은 4일 연속부터 옵니다. 스카우트팀장 배치 제안은 내용이 바뀌었을 때만 새로 오고, 지난 제안도 그대로면 계속 적용할 수 있습니다.',

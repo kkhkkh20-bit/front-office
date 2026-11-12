@@ -376,7 +376,7 @@ function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.us
 /* 받은 제안이 지금 성사될 수 있는지(거부권·소속·상대 정원·샐러리캡). 막히면 사유, 되면 null.
    수락할 때와 AI가 제안을 만들 때 같은 판정을 쓴다: 예전에는 만들 때 이 검사를 안 해 수락하면 샐러리캡으로 취소되는 제안이 잦았다 */
 function offerBlockMsg(o){
-  { const nt=ntcOf(o.get); if(nt)return `${nt.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다.`; }
+  { const nt=ntcOfFor(o.get,o.from); if(nt)return `${nt.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다. 선수에게 ${tshort(o.from)}행 동의를 구할 수 있습니다.`; }
   { const nt=ntcOf(o.give); if(nt)return `${tname(o.from)} ${nt.name}은(는) 트레이드 거부권이 있어 데려올 수 없습니다.`; }
   if([...o.give,...o.get].some(id=>!G.players[id]))return '선수 상황이 바뀌어 성사되지 않았습니다.';
   if(o.give.some(id=>G.players[id].team!==o.from)||o.get.some(id=>G.players[id].team!==G.user))return '선수 상황이 바뀌어 성사되지 않았습니다.';

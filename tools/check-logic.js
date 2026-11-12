@@ -4031,6 +4031,12 @@ T('[감독 갈등 11-12] 안건이 있을 때만 주간 회의: 부진한 주전
   p.hist=(p.hist||[]).filter(h=>!(h.y===G.year&&h.lvl==='1군')); p.hist.push({y:G.year,lvl:'1군',tid:G.user,g:30,pa:110,ab:100,h:12,d:1,tr:0,hr:0,bb:8,hbp:0,sf:2,so:40,rbi:3});
   mcfWeek(); const n1=G.evs.filter(e=>e.k==='magd').length; ok(n1>=1,'부진 주전 안건 없음'); for(const e of G.evs)if(e.k==='magd')evPick(e.id,e.opts.length-1,true);
   G.day+=7; mcfWeek(); const again=G.evs.filter(e=>e.k==='magd'&&!e.done&&e.data.k==='slump:'+p.id).length; ok(again===0,'1주 만에 같은 부진 안건 반복'); });
+T('[커뮤니티 11-13] 거부권 선수에게 동의 구하기: 동의하면 그 구단과 14일만 트레이드 가능, 같은 구단은 30일에 한 번, 거절하면 기분이 조금 떨어진다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign&&!q.ys); initPers(p); p.ntc=G.year+3; p.ctT=G.user; ok(hasNtc(p),'준비 실패: 거부권 없음'); const tid=G.teams.find(t=>t.id!==G.user).id;
+  ok(!!ntcOfFor([p.id],tid),'동의 전인데 거부권이 막지 않음'); const r0=Math.random; Math.random=()=>0; let r; try{ r=ntcAsk(p.id,tid,false); }finally{ Math.random=r0; } ok(/동의/.test(r)&&p.ntcOk&&p.ntcOk.tid===tid,'동의 처리 안 됨: '+r); ok(!ntcOfFor([p.id],tid),'동의했는데 그 구단 거래가 막힘'); const o2=G.teams.find(t=>t.id!==G.user&&t.id!==tid).id; ok(!!ntcOfFor([p.id],o2),'다른 구단까지 거부권이 풀림');
+  G.day+=15; ok(!!ntcOfFor([p.id],tid),'14일이 지났는데 동의가 남음'); const m0=p.mor; Math.random=()=>.999; try{ r=ntcAsk(p.id,o2,false); }finally{ Math.random=r0; } ok(/생각이 없습니다/.test(r)&&p.mor===m0-3,'거절 처리: '+r); ok(/30일/.test(ntcAsk(p.id,o2,false)),'30일 안에 다시 물을 수 있음'); });
+T('[커뮤니티 11-13] 해외 스카우트 포지션 지정: 그 지역 우리 발굴의 대부분이 지정 포지션, 목록은 포지션으로 거른다',()=>{ fresh(); setIntlFocus('us','SS'); ok(G.intlFocus.us==='SS','지정 저장 안 됨'); let m=0; for(let i=0;i<200;i++){ const fo=fFocusOpts(G.intlFocus.us); const q=newForeign('용병',{src:'scout',finder:G.user,flv:2,reg:'us',...(fo.isP!=null?{isP:fo.isP}:{}),...(fo.pos?{pos:fo.pos}:{})}); if(fFocusMatch(q,'SS'))m++; dropP(q.id); } ok(m>=120&&m<=180,'유격수 비율 '+m+'/200');
+  const sp=newForeign('용병',{isP:true,market:true}); sp.role='SP'; ok(fFocusMatch(sp,'P')&&fFocusMatch(sp,'SP')&&!fFocusMatch(sp,'RP')&&!fFocusMatch(sp,'IF'),'투수 분류 오류'); setIntlFocus('us','all'); ok(!(G.intlFocus||{}).us,'전체로 되돌리지 못함'); });
+
 T('[감독 갈등 11-12] 면담 관계 상승은 자주 할수록·관계가 높을수록 줄어든다',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=50; m.tkD=[G.day]; const a=mcfRelGain(m,4); m.tkD=[G.day-3,G.day-2,G.day-1,G.day]; const b=mcfRelGain(m,4); m.rel=85; const c=mcfRelGain(m,4);
   ok(a===4,'첫 면담 상승이 줄어듦 '+a); ok(b<a,'자주 해도 같은 상승 '+b); ok(c<b,'관계 높아도 같은 상승 '+c); ok(mcfRelGain(m,-3)===-3,'하락은 그대로여야 함'); });
 `);
