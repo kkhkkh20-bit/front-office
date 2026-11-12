@@ -63,7 +63,7 @@ function actorFacing(a){if(a.role==='batter')return a.left?Math.PI/2:-Math.PI/2;
    - 디딤발 착지~공 놓기: 골반을 낮추고 두 다리를 2관절 IK로 원래 발 위치에 붙여 디딤 무릎을 굽힌다(착지 40~49°, 놓을 때 30~40°)
    - 착지→놓기 사이 몸통을 앞(30~33°)·글러브 쪽(21~32°)으로 기울이고, 던지는 팔 벌림을 몸통 기준 약 90°로 낮춘다
    계산은 모델 공간(좌투는 모델 좌우 반전이라 같은 식). 값은 measure로 잰 목표에 맞춘 것 */
-export const PITCH_MECH={kneeFC:45,kneeRel:35,kneeBlock:20,kneeReady:25,stance:.3,fwd:28,lat:35,arm:0,stride:.07};
+export const PITCH_MECH={kneeFC:45,kneeRel:35,kneeBlock:20,kneeReady:25,stance:.32,stepBack:.22,fwd:28,lat:35,arm:0,stride:.07};
 /* 던지는 팔 핵심 자세(교본): 몸통(Spine2) 기준. hAbd=어깨선 기준 앞(+)/뒤(-) 각도, flex=팔꿈치 굽힘, er=바깥돌림(0 팔뚝 앞, 90 위, 180 뒤).
    s=0 디딤발 착지, .81 최대 바깥돌림(MER), 1 공 놓기. 어깨 벌림은 몸통 기준 90° 유지 */
 export const ARM_KEYS=[{s:0,hAbd:-20,flex:85,er:60},{s:.81,hAbd:0,flex:95,er:170},{s:1,hAbd:10,flex:25,er:100}]; /* fwd·lat는 척추 세 마디에 나눠 주므로 골반→가슴 기울기는 그보다 작게 나온다(측정으로 맞춤) */
@@ -104,7 +104,13 @@ function pitchMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||!/^pitch_(ov
  const ra=boneByName(a,'RightArm');if(ra)rotModel(a,ra,AX.z,P.arm*arm);
  gloveTuck(a,t<fc?0:t<rel?smooth((t-fc)/(rel-fc)):1); /* 글러브 팔: 착지→놓기 사이 가슴으로 당기고 그대로 수비 준비 */
  {const sv=(t-fc)/(rel-fc),w=t<fc?smooth((t-(fc-.15))/.15):t<=rel+.04?1:1-smooth((t-rel-.04)/.25);throwingArm(a,clamp(sv,0,1),w);} /* 던지는 팔: 착지 전 0.15초부터 핵심 자세로, 놓은 뒤 0.25초에 걸쳐 원래 팔로스루로 */
- if(feet[1]&&t>rel)feet[1].x-=P.stance*smooth((t-rel-.2)/.3); /* 넘어온 뒷발을 던지는 팔 쪽으로 벌려 어깨너비 수비 준비 자세로(두 발이 붙은 채 끝나지 않게) */if(feet[0])feet[0].z+=P.stride*leg; /* 디딤발을 홈 쪽으로 조금 더(보폭 키의 77~85%) */
+ if(feet[0]&&feet[1]&&t>=rel){ /* 마무리 발놀림(사용자 11-12: 두 발이 제자리에 있으면 안 됨): ① 뒷발이 크게 넘어와 디딤발 옆 앞에 내려서고 ② 디딤발이 뒤로 물러나 홈을 보는 수비 자세 */
+  if(a._rfAction!==a.action||a._rfT==null||t<a._rfT){a._rf=[feet[0].clone(),feet[1].clone()];a._rfAction=a.action;}a._rfT=t;
+  const [L0,R0]=a._rf,p=smooth((t-rel-.04)/.3),q=smooth((t-rel-.36)/.26),Rend=L0.clone().add(new T.Vector3(-P.stance,0,.12)),Lend=L0.clone().add(new T.Vector3(.04,0,-P.stepBack));
+  feet[1].copy(R0).lerp(Rend,p);feet[1].y=R0.y+(Rend.y-R0.y)*p+.24*Math.sin(Math.PI*p);
+  feet[0].copy(L0).lerp(Lend,q);feet[0].y=L0.y+.07*Math.sin(Math.PI*q);
+  const mid=feet[0].clone().add(feet[1]).multiplyScalar(.5),wH=smooth((t-rel)/.45)*.8;hips.position.x+=(mid.x-hips.position.x)*wH;hips.position.z+=(mid.z-.05-hips.position.z)*wH;} /* 골반은 두 발 사이로 따라간다 */
+ if(feet[0])feet[0].z+=P.stride*leg; /* 디딤발을 홈 쪽으로 조금 더(보폭 키의 77~85%) */
  if(leg&&feet[0]){ /* 디딤 무릎이 목표 각도가 되도록 골반 높이를 계산해 낮춘다(올리지는 않음) */const up=boneByName(a,'LeftUpLeg'),kn=boneByName(a,'LeftLeg'),ft=boneByName(a,'LeftFoot'),H=modelPos(a,up,new T.Vector3()),K=modelPos(a,kn,new T.Vector3()),F=modelPos(a,ft,new T.Vector3()),l1=H.distanceTo(K),l2=K.distanceTo(F),d=Math.sqrt(l1*l1+l2*l2+2*l1*l2*Math.cos(knee*Math.PI/180)),hz=Math.hypot(H.x-feet[0].x,H.z-feet[0].z);
   if(d>hz){const y=feet[0].y+Math.sqrt(d*d-hz*hz),drop=(t<rel?Math.max(0,H.y-y):H.y-y)*leg;hips.position.y-=drop;}} /* 놓은 뒤에는 골반을 올려(음수 drop) 쪼그려 앉지 않게 */
  if(leg)['Left','Right'].forEach((s,i)=>{if(feet[i])legIK(a,s,feet[i]);});
@@ -150,7 +156,7 @@ async function mount(host,options={}){
  host.dataset.state='ready';host.parentElement.dataset.renderer='ready';host.parentElement.classList.add('has-3d');status('',1);tick(performance.now());return true;
  }catch(e){if(active===s){console.error('3D 경기장 로드 실패',e);fallback(host,'3D 경기장 파일을 불러오지 못해 기본 중계로 표시 중입니다.');}return false;}
 }
-function setCamera(snap=false,dt=1/60){const s=active;if(!s)return;let pos,look;if(s.cameraMode==='incident'){pos=v(0,7.5,-13);look=v(0,1,9);s.camera.fov=s.camera.aspect<1?65:50;s.camera.updateProjectionMatrix();}else if(s.cameraMode==='scoreboard'&&s.boardCenter){look=s.boardCenter.clone();pos=look.clone().addScaledVector(s.boardNormal,29);s.camera.fov=34;s.camera.updateProjectionMatrix();}else if(s.cameraMode==='pitcherSide'){const p=[...s.actors.values()].find(a=>a.pitcher);const c=p?p.root.position:v(0,0,18.4);pos=v(c.x-7.5,1.6,c.z);look=v(c.x,1.15,c.z);s.camera.fov=30;s.camera.updateProjectionMatrix(); /* 점검용: 투수 옆모습 */ }else if(s.cameraMode==='batterSide'){const b=[...s.actors.values()].find(a=>a.role==='batter'),c=b?b.root.position:v(.9,0,0);pos=s.batterView==='front'?v(c.x*.3,1.6,c.z+5.5):v(c.x*4,1.5,c.z+1.2);look=v(c.x,1.0,c.z);s.camera.fov=34;s.camera.updateProjectionMatrix(); /* 점검용: 타자 앞 대각선 */}else if(s.cameraMode==='field'&&s.follow){
+function setCamera(snap=false,dt=1/60){const s=active;if(!s)return;let pos,look;if(s.cameraMode==='incident'){pos=v(0,7.5,-13);look=v(0,1,9);s.camera.fov=s.camera.aspect<1?65:50;s.camera.updateProjectionMatrix();}else if(s.cameraMode==='scoreboard'&&s.boardCenter){look=s.boardCenter.clone();pos=look.clone().addScaledVector(s.boardNormal,29);s.camera.fov=34;s.camera.updateProjectionMatrix();}else if(s.cameraMode==='pitcherSide'){const p=[...s.actors.values()].find(a=>a.pitcher);const c=p?p.root.position:v(0,0,18.4);pos=s.pitcherView==='front'?v(c.x,1.7,c.z-8.5):v(c.x-7.5,1.6,c.z);look=v(c.x,1.0,c.z-.6);s.camera.fov=s.pitcherView==='front'?34:30;s.camera.updateProjectionMatrix(); /* 점검용: 투수 옆모습 */ }else if(s.cameraMode==='batterSide'){const b=[...s.actors.values()].find(a=>a.role==='batter'),c=b?b.root.position:v(.9,0,0);pos=s.batterView==='front'?v(c.x*.3,1.6,c.z+5.5):v(c.x*4,1.5,c.z+1.2);look=v(c.x,1.0,c.z);s.camera.fov=34;s.camera.updateProjectionMatrix(); /* 점검용: 타자 앞 대각선 */}else if(s.cameraMode==='field'&&s.follow){
   // 타구 카메라: 내야 플레이는 홈 뒤 그대로. 깊은 타구일수록 카메라를 타구 쪽으로 높여 당기고, 공 높이는 일부만 따라가 화면이 하늘로만 차지 않게 한다(뜬공·홈런 때 외야수가 몇 픽셀로만 보이던 문제).
   const target=s.follow,r=Math.hypot(target.x,target.z),depth=clamp((r-30)/60,0,1)*.8;/* 카메라는 언제나 홈→공 방향 선 위(홈 뒤 10m에서 시작). 예전처럼 공 쪽 옆으로 비키면 선상 타구·송구 때 덕아웃 지붕·관중석이 화면을 가렸다. 깊은 타구일수록 선을 따라 앞으로·위로 나간다 */
   const w=clamp(r/10,0,1),dx=r?target.x/r*w:0,dz=r?target.z/r*w+(1-w):1,dl=Math.hypot(dx,dz)||1,d=-10*(1-depth)+depth*r*.4;pos=v(dx/dl*d,8.5+depth*6,dz/dl*d);look=target.clone();look.y=clamp(Math.min(target.y,3+target.y*.35),1.5,12);}else{ /* 기본: 포수 뒤. 조금 높고 멀게 두어 포수 몸이 화면 아래 가운데를 덜 가리고 타자·존이 위로 올라오게 한다(예전 0,3.4,-8.8) */pos=v(0,4.4,-9.8);look=v(0,1.3,24);s.camera.fov=s.camera.aspect<1?65:46;s.camera.updateProjectionMatrix();}
@@ -216,7 +222,7 @@ function tick(now){const s=active;if(!s?.ready)return;if(!s.host.isConnected){di
  s.frame=requestAnimationFrame(tick);
 }
 function dispose(){const s=active;if(!s)return;active=null;pendingData=null;cancelAnimationFrame(s.frame);s.resizeObserver?.disconnect();s.cardObserver?.disconnect();for(const a of s.actors.values())clearActor(a);s.customMaterials.forEach(m=>m.dispose());s.ownedTextures.forEach(t=>t.dispose());s.landingRing?.geometry.dispose();s.landingRing?.material.dispose();s.ring?.geometry.dispose();s.ring?.material.dispose();s.trail?.geometry.dispose();s.trail?.material.dispose();s.trailDots?.material.dispose();s.floor?.geometry.dispose();s.floor?.material.dispose();s.env.dispose();s.light.shadow.dispose();s.ownedTextures.forEach(t=>{if(t.image instanceof HTMLCanvasElement){t.image.width=0;t.image.height=0;}}); /* 사파리는 2D 캔버스 메모리를 늦게 돌려준다: 바로 비운다 */s.renderer.renderLists.dispose();s.renderer.domElement.remove();s.labels?.remove();}
-function viewPitcher(on=true){const s=active;if(!s?.ready)return;s.cameraMode=on?'pitcherSide':'pitch';setCamera(true);s.dirty=true;s.cameraFrames=1;}
+function viewPitcher(on=true,angle='side'){const s=active;if(!s?.ready)return;s.pitcherView=angle;s.cameraMode=on?'pitcherSide':'pitch';setCamera(true);s.dirty=true;s.cameraFrames=1;}
 function viewBatter(on=true,angle='side'){const s=active;if(!s?.ready)return;s.batterView=angle;s.cameraMode=on?'batterSide':'pitch';setCamera(true);s.dirty=true;s.cameraFrames=1;}
 /* 점검용: 역할(batter/pitcher/catcher)의 선수를 클립의 정확한 시각 자세로 멈춘다(느린 그래픽에서도 프레임별 비교) */
 function posePreview(role,name,t){const s=active,a=[...(s?.actors.values()||[])].find(x=>role==='pitcher'?x.pitcher:x.role===role);if(!a)return null;const action=playPose(a,name,{freeze:true,fade:0});if(!action)return null;action.paused=false;action.time=Math.min(t,action.getClip().duration);a.mixer.update(0);a.post?.(a);action.paused=true;if(a.pitcher)a.root.rotation.y=Math.PI;s.dirty=true;return action.getClip().duration;}
