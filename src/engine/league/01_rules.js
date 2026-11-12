@@ -26,7 +26,7 @@ const SCOUT_SD=[13,9.5,7.5,5.5,4.2,3];
 const USD=14;                // 1만 달러 = 약 1,400만원 (100만 달러 = 약 14억)
 const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
 /* 외국인 연봉 규정의 물가 반영(커뮤니티 11-12): 리그 샐러리캡이 오른 만큼 협회가 상한을 10% 단위로 올린다(시작 시점 1.0). 실제 KBO 신규 상한 100만 달러는 2019년부터 그대로지만, 수십 년 플레이에서는 국내 연봉만 오르고 외국인 금액이 멈춰 있게 된다 */
-function fEcoK(){ try{ return Math.max(1,Math.round(ecoIdx()*10)/10); }catch(e){ return 1; } }
+function fEcoK(){ try{ return Math.max(1,Math.round(ecoIdx(sponSeason())*10)/10); }catch(e){ return 1; } } /* 겨울에는 다음 시즌 기준(샐러리캡과 같은 시즌 구분) */
 function asiaCap(){ return Math.round(ASIA_CAP*fEcoK()); }
 /* 아시아쿼터 재계약 상한: 신규는 20만 달러, 재계약은 직전 연봉에서 해마다 10만 달러까지 올릴 수 있다(KBO 2026 아시아쿼터 규정, 유저 제보 11-07) */
 function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return asiaCap(); const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); return Math.max(asiaCap(),b+Math.round(10*USD*fEcoK())); } /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */

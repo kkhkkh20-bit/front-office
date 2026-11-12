@@ -88,3 +88,7 @@
 @media(max-width:699px){ #app main.ws-frame .ws-scroll{overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:auto} /* 높이가 내용만큼인 안쪽 칸이 contain이면 바깥 main으로 스크롤이 안 넘어감(감독 후보 목록, 카페 11-09) */ #app main.ws-frame .ws-scroll .tw{overflow-x:auto;max-width:100%} }
 @media(max-width:699px){ #app main.ws-frame .ws-scroll table.sal-t{width:100%;min-width:0}#app main.ws-frame .ws-scroll table.sal-t td.small{white-space:normal}#app main.ws-frame .ws-scroll table.sal-t .candidate-name{min-width:0} }
 .fin-stack>.card+.card{margin-top:12px}
+
+/* 트레이드 선수 목록: 상대/우리 탭과 야수·투수·정렬 줄을 함께 위에 고정(커뮤니티 11-12) */
+.tpool-head{position:sticky;top:0;z-index:4;background:var(--panel);display:grid;gap:0;padding-bottom:2px}
+.tpool-head .trade-pool-options{margin:8px 0 4px}

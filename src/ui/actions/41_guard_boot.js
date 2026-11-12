@@ -183,7 +183,7 @@ function selApply(el,e){ const a=el.dataset.a;
   if(a==='dmemo'){ dmemoOf(+el.dataset.v).t=el.value.slice(0,40); save(); }
   if(a==='drd'){ dmemoOf(+el.dataset.v).rd=+el.value; save(); render(); }
   if(a==='findName'||a==='findAge'||a==='findSal'||a==='findMil'){ UI[a]=el.value; render(); }
-  if(a==='slotMemo'){ const m=meta(); const n=+el.dataset.v; if(m.slots[n]){ m.slots[n].memo=el.value.slice(0,30); setMeta(m); } } }
+  if(a==='slotMemo'){ const m=meta(); const n=+el.dataset.v; if(m.slots[n]){ m.slots[n].memo=el.value.slice(0,30); if(!setMeta(m)){ UI.slotMsg='저장 공간이 가득 차 메모를 저장하지 못했습니다. 안 쓰는 슬롯을 지운 뒤 다시 적어 주세요.'; render(); } } } } /* 공간이 차면 메모 쓰기도 실패해 예전 메모가 남던 것(커뮤니티 11-12) */
 document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if(!el)return;
   if(el.dataset.a==='offA')A.offA(el.dataset.v,el);
   if(el.dataset.a==='extA')A.extA(el.dataset.v,el);

@@ -110,3 +110,6 @@
 .fdpk .optrow{margin:8px 0}.fdpk tr.on td{background:color-mix(in srgb,var(--team-hi) 18%,transparent);font-weight:600}
 .fdpk-now{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;margin:6px 0;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--team-hi) 12%,transparent);font-size:13px}.fdpk-now em{font-style:normal;font-weight:700}.fdpk-now .bad,.fdpk-now em.bad{color:var(--bad,#ff6b6b)}.fdpk-now .ok,.fdpk-now em.ok{color:var(--good,#5ad38b)}
 .fdpk-seq{flex-basis:100%;color:var(--muted)}.fdpk-seq b{color:var(--text,#fff)}
+/* 동석 관람 보고: 창 높이를 화면 안으로 묶어 아래 건의 버튼이 화면 밖으로 밀리지 않게(커뮤니티 11-12) */
+.sheet.cw{max-height:calc(100dvh - 24px)}
+@media (max-width:600px){ .sheet.cw{max-height:calc(100dvh - 70px)} .sheet.cw .mt-log{flex:1 1 0;min-height:60px} .sheet.cw .mt-opts{max-height:46dvh;flex:0 1 auto;min-height:0} }

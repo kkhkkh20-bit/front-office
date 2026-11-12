@@ -159,7 +159,8 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
 /* 해마다 한 번씩(겨울 1월, 시즌 6월 15일~마감): 상한 여유가 있는 우승 도전·내년 도전 구단이 리빌딩 구단에서 전력을 사 온다. 리그 트레이드 한도(20건) 안에서 */
 function aiStanceBuy(){ const per=period(), o=dobj(G.day); const win=per==='season'?G.day>=KD(6,15)&&G.day<=tradeDL():(per==='off'||per==='pre')&&o.m===1; if(!win)return 0;
   const key=G.year+(per==='season'?'s':'w'); if(G.aiBuyK===key)return 0; if((G.lgTrades||[]).filter(t=>t.y===G.year).length>=18)return 0; G.aiBuyK=key;
-  const cap=capOf(sponSeason()); const B=G.teams.filter(t=>t.id!==ME()&&t.mode!=='rebuild'&&(t.cash||0)>-3000&&capPay(t.id)<cap*.96).sort((a,b)=>(stanceOf(a)==='win'?0:1)-(stanceOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,4);
+  const cap=capOf(sponSeason()); const TR={}; for(const t of G.teams)TR[t.id]=teamRating(t.id); const mean=avg(Object.values(TR)); /* 평준화(사용자 11-12): 이미 리그 평균보다 크게 센 구단(+1.0 이상)은 베테랑을 더 사 오지 않는다. 강팀이 해마다 더 강해져 승률 .700 시즌이 나오던 것 */
+  const B=G.teams.filter(t=>t.id!==ME()&&t.mode!=='rebuild'&&(t.cash||0)>-3000&&capPay(t.id)<cap*.96&&TR[t.id]<mean+1).sort((a,b)=>(stanceOf(a)==='win'?0:1)-(stanceOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,3);
   return B.length?fdStrengthen({buyers:B,per:1,wantF:.45}):0; }
 /* 올해 AI끼리 거래 건수(tid 없으면 리그 전체) */
 const lgTradeN=tid=>(G.lgTrades||[]).filter(t=>t.y===G.year&&(tid==null||t.a===tid||t.b===tid)).length;
