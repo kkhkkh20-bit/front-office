@@ -157,10 +157,15 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk);
   if(!get.some(id=>P(id)&&P(id).aiListed))need=Math.max(need,-Math.max(0,outV)*.1);
   const gain=inV-outV; return {gain,need,ok:gain>=need,theirN,theirPay,inV,outV,hit};
 }
+/* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
+let _faLk={k:null,s:null};
+function faLock(p){ if(!p||p.team==null||p.foreign||!(G.last&&G.last.y>=G.year)||G.rolled===G.year)return false; const k=G.year+':'+G.day; if(_faLk.k!==k){ let L=[]; try{ L=faUpcoming(); }catch(e){} _faLk={k,s:new Set(L.filter(x=>x.why!=='svc'||x.sure).map(x=>x.p.id))}; } return _faLk.s.has(p.id); }
+function faLockMsg(ids){ const L=ids.map(id=>G.players[id]).filter(faLock); return L.length?`${L.map(p=>p.name).join(', ')}: FA 신청을 앞둔 선수는 FA 공시(스토브리그 시작) 전까지 트레이드할 수 없습니다.`:''; }
 function proposeTrade(tid,give,get,cash,pk){
   const t=team(tid); cash=Math.round(cash||0); pk=pkNorm(pk); /* cash>0 우리가 얹음, cash<0 상대에게 현금을 받음(사용자 피드백 11-05) */
   if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'};
   if(!give.length&&!get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'};
+  { const m=faLockMsg([...give,...get]); if(m)return {ok:false,msg:m}; }
   if(give.some(id=>!G.players[id]||G.players[id].team!==G.user)||get.some(id=>!G.players[id]||G.players[id].team!==tid))return {ok:false,msg:'선수 소속이 바뀌었습니다. 목록을 다시 확인하세요.'}; /* 우리 선수만 보내고 그 구단 선수만 받는다 */
   { const nt=ntcOf(give); if(nt)return {ok:false,msg:`${nt.name}은(는) 계약서에 트레이드 거부권이 있어 동의 없이 보낼 수 없습니다(${nt.ntc}년까지).`}; }
   { const nt=ntcOf(get); if(nt)return {ok:false,msg:`${tname(tid)} ${nt.name}은(는) 계약서에 트레이드 거부권이 있어 데려올 수 없습니다(${nt.ntc}년까지).`}; }

@@ -15,6 +15,16 @@ function defSub(fs){ const m=mgrOf(fs.tid); if(!m||m.interim)return ''; mgrAttr(
     if(!best)break; const i=fs.order.indexOf(best.p); (fs.outI=fs.outI||{})[best.p.id]=i; (fs.subIn=fs.subIn||{})[best.q.id]=i; fs.order[i]=best.q; fs.posOf[best.q.id]=best.pos; fs.out.push(best.p); fs.bench.splice(fs.bench.indexOf(best.q),1); fs.box.set(best.q.id,bz());
     out.push(`${best.p.name} → ${best.q.name}(${POSS[best.pos]||best.pos})`); }
   if(out.length){ fs.defv=sideDefV(fs); sideTraits(fs); } return out.join(', '); }
+/* 크게 벌어진 경기(7회 이후 7점 차 이상): 주전을 빼고 벤치 선수를 넣는다. 휴식 성향이 큰 감독일수록 많이 바꾼다(커뮤니티 11-12: 시즌 초반 벤치 출전이 거의 없다) */
+function blowSub(fs){ const m=mgrOf(fs.tid); const re=!m||m.interim?50:mgrRestEff(m); const maxN=re>=70?3:re>=50?2:1; const out=[];
+  const freeC=()=>fs.bench.filter(x=>isC(x)&&healthy(x)&&!fs.order.includes(x)&&!fs.out.includes(x)).length;
+  for(let k=0;k<maxN;k++){ let best=null;
+    for(const p of fs.order){ const pos=fs.posOf[p.id]; if(!pos||pos==='C'||(fs.subIn&&fs.subIn[p.id]!=null))continue;
+      for(const q of fs.bench){ if(q.isP||!healthy(q)||fs.order.includes(q)||fs.out.includes(q)||(isC(q)&&freeC()<=1))continue; if(pos!=='DH'&&defAt(q,pos)<defAt(p,pos)-12)continue;
+        const sc=(p.fat||0)+(p.age>=32?6:0)+(ovr(q)-ovr(p))*.2; if(!best||sc>best.sc)best={p,q,pos,sc}; } }
+    if(!best)break; const i=fs.order.indexOf(best.p); (fs.outI=fs.outI||{})[best.p.id]=i; (fs.subIn=fs.subIn||{})[best.q.id]=i; fs.order[i]=best.q; fs.posOf[best.q.id]=best.pos; fs.out.push(best.p); fs.bench.splice(fs.bench.indexOf(best.q),1); fs.box.set(best.q.id,bz());
+    out.push(`${best.p.name} → ${best.q.name}(${POSS[best.pos]||best.pos})`); }
+  if(out.length){ fs.defv=sideDefV(fs); sideTraits(fs); } return out.join(', '); }
 /* 유형 이름: 성향 조합으로 한 줄 요약 */
 const MTYPE={combo_d:['수비·작전 야구형','수비가 좋은 선수를 쓰고 번트·도루로 한 점을 짜냅니다. 앞서면 수비를 굳힙니다.'],combo_o:['공격 야구형','수비가 약해도 잘 치는 선수를 씁니다. 번트 없이 장타로 이깁니다.'],
   pen_all:['불펜 총력형','선발을 일찍 내리고 필승조를 연투·멀티이닝으로 쏟아붓습니다. 투수 부상 위험이 큽니다.'],sp_care:['선발 관리형','선발에게 긴 이닝을 맡기고 불펜 연투를 피합니다.'],
