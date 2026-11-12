@@ -272,3 +272,21 @@ const MILE_W=[['h','안타',[1000,1500,2000,2500,3000],120,false],['hr','홈런'
 function mileWatch(){ const out=[]; for(const p of Object.values(G.players)){ if(p.team==null||p.fdPool||!(p.hist||[]).some(h=>h.lvl==='1군'))continue; const c=careerOf(p);
     for(const [k,l,goals,near,isP] of MILE_W){ if(!!p.isP!==isP)continue; const v=c[k]||0, g=goals.find(x=>x>v); if(g==null||g-v>near)continue; out.push({p,k,l,v,g,left:g-v,near}); } }
   return out.sort((a,b)=>a.left/a.near-b.left/b.near); }
+/* ===== 시즌 결산 때 남기는 역사(OOTP Playoff History·Managers 참고) =====
+   우승팀: 그해 1군 WAR 상위 타자 9명·투수 6명과 주요 기록, 정규시즌 성적, 한국시리즈 MVP.
+   감독: 시즌을 마친 감독에게 그 시즌 성적을 붙인다(시즌 중 교체되면 마친 감독 기준, 대행 표시). 구단별 재임 구간으로 묶는다 */
+function histSnapSeason(h){ if(!h||h.y==null)return; const y=h.y;
+  if(h.champ!=null&&!h.cr){ const L=playersOf(h.champ).map(p=>({p,s:seasonTotal(p,y,'1군')})).filter(x=>x.s); const W=x=>{ try{ return warOf(x.s,x.p); }catch(e){ return 0; } };
+    const line=x=>x.p.isP?`${x.s.w||0}승 ${x.s.l||0}패${x.s.sv?` ${x.s.sv}세`:''}${x.s.hld?` ${x.s.hld}홀`:''} · ${ipStr(x.s.outs||0)}이닝 ERA ${((x.s.er||0)*27/Math.max(1,x.s.outs||0)).toFixed(2)}`:`${(x.s.ab?(x.s.h||0)/x.s.ab:0).toFixed(3).replace(/^0/,'')} ${x.s.hr||0}홈런 ${x.s.rbi||0}타점`;
+    const pick=(isP,n)=>L.filter(x=>!!x.p.isP===isP).map(x=>({x,w:W(x)})).sort((a,b)=>b.w-a.w).slice(0,n).map(({x,w})=>({id:x.p.id,name:x.p.name,pos:posLabel(x.p),w:Math.round(w*10)/10,l:line(x)}));
+    const o=(h.order||[]).find(o=>o.tid===h.champ), m=mgrOf(h.champ); let mvp=null; try{ mvp=champSeriesMvp(y,h.champ); }catch(e){}
+    h.cr={b:pick(false,9),p:pick(true,6),w:o?o.w:null,l:o?o.l:null,t:o?o.t||0:null,rk:(h.order||[]).findIndex(o=>o.tid===h.champ)+1,mg:m?m.name:'',mvp:mvp?{id:mvp.id,n:mvp.n,line:mvp.line}:null}; }
+  G.mgrH=G.mgrH||{}; for(const t of G.teams){ const m=mgrOf(t.id); if(!m)continue; const i=(h.order||[]).findIndex(o=>o.tid===t.id), o=h.order[i]; if(!o)continue; const H=G.mgrH[t.id]=G.mgrH[t.id]||[];
+    let st=H[H.length-1]; if(!st||st.id!==m.id||st.y1!==y-1){ st={id:m.id,name:m.name,y0:y,y1:y,w:0,l:0,t:0,ps:0,ch:0,ru:0,best:null,act:!!m.interim}; H.push(st); }
+    if(st.y1===y&&st.ys&&st.ys.includes(y))continue; st.y1=y; (st.ys=st.ys||[]).push(y); st.w+=o.w||0; st.l+=o.l||0; st.t+=o.t||0; if(i<5)st.ps++; if(h.champ===t.id)st.ch++; if(h.runner===t.id)st.ru++; if(!st.best||i+1<st.best.rk)st.best={y,rk:i+1}; if(!m.interim)st.act=false; } }
+/* 명예의 전당 예정(OOTP Upcoming Eligible 참고): 이 게임은 은퇴하면 기준(통산 WAR 38, MVP 2회, 골든글러브 6회, WAR 30+MVP 1회)으로 바로 헌액한다.
+   현역 중 이미 기준을 채운 선수와 가까운 선수(WAR 30 이상, 또는 MVP·골든글러브 1개 차) */
+function hofWatch(){ const out=[]; for(const p of Object.values(G.players)){ if(p.team==null||p.fdPool||!(p.hist||[]).some(h=>h.lvl==='1군'))continue; const c=careerOf(p); const aw=p.aw||[]; const mvp=aw.filter(a=>/MVP/.test(a)&&!/한국시리즈|올스타/.test(a)).length, gg=aw.filter(a=>/골든/.test(a)).length, war=c.war;
+    const met=war>=38||mvp>=2||gg>=6||(war>=30&&mvp>=1); const near=!met&&(war>=30||mvp===1&&war>=20||gg>=5);
+    if(met||near)out.push({p,war:Math.round(war*10)/10,mvp,gg,met,age:p.age,seasons:c.seasons.size}); }
+  return out.sort((a,b)=>(b.met-a.met)||b.war-a.war); }

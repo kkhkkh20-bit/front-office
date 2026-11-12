@@ -65,7 +65,8 @@ function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R)
   return `<div class="spl"><div class="row between"><span class="eyebrow">${S.y} 좌우 상대 비교</span>${p.splP?`<button class="tc-i" data-a="splP">${UI.splP?'이번 시즌':'지난 시즌'}</button>`:''}</div>
     <div class="spl-h"><span></span><span>${vs[0]} 상대 · ${L?L.pa:0}타석${sm(L)}</span><span>${vs[1]} 상대 · ${Rr?Rr.pa:0}타석${sm(Rr)}</span></div>
     ${M.map(([k,l])=>`<div class="spl-r"><span>${l}</span>${bar(L,k,'l')}${bar(Rr,k,'r')}</div>`).join('')}
-    <p class="small muted">실제 경기 기록입니다(능력치의 좌우 평가와 다를 수 있음). 40타석 미만은 적은 표본입니다. 실제 기용은 감독이 정합니다.</p></div>`; }
+    ${(()=>{ const H=splLine(S.H), Aw=splLine(S.A), Rs=splLine(S.RS); if(!H&&!Aw&&!Rs)return ''; const rowX=(l,x)=>`<div class="spl-x"><span>${l}</span><b>${x?fmt3(x.ops):'-'}</b><span class="small muted">${x?`${x.pa}타석 · 삼진 ${x.kp.toFixed(1)}%`:''}</span></div>`; return `<div class="spl-xs"><span class="eyebrow">${p.isP?'상황별 피OPS':'상황별 OPS'}</span>${rowX('홈',H)}${rowX('원정',Aw)}${rowX('득점권',Rs)}</div>`; })()}
+    <p class="small muted">실제 경기 기록입니다(능력치의 좌우 평가와 다를 수 있음). 40타석 미만은 적은 표본입니다. 실제 기용은 감독이 정합니다. 홈·원정은 이 업데이트 이후 경기부터 쌓입니다.</p></div>`; }
 /* 이동 구간 추세(최근 100타석·상대 100타자 창을 옮기며): 우리 선수만 경기별 기록을 보관 */
 /* 최근 W타석: 마지막에 걸친 경기는 W에 맞게 비율로 잘라 더한다(경기 통째로 더하면 102타석이 됐다). 올해 로그만(검수 11-06) */
 function rollSeries(p,W){ const G0=p.gl&&p.gl.y===G.year?p.gl.g||[]:[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j], f=g[1]>0?Math.min(1,(W-n)/g[1]):1; n+=g[1]*f; for(let k=0;k<8;k++)a[k]+=(g[k+1]||0)*f; } if(n<W-1e-9)continue; out.push({i,day:G0[i][0],a}); } return out; }
