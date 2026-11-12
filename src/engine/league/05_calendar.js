@@ -6,6 +6,7 @@ const WD=FrontOfficeCore.WD;
 const dstr=FrontOfficeCore.dstr;
 const dmd=FrontOfficeCore.dmd;
 const dsh=FrontOfficeCore.dsh;
+const dmdY=n=>{ const o=dobj(n); return `${o.y}년 ${o.m}월 ${o.d}일`; }; /* 해를 넘기는 날짜(군 복무 전역·입대 등)는 연도까지(안토 11-12) */
 const onOrAfter=FrontOfficeCore.onOrAfter;
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 const KD=(m,d)=>dnum(G.year,m,d);

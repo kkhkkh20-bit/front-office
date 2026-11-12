@@ -87,8 +87,8 @@ function schTipKnown(p,tid=G.user){return !!p&&(p.schTips?.[tid]===G.year||(p.sc
 function schTip(){ const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.school&&!schTipKnown(p));
   const L=Object.values(schList()).filter(S=>schRel(S)>=60&&C.some(p=>p.school===S.n)).sort((a,b)=>schRel(b)-schRel(a));
   for(const S of L){ if(R()>.35+(schRel(S)-60)*.01)continue; const p=C.filter(q=>q.school===S.n).sort((a,b)=>(b.pot||0)-(a.pot||0))[0]; if(p.schTip!=null&&!p.schTips){p.schTips={};if(p.schTipT!=null)p.schTips[p.schTipT]=p.schTip;else p.schTipLegacy=p.schTip;} (p.schTips=p.schTips||{})[G.user]=G.year; p.schTip=G.year; p.schTipT=G.user; /* 귀띔은 받은 구단만 쓴다(검수 11-09e #13) */ const c=S.coach;
-    const line={엄격형:`성실함은 제가 보증합니다. ${p.name}, 새벽 훈련 한 번을 안 빠졌어요.`,자율형:`${p.name}은(는) 시키지 않아도 알아서 하는 놈입니다. 프로 가면 더 클 겁니다.`,데이터형:`${p.name} 지난달 기록표 보내 드릴게요. 숫자보다 내용이 더 좋습니다.`,육성형:`${p.name}, 아직 덜 컸습니다. 그래서 더 기대가 돼요. 2~3년 뒤를 보세요.`}[c.sty]||'';
-    mail('스카우트팀',`${S.n} ${c.name} 감독: "우리 애 하나 좋은 놈 있습니다"`,`${S.n} ${c.name} 감독(${c.sty})이 전화를 걸어왔습니다.\n"단장님 구단이니까 먼저 말씀드리는 겁니다. ${line}"\n\n${p.name}(${posLabel(p)}) 평가 오차가 줄어듭니다. 친분 ${schRel(S)}(${schRelLbl(schRel(S))}).`,{kind:'스카우트',acts:[{l:'선수 보기',a:'player',v:p.id}]}); return p; }
+    const line={엄격형:`성실함은 제가 보증합니다. ${pidName(p)}, 새벽 훈련 한 번을 안 빠졌어요.`,자율형:`${pidName(p)}은(는) 시키지 않아도 알아서 하는 놈입니다. 프로 가면 더 클 겁니다.`,데이터형:`${pidName(p)} 지난달 기록표 보내 드릴게요. 숫자보다 내용이 더 좋습니다.`,육성형:`${pidName(p)}, 아직 덜 컸습니다. 그래서 더 기대가 돼요. 2~3년 뒤를 보세요.`}[c.sty]||'';
+    mail('스카우트팀',`${S.n} ${c.name} 감독: "우리 애 하나 좋은 놈 있습니다"`,`${S.n} ${c.name} 감독(${c.sty})이 전화를 걸어왔습니다.\n"단장님 구단이니까 먼저 말씀드리는 겁니다. ${line}"\n\n${pidName(p)}(${posLabel(p)}) 평가 오차가 줄어듭니다. 친분 ${schRel(S)}(${schRelLbl(schRel(S))}).`,{kind:'스카우트',acts:[{l:'선수 보기',a:'player',v:p.id}]}); return p; }
   return null; }
 /* 학교 후원(야구부 장비·전지훈련 지원): 구단마다 한 해 한 번, 1천만 원, 친분 +8 */
 const schGave=(S,tid)=>!!S&&!!S.gy&&typeof S.gy==='object'&&S.gy[tid??G.user]===G.year;
