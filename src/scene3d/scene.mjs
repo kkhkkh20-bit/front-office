@@ -132,6 +132,8 @@ function bodyFrame(a){const lsB=boneByName(a,'LeftArm'),rsB=boneByName(a,'RightA
 const TORSO={front:.18,back:.15,half:.17,arm:.045};
 function armInBody(a,side,F){if(!F)return 0;const ua=boneByName(a,side+'Arm'),fa=boneByName(a,side+'ForeArm'),hd=boneByName(a,side+'Hand');if(!ua||!fa||!hd)return 0;const S=modelPos(a,ua,new T.Vector3()),E=modelPos(a,fa,new T.Vector3()),Hd=modelPos(a,hd,new T.Vector3()),top=F.M.clone().sub(F.H).dot(F.up);let worst=0;
  for(const P of [S.clone().lerp(E,.5),S.clone().lerp(E,.75),E,E.clone().lerp(Hd,.5),Hd]){const r=P.clone().sub(F.H),h=r.dot(F.up);if(h<0||h>top*.92)continue;const x=r.dot(F.lead),z=r.dot(F.fwd),ax=(TORSO.half+TORSO.arm)*F.k,az=((z>=0?TORSO.front:TORSO.back)+TORSO.arm)*F.k,q=Math.hypot(x/ax,z/az);if(q<1)worst=Math.max(worst,(1-q)*Math.min(ax,az));}return worst;}
+/* 타자 시선(사용자 11-12): 공을 쳐다본다 — 대기 중엔 투수 릴리스 지점, 공이 오는 0.45초 동안 공 경로를 따라 임팩트 지점까지, 친 뒤 0.06초만 남았다가 몸과 함께 돈다 */
+const HEAD_TRACK={from:new T.Vector3(0,1.85,16.8),to:new T.Vector3(0,.95,.35),flight:.45,drop:.25,stance:.6,hold:.06,release:.25};
 const ELBOW_MIN_IN=45*Math.PI/180,WRIST_MIN=30*Math.PI/180,WRIST_MAX=125*Math.PI/180;
 /* 배트가 몸통·머리·어깨·허벅지를 뚫지 않게: 몸을 캡슐로 보고, 겹치면 손잡이를 축으로 배트를 몸 밖으로 민다 */
 function segClosest(P,A,B,out){const d=_v.copy(B).sub(A),f=clamp(_v2.copy(P).sub(A).dot(d)/Math.max(1e-9,d.lengthSq()),0,1);return out.copy(A).addScaledVector(d,f);}
@@ -173,7 +175,7 @@ function swingMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||a.motion!=='
  for(const side of ['Left','Right'])for(let it=0;it<5;it++){const Fb=bodyFrame(a);if(!Fb||armInBody(a,side,Fb)<=.003*Fb.k)break;armPole(a,side,Fb.fwd.clone().addScaledVector(Fb.lead,side==='Left'?.6:-.6).addScaledVector(Fb.up,-.4),.4);}
  batBodyClear(a,boneByName(a,'RightHand'));
  /* 시선: 착지부터 임팩트 지점을 보고, 친 뒤 0.2초까지 그 자리를 본다 */
- const wh=t<fd?0:t<c?smooth((t-fd)/(c-fd)):t<c+.2?1:1-smooth((t-c-.2)/.3);if(wh>0){const tgt=a.model.worldToLocal(new T.Vector3(0,.95,.35));for(const [n,share] of [['Neck',.5],['Head',1]]){const b=boneByName(a,n),hd=boneByName(a,'Head');if(!b||!hd)continue;const F=new T.Vector3(0,0,1).applyQuaternion(modelQ(a,hd,new T.Quaternion())).normalize(),D=tgt.clone().sub(modelPos(a,hd,new T.Vector3())).normalize();rotModelQ(a,b,new T.Quaternion().slerpQuaternions(new T.Quaternion(),new T.Quaternion().setFromUnitVectors(F,F.clone().lerp(D,wh).normalize()),share));}}}
+ const wh=t<c+HEAD_TRACK.hold?HEAD_TRACK.stance+(1-HEAD_TRACK.stance)*smooth(t/fd):1-smooth((t-c-HEAD_TRACK.hold)/HEAD_TRACK.release);if(wh>0){const fb=clamp((t-(c-HEAD_TRACK.flight))/HEAD_TRACK.flight,0,1),bw=HEAD_TRACK.from.clone().lerp(HEAD_TRACK.to,fb);bw.y+=HEAD_TRACK.drop*fb*(1-fb);const tgt=a.model.worldToLocal(bw);for(const [n,share] of [['Neck',.5],['Head',1]]){const b=boneByName(a,n),hd=boneByName(a,'Head');if(!b||!hd)continue;const F=new T.Vector3(0,0,1).applyQuaternion(modelQ(a,hd,new T.Quaternion())).normalize(),D=tgt.clone().sub(modelPos(a,hd,new T.Vector3())).normalize();rotModelQ(a,b,new T.Quaternion().slerpQuaternions(new T.Quaternion(),new T.Quaternion().setFromUnitVectors(F,F.clone().lerp(D,wh).normalize()),share));}}}
 // Pitch clips already contain the sideways set, hip rotation and head tracking.
 // A fixed root aims their +Z delivery toward home; rotating it again twists the form.
 function poseWorld(a,now){if(a.pitcher&&a.motion.startsWith('pitch_'))a.root.rotation.y=Math.PI;}
