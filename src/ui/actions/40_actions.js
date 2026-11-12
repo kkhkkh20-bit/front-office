@@ -275,6 +275,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   toYS(v){ UI.entMsg={id:+v,t:toYS(+v)||'육성선수로 돌렸습니다.'}; save(); render(); },
   fromYS(v){ UI.entMsg={id:+v,t:fromYS(+v)||'정식 선수로 등록했습니다.'}; save(); render(); },
   ysNow(v){ const r=toYS(+v); if(r)UI.trimMsg=r; save(); render(); },
+  blkBatch(){ const ok=[], bad=[]; for(const id of (UI.trimSel||[])){ const q=G.players[id]; if(!q||q.team!==G.user)continue; if(hasNtc(q)){ bad.push(`${q.name}: 트레이드 거부권`); continue; } if(q.foreign){ bad.push(`${q.name}: 외국인 선수는 트레이드 대상이 아님`); continue; } try{ blockAdd(id,'any'); ok.push(q.name); }catch(e){ bad.push(q.name); } } UI.trimMsg=[ok.length?`트레이드 매물로 올림: ${ok.join(', ')} (트레이드 > 매물에서 확인)`:'',...bad].filter(Boolean).join(' / '); save(); render(); }, /* 여러 명 한 번에 매물 등록(커뮤니티 11-12) */
+  ysBatch(){ const ids=(UI.trimSel||[]).slice(); const ok=[], bad=[]; for(const id of ids){ const p=G.players[id]; if(!p||p.ys||p.foreign||p.faC||p.sal>100)continue; const r=toYS(id); if(r)bad.push(`${p.name}: ${r}`); else ok.push(p.name); } UI.trimSel=(UI.trimSel||[]).filter(id=>!ok.includes((G.players[id]||{}).name)); UI.trimMsg=[ok.length?`육성선수로 전환: ${ok.join(', ')}`:'',...bad].filter(Boolean).join(' / '); save(); render(); }, /* 고른 선수 한 번에 육성 전환(커뮤니티 11-12) */
   setPol(v){ const r=setPolicy(v); UI.polMsg=r.msg; save(); render(); },
   rcolCfg(){ UI.rcolOpen=!UI.rcolOpen; render(); },
   cgSort(v){ UI.cgS=v; render(); }, splP(){ UI.splP=!UI.splP; renderSheet(); }, sprP(){ UI.sprP=!UI.sprP; renderSheet(); },

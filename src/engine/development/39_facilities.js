@@ -31,7 +31,7 @@ function facEff(p){ if(p.team==null)return FAC[2]; const mine=p.team===G.user; c
   /* 다른 구단: 예전 종합 등급 효과(1단계 .88 ~ 5단계 1.12)를 세부 시설 평균으로 이어 쓰고, 숙소·2군 구장·웨이트는 구단 평균과의 차이만큼 더한다.
      그래서 투자하면 바로 효과가 오르고, 시작 시점 리그 균형은 예전과 같다 */
   if(!mine){ const av=sum(FACK.map(fo))/FACK.length, c=1+av*4/3;
-    const g=.82+.06*c+(young?(fo('dorm')-av)*.015:0)+(futP?(fo('fut')-av)*.02:0), d=1.15-.05*c-(fo('weight')-av)*.01;
+    const g=.94+av*.03+ /* 우리 구단 식과 같은 기울기(시설 1단계당 약 .03). 시작 시점(평균 2단계 안팎)은 예전과 같고, 3단계 이상에서 우리 구단보다 더 크게 오르던 것(예전 .82+.06×종합)을 맞췄다(11-12) */(young?(fo('dorm')-av)*.015:0)+(futP?(fo('fut')-av)*.02:0), d=1.15-.05*c-(fo('weight')-av)*.01;
     return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
   const g=.94+fo('indoor')*.01+fo('lab')*.012*(1+anaPow('trk')*.08)+(young?fo('dorm')*.012:0)+(futP?fo('fut')*.016:0); /* 전부 최고 단계여도 성장 배수 약 1.12~1.13(예전 1.19 안팎): 예전 종합 5단계 시설(1.12)과 같은 천장 */
   const d=1.05-fo('weight')*.025-fo('rehab')*.012;
