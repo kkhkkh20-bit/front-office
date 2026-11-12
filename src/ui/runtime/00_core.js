@@ -7,6 +7,39 @@ const SLOTS=10, META='danjang-meta'; const SLOT_IDS=Array.from({length:SLOTS},(_
 function meta(){ try{ const m=JSON.parse(localStorage.getItem(META)||'null'); if(m&&typeof m==='object'&&!Array.isArray(m)){ if(!m.slots||typeof m.slots!=='object'||Array.isArray(m.slots))m.slots={}; if(!SLOT_IDS.includes(m.active))m.active=1; return m; } }catch(e){} return {active:1,slots:{}}; } /* 구조가 빠진 목록({"active":1} 등)도 고쳐 읽는다(검수 11-09 #15: 부팅 멈춤) */
 function setMeta(m){ try{ const s=JSON.stringify(m); localStorage.setItem(META,s); return localStorage.getItem(META)===s; }catch(e){ return false; } } /* 성공 여부: 활성 슬롯 변경이 실패하면 전환하지 않는다(검수 11-06) */
 const slotKey=n=>`${SAVE}-s${n}`;
+/* ===== 슬롯 본문 보조 저장소: IndexedDB(사용자 11-12, 커뮤니티 "빈 슬롯인데 저장 공간 부족") =====
+   브라우저 localStorage는 모든 슬롯을 합쳐 5~10MB 안팎이라, 오래 한 세이브 여러 개를 두면 저장이 막혔다.
+   - 평소에는 지금처럼 localStorage에 쓴다(동기·즉시 확정). 저장 목록(META)·판번호(rev)·다른 탭 충돌 검사는 그대로 localStorage에 둔다.
+   - localStorage가 가득 차서 본문을 못 쓰면 그 본문을 IndexedDB(용량이 훨씬 큼)에 쓰고, 목록 항목에 idb 표시를 남긴다.
+     이어서 지금 진행 중이 아닌 다른 슬롯 본문도 IndexedDB로 옮겨 localStorage 공간을 비운다(복사를 확인한 뒤에만 지운다).
+   - 이 탭에서 쓴 본문은 메모리(SB)에 두고 읽는다. 부팅 때 idb 표시 슬롯이 있으면 IndexedDB에서 먼저 읽어 온 뒤 이어하기를 연다.
+   - localStorage 쓰기가 다시 성공하면 그 슬롯은 localStorage로 돌아오고 IndexedDB 사본과 표시를 지운다. */
+const SB=new Map(), SB_SEQ={}; let SB_DB=null;
+function sbOk(){ try{ return typeof indexedDB==='object'&&!!indexedDB&&typeof indexedDB.open==='function'; }catch(e){ return false; } }
+function sbIdb(){ if(SB_DB)return SB_DB; SB_DB=new Promise((res,rej)=>{ try{ const r=indexedDB.open('danjang-saves',1); r.onupgradeneeded=()=>{ try{ r.result.createObjectStore('slots'); }catch(e){} }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); r.onblocked=()=>rej(new Error('blocked')); }catch(e){ rej(e); } }); SB_DB.catch(()=>{ SB_DB=null; }); return SB_DB; }
+function sbTx(mode,fn){ return sbIdb().then(db=>new Promise((res,rej)=>{ let out; const tx=db.transaction('slots',mode); const rq=fn(tx.objectStore('slots')); if(rq)rq.onsuccess=()=>{ out=rq.result; }; tx.oncomplete=()=>res(out); tx.onerror=()=>rej(tx.error); tx.onabort=()=>rej(tx.error||new Error('abort')); })); }
+const sbPut=(n,d)=>sbTx('readwrite',st=>st.put(d,n)), sbRead=n=>sbTx('readonly',st=>st.get(n)), sbDrop=n=>sbTx('readwrite',st=>st.delete(n));
+const sbFlag=(m,n)=>!!(m&&m.slots&&m.slots[n]&&m.slots[n].idb);
+function sbLsGet(n){ try{ return localStorage.getItem(slotKey(n)); }catch(e){ return null; } }
+/* 본문 읽기: 이 탭이 IndexedDB에서 읽었거나 쓴 본문(SB)이 먼저, 없으면 localStorage */
+function sbGet(n){ if(SB.has(n))return SB.get(n); return sbLsGet(n); }
+/* 목록의 idb 표시를 고친다(판번호가 그대로일 때만) */
+function sbMark(n,on,rev){ try{ const m=meta(); const it=m.slots[n]; if(!it||(rev!=null&&it.rev!==rev))return false; if(!!it.idb===!!on)return true; if(on)it.idb=true; else delete it.idb; return setMeta(m); }catch(e){ return false; } }
+/* 본문 쓰기: localStorage 우선, 공간이 없으면 IndexedDB. true면 이 탭에서는 바로 읽을 수 있다 */
+function sbSet(n,data){ let ls=false; try{ localStorage.setItem(slotKey(n),data); ls=localStorage.getItem(slotKey(n))===data; }catch(e){}
+  if(ls){ if(SB.has(n)){ SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; } if(sbFlag(meta(),n)){ sbMark(n,false); if(sbOk())sbDrop(n).catch(()=>{}); } return true; }
+  if(!sbOk())return false;
+  SB.set(n,data); const seq=SB_SEQ[n]=(SB_SEQ[n]||0)+1, rev=revOf(meta(),n);
+  sbPut(n,data).then(()=>{ if(SB_SEQ[n]!==seq)return; if(sbMark(n,true,rev)){ try{ localStorage.removeItem(slotKey(n)); }catch(e){} } sbOffload(n); }).catch(()=>{ if(SB_SEQ[n]!==seq)return; SAVE_ERR='브라우저 저장 공간이 가득 차고 보조 저장소(IndexedDB)에도 쓰지 못했습니다. 파일로 내보내기로 백업하세요.'; try{ toast(SAVE_ERR); }catch(e){} });
+  return true; }
+/* 진행 중이 아닌 슬롯 본문을 IndexedDB로 옮겨 localStorage 공간을 비운다(사본 확인 뒤 삭제) */
+let _sbOff=false; async function sbOffload(keep){ if(_sbOff||!sbOk())return; _sbOff=true; try{ for(const k of SLOT_IDS){ if(k===keep||k===CUR_SLOT)continue; const body=sbLsGet(k); if(body==null)continue; const m=meta(); if(!m.slots[k])continue; const rev=m.slots[k].rev;
+      await sbPut(k,body); if(await sbRead(k)!==body)continue; if(sbLsGet(k)!==body||revOf(meta(),k)!==rev)continue; SB.set(k,body); if(sbMark(k,true,rev)){ try{ localStorage.removeItem(slotKey(k)); }catch(e){} } else SB.delete(k); } }catch(e){} finally{ _sbOff=false; } }
+/* 슬롯 본문 지우기(localStorage·메모리·IndexedDB 모두) */
+function sbRemove(n){ try{ localStorage.removeItem(slotKey(n)); }catch(e){} SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; if(sbOk())sbDrop(n).catch(()=>{}); return sbLsGet(n)==null; }
+/* idb 표시가 있는 슬롯 본문을 IndexedDB에서 다시 읽는다(부팅·다른 탭이 쓴 뒤 열기 전) */
+async function sbRefresh(ns){ if(!sbOk())return; const m=meta(); for(const n of (ns||SLOT_IDS)){ if(!sbFlag(m,n))continue; try{ const b=await sbRead(n); if(typeof b==='string')SB.set(n,b); }catch(e){} } }
+function sbNeedBoot(){ const m=meta(); return sbOk()&&SLOT_IDS.some(n=>sbFlag(m,n)); }
 /* 이 탭이 연 슬롯: 저장은 늘 여기로. 다른 탭이 활성 슬롯 기록을 바꿔도 이 탭의 저장 대상은 바뀌지 않는다(검수 11-06) */
 let CUR_SLOT=null; function curSlot(){ return CUR_SLOT??(meta().active||1); }
 /* 슬롯 판번호(rev): 이 탭이 열거나 저장할 때 기억한 판번호와 지금 목록의 판번호가 다르면 다른 탭이 그사이 저장한 것. 늦게 쓴 탭이 앞선 진행을 덮지 않게 이 탭의 저장을 막는다(검수 11-07) */
@@ -14,11 +47,11 @@ let SLOT_REV=0, SAVE_CONFL=false, SLOT_NEW=false; function slotRevSync(n,m){ m=m
 function revOf(m,n){ return (m.slots[n]&&m.slots[n].rev)||0; }
 /* 새 판번호: 무작위 소수를 붙여, 슬롯을 지우고 같은 번호로 다시 만들어도 옛 탭의 판번호와 겹치지 않는다(검수 11-09 #1: 복사본 판번호가 늘 0이라 옛 탭이 새 복사본을 덮음) */
 function revNext(r0){ return Math.max(Math.floor(r0)+1,Date.now())+Math.random(); }
-function slotHas(n){ try{ return localStorage.getItem(slotKey(n))!=null; }catch(e){ return false; } }
+function slotHas(n){ return sbGet(n)!=null; }
 /* 이번 실행에서 열지 못한 슬롯(본문 손상·복원 실패): 이어하기 대상에서 뺀다(검수 11-09 #16) */
 const SLOT_BAD={}, SLOT_BAD_AT={};
-function slotBad(n,why){ SLOT_BAD[n]=why; try{ SLOT_BAD_AT[n]={body:localStorage.getItem(slotKey(n)),rev:revOf(meta(),n)}; }catch(e){ SLOT_BAD_AT[n]=null; } }
-function slotBadCurrent(n,m){ if(!SLOT_BAD[n])return false; const old=SLOT_BAD_AT[n]; try{ if(old&&(old.rev!==revOf(m,n)||old.body!==localStorage.getItem(slotKey(n)))){ delete SLOT_BAD[n]; delete SLOT_BAD_AT[n]; return false; } }catch(e){} return true; }
+function slotBad(n,why){ SLOT_BAD[n]=why; try{ SLOT_BAD_AT[n]={body:sbGet(n),rev:revOf(meta(),n)}; }catch(e){ SLOT_BAD_AT[n]=null; } }
+function slotBadCurrent(n,m){ if(!SLOT_BAD[n])return false; const old=SLOT_BAD_AT[n]; try{ if(old&&(old.rev!==revOf(m,n)||old.body!==sbGet(n))){ delete SLOT_BAD[n]; delete SLOT_BAD_AT[n]; return false; } }catch(e){} return true; }
 /* 이어하기 대상: 활성 슬롯에 본문이 있으면 그것, 없으면(지워짐·첫 저장 실패·목록 유실) 본문이 남은 다른 슬롯(검수 11-09 #9·#11·#12) */
 function contSlot(m){ m=m||meta(); return [m.active,...SLOT_IDS].find(n=>SLOT_IDS.includes(n)&&!slotBadCurrent(n,m)&&slotHas(n))??null; }
 function setActive(n){ const m=meta(); m.active=n; return setMeta(m); } /* 목록을 새로 읽어 활성 번호만 바꾼다(검수 11-09 #4: 예전에 읽은 목록 전체를 다시 써 다른 탭 판번호를 되돌림) */
@@ -27,7 +60,7 @@ function slotInfoOf(g){ const t=(g.teams||[]).find(x=>x.id===g.user); return {ti
 function confDrop(k){ if(!G||!SAVE_CONFL||UI.confDrop===k){ UI.confDrop=null; return true; } UI.confDrop=k; UI.slotMsg=`이 탭의 진행(${dstr(G.day)})은 다른 탭과 겹쳐 저장되지 않았습니다. 새 게임을 시작하면 이 진행은 사라집니다. 남기려면 먼저 "빈 슬롯에 따로 저장"을 누르세요. 그래도 시작하려면 한 번 더 누르세요.`; try{ toast(UI.slotMsg); }catch(e){} try{ render(); }catch(e){} return false; }
 /* 화면을 옮기기 전 저장: 다른 탭과 겹쳐 저장을 막은 상태면 이미 안내했으니 그대로 옮긴다 */
 function saveOK(){ return saveNow()||SAVE_CONFL; }
-function slotUsed(n,m){ m=m||meta(); try{ return !!m.slots[n]||localStorage.getItem(slotKey(n))!=null; }catch(e){ return !!m.slots[n]; } } /* 목록에 빠졌어도 본문이 있으면 빈 슬롯이 아니다 */
+function slotUsed(n,m){ m=m||meta(); try{ return !!m.slots[n]||sbGet(n)!=null; }catch(e){ return !!m.slots[n]; } } /* 목록에 빠졌어도 본문이 있으면 빈 슬롯이 아니다 */
 /* 저장 형식: '\u0001' + 원래 바이트 길이(15비트 두 글자) + deflate(raw) 바이트를 15비트씩 글자로 담는다(0xD800 아래 글자만 써서 브라우저 저장소에서 깨지지 않게).
    예전 LZ 저장('\u0001'로 시작하지 않음)과 아주 옛날 JSON 저장('{')도 그대로 읽는다. LZ는 시즌이 쌓이면 한 번에 0.8초 넘게 걸려 화면이 굳었다 */
 const ZMK='\u0001';
@@ -70,18 +103,18 @@ function writeSlot(n,data,info,exp){ const own=n===curSlot()&&exp==null; if(own)
   const confl=()=>{ if(own){ if(!SAVE_CONFL){ try{ toast('다른 탭(창)에서 이 슬롯을 더 최근에 저장했습니다. 이 탭의 진행은 저장하지 않습니다. 남기려면 설정의 "빈 슬롯에 따로 저장"을, 최신 저장을 보려면 처음 화면의 이어하기를 누르세요.'); }catch(e){} } SAVE_CONFL=true; SAVE_ERR='다른 탭(창)에서 이 슬롯을 더 최근에 저장해, 이 탭의 진행은 저장하지 않았습니다. 이 탭 진행을 남기려면 "빈 슬롯에 따로 저장"이나 파일로 내보내기를 하세요.'; } else SAVE_ERR=`슬롯 ${n}에 다른 탭(창)이 그사이 저장해 쓰지 않았습니다.`; return false; };
   const full=()=>{ let mb=''; try{ mb=` (지금 모든 슬롯 합계 약 ${(SLOT_IDS.reduce((x,k)=>x+slotSize(k),0)/1024).toFixed(1)}MB)`; }catch(e){} SAVE_ERR=`브라우저 저장 공간이 가득 차 저장하지 못했습니다${mb}. 저장 공간은 슬롯마다 따로가 아니라 모든 슬롯이 함께 쓰므로, 빈 슬롯이 있어도 전체가 차면 저장되지 않습니다. 안 쓰는 슬롯을 지우거나 내보내기로 백업한 뒤 지우세요.`; return false; }; /* 커뮤니티 11-12: 빈 슬롯이 있는데 공간 부족이라 나와 헷갈림 */
   if(own&&SAVE_CONFL)return confl();
-  try{ const m=meta(), old=m.slots[n], act0=m.active, b0=localStorage.getItem(slotKey(n)); if(revOf(m,n)!==exp)return confl();
-    info=Object.assign({},info,{rev:revNext(exp)}); if(old&&old.memo!=null&&info.memo==null&&!(own&&SLOT_NEW))info.memo=old.memo; /* 슬롯 메모는 같은 게임을 저장할 때만 남긴다(검수 11-09zr #17: 새 게임·가져온 백업에 이전 메모가 남음) */
+  try{ const m=meta(), old=m.slots[n], act0=m.active, b0=sbGet(n); if(revOf(m,n)!==exp)return confl();
+    info=Object.assign({},info,{rev:revNext(exp)}); if(old&&old.idb&&SB.has(n))info.idb=true; /* 본문이 IndexedDB에 있으면 표시를 이어 간다(공간이 나면 sbSet이 지운다) */ if(old&&old.memo!=null&&info.memo==null&&!(own&&SLOT_NEW))info.memo=old.memo; /* 슬롯 메모는 같은 게임을 저장할 때만 남긴다(검수 11-09zr #17: 새 게임·가져온 백업에 이전 메모가 남음) */
     m.slots[n]=info; if(own)m.active=n; /* 이 탭이 저장에 성공한 슬롯을 이어하기 대상으로(검수 11-09 #9: 첫 저장 전에 활성으로 바꾸면 실패 때 이어하기가 사라짐) */
     if(!setMeta(m)){ SAVE_ERR='저장 목록을 기록하지 못했습니다. 저장 공간을 확인한 뒤 다시 저장하세요.'; return false; }
     /* 판번호를 확인한 뒤 차지하기 전에 다른 탭이 저장을 끝냈으면 본문이 바뀌어 있다: 그 본문을 덮지 않고 충돌로 본다. 목록은 그 본문 기준으로 고치고 새 판번호를 남겨 옛 판번호 탭도 막는다(검수 11-09zr #1: 두 탭 모두 성공) */
-    if(localStorage.getItem(slotKey(n))!==b0){ slotFix(n,info.rev); return confl(); }
+    if(sbGet(n)!==b0){ slotFix(n,info.rev); return confl(); }
     const undo=()=>{ try{ const m2=meta(); if(revOf(m2,n)===info.rev){ if(old)m2.slots[n]=old; else delete m2.slots[n]; if(own&&m2.active===n)m2.active=act0; setMeta(m2); } }catch(e){} try{ if(own&&revOf(meta(),n)===info.rev)SLOT_REV=info.rev; }catch(e){} }; /* 차지한 기록이 그대로일 때만 되돌린다. 되돌리기도 실패하면 남은 판번호(본문은 이 탭이 쓰던 그대로)를 이 탭 것으로 이어 받아 다음 저장이 충돌로 막히지 않게(검수 11-09zr #9) */
-    try{ localStorage.setItem(slotKey(n),data); }catch(e){ undo(); return full(); }
-    const mine=revOf(meta(),n)===info.rev; if(!mine)return confl(); if(localStorage.getItem(slotKey(n))!==data){ undo(); return full(); }
+    if(!sbSet(n,data)){ undo(); return full(); }
+    const mine=revOf(meta(),n)===info.rev; if(!mine)return confl(); if(sbGet(n)!==data){ undo(); return full(); }
     if(own){ SLOT_REV=info.rev; SLOT_NEW=false; } SAVE_ERR=''; return true; }catch(e){ return full(); } }
 /* 목록 항목을 지금 본문 기준으로 고친다(판번호 r이 그대로일 때만). 본문이 없으면 항목을 뺀다 */
-function slotFix(n,r){ try{ const m=meta(); if(revOf(m,n)!==r)return; const h=unpack(localStorage.getItem(slotKey(n))), memo=(m.slots[n]||{}).memo; if(h)m.slots[n]=Object.assign(slotInfoOf(h),{rev:r},memo!=null?{memo}:{}); else delete m.slots[n]; setMeta(m); }catch(e){} }
+function slotFix(n,r){ try{ const m=meta(); if(revOf(m,n)!==r)return; const h=unpack(sbGet(n)), memo=(m.slots[n]||{}).memo; if(h)m.slots[n]=Object.assign(slotInfoOf(h),{rev:r},memo!=null?{memo}:{}); else delete m.slots[n]; setMeta(m); }catch(e){} }
 /* 바뀐 것이 없으면 쓰지 않는다: 진행 없이 처음 화면으로 나간 탭이 판번호를 올려 다른 탭 저장을 막지 않게(검수 11-09 #7) */
 let _svJ=null, _svN=null, _svWarn=false; function svMark(){ _svJ=G?prepG():null; _svN=curSlot(); }
 function svSame(n,j){ return j===_svJ&&n===_svN&&slotHas(n); }
@@ -90,20 +123,20 @@ async function saveStoreAsync(){ if(!G)return; const n=curSlot(), seq=++_svSeq, 
   try{ data=await packJAsync(j); }catch(e){ data=null; }
   if(seq!==_svSeq||G!==g)return; _svBusy=false; let ok; if(data==null)ok=saveStore(); else if((ok=writeSlot(n,data,info))){ _svJ=j; _svN=n; }
   _svFail=!ok; if(ok)_svWarn=false; else if(!SAVE_CONFL&&!_svWarn){ _svWarn=true; try{ toast(`자동 저장에 실패했습니다. ${SAVE_ERR}`); }catch(e){} } } /* 자동 저장 실패를 바로 알린다(검수 11-09 #10). 실패가 이어지는 동안은 한 번만 */
-function slotRecover(n,g,body,m0){ if(m0.slots[n])return m0; try{ const m=meta(); if(m.slots[n]||localStorage.getItem(slotKey(n))!==body)return m0;
+function slotRecover(n,g,body,m0){ if(m0.slots[n])return m0; try{ const m=meta(); if(m.slots[n]||sbGet(n)!==body)return m0;
   const r=revNext(0); m.slots[n]=Object.assign(slotInfoOf(g),{rev:r}); if(!slotHas(m.active))m.active=n;
   if(!setMeta(m))return m0;
   if(revOf(meta(),n)!==r)return m0;
-  if(localStorage.getItem(slotKey(n))!==body){ slotFix(n,r); return m0; }
+  if(sbGet(n)!==body){ slotFix(n,r); return m0; }
   return m;
  }catch(e){ return m0; } }
 function load(){ const m=meta();
-  try{ const old=localStorage.getItem(SAVE); if(old&&!SLOT_IDS.some(n=>m.slots[n]&&slotHas(n))){ const g=unpack(old); if(g){ /* 목록에 본문 없는 항목만 남아 있어도 구형 세이브를 옮긴다(검수 11-09zr #11) */ /* 목록만 비고 슬롯 본문이 남아 있으면 그 본문을 목록에 다시 올리고, 구형 세이브는 빈 슬롯으로 옮긴다(검수 11-07: 슬롯 1을 덮어씀) */ let act=null; for(const n of SLOT_IDS){ if(!slotHas(n))continue; const h=unpack(localStorage.getItem(slotKey(n))); if(h){ if(!m.slots[n])m.slots[n]=slotInfoOf(h); if(act==null)act=n; } }
-    const to=SLOT_IDS.find(n=>!slotHas(n)); if(act!=null&&!slotHas(m.active))m.active=act; try{ if(to==null)throw 0; localStorage.setItem(slotKey(to),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(localStorage.getItem(slotKey(to)))){ m.slots[to]=slotInfoOf(g); if(act==null)m.active=to; if(setMeta(m))localStorage.removeItem(SAVE); } }catch(e){ if(act!=null)setMeta(m); }
+  try{ const old=localStorage.getItem(SAVE); if(old&&!SLOT_IDS.some(n=>m.slots[n]&&slotHas(n))){ const g=unpack(old); if(g){ /* 목록에 본문 없는 항목만 남아 있어도 구형 세이브를 옮긴다(검수 11-09zr #11) */ /* 목록만 비고 슬롯 본문이 남아 있으면 그 본문을 목록에 다시 올리고, 구형 세이브는 빈 슬롯으로 옮긴다(검수 11-07: 슬롯 1을 덮어씀) */ let act=null; for(const n of SLOT_IDS){ if(!slotHas(n))continue; const h=unpack(sbGet(n)); if(h){ if(!m.slots[n])m.slots[n]=slotInfoOf(h); if(act==null)act=n; } }
+    const to=SLOT_IDS.find(n=>!slotHas(n)); if(act!=null&&!slotHas(m.active))m.active=act; try{ if(to==null)throw 0; localStorage.setItem(slotKey(to),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(sbGet(to))){ m.slots[to]=slotInfoOf(g); if(act==null)m.active=to; if(setMeta(m))localStorage.removeItem(SAVE); } }catch(e){ if(act!=null)setMeta(m); }
     if(act==null){ CUR_SLOT=m.slots[m.active]?m.active:(to||1); slotRevSync(CUR_SLOT,m); return g; } } } }catch(e){} /* 새 슬롯을 읽을 수 있을 때만 원본을 지우고, 못 옮겨도 읽은 원본으로 이어서 시작한다(검수 11-06) */
   /* 활성 슬롯 본문이 없거나 손상됐으면 본문이 남은 다른 슬롯을 연다. 못 연 슬롯은 이유를 처음 화면에 보인다(검수 11-09 #9·#11·#12·#14) */
-  CUR_SLOT=null; for(let n;(n=contSlot(m))!=null;){ let g=null,body=null; try{ body=localStorage.getItem(slotKey(n)); g=unpack(body); }catch(e){} if(g){ const fixed=slotRecover(n,g,body,m); CUR_SLOT=n; slotRevSync(n,fixed); return g; } slotBad(n,'저장 본문을 읽을 수 없습니다'); UI.slotMsg=`슬롯 ${n}을(를) 불러오지 못했습니다. 저장 본문이 손상됐습니다. 내보내기 백업이 있으면 그걸로 가져오세요.`; } return null; }
-function slotSize(n){ try{ const s=localStorage.getItem(slotKey(n)); return s?Math.round(s.length*2/1024):0; }catch(e){ return 0; } }
+  CUR_SLOT=null; for(let n;(n=contSlot(m))!=null;){ let g=null,body=null; try{ body=sbGet(n); g=unpack(body); }catch(e){} if(g){ const fixed=slotRecover(n,g,body,m); CUR_SLOT=n; slotRevSync(n,fixed); return g; } slotBad(n,'저장 본문을 읽을 수 없습니다'); UI.slotMsg=`슬롯 ${n}을(를) 불러오지 못했습니다. 저장 본문이 손상됐습니다. 내보내기 백업이 있으면 그걸로 가져오세요.`; } return null; }
+function slotSize(n){ try{ const s=sbGet(n); return s?Math.round(s.length*2/1024):0; }catch(e){ return 0; } }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=s=>document.querySelector(s);
 const hand=p=>p.isP?`${p.th}투`:`${p.th}투${p.bt}타`;
