@@ -346,7 +346,7 @@ function offerContactOk(tid,pid){const c=G.offerContact||{},pending=G.offers||[]
 function aiOffer(){ const ts=G.teams.filter(x=>x.id!==G.user&&!tradeCool(x.id)) /* 막 거래한 구단은 30일 동안 새 제안을 하지 않는다 */.map(t=>({t,w:gmHeat(t.id)+R()*.8})).sort((a,b)=>b.w-a.w).slice(0,3);
   for(const x of ts){ if(aiOfferFrom(x.t))return true; } return false; }
 function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.user);
-  const mine=domestic(G.user).filter(p=>!(p.joinY>G.year)&&healthy(p)&&!hasNtc(p)&&offerContactOk(t.id,p.id)).map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
+  const mine=domestic(G.user).filter(p=>!(p.joinY>G.year)&&healthy(p)&&!hasNtc(p)&&!p.noTrade&&offerContactOk(t.id,p.id)) /* 단장이 '트레이드 불가'로 정한 선수는 다른 구단이 묻지 않는다(커뮤니티 11-12) */.map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
   if(!mine.length)return false; const listed=mine.filter(x=>x.p.listed); const tg=listed.length&&R()<.7?pick(listed):pick(mine);
   const tgU=tval(U,tg.p,'out'); // 우리가 그 선수를 내줄 때 느끼는 가치
   const core=new Set(domestic(t.id).map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id));

@@ -1,6 +1,6 @@
 /* ===== 트레이드 매물과 FA 에이전트 협상 ===== */
 const WANT={any:'가장 좋은 제안',prospect:'유망주',p:'투수',b:'야수',sal:'연봉 절감'};
-function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||hasNtc(p))return; if(!p.listed)delete p.urgent; /* 새로 올리면 일반 매물(지난 급매 설정이 남지 않게, 검수 11-09w) */ p.listed=true; p.lw=want||p.lw||'any'; }
+function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||hasNtc(p))return; if(p.noTrade)delete p.noTrade; /* 매물로 올리면 트레이드 불가 지정은 풀린다 */ if(!p.listed)delete p.urgent; /* 새로 올리면 일반 매물(지난 급매 설정이 남지 않게, 검수 11-09w) */ p.listed=true; p.lw=want||p.lw||'any'; }
 function blockRemove(id){ const p=G.players[id]; if(!p)return; delete p.listed; delete p.lw; delete p.urgent; G.offers=(G.offers||[]).filter(o=>!(o.blk&&o.get.includes(id))); }
 function corePool(tid){ const t=team(tid); const ds=domestic(tid).filter(p=>!p.ys&&!hasNtc(p)); /* 거부권 선수는 트레이드 카드로 내놓지 않는다 */ const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
 function pickPackage(tid,budget,want,exclude){ const t=team(tid); exclude=exclude||[];

@@ -138,7 +138,7 @@ let _intC={};
 function aiInterest(tid){ if(tid===G.user||!G.teams[tid])return []; const wk=G.year*100+Math.floor(G.day/7); const n=Object.values(G.players).filter(p=>p.team===G.user).length; const k=wk+':'+n+':'+(G.trades||[]).length;
   if(_intC[tid]&&_intC[tid].k===k)return _intC[tid].v; const t=team(tid); let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){}
   const back=new Set((G.trades||[]).filter(r=>r.with===tid&&r.y===G.year).flatMap(r=>r.gi||[])); /* 올해 이 구단에서 받아 온 선수는 되찾으려 하지 않는다 */
-  const v=domestic(G.user).filter(p=>!p.ys&&!(p.joinY>G.year)&&healthy(p)&&!back.has(p.id)).map(p=>{ const val=tval(t,p,'in'); const fit=weak.includes(pSlot(p))?1.35:1; return {id:p.id,s:val*fit+hn('int'+tid+':'+wk,p.id)*.6}; }).filter(x=>x.s>.6).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.id);
+  const v=domestic(G.user).filter(p=>!p.ys&&!p.noTrade&&!(p.joinY>G.year)&&healthy(p)&&!back.has(p.id)).map(p=>{ const val=tval(t,p,'in'); const fit=weak.includes(pSlot(p))?1.35:1; return {id:p.id,s:val*fit+hn('int'+tid+':'+wk,p.id)*.6}; }).filter(x=>x.s>.6).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.id);
   _intC[tid]={k,v}; return v; }
 function interestKnown(tid){ return team(tid).rel>=35; }
 
