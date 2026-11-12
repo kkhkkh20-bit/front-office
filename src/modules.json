@@ -88,6 +88,7 @@
       "src/engine/career/70_gm_contract.js",
       "src/engine/contracts/71_foreign_neg.js",
       "src/engine/contracts/72_foreign_temp.js",
+      "src/engine/contracts/73_foreign_drama.js",
       "src/engine/progression/72_delegate.js",
       "src/engine/staff/73_firings.js",
       "src/engine/media/74_press_play.js",

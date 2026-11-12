@@ -17,6 +17,7 @@ function ivBuild(k,d){ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.n
     ['압박','"결과로 보여 줘야 합니다. 모든 건 성적이 말해 줄 겁니다."',ivFx(0,1,{mgr:-6})],
     ['회피','"그 얘기는 시즌 끝나고 하겠습니다."',ivFx(0,-1,{mgr:-2})]]];
   const Q={
+    fdrama:fdramaQ(nm,d), /* 외국인 선수 사건(73_foreign_drama) */
     fa_sign:[[`${nm} 선수를 영입한 배경이 궁금합니다.`,[
         ['자신감','"우리 팀에 가장 필요한 선수였습니다. 전력의 마지막 조각입니다."',ivFx(2,0,{mor:[d.pid,4]})],
         ['신중','"오래 지켜본 선수입니다. 데이터로 충분히 검증했습니다."',ivFx(1,2)],
