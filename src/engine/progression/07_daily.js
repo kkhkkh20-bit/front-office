@@ -122,7 +122,9 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===c.campEnd)campEnd();
   try{ sprcDaily(day); }catch(e){ console.error(e); } try{ sisDaily(day); }catch(e){ console.error(e); } /* 해외 자매결연(98_sister_club.js) */ /* 스프링캠프 장소 예약·캠프 부상·연습경기·시범경기(97_spring_camp.js) */
   if(day===c.open-1){ G.entryY=G.year; for(const t of G.teams){ setEntry(t.id); t.rot=0; } for(const p of Object.values(G.players))if(p.isP)delete p.lastStart; stop('일정',`내일(${dmd(c.open)}) ${G.year} 시즌이 개막합니다. 개막 엔트리가 정해졌습니다. 선수단 구성은 오늘까지 점검하세요.`); }
-  if(day===c.exh&&c.exh<c.open)try{ goalsPreseason(); }catch(e){ console.error(e); } /* 시범경기 첫날 시즌 목표 제시 */
+  if(day===c.exh&&c.exh<c.open)try{ goalsPreseason(); }catch(e){ console.error(e); }
+  if(day===c.exh+1&&c.exh<c.open)try{ mcfPlan(); }catch(e){ console.error(e); } /* 시범경기 둘째 날: 감독 시즌 구상 */
+  try{ mcfDaily(); }catch(e){} /* 시범경기 첫날 시즌 목표 제시 */
   if(day===c.open){ openingDay(); G.fut0={y:G.year,m:Object.fromEntries(playersOf(G.user).map(p=>[p.id,ovr(p)]))}; }
   if(day===KD(7,17)&&!G.unemp&&G.sea&&G.sea.y===G.year){ try{ deadlineDecision(); }catch(e){} }
   if(day===KD(7,24)||day===KD(7,28)){ try{ deadlineRumors(day===KD(7,28)); }catch(e){} }
@@ -154,7 +156,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();
   if(o.w===0){ try{ pwrWeek(); }catch(e){} } /* 주간 파워랭킹 */
-  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(m.imp&&m.kind==='일정'&&G.day-m.day>=3)m.imp=false; } /* 날짜가 지난 일정 안내는 '중요'만 내린다. 소식을 저절로 읽음 처리하지 않는다(단장이 읽거나 '모두 읽음'을 눌러야 읽음) */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} try{treqWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
+  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(m.imp&&m.kind==='일정'&&G.day-m.day>=3)m.imp=false; } /* 날짜가 지난 일정 안내는 '중요'만 내린다. 소식을 저절로 읽음 처리하지 않는다(단장이 읽거나 '모두 읽음'을 눌러야 읽음) */ futuresWeek(); aiWeekly(); moraleWeek(); try{ pdWeek(); }catch(e){} try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} try{treqWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
   tutTick();
   const nx=dobj(day+1); if(nx.d===1&&day>=c.open&&day<=c.end+1)monthReport(o.m); if(nx.d===1){ try{ finMonth(o.m); }catch(e){} }
   if(day===c.end){ const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(c.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 정규시즌 마지막 날 남은 달을 바로 마감 */

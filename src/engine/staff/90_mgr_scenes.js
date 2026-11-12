@@ -206,7 +206,7 @@ function mgrScenePick(m,X){ const s=mgrTalkSty(m), M=mscnMem(m); const L=tcFlavG
 /* 대화 시작: 하루 한 번 */
 function mgrTalkStart(m){ if(!m||m.interim||G.unemp||G.mgr?.[G.user]?.id!==m.id)return {say:['지금은 이야기할 감독이 없습니다.'],st:null}; const s=mgrTalkSty(m), M=mscnMem(m);
   if(M.d===G.day)return {say:[MSCN_BYE[s]],st:null};
-  const X=mgrScnCtx(), sc=mgrScenePick(m,X); if(!sc)return {say:[MSCN_BYE[s]],st:null}; M.d=G.day; M.u[sc.id]=G.day; M.n++;
+  const X=mgrScnCtx(), sc=mgrScenePick(m,X); if(!sc)return {say:[MSCN_BYE[s]],st:null}; M.d=G.day; m.tkD=(m.tkD||[]).filter(d=>G.day-d<=30).concat(G.day); M.u[sc.id]=G.day; M.n++;
   const T=mgrReqTree(sc.b(X,s)); const pre=m.rel<35?'(표정이 딱딱하다) ':''; const st=talkSt(sc.id,X,T,'mg'+m.id);st.tid=G.user;st.mid=m.id;if(sc.flav)st.flav=1;
   const op=pre+mvFresh(m,'scn:'+sc.id+':o',T.o); const cb=sc.flav?'':tcCallback({kind:'mgr'},M,X,'m'+m.id); /* 지난 대화·최근 일 꺼내기(11-12) */
   return {say:cb?[cb,op]:[op],st,ch:talkChoices(st)}; }
@@ -294,7 +294,7 @@ const MSQ=[
 ];
 /* 결과를 실제로 남긴다. 돌려주는 값: 대화 아래에 보일 한 줄들 */
 function mgrScnFx(m,fx,X){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id)return ['현재 구단의 감독과 나눈 대화가 아니라 아무것도 변경하지 않습니다.'];if(Object.prototype.hasOwnProperty.call(fx,'req')){const why=mgrReqBlock(fx.req);if(why)return [why+' 추가 보강 약속은 만들지 않습니다.'];}const out=[]; const P=w=>X[w]&&X[w].team===G.user?X[w]:null;
-  if(fx.rel){ m.rel=clamp(m.rel+fx.rel,0,100); out.push(`감독 관계 ${fx.rel>0?'+':''}${fx.rel}`); }
+  if(fx.rel){ const rv=typeof mcfRelGain==='function'?mcfRelGain(m,fx.rel):fx.rel; m.rel=clamp(m.rel+rv,0,100); out.push(rv!==fx.rel?`감독 관계 ${rv>0?'+':''}${rv}(자주 나눈 이야기라 덜 오름)`:`감독 관계 ${fx.rel>0?'+':''}${fx.rel}`); } /* 면담 체감(11-12) */
   if(fx.mor){ for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+fx.mor,0,100); out.push(`선수단 기분 ${fx.mor>0?'+':''}${fx.mor}`); }
   if(fx.pm){ const p=P(fx.pm[0]); if(p){ p.mor=clamp((p.mor??60)+fx.pm[1],0,100); out.push(`${p.name} 기분 ${fx.pm[1]>0?'+':''}${fx.pm[1]}`); } }
   if(fx.pref&&MPREF[fx.pref[0]]){ const [k,d]=fx.pref; mgrAttr(m); m[k]=clamp((m[k]??50)+d,20,90); out.push(`감독 기용 성향: ${MPREF[k]} ${d>0?'늘림':'줄임'}`); }

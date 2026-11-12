@@ -3434,6 +3434,19 @@ T('[피드백 11-09k] 후보 선수 트레이드 요청: 출전 적은 백업만
   EVH.treq.make(b); const e=evOpen().find(x=>x.k==='treq'); ok(e&&e.data.pid===b.id&&b.treq&&!b.treq.done,'사건 없음'); ok(G.treqLog.n===2&&G.treqLog.last===G.day,'제한 기록 안 됨'); ok(/단장실을 찾아왔습니다/.test(e.sit)&&/트레이드를 생각해/.test(e.sit),'시즌 문구 '+e.sit); ok(!e.data.ks.includes('farm'),'28세에게 2군 선택지'); ok(e.opts[e.def].l.includes('기다려'),'기본안이 거절이 아님');
   b.treq.done=true; ok(!treqCands().includes(b),'같은 선수가 곧바로 또 요청'); G.day+=121; G.sea.rec[G.user].w=60; G.sea.rec[G.user].l=60; ok(treqCands().includes(b)===treqLowPT(b,G.year,120),'넉 달 뒤에도 다시 못 함');
   G.day=G.cal.end+20; ok(period()==='off','스토브리그 준비 실패'); delete b.treq; EVH.treq.make(b); const e2=G.evs[G.evs.length-1]; ok(/쉬는 기간/.test(e2.sit)&&/지난 시즌/.test(e2.sit),'시즌 밖 문구 '+e2.sit); });
+T('[사용자 11-12] 선수 인격체: 불만은 기억되고, 열기가 차면 언론 플레이 → 트레이드 요구 → 묵살하면 훈련 불참', ()=>{ fresh(); G.day=G.cal.open+40; const d=depth(G.user); const p=d.start.find(q=>!q.foreign); ok(p,'준비 실패'); initPers(p); Object.assign(p.pers,{amb:17,temp:16,loy:5,pro:6}); p.grv=null;
+  grvAdd(p,'pt',8); grvAdd(p,'prom',6); ok(grvHeat(p)>=14,'성격이 불만을 키우지 않음 '+grvHeat(p)); const h0=grvHeat(p); grvCut(p,.88); ok(grvHeat(p)<h0,'불만이 잊히지 않음');
+  G.evs=[]; pdStatement(p); const e1=G.evs.find(e=>e.k==='pmed'&&!e.done); ok(e1,'언론 플레이 결정이 생기지 않음'); ok((G.news||[]).some(n=>n.t.includes(p.name)),'기사가 없음');
+  const m0=p.mor; evPick(e1.id,e1.data.ks.indexOf('rebut')); ok(p.mor<m0&&(p.grv.crit||0)>=4,'공개 반박이 기억(체면)으로 남지 않음');
+  grvAdd(p,'pt',10); p.pd={st:1,d:G.day-30}; G.evs=[]; pdDemand(p); const e2=G.evs.find(e=>e.k==='pdem'&&!e.done); ok(e2,'트레이드 요구 결정이 없음'); ok(EV_KEY.has('pdem'),'트레이드 요구가 핵심 결정이 아님');
+  evPick(e2.id,e2.data.ks.indexOf('wait')); const f=G.evf.find(x=>x.k==='pdem'); ok(f,'묵살 후속이 없음'); EVH.pdem.follow(f.data,G.user); ok(p.boy>G.day,'묵살했는데 시위로 번지지 않음'); ok(!p.e1,'시위 중인데 1군 등록');
+  ok(!canUp(p),'시위 중인데 콜업 가능'); const e3=G.evs.find(e=>e.k==='pboy'&&!e.done); ok(e3,'시위 대응 결정이 없음'); evPick(e3.id,e3.data.ks.indexOf('give')); ok(!(p.boy>G.day)&&p.listed,'요구를 들어줬는데 복귀·명단 등록 안 됨'); });
+T('[사용자 11-12] 트레이드 요구 뒤 받은 출전 약속이 깨지면 바로 시위로 번진다, 다른 구단은 핵심이 아니면 싸게 내놓는다', ()=>{ fresh(); G.day=G.cal.open+40; const d=depth(G.user); const p=d.bench.find(q=>!q.foreign&&!q.ys)||d.start.find(q=>!q.foreign); initPers(p); p.pdProm=true; G.evs=[]; pdPromBroken(p); ok(p.boy>G.day,'깨진 약속이 시위로 번지지 않음'); ok((p.grv.prom||0)>=6,'깨진 약속을 기억하지 않음');
+  const t=G.teams.find(x=>x.id!==G.user); const q=playersOf(t.id).filter(x=>!x.foreign&&!x.ys&&!pdCore(x)&&!hasNtc(x))[0]; ok(q,'준비 실패(타 구단)'); pdAiReact(q,2); ok(q.aiListed&&q.aiUrg,'핵심이 아닌 불만 선수를 급매로 내놓지 않음');
+  const c=playersOf(t.id).find(x=>!x.foreign&&pdCore(x)&&!hasNtc(x)); if(c){ for(let i=0;i<20;i++){ delete c.aiListed; delete c.aiUrg; c.promise=null; pdAiReact(c,2); if(c.aiListed)break; } ok(!c.aiUrg,'핵심 선수를 급매로 내놓음'); } });
+T('[사용자 11-12] 1군을 원하는 2군 선수 목록(면담 안건용)과 감독-선수 갈등 결정', ()=>{ fresh(); G.day=G.cal.open+40; const L=playerWantsUp(G.user); ok(Array.isArray(L),'목록 함수 없음'); ok(L.every(x=>x.p&&!x.p.e1&&typeof x.weeks==='number'&&x.t),'목록 항목 모양이 다름');
+  const p=playersOf(G.user).find(q=>!q.foreign&&!q.e1&&!q.ys&&healthy(q)&&!isAway(q)&&!q.prospect); if(p){ initPers(p); p.pers.amb=15; p.downDay=null; p.hist=(p.hist||[]).filter(h=>h.y!==G.year); p.hist.push({y:G.year,lvl:'퓨처스',g:30,pa:120,ab:100,h:38,d:9,tr:1,hr:6,bb:16,hbp:1,sf:1,outs:p.isP?120:0,er:p.isP?10:0}); const w=wantUp(p); if(w&&!p.isP)ok(playerWantsUp(G.user).some(x=>x.p===p),'1군 원하는 선수가 목록에 없음'); }
+  const m=G.mgr[G.user]; ok(m,'감독 없음'); const s=d=>{ const q=depth(G.user).start.find(x=>!x.foreign); return q; }; const q=s(); initPers(q); G.evs=[]; EVH.mpcf.make(q); const e=G.evs.find(x=>x.k==='mpcf'); ok(e,'감독-선수 갈등 결정이 없음'); const r0=m.rel; evPick(e.id,e.data.ks.indexOf('mgr')); ok(m.rel>r0,'감독 편을 들었는데 감독 관계가 그대로'); });
 T('[피드백 11-09k] 후보 선수 트레이드 요청: 선택지마다 효과와 후속 판정',()=>{ fresh(); G.day=G.cal.open+30; G.sea.rec[G.user].w=15; G.sea.rec[G.user].l=15; const d=depth(G.user); const b=d.bench.find(p=>!p.foreign&&!p.ys); initPers(b); Object.assign(b,{age:27,mor:50}); b.pers.temp=10; const m=G.mgr[G.user];
   const go=(key,o)=>{ delete b.listed; delete b.promise; delete b.treq; EVH.treq.make(b,o&&o.hard); const e=G.evs[G.evs.length-1]; const i=e.data.ks.indexOf(key); ok(i>=0,'선택지 없음 '+key); const m0=b.mor; evPick(e.id,i); return {e,dm:b.mor-m0}; };
   let r=go('list'); ok(b.listed&&b.treq.done&&r.dm===6,'명단 올리기: 명단 '+b.listed+' 기분 '+r.dm);
@@ -3994,6 +4007,18 @@ T('[공통 점검] 단장이 몇 번 바뀌어도 연수 예약과 결제 기록
   const t2=G.teams.find(t=>t.id!==G.user); const w=domestic(t2.id).find(x=>!x.foreign&&x.age<=25&&!x.mil); w.mil={unit:'상무',from:dnum(G.year,12,20),until:dnum(G.year,12,20)+MIL_DAYS}; G.ovsAi.us={[t2.id]:[w.id]}; G.ovs=[]; G.day=dnum(G.year,12,1); tabDaily(G.day); ok(!(G.ovsAi.us[t2.id]||[]).includes(w.id),'AI는 연수 중 입대 선수도 보냄'); delete w.mil; });
 T('[공통 점검] 구장: 공사 중 이직 뒤 AI가 같은 시설을 다시 발주하지 않고, 신구장 돔 속성은 고른 유형과 같다',()=>{ fresh(); const t=team(G.user); const S=stadOf(G.user); S.build=[{k:'seat',lv:S.lv.seat+1,done:G.day+200,c:1000}]; G.user=G.teams.find(x=>x.id!==t.id).id; t.cash=99999; const pk=pick; for(let i=0;i<30;i++)stadAI(); ok(S.build.filter(b=>b.k==='seat').length===1,'같은 시설 중복 발주');
   S.dome=true; S.proj={stage:'build',k:'value',cap:21000,cost:3000,paid:3000,done:G.day}; G.user=t.id; try{ newStadDaily&&newStadDaily(); }catch(e){} ok(S.proj||S.dome===false,'돔 아닌 신구장인데 돔 효과'); });
+T('[감독 갈등 11-12] 감독 해임은 구단주 동의가 있어야 한다: 데려온 지 얼마 안 된 감독은 반대, 반대하면 신뢰가 깎이고 동의 없이 UI 경질은 막힌다',()=>{ fresh(); const m=G.mgr[G.user]; m.hD=G.day-10; const t=team(G.user); t.trust=50; const tr0=t.trust;
+  const r=mgrFireAsk(); ok(r.k==='no','갓 선임한 감독 경질에 동의: '+r.k); ok(t.trust<tr0,'반대인데 신뢰 그대로'); ok(!mgrFireOk(),'반대인데 경질 가능');
+  G.mcf.fire=null; m.hD=G.day-400; t.trust=95; const r2=mgrFireAsk(); ok(r2.k==='ok'&&mgrFireOk(),'신뢰 높고 오래된 감독 비시즌 경질 동의 안 함: '+r2.k); });
+T('[감독 갈등 11-12] 시즌 구상: 시범경기 때 감독이 구상을 말하고, 유망주 기용을 받아들이면 기용 가산이 생긴다',()=>{ fresh(); const m=G.mgr[G.user]; m.youth=40; m.ego=20; m.rel=95; G.day=G.cal.exh+1; G.evs=[];
+  mcfPlan(); const e=G.evs.find(x=>x.k==='mplan'); ok(e,'구상 결정이 없음'); const P=G.mcf.plan; ok(P&&P.y===G.year,'구상 상태 없음');
+  const i=e.opts.findIndex(o=>/기회를/.test(o.l)); if(i>=0){ evPick(e.id,i); const it=P.items[0]; ok(it,'요구 기록 없음'); if(it.st!=='no'){ const p=G.players[it.pid]; ok(mcfB(G.user,p)>0,'받아들였는데 기용 가산 없음 '+mcfB(G.user,p)); } } });
+T('[감독 갈등 11-12] 안건이 있을 때만 주간 회의: 부진한 주전이 있으면 안건, 같은 안건은 바로 다시 올리지 않는다',()=>{ fresh(); G.day=G.cal.open+30; G.evs=[]; const d=depth(G.user); const p=d.start[0];
+  p.hist=(p.hist||[]).filter(h=>!(h.y===G.year&&h.lvl==='1군')); p.hist.push({y:G.year,lvl:'1군',tid:G.user,g:30,pa:110,ab:100,h:12,d:1,tr:0,hr:0,bb:8,hbp:0,sf:2,so:40,rbi:3});
+  mcfWeek(); const n1=G.evs.filter(e=>e.k==='magd').length; ok(n1>=1,'부진 주전 안건 없음'); for(const e of G.evs)if(e.k==='magd')evPick(e.id,e.opts.length-1,true);
+  G.day+=7; mcfWeek(); const again=G.evs.filter(e=>e.k==='magd'&&!e.done&&e.data.k==='slump:'+p.id).length; ok(again===0,'1주 만에 같은 부진 안건 반복'); });
+T('[감독 갈등 11-12] 면담 관계 상승은 자주 할수록·관계가 높을수록 줄어든다',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=50; m.tkD=[G.day]; const a=mcfRelGain(m,4); m.tkD=[G.day-3,G.day-2,G.day-1,G.day]; const b=mcfRelGain(m,4); m.rel=85; const c=mcfRelGain(m,4);
+  ok(a===4,'첫 면담 상승이 줄어듦 '+a); ok(b<a,'자주 해도 같은 상승 '+b); ok(c<b,'관계 높아도 같은 상승 '+c); ok(mcfRelGain(m,-3)===-3,'하락은 그대로여야 함'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

@@ -1,5 +1,15 @@
 /* ===== 선수 기분과 성향 ===== */
-function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers)p.pers={pro:ri(4,20),amb:ri(4,20),loy:ri(4,20),temp:ri(4,20)}; }
+function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers){ const g=(m,sd)=>clamp(Math.round(N(m,sd)),3,20); p.pers={pro:g(9.5,3.5),amb:g(11,3.8),loy:g(10,3.8),temp:g(10.5,3.8)}; } /* 멘탈 좋은 선수는 드물다(사용자 11-12): 고른 분포(4~20) 대신 중간~낮음에 몰리게. 프로의식 15 이상 약 10%, 7 이하 약 25% */ }
+/* 히든 멘탈(사용자 11-12): 성실성·야망·충성심·기질은 숫자로 보이지 않는다. 우리 선수는 감독(함께한 시간·안목), 다른 구단·아마추어는 그 지역 스카우트(실력)가 간접적으로 전한다.
+   정보원이 없으면 '알 수 없음'. 추정 오차가 크면 '(불확실)' */
+function mentalRead(p,k){ if(!p||!p.pers)return {t:'알 수 없음',src:'',sd:99}; const v=p.pers[k];
+  let sd=99, src='';
+  if(p.team===G.user&&!G.unemp){ const m=G.mgr&&G.mgr[G.user]; const kn=m?mgrKnow(m,p):0; sd=(1.6+(1-kn)*4.5)*(m?1-((m.eye||50)-50)/160:1.3); src=m?`${m.name} 감독·코치진(훈련 태도)`:'코치진(훈련 태도)'; }
+  else { const ref=p.team!=null?p.team:p.prospect?null:p.faFrom; let sc=null; try{ sc=ref!=null?coverOf(ref).sc:(p.prospect&&p.region?scoutOf('am',p.region):null); }catch(e){} if(sc){ sd=Math.max(3.5,8.5-(sc.skill||2)*1.0); src=`${sc.name} 스카우트(소문)`; } } /* 다른 구단 선수의 훈련 태도는 밖에서 보기 어렵다: 최고 스카우트도 오차가 크다 */
+  if(sd>=99)return {t:'알 수 없음',src:'정보원 없음',sd};
+  const e=v+hn('mr'+k+(src||'')+halfK(),p.id)*sd; const t=k==='temp'?(e>=15.5?'매우 예민':e>=12?'예민한 편':e>=8.5?'보통':e>=5.5?'무던한 편':'매우 무던'):k==='amb'?(e>=15.5?'매우 강함':e>=12?'강한 편':e>=8.5?'보통':e>=5.5?'약한 편':'거의 없음'):(e>=15.5?'매우 좋음':e>=12?'좋은 편':e>=8.5?'보통':e>=5.5?'아쉬운 편':'나쁨');
+  return {t:t+(sd>=4?' (불확실)':''),src,sd}; }
+function mentalSum(p){ const r=mentalRead(p,'pro'), t=mentalRead(p,'temp'); if(r.sd>=99)return '성향 정보 없음'; const a=mentalRead(p,'amb'); return `${r.src}: 프로의식 ${r.t} · 야망 ${a.t} · 예민도 ${t.t}`; }
 const moodLabel=m=>m>=80?'매우 좋음':m>=65?'좋음':m>=45?'보통':m>=30?'불만':'매우 불만';
 const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';
 function persText(p){ const s=p.pers; const t=[]; if(s.pro>=15)t.push('프로의식이 강함'); if(s.pro<=7)t.push('훈련 태도가 들쭉날쭉'); if(s.amb>=15)t.push('야망이 큼'); if(s.loy>=15)t.push('구단 충성심이 높음'); if(s.loy<=6)t.push('시장 평가를 중시'); if(s.temp>=15)t.push('예민한 편'); if(s.temp<=6)t.push('무던한 편'); return t.length?t.join(' · '):'평범한 성향'; }
@@ -64,8 +74,8 @@ function moraleWeek(){
       if(p.promise&&G.day>=p.promise.until&&!healthy(p)&&per==='season'){ p.promise.until=G.day+Math.min(30,Math.max(7,p.injOut||7)); p.promise.inj=(p.promise.inj||0)+1; } /* 부상으로 뛸 수 없으면 평가를 미룬다(복귀 뒤 출전 가능 기간으로 본다) */
       if(p.promise&&G.day>=p.promise.until&&per!=='season'){ p.promise.until=G.day+30; p.promise.off=1; } /* 경기가 없는 기간은 약속 기한에서 빼고 시즌 경기로 평가한다 */
       if(p.promise&&G.day>=p.promise.until){ const r=playPromKept(p);
-        if(r){ dd+=5; if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
-        else { dd-=12; if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
+        if(r){ dd+=5; try{ pdPromKept(p); }catch(e){} if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
+        else { dd-=12; try{ pdPromBroken(p); }catch(e){} if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
         delete p.promise; }
       const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*(per==='season'?.08:.03),0,100); /* 비시즌에는 기분이 천천히 평소로 돌아온다(카페 11-09: 시즌 끝 100이 개막 때 60이 되던 문제). 시즌 중에는 그대로 */
       if(t.id===G.user)requestCheck(p);

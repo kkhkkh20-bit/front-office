@@ -4,7 +4,7 @@ function bondCard(p){
   initPers(p); const m=p.mor;
   return `<section class="card"><div class="row between"><span class="eyebrow">선수와의 관계</span><span class="pill ${moodClass(m)}">기분 ${moodLabel(m)}</span></div>
   <p class="small">${esc(moraleWhy(p))}</p>${p.team===G.user?roleLines(p):''}
-  <p class="small muted">코치진이 본 성향: ${esc(persText(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
+  <p class="small muted">성향: ${esc(mentalSum(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
   ${p.team===G.user?`<button class="btn small mt-go" data-a="meetOpen" data-v="pl:${p.id}">${avImg(p)}<span><b>개인 면담</b><i>${talkUsed(p,'praise')?'이번 주 칭찬·분발 촉구는 했습니다 · 고민은 언제든':'칭찬, 분발 촉구, 출전 기회, 계약, 고민'}</i></span></button>`:''}
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
   </section>`;
@@ -138,8 +138,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   signFc(v){ const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg2=err;render();return;} UI.fmsg2=''; signForeign(G.user,p.id); save(); render(); },
   tutSkip(){ tutSkip(); save(); render(); },
   hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.mgrCandidate=null; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
-  fireAsk(){ UI.confirmFire=true; render(); }, fireCancel(){ UI.confirmFire=false; render(); },
-  fireMgr(){ fireMgr(); UI.confirmFire=false; save(); render(); },
+  fireAsk(){ const r=mgrFireAsk(); if(r.k==='ok')UI.confirmFire=true; else { UI.confirmFire=false; try{ toast(r.msg); }catch(e){} } save(); render(); }, fireCancel(){ UI.confirmFire=false; render(); }, /* 감독 경질은 구단주 동의가 먼저(11-12) */
+  fireMgr(){ if(!mgrFireOk()){ UI.confirmFire=false; try{ toast('구단주 동의가 있어야 경질할 수 있습니다.'); }catch(e){} render(); return; } fireMgr(); if(G.mcf)G.mcf.fire=null; UI.confirmFire=false; save(); render(); },
   renewMgr(v){ const [y,tid,mid]=String(v||2).split(':'); const r=renewMgr(+y,tid,mid); if(r)toast(r); save(); render(); },
   setPrev(v){ G.med.prev=+v; G.medSet=true; save(); render(); },
   setHosp(v){ const L=setHospital(v); if(L&&L.length)note('의무',`재활 중인 선수 남은 기간: ${L.join(', ')}`); save(); render(); },
