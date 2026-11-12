@@ -659,6 +659,24 @@ T('[국가대표] 예비 명단 → 최종 명단 → 소집 기간엔 소속 �
   G.day=KD(9,16); ntDaily(G.day); ok(sq.every(p=>isAway(p)),'소집 기간에는 소속 팀에서 빠짐'); ok(sq.every(p=>!playersOf(p.team).includes(p)),'팀 선수 목록에서 빠짐');
   free[0].mil={unit:'상무',from:G.day+60,until:G.day+60+MIL_DAYS}; /* 입대 예정 선수도 특례 대상 */ const r=ntResult('ag',0); ok(r==='금메달','강제 금메달'); ok(free.every(p=>p.mil&&p.mil.exempt),'미필 선수 병역 특례'); ok((G.ntHist||[]).some(x=>x.k==='ag'&&x.y===2026),'지난 대회 기록');
   G.day=KD(9,28); ntDaily(G.day); ok(sq.every(p=>!isAway(p)),'대회 끝나면 복귀'); });
+T('[국가대표] 실제 대회(11-12): 소집일에 대진·상대국 명단, 대회 기간 하루씩 경기, 대진 결과가 성적·기록·기록실·통산 기록으로',()=>{ fresh(); G.year=2027; const e=NT_EV.p12, D=a=>KD(a[0],a[1]);
+  G.day=D(e.ann); ntDaily(G.day); const N=G.nt; ok(N&&N.k==='p12','프리미어12 명단');
+  for(let d=D(e.from);d<=D(e.to);d++){ G.day=d; ntDaily(d); }
+  const T=N.tour; ok(T&&T.teams.length===12,'참가국 12개 대진'); ok(T.games.length===38&&T.games.every(g=>g.done),'조별 30·슈퍼라운드 6·3위전·결승 모두 치름 '+(T&&T.games.filter(g=>g.done).length));
+  ok(T.games.every(g=>g.d>=D(e.from)&&g.d<=D(e.res)),'경기 날짜가 대회 기간 안');
+  ok(T.games.filter(g=>g.st==='F').every(g=>g.win),'결승 승패가 정해짐(무승부 없음)'); const champ=Object.keys(T.rank).find(c=>T.rank[c]===1); ok(champ,'우승국 '+champ);
+  ok(N.res===T.res,'대표팀 성적은 대진 결과: '+N.res+' / '+T.res); ok(T.lv===(T.rank.KR&&T.rank.KR<=3?T.rank.KR:4),'성적 단계가 순위와 같음');
+  const kr=Object.keys(T.st).filter(k=>String(+k)===k); /* 정규식 역슬래시는 점검기 템플릿에서 사라진다 */ ok(kr.length>=15,'한국 선수 대회 기록 '+kr.length+'명'); ok(kr.some(k=>G.players[+k].ntc&&G.players[+k].ntc.g>0),'선수 통산 국가대표 기록');
+  ok((G.ntArc||[]).some(x=>x.k==='p12'&&x.y===2027&&x.res===N.res&&x.ros.length===N.ids.length),'대회 기록실(명단·성적)');
+  ok(!Object.values(G.players).some(p=>p.ntTmp),'경기용 임시 선수가 남지 않음');
+  const jp=T.sq.JP.map(ntFindPl); ok(jp.length===26&&jp.every(Boolean),'상대국 명단 26명은 명부 선수(카드)'); ok(jp.some(pl=>pl.cs&&pl.cs.g>0),'상대국 선수 대표 통산 기록'); });
+T('[국가대표] 상대국 명부: 해마다 나이·성장·은퇴가 반영되고, 프리미어12·올림픽에는 메이저리거가 나오지 않는다',()=>{ fresh(); G.year=2027; const W=ntWorld(); const jp=ntNation('JP'), us=ntNation('US');
+  ok(jp.p.length===46&&us.p.length===52,'일본·미국 깊은 명부'); ok(us.p.filter(x=>x.lv==='MLB').length===34,'미국 메이저리거 34명'); ok(jp.p.every(x=>x.c),'일본 선수 소속 구단');
+  const a=jp.p.find(x=>x.a<=28), a0=a.a, id=a.i; G.year=2030; ntWorld(); const b=ntFindPl(id); ok(b&&b.a===a0+3,'같은 선수가 3년 뒤 3살 더 많음'); ok(ntNation('JP').p.length===46,'은퇴만큼 신인 보충');
+  const P=ntPickSquad('US','p12'), WB=ntPickSquad('US','wbc'); ok(P.ids.map(ntFindPl).every(x=>x.lv!=='MLB'&&!x.m),'프리미어12 미국은 메이저리거 없음'); const av=L=>L.map(ntFindPl).reduce((s,x)=>s+ntPlO(x),0)/L.length; ok(av(WB.ids)>av(P.ids)+3,'WBC 미국이 훨씬 강함 '+av(WB.ids).toFixed(1)+'/'+av(P.ids).toFixed(1));
+  const old=JSON.parse(JSON.stringify(G)); void old; });
+T('[국가대표] 예전 저장: 대진 없이 대회 중이던 해는 예전 방식(전력 확률)으로 끝난다',()=>{ fresh(); G.year=2026; const e=NT_EV.ag, D=a=>KD(a[0],a[1]); G.day=D(e.ann); ntDaily(G.day); const N=G.nt; ok(N&&!N.tour,'대진 전');
+  G.day=D(e.res); ntDaily(G.day); ok(!N.tour&&N.res,'대진 없이도 성적: '+N.res); });
 T('[국가대표] 우리 선수 차출 거부: 대체 선수가 들어오고 팬·언론 여론과 선수 사기가 떨어진다. 소집 뒤에는 거부할 수 없다',()=>{ fresh(); G.year=2026; G.day=KD(6,11); ntAnnounce('ag'); const N=G.nt;
   let id=N.ids.find(x=>G.players[x].team===G.user); if(id==null){ const p=domestic(G.user).filter(q=>ntU25(q)&&ntBucket(q)==='P')[0]; const out=N.ids.find(x=>ntBucket(G.players[x])==='P'); N.ids[N.ids.indexOf(out)]=p.id; id=p.id; }
   const p=G.players[id]; prInit(); const f0=G.pr.fan, m0=p.mor??60; const msg=ntRefuse(id); ok(/거부/.test(msg),msg); ok(!N.ids.includes(id)&&N.ref.includes(id),'명단에서 빠짐'); ok(N.ids.length===24,'대체 선수로 24명 유지'); ok(G.pr.fan<f0,'팬 여론 하락'); ok((p.mor??60)<m0,'선수 사기 하락');
