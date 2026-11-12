@@ -11921,7 +11921,7 @@ function injure(p,day,ctx){ ctx=ctx||{}; day=day??G.day;
   if(p.team===G.user){ const H=HOSP[G.med.hosp]; const len=days>=300?`약 ${Math.round(days/30)}개월`:`${H.dx?'':'약 '}${days}일`;
     const fxT=I.tj?' 복귀까지 보통 12~16개월이 걸리고, 복귀 첫해에는 제구가 흔들리는 경우가 많습니다. 구속은 떨어지는 선수가 더 많지만 젊으면 오히려 오르기도 합니다.':I.perm&&I.d[0]>=90?' 수술 뒤 예전 몸 상태를 완전히 되찾지 못할 수도 있습니다.':I.re?' 복귀 직후 재발이 잦은 부위입니다.':'';
     const msg=`${p.name}(${posLabel(p)})이(가) ${I.n}(으)로 ${len} 이탈합니다. 예상 복귀 ${ret}.${seasonOut?' 올 시즌은 사실상 끝났습니다.':''}${fxT}${H.c?` ${H.name}에서 치료합니다.`:''}${H.dx?` 정밀 검진 결과 재발 위험은 ${p.inj>.24?'높은':p.inj>.15?'보통':'낮은'} 편입니다.`:''}`;
-    p.mor=clamp((p.mor??60)-4,0,100); days>=10&&!ctx.farm?stop('부상',msg,p.id):note('부상',(ctx.farm?'[퓨처스] ':'')+msg,p.id); }
+    p.mor=clamp((p.mor??60)-4,0,100); !ctx.farm&&((days>=10&&(()=>{ try{ return isRegular(p); }catch(e){ return true; } })())||days>=30)?stop('부상',msg,p.id):note('부상',(ctx.farm?'[퓨처스] ':'')+msg,p.id); }
   if(!I.surg)try{ evInjury(p,days,reg); }catch(e){}
   if(p.team===G.user&&days>=30&&!ctx.farm&&ovr(p)>=58)try{ ivRequest('injury',{pid:p.id,days}); }catch(e){}
 }
@@ -12112,7 +12112,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   milDaily();
   recoverAll(1);
   if(o.w===0)for(const p of Object.values(G.players)){ if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)*.65+N(0,(p.foreign?.75:.55)*volF(p)),-2.5,2.5); /* 기복이 큰 선수는 슬럼프·상승세 폭도 크다 */ }
-  for(const p of Object.values(G.players)) if(p.injOut>0){ p.injOut--; if(p.injOut===0){ { const h=(p.injHist||[]).slice(-1)[0]; if(h&&h.bk==null)h.bk=G.day; } if(p.rushRet){ p.rush=G.day+30; delete p.rushRet; } /* 조기 복귀 위험 기간: 실제 복귀일부터 한 달(검수 11-09t) */ /* 실제 복귀일(조기 복귀 포함, 검수 11-08) */ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0],d:G.day}; if(p.team===G.user){ const fx=injFxNow(p); const hd=((p.injHist||[]).slice(-1)[0]||{}).days||0; (hd>=10?(k,t,r)=>mail(FROM[k],headline(t),t,{ref:r,kind:k,acts:kindActs(k,r),imp:true}):note)('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${(()=>{ const f=(p.injFx||[]).slice(-1)[0]; if(!f||f.k!==p.injK)return ''; return (f.v?` 복귀 후 측정한 직구 구속은 수술 전보다 ${f.v>0?f.v+'km/h 빨라졌습니다':(-f.v)+'km/h 느려졌습니다'}.`:'')+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); })()}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
+  for(const p of Object.values(G.players)) if(p.injOut>0){ p.injOut--; if(p.injOut===0){ { const h=(p.injHist||[]).slice(-1)[0]; if(h&&h.bk==null)h.bk=G.day; } if(p.rushRet){ p.rush=G.day+30; delete p.rushRet; } /* 조기 복귀 위험 기간: 실제 복귀일부터 한 달(검수 11-09t) */ /* 실제 복귀일(조기 복귀 포함, 검수 11-08) */ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0],d:G.day}; if(p.team===G.user){ const fx=injFxNow(p); const hd=((p.injHist||[]).slice(-1)[0]||{}).days||0; /* 진행을 멈추는 복귀 소식은 1군 주전의 10일 이상 부상, 또는 45일 이상 장기 부상만(플레이 리뷰 11-12: 물집·2군 선수 복귀로 시즌당 16번 멈춤) */((hd>=10&&p.e1&&(()=>{ try{ return isRegular(p); }catch(e){ return false; } })())||hd>=45?(k,t,r)=>mail(FROM[k],headline(t),t,{ref:r,kind:k,acts:kindActs(k,r),imp:true}):note)('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${(()=>{ const f=(p.injFx||[]).slice(-1)[0]; if(!f||f.k!==p.injK)return ''; return (f.v?` 복귀 후 측정한 직구 구속은 수술 전보다 ${f.v>0?f.v+'km/h 빨라졌습니다':(-f.v)+'km/h 느려졌습니다'}.`:'')+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); })()}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
   try{ fTmpDaily(); }catch(e){} /* 재활이 끝난 날 바로 외국인 복귀 결정(검수 11-09t: 하루 늦게 떴다) */
   try{ injDaily(); loadDaily(); if(o.w===1&&G.day>G.cal.open)loadWeekly(); }catch(e){}
   const c=G.cal;
@@ -18366,7 +18366,7 @@ function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day),L=p.ld=p.ld||[],S
   if(same){const apps=same[3]||(same[3]=[[same[1],SD.includes(day)?1:0]]);apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
   if(isStart){if(!SD.includes(day))SD.push(day);SD.sort((a,b)=>a-b);if(p.lsS==null||day>p.lsS)p.lsS=day;}
   p.armw=Math.max(0,(p.armw||0)+loadSpan(L,SD)-before);while(L.length>10)L.shift();if(isStart)p.lsD=SD.slice(-6);
-  if(cd>=2&&p.team===G.user&&p.e1&&period()==='season'){ /* 2군(퓨처스) 연투는 2군 감독 몫: 1군 투수만 알린다(제보 11-12) */ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
+  if(cd>=3&&p.team===G.user&&p.e1&&period()==='season'){ /* 4일 연속부터(플레이 리뷰 11-12: 3일 연투 알림이 시즌 14통) */ /* 2군(퓨처스) 연투는 2군 감독 몫: 1군 투수만 알린다(제보 11-12) */ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
   return cd; }
 /* 부상 위험 배수: 연투(급성)와 누적 부하(만성) */
 function loadMult(p,cd,day){ const sp=isSPr(p); const w7=pc7(p,day);
@@ -21321,7 +21321,7 @@ function takeBack(k){ autoSet(k,false); const a=AUTO_AREAS.find(x=>x[0]===k); re
 /* 결정 한 건만 넘기기(핵심 결정 포함): 비서가 기본안으로 처리 */
 function handOffEv(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k))return '단장 계약과 협회 표결은 단장이 직접 정합니다.'; e.deleg=true; const r=evPick(e.id,e.def,true); if(e.void||!e.done)return r||'처리하지 못했습니다.'; /* 효력을 잃은 결정은 처리했다고 하지 않는다(검수 11-07) */ return `비서가 "${e.opts[e.pick??e.def].l}"(으)로 처리했습니다.${r?' '+r:''}`; /* 처리 중 바뀐 실제 선택으로(검수 11-09z) */ }
 /* 스카우트: 맡기지 않았으면 팀장이 달마다 배치 제안을 보낸다(적용은 단장이) */
-function scoutSuggest(){ if(G.scoutAuto||G.unemp)return; let P=[]; try{ P=scoutPlan().filter(x=>x.move); }catch(e){ return; } if(!P.length)return; const sig=(G.year*100+dobj(G.day).m)+'#'+P.map(x=>x.s.id+x.role+x.key).join('|'); if(G.scSugSig===sig)return; /* 지난달 제안은 기한이 끝나므로 같은 내용이라도 달마다 새로 보낸다(검수 11-09e #22) */ G.scSugSig=sig;
+function scoutSuggest(){ if(G.scoutAuto||G.unemp)return; let P=[]; try{ P=scoutPlan().filter(x=>x.move); }catch(e){ return; } if(!P.length)return; const sig=P.map(x=>x.s.id+x.role+x.key).join('|'); if(G.scSugSig===sig||(G.scSugSig||'').replace(/^[0-9]+#/,'')===sig)return; /* 지난번과 같은 제안이면 다시 보내지 않는다(플레이 리뷰 11-12: 같은 배치 제안이 달마다 와서 시즌 10통). 바뀐 제안만 새 메일 */ G.scSugSig=sig;
   const c=scoutChief(); mail('스카우트팀',`스카우트팀장 배치 제안 ${P.length}명`,`${c?`${c.name} 팀장`:'스카우트팀장'}의 이번 달 배치 제안입니다.\n${P.map(x=>`${x.s.name}: ${scoutSlotTxt(x.role,x.key)} (${x.why})`).join('\n')}\n바꾼 스카우트는 30일 동안 적응 기간입니다.`,{kind:'스카우트',acts:[{l:'제안대로 배치',a:'scoutPlanGo',v:P.map(x=>x.s.id+':'+x.role+':'+x.key).join('|')}]}); if(G.mail[0])G.mail[0].auto=['scout']; }
 /* ===== 다른 구단 단장·감독 교체를 기사로 =====
  단장도 계약이 끝나고 다른 구단으로 옮기는 사람이라, 리그의 단장·감독 교체는 리그 소식(한 줄)뿐 아니라 기사로도 나온다.
@@ -28492,7 +28492,7 @@ function mailActionStatus(m,a){
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 종료되었습니다.'):null;}
   if(a.a==='scoutPlanGo'){
     if(scoutWorkStatus().delegated)return mailEnd('스카우트팀장에게 배치를 맡겼습니다. 단장의 별도 승인은 필요하지 않습니다.');
-    if(old||dobj(d).m!==dobj(G.day).m)return mailEnd('지난달의 배치 제안입니다. 최신 제안은 스카우트팀에서 확인하세요.',true);
+    if(old)return mailEnd('더 새로운 배치 제안이 있습니다. 최신 제안은 스카우트팀에서 확인하세요.',true); /* 같은 제안은 다시 보내지 않으므로 달이 바뀌어도 내용이 그대로면 그대로 적용할 수 있다(아래에서 지금 배치안과 대조) */
     const P=c.scout;if(P){if(P.every(x=>G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('이미 제안한 스카우트 배치를 마쳤습니다.');const now=scoutPlan().filter(x=>x.move);if(P.some(x=>!now.some(z=>z.s.id===x.id&&z.role===x.role&&z.key===x.key)&&!G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('직원·배치 상황이 바뀌었습니다. 최신 제안을 확인하세요.',true);}
     else if(!scoutPlan().some(x=>x.move))return mailEnd('이미 스카우트 배치를 마쳤습니다.');return null;
   }

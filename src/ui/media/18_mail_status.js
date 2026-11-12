@@ -35,7 +35,7 @@ function mailActionStatus(m,a){
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 종료되었습니다.'):null;}
   if(a.a==='scoutPlanGo'){
     if(scoutWorkStatus().delegated)return mailEnd('스카우트팀장에게 배치를 맡겼습니다. 단장의 별도 승인은 필요하지 않습니다.');
-    if(old||dobj(d).m!==dobj(G.day).m)return mailEnd('지난달의 배치 제안입니다. 최신 제안은 스카우트팀에서 확인하세요.',true);
+    if(old)return mailEnd('더 새로운 배치 제안이 있습니다. 최신 제안은 스카우트팀에서 확인하세요.',true); /* 같은 제안은 다시 보내지 않으므로 달이 바뀌어도 내용이 그대로면 그대로 적용할 수 있다(아래에서 지금 배치안과 대조) */
     const P=c.scout;if(P){if(P.every(x=>G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('이미 제안한 스카우트 배치를 마쳤습니다.');const now=scoutPlan().filter(x=>x.move);if(P.some(x=>!now.some(z=>z.s.id===x.id&&z.role===x.role&&z.key===x.key)&&!G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('직원·배치 상황이 바뀌었습니다. 최신 제안을 확인하세요.',true);}
     else if(!scoutPlan().some(x=>x.move))return mailEnd('이미 스카우트 배치를 마쳤습니다.');return null;
   }
