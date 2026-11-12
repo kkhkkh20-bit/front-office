@@ -31,7 +31,7 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
   G2.push(['체력·몸',[['체력',c(p.isP?tv.sta:tv.vit)],['내구성',c(80-(clamp(medInj(p),.03,.42)-.03)/.39*60)]]]);
   const mr=k=>mentalRead(p,k).t; const mind=[['프로의식(평판)',mr('pro'),'t'],['야망(평판)',mr('amb'),'t'],['예민도(평판·낮을수록 좋음)',mr('temp'),'t'],['충성심(평판)',mr('loy'),'t'],['승부처 집중(멘탈)',c(mentalRt(p))],['꾸준함(기복 적음)',c(consRt(p))]]; /* 멘탈: 득점권·접전 후반·포스트시즌에서만 능력에 더해짐. 꾸준함: 경기별 컨디션·몇 주 단위 슬럼프 폭 */
   if(p.foreign&&p.adapt!=null)mind.push(['한국 적응력',c(p.adapt)]); if(!p.foreign&&p.team!=null)mind.push(['해외 진출 의지',c(20+mlbOf(p)*.6),'i']);
-  G2.push(['성격',mind]);
+  /* 성격(프로의식·야망·예민도·충성심·승부처·꾸준함·적응력)은 화면에 보이지 않는다(사용자 11-12): 감독·코치의 훈련 태도 평, 스카우트 소문, 보고서 문장으로만 알 수 있다 */ void mind;
   const radar=!p.isP?[['컨택',c(tv.con),c(tf.con)],['파워',c(tv.pow),c(tf.pow)],['선구안',c(tv.eye),c(tf.eye)],['주루',c(tv.spd),c(tf.spd)],['수비',tv.def,tf.def],['체력',c(tv.vit),c(tf.vit)]]
     :[['구위',c(tv.stf),c(tf.stf)],['제구',c(tv.ctl),c(tf.ctl)],['스태미나',c(tv.sta),c(tf.sta)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv')),c((tf.stf+tf.ctl)/2+o('mv'))],['구속',c(20+(veloOf(p)-130)/25*60),c(20+(veloOf(p)-130)/25*60)],['결정구',Math.max(...G2[1][1].map(x=>x[1])),Math.max(...G2[1][1].map(x=>x[1]))]];
   return {groups:G2,radar}; }
