@@ -48,8 +48,9 @@ function develop(p){
   else { base=-(age-T.fall+1)*.6*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=36?-2.4:-3.6)-(age>=37?.8:0); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
-  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.17:.11)+Math.max(0,10-pr)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
+  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.015, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
     if(x<dn){ const s=-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; p.devLog.reasons.push('slump'); } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
+  if(age<=29&&!svc)base+=N(-.25,.9); /* 젊은 선수도 해마다 들쭉날쭉: 성장 구간에서도 정체·후퇴가 섞인다 */
   if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
