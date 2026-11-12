@@ -64,8 +64,8 @@ function moraleWeek(){
       if(p.promise&&G.day>=p.promise.until&&!healthy(p)&&per==='season'){ p.promise.until=G.day+Math.min(30,Math.max(7,p.injOut||7)); p.promise.inj=(p.promise.inj||0)+1; } /* 부상으로 뛸 수 없으면 평가를 미룬다(복귀 뒤 출전 가능 기간으로 본다) */
       if(p.promise&&G.day>=p.promise.until&&per!=='season'){ p.promise.until=G.day+30; p.promise.off=1; } /* 경기가 없는 기간은 약속 기한에서 빼고 시즌 경기로 평가한다 */
       if(p.promise&&G.day>=p.promise.until){ const r=playPromKept(p);
-        if(r){ dd+=5; if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
-        else { dd-=12; if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
+        if(r){ dd+=5; try{ pdPromKept(p); }catch(e){} if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
+        else { dd-=12; try{ pdPromBroken(p); }catch(e){} if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
         delete p.promise; }
       const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*(per==='season'?.08:.03),0,100); /* 비시즌에는 기분이 천천히 평소로 돌아온다(카페 11-09: 시즌 끝 100이 개막 때 60이 되던 문제). 시즌 중에는 그대로 */
       if(t.id===G.user)requestCheck(p);
