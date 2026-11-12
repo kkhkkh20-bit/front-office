@@ -11553,7 +11553,7 @@ function develop(p){
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
   const tc=svc?(delete p.trD,null):typeof trnCost==='function'?trnCost(p):null; /* 복무 중 겨울에는 입대 전 집중 훈련 비용을 매기지 않는다(검수 11-09zy) */ /* 훈련 방향 비용: 한 항목에 집중한 만큼 다른 항목의 성장 기회가 준다 */
-  const stam0=(p.isP?p.r.sta:p.r.vit)??50; initPers(p); const agK=clamp(1-(stam0-50)*.012-((p.pers.pro??10)-10)*.025,.55,1.4); /* 노화 하락 폭: 체력이 높고 프로의식이 강하면 덜 떨어진다(사용자 11-08). 부상 후유증 하락은 따로(injury) */
+  const stam0=(p.isP?p.r.sta:p.r.vit)??50; initPers(p); const agK=clamp(1-(stam0-50)*.012-((p.pers.pro??10)-10)*.025,.7,1.4); /* 노화 하락 폭: 체력이 높고 프로의식이 강하면 덜 떨어진다(사용자 11-08). 부상 후유증 하락은 따로(injury) */
   for(const k in p.r){
     let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1));
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
@@ -18335,7 +18335,7 @@ function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day),L=p.ld=p.ld||[],S
   if(same){const apps=same[3]||(same[3]=[[same[1],SD.includes(day)?1:0]]);apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
   if(isStart){if(!SD.includes(day))SD.push(day);SD.sort((a,b)=>a-b);if(p.lsS==null||day>p.lsS)p.lsS=day;}
   p.armw=Math.max(0,(p.armw||0)+loadSpan(L,SD)-before);while(L.length>10)L.shift();if(isStart)p.lsD=SD.slice(-6);
-  if(cd>=2&&p.team===G.user&&period()==='season'){ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
+  if(cd>=2&&p.team===G.user&&p.e1&&period()==='season'){ /* 2군(퓨처스) 연투는 2군 감독 몫: 1군 투수만 알린다(제보 11-12) */ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
   return cd; }
 /* 부상 위험 배수: 연투(급성)와 누적 부하(만성) */
 function loadMult(p,cd,day){ const sp=isSPr(p); const w7=pc7(p,day);
@@ -35070,6 +35070,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-12-fb2',d:'11월 12일',t:'벤치 활용 · 스태프 먼저 영입 · 재테크 일부 찾기',items:[
+    '7회 이후 7점 차 이상 벌어진 경기에서는 감독이 주전을 빼고 벤치 선수를 넣습니다(휴식 성향이 큰 감독일수록 최대 3명). 휴식 성향이 높은 감독은 개막부터 주전에게 정기 휴식을 줍니다.',
+    '스카우트·전력분석원 정원이 차 있어도 영입 제안을 할 수 있습니다. 영입이 성사되면 7일 안에 내보낼 사람을 고르면 됩니다(고르지 않으면 실력이 가장 낮은 사람과 계약 종료).',
+    '개인 재테크에서 일부만 찾기(−10·−50·−100)와 전액 넣기 버튼이 생겼습니다.',
+    'FA 신청을 앞둔 선수는 시즌 결산 뒤부터 FA 공시(스토브리그 시작) 전까지 트레이드할 수 없습니다.',
+    '체력·프로의식이 최상급인 베테랑도 30대 중반부터는 능력이 조금 더 떨어집니다(모든 구단 같은 규칙).']},
   {id:'2026-11-12-swap',d:'11월 12일',t:'AI 구단끼리 맞트레이드',items:[
     '다른 구단끼리 서로 약한 자리를 상대의 남는 선수로 메우는 맞트레이드를 합니다. 예: 포수가 약한 팀과 불펜이 약한 팀이 백업 포수와 불펜 투수를 바꿉니다. 양쪽 다 이득인 거래라 웃돈을 덜 요구하고, 비슷한 가치끼리 바꿉니다. 전력 상위 3개 구단은 맞트레이드에서 빠져 격차가 벌어지지 않습니다. 트레이드 마감 직전에 더 활발합니다.',
     '리그 뉴스에 "서로 약한 자리를 메우는 맞트레이드"로 표시됩니다.']},

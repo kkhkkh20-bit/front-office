@@ -3397,7 +3397,7 @@ T('[검수 11-09zr] 복원: 후보가 빈 6월 저장을 같은 내용으로 두
   G=JSON.parse(s); migrateDraft(); const a=JSON.stringify(G.fmarket), na=Object.keys(G.players).length; G=JSON.parse(s); migrateDraft(); const b=JSON.stringify(G.fmarket);
   ok(a===b,'두 번 연 후보가 다름: '+a+' / '+b); ok(Object.keys(G.players).length===na,'복원만으로 선수가 늘어남'); ok(!G.fmarket.length,'복원하자마자 후보를 채움'); refreshFMarket(0); ok(G.fmarket.length>0,'다음 진행에서 채울 후보가 없음'); });
 T('[피드백 11-09k] 후보 선수 트레이드 요청: 출전 적은 백업만, 30일·한 해 3번 제한, 시즌 밖은 따로',()=>{ fresh(); G.day=G.cal.open+30; G.sea.rec[G.user].w=15; G.sea.rec[G.user].l=15; const d=depth(G.user);
-  const k=Object.keys(d.ln).find(k=>k!=='DH'&&!d.ln[k].foreign), s=d.ln[k]; const b=d.bench.find(p=>!p.foreign&&!p.ys); ok(s&&b,'준비 실패'); for(const p of playersOf(G.user)){ initPers(p); p.pers.amb=5; }
+  const k=Object.keys(d.ln).find(k=>k!=='DH'&&!d.ln[k].foreign), s=d.ln[k]; const b=d.bench.filter(p=>!p.foreign&&!p.ys).sort((x,y)=>ovr(x)-ovr(y))[0]; /* 가장 약한 백업: 주전 자리로 옮겨도 주전을 밀어내지 않게 */ ok(s&&b,'준비 실패'); for(const p of playersOf(G.user)){ initPers(p); p.pers.amb=5; }
   Object.assign(b,{pos:k,age:28,mor:50,injOut:0,mil:null,tLog:[],listed:false}); b.hist=(b.hist||[]).filter(h=>h.y!==G.year); Object.assign(b.pers,{amb:16,loy:10,temp:10}); s.pers.amb=16; s.mor=40;
   const was=treqCands().includes(b); b.hist.push({y:G.year,lvl:'퓨처스',g:22,pa:90,ab:78,h:30,d:7,tr:1,hr:5,bb:10,hbp:1,sf:1}); /* 2군에서 잘 치는 백업 */
   ok(isRegular(b)===false&&treqCands().includes(b),'자격 있는 백업이 후보가 아님 '+was); ok(!treqCands().includes(s),'주전이 후보'); ok(treqCands().every(p=>!isRegular(p)&&!p.foreign),'주전·외국인 포함');
