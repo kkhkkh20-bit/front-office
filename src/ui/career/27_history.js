@@ -12,8 +12,11 @@ function histView(){
   const board=(label,f,fmt,flt)=>`<div class="ldr"><div class="eyebrow">${label}</div>${all.filter(flt||(()=>true)).sort((a,b)=>f(b)-f(a)).slice(0,8).map((x,i)=>`<div class="ldr-r"><i>${i+1}</i><span>${open(x)?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.name)}</button>`:esc(x.name)} <span class="small muted">${x.act?tshort(x.t):x.lab}</span></span><b class="num">${fmt(f(x))}</b></div>`).join('')}</div>`;
   const hof=hofList();
   const champs=G.history.filter(h=>h.champ===G.user).map(h=>h.y);
-  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['ret','영구결번'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['abroad','해외파'],['book','리그 연감']],'sum');
+  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['ret','영구결번'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['teams','구단 역대'],['mile','기록 도전'],['grec','한 경기 기록'],['abroad','해외파'],['book','리그 연감']],'sum');
   if(hv.cur==='book')return hv.bar+yearbookView();
+  if(hv.cur==='teams')return hv.bar+teamAllTimeView();
+  if(hv.cur==='mile')return hv.bar+mileWatchView();
+  if(hv.cur==='grec')return hv.bar+gameRecView();
   if(hv.cur==='abroad')return hv.bar+abroadView();
   if(hv.cur==='events')return hv.bar+leagueEventsView();
   if(hv.cur==='tro')return hv.bar+trophyRoom();
@@ -71,3 +74,19 @@ function yearbookView(){ const H=[...(G.history||[])].filter(h=>h.y!=null).sort(
 /* 단장 명예의 전당(91_person_ledger) */
 function gmHofSec(){ const H=(G.gmHof||[]).slice().sort((a,b)=>b.y-a.y||b.c-a.c); const M=G.gmMerit&&G.gmMerit[legMeK()];
   return csec(`단장 명예의 전당 ${H.length}명`,(M?`<p class="small">현역 공로상: ${esc(legMeName())} 단장 (${M.y}년 · ${M.s}시즌 · 우승 ${M.c}회)</p>`:'')+(H.length?`<div class="list">${H.map(h=>`<div class="item" style="cursor:default"><span class="nm"><b>${esc(h.n)}</b>${h.u?' <span class="pill acc">우리 계보</span>':''}</span><span class="sub">${h.y}년 헌액 · ${h.y0}~${h.y1} · ${h.ts.map(t=>esc(tshort(t,h.y1))).join('·')} · ${h.s}시즌 ${h.w}승 ${h.l}패 · 우승 ${h.c}회</span></div>`).join('')}</div>`:'<p class="small muted">아직 헌액된 단장이 없습니다. 물러난 단장 가운데 우승 3회, 또는 15시즌·우승 1회, 또는 10시즌·승률 .560을 넘긴 사람이 해마다 12월에 오릅니다(게임 기준).</p>')); }
+
+/* ===== 구단 역대 기록(OOTP Team History 참고): 리그 역사(G.history)의 연도별 순위로 구단마다 통산 성적·가을야구·우승을 모은다.
+   가을야구는 그해 순위 5위 안(실제 와일드카드 결정전 포함 KBO 방식), 우승·준우승은 한국시리즈 결과. 옛 저장도 G.history만 있으면 그린다 */
+function teamAllTimeView(){ const T=teamAllTime(); if(!T.n)return csec('구단 역대 기록','<p class="small muted">첫 시즌을 마치면 구단별 통산 기록이 쌓입니다.</p>');
+  const pct=r=>(r.w/Math.max(1,r.w+r.l)).toFixed(3).replace(/^0/,'');
+  const rows=T.rows.map((r,i)=>`<tr class="${r.tid===G.user?'me':''}"><td>${i+1}</td><td class="stk">${badge(r.tid,14)} ${esc(tshort(r.tid))}</td><td>${r.ys}</td><td>${r.w}-${r.l}-${r.t}</td><td>${pct(r)}</td><td>${r.ps}</td><td title="${r.ch.join(', ')}">${r.ch.length}${r.ch.length?` <span class="small muted">(${r.ch[r.ch.length-1]})</span>`:''}</td><td>${r.ru}</td><td>${r.best?`${r.best.y} ${r.best.w}-${r.best.l}-${r.best.t} (${r.best.rk}위)`:'-'}</td></tr>`).join('');
+  return csec('구단 역대 기록',`<p class="small muted">이 리그 ${T.n}시즌(정규시즌) 기준. 가을야구는 정규시즌 5위 안, 우승·준우승은 한국시리즈 결과입니다. 괄호는 마지막 우승 연도.</p><div class="tw"><table class="sqt"><thead><tr><th>#</th><th class="stk">구단</th><th>시즌</th><th>통산 승-패-무</th><th>승률</th><th>가을야구</th><th>우승</th><th>준우승</th><th>최고 시즌</th></tr></thead><tbody>${rows}</tbody></table></div>`); }
+
+/* ===== 기록 도전(OOTP Milestone Watch 참고): KBO에서 의미 있게 보는 통산 이정표에 가까운 현역 선수.
+   이정표까지 남은 양이 '가까움' 기준 안이면 올린다(1군 통산, 이 리그 기준). 달성은 대기록(feats)에 남는다 */
+function mileWatchView(){ const L=mileWatch(); const byK={}; for(const x of L)(byK[x.l]=byK[x.l]||[]).push(x);
+  const blk=Object.entries(byK).map(([l,xs])=>`<div class="ldr"><div class="eyebrow">${l}</div>${xs.slice(0,8).map(x=>`<div class="ldr-r mile-r${x.p.team===G.user?' me':''}"><i>${x.g.toLocaleString()}</i><span><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button> <span class="small muted">${esc(tshort(x.p.team))} · ${x.v.toLocaleString()}</span><span class="mile-bar"><b style="width:${Math.round(x.v/x.g*100)}%"></b></span></span><b class="num">${x.left}</b></div>`).join('')}</div>`).join('');
+  return csec('기록 도전',`<p class="small muted">통산 이정표(1군, 이 리그 기준)에 가까운 현역 선수입니다. 오른쪽 숫자는 남은 개수, 왼쪽은 도전하는 기록입니다.</p>${blk?`<div class="ldrs">${blk}</div>`:'<p class="small muted">지금 이정표에 가까운 선수가 없습니다.</p>'}`); }
+function gameRecView(){ const B=G.gbest||{}; const ks=Object.keys(GBK).filter(k=>B[k]);
+  const rows=ks.map(k=>{ const r=B[k], p=G.players[r.pid]||(G.arch&&G.arch[r.pid]); return `<tr class="${r.tid===G.user?'me':''}"><td>${GBK[k][0]}</td><td class="num"><b>${r.v}</b></td><td>${p?`<button class="lnk" data-a="player" data-v="${r.pid}">${esc(r.name)}</button>`:esc(r.name)}</td><td>${r.tid!=null&&G.teams[r.tid]?esc(tshort(r.tid,r.y)):'-'}</td><td>${r.y} · ${esc(r.vs||dmd(r.d))}</td><td>${r.tie?`${r.tie}번`:'-'}</td></tr>`; }).join('');
+  return csec('한 경기 최다 기록',`<p class="small muted">1군 정규시즌 한 경기 최고 기록입니다. 같은 기록은 먼저 세운 선수를 남기고 타이 횟수를 셉니다. 이 기능이 들어간 뒤(2026-11-12 업데이트) 치른 경기부터 집계합니다.</p>${rows?`<div class="tw"><table class="sqt"><thead><tr><th>부문</th><th>기록</th><th>선수</th><th>당시 구단</th><th>경기</th><th>타이</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="small muted">아직 집계된 경기가 없습니다. 경기를 치르면 쌓입니다.</p>'}`); }

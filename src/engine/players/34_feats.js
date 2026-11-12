@@ -42,10 +42,16 @@ function featGame(day,g){ if(!G.cal)return; try{ featPbp(day,g); }catch(e){} for
     const P=s.pitchers.map(id=>[id,s.box.get(id)]).filter(x=>x[1]); const ha=sum(P.map(x=>x[1].h||0)), bba=sum(P.map(x=>(x[1].bb||0)+(x[1].hbp||0))), outs=sum(P.map(x=>x[1].outs||0)), bf=sum(P.map(x=>x[1].bf||0)); const roe=sum(P.map(x=>x[1].roe||0)); const perfect=bba===0&&roe===0&&bf>0&&bf<=outs; /* 실책 출루 등 어떤 출루도 없어야 퍼펙트(상대 타자 수 = 잡은 아웃 수) */
     if(outs>=27&&ha===0&&g.score[ok]===0){ if(P.length===1){ const p=G.players[P[0][0]]; if(p)featAdd(perfect?'pg':'nh',p,perfect?'퍼펙트게임':'노히트노런',{vs}); } else featAdd('tnh',null,`${tname(s.tid)} 투수 ${P.length}명 합작 노히트노런`,{tid:s.tid,vs,name:tname(s.tid)}); }
     else if(P.length===1&&outs>=27&&g.score[ok]===0&&bba===0){ const p=G.players[P[0][0]]; if(p)featAdd('cg0',p,`무사사구 완봉 (${ha}피안타)`,{vs}); }
+    for(const [id,x] of P){ try{ gbestSet('so',x.so||0,G.players[id],vs); }catch(e){} }
     for(const [id,x] of P)if((x.so||0)>=15){ const p=G.players[id]; if(p)featAdd('k15',p,`한 경기 ${x.so}탈삼진`,{vs,maj:x.so>=17}); }
     if(g.score[k]>=20)featAdd('r20',null,`${tname(s.tid)} ${g.score[k]}득점`,{tid:s.tid,vs,name:tname(s.tid)}); } }
+/* 한 경기 최다 기록(OOTP Single Game Records 참고): 1군 정규시즌 경기에서 부문별 최고값과 기록자·날짜. 같은 값이면 먼저 세운 기록을 남기고 타이 횟수를 센다.
+   이 기능이 들어간 뒤 치른 경기부터 집계한다(옛 경기 기록은 남아 있지 않음) */
+const GBK={h:['안타',4],hr:['홈런',3],rbi:['타점',6],r:['득점',4],sb:['도루',3],so:['탈삼진(투수)',10]};
+function gbestSet(k,v,p,vs){ if(!GBK[k]||!(v>=GBK[k][1])||!p)return; G.gbest=G.gbest||{}; const c=G.gbest[k]; if(c&&v<c.v)return; if(c&&v===c.v){ c.tie=(c.tie||0)+1; return; }
+  G.gbest[k]={v,name:p.name,pid:p.id,tid:p.team,y:G.year,d:G.day,vs:vs||'',tie:0}; }
 /* 경기 단위 타자 기록 (storyGame에서 부른다) */
-function featBat(p,x,vs){ const sg=(x.h||0)-(x.d||0)-(x.tr||0)-(x.hr||0);
+function featBat(p,x,vs){ const sg=(x.h||0)-(x.d||0)-(x.tr||0)-(x.hr||0); try{ for(const k of ['h','hr','rbi','r','sb'])gbestSet(k,x[k]||0,p,vs); }catch(e){}
   if(sg>=1&&x.d>=1&&x.tr>=1&&x.hr>=1)featAdd('cyc',p,`사이클링 히트 (${x.ab}타수 ${x.h}안타)`,{vs});
   if(x.hr>=4)featAdd('hr4',p,`한 경기 ${x.hr}홈런`,{vs}); else if(x.hr===3)featAdd('hr3',p,'한 경기 3홈런',{vs});
   if(x.h>=6)featAdd('h6',p,`한 경기 ${x.h}안타`,{vs}); else if(x.h===5)featAdd('h5',p,'한 경기 5안타',{vs});

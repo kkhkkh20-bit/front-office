@@ -116,3 +116,13 @@ function updateLg(y){
   G.lg[y]={ops:pa&&ab?(H+bb+hbp)/pa+tb/ab:.72, era:outs?er*27/outs:4.5}; try{ _lgbC={k:'',m:{}}; const W=lgBat(y); Object.assign(G.lg[y],{woba:W.woba,scale:W.scale,rpa:W.rpa}); }catch(e){} /* wRC+ 기준(시즌이 끝나면 고정) */ try{ archWarSync(y); }catch(e){}
 }
 
+/* ===== 주간 파워랭킹(OOTP Power Rankings 참고): 정규시즌 매주 월요일. 시즌 승률·피타고리안 기대 승률(득실점)·최근 10경기·현재 전력(teamRating)을 섞고,
+   시즌 초(10경기 전)에는 전력 비중을 높인다. 지난주 순위와 비교해 변동을 남긴다 */
+function pwrWeek(){ if(period()!=='season'||!G.sea||!G.sea.rec)return; const TL=(G.sea.tl)||[]; const P=G.pwr&&G.pwr.y===G.year?G.pwr:null; const prev={}; if(P)for(const r of P.rows)prev[r.tid]=r.rk;
+  const rat=G.teams.map(t=>{ try{ return teamRating(t.id); }catch(e){ return 0; } }), lo=Math.min(...rat), hi=Math.max(...rat);
+  const rows=G.teams.map((t,i)=>{ const r=G.sea.rec[t.id]||{w:0,l:0}, gp=(r.w||0)+(r.l||0), L=TL[t.id]||[]; const rs=sum(L.map(x=>x[1]||0)), ra=sum(L.map(x=>x[2]||0));
+    const pct=gp?r.w/gp:.5, py=rs+ra>0?Math.pow(rs,1.83)/(Math.pow(rs,1.83)+Math.pow(ra,1.83)):.5, l10=L.slice(-10), r10=l10.length?l10.filter(x=>x[0]>0).length/Math.max(1,l10.filter(x=>x[0]!==0).length||1):.5, rn=hi>lo?(rat[i]-lo)/(hi-lo):.5;
+    const wr=gp<10?.55:gp<40?.25:.12; const s=(pct*.42+py*.28+r10*.18)*(1-wr)/.88+rn*wr;
+    return {tid:t.id,s:Math.round(s*1000)/10,w:r.w||0,l:r.l||0,t:r.t||0,rd:rs-ra,r10:l10.length?`${l10.filter(x=>x[0]>0).length}-${l10.filter(x=>x[0]<0).length}`:'-',py:Math.round(py*1000)/1000}; });
+  rows.sort((a,b)=>b.s-a.s).forEach((r,i)=>{ r.rk=i+1; r.prev=prev[r.tid]??null; });
+  G.pwr={y:G.year,d:G.day,rows}; }
