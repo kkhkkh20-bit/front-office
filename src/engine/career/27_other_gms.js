@@ -116,7 +116,9 @@ function tradeGrade(tid,give,get,cash,pk){ const U=team(G.user); pk=pkNorm(pk); 
 function slotBase(tid,k){ const L=leagueSlots()[tid]; return k==='SP'?(L.SP.ps.length<5?30:Math.min(...L.SP.ps.map(spV))):k==='RP'?(L.RP.ps.length<4?30:Math.min(...L.RP.ps.map(penV))):L[k].v; }
 const slotFits=(p,k)=>(k==='SP'||k==='RP')?pSlot(p)===k:(!p.isP&&(p.pos===k||subsOf(p).includes(k)));
 /* o.swap: 맞트레이드. 서로 약한 자리를 상대의 남는 자원으로 메운다. 양쪽 모두 이득이라 웃돈(need)을 절반만 요구하고, 가치가 비슷한 선수끼리라 한쪽으로 전력이 쏠리지 않는다 */
-function aiTradeTry(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>t.y===G.year).forEach(t=>{ tc[t.a]=(tc[t.a]||0)+1; tc[t.b]=(tc[t.b]||0)+1; }); const teams=G.teams.filter(t=>t.id!==ME()&&(tc[t.id]||0)<5); const buyers=teams.filter(t=>teamCtx(t).contend); const A=aid!=null?teams.find(t=>t.id===aid):pick(buyers.length?buyers:teams); if(!A)return null;
+function aiTradeTry(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>t.y===G.year).forEach(t=>{ tc[t.a]=(tc[t.a]||0)+1; tc[t.b]=(tc[t.b]||0)+1; }); let teams=G.teams.filter(t=>t.id!==ME()&&(tc[t.id]||0)<5);
+  /* 맞트레이드는 전력 상위 3개 구단을 빼고 한다: 중하위 구단끼리 빈자리를 메워 격차가 벌어지지 않게 */
+  if(o.swap){ const top=new Set([...G.teams].sort((a,b)=>teamRating(b.id)-teamRating(a.id)).slice(0,3).map(t=>t.id)); teams=teams.filter(t=>!top.has(t.id)); } const buyers=teams.filter(t=>teamCtx(t).contend); const A=aid!=null?teams.find(t=>t.id===aid):pick(buyers.length?buyers:teams); if(!A)return null;
   const rk=slotRanks(A.id); const nd=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0]; if(!nd||nd.r<(o.swap?4:(gmHeat(A.id)>=.4?5:6)))return null;
   const k=nd.k; const base=slotBase(A.id,k); const bNeed={};
   if(o.swap)for(const B of teams){ if(B.id===A.id)continue; const rB=slotRanks(B.id); const w=PSLOTS.filter(x=>x!=='DH'&&x!==k&&rB[x].rank>=3).sort((a,b)=>rB[b].rank-rB[a].rank)[0]; if(w)bNeed[B.id]={k:w,base:slotBase(B.id,w)}; }
