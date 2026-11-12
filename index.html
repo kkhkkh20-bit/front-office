@@ -11380,7 +11380,7 @@ function makeLineup(tid,pool){
   const fitPen=(p,pos)=>{ if(pos==='DH')return p.pos==='C'?1:0; if(p.pos===pos)return 0; if(p.pos==='C')return 400; /* 포수는 포수·지명만(다른 자리는 대안이 아예 없을 때뿐). 40이면 방망이가 아주 좋은 포수가 코너 외야로 나갔다 */ const e=(pexpOf(p)[pos]||0)/100; const IF=['2B','SS','3B'], OF=['LF','CF','RF']; const cross=(IF.includes(p.pos)&&OF.includes(pos))||(OF.includes(p.pos)&&IF.includes(pos))||(p.pos==='1B'&&pos!=='DH'); const b=pos==='C'?40:pos==='1B'?3:cross?16:OF.includes(pos)?2:4; return e>=.5?Math.min(1,b):b-(b-1)*e/.5; }; /* 같은 무리(내야끼리·외야끼리) 이동은 쉽고, 내야↔외야는 경험 없이는 꺼린다 */
   const lean=teamLean(tid); const pb=p=>polBonus(tid,p,lean); const wD=mgrDefW(tid);
   const open=new Set(ORDER.filter(pos=>!ln[pos]));
-  const mf=wD/.38; const SC=new Map(); for(const p of bats){ const o=offV(p)*1.25, ex=promo(p)+pb(p)+rpB(tid,p,'B'); const m={}; for(const pos of ORDER)m[pos]=(pos==='DH'?o:o+(defAt(p,pos)-DAVG[pos])*DWR[pos]*mf)+ex-fitPen(p,pos); SC.set(p.id,m); }
+  const mf=wD/.38; const SC=new Map(); for(const p of bats){ const o=offV(p)*1.25, ex=promo(p)+pb(p)+rpB(tid,p,'B'); const m={}; for(const pos of ORDER)m[pos]=(pos==='DH'?o:o+(defAt(p,pos)-DAVG[pos])*DWR[pos]*mf)+ex-fitPen(p,pos)+(typeof posAskB==='function'?posAskB(tid,p,pos):0); /* 단장 포지션 기용 건의를 감독이 받아들이면 그 자리 쪽으로 */ SC.set(p.id,m); }
   while(open.size){ let bp=null,bq=null,bs=-1e9;
     for(const pos of open){ if(pos==='DH'&&open.size>1)continue; for(const p of bats){ if(used.has(p.id))continue; const s=SC.get(p.id)[pos]; if(s>bs){bs=s;bp=pos;bq=p;} } }
     if(!bq)break; ln[bp]=bq; used.add(bq.id); open.delete(bp); }
@@ -19693,7 +19693,22 @@ function useScore(m,gap){ const ego=m.interim?40:m.ego; return 4-gap-(ego-50)/10
 function mgrUseView(p){ const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 로테이션':k==='RP'?'필승조':'주전'; if(r&&promKept(p,r))return `${p.name}은(는) 지금 약속대로 ${roleNowTxt(p)}(으)로 쓰고 있습니다.`;
   const {c,gap}=useComp(p,k); return `${p.name} 말씀이군요. 지금은 ${roleNowTxt(p)}(으)로 쓰고 있습니다. ${c?`${role} 마지막 자리는 ${c.name}인데, ${gap>2?`${p.name}이(가) 아직 처집니다`:gap>=-2?'둘이 비슷합니다':`${p.name}이(가) 더 낫습니다`}.`:`${role} 자리에 여유가 있습니다.`}${r?` 계약 때 ${r.l} 약속이 있었던 건 압니다.`:''}`; }
 function useUnavailable(p){ if(!healthy(p)||isAway(p)||p.ys||p.joinY>G.year||p.hold||!psOk(p))return upWhy({...p,e1:false}); if(entryOn()&&!p.e1&&!canUp(p))return upWhy(p); return ''; }
+/* 포지션 기용 건의(커뮤니티 11-12 Derma: 3루도 되는 1루수를 감독이 1루에만 쓴다). 단장은 건의만 하고 감독이 받아들이면
+   그 감독이 있는 동안 이번 시즌 그 자리에 쓰는 쪽으로 기운다(라인업 가산 posAskB, 절대 지시는 아님: 그 자리 수비가 크게 처지면 여전히 안 쓴다).
+   판단: 그 자리 지금 주전과의 자리 점수(posScore) 차, 감독 고집·관계(useScore와 같은 식). 거절하면 관계 -1, 7일 뒤 다시 */
+function posAskOf(tid,p){ const x=G.posAsk&&G.posAsk[p.id]; if(!x||x.tid!==tid||x.y!==G.year||p.team!==tid)return null; const m=G.mgr[tid]; return m&&m.id===x.mid?x.k:null; }
+const posAskB=(tid,p,pos)=>posAskOf(tid,p)===pos?14:0;
+function mgrPosAsk(p,m,k){ const nm=POSK[k]||k; const me=`${p.name}을(를) ${nm}로도 써 주십시오. 그 자리 수비가 됩니다.`;
+  if(p.isP||!subsOf(p).includes(k))return {me,a:`${p.name}은(는) ${nm} 수비 경험이 부족합니다. 거기는 못 맡깁니다.`,sys:'그 자리 숙련도 50 이상인 자리만 건의할 수 있습니다'};
+  if(posAskOf(G.user,p)===k)return {me,a:'이미 그렇게 쓰기로 했습니다.',sys:''};
+  const no=G.useNo&&G.useNo[p.id]; if(no&&no.u>G.day&&no.mid===m.id)return {me,a:`며칠 전에 말씀드렸습니다. 당분간은 지금대로 가겠습니다.`,sys:`${dmd(no.u)}부터 다시 건의할 수 있습니다`};
+  const d=depth(G.user), at=d.ln&&d.ln[k]; const gap=at&&at.id!==p.id?Math.round(posScore(at,k)-posScore(p,k)):-3;
+  if(useScore(m,gap)<0){ m.rel=clamp(m.rel-1,0,100); (G.useNo=G.useNo||{})[p.id]={u:G.day+7,mid:m.id}; return {me,a:`${at?`${nm}는 ${at.name}이(가) 낫습니다.`:''} ${p.name}은(는) 지금 자리에서 쓰겠습니다.`,sys:'건의 거절 · 감독 관계 -1 · 7일 뒤 다시 건의할 수 있습니다'}; }
+  const cost=m.ego>=65&&!mplOn('listen'); if(cost)m.rel=clamp(m.rel-1,0,100);
+  (G.posAsk=G.posAsk||{})[p.id]={k,tid:G.user,mid:m.id,y:G.year,d:G.day}; p.mor=clamp((p.mor??60)+2,0,100);
+  return {me,a:`해 보겠습니다. ${nm}에 넣어 보고 수비가 버티면 계속 쓰겠습니다.`,sys:`수락: 이번 시즌 ${p.name}을(를) ${nm} 쪽으로 기용(감독이 바뀌면 다시 건의) · ${p.name} 기분 +2${cost?' · 감독 관계 -1':''}`}; }
 function mgrUseAsk(pid,c){ const p=G.players[pid], m=G.mgr[G.user]; if(!p||p.team!==G.user||G.unemp||!m)return {me:'',a:'...',sys:'건의할 수 없는 선수입니다.'}; mgrFix(m);
+  if(String(c).startsWith('pos:'))return mgrPosAsk(p,m,String(c).slice(4));
   const why=useUnavailable(p); if(why)return {me:'',a:'지금은 출전 기용을 약속할 수 없습니다.',sys:why};
   const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 로테이션':k==='RP'?'필승조':'주전'; const {c:cp,gap}=useComp(p,k);
   const me=c==='role'?`계약 때 약속한 ${r?r.l.replace(' 보장',''):role} 자리대로 ${p.name}을(를) 써 주십시오.`:c==='alt'?`${r?`${role}이 어렵다면 `:''}${p.name}에게 ${p.isP?'롱릴리프·스윙맨으로라도':'대타·선발 몇 경기로라도'} 출전 기회를 주십시오.`:`성적이 안 되면 감독님 판단을 존중하겠습니다. 다만 ${p.name} 사정은 알아 주십시오.`;
@@ -33499,7 +33514,7 @@ function meetTopics(M){ const t=team(G.user);
     return L; }
   if(M.k==='gm')return [['plan','앞으로의 운영 계획은?'],['trade','선수 거래에서 무엇을 봅니까?'],['check','양 구단 관계를 이야기합시다']];
   if(M.k==='mgr'){ if(M.sc)return mgrTalkChoices(M.sc).map((l,i)=>['sc:'+i,l]); const mm=G.mgr[G.user], done=mm&&mm.scn&&mm.scn.d===G.day; /* 장면 중에는 대답 2~3개만 */
-    if(M.use!=null){ const p=G.players[M.use], r=p&&rpLive(p); if(p){ const {c,gap}=useComp(p,useKind(p)); const vs=c?`마지막 자리 ${c.name}보다 ${gap>0?`${gap} 처짐`:gap<0?`${-gap} 앞섬`:'비슷함'}`:'자리에 여유'; return [...(r&&!rpromK(G.user,p)?[['uz:role',`계약 때 약속한 역할(${r.l.replace(' 보장','')})대로 써 달라고 건의`,vs]]:[]),['uz:alt',r?`대신 다른 기회(${p.isP?'롱릴리프·스윙맨':'대타·선발 몇 경기'})라도`:'출전 기회를 더 달라고 건의','30일 안에 출전 기회 · 감독이 받아들이기 쉬움'],['uz:respect','성적이 안 되면 감독님 판단을 존중하겠다','감독 관계 +1(시즌 한 번)'],['uz:back','다른 이야기를 하겠습니다']]; } }
+    if(M.use!=null){ const p=G.players[M.use], r=p&&rpLive(p); if(p){ const {c,gap}=useComp(p,useKind(p)); const vs=c?`마지막 자리 ${c.name}보다 ${gap>0?`${gap} 처짐`:gap<0?`${-gap} 앞섬`:'비슷함'}`:'자리에 여유'; return [...(r&&!rpromK(G.user,p)?[['uz:role',`계약 때 약속한 역할(${r.l.replace(' 보장','')})대로 써 달라고 건의`,vs]]:[]),['uz:alt',r?`대신 다른 기회(${p.isP?'롱릴리프·스윙맨':'대타·선발 몇 경기'})라도`:'출전 기회를 더 달라고 건의','30일 안에 출전 기회 · 감독이 받아들이기 쉬움'],...(!p.isP?subsOf(p).slice(0,3).map(k=>{ const at=depth(G.user).ln[k]; return ['uz:pos:'+k,`${POSK[k]||k}로도 써 달라고 건의`,at&&at.id!==p.id?`지금 ${POSK[k]||k} ${at.name}`:'그 자리 숙련도 '+(pexpOf(p)[k]||0)]; }):[]),['uz:respect','성적이 안 되면 감독님 판단을 존중하겠다','감독 관계 +1(시즌 한 번)'],['uz:back','다른 이야기를 하겠습니다']]; } }
     const UC=useCands(), ud=depth(G.user); /* 선수 기용 건의: 약속 위반 선수 먼저 */
     return [...(UC.length?UC.map(p=>['use:'+p.id,`${p.name} 기용 건의`,rpLive(p)&&!promKept(p,p.roleProm,ud)?`계약 약속 ${p.roleProm.l} · 지금 ${roleNowTxt(p,ud)}`:`지금 ${roleNowTxt(p,ud)} · 기분 ${moodLabel(p.mor??60)}`]):[['use','선수 기용 건의','출전·역할 불만인 선수가 없습니다',true]]),['talk','감독과 이야기 나누기',done?'오늘은 이미 나눴습니다':`${MTSTY[mgrTalkSty(mm)].l} · 하루 한 번`],['now','지금 팀 상황은 어떻습니까?'],['foreign','외국인은 어떤 선수가 필요합니까?'],['cand','시장에 나온 외국인 후보들 어떻게 보세요?'],['need','가장 급한 자리는 어디입니까?'],['young','눈여겨보는 젊은 선수 있습니까?'],['pitch','선발과 불펜은 어떻게 보고 있습니까?'],['bat','타선의 흐름은 어떻습니까?'],['defense','수비에서 챙길 부분은 무엇입니까?'],['run','도루와 추가 진루는 어떻게 가져갈까요?'],['workload','지친 선수와 휴식 계획을 봅시다'],['clubhouse','선수단 분위기는 어떻습니까?'],['plan','보강과 육성의 우선순위를 맞춰 봅시다']]; }
   const p=G.players[M.id]; return Object.entries(TALK).filter(([k])=>k!=='futreq'||(p&&!p.e1)).map(([k,l])=>[k,l,k==='ask'?'언제든 물어볼 수 있습니다':talkUsed(p,k)?'이번 주에는 했습니다':null,talkUsed(p,k)]); }
@@ -34986,7 +35001,8 @@ Object.assign(A,{
 const PATCH=[
   {id:'2026-11-12-goals',d:'11월 12일',t:'시즌 목표를 시범경기 전에 · 구단주와 목표 상의',items:[
     '구단주가 시즌 목표를 개막일이 아니라 시범경기 첫날에 제시합니다. 소식함 중요 메일로 옵니다.',
-    '개막 전까지 순위 목표를 한 번 상의할 수 있습니다. 한 계단 높여 제안하면 구단주 신뢰 +2, 낮춰 요청하면 구단주 신뢰·단장 명성에 따라 받아들이거나 거절합니다(구단주·목표 화면이나 목표 메일에서).']},
+    '개막 전까지 순위 목표를 한 번 상의할 수 있습니다. 한 계단 높여 제안하면 구단주 신뢰 +2, 낮춰 요청하면 구단주 신뢰·단장 명성에 따라 받아들이거나 거절합니다(구단주·목표 화면이나 목표 메일에서).',
+    '감독실 > 선수 기용 건의에서 야수를 다른 수비 자리(숙련도 50 이상)로 써 달라고 건의할 수 있습니다. 감독은 그 자리 주전과의 실력 차·고집·관계로 정하고, 받아들이면 이번 시즌 그 자리 쪽으로 기용합니다.']},
   {id:'2026-11-12-idb',d:'11월 12일',t:'저장 공간 확장',items:[
     '기본 저장 공간(보통 5MB 안팎)이 가득 차면 진행 중이 아닌 슬롯부터 브라우저의 보조 저장소(IndexedDB)로 자동으로 옮겨, 슬롯이 남아 있는데 "저장 공간 부족"으로 저장이 막히던 일이 없어집니다.',
     '공간이 다시 생기면 기본 저장 공간으로 돌아옵니다. 슬롯 목록·이어하기·삭제는 그대로 쓰면 됩니다.',
