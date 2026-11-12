@@ -48,7 +48,7 @@ function makeActor(t){const s=active,role=roleOf(t),o=cloneSkeleton(s.assets.pla
  o.traverse(n=>{if(n.userData.cb_group)n.visible=allowed.has(n.name);if(n.isMesh){n.castShadow=role==='batter'||role==='catcher'||/pit/.test(t.cls);n.receiveShadow=true;const paint=m=>{if(materials.has(m))return materials.get(m);const q=m.clone();if(q.name==='uniform_jersey')q.color.set(t.u?.S||'#eeeeee');if(['uniform_socks','cap','helmet','uniform_undershirt','piping','batting_glove'].includes(q.name))q.color.set(t.u?.H||t.col||'#273650');if(/jersey_decal|cap_logo|helmet_logo/.test(q.name)||/Teeth/.test(n.name))n.visible=false;materials.set(m,q);return q;};n.material=Array.isArray(n.material)?n.material.map(paint):paint(n.material);}});
  const group=new T.Group();group.add(o);s.scene.add(group);const a={key:t.k,id:t.id,role,pitcher:/pit/.test(t.cls),root:group,model:o,mixer:new T.AnimationMixer(o),materials:[...materials.values()],uniform:JSON.stringify(t.u),motion:'',move:null,clips:s.assets.player.animations,updatedAt:performance.now(),positionLabel:t.position||t.lab||''};
  if(role==='batter'){const grip=o.getObjectByName('Bat_Grip');if(grip){a.bat=s.assets.bat.scene.clone();grip.add(a.bat);}}
- if(a.pitcher){a.releaseGrip=o.getObjectByName('Ball_Grip');if(a.releaseGrip){a.heldBall=s.assets.ball.scene.clone();a.releaseGrip.add(a.heldBall);}}
+ if(a.pitcher){a.post=pitchMechanics;a.releaseGrip=o.getObjectByName('Ball_Grip');if(a.releaseGrip){a.heldBall=s.assets.ball.scene.clone();a.releaseGrip.add(a.heldBall);}}
  o.traverse(n=>{if(n.isBone&&/Head$/.test(n.name))a.head=n;if(n.isBone&&/LeftShoulder$/.test(n.name))a.shoulderL=n;if(n.isBone&&/RightShoulder$/.test(n.name))a.shoulderR=n;});a.gloveGrip=o.getObjectByName('Glove_Pocket');a.throwGrip=o.getObjectByName('Ball_Grip');makeLabel(s,a,t);
  a.zone=zoneOf(t);actorSide(a,t);pose(a,idle(a),true);return a;
 }
@@ -58,6 +58,37 @@ function makeActor(t){const s=active,role=roleOf(t),o=cloneSkeleton(s.assets.pla
 function zoneOf(t){return t.pt&&t.pt[1]<56?'of':'if';}
 function actorSide(a,t){a.left=a.role==='batter'?/lhb/.test(t.cls):/lhp/.test(t.cls)||t.u?.glove==='R';a.model.scale.x=a.left?-1:1;}
 function actorFacing(a){if(a.role==='batter')return a.left?Math.PI/2:-Math.PI/2;if(a.pitcher)return Math.PI;if(a.role==='catcher')return 0;return Math.atan2(-a.root.position.x,-a.root.position.z);}
+
+/* 투구 역학 보정(교본 docs/asset-research/2026-11-12-mechanics): 클립 자세 위에 매 프레임 덧붙인다.
+   - 디딤발 착지~공 놓기: 골반을 낮추고 두 다리를 2관절 IK로 원래 발 위치에 붙여 디딤 무릎을 굽힌다(착지 40~49°, 놓을 때 30~40°)
+   - 착지→놓기 사이 몸통을 앞(30~33°)·글러브 쪽(21~32°)으로 기울이고, 던지는 팔 벌림을 몸통 기준 약 90°로 낮춘다
+   계산은 모델 공간(좌투는 모델 좌우 반전이라 같은 식). 값은 measure로 잰 목표에 맞춘 것 */
+export const PITCH_MECH={kneeFC:45,kneeRel:35,fwd:28,lat:40,arm:10,stride:.07}; /* fwd·lat는 척추 세 마디에 나눠 주므로 골반→가슴 기울기는 그보다 작게 나온다(측정으로 맞춤) */
+const _q=new T.Quaternion(),_q2=new T.Quaternion(),_v=new T.Vector3(),_v2=new T.Vector3(),_m=new T.Matrix4(),AX={x:new T.Vector3(1,0,0),y:new T.Vector3(0,1,0),z:new T.Vector3(0,0,1)};
+const smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
+function boneByName(a,n){a.bones=a.bones||{};return a.bones[n]||(a.bones[n]=a.model.getObjectByName('mixamorig'+n));}
+function modelQ(a,b,out){out.identity();const chain=[];for(let n=b;n&&n!==a.model;n=n.parent)chain.push(n);for(let i=chain.length-1;i>=0;i--)out.multiply(chain[i].quaternion);return out;}
+function modelPos(a,b,out){a.model.updateMatrixWorld(true);b.getWorldPosition(out);return a.model.worldToLocal(out);}
+function rotModel(a,b,axis,deg){if(!deg)return;const P=modelQ(a,b.parent,_q2),r=_q.setFromAxisAngle(axis,deg*Math.PI/180);b.quaternion.premultiply(P.clone().invert().multiply(r).multiply(P));}
+function rotModelQ(a,b,r){const P=modelQ(a,b.parent,_q2);b.quaternion.premultiply(P.clone().invert().multiply(r).multiply(P));}
+function legIK(a,side,target){const up=boneByName(a,side+'UpLeg'),kn=boneByName(a,side+'Leg'),ft=boneByName(a,side+'Foot');if(!up||!kn||!ft)return;
+ const H=modelPos(a,up,new T.Vector3()),K=modelPos(a,kn,new T.Vector3()),F=modelPos(a,ft,new T.Vector3()),l1=H.distanceTo(K),l2=K.distanceTo(F),d=clamp(H.distanceTo(target),Math.abs(l1-l2)+1e-3,l1+l2-1e-3);
+ const cur=_v.copy(H).sub(K).angleTo(_v2.copy(F).sub(K)),want=Math.acos(clamp((l1*l1+l2*l2-d*d)/(2*l1*l2),-1,1)),n=new T.Vector3().crossVectors(_v.copy(H).sub(K),_v2.copy(F).sub(K));
+ if(n.lengthSq()<1e-8)n.set(1,0,0);n.normalize();rotModelQ(a,kn,new T.Quaternion().setFromAxisAngle(n,want-cur));
+ const F2=modelPos(a,ft,new T.Vector3());rotModelQ(a,up,new T.Quaternion().setFromUnitVectors(F2.sub(H).normalize(),target.clone().sub(H).normalize()));}
+function pitchMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||!/^pitch_(overhand|three_quarter|sidearm|submarine)_(windup|stretch)$/.test(a.motion))return;const e=clipEvents[a.motion];if(!e?.foot_plant)return;
+ const t=a.action.time,fc=e.foot_plant,rel=e.release,P=PITCH_MECH,
+  leg=t<fc?smooth((t-(fc-.1))/.1):t<rel+.25?1:1-smooth((t-rel-.25)/.4),knee=t<rel?P.kneeFC+(P.kneeRel-P.kneeFC)*smooth((t-fc)/(rel-fc)):P.kneeRel,
+  tilt=t<fc?0:t<rel?smooth((t-fc)/(rel-fc)):1-smooth((t-rel)/.3), /* 놓은 뒤는 클립 자체의 팔로스루 숙임이 이어받으므로 빨리 푼다(겹치면 머리가 무릎까지 숙여짐) */arm=t<fc?0:t<rel?smooth((t-fc)/(rel-fc)):t<rel+.12?1:1-smooth((t-rel-.12)/.3);
+ if(!leg&&!tilt&&!arm)return;const hips=boneByName(a,'Hips');if(!hips)return;
+ const feet=['Left','Right'].map(s=>{const f=boneByName(a,s+'Foot');return f?modelPos(a,f,new T.Vector3()):null;});
+ const sp=['Spine','Spine1','Spine2'].map(n=>boneByName(a,n));for(const b of sp)if(b){rotModel(a,b,AX.x,P.fwd*tilt/3);rotModel(a,b,AX.z,-P.lat*tilt/3);}
+ const ra=boneByName(a,'RightArm');if(ra)rotModel(a,ra,AX.z,P.arm*arm);
+ if(feet[0])feet[0].z+=P.stride*leg; /* 디딤발을 홈 쪽으로 조금 더(보폭 키의 77~85%) */
+ if(leg&&feet[0]){ /* 디딤 무릎이 목표 각도가 되도록 골반 높이를 계산해 낮춘다(올리지는 않음) */const up=boneByName(a,'LeftUpLeg'),kn=boneByName(a,'LeftLeg'),ft=boneByName(a,'LeftFoot'),H=modelPos(a,up,new T.Vector3()),K=modelPos(a,kn,new T.Vector3()),F=modelPos(a,ft,new T.Vector3()),l1=H.distanceTo(K),l2=K.distanceTo(F),d=Math.sqrt(l1*l1+l2*l2+2*l1*l2*Math.cos(knee*Math.PI/180)),hz=Math.hypot(H.x-feet[0].x,H.z-feet[0].z);
+  if(d>hz){const y=feet[0].y+Math.sqrt(d*d-hz*hz),drop=Math.max(0,H.y-y)*leg;hips.position.y-=drop;}}
+ if(leg)['Left','Right'].forEach((s,i)=>{if(feet[i])legIK(a,s,feet[i]);});
+}
 // Pitch clips already contain the sideways set, hip rotation and head tracking.
 // A fixed root aims their +Z delivery toward home; rotating it again twists the form.
 function poseWorld(a,now){if(a.pitcher&&a.motion.startsWith('pitch_'))a.root.rotation.y=Math.PI;}
@@ -168,7 +199,7 @@ function dispose(){const s=active;if(!s)return;active=null;pendingData=null;canc
 function viewPitcher(on=true){const s=active;if(!s?.ready)return;s.cameraMode=on?'pitcherSide':'pitch';setCamera(true);s.dirty=true;s.cameraFrames=1;}
 function viewBatter(on=true,angle='side'){const s=active;if(!s?.ready)return;s.batterView=angle;s.cameraMode=on?'batterSide':'pitch';setCamera(true);s.dirty=true;s.cameraFrames=1;}
 /* 점검용: 역할(batter/pitcher/catcher)의 선수를 클립의 정확한 시각 자세로 멈춘다(느린 그래픽에서도 프레임별 비교) */
-function posePreview(role,name,t){const s=active,a=[...(s?.actors.values()||[])].find(x=>role==='pitcher'?x.pitcher:x.role===role);if(!a)return null;const action=playPose(a,name,{freeze:true,fade:0});if(!action)return null;action.paused=false;action.time=Math.min(t,action.getClip().duration);a.mixer.update(0);action.paused=true;if(a.pitcher)a.root.rotation.y=Math.PI;s.dirty=true;return action.getClip().duration;}
+function posePreview(role,name,t){const s=active,a=[...(s?.actors.values()||[])].find(x=>role==='pitcher'?x.pitcher:x.role===role);if(!a)return null;const action=playPose(a,name,{freeze:true,fade:0});if(!action)return null;action.paused=false;action.time=Math.min(t,action.getClip().duration);a.mixer.update(0);a.post?.(a);action.paused=true;if(a.pitcher)a.root.rotation.y=Math.PI;s.dirty=true;return action.getClip().duration;}
 function viewBoard(on=true){const s=active;if(!s?.ready)return;s.cameraMode=on?'scoreboard':'pitch';setCamera(true);s.dirty=true;s.cameraFrames=1;}
 function batted(result,hold=0){const s=active;if(!s)return;s.nextBatted=result;s.followDelay=hold;s.receiver=null;s.thrower=null;s.landing=null;if(s.landingRing)s.landingRing.visible=false;if(s.landingLabel)s.landingLabel.hidden=true;}
 function trackRunner(key){if(active){active.followRunner=key;active.dirty=true;}}
