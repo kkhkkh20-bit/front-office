@@ -24,13 +24,16 @@ function wkPlayers(gs){ const rows=[], S={};
   rows.sort((a,b)=>b.sc-a.sc); const B=rows.filter(x=>!x.isP), P=rows.filter(x=>x.isP);
   const hot=[...B.slice(0,2),...P.slice(0,1)].filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc); const cold=[B[B.length-1],P[P.length-1]].filter(x=>x&&x.sc<0&&!hot.includes(x));
   return {hot,cold}; }
+/* 한 상대와의 시리즈 결과 문구(커뮤니티 11-12 무우야호): 3승 스윕 승·2승 위닝·1승 루징·0승 스윕 패. 2연전은 2승 위닝·1승 1패 반타작·2패 루징 */
+function seriesTag(G0){ if(!G0||G0.length<2)return ''; const op=g=>g.home===G.user?g.away:g.home; const o=op(G0[0]); if(!G0.every(g=>op(g)===o))return ''; const w=G0.filter(g=>g.res==='승').length, l=G0.filter(g=>g.res==='패').length, n=G0.length;
+  if(w===n&&n>=3)return '스윕 승, 위닝 시리즈!'; if(l===n&&n>=3)return '스윕 패, 루징 시리즈…'; if(w>l)return '위닝 시리즈!'; if(l>w)return '루징 시리즈…'; return '시리즈 균형'; }
 function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.length){ UI.wkres=null; return ''; }
   const w=gs.filter(x=>x.g.res==='승').length, l=gs.filter(x=>x.g.res==='패').length, t=gs.length-w-l;
   const st=(()=>{ try{ return standingsNow(); }catch(e){ return []; } })(); const ri=st.findIndex(x=>x.tid===G.user), rk=tieRank(st,G.user); const me=st[ri], top=st[0];
   const gb=me&&top&&rk>1?Math.max(0,((top.w-me.w)+(me.l-top.l))/2):0; /* 경기 수 차이로 순위와 경기 차가 엇갈려도 음수로 쓰지 않는다(검수 11-09l) */ const o2=st[ri?0:1]; const post=gs.some(x=>/차전/.test(x.g.kind||''));
   const {hot,cold}=wkPlayers(gs);
   const rkLine=post?'':R.rk0&&rk?(rk<R.rk0?`${R.rk0}위 → <b class="good">${rk}위</b>`:rk>R.rk0?`${R.rk0}위 → <b class="bad">${rk}위</b>`:`${rk}위 유지`):rk?`${rk}위`:'';
-  const title=gs.length===1?(w?'승리':l?'패배':'무승부'):w>l?'좋은 흐름':w<l?'아쉬운 결과':'반타작';
+  const ser=post?'':seriesTag(gs.map(x=>x.g)); const title=ser||(gs.length===1?(w?'승리':l?'패배':'무승부'):w>l?'좋은 흐름':w<l?'아쉬운 결과':'반타작');
   const row=({g,i})=>{ const home=g.home===G.user; const op=home?g.away:g.home; const ms=home?g.hs:g.as, os=home?g.as:g.hs; const k=gmKey(g);
     return `<div class="wk-g ${g.res==='승'?'w':g.res==='패'?'l':''}">
       <div class="wk-top"><span class="wk-d">${dsh(g.day)} ${WD[dobj(g.day).w]}${g.kind?` · ${esc(g.kind)}`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span>${badge(op,22)}<b class="wk-op">${home?'vs':'@'} ${esc(tname(op))}</b><span class="num wk-sc">${ms} : ${os}</span><button class="btn small" data-a="openGame" data-v="${i}">박스스코어</button></div>
