@@ -74,9 +74,10 @@ function modelQ(a,b,out){out.identity();const chain=[];for(let n=b;n&&n!==a.mode
 function modelPos(a,b,out){a.model.updateMatrixWorld(true);b.getWorldPosition(out);return a.model.worldToLocal(out);}
 function rotModel(a,b,axis,deg){if(!deg)return;const P=modelQ(a,b.parent,_q2),r=_q.setFromAxisAngle(axis,deg*Math.PI/180);b.quaternion.premultiply(P.clone().invert().multiply(r).multiply(P));}
 function rotModelQ(a,b,r){const P=modelQ(a,b.parent,_q2);b.quaternion.premultiply(P.clone().invert().multiply(r).multiply(P));}
-function legIK(a,side,target){const up=boneByName(a,side+'UpLeg'),kn=boneByName(a,side+'Leg'),ft=boneByName(a,side+'Foot');if(!up||!kn||!ft)return;
+function legIK(a,side,target){limbIK(a,[side+'UpLeg',side+'Leg',side+'Foot'],target);}
+function limbIK(a,names,target,minIn=0){const [up,kn,ft]=names.map(n=>boneByName(a,n));if(!up||!kn||!ft)return;
  const H=modelPos(a,up,new T.Vector3()),K=modelPos(a,kn,new T.Vector3()),F=modelPos(a,ft,new T.Vector3()),l1=H.distanceTo(K),l2=K.distanceTo(F),d=clamp(H.distanceTo(target),Math.abs(l1-l2)+1e-3,l1+l2-1e-3);
- const cur=_v.copy(H).sub(K).angleTo(_v2.copy(F).sub(K)),want=Math.acos(clamp((l1*l1+l2*l2-d*d)/(2*l1*l2),-1,1)),n=new T.Vector3().crossVectors(_v.copy(H).sub(K),_v2.copy(F).sub(K));
+ const cur=_v.copy(H).sub(K).angleTo(_v2.copy(F).sub(K)),want=Math.max(minIn,Math.acos(clamp((l1*l1+l2*l2-d*d)/(2*l1*l2),-1,1))),n=new T.Vector3().crossVectors(_v.copy(H).sub(K),_v2.copy(F).sub(K));
  if(n.lengthSq()<1e-8)n.set(1,0,0);n.normalize();rotModelQ(a,kn,new T.Quaternion().setFromAxisAngle(n,want-cur));
  const F2=modelPos(a,ft,new T.Vector3());rotModelQ(a,up,new T.Quaternion().setFromUnitVectors(F2.sub(H).normalize(),target.clone().sub(H).normalize()));}
 
@@ -119,8 +120,21 @@ function pitchMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||!/^pitch_(ov
 }
 
 /* 타격 역학 보정(교본: 앞발 착지→임팩트 약 211ms, 앞무릎을 펴며 버팀, 머리 고정). 클립 자세 위에 매 프레임 덧붙인다 */
+/* 사람 관절 가동범위: 팔꿈치는 135°까지만 굽힌다(끼인각 45° 이상) */
+const ELBOW_MIN_IN=45*Math.PI/180,WRIST_MIN=30*Math.PI/180,WRIST_MAX=125*Math.PI/180;
+/* 배트가 몸통·머리·어깨·허벅지를 뚫지 않게: 몸을 캡슐로 보고, 겹치면 손잡이를 축으로 배트를 몸 밖으로 민다 */
+function segClosest(P,A,B,out){const d=_v.copy(B).sub(A),f=clamp(_v2.copy(P).sub(A).dot(d)/Math.max(1e-9,d.lengthSq()),0,1);return out.copy(A).addScaledVector(d,f);}
+function batBodyClear(a,hand){if(!a.bat||!hand)return;const P=n=>{const b=boneByName(a,n);return b?modelPos(a,b,new T.Vector3()):null;};
+ const ls=P('LeftArm'),rs=P('RightArm');if(!ls||!rs)return;const k=ls.distanceTo(rs)/.33,caps=[['Hips','Spine2',.15],['Spine2','Neck',.16],['Neck','Head',.14],['LeftArm','RightArm',.08],['LeftUpLeg','LeftLeg',.09],['RightUpLeg','RightLeg',.09],['LeftArm','LeftForeArm',.055],['RightArm','RightForeArm',.055]].map(([x,y,r])=>[P(x),P(y),(r+.035)*k]).filter(c=>c[0]&&c[1]);
+ if(!a.batLen){const bb=new T.Box3().setFromObject(a.bat),g=a.bat.getWorldPosition(new T.Vector3());a.batLen=bb.getCenter(new T.Vector3()).sub(g).length()*2/a.model.getWorldScale(new T.Vector3()).x;}
+ const Q=new T.Vector3(),S=new T.Vector3(),fa=boneByName(a,'RightForeArm');for(let it=0;it<12;it++){
+  /* 손목 가동범위: 배트와 아래팔 사이 각은 30~125° 안에서만 */
+  if(fa){const fd=modelPos(a,hand,new T.Vector3()).sub(modelPos(a,fa,new T.Vector3())).normalize(),bd=batDir(a),an=bd.angleTo(fd),lim=clamp(an,WRIST_MIN,WRIST_MAX);if(Math.abs(lim-an)>1e-3){const ax=new T.Vector3().crossVectors(fd,bd);if(ax.lengthSq()>1e-9){ax.normalize();rotModelQ(a,hand,new T.Quaternion().setFromAxisAngle(ax,lim-an));}}}
+  const g=modelPos(a,a.bat,new T.Vector3()),dir=batDir(a);let worst=0,n=null,lp=0;
+  for(let i=1;i<=10;i++){const l=.14*k+(a.batLen-.14*k)*i/10;S.copy(g).addScaledVector(dir,l);for(const [A,B,r] of caps){segClosest(S,A,B,Q);const dd=S.distanceTo(Q);if(r-dd>worst){worst=r-dd;n=S.clone().sub(Q).normalize();lp=l;}}}
+  if(!n)return;const nd=dir.clone().multiplyScalar(lp).addScaledVector(n,worst+.01*k).normalize();rotModelQ(a,hand,new T.Quaternion().setFromUnitVectors(dir,nd));}}
 function batDir(a){if(!a.batAxis){const bb=new T.Box3().setFromObject(a.bat),c=bb.getCenter(new T.Vector3());a.batAxis=a.bat.worldToLocal(c).normalize();}const g=modelPos(a,a.bat,new T.Vector3()),tip=a.model.worldToLocal(a.bat.localToWorld(a.batAxis.clone()));return tip.sub(g).normalize();}
-export const SWING_MECH={kneeFD:30,kneeContact:12,kneeAfter:6,drift:.4,kick:.22,gather:.12,kickPeak:.5,hipLead:16,release:.06}; /* kick: 레그킥 높이(m), gather: 포수 쪽으로 당기기(m), hipLead: 착지 뒤 골반이 어깨보다 먼저 더 도는 각도(°) */
+export const SWING_MECH={kneeFD:30,kneeContact:12,kneeAfter:6,drift:.4,kick:.22,gather:.12,kickPeak:.5,hipLead:16,release:.06,finishStart:.06,finishLen:.25,finishBat:.34,finishHandUp:.2}; /* kick: 레그킥 높이(m), gather: 포수 쪽으로 당기기(m), hipLead: 착지 뒤 골반이 어깨보다 먼저 더 도는 각도(°) */
 function swingMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||a.motion!=='swing')return;const e=clipEvents.swing;if(!e?.contact)return;
  const t=a.action.time,c=e.contact,fd=e.foot_down??c-.211,P=SWING_MECH,w=smooth((t-(fd-.06))/.06),k0=.22,kick=t>k0&&t<fd?Math.sin(Math.PI*(t-k0)/(fd-k0)):0;if(!w&&!kick)return;
  const hips=boneByName(a,'Hips');if(!hips)return;const feet=['Left','Right'].map(s=>{const f=boneByName(a,s+'Foot');return f?modelPos(a,f,new T.Vector3()):null;});
@@ -134,6 +148,14 @@ function swingMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||a.motion!=='
  /* 배트 늦게 따라오기(사용자 11-12): 착지 순간 배트 방향(뒤로 눕힌 상태)을 잡아 두어 골반·몸통이 도는 동안 배트가 약 90° 뒤에 남고, 임팩트 0.06초 전부터 0.05초 사이에 풀려 한 번에 돈다 */
  const hand=boneByName(a,'RightHand');if(a.bat&&hand&&t>=fd){const bd=batDir(a);if(a._sbAction!==a.action||a._sbT==null||t<a._sbT){a._sbDir=bd.clone();a._sbAction=a.action;}a._sbT=t;
   const wl=smooth((t-fd)/.05)*(1-smooth((t-(c-P.release))/(P.release-.01)));if(wl>0)rotModelQ(a,hand,new T.Quaternion().setFromUnitVectors(bd,bd.clone().lerp(a._sbDir,wl).normalize()));}
+ /* 풀스윙 마무리(사용자 11-12 참고 사진): 두 손은 앞어깨 위 귀 높이로 모이고, 배트는 앞으로 뻗은 뒤 머리 위를 지나 머리 뒤→등 위로 비스듬히 감긴다.
+    방향은 실제 어깨선으로 만든 몸 좌표(앞=가슴, 리드=앞어깨 쪽, 위)로 정해 몸을 지나지 않는 길로만 움직인다 */
+ const fs=t-c-P.finishStart,lsB=boneByName(a,'LeftArm'),rsB=boneByName(a,'RightArm');if(fs>0&&lsB&&rsB){const LS=modelPos(a,lsB,new T.Vector3()),RS=modelPos(a,rsB,new T.Vector3()),k=LS.distanceTo(RS)/.33,up=new T.Vector3(0,1,0),lead=LS.clone().sub(RS).setY(0).normalize(),fwd=new T.Vector3().crossVectors(lead,up).normalize(),V=(l,u,f)=>lead.clone().multiplyScalar(l).addScaledVector(up,u).addScaledVector(fwd,f).normalize();
+  const wf=smooth(fs/P.finishLen),Ht=LS.clone().addScaledVector(up,P.finishHandUp*k).addScaledVector(fwd,.12*k).addScaledVector(lead,-.06*k);
+  for(const side of ['Right','Left']){const H0=modelPos(a,boneByName(a,side+'Hand'),new T.Vector3());limbIK(a,[side+'Arm',side+'ForeArm',side+'Hand'],H0.lerp(Ht,wf),ELBOW_MIN_IN);}
+  if(a.bat&&hand){const bd=batDir(a),sv=clamp(fs/P.finishBat,0,1),U=V(.15,.9,-.4),F=V(-.45,-.42,-.79),sl=(A,B,f)=>A.clone().applyQuaternion(new T.Quaternion().slerp(new T.Quaternion().setFromUnitVectors(A,B),f)),want=sv<.45?sl(bd,U,smooth(sv/.45)):sl(U,F,smooth((sv-.45)/.55));
+   rotModelQ(a,hand,new T.Quaternion().setFromUnitVectors(bd,want));}}
+ batBodyClear(a,boneByName(a,'RightHand'));
  /* 시선: 착지부터 임팩트 지점을 보고, 친 뒤 0.2초까지 그 자리를 본다 */
  const wh=t<fd?0:t<c?smooth((t-fd)/(c-fd)):t<c+.2?1:1-smooth((t-c-.2)/.3);if(wh>0){const tgt=a.model.worldToLocal(new T.Vector3(0,.95,.35));for(const [n,share] of [['Neck',.5],['Head',1]]){const b=boneByName(a,n),hd=boneByName(a,'Head');if(!b||!hd)continue;const F=new T.Vector3(0,0,1).applyQuaternion(modelQ(a,hd,new T.Quaternion())).normalize(),D=tgt.clone().sub(modelPos(a,hd,new T.Vector3())).normalize();rotModelQ(a,b,new T.Quaternion().slerpQuaternions(new T.Quaternion(),new T.Quaternion().setFromUnitVectors(F,F.clone().lerp(D,wh).normalize()),share));}}}
 // Pitch clips already contain the sideways set, hip rotation and head tracking.
