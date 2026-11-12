@@ -119,7 +119,8 @@ function pitchMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||!/^pitch_(ov
 }
 
 /* 타격 역학 보정(교본: 앞발 착지→임팩트 약 211ms, 앞무릎을 펴며 버팀, 머리 고정). 클립 자세 위에 매 프레임 덧붙인다 */
-export const SWING_MECH={kneeFD:30,kneeContact:12,kneeAfter:6,drift:.4,kick:.22,gather:.12,kickPeak:.5,hipLead:16}; /* kick: 레그킥 높이(m), gather: 포수 쪽으로 당기기(m), hipLead: 착지 뒤 골반이 어깨보다 먼저 더 도는 각도(°) */
+function batDir(a){if(!a.batAxis){const bb=new T.Box3().setFromObject(a.bat),c=bb.getCenter(new T.Vector3());a.batAxis=a.bat.worldToLocal(c).normalize();}const g=modelPos(a,a.bat,new T.Vector3()),tip=a.model.worldToLocal(a.bat.localToWorld(a.batAxis.clone()));return tip.sub(g).normalize();}
+export const SWING_MECH={kneeFD:30,kneeContact:12,kneeAfter:6,drift:.4,kick:.22,gather:.12,kickPeak:.5,hipLead:16,release:.06}; /* kick: 레그킥 높이(m), gather: 포수 쪽으로 당기기(m), hipLead: 착지 뒤 골반이 어깨보다 먼저 더 도는 각도(°) */
 function swingMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||a.motion!=='swing')return;const e=clipEvents.swing;if(!e?.contact)return;
  const t=a.action.time,c=e.contact,fd=e.foot_down??c-.211,P=SWING_MECH,w=smooth((t-(fd-.06))/.06),k0=.22,kick=t>k0&&t<fd?Math.sin(Math.PI*(t-k0)/(fd-k0)):0;if(!w&&!kick)return;
  const hips=boneByName(a,'Hips');if(!hips)return;const feet=['Left','Right'].map(s=>{const f=boneByName(a,s+'Foot');return f?modelPos(a,f,new T.Vector3()):null;});
@@ -129,7 +130,12 @@ function swingMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||a.motion!=='
  const knee=t<c?P.kneeFD+(P.kneeContact-P.kneeFD)*smooth((t-fd)/(c-fd)):P.kneeContact+(P.kneeAfter-P.kneeContact)*smooth((t-c)/.15);
  if(feet[0]){const up=boneByName(a,'LeftUpLeg'),kn=boneByName(a,'LeftLeg'),ft=boneByName(a,'LeftFoot'),H=modelPos(a,up,new T.Vector3()),K=modelPos(a,kn,new T.Vector3()),F=modelPos(a,ft,new T.Vector3()),l1=H.distanceTo(K),l2=K.distanceTo(F),d=Math.sqrt(l1*l1+l2*l2+2*l1*l2*Math.cos(knee*Math.PI/180)),hz=Math.hypot(H.x-feet[0].x,H.z-feet[0].z);
   if(d>hz){const y=feet[0].y+Math.sqrt(d*d-hz*hz);hips.position.y-=(H.y-y)*w;}}
- ['Left','Right'].forEach((s,i)=>{if(feet[i])legIK(a,s,feet[i]);});}
+ ['Left','Right'].forEach((s,i)=>{if(feet[i])legIK(a,s,feet[i]);});
+ /* 배트 늦게 따라오기(사용자 11-12): 착지 순간 배트 방향(뒤로 눕힌 상태)을 잡아 두어 골반·몸통이 도는 동안 배트가 약 90° 뒤에 남고, 임팩트 0.06초 전부터 0.05초 사이에 풀려 한 번에 돈다 */
+ const hand=boneByName(a,'RightHand');if(a.bat&&hand&&t>=fd){const bd=batDir(a);if(a._sbAction!==a.action||a._sbT==null||t<a._sbT){a._sbDir=bd.clone();a._sbAction=a.action;}a._sbT=t;
+  const wl=smooth((t-fd)/.05)*(1-smooth((t-(c-P.release))/(P.release-.01)));if(wl>0)rotModelQ(a,hand,new T.Quaternion().setFromUnitVectors(bd,bd.clone().lerp(a._sbDir,wl).normalize()));}
+ /* 시선: 착지부터 임팩트 지점을 보고, 친 뒤 0.2초까지 그 자리를 본다 */
+ const wh=t<fd?0:t<c?smooth((t-fd)/(c-fd)):t<c+.2?1:1-smooth((t-c-.2)/.3);if(wh>0){const tgt=a.model.worldToLocal(new T.Vector3(0,.95,.35));for(const [n,share] of [['Neck',.5],['Head',1]]){const b=boneByName(a,n),hd=boneByName(a,'Head');if(!b||!hd)continue;const F=new T.Vector3(0,0,1).applyQuaternion(modelQ(a,hd,new T.Quaternion())).normalize(),D=tgt.clone().sub(modelPos(a,hd,new T.Vector3())).normalize();rotModelQ(a,b,new T.Quaternion().slerpQuaternions(new T.Quaternion(),new T.Quaternion().setFromUnitVectors(F,F.clone().lerp(D,wh).normalize()),share));}}}
 // Pitch clips already contain the sideways set, hip rotation and head tracking.
 // A fixed root aims their +Z delivery toward home; rotating it again twists the form.
 function poseWorld(a,now){if(a.pitcher&&a.motion.startsWith('pitch_'))a.root.rotation.y=Math.PI;}
