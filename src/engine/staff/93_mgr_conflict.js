@@ -55,7 +55,7 @@ function mcfUse(p){ const h=seasonTotal(p,G.year,'1군'); return h?(p.isP?(h.out
 /* ---------- 2. 안건이 있을 때만 여는 주간 회의 ---------- */
 /* 2군에서 올라가고 싶어 하는 선수: 선수 쪽 기능(playerWantsUp)이 있으면 그것을, 없으면 2군 호성적·1군 자리 막힘으로 본다 */
 function mcfWantsUp(){ const L=playersOf(G.user).filter(p=>!p.e1&&(typeof canUp!=='function'||canUp(p)));
-  if(typeof playerWantsUp==='function')return L.filter(p=>{ try{ return playerWantsUp(p); }catch(e){ return false; } });
+  if(typeof playerWantsUp==='function'){ let W=[]; try{ W=(playerWantsUp(G.user)||[]).map(x=>x&&x.p).filter(Boolean); }catch(e){} const ids=new Set(W.map(p=>p.id)); return L.filter(p=>ids.has(p.id)&&seasonTotal(p,G.year,'퓨처스')); } /* 선수 쪽 훅: playerWantsUp(tid) → [{p,t,gap,why,weeks,heat}] */
   return L.filter(p=>{ const h=seasonTotal(p,G.year,'퓨처스'); return h&&(p.isP?h.outs>=60&&pRate(h).era<=3.0:h.pa>=60&&bRate(h).ops>=.85); }); }
 function mcfAgenda(){ const m=G.mgr[G.user]; const S=mcf(); const X=mgrSit(); const d=depth(G.user); const A=[]; const nm=`${m.name} 감독`; mgrAttr(m);
   /* 주전 부진 */ { const c=X.cold&&X.cold[0]; if(c&&c.h.pa>=80&&bRate(c.h).ops<.6){ const p=c.p, ops=bRate(c.h).ops; const keep=p.age>=30||m.ego>=60; A.push({k:'slump:'+p.id,sc:(.64-ops)*25+1,pid:p.id,t:`${p.name} 부진(OPS ${fmt3(ops)}, ${c.h.pa}타석)`,
