@@ -1,5 +1,10 @@
 /* ---------- 선수 카드와 경기 기록 ---------- */
-function statTable(p){
+function statTable(p){ return statTable0(p)+psTable(p); }
+/* 포스트시즌 기록(모든 구단, 2026-11-12 업데이트 이후): 정규시즌 표와 따로 */
+function psTable(p){ const Y=p.psY; if(!Y)return ''; const ys=Object.keys(Y).map(Number).sort((a,b)=>b-a); if(!ys.length)return ''; const tot={g:0}; for(const y of ys)for(const k in Y[y])if(typeof Y[y][k]==='number')tot[k]=(tot[k]||0)+Y[y][k];
+  const row=(l,o,t)=>p.isP?`<tr><td>${l}</td><td>${t}</td><td>${o.g}</td><td>${ipStr(o.outs||0)}</td><td>${o.w||0}-${o.l||0}${o.sv?`-${o.sv}`:''}</td><td class="key">${o.outs?((o.er||0)*27/o.outs).toFixed(2):'-'}</td><td>${o.so||0}</td></tr>`:`<tr><td>${l}</td><td>${t}</td><td>${o.g}</td><td>${o.pa||0}</td><td>${o.ab?((o.h||0)/o.ab).toFixed(3).replace(/^0/,''):'-'}</td><td>${o.hr||0}</td><td>${o.rbi||0}</td><td class="key">${(()=>{ const ob=((o.h||0)+(o.bb||0)+(o.hbp||0))/Math.max(1,(o.ab||0)+(o.bb||0)+(o.hbp||0)), sl=o.ab?((o.h||0)+(o.d||0)+2*(o.tr||0)+3*(o.hr||0))/o.ab:0; return (ob+sl).toFixed(3).replace(/^0/,''); })()}</td></tr>`;
+  return `<div class="eyebrow" style="margin-top:10px">포스트시즌</div><table><thead><tr><th>시즌</th><th>구단</th><th>경기</th>${p.isP?'<th>이닝</th><th>승-패-세</th><th class="key">ERA</th><th>탈삼진</th>':'<th>타석</th><th>타율</th><th>홈런</th><th>타점</th><th class="key">OPS</th>'}</tr></thead><tbody>${ys.length>1?row('통산',tot,''):''}${ys.map(y=>row(y,Y[y],Y[y].t!=null&&G.teams[Y[y].t]?esc(tshort(Y[y].t)):'')).join('')}</tbody></table>`; }
+function statTable0(p){
   const rows=[...p.hist].sort((a,b)=>b.y-a.y||(a.lvl<b.lvl?-1:1));
   const pre=p.prev?[Object.assign({y:G.year-1,pre:p.prev.lvl},p.prev)]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
   const one=p.hist.filter(h=>h.lvl==='1군'); let tot=null; if(one.length>1){ tot=Object.assign({},p.isP?ZP:ZB,{y:'통산',tot:true,war:sum(one.map(h=>wOf(h,p)))}); for(const h of one)addTo(tot,h); tot.y='통산'; }
@@ -70,7 +75,7 @@ function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R)
 /* 이동 구간 추세(최근 100타석·상대 100타자 창을 옮기며): 우리 선수만 경기별 기록을 보관 */
 /* 최근 W타석: 마지막에 걸친 경기는 W에 맞게 비율로 잘라 더한다(경기 통째로 더하면 102타석이 됐다). 올해 로그만(검수 11-06) */
 function rollSeries(p,W){ const G0=p.gl&&p.gl.y===G.year?p.gl.g||[]:[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j], f=g[1]>0?Math.min(1,(W-n)/g[1]):1; n+=g[1]*f; for(let k=0;k<8;k++)a[k]+=(g[k+1]||0)*f; } if(n<W-1e-9)continue; out.push({i,day:G0[i][0],a}); } return out; }
-function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSeries(p,W); const tot=sum(((p.gl&&p.gl.y===G.year&&p.gl.g)||[]).map(g=>g[1]));
+function rollCard(p){ if(p.team==null)return ''; /* 경기별 기록은 모든 구단 선수에게 남는다(사용자 11-12) */ const W=100; const L=rollSeries(p,W); const tot=sum(((p.gl&&p.gl.y===G.year&&p.gl.g)||[]).map(g=>g[1]));
   const st=seasonTotal(p,G.year,'1군'), sAll=st?(p.isP?(st.bf||0):(st.pa||0)):0, u=p.isP?'명':'타석'; const part=sAll>tot; /* 경기별 기록은 우리 구단에서 뛴 경기만 보관한다(이적 전 경기는 시즌 합계에만) */
   const scope=part?`우리 구단에서 모은 경기별 기록 ${tot}${u}(이번 시즌 전체 ${sAll}${u} 중 이적 전 기록은 경기별로 없음)`:`이번 시즌 ${tot}${u}`;
   if(L.length<2)return `<p class="small muted">이동 구간 추세: ${scope}. ${W}${u}부터 추세를 표시합니다.</p>`;
