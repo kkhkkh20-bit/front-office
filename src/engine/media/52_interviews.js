@@ -6,7 +6,7 @@
 const REPORTERS=['김도윤','박서진','이하람','정우성','최가은','한지후','윤세라','오태민'];
 function ivFx(fan,press,o){ return Object.assign({fan,press},o||{}); }
 /* 질문 묶음: 상황별 3문항. tone은 화면 표시용 */
-function ivBuild(k,d){ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.name:''; const m=G.mgr[G.user]; const mn=m&&!m.interim?m.name+' 감독':'감독';
+function ivBuild(k,d){ if(k==='pdrama')return pdIvQs(d); /* 선수 갈등 질문(29b_player_drama) */ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.name:''; const m=G.mgr[G.user]; const mn=m&&!m.interim?m.name+' 감독':'감독';
   const goal=[`올 시즌 목표를 말씀해 주시죠.`,[
     ['자신감','"우승에 도전합니다. 그만한 전력을 만들었습니다."',ivFx(3,1,{prom:'champ'})],
     ['자신감','"가을야구는 반드시 갑니다."',ivFx(2,1,{prom:'ps'})],
