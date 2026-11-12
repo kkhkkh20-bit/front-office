@@ -21,7 +21,7 @@ function newSalary(p){
      현재 연봉 대비 최소 인상률: WAR 2 +4%, 3 +12%, 4 +20%, 5 이상 +28~35%. WAR 4 이상은 인상 상한을 1.3배에서 1.4배로 */
     const wy=(G.contract&&G.contract.y)??(period()==='pre'?G.year-1:G.year); let w=0; try{ const h=seasonTotal(p,wy,'1군'); w=h?warOf(h,p):0; }catch(e){}
     const up=Math.max(p.sal,Math.min(p.sal*(w>=4?1.4:1.3),200*USD)), fl=w>=1.5?p.sal*(1+clamp((w-1.5)*.08,0,.35)):0;
-    return round5(clamp(Math.max(700+(base-46)*70,Math.min(fl,up)),p.sal*.7,up)); }
+    return round5(clamp(Math.max((700+(base-46)*70)*fEcoK(),Math.min(fl,up)),p.sal*.7,up)); }
   /* FA 전에는 보류권 때문에 시장가보다 훨씬 낮다(NONFA_F). 실제 KBO: 3년차 필승조 평균자책점 1점대 → 1억2천, 첫 주전 시즌 → 1억 안팎,
      4년차 MVP급 → 5억이 최고 기록. 연차별 상한(PRE_CAP)은 그 최고 기록 수준이다 */
   /* FA 자격이 있어도 신청하지 않고 남은 선수는 여전히 보류 선수다: 인상 50% 이내, 7억 상한 */

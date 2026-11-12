@@ -11,7 +11,7 @@ const FACI={
   fut:{l:'2군 구장',lv:['낡은 공용 구장','천연잔디 교체','조명·불펜·라커룸 개선','2군 전용 구장'],c:[0,2000,5000,10000],days:[0,150,210,300],up:[0,50,100,180],d:'2군 경기 환경입니다. 2군에서 뛰는 시간이 성장에 더 많이 인정되고 2군 부상이 줄어듭니다.'},
   dorm:{l:'선수 숙소·식당',lv:['없음','기숙사','기숙사·영양 식당','선수촌'],c:[0,1000,2500,5000],days:[0,120,180,240],up:[0,30,60,100],d:'젊은 선수의 생활과 영양을 관리합니다. 23세 이하 선수 성장과 기분이 좋아집니다.'}};
 const FAC_MAX=6;
-const facImpact=lv=>lv<=3?lv:3+(lv-3)*.35;
+const facImpact=lv=>lv<=3?lv:3+(lv-3)*.2; /* 4~6단계는 한 단계 .2(사용자 피드백 11-12: 시설만 올려도 몇 년 안에 우승권이 되던 것. 예전 .35) */
 for(const F of Object.values(FACI)){const c=F.c[3],days=F.days[3],up=F.up[3];F.lv.push(F.l+' 전문화',F.l+' 통합 캠퍼스',F.l+' 선도 연구센터');for(let lv=4;lv<=FAC_MAX;lv++){F.c.push(Math.round(c*Math.pow(1.7,lv-3)/100)*100);F.days.push(days+(lv-3)*90);F.up.push(Math.round(up*Math.pow(1.45,lv-3)));}}
 const FACK=Object.keys(FACI);
 /* 구단 버스: 원정 경기 피로. 다른 구단은 우등 버스 기준 */
@@ -33,8 +33,8 @@ function facEff(p){ if(p.team==null)return FAC[2]; const mine=p.team===G.user; c
   if(!mine){ const av=sum(FACK.map(fo))/FACK.length, c=1+av*4/3;
     const g=.82+.06*c+(young?(fo('dorm')-av)*.015:0)+(futP?(fo('fut')-av)*.02:0), d=1.15-.05*c-(fo('weight')-av)*.01;
     return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
-  const g=.94+fo('indoor')*.012+fo('lab')*.015*(1+anaPow('trk')*.08)+(young?fo('dorm')*.015:0)+(futP?fo('fut')*.02:0);
-  const d=1.05-fo('weight')*.03-fo('rehab')*.015;
+  const g=.94+fo('indoor')*.01+fo('lab')*.012*(1+anaPow('trk')*.08)+(young?fo('dorm')*.012:0)+(futP?fo('fut')*.016:0); /* 전부 최고 단계여도 성장 배수 약 1.12~1.13(예전 1.19 안팎): 예전 종합 5단계 시설(1.12)과 같은 천장 */
+  const d=1.05-fo('weight')*.025-fo('rehab')*.012;
   return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
 function buildFacItem(k){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; if(lv>=FAC_MAX)return '이미 최고 단계입니다.'; if(G.fac.bld[k])return '이미 공사 중입니다.'; if(Object.keys(G.fac.bld).length>=2)return '공사는 동시에 2곳까지만 할 수 있습니다.';
   const c=F.c[lv+1]; const t=team(G.user); const free=spendable(G.user); /* 트레이드로 약정한 현금은 이미 쓴 돈(검수 11-09v), 모기업 구단은 구단주 지원 여유까지(피드백 11-09j) */ if(free<c)return `쓸 수 있는 돈이 부족합니다. 공사비 ${money(c)}이 필요합니다(${spendTxt()}).`;

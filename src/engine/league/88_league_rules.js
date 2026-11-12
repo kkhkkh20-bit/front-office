@@ -7,7 +7,7 @@
 function lgrInit(){ return G.lgr=G.lgr||{y:{},hist:[],hr0:null}; }
 function lgRuleOf(y){ const L=lgrInit(); let r=null; for(const k in L.y)if(+k<=y&&(r==null||+k>r))r=+k; return r==null?{ball:1,zone:0,fcap:1}:L.y[r]; }
 function lgRuleNow(){ return lgRuleOf(G.year); }
-function fTotCap(){ return Math.round(F_TOTAL_CAP*(lgRuleNow().fcap||1)); }
+function fTotCap(){ return Math.round(F_TOTAL_CAP*(lgRuleNow().fcap||1)*fEcoK()); }
 function lgHrRate(y){ let hr=0,pa=0; for(const p of Object.values(G.players)){ if(p.isP)continue; const h=seasonTotal(p,y,'1군'); if(h){ hr+=h.hr||0; pa+=h.pa||0; } } return pa>2000?hr/pa:null; }
 function lgrDecide(){ const L=lgrInit(), y=G.year+1; if(L.y[y])return; const cur=lgRuleOf(G.year), hr=lgHrRate(G.year); if(L.hr0==null&&hr!=null)L.hr0=hr;
   const nx={...cur}, why=[];

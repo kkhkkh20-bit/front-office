@@ -6,7 +6,7 @@
  - 우리 제안의 값(보장 + 인센티브 x 0.55) x 우리 매력이 선수 기준선과 가장 강한 경쟁 구단 제안보다 높으면 사인한다.
  - 처음 제안하면 에이전트가 경쟁 상황을 알려 주고 3일을 기다려 준다. 그 안에 못 잡으면 가장 강한 경쟁 구단으로 간다. */
 const FO_INC_W=.55;
-function foCap(q){ return q.foreign==='아시아'?ASIA_CAP:fNewCap(); }
+function foCap(q){ return q.foreign==='아시아'?asiaCap():fNewCap(); }
 function foRep(tid){ const L=foreignOf(tid).filter(p=>p.foreign==='용병'||p.foreign==='아시아'); return L.filter(p=>p.fy!=null&&p.fy<=G.year-1).length; }
 /* 선수 선호(사람마다 하나): 우승·도시(수도권)·출전 기회·돈·보류권 해제(다음 해 자유) 중 무엇을 크게 보는지. 에이전트가 알려 준다 */
 const FO_PREF={win:'우승 가능성을 가장 중시',city:'수도권·큰 도시를 선호',play:'확실한 주전 자리를 원함',money:'돈(보장액)을 가장 중시',free:'1년 뒤 자유(보류권 해제 조항)를 원함'};

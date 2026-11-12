@@ -6,7 +6,7 @@
    - 8월 15일까지 정식 계약한 선수만 포스트시즌에 나가므로 대체 계약은 정규시즌 끝에 끝난다.
    shortcut: 일반 외국인만 대상(아시아쿼터 대체는 세칙 확인 전이라 뺐다), 세칙이 확인되면 넓힌다 */
 const F_TMP_DAYS=42, F_TMP_MON=10*USD;
-const fTmpFee=q=>Math.min(F_TMP_MON,round5(Math.min(q.ask,fNewCap())/6)); /* 한 달 지급액(시즌 6개월 기준 환산) */
+const fTmpFee=q=>Math.min(Math.round(F_TMP_MON*fEcoK()),round5(Math.min(q.ask,fNewCap())/6)); /* 한 달 지급액(시즌 6개월 기준 환산) */
 /* 처음 받은 진단 일수: 42일 진단 메일을 받은 다음 날 41일로 줄어 막히지 않게(검수 11-06). 규정은 진단 기준이다 */
 function fTmpDx(o){ const h=(o.injHist||[]).slice(-1)[0]; return h&&h.d!=null&&h.d+h.days>=G.day+o.injOut-1?Math.max(h.days,o.injOut):o.injOut||0; }
 function fTmpErr(tid,o,q){
