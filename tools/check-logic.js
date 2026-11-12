@@ -3447,6 +3447,19 @@ T('[사용자 11-12] 트레이드 요구 뒤 받은 출전 약속이 깨지면 �
 T('[사용자 11-12] 1군을 원하는 2군 선수 목록(면담 안건용)과 감독-선수 갈등 결정', ()=>{ fresh(); G.day=G.cal.open+40; const L=playerWantsUp(G.user); ok(Array.isArray(L),'목록 함수 없음'); ok(L.every(x=>x.p&&!x.p.e1&&typeof x.weeks==='number'&&x.t),'목록 항목 모양이 다름');
   const p=playersOf(G.user).find(q=>!q.foreign&&!q.e1&&!q.ys&&healthy(q)&&!isAway(q)&&!q.prospect); if(p){ initPers(p); p.pers.amb=15; p.downDay=null; p.hist=(p.hist||[]).filter(h=>h.y!==G.year); p.hist.push({y:G.year,lvl:'퓨처스',g:30,pa:120,ab:100,h:38,d:9,tr:1,hr:6,bb:16,hbp:1,sf:1,outs:p.isP?120:0,er:p.isP?10:0}); const w=wantUp(p); if(w&&!p.isP)ok(playerWantsUp(G.user).some(x=>x.p===p),'1군 원하는 선수가 목록에 없음'); }
   const m=G.mgr[G.user]; ok(m,'감독 없음'); const s=d=>{ const q=depth(G.user).start.find(x=>!x.foreign); return q; }; const q=s(); initPers(q); G.evs=[]; EVH.mpcf.make(q); const e=G.evs.find(x=>x.k==='mpcf'); ok(e,'감독-선수 갈등 결정이 없음'); const r0=m.rel; evPick(e.id,e.data.ks.indexOf('mgr')); ok(m.rel>r0,'감독 편을 들었는데 감독 관계가 그대로'); });
+T('[사용자 11-12] 외국인 KBO 적합도(숨김): 넓은 분포, 적응이 높으면 부진 폭이 준다, 태업은 경기력을 깎는다',()=>{ fresh();
+  const L=[]; for(let i=0;i<400;i++){ const p={foreign:'용병'}; L.push(fKfit(p)); } const flop=L.filter(x=>x<-2).length/400, over=L.filter(x=>x>1.5).length/400;
+  ok(flop>=.28&&flop<=.45,'부진형 비율 '+flop); ok(over>=.12&&over<=.3,'기대 이상 비율 '+over);
+  const p=foreignOf(G.user).find(x=>x.foreign==='용병'); ok(p,'준비 실패'); p.kfit=-4; p.adapt=50; const b0=fBoost(p); p.adapt=85; const b1=fBoost(p); ok(b1>b0&&b1<0,'적응이 높아도 부진 폭이 줄지 않음 '+b0+' '+b1);
+  p.fslk={until:G.day+10,b:-3}; ok(fBoost(p)<b1-11,'태업이 경기력에 안 들어감'); delete p.fslk; delete p.kfit; });
+T('[사용자 11-12] 외국인 사건: 우리 선수는 결정, 귀국 휴가·꾀병 휴식은 결장, 방출은 방출 처리',()=>{ fresh(); G.day=G.cal.open+40;
+  const p=foreignOf(G.user).find(x=>x.foreign==='용병'); ok(p,'준비 실패'); initPers(p);
+  fDramaUser(p,'home'); const e=G.evs.find(x=>x.k==='fdrama'&&!x.done); ok(e&&e.data.keys.includes('leave'),'귀국 결정이 없음');
+  evPick(e.id,e.data.keys.indexOf('leave')); ok(p.fLeave>G.day&&!healthy(p),'귀국 휴가인데 출전 가능');
+  p.fLeave=0; fDramaUser(p,'fake'); const f=G.evs.find(x=>x.k==='fdrama'&&!x.done&&x.data.t==='fake'); evPick(f.id,f.data.keys.indexOf('rest')); ok(!healthy(p),'휴식인데 출전 가능'); p.fLeave=0;
+  fDramaUser(p,'slack'); const s=G.evs.find(x=>x.k==='fdrama'&&!x.done&&x.data.t==='slack'); evPick(s.id,s.data.keys.indexOf('release')); ok(!G.players[p.id]||G.players[p.id].team!==G.user,'방출했는데 남아 있음'); });
+T('[사용자 11-12] 외국인 사건: 다른 구단은 AI가 처리하고 소식으로, 같은 선수는 한 해 한 번',()=>{ fresh(); G.day=G.cal.open+40; const t=G.teams.find(x=>x.id!==G.user&&foreignOf(x.id).some(q=>q.foreign==='용병'))||G.teams.find(x=>x.id!==G.user); let p=foreignOf(t.id).find(x=>x.foreign==='용병'); if(!p){ p=newForeign('용병',{isP:true}); p.team=t.id; p.fy=G.year; } ok(p,'준비 실패');
+  const w0=(G.wire||[]).length; fDramaAI(p,'clash'); ok((G.wire||[]).length>w0,'소식이 없음'); p.fdY=G.year; const r0=Math.random; Math.random=()=>0; try{ fDramaWeekly(); }finally{ Math.random=r0; } ok(!(G.evs||[]).some(e=>e.k==='fdrama'&&e.data.pid===p.id),'다른 구단 선수가 우리 결정으로'); });
 T('[피드백 11-09k] 후보 선수 트레이드 요청: 선택지마다 효과와 후속 판정',()=>{ fresh(); G.day=G.cal.open+30; G.sea.rec[G.user].w=15; G.sea.rec[G.user].l=15; const d=depth(G.user); const b=d.bench.find(p=>!p.foreign&&!p.ys); initPers(b); Object.assign(b,{age:27,mor:50}); b.pers.temp=10; const m=G.mgr[G.user];
   const go=(key,o)=>{ delete b.listed; delete b.promise; delete b.treq; EVH.treq.make(b,o&&o.hard); const e=G.evs[G.evs.length-1]; const i=e.data.ks.indexOf(key); ok(i>=0,'선택지 없음 '+key); const m0=b.mor; evPick(e.id,i); return {e,dm:b.mor-m0}; };
   let r=go('list'); ok(b.listed&&b.treq.done&&r.dm===6,'명단 올리기: 명단 '+b.listed+' 기분 '+r.dm);
@@ -3877,7 +3890,8 @@ T('[카페 건의 11-09] 훈련 강도: 강할수록 겨울 성장이 크고, �
   const P=domestic(G.user).filter(q=>!q.foreign&&q.age<=23&&!milServing(q)).slice(0,8); ok(P.length>=4,'준비 실패');
   const gain=i=>{ let tot=0; for(const p0 of P){ const snap=JSON.stringify(p0); for(let s=1;s<=5;s++){ const p=Object.assign(JSON.parse(snap),{id:p0.id}); p.dt='norm'; p.pot=Math.min(80,ovr(p)+12); G.players[p.id]=p; p.trI={y:G.year,s:20*TRNI[i].g,n:20}; const o=ovr(p); __seed(s*31+p.id%97); develop(p); tot+=ovr(p)-o; } G.players[p0.id]=p0; } return tot/P.length/5; };
   const g=[0,1,2,3].map(gain); ok(g[0]<g[1]&&g[1]<g[2]&&g[2]<g[3],'강도별 성장 순서 '+g.map(x=>x.toFixed(2)).join(' < '));
-  const rt=g[3]/g[1]; ok(rt>1.2&&rt<1.6,'아주 강하게 겨울 성장 배율 '+rt.toFixed(2));
+  /* 성장 기복·퇴보(11-12)는 강도와 무관한 같은 몫이라(같은 시드) 배율은 '회복 위주' 대비 증가분으로 잰다: 성장분이 강도 배수(0.85·1·1.3)에 비례하면 (아주강-회복)/(보통-회복)=3 */
+  const rt=(g[3]-g[0])/(g[1]-g[0]); ok(rt>2&&rt<4.2,'아주 강하게 성장 증가분 배율 '+rt.toFixed(2)+' ('+g.map(x=>x.toFixed(2)).join(', ')+')');
   const h=domestic(G.user).find(q=>!q.isP&&!q.foreign&&!milServing(q)); h.age=26; G.trnI={}; h.injOut=0; h.injHist=[]; h.fat=0;
   const inc=v=>{ h.r.vit=v; G.trnI[h.id]=1; const a=injMult(h); G.trnI[h.id]=3; return injMult(h)/a; };
   const hi=inc(80), lo=inc(35); ok(hi<1.15&&lo>1.4&&hi<lo,'아주 강하게 부상 배수 내구성 80 '+hi.toFixed(2)+' / 35 '+lo.toFixed(2));

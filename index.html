@@ -11113,7 +11113,7 @@ const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
 const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return x.city+' '+x.nick; } return team(id).city+' '+team(id).nick; }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
-const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold; /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
+const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day); /* fLeave: 외국인 선수 귀국 휴가·결장 요청(73_foreign_drama) */ /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
 
 function genRatings(isP,base,pos){
   const g=()=>clamp(N(base,7),20,80);
@@ -11722,7 +11722,7 @@ function gameSide(tid,day,ps){
   if(sp)s.box.set(sp.id,pz()); order.forEach(p=>s.box.set(p.id,bz())); sideTraits(s);
   return s;
 }
-function boostOf(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 코치·감독·분위기를 받지 않는다(검수 11-09zk) */ let b=(tm!=null&&G.coach)?coachBoost(p):0; if(SIMDAY!=null&&p.gcD===SIMDAY)b+=p.gc||0; if(tm!=null)b+=mgrRelBoost(p); const f=G.form; if(f&&tm!=null&&tm===G.user&&G.day<=f.until)b+=f.b; if(p.form&&G.day<=p.form.until)b+=p.form.b; if(p.mor!=null)b+=clamp((p.mor-60)/36,-1.1,.8); /* 사기: 이기는 팀일수록 오르므로 효과가 크면 강팀이 더 강해진다(되먹임). 폭을 줄였다 */ if(tm!=null){ b+=(mgrOf(tm).tac-50)/60; b+=climateOf(tm).boost; } if(p.foreign&&p.fy===G.year&&p.adapt!=null)b+=(p.adapt-50)/22;
+function boostOf(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 코치·감독·분위기를 받지 않는다(검수 11-09zk) */ let b=(tm!=null&&G.coach)?coachBoost(p):0; if(SIMDAY!=null&&p.gcD===SIMDAY)b+=p.gc||0; if(tm!=null)b+=mgrRelBoost(p); const f=G.form; if(f&&tm!=null&&tm===G.user&&G.day<=f.until)b+=f.b; if(p.form&&G.day<=p.form.until)b+=p.form.b; if(p.mor!=null)b+=clamp((p.mor-60)/36,-1.1,.8); /* 사기: 이기는 팀일수록 오르므로 효과가 크면 강팀이 더 강해진다(되먹임). 폭을 줄였다 */ if(tm!=null){ b+=(mgrOf(tm).tac-50)/60; b+=climateOf(tm).boost; } if(p.foreign&&p.fy===G.year&&p.adapt!=null)b+=(p.adapt-50)/22; if(p.foreign)b+=fBoost(p); /* 숨은 KBO 적합도·태업(73_foreign_drama) */
   if(p.sf&&p.sf.y===G.year)b+=p.sf.v+(p.sf.m||0);
   if(p.fat>45)b-=(p.fat-45)/18;
   if(p.wear){ const cap=p.isP?40+p.r.sta*1.7:70+(p.r.vit||52)*1.0; if(p.wear>cap)b-=Math.min(3,(p.wear-cap)/25); }
@@ -12090,6 +12090,8 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(o.d===1)try{ scoutAutoMonthly(); }catch(e){}
   if(o.d===1)try{ stAiStaff(); }catch(e){}
   if(o.d===1)try{ posReqMonth(); }catch(e){}
+  if(o.d===1)try{ fAdaptMonthly(); }catch(e){} /* 외국인 선수 적응 곡선(73_foreign_drama) */
+  if(o.w===1)try{ fDramaWeekly(); }catch(e){} /* 외국인 선수 향수병·불화·태업·꾀병 */
   if(o.d===1)try{ misbehaveMonth(); }catch(e){}
   if(o.d===1)try{ rSnapAll(); starCheck(); }catch(e){}
   if(o.d===1)try{ fanMonthly(); }catch(e){} if(o.d===1)try{ fanAwayMonthly(); }catch(e){} /* 팬 마케팅 운영비·채널 수입 */
@@ -13766,7 +13768,7 @@ function aiForeignReview(tid){
   if((G.sea.repl[tid]||0)>=F_REPL_MAX)return;
   for(const p of foreignOf(tid).filter(x=>x.foreign==='용병')){
     const h=seasonTotal(p,G.year,'1군');
-    const bad=p.injOut>45||(G.day>G.cal.open+40&&h&&(p.isP?(h.outs>=120&&pRate(h).era>4.9):(h.pa>=160&&bRate(h).ops<.730)));
+    const bad=p.injOut>45||(p.fBad&&R()<.5)||(G.day>G.cal.open+40&&h&&(p.isP?(h.outs>=120&&pRate(h).era>4.9):(h.pa>=160&&bRate(h).ops<.730)));
     /* 기록이 아직 나쁘지 않아도 시장에 확실히 나은 후보가 있으면 바꾼다(교체 한도 안에서) */
     const q=G.day>G.cal.open+30?(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&x.foreign==='용병'&&x.isP===p.isP&&fKnows(tid,x)&&!foHeld(x)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a))[0]:null; const up=!bad&&q&&fScoreBy(tid,q)>ovr(p)+6;
     if((bad&&R()<.7)||(up&&R()<.1)){ const nm=p.name; const qOk=q&&!foreignCheck(tid,Object.assign({},q,{ask:Math.min(q.ask,fNewCap())}),p.id); if(!qOk&&!bad)continue; if(!qOk&&fReplLeft(tid)<=0)continue; if(!qOk&&fCap(tid,p.id)-sum(foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==p).map(fCommit))<300)continue; /* 내보낸 뒤 줄어든 총액 한도로 대체 선수를 구할 여지가 없으면 방출하지 않는다(검수 11-09zl) */ if(qOk&&foCutIn(tid,q,p.id))return; /* 우리 관찰 후보면 바로 데려가지 않고 끼어들 기한부터 */ /* 새 선수를 데려올 수 있는지 먼저 본다(검수 11-06: 보류권 후보 때문에 기존 선수만 잃음) */
@@ -18963,6 +18965,7 @@ function ivBuild(k,d){ if(k==='pdrama')return pdIvQs(d); /* 선수 갈등 질문
     ['압박','"결과로 보여 줘야 합니다. 모든 건 성적이 말해 줄 겁니다."',ivFx(0,1,{mgr:-6})],
     ['회피','"그 얘기는 시즌 끝나고 하겠습니다."',ivFx(0,-1,{mgr:-2})]]];
   const Q={
+    fdrama:fdramaQ(nm,d), /* 외국인 선수 사건(73_foreign_drama) */
     fa_sign:[[`${nm} 선수를 영입한 배경이 궁금합니다.`,[
         ['자신감','"우리 팀에 가장 필요한 선수였습니다. 전력의 마지막 조각입니다."',ivFx(2,0,{mor:[d.pid,4]})],
         ['신중','"오래 지켜본 선수입니다. 데이터로 충분히 검증했습니다."',ivFx(1,2)],
@@ -20169,7 +20172,7 @@ function curExplain(p,rp){ rp=rp||scoutReport(p); const fsx=p.foreign&&p.team==n
   if(p.team!==G.user){ try{ const k=p.isP?(isSPr(p)?'SP':'RP'):pSlot(p); const d=depth(G.user); const mine=k==='SP'?d.sp:k==='RP'?d.pen.slice(0,4):[d.ln[k]].filter(Boolean); const w=mine.filter(Boolean).sort((a,b)=>ovr(a)-ovr(b))[0];
       if(w){ const df=dv(c)-dvo(w); /* 화면에 보이는 점수(100점 척도)끼리 뺀다 */ L.push(`우리 ${SLOTK[k]||posLabel(p)} ${k==='SP'||k==='RP'?'가장 약한 투수':'주전'} ${w.name}(${dvo(w)})보다 ${df>0?'+':''}${df}${df>=2?' — 바로 전력이 오릅니다':df<=-2?' — 주전보다 못합니다':' — 비슷한 수준입니다'}.`); } }catch(e){} }
   /* 외국인 후보의 조사 단계·추정 범위는 선수 화면 위쪽 상자(fsBox)에 따로 보인다 */ if(!(p.foreign&&p.team==null))L.push(sd?`평가 오차 약 ±${dvSd(c,sd)}(정확도 ${rp.conf}). 담당 스카우트 능력과 트래킹 분석원이 좋을수록 줄어듭니다.`:'');
-  if(p.foreign){ if(p.adapt!=null&&rp.sd!=null&&rp.sd<=7.5)L.push(p.adapt>=62?'적응: 생활 적응력이 좋아 첫해부터 제 실력을 낼 것으로 봅니다.':p.adapt<45?'적응: 한국 생활 적응이 변수입니다. 첫 두 달 성적이 기대보다 낮을 수 있습니다.':'적응: 보통입니다.'); L.push('외국인 선수는 올해 성적을 보고 뽑습니다. 장래 성장은 평가에 넣지 않았습니다.'); }
+  if(p.foreign){ if(p.adapt!=null&&rp.sd!=null&&rp.sd<=7.5)L.push(p.adapt>=62?'적응: 생활 적응력이 좋아 첫해부터 제 실력을 낼 것으로 봅니다.':p.adapt<45?'적응: 한국 생활 적응이 변수입니다. 첫 두 달 성적이 기대보다 낮을 수 있습니다.':'적응: 보통입니다.'); if(p.team==null&&rp.sd!=null&&rp.sd<=8)L.push(fFitHint(p,rp.sd)); L.push('외국인 선수는 올해 성적을 보고 뽑습니다. 장래 성장은 평가에 넣지 않았습니다.'); }
   return L.filter(Boolean); }
 /* ===== 구단별 훈련 시설 보존과 다른 구단의 시설 투자 =====
    훈련 시설은 단장이 아니라 구단의 것이다. 우리 구단 시설은 G.fac, 다른 구단 시설은 team.fi에 같은 모양으로 둔다.
@@ -20499,7 +20502,7 @@ function cwOrdIssue(who){ if(cwOrd())return null; const L=cwOrdCands(); if(!L.le
   const O={k:c.k,t:c.t,crit:c.crit,until:c.until,base:c.base,d0:G.day,tid:G.user,person:bossOf(G.user)[who==='ceo'?'ceo':'own'].id,who,st:'open',say:cwOrdSay(c.k)}; G.ownOrder=O; return O; }
 function cwOrdSay(k){ const ow=team(G.user).owner; return {win:ow==='win'?'이기는 게 먼저요. 앞으로 3주는 5할 밑으로 떨어지지 마시오.':'성적도 좀 챙기시오. 3주 동안 5할은 하시오.',att:'관중석이 차야 그룹 체면이 서오. 홈 관중을 늘려 보게.',cut:'적자는 줄이시오. 한 달 뒤에 숫자로 봅시다.',keep:'지금처럼 예산 안에서 운영하시오. 적자는 안 되오.',young:'젊은 선수 하나쯤은 1군에서 크는 걸 보고 싶소. 한 명 써 보게.',ext:'저런 선수는 놓치면 안 되오. 계약을 매듭지으시오.'}[k]||''; }
 function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
-  if(O.k==='win'){ const L=cwUlog().filter(u=>u.d>O.d0&&u.d<=O.until&&u.res!=='무'); const w=L.filter(u=>u.res==='승').length; const ok=L.length?w/L.length>=.5:false; return {done:end,ok,txt:`${w}승 ${L.length-w}패`}; }
+  if(O.k==='win'){ const A0=cwUlog().filter(u=>u.d>O.d0&&u.d<=O.until), L=A0.filter(u=>u.res!=='무'), t=A0.length-L.length; const w=L.filter(u=>u.res==='승').length; const ok=L.length?w/L.length>=.5:false; return {done:end,ok,txt:`${w}승 ${L.length-w}패${t?` ${t}무`:''}`}; } /* 무승부도 적는다: 기한 당일 무승부를 '경기 전 판정'처럼 보이게 하지 않게 */
   if(O.k==='att'){ const H=(G.games||[]).filter(g=>g.day>O.d0&&g.home===G.user&&g.att); const r=H.length?sum(H.map(g=>g.att))/sum(H.map(g=>g.cap||stadCap(G.user))):0; /* 경기 당시 좌석 수 기준 */ const tg=O.base.tg??Math.min(1,O.base.ratio+.03); return {done:end,ok:H.length>0&&r>=tg,txt:H.length?`홈 ${H.length}경기 점유율 ${cwPct(r)}(목표 ${cwPct(tg)})`:'아직 홈경기 없음'}; }
   if(O.k==='cut'||O.k==='keep'){ let b=null; try{ b=budget(); }catch(e){} const v=b?b.roomGoal:O.base.room; if(O.k==='keep')O.lo=Math.min(O.lo??O.base.room,v); const ok=O.k==='cut'?v>=O.base.room+300:O.lo>=0; return {done:end||(O.k==='cut'&&ok),ok,txt:`예산 여유 ${money(v)}${O.k==='keep'&&O.lo<v?`(기간 중 최저 ${money(O.lo)})`:''}`}; } /* 개선 지시는 말한 3억 그대로, 유지 지시는 기간 중 한 번이라도 적자면 미달(검수 11-09zzd) */
   if(O.k==='young'){ let best=null; for(const id in O.base.snap){ const p=G.players[id]; const s=O.base.snap[id]; if(!p)continue; /* 지시 때 23세 이하였던 선수만. 대표팀 소집 중이어도 센다 */ const h=seasonTotalT(p,G.year,'1군',G.user); /* 우리 팀에서 쌓은 기록만(검수 11-09zzd) */ const pa=((h&&h.pa)||0)-s[0], ou=((h&&h.outs)||0)-s[1]; const sc=Math.max(pa/30,ou/24); if(!best||sc>best.sc)best={p,pa,ou,sc}; }
@@ -21160,6 +21163,86 @@ function aiForeignTemp(tid){ const left=Math.max(0,G.cal.end-G.day); /* 남은 �
     const L=(G.fmarket||[]).map(id=>G.players[id]).filter(q=>q&&q.team==null&&!foHeld(q)&&fKnows(tid,q)&&q.isP===o.isP&&!fTmpErr(tid,o,q)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a));
     if(L[0]&&!signTempForeign(tid,o.id,L[0].id))return true; }
   return false; }
+/* ===== 외국인 선수 현실화: KBO 적합도(숨김) · 적응 곡선 · 향수병·불화·태업·꾀병 (사용자 11-12) =====
+   "용병이야말로 멘탈이 진짜 어렵다. 적응 문제, 불화, 돌아가겠다. 능력치 대비 부진도 많아야 한다. 태업도, 아프다고 하는 것도."
+   - KBO 적합도(p.kfit, 능력 단위): 구종 구성·스트라이크존·변화구 대처처럼 능력치에 안 잡히는 한국 무대 궁합. 평균 -1.1, 폭이 넓다(최대 +3.5)(약 35~40%는 능력보다 확실히 부진, 20%는 기대 이상).
+     스카우트·분석원이 좋으면 영입 전에 '전망'을 들을 수 있지만 오차가 남는다. 적응이 오를수록 부진 폭이 줄고, 시즌을 치르며 조금씩 배운다.
+   - 적응(p.adapt): 매달 성격·기분·같은 나라 동료·사건에 따라 움직인다. 첫해 적응은 경기력에 들어간다(boostOf).
+   - 사건: 선수마다 한 시즌 한 번까지, 우리 구단은 한 해 두 번까지. 다른 구단도 같은 규칙으로 겪고, AI 단장이 알아서 처리한 뒤 소식으로 나온다.
+   외국인은 성격이 조금 더 예민하고 구단 충성심이 낮은 쪽으로 기운다(fPers). */
+function fPers(p){ if(!p||!p.foreign||p.fPsk)return; initPers(p); p.pers.temp=clamp(p.pers.temp+ri(0,3),3,20); p.pers.loy=clamp(p.pers.loy-ri(0,3),3,20); p.fPsk=1; }
+function fKfit(p){ if(!p||!p.foreign)return 0; if(p.kfit==null)p.kfit=Math.round(clamp(N(-1.1,3),-7,3.5)*10)/10; return p.kfit; }
+/* 경기력 보정(능력 단위, boostOf에서 더한다): 적합도(적응이 높을수록 부진 폭 축소) + 태업 */
+function fBoost(p){ if(!p||!p.foreign||p.team==null)return 0; let k=fKfit(p); const ad=p.adapt??50; if(k<0)k*=1-clamp((ad-50)/70,0,.5); if(p.fslk&&p.fslk.until>G.day)k+=p.fslk.b; return k*4; } /* boostOf 값은 능력치에 .35~.55만 실려서(기세용 단위) 4배로 넣는다: 적합도 -3이면 평균자책점 약 +0.9, -6이면 +1.8 안팎 */
+/* 영입 전 전망(시장 후보): 우리 해외 스카우트·분석원 수준이 좋을수록 정확하다. 끝내 확신할 수는 없다 */
+function fFitHint(p,sd){ if(!p||!p.foreign)return ''; const k=fKfit(p); const e=k+hn('kf'+G.year,p.id)*Math.max(1.4,(sd??7)*.45);
+  return e>=1.5?'한국 무대 궁합: 구종·스타일이 KBO 타자(투수)에 잘 통할 것으로 봅니다. 확신은 어렵습니다.':e<=-2?'한국 무대 궁합: 우려가 있습니다. 능력치만큼 성적이 안 나올 수 있습니다.':'한국 무대 궁합: 뚜렷한 신호가 없습니다. 뛰어 봐야 압니다.'; }
+/* 매달 1일: 적응 변화와 적합도 학습 */
+function fAdaptMonthly(){ const per=period(); if(per!=='season'&&per!=='pre')return;
+  for(const p of Object.values(G.players)){ if(!p.foreign||p.team==null||p.adapt==null)continue; fPers(p);
+    const mates=foreignOf(p.team).filter(q=>q!==p&&q.orig&&q.orig===p.orig).length;
+    let d=N(.8,1.6)+(p.pers.temp<=8?.6:p.pers.temp>=14?-.9:0)+(mates?.5:0)+clamp(((p.mor??60)-60)/25,-1.2,.6)-(p.fhome&&p.fhome>G.day?1.5:0);
+    p.adapt=Math.round(clamp(p.adapt+d,15,85)); fKfit(p); if(p.kfit<0)p.kfit=Math.round((p.kfit+Math.min(.2,-p.kfit*.04)*(p.adapt/60))*10)/10; } }
+/* ===== 사건 ===== */
+const FD_T={home:'향수병',clash:'불화',slack:'태업 의혹',fake:'몸 상태 호소'};
+function fOutOfRace(tid){ try{ const st=standingsNow(); const i=st.findIndex(x=>x.tid===tid); const r5=st[4]; const me=st[i]; if(!me||!r5||G.day<KD(7,1))return false; return ((r5.w-me.w)+(me.l-r5.l))/2>=8; }catch(e){ return false; } }
+function fDramaRisk(p){ initPers(p); fPers(p); const ad=p.adapt??50; return .009+Math.max(0,50-ad)*.0006+Math.max(0,p.pers.temp-11)*.0012+Math.max(0,10-p.pers.loy)*.0006+Math.max(0,55-(p.mor??60))*.0006+(fOutOfRace(p.team)?.004:0); }
+function fDramaType(p){ const ad=p.adapt??50, mor=p.mor??60, out=fOutOfRace(p.team);
+  const W={home:(ad<45?3:1)+(G.day>KD(8,1)?.8:0),clash:(mor<55?2:.5)+(p.pers.temp>=13?1.5:0),slack:(mor<50?2:.4)+(out?2:0)+(p.sal>=800?.6:0),fake:(p.pers.pro<=8?2:.5)+(p.pers.temp>=13?.8:0)};
+  let x=R()*sum(Object.values(W)); for(const k in W){ x-=W[k]; if(x<=0)return k; } return 'clash'; }
+/* 매주(월요일) 리그 전체 외국인 선수 점검 */
+function fDramaWeekly(){ if(period()!=='season')return; const y=G.year; G.fdN=G.fdN&&G.fdN.y===y?G.fdN:{y,u:0};
+  for(const p of Object.values(G.players)){ if(!p.foreign||p.team==null||p.fdY===y||!healthy(p)||isAway(p))continue; if(R()>=fDramaRisk(p))continue;
+    const me=p.team===G.user&&!G.unemp; if(me&&G.fdN.u>=2)continue; const k=fDramaType(p); p.fdY=y;
+    if(k==='slack')p.fslk={until:G.day+28,b:-Math.round(rnd(1.5,3.5)*10)/10};
+    if(k==='home')p.fhome=G.day+30;
+    if(me){ G.fdN.u++; fDramaUser(p,k); } else fDramaAI(p,k); } }
+/* 다른 구단: AI 단장이 성향대로 처리하고 소식으로 */
+function fDramaAI(p,k){ const t=team(p.team), nm=p.name, tn=tshort(p.team); const bad=(()=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=90&&pRate(h).era>4.8):(h.pa>=120&&bRate(h).ops<.72)); })();
+  if(k==='home'){ if(bad&&R()<.5){ try{ releaseForeign(p.id); }catch(e){} wire('외국인',`${tn} 외국인 선수 ${nm}, 가족 문제로 시즌 중 귀국. 구단은 방출로 정리했습니다.`,{tid:t.id}); try{ aiForeignFill(t.id); }catch(e){} return; }
+    p.fLeave=G.day+ri(7,10); p.adapt=clamp((p.adapt??50)+5,15,85); wire('외국인',`${tn} ${nm}, 향수병으로 짧은 귀국 휴가. 구단은 "곧 돌아온다"는 입장입니다.`,{tid:t.id}); return; }
+  if(k==='clash'){ p.mor=clamp((p.mor??60)-8,0,100); wire('외국인',`${tn} ${nm}, 감독과의 기용 갈등설. 더그아웃 분위기에 물음표가 붙었습니다.`,{tid:t.id}); return; }
+  if(k==='slack'){ if(bad){ p.fBad=1; } wire('외국인',`${tn} ${nm} 태업 논란. 전력 질주를 하지 않는다는 지적이 나옵니다.`,{tid:t.id}); return; }
+  if(k==='fake'){ p.fLeave=G.day+ri(3,6); wire('외국인',`${tn} ${nm}, 몸 상태를 이유로 며칠 결장. 정밀 검진에서는 큰 이상이 없었다는 소식입니다.`,{tid:t.id}); } }
+/* 우리 구단: 결정 사건 */
+function fDramaUser(p,k){ const m=G.mgr[G.user], mn=m&&!m.interim?`${m.name} 감독`:'감독', cn=p.orig||'고향';
+  const sit=k==='home'?`${p.name}(${posLabel(p)})이(가) 통역을 통해 면담을 요청했습니다. "가족이 많이 힘들어합니다. 솔직히 집에 가고 싶습니다." ${cn} 생활이 그립다며 표정이 어둡습니다. 최근 경기 집중력도 떨어졌다는 코치진 보고가 함께 왔습니다.`
+    :k==='clash'?(R()<.6?`${mn}과(와) ${p.name}이(가) 더그아웃에서 언성을 높였습니다. ${p.isP?'등판 간격과 교체 시점':'타순과 수비 위치'}에 대한 불만이 쌓였다고 합니다. 선수는 "존중받지 못한다"고, 감독은 "팀 규율이 먼저"라고 말합니다.`:`${p.name}이(가) 국내 선수들과 어울리지 못하고 따로 지낸다는 보고입니다. 훈련 방식 차이로 몇몇 고참과 마찰이 있었습니다.`)
+    :k==='slack'?`코치진 보고: "${p.name}의 훈련 태도가 성의 없어 보입니다. 경기에서도 전력 질주가 줄었습니다." 몸에는 이상이 없다고 합니다. 기록도 조금씩 떨어지고 있습니다.`
+    :`${p.name}이(가) "몸이 좋지 않다"며 결장을 요청했습니다. 의무팀은 뚜렷한 이상을 찾지 못했지만 선수는 통증을 호소합니다.`;
+  const O=k==='home'?[['leave','짧은 귀국 휴가를 준다','7~10일 빠지지만 적응과 기분이 오릅니다. 예민한 선수는 복귀가 늦어질 수 있습니다.'],['family','가족 초청·생활 지원(약 1억)','비용이 들지만 적응이 크게 오를 가능성이 큽니다.'],['release','방출 요청을 받아들인다','남은 연봉은 그대로 지급하고 새 외국인 선수를 찾아야 합니다.'],['hold','설득만 하고 버틴다','기분과 적응이 떨어지고, 태업으로 번질 수 있습니다.']]
+    :k==='clash'?[['club','팀 규율이 먼저라고 선을 긋는다','감독 관계가 좋아지지만 선수 기분이 크게 떨어집니다.'],['player','감독에게 배려를 요청한다','선수 기분이 오르지만 감독 관계가 내려갑니다.'],['mediate','통역·멘토를 붙여 중재(약 3천만)','비용이 들지만 대부분 갈등이 가라앉고 적응이 오릅니다.'],['watch','지켜본다','저절로 풀리기도 하지만 태업으로 번질 수 있습니다.']]
+    :k==='slack'?[['talk','면담으로 동기를 다시 심어 준다','성격에 따라 효과가 갈립니다.'],['fine','벌금을 매긴다','태업이 멈출 가능성이 크지만 기분이 크게 떨어집니다. 예민한 선수는 귀국을 말할 수 있습니다.'],['release','방출한다','남은 연봉은 그대로 지급하고 새 외국인 선수를 찾아야 합니다.'],['ignore','모른 척한다','태업이 한 달 더 이어집니다.']]
+    :[['exam','정밀 검진(약 1천만)','진짜 부상인지 확인합니다. 의료진이 좋을수록 정확합니다.'],['rest','며칠 쉬게 한다','3~6일 빠지고 기분이 조금 오릅니다.'],['play','출전을 지시한다','기분이 떨어지고, 실제로 아팠다면 다칠 수 있습니다.']];
+  const def=k==='fake'?1:O.length-1;
+  evNew('fdrama',`외국인 선수 ${FD_T[k]}: ${p.name}`,sit,O.map(o=>({l:o[1],fx:o[2]})),{def,data:{pid:p.id,t:k,keys:O.map(o=>o[0])},ref:p.id,face:p.id,from:k==='slack'?'코치진':k==='fake'?'의무팀':'운영팀',exp:4});
+  if(R()<.5)try{ ivRequest('fdrama',{pid:p.id,t:k}); }catch(e){} }
+EVH.fdrama={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; const c=e.data.keys[i], t=team(G.user), m=G.mgr[G.user]; initPers(p);
+  const mor=d=>{ p.mor=clamp((p.mor??60)+d,0,100); }, ad=d=>{ p.adapt=clamp((p.adapt??50)+d,15,85); }, pay=a=>{ G.spend.etc=(G.spend.etc||0)+a; }, rel=d=>{ if(m&&!m.interim)m.rel=clamp(m.rel+d,0,100); };
+  const rel_=()=>{ try{ releaseForeign(p.id); }catch(err){} return `${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 나갑니다. 외국인 시장에서 대체 선수를 찾아야 합니다.`; };
+  switch(c){
+    case 'leave': { const late=p.pers.temp>=14&&R()<.3; p.fLeave=G.day+ri(7,10)+(late?ri(3,6):0); ad(6); mor(8); delete p.fhome; return `${p.name}이(가) 귀국했습니다. ${dmd(p.fLeave)}에 돌아올 예정입니다.${late?' 다만 연락이 뜸해 복귀가 늦어질 수 있다는 말이 나옵니다.':''}`; }
+    case 'family': pay(Math.round(100*ecoIdx())); if(R()<.7){ ad(12); mor(10); delete p.fhome; return `가족이 한국에 왔습니다. ${p.name}의 표정이 한결 밝아졌습니다.`; } ad(4); mor(3); return '가족이 다녀갔지만 마음을 다잡지는 못한 모습입니다.';
+    case 'hold': mor(-8); ad(-3); if(R()<.35){ p.fslk={until:G.day+21,b:-2.5}; return `${p.name}이(가) 마지못해 남았습니다. 코치진은 "의욕이 없어 보인다"고 걱정합니다.`; } return `${p.name}이(가) 일단 남기로 했습니다. 기분은 좋지 않습니다.`;
+    case 'release': return rel_();
+    case 'club': mor(-12); rel(2); if(p.pers.temp>=14&&R()<.4){ p.fslk={until:G.day+21,b:-2}; return `${fMgrN(m)}은(는) 만족했지만 ${p.name}은(는) 마음의 문을 닫았습니다.`; } return `${fMgrN(m)}이(가) 구단의 지지에 고마워합니다. ${p.name}은(는) 불만이 남았습니다.`;
+    case 'player': mor(7); rel(-3); return `${fMgrN(m)}이(가) "선수 눈치를 본다"며 언짢아합니다. ${p.name}은(는) 고마워합니다.`;
+    case 'mediate': pay(Math.round(30*ecoIdx())); if(R()<.7){ mor(5); ad(5); return '중재가 통했습니다. 갈등이 가라앉았습니다.'; } mor(1); return '중재는 했지만 앙금이 남았습니다.';
+    case 'watch': if(R()<.4){ p.fslk={until:G.day+21,b:-2}; mor(-4); return `갈등이 풀리지 않았습니다. ${p.name}의 훈련 태도가 눈에 띄게 느슨해졌습니다.`; } return '시간이 지나며 조금 가라앉았습니다.';
+    case 'talk': if(R()<clamp(.35+(p.pers.pro-8)*.05+((p.adapt??50)-50)/100,.15,.85)){ delete p.fslk; mor(5); return `${p.name}이(가) "다시 집중하겠다"고 약속했습니다.`; } if(p.fslk)p.fslk.until=G.day+14; return `${p.name}은(는) 고개만 끄덕였습니다. 달라질지는 지켜봐야 합니다.`;
+    case 'fine': mor(-14); if(R()<.65)delete p.fslk; if(p.pers.temp>=14&&R()<.35){ p.fhome=G.day+30; return `벌금을 매겼습니다. ${p.name}이(가) 크게 반발하며 "이럴 거면 집에 가겠다"고 했습니다.`; } return `벌금을 매겼습니다. ${p.name}은(는) 불만스럽지만 훈련에는 나옵니다.`;
+    case 'ignore': if(p.fslk)p.fslk.until=G.day+30; return '모른 척하기로 했습니다. 코치진은 답답해합니다.';
+    case 'exam': { pay(Math.round(10*ecoIdx())); const real=R()<.35; const sure=R()<(G.med&&G.med.hosp==='a'?.9:.7); if(real){ p.injOut=ri(5,12); p.injK='blister'; return `검진 결과 실제로 가벼운 부상이 있었습니다. ${p.injOut}일 쉽니다.`; } if(sure){ mor(-3); return `검진 결과 이상이 없었습니다. ${p.name}은(는) 머쓱해하며 경기에 나갑니다.`; } p.fLeave=G.day+ri(2,4); return '검진으로도 확실히 가리지 못했습니다. 며칠 쉬게 했습니다.'; }
+    case 'rest': p.fLeave=G.day+ri(3,6); mor(4); return `${p.name}에게 휴식을 줬습니다. ${dmd(p.fLeave)}부터 다시 뜁니다.`;
+    case 'play': mor(-8); p.fslk={until:G.day+14,b:-1.5}; if(R()<.12){ try{ injure(p,G.day); }catch(err){} return `출전을 지시했습니다. 그런데 ${p.name}이(가) 경기 중 다쳤습니다. 진짜 아팠던 것으로 보입니다.`; } return `출전을 지시했습니다. ${p.name}은(는) 마지못해 나섰습니다.`; }
+  return ''; } };
+const fMgrN=m=>m&&!m.interim?`${m.name} 감독`:'감독';
+/* 기자 질문(52_interviews.js의 Q에 덧붙인다) */
+function fdramaQ(nm,d){ const t=d&&d.t; const q=t==='home'?`${nm} 선수가 귀국을 원한다는 보도가 있습니다.`:t==='clash'?`${nm} 선수와 감독 사이 갈등설, 사실입니까?`:t==='slack'?`${nm} 선수의 태업 논란에 대해 한 말씀 해 주시죠.`:`${nm} 선수의 결장을 두고 꾀병 아니냐는 말이 나옵니다.`;
+  return [[q,[['감싸기',`"${nm} 선수는 우리 팀에 꼭 필요한 선수입니다. 구단이 끝까지 돕겠습니다."`,ivFx(1,0,{mor:[d.pid,5]})],
+    ['원칙',`"누구든 팀보다 앞설 수는 없습니다. 구단 원칙대로 처리합니다."`,ivFx(1,1,{mor:[d.pid,-6]})],
+    ['신중','"내부 문제는 안에서 풀겠습니다. 지금은 말씀드릴 게 없습니다."',ivFx(0,-1)],
+    ['직설',`"솔직히 실망스럽습니다. 계속 이러면 교체도 생각합니다."`,ivFx(2,-1,{mor:[d.pid,-12]})]]]]; }
 /* ===== 업무 맡기기: 반복 업무를 직접 할지 비서·팀장에게 맡길지 고른다 =====
  맡기면 스태프가 '무난한' 선택을 한다. 직접 하면 더 좋은 결과를 낼 수 있다(예: 맡긴 연봉 협상은 요구액과 산정안의 중간쯤에서 합의, 맡긴 외국인 재계약은 기준선보다 4% 더 주고 잡음).
  큰 결정(드래프트·트레이드 협상·FA·외국인 영입·단장 계약·협회 표결)은 맡기지 않는다. */
@@ -27153,7 +27236,7 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
   G2.push(['체력·몸',[['체력',c(p.isP?tv.sta:tv.vit)],['내구성',c(80-(clamp(medInj(p),.03,.42)-.03)/.39*60)]]]);
   const mr=k=>mentalRead(p,k).t; const mind=[['프로의식(평판)',mr('pro'),'t'],['야망(평판)',mr('amb'),'t'],['예민도(평판·낮을수록 좋음)',mr('temp'),'t'],['충성심(평판)',mr('loy'),'t'],['승부처 집중(멘탈)',c(mentalRt(p))],['꾸준함(기복 적음)',c(consRt(p))]]; /* 멘탈: 득점권·접전 후반·포스트시즌에서만 능력에 더해짐. 꾸준함: 경기별 컨디션·몇 주 단위 슬럼프 폭 */
   if(p.foreign&&p.adapt!=null)mind.push(['한국 적응력',c(p.adapt)]); if(!p.foreign&&p.team!=null)mind.push(['해외 진출 의지',c(20+mlbOf(p)*.6),'i']);
-  G2.push(['성격',mind]);
+  /* 성격(프로의식·야망·예민도·충성심·승부처·꾸준함·적응력)은 화면에 보이지 않는다(사용자 11-12): 감독·코치의 훈련 태도 평, 스카우트 소문, 보고서 문장으로만 알 수 있다 */ void mind;
   const radar=!p.isP?[['컨택',c(tv.con),c(tf.con)],['파워',c(tv.pow),c(tf.pow)],['선구안',c(tv.eye),c(tf.eye)],['주루',c(tv.spd),c(tf.spd)],['수비',tv.def,tf.def],['체력',c(tv.vit),c(tf.vit)]]
     :[['구위',c(tv.stf),c(tf.stf)],['제구',c(tv.ctl),c(tf.ctl)],['스태미나',c(tv.sta),c(tf.sta)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv')),c((tf.stf+tf.ctl)/2+o('mv'))],['구속',c(20+(veloOf(p)-130)/25*60),c(20+(veloOf(p)-130)/25*60)],['결정구',Math.max(...G2[1][1].map(x=>x[1])),Math.max(...G2[1][1].map(x=>x[1]))]];
   return {groups:G2,radar}; }
@@ -35834,9 +35917,13 @@ Object.assign(A,{
 const PATCH=[
   {id:'2026-11-12-attrhelp',d:'11월 12일',t:'능력치 설명',items:[
     '선수 상세의 능력치에 마우스를 올리면 그 능력이 어디에 영향을 주는지 나옵니다. 세부 능력 옆 i를 누르면 전체 설명을 한 번에 볼 수 있습니다.']},
+  {id:'2026-11-12-fdrama',d:'11월 12일',t:'외국인 선수 현실화: 한국 무대 궁합 · 적응 · 향수병·불화·태업',items:[
+    '외국인 선수는 능력치만으로 성적을 알 수 없습니다. 구종·스타일이 한국 무대와 맞는지가 숨어 있어 꽤 많은 선수가 기대보다 부진하고, 일부는 기대 이상입니다. 해외 스카우트·분석원이 좋으면 영입 전에 "한국 무대 궁합" 전망을 들을 수 있지만 확신할 수는 없습니다.',
+    '적응은 매달 바뀝니다(성격·기분·같은 나라 동료). 적응이 오르면 부진 폭이 줄어듭니다.',
+    '시즌 중 향수병("집에 가고 싶다"), 감독·동료와의 불화, 태업 의혹(코치진 보고), 몸 상태 호소(꾀병일 수도)가 생깁니다. 귀국 휴가·가족 초청·중재·벌금·정밀 검진·방출 등으로 대응합니다. 다른 구단도 같은 일을 겪고 소식으로 나옵니다.']},
   {id:'2026-11-12-grow',d:'11월 12일',t:'선수 성장 현실화 · 히든 멘탈',items:[
     '잠재력만큼 크는 선수는 드뭅니다. 선수마다 잠재력을 얼마나 실현할지가 숨겨져 있어, 별 다섯 유망주도 안 터질 수 있습니다. 젊은 선수도 해마다 정체·후퇴가 섞입니다.',
-    '프로의식·야망·예민도·충성심은 숫자로 보이지 않습니다. 우리 선수는 감독·코치진이 훈련 태도로(함께한 시간이 길수록 정확), 다른 구단 선수는 스카우트가 소문으로만(오차 큼) 알려 줍니다. 프로의식·야망이 높고 예민도가 낮을수록 잠재력을 잘 실현하고, 반대면 슬럼프가 잦습니다.']},
+    '성격(프로의식·야망·예민도·충성심·승부처 집중·꾸준함·적응력)은 선수 화면에 보이지 않습니다. 우리 선수는 감독·코치진이 훈련 태도로(함께한 시간이 길수록 정확), 다른 구단 선수는 스카우트가 소문으로만(오차 큼) 알려 줍니다. 프로의식·야망이 높고 예민도가 낮을수록 잠재력을 잘 실현하고, 반대면 슬럼프가 잦습니다.']},
   {id:'2026-11-12-pdrama',d:'11월 12일',t:'선수도 인격체: 언론 플레이·트레이드 요구·훈련 불참',items:[
     '선수는 겪은 일을 기억합니다(출전 기회, 2군 강등, 지켜지지 않은 약속, 공개 비판). 불만이 성격(야망·다혈질·충성·프로의식)만큼 쌓이면 스스로 움직입니다: 측근·SNS·에이전트를 통한 언론 플레이 → 공식 트레이드 요구 → 묵살하면 훈련 불참 시위.',
     '단장은 면담, 공개 반박, 징계, 트레이드 명단, 무대응 중에서 고릅니다. 감독은 성향에 따라 선수 편이나 구단 편을 들고, 구단주와 팬도 각자 반응합니다. 기자들도 이 일을 묻습니다.',
