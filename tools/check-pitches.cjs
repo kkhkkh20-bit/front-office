@@ -25,7 +25,7 @@ for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1920,h
  const countPanel=document.querySelector('#cs-bso').closest('.md-count-panel'),count=countPanel.getBoundingClientRect(),floating=countPanel.parentElement?.id==='cs-stage';
  if(!bso.width||!bso.height||bso.left<count.left-1||bso.right>count.right+1||bso.top<count.top-1||bso.bottom>count.bottom+1)failures.push('카운트 패널 내부 표시');
  if(floating){if(count.left<field.left-1||count.right>field.right+1||count.top<field.top-1||count.bottom>field.bottom+1)failures.push('구장 내 모바일 카운트');}
- else if(bso.bottom>dock.bottom+1||bso.right>dock.right+1||bso.top<dock.top+dock.height/2)failures.push('우측 하단 카운트');
+ else if(bso.bottom>dock.bottom+1||bso.right>dock.right+1||dock.bottom-bso.bottom>2||dock.right-bso.right>2)failures.push('우측 하단 카운트'); /* 투구판 묶음의 오른쪽 아래 모서리. 11-12부터 존 그림이 카운트 왼쪽에 붙어 묶음이 낮아져 '아래 절반' 대신 모서리 정렬로 본다 */
  if(field.height<160||field.width<200||duel.bottom>innerHeight||host.right>innerWidth+1)failures.push('구장·카드 배치');
  return {failures,record:document.querySelector('#cs-pitch-source').textContent,pitcher:document.querySelector('#cs-pitcher-count').textContent};},k);
  assert.deepEqual(result.failures,[],size.width+' 투구판');assert.equal(result.record,'투구 기록');assert.match(result.pitcher,/구$/);
