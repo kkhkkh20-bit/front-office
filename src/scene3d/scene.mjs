@@ -63,7 +63,10 @@ function actorFacing(a){if(a.role==='batter')return a.left?Math.PI/2:-Math.PI/2;
    - 디딤발 착지~공 놓기: 골반을 낮추고 두 다리를 2관절 IK로 원래 발 위치에 붙여 디딤 무릎을 굽힌다(착지 40~49°, 놓을 때 30~40°)
    - 착지→놓기 사이 몸통을 앞(30~33°)·글러브 쪽(21~32°)으로 기울이고, 던지는 팔 벌림을 몸통 기준 약 90°로 낮춘다
    계산은 모델 공간(좌투는 모델 좌우 반전이라 같은 식). 값은 measure로 잰 목표에 맞춘 것 */
-export const PITCH_MECH={kneeFC:45,kneeRel:35,fwd:28,lat:35,arm:70,stride:.07}; /* fwd·lat는 척추 세 마디에 나눠 주므로 골반→가슴 기울기는 그보다 작게 나온다(측정으로 맞춤) */
+export const PITCH_MECH={kneeFC:45,kneeRel:35,fwd:28,lat:35,arm:0,stride:.07};
+/* 던지는 팔 핵심 자세(교본): 몸통(Spine2) 기준. hAbd=어깨선 기준 앞(+)/뒤(-) 각도, flex=팔꿈치 굽힘, er=바깥돌림(0 팔뚝 앞, 90 위, 180 뒤).
+   s=0 디딤발 착지, .81 최대 바깥돌림(MER), 1 공 놓기. 어깨 벌림은 몸통 기준 90° 유지 */
+export const ARM_KEYS=[{s:0,hAbd:-20,flex:85,er:60},{s:.81,hAbd:0,flex:95,er:170},{s:1,hAbd:10,flex:25,er:100}]; /* fwd·lat는 척추 세 마디에 나눠 주므로 골반→가슴 기울기는 그보다 작게 나온다(측정으로 맞춤) */
 const _q=new T.Quaternion(),_q2=new T.Quaternion(),_v=new T.Vector3(),_v2=new T.Vector3(),_m=new T.Matrix4(),AX={x:new T.Vector3(1,0,0),y:new T.Vector3(0,1,0),z:new T.Vector3(0,0,1)};
 const smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 function boneByName(a,n){a.bones=a.bones||{};return a.bones[n]||(a.bones[n]=a.model.getObjectByName('mixamorig'+n));}
@@ -76,6 +79,16 @@ function legIK(a,side,target){const up=boneByName(a,side+'UpLeg'),kn=boneByName(
  const cur=_v.copy(H).sub(K).angleTo(_v2.copy(F).sub(K)),want=Math.acos(clamp((l1*l1+l2*l2-d*d)/(2*l1*l2),-1,1)),n=new T.Vector3().crossVectors(_v.copy(H).sub(K),_v2.copy(F).sub(K));
  if(n.lengthSq()<1e-8)n.set(1,0,0);n.normalize();rotModelQ(a,kn,new T.Quaternion().setFromAxisAngle(n,want-cur));
  const F2=modelPos(a,ft,new T.Vector3());rotModelQ(a,up,new T.Quaternion().setFromUnitVectors(F2.sub(H).normalize(),target.clone().sub(H).normalize()));}
+
+function armKey(sv){const K=ARM_KEYS;if(sv<=K[0].s)return K[0];for(let i=1;i<K.length;i++)if(sv<=K[i].s){const A=K[i-1],B=K[i],f=smooth((sv-A.s)/(B.s-A.s));return {hAbd:A.hAbd+(B.hAbd-A.hAbd)*f,flex:A.flex+(B.flex-A.flex)*f,er:A.er+(B.er-A.er)*f};}return K[K.length-1];}
+function aimBone(a,b,c,dir,w){const B=modelPos(a,b,new T.Vector3()),C=modelPos(a,c,new T.Vector3()),d=C.sub(B).normalize(),D=d.clone().lerp(dir,w).normalize();rotModelQ(a,b,new T.Quaternion().setFromUnitVectors(d,D));}
+function throwingArm(a,sv,w){if(w<=0)return;const sp=boneByName(a,'Spine2'),ua=boneByName(a,'RightArm'),fa=boneByName(a,'RightForeArm'),hd=boneByName(a,'RightHand');if(!sp||!ua||!fa||!hd)return;
+ const q=modelQ(a,sp,new T.Quaternion()),tX=new T.Vector3(1,0,0).applyQuaternion(q),tY=new T.Vector3(0,1,0).applyQuaternion(q),tZ=new T.Vector3(0,0,1).applyQuaternion(q),k=armKey(sv),h=k.hAbd*Math.PI/180;
+ const u=tX.clone().multiplyScalar(-Math.cos(h)).addScaledVector(tZ,Math.sin(h)).normalize(); /* 몸통 오른쪽(-X)으로 90° 벌림, 앞뒤로 hAbd */
+ aimBone(a,ua,fa,u,w);
+ const f0=tZ.clone().addScaledVector(u,-tZ.dot(u)).normalize(),f90=tY.clone().addScaledVector(u,-tY.dot(u)).normalize(),er=k.er*Math.PI/180,perp=f0.multiplyScalar(Math.cos(er)).addScaledVector(f90,Math.sin(er)).normalize(),fl=k.flex*Math.PI/180;
+ const U=modelPos(a,fa,new T.Vector3()).sub(modelPos(a,ua,new T.Vector3())).normalize(),fd=U.multiplyScalar(Math.cos(fl)).addScaledVector(perp,Math.sin(fl)).normalize();
+ aimBone(a,fa,hd,fd,w);}
 function pitchMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||!/^pitch_(overhand|three_quarter|sidearm|submarine)_(windup|stretch)$/.test(a.motion))return;const e=clipEvents[a.motion];if(!e?.foot_plant)return;
  const t=a.action.time,fc=e.foot_plant,rel=e.release,P=PITCH_MECH,
   leg=t<fc?smooth((t-(fc-.1))/.1):t<rel+.25?1:1-smooth((t-rel-.25)/.4),knee=t<rel?P.kneeFC+(P.kneeRel-P.kneeFC)*smooth((t-fc)/(rel-fc)):P.kneeRel,
@@ -84,6 +97,7 @@ function pitchMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||!/^pitch_(ov
  const feet=['Left','Right'].map(s=>{const f=boneByName(a,s+'Foot');return f?modelPos(a,f,new T.Vector3()):null;});
  const sp=['Spine','Spine1','Spine2'].map(n=>boneByName(a,n));for(const b of sp)if(b){rotModel(a,b,AX.x,P.fwd*tilt/3);rotModel(a,b,AX.z,-P.lat*tilt/3);}
  const ra=boneByName(a,'RightArm');if(ra)rotModel(a,ra,AX.z,P.arm*arm);
+ {const sv=(t-fc)/(rel-fc),w=t<fc?smooth((t-(fc-.15))/.15):t<=rel+.04?1:1-smooth((t-rel-.04)/.25);throwingArm(a,clamp(sv,0,1),w);} /* 던지는 팔: 착지 전 0.15초부터 핵심 자세로, 놓은 뒤 0.25초에 걸쳐 원래 팔로스루로 */
  if(feet[0])feet[0].z+=P.stride*leg; /* 디딤발을 홈 쪽으로 조금 더(보폭 키의 77~85%) */
  if(leg&&feet[0]){ /* 디딤 무릎이 목표 각도가 되도록 골반 높이를 계산해 낮춘다(올리지는 않음) */const up=boneByName(a,'LeftUpLeg'),kn=boneByName(a,'LeftLeg'),ft=boneByName(a,'LeftFoot'),H=modelPos(a,up,new T.Vector3()),K=modelPos(a,kn,new T.Vector3()),F=modelPos(a,ft,new T.Vector3()),l1=H.distanceTo(K),l2=K.distanceTo(F),d=Math.sqrt(l1*l1+l2*l2+2*l1*l2*Math.cos(knee*Math.PI/180)),hz=Math.hypot(H.x-feet[0].x,H.z-feet[0].z);
   if(d>hz){const y=feet[0].y+Math.sqrt(d*d-hz*hz),drop=Math.max(0,H.y-y)*leg;hips.position.y-=drop;}}
