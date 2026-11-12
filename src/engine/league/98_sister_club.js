@@ -71,7 +71,9 @@ function sisVisit(cid){ const c=OCL_BY[cid]; if(!c||G.unemp)return '지금은 �
 function sisTour(k){ if(G.unemp)return ''; const c=k==='mlb'?'us':'jp'; for(const x of OCL)if(x.c===c)sisAdd(G.user,x.id,5); return ` ${OCN[c]} 구단들과 관계 +5.`; }
 /* 가을 교육리그: 9월 1일~10월 10일 신청(fallOpen), 10월 11일 출국, 11월 15일 결과. 25세 이하 국내 선수 최대 4명 */
 /* 파견 예약은 구단별 보존. fl은 옛 저장/호출과의 호환용 최근 예약, flT가 전체 구단 장부다. */
-function sisFlAwayOn(p){ if(!p)return false; const a=p.sisFlAway; if(a&&a.from<=G.day&&a.until>G.day)return true; const S=G.sis,F=S&&(S.flT&&S.flT[p.team]||(S.fl&&S.fl.tid===p.team?S.fl:null)); return !!(F&&F.go&&F.y===G.year&&F.ids.includes(p.id)&&G.day>=dnum(F.y,10,11)&&G.day<dnum(F.y,11,15)); }
+/* 가을야구를 치르는 구단(아직 탈락 안 함)은 교육리그 파견 선수도 팀에 남는다. 탈락·우승 확정 뒤 합류(커뮤니티 11-12: 파견이 10월 11일부터라 한국시리즈 핵심 선수가 빠짐) */
+function sisPsAlive(tid){ const P=G.ps; if(!P||P.done||!G.cal)return false; let per=''; try{ per=period(); }catch(e){ return false; } if(per!=='post')return false; if(!(P.seeds||[]).includes(tid))return false; return !Object.values(P.res||{}).some(r=>r&&r[1]===tid); }
+function sisFlAwayOn(p){ if(!p)return false; if(p.team!=null&&sisPsAlive(p.team))return false; const a=p.sisFlAway; if(a&&a.from<=G.day&&a.until>G.day)return true; const S=G.sis,F=S&&(S.flT&&S.flT[p.team]||(S.fl&&S.fl.tid===p.team?S.fl:null)); return !!(F&&F.go&&F.y===G.year&&F.ids.includes(p.id)&&G.day>=dnum(F.y,10,11)&&G.day<dnum(F.y,11,15)); }
 function sisFlOf(tid){ const S=sisInit(); return S.flT&&S.flT[tid]||(S.fl&&S.fl.tid===tid?S.fl:null); }
 function sisFlAll(){ const S=sisInit(), by=Object.assign({},S.flT); if(S.fl&&!by[S.fl.tid])by[S.fl.tid]=S.fl; return Object.values(by); }
 function sisFlStore(F){ const S=sisInit(); (S.flT=S.flT||{})[F.tid]=F; S.fl=F; return F; }

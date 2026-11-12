@@ -67,7 +67,7 @@ function futEligibleDay(p,t,d){if(!p||p.team!==t||p.prospect||p.joinY>G.year||!h
   if(p.gl&&p.gl.y===G.year&&p.gl.g.some(x=>x[0]===d))return false;
   const m=milPeriod(p);if(milServing(p)){if(m.unit!=='상무'||!milOn(p,d))return false;}else if(milOn(p,d))return false;
   for(const h of p.injHist||[])if(h.d!=null&&h.d<=d&&d<(h.bk??(p.injOut>0&&h===(p.injHist||[]).at(-1)?Infinity:h.d+h.days)))return false;
-  const a=p.sisFlAway;if(a&&a.from<=d&&d<a.until)return false;if(d===G.day&&typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))return false;
+  const a=p.sisFlAway;if(a&&a.from<=d&&d<a.until&&!(d===G.day&&p.team!=null&&typeof sisPsAlive==='function'&&sisPsAlive(p.team)))return false; /* 가을야구 중인 구단은 파견 선수도 쓴다 */if(d===G.day&&typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))return false;
   return true;}
 function futBat(p,t,pos,games){ games=games||3; if(futUpToday(p))return;const days=Array.from({length:games},(_,i)=>G.day-games+1+i).filter(d=>futEligibleDay(p,t,d));if(!days.length)return;games=days.length;const pa=games>=3?ri(9,14):games===2?ri(6,10):ri(3,6);
   const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games,{mil:milServing(p)&&milPeriod(p).unit==='상무',days}); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
