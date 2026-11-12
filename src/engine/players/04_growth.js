@@ -31,7 +31,7 @@ function develop(p){
   /* 잠재력 실현율(숨김, 사용자 11-12: 잠재력만 믿고 모으면 망할 수도 있어야 한다. 잠재력만큼 크는 선수는 드물다).
      처음 성장할 때 정한다: 약 30%는 불발(잠재력까지 남은 몫의 30~60%), 50%는 부분(60~90%), 20%만 거의 다(90~100%). 프로의식이 좋을수록 높다.
      스카우트가 보는 잠재력(p.pot)은 그대로라 별 다섯 유망주도 안 터질 수 있다. 실현 상한 = 기준 능력 + (잠재력-기준)×실현율 */
-  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<.3?rnd(.3,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.015; p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; }
+  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<.3?rnd(.3,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.035-Math.max(0,((p.pers&&p.pers.temp)||10)-13)*.02; /* 멘탈이 실현율을 크게 가른다(사용자 11-12): 성실성 4면 -0.21, 16이면 +0.21, 예민하면 더 낮게 */ p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; }
   const potEff=p.realK!=null?p.potB+Math.max(0,p.pot-p.potB)*p.realK:p.pot;
   const gap=Math.max(0,potEff-o); let base=0;
   if(age<=T.grow){
@@ -48,7 +48,7 @@ function develop(p){
   else { base=-(age-T.fall+1)*.6*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=36?-2.4:-3.6)-(age>=37?.8:0); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
-  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.015, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
+  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.02+Math.max(0,(p.pers.temp||10)-13)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
     if(x<dn){ const s=-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; p.devLog.reasons.push('slump'); } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
   if(age<=29&&!svc)base+=N(-.25,.9); /* 젊은 선수도 해마다 들쭉날쭉: 성장 구간에서도 정체·후퇴가 섞인다 */
   if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */

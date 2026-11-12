@@ -11532,7 +11532,12 @@ function develop(p){
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
   const club=p.team!=null&&!svc; const ti=club&&p.trI&&p.trI.n&&(p.trI.y===G.year||p.trI.y===G.year-1)?p.trI.s/p.trI.n:1; delete p.trI; /* 그 시즌 평균 훈련 강도(76_dev_plan) */ const devMgr=club&&G.mgr?mgrOf(p.team):null,yf=devMgr?1+(devMgr.youth-50)/150:1;
   p.devLog={y:G.year,tid:p.team,play,fac:fac.l,manager:devMgr&&devMgr.name?{id:devMgr.id??null,name:devMgr.name,youth:devMgr.youth}:null,reasons:[]};
-  const gap=Math.max(0,p.pot-o); let base=0;
+  /* 잠재력 실현율(숨김, 사용자 11-12: 잠재력만 믿고 모으면 망할 수도 있어야 한다. 잠재력만큼 크는 선수는 드물다).
+     처음 성장할 때 정한다: 약 30%는 불발(잠재력까지 남은 몫의 30~60%), 50%는 부분(60~90%), 20%만 거의 다(90~100%). 프로의식이 좋을수록 높다.
+     스카우트가 보는 잠재력(p.pot)은 그대로라 별 다섯 유망주도 안 터질 수 있다. 실현 상한 = 기준 능력 + (잠재력-기준)×실현율 */
+  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<.3?rnd(.3,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.035-Math.max(0,((p.pers&&p.pers.temp)||10)-13)*.02; /* 멘탈이 실현율을 크게 가른다(사용자 11-12): 성실성 4면 -0.21, 16이면 +0.21, 예민하면 더 낮게 */ p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; }
+  const potEff=p.realK!=null?p.potB+Math.max(0,p.pot-p.potB)*p.realK:p.pot;
+  const gap=Math.max(0,potEff-o); let base=0;
   if(age<=T.grow){
     const rate=clamp((p.dt==='early'?1.25:p.dt==='late'?(T.vl&&age<=28?.35:.85):p.dt==='stall'?.35:1)/(T.grow-age+1.5),.04,.65); /* 남은 성장 연수에 맞춰 조금씩: 18세 1순위도 20대 중반에 정점(예전엔 남은 잠재력의 20~34%를 해마다 채워 20~21세에 리그 정상급이 됐다) */
     const env=play*fac.g*yf*(club&&G.coach?coachDevMult(p):1)*(club?mpickMult(p):1)*pg*ti; base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
@@ -11547,8 +11552,9 @@ function develop(p){
   else { base=-(age-T.fall+1)*.6*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=36?-2.4:-3.6)-(age>=37?.8:0); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
-  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.17:.11)+Math.max(0,10-pr)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
+  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.02+Math.max(0,(p.pers.temp||10)-13)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
     if(x<dn){ const s=-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; p.devLog.reasons.push('slump'); } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
+  if(age<=29&&!svc)base+=N(-.25,.9); /* 젊은 선수도 해마다 들쭉날쭉: 성장 구간에서도 정체·후퇴가 섞인다 */
   if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
@@ -16207,7 +16213,17 @@ function tutTick(){
 function tutSkip(){ const t=G.tut; if(!t||t.done)return; t.step++; if(t.step>=TUT.length){t.done=true;return;} sendTut(); }
 
 /* ===== 선수 기분과 성향 ===== */
-function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers)p.pers={pro:ri(4,20),amb:ri(4,20),loy:ri(4,20),temp:ri(4,20)}; }
+function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers){ const g=(m,sd)=>clamp(Math.round(N(m,sd)),3,20); p.pers={pro:g(9.5,3.5),amb:g(11,3.8),loy:g(10,3.8),temp:g(10.5,3.8)}; } /* 멘탈 좋은 선수는 드물다(사용자 11-12): 고른 분포(4~20) 대신 중간~낮음에 몰리게. 프로의식 15 이상 약 10%, 7 이하 약 25% */ }
+/* 히든 멘탈(사용자 11-12): 성실성·야망·충성심·기질은 숫자로 보이지 않는다. 우리 선수는 감독(함께한 시간·안목), 다른 구단·아마추어는 그 지역 스카우트(실력)가 간접적으로 전한다.
+   정보원이 없으면 '알 수 없음'. 추정 오차가 크면 '(불확실)' */
+function mentalRead(p,k){ if(!p||!p.pers)return {t:'알 수 없음',src:'',sd:99}; const v=k==='temp'?24-p.pers.temp:p.pers[k];
+  let sd=99, src='';
+  if(p.team===G.user&&!G.unemp){ const m=G.mgr&&G.mgr[G.user]; const kn=m?mgrKnow(m,p):0; sd=(1.6+(1-kn)*4.5)*(m?1-((m.eye||50)-50)/160:1.3); src=m?`${m.name} 감독`:'코치진'; }
+  else { const ref=p.team!=null?p.team:p.prospect?null:p.faFrom; let sc=null; try{ sc=ref!=null?coverOf(ref).sc:(p.prospect&&p.region?scoutOf('am',p.region):null); }catch(e){} if(sc){ sd=Math.max(1.2,7-(sc.skill||2)*1.2); src=`${sc.name} 스카우트`; } }
+  if(sd>=99)return {t:'알 수 없음',src:'정보원 없음',sd};
+  const e=v+hn('mr'+k+(src||'')+halfK(),p.id)*sd; const t=e>=15.5?'매우 좋음':e>=12?'좋은 편':e>=8.5?'보통':e>=5.5?'아쉬운 편':'나쁨';
+  return {t:t+(sd>=4?' (불확실)':''),src,sd}; }
+function mentalSum(p){ const r=mentalRead(p,'pro'), t=mentalRead(p,'temp'); if(r.sd>=99)return '성향 정보 없음'; return `${r.src} 평: 성실성 ${r.t} · 기질 ${t.t}`; }
 const moodLabel=m=>m>=80?'매우 좋음':m>=65?'좋음':m>=45?'보통':m>=30?'불만':'매우 불만';
 const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';
 function persText(p){ const s=p.pers; const t=[]; if(s.pro>=15)t.push('프로의식이 강함'); if(s.pro<=7)t.push('훈련 태도가 들쭉날쭉'); if(s.amb>=15)t.push('야망이 큼'); if(s.loy>=15)t.push('구단 충성심이 높음'); if(s.loy<=6)t.push('시장 평가를 중시'); if(s.temp>=15)t.push('예민한 편'); if(s.temp<=6)t.push('무던한 편'); return t.length?t.join(' · '):'평범한 성향'; }
@@ -26805,7 +26821,7 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
     { const use=new Set(arsenal.map(x=>x[0])); const rest=arsenalAll(viewP,tv.stf).filter(([k])=>!use.has(k)).map(([k,v])=>[k+' · 보유(계투라 거의 안 씀)',c(v)]); G2.push(['구종',arsenal.map(([k,v])=>[k+(k===best?' · 결정구':''),v]).concat(rest)]); }
     G2.push(['투구 정보',[['직구 평균',velo+'km/h','t'],['직구 최고',veloMax(p)+'km/h','t'],['유형',(hn('gb',id)>.5?'땅볼형':hn('gb',id)<-.5?'뜬공형':'중립'),'t'],['투구 팔',p.th==='좌'?'좌완':'우완','t'],['타순 세 바퀴째',(()=>{ const n=arsenal.length, pn=clamp(1.6-.3*(n-2),.4,1.6); return `구종 ${n}개 · ${pn<=.7?'잘 버팀':pn<=1.1?'보통':'맞기 쉬움'}`; })(),'t']]]); }
   G2.push(['체력·몸',[['체력',c(p.isP?tv.sta:tv.vit)],['내구성',c(80-(clamp(medInj(p),.03,.42)-.03)/.39*60)]]]);
-  const mind=[['성실성',ps(pers.pro)],['야망',ps(pers.amb),'n'],['충성심',ps(pers.loy)],['기질 안정',ps(24-pers.temp)],['승부처 집중(멘탈)',c(mentalRt(p))],['꾸준함(기복 적음)',c(consRt(p))]]; /* 멘탈: 득점권·접전 후반·포스트시즌에서만 능력에 더해짐. 꾸준함: 경기별 컨디션·몇 주 단위 슬럼프 폭 */
+  const mr=k=>mentalRead(p,k).t; const mind=[['성실성(평판)',mr('pro'),'t'],['야망(평판)',mr('amb'),'t'],['충성심(평판)',mr('loy'),'t'],['기질 안정(평판)',mr('temp'),'t'],['승부처 집중(멘탈)',c(mentalRt(p))],['꾸준함(기복 적음)',c(consRt(p))]]; /* 멘탈: 득점권·접전 후반·포스트시즌에서만 능력에 더해짐. 꾸준함: 경기별 컨디션·몇 주 단위 슬럼프 폭 */
   if(p.foreign&&p.adapt!=null)mind.push(['한국 적응력',c(p.adapt)]); if(!p.foreign&&p.team!=null)mind.push(['해외 진출 의지',c(20+mlbOf(p)*.6),'i']);
   G2.push(['성격',mind]);
   const radar=!p.isP?[['컨택',c(tv.con),c(tf.con)],['파워',c(tv.pow),c(tf.pow)],['선구안',c(tv.eye),c(tf.eye)],['주루',c(tv.spd),c(tf.spd)],['수비',tv.def,tf.def],['체력',c(tv.vit),c(tf.vit)]]
@@ -31705,7 +31721,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const sy=Object.keys(p.salYr||{}).map(Number).sort((a,b)=>a-b).slice(-3), mv=[...(p.story||[])].reverse().find(s=>s.k==='move'||s.k==='draft');
   const infoCard=`<section class="card pf-fm-info"><h3>계약</h3>${fsx?stateRow('요구 연봉',p.ask?Math.round(p.ask/USD)+'만 달러':'-')+stateRow('계약','영입 전 · 외국인 1년'):stateRow('연봉',money(p.sal||0))+stateRow('계약',esc(ctText(p)))}${stateRow('형태',p.foreign?'외국인 계약':p.faC?(p.ext?'비FA 다년계약':'FA 계약'):'단년(연봉 협상)')}${!p.foreign?stateRow('FA 자격',p.svc>=faSvc(p)?'충족':`등록 ${p.svc||0}/${faSvc(p)}년`):''}${sy.length>1?stateRow('연봉 추이',sy.map(y=>money(p.salYr[y])).join(' → ')):''}<h3>신분</h3>${stateRow(p.foreign?'국적':'고향',esc(p.foreign?(p.nat||'-'):homeTxt(p)))}${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${stateRow('투타',esc(hand(p)))}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}${stateRow('병역',esc(milText(p)))}${p.draft?stateRow('드래프트',p.draft.y+' '+p.draft.rd+'R '+p.draft.no+'순위'):''}${mv?stateRow('입단·이적',esc(mv.t)):''}</section>`;
   const oh=(p.oh||[]).slice(-4), inj=p.injHist||[], aw=(p.aw||[]).slice(-3).reverse();
-  const career=`<section class="card pf-fm-info pf-career"><h3>경력 <button class="tc-i" data-a="ptab" data-v="story">경력·수상 전체</button></h3>${stateRow('수상',aw.length?esc(aw.join(', ')):'없음')}${stateRow('부상 이력',inj.length?inj.length+'회 · 최근 '+inj[inj.length-1].y+'년 '+inj[inj.length-1].days+'일':'없음')}${rp.exact&&oh.length>1?stateRow('종합 추이',oh.map(x=>x.y%100+'년 '+dv(x.o)).join(' → ')):''}${p.use&&p.use.y===G.year&&p.use.g?stateRow('올해 기용',esc(useText(p))):''}${own?`<h3>성격</h3><p class="small keep">${esc(persText(p))}</p>`:''}</section>`;
+  const career=`<section class="card pf-fm-info pf-career"><h3>경력 <button class="tc-i" data-a="ptab" data-v="story">경력·수상 전체</button></h3>${stateRow('수상',aw.length?esc(aw.join(', ')):'없음')}${stateRow('부상 이력',inj.length?inj.length+'회 · 최근 '+inj[inj.length-1].y+'년 '+inj[inj.length-1].days+'일':'없음')}${rp.exact&&oh.length>1?stateRow('종합 추이',oh.map(x=>x.y%100+'년 '+dv(x.o)).join(' → ')):''}${p.use&&p.use.y===G.year&&p.use.g?stateRow('올해 기용',esc(useText(p))):''}${own?`<h3>성격</h3><p class="small keep">${esc(mentalSum(p))}</p>`:''}</section>`;
   /* 빈 칸을 채우는 상자들(PC): 최근 경기(왼쪽), 감독 의견(보고서), 타구·투구 지표(오른쪽), 팀 내 위치(네 번째 열) */
   const GL=((p.gl&&p.gl.y===G.year&&p.gl.g)||[]).slice(-5).reverse();
   const gameRow=g=>p.isP?`<div class="pf-gl"><span>${dsh(g[0])}</span><b>${ipStr(g[2])}이닝</b><i>${g[3]}K ${g[4]}BB ${g[8]!=null?`${g[8]}실점${g[8]!==g[7]?`(${g[7]}자책)`:''}`:`${g[7]}자책`}</i></div>`:`<div class="pf-gl"><span>${dsh(g[0])}</span><b>${g[2]}타수 ${g[3]}안타</b><i>${g[7]?g[7]+'홈런 ':''}${g[5]?g[5]+'볼넷 ':''}${g[6]?g[6]+'삼진':''}</i></div>`;
@@ -32050,7 +32066,7 @@ function renderSheet0(){
    ${tiles?`<div><div class="eyebrow" style="margin-bottom:6px">${h.y} ${h.lvl==='퓨처스'?'2군':'1군'} 성적</div><div class="tiles">${tiles.map(t=>`<div class="tile${t[2]?' key':''}" data-a="recGo" data-v="${p.isP?'pit':'bat'}:${({OPS:'ops',WAR:'war',타율:'avg',홈런:'hr',타점:'rbi',ERA:'era',이닝:'ip',탈삼진:'so',세이브:'sv',홀드:'hld',승:'w'})[t[0]]||'war'}" role="button" title="리그 순위 보기"><span class="g">${t[1]}</span><span class="l">${t[0]}</span></div>`).join('')}</div></div>`:''}
    ${h&&h.lvl==='퓨처스'?'':fut2Card(p)}
    ${!p.prospect&&h?recent3(p,h.y):''}
-   ${p.prospect?`<section class="card"><div class="row between"><span class="eyebrow">아마추어 프로필</span><button class="btn small${(G.shortlist||[]).includes(p.id)?' primary':''}" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 선수':'☆ 관심 표시'}</button></div><dl class="kv"><dt>학교</dt><dd>${esc(p.school||'-')} (${p.college?'대학 4년':'고교 3년'})</dd><dt>체격</dt><dd>${p.ht||'-'}cm · ${p.wt||'-'}kg</dd><dt>${p.isP?'최고 구속':'1루 도달'}</dt><dd>${p.isP?amVmax(p)+'km/h <span class="small muted">(아마 대회 측정)</span>':(p.amRun||runOf(p))+'초'}</dd><dt>언론 순위</dt><dd>${p.press||'-'}위</dd><dt>의료 기록</dt><dd>${p.amInj?esc(p.amInj):'특이 사항 없음'}</dd>${(()=>{const sc=bestScout(p.region,p); return sc&&sc.skill>=3?`<dt>면담 평가</dt><dd>${esc(persText(p))}</dd>`:'';})()}</dl><div class="eyebrow">학년별 기록</div>${amYearTable(p)}${amNotes(p).map(t=>`<p class="small amn">${esc(t)}</p>`).join('')}</section>`:''}
+   ${p.prospect?`<section class="card"><div class="row between"><span class="eyebrow">아마추어 프로필</span><button class="btn small${(G.shortlist||[]).includes(p.id)?' primary':''}" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 선수':'☆ 관심 표시'}</button></div><dl class="kv"><dt>학교</dt><dd>${esc(p.school||'-')} (${p.college?'대학 4년':'고교 3년'})</dd><dt>체격</dt><dd>${p.ht||'-'}cm · ${p.wt||'-'}kg</dd><dt>${p.isP?'최고 구속':'1루 도달'}</dt><dd>${p.isP?amVmax(p)+'km/h <span class="small muted">(아마 대회 측정)</span>':(p.amRun||runOf(p))+'초'}</dd><dt>언론 순위</dt><dd>${p.press||'-'}위</dd><dt>의료 기록</dt><dd>${p.amInj?esc(p.amInj):'특이 사항 없음'}</dd>${(()=>{const sc=bestScout(p.region,p); return sc&&sc.skill>=3?`<dt>면담 평가</dt><dd>${esc(mentalSum(p))}</dd>`:'';})()}</dl><div class="eyebrow">학년별 기록</div>${amYearTable(p)}${amNotes(p).map(t=>`<p class="small amn">${esc(t)}</p>`).join('')}</section>`:''}
    ${p.prospect||isFM?reportCard(p):''}
    ${hideOvr(p)&&!p.prospect?trackCard(p):''}
    ${!p.prospect&&!isFM?`<dl class="kv"><dt>연봉</dt><dd>${money(p.sal)}</dd><dt>계약</dt><dd>${p.extNext?`다년 합의(${p.extNext.years}년, 다음 시즌부터)`:p.faC?`${ctText(p)} · ${ctSeason()+Math.max(1,p.yrs)-1}시즌까지`:p.foreign?'1년':`단년 · ${ctText(p)}`}</dd>${ctMoneyKv(p)}${p.foreign?'':`<dt>등록 연차</dt><dd>${p.svc}년 (FA 자격 ${faSvc(p)}시즌 · ${p.college?'대졸':'고졸'})</dd><dt>샐러리캡 산정</dt><dd>${isRookie(p)?'신인이라 제외':'포함'}</dd>`}</dl>`:''}
@@ -32174,7 +32190,7 @@ function bondCard(p){
   initPers(p); const m=p.mor;
   return `<section class="card"><div class="row between"><span class="eyebrow">선수와의 관계</span><span class="pill ${moodClass(m)}">기분 ${moodLabel(m)}</span></div>
   <p class="small">${esc(moraleWhy(p))}</p>${p.team===G.user?roleLines(p):''}
-  <p class="small muted">코치진이 본 성향: ${esc(persText(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
+  <p class="small muted">성향: ${esc(mentalSum(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
   ${p.team===G.user?`<button class="btn small mt-go" data-a="meetOpen" data-v="pl:${p.id}">${avImg(p)}<span><b>개인 면담</b><i>${talkUsed(p,'praise')?'이번 주 칭찬·분발 촉구는 했습니다 · 고민은 언제든':'칭찬, 분발 촉구, 출전 기회, 계약, 고민'}</i></span></button>`:''}
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
   </section>`;
@@ -35481,6 +35497,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-12-grow',d:'11월 12일',t:'선수 성장 현실화 · 히든 멘탈',items:[
+    '잠재력만큼 크는 선수는 드뭅니다. 선수마다 잠재력을 얼마나 실현할지가 숨겨져 있어, 별 다섯 유망주도 안 터질 수 있습니다. 젊은 선수도 해마다 정체·후퇴가 섞입니다.',
+    '성실성·야망·충성심·기질은 숫자로 보이지 않습니다. 우리 선수는 감독이(함께한 시간이 길수록 정확), 다른 구단·아마추어 선수는 그 지역 스카우트가 평판으로 알려 줍니다. 멘탈이 좋을수록 잠재력을 잘 실현하고, 나쁘면 슬럼프가 잦습니다.']},
   {id:'2026-11-12-series',d:'11월 12일',t:'시리즈 결과 문구',items:[
     '한 시리즈를 마치면 결과 창 제목에 "스윕 승, 위닝 시리즈!", "위닝 시리즈!", "루징 시리즈…", "스윕 패, 루징 시리즈…"가 나오고 리그 소식에도 실립니다.']},
   {id:'2026-11-12-floor',d:'11월 12일',t:'AI 연봉 하한 맞추기 정리',items:[
