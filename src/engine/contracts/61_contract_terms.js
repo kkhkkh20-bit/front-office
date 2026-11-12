@@ -94,7 +94,22 @@ function useScore(m,gap){ const ego=m.interim?40:m.ego; return 4-gap-(ego-50)/10
 function mgrUseView(p){ const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 로테이션':k==='RP'?'필승조':'주전'; if(r&&promKept(p,r))return `${p.name}은(는) 지금 약속대로 ${roleNowTxt(p)}(으)로 쓰고 있습니다.`;
   const {c,gap}=useComp(p,k); return `${p.name} 말씀이군요. 지금은 ${roleNowTxt(p)}(으)로 쓰고 있습니다. ${c?`${role} 마지막 자리는 ${c.name}인데, ${gap>2?`${p.name}이(가) 아직 처집니다`:gap>=-2?'둘이 비슷합니다':`${p.name}이(가) 더 낫습니다`}.`:`${role} 자리에 여유가 있습니다.`}${r?` 계약 때 ${r.l} 약속이 있었던 건 압니다.`:''}`; }
 function useUnavailable(p){ if(!healthy(p)||isAway(p)||p.ys||p.joinY>G.year||p.hold||!psOk(p))return upWhy({...p,e1:false}); if(entryOn()&&!p.e1&&!canUp(p))return upWhy(p); return ''; }
+/* 포지션 기용 건의(커뮤니티 11-12 Derma: 3루도 되는 1루수를 감독이 1루에만 쓴다). 단장은 건의만 하고 감독이 받아들이면
+   그 감독이 있는 동안 이번 시즌 그 자리에 쓰는 쪽으로 기운다(라인업 가산 posAskB, 절대 지시는 아님: 그 자리 수비가 크게 처지면 여전히 안 쓴다).
+   판단: 그 자리 지금 주전과의 자리 점수(posScore) 차, 감독 고집·관계(useScore와 같은 식). 거절하면 관계 -1, 7일 뒤 다시 */
+function posAskOf(tid,p){ const x=G.posAsk&&G.posAsk[p.id]; if(!x||x.tid!==tid||x.y!==G.year||p.team!==tid)return null; const m=G.mgr[tid]; return m&&m.id===x.mid?x.k:null; }
+const posAskB=(tid,p,pos)=>posAskOf(tid,p)===pos?14:0;
+function mgrPosAsk(p,m,k){ const nm=POSK[k]||k; const me=`${p.name}을(를) ${nm}로도 써 주십시오. 그 자리 수비가 됩니다.`;
+  if(p.isP||!subsOf(p).includes(k))return {me,a:`${p.name}은(는) ${nm} 수비 경험이 부족합니다. 거기는 못 맡깁니다.`,sys:'그 자리 숙련도 50 이상인 자리만 건의할 수 있습니다'};
+  if(posAskOf(G.user,p)===k)return {me,a:'이미 그렇게 쓰기로 했습니다.',sys:''};
+  const no=G.useNo&&G.useNo[p.id]; if(no&&no.u>G.day&&no.mid===m.id)return {me,a:`며칠 전에 말씀드렸습니다. 당분간은 지금대로 가겠습니다.`,sys:`${dmd(no.u)}부터 다시 건의할 수 있습니다`};
+  const d=depth(G.user), at=d.ln&&d.ln[k]; const gap=at&&at.id!==p.id?Math.round(posScore(at,k)-posScore(p,k)):-3;
+  if(useScore(m,gap)<0){ m.rel=clamp(m.rel-1,0,100); (G.useNo=G.useNo||{})[p.id]={u:G.day+7,mid:m.id}; return {me,a:`${at?`${nm}는 ${at.name}이(가) 낫습니다.`:''} ${p.name}은(는) 지금 자리에서 쓰겠습니다.`,sys:'건의 거절 · 감독 관계 -1 · 7일 뒤 다시 건의할 수 있습니다'}; }
+  const cost=m.ego>=65&&!mplOn('listen'); if(cost)m.rel=clamp(m.rel-1,0,100);
+  (G.posAsk=G.posAsk||{})[p.id]={k,tid:G.user,mid:m.id,y:G.year,d:G.day}; p.mor=clamp((p.mor??60)+2,0,100);
+  return {me,a:`해 보겠습니다. ${nm}에 넣어 보고 수비가 버티면 계속 쓰겠습니다.`,sys:`수락: 이번 시즌 ${p.name}을(를) ${nm} 쪽으로 기용(감독이 바뀌면 다시 건의) · ${p.name} 기분 +2${cost?' · 감독 관계 -1':''}`}; }
 function mgrUseAsk(pid,c){ const p=G.players[pid], m=G.mgr[G.user]; if(!p||p.team!==G.user||G.unemp||!m)return {me:'',a:'...',sys:'건의할 수 없는 선수입니다.'}; mgrFix(m);
+  if(String(c).startsWith('pos:'))return mgrPosAsk(p,m,String(c).slice(4));
   const why=useUnavailable(p); if(why)return {me:'',a:'지금은 출전 기용을 약속할 수 없습니다.',sys:why};
   const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 로테이션':k==='RP'?'필승조':'주전'; const {c:cp,gap}=useComp(p,k);
   const me=c==='role'?`계약 때 약속한 ${r?r.l.replace(' 보장',''):role} 자리대로 ${p.name}을(를) 써 주십시오.`:c==='alt'?`${r?`${role}이 어렵다면 `:''}${p.name}에게 ${p.isP?'롱릴리프·스윙맨으로라도':'대타·선발 몇 경기로라도'} 출전 기회를 주십시오.`:`성적이 안 되면 감독님 판단을 존중하겠습니다. 다만 ${p.name} 사정은 알아 주십시오.`;
