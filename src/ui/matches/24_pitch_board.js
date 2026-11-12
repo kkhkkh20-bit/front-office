@@ -23,6 +23,7 @@ function cPitchPanel(g,k,seq,shown){
   if(q){const terminal=shown===seq.length,n=terminal?{b:q.b,s:q.s}:cCountAfter(q);cCount(n.b,n.s);if(c3DActive())Match3D.scoreboard({b:n.b,s:n.s,pitch:Number.isFinite(q.v)?{t:q.t,v:q.v}:null,playText:q.res});}
   else cCount(0,0);
   const count=document.getElementById('cs-pitcher-count');if(count&&x&&typeof x[1]==='number'){const total=cPitchTotalBefore(g,k,x[2]);count.textContent=total==null?'투구 수 미기록':(total+shown)+'구';}
+  const bugCount=document.getElementById('md-bug-pc');if(bugCount&&x&&typeof x[1]==='number'){const total=cPitchTotalBefore(g,k,x[2]);bugCount.textContent=total==null?'':(total+shown)+'구';}
 }
 function cShowPitch(g,k,seq,index){if(!UI.cast)return;UI.cast.pitch={k,shown:index+1};cPitchPanel(g,k,seq,index+1);}
 function cPitchReset(g,k){const state=UI.cast?.pitch,seq=cPitchSeq(g,k);cPitchPanel(g,k,seq,state?.k===k?Math.min(seq.length,state.shown):0);}
