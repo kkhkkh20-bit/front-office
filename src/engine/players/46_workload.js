@@ -25,7 +25,7 @@ function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day),L=p.ld=p.ld||[],S
   if(same){const apps=same[3]||(same[3]=[[same[1],SD.includes(day)?1:0]]);apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
   if(isStart){if(!SD.includes(day))SD.push(day);SD.sort((a,b)=>a-b);if(p.lsS==null||day>p.lsS)p.lsS=day;}
   p.armw=Math.max(0,(p.armw||0)+loadSpan(L,SD)-before);while(L.length>10)L.shift();if(isStart)p.lsD=SD.slice(-6);
-  if(cd>=2&&p.team===G.user&&p.e1&&period()==='season'){ /* 2군(퓨처스) 연투는 2군 감독 몫: 1군 투수만 알린다(제보 11-12) */ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
+  if(cd>=3&&p.team===G.user&&p.e1&&period()==='season'){ /* 4일 연속부터(플레이 리뷰 11-12: 3일 연투 알림이 시즌 14통) */ /* 2군(퓨처스) 연투는 2군 감독 몫: 1군 투수만 알린다(제보 11-12) */ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
   return cd; }
 /* 부상 위험 배수: 연투(급성)와 누적 부하(만성) */
 function loadMult(p,cd,day){ const sp=isSPr(p); const w7=pc7(p,day);
