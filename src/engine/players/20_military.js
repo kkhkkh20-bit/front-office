@@ -13,7 +13,7 @@ const milFree=p=>!p.foreign&&!(p.mil&&(p.mil.done||p.mil.exempt||p.mil.until));
 function milInit(p){ if(p.mil!==undefined||p.foreign)return; const a=p.age; const u=u01('mil',p.id);
   p.mil=a>=28?(u<.9?{done:true}:u<.95?{exempt:true}:null):a>=25?(u<.55?{done:true}:u<.6?{exempt:true}:null):a>=22?(u<.2?{done:true}:null):null; }
 function milText(p){ if(p.foreign)return '해당 없음'; const m=p.mil; if(!m)return `미필 · ${G.year+Math.max(0,27-p.age)}년까지 입대`; if(m.exempt)return '면제(체육요원)'; if(m.done)return '군필';
-  if(m.until&&m.from<=G.day&&m.until>G.day)return `${m.unit} 복무 중 · ${dmd(m.until)} 전역`; if(m.until&&m.from>G.day)return `${m.unit} 입대 예정 · ${dmd(m.from)}`; if(m.app)return `상무 지원 중(${m.app==='dec'?'12월':'6월'} 입대)`; return '미필'; }
+  if(m.until&&m.from<=G.day&&m.until>G.day)return `${m.unit} 복무 중 · ${dmdY(m.until)} 전역`; if(m.until&&m.from>G.day)return `${m.unit} 입대 예정 · ${dmdY(m.from)}`; if(m.app)return `상무 지원 중(${m.app==='dec'?'12월':'6월'} 입대)`; return '미필'; }
 function enlist(p,unit,from){ p.mil={unit,from,until:from+MIL_DAYS}; const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.st!=='ok'){ p.mil.neg={st:cn.st,ns:p.newSal,has:'newSal' in p,v:cn.cur??cn.off,ask:cn.ask}; /* 예약 전 협상은 선수에게 남긴다: 단장이 떠났다 돌아와도 같은 결과(검수 11-09zx) */ cn.st='ok'; cn.mil=true; p.newSal=p.sal; } /* 복무 선수는 연봉 협상 없이 지금 연봉으로(복무 중 지급 없음). 예약을 취소하면 아래에서 협상 상태를 되돌린다 */ story(p,`${unit} 입대 (${dmd(from)})`,'mil'); if(from<=G.day){ p.e1=false; milChron(p,'입대',unit,from,from+MIL_DAYS); } /* 엔트리는 입대일에 뺀다(합격 발표 때 빼지 않는다) */ if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+MIL_DAYS)} 전역 예정).`); }
 function sangmuApply(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; if(p.mil&&p.mil.app)return '이미 지원했습니다.'; const W=sangmuPeriod(),w=W.open?W.wave:null; if(!w)return '상무 지원 기간이 아닙니다(3월 1일~4월 14일, 9월 1일~10월 14일).'; if(sangmuEntryAge(p,W)>27)return '상무 지원은 해당 기수 입대 연도에 27세까지입니다(게임 규칙).';
   p.mil={app:w}; addLog(`${p.name}이(가) 상무에 지원했습니다.`); return ''; }
@@ -61,14 +61,14 @@ function milDaily(){ const d=G.day;
     if(mo.length||mn.length)mail('운영팀','상무 합격자 발표',`${mo.length?`합격: ${mo.map(p=>p.name).join(', ')} (${dmd(from)} 입대)`:'합격자 없음'}${mn.length?`\n불합격: ${mn.map(p=>p.name).join(', ')}. 다음 지원 기간에 다시 지원하거나 현역으로 입대해야 합니다.`:''}`,{imp:true,kind:'병역'});
     if(mo.some(p=>ovr(p)>=52))news('선수',`${tshort(G.user)} 주축 ${mo.find(p=>ovr(p)>=52).name} 상무 합격`,`전력 공백은 불가피하지만 1년 6개월 뒤 돌아올 자원입니다.`,-1); }
   try{ milRetWarn(d); }catch(e){}
-  for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.from===d){ p.e1=false; milChron(p,'입대',m.unit,m.from,m.until); if(p.team===G.user)addLog(`${p.name} ${m.unit} 입대. 전역 예정 ${dmd(m.until)}.`); } }
+  for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.from===d){ p.e1=false; milChron(p,'입대',m.unit,m.from,m.until); if(p.team===G.user)addLog(`${p.name} ${m.unit} 입대. 전역 예정 ${dmdY(m.until)}.`); } }
   const back={}; for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until===d){ milChron(p,'전역',m.unit,m.from,m.until); if(p.team!=null)(back[p.team]=back[p.team]||[]).push(p); p.mil={done:true,unit:m.unit,pf:m.from,pu:m.until}; /* 지난 복무 기간: 그해 연봉 계산(payFrac)에 남긴다(검수 11-06) */ story(p,`${m.unit} 전역`,'mil'); if(p.team===G.user)mail('운영팀',`${p.name} 전역`,`${p.name}이(가) ${m.unit} 복무를 마치고 돌아왔습니다. 정식 로스터 인원을 확인해 주세요.`,{kind:'병역',ref:p.id}); } }
   try{ ntDaily(d); }catch(e){ console.error(e); } /* 국가대표(아시안게임·올림픽·WBC·프리미어12): 84_national.js. 정원 정리보다 먼저: 입상 병역 특례로 복무 중 선수가 바로 전역해도 AI가 같은 날 68명에 맞춘다(2028 SEED 7 인천 69명) */
   for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX)try{ trimRoster(t.id,ROSTER_MAX); }catch(e){} }
   for(const tid in back)try{ entryUpgrade(+tid,back[tid],'전역'); }catch(e){} /* 전역한 주축은 당일 엔트리 교체를 검토한다(검수 11-09zx) */ }
 /* 곧 군에서 돌아오는 우리 선수(정식 로스터로 바로 복귀한다) */
 function milReturns(days){ return awayOf(G.user).filter(p=>!p.ys&&p.mil&&p.mil.until>G.day&&p.mil.until<=G.day+days).sort((a,b)=>a.mil.until-b.mil.until); }
-function milRetTxt(L){ return L.map(p=>`${p.name}(${posLabel(p)}, ${dmd(p.mil.until)})`).join(', '); }
+function milRetTxt(L){ return L.map(p=>`${p.name}(${posLabel(p)}, ${dmdY(p.mil.until)})`).join(', '); }
 /* 복귀 7일 전: 시즌 중 로스터가 넘칠 것 같으면 미리 알린다 */
 function milRetWarn(d){ if(G.unemp)return; const L=milReturns(7); if(!L.some(p=>p.mil.until===d+7))return; /* 스토브리그 전역도 미리 알림(검수 11-09zk) */
   const n=rosterN(G.user); let pk=n, pd=d; for(let k=1;k<=7;k++){ const v=rosterN(G.user,d+k); if(v>pk){ pk=v; pd=d+k; } } const need=pk-ROSTER_MAX; if(need<=0)return; /* 하루씩 실제 병역 처리 기준으로 세어 중간에 넘치는 날도 잡는다(검수 11-09zk) */
@@ -103,10 +103,10 @@ const olyYear=y=>y>=2028&&(y-2028)%4===0;
 /* 올림픽 명단·결과는 국가대표(84_national.js)로 옮겼다 */
 
 /* 병역 상태 한 줄(사용자 피드백 11-05: 상무 복무 중인 선수가 검색표에서 군필·면제로 보였다). k: free 미필 · svc 복무 중·입대 예정 · done 군필·면제 */
-function milState(p){ if(p.foreign)return {k:'done',l:'-'}; const m=p.mil; if(m&&m.until&&!m.done){ if(m.from<=G.day&&m.until>G.day)return {k:'svc',l:`${m.unit||'복무'} 중 · ${dmd(m.until)} 전역`}; if(m.from>G.day)return {k:'svc',l:`입대 예정 · ${dmd(m.from)}`}; } return milFree(p)?{k:'free',l:'미필'}:{k:'done',l:'군필·면제'}; }
+function milState(p){ if(p.foreign)return {k:'done',l:'-'}; const m=p.mil; if(m&&m.until&&!m.done){ if(m.from<=G.day&&m.until>G.day)return {k:'svc',l:`${m.unit||'복무'} 중 · ${dmdY(m.until)} 전역`}; if(m.from>G.day)return {k:'svc',l:`입대 예정 · ${dmdY(m.from)}`}; } return milFree(p)?{k:'free',l:'미필'}:{k:'done',l:'군필·면제'}; }
 
 /* 실제 입대·복귀만 구단 연대기에 남긴다. 예약·취소는 소속 이력이 아니다. */
-function milChron(p,kind,unit,from,until){ if(!p||p.team==null)return; chron('mil',`${p.name} ${unit} ${kind} · 복무 ${dmd(from)}~${dmd(until)}${kind==='입대'?' · 전역 예정':''}`,p.id,p.team,{source:'mil:'+p.id+':'+from+':'+kind}); }
+function milChron(p,kind,unit,from,until){ if(!p||p.team==null)return; chron('mil',`${p.name} ${unit} ${kind} · 복무 ${dmd(from)}~${dmdY(until)}${kind==='입대'?' · 전역 예정':''}`,p.id,p.team,{source:'mil:'+p.id+':'+from+':'+kind}); }
 
 /* 상무 합격 심사의 실적: 상무는 퓨처스리그 팀이라 2군 기록을 주로 본다(사용자 11-11). 올해·지난해 퓨처스 합계(게임 기준값)
    타자 100타석↑: (OPS-.700)×20, 투수 20이닝↑: (4.50-ERA)×1.5 (각 -4~+6) · 기록이 거의 없으면 -4 · 2군 출장 30경기마다 +1(최대 +3) · 1군 경험 30경기마다 +1(최대 +2) */
