@@ -25,7 +25,7 @@ export function catcherThrow(source,crouch){
 export const FOLLOW_FLEX=1.05; /* 투구 뒤 상체를 더 깊게 숙인다(사용자 피드백 11-07) */
 export function pitchFollowThrough(source,release){const axis=new Vector3(1,0,0),q=new Quaternion(),turn=new Quaternion(),weights={Spine:.3,Spine1:.35,Spine2:.35},ramp=.22;
  const tracks=source.tracks.map(track=>{const joint=track.name.match(/(Spine[12]?)\.quaternion$/)?.[1];if(!joint)return track;const grid=[];for(let t=release;t<source.duration;t+=1/30)grid.push(t);const times=[...new Set([...track.times,...grid,source.duration])].filter(t=>t<=source.duration).sort((a,b)=>a-b),values=times.flatMap(t=>valuesAt(track,t));
-  for(let i=0;i<times.length;i++){const k=smooth((times[i]-release)/ramp);if(!k)continue;q.fromArray(values,i*4);q.multiply(turn.setFromAxisAngle(axis,FOLLOW_FLEX*weights[joint]*k)).normalize().toArray(values,i*4);}
+  for(let i=0;i<times.length;i++){const k=smooth((times[i]-release)/ramp)*(1-.65*smooth((times[i]-release-.3)/.4));if(!k)continue; /* 깊이 숙였다가 0.3초 뒤부터 일어나 수비 준비 자세로(끝까지 숙이면 쪼그려 앉은 모양, 사용자 11-12) */q.fromArray(values,i*4);q.multiply(turn.setFromAxisAngle(axis,FOLLOW_FLEX*weights[joint]*k)).normalize().toArray(values,i*4);}
   const copy=track.clone();copy.times=new Float32Array(times);copy.values=new Float32Array(values);return copy;});
  return new AnimationClip(source.name,source.duration,tracks);}
 /* 세트 포지션: 투수는 글러브 쪽 어깨를 홈으로 두고 옆으로 선다(우투수는 3루 쪽을 본다). 원본 세트·킥이 반쯤 정면이라

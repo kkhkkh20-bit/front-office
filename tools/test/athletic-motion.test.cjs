@@ -8,6 +8,6 @@ for(const mirror of [1,-1]){const rig=model.scene.clone(true);rig.scale.x=mirror
 });
 test('투구 팔로스루는 릴리스 자세를 그대로 두고 그 뒤 상체를 홈 쪽으로 숙인다',async()=>{const {T,model,api}=await ready,base=model.animations.find(c=>c.name==='pitch_overhand_windup'),release=.5833,clip=api.pitchFollowThrough(base,release);
  const lean=(c,t)=>{const rig=model.scene.clone(true),mixer=new T.AnimationMixer(rig);mixer.clipAction(c).play();mixer.setTime(t);rig.updateMatrixWorld(true);const h=rig.getObjectByName('mixamorigHips').getWorldPosition(new T.Vector3()),s=rig.getObjectByName('mixamorigSpine2').getWorldPosition(new T.Vector3());return Math.atan2(s.z-h.z,s.y-h.y);};
- assert.ok(Math.abs(lean(clip,release)-lean(base,release))<.01,'릴리스 순간 자세 보존');const end=base.duration-.01;assert.ok(lean(clip,end)-lean(base,end)>.15,'팔로스루에서 상체가 더 숙여짐');
+ assert.ok(Math.abs(lean(clip,release)-lean(base,release))<.01,'릴리스 순간 자세 보존');const deep=release+.3,end=base.duration-.01;assert.ok(lean(clip,deep)-lean(base,deep)>.15,'팔로스루에서 상체가 더 숙여짐(11-07)');assert.ok(lean(clip,end)-lean(base,end)<lean(clip,deep)-lean(base,deep),'숙였다가 다시 일어나 끝까지 쪼그리지 않음(11-12)');
  for(const t of clip.tracks)assert.ok(t.values.every(Number.isFinite));
 });
