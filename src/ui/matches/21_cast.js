@@ -214,7 +214,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   const runAll2=async(per)=>Promise.all(moves.map(async m=>{ const el=card('o'+m.id); if(!el)return; for(let i=m.from+1;i<=Math.min(4,m.to);i++){ cPlace(el,CPATH[i],per); await cSleep(per); } if(m.out||m.score)el.classList.add('gone'); }));
   let cap='', cls='';
   const oc=cTeamCol(x[0]%2?g.home:g.away);
-  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } else umpCall('스트라이크 아웃'); if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
+  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } else umpCall('스트라이크 아웃'); if(homeBat&&(b.bases[1]||b.bases[2]))sfx('sigh',.5); /* 홈 팀 득점권 삼진: 관중 탄식 */ if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
   else if(o==='BB'||o==='HBP'){if(o==='HBP'&&scene3d){Match3D.hitByPitch();await cSleep(650);} if(!cam)cFx(o==='HBP'?'몸에 맞는 공':'볼넷','bb'); const pr=[]; if(bat){ cPlace(bat,CBS[0],700); pr.push(cSleep(700)); } pr.push(runAll2(600)); await Promise.all(pr); }
   else if(scene3d){await c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo});}
   else {

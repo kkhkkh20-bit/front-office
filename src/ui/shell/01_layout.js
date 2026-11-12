@@ -176,7 +176,7 @@ function isIOS(){ try{ const u=navigator.userAgent||''; return /iPhone|iPad|iPod
 const NOT_AFFIL='이 게임은 가상의 프로야구 단장 시뮬레이션입니다. KBO(한국야구위원회)와 KBO 리그 구단, 실제 선수·스폰서와 관련이 없으며 승인이나 후원을 받지 않았습니다. 구단·선수·인물은 모두 가상입니다.';
 /* 서드파티 고지. 전문은 docs/licenses/*.txt — 단일 HTML은 빌드가 #lic-text 템플릿으로 싣고, 사이트판은 licenses/ 파일로 올린다(tools/build.cjs·build-site.cjs) */
 const CREDITS=[['faces.js (ZenGM)','Apache License 2.0, 이 게임에 맞게 수정한 사본','선수 얼굴'],['lz-string (pieroxy)','MIT','저장 압축'],['fflate (Arjun Barrett)','MIT','저장 압축'],
-  ['three.js','MIT','3D 중계'],['Claudeball (Taylor Beeston)','MIT','3D 선수·구장 모델과 애니메이션. 인체 메시·머리카락·피부 텍스처는 MakeHuman/MPFB2 에셋(CC0), 재질은 ambientCG(CC0), 애니메이션은 원작 자체 제작'],
+  ['three.js','MIT','3D 중계'],['Claudeball (Taylor Beeston)','MIT','3D 선수·구장 모델과 애니메이션. 인체 메시·머리카락·피부 텍스처는 MakeHuman/MPFB2 에셋(CC0), 재질은 ambientCG(CC0), 애니메이션은 원작 자체 제작'],['CMU Graphics Lab Motion Capture Database','재배포 허가 불필요(CMU 안내)','번트 동작. The data used in this project was obtained from mocap.cs.cmu.edu.'],['Freesound 녹음 (martinimeniscus, craigsmith, Douglas711, ShangusBurger)','CC0','중계 타격음·미트·관중 웅성임·탄식·뜬공 반응'],
   ['meshoptimizer (Arseny Kapoulkine)','MIT','3D 모델 압축 해제'],['Basis Universal (Binomial LLC)','Apache License 2.0','3D 텍스처 변환'],['Kenney Sports Pack','CC0','카드 중계 선수 그림'],['Lucide','ISC','아이콘'],
   ['지도','통계청(KOSTAT) 행정구역경계, Natural Earth, 미국 인구조사국(공공 영역)','권역·해외 지도'],['Noto Sans KR, Black Han Sans, Barlow Condensed, Alfa Slab One','SIL Open Font License 1.1','글꼴·배지 글자'],['DejaVu Sans Condensed Bold','Bitstream Vera 라이선스','배지 글자 외곽선']];
 const LIC_FILES=['data-sources.txt','facesjs.txt','fflate.txt','fonts.txt','lucide.txt','lz-string.txt','match3d.txt'];
