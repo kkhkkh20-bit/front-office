@@ -26,7 +26,13 @@ function offerRevert(id){ const o=(G.offers||[]).find(x=>x.id===id); if(!o||!o.p
   o.give=o.prev.give; if(o.prev.adv!==undefined)o.adv=o.prev.adv; else delete o.adv; if(o.prev.pot!==undefined)o.pot=o.prev.pot; else delete o.pot; delete o.prev;
   return `${t.city} ${t.nick} 단장: 알겠습니다. 처음 제안한 조건대로 하죠.`; }
 /* 다른 구단 트레이드 매물: 이유가 있는 선수를 올리고 6주까지 둔다. 압박받는 단장·연봉 초과 구단은 급매 */
-const BLKWHY={reb:'리빌딩 정리',room:'자리 없음',dup:'중복 자원',sal:'연봉 정리'};
+const BLKWHY={reb:'리빌딩 정리',room:'자리 없음',dup:'중복 자원',sal:'연봉 정리',fa:'FA 앞둔 주전'};
+/* FA를 앞둔 주전의 처리(11-12, 사용자 "AI도 유저처럼 머리를 쓰게"): 재계약할 수 있으면 지키고, FA 보상(A·B등급 보상선수·보상금)이 쏠쏠하면 기다리고,
+   가을야구가 멀고 재계약도 어려우면 시즌 중에 제값 받고 판다. 예전에는 연봉 정리 때 FA 직전 고액 주전을 급매로 내놓아 다른 구단이 싸게 데려갔다 */
+function aiCY(p){ return !!p&&!p.foreign&&(preFA(p)||(p.faC&&(p.yrs||0)<=1&&!p.extNext)); }
+function aiFaPlan(t,p){ if(!aiCY(p)||ovr(p)<52)return null; if(teamCtx(t).contend)return 'keep';
+  const loy=((p.pers&&p.pers.loy)??10)-10; const rs=clamp(.55+((t.cash||0)>3000?.15:(t.cash||0)<0?-.25:0)+(t.owner==='profit'?-.15:0)-Math.max(0,p.age-30)*.06+loy/100,.05,.9);
+  const comp=p.age<=32&&ovr(p)>=54; if(rs>=.55||(comp&&rs>=.35))return 'keep'; return 'sell'; }
 function aiBlockWeekly(){ if(!tradeOpen())return;
   for(const p of playersOf(G.user)){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; }
   for(const t of G.teams){ if(t.id===ME())continue; const ds=domestic(t.id).filter(p=>!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!hasNtc(p)&&!mvRecent(p)); /* 거부권 선수는 동의 절차가 없어 데려갈 수 없으니 매물로 내놓지 않는다 */ for(const p of domestic(t.id))if(p.aiListed&&hasNtc(p)){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; }
@@ -36,12 +42,13 @@ function aiBlockWeekly(){ if(!tradeOpen())return;
       /* 정리 대상은 '연봉이 높은 선수'가 아니라 '받는 돈만큼 못 하는 선수'다: 몸값(시장 연봉) 대비 초과분이 큰 순, 나이가 많을수록 먼저.
          실력 좋은 고액 선수는 성적을 원하는 팀이 오히려 비싸게 사 가는 자원이라 내놓지 않는다 */
       const mk=p=>Math.max(MIN_SAL*3,marketSal(projO(p,0))); const over=p=>p.sal/mk(p)+(p.age>=32?(p.age-31)*.15:0); /* 몸값(시장 연봉) 대비 몇 배를 받나 + 노장 가산. 금액 차보다 배율이 '거품'을 잘 가린다 */
-      if(ci.pay>ci.cap*.97){ pk=ds.filter(p=>!top3.has(p.id)&&!p.aiListed&&p.sal-mk(p)>100).sort((x,y)=>over(y)-over(x))[0]; why='sal'; }
+      if(period()==='season'&&G.day>=KD(6,1)&&!teamCtx(t).contend){ pk=ds.filter(p=>!p.aiListed&&aiFaPlan(t,p)==='sell').sort((x,y)=>ovr(y)-ovr(x))[0]; if(pk)why='fa'; } /* 가을야구가 멀고 재계약이 어려운 FA 직전 주전은 제값에 판다 */
+      if(!pk&&ci.pay>ci.cap*.97){ pk=ds.filter(p=>!top3.has(p.id)&&!p.aiListed&&p.sal-mk(p)>100&&!(ci.pay<=ci.cap&&aiFaPlan(t,p)==='keep')).sort((x,y)=>over(y)-over(x))[0]; why='sal'; } /* 상한을 넘지 않았으면 지킬 FA 직전 선수는 연봉 정리 대상에서 뺀다 */
       if(!pk&&t.mode==='rebuild'){ pk=ds.filter(p=>p.age>=29&&ovr(p)>=50&&!p.aiListed&&over(p)>.85).sort((x,y)=>over(y)-over(x))[0]; why='reb'; }
       if(!pk&&R()<.5){ pk=ds.filter(p=>p.age<=25&&!st.has(p.id)&&p.pot-ovr(p)>=6&&!p.aiListed).sort((x,y)=>ovr(y)-ovr(x))[0]; why='room'; }
       if(!pk){ const rk=slotRanks(t.id); pk=ds.filter(p=>!st.has(p.id)&&!top3.has(p.id)&&ovr(p)>=48&&!p.aiListed&&rk[pSlot(p)]&&rk[pSlot(p)].rank<=4).sort((x,y)=>ovr(y)-ovr(x))[0]; why='dup'; }
       if(pk){ pk.aiListed=true; pk.aiWhy=why; pk.aiLd=G.day; } }
-    for(const p of ds.filter(q=>q.aiListed)){ p.aiUrg=p.aiWhy==='sal'&&ci.pay>ci.cap||heat>=.6||(G.day-(p.aiLd||G.day)>35); } } }
+    for(const p of ds.filter(q=>q.aiListed)){ p.aiUrg=p.aiWhy==='fa'?(G.day>=tradeDL()-7):(p.aiWhy==='sal'&&ci.pay>ci.cap||heat>=.6||(G.day-(p.aiLd||G.day)>35)); /* FA 앞둔 주전은 마감 직전 주에만 급해진다 */ } } }
 /* FA 에이전트 */
 function negOf(id){ const F=G.fa; F.neg=F.neg||{}; if(!F.neg[id]){ const ag=G.players[id]?agentOf(G.players[id]):null; F.neg[id]={rounds:0,mood:clamp(Math.round(50+(agRel(ag)-50)*.6),25,85),log:[],counter:null,closed:false,warned:false}; } return F.neg[id]; }
 const offScore=o=>o.annual*(1+.06*(o.years-1));
