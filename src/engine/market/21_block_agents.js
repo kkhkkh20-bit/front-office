@@ -2,7 +2,7 @@
 const WANT={any:'가장 좋은 제안',prospect:'유망주',p:'투수',b:'야수',sal:'연봉 절감'};
 function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||hasNtc(p))return; if(p.noTrade)delete p.noTrade; /* 매물로 올리면 트레이드 불가 지정은 풀린다 */ if(!p.listed)delete p.urgent; /* 새로 올리면 일반 매물(지난 급매 설정이 남지 않게, 검수 11-09w) */ p.listed=true; p.lw=want||p.lw||'any'; }
 function blockRemove(id){ const p=G.players[id]; if(!p)return; delete p.listed; delete p.lw; delete p.urgent; G.offers=(G.offers||[]).filter(o=>!(o.blk&&o.get.includes(id))); }
-function corePool(tid){ const t=team(tid); const ds=domestic(tid).filter(p=>!p.ys&&!hasNtc(p)); /* 거부권 선수는 트레이드 카드로 내놓지 않는다 */ const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
+function corePool(tid){ const t=team(tid); const ds=domestic(tid).filter(p=>!p.ys&&!(hasNtc(p)||faLock(p))); /* 거부권 선수는 트레이드 카드로 내놓지 않는다 */ const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
 function pickPackage(tid,budget,want,exclude){ const t=team(tid); exclude=exclude||[];
   let pool=corePool(tid).filter(p=>!exclude.includes(p.id)&&healthy(p)).map(p=>({p,v:tval(t,p,'out')*(p.aiListed?.85:1),u:tval(team(G.user),p,'in')})).filter(x=>x.v>0.3&&x.u>0.3);
   if(want==='prospect')pool=pool.filter(x=>x.p.age<=24&&x.p.pot-ovr(x.p)>=6); else if(want==='p')pool=pool.filter(x=>x.p.isP); else if(want==='b')pool=pool.filter(x=>!x.p.isP);
@@ -35,7 +35,7 @@ function aiFaPlan(t,p){ if(!aiCY(p)||ovr(p)<52)return null; if(teamCtx(t).conten
   const comp=p.age<=32&&ovr(p)>=54; if(rs>=.55||(comp&&rs>=.35))return 'keep'; return 'sell'; }
 function aiBlockWeekly(){ if(!tradeOpen())return;
   for(const p of playersOf(G.user)){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; }
-  for(const t of G.teams){ if(t.id===ME())continue; const ds=domestic(t.id).filter(p=>!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!hasNtc(p)&&!mvRecent(p)); /* 거부권 선수는 동의 절차가 없어 데려갈 수 없으니 매물로 내놓지 않는다 */ for(const p of domestic(t.id))if(p.aiListed&&hasNtc(p)){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; }
+  for(const t of G.teams){ if(t.id===ME())continue; const ds=domestic(t.id).filter(p=>!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!(hasNtc(p)||faLock(p))&&!mvRecent(p)); /* 거부권 선수는 동의 절차가 없어 데려갈 수 없으니 매물로 내놓지 않는다 */ for(const p of domestic(t.id))if(p.aiListed&&(hasNtc(p)||faLock(p))){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; }
     for(const p of domestic(t.id))if(p.aiListed&&mvRecent(p)&&p.aiWhy!=='mood'){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } for(const p of ds){ if(p.aiListed&&G.day-(p.aiLd||G.day)>42){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } }
     const cur=ds.filter(p=>p.aiListed); const heat=gmHeat(t.id); const ci=capInfo(t.id);
     if(cur.length<2&&R()<.55){ const top3=new Set([...ds].sort((x,y)=>ovr(y)-ovr(x)).slice(0,3).map(q=>q.id)); const d=depth(t.id); const st=new Set([...d.start,...d.sp,...d.pen.slice(0,3)].map(q=>q.id)); let pk=null, why=null;

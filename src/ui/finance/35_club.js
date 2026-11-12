@@ -148,6 +148,7 @@ function gamesView(){
 
 function tradeMood(tid,give,get,cash,pk){
   if(!give.length&&!get.length)return null;
+  if(faLockMsg([...give,...get]))return {k:'no',l:'트레이드 불가',s:'FA 신청을 앞둔 선수는 FA 공시 전까지 트레이드할 수 없습니다',c:'var(--bad)',w:3,sd:0};
   const t=team(tid); const e=evalTrade(tid,give,get,cash,pk);
   const sd=1.2+Math.max(0,75-t.rel)/10; // 관계가 좋을수록 상대 속내를 정확히 읽는다
   const key=[...give].sort((a,b)=>a-b).join('-')+'|'+[...get].sort((a,b)=>a-b).join('-');

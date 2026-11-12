@@ -46,7 +46,7 @@ function gameSide(tid,day,ps){
   const d=depth(tid); const ln=Object.assign({},d.ln); const bench=[...d.bench];
   const ov={}, rest=new Set();
   for(const pos of ORDER){ const p=ln[pos]; if(!p||ov[pos]===p.id||!bench.length)continue;
-    const m=mgrOf(tid), re=m.interim?50:mgrRestEff(m); const fat=p.fat||0, thr=(pos==='C'?55:66)+(50-re)*.35; if(R()<.004+re/4000||(fat>thr&&R()<clamp((fat-thr)/30+(re-50)/150,.12,.95))){ const bc=pos==='C'?bench.filter(q=>isC(q)&&!rest.has(q.id)):null; if(bc&&!bc.length)continue; /* 주전 포수 휴식은 백업 포수로만(외야수를 포수로 넣지 않는다, 검수 11-09t) */ let best=null,bs=-1e9; for(const q of (bc||bench)){ if(rest.has(q.id)||(!bc&&isC(q)&&bench.filter(isC).length<=1))continue; /* 하나뿐인 백업 포수는 다른 자리에 쓰지 않는다(검수 11-09zh) */ const s=posScore(q,pos); if(s>bs){bs=s;best=q}} if(!best)continue; rest.add(p.id); ln[pos]=best; bench.splice(bench.indexOf(best),1,p); } } /* 쉬는 주전은 벤치에 남아 대타·대수비로 나갈 수 있다(검수 11-08) */
+    const m=mgrOf(tid), re=m.interim?50:mgrRestEff(m); const fat=p.fat||0, thr=(pos==='C'?55:66)+(50-re)*.35; if(R()<.004+re/4000+(re>=60?(re-55)/500:0)||(fat>thr&&R()<clamp((fat-thr)/30+(re-50)/150,.12,.95))){ const bc=pos==='C'?bench.filter(q=>isC(q)&&!rest.has(q.id)):null; if(bc&&!bc.length)continue; /* 주전 포수 휴식은 백업 포수로만(외야수를 포수로 넣지 않는다, 검수 11-09t) */ let best=null,bs=-1e9; for(const q of (bc||bench)){ if(rest.has(q.id)||(!bc&&isC(q)&&bench.filter(isC).length<=1))continue; /* 하나뿐인 백업 포수는 다른 자리에 쓰지 않는다(검수 11-09zh) */ const s=posScore(q,pos); if(s>bs){bs=s;best=q}} if(!best)continue; rest.add(p.id); ln[pos]=best; bench.splice(bench.indexOf(best),1,p); } } /* 쉬는 주전은 벤치에 남아 대타·대수비로 나갈 수 있다(검수 11-08) */
   const posOf={}; for(const k in ln)posOf[ln[k].id]=k;
   const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),tid); if(order.length<9)throw new Error('건강한 야수 9명 미만'); /* 8인 타순으로 경기하지 않는다: 감독이 엔트리를 고친 뒤 다시, 안 되면 연기(검수 11-09zh) */
   const ro={}, sp=pickStarter(tid,d,day,ps,ro);
@@ -131,6 +131,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
     const lead=()=>score[bk]-score[opp(bk)];
     if(fs.cur&&needChange(fs))bringIn(fs,inn,-lead(),half);
     if(inn>=8&&-lead()>=1&&-lead()<=3&&!fs.dsub){ fs.dsub=1; const n=defSub(fs); if(n){fs.changes.push({at:pbp.length,half,lineup:fs.order.map((p,o)=>({id:p.id,n:p.name,o,pos:fs.posOf[p.id]}))});if(ev.length<400)ev.push({h:half,t:`수비 강화: ${n}`});} }
+    if(inn>=7&&Math.abs(lead())>=7&&!fs.bsub){ fs.bsub=1; const n=blowSub(fs); if(n){fs.changes.push({at:pbp.length,half,lineup:fs.order.map((p,o)=>({id:p.id,n:p.name,o,pos:fs.posOf[p.id]}))});if(ev.length<400)ev.push({h:half,t:`주전 휴식 교체: ${n}`});} }
     let outs=0, runs=0, hh=0, eOuts=0, ph=null; /* ph: 실책 플레이로만 홈에 들어온 3루 주자의 책임 투수. 실책이 없었다면 아직 3루에 있다(자책점 재구성, 야구규칙 9.16) */ const ueR=new Set(); const eAt={}; /* 투수별 등판 때까지의 실책 아웃: 구원투수 개인 자책점은 등판 뒤 실책만으로 이닝을 다시 센다(KBO 기록규칙) */ const base=[null,null,null]; const resp=new Map(); /* 주자별 책임 투수(승계주자 자책점). 자책점: 실책이 없었다고 보고 이닝을 다시 세운다(eOuts: 실책이 아니었으면 아웃, ueR: 실책으로 나간 주자) */
     while(outs<3){
       /* 도루: KBO 2024~25 구단 평균 시즌 120~140개, 성공률 72~75%, 1위 50~65개 수준에 맞춘다. 2루 도루가 대부분이고 빠른 주자는 3루도 노린다 */

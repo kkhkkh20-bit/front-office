@@ -100,7 +100,10 @@ function foundYear(S){const F=S.found;if(!F||F.paid>=G.year)return;F.paid=G.year
 const PL_INV={dep:{l:'예금',mu:.0025,sd:0,d:'연 3% · 손실 없음'},fund:{l:'펀드',mu:.005,sd:.03,d:'월 ±3% 안팎'},stock:{l:'고위험 주식',mu:.006,sd:.1,d:'월 ±10% 안팎 · 큰 손실 가능'}};
 function personalInvest(k,amt){const I=PL_INV[k];if(!I)return '없는 상품입니다.';const S=personalState();S.inv=S.inv||{};let text;
  if(amt>0){if(S.cash<amt)return `개인 잔액이 부족합니다(${money(amt)} 필요).`;S.cash-=amt;S.inv[k]=(S.inv[k]||0)+amt;text=`${I.l}에 ${money(amt)} 넣었습니다.`;personalLog(S,text,-amt);return text;}
- const v=S.inv[k]||0;if(v<=0)return `${I.l}에 찾을 돈이 없습니다.`;S.cash+=v;S.inv[k]=0;text=`${I.l} ${pmoney(v)}을(를) 모두 찾았습니다.`;personalLog(S,text,v);return text;}
+ const v=S.inv[k]||0;if(v<=0)return `${I.l}에 찾을 돈이 없습니다.`;
+ /* 일부 찾기(amt<0): 넣은 돈보다 많이 찾으면 있는 만큼만(커뮤니티 11-12) */
+ if(amt<0){const w=Math.min(v,-amt);S.cash+=w;S.inv[k]=Math.round((v-w)*1e4)/1e4;text=`${I.l}에서 ${pmoney(w)} 찾았습니다.`;personalLog(S,text,w);return text;}
+ S.cash+=v;S.inv[k]=0;text=`${I.l} ${pmoney(v)}을(를) 모두 찾았습니다.`;personalLog(S,text,v);return text;}
 function invMonth(S){if(!S.inv)return;let tot=0;const r={};for(const k in PL_INV){const v=S.inv[k]||0;if(v<=0)continue;const I=PL_INV[k],x=I.sd?clamp(N(I.mu,I.sd),-.3,.3):I.mu,d=Math.round(v*x*1e4)/1e4; /* 100원 단위: 만 원 반올림이 1,000만 예금 이자 2.5만을 3만으로 올렸다(검수 11-09zc) */S.inv[k]=Math.max(0,v+d);tot+=d;r[k]=Math.round(x*1000)/10;}
  if(!Object.keys(r).length)return;(S.invLog=S.invLog||[]).unshift({day:G.day,r,d:Math.round(tot*1e4)/1e4});S.invLog.length=Math.min(S.invLog.length,12);}
 /* 생활비: 야인이면 생활 등급별 월 생활비, 현직이면 등급 유지비(원룸은 0). 지갑이 바닥나면 0에서 멈추고(게임 오버 없음) 제의 연봉이 10% 낮게 들어온다 */

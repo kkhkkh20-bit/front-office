@@ -14,7 +14,7 @@ function anaEff(tid){if(tid==null)tid=G.user; const o=anaPow('opp',tid)*anaRoleQ
 function dataLv(tid){ return anaEff(tid).rep; }
 function anaSal(){ return sum(anaList().map(a=>a.sal)); }
 function anaMarket(){ const mk=G.year*100+dobj(G.day).m; if(!G.amarket||G.amarketM!==mk){ const keep=(G.amarket||[]).filter(s=>(s.bid&&s.bid.exp>=G.day)||R()<.4); /* 재제안 기한이 남은 후보는 월초 교체에서 빼지 않는다 */ G.amarket=keep; while(G.amarket.length<12){ const sk=R()<.05?5:R()<.17?4:R()<.42?3:R()<.75?2:1; G.amarket.push(mkAnalyst(sk)); } G.amarketM=mk; } return G.amarket; }
-function hireAna(id){ const a=anaMarket().find(x=>x.id===id); if(!a)return '후보가 없습니다.'; if(anaList().length>=ANA_MAX)return `분석원은 ${ANA_MAX}명까지입니다.`; a.since=G.day; G.analysts.push(a); G.amarket=G.amarket.filter(x=>x.id!==id); staffHistory('analyst',a,'영입',G.user,`연 ${money(a.sal)}`); addLog(`${AROLE[a.role].l} 분석원 ${a.name}(능력 ${a.skill})을(를) 연 ${money(a.sal)}에 채용했습니다.`); return ''; }
+function hireAna(id){ const a=anaMarket().find(x=>x.id===id); if(!a)return '후보가 없습니다.'; if(anaList().length>ANA_MAX)return `분석원 정원(${ANA_MAX}명)을 넘었습니다. 먼저 한 명을 내보내세요.`; a.since=G.day; G.analysts.push(a); G.amarket=G.amarket.filter(x=>x.id!==id); staffHistory('analyst',a,'영입',G.user,`연 ${money(a.sal)}`); addLog(`${AROLE[a.role].l} 분석원 ${a.name}(능력 ${a.skill})을(를) 연 ${money(a.sal)}에 채용했습니다.`); return ''; }
 function fireAna(id){ const a=anaList().find(x=>x.id===id); if(!a)return ''; G.analysts=G.analysts.filter(x=>x.id!==id); staffHistory('analyst',a,'계약 종료',G.user,'단장 결정'); addLog(`분석원 ${a.name}과(와) 계약을 정리했습니다.`); return ''; }
 function setAnaRole(id,role){ const a=anaList().find(x=>x.id===id); if(!a||!AROLE[role])return ''; if(a.role!==role){staffAttach(a,'analyst'); a.role=role; a.since=G.day; } return ''; } /* 역할을 바꾸면 다시 30일 적응 */
 function dataReport(m){ if(G.unemp||!anaList().length)return; const lv=dataLv(G.user); const T=G.teams.map(t=>({tid:t.id,b:Object.assign({},ZB),p:Object.assign({},ZP,{roe:0})}));
@@ -30,3 +30,10 @@ function dataReport(m){ if(G.unemp||!anaList().length)return; const lv=dataLv(G.
   if(lv>=3){ const d=G.sea&&G.sea.rec&&G.sea.rec[G.user]; if(d){ const st=standingsNow(); const i=st.findIndex(x=>x.tid===G.user); const po=(()=>{ try{ const o=playoffOdds(); const q=o&&o.find(x=>x.tid===G.user); return q?Math.round(q.ps*100):null; }catch(e){ return null; } })(); if(po!=null)lines.push(`데이터 랩 시뮬레이션: 가을야구 진출 확률 ${po}%`); } }
   try{ const D=dataLines(); if(D.length)lines.push('',...D); }catch(e){}
   const rm=mail('전력분석팀',`${m}월 전력 분석 보고`,lines.join('\n')+`\n\n분석원 ${anaList().length}명 기준 보고입니다. 상대 전력분석·영상 분석 인력이 늘수록 보고가 자세해집니다.`,{kind:'분석',acts:[{l:'통계에서 보기',a:'go',v:'league:stat'},{l:'전력분석',a:'go',v:'staff:data'}]}); if(rm&&rm.id&&!rm.rep)try{ rm.rep=trpSnap(rm.day); }catch(e){} }
+
+/* 정원 초과(먼저 영입, 나중에 정리): 7일 안에 내보낼 사람을 고르지 않으면 실력이 가장 낮은 사람과 계약을 끝낸다(커뮤니티 11-12) */
+function stOverCheck(){ if(G.unemp)return; G.stOver=G.stOver||{};
+  for(const k of ['sc','an']){ const L=k==='sc'?(G.scouts||[]):anaList(), cap=k==='sc'?scoutMax():ANA_MAX, nm=k==='sc'?'스카우트':'전력분석원';
+    if(L.length<=cap){ delete G.stOver[k]; continue; }
+    if(G.stOver[k]==null){ G.stOver[k]=G.day; mail('운영팀',`${nm} 정원 초과`,`${nm}이(가) ${L.length}명으로 정원 ${cap}명을 넘었습니다. 7일 안에 스태프 화면에서 내보낼 사람을 고르세요. 고르지 않으면 실력이 가장 낮은 사람과 계약을 끝냅니다.`,{kind:'스태프',imp:true}); continue; }
+    if(G.day>=G.stOver[k]+7){ const lo=[...L].sort((a,b)=>(a.skill||0)-(b.skill||0)||(a.since||0)-(b.since||0)).slice(0,L.length-cap); for(const x of lo){ try{ k==='sc'?scoutFire(x.id):fireAna(x.id); }catch(e){} } delete G.stOver[k]; if(lo.length)note('스태프',`${nm} 정원 정리: ${lo.map(x=>x.name).join(', ')}와(과) 계약을 끝냈습니다.`); } } }
