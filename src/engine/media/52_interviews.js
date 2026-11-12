@@ -112,7 +112,11 @@ const IV_TOPIC={mediaday:'개막 미디어데이',ps_md:'포스트시즌 미디�
 function ivRequest(k,d){ if(G.unemp)return; d=d||{}; const cur=G.iv; if(cur&&!cur.done&&cur.exp>=G.day)return; if(cur&&G.day-cur.day<8&&!['preseason','season_end','deadline','mgr_hire','mgr_fire','follow'].includes(k))return;
   const R0=repPick(); const outlet=R0.outlet, rep=R0.name; const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return; if(k!=='follow'){ const pq=ivPPQ(); if(pq)qs.push(pq); } /* 마지막 질문: 언론 플레이 기회 */
   G.iv={id:(G.ivSeq=(G.ivSeq||0)+1),k,d,outlet,rep,repId:R0.id,qs,i:0,ans:[],exp:G.day+(k==='follow'?3:5),done:false,day:G.day};
+  if(k==='follow'&&G.cfg&&G.cfg.ivFolDel){ /* 후속 질문은 홍보팀이 대신 답한다(사용자 11-12): 문항마다 팬·언론 손해가 가장 작은 무난한 답 */ ivAuto();
+    mail('홍보팀',`[후속 질문] ${outlet}: 홍보팀이 대신 답했습니다`,`${outlet} ${rep} 기자의 후속 질문에 홍보팀이 단장님 대신 무난하게 답했습니다. 직접 답하려면 설정 > 게임 설정의 '후속 질문 홍보팀에 맡기기'를 끄세요.`,{kind:'언론'}); return; }
   mail('홍보팀',`[인터뷰 요청] ${outlet}: ${IV_TOPIC[k]||'현안'}`,`${outlet} ${rep} 기자가 ${IV_TOPIC[k]||'현안'} 관련 단장 인터뷰를 요청했습니다. 질문은 ${qs.length}개입니다.\n\n답변에 따라 팬 여론·언론 논조·선수 기분·감독과의 관계가 달라집니다. 5일 안에 응하지 않으면 '단장 침묵' 기사가 나갑니다.`,{imp:true,kind:'언론',acts:[{l:'인터뷰 참여하기',a:'ivOpen',v:G.iv.id},{l:'정중히 거절',a:'ivSkip',v:G.iv.id}]}); }
+/* 홍보팀 대리 답변: 문항마다 팬·언론 손해가 가장 작은 무난한 답 */
+function ivAuto(){ let n=0; while(G.iv&&!G.iv.done&&n++<8){ const q=G.iv.qs[G.iv.i]; if(!q)break; let bj=0,bv=-1e9; q.opts.forEach((o,j)=>{ const f=o.fx||{}; const v=(f.fan||0)+(f.press||0)-Math.abs(f.team||0)*.3-Math.abs(f.mgr||0)*.3-(o.tone==='노코멘트'?.5:0); if(v>bv){ bv=v; bj=j; } }); if(ivAnswer(bj)==null)break; } return !!(G.iv&&G.iv.done); }
 function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]; const o=q&&q.opts[j]; if(!o)return null; const R0=repById(v.repId); const fx=Object.assign({},o.fx,{fan:repMul(R0,o.fx.fan),press:repMul(R0,o.fx.press)}); prInit();
   repRel(R0,['회피','비판','압박','냉정','노코멘트'].includes(o.tone)?-2:['솔직','설명','신중','감사','반성'].includes(o.tone)?2:1,`인터뷰 답변(${o.tone})`);
   G.pr.fan=clamp(G.pr.fan+fx.fan,0,100); G.pr.press=clamp(G.pr.press+fx.press,0,100);
@@ -192,7 +196,7 @@ function ivNewsPub(){ const Q=G.ivNewsQ||[]; if(!Q.length)return; const due=Q.fi
     const heads=[]; for(const o in by){ const L=by[o]; const big=L.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0]; const q=big.a.replace(/^"|"$/g,''); const h=`${tshort(G.user)} ${meName()?meName()+' ':''}단장 "${q.slice(0,30)}${q.length>32?'…':''}"`;
       const ni=news('언론',h,`${o} ${L[0].rep||x.rep} 기자${x.md?` · ${IV_TOPIC[x.k]}`:''}: ${L.map(a=>`${a.q} ${a.a}`).join(' ')}`,big.fx.fan>=2?1:big.fx.fan<=-2?-1:0,{outlet:o}); if(ni&&!x.n0)x.n0=ni; heads.push(`${o}: ${h}`); }
     const sumFx=x.ans.reduce((s,a)=>({fan:s.fan+(a.fx.fan||0),press:s.press+(a.fx.press||0)}),{fan:0,press:0});
-    const hot=x.ans.filter(a=>Math.abs(a.fx.fan)+Math.abs(a.fx.press)>=3||a.fx.prom||(a.fx.mgr||0)<0||['비판','냉정','도발','압박'].includes(a.tone));
+    const hot=x.ans.filter(a=>Math.abs(a.fx.fan)+Math.abs(a.fx.press)>=4||a.fx.prom||(a.fx.mgr||0)<0||['비판','도발'].includes(a.tone)); /* 11-12: 후속 질문은 크게 화제가 된 말에만(예전엔 무난한 답에도 자주 따라옴) */
     mail('홍보팀',`[기사] ${IV_TOPIC[x.k]||'인터뷰'} 기사가 나왔습니다`,`${heads.join('\n')}\n\n반응: 팬 여론 ${sumFx.fan>=0?'+':''}${sumFx.fan} · 언론 논조 ${sumFx.press>=0?'+':''}${sumFx.press}.${hot.length?` 화제가 된 말: ${hot.slice(0,2).map(a=>a.a).join(' ')}`:''}${fpNewsReact(x.n0)}`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'club:news'}]}); delete x.n0;
-    if(x.k!=='follow'&&hot.length&&R()<.55){ (G.ivFollowQ=G.ivFollowQ||[]).push({day:G.day+1+Math.floor(R()*2),prev:{outlet:x.outlet,ans:hot}}); } } }
+    if(x.k!=='follow'&&hot.length&&R()<.4){ (G.ivFollowQ=G.ivFollowQ||[]).push({day:G.day+1+Math.floor(R()*2),prev:{outlet:x.outlet,ans:hot}}); } } }
 function ivFollowDaily(){ const Q=G.ivFollowQ||[]; if(!Q.length)return; const due=Q.find(x=>x.day<=G.day); if(!due)return; if(G.iv&&!G.iv.done&&G.iv.exp>=G.day)return; G.ivFollowQ=Q.filter(x=>x!==due); ivRequest('follow',{prev:due.prev}); }
