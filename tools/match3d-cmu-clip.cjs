@@ -45,7 +45,7 @@ const restHand={};for(const s of ['Left','Right']){const h=rest[s+'Hand'],dir=ne
 // 첫 프레임 기준 수평 회전(A)과 높이 비율
 const i0=Math.round(+t0s*FPS_IN),i1=Math.min(frames.length-1,Math.round(+t1s*FPS_IN));const J0=fk(frames[i0]);
 const fwd=q=>{const f=new T.Vector3(0,0,1).applyQuaternion(q);f.y=0;return f.normalize();};
-const cmuHip0=hipFrame(J0.lhipjoint,J0.rhipjoint,J0.lowerback.clone().sub(J0.root)),fa=fwd(cmuHip0),fb=fwd(mixHip),A=new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),Math.atan2(fb.x,fb.z)-Math.atan2(fa.x,fa.z));
+const cmuHip0=hipFrame(J0.lhipjoint,J0.rhipjoint,J0.lowerback.clone().sub(J0.root)),J1=fk(frames[i1]),travel=J1.root.clone().sub(J0.root).setY(0).normalize(),fa=process.env.ALIGN==='travel'?travel:fwd(cmuHip0) /* ALIGN=travel: 투구처럼 몸이 옆으로 섰다가 앞으로 나가는 동작은 이동 방향을 정면(+Z)으로 */,fb=fwd(mixHip),A=new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),Math.atan2(fb.x,fb.z)-Math.atan2(fa.x,fa.z));
 const footY=J=>Math.min(J.ltoes.y,J.rtoes.y,J.lfoot.y,J.rfoot.y),hipH0=J0.root.y-footY(J0),scale=rest.Hips.local.t.y/hipH0,ground0=footY(J0);
 const tracks={};BONES.forEach(b=>tracks[b]=[]);const pos=[],times=[];
 for(let t=+t0s;t<=+t1s+1e-6;t+=1/FPS_OUT){const fi=Math.min(frames.length-2,Math.floor(t*FPS_IN)),w=t*FPS_IN-fi,Ja=fk(frames[fi]),Jb=fk(frames[fi+1]),J={};for(const k in Ja)J[k]=Ja[k].clone().lerp(Jb[k],w).applyQuaternion(A);
@@ -61,5 +61,5 @@ for(let t=+t0s;t<=+t1s+1e-6;t+=1/FPS_OUT){const fi=Math.min(frames.length-2,Math
 // 사원수 부호 연속
 for(const b of BONES){const v=tracks[b];for(let i=4;i<v.length;i+=4)if(v[i]*v[i-4]+v[i+1]*v[i-3]+v[i+2]*v[i-2]+v[i+3]*v[i-1]<0)for(let j=0;j<4;j++)v[i+j]*=-1;}
 const r5=a=>a.map(x=>+x.toFixed(5));
-const clip={name:clipName,duration:times.at(-1),source:'CMU mocap subject 124 '+path.basename(amcPath),contact:+(+contactS-+t0s).toFixed(4),tracks:[{name:'mixamorigHips.position',type:'vector',times,values:r5(pos)},...BONES.map(b=>({name:'mixamorig'+b+'.quaternion',type:'quaternion',times,values:r5(tracks[b])}))]};
+const clip={name:clipName,duration:times.at(-1),source:'CMU mocap subject 124 '+path.basename(amcPath),events:{[process.env.EVENT||'contact']:+(+contactS-+t0s).toFixed(4)},tracks:[{name:'mixamorigHips.position',type:'vector',times,values:r5(pos)},...BONES.map(b=>({name:'mixamorig'+b+'.quaternion',type:'quaternion',times,values:r5(tracks[b])}))]};
 fs.writeFileSync(outPath,JSON.stringify(clip));console.log(clipName,'frames',times.length,'duration',clip.duration,'bytes',fs.statSync(outPath).size);
