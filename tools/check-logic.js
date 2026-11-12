@@ -4007,6 +4007,18 @@ T('[공통 점검] 단장이 몇 번 바뀌어도 연수 예약과 결제 기록
   const t2=G.teams.find(t=>t.id!==G.user); const w=domestic(t2.id).find(x=>!x.foreign&&x.age<=25&&!x.mil); w.mil={unit:'상무',from:dnum(G.year,12,20),until:dnum(G.year,12,20)+MIL_DAYS}; G.ovsAi.us={[t2.id]:[w.id]}; G.ovs=[]; G.day=dnum(G.year,12,1); tabDaily(G.day); ok(!(G.ovsAi.us[t2.id]||[]).includes(w.id),'AI는 연수 중 입대 선수도 보냄'); delete w.mil; });
 T('[공통 점검] 구장: 공사 중 이직 뒤 AI가 같은 시설을 다시 발주하지 않고, 신구장 돔 속성은 고른 유형과 같다',()=>{ fresh(); const t=team(G.user); const S=stadOf(G.user); S.build=[{k:'seat',lv:S.lv.seat+1,done:G.day+200,c:1000}]; G.user=G.teams.find(x=>x.id!==t.id).id; t.cash=99999; const pk=pick; for(let i=0;i<30;i++)stadAI(); ok(S.build.filter(b=>b.k==='seat').length===1,'같은 시설 중복 발주');
   S.dome=true; S.proj={stage:'build',k:'value',cap:21000,cost:3000,paid:3000,done:G.day}; G.user=t.id; try{ newStadDaily&&newStadDaily(); }catch(e){} ok(S.proj||S.dome===false,'돔 아닌 신구장인데 돔 효과'); });
+T('[감독 갈등 11-12] 감독 해임은 구단주 동의가 있어야 한다: 데려온 지 얼마 안 된 감독은 반대, 반대하면 신뢰가 깎이고 동의 없이 UI 경질은 막힌다',()=>{ fresh(); const m=G.mgr[G.user]; m.hD=G.day-10; const t=team(G.user); t.trust=50; const tr0=t.trust;
+  const r=mgrFireAsk(); ok(r.k==='no','갓 선임한 감독 경질에 동의: '+r.k); ok(t.trust<tr0,'반대인데 신뢰 그대로'); ok(!mgrFireOk(),'반대인데 경질 가능');
+  G.mcf.fire=null; m.hD=G.day-400; t.trust=95; const r2=mgrFireAsk(); ok(r2.k==='ok'&&mgrFireOk(),'신뢰 높고 오래된 감독 비시즌 경질 동의 안 함: '+r2.k); });
+T('[감독 갈등 11-12] 시즌 구상: 시범경기 때 감독이 구상을 말하고, 유망주 기용을 받아들이면 기용 가산이 생긴다',()=>{ fresh(); const m=G.mgr[G.user]; m.youth=40; m.ego=20; m.rel=95; G.day=G.cal.exh+1; G.evs=[];
+  mcfPlan(); const e=G.evs.find(x=>x.k==='mplan'); ok(e,'구상 결정이 없음'); const P=G.mcf.plan; ok(P&&P.y===G.year,'구상 상태 없음');
+  const i=e.opts.findIndex(o=>/기회를/.test(o.l)); if(i>=0){ evPick(e.id,i); const it=P.items[0]; ok(it,'요구 기록 없음'); if(it.st!=='no'){ const p=G.players[it.pid]; ok(mcfB(G.user,p)>0,'받아들였는데 기용 가산 없음 '+mcfB(G.user,p)); } } });
+T('[감독 갈등 11-12] 안건이 있을 때만 주간 회의: 부진한 주전이 있으면 안건, 같은 안건은 바로 다시 올리지 않는다',()=>{ fresh(); G.day=G.cal.open+30; G.evs=[]; const d=depth(G.user); const p=d.start[0];
+  p.hist=(p.hist||[]).filter(h=>!(h.y===G.year&&h.lvl==='1군')); p.hist.push({y:G.year,lvl:'1군',tid:G.user,g:30,pa:110,ab:100,h:12,d:1,tr:0,hr:0,bb:8,hbp:0,sf:2,so:40,rbi:3});
+  mcfWeek(); const n1=G.evs.filter(e=>e.k==='magd').length; ok(n1>=1,'부진 주전 안건 없음'); for(const e of G.evs)if(e.k==='magd')evPick(e.id,e.opts.length-1,true);
+  G.day+=7; mcfWeek(); const again=G.evs.filter(e=>e.k==='magd'&&!e.done&&e.data.k==='slump:'+p.id).length; ok(again===0,'1주 만에 같은 부진 안건 반복'); });
+T('[감독 갈등 11-12] 면담 관계 상승은 자주 할수록·관계가 높을수록 줄어든다',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=50; m.tkD=[G.day]; const a=mcfRelGain(m,4); m.tkD=[G.day-3,G.day-2,G.day-1,G.day]; const b=mcfRelGain(m,4); m.rel=85; const c=mcfRelGain(m,4);
+  ok(a===4,'첫 면담 상승이 줄어듦 '+a); ok(b<a,'자주 해도 같은 상승 '+b); ok(c<b,'관계 높아도 같은 상승 '+c); ok(mcfRelGain(m,-3)===-3,'하락은 그대로여야 함'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

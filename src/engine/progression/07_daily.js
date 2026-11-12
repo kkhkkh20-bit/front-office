@@ -122,7 +122,9 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===c.campEnd)campEnd();
   try{ sprcDaily(day); }catch(e){ console.error(e); } try{ sisDaily(day); }catch(e){ console.error(e); } /* 해외 자매결연(98_sister_club.js) */ /* 스프링캠프 장소 예약·캠프 부상·연습경기·시범경기(97_spring_camp.js) */
   if(day===c.open-1){ G.entryY=G.year; for(const t of G.teams){ setEntry(t.id); t.rot=0; } for(const p of Object.values(G.players))if(p.isP)delete p.lastStart; stop('일정',`내일(${dmd(c.open)}) ${G.year} 시즌이 개막합니다. 개막 엔트리가 정해졌습니다. 선수단 구성은 오늘까지 점검하세요.`); }
-  if(day===c.exh&&c.exh<c.open)try{ goalsPreseason(); }catch(e){ console.error(e); } /* 시범경기 첫날 시즌 목표 제시 */
+  if(day===c.exh&&c.exh<c.open)try{ goalsPreseason(); }catch(e){ console.error(e); }
+  if(day===c.exh+1&&c.exh<c.open)try{ mcfPlan(); }catch(e){ console.error(e); } /* 시범경기 둘째 날: 감독 시즌 구상 */
+  try{ mcfDaily(); }catch(e){} /* 시범경기 첫날 시즌 목표 제시 */
   if(day===c.open){ openingDay(); G.fut0={y:G.year,m:Object.fromEntries(playersOf(G.user).map(p=>[p.id,ovr(p)]))}; }
   if(day===KD(7,17)&&!G.unemp&&G.sea&&G.sea.y===G.year){ try{ deadlineDecision(); }catch(e){} }
   if(day===KD(7,24)||day===KD(7,28)){ try{ deadlineRumors(day===KD(7,28)); }catch(e){} }
