@@ -12,10 +12,11 @@ function histView(){
   const board=(label,f,fmt,flt)=>`<div class="ldr"><div class="eyebrow">${label}</div>${all.filter(flt||(()=>true)).sort((a,b)=>f(b)-f(a)).slice(0,8).map((x,i)=>`<div class="ldr-r"><i>${i+1}</i><span>${open(x)?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.name)}</button>`:esc(x.name)} <span class="small muted">${x.act?tshort(x.t):x.lab}</span></span><b class="num">${fmt(f(x))}</b></div>`).join('')}</div>`;
   const hof=hofList();
   const champs=G.history.filter(h=>h.champ===G.user).map(h=>h.y);
-  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['ret','영구결번'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['teams','구단 역대'],['champs','우승팀'],['mgrs','역대 감독'],['mile','기록 도전'],['grec','한 경기 기록'],['abroad','해외파'],['book','리그 연감']],'sum');
+  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['ret','영구결번'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['teams','구단 역대'],['champs','우승팀'],['psrec','포스트시즌 기록'],['mgrs','역대 감독'],['mile','기록 도전'],['grec','한 경기 기록'],['abroad','해외파'],['book','리그 연감']],'sum');
   if(hv.cur==='book')return hv.bar+yearbookView();
   if(hv.cur==='teams')return hv.bar+teamAllTimeView();
   if(hv.cur==='champs')return hv.bar+champTeamsView();
+  if(hv.cur==='psrec')return hv.bar+psRecView();
   if(hv.cur==='mgrs')return hv.bar+mgrHistView();
   if(hv.cur==='mile')return hv.bar+mileWatchView();
   if(hv.cur==='grec')return hv.bar+gameRecView();
@@ -104,3 +105,12 @@ function mgrHistView(){ const M=G.mgrH||{}; const tids=G.teams.map(t=>t.id).filt
 function hofWatchView(){ const L=hofWatch(); if(!L.length)return ''; const row=x=>`<div class="ldr-r${x.p.team===G.user?' me':''}"><i>${x.met?'✓':''}</i><span><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button> <span class="small muted">${esc(tshort(x.p.team))} · ${x.age}세 · ${x.seasons}시즌${x.mvp?` · MVP ${x.mvp}`:''}${x.gg?` · 골든글러브 ${x.gg}`:''}</span></span><b class="num">${x.war.toFixed(1)}</b></div>`;
   const met=L.filter(x=>x.met), near=L.filter(x=>!x.met);
   return csec('명예의 전당 예정',`<p class="small muted">은퇴하면 바로 헌액되는 기준(통산 WAR 38, MVP 2회, 골든글러브 6회, WAR 30+MVP 1회)을 이미 채운 현역(✓)과 가까운 현역입니다. 오른쪽은 통산 WAR(이 리그 1군).</p><div class="ldrs">${met.length?`<div class="ldr"><div class="eyebrow">기준 충족 ${met.length}명</div>${met.slice(0,12).map(row).join('')}</div>`:''}${near.length?`<div class="ldr"><div class="eyebrow">근접 ${near.length}명</div>${near.slice(0,12).map(row).join('')}</div>`:''}</div>`); }
+/* 포스트시즌 기록(모든 구단): 해마다 라운드별 타자·투수 상위 */
+function psRecView(){ const P=G.psSer||{}; const ys=Object.keys(P).map(Number).sort((a,b)=>b-a); if(!ys.length)return csec('포스트시즌 기록','<p class="small muted">이 업데이트(2026-11-12) 이후 가을야구부터 모든 구단 선수의 포스트시즌 기록이 쌓입니다.</p>');
+  const y=UI.psy&&P[UI.psy]?UI.psy:ys[0]; const R=P[y]; const ord=['ks','po','spo','wc','tb'].filter(r=>R[r]);
+  const chips=`<div class="chips">${ys.map(v=>`<button data-a="psy" data-v="${v}" class="${v===y?'on':''}">${v}</button>`).join('')}</div>`;
+  const ops=o=>{ const ob=((o.h||0)+(o.bb||0)+(o.hbp||0))/Math.max(1,(o.ab||0)+(o.bb||0)+(o.hbp||0)), sl=o.ab?((o.h||0)+(o.d||0)+2*(o.tr||0)+3*(o.hr||0))/o.ab:0; return ob+sl; };
+  const nm=(id,o)=>G.players[id]?`<button class="lnk" data-a="player" data-v="${id}">${esc(o.n)}</button>`:esc(o.n);
+  const blk=r=>{ const E=Object.entries(R[r]); const B=E.filter(([,o])=>!o.isP&&(o.pa||0)>=6).sort((a,b)=>ops(b[1])-ops(a[1])).slice(0,5), Pp=E.filter(([,o])=>o.isP&&(o.outs||0)>=6).sort((a,b)=>((b[1].outs||0)/3-(b[1].er||0)*2)-((a[1].outs||0)/3-(a[1].er||0)*2)).slice(0,5);
+    return `<div class="ldr"><div class="eyebrow">${ROUNDK[r]||r} · 타자</div>${B.map(([id,o])=>`<div class="ldr-r${o.t===G.user?' me':''}"><i>${esc(tshort(o.t))}</i><span>${nm(id,o)} <span class="small muted">${o.ab||0}타수 ${o.h||0}안타 ${o.hr||0}홈런 ${o.rbi||0}타점</span></span><b class="num">${ops(o).toFixed(3).replace(/^0/,'')}</b></div>`).join('')||'<p class="small muted">기록 없음</p>'}<div class="eyebrow">${ROUNDK[r]||r} · 투수</div>${Pp.map(([id,o])=>`<div class="ldr-r${o.t===G.user?' me':''}"><i>${esc(tshort(o.t))}</i><span>${nm(id,o)} <span class="small muted">${ipStr(o.outs||0)}이닝 ${o.so||0}탈삼진${o.w?` ${o.w}승`:''}${o.sv?` ${o.sv}세`:''}</span></span><b class="num">${((o.er||0)*27/Math.max(1,o.outs||0)).toFixed(2)}</b></div>`).join('')||'<p class="small muted">기록 없음</p>'}</div>`; };
+  return csec('포스트시즌 기록',`${chips}<p class="small muted">${y} 가을야구 라운드별 상위 기록입니다(타자 6타석·투수 2이닝 이상, 모든 구단). 오른쪽은 OPS·평균자책점.</p><div class="ldrs">${ord.map(blk).join('')}</div>`); }
