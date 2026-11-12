@@ -18,6 +18,7 @@ function buildWorld(){ const userTid=0; worldReset();
       newPlayer({age,isP:i<15,pos:i<15?undefined:pick(['C','1B','2B','3B','SS','LF','CF','RF','C','SS','2B','CF']),base:cur,pot:Math.max(cur,T),team:t.id,svc:clamp(age-19-ri(0,2),0,8)}); }
     bpos.forEach(pos=>mk(false,pos));
   }
+  genBalance();
   G.year=2025;
   for(const p of Object.values(G.players)){ const f=p.svc<4?.45:p.svc<7?.7:1; p.sal=round5(marketSal(ovr(p)+pvShift(p))*f);
     if(p.svc>=FA_SVC){ if(R()<.6){ p.faC=true; p.yrs=ri(1,4); p.cyrs=4; p.lastFA=2025-(4-p.yrs)-ri(0,2); p.faN=1; } else p.svc=FA_SVC-1-ri(0,5); } } /* 시작 시점 FA 계약은 남은 연수에 맞춰 체결 연도를 흩어 놓는다: 재자격 시기가 한 해에 몰리지 않는다 */
@@ -102,3 +103,16 @@ function setTeamLogo(tid,patch){ const t=G&&G.teams&&G.teams[tid]; if(!t)return 
   if('img' in P){ if(P.img!=null){ const s=String(P.img); if(!/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s))return '이미지 파일(png·jpg·webp·gif)만 쓸 수 있습니다.'; if(s.length>64000)return '이미지가 너무 큽니다(64KB까지). 작게 줄여서 올려 주세요.'; L.img=s; } else delete L.img; }
   for(const k of Object.keys(L))if(L[k]==null)delete L[k]; if(Object.keys(L).length)t.logo=L; else delete t.logo; return ''; }
 function resetTeamNames(){ if(!G||!G.teams)return; for(const t of G.teams){ const d=TEAM_DEF[t.id]; if(d){ t.city=d.city; t.nick=d.nick; } } }
+
+/* 시작 세계 전력 고르기(사용자 11-12 "평준화"): 무작위로 만든 선수단은 표본 운만으로도 구단 전력 차가 커서(구단 전력 표준편차 1.3~2.4)
+   첫해부터 승률 .65 대 .32가 나왔다. 가장 센 구단과 가장 약한 구단 사이에서 같은 자리(투수끼리·같은 포지션 타자끼리) 주전급 선수를 맞바꿔
+   리그 전체 선수 수준은 그대로 두고 구단 차이만 줄인다. KBO 실제 승률 표준편차 약 .05~.06(144경기 운만으로 .042)에 맞춘 목표 폭 */
+function genBalance(){ const T=G.teams.map(t=>t.id);
+  const pv=p=>p.isP?spV(p):offV(p);
+  const sc=tid=>{ const ps=Object.values(G.players).filter(p=>p.team===tid&&!p.foreign); const H=ps.filter(p=>!p.isP).map(offV).sort((a,b)=>b-a).slice(0,9), P=ps.filter(p=>p.isP);
+    const sp=P.map(spV).sort((a,b)=>b-a).slice(0,5), rp=P.map(penV).sort((a,b)=>b-a).slice(5,12); return avg(H)*.4+(avg(sp)*.65+avg(rp)*.35)*.45; };
+  for(let it=0;it<120;it++){ const s=T.map(id=>[sc(id),id]).sort((a,b)=>b[0]-a[0]); const [hi,S]=s[0], [lo,W]=s[s.length-1]; if(hi-lo<1.4)break;
+    const top=tid=>Object.values(G.players).filter(p=>p.team===tid&&!p.foreign).sort((a,b)=>pv(b)-pv(a)).slice(0,24);
+    const A=top(S), B=top(W); let best=null, bg=hi-lo;
+    for(const a of A)for(const b of B){ if(a.isP!==b.isP||(!a.isP&&a.pos!==b.pos)||pv(a)<=pv(b))continue; a.team=W; b.team=S; const g=Math.abs(sc(S)-sc(W)); a.team=S; b.team=W; if(g<bg-.05){ bg=g; best=[a,b]; } }
+    if(!best)break; best[0].team=W; best[1].team=S; } }

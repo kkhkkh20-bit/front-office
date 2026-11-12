@@ -15,6 +15,7 @@ function repRel(r,d,why){ if(!r)return; r.rel=clamp(r.rel+d,0,100); r.last={d:G.
 /* 귀띔: 관계 좋은 기자가 다른 구단이 노리는 자리와 우리 선수를 알려 준다(2주에 한 번 정도) */
 function pressTips(){ if(G.unemp)return; const r=pressInit().filter(x=>x.rel>=70).sort(()=>R()-.5)[0]; if(!r||R()>.5)return;
   const t=pick(G.teams.filter(x=>x.id!==G.user)); let txt=''; try{ const SR=slotRanks(t.id); const k=PSLOTS.filter(s=>s!=='DH').sort((a,b)=>SR[b].rank-SR[a].rank)[0];
-    const mine=playersOf(G.user).filter(p=>pSlot(p)===k||(k==='SP'&&isSPr(p))||(k==='RP'&&p.isP&&!isSPr(p))).sort((a,b)=>ovr(b)-ovr(a))[0];
+    const fit=p=>!p.foreign&&(pSlot(p)===k||(k==='SP'&&isSPr(p))||(k==='RP'&&p.isP&&!isSPr(p))); let want=[]; try{ want=(aiInterest(t.id)||[]).map(id=>G.players[id]).filter(Boolean); }catch(e){} /* 외국인 선수는 트레이드 대상이 아니므로 귀띔에서도 뺀다(커뮤니티 11-12). 실제 그 구단 관심 명단(aiInterest)에 있는 선수를 먼저 */
+    const mine=want.find(fit)||playersOf(G.user).filter(fit).sort((a,b)=>ovr(b)-ovr(a))[0];
     txt=`${tname(t.id)}이(가) ${SLOTK[k]} 보강을 서두르고 있습니다.${mine?` 우리 ${mine.name}을(를) 눈여겨본다는 얘기가 있습니다.`:''}`; }catch(e){ return; }
   mail(`${r.outlet} ${r.name} 기자`,`[귀띔] ${tshort(t.id)} 동향`,`"단장님께만 드리는 얘기입니다." ${txt}\n\n(관계 ${Math.round(r.rel)} 기자의 비공식 정보입니다. 기사로는 아직 나가지 않았습니다.)`,{kind:'언론'}); }

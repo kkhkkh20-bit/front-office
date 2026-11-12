@@ -11007,8 +11007,11 @@ const SCOUT_SAL=[0,60,90,130,180,250];
 const SCOUT_SD=[13,9.5,7.5,5.5,4.2,3];
 const USD=14;                // 1만 달러 = 약 1,400만원 (100만 달러 = 약 14억)
 const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
+/* 외국인 연봉 규정의 물가 반영(커뮤니티 11-12): 리그 샐러리캡이 오른 만큼 협회가 상한을 10% 단위로 올린다(시작 시점 1.0). 실제 KBO 신규 상한 100만 달러는 2019년부터 그대로지만, 수십 년 플레이에서는 국내 연봉만 오르고 외국인 금액이 멈춰 있게 된다 */
+function fEcoK(){ try{ return Math.max(1,Math.round(ecoIdx()*10)/10); }catch(e){ return 1; } }
+function asiaCap(){ return Math.round(ASIA_CAP*fEcoK()); }
 /* 아시아쿼터 재계약 상한: 신규는 20만 달러, 재계약은 직전 연봉에서 해마다 10만 달러까지 올릴 수 있다(KBO 2026 아시아쿼터 규정, 유저 제보 11-07) */
-function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return ASIA_CAP; const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); return Math.max(ASIA_CAP,b+10*USD); } /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */
+function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return asiaCap(); const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); return Math.max(asiaCap(),b+Math.round(10*USD*fEcoK())); } /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */
 /* 외국인 선수 한 명이 총액 한도에 차지하는 금액: 보장 연봉 + 아직 유효한 인센티브(신규·재계약·화면이 모두 이 계산을 쓴다) */
 function fCommit(p,sy){ sy=sy>999?sy:ctSeason(); /* map(fCommit)이 넘기는 순번을 시즌으로 보지 않게(검수 11-09a: 끝난 인센티브가 한도에 남음) */ return (p.sal||0)+(p.opt&&p.ctT===p.team&&p.opt.until>=sy?(p.opt.a||0):0); } /* sy: 계약 대상 시즌(기본: 지금 계약이 잡히는 시즌 — 겨울이면 다음 시즌). 그 시즌에 유효한 인센티브만 더한다(달력 연도로 보지 않음) */
 /* 신생 구단 혜택(89_league_expansion): 1군 첫 두 시즌은 일반 외국인 4명까지, 총액 한도 +100만 달러(KBO 9·10구단 창단 혜택을 본뜸) */
@@ -11092,7 +11095,9 @@ const FIELD=['C','1B','2B','3B','SS','LF','CF','RF'];
 /* 투수는 선발·불펜이 정해져 있지 않다. 소속 구단 감독이 체력과 성적을 보고 정하고, 시즌 중에도 바꾼다 */
 const isSPr=p=>p.isP&&(p.role?p.role==='SP':isSP(p));
 const posLabel=p=>p.isP?(p.team==null||p.fdPool||p.prospect||!p.role?'투수':(p.role==='SP'?'선발':'불펜')):POSK[p.pos];
-function roleBias(tid,p){ const thr=rpThr(tid); return clamp((p.r.sta-thr)*.9,-14,8)+(p.rAdj||0)+rpBias(tid,p); } /* 체력 기준은 감독 성향(불펜 의존·스몰볼), 보직 계획(신인 계투 시작·단장 요청)은 77_pitch_role.js */
+/* 선발 체력 문턱(커뮤니티 11-12): 표시 체력(100점) 60 이상 선발, 50~59는 5선발·대체 선발, 50 미만은 선발이 모자랄 때만. 단장이 '선발'로 요청한 투수는 요청을 따른다 */
+function staGate(tid,p){ if(rpPlanOf(tid,p)==='sp')return 0; const d=FrontOfficeCore.dv(p.r.sta); return d>=60?0:d>=50?-6:-40; }
+function roleBias(tid,p){ const thr=rpThr(tid); return clamp((p.r.sta-thr)*.9,-14,8)+(p.rAdj||0)+rpBias(tid,p)+staGate(tid,p); } /* 체력 기준은 감독 성향(불펜 의존·스몰볼), 보직 계획(신인 계투 시작·단장 요청)은 77_pitch_role.js */
 const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
 const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return x.city+' '+x.nick; } return team(id).city+' '+team(id).nick; }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
@@ -13496,8 +13501,8 @@ function amScore(p){ const x=amRaw(p); if(x==null)return -99; const rows=(G.draf
   const s=_amZ[!!p.isP];return (x-s.m)/s.s; }
 /* ===== 외국인 선수 ===== */
 /* KBO: 시즌 중 교체 외국인은 남은 기간 월 10만 달러까지. 지급은 남은 경기 비율(remainFrac)이라 연봉 기준 60만 달러(6개월)로 묶는다. shortcut: 시즌 6개월 고정 — 일정 길이가 바뀌면 남은 달 수로 */
-const fNewCap=()=>period()==='season'?Math.min(F_NEW_CAP,60*USD):F_NEW_CAP;
-function fAsk(p,o){ o=o??ovr(p); if(p.foreign==='아시아')return clamp(round5(100+(o-44)*16),100,ASIA_CAP); return clamp(round5(980+(o-46)*55),700,fNewCap()); } /* 신규 용병 요구액: 능력 55 약 67만, 60 약 82만, 64 이상은 상한 100만 달러 근처(실제 KBO 신규 외국인 계약 대부분이 상한 가까이) */
+const fNewCap=()=>Math.round((period()==='season'?Math.min(F_NEW_CAP,60*USD):F_NEW_CAP)*fEcoK());
+function fAsk(p,o){ o=o??ovr(p); const k=fEcoK(); if(p.foreign==='아시아')return clamp(round5((100+(o-44)*16)*k),round5(100*k),asiaCap()); return clamp(round5((980+(o-46)*55)*k),round5(700*k),fNewCap()); } /* 신규 용병 요구액: 능력 55 약 67만, 60 약 82만, 64 이상은 상한 100만 달러 근처(실제 KBO 신규 외국인 계약 대부분이 상한 가까이) */
 function wpick(ws){ let tot=0; for(const k in ws)tot+=ws[k]; let x=R()*tot; for(const k in ws){ x-=ws[k]; if(x<=0)return k; } return Object.keys(ws)[0]; }
 /* 외국인 후보는 두 경로로 나온다.
    에이전트 제안: 리그 전체에 돌리는 공용 후보. 대부분 트리플A 출신(MLB 콜업 경력이 있는 선수가 많다)이고, 이름값 있는 선수는 이유(부상·나이·적응)가 있다.
@@ -13646,7 +13651,7 @@ function foreignCheck(tid,p,excludeId,tmp){
   if(!tmp&&period()==='season'&&fReplLeft(tid,p.foreign)<=0)return `이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 썼습니다.`;
   if(!excludeId&&rosterN(tid)-(foreignOf(tid).length-fStayOf(tid).length)>=ROSTER_MAX)return `선수단이 ${ROSTER_MAX}명이라 더 등록할 수 없습니다. 먼저 한 명을 정리하세요.`; /* 교체가 아니면 한 자리가 늘어난다. 결별하기로 한 외국인 자리는 비는 것으로 본다(검수 11-09zl) */
   const fs=fStayOf(tid).filter(x=>x.id!==excludeId);
-  if(p.foreign==='아시아'){ if(fs.filter(x=>x.foreign==='아시아').length>=1)return '아시아쿼터는 1명까지입니다. 먼저 한 명을 방출하세요.'; if((p.ask||0)>ASIA_CAP)return `아시아쿼터 연봉은 ${money(ASIA_CAP)}까지입니다.`; /* 기본 계약 경로도 상한(검수 11-06) */ return ''; }
+  if(p.foreign==='아시아'){ if(fs.filter(x=>x.foreign==='아시아').length>=1)return '아시아쿼터는 1명까지입니다. 먼저 한 명을 방출하세요.'; if((p.ask||0)>asiaCap())return `아시아쿼터 연봉은 ${money(asiaCap())}까지입니다.`; /* 기본 계약 경로도 상한(검수 11-06) */ return ''; }
   const yb=fs.filter(x=>x.foreign==='용병');
   if(yb.length>=fMaxYB(tid))return `외국인 선수(아시아쿼터 제외)는 ${fMaxYB(tid)}명까지입니다. 먼저 한 명을 방출하세요.`;
   if(yb.length===2&&yb.every(x=>x.isP===p.isP))return `외국인 3명을 모두 ${p.isP?'투수':'타자'}로 채울 수 없습니다.`;
@@ -13836,7 +13841,7 @@ function newSalary(p){
      현재 연봉 대비 최소 인상률: WAR 2 +4%, 3 +12%, 4 +20%, 5 이상 +28~35%. WAR 4 이상은 인상 상한을 1.3배에서 1.4배로 */
     const wy=(G.contract&&G.contract.y)??(period()==='pre'?G.year-1:G.year); let w=0; try{ const h=seasonTotal(p,wy,'1군'); w=h?warOf(h,p):0; }catch(e){}
     const up=Math.max(p.sal,Math.min(p.sal*(w>=4?1.4:1.3),200*USD)), fl=w>=1.5?p.sal*(1+clamp((w-1.5)*.08,0,.35)):0;
-    return round5(clamp(Math.max(700+(base-46)*70,Math.min(fl,up)),p.sal*.7,up)); }
+    return round5(clamp(Math.max((700+(base-46)*70)*fEcoK(),Math.min(fl,up)),p.sal*.7,up)); }
   /* FA 전에는 보류권 때문에 시장가보다 훨씬 낮다(NONFA_F). 실제 KBO: 3년차 필승조 평균자책점 1점대 → 1억2천, 첫 주전 시즌 → 1억 안팎,
      4년차 MVP급 → 5억이 최고 기록. 연차별 상한(PRE_CAP)은 그 최고 기록 수준이다 */
   /* FA 자격이 있어도 신청하지 않고 남은 선수는 여전히 보류 선수다: 인상 50% 이내, 7억 상한 */
@@ -13997,6 +14002,7 @@ function buildWorld(){ const userTid=0; worldReset();
       newPlayer({age,isP:i<15,pos:i<15?undefined:pick(['C','1B','2B','3B','SS','LF','CF','RF','C','SS','2B','CF']),base:cur,pot:Math.max(cur,T),team:t.id,svc:clamp(age-19-ri(0,2),0,8)}); }
     bpos.forEach(pos=>mk(false,pos));
   }
+  genBalance();
   G.year=2025;
   for(const p of Object.values(G.players)){ const f=p.svc<4?.45:p.svc<7?.7:1; p.sal=round5(marketSal(ovr(p)+pvShift(p))*f);
     if(p.svc>=FA_SVC){ if(R()<.6){ p.faC=true; p.yrs=ri(1,4); p.cyrs=4; p.lastFA=2025-(4-p.yrs)-ri(0,2); p.faN=1; } else p.svc=FA_SVC-1-ri(0,5); } } /* 시작 시점 FA 계약은 남은 연수에 맞춰 체결 연도를 흩어 놓는다: 재자격 시기가 한 해에 몰리지 않는다 */
@@ -14081,6 +14087,19 @@ function setTeamLogo(tid,patch){ const t=G&&G.teams&&G.teams[tid]; if(!t)return 
   if('img' in P){ if(P.img!=null){ const s=String(P.img); if(!/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s))return '이미지 파일(png·jpg·webp·gif)만 쓸 수 있습니다.'; if(s.length>64000)return '이미지가 너무 큽니다(64KB까지). 작게 줄여서 올려 주세요.'; L.img=s; } else delete L.img; }
   for(const k of Object.keys(L))if(L[k]==null)delete L[k]; if(Object.keys(L).length)t.logo=L; else delete t.logo; return ''; }
 function resetTeamNames(){ if(!G||!G.teams)return; for(const t of G.teams){ const d=TEAM_DEF[t.id]; if(d){ t.city=d.city; t.nick=d.nick; } } }
+
+/* 시작 세계 전력 고르기(사용자 11-12 "평준화"): 무작위로 만든 선수단은 표본 운만으로도 구단 전력 차가 커서(구단 전력 표준편차 1.3~2.4)
+   첫해부터 승률 .65 대 .32가 나왔다. 가장 센 구단과 가장 약한 구단 사이에서 같은 자리(투수끼리·같은 포지션 타자끼리) 주전급 선수를 맞바꿔
+   리그 전체 선수 수준은 그대로 두고 구단 차이만 줄인다. KBO 실제 승률 표준편차 약 .05~.06(144경기 운만으로 .042)에 맞춘 목표 폭 */
+function genBalance(){ const T=G.teams.map(t=>t.id);
+  const pv=p=>p.isP?spV(p):offV(p);
+  const sc=tid=>{ const ps=Object.values(G.players).filter(p=>p.team===tid&&!p.foreign); const H=ps.filter(p=>!p.isP).map(offV).sort((a,b)=>b-a).slice(0,9), P=ps.filter(p=>p.isP);
+    const sp=P.map(spV).sort((a,b)=>b-a).slice(0,5), rp=P.map(penV).sort((a,b)=>b-a).slice(5,12); return avg(H)*.4+(avg(sp)*.65+avg(rp)*.35)*.45; };
+  for(let it=0;it<120;it++){ const s=T.map(id=>[sc(id),id]).sort((a,b)=>b[0]-a[0]); const [hi,S]=s[0], [lo,W]=s[s.length-1]; if(hi-lo<1.4)break;
+    const top=tid=>Object.values(G.players).filter(p=>p.team===tid&&!p.foreign).sort((a,b)=>pv(b)-pv(a)).slice(0,24);
+    const A=top(S), B=top(W); let best=null, bg=hi-lo;
+    for(const a of A)for(const b of B){ if(a.isP!==b.isP||(!a.isP&&a.pos!==b.pos)||pv(a)<=pv(b))continue; a.team=W; b.team=S; const g=Math.abs(sc(S)-sc(W)); a.team=S; b.team=W; if(g<bg-.05){ bg=g; best=[a,b]; } }
+    if(!best)break; best[0].team=W; best[1].team=S; } }
 /* ===== 트레이드 ===== */
 /* ===== AI 단장이 보는 능력: 실제 능력 + 최근 성적에 섞인 운 =====
    AI 단장·감독도 능력치를 직접 보지는 못한다. 스카우트 평가와 함께 올해(가중 1)·작년(0.5) 1군 성적을 본다.
@@ -14527,7 +14546,7 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
     roomGoal:goalL-needL, roomCap:capL-needL, roomMax:capL-gapL+Math.max(0,cash), rem, indie:!!t.indie, trust:t.trust,
     fR,fRoom:Math.max(0,fR-fs),fUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='용병').map(p=>fRe(p)?p.newSal+(p.fInc||0):fCommit(p))), fCap:fCap(G.user), aUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='아시아').map(p=>fRe(p)?p.newSal:p.sal)), ci}; }
 /* 외국인 선수 연봉은 어느 구단이나 미리 잡아 두는 돈이다. 단장 첫 시즌은 규정 한도(신규 외국인 3명 각 100만 달러 + 아시아쿼터 20만 달러)까지 배정하고, 이후에는 지난 시즌 리그 평균 외국인 지출을 배정한다 */
-function fReserve(){ if(G.gmSince===G.year)return 3*F_NEW_CAP+ASIA_CAP; const L=G.lgFor&&G.lgFor[G.year-1]; return L||3200; }
+function fReserve(){ if(G.gmSince===G.year)return 3*fNewCap()+asiaCap(); const L=G.lgFor&&G.lgFor[G.year-1]; return L||3200; }
 /* 개막 전 구단주 지원 목표는 시즌 시작 때 한 번 정해 둔다(지출할수록 여유가 줄어들도록) */
 /* 창단 첫해 예비비: 비어 있는 코치 자리를 채울 연봉 + 운영 여유분. 드래프트 한도와 지원 목표에서 미리 떼어 둔다 */
 function foundReserve(tid){ tid=tid??G.user; const C=G.coach&&G.coach[tid]; let vac=0;
@@ -17674,7 +17693,7 @@ const FACI={
   fut:{l:'2군 구장',lv:['낡은 공용 구장','천연잔디 교체','조명·불펜·라커룸 개선','2군 전용 구장'],c:[0,2000,5000,10000],days:[0,150,210,300],up:[0,50,100,180],d:'2군 경기 환경입니다. 2군에서 뛰는 시간이 성장에 더 많이 인정되고 2군 부상이 줄어듭니다.'},
   dorm:{l:'선수 숙소·식당',lv:['없음','기숙사','기숙사·영양 식당','선수촌'],c:[0,1000,2500,5000],days:[0,120,180,240],up:[0,30,60,100],d:'젊은 선수의 생활과 영양을 관리합니다. 23세 이하 선수 성장과 기분이 좋아집니다.'}};
 const FAC_MAX=6;
-const facImpact=lv=>lv<=3?lv:3+(lv-3)*.35;
+const facImpact=lv=>lv<=3?lv:3+(lv-3)*.2; /* 4~6단계는 한 단계 .2(사용자 피드백 11-12: 시설만 올려도 몇 년 안에 우승권이 되던 것. 예전 .35) */
 for(const F of Object.values(FACI)){const c=F.c[3],days=F.days[3],up=F.up[3];F.lv.push(F.l+' 전문화',F.l+' 통합 캠퍼스',F.l+' 선도 연구센터');for(let lv=4;lv<=FAC_MAX;lv++){F.c.push(Math.round(c*Math.pow(1.7,lv-3)/100)*100);F.days.push(days+(lv-3)*90);F.up.push(Math.round(up*Math.pow(1.45,lv-3)));}}
 const FACK=Object.keys(FACI);
 /* 구단 버스: 원정 경기 피로. 다른 구단은 우등 버스 기준 */
@@ -17696,8 +17715,8 @@ function facEff(p){ if(p.team==null)return FAC[2]; const mine=p.team===G.user; c
   if(!mine){ const av=sum(FACK.map(fo))/FACK.length, c=1+av*4/3;
     const g=.82+.06*c+(young?(fo('dorm')-av)*.015:0)+(futP?(fo('fut')-av)*.02:0), d=1.15-.05*c-(fo('weight')-av)*.01;
     return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
-  const g=.94+fo('indoor')*.012+fo('lab')*.015*(1+anaPow('trk')*.08)+(young?fo('dorm')*.015:0)+(futP?fo('fut')*.02:0);
-  const d=1.05-fo('weight')*.03-fo('rehab')*.015;
+  const g=.94+fo('indoor')*.01+fo('lab')*.012*(1+anaPow('trk')*.08)+(young?fo('dorm')*.012:0)+(futP?fo('fut')*.016:0); /* 전부 최고 단계여도 성장 배수 약 1.12~1.13(예전 1.19 안팎): 예전 종합 5단계 시설(1.12)과 같은 천장 */
+  const d=1.05-fo('weight')*.025-fo('rehab')*.012;
   return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
 function buildFacItem(k){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; if(lv>=FAC_MAX)return '이미 최고 단계입니다.'; if(G.fac.bld[k])return '이미 공사 중입니다.'; if(Object.keys(G.fac.bld).length>=2)return '공사는 동시에 2곳까지만 할 수 있습니다.';
   const c=F.c[lv+1]; const t=team(G.user); const free=spendable(G.user); /* 트레이드로 약정한 현금은 이미 쓴 돈(검수 11-09v), 모기업 구단은 구단주 지원 여유까지(피드백 11-09j) */ if(free<c)return `쓸 수 있는 돈이 부족합니다. 공사비 ${money(c)}이 필요합니다(${spendTxt()}).`;
@@ -19088,7 +19107,8 @@ function repRel(r,d,why){ if(!r)return; r.rel=clamp(r.rel+d,0,100); r.last={d:G.
 /* 귀띔: 관계 좋은 기자가 다른 구단이 노리는 자리와 우리 선수를 알려 준다(2주에 한 번 정도) */
 function pressTips(){ if(G.unemp)return; const r=pressInit().filter(x=>x.rel>=70).sort(()=>R()-.5)[0]; if(!r||R()>.5)return;
   const t=pick(G.teams.filter(x=>x.id!==G.user)); let txt=''; try{ const SR=slotRanks(t.id); const k=PSLOTS.filter(s=>s!=='DH').sort((a,b)=>SR[b].rank-SR[a].rank)[0];
-    const mine=playersOf(G.user).filter(p=>pSlot(p)===k||(k==='SP'&&isSPr(p))||(k==='RP'&&p.isP&&!isSPr(p))).sort((a,b)=>ovr(b)-ovr(a))[0];
+    const fit=p=>!p.foreign&&(pSlot(p)===k||(k==='SP'&&isSPr(p))||(k==='RP'&&p.isP&&!isSPr(p))); let want=[]; try{ want=(aiInterest(t.id)||[]).map(id=>G.players[id]).filter(Boolean); }catch(e){} /* 외국인 선수는 트레이드 대상이 아니므로 귀띔에서도 뺀다(커뮤니티 11-12). 실제 그 구단 관심 명단(aiInterest)에 있는 선수를 먼저 */
+    const mine=want.find(fit)||playersOf(G.user).filter(fit).sort((a,b)=>ovr(b)-ovr(a))[0];
     txt=`${tname(t.id)}이(가) ${SLOTK[k]} 보강을 서두르고 있습니다.${mine?` 우리 ${mine.name}을(를) 눈여겨본다는 얘기가 있습니다.`:''}`; }catch(e){ return; }
   mail(`${r.outlet} ${r.name} 기자`,`[귀띔] ${tshort(t.id)} 동향`,`"단장님께만 드리는 얘기입니다." ${txt}\n\n(관계 ${Math.round(r.rel)} 기자의 비공식 정보입니다. 기사로는 아직 나가지 않았습니다.)`,{kind:'언론'}); }
 /* ===== 시설 투자 재원 =====
@@ -20665,7 +20685,7 @@ function myCStats(){ const C=myCInit()||G.myC; if(!C)return null; const A=C.seas
  - 우리 제안의 값(보장 + 인센티브 x 0.55) x 우리 매력이 선수 기준선과 가장 강한 경쟁 구단 제안보다 높으면 사인한다.
  - 처음 제안하면 에이전트가 경쟁 상황을 알려 주고 3일을 기다려 준다. 그 안에 못 잡으면 가장 강한 경쟁 구단으로 간다. */
 const FO_INC_W=.55;
-function foCap(q){ return q.foreign==='아시아'?ASIA_CAP:fNewCap(); }
+function foCap(q){ return q.foreign==='아시아'?asiaCap():fNewCap(); }
 function foRep(tid){ const L=foreignOf(tid).filter(p=>p.foreign==='용병'||p.foreign==='아시아'); return L.filter(p=>p.fy!=null&&p.fy<=G.year-1).length; }
 /* 선수 선호(사람마다 하나): 우승·도시(수도권)·출전 기회·돈·보류권 해제(다음 해 자유) 중 무엇을 크게 보는지. 에이전트가 알려 준다 */
 const FO_PREF={win:'우승 가능성을 가장 중시',city:'수도권·큰 도시를 선호',play:'확실한 주전 자리를 원함',money:'돈(보장액)을 가장 중시',free:'1년 뒤 자유(보류권 해제 조항)를 원함'};
@@ -20780,7 +20800,7 @@ function fReMulti(id){ const C=G.contract; const p=G.players[id]; if(!C||C.done|
    - 8월 15일까지 정식 계약한 선수만 포스트시즌에 나가므로 대체 계약은 정규시즌 끝에 끝난다.
    shortcut: 일반 외국인만 대상(아시아쿼터 대체는 세칙 확인 전이라 뺐다), 세칙이 확인되면 넓힌다 */
 const F_TMP_DAYS=42, F_TMP_MON=10*USD;
-const fTmpFee=q=>Math.min(F_TMP_MON,round5(Math.min(q.ask,fNewCap())/6)); /* 한 달 지급액(시즌 6개월 기준 환산) */
+const fTmpFee=q=>Math.min(Math.round(F_TMP_MON*fEcoK()),round5(Math.min(q.ask,fNewCap())/6)); /* 한 달 지급액(시즌 6개월 기준 환산) */
 /* 처음 받은 진단 일수: 42일 진단 메일을 받은 다음 날 41일로 줄어 막히지 않게(검수 11-06). 규정은 진단 기준이다 */
 function fTmpDx(o){ const h=(o.injHist||[]).slice(-1)[0]; return h&&h.d!=null&&h.d+h.days>=G.day+o.injOut-1?Math.max(h.days,o.injOut):o.injOut||0; }
 function fTmpErr(tid,o,q){
@@ -21345,9 +21365,12 @@ function rpWeek(){ if(G.bprole)for(const id in G.bprole){ const x=G.bprole[id], 
       else if(x.k==='auto'&&x.y<y)delete G.rplan[p.id]; } }
   /* 2군 선발 수업 중이면 2군에서 선발로 나간다 */
   for(const p of Object.values(G.players)){ if(!p.isP||p.team==null||p.e1)continue; if(rpPlanOf(p.team,p)==='sp2'){ p.role='SP'; if(per==='season'&&healthy(p)&&!isAway(p)){ /* 대표팀 차출 중에도 구단 수업 효과 없음(검수 11-08) */ const rm=trnRoom(p,'sta'); if(rm>0)addR(p,'sta',.05*clamp(rm/8,.2,1)); } } /* 체력 성장 여력이 없으면 오르지 않는다(검수 11-06) */ } /* 선발로 길게 던지며 체력이 붙는다 */
-  if(myNew.length){ const m=G.mgr[G.user]; const L=myNew.map(p=>{ const k=G.rplan[p.id].k; return `${p.name}(${p.age}세): ${k==='sp2'?'2군 선발 수업':k==='rp'?'계투로 시작':'선발 경쟁'} · ${rpWhy(p,G.user)}`; });
-    mail('감독실',`신인 투수 보직 계획 (${myNew.length}명)`,`${m?m.name+' 감독':'코치진'}: 신인 투수들은 이렇게 시작하려 합니다.\n\n${L.join('\n')}\n\n체력이 붙고 내용이 좋아지면 언제든 바꿉니다. 다르게 쓰고 싶으시면 선수 정보 육성 탭의 '보직'에서 말씀해 주십시오.`,{kind:'감독',acts:myNew.slice(0,4).map(p=>({l:p.name,a:'player',v:p.id}))}); }
-  if(grad.length){ const m=G.mgr[G.user]; mail('감독실',`2군 선발 수업 마침 (${grad.length}명)`,`${m?m.name+' 감독':'코치진'}: ${grad.map(p=>`${p.name}(${p.r.sta>=rpThr(G.user)?'선발 체력 기준 도달':'두 시즌 수업 완료'})`).join(', ')}의 2군 선발 수업을 마칩니다. 이제부터 체력과 투구 내용으로 다른 투수들과 선발 자리를 다툽니다. 선발 5명에 들지 못하면 불펜에서 기회를 봅니다.`,{kind:'감독',acts:grad.slice(0,4).map(p=>({l:p.name,a:'player',v:p.id}))}); }
+  if(myNew.length){ const m=G.mgr[G.user]; const fm=(coachesOf(G.user)||{}).fm; const row=p=>{ const k=G.rplan[p.id].k; return `${p.name}(${p.age}세): ${k==='sp2'?'2군 선발 수업':k==='rp'?'계투로 시작':'선발 경쟁'} · ${rpWhy(p,G.user)}`; };
+    /* 1군에서 쓸 투수는 1군 감독이, 2군 선발 수업은 2군 감독이 맡아 말한다(커뮤니티 11-12: 1군 감독이 2군 보직을 정하는 것처럼 보였다) */
+    const L1=myNew.filter(p=>G.rplan[p.id].k!=='sp2').map(row), L2=myNew.filter(p=>G.rplan[p.id].k==='sp2').map(row);
+    const L=[...(L1.length?[`${m?m.name+' 감독':'1군 코치진'}(1군):`,...L1]:[]),...(L2.length?[`${L1.length?'\n':''}${fm?fm.name+' 2군 감독':'2군 코치진'}(2군에서 선발로 키움):`,...L2]:[])];
+    mail('감독실',`신인 투수 보직 계획 (${myNew.length}명)`,`신인 투수들은 이렇게 시작하려 합니다.\n\n${L.join('\n')}\n\n체력이 붙고 내용이 좋아지면 언제든 바꿉니다. 다르게 쓰고 싶으시면 선수 정보 육성 탭의 '보직'에서 말씀해 주십시오.`,{kind:'감독',acts:myNew.slice(0,4).map(p=>({l:p.name,a:'player',v:p.id}))}); }
+  if(grad.length){ const fm=(coachesOf(G.user)||{}).fm; mail('감독실',`2군 선발 수업 마침 (${grad.length}명)`,`${fm?fm.name+' 2군 감독':'2군 코치진'}: ${grad.map(p=>`${p.name}(${p.r.sta>=rpThr(G.user)?'선발 체력 기준 도달':'두 시즌 수업 완료'})`).join(', ')}의 2군 선발 수업을 마칩니다. 이제부터 체력과 투구 내용으로 다른 투수들과 선발 자리를 다툽니다. 선발 5명에 들지 못하면 불펜에서 기회를 봅니다.`,{kind:'감독',acts:grad.slice(0,4).map(p=>({l:p.name,a:'player',v:p.id}))}); }
   /* 단장이 2군 선발 수업을 요청한 선수가 기준에 닿으면 알린다(한 번) */
   for(const id in (G.prole||{})){ const x=G.prole[id], p=G.players[id], xt=x.tid??G.user; if(!p||p.team!==xt){ delete G.prole[id]; continue; } if(xt!==G.user)continue; /* 다른 구단으로 옮겨도 그 구단 요청은 남겨 둔다(돌아오면 그대로) */ if(x.k==='sp2'&&!x.told&&p.r.sta>=rpThr(G.user)){ x.told=true; const m=G.mgr[G.user]; mail('감독실',`${p.name} 선발 수업 성과`,`${m?m.name+' 감독':'코치진'}: ${p.name}이(가) 선발로 쓸 만큼 체력이 붙었습니다. 1군 선발 경쟁에 넣어도 되겠습니까?`,{kind:'감독',acts:[{l:'1군 선발 경쟁으로',a:'proleSet',v:`${p.id}:auto`},{l:'선수 보기',a:'player',v:p.id}]}); } } }
 /* 감독이 이 투수를 어떻게 보는지(단장 요청과 별개) */
@@ -23530,7 +23553,7 @@ EVH.rebrand={ pick(e,i){ const t=team(e.data.tid); if(!t||e.data.tid!==G.user)re
 function lgrInit(){ return G.lgr=G.lgr||{y:{},hist:[],hr0:null}; }
 function lgRuleOf(y){ const L=lgrInit(); let r=null; for(const k in L.y)if(+k<=y&&(r==null||+k>r))r=+k; return r==null?{ball:1,zone:0,fcap:1}:L.y[r]; }
 function lgRuleNow(){ return lgRuleOf(G.year); }
-function fTotCap(){ return Math.round(F_TOTAL_CAP*(lgRuleNow().fcap||1)); }
+function fTotCap(){ return Math.round(F_TOTAL_CAP*(lgRuleNow().fcap||1)*fEcoK()); }
 function lgHrRate(y){ let hr=0,pa=0; for(const p of Object.values(G.players)){ if(p.isP)continue; const h=seasonTotal(p,y,'1군'); if(h){ hr+=h.hr||0; pa+=h.pa||0; } } return pa>2000?hr/pa:null; }
 function lgrDecide(){ const L=lgrInit(), y=G.year+1; if(L.y[y])return; const cur=lgRuleOf(G.year), hr=lgHrRate(G.year); if(L.hr0==null&&hr!=null)L.hr0=hr;
   const nx={...cur}, why=[];
@@ -29753,11 +29776,11 @@ function foreignView(){
   const tabs=`<div class="seg fr-ty"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
   const capT=fCap(G.user), rsyN=sum(yb.map(x=>x.rsy||0)); const pct=Math.min(100,tot/capT*100);
   const rule=asia
-    ?`<dl class="tsum"><div><dt>아시아쿼터</dt><dd class="num" style="color:${as.length?'var(--good)':'var(--warn)'}">${as.length} / 1</dd></div><div><dt>연봉 상한</dt><dd class="num">신규 20만 달러 · 재계약 +10만/년</dd></div><div><dt>대상</dt><dd>일본·대만·호주</dd></div></dl>
-      <p class="small muted">아시아쿼터 규정 <button type="button" class="hi-i" data-tip="${esc(`아시아쿼터는 일반 외국인 3명과 별도로 1명을 더 쓸 수 있는 자리이며, 시즌 중 교체도 일반 외국인과 별도로 1회까지입니다. 신규 계약 연봉은 20만 달러(약 ${money(ASIA_CAP)})까지이고, 재계약하면 직전 연봉에서 해마다 10만 달러까지 올릴 수 있으며, 외국인 연봉 총액 400만 달러에는 들어가지 않습니다.`)}">i</button></p>`
+    ?`<dl class="tsum"><div><dt>아시아쿼터</dt><dd class="num" style="color:${as.length?'var(--good)':'var(--warn)'}">${as.length} / 1</dd></div><div><dt>연봉 상한</dt><dd class="num">신규 ${Math.round(asiaCap()/USD)}만 달러 · 재계약 +${Math.round(10*fEcoK())}만/년</dd></div><div><dt>대상</dt><dd>일본·대만·호주</dd></div></dl>
+      <p class="small muted">아시아쿼터 규정 <button type="button" class="hi-i" data-tip="${esc(`아시아쿼터는 일반 외국인 3명과 별도로 1명을 더 쓸 수 있는 자리이며, 시즌 중 교체도 일반 외국인과 별도로 1회까지입니다. 신규 계약 연봉은 ${Math.round(asiaCap()/USD)}만 달러(약 ${money(asiaCap())})까지이고, 재계약하면 직전 연봉에서 해마다 10만 달러까지 올릴 수 있으며, 외국인 연봉 총액 400만 달러에는 들어가지 않습니다.`)}">i</button></p>`
     :`<dl class="tsum"><div><dt>외국인</dt><dd class="num" style="color:${yb.length<3?'var(--warn)':'var(--good)'}">${yb.length} / 3</dd></div><div><dt>투수 · 타자</dt><dd class="num">${yb.filter(p=>p.isP).length} · ${yb.filter(p=>!p.isP).length}</dd></div><div><dt>총액 / 한도</dt><dd class="num">${Math.round(tot/USD)}만 / ${Math.round(capT/USD)}만 달러</dd></div></dl>
       <div class="bar"><i class="${tot>capT?'over':''}" style="width:${pct}%"></i></div>
-      <p class="small muted">외국인 선수 규정 <button type="button" class="hi-i" data-tip="${esc(`신규 계약은 1인 100만 달러(연봉·계약금·이적료·인센티브 포함)까지입니다. 재계약 선수는 개인 상한이 없습니다. 3명 총액 한도는 400만 달러이고, 재계약 선수의 재계약 연차 1년마다 10만 달러씩 늘어납니다(지금 연차 합 ${rsyN}년 → 한도 ${Math.round(capT/USD)}만 달러). 3명을 모두 투수나 모두 타자로 채울 수 없습니다. 보류권: 원소속 구단이 재계약을 제안했는데 선수가 받아들이지 않으면 5년 동안 국내 다른 구단에 입단할 수 없습니다(원소속 구단이 동의하면 예외). 그래서 다른 구단 외국인은 데려올 수 없고, 보류권이 풀린 선수만 시장에 나옵니다.`)}">i</button></p>${(()=>{ const L=(G.fRes||[]).filter(x=>x.until>=G.year); return L.length?`<details class="frule"><summary class="small">보류권으로 묶인 외국인 ${L.length}명</summary><ul class="small muted">${L.slice(0,12).map(x=>`<li>${esc(x.name)}(${esc(x.nat||'')} ${esc(x.pos)}) · ${esc(tshort(x.tid))} 보류 · ${x.until}년까지</li>`).join('')}</ul></details>`:''; })()}`;
+      <p class="small muted">외국인 선수 규정 <button type="button" class="hi-i" data-tip="${esc(`신규 계약은 1인 ${Math.round(F_NEW_CAP*fEcoK()/USD)}만 달러(연봉·계약금·이적료·인센티브 포함)까지입니다. 재계약 선수는 개인 상한이 없습니다. 3명 총액 한도는 400만 달러이고, 재계약 선수의 재계약 연차 1년마다 10만 달러씩 늘어납니다(지금 연차 합 ${rsyN}년 → 한도 ${Math.round(capT/USD)}만 달러). 3명을 모두 투수나 모두 타자로 채울 수 없습니다. 보류권: 원소속 구단이 재계약을 제안했는데 선수가 받아들이지 않으면 5년 동안 국내 다른 구단에 입단할 수 없습니다(원소속 구단이 동의하면 예외). 그래서 다른 구단 외국인은 데려올 수 없고, 보류권이 풀린 선수만 시장에 나옵니다.`)}">i</button></p>${(()=>{ const L=(G.fRes||[]).filter(x=>x.until>=G.year); return L.length?`<details class="frule"><summary class="small">보류권으로 묶인 외국인 ${L.length}명</summary><ul class="small muted">${L.slice(0,12).map(x=>`<li>${esc(x.name)}(${esc(x.nat||'')} ${esc(x.pos)}) · ${esc(tshort(x.tid))} 보류 · ${x.until}년까지</li>`).join('')}</ul></details>`:''; })()}`;
   const summary=`<section class="card">${rule}
     <p class="small muted">${mid?`${asia?'아시아쿼터':'일반 외국인'} 시즌 중 교체 ${used}/${max}회, 영입하면 남은 경기 비율만큼 연봉을 냅니다. `:''}${open?'후보는 매달 1일 일부 바뀝니다. 8월 15일 이후에는 영입할 수 없습니다.':'<b>지금은 영입 기간이 아닙니다.</b> (12월~8월 15일)'}</p>
     <div class="netrow">${regs.map(netPill).join('')}<button class="tc-i" data-a="itab" data-v="fview:net">해외 스카우트망 관리</button></div>
@@ -29805,7 +29828,7 @@ function contractPage(){
 /* PC 외국인(FM 선수 검색처럼): 위 한도 요약, 왼쪽 후보 표(능력은 스카우트가 아는 만큼 범위로), 오른쪽 우리 외국인 · 관찰 명단 · 해외 스카우트망 */
 function foreignFM(o){ const {asia,yb,as,tot,capT,mid,open,ff,regs,used,max,market,fchips,rule}=o, b=budget(), mine=asia?as:yb, cap=asia?1:3, fsU=sum(fStayOf(G.user).map(p=>p.sal));
   const tabs=`<div class="seg tf-seg"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
-  const top=tfKpi([tabs,...(asia?[['아시아쿼터',`${as.length} / 1`,as.length?'good':'warn','일반 외국인 3명과 별도'],['연봉 상한','신규 20만 달러','',`재계약은 직전 연봉 +10만 달러/년 · 총액 한도 밖`],['대상','일본·대만·호주']]
+  const top=tfKpi([tabs,...(asia?[['아시아쿼터',`${as.length} / 1`,as.length?'good':'warn','일반 외국인 3명과 별도'],['연봉 상한',`신규 ${Math.round(asiaCap()/USD)}만 달러`,'',`재계약은 직전 연봉 +10만 달러/년 · 총액 한도 밖`],['대상','일본·대만·호주']]
       :[['외국인',`${yb.length} / 3`,yb.length<3?'warn':'good'],['투수 · 타자',`${yb.filter(p=>p.isP).length} · ${yb.filter(p=>!p.isP).length}`,'','3명 모두 한쪽은 불가'],['총액 / 한도',`${Math.round(tot/USD)}만 / ${Math.round(capT/USD)}만 달러`,tot>capT?'bad':'','신규 계약 1인 100만 달러까지']]),
     mid?[`시즌 중 ${asia?'아시아쿼터':'일반 외국인'}`,`교체 ${used}/${max}회`,used>=max?'bad':'','영입하면 남은 경기 비율만큼 연봉']:null,['영입 기간',open?'열림':'닫힘',open?'good':'warn',open?'8월 15일까지 · 매달 1일 후보 교체':'12월~8월 15일'],b.fR?['외국인 배정 예산 남음',money(b.fRoom),b.fRoom<0?'bad':'',`${money(b.fR)} 중 ${money(fsU)} 사용`]:null]);
   const rows=market.map(({p,rp,fs})=>{ const err=open?foListErr(p):'영입 기간이 아닙니다.', repl=mid&&fReplLeft(G.user,p.foreign)<=0, pay=mid?Math.round(p.ask*remainFrac()):p.ask, n=fInterest(p), h=p.now&&p.now.y===G.year?p.now:p.prev, fn=fFindNote(p,rp);
@@ -30994,8 +31017,8 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
     <p class="small expl"><b>시즌 예산은 ${b.lockD!=null?dsh(b.lockD):'시즌 시작 때'} 확정됐습니다.</b> 구단주 지원과 예상 수입(입장·중계·광고·스폰서)을 그때 기준으로 정해 두고, 시즌 중에 성적이 좋아 신뢰나 수입이 늘어도 예산 여유는 늘지 않습니다. 더 쓰려면 구단주에게 추가 지원을 받아야 합니다(구단 → 구단주).${b.extra>0?` 지금까지 예상보다 수입이 <b class="ok">${money(b.extra)}</b> 더 들어왔습니다. 이 돈은 구단 몫이고, 구단주에게 요청할 때 근거가 됩니다(승인 가능성이 오릅니다).`:b.extra<0?` 수입이 예상보다 ${money(-b.extra)} 덜 들어오고 있습니다(결산 때 적자 보전이 그만큼 늘어납니다).`:''}</p>
     <p class="small muted">자금이 마이너스가 되면 구단주 신뢰가 크게 떨어집니다. 지원 한도와 보유 현금까지 모두 쓰면 최대 ${money(b.roomMax)}까지 더 쓸 수 있습니다. 새로 맺는 계약은 올해 남은 기간(${Math.round(b.rem*100)}%)만큼만 올해 예산에 잡힙니다.</p></section>
   <section class="card"><h2 class="sec">용도별 한도</h2><div class="bud-u">
-    <div><span class="eyebrow">외국인 선수 (${fStayOf(G.user).filter(p=>p.foreign==='용병').length}명)</span><b>${b.fUsed?`${Math.round(b.fUsed/USD)}만 / ${Math.round(b.fCap/USD)}만 달러`:`계약 없음 · 한도 ${Math.round(b.fCap/USD)}만 달러`}</b><i class="bar"><em style="width:${Math.min(100,b.fUsed/b.fCap*100)}%"></em></i><span class="small muted">남은 총액 ${Math.round((b.fCap-b.fUsed)/USD)}만 달러(약 ${money(b.fCap-b.fUsed)}) · 새 계약 1명당 ${Math.round(F_NEW_CAP/USD)}만 달러 이하 · ${yb.length}/3명</span></div>
-    <div><span class="eyebrow">아시아쿼터 (1명)</span><b>${as.length?`${Math.round(b.aUsed/USD)}만 달러`:'비어 있음'}</b><span class="small muted">1명당 ${Math.round(ASIA_CAP/USD)}만 달러 이하</span></div>
+    <div><span class="eyebrow">외국인 선수 (${fStayOf(G.user).filter(p=>p.foreign==='용병').length}명)</span><b>${b.fUsed?`${Math.round(b.fUsed/USD)}만 / ${Math.round(b.fCap/USD)}만 달러`:`계약 없음 · 한도 ${Math.round(b.fCap/USD)}만 달러`}</b><i class="bar"><em style="width:${Math.min(100,b.fUsed/b.fCap*100)}%"></em></i><span class="small muted">남은 총액 ${Math.round((b.fCap-b.fUsed)/USD)}만 달러(약 ${money(b.fCap-b.fUsed)}) · 새 계약 1명당 ${Math.round(F_NEW_CAP*fEcoK()/USD)}만 달러 이하 · ${yb.length}/3명</span></div>
+    <div><span class="eyebrow">아시아쿼터 (1명)</span><b>${as.length?`${Math.round(b.aUsed/USD)}만 달러`:'비어 있음'}</b><span class="small muted">1명당 ${Math.round(asiaCap()/USD)}만 달러 이하</span></div>
     <div><span class="eyebrow">감독</span><b>${m?`${esc(m.name)} 연 ${money(m.sal)}`:'빈자리'}</b><span class="small muted">${m&&!m.interim?`잔여 ${Math.max(0,m.yrs)}년 · 경질하면 정산금 ${money(pay)}`:'감독대행 체제'}${mm.length?` · 후보 연봉 ${money(Math.min(...mm))}~${money(Math.max(...mm))}`:''}</span></div>
     <div><span class="eyebrow">국내 선수 연봉 (샐러리캡)</span><b>${money(b.ci.pay)} / ${money(b.ci.cap)}</b><i class="bar"><em class="${b.ci.over?'bad':''}" style="width:${Math.min(100,b.ci.pay/b.ci.cap*100)}%"></em></i><span class="small muted">${b.ci.over?`초과 ${money(b.ci.over)} · 경쟁균형세 부과`:`여유 ${money(b.ci.cap-b.ci.pay)}`}</span></div>
   </div><p class="small muted">한도는 계약 규정입니다. 실제로 쓸 수 있는지는 위의 "예산 여유"로 판단하세요.</p></section>

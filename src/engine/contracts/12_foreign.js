@@ -1,7 +1,7 @@
 /* ===== 외국인 선수 ===== */
 /* KBO: 시즌 중 교체 외국인은 남은 기간 월 10만 달러까지. 지급은 남은 경기 비율(remainFrac)이라 연봉 기준 60만 달러(6개월)로 묶는다. shortcut: 시즌 6개월 고정 — 일정 길이가 바뀌면 남은 달 수로 */
-const fNewCap=()=>period()==='season'?Math.min(F_NEW_CAP,60*USD):F_NEW_CAP;
-function fAsk(p,o){ o=o??ovr(p); if(p.foreign==='아시아')return clamp(round5(100+(o-44)*16),100,ASIA_CAP); return clamp(round5(980+(o-46)*55),700,fNewCap()); } /* 신규 용병 요구액: 능력 55 약 67만, 60 약 82만, 64 이상은 상한 100만 달러 근처(실제 KBO 신규 외국인 계약 대부분이 상한 가까이) */
+const fNewCap=()=>Math.round((period()==='season'?Math.min(F_NEW_CAP,60*USD):F_NEW_CAP)*fEcoK());
+function fAsk(p,o){ o=o??ovr(p); const k=fEcoK(); if(p.foreign==='아시아')return clamp(round5((100+(o-44)*16)*k),round5(100*k),asiaCap()); return clamp(round5((980+(o-46)*55)*k),round5(700*k),fNewCap()); } /* 신규 용병 요구액: 능력 55 약 67만, 60 약 82만, 64 이상은 상한 100만 달러 근처(실제 KBO 신규 외국인 계약 대부분이 상한 가까이) */
 function wpick(ws){ let tot=0; for(const k in ws)tot+=ws[k]; let x=R()*tot; for(const k in ws){ x-=ws[k]; if(x<=0)return k; } return Object.keys(ws)[0]; }
 /* 외국인 후보는 두 경로로 나온다.
    에이전트 제안: 리그 전체에 돌리는 공용 후보. 대부분 트리플A 출신(MLB 콜업 경력이 있는 선수가 많다)이고, 이름값 있는 선수는 이유(부상·나이·적응)가 있다.
@@ -150,7 +150,7 @@ function foreignCheck(tid,p,excludeId,tmp){
   if(!tmp&&period()==='season'&&fReplLeft(tid,p.foreign)<=0)return `이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 썼습니다.`;
   if(!excludeId&&rosterN(tid)-(foreignOf(tid).length-fStayOf(tid).length)>=ROSTER_MAX)return `선수단이 ${ROSTER_MAX}명이라 더 등록할 수 없습니다. 먼저 한 명을 정리하세요.`; /* 교체가 아니면 한 자리가 늘어난다. 결별하기로 한 외국인 자리는 비는 것으로 본다(검수 11-09zl) */
   const fs=fStayOf(tid).filter(x=>x.id!==excludeId);
-  if(p.foreign==='아시아'){ if(fs.filter(x=>x.foreign==='아시아').length>=1)return '아시아쿼터는 1명까지입니다. 먼저 한 명을 방출하세요.'; if((p.ask||0)>ASIA_CAP)return `아시아쿼터 연봉은 ${money(ASIA_CAP)}까지입니다.`; /* 기본 계약 경로도 상한(검수 11-06) */ return ''; }
+  if(p.foreign==='아시아'){ if(fs.filter(x=>x.foreign==='아시아').length>=1)return '아시아쿼터는 1명까지입니다. 먼저 한 명을 방출하세요.'; if((p.ask||0)>asiaCap())return `아시아쿼터 연봉은 ${money(asiaCap())}까지입니다.`; /* 기본 계약 경로도 상한(검수 11-06) */ return ''; }
   const yb=fs.filter(x=>x.foreign==='용병');
   if(yb.length>=fMaxYB(tid))return `외국인 선수(아시아쿼터 제외)는 ${fMaxYB(tid)}명까지입니다. 먼저 한 명을 방출하세요.`;
   if(yb.length===2&&yb.every(x=>x.isP===p.isP))return `외국인 3명을 모두 ${p.isP?'투수':'타자'}로 채울 수 없습니다.`;
