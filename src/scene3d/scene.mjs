@@ -47,7 +47,7 @@ function roleOf(t){return /ctch/.test(t.cls)?'catcher':/bat/.test(t.cls)?'batter
 function makeActor(t){const s=active,role=roleOf(t),o=cloneSkeleton(s.assets.player.scene),allowed=new Set(pack.gear[role==='runner'?'batter':role]),materials=new Map();if(/pit/.test(t.cls)){allowed.delete('Hand_R');allowed.add('Hand_R_Ball');}
  o.traverse(n=>{if(n.userData.cb_group)n.visible=allowed.has(n.name);if(n.isMesh){n.castShadow=role==='batter'||role==='catcher'||/pit/.test(t.cls);n.receiveShadow=true;const paint=m=>{if(materials.has(m))return materials.get(m);const q=m.clone();if(q.name==='uniform_jersey')q.color.set(t.u?.S||'#eeeeee');if(['uniform_socks','cap','helmet','uniform_undershirt','piping','batting_glove'].includes(q.name))q.color.set(t.u?.H||t.col||'#273650');if(/jersey_decal|cap_logo|helmet_logo/.test(q.name)||/Teeth/.test(n.name))n.visible=false;materials.set(m,q);return q;};n.material=Array.isArray(n.material)?n.material.map(paint):paint(n.material);}});
  const group=new T.Group();group.add(o);s.scene.add(group);const a={key:t.k,id:t.id,role,pitcher:/pit/.test(t.cls),root:group,model:o,mixer:new T.AnimationMixer(o),materials:[...materials.values()],uniform:JSON.stringify(t.u),motion:'',move:null,clips:s.assets.player.animations,updatedAt:performance.now(),positionLabel:t.position||t.lab||''};
- if(role==='batter'){const grip=o.getObjectByName('Bat_Grip');if(grip){a.bat=s.assets.bat.scene.clone();grip.add(a.bat);}}
+ if(role==='batter'){a.post=swingMechanics;const grip=o.getObjectByName('Bat_Grip');if(grip){a.bat=s.assets.bat.scene.clone();grip.add(a.bat);}}
  if(a.pitcher){a.post=pitchMechanics;a.releaseGrip=o.getObjectByName('Ball_Grip');if(a.releaseGrip){a.heldBall=s.assets.ball.scene.clone();a.releaseGrip.add(a.heldBall);}}
  o.traverse(n=>{if(n.isBone&&/Head$/.test(n.name))a.head=n;if(n.isBone&&/LeftShoulder$/.test(n.name))a.shoulderL=n;if(n.isBone&&/RightShoulder$/.test(n.name))a.shoulderR=n;});a.gloveGrip=o.getObjectByName('Glove_Pocket');a.throwGrip=o.getObjectByName('Ball_Grip');makeLabel(s,a,t);
  a.zone=zoneOf(t);actorSide(a,t);pose(a,idle(a),true);return a;
@@ -82,9 +82,11 @@ function legIK(a,side,target){const up=boneByName(a,side+'UpLeg'),kn=boneByName(
 
 function armKey(sv){const K=ARM_KEYS;if(sv<=K[0].s)return K[0];for(let i=1;i<K.length;i++)if(sv<=K[i].s){const A=K[i-1],B=K[i],f=smooth((sv-A.s)/(B.s-A.s));return {hAbd:A.hAbd+(B.hAbd-A.hAbd)*f,flex:A.flex+(B.flex-A.flex)*f,er:A.er+(B.er-A.er)*f};}return K[K.length-1];}
 function aimBone(a,b,c,dir,w){const B=modelPos(a,b,new T.Vector3()),C=modelPos(a,c,new T.Vector3()),d=C.sub(B).normalize(),D=d.clone().lerp(dir,w).normalize();rotModelQ(a,b,new T.Quaternion().setFromUnitVectors(d,D));}
-function throwingArm(a,sv,w){if(w<=0)return;const sp=boneByName(a,'Spine2'),ua=boneByName(a,'RightArm'),fa=boneByName(a,'RightForeArm'),hd=boneByName(a,'RightHand');if(!sp||!ua||!fa||!hd)return;
+/* 투구폼별 팔 높이(몸통 기준 위팔 벌림): 다른 동작은 같고 팔 위치만 다르다(사용자 11-12) */
+export const ARM_SLOT={overhand:90,three_quarter:75,sidearm:55,submarine:30};
+function throwingArm(a,sv,w,style='overhand'){if(w<=0)return;const sp=boneByName(a,'Spine2'),ua=boneByName(a,'RightArm'),fa=boneByName(a,'RightForeArm'),hd=boneByName(a,'RightHand');if(!sp||!ua||!fa||!hd)return;
  const q=modelQ(a,sp,new T.Quaternion()),tX=new T.Vector3(1,0,0).applyQuaternion(q),tY=new T.Vector3(0,1,0).applyQuaternion(q),tZ=new T.Vector3(0,0,1).applyQuaternion(q),k=armKey(sv),h=k.hAbd*Math.PI/180;
- const u=tX.clone().multiplyScalar(-Math.cos(h)).addScaledVector(tZ,Math.sin(h)).normalize(); /* 몸통 오른쪽(-X)으로 90° 벌림, 앞뒤로 hAbd */
+ const ab=(ARM_SLOT[style]??90)*Math.PI/180,u=tX.clone().multiplyScalar(-Math.cos(h)).addScaledVector(tZ,Math.sin(h)).normalize().multiplyScalar(Math.sin(ab)).addScaledVector(tY,-Math.cos(ab)).normalize(); /* 몸통 오른쪽(-X)으로 투구폼별 각도만큼 벌림(90°=어깨 높이), 앞뒤로 hAbd */
  aimBone(a,ua,fa,u,w);
  const f0=tZ.clone().addScaledVector(u,-tZ.dot(u)).normalize(),f90=tY.clone().addScaledVector(u,-tY.dot(u)).normalize(),er=k.er*Math.PI/180,perp=f0.multiplyScalar(Math.cos(er)).addScaledVector(f90,Math.sin(er)).normalize(),fl=k.flex*Math.PI/180;
  const U=modelPos(a,fa,new T.Vector3()).sub(modelPos(a,ua,new T.Vector3())).normalize(),fd=U.multiplyScalar(Math.cos(fl)).addScaledVector(perp,Math.sin(fl)).normalize();
@@ -103,7 +105,7 @@ function pitchMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||!/^pitch_(ov
  const sp=['Spine','Spine1','Spine2'].map(n=>boneByName(a,n));for(const b of sp)if(b){rotModel(a,b,AX.x,P.fwd*tilt/3);rotModel(a,b,AX.z,-P.lat*tilt/3);}
  const ra=boneByName(a,'RightArm');if(ra)rotModel(a,ra,AX.z,P.arm*arm);
  gloveTuck(a,t<fc?0:t<rel?smooth((t-fc)/(rel-fc)):1); /* 글러브 팔: 착지→놓기 사이 가슴으로 당기고 그대로 수비 준비 */
- {const sv=(t-fc)/(rel-fc),w=t<fc?smooth((t-(fc-.15))/.15):t<=rel+.04?1:1-smooth((t-rel-.04)/.25);throwingArm(a,clamp(sv,0,1),w);} /* 던지는 팔: 착지 전 0.15초부터 핵심 자세로, 놓은 뒤 0.25초에 걸쳐 원래 팔로스루로 */
+ {const sv=(t-fc)/(rel-fc),w=t<fc?smooth((t-(fc-.15))/.15):t<=rel+.04?1:1-smooth((t-rel-.04)/.25);throwingArm(a,clamp(sv,0,1),w,a.motion.match(/^pitch_(\w+?)_(windup|stretch)$/)?.[1]);} /* 던지는 팔: 착지 전 0.15초부터 핵심 자세로, 놓은 뒤 0.25초에 걸쳐 원래 팔로스루로 */
  if(feet[0]&&feet[1]&&t>=rel){ /* 마무리 발놀림(사용자 11-12: 두 발이 제자리에 있으면 안 됨): ① 뒷발이 크게 넘어와 디딤발 옆 앞에 내려서고 ② 디딤발이 뒤로 물러나 홈을 보는 수비 자세 */
   if(a._rfAction!==a.action||a._rfT==null||t<a._rfT){a._rf=[feet[0].clone(),feet[1].clone()];a._rfAction=a.action;}a._rfT=t;
   const [L0,R0]=a._rf,p=smooth((t-rel-.04)/.3),q=smooth((t-rel-.36)/.26),Rend=L0.clone().add(new T.Vector3(-P.stance,0,.12)),Lend=L0.clone().add(new T.Vector3(.04,0,-P.stepBack));
@@ -115,6 +117,19 @@ function pitchMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||!/^pitch_(ov
   if(d>hz){const y=feet[0].y+Math.sqrt(d*d-hz*hz),drop=(t<rel?Math.max(0,H.y-y):H.y-y)*leg;hips.position.y-=drop;}} /* 놓은 뒤에는 골반을 올려(음수 drop) 쪼그려 앉지 않게 */
  if(leg)['Left','Right'].forEach((s,i)=>{if(feet[i])legIK(a,s,feet[i]);});
 }
+
+/* 타격 역학 보정(교본: 앞발 착지→임팩트 약 211ms, 앞무릎을 펴며 버팀, 머리 고정). 클립 자세 위에 매 프레임 덧붙인다 */
+export const SWING_MECH={kneeFD:30,kneeContact:12,kneeAfter:6,drift:.4,kick:.22,gather:.12,kickPeak:.5,hipLead:16}; /* kick: 레그킥 높이(m), gather: 포수 쪽으로 당기기(m), hipLead: 착지 뒤 골반이 어깨보다 먼저 더 도는 각도(°) */
+function swingMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action||a.motion!=='swing')return;const e=clipEvents.swing;if(!e?.contact)return;
+ const t=a.action.time,c=e.contact,fd=e.foot_down??c-.211,P=SWING_MECH,w=smooth((t-(fd-.06))/.06),k0=.22,kick=t>k0&&t<fd?Math.sin(Math.PI*(t-k0)/(fd-k0)):0;if(!w&&!kick)return;
+ const hips=boneByName(a,'Hips');if(!hips)return;const feet=['Left','Right'].map(s=>{const f=boneByName(a,s+'Foot');return f?modelPos(a,f,new T.Vector3()):null;});
+ if(kick&&feet[0]){const pk=Math.sin(Math.PI*clamp((t-k0)/((fd-k0)*2*P.kickPeak),0,1)/1);feet[0].y+=P.kick*kick;feet[0].x-=P.gather*Math.sin(Math.PI*clamp((t-k0)/(fd-k0),0,1));legIK(a,'Left',feet[0]);if(!w)return;} /* 레그킥: 앞무릎을 끌어올리며 포수 쪽으로 당겼다가 투수 쪽으로 내딛는다(사용자 11-12) */
+ {const h=t<fd?0:t<c?P.hipLead*Math.sin(Math.PI*clamp((t-fd)/(c-fd),0,1)*.5+0):P.hipLead*(1-smooth((t-c)/.12));if(h){rotModel(a,hips,AX.y,h);const sp=boneByName(a,'Spine');if(sp)rotModel(a,sp,AX.y,-h);}} /* 골반 먼저: 착지 뒤 골반만 더 열고 위 몸통은 남겨 꼬임을 키웠다가, 임팩트 무렵 풀며 어깨·팔·배트가 따라 돈다 */
+ if(t>=fd){const hd=boneByName(a,'Head'),hp=hd?modelPos(a,hd,new T.Vector3()):null;if(a._sfAction!==a.action||a._sfT==null||t<a._sfT){a._sfHead=hp?.x;a._sfAction=a.action;}a._sfT=t;if(hp&&a._sfHead!=null)hips.position.x-=(hp.x-a._sfHead)*(1-P.drift);} /* 머리 고정: 착지 순간 머리 위치에서 투수 쪽(모델 +X)으로 쏠린 만큼의 60%를 몸 전체로 되돌린다 */
+ const knee=t<c?P.kneeFD+(P.kneeContact-P.kneeFD)*smooth((t-fd)/(c-fd)):P.kneeContact+(P.kneeAfter-P.kneeContact)*smooth((t-c)/.15);
+ if(feet[0]){const up=boneByName(a,'LeftUpLeg'),kn=boneByName(a,'LeftLeg'),ft=boneByName(a,'LeftFoot'),H=modelPos(a,up,new T.Vector3()),K=modelPos(a,kn,new T.Vector3()),F=modelPos(a,ft,new T.Vector3()),l1=H.distanceTo(K),l2=K.distanceTo(F),d=Math.sqrt(l1*l1+l2*l2+2*l1*l2*Math.cos(knee*Math.PI/180)),hz=Math.hypot(H.x-feet[0].x,H.z-feet[0].z);
+  if(d>hz){const y=feet[0].y+Math.sqrt(d*d-hz*hz);hips.position.y-=(H.y-y)*w;}}
+ ['Left','Right'].forEach((s,i)=>{if(feet[i])legIK(a,s,feet[i]);});}
 // Pitch clips already contain the sideways set, hip rotation and head tracking.
 // A fixed root aims their +Z delivery toward home; rotating it again twists the form.
 function poseWorld(a,now){if(a.pitcher&&a.motion.startsWith('pitch_'))a.root.rotation.y=Math.PI;}
@@ -226,6 +241,8 @@ function viewPitcher(on=true,angle='side'){const s=active;if(!s?.ready)return;s.
 function viewBatter(on=true,angle='side'){const s=active;if(!s?.ready)return;s.batterView=angle;s.cameraMode=on?'batterSide':'pitch';setCamera(true);s.dirty=true;s.cameraFrames=1;}
 /* 점검용: 역할(batter/pitcher/catcher)의 선수를 클립의 정확한 시각 자세로 멈춘다(느린 그래픽에서도 프레임별 비교) */
 function posePreview(role,name,t){const s=active,a=[...(s?.actors.values()||[])].find(x=>role==='pitcher'?x.pitcher:x.role===role);if(!a)return null;const action=playPose(a,name,{freeze:true,fade:0});if(!action)return null;action.paused=false;action.time=Math.min(t,action.getClip().duration);a.mixer.update(0);a.post?.(a);action.paused=true;if(a.pitcher)a.root.rotation.y=Math.PI;s.dirty=true;return action.getClip().duration;}
+/* 점검용: 역할별 선수의 관절·배트 위치(월드) */
+function bonesOf(role){const s=active,a=[...(s?.actors.values()||[])].find(x=>role==='pitcher'?x.pitcher:x.role===role);if(!a)return null;s.scene.updateMatrixWorld(true);const r={yaw:a.root.rotation.y,left:a.left};for(const n of BONES)r[n]=a.model.getObjectByName('mixamorig'+n)?.getWorldPosition(new T.Vector3()).toArray();if(a.bat){const bb=new T.Box3().setFromObject(a.bat),g=a.bat.getWorldPosition(new T.Vector3());r.batGrip=g.toArray();const c=bb.getCenter(new T.Vector3());r.batTip=g.clone().add(c.sub(g).multiplyScalar(2)).toArray();}return r;}
 function viewBoard(on=true){const s=active;if(!s?.ready)return;s.cameraMode=on?'scoreboard':'pitch';setCamera(true);s.dirty=true;s.cameraFrames=1;}
 function batted(result,hold=0){const s=active;if(!s)return;s.nextBatted=result;s.followDelay=hold;s.receiver=null;s.thrower=null;s.landing=null;if(s.landingRing)s.landingRing.visible=false;if(s.landingLabel)s.landingLabel.hidden=true;}
 function trackRunner(key){if(active){active.followRunner=key;active.dirty=true;}}
@@ -244,4 +261,4 @@ function info(details=false){const s=active;if(!s)return null;const r={ready:s.r
  if(details&&s.ready){s.scene.updateMatrixWorld(true);r.players=[...s.actors.values()].map(a=>({key:a.key,id:a.id,role:a.role,pitcher:a.pitcher,left:a.left,visible:a.root.visible,moving:!!a.move,playing:!!a.action&&!a.action.paused&&a.action.isRunning(),delivery:a.delivery,actionTime:a.action?.time,actionDuration:a.action?.getClip().duration,actualClip:a.action?.getClip().name,actionRate:a.action?.getEffectiveTimeScale(),motionHistory:a.motionHistory,motion:a.motion,highlight:a.highlight,label:a.labelName?.textContent,yaw:a.root.rotation.y,position:a.root.position.toArray(),headForward:a.head?v(0,0,1).transformDirection(a.head.matrixWorld).toArray():null,headPosition:a.head?.getWorldPosition(new T.Vector3()).toArray(),chestForward:a.shoulderL&&a.shoulderR?a.shoulderL.getWorldPosition(new T.Vector3()).sub(a.shoulderR.getWorldPosition(new T.Vector3())).cross(v(0,1,0)).normalize().toArray():null,batVisible:a.bat?.visible,heldBallVisible:a.heldBall?.visible,grip:a.releaseGrip?.getWorldPosition(new T.Vector3()).toArray()}));const pitcher=[...s.actors.values()].find(a=>a.pitcher);if(pitcher)r.pitcherBones=Object.fromEntries(BONES.map(n=>[n,pitcher.model.getObjectByName('mixamorig'+n)?.getWorldPosition(new T.Vector3()).toArray()]));r.ball=s.ball.position.toArray();r.flight=s.ballMotion?{from:s.ballMotion.from.toArray(),to:s.ballMotion.to.toArray(),pitch:s.ballMotion.pitch}:null;r.look=s.look.toArray();}
  return r;}
 
-export {posePreview,audioData,viewPitcher,viewBatter,carom,roll,mount,sync,hitByPitch,move,slide,tag,hide,windup,swing,pitchReleaseMs,swingContactMs,distance,actorDistance,batFlip,benchClear,benchGather,benchReturn,flight,hideBall,cancelMotion,dispose,ready,info,scoreboard,focus,receive,caught,throwing,prefetch,viewBoard,batted,trackRunner,confirmLanding,landed};
+export {bonesOf,posePreview,audioData,viewPitcher,viewBatter,carom,roll,mount,sync,hitByPitch,move,slide,tag,hide,windup,swing,pitchReleaseMs,swingContactMs,distance,actorDistance,batFlip,benchClear,benchGather,benchReturn,flight,hideBall,cancelMotion,dispose,ready,info,scoreboard,focus,receive,caught,throwing,prefetch,viewBoard,batted,trackRunner,confirmLanding,landed};
