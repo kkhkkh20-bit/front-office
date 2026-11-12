@@ -1,7 +1,7 @@
 /* ===== 외국인 선수 ===== */
 /* KBO: 시즌 중 교체 외국인은 남은 기간 월 10만 달러까지. 지급은 남은 경기 비율(remainFrac)이라 연봉 기준 60만 달러(6개월)로 묶는다. shortcut: 시즌 6개월 고정 — 일정 길이가 바뀌면 남은 달 수로 */
 const fNewCap=()=>period()==='season'?Math.min(F_NEW_CAP,60*USD):F_NEW_CAP;
-function fAsk(p,o){ o=o??ovr(p); if(p.foreign==='아시아')return clamp(round5(100+(o-44)*16),100,ASIA_CAP); return clamp(round5(560+(o-46)*42),400,fNewCap()); } /* 신규 용병 요구액: 능력 55 약 67만, 60 약 82만, 64 이상은 상한 100만 달러 근처(실제 KBO 신규 외국인 계약 대부분이 상한 가까이) */
+function fAsk(p,o){ o=o??ovr(p); if(p.foreign==='아시아')return clamp(round5(100+(o-44)*16),100,ASIA_CAP); return clamp(round5(980+(o-46)*55),700,fNewCap()); } /* 신규 용병 요구액: 능력 55 약 67만, 60 약 82만, 64 이상은 상한 100만 달러 근처(실제 KBO 신규 외국인 계약 대부분이 상한 가까이) */
 function wpick(ws){ let tot=0; for(const k in ws)tot+=ws[k]; let x=R()*tot; for(const k in ws){ x-=ws[k]; if(x<=0)return k; } return Object.keys(ws)[0]; }
 /* 외국인 후보는 두 경로로 나온다.
    에이전트 제안: 리그 전체에 돌리는 공용 후보. 대부분 트리플A 출신(MLB 콜업 경력이 있는 선수가 많다)이고, 이름값 있는 선수는 이유(부상·나이·적응)가 있다.
