@@ -63,7 +63,7 @@ function actorFacing(a){if(a.role==='batter')return a.left?Math.PI/2:-Math.PI/2;
    - 디딤발 착지~공 놓기: 골반을 낮추고 두 다리를 2관절 IK로 원래 발 위치에 붙여 디딤 무릎을 굽힌다(착지 40~49°, 놓을 때 30~40°)
    - 착지→놓기 사이 몸통을 앞(30~33°)·글러브 쪽(21~32°)으로 기울이고, 던지는 팔 벌림을 몸통 기준 약 90°로 낮춘다
    계산은 모델 공간(좌투는 모델 좌우 반전이라 같은 식). 값은 measure로 잰 목표에 맞춘 것 */
-export const PITCH_MECH={kneeFC:45,kneeRel:35,fwd:28,lat:40,arm:10,stride:.07}; /* fwd·lat는 척추 세 마디에 나눠 주므로 골반→가슴 기울기는 그보다 작게 나온다(측정으로 맞춤) */
+export const PITCH_MECH={kneeFC:45,kneeRel:35,fwd:28,lat:35,arm:70,stride:.07}; /* fwd·lat는 척추 세 마디에 나눠 주므로 골반→가슴 기울기는 그보다 작게 나온다(측정으로 맞춤) */
 const _q=new T.Quaternion(),_q2=new T.Quaternion(),_v=new T.Vector3(),_v2=new T.Vector3(),_m=new T.Matrix4(),AX={x:new T.Vector3(1,0,0),y:new T.Vector3(0,1,0),z:new T.Vector3(0,0,1)};
 const smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 function boneByName(a,n){a.bones=a.bones||{};return a.bones[n]||(a.bones[n]=a.model.getObjectByName('mixamorig'+n));}
