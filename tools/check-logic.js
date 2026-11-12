@@ -2766,14 +2766,23 @@ T('[검수 11-09o] 훈련: 감독 마찰 주간 제한은 구단·감독마다 �
   G.day=dnum(G.year,11,20); trnSet(q.id,'bal'); trnSet(q.id,g); for(let i=0;i<10;i++){ G.day+=7; trnWeek(); } const o=trnObs(q); ok(o&&o.w===0,'비시즌 주수 '+(o&&o.w)); });
 T('[검수 11-09o] 포지션 전환: 못 닿는 목표는 도달 어려움, 같은 자리 2군 전환생은 돌아가며 선다',()=>{ fresh(); const b=domestic(G.user).find(q=>!q.isP&&q.pos!=='1B'&&q.pos!=='C'&&!q.mil&&!(q.joinY>G.year)); b.vers=20; b.age=32; delete b.pconv; ok(posEtaW(b,'1B',true,G.user)===null,'200주 상한을 도달로 계산'); ok(/도달 어려움|도달이 어렵/.test(posConv(b.id,'1B')),'안내 문구'); delete b.pconv;
   const L=depth(G.user).futB.filter(healthy); const tw=L.filter(q=>q.pos!=='1B'&&q.pos!=='C').slice(0,2); ok(tw.length===2,'준비 실패'); tw.forEach(q=>q.pconv={pos:'1B',d:G.day}); const n=[0,0]; for(let i=0;i<8;i++){ G.day+=7; const ln=futLineupE(G.user,L); tw.forEach((q,j)=>{ if(ln['1B']===q)n[j]++; }); } ok(n[0]>=3&&n[1]>=3,'1루 출전 '+n.join('/')); });
-T('[피드백 11-09e] 감독·구단주 대화 티키타카: 장면마다 3마디 이상, 상대가 단장에게 묻고, 대답 글이 단장 말투마다 다르며, 결과가 실제로 남는다',()=>{ fresh(); G.gmP=G.gmP||{};
-  const walk=(start,pick)=>{ let r=start(), st=r.st, beats=0, asks=0, sys=[], said=[]; let n=0; while(st&&n++<8){ const i=(n+beats)%st.node.c.length; const x=pick(st,i); beats++; said.push(...x.say.slice(1)); sys=sys.concat(x.sys); st=x.st; } asks=said.filter(t=>/[?？]/.test(t)).length; return {beats,asks,sys,open:r.say[0]}; };
-  const m=G.mgr[G.user]; let askN=0; for(const s of Object.keys(MTSTY)){ m.sty=s; m.scn=null; m.dialogue=null; m.rel=50; const w=walk(()=>mgrTalkStart(m),(st,i)=>mgrTalkPick(m,st,i)); ok(w.beats>=3&&w.beats<=5,s+' 감독 마디 '+w.beats); ok(w.sys.length>0,s+' 결과 없음'); if(w.asks)askN++; }
-  ok(askN>=5,'감독이 단장에게 묻는 장면이 적음 '+askN);
-  const t=team(G.user); const B=bossOf(G.user); for(const o of ['win','profit','pr']){ t.owner=o; B.own.scn=null; B.own.dialogue=null; t.trust=50; const w=walk(()=>ownTalkStart(),(st,i)=>ownTalkPick(st,i)); ok(w.beats>=3&&w.beats<=5,o+' 구단주 마디 '+w.beats); ok(w.sys.length>0,o+' 구단주 결과 없음'); ok(w.asks>0,o+' 구단주가 묻지 않음'); }
+T('[피드백 11-09e·11-12] 감독·구단주 대화 티키타카: 대답 마디는 1~5개(대부분 3개 이상), 듣기만 하는 마디가 섞이고, 상대가 단장에게 묻고, 대답 글이 단장 말투마다 다르며, 결과가 실제로 남는다',()=>{ fresh(); G.gmP=G.gmP||{};
+  /* beats: 대답 마디(선택지 2개 이상), lis: '듣는다' 하나뿐인 혼잣말 마디(11-12) */
+  const walk=(start,pick)=>{ let r=start(), st=r.st, beats=0, lis=0, asks=0, sys=[], said=[...r.say.slice(1)]; let n=0; while(st&&n++<12){ const c=st.node.c.length; const i=(n+beats)%c; const x=pick(st,i); if(c>1)beats++; else lis++; said.push(...(c>1?x.say.slice(1):x.say)); sys=sys.concat(x.sys); st=x.st; } asks=said.filter(t=>/[?？]/.test(t)).length; return {beats,lis,asks,sys,open:r.say[0]}; };
+  const m=G.mgr[G.user]; let askN=0, longN=0, lisN=0; for(const s of Object.keys(MTSTY)){ m.sty=s; m.scn=null; m.dialogue=null; m.rel=50; const w=walk(()=>mgrTalkStart(m),(st,i)=>mgrTalkPick(m,st,i)); ok(w.beats>=1&&w.beats<=5&&w.lis<=2,s+' 감독 마디 '+w.beats+'/'+w.lis); ok(w.sys.length>0,s+' 결과 없음'); if(w.asks)askN++; if(w.beats>=3)longN++; lisN+=w.lis; }
+  ok(askN>=5,'감독이 단장에게 묻는 장면이 적음 '+askN); ok(longN>=4,'3마디 이상 장면이 적음 '+longN);
+  const t=team(G.user); const B=bossOf(G.user); for(const o of ['win','profit','pr']){ t.owner=o; B.own.scn=null; B.own.dialogue=null; t.trust=50; const w=walk(()=>ownTalkStart(),(st,i)=>ownTalkPick(st,i)); ok(w.beats>=1&&w.beats<=5&&w.lis<=2,o+' 구단주 마디 '+w.beats+'/'+w.lis); lisN+=w.lis; ok(w.sys.length>0,o+' 구단주 결과 없음'); ok(w.asks>0,o+' 구단주가 묻지 않음'); }
+  ok(lisN>=1,'듣기만 하는 마디가 한 번도 없음'); /* 혼잣말 마디(11-12) */
   ok(!ownTalkStart().st,'구단주 대화가 일주일에 두 번 열림'); B.own.scn.d=G.day-7; ok(ownTalkStart().st,'일주일 뒤에 다시 열리지 않음');
   const q=MSQ.find(x=>x.id==='life'); const lab=v=>{ G.gmP.voice=v; return gvL(q.a({})[0].l); }; ok(new Set(['ana','bro','gam','fox','blunt',null].map(lab)).size===6,'단장 말투마다 대답 글이 같음'); G.gmP.voice=null;
   delete G.ownReq; t.trust=50; const out=ownScnFx({oreq:'fan'},ownScnCtx()); ok(G.ownReq&&out.some(x=>x.includes('구단주 주문')),'구단주 주문이 생기지 않음'); G.pr.fan=G.ownReq.f0+3; G.day=G.ownReq.until+1; ownReqDaily(); ok(!G.ownReq&&t.trust===53,'주문을 지켰는데 신뢰 '+t.trust); });
+T('[사용자 11-12] 대화 결: 사담 장면·대답 순서 섞기·기분에 따른 반응·지난 대화 꺼내기·구단주 결과 문구',()=>{ fresh();
+  ok(MSCN.filter(c=>c.flav).length>=8&&OSCN.filter(c=>c.flav).length>=6,'사담 장면 수');
+  const st={id:'x',beat:0,il:0,node:{c:[{l:'a'},{l:'b'},{l:'c'}]}}; const o1=talkOrder(st), o2=talkOrder(st); ok(o1.join()===o2.join()&&[...o1].sort().join()==='0,1,2','순서 섞기가 같은 날 같지 않거나 빠짐');
+  let diff=0; for(let k=0;k<20;k++){ st.id='x'+k; if(talkOrder(st).join()!=='0,1,2')diff++; } ok(diff>=8,'대답 순서가 거의 섞이지 않음 '+diff);
+  const m=G.mgr[G.user]; const D={kind:'mgr',mem:m,sty:'calm'}; let hi=0,lo=0; for(let k=0;k<200;k++){ const s2={id:'adj'+k,beat:1,il:0}; hi+=tcAdjust(D,s2,{rel:3},.9).fx.rel||0; lo+=tcAdjust(D,s2,{rel:3},-.9).fx.rel||0; } ok(hi>600&&lo<600,'기분에 따라 효과가 달라지지 않음 '+hi+'/'+lo);
+  const M=mscnMem(m); M.tl={d:G.day-5,me:'믿고 맡기겠습니다'}; let cb=0; for(let k=0;k<40;k++){ G.day++; if(tcCallback({kind:'mgr'},M,{},'t')) cb++; } ok(cb>=8,'지난 대화를 꺼내지 않음 '+cb);
+  const out=ownScnFx({tr:1},ownScnCtx()); ok(!out.some(x=>x.includes('아무것도 변경하지')),'구단주 결과에 감독 대화 문구가 붙음: '+out.join(' / ')); });
 T('[검수 11-09r] FA: 정식 선수가 꽉 찬 구단은 역제안 수락·마감 체결로 정원을 넘기지 않는다(우리·AI 모두, 마감 때 계약마다 다시 확인)',()=>{ fresh(); const ts=G.teams.filter(t=>t.id!==G.user).map(t=>t.id), op=ts[0], t2=ts[1];
   G.fa={pool:[],offers:{},ai:{},open:true,openDay:G.day-20,closed:false,results:[],cap:3,outN:{},y0:G.year};
   const fill=(tid,n)=>{ while(rosterN(tid)<n)newPlayer({age:22,isP:false,base:40,pot:42,team:tid}); if(rosterN(tid)>n)trimRoster(tid,n); };
