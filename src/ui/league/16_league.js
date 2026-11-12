@@ -9,8 +9,9 @@ function standView0(){
   const msg=live&&period()==='season'?(mi<=4?`가을야구권 ${stRank(order,G.user)}위 · 6위와 ${Math.max(0,gbOf(me,order[5])).toFixed(1)}경기 차`:`5위 ${tshort(fifth.tid)}와(과) ${gbOf(fifth,me).toFixed(1)}경기 차`):'';
   // 상대 전적
   const h2h=hasTl?`<div class="tw"><table class="h2h"><thead><tr><th>상대</th>${G.teams.filter(t=>t.id!==G.user).map(t=>`<th>${badge(t.id,16)}</th>`).join('')}</tr></thead><tbody><tr class="me"><td>${tshort(G.user)}</td>${G.teams.filter(t=>t.id!==G.user).map(t=>{ const r=h2hOf(G.user,t.id); return `<td class="${r.w>r.l?'pos':r.w<r.l?'neg':''}">${r.w+r.l+r.t?`${r.w}-${r.l}${r.t?'-'+r.t:''}`:'-'}</td>`; }).join('')}</tr></tbody></table></div>`:'';
-  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],...(G.fl&&G.fl.games.length?[['fut','퓨처스리그']]:[]),['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
+  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),...(G.pwr&&G.pwr.y===G.year?[['pwr','파워랭킹']]:[]),...(live&&(G.history||[]).some(h=>h.order&&h.order.length)?[['last','지난 시즌 순위']]:[]),['map','구단 전력'],...(G.fl&&G.fl.games.length?[['fut','퓨처스리그']]:[]),['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
   if(tt.cur==='teams')return tt.bar+teamsView();
+  if(tt.cur==='pwr')return tt.bar+pwrView();
   if(tt.cur==='last')return tt.bar+lastStandCard();
   if(tt.cur==='tbl'&&fmOn())return tt.bar+standFm(order,live,y);
   if(tt.cur==='tbl')return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">${live?`${G.year} 정규시즌 순위`:`${y} 최종 순위`}</h2>${msg?`<span class="small">${msg}</span>`:''}</div>
@@ -325,3 +326,9 @@ function flBox(x){ const side=k=>{ const B=x.box[k]; const nm=(id,n)=>G.players[
     <table class="tbl small"><thead><tr><th>투수</th><th>이닝</th><th>피안타</th><th>실점</th><th>자책</th><th>볼넷</th><th>삼진</th><th>투구 수</th></tr></thead><tbody>${B.pit.map(r=>`<tr><td>${nm(r[0],r[8])}</td><td>${ipStr(r[1])}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td></tr>`).join('')}</tbody></table></div>`; };
   const ln=k=>(x.box[k].line||[]).map(v=>v==null?'-':v).join(' '); 
   return `<div class="fl-box"><p class="small mono">${esc(flName(x.a))} ${ln('a')}<br>${esc(flName(x.h))} ${ln('h')}</p>${side('a')}${side('h')}</div>`; }
+
+/* 주간 파워랭킹(OOTP Power Rankings 참고) */
+function pwrView(){ const P=G.pwr; if(!P||P.y!==G.year)return csec('파워랭킹','<p class="small muted">정규시즌 매주 월요일에 발표합니다.</p>');
+  const arr=r=>r.prev==null?'<span class="small muted">new</span>':r.prev>r.rk?`<span class="pos">▲${r.prev-r.rk}</span>`:r.prev<r.rk?`<span class="neg">▼${r.rk-r.prev}</span>`:'<span class="small muted">-</span>';
+  const rows=P.rows.map(r=>`<tr class="${r.tid===G.user?'me':''}"><td>${r.rk}</td><td>${arr(r)}</td><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${r.tid}">${badge(r.tid,16)} ${esc(tshort(r.tid))}</button></td><td class="key">${r.s.toFixed(1)}</td><td>${r.w}-${r.l}-${r.t}</td><td>${r.r10}</td><td class="${r.rd>0?'pos':r.rd<0?'neg':''}">${r.rd>0?'+':''}${r.rd}</td><td>${r.py.toFixed(3).replace(/^0/,'')}</td></tr>`).join('');
+  return csec('파워랭킹',`<p class="small muted">${dmd(P.d)} 발표 · 시즌 승률, 득실점으로 본 기대 승률(피타고리안), 최근 10경기, 지금 전력을 합친 점수입니다. 시즌 초에는 전력 비중이 큽니다. 화살표는 지난주 대비 변동입니다.</p><div class="tw"><table class="sqt"><thead><tr><th>#</th><th>변동</th><th class="stk">구단</th><th>점수</th><th>승-패-무</th><th>최근10</th><th>득실</th><th>기대승률</th></tr></thead><tbody>${rows}</tbody></table></div>`); }

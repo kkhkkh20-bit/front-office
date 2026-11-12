@@ -2,8 +2,9 @@
 function moneyView(){
   const t=team(G.user); const ci=capInfo(G.user);
   const lme=G.last?(G.last.tid??G.user):G.user; /* 시즌 결산 화면과 같은 구단(결산한 구단, 검수 11-09y) */ const f=G.last&&G.last.fins?G.last.fins[lme]:null; const hs=G.history.filter(h=>h.user);
-  const it=inTabs('fin',[['bud','올해 예산'],['flow','수입·지출'],['lim','한도·캡'],['last','지난 결산'],...(fmOn()?[['star','선수 홍보']]:[])]); /* PC 구단주 화면은 FM식 한 화면이라 선수 홍보 카드는 재정 쪽 탭으로 */
+  const it=inTabs('fin',[['bud','올해 예산'],['flow','수입·지출'],['lim','한도·캡'],['fut','향후 연봉'],['last','지난 결산'],...(fmOn()?[['star','선수 홍보']]:[])]); /* PC 구단주 화면은 FM식 한 화면이라 선수 홍보 카드는 재정 쪽 탭으로 */
   if(it.cur==='star')return it.bar+starPanel();
+  if(it.cur==='fut')return it.bar+payFutureView();
   const bsp=`<section class="card bsp-sec"><h2 class="sec">예산 한눈에</h2>${bspCards()}</section>`; /* 세 칸 요약을 맨 위에(피드백 11-09q) */
   if(it.cur==='bud'&&fmOn())return it.bar+bsp+finDash();
   if(it.cur==='flow'||it.cur==='lim'){ const parts=budgetCards().split('<section class="card'); const pick=it.cur==='flow'?parts.find(x=>x.includes('어디에 쓰고 어디서 버나')):parts.find(x=>x.includes('용도별 한도')); return it.bar+(pick?'<section class="card'+pick:'')+(it.cur==='lim'?capCard(ci):''); }
@@ -95,3 +96,17 @@ function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=(G.finLog||[]).
 function fBudgetTag(cost){ const b=budget(); if(cost<=b.fRoom)return '<span class="pill good" title="보장액(계약금+연봉)은 외국인 배정 예산(시즌 전에 따로 떼어 둔 돈) 안에서 씁니다. 인센티브는 달성할 것으로 보고 일반 예산의 계약 옵션(예상) 항목에 잡혀서, 계약하면 연봉 여유(예산 기준)가 그만큼 줄어듭니다">보장액은 배정 예산 안 · 인센티브는 일반 예산</span>'; const ex=cost-b.fRoom; return b.roomGoal>=ex?`<span class="pill warn" title="외국인 배정 예산을 넘는 ${money(ex)}은 연봉 여유(예산 기준)에서 씁니다">배정 예산 초과 ${money(ex)} · 연봉 여유 사용</span>`:b.roomMax>=ex?`<span class="pill warn">예산 초과 ${money(ex)}</span>`:'<span class="pill bad">자금 부족</span>'; }
 function budgetTag(cost){ const b=budget(); if(b.roomGoal>=cost)return `<span class="pill good">올해 부담 ${money(cost)} · 예산 안</span>`; if(b.roomCap>=cost||b.roomMax>=cost)return `<span class="pill warn">올해 부담 ${money(cost)} · 구단주 목표 초과</span>`; return `<span class="pill bad">올해 부담 ${money(cost)} · 자금 부족</span>`; }
 
+
+/* ===== 향후 연봉표(OOTP Salaries 참고): 우리 국내 선수의 시즌별 계약 연봉. FA·다년계약은 남은 기간 동안 같은 연봉(+계약금 안분),
+   다년계약 연장(extNext)은 지금 계약이 끝난 다음 시즌부터, 매년 협상하는 보류 선수는 '협상'으로 따로 센다. 상한(경쟁균형세) 대비 보장액 막대 */
+function payFutureRows(tid){ const y0=ctSeason(), Y=[0,1,2,3,4].map(i=>y0+i);
+  const rows=domestic(tid).filter(p=>!p.foreign).map(p=>{ const v={}; let guar=0; const left=p.faC?Math.max(1,p.yrs||1):(p.ext?Math.max(1,p.yrs||1):1);
+    for(let i=0;i<left&&i<5;i++){ if(p.faC||p.ext||i===0){ v[Y[i]]=(i===0&&y0>G.year?salNext(p):p.sal)+(capBAt(p,Y[i])||0); if(p.faC||p.ext)guar+=v[Y[i]]; } }
+    const x=p.extNext; if(x){ const st=y0+((p.faC||p.ext)?left:1); for(let i=0;i<(x.years||1);i++){ const yy=st+i; if(yy>Y[4])break; v[yy]=x.annual+(capBAt(p,yy)||0); guar+=v[yy]; } }
+    const lastY=Math.max(...Object.keys(v).map(Number)); return {p,v,guar,lastY,neg:!(p.faC||p.ext||x)}; });
+  return {Y,rows:rows.sort((a,b)=>b.guar-a.guar||b.p.sal-a.p.sal)}; }
+function payFutureView(){ const tid=G.user; const {Y,rows}=payFutureRows(tid); const cap=y=>capOf(y), sumY=y=>rows.reduce((t,r)=>t+(r.neg&&y!==Y[0]?0:(r.v[y]||0)),0) /* 올(첫) 시즌은 전원 연봉이 정해져 있다 */, negN=y=>rows.filter(r=>r.neg||!(y in r.v)).length;
+  const bars=Y.map(y=>{ const g=sumY(y), c=cap(y); return `<div class="pf-bar"><span>${y}</span><p class="fx-bar"><i style="width:${Math.min(100,g/c*100).toFixed(1)}%"></i></p><b class="num">${money(g)}</b><em class="small muted">상한 ${money(c)}</em></div>`; }).join('');
+  const shown=rows.filter(r=>!r.neg||r.p.sal>=100).slice(0,40);
+  const tr=shown.map(r=>`<tr class="${r.neg?'':'me'}"><td class="stk"><button class="lnk" data-a="player" data-v="${r.p.id}">${esc(r.p.name)}</button> <span class="small muted">${posLabel(r.p)} · ${r.p.age}세</span></td>${Y.map(y=>`<td class="num">${r.v[y]!=null?money(r.v[y]):r.neg&&y>Y[0]?'<span class="small muted">협상</span>':''}</td>`).join('')}<td>${r.neg?'매년 협상':r.lastY+'년까지'}</td></tr>`).join('');
+  return csec('향후 연봉',`<p class="small muted">${Y[0]}~${Y[4]} 시즌 국내 선수 연봉입니다. FA·다년계약(계약금 안분 포함)은 확정 금액이고, 그 밖의 선수는 해마다 연봉 협상으로 정해져 '협상'으로 표시합니다. 막대는 확정 금액 합계(첫 시즌은 전원 연봉)와 그해 경쟁균형세 상한입니다(상한 판정은 연봉 상위 40명 기준이라 실제 판정과 다를 수 있습니다).</p><div class="pf-bars">${bars}</div><div class="tw"><table class="sqt"><thead><tr><th class="stk">선수</th>${Y.map(y=>`<th>${y}</th>`).join('')}<th>계약</th></tr></thead><tbody>${tr}</tbody></table></div><p class="small muted">협상 대상 ${negN(Y[1])}명(다음 시즌 기준) · 연봉 1억 미만 협상 선수는 목록에서 뺐습니다.</p>`); }

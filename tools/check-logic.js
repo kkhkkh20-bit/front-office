@@ -1460,6 +1460,11 @@ T('[투수] 불펜 역할 요청: 마무리는 맨 앞·한 명, 추격조·롱�
   const p1=depth(G.user).pen; ok(p1[0].id===a.id,'마무리가 맨 앞이 아님'); ok(p1.slice(1,4).every(x=>x.id!==b.id&&x.id!==c.id),'추격조·롱릴리프가 필승조 자리에'); ok(p1[p1.length-1].id===c.id,'추격조가 맨 뒤가 아님');
   for(let k=0;k<20&&bproleOf(G.user,d)!=='cl';k++){ delete (G.bproleNo||{})[d.id]; bproleSet(d.id,'cl'); } ok(bproleOf(G.user,d)==='cl','새 마무리 미적용'); ok(bproleOf(G.user,a)==='su','이전 마무리가 필승조로 바뀌지 않음');
   a.team=(G.user+1)%G.teams.length; ok(bproleOf(G.user,a)==null&&bproleOf(a.team,a)==null,'떠난 선수 요청이 남음'); });
+T('[OOTP 반영] 주간 파워랭킹은 1~N위가 한 번씩, 지난주 순위를 남기고, 한 경기 최다 기록은 실제 경기 박스 최고값과 같다',()=>{ fresh(); G.gbest={}; simTo(()=>period()==='season'&&G.day>=G.cal.open+21);
+  const P=G.pwr; ok(P&&P.y===G.year&&P.rows.length===G.teams.length,'파워랭킹 없음'); ok(P.rows.map(r=>r.rk).sort((a,b)=>a-b).join()===G.teams.map((t,i)=>i+1).join(),'순위 중복·누락'); ok(P.rows.some(r=>r.prev!=null),'지난주 순위 없음');
+  for(let i=1;i<P.rows.length;i++)ok(P.rows[i-1].s>=P.rows[i].s,'점수 순서');
+  const B=G.gbest||{}; ok(B.h&&B.h.v>=4,'한 경기 안타 기록 없음'); let mx=0; for(const p of Object.values(G.players))for(const g of (p.glog||[]))if(g.y===G.year)mx=Math.max(mx,g.h||0); if(mx)ok(B.h.v>=mx,'최다 안타 '+B.h.v+' < 경기 기록 '+mx);
+  ok(Object.values(B).every(r=>r.pid!=null&&r.name&&r.y),'기록자 정보 누락'); ok(teamAllTime().rows.length===G.teams.length,'구단 역대 표 구단 수'); ok(mileWatch().every(x=>x.g>x.v&&x.left<=x.near),'기록 도전 범위'); });
 T('[투수] 2군(퓨처스) 투수만 부하 한도를 넘으면 1군 부하 보고를 보내지 않고, 1군 보고에는 2군을 참고로만 적는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+14); const P=playersOf(G.user).filter(q=>q.isP); const f=P.find(q=>!q.e1), a=P.find(q=>q.e1&&isSPr(q)); ok(f&&a,'1군·2군 투수 필요'); for(const q of P)q.armw=0; G.loadSig={};
   const cnt=()=>G.mail.filter(m=>m.subj.includes('투수 부하 주의')).length; const n0=cnt(); f.armw=armCap(f)*1.35; loadWeekly(); ok(cnt()===n0,'2군 투수만 넘었는데 보고');
   a.armw=armCap(a)*1.35; loadWeekly(); const m=G.mail.find(x=>x.subj.includes('투수 부하 주의')); ok(cnt()===n0+1&&m.subj.startsWith('1군'),'1군 보고 없음'); ok(m.body.includes('2군(퓨처스)')&&m.body.includes(f.name),'2군 참고 줄 없음'); ok(!m.body.split('참고')[0].includes(f.name+'('),'2군 투수가 1군 목록에 섞임'); });

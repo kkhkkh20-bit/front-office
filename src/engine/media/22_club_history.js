@@ -260,3 +260,15 @@ function awardsCompact(){ const A=G.awards; if(!A)return; for(const y in A){ if(
   a.cn={mvp:(a.cand.mvp||[]).length,roy:(a.cand.roy||[]).length,gg:{}}; for(const k in (a.cand.gg||{}))a.cn.gg[k]=a.cand.gg[k].length; /* 정리 전 후보 수: 생략한 후보를 화면에 밝힌다(검수 11-09zf) */
   a.cand.mvp=slim(a.cand.mvp,5); a.cand.roy=slim(a.cand.roy,3); for(const k in (a.cand.gg||{}))a.cand.gg[k]=slim(a.cand.gg[k],k==='OF'?5:3);
   if(a.ggVote){ delete a.ggVote.ballots; delete a.ggVote.news; } a.cmp=1; } }
+
+/* 구단 역대 기록·기록 도전 데이터(화면은 27_history) */
+function teamAllTime(){ const H=(G.history||[]).filter(h=>Array.isArray(h.order)&&h.order.length&&h.order[0].w!=null); const R={};
+  for(const h of H)h.order.forEach((o,i)=>{ const r=R[o.tid]=R[o.tid]||{tid:o.tid,ys:0,w:0,l:0,t:0,ps:0,ch:[],ru:0,best:null,first:h.y,last:h.y};
+    r.ys++; r.w+=o.w||0; r.l+=o.l||0; r.t+=o.t||0; if(i<5)r.ps++; if(h.champ===o.tid)r.ch.push(h.y); if(h.runner===o.tid)r.ru++; r.last=h.y;
+    const pct=(o.w||0)/Math.max(1,(o.w||0)+(o.l||0)); if(!r.best||pct>r.best.pct)r.best={pct,y:h.y,w:o.w,l:o.l,t:o.t||0,rk:i+1}; });
+  return {n:H.length,rows:Object.values(R).filter(r=>G.teams[r.tid]).sort((a,b)=>b.ch.length-a.ch.length||b.w/Math.max(1,b.w+b.l)-a.w/Math.max(1,a.w+a.l))}; }
+const MILE_W=[['h','안타',[1000,1500,2000,2500,3000],120,false],['hr','홈런',[100,200,300,400,500],25,false],['rbi','타점',[500,1000,1500],80,false],['sb','도루',[200,300,400,500],30,false],
+  ['w','승',[100,150,200],15,true],['sv','세이브',[100,200,300,400],30,true],['hld','홀드',[100,150,200],25,true],['so','탈삼진',[1000,1500,2000],150,true]];
+function mileWatch(){ const out=[]; for(const p of Object.values(G.players)){ if(p.team==null||p.fdPool||!(p.hist||[]).some(h=>h.lvl==='1군'))continue; const c=careerOf(p);
+    for(const [k,l,goals,near,isP] of MILE_W){ if(!!p.isP!==isP)continue; const v=c[k]||0, g=goals.find(x=>x>v); if(g==null||g-v>near)continue; out.push({p,k,l,v,g,left:g-v,near}); } }
+  return out.sort((a,b)=>a.left/a.near-b.left/b.near); }
