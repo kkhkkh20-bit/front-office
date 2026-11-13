@@ -83,7 +83,7 @@ function leaderTiles(rows,y){
   const tile=([l,arr,v,f])=>{ const s=[...arr].sort((a,b)=>v(b)-v(a)).slice(0,5); if(!s.length)return ''; const fm=f||v; const a=s[0];
     return `<div class="ltile"><div class="lh">${l}</div><button class="l1${(a.h.t??a.p.team)===G.user?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p,true)}<span><b>${esc(a.p.name)}</b><i>${badge(a.h.t??a.p.team,14)} ${(a.h.t??a.p.team)!=null?esc(team(a.h.t??a.p.team).nick):''}</i></span><em class="num">${fm(a)}</em></button>
       <ol>${s.slice(1).map((x,i)=>`<li class="${(x.h.t??x.p.team)===G.user?'me':''}"><button data-a="player" data-v="${x.p.id}"><i>${s.findIndex(z=>Math.abs(v(z)-v(x))<1e-9)+1}</i>${esc(x.p.name)} <span class="muted">${tshort(x.h.t??x.p.team)}</span><b class="num">${fm(x)}</b></button></li>`).join('')}</ol></div>`; };
-  return `<section class="card"><div class="row between"><h2 class="sec">${y} 부문별 순위</h2><span class="small muted">타율·OPS·wRC+·평균자책점·WHIP는 규정 기준 이상</span></div><div class="ltiles">${T.map(tile).join('')}</div></section>`;
+  return `<section class="card"><div class="row between"><h2 class="sec">${y} 부문별 순위${hiI('타율·OPS·wRC+·평균자책점·WHIP는 규정 타석·이닝을 채운 선수만 순위에 듭니다.')}</h2></div><div class="ltiles">${T.map(tile).join('')}</div></section>`;
 }
 /* 부문별 순위 항목: [이름, 대상, 정렬값, 표시] (부문별 1위 타일·PC 대회 화면 공용) */
 function leaderCats(rows,y){
@@ -194,7 +194,7 @@ function standFm(order,live,y){
   let TS=null; if(!live)try{ TS=new Map(teamStats(y).map(r=>[r.tid,r])); }catch(e){}
   const rows=order.map((o,i)=>{ const sp=live?splitOf(o.tid):null, ts=TS&&TS.get(o.tid), d=live?sp.rs-sp.ra:ts&&ts.rs!=null&&ts.ra!=null?ts.rs-ts.ra:null, has=live?sp.n:d!=null;
     return `<tr class="${o.tid===me?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,16)}${esc(team(o.tid).nick)}</button></td><td>${o.w+o.l+(o.t||0)}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${has?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(o.tid).slice(-5)):'<span class="muted">지난 시즌</span>'}</td></tr>`; }).join('');
-  const reg=fxBox('fx-reg',fxHead(`${y} 정규시즌`,`${n}개 구단 · 팀당 144경기 · 5위까지 가을야구`),
+  const reg=fxBox('fx-reg',fxHead(`${y} 정규시즌 ${hiI(`${n}개 구단이 팀당 144경기를 치릅니다. 5위까지 가을야구에 나갑니다.`)}`),
     (live&&rk?fxExp(gs?goalRankTxt(gs.rank.t):'목표 없음',(n+1-rk)/n*100,gs?(n+1-gs.rank.t)/n*100:null,gs?rk<=gs.rank.t:null,`${rk}위`):fxExp(gs?`${G.year} ${goalRankTxt(gs.rank.t)}`:'목표 없음',null,null,null,rk?`${y} 최종 ${rk}위 · 개막 전`:'개막 전'))
     +`<div class="fx-two"><div><h4>최근 경기력</h4>${tlOf(me).length?fxForm(tlOf(me).slice(-10)):'<p class="fx-none">경기 전</p>'}</div><div><h4>리그 순위</h4>${rc||'<p class="fx-none">사흘 이상 치르면 그립니다</p>'}</div></div>`
     +`<div class="fx-tw"><table class="fx-t fx-st"><thead><tr><th>순위</th><th>구단</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th><th>득실</th><th>최근 5</th></tr></thead><tbody>${rows}</tbody></table></div>`
@@ -204,7 +204,7 @@ function standFm(order,live,y){
   const seeds=G.ps&&G.ps.seeds&&G.ps.seeds.length?G.ps.seeds:null, mo=om.get(me), inPs=seeds?seeds.includes(me):null, fifth=order[4];
   const odds=od?order.map((o,i)=>{ const x=om.get(o.tid); return `<div class="fx-odd${o.tid===me?' me':''}${i===4?' cut':''}"><span>${i+1}</span>${badge(o.tid,16)}<b>${esc(team(o.tid).nick)}</b><p class="fx-bar"><i class="${x.ps>=.5?'good':''}" style="width:${Math.max(2,x.ps*100)}%"></i></p><em>${pct(x.ps)}</em></div>`; }).join('')
     :order.map((o,i)=>{ const v=gbOf(fifth,o); return `<div class="fx-odd${o.tid===me?' me':''}${i===4?' cut':''}"><span>${i+1}</span>${badge(o.tid,16)}<b>${esc(team(o.tid).nick)}</b><p></p><em class="${v<0?'pos':v>0?'neg':''}">${i===4?'5위':v<0?'+'+(-v).toFixed(1):v>0?'-'+v.toFixed(1):'0.0'}</em></div>`; }).join('');
-  const ps=fxBox('fx-ps',fxHead(`${live||seeds?y:G.year} 포스트시즌`,'정규시즌 1~5위 · 계단식 진행',compMark('ps',30)),
+  const ps=fxBox('fx-ps',fxHead(`${live||seeds?y:G.year} 포스트시즌 ${hiI('정규시즌 1~5위가 나갑니다. 4·5위 와일드카드부터 아래 순위가 위 순위에 차례로 도전하는 계단식입니다. 4위는 와일드카드에서 1승만 하면 올라가고, 한국시리즈는 2-3-2 방식입니다.')}`,'',compMark('ps',30)),
     fxExp(gs?(gs.rank.t<=5?'가을야구 진출':`요구 없음(목표 ${gs.rank.t}위)`):'목표 없음',inPs!=null?(inPs?100:0):mo?mo.ps*100:null,null,inPs!=null?inPs:mo?mo.ps>=.5:null,inPs!=null?(inPs?'진출':'탈락'):mo?'진출 확률 '+pct(mo.ps):'팀당 20경기 뒤 계산')
     +`<h4>${seeds?'대진':live?'대진(지금 순위대로라면)':'대진'}</h4><div class="psl-l">${psLadder(live?order:null)}</div><h4>${od?'가을야구 진출 확률':live?'5위와 승차':y+' 최종 순위 · 5위와 승차'}</h4><div class="fx-odds">${odds}</div>`
     +(tlOf(me).length?`<h4>우리 팀 상대 전적</h4><div class="fx-h2h">${order.filter(o=>o.tid!==me).map(o=>{ const r=h2hOf(me,o.tid); return `<div class="${r.w>r.l?'pos':r.w<r.l?'neg':''}">${badge(o.tid,16)}<span>${esc(team(o.tid).nick)}</span><b>${r.w+r.l+r.t?wlStr(r):'-'}</b></div>`; }).join('')}</div>`:''),
@@ -215,7 +215,7 @@ function standFm(order,live,y){
   const vsT=(t,h)=>`<div class="fx-vt">${badge(t,64)}<b>${esc(team(t).nick)}</b><span>${h} · ${recA(t)}</span></div>`;
   const sch=fxBox('fx-sch',fxHead('경기 일정',g0?`다음 경기 ${dmd(g0.d)} ${WD[dobj(g0.d).w]}`:'남은 경기 없음'),
     (g0?`<div class="fx-vs">${vsT(g0.home?me:g0.op,'홈')}<em>${g0.ps?esc(g0.ps):'vs'}</em>${vsT(g0.home?g0.op:me,'원정')}</div>`:cs?`<h4>${ROUNDK[cs.round]} 진행 중 · 다음 ${dmd(cs.days[cs.gi])}</h4><div class="fx-vs">${vsT(cs.hi,cs.wh+'승')}<em>${cs.wh} : ${cs.wl}</em>${vsT(cs.lo,cs.wl+'승')}</div>`:'')
-    +(dd?`<h4>${dmd(dd)} ${WD[dobj(dd).w]} 전체 대진 <i>왼쪽이 홈</i></h4>${G.cal.sched[dd].map(([h,a])=>`<div class="fx-fx${h===me||a===me?' me':''}"><span>${badge(h,16)}${esc(team(h).nick)}</span><em>vs</em><span>${esc(team(a).nick)}${badge(a,16)}</span></div>`).join('')}`:'')
+    +(dd?`<h4>${dmd(dd)} ${WD[dobj(dd).w]} 전체 대진</h4>${G.cal.sched[dd].map(([h,a])=>`<div class="fx-fx${h===me||a===me?' me':''}"><span>${badge(h,16)}${esc(team(h).nick)}</span><em>vs</em><span>${esc(team(a).nick)}${badge(a,16)}</span></div>`).join('')}`:'')
     +(nx.length>1?`<h4>우리 다음 경기</h4>${nx.slice(1).map(x=>`<div class="ibd-gm"><span>${dmd(x.d)} ${WD[dobj(x.d).w]}</span><span class="pill">${x.ps?esc(x.ps):x.home?'홈':'원정'}</span><b>${badge(x.op,14)} ${esc(tshort(x.op))}</b><em>${ibdRank(x.op)?ibdRank(x.op)+'위':''}</em></div>`).join('')}`:'')
     +(G.games.length?`<h4>최근 결과</h4>${G.games.slice(0,5).map((g,i)=>{ const h=g.home===me, op=h?g.away:g.home; return `<button class="fx-res" data-a="openGame" data-v="${i}"><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span><span>${dmd(g.day)}</span><b>${h?'vs':'@'} ${badge(op,14)} ${esc(team(op).nick)}</b><em>${h?g.hs:g.as} : ${h?g.as:g.hs}</em></button>`; }).join('')}`:''),
     fxBtn('go','league:score','일정·결과'));
@@ -223,7 +223,7 @@ function standFm(order,live,y){
   const L=leaderCats(R,y).filter(c=>!/wRC|WHIP|안타/.test(c[0])).map(([l,arr,v,f])=>{ const a=fxTop(arr,v); const tt=a&&(a.h.t??a.p.team); /* 스토브리그에는 FA·은퇴로 소속이 없을 수 있어 그 시즌 소속으로 */
     return a?`<button class="fx-ld${tt===me?' me':''}" data-a="player" data-v="${a.p.id}"><span>${l}</span>${avImg(a.p)}<b>${esc(a.p.name)}<i>${tt!=null?badge(tt,12)+' '+esc(team(tt).nick):'무소속'}</i></b><em>${(f||v)(a)}</em></button>`:''; }).join('');
   const hist=[...G.history].filter(h=>h.champ!=null).reverse().slice(0,6).map(h=>`<div class="fx-li${h.champ===me?' me':''}"><b>${h.y}</b><span>${badge(h.champ,14)} ${esc(tshort(h.champ,h.y))}</span></div>`).join('');
-  const lead=fxBox('fx-lead',fxHead(`${y} 부문별 1위`,'비율 기록은 규정 기준 이상'),(L||'<p class="fx-none">아직 기록이 없습니다.</p>')+(hist?`<h4>역대 한국시리즈 우승</h4>${hist}`:''),fxBtn('go','league:rec','기록')+fxBtn('go','league:hist','역사'));
+  const lead=fxBox('fx-lead',fxHead(`${y} 부문별 1위 ${hiI('타율·평균자책점 같은 비율 기록은 규정 타석·이닝을 채운 선수만 봅니다.')}`),(L||'<p class="fx-none">아직 기록이 없습니다.</p>')+(hist?`<h4>역대 한국시리즈 우승</h4>${hist}`:''),fxBtn('go','league:rec','기록')+fxBtn('go','league:hist','역사'));
   return `<div class="fmx fmx-fit fmx-league nolink ws-own">${reg}${ps}${sch}${lead}</div>`;
 }
 
@@ -274,7 +274,7 @@ function scoreFm(){ const me=G.user, c=G.cal, U=(G.sea.ulog||[]).filter(x=>!/차
   const res=gs.map(s=>{ const gi=G.games.findIndex(g=>g.day===d&&g.home===s.h&&g.away===s.a), mine=s.h===me||s.a===me;
     return `<${gi>=0?`button data-a="openGame" data-v="${gi}"`:'div'} class="fx-fx fx-sc${mine?' me':''}"><span>${badge(s.h,16)}${esc(team(s.h).nick)}</span><em><b class="${s.hs>s.as?'w':''}">${s.hs}</b> : <b class="${s.as>s.hs?'w':''}">${s.as}</b></em><span>${esc(team(s.a).nick)}${badge(s.a,16)}</span></${gi>=0?'button':'div'}>`; }).join('');
   let dd=null; for(let x=G.day+1;x<=c.end&&dd==null;x++)if((c.sched[x]||[]).length)dd=x;
-  const day=fxBox('fxs-day',fxHead('날짜별 결과',d!=null?`${dmd(d)} ${WD[dobj(d).w]} · 왼쪽이 홈`:'아직 치른 경기가 없습니다'),
+  const day=fxBox('fxs-day',fxHead('날짜별 결과',d!=null?`${dmd(d)} ${WD[dobj(d).w]}`:'아직 치른 경기가 없습니다'),
     (res||'<p class="fx-none">치른 경기가 쌓이면 날짜별 점수가 보입니다.</p>')+((so.order||[]).length?`<h4>${so.live?'지금 순위':so.y+' 최종 순위'}</h4><table class="fx-t fx-mst"><tbody>${so.order.map((o,i)=>`<tr class="${o.tid===me?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td>${badge(o.tid,14)} ${esc(team(o.tid).nick)}</td><td>${o.w}-${o.l}${o.t?'-'+o.t:''}</td><td>${pctStr(o)}</td><td>${i?gbStr(gbOf(so.order[0],o)):'-'}</td></tr>`).join('')}</tbody></table>`:'')+(dd?`<h4>다음 경기일 ${dmd(dd)} ${WD[dobj(dd).w]} 대진</h4>${c.sched[dd].map(([h,a])=>`<div class="fx-fx${h===me||a===me?' me':''}"><span>${badge(h,16)}${esc(team(h).nick)}</span><em>vs</em><span>${esc(team(a).nick)}${badge(a,16)}</span></div>`).join('')}`:''),
     (di>0?`<button class="btn small" data-a="sbd" data-v="${rd[di-1]}">‹ 이전 날</button>`:'')+(di>=0&&di<rd.length-1?`<button class="btn small" data-a="sbd" data-v="${rd[di+1]}">다음 날 ›</button>`:'')+fxBtn('itab','sres:day','크게 보기'));
   /* 다음 경기 */
@@ -300,7 +300,7 @@ function recFm(rows,y){ const me=G.user, C=leaderCats(rows,y), by=l=>C.find(c=>c
     return `<div class="fx-cat"><h4>${l}</h4><button class="fx-l1${tt(a)===me?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p)}<b>${esc(a.p.name)}<i>${tt(a)!=null?badge(tt(a),12)+' '+esc(team(tt(a)).nick):'무소속'}</i></b><em>${fm(a)}</em></button>${s.slice(1).map((x,i)=>`<button class="fx-rk${tt(x)===me?' me':''}" data-a="player" data-v="${x.p.id}"><i>${s.findIndex(z=>Math.abs(v(z)-v(x))<1e-9)+1}</i><b>${esc(x.p.name)}</b><span>${tt(x)!=null?esc(team(tt(x)).nick):''}</span><em>${fm(x)}</em></button>`).join('')}</div>`; };
   const ours=`<div class="fx-cat"><h4>우리 선수 최고 순위</h4>${C.map(c=>{ const s=srt(c), i=s.findIndex(x=>tt(x)===me); return i<0?'':`<button class="fx-rk${i<3?' me':''}" data-a="player" data-v="${s[i].p.id}"><i>${s.findIndex(z=>Math.abs(c[2](z)-c[2](s[i]))<1e-9)+1}</i><b>${esc(s[i].p.name)}</b><span>${c[0]}</span><em>${(c[3]||c[2])(s[i])}</em></button>`; }).join('')||'<p class="fx-none">기록 없음</p>'}</div>`;
   const col=(cls,t,s,ls,foot,extra)=>fxBox('fxr '+cls,fxHead(t,s),ls.map(by).filter(Boolean).map(cat).join('')+(extra||''),foot);
-  return `<div class="fmx fmx-fit fmx-rec nolink ws-own">${col('fxr-b1',`${y} 타격 · 정확성`,'타율·OPS·wRC+는 규정타석 이상',['타율','안타','OPS','wRC+'],fxBtn('lrec','bat','타자 기록'))}${col('fxr-b2',`${y} 타격 · 힘과 발`,'누적 기록은 모든 타자',['홈런','타점','도루','타자 WAR'],fxBtn('go','league:stat','리그 통계'))}${col('fxr-p1',`${y} 투수 · 실점 억제`,'평균자책점·WHIP는 규정이닝 이상',['평균자책점','승리','탈삼진','WHIP'],fxBtn('lrec','pit','투수 기록'))}${col('fxr-p2',`${y} 투수 · 불펜과 종합`,'누적 기록은 모든 투수',['세이브','홀드','투수 WAR'],fxBtn('lrec','team','팀 기록'),ours)}</div>`; }
+  return `<div class="fmx fmx-fit fmx-rec nolink ws-own">${col('fxr-b1',`${y} 타격 · 정확성 ${hiI('타율·OPS·wRC+는 규정타석을 채운 타자만 봅니다.')}`,'',['타율','안타','OPS','wRC+'],fxBtn('lrec','bat','타자 기록'))}${col('fxr-b2',`${y} 타격 · 힘과 발`,'',['홈런','타점','도루','타자 WAR'],fxBtn('go','league:stat','리그 통계'))}${col('fxr-p1',`${y} 투수 · 실점 억제 ${hiI('평균자책점·WHIP는 규정이닝을 채운 투수만 봅니다.')}`,'',['평균자책점','승리','탈삼진','WHIP'],fxBtn('lrec','pit','투수 기록'))}${col('fxr-p2',`${y} 투수 · 불펜과 종합`,'',['세이브','홀드','투수 WAR'],fxBtn('lrec','team','팀 기록'),ours)}</div>`; }
 
 /* ---------- PC(FM 뉴스 배치): 리그 소식 ----------
    왼쪽 전체 소식 한 줄 목록(분류 버튼), 오른쪽 이적·계약과 감독·스태프 소식을 따로 */
@@ -308,8 +308,8 @@ const WIRE_G={mv:['트레이드','FA','외국인','이적','계약','방출','�
 function wireFm(){ const all=G.wire||[], ks=[...new Set(all.map(w=>w.k))], W=UI.wk?all.filter(w=>w.k===UI.wk):all;
   const line=w=>`<div class="fx-wr"${pAttr(w.ref)}><span>${dsh(w.d)}</span><span class="pill">${esc(w.k)}</span>${w.tid!=null?badge(w.tid,16):`<span class="av ini">${ASSOC.s}</span>`}<b>${lk(w.t)}</b></div>`; /* 본문 안 이름 링크(lk)가 있어 버튼 대신 div */
   const kc=ks.length>1?`<div class="chips fx-chips"><button data-a="wk" data-v="" class="${!UI.wk?'on':''}">전체 ${all.length}</button>${ks.map(k=>`<button data-a="wk" data-v="${esc(k)}" class="${UI.wk===k?'on':''}">${esc(k)} ${all.filter(w=>w.k===k).length}</button>`).join('')}</div>`:'';
-  const side=(cls,t,g,none)=>{ const L=all.filter(w=>WIRE_G[g].includes(w.k)); return fxBox(cls,fxHead(t,L.length?`${L.length}건 · 최근 순`:'소식 없음'),L.length?`<div class="fx-scr">${L.slice(0,40).map(line).join('')}</div>`:`<p class="fx-none">${none}</p>`); };
-  return `<div class="fmx fmx-fit fmx-wire nolink ws-own">${fxBox('fxw-all',fxHead('리그 소식',`${W.length}건${UI.wk?' · '+esc(UI.wk):''} · 최근 150건 보관`),kc+(W.length?`<div class="fx-scr">${W.slice(0,150).map(line).join('')}</div>`:'<p class="fx-none">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>'),fxBtn('go','transfer:moves','이적 현황')+fxBtn('go','club:fans','우리 구단 기사'))}${side('fxw-mv','이적·계약','mv','트레이드·FA·외국인 계약 소식이 쌓입니다.')}${side('fxw-st','감독·스태프','st','감독 선임·코치·스태프 변동 소식이 쌓입니다.')}</div>`; }
+  const side=(cls,t,g,none)=>{ const L=all.filter(w=>WIRE_G[g].includes(w.k)); return fxBox(cls,fxHead(t,L.length?`${L.length}건`:'소식 없음'),L.length?`<div class="fx-scr">${L.slice(0,40).map(line).join('')}</div>`:`<p class="fx-none">${none}</p>`); };
+  return `<div class="fmx fmx-fit fmx-wire nolink ws-own">${fxBox('fxw-all',fxHead('리그 소식',`${W.length}건${UI.wk?' · '+esc(UI.wk):''}`),kc+(W.length?`<div class="fx-scr">${W.slice(0,150).map(line).join('')}</div>`:'<p class="fx-none">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>'),fxBtn('go','transfer:moves','이적 현황')+fxBtn('go','club:fans','우리 구단 기사'))}${side('fxw-mv','이적·계약','mv','트레이드·FA·외국인 계약 소식이 쌓입니다.')}${side('fxw-st','감독·스태프','st','감독 선임·코치·스태프 변동 소식이 쌓입니다.')}</div>`; }
 
 /* ===== 퓨처스리그 화면(92_futures_league): 북부·남부 순위, 우리 2군 최근 경기와 박스스코어 ===== */
 function flTeamCell(t){ return t==='sm'?`<span class="tname"><b>상무</b></span>`:`<button class="lnk tname" data-a="lteamGo" data-v="${t}">${badge(t,16)}${esc(tshort(t))}</button>`; }

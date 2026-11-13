@@ -37,7 +37,7 @@ function faCenter0(){ const F=G.fa;
   if(!faLive()){ const U=faUpcoming(); const nx=U.filter(x=>x.p.team===G.user).map(x=>x.p).sort((a,b)=>ovr(b)-ovr(a));
     const res=F&&F.results&&F.results.length?`<div class="feed">${F.results.slice(0,10).map(r=>`<div class="fd"><span class="pill">${r.grade}</span><span>${esc(r.name)} · ${esc(tshort(r.from))} → <b>${esc(tshort(r.to))}</b> ${esc(ctRecShort(r))}</span><i>${dsh(r.day)}</i></div>`).join('')}</div>`:'';
     /* 시장 열리기 전: 일정은 한 줄 안내(패널 밖), 첫 칸은 FA 예정자 목록 */
-    return `<p class="small muted fa-sched"><b>FA 시장</b> 포스트시즌 뒤 11월 2일 공시 · 11월 6일 협상 시작 · 1월 24일(캠프 전날) 사실상 마감</p>${faUpcomingCard(U)}
+    return `<p class="small muted fa-sched"><b>FA 시장</b> 포스트시즌 뒤 11월 2일 공시 · 11월 6일 협상 시작 · 1월 24일 마감</p>${faUpcomingCard(U)}
       <section class="card"><h2 class="sec">올겨울 FA가 될 우리 선수</h2>${nx.length?`<div class="fl">${nx.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">예상 ${faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null))}등급(FA 보상 기준)</span>${canExtend(p)?`<button class="tc-i go" data-a="extOpen" data-v="${p.id}">연장 협상</button>`:'<span class="flx"></span>'}</div>`).join('')}</div>`:'<p class="small muted">없습니다.</p>'}<p class="small muted">FA가 되기 전에 비FA 다년계약으로 묶어 둘 수 있습니다.</p></section>
       ${res?`<section class="card"><h2 class="sec">지난 FA 계약</h2>${res}</section>`:''}${freeCard()}`; }
   const ids=F.pool.filter(id=>G.players[id]&&G.players[id].team==null).sort((a,b)=>G.players[b].ask.annual-G.players[a].ask.annual);
@@ -61,7 +61,7 @@ function freeCard(){const L=freeList().map(p=>({p,rp:scoutReport(p)})).sort((a,b
 
 /* 올 시즌 뒤 FA 예정자(다른 구단): 자금을 미리 모으고 노릴 선수를 정할 수 있게. 능력은 스카우트 평가로만 보이고, 연봉·등급·기록은 공개 정보 */
 function faUpSt(x){ if(x.why==='end')return 'FA 계약 만료'; if(x.why==='out')return '옵트아웃 예상'; if(x.why==='re')return '자격 보유(지난번 미신청)'; if(x.sure)return '등록일수 충족'; const h=seasonTotal(x.p,G.year,'1군')||{};
-  return `등록일수 필요(${x.p.isP?`${h.g||0}/40경기 또는 ${ipStr(h.outs||0)}/90이닝`:`${h.g||0}/85경기 또는 ${h.pa||0}/260타석`} · 하나만 채우면 됨)`; }
+  return `등록일수 ${x.p.isP?`${h.g||0}/40경기 또는 ${ipStr(h.outs||0)}/90이닝`:`${h.g||0}/85경기 또는 ${h.pa||0}/260타석`}`; }
 function faUpDl(x){ return x.dp>=.8?['신청 유력','good']:x.dp>=.34?['반반','warn']:['잔류 유력','muted']; }
 function faUpcomingCard(U){ const all=Object.values(G.players).filter(q=>q.team!=null); const L=U.filter(x=>x.p.team!==G.user);
   const f=UI.fuF||'all'; const R=L.filter(x=>f==='all'||(f==='P'?x.p.isP:f==='H'?!x.p.isP:f==='sure'?x.sure&&x.dp>=.8:true)).map(x=>({...x,g:faGradeOf(x.p,all)})).sort((a,b)=>b.p.sal-a.p.sal);
@@ -87,7 +87,7 @@ function faNewsRows(R){ return R.map(r=>`<tr class="${r.to===G.user||r.from===G.
 function faFM(){ const F=G.fa, b=budget(), all=Object.values(G.players).filter(q=>q.team!=null);
   if(!faLive()){ const U=faUpcoming(), nx=U.filter(x=>x.p.team===G.user).map(x=>x.p).sort((a,c)=>ovr(c)-ovr(a)), L=U.filter(x=>x.p.team!==G.user).map(x=>({...x,g:faGradeOf(x.p,all)})), f=UI.fuF||'all';
     const R=L.filter(x=>f==='all'||(f==='P'?x.p.isP:f==='H'?!x.p.isP:f==='sure'?x.sure&&x.dp>=.8:true)).sort((a,c)=>c.p.sal-a.p.sal), d0=KD(11,2)-G.day;
-    const top=tfKpi([['FA 공시',dmd(KD(11,2)),'',d0>0?`D-${d0} · 포스트시즌 뒤`:'포스트시즌 뒤'],['협상 시작',dmd(KD(11,6)),'','1월 24일(캠프 전날) 사실상 마감'],['FA 예정자 · 다른 구단',`${L.length}명`,'',`예상 A등급 ${L.filter(x=>x.g==='A').length} · B등급 ${L.filter(x=>x.g==='B').length}`],['우리 FA 예정',`${nx.length}명`,nx.length?'warn':''],['외부 FA 영입 한도','2~3명','','한 겨울 · A·B등급은 보상'],['예산 여유',money(Math.round(b.roomGoal)),b.roomGoal<0?'bad':'good']]);
+    const top=tfKpi([['FA 공시',dmd(KD(11,2)),'',d0>0?`D-${d0} · 포스트시즌 뒤`:'포스트시즌 뒤'],['협상 시작',dmd(KD(11,6)),'','1월 24일 마감'],['FA 예정자 · 다른 구단',`${L.length}명`,'',`예상 A등급 ${L.filter(x=>x.g==='A').length} · B등급 ${L.filter(x=>x.g==='B').length}`],['우리 FA 예정',`${nx.length}명`,nx.length?'warn':''],['외부 FA 영입 한도','2~3명','','한 겨울 · A·B등급은 보상'],['예산 여유',money(Math.round(b.roomGoal)),b.roomGoal<0?'bad':'good']]);
     const up=tfBox('tf-up','올 시즌 뒤 FA 예정자 · 다른 구단',`${R.length}명`,tfChips('fuF',f,[['all','전체'],['sure','신청 유력'],['P','투수'],['H','야수']])+tfT(['선수','소속','종합','잠재력','기록','연봉','예상 등급','자격','신청 전망'],R.map(x=>{ const rp=scoutReport(x.p), [d,c]=faUpDl(x);
       return `<tr class="fur"><td>${tfP(x.p,`${esc(posLabel(x.p))} · ${x.p.age}세`)}</td><td>${badge(x.p.team,16)} ${esc(tshort(x.p.team))}</td><td>${rchip(rp.cur)}</td><td>${tfPot(rp,x.p)}</td><td class="small">${tfRec(x.p)}</td><td>${money(x.p.sal)}</td><td><b>${x.g}</b></td><td class="wrap small">${esc(faUpSt(x))}</td><td class="${c}">${d}</td></tr>`; }),'조건에 맞는 선수가 없습니다.')
       +`<p class="small muted tipme">실제로 시장에 나올지는 선수가 정합니다(가치가 애매하면 신청하지 않고 남습니다). 외부 FA는 한 겨울에 2~3명까지 데려올 수 있고, A·B등급은 원 소속 구단에 보상(선수 또는 연봉의 200~300%)을 줘야 합니다. 능력은 스카우트 평가로만 보이고 연봉·등급·기록은 공개 정보입니다.</p>`);

@@ -39,7 +39,7 @@ Object.assign(A,{ trnSet(v){ const [id,f]=v.split(':'); const t=trnSet(+id,f); U
   trnPolSet(v){ UI.trnPolMsg=trnPolSet(v); save(); render(); } });
 /* 팀 육성 방침(단장이 정하는 것은 이것 하나): 코치진이 이 안에서 선수별 강도를 나눈다 */
 function trnPolBox(){ const cur=trnPol(); const ps=domestic(G.user).filter(p=>!milServing(p)&&!(p.joinY>G.year)); const n=[0,0,0,0]; for(const p of ps)n[trnI(p)]++;
-  return `<div class="trn-env"><b>육성 방침</b> <span class="small muted">선수별 훈련 강도는 코치진이 정합니다</span>
+  return `<div class="trn-env"><b>육성 방침</b>${hiI('선수별 훈련 강도는 코치진이 정합니다.')}
   <div class="seg trn-seg">${Object.entries(TRNPOL).map(([k,v])=>`<button data-a="trnPolSet" data-v="${k}" class="${cur===k?'on':''}">${v.l}</button>`).join('')}</div>
   <div class="small">${esc(TRNPOL[cur].d)}</div><div class="small muted">지금 배분: ${TRNI.map((t,i)=>`${t.l} ${n[i]}명`).join(' · ')}</div>${UI.trnPolMsg?`<div class="note">${esc(UI.trnPolMsg)}</div>`:''}</div>`; }
 /* 훈련 강도(선수 화면 육성 탭): 코치가 정한 결과를 보여 주고, 단장 건의는 접힌 예외 항목. 부상 위험은 내구성(투수는 체력)·나이를 반영한 전체 위험 */

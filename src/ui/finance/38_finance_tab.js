@@ -21,16 +21,16 @@ function bspCards(home){ const s=budgetSplit(), B=s.buy, P=s.pay, O=s.ops;
     `큰 숫자는 규정상 한도입니다. 국내 선수 연봉 총액(상위 40명) ${money(P.pay)}이 경쟁균형세 상한 ${money(P.cap)}까지 남은 금액입니다${P.floor?`. 하한 ${money(P.floor)}에 못 미치면 발전기금을 냅니다`:''}. 돈이 있다는 뜻은 아닙니다. 예산 여유는 ${s.indie?'적자 없이 더 쓸 수 있는 연봉입니다(독립구단은 연봉도 보유 현금에서 나갑니다)':'구단주 지원 목표 안에서 더 쓸 수 있는 연봉입니다'}. 외국인 계약금·연봉은 외국인 배정 예산에서 먼저 씁니다.`);
   const c3=card('운영 예산',money(O.left),O.left<0,[['이번 시즌 지출',money(O.spent)],['올해 예산',money(O.budget)]],bar(O.spent,O.budget,O.spent>O.budget),
     '감독·코치·스카우트·의료·시설 유지·마케팅·팬 이벤트 같은 운영비입니다. 이미 올해 예상 지출에 들어 있어 따로 더 쓸 수 있는 돈은 아닙니다.');
-  return `<div class="bsp ${home?'bsp-home':''}">${c1}${c2}${c3}</div><p class="small muted bsp-n ${home?'':'keep'}">${s.indie?'선수 영입 자금과 예산 여유는 같은 보유 현금에서 나옵니다. 한쪽에 쓰면 다른 쪽도 줄어듭니다. 연봉 상한까지는 규정상 한도일 뿐 쓸 수 있는 돈이 아닙니다.':'예산 여유(맨 위 칩과 같은 숫자) = 올해 예상 수입 + 구단주 지원 목표 - 올해 예상 지출. 0보다 크면 그만큼이 선수 영입 자금에 더해지고, 0보다 작으면 목표를 넘긴 상태입니다. 연봉 상한까지는 경쟁균형세 규정상 한도일 뿐 쓸 수 있는 돈이 아닙니다.'}</p>`; }
+  return `<div class="bsp ${home?'bsp-home':''}">${c1}${c2}${c3}</div><p class="small muted bsp-n">${s.indie?'선수 영입 자금과 예산 여유는 같은 보유 현금에서 나옵니다. 한쪽에 쓰면 다른 쪽도 줄어듭니다. 연봉 상한까지는 규정상 한도일 뿐 쓸 수 있는 돈이 아닙니다.':'예산 여유(맨 위 칩과 같은 숫자) = 올해 예상 수입 + 구단주 지원 목표 - 올해 예상 지출. 0보다 크면 그만큼이 선수 영입 자금에 더해지고, 0보다 작으면 목표를 넘긴 상태입니다. 연봉 상한까지는 경쟁균형세 규정상 한도일 뿐 쓸 수 있는 돈이 아닙니다.'}</p>`; }
 function finMonthCard(){ const L=(G.finLog||[]).filter(x=>x.y===G.year&&(x.tid??G.user)===G.user); const x=L[L.length-1]; const p=G.finSnap; const now=p&&p.y===G.year&&(p.tid??G.user)===G.user&&p.st===!!(G.last&&G.last.y>=G.year)?finSnapNow():null; /* 결산을 사이에 두면 다른 시즌 예산이라 비교하지 않는다(월간 메일과 같게, 검수 11-09y) */ /* 이직하면 전 구단 월간 기록은 쓰지 않는다(검수 11-09h) */ const dr=now?now.room-p.room:null;
   const lk=!!(G.bLocks&&G.bLocks[G.user]&&G.bLocks[G.user].fy===sponSeason()); /* 확정 예산: 수입 전망이 늘어도 예산 여유는 그대로(검수 11-08) */
-  const row=z=>{ const neu=lk&&z.kind==='수입'; return `<div class="tsb-r"><span>${z.kind} · ${esc(z.l)}${neu?' <i class="muted">(전망만, 예산 여유와 무관)</i>':''}</span><span>${money(z.v0)} → ${money(z.v1)} <b class="${neu?'muted':z.eff>=0?'good':'bad'}">${z.eff>=0?'+':''}${money(z.eff)}</b></span></div>`; };
+  const row=z=>{ const neu=lk&&z.kind==='수입'; return `<div class="tsb-r"><span>${z.kind} · ${esc(z.l)}${neu?' <i class="muted">전망</i>':''}</span><span>${money(z.v0)} → ${money(z.v1)} <b class="${neu?'muted':z.eff>=0?'good':'bad'}">${z.eff>=0?'+':''}${money(z.eff)}</b></span></div>`; };
   if(!x&&dr==null)return '';
   const xr=x?x.room1-x.room0:0;
   return `<section class="card"><div class="row between"><h2 class="sec">예산 여유가 바뀐 이유</h2><span class="small muted">재무팀 월간 보고</span></div>
     ${x?`<p><b>${x.m}월</b> ${money(x.room0)} → <b class="${xr>=0?'good':'bad'}">${money(x.room1)}</b> (${xr>=0?'+':''}${money(xr)})</p>${x.top.length?`<div class="tsbox">${x.top.slice(0,5).map(row).join('')}</div>`:'<p class="small muted">크게 바뀐 항목이 없었습니다.</p>'}`:''}
     ${dr!=null&&Math.abs(dr)>=50?`<p class="small muted">${dsh(p.d)} 이후 ${dr>=0?'+':''}${money(dr)} 더 바뀌었습니다.</p>`:''}
-    <p class="small muted">초록은 예산 여유를 늘린 변화, 빨강은 줄인 변화입니다.</p></section>`; }
+    </section>`; }
 /* 예산 여유 계산식: 화면에 보이는 항목을 더하면 정확히 예산 여유가 되게(플레이 테스트 3차: 표시 -16.25억 vs 손으로 계산 -1.8억) */
 function roomFormula(b){ const IL=Math.round(b.lockI), G2=b.indie?0:Math.round(b.goalSup), C=Math.round(b.selfCL||0), E=Math.round(b.E), R=IL+G2+C-E;
   return `예산 여유 = ${b.indie?'올해 예상 수입':'확정 예상 수입'} ${money(IL)}${b.indie?'':` + 구단주 지원 목표 ${money(G2)}`}${C?` + 보유 현금 보전 ${money(C)}`:''} - 올해 예상 지출 ${money(E)} = <b>${money(R)}</b>${!b.indie&&Math.round(b.extra)?` (시즌 중 늘거나 준 수입 ${b.extra>0?'+':''}${money(b.extra)}은 넣지 않음)`:''}`; }
