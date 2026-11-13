@@ -2,7 +2,7 @@
 function matchEntrySheet(){const x=nextGames(1)[0];return `<div class="scrim"><section class="sheet gut match-entry" role="dialog" aria-label="경기 중계 선택"><div class="sheet-head"><div><span class="eyebrow">경기 시작 전</span><h2 class="sec">이번 경기를 어떻게 볼까요?</h2></div></div>${x?`<div class="match-entry-teams">${badge(G.user,64)}<b>${esc(tshort(G.user))}<span>vs</span>${esc(tshort(x.op))}</b>${badge(x.op,64)}</div><p>${dstr(x.d)} · ${x.home?'홈':'원정'}${x.ps?' · '+esc(x.ps):''}</p><p class="muted">결과를 미리 보여주지 않고 1회부터 중계합니다.</p><div class="match-entry-choices"><button class="btn primary" data-a="matchWatch"><b>3D 중계로 보기</b><span>결과를 숨긴 채 1회부터 · 하이라이트/전체 선택</span></button><button class="btn" data-a="matchSim"><b>결과만 보기</b><span>이 경기 한 경기만 빠르게 진행</span></button></div>`:'<p>예정된 우리 경기가 없습니다.</p>'}<button class="btn" data-a="matchLater">나중에 결정</button></section></div>`;}
 
 /* 경기 전 라인업(FM 경기 전 화면처럼): 흐린 경기장 위에 포지션 그림 카드 + 오른쪽 구단색 타순 패널. 원정·홈은 위 버튼으로 바꿔 본다(기본: 우리 팀) */
-const PREP_XY={C:[60,95],P:[60,73],'1B':[81,69],'2B':[71,54],SS:[49,54],'3B':[39,69],LF:[24,38],CF:[60,23],RF:[96,38],DH:[104,90]}; /* 120x100 도식 좌표(홈 60,92) */
+const PREP_XY={C:[60,95],P:[60,73],'1B':[81,69],'2B':[73,47],SS:[47,47],'3B':[39,69],LF:[24,38],CF:[60,23],RF:[96,38],DH:[95,90]}; /* 120x100 도식 좌표(홈 60,92). 유격수·2루수 이름표가 겹치고 지명타자 이름이 오른쪽 끝에서 잘리던 위치를 조정 */
 /* 경기 직전 저장값을 우선한다. 옛 경기의 현재 시즌 누계에서 임의로 한 경기만 빼지 않는다. */
 function prepSeason(g,id,line,isP){let pre=g.broadcast?.players?.[id]?.pre;
  if(!pre&&line?.pre){pre={};(isP?PRE_P:PRE_B).forEach((k,i)=>pre[k]=line.pre[i]||0);}

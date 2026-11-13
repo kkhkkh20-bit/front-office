@@ -92,7 +92,7 @@ main.content{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-b
 .goset .step .st-x{padding:0;border:0;background:none}
 /* 패널 */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
-.card>h2.sec:first-child,.card>.row.between:first-child,.card>.eyebrow:first-child,details.card>summary{margin:-12px -12px 2px;padding:8px 12px;background:var(--head);border-bottom:1px solid var(--line);border-radius:4px 4px 0 0;min-height:38px}
+.card>h2.sec:first-child,.card>.row.between:first-child,.card>.eyebrow:first-child,details.card>summary{margin:-12px -12px 2px;padding:8px 12px;background:var(--head);border-bottom:1px solid var(--line);border-radius:4px 4px 0 0;min-height:38px;flex-shrink:0}
 .card.hero{border-color:var(--team)}
 .card.hero>h2.sec:first-child,.card.hero>.row.between:first-child,.card.hero>.eyebrow:first-child{background:color-mix(in srgb,var(--team) 45%,var(--panel));border-bottom-color:var(--team-hi);color:#fff}
 .card.hero>.row.between:first-child .eyebrow,.card.hero>.eyebrow:first-child{color:#e8eef3}
@@ -4597,7 +4597,7 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .cs-pfx.tl{left:0;top:0}.cs-pfx.bl{left:0;bottom:0}
 @media(max-width:700px){.cs-pfx{padding:3px 6px;font-size:9.5px}.cs-pfx b{font-size:11px}}
 .cs-pl{padding:12px 14px 10px}.cs-pl header{margin-bottom:4px}.cs-pl-h,.cs-pl li{grid-template-columns:22px minmax(0,1fr) 50px 40px 28px 28px;gap:5px}.cs-pl-h>span{white-space:nowrap}
-.cs-pl ol{gap:0;overflow:visible}.cs-pl li{padding:2px 0;font-size:13px;line-height:1.35}.cs-pl-sp{padding-top:6px;gap:0 8px}
+.cs-pl ol{gap:0;overflow:auto;flex:1 1 auto;min-height:0;scrollbar-width:thin}.cs-pl li{padding:2px 0;font-size:13px;line-height:1.35}@media(min-width:701px) and (max-height:820px){body .cs-prep-teams .cs-pl li{padding:0;font-size:12px}body .cs-prep-teams .cs-pl li,body .cs-prep-teams .cs-pl li>*{line-height:15px}}.cs-pl-sp{padding-top:6px;gap:0 8px;flex:none} /* 낮은 PC(1366x768)에서 8·9번 타자 줄이 선발투수 칸과 겹치던 문제: 넘치면 목록 안에서 스크롤 */
 /* 중계 자막(FM처럼): 가운데 정렬 알약 모양, 그 장면 공격 팀 색 바탕에 흰 글씨, '캐스터' 꼬리표 없음 */
 .match-dashboard .cs-stage.has-3d>.cs-cap{left:50%;right:auto;bottom:14px;transform:translateX(-50%);width:max-content;max-width:min(78%,760px);min-height:0;padding:7px 22px;border:0;border-radius:999px;background:var(--cap-bg,#1d4f9a);color:var(--cap-fg,#fff);text-align:center;font-size:15px;box-shadow:0 6px 18px #0007;-webkit-backdrop-filter:none;backdrop-filter:none}
 .cs-cap .cs-voice{display:block;text-align:center}.cs-cap .cs-voice>b{color:inherit}
@@ -4819,6 +4819,8 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .hw-sr>em{font-style:normal;font-weight:700;font-size:12px}.hw-sr>small{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hw-sr.past{opacity:.85}.hw-sr .good{color:var(--good)}.hw-sr .bad{color:var(--bad)}
 .hw-leaders .fx-pls{padding:6px 10px}
 @media(min-width:1100px){.home-workspace[data-device="desktop"] .home-grid.home-dashboard>.hw-stand{grid-row:span 2}}
+/* 첫 시즌 준비 카드가 있는 동안은 카드가 9장이라 순위가 두 칸을 차지하면 예산 카드가 넷째 줄로 밀려 위 카드들이 납작해지고 아래가 비었다: 그동안은 한 칸만 */
+@media(min-width:1100px){.home-workspace[data-device="desktop"] .home-grid.home-dashboard:has(>.hw-start)>.hw-stand{grid-row:auto}}
 @media(min-width:1100px) and (max-height:860px){.home-workspace[data-device="desktop"][data-rows="3"] .hw-news h3{-webkit-line-clamp:1;font-size:14px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-news article>p{-webkit-line-clamp:1}}
 @media(min-width:1100px) and (max-height:860px){#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-news article>:is(p,.hw-kicker){display:none}#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-news h3{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;margin:4px 0}}
 @media(max-width:699px){.hw-finance dl{gap:4px!important;padding:6px 10px!important}.hw-finance dd{font-size:16px!important}}
@@ -13879,7 +13881,7 @@ function signForeign(tid,id){
   const err=foreignCheck(tid,p); if(err){ if(p)p.ask=ask0; return err; } /* 실패한 시도는 시장 요구액을 바꾸지 않는다 */
   const mid=period()==='season';
   { const h=foResFor(p); if(!(h&&h.tid===tid))p.rsy=0; } /* 재계약 연차는 그 구단에서 쌓은 것만: 다른 구단이 새로 데려오면 한도 가산 없음(검수 11-06) */
-  story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; delete p.fMulti; /* 새 구단 계약은 1년부터. shortcut: 2년 계약 도중 방출해도 다음 해 보장분은 따로 물리지 않는다, 방출 정산을 다년으로 넓힐 때 함께 */ if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));
+  story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; p.fjD=G.day; delete p.fMulti; /* 새 구단 계약은 1년부터. shortcut: 2년 계약 도중 방출해도 다음 해 보장분은 따로 물리지 않는다, 방출 정산을 다년으로 넓힐 때 함께 */ if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));
   const cost=Math.round(p.ask*remainFrac());
   if(mid||G.day>=G.cal.open){ G.sea.fspend[tid]=(G.sea.fspend[tid]||0)+cost; }
   if(mid){ const key=p.foreign==='아시아'?'asiaRepl':'repl'; G.sea[key]=G.sea[key]||{}; G.sea[key][tid]=(G.sea[key][tid]||0)+1; try{ gmInc(tid,'fRep'); }catch(e){} }
@@ -21483,7 +21485,7 @@ function fDramaType(p){ const ad=p.adapt??50, mor=p.mor??60, out=fOutOfRace(p.te
   let x=R()*sum(Object.values(W)); for(const k in W){ x-=W[k]; if(x<=0)return k; } return 'clash'; }
 /* 매주(월요일) 리그 전체 외국인 선수 점검 */
 function fDramaWeekly(){ if(period()!=='season')return; const y=G.year; G.fdN=G.fdN&&G.fdN.y===y?G.fdN:{y,u:0};
-  for(const p of Object.values(G.players)){ if(!p.foreign||p.team==null||p.fdY===y||!healthy(p)||isAway(p))continue; if(R()>=fDramaRisk(p))continue;
+  for(const p of Object.values(G.players)){ if(!p.foreign||p.team==null||p.fdY===y||!healthy(p)||isAway(p))continue; if(p.fjD!=null&&G.day-p.fjD<28)continue; /* 막 입단한 선수(4주 안)는 향수병·불화 등 사건 없음: 계약 다음 날 '최근 경기 집중력' 면담이 오던 문제 */ if(R()>=fDramaRisk(p))continue;
     const me=p.team===G.user&&!G.unemp; if(me&&G.fdN.u>=2)continue; const k=fDramaType(p); p.fdY=y;
     if(k==='slack')p.fslk={until:G.day+28,b:-Math.round(rnd(1.5,3.5)*10)/10};
     if(k==='home')p.fhome=G.day+30;
@@ -21496,7 +21498,7 @@ function fDramaAI(p,k){ const t=team(p.team), nm=p.name, tn=tshort(p.team); cons
   if(k==='slack'){ if(bad){ p.fBad=1; } wire('외국인',`${tn} ${nm} 태업 논란. 전력 질주를 하지 않는다는 지적이 나옵니다.`,{tid:t.id}); return; }
   if(k==='fake'){ p.fLeave=G.day+ri(3,6); wire('외국인',`${tn} ${nm}, 몸 상태를 이유로 며칠 결장. 정밀 검진에서는 큰 이상이 없었다는 소식입니다.`,{tid:t.id}); } }
 /* 우리 구단: 결정 사건 */
-function fDramaUser(p,k){ const m=G.mgr[G.user], mn=m&&!m.interim?`${m.name} 감독`:'감독', cn=p.orig||'고향';
+function fDramaUser(p,k){ const m=G.mgr[G.user], mn=m&&!m.interim?`${m.name} 감독`:'감독', cn=p.nat||'고향'; /* orig는 지역 코드(us·la)라 글에 그대로 나오던 문제: 나라 이름으로 */
   const sit=k==='home'?`${p.name}(${posLabel(p)})이(가) 통역을 통해 면담을 요청했습니다. "가족이 많이 힘들어합니다. 솔직히 집에 가고 싶습니다." ${cn} 생활이 그립다며 표정이 어둡습니다. 최근 경기 집중력도 떨어졌다는 코치진 보고가 함께 왔습니다.`
     :k==='clash'?(R()<.6?`${mn}과(와) ${p.name}이(가) 더그아웃에서 언성을 높였습니다. ${p.isP?'등판 간격과 교체 시점':'타순과 수비 위치'}에 대한 불만이 쌓였다고 합니다. 선수는 "존중받지 못한다"고, 감독은 "팀 규율이 먼저"라고 말합니다.`:`${p.name}이(가) 국내 선수들과 어울리지 못하고 따로 지낸다는 보고입니다. 훈련 방식 차이로 몇몇 고참과 마찰이 있었습니다.`)
     :k==='slack'?`코치진 보고: "${p.name}의 훈련 태도가 성의 없어 보입니다. 경기에서도 전력 질주가 줄었습니다." 몸에는 이상이 없다고 합니다. 기록도 조금씩 떨어지고 있습니다.`
@@ -26137,7 +26139,7 @@ function linkMap(){ const ps=Object.values(G.players); const k=G.year+':'+G.day+
   for(const m of [...(G.mmarket||[]),...(G.exMgr||[])])addP(m.name,'person','xmgr:'+m.id); for(const a of G.abroad||[])if(!a.back)addP(a.name,'person','abr:'+a.id); for(const o of G.ob||[])addP(o.name,'person','ob:'+o.id); /* 떠난 사람도 소식 속 이름을 누르면 인물 창(현역 이름이 먼저) */
   const er=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); const tk=Object.keys(teams).sort((a,b)=>b.length-a.length).map(er); const pk=[...Object.keys(names),...Object.keys(ppl)].sort((a,b)=>b.length-a.length).map(er);
   const src=`(${tk.join('|')})|(^|[^가-힣A-Za-z])(${pk.join('|')})(\u2063[\u200b\u200c]+\u2064)?`; /* 뒤쪽 확인((?<!…))은 iOS 16.3 이하 사파리에서 문법 오류라 앞 글자를 잡아 그대로 돌려준다(모바일 접속 불가 제보 11-11) */ _lk={g:G,k,names,teams,ppl,pplT,re:new RegExp(src,'g'),re1:new RegExp(src)}; return _lk; }
-function linkify(h,pp){ if(!G||!h)return h; const L=linkMap(); return h.replace(L.re,(m,t,pre,pn,mk,off,str)=>{ if(t)return `<a class="tl" data-a="lteam" data-v="${L.teams[t]}">${t}</a>`; pre=pre||''; if(pp&&L.names[pn]!=null&&L.pplT[pn]&&!mk){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } /* 감독·코치 화면(또는 data-person 안)에서는 표시 없는 동명이인 이름을 사람 쪽으로(꺼끼꺼 11-12) */ if(L.names[pn]!=null&&!L.pplT[pn]&&!mk&&typeof off==='number'&&typeof str==='string'){ const after=str.slice(off+m.length,off+m.length+6), before=str.slice(Math.max(0,off-6),off+pre.length); if(/^\s?([가-힣]{0,3}코치|단장|감독|구단주|사장|스카우트|대행)/.test(after)||/(단장|감독|코치|구단주|사장|스카우트)\s?$/.test(before))return m; } /* 직함이 붙었는데 인물 목록에 없는 사람(고교 감독 등)은 같은 이름 선수로 잇지 않는다(일고회장 11-12) */ if(L.names[pn]!=null&&L.pplT[pn]&&!mk&&typeof off==='number'&&typeof str==='string'){ const after=str.slice(off+m.length,off+m.length+6), before=str.slice(Math.max(0,off-6),off+pre.length); if(/^\s?([가-힣]{0,3}코치|단장|감독|구단주|사장|스카우트|대행)/.test(after)||/(단장|감독|코치|구단주|사장|스카우트)\s?$/.test(before)){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } } { const id=pnmId(mk); if(id!=null&&G.players[id]&&G.players[id].name===pn)return `${pre}<a class="pl" data-a="player" data-v="${id}">${pn}</a>`; } if(L.names[pn]!=null)return `${pre}<a class="pl" data-a="player" data-v="${L.names[pn]}">${pn}</a>`; const q=L.ppl[pn]; return pre+(q?`<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`:pn); }); }
+function linkify(h,pp){ if(!G||!h)return h; const L=linkMap(); return h.replace(L.re,(m,t,pre,pn,mk,off,str)=>{ if(t)return `<a class="tl" data-a="lteam" data-v="${L.teams[t]}">${t}</a>`; pre=pre||''; if(pp&&L.names[pn]!=null&&L.pplT[pn]&&!mk){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } /* 감독·코치 화면(또는 data-person 안)에서는 표시 없는 동명이인 이름을 사람 쪽으로(꺼끼꺼 11-12) */ if(L.names[pn]!=null&&!L.pplT[pn]&&!mk&&typeof off==='number'&&typeof str==='string'){ const after=str.slice(off+m.length,off+m.length+6), before=str.slice(Math.max(0,off-6),off+pre.length); if(/^\s?([가-힣]{0,3}코치|단장|감독|구단주|사장|스카우트|대행|기자|해설위원|캐스터)/.test(after)||/(단장|감독|코치|구단주|사장|스카우트|기자)\s?$/.test(before))return m; /* 기자 이름이 같은 이름의 선수로 이어지던 문제 */ } /* 직함이 붙었는데 인물 목록에 없는 사람(고교 감독 등)은 같은 이름 선수로 잇지 않는다(일고회장 11-12) */ if(L.names[pn]!=null&&L.pplT[pn]&&!mk&&typeof off==='number'&&typeof str==='string'){ const after=str.slice(off+m.length,off+m.length+6), before=str.slice(Math.max(0,off-6),off+pre.length); if(/^\s?([가-힣]{0,3}코치|단장|감독|구단주|사장|스카우트|대행|기자|해설위원|캐스터)/.test(after)||/(단장|감독|코치|구단주|사장|스카우트|기자)\s?$/.test(before)){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } } { const id=pnmId(mk); if(id!=null&&G.players[id]&&G.players[id].name===pn)return `${pre}<a class="pl" data-a="player" data-v="${id}">${pn}</a>`; } if(L.names[pn]!=null)return `${pre}<a class="pl" data-a="player" data-v="${L.names[pn]}">${pn}</a>`; const q=L.ppl[pn]; return pre+(q?`<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`:pn); }); }
 /* 조사 자동 맞춤: 화면에 "을(를)·이(가)·은(는)·와(과)·(으)로·(이)라"가 남으면 앞 글자 받침을 보고 고른다 */
 const JOSA_RE=/을\(를\)|이\(가\)|은\(는\)|와\(과\)|과\(와\)|\(으\)로|\(이\)라/g;
 /* 키보드 안내 '(Space)' 등은 터치 기기에서 숨긴다(플레이 테스트 11-13) */
@@ -29861,7 +29863,7 @@ async function c3DBenchClear(g,k,event){const c=UI.cast,token=CT.tok;if(!c)retur
 function matchEntrySheet(){const x=nextGames(1)[0];return `<div class="scrim"><section class="sheet gut match-entry" role="dialog" aria-label="경기 중계 선택"><div class="sheet-head"><div><span class="eyebrow">경기 시작 전</span><h2 class="sec">이번 경기를 어떻게 볼까요?</h2></div></div>${x?`<div class="match-entry-teams">${badge(G.user,64)}<b>${esc(tshort(G.user))}<span>vs</span>${esc(tshort(x.op))}</b>${badge(x.op,64)}</div><p>${dstr(x.d)} · ${x.home?'홈':'원정'}${x.ps?' · '+esc(x.ps):''}</p><p class="muted">결과를 미리 보여주지 않고 1회부터 중계합니다.</p><div class="match-entry-choices"><button class="btn primary" data-a="matchWatch"><b>3D 중계로 보기</b><span>결과를 숨긴 채 1회부터 · 하이라이트/전체 선택</span></button><button class="btn" data-a="matchSim"><b>결과만 보기</b><span>이 경기 한 경기만 빠르게 진행</span></button></div>`:'<p>예정된 우리 경기가 없습니다.</p>'}<button class="btn" data-a="matchLater">나중에 결정</button></section></div>`;}
 
 /* 경기 전 라인업(FM 경기 전 화면처럼): 흐린 경기장 위에 포지션 그림 카드 + 오른쪽 구단색 타순 패널. 원정·홈은 위 버튼으로 바꿔 본다(기본: 우리 팀) */
-const PREP_XY={C:[60,95],P:[60,73],'1B':[81,69],'2B':[71,54],SS:[49,54],'3B':[39,69],LF:[24,38],CF:[60,23],RF:[96,38],DH:[104,90]}; /* 120x100 도식 좌표(홈 60,92) */
+const PREP_XY={C:[60,95],P:[60,73],'1B':[81,69],'2B':[73,47],SS:[47,47],'3B':[39,69],LF:[24,38],CF:[60,23],RF:[96,38],DH:[95,90]}; /* 120x100 도식 좌표(홈 60,92). 유격수·2루수 이름표가 겹치고 지명타자 이름이 오른쪽 끝에서 잘리던 위치를 조정 */
 /* 경기 직전 저장값을 우선한다. 옛 경기의 현재 시즌 누계에서 임의로 한 경기만 빼지 않는다. */
 function prepSeason(g,id,line,isP){let pre=g.broadcast?.players?.[id]?.pre;
  if(!pre&&line?.pre){pre={};(isP?PRE_P:PRE_B).forEach((k,i)=>pre[k]=line.pre[i]||0);}
@@ -36330,6 +36332,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-13-realplay',d:'11월 13일',t:'화면 다듬기 · 외국인 선수 사건',items:[
+    'PC 홈: 첫 시즌 준비 카드가 있는 동안 예산 카드가 아래로 밀려 다른 카드가 납작해지던 배치를 고쳐, 9장이 한 화면에 고르게 들어갑니다.',
+    '스카우트 화면 "지식 범위" 카드의 버튼이 제목 위로 겹치던 문제를 고쳤습니다.',
+    '중계 경기 전 라인업: 8·9번 타자 줄이 선발투수 칸과 겹치던 문제와, 유격수·2루수 이름표가 겹치고 지명타자 이름이 잘리던 문제를 고쳤습니다.',
+    '소식 속 기자 이름이 같은 이름의 선수로 연결되던 문제를 고쳤습니다.',
+    '외국인 선수 향수병 면담에 "us 생활"처럼 코드가 보이던 문구를 나라 이름으로 고쳤고, 막 입단한 외국인 선수(4주 이내)에게는 향수병·불화 같은 사건이 생기지 않습니다.']},
   {id:'2026-11-13-fabonus',d:'11월 13일',t:'FA 계약금 · 장기계약 · 국가대표 탭',items:[
     'AI 구단의 FA 계약도 실제 KBO처럼 계약금과 연봉으로 나뉩니다. 보상금은 직전 연봉 기준이라, 다음 FA 때 보상금 부담이 현실적으로 줄어듭니다. 계약 총액은 같습니다.',
     '능력이 뛰어난 젊은 프랜차이즈 스타는 AI 구단과 5~6년 장기계약(비FA 다년계약·FA)을 맺기도 합니다.',
