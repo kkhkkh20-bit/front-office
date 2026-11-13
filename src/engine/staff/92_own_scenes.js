@@ -68,7 +68,7 @@ const OSCN_BYE={win:'이번 주는 여기까지 합시다. 이기는 소식 들�
 const OREQ={win:'2주 동안 5할 승률',fan:'한 달 안에 팬 여론 2 이상 올리기'};
 function ownScnMem(){ const o=bossOf(G.user).own; return o.scn=o.scn||{d:-99,u:{},q:{}}; }
 function ownScnCtx(){ const X=mgrScnCtx(), t=team(G.user); X.mgr=G.mgr&&G.mgr[G.user]&&!G.mgr[G.user].interim?G.mgr[G.user]:null; X.etc=Math.round((G.spend&&G.spend.etc)||0);
-  try{ const g=goalStatus(); X.goal=g?g.rank.t:0; }catch(e){ X.goal=0; } X.trust=t.trust; return X; }
+  try{ const g=goalStatus(); X.goal=g&&g.rank.t<G.teams.length?g.rank.t:0; /* 순위 목표가 없는 창단 첫해는 묻지 않는다 */ }catch(e){ X.goal=0; } X.trust=t.trust; return X; }
 const ownTD=()=>({kind:'own',sm:ownScnMem(),mem:bossOf(G.user).own,sty:team(G.user).owner,qs:OQ,qm:(ownScnMem().q=ownScnMem().q||{}),fx:(fx,X)=>ownScnFx(fx,X)});
 /* 일주일에 한 번. 독립구단은 구단주가 없다 */
 function ownTalkStart(){ const t=team(G.user), M=ownScnMem(), s=t.owner, B=bossOf(G.user); if(t.indie)return {say:['독립구단이라 모기업 구단주가 없습니다.'],st:null};
