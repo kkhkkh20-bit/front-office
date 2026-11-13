@@ -5,7 +5,7 @@
 .cs-board{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-width:0}
 .cs-tm{display:flex;align-items:center;gap:6px;min-width:0}.cs-tm i{font-style:normal;font-size:13px;color:var(--muted);white-space:nowrap}.cs-tm b{font:700 32px var(--f-num);min-width:22px;text-align:center}
 .cs-mid{display:grid;justify-items:center;gap:2px}.cs-mid>b{font-size:12px;color:var(--team-hi,#4fa3ff)}
-.cs-cnt{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--dim)}.cs-cnt em{font-style:normal;font-weight:700;margin-left:3px}
+.cs-cnt{display:flex;align-items:center;gap:3px;font-size:var(--ui-micro);color:var(--dim)}.cs-cnt em{font-style:normal;font-weight:700;margin-left:3px}
 .cs-cnt i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2a333c;margin:0 1px}
 #cs-O i.on{background:#e0564f}.cs-cnt #cs-on{display:none}
 .cs-body{display:grid;grid-template-rows:auto minmax(0,1fr);justify-items:center;min-height:0;overflow:hidden}
@@ -28,7 +28,7 @@
 .cs-side{width:min(100%,620px);display:grid;grid-template-rows:auto minmax(0,1fr);gap:6px;padding:6px 10px;min-height:0}
 .cs-vs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .cs-p{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:5px 8px;color:inherit;text-align:left;cursor:pointer;min-width:0}
-.cs-p>span{display:grid;min-width:0}.cs-p i{font-style:normal;font-size:10px;color:var(--dim)}.cs-p b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-p em{font-style:normal;font-size:11px;color:var(--muted)}
+.cs-p>span{display:grid;min-width:0}.cs-p i{font-style:normal;font-size:var(--ui-micro);color:var(--dim)}.cs-p b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-p em{font-style:normal;font-size:11px;color:var(--muted)}
 .cs-fin{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
 .cs-log{overflow-y:auto;font-size:12.5px;color:var(--muted);min-height:0}.cs-log p{margin:0;padding:2px 0;display:flex;gap:8px}.cs-log p span{color:var(--dim);min-width:38px}.cs-log p.cur{color:var(--ink)}.cs-log p.run{color:#ffd24d}
 .cs-ctl{display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:#111920;border-top:1px solid var(--line);overflow-x:auto}
@@ -74,7 +74,7 @@
 
 
 @keyframes vxl{from{transform:translateX(-60%);opacity:0}}@keyframes vxr{from{transform:translateX(60%);opacity:0}}
-.cs-pm{display:grid;gap:1px;min-width:0}.cs-pr{display:flex;align-items:center;gap:6px;min-width:0}.cs-pr i{font-style:normal;font-size:10px;color:var(--dim)}.cs-pr b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-pm{display:grid;gap:1px;min-width:0}.cs-pr{display:flex;align-items:center;gap:6px;min-width:0}.cs-pr i{font-style:normal;font-size:var(--ui-micro);color:var(--dim)}.cs-pr b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cs-ps{font:600 12px var(--f-num);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-pd{font-size:11px;color:var(--muted);white-space:nowrap}
 .cs-ctl{display:grid!important;gap:6px}.cs-mode,.cs-btns{display:flex;gap:6px}.cs-mode button{min-height:32px!important;font-size:12.5px!important}.cs-mode button.on{background:var(--team,#2b5b8a);border-color:var(--team-hi,#4fa3ff);font-weight:700}
 @media (min-width:980px){.cs-mode,.cs-btns{justify-content:center}.cs-mode button{flex:0 0 auto;min-width:96px}}
@@ -137,4 +137,4 @@
 .cs-bso>div{display:flex;align-items:center;gap:5px}.cs-bso b{width:10px;font-size:11px;color:#c9d3dc;font-weight:800}
 .cs-bso span{display:flex;gap:4px}.cs-bso i{width:11px;height:11px;border-radius:50%;background:#2a333c;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
 #cs-B i.on{background:#3fd07f}#cs-S i.on{background:#f0c040}#cs-Ob i.on{background:#e0564f}
-@media (max-width:600px){ .cs-bso{padding:4px 5px;gap:2px}.cs-bso i{width:9px;height:9px}.cs-bso b{font-size:10px} }
+@media (max-width:600px){ .cs-bso{padding:4px 5px;gap:2px}.cs-bso i{width:9px;height:9px}.cs-bso b{font-size:var(--ui-micro)} }

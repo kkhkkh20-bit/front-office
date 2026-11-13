@@ -22,7 +22,7 @@ svg .isot{font-family:var(--f-ui);font-weight:700;fill:#f2f4f6;paint-order:strok
 svg.campus.iso .pso{fill:none;stroke:#ffffff1c;stroke-width:1.2}
 svg.campus.iso .plot.sel .pso{stroke:#ffd24d;stroke-width:3;fill:#ffd24d10}
 svg.campus.iso .cptag .pt{font-size:12px}
-svg.campus.iso .cpn{font-size:9.5px}
+svg.campus.iso .cpn{font-size:var(--ui-tiny)}
 /* 인형 동작: 방망이 휘두르기, 던지기(몸 기울임), 달리기(들썩임), 바벨 들기 */
 .cpp.sw .imb{transform-box:fill-box;transform-origin:0 100%;animation:imsw var(--ad,2.6s) var(--dl,0s) infinite}
 .cpp.th .imx{transform-box:fill-box;transform-origin:50% 100%;animation:imth var(--ad,2.6s) var(--dl,0s) infinite}

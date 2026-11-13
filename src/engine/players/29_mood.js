@@ -183,7 +183,7 @@ function talk(id,kind){
   if(d>0&&(kind==='praise'||kind==='ask')){ p.tkH=(p.tkH||[]).filter(x=>G.day-x<28); const n=p.tkH.length; const f=[1,.6,.35,.2][Math.min(n,3)]; const cap=TALK_MOR_CAP;
     let d2=Math.round(d*f*10)/10; if(p.mor>=cap)d2=0; else d2=Math.min(d2,cap-p.mor); if(d2>0)p.tkH.push(G.day);
     /* 줄어든 효과는 숫자 안내 대신 선수의 말투로 드러난다(사용자 11-13) */
-    if(d2<d){ if(kind==='praise')line=p.mor>=cap?'말씀은 감사합니다. 지금도 충분히 좋습니다.':n>=2?'자꾸 그러시면 민망합니다. 경기로 보여 드리겠습니다.':n?line+' 지난번에도 같은 말씀을 해 주셨습니다.':line; else if(n&&p.mor<cap)line+=n>=2?' 드릴 말씀은 지난번에 다 드렸습니다.':' 지난번에 말씀드린 그대로입니다.'; } d=d2; }
+    if(d2<d){ if(kind==='praise')line=p.mor>=cap?'말씀은 감사합니다. 지금도 충분히 좋습니다.':n>=2?'자꾸 그러시면 민망합니다. 경기로 보여 드리겠습니다.':n?line+' 지난번에도 같은 말씀을 해 주셨습니다.':line; } d=d2; }
   line=personalTalkReply(p,kind,line);if(d){const C=contactRecord('pl:'+p.id);C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
   return {msg:`${p.name}: "${line}"`,d};
 }

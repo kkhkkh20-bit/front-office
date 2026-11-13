@@ -9,7 +9,7 @@
 .fcmp td.fcl2{background:rgba(61,139,253,.22)}
 .fcmp td.fcl3{background:rgba(61,139,253,.5);color:#fff;font-weight:700}
 .fcmp td.fcg{font-weight:700}
-.fcmp sup{font-size:9px;color:var(--warn);margin-left:1px}
+.fcmp sup{font-size:var(--ui-tiny);color:var(--warn);margin-left:1px}
 .fcmp tr.me td{border-top:1px solid var(--team-hi);border-bottom:1px solid var(--team-hi)}
 .fcmp tr.me td:first-child{font-weight:700;color:var(--team-hi)}
 .fcmp tr.fav td,.fcmp tr.frk td{color:var(--muted);font-size:11px;background:none}
@@ -49,7 +49,7 @@
 }
 @media(min-width:1100px) and (max-width:1599px){
   .fvx{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) 300px}
-  .fvx-t{padding:6px 8px;gap:2px 4px}.fvx-n{font-size:12.5px}.fvx-lv{font-size:22px}.fvx-st{font-size:11px}.fvx-g{font-size:11.5px}.fvx-t>em{font-size:10.5px}
+  .fvx-t{padding:6px 8px;gap:2px 4px}.fvx-n{font-size:12.5px}.fvx-lv{font-size:22px}.fvx-st{font-size:11px}.fvx-g{font-size:11.5px}.fvx-t>em{font-size:var(--ui-micro)}
   .fvx-cmp .sf-r{grid-template-columns:78px minmax(0,1fr) 46px 30px}
 }
 /* 1366px(플레이테스트 3): 막대 값 '24,000'이 두 줄로 꺾이던 것, 신구장 카드 담장 거리·높이 글자가 옆 칸과 겹치던 것 */

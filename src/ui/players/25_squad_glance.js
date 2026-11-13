@@ -69,7 +69,7 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
   const PY=[0,1,2].map(planPay);
   const payT=`<div class="tw"><table class="pl-pay"><thead><tr><th></th>${PY.map((_,k)=>`<th>${Y+k}</th>`).join('')}</tr></thead><tbody>
     <tr><th>확정 연봉</th>${PY.map(x=>`<td>${money(x.fix)}</td>`).join('')}</tr>
-    <tr><th>예상(연봉 협상)</th>${PY.map((x,k)=>`<td>${k?money(x.est):'-'}</td>`).join('')}</tr>
+    <tr><th>연봉 협상 예상</th>${PY.map((x,k)=>`<td>${k?money(x.est):'-'}</td>`).join('')}</tr>
     <tr><th>FA 재계약 시</th>${PY.map((x,k)=>`<td>${k&&x.faN?`${money(x.fa)} <i class="muted">(${x.faN}명)</i>`:'-'}</td>`).join('')}</tr>
     <tr><th>샐러리캡</th>${PY.map(x=>`<td>${money(x.cap)}</td>`).join('')}</tr>
     <tr><th>예상 합계 · 캡 여유</th>${PY.map((x,k)=>{ const t=x.fix+(k?x.est:0); const r=x.cap-t; return `<td>${money(t)} · <b class="${r<0?'bad':''}">${r>=0?'여유 ':'초과 '}${money(Math.abs(r))}</b></td>`; }).join('')}</tr></tbody></table></div><p class="small muted">예상 합계 = 확정 + 연봉 협상 예상(FA 재계약은 뺌). 캡 산입 예외(신인 등)는 반영하지 않은 대략값입니다.</p>`;
@@ -77,7 +77,7 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
   /* 세대 구성 */
   const dom=ps.filter(p=>!p.foreign&&!(p.joinY>Y)); const st=[['성장기','~23세',p=>p.age<=23],['도약기','24~26세',p=>p.age>=24&&p.age<=26],['전성기','27~31세',p=>p.age>=27&&p.age<=31],['노장','32세~',p=>p.age>=32]];
   const gen=st.map(([l,a,f])=>{ const L=dom.filter(f); const g=L.filter(p=>ovr(p)>=52).length; return `<div class="gen-c"><b>${l}</b><i>${a}</i><span>${L.length}명</span><em>1군급 ${g}</em></div>`; }).join('');
-  return `<section class="card"><div class="row between"><h2 class="sec">선수단 계획</h2><span class="small muted">프런트 예상 배치(감독 실제 기용과 다를 수 있음) · 숫자는 그해 예상 능력</span></div>
+  return `<section class="card"><div class="row between"><h2 class="sec">선수단 계획</h2>${hiI('프런트가 예상한 배치입니다. 감독의 실제 기용과 다를 수 있습니다. 숫자는 그해 예상 능력입니다.')}</div>
     <div class="tw"><table class="pl-t"><thead><tr><th></th>${[0,1].map(k=>`<th>${Y+k} ${k===0?'(올해)':'(내년)'}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
     <p class="small ${holes.length?'':'good'} keep">${holes.length?`내년 보강이 필요한 자리: <b>${holes.join(' · ')}</b>`:'내년까지 모든 자리가 채워져 있습니다.'}</p>
     ${exL.length?`<p class="small keep">내년 계획에서 뺀 선수: ${exL.map(p=>esc(p.name)).join(', ')} <button class="tc-i" data-a="plExClear">되돌리기</button></p>`:''}
@@ -203,7 +203,7 @@ function lineupCard(tid){
   const bench=d.bench.map(p=>`<div class="lu sm" data-a="player" data-v="${p.id}" role="button" tabindex="0">${avImg(p)}<div class="lu-m"><b>${esc(p.name)}${condChip(p)}</b><span class="lu-p">${posChips(p)}</span><span class="lu-s">${bLine(p)}</span><span class="lu-u">${useText(p)}</span></div></div>`).join('');
   return `<section class="card"><div class="row between"><h2 class="sec">${tid===G.user?'감독 라인업':'예상 라인업'}</h2><span class="small muted">${m?esc(m.name)+' 감독 · ':''}${tid===G.user&&G.policy?POL[G.policy.k].l+' 지시 · ':''}다음 경기 기준</span></div>
     <div class="lus">${order.map(row).join('')}</div>
-    ${bench?`<div class="eyebrow">벤치 (대타·대수비·휴식일 선발)</div><div class="lus two">${bench}</div>`:''}
+    ${bench?`<div class="eyebrow">벤치</div><div class="lus two">${bench}</div>`:''}
     <p class="small muted">타순과 수비 위치는 감독이 타격·수비 적합도로 정합니다. 노란 위치는 본래 포지션이 아닌 자리입니다. 출장 기록은 이번 시즌 실제 선발 기록입니다.</p></section>`;
 }
 function staffCard(tid){

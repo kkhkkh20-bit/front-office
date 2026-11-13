@@ -89,7 +89,7 @@ function dataFM(){ const {y,cur,T}=dhTeams(), me=T.find(t=>t.tid===G.user), has=
   /* 왼쪽 아래: 주요 발견(월간 분석 보고와 같은 근거) */
   const lv=dataLv(G.user), F=[];
   if(has){ const dw=me.w-me.xw;
-    F.push(['전반적인 기록',`${me.w}승 ${me.l}패${me.d?` ${me.d}무`:''}, ${me.rk}위입니다. 득실차 ${sg(me.rd)}(${rk('rd')}위). 득점·실점으로 본 기대 승수는 ${me.xw.toFixed(1)}승으로 ${Math.abs(dw)<1.5?'실제 승수와 비슷합니다':`실제보다 ${Math.abs(dw).toFixed(1)}승 ${dw>0?'적습니다(접전에서 많이 이겼습니다)':'많습니다(접전에서 많이 졌습니다)'}`}.`]);
+    F.push(['전반적인 기록',`${me.w}승 ${me.l}패${me.d?` ${me.d}무`:''}, ${me.rk}위입니다. 득실차 ${sg(me.rd)}(${rk('rd')}위). 득점·실점으로 본 기대 승수는 ${me.xw.toFixed(1)}승으로 ${Math.abs(dw)<1.5?'실제 승수와 비슷합니다':`실제보다 ${Math.abs(dw).toFixed(1)}승 ${dw>0?'적습니다. 접전에서 많이 이겼습니다':'많습니다. 접전에서 많이 졌습니다'}`}.`]);
     F.push(['팀 공격',`팀 OPS ${f3(me.ops)}(${rk('ops')}위) · 경기당 득점 ${f2(me.rpg)}(${rk('rpg')}위) · 홈런 ${me.hr}개(${rk('hr')}위) · 도루 ${me.sb}개(${rk('sb')}위).`]);
     F.push(['팀 수비',`평균자책점 ${f2(me.era)}(${rk('era',1)}위) · WHIP ${f2(me.whip)}(${rk('whip',1)}위) · 수비 타구 처리율 ${f3(me.der)}(${rk('der')}위).`]); }
   try{ const SR=slotRanks(G.user), ks=PSLOTS.filter(k=>k!=='DH'), w=[...ks].sort((a,b)=>SR[b].rank-SR[a].rank).slice(0,2), s=[...ks].sort((a,b)=>SR[a].rank-SR[b].rank)[0];
