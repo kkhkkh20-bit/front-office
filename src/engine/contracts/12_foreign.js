@@ -121,9 +121,14 @@ function fFindNote(p,rp){ if(!fMineFind(p))return ''; const T=(rp&&rp.tools||[])
 /* 이 구단이 이 후보를 아는가 */
 function fKnows(tid,p){ return !p||p.fsrc!=='scout'||G.day>=(p.fpub||0)||(p.fknow||[]).includes(tid); }
 function fScoutLv(tid){ if(tid===G.user)return null; const sd=team(tid).scoutSd||6; return clamp((9-sd)/1.6,0,3); }
+/* 해외 스카우트 포지션 지정(커뮤니티 11-13 마스터쉐프): 지역마다 찾을 포지션을 정하면 그 지역 우리 발굴의 약 75%가 그 포지션이다 */
+const FFOC=[['all','전체'],['P','투수'],['SP','선발'],['RP','불펜'],['C','포수'],['IF','내야수'],['OF','외야수'],['1B','1루수'],['2B','2루수'],['3B','3루수'],['SS','유격수'],['LF','좌익수'],['CF','중견수'],['RF','우익수']];
+function fFocusMatch(p,f){ if(!p||!f||f==='all')return true; if(f==='P')return !!p.isP; if(f==='SP')return !!p.isP&&isSPr(p); if(f==='RP')return !!p.isP&&!isSPr(p); if(p.isP)return false; if(f==='IF')return ['1B','2B','3B','SS'].includes(p.pos); if(f==='OF')return ['LF','CF','RF'].includes(p.pos); return p.pos===f; }
+function fFocusOpts(f){ if(!f||f==='all'||R()>=.75)return {}; if(f==='P'||f==='SP'||f==='RP')return {isP:true,_f:f}; return {isP:false,pos:f==='IF'?pick(['1B','2B','3B','SS']):f==='OF'?pick(['LF','CF','RF']):f}; }
+function setIntlFocus(r,f){ if(!IREG[r]||!FFOC.some(x=>x[0]===f))return; (G.intlFocus=G.intlFocus||{})[r]=f; if(f==='all')delete G.intlFocus[r]; }
 /* 매주 스카우트 발굴: 우리는 스카우트망 지역에서, 다른 구단은 스카우트 수준에 따라 */
 function scoutFindWeek(silent){ const o=dobj(G.day); if(!(foreignOpen()||o.m===10||o.m===11))return; G.fmarket=G.fmarket||[]; if(G.fmarket.length>=70)return; const found=[];
-  if(!G.unemp){ for(const r of Object.keys(IREG)){ const lv=intlLv(r); const isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r); const ch=lv>=1?.13*lv+(isc?isc.skill*.04:0):.03; if(R()<ch){ const asia=IREG[r].asia; const q=newForeign(asia?'아시아':'용병',{src:'scout',finder:G.user,flv:lv+(isc?isc.skill/3:0),reg:r}); G.fmarket.push(q.id); found.push(q); } } try{ sisLeadWeek(found); }catch(e){} }
+  if(!G.unemp){ for(const r of Object.keys(IREG)){ const lv=intlLv(r); const isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r); const ch=lv>=1?.13*lv+(isc?isc.skill*.04:0):.03; if(R()<ch){ const asia=IREG[r].asia; const fo=fFocusOpts((G.intlFocus||{})[r]); const q=newForeign(asia?'아시아':'용병',{src:'scout',finder:G.user,flv:lv+(isc?isc.skill/3:0),reg:r,...(fo.isP!=null?{isP:fo.isP}:{}),...(fo.pos?{pos:fo.pos}:{})}); if(fo._f==='SP'){ q.r.sta=Math.max(q.r.sta,60); q.role='SP'; } else if(fo._f==='RP'){ q.r.sta=Math.min(q.r.sta,44); q.role='RP'; } G.fmarket.push(q.id); found.push(q); } } try{ sisLeadWeek(found); }catch(e){} }
   for(const t of G.teams){ if(t.id===G.user)continue; const lv=fScoutLv(t.id); if(R()<.12+lv*.05){ const q=newForeign(R()<.25?'아시아':'용병',{src:'scout',finder:t.id,flv:lv}); G.fmarket.push(q.id); } }
   void silent; /* 발굴 소식은 보내지 않는다: 외국인 시장에서 '우리 스카우트 발굴'로 표시하고 관찰 메모를 자세히 보여 준다 */
   return found; }

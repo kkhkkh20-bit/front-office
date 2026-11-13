@@ -134,7 +134,27 @@ function agPardon(pid){ const p=G.players[pid], r=p&&rpLive(p); if(!p||p.team!==
   return `${ag?`${ag.name} 에이전트`:p.name}: "사정은 알겠습니다. 두 달은 지켜보겠습니다. 그 뒤에도 그대로면 다음 계약 때 다시 이야기하겠습니다." (${ag?`에이전트 관계 ${ag.size==='big'?-3:-2} · `:''}기분 -2 · ${dmd(r.grace)}까지 약속 위반 기분 하락 절반${ag?', 에이전트 관계 감점 없음':''})`; }
 /* 거부권은 계약한 구단에 있는 동안 유효하다(우리 선수든 상대 선수든) */
 function ntcOf(ids){ return ids.map(id=>G.players[id]).find(p=>p&&hasNtc(p))||null; }
-const hasNtc=p=>ctOn(p)&&p.ntc>=ctSeason(); /* 스토브리그 뒤에는 다음 시즌 계약 기준: 끝난 해까지인 거부권이 11월 거래를 막았다(검수 11-09zzb) */
+const hasNtc=p=>ctOn(p)&&p.ntc>=ctSeason();
+/* 거부권 선수의 동의(커뮤니티 11-13 마스터쉐프): 우리 선수가 특정 구단행에 동의하면 14일 동안 그 구단과의 트레이드에서만 거부권을 쓰지 않는다 */
+const ntcFor=(p,tid)=>hasNtc(p)&&!(p.ntcOk&&p.ntcOk.tid===tid&&p.ntcOk.until>=G.day);
+function ntcOfFor(ids,tid){ return ids.map(id=>G.players[id]).find(p=>p&&ntcFor(p,tid))||null; }
+/* 동의 확률: 충성심이 높으면 남고 싶어 하고, 야망이 크거나 기분이 나쁘면 떠날 마음이 있다. 가서 주전이 되거나 우승 경쟁 구단·고향 구단이면 끌린다. 지켜지지 않은 약속이 있으면 구단 말을 믿지 않는다. 포기 대가(연봉의 30%)를 주면 오른다 */
+const NTC_BONUS_F=.3;
+function ntcAskOdds(p,tid,bonus){ initPers(p); const s=p.pers; let x=.3-(s.loy-10)*.035+(s.amb-10)*.02+(60-(p.mor??60))/100; const why=[];
+  let reg=false; try{ reg=isRegular(p); }catch(e){} if(!reg){ x+=.12; why.push('여기선 출전 기회가 적다'); } else x-=.08;
+  try{ const L=leagueSlots()[tid], sl=L&&L[pSlot(p)]; if(sl&&sl.v!=null&&ovr(p)>sl.v+1){ x+=.12; why.push('그 팀에선 주전'); } }catch(e){}
+  try{ if(teamCtx(team(tid)).contend){ x+=.1; why.push('우승 경쟁 구단'); } }catch(e){}
+  try{ if(homeTie(p,tid)){ x+=.15; why.push('고향 구단'); } }catch(e){}
+  const pr=p.grv&&p.grv.prom||0; if(pr>0){ x-=Math.min(.2,pr*.02); why.push('지켜지지 않은 약속'); }
+  if(bonus){ x+=.2; why.push('포기 대가'); }
+  return {p:clamp(x,.03,.92),why}; }
+function ntcAsk(id,tid,bonus){ const p=G.players[+id]; tid=+tid; if(!p||p.team!==G.user||G.unemp)return '우리 선수가 아닙니다.'; if(!hasNtc(p))return `${p.name}은(는) 거부권이 없습니다.`; if(!team(tid)||tid===G.user)return '상대 구단을 먼저 고르세요.';
+  if(!ntcFor(p,tid))return `${p.name}은(는) 이미 ${tshort(tid)}행에 동의했습니다(${dmd(p.ntcOk.until)}까지).`;
+  const A=p.ntcAsk=p.ntcAsk||{}; if(A[tid]!=null&&G.day-A[tid]<30)return `${p.name}에게는 ${tshort(tid)}행을 ${dmd(A[tid])}에 이미 물었습니다. 30일 뒤에 다시 물을 수 있습니다.`;
+  const cost=bonus?round5(Math.max(MIN_SAL,p.sal*NTC_BONUS_F)):0; if(cost&&spendable(G.user)<cost)return `포기 대가 ${money(cost)}을(를) 낼 돈이 부족합니다(${spendTxt()}).`;
+  const o=ntcAskOdds(p,tid,!!bonus); A[tid]=G.day;
+  if(R()<o.p){ if(cost){ spendPay(cost); G.spend.etc=(G.spend.etc||0); story(p,`${G.year} 트레이드 거부권 포기 대가 ${money(cost)}`,'move'); } p.ntcOk={tid,until:G.day+14}; return `${p.name}: "${tshort(tid)}이라면 가겠습니다." ${dmd(G.day+14)}까지 ${tname(tid)}과의 트레이드에 동의했습니다.${cost?` 포기 대가 ${money(cost)}을(를) 지급했습니다.`:''}`; }
+  p.mor=clamp((p.mor??60)-3,0,100); return `${p.name}: "${tshort(tid)}행은 생각이 없습니다." 거부권을 지키겠다고 합니다. (기분 -3${o.why.length?` · 고려한 점: ${o.why.join(', ')}`:''})`; } /* 스토브리그 뒤에는 다음 시즌 계약 기준: 끝난 해까지인 거부권이 11월 거래를 막았다(검수 11-09zzb) */
 /* 계약 금액 표기 통일: 그 시즌 현금 지출(연봉 + 그 회계연도에 준 계약금) · 보장 총액(계약금 + 연봉×기간) · 연평균(상한 반영 = 연봉 + 계약금/기간) */
 function ctMoney(p){ if(!p||!p.faC||!ctOn(p))return null; const c=ctInfo(p); const yrs=c?c.tot:Math.max(1,p.yrs||1); const sy=ctSeason(); const B=p.capB&&p.capB.until>=sy?p.capB:null;
   const bTot=p.ctB?p.ctB.b:B?(B.b??B.a*yrs):0; const first=B?B.until-yrs+1:sy-(c?c.k-1:0); /* 계약금은 상한 반영 기간이 끝나도 계약 총액에 남는다 */
