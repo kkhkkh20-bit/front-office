@@ -255,3 +255,17 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 @media(max-width:700px){.free-table{min-width:0;width:100%}.free-table th:nth-child(4),.free-table td:nth-child(4),.free-table th:nth-child(6),.free-table td:nth-child(6){display:none}.free-table th:last-child,.free-table td:last-child{position:static}.free-table .free-player{min-width:118px;max-width:140px;width:auto}.free-table th,.free-table td{padding:8px 6px}.free-action .btn{min-width:0;padding-inline:6px;font-size:12px}}
 @media(max-width:700px){.free-table{font-size:12px}.free-table .free-player{max-width:112px;min-width:104px}.free-table .pm-n .av{width:24px;height:24px}.free-action .btn{white-space:nowrap;font-size:11px;padding:5px}.free-table th,.free-table td{padding:7px 4px}}
 @media(max-width:700px){.free-table td.free-action{width:auto;min-width:58px}.free-table td.free-action .btn{white-space:nowrap;word-break:keep-all}}
+/* 플레이 테스트 11-13: FA 예정자 '자격' 열이 글자마다 줄바꿈되고 '신청 전망'이 잘림, 외국인 후보 관찰·협상 버튼이 오른쪽에서 잘림 */
+#app .tf-up .tf-t td.wrap{min-width:7.5em;white-space:normal;word-break:keep-all}
+#app .tf-up .tf-t td:last-child,#app .tf-up .tf-t th:last-child{white-space:nowrap}
+#app .foreign-candidates .tf-t td:last-child{white-space:nowrap;min-width:4.5em;padding-left:4px;padding-right:4px}
+#app .foreign-candidates .tf-t td:last-child .tc-i,#app .foreign-candidates .tf-t td:last-child .btn{display:block;width:100%;margin:2px 0}
+#app .foreign-candidates .sf-tw,#app .tf-up .sf-tw{overflow-x:auto}
+/* 플레이 테스트 11-13: 스폰서 표가 가로로 밀려 '자리' 열이 잘림 → 자리 열 고정, 좁은 화면은 줄바꿈 */
+#app .spt-w .spt th:first-child,#app .spt-w .spt td:first-child{position:sticky;left:0;z-index:1;background:var(--panel,var(--bg));min-width:7.5em}
+#app .spt-w .spt td{white-space:normal;word-break:keep-all}
+#app .tf-up .tf-t td:nth-child(5){max-width:9em;white-space:normal;word-break:keep-all}
+#app .tf-up .tf-t td.wrap{min-width:6em}
+#app .foreign-candidates .tf-t td:nth-child(3),#app .foreign-candidates .tf-t td:nth-child(5){max-width:9em;white-space:normal;word-break:keep-all}
+#app .foreign-candidates .tf-t td:first-child{min-width:11em;word-break:keep-all}
+#app .foreign-candidates .tf-t td:nth-child(5) *{white-space:normal!important}

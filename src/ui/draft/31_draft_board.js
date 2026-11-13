@@ -81,6 +81,7 @@ function draftBoard(){
       <div class="row">${btns}</div>
       ${restBox}${restOn}${feed}
     </section>`;
+    if(!(G.scouts||[]).some(s=>(s.role||'am')==='am'))head=`<p class="note warn" role="status">아마추어 스카우트가 없어 후보 잠재력이 모두 '?'입니다. <button class="btn small" data-a="go" data-v="staff:scouts">스카우트 배치</button></p>`+head; /* 플레이 테스트 11-13 */
     if(d.ruleMsg)head=`<p class="note warn" role="status">${esc(d.ruleMsg)}</p>`+head;
   } else {
     const left=Math.max(0,G.cal.draft-G.day);

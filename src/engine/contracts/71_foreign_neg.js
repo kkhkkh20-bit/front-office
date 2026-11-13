@@ -58,7 +58,7 @@ function foOffer(id,g,i,rel){ rel=!!rel; const q=G.players[id]; if(!q||q.team!=n
   const okT=(g,ii)=>{ if(g==null)return null; const a0=q.ask; q.ask=g+ii; const e=foreignCheck(G.user,q); q.ask=a0; return e?null:g; }; /* 구단 외국인 총액 한도로 다시 막히는 금액은 안내하지 않는다(검수 11-09s) */
   const ng=okT(foNeedG(q,i,target,me.f),i), ng0=i>0?okT(foNeedG(q,0,target,me.f),0):null;
   const why=best&&best.v>floor?`${tshort(best.tid)} 조건이 더 좋습니다`:'요구 조건에 못 미칩니다';
-  const pfT=`${q.name}은(는) ${FO_PREF[me.pref]}합니다.`;
+  const pfT=`${q.name}은(는) ${String(FO_PREF[me.pref]||'').replace(/원함$/,'원')}합니다.`;
   const how=ng!=null?`${i>0?'인센티브를 그대로 두면 ':''}보장 ${usdT(ng)}(${money(ng)}) 이상이면 사인하겠다고 합니다.${ng0!=null&&ng0<ng+i?` 인센티브를 빼면 보장 ${usdT(ng0)}로도 됩니다.`:''}`:ng0!=null?`보장을 늘리고 인센티브를 줄여야 합니다. 인센티브 없이 보장 ${usdT(ng0)}면 사인합니다.`:`상한 ${Math.round(cap/USD)}만 달러와 남은 외국인 총액 한도 안에서는 ${best?tshort(best.tid)+' 조건을':'요구 조건을'} 넘기 어렵습니다. 우리 구단 매력이 부족합니다.`;
   return {ok:false,need:ng,msg:`${q.name} 측: ${why}. ${how} ${riv} ${pfT}${N.dl?` ${dmd(N.dl)}까지 답을 기다려 준다고 합니다.`:''}`}; }
 /* 계약 반영: 보장은 연봉, 인센티브는 계약 옵션(규정 출전을 채우면 시즌 결산에 지급) */
