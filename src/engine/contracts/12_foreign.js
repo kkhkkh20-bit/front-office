@@ -107,8 +107,8 @@ function fSortBy(k){ const st=p=>{ const h=p.prev; if(!h)return -9; return p.isP
   return ({stat:(a,b)=>st(b.p)-st(a.p),ask:(a,b)=>a.p.ask-b.p.ask,age:(a,b)=>a.p.age-b.p.age})[k]||((a,b)=>b.fs.score-a.fs.score); }
 /* 우리만 아는 발굴 후보가 곧 다른 구단에 알려질 때·알려졌을 때 알린다(기다리는 동안 기회가 어떻게 바뀌는지) */
 function fPubDaily(){ if(G.unemp)return; for(const id of (G.fmarket||[])){ const p=G.players[id]; if(!p||p.team!=null||!fMineFind(p)||p.fpub==null||!fNewsOk(p))continue; const d=p.fpub-G.day;
-    if(d===3)mail('스카우트팀',`독점 발굴 후보 공개 임박: ${p.name}`,`우리 스카우트가 찾은 ${p.name}(${posLabel(p)}, ${p.age}세)을 다른 구단도 3일쯤 뒤(${dmd(p.fpub)})에 알게 됩니다. 그 전에 계약하면 경쟁 없이 협상할 수 있습니다.`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
-    if(d===0)mail('스카우트팀',`${p.name} 정보가 경쟁 구단에 퍼졌습니다`,`이제 다른 구단도 ${p.name}을(를) 압니다. 관심 구단이 생기면 몸값이 오를 수 있습니다.`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); } }
+    if(d===3){ const xm=mail('스카우트팀',`독점 발굴 후보 공개 임박: ${p.name}`,`우리 스카우트가 찾은 ${p.name}(${posLabel(p)}, ${p.age}세)을 다른 구단도 3일쯤 뒤(${dmd(p.fpub)})에 알게 됩니다. 그 전에 계약하면 경쟁 없이 협상할 수 있습니다.`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); if(xm)xm.read=true; }
+    if(d===0){ const xm=mail('스카우트팀',`${p.name} 정보가 경쟁 구단에 퍼졌습니다`,`이제 다른 구단도 ${p.name}을(를) 압니다. 관심 구단이 생기면 몸값이 오를 수 있습니다.`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); if(xm)xm.read=true; } } }
 /* 예상 종합 65 이하 후보는 소식함에 알리지 않는다: 좋은 선수가 나와야 소식(사용자 11-08) */
 const fNewsOk=p=>{ try{ return (fScout(p).mid??0)>65; }catch(e){ return false; } };
 function fMineFind(p){ return !!(p&&p.fsrc==='scout'&&(p.fknow||[]).includes(G.user)&&p.fknow[0]===G.user); }

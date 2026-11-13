@@ -179,7 +179,7 @@ function detailPageSync(el){
     sh.classList.add('detail-page'); sh.setAttribute('role','region'); sh.removeAttribute('aria-modal');
     const scrim=sh.closest('.scrim'); if(scrim){scrim.classList.add('detail-page-wrap');scrim.removeAttribute('data-a');}
     const bar=document.createElement('nav');bar.className='detail-navigation';bar.setAttribute('aria-label','상세 화면 이동');
-    bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로 · Esc</span>';
+    bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로'+(touchDev()?'':' · Esc')+'</span>';
     if(!cast&&(sh.matches('.ps,.psh'))){const nav=relNav(peopleCurrent());if(nav){bar.classList.add('people-navigation');bar.insertAdjacentHTML('beforeend',nav);}}
     { const qa=sh.querySelector('.pf-topnav .qacts'); if(qa){ const c=qa.cloneNode(true); c.classList.add('detail-acts'); bar.appendChild(c); } } /* PC(FM 탭)는 머리 줄(pf-topnav)을 숨기므로 면담·시장 가치·트레이드·매물·연장 버튼을 뒤로 줄 오른쪽에 둔다 */
     if(!cast)sh.prepend(bar);

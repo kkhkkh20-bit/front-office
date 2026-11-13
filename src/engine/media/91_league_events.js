@@ -6,9 +6,10 @@ function rivalPair(a,b){const ids=[+a,+b].sort((x,y)=>x-y);return ids.join(':');
 function rivalAfterGame(day,h,a,g,post){
   if(!g||!g.score||h===a)return;
   const S=G.rivalries=G.rivalries||{pairs:{}},key=rivalPair(h,a);
-  const named=key==='6:7'?'달빛대전':['0:6','0:8','6:8'].includes(key)?'엘롯기 맞대결':key==='0:1'?'서울 더비':'';
+  const named=key==='6:7'?'달빛대전':['0:6','0:8','6:8'].includes(key)?'전국구 맞대결':key==='0:1'?'서울 더비':''; /* 실존 구단 별칭(엘롯기)은 쓰지 않는다(플레이테스트 4 #18) */
   const r=S.pairs[key]=S.pairs[key]||{a:Math.min(h,a),b:Math.max(h,a),label:named,games:0,close:0,post:0,seasons:[],wins:{},seen:[]};
   const eid=day+':'+h+':'+a+':'+(post?'p':'r')+':'+(g.rvN=g.rvN||(G.rvSeq=(G.rvSeq||0)+1));if(r.seen.includes(eid))return; /* 경기마다 번호: 같은 날 두 경기(더블헤더)도 따로 센다(검수 11-09zq) */
+  if(r.label==='엘롯기 맞대결')r.label='전국구 맞대결'; /* 예전 세이브 */
   r.seen.push(eid);if(r.seen.length>120)r.seen.shift();r.games++;
   if(!r.seasons.includes(G.year))r.seasons.push(G.year);
   const margin=g.score.h-g.score.a;if(Math.abs(margin)<=2)r.close++;
@@ -20,8 +21,8 @@ function rivalAfterGame(day,h,a,g,post){
   if(born){r.emerged=day;r.label=team(r.a).city+'·'+team(r.b).city+' 라이벌';}
   if(!r.label||(!born&&r.lastNews!=null&&day-r.lastNews<28))return;
   const title=born?`${r.label}, 맞대결이 쌓여 만든 새 이야기`:`${r.label}… ${tshort(h)} ${g.score.h}:${g.score.a} ${tshort(a)}`;
-  const intro=born?`${r.seasons.length}시즌 동안 ${r.games}번 만나 ${r.close}번의 두 점 차 이내 승부와 ${r.post}번의 포스트시즌 맞대결을 남겼습니다. 팬들이 두 팀의 다음 대결을 기다립니다.`:key==='6:7'?'광주와 대구가 만나는 달빛대전입니다.':named==='엘롯기 맞대결'?'서울·부산·광주 구단을 함께 묶어 부르는 팬 문화에서 가져온 맞대결입니다.':team(r.a).city===team(r.b).city?'같은 연고지 두 구단의 맞대결입니다.':`${team(r.a).city}·${team(r.b).city} 두 구단이 이어 온 맞대결입니다.`; /* 연고지가 다르면 '같은 연고지'라고 하지 않는다(검수 11-06) */
-  const it=news('경기',title,`${intro}\n이번 경기 ${tname(h)} ${g.score.h}:${g.score.a} ${tname(a)}. 이 게임에서 집계한 맞대결은 ${r.games}경기입니다.`,0,{tid:[h,a].includes(G.user)?G.user:h});
+  const intro=born?`${r.seasons.length}시즌 동안 ${r.games}번 만나 ${r.close}번의 두 점 차 이내 승부와 ${r.post}번의 포스트시즌 맞대결을 남겼습니다. 팬들이 두 팀의 다음 대결을 기다립니다.`:key==='6:7'?'광주와 대구가 만나는 달빛대전입니다.':named==='전국구 맞대결'?'서울·광주·부산, 전국에 팬을 둔 인기 구단끼리 만났습니다. 원정 관중석까지 들어찹니다.':team(r.a).city===team(r.b).city?'같은 연고지 두 구단의 맞대결입니다.':`${team(r.a).city}·${team(r.b).city} 두 구단이 이어 온 맞대결입니다.`; /* 연고지가 다르면 '같은 연고지'라고 하지 않는다(검수 11-06) */
+  const it=news('경기',title,`${intro}\n이번 경기 ${tname(h)} ${g.score.h}:${g.score.a} ${tname(a)}. 두 구단은 지금까지 ${r.games}번 맞붙었습니다.`,0,{tid:[h,a].includes(G.user)?G.user:h});
   if(it)r.lastNews=day;
 }
 function allStarPool(y){

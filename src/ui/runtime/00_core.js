@@ -113,7 +113,7 @@ function writeSlot(n,data,info,exp){ const own=n===curSlot()&&exp==null; if(own)
   const confl=()=>{ if(own){ if(!SAVE_CONFL){ try{ toast('다른 탭(창)에서 이 슬롯을 더 최근에 저장했습니다. 이 탭의 진행은 저장하지 않습니다. 남기려면 설정의 "빈 슬롯에 따로 저장"을, 최신 저장을 보려면 처음 화면의 이어하기를 누르세요.'); }catch(e){} } SAVE_CONFL=true; SAVE_ERR='다른 탭(창)에서 이 슬롯을 더 최근에 저장해, 이 탭의 진행은 저장하지 않았습니다. 이 탭 진행을 남기려면 "빈 슬롯에 따로 저장"이나 파일로 내보내기를 하세요.'; } else SAVE_ERR=`슬롯 ${n}에 다른 탭(창)이 그사이 저장해 쓰지 않았습니다.`; return false; };
   const full=()=>{ let mb=''; try{ mb=` (지금 모든 슬롯 합계 약 ${(SLOT_IDS.reduce((x,k)=>x+slotSize(k),0)/1024).toFixed(1)}MB)`; }catch(e){} SAVE_ERR=`브라우저 저장 공간이 가득 차 저장하지 못했습니다${mb}. 저장 공간은 슬롯마다 따로가 아니라 모든 슬롯이 함께 쓰므로, 빈 슬롯이 있어도 전체가 차면 저장되지 않습니다. 안 쓰는 슬롯을 지우거나 내보내기로 백업한 뒤 지우세요.`; return false; }; /* 커뮤니티 11-12: 빈 슬롯이 있는데 공간 부족이라 나와 헷갈림 */
   if(own&&SAVE_CONFL)return confl();
-  try{ const m=meta(), old=m.slots[n], act0=m.active, b0=sbGet(n); if(revOf(m,n)!==exp)return confl();
+  try{ const m=meta(), old=m.slots[n], act0=m.active, b0=sbGet(n); if(old&&old.lock){ SAVE_ERR=`슬롯 ${n}은(는) 보관 슬롯이라 덮어쓰지 않습니다. 보관을 풀어야 쓸 수 있습니다.`; return false; } /* 보관 슬롯은 자동 저장·덮어쓰기가 절대 쓰지 않는다(플레이테스트 3) */ if(revOf(m,n)!==exp)return confl();
     info=Object.assign({},info,{rev:revNext(exp)}); if(old&&old.idb&&SB.has(n))info.idb=true; /* 본문이 IndexedDB에 있으면 표시를 이어 간다(공간이 나면 sbSet이 지운다) */ if(old&&old.memo!=null&&info.memo==null&&!(own&&SLOT_NEW))info.memo=old.memo; /* 슬롯 메모는 같은 게임을 저장할 때만 남긴다(검수 11-09zr #17: 새 게임·가져온 백업에 이전 메모가 남음) */
     m.slots[n]=info; if(own)m.active=n; /* 이 탭이 저장에 성공한 슬롯을 이어하기 대상으로(검수 11-09 #9: 첫 저장 전에 활성으로 바꾸면 실패 때 이어하기가 사라짐) */
     if(!setMeta(m)){ SAVE_ERR='저장 목록을 기록하지 못했습니다. 저장 공간을 확인한 뒤 다시 저장하세요.'; return false; }
@@ -124,7 +124,7 @@ function writeSlot(n,data,info,exp){ const own=n===curSlot()&&exp==null; if(own)
     const mine=revOf(meta(),n)===info.rev; if(!mine)return confl(); if(sbGet(n)!==data){ undo(); return full(); }
     if(own){ SLOT_REV=info.rev; SLOT_NEW=false; } SAVE_ERR=''; return true; }catch(e){ return full(); } }
 /* 목록 항목을 지금 본문 기준으로 고친다(판번호 r이 그대로일 때만). 본문이 없으면 항목을 뺀다 */
-function slotFix(n,r){ try{ const m=meta(); if(revOf(m,n)!==r)return; const h=unpack(sbGet(n)), memo=(m.slots[n]||{}).memo; if(h)m.slots[n]=Object.assign(slotInfoOf(h),{rev:r},memo!=null?{memo}:{}); else delete m.slots[n]; setMeta(m); }catch(e){} }
+function slotFix(n,r){ try{ const m=meta(); if(revOf(m,n)!==r)return; const h=unpack(sbGet(n)), memo=(m.slots[n]||{}).memo; if(h)m.slots[n]=Object.assign(slotInfoOf(h),{rev:r},memo!=null?{memo}:{},m.slots[n]&&m.slots[n].lock?{lock:true}:{}); else delete m.slots[n]; setMeta(m); }catch(e){} }
 /* 바뀐 것이 없으면 쓰지 않는다: 진행 없이 처음 화면으로 나간 탭이 판번호를 올려 다른 탭 저장을 막지 않게(검수 11-09 #7) */
 let _svJ=null, _svN=null, _svWarn=false; function svMark(){ _svJ=G?prepG():null; _svN=curSlot(); }
 function svSame(n,j){ return j===_svJ&&n===_svN&&slotHas(n); }
@@ -197,6 +197,9 @@ function linkify(h,pp){ if(!G||!h)return h; const L=linkMap(); return h.replace(
 const JOSA_RE=/을\(를\)|이\(가\)|은\(는\)|와\(과\)|과\(와\)|\(으\)로|\(이\)라/g;
 /* 키보드 안내 '(Space)' 등은 터치 기기에서 숨긴다(플레이 테스트 11-13) */
 const kbdHint=k=>typeof matchMedia==='function'&&matchMedia('(hover:none),(pointer:coarse)').matches?'':` (${k})`;
+/* 안내 글의 키보드 표현을 기기에 맞춘다: 터치 기기에서는 스페이스바 대신 '진행하기' 버튼 */
+const touchDev=()=>typeof matchMedia==='function'&&matchMedia('(hover:none),(pointer:coarse)').matches;
+function devTxt(s){ s=String(s||'').replace(/한 경기씩 보려면 '1경기 진행'을 누르세요\./g,"하루씩 넘기려면 '진행하기' 옆의 '하루 진행'을, 시즌 중 우리 경기를 직접 보려면 그 자리의 '중계'를 누르세요.").replace(/'1경기 진행'/g,"'하루 진행'"); if(!touchDev())return s; return s.replace(/스페이스바\(또는 ([^)]*)\)/g,'$1').replace(/스페이스바로/g,"'진행하기' 버튼으로").replace(/스페이스바만/g,"'진행하기' 버튼만").replace(/스페이스바/g,"'진행하기' 버튼"); }
 function josaTail(s){ for(let i=s.length-1;i>=0;i--){ const c=s[i]; if(c===')'){ let d=1; for(i--;i>=0;i--){ if(s[i]===')')d++; else if(s[i]==='('&&--d===0)break; } continue; } if(/["'”’」』\]\s.·]/.test(c))continue; return c; } return ''; }
 function josaPick(prev,j){ const c=josaTail(prev); let jong=-1; if(/[가-힣]/.test(c))jong=(c.charCodeAt(0)-0xAC00)%28; else if(/[0-9]/.test(c))jong=[1,1,0,1,0,0,1,1,1,0][+c]?8:0; else if(/[A-Za-z]/.test(c))jong=/[lmnr]/i.test(c)?4:0; else return null;
   const has=jong>0; switch(j){ case '을(를)':return has?'을':'를'; case '이(가)':return has?'이':'가'; case '은(는)':return has?'은':'는'; case '와(과)': case '과(와)':return has?'과':'와'; case '(으)로':return has&&jong!==8?'으로':'로'; case '(이)라':return has?'이라':'라'; } return null; }
@@ -205,7 +208,9 @@ function josaFix(root){ if(!root)return; const W=document.createTreeWalker(root,
     if(v&&v.trim())prev=(prev+n.nodeValue).slice(-60); } }
 /* 화면을 그린 뒤, 누를 수 없는 글자 속 이름을 찾아 링크로 바꾼다 */
 const NOLINK='a,button,[data-a],select,option,textarea,input,svg,script,style,.nolink,.kbar,.seg,.chips,.bnav,.sbar,.cast,label,.tcd';
-function autoLink(root){ try{ josaFix(root); }catch(e){} if(!G||!root||UI.cast)return; const L=linkMap(); const W=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{ const v=n.nodeValue; if(!v||v.length<2||!/[가-힣A-Za-z]/.test(v))return NodeFilter.FILTER_REJECT; const pe=n.parentElement; if(!pe||pe.closest(NOLINK))return NodeFilter.FILTER_REJECT; return L.re1.test(v)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT; }});
+/* 표 머리 WAR·OPS에 용어 풀이(마우스를 올리면). 정렬 버튼을 막지 않게 title만 단다(플레이테스트 4 #14) */
+function glossTh(root){ if(typeof GLOSS==='undefined')return; for(const th of root.querySelectorAll('th')){ if(th.title)continue; const t=th.textContent.trim(); if(t==='WAR'||t==='OPS')th.title=GLOSS[t]; } }
+function autoLink(root){ try{ josaFix(root); }catch(e){} try{ glossTh(root); }catch(e){} if(!G||!root||UI.cast)return; const L=linkMap(); const W=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{ const v=n.nodeValue; if(!v||v.length<2||!/[가-힣A-Za-z]/.test(v))return NodeFilter.FILTER_REJECT; const pe=n.parentElement; if(!pe||pe.closest(NOLINK))return NodeFilter.FILTER_REJECT; return L.re1.test(v)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT; }});
   const list=[]; let n; while((n=W.nextNode()))list.push(n); for(const t of list){ const sp=document.createElement('span'); const pe=t.parentElement; sp.innerHTML=linkify(esc(t.nodeValue),!!(pe&&(pe.closest('[data-person]')||(UI.tab==='staff'&&!pe.closest('[data-player-ctx]'))))); const f=document.createDocumentFragment(); while(sp.firstChild)f.appendChild(sp.firstChild); t.parentNode.replaceChild(f,t); } }
 const lk=t=>linkify(esc(t));
 /* 창단 드래프트 등급: 숫자 대신 색 구간만. 우리 스카우트 추정이라 틀릴 수 있다 */

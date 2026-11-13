@@ -53,7 +53,7 @@ function stbl(id,cols,rows,o){
 }
 
 /* ---------- 리그: 기록 ---------- */
-function recView(){
+function recView(){ if(spoilG()&&period()==='season')return `<section class="card"><h2 class="sec">기록</h2><p class="small">보던 중계를 마치면 오늘 경기 기록까지 반영해 보여 드립니다. 지금 기록을 보면 중계 중인 경기 결과가 드러납니다.</p>${UI.castRet&&UI.castRet.parked?'<button class="btn small primary" data-a="castResume">중계 이어 보기</button>':''}</section>`; /* 플레이테스트 4 #1 */
   const per=period(); const y=per==='pre'||per==='off'?(per==='off'?G.year:G.year-1):G.year;
   const seg=UI.lrec||'top';
   const head=`<div class="seg">${[['top','부문별 1위'],['bat','타자 기록'],['pit','투수 기록'],['team','팀 기록']].map(([k,l])=>`<button data-a="lrec" data-v="${k}" class="${seg===k?'on':''}">${l}</button>`).join('')}</div>`;
@@ -250,7 +250,7 @@ function wireView(){ if(fmOn())return wireFm(); const all=G.wire||[]; const ks=[
   return csec('리그 소식',kc+(W.length?(()=>{ const P=pager('wire',W.slice(0,120),20); return `<div class="list">${P.items.map(w=>`<div class="item wa" ${pAttr(w.ref)||'style="cursor:default"'}>${w.tid!=null?badge(w.tid,24):`<span class="av ini">${ASSOC.s}</span>`}<span class="nm">${lk(w.t)}</span><span class="sub"><span class="pill">${esc(w.k)}</span> ${dsh(w.d)}</span></div>`).join('')}</div>${P.bar}`; })():'<p class="small muted">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>')); }
 /* 우리 구단 기사(구단 > 팬·언론) */
 function ourNewsView(){ G.newsSeen=Math.max(newsSeen(),...(G.news||[]).map(n=>n.id||0));
-  const kinds=[...new Set((G.news||[]).map(n=>n.k).filter(Boolean))]; const ns=(G.news||[]).filter(n=>!UI.nk||n.k===UI.nk);
+  const own=(G.news||[]).filter(n=>!n.oth); /* 다른 구단 기사는 빼고 우리 구단 기사만(플레이테스트 4 #18) */ const kinds=[...new Set(own.map(n=>n.k).filter(Boolean))]; const ns=own.filter(n=>!UI.nk||n.k===UI.nk);
   const kc=`<div class="chips"><button data-a="nk" data-v="" class="${!UI.nk?'on':''}">전체</button>${kinds.map(k=>`<button data-a="nk" data-v="${esc(k)}" class="${UI.nk===k?'on':''}">${esc(k)}</button>`).join('')}</div>`;
   return csec('우리 구단 기사',kc+(ns.length?(()=>{ const P=pager('news'+(UI.nk||''),ns.slice(0,120),8); return `<div class="newslist">${P.items.map(n=>newsItem(n,true)).join('')}</div>${P.bar}`; })():'<p class="small muted">기사가 없습니다.</p>')); }
 function newsView(){ return ourNewsView(); }

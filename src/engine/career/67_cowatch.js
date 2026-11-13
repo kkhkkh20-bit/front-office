@@ -98,14 +98,15 @@ const CW_LIVE={
   flip:{win:'됐어, 뒤집었어! 이래야지.',profit:'이런 경기가 관중을 다시 부르지.',pr:'방금 장면은 내일 기사 첫머리감이오.'},
   lead:{win:'앞서 나가는군. 이대로 끝냅시다.',profit:'분위기 좋소. 관중석이 들썩이는군.',pr:'중계 화면에 우리 응원석이 잡히겠군.'},
   tie:{win:'따라붙었어. 아직 모르지.',profit:'원점이군. 끝까지 보고 가야겠소.',pr:'이런 접전이 화제가 되지.'},
-  lost:{win:'어허, 뒤집혔잖소. 마운드가 왜 이래요?',profit:'관중들 표정이 굳는군.',pr:'이 장면이 하이라이트로 계속 돌겠군.'},
+  lost:{win:'어허, 뒤집혔잖소. 마운드가 왜 이래요?',profit:'관중들 표정이 굳는군.',pr:'역전당하는 장면이 상대 하이라이트로 계속 돌겠군. 체면이 말이 아니오.'},
+  behind:{win:'먼저 내줬군. 아직 갈 길이 멀지만 기분은 별로요.',profit:'선취점을 내주니 관중석이 조용하군.',pr:'상대 쪽 장면이 하이라이트 첫머리에 나오겠군.'}, /* 동점에서 먼저 내준 것은 '뒤집혔다'가 아니다(플레이테스트 4 #24) */
   hurt:{win:'한 번에 {r}점이라... 단장, 저건 설명 좀 들어야겠소.',profit:'{r}점을 한꺼번에 주다니. 표값 아깝다는 말 나오겠소.',pr:'{r}점이라니, 기자들이 가만있지 않겠군.'},
   hr:{win:'{n}, 저 친구 힘 좋네.',profit:'{n} 홈런이면 유니폼 좀 팔리겠군.',pr:'{n}, 저런 선수가 구단 얼굴이 돼야 해.'}};
 function cwLive(g,who){ if(!g||!g.pbp)return []; const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!me)return []; const ow=who==='ceo'?'profit':(team(G.user).owner||'win'); let pa=0,ph=0; const L=[];
   g.pbp.forEach((x,k)=>{ if(typeof x[1]!=='number'||x.length<9)return; const a=x[7],h=x[8]; const runs=(a-pa)+(h-ph); const d0=me==='h'?ph-pa:pa-ph, d1=me==='h'?h-a:a-h; const usBat=(x[0]%2===1)===(me==='h'); pa=a; ph=h; if(runs<=0)return;
-    let t=null; if(usBat&&d0<=0&&d1>0)t=d0<0?'flip':'lead'; else if(!usBat&&d0>=0&&d1<0)t='lost'; else if(usBat&&d0<0&&d1===0)t='tie'; else if(usBat&&x[3]==='HR')t='hr'; else if(!usBat&&runs>=3)t='hurt';
+    let t=null; if(usBat&&d0<=0&&d1>0)t=d0<0?'flip':'lead'; else if(!usBat&&d0>=0&&d1<0)t=d0>0?'lost':'behind'; else if(usBat&&d0<0&&d1===0)t='tie'; else if(usBat&&x[3]==='HR')t='hr'; else if(!usBat&&runs>=3)t='hurt';
     if(t)L.push({k,t,inn:Math.floor(x[0]/2)+1,top:x[0]%2===0,r:runs,n:(G.players[x[1]]||{}).name||''}); });
-  const pri={flip:0,lost:0,lead:1,tie:1,hurt:2,hr:3}; const pick=L.map((z,i)=>({z,i})).sort((a,b)=>pri[a.z.t]-pri[b.z.t]||a.i-b.i).slice(0,4).map(o=>o.z).sort((a,b)=>a.k-b.k);
+  const pri={flip:0,lost:0,lead:1,tie:1,behind:1,hurt:2,hr:3}; const pick=L.map((z,i)=>({z,i})).sort((a,b)=>pri[a.z.t]-pri[b.z.t]||a.i-b.i).slice(0,4).map(o=>o.z).sort((a,b)=>a.k-b.k);
   return pick.map(z=>({k:z.k,inn:z.inn,top:z.top,t:z.t,l:(CW_LIVE[z.t][ow]||CW_LIVE[z.t].win).replace('{r}',z.r).replace('{n}',z.n)})); }
 /* 좋은 경기 표시: 끝내기, 대승, 연패 탈출, 같은 지역 라이벌전, 가을야구 확정권 */
 function cwTags(rec,me,ms,prevStreak){ const T=[]; if(ms<=0)return T; const op=team(me==='h'?rec.away:rec.home), mine=team(G.user);

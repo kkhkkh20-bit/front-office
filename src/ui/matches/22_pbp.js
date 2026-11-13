@@ -29,7 +29,7 @@ function pbpView(gi){
     <path d="M50 96 L4 50 Q50 -4 96 50 Z" class="grass"/><path d="M50 88 L68 70 L50 52 L32 70 Z" class="dirt"/>
     ${bpos.map((b,i)=>`<rect x="${b[0]-3}" y="${b[1]-3}" width="6" height="6" transform="rotate(45 ${b[0]} ${b[1]})" class="base${s.bases[i]?' on':''}"/>`).join('')}<rect x="47.5" y="85.5" width="5" height="5" class="base home"/>
     ${fielders.map(f=>{ const c=PBPOS[f.pos]; return `<text x="${c[0]}" y="${c[1]}" class="fn">${esc(f.n)}</text><text x="${c[0]}" y="${c[1]+4}" class="fp">${POSS[f.pos]||'투'}</text>`; }).join('')}
-    ${[0,1,2].map(i=>s.bases[i]?`<text x="${bpos[i][0]}" y="${bpos[i][1]-5}" class="rn">${esc(runner(i))}</text>`:'').join('')}
+    ${[0,1,2].map(i=>s.bases[i]?`<text x="${bpos[i][0]}" y="${bpos[i][1]+(i===1?-5:8)}" class="rn">${esc(runner(i))}</text>`:'').join('')}
   </svg>`;
   const bat=typeof x[1]==='number'?G.players[x[1]]:null;
   const nxtInn=L.findIndex((y,i)=>i>k&&y[0]!==half);

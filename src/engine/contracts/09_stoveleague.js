@@ -116,10 +116,18 @@ function faExpWar(p){ const y0=G.year; const by={}; let pa=0; for(const h of (p.
   if(pa<350)return null; const ys=Object.keys(by).map(Number).sort((a,b)=>b-a).slice(0,3); const W=[6,3,1]; let s=0,w=0; ys.forEach((y,i)=>{ s+=by[y]*W[i]; w+=W[i]; }); let e=w?s/w:0; e=e*.85+1*.15; /* FA 시즌·최근 해에 무게(카페 11-13: 최근 2년 스텝업한 선수가 3년 평균으로 헐값이 됐다) */ if(p.age>=31)e*=Math.max(.5,1-(p.age-30)*.07); return Math.max(0,e); }
 /* AI가 내는 연봉 상한: 기대 WAR × WAR당 시장가(5.5억, 실제 KBO FA 연평균은 대략 WAR당 5~6억: 안치홍 4년 72억·채은성 6년 90억) × 물가, 우승 경쟁 구단은 15% 더 */
 function faWarCap(t,p){ const e=faExpWar(p); if(e==null)return null; return Math.max(MIN_SAL*2,round5(e*550*ecoIdx(sponSeason())*(t.mode==='contend'?1.15:1))); }
-function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); if(wc==null)return w0; const pr=faPoolPrem(p); return round5(Math.min(w0*pr,Math.max(w0*.7,wc*pr))); }
+function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); if(wc==null)return w0; const pr=faPoolPrem(p)*faPosPrem(t,p); return round5(Math.min(w0*pr,Math.max(w0*.7,wc*pr))); }
 /* FA 시장 경쟁(카페 11-13): 이번 시장 상위 매물은 성적이 조금 모자라도 몸값이 오른다(1~3위 +35%, 4~8위 +15%). 성적(WAR) 상한은 능력 기준 몸값의 70% 아래로는 깎지 않는다 */
 let _fpr={k:null,m:null};
-function faPoolPrem(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=G.year+':'+G.day+':'+F.pool.length; if(_fpr.k!==k){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null).sort((a,b)=>ovr(b)-ovr(a)); _fpr={k,m:new Map(L.map((q,i)=>[q.id,i]))}; } const r=_fpr.m.get(p.id); return r==null?1:r<3?1.35:r<8?1.15:1; } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
+function faPoolPrem(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=G.year+':'+G.day+':'+F.pool.length; if(_fpr.k!==k){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null).sort((a,b)=>ovr(b)-ovr(a)); _fpr={k,m:new Map(L.map((q,i)=>[q.id,i]))}; } const r=_fpr.m.get(p.id); return r==null?1:r<3?1.35:r<8?1.15:1; }
+/* 포지션 희소성·구단 수요(카페 11-13 beeseo: 김호령 CF·유강남 C처럼 시장에 대체자가 없거나 그 자리가 약한 구단은 더 쓴다).
+   이번 시장에 같은 자리 비슷한 급(종합 -3 이내) 매물이 없으면 +12%, 하나뿐이면 +6%. 그 구단 해당 자리가 리그 7위 이하면 +8%, 9위 이하면 +12% */
+let _fps={k:null,r:{}};
+function faPosPrem(t,p){ const F=G.fa; if(!F||!F.pool||t.id===ME())return 1; const sl=pSlot(p); const o=ovr(p);
+  const n=F.pool.map(i=>G.players[i]).filter(q=>q&&q.id!==p.id&&q.team==null&&pSlot(q)===sl&&ovr(q)>=o-3).length;
+  let m=n===0?1.12:n===1?1.06:1;
+  const k=G.year+':'+G.day; if(_fps.k!==k)_fps={k,r:{}}; if(!_fps.r[t.id]){ try{ _fps.r[t.id]=slotRanks(t.id); }catch(e){ _fps.r[t.id]={}; } }
+  const rk=(_fps.r[t.id][sl]||{}).rank||0; m*=rk>=9?1.12:rk>=7?1.08:1; return m; } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;

@@ -1,8 +1,10 @@
 /* ---------- 스태프·육성 > 훈련·육성 > 스프링캠프: 장소 예약 · 훈련 강도 · 연습경기 · 시범경기 기록 ---------- */
 function sprcSiteBtns(lvl){ const T=lvl===1?SPRC1:SPRC2, P=sprcPlan(G.user), cur=P[lvl===1?'s1':'s2'], open=sprcOpen();
-  return `<div class="talk sprc-sites">${Object.entries(T).map(([k,D])=>{ const left=Math.max(0,D.sl-sprcTaken(lvl,k)), mine=cur===k, o=sprcOdds(G.user,lvl,k); const full=left<=0&&!mine&&!o.sb;
+  return `<div class="talk sprc-sites">${Object.entries(T).map(([k,D])=>{ const left=Math.max(0,D.sl-sprcTaken(lvl,k)), mine=cur===k, o=sprcOdds(G.user,lvl,k); const full=left<=0&&!mine&&!o.sb; const f=(P.fail||{})[lvl+k], wait=!mine&&f!=null&&G.day-f<7?7-(G.day-f):0; /* 결렬된 곳은 다시 시도할 수 있는 날을 버튼에 적는다(플레이테스트 3) */
     const odds=k==='home'?'':o.q>=.8?' · 성사 높음':o.q>=.55?' · 성사 보통':' · 성사 낮음';
-    return `<button class="btn small ${mine?'on':''}" data-a="sprcBook" data-v="${lvl}:${k}" ${!open||full?'disabled':''}><b>${esc(D.l)}</b> <span class="small">${mine?'예약됨':full?'마감':`+${money(o.c)} · ${!left&&o.sb?'일반 예약 마감 · 자매구단 우선 예약':left+'자리 남음'}${odds}`}${o.pv&&!mine?' · 지난해 사용':''}${o.sb?' · 자매구단':''}</span></button>`; }).join('')}</div>`; }
+    return `<button class="btn small ${mine?'on':''}" data-a="sprcBook" data-v="${lvl}:${k}" ${!open||full||wait?'disabled':''}><b>${esc(D.l)}</b> <span class="small">${mine?'예약됨':full?'마감':wait?`협상 결렬 · ${wait}일 뒤 재시도`:`+${money(o.c)} · ${!left&&o.sb?'일반 예약 마감 · 자매구단 우선 예약':left+'자리 남음'}${odds}`}${o.pv&&!mine?' · 지난해 사용':''}${o.sb?' · 자매구단':''}</span></button>`; }).join('')}</div>${sprcMsgFor(lvl)}`; }
+/* 예약 결과 안내는 누른 차수 버튼 바로 아래, 그날에만 보인다: 맨 위에만 떠서 못 보거나, 며칠 뒤 다른 곳을 잡았는데 옛 결렬 안내가 남던 문제(플레이테스트 3) */
+function sprcMsgFor(lvl){ const M=UI.sprcMsg; if(!M||typeof M!=='object'||M.lvl!==lvl||M.day!==G.day)return ''; return `<div class="note ${M.ok?'':'bad'}" role="status">${esc(M.t)}</div>`; }
 function sprcStatTable(st,isP){ const rows=lightRows(st,G.user).filter(x=>!!x.p.isP===isP&&x.a.length===(isP?6:8)).sort((x,y)=>y.a[1]-x.a[1]).slice(0,14),legacy=!isP&&lightLegacyCount(st)?'<p class="small muted">이전 형식의 합계 기록은 출전 구단을 확인할 수 없어 별도 보관합니다. 아래 구단별 기록에는 합산하지 않습니다.</p>':'';
   if(!rows.length)return legacy;
   const ip=o=>`${Math.floor(o/3)}${o%3?'.'+o%3:''}`;
@@ -12,14 +14,14 @@ function sprcView(){ if(G.unemp)return csec('스프링캠프','<p class="small m
   if(pre&&!sprcOpen())out.push(csec('스프링캠프 계획','<p class="small">캠프 장소 예약은 시즌 결산이 끝난 뒤(11월)부터 1월 24일까지 합니다. 좋은 곳은 다른 구단이 11~12월에 먼저 채웁니다.</p>'));
   if(pre&&P){ const pref=sprcMgrPref(m), cap=sprcPgCap(P); const S=G.scp; const mates={}; for(const t of G.teams){ if(t.id===G.user)continue; const Q=S.t[t.id]; if(Q&&Q.s2)(mates[Q.s2]=mates[Q.s2]||[]).push(tshort(t.id)); }
     const left=c.camp-1-G.day; const d1=SPRC1[P.s1], d2=SPRC2[P.s2];
-    out.push(csec('스프링캠프 계획',`${UI.sprcMsg?`<div class="note bad">${esc(UI.sprcMsg)}</div>`:''}
+    out.push(csec('스프링캠프 계획',`${typeof UI.sprcMsg==='string'?`<div class="note bad">${esc(UI.sprcMsg)}</div>`:''}
       <p class="small">${dmd(c.camp)} 출국 · 1차 ${dmd(c.camp)}~2월 19일 · 2차 2월 20일~${dmd(c.campEnd)} 귀국. 비용은 기본 운영비(대만·국내 기준)보다 더 드는 돈입니다. 예약 성사와 값은 단장 명성(현지 네트워크)과 지난해에도 쓴 곳인지에 달렸습니다.</p>
       <div class="eyebrow">1차 캠프 · 몸 만들기와 기술 훈련</div>${sprcSiteBtns(1)}${d1?`<p class="small muted">${esc(d1.l)}: ${esc(d1.d)}</p>`:''}
       <div class="eyebrow">2차 캠프 · 실전과 연습경기</div>${sprcSiteBtns(2)}${d2?`<p class="small muted">${esc(d2.l)}: ${esc(d2.d)}${mates[P.s2]?` 같은 곳: ${esc(mates[P.s2].join(', '))}.`:''}</p>`:''}
       <div class="eyebrow">훈련 강도 · 감독과 함께</div><div class="talk">${SPRC_INTK.map(k=>`<button class="btn small ${P.int===k?'on':''}" data-a="sprcInt" data-v="${k}">${SPRC_INT[k].l}${k===pref?' · 감독 희망':''}</button>`).join('')}</div>
       <p class="small muted">${esc(SPRC_INT[P.int].d)}</p>
       ${m&&!m.interim?`<div class="mop"><b>${esc(m.name)} 감독</b><span>"${pref==='hard'?'캠프는 빡세게 가야 시즌을 버팁니다.':pref==='easy'?'선수들이 알아서 몸을 만들게 두는 게 맞습니다.':'정해진 일정대로 무리 없이 가겠습니다.'}"</span>${P.int!==pref?`<span class="small warn">감독 희망과 다릅니다. 캠프 시작 때 감독 관계가 깎이고 캠프 효과도 조금 줄어듭니다.</span>`:''}</div>`:''}
-      <div class="eyebrow">연습경기</div><div class="talk">${[...new Set(SPRC_PGN.concat(cap))].sort((a,b)=>a-b).map(n=>`<button class="btn small ${P.pgN===n?'on':''}" data-a="sprcPg" data-v="${n}:" ${!P.s1||!P.s2||n>cap?'disabled':''}>${n}경기</button>`).join('')}</div>
+      <div class="eyebrow">연습경기</div><div class="talk">${[...new Set(SPRC_PGN.concat(cap))].sort((a,b)=>a-b).map(n=>`<button class="btn small ${P.pgN===n?'on':''}" data-a="sprcPg" data-v="${n}:" ${!P.s1||!P.s2||n>cap?`disabled title="${esc(!P.s1||!P.s2?'1차·2차 캠프 장소를 먼저 정하세요':sprcPgWhy(P,cap))}"`:''}>${n}경기</button>`).join('')}</div>${P.s1&&P.s2&&SPRC_PGN.some(n=>n>cap)?`<p class="small warn">${esc(sprcPgWhy(P,cap))}</p>`:!P.s1||!P.s2?'<p class="small warn">1차·2차 캠프 장소를 먼저 정해야 연습경기 수를 고를 수 있습니다.</p>':''}
       <div class="talk">${Object.entries(SPRC_LV).map(([k,l])=>`<button class="btn small ${P.pgLv===k?'on':''}" data-a="sprcPg" data-v=":${k}">${l}</button>`).join('')}</div>
       <p class="small muted">${P.s1&&P.s2?`지금 장소로 잡을 수 있는 연습경기는 최대 ${cap}경기입니다.`:'장소를 정하면 잡을 수 있는 연습경기 수가 나옵니다.'} 상대 구단 사정에 따라 몇 경기는 못 잡을 수 있습니다. 일본 1군 상대는 2차가 일본일 때만 잡힙니다.</p>
       <p class="small">${left>0?`예약 마감까지 ${left}일`:'오늘 예약 마감'} · ${c.y}년 캠프 추가 비용 ${money((P.c1||0)+(P.c2||0))}</p>`));
@@ -43,8 +45,10 @@ function acadCard(){ if(G.unemp)return ''; const lv=acadLv(), nx=ACAD[lv+1], t=t
     ${nx?`<div class="row between"><span class="small">다음: <b>${esc(nx.l)}</b> · ${esc(nx.d)}</span><button class="btn small primary" data-a="acadUp" data-v="${lv+1}" ${spendable(G.user)<nx.c?'disabled':''}>구단 자금으로 · ${money(nx.c)}</button></div>`:'<span class="pill good">최고 단계</span>'}
     ${UI.acadMsg?`<div class="note bad">${esc(UI.acadMsg)}</div>`:''}</section>`; }
 Object.assign(A,{
-  sprcBook(v){ const [l,k]=String(v).split(':'); const r=sprcBook(+l,k); UI.sprcMsg=r||null; if(!r)toast(`${l}차 캠프 예약: ${(+l===1?SPRC1:SPRC2)[k].l}`); save(); render(); },
+  sprcBook(v){ const [l,k]=String(v).split(':'); const nm=((+l===1?SPRC1:SPRC2)[k]||{}).l||''; const r=sprcBook(+l,k); UI.sprcMsg={lvl:+l,day:G.day,ok:!r,t:r||`${l}차 캠프 장소를 ${nm}(으)로 예약했습니다.`}; if(!r)toast(`${l}차 캠프 예약: ${nm}`); else toast(r); save(); render(); },
   sprcInt(v){ UI.sprcMsg=sprcSetInt(v)||null; save(); render(); },
   sprcPg(v){ const [n,lv]=String(v).split(':'); UI.sprcMsg=sprcSetPg(n===''?null:+n,lv||null)||null; save(); render(); },
   acadUp(){ UI.acadMsg=acadUp()||null; save(); render(); } });
 Object.assign(GUARD,{ acadUp(v){ const n=ACAD[+v]; if(!n||+v!==acadLv()+1)return null; const t=team(G.user); return {subj:`특수 아카데미 제휴: ${n.l}`,kind:'시설',lines:[`비용 ${money(n.c)} · ${spendTxt()}`,n.d],warn:'비용은 현금에서 바로 나가고 되돌릴 수 없습니다.'}; } });
+/* 연습경기 수가 막힌 이유(플레이테스트 4 #11): 캠프지마다 연습 상대를 잡을 수 있는 수가 정해져 있다 */
+function sprcPgWhy(P,cap){ const a=SPRC1[P.s1], b=SPRC2[P.s2]; return `${cap}경기보다 많이는 잡을 수 없습니다. 연습 상대는 1차 캠프지(${a?a.l:'-'})에서 최대 ${a?a.pg:0}경기, 2차 캠프지(${b?b.l:'-'})에서 최대 ${b?b.pg*2:0}경기입니다. 더 치르려면 상대 팀이 많은 캠프지(2차 오키나와 최대 8경기 등)를 고르세요.`; }

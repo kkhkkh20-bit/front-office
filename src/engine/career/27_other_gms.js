@@ -122,14 +122,14 @@ function aiTradeTry(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>t.y
   const rk=slotRanks(A.id); const nd=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0]; if(!nd||nd.r<(o.swap?4:(gmHeat(A.id)>=.4?5:6)))return null;
   const k=nd.k; const base=slotBase(A.id,k); const bNeed={};
   if(o.swap)for(const B of teams){ if(B.id===A.id)continue; const rB=slotRanks(B.id); const w=PSLOTS.filter(x=>x!=='DH'&&x!==k&&rB[x].rank>=3).sort((a,b)=>rB[b].rank-rB[a].rank)[0]; if(w)bNeed[B.id]={k:w,base:slotBase(B.id,w)}; }
-  const cands=[]; for(const B of teams){ if(B.id===A.id||(o.swap&&!bNeed[B.id]))continue; for(const p of domestic(B.id)){ if(p.ys||!healthy(p)||hasNtc(p)||faLock(p))continue; if(k==='SP'||k==='RP'){ if(pSlot(p)!==k)continue; } else if(p.isP||(p.pos!==k&&!subsOf(p).includes(k)))continue;
+  const cands=[]; for(const B of teams){ if(B.id===A.id||(o.swap&&!bNeed[B.id]))continue; for(const p of domestic(B.id)){ if(p.ys||!healthy(p)||hasNtc(p)||faLock(p)||recentTr(p))continue; if(k==='SP'||k==='RP'){ if(pSlot(p)!==k)continue; } else if(p.isP||(p.pos!==k&&!subsOf(p).includes(k)))continue;
       const up=slotGain(k,p)-base+(p.aiListed?(p.aiUrg?4:2.5):0); if(up>=(o.swap?2:3))cands.push({B,p,up}); } }
   cands.sort((a,b)=>b.up-a.up);
   for(const c of cands.slice(0,8)){ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue; const needB=tradeNeed(B,vOut);
     /* 2대2: B의 블록 선수 한 명을 끼워 함께 받는 경우 */
-    const extra=!o.swap&&R()<.3?domestic(B.id).find(q=>q.aiListed&&q.id!==p.id&&healthy(q)&&!q.ys&&!(hasNtc(q)||faLock(q))):null; const gets=extra?[p,extra]:[p];
+    const extra=!o.swap&&R()<.3?domestic(B.id).find(q=>q.aiListed&&q.id!==p.id&&healthy(q)&&!q.ys&&!(hasNtc(q)||faLock(q))&&!recentTr(q)):null; const gets=extra?[p,extra]:[p];
     const vOutAll=sum(gets.map(q=>tval(B,q,'out'))), vInAAll=stackIn(gets.map(q=>tval(A,q,'in')));
-    const pool=corePool(A.id).filter(q=>healthy(q)&&!q.ys&&!faLock(q)).map(q=>({q,b:tval(B,q,'in')*(q.aiListed?1.1:1),a:tval(A,q,'out')})).filter(x=>x.b>.3&&(!o.swap||(slotFits(x.q,bNeed[B.id].k)&&slotGain(bNeed[B.id].k,x.q)-bNeed[B.id].base>=1))).sort((x,y)=>x.b-y.b).slice(0,22); const nm=o.swap?.5:1;
+    const pool=corePool(A.id).filter(q=>healthy(q)&&!q.ys&&!faLock(q)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in')*(q.aiListed?1.1:1),a:tval(A,q,'out')})).filter(x=>x.b>.3&&(!o.swap||(slotFits(x.q,bNeed[B.id].k)&&slotGain(bNeed[B.id].k,x.q)-bNeed[B.id].base>=1))).sort((x,y)=>x.b-y.b).slice(0,22); const nm=o.swap?.5:1;
     let best=null,bo=1e9; const tryS=arr=>{ const bv=stackIn(arr.map(x=>x.b)); if(bv<vOutAll+needB*nm)return; if(arr.length>gets.length&&((vOut>=2&&Math.max(...arr.map(x=>x.b))<vOut*.75)||(ovr(p)>=56&&Math.max(...arr.map(x=>ovr(x.q)))<ovr(p)-5)))return; const av=sum(arr.map(x=>x.a)); if(vInAAll-av<tradeNeed(A,av)*nm)return; const ob=bv-vOutAll-needB*nm+arr.length*.5; if(ob<bo){ bo=ob; best=arr; } };
     for(let i=0;i<pool.length;i++){ tryS([pool[i]]); for(let j=i+1;j<pool.length;j++)tryS([pool[i],pool[j]]); }
     if(!best)continue;
@@ -149,12 +149,12 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
   const C=o.buyers||ai.filter(t=>t.mode!=='rebuild').sort((a,b)=>teamRating(b.id)-teamRating(a.id)).slice(0,4); let n=0;
   for(const A of C)for(let k=0;k<(o.per||2);k++){ const base=teamRating(A.id); const cands=[]; const nx=stanceOf(A)==='next'&&o.buyers;
     if(o.buyers&&(capPay(A.id)>capOf(sponSeason())*.98||lgTradeN(A.id)>=5||lgTradeN()>=20))break; /* 일반 AI 거래와 같은 한도: 구단당 5건, 리그 20건(검수 11-09w) */
-    for(const B of Rb)for(const p of domestic(B.id)){ if(o.buyers&&lgTradeN(B.id)>=5)break; if(p.ys||!healthy(p)||hasNtc(p)||faLock(p)||(nx?p.age<26||p.age>30||ovr(p)<56:p.age<29||ovr(p)<54))continue; p.team=A.id; const d=teamRating(A.id)-base; p.team=B.id; if(d>=.15)cands.push({B,p,d}); }
+    for(const B of Rb)for(const p of domestic(B.id)){ if(o.buyers&&lgTradeN(B.id)>=5)break; if(p.ys||!healthy(p)||hasNtc(p)||faLock(p)||recentTr(p)||(nx?p.age<26||p.age>30||ovr(p)<56:p.age<29||ovr(p)<54))continue; p.team=A.id; const d=teamRating(A.id)-base; p.team=B.id; if(d>=.15)cands.push({B,p,d}); }
     cands.sort((x,y)=>y.d-x.d); let done=false;
     for(const best of cands.slice(0,6)){ /* 가장 도움 되는 선수부터, 값이 안 맞으면 다음 후보 */
     const B=best.B, p=best.p; const vOut=tval(B,p,'out'), vin=tval(A,p,'in'); const core=new Set(domestic(A.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id));
     /* 리빌딩 구단은 서른 안팎 베테랑의 남은 계약 가치보다 젊은 선수를 받는 것을 앞세운다: 남은 가치의 30%만 채워도 판다(AI끼리만. 우리 구단과의 트레이드는 평소 기준) */
-    const want=vOut*(nx?.6:o.wantF||.3)+1; const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
+    const want=vOut*(nx?.6:o.wantF||.3)+1; const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
     let pay=null; for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<0)continue; pay=arr; break; }
     if(!pay)continue; const give=pay.map(x=>x.q.id); if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year))continue;
     const snap=tradeSnap([p.id,...give]); tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;

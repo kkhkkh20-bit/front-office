@@ -46,7 +46,7 @@ const GUARD={
   relNow(v){ const p=G.players[+v]; if(!p)return null; const rc=relCost(p), cost=rc.tot; return {subj:`${p.name} 방출`,kind:'선수',lines:[pnm(p.id),...(p.foreign&&period()==='season'?[G.day>foreignDL()?`대체 외국인 등록 마감(${dsh(foreignDL())})이 지나 올해는 대체 선수를 데려올 수 없습니다.`:fReplLeft(G.user,p.foreign)<=0?`이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 써서 대체 선수를 데려올 수 없습니다.`:`대체 외국인을 데려올 수 있습니다(남은 교체 ${fReplLeft(G.user,p.foreign)}회, ${dsh(foreignDL())}까지).`]:[]),...(p.foreign?[`남은 연봉 약 ${money(Math.round(p.sal*(()=>{ try{ return tradeYrFrac(); }catch(e){ return 1; } })()))}(올해 연봉 ${money(p.sal)} 중 남은 기간 몫)은 이미 지출로 잡혀 있어 돌려받지 못합니다.`]:cost?[`현재 계약 정산금 ${money(rc.cur)}`,...(rc.next?[`다음 시즌 확정 계약 정산금 ${money(rc.next)}(${p.extNext.years}년 연 ${money(p.extNext.annual)}의 50%)`]:[]),`총 방출 비용 ${money(cost)}`]:['정산금 없음'])],warn:'방출하면 되돌릴 수 없습니다.'}; },
   advTo(){ return UI.advRun?null:pendDoc(); }, matchSim(v,el){ return el?pendDoc():null; }, watchNext(v,el){ return el?pendDoc():null; }, /* 달력 진행·결과만 보기·다음 경기 관전도 미결 결정을 확인(검수 11-08) */
   adv(v,el){ if(UI.advRun)return null;if(el&&G.advAsk&&!advBlk())return advAskDoc(v); /* '매번 묻기'는 버튼 진행에도(검수 11-09z) */ const pd=pendDoc(); if(pd)return pd; if(G.fOkY===G.year||period()!=='pre'||G.day<G.cal.open-35||blocker()||!G.mgr[G.user])return null; const f=foreignOf(G.user); const m=f.filter(p=>p.foreign==='용병').length, as=f.filter(p=>p.foreign==='아시아').length; if(m>=3&&as>=1)return null;
-    UI._advT=0; return {subj:'외국인 선수 자리가 비어 있습니다',kind:'외국인',lines:[`외국인 ${m}/3 · 아시아쿼터 ${as}/1`,'빈 자리는 시즌 중에도 채울 수 있지만, 좋은 후보는 다른 구단이 먼저 데려갑니다.','그대로 진행하려면 진행, 먼저 채우려면 취소 후 영입 → 외국인 시장으로 가세요.'],warn:'이번 시즌에는 다시 묻지 않습니다.',onOk:()=>{ G.fOkY=G.year; }}; }, /* 외국인 공석 확인만 이번 시즌 끄기(다른 진행 확인으로 꺼지지 않게, 검수 11-08) */
+    UI._advT=0; return {subj:m>=3&&as<1?'아시아쿼터 자리가 비어 있습니다':m<3&&as<1?'외국인 선수·아시아쿼터 자리가 비어 있습니다':'외국인 선수 자리가 비어 있습니다',kind:'외국인',lines:[`외국인 ${m}/3 · 아시아쿼터 ${as}/1`,'빈 자리는 시즌 중에도 채울 수 있지만, 좋은 후보는 다른 구단이 먼저 데려갑니다.','그대로 진행하려면 진행, 먼저 채우려면 취소 후 영입 → 외국인 시장으로 가세요.'],warn:'이번 시즌에는 다시 묻지 않습니다.',onOk:()=>{ G.fOkY=G.year; }}; }, /* 외국인 공석 확인만 이번 시즌 끄기(다른 진행 확인으로 꺼지지 않게, 검수 11-08) */
   fdAuto(){ const F=G.fd; if(!F||F.done)return null; const n=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; if(n<2||fdManDone())return null;
     return {subj:`남은 ${n}번 지명을 자동으로`,kind:'드래프트',lines:[`우리 남은 지명 ${n}번을 스카우트 추천대로 뽑습니다.`,'관심 선수(★)가 남아 있으면 먼저 고릅니다.','끝나면 지명 결과를 소식함으로 보고합니다.'],warn:'자동 지명은 되돌릴 수 없습니다.'}; },
   fdPick(v){ const p=G.players[+v]; const M=fdMoney(); if(!p||!M||p.sal<=M.room-M.W)return null;
@@ -117,6 +117,16 @@ function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=documen
   const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;
   el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3>${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
+/* 길게 진행(플레이테스트 3: 시즌 한 번에 시리즈 단위 70번 클릭): 1주일 · 한 달 · 다음 주요 일정 전날까지. 중요한 소식·결정이 생기면 그 전에 멈춘다 */
+function advKeyList(){ const c=G.cal||{}, d=G.day, y=G.year, L=[]; const add=(n,t)=>{ if(Number.isFinite(n)&&n-1>d&&!L.some(x=>x[0]===n))L.push([n,t]); };
+  try{ add(tradeDL(),'트레이드 마감'); }catch(e){} add(c.end,'정규시즌 종료'); add(c.draft,'신인 드래프트'); add(G.fa&&!G.fa.closed&&Number.isFinite(G.fa.openDay)?G.fa.openDay:KD(11,6),'FA 시장 개장'); add(c.camp>d+1?c.camp:dnum(y+1,1,25),'스프링캠프'); add(c.open,'개막');
+  return L.sort((a,b)=>a[0]-b[0]); }
+function advMoreRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); } if(!UI.advMore){ el.innerHTML=''; return; }
+  const K=advKeyList(), m1=G.day+30; const row=(a,v,t,s)=>`<button class="btn block advm-b" data-a="${a}" data-v="${v}"><b>${esc(t)}</b><span class="small muted">${esc(s)}</span></button>`;
+  el.innerHTML=`<div class="cfm-w" data-a="advMoreX"><div class="cfm advm" role="dialog" aria-modal="true" aria-label="길게 진행" data-stop="1"><div class="cfm-h"><span>진행</span><span>${dsh(G.day)}</span></div><h3>어디까지 진행할까요?</h3><p class="small muted">중요한 소식이나 결정, 예약한 관전 경기가 생기면 그 전에 멈춥니다.</p><div class="advm-l">${row('advPick','week','1주일',`${dmd(G.day+7)}까지`)}${row('advPick','mon','한 달',`${dmd(m1)}까지`)}${K.slice(0,4).map(([n,t])=>row('advPick','key:'+n,`${t} 전날까지`,`${dmd(n-1)} · ${n-G.day-1}일`)).join('')}</div><div class="cfm-b"><button class="btn" data-a="advMoreX">취소</button></div></div></div>`; }
+A.advMore=function(){ if(UI.advRun||!G||G.unemp)return; UI.cfm=null; UI.advMore=true; advMoreRender(); };
+A.advMoreX=function(v,el,e){ if(e&&e.target&&e.target.closest&&e.target.closest('[data-stop]')&&!(el&&el.matches&&el.matches('button')))return; UI.advMore=false; advMoreRender(); };
+A.advPick=function(v){ UI.advMore=false; advMoreRender(); v=String(v); if(v==='week')return A.adv('week'); if(v==='mon')return A.advTo(G.day+30); if(v.startsWith('key:'))return A.advTo(+v.slice(4)-1); };
 for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v,el); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
 A.advSpace=function(v){ setTimeout(()=>{ A.adv(v); },0); }; /* 진행 확인 뒤 실제 진행은 버튼과 같은 경로(외국인 자리 결재 등)를 거친다 */
 A.cfmNo=function(){ const c=UI.cfm; UI.cfm=null; cfmRender(); if(c&&c.doc&&c.doc.noGo)c.doc.noGo(); };
@@ -138,7 +148,7 @@ document.addEventListener('click',e=>{
   if(a==='start'&&el.matches('.tmk.open')&&!e.target.closest('.tp-h'))return;
   if(['playerTab','castSeek','analysisY','tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','blkWant','impFile','recF','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
   if(el.matches('select,input[type=range],input[type=file],textarea'))return;
-  if(a==='closeSheet'){ if(e.target.closest('.x')||e.target.closest('button[data-a="closeSheet"]')||!e.target.closest('[data-stop]')){ /* 시트 안의 '닫기' 버튼도 닫는다(바깥 여백·× 말고) */ if(closeTop())return; const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=!!back.wasPlay&&back.k<G.games[back.g].pbp.length; renderSheet(); } /* 선수 창을 열기 전 재생 상태로 돌아간다(×·뒤로·Esc 같게, 검수 11-07) */ } return; }
+  if(a==='closeSheet'){ if(e.target.closest('.x')||e.target.closest('button[data-a="closeSheet"]')||!e.target.closest('[data-stop]')){ /* 시트 안의 '닫기' 버튼도 닫는다(바깥 여백·× 말고) */ if(closeTop())return; const back=UI.sheet!=null&&UI.castRet&&!UI.castRet.parked&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=!!back.wasPlay&&back.k<G.games[back.g].pbp.length; renderSheet(); } /* 선수 창을 열기 전 재생 상태로 돌아간다(×·뒤로·Esc 같게, 검수 11-07) */ } return; }
   /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
      예) 인터뷰 답을 누르고 손가락을 한 번 더 대면 다음 질문의 같은 자리 답이 나가던 문제(커뮤니티 제보 2026-10-31). 같은 버튼(＋/− 등)의 빠른 연타는 그대로 */
   { const now=performance.now(), L=UI._clk, sig=a+'|'+(el.dataset.v||'')+'|'+(el.textContent||'').trim().slice(0,40);
@@ -204,10 +214,11 @@ document.addEventListener('keydown',e=>{
   if(UI.matchPreview&&e.key===' '){ if(!(e.target.closest&&e.target.closest('#sheet .match-entry button')))e.preventDefault(); return; } /* 경기 선택창: 스페이스바로 진행하지 않는다. 창 안 버튼에 초점이 있을 때만 그 버튼(검수 11-09z) */
   if(UI.fmKeys&&e.key==='Escape'){ UI.fmKeys=false; render(); return; }
   try{ if(fmHotkey(e))return; }catch(x){} /* PC 단축키(FM식) */
-  if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
+  if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ if(UI.cfm)return; A.castExit(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
   if(e.key==='Escape'&&UI.negWin&&!UI.ngt&&!UI.meet){ UI.negWin=null; renderSheet(); render(); return; }
   if(e.key==='Escape'&&UI.meet){e.preventDefault();A.detailBack();return;}
   if(e.key==='Escape'&&UI.ngt){ UI.ngt=null; UI.meet=null; renderSheet(); render(); return; }
+  if(e.key==='Escape'&&UI.advMore){ A.advMoreX(); return; }
   if(e.key==='Escape'&&(document.documentElement.classList.contains('detail-page-open')||UI.sheet!=null||UI.posSheet||UI.game!=null||UI.menu||UI.wkres)){A.detailBack();return;}
   if(e.key===' '&&UI.wkres&&UI.sheet==null&&UI.game==null&&!UI.menu&&!UI.cast&&!UI.cfm&&!(e.target.matches&&e.target.matches('input,select,textarea'))){ e.preventDefault(); if(!e.repeat)A.wkClose(); return; } /* 경기 결과 창: 스페이스바 = 확인 */
   if(UI.tab==='inbox'&&!UI.meet&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }
