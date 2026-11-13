@@ -25,7 +25,7 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
     c.clan=null; delete c.res; staffCt(c,ri(1,3),off&&m>=11?G.year+1:G.year); C[c.role]=c; staffHistory('coach',c,'영입',tid,`${c.yrs}년 · 연 ${money(c.sal)}`); stAttr(c); c.loy=20; if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ if(c.ob)obTaken(c.ob,c); }catch(e){}
     const txt=`${tshort(tid)}, ${CROLE[c.role].l}(으)로 ${c.name} 영입${c.star?' (스타 코치)':''}`; moved.push(txt); if(c.star||cmVal(c)>=122)try{ wire('코치',txt,{tid}); }catch(e){} }
   /* 비시즌: 부유한 구단이 다른 AI 구단 코치를 한 단계 높은 자리로 빼 간다 */
-  if(m>=11||m<=1)for(const tid of ids){ const t=team(tid), P=stAiPlan(t); if(P.rich<.4||R()>.1)continue; const C=G.coach[tid]; const pool=[];
+  if(m>=11||m<=1)for(const tid of ids){ const t=team(tid), P=stAiPlan(t); if(R()>(P.rich>=.4?.2:P.rich>=0?.1:.04))continue; /* 우리와 같은 조건: 돈이 적어도 승격 자리를 내걸면 빼 갈 수 있다 */ const C=G.coach[tid]; const pool=[];
     for(const o of ids){ if(o===tid)continue; const OC=G.coach[o]; if(!OC)continue; for(const k in OC){ const c=OC[k]; const to=PROMO[k]; if(!c||!to||staffPending(c)||(c.clan&&G.mgr[o]&&c.clan===G.mgr[o].id))continue; /* 막 계약해 아직 합류 전인 코치는 빼 가지 않는다 */ if(cmVal(c)>=cmVal(C[to])+6)pool.push([o,k,to,c]); } }
     const tg=pool.sort((a,b)=>cmVal(b[3])-cmVal(a[3]))[0]; if(!tg)continue; const [o,k,to,c]=tg; const sal=round5(c.sal*1.2);
     if(cmScore(c,tid,sal,to,false)<=cmScore(c,o,c.sal*1.05,k,true))continue;
@@ -35,10 +35,10 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
   return moved; }
 /* 다른 구단이 우리 코치를 노린다(11월 20일·12월 20일). 감독 사단 코치는 감독 곁에 남는다 */
 function cmRaid(){ if(G.unemp||!G.coach||!G.coach[G.user])return []; const C=G.coach[G.user], um=G.mgr[G.user]; G.cmRaid=G.cmRaid||[]; const out=[];
-  const L=CKEYS.map(k=>[k,C[k]]).filter(([k,c])=>c&&cmVal(c)>=112&&!(um&&c.clan&&c.clan===um.id)&&!G.cmRaid.some(r=>r.id===c.id)).filter(([k,c])=>{ stAttr(c); return R()<clamp((cmVal(c)-105)/90,0,.5)*(c.amb/55)*(1-coachLoyalty(c,G.user)/150); });
-  for(const [k,c] of L.slice(0,2)){ const opts=[]; for(const t of G.teams){ if(t.id===G.user)continue; const TC=G.coach[t.id]; if(!TC)continue; const to=PROMO[k]&&cmVal(TC[PROMO[k]])<cmVal(c)?PROMO[k]:k; if(to===k&&cmVal(TC[k])>=cmVal(c))continue; if(clubPrestige(t.id)<clubPrestige(G.user)-12&&to===k)continue; opts.push({t,to}); }
+  const L=CKEYS.map(k=>[k,C[k]]).filter(([k,c])=>c&&cmVal(c)>=104&&!(um&&c.clan&&c.clan===um.id)&&!G.cmRaid.some(r=>r.id===c.id)).filter(([k,c])=>{ stAttr(c); return R()<clamp((cmVal(c)-98)/70,0,.45)*(c.amb/55)*(1-coachLoyalty(c,G.user)/150); }); /* 사용자 11-13: 타 구단에 코치도 뺏겨야 한다. 리그 중간(108) 이상이면 노리는 구단이 생긴다(전에는 112·연 0.3~0.9건) */
+  for(const [k,c] of L.sort(()=>R()-.5).slice(0,3)){ const opts=[]; for(const t of G.teams){ if(t.id===G.user)continue; const TC=G.coach[t.id]; if(!TC)continue; const to=PROMO[k]&&cmVal(TC[PROMO[k]])<cmVal(c)?PROMO[k]:k; if(to===k&&cmVal(TC[k])>=cmVal(c))continue; if(clubPrestige(t.id)<clubPrestige(G.user)-12&&to===k)continue; opts.push({t,to}); }
     if(!opts.length)continue; const {t,to}=pick(opts); const sal=round5(c.sal*(to!==k?1.2:rnd(1.25,1.4))); const r={id:c.id,role:k,tid:t.id,to,sal,exp:G.day+7,from:G.user}; G.cmRaid.push(r); out.push(r);
-    mail('운영팀',`${tshort(t.id)}, 우리 ${CROLE[k].l} ${c.name}에게 영입 제안`,`${tname(t.id)}이(가) ${c.name}(기본 지도 ${dv(c.sk)} · 기본 육성 ${dv(c.dv)})에게 ${to!==k?`${CROLE[to].l} 자리(승격)와 `:''}연 ${money(sal)}을 제시했습니다(현재 ${money(c.sal)}).\n구단 위상: 우리 ${clubPrestige(G.user)} · ${tshort(t.id)} ${clubPrestige(t.id)}. ${staffLoyWord(coachLoyalty(c,G.user))}${coachSupportView(c,G.user).bonus>0?', 구단 연수 지원 인연도 있습니다':''}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,
+    mail('운영팀',`${tshort(t.id)}, 우리 ${CROLE[k].l} ${c.name}에게 영입 제안`,`${tname(t.id)}이(가) ${c.name}(기본 지도 ${dv(c.sk)} · 기본 육성 ${dv(c.dv)})에게 ${to!==k?`${CROLE[to].l} 자리(승격)와 `:''}연 ${money(sal)}을 제시했습니다(현재 ${money(c.sal)}).\n${(()=>{ const d=clubPrestige(t.id)-clubPrestige(G.user); return d>=8?`${tshort(t.id)}의 위상이 우리보다 높습니다.`:d<=-8?`위상은 우리가 더 높습니다.`:'두 구단 위상은 비슷합니다.'; })()} ${staffLoyWord(coachLoyalty(c,G.user))}${coachSupportView(c,G.user).bonus>0?', 구단 연수 지원 인연도 있습니다':''}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,
       {imp:true,kind:'코치',acts:[{l:`연봉 맞춰 붙잡기(연 ${money(sal)})`,a:'cmKeep',v:`${c.id}:1:${r.exp}`},{l:'조금 올려 설득(+10%)',a:'cmKeep',v:`${c.id}:0:${r.exp}`},{l:'보내 주기',a:'cmLet',v:`${c.id}::${r.exp}`}]}); }
   return out; }
 function cmRaidFind(id){ return (G.cmRaid||[]).find(r=>r.id===id); }
