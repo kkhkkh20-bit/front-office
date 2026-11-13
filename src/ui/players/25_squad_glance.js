@@ -111,7 +111,7 @@ function planFM(){ const Y=G.year; if(!G.plEx||G.plEx.y!==Y)G.plEx={y:Y,ids:[]};
     <div class="spn-sum"><span>야수 평균 예상 <b>${fv.length?dv(avg(fv)):'-'}</b></span><span>선발 평균 <b>${val(c,'SP')==null?'-':dv(val(c,'SP'))}</b></span><span class="${nW?'warn':'good'}">점검할 자리 <b>${nW}</b></span></div>
     <div class="spn-dia"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M50 97 L3 50 Q50 -4 97 50 Z" class="of"/><path d="M50 90 L27 66 L50 42 L73 66 Z" class="inf"/></svg>${PSLOTS.map(node).join('')}</div>
     <div class="spn-gen">${gst.map(([l,a,f])=>{ const L=dom.filter(f); return `<div><b>${l}</b><i>${a}</i><span>${L.length}명</span><em>1군급 ${L.filter(p=>ovr(p)>=52).length}</em></div>`; }).join('')}</div>
-    <p class="spn-leg">숫자는 그해 예상 능력(코치진 추정). 자리를 누르면 오른쪽에 후보가 나옵니다. 국내 선수 세대 구성은 지금 나이 기준입니다.</p></section>`;
+    <p class="spn-leg tipme">숫자는 그해 예상 능력(코치진 추정). 자리를 누르면 오른쪽에 후보가 나옵니다. 국내 선수 세대 구성은 지금 나이 기준입니다.</p></section>`;
   /* 가운데: 포지션 × 3시즌 */
   const cell=(k,y)=>{ const cc=C[y], W=warn(cc,k); let h;
     if(k==='SP'||k==='RP'){ const L=grp(cc,k); h=L.length?`<span class="spn-p"><b>${esc(L[0].name)}</b>${rchip(Math.round(cc.v(L[0])))}${tag(cc,L[0])}</span><i>${k==='SP'?'1선발':'불펜 1순위'} · ${L.length}명 평균 ${dv(val(cc,k))}${W.length?' · '+W.map(w=>w[1]).join(' · '):''}</i>`:'<span class="spn-p"><b class="bad">빈자리</b></span><i>투수 없음</i>'; }

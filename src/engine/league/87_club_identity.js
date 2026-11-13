@@ -17,7 +17,7 @@ function clubRebrand(tid,o,why){ const t=team(tid); if(!t)return false; const L=
 /* 인수 완료 뒤 호출: AI 구단은 확률로, 우리 구단은 단장에게 묻는다 */
 function ciOnSale(tid){ const t=team(tid); if(!t)return; const N=ciNickPool(); if(!N.length)return;
   if(tid===G.user&&!G.unemp){ const a=pick(N), b=pick(N.filter(x=>x!==a))||a, own=bossOf(tid).own.name;
-    evNew('rebrand',`새 구단주가 구단 이름을 바꾸고 싶어 합니다`,`새 구단주 ${own}: "새 출발을 알리고 싶습니다. 연고와 기록은 그대로 두고 이름만 바꾸면 어떻겠습니까?"`,[{l:`${t.city} ${a}`,fx:'다음 시즌부터 새 이름. 구단주 신뢰 +3'},{l:`${t.city} ${b}`,fx:'다음 시즌부터 새 이름. 구단주 신뢰 +3'},{l:'지금 이름 유지',fx:'팬 여론은 반기지만 구단주 신뢰 -4'}],{def:2,exp:14,data:{tid,a,b},from:'구단주'}); return; }
+    evNew('rebrand',`새 구단주가 구단 이름을 바꾸고 싶어 합니다`,`새 구단주 ${own}: "새 출발을 알리고 싶습니다. 연고와 기록은 그대로 두고 이름만 바꾸면 어떻겠습니까?"`,[{l:`${t.city} ${a}`,fx:'다음 시즌부터 새 이름. 구단주 신뢰 상승'},{l:`${t.city} ${b}`,fx:'다음 시즌부터 새 이름. 구단주 신뢰 상승'},{l:'지금 이름 유지',fx:'팬 여론은 반기지만 구단주 신뢰 하락'}],{def:2,exp:14,data:{tid,a,b},from:'구단주'}); return; }
   if(tid===G.user)return; const C=ciCityPool(); const small=(t.market||1)<=1&&t.region!=='수도권'&&!t.indie;
   if(small&&C.length&&R()<.12){ const c=pick(C); clubRebrand(tid,{city:c.city,nick:R()<.6?pick(N):null},'새 운영 주체의 연고 이전'); return; }
   if(R()<.55)clubRebrand(tid,{nick:pick(N)},'새 운영 주체');

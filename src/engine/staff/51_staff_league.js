@@ -81,14 +81,14 @@ function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return '다른 
   if(kind==='sc'&&G.scouts.length>scoutMax())return `스카우트 정원(${scoutMax()}명)을 넘었습니다. 먼저 한 명을 내보내세요.`; if(kind==='an'&&anaList().length>ANA_MAX)return `분석원 정원(${ANA_MAX}명)을 넘었습니다. 먼저 한 명을 내보내세요.`;
   P.n++; P.t.push(tid); const sal=round5(s.sal*(1+raise)); const go=stScore(s,G.user,sal,false), stay=stScore(s,tid,s.sal*1.05,true);
   const t=team(tid); t.rel=clamp((t.rel??50)-3,0,100);
-  if(go<=stay)return `${s.name}: "제안은 감사하지만 ${tshort(tid)}에 남겠습니다." ${s.loy>=60?'오래 몸담은 구단이라 마음이 쉽게 움직이지 않습니다.':'조건이나 구단 위상이 부족했습니다.'} (${tshort(tid)} 관계 -3)`;
+  if(go<=stay)return `${s.name}: "제안은 감사하지만 ${tshort(tid)}에 남겠습니다." ${s.loy>=60?'오래 몸담은 구단이라 마음이 쉽게 움직이지 않습니다.':'조건이나 구단 위상이 부족했습니다.'} (${tshort(tid)} 관계 악화)`;
   list.splice(list.indexOf(s),1); if(kind==='sc')stSync(tid); s.sal=sal; s.since=G.day; s.loy=15; if(kind==='sc'){ s.role=s.role||'am'; G.scouts.push(s); } else G.analysts.push(s);
   staffHistory(kind==='sc'?'scout':'analyst',s,'이적',tid,`${tshort(G.user)} 영입`); staffHistory(kind==='sc'?'scout':'analyst',s,'영입',G.user,`${tshort(tid)}에서 이적 · 연 ${money(sal)}`); wire('스태프',`${tshort(G.user)}, ${tshort(tid)} ${kind==='sc'?'스카우트':'전력분석원'} ${s.name} 영입`,{tid:G.user}); addLog(`${tshort(tid)}의 ${kind==='sc'?'스카우트':'분석원'} ${s.name}(능력 ${s.skill})을(를) 연 ${money(sal)}에 데려왔습니다.`);
-  return `${s.name}이(가) 우리 구단으로 옵니다. 연 ${money(sal)}. (${tshort(tid)} 관계 -3)`; }
+  return `${s.name}이(가) 우리 구단으로 옵니다. 연 ${money(sal)}. (${tshort(tid)} 관계 악화)`; }
 /* 다른 구단이 우리 스태프를 노린다: 11월 15일·12월 15일 */
 function stRaid(){ stInit(); const mine=[...G.scouts.map(s=>['sc',s]),...anaList().map(a=>['an',a])].map(([k,s])=>[k,stAttr(s)]).filter(([,s])=>s.skill>=3&&R()<(s.skill-2)*.09*(s.amb/60)*(1-s.loy/150));
   for(const [k,s] of mine.slice(0,2)){ const offer=round5(s.sal*rnd(1.15,1.4)), ok=t=>t.id!==G.user&&stAiFits(t.id,offer); /* 예산이 남는 구단만 제안한다(검수 11-09zw #26) */ const cands=G.teams.filter(t=>ok(t)&&clubPrestige(t.id)>=clubPrestige(G.user)-5); const t=pick(cands.length?cands:G.teams.filter(ok)); if(!t)continue; (G.stRaid=G.stRaid||[]).push({k,id:s.id,tid:t.id,sal:offer,exp:G.day+7});
-    if(!autoOn('raid'))mail('운영팀',`${tshort(t.id)}, 우리 ${k==='sc'?'스카우트':'분석원'} ${s.name}에게 영입 제안`,`${tname(t.id)}이(가) ${s.name}(능력 ${s.skill})에게 연 ${money(offer)}을 제시했습니다(현재 ${money(s.sal)}). 구단 위상: 우리 ${clubPrestige(G.user)} · ${tshort(t.id)} ${clubPrestige(t.id)}. 충성도 ${Math.round(s.loy)}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,{imp:true,kind:'스태프',acts:[{l:`맞춰서 붙잡기(연 ${money(offer)})`,a:'stKeep',v:s.id+':1'},{l:'조금 올려 설득(+10%)',a:'stKeep',v:s.id+':0'},{l:'보내 주기',a:'stLet',v:s.id}]}); if(!autoOn('raid')&&G.mail[0])G.mail[0].auto=['raid']; } }
+    if(!autoOn('raid'))mail('운영팀',`${tshort(t.id)}, 우리 ${k==='sc'?'스카우트':'분석원'} ${s.name}에게 영입 제안`,`${tname(t.id)}이(가) ${s.name}(능력 ${s.skill})에게 연 ${money(offer)}을 제시했습니다(현재 ${money(s.sal)}). 구단 위상: 우리 ${clubPrestige(G.user)} · ${tshort(t.id)} ${clubPrestige(t.id)}. ${staffLoyWord(s.loy)}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,{imp:true,kind:'스태프',acts:[{l:`맞춰서 붙잡기(연 ${money(offer)})`,a:'stKeep',v:s.id+':1'},{l:'조금 올려 설득(+10%)',a:'stKeep',v:s.id+':0'},{l:'보내 주기',a:'stLet',v:s.id}]}); if(!autoOn('raid')&&G.mail[0])G.mail[0].auto=['raid']; } }
 /* 단장이 떠나기 전에 걸린 다른 구단의 영입 제안은 그 자리에서 결론 낸다(떠나면 제안이 사라져 원구단에 남던 문제, 검수 11-08) */
 function stRaidSettle(){ for(const r of [...(G.stRaid||[])]){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(s&&stScore(s,G.user,s.sal,true)<stScore(s,r.tid,r.sal,false))stLeave(r); } G.stRaid=[]; }
 function stRaidAuto(){ try{ autoRaid(); }catch(e){} }
@@ -131,7 +131,7 @@ function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...a
    목표 인원·수준은 구단 재정(보유 현금)·시장 규모·전략으로 정한다. 빈자리는 아무 달에나 채우고, 사람 바꾸기(약한 사람 내보내고 더 나은 사람)는 11~2월에.
    비시즌(11~1월)에는 다른 AI 구단 스태프를 연봉을 올려 빼 오기도 한다. 들어간 연봉은 시즌 결산 지출(스카우트 운영)에 실제로 잡힌다 */
 function stAiPlan(t){ const cash=t.cash||0; const rich=(t.market-1)*2+(t.indie?-.6:0)+clamp(cash/4000,-1,1.2);
-  return {rich,tSc:clamp(5+Math.round(rich+(t.mode==='rebuild'?.6:0)),4,8),tAn:clamp(3+Math.round(rich*.8+(t.mode==='contend'?.6:0)),ST_AN_N[0],ANA_MAX),payMax:Math.round(clamp(700+rich*250,500,1700))}; }
+  return {rich,tSc:clamp(5+Math.round(rich+(t.mode==='rebuild'?.6:0)),4,8),tAn:clamp(3+Math.round(rich*.8+(t.mode==='contend'?.6:0)),ST_AN_N[0],ANA_MAX),payMax:Math.round(clamp(700+rich*250,500,1700))+(t.stBoost||0)}; } /* stBoost: 남는 돈을 스태프에 돌린 몫(57_club_econ aiSpend) */
 function stAiPay(S){ return sum(S.sc.map(x=>x.sal||0))+sum(S.an.map(x=>x.sal||0)); }
 /* AI 구단이 연봉 sal인 사람을 더 둘 수 있는가(out: 함께 내보내는 사람 연봉) */
 function stAiFits(tid,sal,out){ const L=G.lgStaff&&G.lgStaff[tid], t=team(tid); return !L||!t||stAiPay(L)-(out||0)+sal<=stAiPlan(t).payMax; }

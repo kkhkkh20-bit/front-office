@@ -17,8 +17,8 @@ function lgClubView(){ const tid=UI.lgT!=null&&team(UI.lgT)?UI.lgT:(G.user??0); 
   const P=G.gmLeg&&G.gmLeg.pres;
   return csec(`${esc(tname(tid))} 역대 단장`,pick+(L.length?`<div class="list">${L.map(row).join('')}</div>`:'<p class="small muted">아직 기록이 없습니다. 시즌을 마치면 그해 단장이 쌓입니다.</p>')
     +`<p class="small muted">기록은 ${D.L.length?Math.min(...D.L.map(x=>x.y0)):G.year}년부터 남아 있습니다. 배출 스타는 그 단장 재임 중 지명한 선수 가운데 MVP·골든글러브·프랜차이즈 스타·명예의 전당 선수입니다.</p>`)
-   +csec('구단이 공로를 기리는 방법',`<p class="small">실제 한국 프로야구에는 단장을 구단 레전드로 올리는 공식 제도가 뚜렷하지 않습니다. 이 게임에서는 한 구단에서 ${LEG_HON.s}시즌 이상 일하며 우승 ${LEG_HON.c}회 이상, 또는 그 구단 우승 ${LEG_HON.c5}회를 이룬 단장이 구단을 떠나거나 물러나면 '구단 공로자'로 구단 역사에 이름이 남고 기사가 납니다.</p>
-    <p class="small">한 구단을 ${LEG_PRES.s}시즌 이상 연속해서 맡고 구단주 신뢰가 ${LEG_PRES.trust} 이상이면 모기업이 있는 구단의 구단주가 대표이사(사장)나 고문 자리를 한 번 제안합니다. 답은 기록으로만 남고 단장 업무는 그대로 이어집니다.${P?` <b>${P.y}년 ${esc(P.role)} 제안 · ${P.ans==null?'답하지 않음':P.ans?'수락':'사양'}</b>`:''}</p>
+   +csec('구단이 공로를 기리는 방법',`<p class="small tipme">실제 한국 프로야구에는 단장을 구단 레전드로 올리는 공식 제도가 뚜렷하지 않습니다. 이 게임에서는 한 구단에서 ${LEG_HON.s}시즌 이상 일하며 우승 ${LEG_HON.c}회 이상, 또는 그 구단 우승 ${LEG_HON.c5}회를 이룬 단장이 구단을 떠나거나 물러나면 '구단 공로자'로 구단 역사에 이름이 남고 기사가 납니다.</p>
+    <p class="small tipme">한 구단을 ${LEG_PRES.s}시즌 이상 연속해서 맡고 구단주 신뢰가 ${LEG_PRES.trust} 이상이면 모기업이 있는 구단의 구단주가 대표이사(사장)나 고문 자리를 한 번 제안합니다. 답은 기록으로만 남고 단장 업무는 그대로 이어집니다.${P?` <b>${P.y}년 ${esc(P.role)} 제안 · ${P.ans==null?'답하지 않음':P.ans?'수락':'사양'}</b>`:''}</p>
     ${(G.gmLeg&&G.gmLeg.hon||[]).length?`<p class="small">내 계보의 구단 공로자: ${G.gmLeg.hon.map(h=>`${esc(h.n)}(${esc(tshort(h.t))} ${h.y0}~${h.y1}, 우승 ${h.c}회)`).join(', ')}</p>`:''}`); }
 function lgHofView(){ const L=legPeople(), me=L.findIndex(p=>p.u&&p.k===legMeK());
   const row=(p,i)=>`<div class="item${p.u?' lg-me':''}" style="cursor:default"><span class="nm"><b class="num">${i+1}</b> ${esc(p.n)}${p.u&&p.k===legMeK()?' <span class="pill acc">나</span>':p.u?' <span class="pill">내 계보</span>':''}${p.cur?' <span class="pill">재임 중</span>':''}</span>

@@ -23,6 +23,10 @@ function lgTopBase(m){ if(G.lgBaseT==null&&m!=null)G.lgBaseT=+m.toFixed(2); retu
 function draftLevelAdj(){ const m=lgMeanDom(); if(m==null)return 0; if(G.lgBase==null){ G.lgBase=+m.toFixed(2); } const t=lgTopDom(), b=lgTopBase(t); const dT=t!=null&&b!=null?t-b:0; return clamp(Math.max((m-G.lgBase)*1.6,dT*2.4),-3,8); } /* 1.6→2.4: 10시즌에 평균 표시 능력 57.3→58.9, 80 이상 4→11명(커뮤니티 피드백 11-11) */
 /* 성장 안정 장치: 국내 상위 300명 평균이 시작 때보다 오른 만큼 그해 겨울 성장(플러스 쪽)을 줄인다. 원래 능력 1점에 15%, 최대 40%. 내려가면 최대 5% 더 큰다 */
 function growLevelF(){ const y=G.year; if(G.lvF&&G.lvF.y===y)return G.lvF.f; const t=lgTopDom(), b=lgTopBase(t); const f=t==null||b==null?1:clamp(1-(t-b)*.15,.6,1.05); G.lvF={y,f:+f.toFixed(3)}; return G.lvF.f; }
+/* 특급 꼬리 억제(사용자 11-13: S급은 몇 년에 한 번): 상위 300명 평균을 맞춰도 정상급(표시 80+)이 해마다 늘었다(16시즌 8→26명).
+   표시 80 이상 선수 수가 처음보다 많아진 만큼 정상급 근처(76+) 선수의 성장을 줄이고, 90 근처(86+)는 더 줄인다. 모든 구단에 같다 */
+function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; if(G.elBase==null)G.elBase=Math.min(n,12); const b=Math.max(6,G.elBase); G.elN={y,n,f:+clamp(1-(n-b)/b*.7,.3,1.05).toFixed(3)}; return G.elN; }
+function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
   for(let i=0;i<DRAFT_POOL;i++){
@@ -44,6 +48,7 @@ function makeDraftClass(){
   { const top=cls.map(id=>G.players[id]).filter(p=>p.pot>=54).sort((a,b)=>b.pot-a.pot).slice(0,5);
     for(const p of top){ if(R()<.55){ const t=clamp(p.pot-rnd(4,9),47,56); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
     if(top[0]&&R()<.35){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
+    top.slice(0,3).forEach(p=>{ p.blue=1; }); /* 대어 셋: 성장 실현율 하한이 높다(04_growth). 상위 지명과 하위 지명의 차이가 실제로 나게(사용자 11-13: 우승팀 10순위가 손해가 되게) */
     for(const p of top.filter(q=>q.ready)){ amHistory(p,rnd(14.5,19.5)); if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
   /* 해외파 신인: 해외에서 돌아와 2년 유예를 마친 선수(KBO 규약 107조)는 이해 신인 드래프트에 나온다. 트라이아웃 기록 대신 해외 마지막 시즌 수준으로 아마 기록을 만든다 */
   for(const p of Object.values(G.players)){ if(p.ovsRet&&p.prospect&&p.team==null&&!p.retired){ if(!cls.includes(p.id))cls.push(p.id); continue; } /* 불러오기 보정으로 명단을 다시 만들 때 이미 참가한 복귀자(검수 11-09ze) */

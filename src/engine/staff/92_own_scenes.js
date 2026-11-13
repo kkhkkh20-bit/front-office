@@ -94,4 +94,4 @@ function ownScnFx(fx,X){ const t=team(G.user), out=[];
 function ownReqDaily(){ const Q=G.ownReq; if(!Q)return; if(G.unemp||Q.tid!==G.user||(Q.person!=null&&Q.person!==bossOf(G.user).own.id)){ delete G.ownReq; return; } if(G.day<=Q.until)return; const t=team(G.user), B=bossOf(G.user);
   let ok; if(Q.k==='win'){ const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:Q.w0,l:Q.l0}; const w=r.w-Q.w0, l=r.l-Q.l0; ok=w+l>0&&w>=l; } else { prInit(); ok=G.pr.fan>=Q.f0+2; }
   t.trust=clamp(t.trust+(ok?3:-2),0,100); delete G.ownReq;
-  mail('구단주실',ok?`${B.own.name} 회장: "약속을 지켰군"`:`${B.own.name} 회장: "말한 것과 다르군"`,`면담 때 받은 주문(${OREQ[Q.k]})을 ${ok?'지켰습니다':'지키지 못했습니다'}. 구단주 신뢰 ${ok?'+3':'-2'}.`,{kind:'구단주'}); }
+  mail('구단주실',ok?`${B.own.name} 회장: "약속을 지켰군"`:`${B.own.name} 회장: "말한 것과 다르군"`,`면담 때 받은 주문(${OREQ[Q.k]})을 ${ok?'지켰습니다':'지키지 못했습니다'}. 구단주 신뢰가 ${ok?'올랐습니다':'떨어졌습니다'}.`,{kind:'구단주'}); }

@@ -39,7 +39,7 @@ function facAiFut(tid){ return tid==null?0:(facImpact(facLvK(tid,'fut'))-2)*.05;
 /* 증설분 유지비: 시작 때보다 늘어난 유지비만 결산에 붙인다(기본 시설 유지비는 구단 운영비에 들어 있다) */
 /* 야인 기간 전 구단은 아직 G.fac·G.bus에 있다(검수 11-09zza). 우리가 떠난 날(hoD)이 이번 결산 기간이면 그 전 유지비는 인계 장부에 이미 냈으므로 떠난 뒤 몫만(검수 11-09zza) */
 function aiFacUpExtra(t){ const me=t.id===G.user, F=me?G.fac:t.fi, bl=me?G.bus:t.bus; const s0=F&&F.hoD!=null&&F.hoD>G.day-365?F.hoD:G.day-365, f=clamp((G.day-s0)/365,0,1);
-  const bus=bl!=null?Math.round(Math.max(0,BUS[bl].up-BUS[1].up)*f):0; /* 우리가 산 리무진의 추가 운영비(다른 구단 기본은 우등 버스, 검수 11-06) */ if(!F||!F.it)return bus; const up=sum(FACK.map(k=>{ const l=F.it[k]||0, cur=FACI[k].up[l], d=F.dn&&F.dn[k]; if(d!=null&&d>s0&&l>0){ const pv=FACI[k].up[l-1]; return pv*f+(cur-pv)*clamp((G.day-d)/365,0,1); } return cur*f; })); return Math.max(0,Math.round(up-(F.up0||0)*f))+bus; } /* 올해 완공한 증설분은 쓴 기간만(우리 구단처럼 일할, 검수 11-08) */ /* 올해 완공한 증설분은 쓴 기간만(우리 구단처럼 일할, 검수 11-08) */
+  const bus=bl!=null?Math.round(Math.max(0,BUS[bl].up-BUS[1].up)*f):0; /* 우리가 산 리무진의 추가 운영비(다른 구단 기본은 우등 버스, 검수 11-06) */ if(!F||!F.it)return bus; const up=sum(FACK.map(k=>{ const l=F.it[k]||0, cur=FACI[k].up[l], d=F.dn&&F.dn[k]; if(d!=null&&d>s0&&l>0){ const pv=FACI[k].up[l-1]; return pv*f+(cur-pv)*clamp((G.day-d)/365,0,1); } return cur*f; })); return Math.max(0,Math.round(up-(F.up0||0)*f))+bus+(me?0:Math.round(facCityUp(t)*f)); } /* 올해 완공한 증설분은 쓴 기간만(우리 구단처럼 일할, 검수 11-08) */ /* 올해 완공한 증설분은 쓴 기간만(우리 구단처럼 일할, 검수 11-08) */
 /* 구단 이동: 떠나는 구단에 시설을 그대로 남기고, 가는 구단의 시설을 그대로 가져온다 */
 function facMoveTeam(oldTid,newTid){ if(oldTid===newTid)return; const ot=team(oldTid), nt=team(newTid); facInit();
   const S=G.fac; S.dn=S.dn||{}; S.hist=S.hist||[]; if(S.up0==null)S.up0=Math.min(facUpOf(S.it),facUpOf(facAlloc(ot,2).it)); /* 예전 저장: 증설된 현재 단계가 아니라 리그 기본(2단계) 기준(검수 11-06) */ if(!S.pf)S.pf=facAlloc(ot,ot.fac||3).pf;
@@ -49,29 +49,39 @@ function facMoveTeam(oldTid,newTid){ if(oldTid===newTid)return; const ot=team(ol
 function aiFacDaily(){ if(!G||!G.teams)return; const o=dobj(G.day); const plan=(o.m===12&&o.d===1)||(o.m===6&&o.d===15);
   for(const t of G.teams){ const mine=t.id===G.user; if(mine&&!G.unemp)continue; const S=mine?facSt(t.id):aiFacInit(t); if(!S)continue;
     if(!mine)for(const k of Object.keys(S.bld)){ const b=S.bld[k]; if(G.day<b.done)continue; S.it[k]=Math.max(S.it[k]||0,b.lv); S.dn[k]=G.day; delete S.bld[k]; S.lv=facCalcLv(S.it); t.fac=S.lv;
-      clubFacilityHistory('fac',t.id,FACI[k].l,'완공',b); wire('시설',`${t.city} ${FAC_NEWS[k][b.lv]} 완공`,{tid:t.id}); }
-    if(plan)try{ aiFacPlan(t,S,o.m===6); }catch(e){} } }
-function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)return null;
-  const key='fai'+facWK()+':'+t.id+':'+G.year+(summer?'s':'w'); const tr=gmTrait(t.id);
+      clubFacilityHistory('fac',t.id,FACI[k].l,'완공',b); wire('시설',`${t.city} ${FAC_NEWS[k][b.lv]} ${b.lv>=4?'개관':'완공'}`,{tid:t.id}); }
+    if(plan)try{ aiFacPlan(t,S,o.m===6); }catch(e){} }
+  try{ clubEconDaily(); }catch(e){} }
+/* AI 시설 투자 결정. o={force,budget,reserve}: 지출 정책(57_club_econ)이 남는 돈을 쓸 때는 굴림 없이 정하고, 예산 안에서 고른다.
+   우리 구단과 같은 규칙: 선행 조건·큰 공사 한 곳·인허가(facCanStart·facStartBuild), 모기업 투자는 같은 승인 식과 120일 간격(capexOddsT), 명명권·지자체 보조도 같은 조건 */
+function aiFacPlan(t,S,summer,o){ o=o||{}; const nb=Object.keys(S.bld).length; if(nb>=2)return null;
+  const key='fai'+facWK()+':'+t.id+':'+G.year+(summer?'s':'w')+(o.force?'f'+nb:''); const tr=gmTrait(t.id);
   const cash=spendable(t.id); /* 독립구단은 결산 때 낼 신구장 분담금을 남긴다(검수 11-09zza) */ const tight=cash<1500||(t.indie&&cash<3000), rich=!tight&&(cash>=6000||(t.market>=1.1&&cash>=4500));
-  let p=tight?.15:rich?.7:.5; p+={win:.08,pr:.03,profit:-.08}[t.owner]||0; if(t.mode==='contend')p+=.04; if(tr==='miser')p*=.6; const pl=planOf(t); if(pl==='build')p+=.25; /* 유망주 수집 구단은 남는 돈을 육성 시설에 돌린다 */ if(pl==='tight')p*=.3; if(summer)p*=pl==='build'?.6:.3; if(nb)p*=.5;
-  if(facU(key,'go')>=p)return null;
+  const pl=planOf(t);
+  if(!o.force){ let p=tight?.15:rich?.7:.5; p+={win:.08,pr:.03,profit:-.08}[t.owner]||0; if(t.mode==='contend')p+=.04; if(tr==='miser')p*=.6; if(pl==='build')p+=.25; /* 유망주 수집 구단은 남는 돈을 육성 시설에 돌린다 */ if(pl==='tight')p*=.3; if(summer)p*=pl==='build'?.6:.3; if(nb)p*=.5;
+    if(facU(key,'go')>=p){ if(t.indie||capexWait(t.id))return null; o.capOnly=true; } } /* 직접 지을 생각이 없어도 모기업 투자 요청은 해 본다(사람 단장처럼, 같은 승인 식·120일 간격) */
   const maps=[]; if(rich)maps.push({lab:2.2,rehab:1.8}); if(tight)maps.push({weight:1.8,rehab:1.3});
-  maps.push(pl==='build'?{fut:2.6,dorm:2.4,indoor:1.6}:pl==='tight'?{weight:1.3}:t.mode==='rebuild'?{fut:2.2,dorm:2.2}:{rehab:1.8,weight:1.8});
+  maps.push(pl==='build'?{fut:2.6,dorm:2.4,indoor:1.6}:pl==='tight'?{weight:1.3}:pl==='win'?{rehab:2,weight:1.8,lab:1.6}:pl==='star'?{indoor:1.4,rehab:1.3}:t.mode==='rebuild'?{fut:2.2,dorm:2.2}:{rehab:1.8,weight:1.8});
   if(tr==='data')maps.push({lab:1.6}); else if(tr==='prospect')maps.push({fut:1.4,dorm:1.4}); else if(tr==='gambler')maps.push({rehab:1.3,weight:1.2});
-  const reserve=pl==='build'?1500:rich?2000:2500; const capP=t.indie?0:clamp(.28+({win:.15,pr:.1,profit:-.05}[t.owner]||0)+((t.trust??55)-50)/100,.05,.65);
-  const C=FACK.filter(k=>(S.it[k]||0)<FAC_MAX&&!S.bld[k]).map(k=>{ const lv=S.it[k]||0, c=FACI[k].c[lv+1]; let w=((S.pf&&S.pf[k])||1)*(1+(2-lv)*.25); for(const M of maps)w*=M[k]||1;
-      if(tight&&c>1500)w=0; return {k,lv,c,w}; }).filter(x=>x.w>0);
+  const reserve=o.reserve??(pl==='build'?1500:rich?2000:2500);
+  const C=FACK.filter(k=>!facCanStart(t.id,k)).map(k=>{ const lv=S.it[k]||0, c=FACI[k].c[lv+1]; let w=((S.pf&&S.pf[k])||1)*(1+(2-lv)*.25); for(const M of maps)w*=M[k]||1;
+      if(tight&&c>1500)w=0; if(o.budget!=null&&c>o.budget*1.6)w*=.15; return {k,lv,c,w}; }).filter(x=>x.w>0);
   if(!C.length)return null;
-  /* 먼저 하고 싶은 공사를 고르고, 돈은 그다음에 본다: 적립금으로 되면 바로, 크면 모기업에 한 번 요청, 안 되면 작은 공사로 바꾸거나 올해는 접는다 */
+  /* 먼저 하고 싶은 공사를 고르고, 돈은 그다음에 본다: 모기업 요청 → 명명권·지자체 → 적립금, 안 되면 작은 공사로 바꾸거나 접는다 */
   let r=facU(key,'pick')*sum(C.map(x=>x.w)), x=C[C.length-1]; for(const y of C){ r-=y.w; if(r<=0){ x=y; break; } }
-  const cashOk=cash-x.c>=reserve, capOk=facU(key,'cap')<capP-x.c/30000;
-  let src=capOk&&(x.c>=2500||!cashOk)?'cap':cashOk?'cash':null;
-  if(!src){ const sm=C.filter(y=>cash-y.c>=reserve).sort((a,b)=>a.c-b.c)[0]; if(!sm||facU(key,'fb')>=.5)return null; x=sm; src='cash'; } /* 큰 공사가 막히면 절반은 적립금으로 되는 작은 공사로 바꾼다 */
+  const go=(x)=>{ const I=facRouteInfo(t.id,x.k), cashOk=cash-x.c>=reserve;
+    if(I.cap.ok){ t.capexD=G.day; /* 사람 단장처럼 먼저 모기업에 요청해 본다(같은 승인 식·간격) */ if(facU(key,'cap'+x.k)<I.cap.p){ t.capexY=sponSeason(); t.capN=(t.capN||0)+1; return 'cap'; } t.trust=clamp((t.trust??55)-1,0,100); }
+    if(o.capOnly)return null;
+    for(const rt of ['spon','city'])if(I[rt].ok&&cash-x.c*(1-(rt==='spon'?FAC_SPON.share:FAC_CITY.share))>=reserve&&(x.c>=2000||!cashOk)){ (t.facAsk=t.facAsk||{})[rt]=G.day; if(facU(key,rt+x.k)<I[rt].p)return rt; }
+    return cashOk?'cash':null; };
+  let src=go(x);
+  if(!src&&o.capOnly)return null;
+  if(!src){ const sm=C.filter(y=>y!==x&&cash-y.c>=reserve).sort((a,b)=>a.c-b.c)[0]; if(!sm||(!o.force&&facU(key,'fb')>=.5))return null; x=sm; src='cash'; } /* 큰 공사가 막히면 절반은 적립금으로 되는 작은 공사로 바꾼다 */
+  if(src==='spon'||src==='city'){ facFundGo(t.id,x.k,src,x.c); t.facN=(t.facN||0)+1; return x.k; }
   if(src==='cash')t.cash-=x.c;
-  S.bld[x.k]={lv:x.lv+1,done:G.day+FACI[x.k].days[x.lv+1],c:x.c}; if(src==='cap')S.bld[x.k].cap=true;
-  S.inv=(S.inv||0)+x.c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k:x.k,lv:x.lv+1,c:x.c,src}); if(S.hist.length>40)S.hist.shift();
-  clubFacilityHistory('fac',t.id,FACI[x.k].l,'착공',{...S.bld[x.k],src:src==='cap'?'모기업 투자':'구단 현금'}); if(x.c>=4000)wire('시설',`${t.city} ${t.nick}, ${FAC_NEWS[x.k][x.lv+1]} 착공(${money(x.c)}${src==='cap'?', 모기업 투자':''})`,{tid:t.id});
+  const b=facStartBuild(t.id,x.k,{src}); if(src==='cap')b.cap=true;
+  S.inv=(S.inv||0)+x.c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k:x.k,lv:x.lv+1,c:x.c,src}); if(S.hist.length>40)S.hist.shift(); t.facN=(t.facN||0)+1;
+  clubFacilityHistory('fac',t.id,FACI[x.k].l,'착공',{...b,src:facSrcTxt(src)}); facStartNews(t.id,x.k,b);
   return x.k; }
 
 /* 유지·보수를 못 해 시설이 낡는다: 가장 높은 시설 하나가 한 단계 내려간다(공사 중인 시설은 제외) */

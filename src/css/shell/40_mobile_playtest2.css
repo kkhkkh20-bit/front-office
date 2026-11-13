@@ -12,7 +12,7 @@
 
 @media (max-width:480px){
   /* 1) 상단: 화면 제목을 한 단계 줄여 '트레이…'처럼 잘리지 않게, 진행 버튼 보조 문구는 짧은 앞부분만(goSub) */
-  #app .top .club b{font-size:15px;letter-spacing:-.03em}
+  #app .top .club b{font-size:16px;letter-spacing:-.03em}
   #app .goset .continue .cl i{max-width:96px}
 
   /* 3) 트레이드 협상: 제안하기·비우기 줄을 스크롤 영역 아래에 붙여 늘 보이게, 정렬 버튼은 한 줄 */

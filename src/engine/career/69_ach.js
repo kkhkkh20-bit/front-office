@@ -107,7 +107,7 @@ const ACH=[
 const ACH_BY=Object.fromEntries(ACH.map(a=>[a.id,a]));
 const achHas=id=>!!(G&&G.ach&&G.ach[id]);
 const achHasMeta=id=>!!achMeta().u[id];
-function achRewardTxt(r){ if(!r)return '기록만 남습니다'; const L=[]; if(r.rep)L.push(`새 게임 시작 명성 +${r.rep}`); if(r.trust)L.push(`새 게임 첫 시즌 구단주 신뢰 +${r.trust}`); if(r.cash)L.push(`새 게임 창단 자금 +${money(r.cash)}`); if(r.title)L.push(`칭호 '${r.title}'`); return L.join(' · '); }
+function achRewardTxt(r){ if(!r)return '기록만 남습니다'; const L=[]; if(r.rep)L.push(`새 게임 시작 명성 상승`); if(r.trust)L.push(`새 게임 첫 시즌 구단주 신뢰 상승`); if(r.cash)L.push(`새 게임 창단 자금 +${money(r.cash)}`); if(r.title)L.push(`칭호 '${r.title}'`); return L.join(' · '); }
 
 function achUnlock(id,why){ const a=ACH_BY[id]; if(!a)return false; if(G&&G.edited)return false; /* 에디터로 능력을 고친 저장은 도전과제를 열지 않는다 */ G.ach=G.ach||{}; const M=achMeta(); const newHere=!G.ach[id], newMeta=!M.u[id];
   if(!newHere&&!newMeta)return false;

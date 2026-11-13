@@ -21,18 +21,18 @@ function deadlineDecision(){ if(G.dline&&G.dline.y===G.year)return; const st=sta
   const vets=domestic(G.user).filter(p=>p.age>=30&&ctrlYears(p)<=1&&ovr(p)>=52&&!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3);
   const sit=`${r.w}승 ${r.l}패로 ${rk}위입니다. ${rk<=5?`가을야구 안쪽입니다(6위와 ${(((r.w-r.l)-(st[5].w-st[5].l))/2).toFixed(1)}경기 차).`:`5위와 ${gb5.toFixed(1)}경기 차입니다.`} 7월 31일 트레이드 마감 전에 올해 방향을 정해 주세요. ${vets.length?`계약이 올해로 끝나는 베테랑: ${vets.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세)`).join(', ')}.`:''}`;
   evNew('dline',`트레이드 마감 방향: ${rk}위`,sit,[
-    {l:'보강한다',fx:'부단장이 약한 자리 보강안을 바로 올립니다. 팬 여론 +2. 성적 우선 구단주는 반기지만, 유망주를 내줄 각오가 필요합니다.'},
+    {l:'보강한다',fx:'부단장이 약한 자리 보강안을 바로 올립니다. 팬 여론 조금 호전. 성적 우선 구단주는 반기지만, 유망주를 내줄 각오가 필요합니다.'},
     {l:'지금 전력으로 간다',fx:'변화 없이 시즌을 이어갑니다.'},
-    {l:'정리한다',fx:`올해 계약이 끝나는 베테랑을 급매물로 내놓습니다. 팬 여론 -3. 수익 우선 구단주는 반깁니다.`}],{from:'부단장',data:{rk,vets:vets.map(p=>p.id)},def:1,exp:7}); }
+    {l:'정리한다',fx:`올해 계약이 끝나는 베테랑을 급매물로 내놓습니다. 팬 여론 악화. 수익 우선 구단주는 반깁니다.`}],{from:'부단장',data:{rk,vets:vets.map(p=>p.id)},def:1,exp:7}); }
 EVH.lead=EVH_LEAD;
 EVH.dline={ pick(e,i){ const t=team(G.user); G.dline={y:G.year,mode:['buy','hold','sell'][i]};
   if(i===0){ G.pr.fan=clamp(G.pr.fan+2,0,100); if(t.owner==='win')t.trust=clamp(t.trust+2,0,100); let L=[]; try{ L=tradeSuggest(true).slice(0,3); }catch(err){}
     if(L.length)mail('부단장','마감 보강안',`보강 방향으로 정리했습니다. 상대가 받아들일 만한 조건입니다.\n\n${L.map(x=>{ const q=G.players[x.id]; return q?`${SLOTK[x.k]||''} 보강: ${q.name}(${tshort(x.tid)}, ${posLabel(q)}) 영입 · 내줄 선수 ${x.give.map(id=>G.players[id]?G.players[id].name:'').join(', ')}`:''; }).filter(Boolean).join('\n')}\n\n홈의 전력 요약이나 트레이드 센터에서 바로 제안할 수 있습니다.`,{kind:'트레이드',imp:true,acts:[{l:'트레이드 센터',a:'go',v:'trade:market'}]});
-    return `팬 여론 +2.${t.owner==='win'?' 구단주 신뢰 +2.':''} ${L.length?`부단장이 보강안 ${L.length}건을 올렸습니다(소식함 '마감 보강안').`:'지금은 상대가 받아들일 만한 보강안이 없습니다. 트레이드 센터에서 직접 찾아보세요.'}`; }
+    return `팬 여론 조금 호전.${t.owner==='win'?' 구단주 신뢰 조금 상승.':''} ${L.length?`부단장이 보강안 ${L.length}건을 올렸습니다(소식함 '마감 보강안').`:'지금은 상대가 받아들일 만한 보강안이 없습니다. 트레이드 센터에서 직접 찾아보세요.'}`; }
   if(i===1)return '현재 전력으로 시즌을 이어갑니다.';
   const ids=(e.data.vets||[]).filter(id=>G.players[id]&&G.players[id].team===G.user); for(const id of ids){ const p=G.players[id]; p.listed=true; p.urgent=true; }
   G.pr.fan=clamp(G.pr.fan-3,0,100); if(t.owner==='profit')t.trust=clamp(t.trust+2,0,100);
-  return `${ids.length?ids.map(id=>G.players[id].name).join(', ')+'을(를) 급매물로 내놓았습니다. ':''}팬 여론 -3.${t.owner==='profit'?' 구단주 신뢰 +2.':''}`; } };
+  return `${ids.length?ids.map(id=>G.players[id].name).join(', ')+'을(를) 급매물로 내놓았습니다. ':''}팬 여론 악화.${t.owner==='profit'?' 구단주 신뢰 조금 상승.':''}`; } };
 function slotRanks(tid){ const L=leagueSlots(); const out={}; for(const k of PSLOTS){ const vs=L.map((s,i)=>({i,v:s[k].v})).sort((a,b)=>b.v-a.v); out[k]={rank:vs.findIndex(x=>x.i===tid)+1,v:L[tid][k].v,ps:L[tid][k].ps}; } return out; }
 function rankWith(k,v){ return leagueSlots().filter((s,i)=>i!==G.user&&s[k].v>v).length+1; }
 function myCoreIds(){ const d=depth(G.user); return new Set([...d.start,...d.sp.slice(0,3),...d.pen.slice(0,1)].map(p=>p.id)); }
@@ -97,7 +97,7 @@ function tradeSuggest(force,only){ if(!tradeOpen())return [];
 function churnCheck(){ const n=(G.trades||[]).filter(t=>t.d!=null&&t.d>G.day-30&&(t.me==null||t.me===G.user)) /* 지금 구단이 한 거래만(검수 11-08c) */.length; if(n<3)return;
   G.form={until:G.day+14,b:-.5}; const m=G.mgr[G.user]; if(m)m.rel=clamp(m.rel-3,0,100); for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)-2,0,100);
   news('선수',`${tshort(G.user)}, 한 달 새 트레이드 ${n}건… 선수단 어수선`,`잇단 트레이드로 선수들 사이에 "다음은 누구냐"는 말이 나옵니다.`,-1);
-  stop('감독',`한 달 사이 트레이드가 ${n}건입니다. 선수단이 어수선해 2주간 팀 분위기가 떨어지고, 감독 관계 -3, 선수 기분 -2입니다.`); }
+  stop('감독',`한 달 사이 트레이드가 ${n}건입니다. 선수단이 어수선해 2주간 팀 분위기가 떨어지고, 감독과 선수들도 불편해합니다.`); }
 function findPackages(pid){ const p=G.players[pid]; if(!p||p.team==null||p.team===G.user)return []; const t=team(p.team); const out=[]; const used=new Set(); let core=myCoreIds();
   for(let i=0;i<4&&out.length<3;i++){ const ex=new Set([...core,...used]); const pk=buildPackage(t,p,ex); if(!pk){ if(core.size){ core=new Set(); continue; } break; } out.push(pk); pk.forEach(id=>used.add(id)); }
   return out; }

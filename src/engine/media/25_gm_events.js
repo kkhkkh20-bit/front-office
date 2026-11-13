@@ -57,16 +57,16 @@ const EVH={
       return {p:pk,ty:wpick({gamble:.15,drink:.4,sns:.45})}; },
     make(d){ const p=d.p, S=SCAND[d.ty]; prInit(); G.pr.fan=clamp(G.pr.fan-S.fan,0,100); G.pr.press=clamp(G.pr.press-S.press,0,100); G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+S.sp;
       if(S.kbo)p.susp=G.day+gDays(S.kbo); story(p,`${S.t}로 ${ASSOC.s} 징계${S.kbo?` (출장정지 ${S.kbo}경기)`:' (제재금)'}`,'inj'); news('구단',`${tshort(G.user)} ${p.name}, ${S.t} 파문`,`${S.d} ${ASSOC.s} 상벌위원회는 ${S.kbo?`출장정지 ${S.kbo}경기와 `:''}제재금을 부과했습니다. 후원사 일부가 광고를 중단해 약 ${money(S.sp)}의 손실이 예상됩니다.`,-3,{ref:p.id});
-      evNew('scandal',`${p.name} ${S.t}: 구단 징계를 정해 주세요`,`${p.name}(${posLabel(p)}, ${p.age}세) ${S.d}\n${ASSOC.s} 징계: ${S.kbo?`출장정지 ${S.kbo}경기 + 제재금`:'제재금'}\n후원 손실 약 ${money(S.sp)}, 팬 여론 -${S.fan}, 언론 논조 -${S.press}가 이미 반영됐습니다. 구단 자체 징계 수위에 따라 여론과 후원사 반응이 달라집니다.`,
+      evNew('scandal',`${p.name} ${S.t}: 구단 징계를 정해 주세요`,`${p.name}(${posLabel(p)}, ${p.age}세) ${S.d}\n${ASSOC.s} 징계: ${S.kbo?`출장정지 ${S.kbo}경기 + 제재금`:'제재금'}\n후원 손실 약 ${money(S.sp)}, 팬 여론 악화, 언론 논조 악화가 이미 반영됐습니다. 구단 자체 징계 수위에 따라 여론과 후원사 반응이 달라집니다.`,
         [{l:'협회 징계만 따르기',fx:'선수 기분은 지키지만 "봐주기" 비판으로 팬 여론과 언론 논조가 더 떨어집니다.'},
          {l:`자체 징계 추가 (벌금·출장정지 ${S.club}경기)`,fx:'여론은 조금 더 떨어지고 선수 기분이 내려갑니다. 무난한 선택입니다.'},
          {l:'시즌 아웃 (무기한 출장정지)',fx:'올 시즌 더 쓸 수 없습니다. 여론이 회복되고, 후원사 일부가 돌아올 수 있습니다.'},
          {l:'방출',fx:'남은 연봉은 그대로 주고 팀을 떠납니다. 여론은 가장 빨리 회복됩니다.'}],{ref:p.id,face:p.id,from:'운영팀',data:{pid:p.id,ty:d.ty},def:1,exp:4}); },
     pick(e,i){ const p=evP(e.data.pid); const S=SCAND[e.data.ty]; if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; initPers(p); const base=Math.max(G.day,p.susp||0);
-      if(i===0){ G.pr.fan=clamp(G.pr.fan-4,0,100); G.pr.press=clamp(G.pr.press-6,0,100); p.mor=clamp((p.mor??60)+4,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:0}); return '팬 여론 -4, 언론 논조 -6. 선수는 구단에 고마워합니다.'; }
-      if(i===1){ p.susp=base+gDays(S.club); G.pr.fan=clamp(G.pr.fan-1,0,100); p.mor=clamp((p.mor??60)-8,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:1}); return `${p.name} 출장정지가 ${S.club}경기 늘었습니다. 선수 기분 -8.`; }
-      if(i===2){ p.susp=Math.max(base,G.cal?G.cal.end+1:base+120); G.pr.fan=clamp(G.pr.fan+3,0,100); G.pr.press=clamp(G.pr.press+4,0,100); p.mor=clamp((p.mor??60)-20,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:2}); return `${p.name}은(는) 올 시즌 뛸 수 없습니다. 팬 여론 +3, 언론 논조 +4.`; }
-      const nm=p.name; if(p.foreign)releaseForeign(p.id); else releasePlayer(p.id); G.pr.fan=clamp(G.pr.fan+4,0,100); G.pr.press=clamp(G.pr.press+5,0,100); evFollow(21,'scandal',{pid:null,ty:e.data.ty,c:3,nm}); return `${nm}을(를) 방출했습니다. 팬 여론 +4, 언론 논조 +5.`; },
+      if(i===0){ G.pr.fan=clamp(G.pr.fan-4,0,100); G.pr.press=clamp(G.pr.press-6,0,100); p.mor=clamp((p.mor??60)+4,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:0}); return '팬 여론 악화, 언론 논조 크게 악화. 선수는 구단에 고마워합니다.'; }
+      if(i===1){ p.susp=base+gDays(S.club); G.pr.fan=clamp(G.pr.fan-1,0,100); p.mor=clamp((p.mor??60)-8,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:1}); return `${p.name} 출장정지가 ${S.club}경기 늘었습니다. 선수 기분 크게 하락.`; }
+      if(i===2){ p.susp=Math.max(base,G.cal?G.cal.end+1:base+120); G.pr.fan=clamp(G.pr.fan+3,0,100); G.pr.press=clamp(G.pr.press+4,0,100); p.mor=clamp((p.mor??60)-20,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:2}); return `${p.name}은(는) 올 시즌 뛸 수 없습니다. 팬 여론 호전, 언론 논조 호전.`; }
+      const nm=p.name; if(p.foreign)releaseForeign(p.id); else releasePlayer(p.id); G.pr.fan=clamp(G.pr.fan+4,0,100); G.pr.press=clamp(G.pr.press+5,0,100); evFollow(21,'scandal',{pid:null,ty:e.data.ty,c:3,nm}); return `${nm}을(를) 방출했습니다. 팬 여론 호전, 언론 논조 호전.`; },
     follow(d,tid){ const S=SCAND[d.ty], here=!G.unemp&&tid===G.user; if(!here&&d.c<2)return; if(d.c>=2){ const back=Math.round(S.sp*.5), led=here?Math.min(back,(G.spend&&G.spend.etc)||0):0; if(led)G.spend.etc-=led; if(back>led){ team(tid).cash+=back-led; hoBook(tid,[['후원사 복귀',back-led]],[]); } /* 이직으로 손실이 옛 장부에서 구단 현금으로 넘어갔으면 만회도 구단 현금으로(검수 11-09za) */ if(here)mail('마케팅팀','후원사 일부 복귀',`강한 자체 징계 뒤 광고를 중단했던 후원사 일부가 돌아왔습니다. 손실 ${money(back)}을(를) 만회했습니다.`,{kind:'재정'}); }
       else if(d.c===0){ G.pr.fan=clamp(G.pr.fan-2,0,100); mail('마케팅팀','징계 논란이 이어집니다',`"구단이 감싼다"는 비판이 계속되고 있습니다. 팬 여론이 조금 더 떨어졌습니다.`,{kind:'재정'}); } } },
   /* 출전 시간 불만: 시즌 100경기가 지난 뒤에만 생긴다. 선수는 먼저 감독에게 따지고, 그게 기사로 나오면 단장이 후속 조치를 정한다.
@@ -86,11 +86,11 @@ const EVH={
         :{l:'트레이드 명단에 올리기',fx:tradeOpen()?'선수 기분이 조금 오르고, 다른 구단 제안이 올 수 있습니다.':'선수 기분이 조금 오릅니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'},
        {l:'지켜보기',fx:'둘이 알아서 풀게 둡니다. 선수 기분이 조금 떨어지고 언론은 프런트가 손 놓았다고 봅니다.'}],{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,hot},def:3}); },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; const m=G.mgr[G.user];
-      if(i===0){ if(m)m.rel=clamp(m.rel+4,0,100); p.mor=clamp(p.mor-9,0,100); return `감독 관계 +4. ${p.name} 기분 -9. 선수단에는 감독 권한을 존중한다는 메시지가 갔습니다.`; }
-      if(i===1){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 +8, 감독 관계 -${d}. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
-      if(i===2&&p.foreign){ p.mor=clamp(p.mor+3,0,100); return `${p.name}과(와) 통역을 두고 따로 이야기했습니다. 기분 +3. 출전은 감독 결정 그대로입니다.`; } /* 외국인은 트레이드 명단에 오르지 않는데 '올렸다'고만 나오던 문제(꺼끼꺼 11-12) */
-      if(i===2){ listPlayer(p.id); p.mor=clamp(p.mor+3,0,100); return `${p.name}을(를) 트레이드 명단에 올렸습니다. 기분 +3.`; }
-      p.mor=clamp(p.mor-4,0,100); prInit(); G.pr.press=clamp(G.pr.press-1,0,100); return `${p.name} 기분 -4, 언론 -1.`; } },
+      if(i===0){ if(m)m.rel=clamp(m.rel+4,0,100); p.mor=clamp(p.mor-9,0,100); return `감독 관계 개선. ${p.name} 기분 크게 하락. 선수단에는 감독 권한을 존중한다는 메시지가 갔습니다.`; }
+      if(i===1){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 크게 상승, 감독 관계 악화. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
+      if(i===2&&p.foreign){ p.mor=clamp(p.mor+3,0,100); return `${p.name}과(와) 통역을 두고 따로 이야기했습니다. 기분 상승. 출전은 감독 결정 그대로입니다.`; } /* 외국인은 트레이드 명단에 오르지 않는데 '올렸다'고만 나오던 문제(꺼끼꺼 11-12) */
+      if(i===2){ listPlayer(p.id); p.mor=clamp(p.mor+3,0,100); return `${p.name}을(를) 트레이드 명단에 올렸습니다. 기분 상승.`; }
+      p.mor=clamp(p.mor-4,0,100); prInit(); G.pr.press=clamp(G.pr.press-1,0,100); return `${p.name} 기분 하락, 언론 조금 악화.`; } },
   /* 2군 유망주 콜업 여론 */
   call:{ w:1.1, check(){ if(!entryOn())return null;
       const L=playersOf(G.user).filter(p=>!p.e1&&!p.ys&&healthy(p)&&canUp(p)).map(p=>{ const h=seasonTotal(p,G.year,'퓨처스'); if(!h)return null;
@@ -101,7 +101,7 @@ const EVH={
        {l:'2군에서 더 키운다',fx:'팬 여론이 조금 내려갑니다. 야망이 큰 선수는 실망합니다.'}],{ref:p.id,face:p.id,from:'스카우트팀장',data:{pid:p.id},def:1}); },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.';
       if(i===0){ const r=reqEntry(p.id,true); if(p.e1){ G.pr.fan=clamp(G.pr.fan+2,0,100); const h=seasonTotal(p,G.year,'1군'); evFollow(30,'call',{pid:p.id,ev:e.id,pa:h?h.pa:0,outs:h?h.outs:0}); } return r; }
-      G.pr.fan=clamp(G.pr.fan-2,0,100); initPers(p); if(p.pers.amb>=13){ p.mor=clamp(p.mor-6,0,100); return `팬 여론 -2. ${p.name}은(는) 실망한 기색입니다(기분 -6).`; } return '팬 여론 -2. 선수는 묵묵히 준비하겠다고 합니다.'; },
+      G.pr.fan=clamp(G.pr.fan-2,0,100); initPers(p); if(p.pers.amb>=13){ p.mor=clamp(p.mor-6,0,100); return `팬 여론 조금 악화. ${p.name}은(는) 실망한 기색입니다. 기분 하락.`; } return '팬 여론 조금 악화. 선수는 묵묵히 준비하겠다고 합니다.'; },
     follow(d){ const p=evP(d.pid); if(!p||p.team!==G.user)return; const h=seasonTotal(p,G.year,'1군');
       const t=h?`${p.name} 콜업 한 달: 1군 ${statLine(h,p)}${p.e1?'':' · 지금은 2군으로 내려가 있습니다'}`:`${p.name} 콜업 한 달: 1군 기회를 거의 얻지 못했습니다.`; evResult(d.ev,t); note('엔트리',t,p.id); } },
   /* 감독의 보강 요청 */
@@ -112,11 +112,11 @@ const EVH={
     make(x){ const m=G.mgr[G.user]; G.mgrReqD=G.day; evNew('reinf',`감독의 ${x.area} 보강 요청`,`${m.name} 감독: "우리 ${x.area}이(가) 리그 ${x.rank}위입니다. 이대로는 버티기 어렵습니다. 보강을 부탁드립니다."`,
       [{l:'30일 안에 보강 약속',fx:'감독 관계가 오릅니다. 30일 안에 트레이드·외국인 교체 등으로 선수를 데려오지 못하면 크게 떨어집니다.'},
        {l:'지금 전력으로 버티자',fx:'감독 관계가 내려갑니다.'}],{from:'감독실',data:{area:x.area},def:1}); },
-    pick(e,i){ const m=G.mgr[G.user]; if(!m)return ''; if(i===0){ m.rel=clamp(m.rel+4,0,100); evFollow(30,'reinf',{ev:e.id,day:G.day,area:e.data.area,mid:m.id}); return '감독 관계 +4. 30일 안에 선수를 데려와야 합니다.'; }
-      m.rel=clamp(m.rel-5,0,100); return '감독 관계 -5. 감독은 아쉬운 표정입니다.'; },
+    pick(e,i){ const m=G.mgr[G.user]; if(!m)return ''; if(i===0){ m.rel=clamp(m.rel+4,0,100); evFollow(30,'reinf',{ev:e.id,day:G.day,area:e.data.area,mid:m.id}); return '감독 관계 개선. 30일 안에 선수를 데려와야 합니다.'; }
+      m.rel=clamp(m.rel-5,0,100); return '감독 관계 악화. 감독은 아쉬운 표정입니다.'; },
     follow(d){ const m=G.mgr[G.user]; if(!m||m.id!==d.mid)return; const got=evSince(d.day);
-      if(got.length){ m.rel=clamp(m.rel+6,0,100); if(!G.form||G.day>G.form.until)G.form={until:G.day+14,b:.6}; const t=`${m.name} 감독: "약속을 지켜 주셨습니다. ${got.slice(0,2).map(p=>p.name).join(', ')} 합류로 선수단 분위기가 살아났습니다." (감독 관계 +6, 2주간 팀 분위기 상승)`; evResult(d.ev,t); note('감독',t); }
-      else { m.rel=clamp(m.rel-10,0,100); const t=`${m.name} 감독: "보강 약속은 어떻게 된 겁니까?" 30일이 지났지만 데려온 선수가 없습니다. (감독 관계 -10)`; evResult(d.ev,t); stop('감독',t); } } },
+      if(got.length){ m.rel=clamp(m.rel+6,0,100); if(!G.form||G.day>G.form.until)G.form={until:G.day+14,b:.6}; const t=`${m.name} 감독: "약속을 지켜 주셨습니다. ${got.slice(0,2).map(p=>p.name).join(', ')} 합류로 선수단 분위기가 살아났습니다." 감독 관계 개선, 2주간 팀 분위기 상승.`; evResult(d.ev,t); note('감독',t); }
+      else { m.rel=clamp(m.rel-10,0,100); const t=`${m.name} 감독: "보강 약속은 어떻게 된 겁니까?" 30일이 지났지만 데려온 선수가 없습니다. 감독 관계 크게 악화.`; evResult(d.ev,t); stop('감독',t); } } },
   /* 더그아웃 충돌 */
   clash:{ w:.8, check(){ if(R()>.4)return null; const ps=playersOf(G.user).filter(p=>{ initPers(p); return healthy(p)&&p.pers.temp>=15&&p.mor<70&&isRegular(p); }); if(!ps.length)return null;
       const a=ps[Math.floor(R()*ps.length)]; const others=playersOf(G.user).filter(p=>p.id!==a.id&&healthy(p)&&isRegular(p)); if(!others.length)return null; return {a,b:others[Math.floor(R()*others.length)]}; },
@@ -126,9 +126,9 @@ const EVH={
        x.a.foreign?{l:'벌금 징계(구단 내규)',fx:`${x.a.name}에게 구단 내규로 벌금을 매깁니다. 출전은 그대로이고 기분이 떨어집니다. 외국인 선수는 트레이드할 수 없어 매물로 올리지 않습니다.`}
         :{l:'트레이드 명단에 올리기',fx:tradeOpen()?'갈등을 정리합니다. 다른 구단이 싸게 보려 할 수 있습니다.':'갈등을 정리합니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'}],{ref:x.a.id,face:x.a.id,from:'수석코치',data:{a:x.a.id,b:x.b.id},def:0}); },
     pick(e,i){ const a=evP(e.data.a); if(!a||a.team!==G.user)return '';
-      if(i===0){ a.mor=clamp(a.mor-3,0,100); if(R()<.4){ news('선수',`${tshort(G.user)} 더그아웃 불화설`,`${a.name}이(가) 동료와 충돌했다는 이야기가 흘러나왔습니다. 구단은 "별일 아니다"라고 밝혔습니다.`,-2,{ref:a.id}); return '경고로 마무리했지만 이야기가 언론에 새어 나갔습니다(언론 논조 하락).'; } return '조용히 마무리했습니다.'; }
-      if(i===1){ a.susp=G.day+5; a.mor=clamp(a.mor-12,0,100); G.form={until:G.day+14,b:.5}; for(const p of playersOf(G.user))if(p.id!==a.id&&p.pers&&p.pers.pro>=13)p.mor=clamp(p.mor+2,0,100); return `${a.name} 5일 출장 정지(기분 -12). 2주간 팀 분위기 상승.`; }
-      if(a.foreign){ a.mor=clamp(a.mor-6,0,100); for(const p of playersOf(G.user))if(p.id!==a.id&&p.pers&&p.pers.pro>=13)p.mor=clamp(p.mor+1,0,100); return `${a.name}에게 구단 내규에 따라 벌금을 매겼습니다(기분 -6). 출전은 그대로입니다.`; } /* 외국인 선수는 트레이드 대상이 아니다(커뮤니티 제보 11-11) */
+      if(i===0){ a.mor=clamp(a.mor-3,0,100); if(R()<.4){ news('선수',`${tshort(G.user)} 더그아웃 불화설`,`${a.name}이(가) 동료와 충돌했다는 이야기가 흘러나왔습니다. 구단은 "별일 아니다"라고 밝혔습니다.`,-2,{ref:a.id}); return '경고로 마무리했지만 이야기가 언론에 새어 나갔습니다. 언론 논조 하락.'; } return '조용히 마무리했습니다.'; }
+      if(i===1){ a.susp=G.day+5; a.mor=clamp(a.mor-12,0,100); G.form={until:G.day+14,b:.5}; for(const p of playersOf(G.user))if(p.id!==a.id&&p.pers&&p.pers.pro>=13)p.mor=clamp(p.mor+2,0,100); return `${a.name} 5일 출장 정지(기분 크게 하락). 2주간 팀 분위기 상승.`; }
+      if(a.foreign){ a.mor=clamp(a.mor-6,0,100); for(const p of playersOf(G.user))if(p.id!==a.id&&p.pers&&p.pers.pro>=13)p.mor=clamp(p.mor+1,0,100); return `${a.name}에게 구단 내규에 따라 벌금을 매겼습니다. 기분 하락. 출전은 그대로입니다.`; } /* 외국인 선수는 트레이드 대상이 아니다(커뮤니티 제보 11-11) */
       listPlayer(a.id); return `${a.name}을(를) 트레이드 명단에 올렸습니다.`; } },
   /* 연패 기자회견 */
   press:{ w:1.3, check(){ const L=(G.sea.tl&&G.sea.tl[G.user])||[]; if(L.length<6)return null; const last=L.slice(-5); return last.every(x=>x[0]<0)?{n:(()=>{ let n=0; for(let i=L.length-1;i>=0&&L[i][0]<0;i--)n++; return n; })()}:null; },
@@ -137,9 +137,9 @@ const EVH={
        {l:'선수단 분발 촉구',fx:'프로의식이 높은 선수는 2주간 분발하고, 나머지는 기분이 내려갑니다.'},
        {l:'말을 아낀다',fx:'언론 논조가 조금 내려갑니다.'}],{from:'홍보팀',data:{n:x.n},def:2,exp:3}); },
     pick(e,i){ const m=G.mgr[G.user]; const r=G.sea.rec[G.user]; const base={w:r.w,l:r.l,ev:e.id,i};
-      if(i===0){ if(m)m.rel=clamp(m.rel+8,0,100); news('언론',`단장 "${m?m.name:'감독'} 감독 믿는다"`,`연패 속에서도 단장은 감독에게 힘을 실어 줬습니다.`,1); evFollow(10,'press',base); return '감독 관계 +8. 10일 뒤 성적에 따라 여론이 갈립니다.'; }
-      if(i===1){ let up=0,dn=0; for(const p of playersOf(G.user)){ initPers(p); if(p.pers.pro>=13){ p.form={until:G.day+14,b:.8}; up++; } else { p.mor=clamp(p.mor-5,0,100); dn++; } } evFollow(10,'press',base); return `${up}명은 분발(2주), ${dn}명은 기분 -5.`; }
-      G.pr.press=clamp(G.pr.press-3,0,100); return '언론 논조 -3.'; },
+      if(i===0){ if(m)m.rel=clamp(m.rel+8,0,100); news('언론',`단장 "${m?m.name:'감독'} 감독 믿는다"`,`연패 속에서도 단장은 감독에게 힘을 실어 줬습니다.`,1); evFollow(10,'press',base); return '감독 관계 크게 개선. 10일 뒤 성적에 따라 여론이 갈립니다.'; }
+      if(i===1){ let up=0,dn=0; for(const p of playersOf(G.user)){ initPers(p); if(p.pers.pro>=13){ p.form={until:G.day+14,b:.8}; up++; } else { p.mor=clamp(p.mor-5,0,100); dn++; } } evFollow(10,'press',base); return `${up}명은 분발(2주), ${dn}명은 기분 하락.`; }
+      G.pr.press=clamp(G.pr.press-3,0,100); return '언론 논조 악화.'; },
     follow(d){ const r=G.sea.rec[G.user]; const w=r.w-d.w, l=r.l-d.l; const good=w>l;
       let t=`기자회견 뒤 10일: ${w}승 ${l}패.`; if(d.i===0&&!good){ news('언론',`연패 탈출 실패… 단장 책임론`,`단장이 감독을 공개적으로 신임했지만 반등은 없었습니다.`,-2); t+=' 반등이 없어 단장 책임론 기사가 나왔습니다.'; } else if(good)t+=' 분위기 반전에 성공했습니다.';
       evResult(d.ev,t); note('언론',t); } },
@@ -149,8 +149,8 @@ const EVH={
       [{l:'멘토 역할 맡기기 (수당 5천만)',fx:'올 시즌 24세 이하 선수 성장이 조금 빨라지고, 본인 기분이 오릅니다.'},
        {l:'선수로 집중해 달라',fx:'변화가 없습니다. 본인은 조금 서운해합니다.'}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id},def:1}); },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '';
-      if(i===0){ G.mentor={id:p.id,y:G.year}; G.spend.etc=(G.spend.etc||0)+50; p.mor=clamp(p.mor+8,0,100); return `${p.name} 멘토 지정. 올 시즌 24세 이하 성장 +5%. 수당 5천만.`; }
-      p.mor=clamp(p.mor-3,0,100); return `${p.name} 기분 -3.`; } },
+      if(i===0){ G.mentor={id:p.id,y:G.year}; G.spend.etc=(G.spend.etc||0)+50; p.mor=clamp(p.mor+8,0,100); return `${p.name} 멘토 지정. 올 시즌 젊은 선수들 성장에 도움이 됩니다. 수당 5천만.`; }
+      p.mor=clamp(p.mor-3,0,100); return `${p.name} 기분 하락.`; } },
   /* 마케팅 행사 */
   fan:{ w:.6, check(){ const n=(G.evlog||[]).filter(x=>x.k==='fan'&&x.y===G.year).length; return n<2&&G.pr.fan<56&&!team(G.user).indie?{fan:Math.round(G.pr.fan)}:null; },
     make(x){ evNew('fan','팬 행사 제안',`마케팅팀이 팬 행사를 제안했습니다. 현재 팬 여론은 ${x.fan}입니다.`,
@@ -158,14 +158,14 @@ const EVH={
        {l:'유니폼 증정 경기 (8천만)',fx:'팬 여론이 조금 오릅니다.'},
        {l:'하지 않는다',fx:'변화가 없습니다.'}],{from:'마케팅팀',def:2}); },
     pick(e,i){ const t=team(G.user);
-      if(i===0){ G.spend.etc=(G.spend.etc||0)+200; G.pr.fan=clamp(G.pr.fan+8,0,100); t.pop=clamp(t.pop+.01,0,1.5); return '2억 지출. 팬 여론 +8, 구단 인기 소폭 상승.'; }
-      if(i===1){ G.spend.etc=(G.spend.etc||0)+80; G.pr.fan=clamp(G.pr.fan+3,0,100); return '8천만 지출. 팬 여론 +3.'; } return ''; } },
+      if(i===0){ G.spend.etc=(G.spend.etc||0)+200; G.pr.fan=clamp(G.pr.fan+8,0,100); t.pop=clamp(t.pop+.01,0,1.5); return '2억 지출. 팬 여론 크게 호전, 구단 인기 소폭 상승.'; }
+      if(i===1){ G.spend.etc=(G.spend.etc||0)+80; G.pr.fan=clamp(G.pr.fan+3,0,100); return '8천만 지출. 팬 여론 호전.'; } return ''; } },
   /* FA 앞둔 주축의 다년계약 요구 */
   agent:{ w:.8, check(){ const top=playersOf(G.user).map(ovr).sort((a,b)=>b-a); const bar=top[11]||50; const L=playersOf(G.user).filter(p=>!p.foreign&&!p.faC&&!p.extNext&&p.svc===faSvc(p)-1&&ovr(p)>=bar&&!p.agentY); return L.sort((a,b)=>ovr(b)-ovr(a))[0]||null; },
     make(p){ p.agentY=G.year; evNew('agent',`${p.name} 측, 다년계약 요구`,`올 시즌 뒤 FA가 되는 ${p.name}(${posLabel(p)}, ${p.age}세)의 에이전트가 시즌 중 다년계약 협상을 원합니다.\n올해 기록: ${evLine(p)}`,
       [{l:'다년계약 협상하기',fx:'선수 관리 화면에서 조건을 제시합니다. 협상이 틀어지면 기분이 내려갈 수 있습니다.'},
        {l:'시즌 끝나고 이야기하자',fx:'선수 기분이 조금 내려가고, FA 시장에 나갈 가능성이 커집니다.'}],{ref:p.id,face:p.id,from:'에이전트',data:{pid:p.id},def:1}); },
-    pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0)return '선수 정보의 관리 탭에서 다년계약 조건을 제시하세요.'; p.mor=clamp(p.mor-5,0,100); return `${p.name} 기분 -5.`; } },
+    pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0)return '선수 정보의 관리 탭에서 다년계약 조건을 제시하세요.'; p.mor=clamp(p.mor-5,0,100); return `${p.name} 기분 하락.`; } },
   /* 주전 슬럼프 */
   slump:{ w:1.1, check(){ const d=depth(G.user); const L=d.start.filter(p=>(p.l10||[]).length>=8).map(p=>{ const L=p.l10; const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])),bb=sum(L.map(x=>x[3])),xb=sum(L.map(x=>x[5]||0)),sf=sum(L.map(x=>x[6]||0)); if(ab<25)return null; const hp=sum(L.map(x=>x[7]||0)); const ops=(h+bb+hp)/(ab+bb+hp+sf)+(h+xb)/ab; return ops<.5?{p,ops,avg:h/ab}:null; }).filter(Boolean).sort((a,b)=>a.ops-b.ops); return L[0]||null; },
     make(x){ const p=x.p; evNew('slump',`${p.name}, 깊은 슬럼프`,`주전 ${p.name}(${posLabel(p)})이(가) 최근 10경기(${dmd(G.day)} 기준) 타율 ${fmt3(x.avg)}, OPS ${fmt3(x.ops)}에 그치고 있습니다. 전력분석팀은 타격 밸런스가 무너졌다고 봅니다.\n시즌 기록: ${evLine(p)}`,
@@ -174,8 +174,8 @@ const EVH={
        {l:'믿고 기다린다',fx:'변화가 없습니다. 선수 기분이 조금 오릅니다.'}],{ref:p.id,face:p.id,from:'전력분석팀',data:{pid:p.id},def:2}); },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '';
       if(i===0){ const r=reqEntry(p.id,false); if(!p.e1){ p.mor=clamp(p.mor-6,0,100); p.form={until:G.day+24,b:.9}; evFollow(25,'slump',{pid:p.id,ev:e.id}); } return r; }
-      if(i===1){ initPers(p); if(p.pers.pro>=12){ p.form={until:G.day+14,b:.9}; p.mor=clamp(p.mor+2,0,100); evFollow(15,'slump',{pid:p.id,ev:e.id}); return `${p.name}: "다시 준비하겠습니다." (2주간 분발)`; } p.mor=clamp(p.mor-6,0,100); return `${p.name}: "저도 답답합니다." (기분 -6)`; }
-      p.mor=clamp(p.mor+3,0,100); return `${p.name} 기분 +3.`; },
+      if(i===1){ initPers(p); if(p.pers.pro>=12){ p.form={until:G.day+14,b:.9}; p.mor=clamp(p.mor+2,0,100); evFollow(15,'slump',{pid:p.id,ev:e.id}); return `${p.name}: "다시 준비하겠습니다." (2주간 분발)`; } p.mor=clamp(p.mor-6,0,100); return `${p.name}: "저도 답답합니다." 기분 하락.`; }
+      p.mor=clamp(p.mor+3,0,100); return `${p.name} 기분 상승.`; },
     follow(d){ const p=evP(d.pid); if(!p)return; const L=p.l10||[]; const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])); const t=ab?`${p.name} 조정 이후 최근 10경기 타율 ${fmt3(h/ab)}.`:`${p.name}은(는) 아직 1군 경기에 나오지 않았습니다.`; evResult(d.ev,t); note('경기',t,p.id); } },
   /* 외국인 선수 부진 */
   fx:{ w:1, check(){ if(G.day>foreignDL())return null; const L=foreignOf(G.user).filter(p=>!p.fxAsk&&fReplLeft(G.user,p.foreign)>0).map(p=>{ const h=seasonTotal(p,G.year,'1군'); if(!h)return null;
@@ -191,6 +191,6 @@ const EVH={
 };
 function evInjury(p,days,reg){ if(p.team!==G.user||period()!=='season'||days<12||days>70||evOpen().some(e=>e.k==='inj'))return; if(!(reg??isRegular(p)))return; /* reg: 다치기 전 주전 여부(검수 11-09t) */
   evNew('inj',`${p.name} 복귀 시점`,`${p.name}이(가) 부상으로 약 ${days}일 빠집니다. 의무팀은 무리하면 일찍 돌아올 수 있다고 합니다.`,
-    [{l:'조기 복귀 (재활 약 40% 단축)',fx:'빨리 돌아오지만, 복귀 후 한 달 동안 부상 위험이 3배입니다.'},
+    [{l:'조기 복귀',fx:'빨리 돌아오지만, 복귀 후 한 달 동안 부상 위험이 3배입니다.'},
      {l:'정상 재활',fx:'예정대로 복귀합니다.'}],{ref:p.id,face:p.id,from:'팀 닥터 · 의무팀',data:{pid:p.id},def:1,exp:2}); }
 

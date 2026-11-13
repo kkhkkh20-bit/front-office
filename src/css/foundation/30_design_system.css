@@ -31,7 +31,8 @@
 :is(#app,#sheet) :is(.tc-name,.tcard .row>b,.pc-name,.staff-person b){font-size:var(--ui-heading);line-height:24px}
 :is(#app,#sheet) :is(.pc-v,.pc-v b,.pc-r b){font-size:var(--ui-title);line-height:28px}
 :is(#app,#sheet) :is(.staff-primary-grid,.staff-mental){gap:var(--ui-space);margin-block:var(--ui-space)}
-:is(#app,#sheet) :is(.staff-primary-grid,.staff-mental)>span{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;min-height:40px;padding:4px 8px;gap:var(--ui-space)}
+:is(#app,#sheet) :is(.staff-primary-grid,.staff-mental)>span{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;min-height:40px;padding:4px 8px;gap:var(--ui-space)}
+:is(#app,#sheet) .staff-mental .trait-w{font-size:var(--ui-caption);line-height:var(--ui-caption-line);font-weight:600;white-space:nowrap}
 :is(#app,#sheet) :is(.staff-primary-grid,.staff-mental) i{font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
 :is(#app,#sheet) .cgr b{font-size:var(--ui-heading);line-height:24px}
 

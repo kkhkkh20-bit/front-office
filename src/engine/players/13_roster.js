@@ -53,10 +53,16 @@ function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx(spon
 /* 경쟁균형세(KBO 2025-09 개정, 2026~): 초과분 1회 30%·2회 연속 50%·3회 연속 100% + 3회 연속이면 다음 해 1라운드 지명 9단계 하락.
    AI 구단의 상한 감각: 지난해 넘은 구단은 2회 연속을 피하려고 더 아낀다(실제로 초과 다음 해 FA 영입을 포기한 사례가 있다). 가끔 한 구단은 세금을 감수하고 우승에 올인한다 */
 function aiCapMul(t){ if(!t||t.id===ME())return 1; if(t.allIn===sponSeason())return t.capOver>=2?1.02:1.12; return t.capOver>=1?.97:1; }
-/* FA 시장이 열릴 때 올인 구단을 고른다: 구단주가 우승형·현금 여유·전력 상위·최근 3년 올인 없음·연속 초과 2회 미만. 한 해 많아야 한 구단 */
-function allInPick(){ const sy=sponSeason(); if(G.teams.some(t=>t.allIn===sy))return; const ord=(G.last&&G.last.order)||[]; const rk=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?6:i+1; };
-  const C=G.teams.filter(t=>t.id!==ME()&&!t.indie&&planOf(t)==='win'&&(t.owner==='win'||(t.owner==='pr'&&gmTrait(t.id)==='gambler'))&&(t.cash||0)>5000&&rk(t.id)<=4&&(t.capOver||0)<2&&!(t.allInY&&sy-t.allInY<3)); if(!C.length||R()>=.22)return;
-  const t=C[Math.floor(R()*C.length)]; t.allIn=sy; t.allInY=sy; news('구단',`${tshort(t.id)}, 경쟁균형세 감수하고 우승 올인`,`${t.city} ${t.nick} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다. 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); }
+/* FA 시장이 열릴 때 올인 구단을 고른다: 구단주가 우승형·현금 여유·전력 상위·최근 3년 올인 없음·연속 초과 2회 미만. 한 해 한 구단(독주 구단이 있으면 두 구단까지) */
+function allInPick(){ const sy=sponSeason(); const ord=(G.last&&G.last.order)||[]; const rk=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?6:i+1; };
+  /* 독주 견제(86b_dynasty): 한 구단이 달아나면 상위권 경쟁 구단이, 자리가 위태로운 단장은 빚을 져서라도 올인한다(한 해 두 구단까지). 독주 구단 자신은 올인하지 않는다 */
+  let L=null; try{ L=domLead(); }catch(e){} const max=L?2:1; if(G.teams.filter(t=>t.allIn===sy).length>=max)return;
+  const ok0=t=>t.id!==ME()&&!t.indie&&planOf(t)==='win'&&t.allIn!==sy&&(t.capOver||0)<2&&!(t.allInY&&sy-t.allInY<3)&&!(L&&L.tid===t.id);
+  const ds=t=>{ try{ return despOf(t); }catch(e){ return 0; } };
+  const C=G.teams.filter(t=>ok0(t)&&(((t.owner==='win'||(t.owner==='pr'&&gmTrait(t.id)==='gambler'))&&(t.cash||0)>5000&&rk(t.id)<=4)||((ds(t)>=.5||(L&&rk(t.id)<=5))&&(t.cash||0)>-1000)));
+  if(!C.length||R()>=.22+(L?.25:0)+.2*Math.max(0,...C.map(ds)))return;
+  const t=C[Math.floor(R()*C.length)]; t.allIn=sy; t.allInY=sy; const dp=ds(t)>=.5; if(L||dp)try{ domLog('allin'); }catch(e){}
+  news('구단',`${tshort(t.id)}, ${L&&!dp?`${tshort(L.tid)} 독주 막겠다… `:dp?'벼랑 끝 승부수… ':''}경쟁균형세 감수하고 우승 올인`,`${t.city} ${t.nick} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다.${dp?' 성적이 나지 않으면 단장 자리도 장담할 수 없다는 이야기가 함께 나옵니다.':''} 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); }
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
 /* 초과액으로 낼 제재금 예상: 지금까지 연속 초과 횟수에 이번을 더한 단계(재계약 화면에서 넘길지 고르게, 유저 피드백 11-07) */
 function capTaxEst(over,tid=G.user){ const n=((team(tid)||{}).capOver||0)+1; return {n,tax:Math.round(Math.max(0,over)*capRate(n)),pen:n>=3}; }
@@ -81,7 +87,7 @@ function capOwnerCheck(pay,before,s,key){ if(G.unemp)return null; const t=team(G
 function capOwnerTxt(c){ if(!c)return ''; if(c.hard)return `구단주 허용 한도(상한 +${Math.round(c.L*100)}%, ${money(c.lim)}) 초과 · 구단주가 승인하지 않습니다`; return `상한 ${money(c.over)} 초과 · 구단주 결재 필요(승인 가능성 ${capPLabel(c.p)})`; } /* 결재 결과(고정값)는 미리 알려 주지 않는다: 올려 봐야 안다 */
 /* 결재 통과: 구단주 신뢰가 초과 폭만큼 깎인다(5% 넘으면 -2, 10% 넘으면 -3) */
 function capOwnerOk(c,what){ if(!c||!c.ok)return; const t=team(G.user); const d=c.r>.1?3:c.r>.05?2:1; t.trust=clamp(t.trust-d,0,100);
-  try{ mail('구단주실',`구단주: 상한 초과 결재 (${what})`,`${c.who}: "${what}로 ${c.s}시즌 상위 40명 연봉이 상한을 ${money(c.over)}(${Math.round(c.r*100)}%) 넘지만 이번만 승인하겠습니다. 시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(c.n)*100)}%를 야구발전기금으로 내고, 모기업 지원도 그만큼 줄어듭니다." 구단주 신뢰 -${d}.`,{kind:'구단주'}); }catch(e){} }
+  try{ mail('구단주실',`구단주: 상한 초과 결재 (${what})`,`${c.who}: "${what}로 ${c.s}시즌 상위 40명 연봉이 상한을 ${money(c.over)}(${Math.round(c.r*100)}%) 넘지만 이번만 승인하겠습니다. 시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(c.n)*100)}%를 야구발전기금으로 내고, 모기업 지원도 그만큼 줄어듭니다." 구단주 신뢰 하락.`,{kind:'구단주'}); }catch(e){} }
 function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달분의 1회 30%·2회 연속 50%·3회 연속 100%(유소년 발전기금) */
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
 /* 야인일 때는 전 소속 구단도 AI가 운영한다 */

@@ -19,7 +19,7 @@ function curExplain(p,rp){ rp=rp||scoutReport(p); const fsx=p.foreign&&p.team==n
   const sd=rp.exact?0:fsx&&fsx.ms!=null?fsx.ms:(rp.sd||0); /* KBO 소속 선수의 현재 능력은 정확히 보인다(오차 없음). 추정인 것은 잠재력뿐 */
   /* 계약 전 외국인 후보: 문장도 조사 단계만큼만 말한다. 기초 조사에서는 방향만, 조사가 쌓이면 수준(플러스·평균 이하)까지. 숫자는 범위로만(사용자 11-13) */
   const fn=fsx?fsx.n:3, soft=!!fsx&&fsx.raw!=null;
-  L.push(soft?`종합 추정 ${fsx.lo}~${fsx.hi}, ${curBand(c)}${p.isP?(isSPr(p)?' 선발':' 불펜'):''}${fn<=1?'으로 보입니다':'입니다'}. 1군 주전 평균이 ${dv(53)}, 리그 상위 5%가 ${dv(60)}쯤입니다.`:`종합 ${dv(c)}: ${curBand(c)}${p.isP?(isSPr(p)?' 선발':' 불펜'):''}입니다. 1군 주전 평균이 ${dv(53)}, 리그 상위 5%가 ${dv(60)}쯤입니다.`);
+  L.push(soft?`종합 추정 ${fsx.lo}~${fsx.hi}, ${curBand(c)}${p.isP?(isSPr(p)?' 선발':' 불펜'):''}${fn<=1?'(으)로 보입니다':'입니다'}. 1군 주전 평균이 ${dv(53)}, 리그 상위 5%가 ${dv(60)}쯤입니다.`:`종합 ${dv(c)}: ${curBand(c)}${p.isP?(isSPr(p)?' 선발':' 불펜'):''}입니다. 1군 주전 평균이 ${dv(53)}, 리그 상위 5%가 ${dv(60)}쯤입니다.`);
   const ts=[...(rp.tools||[])].sort((a,b)=>b.cur-a.cur);
   const top=ts.filter(t=>t.cur>=53).slice(0,2), low=ts.filter(t=>t.cur<47).slice(-2).reverse();
   if(soft){ const nm=t=>TOOLK[t.k], lv=t=>`${TOOLK[t.k]} ${toolLv(t.cur)}`;
