@@ -40,7 +40,7 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
   const step=(k,d,l)=>`<button class="btn small" data-a="foStep" data-v="${k}:${d}">${l} 달러</button>`; const h=seasonTotal(p,C.y,'1군');
   return `<section class="card fo"><div class="row between"><h2 class="sec">재계약 협상</h2><span class="small muted">보류권 · 국내 경쟁 없음</span></div>
     <p class="small">지금 ${usdT(p.sal)} · 요구 ${usdT(p.newSal)}(${money(p.newSal)}) · 지난 시즌 ${h?statLine(h,p):'기록 없음'}${h?` · WAR ${warOf(h,p).toFixed(1)}`:''}</p>
-    ${p.foreign==='아시아'?`<p class="small">아시아쿼터 재계약 상한 <b>${usdT(asiaReCap(p))}</b> · 직전 연봉 ${usdT(p.sal)}에서 해마다 10만 달러까지 올릴 수 있습니다(신규 계약은 20만 달러).</p>`:''}
+    ${p.foreign==='아시아'?`<p class="small">아시아쿼터 재계약 상한 <b>${usdT(asiaReCap(p))}</b> · 직전 연봉 ${usdT(p.sal)}에서 해마다 10만 달러까지 올릴 수 있습니다(신규 계약은 ${Math.round(asiaCap()/USD)}만 달러).</p>`:''}
     <p class="small">보류권 때문에 국내 다른 구단은 이 선수와 협상할 수 없습니다. 경쟁 상대는 해외 제안뿐입니다: <b>${O&&!O.none?`${O.k} 구단 ${usdT(O.v)} 수준`:'해외 제안 없음'}</b></p>
     <div class="fo-in">
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>

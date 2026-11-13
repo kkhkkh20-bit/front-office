@@ -110,9 +110,14 @@ function tradeCool(tid,get){ if(get&&get.length&&get.every(id=>{ const q=G.playe
 function tradeYrFrac(){ const C=G.cal, per=period(); if(per!=='season'||!C)return per==='post'?0:1; return clamp((C.end+1-G.day)/(C.end+1-C.open),0,1); }
 /* 거래로 바뀌는 연봉: 겨울·개막 전은 합의한 다음 시즌 연봉(capInfo와 같게, 검수 11-08b), yr은 올해 예산에 잡히는 몫(시즌 중이면 남은 기간만, 검수 11-06). 확인창·결재 문서·구단주 승인이 같은 값을 쓴다(검수 11-09v) */
 function tradeSalChg(give,get){ const P=id=>G.players[id]; const nx=preSeason(sponSeason()), sv=id=>P(id)?(nx?salNext(P(id)):P(id).sal):0; const fr=tradeYrFrac(); const d=sum(get.map(sv))-sum(give.map(sv)); return {d,yr:Math.round(d*fr),fr,nx}; }
+/* 거래 전후 예산 여유: 선수를 잠시 옮겨 budget()을 다시 계산한다(확인창·결재 문서·구단주 승인이 같은 값을 쓴다) */
+function roomAfter(give,get){ const b0=budget(); const sv=[]; const mv=(id,t)=>{ const p=G.players[id]; if(!p)return; sv.push([p,p.team,p.tLog]); if(!p.foreign&&period()==='season')p.tLog=(p.tLog||[]).concat({y:G.year,d:G.day,f:p.team,t}); p.team=t; }; /* 시즌 중이면 결산처럼 남은 기간 연봉만(검수 11-06) */
+  const other=get.length&&G.players[get[0]]?G.players[get[0]].team:-9; give.forEach(id=>mv(id,other)); get.forEach(id=>mv(id,G.user));
+  let b1=b0; try{ b1=budget(); }finally{ sv.reverse().forEach(([p,t,l])=>{ p.team=t; if(l===undefined)delete p.tLog; else p.tLog=l; }); } return {before:Math.round(b0.roomGoal),after:Math.round(b1.roomGoal),dE:Math.round(b1.E-b0.E),dI:Math.round(b1.I-b0.I),cash0:Math.round(b0.endCash),cash1:Math.round(b1.endCash)}; }
 function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)return null;
   const sc=tradeSalChg(give,get), fr=sc.fr; const dSal=sc.yr+(cash||0); if(dSal<=0)return null; let b; try{ b=budget(); }catch(e){ return null; }
-  const room=after?b.roomGoal+dSal:b.roomGoal; const over=dSal-room; if(over<=0)return null; const t=team(G.user);
+  let post=b.roomGoal; if(!after){ try{ post=roomAfter(give,get).after-(cash||0); }catch(e){ post=b.roomGoal-dSal; } } /* 거래 뒤 실제 예산 여유로 판정(플레이 테스트 3차: 확인창의 '거래 후 예산 여유'와 승인 판정 금액이 달랐다) */
+  const over=-post; if(over<=0)return null; const t=team(G.user);
   const lim=Math.round((t.owner==='win'?1500:t.owner==='pr'?1000:500)*(t.trust>=70?1.5:t.trust>=50?1:.5));
   if(over<=lim)return {ok:true,over,lim,dSal};
   return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(선수 연봉 ${money(dSal-(cash||0))}${fr<1?`(남은 시즌 ${Math.round(fr*100)}% 몫)`:''}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 연봉 여유(예산 기준, 구단주 지원 목표 안)를 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }

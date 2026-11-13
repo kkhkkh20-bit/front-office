@@ -161,6 +161,7 @@ function ctInfo(p){ if(!p||!p.faC)return null; const left=Math.max(1,p.yrs||1); 
 function faLeft(p){ const n=Math.max(0,faSvc(p)-(p.svc||0)); const re=p.lastFA!=null?p.lastFA+4-ctSeason()+1:0; return Math.max(1,n,re); }
 function ctText(p){ if(G.fa&&(G.fa.pool||[]).includes(p.id)&&!p.faC&&!p.ext&&(p.team==null||!G.fa.closed))return p.team==null?'FA 미계약':'FA 신분 · 협상 중'; /* 지금 FA인 선수를 다음·올 시즌 뒤 FA로 보이던 것(사용자 피드백 11-05) */ const c=ctInfo(p); if(c){ const kind=p.ext?'다년':'FA'; const ox=(ctOn(p)&&p.cOpt&&!p.cOpt.used?` · 구단 옵션 ${p.cOpt.y}년`:'')+(ctOn(p)&&p.pOut&&!p.pOut.used?` · ${p.pOut.y}시즌 뒤 옵트아웃`:''); return (c.tot===1?`${kind} 1년 계약`:c.last?`${kind} ${c.tot}년 중 마지막 해`:`${kind} ${c.tot}년 중 ${c.k}년차`)+ox; }
   if(p.extNext)return `다년 ${p.extNext.years}년 합의`; if(p.foreign)return '1년 계약';
+  if(typeof milServing==='function'&&milServing(p)){ const m=milPeriod(p); return `군 복무 중(FA 연차 정지${m&&m.until?` · ${dmdY(m.until)} 전역`:''})`; } /* 복무 중에는 FA 연차가 쌓이지 않고 FA 신청도 못 한다(플레이 테스트 11-13) */
   const n=Math.max(0,faSvc(p)-(p.svc||0)); const off=G.rolled===G.year;
   /* 등록 연수를 채운 선수: 재자격(직전 FA 후 4시즌)이 남았으면 그만큼, 아니면 이번(다음) 시즌 뒤 */
   const m=faLeft(p);

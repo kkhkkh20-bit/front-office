@@ -87,7 +87,7 @@ function clubView(){ return subTabs('club')+clubBody(curSub('club')); }
 /* PC(FM '구단 정보' 배치): 구단 기본 정보·시설·재정·선발 명단·구장·주요 인물·인물·명예의 전당·유니폼·경기 일정. 모두 지금 게임 데이터(없는 값은 지어내지 않음) */
 function clubFm(){ const tid=G.user, t=team(tid), F=fxFact, H=G.history||[];
   const A=(G.sea.att&&G.sea.att[tid])||{n:0,sum:0,so:0}, pv=clubPrestige(tid), prk=G.teams.filter(x=>clubPrestige(x.id)>pv).length+1, mrk=G.teams.filter(x=>x.market>t.market).length+1, rk=ibdRank(tid);
-  const info=fxBox('fxc-info',fxHead(esc(tname(tid)),`명성 ${pv}점 · 리그 ${prk}위`),
+  const info=fxBox('fxc-info',fxHead(esc(tname(tid)),`구단 명성 ${pv}점 · 리그 ${prk}위`),
     `<div class="fx-facts">${F('구단 명성',`<em class="stars-t">${starTxt(prestigeStars(pv))}</em>`)}${F('구단주 성향',OWNER[t.owner]?OWNER[t.owner].label:'-')}${F('운영 방침',t.mode==='contend'?'우승 경쟁':'리빌딩')}${F('홈 평균 관중',A.n?Math.round(A.sum/A.n).toLocaleString('ko-KR')+'명':'-')}</div>
     <div class="fx-id">${F('연고지',esc(t.city)+(t.region?`<small>${esc(t.region)}</small>`:''))}${badge(tid,104)}${F('리그 순위',rk?`${rk}위<small>${ibdRec(tid)}</small>`:'-')}</div>
     <div class="fx-facts">${F('홈구장',esc(stadName(tid)))}${F('구단주 신뢰',t.trust??'-')}${F('팬 여론',Math.round(G.pr.fan))}${F('연고 시장 규모',`리그 ${mrk}위`)}</div>${ownershipCard(tid,true)}`);

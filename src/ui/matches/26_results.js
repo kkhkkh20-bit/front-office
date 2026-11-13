@@ -84,7 +84,7 @@ function invFM(){ facInit(); try{ aiFacAll(); }catch(e){} const tid=G.user, t=te
     <div class="fvx-pic">${isoStadiumSvg(o)}</div>
     <div class="fvx-kv">${kv('수용 인원',cap.toLocaleString('ko-KR')+'석')}${kv('올해 홈 평균',A.n?Math.round(A.sum/A.n).toLocaleString('ko-KR')+'명':P.n?'예상 '+P.avg.toLocaleString('ko-KR')+'명':'-')}${kv('좌석 점유율',A.n?Math.min(100,Math.round(A.sum/(A.cap||A.n*cap)*100))+'%':'-') /* 경기 당시 좌석 수 합으로(구장이 바뀌어도 100%를 넘지 않게) */}${kv('매진',`${A.so||0}회 / ${A.n}경기`)}
       ${kv('담장 거리',`좌 ${D.lf} · 중 ${D.cf} · 우 ${D.rf}m`,1)}${kv('담장 높이',`좌 ${D.wl} · 중 ${D.wc} · 우 ${D.wr}m`,1)}${kv('홈런 지수',`우타 ${Math.round(parkHRM(tid,'R')*100)} · 좌타 ${Math.round(parkHRM(tid,'L')*100)}`)}${kv('시즌 예상 관중',P.att.toLocaleString('ko-KR')+'명')}
-      ${kv('표값 수입',money(P.ticket))}${kv('구장 부대 수입',money(P.fnb+P.prem+P.ad))}</div>
+      ${kv('표값 수입',money(P.ticket))}${kv('구장 부대 수입',P.fnb+P.prem+P.ad>0?money(P.fnb+P.prem+P.ad):'<span class="muted">없음 · 매점·프리미엄석·전광판을 3단계 이상으로 올리면 생깁니다</span>')}</div>
     <div class="fvx-pr"><span>티켓 가격</span><div class="seg">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div></div><p class="fvx-note">${esc(PRICE[S.price].d)} 홈런 지수 100 = 리그 평균.</p>${fenceBox(tid)}</section>`;
   /* 리그 비교 */
   const att=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?x.sum/x.n:0; }, occ=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?Math.min(100,x.sum/(x.cap||x.n*stadCap(i))*100):0; }, sTot=i=>sum(STAD_ITEMS.map(x=>stadOf(i).lv[x.k]||0));
