@@ -112,7 +112,7 @@ function pitcherSet(a,wl,wh){const F=bodyFrame(a),hips=boneByName(a,'Hips'),lf=b
   for(const side of ['Left','Right']){const H0=modelPos(a,boneByName(a,side+'Hand'),new T.Vector3()),tg=Ht.clone().addScaledVector(F2.lead,(side==='Left'?.02:-.02)*k);limbIK(a,[side+'Arm',side+'ForeArm',side+'Hand'],H0.lerp(tg,wh),ELBOW_MIN_IN);armPole(a,side,F2.up.clone().multiplyScalar(-1).addScaledVector(F2.lead,side==='Left'?.35:-.35),wh);}
   const hd=boneByName(a,'Head');if(hd){const tgt=toModel(a,new T.Vector3(0,1,0));for(const [n,share] of [['Neck',.5],['Head',1]]){const b=boneByName(a,n);if(!b)continue;const Fw=new T.Vector3(0,0,1).applyQuaternion(modelQ(a,hd,new T.Quaternion())).normalize(),D=tgt.clone().sub(modelPos(a,hd,new T.Vector3())).normalize();rotModelQ(a,b,new T.Quaternion().slerpQuaternions(new T.Quaternion(),new T.Quaternion().setFromUnitVectors(Fw,Fw.clone().lerp(D,wh*.9).normalize()),share));}}}}
 /* 수비 보정(사용자 11-12): 고개는 공(홈·글러브·던질 곳)을 보고, 땅볼은 글러브를 땅까지 내려 두 손으로, 뜬공도 맨손을 글러브 옆에 댄다 */
-export const FIELD_MECH={groundY:.07,reach:.42,backhandSide:.3,down:[.12,.36],up:[.5,.72],bareGap:.11,flyGap:.16,bend:48,hipMin:.4};
+export const FIELD_MECH={groundY:.07,reach:.42,backhandSide:.3,down:[.12,.36],up:[.5,.72],bareGap:.11,flyGap:.16,bend:48,hipMin:.4,stretchUp:.12,stretchLean:22,runUp:.9,runFwd:.45,tagY:.2,tagBend:40};
 function headLook(a,tgt,w){const hd=boneByName(a,'Head');if(!hd||w<=0)return;const F=bodyFrame(a),hp=modelPos(a,hd,new T.Vector3());let D=tgt.clone().sub(hp).normalize();
  if(F){const soft=(x,L)=>L*Math.tanh(x/L),hz=D.dot(F.fwd),hx=D.dot(F.lead),hy=D.dot(F.up),yaw=soft(Math.atan2(hx,hz),HEAD_TRACK.yaw),py=Math.atan2(hy,Math.hypot(hx,hz)),pit=py>0?soft(py,HEAD_TRACK.up):-soft(-py,HEAD_TRACK.down);D=F.fwd.clone().multiplyScalar(Math.cos(yaw)*Math.cos(pit)).addScaledVector(F.lead,Math.sin(yaw)*Math.cos(pit)).addScaledVector(F.up,Math.sin(pit)).normalize();}
  for(const [n,share] of [['Neck',.5],['Head',1]]){const b=boneByName(a,n);if(!b)continue;const Fw=new T.Vector3(0,0,1).applyQuaternion(modelQ(a,hd,new T.Quaternion())).normalize();rotModelQ(a,b,new T.Quaternion().slerpQuaternions(new T.Quaternion(),new T.Quaternion().setFromUnitVectors(Fw,Fw.clone().lerp(D,w).normalize()),share));}}
@@ -132,7 +132,21 @@ function fieldMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action)return;const 
   const wl=1-smooth((t-P.up[1])/.25),wi=smooth(t/P.down[1]),ahead=a.model.worldToLocal(a.model.localToWorld(modelPos(a,hips,new T.Vector3())).add(new T.Vector3(0,0,0)));{const L2=modelPos(a,lf,new T.Vector3()),R2=modelPos(a,rf,new T.Vector3()),ld=L2.clone().sub(R2).setY(0).normalize(),fw=new T.Vector3().crossVectors(ld,new T.Vector3(0,1,0)).normalize();ahead.copy(L2.add(R2).multiplyScalar(.5)).addScaledVector(fw,3);}{const g=glove(),fw2=ahead.clone().sub(g).setY(0).normalize();g.addScaledVector(fw2,.45);headLook(a,ahead.lerp(g,wi).lerp(homeM(),1-wl),1);}return;} /* 시선: 굴러오는 공(3m 앞 땅)→글러브→잡은 뒤 앞 */
  if(m==='catch_fly'||m==='catch_fly_run'||m==='catch_line_drive'||m==='catch_throw'||m==='catch_stretch'){const d=a.action.getClip().duration,ph=t/d,w=smooth(ph/.25)*(1-smooth((ph-.6)/.3));
   if(w>0&&m!=='catch_stretch'&&m!=='catch_fly_run'){const F=bodyFrame(a),k=F?.k||1,g=glove(),bt=g.clone().addScaledVector(F?F.lead:new T.Vector3(1,0,0),-P.flyGap*k).add(new T.Vector3(0,-.03*k,0));limbIK(a,['RightArm','RightForeArm','RightHand'],modelPos(a,bh,new T.Vector3()).lerp(bt,w),ELBOW_MIN_IN);}
-  headLook(a,glove().add(new T.Vector3(0,.25,0)),Math.max(w,.0));return;}
+  const sh=boneByName(a,'LeftArm'),fa=boneByName(a,'LeftForeArm');
+  if(w>0&&m==='catch_stretch')for(const n of ['Spine','Spine1','Spine2']){const b=boneByName(a,n);if(b)rotModel(a,b,AX.x,P.stretchLean/3*w);} /* 상체도 송구 쪽으로 기울여 더 멀리 */
+  if(w>0&&sh&&fa){const F=bodyFrame(a),k=F?.k||1,S=modelPos(a,sh,new T.Vector3()),arm=S.distanceTo(modelPos(a,fa,new T.Vector3()))+modelPos(a,fa,new T.Vector3()).distanceTo(glove());
+   /* 1루수 뻗어 잡기: 글러브 팔을 송구 쪽(앞)으로 끝까지 편다 */
+   if(m==='catch_stretch')limbIK(a,['LeftArm','LeftForeArm','LeftHand'],glove().lerp(S.clone().add(new T.Vector3(0,P.stretchUp,1).normalize().multiplyScalar(arm*.98)),w),ELBOW_MIN_IN);
+   /* 달려가며 잡기: 글러브를 머리 위 앞으로 올린다 */
+   if(m==='catch_fly_run')limbIK(a,['LeftArm','LeftForeArm','LeftHand'],glove().lerp(S.clone().add(new T.Vector3(0,P.runUp,P.runFwd).normalize().multiplyScalar(arm*.95)),w),ELBOW_MIN_IN);}
+  headLook(a,glove().add(new T.Vector3(0,m==='catch_stretch'?.05:.25,m==='catch_stretch'?.4:0)),Math.max(w,.0));return;}
+ /* 태그: 상체를 숙이고 글러브를 주자가 들어오는 땅 높이까지 내린다. 고개는 글러브를 본다 */
+ if(m==='tag_glove'){const d=a.action.getClip().duration,ph=t/d,w=smooth(ph/.45)*(1-smooth((ph-.68)/.3)),L=modelPos(a,lf,new T.Vector3()),R=modelPos(a,rf,new T.Vector3());
+  if(w>0){const F=bodyFrame(a),k=F?.k||1,lead=modelPos(a,boneByName(a,'LeftUpLeg'),new T.Vector3()).sub(modelPos(a,boneByName(a,'RightUpLeg'),new T.Vector3())).setY(0).normalize(),ground=Math.min(L.y,R.y)-.08*k,tg=glove();tg.y=ground+P.tagY*k;
+   for(const n of ['Spine','Spine1','Spine2']){const b=boneByName(a,n);if(b)rotModelQ(a,b,new T.Quaternion().setFromAxisAngle(lead,P.tagBend/3*w*Math.PI/180));}
+   const sh=boneByName(a,'LeftArm'),fa=boneByName(a,'LeftForeArm');if(sh&&fa){const S=modelPos(a,sh,new T.Vector3()),arm=S.distanceTo(modelPos(a,fa,new T.Vector3()))+modelPos(a,fa,new T.Vector3()).distanceTo(glove()),hz=Math.hypot(S.x-tg.x,S.z-tg.z),need=hz<arm*.96?tg.y+Math.sqrt((arm*.96)**2-hz*hz):tg.y+.05;if(S.y>need){const Hy=modelPos(a,hips,new T.Vector3()).y,drop=Math.min((S.y-need)*w,Math.max(0,Hy-(ground+P.hipMin*k)));hips.position.y-=drop;legIK(a,'Left',L);legIK(a,'Right',R);}}
+   limbIK(a,['LeftArm','LeftForeArm','LeftHand'],glove().lerp(tg,w),ELBOW_MIN_IN);}
+  headLook(a,glove(),1);return;}
  if(m==='throw'||m==='catcher_throw'){const P=THROW_MECH,off=m==='catcher_throw'?CATCHER_PREP:0 /* 포수는 일어서는 0.24초 뒤부터 같은 송구 */,rel=clipEvents.throw?.release||THROW_RELEASE,fc=rel-P.stride,L=modelPos(a,lf,new T.Vector3()),R=modelPos(a,rf,new T.Vector3()),tt=t-off;
   /* 몸 회전: 내딛는 동안 옆으로 서도록 더 닫았다가(coil) 놓을 때까지 풀고, 던진 뒤엔 던지는 어깨가 앞으로 넘어간다(over). 발은 원래 자리에 둔다 */
   const yaw=-P.coil*smooth(tt/(fc*.7))*(1-smooth((tt-(fc-.04))/(rel-fc+.02)))+P.over*smooth((tt-rel)/.2)*(1-smooth((tt-rel-.45)/.3));
