@@ -1,0 +1,36 @@
+/* ===== 휴대폰 화면 정리(플레이 테스트 2차, 11-13: 390×844) =====
+   1) 상단 제목·진행 버튼 문구가 잘림  2) 넘치는 탭 줄에 표시가 없음  3) 트레이드 '제안하기'가 깊은 내부 스크롤 끝에만 있음, 정렬 버튼 두 줄
+   4) 선수단 이름·배지 잘림  6) 감독 후보 페이지 버튼이 카드 내용을 덮음. 데스크톱(>600px)은 바꾸지 않는다 */
+
+/* 넘치는 탭 줄: 오른쪽·왼쪽에 더 있으면 가장자리를 흐린다(tabRowHints가 .hrow·.more-l·.more-r를 붙인다) */
+@media (max-width:700px){
+:is(#app,#sheet) .hrow.more-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}
+:is(#app,#sheet) .hrow.more-l{-webkit-mask-image:linear-gradient(to right,transparent,#000 28px);mask-image:linear-gradient(to right,transparent,#000 28px)}
+:is(#app,#sheet) .hrow.more-l.more-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
+:is(#app,#sheet) .hrow{scroll-behavior:smooth;scrollbar-width:none}
+} /* 넘침 표시·스크롤바 숨김은 휴대폰만: PC에서 탭 줄 스크롤바가 사라지던 문제(UI 리뷰 11-13) */
+
+@media (max-width:480px){
+  /* 1) 상단: 화면 제목을 한 단계 줄여 '트레이…'처럼 잘리지 않게, 진행 버튼 보조 문구는 짧은 앞부분만(goSub) */
+  #app .top .club b{font-size:15px;letter-spacing:-.03em}
+  #app .goset .continue .cl i{max-width:96px}
+
+  /* 3) 트레이드 협상: 제안하기·비우기 줄을 스크롤 영역 아래에 붙여 늘 보이게, 정렬 버튼은 한 줄 */
+  #app .tprop-bar{position:sticky;bottom:0;z-index:3;background:var(--panel,var(--card,#1b2533));padding:8px 0;margin-bottom:0;box-shadow:0 -6px 10px -6px rgba(0,0,0,.45)}
+  #app .trade-pool-options .seg button,#app .pr-ctl .chips button,#app .tsort button{white-space:nowrap;word-break:keep-all}
+  #app .trade-pool-options .seg{overflow-x:auto;flex-wrap:nowrap}
+
+  /* 4) 선수단: 이름 칸을 넓히고 배지는 이름 아래 줄로(잘리지 않게), 보조 포지션은 숨겨 폭 확보 */
+  #app .roster-list .rt .pn{max-width:none;min-width:0}
+  #app .tw.twp .sqt .pn{max-width:150px}
+  #app .tw.twp .pn>span{white-space:normal;overflow:visible;text-overflow:clip;display:flex;flex-wrap:wrap;align-items:center;gap:1px 4px;line-height:1.25}
+  #app .tw.twp .pn>span .pill{font-size:10px;padding:0 4px;line-height:15px;white-space:nowrap}
+  #app .roster-list .rt td.rtpos i.f{display:none}
+
+  /* 6) 페이지 버튼이 카드 내용을 덮지 않게: 불투명 배경, 내용과 겹치지 않는 자리 */
+  #app .ws-panel>.pgr,#app .pgr{position:relative;z-index:2;background:var(--panel,var(--card,#1b2533));padding-block:4px}
+
+  /* 하단 탭바 높이만큼 본문 끝 여백: 마지막 버튼이 탭바에 가리지 않게 */
+  #app main.content:not(.ws-frame){padding-bottom:calc(var(--bnav-h,58px) + env(safe-area-inset-bottom,0px) + 8px)}
+  #sheet .sheet .sh-foot,#sheet .sheet .pn-foot{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+}

@@ -1,5 +1,5 @@
 /* 당시 소식의 업무 상태. 읽음과 완료는 별개이며, 기록을 여는 링크는 계속 쓸 수 있다. */
-const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt']);
+const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt']);
 const mailStamp=m=>m.day0??m.day;
 const mailEnd=(text,expired=false)=>({label:expired?'기한 종료':'처리 완료',text,expired});
 /* 이전 구단 업무: 같은 구단으로 돌아오면 다시 열리므로 종료 상태로 저장하지 않는다(검수 11-09za) */
@@ -10,7 +10,7 @@ function mailActionStatus(m,a){
   const id=String(a.v??'').split(':')[0],p=G.players[+id],d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{};
   if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
   if(a.a==='watchPlan'){const d=+a.v,P=gmPlanAt(d),nx=nextGames(1)[0];if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d)return mailEnd('열리지 않거나 이미 지난 경기입니다.',true);return null;} /* 시리즈가 끝나 열리지 않는 경기의 직관 버튼(검수 11-08) */
-  if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');if(evExpired(e))return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
+  if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?(e.deleg?'맡긴 대로 담당 부서가 처리했습니다.':'답변 기한이 지나 기본안으로 처리했습니다.'):'이미 결정을 마쳤습니다.');if(evExpired(e))return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
   if(a.a==='ivOpen'||a.a==='ivSkip'){const v=G.iv;if(!v||String(v.id)!==String(a.v))return mailEnd('이 인터뷰 요청은 종료되었습니다.',true);if(v.done)return mailEnd(v.ans?.length?'이미 인터뷰를 마쳤습니다.':'이미 인터뷰를 거절했습니다.');return G.day>v.exp?mailEnd('인터뷰 응답 기한이 지났습니다.',true):null;}
   if(['faOpen','faMatch','faLL','agPitchOk'].includes(a.a)){
     if(p?.team!=null)return mailEnd(p.team===G.user?'이미 우리 구단과 계약한 선수입니다.':'이미 다른 구단과 계약한 선수입니다.');
@@ -19,6 +19,7 @@ function mailActionStatus(m,a){
     if(a.a==='faLL'){const o=F.mk?.[id]?.ll;if(!o||G.day>o.until)return mailEnd('라스트 룩 제안이 처리되었거나 기한이 지났습니다.',true);}return null;
   }
   if(a.a==='renewMgr'){const [,tid,mid]=String(a.v).split(':'),M=G.mgr[G.user];if(!M||M.interim||old||(tid!=null&&+tid!==G.user)||(mid&&mid!==M.id))return mailEnd('당시 감독의 재계약 요청은 종료되었습니다.',true);return M.yrs>0?mailEnd('이미 감독 계약을 확정했습니다.'):null;}
+  if(a.a==='mdGoal'){const D=G.md;if(!D||old||D.y!==G.year||d>D.day||G.day>=D.day)return mailEnd('미디어데이가 지났습니다.',true);return D.gp?mailEnd('이미 출사표 방향을 정했습니다.'):null;}
   if(a.a==='mdRep'){const D=G.md;if(!D||old||D.y!==G.year||d>D.day||G.day>=D.day)return mailEnd('이 미디어데이의 참석자 결정 기간이 지났습니다.',true);return D.res?mailEnd('이미 미디어데이 참석 선수를 확정했습니다.'):null;}
   if(['posReqOk','posReqNo','keepP','listP','posConv','proleSet','pmgmt'].includes(a.a)){
     if(!p||p.team!==G.user)return mailEnd('대상 선수가 우리 구단을 떠났거나 더 이상 처리할 수 없습니다.',true);
@@ -32,15 +33,16 @@ function mailActionStatus(m,a){
   if(a.a==='stKeep'||a.a==='stLet'){const r=(G.stRaid||[]).find(x=>x.id===id&&(c.raid!=null?x.exp===c.raid:x.exp===d+7));return !r?mailEnd('이미 직원 잔류·이적을 결정한 제안입니다.'):G.day>r.exp?mailEnd('직원 영입 제안의 답변 기한이 지났습니다.',true):null;} /* 마감일 당일까지 답할 수 있다(자동 처리는 다음 날, 검수 11-07) */
   if(a.a==='cmKeep'||a.a==='cmLet'){const ex=+String(a.v).split(':')[2],r=(G.cmRaid||[]).find(x=>x.id===id&&x.exp===ex);return !r?mailEnd('이미 코치 잔류·이적을 결정한 제안입니다.'):G.day>r.exp?mailEnd('코치 영입 제안의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='jobYes'||a.a==='jobNo'){const j=(G.jobs||[]).find(x=>x.tid===+a.v&&(c.job!=null?x.exp===c.job:x.exp>d&&x.exp<=d+20));return !j||j.done?mailEnd('이미 답변했거나 종료된 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
+  if(a.a==='goalTalk'){const g=G.goals;return !g||g.y!==G.year||!g.pre||g.talk?mailEnd(g&&g.talk?'올해 목표는 구단주와 상의를 마쳤습니다.':'목표 상의 기간이 끝났습니다.'):null;} /* 플레이 테스트 11-13: 수락한 뒤에도 버튼이 살아 있었다 */
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 종료되었습니다.'):null;}
   if(a.a==='scoutPlanGo'){
     if(scoutWorkStatus().delegated)return mailEnd('스카우트팀장에게 배치를 맡겼습니다. 단장의 별도 승인은 필요하지 않습니다.');
-    if(old||dobj(d).m!==dobj(G.day).m)return mailEnd('지난달의 배치 제안입니다. 최신 제안은 스카우트팀에서 확인하세요.',true);
+    if(old)return mailEnd('더 새로운 배치 제안이 있습니다. 최신 제안은 스카우트팀에서 확인하세요.',true); /* 같은 제안은 다시 보내지 않으므로 달이 바뀌어도 내용이 그대로면 그대로 적용할 수 있다(아래에서 지금 배치안과 대조) */
     const P=c.scout;if(P){if(P.every(x=>G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('이미 제안한 스카우트 배치를 마쳤습니다.');const now=scoutPlan().filter(x=>x.move);if(P.some(x=>!now.some(z=>z.s.id===x.id&&z.role===x.role&&z.key===x.key)&&!G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('직원·배치 상황이 바뀌었습니다. 최신 제안을 확인하세요.',true);}
     else if(!scoutPlan().some(x=>x.move))return mailEnd('이미 스카우트 배치를 마쳤습니다.');return null;
   }
   if(a.a==='retNo'){const r=String(a.v)[0]==='p'?(G.legends||[]).find(r=>'p'+r.pid===String(a.v)):(G.legends||[])[+a.v];return !r||r.retNo||!r.canRetNo||(r.tid!=null&&r.tid!==G.user)?mailEnd('이미 영구결번을 지정했거나 지정 대상이 아닙니다.'):null;}
-  if(a.a==='cwOpen'){const S=G.cwS,id=c.cw??a.v;return !S||(id!=null?String(S.id)!==String(id):S.day!==d)||S.done||G.day>S.until?mailEnd('이 경기 관전 뒤 건의 기간은 종료되었습니다.',true):null;}
+  if(a.a==='cwOpen'){const S=G.cwS,id=c.cw??a.v,same=!!S&&(id!=null?String(S.id)===String(id):S.day===d);if(same&&S.done)return mailEnd('구단주와 함께 본 경기 이야기를 마쳤습니다.'); /* 마친 건의를 '기한 종료'로 표시하던 문제(플레이테스트 4 #23) */return !same||G.day>S.until?mailEnd('이 경기 관전 뒤 건의 기간은 종료되었습니다.',true):null;}
   if(a.a==='fdBegin')return !G.fdWait?mailEnd('이미 창단 드래프트를 시작했습니다.'):null;
   return null;
 }
@@ -49,7 +51,7 @@ function mailStatus(m){
   if(m.done)return mailEnd('이미 처리한 소식입니다.');
   const A=m.acts||[],s=m.subj||'',d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{},M=G.mgr[G.user],end=mailEnd;
   if(/^\[인터뷰 요청\]/.test(s)&&!A.some(a=>a.a==='ivOpen'||a.a==='ivSkip')){const v=G.iv;return !v||v.done||d<v.day?end('이미 끝난 인터뷰 요청입니다.'):G.day>v.exp?end('인터뷰 응답 기한이 지났습니다.',true):null;}
-  if(!A.length&&m.kind==='결정'&&/\n\[(결정|종료)\] /.test(m.body||'')){const e=(G.evs||[]).find(x=>x.mid===m.id);return end(e&&e.void?'적용하지 않고 끝난 결정입니다.':e&&e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');} /* 답한 결정은 버튼을 지우고 본문에 기록하므로 그 기록으로 완료를 본다(검수 11-09za) */
+  if(!A.length&&m.kind==='결정'&&/\n\[(결정|종료)\] /.test(m.body||'')){const e=(G.evs||[]).find(x=>x.mid===m.id);return end(e&&e.void?'적용하지 않고 끝난 결정입니다.':e&&e.auto?(e.deleg?'맡긴 대로 담당 부서가 처리했습니다.':'답변 기한이 지나 기본안으로 처리했습니다.'):'이미 결정을 마쳤습니다.');} /* 답한 결정은 버튼을 지우고 본문에 기록하므로 그 기록으로 완료를 본다(검수 11-09za) */
   if(m.oid){const o=(G.offers||[]).find(x=>x.id===m.oid);return !o?end('이미 답변했거나 종료된 트레이드 제안입니다.'):G.day>o.exp?end('트레이드 제안의 답변 기한이 지났습니다.',true):null;}
   /* 제목은 이전 저장의 업무에도 사용한다. 단순 보고/기록의 이동 링크는 끝난 업무로 보지 않는다. */
   const task=/감독 자리가 비어|감독 계약이 끝납니다|코치 자리가 비어|부상 방지 프로그램과 병원 제휴|훈련 방향과 해외 연수 안내|스카우트 담당 지역에 공백|감독이 정한 선수단 배치|개막 준비가 끝났습니다|외국인 선수를 구성|연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청|신인 드래프트가 열립니다|스프링캠프가 시작|스폰서 제안|상무 지원 기간|보호선수 명단|보상선수 지명|영입 보상: 보호선수|FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작|트레이드 마감|마감 보강안|내일 직관|개막합니다/.test(s);
@@ -72,7 +74,7 @@ function mailStatus(m){
   if(/보호선수 명단|보상선수 지명|영입 보상: 보호선수/.test(s)){const L=(G.comp||[]).filter(x=>((x.stage==='protect'&&x.to===G.user)||(x.stage==='pick'&&x.from===G.user))&&(c.comp!=null?x.id===c.comp:x.day==null||x.day<=d));if(!L.length)return end('이미 보상 절차를 마쳤거나 해당 지명 기간이 끝났습니다.');if(L.every(x=>G.day>x.exp))return end('보상 절차의 답변 기한이 지났습니다.',true);}
   if(/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/.test(s)&&(!G.fa||G.fa.closed||G.fa.y0!==(c.fa??dobj(d).y)))return end('이 FA 협상 기간은 종료되었습니다.',true);
   if(/관심 FA|우리 FA|시장 보고/.test(s)){const a=A.find(a=>a.a==='player'),p=a&&G.players[+a.v];if(p?.team!=null)return end('이미 계약을 마친 선수의 FA 소식입니다.');}
-  if(/트레이드 마감|마감 보강안/.test(s)&&(old||!tradeOpen()||G.day>tradeDL()))return end('이 시즌의 트레이드 마감일이 지났습니다.',true);
+  if(/트레이드 마감|마감 보강안/.test(s)&&!/^\[인터뷰|^\[기사/.test(s)&&(old||!tradeOpen()||G.day>tradeDL()))return end('이 시즌의 트레이드 마감일이 지났습니다.',true);
   if(/내일 직관|개막합니다/.test(s)&&G.day>d+1)return end('이미 지난 일정입니다.',true);
   const tasks=A.filter(a=>MAIL_TASK_ACTS.has(a.a)||a.done);if(tasks.length){const S=tasks.map(a=>mailActionStatus(m,a));if(S.every(Boolean))return S[0];}
   return null;

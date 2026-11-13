@@ -231,3 +231,10 @@ button.st-n:hover b{text-decoration:underline}
 /* 스카우팅 센터 관심 명단 칸: 드래프트·외국인·타 구단 관심 선수 표를 한 칸 안에서 스크롤 */
 .scn-watch>.sf-tw{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}.scn-watch .pw-h{margin:12px 0 4px}
 .scn-watch .pw-g td{text-align:left;font-weight:700;color:var(--muted)} /* 하위 탭 단독 표시(11-11) */
+/* 1366px(플레이테스트 3): 핵심 능력 칸이 좁아 '체력 100'이 글자 단위로 꺾이던 것. 능력 묶음은 통째로 줄바꿈하고, 왼쪽 비교 카드가 있을 때는 핵심 능력을 둘째 줄로 */
+.st-ab,.st-ab i,.st-r .rc{white-space:nowrap}.st-ab{flex:none}
+@media (min-width:761px){
+  .cmk-split .st-r{grid-template-columns:minmax(180px,240px) 84px 84px 92px minmax(0,1fr) auto;grid-template-areas:"n sk dv sal . act" "n abs abs abs abs act";row-gap:4px}
+  .cmk-split .st-h{grid-template-areas:"n sk dv sal abs act"}.cmk-split .st-h>span:nth-child(5){display:none}
+  .cmk-split .st-emp{grid-template-areas:"n abs abs abs abs act"}
+}

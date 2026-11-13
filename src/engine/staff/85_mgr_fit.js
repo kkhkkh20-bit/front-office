@@ -18,6 +18,10 @@ const MT_ROLES={small:['runSPD','runOB'],combo_d:['defC','runSPD','runOB'],big:[
 /* 역할 기준(내부 능력): 커뮤니티 피드백(11-08) '파워 센 선수를 데려와도 장타형으로 안 잡힌다' → 화면 70 안팎이면 그 역할로 본다. 화면에는 crTxt로 기준을 보여 준다 */
 function crOk(p,k){ return MROLE[k].cr.every(([,key,v])=>(p.r[key]??0)>=v); }
 function crTxt(k){ const R=MROLE[k]; return R&&R.cr?R.cr.map(([l,,v])=>`${l} ${dv(v)} 이상`).join(' · ')+(k==='defC'?' (포수·유격수·2루수·중견수)':''):''; }
+/* 기준별 현재 값(화면 단위): [{l,cur,need,ok}] + 포지션 조건. 직관적으로 '무엇이 몇 모자라는지' 보여 주는 데 쓴다(사용자 11-12) */
+function roleCheck(p,k){ const R=MROLE[k]; if(!R||!p||!p.r)return null; const L=R.cr.map(([l,key,v])=>({l,cur:dv(p.r[key]??0),need:dv(v),ok:(p.r[key]??0)>=v})); if(k==='defC')L.push({l:'포지션',cur:posLabel(p),need:'포·유·2·중',ok:['SS','2B','CF','C'].includes(p.pos),pos:1}); return L; }
+/* 모자란 정도(화면 단위 합): 0이면 충족. 가까운 후보 고르기용 */
+function roleShort(p,k){ const C=roleCheck(p,k); if(!C)return 99; return C.reduce((t,c)=>t+(c.ok?0:c.pos?99:Math.max(0,c.need-c.cur)),0); }
 function mgrRolesOf(m){ if(!m||m.interim)return []; return MT_ROLES[mgrType(m).k]||[]; }
 function roleOk(p,k){ const R=MROLE[k]; if(!p||!R||!p.r)return false; if(R.bat?p.isP:!p.isP)return false; try{ return !!R.ok(p); }catch(e){ return false; } }
 function roleTags(p,k){ const R=MROLE[k]; if(!R||!p)return ''; const g=v=>v>=57?'강점':v<=45?'약함':'보통'; const T=R.bat?{runSPD:[['주력','spd'],['선구','eye']],runOB:[['선구','eye'],['컨택','con'],['주력','spd']],pow:[['파워','pow'],['컨택','con'],['수비','def']],defC:[['수비','def'],['컨택','con']]}[k]:{penS:[['구위','stf'],['제구','ctl']],spL:[['체력','sta'],['제구','ctl'],['구위','stf']],spK:[['구위','stf'],['제구','ctl'],['체력','sta']]}[k];

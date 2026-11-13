@@ -98,14 +98,15 @@ const CW_LIVE={
   flip:{win:'됐어, 뒤집었어! 이래야지.',profit:'이런 경기가 관중을 다시 부르지.',pr:'방금 장면은 내일 기사 첫머리감이오.'},
   lead:{win:'앞서 나가는군. 이대로 끝냅시다.',profit:'분위기 좋소. 관중석이 들썩이는군.',pr:'중계 화면에 우리 응원석이 잡히겠군.'},
   tie:{win:'따라붙었어. 아직 모르지.',profit:'원점이군. 끝까지 보고 가야겠소.',pr:'이런 접전이 화제가 되지.'},
-  lost:{win:'어허, 뒤집혔잖소. 마운드가 왜 이래요?',profit:'관중들 표정이 굳는군.',pr:'이 장면이 하이라이트로 계속 돌겠군.'},
+  lost:{win:'어허, 뒤집혔잖소. 마운드가 왜 이래요?',profit:'관중들 표정이 굳는군.',pr:'역전당하는 장면이 상대 하이라이트로 계속 돌겠군. 체면이 말이 아니오.'},
+  behind:{win:'먼저 내줬군. 아직 갈 길이 멀지만 기분은 별로요.',profit:'선취점을 내주니 관중석이 조용하군.',pr:'상대 쪽 장면이 하이라이트 첫머리에 나오겠군.'}, /* 동점에서 먼저 내준 것은 '뒤집혔다'가 아니다(플레이테스트 4 #24) */
   hurt:{win:'한 번에 {r}점이라... 단장, 저건 설명 좀 들어야겠소.',profit:'{r}점을 한꺼번에 주다니. 표값 아깝다는 말 나오겠소.',pr:'{r}점이라니, 기자들이 가만있지 않겠군.'},
   hr:{win:'{n}, 저 친구 힘 좋네.',profit:'{n} 홈런이면 유니폼 좀 팔리겠군.',pr:'{n}, 저런 선수가 구단 얼굴이 돼야 해.'}};
 function cwLive(g,who){ if(!g||!g.pbp)return []; const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!me)return []; const ow=who==='ceo'?'profit':(team(G.user).owner||'win'); let pa=0,ph=0; const L=[];
   g.pbp.forEach((x,k)=>{ if(typeof x[1]!=='number'||x.length<9)return; const a=x[7],h=x[8]; const runs=(a-pa)+(h-ph); const d0=me==='h'?ph-pa:pa-ph, d1=me==='h'?h-a:a-h; const usBat=(x[0]%2===1)===(me==='h'); pa=a; ph=h; if(runs<=0)return;
-    let t=null; if(usBat&&d0<=0&&d1>0)t=d0<0?'flip':'lead'; else if(!usBat&&d0>=0&&d1<0)t='lost'; else if(usBat&&d0<0&&d1===0)t='tie'; else if(usBat&&x[3]==='HR')t='hr'; else if(!usBat&&runs>=3)t='hurt';
+    let t=null; if(usBat&&d0<=0&&d1>0)t=d0<0?'flip':'lead'; else if(!usBat&&d0>=0&&d1<0)t=d0>0?'lost':'behind'; else if(usBat&&d0<0&&d1===0)t='tie'; else if(usBat&&x[3]==='HR')t='hr'; else if(!usBat&&runs>=3)t='hurt';
     if(t)L.push({k,t,inn:Math.floor(x[0]/2)+1,top:x[0]%2===0,r:runs,n:(G.players[x[1]]||{}).name||''}); });
-  const pri={flip:0,lost:0,lead:1,tie:1,hurt:2,hr:3}; const pick=L.map((z,i)=>({z,i})).sort((a,b)=>pri[a.z.t]-pri[b.z.t]||a.i-b.i).slice(0,4).map(o=>o.z).sort((a,b)=>a.k-b.k);
+  const pri={flip:0,lost:0,lead:1,tie:1,behind:1,hurt:2,hr:3}; const pick=L.map((z,i)=>({z,i})).sort((a,b)=>pri[a.z.t]-pri[b.z.t]||a.i-b.i).slice(0,4).map(o=>o.z).sort((a,b)=>a.k-b.k);
   return pick.map(z=>({k:z.k,inn:z.inn,top:z.top,t:z.t,l:(CW_LIVE[z.t][ow]||CW_LIVE[z.t].win).replace('{r}',z.r).replace('{n}',z.n)})); }
 /* 좋은 경기 표시: 끝내기, 대승, 연패 탈출, 같은 지역 라이벌전, 가을야구 확정권 */
 function cwTags(rec,me,ms,prevStreak){ const T=[]; if(ms<=0)return T; const op=team(me==='h'?rec.away:rec.home), mine=team(G.user);
@@ -196,7 +197,7 @@ function cwOrdIssue(who){ if(cwOrd())return null; const L=cwOrdCands(); if(!L.le
   const O={k:c.k,t:c.t,crit:c.crit,until:c.until,base:c.base,d0:G.day,tid:G.user,person:bossOf(G.user)[who==='ceo'?'ceo':'own'].id,who,st:'open',say:cwOrdSay(c.k)}; G.ownOrder=O; return O; }
 function cwOrdSay(k){ const ow=team(G.user).owner; return {win:ow==='win'?'이기는 게 먼저요. 앞으로 3주는 5할 밑으로 떨어지지 마시오.':'성적도 좀 챙기시오. 3주 동안 5할은 하시오.',att:'관중석이 차야 그룹 체면이 서오. 홈 관중을 늘려 보게.',cut:'적자는 줄이시오. 한 달 뒤에 숫자로 봅시다.',keep:'지금처럼 예산 안에서 운영하시오. 적자는 안 되오.',young:'젊은 선수 하나쯤은 1군에서 크는 걸 보고 싶소. 한 명 써 보게.',ext:'저런 선수는 놓치면 안 되오. 계약을 매듭지으시오.'}[k]||''; }
 function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
-  if(O.k==='win'){ const L=cwUlog().filter(u=>u.d>O.d0&&u.d<=O.until&&u.res!=='무'); const w=L.filter(u=>u.res==='승').length; const ok=L.length?w/L.length>=.5:false; return {done:end,ok,txt:`${w}승 ${L.length-w}패`}; }
+  if(O.k==='win'){ const A0=cwUlog().filter(u=>u.d>O.d0&&u.d<=O.until), L=A0.filter(u=>u.res!=='무'), t=A0.length-L.length; const w=L.filter(u=>u.res==='승').length; const ok=L.length?w/L.length>=.5:false; return {done:end,ok,txt:`${w}승 ${L.length-w}패${t?` ${t}무`:''}`}; } /* 무승부도 적는다: 기한 당일 무승부를 '경기 전 판정'처럼 보이게 하지 않게 */
   if(O.k==='att'){ const H=(G.games||[]).filter(g=>g.day>O.d0&&g.home===G.user&&g.att); const r=H.length?sum(H.map(g=>g.att))/sum(H.map(g=>g.cap||stadCap(G.user))):0; /* 경기 당시 좌석 수 기준 */ const tg=O.base.tg??Math.min(1,O.base.ratio+.03); return {done:end,ok:H.length>0&&r>=tg,txt:H.length?`홈 ${H.length}경기 점유율 ${cwPct(r)}(목표 ${cwPct(tg)})`:'아직 홈경기 없음'}; }
   if(O.k==='cut'||O.k==='keep'){ let b=null; try{ b=budget(); }catch(e){} const v=b?b.roomGoal:O.base.room; if(O.k==='keep')O.lo=Math.min(O.lo??O.base.room,v); const ok=O.k==='cut'?v>=O.base.room+300:O.lo>=0; return {done:end||(O.k==='cut'&&ok),ok,txt:`예산 여유 ${money(v)}${O.k==='keep'&&O.lo<v?`(기간 중 최저 ${money(O.lo)})`:''}`}; } /* 개선 지시는 말한 3억 그대로, 유지 지시는 기간 중 한 번이라도 적자면 미달(검수 11-09zzd) */
   if(O.k==='young'){ let best=null; for(const id in O.base.snap){ const p=G.players[id]; const s=O.base.snap[id]; if(!p)continue; /* 지시 때 23세 이하였던 선수만. 대표팀 소집 중이어도 센다 */ const h=seasonTotalT(p,G.year,'1군',G.user); /* 우리 팀에서 쌓은 기록만(검수 11-09zzd) */ const pa=((h&&h.pa)||0)-s[0], ou=((h&&h.outs)||0)-s[1]; const sc=Math.max(pa/30,ou/24); if(!best||sc>best.sc)best={p,pa,ou,sc}; }

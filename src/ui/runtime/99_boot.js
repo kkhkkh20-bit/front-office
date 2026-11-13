@@ -6,6 +6,7 @@ function bootLoad(){ { let bad=''; for(let i=0;i<=SLOTS&&(G=load());i++){ try{ m
 render(); /* 공간이 빠듯하면(본문 합계 약 3MB 이상) 진행 중이 아닌 슬롯을 IndexedDB로 미리 옮긴다 */ try{ if(sbOk()&&SLOT_IDS.reduce((a,k)=>a+((sbLsGet(k)||'').length),0)>1.5e6)setTimeout(()=>sbOffload(CUR_SLOT),3000); }catch(e){} }
 let DL=null; try{ if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{ DL=d; if(G&&UI.tab==='club')render(); }).catch(()=>{}); }catch(e){}
 /* IndexedDB에 둔 슬롯이 있으면 먼저 읽어 온 뒤 연다. 없으면 예전처럼 바로 연다(사용자 11-12) */
-if(sbNeedBoot())sbRefresh().catch(()=>{}).then(bootLoad); else bootLoad();
+if(sbNeedBoot()){ let done=false; const go=()=>{ if(done)return; done=true; bootLoad(); }; sbRefresh().catch(()=>{}).then(go); setTimeout(()=>{ if(!done){ go(); try{ toast('보조 저장소(IndexedDB)가 응답하지 않아 일부 슬롯을 읽지 못했을 수 있습니다. 새로고침해 보세요.'); }catch(e){} } },2500); } else bootLoad(); /* 일부 Safari에서 indexedDB.open이 응답하지 않으면 첫 화면이 영영 안 뜨던 문제(UI 리뷰 11-13) */
+try{ savePersistAsk(); }catch(e){} /* 저장 영구 보관 요청(모바일 정리로 지워지지 않게) */
 
 try{performance.mark('fronttime-menu-ready');}catch(e){}

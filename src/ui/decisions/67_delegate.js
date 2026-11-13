@@ -19,6 +19,6 @@ Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v
   foRec(v){ const F=UI.fo; const p=G.players[+v]; if(!F||!p)return; if(F.re){ const t=foReFloor(p), f=foReComfort(p), cap=p.foreign==='아시아'?asiaReCap(p):Infinity; const need=i=>Math.max(MIN_SAL,Math.ceil((t/f-i*FO_INC_W)/USD)*USD); /* 아시아쿼터 재계약 상한 안에서만 추천(검수 11-09b). 상한이 있으면 인센티브 없이 보장으로 주는 쪽이 값이 크다 */
     if(need(F.i)+F.i>cap)F.i=0; const g=need(F.i); if(g+F.i>cap){ F.g=Math.max(MIN_SAL,cap-F.i); F.msg=`재계약 상한 ${usdT(cap)} 안에서는 합의할 수 있는 조건이 없습니다. 상한까지 맞췄습니다.`; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); return; }
     const me=foAppeal(p,G.user,{rel:!!F.rel}) /* 넣은 보류권 해제 조항도 반영(검수 11-09b) */, Rv=foRivals(p), best=Rv[0]; const known=!!p.fneg||!best; const cap=foCap(p);
-    if(!known){ F.g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F.i=Math.max(0,Math.min(cap-F.g,p.ask-F.g)); F.msg='경쟁 구단 조건을 아직 모릅니다. 요구액 기준(보장 85% + 인센티브 15%)으로 맞췄습니다. 한 번 제안하면 정확한 조건을 알려 줍니다.'; renderSheet(); return; }
-    const tgt=Math.max(foFloor(p),best?best.v*1.01:0); let g=foNeedG(p,F.i,tgt,me.f); if(g==null){ F.i=0; g=foNeedG(p,0,tgt,me.f); }
-    if(g==null){ F.msg='상한 안에서는 사인시킬 수 있는 조건이 없습니다.'; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); } });
+    /* 추천 조건은 실제 제안 판정과 같은 기준(경쟁 구단 조건 포함)으로 계산한다. 경쟁 조건을 아직 몰라도 에이전트 귀띔으로 맞춘다(플레이테스트 4 #12: 추천 조건이 거절됨) */
+    const room=foRoom(p), tgt=Math.max(foFloor(p),best?best.v*1.01:0)*1.005; const need=i=>{ const g=foNeedG(p,i,tgt,me.f); return g!=null&&g+i<=room?g:null; }; let g=need(F.i); if(g==null){ F.i=0; g=need(0); }
+    if(g==null){ F.msg=room<cap?`외국인 총액 한도에서 남은 몫(${usdT(room)}) 안에서는 사인시킬 수 있는 조건이 없습니다.`:'상한 안에서는 사인시킬 수 있는 조건이 없습니다.'; } else { F.g=g; F.msg=known?'사인 가능한 최소 보장액으로 맞췄습니다.':'에이전트 귀띔(경쟁 구단 조건 포함)으로 사인 가능한 보장액에 맞췄습니다.'; } renderSheet(); } });

@@ -65,6 +65,7 @@
       "src/engine/staff/51_staff_league.js",
       "src/engine/staff/52_staff_profiles.js",
       "src/engine/media/52_interviews.js",
+      "src/engine/players/29b_player_drama.js",
       "src/engine/career/53_gm_schedule.js",
       "src/engine/media/54_press.js",
       "src/engine/finance/55_capex.js",
@@ -88,6 +89,7 @@
       "src/engine/career/70_gm_contract.js",
       "src/engine/contracts/71_foreign_neg.js",
       "src/engine/contracts/72_foreign_temp.js",
+      "src/engine/contracts/73_foreign_drama.js",
       "src/engine/progression/72_delegate.js",
       "src/engine/staff/73_firings.js",
       "src/engine/media/74_press_play.js",
@@ -104,6 +106,7 @@
       "src/engine/career/82_team_build.js",
       "src/engine/players/83_stars.js",
       "src/engine/league/84_national.js",
+      "src/engine/league/84b_nt_tour.js",
       "src/engine/staff/85_mgr_fit.js",
       "src/engine/staff/86_ai_plan.js",
       "src/engine/staff/87_ai_events.js",
@@ -113,6 +116,8 @@
       "src/engine/staff/90_mgr_scenes.js",
       "src/engine/staff/91_schools.js",
       "src/engine/staff/92_own_scenes.js",
+      "src/engine/staff/92b_talk_color.js",
+      "src/engine/staff/93_mgr_conflict.js",
       "src/engine/draft/88_draft_view.js",
       "src/engine/media/89_data_report.js",
       "src/engine/runtime/95_audit.js",
@@ -256,6 +261,7 @@
       "src/ui/matches/74_game_results.js",
       "src/ui/media/75_patch_notes.js",
       "src/ui/league/76_national.js",
+      "src/ui/league/76b_nt_tour.js",
       "src/ui/assets/77_assets_ui.js",
       "src/ui/league/97_spring_camp_ui.js",
       "src/ui/runtime/99_boot.js"
@@ -301,7 +307,8 @@
       "src/css/career/31_personal_life.css",
       "src/css/career/84_personal_network.css",
       "src/css/career/85_bulk_relations.css",
-      "src/css/staff/32_operations_art.css"
+      "src/css/staff/32_operations_art.css",
+      "src/css/shell/40_mobile_playtest2.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

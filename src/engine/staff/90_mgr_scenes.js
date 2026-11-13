@@ -200,17 +200,18 @@ function mgrReqChoiceBlock(c){if(c.fx&&Object.prototype.hasOwnProperty.call(c.fx
 function mgrReqTree(T){let why='';const c=(T.c||[]).filter(x=>{const reason=mgrReqChoiceBlock(x);if(reason)why=why||reason;return !reason;});if(why)c.unshift({l:'현재 조건에서 가능한 운영을 논의하죠',r:[why+' 추가 보강 약속 없이 현재 인원을 활용하겠습니다.'],fx:{}});return {...T,c};}
 function mscnMem(m){ return m.scn=m.scn||{d:-1,u:{},n:0}; }
 /* 장면 고르기: 지금 상황에 맞는 것 중 최근 30일에 안 나온 것, 가중치 추첨 */
-function mgrScenePick(m,X){ const s=mgrTalkSty(m), M=mscnMem(m); const L=MSCN.filter(c=>(c.s===s||c.s==='*')&&c.w(X)>0);
+function mgrScenePick(m,X){ const s=mgrTalkSty(m), M=mscnMem(m); const L=tcFlavGate(MSCN.filter(c=>(c.s===s||c.s==='*')&&c.w(X)>0),M,'m'+m.id);
   const fresh=L.filter(c=>!(M.u[c.id]>G.day-30)); const pool=fresh.length?fresh:L.sort((a,b)=>(M.u[a.id]||0)-(M.u[b.id]||0)).slice(0,1); if(!pool.length)return null;
   let t=sum(pool.map(c=>c.w(X))), r=R()*t; for(const c of pool){ r-=c.w(X); if(r<=0)return c; } return pool[pool.length-1]; }
 /* 대화 시작: 하루 한 번 */
 function mgrTalkStart(m){ if(!m||m.interim||G.unemp||G.mgr?.[G.user]?.id!==m.id)return {say:['지금은 이야기할 감독이 없습니다.'],st:null}; const s=mgrTalkSty(m), M=mscnMem(m);
   if(M.d===G.day)return {say:[MSCN_BYE[s]],st:null};
-  const X=mgrScnCtx(), sc=mgrScenePick(m,X); if(!sc)return {say:[MSCN_BYE[s]],st:null}; M.d=G.day; M.u[sc.id]=G.day; M.n++;
-  const T=mgrReqTree(sc.b(X,s)); const pre=m.rel<35?'(표정이 딱딱하다) ':''; const st=talkSt(sc.id,X,T,'mg'+m.id);st.tid=G.user;st.mid=m.id;
-  return {say:[pre+mvFresh(m,'scn:'+sc.id+':o',T.o)],st,ch:talkChoices(st)}; }
+  const X=mgrScnCtx(), sc=mgrScenePick(m,X); if(!sc)return {say:[MSCN_BYE[s]],st:null}; M.d=G.day; m.tkD=(m.tkD||[]).filter(d=>G.day-d<=30).concat(G.day); M.u[sc.id]=G.day; M.n++;
+  const T=mgrReqTree(sc.b(X,s)); const pre=m.rel<35?'(표정이 딱딱하다) ':''; const st=talkSt(sc.id,X,T,'mg'+m.id);st.tid=G.user;st.mid=m.id;if(sc.flav)st.flav=1;
+  const op=pre+mvFresh(m,'scn:'+sc.id+':o',T.o); const cb=sc.flav?'':tcCallback({kind:'mgr'},M,X,'m'+m.id); /* 지난 대화·최근 일 꺼내기(11-12) */
+  return {say:cb?[cb,op]:[op],st,ch:talkChoices(st)}; }
 const mgrTalkChoices=st=>talkChoices(st);
-const mgrTD=m=>({mem:m,sty:mgrTalkSty(m),qs:MSQ.map(q=>({...q,a:(X,s)=>mgrReqTree({c:q.a(X,s)}).c})),qm:(mscnMem(m).q=mscnMem(m).q||{}),fx:(fx,X)=>mgrScnFx(m,fx,X)});
+const mgrTD=m=>({kind:'mgr',mem:m,sm:mscnMem(m),sty:mgrTalkSty(m),qs:MSQ.map(q=>({...q,a:(X,s)=>mgrReqTree({c:q.a(X,s)}).c})),qm:(mscnMem(m).q=mscnMem(m).q||{}),fx:(fx,X)=>mgrScnFx(m,fx,X)});
 function mgrTalkPick(m,st,i){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id||(st?.tid!=null&&st.tid!==G.user)||(st?.mid!=null&&st.mid!==m.id))return {me:'',say:['요청한 감독 또는 구단이 바뀌어 이전 대화를 종료합니다.'],sys:[],st:null,ch:[]};const ch=st?.node?.c?.[i];if(ch){const why=mgrReqChoiceBlock(ch);if(why){st.node=null;return {me:gvL(ch.me||ch.l),say:[why+' 추가 보강 약속은 만들지 않습니다.'],sys:[],st:null,ch:[]};}}return talkPick(mgrTD(m),st,i);}
 
 /* ===== 주고받는 대화(11-09e: 감독·구단주 대화가 티키타카가 되게) =====
@@ -222,7 +223,8 @@ const GVI={ana:1,bro:2,gam:3,fox:4,blunt:5};
 const gvL=l=>Array.isArray(l)?(l[GVI[myVoice()]]||l[0]):l;
 /* 반응: 배열이거나 상대 성향별 객체({d:기본, fire:[...], win:[...]}) */
 const scnR=(r,s)=>Array.isArray(r)?r:(r[s]||r.d);
-function talkSt(id,X,T,salt){ return {id,X,T,node:T,path:[],beat:0,goal:3+(u01('tgoal'+salt+id,G.day)<.4?1:0),asked:[]}; }
+/* 목표 마디 수도 들쭉날쭉(11-12): 짧게 끝나는 날(2), 보통(3), 길게(4) */
+function talkSt(id,X,T,salt){ const g=u01('tgoal'+salt+id,G.day); return {id,X,T,node:T,path:[],beat:0,goal:g<.2?2:g<.7?3:4,asked:[],il:0}; }
 function talkChoices(st){ return st&&st.node?st.node.c.map(c=>gvL(c.l)):[]; }
 /* 상대가 단장에게 묻는 마디: 지금 상황에 맞고, 이번 장면·최근 7일에 안 나온 질문 */
 function talkQ(D,st){ const X=st.X; const L=D.qs.filter(q=>!st.asked.includes(q.id)&&!(D.qm[q.id]>G.day-7)&&q.w(X,D.sty)>0); if(!L.length)return null;
@@ -230,9 +232,20 @@ function talkQ(D,st){ const X=st.X; const L=D.qs.filter(q=>!st.asked.includes(q.
   st.asked.push(q.id); D.qm[q.id]=G.day; return {t:q.q(X,D.sty),c:q.a(X,D.sty),q:q.id}; }
 /* 대답 고르기: 상대 반응 → 결과 → 다음 마디(준비된 것, 없으면 상대의 질문) */
 function talkPick(D,st,i){ if(!st||!st.node)return {me:'',say:[],sys:[],st:null}; const ch=st.node.c[i]; if(!ch)return {me:'',say:[],sys:[],st};
-  st.beat++; const k='scn:'+st.id+':'+st.path.join('.')+':'+i, me=gvL(ch.me||ch.l); const say=[mvFresh(D.mem,k,scnR(ch.r,D.sty))]; const sys=D.fx(ch.fx||{},st.X);
-  let n=ch.n&&ch.n.c&&ch.n.c.length?ch.n:null; if(!n&&st.beat<st.goal)n=talkQ(D,st);
-  if(n&&st.beat<5){ st.path.push(i); st.node=n; say.push(mvFresh(D.mem,k+':t',scnR(n.t,D.sty))); return {me,say,sys,st,ch:talkChoices(st)}; }
+  /* 혼잣말 마디에서 '듣는다'(11-12): 대답이 아니라 반응. 다음 마디로 넘어가거나, 이어질 게 없으면 헤어진다 */
+  if(ch.cont){ const me0=gvL(ch.l); const n0=ch.n&&ch.n.c&&ch.n.c.length?ch.n:null; if(n0){ st.node=n0; return {me:me0,say:[mvFresh(D.mem,'scn:'+st.id+':ct'+st.beat,scnR(n0.t,D.sty))],sys:[],st,ch:talkChoices(st)}; }
+    if(st.beat<st.goal&&!st.flav){ const q=talkQ(D,st); if(q){ st.node=q; return {me:me0,say:[mvFresh(D.mem,'scn:'+st.id+':cq',scnR(q.t,D.sty))],sys:[],st,ch:talkChoices(st)}; } }
+    st.node=null; return {me:me0,say:[tcPart(D,st)],sys:[],st:null,ch:[]}; }
+  st.beat++; const k='scn:'+st.id+':'+st.path.join('.')+':'+i, me=gvL(ch.me||ch.l); const X=st.X||{}, mood=tcMood(D,X);
+  /* 같은 대답도 상대 기분에 따라 더 먹히거나 반만 먹힌다(11-12) */ const A=tcAdjust(D,st,ch.fx||{},mood);
+  const say=[mvFresh(D.mem,k,scnR(ch.r,D.sty))+(A.add?' '+A.add:'')]; const sys=D.fx(A.fx,st.X); if(!st.flav)tcRemember(D,D.sm||D.mem,me);
+  let n=ch.n&&ch.n.c&&ch.n.c.length?ch.n:null; const tail=ch.n&&ch.n.t&&!(ch.n.c&&ch.n.c.length)?ch.n:null; if(!n&&!tail&&!st.flav&&st.beat<st.goal)n=talkQ(D,st);
+  if(tail){ st.path.push(i); st.node={t:tail.t,c:[{l:tail.c&&tail.c[0]?tail.c[0].l:TC_CONT[0],cont:1}]}; say.push(mvFresh(D.mem,k+':t',scnR(tail.t,D.sty))); return {me,say,sys,st,ch:talkChoices(st)}; }
+  if(n&&st.beat<5){ st.path.push(i);
+    /* 상대가 먼저 일어난다: 바쁘거나 기분이 나쁠 때(2마디 이후, 가끔) */ if(st.beat>=2&&tcU(D,st,'cut')<.07+(mood<-.3?.1:0)){ say.push(tcCut(D,st,mood)); st.node=null; return {me,say,sys,st:null,ch:[]}; }
+    /* 혼잣말 마디: 묻지 않고 그냥 이야기한다(옛날 얘기·푸념·농담·소문). 한 장면에 두 번까지 */ if((st.il||0)<2&&!(n.c.length===1&&n.c[0].cont)&&tcU(D,st,'il')<.62){ const I=tcInterlude(D,st); st.il=(st.il||0)+1; say.push(I.line); st.node={c:[{l:I.lab,cont:1,n}]}; return {me,say,sys,st,ch:talkChoices(st)}; }
+    st.node=n; say.push(mvFresh(D.mem,k+':t',scnR(n.t,D.sty))); return {me,say,sys,st,ch:talkChoices(st)}; }
+  if(tcU(D,st,'part')<.35)say.push(tcPart(D,st));
   st.node=null; return {me,say,sys,st:null,ch:[]}; }
 /* 감독이 단장에게 묻는 질문. l 배열 순서는 gvL 참고 */
 const MSQ=[
@@ -281,7 +294,7 @@ const MSQ=[
 ];
 /* 결과를 실제로 남긴다. 돌려주는 값: 대화 아래에 보일 한 줄들 */
 function mgrScnFx(m,fx,X){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id)return ['현재 구단의 감독과 나눈 대화가 아니라 아무것도 변경하지 않습니다.'];if(Object.prototype.hasOwnProperty.call(fx,'req')){const why=mgrReqBlock(fx.req);if(why)return [why+' 추가 보강 약속은 만들지 않습니다.'];}const out=[]; const P=w=>X[w]&&X[w].team===G.user?X[w]:null;
-  if(fx.rel){ m.rel=clamp(m.rel+fx.rel,0,100); out.push(`감독 관계 ${fx.rel>0?'+':''}${fx.rel}`); }
+  if(fx.rel){ const rv=typeof mcfRelGain==='function'?mcfRelGain(m,fx.rel):fx.rel; m.rel=clamp(m.rel+rv,0,100); out.push(rv!==fx.rel?`감독 관계 ${rv>0?'+':''}${rv}(자주 나눈 이야기라 덜 오름)`:`감독 관계 ${fx.rel>0?'+':''}${fx.rel}`); } /* 면담 체감(11-12) */
   if(fx.mor){ for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+fx.mor,0,100); out.push(`선수단 기분 ${fx.mor>0?'+':''}${fx.mor}`); }
   if(fx.pm){ const p=P(fx.pm[0]); if(p){ p.mor=clamp((p.mor??60)+fx.pm[1],0,100); out.push(`${p.name} 기분 ${fx.pm[1]>0?'+':''}${fx.pm[1]}`); } }
   if(fx.pref&&MPREF[fx.pref[0]]){ const [k,d]=fx.pref; mgrAttr(m); m[k]=clamp((m[k]??50)+d,20,90); out.push(`감독 기용 성향: ${MPREF[k]} ${d>0?'늘림':'줄임'}`); }

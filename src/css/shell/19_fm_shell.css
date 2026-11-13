@@ -213,3 +213,8 @@ main.ws-frame>.setx.ws-own{flex:1;min-height:0;overflow:auto;overscroll-behavior
 /* 실제 날짜 진행 중에는 모바일 날짜 옆에 점수를 두어 머리의 잘림 영역을 벗어나지 않는다. */
 .top .fm-dres.ap-dres{position:static;display:inline-flex;vertical-align:baseline;margin:0 0 0 3px;padding:0;background:none;font-size:10px;gap:0}
 #app .top .club b.ap-date-label{display:inline;font:inherit;line-height:inherit}
+/* 길게 진행 메뉴(플레이테스트 3) */
+.cfm.advm .advm-l{display:grid;gap:6px;margin:10px 0 4px}
+.cfm.advm .advm-b{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;white-space:nowrap}
+.cfm.advm .advm-b .small{flex:none}
+.goset .step.advmore{white-space:nowrap}

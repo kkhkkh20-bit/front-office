@@ -1,5 +1,15 @@
 /* ===== 선수 기분과 성향 ===== */
-function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers)p.pers={pro:ri(4,20),amb:ri(4,20),loy:ri(4,20),temp:ri(4,20)}; }
+function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers){ const g=(m,sd)=>clamp(Math.round(N(m,sd)),3,20); p.pers={pro:g(9.5,3.5),amb:g(11,3.8),loy:g(10,3.8),temp:g(10.5,3.8)}; } /* 멘탈 좋은 선수는 드물다(사용자 11-12): 고른 분포(4~20) 대신 중간~낮음에 몰리게. 프로의식 15 이상 약 10%, 7 이하 약 25% */ }
+/* 히든 멘탈(사용자 11-12): 성실성·야망·충성심·기질은 숫자로 보이지 않는다. 우리 선수는 감독(함께한 시간·안목), 다른 구단·아마추어는 그 지역 스카우트(실력)가 간접적으로 전한다.
+   정보원이 없으면 '알 수 없음'. 추정 오차가 크면 '(불확실)' */
+function mentalRead(p,k){ if(!p||!p.pers)return {t:'알 수 없음',src:'',sd:99}; const v=p.pers[k];
+  let sd=99, src='';
+  if(p.team===G.user&&!G.unemp){ const m=G.mgr&&G.mgr[G.user]; const kn=m?mgrKnow(m,p):0; sd=(1.6+(1-kn)*4.5)*(m?1-((m.eye||50)-50)/160:1.3); src=m?`${m.name} 감독·코치진(훈련 태도)`:'코치진(훈련 태도)'; }
+  else { const ref=p.team!=null?p.team:p.prospect?null:p.faFrom; let sc=null; try{ sc=ref!=null?coverOf(ref).sc:(p.prospect&&p.region?scoutOf('am',p.region):null); }catch(e){} if(sc){ sd=Math.max(3.5,8.5-(sc.skill||2)*1.0); src=`${sc.name} 스카우트(소문)`; } } /* 다른 구단 선수의 훈련 태도는 밖에서 보기 어렵다: 최고 스카우트도 오차가 크다 */
+  if(sd>=99)return {t:'알 수 없음',src:'정보원 없음',sd};
+  const e=v+hn('mr'+k+(src||'')+halfK(),p.id)*sd; const t=k==='temp'?(e>=15.5?'매우 예민':e>=12?'예민한 편':e>=8.5?'보통':e>=5.5?'무던한 편':'매우 무던'):k==='amb'?(e>=15.5?'매우 강함':e>=12?'강한 편':e>=8.5?'보통':e>=5.5?'약한 편':'거의 없음'):(e>=15.5?'매우 좋음':e>=12?'좋은 편':e>=8.5?'보통':e>=5.5?'아쉬운 편':'나쁨');
+  return {t:t+(sd>=4?' (불확실)':''),src,sd}; }
+function mentalSum(p){ const r=mentalRead(p,'pro'), t=mentalRead(p,'temp'); if(r.sd>=99)return '성향 정보 없음'; const a=mentalRead(p,'amb'); return `${r.src}: 프로의식 ${r.t} · 야망 ${a.t} · 예민도 ${t.t}`; }
 const moodLabel=m=>m>=80?'매우 좋음':m>=65?'좋음':m>=45?'보통':m>=30?'불만':'매우 불만';
 const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';
 function persText(p){ const s=p.pers; const t=[]; if(s.pro>=15)t.push('프로의식이 강함'); if(s.pro<=7)t.push('훈련 태도가 들쭉날쭉'); if(s.amb>=15)t.push('야망이 큼'); if(s.loy>=15)t.push('구단 충성심이 높음'); if(s.loy<=6)t.push('시장 평가를 중시'); if(s.temp>=15)t.push('예민한 편'); if(s.temp<=6)t.push('무던한 편'); return t.length?t.join(' · '):'평범한 성향'; }
@@ -64,8 +74,8 @@ function moraleWeek(){
       if(p.promise&&G.day>=p.promise.until&&!healthy(p)&&per==='season'){ p.promise.until=G.day+Math.min(30,Math.max(7,p.injOut||7)); p.promise.inj=(p.promise.inj||0)+1; } /* 부상으로 뛸 수 없으면 평가를 미룬다(복귀 뒤 출전 가능 기간으로 본다) */
       if(p.promise&&G.day>=p.promise.until&&per!=='season'){ p.promise.until=G.day+30; p.promise.off=1; } /* 경기가 없는 기간은 약속 기한에서 빼고 시즌 경기로 평가한다 */
       if(p.promise&&G.day>=p.promise.until){ const r=playPromKept(p);
-        if(r){ dd+=5; if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
-        else { dd-=12; if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
+        if(r){ dd+=5; try{ pdPromKept(p); }catch(e){} if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
+        else { dd-=12; try{ pdPromBroken(p); }catch(e){} if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
         delete p.promise; }
       const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*(per==='season'?.08:.03),0,100); /* 비시즌에는 기분이 천천히 평소로 돌아온다(카페 11-09: 시즌 끝 100이 개막 때 60이 되던 문제). 시즌 중에는 그대로 */
       if(t.id===G.user)requestCheck(p);
@@ -181,11 +191,13 @@ function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)
 function keepPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(!(p.treq&&!p.treq.done)){ note('면담',`${p.name}: "이미 말씀 나눴습니다."`,id); return; } p.treq.done=true; const ok=p.pers.loy>=11||R()<.35; p.mor=clamp(p.mor+(ok?8:-6),0,100); note('면담',ok?`${p.name}: "단장님 말씀을 믿고 한 번 더 해 보겠습니다."`:`${p.name}: "생각은 달라지지 않았습니다."`,id); }
 /* 후보 선수의 트레이드 요청(피드백 11-09k): 실력은 주전과 비슷한데 출전이 적은 백업이 단장실을 찾아온다. 구단 전체로 30일에 한 번, 한 해 3번까지.
    시즌 중에는 evWeek가 check()로 고르고, 시즌 밖(스토브리그·캠프)에는 treqWeek가 따로 본다 */
-function treqLowPT(p,y,gp){ const h=seasonTotal(p,y,'1군')||{}; return p.isP?(h.outs||0)<gp*.6:(h.pa||0)<gp*1.1; }
+/* 그 시즌을 우리 구단에서 보내지 않은 선수(시즌 중간 이후·시즌 뒤 합류)는 그 시즌 출전으로 불만을 말하지 않는다 */
+function treqNewHere(p,y){ const C=G.cal; const end=y<G.year?dnum(y,10,1):(C?C.end:dnum(y,10,1)), open=y<G.year?dnum(y,3,25):(C?C.open:dnum(y,3,25)); let j=null; for(const m of p.tLog||[])if(m.t===G.user&&m.d!=null)j=Math.max(j??-1e9,m.d); if(j==null&&p.mvD!=null&&p.team===G.user)j=p.mvD; return j!=null&&j>open+Math.round((end-open)/2); }
+function treqLowPT(p,y,gp){ const h=(p.team===G.user?seasonTotalT(p,y,'1군',G.user):seasonTotal(p,y,'1군'))||{}; /* 우리 구단에서 뛴 몫만(커뮤니티 11-13 질수없뜸: 12월에 데려온 선수가 전 구단 시절 0타석을 이유로 트레이드 요청) */ return p.isP?(h.outs||0)<gp*.6:(h.pa||0)<gp*1.1; }
 function treqCands(){ if(G.unemp||!G.mgr[G.user])return []; const per=period(), live=per==='season', y=per==='off'||live?G.year:G.year-1; const gp=live?teamGP(G.user):144; if(live&&gp<20)return [];
   const d=depth(G.user); const rv=p=>(p.isP?[d.sp[4],d.pen[3]]:[d.ln[p.pos]]).filter(Boolean);
   return playersOf(G.user).filter(p=>{ initPers(p); if(p.foreign||p.ys||!healthy(p)||isAway(p)||p.listed||p.promise||(p.treq&&(!p.treq.done||G.day-p.treq.day<120))||p.joinY>G.year||p.age<23||p.age>33||p.pers.amb<10||(p.mor??60)>=70)return false;
-    if((p.tLog||[]).some(x=>x.t===G.user&&G.day-x.d<60)||isRegular(p)||(live&&playedReg(p))||!treqLowPT(p,y,gp))return false;
+    if((p.mvD!=null&&G.day-p.mvD<60)||treqNewHere(p,y)||(p.tLog||[]).some(x=>x.t===G.user&&G.day-x.d<60)||isRegular(p)||(live&&playedReg(p))||!treqLowPT(p,y,gp))return false;
     const f=seasonTotal(p,y,'퓨처스'); const farm=f&&(p.isP?f.outs>=60&&f.er*27/f.outs<=3.6:f.pa>=60&&bRate(f).ops>=.8);
     return farm||rv(p).some(q=>q.id!==p.id&&ovr(p)>=ovr(q)-3); }); }
 function treqWeek(){ const per=period(), L=(G.treqLog||{}).last; if(per==='season'||per==='post'||G.gameOver||(L!=null&&G.day-L<90)||evOpen().some(e=>e.k==='treq')||R()>.3)return; /* 시즌 밖은 석 달에 한 번까지(같은 해 시즌 몫을 캠프 때 다 쓰지 않게) */ const p=EVH.treq.check(); if(p)EVH.treq.make(p); }

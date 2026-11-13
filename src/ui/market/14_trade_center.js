@@ -35,7 +35,7 @@ function tradeModes(key,tabs,cur){return `<nav class="trade-modes" aria-label="�
 function tcMarket(){const open=tradeOpen(),mode=(UI.it||{}).mkv||'find',cur=['find','sug','req','sell','news'].includes(mode)?mode:'find';
  const bar=tradeModes('mkv',[['find','선수 검색'],['sug','추천 받기'],['sell','보낼 선수']],cur==='req'?'sug':cur);
  if(cur==='find'||cur==='sell')return bar+tcFind(cur==='sell'?'sell':'buy');
- if(cur==='req')return bar+`<button class="btn small" data-a="itab" data-v="mkv:sug">‹ 추천으로</button>`+recCard();
+ if(cur==='req')return bar+recCard().replace('<section class="card">','<section class="card"><button class="btn small" data-a="itab" data-v="mkv:sug">‹ 추천으로</button>'); /* 돌아가기 버튼을 카드 안에: 카드 밖에 따로 두면 모바일에서 별도 칸('보고')으로 나뉘어 빈 화면이 됐다(플레이 테스트 11-13) */
  if(cur==='news')return bar+csec('시장 소식',feedList(14));
  const L=open?tradeSuggest(false):[];UI._tsug=L;
  return bar+deadlineBanner()+`<section class="card"><div class="row between"><h2 class="sec">추천 트레이드</h2><button class="btn small" data-a="itab" data-v="mkv:req">포지션 지정</button>${open?'<button class="tc-i" data-a="tsugMore">새 추천</button>':''}</div>${UI.deskMsg?`<div class="note ${UI.deskOk?'':'bad'}">${esc(UI.deskMsg)}</div>`:''}${!open?'<p class="small">지금은 트레이드 기간이 아닙니다.</p>':L.length?`<div class="dealg">${L.map((x,i)=>dealCard(x,i,'d')).join('')}</div>`:'<p class="small">바로 성사할 수 있는 추천이 없습니다. 선수를 검색하거나 포지션을 지정해 보세요.</p>'}</section>`;

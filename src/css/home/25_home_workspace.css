@@ -220,3 +220,9 @@
  #app .home-workspace[data-device="tablet"] .hw-stand :is(td,th){height:20px}
  #app .home-workspace[data-device="tablet"] .hw-stand td button{height:18px;min-height:0;line-height:18px}
 }
+/* 첫 시즌 준비 체크리스트(플레이테스트 4 #13) */
+.hw-start .hw-ck{list-style:none;margin:0;padding:0;display:grid;gap:4px}.hw-start .hw-ck li{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line,#2a3a48)}
+.hw-start .hw-ck li small{grid-column:2;color:var(--muted);font-size:11px}.hw-start .hw-ck li .btn{grid-column:3;grid-row:1/span 2}
+.hw-start .hw-ck-m{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--muted,#7a8a99);display:grid;place-items:center;font-size:11px;font-weight:700}.hw-start .hw-ck li.ok .hw-ck-m{background:var(--good,#3fae6a);border-color:var(--good,#3fae6a);color:#fff}.hw-start .hw-ck li.ok b{color:var(--muted);text-decoration:line-through;font-weight:500}
+/* 태블릿: 리그 부문별 1위 이름이 잘리지 않게 얼굴을 빼고 이름 칸을 넓힌다(플레이테스트 4 E) */
+@media(min-width:701px) and (max-width:1099px){.hw-lt .hw-lr{grid-template-columns:auto minmax(0,1fr) 14px auto;gap:4px}.hw-lt .hw-lr-f{display:none}.hw-lt .hw-lr>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
