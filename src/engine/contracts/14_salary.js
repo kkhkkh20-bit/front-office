@@ -38,7 +38,7 @@ function newSalary(p){
   const up=war<=0?1.0:1+clamp(war*.4,.03,1.9);
   /* 잘한 선수는 깎지 않고 올려 준다: WAR 3 이상 +15% 이상, 2 이상 +8% 이상, 1 이상 동결 이상, 0 이상 최대 -15% */
   const lo2=war>=3?p.sal*1.15:war>=2?p.sal*1.08:war>=1?p.sal:war>=0?p.sal*.85:lo;
-  const v=round5(clamp(marketSal(base)*f,Math.max(lo,lo2),Math.max(p.sal*up,lo2)));
+  const v=round5(clamp(marketSal(base)*f,Math.max(lo,lo2),Math.max(p.sal*up,lo2))*(war>=1?domPrem(p.team):1)); /* 우승 프리미엄: 독주 구단에서 잘한 선수는 더 오른다 */
   if(skip)return round5(Math.min(v,Math.max(p.sal,Math.min(700,p.sal*1.5))));
   return p.svc<faSvc(p)&&!p.faC?Math.min(v,Math.max(p.sal,preCap(p))):v;
 }
@@ -67,6 +67,7 @@ function faAsk(p){
   const tab=Math.max(marketSal(base)*1.05*af*tier*faMktNow(),fl);
   /* 요구액은 시장가에서 시작한다(시장 엔진: 두 번째로 높은 지불 의사). 표 기준 금액은 하한(45%)·상한(2배)으로만 남겨 이상값을 막는다 */
   let ann=tab; if(!p.foreign&&typeof mktPrice==='function'){ try{ ann=clamp(mktPrice(p),tab*.45,tab*2); }catch(e){ ann=tab; } }
+  ann*=domPrem(p.team??p.faFrom); /* 우승 프리미엄: 독주 구단 선수는 시장에서 더 부른다 */
   return {annual:round5(Math.min(ann,3000*ecoCap(G.year)/14397,typeof faTop==='function'?Math.max(tab,faTop()):1e9)),years};
 }
 /* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */

@@ -811,7 +811,7 @@ T('[구단 전략] 계획에는 관성이 있다: 유망주 수집은 세 시즌
 T('[구단 전략] 유망주 수집 구단은 우리 제안에서 지명권·어린 선수를 훨씬 높게, 서른 넘은 주전을 훨씬 낮게 친다(같은 묶음을 우승 도전 구단과 다르게 평가)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const U=domestic(G.user).filter(p=>!p.ys&&!(p.joinY>G.year)&&healthy(p));
   const yg=U.filter(p=>p.age<=23).sort((a,b)=>b.pot-a.pot)[0], vt=U.filter(p=>p.age>=28).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(yg&&vt,'준비 실패'); vt.age=32; vt.sal=200; vt.faC=false; delete vt.ext; yg.age=21; yg.pot=Math.max(yg.pot,ovr(yg)+10); const pk='2:'+G.user;
   const at=k=>{ aiPlanSet(t,k,'',true); _tcC.k=null; return {y:tval(t,yg,'in'),v:tval(t,vt,'in'),p:pkVal(t,pk),e:evalTrade(t.id,[vt.id],[]),e2:evalTrade(t.id,[yg.id],[],0,{give:[pk],get:[]})}; }; const B=at('build'), W=at('win');
-  ok(W.v>0&&W.y>0,'준비 실패: 값이 0'); ok(B.y>W.y*1.15,'어린 선수 값 차이가 작다: '+B.y.toFixed(2)+' vs '+W.y.toFixed(2)); ok(B.v<W.v*.7,'서른 넘은 주전 값 차이가 작다: '+B.v.toFixed(2)+' vs '+W.v.toFixed(2)); ok(B.p>W.p*1.9,'지명권 값 차이가 작다: '+B.p.toFixed(2)+' vs '+W.p.toFixed(2));
+  ok(W.v>0&&W.y>0,'준비 실패: 값이 0'); ok(B.y>W.y*1.15,'어린 선수 값 차이가 작다: '+B.y.toFixed(2)+' vs '+W.y.toFixed(2)); ok(B.v<W.v*.7,'서른 넘은 주전 값 차이가 작다: '+B.v.toFixed(2)+' vs '+W.v.toFixed(2)); ok(B.p>W.p*1.5,'지명권 값 차이가 작다: '+B.p.toFixed(2)+' vs '+W.p.toFixed(2));
   ok(B.e2.inV-B.e.inV>W.e2.inV-W.e.inV+1,'묶음 평가가 계획을 따르지 않는다'); aiPlanSet(t,'build','',true); const o=domestic(t.id).filter(p=>!p.ys)[5];
   ok(tradeWhyNot(t,[vt.id],[o.id]).includes('지명권'),'유망주 수집 구단의 답에 지명권 이야기가 없다'); ok(needText(t.id).includes('지명권'),'단장 대화에 방향이 드러나지 않는다'); aiPlanSet(t,'win','',true); ok(tradeWhyNot(t,[],[o.id],{give:[pk],get:[]}).includes('우승'),'우승 도전 구단이 지명권만 받는 이유를 말하지 않는다');
   /* 우승 도전 구단은 에이스를 지명권과 바꾸지 않는다 */ _tcC.k=null; const ace=domestic(t.id).filter(p=>p.isP&&!p.ys&&!hasNtc(p)).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(!evalTrade(t.id,[],[ace.id],0,{give:['1:'+G.user,'2:'+G.user,'3:'+G.user],get:[]}).ok,'우승 도전 구단이 에이스를 지명권에 내줬다'); });
@@ -1678,7 +1678,7 @@ T('[기록] wRC+: 창단 드래프트 기록에도 들어가고, 퓨처스 기�
 T('[난이도] 1위 견제: 우리가 선두를 달리면 경쟁 구단은 같은 트레이드에 더 많은 값을 요구하고, 선두가 아니면 요구가 그대로다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3);
   const op=G.teams.find(t=>t.id!==G.user&&t.mode!=='rebuild')||G.teams.find(t=>t.id!==G.user); const mine=domestic(G.user).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[3], their=domestic(op.id).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[3];
   const R0=JSON.parse(JSON.stringify(G.sea.rec)); for(const t of G.teams)G.sea.rec[t.id]={w:15,l:15,t:0}; G.sea.rec[G.user]={w:30,l:5,t:0}; ok(leaderGap()>=1.5,'준비 실패: 독주 '+leaderGap());
-  const a=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec[G.user]={w:10,l:25,t:0}; ok(leaderGap()===0,'선두가 아닌데 견제 '+leaderGap()); const b=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec=R0;
+  _domC.k=null; _tcC.k=null; const a=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec[G.user]={w:14,l:16,t:0}; /* 상대 순위는 그대로 두고 우리만 선두에서 내려온다. 독주 판정(86b_dynasty)·구단 사정은 하루 단위로 캐시하므로 지운다 */ ok(leaderGap()===0,'선두가 아닌데 견제 '+leaderGap()); _domC.k=null; _tcC.k=null; const b=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec=R0;
   ok(a>b+.1,'선두일 때 요구 '+a.toFixed(2)+' · 아닐 때 '+b.toFixed(2)); });
 T('[100년] 단장 세대 교체: 시즌 밖에서 후임에게 넘기면 구단·선수단은 그대로, 전임은 계보에 남고, 78세가 되는 해에는 자동으로 넘어간다',()=>{ fresh(); G.gmP={name:'원조단장',age:60,bg:'corp',female:false,face:'gm1',y0:G.year,bgDone:true};
   simTo(()=>period()==='season'); ok(gmSucceed({name:'둘째단장',age:41})!=='','시즌 중에 넘어감');
@@ -4153,6 +4153,40 @@ T('[단장 돈·시설] AI 구단은 남는 돈을 계획에 맞게 쓰고, 긴�
   a.cash=30000; a.plan={k:'build',y:G.year,d:G.day}; const c0=a.cash, n0=Object.keys(aiFacInit(a).bld).length; const S=aiSpend(a,true); ok(S&&a.cash<c0,'남는 돈을 안 씀 '+a.cash); ok(Object.keys(aiFacInit(a).bld).length>n0||S.stad>0,'시설·구장 공사 없음 '+JSON.stringify(S));
   b.cash=30000; b.plan={k:'tight',y:G.year,d:G.day}; ok(!aiSpend(b,true)&&b.cash===30000,'긴축 구단이 씀');
   const ord=G.teams.map(x=>({tid:x.id})); ord.sort((x,y)=>(y.tid===a.id)-(x.tid===a.id)); a.trust=50; a.owner='win'; const h={y:G.year,order:ord,champ:a.id,fins:{}}; const ca=a.cash; aiOwnerYear(h); ok(a.trust>50,'우승했는데 신뢰 그대로 '+a.trust); ok(a.cash>ca,'우승 포상 없음'); });
+/* 독주 견제(86b_dynasty): 최근 세 시즌 우승·정규시즌 1위를 몰아 준다 */
+const mkDyn=tid=>{ const ord=G.teams.map(t=>({tid:t.id})); G.history=G.history.filter(h=>h.y<G.year-3); for(let i=3;i>=1;i--){ const o=[{tid},...ord.filter(x=>x.tid!==tid)]; G.history.push({y:G.year-i,order:o,champ:tid,runner:o[1].tid}); } _domC.k=null; _mkP.k=null; };
+const topRival=X=>G.teams.filter(t=>t.id!==X&&t.id!==G.user).sort((a,b)=>teamRating(b.id)-teamRating(a.id))[0];
+T('[독주 견제] 최근 세 시즌을 휩쓴 구단만 독주 구단이 된다(우리 구단·AI 구단 같은 기준)',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; ok(!domLead()||domLead().tid!==X,'준비 실패: 처음부터 독주');
+  mkDyn(X); ok(domOf(X)>=DOM_TH,'세 시즌 우승인데 독주 아님 '+domOf(X)); const L=domLead(); ok(L&&L.tid===X,'독주 구단이 다름'); ok(G.teams.filter(t=>t.id!==X).every(t=>domOf(t.id)<DOM_TH),'다른 구단도 독주로 잡힘');
+  G.history=G.history.filter(h=>h.champ!==X); mkDyn(G.user); ok(domLead()&&domLead().tid===G.user,'우리 구단 독주를 못 잡음'); });
+T('[독주 견제] 트레이드: 우승 경쟁 구단은 독주 구단에 주전을 내주지 않고, 유망주 수집 구단은 팔되 값을 더 받는다',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X);
+  const riv=topRival(X); aiPlanSet(riv,'win','',true); const bld=G.teams.find(t=>t.id!==X&&t.id!==G.user&&t.id!==riv.id); aiPlanSet(bld,'build','',true); _domC.k=null;
+  const a=domTradeTax(riv,X,true), b=domTradeTax(bld,X,true), c=domTradeTax(riv,X,false); ok(a.refuse,'우승 경쟁 구단이 주전을 내줌 '+JSON.stringify(a)); ok(!b.refuse&&b.k>0,'리빌딩 구단 견제가 이상함 '+JSON.stringify(b)); ok(!c.refuse&&c.k>b.k,'경쟁 구단 웃돈이 리빌딩보다 작음');
+  const Y=G.teams.find(t=>t.id!==X&&t.id!==G.user&&t.id!==riv.id&&t.id!==bld.id).id; ok(domTradeTax(riv,Y,true).k===0,'독주가 아닌 구단에도 견제'); });
+T('[독주 견제] 우리 구단이 독주하면 경쟁 구단 단장이 주전 트레이드를 거절하고 이유를 말한다',()=>{ fresh(); const riv=topRival(G.user); aiPlanSet(riv,'win','',true);
+  const their=[...startersOf(riv.id)].map(id=>G.players[id]).filter(p=>p&&!p.foreign&&!hasNtc(p)).sort((a,b)=>ovr(a)-ovr(b))[0]; ok(their,'준비 실패: 상대 주전 없음');
+  const give=domestic(G.user).filter(p=>!p.foreign&&!hasNtc(p)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(p=>p.id); const e0=evalTrade(riv.id,give,[their.id]); ok(!e0.dom,'독주가 아닌데 견제');
+  mkDyn(G.user); const e=evalTrade(riv.id,give,[their.id]); ok(e.dom&&e.dom.refuse&&!e.ok,'독주인데 주전을 내줌 '+JSON.stringify(e.dom));
+  const r=proposeTrade(riv.id,give,[their.id]); ok(!r.ok&&(r.msg.includes('우승 경쟁팀을 도와줄 수는 없습니다')||r.msg.includes('선두를 달리는 팀')),'거절 이유가 없음: '+r.msg); });
+T('[독주 견제] FA: 독주 구단의 FA에는 경쟁 구단이 더 쓰고, 독주 구단 선수는 우승 프리미엄을 부른다',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; const riv=topRival(X); aiPlanSet(riv,'win','',true);
+  const p=domestic(X).filter(q=>!q.foreign&&ovr(q)>=50&&ovr(q)<=57).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패: 중간급 선수 없음'); const a0=faAsk(p).annual; p.faFrom=X; const w0=mktWTP(riv,p);
+  mkDyn(X); ok(domFaMul(riv,p)>1,'독주 구단 FA에 웃돈 없음'); const q=domestic(riv.id).find(x=>!x.foreign); ok(domFaMul(G.teams.find(t=>t.id!==X&&t.id!==riv.id&&t.id!==G.user),Object.assign({},q,{faFrom:riv.id}))===1,'다른 구단 FA에도 웃돈');
+  _mkP.k=null; const w1=mktWTP(riv,p); ok(w1>=w0,'경쟁 구단 지불 의사가 오르지 않음 '+w0+'→'+w1); delete p.faFrom; _mkP.k=null; const a1=faAsk(p).annual; ok(a1>a0,'우승 프리미엄 없음 '+a0+'→'+a1); ok(domPrem(riv.id)===1,'독주가 아닌 구단에 프리미엄'); });
+T('[독주 견제] 군비 경쟁과 벼랑 끝: 한 구단이 달아나면 상위권이 우승 도전을 앞당기고, 자리가 위태로운 단장도 승부를 건다',()=>{ const c={rk:4.3,rkL:4.3,age:28,cash:2000,owner:'pr',tr:'loyal',mid:false};
+  ok(aiPlanChoose(c,'next',2,false,null)!=='win','준비 실패: 처음부터 우승 도전'); ok(aiPlanChoose({...c,arms:1.35},'next',2,false,null)==='win','군비 경쟁인데 그대로'); ok(aiPlanChoose({...c,desp:1},'next',2,false,null)==='win','벼랑 끝인데 그대로');
+  fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X); const o=G.teams.find(t=>t.id!==X&&t.id!==G.user); ok(domArms(o,3)>0,'상위권 구단 군비 경쟁 없음'); ok(domArms(team(X),3)===0,'독주 구단도 군비 경쟁'); ok(domArms(o,8)===0,'하위권도 군비 경쟁'); });
+T('[독주 견제] 단장 생존: 성적 우선 구단주는 두 시즌 연속 기대 이하면 단장을 바꾸고, 새 단장은 두 시즌을 기다려 준다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); t.owner='win'; aiPlanSet(t,'win','',true); const g=t.gm; g.age=50; g.since=G.year-4;
+  const ord=G.teams.map(x=>({tid:x.id})).filter(x=>x.tid!==t.id); G.history=G.history.filter(h=>h.y<G.year-3); for(let i=3;i>=1;i--)G.history.push({y:G.year-i,order:[...ord.slice(0,8),{tid:t.id},...ord.slice(8)],champ:ord[0].tid,runner:ord[1].tid}); _domC.k=null;
+  ok(gmBadRun(t)>=2,'못한 시즌을 못 셈 '+gmBadRun(t)); ok(gmHot(t)===1&&despOf(t)>=.45,'벼랑 끝이 아님'); let n=0; for(let i=0;i<40;i++)if(gmFireCheck(t,g,G.year-g.since))n++; ok(n>=24,'경질이 드묾 '+n+'/40');
+  g.since=G.year-1; let m=0; for(let i=0;i<40;i++)if(gmFireCheck(t,g,G.year-g.since))m++; ok(m===0,'새 단장을 바로 자름 '+m);
+  const ab=x=>{ const a=gmAbil(x); return (a.eye+a.neg+a.plan+a.money)/4; }; let s0=0,s1=0; for(let i=0;i<30;i++){ s0+=ab(mkGM(t.id)); s1+=ab(gmReformPick(t,3)); } ok(s1>s0+30*4,'개혁 단장 능력이 평범함 '+(s0/30).toFixed(1)+' → '+(s1/30).toFixed(1)); });
+T('[독주 견제] 지명권: 우승 도전 구단도 1라운드 지명권을 헐값에 넘기지 않고, 올인 구단만 싸게 본다',()=>{ fresh(); const [w,b]=G.teams.filter(t=>t.id!==G.user); aiPlanSet(w,'win','',true); aiPlanSet(b,'build','',true); const k='1:'+G.teams[G.teams.length-1].id;
+  const vw=pkVal(w,k), vb=pkVal(b,k); ok(vw>=vb*.55,'우승 도전 구단 지명권 값이 너무 낮음 '+vw.toFixed(1)+' / '+vb.toFixed(1)); w.allIn=sponSeason(); ok(pkVal(w,k)<vw,'올인인데 지명권 값이 그대로'); });
+T('[독주 견제] 드래프트: 그해 대어 셋은 잠재력 최상위이고 성장이 불발로 끝나는 일이 드물다(앞 순번 지명이 실제로 값지다)',()=>{ fresh(); makeDraftClass(); const C=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&!p.ovsRet); const B=C.filter(p=>p.blue);
+  ok(B.length>=1&&B.length<=3,'대어 수 '+B.length); const pots=C.map(p=>p.pot).sort((a,b)=>b-a); ok(B.every(p=>p.pot>=pots[3]),'대어가 잠재력 최상위가 아님');
+  for(const p of B.filter(q=>q.pot<66)){ delete p.realK; develop(p); ok(p.realK>=.62,'대어 실현율이 낮음 '+p.realK); } const o=C.find(p=>!p.blue&&p.pot<pots[5]); if(o){ delete o.realK; develop(o); ok(o.realK!=null,'일반 후보 실현율 없음'); } });
+T('[독주 견제] 소식: 독주 구단이 생기면 다른 구단들이 견제에 나선다는 기사가 나온다',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X); const riv=topRival(X); aiPlanSet(riv,'win','',true); _domC.k=null; G.domNewsK=null; domNews();
+  ok((G.news||[]).some(n=>n.t.includes('독주에 다른 구단들 견제')),'견제 기사 없음'); });
 
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
