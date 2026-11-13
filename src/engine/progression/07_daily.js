@@ -141,6 +141,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===c.draft)startDraft();
   if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); } for(const t of G.teams)try{ roleSync(t.id); }catch(e){} /* 하루 한 번 보직 확정(뎁스 조회는 보직을 바꾸지 않는다, 검수 11-09zh) */ try{ regDaily(); }catch(e){} /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
   if(c.sched[day]||(G.makeup||[]).length&&period()==='season')playDay(day);
+  if(period()==='season'&&!G.unemp&&(c.sched[day]||[]).some(m=>m.includes(G.user))&&seriesEnd(day)){ try{ seriesNews(day); }catch(e){} } /* 하루씩 진행해도 시리즈 결과 소식(코드 리뷰 11-13) */
   try{ flPlayDay(day); }catch(e){ console.error(e); } /* 퓨처스리그(2군) 경기 */
   if(day===KD(9,1)){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} } /* 정규시즌이 끝난 뒤 올린 연봉은 그해 지급이 없어 하한 제재만 피했다: 시즌 뒤 보정은 하지 않는다(검수 11-09zzb) */ /* AI 구단은 시즌 막판 하한을 다시 확인해 주축과 연장계약으로 맞춘다 */
   if(day===c.end+1)seasonEnd();

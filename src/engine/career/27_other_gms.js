@@ -122,7 +122,7 @@ function aiTradeTry(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>t.y
   const rk=slotRanks(A.id); const nd=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0]; if(!nd||nd.r<(o.swap?4:(gmHeat(A.id)>=.4?5:6)))return null;
   const k=nd.k; const base=slotBase(A.id,k); const bNeed={};
   if(o.swap)for(const B of teams){ if(B.id===A.id)continue; const rB=slotRanks(B.id); const w=PSLOTS.filter(x=>x!=='DH'&&x!==k&&rB[x].rank>=3).sort((a,b)=>rB[b].rank-rB[a].rank)[0]; if(w)bNeed[B.id]={k:w,base:slotBase(B.id,w)}; }
-  const cands=[]; for(const B of teams){ if(B.id===A.id||(o.swap&&!bNeed[B.id]))continue; for(const p of domestic(B.id)){ if(p.ys||!healthy(p)||hasNtc(p))continue; if(k==='SP'||k==='RP'){ if(pSlot(p)!==k)continue; } else if(p.isP||(p.pos!==k&&!subsOf(p).includes(k)))continue;
+  const cands=[]; for(const B of teams){ if(B.id===A.id||(o.swap&&!bNeed[B.id]))continue; for(const p of domestic(B.id)){ if(p.ys||!healthy(p)||hasNtc(p)||faLock(p))continue; if(k==='SP'||k==='RP'){ if(pSlot(p)!==k)continue; } else if(p.isP||(p.pos!==k&&!subsOf(p).includes(k)))continue;
       const up=slotGain(k,p)-base+(p.aiListed?(p.aiUrg?4:2.5):0); if(up>=(o.swap?2:3))cands.push({B,p,up}); } }
   cands.sort((a,b)=>b.up-a.up);
   for(const c of cands.slice(0,8)){ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue; const needB=tradeNeed(B,vOut);
@@ -149,7 +149,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
   const C=o.buyers||ai.filter(t=>t.mode!=='rebuild').sort((a,b)=>teamRating(b.id)-teamRating(a.id)).slice(0,4); let n=0;
   for(const A of C)for(let k=0;k<(o.per||2);k++){ const base=teamRating(A.id); const cands=[]; const nx=stanceOf(A)==='next'&&o.buyers;
     if(o.buyers&&(capPay(A.id)>capOf(sponSeason())*.98||lgTradeN(A.id)>=5||lgTradeN()>=20))break; /* 일반 AI 거래와 같은 한도: 구단당 5건, 리그 20건(검수 11-09w) */
-    for(const B of Rb)for(const p of domestic(B.id)){ if(o.buyers&&lgTradeN(B.id)>=5)break; if(p.ys||!healthy(p)||hasNtc(p)||(nx?p.age<26||p.age>30||ovr(p)<56:p.age<29||ovr(p)<54))continue; p.team=A.id; const d=teamRating(A.id)-base; p.team=B.id; if(d>=.15)cands.push({B,p,d}); }
+    for(const B of Rb)for(const p of domestic(B.id)){ if(o.buyers&&lgTradeN(B.id)>=5)break; if(p.ys||!healthy(p)||hasNtc(p)||faLock(p)||(nx?p.age<26||p.age>30||ovr(p)<56:p.age<29||ovr(p)<54))continue; p.team=A.id; const d=teamRating(A.id)-base; p.team=B.id; if(d>=.15)cands.push({B,p,d}); }
     cands.sort((x,y)=>y.d-x.d); let done=false;
     for(const best of cands.slice(0,6)){ /* 가장 도움 되는 선수부터, 값이 안 맞으면 다음 후보 */
     const B=best.B, p=best.p; const vOut=tval(B,p,'out'), vin=tval(A,p,'in'); const core=new Set(domestic(A.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id));
@@ -177,7 +177,7 @@ function marketWeek(){ if(!tradeOpen()||G.gameOver)return; gmInit(); const per=p
   { const n=(G.lgTrades||[]).filter(t=>t.y===G.year).length; if(n<20){ for(const t of G.teams){ if(t.id===ME())continue; if(lgTradeN()>=20)break; /* 한 주에 여러 건이 나도 리그 상한을 넘지 않게(검수 11-09w) */ const rk=slotRanks(t.id); const weak=PSLOTS.filter(k=>k!=='DH'&&rk[k].rank>=8).length;
       let pr=.07+gmHeat(t.id)*.1+Math.min(2,weak)*.03+(dl?.16:0); if(per!=='season')pr*=.75; if(R()<pr&&!aiTradeTry(t.id)&&R()<.06){ const B=pick(G.teams.filter(x=>x.id!==ME()&&x.id!==t.id)); wire('루머',`${tshort(t.id)}, ${tshort(B.id)}에 트레이드를 제안했지만 조건이 맞지 않았다는 소식입니다.`,{tid:t.id}); } }
     /* 맞트레이드: 서로 약한 자리를 남는 자원으로 바꾼다(AI끼리 밀어주기). 가치가 비슷한 선수끼리라 전력 쏠림 없이 시장만 활발해진다 */
-    for(const t of G.teams){ if(lgTradeN()>=20)break; if(t.id===ME()||lgTradeN(t.id)>=4)continue; if(R()<(per==='season'?(dl?.2:.09):.06))aiTradeTry(t.id,{swap:1}); } } }
+    let swN=0; for(const t of G.teams){ if(lgTradeN()>=20)break; if(t.id===ME()||lgTradeN(t.id)>=4)continue; if(swN>=3)break; if(R()<(per==='season'?(dl?.2:.09):.06)){ swN++; aiTradeTry(t.id,{swap:1}); } /* 한 주 맞트레이드 시도 3번까지(코드 리뷰 11-13: 시도 한 번이 무겁다) */ } } }
   try{ aiStanceBuy(); }catch(e){}
   if(G.unemp)return;
   const teams=G.teams.filter(t=>t.id!==ME()); const t=pick(teams); const n=teamNeeds(t.id);
