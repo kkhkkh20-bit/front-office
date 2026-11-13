@@ -538,6 +538,8 @@ T('[감사] 해외에서 돌아온 선수의 진출 전 계약 조건은 되살�
   ovsLeave(p,'NPB','테스트',1,100,'해외 FA'); const a=G.abroad.find(x=>x.id===p.id); a.y=G.year-1; a.y1=G.year; abroadYear(); const q=G.players[p.id]; if(q&&q.retAsk)ovsBackSign(q); /* 복귀는 원소속 우선협상: 계약을 고른 뒤 */ ok(q&&q.team===a.from,'준비 실패: 복귀 안 함'); ok(!hasNtc(q)&&capBOf(q)===0,'해외 복귀 뒤 옛 계약 조건이 되살아남'); });
 
 /* ===== 패턴 감사(같은 값 두 곳 계산·기간 경계) ===== */
+T('[리뷰 11-14] AI 시절에 맺은 FA 계약금은 그 사이 우리 구단이 됐어도 결산에서 낸다',()=>{ fresh(); const ai=G.teams.find(t=>t.id!==G.user); team(G.user).faBDue=777; ai.faBDue=555; simTo(()=>G.last&&G.last.y===G.year);
+  const row=(tid)=>{ const f=G.last.fins[tid]; return f&&(f.exp||[]).find(x=>x[0]==='FA·다년 계약금'); }; ok(row(ai.id)&&row(ai.id)[1]===555,'AI 구단 계약금 줄 없음'); ok(row(G.user)&&row(G.user)[1]===777,'물려받은 계약금이 결산에서 빠짐'); ok(team(G.user).faBDue==null&&ai.faBDue==null,'결산 뒤 계약금 잔액이 남음'); });
 T('[감사] 돔구장 대관 수입은 예산 전망과 결산이 같다',()=>{ fresh(); stadOf(G.user).dome=true; const proj=stadProj(G.user).ad; simTo(()=>G.last&&G.last.y===G.year); const f=G.last.fins&&(G.last.fins[G.user]||G.last.fins.find?.(x=>x.tid===G.user));
   const inc=JSON.stringify(f||G.last.fins); const m=(f&&f.inc||[]).find(x=>x[0]==='구장 부대 수입'); ok(m,'준비 실패: 결산에 구장 부대 수입 줄 없음 '+inc.slice(0,120)); ok(m[1]>=2500,'돔 대관 수입이 결산에 없음: 전망 '+proj+' · 결산 '+m[1]); });
 

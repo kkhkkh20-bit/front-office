@@ -45,7 +45,7 @@ function cmtAsk(){ const A=asInit(), C=A.cur; if(!C||!C.on||!asEmp()||C.uvT!=nul
   const cap=capOf(G.year); const hint=G.teams.filter(t=>t.id!==G.user&&(t.rel??50)>=60).map(t=>`${tshort(t.id)} ${gmOf(t.id).name} 단장: ${pctTxt(cmtSnap(cmtIdeal(t)))} 쪽`);
   const sit=`올 시즌 연봉이 상한의 90% 이상이었거나 상한을 넘긴 구단이 ${near.length}곳(${near.map(t=>tshort(t.id)).join(', ')})이라 12월 10일 실행위원회(단장 회의)가 열립니다. 안건은 ${y}년 경쟁균형세 상한입니다.
 현재 상한 ${money(cap)} · 우리 구단 시즌 연봉 상한 대비 ${cmtPct(cmtRatio(team(G.user)))}.
-상한이 오르면 하한도 같은 비율로 오르고, 리그 수입 규모(중계권·광고)도 함께 커집니다. 상한에 여유가 많은 구단에는 부담만 늘 수 있습니다.
+상한이 오르면 하한도 같은 비율로 오릅니다. 리그 수입은 그대로라 상한에 여유가 많은 구단에는 부담만 늘 수 있습니다.
 과반이 지지한 안을 이사회(사장단)에 올립니다. 과반이 없으면 상위 두 안으로 결선 투표를 합니다.
 ${hint.length?`친분 있는 단장들에게 들은 분위기:\n${hint.join('\n')}`:'미리 속내를 들을 만큼 가까운 단장은 없습니다.'}`;
   evNew('cmt',`실행위원회 소집: ${y}년 상한 조정 표결`,sit,
@@ -60,7 +60,7 @@ function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; i
   if(!C.on){ /* 위원회가 열리지 않는 해는 매년 동결(돈의 기준 고정). 위원회가 열려 표결로 정한 결과는 동결 포함 그대로(사용자 요청 11-09) */
     const ix=0; /* 돈의 기준은 2026년으로 고정(사용자 11-13: FM·OOTP처럼 금액 감각이 흔들리지 않게). 위원회가 열리지 않는 해는 동결, 상한은 리그 연봉이 상한에 붙어 위원회가 열릴 때만 표결로 바뀐다 */
     G.capY[y]=Math.round(cap*(1+ix)); A.cmt.unshift({y,n:C.near.length,held:false,fin:ix,idx:true}); A.cmt.length=Math.min(A.cmt.length,15);
-    note('일정',`${y}년 경쟁균형세 상한은 ${money(G.capY[y])}으로 동결됩니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳐 표결 없이 자동 조정했습니다.`); A.cur=null; return; }
+    note('일정',`${y}년 경쟁균형세 상한은 ${money(G.capY[y])}으로 동결됩니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳐 표결이 없었습니다.`); A.cur=null; return; }
   /* 1차 표결 */
   const ideal={}, vote={}; const vt=C.uvT??G.user; /* 표는 던질 때 구단 것(이직해도 옮겨 가지 않는다: 검수 11-06) */ const userVotes=C.uvT!=null?C.uv!==undefined:asEmp();
   for(const t of G.teams){ ideal[t.id]=cmtIdeal(t); if(userVotes&&t.id===vt){ if(C.uv!=null)vote[t.id]=C.uv; continue; } vote[t.id]=cmtSnap(ideal[t.id]); }
