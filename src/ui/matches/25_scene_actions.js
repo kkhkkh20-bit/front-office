@@ -28,7 +28,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  const relayPt2=path?base.map((v,i)=>v*.62+chase2[i]*.38):relayPt;
  /* 외야수가 늘 중계에게 던지지는 않는다(사용자 11-13): 가깝거나 어깨가 좋으면 베이스로 바로 던진다. 같은 타석은 늘 같은 선택(타석 번호로 고른다). 기록은 그대로 */
  const lead3=!outPlay&&!path?moves.find(m=>!m.out&&m.to===3&&m.from<3):null,armF=G.players[f?.id]?.r.arm??50;
- const direct=!!f&&!isHR&&!outPlay&&!UI.cast.errPos&&['LF','CF','RF'].includes(f.pos)&&!moves.some(m=>m.out)&&pcH(g,k,'direct')<(path?(Match3D.distance(chase2,base)<60?.3:.1):.5)+(armF-50)*.006;
+ const direct=!!f&&!isHR&&!outPlay&&!UI.cast.errPos&&['LF','CF','RF'].includes(f.pos)&&!moves.some(m=>m.out)&&(typeof pcH==='function'?pcH(g,k,'direct'):1)<(path?(Match3D.distance(chase2,base)<60?.3:.1):.5)+(armF-50)*.006;
  const directPos=path?basePos:lead3?'3B':basePos,directPt=path?base:lead3?CBS[2]:CBS[1];
  const cover=(pos,target)=>{const receiver=c3DFielder(g,k,pos);if(receiver&&receiver.id!==f?.id)Match3D.move('d'+receiver.id,target,Match3D.distance(CFP[pos],target)/8.5*1000/cSpd());};
  if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);cover(pat[1],CBS[1]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else{if(direct)cover(directPos,directPt);else cover(relayPos,relayPt2);if(path)cover(basePos,base);}}}

@@ -24,7 +24,7 @@
   #app .roster-list .rt .pn{max-width:none;min-width:0}
   #app .tw.twp .sqt .pn{max-width:150px}
   #app .tw.twp .pn>span{white-space:normal;overflow:visible;text-overflow:clip;display:flex;flex-wrap:wrap;align-items:center;gap:1px 4px;line-height:1.25}
-  #app .tw.twp .pn>span .pill{font-size:10px;padding:0 4px;line-height:15px;white-space:nowrap}
+  #app .tw.twp .pn>span .pill{font-size:var(--ui-micro);padding:0 4px;line-height:15px;white-space:nowrap}
   #app .roster-list .rt td.rtpos i.f{display:none}
 
   /* 6) 페이지 버튼이 카드 내용을 덮지 않게: 불투명 배경, 내용과 겹치지 않는 자리 */

@@ -1,9 +1,14 @@
 /* ===== 리그 규정 (KBO 실제 규정을 단순화, 2029년 이후 상한액은 가정) ===== */
 const REG=['수도권','영남','호남·충청'];
-/* 경쟁균형세 상한: 2026~2028년은 KBO 이사회 결정(매년 5%). 2029년부터는 게임 안 이사회가 매년 12월 리그 연봉 상황을 보고 정한다 */
-function capOf(y){ if(y<=2026)return 14397; if(y===2027)return 15117; if(y===2028)return 15873; if(typeof G!=='undefined'&&G&&G.capY){ if(G.capY[y])return G.capY[y]; const ks=Object.keys(G.capY).map(Number).filter(k=>k<y).sort((a,b)=>b-a); if(ks.length)return Math.round(G.capY[ks[0]]*Math.pow(1.03,y-ks[0])); } return Math.round(15873*Math.pow(1.03,y-2028)); }
+/* 경쟁균형세 상한: 2026~2028년은 KBO 이사회 결정(매년 5%). 2029년부터는 게임 안 이사회가 매년 12월 리그 연봉 상황을 보고 정한다(자동 인상 없음, 위원회 표결 0~5%) */
+function capOf(y){ if(y<=2026)return 14397; if(y===2027)return 15117; if(y===2028)return 15873; if(typeof G!=='undefined'&&G&&G.capY){ if(G.capY[y])return G.capY[y]; const ks=Object.keys(G.capY).map(Number).filter(k=>k<y).sort((a,b)=>b-a); if(ks.length)return Math.round(G.capY[ks[0]]*1); } return 15873; } /* 미래 연도 예상은 마지막으로 정해진 상한 그대로(자동 인상 없음) */
 /* 리그 경제 지수: 연봉 상한이 오르는 만큼 수입·운영비·지원 한도·스폰서도 같이 오른다(연봉만 오르고 수입이 고정이면 해마다 모든 구단이 적자로 몰린다) */
-function ecoIdx(y){ return Math.max(1,capOf(y??G.year)/14397); }
+/* 물가(경제 지수)는 상한과 분리한다(사용자 11-13: 상한은 구단이 쓸 수 있는 여유일 뿐, 몸값·수입이 상한에 묶여 오르면 안 된다).
+   KBO가 미리 정한 2026~2028년 인상만 물가에 반영하고, 그 뒤 이사회가 상한을 올려도 물가는 2028년 수준 그대로. 몸값은 FA 시장 수요·공급(경쟁)으로만 오른다 */
+function ecoCap(y){ y=y??(G&&G.year); if(!(y>2028)||typeof G==='undefined'||!G)return capOf(Math.min(y??2026,2028));
+  if(G.ecoFix==null)G.ecoFix=capOf(Math.max(2028,Math.min(G.year,y))); /* 처음 2029년 이후를 계산하는 순간의 수준으로 고정: 새 게임은 2028년, 이미 오래 진행한 세이브는 그 해 수준(갑자기 수입이 줄지 않게) */
+  return G.ecoFix; }
+function ecoIdx(y){ return Math.max(1,ecoCap(y)/14397); }
 function floorOf(y){ return Math.round(6065*capOf(y)/capOf(2027)); } /* KBO 하한: 2027년 도입 60억6,538만 원, 이후 상한과 같이 매년 상향 */
 let MIN_SAL=30;              // 최저 연봉 3,000만원(금액 단위: 백만원). 2027년부터 3,300만원(2026년 1월 KBO 이사회)
 function syncMinSal(){ MIN_SAL=(typeof G!=='undefined'&&G&&G.year>=2027)?33:30; }
@@ -211,7 +216,7 @@ function capDeadDrop(pid){ const D=G.capDead; if(D&&D.L)D.L=D.L.filter(x=>x.pid!
 function capPay(tid){ const fid=franId(tid); const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)).concat(capDeadA(tid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign&&!p.frehab); /* 재활 선수 명단에 오른 외국인은 등록 인원·총액에서 빠진다(대체 선수가 그 자리) */
 /* 시장가(연 환산, 백만원): 능력 60까지는 제곱으로 오르고, 그 위는 완만하게(최상위 FA 연평균 20~25억: 2026 최상위 계약 4년 80억~100억) */
-function marketSal(o){ const x=Math.max(0,o-37); const v=o<=60?30+x*x*1.8:982+(o-60)*138; return Math.round(Math.min(3000,v)*capOf(G.year)/15117); }
+function marketSal(o){ const x=Math.max(0,o-37); const v=o<=60?30+x*x*1.8:982+(o-60)*138; return Math.round(Math.min(3000,v)*ecoCap(G.year)/15117); }
 const round5=v=>Math.max(MIN_SAL,Math.round(v/5)*5);
 /* 직구 평균 구속(km): 리그 평균 146 안팎(KBO 2025~26년 146.0·146.3), 구위 90(원래 능력 약 69.5)이면 155 안팎·최고 160 가까이.
    VELO_K: 구위 1당 구속. 화면과 경기 계산(직구 구종 점수)이 같은 구속을 사용한다 */

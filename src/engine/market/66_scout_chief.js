@@ -12,7 +12,7 @@ function scoutWorkStatus(){
   return {delegated,missing,shortage,needs:shortage>0||(!delegated&&scoutDraftSea()&&missing.length>0)};
 }
 function scoutSlots(){ const draftSea=scoutDraftSea(); const S=[];
-  const proN=r=>G.teams.filter(t=>t.id!==G.user&&t.region===r).length;
+  const proN=r=>G.teams.filter(t=>t.id!==G.user&&teamScoutReg(t.id)===r).length;
   const asiaNeed=(()=>{ try{ return foreignOf(G.user).filter(p=>p.foreign==='아시아').length<1; }catch(e){ return false; } })();
   REG.forEach((r,i)=>S.push({role:'am',key:r,w:(draftSea?10:5.5)-i*.3,why:draftSea?'드래프트 시즌 아마추어 관찰':'내년 드래프트 후보 미리 관찰'}));
   REG.forEach(r=>{ const n=proN(r); if(n)S.push({role:'pro',key:r,w:(draftSea?3.5:6.5)+n*.6,why:`${r} 구단 ${n}곳 선수 평가(트레이드·FA)`}); });

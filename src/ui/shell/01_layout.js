@@ -69,7 +69,7 @@ function tabBody(){
   if(UI.tab==='roster')G.tutFlags.roster=true;
   if(!TITLE[UI.tab])UI.tab='home';
   if(G.unemp&&UI.tab==='cfg')return unempCfg(); /* 야인이어도 저장·불러오기·내보내기는 쓸 수 있어야 한다 */
-  if(G.unemp&&!['home','inbox','league','me'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요. 내 경력과 재임 구단의 마지막 결산은 단장 탭에서 볼 수 있습니다.</p><div class="row"><button class="btn small" data-a="tab" data-v="me">내 경력·재임 결산</button><button class="btn small" data-a="tab" data-v="cfg">게임 설정(저장·불러오기)</button></div><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
+  if(G.unemp&&!['home','inbox','league','me'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요. 내 경력과 재임 구단의 마지막 결산은 단장 탭에서 볼 수 있습니다.</p><div class="row"><button class="btn small" data-a="tab" data-v="me">내 경력·재임 결산</button><button class="btn small" data-a="tab" data-v="cfg">게임 설정</button></div><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
   return {cal:calView,home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,cfg:cfgView,me:meView,league:leagueView,club:clubView}[UI.tab]();
 }
 function unempCfg(){ return patchCard()+`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard(); }

@@ -27,7 +27,7 @@ function fDramaType(p){ const ad=p.adapt??50, mor=p.mor??60, out=fOutOfRace(p.te
   let x=R()*sum(Object.values(W)); for(const k in W){ x-=W[k]; if(x<=0)return k; } return 'clash'; }
 /* 매주(월요일) 리그 전체 외국인 선수 점검 */
 function fDramaWeekly(){ if(period()!=='season')return; const y=G.year; G.fdN=G.fdN&&G.fdN.y===y?G.fdN:{y,u:0};
-  for(const p of Object.values(G.players)){ if(!p.foreign||p.team==null||p.fdY===y||!healthy(p)||isAway(p))continue; if(R()>=fDramaRisk(p))continue;
+  for(const p of Object.values(G.players)){ if(!p.foreign||p.team==null||p.fdY===y||!healthy(p)||isAway(p))continue; if(p.fjD!=null&&G.day-p.fjD<28)continue; /* 막 입단한 선수(4주 안)는 향수병·불화 등 사건 없음: 계약 다음 날 '최근 경기 집중력' 면담이 오던 문제 */ if(R()>=fDramaRisk(p))continue;
     const me=p.team===G.user&&!G.unemp; if(me&&G.fdN.u>=2)continue; const k=fDramaType(p); p.fdY=y;
     if(k==='slack')p.fslk={until:G.day+28,b:-Math.round(rnd(1.5,3.5)*10)/10};
     if(k==='home')p.fhome=G.day+30;
@@ -40,7 +40,7 @@ function fDramaAI(p,k){ const t=team(p.team), nm=p.name, tn=tshort(p.team); cons
   if(k==='slack'){ if(bad){ p.fBad=1; } wire('외국인',`${tn} ${nm} 태업 논란. 전력 질주를 하지 않는다는 지적이 나옵니다.`,{tid:t.id}); return; }
   if(k==='fake'){ p.fLeave=G.day+ri(3,6); wire('외국인',`${tn} ${nm}, 몸 상태를 이유로 며칠 결장. 정밀 검진에서는 큰 이상이 없었다는 소식입니다.`,{tid:t.id}); } }
 /* 우리 구단: 결정 사건 */
-function fDramaUser(p,k){ const m=G.mgr[G.user], mn=m&&!m.interim?`${m.name} 감독`:'감독', cn=p.orig||'고향';
+function fDramaUser(p,k){ const m=G.mgr[G.user], mn=m&&!m.interim?`${m.name} 감독`:'감독', cn=p.nat||'고향'; /* orig는 지역 코드(us·la)라 글에 그대로 나오던 문제: 나라 이름으로 */
   const sit=k==='home'?`${p.name}(${posLabel(p)})이(가) 통역을 통해 면담을 요청했습니다. "가족이 많이 힘들어합니다. 솔직히 집에 가고 싶습니다." ${cn} 생활이 그립다며 표정이 어둡습니다. 최근 경기 집중력도 떨어졌다는 코치진 보고가 함께 왔습니다.`
     :k==='clash'?(R()<.6?`${mn}과(와) ${p.name}이(가) 더그아웃에서 언성을 높였습니다. ${p.isP?'등판 간격과 교체 시점':'타순과 수비 위치'}에 대한 불만이 쌓였다고 합니다. 선수는 "존중받지 못한다"고, 감독은 "팀 규율이 먼저"라고 말합니다.`:`${p.name}이(가) 국내 선수들과 어울리지 못하고 따로 지낸다는 보고입니다. 훈련 방식 차이로 몇몇 고참과 마찰이 있었습니다.`)
     :k==='slack'?`코치진 보고: "${p.name}의 훈련 태도가 성의 없어 보입니다. 경기에서도 전력 질주가 줄었습니다." 몸에는 이상이 없다고 합니다. 기록도 조금씩 떨어지고 있습니다.`

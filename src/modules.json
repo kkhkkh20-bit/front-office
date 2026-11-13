@@ -16,6 +16,7 @@
       "src/engine/matches/09_broadcast_context.js",
       "src/engine/progression/07_daily.js",
       "src/engine/league/08_season_events.js",
+      "src/engine/contracts/08_market_engine.js",
       "src/engine/contracts/09_stoveleague.js",
       "src/engine/draft/10_draft.js",
       "src/engine/draft/11_founding_draft.js",

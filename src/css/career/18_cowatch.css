@@ -24,8 +24,8 @@
   .fdt thead th{font-size:11px}
   .fdt tbody th,.fdt thead th.c0{min-width:0!important;max-width:150px;padding-left:2px}
   .fdn{gap:2px}.fds{min-width:16px;font-size:13px;padding:0}
-  .fdnm b{font-size:12.5px;white-space:nowrap}.fdnm i{font-size:10px;white-space:nowrap!important;letter-spacing:-.2px}
-  .rkp{font-size:9.5px;margin-left:3px;padding:0 3px}
+  .fdnm b{font-size:12.5px;white-space:nowrap}.fdnm i{font-size:var(--ui-micro);white-space:nowrap!important;letter-spacing:-.2px}
+  .rkp{font-size:var(--ui-tiny);margin-left:3px;padding:0 3px}
   .fdgo{padding:3px 5px!important;font-size:11px!important}
   .fdt td.fdg{font-size:13px!important;min-width:26px}
   .fdt td{min-width:0}
@@ -56,7 +56,7 @@
 /* 선수별 장기 연봉표 */
 .cg-w{max-height:520px;overflow:auto}.cg{border-collapse:separate;border-spacing:0;font-size:12px;min-width:520px}.cg th,.cg td{padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:left}
 .cg thead th{position:sticky;top:0;background:var(--panel);z-index:2}.cg tbody th,.cg tfoot th{position:sticky;left:0;background:var(--panel);z-index:1;font-weight:600}.cg tfoot td,.cg tfoot th{position:sticky;bottom:0;background:var(--panel);border-top:1px solid var(--line);font-weight:700}
-.cg-c.fix{font-weight:600}.cg-c.est{color:var(--muted);font-style:italic}.cg-c.fa{color:var(--warn)}.cg-c.none,.cg-c.neg{color:var(--muted)}.cg-m{font-style:normal;font-size:10px;padding:0 4px;border-radius:4px;border:1px solid var(--line);margin-left:3px}
+.cg-c.fix{font-weight:600}.cg-c.est{color:var(--muted);font-style:italic}.cg-c.fa{color:var(--warn)}.cg-c.none,.cg-c.neg{color:var(--muted)}.cg-m{font-style:normal;font-size:var(--ui-micro);padding:0 4px;border-radius:4px;border:1px solid var(--line);margin-left:3px}
 .cg-k{font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--line)}.cg-k.est{font-style:italic;color:var(--muted)}.cg-k.fa{color:var(--warn)}
 /* 리그 분포 산점도 */
 .ds-w{width:100%;overflow-x:auto}.ds{width:100%;min-width:320px;height:auto;display:block}.ds .gr{stroke:var(--line);stroke-width:1}.ds .md{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.7}.ds .tk,.ds .al{fill:var(--muted);font-size:11px}.ds .al{font-size:12px}
@@ -68,7 +68,7 @@
 /* 리그 백분위 */
 .pct{margin:4px 0 12px}.pct-r{display:grid;grid-template-columns:minmax(84px,30%) 1fr 48px 36px;align-items:center;gap:8px;font-size:12px;padding:3px 0}.pct-r.off{opacity:.5}
 .pct-b{position:relative;height:6px;background:var(--line);border-radius:3px}.pct-b i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;opacity:.55}.pct-b em{position:absolute;top:50%;transform:translate(-50%,-50%);min-width:22px;height:20px;line-height:20px;border-radius:10px;color:#fff;font-style:normal;font-size:11px;font-weight:700;text-align:center;border:2px solid var(--panel)}
-.pct-r>b{text-align:right;font-variant-numeric:tabular-nums}.pct-r>i{font-style:normal;font-size:10px;color:var(--muted)}
+.pct-r>b{text-align:right;font-variant-numeric:tabular-nums}.pct-r>i{font-style:normal;font-size:var(--ui-micro);color:var(--muted)}
 
 .ds{max-width:680px;margin-left:auto;margin-right:auto}
 
@@ -92,7 +92,7 @@
 .bg-hero{background-size:cover;background-position:center 60%;border-radius:10px;padding:14px 14px 10px;margin:0 0 10px;color:#f4f6f8}.bg-hero .small,.bg-hero .sdesc{color:#d9dee4}.bg-hero dt{color:#c9d1d9}
 .ps-hero{display:flex;align-items:center;min-height:86px}.ps-head{display:flex;gap:12px;align-items:center}.ps-head b{display:block;font-size:18px}.ps-head .small{color:#d9dee4}
 .cmark{display:inline-block;vertical-align:middle;object-fit:contain}.ps-r{display:flex;gap:10px;align-items:center}.ps-m{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ps-t{display:inline-flex;align-items:center;gap:4px}.ps-t.me b,.ps-t.me{font-weight:700;color:var(--ink)}
-.ps-seeds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}.ps-seed{display:grid;justify-items:center;gap:3px;padding:8px 4px;border:1px solid var(--line);border-radius:10px;text-align:center}.ps-seed.me{border-color:var(--acc)}.ps-seed i{font-style:normal;font-size:10.5px;color:var(--muted);line-height:1.3}.ps-seed .num{font-size:11px;color:var(--muted)}
+.ps-seeds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}.ps-seed{display:grid;justify-items:center;gap:3px;padding:8px 4px;border:1px solid var(--line);border-radius:10px;text-align:center}.ps-seed.me{border-color:var(--acc)}.ps-seed i{font-style:normal;font-size:var(--ui-micro);color:var(--muted);line-height:1.3}.ps-seed .num{font-size:11px;color:var(--muted)}
 @media (max-width:600px){.ps-seeds{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .ps-champ{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid #d5b46a55;border-radius:10px;margin:0 0 10px;background:#d5b46a10}.ps-champ b{display:flex;align-items:center;gap:6px;font-size:17px}.ps-champ>div{display:grid;gap:2px}
 .nt-id{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 10px}.nt-id>div:not(.uni-row){display:grid;gap:2px}.nt-id .uni-row{margin:0 0 0 auto}

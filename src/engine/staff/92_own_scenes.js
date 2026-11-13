@@ -68,7 +68,7 @@ const OSCN_BYE={win:'이번 주는 여기까지 합시다. 이기는 소식 들�
 const OREQ={win:'2주 동안 5할 승률',fan:'한 달 안에 팬 여론 2 이상 올리기'};
 function ownScnMem(){ const o=bossOf(G.user).own; return o.scn=o.scn||{d:-99,u:{},q:{}}; }
 function ownScnCtx(){ const X=mgrScnCtx(), t=team(G.user); X.mgr=G.mgr&&G.mgr[G.user]&&!G.mgr[G.user].interim?G.mgr[G.user]:null; X.etc=Math.round((G.spend&&G.spend.etc)||0);
-  try{ const g=goalStatus(); X.goal=g?g.rank.t:0; }catch(e){ X.goal=0; } X.trust=t.trust; return X; }
+  try{ const g=goalStatus(); X.goal=g&&g.rank.t<G.teams.length?g.rank.t:0; /* 순위 목표가 없는 창단 첫해는 묻지 않는다 */ }catch(e){ X.goal=0; } X.trust=t.trust; return X; }
 const ownTD=()=>({kind:'own',sm:ownScnMem(),mem:bossOf(G.user).own,sty:team(G.user).owner,qs:OQ,qm:(ownScnMem().q=ownScnMem().q||{}),fx:(fx,X)=>ownScnFx(fx,X)});
 /* 일주일에 한 번. 독립구단은 구단주가 없다 */
 function ownTalkStart(){ const t=team(G.user), M=ownScnMem(), s=t.owner, B=bossOf(G.user); if(t.indie)return {say:['독립구단이라 모기업 구단주가 없습니다.'],st:null};
@@ -81,14 +81,14 @@ function ownTalkStart(){ const t=team(G.user), M=ownScnMem(), s=t.owner, B=bossO
 function ownTalkPick(st,i){ if(!st||st.tid!==G.user||st.person!==bossOf(G.user).own.id)return {say:['면담 상대가 자리를 떠나 이야기를 마칩니다.'],sys:[],st:null}; return talkPick(ownTD(),st,i); }
 /* 결과: 구단주 신뢰·친밀도·팬 여론·감독 관계·선수 기분·구단주 주문 */
 function ownScnFx(fx,X){ const t=team(G.user), out=[];
-  if(fx.tr){ t.trust=clamp(t.trust+fx.tr,0,100); out.push(`구단주 신뢰 ${fx.tr>0?'+':''}${fx.tr}`); }
-  if(fx.rap){ const o=cwRapP('own'); o.rap=clamp(o.rap+fx.rap,0,100); out.push(`구단주 친밀도 ${fx.rap>0?'+':''}${fx.rap}`); }
-  if(fx.fan){ prInit(); G.pr.fan=clamp(G.pr.fan+fx.fan,0,100); out.push(`팬 여론 ${fx.fan>0?'+':''}${fx.fan}`); }
-  if(fx.mrel){ const m=G.mgr&&G.mgr[G.user]; if(m&&!m.interim){ m.rel=clamp(m.rel+fx.mrel,0,100); out.push(`감독 관계 ${fx.mrel>0?'+':''}${fx.mrel}(구단주 이야기가 전해짐)`); } }
+  if(fx.tr){ t.trust=clamp(t.trust+fx.tr,0,100); out.push(fxSoft('tr',fx.tr)); }
+  if(fx.rap){ const o=cwRapP('own'); o.rap=clamp(o.rap+fx.rap,0,100); out.push(fxSoft('rap',fx.rap)); }
+  if(fx.fan){ prInit(); G.pr.fan=clamp(G.pr.fan+fx.fan,0,100); out.push(fxSoft('fan',fx.fan)); }
+  if(fx.mrel){ const m=G.mgr&&G.mgr[G.user]; if(m&&!m.interim){ m.rel=clamp(m.rel+fx.mrel,0,100); out.push(fx.mrel>0?'이야기를 전해 들은 감독이 고마워합니다':'이야기를 전해 들은 감독이 서운해합니다'); } }
   /* 선수 기분·선수단 분위기·지출은 감독 대화 처리와 같은 곳에서(감독이 있을 때만). 예전엔 감독 없이 불러 '감독과 나눈 대화가 아니라…' 문구가 매번 붙었다(11-12) */ { const mm=G.mgr&&G.mgr[G.user]; if((fx.pm||fx.mor||fx.cash)&&mm&&!mm.interim)out.push(...mgrScnFx(mm,{pm:fx.pm,mor:fx.mor,cash:fx.cash},X)); }
   if(fx.oreq&&OREQ[fx.oreq]){ if(G.ownReq&&G.ownReq.until>=G.day)out.push('구단주 주문이 이미 하나 있어 이번 말은 기억만 해 둡니다.');
     else { const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:0,l:0}; prInit(); const Q=G.ownReq={k:fx.oreq,tid:G.user,person:bossOf(G.user).own.id,d:G.day,until:G.day+(fx.oreq==='win'?14:30),w0:r.w,l0:r.l,f0:Math.round(G.pr.fan)};
-      out.push(`구단주 주문: ${dmd(Q.until)}까지 ${OREQ[Q.k]}(지키면 신뢰 +3, 못 지키면 -2)`); } }
+      out.push(`구단주 주문: ${dmd(Q.until)}까지 ${OREQ[Q.k]}`); } }
   return out; }
 /* 매일: 구단주 주문 판정(감독 요청과 같은 자리에서 부른다) */
 function ownReqDaily(){ const Q=G.ownReq; if(!Q)return; if(G.unemp||Q.tid!==G.user||(Q.person!=null&&Q.person!==bossOf(G.user).own.id)){ delete G.ownReq; return; } if(G.day<=Q.until)return; const t=team(G.user), B=bossOf(G.user);

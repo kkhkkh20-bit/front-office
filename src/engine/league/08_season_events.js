@@ -6,7 +6,7 @@ function openingDay(){
   { const v=G.teams.filter(t=>t.id!==ME()).map(t=>G.sea.fspend[t.id]||0); G.lgFor=G.lgFor||{}; G.lgFor[G.year]=Math.round(sum(v)/Math.max(1,v.length)); }
   const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})); const a=avg(rs.map(x=>x.r));
   rs.forEach(x=>team(x.id).expW=clamp(.5+(x.r-a)*.03,.36,.64));
-  G.proj=rs.map(x=>({id:x.id,r:x.r+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
+  { const A=rs.map(x=>({id:x.id,r:x.r+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r); G.proj=A.map(x=>x.id); G.projR=Object.fromEntries(A.map(x=>[x.id,x.r])); }
   note('일정',`${G.year} 시즌 개막입니다. 전력분석팀 예상 순위 ${G.proj.indexOf(G.user)+1}위.`);
   if(!(G.goals&&G.goals.y===G.year&&(G.goals.fd||G.goals.pre)))setGoals(); /* 시범경기 전에 정해 상의한 목표는 개막에 그대로 */ news('분석',`${G.year} 시즌 전망: ${tshort(G.user)} ${G.proj.indexOf(G.user)+1}위 예상`,`${tname(G.user)}의 시즌 전 전력은 ${G.proj.indexOf(G.user)+1}위로 꼽힙니다.`,0);
 }
@@ -137,6 +137,7 @@ function settlement(){
     const gmS=t.id!==ME()?((gmCon(t.gm,t.id)||{}).sal||0):0; /* 다른 구단 단장 연봉: 운영비 안에서 따로 적는다(총액은 그대로) */
     const exp=[['국내 선수 연봉',ci.all],['외국인 선수 연봉',G.sea.fspend[t.id]||0],['구단 운영비',Math.round((t.indie?19000:24000)*EI)-gmS],...(gmS?[['단장 연봉',gmS]]:[]),['스카우트 운영',scoutCost],['마케팅',mkt]];
     if(tax)exp.push(['경쟁균형세(야구발전기금)',tax]);
+    if(t.id!==ME()&&t.faBDue>0){ exp.push(['FA·다년 계약금',Math.round(t.faBDue)]); } if(t.faBDue)delete t.faBDue;
     { const bn=G.sea.bonus&&G.sea.bonus[t.id]; if(bn)exp.push(['신인 계약금',bn]); }
     { const due=newStadDue(t.id); if(due){ exp.push(['신구장 분담금',due]); if(!t.indie)inc.push(['모기업 신구장 출자(분담금의 70%)',Math.round(due*.7)]); /* 독립구단은 모기업 출자 없음 */ { const N=newStadAcct(t.id); N.paid=(N.paid||0)+due; if(N===stadOf(t.id).debt&&N.paid>=N.cost)delete stadOf(t.id).debt; } } }
     { const up=SPj.up; if(up>0)exp.push(['구장 시설 유지비',up]); } /* 경기별 집계(검수 11-07) */
@@ -165,8 +166,8 @@ function settlement(){
     t.cash+=net;
     /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(INDIE_DIV_T 초과분의 INDIE_DIV_R, 49_sponsors) */
     let div=0; if(t.indie&&t.cash>Math.round(INDIE_DIV_T*EI)){ div=Math.round((t.cash-Math.round(INDIE_DIV_T*EI))*INDIE_DIV_R); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
-    /* 유보금 상한(11-12): 모기업 구단도 현금이 100억(경제 지수 반영)을 넘으면 넘은 돈의 절반을 모기업이 회수한다(실제 구단은 수백억을 쌓아 두지 않는다) */
-    let sweep=0; if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0; /* 우승 포상 FA 특별자금은 용도가 정해진 돈이라 회수 대상에서 뺀다(플레이 테스트 11-13) */ const T=Math.round(10000*EI)+ear; if(t.cash>T){ sweep=Math.round((t.cash-T)*.5); t.cash-=sweep; if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 절반(${money(sweep)})을 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.`,{kind:'구단주'}); } }
+    /* 유보금 상한(11-12, 재정 시뮬 11-13에 60억·60%로 조임: 잘 굴러가는 구단은 해마다 60~90억이 남아 100억 넘는 현금을 늘 들고 있었다): 모기업 구단도 현금이 60억(경제 지수 반영)을 넘으면 넘은 돈의 60%를 모기업이 회수한다(실제 구단은 수백억을 쌓아 두지 않는다) */
+    let sweep=0; if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0; /* 우승 포상 FA 특별자금은 용도가 정해진 돈이라 회수 대상에서 뺀다(플레이 테스트 11-13) */ const T=Math.round(RES_CAP*EI)+ear; if(t.cash>T){ sweep=Math.round((t.cash-T)*RES_RATE); t.cash-=sweep; if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 60%(${money(sweep)})를 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.`,{kind:'구단주'}); } }
     /* 모기업 지원 조정: 구단에 쓰지 않은 돈이 쌓여 있으면, 다음 시즌 모기업 지원 한도를 그만큼 줄인다(돈을 가져가지는 않는다).
        50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 줄인다. 쌓인 돈은 구단이 그대로 쓸 수 있다 */
     let cut0=t.supCut&&t.supCut.y===y?t.supCut.amt:0;
@@ -185,12 +186,15 @@ function settlement(){
   const finScore=clamp((fin.net+(fin.back||0))/2500,-8,5) /* 흑자 조정·배당은 구단주 쪽이 가져간 돈이라 단장 평가에서는 흑자로 본다 */-(fin.supCap?(fin.support/fin.supCap-.5)*4:0);
   /* 공개된 순위 목표를 달성했으면 기대 승률 대비 평가로 깎지 않는다. 창단 첫해는 폭을 줄인다 */
   const rkNow=rankOf(G.user); /* 목표 화면(goalStatus)과 같은 순위 함수(검수 11-09zzd) */ let perf=(wp-u.expW)*150*w[0]; if(G.goals&&G.goals.y===y&&rkNow<=G.goals.rank)perf=Math.max(perf,0); if(G.startY===y)perf=clamp(perf,-3,6);
-  const why=[['성적(기대 승률 대비)',perf],['포스트시즌',psPart*w[1]],['수지(순이익·모기업 지원)',finScore*w[2]],['인기 변화',(u.pop-prePop[G.user])*40*w[3]]];
+  const ex=expYr(G.user,y); if(ex)perf=clamp(perf,-2,6); /* 창단 유예(89_league_expansion): 성적 감점은 작게, 가을야구 못 간 감점은 없다 */
+  const why=[['성적(기대 승률 대비)',perf],['포스트시즌',(ex?Math.max(0,psPart):psPart)*w[1]],['수지(순이익·모기업 지원)',finScore*w[2]],['인기 변화',(u.pop-prePop[G.user])*40*w[3]]];
   let delta=sum(why.map(x=>x[1]));
   if(u.cash<0){ delta-=5; why.push(['자금 마이너스',-5]); }
   { const pen=capOverOwner(u,y); if(pen){ delta+=pen; why.push([`샐러리캡 초과(${Math.round(capInfo(G.user).over/capInfo(G.user).cap*100)}%)`,pen]); } }
   const gy=goalYearEnd(rkNow,fin); delta+=gy.d; why.push(['구단주 목표(순위·재정·여론)',gy.d]); const pz=(G.pr?(G.pr.press-50)/10:0); delta+=pz; why.push(['언론 논조',pz]);
+  if(ex&&delta<-5){ const cap=-5-(u.cash<0?5:0); if(delta<cap){ why.push([`창단 ${ex}년차 유예(감점 한도)`,cap-delta]); delta=cap; } } /* 유예 중 결산 감점은 -5까지(자금 마이너스면 -10까지) */
   delta=Math.round(HARD()&&delta<0?delta*1.3:delta); const before=u.trust; u.trust=clamp(u.trust+delta,0,100);
+  const grace=ex&&!expFinDisaster(G.user); { const fl=Math.min(15,before); if(grace&&u.trust<fl){ why.push([`창단 ${ex}년차 유예(성적 경질 없음)`,fl-u.trust]); u.trust=fl; delta=u.trust-before; } } /* 유예 중에는 경질선(12) 위에서 멈춘다. 재정 사고(현금 -80억 아래)는 예외 */
   const notes=[];
   for(const tr of G.trades.filter(x=>x.y===y&&!x.revealed)){ tr.revealed=true; if(tr.diff>7&&(tr.me??G.user)===ME()){ /* 전 구단에서 한 거래는 지금 구단 관계·결산에 넣지 않는다(검수 11-09h) */ const t=team(tr.with); t.rel=clamp(t.rel-6,0,100); notes.push(`${tname(tr.with)} 단장이 지난 트레이드에서 손해를 봤다고 판단해 관계가 나빠졌습니다.`);} }
   const lines=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(h)lines.push({p,h}); }
@@ -226,7 +230,7 @@ function settlement(){
   if(!G.unemp)try{ G.last.rep=repSeason(y,rank,ps.champ===G.user,ps.runner===G.user,delta); }catch(e){}
   if(!G.unemp)try{ myCRecord(y,rank,ps,uo); }catch(e){}
   try{ ownerTrustWatch(); }catch(e){}
-  if(u.trust<12&&!G.unemp){ firedFlow(y,`구단주 신뢰가 ${u.trust}까지 떨어져 ${y}시즌을 끝으로 경질되었습니다.`); }
+  if(u.trust<12&&!G.unemp&&!grace){ firedFlow(y,`구단주 신뢰가 ${u.trust}까지 떨어져 ${y}시즌을 끝으로 경질되었습니다.`); }
   else if(!G.unemp)try{ myCSeasonEnd(y,ps); }catch(e){} /* 계약 마지막 해: 재계약 제안 또는 결별, 다른 구단 제의 */
   stop('결산',`${y}시즌 결산이 나왔습니다. ${uo.w}승 ${uo.l}패 ${rank}위, 구단주 신뢰 ${before}→${u.trust}. 신뢰 변화 내역: ${why.filter(x=>Math.abs(x[1])>=.5).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).map(x=>`${x[0]} ${x[1]>0?'+':''}${Math.round(x[1])}`).join(', ')||'변화 없음'}.`);
   clubRescue(y); /* 전임 구단주의 시즌 결산·평가를 마친 뒤 새 사건을 판정한다. */

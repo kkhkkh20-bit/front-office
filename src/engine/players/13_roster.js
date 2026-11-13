@@ -97,7 +97,7 @@ function capWarnUser(){ const pay=capPayNext(G.user), cap=capOf(sponSeason()), c
   stop('재정',`연봉 재계약 기준으로 우리 상위 40명 연봉이 ${money(ci.pay)}으로 상한 ${money(ci.cap)}을 ${money(ci.over)} 넘습니다. 시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(n)*100)}%를 야구발전기금으로 냅니다${n>=3?'. 3회 연속이라 다음 해 1라운드 지명 순서도 9단계 내려갑니다':''}. 개막 전 트레이드나 방출로 줄일 수 있습니다(개막 뒤 방출한 선수 연봉은 그해 산정에 남습니다).${t.indie?'':' 상한을 더 넘기는 영입·계약은 구단주 결재가 필요하고, 구단주는 상한의 10%(성적 우선 구단주가 크게 신뢰하면 15%) 넘게는 허락하지 않습니다.'}`); }
 /* 하한(2027년~)에 못 미치는 AI 구단은 주축 선수 연봉을 올려(다년계약) 하한을 맞춘다 */
 /* 군 입대·부상 이탈로 시즌 중 상위 40명 연봉이 줄어드므로 5% 여유를 두고 맞춘다. 시즌 막판(9월 1일·정규시즌 종료)에도 한 번 더 확인한다 */
-function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.year); let gap=fl*1.05-capPay(tid); if(gap<=0)return; const t=team(tid); if((t.cash||0)<-3000)return; /* 빚이 큰 구단은 연봉을 억지로 올리지 않고 하한 미달 발전기금을 낸다 */
+function aiFloorFix(tid){ if(tid===ME()||G.year<2027||fNewBonus(tid,G.year))return; const fl=floorOf(G.year); let gap=fl*1.05-capPay(tid); if(gap<=0)return; const t=team(tid); if((t.cash||0)<-3000)return; /* 빚이 큰 구단은 연봉을 억지로 올리지 않고 하한 미달 발전기금을 낸다 */
   const ps=domestic(tid).filter(p=>!isRookie(p)&&!p.ys&&!(p.joinY>G.year)&&!p.extNext) /* 다음 시즌 계약에 합의한 선수는 따로 계약을 바꾸지 않는다(검수 11-09zzb) */.sort((a,b)=>ovr(b)-ovr(a)).slice(0,12);
   /* FA까지 1년 넘게 남은 보류 선수는 연차 상한(preCap)까지만 올린다(카페 11-12: 4~5년 차가 하한 맞추기로 16~17억). 남는 차액은 FA·다년계약 선수에게, 그래도 모자라면 하한 미달 발전기금 */
   const room=p=>(!p.faC&&!p.ext&&(p.svc||0)<faSvc(p)-1)?Math.max(0,preCap(p)-p.sal):1e9;
@@ -111,5 +111,5 @@ function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.
 function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME()||t.cash>=-4000)continue; t.mode='rebuild'; n+=aiCapFix(t.id,.8,true,3); } return n; }
 function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} let n=0; for(const t of G.teams)if(t.id!==ME())n+=aiCapFix(t.id,frac); return n; }
 /* 경쟁균형세 상한 결정(capCouncil)은 68_assoc.js의 실행위원회·이사회로 옮겼다 */
-function capInfo(tid){ const pay=preSeason(sponSeason())?capPayNext(tid):capPay(tid), /* 겨울: 합의한 다음 시즌 연봉 기준 */ cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:sponSeason()>=2027?floorOf(sponSeason()):0 /* 하한 제재는 2027년부터(검수 11-09y) */,over:Math.max(0,pay-cap)}; }
+function capInfo(tid){ const pay=preSeason(sponSeason())?capPayNext(tid):capPay(tid), /* 겨울: 합의한 다음 시즌 연봉 기준 */ cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:sponSeason()>=2027&&!fNewBonus(tid)?floorOf(sponSeason()):0 /* 신생 구단은 외국인 혜택과 같은 첫 두 시즌 하한 적용 안 함(창단 테스트 11-13: 특별지명 선수단 연봉이 하한의 절반) */ /* 하한 제재는 2027년부터(검수 11-09y) */,over:Math.max(0,pay-cap)}; }
 

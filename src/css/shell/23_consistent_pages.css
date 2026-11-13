@@ -35,10 +35,10 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .detail-page .fs-kv dt{white-space:normal}
 .pf-core-compact{border-top:1px solid var(--line2);margin-top:10px;padding-top:8px}
 .pf-core-caption{display:flex;justify-content:space-between;gap:4px;font-size:11px;margin-bottom:6px}
-.pf-core-caption>span{font-size:9px;color:var(--muted)}
+.pf-core-caption>span{font-size:var(--ui-tiny);color:var(--muted)}
 .pf-core-compact .pf-core-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
 .pf-core-compact .pf-core-cell{padding:4px 2px;border:0;background:var(--panel2)}
-.pf-core-compact .pf-core-cell>span{font-size:10px}
+.pf-core-compact .pf-core-cell>span{font-size:var(--ui-micro)}
 .pf-core-compact .pf-core-cell strong{font-size:19px}
 .pf-core-compact .pf-core-cell small{display:none}
 /* 목록의 공통 기준: 제목·필터·표, 선택한 한 사람의 상세로 이동. */
@@ -47,16 +47,16 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .candidate-table th,.candidate-table td{white-space:nowrap;padding:8px 10px;font-size:12px}
 .candidate-table .candidate-name{display:flex;align-items:center;gap:8px;color:var(--ink);background:none;border:0;font:700 13px var(--f-ui);padding:0;cursor:pointer;text-align:left}
 .candidate-name .av{width:30px;height:30px;flex-shrink:0}
-.candidate-name small{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:2px}
+.candidate-name small{display:block;font-size:var(--ui-micro);font-weight:400;color:var(--muted);margin-top:2px}
 .candidate-table td:first-child,.candidate-table th:first-child{position:sticky;left:0;background:var(--panel);z-index:1}
 .candidate-table .candidate-note{white-space:normal;min-width:150px;max-width:230px;font-size:11px;line-height:1.5}
 /* 신인 후보 표가 넓은 화면에서 가로로 밀려도 관심·지명 버튼은 오른쪽에 붙어 보인다 */
 @media(min-width:980px){.draft-candidates .candidate-table td:last-child,.draft-candidates .candidate-table th:last-child{position:sticky;right:0;background:var(--panel);z-index:1}}
-.candidate-table small.block{display:block;font-size:10px;line-height:1.5;color:var(--muted)}
+.candidate-table small.block{display:block;font-size:var(--ui-micro);line-height:1.5;color:var(--muted)}
 .foreign-candidates .candidate-table td:last-child{white-space:normal;min-width:140px;max-width:180px}
-.foreign-candidates .candidate-table td:last-child .pill{display:block;white-space:normal;font-size:10px;line-height:1.4;margin-top:4px}
+.foreign-candidates .candidate-table td:last-child .pill{display:block;white-space:normal;font-size:var(--ui-micro);line-height:1.4;margin-top:4px}
 .foreign-candidates .candidate-table td,.foreign-candidates .candidate-table th{padding-inline:7px}
-.candidate-table .pill{font-size:10px}
+.candidate-table .pill{font-size:var(--ui-micro)}
 .candidate-list>.row:first-child{margin-bottom:8px}
 .candidate-list .tw{margin-top:6px;overflow-x:auto}
 /* 후보 표 칸은 자체 가로 스크롤 칸이라, 열 넘김 표의 머리 고정 위치(상단바 높이)를 쓰면 머리줄이 첫 행을 덮는다 */
@@ -83,7 +83,7 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 @media(min-width:1100px){
   .fm1{height:46px;gap:6px;padding-inline:10px}
   .fmm-b{font-size:14px;padding-inline:9px}
-  .fm-i{width:28px;height:30px}.fm-r{gap:3px}.fm-date b{font-size:12px}.fm-date span{font-size:10px}
+  .fm-i{width:28px;height:30px}.fm-r{gap:3px}.fm-date b{font-size:12px}.fm-date span{font-size:var(--ui-micro)}
   .fm1 .goset .continue{min-width:140px;min-height:35px}.fm1 .goset .step{min-height:35px}
   .fm2{height:29px}.fm2 .subtabs button{font-size:12px;padding:6px 12px}
   .fm2-compact{height:0;min-height:0;border:0;overflow:visible;position:relative}
@@ -99,7 +99,7 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .roster-navigation .seg.itabs{margin:0}
   .roster-list.card{padding:10px 12px;margin:0}
   .roster-list .roster-caption{margin-bottom:7px}.roster-caption h2.sec{font-size:15px}
-  .roster-caption .small{font-size:10px}
+  .roster-caption .small{font-size:var(--ui-micro)}
   .roster-list .seg.sm button,.roster-list .chips button,.roster-list .tc-i{padding:4px 8px;min-height:27px;font-size:11px}
   .roster-list .rt td,.roster-list .rt th{font-size:12px;padding:6px 8px}
   .roster-list .rt .pn .av{width:28px;height:28px}.roster-list .rt .pn{font-size:13px;gap:6px}
@@ -132,7 +132,7 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .fd-position-list button{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:5px 7px;font-size:12px;cursor:pointer;text-align:left;min-width:0}
   .fd-position-list button>span{font-size:11px;color:var(--muted);width:28px;flex-shrink:0}
   .fd-position-list button>b{flex:1;overflow:hidden;text-overflow:ellipsis}
-  .fd-position-list button>i{font-size:10px;color:var(--muted);font-style:normal}
+  .fd-position-list button>i{font-size:var(--ui-micro);color:var(--muted);font-style:normal}
   .fd-position-list .empty{border-style:dashed}
   .dshell .fdl-main .seg button,.dshell .fdl-main .chips button{min-height:28px;padding:4px 9px;font-size:12px}
   .draft-candidates .candidate-table td{padding-block:7px}
@@ -151,7 +151,7 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 }
 @media(max-width:600px){
   body #sheet .sheet.detail-page{padding:0 12px 24px}
-  .detail-navigation{margin-inline:-12px;padding-inline:12px}.detail-navigation>span{font-size:10px}
+  .detail-navigation{margin-inline:-12px;padding-inline:12px}.detail-navigation>span{font-size:var(--ui-micro)}
   .detail-page .sheet-head{margin-inline:-12px;padding-inline:12px}
   .detail-page .kv{grid-template-columns:100px minmax(0,1fr);font-size:12px;gap:6px 10px}
   .pf-core-compact .pf-core-cell strong{font-size:18px}.pf-core-caption{display:block}
@@ -221,9 +221,9 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .foreign-candidates .tgrid,.mgrg{align-items:start}.mgrg .mgrc{min-width:0}.mgrc>.tc-i{justify-self:start}
 .star-marketing{min-width:0}.sm-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
 .sm-summary>div{display:grid;align-content:start;gap:5px;padding:9px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);min-width:0}
-.sm-summary dt{font-size:11px;line-height:1.5;color:var(--muted)}.sm-summary dd{margin:0;font:700 19px var(--f-num)}.sm-summary small{font-size:10px;color:var(--muted);line-height:1.5}
+.sm-summary dt{font-size:11px;line-height:1.5;color:var(--muted)}.sm-summary dd{margin:0;font:700 19px var(--f-num)}.sm-summary small{font-size:var(--ui-micro);color:var(--muted);line-height:1.5}
 .sm-player,.sm-active{display:grid;gap:5px}.star-marketing .smb{width:100%;margin-left:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:6px}
-.star-marketing .sm-offer{display:grid;gap:4px;padding:9px 7px;text-align:left;white-space:normal;line-height:1.5;min-width:0}.sm-offer>b{font-size:12px}.sm-offer>span{font-size:10px;color:var(--muted)}.sm-offer>.sm-net{font-size:11px;border-top:1px solid var(--line);padding-top:5px}.sm-active .small{line-height:1.5}
+.star-marketing .sm-offer{display:grid;gap:4px;padding:9px 7px;text-align:left;white-space:normal;line-height:1.5;min-width:0}.sm-offer>b{font-size:12px}.sm-offer>span{font-size:var(--ui-micro);color:var(--muted)}.sm-offer>.sm-net{font-size:11px;border-top:1px solid var(--line);padding-top:5px}.sm-active .small{line-height:1.5}
 @media(max-width:600px){.sm-summary{grid-template-columns:minmax(0,1fr)}.sm-summary>div{grid-template-columns:1fr auto;align-items:center}.sm-summary small{grid-column:1/-1}}
 
 #dtick{top:calc(var(--app-header-h,56px) + 8px)}
@@ -251,12 +251,12 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .trc-s{display:flex;gap:6px;padding:6px 4px 4px;border-bottom:4px solid #ffffff1a}
 .trc-t{display:grid;justify-items:center;gap:1px;flex:none;min-width:44px}.trc-t img,.trc-t svg{width:38px;height:38px;object-fit:contain}.trc.sm .trc-t img,.trc.sm .trc-t svg{width:28px;height:28px}
 .trc-t.r img,.trc-t.r svg{filter:grayscale(1) brightness(1.25)}.trc-t.f img,.trc-t.f svg{filter:sepia(1) hue-rotate(-18deg) saturate(1.6) brightness(.8)}
-.trc-t i{font:700 11px var(--f-num,inherit);font-style:normal}.trc-t em{font-style:normal;font-size:10px;color:var(--muted)}
-.trc-y{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:6px}.trc-y span{display:grid;justify-items:center;padding:3px 0;border-radius:4px;background:#ffffff08;font-size:11px;line-height:1.3}.trc-y i{font-style:normal;color:var(--muted)}.trc-y b{font:700 13px var(--f-num,inherit)}.trc-y em{font-style:normal;color:var(--muted);font-size:10.5px}.trc-y .p em{color:var(--good,#5bd17a)}.trc-y .c{background:#f2c14e22}.trc-y .c em{color:#ffd166;font-weight:700}
+.trc-t i{font:700 11px var(--f-num,inherit);font-style:normal}.trc-t em{font-style:normal;font-size:var(--ui-micro);color:var(--muted)}
+.trc-y{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:6px}.trc-y span{display:grid;justify-items:center;padding:3px 0;border-radius:4px;background:#ffffff08;font-size:11px;line-height:1.3}.trc-y i{font-style:normal;color:var(--muted)}.trc-y b{font:700 13px var(--f-num,inherit)}.trc-y em{font-style:normal;color:var(--muted);font-size:var(--ui-micro)}.trc-y .p em{color:var(--good,#5bd17a)}.trc-y .c{background:#f2c14e22}.trc-y .c em{color:#ffd166;font-weight:700}
 .trc-e{font-size:12px;color:var(--muted);padding:10px 0}
 /* 진열장 카드: 구단 이름이 숫자에 밀려 한 글자로 잘리던 것. 이름은 줄이지 않고, 우승·준우승·정규 1위는 이름 아래 줄로 */.trc-h b{flex:1 1 auto;min-width:auto;white-space:nowrap}.trc-h span.num{flex-basis:100%;padding-left:36px;margin-top:-2px}.trc.sm .trc-h span.num{padding-left:30px}
 /* 이름 잘림 전수 점검(2026-11-05): 구단·선수 이름이 들어간 칸은 말줄임 대신 줄바꿈 */body .ltile .l1 i{white-space:normal;word-break:keep-all;overflow:visible;text-overflow:clip}body .fx-ld b{white-space:normal;word-break:keep-all;overflow:visible;text-overflow:clip;line-height:1.25}body .fx-col2 .fx-li b{white-space:normal;word-break:keep-all;overflow:visible;text-overflow:clip;line-height:1.3}body .bk-lg .bk-t,body .bk-t{display:block;min-width:0;overflow:visible;white-space:normal;text-overflow:clip}body .bk-t .badge{vertical-align:-2px}body .bk-t>*{min-width:0;overflow-wrap:anywhere}
-body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!important;text-overflow:clip!important;font-size:10.5px;letter-spacing:-.02em;line-height:1.15}
+body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!important;text-overflow:clip!important;font-size:var(--ui-micro);letter-spacing:-.02em;line-height:1.15}
 /* 상세 화면·중계가 열리면 뒤쪽 본문은 inert(조작 불가)다. 그 안에 그려진 팝업(업데이트 소식·도장·확인창)이 화면을 덮으면 위의 중계까지 눌리지 않으므로, 상세 화면이 닫힐 때까지 숨긴다(사용자 제보 11-06: 포스트시즌 3D 중계에서 나가기·확인이 안 눌림) */
 [inert] .rv-w,[inert] .stamp-w,[inert] .cfm-w{display:none!important}
 
@@ -275,15 +275,15 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 .ws-frame>.club-profile,.ws-frame>.club-archive{flex:1 1 auto;min-height:0;min-width:0;overflow:hidden}
 .club-profile,.club-archive{display:flex;flex-direction:column;min-height:0;min-width:0;gap:10px}
 .club-profile-head{display:flex;align-items:center;gap:10px;flex:none;padding:10px 12px;background:var(--panel);border:1px solid var(--line2);border-radius:5px}
-.club-profile-head>div{min-width:0;flex:1}.club-profile-head h1{font-size:20px;line-height:1.25;margin:2px 0;overflow-wrap:anywhere}.club-profile-head .eyebrow{font-size:10px}
+.club-profile-head>div{min-width:0;flex:1}.club-profile-head h1{font-size:20px;line-height:1.25;margin:2px 0;overflow-wrap:anywhere}.club-profile-head .eyebrow{font-size:var(--ui-micro)}
 .club-profile-tabs,.club-profile-chips{display:flex;gap:5px;min-width:0;overflow-x:auto;flex:none;padding-bottom:3px;scrollbar-width:thin}.club-profile-tabs .btn,.club-profile-chips .btn{flex:none;white-space:nowrap;min-height:32px}.club-profile-tabs{border-bottom:1px solid var(--line2);padding-bottom:7px}
 .club-profile-body{min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;flex:1;padding-right:3px}.club-profile-body.archive-body{display:flex;overflow:hidden;padding:0}.club-profile-body>.club-archive{flex:1}
-.club-profile-body .card{margin:0 0 10px;min-width:0}.club-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}.club-profile-grid>.card{margin:0}.club-profile-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;margin:12px 0}.club-profile-facts>div{min-width:0}.club-profile-facts dt{font-size:11px;color:var(--muted);margin-bottom:4px}.club-profile-facts dd{margin:0;font-weight:600;overflow-wrap:anywhere}.club-profile-facts small{display:block;font-size:10px;color:var(--muted);font-weight:400;margin-top:3px}
+.club-profile-body .card{margin:0 0 10px;min-width:0}.club-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}.club-profile-grid>.card{margin:0}.club-profile-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;margin:12px 0}.club-profile-facts>div{min-width:0}.club-profile-facts dt{font-size:11px;color:var(--muted);margin-bottom:4px}.club-profile-facts dd{margin:0;font-weight:600;overflow-wrap:anywhere}.club-profile-facts small{display:block;font-size:var(--ui-micro);color:var(--muted);font-weight:400;margin-top:3px}
 .club-profile-body details>summary{cursor:pointer;padding:8px 0;color:var(--text)}.club-profile-ledger p{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line2);padding:6px 0;margin:0;font-size:12px}.club-profile-ledger b{white-space:nowrap}
 .club-profile-player{width:100%;min-width:0;display:flex;align-items:center;gap:10px;text-align:left;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:9px;margin-bottom:6px;color:var(--text);cursor:pointer}.club-profile-player>.av{flex:none;width:38px;height:42px;object-fit:cover}.club-profile-player>span{flex:1;min-width:0}.club-profile-player>span:last-child{flex:0 1 44%;text-align:right}.club-profile-player small{display:block;font-size:11px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}.club-profile-player b{overflow-wrap:anywhere}.club-profile-person{border-bottom:1px solid var(--line2)}.club-profile-person>summary{display:flex;align-items:center;justify-content:space-between;gap:10px}.club-profile-person>summary span{display:block;min-width:0}.club-profile-person>summary small{display:block;font-size:11px;color:var(--muted);margin-top:4px}.club-profile-person>summary i{font-size:11px;color:var(--muted);font-style:normal}.club-profile-vacancy{padding:10px 0;color:var(--muted);font-size:12px}
-.club-profile-table{max-width:100%;overflow:auto;overscroll-behavior:contain;margin:10px 0}.club-profile-table table{width:100%;min-width:520px}.club-profile-table th,.club-profile-table td{white-space:nowrap;font-variant-numeric:tabular-nums}.club-profile-table td small{display:block;color:var(--muted);font-size:10px}.club-profile-table caption{text-align:left;font-size:12px;font-weight:600;margin-bottom:7px}
-.club-archive-head{flex:none;padding:10px 12px;border:1px solid var(--line2);background:var(--panel);border-radius:5px}.club-archive-head h2{font-size:16px;margin:0 0 5px}.club-archive-head p{margin:4px 0}.club-archive-filters{flex:none;min-width:0;padding:0 4px}.club-archive-filters>summary{cursor:pointer;font-size:11px;color:var(--muted);margin:0 0 5px}.club-archive-list{flex:1;min-height:80px;min-width:0;overflow:auto;overscroll-behavior:contain;padding:0 5px;border:1px solid var(--line2);border-radius:4px;background:var(--panel)}.club-archive-event{padding:10px;border-bottom:1px solid var(--line2);overflow-wrap:anywhere}.club-archive-event>div{display:flex;align-items:center;gap:8px}.club-archive-event time{font-size:11px;color:var(--muted)}.club-archive-event .pill{font-size:10px}.club-archive-event p{margin:6px 0 0;font-size:12px;line-height:1.6}.club-archive-event .lnk{white-space:normal;text-align:left;line-height:1.6}.club-archive-pager{display:flex;align-items:center;justify-content:space-between;gap:6px;flex:none;padding:3px 0}
-@media(max-width:799px){.club-profile-grid{grid-template-columns:minmax(0,1fr)}.club-profile-head{padding:7px 9px}.club-profile-head h1{font-size:16px}.club-profile-head>.badge{max-width:32px}.club-profile,.club-archive{gap:7px}.club-archive-head{padding:8px}.club-archive-head p:last-child{font-size:10px}.club-profile-facts{gap:10px}.club-profile-tabs .btn{font-size:11px}.club-archive-filters .btn{min-height:29px;font-size:10px}}
+.club-profile-table{max-width:100%;overflow:auto;overscroll-behavior:contain;margin:10px 0}.club-profile-table table{width:100%;min-width:520px}.club-profile-table th,.club-profile-table td{white-space:nowrap;font-variant-numeric:tabular-nums}.club-profile-table td small{display:block;color:var(--muted);font-size:var(--ui-micro)}.club-profile-table caption{text-align:left;font-size:12px;font-weight:600;margin-bottom:7px}
+.club-archive-head{flex:none;padding:10px 12px;border:1px solid var(--line2);background:var(--panel);border-radius:5px}.club-archive-head h2{font-size:16px;margin:0 0 5px}.club-archive-head p{margin:4px 0}.club-archive-filters{flex:none;min-width:0;padding:0 4px}.club-archive-filters>summary{cursor:pointer;font-size:11px;color:var(--muted);margin:0 0 5px}.club-archive-list{flex:1;min-height:80px;min-width:0;overflow:auto;overscroll-behavior:contain;padding:0 5px;border:1px solid var(--line2);border-radius:4px;background:var(--panel)}.club-archive-event{padding:10px;border-bottom:1px solid var(--line2);overflow-wrap:anywhere}.club-archive-event>div{display:flex;align-items:center;gap:8px}.club-archive-event time{font-size:11px;color:var(--muted)}.club-archive-event .pill{font-size:var(--ui-micro)}.club-archive-event p{margin:6px 0 0;font-size:12px;line-height:1.6}.club-archive-event .lnk{white-space:normal;text-align:left;line-height:1.6}.club-archive-pager{display:flex;align-items:center;justify-content:space-between;gap:6px;flex:none;padding:3px 0}
+@media(max-width:799px){.club-profile-grid{grid-template-columns:minmax(0,1fr)}.club-profile-head{padding:7px 9px}.club-profile-head h1{font-size:16px}.club-profile-head>.badge{max-width:32px}.club-profile,.club-archive{gap:7px}.club-archive-head{padding:8px}.club-archive-head p:last-child{font-size:var(--ui-micro)}.club-profile-facts{gap:10px}.club-profile-tabs .btn{font-size:11px}.club-archive-filters .btn{min-height:29px;font-size:var(--ui-micro)}}
 /* 공통 작업틀의 고정 자식 규칙보다 우선해 공개 페이지에 남은 높이를 배정한다. */
 #app main.ws-frame>.club-profile,#app main.ws-frame>.club-archive{flex:1 1 0;min-height:0;max-height:100%;overflow:hidden}
 .club-profile-records{margin-top:16px;padding-top:8px;border-top:1px solid var(--line2)}.club-profile-records h3{margin:0 0 8px;font-size:13px}

@@ -24,7 +24,7 @@ function truckRisk(){ const u=G.user, r=G.sea&&G.sea.rec&&G.sea.rec[u]; prInit()
   if(fan<35){ s+=fan<25?2:1; why.push('팬 여론 바닥'); }
   return {s,why,st,rank,fan}; }
 function truckWeekly(){ if(G.unemp||G.user==null)return; const o=dobj(G.day); if(o.w!==1)return; const S=truckState(); if(S.n>=2||G.day-S.last<40)return;
-  const K=truckRisk(); let sev=K.s>=5?3:K.s>=3?2:K.s>=2?1:0;
+  const K=truckRisk(); let sev=K.s>=5?3:K.s>=3?2:K.s>=2?1:0; if(expYr(G.user))sev=Math.max(0,sev-1); /* 창단 유예 중인 신생 구단 팬은 성적에 너그럽다 */
   if(!sev)return; /* 사소한 이유로는 트럭이 오지 않는다(사용자 11-06) */
   if(R()<(sev===3?.45:sev===2?.2:.06))truckFire(sev,null,K); }
 function truckFire(sev,kind,K){ const S=truckState(); S.n++; S.last=G.day; const t=team(G.user), m=G.mgr[G.user], tn=`${t.city} ${t.nick}`;

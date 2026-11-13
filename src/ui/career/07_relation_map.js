@@ -61,7 +61,7 @@ function relView(){ const groups=relPeople();
   const W=warn.length?`<div class="note bad">${warn.map(esc).join('<br>')}</div>`:''; const g=G2.find(([h])=>h===it.cur);
   if(it.cur==='network')return it.bar+personalNetworkUI();
   const bulk=g&&relBulkKind(g[0]);if(bulk)return it.bar+csec(g[0],relBulkGroup(bulk,g[1]),relBulkModeButton(bulk)).replace('<section class="card">','<section class="card rel-bulk-group">');
-  return it.bar+(g?csec(g[0],`${g[0]==='선수단'?'<p class="small muted keep">이 목록의 수치는 선수 기분(사기)입니다. 단장 개인 친밀도와 교류 기록은 ‘내 인맥’에서 확인하세요.</p>':''}<div class="rpg">${g[1].map(relCard).join('')}</div>`):csec('관계 지도',relMap(groups))+W); }
+  return it.bar+(g?csec(g[0],`${g[0]==='선수단'?'<p class="small muted">이 목록의 수치는 선수 기분(사기)입니다. 단장 개인 친밀도와 교류 기록은 ‘내 인맥’에서 확인하세요.</p>':''}<div class="rpg">${g[1].map(relCard).join('')}</div>`):csec('관계 지도',relMap(groups))+W); }
 /* 홈: 핵심 관계 한 줄 */
 function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); const pick2=k=>{ for(const [,L] of gs)for(const x of L)if(x.k===k)return x; return null; };
   const L=['own','mgr','fan','press'].map(pick2).filter(Boolean); const g=gs[3][1]; if(g.length)L.push(g[0],g[g.length-1]);
@@ -108,7 +108,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
   const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
   let info=x.info||'', moves=[], fx=[], acts=x.acts||[], recent=''; /* info·acts: 떠난 사람 카드(personGone) */
   if(k==='own'){ const B=bossOf(G.user); const s=goalStatus(); const w=OWNER[t.owner].w;
-    info=`<p>${esc(OWNER[t.owner].msg)} ${esc(OWNTRAIT[t.owner])}</p><p class="small muted">평가 비중 · 순위 ${w[0]} · 재정 ${w[2]} · 여론 ${w[3]}</p>${s?`<p class="small">목표: ${s.rank.t}위 이내 ${s.rank.ok==null?'':s.rank.ok?'(달성 중)':'(미달)'} · 팬 여론 ${s.fan.t} 이상 ${s.fan.ok?'(달성 중)':'(미달)'}</p>`:''}<p class="small">친밀도 ${cwRap('own')}(${cwRapLbl(cwRap('own'))}) · 관심사 ${CW_SECL[cwSec()]} · 예산 요청·투자·감독 교체 승인 보정 ${cwRapMod()>=0?'+':''}${Math.round(cwRapMod()*100)}%p${cwOrdLine()?` · ${esc(cwOrdLine())}`:''}</p>`;
+    info=`<p>${esc(OWNER[t.owner].msg)} ${esc(OWNTRAIT[t.owner])}</p><p class="small muted">평가 비중 · 순위 ${w[0]} · 재정 ${w[2]} · 여론 ${w[3]}</p>${s?`<p class="small">목표: ${goalRankTxt(s.rank.t)} ${s.rank.ok==null?'':s.rank.ok?'(달성 중)':'(미달)'} · 팬 여론 ${s.fan.t} 이상 ${s.fan.ok?'(달성 중)':'(미달)'}</p>`:''}<p class="small">친밀도 ${cwRap('own')}(${cwRapLbl(cwRap('own'))}) · 관심사 ${CW_SECL[cwSec()]} · 예산 요청·투자·감독 교체 승인 보정 ${cwRapMod()>=0?'+':''}${Math.round(cwRapMod()*100)}%p${cwOrdLine()?` · ${esc(cwOrdLine())}`:''}</p>`;
     moves=['매달 말 보고: 순위, 팬 여론, 언론 논조, 예상 적자 보전','시즌 결산: 목표 달성 여부와 언론 논조가 크게 반영','홈경기 동석 초대를 받아 함께 보면 친밀도가 오릅니다(신뢰와 별개)'];
     fx=[`모기업 지원 한도가 신뢰에 따라 달라집니다. 지금 한도 ${money(supportCap(t))}`,'시즌이 끝날 때 12 아래면 경질됩니다'];
     recent=(G.ownerLog||[]).slice(0,3).map(o=>`<div class="ps-r"><span class="pill ${o.mood==='만족'?'good':o.mood==='관망'?'':'bad'}">${o.m}월 ${o.mood}</span> <span class="small">신뢰 ${o.trust} (${o.delta>=0?'+':''}${o.delta})</span></div>`).join('');

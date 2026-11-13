@@ -4,7 +4,9 @@ const GOOD={vit:'체력이 좋아 연속 출장에도 지치지 않습니다.',c
 const BAD={vit:'체력이 약해 연속 출장이 이어지면 성적이 떨어집니다.',con:'변화구 대처가 약해 삼진이 많습니다.',pow:'장타력이 부족합니다.',eye:'유인구에 방망이가 쉽게 나갑니다.',spd:'주력이 느립니다.',def:'수비에서 실수가 잦습니다.',stf:'구위가 평범해 정타를 자주 허용합니다.',ctl:'제구가 흔들려 볼넷이 많습니다.',sta:'투구 수가 늘면 구위가 떨어집니다.'};
 /* 숨은 재능을 못 알아본 만큼 잠재력에서 뺀다: 1군 기록이 쌓여 드러나면(hidR) 0. 스카우트 능력 3부터 알아볼 수 있고(능력 5면 45%), 우리 팀에서 지켜본 시즌만큼 줄어든다 */
 function hidPen(p,sc,own){ if(!p||!p.hidT||p.hidR)return 0; const ak=sc&&p.prospect?areaOf(p):null, nb=ak?(areaNet(G.user,ak)-50)*.003:0; /* 권역 정보망이 촘촘할수록 더 알아본다(정보망 100이면 +15%p, 검수 11-09e #18) */ if(sc&&(sc.skill||1)>=3&&u01('hid'+sc.id,p.id)<((sc.skill||1)-2)*.15+nb)return 0; return own?p.hidT*Math.max(0,1-ownObs(p)*.5):p.hidT; }
-function coverOf(tid){ const reg=team(tid).region; return {reg,sc:scoutOf('pro',reg)}; }
+/* 구단의 스카우트 담당 지역(수도권·영남·호남·충청): 창단·연고 이전 구단은 '강원·충청·호남'처럼 세부 지역으로 저장돼 프로 담당 스카우트와 이어지지 않았다(카페 11-13 dddddd: 원주 신생 구단 선수가 '미확인') */
+function teamScoutReg(tid){ const t=team(tid); const r=t&&t.region; if(REG.includes(r))return r; const a=t&&typeof AREA!=='undefined'?AREA.find(x=>x.city.includes(t.city)):null; if(a)return a.reg; return r==='강원'||r==='경기'||r==='인천'?'수도권':r==='영남'||r==='경남'||r==='경북'?'영남':'호남·충청'; }
+function coverOf(tid){ const reg=teamScoutReg(tid); return {reg,sc:scoutOf('pro',reg)}; }
 function publicP(p){ return p.hist.some(h=>h.lvl==='1군'&&h.y>=G.year-1&&(h.pa>=10||h.outs>=9)); }
 /* 아마추어 후보 오차: 스카우트 실력·특기·정보망에 실제로 본 횟수까지 */
 const prosSd=(sc,p)=>scSd(sc,p)*(1.35-.35*Math.min(1,dcEvalObs(p,sc)/6));
@@ -32,7 +34,7 @@ function exOwnD(p){ const x=[...(p.tLog||[])].reverse().find(z=>z.f===G.user); i
 function ownSd(p,sc){ const b=sc?scSd(sc,p):SCOUT_SD[0]; return clamp(b*anaEff(G.user).sdm*(1-Math.min(.45,ownObs(p)*.15)),1.5,8); }
 /* 겉 포장: 외국인은 1년 보고 뽑으므로 '장래'를 말하지 않고 올해 기량만 말한다. 갓 지명한 우리 신인은 첫 실전 전까지 지명 당시 스카우트 평가를 유지한다 */
 function scoutReport(p){ let r=scoutReport1(p); if(!r)return r;
-  if(p.foreign){ const c=r.cur; r=Object.assign({},r,{ofp:c,role:c!=null?roleOf(c,p):null,tools:(r.tools||[]).map(t=>({...t,fut:t.cur})),notes:(r.notes||[]).filter(n=>!/다 자라지|더 자랄 여지|잠재력/.test(n)),eta:null,now1:true}); }
+  if(p.foreign){ let c=r.cur; /* 계약 전 후보: 잠재력 칸이 현재 능력 추정보다 정확해 보이지 않게, 기록과 합치고 조사 전 흐림을 얹은 종합 추정을 쓴다(사용자 11-13: 잠재력만 봐도 실력이 드러나 관찰 명단을 쓸 이유가 없었다) */ if(p.team==null&&c!=null&&typeof fScout==='function'){ try{ const f=fScout(p,r); if(f&&f.raw!=null)c=clamp(Math.round(f.raw),20,80); }catch(e){} } r=Object.assign({},r,{ofp:c,role:c!=null?roleOf(c,p):null,tools:(r.tools||[]).map(t=>({...t,fut:t.cur})),notes:(r.notes||[]).filter(n=>!/다 자라지|더 자랄 여지|잠재력/.test(n)),eta:null,now1:true}); }
   else if(p.dEst){const d={...p.dEst,tid:p.dEst.tid??p.draft?.tid,y:p.dEst.y??p.draft?.y},date=d.d!=null?dstr(d.d):d.y!=null?`${d.y}년 지명 당시`:'지명 시점 미상',source=d.tid!=null?tname(d.tid):'지명 구단 미상';r={...r,draftEstimate:d};
     const original=p.team===G.user&&d.tid===G.user&&ownObs(p)===0&&(!p.acq||p.acq.k==='draft'||p.acq.k==='fd');
     if(original){const o=Math.max(r.cur??0,d.ofp),c0=r.cur??Math.round(ovr(p));r={...r,ofp:o,sd:d.sd,conf:sdConf(d.sd),who:`${d.who} · ${source} ${date} 평가(현재 관찰과 구분)`,role:roleOf(o,p),tools:(r.tools||[]).map(t=>({...t,fut:p.age<=26?clamp(Math.round(t.cur+(o-c0)*.9),t.cur,80):t.cur})),notes:[...(r.notes||[]).filter(n=>!/다 자라지|자랄 여지/.test(n)),...(p.age<=26&&o-c0>=10?[`지명 당시에는 ${roleOf(o,p)}까지 기대했습니다. 실전 기록이 쌓이면 코치진이 다시 평가합니다.`]:[])]};}
