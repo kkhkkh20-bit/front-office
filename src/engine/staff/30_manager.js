@@ -8,7 +8,7 @@ function mgrFix(m){ if(!m)return m; if(m.ego==null)m.ego=ri(20,85); if(m.fame==n
 const POL={win:{l:'성적 우선',lean:-1,d:'지금 이기는 데 집중합니다. 검증된 선수가 우선 출전합니다.'},bal:{l:'균형',lean:0,d:'성적과 육성을 함께 봅니다.'},youth:{l:'육성 우선',lean:1,d:'젊은 유망주에게 출전 기회를 줍니다. 당장 성적은 떨어질 수 있습니다.'}};
 function mgrLean(m){ return clamp((m.youth-50)/40,-1,1); }
 function teamLean(tid){ const m=mgrOf(tid);
-  if(tid!==G.user){ const T=team(tid); const want=T&&T.mode==='rebuild'?.6:-.5; /* 상무(퓨처스리그)처럼 구단이 아닌 팀은 기본 성향 */ return clamp(want*.5+mgrLean(m)*.5,-1,1); }
+  if(tid!==G.user){ const T=team(tid); const pl=T?planOf(T):null; const want=pl?({build:.7,tight:.5,next:-.15,star:-.3,win:-.6}[pl]):T&&T.mode==='rebuild'?.6:-.5; /* 운영 전략: 유망주 수집 구단은 어린 선수를 쓴다 */ /* 상무(퓨처스리그)처럼 구단이 아닌 팀은 기본 성향 */ return clamp(want*.5+mgrLean(m)*.5,-1,1); }
   if(!G.policy)return mgrLean(m); const f=G.policy.follow??1; return clamp(POL[G.policy.k].lean*f+mgrLean(m)*(1-f),-1,1); }
 function polBonus(tid,p,lean){ return polBonus0(tid,p,lean)+mgrFitB(tid,p)+promB(tid,p)+(typeof mcfB==='function'?mcfB(tid,p):0); } /* mcfB: 단장과 합의한 기용·감독의 검증된 선수 선호(93_mgr_conflict) */
 /* 출전 기회 약속(선수 면담·감독 상의): 약속 기간에는 1군 등록·라인업·불펜 기용에 가산. 기강을 중시하는 감독은 덜 따른다(사용자 제보 11-07: 약속해도 한 번도 안 뜀) */

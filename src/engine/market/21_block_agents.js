@@ -38,13 +38,13 @@ function aiBlockWeekly(){ if(!tradeOpen())return;
   for(const t of G.teams){ if(t.id===ME())continue; const ds=domestic(t.id).filter(p=>!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!(hasNtc(p)||faLock(p))&&!mvRecent(p)); /* 거부권 선수는 동의 절차가 없어 데려갈 수 없으니 매물로 내놓지 않는다 */ for(const p of domestic(t.id))if(p.aiListed&&(hasNtc(p)||faLock(p))){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; }
     for(const p of domestic(t.id))if(p.aiListed&&mvRecent(p)&&p.aiWhy!=='mood'){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } for(const p of ds){ if(p.aiListed&&G.day-(p.aiLd||G.day)>42){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } }
     const cur=ds.filter(p=>p.aiListed); const heat=gmHeat(t.id); const ci=capInfo(t.id);
-    if(cur.length<2&&R()<.55){ const top3=new Set([...ds].sort((x,y)=>ovr(y)-ovr(x)).slice(0,3).map(q=>q.id)); const d=depth(t.id); const st=new Set([...d.start,...d.sp,...d.pen.slice(0,3)].map(q=>q.id)); let pk=null, why=null;
+    const pl=planOf(t); if(cur.length<(pl==='build'?3:2)&&R()<.55){ const top3=new Set([...ds].sort((x,y)=>ovr(y)-ovr(x)).slice(0,3).map(q=>q.id)); const d=depth(t.id); const st=new Set([...d.start,...d.sp,...d.pen.slice(0,3)].map(q=>q.id)); let pk=null, why=null;
       /* 정리 대상은 '연봉이 높은 선수'가 아니라 '받는 돈만큼 못 하는 선수'다: 몸값(시장 연봉) 대비 초과분이 큰 순, 나이가 많을수록 먼저.
          실력 좋은 고액 선수는 성적을 원하는 팀이 오히려 비싸게 사 가는 자원이라 내놓지 않는다 */
       const mk=p=>Math.max(MIN_SAL*3,marketSal(projO(p,0))); const over=p=>p.sal/mk(p)+(p.age>=32?(p.age-31)*.15:0); /* 몸값(시장 연봉) 대비 몇 배를 받나 + 노장 가산. 금액 차보다 배율이 '거품'을 잘 가린다 */
       if(period()==='season'&&G.day>=KD(6,1)&&!teamCtx(t).contend){ pk=ds.filter(p=>!p.aiListed&&aiFaPlan(t,p)==='sell').sort((x,y)=>ovr(y)-ovr(x))[0]; if(pk)why='fa'; } /* 가을야구가 멀고 재계약이 어려운 FA 직전 주전은 제값에 판다 */
       if(!pk&&ci.pay>ci.cap*.97){ pk=ds.filter(p=>!top3.has(p.id)&&!p.aiListed&&p.sal-mk(p)>100&&!(ci.pay<=ci.cap&&aiFaPlan(t,p)==='keep')).sort((x,y)=>over(y)-over(x))[0]; why='sal'; } /* 상한을 넘지 않았으면 지킬 FA 직전 선수는 연봉 정리 대상에서 뺀다 */
-      if(!pk&&t.mode==='rebuild'){ pk=ds.filter(p=>p.age>=29&&ovr(p)>=50&&!p.aiListed&&over(p)>.85).sort((x,y)=>over(y)-over(x))[0]; why='reb'; }
+      if(!pk&&t.mode==='rebuild'){ pk=ds.filter(p=>p.age>=29&&ovr(p)>=50&&!p.aiListed&&(over(p)>.85||(pl==='build'&&(p.age>=31||aiCY(p))))).sort((x,y)=>over(y)-over(x))[0]; why='reb'; } /* 유망주 수집 구단은 서른 넘었거나 계약이 끝나 가는 베테랑이면 거품이 없어도 내놓는다 */
       if(!pk&&R()<.5){ pk=ds.filter(p=>p.age<=25&&!st.has(p.id)&&p.pot-ovr(p)>=6&&!p.aiListed).sort((x,y)=>ovr(y)-ovr(x))[0]; why='room'; }
       if(!pk){ const rk=slotRanks(t.id); pk=ds.filter(p=>!st.has(p.id)&&!top3.has(p.id)&&ovr(p)>=48&&!p.aiListed&&rk[pSlot(p)]&&rk[pSlot(p)].rank<=4).sort((x,y)=>ovr(y)-ovr(x))[0]; why='dup'; }
       if(pk){ pk.aiListed=true; pk.aiWhy=why; pk.aiLd=G.day; } }

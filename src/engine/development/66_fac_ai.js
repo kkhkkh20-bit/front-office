@@ -54,12 +54,12 @@ function aiFacDaily(){ if(!G||!G.teams)return; const o=dobj(G.day); const plan=(
 function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)return null;
   const key='fai'+facWK()+':'+t.id+':'+G.year+(summer?'s':'w'); const tr=gmTrait(t.id);
   const cash=spendable(t.id); /* 독립구단은 결산 때 낼 신구장 분담금을 남긴다(검수 11-09zza) */ const tight=cash<1500||(t.indie&&cash<3000), rich=!tight&&(cash>=6000||(t.market>=1.1&&cash>=4500));
-  let p=tight?.15:rich?.7:.5; p+={win:.08,pr:.03,profit:-.08}[t.owner]||0; if(t.mode==='contend')p+=.04; if(tr==='miser')p*=.6; if(summer)p*=.3; if(nb)p*=.5;
+  let p=tight?.15:rich?.7:.5; p+={win:.08,pr:.03,profit:-.08}[t.owner]||0; if(t.mode==='contend')p+=.04; if(tr==='miser')p*=.6; const pl=planOf(t); if(pl==='build')p+=.25; /* 유망주 수집 구단은 남는 돈을 육성 시설에 돌린다 */ if(pl==='tight')p*=.3; if(summer)p*=pl==='build'?.6:.3; if(nb)p*=.5;
   if(facU(key,'go')>=p)return null;
   const maps=[]; if(rich)maps.push({lab:2.2,rehab:1.8}); if(tight)maps.push({weight:1.8,rehab:1.3});
-  maps.push(t.mode==='rebuild'?{fut:2.2,dorm:2.2}:{rehab:1.8,weight:1.8});
+  maps.push(pl==='build'?{fut:2.6,dorm:2.4,indoor:1.6}:pl==='tight'?{weight:1.3}:t.mode==='rebuild'?{fut:2.2,dorm:2.2}:{rehab:1.8,weight:1.8});
   if(tr==='data')maps.push({lab:1.6}); else if(tr==='prospect')maps.push({fut:1.4,dorm:1.4}); else if(tr==='gambler')maps.push({rehab:1.3,weight:1.2});
-  const reserve=rich?2000:2500; const capP=t.indie?0:clamp(.28+({win:.15,pr:.1,profit:-.05}[t.owner]||0)+((t.trust??55)-50)/100,.05,.65);
+  const reserve=pl==='build'?1500:rich?2000:2500; const capP=t.indie?0:clamp(.28+({win:.15,pr:.1,profit:-.05}[t.owner]||0)+((t.trust??55)-50)/100,.05,.65);
   const C=FACK.filter(k=>(S.it[k]||0)<FAC_MAX&&!S.bld[k]).map(k=>{ const lv=S.it[k]||0, c=FACI[k].c[lv+1]; let w=((S.pf&&S.pf[k])||1)*(1+(2-lv)*.25); for(const M of maps)w*=M[k]||1;
       if(tight&&c>1500)w=0; return {k,lv,c,w}; }).filter(x=>x.w>0);
   if(!C.length)return null;

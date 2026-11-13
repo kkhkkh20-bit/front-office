@@ -66,7 +66,7 @@ function relLabel(r){ return r>=80?'막역한 사이':r>=65?'친한 편':r>=45?'
 function teamNeeds(tid){ const rk=slotRanks(tid); const weak=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r).filter(x=>x.r>=6).slice(0,2).map(x=>x.k);
   const t=team(tid); const c=teamCtx(t); const ci=capInfo(tid); const money=t.indie||ci.over>0||t.owner==='profit'?'tight':ci.cap-ci.pay>2500?'rich':'normal';
   return {weak,contend:c.contend,money,rk}; }
-function needText(tid){ const n=teamNeeds(tid); return `${n.contend?'우승 경쟁':'리빌딩'} · ${n.weak.length?n.weak.map(k=>SLOTK[k]).join('·')+' 보강 원함':'급한 자리 없음'} · 연봉 ${n.money==='tight'?'여유 없음':n.money==='rich'?'여유 많음':'보통'}`; }
+function needText(tid){ const n=teamNeeds(tid); const pt=planTalk(team(tid)); return `${pt||(n.contend?'우승 경쟁':'리빌딩')} · ${n.weak.length?n.weak.map(k=>SLOTK[k]).join('·')+' 보강 원함':'급한 자리 없음'} · 연봉 ${n.money==='tight'?'여유 없음':n.money==='rich'?'여유 많음':'보통'}`; }
 /* 친분은 높을수록 더 쌓기 어렵고(60 넘으면 줄어듦), 해마다 50 쪽으로 조금씩 돌아간다(gmRelYear) */
 function gmRelDim(t){ return t.rel>60?Math.max(.25,1-(t.rel-60)/40):1; }
 function gmRelYear(){ for(const t of G.teams){ if(t.id===G.user||t.rel==null)continue; t.rel=Math.round(50+(t.rel-50)*.75); } }
@@ -86,7 +86,10 @@ function counterOffer(tid,give,get,cash,pk){ cash=cash||0; const ev=(g,t)=>evalT
   if(get.length>1){ for(const id of [...get].sort((a,b)=>tval(team(tid),G.players[b],'out')-tval(team(tid),G.players[a],'out'))){ const ng=get.filter(x=>x!==id); if(ev(give,ng).ok){ out.push({give:[...give],get:ng,why:`${G.players[id].name}은(는) 못 드립니다. 나머지로 하시죠.`}); break; } } }
   if(out.length<2&&get.length===1){ const p=G.players[get[0]]; const k=pSlot(p); const alt=domestic(tid).filter(q=>q.id!==p.id&&!q.ys&&healthy(q)&&pSlot(q)===k&&!ntcOf([q.id])).map(q=>({q,e:ev(give,[q.id])})).filter(x=>x.e.ok).sort((a,b)=>ovr(b.q)-ovr(a.q))[0];
     if(alt&&ovr(alt.q)>=ovr(p)-8)out.push({give:[...give],get:[alt.q.id],why:`${p.name} 대신 ${alt.q.name}(${posLabel(alt.q)})이면 됩니다.`}); }
-  for(const c of out){ c.cash=cash; c.pk=pkNorm(pk); } /* 역제안은 그때 현금·지명권 조건으로 고정 */
+  /* 유망주 수집·긴축 구단은 선수보다 지명권을 먼저 부른다: 우리가 가진 지명권 중 값이 가장 작은 한 장으로 맞는지 본다 */
+  if(get.length&&['build','tight'].includes(planOf(team(tid)))&&!(G.draft&&!G.draft.done)){ try{ const p0=pkNorm(pk); if(p0.y===pkYear()){ const T=team(tid); const H=pkHeld(G.user).filter(k=>!p0.give.includes(k)).map(k=>({k,v:pkVal(T,k)})).sort((a,b)=>a.v-b.v);
+      for(const x of H){ const p2={give:[...p0.give,x.k],get:[...p0.get],y:p0.y}; if(pkCheck(tid,give,get,p2))continue; const e2=evalTrade(tid,give,get,cash,p2); if(e2.ok&&e2.theirN<=ROSTER_MAX){ out.unshift({give:[...give],get:[...get],pk:p2,why:`저희는 선수보다 지명권을 원합니다. ${pkName(x.k)} 지명권을 얹어 주시면 하겠습니다.`}); break; } } } }catch(e){} }
+  for(const c of out){ c.cash=cash; c.pk=c.pk||pkNorm(pk); } /* 역제안은 그때 현금·지명권 조건으로 고정 */
   return gmTrait(tid)==='hard'?out.slice(0,1):out.slice(0,2); }
 const NEG_MONTH=4;
 function negTurn(tid){ G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={}); const o=dobj(G.day); const mk=o.y*100+o.m; if(c.negM!==mk){ c.negM=mk; c.neg=0; } delete c.negDay; c.seen=c.seen||{}; for(const k in c.seen)if(c.seen[k]<G.day-30)delete c.seen[k]; return c; }
@@ -155,12 +158,17 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     const B=best.B, p=best.p; const vOut=tval(B,p,'out'), vin=tval(A,p,'in'); const core=new Set(domestic(A.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id));
     /* 리빌딩 구단은 서른 안팎 베테랑의 남은 계약 가치보다 젊은 선수를 받는 것을 앞세운다: 남은 가치의 30%만 채워도 판다(AI끼리만. 우리 구단과의 트레이드는 평소 기준) */
     const want=vOut*(nx?.6:o.wantF||.3)+1; const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
-    let pay=null; for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<0)continue; pay=arr; break; }
-    if(!pay)continue; const give=pay.map(x=>x.q.id); if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year))continue;
+    let pay=null, pkGive=null;
+    /* 유망주 수집 구단에 파는 쪽이면 지명권으로 값을 치른다(지명권만, 또는 어린 선수 한 명 + 지명권). 사는 쪽이 우승 도전이면 지명권을 싸게 보고 파는 쪽은 비싸게 봐서 거래가 선다. 1라운드는 특급(종합 60 이상)을 살 때만 */
+    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeld(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=60&&r1(HB)<PK_R1_MAX)); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)})).sort((x,y)=>x.b-y.b);
+        for(const x of H){ if(x.b>=want&&vin-x.a>=0){ pay=[]; pkGive=x.k; break; } }
+        if(!pkGive)for(const q of pool){ const x=H.find(x=>stackIn([q.b])+x.b>=want&&vin-q.a-x.a>=0); if(x){ pay=[q]; pkGive=x.k; break; } } }catch(e){ pay=null; pkGive=null; } }
+    for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<0)continue; pay=arr; break; }
+    if(!pay)continue; const give=pay.map(x=>x.q.id); const pkNm=pkGive?pkName(pkGive):null; if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year))continue;
     const snap=tradeSnap([p.id,...give]); tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
     give.forEach(id=>{ const q=G.players[id]; tradeTerms(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
-    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name),snap,...(o.buyers?{}:{fd:1})}); { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } if(G.lgTrades.length>60)G.lgTrades.length=60;
-    wire('트레이드',`${tshort(A.id)}, 리빌딩 ${tshort(B.id)}에서 ${p.name}(${posLabel(p)}, ${p.age}세) 영입: ${give.map(id=>G.players[id].name).join(', ')} 내줌`,{tid:A.id,ref:p.id}); n++; done=true; break; }
+    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]),snap,...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive){ const [rd,og]=pkGive.split(':').map(Number); G.pkOwn=G.pkOwn||{}; if(og===B.id)delete G.pkOwn[pkYear()+':'+rd+':'+og]; else G.pkOwn[pkYear()+':'+rd+':'+og]=B.id; } { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } if(G.lgTrades.length>60)G.lgTrades.length=60;
+    wire('트레이드',`${tshort(A.id)}, 리빌딩 ${tshort(B.id)}에서 ${p.name}(${posLabel(p)}, ${p.age}세) 영입: ${[...give.map(id=>G.players[id].name),...(pkNm?[pkNm+' 지명권']:[])].join(', ')} 내줌`,{tid:A.id,ref:p.id}); n++; done=true; break; }
     if(!done)break; }
   return n; }
 /* 해마다 한 번씩(겨울 1월, 시즌 6월 15일~마감): 상한 여유가 있는 우승 도전·내년 도전 구단이 리빌딩 구단에서 전력을 사 온다. 리그 트레이드 한도(20건) 안에서 */
@@ -182,6 +190,8 @@ function marketWeek(){ if(!tradeOpen()||G.gameOver)return; gmInit(); const per=p
   if(G.unemp)return;
   const teams=G.teams.filter(t=>t.id!==ME()); const t=pick(teams); const n=teamNeeds(t.id);
   if(n.weak.length&&R()<.6)wire('루머',`${t.city} ${t.nick} ${gmOf(t.id).name} 단장, ${SLOTK[n.weak[0]]} 보강을 추진 중이라는 소문입니다.`,{tid:t.id});
+  /* 운영 전략 소문: 다른 구단이 무엇을 모으는지 귀띔(난수 흐름을 건드리지 않게 날짜·구단 고정값) */
+  { const t2=teams[Math.floor(u01('plr'+G.year,G.day)*teams.length)], pl=planOf(t2); const L={build:`${tshort(t2.id)} 단장이 "베테랑은 값만 맞으면 내준다. 지명권과 어린 선수를 달라"고 했다는 이야기가 돕니다.`,tight:`${tshort(t2.id)}이(가) 연봉 큰 선수를 받아 줄 구단을 찾는다는 소문입니다.`,win:`${tshort(t2.id)}이(가) 유망주를 내주더라도 주전급을 데려오려 한다는 소문입니다.`,star:`${tshort(t2.id)} 구단주가 이름값 있는 선수를 원한다는 이야기가 돕니다.`}[pl]; if(L&&u01('plq'+G.year,G.day+t2.id)<.3)wire('루머',L,{tid:t2.id}); }
   if(R()<.25){ let best=null; for(const T of teams){ for(const p of domestic(G.user)){ if(p.ys||(p.joinY>G.year))continue; const v=tval(T,p,'in')-tradeNeed(T,0); if(v>=3&&(!best||v>best.v))best={T,p,v}; } }
     if(best)mail('운영팀',`${best.T.city} ${best.T.nick}, ${best.p.name}에 관심`,`${best.T.city} ${best.T.nick} ${gmOf(best.T.id).name} 단장이 ${best.p.name}(${posLabel(best.p)})에 관심을 보인다는 이야기가 들립니다. 시장 가치를 확인해 보세요.`,{kind:'트레이드',ref:best.p.id,face:best.p.id,acts:[{l:'시장 가치 보기',a:'findMine',v:best.p.id}]}); }
 }
@@ -197,7 +207,7 @@ function gmTurnover(){ gmInit(); const st=G.last&&G.last.order?G.last.order:null
   for(const t of G.teams){ if(t.id===ME())continue; /* 야인일 때 전 소속 구단도 새 단장이 성적으로 평가받는다 */ const g=gmOf(t.id); if(!g)continue; g.age++; const rk=st?st.findIndex(o=>o.tid===t.id)+1:5; const ten=G.year-g.since;
     const fire=expYr(t.id)?g.age>=64&&R()<.35:(rk>=8&&ten>=2&&R()<.4)||(rk>=6&&ten>=4&&R()<.2)||(g.age>=64&&R()<.35); /* 창단 유예 중인 신생 구단 단장은 성적으로 경질하지 않는다(89_league_expansion) */ if(!fire){ gmConRenew(g,rk,!!(G.last&&G.last.ps&&G.last.ps.champ===t.id)); continue; }
     const old=g.name;chron('fired',`${old} 단장 경질 · ${G.year}시즌 ${rk}위 · 재임 ${ten}년 · ${g.age}세`,null,t.id); const want=G.unemp?R()<clamp((G.rep-10)/60,.15,.85):(G.rep>=45&&R()<clamp((G.rep-35)/50,.2,.7)); /* 현직이어도 명성 45부터 다른 구단이 빼 오려 한다 */ if(want&&!G.gameOver&&!(G.unemp&&G.unemp.from===t.id)&&!G.jobs.some(j=>!j.done)){ t.gm={...mkGM(t.id),name:'단장대행',interim:true};chron('join','단장대행 취임 · 정식 후임 물색',null,t.id); jobOffer(t.id,false); wire('단장',`${t.city} ${t.nick}, ${old} 단장 경질. 후임을 물색 중입니다.`,{tid:t.id}); try{ gmFireNews(t,old,rk,ten,g.age,null); }catch(e){} }
-    else { const og=(()=>{ try{ return obAiGM(t.id); }catch(e){ return null; } })(); t.gm=og||mkGM(t.id);chron('join',`${t.gm.name} 단장 취임 · 전임 ${old} · ${GMT[t.gm.trait].l}`,null,t.id); if(!og)t.rel=clamp(Math.round(N(50,6)),35,65); wire('단장',`${t.city} ${t.nick}, ${old} 단장 후임으로 ${t.gm.name} 단장 선임 (${GMT[t.gm.trait].l})`,{tid:t.id}); try{ gmFireNews(t,old,rk,ten,g.age,t.gm); }catch(e){} } } }
+    else { const og=(()=>{ try{ return obAiGM(t.id); }catch(e){ return null; } })(); t.gm=og||mkGM(t.id);chron('join',`${t.gm.name} 단장 취임 · 전임 ${old} · ${GMT[t.gm.trait].l}`,null,t.id); if(!og)t.rel=clamp(Math.round(N(50,6)),35,65); if(t.plan)t.plan.free=1; /* 새 단장은 전임의 계획에 묶이지 않고 다음 점검 때 새로 짠다 */ wire('단장',`${t.city} ${t.nick}, ${old} 단장 후임으로 ${t.gm.name} 단장 선임 (${GMT[t.gm.trait].l})`,{tid:t.id}); try{ gmFireNews(t,old,rk,ten,g.age,t.gm); }catch(e){} } } }
 function jobOffer(tid,fired,terms,exp0){ const t=team(tid); terms=terms||myCOffer(tid,fired); if(personalBroke()){ const s=Math.max(GMC_MIN,Math.round(terms.sal*.9/10)*10); if(s<terms.sal)terms={...terms,sal:s,broke:terms.sal}; } /* 하한에 걸려 그대로면 낮췄다고 하지 않는다(검수 11-09zc). broke=원래 금액 */ /* 야인 생활비가 바닥나면 구단이 사정을 알고 10% 낮춰 부른다(11-09) */ G.jobs.push({tid,exp:G.day+(fired?20:exp0?20:12),fired:!!fired,done:false,terms,exp0:!!exp0});
   mail(`${t.city} ${t.nick} 구단주실`,`${t.city} ${t.nick} 단장직 제의`,`${t.city} ${t.nick} 구단주실입니다. 단장님의 운영을 지켜봐 왔습니다. 저희 구단의 새 단장을 맡아 주실 수 있겠습니까?${exp0?' 계약이 끝나는 때라 미리 연락드립니다.':''}\n제시 조건: 연봉 ${money(terms.sal)}, ${terms.yrs}년${terms.broke?` (생활비가 바닥난 사정을 알고 평소 ${money(terms.broke)}보다 낮게 불렀습니다)`:''}${!G.unemp&&G.myC&&G.myC.tid!=null&&G.myC.sal?` (지금 연봉 ${money(G.myC.sal)})`:''}\n${tname(tid)} · 지난 시즌 ${G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===tid)+1:'-'}위 · ${needText(tid)}\n${G.unemp?`수락하면 바로 ${t.city} ${t.nick}를 맡아 단장 경력을 다시 시작합니다.`:`수락하면 바로 ${t.city} ${t.nick}를 맡게 되고, 지금 구단과는 작별합니다.`}\n${jobBrief(tid).join(' · ')}`,
     {imp:true,kind:'경력',acts:[{l:`수락: ${t.city} ${t.nick}(으)로 이동`,a:'jobYes',v:tid},{l:'거절',a:'jobNo',v:tid}]}); }
