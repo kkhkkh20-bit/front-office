@@ -29456,6 +29456,9 @@ function cBefore(g,k){ const L=g.pbp; if(k<=0)return {sa:0,sh:0,outs:0,bases:[0,
   const s=pbpState(g,Math.min(k,L.length)-1); if(k<L.length&&L[k][0]!==s.half)return {sa:s.sa,sh:s.sh,outs:0,bases:[0,0,0],half:L[k][0]}; return s; }
 function cFielders(g,half,k){ return castLineup(g,half%2===0?'h':'a',k??0).filter(x=>CFP[x.pos]&&x.pos!=='P'); }
 function cCrowd(g){ let occ=0; try{ if(g.att&&g.cap)occ=g.att/g.cap; else{ const A=G.sea&&G.sea.att&&G.sea.att[g.home], cap=typeof stadCap==='function'?stadCap(g.home):0; if(A&&A.n&&cap)occ=A.sum/A.n/cap; } }catch(e){} return {home:cTeamCol(g.home),away:cTeamCol(g.away),occ:Math.round(Math.min(1,occ)*20)/20}; } /* 3D 관중: 팀 색·좌석 점유율(이 경기 기록이 없으면 올해 홈 평균) */
+/* 타구 도착점을 파울선 안쪽으로 당긴다(사용자 11-13: 1·3루수 앞 땅볼·번트·실책 타구가 파울 지역에 떨어지는데 인플레이로 처리돼, 파울 타구를 놓쳤는데 세이프가 되는 것처럼 보였다).
+   3D 좌표 변환(scene.mjs point)의 파울선: 내야(y>56)는 |x-50|=(89-y)*1.09, 외야는 *0.907 */
+function cFair(pt,margin=1.6){ const lim=Math.max(0,(89-pt[1])*(pt[1]>56?1.09:.907)-margin), dx=pt[0]-50; return Math.abs(dx)>lim?[50+Math.sign(dx)*lim,pt[1]]:pt; }
 function cTeamCol(tid){ const t=G.teams[tid]; return t?tpal(t)[3]:'#888'; }
 /* 새 기록의 송구 아웃 목적지를 우선하고, 옛 기록은 베이스·득점 변화로 복원한다. */
 function cRunnerMoves(g,k){const x=g.pbp[k];if(!x||typeof x[1]!=='number')return [];const before=cBefore(g,k),after=x[5],hr=x[3]==='HR',recorded=Array.isArray(x[14])?x[14]:[],moves=[];let scores=x[6]-(hr?1:0); let outsLeft=Math.max(0,(x[4]??0)-before.outs-(['OUT','K','SAC','DP'].includes(x[3])?1:0)); /* 이 플레이에서 실제로 늘어난 아웃만큼만 주자 아웃(끝내기에서 없던 주루사가 생기던 문제, 검수 11-08) */
@@ -29650,6 +29653,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
     else { const pp=G.players[x[2]]; const r=H('ot'), gbB=pp?gbT(pp)*.08:0; if(r<.45+gbB)opos=pk('gp',['SS','2B','3B','1B','SS','2B','P']); else if(r<.85){ opos=pk('fp',['LF','CF','RF','CF']); typ='fly'; } else { opos=pk('lp',['SS','2B','3B','1B']); typ='ld'; } }
     const base=CFP[opos]||CFP.SS; spot=[base[0]+rnd()*6-3,base[1]+rnd()*5-2.5]; const ofE=typ==='err'&&['LF','CF','RF'].includes(opos); arc=typ==='fly'||ofE; c.gb=typ==='gb'||(typ==='err'&&!ofE); c.errPos=typ==='err'?opos:null; flight=arc?950:typ==='ld'?380:560;
     kind=typ==='fly'?(x[6]>0?'희생플라이':'뜬공 아웃'):typ==='gb'&&x[6]>0&&o!=='DP'?(x[12]>0?'땅볼 타점':'땅볼 득점'):typ==='ld'?'직선타 아웃':typ==='err'?'실책':x[16]?'번트 실패 · 포스아웃':(o==='DP'?'병살타':'땅볼 아웃'); }
+  if(spot)spot=cFair(spot); /* 인플레이 타구는 늘 페어 지역에 떨어진다 */
   const cam=false,scene3d=c3DActive();
   { const seq=cPitchSeq(g,k); const fast=c.mode&&c.mode!=='all'; const show=fast&&!(g.incidents||[]).some(e=>e.k===k)?Math.min(2,seq.length):seq.length;
     const throwOne=async(q,i,last)=>{const delivery=pitchDelivery(G.players[x[2]]),pc=st.querySelector('.cc.pit'),sw=last?(o!=='BB'&&o!=='HBP'&&!/루킹/.test(q.res)):/헛스윙|파울/.test(q.res),stretch=true /* 주자가 없어도 모든 투구를 세트 포지션에서(사용자 11-12) */,wind=scene3d?(Math.round(Match3D.pitchReleaseMs(delivery,stretch))):(fast?150:220),travel=scene3d?Math.round(18.44/(Math.max(80,q.v)/3.6)*1000):(fast?240:300),lead=scene3d&&sw?Math.min(wind,Math.max(0,Match3D.swingContactMs()*.8-travel)):0; /* 스윙은 빠르게(접촉까지 약 0.75초), 동작 프레임은 클립을 촘촘히 다시 뽑아 부드럽게(사용자 피드백 11-07) */
