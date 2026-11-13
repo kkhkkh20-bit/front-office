@@ -15,6 +15,14 @@ const slotKey=n=>`${SAVE}-s${n}`;
    - 이 탭에서 쓴 본문은 메모리(SB)에 두고 읽는다. 부팅 때 idb 표시 슬롯이 있으면 IndexedDB에서 먼저 읽어 온 뒤 이어하기를 연다.
    - localStorage 쓰기가 다시 성공하면 그 슬롯은 localStorage로 돌아오고 IndexedDB 사본과 표시를 지운다. */
 const SB=new Map(), SB_SEQ={}; let SB_DB=null;
+/* 다른 사이트(itch 껍데기 등) 안에 끼워 열린 화면인가(카페 11-13 쌉싸코: 휴대폰에서 저장해도 다시 켜면 이어하기가 없음).
+   아이폰·아이패드(모든 브라우저가 WebKit)는 다른 사이트 안에서 쓴 저장을 그 사이트별로 따로 두고, 첫 화면으로 직접 방문한 기록이 없으면 7일 안에 지운다.
+   그래서 끼워 연 화면에서는 저장이 사라질 수 있다고 알리고, 이 주소를 새 창으로 바로 열게 한다 */
+function saveEmbedded(){ try{ return window.top!==window.self; }catch(e){ return true; } }
+function isIOSLike(){ try{ const u=navigator.userAgent||''; return /iP(hone|ad|od)/.test(u)||(/Macintosh/.test(u)&&(navigator.maxTouchPoints||0)>1); }catch(e){ return false; } }
+function saveEmbedBanner(){ if(!saveEmbedded())return ''; let url=''; try{ url=location.href.split('#')[0]; }catch(e){} return `<div class="note warn" role="alert" style="margin:0 0 12px">다른 사이트 안에서 열린 화면입니다. ${isIOSLike()?'아이폰·아이패드에서는':'일부 휴대폰 브라우저에서는'} 이 상태의 저장이 브라우저 정책으로 사라질 수 있습니다. 아래 버튼으로 게임 주소를 직접 열어 플레이하고, 중요한 진행은 설정의 '파일로 내보내기'로 백업하세요.<div class="row" style="margin-top:8px"><a class="btn small primary" href="${esc(url)}" target="_blank" rel="noopener">새 창에서 열기(저장 안전)</a></div></div>`; }
+/* 저장이 지워지지 않게 브라우저에 영구 보관을 요청한다(지원하는 브라우저만, 결과는 기록만) */
+let SAVE_PERSIST=null; function savePersistAsk(){ try{ if(navigator.storage&&navigator.storage.persist&&!saveEmbedded())navigator.storage.persist().then(v=>{ SAVE_PERSIST=!!v; }).catch(()=>{}); }catch(e){} }
 function sbOk(){ try{ return typeof indexedDB==='object'&&!!indexedDB&&typeof indexedDB.open==='function'; }catch(e){ return false; } }
 function sbIdb(){ if(SB_DB)return SB_DB; SB_DB=new Promise((res,rej)=>{ try{ const r=indexedDB.open('danjang-saves',1); r.onupgradeneeded=()=>{ try{ r.result.createObjectStore('slots'); }catch(e){} }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); r.onblocked=()=>rej(new Error('blocked')); }catch(e){ rej(e); } }); SB_DB.catch(()=>{ SB_DB=null; }); return SB_DB; }
 function sbTx(mode,fn){ return sbIdb().then(db=>new Promise((res,rej)=>{ let out; const tx=db.transaction('slots',mode); const rq=fn(tx.objectStore('slots')); if(rq)rq.onsuccess=()=>{ out=rq.result; }; tx.oncomplete=()=>res(out); tx.onerror=()=>rej(tx.error); tx.onabort=()=>rej(tx.error||new Error('abort')); })); }

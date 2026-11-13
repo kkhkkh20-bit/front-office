@@ -11,6 +11,7 @@ function render(){const app=document.getElementById('app');try{uiSaveSync();}cat
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
+  if(saveEmbedded()&&!UI._embWarn){ UI._embWarn=1; setTimeout(()=>{ try{ toast('다른 사이트 안에서 열린 화면이라 휴대폰에서는 저장이 사라질 수 있습니다. 처음 화면의 "새 창에서 열기"로 직접 열어 주세요.'); }catch(e){} },400); } /* 카페 11-13: 끼워 연 화면 저장 유실 */
   try{ annCheck(); }catch(e){} try{ ibAutoRead(); }catch(e){}
   setTimeout(()=>{ try{ document.querySelectorAll('nav.subtabs,.itabs,.tstrip').forEach(n=>{ const ov=n.scrollWidth>n.clientWidth+2; n.classList.toggle('ovx',ov); const b=n.querySelector('button.on'); if(ov&&b)n.scrollLeft=Math.max(0,b.offsetLeft-n.clientWidth/2+b.offsetWidth/2); }); }catch(e){} },0);
   setTimeout(()=>{ try{ campAfter(); if(UI.facFocus){ const el=document.getElementById('fci-'+UI.facFocus); UI.facFocus=null; if(el){ el.scrollIntoView({block:'center'}); el.classList.add('flash'); } } }catch(e){} try{ document.querySelectorAll('.chips').forEach(el=>el.classList.toggle('ovf',el.scrollWidth>el.clientWidth+2)); }catch(e){} try{ document.querySelectorAll('[data-snap]').forEach(w=>{ const r=w.querySelector('tr.now'); if(r&&!w.scrollTop)w.scrollTop=Math.max(0,r.offsetTop-w.clientHeight/3); }); }catch(e){} },0); /* data-snap: PC 시즌 일정 표를 다음 경기 근처로 */
@@ -189,7 +190,8 @@ function creditsLine(noNote){ /* noNote: 바로 위에 비제휴 고지가 이�
   <p>그 밖의 그림과 게임 코드는 이 게임을 위해 만들었습니다. 선수·스태프·팬 얼굴, 유니폼, 관중석 등 인물 그림은 이미지 생성 도구로 만든 가상 인물입니다.</p>
   ${TELE.ga||TELE.ph?`<p><b>개인정보</b> · ${telePrivacyTxt()}</p>`:''}
   <button class="lnk" data-a="licShow">${UI.licOpen?'라이선스 전문 닫기':'라이선스 전문 보기'}</button>${UI.licOpen?licBody():''}</div></details>`; }
-function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const live=G&&!SAVE_CONFL&&slotHas(curSlot())&&revOf(m,curSlot())===SLOT_REV, cs=live?null:G&&slotHas(curSlot())?curSlot():contSlot(m); /* 다른 탭이 그사이 저장하거나 지운 슬롯은 저장소 기준으로 표시(검수 11-09zr #6) */ /* 이어하기가 실제로 여는 것과 같은 대상을 표시한다(검수 11-09 #8): 이 탭 게임, 충돌 뒤엔 이 탭 슬롯의 최신 저장, 없으면 본문이 남은 슬롯 */
+function startScreen(){ const h=startScreen0(); return (UI.sstep||'main')==='main'?saveEmbedBanner()+h:h; }
+function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G&&!SAVE_CONFL&&slotHas(curSlot())&&revOf(m,curSlot())===SLOT_REV, cs=live?null:G&&slotHas(curSlot())?curSlot():contSlot(m); /* 다른 탭이 그사이 저장하거나 지운 슬롯은 저장소 기준으로 표시(검수 11-09zr #6) */ /* 이어하기가 실제로 여는 것과 같은 대상을 표시한다(검수 11-09 #8): 이 탭 게임, 충돌 뒤엔 이 탭 슬롯의 최신 저장, 없으면 본문이 남은 슬롯 */
   const act=live?{tid:G.user,date:dstr(G.day)}:cs!=null?(m.slots[cs]||{name:`슬롯 ${cs}`}):null; const canCont=!!act;
   const foot=`<p class="small muted" style="margin-top:14px">${NOT_AFFIL} 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
   const back=(v,l)=>`<button class="lnk tsback" data-a="tsGo" data-v="${v}">← ${l}</button>`;

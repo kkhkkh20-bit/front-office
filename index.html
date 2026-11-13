@@ -25762,6 +25762,14 @@ const slotKey=n=>`${SAVE}-s${n}`;
    - 이 탭에서 쓴 본문은 메모리(SB)에 두고 읽는다. 부팅 때 idb 표시 슬롯이 있으면 IndexedDB에서 먼저 읽어 온 뒤 이어하기를 연다.
    - localStorage 쓰기가 다시 성공하면 그 슬롯은 localStorage로 돌아오고 IndexedDB 사본과 표시를 지운다. */
 const SB=new Map(), SB_SEQ={}; let SB_DB=null;
+/* 다른 사이트(itch 껍데기 등) 안에 끼워 열린 화면인가(카페 11-13 쌉싸코: 휴대폰에서 저장해도 다시 켜면 이어하기가 없음).
+   아이폰·아이패드(모든 브라우저가 WebKit)는 다른 사이트 안에서 쓴 저장을 그 사이트별로 따로 두고, 첫 화면으로 직접 방문한 기록이 없으면 7일 안에 지운다.
+   그래서 끼워 연 화면에서는 저장이 사라질 수 있다고 알리고, 이 주소를 새 창으로 바로 열게 한다 */
+function saveEmbedded(){ try{ return window.top!==window.self; }catch(e){ return true; } }
+function isIOSLike(){ try{ const u=navigator.userAgent||''; return /iP(hone|ad|od)/.test(u)||(/Macintosh/.test(u)&&(navigator.maxTouchPoints||0)>1); }catch(e){ return false; } }
+function saveEmbedBanner(){ if(!saveEmbedded())return ''; let url=''; try{ url=location.href.split('#')[0]; }catch(e){} return `<div class="note warn" role="alert" style="margin:0 0 12px">다른 사이트 안에서 열린 화면입니다. ${isIOSLike()?'아이폰·아이패드에서는':'일부 휴대폰 브라우저에서는'} 이 상태의 저장이 브라우저 정책으로 사라질 수 있습니다. 아래 버튼으로 게임 주소를 직접 열어 플레이하고, 중요한 진행은 설정의 '파일로 내보내기'로 백업하세요.<div class="row" style="margin-top:8px"><a class="btn small primary" href="${esc(url)}" target="_blank" rel="noopener">새 창에서 열기(저장 안전)</a></div></div>`; }
+/* 저장이 지워지지 않게 브라우저에 영구 보관을 요청한다(지원하는 브라우저만, 결과는 기록만) */
+let SAVE_PERSIST=null; function savePersistAsk(){ try{ if(navigator.storage&&navigator.storage.persist&&!saveEmbedded())navigator.storage.persist().then(v=>{ SAVE_PERSIST=!!v; }).catch(()=>{}); }catch(e){} }
 function sbOk(){ try{ return typeof indexedDB==='object'&&!!indexedDB&&typeof indexedDB.open==='function'; }catch(e){ return false; } }
 function sbIdb(){ if(SB_DB)return SB_DB; SB_DB=new Promise((res,rej)=>{ try{ const r=indexedDB.open('danjang-saves',1); r.onupgradeneeded=()=>{ try{ r.result.createObjectStore('slots'); }catch(e){} }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); r.onblocked=()=>rej(new Error('blocked')); }catch(e){ rej(e); } }); SB_DB.catch(()=>{ SB_DB=null; }); return SB_DB; }
 function sbTx(mode,fn){ return sbIdb().then(db=>new Promise((res,rej)=>{ let out; const tx=db.transaction('slots',mode); const rq=fn(tx.objectStore('slots')); if(rq)rq.onsuccess=()=>{ out=rq.result; }; tx.oncomplete=()=>res(out); tx.onerror=()=>rej(tx.error); tx.onabort=()=>rej(tx.error||new Error('abort')); })); }
@@ -26063,6 +26071,7 @@ function render(){const app=document.getElementById('app');try{uiSaveSync();}cat
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
+  if(saveEmbedded()&&!UI._embWarn){ UI._embWarn=1; setTimeout(()=>{ try{ toast('다른 사이트 안에서 열린 화면이라 휴대폰에서는 저장이 사라질 수 있습니다. 처음 화면의 "새 창에서 열기"로 직접 열어 주세요.'); }catch(e){} },400); } /* 카페 11-13: 끼워 연 화면 저장 유실 */
   try{ annCheck(); }catch(e){} try{ ibAutoRead(); }catch(e){}
   setTimeout(()=>{ try{ document.querySelectorAll('nav.subtabs,.itabs,.tstrip').forEach(n=>{ const ov=n.scrollWidth>n.clientWidth+2; n.classList.toggle('ovx',ov); const b=n.querySelector('button.on'); if(ov&&b)n.scrollLeft=Math.max(0,b.offsetLeft-n.clientWidth/2+b.offsetWidth/2); }); }catch(e){} },0);
   setTimeout(()=>{ try{ campAfter(); if(UI.facFocus){ const el=document.getElementById('fci-'+UI.facFocus); UI.facFocus=null; if(el){ el.scrollIntoView({block:'center'}); el.classList.add('flash'); } } }catch(e){} try{ document.querySelectorAll('.chips').forEach(el=>el.classList.toggle('ovf',el.scrollWidth>el.clientWidth+2)); }catch(e){} try{ document.querySelectorAll('[data-snap]').forEach(w=>{ const r=w.querySelector('tr.now'); if(r&&!w.scrollTop)w.scrollTop=Math.max(0,r.offsetTop-w.clientHeight/3); }); }catch(e){} },0); /* data-snap: PC 시즌 일정 표를 다음 경기 근처로 */
@@ -26241,7 +26250,8 @@ function creditsLine(noNote){ /* noNote: 바로 위에 비제휴 고지가 이�
   <p>그 밖의 그림과 게임 코드는 이 게임을 위해 만들었습니다. 선수·스태프·팬 얼굴, 유니폼, 관중석 등 인물 그림은 이미지 생성 도구로 만든 가상 인물입니다.</p>
   ${TELE.ga||TELE.ph?`<p><b>개인정보</b> · ${telePrivacyTxt()}</p>`:''}
   <button class="lnk" data-a="licShow">${UI.licOpen?'라이선스 전문 닫기':'라이선스 전문 보기'}</button>${UI.licOpen?licBody():''}</div></details>`; }
-function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const live=G&&!SAVE_CONFL&&slotHas(curSlot())&&revOf(m,curSlot())===SLOT_REV, cs=live?null:G&&slotHas(curSlot())?curSlot():contSlot(m); /* 다른 탭이 그사이 저장하거나 지운 슬롯은 저장소 기준으로 표시(검수 11-09zr #6) */ /* 이어하기가 실제로 여는 것과 같은 대상을 표시한다(검수 11-09 #8): 이 탭 게임, 충돌 뒤엔 이 탭 슬롯의 최신 저장, 없으면 본문이 남은 슬롯 */
+function startScreen(){ const h=startScreen0(); return (UI.sstep||'main')==='main'?saveEmbedBanner()+h:h; }
+function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G&&!SAVE_CONFL&&slotHas(curSlot())&&revOf(m,curSlot())===SLOT_REV, cs=live?null:G&&slotHas(curSlot())?curSlot():contSlot(m); /* 다른 탭이 그사이 저장하거나 지운 슬롯은 저장소 기준으로 표시(검수 11-09zr #6) */ /* 이어하기가 실제로 여는 것과 같은 대상을 표시한다(검수 11-09 #8): 이 탭 게임, 충돌 뒤엔 이 탭 슬롯의 최신 저장, 없으면 본문이 남은 슬롯 */
   const act=live?{tid:G.user,date:dstr(G.day)}:cs!=null?(m.slots[cs]||{name:`슬롯 ${cs}`}):null; const canCont=!!act;
   const foot=`<p class="small muted" style="margin-top:14px">${NOT_AFFIL} 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
   const back=(v,l)=>`<button class="lnk tsback" data-a="tsGo" data-v="${v}">← ${l}</button>`;
@@ -36041,6 +36051,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-13-saveembed',d:'11월 13일',t:'휴대폰 저장 안내',items:[
+    '다른 사이트(itch 등) 안에 끼워 열린 화면이면 처음 화면에 안내와 "새 창에서 열기" 버튼이 나옵니다. 휴대폰(특히 아이폰)은 이런 화면의 저장을 브라우저 정책으로 지울 수 있으니, 게임 주소를 직접 열어 플레이하고 중요한 진행은 파일로 내보내 두세요.',
+    '지원하는 브라우저에서는 저장이 정리되지 않게 영구 보관을 요청합니다.']},
   {id:'2026-11-13-mobile2',d:'11월 13일',t:'휴대폰 화면 정리',items:[
     '휴대폰에서 화면 제목과 진행 버튼 문구가 잘리지 않게 줄였습니다. 옆으로 넘치는 탭 줄은 가장자리가 흐려져 더 있음을 알려 주고, 고른 탭이 화면 안으로 옵니다.',
     '트레이드 협상의 제안하기·비우기 버튼이 늘 아래에 붙어 보이고, 정렬 버튼이 두 줄로 깨지지 않습니다. 선수단 목록에서 이름과 FA 예정·포스팅 후보 표시가 잘리지 않습니다.',
@@ -37802,6 +37815,7 @@ render(); /* 공간이 빠듯하면(본문 합계 약 3MB 이상) 진행 중이 
 let DL=null; try{ if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{ DL=d; if(G&&UI.tab==='club')render(); }).catch(()=>{}); }catch(e){}
 /* IndexedDB에 둔 슬롯이 있으면 먼저 읽어 온 뒤 연다. 없으면 예전처럼 바로 연다(사용자 11-12) */
 if(sbNeedBoot())sbRefresh().catch(()=>{}).then(bootLoad); else bootLoad();
+try{ savePersistAsk(); }catch(e){} /* 저장 영구 보관 요청(모바일 정리로 지워지지 않게) */
 
 try{performance.mark('fronttime-menu-ready');}catch(e){}
 </script>

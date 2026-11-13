@@ -7,5 +7,6 @@ render(); /* 공간이 빠듯하면(본문 합계 약 3MB 이상) 진행 중이 
 let DL=null; try{ if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{ DL=d; if(G&&UI.tab==='club')render(); }).catch(()=>{}); }catch(e){}
 /* IndexedDB에 둔 슬롯이 있으면 먼저 읽어 온 뒤 연다. 없으면 예전처럼 바로 연다(사용자 11-12) */
 if(sbNeedBoot())sbRefresh().catch(()=>{}).then(bootLoad); else bootLoad();
+try{ savePersistAsk(); }catch(e){} /* 저장 영구 보관 요청(모바일 정리로 지워지지 않게) */
 
 try{performance.mark('fronttime-menu-ready');}catch(e){}
