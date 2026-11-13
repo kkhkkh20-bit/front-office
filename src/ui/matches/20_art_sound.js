@@ -37,10 +37,12 @@ function sndSynth(c){ const sr=c.sampleRate, mk=(sec,fn,ch=1)=>{ const n=Math.fl
   SND.buf.cheer_big=crowd(4.5,f=>Math.min(1,f/.08)*(f<.5?1:Math.pow((1-f)/.5,1.2)),.9);
   /* 배경 웅성임·득점권 응원 반복음은 바람 소리처럼 들려 뺐다(사용자 11-08). 안타·홈런 함성만 짧게 */
 }
-function sndReady(){ if(!sndOn())return null; sndInit(); const c=SND.ctx; if(!c)return null; if(c.state==='suspended')c.resume(); return c; }
-function sfx(k,vol,rate){ const c=sndReady(); if(!c||!SND.buf[k])return null; const s=c.createBufferSource(); s.buffer=SND.buf[k]; if(rate)s.playbackRate.value=rate;
+/* 실제 녹음 효과음(CC0, Freesound. 출처는 assets/match3d/audio/README.md): 경기 화면 3D 묶음에 들어 있어 받아지면 합성음을 대신한다. 못 받으면 합성음 그대로 */
+function sndFiles(c){ if(SND.files||typeof Match3D==='undefined'||typeof Match3D.audioData!=='function')return; SND.files=Promise.resolve(Match3D.audioData()).then(async raw=>{ for(const [k,buf] of Object.entries(raw||{})){ try{ SND.buf[k]=await c.decodeAudioData(buf.slice(0)); }catch(e){} } if(SND.buf.amb1){ SND.buf.amb=SND.buf.amb1; if(UI.cast?.play&&!SND.loops.amb)sndLoop('amb','amb',.4,1.2); } }).catch(()=>{ SND.files=null; }); }
+function sndReady(){ if(!sndOn())return null; sndInit(); const c=SND.ctx; if(!c)return null; if(c.state==='suspended')c.resume(); sndFiles(c); return c; }
+function sfx(k,vol,rate){ if((k==='cheer_hit'||k==='cheer_big')&&typeof Match3D!=='undefined'&&Match3D.cheer)Match3D.cheer(k==='cheer_big'?1:.55,(vol==null?1:vol)>=.5); /* 함성이 날 때 3D 관중도 일어난다. 음량이 큰 쪽이 홈 공격(호출부 규칙) */ const c=sndReady(); if(k==='mitt'&&SND.buf.mitt1)k=Math.random()<.5?'mitt1':'mitt2'; /* 녹음 미트 두 가지를 번갈아 */ if(!c||!SND.buf[k])return null; const s=c.createBufferSource(); s.buffer=SND.buf[k]; if(rate)s.playbackRate.value=rate;
   const g=c.createGain(); g.gain.value=vol??1; s.connect(g); g.connect(SND.master); s.start(); return {s,g}; }
-function sndLoop(name,k,vol,fade){ if(SND.loops[name]&&SND.loops[name].k===k)return; sndStop(name,.2); const c=sndReady(); if(!c||!SND.buf[k])return; const s=c.createBufferSource(); s.buffer=SND.buf[k]; s.loop=true;
+function sndLoop(name,k,vol,fade){ if(SND.loops[name]&&SND.loops[name].k===k)return; sndStop(name,.2); const c=sndReady(); if(!c||!SND.buf[k])return; const s=c.createBufferSource(); s.buffer=SND.buf[k]; s.loop=true; if(s.buffer.duration>4){ s.loopStart=.06; s.loopEnd=s.buffer.duration-.06; } /* mp3 앞뒤 인코더 여백을 건너뛰어 이음매 없이 반복 */
   const g=c.createGain(); g.gain.setValueAtTime(0,c.currentTime); g.gain.linearRampToValueAtTime(vol,c.currentTime+(fade??.8)); s.connect(g); g.connect(SND.master); s.start(); SND.loops[name]={s,g,k}; }
 function sndStop(name,fade){ const L=SND.loops[name]; if(!L||!SND.ctx)return; const c=SND.ctx; const f=fade??.6; try{ L.g.gain.cancelScheduledValues(c.currentTime); L.g.gain.setValueAtTime(L.g.gain.value,c.currentTime); L.g.gain.linearRampToValueAtTime(0,c.currentTime+f); L.s.stop(c.currentTime+f+.05); }catch(e){} delete SND.loops[name]; }
 function sndStopAll(){ for(const k in SND.loops)sndStop(k,.3); try{ window.speechSynthesis&&speechSynthesis.cancel(); }catch(e){} }
@@ -55,7 +57,8 @@ function siren(){ const c=sndReady(); if(!c)return; const t=c.currentTime; const
   o.frequency.setValueAtTime(380,t); o.frequency.linearRampToValueAtTime(620,t+.9); o.frequency.linearRampToValueAtTime(560,t+1.8);
   g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.12,t+.15); g.gain.setValueAtTime(.12,t+1.4); g.gain.linearRampToValueAtTime(0,t+1.9); o.connect(lp); lp.connect(g); g.connect(SND.master); o.start(t); o.stop(t+2); }
 /* 심판 콜: 한국어 음성 합성(스트라이크 아웃·아웃·세이프)은 쓰지 않는다. 판정은 화면 자막과 효과음으로만 전한다(사용자 11-11). 부르는 곳은 그대로 둔다 */
-function umpCall(){}
+/* 심판 콜: 음성은 없고(녹음 에셋 없음), 3D 중계에서는 주심이 오른팔을 들어 올린다. 세이프는 동작 없음 */
+function umpCall(t){ if(typeof Match3D==='undefined'||typeof Match3D.umpireCall!=='function')return; if(/스트라이크|아웃|세이프|파울/.test(t||''))Match3D.umpireCall(/스트라이크 아웃/.test(t)?'strikeout':/스트라이크/.test(t)?'strike':/세이프/.test(t)?'safe':/파울/.test(t)?'foul':'out'); }
 function buzz(ms){ try{ if(navigator.vibrate)navigator.vibrate(ms); }catch(e){} }
 addEventListener('pointerdown',()=>{ if(sndOn())sndInit(); if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume(); },{passive:true});
 

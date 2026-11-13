@@ -1,10 +1,13 @@
 const fs=require('node:fs'),path=require('node:path'),esbuild=require('esbuild');
-const {modelFiles}=require('./match3d-assets.cjs');
+const {modelFiles,audioFiles}=require('./match3d-assets.cjs');
 function buildMatch3d(root,manifest,{embedded=true}={}){
  const bytes=p=>fs.readFileSync(p).toString('base64'),dir=path.join(root,'assets/match3d'),three=path.join(__dirname,'node_modules/three');
  const assets={};for(const file of modelFiles(root))assets[file.key]=embedded?bytes(file.source):{url:'./'+file.filename,bytes:file.bytes};
+ assets.audio=Object.fromEntries(audioFiles(root).map(f=>[f.key,embedded?bytes(f.source):{url:'./'+f.filename,bytes:f.bytes}]));
  assets.events=JSON.parse(fs.readFileSync(path.join(dir,'animation-events.json'),'utf8'));
  assets.gear=JSON.parse(fs.readFileSync(path.join(dir,'gear_defaults.json'),'utf8'));
+ /* 원본에 없는 동작: CMU 모션캡처를 같은 골격으로 옮긴 클립(tools/match3d-cmu-clip.cjs) */
+ assets.clips=fs.readdirSync(dir).filter(f=>/^clip-.*\.json$/.test(f)).sort().map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')));
  assets.basisJS=fs.readFileSync(path.join(three,'examples/jsm/libs/basis/basis_transcoder.js'),'utf8');assets.basisWasm=bytes(path.join(three,'examples/jsm/libs/basis/basis_transcoder.wasm'));
  return esbuild.buildSync({absWorkingDir:root,entryPoints:[manifest.bundles.scene3d[0]],bundle:true,write:false,format:'iife',globalName:'Match3D',platform:'browser',target:'es2020',minify:true,nodePaths:[path.join(__dirname,'node_modules')],define:{FO3D_PACK:JSON.stringify(assets)},banner:{js:'/*\n'+fs.readFileSync(path.join(root,'docs/licenses/match3d.txt'),'utf8')+'\n*/'},legalComments:'eof'}).outputFiles[0].text.replace(/<\/script/gi,'<\\/script').replace(/[ \t]+$/gm,'');
 }

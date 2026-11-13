@@ -2,21 +2,25 @@ import {LoopOnce,LoopRepeat,AnimationClip} from 'three';
 // Keep the original rig and four deliveries; re-time their load, plant and release phases.
 // 와인드업은 다리를 허리 높이로 든 자세(원본 손 분리 직전 구간)를 늘려 균형 잡는 순간을 보여 준다.
 export function retimeBaseballClips(clips,events){const updated={...events},result=clips.map(source=>{
- let knots;if(source.name==='swing'){const contact=events.swing.contact;knots=[[0,0],[contact*.45,.48],[contact*.78,.74],[contact,.90],[source.duration,1.52]];updated.swing={...events.swing,contact:.90};}
- else if(/^pitch_.*_(windup|stretch)$/.test(source.name)){const e=events[source.name];if(!e)return source;const stretch=source.name.endsWith('stretch'),hand=stretch?.34:.64,plant=stretch?.60:1.01,release=stretch?.79:1.23,end=stretch?1.48:2.02;knots=[[0,0],...(stretch?[]:[[e.hand_break*.51,hand*.34],[e.hand_break*.87,hand*.9]]),[e.hand_break,hand],[e.foot_plant,plant],[e.release,release],[source.duration,end]];updated[source.name]={...e,hand_break:hand,foot_plant:plant,release};}
+ let knots;if(source.name==='swing'){const contact=events.swing.contact;knots=[[0,0],[contact*.45,.48],[contact*.78,.68],[contact,.90],[source.duration,1.52]];updated.swing={...events.swing,contact:.90,foot_down:.69}; /* 앞발 착지 .69→임팩트 .90 = 210ms(교본 211ms). 예전 .74는 150ms라 몸을 내밀며 쳤다 */}
+ else if(/^pitch_.*_(windup|stretch)$/.test(source.name)){const e=events[source.name];if(!e)return source;const stretch=source.name.endsWith('stretch'),hand=stretch?.34:.64,release=stretch?.79:1.23,plant=release-.145 /* 디딤발 착지→공 놓기 145ms(교본: Fleisig 계열 측정, docs/asset-research/2026-11-12-mechanics). 예전 220ms는 팔이 느려 힘없어 보였다 */,end=stretch?1.48:2.02;knots=[[0,0],...(stretch?[]:[[e.hand_break*.51,hand*.34],[e.hand_break*.87,hand*.9]]),[e.hand_break,hand],[e.foot_plant,plant],[e.release,release],[source.duration,end]];updated[source.name]={...e,hand_break:hand,foot_plant:plant,release};}
  if(!knots)return source;const map=t=>{let i=1;while(i<knots.length-1&&t>knots[i][0])i++;const [a,x]=knots[i-1],[b,y]=knots[i];return x+(y-x)*Math.max(0,Math.min(1,(t-a)/Math.max(1e-6,b-a)));};const clip=source.clone();for(const track of clip.tracks)track.times=Float32Array.from(track.times,map);clip.duration=knots.at(-1)[1];return clip;
  });return {clips:result,events:updated};}
-export function idleClip(a){return a.role==='batter'?'batting_stance':a.role==='catcher'?'catcher_crouch':a.role==='runner'?'idle':a.pitcher?'pitcher_set':'field_ready';}
-export function advanceActor(a,now){const dt=Math.max(0,(now-(a.updatedAt??now))/1000);a.updatedAt=now;if(a.action&&(!a.action.paused||a.blendUntil))a.mixer.update(dt);if(a.blendUntil&&now>=a.blendUntil)a.blendUntil=0;if(a.returnAt&&now>=a.returnAt){a.returnAt=0;playPose(a,idleClip(a),{freeze:true,fade:.16});}}
+export function idleClip(a){return a.role==='batter'?'batting_stance':a.role==='catcher'?'catcher_crouch':a.role==='runner'?'idle':a.pitcher?'pitcher_set':a.zone==='of'?'field_ready_outfield':'field_ready_infield';} /* 내야·외야 준비 자세(원본 클립) */
+/* 보정(post)은 클립 자세 위에 회전을 덧붙인다. 믹서는 값이 지난 프레임과 같은 뼈는 다시 쓰지 않으므로, 그대로 두면 클립에서 멈춰 있는 뼈에 보정이 매 프레임 누적된다(실제 재생에서 1루수 몸이 접히던 문제).
+   그래서 보정 직전 자세를 저장해 두었다가 다음 갱신 전에 되돌린다 */
+export function updatePose(a,dt){const base=a._poseBase;if(base)for(const e of base){e[0].quaternion.copy(e[1]);e[0].position.copy(e[2]);}a.mixer.update(dt);if(!a.post)return;
+ if(!a._poseBase){a._poseBase=[];a.model.traverse(o=>{if(o.isBone)a._poseBase.push([o,o.quaternion.clone(),o.position.clone()]);});}for(const e of a._poseBase){e[1].copy(e[0].quaternion);e[2].copy(e[0].position);}a.post(a);}
+export function advanceActor(a,now){const dt=Math.max(0,(now-(a.updatedAt??now))/1000);a.updatedAt=now;if(a.action&&(!a.action.paused||a.blendUntil))updatePose(a,dt); /* post: 클립이 만든 자세 위에 덧붙이는 보정(투구 역학) */if(a.blendUntil&&now>=a.blendUntil)a.blendUntil=0;if(a.returnAt&&now>=a.returnAt){a.returnAt=0;playPose(a,idleClip(a),{freeze:true,fade:.16});}}
 export function playPose(a,name,{freeze=false,loop=false,rate=1,fade=.12,returnIdle=false}={}){
  const clip=AnimationClip.findByName(a.clips,name)||AnimationClip.findByName(a.clips,'idle');if(!clip)return null;
  const now=performance.now();advanceActor(a,now);
  // A seek/cancel is immediate: fading clips must not keep twisting the frozen pose.
- if(freeze&&fade===0){a.mixer.stopAllAction();a.blendUntil=0;}
+ if(freeze&&fade===0){const base=a._poseBase;if(base)for(const e of base){e[0].quaternion.copy(e[1]);e[0].position.copy(e[2]);}a.mixer.stopAllAction();a.blendUntil=0;if(base)for(const e of base){e[1].copy(e[0].quaternion);e[2].copy(e[0].position);}} /* 완전히 끊고 새로 시작: 보정을 걷어낸 뒤 멈추고, 저장값도 믹서가 되돌린 자세로 새로 맞춘다 */
  const previous=a.action,action=a.mixer.clipAction(clip);
  if(previous===action&&loop&&!action.paused&&action.isRunning()){action.setEffectiveTimeScale(rate);return action;}
  action.stopFading().stopWarping().reset().setEffectiveTimeScale(rate).setEffectiveWeight(1).setLoop(loop?LoopRepeat:LoopOnce,loop?Infinity:1);action.clampWhenFinished=true;action.play();
  if(previous&&previous!==action&&fade>0){previous.fadeOut(fade);action.fadeIn(fade);a.blendUntil=now+fade*1000;}else if(previous&&previous!==action)previous.stop();
  a.motionHistory=(a.motionHistory||[]).concat({name,at:now}).slice(-16);a.action=action;a.motion=name;a.release=null;a.returnAt=returnIdle?now+clip.duration/rate*1000:0;
- if(freeze){a.mixer.update(.04);action.paused=true;}return action;
+ if(freeze){updatePose(a,.04);action.paused=true;}return action;
 }

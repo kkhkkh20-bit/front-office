@@ -23,6 +23,11 @@
 
 - 3D 선수·구장: Claudeball(Taylor Beeston, MIT). 인체 메시·머리카락·눈·피부 텍스처는 MakeHuman/MPFB2 에셋(CC0 1.0), 재질 텍스처는 ambientCG(CC0 1.0), 애니메이션은 원작자가 Blender 파이썬 스크립트로 직접 만든 것입니다. 골격 이름 `mixamorig:*`는 이름 규칙만 따른 것이고 Mixamo 애니메이션은 쓰지 않았습니다. 자세한 내용은 [assets/match3d/README.md](assets/match3d/README.md).
 
+## 동작·효과음 추가 출처
+
+- 번트 동작: CMU Graphics Lab Motion Capture Database(http://mocap.cs.cmu.edu), 피험자 124 기록 08. CMU FAQ: "The motion capture data may be copied, modified, or redistributed without permission." 원본은 `assets/match3d/cmu/`, 변환 도구는 `tools/match3d-cmu-clip.cjs`. The data used in this project was obtained from mocap.cs.cmu.edu. (CMU 사이트 안내: 데이터 수집은 NSF Grant #0196217 지원)
+- 중계 효과음(타격음·미트·관중 웅성임·탄식·뜬공 반응): Freesound의 CC0 녹음(martinimeniscus, craigsmith, Douglas711, ShangusBurger). 파일별 원본과 처리 내용은 [assets/match3d/audio/README.md](assets/match3d/audio/README.md).
+
 ## 글꼴
 
 | 항목 | 라이선스 | 쓰는 곳 | 전문 |

@@ -51,7 +51,7 @@ function cPrepDone(ok){const c=UI.cast;if(!c?.pre)return;if(!ok){cPrepClose(c);r
  const t0=c.preAt||Date.now();setTimeout(()=>{if(UI.cast===c&&c.pre)A.castStart();},Math.max(1200,6000-(Date.now()-t0)));}
 function cPrepClose(c){c.pre=0;document.getElementById('cs-3d')?.removeAttribute('data-pre');}
 /* 휴대폰 중계는 화면 세로에 딱 맞춘다(사용자 11-05: 드래그하지 않게): 중계 판 위쪽부터 아래 탭바 위까지 */
-function castFit(){ try{ const el=document.querySelector('.cast.match-dashboard'); if(!el)return; if(innerWidth>1000){ if(el.style.height){ el.style.height=''; el.style.minHeight=''; } return; }
+function castFit(){ try{ const el=document.querySelector('.cast.match-dashboard'); if(!el)return; mdBugPlace(); if(innerWidth>1000){ if(el.style.height){ el.style.height=''; el.style.minHeight=''; } return; }
   const host=el.closest('#sheet'),bn=document.querySelector('.bnav'),bh=bn&&getComputedStyle(bn).display!=='none'?bn.getBoundingClientRect().height:0;
   const room=host?host.clientHeight:innerHeight-el.getBoundingClientRect().top-bh;
   const h=Math.max(0,Math.floor(room))+'px'; if(el.style.height!==h||el.style.minHeight!=='0px'){el.style.height=h;el.style.minHeight='0px';} /* 가로 모드의 420px 최소 높이가 재생 탐색 줄을 화면 아래로 밀지 않게 */ }catch(e){} }

@@ -25,7 +25,7 @@ export function catcherThrow(source,crouch){
 export const FOLLOW_FLEX=1.05; /* 투구 뒤 상체를 더 깊게 숙인다(사용자 피드백 11-07) */
 export function pitchFollowThrough(source,release){const axis=new Vector3(1,0,0),q=new Quaternion(),turn=new Quaternion(),weights={Spine:.3,Spine1:.35,Spine2:.35},ramp=.22;
  const tracks=source.tracks.map(track=>{const joint=track.name.match(/(Spine[12]?)\.quaternion$/)?.[1];if(!joint)return track;const grid=[];for(let t=release;t<source.duration;t+=1/30)grid.push(t);const times=[...new Set([...track.times,...grid,source.duration])].filter(t=>t<=source.duration).sort((a,b)=>a-b),values=times.flatMap(t=>valuesAt(track,t));
-  for(let i=0;i<times.length;i++){const k=smooth((times[i]-release)/ramp);if(!k)continue;q.fromArray(values,i*4);q.multiply(turn.setFromAxisAngle(axis,FOLLOW_FLEX*weights[joint]*k)).normalize().toArray(values,i*4);}
+  for(let i=0;i<times.length;i++){const k=smooth((times[i]-release)/ramp)*(1-.65*smooth((times[i]-release-.3)/.4));if(!k)continue; /* 깊이 숙였다가 0.3초 뒤부터 일어나 수비 준비 자세로(끝까지 숙이면 쪼그려 앉은 모양, 사용자 11-12) */q.fromArray(values,i*4);q.multiply(turn.setFromAxisAngle(axis,FOLLOW_FLEX*weights[joint]*k)).normalize().toArray(values,i*4);}
   const copy=track.clone();copy.times=new Float32Array(times);copy.values=new Float32Array(values);return copy;});
  return new AnimationClip(source.name,source.duration,tracks);}
 /* 세트 포지션: 투수는 글러브 쪽 어깨를 홈으로 두고 옆으로 선다(우투수는 3루 쪽을 본다). 원본 세트·킥이 반쯤 정면이라
@@ -61,5 +61,5 @@ export const BAT_STANCE={RightArm:[[1,0,0,-.671],[0,0,1,.544],[0,1,0,-.146]],Rig
 export function batStance(source,fade=null){return boneOffsets(source,BAT_STANCE,t=>fade?1-smooth((t-fade[0])/(fade[1]-fade[0])):1);}
 /* 호쾌한 스윙: 맞히는 순간 두 팔을 쭉 뻗어(번트처럼 팔을 접은 채 밀지 않게) 배트 끝이 큰 원을 그리고, 팔로스루에서 다시 접어 어깨 위로 감는다(사용자 피드백 11-07). 접촉 순간 손 위치를 어깨에서 12cm 더 멀리 뻗도록 잰 값 */
 export const SWING_EXT={RightForeArm:[[1,0,0,.691],[0,0,1,-.053]],LeftForeArm:[[1,0,0,.761],[0,0,1,-.279]],RightArm:[[1,0,0,-.059],[0,0,1,.331]],LeftArm:[[0,1,0,.327],[0,0,1,-.376],[1,0,0,-.094]]};
-export function swingExtend(source){const C=SWING_CONTACT,a=C-.2,b=C+.28;return boneOffsets(source,SWING_EXT,t=>t<a||t>b?0:t<C?smooth((t-a)/(C-a)):1-smooth((t-C)/(b-C)));}
+export function swingExtend(source){const C=SWING_CONTACT,a=C-.03,p=C+.1,b=C+.4;return boneOffsets(source,SWING_EXT,t=>t<a||t>b?0:t<p?smooth((t-a)/(p-a)):1-smooth((t-p)/(b-p)));} /* 두 팔이 쭉 펴지는 것은 맞힌 뒤(최대 0.1초 뒤), 그 전에는 굽힌 채 몸에 붙여 돈다(사용자 11-12) */
 export function athleticClips(clips,events={}){const swing=clips.find(c=>c.name==='swing'),throwing=clips.find(c=>c.name==='throw'),crouch=clips.find(c=>c.name==='catcher_crouch');if(!swing||!throwing||!crouch)return clips;return [...clips.map(c=>c===swing?swingExtend(powerSwing(batStance(c,[.35,.7]))):c.name==='batting_stance'?batStance(c):c.name==='pitcher_set'?pitchSideOn(c,null):/^pitch_.*_stretch$/.test(c.name)&&events[c.name]?pitchSideOn(pitchFinish(pitchFollowThrough(c,events[c.name].release),events[c.name]),events[c.name]):/^pitch_.*_windup$/.test(c.name)&&events[c.name]?pitchSideOn(pitchFinish(pitchFollowThrough(c,events[c.name].release),events[c.name]),events[c.name],true):c),catcherThrow(throwing,crouch)];}
