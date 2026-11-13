@@ -18173,7 +18173,7 @@ function facHistLbl(h){ const F=FACI[h.k]; if(F)return F.lv[h.lv]||F.l; return h
 function facDaily(){ if(!G.fac||!G.fac.bld)return; for(const k of Object.keys(G.fac.bld)){ const b=G.fac.bld[k]; if(G.day>=b.done){ G.fac.it[k]=b.lv; (G.fac.dn=G.fac.dn||{})[k]=G.day; delete G.fac.bld[k]; facRecalc(); addLog(`${FACI[k].l} ${FACI[k].lv[b.lv]} 완공.`); clubFacilityHistory('fac',G.user,FACI[k].l,'완공',b); mail('육성팀',`${FACI[k].l} 완공: ${FACI[k].lv[b.lv]}`,`${FACI[k].l}이(가) ${b.lv}단계(${FACI[k].lv[b.lv]})로 완공됐습니다. ${FACI[k].d} 연 유지비는 ${money(FACI[k].up[b.lv])}입니다.`,{kind:'시설',acts:[{l:'시설 보기',a:'go',v:'staff:fac'}]}); } } }
 /* 시설 한 단계 효과를 말로만(사용자 11-05: 시뮬 게임이라 수치는 보여 주지 않고 '영향을 준다' 정도로. 실제 배수는 facEff) */
 function facGainTxt(k,lv){ if(lv>=FAC_MAX)return ''; const who={indoor:'모든 선수의 성장',lab:'모든 선수의 성장(트래킹 분석원이 있으면 더)',dorm:'23세 이하 선수의 성장과 기분',fut:'2군에서 주로 뛰는 선수의 성장',weight:'30대 선수의 하락 속도와 부상',rehab:'부상 복귀와 피로 회복'}[k]; if(!who)return '';
-  return `다음 단계로 올리면 ${who}에 영향을 줍니다${lv>=3?'(4단계부터는 효과가 완만해집니다)':''}.`; }
+  return `다음 단계로 올리면 ${who}에 영향을 줍니다${lv>=3?'. 이제부터는 효과가 완만해집니다':''}.`; }
 /* ===== 전력분석팀: 분석원 고용·역할·효과·월간 보고 ===== */
 /* 전력분석·데이터팀: 분석원을 사람으로 뽑아 배치한다(스카우트처럼). 역할 3가지
    상대 전력분석: 상대 타자별 수비 위치·투구 계획 → 실점 억제 / 트래킹 데이터: 장비 운용 → 선수 평가 정확도·랩 성장 / 영상 분석: 상대 투수 공략 → 타격 */
@@ -24582,7 +24582,7 @@ function mcfMedia(){ const m=G.mgr[G.user]; if(!m||m.interim)return; const S=mcf
   try{ ivRequest('mgr_media',{say:T,why}); }catch(e){} }
 function mcfAskMet(P){ if(!P||!P.ask)return true; return playersOf(G.user).some(q=>q.acq&&q.acq.d>=P.day&&roleOk(q,P.ask.k)); }
 function mcfMediaPick(e,i){ const m=G.mgr[G.user]; const S=mcf(); if(!m||m.interim||S.mid!==e.data.mid)return ''; prInit(); const t=team(G.user), M=mmem(m); const nm=`${m.name} 감독`;
-  if(i===0){ m.rel=clamp(m.rel-7,0,100); G.pr.press=clamp(G.pr.press-2,0,100); t.trust=clamp(t.trust-1,0,100); news('언론',`${tshort(G.user)} 단장, ${nm} 발언 정면 반박`,'프런트와 현장의 불화가 수면 위로 올라왔습니다.',-2); return `감독 관계 크게 악화, 언론 조금 악화, 구단주 신뢰 조금 하락(집안싸움이 밖으로 나갔습니다).`; }
+  if(i===0){ m.rel=clamp(m.rel-7,0,100); G.pr.press=clamp(G.pr.press-2,0,100); t.trust=clamp(t.trust-1,0,100); news('언론',`${tshort(G.user)} 단장, ${nm} 발언 정면 반박`,'프런트와 현장의 불화가 수면 위로 올라왔습니다.',-2); return `집안싸움이 밖으로 새어 나갔습니다. 감독과 사이가 크게 틀어졌고, 언론과 구단주 시선도 조금 차가워졌습니다.`; }
   if(i===1){ G.pr.fan=clamp(G.pr.fan-1,0,100); return `팬 여론 조금 악화. ${nm}은 단장이 답하지 않았다고 기억합니다.`; }
   if(i===2){ m.rel=clamp(m.rel+5,0,100); G.pr.fan=clamp(G.pr.fan+1,0,100); M.slight=Math.max(0,M.slight-1); S.backed={d:G.day,w0:(G.sea.rec[G.user]||{}).w||0,l0:(G.sea.rec[G.user]||{}).l||0}; return `감독 관계 개선, 팬 여론 조금 호전. 단장이 감독과 한배를 탔습니다. 이후 성적은 구단주가 함께 봅니다.`; }
   const loud=m.ego>=68; m.rel=clamp(m.rel-2,0,100); M.warn++; S.media.hush=G.day+(loud?0:45); if(loud){ S.media.d=G.day-14; return `${nm}은 경고를 듣고도 굽히지 않을 기세입니다. 감독 관계 조금 악화.`; } return `${nm}이 당분간 말을 아끼기로 했습니다. 감독 관계 조금 악화.`; }
@@ -24690,7 +24690,7 @@ function dataLines(){ const me=teamRuns(G.user); if(me.g<10)return [];
     `피타고리안 기대 승수 ${me.exW.toFixed(1)}승, 실제 ${me.w}승(${d>=0?'+':''}${d.toFixed(1)}). ${Math.abs(d)<1.5?'득실점만큼 이기고 있습니다.':`득실점보다 ${d>0?'더':'덜'} 이기고 있습니다. ${cl}`}`,
     `최근 10경기 ${w10}승 ${l10}패${t10?` ${t10}무`:''}`,
     `리그 백분위 상위 10%: ${hits.length?hits.slice(0,5).map(x=>`${x.p.name} ${x.l} ${x.pc}`).join(', '):'없음'}`,
-    `리그 백분위 하위 10%: ${lows.length?lows.slice(0,5).map(x=>`${x.p.name} ${x.l} ${x.pc}`).join(', '):'없음'} (1군 기준 이상 선수 중. 시즌 초에는 크게 움직입니다)`]; }
+    `리그 백분위 하위 10%: ${lows.length?lows.slice(0,5).map(x=>`${x.p.name} ${x.l} ${x.pc}`).join(', '):'없음'}`]; }
 /* ===== 공통 상태 점검(stateAudit): 기능 사이의 연결이 어긋났는지 한 번에 본다 =====
    리뷰에서 반복된 네 가지 원인을 규칙으로 묶었다. 점검 도구(tools/check-logic.js [공통 점검])가 여러 전환(방출·이적·해외·이직·감독 교체·연도 변경)
    뒤에 이 함수를 불러 문제 목록이 비어 있는지 본다. 게임 진행에는 쓰지 않는다(읽기만 한다).
@@ -25123,7 +25123,7 @@ function personalActivity(kind,target){const A=PERSONAL_ACT[kind];if(!A||G.unemp
  if(kind==='study'){S.study=Math.min(5,(S.study||0)+A.fx.study);text=`실무 교육 ${S.study}/5: 선수 정보의 관리(계약)·육성(연수) 탭에서 판단 참고를 확인할 수 있습니다.`;}
  if(kind==='team'){const P=playersOf(G.user);if(!P.length)return '선수단이 없습니다.';for(const q of P)q.mor=clamp((q.mor??60)+A.fx.mor,0,100);const m=G.mgr[G.user];if(m&&!m.interim)m.rel=clamp(m.rel+A.fx.mgr,0,100);const say=mySay('treat');text=`${say?`"${say}" `:''}선수단 회식: 선수 기분 상승${m&&!m.interim?`, 감독 관계 개선`:''}. 구단 예산은 쓰지 않았습니다.`;}
  if(kind==='fan'){prInit();const f0=G.pr.fan;G.pr.fan=clamp(G.pr.fan+A.fx.fan,0,100);const d=Math.round((G.pr.fan-f0)*10)/10; /* 실제 오른 만큼(검수 156) */text=`팬 이벤트 사비 후원: 팬 여론 ${d>0?'조금 호전':'더 오를 데가 없음'}. "단장이 자기 돈으로 쐈다"는 글이 커뮤니티에 올라옵니다.`;}
- if(kind==='scout'){const L=(G.scouts||[]);if(!L.length)return '우리 구단 스카우트가 없습니다.';for(const s of L)s.loy=clamp((s.loy??50)+A.fx.loy,0,100);text=`스카우트 ${L.length}명 출장비 보태기: 근속 충성도 상승(다른 구단 영입 제안에 덜 흔들립니다).`;}
+ if(kind==='scout'){const L=(G.scouts||[]);if(!L.length)return '우리 구단 스카우트가 없습니다.';for(const s of L)s.loy=clamp((s.loy??50)+A.fx.loy,0,100);text=`스카우트 ${L.length}명 출장비 보태기: 스카우트들이 다른 구단 제안에 덜 흔들립니다.`;}
  if(kind==='community'){G.rep=clamp((G.rep??50)+A.fx.rep,0,100);if(!team(G.user).indie)cwRapAdd('own',1);text=`지역 야구 봉사·기부: 단장 명성 상승. 구단 예산은 사용하지 않았습니다.`;}
  S.cash-=A.cost;S.spent+=A.cost;S.last[kind]=G.day;S.history.unshift({day:G.day,text,amount:-A.cost});S.history.length=Math.min(S.history.length,40);if(contact){personNetworkNote(contact,{day:G.day,kind,text});contact.history.unshift({day:G.day,kind,text});contact.history.length=Math.min(contact.history.length,12);}return text;
 }
@@ -26981,7 +26981,7 @@ function pactCard(m){ const P=G.pact&&G.pact.y===G.year&&G.pact.on&&G.pact.mid==
   sel=sel.filter(id=>cands.some(p=>p.id===id)); const cur=P?`<ul class="rec-w">${P.t.map(x=>{ const p=G.players[x.id]; return p?`<li><b>${esc(p.name)}</b> ${x.lv==='full'?'<span class="pill good">합의</span>':x.lv==='part'?'<span class="pill warn">부분 합의</span>':'<span class="pill bad">거절</span>'} ${esc(x.why)}</li>`:''; }).join('')}</ul>${P.log.length?`<p class="small muted">최근 점검: ${esc(P.log[P.log.length-1].m)}월 · ${esc(P.log[P.log.length-1].L.join(' / '))}</p>`:''}<div class="row"><button class="btn small" data-a="pactEnd">합의 끝내기</button></div>`:'';
   const pick=cands.length?`<div class="chips">${cands.map(p=>`<button data-a="pactSel" data-v="${p.id}" class="${sel.includes(p.id)?'on':''}">${esc(p.name)} <i>${posLabel(p)} ${p.age}세</i></button>`).join('')}</div><div class="row"><button class="btn small primary" data-a="pactGo" ${sel.length?'':'disabled'}>감독과 합의하기 (${sel.length}/2)</button></div>`:`<p class="small muted">${pactPeriodOpen()?'지금 출전 기회를 합의할 수 있는 25세 이하 비주전 선수가 없습니다.':'시즌이 끝나 출전 기회 합의는 다음 시즌 준비 때 다시 논의합니다.'}</p>`;
   return `<section class="card"><div class="row between"><span class="eyebrow">유망주 기회 합의</span><span class="small muted">감독 관계 ${m.rel} · ${mgrYouthWord(m.youth)}</span></div>
-    <p class="small expl">${mplOn('youth')?'영입 때 유망주 기회 보장을 약속받아 합의가 잘 됩니다. ':''}1군 기회를 줄 유망주를 2명까지 정해 감독과 합의합니다(영입 면담의 '유망주 기회 보장'은 전반적인 방침, 여기는 특정 선수). 감독은 실력 차이와 성향에 따라 받아들이거나 일부만 받아들이고, 매달 근거와 함께 보고합니다. 결과만으로 감독을 자동 평가하지 않습니다.</p>
+    <p class="small expl">${mplOn('youth')?'영입 때 유망주 기회 보장을 약속받아 합의가 잘 됩니다. ':''}1군 기회를 줄 유망주를 2명까지 정해 감독과 합의합니다. 감독은 실력 차이와 성향에 따라 받아들이거나 일부만 받아들이고, 매달 근거와 함께 보고합니다. 결과만으로 감독을 자동 평가하지 않습니다.</p>
     ${cur}${P?`<div class="eyebrow" style="margin-top:8px">대상 다시 정하기</div>`:''}${pick}${UI.pactMsg?`<div class="note">${esc(UI.pactMsg).replace(/\n/g,'<br>')}</div>`:''}</section>`; }
 /* 감독 중도 재계약: 연장 기간별 요구 연봉과 경질 정산금 변화 */
 function mgrExtBox(m){ const T1=mgrExtTerms(1); if(!T1)return ''; const re=m.yrs<=0; const L=[1,2,3].map(a=>mgrExtTerms(a)).filter(T=>T&&!(T.why&&/최대/.test(T.why)));
@@ -32628,7 +32628,7 @@ function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=(G.finLog||[]).
     <div class="fmd-s"><span class="fmd-k">마케팅 예산</span>${period()==='pre'?marketingBody():`<b>${money(G.marketing)}</b><p>개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`}</div>
     <div class="fmd-s"><span class="fmd-k">예산 조정</span><div class="fmd-acts"><button class="btn small" data-a="go" data-v="club:owner">구단주에게 요청</button><button class="btn small" data-a="itab" data-v="fin:lim">한도·캡 자세히</button><button class="btn small" data-a="itab" data-v="fin:star">선수 홍보</button></div></div></section>`;
   return `<div class="fmd fin-d">${fmBox('fmd-cash','보유 현금',`<span class="${t.cash<0?'bad':''}">${money(t.cash)}</span>`,[['결산 후 예상 현금',money(b.endCash)],['결산일',dmd(finYearEnd())],['지난 결산 후 현금',f?money(f.cash):'기록 없음']],fmArea(cash,'var(--team-hi)')+'<p class="fmd-note">월말 재무팀 기록과 오늘 값 · 점선은 결산까지의 예상</p>')}
-    ${fmBox('fmd-room','예산 여유',`<span class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</span>`,[['올해 예상 수지',sg(b.I-b.E)],['모기업 지원 예상',b.indie?'없음':money(b.support)],['지난 시즌 순이익',f?sg(f.net):'기록 없음']],`<p class="fmd-note">${roomFormula(b)}</p><div class="fmd-row">${fmArea(room,'var(--warn)')}<div class="fmd-chg"><span class="fmd-k">${chg.length?last.m+'월에 바뀐 항목':'바뀐 항목'}</span>${chg.map(z=>`<div class="fmd-li2"><span>${z.kind} · ${esc(z.l)}</span>${sg(z.eff)}</div>`).join('')||'<p class="fmd-note">월말 재무팀 보고가 오면 예산 여유를 바꾼 항목이 여기에 쌓입니다.</p>'}</div></div>`)}
+    ${fmBox('fmd-room','예산 여유',`<span class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</span>`,[['올해 예상 수지',sg(b.I-b.E)],['모기업 지원 예상',b.indie?'없음':money(b.support)],['지난 시즌 순이익',f?sg(f.net):'기록 없음']],`<p class="fmd-note tipme">${roomFormula(b)}</p><div class="fmd-row">${fmArea(room,'var(--warn)')}<div class="fmd-chg"><span class="fmd-k">${chg.length?last.m+'월에 바뀐 항목':'바뀐 항목'}</span>${chg.map(z=>`<div class="fmd-li2"><span>${z.kind} · ${esc(z.l)}</span>${sg(z.eff)}</div>`).join('')||'<p class="fmd-note">월말 재무팀 보고가 오면 예산 여유를 바꾼 항목이 여기에 쌓입니다.</p>'}</div></div>`)}
     ${fmBox('fmd-inc','올해 예상 수입',money(b.I),[],`<div class="fmd-l">${li(b.inc,'--good')}</div><p class="fmd-note">${dmd(finYearEnd())} 결산까지 연간 예상 · 포스트시즌 배당 ${b.inc.some(x=>/포스트시즌 배당/.test(x[0]))?'포함':'제외'}</p>`)}
     ${fmBox('fmd-exp','올해 예상 지출',money(b.E),[],`<div class="fmd-l">${li([...b.exp].sort((x,y)=>y[1]-x[1]),'--warn')}</div>`)}
     ${bud}<section class="card fmd-rule"><h3 class="fmd-h">규정 준수</h3><div class="fmd-rl">${R.map(([l,ok,d])=>`<div class="${ok?'ok':'ng'}"><b>${l} <span class="pill ${ok?'good':'bad'}">${ok?'준수':/하한/.test(l)?'미달':'초과'}</span></b><p>${d}</p></div>`).join('')}</div></section></div>`; }

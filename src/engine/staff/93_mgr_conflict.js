@@ -114,7 +114,7 @@ function mcfMedia(){ const m=G.mgr[G.user]; if(!m||m.interim)return; const S=mcf
   try{ ivRequest('mgr_media',{say:T,why}); }catch(e){} }
 function mcfAskMet(P){ if(!P||!P.ask)return true; return playersOf(G.user).some(q=>q.acq&&q.acq.d>=P.day&&roleOk(q,P.ask.k)); }
 function mcfMediaPick(e,i){ const m=G.mgr[G.user]; const S=mcf(); if(!m||m.interim||S.mid!==e.data.mid)return ''; prInit(); const t=team(G.user), M=mmem(m); const nm=`${m.name} 감독`;
-  if(i===0){ m.rel=clamp(m.rel-7,0,100); G.pr.press=clamp(G.pr.press-2,0,100); t.trust=clamp(t.trust-1,0,100); news('언론',`${tshort(G.user)} 단장, ${nm} 발언 정면 반박`,'프런트와 현장의 불화가 수면 위로 올라왔습니다.',-2); return `감독 관계 크게 악화, 언론 조금 악화, 구단주 신뢰 조금 하락(집안싸움이 밖으로 나갔습니다).`; }
+  if(i===0){ m.rel=clamp(m.rel-7,0,100); G.pr.press=clamp(G.pr.press-2,0,100); t.trust=clamp(t.trust-1,0,100); news('언론',`${tshort(G.user)} 단장, ${nm} 발언 정면 반박`,'프런트와 현장의 불화가 수면 위로 올라왔습니다.',-2); return `집안싸움이 밖으로 새어 나갔습니다. 감독과 사이가 크게 틀어졌고, 언론과 구단주 시선도 조금 차가워졌습니다.`; }
   if(i===1){ G.pr.fan=clamp(G.pr.fan-1,0,100); return `팬 여론 조금 악화. ${nm}은 단장이 답하지 않았다고 기억합니다.`; }
   if(i===2){ m.rel=clamp(m.rel+5,0,100); G.pr.fan=clamp(G.pr.fan+1,0,100); M.slight=Math.max(0,M.slight-1); S.backed={d:G.day,w0:(G.sea.rec[G.user]||{}).w||0,l0:(G.sea.rec[G.user]||{}).l||0}; return `감독 관계 개선, 팬 여론 조금 호전. 단장이 감독과 한배를 탔습니다. 이후 성적은 구단주가 함께 봅니다.`; }
   const loud=m.ego>=68; m.rel=clamp(m.rel-2,0,100); M.warn++; S.media.hush=G.day+(loud?0:45); if(loud){ S.media.d=G.day-14; return `${nm}은 경고를 듣고도 굽히지 않을 기세입니다. 감독 관계 조금 악화.`; } return `${nm}이 당분간 말을 아끼기로 했습니다. 감독 관계 조금 악화.`; }
