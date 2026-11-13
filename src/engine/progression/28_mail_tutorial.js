@@ -29,8 +29,11 @@ function mailContext(subj,acts){ const c={tid:G.user},has=k=>(acts||[]).some(a=>
   return c; }
 function mail(from,subj,body,o){ o=o||{}; if(G._away)return {read:true,acts:[]}; /* 떠난 구단 대리 처리 중(fanAway) */ if(G.unemp&&o.kind!=='경력'&&from!=='야인')return {read:true,acts:[]}; /* 야인일 때는 전 소속 구단 업무 메일을 받지 않는다 */
   { const d=G.mail.slice(0,60).find(x=>!x.read&&x.subj===subj&&x.body===body&&G.day-x.day<=7&&JSON.stringify(x.acts||[])===JSON.stringify(o.acts||[])); if(d){ if(o.imp&&!d.imp){ d.imp=true; if(stopOn(d))G.stops.push(d); } return d; } } /* 같은 소식이 안 읽힌 채 있으면 다시 보내지 않고, 중요 경고면 기존 소식을 중요로 올린다(검수 11-09za). 버튼이 다른(다른 결정) 소식은 따로(검수 11-09z) */
+  /* 외국인 스카우팅 잔소식(새 후보·관찰 명단·정보 유출 등, 중요 표시 없는 것)은 한 주 동안 소식 하나로 묶는다(플레이 테스트 11-13: 안 읽은 소식 170건) */
+  const dg=!o.imp&&o.kind==='외국인'&&/^스카우트팀/.test(from)?'fscout':null;
+  if(dg){ const d=G.mail.slice(0,80).find(x=>x.dg===dg&&!x.read&&G.day-(x.dg0??x.day)<=7); if(d){ d.dgN=(d.dgN||1)+1; d.body=`${d.body}\n\n· ${subj}\n${body}`; d.subj=`외국인 스카우팅 소식 ${d.dgN}건`; const A=[...(d.acts||[]),...(o.acts||[])], seen=new Set(); d.acts=A.filter(x=>{ const k=x.a+':'+x.v; if(seen.has(k))return false; seen.add(k); return true; }).slice(0,4); d.day=G.day; const i=G.mail.indexOf(d); if(i>0){ G.mail.splice(i,1); G.mail.unshift(d); } return d; } }
   const m={id:'m'+(G.mailSeq=(G.mailSeq||0)+1),day:G.day,from,subj,body,read:false,imp:!!o.imp,acts:o.acts||[],ref:o.ref??null,kind:o.kind||'일반',face:o.face??null,ctx:mailContext(subj,o.acts)};
-  if(o.cat)m.cat=o.cat; G.mail.unshift(m); mailPrune(); if(m.imp&&stopOn(m))G.stops.push(m); return m; }
+  if(o.cat)m.cat=o.cat; if(dg){ m.dg=dg; m.dg0=G.day; m.body=`· ${subj}\n${body}`; } G.mail.unshift(m); mailPrune(); if(m.imp&&stopOn(m))G.stops.push(m); return m; }
 /* 이미 보낸 소식을 다시 알릴 때: 새 소식을 만들지 않고 원래 소식을 오늘로 끌어올려 안 읽음으로 되돌린다 */
 function mailBump(m,warn){ const i=G.mail.indexOf(m); if(i<0)return null; G.mail.splice(i,1); G.mail.unshift(m); if(m.day0==null)m.day0=m.day; m.day=G.day; m.read=false; m.imp=true; m.warn=warn||m.warn||''; if(stopOn(m))G.stops.push(m); return m; }
 /* 소식함 한도: 160건을 넘으면 오래된 '읽은' 소식부터 지운다. 안 읽은 소식은 남기고, 그래도 240건을 넘을 때만 가장 오래된 것을 지운다 */

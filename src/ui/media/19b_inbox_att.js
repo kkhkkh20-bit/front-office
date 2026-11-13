@@ -7,7 +7,7 @@ const ibdRec=tid=>{ const r=(G.sea&&G.sea.rec&&G.sea.rec[tid])||{w:0,l:0,t:0}; r
 const ibdRank=tid=>{ const S=standOrder(), o=S.order||[]; const i=o.findIndex(x=>(x.tid??x)===tid); if(i<0)return null; try{ if(S.live&&period()==='season')return tieRank(o,tid); }catch(e){} return i+1; }; /* 시즌 중 동률은 순위표·상단과 같은 공동 순위(검수 11-08) */
 /* 남의 선수는 스카우트가 아는 만큼만(모르면 '?') */
 function ibdOvr(p){ if(!p||hideOvr(p))return null; if(p.team===G.user)return ovr(p); const r=scoutReport(p); return r&&r.cur!=null?r.cur:null; }
-function ibdTeamsIn(m){ const s=ibdTxt(m); return G.teams.map(t=>t.id).filter(id=>id!==G.user&&(s.includes(tshort(id))||s.includes(team(id).nick))); }
+function ibdTeamsIn(m){ const s=ibdTxt(m); const at=id=>{ const a=[s.indexOf(tshort(id)),s.indexOf(team(id).nick)].filter(i=>i>=0); return a.length?Math.min(...a):-1; }; return G.teams.map(t=>t.id).filter(id=>id!==G.user&&at(id)>=0).sort((a,b)=>at(a)-at(b)); } /* 본문에 먼저 나온 구단부터(플레이 테스트 11-13: 구단 번호순이라 엉뚱한 구단이 '소식 속 구단'으로 나왔다) */
 /* 본문에 이름이 나온 선수: 우리 선수 먼저, 같은 이름은 한 번만 */
 function ibdPlayersIn(m,skip){ const s=ibdTxt(m), seen=new Set(), L=[];
   const all=Object.values(G.players).filter(p=>p.name&&p.name.length>=2&&p.id!==skip&&(p.team!=null||p.foreign||p.watch)).sort((a,b)=>(b.team===G.user)-(a.team===G.user));

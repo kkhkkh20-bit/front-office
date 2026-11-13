@@ -163,7 +163,8 @@ function devPage(){
 }
 function marketingBody(){
   return `<div class="row between"><span class="small">올 시즌 예산</span><b class="num" id="mktv">${money(G.marketing)}</b></div>
-    <input type="range" id="mkt" min="500" max="6000" step="250" value="${G.marketing}" data-a="mkt" aria-label="마케팅 예산">
+    <div class="row" style="gap:6px;align-items:center"><button class="btn small" data-a="mktStep" data-v="-100" aria-label="1억 줄이기">−1억</button><input type="range" id="mkt" min="500" max="6000" step="100" value="${G.marketing}" data-a="mkt" aria-label="마케팅 예산" style="flex:1"><button class="btn small" data-a="mktStep" data-v="100" aria-label="1억 늘리기">+1억</button></div>
+    <p class="small"><b>늘리면</b> 그만큼 지출이 늘어 <b>예산 여유가 바로 줄고</b>, 광고·상품 수입과 인기는 시즌 동안 서서히 늘어 <b>예상 수지</b>에 반영됩니다.</p>
     <p class="small muted">구단 전체의 연간 홍보비입니다. 광고·상품 수입과 인기에 영향을 줍니다. 개막 전에만 바꿀 수 있고, 비용은 시즌 결산 때 나갑니다. 구단주 화면의 선수별 추가 홍보와는 별도입니다.</p>`;
 }
 function capCard(ci){

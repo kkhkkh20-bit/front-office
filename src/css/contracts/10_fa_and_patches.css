@@ -248,3 +248,17 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .prl .pr-v{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1}.prl .pr-v small{font-size:var(--ui-xs,11px);color:var(--muted)}
 .prl .pr-pot .ptier{padding:2px 6px}.prl .pr-pot .pst{font-size:16px;letter-spacing:1px}.prl .pr-pot .pst-fill{color:#ffcf4a}
 .prl{grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+/* 플레이 테스트 11-13: FA 예정자 '자격' 열이 글자마다 줄바꿈되고 '신청 전망'이 잘림, 외국인 후보 관찰·협상 버튼이 오른쪽에서 잘림 */
+#app .tf-up .tf-t td.wrap{min-width:7.5em;white-space:normal;word-break:keep-all}
+#app .tf-up .tf-t td:last-child,#app .tf-up .tf-t th:last-child{white-space:nowrap}
+#app .foreign-candidates .tf-t td:last-child{white-space:nowrap;min-width:4.5em;padding-left:4px;padding-right:4px}
+#app .foreign-candidates .tf-t td:last-child .tc-i,#app .foreign-candidates .tf-t td:last-child .btn{display:block;width:100%;margin:2px 0}
+#app .foreign-candidates .sf-tw,#app .tf-up .sf-tw{overflow-x:auto}
+/* 플레이 테스트 11-13: 스폰서 표가 가로로 밀려 '자리' 열이 잘림 → 자리 열 고정, 좁은 화면은 줄바꿈 */
+#app .spt-w .spt th:first-child,#app .spt-w .spt td:first-child{position:sticky;left:0;z-index:1;background:var(--panel,var(--bg));min-width:7.5em}
+#app .spt-w .spt td{white-space:normal;word-break:keep-all}
+#app .tf-up .tf-t td:nth-child(5){max-width:9em;white-space:normal;word-break:keep-all}
+#app .tf-up .tf-t td.wrap{min-width:6em}
+#app .foreign-candidates .tf-t td:nth-child(3),#app .foreign-candidates .tf-t td:nth-child(5){max-width:9em;white-space:normal;word-break:keep-all}
+#app .foreign-candidates .tf-t td:first-child{min-width:11em;word-break:keep-all}
+#app .foreign-candidates .tf-t td:nth-child(5) *{white-space:normal!important}
