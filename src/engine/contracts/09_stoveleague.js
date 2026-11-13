@@ -47,12 +47,14 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
     const dp=faDeclP(p);
     if(elig&&p.ctFree!==G.year&&R()>=dp){ p.faSkip=G.year; if(p.team===G.user)(G._faSkip=G._faSkip||[]).push(p.name); continue; }
     if(elig){ delete p.faSkip; const grade=faGradeOf(p,all,gSnap);
-      p.faFrom=p.team; p.faGrade=grade; p.faPrevSal=p.sal; faMktFix(G.year); p.ask=faAsk(p); p.ask0=p.ask.annual; try{ agentOf(p); }catch(e){} termsClear(p); /* 끝난 계약의 계약금 상한 반영·옵션은 FA가 되면 정리(AI FA도 계약금이 생겼다) */ p.team=null; pool.push(p.id);
+      p.faFrom=p.team; p.faGrade=grade; p.faPrevSal=p.sal; faMktFix(G.year); try{ agentOf(p); }catch(e){} termsClear(p); /* 끝난 계약의 계약금 상한 반영·옵션은 FA가 되면 정리(AI FA도 계약금이 생겼다) */ p.team=null; pool.push(p.id);
       for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k];
       if(p.faFrom===G.user)declared.push(p.id); }
   }
   try{ ovsFA(pool); }catch(e){}
   G.fa={pool,offers:{},ai:{},open:false,openDay:KD(11,6),closed:false,results:[],cap:pool.length<=20?2:3,outN:{},y0:G.year}; try{ allInPick(); }catch(e){}
+  /* 요구액은 FA 명단이 다 나온 뒤에 매긴다: 하나씩 매기면 먼저 나온 FA가 아직 원소속 구단 주전으로 남아 뒤 FA의 수요·시장가가 처리 순서에 따라 달라진다 */
+  _mkD.k=null; _mkP.k=null; for(const id of pool){ const p=G.players[id]; if(p){ p.ask=faAsk(p); p.ask0=p.ask.annual; } }
   if(G._faSkip&&G._faSkip.length){ note('FA',`FA 자격이 있지만 신청하지 않고 남은 우리 선수: ${G._faSkip.join(', ')}. 내년에도 자격은 유지됩니다.`); } G._faSkip=null;
   G.retired=retired; G.rolled=G.year; try{ obRetireEvents(obs); }catch(e){} try{ abroadYear(); }catch(e){} try{ fOverseas(); }catch(e){} try{ postingSeason(); }catch(e){}
   try{ leaveSweep(); }catch(e){} /* 은퇴·FA·해외 진출로 떠난 선수에게 남은 출전 약속·매물 표시를 바로 정리(다음 날 처리 첫머리를 기다리지 않게) */
@@ -120,11 +122,11 @@ function faWarCap(t,p){ const e=faExpWar(p); if(e==null)return null; return Math
 function faWorth(t,p){ if(t.id!==ME()&&!p.foreign)return mktWTP(t,p); /* AI 구단 평가는 시장 엔진(08_market_engine): 추가 승수 × 1승의 값 */ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); if(wc==null)return round5(Math.min(faTop(),w0*(faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)))); const pr=Math.min(1.5,faPoolPrem(p)*faPosPrem(t,p)); /* 시장 순위·희소성·구단 수요 웃돈은 합쳐서 +50%까지 */ return round5(Math.min(faTop(),Math.min(w0*pr,Math.max(w0*.7,wc*pr))*(faTgt(t,p)?faOverpay(t):1)*faRoomPush(t,p))); }
 /* FA 시장 경쟁(카페 11-13): 이번 시장 상위 매물은 성적이 조금 모자라도 몸값이 오른다(1~3위 +35%, 4~8위 +15%). 성적(WAR) 상한은 능력 기준 몸값의 70% 아래로는 깎지 않는다 */
 let _fpr={k:null,m:null};
-function faPoolPrem(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=G.year+':'+G.day+':'+F.pool.length; if(_fpr.k!==k){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null).sort((a,b)=>ovr(b)-ovr(a)); _fpr={k,m:new Map(L.map((q,i)=>[q.id,i]))}; } const r=_fpr.m.get(p.id); return r==null?1:r<3?1.35:r<8?1.15:1; }
+function faPoolPrem(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=G.year+':'+G.day+':'+F.pool.length; if(_fpr.k!==k||_fpr.g!==G){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null).sort((a,b)=>ovr(b)-ovr(a)); _fpr={k,g:G,m:new Map(L.map((q,i)=>[q.id,i]))}; } const r=_fpr.m.get(p.id); return r==null?1:r<3?1.35:r<8?1.15:1; }
 /* FA 시장 수요·공급(카페 11-13 beeseo·운영자): 같은 자리 비슷한 급(종합 -3 이내) 매물 수가 공급, 데려오면 주전이 바뀌고(그 자리 리그 4위 아래) 돈이 되는 AI 구단 수가 수요다.
    찾는 구단이 많고 매물이 적으면 오르고(최대 +20%), 매물이 넘치면 내려간다(최대 -10%). 그 구단 자리가 리그 7위 이하면 +8%, 9위 이하면 +12% */
 let _fps={k:null,r:{}};
-function faRanks(tid){ const k=G.year+':'+G.day; if(_fps.k!==k)_fps={k,r:{}}; if(!_fps.r[tid]){ try{ _fps.r[tid]=slotRanks(tid); }catch(e){ _fps.r[tid]={}; } } return _fps.r[tid]; }
+function faRanks(tid){ const k=G.year+':'+G.day; if(_fps.k!==k||_fps.g!==G)_fps={k,g:G,r:{}}; /* 다른 저장을 불러오면(같은 날짜여도) 새로 */ if(!_fps.r[tid]){ try{ _fps.r[tid]=slotRanks(tid); }catch(e){ _fps.r[tid]={}; } } return _fps.r[tid]; }
 function faSupply(p){ const F=G.fa; if(!F||!F.pool)return 0; const sl=pSlot(p), o=ovr(p); return F.pool.map(i=>G.players[i]).filter(q=>q&&q.id!==p.id&&q.team==null&&pSlot(q)===sl&&ovr(q)>=o-3).length; }
 function faDemand(p){ const sl=pSlot(p), cap=capOf(sponSeason()), a=(p.ask&&p.ask.annual)||0; return G.teams.filter(t=>t.id!==ME()&&t.id!==p.faFrom&&!t.indie&&t.cash>-3000&&needScore(t.id,p)>0&&((faRanks(t.id)[sl]||{}).rank||0)>=4&&cap-capPay(t.id)>=a*.7).length; } /* 데려오면 주전이 바뀌는 구단만 센다 */
 function faSD(p){ const d=faDemand(p), s=faSupply(p); return {d,s,m:clamp(1+.06*(d-(s+1)),.9,1.2)}; }
