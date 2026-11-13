@@ -51,7 +51,7 @@ function develop(p){
   if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.02+Math.max(0,(p.pers.temp||10)-13)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
     if(x<dn){ const s=-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; p.devLog.reasons.push('slump'); } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
   if(age<=29&&!svc)base+=N(-.25,.9); /* 젊은 선수도 해마다 들쭉날쭉: 성장 구간에서도 정체·후퇴가 섞인다 */
-  if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
+  if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } if(base>0&&!p.prospect)base*=eliteGrowF(o); /* 정상급 꼬리 억제(10_draft) */ /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
   const tc=svc?(delete p.trD,null):typeof trnCost==='function'?trnCost(p):null; /* 복무 중 겨울에는 입대 전 집중 훈련 비용을 매기지 않는다(검수 11-09zy) */ /* 훈련 방향 비용: 한 항목에 집중한 만큼 다른 항목의 성장 기회가 준다 */
