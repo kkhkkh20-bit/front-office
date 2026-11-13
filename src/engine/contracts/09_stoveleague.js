@@ -53,11 +53,11 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   }
   try{ ovsFA(pool); }catch(e){}
   G.fa={pool,offers:{},ai:{},open:false,openDay:KD(11,6),closed:false,results:[],cap:pool.length<=20?2:3,outN:{},y0:G.year}; try{ allInPick(); }catch(e){}
-  /* 요구액은 FA 명단이 다 나온 뒤에 매긴다: 하나씩 매기면 먼저 나온 FA가 아직 원소속 구단 주전으로 남아 뒤 FA의 수요·시장가가 처리 순서에 따라 달라진다 */
-  _mkD.k=null; _mkP.k=null; for(const id of pool){ const p=G.players[id]; if(p){ p.ask=faAsk(p); p.ask0=p.ask.annual; } }
   if(G._faSkip&&G._faSkip.length){ note('FA',`FA 자격이 있지만 신청하지 않고 남은 우리 선수: ${G._faSkip.join(', ')}. 내년에도 자격은 유지됩니다.`); } G._faSkip=null;
   G.retired=retired; G.rolled=G.year; try{ obRetireEvents(obs); }catch(e){} try{ abroadYear(); }catch(e){} try{ fOverseas(); }catch(e){} try{ postingSeason(); }catch(e){}
   try{ leaveSweep(); }catch(e){} /* 은퇴·FA·해외 진출로 떠난 선수에게 남은 출전 약속·매물 표시를 바로 정리(다음 날 처리 첫머리를 기다리지 않게) */
+  /* 요구액은 FA 명단·해외 진출이 다 정리된 뒤에 한 번에 매긴다: 하나씩 매기면 먼저 나온 FA가 아직 원소속 구단 주전으로 남아 뒤 FA의 수요·시장가가 처리 순서에 따라 달라진다 */
+  _mkD.k=null; _mkP.k=null; for(const id of G.fa.pool){ const p=G.players[id]; if(p&&p.team==null){ p.ask=faAsk(p); p.ask0=p.ask.annual; } }
   const mine=retired.filter(r=>r.team===G.user);
   stop('스토브리그',`스토브리그가 시작되었습니다. 은퇴 ${retired.length}명(우리 ${mine.length}명), FA 자격 ${pool.length}명(우리 ${declared.length}명). 11월 2일 FA 공시, 6일부터 협상, 12월 1일 연봉 협상이 시작됩니다.`);
 }
@@ -149,7 +149,7 @@ function payTarget(t){ const b=t.mode==='contend'?(t.owner==='win'?1:.92):t.owne
 /* 남는 돈은 급이 높은 선수에게 몰린다(사용자 11-13: S급은 모두가 원하고, 어중간한 급은 값 차이가 벌어지는 게 시장). 특급(종합 60+)은 여유를 그대로, 주전급(56+)은 60%, 그 아래는 25%만 얹는다.
    돈이 없는 구단(현금 마이너스)·리빌딩 구단은 얹지 않는다: 그런 구단은 FA 대신 유망주를 모은다 */
 function faRoomPush(t,p){ if(!t||t.id===ME()||(t.cash||0)<0)return 1; const r=capPay(t.id)/capOf(sponSeason()); const k=clamp(1+(payTarget(t)-r)*1.1,1,1.4); if(!p)return k; if(t.mode==='rebuild'&&p.age>=29)return 1; const o=ovr(p), st=o>=60?1:o>=56?.6:.25; return 1+(k-1)*st; }
-function faTgt(t,p){ const F=G.fa; return !!(t&&p&&F&&F.tgt&&F.tgt[t.id]===p.id); }
+function faTgt(t,p){ const F=G.fa; return !!(t&&p&&F&&!F.closed&&F.tgt&&F.tgt[t.id]===p.id); } /* 시장이 닫히면 찍은 선수도 끝(다음 해 다년계약 요구액에 옛 웃돈이 붙지 않게) */
 function faOverpay(t){ return t.allIn===sponSeason()?1.35:t.owner==='win'?1.25:1.15; }
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
