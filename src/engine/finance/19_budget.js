@@ -67,18 +67,18 @@ function staffReport(when){ if(G.unemp||!G.mgr[G.user])return; const tid=G.user;
 const TRUST_WARN=[35,20,10];
 function ownerTrustWatch(){ if(G.unemp||G.gameOver||(G.fd&&!G.fd.done))return; const t=team(G.user); if(!t||t.trust==null)return; const tr=t.trust;
   const W=G.trW&&G.trW.tid===G.user?G.trW:(G.trW={tid:G.user,lv:0}); const cur=TRUST_WARN.filter(v=>tr<=v).length;
-  { const o=dobj(G.day); if(period()==='season'&&o.d===1&&o.m>=7&&W.fy!==G.year){ let L=null; try{ L=ownerTrustOutlook(); }catch(e){} if(L&&L.end<12){ W.fy=G.year; /* 결산 때 한꺼번에 깎여 경고 없이 경질되지 않게: 지금 흐름이면 결산 뒤 신뢰가 경질선 아래라는 예고 */
+  { const o=dobj(G.day); if(period()==='season'&&o.d===1&&o.m>=7&&W.fy!==G.year&&!(expYr(G.user)&&!expFinDisaster(G.user))){ /* 창단 유예 중에는 성적으로 경질되지 않는다 */ let L=null; try{ L=ownerTrustOutlook(); }catch(e){} if(L&&L.end<12){ W.fy=G.year; /* 결산 때 한꺼번에 깎여 경고 없이 경질되지 않게: 지금 흐름이면 결산 뒤 신뢰가 경질선 아래라는 예고 */
     mail('구단주실',`[경고] 이대로면 시즌 결산 때 경질됩니다`,`지금 구단주 신뢰는 ${tr}입니다. 현재 성적·순위·수지·여론이 시즌 끝까지 이어지면 결산 때 신뢰가 약 ${L.d>=0?'+':''}${L.d} 바뀌어 ${L.end} 안팎이 됩니다. 결산 때 12 미만이면 경질됩니다.\n\n크게 움직이는 항목: ${L.why}\n남은 경기 성적, 구단주 목표(순위·재정·여론) 달성 여부가 결과를 바꿉니다.`,{imp:true,kind:'구단주',cat:'must',acts:[{l:'구단주 보기',a:'go',v:'club:owner'},{l:'재정 보기',a:'go',v:'club:fin'}]}); } } }
   if(cur<W.lv){ while(W.lv>cur&&tr>TRUST_WARN[W.lv-1]+5)W.lv--; return; } if(cur===W.lv)return; W.lv=cur;
   const lim=TRUST_WARN[cur-1], fire=12; const last=(G.ownerLog||[])[0];
   const why=last&&last.txt?`\n최근 구단주 보고: ${last.txt}`:'';
-  const head=cur===1?`구단주 신뢰가 ${tr}까지 내려갔습니다(경고 기준 ${lim}).`:cur===2?`구단주 신뢰가 ${tr}입니다. 구단주실에서 단장 교체를 검토하기 시작했습니다.`:`구단주 신뢰가 ${tr}입니다. 이대로면 시즌 결산 때 경질됩니다.`;
-  const tail=`\n\n시즌 결산 때 신뢰가 ${fire} 미만이면 경질됩니다. 신뢰를 올리는 길: 시즌 목표(순위·재정·여론) 달성, 월간 보고 만족, 구단주 면담에서 약속을 지키기. 반려된 요청과 목표 초과 지출은 신뢰를 깎습니다.`;
+  const head=expYr(G.user)&&cur>=2?`구단주 신뢰가 ${tr}까지 내려갔습니다. 창단 유예 중이라 당장 자리를 걱정할 단계는 아니지만, 구단주가 눈여겨보고 있습니다.`:cur===1?`구단주 신뢰가 ${tr}까지 내려갔습니다(경고 기준 ${lim}).`:cur===2?`구단주 신뢰가 ${tr}입니다. 구단주실에서 단장 교체를 검토하기 시작했습니다.`:`구단주 신뢰가 ${tr}입니다. 이대로면 시즌 결산 때 경질됩니다.`;
+  const tail=expYr(G.user)?`\n\n${expGraceTxt(G.user)} 다만 구단 자금이 바닥나는 재정 사고는 책임을 묻습니다. 신뢰는 유예가 끝난 뒤 평가의 출발점이 됩니다.`:`\n\n시즌 결산 때 신뢰가 ${fire} 미만이면 경질됩니다. 신뢰를 올리는 길: 시즌 목표(순위·재정·여론) 달성, 월간 보고 만족, 구단주 면담에서 약속을 지키기. 반려된 요청과 목표 초과 지출은 신뢰를 깎습니다.`;
   mail('구단주실',cur===3?`[최종 경고] 구단주 신뢰 ${tr}`:`[경고] 구단주 신뢰 ${tr}`,head+why+tail,{imp:true,kind:'구단주',cat:'must',acts:[{l:'구단주 보기',a:'go',v:'club:owner'},{l:'목표 확인',a:'go',v:'club:fin'}]}); }
 /* 시즌 결산 때 신뢰 변화 예상(08_season_events 결산식을 지금 값으로 어림): 성적·포스트시즌·수지·구단주 목표·언론 */
 function ownerTrustOutlook(){ const u=team(G.user); const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; if(!u||!r||r.w+r.l<40)return null; const y=G.year, wp=r.w/(r.w+r.l);
-  const w=OWNER[(G.goals&&G.goals.y===y&&G.goals.owner)||u.owner].w; const rk=rankOf(G.user); let perf=(wp-(u.expW??.5))*150*w[0]; if(G.goals&&G.goals.y===y&&rk<=G.goals.rank)perf=Math.max(perf,0); if(G.startY===y)perf=clamp(perf,-3,6);
-  const ps=(rk<=5?2:-1)*w[1]; let b=null; try{ b=budget(); }catch(e){} const fin=b?(clamp((b.I+b.support-b.E)/2500,-8,5)-(b.cap?(b.support/b.cap-.5)*4:0))*w[2]:0;
+  const w=OWNER[(G.goals&&G.goals.y===y&&G.goals.owner)||u.owner].w; const rk=rankOf(G.user); let perf=(wp-(u.expW??.5))*150*w[0]; if(G.goals&&G.goals.y===y&&rk<=G.goals.rank)perf=Math.max(perf,0); if(G.startY===y)perf=clamp(perf,-3,6); if(expYr(G.user))perf=clamp(perf,-2,6); /* 결산식과 같게(08_season_events) */
+  const ps=(rk<=5?2:expYr(G.user)?0:-1)*w[1]; let b=null; try{ b=budget(); }catch(e){} const fin=b?(clamp((b.I+b.support-b.E)/2500,-8,5)-(b.cap?(b.support/b.cap-.5)*4:0))*w[2]:0;
   let gy=0; try{ gy=goalYearEnd(rk,b?{support:b.support,supCap:b.cap}:null).d; }catch(e){} const pz=G.pr?(G.pr.press-50)/10:0;
   let d=perf+ps+fin+gy+pz; if(HARD()&&d<0)d*=1.3; d=Math.round(d);
   const parts=[['성적',perf],['포스트시즌',ps],['수지',fin],['구단주 목표',gy],['언론',pz]].filter(x=>Math.abs(x[1])>=1).sort((a,b)=>a[1]-b[1]).map(([l,v])=>`${l} ${v>=0?'+':''}${Math.round(v)}`).join(' · ');
@@ -89,16 +89,17 @@ function ownerMonth(m,rk){ const t=team(G.user); const g=G.goals; if(!g)return; 
   let s=0; s+=(g.rank-rk)*.6*w[0]*rkW; s+=(G.pr.press-50)/14*(w[3]*.6+.4); s+=(G.pr.fan-g.fan)/12*(w[3]*.7+.3); const ps=projSupport(); s+=(g.sup-ps)*4*w[2];
   if(early)s=clamp(s,-1,1);
   const fy=g.fd&&G.year===G.startY; if(fy&&s<0)s*=.6; /* 창단 첫해: 구단주도 참을성이 있다 */
-  const d=gp<10?0:clamp(Math.round(s),early?0:fy?-2:-4,early?1:3); /* 평가 보류면 신뢰도 그대로(검수 11-09zzd) */ t.trust=clamp(t.trust+(HARD()&&d<0?Math.round(d*1.3):d),0,100); /* 하드 모드: 신뢰 하락 1.3배 */
+  const ex=expYr(G.user); if(ex&&s<0)s*=.35; /* 신생 구단 유예(89_league_expansion): 성적이 나빠도 크게 나무라지 않는다 */
+  const d=gp<10?0:clamp(Math.round(s),early||ex?(ex&&!early?-1:0):fy?-2:-4,early?1:3); /* 평가 보류면 신뢰도 그대로(검수 11-09zzd) */ t.trust=clamp(t.trust+(HARD()&&d<0?Math.round(d*1.3):d),0,100); /* 하드 모드: 신뢰 하락 1.3배 */
   const mood=s>=2?'만족':s>=-1?'관망':s>=-4?'불만':'격노';
-  const demands=[]; if(!early&&rkW>=.5&&rk>g.rank+1)demands.push(`순위를 ${g.rank}위 안으로 끌어올리라`); if(ps>g.sup+.15)demands.push('적자 폭을 줄이라'); if(G.pr.press<38)demands.push('언론 보도를 관리하라'); if(G.pr.fan<g.fan-8)demands.push('팬심을 돌려 놓으라');
-  const txt=mood==='만족'?`구단주께서 ${m}월 보고를 받고 만족해하셨습니다. 지금 방향을 유지하라는 말씀입니다.`:mood==='관망'?(early?`구단주께서 ${m}월 보고를 받으셨습니다. 아직 ${gp}경기라 성적은 더 지켜보겠다고 하셨습니다.`:`구단주께서 ${m}월 보고를 받으셨습니다. 아직 판단을 미루고 지켜보겠다고 하셨습니다.`):`구단주께서 ${m}월 보고에 ${mood==='격노'?'크게 화를 내셨습니다':'불만을 표하셨습니다'}. ${demands.length?demands.join(', ')+'고 하셨습니다.':''}${t.trust<25?' 단장 교체 이야기가 그룹 안에서 나오고 있습니다.':''}`;
+  const demands=[]; if(!early&&!ex&&rkW>=.5&&rk>g.rank+1)demands.push(`순위를 ${g.rank}위 안으로 끌어올리라`); if(ps>g.sup+.15)demands.push('적자 폭을 줄이라'); if(G.pr.press<38)demands.push('언론 보도를 관리하라'); if(G.pr.fan<g.fan-8)demands.push('팬심을 돌려 놓으라');
+  const txt=mood==='만족'?`구단주께서 ${m}월 보고를 받고 만족해하셨습니다. 지금 방향을 유지하라는 말씀입니다.`:mood==='관망'?(early?`구단주께서 ${m}월 보고를 받으셨습니다. 아직 ${gp}경기라 성적은 더 지켜보겠다고 하셨습니다.`:`구단주께서 ${m}월 보고를 받으셨습니다. 아직 판단을 미루고 지켜보겠다고 하셨습니다.`):`구단주께서 ${m}월 보고에 ${mood==='격노'?'크게 화를 내셨습니다':'불만을 표하셨습니다'}. ${demands.length?demands.join(', ')+'고 하셨습니다.':''}${ex?` 창단 ${ex}년차라 성적보다 기반을 보겠다고 덧붙이셨습니다.`:t.trust<25?' 단장 교체 이야기가 그룹 안에서 나오고 있습니다.':''}`;
   if(gp<10){ G.ownerLog.unshift({d:G.day,m,mood:'관망',delta:d,trust:t.trust,txt:`개막 ${gp}경기: 평가 보류`}); if(G.ownerLog.length>20)G.ownerLog.length=20; return; }
   G.ownerLog.unshift({d:G.day,m,mood,delta:d,trust:t.trust,txt}); if(G.ownerLog.length>20)G.ownerLog.length=20;
   mail('구단주실',`${m}월 구단주 보고: ${mood}`,`${txt}\n\n현재 ${rk}위(목표 ${g.rank}위 이내) · 팬 여론 ${Math.round(G.pr.fan)}(목표 ${g.fan}) · 언론 논조 ${Math.round(G.pr.press)} · 예상 적자 보전 ${Math.round(ps*100)}%(목표 ${Math.round(g.sup*100)}% 이하)\n구단주 신뢰 ${t.trust} (${d>=0?'+':''}${d})`,{imp:mood==='격노',kind:'구단주',acts:[{l:'목표 보기',a:'go',v:'club:owner'}]});
 }
 function goalYearEnd(rank,fin){ const s=goalStatus(); if(!s)return {d:0,lines:[]}; s.rank.cur=rank; s.rank.ok=rank<=s.rank.t; if(fin&&fin.supCap){ s.sup.cur=fin.support/fin.supCap; s.sup.ok=s.sup.cur<=s.sup.t; } const w=OWNER[(G.goals&&G.goals.owner)||team(G.user).owner].w; let d=0; const lines=[];
-  const f=(ok,label,wt)=>{ const v=Math.round((ok?3:-4)*wt); d+=v; lines.push(`${label} ${ok?'달성':'미달'} (${v>=0?'+':''}${v})`); };
+  const ex=expYr(G.user); const f=(ok,label,wt)=>{ const v=Math.round((ok?3:ex?-1.5:-4)*wt); d+=v; /* 창단 유예: 미달 벌점을 크게 줄인다 */ lines.push(`${label} ${ok?'달성':'미달'} (${v>=0?'+':''}${v})`); };
   f(s.rank.ok,`순위 목표(${s.rank.t}위 이내)`,w[0]); f(s.sup.ok,'재정 목표',w[2]); f(s.fan.ok,`여론 목표(${s.fan.t})`,w[3]); if(s.youth)f(s.youth.ok,'육성 목표',.8);
   return {d,lines}; }
 

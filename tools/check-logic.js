@@ -4060,6 +4060,35 @@ T('[커뮤니티 11-13] 해외 스카우트 포지션 지정: 그 지역 우리 
 
 T('[감독 갈등 11-12] 면담 관계 상승은 자주 할수록·관계가 높을수록 줄어든다',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=50; m.tkD=[G.day]; const a=mcfRelGain(m,4); m.tkD=[G.day-3,G.day-2,G.day-1,G.day]; const b=mcfRelGain(m,4); m.rel=85; const c=mcfRelGain(m,4);
   ok(a===4,'첫 면담 상승이 줄어듦 '+a); ok(b<a,'자주 해도 같은 상승 '+b); ok(c<b,'관계 높아도 같은 상승 '+c); ok(mcfRelGain(m,-3)===-3,'하락은 그대로여야 함'); });
+
+/* 창단 구단(카페 11-13: 원주 신생 구단 '미확인', 창단 첫해 7위 목표·3주 5할 지시로 1년 만에 경질) */
+const expMake=(user,city)=>{ fresh(); expPropose(); const E=G.exp; const C=CI_CITY.find(c=>c.city===(city||'원주')); if(C)Object.assign(E,{city:C.city,region:C.region,market:C.market}); E.stage='approved'; E.ay=G.year; E.userGm=!!user; const tid=expDraft(); G.cal=buildCalendar(G.year); team(tid).born=G.year; /* 이번 시즌이 창단 1년차 */ return tid; };
+T('[창단 구단] 창단 1~3년차 구단주 목표는 순위 부담 없음→탈꼴찌→뒤에서 셋째이고, 단장 계약도 새 구단으로 옮긴다',()=>{ const tid=expMake(true); const N=G.teams.length; ok(N===11&&G.user===tid,'준비 실패: 창단 단장 부임 안 됨');
+  ok(G.myC&&G.myC.tid===tid&&G.myC.y1>=team(tid).born+2,'단장 계약이 옛 구단에 남음: '+JSON.stringify(G.myC&&{tid:G.myC.tid,y1:G.myC.y1}));
+  const got=[]; for(const k of [0,1,2,3]){ team(tid).born=G.year-k; G.goals=null; G.proj=null; goalsPreseason(); got.push(G.goals.rank+(G.goals.exp?'/'+G.goals.exp:'')); }
+  ok(got[0]===N+'/1'&&got[1]===(N-1)+'/2'&&got[2]===(N-2)+'/3','유예 목표가 다름: '+got.join(','));
+  ok(!/\\/4$/.test(got[3])&&+got[3].split('/')[0]<=8,'유예가 끝난 4년차는 평소 목표여야 함: '+got[3]);
+  team(tid).born=G.year; G.goals=null; G.mail=[]; goalsPreseason(); ok(G.goals.youth===1&&G.goals.sup>=1,'유예 목표에 육성·재정 완화 없음');
+  const m=G.mail.find(x=>(x.subj||'').includes('시즌 구단 목표')); ok(m&&m.body.includes('창단 1년차')&&m.body.includes('순위 목표 없음'),'목표 메일에 창단 유예 안내 없음');
+  ok(team(tid).cash>=0,'특별지명 보상금이 구단 운영 자금에서 빠져 시작부터 적자: '+team(tid).cash);
+  ok(capInfo(tid).floor===0,'창단 첫 시즌인데 연봉 하한 적용'); });
+T('[창단 구단] 유예 중에는 단기 승률 지시가 없고, 신뢰가 바닥이어도 성적으로 경질되지 않는다(사용자·AI 단장·AI 감독)',()=>{ const tid=expMake(true); simTo(()=>period()==='season'&&G.day>=G.cal.open+40);
+  for(let i=0;i<30;i++){ ok(!cwOrdCands().some(c=>c.k==='win'),'유예 중 3주 5할 지시 후보'); }
+  team(tid).trust=5; for(const p of playersOf(tid))if(p.r)for(const k in p.r)p.r[k]=Math.min(p.r[k],30); /* 일부러 꼴찌로 */
+  simTo(()=>G.last&&G.last.y===G.year); ok(!G.unemp&&G.user===tid,'유예 중 성적으로 경질: '+JSON.stringify(G.unemp));
+  ok(!(G.mail||[]).some(x=>(x.subj||'').includes('이대로면 시즌 결산 때 경질')),'유예 중 경질 예고 메일');
+  /* AI가 맡은 신생 구단: 꼴찌여도 단장·감독을 성적으로 바꾸지 않는다 */
+  const ai=expMake(false); const t=team(ai); t.born=G.year-1; const g=gmOf(ai); g.since=G.year-3; g.age=30; const m=G.mgr[ai]; m.yrs=2;
+  G.last={y:G.year-1,order:[...G.teams.filter(x=>x.id!==ai).map(x=>({tid:x.id})),{tid:ai}]}; const gid=g.id||g.name, mid=m.id;
+  for(let i=0;i<25;i++){ gmTurnover(); mgrFireOff(); } ok((t.gm.id||t.gm.name)===gid,'AI 신생 구단 단장이 유예 중 경질'); ok(G.mgr[ai].id===mid,'AI 신생 구단 감독이 유예 중 경질');
+  t.born=G.year-5; let fired=false; for(let i=0;i<25&&!fired;i++){ gmTurnover(); fired=(t.gm.id||t.gm.name)!==gid; } ok(fired,'유예가 끝난 꼴찌 구단 단장도 바뀌지 않음(점검이 무의미)'); });
+T('[창단 구단] 강원(원주) 연고 신생 구단 선수도 수도권 프로 담당 스카우트가 평가한다',()=>{ const tid=expMake(false,'원주'); ok(team(tid).region==='강원','준비 실패: 강원 연고 아님');
+  ok(teamScoutReg(tid)==='수도권','스카우트 지역 '+teamScoutReg(tid)); for(const s of G.scouts)if(s.role==='pro')s.region='영남';
+  const sc=G.scouts.find(s=>s.role==='pro'); ok(sc,'준비 실패: 프로 스카우트 없음'); const ps=playersOf(tid).filter(p=>!p.foreign);
+  const seen0=ps.filter(p=>scoutReport(p).ofp!=null).length;
+  sc.region='수도권'; sc.skill=4; const seen=ps.filter(p=>scoutReport(p).ofp!=null).length; ok(seen>seen0,'수도권 담당을 둬도 더 보이지 않음 '+seen0+'→'+seen); ok(seen>=ps.length*.9,'수도권 담당이 있어도 원주 구단 선수 잠재력 미확인 '+(ps.length-seen)+'/'+ps.length);
+  ok(scoutSlots().some(x=>x.role==='pro'&&x.key==='수도권'&&x.why.includes('구단')),'스카우트 배치 후보에 수도권 프로 담당이 없음'); });
+
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

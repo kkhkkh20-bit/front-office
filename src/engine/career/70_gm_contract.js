@@ -51,7 +51,7 @@ function myCSeasonEnd(y,ps){ const C=myCInit(); if(!C||G.unemp||C.y1!==y)return;
   /* 명성이 높으면 다른 구단이 먼저 연락해 온다 */
   if(rep>=58){ const cands=G.teams.filter(x=>x.id!==G.user&&!(G.jobs||[]).some(j=>!j.done&&j.tid===x.id)).map(x=>({x,rk:G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===x.id)+1:5,g:gmOf(x.id)})).sort((a,b)=>b.rk-a.rk+(b.g&&b.g.age>=60?2:0)-(a.g&&a.g.age>=60?2:0));
     for(const c of cands.slice(0,rep>=75?2:1)){ if(R()<.25)continue; jobOffer(c.x.id,false,myCOffer(c.x.id,false),true); } }
-  const will=tr>=45||(tr>=35&&rep>=60);
+  const will=tr>=45||(tr>=35&&rep>=60)||(!!expYr(G.user,y+1)&&!expFinDisaster(G.user)); /* 창단 유예 중에는 성적으로 재계약을 끊지 않는다(89_league_expansion) */
   if(!will){ firedFlow(y,`${y}시즌으로 계약이 끝났고, 구단주가 재계약하지 않기로 했습니다(구단주 신뢰 ${tr}).`,'expire'); return; }
   const yrs=champ||recent>=2?4:tr>=70?3:2; const raise=(tr>=70?.15:tr>=55?.08:0)+(champ?.1:0)+(rep>=70?.05:0);
   const sal=Math.round(Math.max(GMC_MIN,Math.min(Math.max(C.sal,myCBase(G.user))*(1+raise),C.sal*1.35))/10)*10; /* 한 번에 35%까지만 오른다. 7억 상한은 기본 연봉에만: 영입 제안처럼 지금 연봉 위로 오른다(검수 11-09zb) */ const B=bossOf(G.user);
