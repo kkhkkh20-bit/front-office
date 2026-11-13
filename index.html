@@ -12750,10 +12750,13 @@ function aiExtensions(all){ const done=[];
    최근 3시즌 1군 WAR을 최근 해에 더 무게(5·4·3)로 평균내고 리그 평균 쪽으로 25% 당긴 뒤, 31세부터 해마다 7%씩 깎는다(계약 기간 평균 하락).
    1군 기록이 거의 없으면(합계 1시즌 미만) null: 능력치 기준을 그대로 쓴다 */
 function faExpWar(p){ const y0=G.year; const by={}; let pa=0; for(const h of (p.hist||[])){ if(h.lvl!=='1군'||h.y<y0-3||h.y>y0)continue; by[h.y]=(by[h.y]||0)+(warOf(h,p)||0); pa+=p.isP?(h.outs||0)/3*4.3:(h.pa||0); }
-  if(pa<350)return null; const ys=Object.keys(by).map(Number).sort((a,b)=>b-a).slice(0,3); const W=[5,4,3]; let s=0,w=0; ys.forEach((y,i)=>{ s+=by[y]*W[i]; w+=W[i]; }); let e=w?s/w:0; e=e*.75+1*.25; if(p.age>=31)e*=Math.max(.5,1-(p.age-30)*.07); return Math.max(0,e); }
+  if(pa<350)return null; const ys=Object.keys(by).map(Number).sort((a,b)=>b-a).slice(0,3); const W=[6,3,1]; let s=0,w=0; ys.forEach((y,i)=>{ s+=by[y]*W[i]; w+=W[i]; }); let e=w?s/w:0; e=e*.85+1*.15; /* FA 시즌·최근 해에 무게(카페 11-13: 최근 2년 스텝업한 선수가 3년 평균으로 헐값이 됐다) */ if(p.age>=31)e*=Math.max(.5,1-(p.age-30)*.07); return Math.max(0,e); }
 /* AI가 내는 연봉 상한: 기대 WAR × WAR당 시장가(5.5억, 실제 KBO FA 연평균은 대략 WAR당 5~6억: 안치홍 4년 72억·채은성 6년 90억) × 물가, 우승 경쟁 구단은 15% 더 */
 function faWarCap(t,p){ const e=faExpWar(p); if(e==null)return null; return Math.max(MIN_SAL*2,round5(e*550*ecoIdx(sponSeason())*(t.mode==='contend'?1.15:1))); }
-function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); return wc==null?w0:Math.min(w0,wc); } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
+function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); if(wc==null)return w0; const pr=faPoolPrem(p); return round5(Math.min(w0*pr,Math.max(w0*.7,wc*pr))); }
+/* FA 시장 경쟁(카페 11-13): 이번 시장 상위 매물은 성적이 조금 모자라도 몸값이 오른다(1~3위 +35%, 4~8위 +15%). 성적(WAR) 상한은 능력 기준 몸값의 70% 아래로는 깎지 않는다 */
+let _fpr={k:null,m:null};
+function faPoolPrem(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=G.year+':'+G.day+':'+F.pool.length; if(_fpr.k!==k){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null).sort((a,b)=>ovr(b)-ovr(a)); _fpr={k,m:new Map(L.map((q,i)=>[q.id,i]))}; } const r=_fpr.m.get(p.id); return r==null?1:r<3?1.35:r<8?1.15:1; } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;
