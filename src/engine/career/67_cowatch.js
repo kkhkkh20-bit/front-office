@@ -184,7 +184,7 @@ function cwGame(S){ S=S||G.cwS; if(!S)return null; return (G.games||[]).find(g=>
 function cwOrd(){ const o=G.ownOrder; return o&&o.st==='open'?o:null; }
 function cwOrdCands(){ const t=team(G.user); const sec=cwSec(); const C=G.cal; const end=Math.min(G.day+21,C.end); const L=[]; const left=homeGames(G.user,G.day+1,end).length; const games=(()=>{ let n=0; for(let d=G.day+1;d<=end;d++)n+=dayGames(d).filter(m=>m.includes(G.user)).length; return n; })(); /* 경기 수: 같은 날 두 경기·보충 경기도 센다(검수 11-09zzd) */
   if(period()!=='season')return L;
-  if(games>=10)L.push({k:'win',w:t.owner==='win'?3:1,t:'앞으로 3주 5할 이상',crit:`${dmd(end)}까지 우리 경기 승률 5할 이상(무승부 제외)`,until:end,base:{}});
+  if(games>=10&&!expYr(G.user))L.push({k:'win',w:t.owner==='win'?3:1,t:'앞으로 3주 5할 이상',crit:`${dmd(end)}까지 우리 경기 승률 5할 이상(무승부 제외)`,until:end,base:{}});
   if(left>=5){ const A=cwHomeAtt(); const full=A.ratio>=.97; const tg=full?.95:Math.min(1,A.ratio+.03); L.push({k:'att',w:(t.owner==='pr'?3:.8)*(sec==='crowd'?2:1),t:full?'매진 행진 이어 가게':'홈 관중 늘려 보게',crit:`${dmd(end)}까지 홈경기 평균 좌석 점유율 ${cwPct(tg)} 이상${full?' 유지':''}(지금까지 ${cwPct(A.ratio)})`,until:end,base:{ratio:A.ratio,tg}}); } /* 이미 꽉 찬 구장에 '더 늘리라'는 목표는 이룰 수 없다 */
   let b=null; try{ b=budget(); }catch(e){} if(b){ const e2=Math.min(G.day+28,C.end+30); if(b.roomGoal<0)L.push({k:'cut',w:(t.owner==='profit'?3:.8)*(sec==='money'?2:1),t:'이번 분기 적자 줄이게',crit:`${dmd(e2)}까지 예산 여유를 3억 이상 개선(지금 ${money(b.roomGoal)})`,until:e2,base:{room:b.roomGoal}});
     else L.push({k:'keep',w:(t.owner==='profit'?1.5:.4)*(sec==='money'?1.5:1),t:'예산 여유 지키게',crit:`${dmd(e2)}까지 예산 여유를 0원 이상으로 유지(지금 ${money(b.roomGoal)})`,until:e2,base:{room:b.roomGoal}}); }

@@ -6,7 +6,7 @@ function teamStatusBox(){ const per=period(); const gs=goalStatus(); const ci=ca
   const pr=me?null:projNow().findIndex(x=>x.tid===G.user)+1||null; /* 홈 상단·오른쪽 전력 예상과 같은 기준 */
   const rec=me?`<b>${i+1}위</b> ${me.w}승 ${me.l}패${me.t?` ${me.t}무`:''} · 승률 ${fmt3(me.w/Math.max(1,me.w+me.l))}${i>0?` · 1위와 ${gb}경기`:''}${g5!=null?` · 5위와 ${g5}경기`:''}`:`${PERIOD[per]}${pr?` · 예상 ${pr}위`:''}`;
   const ok=x=>x?'<b class="good">달성 중</b>':'<b class="bad">미달</b>';
-  const goal=gs?`목표 ${gs.rank.t}위 이내 ${gs.rank.cur!=null?ok(gs.rank.ok):''} · 지원 ${Math.round(gs.sup.cur*100)}%/${Math.round(gs.sup.t*100)}% ${ok(gs.sup.ok)} · 팬 ${gs.fan.cur}/${gs.fan.t} ${ok(gs.fan.ok)}`:'올해 목표 미정';
+  const goal=gs?`목표 ${goalRankTxt(gs.rank.t)} ${gs.rank.cur!=null?ok(gs.rank.ok):''} · 지원 ${Math.round(gs.sup.cur*100)}%/${Math.round(gs.sup.t*100)}% ${ok(gs.sup.ok)} · 팬 ${gs.fan.cur}/${gs.fan.t} ${ok(gs.fan.ok)}`:'올해 목표 미정';
   const out=playersOf(G.user).filter(p=>!healthy(p)); const ng=(G.cal&&per!=='off')?nextGames(1)[0]:null;
   const r=(l,v)=>`<div class="tsb-r"><span>${l}</span><span>${v}</span></div>`;
   return `<div class="tsbox">${r('성적',rec)}${r('구단주',goal)}${r('돈',`캡 ${money(ci.pay)} / ${money(ci.cap)}${ci.over>0?' <b class="bad">초과</b>':''}${b?` · 예산 여유 <b class="${b.roomGoal<0?'bad':'good'}">${money(b.roomGoal)}</b>`:''}`)}

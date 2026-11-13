@@ -6,6 +6,14 @@
    4) 특별지명(11월 20일): 기존 구단은 국내 선수 20명을 보호하고, 신생 구단은 구단마다 보호 밖 1명을 지명한다(구단마다 보상금 10억). 나머지는 신인·독립리그 선수로 채운다.
    5) 다음 시즌 1군 진입. 일정은 구단 수에 맞게(11구단 140경기, 12구단 132경기). 첫 신인 드래프트는 1라운드 첫 순번 */
 const EXP_NICK=['다이노스','위즈','히어로즈','레인저스','썬더스','팰컨스','마린스','블루윙스','스타즈','유니콘스'];
+/* 창단 유예(카페 11-13: 창단 첫해 구단주 목표 7위·3주 5할 지시로 1년 만에 경질). 실제 KBO도 NC(2013)·KT(2015)에 몇 해 시간을 줬다.
+   1군 첫 시즌부터 3시즌(창단 겨울 포함)은 구단주 목표를 낮추고(1년차 순위 부담 없음 → 2년차 탈꼴찌 → 3년차 뒤에서 셋째), 단기 승률 지시를 내리지 않으며,
+   성적 때문에 신뢰가 크게 깎이거나 단장(사용자·AI)·AI 감독이 성적으로 경질되지 않는다. 자금이 바닥나는 재정 사고는 유예와 상관없이 책임을 묻는다 */
+const EXP_GRACE=3;
+function expYr(tid,y){ const t=tid!=null&&typeof G!=='undefined'&&G&&G.teams?G.teams[tid]:null; if(!t||!t.born)return 0; const n=(y??G.year)-t.born+1; return n>=0&&n<=EXP_GRACE?Math.max(1,n):0; } /* 창단 n년차(유예 중일 때만, 아니면 0) */
+function expGraceRank(tid,y){ const n=expYr(tid,y); if(!n)return null; const N=G.teams.length; return n===1?N:n===2?N-1:N-2; } /* 1년차는 순위 목표 없음(N위), 2년차 탈꼴찌, 3년차 뒤에서 셋째 */
+function expGraceTxt(tid,y){ const n=expYr(tid,y); return n?`창단 ${n}년차 유예(${EXP_GRACE}년차까지): 구단주가 성적보다 기반을 봅니다. 성적으로는 경질되지 않습니다.`:''; }
+function expFinDisaster(tid){ const t=team(tid); return (t.cash||0)<-8000*(typeof ecoIdx==='function'?ecoIdx():1); } /* 유예 중에도 책임을 묻는 재정 사고: 현금 -80억 아래 */
 function expInit(){ return G.exp=G.exp||{stage:'idle',last:null,cool:null,hist:[]}; }
 function expDaily(day){ const E=expInit(); const o=dobj(day);
   if(o.m===12&&o.d===31)try{ expFBonusEnd(); }catch(e){}
@@ -35,13 +43,14 @@ function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid
   for(const o of G.teams){ if(o.id===tid)continue; const pool=domestic(o.id).filter(p=>!p.prospect&&!(p.joinY>G.year)&&!(p.mil&&p.mil.until>G.day));
     const prot=new Set(pool.slice().sort((a,b)=>aiVal(o,b)-aiVal(o,a)).slice(0,20).map(p=>p.id)); const cand=pool.filter(p=>!prot.has(p.id)).sort((a,b)=>aiVal(t,b)-aiVal(t,a))[0]; if(!cand)continue;
     mvLog('특별지명',cand,o.id,tid); cand.team=tid; delete cand.listed; delete cand.aiListed; L.push(`${tshort(o.id)} ${cand.name}(${posLabel(cand)}, ${dv(ovr(cand))})`); o.cash+=1000; pay+=1000; }
-  t.cash-=pay;
+  E.comp=pay; /* 보상금은 모기업이 창단 출자금으로 따로 낸다(실제 KBO 신생 구단처럼). 구단 운영 자금에서 빼면 첫 시즌 전부터 -60억으로 시작해 빚이 불어났다(창단 테스트 11-13) */
   /* 나머지: 독립리그·신인급으로 국내 선수 50명까지 */
   const bpos=['C','C','C','1B','2B','2B','3B','SS','SS','LF','CF','CF','RF']; let i=0; while(domestic(tid).length<50&&i<80){ const isP=domestic(tid).filter(p=>p.isP).length<26; const age=ri(20,31), b=clamp(N(41,5),28,56);
     const p=newPlayer({age,isP,pos:isP?undefined:bpos[i%bpos.length],base:b,pot:b+ri(0,age<=25?12:4),team:tid,svc:clamp(age-20,0,8)}); p.sal=round5(Math.max(MIN_SAL,marketSal(ovr(p))*.5)); i++; }
   E.stage='done'; E.last=G.year; E.tid=tid; E.hist.push({y:G.year,city:E.city,ok:true,tid});
-  news('리그',`${tshort(tid)} 특별지명 결과`,`구단마다 보호선수 20명 밖에서 1명씩 지명했습니다(보상금 구단당 10억).\n`+L.join('\n'),2,{tid});
-  if(E.userGm&&!G.gameOver){ try{ switchTeam(tid); mail(E.parent,`${tshort(tid)} 창단 단장 부임`,`특별지명으로 ${L.length}명을 데려왔습니다. 외국인 선수와 코칭스태프를 채우고 첫 시즌을 준비해 주십시오.\n\n`+L.join('\n'),{kind:'구단',imp:true}); }catch(e){} }
+  news('리그',`${tshort(tid)} 특별지명 결과`,`구단마다 보호선수 20명 밖에서 1명씩 지명했습니다(보상금 구단당 10억, ${E.parent} 창단 출자금으로 지급).\n`+L.join('\n'),2,{tid});
+  if(E.userGm&&!G.gameOver){ try{ const wasU=!!G.unemp; if(!wasU&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); } G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid);
+      try{ myCStart(tid,{sal:Math.max(myCBase(tid),wasU?0:(G.myC&&G.myC.sal)||0),yrs:EXP_GRACE+1},'창단 단장'); }catch(e){} /* 단장 계약도 새 구단으로(창단 테스트 11-13: 옛 구단 계약이 남아 유예 중 계약 만료 판정) */ mail(E.parent,`${tshort(tid)} 창단 단장 부임`,`특별지명으로 ${L.length}명을 데려왔습니다. 외국인 선수와 코칭스태프를 채우고 첫 시즌을 준비해 주십시오.\n\n당장 성적을 바라지는 않습니다. ${G.year+1}~${G.year+EXP_GRACE}시즌(창단 ${EXP_GRACE}년차까지)은 순위보다 선수 육성과 팬 기반을 보겠습니다. 첫해 순위 목표는 두지 않고, 2년차 탈꼴찌, 3년차부터 조금씩 올려 가겠습니다.\n\n`+L.join('\n'),{kind:'구단',imp:true}); }catch(e){} }
   return tid; }
 
 /* 신생 구단 외국인 혜택이 끝나는 겨울(12월 31일): 일반 외국인이 3명을 넘으면 가장 낮은 선수를 내보낸다(우리 구단이면 소식으로 알린다) */
