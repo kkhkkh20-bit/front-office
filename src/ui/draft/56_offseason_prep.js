@@ -49,7 +49,7 @@ function ctMoneyKv(p){ const m=ctMoney(p); if(!m)return ''; return `<dt>${m.sy}�
 /* ---------- 외국인 재계약 "15% 깎아 협상" 위험 표시: 엔진 fReNegChance와 같은 식 ---------- */
 function fNegRiskH(p){ const C=G.contract; if(!C||C.done)return ''; if((C.fneg||{})[p.id])return `<span class="opz-risk small muted">이미 한 번 협상했습니다 · 다시 협상할 수 없습니다</span>`;
   let r; try{ r=fReNegChance(p); }catch(e){ return ''; } const b=1-r.ch; const lv=b>=.55?['높음','bad']:b>=.35?['보통','warn']:['낮음','good'];
-  return `<span class="opz-risk small"><span class="${lv[1]}">결렬 가능성 ${lv[0]}(약 ${Math.round(b*100)}%)</span> · 결렬되면 다시 협상할 수 없고 선수는 떠납니다${r.star?' · 지난 시즌 WAR 3 이상이라 잘 받아들이지 않습니다':''}</span>`; }
+  return `<span class="opz-risk small"><span class="${lv[1]}">결렬 가능성 ${lv[0]}</span> · 결렬되면 다시 협상할 수 없고 선수는 떠납니다${r.star?' · 지난 시즌 WAR 3 이상이라 잘 받아들이지 않습니다':''}</span>`; }
 
 /* ---------- 시즌 회고 메일: 선수별 후속 조치(유지 · 재계약 검토 · 대체 후보 찾기) ---------- */
 function rvExt(p,y){ if(canExtend(p))return {a:'ngtOpen',v:'ext:'+p.id};

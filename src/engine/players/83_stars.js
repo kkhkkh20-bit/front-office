@@ -86,4 +86,4 @@ EVH.memo={ can(e,i){ if(i>=MEMO_Q.length)return ''; const t=team(G.user), cost=M
   if(boom){ G.pr.fan=clamp(G.pr.fan+3,0,100); team(G.user).pop=clamp(team(G.user).pop+.003,.4,1.6); p.mor=clamp((p.mor??60)+3,0,100); news('구단',`${e.data.nm} 기념 유니폼 품절 대란`,`출시 첫날 구단 온라인몰 접속이 몰렸고 ${q.toLocaleString('ko-KR')}벌이 금세 동났습니다. 추가 제작 요청이 이어집니다.`,2,{ref:p.id,fanW:2}); }
   else if(flop)news('구단',`${e.data.nm} 기념 유니폼, 재고 남아`,`관심에 비해 판매가 더뎌 ${(q-sold).toLocaleString('ko-KR')}벌이 남았습니다.`,0,{ref:p.id});
   else { G.pr.fan=clamp(G.pr.fan+1,0,100); news('구단',`${e.data.nm} 기념 유니폼 출시`,`기념 유니폼 ${sold.toLocaleString('ko-KR')}벌이 팔렸습니다.`,1,{ref:p.id,fanW:1}); }
-  return `${q.toLocaleString('ko-KR')}벌을 만들어 ${sold.toLocaleString('ko-KR')}벌 팔았습니다${boom?'(품절 대란, 팬 여론 +3)':''}. 판매 수입 ${money(inc)}, 제작비 ${money(cost)}, 손익 ${money(inc-cost)}.`; } };
+  return `${q.toLocaleString('ko-KR')}벌을 만들어 ${sold.toLocaleString('ko-KR')}벌 팔았습니다${boom?'(품절 대란, 팬 여론 호전)':''}. 판매 수입 ${money(inc)}, 제작비 ${money(cost)}, 손익 ${money(inc-cost)}.`; } };

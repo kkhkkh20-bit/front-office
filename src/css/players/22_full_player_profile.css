@@ -47,7 +47,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 @media(min-width:1100px){.pf-screen .pf-masthead:not(:has(.pe-box)){display:none}.pf-fm-name .pe-b{font-size:11px;padding:1px 6px;margin-left:4px;vertical-align:2px}.pf-fm-pay .tc-i{margin:6px 2px 0}}
 /* PC: FM 시즌 통계처럼 연도·소속별 표(올해 핵심 숫자는 왼쪽 인물 상자에) */
 .pf-season-table{display:none!important}
-@media(min-width:1100px){.pf-screen .pf-mobile-only{display:none!important}.pf-screen .pf-season-table{display:block!important}.pf-season-table .tw{max-height:220px;overflow:auto;margin:0}.pf-season-table table{font-size:12px}.pf-season-table th,.pf-season-table td{padding:4px 6px}}
+@media(min-width:1100px){.pf-screen .pf-mobile-only{display:none!important}.pf-screen .pf-season-table{display:block!important}.pf-season-table .tw{max-height:220px;overflow:auto;margin:0}.pf-season-table :is(table,th,td,td a){font-size:12px}.pf-season-table th,.pf-season-table td{padding:4px 6px}}
 /* PC: 선수 탭은 상단 하위 탭 줄로 올라간다(FM처럼) */
 @media(min-width:1100px){.fm-ptabs .pf-screen .pf-topnav .ptabs{display:none}}
 /* PC: FM 상황판처럼 한 화면에 꽉 맞춘다. 페이지는 스크롤하지 않고, 내용이 넘치는 열만 그 안에서 스크롤 */
@@ -213,7 +213,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career{grid-area:7/3/9/4}
 }
 @media(min-width:1100px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:1/1;height:auto;object-fit:contain} /* 사진을 자르지 않고 통째로(사용자 11-08) */}
-@media(min-width:1100px) and (max-width:1919px){#sheet .pf-season-table table{font-size:var(--ui-micro)}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
+@media(min-width:1100px) and (max-width:1919px){#sheet .pf-season-table :is(table,th,td,td a){font-size:var(--ui-caption)}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
 /* 능력 변화 표시(사용자 11-08) */
 .pf-attribute-row:has(>.pf-ar){grid-template-columns:minmax(0,1fr) 14px auto}
 .pf-ar{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;font-style:normal;vertical-align:middle;cursor:help}

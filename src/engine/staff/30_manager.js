@@ -6,6 +6,8 @@ function mkMgr(){ const tac=ri(35,82); const fame=R()<.16?ri(70,92):ri(18,62); c
 function mgrFix(m){ if(!m)return m; if(m.ego==null)m.ego=ri(20,85); if(m.fame==null)m.fame=ri(18,62); if(m.rel==null)m.rel=60; mgrAttr(m); return m; }
 /* 운영 기조: 단장이 지시하고, 감독이 성향대로 받아들인다 */
 const POL={win:{l:'성적 우선',lean:-1,d:'지금 이기는 데 집중합니다. 검증된 선수가 우선 출전합니다.'},bal:{l:'균형',lean:0,d:'성적과 육성을 함께 봅니다.'},youth:{l:'육성 우선',lean:1,d:'젊은 유망주에게 출전 기회를 줍니다. 당장 성적은 떨어질 수 있습니다.'}};
+/* 감독이 지시를 따르는 정도는 숫자 대신 말로 */
+function followWord(f){ return f>=.8?'지시를 잘 따릅니다':f>=.55?'대체로 따릅니다':f>=.35?'반쯤만 따릅니다':'잘 따르지 않습니다'; }
 function mgrLean(m){ return clamp((m.youth-50)/40,-1,1); }
 function teamLean(tid){ const m=mgrOf(tid);
   if(tid!==G.user){ const T=team(tid); const pl=T?planOf(T):null; const want=pl?({build:.7,tight:.5,next:-.15,star:-.3,win:-.6}[pl]):T&&T.mode==='rebuild'?.6:-.5; /* 운영 전략: 유망주 수집 구단은 어린 선수를 쓴다 */ /* 상무(퓨처스리그)처럼 구단이 아닌 팀은 기본 성향 */ return clamp(want*.5+mgrLean(m)*.5,-1,1); }
@@ -47,8 +49,8 @@ function setPolicy(k){
   if(follow>=.8){ msg=`${m.name} 감독: 알겠습니다. ${POL[k].l} 기조로 운영하겠습니다.`; m.rel=clamp(m.rel+2,0,100); }
   else if(follow>=.5){ msg=`${m.name} 감독: 취지는 이해합니다. 다만 현장 상황을 보면서 일부만 반영하겠습니다.`; }
   else { msg=`${m.name} 감독: 선수 기용은 감독의 권한입니다. 제 방식대로 하겠습니다.`; m.rel=clamp(m.rel-6,0,100); if(m.fame>=70||m.ego>=75)prLeak('mgr',null,`${m.name} 감독 "기용은 감독 권한"… 프런트와 엇박자`); }
-  mail('감독실',`운영 기조 지시: ${POL[k].l}`,`${msg}\n\n감독 수용도 ${Math.round(follow*100)}%. 실제 운영은 지시와 감독 본래 성향(${mgrLean(m)>.2?'육성 쪽':mgrLean(m)<-.2?'성적 쪽':'균형'})이 섞여 정해집니다.`,{kind:'감독'});
-  addLog(`운영 기조를 ${POL[k].l}(으)로 지시했습니다. 감독 수용도 ${Math.round(follow*100)}%.`);
+  mail('감독실',`운영 기조 지시: ${POL[k].l}`,`${msg}\n\n감독이 ${followWord(follow)}. 실제 운영은 지시와 감독 본래 성향(${mgrLean(m)>.2?'육성 쪽':mgrLean(m)<-.2?'성적 쪽':'균형'})이 섞여 정해집니다.`,{kind:'감독'});
+  addLog(`운영 기조를 ${POL[k].l}(으)로 지시했습니다. 감독이 ${followWord(follow)}.`);
   return {msg,follow};
 }
 function mgrStyle(m){ const t=[]; mgrAttr(m); t.push(mgrType(m).n); t.push(m.small>=62?'스몰볼':m.small<=38?'빅볼':'균형 공격'); if(m.dfn>=62)t.push('수비 중시'); else if(m.dfn<=38)t.push('타격 중시'); t.push(m.pen>=62?'불펜 적극 운용':m.pen<=38?'선발에 긴 이닝':'보통 투수 운용'); mgrAttr(m); if(m.arm>=65)t.push('투수 혹사형(연투·멀티이닝)'); else if(m.arm<=35)t.push('투수 보호형'); if(m.youth>=62)t.push('육성형'); if(m.disc>=65)t.push('강한 장악력'); else if(m.disc<=35)t.push('자율형'); return t.join(' · '); }

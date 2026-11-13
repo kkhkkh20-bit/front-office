@@ -9,7 +9,7 @@
 const ASSOC={name:'대한프로야구협회',s:'KPBA',head:'협회장'};
 const AS_STANCE={tight:{l:'긴축형',v:0,d:'구단 재정 건전성을 앞세워 상한 인상을 억제합니다. 큰 인상안은 이사회에서 한 단계 낮출 때가 있습니다.'},
   bal:{l:'균형형',v:.03,d:'단장 회의 결정을 그대로 존중합니다.'},
-  grow:{l:'확장형',v:.06,d:'리그 사업을 키웁니다. 중계권 배분이 3% 늘고, 작은 인상안은 이사회에서 한 단계 올릴 때가 있습니다.'}};
+  grow:{l:'확장형',v:.06,d:'리그 사업을 키웁니다. 중계권 배분이 조금 늘고, 작은 인상안은 이사회에서 한 단계 올릴 때가 있습니다.'}};
 const AS_CAR=['전 구단 사장','모기업 그룹 부회장','야구 해설위원 출신','전 구단주 대행','스포츠 행정학 교수','전 체육 단체 사무총장','전 국회 문화체육관광위원'];
 const CMT_OPT=[0,.02,.03,.05] /* 표결 선택지(카페 11-13: 2060년대 상한 500억·연봉 90억처럼 숫자가 너무 커져 와닿지 않았다) */, CMT_TH=.9, CMT_N=5;
 const pctTxt=x=>x?`${Math.round(x*100)}% 인상`:'동결';
@@ -45,7 +45,7 @@ function cmtAsk(){ const A=asInit(), C=A.cur; if(!C||!C.on||!asEmp()||C.uvT!=nul
   const cap=capOf(G.year); const hint=G.teams.filter(t=>t.id!==G.user&&(t.rel??50)>=60).map(t=>`${tshort(t.id)} ${gmOf(t.id).name} 단장: ${pctTxt(cmtSnap(cmtIdeal(t)))} 쪽`);
   const sit=`올 시즌 연봉이 상한의 90% 이상이었거나 상한을 넘긴 구단이 ${near.length}곳(${near.map(t=>tshort(t.id)).join(', ')})이라 12월 10일 실행위원회(단장 회의)가 열립니다. 안건은 ${y}년 경쟁균형세 상한입니다.
 현재 상한 ${money(cap)} · 우리 구단 시즌 연봉 상한 대비 ${cmtPct(cmtRatio(team(G.user)))}.
-상한이 오르면 하한도 같은 비율로 오르고, 리그 수입 규모(중계권·광고)도 함께 커집니다. 상한에 여유가 많은 구단에는 부담만 늘 수 있습니다.
+상한이 오르면 하한도 같은 비율로 오릅니다. 리그 수입은 그대로라 상한에 여유가 많은 구단에는 부담만 늘 수 있습니다.
 과반이 지지한 안을 이사회(사장단)에 올립니다. 과반이 없으면 상위 두 안으로 결선 투표를 합니다.
 ${hint.length?`친분 있는 단장들에게 들은 분위기:\n${hint.join('\n')}`:'미리 속내를 들을 만큼 가까운 단장은 없습니다.'}`;
   evNew('cmt',`실행위원회 소집: ${y}년 상한 조정 표결`,sit,
@@ -60,7 +60,7 @@ function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; i
   if(!C.on){ /* 위원회가 열리지 않는 해는 매년 동결(돈의 기준 고정). 위원회가 열려 표결로 정한 결과는 동결 포함 그대로(사용자 요청 11-09) */
     const ix=0; /* 돈의 기준은 2026년으로 고정(사용자 11-13: FM·OOTP처럼 금액 감각이 흔들리지 않게). 위원회가 열리지 않는 해는 동결, 상한은 리그 연봉이 상한에 붙어 위원회가 열릴 때만 표결로 바뀐다 */
     G.capY[y]=Math.round(cap*(1+ix)); A.cmt.unshift({y,n:C.near.length,held:false,fin:ix,idx:true}); A.cmt.length=Math.min(A.cmt.length,15);
-    note('일정',`${y}년 경쟁균형세 상한은 ${money(G.capY[y])}으로 동결됩니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳐 표결 없이 자동 조정했습니다.`); A.cur=null; return; }
+    note('일정',`${y}년 경쟁균형세 상한은 ${money(G.capY[y])}으로 동결됩니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳐 표결이 없었습니다.`); A.cur=null; return; }
   /* 1차 표결 */
   const ideal={}, vote={}; const vt=C.uvT??G.user; /* 표는 던질 때 구단 것(이직해도 옮겨 가지 않는다: 검수 11-06) */ const userVotes=C.uvT!=null?C.uv!==undefined:asEmp();
   for(const t of G.teams){ ideal[t.id]=cmtIdeal(t); if(userVotes&&t.id===vt){ if(C.uv!=null)vote[t.id]=C.uv; continue; } vote[t.id]=cmtSnap(ideal[t.id]); }
@@ -125,7 +125,7 @@ function asElect(){ const A=asInit(); const E=A.el; if(!E||E.y!==G.year||E.done)
   if(uv==null||!asEmp()||vt!==G.user)return;
   const won=ok&&lead===uv; A.rel=clamp(won?Math.max(A.rel,50)+12:ok?A.rel-8:A.rel,0,100);
   const same=[], diff=[]; for(const t of G.teams){ if(t.id===G.user)continue; if(v1[t.id]===uv){ t.rel=clamp((t.rel??50)+2,0,100); same.push(t.id); } else { t.rel=clamp((t.rel??50)-1,0,100); diff.push(t.id); } }
-  note('일정',`${ASSOC.head} 선거 결과: ${ok?`${C[lead].name} 당선`:'추천 무산(현 협회장 1년 연장)'}. 우리 구단이 지지한 ${C[uv].name} 후보는 1차에서 ${c1[uv]}표${rounds.filter(r=>r.cn).length>1?`, 마지막 표결에서 ${cn[uv]}표`:''}를 받았습니다. ${won?`${ASSOC.head}과의 관계가 좋아졌습니다.`:ok?`새 ${ASSOC.head}과는 서먹하게 시작합니다.`:''} 1차에서 같은 후보를 민 구단 ${same.length}곳 단장과 친분 +2, 다른 후보를 민 ${diff.length}곳과 -1.`); }
+  note('일정',`${ASSOC.head} 선거 결과: ${ok?`${C[lead].name} 당선`:'추천 무산(현 협회장 1년 연장)'}. 우리 구단이 지지한 ${C[uv].name} 후보는 1차에서 ${c1[uv]}표${rounds.filter(r=>r.cn).length>1?`, 마지막 표결에서 ${cn[uv]}표`:''}를 받았습니다. ${won?`${ASSOC.head}과의 관계가 좋아졌습니다.`:ok?`새 ${ASSOC.head}과는 서먹하게 시작합니다.`:''} 1차에서 같은 후보를 민 구단 ${same.length}곳 단장과 친분 조금 상승, 다른 후보를 민 ${diff.length}곳과 -1.`); }
 
 /* 매일 훅: 07_daily에서 부른다 */
 function assocDaily(day){ try{ asInit(); }catch(e){ return; }

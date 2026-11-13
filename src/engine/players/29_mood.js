@@ -214,17 +214,17 @@ EVH.treq={ w:.7, check(){ const T=G.treqLog||{}; if(T.last!=null&&G.day-T.last<3
       ['wait','지금은 팀에 필요하다, 기다려 달라','기분이 내려갑니다. 불만이 바깥으로 새어 나갈 수 있고, 거듭 거절하면 다른 후보 선수들도 동요합니다.']];
     evNew('treq',`${p.name}${hard?'의 두 번째 트레이드 요청':' 트레이드 요청 면담'}`,`${p.name}(${posLabel(p)}, ${p.age}세, ${squadRole(p)||'후보'})이(가) 단장실을 찾아왔습니다.\n\n"${say}"\n\n${live?'올해':'최근'} 기록: ${evLine(p)}`,O.map(o=>({l:o[1],fx:o[2]})),{ref:p.id,face:p.id,from:p.name,data:{pid:p.id,ks:O.map(o=>o[0]),hard:!!hard},def:O.length-1,exp:5}); },
   pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; initPers(p); const k=e.data.ks[i]; const m=G.mgr[G.user];
-    if(k==='list'){ listPlayer(p.id); return `${p.name}: "들어주셔서 감사합니다. 가기 전까지는 여기서 최선을 다하겠습니다." (기분 +6, 트레이드 명단 등록)`; }
+    if(k==='list'){ listPlayer(p.id); return `${p.name}: "들어주셔서 감사합니다. 가기 전까지는 여기서 최선을 다하겠습니다." 기분 상승, 트레이드 명단 등록.`; }
     if(p.treq)p.treq.done=true;
-    if(k==='promise'){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+4,0,100); if(m)m.rel=clamp(m.rel-1,0,100); evFollow(32,'treq',{pid:p.id,ev:e.id,c:k,b:p.promise.b}); return `${p.name}: "한 번만 더 믿어 보겠습니다." (기분 +4, 감독 관계 -1)`; }
-    if(k==='farm'){ const f=seasonTotal(p,G.year,'퓨처스')||{}; p.mor=clamp(p.mor+3,0,100); evFollow(30,'treq',{pid:p.id,ev:e.id,c:k,g:f.g||0}); return `${p.name}: "알겠습니다. 2군에서라도 매일 뛰면서 보여 드리겠습니다." (기분 +3)`; }
+    if(k==='promise'){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+4,0,100); if(m)m.rel=clamp(m.rel-1,0,100); evFollow(32,'treq',{pid:p.id,ev:e.id,c:k,b:p.promise.b}); return `${p.name}: "한 번만 더 믿어 보겠습니다." 기분 상승, 감독 관계 조금 악화.`; }
+    if(k==='farm'){ const f=seasonTotal(p,G.year,'퓨처스')||{}; p.mor=clamp(p.mor+3,0,100); evFollow(30,'treq',{pid:p.id,ev:e.id,c:k,g:f.g||0}); return `${p.name}: "알겠습니다. 2군에서라도 매일 뛰면서 보여 드리겠습니다." 기분 상승.`; }
     const dn=(p.pers.temp>=14?8:5)+(e.data.hard?4:0); p.mor=clamp(p.mor-dn,0,100); p.treqNo=(p.treqNo||0)+1; let x='';
-    if(p.treqNo>=2){ let n=0; for(const q of playersOf(G.user))if(q!==p&&!isRegular(q)&&q.pers&&q.pers.amb>=13){ q.mor=clamp((q.mor??60)-2,0,100); n++; } if(n)x=` 거듭된 거절 소식에 후보 선수 ${n}명도 동요합니다(기분 -2).`; }
-    evFollow(21,'treq',{pid:p.id,ev:e.id,c:k,hard:!!e.data.hard}); return `${p.name}: "...알겠습니다." (기분 -${dn})${x}`; },
+    if(p.treqNo>=2){ let n=0; for(const q of playersOf(G.user))if(q!==p&&!isRegular(q)&&q.pers&&q.pers.amb>=13){ q.mor=clamp((q.mor??60)-2,0,100); n++; } if(n)x=` 거듭된 거절 소식에 후보 선수 ${n}명도 동요합니다. 기분 조금 하락.`; }
+    evFollow(21,'treq',{pid:p.id,ev:e.id,c:k,hard:!!e.data.hard}); return `${p.name}: "...알겠습니다." 기분 하락.${x}`; },
   follow(d,tid){ if(G.unemp||tid!==G.user)return; const p=evP(d.pid); if(!p||p.team!==G.user)return;
     if(d.c==='promise'){ if(p.promise){ evFollow(7,'treq',d); return; } /* 약속 판정(moraleWeek)이 끝난 뒤에 본다 */
       if(playPromKept(p,{b:d.b}))evResult(d.ev,`${p.name}은(는) 약속대로 출전 기회를 얻었습니다.`); else { evResult(d.ev,`${p.name}은(는) 기회를 얻지 못해 다시 트레이드를 요청했습니다.`); if(!p.listed&&healthy(p))EVH.treq.make(p,true); } return; }
-    if(d.c==='farm'){ const g=(seasonTotal(p,G.year,'퓨처스')||{}).g||0; if(g-d.g>=8||period()!=='season'){ evResult(d.ev,`${p.name}은(는) 2군에서 꾸준히 뛰고 있습니다.`); return; } p.mor=clamp(p.mor-5,0,100); const t=`${p.name}: "2군에서도 못 뛰면 저는 어디서 뛰어야 합니까." (2군 ${g-d.g}경기 출전, 기분 -5)`; evResult(d.ev,t); note('면담',t,p.id); return; }
+    if(d.c==='farm'){ const g=(seasonTotal(p,G.year,'퓨처스')||{}).g||0; if(g-d.g>=8||period()!=='season'){ evResult(d.ev,`${p.name}은(는) 2군에서 꾸준히 뛰고 있습니다.`); return; } p.mor=clamp(p.mor-5,0,100); const t=`${p.name}: "2군에서도 못 뛰면 저는 어디서 뛰어야 합니까." 2군 ${g-d.g}경기 출전, 기분 하락.`; evResult(d.ev,t); note('면담',t,p.id); return; }
     if(p.listed||(p.mor??60)>=45){ evResult(d.ev,`${p.name}은(는) 묵묵히 훈련하고 있습니다.`); return; }
     if(R()<(d.hard||p.pers.temp>=13?.6:.35)){ prLeak('p',p); evResult(d.ev,`${p.name}의 불만이 기사로 새어 나갔습니다.`); } else evResult(d.ev,`${p.name}은(는) 아직 불만이 있지만 말을 아끼고 있습니다.`); } };
 
