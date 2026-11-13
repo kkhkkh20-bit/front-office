@@ -15,7 +15,7 @@ function meetOpen(k,id,o){ if(k==='gm'){ const w=personalAway(); if(w){ toast(`$
   meetKeep(); UI.sheet=null; UI.person=null; /* 면담 전에 보던 상세는 M.bs·M.bp에 두었다가 면담을 마치면 다시 연다 */
   const H=meetHeld(k); if(H&&!o.ask&&H.mid===M.mid){ UI.meetHold=null; Object.assign(H,{returnY:M.returnY,returnDetail:M.returnDetail,bs:M.bs,bp:M.bp,logCount:-1}); H.log.push({w:'sys',t:'하던 이야기를 이어 합니다'}); UI.meet=H; render(); return; }
   /* 같은 날 다시 들어오면 앞서 나눈 이야기를 그대로 이어 보여 준다(사용자 11-13: 다음 화제를 고르거나 다시 열면 지난 대화가 사라짐) */
-  const D=meetDayLog(M); if(D){ M.log=D.log; M.answers=D.answers; M.log.push({w:'sys',t:'앞서 나눈 이야기'}); UI.meet=M; if(o.ask)meetDo(o.ask); render(); return; }
+  const D=meetDayLog(M); if(D){ M.log=D.log; M.answers=D.answers; M.log.push({w:'sys',t:'여기까지 앞서 나눈 이야기'}); UI.meet=M; if(o.ask)meetDo(o.ask); render(); return; }
   if(k==='pl'){ const p=G.players[M.id]; const TL=(p&&p.talkLog)||[]; if(TL.length)M.log.push({w:'sys',t:`최근 면담 · ${TL.slice(0,3).map(x=>`${dmd(x.d)} ${TALK[x.k]||x.k}: "${x.a}"`).join(' / ')}`}); if(futReqOn(p))M.log.push({w:'sys',t:`2군 주전 기용 요청: ${dmd(p.futReq.until)}까지`}); if(p&&p.promise)M.log.push({w:'sys',t:`약속: 출전 기회 건의 · ${dmd(p.promise.until)}까지 감독이 기회를 주는지 확인`}); }
   M.log.push({w:'them',t:meetGreet(M)}); UI.meet=M; if(o.ask)meetDo(o.ask); render(); }
 /* 대화 중 이름 링크로 연 선수·인물 창은 면담 위에 그리고, 닫으면 같은 마디·같은 선택지로 돌아온다(카페 11-09d) */
@@ -25,7 +25,7 @@ function meetKeep(){ const M=UI.meet; if(M&&M.sc&&M.sc.node)UI.meetHold=Object.a
 /* 그날의 대화 기록: 화면을 떠나도 같은 날에는 남는다. 감독 답변은 저장에도 남아(G.mgrChat) 새로고침 뒤에도 그날 대화를 되살린다 */
 const MEET_LOG_MAX=40;
 function meetDayKey(M){ return M.k+':'+(M.k==='mgr'?(M.mid??''):M.k==='own'?(M.person??''):(M.id??'')); }
-function meetDaySave(M){ if(!M||!M.log||!M.log.some(x=>x.w==='me'))return; const log=M.log.filter(x=>!(x.w==='sys'&&/^(앞서 나눈 이야기|하던 이야기를 이어 합니다)$/.test(x.t))).slice(-MEET_LOG_MAX); (UI.meetDay=UI.meetDay||{})[meetDayKey(M)]={g:G,day:G.day,log,answers:M.answers}; }
+function meetDaySave(M){ if(!M||!M.log||!M.log.some(x=>x.w==='me'))return; const log=M.log.filter(x=>!(x.w==='sys'&&/^(여기까지 앞서 나눈 이야기|앞서 나눈 이야기|하던 이야기를 이어 합니다)$/.test(x.t))).slice(-MEET_LOG_MAX); (UI.meetDay=UI.meetDay||{})[meetDayKey(M)]={g:G,day:G.day,log,answers:M.answers}; }
 function meetDayLog(M){ const D=UI.meetDay&&UI.meetDay[meetDayKey(M)]; if(D&&D.g===G&&D.day===G.day&&D.log.length)return {log:D.log.slice(),answers:D.answers};
   if(M.k==='mgr'){ const C=(G.mgrChat||[]).filter(c=>c.d===G.day).reverse(); if(!C.length)return null; const T=meetTopics({k:'mgr'}), log=[]; for(const c of C){ const q=T.find(x=>x[0]===c.t); if(q)log.push({w:'me',t:q[1]}); log.push({w:'them',t:c.a}); } return {log,answers:undefined}; }
   return null; }
