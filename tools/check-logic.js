@@ -1390,6 +1390,26 @@ T('[외국인·FA] 결산 뒤 겨울에도 지출을 늘리면 예산 여유가 
 T('[외국인·FA] 외국인 재계약 거절 문구의 조사(일본으로)(외국인·FA 플레이 점검)',()=>{ const C=reNow(); const id=C.foreignEnd.find(i=>!C.foreignDrop.includes(i)); const p=G.players[id]; p.fout={y:C.y,k:'일본',v:Math.round(p.newSal*2)}; let r;
   for(let i=0;i<3;i++){ r=foReOffer(id,MIN_SAL,0); if(C.foreignDrop.includes(id))break; } ok(r&&!r.msg.includes('일본로')&&r.msg.includes('일본으로'),'문구: '+(r&&r.msg)); });
 
+/* 샐러리캡 구단주 결재(사용자 11-13 "셀캡 깨는 유저들도 있더라"): 상한 +10%(성적 우선·신뢰 70 이상 +15%)를 넘기는 FA·다년계약·트레이드는 구단주가 막는다 */
+const capFill=f=>{ const s=sponSeason(), cap=capOf(s); const q=domestic(G.user).filter(p=>!isRookie(p)&&!p.ys).sort((a,b)=>b.sal-a.sal)[0]; delete q.newSal; delete q.extNext; q.sal+=Math.max(0,Math.round(cap*f-capPayWith(G.user,null,null,s).tot)); return {s,cap,q}; }; /* 다음에 잴 상한 합계를 상한의 f배로 맞춘다 */
+T('[샐러리캡] 구단주 결재: 상한 +10%를 넘기는 FA 제안·다년계약은 막히고 협상 상태는 그대로, 사인 직전에도 다시 막는다',()=>{ const L=faOpenNow(); const u=team(G.user); u.indie=false; u.owner='profit'; u.trust=60; u.capOver=0; const {s,cap}=capFill(.98); const p=L[0]; ok(p,'준비 실패: 외부 FA 없음');
+  const ann=Math.round(cap*.2); const c=faCapCheck(p,{annual:ann,years:4}); ok(c&&c.hard&&!c.ok&&c.lim===Math.floor(cap*1.1),'상한 +10% 넘는데 한도 판정 아님 '+JSON.stringify(c&&{hard:c.hard,lim:c.lim,pay:c.pay}));
+  const r=faNegotiate(p.id,{annual:ann,years:4}); ok(r.owner&&r.msg.includes('구단주 승인 불가'),'구단주 거절 문구 없음: '+r.msg); ok(!G.fa.offers[p.id],'거절됐는데 제안이 남음'); ok(!(G.fa.neg&&G.fa.neg[p.id]&&G.fa.neg[p.id].rounds),'결재 거절이 협상 횟수를 씀');
+  faSign(p,[{tid:G.user,annual:ann,years:4}]); ok(p.team!==G.user,'사인 직전 재결재 없이 한도를 넘겨 계약됨'); ok(!G.fa.offers[p.id],'막힌 제안이 남음');
+  const e=domestic(G.user).find(q=>canExtend(q)); if(e){ const t0=u.trust; const x=offerExtension(e.id,ann,4,false); ok(x.st==='owner'&&!x.ok&&!e.extNext&&e.extTried==null,'다년계약이 결재 없이 진행 '+JSON.stringify({st:x.st,ext:!!e.extNext,tried:e.extTried})); ok(u.trust===t0,'거절인데 신뢰 변화'); }
+  const q=L.find(x=>x!==p&&x.team==null)||p; u.owner='win'; u.trust=80; const c2=faCapCheck(q,{annual:Math.round(cap*.13),years:4}); ok(c2&&!c2.hard&&c2.lim===Math.floor(cap*1.15)&&c2.p>=.4,'성적 우선·신뢰 80은 +15%까지 결재 대상 '+JSON.stringify(c2&&{hard:c2.hard,p:c2.p,lim:c2.lim}));
+  u.owner='profit'; u.trust=60; const c3=faCapCheck(q,{annual:Math.round(cap*.13),years:4}); ok(c3&&c3.hard,'수익 우선은 같은 조건도 한도 초과여야 함');
+  const pp=faCapCheck(q,{annual:Math.round(cap*.05),years:4}); u.owner='win'; const pw=faCapCheck(q,{annual:Math.round(cap*.05),years:4}); u.capOver=2; const p3=faCapCheck(q,{annual:Math.round(cap*.05),years:4}); ok(pp&&pw&&p3&&pw.p>pp.p&&p3.p<pw.p,'승인 가능성: 성적 우선 > 수익 우선, 연속 초과면 낮아져야 '+[pp&&pp.p,pw&&pw.p,p3&&p3.p].join('/'));
+  ok(faCapCheck(q,{annual:Math.round(cap*.05),years:4}).ok===p3.ok&&capRoll('fa'+q.id)===capRoll('fa'+q.id),'같은 건 결재가 매번 바뀜');
+  const t1=u.trust; capOwnerOk(Object.assign({},pw,{ok:true}),'점검'); ok(u.trust<t1,'결재 통과인데 신뢰 그대로');
+  u.indie=true; ok(faCapCheck(q,{annual:ann,years:4})===null,'독립구단은 투자사 결재 없이 세금만(구단주 결재 대상 아님)'); u.indie=false; u.capOver=0;
+  ok(faCapCheck(q,{annual:MIN_SAL,years:1})===null||capPayWith(G.user,q.id,MIN_SAL,s).tot>cap,'상한 안 계약에 결재'); });
+T('[샐러리캡] 트레이드로 상한 +10%를 넘겨 연봉을 떠안으면 구단주가 막는다',()=>{ fresh(); const u=team(G.user); u.indie=false; u.owner='profit'; u.trust=60; const {cap}=capFill(1.0); const op=G.teams.find(t=>t.id!==G.user).id; const big=domestic(op).filter(p=>!p.foreign&&!hasNtc(p)&&!isRookie(p)).sort((a,b)=>b.sal-a.sal)[0]; big.sal=Math.max(big.sal,Math.round(cap*.15)); delete big.newSal; delete big.extNext;
+  const c=tradeCapCheck([],[big.id]); ok(c&&c.hard&&!c.ok,'상한 +15% 떠안기가 결재 대상 아님 '+JSON.stringify(c&&{pay:c.pay,cap:c.cap})); const mine=domestic(G.user).filter(p=>!p.foreign&&!hasNtc(p)&&p.sal<=100)[0]; const r=proposeTrade(op,[mine.id],[big.id],0); ok(!r.ok&&r.owner,'트레이드가 결재 없이 진행: '+r.msg); ok(big.team===op,'선수가 넘어옴'); });
+T('[샐러리캡] 개막 뒤 방출한 선수 연봉은 그해 상한 산정에 남고(결산 직전 방출로 세금 회피 불가), 웨이버로 계약이 넘어가면 빠진다',()=>{ fresh(); G.day=G.cal.open+100; delete G.last; delete G.capDead; const ps=domestic(G.user).filter(p=>!isRookie(p)&&!p.ys&&!milServing(p)).sort((a,b)=>b.sal-a.sal); const p=ps[0], q=ps[1]; const b=capPay(G.user);
+  releasePlayer(p.id); ok(p.team==null,'준비 실패: 방출 안 됨'); ok(capPay(G.user)===b,'방출로 상한 합계가 줄었다 '+b+' → '+capPay(G.user)); ok(capInfo(G.user).pay===b,'결산 산정(capInfo)이 줄었다');
+  capDeadDrop(p.id); ok(capPay(G.user)<b,'계약이 넘어간 뒤에도 남음');
+  G.day=G.cal.open-5; const b2=capPay(G.user); releasePlayer(q.id); ok(capPay(G.user)<b2,'개막 전 겨울 방출은 그해 산정에서 빠져야 함'); });
 T('[스타] 능력치 변화: 우리 선수는 매달 능력치를 남기고, 약 6개월 전과 비교한 변화를 낸다(FM 화살표)',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.isP); rSnapAll(); ok(p.rS&&p.rS.length&&p.rS[p.rS.length-1].d===G.day,'이번 달 기록이 남지 않음');
   p.rS=[{d:G.day-400,r:{...p.r,con:p.r.con-9}},{d:G.day-200,r:{...p.r,con:p.r.con-3,pow:p.r.pow+2}},{d:G.day-30,r:{...p.r}}]; const D=rDelta(p); ok(D&&D.from===G.day-200,'기준 시점이 6개월 전쯤이 아님: '+(D&&G.day-D.from));
   ok(Math.abs(D.d.con-3)<1e-9&&Math.abs(D.d.pow+2)<1e-9,'변화량이 틀림: '+JSON.stringify(D.d)); const q=Object.values(G.players).find(x=>x.team!=null&&x.team!==G.user); rSnapAll(); ok(!q.rS,'다른 구단 선수까지 기록함'); });
@@ -1510,9 +1530,10 @@ T('[리그] 창단 드래프트 뒤 AI 구단끼리 보강 트레이드가 일�
   for(const A of ai.filter(t=>t.mode!=='rebuild')){ const y=domestic(A.id).filter(q=>!q.foreign&&!q.ys&&q.age<=24).sort((a,b)=>ovr(a)-ovr(b))[0]; if(y)y.pot=Math.max(y.pot,78); } /* 리빌딩 구단이 원할 유망주 */
   const n0=(G.lgTrades||[]).length; const n=fdStrengthen(); const L=(G.lgTrades||[]).slice(0,(G.lgTrades||[]).length-n0); ok(n>=1&&L.length>=1,'AI 보강 트레이드 '+n+'건');
   ok(L.every(x=>team(x.a).mode!=='rebuild'&&team(x.b).mode==='rebuild'),'사는 쪽이 리빌딩이거나 파는 쪽이 리빌딩이 아님'); });
-T('[난이도] 우리 구단이 샐러리캡을 넘기면 구단주 신뢰 감점과 다음 시즌 모기업 지원 한도 축소(초과분의 절반)가 붙고, 안 넘기면 없다',()=>{ fresh(); const u=team(G.user); u.indie=false; delete u.supCut; const cap=capOf(sponSeason());
+T('[난이도] 우리 구단이 샐러리캡을 넘기면 구단주 신뢰 감점과 다음 시즌 모기업 지원 한도 축소가 붙고(초과 폭·연속 횟수만큼 커진다), 안 넘기면 없다',()=>{ fresh(); const u=team(G.user); u.indie=false; delete u.supCut; const cap=capOf(sponSeason());
   ok(capOverOwner(u,G.year)===0||capPay(G.user)>cap,'상한 안인데 감점'); const ps=domestic(G.user).filter(p=>!isRookie(p)).sort((a,b)=>b.sal-a.sal); const add=cap*1.2-capPay(G.user); ps[0].sal+=Math.max(0,Math.round(add));
-  const pen=capOverOwner(u,G.year); const ci=capInfo(G.user); ok(ci.over>0,'준비 실패: 초과 아님'); ok(pen<=-2&&pen>=-10,'신뢰 감점 '+pen); ok(u.supCut&&u.supCut.y===G.year+1&&Math.abs(u.supCut.amt-Math.round(ci.over*.5))<=1,'지원 한도 축소 '+JSON.stringify(u.supCut)); });
+  const pen=capOverOwner(u,G.year); const ci=capInfo(G.user); ok(ci.over>0,'준비 실패: 초과 아님'); const r=ci.over/ci.cap; ok(pen===-Math.min(20,Math.max(2,Math.round(r*60))),'신뢰 감점 '+pen); ok(pen<-10,'상한 20% 초과인데 감점이 예전 상한(-10)에 머묾 '+pen); ok(u.supCut&&u.supCut.y===G.year+1&&Math.abs(u.supCut.amt-Math.round(ci.over*Math.min(1.5,.5+r*2.5)))<=1,'지원 한도 축소 '+JSON.stringify(u.supCut));
+  delete u.supCut; ps[0].sal+=Math.round(cap*.2); u.capOver=2; const pen2=capOverOwner(u,G.year), o2=capInfo(G.user).over; ok(pen2<pen,'더 크게·연속으로 넘겼는데 감점이 같음 '+pen2+' / '+pen); ok(u.supCut&&u.supCut.amt>o2,'40% 초과·연속인데 지원 축소가 초과분 이하 '+JSON.stringify(u.supCut)+' / '+o2); });
 T('[난이도] 창단 드래프트 AI 지명: 우승 도전 구단은 상한 근처의 비싼 주전을, 리빌딩 구단은 젊은 선수를 더 높게 본다',()=>{ fresh(); const ai=G.teams.find(t=>t.id!==G.user); const old=newPlayer({age:31,isP:false,base:64,pos:'1B',team:null}), yg=newPlayer({age:21,isP:false,base:54,pos:'1B',team:null}); old.pot=64; yg.pot=70; old.sal=1500; yg.sal=MIN_SAL; if(!G.fd)G.fd={est:{},ana:{}};
   const X={c:{},cp:capOf(G.year)*.84,cap:capOf(G.year)}; ai.mode='contend'; ai.stance='win'; const w=fdScore(ai.id,old,false,X)-fdScore(ai.id,yg,false,X); ai.mode='rebuild'; const r=fdScore(ai.id,old,false,X)-fdScore(ai.id,yg,false,X);
   ok(w>r,'우승 도전 '+w.toFixed(2)+' · 리빌딩 '+r.toFixed(2)); });
