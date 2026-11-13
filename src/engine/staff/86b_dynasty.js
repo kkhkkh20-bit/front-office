@@ -63,12 +63,15 @@ function domRumor(seller,buyer){ if(R()>=.35)return; try{ wire('루머',`${tshor
 function gmExpRank(t){ const pl=planOf(t); return pl==='win'||pl==='star'?5:pl==='next'?6:planYears(t)<3?8:6; }
 function gmBadRun(t){ const g=t&&t.gm; if(!g||g.interim)return 0; const H=(G.history||[]).filter(h=>h&&h.order&&h.y>g.since&&h.y<=G.year).sort((a,b)=>b.y-a.y); const lim=gmExpRank(t); let n=0;
   for(const h of H){ const rk=h.order.findIndex(o=>(o.tid??o)===t.id)+1; if(!rk||rk<=lim)break; n++; } return n; }
-function gmPatience(t){ return (t.owner==='win'?2:3)+(planOf(t)==='build'&&planYears(t)<4?1:0); }
+function gmPatience(t){ return (t.owner==='win'?2:3)+(planOf(t)==='build'&&planYears(t)<3?1:0); }
+/* 지난 시즌 순위 */
+function domRk0(tid){ const o=(G.last&&G.last.order)||[]; const i=o.findIndex(x=>(x.tid??x)===tid); return i<0?6:i+1; }
 /* 자리 위태로움(0~1): 한 시즌만 더 못하면 잘린다 1, 두 시즌 남았으면 .5 */
 function gmHot(t){ const g=t&&t.gm; if(!g||g.interim||t.id===ME())return 0; const ten=G.year-g.since; const run=gmBadRun(t), N=gmPatience(t); return run>=N-1&&ten>=1?1:run>=1&&run>=N-2?.5:0; }
 /* 시즌 뒤 단장 경질 판정(gmTurnover가 부른다). 성적 경질이면 run(못한 시즌 수)을 돌려준다 */
 function gmFireCheck(t,g,ten){ if(expYr(t.id))return g.age>=64&&R()<.35?{age:1}:null; if(ten>=2){ const run=gmBadRun(t), N=gmPatience(t);
-    if(run>=N&&R()<.8)return {run}; if(run>=N-1&&(t.trust??55)<35&&R()<.3)return {run}; }
+    if(run>=N&&R()<.85)return {run}; if(run>=N-1&&(t.trust??55)<35&&R()<.3)return {run};
+    const rk=domRk0(t.id); if(rk>=9&&run>=1&&R()<.25)return {run:Math.max(1,run)}; } /* 꼴찌권이면 인내심이 남아 있어도 잘릴 수 있다 */
   return g.age>=64&&R()<.35?{age:1}:null; }
 /* 개혁 단장: 못한 기간이 길수록 구단주가 능력을 더 따지고 돈을 더 쓴다. 후보는 새 인물·내부 승격·다른 구단에서 물러난 단장·OB */
 function gmReformPick(t,run){ const C=[]; const n=3+Math.min(3,run||0); for(let i=0;i<n;i++)C.push(mkGM(t.id)); try{ C[0]=ipGM(t,C[0]); }catch(e){}

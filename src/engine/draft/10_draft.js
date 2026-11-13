@@ -44,6 +44,7 @@ function makeDraftClass(){
   { const top=cls.map(id=>G.players[id]).filter(p=>p.pot>=54).sort((a,b)=>b.pot-a.pot).slice(0,5);
     for(const p of top){ if(R()<.55){ const t=clamp(p.pot-rnd(4,9),47,56); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
     if(top[0]&&R()<.35){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
+    top.slice(0,3).forEach(p=>{ p.blue=1; }); /* 대어 셋: 성장 실현율 하한이 높다(04_growth). 상위 지명과 하위 지명의 차이가 실제로 나게(사용자 11-13: 우승팀 10순위가 손해가 되게) */
     for(const p of top.filter(q=>q.ready)){ amHistory(p,rnd(14.5,19.5)); if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
   /* 해외파 신인: 해외에서 돌아와 2년 유예를 마친 선수(KBO 규약 107조)는 이해 신인 드래프트에 나온다. 트라이아웃 기록 대신 해외 마지막 시즌 수준으로 아마 기록을 만든다 */
   for(const p of Object.values(G.players)){ if(p.ovsRet&&p.prospect&&p.team==null&&!p.retired){ if(!cls.includes(p.id))cls.push(p.id); continue; } /* 불러오기 보정으로 명단을 다시 만들 때 이미 참가한 복귀자(검수 11-09ze) */

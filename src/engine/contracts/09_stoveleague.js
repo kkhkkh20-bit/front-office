@@ -133,7 +133,7 @@ function faPosPrem(t,p){ const F=G.fa; if(!F||!F.pool||t.id===ME())return 1; con
    찍힌 선수에게는 성적 상한을 넘겨 웃돈(올인 1.35배·우승형 1.25배·그 밖 1.15배)을 주고, 경쟁이 붙으면 끝까지 따라간다(오버페이) */
 function faTgtPick(){ const F=G.fa; if(!F||!F.pool||F.tgt)return; F.tgt={}; const pool=F.pool.map(i=>G.players[i]).filter(p=>p&&p.team==null&&p.age<=33).sort((a,b)=>ovr(b)-ovr(a)).slice(0,10);
   for(const t of G.teams){ if(t.id===ME()||t.indie||t.cash<0)continue; const allIn=t.allIn===sponSeason();
-    const ch=(allIn?.9:0)+(t.owner==='win'?.35:t.owner==='profit'?.05:.18)+(t.mode==='contend'?.15:0); if(R()>=ch)continue;
+    const ch=(allIn?.9:0)+(t.owner==='win'?.35:t.owner==='profit'?.05:.18)+(t.mode==='contend'?.15:0)+despOf(t)*.3; if(R()>=ch)continue; /* 자리가 위태로운 단장도 대어를 찍는다(86b_dynasty) */
     const rk=faRanks(t.id); const p=pool.find(q=>((rk[pSlot(q)]||{}).rank||0)>=6&&!Object.values(F.tgt).includes(q.id)); if(p)F.tgt[t.id]=p.id; } }
 /* 시장 개장 스카우트 보고: 자리별 수요·공급과 구단주가 찍은 선수 소문(스카우트 귀가 닿는 만큼만, 숫자 없이) */
 function faMoodTxt(top){ try{ const L=[]; for(const p of top.slice(0,5)){ const x=faSD(p), pos=posLabel(p); if(x.d>=3&&x.s===0)L.push(`${p.name}: ${pos} 매물이 귀하고 찾는 구단이 많아 몸값이 뛸 것 같습니다.`); else if(x.s>=2||x.d===0)L.push(`${p.name}: 비슷한 ${pos} 매물이 많아 시간이 갈수록 값이 내려갈 수 있습니다.`); }
