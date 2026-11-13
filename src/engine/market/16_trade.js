@@ -63,6 +63,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
     const sal=p.faC||p.foreign?p.sal/100:Math.min(seasonWorth(o),p.sal/100*Math.pow(1.3,i)); v+=w-sal*c.money*d; }
   if(v>0)v*=roleFactor(t,p,dir);
   const gt=gmTrait(t.id); if(v>0){ if(gt==='prospect'&&p.age<=24)v*=1.22; if(gt==='gambler'&&dir==='in'&&ovr(p)>=60)v*=1.15; if(gt==='data'){ const cd=condOf(p); v*=1-cd*.02; } }
+  if(v>0)v*=planTradeMul(t,p,dir); /* 운영 전략(86_ai_plan): 유망주 수집 구단은 어린 선수를 높게·서른 가까운 주전을 낮게, 우승 도전은 반대 */
   const m=G.mgr[t.id]; if(m&&v>0){ if(m.youth>=65&&p.age<=25)v*=1.1; v*=mgrFitMul(t.id,p,dir); } /* 감독 야구에 맞는 역할, 특히 모자란 역할의 선수를 더 쳐준다(85_mgr_fit) */
   if(v>0&&p.mor!=null&&p.mor<30)v*=dir==='in'?.92:.85;
   if(v>0&&dir==='in'&&ovr(p)<40&&p.age<=24)v*=.8; /* 아직 1군 근처에도 못 온 유망주는 불확실하다 */
@@ -157,7 +158,7 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk);
     if(topO>=3&&give.length>get.length&&topI<topO*.75)need+=(topO*.75-topI)*1.3; }
   /* 올해 전력: 리빌딩이 아닌 구단은 주전을 내줄 때 올해 당장 그만큼 뛸 선수를 받아야 한다(연봉이 부담스러워도 순위 싸움을 포기하지 않는다).
      없으면 고액 주전을 어린 백업 하나와 바꿔 줘서, 첫 시즌부터 연봉만 떠안으면 손쉽게 전력을 끌어올릴 수 있었다. 매물로 내놓은 선수는 예외 */
-  { const reb=t.mode==='rebuild'; const k=teamCtx(t).contend?.8:reb?.6:.7; const S=startersOf(t.id); const st=get.map(P).filter(q=>q&&!q.aiListed&&S.has(q.id)&&(!reb||q.age<=28)); /* 리빌딩 구단은 서른 넘은 주전은 정리하지만 젊은 주전은 지킨다 */
+  { const reb=t.mode==='rebuild'; const k=planOf(t)==='win'?.9:teamCtx(t).contend?.8:reb?.6:.7; /* 우승 도전 구단은 주전(에이스)을 지명권·유망주와 바꾸지 않는다 */ const S=startersOf(t.id); const st=get.map(P).filter(q=>q&&!q.aiListed&&S.has(q.id)&&(!reb||q.age<=28)); /* 리빌딩 구단은 서른 넘은 주전은 정리하지만 젊은 주전은 지킨다 */
     if(st.length){ const nowOut=Math.max(...st.map(q=>seasonWorth(projO(q,0)+seenDelta(t,q)))); const nowIn=Math.max(0,...give.map(id=>P(id)?seasonWorth(projO(P(id),0)+seenDelta(t,P(id))):0)); if(nowIn<nowOut*k)need+=(nowOut*k-nowIn)*1.3; } }
   /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
@@ -212,10 +213,11 @@ function proposeTrade(tid,give,get,cash,pk){
   }
   const gap=e.need-e.gain; if(!ni.free&&!isCtr)nt.neg++; nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ if(tradeUrgent(tid,G.players[id]))continue; const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }
   for(const id of give){ const q=G.players[id]; if(q&&R()<.12){ q.mor=clamp((q.mor??60)-4,0,100); if(R()<.5)wire('루머',`${q.name}, ${t.city} ${t.nick}와(과) 트레이드 대상으로 거론됐다는 소문`,{ref:q.id}); } } if(gmTrait(tid)==='hard'&&nt.neg>=3)t.rel=clamp(t.rel-1,0,100);
-  const why=tradeWhyNot(t,give,get);
+  const why=tradeWhyNot(t,give,get,pk);
   if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다.${why?` ${why}`:''}${aiQ(tid,'no')} (친분 -2)`}; }
-  const co=counterOffer(tid,give,get,cash,pk); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get,cash)+pkSig(pk)]=G.day; /* 현금은 그대로 두고 선수 구성만 바꾼 안 */ if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.${aiQ(tid,'short')}`,counters:co};
-  const cand=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)).map(p=>({p,v:tval(t,p,'in')*.72})).filter(x=>x.v>=gap*.8).sort((a,b)=>a.v-b.v)[0];
+  const co=counterOffer(tid,give,get,cash,pk); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get,cash)+pkSig(c.pk||pk)]=G.day; /* 현금은 그대로 두고 선수 구성만 바꾼 안 */ if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.${aiQ(tid,'short')}`,counters:co};
+  const yng=['build','tight'].includes(planOf(t)); /* 유망주 수집·긴축 구단은 얹을 선수도 어린 선수로 부른다 */
+  const cand=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)).map(p=>({p,v:tval(t,p,'in')*.72})).filter(x=>x.v>=gap*.8).sort((a,b)=>(yng?(a.p.age<=25?0:1)-(b.p.age<=25?0:1):0)||a.v-b.v)[0];
   if(cand)nt.ctr[tsig([...give,cand.p.id],get,cash)+pkSig(pk)]=G.day;
   const cashNeed=cashFor(t,gap); if(cashNeed&&cashNeed+cash<=3000)nt.ctr[tsig(give,get,cashNeed+cash)+pkSig(pk)]=G.day; const cT=cashNeed+cash; const cTxt=cashNeed&&cT<=3000?(cT>0?` 아니면 현금 ${money(cT)}을(를) 얹어도 됩니다.`:cT<0?` 아니면 받는 현금을 ${money(-cT)}로 줄이면 됩니다.`:' 아니면 현금을 받지 않으면 됩니다.'):'';
   return {ok:false,msg:`${gmn}: 조금 부족합니다.${why?` ${why}`:''}${cand?` ${cand.p.name}(${posLabel(cand.p)})을(를) 얹어 주면 응하겠습니다.`:' 받는 선수를 줄여 주세요.'}${cTxt}${aiQ(tid,'short')}`,want:cand?cand.p.id:null,cashAsk:cashNeed?cashNeed+cash:null};
@@ -223,8 +225,14 @@ function proposeTrade(tid,give,get,cash,pk){
 
 
 /* 거절 이유를 한마디로: 상대 구단 사정(리빌딩·우승 경쟁·연봉)과 맞지 않는 선수를 내밀 때 */
-function tradeWhyNot(t,give,get){ const P=id=>G.players[id]; const g=give.map(P).filter(Boolean), o=get.map(P).filter(Boolean); if(!g.length)return '';
+function tradeWhyNot(t,give,get,pk){ const P=id=>G.players[id]; const g=give.map(P).filter(Boolean), o=get.map(P).filter(Boolean); const pl=planOf(t); const npk=pk&&pk.give?pk.give.length:0;
+  if(!g.length)return pl==='win'&&npk?'저희는 올해 우승을 보고 있습니다. 지명권보다 당장 1군에서 뛸 선수가 필요합니다.':'';
   const ag=sum(g.map(p=>p.age))/g.length, gs=sum(g.map(p=>p.sal)), os=sum(o.map(p=>p.sal)); const ctx=teamCtx(t);
+  /* 운영 전략이 드러나는 답: 사용자가 그 구단이 무엇을 모으는지 알 수 있는 길 */
+  if(pl==='build'&&(ag>=28||g.every(p=>p.age>=27)))return '저희는 몇 년 뒤를 보고 팀을 짓는 중입니다. 서른 가까운 선수보다 신인 지명권이나 어린 선수를 원합니다.';
+  if(pl==='tight'&&gs>os+100)return '지금은 모기업이 지갑을 닫았습니다. 연봉이 늘어나는 거래는 어렵고, 연봉이 적은 어린 선수라면 이야기해 볼 수 있습니다.';
+  if(pl==='win'&&o.some(p=>startersOf(t.id).has(p.id))&&g.every(p=>p.age<=24&&ovr(p)<52))return '저희는 올해 우승을 보고 있습니다. 유망주나 지명권을 받고 주전을 내줄 수는 없습니다. 당장 1군에서 뛸 선수를 주십시오.';
+  if(pl==='next'&&ag>=32)return '저희는 내년에 승부를 걸 생각입니다. 서른을 넘긴 선수보다 20대 후반 주전감을 찾고 있습니다.';
   if(t.mode==='rebuild'&&(ag>=29||gs>os*1.3+100))return '저희는 리빌딩 중이라 나이 많고 연봉 큰 선수는 부담입니다. 젊은 선수를 원합니다.';
   if(ctx.contend&&g.every(p=>ovr(p)<ovr(o[0]||p)-3))return '저희는 지금 순위 싸움 중이라 당장 뛸 선수가 필요합니다.';
   if(gs>os+300&&(t.owner==='profit'||capPayAs(t.id,give,get)>capOf(G.year)*.95))return `연봉을 ${money(gs-os)} 더 떠안는 건 어렵습니다.`;

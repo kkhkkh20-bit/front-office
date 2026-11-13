@@ -78,7 +78,7 @@ function personXExt(k){ const P=String(k).split(':'), kind=P[0];
   const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
   if(kind==='oown'||kind==='oceo'){ const tid=+P[1]; if(!team(tid))return null; if(tid===G.user)return null; const B=bossOf(tid), t=team(tid), x=kind==='oown'?B.own:B.ceo, ow=OWNER[t.owner];
     return {k,name:x.name,role:`${tname(tid)} ${kind==='oown'?'구단주':'사장'}`,av:{persona:kind==='oown'?'own':'staff',pid:x.id,team:tid,age:x.age,name:x.name},rel:null,lab:kind==='oown'?ow.label:'',sub:`${x.age}세${kind==='oceo'&&x.car?' · '+x.car:''}`,
-      info:kind==='oown'?`<p>${esc(OWNTRAIT[t.owner]||ow.msg)}</p><p class="small">올해 목표 ${goalRankOf(tid)}위 이내 · ${t.mode==='contend'?'우승 경쟁':'리빌딩'} · ${t.indie?'독립구단(투자사)':'모기업 구단'}</p>`:`<p class="small">${esc(x.car||'')}. ${esc(B.own.name)} 구단주의 뜻을 단장에게 전하고 예산 집행을 맡습니다.</p>`,
+      info:kind==='oown'?`<p>${esc(OWNTRAIT[t.owner]||ow.msg)}</p><p class="small">올해 목표 ${goalRankOf(tid)}위 이내 · ${modeLabel(t)} · ${t.indie?'독립구단(투자사)':'모기업 구단'}</p>`:`<p class="small">${esc(x.car||'')}. ${esc(B.own.name)} 구단주의 뜻을 단장에게 전하고 예산 집행을 맡습니다.</p>`,
       acts:[btn('구단 정보','lteamGo',tid,1),btn('단장','person','gm:'+tid)]}; }
   if(kind==='oc'){ const tid=+P[1], role=P[2]; const c=G.coach&&coachesOf(tid)[role]; if(!c)return null;
     return {k,name:c.name,role:`${tname(tid)} ${CROLE[role]?.l||'코치'}`,av:{persona:'coach',pid:c.id,team:tid,age:c.age,name:c.name},rel:null,lab:'',sub:`${c.age}세${c.ob?' · OB':''}`,
