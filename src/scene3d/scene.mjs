@@ -62,13 +62,13 @@ function umpireMechanics(a){const s=active;if(!s)return;const home=a.ump.k==='ho
  headLook(a,toModel(a,c?.at3&&w>0?c.at3.clone():fly?s.ball.position.clone():home?new T.Vector3(0,1.7,17):new T.Vector3(0,1.2,0)),1);
 }
 /* 누심은 선수 동선과 공이 떨어질 자리를 비켜 준다: 선수(지금 위치와 가는 곳)·타구 도착 지점이 반경 안에 들어오면 반대쪽으로 물러났다가, 지나가면 제자리로 돌아온다 */
-const UMP_AVOID={radius:3.6,max:4.5,speed:4.2,arrive:.06};
+const UMP_AVOID={radius:3.6,max:4.5,speed:4.2,arrive:.06,start:.9}; /* start: 이만큼 어긋나야 움직이기 시작(조금씩 까딱거리지 않게) */
 function umpireAvoid(s,now,dt){for(const u of s.umps||[]){if(u.ump.k==='home')continue;const h=u.home||(u.home=new T.Vector3(...u.ump.pos)),P=UMP_AVOID,pos=u.root.position;let px=0,pz=0;
   const near=p=>{let dx=h.x-p.x,dz=h.z-p.z,d=Math.hypot(dx,dz);if(d>=P.radius)return;if(d<.05){d=Math.hypot(h.x,h.z)||1;dx=h.x/d;dz=h.z/d;d=0;}else{dx/=d;dz/=d;}px+=dx*(P.radius-d);pz+=dz*(P.radius-d);};
   for(const a of s.actors.values()){if(!a.root.visible)continue;near(a.root.position);if(a.move)near(a.move.to);}if(s.ballMotion&&!s.ballMotion.pitch)near(s.ballMotion.to);
   const pl=Math.hypot(px,pz),k=pl>P.max?P.max/pl:1,tx=h.x+px*k,tz=h.z+pz*k,dx=tx-pos.x,dz=tz-pos.z,d=Math.hypot(dx,dz);
   if(u.call){if(u.avoiding)u.avoiding=false;continue;} /* 판정 중에는 그 자리에서 */
-  if(d>P.arrive){const step=Math.min(d,P.speed*dt);pos.x+=dx/d*step;pos.z+=dz/d*step;u.root.rotation.y=Math.atan2(dx,dz);if(!u.avoiding){u.avoiding=true;u.updatedAt=now;playPose(u,'jog',{loop:true,fade:.12});}advanceActor(u,now);s.dirty=true;}
+  if(d>(u.avoiding?P.arrive:P.start)){const step=Math.min(d,P.speed*dt);pos.x+=dx/d*step;pos.z+=dz/d*step;u.root.rotation.y=Math.atan2(dx,dz);if(!u.avoiding){u.avoiding=true;u.updatedAt=now;playPose(u,'jog',{loop:true,fade:.12});}advanceActor(u,now);s.dirty=true;}
   else if(u.avoiding){u.avoiding=false;u.root.rotation.y=u.yaw0=Math.atan2(-pos.x,-pos.z);u.updatedAt=now;playPose(u,UMP_CLIP.ready,{freeze:true,fade:.18});s.dirty=true;}
   else if(u.blendUntil){advanceActor(u,now);s.dirty=true;}}}
 function umpireRest(u){u.call=null;if(u.yaw0!=null)u.root.rotation.y=u.yaw0;playPose(u,UMP_CLIP.ready,{freeze:true,fade:0});}
