@@ -93,5 +93,5 @@ function facRefurb(k){ if(G.unemp)return '맡은 구단이 없습니다.'; const
 function facAgeYear(){ for(const t of G.teams){ const S=facAgeStore(t); if(!S)continue;
   for(const k of FACK){ const lv=S.it[k]||0; if(lv<3||S.bld[k])continue; const age=G.year-S.A[k].y;
     if(!S.mine&&age>=FAC_AGE.warn&&(t.cash||0)>Math.max(3000,FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix*2)){ t.cash-=Math.round(FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix); S.A[k].y=G.year; continue; } /* 여유 있는 AI 구단은 보수 */
-    if(S.mine&&age===FAC_AGE.warn&&!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 오래됐습니다`,`${FACI[k].l}을(를) 짓거나 고친 지 ${age}년입니다. 10년이 넘으면 해마다 낡아 한 단계씩 내려갈 수 있습니다. 시설 화면에서 보수 공사(${money(facRefurbCost(k))})를 하면 연식을 새로 셉니다.`,{kind:'시설'});
+    if(S.mine&&age===FAC_AGE.warn&&!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 오래됐습니다`,`${FACI[k].l}을(를) 짓거나 고친 지 ${age}년입니다. 10년이 넘으면 해마다 낡아 한 단계씩 내려갈 수 있습니다. 시설 화면에서 보수 공사(${money(facRefurbCost(k))})를 하면 연식을 새로 셉니다.`,{kind:'시설',acts:[{l:'시설 화면',a:'cpFacGo',v:k}]});
     if(age>=FAC_AGE.old&&R()<FAC_AGE.p){ S.it[k]=lv-1; S.A[k]={lv:lv-1,y:G.year-5}; if(S.mine){ try{ facRecalc(); }catch(e){} if(!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 낡아 한 단계 내려갔습니다`,`${FACI[k].l}이(가) ${FACI[k].lv[Math.min(lv-1,FACI[k].lv.length-1)]||''} 수준으로 내려갔습니다. 다시 공사하면 회복됩니다.`,{kind:'시설'}); } else { try{ t.fi.lv=facCalcLv(S.it); t.fac=t.fi.lv; }catch(e){} } } } } }

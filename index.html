@@ -12270,7 +12270,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===c.end+1)seasonEnd();
   if(G.ps&&!G.ps.done)try{ psDay(day); }catch(e){ console.error('포스트시즌 경기 처리 실패',e); } /* 다음 날 psDay가 밀린 차전부터 다시 잡는다(검수 11-09k) */
   try{ if(cwOn()&&G.cal)cwOrdDaily(); }catch(e){}
-  if(day===KD(10,1)&&!G.unemp){ try{ const t=team(G.user); if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0, T=Math.round(10000*ecoIdx(sponSeason()))+ear; if(t.cash>T)mail('재무팀','결산 때 유보금 회수 예정',`보유 현금 ${money(t.cash)}이(가) 유보금 상한 ${money(T)}을(를) 넘습니다. 시즌 결산 때 모기업이 넘은 돈의 절반을 회수합니다. 결산 전에 시설·선수 투자에 쓰면 회수되지 않습니다.`,{kind:'재정',imp:true}); } }catch(e){} } /* 회수 전에 미리 알린다(플레이 테스트 11-13) */ /* 구단주 지시 판정은 그날 경기를 치른 뒤: 기한 당일 경기 결과·관중·타석까지 넣는다(검수 11-09zzd) */
+  if(day===KD(10,1)&&!G.unemp){ try{ const t=team(G.user); if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0, T=Math.round(RES_CAP*ecoIdx(sponSeason()))+ear; if(t.cash>T)mail('재무팀','결산 때 유보금 회수 예정',`보유 현금 ${money(t.cash)}이(가) 유보금 상한 ${money(T)}을(를) 넘습니다. 시즌 결산 때 모기업이 넘은 돈의 60%를 회수합니다. 결산 전에 시설·선수 투자에 쓰면 회수되지 않습니다.`,{kind:'재정',imp:true}); } }catch(e){} } /* 회수 전에 미리 알린다(플레이 테스트 11-13) */ /* 구단주 지시 판정은 그날 경기를 치른 뒤: 기한 당일 경기 결과·관중·타석까지 넣는다(검수 11-09zzd) */
   try{ cheerDaily(); }catch(e){} /* 응원단 휴식은 그날 경기(무대)를 다 치른 뒤(검수 11-09zza) */
   if(G.ps&&G.ps.done&&G.ps.finDay===day){ settlement(); try{ stadSeasonNote(); }catch(e){} try{ draftRetro(); }catch(e){} }
   /* 스토브리그는 결산이 끝난 뒤에만 연다(포스트시즌이 길어져 결산이 11월로 밀려도 순서가 뒤집히지 않게) */
@@ -12561,8 +12561,8 @@ function settlement(){
     t.cash+=net;
     /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(INDIE_DIV_T 초과분의 INDIE_DIV_R, 49_sponsors) */
     let div=0; if(t.indie&&t.cash>Math.round(INDIE_DIV_T*EI)){ div=Math.round((t.cash-Math.round(INDIE_DIV_T*EI))*INDIE_DIV_R); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
-    /* 유보금 상한(11-12): 모기업 구단도 현금이 100억(경제 지수 반영)을 넘으면 넘은 돈의 절반을 모기업이 회수한다(실제 구단은 수백억을 쌓아 두지 않는다) */
-    let sweep=0; if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0; /* 우승 포상 FA 특별자금은 용도가 정해진 돈이라 회수 대상에서 뺀다(플레이 테스트 11-13) */ const T=Math.round(10000*EI)+ear; if(t.cash>T){ sweep=Math.round((t.cash-T)*.5); t.cash-=sweep; if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 절반(${money(sweep)})을 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.`,{kind:'구단주'}); } }
+    /* 유보금 상한(11-12, 재정 시뮬 11-13에 60억·60%로 조임: 잘 굴러가는 구단은 해마다 60~90억이 남아 100억 넘는 현금을 늘 들고 있었다): 모기업 구단도 현금이 60억(경제 지수 반영)을 넘으면 넘은 돈의 60%를 모기업이 회수한다(실제 구단은 수백억을 쌓아 두지 않는다) */
+    let sweep=0; if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0; /* 우승 포상 FA 특별자금은 용도가 정해진 돈이라 회수 대상에서 뺀다(플레이 테스트 11-13) */ const T=Math.round(RES_CAP*EI)+ear; if(t.cash>T){ sweep=Math.round((t.cash-T)*RES_RATE); t.cash-=sweep; if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 60%(${money(sweep)})를 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.`,{kind:'구단주'}); } }
     /* 모기업 지원 조정: 구단에 쓰지 않은 돈이 쌓여 있으면, 다음 시즌 모기업 지원 한도를 그만큼 줄인다(돈을 가져가지는 않는다).
        50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 줄인다. 쌓인 돈은 구단이 그대로 쓸 수 있다 */
     let cut0=t.supCut&&t.supCut.y===y?t.supCut.amt:0;
@@ -18865,6 +18865,7 @@ function playerState(p){
    제안 금액은 시장 규모·인기·성적·팬 여론·언론 논조·스타 선수로 정한 '스폰서 가치'를 따른다.
    계약에는 연 금액, 기간, 가을야구·우승 보너스가 있고 일부는 이미지 조항(언론 논조가 나쁘면 감액)이 붙는다 */
 /* 독립구단 재정(카페 11-11): 메인 스폰서 기준액과 투자사 배당(결산 뒤 현금이 기준을 넘으면 넘는 몫의 일부를 회수) */
+var RES_CAP=6000, RES_RATE=.6; /* 모기업 구단 유보금 상한(백만원, 경제 지수 곱)·회수 비율 */
 var INDIE_MAIN_B=6800, INDIE_DIV_T=4000, INDIE_DIV_R=.5; /* 11-11: 90억·80억이면 고양 시즌 예산 여유가 10개 구단 중 1위(시작 39.5억)라 독립구단이 오히려 넉넉했다. 68억이면 보통 성적일 때 개막 여유가 모기업 구단 중간 수준, 성적이 좋아 쌓인 흑자는 40억 기준으로 투자사가 절반 회수 */
 const SPON_SLOT={main:{l:'메인 스폰서(구단 명칭)',get b(){ return INDIE_MAIN_B; },indie:1},kit:{l:'공식 용품(유니폼 공급)',b:1400},sleeve:{l:'유니폼 소매 패치',b:1100},fence:{l:'외야 펜스 메인 보드',b:1000},helmet:{l:'헬멧',b:650},back:{l:'유니폼 등·바지',b:550}};
 const SPON_IND={kit:['스포츠용품'],main:['금융','통신','건설','게임','유통'],sleeve:['금융','통신','자동차','제약','게임','식품'],fence:['주류','식품','편의점','보험','가전'],helmet:['보험','제약','식품','자동차'],back:['편의점','식품','게임','여행']};
@@ -20571,7 +20572,7 @@ function facRefurb(k){ if(G.unemp)return '맡은 구단이 없습니다.'; const
 function facAgeYear(){ for(const t of G.teams){ const S=facAgeStore(t); if(!S)continue;
   for(const k of FACK){ const lv=S.it[k]||0; if(lv<3||S.bld[k])continue; const age=G.year-S.A[k].y;
     if(!S.mine&&age>=FAC_AGE.warn&&(t.cash||0)>Math.max(3000,FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix*2)){ t.cash-=Math.round(FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix); S.A[k].y=G.year; continue; } /* 여유 있는 AI 구단은 보수 */
-    if(S.mine&&age===FAC_AGE.warn&&!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 오래됐습니다`,`${FACI[k].l}을(를) 짓거나 고친 지 ${age}년입니다. 10년이 넘으면 해마다 낡아 한 단계씩 내려갈 수 있습니다. 시설 화면에서 보수 공사(${money(facRefurbCost(k))})를 하면 연식을 새로 셉니다.`,{kind:'시설'});
+    if(S.mine&&age===FAC_AGE.warn&&!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 오래됐습니다`,`${FACI[k].l}을(를) 짓거나 고친 지 ${age}년입니다. 10년이 넘으면 해마다 낡아 한 단계씩 내려갈 수 있습니다. 시설 화면에서 보수 공사(${money(facRefurbCost(k))})를 하면 연식을 새로 셉니다.`,{kind:'시설',acts:[{l:'시설 화면',a:'cpFacGo',v:k}]});
     if(age>=FAC_AGE.old&&R()<FAC_AGE.p){ S.it[k]=lv-1; S.A[k]={lv:lv-1,y:G.year-5}; if(S.mine){ try{ facRecalc(); }catch(e){} if(!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 낡아 한 단계 내려갔습니다`,`${FACI[k].l}이(가) ${FACI[k].lv[Math.min(lv-1,FACI[k].lv.length-1)]||''} 수준으로 내려갔습니다. 다시 공사하면 회복됩니다.`,{kind:'시설'}); } else { try{ t.fi.lv=facCalcLv(S.it); t.fac=t.fi.lv; }catch(e){} } } } } }
 /* ---------- 스카우트팀장: 시기에 맞게 스카우트 배치를 제안하고, 맡기면 매달 1일 직접 배치한다 ----------
    3~9월(드래프트 시즌): 아마추어 3개 지역이 먼저. 10~2월(외국인·FA 시즌): 해외(미국·중남미)와 프로 담당이 먼저.
@@ -21076,7 +21077,7 @@ const ACH=[
   {id:'post1',c:'선수',n:'해외로 보낸 꿈',d:'우리 선수를 포스팅으로 해외 리그에 보냅니다.',r:{rep:1}},
   {id:'legendMgr',c:'경력',n:'레전드의 귀환',d:'우리 구단 레전드 출신이 우리 구단 감독으로 시즌을 치릅니다.',r:{title:'레전드를 부른 단장'}},
   {id:'turn',c:'경력',n:'구원투수',d:'직전 시즌 8위 이하였던 구단을 맡아 두 시즌 안에 가을야구에 나갑니다.',r:{rep:2,title:'구원투수'}},
-  {id:'gm1000',c:'경력',n:'1000경기',d:'한 구단에서 단장으로 1000경기를 치릅니다.',r:{trust:2},p:()=>[G.gmTen&&G.gmTen.tid===G.user?G.gmTen.g:0,1000]},
+  {id:'gm1000',c:'경력',n:'1000경기',d:'한 구단에서 단장으로 1000경기를 치릅니다(세대 교체로 이어 가도 인정).',r:{trust:2},p:()=>[G.gmClub&&G.gmClub.tid===G.user?G.gmClub.g:(G.gmTen&&G.gmTen.tid===G.user?G.gmTen.g:0),1000]},
   {id:'stadNew',c:'재정',n:'새 집',d:'신구장을 지어 문을 엽니다.',r:{cash:500}},
   {id:'profit5',c:'재정',n:'흑자 경영',d:'흑자 시즌 5번.',r:{cash:500},p:T=>[T.profit,5]},
   {id:'cash200',c:'재정',n:'곳간',d:'시즌을 마칠 때 구단 현금 200억 원 이상.',r:null},
@@ -21090,7 +21091,7 @@ const ACH=[
   {id:'s60',c:'경력',n:'60시즌',d:'단장으로 60시즌을 보냅니다.',r:{rep:3,title:'야구계의 큰어른'},p:T=>[T.seasons,60],big:true},
   {id:'w1000',c:'경력',n:'1,000승',d:'단장 통산 정규시즌 1,000승.',r:{rep:2},p:()=>[achWins(),1000]},
   {id:'w2000',c:'경력',n:'2,000승',d:'단장 통산 정규시즌 2,000승.',r:{title:'2,000승 단장'},p:()=>[achWins(),2000]},
-  {id:'gm3000',c:'경력',n:'3000경기',d:'한 구단에서 단장으로 3000경기를 치릅니다.',r:{trust:2,title:'구단의 얼굴'},p:()=>[G.gmTen&&G.gmTen.tid===G.user?G.gmTen.g:0,3000]},
+  {id:'gm3000',c:'경력',n:'3000경기',d:'한 구단에서 단장으로 3000경기를 치릅니다(세대 교체로 이어 가도 인정).',r:{trust:2,title:'구단의 얼굴'},p:()=>[G.gmClub&&G.gmClub.tid===G.user?G.gmClub.g:(G.gmTen&&G.gmTen.tid===G.user?G.gmTen.g:0),3000]},
   {id:'champ10',c:'우승',n:'우승 10회',d:'단장 통산 우승 10회.',r:{rep:3},p:T=>[achTitlesN(T),10]},
   {id:'champ15',c:'우승',n:'우승 15회',d:'단장 통산 우승 15회.',r:{cash:500,title:'우승 제조기'},p:T=>[achTitlesN(T),15],big:true},
   {id:'pupilMgr',c:'선수',n:'제자가 감독으로',d:'우리가 지명한 선수가 은퇴 뒤 우리 구단 감독이 되어 우승합니다.',r:{title:'야구 가문의 어른'}},
@@ -21850,7 +21851,11 @@ function gmAgeYear(){ if(G.unemp||!G.gmP)return; const a=meAge(); if(a==null)ret
   if(a>=GM_SUCC_ASK)mail('구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 이번 겨울(3월 개막 전까지) 후임을 직접 정하고 물러날 수 있습니다. 선수단·시설·재정은 그대로 후임에게 이어집니다.\n${GM_SUCC_FORCE}세가 되는 해에는 구단이 정한 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
 
 /* 단장 재임 이정표(사용자 11-08): 이 구단에서 지휘한 경기 수(500·1000·1500…)와 재임 햇수(5·10·15…년). 구단 연대기·뉴스에 남는다 */
-function gmTenTick(){ if(G.unemp||G.user==null||!G.gmP)return; const T=G.gmTen=G.gmTen&&G.gmTen.tid===G.user?G.gmTen:{tid:G.user,g:0}; T.g++; try{ achProg(); }catch(e){} /* 1000·3000경기 업적은 그 경기에서 바로(검수 149) */
+function gmTenTick(){ if(G.unemp||G.user==null||!G.gmP)return; const T=G.gmTen=G.gmTen&&G.gmTen.tid===G.user?G.gmTen:{tid:G.user,g:0}; T.g++;
+  /* 구단 기준 누적 경기(도전과제 1000·3000경기용): 세대 교체로 후임이 이어 가도 같은 구단이면 이어서 센다(펨코 11-13 울브즈: 세대 교체하면 초기화).
+     처음 만들 때는 계보(G.gmLine)에 남은 같은 구단 전임들의 승패 합으로 채운다. 구단을 옮기면 0부터 */
+  { let C=G.gmClub; if(!C){ let b=T.g-1; try{ for(const x of (G.gmLine||[]))if(x&&x.tid===G.user)b+=(x.w||0)+(x.l||0); }catch(e){} C=G.gmClub={tid:G.user,g:b}; } else if(C.tid!==G.user)C=G.gmClub={tid:G.user,g:0}; C.g++; }
+  try{ achProg(); }catch(e){} /* 1000·3000경기 업적은 그 경기에서 바로(검수 149) */
   if(T.g%500===0){ const nm=G.gmP.name, r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; chron('gm',`${nm} 단장 ${T.g}경기째`); news('구단',`${nm} 단장, ${tshort(G.user)}에서 ${T.g}경기째`,`${tname(G.user)} 단장을 맡은 뒤 ${T.g}번째 경기를 치렀습니다. ${G.gmSince!=null?`${G.gmSince}년 취임 뒤 `:''}구단의 얼굴로 자리 잡았다는 평가입니다.`,1); if(T.g>=1000)G.rep=clamp((G.rep??50)+1,0,100); } }
 function gmTenYear(){ if(G.unemp||G.user==null||!G.gmP||G.gmSince==null)return; const n=G.year-G.gmSince; if(n>0&&n%5===0){ const nm=G.gmP.name; chron('gm',`${nm} 단장 재임 ${n}년째`); news('구단',`${nm} 단장, ${tshort(G.user)} ${n}년째`,`${G.gmSince}년 취임한 ${nm} 단장이 올해로 ${n}년째 구단을 이끕니다.`,1); } }
 /* ===== 선수별 훈련 방향: 코치진이 짜고, 단장이 받아들이거나 바꾼다 =====
@@ -30478,7 +30483,8 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
   const card=k=>{ const D=FACI[k], lv=F.it[k], b=F.bld[k], nx=lv+1;
     const pips=[...Array(FAC_MAX)].map((_,j)=>j+1).map(i=>`<i class="${i<=lv?'on':''}${b&&i===b.lv?' bld':''}"></i>`).join('');
     return `<div class="tcard fci" id="fci-${k}" style="cursor:default">${facThumb(k)}<div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><div style="min-width:0"><b>${D.l}</b> ${hiI(D.d)}<div class="small muted">${D.lv[lv]}</div></div><span class="fpip" title="${lv}/${FAC_MAX}단계">${pips}<em>${lv}/${FAC_MAX}</em></span></div>
-      <div class="tc-ft">${b?`<span class="pill warn">${D.lv[b.lv]} 공사 중 · ${dmd(b.done)} 완공</span>`:lv>=FAC_MAX?'<span class="pill good">최고 단계</span>' /* 6단계까지(검수 11-06: 모바일에서 3단계에 막힘) */:`<span class="small">다음: <b>${D.lv[nx]}</b> · 공사비 <b class="num">${money(D.c[nx])}</b> · ${D.days[nx]}일 · 유지비 연 ${money(D.up[nx])}</span><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||spendable(G.user)<D.c[nx]?'disabled':''}>구단 자금으로 · ${money(D.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''} title="승인 가능성 ${Math.round(capexOdds('fac',D.c[nx])*100)}%">모기업 투자 요청 · ${Math.round(capexOdds('fac',D.c[nx])*100)}%</button>`}${nb>=2?'<span class="small muted">동시 공사는 2곳까지</span>':t.cash<D.c[nx]?`<span class="small bad">현금 부족(보유 ${money(t.cash)})</span>`:''}`}</div></div>`; };
+      <div class="tc-ft">${b?`<span class="pill warn">${D.lv[b.lv]} 공사 중 · ${dmd(b.done)} 완공</span>`:lv>=FAC_MAX?'<span class="pill good">최고 단계</span>' /* 6단계까지(검수 11-06: 모바일에서 3단계에 막힘) */:`<span class="small">다음: <b>${D.lv[nx]}</b> · 공사비 <b class="num">${money(D.c[nx])}</b> · ${D.days[nx]}일 · 유지비 연 ${money(D.up[nx])}</span><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||spendable(G.user)<D.c[nx]?'disabled':''}>구단 자금으로 · ${money(D.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''} title="승인 가능성 ${Math.round(capexOdds('fac',D.c[nx])*100)}%">모기업 투자 요청 · ${Math.round(capexOdds('fac',D.c[nx])*100)}%</button>`}${nb>=2?'<span class="small muted">동시 공사는 2곳까지</span>':t.cash<D.c[nx]?`<span class="small bad">현금 부족(보유 ${money(t.cash)})</span>`:''}`}</div>
+      ${lv>=2?(()=>{ const age=facAgeOf(G.user,k); return `<div class="tc-ft"><span class="small${age>=9?' bad':''}">시설 연식 <b>${age}년</b>${age>=9?' · 10년이 넘으면 해마다 낡아 한 단계씩 내려갈 수 있습니다':''}</span>${age>=6&&!b?`<button class="btn small" data-a="facRefurb" data-v="${k}">보수 공사 · ${money(facRefurbCost(k))}</button>`:''}</div>`; })():''}</div>`; }; /* 휴대폰 카드에도 연식·보수 공사(카페 11-13: 보수하라는데 버튼이 없다) */
   return csec(`훈련·육성 시설 ${hiI('실제 구단의 2군 훈련 단지·재활센터·트래킹 장비 투자를 항목별로 나눴습니다. 실제 구단처럼 큰 시설 투자는 연간 운영 예산이 아니라 별도 재원으로 합니다. 구단 보유 현금(적립금)으로 바로 짓거나, 모기업에 투자를 요청할 수 있습니다(구단주 신뢰·성향·금액에 따라 승인, 거절되면 신뢰 -1, 60일마다 1번). 완공 뒤 유지비만 운영비에서 매년 나갑니다. 공사는 동시에 2곳까지 할 수 있습니다. 성장 효과는 매년 겨울 성장 때 반영되고, 부상·회복 효과는 바로 적용됩니다.')}`,`
     <dl class="tsum"><div><dt>종합 등급</dt><dd>${F.lv}단계 · 리그 ${rk}위</dd></div><div><dt>연 유지비</dt><dd class="num">${money(facUpkeep())}</dd></div><div><dt>보유 현금</dt><dd class="num">${money(t.cash)}</dd></div><div><dt>공사 중</dt><dd>${nb}/2</dd></div></dl>
     ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
@@ -36364,6 +36370,13 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-13-goalfin',d:'11월 13일',t:'전력에 맞춘 목표 · 재정 조정',items:[
+    '구단주의 시즌 순위 목표가 그해 전력(예상 순위)에 맞춰 정해집니다. 구단주 성향에 따라 한 계단 높거나 여유가 있습니다.',
+    '구단주의 단기 승률 지시도 전력에 맞춰 기준이 달라집니다(강팀은 5할 이상, 약팀은 4할대).',
+    '몸값과 구단 수입은 경쟁균형세 상한과 따로 움직입니다. 상한이 올라도 물가는 오르지 않고, 몸값은 FA 시장 경쟁으로만 오릅니다.',
+    '모기업 구단의 유보금 상한이 60억 원이 됩니다. 넘는 현금의 60%는 시즌 결산 때 모기업이 회수합니다.',
+    '휴대폰 시설 화면에도 시설 연식과 보수 공사 버튼이 나옵니다. 시설 노후 알림에서 시설 화면으로 바로 갈 수 있습니다.',
+  ]},
   {id:'2026-11-13-moneyfix',d:'11월 13일',t:'돈의 기준 고정',items:[
     '경쟁균형세 상한이 해마다 저절로 오르지 않습니다. 돈의 기준이 2026년으로 고정돼, 수십 년이 지나도 30억은 30억짜리 선수입니다.',
     '상한은 리그 연봉이 상한에 붙어 실행위원회가 열릴 때만 표결(동결~5%)로 바뀝니다.',
