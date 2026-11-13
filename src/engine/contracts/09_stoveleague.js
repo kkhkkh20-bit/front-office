@@ -197,6 +197,7 @@ function homeReturn(p,tid,h){ h=h||homeTie(p,tid); /* h: 소속을 바꾸기 전
 function faBestOf(p,offers){ let b=null,bs=-1; for(const o of offers){ const s=faScore(p,o); if(s>bs){bs=s;b=o;} } return b; }
 function faSign(p,offers){
   offers=offers.filter(o=>!faOutBlocked(o.tid,p)&&rosterN(o.tid)<ROSTER_MAX); if(!offers.length)return; /* 정식 선수가 꽉 찬 구단은 계약할 수 없다(검수 11-09r) */
+  let capC=null; { const uo=G.unemp?null:offers.find(o=>o.tid===G.user); if(uo){ capC=faCapCheck(p,uo); if(capC&&!capC.ok){ offers=offers.filter(o=>o!==uo); delete G.fa.offers[p.id]; stop('FA',`${p.name} 측이 우리 조건에 사인하려 했지만 구단주 결재가 나지 않아 제안을 거둬들였습니다. ${capC.msg}`,p.id); capC=null; if(!offers.length)return; } } } /* 사인 직전에 구단주가 그때 연봉 합계로 다시 본다: 여러 FA에게 동시에 낸 제안이 하나씩은 통과해도 합치면 한도를 넘는다(사용자 11-13) */
   let best=null,bs=-1; const shop=agShopN(p)>0; const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id];
   for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=faScore(p,o)*(shop?1:rnd(.96,1.04)); if(sc>bs){bs=sc;best=o;} } /* 대어는 시장 보고 결과대로 결정한다 */
   if(!best)best=offers.find(o=>o.tid!==G.user); if(!best)return; /* 우리와 협상을 접은 선수는 우리 제안만 남아 있어도 사인하지 않는다 */
@@ -212,6 +213,7 @@ function faSign(p,offers){
     try{ compStart(p,from,best.tid,rec); }catch(e){}
   }
   if(best.tid!==from)try{ homeReturn(p,best.tid,ht); }catch(e){} /* 고향 팀 귀향(11-09d) */
+  if(capC&&best.tid===G.user)capOwnerOk(capC,`FA ${p.name} 계약`);
   const uo0=G.fa.offers[p.id]; const userOffered=!!uo0; const whyLost=!uo0?'':uo0.rej?' 우리 제안은 선수가 이미 거절한 조건이었습니다.':faOutBlocked(G.user,p)?` 우리 구단은 외부 FA 영입 한도(${faCapN()}명)를 채워 계약할 수 없었습니다.`:' 우리 제안은 밀렸습니다.';
   delete G.fa.offers[p.id]; G.fa.pool=G.fa.pool.filter(x=>x!==p.id); G.fa.results.unshift(rec); prFA(rec); try{ if(rec.to===G.user&&from!==G.user&&rec.annual>=700)ivRequest('fa_sign',{pid:p.id}); else if(from===G.user&&rec.to!==G.user&&rec.annual>=500)ivRequest('fa_lost',{pid:p.id}); }catch(e){} mvLog('FA',p,from,rec.to,`${from===rec.to?'잔류 ':''}${ctRecShort(rec)}`,rec.terms?ctRecMoney(rec).tot:rec.annual*rec.years);
   const tx=rec.terms?`${termsTxt(rec.terms,true)} · ${ctRecMoney(rec).txt}`:`${rec.years}년 연 ${money(rec.annual)}`;
@@ -411,7 +413,9 @@ function answerOffer(id,yes){
   /* 성사 여부(거부권·소속)를 먼저 보고, 구단주 승인(신뢰 비용)은 실제로 성사될 때만 반영한다 */
   { const why=offerBlockMsg(o); if(why)return {ok:false,msg:why}; }
   { const cd=tradeCool(o.from,o.give); if(cd){ offerMailDone(o.id); /* 거래 한도·간격에 걸린 제안은 다시 받을 수 없으니 목록에 되돌리지 않는다(카페 11-09) */ return {ok:false,msg:cd.cap?`올해 ${tshort(o.from)}와(과)는 이미 ${cd.n}번 거래해 더 거래할 수 없습니다.`:`${tshort(o.from)}와(과)는 ${dmd(cd.until)}까지 다시 거래할 수 없습니다(거래 뒤 ${TRADE_COOL}일).`}; } } /* 받아 둔 제안도 수락할 때 거래 간격을 다시 본다 */
-  { const oc=tradeOwnerCheck(o.get,o.give,+(o.cash||0)); if(oc&&!oc.ok){ G.offers.unshift(o); return {ok:false,owner:true,msg:oc.msg}; } if(oc&&oc.ok)tradeOwnerOk(oc); } /* AI 제안은 우리가 o.get을 보내고 o.give를 받는다 */
+  const cc=tradeCapCheck(o.get,o.give); if(cc&&!cc.ok){ G.offers.unshift(o); return {ok:false,owner:true,msg:cc.msg}; } /* 상한 결재(13_roster capOwnerCheck) */
+  { const oc=tradeOwnerCheck(o.get,o.give,+(o.cash||0)); if(oc&&!oc.ok){ G.offers.unshift(o); return {ok:false,owner:true,msg:oc.msg}; } if(oc&&oc.ok)tradeOwnerOk(oc); }
+  if(cc&&cc.ok)capOwnerOk(cc,`${tname(o.from)} 트레이드 제안 수락`); /* AI 제안은 우리가 o.get을 보내고 o.give를 받는다 */
   const t=team(o.from); const mv=mgrTradeView(o.from,o.get,o.give); const snap=tradeSnap([...o.give,...o.get]); const cash=+(o.cash||0),pk=pkNorm(o.pk); const grade=tradeGrade(o.from,o.get,o.give,cash,pk);
   o.give.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); o.get.forEach(id=>{tradeTerms(G.players[id]); G.players[id].team=o.from; delete G.players[id].listed; /* 트레이드로 옮기면 계약한 구단에만 걸린 조건은 끝난다(돌아와도 되살아나지 않음) */ story(G.players[id],`트레이드로 ${tname(o.from)} 이적`,'move');});
   for(const k in G.lineup) if(o.get.includes(G.lineup[k]))delete G.lineup[k];

@@ -121,6 +121,8 @@ function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)re
   const lim=Math.round((t.owner==='win'?1500:t.owner==='pr'?1000:500)*(t.trust>=70?1.5:t.trust>=50?1:.5));
   if(over<=lim)return {ok:true,over,lim,dSal};
   return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(선수 연봉 ${money(dSal-(cash||0))}${fr<1?`(남은 시즌 ${Math.round(fr*100)}% 몫)`:''}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 연봉 여유(예산 기준, 구단주 지원 목표 안)를 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
+/* 트레이드의 상한 결재(13_roster capOwnerCheck): 받는 선수 계약으로 다음에 잴 상위 40명 합계(겨울은 다음 시즌 기준) */
+function tradeCapCheck(give,get){ if(!(get||[]).length)return null; const s=sponSeason(); return capOwnerCheck(capPayAs(G.user,get,give),capInfo(G.user).pay,s,'tr'+[...get].sort((a,b)=>a-b).join(',')); }
 function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 -2.`,{kind:'구단주'}); }catch(e){} }
 /* 정식 인원은 선수 신분(육성·복무·입단 예정 제외)으로 센다(rosterN과 같은 기준) */
 function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)&&!(q.joinY>G.year); }
@@ -184,6 +186,7 @@ function proposeTrade(tid,give,get,cash,pk){
   const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);
   { const cd=tradeCool(tid,get); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)}) 뒤 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
   const oc0=tradeOwnerCheck(give,get,cash); if(oc0&&!oc0.ok)return {ok:false,owner:true,msg:oc0.msg};
+  const cc0=tradeCapCheck(give,get); if(cc0&&!cc0.ok)return {ok:false,owner:true,msg:cc0.msg};
   const isCtr=!!(nt.ctr&&nt.ctr[sig]!=null&&G.day-nt.ctr[sig]<=7); /* 상대가 직접 낸 역제안·보완안은 일주일 동안 횟수·중복 제한 없이 받는다 */
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};
   if(!isCtr&&!ni.left)return {ok:false,msg:`${gmn}: 이번 달은 더 시간을 내기 어렵습니다. ${ni.next}에 다시 연락 주십시오.${ni.free?'':' (우리와 맞대결하는 기간에는 경기장에서 따로 만날 수 있습니다)'}`,closed:true};
@@ -203,6 +206,7 @@ function proposeTrade(tid,give,get,cash,pk){
     if(cash>0){ payOut(G.user,cash,'etc'); payIn(tid,cash); G.spend.trC=(G.spend.trC||0)+cash; } else if(cash<0){ payOut(tid,-cash,'etc'); payIn(G.user,-cash,'tradeIn'); } /* 트레이드로 받은 현금은 보상금·양도금과 따로(검수 11-08d) */
     const pkT=(L,s)=>L.length?`${s}${L.map(pkName).join(', ')}`:''; const pkG=pkT(pk.give,' + 지명권 '), pkR=pkT(pk.get,' + 지명권 '); pkMove(pk,tid); if(pkG||pkR){ const T=G.trades[G.trades.length-1]; T.pk={give:pk.give.map(pkName),get:pk.get.map(pkName)}; T.pkk={y:pk.y,give:[...pk.give],get:[...pk.get]}; /* 실제 지명 선수를 찾는 열쇠(검수 11-09w) */ wire('트레이드',`${tshort(G.user)}·${tshort(tid)} 트레이드로 신인 지명권 이동: ${[...pk.give.map(k=>pkName(k)+' → '+tshort(tid)),...pk.get.map(k=>pkName(k)+' → '+tshort(G.user))].join(', ')}`,{tid}); }
     addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash>0?` + 현금 ${money(cash)}`:''}${pkG} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}${cash<0?` + 현금 ${money(-cash)}`:''}${pkR}`);
+    if(cc0&&cc0.ok)capOwnerOk(cc0,`${tname(tid)}와(과) 트레이드`);
     if(oc0&&oc0.ok&&oc0.over>0)tradeOwnerOk(oc0); /* 승인 판정은 거래 전 한 번으로(검수 11-06: 거래 뒤 다시 계산하면 승인 대상이 사라져 신뢰 차감이 빠짐) */
     offerDropMoved([...give,...get]); offerDropCool(); /* 직접 거래로 옮긴 선수가 걸린 받은 제안·메일은 닫는다(검수 11-08c) */ mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${aiQ(tid,'yes')}${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}(관계 ${mv.r>0?'+':''}${mv.r}).`:''}`};
   }
