@@ -57,7 +57,7 @@ function capexWait(tid){ const t=team(tid), d=t&&t.capexD; return d!=null&&G.day
 /* --- 명명권 후원·지자체 보조 --- */
 const FAC_SPON={share:.5,yrs:3,k:['indoor','weight','lab','fut'],rk:6,occ:.75,back:.3};
 const FAC_CITY={share:.4,yrs:4,k:['fut','dorm','indoor'],prog:.03,up:.1};
-const SPON_CO=['한빛','대성','미래','동방','새솔','청운','해담','누리'];
+const facSponCo=()=>{ const L=Object.values(SPON_CO).flat(); return L.length?L:['한빛']; }; /* 명명권 기업 이름은 스폰서 기업 목록에서 */
 function facLastRank(tid){ const o=G.last&&G.last.order; if(!o)return 5.5; const i=o.findIndex(x=>(x.tid??x)===tid); return i<0?5.5:i+1; }
 function facSponOdds(tid){ const t=team(tid), fan=prOf(tid)?prOf(tid).fan:55; return clamp(.2+((t.pop||1)-1)*.9+(5.5-facLastRank(tid))*.05+(fan-55)/200,.05,.7); }
 function facCityOdds(tid){ const t=team(tid); return clamp(.15+(cityRel(tid)-50)/80+((t.pop||1)-1)*.3,.05,.75); }
@@ -89,7 +89,7 @@ function facFund(k,route){ if(G.unemp)return '맡은 구단이 없습니다.'; f
   return facFundGo(tid,k,route,c); }
 function facFundGo(tid,k,route,c){ const t=team(tid), me=tid===G.user&&!G.unemp, share=route==='spon'?FAC_SPON.share:FAC_CITY.share, own=Math.round(c*(1-share)), help=c-own;
   let k0=own; if(me){ k0=spendPay(own); G.spend.facB=(G.spend.facB||0)+k0; } else t.cash-=own;
-  const o={src:route,help}; if(route==='spon'){ o.sponN=SPON_CO[Math.floor(facU('spn'+G.year,tid+k)*SPON_CO.length)]+'그룹'; t.facSpon={k,n:o.sponN,y0:sponSeason(),y1:sponSeason()+FAC_SPON.yrs-1,help,miss:0}; }
+  const o={src:route,help}; if(route==='spon'){ { const L=facSponCo(); o.sponN=L[Math.floor(facU('spn'+G.year,tid+k)*L.length)]; } t.facSpon={k,n:o.sponN,y0:sponSeason(),y1:sponSeason()+FAC_SPON.yrs-1,help,miss:0}; }
   else (t.cityOb=t.cityOb||[]).push({k,y1:sponSeason()+FAC_CITY.yrs-1,prog:Math.round(c*FAC_CITY.prog),miss:0});
   const S=facSt(tid), b=facStartBuild(tid,k,o); S.inv=(S.inv||0)+c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k,lv:b.lv,c,src:route}); if(S.hist.length>40)S.hist.shift();
   clubFacilityHistory('fac',tid,FACI[k].l,'착공',{...b,src:`${facSrcTxt(route)} ${money(help)} · 구단 ${money(own)}`}); facStartNews(tid,k,b);

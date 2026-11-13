@@ -74,7 +74,7 @@ function cpFacPanel(S,k){ const t=team(G.user);
       ${nx?`<p class="small">다음: <b>${esc(nx.l)}</b> · ${money(nx.c)} · 원정 피로 ${nx.f>=0?'+':''}${Math.round(nx.f*100)}%</p>`:'<p class="small good">가장 좋은 버스입니다.</p>'}
       <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="bus">구단 버스 화면</button></div>`; }
   const D=FACI[k]; if(!D)return cpIdle(S); const lv=facOf(k), b=S.bmap[k], nx=lv+1; const nb=Object.keys(S.bmap).length; const st=cpFacStat(k);
-  const act=b?`<div class="eyebrow">공사 중: ${esc(D.lv[b.lv])}</div>${cpBar(b)}`
+  const act=b?`<div class="eyebrow">${b.pm>G.day?'인허가 중':'공사 중'}: ${esc(D.lv[b.lv])}</div>${cpBar(b)}`
     :lv>=FAC_MAX?'<p class="small good">최고 단계입니다.</p>'
     :`<dl class="cpdl"><div><dt>다음 단계</dt><dd><b>${esc(D.lv[nx])}</b></dd></div><div><dt>공사비</dt><dd class="num">${money(D.c[nx])}</dd></div><div><dt>기간</dt><dd>${D.days[nx]}일</dd></div><div><dt>유지비</dt><dd>연 ${money(D.up[nx])}</dd></div></dl>
       ${facRouteBtns(k)}`;

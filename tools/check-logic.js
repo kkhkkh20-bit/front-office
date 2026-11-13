@@ -2460,7 +2460,7 @@ T('[피드백 11-09] 장학재단·프런트 견학·OB 후원',()=>{ fresh(); c
   S.trip=null; const c1=S.cash; personalFound(); const F=S.found; ok(F&&S.cash===c1-30&&G.rep===r0+1,'재단 설립 비용·명성 '+S.cash+' '+G.rep); ok(F.list.length===1&&G.schools[F.list[0].school],'장학생 학교 없음 '+JSON.stringify(F.list));
   const sc=G.schools[F.list[0].school]; ok(schRel(sc)>=schRel0(sc,G.user)+4,'학교 감독 친분 '+schRel(sc)); ok(G.news.some(n=>/장학재단/.test(n.t)),'설립 기사 없음'); ok(/이미/.test(personalFound()),'재단 두 번 설립');
   F.paid=G.year-1; const c2=S.cash, f0=G.pr.fan; foundYear(S); ok(S.cash===c2-5&&F.list.length===2&&G.rep===r0+2&&G.pr.fan>f0,'연간 장학금 '+S.cash+' '+F.list.length+' '+G.rep); foundYear(S); ok(S.cash===c2-5,'같은 해 두 번 냄');
-  obInit(); const L=G.ob.filter(o=>o.team===G.user); ok(L.length>0,'우리 OB 없음'); const b0=L[0].bond; const rp=G.rep; const m=personalActivity('ob'); ok(L[0].bond===b0+5&&G.rep===rp+1,'OB 후원 효과 '+m);
+  obInit(); const L=G.ob.filter(o=>o.team===G.user); ok(L.length>0,'우리 OB 없음'); const b0=L[0].bond; const rp=G.rep; const m=personalActivity('ob'); ok(L[0].bond===b0+5&&(G.rep===rp+1||(S.repY&&S.repY.n>=PL_REP_CAP&&G.rep===rp)),'OB 후원 효과 '+m); /* 사비로 올리는 명성은 한 해 상한(11-13) */
   const cand=obCands('coach').filter(o=>o.team===G.user); if(cand.length){ let got=false; for(let i=0;i<60&&!got;i++){ S.last.ob=null; S.wk=null; S.cash=1000; personalActivity('ob'); got=(G.cmarket||[]).some(c=>c.res===G.user&&cand.some(o=>o.id===c.ob)); } ok(got,'레전드 코치 제안이 한 번도 안 옴'); } });
 T('[피드백 11-09] 재테크 수익·손실 기록과 야인 생활비·바닥 시 제의 연봉 하락',()=>{ fresh(); const S=personalState(); S.cash=300;
   ok(/부족/.test(personalInvest('stock',1000)),'잔액보다 많이 넣음'); personalInvest('dep',100); personalInvest('stock',100); ok(S.cash===100&&S.inv.dep===100,'넣기 '+S.cash);
@@ -4122,7 +4122,7 @@ T('[단장 돈·시설] 사비 활동: 같은 활동을 거듭하면 효과가 �
   S.wk=null; S.last.scout=null; S.last.team=null; S.last.meal=null; personalActivity('scout'); personalActivity('team'); const p=domestic(G.user)[0]; const m=personalActivity('meal',p.id); ok(/꽉/.test(m),'한 주 세 번째 유료 일정이 막히지 않음 '+m);
   ok(!/[0-9]+%|\\+[0-9]/.test(personalActivity('chat',p.id)),'결과 안내에 효과 수치'); });
 T('[단장 돈·시설] 다른 단장과 식사: 같은 단장은 45일 간격, 그 구단 사정을 듣고, 잦은 접대는 뒷말이 쌓여 구설이 된다',()=>{ fresh(); const S=personalState(); S.cash=5000; const o=G.teams.find(t=>t.id!==G.user); o.rel=50;
-  const m1=personalActivity('network',o.id); ok(/식사/.test(m1)&&!/[0-9]/.test(m1),'식사 안내 '+m1); S.last.network=null; S.wk=null; ok(/다시 식사/.test(personalActivity('network',o.id)),'같은 단장 간격 없음');
+  const m1=personalActivity('network',o.id); ok(/식사/.test(m1)&&!/\\+[0-9]|친밀도 [0-9]/.test(m1),'식사 안내 '+m1); S.last.network=null; S.wk=null; ok(/다시 식사/.test(personalActivity('network',o.id)),'같은 단장 간격 없음');
   ok((S.heat||0)>0,'뒷말이 쌓이지 않음'); const t=team(G.user); S.heat=30; const tr=t.trust; let hit=false; for(let i=0;i<200&&!hit;i++){ S.heat=30; plHeatMonth(S); hit=t.trust<tr; } ok(hit&&G.news.some(n=>/뒷말/.test(n.t)),'뒷말이 많은데 구설 없음'); ok(S.heat<30*.5,'구설 뒤 뒷말이 그대로');
   S.heat=10; plHeatMonth(S); ok(S.heat<=10,'뒷말이 사그라들지 않음'); });
 T('[단장 돈·시설] 친분은 만나지 않으면 식고, 재테크는 시장 흐름을 함께 타며 손실도 난다',()=>{ fresh(); const S=personalState(); const C=contactRecord('pl:test'); C.bond=90; C.history=[{day:G.day-200,kind:'meal',text:''}]; plBondDecay(S); ok(C.bond<90&&C.bond>30,'친분이 식지 않음 '+C.bond);
