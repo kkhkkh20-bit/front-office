@@ -174,9 +174,10 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
 /* 해마다 한 번씩(겨울 1월, 시즌 6월 15일~마감): 상한 여유가 있는 우승 도전·내년 도전 구단이 리빌딩 구단에서 전력을 사 온다. 리그 트레이드 한도(20건) 안에서 */
 /* 유망주 수집·긴축 구단이 먼저 움직여 베테랑을 판다(여름 6월 15일~마감, 겨울 11월 중순~1월). 사 가는 쪽은 우승 도전·내년 도전·흥행 구단이고 값은 지명권이나 어린 선수로 받는다.
    한 주에 구단마다 22% 확률로 한 번, 리그 트레이드 한도(20건·구단당 5건) 안에서 */
-function aiBuilderSell(){ const per=period(), o=dobj(G.day); const win=per==='season'?G.day>=KD(6,15)&&G.day<=tradeDL():(per==='off'||per==='pre')&&(o.m===1||o.m===12||(o.m===11&&o.d>=15)); if(!win||(G.draft&&!G.draft.done))return 0; let n=0;
+function aiBuilderSell(){ const per=period(), o=dobj(G.day); const win=per==='season'?G.day>=KD(6,15)&&G.day<=tradeDL():(per==='off'||per==='pre')&&(o.m===1||o.m===12||(o.m===11&&o.d>=15)); if(!win||(G.draft&&!G.draft.done))return 0; let n=0, TR=null, mean=0;
   for(const B of G.teams){ if(B.id===ME()||!['build','tight'].includes(planOf(B))||lgTradeN(B.id)>=4||lgTradeN()>=18)continue; if(R()>=.22)continue;
-    const cap=capOf(sponSeason()); const A=G.teams.filter(t=>t.id!==ME()&&t.id!==B.id&&['win','next','star'].includes(planOf(t))&&(t.cash||0)>-2000&&capPay(t.id)<cap*.96&&lgTradeN(t.id)<5).sort((a,b)=>(planOf(a)==='win'?0:1)-(planOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,2);
+    const cap=capOf(sponSeason()); if(!TR){ TR={}; for(const t of G.teams)TR[t.id]=teamRating(t.id); mean=avg(Object.values(TR)); } /* aiStanceBuy와 같은 평준화: 이미 리그 평균보다 크게 센 구단(+1.0)은 사 가지 않는다(검증 리그에서 한 구단이 12시즌 중 8번 1위) */
+    const A=G.teams.filter(t=>t.id!==ME()&&t.id!==B.id&&['win','next','star'].includes(planOf(t))&&(t.cash||0)>-2000&&capPay(t.id)<cap*.96&&lgTradeN(t.id)<5&&TR[t.id]<mean+1).sort((a,b)=>(planOf(a)==='win'?0:1)-(planOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,2);
     for(const a of A){ if(fdStrengthen({buyers:[a],sellers:[B],per:1,wantF:.4})){ n++; break; } } }
   return n; }
 function aiStanceBuy(){ const per=period(), o=dobj(G.day); const win=per==='season'?G.day>=KD(6,15)&&G.day<=tradeDL():(per==='off'||per==='pre')&&o.m===1; if(!win)return 0;
