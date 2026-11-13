@@ -7,12 +7,15 @@ const REPORTERS=['김도윤','박서진','이하람','정우성','최가은','�
 function ivFx(fan,press,o){ return Object.assign({fan,press},o||{}); }
 /* 질문 묶음: 상황별 3문항. tone은 화면 표시용 */
 function ivBuild(k,d){ if(k==='pdrama')return pdIvQs(d); /* 선수 갈등 질문(29b_player_drama) */ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.name:''; const m=G.mgr[G.user]; const mn=m&&!m.interim?m.name+' 감독':'감독';
-  const goal=[`올 시즌 목표를 말씀해 주시죠.`,[
-    ['자신감','"우승에 도전합니다. 그만한 전력을 만들었습니다."',ivFx(3,1,{prom:'champ'})],
+  /* 질문 문장은 상황(지난 시즌 순위)과 인터뷰마다 바뀐다(플레이테스트 4 #16) */
+  const sd=(G.ivSeq||0)+1, pk=L=>L[Math.abs(Math.round(hn('ivq'+k,sd)*1000))%L.length]; let lastRk=0; if(period()==='off'||period()==='pre'){ const ord=(G.last&&G.last.order)||[]; lastRk=ord.findIndex(x=>(x.tid??x)===G.user)+1; }
+  const goalQ=lastRk>=7?pk([`지난 시즌 ${lastRk}위였습니다. 올해는 달라질 수 있습니까?`,`하위권 평가를 받습니다. 올해 목표는 어디까지입니까?`]):lastRk&&lastRk<=3?pk([`지난 시즌 ${lastRk}위였습니다. 올해는 더 위를 봅니까?`,`우승 후보라는 평가가 많습니다. 목표를 말씀해 주시죠.`]):pk([`올 시즌 목표를 말씀해 주시죠.`,`팬들이 가장 궁금해하는 건 목표입니다. 어디까지 보십니까?`,`올해 이 팀의 목표 순위는 어디입니까?`]);
+  const goal=[goalQ,[
+    ['우승 공약','"우승에 도전합니다. 그만한 전력을 만들었습니다."',ivFx(3,1,{prom:'champ'})],
     ['자신감','"가을야구는 반드시 갑니다."',ivFx(2,1,{prom:'ps'})],
     ['신중','"한 경기씩 이기다 보면 결과가 따라올 겁니다."',ivFx(0,1)],
     ['현실','"아직 만들어 가는 팀입니다. 성장하는 과정을 봐 주십시오."',ivFx(-1,1)]]];
-  const mgrQ=[`${mn}에 대한 신뢰는 변함없습니까?`,[
+  const mgrQ=[pk([`${mn}에 대한 신뢰는 변함없습니까?`,`${mn}과(와) 호흡은 어떻습니까?`,`${mn} 운영에 만족하십니까?`]),[
     ['지지','"전적으로 믿습니다. 현장은 감독이 맡는 겁니다."',ivFx(0,1,{mgr:5})],
     ['압박','"결과로 보여 줘야 합니다. 모든 건 성적이 말해 줄 겁니다."',ivFx(0,1,{mgr:-6})],
     ['회피','"그 얘기는 시즌 끝나고 하겠습니다."',ivFx(0,-1,{mgr:-2})]]];
@@ -50,7 +53,10 @@ function ivBuild(k,d){ if(k==='pdrama')return pdIvQs(d); /* 선수 갈등 질문
         ['보호','"절대 서두르지 않습니다. 선수 몸이 먼저입니다."',ivFx(0,2,{mor:[d.pid,4]})],
         ['기대','"빨리 돌아와 주길 바랍니다. 팀에 꼭 필요한 선수입니다."',ivFx(1,0,{mor:[d.pid,-2]})],
         ['의무팀','"의무팀 판단에 맡기겠습니다."',ivFx(0,1)]]], mgrQ],
-    preseason:[goal,[`올 시즌 가장 기대하는 선수는 누구입니까?`,(d.cand||[]).slice(0,3).map(id=>{ const q=G.players[id]; return ['칭찬',`"${q?q.name:''} 선수입니다. 올해 일을 낼 겁니다."`,ivFx(1,0,{mor:[id,6]})]; }).concat([['단합','"한 명을 꼽을 수 없습니다. 모두가 주인공입니다."',ivFx(0,1,{team:1})]])], mgrQ],
+    preseason:[goal,...(()=>{ const F=(foreignOf(G.user)||[]).filter(p=>p.foreign==='용병'&&p.fy===G.year); if(!F.length)return []; const f=F[0]; return [[pk([`새 외국인 ${f.name} 선수에 대한 기대가 큽니다.`,`외국인 선수 구성이 끝났습니다. ${f.name} 선수는 어떤 역할입니까?`]),[
+        ['기대','"우리 팀에 꼭 맞는 선수입니다. 첫 달부터 보여 줄 겁니다."',ivFx(1,0,{mor:[f.id,4]})],
+        ['신중','"리그 적응이 먼저입니다. 시간을 주겠습니다."',ivFx(0,1,{mor:[f.id,2]})],
+        ['냉정','"외국인 선수는 성적으로 말합니다. 안 되면 바꿉니다."',ivFx(-1,0,{mor:[f.id,-4]})]]]]; })(),[`올 시즌 가장 기대하는 선수는 누구입니까?`,(d.cand||[]).slice(0,3).map(id=>{ const q=G.players[id]; return ['칭찬',`"${q?q.name:''} 선수입니다. 올해 일을 낼 겁니다."`,ivFx(1,0,{mor:[id,6]})]; }).concat([['단합','"한 명을 꼽을 수 없습니다. 모두가 주인공입니다."',ivFx(0,1,{team:1})]])], mgrQ],
     deadline:[[`트레이드 마감이 지났습니다. 만족하십니까?`,[
         ['자신감','"필요한 건 다 했습니다. 이제 선수들이 보여 줄 차례입니다."',ivFx(1,0)],
         ['아쉬움','"아쉬움이 남습니다. 원하던 조건이 나오지 않았습니다."',ivFx(-1,2)],
@@ -209,7 +215,7 @@ function ivDaily(){ const o=dobj(G.day); if(G.unemp){ try{ mdDaily(); }catch(e){
 function ivNewsPub(){ const Q=G.ivNewsQ||[]; if(!Q.length)return; const due=Q.filter(x=>x.day<=G.day); if(!due.length)return; G.ivNewsQ=Q.filter(x=>x.day>G.day);
   for(const x of due){ if(x.tid!=null&&x.tid!==G.user)continue; /* 다른 구단 시절 인터뷰는 새 구단 기사로 내지 않는다 */ const by={}; for(const a of x.ans){ const o=a.outlet||x.outlet; (by[o]=by[o]||[]).push(a); }
     const heads=[]; for(const o in by){ const L=by[o]; const big=L.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0]; const q=big.a.replace(/^"|"$/g,''); const h=`${tshort(G.user)} ${meName()?meName()+' ':''}단장 "${q.slice(0,30)}${q.length>32?'…':''}"`;
-      const ni=news('언론',h,`${o} ${L[0].rep||x.rep} 기자${x.md?` · ${IV_TOPIC[x.k]}`:''}: ${L.map(a=>`${a.q} ${a.a}`).join(' ')}`,big.fx.fan>=2?1:big.fx.fan<=-2?-1:0,{outlet:o}); if(ni&&!x.n0)x.n0=ni; heads.push(`${o}: ${h}`); }
+      const ni=news('언론',h,`${o} ${L[0].rep||x.rep} 기자${x.md?` · ${IV_TOPIC[x.k]}`:''}: ${L.map(a=>`${a.q} ${a.a}`).join(' ')}`,big.fx.fan>=2?1:big.fx.fan<=-2?-1:0,{outlet:o,by:L[0].rep||x.rep}); /* 기사 바이라인은 인터뷰한 기자(플레이테스트 4 #17) */ if(ni&&!x.n0)x.n0=ni; heads.push(`${o}: ${h}`); }
     const sumFx=x.ans.reduce((s,a)=>({fan:s.fan+(a.fx.fan||0),press:s.press+(a.fx.press||0)}),{fan:0,press:0});
     const hot=x.ans.filter(a=>Math.abs(a.fx.fan)+Math.abs(a.fx.press)>=4||a.fx.prom||(a.fx.mgr||0)<0||['비판','도발'].includes(a.tone)); /* 11-12: 후속 질문은 크게 화제가 된 말에만(예전엔 무난한 답에도 자주 따라옴) */
     mail('홍보팀',`[기사] ${IV_TOPIC[x.k]||'인터뷰'} 기사가 나왔습니다`,`${heads.join('\n')}\n\n반응: 팬 여론 ${sumFx.fan>=0?'+':''}${sumFx.fan} · 언론 논조 ${sumFx.press>=0?'+':''}${sumFx.press}.${hot.length?` 화제가 된 말: ${hot.slice(0,2).map(a=>a.a).join(' ')}`:''}${fpNewsReact(x.n0)}`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'club:news'}]}); delete x.n0;

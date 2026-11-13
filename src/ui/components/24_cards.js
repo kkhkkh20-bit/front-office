@@ -41,7 +41,7 @@ function useText(p){ const u=p.use&&p.use.y===G.year?p.use:null; if(!u||!u.g)ret
   return `선발 ${u.g}경기 · 주로 ${sl[0]}번 · ${ps}`; }
 function bLine(p){ const h=seasonTotal(p,G.year,'1군'); if(!h||!h.pa){ const l=curLine(p); return l&&l.pa?`<span class="muted">${l.y===G.year?'2군':l.y} OPS ${fmt3(bRate(l).ops)}</span>`:'<span class="muted">기록 없음</span>'; }
   const r=bRate(h); const c=r.ops>=.9?'var(--good)':r.ops>=.78?'var(--r50)':r.ops<.62?'var(--bad)':'inherit';
-  return `<b class="num">${fmt3(r.avg)}</b> · OPS <b class="num" style="color:${c}">${fmt3(r.ops)}</b> · ${h.hr}홈런 ${h.rbi}타점${h.sb?` ${h.sb}도루`:''}`; }
+  return `<b class="num">${fmt3(r.avg)}</b> · ${gl('OPS')} <b class="num" style="color:${c}">${fmt3(r.ops)}</b> · ${h.hr}홈런 ${h.rbi}타점${h.sb?` ${h.sb}도루`:''}`; }
 function pLine(p){ const h=seasonTotal(p,G.year,'1군'); if(!h||!h.outs)return '<span class="muted">이번 시즌 기록 없음</span>'; const r=pRate(h); const c=r.era<=3.3?'var(--good)':r.era<=4.2?'var(--r50)':r.era>=5.8?'var(--bad)':'inherit';
   return `ERA <b class="num" style="color:${c}">${r.era.toFixed(2)}</b> · ${ipStr(h.outs)}이닝 · ${h.w||0}승 ${h.l||0}패${h.sv?` ${h.sv}세이브`:''}${h.hld?` ${h.hld}홀드`:''} · 탈삼진 ${h.so}`; }
 function l10Text(p){ const L=p.l10||[]; if(!L.length)return '';

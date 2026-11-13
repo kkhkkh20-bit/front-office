@@ -783,3 +783,7 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .tcd-r{display:grid;grid-template-columns:62px 1fr auto;gap:2px 8px;align-items:baseline;padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.07);margin-bottom:4px;font-size:14px}
 .tcd-r .tcd-p{opacity:.7;font-size:12px}.tcd-r em{font-style:normal;color:#ffd166;font-weight:700}.tcd-r i{grid-column:2/4;font-style:normal;font-size:12px;opacity:.7}
 @media(max-width:700px){.tcd-g{grid-template-columns:1fr}.tcd-h h2{font-size:24px}}
+/* 용어 풀이 글자(플레이테스트 4 #14) */
+.gl{border-bottom:1px dotted currentColor;cursor:help}
+/* 태블릿: 떠 있는 ? 버튼이 선수단 머리 줄의 정리 모드 버튼을 가리지 않게(플레이테스트 4 E) */
+@media(max-width:1000px){#app .shell:has(.subhead.notitle) main.content .roster-heading{padding-right:36px}}

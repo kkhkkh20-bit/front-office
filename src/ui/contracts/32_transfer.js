@@ -16,7 +16,7 @@ function foreignView(){
   let market=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&fKnows(G.user,p)&&(p.foreign==='아시아')===asia)
     .filter(p=>ff.r==='all'||(ff.r==='p'?p.isP:ff.r==='b'?!p.isP:ff.r==='mine'?fMineFind(p):origOf(p)===ff.r)).filter(p=>fFocusMatch(p,ff.pp||'all'))
     .map(p=>{ const rp=scoutReport(p); return {p,rp,fs:fScout(p,rp)}; });
-  market.sort(fSortBy(ff.s)); /* 고른 기준 하나로만 줄 세운다. 우리 발굴 후보는 '우리 발굴' 칩으로 따로 본다 */
+  market.sort(fSortBy(ff.s)); { const key=[ff.t,ff.r,ff.s,ff.pp||'all',G.day].join('|'), O=UI.fmOrd&&UI.fmOrd.k===key?UI.fmOrd.ids:null; if(O){ const ix=new Map(O.map((id,i)=>[id,i])), at=x=>ix.has(x.p.id)?ix.get(x.p.id):1e9; market.sort((a,b)=>at(a)-at(b)); } UI.fmOrd={k:key,ids:market.map(x=>x.p.id)}; } /* 계약·관찰 뒤에도 같은 날 같은 조건이면 순서를 그대로(플레이테스트 4 #12) */ /* 고른 기준 하나로만 줄 세운다. 우리 발굴 후보는 '우리 발굴' 칩으로 따로 본다 */
   const tabs=`<div class="seg fr-ty"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
   const capT=fCap(G.user), rsyN=sum(yb.map(x=>x.rsy||0)); const pct=Math.min(100,tot/capT*100);
   const rule=asia
