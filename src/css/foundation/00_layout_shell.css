@@ -75,3 +75,5 @@ main.content{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-b
 /* 넓은 모니터(1600px 이상): 가운데 1180px에 갇혀 태블릿처럼 보이지 않게 본문을 넓힌다 */
 @media (min-width:1500px){ .wrap{max-width:1640px} }
 
+/* 스태프 카드의 .st-x(점선 상자) 스타일이 하루 진행 버튼 글자에 묻어 나오던 문제(플레이테스트 4 E) */
+.goset .step .st-x{padding:0;border:0;background:none}

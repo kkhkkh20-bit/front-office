@@ -100,6 +100,6 @@ function repScoop(id){ if(G.unemp)return ''; const r=repById(id); if(!r)return '
 /* 인터뷰 마지막 질문: 하고 싶은 말(언론 플레이). 기자가 먼저 청한 자리라 친분 기준이 없다(30일 간격은 같다) */
 function ivPPQ(){ if(G.unemp||!ppReady())return null; const opts=[{tone:'없음',t:'"오늘은 여기까지 하겠습니다."',fx:{fan:0,press:0}}];
   const tgt=(G.shortlist||[]).map(id=>G.players[id]).find(p=>p&&p.team!==G.user&&!p.foreign&&!p.prospect)||(G.fa&&!G.fa.closed?(G.fa.pool||[]).map(id=>G.players[id]).filter(Boolean).sort((a,b)=>ovr(b)-ovr(a))[0]:null);
-  if(tgt)opts.push({tone:'영입 의지',t:`"${tgt.name} 선수, 꼭 데려오겠습니다."`,fx:{fan:0,press:0,pp:'sign',pid:tgt.id}});
-  opts.push({tone:'투자 선언',t:'"올해는 과감하게 투자하겠습니다."',fx:{fan:0,press:0,pp:'invest'}});
+  if(tgt)opts.push({tone:'영입 의지',t:`"${tgt.name} 선수, 꼭 데려오겠습니다."`,fx:{fan:0,press:0,pp:'sign',pid:tgt.id},hint:`기사가 나가고 팬 여론이 오릅니다. 정해진 기한 안에 ${tgt.name}을(를) 데려오지 못하면 팬이 실망합니다.`});
+  { const t=team(G.user); opts.push({tone:'투자 선언',t:'"올해는 과감하게 투자하겠습니다."',fx:{fan:0,press:0,pp:'invest'},hint:`기사가 나가고 팬 여론이 오릅니다(최대 +5). 개막까지 연봉 규모를 5% 이상 늘리지 못하면 팬 여론 -7·구단주 신뢰 -2.${t&&!t.indie?(t.owner==='profit'?' 수익형 구단주는 돈 이야기를 먼저 꺼낸 것을 싫어합니다(신뢰 -4).':t.owner==='pr'?' 홍보형 구단주는 화제가 되는 것을 반깁니다(신뢰 +1).':''):''}`}); }
   return {q:'끝으로 팬들께 따로 하실 말씀이 있습니까?',opts}; }

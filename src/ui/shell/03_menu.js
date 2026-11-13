@@ -57,6 +57,16 @@ function subTabsRaw(tab){
   return `<nav class="subtabs" aria-label="${TITLE[tab]} 하위 메뉴">${SUBS[tab].map(([k,l])=>`<button data-a="${tab==='league'?'lseg':'sub'}" data-v="${tab==='league'?k:tab+':'+k}" class="${cur===k?'on':''}">${l}${((MERGE[tab]&&MERGE[tab][k])||[k]).some(x=>subAlert(tab,x))?'<i class="sdot"></i>':''}</button>`).join('')}</nav>`;
 }
 /* 부가설명은 화면에 펼치지 않고 제목·라벨 옆 i 말풍선으로 */
+/* 초보자용 용어 풀이(플레이테스트 4 #14): 점선 밑줄 글자를 누르면(마우스는 올리면) 설명이 뜬다 */
+const GLOSS={
+  '시장 규모':'연고 지역의 인구·소득으로 본 시장 크기입니다. 100이 리그 평균이고, 클수록 관중·광고·굿즈 수입이 많습니다.',
+  'WAR':'대체 선수 대비 승리 기여(Wins Above Replacement). 그 선수 대신 쉽게 구할 수 있는 선수가 뛰었을 때보다 팀이 몇 승을 더 했는지입니다. 한 시즌 2 이상이면 주전급, 5 이상이면 리그 정상급입니다.',
+  'OPS':'출루율 + 장타율. 타자의 공격력을 한 숫자로 봅니다. .700 안팎이 리그 평균, .800 이상이면 좋은 타자, .900 이상이면 리그 정상급입니다.',
+  '보류권 해제 조항':'재계약하지 않으면 보류권을 풀어 이 선수가 국내 다른 구단과 계약할 수 있게 하는 약속입니다. 선수에게는 매력이지만, 결별하면 경쟁 구단으로 갈 수 있습니다.',
+  '흑자 조정':'시즌 흑자가 나면 모기업이 그만큼 광고·후원을 덜 집행합니다(실제 KBO 방식). +10%p는 흑자 중 회수되는 비율이 보통보다 10%포인트 높다는 뜻입니다.',
+  '언론 평점':'트레이드를 본 언론의 평가입니다. A가 가장 좋고 F가 가장 나쁩니다. 받은 선수와 내준 선수의 가치를 견줘 매깁니다. C는 무난하다는 뜻입니다.',
+  '주장':'C는 주장(Captain)입니다. 선수단 분위기와 팀 케미스트리에 영향을 줍니다.'};
+function gl(term,txt){ const t=GLOSS[term]; return t?`<span class="gl" tabindex="0" role="button" data-tip="${esc(t)}">${esc(txt??term)}</span>`:esc(txt??term); }
 function hiI(t){ return `<button type="button" class="hi-i" data-tip="${esc(t)}">i</button>`; }
 /* 긴 설명 줄: 첫 문장만 보이고 나머지는 i로 */
 function tipRest(x){ const i=x.length>=45?x.search(/\. (?=\S)/):-1; return i<0?esc(x):esc(x.slice(0,i+1))+' '+hiI(x.slice(i+2)); }

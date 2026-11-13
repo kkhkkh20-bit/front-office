@@ -21,7 +21,7 @@ function sprcView(){ if(G.unemp)return csec('스프링캠프','<p class="small m
       <div class="eyebrow">훈련 강도 · 감독과 함께</div><div class="talk">${SPRC_INTK.map(k=>`<button class="btn small ${P.int===k?'on':''}" data-a="sprcInt" data-v="${k}">${SPRC_INT[k].l}${k===pref?' · 감독 희망':''}</button>`).join('')}</div>
       <p class="small muted">${esc(SPRC_INT[P.int].d)}</p>
       ${m&&!m.interim?`<div class="mop"><b>${esc(m.name)} 감독</b><span>"${pref==='hard'?'캠프는 빡세게 가야 시즌을 버팁니다.':pref==='easy'?'선수들이 알아서 몸을 만들게 두는 게 맞습니다.':'정해진 일정대로 무리 없이 가겠습니다.'}"</span>${P.int!==pref?`<span class="small warn">감독 희망과 다릅니다. 캠프 시작 때 감독 관계가 깎이고 캠프 효과도 조금 줄어듭니다.</span>`:''}</div>`:''}
-      <div class="eyebrow">연습경기</div><div class="talk">${[...new Set(SPRC_PGN.concat(cap))].sort((a,b)=>a-b).map(n=>`<button class="btn small ${P.pgN===n?'on':''}" data-a="sprcPg" data-v="${n}:" ${!P.s1||!P.s2||n>cap?'disabled':''}>${n}경기</button>`).join('')}</div>
+      <div class="eyebrow">연습경기</div><div class="talk">${[...new Set(SPRC_PGN.concat(cap))].sort((a,b)=>a-b).map(n=>`<button class="btn small ${P.pgN===n?'on':''}" data-a="sprcPg" data-v="${n}:" ${!P.s1||!P.s2||n>cap?`disabled title="${esc(!P.s1||!P.s2?'1차·2차 캠프 장소를 먼저 정하세요':sprcPgWhy(P,cap))}"`:''}>${n}경기</button>`).join('')}</div>${P.s1&&P.s2&&SPRC_PGN.some(n=>n>cap)?`<p class="small warn">${esc(sprcPgWhy(P,cap))}</p>`:!P.s1||!P.s2?'<p class="small warn">1차·2차 캠프 장소를 먼저 정해야 연습경기 수를 고를 수 있습니다.</p>':''}
       <div class="talk">${Object.entries(SPRC_LV).map(([k,l])=>`<button class="btn small ${P.pgLv===k?'on':''}" data-a="sprcPg" data-v=":${k}">${l}</button>`).join('')}</div>
       <p class="small muted">${P.s1&&P.s2?`지금 장소로 잡을 수 있는 연습경기는 최대 ${cap}경기입니다.`:'장소를 정하면 잡을 수 있는 연습경기 수가 나옵니다.'} 상대 구단 사정에 따라 몇 경기는 못 잡을 수 있습니다. 일본 1군 상대는 2차가 일본일 때만 잡힙니다.</p>
       <p class="small">${left>0?`예약 마감까지 ${left}일`:'오늘 예약 마감'} · ${c.y}년 캠프 추가 비용 ${money((P.c1||0)+(P.c2||0))}</p>`));
@@ -50,3 +50,5 @@ Object.assign(A,{
   sprcPg(v){ const [n,lv]=String(v).split(':'); UI.sprcMsg=sprcSetPg(n===''?null:+n,lv||null)||null; save(); render(); },
   acadUp(){ UI.acadMsg=acadUp()||null; save(); render(); } });
 Object.assign(GUARD,{ acadUp(v){ const n=ACAD[+v]; if(!n||+v!==acadLv()+1)return null; const t=team(G.user); return {subj:`특수 아카데미 제휴: ${n.l}`,kind:'시설',lines:[`비용 ${money(n.c)} · ${spendTxt()}`,n.d],warn:'비용은 현금에서 바로 나가고 되돌릴 수 없습니다.'}; } });
+/* 연습경기 수가 막힌 이유(플레이테스트 4 #11): 캠프지마다 연습 상대를 잡을 수 있는 수가 정해져 있다 */
+function sprcPgWhy(P,cap){ const a=SPRC1[P.s1], b=SPRC2[P.s2]; return `${cap}경기보다 많이는 잡을 수 없습니다. 연습 상대는 1차 캠프지(${a?a.l:'-'})에서 최대 ${a?a.pg:0}경기, 2차 캠프지(${b?b.l:'-'})에서 최대 ${b?b.pg*2:0}경기입니다. 더 치르려면 상대 팀이 많은 캠프지(2차 오키나와 최대 8경기 등)를 고르세요.`; }
