@@ -181,7 +181,7 @@ function achSetTitle(t){ const M=achMeta(); M.title=t&&achTitles().includes(t)?t
 (function(){
   const wrap=(name,after,before)=>{ try{ const f=eval(name); if(typeof f!=='function')return; const g=function(){ let b; if(before)try{ b=before.apply(this,arguments); }catch(e){} const r=f.apply(this,arguments); if(after)try{ after.call(this,r,arguments,b); }catch(e){} return r; }; eval(name+'=g'); }catch(e){} };
   /* 새 게임: 구단을 맡는 순간 혜택을 얹는다 */
-  wrap('claimTeam',(r,args)=>{ const P=achPerks(); const t=team(args[0]); G.rep=(G.rep??50)+P.rep; t.trust=clamp((t.trust??55)+P.trust,0,100); t.cash=(t.cash||0)+P.cash; G.achPerk=P; G.ach={}; G.achT=null; achT(); });
+  wrap('claimTeam',(r,args)=>{ const P=achPerks(); const t=team(args[0]); G.rep=clamp(Math.round((G.rep??50)+P.rep),0,100); t.trust=clamp((t.trust??55)+P.trust,0,100); t.cash=(t.cash||0)+P.cash; G.achPerk=P; G.ach={}; G.achT=null; achT(); });
   /* 결산 직후(우승·성적·재정) */
   wrap('settlement',()=>achCheck({k:'season'}));
   /* 시상식(MVP·신인왕, 골든글러브) */

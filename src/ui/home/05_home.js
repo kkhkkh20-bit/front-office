@@ -85,9 +85,6 @@ const CND=[{min:2,deg:-90,c:'#3fd07f',l:'최상'},{min:1,deg:-45,c:'#9be27a',l:'
 function condLv(p){ const c=condOf(p); return {c,...CND.find(x=>c>=x.min)}; }
 function condChip(p){ if(!p||p.team==null)return ''; const L=condLv(p); const f=p.sf&&p.sf.y===G.year?(p.sf.v*.5+(p.sf.m||0)):0;
   return `<i class="cnd ca" style="--cc:${L.c}" title="컨디션 ${L.l} (${L.c>0?'+':''}${L.c}) · 폼 ${f>=0?'+':''}${f.toFixed(1)} · 기분 ${Math.round(p.mor??60)} · 피로 ${Math.round(p.fat||0)}"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" style="transform:rotate(${L.deg}deg)"><path d="M1.5 6h8M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`; }
-function roomAfter(give,get){ const b0=budget(); const sv=[]; const mv=(id,t)=>{ const p=G.players[id]; if(!p)return; sv.push([p,p.team,p.tLog]); if(!p.foreign&&period()==='season')p.tLog=(p.tLog||[]).concat({y:G.year,d:G.day,f:p.team,t}); p.team=t; }; /* 시즌 중이면 결산처럼 남은 기간 연봉만(검수 11-06) */
-  const other=get.length&&G.players[get[0]]?G.players[get[0]].team:-9; give.forEach(id=>mv(id,other)); get.forEach(id=>mv(id,G.user));
-  let b1=b0; try{ b1=budget(); }finally{ sv.reverse().forEach(([p,t,l])=>{ p.team=t; if(l===undefined)delete p.tLog; else p.tLog=l; }); } return {before:Math.round(b0.roomGoal),after:Math.round(b1.roomGoal),dE:Math.round(b1.E-b0.E),dI:Math.round(b1.I-b0.I),cash0:Math.round(b0.endCash),cash1:Math.round(b1.endCash)}; }
 /* 거래 돈: 올해 연봉 변화 · 내년(계약이 정해진 선수만 확정, 나머지는 연봉 협상) · 확정 잔여 보장액(다년·FA 계약 남은 해) · 예산 여유와 그 이유 */
 function dealNext(p){ if(!p)return {v:0,fix:true}; if(p.foreign)return {v:0,fix:false,f:true}; if(p.extNext)return {v:p.extNext.annual,fix:true}; if(p.faC&&(p.yrs||0)>1)return {v:p.sal,fix:true}; return {v:p.sal,fix:false}; }
 function dealGuar(p){ return guarLeft(p); } /* 다음 시즌 시작 다년계약도 포함(리뷰 2026-11-01) */
