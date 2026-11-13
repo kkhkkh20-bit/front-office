@@ -26203,11 +26203,14 @@ function rememberReading(host){if(!host?.dataset.readingContext)return;const con
  host.querySelectorAll('details[data-reading-key]').forEach(d=>UI.readingOpen[d.dataset.readingKey]=d.open);
  host.querySelectorAll('.ws-scroll,.tf-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log,.setx').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;if(el.scrollHeight>el.clientHeight+2)UI.readingScroll[context+':'+el.className+':'+i]=el.scrollTop;});
  const wf=host.querySelector('main.ws-frame');if(wf&&wf.scrollHeight>wf.clientHeight+2)UI.readingScroll[context+':frame']=wf.scrollTop;
+ /* 휴대폰: 스크롤로 접힌 위쪽 머리(wsSet)도 기억한다. 다시 그릴 때 펼쳐지면 목록이 그만큼 밀려 '맨 위로 튄다'(카페 11-13: 학교 후원·인맥 관리) */
+ const mn=host.querySelector('main.ws-frame,main.inbox-workspace');UI._wsKeep=UI._wsKeep||{};UI._wsKeep[host.id]=mn&&mn._wsy?{c:context,y:mn._wsy,mx:mn._wsMx}:null;
 }
 function restoreReading(host){if(!host)return;const context=readingContext(host),seen={};host.dataset.readingContext=context;UI.readingOpen=UI.readingOpen||{};
  host.querySelectorAll('details').forEach(d=>{const summary=d.querySelector('summary')?.textContent.trim().replace(/\d+/g,'#')||'상세',index=seen[summary]||0;seen[summary]=index+1;const key=context+':'+(d.dataset.k||summary+':'+index);d.dataset.readingKey=key;if(Object.hasOwn(UI.readingOpen,key))d.open=UI.readingOpen[key];});
  host.querySelectorAll('.ws-scroll,.tf-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log,.setx').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;const y=UI.readingScroll?.[context+':'+el.className+':'+i];if(y!=null)el.scrollTop=y;});
  /* 휴대폰 작업 공간 전체 스크롤(감독 채용·신인 드래프트): 다시 그려도 읽던 위치 유지. 드래프트는 처음 열 때 영입 탭 줄을 위로 밀어 후보 목록부터 보인다 */
+ {const K=(UI._wsKeep||{})[host.id],mn=host.querySelector('main.ws-frame,main.inbox-workspace');if(K&&mn&&K.c===context&&typeof wsSet==='function'&&wsMobile()){mn._wsMx=K.mx;wsSet(mn,K.y);}}
  const wf=host.querySelector('main.ws-frame');if(wf){const y=UI.readingScroll?.[context+':frame'],d=wf.querySelector('.draft-page');if(y!=null)wf.scrollTop=y;else if(d&&innerWidth<600)wf.scrollTop=d.getBoundingClientRect().top-wf.getBoundingClientRect().top;}
 }
 /* 읽고 있는 목록 안에서만 이동한다. 편집·결재·중계의 방향키는 그대로 둔다. */
@@ -36306,6 +36309,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-13-scrollkeep',d:'11월 13일',t:'휴대폰 목록 위치 유지',items:[
+    '휴대폰에서 목록을 내린 뒤 학교 후원, 인맥 관리 같은 버튼을 눌러도 화면이 위로 튀지 않고 보던 자리에 머뭅니다.',
+  ]},
   {id:'2026-11-13-famkt',d:'11월 13일',t:'FA 시장 수요와 공급',items:[
     'FA 몸값이 시장 수요와 공급으로 움직입니다. 같은 자리 비슷한 급의 매물이 적고 데려가면 주전이 바뀌는 구단이 많으면 값이 오르고, 매물이 넘치면 내려갑니다. 모든 선수가 함께 오르지 않습니다.',
     '외부 구단이 둘 이상 붙은 선수는 요구액이 조금씩 오릅니다. 찾는 구단이 없는 선수는 지금처럼 요구액을 낮춥니다.',
