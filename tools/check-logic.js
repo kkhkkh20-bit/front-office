@@ -4156,6 +4156,9 @@ T('[단장 돈·시설] AI 구단은 남는 돈을 계획에 맞게 쓰고, 긴�
 /* 독주 견제(86b_dynasty): 최근 세 시즌 우승·정규시즌 1위를 몰아 준다 */
 const mkDyn=tid=>{ const ord=G.teams.map(t=>({tid:t.id})); G.history=G.history.filter(h=>h.y<G.year-3); for(let i=3;i>=1;i--){ const o=[{tid},...ord.filter(x=>x.tid!==tid)]; G.history.push({y:G.year-i,order:o,champ:tid,runner:o[1].tid}); } _domC.k=null; _mkP.k=null; };
 const topRival=X=>G.teams.filter(t=>t.id!==X&&t.id!==G.user).sort((a,b)=>teamRating(b.id)-teamRating(a.id))[0];
+T('[성장] 정상급 꼬리 억제: 표시 80 이상이 처음보다 많아지면 76+ 선수 성장이 줄고, 86+는 더 줄며, 76 미만은 그대로',()=>{ fresh(); G.elN=null; G.elBase=null; const f0=eliteN80().f; ok(f0>=.99,'처음부터 억제 '+f0);
+  const P=Object.values(G.players).filter(p=>!p.prospect&&p.team!=null&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a)).slice(0,40); for(const p of P)setOvr(p,Math.max(ovr(p),dvInv(83))); G.elN=null; const E=eliteN80(); ok(E.n>=40&&E.f<.7,'억제 약함 '+JSON.stringify(E));
+  ok(eliteGrowF(dvInv(70))===1,'76 미만도 억제'); ok(eliteGrowF(dvInv(88))<eliteGrowF(dvInv(80)),'86+ 추가 억제 없음'); });
 T('[독주 견제] 최근 세 시즌을 휩쓴 구단만 독주 구단이 된다(우리 구단·AI 구단 같은 기준)',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; ok(!domLead()||domLead().tid!==X,'준비 실패: 처음부터 독주');
   mkDyn(X); ok(domOf(X)>=DOM_TH,'세 시즌 우승인데 독주 아님 '+domOf(X)); const L=domLead(); ok(L&&L.tid===X,'독주 구단이 다름'); ok(G.teams.filter(t=>t.id!==X).every(t=>domOf(t.id)<DOM_TH),'다른 구단도 독주로 잡힘');
   G.history=G.history.filter(h=>h.champ!==X); mkDyn(G.user); ok(domLead()&&domLead().tid===G.user,'우리 구단 독주를 못 잡음'); });

@@ -23,6 +23,10 @@ function lgTopBase(m){ if(G.lgBaseT==null&&m!=null)G.lgBaseT=+m.toFixed(2); retu
 function draftLevelAdj(){ const m=lgMeanDom(); if(m==null)return 0; if(G.lgBase==null){ G.lgBase=+m.toFixed(2); } const t=lgTopDom(), b=lgTopBase(t); const dT=t!=null&&b!=null?t-b:0; return clamp(Math.max((m-G.lgBase)*1.6,dT*2.4),-3,8); } /* 1.6→2.4: 10시즌에 평균 표시 능력 57.3→58.9, 80 이상 4→11명(커뮤니티 피드백 11-11) */
 /* 성장 안정 장치: 국내 상위 300명 평균이 시작 때보다 오른 만큼 그해 겨울 성장(플러스 쪽)을 줄인다. 원래 능력 1점에 15%, 최대 40%. 내려가면 최대 5% 더 큰다 */
 function growLevelF(){ const y=G.year; if(G.lvF&&G.lvF.y===y)return G.lvF.f; const t=lgTopDom(), b=lgTopBase(t); const f=t==null||b==null?1:clamp(1-(t-b)*.15,.6,1.05); G.lvF={y,f:+f.toFixed(3)}; return G.lvF.f; }
+/* 특급 꼬리 억제(사용자 11-13: S급은 몇 년에 한 번): 상위 300명 평균을 맞춰도 정상급(표시 80+)이 해마다 늘었다(16시즌 8→26명).
+   표시 80 이상 선수 수가 처음보다 많아진 만큼 정상급 근처(76+) 선수의 성장을 줄이고, 90 근처(86+)는 더 줄인다. 모든 구단에 같다 */
+function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; if(G.elBase==null)G.elBase=Math.min(n,12); const b=Math.max(6,G.elBase); G.elN={y,n,f:+clamp(1-(n-b)/b*.7,.3,1.05).toFixed(3)}; return G.elN; }
+function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
   for(let i=0;i<DRAFT_POOL;i++){
