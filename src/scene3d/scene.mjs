@@ -133,7 +133,17 @@ function fieldMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action)return;const 
  if(m==='catch_fly'||m==='catch_fly_run'||m==='catch_line_drive'||m==='catch_throw'||m==='catch_stretch'){const d=a.action.getClip().duration,ph=t/d,w=smooth(ph/.25)*(1-smooth((ph-.6)/.3));
   if(w>0&&m!=='catch_stretch'&&m!=='catch_fly_run'){const F=bodyFrame(a),k=F?.k||1,g=glove(),bt=g.clone().addScaledVector(F?F.lead:new T.Vector3(1,0,0),-P.flyGap*k).add(new T.Vector3(0,-.03*k,0));limbIK(a,['RightArm','RightForeArm','RightHand'],modelPos(a,bh,new T.Vector3()).lerp(bt,w),ELBOW_MIN_IN);}
   headLook(a,glove().add(new T.Vector3(0,.25,0)),Math.max(w,.0));return;}
- if(m==='throw'){const F=bodyFrame(a);if(F){const hd=boneByName(a,'Head'),hp=modelPos(a,hd,new T.Vector3()),fwdH=new T.Vector3(0,0,1);headLook(a,hp.clone().addScaledVector(fwdH,10),1);}}}
+ if(m==='throw'){const P=THROW_MECH,rel=clipEvents.throw?.release||.5417,fc=rel-P.stride,L=modelPos(a,lf,new T.Vector3()),R=modelPos(a,rf,new T.Vector3());
+  /* 몸 회전: 내딛는 동안 옆으로 서도록 더 닫았다가(coil) 놓을 때까지 풀고, 던진 뒤엔 던지는 어깨가 앞으로 넘어간다(over). 발은 원래 자리에 둔다 */
+  const yaw=-P.coil*smooth(t/(fc*.7))*(1-smooth((t-(fc-.04))/(rel-fc+.02)))+P.over*smooth((t-rel)/.2)*(1-smooth((t-rel-.45)/.3));
+  if(yaw){rotModel(a,hips,AX.y,yaw);legIK(a,'Left',L);legIK(a,'Right',R);}
+  /* 상체: 착지부터 던질 곳으로 숙이고 던진 뒤 절반쯤 세운다 */
+  const tilt=P.fwd*smooth((t-fc)/(rel-fc))*(1-.5*smooth((t-rel-.3)/.4));if(tilt)for(const n of ['Spine','Spine1','Spine2']){const b=boneByName(a,n);if(b)rotModel(a,b,AX.x,tilt/3);}
+  /* 던지는 팔: 투수와 같은 핵심 자세(코킹→최대 외회전→릴리스) */
+  const sv=(t-fc)/(rel-fc),w=t<fc?smooth((t-(fc-.15))/.15):t<=rel+.04?1:1-smooth((t-rel-.04)/.25);throwingArm(a,clamp(sv,0,1),w,'three_quarter');
+  const hd=boneByName(a,'Head');if(hd)headLook(a,modelPos(a,hd,new T.Vector3()).add(new T.Vector3(0,0,10)),1);}}
+/* 야수 송구(사용자 11-12): 착지→릴리스 0.14초, 옆으로 서는 추가 회전 50°, 던진 뒤 넘어가는 회전 20°, 상체 숙임 22° */
+export const THROW_MECH={stride:.14,coil:50,over:20,fwd:22};
 function pitchMechanics(a){if(!globalThis.FO3D_RAW_CLIPS&&a.action&&a.motion==='pitcher_set'){pitcherSet(a,1,1);return;}
  if(a.action&&!/^pitch/.test(a.motion||'')){fieldMechanics(a);return;}
  if(!globalThis.FO3D_RAW_CLIPS&&a.action&&/^pitch_\w+_stretch$/.test(a.motion)){const t=a.action.time,P=SET_POS;pitcherSet(a,1-smooth((t-P.legOut[0])/(P.legOut[1]-P.legOut[0])),1-smooth((t-P.handOut[0])/(P.handOut[1]-P.handOut[0])));}
