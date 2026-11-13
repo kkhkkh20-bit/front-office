@@ -70,7 +70,8 @@ function aiPlanOff(){ if(G.aiPlanY===G.year)return; G.aiPlanY=G.year; aiPlanYear
 function planTradeMul(t,p,dir){ const pl=planOf(t); if(!pl)return 1; const a=p.age, gap=Math.max(0,p.pot-ovr(p));
   if(pl==='build'){ if(dir==='in')return a<=23?(gap>=6?1.35:1.2):a<=25?1.18:a<=28?1:a<=31?.6:.4; return a<=25?1.2:a>=30?.8:1; }
   if(pl==='tight'){ if(dir==='in')return (p.sal>=500?.5:p.sal>=200?.75:1)*(a<=25?1.12:a>=31?.8:1); return p.sal>=500?.75:1; }
-  if(pl==='win'){ if(dir==='in')return a>=27&&ovr(p)>=54?1.12:a<=23&&ovr(p)<48?.8:1; return a<=24&&ovr(p)<52?.9:1; }
+  if(pl==='win'){ const hot=t.allIn===sponSeason()||despOf(t)>=.5; /* 올인·벼랑 끝: 검증된 주전에 확실성 웃돈, 유망주는 더 싸게 본다(86b_dynasty) */
+    if(dir==='in')return a>=27&&ovr(p)>=54?(hot?1.22:1.12):a<=23&&ovr(p)<48?(hot?.72:.8):1; return a<=24&&ovr(p)<52?(hot?.8:.9):1; }
   if(pl==='next'){ return dir==='in'?(a>=25&&a<=30?1.1:a>=33?.8:1):1; }
   if(pl==='star'){ return dir==='in'&&planStar(t,p)?1.2:1; } return 1; }
 /* 흥행 구단이 웃돈을 주는 선수: 최근 수상·대기록으로 이름값이 있거나 연고 출신 주전급 */

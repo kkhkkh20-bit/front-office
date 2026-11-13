@@ -211,7 +211,9 @@ function milBackBy(tid){ const op=G.cal&&G.cal.open>G.day?G.cal.open:onOrAfter(G
 function dGrp(p){ if(p.isP)return p.role==='RP'?'RP':'SP'; return p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':p.pos==='DH'?'IF':'OF'; }
 function draftNeed(tid){ const k=['C','IF','OF','SP','RP'], share={C:.08,IF:.27,OF:.2,SP:.25,RP:.2}; const L=domestic(tid).filter(p=>p.age<=26).concat(Object.values(G.players).filter(p=>p.team===tid&&!p.foreign&&p.joinY>G.year)); /* 이번 드래프트에서 이미 뽑은(내년 합류) 선수도 수요에 반영(검수 11-07) */ const n=L.length||1; const o={};
   for(const g of k){ const c=L.filter(p=>dGrp(p)===g).length; o[g]=clamp((share[g]*n-c)*.6,-2,3); } return o; }
-function aiDraftScore(tid,p,need){ const t=team(tid); return p.pot-(p.hidT&&u01('aih'+tid,p.id)>=.2?p.hidT:0)+ /* 숨은 재능은 AI 구단도 대부분 놓친다 */hn('ai'+tid+G.year,p.id)*t.scoutSd*netSdM(p,tid)+ /* 후보 권역 정보망만큼 오차가 줄거나 는다(검수 11-09e #29) */(ovr(p)-35)*({win:.55,next:.4,star:.4,build:.12,tight:.25}[planOf(t)]??(t.mode==='contend'?.5:.25))+(planOf(t)==='build'&&p.age<=19?1.5:0)+(need[dGrp(p)]||0); } /* 운영 전략: 우승 도전은 바로 쓸 대졸·완성형, 유망주 수집은 고졸 원석 */
+/* 이름난 후보일수록 모든 구단 스카우트가 여러 번 봐서 평가가 덜 갈린다(언론 상위·완성형). 상위 지명이 하위 지명보다 확실히 낫게(사용자 11-13: 우승팀 10순위가 실제 손해가 되게) */
+function draftVis(p){ return p.ready?.5:p.press<=10?.6:p.press<=30?.8:1; }
+function aiDraftScore(tid,p,need){ const t=team(tid); return p.pot-(p.hidT&&u01('aih'+tid,p.id)>=.2?p.hidT:0)+ /* 숨은 재능은 AI 구단도 대부분 놓친다 */hn('ai'+tid+G.year,p.id)*t.scoutSd*netSdM(p,tid)*draftVis(p)+ /* 후보 권역 정보망만큼 오차가 줄거나 는다(검수 11-09e #29) */(ovr(p)-35)*({win:.55,next:.4,star:.4,build:.12,tight:.25}[planOf(t)]??(t.mode==='contend'?.5:.25))+(planOf(t)==='build'&&p.age<=19?1.5:0)+(need[dGrp(p)]||0); } /* 운영 전략: 우승 도전은 바로 쓸 대졸·완성형, 유망주 수집은 고졸 원석 */
 /* AI 지명: 평가 순으로 보되, 로스터가 찬 3라운드 이후에는 최하위 선수보다 나은 후보만 뽑는다.
    기준을 넘는 후보가 하나라도 있으면 그중 평가 1위를 뽑고, 아무도 없을 때만 건너뛴다(검수 11-09d: 1위만 보고 패스). 모의 지명도 같은 판단 */
 function aiDraftChoose(tid,ids,rd,proj){ const t=team(tid); const need=draftNeed(tid);
