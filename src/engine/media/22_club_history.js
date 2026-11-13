@@ -175,7 +175,7 @@ function awardCeremony(k){ const y=G.year; const A=G.awards&&G.awards[y]; if(!A|
     if(A.roy)news('선수',`${A.roy.name}, ${y} 신인왕`,`${tname(A.roy.t)}의 ${A.roy.name}이(가) ${A.roy.v}표로 신인왕에 올랐습니다.`,A.roy.t===G.user?2:0,{ref:A.roy.id}); }
   else { const gg=Object.values(A.gg).filter(x=>x.t===G.user); news('선수',gg.length?`${y} 골든글러브: ${tshort(G.user)} ${gg.length}명 수상`:`${y} 골든글러브, ${tshort(G.user)} 수상자 없어`,gg.length?`${gg.map(x=>x.name).join(', ')}이(가) 황금장갑을 꼈습니다.`:'우리 구단은 수상자를 내지 못했습니다.',gg.length>=3?2:gg.length?1:-1); try{ starAwardsNews(); }catch(e){} }
   if(G.last&&G.last.y===y&&G.last.awards&&G.last.awards!==A&&G.last.awards.pend)G.last.awards.pend[k]=false; /* 저장·불러오기로 사본이 갈라진 경우 */
-  G.cerNew={y,k,d:G.day}; mail('홍보팀',`${y} ${k==='mvp'?`${ASSOC.s} 시상식(MVP·신인왕)`:'골든글러브 시상식'}`,`오늘 ${k==='mvp'?`${ASSOC.s} 시상식`:'골든글러브 시상식'}이 열렸습니다.${mine.length?` 우리 구단 수상: ${mine.join(', ')}.`:' 우리 구단 수상자는 없습니다.'}\n\n시상식 화면에서 후보와 투표 결과를 확인할 수 있습니다.`,{imp:true,kind:'기록',acts:[{l:'시상식 보기',a:'cerOpen',v:`${y}:${k}`}]}); }
+  G.cerNew={y,k,d:G.day}; mail('홍보팀',`${y} ${k==='mvp'?`${ASSOC.s} 시상식(MVP·신인왕)`:'골든글러브 시상식'}`,`오늘 ${k==='mvp'?`${ASSOC.s} 시상식`:'골든글러브 시상식'}이 열렸습니다.${mine.length?` 우리 구단 수상: ${mine.join(', ')}.`:' 우리 구단 수상자는 없습니다.'}\n\n시상식 화면에서 후보와 투표 결과를 확인할 수 있습니다.`,{imp:true,kind:'기록',...(mine.length?{cat:'must'}:{}),acts:[{l:'시상식 보기',a:'cerOpen',v:`${y}:${k}`}]}); } /* 우리 선수가 받으면 일반 소식이 아니라 진행을 멈추고 알린다(플레이 테스트 11-13) */
 /* 창단 드래프트 게임: 같은 구단 번호라도 창단 이전 기록은 우리 구단 기록이 아니다 */
 /* 사람의 소속과 무관한 같은 결번 기준. 추정 경력과 창단 이전 타 구단 기록은 제외한다. */
 function retNoRule(){const war=retWarT();return {war,seasons:war>=60?10:8};}

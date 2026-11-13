@@ -95,6 +95,8 @@ function offerExtension(id,annual,years,acc,T){ const r=offerExtension0(id,annua
   if(p&&r.st&&r.st!=='na'&&r.st!=='locked')p.extLast={d:G.day,st:r.st,t:r.msg.replace(/^[^:]+: /,''),next:r.st==='ok'||r.st==='counter'?null:(Math.floor(G.day/7)+1)*7};
   if(r.st==='locked'&&p)r.next=(Math.floor(G.day/7)+1)*7; return r; }
 /* 강경형·대형 에이전트가 요구하는 최소 기간(없으면 0). 협상 화면의 '요구 조건 충족' 표시도 같은 기준(검수 11-09s) */
+/* 다년계약 요구(연평균): 에이전트 배수와, FA 시장 평가를 원하는 선수의 웃돈(8%)까지 — 협상 화면의 요구와 판정이 같은 값을 쓴다 */
+function extDemandAll(p,years){ return round5(extDemand(p,years)*(hasAgent(p)?agExtMul(p):1)*(agExtTestMarket(p)?1.08:1)); }
 function extMinY(p){ const ag=hasAgent(p)?agentOf(p):null; return ag&&(ag.style==='hard'||ag.size==='big')?(p.age<=29?4:p.age<=32?3:2)-1:0; }
 const extNextDay=p=>p&&p.extTried===Math.floor(G.day/7)?(Math.floor(G.day/7)+1)*7:null; /* 이번 주에 이미 거절당했으면 다시 제안할 수 있는 날 */
 function offerExtension0(id,annual,years,acc,T){
@@ -103,14 +105,14 @@ function offerExtension0(id,annual,years,acc,T){
   const who=agWho(p); const ag=hasAgent(p)?agentOf(p):null;
   if(acc&&p.extCounter&&p.extCounter.until>=G.day&&annual>=p.extCounter.annual&&years===p.extCounter.years){ delete p.extCounter; p.extTried=null; annual=Math.max(annual,0); }
   else if((acc=false)||p.extTried===wk)return /* 유효한 역제안이 아니면 일반 제안으로 본다 */ {ok:false,st:'locked',msg:`${who}: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 제안해 주세요.`};
-  const d=round5(extDemand(p,years)*agExtMul(p));
+  const d=extDemandAll(p,years); /* 화면 '요구 조건'과 같은 값: 시장 평가를 원하는 선수는 그 웃돈까지 요구에 들어 있다(플레이 테스트 11-13: 요구대로 채웠는데 거절) */
   let D=null; if(T){ T={...T,years,role:null}; D=termsDemand(p,'ext',{annual:d,years}); annual=Math.round(termsVal(T,D)); }
   /* 강경형·대형 에이전트는 원하는 기간보다 짧으면 받지 않는다 */
   if(years<extMinY(p)){ p.extTried=wk; return {ok:false,st:'no',msg:`${who}: ${years}년으로는 이야기가 안 됩니다. 최소 ${extMinY(p)}년은 보장해 주셔야 합니다.`}; }
   /* FA를 1년 앞둔 대어: 시장 평가를 받아 보겠다며 요구보다 확실히 높아야 움직인다 */
-  const mkt=agExtTestMarket(p); if(mkt&&annual<d*1.08){ p.extTried=wk; if(annual<d*.85)agRelAdd(ag,-1,`${p.name} 다년계약 낮은 제안`); return {ok:false,st:'market',msg:`${who}: 선수가 FA 시장 평가를 받아 보고 싶어 합니다. 연 ${money(round5(d*1.08))} 이상이 아니면 시즌 뒤 시장에 나가겠습니다.`}; }
+  const mkt=agExtTestMarket(p); if(mkt&&annual<d*.98){ p.extTried=wk; if(annual<d*.85)agRelAdd(ag,-1,`${p.name} 다년계약 낮은 제안`); return {ok:false,st:'market',msg:`${who}: 선수가 FA 시장 평가를 받아 보고 싶어 합니다. 연 ${money(d)} 이상이 아니면 시즌 뒤 시장에 나가겠습니다.`}; }
   /* 에이전트는 첫 제안을 그대로 받지 않는다: 요구에 가까우면 조금 올린 역제안을 낸다(그 자리에서 수락 가능) */
-  if(ag&&!acc&&annual>=d*.9&&annual<d*(ag.style==='fast'?1:1.04)&&!(p.extCounter&&p.extCounter.y===G.year)){ const c=round5(d*(ag.style==='hard'?1.06:ag.style==='fast'?1.01:1.04)); p.extCounter={annual:c,years,until:G.day+7,y:G.year,...(T?{terms:termsFit(T,D,c,years)}:{})}; return {ok:false,counter:true,st:'counter',msg:`${who}: 거의 다 왔습니다. ${T?termsTxt(p.extCounter.terms,false):`${years}년 연 ${money(c)}(총 ${money(c*years)})`}이면 바로 사인하겠습니다.`}; }
+  if(ag&&!acc&&annual>=d*.9&&annual<d*.98&&!(p.extCounter&&p.extCounter.y===G.year)){ /* 요구를 채운 제안에는 역제안하지 않는다(요구에 조금 못 미칠 때만) */ const c=round5(d*(ag.style==='hard'?1.06:ag.style==='fast'?1.01:1.04)); p.extCounter={annual:c,years,until:G.day+7,y:G.year,...(T?{terms:termsFit(T,D,c,years)}:{})}; return {ok:false,counter:true,st:'counter',msg:`${who}: 거의 다 왔습니다. ${T?termsTxt(p.extCounter.terms,false):`${years}년 연 ${money(c)}(총 ${money(c*years)})`}이면 바로 사인하겠습니다.`}; }
   if(annual>=d*.98||acc){ delete p.extCounter; const now=(G.rolled===G.year&&G.day>=KD(11,1))||period()==='pre'; /* 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 */
     if(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id)){ G.contract.ended=G.contract.ended.filter(x=>x!==p.id); if(G.contract.neg)delete G.contract.neg[p.id]; delete p.newSal; }
     const pay=T?T.annual:annual; const tx=T?termsTxt(T,false):`${years}년 연 ${money(annual)}(총 ${money(annual*years)})`;

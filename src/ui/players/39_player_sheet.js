@@ -351,7 +351,7 @@ function offerForm(p){
 }
 function extForm(p){
   /* 슬라이더 범위는 에이전트 요구 수준을 기준으로 잡는다(요구액까지 올릴 수 있게) */
-  const dem=y=>round5(extDemand(p,y)*agExtMul(p)); const e=UI.ext&&UI.ext.id===p.id?UI.ext:{id:p.id,years:4,annual:round5(Math.max(p.sal,dem(4)*.92)),msg:''};
+  const dem=y=>extDemandAll(p,y); const e=UI.ext&&UI.ext.id===p.id?UI.ext:{id:p.id,years:4,annual:round5(Math.max(p.sal,dem(4)*.92)),msg:''};
   UI.ext=e; const d=dem(e.years);
   const min=round5(Math.max(MIN_SAL,Math.min(p.sal,d*.5))), max=round5(Math.max(d*1.6,p.sal*1.5,min+100));
   const agk=hasAgent(p)?agRel(agentOf(p)):50; const est=round5(d*(1+(agk>=60?0:agk>=40?.03:.06)+hn('xe'+G.year,p.id)*.02));

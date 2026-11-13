@@ -45,5 +45,5 @@ function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid
   return tid; }
 
 /* 신생 구단 외국인 혜택이 끝나는 겨울(12월 31일): 일반 외국인이 3명을 넘으면 가장 낮은 선수를 내보낸다(우리 구단이면 소식으로 알린다) */
-function expFBonusEnd(){ for(const t of G.teams){ const yb=foreignOf(t.id).filter(p=>p.foreign==='용병'); const max=fMaxYB(t.id); if(yb.length<=max)continue;
+function expFBonusEnd(){ for(const t of G.teams){ if(!t.born||!fNewBonus(t.id,G.year)||fNewBonus(t.id,G.year+1))continue; /* 혜택이 올해로 끝나는 신생 구단만(플레이 테스트 11-13: 일반 구단에 '신생 구단 혜택 종료' 방출) */ const yb=fStayOf(t.id).filter(p=>p.foreign==='용병'); /* 재계약 기간에 결별하기로 한 선수는 이미 빈자리(영입 검사와 같은 기준) */ const max=fMaxYB(t.id,G.year+1); if(yb.length<=max)continue;
   for(const p of yb.sort((a,b)=>ovr(a)-ovr(b)).slice(0,yb.length-max)){ const nm=p.name; try{ toFree(p,'신생 구단 외국인 혜택 종료'); }catch(e){ p.team=null; } if(t.id===G.user&&!G.unemp)mail(ASSOC.s,`신생 구단 외국인 혜택 종료: ${nm} 방출`,`신생 구단 혜택(일반 외국인 4명)이 끝나 3명 한도를 넘는 ${nm}을(를) 방출했습니다.`,{kind:'구단',imp:true}); } } }
