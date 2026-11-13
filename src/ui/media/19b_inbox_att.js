@@ -11,7 +11,10 @@ function ibdTeamsIn(m){ const s=ibdTxt(m); const at=id=>{ const a=[s.indexOf(tsh
 /* 본문에 이름이 나온 선수: 우리 선수 먼저, 같은 이름은 한 번만 */
 function ibdPlayersIn(m,skip){ const s=ibdTxt(m), seen=new Set(), L=[];
   const all=Object.values(G.players).filter(p=>p.name&&p.name.length>=2&&p.id!==skip&&(p.team!=null||p.foreign||p.watch)).sort((a,b)=>(b.team===G.user)-(a.team===G.user));
-  for(const p of all){ if(seen.has(p.name)||!s.includes(p.name))continue; seen.add(p.name); L.push(p); if(L.length>=8)break; }
+  /* 이름 뒤에 직함이 붙은 자리(김도윤 기자, 이상진 감독)는 선수가 아니다: 직함 없이 나온 자리가 하나라도 있어야 선수로 본다(플레이 테스트 11-13: 기자·감독이 동명이인 선수로 연결) */
+  const ROLE=/^\s?(감독|코치|기자|단장|회장|사장|스카우트|팀장|위원|대표|에이전트|부단장|대행|씨|캐스터|해설)/;
+  const asPlayer=nm=>{ let i=s.indexOf(nm); while(i>=0){ if(!ROLE.test(s.slice(i+nm.length,i+nm.length+6)))return true; i=s.indexOf(nm,i+nm.length); } return false; };
+  for(const p of all){ if(seen.has(p.name)||!s.includes(p.name))continue; seen.add(p.name); if(!asPlayer(p.name))continue; L.push(p); if(L.length>=8)break; }
   return L; }
 function ibdPlayers(L){ const sy=period()!=='season'&&period()!=='post'&&dobj(G.day).m<=3?G.year-1:G.year; /* 겨울(1~3월)에는 지난 시즌 기록: 연봉조정 근거(사용자 피드백 11-05) */ return ibdSec(`소식에 나온 선수 <em>${L.length}명</em>`,`<table class="ibd-t"><thead><tr><th>선수</th><th>소속</th><th>포지션</th><th>나이</th><th>종합</th><th>${sy===G.year?'올해':sy+'년'} 1군</th></tr></thead><tbody>${L.map(p=>{ const o=ibdOvr(p);
     return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${p.team!=null?badge(p.team,14)+' '+esc(team(p.team).nick):'-'}</td><td>${esc(posLabel(p))}</td><td>${p.age}</td><td><b style="color:${o!=null?rcol(o):'var(--muted)'}">${o!=null?dv(o):'?'}</b></td><td class="small">${esc(statLine(seasonTotal(p,sy,'1군'),p))}</td></tr>`; }).join('')}</tbody></table>`,'ibd-wide'); }

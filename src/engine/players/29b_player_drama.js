@@ -55,7 +55,7 @@ function pdWeek(){ if(G.gameOver)return; const per=period(); if(per!=='season'&&
     if(per==='season')pdEscalate(t,L); }
   pdBoyDaily(true); }
 /* 단계 오르기: 언론 플레이(열기 10) → 트레이드 요구(열기 16, 발언 3주 뒤) → 시위(요구가 묵살되면) */
-function pdEscalate(t,L){ const me=t.id===G.user; if(me&&(G.unemp||!G.mgr[G.user]))return; const c=pdCnt(t.id);
+function pdEscalate(t,L){ const me=t.id===G.user&&!G.unemp; if(me&&!G.mgr[G.user])return; /* 야인일 때 옛 구단은 AI 규칙으로(코드 리뷰 11-13) */ const c=pdCnt(t.id);
   const C=L.filter(p=>!p.ys&&healthy(p)&&!(p.boy>G.day)&&!(p.joinY>G.year)).map(p=>({p,h:grvHeat(p)})).filter(x=>x.h>=10).sort((a,b)=>b.h-a.h);
   for(const {p,h} of C){ const D=p.pd||(p.pd={st:0,d:-999}); if(G.day-D.d<21)continue; if(p.listed||p.aiListed&&p.aiWhy==='mood')continue;
     if(D.st>=1&&h>=16&&G.day-D.d>=21&&c.dm<(me?2:1)){ if(me&&evOpen().some(e=>e.k==='pdem'||e.k==='pboy'))continue; c.dm++; D.st=2; D.d=G.day; pdDemand(p); return; }
@@ -97,7 +97,7 @@ EVH.pdem={ pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '�
   follow(d,tid){ if(G.unemp||tid!==G.user)return; const p=evP(d.pid); if(!p||p.team!==G.user||p.listed)return; if(d.hot||grvHeat(p)>=12){ pdBoycott(p); evResult(d.ev,`${p.name}이(가) 훈련에 나오지 않고 있습니다.`); } else evResult(d.ev,`${p.name}은(는) 불만을 안은 채 훈련하고 있습니다.`); } };
 /* 3단계: 시위(훈련 불참). 1군에서 빠지고 훈련 효과가 없으며, 욕심 많은 동료들이 동요한다 */
 function pdBoycott(p){ if(!p||p.team==null||p.boy>G.day)return; const c=pdCnt(p.team); if(c.bo>=1){ grvAdd(p,'crit',1); news('선수',`${tshort(p.team)} ${p.name}, 냉랭한 분위기 속 훈련`,`${p.name}이(가) 구단과 말을 섞지 않은 채 훈련만 하고 있다는 소식입니다.`,p.team===G.user?-1:0,{ref:p.id,tid:p.team}); return; } /* 시위는 한 구단에 한 해 한 번까지 */ c.bo++; const n=7+Math.floor(u01('boy'+G.day,p.id)*8); p.boy=G.day+n; if(p.e1){ p.e1=false; p.downDay=G.day; } (p.pd=p.pd||{}).st=3; p.pd.d=G.day; story(p,`${G.year} 트레이드 요구하며 훈련 불참`,'move');
-  const me=p.team===G.user; news('선수',`${tshort(p.team)} ${p.name}, 훈련 불참… 트레이드 요구 시위`,`${p.name}이(가) 트레이드를 요구하며 훈련에 나오지 않고 있습니다. 구단과 선수의 갈등이 극으로 치닫고 있습니다.`,me?-4:0,{ref:p.id,tid:p.team});
+  const me=p.team===G.user&&!G.unemp; news('선수',`${tshort(p.team)} ${p.name}, 훈련 불참… 트레이드 요구 시위`,`${p.name}이(가) 트레이드를 요구하며 훈련에 나오지 않고 있습니다. 구단과 선수의 갈등이 극으로 치닫고 있습니다.`,me?-4:0,{ref:p.id,tid:p.team});
   if(!me){ pdAiReact(p,3); return; }
   try{ G.pr.fan=clamp(G.pr.fan-1,0,100); }catch(e){} pdIvAsk(p);
   const O=[['give','요구를 들어준다(트레이드 명단, 즉시 복귀)','선수는 돌아오지만 구단이 끌려갔다는 말이 나옵니다.'],['promise','출전을 약속하고 복귀시킨다','약속이 또 깨지면 더 크게 터집니다.'],['hard','중징계(벌금, 시위 기간 무급)','기강은 서지만 선수와의 관계는 회복하기 어렵습니다.'],['wait','버틴다','시위가 끝날 때까지 선수단 분위기가 흔들립니다.']];

@@ -166,7 +166,7 @@ function trow(p,side,on,hot){ const rp=scoutReport(p); const tag=hot?`<em class=
 function tmini(p,side){ const rp=scoutReport(p);
   return `<div class="tmini">${avImg(p)}<div class="tm-id"><b>${esc(p.name)}</b><span>${posLabel(p)} · ${p.age}세 · ${money(p.sal)}</span></div><span class="tm-r">${rchip(rp.cur)}${potChip(rp,p)}</span><button class="x" data-a="tpick" data-v="${side}:${p.id}" aria-label="${esc(p.name)} 빼기">×</button></div>`; }
 function tradeView(){
-  const tr=UI.trade;
+  const tr=UI.trade; if(tr){ const sy=sponSeason(); if(tr.yr!=null&&tr.yr!==sy){ tr.give=[]; tr.get=[]; tr.cash=0; } tr.yr=sy; } /* 시즌이 바뀌면 만들다 만 트레이드안을 비운다(플레이 테스트 11-13: 1년 전 안이 그대로 남음) */
   if(!tradeOpen())return `<section class="card"><h2 class="sec">트레이드 기간이 아닙니다</h2><p class="small muted">7월 31일 트레이드 마감 이후에는 포스트시즌이 끝날 때까지 트레이드할 수 없습니다.</p></section>`;
   const strip=`<div class="trade-partner"><span class="small muted">상대 구단</span>${optRow('tpartner',tr.tid,G.teams.filter(t=>t.id!==G.user).map(t=>[t.id,`${badge(t.id,14)} ${esc(t.nick)}`]),null,'wsx')}<button class="btn small" data-a="tradeGm">상대 단장</button></div>`;
   /* 상대를 고르기 전: 선택 상자 대신 구단 카드(순위·단장 성향·친분·보강 원하는 자리)를 눌러 고른다 */

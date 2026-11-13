@@ -74,7 +74,7 @@ function starPanel(){
 /* ---------- FA 보상 절차: 보호선수 명단 · 보상선수 지명 ---------- */
 function compRuleTxt(){ return `A등급(3년 평균 연봉 구단 3위·리그 30위 이내): 보호선수 외 1명 + 직전 연봉 200%, 또는 선수 없이 300%. B등급(구단 10위·리그 60위 이내, 또는 두 번째 FA): 보호선수 외 1명 + 100%, 또는 200%. 보호선수는 A 20명, B 25명입니다(소속선수 한도 ${ROSTER_MAX}명).`+'  C등급(그 밖, 만 35세 이상, 세 번째 이상 FA): 선수 없이 150%. 외국인, 올해 신인, 군 복무 중인 선수, 이번 겨울 FA 계약 선수는 저절로 보호됩니다. FA 자격은 고졸 8시즌, 대졸 7시즌입니다.'; }
 /* 보호명단은 보상 건(카드)마다 따로 든다: 두 건을 함께 열어도 다른 카드 명단이 제출되지 않게(검수 11-09r) */
-function protOf(c){ const M=UI.prot&&!UI.prot.ids?UI.prot:(UI.prot={}); return M[c.id]||(M[c.id]=aiProtect(G.user,COMP[c.grade].prot)); }
+function protOf(c){ const M=UI.prot&&!UI.prot.ids?UI.prot:(UI.prot={}); if(M[c.id])return M[c.id]; const n=COMP[c.grade].prot, pool=new Set(compPool(G.user).map(q=>q.id)); const last=(G.protLast&&G.protLast.y===stoveY()?G.protLast.ids:[]).filter(id=>pool.has(id)).slice(0,n); /* 같은 겨울 앞서 낸 보호명단을 먼저 채운다(플레이 테스트 11-13: FA마다 25명을 처음부터) */ const fill=aiProtect(G.user,n+last.length).filter(id=>!last.includes(id)); return M[c.id]=[...last,...fill].slice(0,n); }
 function protByOvr(c){ return compPool(G.user).sort((a,b)=>ovr(b)-ovr(a)).slice(0,COMP[c.grade].prot).map(q=>q.id); }
 function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.user); if(!L.length)return '';
   const open=L.filter(c=>c.stage!=='done'); const done=L.filter(c=>c.stage==='done').slice(0,6);
