@@ -18,7 +18,7 @@ async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
 
 async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  const o=x[3],outPlay=['OUT','DP','SAC'].includes(o),isHR=o==='HR',fielders=cFielders(g,x[0],k).concat([{id:cPit(g,k),pos:'P'}]);let f=opos?c3DFielder(g,k,opos):null;
- if(!f)f=fielders.reduce((best,a)=>!best||cDist(CFP[a.pos],spot)<cDist(CFP[best.pos],spot)?a:best,null);
+ if(!f){const of=!outPlay&&!isHR?fielders.filter(a=>['LF','CF','RF'].includes(a.pos)):[],pool=of.length?of:fielders; /* 내야를 빠져나간 안타는 외야수가 달려 나와 잡는다. 예전에는 타구 자리에 가장 가까운 야수를 골라, 내야수가 외야로 물러나 잡는 일이 있었다(사용자 11-13) */f=pool.reduce((best,a)=>!best||cDist(CFP[a.pos],spot)<cDist(CFP[best.pos],spot)?a:best,null);}
  const airOut=outPlay&&!UI.cast.errPos&&!UI.cast.gb&&!['DP','SAC'].includes(o),timing=FrontOfficeCore.contactTiming({distance:Match3D.distance(CHM,spot),fieldDistance:f?Match3D.distance(CFP[f.pos],spot):0,speed:G.players[f?.id]?.r.spd??50,arc,airOut,homer:isHR}),retired=new Set();
  // 외야 장타: 공이 펜스·잔디에 맞고 멈춘 곳까지 외야수가 가서 줍고, 중계를 거쳐 타자 주자가 가는 베이스로 던진다.
  const path=['2B','3B'].includes(o)&&['LF','CF','RF'].includes(f?.pos)?Match3D.carom(spot,o):null,chase=path?path.roll:spot,relayPos=path?(chase[0]<50?'SS':'2B'):f?.pos==='LF'?'SS':'2B',base=o==='3B'?CBS[2]:CBS[1],basePos=o==='3B'?'3B':relayPos==='SS'?'2B':'SS',relayPt=path?base.map((v,i)=>v*.62+chase[i]*.38):spot.map((v,i)=>CBS[1][i]*.72+v*.28),run0=path?Math.round(Match3D.distance(CFP[f.pos],chase)/7.2*1000):timing.run;
