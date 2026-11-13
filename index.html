@@ -29878,10 +29878,10 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  if(slideHome.size&&typeof Match3D.brace==='function'){const c=c3DFielder(g,k,'C');if(c)setTimeout(()=>{if(UI.cast&&g.pbp[k]===x)Match3D.brace('d'+c.id,spot);},1100/cSpd());} /* 포수는 송구가 오기 전에 홈에서 낮은 자세로 기다린다 */
  const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;for(let i=m.from+1;i<=Math.min(4,isHR?m.from+1:m.to);i++){if(retired.has(m.id))return;const duration=isHR?1500:c3DRunTime(m.id);cPlace(el,CPATH[i],duration);if(i===4&&slideHome.has(m.id)&&duration>1000&&typeof Match3D.slide==='function'){await cSleep(duration-900);if(retired.has(m.id))return;Match3D.slide('o'+m.id,CHM,900/cSpd(),false);await cSleep(900);}else await cSleep(duration);}if(retired.has(m.id))return;if(m.out||m.score)retire(m.id);}));
  runners.catch(()=>{});
- const batter=(async()=>{await cSleep(620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(350);}const target=isHR?2:bTo>0?Math.min(4,bTo):1;for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?1500:c3DRunTime(x[1]); /* 홈런은 2루까지만 돌고 넘긴다(사용자 요청 11-07) */cPlace(bat,CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&(bTo>=4||isHR))retire(x[1]);})();
+ const batter=(async()=>{await cSleep(isHR?430:620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(540);} /* 빠던: 화면이 타구로 넘어가기 전에 다 보이도록 조금 일찍 던진다(사용자 11-13) */const target=isHR?2:bTo>0?Math.min(4,bTo):1;for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?1500:c3DRunTime(x[1]); /* 홈런은 2루까지만 돌고 넘긴다(사용자 요청 11-07) */cPlace(bat,CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&(bTo>=4||isHR))retire(x[1]);})();
  batter.catch(()=>{});
  const leap=!!(airOut&&!arc&&f&&pcH(g,k,'leap')<.3); /* 직선타 아웃 열에 셋은 뛰어올라 잡는다(기록은 그대로, 보이는 동작만) */
- sfx('crack',1,1);Match3D.batted(o,(isHR?1150:650)/cSpd(),leap);
+ sfx('crack',1,1);Match3D.batted(o,(isHR?1500:650)/cSpd(),leap); /* 홈런은 타석 화면을 1.5초 잡아 빠던을 보여 준 뒤 타구로 넘어간다 */
  const short=!path&&!outPlay&&!isHR&&f?[50+(spot[0]-50)*(UI.cast.gb?.7:.8),88+(spot[1]-88)*(UI.cast.gb?.7:.8)]:null; /* 안타: 야수 앞에 떨어져 야수 쪽으로 굴러간다(떨어진 자리에 멈춰 있지 않게, 사용자 11-13) */
  const ball=cBall([50,88],path?path.land:short||spot,timing.flight,arc,!!UI.cast.gb);if(airOut&&arc&&Match3D.distance(CHM,spot)>62)sfx('ooh',x[0]%2===1?.75:.4); /* 깊은 뜬공: 관중이 기대했다가 잡히면 아쉬워한다(녹음 한 덩어리) */
  if(f&&!isHR){
