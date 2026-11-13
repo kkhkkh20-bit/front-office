@@ -121,13 +121,13 @@ function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+
 /* FA 시장 경쟁(카페 11-13): 이번 시장 상위 매물은 성적이 조금 모자라도 몸값이 오른다(1~3위 +35%, 4~8위 +15%). 성적(WAR) 상한은 능력 기준 몸값의 70% 아래로는 깎지 않는다 */
 let _fpr={k:null,m:null};
 function faPoolPrem(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=G.year+':'+G.day+':'+F.pool.length; if(_fpr.k!==k){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null).sort((a,b)=>ovr(b)-ovr(a)); _fpr={k,m:new Map(L.map((q,i)=>[q.id,i]))}; } const r=_fpr.m.get(p.id); return r==null?1:r<3?1.35:r<8?1.15:1; }
-/* FA 시장 수요·공급(카페 11-13 beeseo·운영자): 같은 자리 비슷한 급(종합 -3 이내) 매물 수가 공급, 그 자리가 약하고(리그 6위 이하) 돈이 되는 AI 구단 수가 수요다.
+/* FA 시장 수요·공급(카페 11-13 beeseo·운영자): 같은 자리 비슷한 급(종합 -3 이내) 매물 수가 공급, 데려오면 주전이 바뀌고(그 자리 리그 4위 아래) 돈이 되는 AI 구단 수가 수요다.
    찾는 구단이 많고 매물이 적으면 오르고(최대 +20%), 매물이 넘치면 내려간다(최대 -10%). 그 구단 자리가 리그 7위 이하면 +8%, 9위 이하면 +12% */
 let _fps={k:null,r:{}};
 function faRanks(tid){ const k=G.year+':'+G.day; if(_fps.k!==k)_fps={k,r:{}}; if(!_fps.r[tid]){ try{ _fps.r[tid]=slotRanks(tid); }catch(e){ _fps.r[tid]={}; } } return _fps.r[tid]; }
 function faSupply(p){ const F=G.fa; if(!F||!F.pool)return 0; const sl=pSlot(p), o=ovr(p); return F.pool.map(i=>G.players[i]).filter(q=>q&&q.id!==p.id&&q.team==null&&pSlot(q)===sl&&ovr(q)>=o-3).length; }
-function faDemand(p){ const sl=pSlot(p), cap=capOf(sponSeason()), a=(p.ask&&p.ask.annual)||0; return G.teams.filter(t=>t.id!==ME()&&!t.indie&&t.cash>-3000&&((faRanks(t.id)[sl]||{}).rank||0)>=6&&cap-capPay(t.id)>=a*.7).length; }
-function faSD(p){ const d=faDemand(p), s=faSupply(p); return {d,s,m:clamp(1+.05*(d-1.5*(s+1)),.9,1.2)}; }
+function faDemand(p){ const sl=pSlot(p), cap=capOf(sponSeason()), a=(p.ask&&p.ask.annual)||0; return G.teams.filter(t=>t.id!==ME()&&t.id!==p.faFrom&&!t.indie&&t.cash>-3000&&needScore(t.id,p)>0&&((faRanks(t.id)[sl]||{}).rank||0)>=4&&cap-capPay(t.id)>=a*.7).length; } /* 데려오면 주전이 바뀌는 구단만 센다 */
+function faSD(p){ const d=faDemand(p), s=faSupply(p); return {d,s,m:clamp(1+.06*(d-(s+1)),.9,1.2)}; }
 function faPosPrem(t,p){ const F=G.fa; if(!F||!F.pool||t.id===ME())return 1; const rk=(faRanks(t.id)[pSlot(p)]||{}).rank||0; return faSD(p).m*(rk>=9?1.12:rk>=7?1.08:1); }
 /* 구단주가 찍은 FA(꼭 필요한 자리 + 구단주 의지): 시장이 열릴 때 AI 구단마다 많아야 한 명. 우승형 구단주·올인·우승 도전일수록 잘 찍는다.
    찍힌 선수에게는 성적 상한을 넘겨 웃돈(올인 1.35배·우승형 1.25배·그 밖 1.15배)을 주고, 경쟁이 붙으면 끝까지 따라간다(오버페이) */
