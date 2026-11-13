@@ -59,7 +59,7 @@ function aiFacPlan(t,S,summer,o){ o=o||{}; const nb=Object.keys(S.bld).length; i
   const cash=spendable(t.id); /* 독립구단은 결산 때 낼 신구장 분담금을 남긴다(검수 11-09zza) */ const tight=cash<1500||(t.indie&&cash<3000), rich=!tight&&(cash>=6000||(t.market>=1.1&&cash>=4500));
   const pl=planOf(t);
   if(!o.force){ let p=tight?.15:rich?.7:.5; p+={win:.08,pr:.03,profit:-.08}[t.owner]||0; if(t.mode==='contend')p+=.04; if(tr==='miser')p*=.6; if(pl==='build')p+=.25; /* 유망주 수집 구단은 남는 돈을 육성 시설에 돌린다 */ if(pl==='tight')p*=.3; if(summer)p*=pl==='build'?.6:.3; if(nb)p*=.5;
-    if(facU(key,'go')>=p)return null; }
+    if(facU(key,'go')>=p){ if(t.indie||capexWait(t.id))return null; o.capOnly=true; } } /* 직접 지을 생각이 없어도 모기업 투자 요청은 해 본다(사람 단장처럼, 같은 승인 식·120일 간격) */
   const maps=[]; if(rich)maps.push({lab:2.2,rehab:1.8}); if(tight)maps.push({weight:1.8,rehab:1.3});
   maps.push(pl==='build'?{fut:2.6,dorm:2.4,indoor:1.6}:pl==='tight'?{weight:1.3}:pl==='win'?{rehab:2,weight:1.8,lab:1.6}:pl==='star'?{indoor:1.4,rehab:1.3}:t.mode==='rebuild'?{fut:2.2,dorm:2.2}:{rehab:1.8,weight:1.8});
   if(tr==='data')maps.push({lab:1.6}); else if(tr==='prospect')maps.push({fut:1.4,dorm:1.4}); else if(tr==='gambler')maps.push({rehab:1.3,weight:1.2});
@@ -71,9 +71,11 @@ function aiFacPlan(t,S,summer,o){ o=o||{}; const nb=Object.keys(S.bld).length; i
   let r=facU(key,'pick')*sum(C.map(x=>x.w)), x=C[C.length-1]; for(const y of C){ r-=y.w; if(r<=0){ x=y; break; } }
   const go=(x)=>{ const I=facRouteInfo(t.id,x.k), cashOk=cash-x.c>=reserve;
     if(I.cap.ok){ t.capexD=G.day; /* 사람 단장처럼 먼저 모기업에 요청해 본다(같은 승인 식·간격) */ if(facU(key,'cap'+x.k)<I.cap.p){ t.capexY=sponSeason(); t.capN=(t.capN||0)+1; return 'cap'; } t.trust=clamp((t.trust??55)-1,0,100); }
+    if(o.capOnly)return null;
     for(const rt of ['spon','city'])if(I[rt].ok&&cash-x.c*(1-(rt==='spon'?FAC_SPON.share:FAC_CITY.share))>=reserve&&(x.c>=2000||!cashOk)){ (t.facAsk=t.facAsk||{})[rt]=G.day; if(facU(key,rt+x.k)<I[rt].p)return rt; }
     return cashOk?'cash':null; };
   let src=go(x);
+  if(!src&&o.capOnly)return null;
   if(!src){ const sm=C.filter(y=>y!==x&&cash-y.c>=reserve).sort((a,b)=>a.c-b.c)[0]; if(!sm||(!o.force&&facU(key,'fb')>=.5))return null; x=sm; src='cash'; } /* 큰 공사가 막히면 절반은 적립금으로 되는 작은 공사로 바꾼다 */
   if(src==='spon'||src==='city'){ facFundGo(t.id,x.k,src,x.c); t.facN=(t.facN||0)+1; return x.k; }
   if(src==='cash')t.cash-=x.c;
