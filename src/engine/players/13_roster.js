@@ -40,7 +40,12 @@ function offerMailDone(oid){ for(const m of G.mail) if(m.oid===oid)m.read=true; 
 function offerDropMoved(ids){ G.offers=(G.offers||[]).filter(x=>{ if(![...x.give,...x.get].some(id=>ids.includes(id)))return true; offerMailDone(x.id); return false; }); }
 function wire(kind,t,o){ o=o||{}; const w={d:G.day,k:kind,t,tid:o.tid??null,ref:o.ref??null}; if(o.x)w.x=o.x; (G.wire=G.wire||[]).unshift(w); if(G.wire.length>150)G.wire.length=150; }
 function addLog(t){ G.log.unshift({y:G.year,d:G.day,t}); G.log=G.log.slice(0,80); }
-function updateModes(){ const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r); rs.forEach((x,i)=>{ const t=team(x.id); t.mode=i<6?'contend':i<8&&R()<.5?'contend':'rebuild'; t.stance=t.mode==='rebuild'?'rebuild':i<4||(i<6&&t.owner==='win')?'win':'next'; }); for(const t of G.teams){ if(G.user!=null&&t.id!==ME()&&t.cash<-5000){ t.mode='rebuild'; t.stance='rebuild'; } } }
+/* AI 구단은 운영 전략(86_ai_plan의 t.plan)에서 mode·stance가 나온다: 새해마다 순위로 다시 뽑지 않는다(계획의 관성). 계획이 아직 없는 구단(새 게임·예전 저장)만 여기서 처음 정한다.
+   우리 구단(사용자)은 예전처럼 전력 순위로만 표시한다 */
+function updateModes(){ const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r); const me=G.user!=null?ME():-99;
+  rs.forEach((x,i)=>{ const t=team(x.id); if(t.id!==me&&t.plan&&AIPLAN[t.plan.k]){ t.mode=AIPLAN[t.plan.k].mode; t.stance=AIPLAN[t.plan.k].st; return; }
+    if(t.id===me||G.user==null&&!t.owner){ t.mode=i<6?'contend':i<8&&R()<.5?'contend':'rebuild'; t.stance=t.mode==='rebuild'?'rebuild':i<4||(i<6&&t.owner==='win')?'win':'next'; return; }
+    const rk=(i+1)*10/G.teams.length; aiPlanSet(t,aiPlanChoose({rk,rkL:rk,age:28,cash:t.cash||0,owner:t.owner,tr:gmTrait(t.id),mid:false},null,0,true),'',true); }); }
 /* AI 운영 방향: win 우승 도전(연봉을 상한 근처까지 실제 전력으로), next 내년 도전(25~30세 주전급·유망주), rebuild 리빌딩(유망주, 비싼 베테랑 정리). mode(contend/rebuild)를 잘게 나눈 것 */
 function stanceOf(t){ return t.mode==='rebuild'?'rebuild':t.stance||'win'; }
 function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx(sponSeason())*ownershipSupportPct(t,sponSeason())/100*(.5+t.trust/100)*(1+((austOn(t)||{}).d||0)))-(t.supCut&&t.supCut.y===sponSeason()?t.supCut.amt:0)-(t.ownCut&&t.ownCut.y===sponSeason()?t.ownCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
@@ -50,7 +55,7 @@ function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx(spon
 function aiCapMul(t){ if(!t||t.id===ME())return 1; if(t.allIn===sponSeason())return t.capOver>=2?1.02:1.12; return t.capOver>=1?.97:1; }
 /* FA 시장이 열릴 때 올인 구단을 고른다: 구단주가 우승형·현금 여유·전력 상위·최근 3년 올인 없음·연속 초과 2회 미만. 한 해 많아야 한 구단 */
 function allInPick(){ const sy=sponSeason(); if(G.teams.some(t=>t.allIn===sy))return; const ord=(G.last&&G.last.order)||[]; const rk=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?6:i+1; };
-  const C=G.teams.filter(t=>t.id!==ME()&&!t.indie&&t.owner==='win'&&(t.cash||0)>5000&&rk(t.id)<=4&&(t.capOver||0)<2&&!(t.allInY&&sy-t.allInY<3)); if(!C.length||R()>=.22)return;
+  const C=G.teams.filter(t=>t.id!==ME()&&!t.indie&&planOf(t)==='win'&&(t.owner==='win'||(t.owner==='pr'&&gmTrait(t.id)==='gambler'))&&(t.cash||0)>5000&&rk(t.id)<=4&&(t.capOver||0)<2&&!(t.allInY&&sy-t.allInY<3)); if(!C.length||R()>=.22)return;
   const t=C[Math.floor(R()*C.length)]; t.allIn=sy; t.allInY=sy; news('구단',`${tshort(t.id)}, 경쟁균형세 감수하고 우승 올인`,`${t.city} ${t.nick} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다. 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); }
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
 /* 초과액으로 낼 제재금 예상: 지금까지 연속 초과 횟수에 이번을 더한 단계(재계약 화면에서 넘길지 고르게, 유저 피드백 11-07) */
@@ -108,7 +113,8 @@ function aiFloorFix(tid){ if(tid===ME()||G.year<2027||fNewBonus(tid,G.year))retu
     if(p.sal!==s0.get(p.id)||multi)story(p,`연봉 하한 맞추기 계약 조정: 연봉 ${money(s0.get(p.id))} → ${money(p.sal)}, 계약 ${multi?`${y0||1}년 → ${p.yrs}년(다년계약 전환)`:`${p.yrs}년 유지`}`,'move'); } /* 구단이 하한을 맞추려 올린 계약도 선수 이력(이적·계약)에 남긴다 */
   wire('구단',`${t.city} ${t.nick}, 연봉 하한 맞추려 주축 선수들과 다년계약`,{tid}); }
 /* 빚이 깊은 AI 구단(현금 -40억 아래): 모기업이 허리띠를 졸라맨다. 고액 베테랑을 여유 있는 구단에 넘겨 상위 40명 연봉을 상한의 80%까지 낮춘다(방출 위약금은 빚을 늘리므로 트레이드만) */
-function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME()||t.cash>=-4000)continue; t.mode='rebuild'; n+=aiCapFix(t.id,.8,true,3); } return n; }
+/* 긴축 계획 구단(빚이 그만큼 깊지 않아도)은 상한의 88%까지 덜어낸다. 빚이 깊은 구단은 그 자리에서 긴축으로 돌아선다 */
+function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME())continue; const deep=t.cash<-4000; if(!deep&&planOf(t)!=='tight')continue; if(deep)try{ aiPlanSet(t,'tight','빚 누적'); }catch(e){ t.mode='rebuild'; } n+=aiCapFix(t.id,deep?.8:.88,true,deep?3:2); } return n; }
 function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} let n=0; for(const t of G.teams)if(t.id!==ME())n+=aiCapFix(t.id,frac); return n; }
 /* 경쟁균형세 상한 결정(capCouncil)은 68_assoc.js의 실행위원회·이사회로 옮겼다 */
 function capInfo(tid){ const pay=preSeason(sponSeason())?capPayNext(tid):capPay(tid), /* 겨울: 합의한 다음 시즌 연봉 기준 */ cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:sponSeason()>=2027&&!fNewBonus(tid)?floorOf(sponSeason()):0 /* 신생 구단은 외국인 혜택과 같은 첫 두 시즌 하한 적용 안 함(창단 테스트 11-13: 특별지명 선수단 연봉이 하한의 절반) */ /* 하한 제재는 2027년부터(검수 11-09y) */,over:Math.max(0,pay-cap)}; }

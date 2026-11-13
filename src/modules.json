@@ -109,6 +109,7 @@
       "src/engine/league/84_national.js",
       "src/engine/league/84b_nt_tour.js",
       "src/engine/staff/85_mgr_fit.js",
+      "src/engine/staff/74_internal_promo.js",
       "src/engine/staff/86_ai_plan.js",
       "src/engine/staff/87_ai_events.js",
       "src/engine/staff/89_coach_market.js",
