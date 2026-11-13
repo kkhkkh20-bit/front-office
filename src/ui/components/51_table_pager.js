@@ -33,9 +33,12 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     bar.innerHTML=`<button type="button" ${pg>0?'':'disabled'} aria-label="앞 열">◀</button><span><b>${pg+1}/${pages.length}</b> ${esc(lab(pg))}</span><button type="button" ${pg<pages.length-1?'':'disabled'} aria-label="다음 열">▶</button>`;
     const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.twPg[key]=pg+d; twPager(); };
     bp.onclick=()=>go(-1); bn.onclick=()=>go(1); const rtools=matchMedia('(max-width:699px) and (min-height:600px)').matches?tw.closest('.roster-list')?.querySelector('.roster-tools'):null; /* 30_mobile_workspace.css의 세로 휴대폰 조건과 같게 */ if(tw.matches('.fdl-main .fdt-w')&&fdCompact())tw.before(bar); else if(rtools)rtools.append(bar); /* 선수 명단: 필터 줄 옆 */ else tw.insertBefore(bar,tb); /* 휴대폰 드래프트: 표 스크롤 밖에 두어 늘 보이게 */ tw._twGo=d=>{ if(pg+d>=0&&pg+d<pages.length)go(d); }; });
-  document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); }
+  document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); try{ tabRowHints(); }catch(e){} }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
 
+/* 가로로 넘치는 탭·버튼 줄 전부(플레이 테스트 11-13: 휴대폰에서 넘침 표시가 없고, 연 탭이 화면 밖에 있어 '협상'을 눌러도 반응이 없는 것처럼 보였다):
+   고른 탭을 보이는 자리로 옮기고, 옆에 더 있으면 가장자리를 흐린다 */
+function tabRowHints(){ if(typeof document==='undefined')return; for(const row of document.querySelectorAll('.seg,.itabs,.ptabs,nav.subtabs,.tstrip,.ws-tab-row,.tabs,.chips')){ if(row.scrollWidth<=row.clientWidth+2)continue; const ox=getComputedStyle(row).overflowX; if(ox!=='auto'&&ox!=='scroll')continue; row.classList.add('hrow'); wsRowHint(row); } }
 /* 한 줄 버튼 줄: 지금 고른 버튼을 보이는 자리로 옮기고, 옆에 더 있으면 가장자리를 흐리게 표시한다 */
 function wsRowHint(row){ if(!row||!row.isConnected)return; const on=row.querySelector('button.on,button[aria-current="true"]');
   if(on&&row.scrollWidth>row.clientWidth+2){const r=row.getBoundingClientRect(),b=on.getBoundingClientRect();if(b.left<r.left||b.right>r.right)row.scrollLeft+=b.left-r.left-(r.width-b.width)/2;}
