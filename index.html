@@ -5869,6 +5869,40 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  main:has(>.ovs-page)>.seg.itabs,main:has(>.ovs-page)>nav.subtabs{display:flex;flex-wrap:nowrap;flex:none;overflow-x:auto;scrollbar-width:thin}
  main:has(>.ovs-page)>.seg.itabs button,main:has(>.ovs-page)>nav.subtabs button{flex:none;min-height:36px;white-space:nowrap}
 }
+/* ===== 휴대폰 화면 정리(플레이 테스트 2차, 11-13: 390×844) =====
+   1) 상단 제목·진행 버튼 문구가 잘림  2) 넘치는 탭 줄에 표시가 없음  3) 트레이드 '제안하기'가 깊은 내부 스크롤 끝에만 있음, 정렬 버튼 두 줄
+   4) 선수단 이름·배지 잘림  6) 감독 후보 페이지 버튼이 카드 내용을 덮음. 데스크톱(>600px)은 바꾸지 않는다 */
+
+/* 넘치는 탭 줄: 오른쪽·왼쪽에 더 있으면 가장자리를 흐린다(tabRowHints가 .hrow·.more-l·.more-r를 붙인다) */
+:is(#app,#sheet) .hrow.more-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}
+:is(#app,#sheet) .hrow.more-l{-webkit-mask-image:linear-gradient(to right,transparent,#000 28px);mask-image:linear-gradient(to right,transparent,#000 28px)}
+:is(#app,#sheet) .hrow.more-l.more-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
+:is(#app,#sheet) .hrow{scroll-behavior:smooth;scrollbar-width:none}
+
+@media (max-width:480px){
+  /* 1) 상단: 화면 제목을 한 단계 줄여 '트레이…'처럼 잘리지 않게, 진행 버튼 보조 문구는 짧은 앞부분만(goSub) */
+  #app .top .club b{font-size:15px;letter-spacing:-.03em}
+  #app .goset .continue .cl i{max-width:96px}
+
+  /* 3) 트레이드 협상: 제안하기·비우기 줄을 스크롤 영역 아래에 붙여 늘 보이게, 정렬 버튼은 한 줄 */
+  #app .tprop-bar{position:sticky;bottom:0;z-index:3;background:var(--panel,var(--card,#1b2533));padding:8px 0;margin-bottom:0;box-shadow:0 -6px 10px -6px rgba(0,0,0,.45)}
+  #app .trade-pool-options .seg button,#app .pr-ctl .chips button,#app .tsort button{white-space:nowrap;word-break:keep-all}
+  #app .trade-pool-options .seg{overflow-x:auto;flex-wrap:nowrap}
+
+  /* 4) 선수단: 이름 칸을 넓히고 배지는 이름 아래 줄로(잘리지 않게), 보조 포지션은 숨겨 폭 확보 */
+  #app .roster-list .rt .pn{max-width:none;min-width:0}
+  #app .tw.twp .sqt .pn{max-width:150px}
+  #app .tw.twp .pn>span{white-space:normal;overflow:visible;text-overflow:clip;display:flex;flex-wrap:wrap;align-items:center;gap:1px 4px;line-height:1.25}
+  #app .tw.twp .pn>span .pill{font-size:10px;padding:0 4px;line-height:15px;white-space:nowrap}
+  #app .roster-list .rt td.rtpos i.f{display:none}
+
+  /* 6) 페이지 버튼이 카드 내용을 덮지 않게: 불투명 배경, 내용과 겹치지 않는 자리 */
+  #app .ws-panel>.pgr,#app .pgr{position:relative;z-index:2;background:var(--panel,var(--card,#1b2533));padding-block:4px}
+
+  /* 하단 탭바 높이만큼 본문 끝 여백: 마지막 버튼이 탭바에 가리지 않게 */
+  #app main.content:not(.ws-frame){padding-bottom:calc(var(--bnav-h,58px) + env(safe-area-inset-bottom,0px) + 8px)}
+  #sheet .sheet .sh-foot,#sheet .sheet .pn-foot{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+}
 </style>
 </head>
 <body>
@@ -25898,6 +25932,8 @@ function linkMap(){ const ps=Object.values(G.players); const k=G.year+':'+G.day+
 function linkify(h,pp){ if(!G||!h)return h; const L=linkMap(); return h.replace(L.re,(m,t,pre,pn,mk,off,str)=>{ if(t)return `<a class="tl" data-a="lteam" data-v="${L.teams[t]}">${t}</a>`; pre=pre||''; if(pp&&L.names[pn]!=null&&L.pplT[pn]&&!mk){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } /* 감독·코치 화면(또는 data-person 안)에서는 표시 없는 동명이인 이름을 사람 쪽으로(꺼끼꺼 11-12) */ if(L.names[pn]!=null&&!L.pplT[pn]&&!mk&&typeof off==='number'&&typeof str==='string'){ const after=str.slice(off+m.length,off+m.length+6), before=str.slice(Math.max(0,off-6),off+pre.length); if(/^\s?([가-힣]{0,3}코치|단장|감독|구단주|사장|스카우트|대행)/.test(after)||/(단장|감독|코치|구단주|사장|스카우트)\s?$/.test(before))return m; } /* 직함이 붙었는데 인물 목록에 없는 사람(고교 감독 등)은 같은 이름 선수로 잇지 않는다(일고회장 11-12) */ if(L.names[pn]!=null&&L.pplT[pn]&&!mk&&typeof off==='number'&&typeof str==='string'){ const after=str.slice(off+m.length,off+m.length+6), before=str.slice(Math.max(0,off-6),off+pre.length); if(/^\s?([가-힣]{0,3}코치|단장|감독|구단주|사장|스카우트|대행)/.test(after)||/(단장|감독|코치|구단주|사장|스카우트)\s?$/.test(before)){ const q=L.pplT[pn]; return `${pre}<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`; } } { const id=pnmId(mk); if(id!=null&&G.players[id]&&G.players[id].name===pn)return `${pre}<a class="pl" data-a="player" data-v="${id}">${pn}</a>`; } if(L.names[pn]!=null)return `${pre}<a class="pl" data-a="player" data-v="${L.names[pn]}">${pn}</a>`; const q=L.ppl[pn]; return pre+(q?`<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`:pn); }); }
 /* 조사 자동 맞춤: 화면에 "을(를)·이(가)·은(는)·와(과)·(으)로·(이)라"가 남으면 앞 글자 받침을 보고 고른다 */
 const JOSA_RE=/을\(를\)|이\(가\)|은\(는\)|와\(과\)|과\(와\)|\(으\)로|\(이\)라/g;
+/* 키보드 안내 '(Space)' 등은 터치 기기에서 숨긴다(플레이 테스트 11-13) */
+const kbdHint=k=>typeof matchMedia==='function'&&matchMedia('(hover:none),(pointer:coarse)').matches?'':` (${k})`;
 function josaTail(s){ for(let i=s.length-1;i>=0;i--){ const c=s[i]; if(c===')'){ let d=1; for(i--;i>=0;i--){ if(s[i]===')')d++; else if(s[i]==='('&&--d===0)break; } continue; } if(/["'”’」』\]\s.·]/.test(c))continue; return c; } return ''; }
 function josaPick(prev,j){ const c=josaTail(prev); let jong=-1; if(/[가-힣]/.test(c))jong=(c.charCodeAt(0)-0xAC00)%28; else if(/[0-9]/.test(c))jong=[1,1,0,1,0,0,1,1,1,0][+c]?8:0; else if(/[A-Za-z]/.test(c))jong=/[lmnr]/i.test(c)?4:0; else return null;
   const has=jong>0; switch(j){ case '을(를)':return has?'을':'를'; case '이(가)':return has?'이':'가'; case '은(는)':return has?'은':'는'; case '와(과)': case '과(와)':return has?'과':'와'; case '(으)로':return has&&jong!==8?'으로':'로'; case '(이)라':return has?'이라':'라'; } return null; }
@@ -26066,7 +26102,9 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
 /* 화면에 보이는 시즌 단계: 경기는 중계보다 먼저 계산돼 한국시리즈 마지막 경기 중계 중에도 엔진은 이미 시리즈 종료(스토브리그)다.
    그 중계를 보는 동안에는 결과를 먼저 알리지 않게 '포스트시즌'으로 둔다 */
 function perShown(){ const P=G.ps, g=UI.cast&&G.games[UI.cast.g]; return P&&P.done&&g&&P.resD&&g.day===P.resD.ks&&G.day<(P.finDay??G.day+1)?'post':period(); }
-function goSet(per,b){ if(UI.advRun)return `<div class="goset"><button class="continue fm-busy" data-a="advStop" aria-label="진행 멈추기"><span class="cl"><b>진행 멈추기</b><i>${esc(dmd(G.day))} · 일정 진행 중</i></span>Ⅱ</button></div>`;if(UI.cast)return ''; /* 중계를 보는 동안 날짜 진행 버튼은 숨긴다(중계는 '나가기'로 닫는다, 사용자 피드백 11-07) */ const hint=!G.unemp&&(per==='season'||nextGames(1).some(x=>x.d<=G.day+7))?'한 시리즈씩 · 예약한 경기만 관전':'최대 7일 · 중요한 소식까지'; return `<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>진행하기</b><i>제의가 오거나 1주일이 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="matchOpen" ${b?'disabled':''} aria-label="경기 중계 선택" title="중계로 보거나 결과만 보기를 선택합니다"><span class="st-l">중계</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="같은 팀과 치르는 한 시리즈(보통 3연전)를 이어서 진행합니다. 예약한 관전 경기와 설정한 멈춤 조건에서 멈추고, 확인할 소식이 있으면 먼저 엽니다"><b>진행하기</b><i>${esc(b?nextLabel():contSub(hint))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>진행하기</b><i>${esc(b?nextLabel():contSub(hint))}</i></span>${ICO.ff}</button>`}</div>`; }
+/* 휴대폰: 진행 버튼 보조 문구는 ' · ' 앞만(플레이 테스트 11-13: '최대 7일 · …'처럼 늘 잘렸다). 전체 문구는 title로 */
+const goSub=t=>typeof matchMedia==='function'&&matchMedia('(max-width:480px)').matches?String(t).split(' · ')[0]:t;
+function goSet(per,b){ if(UI.advRun)return `<div class="goset"><button class="continue fm-busy" data-a="advStop" aria-label="진행 멈추기"><span class="cl"><b>진행 멈추기</b><i>${esc(dmd(G.day))} · 일정 진행 중</i></span>Ⅱ</button></div>`;if(UI.cast)return ''; /* 중계를 보는 동안 날짜 진행 버튼은 숨긴다(중계는 '나가기'로 닫는다, 사용자 피드백 11-07) */ const hint=!G.unemp&&(per==='season'||nextGames(1).some(x=>x.d<=G.day+7))?'한 시리즈씩 · 예약한 경기만 관전':'최대 7일 · 중요한 소식까지'; return `<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>진행하기</b><i>제의가 오거나 1주일이 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="matchOpen" ${b?'disabled':''} aria-label="경기 중계 선택" title="중계로 보거나 결과만 보기를 선택합니다"><span class="st-l">중계</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="같은 팀과 치르는 한 시리즈(보통 3연전)를 이어서 진행합니다. 예약한 관전 경기와 설정한 멈춤 조건에서 멈추고, 확인할 소식이 있으면 먼저 엽니다"><b>진행하기</b><i title="${esc(b?nextLabel():contSub(hint))}">${esc(goSub(b?nextLabel():contSub(hint)))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>진행하기</b><i title="${esc(b?nextLabel():contSub(hint))}">${esc(goSub(b?nextLabel():contSub(hint)))}</i></span>${ICO.ff}</button>`}</div>`; }
 /* 휴대폰·태블릿 신인 드래프트 진행 중: 선수 프로필 화면처럼 제목 줄 없이, 상단 바 구단명·날짜 자리에 지명 순서를 굵게, 아래 작게 로스터·지명 중인 구단.
    배지는 구단 메뉴, 드래프트 정보는 더보기(건너뛰기·일괄 처리·지명 소식), '진행하기' 자리는 우리 차례면 추천 지명, 아니면 다른 구단 지명 보기 */
 function draftTopOn(){ const d=G.draft; return !wide()&&!G.unemp&&!!d&&!d.done&&!!d.picks[d.cur]&&UI.tab==='transfer'&&curSub('transfer')==='draft'&&!UI.meet; }
@@ -31552,7 +31590,7 @@ function tradeView(){
     <details class="trade-analysis"><summary>선수 비교·메디컬·검토 의견</summary>${tradeInsight(tr.tid,tr.give,tr.get)}</details>
     ${gt.length||gv.length?`<div class="tcash"><span class="small">현금</span><div class="chips">${[...(gv.length?[-3000,-1000,-500,-300,-100]:[]),0,...(gt.length?[100,300,500,1000,2000,3000]:[])].map(v=>`<button data-a="tcash" data-v="${v}" class="${(tr.cash||0)===v?'on':''}">${v>0?money(v)+' 주기':v<0?money(-v)+' 받기':'없음'}</button>`).join('')}</div><span class="small muted">실제 한국 프로야구도 선수와 현금을 섞은 트레이드가 있습니다. 돈을 중시하는 구단(독립구단·수익형 구단주·샐러리캡 초과·리빌딩)일수록 현금을 높게 치고, 내주기는 아까워합니다. 주는 현금은 예산 여유에서 빠지고, 받는 현금은 이번 시즌 결산 수입으로 잡히고, 보유 현금에는 결산 때 들어옵니다(상대 보유 현금 안에서). 그 전에는 시설 투자 같은 보유 현금 지출에 쓸 수 없습니다.${gt.length?` 지금 얹을 수 있는 돈: ${esc(spendTxt())}.`:''}</span></div>`:''}
     ${pkRow(tr)}
-    ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get,tr.cash||0)+pkSig(tr.pk); const isC=!!(nt.ctr&&nt.ctr[sg]!=null&&G.day-nt.ctr[sg]<=7); const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}${(()=>{ const cd=tradeCool(tr.tid,tr.get); if(cd)return `<p class="small" style="color:#ffb547">${cd.cap?`${esc(tshort(tr.tid))}와(과)는 올해 이미 ${cd.n}번 거래했습니다(같은 구단과는 한 시즌 ${cd.max}번까지, 맞대결 기간에는 한 번 더). 급매 매물은 이 제한 없이 데려올 수 있습니다.`:`${esc(tshort(tr.tid))}와(과)는 ${dsh(cd.d)}에 거래했습니다. ${dsh(cd.until)}부터 다시 거래할 수 있습니다. 맞대결 기간이나 급매 매물은 바로 됩니다.`}</p>`; const oc=(gv.length||gt.length)?tradeOwnerCheck(tr.give,tr.get,tr.cash||0):null; return oc?`<p class="small" style="color:${oc.ok?'#ffb547':'#ff6b6b'}">연봉 ${money(oc.dSal)} 증가 · 예산 초과 ${money(oc.over)} (구단주 허용 ${money(oc.lim)}) — ${oc.ok?'성사되면 구단주가 승인하지만 신뢰 -2':'구단주가 승인하지 않습니다'}</p>`:''; })()}`; })()}
+    ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get,tr.cash||0)+pkSig(tr.pk); const isC=!!(nt.ctr&&nt.ctr[sg]!=null&&G.day-nt.ctr[sg]<=7); const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row tprop-bar"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}${(()=>{ const cd=tradeCool(tr.tid,tr.get); if(cd)return `<p class="small" style="color:#ffb547">${cd.cap?`${esc(tshort(tr.tid))}와(과)는 올해 이미 ${cd.n}번 거래했습니다(같은 구단과는 한 시즌 ${cd.max}번까지, 맞대결 기간에는 한 번 더). 급매 매물은 이 제한 없이 데려올 수 있습니다.`:`${esc(tshort(tr.tid))}와(과)는 ${dsh(cd.d)}에 거래했습니다. ${dsh(cd.until)}부터 다시 거래할 수 있습니다. 맞대결 기간이나 급매 매물은 바로 됩니다.`}</p>`; const oc=(gv.length||gt.length)?tradeOwnerCheck(tr.give,tr.get,tr.cash||0):null; return oc?`<p class="small" style="color:${oc.ok?'#ffb547':'#ff6b6b'}">연봉 ${money(oc.dSal)} 증가 · 예산 초과 ${money(oc.over)} (구단주 허용 ${money(oc.lim)}) — ${oc.ok?'성사되면 구단주가 승인하지만 신뢰 -2':'구단주가 승인하지 않습니다'}</p>`:''; })()}`; })()}
   </section>`;
   const side=tr.side||'get', seg=tr.seg||'bat', sort=tr.sort||'cur';
   let pool=(side==='get'?domestic(tr.tid):domestic(G.user)).filter(p=>ok(p)&&(seg==='bat'?!p.isP:p.isP)).map(p=>({p,rp:scoutReport(p)}));
@@ -33401,7 +33439,7 @@ function advTargetTxt(v){ const per=period();
   const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?` 비시즌·시즌 준비 기간에는 한 번에 최대 7일(${dmd(G.day+7)})까지 진행합니다.`:''}`; }
 function advAskDoc(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
   const sig=P.map(x=>x.id).join('|');
-  return {subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true,onOk:()=>{ if(P.length)UI._pendAck=sig; }}; }
+  return {subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행'+kbdHint('Space'),no:'취소'+kbdHint('Esc'),noMail:true,onOk:()=>{ if(P.length)UI._pendAck=sig; }}; }
 function advAsk(v){ UI.cfm={k:'advSpace',v,doc:advAskDoc(v)}; cfmRender(); } /* 확인은 진행을 눌렀을 때만(취소하면 다음 진행 때 다시 묻는다, 검수 11-08) */
 function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); }
   const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;
@@ -34281,9 +34319,12 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     bar.innerHTML=`<button type="button" ${pg>0?'':'disabled'} aria-label="앞 열">◀</button><span><b>${pg+1}/${pages.length}</b> ${esc(lab(pg))}</span><button type="button" ${pg<pages.length-1?'':'disabled'} aria-label="다음 열">▶</button>`;
     const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.twPg[key]=pg+d; twPager(); };
     bp.onclick=()=>go(-1); bn.onclick=()=>go(1); const rtools=matchMedia('(max-width:699px) and (min-height:600px)').matches?tw.closest('.roster-list')?.querySelector('.roster-tools'):null; /* 30_mobile_workspace.css의 세로 휴대폰 조건과 같게 */ if(tw.matches('.fdl-main .fdt-w')&&fdCompact())tw.before(bar); else if(rtools)rtools.append(bar); /* 선수 명단: 필터 줄 옆 */ else tw.insertBefore(bar,tb); /* 휴대폰 드래프트: 표 스크롤 밖에 두어 늘 보이게 */ tw._twGo=d=>{ if(pg+d>=0&&pg+d<pages.length)go(d); }; });
-  document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); }
+  document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); try{ tabRowHints(); }catch(e){} }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
 
+/* 가로로 넘치는 탭·버튼 줄 전부(플레이 테스트 11-13: 휴대폰에서 넘침 표시가 없고, 연 탭이 화면 밖에 있어 '협상'을 눌러도 반응이 없는 것처럼 보였다):
+   고른 탭을 보이는 자리로 옮기고, 옆에 더 있으면 가장자리를 흐린다 */
+function tabRowHints(){ if(typeof document==='undefined')return; for(const row of document.querySelectorAll('.seg,.itabs,.ptabs,nav.subtabs,.tstrip,.ws-tab-row,.tabs,.chips')){ if(row.scrollWidth<=row.clientWidth+2)continue; const ox=getComputedStyle(row).overflowX; if(ox!=='auto'&&ox!=='scroll')continue; row.classList.add('hrow'); wsRowHint(row); } }
 /* 한 줄 버튼 줄: 지금 고른 버튼을 보이는 자리로 옮기고, 옆에 더 있으면 가장자리를 흐리게 표시한다 */
 function wsRowHint(row){ if(!row||!row.isConnected)return; const on=row.querySelector('button.on,button[aria-current="true"]');
   if(on&&row.scrollWidth>row.clientWidth+2){const r=row.getBoundingClientRect(),b=on.getBoundingClientRect();if(b.left<r.left||b.right>r.right)row.scrollLeft+=b.left-r.left-(r.width-b.width)/2;}
@@ -35986,7 +36027,7 @@ function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.l
     ${hot.length?`<div class="eyebrow">이 기간 잘한 선수</div><div class="dg-ps">${hot.map(li).join('')}</div>`:''}
     ${cold.length?`<div class="eyebrow">이 기간 부진한 선수</div><div class="dg-ps">${cold.map(li).join('')}</div>`:''}
     ${inj.length?`<p class="small">부상${stale?`(${dmd(G.day)} 현재)`:''}: ${inj.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>(${esc(injNow(p))}, ${p.injOut}일)`).join(', ')}</p>`:''}
-    <div class="wk-acts"><button class="btn primary" data-a="wkClose">확인 (Space)</button><button class="btn" data-a="wkStand">순위 보기</button></div>
+    <div class="wk-acts"><button class="btn primary" data-a="wkClose">확인${kbdHint('Space')}</button><button class="btn" data-a="wkStand">순위 보기</button></div>
   </div></div>`; }
 Object.assign(A,{
   wkClose(){ UI.wkres=null; save(); renderSheet(); }, /* 닫은 요약은 다시 열리지 않게 저장(검수 11-09zzc #20) */
@@ -36000,6 +36041,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-13-mobile2',d:'11월 13일',t:'휴대폰 화면 정리',items:[
+    '휴대폰에서 화면 제목과 진행 버튼 문구가 잘리지 않게 줄였습니다. 옆으로 넘치는 탭 줄은 가장자리가 흐려져 더 있음을 알려 주고, 고른 탭이 화면 안으로 옵니다.',
+    '트레이드 협상의 제안하기·비우기 버튼이 늘 아래에 붙어 보이고, 정렬 버튼이 두 줄로 깨지지 않습니다. 선수단 목록에서 이름과 FA 예정·포스팅 후보 표시가 잘리지 않습니다.',
+    '터치 기기에서는 (Space)·(Esc) 같은 키보드 안내를 숨깁니다. 감독 후보 목록의 페이지 버튼이 카드 내용을 덮지 않습니다.']},
   {id:'2026-11-13-cm',d:'11월 13일',t:'해외 연수·대체 외국인·트레이드 요청 정리',items:[
     '해외 연수 신청 화면에서 연수 기간 중 입대가 잡힌 선수는 신청할 수 없고 아래에 이유와 함께 따로 표시됩니다. 상무 지원 중인 선수에는 표시가 붙고, 신청한 뒤 입대가 잡히면 출발 날이 아니라 그때 바로 취소·환급됩니다.',
     '부상 대체 외국인 거취 결정에 원 선수 방출·대체 선수 정식 계약 선택지가 항상 보입니다(할 수 없을 때는 이유 표시). 8월 15일 외국인 등록 마감 7일 전과 하루 전에 대체 선수를 정식 계약할지 미리 묻습니다.',
