@@ -111,7 +111,7 @@ function advTargetTxt(v){ const per=period();
   const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?` 비시즌·시즌 준비 기간에는 한 번에 최대 7일(${dmd(G.day+7)})까지 진행합니다.`:''}`; }
 function advAskDoc(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
   const sig=P.map(x=>x.id).join('|');
-  return {subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true,onOk:()=>{ if(P.length)UI._pendAck=sig; }}; }
+  return {subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행'+kbdHint('Space'),no:'취소'+kbdHint('Esc'),noMail:true,onOk:()=>{ if(P.length)UI._pendAck=sig; }}; }
 function advAsk(v){ UI.cfm={k:'advSpace',v,doc:advAskDoc(v)}; cfmRender(); } /* 확인은 진행을 눌렀을 때만(취소하면 다음 진행 때 다시 묻는다, 검수 11-08) */
 function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); }
   const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;

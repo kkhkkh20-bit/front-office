@@ -51,7 +51,7 @@ function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.l
     ${hot.length?`<div class="eyebrow">이 기간 잘한 선수</div><div class="dg-ps">${hot.map(li).join('')}</div>`:''}
     ${cold.length?`<div class="eyebrow">이 기간 부진한 선수</div><div class="dg-ps">${cold.map(li).join('')}</div>`:''}
     ${inj.length?`<p class="small">부상${stale?`(${dmd(G.day)} 현재)`:''}: ${inj.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>(${esc(injNow(p))}, ${p.injOut}일)`).join(', ')}</p>`:''}
-    <div class="wk-acts"><button class="btn primary" data-a="wkClose">확인 (Space)</button><button class="btn" data-a="wkStand">순위 보기</button></div>
+    <div class="wk-acts"><button class="btn primary" data-a="wkClose">확인${kbdHint('Space')}</button><button class="btn" data-a="wkStand">순위 보기</button></div>
   </div></div>`; }
 Object.assign(A,{
   wkClose(){ UI.wkres=null; save(); renderSheet(); }, /* 닫은 요약은 다시 열리지 않게 저장(검수 11-09zzc #20) */

@@ -307,7 +307,8 @@
       "src/css/career/31_personal_life.css",
       "src/css/career/84_personal_network.css",
       "src/css/career/85_bulk_relations.css",
-      "src/css/staff/32_operations_art.css"
+      "src/css/staff/32_operations_art.css",
+      "src/css/shell/40_mobile_playtest2.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
