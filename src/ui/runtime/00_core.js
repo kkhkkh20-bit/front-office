@@ -200,7 +200,7 @@ const kbdHint=k=>typeof matchMedia==='function'&&matchMedia('(hover:none),(point
 /* 안내 글의 키보드 표현을 기기에 맞춘다: 터치 기기에서는 스페이스바 대신 '진행하기' 버튼 */
 const touchDev=()=>typeof matchMedia==='function'&&matchMedia('(hover:none),(pointer:coarse)').matches;
 function devTxt(s){ s=String(s||'').replace(/한 경기씩 보려면 '1경기 진행'을 누르세요\./g,"하루씩 넘기려면 '진행하기' 옆의 '하루 진행'을, 시즌 중 우리 경기를 직접 보려면 그 자리의 '중계'를 누르세요.").replace(/'1경기 진행'/g,"'하루 진행'"); if(!touchDev())return s; return s.replace(/스페이스바\(또는 ([^)]*)\)/g,'$1').replace(/스페이스바로/g,"'진행하기' 버튼으로").replace(/스페이스바만/g,"'진행하기' 버튼만").replace(/스페이스바/g,"'진행하기' 버튼"); }
-function josaTail(s){ for(let i=s.length-1;i>=0;i--){ const c=s[i]; if(c===')'){ let d=1; for(i--;i>=0;i--){ if(s[i]===')')d++; else if(s[i]==='('&&--d===0)break; } continue; } if(/["'”’」』\]\s.·]/.test(c))continue; return c; } return ''; }
+function josaTail(s){ for(let i=s.length-1;i>=0;i--){ const c=s[i]; if(c===')'){ let d=1; for(i--;i>=0;i--){ if(s[i]===')')d++; else if(s[i]==='('&&--d===0)break; } continue; } if(/["'”’」』\]\s.·\u2063\u2064\u200b\u200c]/.test(c))continue; return c; } return ''; } /* 이름 뒤 보이지 않는 선수 번호(pidName)는 건너뛴다 */
 function josaPick(prev,j){ const c=josaTail(prev); let jong=-1; if(/[가-힣]/.test(c))jong=(c.charCodeAt(0)-0xAC00)%28; else if(/[0-9]/.test(c))jong=[1,1,0,1,0,0,1,1,1,0][+c]?8:0; else if(/[A-Za-z]/.test(c))jong=/[lmnr]/i.test(c)?4:0; else return null;
   const has=jong>0; switch(j){ case '을(를)':return has?'을':'를'; case '이(가)':return has?'이':'가'; case '은(는)':return has?'은':'는'; case '와(과)': case '과(와)':return has?'과':'와'; case '(으)로':return has&&jong!==8?'으로':'로'; case '(이)라':return has?'이라':'라'; } return null; }
 function josaFix(root){ if(!root)return; const W=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let prev=''; let n;

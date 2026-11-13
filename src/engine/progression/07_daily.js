@@ -80,6 +80,7 @@ function demoOver(){ return DEMO.on&&G.year>=(G.startY||2026)+DEMO.seasons-1&&!G
 function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(G.demoEnd)return;
   G.day++; const day=G.day, o=dobj(day);
+  try{ ownerTrustWatch(); }catch(e){}
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }
   if(o.m===9&&o.d===1){ try{ coachExpNote(); }catch(e){} }
   if(o.d===1&&o.m!==1)try{ rmSnap(); }catch(e){} /* 우리 선수 월별 능력치 기록(1월은 겨울 성장 뒤에) */
