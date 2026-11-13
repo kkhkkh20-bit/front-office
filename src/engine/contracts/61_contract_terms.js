@@ -106,26 +106,26 @@ function mgrPosAsk(p,m,k){ const nm=POSK[k]||k; const me=`${p.name}을(를) ${nm
   if(posAskOf(G.user,p)===k)return {me,a:'이미 그렇게 쓰기로 했습니다.',sys:''};
   const no=G.useNo&&G.useNo[p.id]; if(no&&no.u>G.day&&no.mid===m.id)return {me,a:`며칠 전에 말씀드렸습니다. 당분간은 지금대로 가겠습니다.`,sys:`${dmd(no.u)}부터 다시 건의할 수 있습니다`};
   const d=depth(G.user), at=d.ln&&d.ln[k]; const gap=at&&at.id!==p.id?Math.round(posScore(at,k)-posScore(p,k)):-3;
-  if(useScore(m,gap)<0){ m.rel=clamp(m.rel-1,0,100); (G.useNo=G.useNo||{})[p.id]={u:G.day+7,mid:m.id}; return {me,a:`${at?`${nm}는 ${at.name}이(가) 낫습니다.`:''} ${p.name}은(는) 지금 자리에서 쓰겠습니다.`,sys:'건의 거절 · 감독 관계 -1 · 7일 뒤 다시 건의할 수 있습니다'}; }
+  if(useScore(m,gap)<0){ m.rel=clamp(m.rel-1,0,100); (G.useNo=G.useNo||{})[p.id]={u:G.day+7,mid:m.id}; return {me,a:`${at?`${nm}는 ${at.name}이(가) 낫습니다.`:''} ${p.name}은(는) 지금 자리에서 쓰겠습니다.`,sys:'건의 거절 · 감독 관계 조금 악화 · 7일 뒤 다시 건의할 수 있습니다'}; }
   const cost=m.ego>=65&&!mplOn('listen'); if(cost)m.rel=clamp(m.rel-1,0,100);
   (G.posAsk=G.posAsk||{})[p.id]={k,tid:G.user,mid:m.id,y:G.year,d:G.day}; p.mor=clamp((p.mor??60)+2,0,100);
-  return {me,a:`해 보겠습니다. ${nm}에 넣어 보고 수비가 버티면 계속 쓰겠습니다.`,sys:`수락: 이번 시즌 ${p.name}을(를) ${nm} 쪽으로 기용(감독이 바뀌면 다시 건의) · ${p.name} 기분 +2${cost?' · 감독 관계 -1':''}`}; }
+  return {me,a:`해 보겠습니다. ${nm}에 넣어 보고 수비가 버티면 계속 쓰겠습니다.`,sys:`수락: 이번 시즌 ${p.name}을(를) ${nm} 쪽으로 기용(감독이 바뀌면 다시 건의) · ${p.name} 기분 조금 상승${cost?' · 감독 관계 조금 악화':''}`}; }
 function mgrUseAsk(pid,c){ const p=G.players[pid], m=G.mgr[G.user]; if(!p||p.team!==G.user||G.unemp||!m)return {me:'',a:'...',sys:'건의할 수 없는 선수입니다.'}; mgrFix(m);
   if(String(c).startsWith('pos:'))return mgrPosAsk(p,m,String(c).slice(4));
   const why=useUnavailable(p); if(why)return {me:'',a:'지금은 출전 기용을 약속할 수 없습니다.',sys:why};
   const k=useKind(p), r=rpLive(p), role=k==='SP'?'선발 로테이션':k==='RP'?'필승조':'주전'; const {c:cp,gap}=useComp(p,k);
   const me=c==='role'?`계약 때 약속한 ${r?r.l.replace(' 보장',''):role} 자리대로 ${p.name}을(를) 써 주십시오.`:c==='alt'?`${r?`${role}이 어렵다면 `:''}${p.name}에게 ${p.isP?'롱릴리프·스윙맨으로라도':'대타·선발 몇 경기로라도'} 출전 기회를 주십시오.`:`성적이 안 되면 감독님 판단을 존중하겠습니다. 다만 ${p.name} 사정은 알아 주십시오.`;
-  if(c==='respect'){ const first=m.useResp!==G.year; if(first){ m.useResp=G.year; m.rel=clamp(m.rel+1,0,100); } return {me,a:`알겠습니다. 내용이 올라오면 바로 쓰겠습니다. 믿어 주셔서 고맙습니다.`,sys:`${first?'감독 관계 +1 · ':''}약속 판정은 그대로입니다`}; }
+  if(c==='respect'){ const first=m.useResp!==G.year; if(first){ m.useResp=G.year; m.rel=clamp(m.rel+1,0,100); } return {me,a:`알겠습니다. 내용이 올라오면 바로 쓰겠습니다. 믿어 주셔서 고맙습니다.`,sys:`${first?'감독 관계 조금 개선 · ':''}약속 판정은 그대로입니다`}; }
   if(c==='role'&&(!r||rpromK(G.user,p)))return {me,a:`${r?'이미 그렇게 하기로 했습니다.':'계약 때 약속한 역할이 없는 선수입니다.'}`,sys:''};
   if(c==='alt'&&p.promise)return {me,a:`지난번 말씀하신 출전 기회부터 챙기고 있습니다.`,sys:`${dmd(p.promise.until)}까지 출전 기회 약속이 이미 있습니다`};
   const no=G.useNo&&G.useNo[pid]; if(no&&no.u>G.day&&no.mid===m.id)return {me,a:`며칠 전에 말씀드렸습니다. 당분간은 지금대로 가겠습니다.`,sys:`${dmd(no.u)}부터 다시 건의할 수 있습니다`};
   if(useScore(m,gap)+(c==='alt'?5:0)<0){ m.rel=clamp(m.rel-1,0,100); (G.useNo=G.useNo||{})[pid]={u:G.day+7,mid:m.id};
-    return {me,a:`${cp?`${p.name}은(는) 지금 ${cp.name}보다 처집니다.`:''} 약속은 프런트 사정이고, 저는 이기는 쪽으로 쓰겠습니다. 내용으로 보여 주면 그때 쓰겠습니다.`,sys:'건의 거절 · 감독 관계 -1 · 7일 뒤 다시 건의할 수 있습니다'}; }
+    return {me,a:`${cp?`${p.name}은(는) 지금 ${cp.name}보다 처집니다.`:''} 약속은 프런트 사정이고, 저는 이기는 쪽으로 쓰겠습니다. 내용으로 보여 주면 그때 쓰겠습니다.`,sys:'건의 거절 · 감독 관계 조금 악화 · 7일 뒤 다시 건의할 수 있습니다'}; }
   const cost=m.ego>=65&&!mplOn('listen'); if(cost)m.rel=clamp(m.rel-1,0,100);
   if(c==='role'){ r.ok={tid:G.user,mid:m.id,y:G.year,d:G.day}; if(k==='SP'&&G.prole&&G.prole[pid]&&G.prole[pid].k!=='sp')delete G.prole[pid]; try{ entryUpgrade(G.user,[p],'약속 보직'); roleSync(G.user); }catch(e){} p.mor=clamp((p.mor??60)+4,0,100);
-    return {me,a:`알겠습니다. 계약 때 한 약속이니 이번 시즌은 ${role}에 넣겠습니다. 대신 결과는 선수가 책임져야 합니다.`,sys:`수락: 이번 시즌 ${role}${k==='SP'?'으로':'로'} 기용(감독이 바뀌면 다시 건의) · ${p.name} 기분 +4${cost?' · 감독 관계 -1':''}`}; }
+    return {me,a:`알겠습니다. 계약 때 한 약속이니 이번 시즌은 ${role}에 넣겠습니다. 대신 결과는 선수가 책임져야 합니다.`,sys:`수락: 이번 시즌 ${role}${k==='SP'?'으로':'로'} 기용(감독이 바뀌면 다시 건의) · ${p.name} 기분 상승${cost?' · 감독 관계 조금 악화':''}`}; }
   p.promise=mkPromise(p,30); if(r)r.soft=G.day+30; p.mor=clamp((p.mor??60)+3,0,100);
-  return {me,a:`그 정도는 해 보겠습니다. 한 달 안에 기회를 주겠습니다.`,sys:`수락: 30일 안에 출전 기회 · ${p.name} 기분 +3${r?' · 그동안 약속 위반 기분 하락 절반(약속 위반은 그대로)':''}${cost?' · 감독 관계 -1':''}`}; }
+  return {me,a:`그 정도는 해 보겠습니다. 한 달 안에 기회를 주겠습니다.`,sys:`수락: 30일 안에 출전 기회 · ${p.name} 기분 상승${r?' · 그동안 약속 위반 기분 하락 절반(약속 위반은 그대로)':''}${cost?' · 감독 관계 조금 악화':''}`}; }
 /* 건의할 만한 선수: 역할 약속을 못 지키는 선수 먼저, 다음은 출전 시간에 불만인 주축·고참 */
 function useCands(){ if(G.unemp)return []; const d=depth(G.user); const L=playersOf(G.user).filter(p=>!useUnavailable(p));
   const bad=L.filter(p=>rpLive(p)&&!promKept(p,p.roleProm,d)); return [...bad,...L.filter(p=>!bad.includes(p)&&ptWhyP(p)&&(p.mor??60)<55).sort((a,b)=>ovr(b)-ovr(a))].slice(0,4); }
@@ -133,7 +133,7 @@ function useCands(){ if(G.unemp)return []; const d=depth(G.user); const L=player
    60일 동안은 매달 약속 위반 기분 하락이 절반, 에이전트 관계 감점은 없다. 약속 자체가 없어지지는 않는다 */
 function agPardon(pid){ const p=G.players[pid], r=p&&rpLive(p); if(!p||p.team!==G.user||G.unemp||!r)return '역할 약속이 남은 우리 선수가 아닙니다.'; if(r.pard)return '이번 계약에서는 이미 양해를 구했습니다.';
   r.pard=G.year; r.grace=G.day+60; const ag=hasAgent(p)?agentOf(p):null; if(ag)agRelAdd(ag,-2,`${p.name} 역할 약속 양해 요청`); p.mor=clamp((p.mor??60)-2,0,100);
-  return `${ag?`${ag.name} 에이전트`:p.name}: "사정은 알겠습니다. 두 달은 지켜보겠습니다. 그 뒤에도 그대로면 다음 계약 때 다시 이야기하겠습니다." (${ag?`에이전트 관계 ${ag.size==='big'?-3:-2} · `:''}기분 -2 · ${dmd(r.grace)}까지 약속 위반 기분 하락 절반${ag?', 에이전트 관계 감점 없음':''})`; }
+  return `${ag?`${ag.name} 에이전트`:p.name}: "사정은 알겠습니다. 두 달은 지켜보겠습니다. 그 뒤에도 그대로면 다음 계약 때 다시 이야기하겠습니다." ${ag?`${ag.size==='big'?'에이전트가 꽤 서운해하고':'에이전트가 조금 서운해하고'}, `:''}선수 기분도 조금 내려갑니다. ${dmd(r.grace)}까지는 약속 위반에 대한 실망이 덜합니다${ag?'. 그동안 에이전트와 사이는 더 나빠지지 않습니다':''}.`; }
 /* 거부권은 계약한 구단에 있는 동안 유효하다(우리 선수든 상대 선수든) */
 function ntcOf(ids){ return ids.map(id=>G.players[id]).find(p=>p&&hasNtc(p))||null; }
 const hasNtc=p=>ctOn(p)&&p.ntc>=ctSeason();
@@ -156,7 +156,7 @@ function ntcAsk(id,tid,bonus){ const p=G.players[+id]; tid=+tid; if(!p||p.team!=
   const cost=bonus?round5(Math.max(MIN_SAL,p.sal*NTC_BONUS_F)):0; if(cost&&spendable(G.user)<cost)return `포기 대가 ${money(cost)}을(를) 낼 돈이 부족합니다(${spendTxt()}).`;
   const o=ntcAskOdds(p,tid,!!bonus); A[tid]=G.day;
   if(R()<o.p){ if(cost){ spendPay(cost); G.spend.etc=(G.spend.etc||0); story(p,`${G.year} 트레이드 거부권 포기 대가 ${money(cost)}`,'move'); } p.ntcOk={tid,until:G.day+14}; return `${p.name}: "${tshort(tid)}(이)라면 가겠습니다." ${dmd(G.day+14)}까지 ${tname(tid)}과(와)의 트레이드에 동의했습니다.${cost?` 포기 대가 ${money(cost)}을(를) 지급했습니다.`:''}`; }
-  p.mor=clamp((p.mor??60)-3,0,100); return `${p.name}: "${tshort(tid)}행은 생각이 없습니다." 거부권을 지키겠다고 합니다. (기분 -3${o.why.length?` · 고려한 점: ${o.why.join(', ')}`:''})`; } /* 스토브리그 뒤에는 다음 시즌 계약 기준: 끝난 해까지인 거부권이 11월 거래를 막았다(검수 11-09zzb) */
+  p.mor=clamp((p.mor??60)-3,0,100); return `${p.name}: "${tshort(tid)}행은 생각이 없습니다." 거부권을 지키겠다고 합니다. (기분 하락${o.why.length?` · 고려한 점: ${o.why.join(', ')}`:''})`; } /* 스토브리그 뒤에는 다음 시즌 계약 기준: 끝난 해까지인 거부권이 11월 거래를 막았다(검수 11-09zzb) */
 /* 계약 금액 표기 통일: 그 시즌 현금 지출(연봉 + 그 회계연도에 준 계약금) · 보장 총액(계약금 + 연봉×기간) · 연평균(상한 반영 = 연봉 + 계약금/기간) */
 function ctMoney(p){ if(!p||!p.faC||!ctOn(p))return null; const c=ctInfo(p); const yrs=c?c.tot:Math.max(1,p.yrs||1); const sy=ctSeason(); const B=p.capB&&p.capB.until>=sy?p.capB:null;
   const bTot=p.ctB?p.ctB.b:B?(B.b??B.a*yrs):0; const first=B?B.until-yrs+1:sy-(c?c.k-1:0); /* 계약금은 상한 반영 기간이 끝나도 계약 총액에 남는다 */

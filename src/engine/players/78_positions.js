@@ -35,7 +35,7 @@ function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP
   if(v<need)return `${who}: "${p.name}은(는) ${POSK[pos]}를 맡을 만큼 몸놀림이 다양하지 않습니다. 무리입니다." (다재다능 ${dvGrade(v)}, ${POSK[pos]}는 ${dvGrade(need)} 이상 필요)`;
   if(p.age>=33)return `${who}: "이 나이에 새 자리를 익히기는 어렵습니다."`;
   p.pconv={pos,d:G.day}; let tail='';
-  if(m&&!m.interim&&m.ego>=70&&!mplOn('listen')&&isRegular(p)){ m.rel=clamp(m.rel-1,0,100); tail=` ${who}이 주전을 흔드는 게 썩 내키지 않아 합니다(관계 -1).`; }
+  if(m&&!m.interim&&m.ego>=70&&!mplOn('listen')&&isRegular(p)){ m.rel=clamp(m.rel-1,0,100); tail=` ${who}이 주전을 흔드는 게 썩 내키지 않아 합니다. 관계 조금 악화.`; }
   return `${p.name}: ${POSK[pos]} 전환 훈련을 계획했습니다. ${posConvStatus(p,pos)}${tail}`; }
 /* ETA는 실제로 훈련할 수 있는 주 수다. 부상·차출·비시즌 대기는 따로 알린다. */
 function posConvStatus(p,pos=p.pconv?.pos){if(!pos)return '';const reasons=[];if(p.injOut>0)reasons.push(`부상 재활 ${p.injOut}일 남음(현재 예상 회복일 ${dmd(G.day+p.injOut)})`);if(milServing(p))reasons.push('군 복무');else if(isAway(p))reasons.push('대표팀·파견');if(p.hold)reasons.push('연봉 미계약');if(ovsAbroad(p))reasons.push('해외 연수');if(!['pre','season'].includes(period()))reasons.push('비시즌');
@@ -90,7 +90,7 @@ function posReqMonth(){ const m=dobj(G.day).m; if(m<3||m>8)return; let mine=0;
 /* 단장의 답 */
 function posReqAnswer(id,yes){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return '우리 선수가 아닙니다.'; const r=p.posReq; if(!r||!r.open)return `${p.name}: "이미 말씀 나눴습니다."`; r.open=false;
   if(yes){ const msg=posConv(p.id,r.q); if(p.pconv&&p.pconv.pos===r.q){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 1군 기회를 찾아 ${POSK[p.pos]}에서 ${POSK[r.q]} 전환 도전`); return msg+` ${p.name}의 기분이 좋아졌습니다.`; } r.open=true; return msg; } /* 전환을 시작하지 못하면(군 복무 등) 요청을 열어 둔다(검수 11-07) */
-  const amb=(p.pers&&p.pers.amb)||10; const d=Math.round(2+amb/4); p.mor=clamp((p.mor??60)-d,0,100); return `${p.name}: "알겠습니다. 기다려 보겠습니다." (기분 -${d})`; }
+  const amb=(p.pers&&p.pers.amb)||10; const d=Math.round(2+amb/4); p.mor=clamp((p.mor??60)-d,0,100); return `${p.name}: "알겠습니다. 기다려 보겠습니다." 기분 하락.`; }
 function posYear(){ const y=G.year-1; try{ posSettle(y); }catch(e){} for(const p of Object.values(G.players)){ if(p.isP||!p.pexp)continue; const used=k=>(p.use&&p.use.y===y&&p.use.pos&&p.use.pos[k])||(p.fuse&&p.fuse.y===y&&p.fuse.pos&&p.fuse.pos[k]);
   for(const k in p.pexp){ const e=p.pexp[k]; if(e<50&&!used(k)&&!(p.pconv&&p.pconv.pos===k))p.pexp[k]=+(e*.9).toFixed(1); if(p.pexp[k]<3)delete p.pexp[k]; } } } /* 반쯤 익히다 만 자리(숙련 50 미만)는 그해 안 뛰었으면 감각이 떨어진다. 한 번 맡을 만해진 자리는 남는다 */
 /* ===== 2군 경기: 누가 어느 자리로 뛰는지 =====

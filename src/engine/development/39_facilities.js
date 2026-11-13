@@ -44,4 +44,4 @@ function facHistLbl(h){ const F=FACI[h.k]; if(F)return F.lv[h.lv]||F.l; return h
 function facDaily(){ if(!G.fac||!G.fac.bld)return; for(const k of Object.keys(G.fac.bld)){ const b=G.fac.bld[k]; if(G.day>=b.done){ G.fac.it[k]=b.lv; (G.fac.dn=G.fac.dn||{})[k]=G.day; delete G.fac.bld[k]; facRecalc(); addLog(`${FACI[k].l} ${FACI[k].lv[b.lv]} 완공.`); clubFacilityHistory('fac',G.user,FACI[k].l,'완공',b); mail('육성팀',`${FACI[k].l} 완공: ${FACI[k].lv[b.lv]}`,`${FACI[k].l}이(가) ${b.lv}단계(${FACI[k].lv[b.lv]})로 완공됐습니다. ${FACI[k].d} 연 유지비는 ${money(FACI[k].up[b.lv])}입니다.`,{kind:'시설',acts:[{l:'시설 보기',a:'go',v:'staff:fac'}]}); } } }
 /* 시설 한 단계 효과를 말로만(사용자 11-05: 시뮬 게임이라 수치는 보여 주지 않고 '영향을 준다' 정도로. 실제 배수는 facEff) */
 function facGainTxt(k,lv){ if(lv>=FAC_MAX)return ''; const who={indoor:'모든 선수의 성장',lab:'모든 선수의 성장(트래킹 분석원이 있으면 더)',dorm:'23세 이하 선수의 성장과 기분',fut:'2군에서 주로 뛰는 선수의 성장',weight:'30대 선수의 하락 속도와 부상',rehab:'부상 복귀와 피로 회복'}[k]; if(!who)return '';
-  return `다음 단계로 올리면 ${who}에 영향을 줍니다${lv>=3?'(4단계부터는 효과가 완만해집니다)':''}.`; }
+  return `다음 단계로 올리면 ${who}에 영향을 줍니다${lv>=3?'. 이제부터는 효과가 완만해집니다':''}.`; }

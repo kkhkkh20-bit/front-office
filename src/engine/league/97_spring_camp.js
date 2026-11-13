@@ -117,7 +117,7 @@ function sprcCampStart(){ sprcInit(); const messages=[]; for(const t of G.teams)
     P.eff=Math.round((P.wx1*a.fq*.65+P.wx2*b.fq*.35)*SPRC_INT[P.int].g*(gap?.93:1)*1000)/1000; sprcSchedule(t.id);
     if(t.id===G.user&&!G.unemp&&m&&!m.interim){ messages.push(()=>{ m.rel=clamp((m.rel??50)+(gap?-3*gap:1),0,100);
       const wx=P.wx1<a.wx-.04?` 1차 ${a.l}은(는) 올해 날씨가 좋지 않다고 합니다.`:P.wx1>a.wx+.04?` 1차 ${a.l} 날씨가 아주 좋습니다.`:'';
-      mail(`${m.name} 감독`,gap?`캠프 강도, 제 생각과는 다릅니다`:'캠프 출발합니다',gap?`단장님이 정한 ${SPRC_INT[P.int].l}로 갑니다. 다만 저는 ${SPRC_INT[pref].l}이(가) 맞다고 봤습니다. 선수들 앞에서는 티 내지 않겠지만, 제 방식이 아니라 코치진도 손에 덜 익을 겁니다(감독 관계 -${3*gap}, 캠프 효과 조금 감소).${wx}`:`말씀 나눈 대로 ${SPRC_INT[P.int].l}로 갑니다. 1차 ${a.l}, 2차 ${b.l}. 연습경기는 ${P.pg.length}경기 잡혔습니다${P.pgMiss?`(원한 ${P.pg.length+P.pgMiss}경기 중 ${P.pgMiss}경기는 상대를 못 구함)`:''}.${wx} (감독 관계 +1)`,{kind:'감독',acts:[{l:'캠프 계획',a:'goWork',v:'스프링캠프'}]}); }); } }
+      mail(`${m.name} 감독`,gap?`캠프 강도, 제 생각과는 다릅니다`:'캠프 출발합니다',gap?`단장님이 정한 ${SPRC_INT[P.int].l}로 갑니다. 다만 저는 ${SPRC_INT[pref].l}이(가) 맞다고 봤습니다. 선수들 앞에서는 티 내지 않겠지만, 제 방식이 아니라 코치진도 손에 덜 익을 겁니다. 감독 관계 악화, 캠프 효과 조금 감소.${wx}`:`말씀 나눈 대로 ${SPRC_INT[P.int].l}로 갑니다. 1차 ${a.l}, 2차 ${b.l}. 연습경기는 ${P.pg.length}경기 잡혔습니다${P.pgMiss?`(원한 ${P.pg.length+P.pgMiss}경기 중 ${P.pgMiss}경기는 상대를 못 구함)`:''}.${wx} (감독 관계 조금 개선)`,{kind:'감독',acts:[{l:'캠프 계획',a:'goWork',v:'스프링캠프'}]}); }); } }
   sprcPairSchedules(); for(const send of messages)send(); const L={}; for(const t of G.teams){ const P=G.scp.t[t.id]; (L[P.s1]=L[P.s1]||[]).push(tshort(t.id)); }
   try{ sisCampStart(); }catch(e){ console.error(e); }
   news('리그',`${G.year} 스프링캠프 출국`,Object.entries(L).map(([k,v])=>`${SPRC1[k].l}: ${v.join(', ')}`).join('\n'),0); }

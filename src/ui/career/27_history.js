@@ -63,7 +63,7 @@ function trophyRoom(){ const L=G.teams.map(t=>({t,T:trophyOf(t.id)})).sort((a,b)
 
 /* 전체 구단 결번은 트로피 진열장과 별도로, 기록이 있는 구단부터 바로 보여 준다. */
 function retiredNumberRoom(){ const L=G.teams.map(t=>({t,n:retNosOf(t.id).length})).sort((a,b)=>Number(b.n>0)-Number(a.n>0)||(b.t.id===G.user)-(a.t.id===G.user)||a.t.id-b.t.id), total=sum(L.map(x=>x.n));
-  return `<div class="rn-page ws-own"><div class="rn-intro"><h2 class="sec">전체 구단 영구결번</h2><p class="small muted keep">${L.length}개 구단 · 총 ${total}명. 이직 전 구단의 기록도 함께 표시합니다.</p></div><div class="rn-teams">${L.map(({t,n})=>`<article class="rn-team${t.id===G.user?' me':''}" data-team="${t.id}"><div class="row wrapr">${badge(t.id,22)}<b>${esc(tname(t.id))}</b>${t.id===G.user?'<span class="pill">우리 구단</span>':''}<span class="small muted">${n}명</span></div>${n?retiredNumbers(t.id):'<p class="small muted">아직 지정된 영구결번이 없습니다.</p>'}</article>`).join('')}</div></div>`; }
+  return `<div class="rn-page ws-own"><div class="rn-intro"><h2 class="sec">전체 구단 영구결번</h2><p class="small muted keep">${L.length}개 구단 · 총 ${total}명</p></div><div class="rn-teams">${L.map(({t,n})=>`<article class="rn-team${t.id===G.user?' me':''}" data-team="${t.id}"><div class="row wrapr">${badge(t.id,22)}<b>${esc(tname(t.id))}</b>${t.id===G.user?'<span class="pill">우리 구단</span>':''}<span class="small muted">${n}명</span></div>${n?retiredNumbers(t.id):'<p class="small muted">아직 지정된 영구결번이 없습니다.</p>'}</article>`).join('')}</div></div>`; }
 
 /* ===== 리그 연감(장기 기획 11-11): 해마다 우승·1위·시상·규정 변화·구단 변화(이름·연고·구장)·라이벌 탄생을 한 장에 =====
    이름은 그해 이름(tshort(id,y))으로 보인다 */

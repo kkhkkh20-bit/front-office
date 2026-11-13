@@ -43,13 +43,13 @@ function fanEvent(k,scheduled){ if(G.unemp)return '지금은 구단 단장이 �
   const guests=k==='meet'?playersOf(G.user).filter(p=>!p.foreign&&healthy(p)&&!isAway(p)&&!ovsAbroad(p)&&!(p.joinY>G.year)):null;
   if(guests&&!guests.length)return '팬 사인회에 참가할 수 있는 선수가 없습니다(부상·파견·복무·합류 전 제외).';
   const F=fanOps(), t=team(G.user); prInit(); G.spend.fan=(G.spend.fan||0)+E.c; if(E.yr)F.yr[k]=sponSeason(); else F.last[k]=G.day; const pop=clamp(t.pop,.4,1.6); let msg='';
-  if(k==='pitch'){ const up=R()<.25*pop?3:R()<.6?2:1; G.pr.fan=clamp(G.pr.fan+up,0,100); news('구단',`${tshort(G.user)} 홈경기 시구, 화제의 스타 등장`,`초청 스타의 시구 영상이 온라인에서 화제가 됐습니다.`,1,{fanW:1}); msg=`시구 행사를 열었습니다. 팬 여론 +${up}.`; }
-  if(k==='theme'){ F.boost={from:G.day,until:G.day+7}; G.pr.fan=clamp(G.pr.fan+1,0,100); msg=`테마 데이를 열었습니다. ${dmd(G.day+7)}까지 홈 관중이 늘어납니다. 팬 여론 +1.`; }
-  if(k==='meet'){ G.pr.fan=clamp(G.pr.fan+2,0,100); const L=guests.sort(()=>R()-.5).slice(0,3); L.forEach(p=>{ p.mor=clamp((p.mor??60)+2,0,100); }); msg=`팬 사인회를 열었습니다(${L.map(p=>p.name).join(', ')} 참가). 팬 여론 +2, 참가 선수 기분 상승.`; }
+  if(k==='pitch'){ const up=R()<.25*pop?3:R()<.6?2:1; G.pr.fan=clamp(G.pr.fan+up,0,100); news('구단',`${tshort(G.user)} 홈경기 시구, 화제의 스타 등장`,`초청 스타의 시구 영상이 온라인에서 화제가 됐습니다.`,1,{fanW:1}); msg=`시구 행사를 열었습니다. 팬 여론 호전.`; }
+  if(k==='theme'){ F.boost={from:G.day,until:G.day+7}; G.pr.fan=clamp(G.pr.fan+1,0,100); msg=`테마 데이를 열었습니다. ${dmd(G.day+7)}까지 홈 관중이 늘어납니다. 팬 여론 조금 호전.`; }
+  if(k==='meet'){ G.pr.fan=clamp(G.pr.fan+2,0,100); const L=guests.sort(()=>R()-.5).slice(0,3); L.forEach(p=>{ p.mor=clamp((p.mor??60)+2,0,100); }); msg=`팬 사인회를 열었습니다(${L.map(p=>p.name).join(', ')} 참가). 팬 여론 조금 호전, 참가 선수 기분 상승.`; }
   if(k==='collab'){ const ok=R()<clamp(.3+.3*(pop-.8)+(G.pr.fan-55)/200,.15,.8); const inc=Math.round((ok?rnd(600,1200):rnd(100,220))*ecoIdx()); G.spend.fanIn=(G.spend.fanIn||0)+inc; if(ok)G.pr.fan=clamp(G.pr.fan+3,0,100);
-    news('구단',ok?`${tshort(G.user)} 콜라보 유니폼 하루 만에 완판`:`${tshort(G.user)} 콜라보 굿즈, 반응 미지근`,ok?'한정판 유니폼과 굿즈가 출시 첫날 다 팔렸습니다. 추가 생산 요청이 이어집니다.':'출시 초반 관심에 비해 판매가 더딥니다. 재고가 남았습니다.',ok?2:0,{fanW:1}); msg=ok?`완판입니다. 상품 수입 ${money(inc)}, 팬 여론 +3.`:`판매가 부진했습니다. 상품 수입 ${money(inc)}(비용 ${money(E.c)}).`; }
-  if(k==='retro'){ const inc=Math.round(rnd(200,480)*pop*ecoIdx()); G.spend.fanIn=(G.spend.fanIn||0)+inc; G.pr.fan=clamp(G.pr.fan+2,0,100); news('구단',`${tshort(G.user)}, 창단 기념 레트로 유니폼 공개`,`옛 유니폼을 복각한 기념 유니폼에 오랜 팬들이 반가워했습니다.`,1,{fanW:1}); msg=`레트로 유니폼을 냈습니다. 상품 수입 ${money(inc)}, 팬 여론 +2.`; }
-  if(k==='sup'){ const y=sponSeason(); F.sup=y; G.pr.fan=clamp(G.pr.fan+2,0,100); msg=`${y} 서포터즈를 모집했습니다. ${y===G.year?'올':y+'년'} 시즌 홈 관중이 늘고 팬 여론 +2.`; } /* 결산 뒤 모집은 다음 시즌 회원(검수 11-08) */
+    news('구단',ok?`${tshort(G.user)} 콜라보 유니폼 하루 만에 완판`:`${tshort(G.user)} 콜라보 굿즈, 반응 미지근`,ok?'한정판 유니폼과 굿즈가 출시 첫날 다 팔렸습니다. 추가 생산 요청이 이어집니다.':'출시 초반 관심에 비해 판매가 더딥니다. 재고가 남았습니다.',ok?2:0,{fanW:1}); msg=ok?`완판입니다. 상품 수입 ${money(inc)}, 팬 여론 호전.`:`판매가 부진했습니다. 상품 수입 ${money(inc)}(비용 ${money(E.c)}).`; }
+  if(k==='retro'){ const inc=Math.round(rnd(200,480)*pop*ecoIdx()); G.spend.fanIn=(G.spend.fanIn||0)+inc; G.pr.fan=clamp(G.pr.fan+2,0,100); news('구단',`${tshort(G.user)}, 창단 기념 레트로 유니폼 공개`,`옛 유니폼을 복각한 기념 유니폼에 오랜 팬들이 반가워했습니다.`,1,{fanW:1}); msg=`레트로 유니폼을 냈습니다. 상품 수입 ${money(inc)}, 팬 여론 조금 호전.`; }
+  if(k==='sup'){ const y=sponSeason(); F.sup=y; G.pr.fan=clamp(G.pr.fan+2,0,100); msg=`${y} 서포터즈를 모집했습니다. ${y===G.year?'올':y+'년'} 시즌 홈 관중이 늘고 팬 여론 조금 호전.`; } /* 결산 뒤 모집은 다음 시즌 회원(검수 11-08) */
   fanLog(`${E.l}: ${msg}`); return msg; }
 /* 이달 이미 쓴 더 높은 단계 몫(다음 달 1일 청구 예정): 단계를 내려도 예산에서 빠지지 않게(검수 11-09j) */
 function fanPeakExtra(){ const F=G.fanOps; if(!F||G.unemp)return 0; const mx=F.mx||{}; return sum(['cheer','yt'].map(k=>FAN_OPS[k].m[Math.max(F[k]||0,mx[k]||0)]-FAN_OPS[k].m[F[k]||0]))+(F.cs?Math.max(0,(F.cs.payPeak||0)-cheerPay()):0); }

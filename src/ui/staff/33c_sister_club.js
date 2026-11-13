@@ -47,4 +47,4 @@ Object.assign(A,{
   sisEnd(v){ const d=!UI._cfmPass&&GUARD.sisEnd(v); if(d){ UI.cfm={k:'sisEnd',v,doc:d}; cfmRender(); return; } /* 41_guard_boot보다 늦게 실려 결재 창을 직접 띄운다 */ UI.sisMsg=sisEnd(v)||null; save(); render(); },
   sisFl(v){ const [c,id]=String(v).split(':'); UI.sisMsg=sisFlToggle(c,+id||id)||null; save(); render(); },
   sisCt(v){const [cid,k]=String(v).split(':');A.coachStudyOpen(k+':'+(OCL_BY[cid]?.c==='us'?'us':'jp'));} });
-Object.assign(GUARD,{ sisEnd(v){ const c=OCL_BY[v]; if(!c||sisPtn(v)!==G.user)return null; return {subj:`${c.n} 자매결연 끝내기`,kind:'캠프',lines:['캠프지 예약 우선·할인, 교육리그·코치 연수, 정보 교환 혜택이 사라집니다.','관계가 10 떨어집니다.'],warn:'끝낸 뒤 다시 맺으려면 관계를 55 이상으로 쌓고 다시 제안해야 합니다.'}; } });
+Object.assign(GUARD,{ sisEnd(v){ const c=OCL_BY[v]; if(!c||sisPtn(v)!==G.user)return null; return {subj:`${c.n} 자매결연 끝내기`,kind:'캠프',lines:['캠프지 예약 우선·할인, 교육리그·코치 연수, 정보 교환 혜택이 사라집니다.','그 구단과 사이가 꽤 나빠집니다.'],warn:'끝낸 뒤 다시 맺으려면 관계를 55 이상으로 쌓고 다시 제안해야 합니다.'}; } });

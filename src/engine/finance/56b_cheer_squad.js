@@ -81,4 +81,4 @@ function cheerMeet(){ if(G.unemp)return '지금은 구단 단장이 아닙니다
   const U=S.L.filter(m=>!m.inj&&m.fat<85).sort((a,b)=>b.pop-a.pop).slice(0,4); if(U.length<2)return '나설 수 있는 단원이 모자랍니다(부상·피로).';
   prInit(); S.ev=G.day; G.spend.fan=(G.spend.fan||0)+5; const sv=avg(U.map(m=>m.svc)), up=sv>=13?2:1; G.pr.fan=clamp(G.pr.fan+up,0,100);
   for(const m of U){ m.fat=Math.min(100,m.fat+18); m.fol+=Math.round(m.pop*rnd(200,400)*(1+(m.svc-10)/20)); if(R()<m.svc/40)m.pop=Math.min(20,m.pop+1); }
-  const msg=`치어리더 팬 사인회를 열었습니다(${U.map(m=>m.name).join(', ')}). 팬 여론 +${up}, 참가 단원 피로 +18.`; fanLog(msg); return msg; }
+  const msg=`치어리더 팬 사인회를 열었습니다(${U.map(m=>m.name).join(', ')}). 팬 여론 호전, 참가 단원 피로 증가.`; fanLog(msg); return msg; }

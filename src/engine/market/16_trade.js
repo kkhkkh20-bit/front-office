@@ -124,7 +124,7 @@ function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)re
   return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(선수 연봉 ${money(dSal-(cash||0))}${fr<1?`(남은 시즌 ${Math.round(fr*100)}% 몫)`:''}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 연봉 여유(예산 기준, 구단주 지원 목표 안)를 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
 /* 트레이드의 상한 결재(13_roster capOwnerCheck): 받는 선수 계약으로 다음에 잴 상위 40명 합계(겨울은 다음 시즌 기준) */
 function tradeCapCheck(give,get){ if(!(get||[]).length)return null; const s=sponSeason(); return capOwnerCheck(capPayAs(G.user,get,give),capInfo(G.user).pay,s,'tr'+[...get].sort((a,b)=>a-b).join(',')); }
-function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 -2.`,{kind:'구단주'}); }catch(e){} }
+function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 조금 하락.`,{kind:'구단주'}); }catch(e){} }
 /* 정식 인원은 선수 신분(육성·복무·입단 예정 제외)으로 센다(rosterN과 같은 기준) */
 function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)&&!(q.joinY>G.year); }
 /* 우리 쪽 정원: 상대 쪽 초과는 막지만 우리 쪽은 넘어도 성사되고, 넘은 만큼 정리해야 진행된다. 확인창·받은 제안에 미리 보여 준다 */
@@ -214,7 +214,7 @@ function proposeTrade(tid,give,get,cash,pk){
   const gap=e.need-e.gain; if(!ni.free&&!isCtr)nt.neg++; nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ if(tradeUrgent(tid,G.players[id]))continue; const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }
   for(const id of give){ const q=G.players[id]; if(q&&R()<.12){ q.mor=clamp((q.mor??60)-4,0,100); if(R()<.5)wire('루머',`${q.name}, ${t.city} ${t.nick}와(과) 트레이드 대상으로 거론됐다는 소문`,{ref:q.id}); } } if(gmTrait(tid)==='hard'&&nt.neg>=3)t.rel=clamp(t.rel-1,0,100);
   const why=tradeWhyNot(t,give,get,pk);
-  if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다.${why?` ${why}`:''}${aiQ(tid,'no')} (친분 -2)`}; }
+  if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다.${why?` ${why}`:''}${aiQ(tid,'no')} (친분 조금 하락)`}; }
   const co=counterOffer(tid,give,get,cash,pk); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get,cash)+pkSig(c.pk||pk)]=G.day; /* 현금은 그대로 두고 선수 구성만 바꾼 안 */ if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.${aiQ(tid,'short')}`,counters:co};
   const yng=['build','tight'].includes(planOf(t)); /* 유망주 수집·긴축 구단은 얹을 선수도 어린 선수로 부른다 */
   const cand=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)).map(p=>({p,v:tval(t,p,'in')*.72})).filter(x=>x.v>=gap*.8).sort((a,b)=>(yng?(a.p.age<=25?0:1)-(b.p.age<=25?0:1):0)||a.v-b.v)[0];

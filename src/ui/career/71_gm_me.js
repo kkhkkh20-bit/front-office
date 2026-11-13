@@ -38,7 +38,7 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
   const stints=G.unemp&&C&&C.stints&&C.stints.length?csec('지난 경력',C.stints.map(x=>`<div class="row between small"><span>${badge(x.tid,16)} ${esc(tshort(x.tid))} · ${x.y0}~${x.y1}</span><span class="muted">${esc(x.how)}</span></div>`).join(''))+meCareerSeasons(C)+meLastFin(C):'';
   const left=C&&C.tid!=null?Math.max(0,C.y1-G.year):0; const mid=period()==='season'||period()==='post'; const pen=(left>0?2:0)+(mid?3:0);
   const quit=G.unemp||G.gameOver||!C||C.tid==null?'':csec('사임',`<p class="small">스스로 물러나면 야인이 됩니다. 시간은 계속 흐르고, 다른 구단이 단장을 바꿀 때 명성을 보고 제의가 옵니다.</p>
-    <ul class="small muted"><li>남은 계약 ${left}년 치 연봉은 받지 않습니다(경질과 다릅니다).</li><li>명성 ${pen?`-${pen}`:'변화 없음'}${mid?' (시즌 도중 사임은 -3 더)':''}${left>0?' (계약 기간 중 -2)':''}. 지금 단장 명성 ${G.rep??50}.</li><li>구단은 새 단장(AI)이 맡습니다. 진행 중인 협상·약속은 넘어가지 않습니다.</li></ul>
+    <ul class="small muted"><li>남은 계약 ${left}년 치 연봉은 받지 않습니다(경질과 다릅니다).</li><li>${pen?`단장 명성이 ${pen>=4?'크게 ':''}떨어집니다${mid?'. 시즌 도중 사임이라 타격이 더 큽니다':''}`:'단장 명성은 그대로입니다'}.</li><li>구단은 새 단장(AI)이 맡습니다. 진행 중인 협상·약속은 넘어가지 않습니다.</li></ul>
     ${UI.rsAsk?`<div class="note bad">${esc(tname(G.user))} 단장직에서 물러납니다. 되돌릴 수 없습니다.</div><div class="row"><button class="btn danger" data-a="resignGo">사임합니다</button><button class="btn" data-a="resignAsk">취소</button></div>`:'<button class="btn" data-a="resignAsk">단장직 사임</button>'}`);
   const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small primary" data-a="go" data-v="club:build">보기</button></div></section>`;
   return head+tb+personalLifeView()+card+stints+lgMeCard()+gmSuccView()+quit; }

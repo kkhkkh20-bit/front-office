@@ -68,5 +68,5 @@ function gmHofYear(){ const H=G.gmHof=G.gmHof||[]; let L=[]; try{ L=legPeople();
     if(p.u&&!G.unemp)mail(ASSOC.s,`${p.n} 단장 명예의 전당 헌액`,`우리 계보의 ${p.n} 단장이 ${ASSOC.name} 단장 명예의 전당에 올랐습니다. 우승 ${p.c}회 · ${p.s}시즌.`,{kind:'리그',imp:true}); } }
 function gmMeritCheck(){ if(G.unemp||G.user==null)return; G.gmMerit=G.gmMerit||{}; const k=legMeK(); if(G.gmMerit[k])return; let a=null; try{ a=legPeople().find(p=>p.k===k); }catch(e){} if(!a||!(a.c>=3||a.s>=15))return;
   G.gmMerit[k]={y:G.year,c:a.c,s:a.s}; const nm=legMeName(); news('리그',`${ASSOC.s}, ${nm} 단장에게 공로상`,`${a.s}시즌 동안 우승 ${a.c}회를 이끈 공로를 기려 ${ASSOC.name}이(가) 공로상을 수여했습니다.`,2,{tid:G.user}); try{ chron('honor',`${nm} 단장 ${ASSOC.s} 공로상`,null,G.user,{source:'merit:'+k}); }catch(e){}
-  G.rep=Math.min(100,(G.rep??50)+3); mail(ASSOC.s,`공로상 수여`,`${a.s}시즌 · 우승 ${a.c}회의 공로를 기려 공로상을 드립니다. 단장 명성 +3.`,{kind:'리그',imp:true}); }
+  G.rep=Math.min(100,(G.rep??50)+3); mail(ASSOC.s,`공로상 수여`,`${a.s}시즌 · 우승 ${a.c}회의 공로를 기려 공로상을 드립니다. 단장 명성 상승.`,{kind:'리그',imp:true}); }
 function gmHofDaily(day){ const o=dobj(day); if(o.m===12&&o.d===20){ try{ gmHofYear(); }catch(e){} try{ gmMeritCheck(); }catch(e){} } }
