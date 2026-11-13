@@ -193,7 +193,8 @@ function digAnalysis(gs){ let so=0,se=0,ro=0,re=0,rs=0; const by={}; for(const g
 const digWin=gs=>gs.filter(g=>g.res==='승').length>gs.length/2;
 function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
   const gs=[...new Set(D.games)].flatMap(d=>G.games.filter(g=>g.day===d&&(g.home===G.user||g.away===G.user)).reverse()); /* 더블헤더는 두 경기 모두(검수 11-09k) */
-  const w=gs.filter(g=>g.res==='승').length, l=gs.filter(g=>g.res==='패').length; const rk=userRank();
+  if(!gs.length||!gs.some(g=>g.res))return; /* 우천 취소 등으로 치른 경기가 없으면 '0승 0패' 정리를 보내지 않는다(플레이테스트 3) */
+  const w=gs.filter(g=>g.res==='승').length, l=gs.filter(g=>g.res==='패').length; const rk=userRank(); const gd=gs.map(g=>g.day), d0=Math.min(...gd), d1=Math.max(...gd), span=d0===d1?dsh(d0):`${dsh(d0)}~${dsh(d1)}`; /* 하루짜리는 '6/12~6/12' 대신 '6/12' */
   const L=gs.map(g=>{ const home=g.home===G.user; const ms=home?g.hs:g.as, os=home?g.as:g.hs; let k=null; try{ k=gmKey(g); }catch(e){} return `${dsh(g.day)} ${home?'vs':'@'} ${tshort(home?g.away:g.home)} ${g.res} ${ms}:${os}${k&&k.gw?` · 결승 ${k.gw}`:''}${k&&k.dec?` · ${k.dec}`:''}`; });
   const rows=[]; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-(a[i]||0));
     if(p.isP){ if(d.outs<3)continue; const era=d.er*27/d.outs; rows.push({p,sc:(d.outs/3)*(4.5-era)/9+d.w*.3+d.sv*.3,t:`${ipStr(d.outs)}이닝 ${d.er}자책`}); }
@@ -201,5 +202,5 @@ function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
   rows.sort((a,b)=>b.sc-a.sc); const hot=rows.filter(x=>x.sc>0).slice(0,3), cold=rows.filter(x=>x.sc<0).slice(-2).reverse();
   const A=digAnalysis(gs);
   const body=[`[진행 결과] ${gs.length}경기 ${w}승 ${l}패 · 지금 ${rk}위. ${A.core}`, A.act?`[검토할 행동] ${A.act}`:'', `[판단 근거] ${A.base}`, hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', '[경기별 상세]',...L].filter(Boolean).join('\n');
-  const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,body,{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}:${gs.length}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
+  const m=mail('전력분석팀',`${span} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,body,{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}:${gs.length}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
   return m; }

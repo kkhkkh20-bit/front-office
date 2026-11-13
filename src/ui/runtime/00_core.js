@@ -113,7 +113,7 @@ function writeSlot(n,data,info,exp){ const own=n===curSlot()&&exp==null; if(own)
   const confl=()=>{ if(own){ if(!SAVE_CONFL){ try{ toast('다른 탭(창)에서 이 슬롯을 더 최근에 저장했습니다. 이 탭의 진행은 저장하지 않습니다. 남기려면 설정의 "빈 슬롯에 따로 저장"을, 최신 저장을 보려면 처음 화면의 이어하기를 누르세요.'); }catch(e){} } SAVE_CONFL=true; SAVE_ERR='다른 탭(창)에서 이 슬롯을 더 최근에 저장해, 이 탭의 진행은 저장하지 않았습니다. 이 탭 진행을 남기려면 "빈 슬롯에 따로 저장"이나 파일로 내보내기를 하세요.'; } else SAVE_ERR=`슬롯 ${n}에 다른 탭(창)이 그사이 저장해 쓰지 않았습니다.`; return false; };
   const full=()=>{ let mb=''; try{ mb=` (지금 모든 슬롯 합계 약 ${(SLOT_IDS.reduce((x,k)=>x+slotSize(k),0)/1024).toFixed(1)}MB)`; }catch(e){} SAVE_ERR=`브라우저 저장 공간이 가득 차 저장하지 못했습니다${mb}. 저장 공간은 슬롯마다 따로가 아니라 모든 슬롯이 함께 쓰므로, 빈 슬롯이 있어도 전체가 차면 저장되지 않습니다. 안 쓰는 슬롯을 지우거나 내보내기로 백업한 뒤 지우세요.`; return false; }; /* 커뮤니티 11-12: 빈 슬롯이 있는데 공간 부족이라 나와 헷갈림 */
   if(own&&SAVE_CONFL)return confl();
-  try{ const m=meta(), old=m.slots[n], act0=m.active, b0=sbGet(n); if(revOf(m,n)!==exp)return confl();
+  try{ const m=meta(), old=m.slots[n], act0=m.active, b0=sbGet(n); if(old&&old.lock){ SAVE_ERR=`슬롯 ${n}은(는) 보관 슬롯이라 덮어쓰지 않습니다. 보관을 풀어야 쓸 수 있습니다.`; return false; } /* 보관 슬롯은 자동 저장·덮어쓰기가 절대 쓰지 않는다(플레이테스트 3) */ if(revOf(m,n)!==exp)return confl();
     info=Object.assign({},info,{rev:revNext(exp)}); if(old&&old.idb&&SB.has(n))info.idb=true; /* 본문이 IndexedDB에 있으면 표시를 이어 간다(공간이 나면 sbSet이 지운다) */ if(old&&old.memo!=null&&info.memo==null&&!(own&&SLOT_NEW))info.memo=old.memo; /* 슬롯 메모는 같은 게임을 저장할 때만 남긴다(검수 11-09zr #17: 새 게임·가져온 백업에 이전 메모가 남음) */
     m.slots[n]=info; if(own)m.active=n; /* 이 탭이 저장에 성공한 슬롯을 이어하기 대상으로(검수 11-09 #9: 첫 저장 전에 활성으로 바꾸면 실패 때 이어하기가 사라짐) */
     if(!setMeta(m)){ SAVE_ERR='저장 목록을 기록하지 못했습니다. 저장 공간을 확인한 뒤 다시 저장하세요.'; return false; }
@@ -124,7 +124,7 @@ function writeSlot(n,data,info,exp){ const own=n===curSlot()&&exp==null; if(own)
     const mine=revOf(meta(),n)===info.rev; if(!mine)return confl(); if(sbGet(n)!==data){ undo(); return full(); }
     if(own){ SLOT_REV=info.rev; SLOT_NEW=false; } SAVE_ERR=''; return true; }catch(e){ return full(); } }
 /* 목록 항목을 지금 본문 기준으로 고친다(판번호 r이 그대로일 때만). 본문이 없으면 항목을 뺀다 */
-function slotFix(n,r){ try{ const m=meta(); if(revOf(m,n)!==r)return; const h=unpack(sbGet(n)), memo=(m.slots[n]||{}).memo; if(h)m.slots[n]=Object.assign(slotInfoOf(h),{rev:r},memo!=null?{memo}:{}); else delete m.slots[n]; setMeta(m); }catch(e){} }
+function slotFix(n,r){ try{ const m=meta(); if(revOf(m,n)!==r)return; const h=unpack(sbGet(n)), memo=(m.slots[n]||{}).memo; if(h)m.slots[n]=Object.assign(slotInfoOf(h),{rev:r},memo!=null?{memo}:{},m.slots[n]&&m.slots[n].lock?{lock:true}:{}); else delete m.slots[n]; setMeta(m); }catch(e){} }
 /* 바뀐 것이 없으면 쓰지 않는다: 진행 없이 처음 화면으로 나간 탭이 판번호를 올려 다른 탭 저장을 막지 않게(검수 11-09 #7) */
 let _svJ=null, _svN=null, _svWarn=false; function svMark(){ _svJ=G?prepG():null; _svN=curSlot(); }
 function svSame(n,j){ return j===_svJ&&n===_svN&&slotHas(n); }

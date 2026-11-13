@@ -26,7 +26,7 @@ function fanPulseDaily(){ if(G.unemp||typeof fanThreads!=='function')return; con
   const tl=fresh.map((t,i)=>{ const c=t.cm.find(c=>c.best)||t.cm[0]; return `${i+1}. ${t.title} (조회 ${t.views.toLocaleString()})${c?`\n   └ ${fpCm(c)}`:''}`; }).join('\n');
   const nl=ns.map(n=>{ let c=null; try{ c=(typeof newsComments==='function'?newsComments(n):[])[0]; }catch(e){} return `[${n.o}] ${n.t}${c?`\n   └ ${fpCm(c)}`:''}`; }).join('\n');
   const tone=D.f>=65?'팬들이 구단을 믿고 있습니다.':D.f>=50?'팬들은 지켜보는 중입니다.':D.f>=38?'팬들의 불만이 쌓이고 있습니다.':'팬들이 등을 돌리고 있습니다. 관중과 상품 수입에 영향이 갑니다.';
-  mail('홍보팀',`[여론] 이번 주 팬 게시판·기사 반응 · 팬 여론 ${D.f}`,`${D.t}\n${tone}${allC.length?` 게시판 분위기: ${fpMood(allC)}.`:''}${tl?`\n\n인기 글\n${tl}`:''}${nl?`\n\n우리 구단 기사\n${nl}`:''}`,{kind:'언론',acts:[{l:'팬 게시판',a:'go',v:'club:fans'},{l:'기사',a:'go',v:'club:news'}]});
+  { const wm=mail('홍보팀',`[여론] 이번 주 팬 게시판·기사 반응 · 팬 여론 ${D.f}`,`${D.t}\n${tone}${allC.length?` 게시판 분위기: ${fpMood(allC)}.`:''}${tl?`\n\n인기 글\n${tl}`:''}${nl?`\n\n우리 구단 기사\n${nl}`:''}`,{kind:'언론',acts:[{l:'팬 게시판',a:'go',v:'club:fans'},{l:'기사',a:'go',v:'club:news'}]}); if(wm)wm.read=true; } /* 주간 여론 정리는 읽음으로 들어온다: 안 읽은 소식 수를 부풀리지 않게(플레이테스트 3) */
   fpPrune(S); }
 function fpPrune(S){ for(const k in S.seen)if(G.day-S.seen[k]>30)delete S.seen[k]; }
 

@@ -117,6 +117,16 @@ function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=documen
   const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;
   el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3>${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
+/* 길게 진행(플레이테스트 3: 시즌 한 번에 시리즈 단위 70번 클릭): 1주일 · 한 달 · 다음 주요 일정 전날까지. 중요한 소식·결정이 생기면 그 전에 멈춘다 */
+function advKeyList(){ const c=G.cal||{}, d=G.day, y=G.year, L=[]; const add=(n,t)=>{ if(Number.isFinite(n)&&n-1>d&&!L.some(x=>x[0]===n))L.push([n,t]); };
+  try{ add(tradeDL(),'트레이드 마감'); }catch(e){} add(c.end,'정규시즌 종료'); add(c.draft,'신인 드래프트'); add(G.fa&&!G.fa.closed&&Number.isFinite(G.fa.openDay)?G.fa.openDay:KD(11,6),'FA 시장 개장'); add(c.camp>d+1?c.camp:dnum(y+1,1,25),'스프링캠프'); add(c.open,'개막');
+  return L.sort((a,b)=>a[0]-b[0]); }
+function advMoreRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); } if(!UI.advMore){ el.innerHTML=''; return; }
+  const K=advKeyList(), m1=G.day+30; const row=(a,v,t,s)=>`<button class="btn block advm-b" data-a="${a}" data-v="${v}"><b>${esc(t)}</b><span class="small muted">${esc(s)}</span></button>`;
+  el.innerHTML=`<div class="cfm-w" data-a="advMoreX"><div class="cfm advm" role="dialog" aria-modal="true" aria-label="길게 진행" data-stop="1"><div class="cfm-h"><span>진행</span><span>${dsh(G.day)}</span></div><h3>어디까지 진행할까요?</h3><p class="small muted">중요한 소식이나 결정, 예약한 관전 경기가 생기면 그 전에 멈춥니다.</p><div class="advm-l">${row('advPick','week','1주일',`${dmd(G.day+7)}까지`)}${row('advPick','mon','한 달',`${dmd(m1)}까지`)}${K.slice(0,4).map(([n,t])=>row('advPick','key:'+n,`${t} 전날까지`,`${dmd(n-1)} · ${n-G.day-1}일`)).join('')}</div><div class="cfm-b"><button class="btn" data-a="advMoreX">취소</button></div></div></div>`; }
+A.advMore=function(){ if(UI.advRun||!G||G.unemp)return; UI.cfm=null; UI.advMore=true; advMoreRender(); };
+A.advMoreX=function(v,el,e){ if(e&&e.target&&e.target.closest&&e.target.closest('[data-stop]')&&!(el&&el.matches&&el.matches('button')))return; UI.advMore=false; advMoreRender(); };
+A.advPick=function(v){ UI.advMore=false; advMoreRender(); v=String(v); if(v==='week')return A.adv('week'); if(v==='mon')return A.advTo(G.day+30); if(v.startsWith('key:'))return A.advTo(+v.slice(4)-1); };
 for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v,el); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
 A.advSpace=function(v){ setTimeout(()=>{ A.adv(v); },0); }; /* 진행 확인 뒤 실제 진행은 버튼과 같은 경로(외국인 자리 결재 등)를 거친다 */
 A.cfmNo=function(){ const c=UI.cfm; UI.cfm=null; cfmRender(); if(c&&c.doc&&c.doc.noGo)c.doc.noGo(); };
@@ -208,6 +218,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&UI.negWin&&!UI.ngt&&!UI.meet){ UI.negWin=null; renderSheet(); render(); return; }
   if(e.key==='Escape'&&UI.meet){e.preventDefault();A.detailBack();return;}
   if(e.key==='Escape'&&UI.ngt){ UI.ngt=null; UI.meet=null; renderSheet(); render(); return; }
+  if(e.key==='Escape'&&UI.advMore){ A.advMoreX(); return; }
   if(e.key==='Escape'&&(document.documentElement.classList.contains('detail-page-open')||UI.sheet!=null||UI.posSheet||UI.game!=null||UI.menu||UI.wkres)){A.detailBack();return;}
   if(e.key===' '&&UI.wkres&&UI.sheet==null&&UI.game==null&&!UI.menu&&!UI.cast&&!UI.cfm&&!(e.target.matches&&e.target.matches('input,select,textarea'))){ e.preventDefault(); if(!e.repeat)A.wkClose(); return; } /* 경기 결과 창: 스페이스바 = 확인 */
   if(UI.tab==='inbox'&&!UI.meet&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }

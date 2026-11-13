@@ -7,6 +7,8 @@ function draftFan(p){ const d=p.draft; if(!d)return {mood:'mix',bank:'drOk',line
   return {bank,mood,n,r,lines:fComments('dr'+p.id,bank,mood,{p:p.name,n,r,pos:posLabel(p)},3,G.user,fanAdj())}; }
 const sn=id=>{ const p=G.players[id]; return p?p.name:''; };
 /* ---- 글 만들기 ---- */
+/* 연승·연패 글 쿨다운(플레이테스트 3: '3연승 실화냐'가 한 시즌에 여러 번): 최근 3주 안에 같은 쪽 3연속이 이미 있었으면 5연속 이상일 때만 다시 올린다 */
+function fbStreakCool(me,n,w){ if(n>=5)return false; const gs=(G.games||[]).filter(g=>(g.home===me||g.away===me)&&g.res&&g.day<=G.day&&g.day>G.day-21).sort((a,b)=>a.day-b.day); const prev=gs.slice(0,Math.max(0,gs.length-n)); let run=0,best=0; for(const g of prev){ if((g.res==='승')===w&&g.res!=='무'){ run++; best=Math.max(best,run); } else run=0; } return best>=3; }
 function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; const fa=fanAdj();
   const add=(o)=>{ o.views=o.views||Math.floor(200+fRng(o.id+'v')()*(o.hot?9000:2600)); T.push(o); };
   /* 1) 최근 우리 경기 */
@@ -27,7 +29,7 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
       add({id:'ps'+G.year+rd,d,cat:'경기',title:champ?`한국시리즈 우승!!! ${r[2]}승 ${r[3]}패`:!won?`${R} ${r[3]}승 ${r[2]}패 탈락... 올 시즌 총평`:upset?`${R} 업셋! ${tshort(op)} 잡았다 (${r[2]}승 ${r[3]}패)`:`${R} 통과! (${r[2]}승 ${r[3]}패)`,
         body:`${R}: ${tname(r[0])} ${r[2]}승 ${r[3]}패로 승리.`,tid:me,hot:true,cm:fComments('psc'+G.year+rd,bank,won?'pos':'mix',{R,O:team(op).nick},7,me,fa)}); } } }catch(e){ console.error(e); }
   /* 2) 연승·연패: 정규시즌 중에만(시즌이 끝나면 정규시즌 마지막 흐름 이야기를 계속 올리지 않는다) */
-  if(period()==='season')try{ const st=streakOf(me)||''; const m=st.match(/(\d+)\s*(연승|연패)/); if(m&&+m[1]>=3){ const w=m[2]==='연승'; const k=`s${G.day}`; add({id:'st'+G.day,d:G.day,cat:'잡담',title:w?`${m[1]}연승 실화냐`:`${m[1]}연패... 다들 괜찮으세요`,body:'',tid:me,cm:fComments('stc'+G.day,w?'wstreak':'lstreak',w?'pos':'neg',{n:m[1]},6,me,fa),hot:true}); } }catch(e){}
+  if(period()==='season')try{ const st=streakOf(me)||''; const m=st.match(/(\d+)\s*(연승|연패)/); if(m&&+m[1]>=3&&!fbStreakCool(me,+m[1],m[2]==='연승')){ const w=m[2]==='연승'; const k=`s${G.day}`; const n=m[1]; const TT=w?[`${n}연승 실화냐`,`${n}연승 달린다`,`요즘 우리 팀 왜 이렇게 잘함? ${n}연승`,`${n}연승 기념 글`,`이 기세 언제까지 가냐 (${n}연승)`]:[`${n}연패... 다들 괜찮으세요`,`${n}연패 중 정신 승리 스레드`,`${n}연패, 뭐가 문제냐`,`오늘도 졌다 (${n}연패)`,`${n}연패 끊을 사람 구함`]; const tt=TT[Math.floor(fRng('stt'+G.year+G.day)()*TT.length)]; add({id:'st'+G.day,d:G.day,cat:'잡담',title:tt,body:'',tid:me,cm:fComments('stc'+G.day,w?'wstreak':'lstreak',w?'pos':'neg',{n:m[1]},6,me,fa),hot:true}); } }catch(e){}
   /* 3) 이번 주 순위(정규시즌 중에만) */
   if(period()==='season')try{ const wk=Math.floor(G.day/7); const order=standingsNow(); const rk=order.findIndex(x=>x.tid===me)+1; const gp=(G.sea.rec[me].w+G.sea.rec[me].l);
     if(gp>=10){ const T2=gmTrend(); const weak=T2&&T2.weak?SLOTS_S[T2.weak.k]:'';

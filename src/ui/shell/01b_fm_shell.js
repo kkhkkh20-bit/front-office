@@ -74,7 +74,7 @@ function fmRun(act){ if(!act)return false; const [a,t,s]=act.split(':');
   if(a==='save'){ try{ saveNow(); note('저장','지금까지 진행을 저장했습니다.'); }catch(e){} return true; }
   if(a==='cal'){ if(!G.unemp)A.calOpen(); return true; }
   if(a==='x'){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; closeSheets(); render(); return true; }
-  if(G.unemp&&!['home','inbox','league','me'].includes(t))return true;
+  if(G.unemp&&!['home','inbox','league','me','cfg'].includes(t))return true; /* 야인도 설정(저장 슬롯)은 연다(플레이테스트 3) */
   if(a==='tab'){ closeSheets(); A.tab(t); return true; } if(a==='go'){ closeSheets(); A.go(t+':'+s); return true; } return false; }
 function fmHotkey(e){ if(!G||UI.title||!fmOn())return false; if((G.fd&&!G.fd.done)||G.fdWait)return false; if(UI.cast||UI.cfm||UI.ngt||UI.negWin||UI.game!=null)return false;
   if(e.target&&e.target.matches&&e.target.matches('input,select,textarea,[contenteditable]'))return false;
