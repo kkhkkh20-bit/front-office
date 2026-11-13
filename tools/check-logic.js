@@ -4116,7 +4116,7 @@ T('[창단 구단] 강원(원주) 연고 신생 구단 선수도 수도권 프�
   sc.region='수도권'; sc.skill=4; const seen=ps.filter(p=>scoutReport(p).ofp!=null).length; ok(seen>seen0,'수도권 담당을 둬도 더 보이지 않음 '+seen0+'→'+seen); ok(seen>=ps.length*.9,'수도권 담당이 있어도 원주 구단 선수 잠재력 미확인 '+(ps.length-seen)+'/'+ps.length);
   ok(scoutSlots().some(x=>x.role==='pro'&&x.key==='수도권'&&x.why.includes('구단')),'스카우트 배치 후보에 수도권 프로 담당이 없음'); });
 /* 독주 견제(86b_dynasty): 최근 세 시즌 우승·정규시즌 1위를 몰아 준다 */
-const mkDyn=tid=>{ const ord=G.teams.map(t=>({tid:t.id})); for(let i=3;i>=1;i--){ const o=[{tid},...ord.filter(x=>x.tid!==tid)]; G.history.push({y:G.year-i,order:o,champ:tid,runner:o[1].tid}); } _domC.k=null; _mkP.k=null; };
+const mkDyn=tid=>{ const ord=G.teams.map(t=>({tid:t.id})); G.history=G.history.filter(h=>h.y<G.year-3); for(let i=3;i>=1;i--){ const o=[{tid},...ord.filter(x=>x.tid!==tid)]; G.history.push({y:G.year-i,order:o,champ:tid,runner:o[1].tid}); } _domC.k=null; _mkP.k=null; };
 const topRival=X=>G.teams.filter(t=>t.id!==X&&t.id!==G.user).sort((a,b)=>teamRating(b.id)-teamRating(a.id))[0];
 T('[독주 견제] 최근 세 시즌을 휩쓴 구단만 독주 구단이 된다(우리 구단·AI 구단 같은 기준)',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; ok(!domLead()||domLead().tid!==X,'준비 실패: 처음부터 독주');
   mkDyn(X); ok(domOf(X)>=DOM_TH,'세 시즌 우승인데 독주 아님 '+domOf(X)); const L=domLead(); ok(L&&L.tid===X,'독주 구단이 다름'); ok(G.teams.filter(t=>t.id!==X).every(t=>domOf(t.id)<DOM_TH),'다른 구단도 독주로 잡힘');
@@ -4138,7 +4138,7 @@ T('[독주 견제] 군비 경쟁과 벼랑 끝: 한 구단이 달아나면 상�
   ok(aiPlanChoose(c,'next',2,false,null)!=='win','준비 실패: 처음부터 우승 도전'); ok(aiPlanChoose({...c,arms:1.35},'next',2,false,null)==='win','군비 경쟁인데 그대로'); ok(aiPlanChoose({...c,desp:1},'next',2,false,null)==='win','벼랑 끝인데 그대로');
   fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X); const o=G.teams.find(t=>t.id!==X&&t.id!==G.user); ok(domArms(o,3)>0,'상위권 구단 군비 경쟁 없음'); ok(domArms(team(X),3)===0,'독주 구단도 군비 경쟁'); ok(domArms(o,8)===0,'하위권도 군비 경쟁'); });
 T('[독주 견제] 단장 생존: 성적 우선 구단주는 두 시즌 연속 기대 이하면 단장을 바꾸고, 새 단장은 두 시즌을 기다려 준다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); t.owner='win'; aiPlanSet(t,'win','',true); const g=t.gm; g.age=50; g.since=G.year-4;
-  const ord=G.teams.map(x=>({tid:x.id})).filter(x=>x.tid!==t.id); for(let i=3;i>=1;i--)G.history.push({y:G.year-i,order:[...ord.slice(0,8),{tid:t.id},...ord.slice(8)],champ:ord[0].tid,runner:ord[1].tid}); _domC.k=null;
+  const ord=G.teams.map(x=>({tid:x.id})).filter(x=>x.tid!==t.id); G.history=G.history.filter(h=>h.y<G.year-3); for(let i=3;i>=1;i--)G.history.push({y:G.year-i,order:[...ord.slice(0,8),{tid:t.id},...ord.slice(8)],champ:ord[0].tid,runner:ord[1].tid}); _domC.k=null;
   ok(gmBadRun(t)>=2,'못한 시즌을 못 셈 '+gmBadRun(t)); ok(gmHot(t)===1&&despOf(t)>=.45,'벼랑 끝이 아님'); let n=0; for(let i=0;i<40;i++)if(gmFireCheck(t,g,G.year-g.since))n++; ok(n>=24,'경질이 드묾 '+n+'/40');
   g.since=G.year-1; let m=0; for(let i=0;i<40;i++)if(gmFireCheck(t,g,G.year-g.since))m++; ok(m===0,'새 단장을 바로 자름 '+m);
   const ab=x=>{ const a=gmAbil(x); return (a.eye+a.neg+a.plan+a.money)/4; }; let s0=0,s1=0; for(let i=0;i<30;i++){ s0+=ab(mkGM(t.id)); s1+=ab(gmReformPick(t,3)); } ok(s1>s0+30*4,'개혁 단장 능력이 평범함 '+(s0/30).toFixed(1)+' → '+(s1/30).toFixed(1)); });
