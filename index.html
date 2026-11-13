@@ -30863,7 +30863,7 @@ function ownershipMarkup(tid,v,compact){ if(!v)return ''; const history=(v.histo
   return `<${compact?'div':'section'} class="${compact?'ownership-card compact':'card ownership-card'}" data-ownership-tid="${tid}" aria-label="${esc(tname(tid))} 모기업·구단주"><header><h3>모기업·구단주</h3><span class="pill ${status}">${esc(v.stage||'기록 없음')}</span></header>${facts}${pending}${!compact&&v.detail?`<p class="ownership-detail">${esc(v.detail)}</p>`:''}${compact?(tid===G.user&&!G.unemp?`<button class="tc-i" data-a="go" data-v="club:owner">소유권·경영 이력 ${history.length}건</button>`:''):`<p class="ownership-continuity">구단명·상징·선수 계약·영구결번·트로피 기록은 구단에 이어집니다.</p><details class="ownership-history"><summary>소유권·경영 변동 ${history.length}건</summary><ol class="ownership-history-list" tabindex="0" aria-label="소유권·경영 변동 이력">${events||'<li class="muted">기록된 변동이 없습니다.</li>'}</ol></details>`}</${compact?'div':'section'}>`; }
 function ownershipGoalNote(){ const g=G.goals,t=team(G.user); return (g&&g.y===G.year&&g.owner&&g.owner!==t.owner?'<p class="ownership-goal-note">현 구단주 방침은 다음 시즌 목표부터 적용됩니다. 이번 시즌에는 합의한 목표·평가 기준을 유지합니다.</p>':'')+expGraceNote(); }
 /* 창단 유예 안내 한 줄(89_league_expansion) */
-function expGraceNote(){ return !G.unemp&&expYr(G.user)?`<p class="note good exp-grace">${esc(expGraceTxt(G.user))}</p>`:''; }
+function expGraceNote(){ return !G.unemp&&expYr(G.user)?`<p class="small good exp-grace">${esc(expGraceTxt(G.user))}</p>`:''; }
 function goalRankTxt(t){ return t>=G.teams.length?'순위 목표 없음':t+'위 이내'; }
 function ownerView(){
   prInit(); const t=team(G.user); const s=goalStatus(); const g=G.goals; const ow=OWNER[g&&g.y===G.year&&g.owner||t.owner];
@@ -30885,7 +30885,7 @@ function ownerDash(){ prInit(); const t=team(G.user), currentOw=OWNER[t.owner], 
   const pill=ok=>ok==null?'<span class="pill">시즌 전</span>':`<span class="pill ${ok?'good':'bad'}">${ok?'달성 중':'미달'}</span>`, pct=v=>Math.round(v*100)+'%';
   const gr=(l,cat,wt,ok,cur)=>{ const [il,ik]=wt>=1.3?['필수 사항','must']:wt>=.8?['선호 사항','pref']:['희망 사항','hope']; return `<div class="og-r ${ik}"><b>${l}</b><span>${il}</span><span>${cat}</span><span>${cur}</span>${pill(ok)}</div>`; }; /* 중요도 = 구단주 성향의 평가 가중치 */
   const hd=l=>`<div class="og-r og-h"><span>${l}</span><span>중요도</span><span>분류</span><span>현재</span><span>상태</span></div>`;
-  const goals=s?expGraceNote()+hd('올 시즌 목표')+gr(s.rank.t>=G.teams.length?'순위 목표 없음: 창단 첫해 경험을 쌓아라':`정규시즌 ${s.rank.t}위 안에 들어라${G.goals&&G.goals.exp&&s.rank.t===G.teams.length-1?'(탈꼴찌)':''}`,'성적',w[0],s.rank.cur?s.rank.ok:null,s.rank.cur?s.rank.cur+'위':'-')+gr(`모기업 적자 보전을 ${pct(s.sup.t)} 이하로 줄여라`,'재정',w[2],s.sup.ok,'예상 '+pct(s.sup.cur))+gr(`팬 여론을 ${s.fan.t} 이상으로 지켜라`,'여론',w[3],s.fan.ok,s.fan.cur)+(s.youth?gr('24세 이하 주전급을 1명 이상 키워라','육성',.8,s.youth.ok,s.youth.cur+'명'):''):'<p class="small muted">시즌 목표는 개막일에 구단주가 정합니다.</p>';
+  const goals=s?hd('올 시즌 목표')+gr(s.rank.t>=G.teams.length?'순위 목표 없음: 창단 첫해 경험을 쌓아라':`정규시즌 ${s.rank.t}위 안에 들어라${G.goals&&G.goals.exp&&s.rank.t===G.teams.length-1?'(탈꼴찌)':''}`,'성적',w[0],s.rank.cur?s.rank.ok:null,s.rank.cur?s.rank.cur+'위':'-')+gr(`모기업 적자 보전을 ${pct(s.sup.t)} 이하로 줄여라`,'재정',w[2],s.sup.ok,'예상 '+pct(s.sup.cur))+gr(`팬 여론을 ${s.fan.t} 이상으로 지켜라`,'여론',w[3],s.fan.ok,s.fan.cur)+(s.youth?gr('24세 이하 주전급을 1명 이상 키워라','육성',.8,s.youth.ok,s.youth.cur+'명'):''):'<p class="small muted">시즌 목표는 개막일에 구단주가 정합니다.</p>';
   const info=hd('월간 보고 때 함께 보는 것')+gr('언론 논조를 38 아래로 떨어뜨리지 마라','언론',w[3]*.6+.4,G.pr.press>=38,Math.round(G.pr.press));
   const H=(G.history||[]).filter(h=>h.user).slice(-4).reverse(), it=inTabs('own5',[['cur','현재 시즌'],...H.map(h=>[String(h.y),h.y+'년'])]);
   const olog=L=>L.map(x=>`<div class="olog"><span class="pill ${x.mood==='만족'?'good':x.mood==='관망'?'':'bad'}">${x.m}월 ${x.mood}</span><p class="small">${esc(x.txt)}</p><span class="small muted">신뢰 ${x.trust} (${x.delta>=0?'+':''}${x.delta})</span></div>`).join('');
@@ -36350,6 +36350,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-13-expgrace',d:'11월 13일',t:'신생 구단 창단 유예',items:[
+    '신생 구단은 1군 첫 시즌부터 3시즌 동안 창단 유예를 받습니다. 구단주 목표가 1년차 순위 목표 없음, 2년차 탈꼴찌, 3년차 뒤에서 셋째로 낮아지고, 육성·팬 기반을 함께 봅니다.',
+    '유예 기간에는 "3주 5할" 같은 단기 승률 지시가 없고, 성적 때문에 깎이는 구단주 신뢰가 크게 줄며, 성적으로 경질되지 않습니다(자금이 바닥나는 재정 사고는 예외). AI가 맡은 신생 구단의 단장·감독도 같습니다.',
+    '창단 단장으로 옮기면 단장 계약도 새 구단과 4년으로 다시 맺습니다. 특별지명 보상금은 모기업이 창단 출자금으로 내고, 첫 두 시즌은 연봉 하한을 적용하지 않습니다.',
+    '구단주·목표 화면에 창단 몇 년차 유예인지 한 줄로 보입니다.']},
   {id:'2026-11-13-fabonus',d:'11월 13일',t:'FA 계약금 · 장기계약 · 국가대표 탭',items:[
     'AI 구단의 FA 계약도 실제 KBO처럼 계약금과 연봉으로 나뉩니다. 보상금은 직전 연봉 기준이라, 다음 FA 때 보상금 부담이 현실적으로 줄어듭니다. 계약 총액은 같습니다.',
     '능력이 뛰어난 젊은 프랜차이즈 스타는 AI 구단과 5~6년 장기계약(비FA 다년계약·FA)을 맺기도 합니다.',
