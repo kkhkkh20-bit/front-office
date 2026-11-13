@@ -31,10 +31,15 @@ function mcfPlan(){ if(!mcfOn())return; const m=G.mgr[G.user], S=mcf(); if(S.pla
   const vet=d.start.filter(p=>p.age>=33).sort((a,b)=>ovr(a)-ovr(b))[0]||null;
   const youthT=(m.youth||50)>=62; let need=null; try{ need=mgrNeedRole(G.user); }catch(e){}
   const ask=need?{k:need.k,l:MROLE[need.k].l}:null;
+  const prev=S.plan&&S.plan.y===G.year-1?S.plan:null; /* 작년 구상을 기억한다: 같은 유망주·같은 문장을 되풀이하지 않게(플레이 테스트 11-13) */
   S.plan={y:G.year,day:G.day,goal,yng:yng?yng.id:null,vet:vet?vet.id:null,youthT,ask,st:'open',items:[]};
-  const nm=`${m.name} 감독`; const lines=[`목표는 ${goal}입니다.`, core.length?`타선은 ${core.map(p=>p.name).join('·')} 중심으로 갑니다.`:'', ace?`마운드는 ${ace.name}이(가) 앞에서 끌어 줘야 합니다.`:'',
-    yng?(youthT?`${yng.name}(${yng.age}세)은 올해 1군에서 기회를 주겠습니다.`:`${yng.name}(${yng.age}세)은 아직입니다. 2군에서 더 만들고, 1군은 검증된 선수로 시작하겠습니다.`):'',
-    vet?`${vet.name}은(는) 경험을 믿고 쓰겠습니다.`:'', ask?`단장님께 부탁드릴 건 ${ask.l} 한 명입니다. 개막 한 달 반 안에 있으면 시즌이 달라집니다.`:'보강 요청은 따로 없습니다.'].filter(Boolean);
+  const V=(k,arr)=>arr[Math.floor(u01('mplan'+G.year+k,m.id||0)*arr.length)%arr.length];
+  const again=yng&&prev&&prev.yng===yng.id;
+  const nm=`${m.name} 감독`; const lines=[V('g',[`목표는 ${goal}입니다.`,`올해는 ${goal}을(를) 보고 갑니다.`,`솔직히 말씀드리면 ${goal}이(가) 현실적인 목표입니다.`]),
+    core.length?V('c',[`타선은 ${core.map(p=>p.name).join('·')} 중심으로 갑니다.`,`${core[0].name}을(를) 축으로 ${core.slice(1).map(p=>p.name).join('·')}이(가) 받쳐 줘야 합니다.`,`방망이는 ${core.map(p=>p.name).join('·')}에게 달렸습니다.`]):'',
+    ace?V('a',[`마운드는 ${ace.name}이(가) 앞에서 끌어 줘야 합니다.`,`${ace.name}이(가) 30경기 가까이 버텨 주면 계산이 섭니다.`,`선발은 ${ace.name}부터 시작합니다.`]):'',
+    yng?(youthT?V('y',[`${yng.name}(${yng.age}세)은 올해 1군에서 기회를 주겠습니다.`,`${yng.name}(${yng.age}세)을(를) 올해는 써 보겠습니다. 실패해도 경험입니다.`]):again?`${yng.name}은(는) 작년에도 말씀드렸지만, 아직 제 기준에는 못 미칩니다. 올해도 2군에서 시작합니다.`:V('y',[`${yng.name}(${yng.age}세)은 아직입니다. 2군에서 더 만들고, 1군은 검증된 선수로 시작하겠습니다.`,`${yng.name}(${yng.age}세)은 재능은 있는데 아직 1군 투수 공을 못 따라갑니다. 좀 더 보겠습니다.`])):'',
+    vet?V('v',[`${vet.name}은(는) 경험을 믿고 쓰겠습니다.`,`${vet.name}은(는) 나이가 있지만 큰 경기에서 필요합니다.`]):'', ask?V('k',[`단장님께 부탁드릴 건 ${ask.l} 한 명입니다. 개막 한 달 반 안에 있으면 시즌이 달라집니다.`,`${ask.l}이(가) 하나 더 있으면 좋겠습니다. 시즌 초에 구해 주시면 감사하겠습니다.`]):'보강 요청은 따로 없습니다.'].filter(Boolean);
   const opts=[{l:'구상대로 갑시다',fx:'관계가 조금 오르고, 보강 요청을 지켜보게 됩니다'}];
   if(yng&&!youthT)opts.push({l:`${yng.name}에게 기회를 주십시오`,fx:'감독 성향·관계에 따라 받거나 마지못해 받거나 거절합니다'});
   if(vet)opts.push({l:`${vet.name} 의존도를 줄이십시오`,fx:'베테랑 기용을 줄여 달라는 요구. 고집 센 감독은 반발합니다'});

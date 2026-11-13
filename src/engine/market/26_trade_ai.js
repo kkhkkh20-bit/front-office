@@ -28,7 +28,7 @@ EVH.lead=EVH_LEAD;
 EVH.dline={ pick(e,i){ const t=team(G.user); G.dline={y:G.year,mode:['buy','hold','sell'][i]};
   if(i===0){ G.pr.fan=clamp(G.pr.fan+2,0,100); if(t.owner==='win')t.trust=clamp(t.trust+2,0,100); let L=[]; try{ L=tradeSuggest(true).slice(0,3); }catch(err){}
     if(L.length)mail('부단장','마감 보강안',`보강 방향으로 정리했습니다. 상대가 받아들일 만한 조건입니다.\n\n${L.map(x=>{ const q=G.players[x.id]; return q?`${SLOTK[x.k]||''} 보강: ${q.name}(${tshort(x.tid)}, ${posLabel(q)}) 영입 · 내줄 선수 ${x.give.map(id=>G.players[id]?G.players[id].name:'').join(', ')}`:''; }).filter(Boolean).join('\n')}\n\n홈의 전력 요약이나 트레이드 센터에서 바로 제안할 수 있습니다.`,{kind:'트레이드',imp:true,acts:[{l:'트레이드 센터',a:'go',v:'trade:market'}]});
-    return `팬 여론 +2.${t.owner==='win'?' 구단주 신뢰 +2.':''} 부단장이 보강안을 올렸습니다.`; }
+    return `팬 여론 +2.${t.owner==='win'?' 구단주 신뢰 +2.':''} ${L.length?`부단장이 보강안 ${L.length}건을 올렸습니다(소식함 '마감 보강안').`:'지금은 상대가 받아들일 만한 보강안이 없습니다. 트레이드 센터에서 직접 찾아보세요.'}`; }
   if(i===1)return '현재 전력으로 시즌을 이어갑니다.';
   const ids=(e.data.vets||[]).filter(id=>G.players[id]&&G.players[id].team===G.user); for(const id of ids){ const p=G.players[id]; p.listed=true; p.urgent=true; }
   G.pr.fan=clamp(G.pr.fan-3,0,100); if(t.owner==='profit')t.trust=clamp(t.trust+2,0,100);

@@ -10,7 +10,7 @@ function mailActionStatus(m,a){
   const id=String(a.v??'').split(':')[0],p=G.players[+id],d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{};
   if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
   if(a.a==='watchPlan'){const d=+a.v,P=gmPlanAt(d),nx=nextGames(1)[0];if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d)return mailEnd('열리지 않거나 이미 지난 경기입니다.',true);return null;} /* 시리즈가 끝나 열리지 않는 경기의 직관 버튼(검수 11-08) */
-  if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');if(evExpired(e))return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
+  if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?(e.deleg?'맡긴 대로 담당 부서가 처리했습니다.':'답변 기한이 지나 기본안으로 처리했습니다.'):'이미 결정을 마쳤습니다.');if(evExpired(e))return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
   if(a.a==='ivOpen'||a.a==='ivSkip'){const v=G.iv;if(!v||String(v.id)!==String(a.v))return mailEnd('이 인터뷰 요청은 종료되었습니다.',true);if(v.done)return mailEnd(v.ans?.length?'이미 인터뷰를 마쳤습니다.':'이미 인터뷰를 거절했습니다.');return G.day>v.exp?mailEnd('인터뷰 응답 기한이 지났습니다.',true):null;}
   if(['faOpen','faMatch','faLL','agPitchOk'].includes(a.a)){
     if(p?.team!=null)return mailEnd(p.team===G.user?'이미 우리 구단과 계약한 선수입니다.':'이미 다른 구단과 계약한 선수입니다.');
@@ -50,7 +50,7 @@ function mailStatus(m){
   if(m.done)return mailEnd('이미 처리한 소식입니다.');
   const A=m.acts||[],s=m.subj||'',d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{},M=G.mgr[G.user],end=mailEnd;
   if(/^\[인터뷰 요청\]/.test(s)&&!A.some(a=>a.a==='ivOpen'||a.a==='ivSkip')){const v=G.iv;return !v||v.done||d<v.day?end('이미 끝난 인터뷰 요청입니다.'):G.day>v.exp?end('인터뷰 응답 기한이 지났습니다.',true):null;}
-  if(!A.length&&m.kind==='결정'&&/\n\[(결정|종료)\] /.test(m.body||'')){const e=(G.evs||[]).find(x=>x.mid===m.id);return end(e&&e.void?'적용하지 않고 끝난 결정입니다.':e&&e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');} /* 답한 결정은 버튼을 지우고 본문에 기록하므로 그 기록으로 완료를 본다(검수 11-09za) */
+  if(!A.length&&m.kind==='결정'&&/\n\[(결정|종료)\] /.test(m.body||'')){const e=(G.evs||[]).find(x=>x.mid===m.id);return end(e&&e.void?'적용하지 않고 끝난 결정입니다.':e&&e.auto?(e.deleg?'맡긴 대로 담당 부서가 처리했습니다.':'답변 기한이 지나 기본안으로 처리했습니다.'):'이미 결정을 마쳤습니다.');} /* 답한 결정은 버튼을 지우고 본문에 기록하므로 그 기록으로 완료를 본다(검수 11-09za) */
   if(m.oid){const o=(G.offers||[]).find(x=>x.id===m.oid);return !o?end('이미 답변했거나 종료된 트레이드 제안입니다.'):G.day>o.exp?end('트레이드 제안의 답변 기한이 지났습니다.',true):null;}
   /* 제목은 이전 저장의 업무에도 사용한다. 단순 보고/기록의 이동 링크는 끝난 업무로 보지 않는다. */
   const task=/감독 자리가 비어|감독 계약이 끝납니다|코치 자리가 비어|부상 방지 프로그램과 병원 제휴|훈련 방향과 해외 연수 안내|스카우트 담당 지역에 공백|감독이 정한 선수단 배치|개막 준비가 끝났습니다|외국인 선수를 구성|연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청|신인 드래프트가 열립니다|스프링캠프가 시작|스폰서 제안|상무 지원 기간|보호선수 명단|보상선수 지명|영입 보상: 보호선수|FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작|트레이드 마감|마감 보강안|내일 직관|개막합니다/.test(s);
@@ -73,7 +73,7 @@ function mailStatus(m){
   if(/보호선수 명단|보상선수 지명|영입 보상: 보호선수/.test(s)){const L=(G.comp||[]).filter(x=>((x.stage==='protect'&&x.to===G.user)||(x.stage==='pick'&&x.from===G.user))&&(c.comp!=null?x.id===c.comp:x.day==null||x.day<=d));if(!L.length)return end('이미 보상 절차를 마쳤거나 해당 지명 기간이 끝났습니다.');if(L.every(x=>G.day>x.exp))return end('보상 절차의 답변 기한이 지났습니다.',true);}
   if(/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/.test(s)&&(!G.fa||G.fa.closed||G.fa.y0!==(c.fa??dobj(d).y)))return end('이 FA 협상 기간은 종료되었습니다.',true);
   if(/관심 FA|우리 FA|시장 보고/.test(s)){const a=A.find(a=>a.a==='player'),p=a&&G.players[+a.v];if(p?.team!=null)return end('이미 계약을 마친 선수의 FA 소식입니다.');}
-  if(/트레이드 마감|마감 보강안/.test(s)&&(old||!tradeOpen()||G.day>tradeDL()))return end('이 시즌의 트레이드 마감일이 지났습니다.',true);
+  if(/트레이드 마감|마감 보강안/.test(s)&&!/^\[인터뷰|^\[기사/.test(s)&&(old||!tradeOpen()||G.day>tradeDL()))return end('이 시즌의 트레이드 마감일이 지났습니다.',true);
   if(/내일 직관|개막합니다/.test(s)&&G.day>d+1)return end('이미 지난 일정입니다.',true);
   const tasks=A.filter(a=>MAIL_TASK_ACTS.has(a.a)||a.done);if(tasks.length){const S=tasks.map(a=>mailActionStatus(m,a));if(S.every(Boolean))return S[0];}
   return null;

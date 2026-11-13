@@ -103,7 +103,7 @@ const lightRuns=(own,opp)=>Math.max(0,Math.round(own.r*.5+opp.er*.5+(R()<.25?1:0
 /* 하루 진행에서 부른다(07_daily.js) */
 function sprcDaily(day){ const c=G.cal; if(!c)return;
   if(sprcOpen()){ sprcInit(); try{ sprcAiBook(false); }catch(e){} const o=dobj(day);
-    if(!G.unemp&&o.m===1&&o.d===10){ const P=sprcPlan(G.user); if(!P.s1||!P.s2)stop('캠프',`스프링캠프 장소가 아직 ${!P.s1&&!P.s2?'정해지지 않았습니다':!P.s1?'1차가 비어 있습니다':'2차가 비어 있습니다'}. 1월 24일까지 정하지 않으면 운영팀이 남은 곳 중 싼 곳으로 잡습니다. 훈련 강도와 연습경기도 감독과 함께 정해 두세요.`); }
+    if(!G.unemp&&o.m===1&&o.d===10){ const P=sprcPlan(G.user); if(!P.s1||!P.s2){ const t_=(`스프링캠프 장소가 아직 ${!P.s1&&!P.s2?'정해지지 않았습니다':!P.s1?'1차가 비어 있습니다':'2차가 비어 있습니다'}. 1월 24일까지 정하지 않으면 운영팀이 남은 곳 중 싼 곳으로 잡습니다. 훈련 강도와 연습경기도 감독과 함께 정해 두세요.`); mail(FROM['캠프']||'운영팀',headline(t_),t_,{imp:true,kind:'캠프',cat:'must',acts:kindActs('캠프')}); } /* 캠프 장소는 정하지 않으면 운영팀이 가장 싼 곳을 잡는다: 일반 소식이 아니라 진행을 멈춘다(플레이 테스트 11-13) */; }
     if(day===c.camp-1){ sprcAiBook(true); sprcAutoUser(); } }
   if(day===c.camp)try{ sprcCampStart(); }catch(e){ console.error(e); }
   if(day>c.camp&&day<c.campEnd)try{ sprcCampDay(day); }catch(e){ console.error(e); }

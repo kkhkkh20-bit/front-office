@@ -38,6 +38,10 @@ function aiProtect(tid,n){ const t=team(tid); return compPool(tid).sort((a,b)=>a
 /* 우리 구단의 일회성 현금 지출·수입은 결산 장부(G.spend)에 올려 예산 여유와 결산에 함께 반영한다 */
 function payOut(tid,amt,key){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } else team(tid).cash-=amt; }
 function payIn(tid,amt,key='compIn'){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } /* key: 장부 수입 항목(기본 보상금·양도금, 트레이드 현금은 tradeIn) */ else team(tid).cash+=amt; }
+/* 영입 전에 보여 주는 보상 안내(플레이 테스트 11-13: 계약 뒤에야 보상금 통보). 원소속 구단에 줄 것: 등급별 보상선수·보상금 */
+function faCompTxt(p){ if(!p||!p.faGrade||p.faFrom==null||p.faFrom===G.user)return ''; const g=COMP[p.faGrade], prev=p.faPrevSal||p.sal||0; if(!g)return '';
+  return p.faGrade==='C'?`${p.faGrade}등급 · ${tshort(p.faFrom)}에 보상금 ${money(Math.round(prev*g.cash))}(직전 연봉의 ${Math.round(g.cash*100)}%)만 줍니다.`
+    :`${p.faGrade}등급 · ${tshort(p.faFrom)}이(가) 우리 보호선수 ${g.prot}명 밖에서 1명을 고르고 보상금 ${money(Math.round(prev*g.withP))}(직전 연봉의 ${g.withP*100}%)을 받습니다. 선수 대신 보상금만 고르면 ${money(Math.round(prev*g.cash))}.`; }
 function compStart(p,from,to,rec){ const g=COMP[p.faGrade]; const prev=p.faPrevSal;
   if(p.faGrade==='C'){ const cash=Math.round(prev*1.5); payOut(to,cash,'comp'); payIn(from,cash); rec.compCash=cash;
     if(to===G.user||from===G.user){ (G.comp=G.comp||[]).unshift({id:'cp'+(G.compSeq=(G.compSeq||0)+1),pid:p.id,name:p.name,grade:'C',from,to,prev,day:G.day,stage:'done',done:G.day,prot:[],cash,rec:rec.id}); if(G.comp.length>30)G.comp.length=30; } /* C등급도 FA 보상 기록에 남긴다(검수 11-09r) */
@@ -65,7 +69,7 @@ function compResolve(c,pid){
   if(c.from===G.user)note('FA',pid?`보상선수로 ${G.players[pid].name}을(를) 지명했습니다. 보상금 ${money(cash)}.`:`선수 대신 보상금 ${money(cash)}을(를) 받았습니다.`,pid);
   if(c.to===G.user)note('FA',pid?`${tname(c.from)}이(가) 보상선수로 ${G.players[pid].name}을(를) 데려갔습니다. 보상금 ${money(cash)}.`:`${tname(c.from)}이(가) 선수 대신 보상금 ${money(cash)}을(를) 받았습니다.`,pid);
   return c; }
-function compSubmit(id,prot){ const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='protect'||c.to!==G.user)return '처리할 명단이 없습니다.'; const g=COMP[c.grade]; const pool=compPool(G.user).map(q=>q.id); const P=[...new Set(prot)].filter(x=>pool.includes(x)).slice(0,g.prot); /* 같은 선수를 여러 번 넣어도 한 칸 */
+function compSubmit(id,prot){ const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='protect'||c.to!==G.user)return '처리할 명단이 없습니다.'; G.protLast={y:stoveY(),ids:[...(prot||[])]}; const g=COMP[c.grade]; const pool=compPool(G.user).map(q=>q.id); const P=[...new Set(prot)].filter(x=>pool.includes(x)).slice(0,g.prot); /* 같은 선수를 여러 번 넣어도 한 칸 */
   if(!P.length&&pool.length)return `보호선수를 한 명 이상 고르세요(최대 ${g.prot}명). 내지 않으면 ${dmd(c.exp)} 다음 날 운영팀 추천 순으로 냅니다.`; /* 빈 명단은 제출로 보지 않는다(검수 11-06) */
   c.prot=P; c.away0=awayOf(G.user).map(q=>q.id); c.pool0=pool; c.stage='pick'; compAiPick(c); return c.player?`${tname(c.from)}이(가) ${c.player}을(를) 지명했습니다.`:`${tname(c.from)}이(가) 선수 대신 보상금을 택했습니다.`; }
 function compAuto(c){ if(c.stage==='protect'&&c.to===G.user){ compSubmit(c.id,aiProtect(G.user,COMP[c.grade].prot)); note('FA','보호선수 명단을 운영팀 추천 순으로 제출했습니다.'); }

@@ -2,7 +2,7 @@
    위: 에이전트(또는 선수 본인)의 말  ·  가운데: 계약 조건 한 줄씩(값 조정 + 요구 조건 표시)  ·  아래: 총액·예산·상한 부담과 제안 버튼
    FA: 역할 약속·기간·계약금·연봉·옵션·거부권 / 비FA 다년: 기간·계약금·연봉·옵션·거부권 / 연봉 협상: 연봉만 */
 const NGT_K={fa:'FA 계약',ext:'비FA 다년계약',sal:'연봉 협상'};
-function ngtExtDem(p,y){ return round5(extDemand(p,y)*agExtMul(p)); }
+function ngtExtDem(p,y){ return extDemandAll(p,y); }
 /* 에이전트가 말하는 요구(비FA는 친분이 낮을수록 부풀려 말한다) */
 function ngtDemand(N){ const p=G.players[N.id];
   if(N.k==='fa')return termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years});
@@ -69,7 +69,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
   const ag=hasAgent(p)?agentOf(p):null; const fn=N.k==='fa'&&G.fa&&G.fa.neg?G.fa.neg[p.id]:null;
   const lastAg=fn&&fn.log.length&&fn.log[fn.log.length-1].w==='에이전트'?fn.log[fn.log.length-1].t:null;
   const lastExt=N.k==='ext'&&p.extLast&&G.day-p.extLast.d<=6&&ngtResOf(N)?p.extLast.t:null;
-  const say=N.msg||lastAg||lastExt||(N.k==='sal'?`${ag?'선수와 이야기를 나눠 봤습니다. ':''}구단 산정안은 ${money((salNeg(p.id)||{}).off||p.sal)}이지만, ${ag?'저희는':'저는'} ${money(D.annual)}은(는) 받아야 한다고 봅니다.`:`${ag?'제 의뢰인이 원하는 조건입니다. ':'제가 원하는 조건입니다. '}${termsTxt(D,true)}${D.role===0?` · ${roleSet(p)[0]}`:''}${D.ntc?' · 트레이드 거부권':''}. 이 선에서 맞춰 주시면 바로 이야기가 됩니다.`);
+  const say=N.msg||lastAg||lastExt||(N.k==='sal'?`${ag?'선수와 이야기를 나눠 봤습니다. ':''}구단 산정안은 ${money((salNeg(p.id)||{}).off||p.sal)}이지만, ${ag?'저희는':'저는'} ${money(D.annual)}은(는) 받아야 한다고 봅니다.`:`${ag?'제 의뢰인이 원하는 조건입니다. ':'제가 원하는 조건입니다. '}${termsTxt(D,true)}${D.role===0?` · ${roleSet(p)[0]}`:''}${D.ntc?' · 트레이드 거부권':''}. ${N.k==='fa'?(Object.keys((G.fa&&G.fa.ai[p.id])||{}).length?'이 선을 맞춰 주시면 다른 구단 제안과 비교해 며칠 안에 답을 드리겠습니다.':'이 선을 맞춰 주시면 큰 변수가 없는 한 며칠 안에 사인합니다.'):(agExtTestMarket(p)?'시장 평가를 받아 보고 싶어 하는 몫까지 넣은 조건입니다. 이 선이면 바로 사인합니다.':'이 선에서 맞춰 주시면 바로 사인합니다.')}`); /* FA는 계약이 하루 단위로 정해져 '바로'가 아니다(플레이 테스트 11-13) */
   const expr=fn?(fn.counter?'flat':fn.hot||fn.deal?'smile':fn.mood<40?'angry':null):null;
   const [gc,gt]=ngtGap(N,D);
   const tot=(T.bonus||0)+T.annual*(T.years||1); const capAvg=T.annual+Math.round((T.bonus||0)/(T.years||1)); const ci=capInfo(G.user); const b=budget();
@@ -94,7 +94,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       ${(()=>{ const [s0]=ngtSeasons(N); const W=capPayWith(G.user,p.id,p.foreign?null:capAvg,s0); const over=W.tot-W.cap; const d=W.tot-capPayWith(G.user,null,null,s0).tot; return `<div><i>${W.s}시즌 예상 상한 합계(계약 후)</i><b class="num ${over>0?'bad':''}">${money(W.tot)}</b><em>${W.s}시즌 상한 ${money(W.cap)}${over>0?` · ${money(over)} 초과(경쟁균형세 대상)`:` · 여유 ${money(-over)}`} · 상위 40명 다시 계산(${d>=0?'+':''}${money(d)})</em></div>${over>0?(()=>{ const X=capTaxEst(over); return `<div><i>넘겨도 계약할 수 있습니다</i><b class="num warn">제재금 약 ${money(X.tax)}</b><em>시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(X.n)*100)}%를 야구발전기금으로 냅니다(${X.n}회 연속${X.pen?' · 다음 해 1라운드 지명 순서 9단계 하락':''}). 트레이드·방출로 시즌 중에 줄이면 내지 않습니다.</em></div>`; })():''}`; })()}
       <div><i>상한 반영(연평균)</i><b class="num">${money(capAvg)}</b><em class="${capAvg>capRoom?'bad':''}">연봉 상한까지 ${money(capRoom)}</em></div>
       <div><i>연봉 여유(예산 기준)</i><b class="num">${money(b.roomGoal)}</b><em class="${T.bonus>b.roomGoal?'bad':''}">${T.bonus?`계약금 ${money(T.bonus)} 즉시 지급${T.bonus>b.roomGoal?' · 예산 여유를 넘습니다':''}`:'계약금 없음'}</em></div>
-      <div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div>
+      <div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div>${N.k==='fa'&&faCompTxt(p)?`<div class="note small"><b>영입 보상</b> · ${esc(faCompTxt(p))}</div>`:''}
     </div>`}
     <div class="ng-acts">
       ${closed?`<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.${N.k==='fa'&&!G.fa.closed?` ${dmd(faReopenDay(p.id))}부터 다시 제안할 수 있습니다.`:''}</div>`:`<button class="btn" data-a="ngtDemand">요구 조건대로 채우기</button>${ctr?`<button class="btn" data-a="ngtCounter">역제안 수락 · ${esc(ctrTx)}</button>`:''}${N.k==='ext'&&extNextDay(p)?`<button class="btn primary" data-a="ngtSubmit" disabled>다음 제안 ${dsh(extNextDay(p))}부터</button>`:'<button class="btn primary" data-a="ngtSubmit">제안하기</button>'}`}
