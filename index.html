@@ -4716,6 +4716,9 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 }
 /* 하이라이트·전체 전환: 고른 쪽이 눈에 띄게(플레이테스트 4 #7) */
 .match-dashboard .cs-top .cs-mode button.on,.match-dashboard .md-mobile-nav button.on{background:#2f6fb0;border-color:#7cbcff;color:#fff;font-weight:700;box-shadow:inset 0 0 0 1px #7cbcff55}
+
+/* 3D 중계에서는 구장 위에 뜨는 붉은 상황 표시(득점권 찬스 띠, 결정적 순간 카드)를 띄우지 않는다(사용자 11-13) */
+.match-dashboard .cs-stage.has-3d>:is(.cs-sit,.md-clutch){display:none!important}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 
   .fm-home .fmmain{height:calc(calc(100dvh / var(--z,1)) - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -30056,13 +30059,16 @@ async function c3DSteal(g,k,b){const x=g.pbp[k],i=b.bases.indexOf(x[2]),to=i+2,r
 function c3DPartyKind(g,k){const L=g.pbp,x=L[k];if(k!==L.length-1||!x||typeof x[1]!=='number'||g.hs===g.as)return null;const winner=g.hs>g.as?g.home:g.away;
  const title=/한국시리즈/.test(g.kind||'')&&G.ps&&G.ps.champ===winner&&!(G.games||[]).some(q=>q!==g&&/한국시리즈/.test(q.kind||'')&&q.day>g.day);
  const walkoff=winner===g.home&&x[0]%2===1&&(x[6]||0)>0;return title?'title':walkoff?'walkoff':null;}
-async function c3DParty(g,k,kind){if(!c3DActive()||typeof Match3D.celebrate!=='function')return;const winner=g.hs>g.as?g.home:g.away,side=winner===g.home?'h':'a',box=g.box[side],center=kind==='title'?CFP.P:CHM,dug=CDUG[side],u=cUni(g,winner);
- const ids=[...new Set([...(box.bat||[]).map(r=>r.id),...(box.pit||[]).map(r=>r.id)])].filter(id=>G.players[id]),on=id=>!!document.querySelector(`#cs-stage .cc[data-k="d${id}"]:not(.gone),#cs-stage .cc[data-k="o${id}"]:not(.gone)`);
- const field=ids.filter(on),bench=ids.filter(id=>!on(id)).slice(0,kind==='title'?12:9),spot=i=>{const ring=i<6?0:1,n=ring?10:6,a=(i-(ring?6:0))/n*Math.PI*2+ring*.3,r=ring?4.6:2.6;return [center[0]+Math.cos(a)*r,center[1]+Math.sin(a)*r*.75];};
- const targets=bench.map((id,i)=>({k:'party-'+id,id,name:G.players[id].name,cls:'df',position:'',u:{...u,glove:G.players[id].th==='좌'?'R':'L'},from:[dug[0]+(i%3-1)*1.2,dug[1]+(i%2)*1.5],pt:spot(i)}));
- if(kind==='title')field.forEach((id,i)=>{const key=document.querySelector(`#cs-stage .cc[data-k="d${id}"]`)?'d'+id:'o'+id;targets.push({k:key,id,pt:spot(bench.length+i)});});
+async function c3DParty(g,k,kind){if(!c3DActive()||typeof Match3D.celebrate!=='function')return;const x=g.pbp[k],winner=g.hs>g.as?g.home:g.away,side=winner===g.home?'h':'a',loser=side==='h'?'a':'h',box=g.box[side],center=kind==='title'?CFP.P:CHM,dug=CDUG[side],u=cUni(g,winner),offense=x[0]%2===1?g.home:g.away,winPre=winner===offense?'o':'d',losePre=winPre==='o'?'d':'o';
+ const keys=pre=>[...document.querySelectorAll('#cs-stage .cc:not(.gone)')].map(e=>e.dataset.k||'').filter(q=>q[0]===pre&&/^\d+$/.test(q.slice(1))),onField=keys(winPre),fieldIds=new Set(onField.map(q=>+q.slice(1)));
+ /* 더그아웃에서 나오는 사람: 이 경기에 나온 선수 → 같은 팀의 나머지 선수 순으로 20명(벤치·코치 몫까지). 사용자 11-13: 네댓 명만 나오면 썰렁하다 */
+ const played=[...(box.bat||[]).map(r=>r.id),...(box.pit||[]).map(r=>r.id)],rest=Object.values(G.players||{}).filter(p=>p&&p.team===winner).map(p=>p.id),bench=[...new Set([...played,...rest])].filter(id=>G.players[id]&&!fieldIds.has(id)).slice(0,20);
+ const spot=i=>{const ring=i<6?0:i<16?1:2,n=[6,10,14][ring],j=i-[0,6,16][ring],a=j/n*Math.PI*2+ring*.35,r=[2.5,4.5,6.4][ring];return [center[0]+Math.cos(a)*r,center[1]+Math.sin(a)*r*.75];};
+ const targets=bench.map((id,i)=>({k:'party-'+id,id,name:G.players[id].name,cls:'df',position:'',u:{...u,glove:G.players[id].th==='좌'?'R':'L'},from:[dug[0]+(i%4-1.5)*1.1,dug[1]+(i%3)*1.4],pt:spot(i)}));
+ onField.forEach((key,i)=>targets.push({k:key,id:+key.slice(1),pt:spot(bench.length+i)})); /* 그라운드에 있던 이긴 팀 선수도 함께 모인다 */
  if(!targets.length)return;cCap(kind==='title'?'우승 확정! 선수들이 마운드로 달려 나옵니다':'끝내기! 선수들이 홈으로 달려 나옵니다','good');cFx(kind==='title'?'우승':'끝내기','hr');sfx('cheer_big',winner===g.home?1:.45);
- Match3D.celebrate(targets,1900/cSpd(),center);await cSleep(1900);Match3D.celebrateCheer(center);if(kind==='title'){cFireworks();sfx('cheer_big',winner===g.home?1:.45);}await cSleep(kind==='title'?4200:3000);cCap('');}
+ for(const key of keys(losePre))Match3D.move(key,CDUG[loser],6500/cSpd()); /* 진 팀은 더그아웃으로 들어간다 */
+ Match3D.celebrate(targets,2100/cSpd(),center);await cSleep(2100);Match3D.celebrateCheer(center);if(kind==='title'){cFireworks();sfx('cheer_big',winner===g.home?1:.45);}await cSleep(kind==='title'?4600:3600);cCap('');}
 async function c3DBenchClear(g,k,event){const c=UI.cast,token=CT.tok;if(!c)return;c.incident={k,index:event.pitch,pending:true};const targets=(event.participants||[]).map((p,i)=>{const side=p.team===g.home?1:-1;return {k:'bench-'+p.id,id:p.id,name:p.name,cls:'df',position:'벤치',u:{...cUni(g,p.team),glove:p.th==='좌'?'R':'L'},from:[50+side*10,82],pt:[45+(i%3)*5,80+Math.floor(i/3)*3]};});
  if(!c3DActive()){cCap('몸쪽 공 뒤 언쟁 · 양 팀 벤치가 나와 선수들을 진정시킵니다','bad');await cSleep(2400);c.incident.pending=false;return;}
  Match3D.benchClear(targets,1800/cSpd());cSpeak(g,k,'bench-start',{},'bad');cFx('벤치 클리어링','bad');await cSleep(1800);Match3D.benchGather();cSpeak(g,k,'bench-talk');await cSleep(2200);Match3D.benchGather(true);Match3D.benchReturn(1800/cSpd());cSpeak(g,k,'bench-back');await cSleep(1800);if(token!==CT.tok)throw 'stop';c.incident.pending=false;const st=cBefore(g,k);Match3D.sync({targets:cTargets(g,k,st),board:c3DScore(g,k,st)});cPitchReset(g,k);cFx('');
