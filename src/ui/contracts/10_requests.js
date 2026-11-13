@@ -67,7 +67,7 @@ function starPanel(){
   return csec('선수 이름값과 홍보 수입',`<div class="star-marketing"><p class="small"><b>스타파워 = 선수의 이름값.</b> 수상·기록·활약으로 쌓이는 게임 속 홍보 지수입니다. 이름값이 높은 선수의 유니폼·굿즈·광고 수요가 수입으로 이어집니다.</p>
     <dl class="sm-summary"><div><dt>자동 수입 예상</dt><dd>${money(total-bonus)}</dd><small>상위 3명 이름값 합계 ${T.v}점</small></div><div><dt>진행·종료한 홍보의 추가 수입</dt><dd>${money(bonus)}</dd><small>이번 결산에 반영할 예상액</small></div><div><dt>수입 합계 · 비용 차감 전</dt><dd>${money(total)}</dd><small>시즌 결산 때 정산</small></div></dl>
     <p class="small"><b>기본 수입은 별도 조작 없이 들어옵니다.</b> 아래 홍보는 돈을 더 써서 추가 수입을 얻는 선택입니다. 매년 정하는 구단 전체 마케팅 예산과는 별도입니다.</p>
-    ${C.length?`<div class="eyebrow">선수별 추가 홍보 · 선택 사항</div><p class="small muted">예상 순이익 = 추가 수입 − 홍보 비용. 예를 들어 1억을 써서 1.4억이 들어오면 순이익은 +4천만입니다. 결산까지 남은 기간이 짧으면 수입도 줄어듭니다.</p><div class="sml">${C.map(row).join('')}</div><p class="small muted">비용은 시작할 때 올해 지출에 반영됩니다. 수입은 선수 이름값과 잔여 기간에 따라 달라지며 확정액이 아닙니다. 홍보를 시작하면 팬 관심과 선수 기분도 오릅니다.</p>`:'<p class="small muted keep">수상·활약으로 이름값이 쌓이면 홍보할 선수가 표시됩니다. 지금은 따로 홍보할 필요가 없습니다.</p>'}
+    ${C.length?`<div class="eyebrow">선수별 추가 홍보 · 선택 사항</div><p class="small muted">예상 순이익 = 추가 수입 − 홍보 비용. 예를 들어 1억을 써서 1.4억이 들어오면 순이익은 +4천만입니다. 결산까지 남은 기간이 짧으면 수입도 줄어듭니다.</p><div class="sml">${C.map(row).join('')}</div><p class="small muted">비용은 시작할 때 올해 지출에 반영됩니다. 수입은 선수 이름값과 잔여 기간에 따라 달라지며 확정액이 아닙니다. 홍보를 시작하면 팬 관심과 선수 기분도 오릅니다.</p>`:'<p class="small muted keep">지금은 홍보할 선수가 없습니다.</p>'}
     ${UI.smMsg?`<div class="note">${esc(UI.smMsg)}</div>`:''}
     <details class="candidate-help"><summary class="small muted">이름값은 어떻게 정해지나요?</summary><p class="small muted">최근 3년 수상, 올해·작년 대기록, 올해 WAR 4 이상 활약과 언론 홍보를 반영합니다. 오래된 수상 효과는 줄어들고, 외국인 선수는 60%를 반영합니다. 구단 자동 수입에는 상위 3명의 합계를 사용하고, 추가 홍보는 대상 선수의 점수를 사용합니다.</p></details></div>`);
 }

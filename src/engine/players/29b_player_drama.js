@@ -73,7 +73,7 @@ function pdStatement(p){ const k=grvTop(p)||'pt', me=p.team===G.user, tn=tshort(
 function pdMgrAgree(e,stance){ const m=G.mgr[G.user]; if(!m||m.interim||!e.data.side)return ''; const ok=e.data.side===stance; m.rel=clamp(m.rel+(ok?2:-2),0,100); return ok?` 감독 관계 조금 개선(같은 편)`:` 감독 관계 조금 악화(감독은 다른 생각)`; }
 function pdTalkOk(p){ initPers(p); let fr=30; try{ fr=friendshipScore(p); }catch(e){} const cap=(()=>{ try{ return captainOf(p.team); }catch(e){ return null; } })(); const cb=cap&&cap!==p&&cap.pers&&cap.pers.pro>=14?.08:0;
   return clamp(.42+(p.pers.loy-10)*.03+(p.pers.pro-10)*.015-(p.pers.temp-10)*.02+(fr-30)/200+cb-(p.pd&&p.pd.talkN?p.pd.talkN*.12:0),.08,.85); } /* 같은 말로 거듭 달래면 덜 먹힌다 */
-function ownReact(kind,star){ const t=team(G.user); const ow=t.owner; let d=0; if(kind==='disc')d=ow==='profit'?1:ow==='pr'?-1:star?-1:0; if(kind==='boyGive')d=ow==='win'?1:ow==='pr'?0:-1; if(!d)return ''; t.trust=clamp(t.trust+d,0,100); return ` 구단주 신뢰 ${d>0?'+':''}${d}`; }
+function ownReact(kind,star){ const t=team(G.user); const ow=t.owner; let d=0; if(kind==='disc')d=ow==='profit'?1:ow==='pr'?-1:star?-1:0; if(kind==='boyGive')d=ow==='win'?1:ow==='pr'?0:-1; if(!d)return ''; t.trust=clamp(t.trust+d,0,100); return ` 구단주 신뢰 ${d>0?'조금 상승':'조금 하락'}.`; }
 EVH.pmed={ pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; const k=e.data.ks[i]; const D=p.pd||(p.pd={st:1,d:G.day}); initPers(p); prInit();
     if(k==='talk'){ D.talkN=(D.talkN||0)+1; if(R()<pdTalkOk(p)){ grvCut(p,.45); p.mor=clamp(p.mor+5,0,100); D.st=0; return `${p.name}: "제 마음을 알아주셔서 감사합니다. 경기로 보여 드리겠습니다." 기분 상승, 불만 크게 줄어듦.${pdMgrAgree(e,1)}`; }
       p.mor=clamp(p.mor-2,0,100); return `${p.name}: "말씀은 알겠습니다. 그런데 달라지는 게 없으면 저도 생각이 있습니다." 기분 조금 하락, 불만 그대로.`; }

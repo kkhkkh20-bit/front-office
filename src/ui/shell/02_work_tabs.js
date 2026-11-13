@@ -85,7 +85,7 @@ function mgrRow(x,act){ mgrFix(x); return `<div class="item wa" style="cursor:de
 function policyCard(m){
   const p=G.policy; const lean=teamLean(G.user); const cd=p&&G.day-p.day<14;
   const leanTxt=lean>.35?'육성 쪽':lean<-.35?'성적 쪽':'균형';
-  return `<section class="card polc"><div class="row between"><span class="eyebrow">운영 기조 지시 ${hiI('단장이 방향을 정하면 감독이 성향에 따라 받아들입니다. 출전 시간이 곧 성장이므로, 유망주를 키우려면 육성 기조가 필요합니다.\n고집이 센 감독일수록, 본래 성향과 다른 지시일수록, 관계가 나쁠수록 덜 따릅니다. 2주에 한 번 바꿀 수 있습니다.')}</span>${p?`<span class="small muted">감독 수용도 ${Math.round(p.follow*100)}% · 관계 ${m.rel}</span>`:`<span class="small muted">지시 없음 · 감독 본래 성향대로 운영 · 관계 ${m.rel}</span>`}</div>
+  return `<section class="card polc"><div class="row between"><span class="eyebrow">운영 기조 지시 ${hiI('단장이 방향을 정하면 감독이 성향에 따라 받아들입니다. 출전 시간이 곧 성장이므로, 유망주를 키우려면 육성 기조가 필요합니다.\n고집이 센 감독일수록, 본래 성향과 다른 지시일수록, 관계가 나쁠수록 덜 따릅니다. 2주에 한 번 바꿀 수 있습니다.')}</span>${p?`<span class="small muted">감독이 ${followWord(p.follow)} · 관계 ${m.rel}</span>`:`<span class="small muted">지시 없음 · 감독 본래 성향대로 운영 · 관계 ${m.rel}</span>`}</div>
     <div class="seg">${Object.entries(POL).map(([k,x])=>`<button data-a="setPol" data-v="${k}" class="${p&&p.k===k?'on':''}" ${cd?'disabled':''}>${x.l}</button>`).join('')}</div>
     ${p?`<p class="small">${esc(POL[p.k].d)}</p>`:''}
     <div class="leanbar"><span>성적</span><div><i style="left:${(lean+1)*50}%"></i></div><span>육성</span></div>

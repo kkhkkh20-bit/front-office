@@ -76,8 +76,8 @@ test(152,()=>{const U=U0(),B=other();team(U).cash=50000;G.day=dnum(Y(),1,5);asse
 test(153,()=>{const U=U0(),S=personalState();S.cash=1000;S.found={y:Y()-1,paid:Y()-1,area:teamArea(U),list:[]};const L=Object.values(schList());const before=L.map(s=>schRel(s,U));G.unemp={y:Y(),msg:'',since:G.day,from:U,k:'resign'};foundYear(S);assert.deepEqual(Object.values(schList()).map(s=>schRel(s,U)),before,'야인 장학금이 전 구단 관계를 올림');});
 test(154,()=>{const S=personalState();S.cash=1000;S.trip={to:G.day+10,l:'MLB 프런트 견학'};assert.match(personalAway(),/출장 중/);assert.match(personalActivity('network',other()),/출장 중/);});
 test(155,()=>{const B=other(),C=personalGMContact(B);C.bond=33;team(B).gm=mkGM(B);assert.equal(personalGMBond(B),30);assert.equal(personalGMContact(B).bond,30);});
-test(156,()=>{prInit();G.pr.fan=99;const S=personalState();S.cash=1000;S.last={};const t=personalActivity('fan');assert.match(t,/팬 여론 \+1\b/);assert.equal(G.pr.fan,100);
-  G.pr.press=99;S.pressLog=[];const q=pressDinner(S);if(!/새어 나갔/.test(q))assert.match(q,/언론 논조 \+1\b/);});
+test(156,()=>{prInit();G.pr.fan=99;const S=personalState();S.cash=1000;S.last={};const t=personalActivity('fan');assert.match(t,/팬 여론 조금 호전/);assert.equal(G.pr.fan,100);
+  G.pr.press=99;S.pressLog=[];const q=pressDinner(S);if(!/새어 나갔/.test(q))assert.match(q,/언론 논조가 조금 좋아졌습니다/);});
 test(157,()=>{const A=U0(),B=other(0),C=other(1);switchTeam(B);switchTeam(C);assert.ok(has('teams3'));assert.equal(achMeta().u.teams3.team,tshort(C),'달성 구단');});
 test('community-clash-foreign',()=>{const U=U0();const f=Object.values(G.players).find(p=>p.foreign&&p.team!=null);assert.ok(f);f.team=U;delete f.listed;const b=playersOf(U).find(p=>!p.foreign);G.evs=[];EVH.clash.make({a:f,b});const e=G.evs[G.evs.length-1];assert.ok(!e.opts.some(o=>/트레이드/.test(o.l)),'외국인 선수 트레이드 선택지');
   const t=EVH.clash.pick({data:{a:f.id,b:b.id}},2);assert.match(t,/벌금/);assert.ok(!f.listed);listPlayer(f.id);assert.ok(!f.listed);});
