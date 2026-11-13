@@ -12761,7 +12761,7 @@ function mktWins(t,p){ const d=mktDepth(t.id); const adj=mktBase(p)-ovr(p); let 
 function mktWinPrice(t,p){ const st=t.mode==='contend'?(t.owner==='win'?1.4:1.25):t.mode==='rebuild'?(p.age<=27?1:.6):1; const ab=typeof gmAbOf==='function'?gmAbOf(t.id):null;
   const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); return MKT.win*ecoIdx(sponSeason())*st*af*(t.id===p.faFrom?1.05:1)*faMktNow(); }
 /* 지불 의사(연평균, 백만원): 추가 승수 × 1승의 값 × 남는 연봉 여유(faRoomPush) × 구단주가 찍은 선수 웃돈. 한 선수 연평균 상한(faTop)을 넘지 않는다 */
-function mktWTP(t,p){ const w=mktWins(t,p)*mktWinPrice(t,p); const k=(typeof faTgt==='function'&&faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)); return round5(Math.max(MIN_SAL,Math.min(faTop(),w*k))); }
+function mktWTP(t,p){ const w=mktWins(t,p)*mktWinPrice(t,p); const k=(typeof faTgt==='function'&&faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)); const top=faTop()*clamp((mktBase(p)-46)/16,.1,1); /* 급에 따른 천장: 특급(종합 62+)만 리그 최고액까지, 주전급(58)은 75%, 평범한 주전(54)은 절반. 빈자리가 급해도 어중간한 선수에게 특급 값을 주지 않는다 */ return round5(Math.max(MIN_SAL,Math.min(top,w*k))); }
 /* 시장가: AI 구단들의 지불 의사 가운데 두 번째로 높은 값(경쟁이 가격을 만든다). 원하는 구단이 하나뿐이면 그 구단 값의 70% */
 let _mkP={k:null,m:{}};
 function mktPrice(p){ const k=G.year+':'+G.day; if(_mkP.k!==k||_mkP.g!==G)_mkP={k,g:G,m:{}}; if(_mkP.m[p.id]!=null)return _mkP.m[p.id];
@@ -36411,6 +36411,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-14-mktengine',d:'11월 14일',t:'시장 엔진',items:[
+    'FA 몸값을 시장이 정합니다. 구단마다 그 선수가 오면 주전이 얼마나 좋아지는지를 따져 값을 매기고, 구단끼리 경쟁해 가격이 정해집니다.',
+    '특급 선수는 여러 구단이 원해 비싸지고, 어중간한 선수는 대체할 선수가 많아 싸집니다. 같은 선수라도 그 자리가 빈 구단이 더 많이 부릅니다.',
+    '선수 요구액도 시장가에서 시작합니다. 찾는 구단이 많으면 높고, 한 곳뿐이면 낮습니다.',
+  ]},
   {id:'2026-11-13-market',d:'11월 13일',t:'시장이 정하는 몸값 · 사진 복구',items:[
     'AI 구단이 선수 요구액에 맞추지 않고 자기 평가액과 남은 연봉 여유로 입찰합니다. 여유가 큰 구단, 우승을 노리는 구단일수록 더 부르고, 경쟁이 붙으면 값이 오릅니다.',
     'AI 구단이 연봉 여유를 채워 씁니다. 우승 도전 구단은 상한 근처까지, 가끔은 상한을 넘겨서도 씁니다. 여유가 있는 구단은 잘한 선수 연봉도 후하게 올려 줍니다.',
