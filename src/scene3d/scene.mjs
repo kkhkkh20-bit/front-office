@@ -63,13 +63,13 @@ function umpireMechanics(a){const s=active;if(!s)return;const home=a.ump.k==='ho
 }
 /* 누심은 선수 동선과 공이 떨어질 자리를 비켜 준다: 선수(지금 위치와 가는 곳)·타구 도착 지점이 반경 안에 들어오면 반대쪽으로 물러났다가, 지나가면 제자리로 돌아온다 */
 const UMP_AVOID={radius:3.6,max:4.5,speed:4.2,arrive:.06,start:.9}; /* start: 이만큼 어긋나야 움직이기 시작(조금씩 까딱거리지 않게) */
-function umpireAvoid(s,now,dt){const party=!!s.incident?.party;for(const u of s.umps||[]){if(u.ump.k==='home'&&!party)continue;const h=u.home||(u.home=new T.Vector3(...u.ump.pos)),P=UMP_AVOID,pos=u.root.position;let px=0,pz=0;
+function umpireAvoid(s,now,dt){const party=!!s.incident?.party;for(const u of [...(s.umps||[]),...(s.coaches||[])]){ /* 주루 코치도 심판처럼 공·선수를 비켜 준다(악송구를 주우러 온 1루수와 겹쳤다, 11-13) */if(u.ump.k==='home'&&!party)continue;const h=u.home||(u.home=new T.Vector3(...u.ump.pos)),P=UMP_AVOID,pos=u.root.position;let px=0,pz=0;
   const near=p=>{let dx=h.x-p.x,dz=h.z-p.z,d=Math.hypot(dx,dz);if(d>=P.radius)return;if(d<.05){d=Math.hypot(h.x,h.z)||1;dx=h.x/d;dz=h.z/d;d=0;}else{dx/=d;dz/=d;}px+=dx*(P.radius-d);pz+=dz*(P.radius-d);};
   for(const a of s.actors.values()){if(!a.root.visible)continue;near(a.root.position);if(a.move)near(a.move.to);}if(s.ballMotion&&!s.ballMotion.pitch)near(s.ballMotion.to);
   const pl=Math.hypot(px,pz),k=pl>P.max?P.max/pl:1;let tx=h.x+px*k,tz=h.z+pz*k;if(party){const hl=Math.hypot(h.x,h.z)||1;if(u.ump.k==='home'){tx=-9.5;tz=-5.5;}else{tx=h.x/hl*(hl+9);tz=h.z/hl*(hl+9);}} /* 세리머니: 심판은 모이는 자리에서 물러난다(주심은 1루 쪽 뒤로, 누심은 바깥으로) */const dx=tx-pos.x,dz=tz-pos.z,d=Math.hypot(dx,dz);
   if(u.call){if(u.avoiding)u.avoiding=false;continue;} /* 판정 중에는 그 자리에서 */
   if(d>(u.avoiding?P.arrive:P.start)){const step=Math.min(d,P.speed*dt);pos.x+=dx/d*step;pos.z+=dz/d*step;u.root.rotation.y=Math.atan2(dx,dz);if(!u.avoiding){u.avoiding=true;u.updatedAt=now;playPose(u,'jog',{loop:true,fade:.12});}advanceActor(u,now);s.dirty=true;}
-  else if(u.avoiding){u.avoiding=false;u.root.rotation.y=u.yaw0=Math.atan2(-pos.x,-pos.z);u.updatedAt=now;playPose(u,UMP_CLIP.ready,{freeze:true,fade:.18});s.dirty=true;}
+  else if(u.avoiding){u.avoiding=false;u.root.rotation.y=u.yaw0=Math.atan2(-pos.x,-pos.z);u.updatedAt=now;playPose(u,u.readyClip||UMP_CLIP.ready,{freeze:true,fade:.18});s.dirty=true;}
   else if(u.blendUntil){advanceActor(u,now);s.dirty=true;}}}
 function umpireRest(u){u.call=null;if(u.yaw0!=null)u.root.rotation.y=u.yaw0;playPose(u,UMP_CLIP.ready,{freeze:true,fade:0});}
 /* 심판 판정 동작. 스트라이크는 주심, 아웃·세이프는 플레이(at: 월드 좌표, 없으면 지금 주목받는 야수)에 가장 가까운 심판이 그쪽으로 돌아서서 한다. 같은 판정이 잇달아 불려도 한 번만 */
@@ -469,7 +469,7 @@ function viewBoard(on=true){const s=active;if(!s?.ready)return;s.cameraMode=on?'
 /* 주루 코치: 공격 팀 유니폼으로 1·3루 코치 박스에 한 명씩(선 바깥 약 4m). 멈춘 자세라 매 프레임 계산이 없다. 공수가 바뀌면 유니폼이 바뀐다 */
 const COACH_BOX=[[-23.6,0,13.2],[23.6,0,13.2]];
 function syncCoaches(s,data){const t=data.targets?.find(t=>/(^| )of( |$)/.test(t.cls||''));if(!t)return;const u={...t.u};delete u.bat;delete u.pose;const key=JSON.stringify(u);if(s.coachKey===key)return;s.coachKey=key;for(const c of s.coaches||[])clearActor(c);
- s.coaches=COACH_BOX.map((pos,i)=>{const a=makeActor({k:'coach_'+i,cls:'of run',u,lab:''});a.label?.remove();a.labelLine?.remove();a.label=a.labelLine=null;a.noLabel=true;a.post=null;a.role='coach';a.root.position.set(...pos);a.root.rotation.y=Math.atan2(-pos[0],-pos[2]);playPose(a,'coach_ready',{freeze:true,fade:0});return a;});}
+ s.coaches=COACH_BOX.map((pos,i)=>{const a=makeActor({k:'coach_'+i,cls:'of run',u,lab:''});a.label?.remove();a.labelLine?.remove();a.label=a.labelLine=null;a.noLabel=true;a.post=null;a.role='coach';a.root.position.set(...pos);a.root.rotation.y=Math.atan2(-pos[0],-pos[2]);a.ump={k:'coach',pos};a.readyClip='coach_ready';playPose(a,'coach_ready',{freeze:true,fade:0});return a;});}
 /* 홈 승부를 기다리는 포수: 송구가 오기 전부터 무릎을 굽히고 미트를 낮춰 선다(사용자 11-13) */
 function brace(key,from){const s=active,a=s?.actors.get(key);if(!a||!a.root.visible)return;a.move=null;if(from){const p=point(from);a.root.rotation.y=Math.atan2(p.x-a.root.position.x,p.z-a.root.position.z);}playPose(a,'catcher_block',{freeze:true,fade:.25});s.dirty=true;}
 function cheer(level=.6,home=true){const s=active;if(!s?.ready)return;cheerStands(s.visibility,performance.now(),level,home);s.dirty=true;} /* 관중 환호(소리와 같은 때): 공격 팀 쪽 관중이 일어난다 */
