@@ -5,7 +5,7 @@
 /* 진행 중인 공사 전부: 시설 저장 구조를 읽는 곳은 이 함수 한 곳으로 모은다 */
 function cpBuilds(){ facInit(); const bl=(G.fac&&G.fac.bld)||{}; const o={};
   for(const k of Object.keys(bl)){ const b=bl[k], D=FACI[k]; if(!b||!D)continue; const dur=D.days[b.lv]||1, left=Math.max(0,b.done-G.day);
-    o[k]={lv:b.lv,done:b.done,left,pct:clamp(1-left/dur,0,1),cap:!!b.cap}; }
+    o[k]={lv:b.lv,done:b.done,pm:b.pm,left,pct:clamp(1-left/dur,0,1),cap:!!b.cap}; }
   return o; }
 
 /* 선수가 지도에서 그 자리에 있는 이유: 실제 상태(real)인지 연출(stage)인지 */
