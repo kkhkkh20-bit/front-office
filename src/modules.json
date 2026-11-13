@@ -112,6 +112,7 @@
       "src/engine/staff/85_mgr_fit.js",
       "src/engine/staff/74_internal_promo.js",
       "src/engine/staff/86_ai_plan.js",
+      "src/engine/staff/86b_dynasty.js",
       "src/engine/staff/87_ai_events.js",
       "src/engine/staff/89_coach_market.js",
       "src/engine/career/90_legacy.js",
