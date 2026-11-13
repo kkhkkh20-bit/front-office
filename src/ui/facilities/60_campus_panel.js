@@ -5,7 +5,7 @@
 /* 진행 중인 공사 전부: 시설 저장 구조를 읽는 곳은 이 함수 한 곳으로 모은다 */
 function cpBuilds(){ facInit(); const bl=(G.fac&&G.fac.bld)||{}; const o={};
   for(const k of Object.keys(bl)){ const b=bl[k], D=FACI[k]; if(!b||!D)continue; const dur=D.days[b.lv]||1, left=Math.max(0,b.done-G.day);
-    o[k]={lv:b.lv,done:b.done,left,pct:clamp(1-left/dur,0,1),cap:!!b.cap}; }
+    o[k]={lv:b.lv,done:b.done,pm:b.pm,left,pct:clamp(1-left/dur,0,1),cap:!!b.cap}; }
   return o; }
 
 /* 선수가 지도에서 그 자리에 있는 이유: 실제 상태(real)인지 연출(stage)인지 */
@@ -74,11 +74,10 @@ function cpFacPanel(S,k){ const t=team(G.user);
       ${nx?`<p class="small">다음: <b>${esc(nx.l)}</b> · ${money(nx.c)} · 원정 피로 ${nx.f>=0?'+':''}${Math.round(nx.f*100)}%</p>`:'<p class="small good">가장 좋은 버스입니다.</p>'}
       <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="bus">구단 버스 화면</button></div>`; }
   const D=FACI[k]; if(!D)return cpIdle(S); const lv=facOf(k), b=S.bmap[k], nx=lv+1; const nb=Object.keys(S.bmap).length; const st=cpFacStat(k);
-  const act=b?`<div class="eyebrow">공사 중: ${esc(D.lv[b.lv])}</div>${cpBar(b)}`
+  const act=b?`<div class="eyebrow">${b.pm>G.day?'인허가 중':'공사 중'}: ${esc(D.lv[b.lv])}</div>${cpBar(b)}`
     :lv>=FAC_MAX?'<p class="small good">최고 단계입니다.</p>'
     :`<dl class="cpdl"><div><dt>다음 단계</dt><dd><b>${esc(D.lv[nx])}</b></dd></div><div><dt>공사비</dt><dd class="num">${money(D.c[nx])}</dd></div><div><dt>기간</dt><dd>${D.days[nx]}일</dd></div><div><dt>유지비</dt><dd>연 ${money(D.up[nx])}</dd></div></dl>
-      <div class="cpbtns"><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||spendable(G.user)<D.c[nx]?'disabled':''}>구단 자금으로 · ${money(D.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''}>모기업 투자 요청 · ${oddsShort(capexOdds('fac',D.c[nx]))}</button>`}</div>
-      ${nb>=2?'<p class="small muted">동시 공사는 2곳까지입니다.</p>':spendable(G.user)<D.c[nx]?`<p class="small bad">자금 부족(${esc(spendTxt())})</p>`:''}`;
+      ${facRouteBtns(k)}`;
   return `<div class="cpph"><span class="cpnm sm">${esc(D.l)}</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
     <div class="cplv">${cpPips(lv,FAC_MAX,b)} <span>${esc(D.lv[lv])}</span></div>
     <p class="small">${esc(D.d)} 4단계부터는 전문화 투자로 효과 증가폭이 완만해지고 공사 기간·유지비가 커집니다.</p>${(()=>{ const t=facGainTxt(k,lv); return t?`<p class="small"><b>${esc(t)}</b></p>`:''; })()}
