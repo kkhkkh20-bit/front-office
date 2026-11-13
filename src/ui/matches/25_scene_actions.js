@@ -95,7 +95,7 @@ async function c3DParty(g,k,kind){if(!c3DActive()||typeof Match3D.celebrate!=='f
  const keys=pre=>[...document.querySelectorAll('#cs-stage .cc:not(.gone)')].map(e=>e.dataset.k||'').filter(q=>q[0]===pre&&/^\d+$/.test(q.slice(1))),onField=keys(winPre),fieldIds=new Set(onField.map(q=>+q.slice(1)));
  /* 더그아웃에서 나오는 사람: 이 경기에 나온 선수 → 같은 팀의 나머지 선수 순으로 20명(벤치·코치 몫까지). 사용자 11-13: 네댓 명만 나오면 썰렁하다 */
  const played=[...(box.bat||[]).map(r=>r.id),...(box.pit||[]).map(r=>r.id)],rest=Object.values(G.players||{}).filter(p=>p&&p.team===winner).map(p=>p.id),bench=[...new Set([...played,...rest])].filter(id=>G.players[id]&&!fieldIds.has(id)).slice(0,20);
- const spot=i=>{const ring=i<6?0:i<16?1:2,n=[6,10,14][ring],j=i-[0,6,16][ring],a=j/n*Math.PI*2+ring*.35,r=[2.5,4.5,6.4][ring];return [center[0]+Math.cos(a)*r,center[1]+Math.sin(a)*r*.75];};
+ const jit=(i,q)=>pcH(g,k,'party'+q+i)-.5,spot=i=>{const ring=i<6?0:i<16?1:2,n=[6,10,14][ring],j=i-[0,6,16][ring],a=j/n*Math.PI*2+ring*.35+jit(i,'a')*.5,r=[1.7,3.2,4.8][ring]+jit(i,'r')*1.2;return [center[0]+Math.cos(a)*r,center[1]+Math.sin(a)*r*.75];}; /* 줄 맞춘 원이 아니라 한데 엉킨 무리로: 각도·거리를 사람마다 흩뜨리고 간격을 좁힌다 */
  const targets=bench.map((id,i)=>({k:'party-'+id,id,name:G.players[id].name,cls:'df',position:'',u:{...u,glove:G.players[id].th==='좌'?'R':'L'},from:[dug[0]+(i%4-1.5)*1.1,dug[1]+(i%3)*1.4],pt:spot(i)}));
  onField.forEach((key,i)=>targets.push({k:key,id:+key.slice(1),pt:spot(bench.length+i)})); /* 그라운드에 있던 이긴 팀 선수도 함께 모인다 */
  if(!targets.length)return;cCap(kind==='title'?'우승 확정! 선수들이 마운드로 달려 나옵니다':'끝내기! 선수들이 홈으로 달려 나옵니다','good');cFx(kind==='title'?'우승':'끝내기','hr');sfx('cheer_big',winner===g.home?1:.45);
