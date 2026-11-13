@@ -9,7 +9,10 @@ function ntImpact(ids,k){ if(G.unemp)return ''; /* 야인일 때는 옛 구단�
   const RP=G.nt&&G.nt.k===k&&G.nt.rpos||{}; /* 소집 당시 포지션(검수 11-09zj) */ const role=p=>RS[p.id]?({sp:'선발투수',pen:'불펜',start:`주전 ${RP[p.id]||posLabel(p)}`,bench:`백업 ${RP[p.id]||posLabel(p)}`})[RS[p.id]]:!d?posLabel(p):d.sp.some(x=>x.id===p.id)?'선발투수':p.isP?'불펜':d.start.some(x=>x.id===p.id)?`주전 ${posLabel(p)}`:`백업 ${posLabel(p)}`; const by={}; L.forEach(p=>{ const r=role(p); by[r]=(by[r]||0)+1; });
   const M=L.filter(p=>!p.foreign&&!(p.mil&&(p.mil.done||p.mil.exempt))), mf=M.length; const e=NT_EV[k]; /* 입대 예정·복무 중도 특례 대상(ntResult와 같은 기준, 검수 11-09g) */
   return `<p class="small"><b>우리 팀 영향</b> ${L.length}명 · ${Object.entries(by).map(([r,n])=>`${r} ${n}명`).join(' · ')}${mf?e.ex?` · 병역 특례 가능 ${mf}명(${M.map(p=>esc(p.name)).join(', ')}: ${e.ex==='gold'?'금메달':'3위 이내'}이면 특례, 입대 예정·복무 중 포함)`:` · 미필 ${mf}명`:''}</p>`; }
-function ntView(){ const M=ntMgr(); const N=ntState(); const up=ntUpcoming(4); const nx=up[0]; const TV=ntTourView(), AV=ntArcView(); /* 대회 현황·기록실(76b_nt_tour) */
+function ntView(){ const M=ntMgr(); const N=ntState(); const up=ntUpcoming(4); const nx=up[0]; const TV0=ntTourView(), AV0=ntArcView(); /* 대회 현황·기록실(76b_nt_tour) */
+  /* 대회 화면이 위를 다 차지해 다음 대회 예비 명단·구단 병역 추천이 안 보이던 문제(카페 11-13 알중식): 하위 탭으로 나눈다. 대회 진행 중에만 대회 현황이 먼저 */
+  const tl=!!(G.nt&&G.nt.tour&&!G.nt.tour.done); const it=inTabs('ntv',[['team','대표팀·명단'],...(TV0?[['tour',tl?'대회 진행 중':'지난 대회 현황']]:[]),...(AV0?[['arc','대회 기록실']]:[])],tl?'tour':'team');
+  if(it.cur==='tour')return it.bar+TV0; if(it.cur==='arc')return it.bar+AV0; const TV=it.bar, AV='';
   const exL=k=>NT_EV[k].ex==='gold'?'금메달':NT_EV[k].ex==='top3'?'3위 이내':'없음';
   const live=N&&N.y===G.year&&(!N.res||G.day<KD(...NT_EV[N.k].to))?N:null; /* 결과가 나와도 복귀일까지는 최종 명단(검수 11-09u) */ const medH=live&&(live.med||[]).length?`<p class="small">소집일 제외: ${live.med.map(x=>{ const p=G.players[x.id], r=x.rep!=null?G.players[x.rep]:null; return `${esc(p?p.name:pNmAny(x.id))}(${esc(x.why)})${r?` → ${esc(r.name)}`:''}`; }).join(', ')}</p>`:''; const e=live&&NT_EV[live.k]; const canRef=!G.unemp&&live&&G.day<KD(e.from[0],e.from[1]);
   const pre=!live&&G.ntPre&&G.ntPre.y===G.year&&nx&&G.ntPre.k===nx.k&&nx.y===G.year?G.ntPre:null;
