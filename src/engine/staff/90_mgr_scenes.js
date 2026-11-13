@@ -293,16 +293,32 @@ const MSQ=[
    {l:['우승하면 하겠다고 전해 주세요','시즌 끝나고 성적 보고 하죠','지금 하면 애들이 들뜹니다. 끝나고 하죠','우승하면 제대로 쏩니다','기대하게 두는 게 더 효과가 좋죠, 허허','우승하면'],r:['하하, 그 말 그대로 전하겠습니다. 애들이 이를 갈겠네요.'],fx:{rel:1}}]}
 ];
 /* 결과를 실제로 남긴다. 돌려주는 값: 대화 아래에 보일 한 줄들 */
+/* 대화 결과는 숫자 대신 짧은 반응 한 줄로 남긴다(사용자 11-13): 수치는 관계도·선수 화면에서 본다 */
+function fxSoft(k,d,name){ const up=d>0, big=Math.abs(d)>=4;
+  if(k==='rel')return up?(big?'감독이 크게 고마워합니다':'감독이 고마워합니다'):(big?'감독이 불쾌해합니다':'감독이 못마땅해합니다');
+  if(k==='team')return up?'선수단 분위기가 밝아집니다':'선수단 분위기가 가라앉습니다';
+  if(k==='pm')return `${name} ${up?(big?'표정이 환해집니다':'표정이 밝아집니다'):(big?'표정이 크게 굳습니다':'표정이 굳습니다')}`;
+  if(k==='tr')return up?'구단주가 흡족해합니다':(big?'구단주가 언짢아합니다':'구단주의 표정이 굳습니다');
+  if(k==='rap')return up?'구단주와 한결 가까워졌습니다':'구단주와 서먹해졌습니다';
+  if(k==='fan')return up?'팬들이 반깁니다':'팬들이 실망합니다';
+  if(k==='press')return up?'기자들이 호의적입니다':'기자들의 반응이 차갑습니다';
+  return ''; }
+/* 다른 곳에서 만든 결과 줄(수락·거절 등)에 섞인 수치 변화도 같은 말로 바꾼다 */
+function fxSoftText(t){ return String(t||'').split(' · ').map(s=>{ let m;
+  if((m=s.match(/^감독 관계 ([+-]?\d+(?:\.\d+)?)/)))return fxSoft('rel',+m[1]);
+  if((m=s.match(/^선수단 기분 ([+-]?\d+)/)))return fxSoft('team',+m[1]);
+  if((m=s.match(/^(.+) 기분 ([+-]?\d+(?:\.\d+)?)$/)))return fxSoft('pm',+m[2],m[1]);
+  return s; }).filter(Boolean).join(' · '); }
 function mgrScnFx(m,fx,X){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id)return ['현재 구단의 감독과 나눈 대화가 아니라 아무것도 변경하지 않습니다.'];if(Object.prototype.hasOwnProperty.call(fx,'req')){const why=mgrReqBlock(fx.req);if(why)return [why+' 추가 보강 약속은 만들지 않습니다.'];}const out=[]; const P=w=>X[w]&&X[w].team===G.user?X[w]:null;
-  if(fx.rel){ const rv=typeof mcfRelGain==='function'?mcfRelGain(m,fx.rel):fx.rel; m.rel=clamp(m.rel+rv,0,100); out.push(rv!==fx.rel?`감독 관계 ${rv>0?'+':''}${rv}(자주 나눈 이야기라 덜 오름)`:`감독 관계 ${fx.rel>0?'+':''}${fx.rel}`); } /* 면담 체감(11-12) */
-  if(fx.mor){ for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+fx.mor,0,100); out.push(`선수단 기분 ${fx.mor>0?'+':''}${fx.mor}`); }
-  if(fx.pm){ const p=P(fx.pm[0]); if(p){ p.mor=clamp((p.mor??60)+fx.pm[1],0,100); out.push(`${p.name} 기분 ${fx.pm[1]>0?'+':''}${fx.pm[1]}`); } }
+  if(fx.rel){ const rv=typeof mcfRelGain==='function'?mcfRelGain(m,fx.rel):fx.rel; m.rel=clamp(m.rel+rv,0,100); if(rv)out.push(fxSoft('rel',rv)); } /* 면담 체감(11-12) */
+  if(fx.mor){ for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+fx.mor,0,100); out.push(fxSoft('team',fx.mor)); }
+  if(fx.pm){ const p=P(fx.pm[0]); if(p){ p.mor=clamp((p.mor??60)+fx.pm[1],0,100); out.push(fxSoft('pm',fx.pm[1],p.name)); } }
   if(fx.pref&&MPREF[fx.pref[0]]){ const [k,d]=fx.pref; mgrAttr(m); m[k]=clamp((m[k]??50)+d,20,90); out.push(`감독 기용 성향: ${MPREF[k]} ${d>0?'늘림':'줄임'}`); }
-  if(fx.rest){ const p=P(fx.rest); if(p){ const f0=p.fat||0; p.fat=Math.max(0,f0-20); out.push(`${p.name} 휴식(피로 ${Math.round(f0)} → ${Math.round(p.fat)})`); } }
+  if(fx.rest){ const p=P(fx.rest); if(p){ const f0=p.fat||0; p.fat=Math.max(0,f0-20); out.push(`${p.name} 휴식`); } }
   if(fx.hint){ const p=P(fx.hint); if(p){ mgrAttr(m); const err=hn('mgrhint'+m.id,p.id)*Math.max(0,90-(m.eye||50))/8; const v=Math.round(clamp((p.pot||ovr(p))+err,20,99)/5)*5; out.push(`감독 귀띔: ${p.name}(${p.age}세) 잠재력 추정 ${dv(v)}점 안팎으로 봅니다(지금 능력 ${dv(ovr(p))}점, 감독 눈 기준).`); } }
   if(fx.cash){ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+fx.cash; out.push(`구단 지출 ${money(fx.cash)}`); }
   if(fx.wire){ try{ wire('감독',`${tshort(G.user)} ${fx.wire}`,{tid:G.user}); }catch(e){} out.push(`리그 소식: ${fx.wire}`); }
-  if(fx.req&&MREQ[fx.req]){const need=fx.req==='an'?null:mgrReqNeed(fx.req),R0=G.mgrReq={v:2,tid:G.user,k:fx.req,mid:m.id,d:G.day,until:mgrReqUntil(fx.req),an:G.acqSeq||0,ids:Object.values(G.players).filter(p=>p.team===G.user).map(p=>p.id),sids:anaList().map(a=>a.id),n0:anaList().length,min:Math.max(mreqMin(fx.req),need?Math.ceil(need.v+3):0),slot:need?.slot};(G.mgrReqSeen=G.mgrReqSeen||{})[G.user+':'+m.id+':'+fx.req]=G.day;out.push(`감독 요청: ${dmd(R0.until)}까지 ${MREQ[fx.req]} 보강(들어주면 관계 +6, 못 들어주면 -3) · 조건: ${mgrReqCond(R0)}`);}
+  if(fx.req&&MREQ[fx.req]){const need=fx.req==='an'?null:mgrReqNeed(fx.req),R0=G.mgrReq={v:2,tid:G.user,k:fx.req,mid:m.id,d:G.day,until:mgrReqUntil(fx.req),an:G.acqSeq||0,ids:Object.values(G.players).filter(p=>p.team===G.user).map(p=>p.id),sids:anaList().map(a=>a.id),n0:anaList().length,min:Math.max(mreqMin(fx.req),need?Math.ceil(need.v+3):0),slot:need?.slot};(G.mgrReqSeen=G.mgrReqSeen||{})[G.user+':'+m.id+':'+fx.req]=G.day;out.push(`감독 요청: ${dmd(R0.until)}까지 ${MREQ[fx.req]} 보강 · 조건: ${mgrReqCond(R0)}`);}
   return out; }
 const mreqOk=(k,p)=>k==='rp'?p.isP&&!isSPr(p):k==='sp'?isSPr(p):k==='def'?!p.isP&&['C','SS','2B','CF'].includes(p.pos):k==='bat'?!p.isP:false;
 /* 보강으로 인정하는 최소 능력: 지금 우리 그 유형 선수 중간값(45~68) */
