@@ -8,8 +8,6 @@ function buildMatch3d(root,manifest,{embedded=true}={}){
  assets.gear=JSON.parse(fs.readFileSync(path.join(dir,'gear_defaults.json'),'utf8'));
  /* 원본에 없는 동작: CMU 모션캡처를 같은 골격으로 옮긴 클립(tools/match3d-cmu-clip.cjs) */
  assets.clips=fs.readdirSync(dir).filter(f=>/^clip-.*\.json$/.test(f)).sort().map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')));
- /* FO3D_EXPERIMENT=1: 비교 실험 클립(assets/match3d/experiment)도 넣는다. 배포 빌드에는 넣지 않는다 */
- if(process.env.FO3D_EXPERIMENT)for(const f of fs.readdirSync(path.join(dir,'experiment')).filter(f=>/^clip-.*\.json$/.test(f)).sort())assets.clips.push(JSON.parse(fs.readFileSync(path.join(dir,'experiment',f),'utf8')));
  assets.basisJS=fs.readFileSync(path.join(three,'examples/jsm/libs/basis/basis_transcoder.js'),'utf8');assets.basisWasm=bytes(path.join(three,'examples/jsm/libs/basis/basis_transcoder.wasm'));
  return esbuild.buildSync({absWorkingDir:root,entryPoints:[manifest.bundles.scene3d[0]],bundle:true,write:false,format:'iife',globalName:'Match3D',platform:'browser',target:'es2020',minify:true,nodePaths:[path.join(__dirname,'node_modules')],define:{FO3D_PACK:JSON.stringify(assets)},banner:{js:'/*\n'+fs.readFileSync(path.join(root,'docs/licenses/match3d.txt'),'utf8')+'\n*/'},legalComments:'eof'}).outputFiles[0].text.replace(/<\/script/gi,'<\\/script').replace(/[ \t]+$/gm,'');
 }
