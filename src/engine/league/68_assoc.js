@@ -3,7 +3,7 @@
  - 실행위원회: 10개 구단 단장. 안건을 먼저 심의하고, 과반이 지지한 안만 이사회에 올린다.
  - 이사회: 10개 구단 사장과 협회장. 실행위원회 안을 대부분 그대로 의결하지만, 협회장 성향에 따라 한 단계 조정할 때가 있다.
  - 총회: 10개 구단 구단주. 협회장은 이사회가 재적 4분의 3 이상으로 추천하고 총회가 4분의 3 이상으로 선출한다(임기 3년).
- 경쟁균형세 상한은 2029년부터 실행위원회가 열리면 표결로 정하고(동결 포함), 열리지 않는 해는 물가 연동으로 3% 오른다.
+ 경쟁균형세 상한은 2029년부터 실행위원회가 열리면 표결로 정하고(동결 포함), 열리지 않는 해는 자동으로 1~2% 오른다(리그 평균이 상한의 85% 이상이면 2%).
  시즌을 마친 시점(결산) 연봉이 상한의 90% 이상인 구단이 5곳 이상이면 12월 10일에 소집된다.
  12월 기준으로 세면 계약 만료·FA 이탈로 연봉이 가장 낮은 때라 거의 열리지 않는다(20시즌 시뮬레이션에서 95% 기준은 소집 0회). */
 const ASSOC={name:'대한프로야구협회',s:'KPBA',head:'협회장'};
@@ -11,7 +11,7 @@ const AS_STANCE={tight:{l:'긴축형',v:0,d:'구단 재정 건전성을 앞세�
   bal:{l:'균형형',v:.03,d:'단장 회의 결정을 그대로 존중합니다.'},
   grow:{l:'확장형',v:.06,d:'리그 사업을 키웁니다. 중계권 배분이 3% 늘고, 작은 인상안은 이사회에서 한 단계 올릴 때가 있습니다.'}};
 const AS_CAR=['전 구단 사장','모기업 그룹 부회장','야구 해설위원 출신','전 구단주 대행','스포츠 행정학 교수','전 체육 단체 사무총장','전 국회 문화체육관광위원'];
-const CMT_OPT=[0,.03,.05,.08], CMT_TH=.9, CMT_N=5;
+const CMT_OPT=[0,.02,.03,.05] /* 표결 선택지(카페 11-13: 2060년대 상한 500억·연봉 90억처럼 숫자가 너무 커져 와닿지 않았다) */, CMT_TH=.9, CMT_N=5;
 const pctTxt=x=>x?`${Math.round(x*100)}% 인상`:'동결';
 const cmtPct=r=>Math.floor(r*100+1e-9)+'%'; /* 상한 대비 비율은 내림으로: 89.99%를 90%로 보이면 소집 집계(90% 이상)와 어긋난다(검수 11-09zzd) */
 
@@ -57,9 +57,10 @@ EVH.cmt={ pick(e,i){ const A=asInit(); if(!A.cur)return ''; A.cur.uv=i<CMT_OPT.l
 function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; if(G.capY[y])return; const A=asInit(); const cap=capOf(G.year);
   if(!A.cur||A.cur.y!==y){ const near=cmtNear(); A.cur={y,near:near.map(t=>t.id),on:near.length>=CMT_N}; }
   const C=A.cur;
-  if(!C.on){ /* 위원회가 열리지 않는 해는 매년 물가 연동 3% 인상(동결 없음). 위원회가 열려 표결로 정한 결과는 동결 포함 그대로(사용자 요청 11-09) */
-    G.capY[y]=Math.round(cap*1.03); A.cmt.unshift({y,n:C.near.length,held:false,fin:.03,idx:true}); A.cmt.length=Math.min(A.cmt.length,15);
-    note('일정',`${y}년 경쟁균형세 상한은 물가 연동으로 3% 올라 ${money(G.capY[y])}입니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳐 표결 없이 자동 조정했습니다.`); A.cur=null; return; }
+  if(!C.on){ /* 위원회가 열리지 않는 해는 매년 자동 1~2% 인상(동결 없음). 위원회가 열려 표결로 정한 결과는 동결 포함 그대로(사용자 요청 11-09) */
+    const avgR=G.teams.length?G.teams.reduce((a,t)=>a+cmtRatio(t),0)/G.teams.length:0, ix=avgR>=.85?.02:.01; /* 자동 조정: 리그 평균이 상한에 붙어 있으면 2%, 아니면 1%(금액이 수십 년 뒤에도 지금 감각에 가깝게) */
+    G.capY[y]=Math.round(cap*(1+ix)); A.cmt.unshift({y,n:C.near.length,held:false,fin:ix,idx:true}); A.cmt.length=Math.min(A.cmt.length,15);
+    note('일정',`${y}년 경쟁균형세 상한은 자동 조정으로 ${Math.round(ix*100)}% 올라 ${money(G.capY[y])}입니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳐 표결 없이 자동 조정했습니다.`); A.cur=null; return; }
   /* 1차 표결 */
   const ideal={}, vote={}; const vt=C.uvT??G.user; /* 표는 던질 때 구단 것(이직해도 옮겨 가지 않는다: 검수 11-06) */ const userVotes=C.uvT!=null?C.uv!==undefined:asEmp();
   for(const t of G.teams){ ideal[t.id]=cmtIdeal(t); if(userVotes&&t.id===vt){ if(C.uv!=null)vote[t.id]=C.uv; continue; } vote[t.id]=cmtSnap(ideal[t.id]); }
