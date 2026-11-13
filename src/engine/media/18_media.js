@@ -61,14 +61,18 @@ function prFA(rec){ if(rec.to!==G.user||rec.from===G.user)return; const big=rec.
 function prLeak(kind,p,txt){ news('선수',kind==='mgr'?`${txt}`:`${tshort(G.user)} ${p.name}, 출전 기회 불만 토로`,kind==='mgr'?`감독과 프런트 사이 엇박자가 감지됩니다. 구단 내부 소통에 문제가 있다는 지적입니다.`:`${p.name}이(가) 측근을 통해 지금 처지에 불만을 드러냈다는 소식입니다. 구단 분위기가 흔들릴 수 있다는 우려가 나옵니다.`,-2,{ref:p?p.id:null}); }
 /* 구단주: 시즌 목표와 월간 평가 */
 /* 구단주의 시즌 순위 목표: 예상 순위에서 성적 우선은 한 계단 위(최대 5위), 수익 우선은 한 계단 아래, 홍보 우선은 그대로. 다른 구단 보기에도 같은 기준 */
-function goalRankOf(tid){ const ow=team(tid).owner; const proj=G.proj?G.proj.indexOf(tid)+1:5; const r=ow==='win'?Math.max(1,Math.min(5,proj-1)):ow==='profit'?Math.min(8,proj+1):Math.min(7,proj); const gr=expGraceRank(tid); return gr!=null?Math.max(r,gr):r; } /* 창단 유예 중이면 낮은 쪽(89_league_expansion) */
+/* 시즌 순위 목표는 그해 전력으로(사용자 11-13: 약한 팀에 7위, 11구단 체제에 '8위 이내' 같은 고정 목표가 나왔다).
+   예상 순위 그대로가 기본. 우승형 구단주는 바로 위 팀과 전력 차가 작을 때만 한 계단 위를, 수익형은 한 계단 여유를 준다. 구단 수(N)를 넘지 않는다 */
+function goalRankOf(tid){ const N=G.teams.length, ow=team(tid).owner; const L=G.proj||[]; const proj=L.indexOf(tid)>=0?L.indexOf(tid)+1:Math.ceil(N/2); const R2=G.projR||{};
+  const gapUp=proj>1&&R2[L[proj-2]]!=null&&R2[tid]!=null?R2[L[proj-2]]-R2[tid]:9;
+  let r=ow==='win'?proj-(gapUp<=1.2?1:0):ow==='profit'?proj+1:proj; r=clamp(r,1,N); const gr=expGraceRank(tid); return gr!=null?Math.max(r,gr):r; } /* 창단 유예 중이면 낮은 쪽(89_league_expansion) */
 /* 시범경기 시작 날 구단주가 올 시즌 목표를 먼저 제시한다(커뮤니티 11-12: 개막일에 정해져 준비할 시간이 없었다). 그때 전력으로 예상 순위를 매기고, 개막 전까지 순위 목표를 한 번 상의할 수 있다 */
-function goalsPreseason(){ if(G.unemp||G.user==null)return; if(G.goals&&G.goals.y===G.year)return; G.proj=G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); setGoals('시범경기를 앞두고 구단주께서 올 시즌 목표를 먼저 제시하셨습니다.',false,true); }
+function goalsPreseason(){ if(G.unemp||G.user==null)return; if(G.goals&&G.goals.y===G.year)return; { const A=G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r); G.proj=A.map(x=>x.id); G.projR=Object.fromEntries(A.map(x=>[x.id,x.r])); } setGoals('시범경기를 앞두고 구단주께서 올 시즌 목표를 먼저 제시하셨습니다.',false,true); }
 /* 목표 상의: ok 수락, up 한 계단 높여 제안, down 한 계단 낮춰 요청. 한 해 한 번, 개막 전까지. 하향 수락 여부는 그해·구단으로 고정(다시 불러와도 같은 답) */
 function goalTalk(k){ const g=G.goals, t=team(G.user); if(!g||g.y!==G.year||!g.pre)return '지금은 목표를 상의할 수 없습니다.'; if(g.talk)return '올해 목표는 이미 구단주와 상의를 마쳤습니다.'; if(period()!=='pre')return '개막 뒤에는 목표를 바꿀 수 없습니다.';
   if(k==='ok'){ g.talk='ok'; return `구단주 목표(${g.rank}위 이내)를 그대로 받아들였습니다.`; }
   if(k==='up'){ if(g.rank<=1)return '이미 1위 목표입니다.'; g.rank--; g.talk='up'; t.trust=clamp((t.trust??55)+2,0,100); return `순위 목표를 ${g.rank}위 이내로 높여 제안했습니다. 구단주가 의욕을 높이 삽니다(신뢰 +2). 대신 그만큼 평가 기준이 올라갑니다.`; }
-  if(k==='down'){ if(g.rank>=Math.max(8,G.teams.length-1))return '더 낮출 수 없습니다.'; g.talk='down'; const p=clamp(.35+((t.trust??55)-50)/100+((G.rep??50)-50)/200,.15,.85); if(u01('goalTalk'+G.year,G.user)<p){ g.rank++; t.trust=clamp((t.trust??55)-1,0,100); return `구단주가 받아들였습니다. 순위 목표 ${g.rank}위 이내(신뢰 -1).`; } t.trust=clamp((t.trust??55)-2,0,100); return `구단주가 "${g.rank}위는 해야 합니다"라며 받아들이지 않았습니다(신뢰 -2).`; }
+  if(k==='down'){ if(g.rank>=G.teams.length-1)return '더 낮출 수 없습니다.'; g.talk='down'; const p=clamp(.35+((t.trust??55)-50)/100+((G.rep??50)-50)/200,.15,.85); if(u01('goalTalk'+G.year,G.user)<p){ g.rank++; t.trust=clamp((t.trust??55)-1,0,100); return `구단주가 받아들였습니다. 순위 목표 ${g.rank}위 이내(신뢰 -1).`; } t.trust=clamp((t.trust??55)-2,0,100); return `구단주가 "${g.rank}위는 해야 합니다"라며 받아들이지 않았습니다(신뢰 -2).`; }
   return ''; }
 function setGoals(intro,first,pre){ prInit(); delete G.bLock; if(G.bLocks)delete G.bLocks[G.user]; /* 목표가 정해지면 시즌 예산을 다시 확정한다 */ const t=team(G.user); const proj=G.proj?G.proj.indexOf(G.user)+1:5; const ow=t.owner;
   /* 창단 첫해는 구단주도 기대를 낮춘다: 예상 순위 기준으로 성적 우선 그대로, 홍보 우선 1계단 아래, 수익 우선 2계단 아래(최대 8위) */

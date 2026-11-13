@@ -2968,7 +2968,7 @@ T('[검수 11-09y] 샐러리캡: AI 하한 맞추기는 예외 선수 절반 반
   const top=domestic(A).filter(p=>!isRookie(p)&&!p.ys&&!(p.joinY>G.year)).sort((x,y)=>ovr(y)-ovr(x))[0]; top.hist=top.hist.concat([1,2,3,4,5,6,7].map(i=>({y:G.year-i,t:A}))); ok(franId(A)===top.id,'준비 실패: 예외 대상');
   const fl=floorOf(2027); aiFloorFix(A); ok(capPay(A)>=fl,'하한 미달 '+capPay(A)+' < '+fl); ok(capInfo(G.user).floor===fl,'2027년 하한 '+capInfo(G.user).floor); });
 T('[검수 11-09y] 예산: 이사회 상한 결정이 확정 한도에, 추가 지원은 목표 금액에, 당선된 차기 협회장은 취임 시즌 중계권에 반영된다',()=>{ fresh(); G.year=2028; G.last={y:2028}; delete G.capY; if(G.bLocks)delete G.bLocks[G.user]; const t=team(G.user); t.indie=false; t.grant=null;
-  const b0=budget(); ok(b0.capLock===b0.cap,'준비 실패 '+b0.capLock+' '+b0.cap); G.capY={2029:15000}; /* 11-13: 자동 인상이 없어 예상값=동결값. 이사회가 더 낮게 정한 경우로 확인 */ const b1=budget(); ok(b1.cap<b0.cap,'준비 실패: 이사회 결정이 한도에 반영 안 됨'); ok(Math.abs(b1.capLock-b1.cap)<=2,'확정 한도 '+b1.capLock+' 실시간 '+b1.cap);
+  const b0=budget(); ok(b0.capLock===b0.cap,'준비 실패 '+b0.capLock+' '+b0.cap); G.capY={2029:15000}; /* 11-13: 자동 인상이 없어 예상값=동결값. 이사회가 더 낮게 정한 경우로 확인 */ const b1=budget(); ok(b1.cap===b0.cap,'상한 결정이 지원 한도를 움직임(11-13: 물가와 상한 분리) '+b1.cap+' '+b0.cap); ok(Math.abs(b1.capLock-b1.cap)<=2,'확정 한도 '+b1.capLock+' 실시간 '+b1.cap);
   t.grant={y:2029,amt:2500}; const b2=budget(); ok(b2.grant===2500&&b2.goalSup===Math.round(b2.goalFrac*(b2.capLock-2500))+2500,'추가 지원 목표 '+b2.goalSup+' '+b2.goalFrac+' '+b2.capLock);
   const A=asInit(); A.head.stance='tight'; A.next=Object.assign({},A.head,{stance:'grow',since:2029}); ok(asRev()===1.03,'차기 협회장 효과 빠짐'); A.next.since=2030; ok(asRev()===1,'취임 전 시즌에 효과'); });
 T('[검수 11-09y] 구장 전망: 개막 전 완공 공사는 관중·매점·좌석 감소까지 완공 뒤와 같고, 개막 뒤 완공은 그 뒤 경기만 다음 시즌 전망에 넣는다',()=>{ fresh(); const S=stadOf(G.user); S.build=[]; G.day=G.cal.open-5; const base=stadProj(G.user);
@@ -4066,8 +4066,8 @@ const expMake=(user,city)=>{ fresh(); expPropose(); const E=G.exp; const C=CI_CI
 T('[창단 구단] 창단 1~3년차 구단주 목표는 순위 부담 없음→탈꼴찌→뒤에서 셋째이고, 단장 계약도 새 구단으로 옮긴다',()=>{ const tid=expMake(true); const N=G.teams.length; ok(N===11&&G.user===tid,'준비 실패: 창단 단장 부임 안 됨');
   ok(G.myC&&G.myC.tid===tid&&G.myC.y1>=team(tid).born+2,'단장 계약이 옛 구단에 남음: '+JSON.stringify(G.myC&&{tid:G.myC.tid,y1:G.myC.y1}));
   const got=[]; for(const k of [0,1,2,3]){ team(tid).born=G.year-k; G.goals=null; G.proj=null; goalsPreseason(); got.push(G.goals.rank+(G.goals.exp?'/'+G.goals.exp:'')); }
-  ok(got[0]===N+'/1'&&got[1]===(N-1)+'/2'&&got[2]===(N-2)+'/3','유예 목표가 다름: '+got.join(','));
-  ok(!/\\/4$/.test(got[3])&&+got[3].split('/')[0]<=8,'유예가 끝난 4년차는 평소 목표여야 함: '+got[3]);
+  const rk=x=>+String(x).split('/')[0]; ok(got[0]===N+'/1'&&got[1].endsWith('/2')&&rk(got[1])>=N-1&&got[2].endsWith('/3')&&rk(got[2])>=N-2&&got.every(x=>rk(x)<=N),'유예 목표가 다름: '+got.join(',')); /* 11-13: 목표는 그해 전력(예상 순위)으로, 유예 중엔 그보다 더 어렵지 않게 */
+  ok(!/\\/4$/.test(got[3])&&+got[3].split('/')[0]<=N,'유예가 끝난 4년차는 평소 목표(그해 전력 기준)여야 함: '+got[3]);
   team(tid).born=G.year; G.goals=null; G.mail=[]; goalsPreseason(); ok(G.goals.youth===1&&G.goals.sup>=1,'유예 목표에 육성·재정 완화 없음');
   const m=G.mail.find(x=>(x.subj||'').includes('시즌 구단 목표')); ok(m&&m.body.includes('창단 1년차')&&m.body.includes('순위 목표 없음'),'목표 메일에 창단 유예 안내 없음');
   ok(team(tid).cash>=0,'특별지명 보상금이 구단 운영 자금에서 빠져 시작부터 적자: '+team(tid).cash);

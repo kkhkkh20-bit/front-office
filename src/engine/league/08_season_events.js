@@ -6,7 +6,7 @@ function openingDay(){
   { const v=G.teams.filter(t=>t.id!==ME()).map(t=>G.sea.fspend[t.id]||0); G.lgFor=G.lgFor||{}; G.lgFor[G.year]=Math.round(sum(v)/Math.max(1,v.length)); }
   const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})); const a=avg(rs.map(x=>x.r));
   rs.forEach(x=>team(x.id).expW=clamp(.5+(x.r-a)*.03,.36,.64));
-  G.proj=rs.map(x=>({id:x.id,r:x.r+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
+  { const A=rs.map(x=>({id:x.id,r:x.r+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r); G.proj=A.map(x=>x.id); G.projR=Object.fromEntries(A.map(x=>[x.id,x.r])); }
   note('일정',`${G.year} 시즌 개막입니다. 전력분석팀 예상 순위 ${G.proj.indexOf(G.user)+1}위.`);
   if(!(G.goals&&G.goals.y===G.year&&(G.goals.fd||G.goals.pre)))setGoals(); /* 시범경기 전에 정해 상의한 목표는 개막에 그대로 */ news('분석',`${G.year} 시즌 전망: ${tshort(G.user)} ${G.proj.indexOf(G.user)+1}위 예상`,`${tname(G.user)}의 시즌 전 전력은 ${G.proj.indexOf(G.user)+1}위로 꼽힙니다.`,0);
 }
@@ -165,8 +165,8 @@ function settlement(){
     t.cash+=net;
     /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(INDIE_DIV_T 초과분의 INDIE_DIV_R, 49_sponsors) */
     let div=0; if(t.indie&&t.cash>Math.round(INDIE_DIV_T*EI)){ div=Math.round((t.cash-Math.round(INDIE_DIV_T*EI))*INDIE_DIV_R); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
-    /* 유보금 상한(11-12): 모기업 구단도 현금이 100억(경제 지수 반영)을 넘으면 넘은 돈의 절반을 모기업이 회수한다(실제 구단은 수백억을 쌓아 두지 않는다) */
-    let sweep=0; if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0; /* 우승 포상 FA 특별자금은 용도가 정해진 돈이라 회수 대상에서 뺀다(플레이 테스트 11-13) */ const T=Math.round(10000*EI)+ear; if(t.cash>T){ sweep=Math.round((t.cash-T)*.5); t.cash-=sweep; if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 절반(${money(sweep)})을 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.`,{kind:'구단주'}); } }
+    /* 유보금 상한(11-12, 재정 시뮬 11-13에 60억·60%로 조임: 잘 굴러가는 구단은 해마다 60~90억이 남아 100억 넘는 현금을 늘 들고 있었다): 모기업 구단도 현금이 60억(경제 지수 반영)을 넘으면 넘은 돈의 60%를 모기업이 회수한다(실제 구단은 수백억을 쌓아 두지 않는다) */
+    let sweep=0; if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0; /* 우승 포상 FA 특별자금은 용도가 정해진 돈이라 회수 대상에서 뺀다(플레이 테스트 11-13) */ const T=Math.round(RES_CAP*EI)+ear; if(t.cash>T){ sweep=Math.round((t.cash-T)*RES_RATE); t.cash-=sweep; if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 60%(${money(sweep)})를 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.`,{kind:'구단주'}); } }
     /* 모기업 지원 조정: 구단에 쓰지 않은 돈이 쌓여 있으면, 다음 시즌 모기업 지원 한도를 그만큼 줄인다(돈을 가져가지는 않는다).
        50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 줄인다. 쌓인 돈은 구단이 그대로 쓸 수 있다 */
     let cut0=t.supCut&&t.supCut.y===y?t.supCut.amt:0;
