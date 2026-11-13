@@ -48,7 +48,7 @@ function makeActor(t){const s=active,role=roleOf(t),o=cloneSkeleton(s.assets.pla
  o.traverse(n=>{if(n.userData.cb_group)n.visible=allowed.has(n.name);if(n.isMesh){n.castShadow=role==='batter'||role==='catcher'||/pit/.test(t.cls);n.receiveShadow=true;const paint=m=>{if(materials.has(m))return materials.get(m);const q=m.clone();if(q.name==='uniform_jersey')q.color.set(t.u?.S||'#eeeeee');if(['uniform_socks','cap','helmet','uniform_undershirt','piping','batting_glove'].includes(q.name))q.color.set(t.u?.H||t.col||'#273650');if(/jersey_decal|cap_logo|helmet_logo/.test(q.name)||/Teeth/.test(n.name))n.visible=false;materials.set(m,q);return q;};n.material=Array.isArray(n.material)?n.material.map(paint):paint(n.material);}});
  const group=new T.Group();group.add(o);s.scene.add(group);const a={key:t.k,id:t.id,role,pitcher:/pit/.test(t.cls),root:group,model:o,mixer:new T.AnimationMixer(o),materials:[...materials.values()],uniform:JSON.stringify(t.u),motion:'',move:null,clips:s.assets.player.animations,updatedAt:performance.now(),positionLabel:t.position||t.lab||''};
  if(role==='batter'){a.post=swingMechanics;const grip=o.getObjectByName('Bat_Grip');if(grip){a.bat=s.assets.bat.scene.clone();grip.add(a.bat);}}
- if(role==='field'&&!a.pitcher)a.post=fieldMechanics;
+ if(role==='field'&&!a.pitcher||role==='catcher')a.post=fieldMechanics;
  if(a.pitcher){a.post=pitchMechanics;a.releaseGrip=o.getObjectByName('Ball_Grip');if(a.releaseGrip){a.heldBall=s.assets.ball.scene.clone();a.releaseGrip.add(a.heldBall);}}
  o.traverse(n=>{if(n.isBone&&/Head$/.test(n.name))a.head=n;if(n.isBone&&/LeftShoulder$/.test(n.name))a.shoulderL=n;if(n.isBone&&/RightShoulder$/.test(n.name))a.shoulderR=n;});a.gloveGrip=o.getObjectByName('Glove_Pocket');a.throwGrip=o.getObjectByName('Ball_Grip');makeLabel(s,a,t);
  a.zone=zoneOf(t);actorSide(a,t);pose(a,idle(a),true);return a;
@@ -133,14 +133,14 @@ function fieldMechanics(a){if(globalThis.FO3D_RAW_CLIPS||!a.action)return;const 
  if(m==='catch_fly'||m==='catch_fly_run'||m==='catch_line_drive'||m==='catch_throw'||m==='catch_stretch'){const d=a.action.getClip().duration,ph=t/d,w=smooth(ph/.25)*(1-smooth((ph-.6)/.3));
   if(w>0&&m!=='catch_stretch'&&m!=='catch_fly_run'){const F=bodyFrame(a),k=F?.k||1,g=glove(),bt=g.clone().addScaledVector(F?F.lead:new T.Vector3(1,0,0),-P.flyGap*k).add(new T.Vector3(0,-.03*k,0));limbIK(a,['RightArm','RightForeArm','RightHand'],modelPos(a,bh,new T.Vector3()).lerp(bt,w),ELBOW_MIN_IN);}
   headLook(a,glove().add(new T.Vector3(0,.25,0)),Math.max(w,.0));return;}
- if(m==='throw'){const P=THROW_MECH,rel=clipEvents.throw?.release||.5417,fc=rel-P.stride,L=modelPos(a,lf,new T.Vector3()),R=modelPos(a,rf,new T.Vector3());
+ if(m==='throw'||m==='catcher_throw'){const P=THROW_MECH,off=m==='catcher_throw'?CATCHER_PREP:0 /* 포수는 일어서는 0.24초 뒤부터 같은 송구 */,rel=clipEvents.throw?.release||THROW_RELEASE,fc=rel-P.stride,L=modelPos(a,lf,new T.Vector3()),R=modelPos(a,rf,new T.Vector3()),tt=t-off;
   /* 몸 회전: 내딛는 동안 옆으로 서도록 더 닫았다가(coil) 놓을 때까지 풀고, 던진 뒤엔 던지는 어깨가 앞으로 넘어간다(over). 발은 원래 자리에 둔다 */
-  const yaw=-P.coil*smooth(t/(fc*.7))*(1-smooth((t-(fc-.04))/(rel-fc+.02)))+P.over*smooth((t-rel)/.2)*(1-smooth((t-rel-.45)/.3));
+  const yaw=-P.coil*smooth(tt/(fc*.7))*(1-smooth((tt-(fc-.04))/(rel-fc+.02)))+P.over*smooth((tt-rel)/.2)*(1-smooth((tt-rel-.45)/.3));
   if(yaw){rotModel(a,hips,AX.y,yaw);legIK(a,'Left',L);legIK(a,'Right',R);}
   /* 상체: 착지부터 던질 곳으로 숙이고 던진 뒤 절반쯤 세운다 */
-  const tilt=P.fwd*smooth((t-fc)/(rel-fc))*(1-.5*smooth((t-rel-.3)/.4));if(tilt)for(const n of ['Spine','Spine1','Spine2']){const b=boneByName(a,n);if(b)rotModel(a,b,AX.x,tilt/3);}
+  const tilt=P.fwd*smooth((tt-fc)/(rel-fc))*(1-.5*smooth((tt-rel-.3)/.4));if(tilt)for(const n of ['Spine','Spine1','Spine2']){const b=boneByName(a,n);if(b)rotModel(a,b,AX.x,tilt/3);}
   /* 던지는 팔: 투수와 같은 핵심 자세(코킹→최대 외회전→릴리스) */
-  const sv=(t-fc)/(rel-fc),w=t<fc?smooth((t-(fc-.15))/.15):t<=rel+.04?1:1-smooth((t-rel-.04)/.25);throwingArm(a,clamp(sv,0,1),w,'three_quarter');
+  const sv=(tt-fc)/(rel-fc),w=tt<fc?smooth((tt-(fc-.15))/.15):tt<=rel+.04?1:1-smooth((tt-rel-.04)/.25);throwingArm(a,clamp(sv,0,1),w,'three_quarter');
   const hd=boneByName(a,'Head');if(hd)headLook(a,modelPos(a,hd,new T.Vector3()).add(new T.Vector3(0,0,10)),1);}}
 /* 야수 송구(사용자 11-12): 착지→릴리스 0.14초, 옆으로 서는 추가 회전 50°, 던진 뒤 넘어가는 회전 20°, 상체 숙임 22° */
 export const THROW_MECH={stride:.14,coil:50,over:20,fwd:22};
