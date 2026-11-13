@@ -131,7 +131,7 @@ function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...a
    목표 인원·수준은 구단 재정(보유 현금)·시장 규모·전략으로 정한다. 빈자리는 아무 달에나 채우고, 사람 바꾸기(약한 사람 내보내고 더 나은 사람)는 11~2월에.
    비시즌(11~1월)에는 다른 AI 구단 스태프를 연봉을 올려 빼 오기도 한다. 들어간 연봉은 시즌 결산 지출(스카우트 운영)에 실제로 잡힌다 */
 function stAiPlan(t){ const cash=t.cash||0; const rich=(t.market-1)*2+(t.indie?-.6:0)+clamp(cash/4000,-1,1.2);
-  return {rich,tSc:clamp(5+Math.round(rich+(t.mode==='rebuild'?.6:0)),4,8),tAn:clamp(3+Math.round(rich*.8+(t.mode==='contend'?.6:0)),ST_AN_N[0],ANA_MAX),payMax:Math.round(clamp(700+rich*250,500,1700))}; }
+  return {rich,tSc:clamp(5+Math.round(rich+(t.mode==='rebuild'?.6:0)),4,8),tAn:clamp(3+Math.round(rich*.8+(t.mode==='contend'?.6:0)),ST_AN_N[0],ANA_MAX),payMax:Math.round(clamp(700+rich*250,500,1700))+(t.stBoost||0)}; } /* stBoost: 남는 돈을 스태프에 돌린 몫(57_club_econ aiSpend) */
 function stAiPay(S){ return sum(S.sc.map(x=>x.sal||0))+sum(S.an.map(x=>x.sal||0)); }
 /* AI 구단이 연봉 sal인 사람을 더 둘 수 있는가(out: 함께 내보내는 사람 연봉) */
 function stAiFits(tid,sal,out){ const L=G.lgStaff&&G.lgStaff[tid], t=team(tid); return !L||!t||stAiPay(L)-(out||0)+sal<=stAiPlan(t).payMax; }

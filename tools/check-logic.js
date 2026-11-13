@@ -2417,7 +2417,7 @@ T('[피드백 11-08d] 구단주 자금 요청: 사유와 상황으로 가능성�
 T('[피드백 11-08d] 사비 쓰기: 회식·팬 이벤트·스카우트 출장비는 휴식 기간이 있고, 생활 등급은 잔액이 있어야 오른다',()=>{ fresh(); const S=personalState(); S.cash=1000; const p=playersOf(G.user)[0]; p.mor=50;
   const m1=personalActivity('team'); ok(p.mor===52&&S.cash===992,'회식 효과·비용 '+p.mor+' '+S.cash+' '+m1); ok(/일 뒤/.test(personalActivity('team')),'회식 휴식 기간 없음');
   prInit(); G.pr.fan=50; personalActivity('fan'); ok(G.pr.fan===52,'팬 여론 '+G.pr.fan);
-  const sc=G.scouts[0]; sc.loy=40; personalActivity('scout'); ok(sc.loy===43,'스카우트 충성도 '+sc.loy);
+  S.wk=null; /* 한 주 유료 일정 한도(11-13) */ const sc=G.scouts[0]; sc.loy=40; personalActivity('scout'); ok(sc.loy===43,'스카우트 충성도 '+sc.loy);
   S.cash=10; ok(/부족/.test(personalLifeUp())&&!(S.life>0),'잔액 없이 생활 등급이 오름'); S.cash=1000; personalLifeUp(); ok(S.life===1&&S.cash===970,'생활 등급 비용'); });
 T('[피드백 11-08d] 단장 말투: 내 말투가 인터뷰·구단주 요청에 묻어나고, 다른 구단 단장도 자기 말투로 말한다(말투 없는 예전 저장은 그대로)',()=>{ fresh(); G.gmP={name:'점검',age:40,bg:'corp',y0:G.year};
   const plain=ivBuild('preseason',{})[0].opts[0].t; ok(myVoice()===null,'말투 없는 예전 저장에 말투가 생김');
@@ -2452,7 +2452,7 @@ T('[피드백 11-08e] 특수 아카데미 제휴: 보낼 수 있는 인원·성�
 T('[피드백 11-09] 사비 쓰기 확장: 기자 접대 노출 확률이 쌓이고, 들키면 구설·구단주 신뢰 하락',()=>{ fresh(); const S=personalState(); S.cash=1000; prInit(); const t=team(G.user);
   ok(Math.abs(pressRisk()-.08)<1e-9,'첫 접대 확률 '+pressRisk()); G.pr.press=50; const tr0=t.trust; const m=personalActivity('press'); ok(S.cash===997,'접대 비용 '+S.cash);
   ok(G.pr.press>=55||(/구설/.test(m)&&t.trust===tr0-3),'접대 효과 없음 '+m); ok(/일 뒤/.test(personalActivity('press')),'접대 휴식 기간 없음'); ok(Math.abs(pressRisk()-.16)<1e-9,'두 번째 확률 '+pressRisk());
-  S.pressLog=[...Array(10)].map(()=>G.day); ok(pressRisk()===.6,'최대 60% '+pressRisk()); let hit=null; for(let i=0;i<40&&!hit;i++){ S.last.press=null; const tr=t.trust; const x=personalActivity('press'); if(/구설/.test(x))hit={x,d:tr-t.trust}; }
+  S.pressLog=[...Array(10)].map(()=>G.day); ok(pressRisk()===.6,'최대 60% '+pressRisk()); let hit=null; for(let i=0;i<40&&!hit;i++){ S.last.press=null; S.wk=null; const tr=t.trust; const x=personalActivity('press'); if(/구설/.test(x))hit={x,d:tr-t.trust}; }
   ok(hit&&hit.d===3,'60%로 40번에도 안 들키거나 신뢰 하락 없음 '+JSON.stringify(hit)); ok(G.news.some(n=>/구설/.test(n.t)),'구설 기사 없음'); });
 T('[피드백 11-09] 장학재단·프런트 견학·OB 후원',()=>{ fresh(); const S=personalState(); S.cash=1000; prInit(); const r0=G.rep;
   ok(/스토브리그/.test(personalTour('mlb'))||period()==='off','시즌 중 견학이 열림'); G.day=G.cal.end+20; G.ps=null; ok(period()==='off','스토브리그 아님 '+period());
@@ -2461,7 +2461,7 @@ T('[피드백 11-09] 장학재단·프런트 견학·OB 후원',()=>{ fresh(); c
   const sc=G.schools[F.list[0].school]; ok(schRel(sc)>=schRel0(sc,G.user)+4,'학교 감독 친분 '+schRel(sc)); ok(G.news.some(n=>/장학재단/.test(n.t)),'설립 기사 없음'); ok(/이미/.test(personalFound()),'재단 두 번 설립');
   F.paid=G.year-1; const c2=S.cash, f0=G.pr.fan; foundYear(S); ok(S.cash===c2-5&&F.list.length===2&&G.rep===r0+2&&G.pr.fan>f0,'연간 장학금 '+S.cash+' '+F.list.length+' '+G.rep); foundYear(S); ok(S.cash===c2-5,'같은 해 두 번 냄');
   obInit(); const L=G.ob.filter(o=>o.team===G.user); ok(L.length>0,'우리 OB 없음'); const b0=L[0].bond; const rp=G.rep; const m=personalActivity('ob'); ok(L[0].bond===b0+5&&G.rep===rp+1,'OB 후원 효과 '+m);
-  const cand=obCands('coach').filter(o=>o.team===G.user); if(cand.length){ let got=false; for(let i=0;i<60&&!got;i++){ S.last.ob=null; S.cash=1000; personalActivity('ob'); got=(G.cmarket||[]).some(c=>c.res===G.user&&cand.some(o=>o.id===c.ob)); } ok(got,'레전드 코치 제안이 한 번도 안 옴'); } });
+  const cand=obCands('coach').filter(o=>o.team===G.user); if(cand.length){ let got=false; for(let i=0;i<60&&!got;i++){ S.last.ob=null; S.wk=null; S.cash=1000; personalActivity('ob'); got=(G.cmarket||[]).some(c=>c.res===G.user&&cand.some(o=>o.id===c.ob)); } ok(got,'레전드 코치 제안이 한 번도 안 옴'); } });
 T('[피드백 11-09] 재테크 수익·손실 기록과 야인 생활비·바닥 시 제의 연봉 하락',()=>{ fresh(); const S=personalState(); S.cash=300;
   ok(/부족/.test(personalInvest('stock',1000)),'잔액보다 많이 넣음'); personalInvest('dep',100); personalInvest('stock',100); ok(S.cash===100&&S.inv.dep===100,'넣기 '+S.cash);
   for(let i=0;i<12;i++)invMonth(S); ok(Math.abs(S.inv.dep-100*Math.pow(1.0025,12))<.2,'예금 이자 '+S.inv.dep); ok(S.inv.stock!==100&&S.invLog.length===12,'주식 변동·기록 '+S.inv.stock+' '+S.invLog.length);
@@ -3041,8 +3041,8 @@ T('[검수 11-09zc] 후임 단장은 양식에서 고른 말투와 사진을 그
 T('[검수 11-09zc] 개인 지갑: 연 3% 예금은 1,000만 원에 한 해 약 30만 원, 유지비는 누적 사용에, 2만 원은 2만으로 보인다',()=>{ fresh(); const S=personalState(); S.inv={dep:10}; for(let i=0;i<12;i++)invMonth(S); ok(Math.abs(S.inv.dep-10*Math.pow(1.0025,12))<1e-3&&S.inv.dep<10.31,'예금 '+S.inv.dep);
   G.day=KD(5,1); S.life=1; S.cash=50; const s0=S.spent; personalMonth(); ok(Math.abs(S.spent-s0-LIVE_UP[1])<1e-9,'유지비 누적 사용 '+(S.spent-s0)); ok(pmoney(.02)==='2만'&&pmoney(150.3)==='1억 5,030만'&&pmoney(30)===money(30)&&pmoney(-.5)==='-50만','표시 '+pmoney(.02)+' '+pmoney(150.3)); });
 T('[검수 11-09zc] 독립구단 생활 등급: 올리지 않은 구단주 친밀도를 안내하지 않는다',()=>{ fresh(); const t=team(G.user); t.indie=true; const S=personalState(); S.cash=100; S.life=0; const r=personalLifeUp(); ok(S.life===1&&!/친밀도 \\+1/.test(r),'안내 '+r); t.indie=false; S.cash=100; const r2=personalLifeUp(); ok(/친밀도 \\+1/.test(r2),'일반 구단 안내 '+r2); });
-T('[검수 11-09zc] 기자 접대가 들키면 안내하는 팬 여론 하락폭이 실제와 같다',()=>{ fresh(); prInit(); const S=personalState(); S.cash=500; let r='', f0=0; for(let i=0;i<200&&!/새어/.test(r);i++){ S.last.press=null; S.pressLog=[G.day,G.day,G.day,G.day,G.day,G.day,G.day]; G.pr.fan=60; f0=G.pr.fan; r=personalActivity('press'); }
-  ok(/새어/.test(r),'노출 안 됨'); const m=r.match(/팬 여론 -([0-9.]+)/); ok(m&&Math.abs(+m[1]-(f0-G.pr.fan))<.051,'안내 '+r+' 실제 '+(f0-G.pr.fan)); });
+T('[검수 11-09zc] 기자 접대가 들키면 안내하는 팬 여론 하락폭이 실제와 같다',()=>{ fresh(); prInit(); const S=personalState(); S.cash=500; let r='', f0=0; for(let i=0;i<200&&!/새어/.test(r);i++){ S.last.press=null; S.wk=null; S.pressLog=[G.day,G.day,G.day,G.day,G.day,G.day,G.day]; G.pr.fan=60; f0=G.pr.fan; r=personalActivity('press'); }
+  ok(/새어/.test(r),'노출 안 됨'); ok(/팬 여론/.test(r)&&!/[0-9]/.test(r)&&G.pr.fan<f0,'안내는 수치 없이 실제로 떨어진 것만 '+r+' 실제 '+(f0-G.pr.fan)); }); /* 효과 수치는 숨긴다(11-13) */
 T('[검수 11-09zc] 실무 교육 연봉 중앙값: 짝수 명이면 가운데 두 값의 평균',()=>{ fresh(); const S=personalState(); S.study=2; const p=domestic(G.user).find(q=>!q.foreign&&!q.prospect); const peers=()=>Object.values(G.players).filter(q=>q.team!=null&&!q.prospect&&q.isP===p.isP&&Math.abs(q.age-p.age)<=2&&q.sal>0);
   let L=peers(); if(L.length%2)L.find(q=>q.id!==p.id).sal=0; L=peers().sort((a,b)=>a.sal-b.sal); const n=L.length; ok(n>=2&&n%2===0,'준비 '+n); L[n/2-1].sal=150; L[n/2].sal=350; for(let i=0;i<n/2-1;i++)L[i].sal=Math.min(L[i].sal,150); for(let i=n/2+1;i<n;i++)L[i].sal=Math.max(L[i].sal,350);
   const t=personalAdvice(p,'contract').join(' '); ok(t.includes('중앙값은 '+money(250)),'중앙값 '+t); });
@@ -4115,6 +4115,42 @@ T('[창단 구단] 강원(원주) 연고 신생 구단 선수도 수도권 프�
   const seen0=ps.filter(p=>scoutReport(p).ofp!=null).length;
   sc.region='수도권'; sc.skill=4; const seen=ps.filter(p=>scoutReport(p).ofp!=null).length; ok(seen>seen0,'수도권 담당을 둬도 더 보이지 않음 '+seen0+'→'+seen); ok(seen>=ps.length*.9,'수도권 담당이 있어도 원주 구단 선수 잠재력 미확인 '+(ps.length-seen)+'/'+ps.length);
   ok(scoutSlots().some(x=>x.role==='pro'&&x.key==='수도권'&&x.why.includes('구단')),'스카우트 배치 후보에 수도권 프로 담당이 없음'); });
+T('[단장 돈·시설] 사비 활동: 같은 활동을 거듭하면 효과가 줄고, 사비로 올리는 명성은 한 해 상한, 한 주 유료 일정은 두 개까지',()=>{ fresh(); const S=personalState(); S.cash=5000; prInit();
+  G.rep=50; const r=[]; for(let i=0;i<6;i++){ S.last.community=null; S.wk=null; personalActivity('community'); r.push(G.rep); } ok(G.rep-50<=PL_REP_CAP,'사비 명성 상한 넘음 '+r.join(','));
+  G.pr.fan=40; S.last.fan=null; S.wk=null; personalActivity('fan'); const d1=G.pr.fan-40; G.pr.fan=40; S.last.fan=null; S.wk=null; personalActivity('fan'); const d2=G.pr.fan-40; G.pr.fan=40; S.last.fan=null; S.wk=null; personalActivity('fan'); const d3=G.pr.fan-40;
+  ok(d1>d2&&d2>d3&&d3>0,'효과 감소 없음 '+[d1,d2,d3].join(','));
+  S.wk=null; S.last.scout=null; S.last.team=null; S.last.meal=null; personalActivity('scout'); personalActivity('team'); const p=domestic(G.user)[0]; const m=personalActivity('meal',p.id); ok(/꽉/.test(m),'한 주 세 번째 유료 일정이 막히지 않음 '+m);
+  ok(!/[0-9]+%|\\+[0-9]/.test(personalActivity('chat',p.id)),'결과 안내에 효과 수치'); });
+T('[단장 돈·시설] 다른 단장과 식사: 같은 단장은 45일 간격, 그 구단 사정을 듣고, 잦은 접대는 뒷말이 쌓여 구설이 된다',()=>{ fresh(); const S=personalState(); S.cash=5000; const o=G.teams.find(t=>t.id!==G.user); o.rel=50;
+  const m1=personalActivity('network',o.id); ok(/식사/.test(m1)&&!/[0-9]/.test(m1),'식사 안내 '+m1); S.last.network=null; S.wk=null; ok(/다시 식사/.test(personalActivity('network',o.id)),'같은 단장 간격 없음');
+  ok((S.heat||0)>0,'뒷말이 쌓이지 않음'); const t=team(G.user); S.heat=30; const tr=t.trust; let hit=false; for(let i=0;i<200&&!hit;i++){ S.heat=30; plHeatMonth(S); hit=t.trust<tr; } ok(hit&&G.news.some(n=>/뒷말/.test(n.t)),'뒷말이 많은데 구설 없음'); ok(S.heat<30*.5,'구설 뒤 뒷말이 그대로');
+  S.heat=10; plHeatMonth(S); ok(S.heat<=10,'뒷말이 사그라들지 않음'); });
+T('[단장 돈·시설] 친분은 만나지 않으면 식고, 재테크는 시장 흐름을 함께 타며 손실도 난다',()=>{ fresh(); const S=personalState(); const C=contactRecord('pl:test'); C.bond=90; C.history=[{day:G.day-200,kind:'meal',text:''}]; plBondDecay(S); ok(C.bond<90&&C.bond>30,'친분이 식지 않음 '+C.bond);
+  S.inv={dep:100,fund:100,stock:100}; let neg=0; for(let i=0;i<120;i++){ G.plMkt=null; const s0=S.inv.stock; invMonth(S); if(S.inv.stock<s0)neg++; }
+  ok(neg>20,'주식이 거의 안 떨어짐 '+neg); ok(Math.abs(S.inv.dep-100*Math.pow(1.0025,120))<.5,'예금 '+S.inv.dep); const yr=Math.pow(S.inv.fund/100,1/10)-1; ok(yr>-.08&&yr<.15,'펀드 연수익이 시장과 동떨어짐 '+yr); });
+T('[단장 돈·시설] 장학재단을 오래 운영하면 연고 출신 FA가 우리 구단을 조금 더 반긴다(상한 있음)',()=>{ fresh(); const S=personalState(); S.cash=1000; personalFound(); const F=S.found; ok(F,'재단 없음');
+  const p=Object.values(G.players).find(q=>q.team!=null&&q.team!==G.user&&!q.foreign&&homeTie(q,G.user)); ok(p,'준비 실패: 연고 출신 선수 없음'); const a0=faAppeal(p,G.user).f; F.y=G.year-3; const a1=faAppeal(p,G.user).f; F.y=G.year-40; const a2=faAppeal(p,G.user).f;
+  ok(a1>a0,'재단 인연 없음 '+a0+' '+a1); ok(a2-a0<=FOUND_FA.max+1e-9,'상한 없음 '+(a2-a0)); ok(faAppeal(p,G.user).parts.some(x=>/장학재단/.test(x[0])),'항목 이름 없음'); });
+T('[단장 돈·시설] 시설: 높은 단계는 선행 조건, 큰 공사는 인허가 뒤 착공·한 곳만, 공사 중에는 효과가 잠시 떨어진다',()=>{ fresh(); facInit(); const t=team(G.user); t.cash=999999; const F=G.fac;
+  for(const k of FACK)F.it[k]=1; F.it.indoor=3; ok(/기반/.test(buildFacItem('indoor')),'기반 시설 없이 4단계');
+  for(const k of FACK)F.it[k]=3; F.it.lab=4; G.analysts=[]; ok(/분석원/.test(facCanStart(G.user,'lab')),'분석원 없이 랩 5단계');
+  F.it.fut=4; F.bld={}; const p=domestic(G.user).find(q=>q.age<=22&&!q.prospect)||domestic(G.user)[0]; const g0=facEff(p).g;
+  for(const c of Object.values(coachesOf(G.user)))if(c)c.dv=80; const e=buildFacItem('fut'); ok(e==='','2군 구장 5단계 공사가 안 됨 '+e); const b=F.bld.fut; ok(b&&b.pm>G.day&&b.done>b.pm,'인허가 기간 없음 '+JSON.stringify(b));
+  F.it.dorm=4; ok(/큰 공사/.test(facCanStart(G.user,'dorm')),'큰 공사 두 곳');
+  F.bld.indoor={lv:4,done:G.day+300,c:1}; const g1=facEff(p).g; ok(g1<g0,'공사 중 효과 그대로 '+g0+' '+g1); delete F.bld.indoor; delete F.bld.fut; F.dn={}; F.it.weight=5; F.it.rehab=4; ok(/한 해/.test(facCanStart(G.user,'weight')),'6단계 운영 경험 조건 없음'); });
+T('[단장 돈·시설] 모기업 투자: 적자·낮은 신뢰면 어렵고, 120일 간격·한 시즌 두 번째는 더 어렵다, AI도 같은 식',()=>{ fresh(); facInit(); const t=team(G.user); ok(!t.indie,'준비 실패: 독립구단'); t.trust=60; const c=3000; const p0=capexOddsT(G.user,c);
+  G.history.push({y:G.year-1,fins:{[G.user]:{net:-3000}}}); const p1=capexOddsT(G.user,c); ok(p1<p0,'적자인데 그대로 '+p0+' '+p1); G.history.pop(); t.trust=30; ok(capexOddsT(G.user,c)<p0,'신뢰 낮아도 그대로');
+  t.trust=60; t.capexY=sponSeason(); ok(capexOddsT(G.user,c)<p0,'두 번째도 그대로'); t.capexY=null; t.capexD=G.day; const k=FACK.find(x=>!facCanStart(G.user,x)); ok(/기다려/.test(capexAsk('fac',k)),'120일 간격 없음');
+  const o=G.teams.find(x=>x.id!==G.user&&!x.indie); o.trust=60; o.owner=t.owner; ok(Math.abs(capexOddsT(o.id,c)-p0)<.2,'AI 승인 식이 다름'); });
+T('[단장 돈·시설] 명명권 후원은 공사비 절반, 성적·관중을 두 번 못 맞추면 해지하고 일부 회수 · 지자체 보조는 해마다 지역 교실 비용과 관계',()=>{ fresh(); facInit(); const t=team(G.user); t.cash=99999; for(const k of FACK)G.fac.it[k]=2; G.fac.bld={};
+  const c=FACI.lab.c[3]; t.pop=1.45; let e='x'; for(let i=0;i<300&&e!=='';i++){ t.facAsk={}; e=facFund('lab','spon'); if(e&&!/찾지 못/.test(e))break; } ok(e==='','명명권 공사 실패 '+e); ok(t.facSpon&&G.fac.bld.lab&&G.fac.bld.lab.src==='spon','명명권 기록 없음');
+  ok(Math.abs((99999-t.cash)-c*(1-FAC_SPON.share))<=1,'구단 부담 '+(99999-t.cash)); const D=t.facSpon; G.last=G.last||{}; G.last.y=D.y0; G.last.order=G.teams.map(x=>({tid:x.id})).sort((a,b)=>(a.tid===G.user)-(b.tid===G.user)); G.sea.att=G.sea.att||{}; G.sea.att[G.user]={n:1,sum:1,cap:100};
+  const c1=t.cash; facDealsYear(t); ok(t.facSpon&&t.facSpon.miss===1,'첫 실패 기록 없음'); facDealsYear(t); ok(!t.facSpon&&t.cash<c1,'두 번 실패에도 해지·회수 없음');
+  t.cityRel=90; let e2='x'; for(let i=0;i<300&&e2!=='';i++){ t.facAsk={}; e2=facFund('dorm','city'); if(e2&&!/예산/.test(e2))break; } ok(e2==='','지자체 보조 실패 '+e2); ok((t.cityOb||[]).length===1,'지자체 약속 없음'); const cr=cityRel(G.user); facDealsYear(t); ok(cityRel(G.user)>cr,'약속 이행에도 관계 그대로'); ok(facCityUp(t)>0,'지역 채용 운영비 없음'); });
+T('[단장 돈·시설] AI 구단은 남는 돈을 계획에 맞게 쓰고, 긴축 구단은 아끼며, 구단주 신뢰가 성적으로 움직인다',()=>{ fresh(); G.day=dnum(G.year,11,20); const L=G.teams.filter(t=>t.id!==G.user&&!t.indie); const a=L[0], b=L[1];
+  a.cash=30000; a.plan={k:'build',y:G.year,d:G.day}; const c0=a.cash, n0=Object.keys(aiFacInit(a).bld).length; const S=aiSpend(a,true); ok(S&&a.cash<c0,'남는 돈을 안 씀 '+a.cash); ok(Object.keys(aiFacInit(a).bld).length>n0||S.stad>0,'시설·구장 공사 없음 '+JSON.stringify(S));
+  b.cash=30000; b.plan={k:'tight',y:G.year,d:G.day}; ok(!aiSpend(b,true)&&b.cash===30000,'긴축 구단이 씀');
+  const ord=G.teams.map(x=>({tid:x.id})); ord.sort((x,y)=>(y.tid===a.id)-(x.tid===a.id)); a.trust=50; a.owner='win'; const h={y:G.year,order:ord,champ:a.id,fins:{}}; const ca=a.cash; aiOwnerYear(h); ok(a.trust>50,'우승했는데 신뢰 그대로 '+a.trust); ok(a.cash>ca,'우승 포상 없음'); });
 
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }

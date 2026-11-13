@@ -92,6 +92,7 @@ function faAppeal(p,tid){ const C=faCtx(); const P=[]; const t=team(tid);
   let pt=0; const s=C.slot[tid]||{}; if(p.isP){ if(isSPr(p))pt=spV(p)>s.SP5+1?.05:spV(p)<s.SP5-6?-.08:spV(p)<s.SP5-2?-.03:0; } else { const inc=s[p.pos]; pt=inc==null?.05:ovr(p)>inc+2?.05:ovr(p)<inc-5?-.12:ovr(p)<inc-1?-.05:0; } P.push(['주전 기회',pt*(p.age<=29?1.3:1)]); /* 주전 경쟁이 막힌 구단은 돈만으로 데려오기 어렵게(설문 11-12: 경쟁자가 많아도 돈만 주면 영입). 확실한 주전 자리 +5%, 밀리면 최대 -12%(29세 이하 -16%) */
   { const h=homeTie(p,tid); if(h)P.push([h.l,h.v]); else if(p.region&&t.region===p.region)P.push([`연고(${p.region} 출신)`,.03]); } /* 같은 권역(고향 도시)이면 고향 팀, 넓은 지역만 같으면 조금(11-09d) */
   { const fv=ppFond(p,tid); if(fv)P.push(['단장의 공개 구애',fv/250]); }
+  { const ft=typeof foundTie==='function'?foundTie(p,tid):0; if(ft)P.push(['단장 장학재단과의 인연',ft]); } /* 오래 운영한 장학재단은 연고 출신 FA에게 조금 끌린다(11-13) */
   const f=1+sum(P.map(x=>x[1])); return {f:clamp(f,.8,1.3),parts:P.filter(x=>Math.abs(x[1])>=.005)}; }
 /* 연고 출신 스타: 구단 연고 지역 출신 주전급(능력 64 이상)이 있으면 팬 인기가 더 오른다(최대 +0.03) */
 function localStarPop(tid){ const t=team(tid); if(!t.region)return 0; const n=playersOf(tid).filter(p=>!p.foreign&&p.region===t.region&&ovr(p)>=64).length; return Math.min(.03,n*.008); }
