@@ -10,6 +10,10 @@ function staffProfile(s,kind){
   const pref=kind==='coach'&&u01('staff:pref',s.id)>.78?(promotion[role]||role):role;
   const profile={v:1,identity:s.id,mental,office,pref,rels:{}};STAFF_BIOS.set(s,{kind,id:s.id,profile});return personNetworkStaffProfile(s,kind,profile);
 }
+/* 성격·성향은 숫자를 숨기고 정도만 말로 보여 준다(사용자 11-13) */
+function staffTraitWord(v){v=+v||0;return v>=78?'매우 강함':v>=62?'강함':v>=42?'보통':v>=28?'약함':'매우 약함';}
+function staffLoyWord(v){v=+v||0;return v>=75?'구단 애착 큼':v>=55?'애착 있음':v>=35?'무난함':'떠날 마음 있음';}
+function mgrYouthWord(v){v=v??50;return v>=65?'젊은 선수 적극 기용':v<=35?'경험 많은 선수 선호':'기용 균형';}
 function staffAttach(s,kind){if(s)s.staff=staffProfile(s,kind);return s;}
 /* 단장과의 관계는 사람 사이의 관계라 구단이 바뀌어도 따라간다(rels.me, 카페 11-09: 전 구단에서 쌓은 관계가 다시 영입하면 초기화). 감독 관계는 그 구단 감독 기준 그대로 */
 function staffRel(s,tid,who){if(who!=='mgr'&&tid===G.user){const R0=s?.staff?.rels;if(R0){if(R0.me!=null)return R0.me;const V=Object.keys(R0).map(k=>R0[k]&&R0[k].gm).filter(v=>v!=null);if(V.length)return Math.max(...V);}const linked=personNetworkWorkBond(s);if(linked!=null)return linked;} /* 옛 저장: 구단별로 남은 단장 관계 중 가장 높은 값 */const key=who==='mgr'?'mgr:'+(G.mgr[tid]?.id||'none'):'gm';return s?.staff?.rels?.[tid]?.[key]??50;}
@@ -34,7 +38,7 @@ function staffTalk(kind,id,topic){
   const why=staffTalkCheck(kind,id,topic);if(why)return why;const s=staffOwned(kind,id);
   staffAttach(s,kind);s.staff.talk={tid:G.user,day:G.day,topic};staffRelAdd(s,kind,G.user,'gm',topic==='listen'?4:2);
   if(topic==='coord')staffRelAdd(s,kind,G.user,'mgr',3);
-  const msg=s.name+' 직원과 '+(topic==='listen'?'업무·희망 보직을 논의했습니다. 단장 관계 +4.':'감독과의 업무 조율을 진행했습니다. 단장 관계 +2 · 감독 관계 +3.');addLog(msg);return msg;
+  const msg=s.name+' 직원과 '+(topic==='listen'?'업무·희망 보직을 논의했습니다. 단장 관계 개선.':'감독과의 업무 조율을 진행했습니다. 단장 관계 조금 개선 · 감독 관계 개선.');addLog(msg);return msg;
 }
 function bulkTalkResult(kind,topic,expectedTid,rows){const success=rows.filter(r=>r.ok),skipped=rows.filter(r=>!r.ok);return {kind,topic,day:G.day,tid:G.user,expectedTid,rows,results:rows,success,skipped,counts:{selected:rows.length,success:success.length,skipped:skipped.length},cost:0};}
 function bulkTalkRecord(result){const id='bulkTalk'+(G.bulkTalkSeq=(G.bulkTalkSeq||0)+1);result.id=id;const row={id,kind:result.kind,topic:result.topic,day:G.day,y:G.year,tid:G.user,expectedTid:result.expectedTid,counts:{...result.counts},cost:result.cost,results:result.results.map(r=>({...r}))};(G.bulkTalkHistory=G.bulkTalkHistory||[]).push(row);return result;}

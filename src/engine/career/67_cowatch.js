@@ -91,7 +91,7 @@ function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=p
   if(ms>0)S.gift=cwGift(tags);
   S.ord=cwOrdIssue(who); /* 구단주 지시(이미 진행 중이면 새로 내리지 않는다) */
   G.cwS=S; const c=cwSt(); c.hist.push({d:S.day,y:G.year,tid:G.user,person:S.person,name:S.actor.name,why,who,res:rec.res,ms,trD:S.trD,rapD:S.rapD,gift:S.gift?S.gift.k:null,tags,ord:S.ord?S.ord.k:null}); if(c.hist.length>40)c.hist.splice(0,c.hist.length-40);
-  const O=cwOrd(); const cm=mail(cwFrom(who),`${who==='ceo'?'사장과':'구단주와'} 함께 본 경기: ${rec.res==='승'?'승리':rec.res==='패'?'패배':'무승부'}${S.gift?' · 구단주 선물':''}`,`${cwNm(who)}와(과) ${dmd(rec.day)} ${me==='h'?'홈경기':'원정경기'}를 함께 봤습니다(${CW_WHY[why]}).\n\n${S.lines.map(x=>'"'+x+'"').join('\n')}\n\n구단주 신뢰 ${S.trD>=0?'+':''}${S.trD} · ${who==='ceo'?'사장':'구단주'} 친밀도 +${S.rapD}(${cwRap(who)})${S.gift?`\n${S.gift.t}`:''}\n감독 관계 +1 · 1군 선수단 기분 +1(단장 직관)${O?`\n\n구단주 지시: ${O.t} (${dmd(O.until)}까지, ${O.crit})`:''}\n\n${dmd(S.until)}까지 경기 보고 화면에서 한 가지를 건의할 수 있습니다.`,{kind:'구단주',acts:[{l:'경기 보고 · 건의',a:'cwOpen'}]}); if(cm&&cm.id)cm.sgid=rec.gid; /* 결과가 든 소식: 그 경기 중계를 마칠 때까지 소식함에서 감춘다(검수 11-09zzc #11) */
+  const O=cwOrd(); const cm=mail(cwFrom(who),`${who==='ceo'?'사장과':'구단주와'} 함께 본 경기: ${rec.res==='승'?'승리':rec.res==='패'?'패배':'무승부'}${S.gift?' · 구단주 선물':''}`,`${cwNm(who)}와(과) ${dmd(rec.day)} ${me==='h'?'홈경기':'원정경기'}를 함께 봤습니다(${CW_WHY[why]}).\n\n${S.lines.map(x=>'"'+x+'"').join('\n')}\n\n구단주 신뢰 ${S.trD>0?'상승':S.trD<0?'하락':'변화 없음'} · ${who==='ceo'?'사장':'구단주'}과(와) 한결 가까워짐${S.gift?`\n${S.gift.t}`:''}\n감독 관계 조금 개선 · 단장이 지켜본 1군 선수단 기분 조금 상승${O?`\n\n구단주 지시: ${O.t} (${dmd(O.until)}까지, ${O.crit})`:''}\n\n${dmd(S.until)}까지 경기 보고 화면에서 한 가지를 건의할 수 있습니다.`,{kind:'구단주',acts:[{l:'경기 보고 · 건의',a:'cwOpen'}]}); if(cm&&cm.id)cm.sgid=rec.gid; /* 결과가 든 소식: 그 경기 중계를 마칠 때까지 소식함에서 감춘다(검수 11-09zzc #11) */
   return true; }
 /* 함께 본 경기 중 반응: 리드를 잡거나 빼앗긴 순간, 동점, 우리 홈런, 한 번에 3점 이상 내준 순간. 최대 4번, 구단주 성향별 말투(사장은 수익 쪽) */
 const CW_LIVE={
@@ -121,9 +121,9 @@ function cwGift(tags){ const c=cwSt(); if(c.gift>=2)return null; const t=team(G.
   const p=tags.length?.4+(t.owner==='pr'?.1:0)+(t.trust>=60?.1:0):.12; if(R()>=p)return null; c.gift++;
   const bld=G.fac&&G.fac.bld?Object.keys(G.fac.bld).filter(k=>G.fac.bld[k].c&&!G.fac.bld[k].cap):[]; const why=tags.length?CW_TAGL[tags[0]]:'승리';
   const r=R(); const k=bld.length&&r<.35?'fac':t.owner==='win'?(r<.6?'ops':'bonus'):t.owner==='profit'?(r<.7?'bonus':'ops'):(r<.6?'bonus':'ops');
-  if(k==='fac'){ const b=G.fac.bld[bld[0]]; const amt=Math.round(b.c*.3); t.cash+=amt; const nm=(typeof FACI!=='undefined'&&FACI[bld[0]]&&FACI[bld[0]].l)||'시설'; return {k,t:`구단주 선물(${why}): 진행 중인 ${nm} 공사비의 30%인 ${money(amt)}을(를) 모기업이 대신 냈습니다. 구단 보유 현금 +${money(amt)}.`}; }
+  if(k==='fac'){ const b=G.fac.bld[bld[0]]; const amt=Math.round(b.c*.3); t.cash+=amt; const nm=(typeof FACI!=='undefined'&&FACI[bld[0]]&&FACI[bld[0]].l)||'시설'; return {k,t:`구단주 선물(${why}): 진행 중인 ${nm} 공사비의 30%인 ${money(amt)}을(를) 모기업이 대신 냈습니다. 구단 보유 현금이 그만큼 늘었습니다.`}; }
   if(k==='ops'){ const amt=300; const o=dobj(G.day); grantAdd({y:sponSeason(),mk:o.y*100+o.m,d:G.day,amt,pur:null,ok:true,by:'own',kind:'gift',st:'done',until:null}); grantApply(amt); return {k,t:`구단주 선물(${why}): 운영비 ${money(amt)} 추가 지원. 올해 모기업 지원 한도와 지원 목표가 그만큼 늘었습니다.`}; }
-  for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+3,0,100); return {k:'bonus',t:`구단주 선물(${why}): ${B.own.name} 회장이 선수단 격려금을 개인적으로 냈습니다(구단 예산과 별개). 1군 선수단 기분 +3.`}; }
+  for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+3,0,100); return {k:'bonus',t:`구단주 선물(${why}): ${B.own.name} 회장이 선수단 격려금을 개인적으로 냈습니다(구단 예산과 별개). 1군 선수단 기분 상승.`}; }
 
 /* 구단주 한두 마디: 결과 한 줄 + 실제 기록에서 고른 한 줄(겉으로 보이는 것만, 성향에 따라 다르게) */
 function cwRemarks(rec,me,who,ms,tags){ const ow=team(G.user).owner; const ceo=who==='ceo'; const out=[];
@@ -157,14 +157,14 @@ function cwFacPick(){ if(typeof FACI==='undefined'||!G.fac||!G.fac.it)return nul
 function cwCapexLeft(){ const S=capexState(); return S.last.fac==null||G.day-S.last.fac>=60; }
 /* 건의할 수 있는 일: [키, 제목, 설명(승인 가능성 포함), 막힘 사유] */
 function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const left=ownAskLeft(); const L=[]; const od=p=>oddsTxt(clamp(p+mod,.03,.92)); const fac=cwFacPick(); const noL=left?'':'이번 달 지원 요청은 이미 했습니다';
-  if(S.who==='ceo'){ L.push(['ops:500','운영비 5억 지원 요청',`사장이 구단주께 결재를 올림 · ${od(ownOdds(500,null))} · 반려되면 신뢰 -1`,noL]);
-    L.push(['pay:1500','연봉 재원 15억 요청(다년계약·연봉 인상분)',`모기업 지원 한도에 더해짐 · ${od(ownOdds(1500,null))} · 반려되면 신뢰 -1`,noL]);
-    if(fac)L.push(['fac:'+fac.k,`${FACI[fac.k].l} 시설 투자 결재 요청`,`공사비 ${money(fac.c)} 모기업 부담 · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 -1`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
-  else { L.push(['ops:1000','운영비 10억 증액 요청',`${od(ownOdds(1000,null))} · 반려되면 신뢰 -1`,noL]);
+  if(S.who==='ceo'){ L.push(['ops:500','운영비 5억 지원 요청',`사장이 구단주께 결재를 올림 · ${od(ownOdds(500,null))} · 반려되면 신뢰 조금 하락`,noL]);
+    L.push(['pay:1500','연봉 재원 15억 요청(다년계약·연봉 인상분)',`모기업 지원 한도에 더해짐 · ${od(ownOdds(1500,null))} · 반려되면 신뢰 조금 하락`,noL]);
+    if(fac)L.push(['fac:'+fac.k,`${FACI[fac.k].l} 시설 투자 결재 요청`,`공사비 ${money(fac.c)} 모기업 부담 · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 조금 하락`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
+  else { L.push(['ops:1000','운영비 10억 증액 요청',`${od(ownOdds(1000,null))} · 반려되면 신뢰 조금 하락`,noL]);
     const fa=ownWhyFA()[0]; /* 계약할 수 있는 FA만(외부 FA 한도, 검수 11-09zzd) */
-    if(fa)L.push(['fa:'+fa.id,`FA ${fa.name} 영입 자금 요청`,`${money(fa.ask.annual)} · ${od(ownOdds(fa.ask.annual,{k:'fa',pid:fa.id}))} · 목적대로 못 쓰면 신뢰 -3`,noL]);
-    const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 -2, 감독 관계 -5`,(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]||{w:0,l:0}, gp=r.w+r.l; return gp<20?'시즌 20경기를 치른 뒤 성적을 보고 건의할 수 있습니다':uRank()>=6||m.rel<40||r.w/Math.max(1,gp)<.45?'':'성적 부진(6위 아래·승률 4할 5푼 미만)이나 감독과의 갈등(관계 40 미만)이 있을 때 건의할 수 있습니다'; })()]); /* 사용자 피드백 11-05: 새 감독 첫 경기 패배 직후에도 교체 건의가 떴다 */
-    if(fac)L.push(['fac:'+fac.k,`대형 투자: ${FACI[fac.k].l} 모기업 투자 요청`,`공사비 ${money(fac.c)} · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 -1`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
+    if(fa)L.push(['fa:'+fa.id,`FA ${fa.name} 영입 자금 요청`,`${money(fa.ask.annual)} · ${od(ownOdds(fa.ask.annual,{k:'fa',pid:fa.id}))} · 목적대로 못 쓰면 신뢰 하락`,noL]);
+    const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 조금 하락, 감독 관계 악화`,(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]||{w:0,l:0}, gp=r.w+r.l; return gp<20?'시즌 20경기를 치른 뒤 성적을 보고 건의할 수 있습니다':uRank()>=6||m.rel<40||r.w/Math.max(1,gp)<.45?'':'성적 부진(6위 아래·승률 4할 5푼 미만)이나 감독과의 갈등(관계 40 미만)이 있을 때 건의할 수 있습니다'; })()]); /* 사용자 피드백 11-05: 새 감독 첫 경기 패배 직후에도 교체 건의가 떴다 */
+    if(fac)L.push(['fac:'+fac.k,`대형 투자: ${FACI[fac.k].l} 모기업 투자 요청`,`공사비 ${money(fac.c)} · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 조금 하락`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
   return L; }
 function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||!cwActorMatches(S.who,S.tid,S.person))return '건의할 수 있는 때가 아닙니다.'; const o=cwSuggOpts(S).find(x=>x[0]===v); if(!o)return '지금은 건의할 수 없는 일입니다.'; if(o[3])return o[3];
   const t=team(G.user); const tr0=t.trust; const mod=cwMod(S); const [k,x]=v.split(':'); let ok=false, txt='';
@@ -173,7 +173,7 @@ function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||!cwActorMatches(S.w
   else if(k==='fac'){ const r=cwWithMod(70,mod,()=>capexAsk('fac',x)); ok=r===''; txt=ok?'승인됐습니다. 모기업이 공사비를 냅니다.':r; }
   else if(k==='fire'){ const m=G.mgr[G.user]; const p=cwFireOdds(S); ok=R()<p;
     if(ok){ const pay=mgrSevPay(m).pay; const help=pay>0?round5(pay/2):0; fireMgr(); if(help>0)grantApply(help); txt=`승인됐습니다. ${m.name} 감독을 경질했고, 구단주가 잔여 연봉의 절반 ${money(help)}을(를) 지원합니다. 새 감독은 스태프·육성 → 감독에서 선임하세요.`; }
-    else { t.trust=clamp(t.trust-2,0,100); m.rel=clamp(m.rel-5,0,100); txt='반려됐습니다. 구단주 신뢰 -2, 건의 소문에 감독 관계 -5.'; } }
+    else { t.trust=clamp(t.trust-2,0,100); m.rel=clamp(m.rel-5,0,100); txt='반려됐습니다. 구단주 신뢰 조금 하락, 건의 소문에 감독 관계 악화.'; } }
   const ow=t.owner; const say=S.who==='ceo'?(ok?'회장님 결재가 났습니다. 쓰임새는 분명히 해 주세요.':'이번에는 어렵다고 하십니다.'):ok?(ow==='win'?'좋소. 대신 결과로 보여 주시오.':ow==='profit'?'...이번만이오. 돈 쓴 만큼 해내시오.':'알겠소. 팬들을 실망시키지 마시오.'):(ow==='profit'?'지금은 돈을 더 쓸 때가 아니오.':ow==='win'?'성적으로 먼저 증명하시오.':'지금은 때가 아니오.');
   S.sugg={k:v,l:o[1],ok,txt,say,dT:Math.round((t.trust-tr0)*10)/10,mod}; S.done=true; const h=cwSt().hist.find(z=>z.d===S.day); if(h)h.sugg={k,ok}; return ''; }
 function cwSkipSugg(){ const S=G.cwS; if(S&&!S.done){ S.done=true; S.sugg={k:'none'}; } }
@@ -208,8 +208,8 @@ function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
   if(O.k==='ext'){ const p=G.players[O.base.pid]; const gone=!p||p.team!==G.user; const ok=!!(p&&p.extNext)&&!gone; /* 합의 뒤 트레이드로 보냈으면 붙잡은 게 아니다(검수 11-09zzd) */ return {done:ok||end||gone,ok,txt:ok?'다년계약 합의':gone?'팀을 떠났습니다':'아직 합의 전'}; }
   void C; return {done:true,ok:false,txt:''}; }
 function cwOrdDaily(){ const O=cwOrd(); if(!O)return; if(!cwActorMatches(O.who,O.tid,O.person)){O.st='cancelled';O.end=G.day;O.txt='지시한 인물이 자리를 떠나 종료';return;} const e=cwOrdEval(O); if(!e.done)return; const t=team(G.user); O.st=e.ok?'ok':'fail'; O.end=G.day; O.txt=e.txt;
-  if(e.ok){ t.trust=clamp(t.trust+2,0,100); cwRapAdd('own',3); mail('구단주실',`구단주 지시 달성: ${O.t}`,`${cwNm('own')}: "말한 대로 해냈군. 그런 단장이 좋소."\n\n${e.txt}. 구단주 신뢰 +2 · 구단주 친밀도 +3.`,{kind:'구단주'}); }
-  else { t.trust=clamp(t.trust-1,0,100); mail('구단주실',`구단주 지시 미달: ${O.t}`,`${cwNm('own')}: "지난번에 한 말, 잊지는 않았겠지요."\n\n${e.txt}. 구단주 신뢰 -1.`,{kind:'구단주'}); }
+  if(e.ok){ t.trust=clamp(t.trust+2,0,100); cwRapAdd('own',3); mail('구단주실',`구단주 지시 달성: ${O.t}`,`${cwNm('own')}: "말한 대로 해냈군. 그런 단장이 좋소."\n\n${e.txt}. 구단주 신뢰 조금 상승 · 구단주 친밀도 상승.`,{kind:'구단주'}); }
+  else { t.trust=clamp(t.trust-1,0,100); mail('구단주실',`구단주 지시 미달: ${O.t}`,`${cwNm('own')}: "지난번에 한 말, 잊지는 않았겠지요."\n\n${e.txt}. 구단주 신뢰 조금 하락.`,{kind:'구단주'}); }
   const h=cwSt().hist.find(z=>z.d===O.d0); if(h)h.ordRes=O.st; }
 /* 홈 신뢰 설명용 한 줄 */
 function cwOrdLine(){ const O=cwOrd(); if(!O)return ''; let e=null; try{ e=cwOrdEval(O); }catch(err){ return ''; } return `구단주 지시: ${O.t}(${dmd(O.until)}까지, 지금 ${e.txt})`; }

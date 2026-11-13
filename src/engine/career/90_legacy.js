@@ -96,7 +96,7 @@ function legStadQ(tid){ const a=legAt(legMeK(),tid); return (a.s>=LEG_STAD.s&&a.
 function legStadOffer(){ G.gmLeg=G.gmLeg||{hon:[],pres:null}; if(G.gmLeg.stad||G.gmLeg.stadAsk||G.unemp||G.user==null||G.gameOver)return null; const tid=G.user; if(!legStadQ(tid))return null;
   const a=legAt(legMeK(),tid), nm=legMeName(), t=team(tid); G.gmLeg.stadAsk={tid,y:G.year};
   evNew('stadNm',`${t.city}시와 구단, '${nm} 구장' 명명을 제안합니다`,`구단주 ${bossOf(tid).own.name}: "단장님이 ${a.s}시즌 동안 우승 ${a.c}회를 이끌었습니다. ${t.city}시와 뜻을 모아 구장에 단장님 이름을 붙이고 싶습니다."`,
-    [{l:`${nm} 필드`,fx:`구장 이름이 '${nm} 필드'가 됩니다. 팬 여론 +3`},{l:`${nm} 기념구장`,fx:`구장 이름이 '${nm} 기념구장'이 됩니다. 팬 여론 +3`},{l:'사양한다',fx:'지금 이름을 지킵니다. 구단주 신뢰 +2'}],{def:0,exp:21,data:{tid,nm},from:'구단주'}); return true; }
+    [{l:`${nm} 필드`,fx:`구장 이름이 '${nm} 필드'가 됩니다. 팬 여론 호전`},{l:`${nm} 기념구장`,fx:`구장 이름이 '${nm} 기념구장'이 됩니다. 팬 여론 호전`},{l:'사양한다',fx:'지금 이름을 지킵니다. 구단주 신뢰 조금 상승'}],{def:0,exp:21,data:{tid,nm},from:'구단주'}); return true; }
 function legStadSet(tid,n){ const S=stadOf(tid); (S.names=S.names||[]).push({until:G.day,n:stadName(tid)}); S.name=n; G.gmLeg.stad={tid,y:G.year,n,k:legMeK()};
   try{ chron('honor',`구장 이름을 '${n}'(으)로 바꿈 · ${legMeName()} 단장 공로 기념`,null,tid,{source:'stadNm:'+tid}); }catch(e){} news('구단',`${tshort(tid)} 홈구장, '${n}'(으)로 새 이름`,`${legMeName()} 단장의 공로를 기려 구단과 ${team(tid).city}시가 구장 이름을 바꿨습니다.`,2,{tid}); }
 EVH.stadNm={ pick(e,i){ const {tid,nm}=e.data; if(tid!==G.user)return '이제 우리 구단이 아닙니다.'; if(i===2){ team(tid).trust=clamp((team(tid).trust||50)+2,0,100); G.gmLeg.stad={tid,y:G.year,n:null,declined:1}; return '정중히 사양했습니다.'; }

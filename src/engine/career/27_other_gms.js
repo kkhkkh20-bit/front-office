@@ -73,10 +73,10 @@ function gmRelYear(){ for(const t of G.teams){ if(t.id===G.user||t.rel==null)con
 function gmContact(tid,kind){ const t=team(tid), g=gmOf(tid); if(!g)return {msg:''}; G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={});
   if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return {msg:`${g.name} 단장과는 ${dmd(c.call+14)}부터 다시 연락할 수 있습니다.`};
     c.call=G.day; const d=Math.round(Math.max(0,(g.trait==='loyal'?2:1)*ri(1,2)-(g.trait==='hard'?1:0))*gmRelDim(t)); t.rel=clamp(t.rel+d,0,100);
-    return {msg:`${g.name} 단장: "${aiSay(tid,'hello')||pick(GMTALK)}" (친분 +${d}) 들어 보니 ${needText(tid)}입니다.`,ok:true}; }
+    return {msg:`${g.name} 단장: "${aiSay(tid,'hello')||pick(GMTALK)}" 친분 상승. 들어 보니 ${needText(tid)}입니다.`,ok:true}; }
   if(kind==='meal'){ if(c.meal!=null&&c.meal>G.day-30)return {msg:`식사 자리는 한 달에 한 번입니다(${dmd(c.meal+30)}부터).`};
     c.meal=G.day; G.spend.etc=(G.spend.etc||0)+10; const d=Math.round(ri(3,5)*(g.trait==='loyal'?1.5:g.trait==='hard'?.6:1)*gmRelDim(t)); t.rel=clamp(t.rel+d,0,100);
-    return {msg:`${g.name} 단장과 저녁 식사를 했습니다(1천만 원). 친분 +${d}. ${g.trait==='hard'?'식사는 즐겁게 했지만 협상은 별개라고 선을 긋습니다.':'다음 거래 때 잘 봐 달라는 말이 오갔습니다.'}${(()=>{ /* 식사 자리에서 속내를 조금 듣는다: 우리 선수 중 누구를 탐내는지 */ try{ const L=aiInterest(tid).map(x=>typeof x==='object'?x:G.players[x]).filter(Boolean); return L.length?` 술잔이 돌자 ${pidName(L[0])}(${posLabel(L[0])}) 이야기를 슬쩍 꺼냈습니다.`:' 지금은 우리 선수에게 특별히 눈독 들이는 사람은 없어 보입니다.'; }catch(e){ return ''; } })()}`,ok:true}; }
+    return {msg:`${g.name} 단장과 저녁 식사를 했습니다(1천만 원). 친분 상승. ${g.trait==='hard'?'식사는 즐겁게 했지만 협상은 별개라고 선을 긋습니다.':'다음 거래 때 잘 봐 달라는 말이 오갔습니다.'}${(()=>{ /* 식사 자리에서 속내를 조금 듣는다: 우리 선수 중 누구를 탐내는지 */ try{ const L=aiInterest(tid).map(x=>typeof x==='object'?x:G.players[x]).filter(Boolean); return L.length?` 술잔이 돌자 ${pidName(L[0])}(${posLabel(L[0])}) 이야기를 슬쩍 꺼냈습니다.`:' 지금은 우리 선수에게 특별히 눈독 들이는 사람은 없어 보입니다.'; }catch(e){ return ''; } })()}`,ok:true}; }
   return {msg:''}; }
 /* 역제안: 조금 모자랄 때 상대가 조건을 바꿔 다시 제시 */
 function counterOffer(tid,give,get,cash,pk){ cash=cash||0; const ev=(g,t)=>evalTrade(tid,g,t,cash,pk); /* 지명권도 넣어 계산(검수 11-06) */ const e=ev(give,get); const gap=e.need-e.gain; if(gap<=0||gap>9)return [];
@@ -280,7 +280,7 @@ function unempAuto(){ if(!G.unemp)return; if(G._unD===G.day)return; G._unD=G.day
 function resignGM(){ if(G.unemp)return '지금은 맡은 구단이 없습니다.'; const C=myCInit(); if(!C||C.tid==null)return '지금은 맡은 구단이 없습니다.'; const left=Math.max(0,C.y1-G.year); const mid=period()==='season'||period()==='post';
   const pen=(left>0?2:0)+(mid?3:0); G.rep=clamp((G.rep??50)-pen,0,100); try{ meInc('resign'); }catch(e){}
   const t=team(G.user); news('언론',`${tshort(G.user)} ${meName()?meName()+' ':''}단장 자진 사임`,`${mid?'시즌 도중 ':''}${tname(G.user)} 단장이 스스로 물러났습니다.${left>0?` 계약은 ${left}년 남아 있었습니다.`:''}`,-1);
-  firedFlow(G.year,`${tname(G.user)} 단장직에서 스스로 물러났습니다.${left>0?` 남은 계약 ${left}년 치 연봉은 받지 않습니다.`:''}${pen?` 명성 -${pen}${mid?'(시즌 도중 사임)':''}.`:''}`,'resign'); void t; return ''; }
+  firedFlow(G.year,`${tname(G.user)} 단장직에서 스스로 물러났습니다.${left>0?` 남은 계약 ${left}년 치 연봉은 받지 않습니다.`:''}${pen?` 명성 하락${mid?'(시즌 도중 사임)':''}.`:''}`,'resign'); void t; return ''; }
 function retireGM(){ if(!G.unemp)return; G.gameOver={y:G.year,msg:`${G.unemp.y}시즌 뒤 야인으로 지내다 단장 경력을 마쳤습니다.`}; }
 /* 구단을 옮기면 '우리 경기' 기록(최근 경기·월별 성적·상세 경기)을 새 구단 것으로 다시 만든다. 리그 경기 기록(tl)에서 새 구단 경기만 꺼낸다(옛 구단 경기가 섞여 '승 1:2'처럼 보이던 문제) */
 function userLogRebuild(tid){ const S=G.sea; if(!S)return; const L=((S.tl||[])[tid])||[];

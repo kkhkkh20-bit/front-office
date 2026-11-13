@@ -65,9 +65,9 @@ function myCSeasonEnd(y,ps){ const C=myCInit(); if(!C||G.unemp||C.y1!==y)return;
 EVH.gmRenew={ pick(e,i){ const C=G.myC; const O=C&&C.offer; if(!O||G.unemp)return ''; const t=team(G.user); delete C.offer;
   const sign=(sal)=>{ C.stints.unshift({tid:C.tid,y0:C.y0,y1:C.y1,sal:C.sal,how:'재계약'}); C.sal=sal; C.y0=O.y+1; C.y1=O.y+O.yrs; chron('join',`재계약: 연봉 ${money(sal)}, ${C.y0}~${C.y1}년`,null,G.user); return `재계약했습니다. 연봉 ${money(sal)}, ${C.y0}~${C.y1}년.`; };
   if(i===0)return sign(O.sal);
-  if(i===1){ const p=clamp((t.trust-40)/60+((G.rep??50)-50)/100,.1,.9); if(R()<p){ t.trust=clamp(t.trust-1,0,100); return '구단주가 인상을 받아들였습니다. '+sign(Math.round(O.sal*1.15/10)*10)+' 신뢰 -1.'; }
+  if(i===1){ const p=clamp((t.trust-40)/60+((G.rep??50)-50)/100,.1,.9); if(R()<p){ t.trust=clamp(t.trust-1,0,100); return '구단주가 인상을 받아들였습니다. '+sign(Math.round(O.sal*1.15/10)*10)+' 신뢰 조금 하락.'; }
     if(t.trust<55&&R()<.3){ firedFlow(O.y,`연봉 인상을 요구하자 구단주가 재계약 제안을 거뒀습니다.`,'expire'); return '구단주가 제안을 거뒀습니다. 계약이 끝나 구단을 떠납니다.'; }
-    t.trust=clamp(t.trust-3,0,100); return '구단주가 인상은 어렵다고 했습니다. '+sign(O.sal)+' 신뢰 -3.'; }
+    t.trust=clamp(t.trust-3,0,100); return '구단주가 인상은 어렵다고 했습니다. '+sign(O.sal)+' 신뢰 하락.'; }
   firedFlow(O.y,`${O.y}시즌으로 계약이 끝나 재계약을 고사했습니다.`,'leave'); return '재계약을 고사했습니다. 이제 다른 구단 제의를 기다립니다.'; } };
 EV_KEY.add('gmRenew');
 /* 새해: 계약 마지막 해 알림 */

@@ -11,7 +11,7 @@ function personX(k){ { const e=personXExt(k); if(e)return e; } const [kind,a,b]=
   if(kind==='omgr'){ const m=G.mgr[+a]; if(!m)return null; mgrFix(m); return {k,name:m.name,role:`${tname(+a)} 감독`,av:{persona:'mgr',pid:m.id,team:+a,age:m.age,name:m.name},rel:null,lab:mgrType(m).n,sub:m.career||''}; }
   if(kind==='ob'||kind==='abr'||kind==='xmgr')return personGone(kind,a,k);
   if(kind==='ost'){ const L=stInit()[+b]; const s=L&&(a==='sc'?L.sc:L.an).find(x=>x.id===String(k).split(':')[3]); if(!s)return null; stAttr(s);
-    return {k,name:s.name,role:`${tname(+b)} ${a==='sc'?'스카우트':'전력분석원'}`,av:{persona:'staff',role:a==='sc'?'scout':'ana',pid:s.id,team:+b,age:s.age,name:s.name},rel:null,lab:`구단 충성도 ${Math.round(s.loy)}`,sub:`${s.age}세 · 연 ${money(s.sal)}`}; }
+    return {k,name:s.name,role:`${tname(+b)} ${a==='sc'?'스카우트':'전력분석원'}`,av:{persona:'staff',role:a==='sc'?'scout':'ana',pid:s.id,team:+b,age:s.age,name:s.name},rel:null,lab:staffLoyWord(s.loy),sub:`${s.age}세 · 연 ${money(s.sal)}`}; }
   return null; }
 /* 카드 공통 상단: 능력·성격·관계 */
 function personTop(k){ { const e=personTopExt(k); if(e!=null)return e; }const staff=staffPerson(k);if(staff)return (staff.kind==='coach'?coachBaseStats(staff.s)+coachAbBox(staff.s):'')+staffBioBox(staff.s,staff.kind,staff.tid,true)+networkPersonBlock(staff.s,staff.kind); const [kind,a]=String(k).split(':'); const t=team(G.user); let ab=[], pe=[], li=[], sty='';
@@ -28,7 +28,7 @@ function personTop(k){ { const e=personTopExt(k); if(e!=null)return e; }const st
       const cl=(faLive()?agClients(ag):[]).map(p=>p.name); if(cl.length)li.push(['FA 고객',cl.join(', ')]); li.push(['우리와 계약',`${(ag.deals&&ag.deals[G.user])||0}건`]); } }
   else if(kind==='sc'||kind==='an'||kind==='ost'){ const x=personX(k); const s=kind==='ost'?((stInit()[+String(k).split(':')[2]]||{})[a==='sc'?'sc':'an']||[]).find(z=>z.id===String(k).split(':')[3]):(kind==='sc'?G.scouts:anaList()).find(z=>z.id===a); if(s){
       ab=[['실력',sk100(s.skill)],['경험(나이)',clamp((s.age-25)*2.2,10,95)]]; pe=[[s.amb>=65?'야망가':s.amb<=35?'안정 추구':'보통',s.amb>=65?'더 큰 구단을 원합니다. 다른 구단 제안에 흔들리기 쉽습니다.':s.amb<=35?'지금 자리에 만족하는 편입니다.':'조건이 좋으면 움직입니다.'],...(s.spec?[[SC_SPEC[s.spec],'그 유형 선수를 볼 때 한 단계 정확합니다.']]:[]),...(s.region?[[`${s.region} 연고`,'연고 지역 구단을 선호합니다.']]:[])];
-      li=[['소속',kind==='ost'?tname(+String(k).split(':')[2]):tname(G.user)],['근속 충성도',String(Math.round(s.loy))]]; void x; } }
+      li=[['소속',kind==='ost'?tname(+String(k).split(':')[2]):tname(G.user)],['구단 애착',staffLoyWord(s.loy)]]; void x; } }
   else if(kind==='rep'){ const r=repById(a); if(r){ ab=[['영향력',r.inf*20],['단장과 관계',r.rel]]; pe=[[PR_STYLE[r.style].l,PR_STYLE[r.style].d],[r.field,'주로 다루는 분야입니다.']]; if(r.last)li.push(['최근 변화',`${dsh(r.last.d)} ${r.last.why} ${r.last.dv>0?'+':''}${r.last.dv}`]); li.push(['인터뷰',`관계 70 이상이면 다른 구단 동향을 귀띔해 줍니다.`]); } }
   const networkSubject=kind==='ob'?obOf(a):kind==='mgr'?G.mgr[G.user]:kind==='omgr'?G.mgr[+a]:kind==='xmgr'?exMgrOf(a):null,network=networkPersonBlock(networkSubject,kind==='ob'?'ob':'mgr');
   if(!ab.length&&!pe.length&&!li.length)return network;

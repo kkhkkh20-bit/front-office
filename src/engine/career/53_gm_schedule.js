@@ -39,10 +39,10 @@ function gmPlanDaily(){ if(G.unemp)return; const P=gmPlans(); const tm=P[G.day+1
   else if(p.k==='farm'){ p.done=true; gmFarmVisit(); } }
 /* 직관 경기가 끝난 뒤(applyGame 이후 호출) */
 function gmAttendResult(rec){ const p=gmPlanAt(rec.day); if(!p||p.k!=='attend'||p.done)return; if(p.op!=null&&p.op!==(rec.home===G.user?rec.away:rec.home))return; /* 다른 상대 경기로 예약을 쓰지 않는다(검수 11-09zo) */ if(['owner','ceo'].includes(p.x)&&!cwActorMatches(p.x==='ceo'?'ceo':'own',p.tid,p.person)){p.done=true;p.cancelled=gmCompanion(p.x,p.tid??G.user)?'인물 교체':'동행 인물 부재';note('일정','동행할 인물이 자리를 떠나 직관 일정을 불이익 없이 종료했습니다.');return;} if((p.x==='owner'||p.x==='ceo')&&cwStart(rec,p))return; /* 구단주·사장 동석: 동석 관람 대화로 */ p.done=true; const t=team(G.user); const ms=rec.home===G.user?rec.hs-rec.as:rec.as-rec.hs; const L=[];
-  const m=G.mgr[G.user]; if(m&&!m.interim){ m.rel=clamp(m.rel+1,0,100); L.push('감독 관계 +1'); } for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+1,0,100); L.push('1군 선수단 기분 +1');
+  const m=G.mgr[G.user]; if(m&&!m.interim){ m.rel=clamp(m.rel+1,0,100); L.push('감독 관계 조금 개선'); } for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+1,0,100); L.push('1군 선수단 기분 조금 상승');
   if(p.x==='owner'){ const d=ms>0?1.5:ms<=-5?-1.5:0; t.trust=clamp(t.trust+d,0,100); L.push(d?`구단주 신뢰 ${d>0?'+':''}${d}`:'구단주 신뢰 변화 없음');
     const B=bossOf(G.user); const cm=mail('구단주실',`구단주와 함께 본 경기: ${ms>0?'승리':ms<0?'패배':'무승부'}`,`${ms>0?'"오늘 같은 경기를 자주 보고 싶군요. 수고했습니다."':ms<=-5?'"이런 경기를 보여 주려고 날 부른 겁니까?"':'"쉽지 않은 경기였군요. 계속 지켜보겠습니다."'}\n\n${L.join(' · ')}`,{kind:'구단주'}); if(cm&&cm.id)cm.sgid=rec.gid; void B; } /* 중계를 마칠 때까지 감출 소식(검수 11-09zzc #11) */
-  else if(p.x==='ceo'){ L.push('사장과 예산 이야기를 나눴습니다'); const b=budget(); if(b.roomGoal<0&&R()<.5){ t.trust=clamp(t.trust+.5,0,100); L.push('사장이 구단주에게 현장 사정을 잘 전해 주기로 했습니다(신뢰 +0.5)'); } mail('사장실','사장과 함께 본 경기',L.join(' · '),{kind:'구단주'}); }
+  else if(p.x==='ceo'){ L.push('사장과 예산 이야기를 나눴습니다'); const b=budget(); if(b.roomGoal<0&&R()<.5){ t.trust=clamp(t.trust+.5,0,100); L.push('사장이 구단주에게 현장 사정을 잘 전해 주기로 했습니다. 신뢰 조금 상승'); } mail('사장실','사장과 함께 본 경기',L.join(' · '),{kind:'구단주'}); }
   else note('일정',`직관을 마쳤습니다. ${L.join(' · ')}.`); }
 function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.region===reg&&!p.college);
   if(!C.length){ note('스카우트',`${reg} ${tn}을(를) 보고 왔지만 올해 드래프트 후보가 눈에 띄지 않았습니다.`); return; }
@@ -52,7 +52,7 @@ function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.
   mail('단장 노트',`${reg} ${tn} 관전`,`직접 본 후보 ${seen.length}명. 이 선수들은 평가 오차가 줄었습니다.\n눈에 들어온 선수: ${top.map(p=>`${p.name}(${posLabel(p)}, ${p.school||p.region})`).join(', ')}${gem?`\n\n눈여겨본 선수: ${gem.name}(${posLabel(gem)}) — 언론 순위는 낮지만 직접 보니 그릇이 커 보입니다. 한두 번 본 인상이라 틀릴 수 있습니다. 관심 명단에 넣었습니다.`:''}`,{kind:'스카우트',acts:[{l:'드래프트 후보',a:'go',v:'transfer:draft'}],ref:gem?gem.id:top[0]&&top[0].id}); }
 function gmFarmVisit(){ const d=depth(G.user); const F=[...d.futB,...d.futP].filter(p=>!p.ys); for(const p of F)p.mor=clamp((p.mor??60)+2,0,100);
   const best=F.filter(p=>p.age<=24).map(p=>({p,g:potGapEst(p)})).sort((a,b)=>b.g-a.g).slice(0,3).map(x=>x.p);
-  mail('단장 노트','2군 방문',`2군 선수 ${F.length}명의 기분이 올랐습니다(+2).\n코치진이 가장 크게 볼 만하다고 보는 선수: ${best.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세, 현재 ${dvo(p)})`).join(', ')||'-'}\n2군 감독: "단장님이 직접 오시니 선수들 눈빛이 다릅니다."`,{kind:'육성'}); }
+  mail('단장 노트','2군 방문',`2군 선수 ${F.length}명의 기분이 조금 올랐습니다.\n코치진이 가장 크게 볼 만하다고 보는 선수: ${best.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세, 현재 ${dvo(p)})`).join(', ')||'-'}\n2군 감독: "단장님이 직접 오시니 선수들 눈빛이 다릅니다."`,{kind:'육성'}); }
 
 /* 직관 전날 알림. 구단주 동행은 '구단주 초대·행사' 멈춤 설정을 따른다(검수 11-06) */
 function gmAttendWarn(tm){ const d=G.day+1; if(!gmPlanLive(d,tm))return; /* 열리지 않는 경기면 알리지 않는다(검수 11-06) */ tm.warned=true; tm.mid=mail('비서실',`내일 직관: ${(()=>{ const op=tm.op??gmOpsOn(d)[0], g=teamGames(G.user,d,4).find(x=>x.d===d&&x.op===op); return g?`${g.home?'vs':'@'} ${tname(op)}`:'우리 경기'; })()}`,`내일 경기장에 가는 일정입니다${tm.x==='owner'?'. 구단주께서 함께 보십니다':tm.x==='ceo'?'. 사장께서 함께 보십니다':''}. '경기장으로 가기'를 누르면 경기를 처음부터 봅니다.`,{imp:true,kind:'일정',...(tm.x==='owner'?{cat:'owner'}:{}),acts:[{l:'경기장으로 가기',a:'watchPlan',v:String(G.day+1)}]}).id; }

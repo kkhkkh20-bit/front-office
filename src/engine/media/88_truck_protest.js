@@ -43,8 +43,8 @@ function truckFire(sev,kind,K){ const S=truckState(); S.n++; S.last=G.day; const
     mail('구단주실','본사 앞 트럭 시위에 대해',`${on}: 본사 앞에 ${days}일째 우리 팬들 트럭이 서 있습니다. 전광판에 "${line}"라고 떠 있더군요. 그룹 안에서도 말이 많습니다.\n남은 시즌을 어떻게 수습할지 단장이 직접 정리해서 움직여 주세요. 결과로 보여 주길 바랍니다.`,{imp:true,kind:'구단주'}); }
   const F=sev===3?{fan:[3,5,-4],own:[0,0,t.indie?-1:-5],cost:400}:{fan:[2,4,-2],own:[0,0,-1],cost:250}; /* 독립구단은 모기업 본사가 없어 구단주실이 나서지 않는다(검수 11-08) */
   evNew('truck',`팬 트럭 시위 대응 (${where})`,`${body}\n기자들이 구단 입장을 묻고 있습니다.`,[
-    {l:'사과 입장문 발표',fx:`팬 여론 +${F.fan[0]}, 언론 +1. 책임을 인정하는 모양이 됩니다`},
-    {l:'팬 간담회 열기',fx:`비용 ${money(F.cost)}, 팬 여론 +${F.fan[1]}. 단장이 직접 팬 대표를 만납니다`},
+    {l:'사과 입장문 발표',fx:`팬 여론 호전, 언론 조금 호전. 책임을 인정하는 모양이 됩니다`},
+    {l:'팬 간담회 열기',fx:`비용 ${money(F.cost)}, 팬 여론 호전. 단장이 직접 팬 대표를 만납니다`},
     {l:'무대응',fx:`팬 여론 ${F.fan[2]}, 구단주 신뢰 ${F.own[2]}. "특별한 입장 없다"`}],{def:2,exp:3,from:sev===3&&!t.indie?'구단주실':'홍보팀',data:{sev,F,line}});
   if(R()<.1)evFollow(20+Math.floor(R()*20),'truck',{fund,line}); }
 function truckCostWhy(e,i){ return i===1&&team(G.user).indie&&spendable(G.user)-Math.max(0,(G.spend.etc||0)-(G.spend.trC||0))-(G.spend.fan||0)<e.data.F.cost?`독립구단의 가용 현금이 부족합니다(${money(e.data.F.cost)} 필요).`:''; }

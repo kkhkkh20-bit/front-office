@@ -9,7 +9,7 @@ function champHomeCard(){ const c=G.champNew; if(!c||c.seen||G.unemp||(c.tid!=nu
     ${c.mvp?`<button class="ch-mvp" data-a="player" data-v="${c.mvp.id}">${G.players[c.mvp.id]?avImg(G.players[c.mvp.id]):''}<span><i>시리즈 최우수선수</i><b>${esc(c.mvp.n)}</b><em>${esc(c.mvp.line)}</em></span></button>`:''}
     ${heads.length?`<div class="ch-news">${heads.map(n=>`<div><span class="pill">${esc(n.o||'')}</span> ${esc(n.t||'')}</div>`).join('')}</div>`:''}
     <div class="ch-fans"><span class="eyebrow">팬 커뮤니티</span>${fans.map(x=>`<p>"${esc(x)}"</p>`).join('')}</div>
-    <p class="small">선수단 기분이 크게 올랐고(+8), 팬 여론 +12 · 언론 논조 +8 · 구단주 신뢰 +3. 구단 인기가 올라 다음 시즌 관중·유니폼·굿즈 판매가 늘고, 우승 기록은 몇 년 동안 구단 명성을 끌어올려 FA와 스태프가 우리 구단을 더 원하게 됩니다. 사흘 뒤 도심 퍼레이드, 다음 시즌 홈 개막전에는 우승 반지 수여식이 열립니다.</p>
+    <p class="small">선수단 기분이 크게 올랐고(+8), 팬 여론 크게 호전 · 언론 논조 크게 호전 · 구단주 신뢰 상승. 구단 인기가 올라 다음 시즌 관중·유니폼·굿즈 판매가 늘고, 우승 기록은 몇 년 동안 구단 명성을 끌어올려 FA와 스태프가 우리 구단을 더 원하게 됩니다. 사흘 뒤 도심 퍼레이드, 다음 시즌 홈 개막전에는 우승 반지 수여식이 열립니다.</p>
     <div class="btns">${ev?`<button class="btn primary" data-a="openMail" data-v="${ev.mid||''}">구단주 포상 고르기</button>`:''}${ban?`<button class="btn" data-a="champMoment" data-v="${c.y}">우승 순간 다시 보기</button>`:''}<button class="btn" data-a="champSeen">확인</button></div></section>`; }
 /* ---------- 우승 순간(v16 사진, 11-09): A 마지막 아웃 → B 시상식 → C 라커룸 파티 → D 퍼레이드. 시즌마다 정해진 한 장씩.
    사진은 사이트에서만 받는다(SCENE_OK). 한 파일 앱에서는 열지 않고, 사진 하나가 안 받아지면 그 자리만 숨긴다 ---------- */

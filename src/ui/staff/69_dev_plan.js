@@ -59,7 +59,7 @@ function trnEnvBox(p){ const f=tbFactors(p,isRegular(p)?new Set([p.id]):null); c
     ['성장 의지',f.will>=1.1?'강함':f.will>=.92?'보통':'약함'],
     ['훈련 시설',`${esc(facEff(p).l)} · ${lv(f.fac,1.04,.97)}`],
     ['코치 수준',lv(f.coach,1.08,.97)],
-    ['감독 육성 성향',m?`${esc(m.name)} ${m.youth}`:'감독 없음']];
+    ['감독 육성 성향',m?`${esc(m.name)} · ${mgrYouthWord(m.youth)}`:'감독 없음']];
   return `<div class="trn-env"><b>성장 환경</b>${L.map(([k,v])=>`<div class="small"><span class="muted">${k}</span> ${v}</div>`).join('')}<div class="small muted">올해 일반 훈련 성장: ${tg>=1.2?'많이 쌓임':tg>=.6?'보통':tg>=.15?'조금':'아직 거의 없음'}</div></div>`; }
 /* 운영 > 육성 > 해외 연수 */
 function ovsBody(){ const y=G.year; const T={big:'크게 늘어 옴',good:'성장 확인',flat:'변화 없음',form:'폼 흐트러짐',inj:'부상'};

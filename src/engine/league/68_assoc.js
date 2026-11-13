@@ -9,7 +9,7 @@
 const ASSOC={name:'대한프로야구협회',s:'KPBA',head:'협회장'};
 const AS_STANCE={tight:{l:'긴축형',v:0,d:'구단 재정 건전성을 앞세워 상한 인상을 억제합니다. 큰 인상안은 이사회에서 한 단계 낮출 때가 있습니다.'},
   bal:{l:'균형형',v:.03,d:'단장 회의 결정을 그대로 존중합니다.'},
-  grow:{l:'확장형',v:.06,d:'리그 사업을 키웁니다. 중계권 배분이 3% 늘고, 작은 인상안은 이사회에서 한 단계 올릴 때가 있습니다.'}};
+  grow:{l:'확장형',v:.06,d:'리그 사업을 키웁니다. 중계권 배분이 조금 늘고, 작은 인상안은 이사회에서 한 단계 올릴 때가 있습니다.'}};
 const AS_CAR=['전 구단 사장','모기업 그룹 부회장','야구 해설위원 출신','전 구단주 대행','스포츠 행정학 교수','전 체육 단체 사무총장','전 국회 문화체육관광위원'];
 const CMT_OPT=[0,.02,.03,.05] /* 표결 선택지(카페 11-13: 2060년대 상한 500억·연봉 90억처럼 숫자가 너무 커져 와닿지 않았다) */, CMT_TH=.9, CMT_N=5;
 const pctTxt=x=>x?`${Math.round(x*100)}% 인상`:'동결';
@@ -125,7 +125,7 @@ function asElect(){ const A=asInit(); const E=A.el; if(!E||E.y!==G.year||E.done)
   if(uv==null||!asEmp()||vt!==G.user)return;
   const won=ok&&lead===uv; A.rel=clamp(won?Math.max(A.rel,50)+12:ok?A.rel-8:A.rel,0,100);
   const same=[], diff=[]; for(const t of G.teams){ if(t.id===G.user)continue; if(v1[t.id]===uv){ t.rel=clamp((t.rel??50)+2,0,100); same.push(t.id); } else { t.rel=clamp((t.rel??50)-1,0,100); diff.push(t.id); } }
-  note('일정',`${ASSOC.head} 선거 결과: ${ok?`${C[lead].name} 당선`:'추천 무산(현 협회장 1년 연장)'}. 우리 구단이 지지한 ${C[uv].name} 후보는 1차에서 ${c1[uv]}표${rounds.filter(r=>r.cn).length>1?`, 마지막 표결에서 ${cn[uv]}표`:''}를 받았습니다. ${won?`${ASSOC.head}과의 관계가 좋아졌습니다.`:ok?`새 ${ASSOC.head}과는 서먹하게 시작합니다.`:''} 1차에서 같은 후보를 민 구단 ${same.length}곳 단장과 친분 +2, 다른 후보를 민 ${diff.length}곳과 -1.`); }
+  note('일정',`${ASSOC.head} 선거 결과: ${ok?`${C[lead].name} 당선`:'추천 무산(현 협회장 1년 연장)'}. 우리 구단이 지지한 ${C[uv].name} 후보는 1차에서 ${c1[uv]}표${rounds.filter(r=>r.cn).length>1?`, 마지막 표결에서 ${cn[uv]}표`:''}를 받았습니다. ${won?`${ASSOC.head}과의 관계가 좋아졌습니다.`:ok?`새 ${ASSOC.head}과는 서먹하게 시작합니다.`:''} 1차에서 같은 후보를 민 구단 ${same.length}곳 단장과 친분 조금 상승, 다른 후보를 민 ${diff.length}곳과 -1.`); }
 
 /* 매일 훅: 07_daily에서 부른다 */
 function assocDaily(day){ try{ asInit(); }catch(e){ return; }
