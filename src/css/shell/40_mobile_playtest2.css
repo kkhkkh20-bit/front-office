@@ -3,10 +3,12 @@
    4) 선수단 이름·배지 잘림  6) 감독 후보 페이지 버튼이 카드 내용을 덮음. 데스크톱(>600px)은 바꾸지 않는다 */
 
 /* 넘치는 탭 줄: 오른쪽·왼쪽에 더 있으면 가장자리를 흐린다(tabRowHints가 .hrow·.more-l·.more-r를 붙인다) */
+@media (max-width:700px){
 :is(#app,#sheet) .hrow.more-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}
 :is(#app,#sheet) .hrow.more-l{-webkit-mask-image:linear-gradient(to right,transparent,#000 28px);mask-image:linear-gradient(to right,transparent,#000 28px)}
 :is(#app,#sheet) .hrow.more-l.more-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
 :is(#app,#sheet) .hrow{scroll-behavior:smooth;scrollbar-width:none}
+} /* 넘침 표시·스크롤바 숨김은 휴대폰만: PC에서 탭 줄 스크롤바가 사라지던 문제(UI 리뷰 11-13) */
 
 @media (max-width:480px){
   /* 1) 상단: 화면 제목을 한 단계 줄여 '트레이…'처럼 잘리지 않게, 진행 버튼 보조 문구는 짧은 앞부분만(goSub) */

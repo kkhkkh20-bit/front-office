@@ -19,7 +19,7 @@ ok(errs.length===0,'페이지 오류 없음 '+errs.join('|'));
 const outer=http.createServer((q,s)=>{ s.writeHead(200,{'content-type':'text/html; charset=utf-8'}); s.end(`<!doctype html><meta name=viewport content="width=device-width"><iframe id=g src="${server.url}" style="position:fixed;inset:0;width:100%;height:100%;border:0"></iframe>`); });
 await new Promise(res=>outer.listen(0,'127.0.0.1',res)); const ou=`http://localhost:${outer.address().port}/`;
 const p2=await ctx.newPage();await p2.route(/fonts\.g/,r=>r.abort());await p2.goto(ou);const fr=await (await p2.waitForSelector('#g')).contentFrame();await fr.waitForFunction(()=>typeof newGame==='function'&&typeof render==='function',null,{timeout:20000});await fr.waitForTimeout(1500);
-const e2=await fr.evaluate(()=>({warn:/새 창에서 열기/.test(document.body.innerText),emb:typeof saveEmbedded==='function'?saveEmbedded():null}));
+const e2=await fr.evaluate(()=>({warn:[...document.querySelectorAll('a,button')].some(x=>/새 창에서 열기/.test(x.textContent))&&!!document.querySelector('.note.warn'),emb:typeof saveEmbedded==='function'?saveEmbedded():null}));
 ok(e2.emb===true&&e2.warn,'다른 사이트 안에 끼워 열면 저장 안내와 새 창 열기 버튼 '+JSON.stringify(e2));
 const e3=await p.evaluate(()=>({emb:typeof saveEmbedded==='function'?saveEmbedded():null,warn:/저장이 사라질 수/.test(document.body.innerText)}));
 ok(e3.emb===false&&!e3.warn,'직접 연 주소에서는 안내 없음 '+JSON.stringify(e3));
