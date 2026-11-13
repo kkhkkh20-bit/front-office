@@ -52,7 +52,11 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
    if(!after.includes(x[1])&&bat)retire(x[1]);
   }else{
    const thrownOut=moves.find(m=>m.out);
+   const homeTry=!thrownOut&&!path&&!UI.cast.errPos&&f&&['LF','CF','RF'].includes(f.pos)?(Array.isArray(x[14])?x[14]:[]).find(r=>r.to===4&&r.result!=='out'&&moves.some(m=>m.id===r.id&&m.score)):null;
    if(thrownOut){const pos=['','1B','2B','3B','C'][thrownOut.to];const thrown=await c3DThrow(g,k,f,spot,pos,CPATH[thrownOut.to],'주루 송구',arrive(thrownOut.id,thrownOut.to-thrownOut.from));await runners;if(thrown){Match3D.tag('d'+thrown.receiver.id,CPATH[Math.max(0,thrownOut.to-1)],240/cSpd());await cSleep(240);Match3D.focus('d'+thrown.receiver.id,thrownOut.to===4?'홈 태그 아웃':'주루 아웃');}retire(thrownOut.id);}
+   else if(homeTry){ /* 홈 승부(사용자 11-13): 기록에 '홈으로 뛰어 세이프'가 있는 안타는 외야수가 홈으로 던지고, 공이 주자보다 조금 늦게 들어온다. 주심이 세이프를 선언한다 */
+    const arm=G.players[f.id]?.r.arm??50,travel=FrontOfficeCore.throwTime(Match3D.distance(chase2,CHM),arm),wait=(arrive(homeTry.id,4-homeTry.from)-performance.now())*cSpd()+350-(travel+450);if(wait>0)await cSleep(wait);
+    const thrown=await c3DThrow(g,k,f,chase2,'C',CHM,'홈 송구');if(thrown){Match3D.focus('d'+thrown.receiver.id,'홈 · 세이프');cCap(`홈 송구 · ${G.players[homeTry.id]?.name||'주자'} 세이프`,'good');}Match3D.trackRunner('o'+x[1]);}
    else {if(f.pos!==relayPos&&!UI.cast.errPos){const relay=await c3DThrow(g,k,f,chase2,relayPos,relayPt2,'중계 플레이');if(path&&relay)await c3DThrow(g,k,relay.receiver,relayPt2,basePos,base,o==='3B'?'3루 송구':'2루 송구'); /* 중계 선수는 받자마자 멈추지 않고 베이스로 던진다. 커버 야수는 타구 직후부터 베이스로 가 먼저 서 있다. 공이 주자보다 늦는 것은 외야수가 갭·선상까지 뛰어가 줍는 시간 때문(사용자 피드백 11-08) */}Match3D.trackRunner('o'+x[1]);}
    cFx((o==='OUT'?'실책 출루':OUTK[o]||'안타')+(thrownOut?' · 주루 아웃':''),'hit');
   }
