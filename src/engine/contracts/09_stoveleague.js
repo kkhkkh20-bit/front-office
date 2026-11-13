@@ -117,22 +117,34 @@ function faExpWar(p){ const y0=G.year; const by={}; let pa=0; for(const h of (p.
   if(pa<350)return null; const ys=Object.keys(by).map(Number).sort((a,b)=>b-a).slice(0,3); const W=[6,3,1]; let s=0,w=0; ys.forEach((y,i)=>{ s+=by[y]*W[i]; w+=W[i]; }); let e=w?s/w:0; e=e*.85+1*.15; /* FA 시즌·최근 해에 무게(카페 11-13: 최근 2년 스텝업한 선수가 3년 평균으로 헐값이 됐다) */ if(p.age>=31)e*=Math.max(.5,1-(p.age-30)*.07); return Math.max(0,e); }
 /* AI가 내는 연봉 상한: 기대 WAR × WAR당 시장가(5.5억, 실제 KBO FA 연평균은 대략 WAR당 5~6억: 안치홍 4년 72억·채은성 6년 90억) × 물가, 우승 경쟁 구단은 15% 더 */
 function faWarCap(t,p){ const e=faExpWar(p); if(e==null)return null; return Math.max(MIN_SAL*2,round5(e*550*ecoIdx(sponSeason())*(t.mode==='contend'?1.15:1))); }
-function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); if(wc==null)return w0; const pr=faPoolPrem(p)*faPosPrem(t,p); return round5(Math.min(w0*pr,Math.max(w0*.7,wc*pr))); }
+function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); if(wc==null)return round5(w0*(faTgt(t,p)?faOverpay(t):1)); const pr=faPoolPrem(p)*faPosPrem(t,p); return round5(Math.min(w0*pr,Math.max(w0*.7,wc*pr))*(faTgt(t,p)?faOverpay(t):1)); }
 /* FA 시장 경쟁(카페 11-13): 이번 시장 상위 매물은 성적이 조금 모자라도 몸값이 오른다(1~3위 +35%, 4~8위 +15%). 성적(WAR) 상한은 능력 기준 몸값의 70% 아래로는 깎지 않는다 */
 let _fpr={k:null,m:null};
 function faPoolPrem(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=G.year+':'+G.day+':'+F.pool.length; if(_fpr.k!==k){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null).sort((a,b)=>ovr(b)-ovr(a)); _fpr={k,m:new Map(L.map((q,i)=>[q.id,i]))}; } const r=_fpr.m.get(p.id); return r==null?1:r<3?1.35:r<8?1.15:1; }
-/* 포지션 희소성·구단 수요(카페 11-13 beeseo: 김호령 CF·유강남 C처럼 시장에 대체자가 없거나 그 자리가 약한 구단은 더 쓴다).
-   이번 시장에 같은 자리 비슷한 급(종합 -3 이내) 매물이 없으면 +12%, 하나뿐이면 +6%. 그 구단 해당 자리가 리그 7위 이하면 +8%, 9위 이하면 +12% */
+/* FA 시장 수요·공급(카페 11-13 beeseo·운영자): 같은 자리 비슷한 급(종합 -3 이내) 매물 수가 공급, 그 자리가 약하고(리그 6위 이하) 돈이 되는 AI 구단 수가 수요다.
+   찾는 구단이 많고 매물이 적으면 오르고(최대 +20%), 매물이 넘치면 내려간다(최대 -10%). 그 구단 자리가 리그 7위 이하면 +8%, 9위 이하면 +12% */
 let _fps={k:null,r:{}};
-function faPosPrem(t,p){ const F=G.fa; if(!F||!F.pool||t.id===ME())return 1; const sl=pSlot(p); const o=ovr(p);
-  const n=F.pool.map(i=>G.players[i]).filter(q=>q&&q.id!==p.id&&q.team==null&&pSlot(q)===sl&&ovr(q)>=o-3).length;
-  let m=n===0?1.12:n===1?1.06:1;
-  const k=G.year+':'+G.day; if(_fps.k!==k)_fps={k,r:{}}; if(!_fps.r[t.id]){ try{ _fps.r[t.id]=slotRanks(t.id); }catch(e){ _fps.r[t.id]={}; } }
-  const rk=(_fps.r[t.id][sl]||{}).rank||0; m*=rk>=9?1.12:rk>=7?1.08:1; return m; } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
+function faRanks(tid){ const k=G.year+':'+G.day; if(_fps.k!==k)_fps={k,r:{}}; if(!_fps.r[tid]){ try{ _fps.r[tid]=slotRanks(tid); }catch(e){ _fps.r[tid]={}; } } return _fps.r[tid]; }
+function faSupply(p){ const F=G.fa; if(!F||!F.pool)return 0; const sl=pSlot(p), o=ovr(p); return F.pool.map(i=>G.players[i]).filter(q=>q&&q.id!==p.id&&q.team==null&&pSlot(q)===sl&&ovr(q)>=o-3).length; }
+function faDemand(p){ const sl=pSlot(p), cap=capOf(sponSeason()), a=(p.ask&&p.ask.annual)||0; return G.teams.filter(t=>t.id!==ME()&&!t.indie&&t.cash>-3000&&((faRanks(t.id)[sl]||{}).rank||0)>=6&&cap-capPay(t.id)>=a*.7).length; }
+function faSD(p){ const d=faDemand(p), s=faSupply(p); return {d,s,m:clamp(1+.05*(d-1.5*(s+1)),.9,1.2)}; }
+function faPosPrem(t,p){ const F=G.fa; if(!F||!F.pool||t.id===ME())return 1; const rk=(faRanks(t.id)[pSlot(p)]||{}).rank||0; return faSD(p).m*(rk>=9?1.12:rk>=7?1.08:1); }
+/* 구단주가 찍은 FA(꼭 필요한 자리 + 구단주 의지): 시장이 열릴 때 AI 구단마다 많아야 한 명. 우승형 구단주·올인·우승 도전일수록 잘 찍는다.
+   찍힌 선수에게는 성적 상한을 넘겨 웃돈(올인 1.35배·우승형 1.25배·그 밖 1.15배)을 주고, 경쟁이 붙으면 끝까지 따라간다(오버페이) */
+function faTgtPick(){ const F=G.fa; if(!F||!F.pool||F.tgt)return; F.tgt={}; const pool=F.pool.map(i=>G.players[i]).filter(p=>p&&p.team==null&&p.age<=33).sort((a,b)=>ovr(b)-ovr(a)).slice(0,10);
+  for(const t of G.teams){ if(t.id===ME()||t.indie||t.cash<0)continue; const allIn=t.allIn===sponSeason();
+    const ch=(allIn?.9:0)+(t.owner==='win'?.35:t.owner==='profit'?.05:.18)+(t.mode==='contend'?.15:0); if(R()>=ch)continue;
+    const rk=faRanks(t.id); const p=pool.find(q=>((rk[pSlot(q)]||{}).rank||0)>=6&&!Object.values(F.tgt).includes(q.id)); if(p)F.tgt[t.id]=p.id; } }
+/* 시장 개장 스카우트 보고: 자리별 수요·공급과 구단주가 찍은 선수 소문(스카우트 귀가 닿는 만큼만, 숫자 없이) */
+function faMoodTxt(top){ try{ const L=[]; for(const p of top.slice(0,5)){ const x=faSD(p), pos=posLabel(p); if(x.d>=3&&x.s===0)L.push(`${p.name}: ${pos} 매물이 귀하고 찾는 구단이 많아 몸값이 뛸 것 같습니다.`); else if(x.s>=2||x.d===0)L.push(`${p.name}: 비슷한 ${pos} 매물이 많아 시간이 갈수록 값이 내려갈 수 있습니다.`); }
+  const T=G.fa.tgt||{}; for(const [tid,pid] of Object.entries(T)){ if(R()<.55&&G.players[pid])L.push(`${tshort(+tid)} 구단주가 ${G.players[pid].name} 영입을 직접 챙긴다는 얘기가 돕니다. 붙으면 값이 크게 오를 수 있습니다.`); }
+  return L.length?'\n\n[시장 분위기]\n'+L.slice(0,6).join('\n'):''; }catch(e){ return ''; } }
+function faTgt(t,p){ const F=G.fa; return !!(t&&p&&F&&F.tgt&&F.tgt[t.id]===p.id); }
+function faOverpay(t){ return t.allIn===sponSeason()?1.35:t.owner==='win'?1.25:1.15; }
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;
-  if(t.id!==ME()&&capPay(t.id)+p.ask.annual*.9>capOf(sponSeason())*((t.id===p.faFrom?1.02:1)+(t.mode==='contend'&&t.cash>3000?.04:0))*aiCapMul(t))return 0; /* 지난해 초과 구단은 더 아끼고, 올인 구단은 넘겨도 산다 */
+  const tg=faTgt(t,p); if(t.id!==ME()&&capPay(t.id)+p.ask.annual*.9>capOf(sponSeason())*((t.id===p.faFrom?1.02:1)+(t.mode==='contend'&&t.cash>3000?.04:0)+(tg?.08:0))*aiCapMul(t))return 0; /* 지난해 초과 구단은 더 아끼고, 올인 구단은 넘겨도 산다 */
   if(t.id!==p.faFrom&&t.cash<-3000)return 0;
   if(t.id!==p.faFrom&&ovr(p)<47)return 0;
   /* 보상 비용(보상금)을 계약 총액과 견준다: 몸값보다 보상금이 크면 외부 구단은 거의 손대지 않는다 */
@@ -140,13 +152,13 @@ function faInterest(t,p){
     if(t.id!==ME()&&t.cash-cc<-2500)return 0; } /* 보상금을 내면 현금이 크게 마이너스가 되는 AI 구단은 외부 FA를 포기한다 */
   const debt=t.id===p.faFrom&&t.id!==ME()&&(t.cash<-5000||capPay(t.id)>capOf(sponSeason())*1.1)?.35:1;
   if(t.cash<-8000&&t.id!==p.faFrom)return 0;
-  if(p.ask.annual>room*1.15&&t.owner==='profit')return 0;
-  if(p.ask.annual>room*1.5)return 0;
+  if(p.ask.annual>room*1.15&&t.owner==='profit'&&!tg)return 0;
+  if(p.ask.annual>room*(tg?1.8:1.5))return 0;
   /* 연봉 총액이 낮은 구단(하한 근처)은 돈을 쓸 이유가 있다 */
   const low=(capPay(t.id)<capOf(sponSeason())*.5?.22:capPay(t.id)<capOf(sponSeason())*.65?.1:0)+(t.cash>6000?.08:0);
   /* 운영 방향: 우승 도전은 상한 92%까지 채우려 적극적, 내년 도전은 25~30세를, 리빌딩은 서른 넘은 외부 FA를 거의 보지 않는다 */
   const st=t.id===ME()||t.id===p.faFrom?null:stanceOf(t); const stB=st==='win'?(capPay(t.id)<capOf(sponSeason())*.92?.15:0):st==='next'?(p.age>=25&&p.age<=30?.08:p.age>=32?-.1:0):st==='rebuild'?(p.age<=27?.06:p.age>=31?-.25:0):0;
-  return compF*clamp(.12+low+stB+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(rosterN(t.id)>=ROSTER_MAX-1?.25:0),0,1)*debt;
+  return compF*clamp(.12+low+stB+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(rosterN(t.id)>=ROSTER_MAX-1?.25:0)+(tg?.35:0),0,1)*debt;
 }
 function faDay(day){
   const F=G.fa; const since=day-F.openDay;
@@ -157,10 +169,11 @@ function faDay(day){
     if(L.length)mail('운영팀',`미리 낸 FA 제안 ${L.length}건에 답이 왔습니다`,L.join('\n\n'),{kind:'FA',imp:true,acts:[{l:'FA 시장',a:'go',v:'transfer:fa'}]}); }
   if(day===F.openDay){ const mine=F.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user&&G.players[id].team==null); stop('FA',`오늘부터 모든 구단과 FA 협상이 열립니다.${mine.length?` 우리 FA ${mine.length}명(${mine.slice(0,4).map(id=>G.players[id].name).join(', ')}${mine.length>4?' 등':''})에게 다른 구단도 제안할 수 있습니다.`:''} 영입·계약 → FA 시장에서 조건을 제시하세요.`); }
   F.warned=F.warned||{};
+  if(day>=F.openDay)faTgtPick();
   if(day===F.openDay&&!G.unemp){ const top=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom!==G.user).sort((a,b)=>ovr(b)-ovr(a)).slice(0,5);
-    if(top.length)mail('스카우트팀장',`FA 시장 개장: 주요 선수 ${top.length}명`,top.map((p,i)=>`${i+1}. ${p.name} (${posLabel(p)}, ${p.age}세, ${p.faGrade}등급, 원소속 ${tshort(p.faFrom)}) · 요구 연 ${money(p.ask.annual)} ${p.ask.years}년`).join('\n')+'\n\n관심 선수로 별표를 해 두면 다른 구단이 제안할 때 바로 알려 드립니다.',{kind:'FA',acts:[{l:'FA 시장',a:'goWork',v:'FA시장'}]}); }
+    if(top.length)mail('스카우트팀장',`FA 시장 개장: 주요 선수 ${top.length}명`,top.map((p,i)=>`${i+1}. ${p.name} (${posLabel(p)}, ${p.age}세, ${p.faGrade}등급, 원소속 ${tshort(p.faFrom)}) · 요구 연 ${money(p.ask.annual)} ${p.ask.years}년`).join('\n')+faMoodTxt(top)+'\n\n관심 선수로 별표를 해 두면 다른 구단이 제안할 때 바로 알려 드립니다.',{kind:'FA',acts:[{l:'FA 시장',a:'goWork',v:'FA시장'}]}); }
   /* 찾는 구단이 없으면 요구액이 매주 내려간다(최초 요구의 40%까지) */
-  if(since>0&&since%7===0)for(const id of F.pool){ const p=G.players[id]; if(!p||p.team!=null)continue; faPruneAi(id); const ai=F.ai[id]||{}; if(Object.keys(ai).length||faOfferLive(id))continue; /* 선수가 거절한 우리 제안은 남은 제안으로 보지 않는다 */ const a0=p.ask0||p.ask.annual; const fl=p.age<=33?clamp(.4+(ovr(p)-52)*.04,.4,.75):.4; /* 주전급은 요구액이 덜 떨어진다(커뮤니티 피드백 11-11: 보상금 부풀리기 뒤 헐값 재계약) */ const na=round5(Math.max(a0*fl,MIN_SAL,p.ask.annual*.9)); if(na<p.ask.annual){ p.ask.annual=na; if(since>=35)p.ask.years=Math.min(p.ask.years,since>=50&&p.age>=33?1:2); } }
+  if(since>0&&since%7===0)for(const id of F.pool){ const p=G.players[id]; if(!p||p.team!=null)continue; faPruneAi(id); const ai=F.ai[id]||{}; const nb=Object.keys(ai).filter(k=>+k!==p.faFrom).length+(faOfferLive(id)&&p.faFrom!==G.user?1:0); if(nb>=2){ const a0=p.ask0||p.ask.annual; const na=round5(Math.min(a0*1.2,p.ask.annual*1.05)); if(na>p.ask.annual)p.ask.annual=na; continue; } /* 외부 구단이 둘 이상 붙으면 요구액이 오른다(최초 요구의 120%까지): 인기 있는 선수만 몸값이 뛴다 */ if(Object.keys(ai).length||faOfferLive(id))continue; /* 선수가 거절한 우리 제안은 남은 제안으로 보지 않는다 */ const a0=p.ask0||p.ask.annual; const fl=p.age<=33?clamp(.4+(ovr(p)-52)*.04,.4,.75):.4; /* 주전급은 요구액이 덜 떨어진다(커뮤니티 피드백 11-11: 보상금 부풀리기 뒤 헐값 재계약) */ const na=round5(Math.max(a0*fl,MIN_SAL,p.ask.annual*.9)); if(na<p.ask.annual){ p.ask.annual=na; if(since>=35)p.ask.years=Math.min(p.ask.years,since>=50&&p.age>=33?1:2); } }
   for(const id of [...F.pool]){
     const p=G.players[id]; if(!p||p.team!=null)continue;
     faPruneAi(id); const ai=F.ai[id]||(F.ai[id]={});
@@ -168,7 +181,7 @@ function faDay(day){
     for(const t of G.teams){ if((t.id===G.user&&!G.unemp)||ai[t.id])continue; const own=t.id===p.faFrom;
       /* 애매한 선수는 원소속 구단도 서두르지 않는다: 시장 반응을 본 뒤(협상 50일 이후) 낮춰 부른다 */
       if(own&&po<50&&since<50)continue;
-      let it=faInterest(t,p); if(!own)it*=po<52?.35:.7; if(it>0&&R()<it*.1){ const w=faWorth(t,p)*(own&&po<50?.65:1); ai[t.id]={annual:round5(Math.min(p.ask.annual*rnd(.92,1.15),w)),years:own&&po<50?(p.age<=30?2:1):clamp(p.ask.years+ri(-1,0)+(p.age<=28&&po>=62&&R()<.3?1:0),p.age<=31?2:1,p.age<=28&&po>=62?5:4)}; } } /* 서른 안팎까지는 보통 2년 이상 보장한다(1+1 포함) */
+      let it=faInterest(t,p); if(!own)it*=po<52?.35:.7; const tg=faTgt(t,p); if(it>0&&R()<it*(tg?.3:.1)){ const w=faWorth(t,p)*(own&&po<50?.65:1); ai[t.id]={annual:round5(Math.min(p.ask.annual*(tg?rnd(1.02,1.2):rnd(.92,1.15)),w)),years:own&&po<50?(p.age<=30?2:1):clamp(p.ask.years+ri(-1,0)+(p.age<=28&&po>=62&&R()<.3?1:0),p.age<=31?2:1,p.age<=28&&po>=62?5:4)}; } } /* 서른 안팎까지는 보통 2년 이상 보장한다(1+1 포함) */
     const live=faOfferLive(id);
     if(p.faFrom!==G.user&&!G.unemp&&!live&&!F.warned[id]&&((G.shortlist||[]).includes(id)||mreqOpen('fa').some(r=>r.data&&r.data.pid===id))&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`관심 FA ${p.name}에게 ${tname(+k0)}이(가) 제안했습니다(연 ${money(ai[k0].annual)} · ${ai[k0].years}년). 잡으려면 서둘러 조건을 제시하세요.`,id); }
     if(p.faFrom===G.user&&!live&&!F.warned[id]&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`우리 FA ${p.name}에게 ${tname(+k0)}이(가) 먼저 제안했습니다. 잡으려면 FA 시장에서 조건을 제시하세요.`,id); }
