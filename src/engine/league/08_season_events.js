@@ -103,10 +103,12 @@ function psDay(day){
     else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; if(done[0]===G.user&&!G.unemp){ G.champScene={y:G.year,day,op:done[1],w:P.res.ks[2],l:P.res.ks[3]}; if(g&&g.walk&&h===G.user)(G.champWo=G.champWo||{})[G.year]=1; } /* 끝내기 우승은 우승 순간 첫 장면을 '끝내기'로(카페 11-11 안토) */ /* 우승 장면을 한 번 띄운다(사용자 11-08) */ stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); try{ champCelebrate(); }catch(e){ console.error(e); } try{ titleNews(done[0],done[1]); }catch(e){ console.error(e); } }
   }
 }
-/* 상한 초과(경쟁균형세)는 세금과 별개로 구단주가 부담으로 본다: 초과 폭만큼 신뢰 점수가 깎이고(상한의 10% 초과면 -4, 25% 넘으면 -10), 다음 시즌 모기업 지원 한도가 초과분의 절반만큼 준다. 신뢰 감점 값을 돌려준다(결산이 더한다) */
-function capOverOwner(u,y){ const ci=capInfo(u.id); if(!(ci.over>0)||u.indie||G.unemp)return 0; const r=ci.over/ci.cap, pen=-clamp(Math.round(r*40),2,10);
-  const cut=Math.round(ci.over*.5); const prev=u.supCut&&u.supCut.y===y+1?u.supCut.amt:0; u.supCut={y:y+1,amt:prev+cut};
-  mail('구단주실',`상한 초과: 다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`상위 40명 연봉이 상한을 ${money(ci.over)}(${Math.round(r*100)}%) 넘었습니다. 경쟁균형세와 별도로, 모기업은 "규정을 넘겨 가며 쓴 돈은 구단이 책임지라"며 ${y+1}시즌 지원 한도를 ${money(cut)} 줄입니다. 구단주 신뢰 ${pen}.`,{kind:'구단주'}); return pen; }
+/* 상한 초과(경쟁균형세)는 세금과 별개로 구단주가 부담으로 본다. 초과 폭과 연속 초과 횟수만큼 커진다(사용자 11-13 "셀캡 깨는 유저": 예전에는 신뢰 -10·지원 축소 초과분의 50%에서 멈춰 상한의 60%를 넘겨도 부담이 같았다).
+   신뢰: 초과율×60(2회 연속 ×1.25, 3회 ×1.5), -2~-20. 다음 시즌 모기업 지원 한도 축소: 초과분의 50%(초과율 0)~150%(초과율 40% 이상), 2회 연속부터 1.2배. 신뢰 감점 값을 돌려준다(결산이 더한다). AI 구단은 세금(경쟁균형세)만 같은 규칙으로 낸다 */
+function capOverOwner(u,y){ const ci=capInfo(u.id); if(!(ci.over>0)||u.indie||G.unemp)return 0; const r=ci.over/ci.cap, n=Math.max(1,u.capOver||1), nm=1+.25*Math.min(2,n-1);
+  const pen=-clamp(Math.round(r*60*nm),2,20);
+  const cutR=clamp(.5+r*2.5,.5,1.5)*(n>=2?1.2:1); const cut=Math.round(ci.over*cutR); const prev=u.supCut&&u.supCut.y===y+1?u.supCut.amt:0; u.supCut={y:y+1,amt:prev+cut};
+  mail('구단주실',`상한 초과: 다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`상위 40명 연봉이 상한을 ${money(ci.over)}(${Math.round(r*100)}%) 넘었습니다${n>=2?`(${n}년 연속)`:''}. 경쟁균형세와 별도로, 모기업은 "규정을 넘겨 가며 쓴 돈은 구단이 책임지라"며 ${y+1}시즌 지원 한도를 초과분의 ${Math.round(cutR*100)}%인 ${money(cut)} 줄입니다. 구단주 신뢰 ${pen}.`,{kind:'구단주'}); return pen; }
 function settlement(){
   try{ asSnap(); }catch(e){} /* 시즌 연봉 규모 기록: 실행위원회 소집 요건은 시즌을 치른 연봉으로 본다 */
   const y=G.year; const P=G.ps; const prePop=G.teams.map(t=>t.pop);

@@ -94,16 +94,19 @@ function canExtend(p){ return p&&p.team===G.user&&!p.foreign&&!p.ys&&!p.extNext&
 /* 다년계약 제안 결과: st = ok(합의) · counter(역제안, 7일 안에 수락 가능) · no(거절) · market(FA 시장을 보겠다며 거절) · locked(이번 주 협상 끝) · na(대상 아님).
    결과는 선수에게 남겨(p.extLast) 협상 창을 닫았다 열어도, 선수 정보에서도 볼 수 있게 한다 */
 function offerExtension(id,annual,years,acc,T){ const r=offerExtension0(id,annual,years,acc,T); const p=G.players[id];
-  if(p&&r.st&&r.st!=='na'&&r.st!=='locked')p.extLast={d:G.day,st:r.st,t:r.msg.replace(/^[^:]+: /,''),next:r.st==='ok'||r.st==='counter'?null:(Math.floor(G.day/7)+1)*7};
+  if(p&&r.st&&r.st!=='na'&&r.st!=='locked'&&r.st!=='owner')p.extLast={d:G.day,st:r.st,t:r.msg.replace(/^[^:]+: /,''),next:r.st==='ok'||r.st==='counter'?null:(Math.floor(G.day/7)+1)*7};
   if(r.st==='locked'&&p)r.next=(Math.floor(G.day/7)+1)*7; return r; }
 /* 강경형·대형 에이전트가 요구하는 최소 기간(없으면 0). 협상 화면의 '요구 조건 충족' 표시도 같은 기준(검수 11-09s) */
 /* 다년계약 요구(연평균): 에이전트 배수와, FA 시장 평가를 원하는 선수의 웃돈(8%)까지 — 협상 화면의 요구와 판정이 같은 값을 쓴다 */
 function extDemandAll(p,years){ return round5(extDemand(p,years)*(hasAgent(p)?agExtMul(p):1)*(agExtTestMarket(p)?1.08:1)); }
 function extMinY(p){ const ag=hasAgent(p)?agentOf(p):null; return ag&&(ag.style==='hard'||ag.size==='big')?(p.age<=29?4:p.age<=32?3:2)-1:0; }
 const extNextDay=p=>p&&p.extTried===Math.floor(G.day/7)?(Math.floor(G.day/7)+1)*7:null; /* 이번 주에 이미 거절당했으면 다시 제안할 수 있는 날 */
+/* 다년계약의 상한 결재(13_roster capOwnerCheck): 계약이 시작하는 시즌 기준, 계약금은 연평균 */
+function extCapCheck(p,pay,bonus,years){ const now=(G.rolled===G.year&&G.day>=KD(11,1))||period()==='pre'; const s=now?ctSeason():G.year+1; const a=pay+Math.round((bonus||0)/Math.max(1,years||1)); return capOwnerCheck(capPayWith(G.user,p.id,a,s).tot,capPayWith(G.user,null,null,s).tot,s,'ext'+p.id); }
 function offerExtension0(id,annual,years,acc,T){
   const p=G.players[id]; if(p&&p.ys)return {ok:false,st:'na',msg:'육성선수는 다년계약을 맺을 수 없습니다(연봉 1억 이하, FA·다년계약이 아닌 선수만 육성선수). 정식 선수로 등록한 뒤 제안하세요.'}; if(!canExtend(p))return {ok:false,st:'na',msg:'다년계약을 제안할 수 없는 선수입니다.'};
   const wk=Math.floor(G.day/7);
+  const cc=extCapCheck(p,T?T.annual:annual,T?T.bonus:0,years); if(cc&&!cc.ok)return {ok:false,st:'owner',msg:cc.msg}; /* 결재가 안 나면 선수에게 내밀지 못한다(이번 주 협상 기회·역제안 그대로) */
   const who=agWho(p); const ag=hasAgent(p)?agentOf(p):null;
   if(acc&&p.extCounter&&p.extCounter.until>=G.day&&annual>=p.extCounter.annual&&years===p.extCounter.years){ delete p.extCounter; p.extTried=null; annual=Math.max(annual,0); }
   else if((acc=false)||p.extTried===wk)return /* 유효한 역제안이 아니면 일반 제안으로 본다 */ {ok:false,st:'locked',msg:`${who}: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 제안해 주세요.`};
@@ -123,6 +126,7 @@ function offerExtension0(id,annual,years,acc,T){
     if(now&&!T)termsClear(p); story(p,`비FA 다년계약 ${T?termsTxt(T,true):`${years}년 연 ${money(annual)}`}`,'move');
     addLog(`${p.name}와(과) 비FA 다년계약에 합의했습니다. ${tx}.`);
     if(ag){ agRelAdd(ag,3,`${p.name} 다년계약`); agDealAdd(p,G.user); }
+    capOwnerOk(cc,`${p.name} 다년계약`);
     return {ok:true,st:'ok',now,msg:`${who}: ${T?termsTxt(T,true):`${years}년 연 ${money(annual)}`}에 합의했습니다. ${now?'바로 적용됩니다.':'다음 시즌부터 적용됩니다.'}${p.postPromise?` 앞서 한 ${p.postPromise}년 포스팅 허락 약속은 그대로 남습니다(그해 포스팅 요청 때 지키거나 어겨야 합니다).`:''}`}; }
   p.extTried=wk; if(ag&&annual<d*.8)agRelAdd(ag,-2,`${p.name} 다년계약 무리한 제안`);
   /* 에이전트는 정확한 하한 대신 조금 높여 부른다(친하면 더 정확히) */
