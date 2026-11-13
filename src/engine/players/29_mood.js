@@ -191,11 +191,13 @@ function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)
 function keepPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(!(p.treq&&!p.treq.done)){ note('면담',`${p.name}: "이미 말씀 나눴습니다."`,id); return; } p.treq.done=true; const ok=p.pers.loy>=11||R()<.35; p.mor=clamp(p.mor+(ok?8:-6),0,100); note('면담',ok?`${p.name}: "단장님 말씀을 믿고 한 번 더 해 보겠습니다."`:`${p.name}: "생각은 달라지지 않았습니다."`,id); }
 /* 후보 선수의 트레이드 요청(피드백 11-09k): 실력은 주전과 비슷한데 출전이 적은 백업이 단장실을 찾아온다. 구단 전체로 30일에 한 번, 한 해 3번까지.
    시즌 중에는 evWeek가 check()로 고르고, 시즌 밖(스토브리그·캠프)에는 treqWeek가 따로 본다 */
-function treqLowPT(p,y,gp){ const h=seasonTotal(p,y,'1군')||{}; return p.isP?(h.outs||0)<gp*.6:(h.pa||0)<gp*1.1; }
+/* 그 시즌을 우리 구단에서 보내지 않은 선수(시즌 중간 이후·시즌 뒤 합류)는 그 시즌 출전으로 불만을 말하지 않는다 */
+function treqNewHere(p,y){ const C=G.cal; const end=y<G.year?dnum(y,10,1):(C?C.end:dnum(y,10,1)), open=y<G.year?dnum(y,3,25):(C?C.open:dnum(y,3,25)); let j=null; for(const m of p.tLog||[])if(m.t===G.user&&m.d!=null)j=Math.max(j??-1e9,m.d); if(j==null&&p.mvD!=null&&p.team===G.user)j=p.mvD; return j!=null&&j>open+Math.round((end-open)/2); }
+function treqLowPT(p,y,gp){ const h=(p.team===G.user?seasonTotalT(p,y,'1군',G.user):seasonTotal(p,y,'1군'))||{}; /* 우리 구단에서 뛴 몫만(커뮤니티 11-13 질수없뜸: 12월에 데려온 선수가 전 구단 시절 0타석을 이유로 트레이드 요청) */ return p.isP?(h.outs||0)<gp*.6:(h.pa||0)<gp*1.1; }
 function treqCands(){ if(G.unemp||!G.mgr[G.user])return []; const per=period(), live=per==='season', y=per==='off'||live?G.year:G.year-1; const gp=live?teamGP(G.user):144; if(live&&gp<20)return [];
   const d=depth(G.user); const rv=p=>(p.isP?[d.sp[4],d.pen[3]]:[d.ln[p.pos]]).filter(Boolean);
   return playersOf(G.user).filter(p=>{ initPers(p); if(p.foreign||p.ys||!healthy(p)||isAway(p)||p.listed||p.promise||(p.treq&&(!p.treq.done||G.day-p.treq.day<120))||p.joinY>G.year||p.age<23||p.age>33||p.pers.amb<10||(p.mor??60)>=70)return false;
-    if((p.tLog||[]).some(x=>x.t===G.user&&G.day-x.d<60)||isRegular(p)||(live&&playedReg(p))||!treqLowPT(p,y,gp))return false;
+    if((p.mvD!=null&&G.day-p.mvD<60)||treqNewHere(p,y)||(p.tLog||[]).some(x=>x.t===G.user&&G.day-x.d<60)||isRegular(p)||(live&&playedReg(p))||!treqLowPT(p,y,gp))return false;
     const f=seasonTotal(p,y,'퓨처스'); const farm=f&&(p.isP?f.outs>=60&&f.er*27/f.outs<=3.6:f.pa>=60&&bRate(f).ops>=.8);
     return farm||rv(p).some(q=>q.id!==p.id&&ovr(p)>=ovr(q)-3); }); }
 function treqWeek(){ const per=period(), L=(G.treqLog||{}).last; if(per==='season'||per==='post'||G.gameOver||(L!=null&&G.day-L<90)||evOpen().some(e=>e.k==='treq')||R()>.3)return; /* 시즌 밖은 석 달에 한 번까지(같은 해 시즌 몫을 캠프 때 다 쓰지 않게) */ const p=EVH.treq.check(); if(p)EVH.treq.make(p); }
