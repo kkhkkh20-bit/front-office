@@ -85,7 +85,7 @@ function pcPitchCall(g,k,q,index){if(/타격|번트/.test(q.res))return null;con
 function pcLiveCall(g,k,phase,ctx={}){const name=pcName(g,g.pbp[k][1]),pick=(key,lines)=>pcVoice(g,k,'live:'+key,lines,true),fielder=ctx.fielder||'수비수';switch(phase){
  case 'flight':return {c:ctx.arc?pick('air',[`${name}, 높이 띄웠어요! ${fielder}, 따라갑니다!`,`뻗어 가는 타구! ${fielder}, 끝까지 봅니다!`,`공이 올라갑니다! ${fielder}의 글러브를 보세요!`]):ctx.ground?`${name}, 땅볼! ${fielder}, 달려 나옵니다!`:`낮게 뻗었어요! ${fielder}, 타구를 쫓습니다!`,a:''};
  case 'homer':return {c:ctx.landing||pick('homer-impact',[`갔습니다! ${name}, 담장 밖으로!`,`넘어갔어요! ${name}, 홈런입니다!`,`아, 이게 뭔가요! ${name}의 홈런!`]),a:''};
- case 'throw':return {c:ctx.relay?`${fielder}, ${ctx.receiver}에게 중계합니다!`:`${fielder}에서 ${ctx.receiver}로! 송구합니다!`,a:''};
+ case 'throw':return {c:ctx.relay?`${fielder}, ${ctx.receiver}에게 중계합니다!`:`${fielder}, ${ctx.receiver}에게 송구합니다!`,a:''};
  case 'steal':return {c:`뜁니다! ${ctx.runner}, ${ctx.base}를 노립니다!`,a:''};
  case 'bench-start':return {c:'잠깐, 벤치가 움직입니다! 분위기가 뜨거워져요!',a:''};
  case 'bench-talk':return {c:'말려야 합니다! 동료들이 사이를 막아섭니다!',a:''};

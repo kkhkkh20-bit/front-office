@@ -4,12 +4,14 @@ function c3DActive(){return typeof Match3D!=='undefined'&&Match3D.ready();}
 function c3DFielder(g,k,pos){if(pos==='P'){const id=cPit(g,k);return id?{id,pos}:null;}return cFielders(g,g.pbp[k][0],k).find(a=>a.pos===pos);}
 function c3DRunTime(id){return FrontOfficeCore.baseRunTime(G.players[id]?.r.spd??50);}
 function c3DName(f){return f?G.players[f.id]?.name||'수비수':'수비수';}
+function c3DBeside(base,from,d=.75){ if(![CBS[0],CBS[1],CBS[2],CHM].some(b=>b[0]===base[0]&&b[1]===base[1]))return base; const dx=from[0]-base[0],dy=from[1]-base[1],l=Math.hypot(dx,dy); return l<.01?base:[base[0]+dx/l*d,base[1]+dy/l*d]; }
 async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
  const receiver=c3DFielder(g,k,toPos);if(!from||!receiver)return;
  const arm=G.players[from.id]?.r.arm??G.players[from.id]?.r.stf??50;let travel=FrontOfficeCore.throwTime(Match3D.distance(fromPt,toPt),arm);
  const cover=(Match3D.actorDistance('d'+receiver.id,toPt)??Match3D.distance(CFP[toPos],toPt))/8*1000;let wind=Math.max(220,Math.min(650,cover-travel+60)); /* 받을 선수를 오래 기다리며 공을 쥐고 있지 않게(사용자 피드백 11-07) */
  if(by){ const left=(by-performance.now())*cSpd()-120, f=left>0?Math.min(1,left/(wind+travel)):.2; if(f<1){ const s=Math.max(.2,f); wind=Math.round(wind*s); travel=Math.round(Math.max(120,travel*s)); } } /* by: 주자가 베이스에 닿는 시각. 아웃이면 공이 그보다 먼저(빠른 송구) */
- Match3D.move('d'+receiver.id,toPt,cover/cSpd());
+ const stand=c3DBeside(toPt,fromPt); /* 받는 야수는 베이스 한가운데가 아니라 송구 쪽 옆에 선다(들어오는 주자와 겹쳐 서지 않게) */
+ Match3D.move('d'+receiver.id,stand,cover/cSpd());
  Match3D.throwing('d'+from.id,toPt,wind/cSpd());cSpeak(g,k,'throw',{fielder:c3DName(from),receiver:c3DName(receiver),relay:phase==='중계 플레이'});
  await cSleep(wind);sfx('pitch',.28,1.15);Match3D.receive('d'+receiver.id,toPos==='C'?'low':'stretch',travel/cSpd(),fromPt);await cBall(fromPt,toPt,travel,false);Match3D.caught('d'+receiver.id,phase);sfx('mitt',.5,1.1); /* 송구·포구 소리(사용자 11-08) */
  cCap(`${POSK[toPos]||toPos} ${c3DName(receiver)} · ${phase}`,phase.includes('아웃')?'bad':'');
@@ -30,7 +32,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  const lead3=!outPlay&&!path?moves.find(m=>!m.out&&m.to===3&&m.from<3):null,armF=G.players[f?.id]?.r.arm??50;
  const direct=!!f&&!isHR&&!outPlay&&!UI.cast.errPos&&['LF','CF','RF'].includes(f.pos)&&!moves.some(m=>m.out)&&(typeof pcH==='function'?pcH(g,k,'direct'):1)<(path?(Match3D.distance(chase2,base)<60?.3:.1):.5)+(armF-50)*.006;
  const directPos=path?basePos:lead3?'3B':basePos,directPt=path?base:lead3?CBS[2]:CBS[1];
- const cover=(pos,target)=>{const receiver=c3DFielder(g,k,pos);if(receiver&&receiver.id!==f?.id)Match3D.move('d'+receiver.id,target,Match3D.distance(CFP[pos],target)/8.5*1000/cSpd());};
+ const cover=(pos,target)=>{target=c3DBeside(target,chase2);const receiver=c3DFielder(g,k,pos);if(receiver&&receiver.id!==f?.id)Match3D.move('d'+receiver.id,target,Match3D.distance(CFP[pos],target)/8.5*1000/cSpd());};
  if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);cover(pat[1],CBS[1]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else{if(direct)cover(directPos,directPt);else cover(relayPos,relayPt2);if(path)cover(basePos,base);}}}
 
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');if(typeof Match3D.leave==='function')Match3D.leave('o'+id,3200/cSpd());else Match3D.hide('o'+id);}; /* 아웃된 주자는 사라지지 않고 뛰어 나간다 */
