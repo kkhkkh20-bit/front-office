@@ -1,6 +1,6 @@
 /* 패널 */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
-.card>h2.sec:first-child,.card>.row.between:first-child,.card>.eyebrow:first-child,details.card>summary{margin:-12px -12px 2px;padding:8px 12px;background:var(--head);border-bottom:1px solid var(--line);border-radius:4px 4px 0 0;min-height:38px}
+.card>h2.sec:first-child,.card>.row.between:first-child,.card>.eyebrow:first-child,details.card>summary{margin:-12px -12px 2px;padding:8px 12px;background:var(--head);border-bottom:1px solid var(--line);border-radius:4px 4px 0 0;min-height:38px;flex-shrink:0}
 .card.hero{border-color:var(--team)}
 .card.hero>h2.sec:first-child,.card.hero>.row.between:first-child,.card.hero>.eyebrow:first-child{background:color-mix(in srgb,var(--team) 45%,var(--panel));border-bottom-color:var(--team-hi);color:#fff}
 .card.hero>.row.between:first-child .eyebrow,.card.hero>.eyebrow:first-child{color:#e8eef3}

@@ -154,6 +154,8 @@
 .hw-sr>em{font-style:normal;font-weight:700;font-size:12px}.hw-sr>small{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hw-sr.past{opacity:.85}.hw-sr .good{color:var(--good)}.hw-sr .bad{color:var(--bad)}
 .hw-leaders .fx-pls{padding:6px 10px}
 @media(min-width:1100px){.home-workspace[data-device="desktop"] .home-grid.home-dashboard>.hw-stand{grid-row:span 2}}
+/* 첫 시즌 준비 카드가 있는 동안은 카드가 9장이라 순위가 두 칸을 차지하면 예산 카드가 넷째 줄로 밀려 위 카드들이 납작해지고 아래가 비었다: 그동안은 한 칸만 */
+@media(min-width:1100px){.home-workspace[data-device="desktop"] .home-grid.home-dashboard:has(>.hw-start)>.hw-stand{grid-row:auto}}
 @media(min-width:1100px) and (max-height:860px){.home-workspace[data-device="desktop"][data-rows="3"] .hw-news h3{-webkit-line-clamp:1;font-size:14px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-news article>p{-webkit-line-clamp:1}}
 @media(min-width:1100px) and (max-height:860px){#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-news article>:is(p,.hw-kicker){display:none}#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-news h3{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;margin:4px 0}}
 @media(max-width:699px){.hw-finance dl{gap:4px!important;padding:6px 10px!important}.hw-finance dd{font-size:16px!important}}
