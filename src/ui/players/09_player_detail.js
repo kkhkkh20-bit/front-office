@@ -3,14 +3,7 @@ const ATTR_HELP={
   '컨택':'공을 맞히는 능력. 삼진이 줄고 안타·타율이 오릅니다.','파워':'장타력. 홈런·2루타가 늘어납니다.','선구안':'볼을 골라내는 능력. 볼넷이 늘고 삼진이 줄어 출루율이 오릅니다.','주루':'발 빠르기. 내야안타·도루·추가 진루가 늘어납니다.','수비':'포지션 수비 범위·처리. 실점을 막습니다(포지션마다 비중이 다름).',
   '구위':'공의 힘. 탈삼진이 늘고 강한 타구를 덜 맞습니다.','제구':'원하는 곳에 던지는 능력. 볼넷이 줄어듭니다.','스태미나':'투수가 긴 이닝을 던지는 힘. 선발로 오래 버티고 등판 뒤 회복도 빠릅니다.',
   '체력':'경기마다 쌓이는 피로가 적고 회복이 빨라 휴식이 덜 필요합니다. 높으면 30대 노화 하락도 덜합니다. 투수는 스태미나와 같습니다.',
-  '내구성':'부상을 잘 당하지 않는 정도. 낮으면 부상이 잦습니다.',
-  '프로의식':'훈련 태도. 높을수록 잠재력을 잘 실현하고, 슬럼프가 드물고 기복이 적으며, 30대 노화 하락도 덜합니다. 동료 분위기와 주장감에도 영향을 줍니다. 감독·코치진(우리 선수)이나 스카우트 소문(다른 구단)으로만 알 수 있습니다.',
-  '야망':'더 잘하고 더 크게 되려는 욕심. 높으면 성장 의욕이 커서 잠재력 실현에 조금 유리하지만, 출전 기회·연봉에 대한 요구도 커서 벤치에 두면 불만·언론 플레이·트레이드 요구가 잦습니다.',
-  '예민도':'낮을수록 좋습니다. 높으면 슬럼프가 잦고 잠재력 실현이 낮으며 승부처에서 흔들립니다. 불만을 밖으로 드러내기 쉬워 언론 플레이·감독과의 불화·훈련 거부로 번지기 쉽습니다.',
-  '충성심':'구단에 대한 애착. 높으면 FA·재계약 때 원소속 구단 조건을 더 좋게 보고, 불만이 있어도 트레이드 요구를 덜 합니다. 낮으면 시장 평가를 중시합니다.',
-  '승부처 집중':'득점권·7회 이후 접전·포스트시즌에서만 능력에 더해집니다(해결사·위기에 강한 투수). 프로의식이 높고 예민도가 낮을수록 조금 높습니다.',
-  '꾸준함':'경기마다의 컨디션 흔들림과 몇 주 단위 슬럼프·상승세의 폭. 높을수록 성적이 능력대로 고르게 나옵니다.',
-  '한국 적응력':'외국인 선수의 생활·리그 적응. 낮으면 첫해 능력만큼 성적이 안 나오고 향수병·불화가 잦습니다.','해외 진출 의지':'포스팅·해외 FA로 떠나려는 의지. 낮을수록 구단에 유리합니다.'};
+  '내구성':'부상을 잘 당하지 않는 정도. 낮으면 부상이 잦습니다.'};
 function attrHelp(l){ const k=String(l).replace(/\(.*?\)/g,'').replace(/·?\s*(결정구|보유.*)$/,'').trim(); for(const x in ATTR_HELP)if(k===x||k.startsWith(x))return ATTR_HELP[x]; return ''; }
 function attrHelpList(){ return `<dl class="attr-help">${Object.entries(ATTR_HELP).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`; }
 /* ---------- 세부 능력치 · 레이더 · 성장 차트 ---------- */
@@ -26,7 +19,7 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
     const viewP={...p,r:{...p.r,stf:tv.stf}}; const arsenal=arsenal_(viewP,tv.stf).map(([k,v])=>[k,c(v)]); const best=[...arsenal].sort((a,b)=>b[1]-a[1])[0][0];
     const L=p.th==='좌'?3:-2;
     G2.push(['투구',[['구위',c(tv.stf)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv'))],['제구',c(tv.ctl)],['스태미나',c(tv.sta)],['좌타자 상대',c(tv.stf+L+o('vl',3))],['우타자 상대',c(tv.stf-L/2+o('vr',3))],['견제·수비',c(50+o('hold',8))]]]);
-    { const use=new Set(arsenal.map(x=>x[0])); const rest=arsenalAll(viewP,tv.stf).filter(([k])=>!use.has(k)).map(([k,v])=>[k+' · 보유(계투라 거의 안 씀)',c(v)]); G2.push(['구종',arsenal.map(([k,v])=>[k+(k===best?' · 결정구':''),v]).concat(rest)]); }
+    { const use=new Set(arsenal.map(x=>x[0])); const rest=arsenalAll(viewP,tv.stf).filter(([k])=>!use.has(k)).map(([k,v])=>[k+' · 보유',c(v)]); G2.push(['구종',arsenal.map(([k,v])=>[k+(k===best?' · 결정구':''),v]).concat(rest)]); }
     G2.push(['투구 정보',[['직구 평균',velo+'km/h','t'],['직구 최고',veloMax(p)+'km/h','t'],['유형',(hn('gb',id)>.5?'땅볼형':hn('gb',id)<-.5?'뜬공형':'중립'),'t'],['투구 팔',p.th==='좌'?'좌완':'우완','t'],['타순 세 바퀴째',(()=>{ const n=arsenal.length, pn=clamp(1.6-.3*(n-2),.4,1.6); return `구종 ${n}개 · ${pn<=.7?'잘 버팀':pn<=1.1?'보통':'맞기 쉬움'}`; })(),'t']]]); }
   G2.push(['체력·몸',[['체력',c(p.isP?tv.sta:tv.vit)],['내구성',c(80-(clamp(medInj(p),.03,.42)-.03)/.39*60)]]]);
   const mr=k=>mentalRead(p,k).t; const mind=[['프로의식(평판)',mr('pro'),'t'],['야망(평판)',mr('amb'),'t'],['예민도(평판·낮을수록 좋음)',mr('temp'),'t'],['충성심(평판)',mr('loy'),'t'],['승부처 집중(멘탈)',c(mentalRt(p))],['꾸준함(기복 적음)',c(consRt(p))]]; /* 멘탈: 득점권·접전 후반·포스트시즌에서만 능력에 더해짐. 꾸준함: 경기별 컨디션·몇 주 단위 슬럼프 폭 */
@@ -35,7 +28,7 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
   const radar=!p.isP?[['컨택',c(tv.con),c(tf.con)],['파워',c(tv.pow),c(tf.pow)],['선구안',c(tv.eye),c(tf.eye)],['주루',c(tv.spd),c(tf.spd)],['수비',tv.def,tf.def],['체력',c(tv.vit),c(tf.vit)]]
     :[['구위',c(tv.stf),c(tf.stf)],['제구',c(tv.ctl),c(tf.ctl)],['스태미나',c(tv.sta),c(tf.sta)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv')),c((tf.stf+tf.ctl)/2+o('mv'))],['구속',c(20+(veloOf(p)-130)/25*60),c(20+(veloOf(p)-130)/25*60)],['결정구',Math.max(...G2[1][1].map(x=>x[1])),Math.max(...G2[1][1].map(x=>x[1]))]];
   return {groups:G2,radar}; }
-function radarSVG(ax,showFut,big){ const n=ax.length, cx=big?130:110, cy=big?122:104, R=big?100:78; const pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n, r=R*clamp((v-20)/60,0,1); return [cx+r*Math.cos(a),cy+r*Math.sin(a)]; };
+function radarSVG(ax,showFut,big,rgLab){ /* lab: 추정 선수는 꼭짓점 숫자를 범위로 적고 점을 찍지 않는다 */ const n=ax.length, cx=big?130:110, cy=big?122:104, R=big?100:78; const pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n, r=R*clamp((v-20)/60,0,1); return [cx+r*Math.cos(a),cy+r*Math.sin(a)]; };
   const ring=v=>ax.map((_,i)=>pt(i,v).map(x=>x.toFixed(1)).join(',')).join(' ');
   const poly=k=>ax.map((a,i)=>pt(i,a[k]).map(x=>x.toFixed(1)).join(',')).join(' ');
   if(big){ /* 선수 상황판 큰 차트: 화면 점수(0~100) 그대로 반지름에 비례(51이면 중간, 사용자 11-08). 에펨처럼 바깥으로 갈수록 빨강→초록 띠, 회색 점선 = 1군 평균(63) */
@@ -43,8 +36,8 @@ function radarSVG(ax,showFut,big){ const n=ax.length, cx=big?130:110, cy=big?122
     const rg=d=>ax.map((_,i)=>pd(i,d).map(x=>x.toFixed(1)).join(',')).join(' ');
     const pl=k=>ax.map((a,i)=>pd(i,dvRaw(a[k])).map(x=>x.toFixed(1)).join(',')).join(' ');
     const band=[[100,'#2a8a3c'],[80,'#7aa630'],[60,'#c9a428'],[40,'#c96526'],[20,'#b3302a']].map(([d,c])=>`<polygon points="${rg(d)}" fill="${c}" stroke="#0b1014" stroke-opacity=".6"/>`).join('');
-    const L=ax.map((a,i)=>{ const an=-Math.PI/2+i*2*Math.PI/n, x=cx+(R+24)*Math.cos(an), y=cy+(R+20)*Math.sin(an); return `<text x="${x.toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" class="rd-n">${a[0]}</text><text x="${x.toFixed(1)}" y="${(y+14).toFixed(1)}" text-anchor="middle" class="rd-v" fill="${rcol(Math.round(a[1]))}">${dv(a[1])}</text>`; }).join('');
-    const dots=ax.map((a,i)=>{ const [x,y]=pd(i,dvRaw(a[1])); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="#fff" stroke="#0b1014" stroke-width="1"/>`; }).join('');
+    const L=ax.map((a,i)=>{ const an=-Math.PI/2+i*2*Math.PI/n, x=cx+(R+24)*Math.cos(an), y=cy+(R+20)*Math.sin(an); return `<text x="${x.toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" class="rd-n">${a[0]}</text><text x="${x.toFixed(1)}" y="${(y+14).toFixed(1)}" text-anchor="middle" class="rd-v${rgLab?' rd-rg':''}" fill="${rcol(Math.round(a[1]))}">${rgLab?rgLab(a[1]):dv(a[1])}</text>`; }).join('');
+    const dots=rgLab?'':ax.map((a,i)=>{ const [x,y]=pd(i,dvRaw(a[1])); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="#fff" stroke="#0b1014" stroke-width="1"/>`; }).join('');
     return `<svg class="radar rd-big" viewBox="0 -6 260 262" role="img" aria-label="능력치 레이더(0~100)">${band}
     ${ax.map((_,i)=>{ const [x,y]=pd(i,100); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#0b1014" stroke-opacity=".45"/>`; }).join('')}
     <polygon points="${rg(63)}" fill="none" stroke="#e8edf2" stroke-opacity=".55" stroke-dasharray="3 3" stroke-width="1.2"/>

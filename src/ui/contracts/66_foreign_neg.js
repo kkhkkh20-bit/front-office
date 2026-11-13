@@ -46,11 +46,11 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>
       <div><span class="muted small">인센티브(규정 출전 시)</span>${contractMoneyInput('fo','i','인센티브',F.i,true)}<div class="row">${step('i',-5,'-5만')}${step('i',5,'+5만')}</div></div>
     </div>
-    <div class="fo-cmp small"><div class="row between"><span>남고 싶은 마음(적응·재계약 연차·충성)</span><b>${f>=1?'+':''}${Math.round((f-1)*100)}%</b></div>
+    <div class="fo-cmp small"><div class="row between"><span>남고 싶은 마음</span><b>${f>=1?'+':''}${Math.round((f-1)*100)}%</b></div>
       <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt&&!reOver?'good':'bad'}">${reOver?'상한 초과':v>=tgt?'합의 가능':'모자람'}</b></div>
       ${N?`<p class="muted">제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
     ${N&&N.ok&&reCap&&reCap.over>0?`<div class="note">외국인 3명 연봉 총액이 한도를 ${money(reCap.over)} 넘습니다. 낮춘 조건으로 다시 제안해 합의를 바꿀 수 있습니다(거절돼도 기존 합의는 남습니다).</div><button class="btn primary block" data-a="foGo" data-v="${p.id}">낮춘 조건으로 다시 제안</button>`:''}
-    ${N&&N.ok?`<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.${p.fMulti>C.y?` ${C.y+1}~${p.fMulti} 2년 계약입니다.`:''}</div>${p.fMulti>C.y||p.age>=35?'':`<button class="btn small" data-a="foMulti" data-v="${p.id}">2년 계약으로 바꾸기(연봉 +5%, 다음 겨울 협상 없음)</button>`}`:`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
+    ${N&&N.ok?`<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.${p.fMulti>C.y?` ${C.y+1}~${p.fMulti} 2년 계약입니다.`:''}</div>${p.fMulti>C.y||p.age>=35?'':`<button class="btn small" data-a="foMulti" data-v="${p.id}" title="연봉 +5%, 다음 겨울 협상 없음">2년 계약으로 바꾸기 · 연봉 +5%</button>`}`:`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
 Object.assign(A,{
   foMulti(v){ const m=fReMulti(+v); if(UI.fo)UI.fo.msg=m; toast(m); save(); render(); },
   fTmpStart(v){ UI.ftmpFor=v===''||v==null?null:+v; UI.ff=Object.assign({},UI.ff||{},{t:'yb'},UI.ftmpFor!=null?{r:'all'}:{}); /* 타자·투수 등 이전 필터가 대체 후보를 숨기지 않게(검수 11-09c) */ if(UI.tab==='transfer'&&curSub('transfer')==='foreign')render(); else A.go('transfer:foreign'); },

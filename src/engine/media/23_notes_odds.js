@@ -107,7 +107,8 @@ function staffNotes(p){ // 선수 카드 상단 스태프 의견
   if(p.fdPool&&G.fd){ /* 창단 드래프트 후보: 스카우트는 툴만, 데이터팀은 기록만. 종합 판단은 하지 않는다 */ 
     return [{w:'스카우트',t:fdScoutLine(p)+'.'},{w:'데이터팀',t:fdDataLine(p,G.fd.y-1)+'.'}]; }
   const own=p.team===G.user&&!p.prospect; const rp=scoutReport(p); const L=[];
-  L.push({w:'스카우트',t:(rp.role?`장래 ${rp.role}. `:'')+(rp.notes&&rp.notes[0]?rp.notes[0]:'')});
+  { const fc=p.foreign&&p.team==null, fn=fc&&typeof fScout==='function'?fScout(p,rp).n:3; /* 계약 전 외국인: 올해 역할만, 조사가 얕으면 단정하지 않는다 */
+    L.push({w:'스카우트',t:fc?(rp.role?(fn<=1?`올해 ${rp.role} 정도로 봅니다. 더 지켜봐야 합니다.`:`올해 ${rp.role}. `+(rp.notes&&rp.notes[0]?rp.notes[0]:'')):''):(rp.role?`장래 ${rp.role}. `:'')+(rp.notes&&rp.notes[0]?rp.notes[0]:'')}); }
   { const sn=statNotes(p); if(sn[0])L.push({w:'전력분석',t:sn[0]}); }
   if(!own)return L.filter(x=>x.t);
   const l=p.l10||[]; if(l.length>=5){ if(p.isP){ const o=sum(l.map(x=>x[0])), er=sum(l.map(x=>x[1])); const era=o?er*27/o:0; L.push({w:'코치',t:era<=3?`최근 ${l.length}경기 평균자책점 ${era.toFixed(2)}로 공이 좋습니다.`:era>=6?`최근 ${l.length}경기 평균자책점 ${era.toFixed(2)}로 흔들리고 있습니다.`:`최근 ${l.length}경기 평균자책점 ${era.toFixed(2)}, 무난합니다.`}); }

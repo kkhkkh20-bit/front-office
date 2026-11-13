@@ -66,7 +66,7 @@ const TODO={
   'transfer:draft':['신인 드래프트 진행 중','우리 순번에 지명하세요'],
   'staff:scouts':['스카우트 배치가 부족합니다','아마추어 담당을 3곳 이상 맡기세요'],
   'staff:mgr':['감독이 없습니다','개막 전에 감독을 선임해야 합니다'],
-  'staff:coach':['코치 자리가 비어 있습니다','스태프·육성 → 코치진에서 채우세요'],
+  'staff:coach':['코치 자리가 비어 있습니다','코치를 채용하세요'],
   'staff:med':['부상 관리 체계를 정하지 않았습니다','부상 방지 투자와 지정 병원'],
   'staff:mil':['상무 지원 기간입니다','입대 대상 선수를 확인하세요'],
   'trade:block':['트레이드 제안이 와 있습니다','받은 제안에 답하세요'],'club:spon':['스폰서 자리가 비어 있습니다','마케팅팀에 영업을 지시하세요','기업 제안을 기다리거나 마케팅팀에 영업을 지시하세요. 영업비 3천만 원, 1~2주 뒤 결과, 같은 자리는 30일에 한 번.'],'staff:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요'],'train:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요']};
@@ -112,7 +112,7 @@ function deskCard(){ const per=period(); if(G.gameOver)return ''; const rk=slotR
   const open=tradeOpen()&&!setup; const L=open?tradeSuggest(false):[]; UI._tsug=L; const S=open?sellSuggest():[];
   const deals=setup?`<p class="small muted">감독 선임과 외국인 선수 구성을 먼저 마치면 트레이드 추천을 드립니다.</p>`:!open?`<p class="small muted">트레이드 기간이 아닙니다(7월 31일 마감, 포스트시즌 뒤 다시 열림).</p>`:L.length?(()=>{ const oi=UI.dealOpen!=null&&UI.dealOpen<L.length?UI.dealOpen:0; return dealCard(L[oi],oi,'d')+L.map((x,i)=>{ if(i===oi)return ''; const q=G.players[x.id]; return `<button class="dealmini" data-a="dealOpen" data-v="${i}"><b>${SLOTK[x.k]} 보강</b><span>${badge(x.tid,14)} ${q?esc(q.name):''} 받고 ${x.give.map(id=>G.players[id]?esc(G.players[id].name):'').join('·')} 주기</span><i>보기</i></button>`; }).join(''); })():'<p class="small muted">지금 바로 성사될 만한 보강 트레이드가 없습니다. "다른 추천"을 눌러 보세요.</p>';
   return `<section class="card desk"><div class="row between"><h2 class="sec">전력 요약</h2><span class="row"><button class="btn small" data-a="cmpT" data-v="">전력 비교</button><button class="btn small primary" data-a="go" data-v="trade:market">트레이드 센터</button></span></div>${deadlineBanner()}
-    <div class="eyebrow">우리 전력 · 자리별 리그 순위 (누르면 비교)</div>${bar}${startAvgBox()}
+    <div class="eyebrow">우리 전력 · 자리별 리그 순위</div>${bar}${startAvgBox()}
     ${UI.deskMsg?`<div class="note ${UI.deskOk?'':'bad'}">${esc(UI.deskMsg)}</div>`:''}
     <div class="row between"><span class="eyebrow">추천 트레이드 · 상대가 받아들일 조건</span>${open?'<button class="tc-i" data-a="tsugMore">다른 추천</button>':''}</div>${deals}
     ${S.length?`<div class="eyebrow">팔 만한 벤치 자원 · 매물로 내놓으면 제안이 옵니다</div><div class="sells">${S.map(x=>`<div class="sell">${pMini(x.p)}<span class="small muted">${tshort(x.t.id)} 관심</span><button class="tc-i go" data-a="listP" data-v="${x.p.id}">매물로 등록</button></div>`).join('')}</div>`:''}

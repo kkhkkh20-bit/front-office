@@ -17,15 +17,23 @@ function projKBO(p,cur,sd){ if(cur==null)return null; const f=projFit(p.isP); if
 /* 설명 줄 */
 function curExplain(p,rp){ rp=rp||scoutReport(p); const fsx=p.foreign&&p.team==null?fScout(p,rp):null; /* 외국인 후보는 스카우트 평가와 기록을 합친 종합 추정으로 설명한다 */ const c=fsx&&fsx.raw!=null?fsx.raw:rp.cur; if(c==null)return null; const L=[];
   const sd=rp.exact?0:fsx&&fsx.ms!=null?fsx.ms:(rp.sd||0); /* KBO 소속 선수의 현재 능력은 정확히 보인다(오차 없음). 추정인 것은 잠재력뿐 */
-  L.push(`${fsx?'종합 추정':'종합'} ${dv(c)}: ${curBand(c)}${p.isP?(isSPr(p)?' 선발':' 불펜'):''}입니다. 1군 주전 평균이 ${dv(53)}, 리그 상위 5%가 ${dv(60)}쯤입니다.`);
+  /* 계약 전 외국인 후보: 문장도 조사 단계만큼만 말한다. 기초 조사에서는 방향만, 조사가 쌓이면 수준(플러스·평균 이하)까지. 숫자는 범위로만(사용자 11-13) */
+  const fn=fsx?fsx.n:3, soft=!!fsx&&fsx.raw!=null;
+  L.push(soft?`종합 추정 ${fsx.lo}~${fsx.hi}, ${curBand(c)}${p.isP?(isSPr(p)?' 선발':' 불펜'):''}${fn<=1?'으로 보입니다':'입니다'}. 1군 주전 평균이 ${dv(53)}, 리그 상위 5%가 ${dv(60)}쯤입니다.`:`종합 ${dv(c)}: ${curBand(c)}${p.isP?(isSPr(p)?' 선발':' 불펜'):''}입니다. 1군 주전 평균이 ${dv(53)}, 리그 상위 5%가 ${dv(60)}쯤입니다.`);
   const ts=[...(rp.tools||[])].sort((a,b)=>b.cur-a.cur);
   const top=ts.filter(t=>t.cur>=53).slice(0,2), low=ts.filter(t=>t.cur<47).slice(-2).reverse();
+  if(soft){ const nm=t=>TOOLK[t.k], lv=t=>`${TOOLK[t.k]} ${toolLv(t.cur)}`;
+    if(fn<=1){ if(top.length)L.push(`${nm(top[0])} 쪽이 강점으로 보입니다.`); else if(ts.length)L.push('아직 뚜렷한 강점을 찾지 못했습니다.'); if(low.length)L.push(`${nm(low[0])}은(는) 약점일 수 있습니다.`); }
+    else { if(top.length)L.push(`강점: ${top.map(lv).join(', ')}. ${fn>=3?GOOD[top[0].k]||'':''}`.trim()); else if(ts.length)L.push(`뚜렷한 강점은 없습니다. 가장 나은 툴은 ${lv(ts[0])}입니다.`); if(low.length)L.push(`약점: ${low.map(lv).join(', ')}. ${fn>=3?BAD[low[0].k]||'':''}`.trim()); } }
+  else {
   if(top.length)L.push(`강점: ${top.map(t=>`${TOOLK[t.k]} ${dv(t.cur)}(${toolLv(t.cur)})`).join(', ')}. ${GOOD[top[0].k]||''}`);
   else if(ts.length)L.push(`뚜렷한 강점은 없습니다. 가장 나은 툴은 ${TOOLK[ts[0].k]} ${dv(ts[0].cur)}(${toolLv(ts[0].cur)})입니다.`);
-  if(low.length)L.push(`약점: ${low.map(t=>`${TOOLK[t.k]} ${dv(t.cur)}(${toolLv(t.cur)})`).join(', ')}. ${BAD[low[0].k]||''}`);
-  const pj=projKBO(p,c,sd); if(pj)L.push(`올해 리그 예상: ${pj.txt} (가운데 ${pj.mid}). ${pj.y}시즌 1군 ${pj.n}명의 실제 기록에서 같은 능력대 선수들이 낸 범위${sd?'에 평가 오차를 더한 폭':''}입니다.`);
+  if(low.length)L.push(`약점: ${low.map(t=>`${TOOLK[t.k]} ${dv(t.cur)}(${toolLv(t.cur)})`).join(', ')}. ${BAD[low[0].k]||''}`); }
+  const pj=projKBO(p,c,sd); if(pj)L.push(`올해 리그 예상: ${pj.txt}${soft?'':`, 가운데 ${pj.mid}`}. ${pj.y}시즌 1군 ${pj.n}명의 실제 기록에서 같은 능력대 선수들이 낸 범위${sd?'에 평가 오차를 더한 폭':''}입니다.`);
   if(p.team!==G.user){ try{ const k=p.isP?(isSPr(p)?'SP':'RP'):pSlot(p); const d=depth(G.user); const mine=k==='SP'?d.sp:k==='RP'?d.pen.slice(0,4):[d.ln[k]].filter(Boolean); const w=mine.filter(Boolean).sort((a,b)=>ovr(a)-ovr(b))[0];
-      if(w){ const df=dv(c)-dvo(w); /* 화면에 보이는 점수(100점 척도)끼리 뺀다 */ L.push(`우리 ${SLOTK[k]||posLabel(p)} ${k==='SP'||k==='RP'?'가장 약한 투수':'주전'} ${w.name}(${dvo(w)})보다 ${df>0?'+':''}${df}${df>=2?' — 바로 전력이 오릅니다':df<=-2?' — 주전보다 못합니다':' — 비슷한 수준입니다'}.`); } }catch(e){} }
+      if(w){ const df=dv(c)-dvo(w); /* 화면에 보이는 점수(100점 척도)끼리 뺀다 */ const who=`우리 ${SLOTK[k]||posLabel(p)} ${k==='SP'||k==='RP'?'가장 약한 투수':'주전'} ${w.name}`;
+        if(soft){ const b=fsx.band||0; L.push(df-b>=2?`${who}보다 낫습니다.`:df+b<=-2?`${who}에 못 미칩니다.`:df>=2?`${who}보다 나아 보입니다.`:df<=-2?`${who}보다 처져 보입니다.`:`${who}와 비슷해 보입니다.`); }
+        else L.push(`${who}(${dvo(w)})보다 ${df>0?'+':''}${df}. ${df>=2?'바로 전력이 오릅니다':df<=-2?'주전보다 못합니다':'비슷한 수준입니다'}.`); } }catch(e){} }
   /* 외국인 후보의 조사 단계·추정 범위는 선수 화면 위쪽 상자(fsBox)에 따로 보인다 */ if(!(p.foreign&&p.team==null))L.push(sd?`평가 오차 약 ±${dvSd(c,sd)}(정확도 ${rp.conf}). 담당 스카우트 능력과 트래킹 분석원이 좋을수록 줄어듭니다.`:'');
   if(p.foreign){ if(p.adapt!=null&&rp.sd!=null&&rp.sd<=7.5)L.push(p.adapt>=62?'적응: 생활 적응력이 좋아 첫해부터 제 실력을 낼 것으로 봅니다.':p.adapt<45?'적응: 한국 생활 적응이 변수입니다. 첫 두 달 성적이 기대보다 낮을 수 있습니다.':'적응: 보통입니다.'); if(p.team==null&&rp.sd!=null&&rp.sd<=8)L.push(fFitHint(p,rp.sd)); L.push('외국인 선수는 올해 성적을 보고 뽑습니다. 장래 성장은 평가에 넣지 않았습니다.'); }
   return L.filter(Boolean); }

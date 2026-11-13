@@ -9,7 +9,7 @@ function trainCoachView(){ const C=coachesOf(G.user), ps=playersOf(G.user).filte
     const ld=r==='fm'?L.length:load[r], lv=r==='fm'?(ld<=20?0:ld<=30?1:2):(ld<=6?0:ld<=12?1:2);
     return `<section class="tc-card${c?'':' miss'}"><div class="tc-h"><b>${lab}</b>${c?tcStars(ab):'<span class="pill warn">담당 없음</span>'}</div>
       <div class="tc-ppl" title="${g==='F'?'2군 선수':'이 항목에 집중하는 선수'} ${L.length}명">${L.slice(0,14).map(p=>`<i class="${p.isP?'p':'b'}"></i>`).join('')}${L.length>14?`<em>+${L.length-14}</em>`:''}${L.length?'':'<em>집중하는 선수 없음</em>'}</div>
-      <p>${c?`<button class="lnk" data-a="sfCoach" data-v="${r}">${esc(c.name)}</button> (${CROLE[r].l})이(가) 훈련을 지도합니다`:`${CROLE[r].l} 자리가 비어 기본 훈련만 합니다 <button class="btn small" data-a="smkGo" data-v="coach">채용</button>`}</p>
+      <p>${c?`<button class="lnk" data-a="sfCoach" data-v="${r}">${esc(c.name)}</button> ${CROLE[r].l}`:`${CROLE[r].l} 공석 · 기본 훈련만 <button class="btn small" data-a="smkGo" data-v="coach">채용</button>`}</p>
       <div class="tc-f"><span>코치 부담</span><b class="${['good','warn','bad'][lv]}">● ${['적음','보통','많음'][lv]}</b><span class="muted">${g==='F'?`2군 ${L.length}명`:`${L.length}명 집중`}</span></div>
       ${L.length?`<table class="tc-t"><tbody>${[...L].sort((a,b)=>g==='F'?ovr(b)-ovr(a):0).slice(0,12).map(p=>{ const v=g==='F'?ovr(p):g==='C'?defAt(p,'C'):p.r[k]; return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td class="muted">${esc(posLabel(p))} · ${p.age}세</td><td>${g==='F'?'종합 ':g==='C'?'포수 수비 ':''}<b style="color:${rcol(v)}">${dv(v)}</b></td></tr>`; }).join('')}</tbody></table>`:''}</section>`; };
   const nC=CKEYS.filter(k=>C[k]).length;
