@@ -23,7 +23,7 @@ function domOf(tid){ if(tid==null||tid<0)return 0; return domScores()[tid]||0; }
 function domLead(){ const m=domScores(); let b=null; for(const k in m){ if(m[k]>=DOM_TH&&(!b||m[k]>b.s))b={tid:+k,s:m[k]}; } return b; }
 /* 견제 강도(0~1.2): 우승 도전 구단이 가장 세고, 순위 싸움에서 멀어질수록 약해진다. 벼랑 끝 단장은 더 세게 */
 function rivalK(t,dtid){ if(!t||t.id===dtid||t.id===ME())return 0; const pl=planOf(t); let k={win:1,next:.75,star:.7,build:.3,tight:.3}[pl]??.6;
-  try{ if(period()==='season'){ const S=standingsNow(); const a=S.find(x=>x.tid===dtid), b=S.find(x=>x.tid===t.id); if(a&&b){ const gb=((a.w-b.w)+(b.l-a.l))/2; k*=clamp(1-(gb-4)/14,.35,1); } }
+  try{ if(period()==='season'){ const S=standingsNow(); const a=S.find(x=>x.tid===dtid), b=S.find(x=>x.tid===t.id); if(a&&b){ const gb=((a.w-b.w)+(b.l-a.l))/2; k*=clamp(1-(gb-6)/20,.5,1); } }
     else { const rk=domRk(t.id); k*=rk<=4?1:rk<=6?.8:.6; } }catch(e){}
   return clamp(k+despOf(t)*.2,0,1.2); }
 /* 벼랑 끝(0~1): 단장 자리가 위태롭다(지난 시즌 순위·재임 기간), 가을야구 가뭄, 구단주 신뢰 하락. AI 구단만 */
