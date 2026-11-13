@@ -64,7 +64,7 @@ function faAsk(p){
   /* 거품이 껴도 연평균은 30억(2026년 기준, 상한이 오르면 같이 오름) 안에서 멈춘다 */
   /* 성적이 한 해 꺾였어도 능력 기준 요구액의 70% 아래로는 내려가지 않는다(카페 11-13 beeseo: 화면 60후반~70대 FA 요구액이 연 1~3억으로 나왔다) */
   const b2=ovr(p)+(p.foreign?0:pvShift(p)); const t2=b2>=62?1:clamp(.7+(b2-50)*.025,.7,1); const fl=marketSal(b2)*1.05*af*t2*faMktNow()*.7;
-  return {annual:round5(Math.min(Math.max(marketSal(base)*1.05*af*tier*faMktNow(),fl),3000*capOf(G.year)/14397)),years};
+  return {annual:round5(Math.min(Math.max(marketSal(base)*1.05*af*tier*faMktNow(),fl),3000*ecoCap(G.year)/14397)),years};
 }
 /* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */
 function faMktOf(y){ G.faMkt=G.faMkt||{}; if(G.faMkt[y]!=null)return G.faMkt[y]; const prev=G.faMkt[y-1]!=null?G.faMkt[y-1]:1.08;

@@ -4066,7 +4066,7 @@ const expMake=(user,city)=>{ fresh(); expPropose(); const E=G.exp; const C=CI_CI
 T('[창단 구단] 창단 1~3년차 구단주 목표는 순위 부담 없음→탈꼴찌→뒤에서 셋째이고, 단장 계약도 새 구단으로 옮긴다',()=>{ const tid=expMake(true); const N=G.teams.length; ok(N===11&&G.user===tid,'준비 실패: 창단 단장 부임 안 됨');
   ok(G.myC&&G.myC.tid===tid&&G.myC.y1>=team(tid).born+2,'단장 계약이 옛 구단에 남음: '+JSON.stringify(G.myC&&{tid:G.myC.tid,y1:G.myC.y1}));
   const got=[]; for(const k of [0,1,2,3]){ team(tid).born=G.year-k; G.goals=null; G.proj=null; goalsPreseason(); got.push(G.goals.rank+(G.goals.exp?'/'+G.goals.exp:'')); }
-  ok(got[0]===N+'/1'&&got[1]===(N-1)+'/2'&&got[2]===(N-2)+'/3','유예 목표가 다름: '+got.join(','));
+  const rk=x=>+String(x).split('/')[0]; ok(got[0]===N+'/1'&&got[1].endsWith('/2')&&rk(got[1])>=N-1&&got[2].endsWith('/3')&&rk(got[2])>=N-2&&got.every(x=>rk(x)<=N),'유예 목표가 다름: '+got.join(',')); /* 11-13: 목표는 그해 전력(예상 순위)으로, 유예 중엔 그보다 더 어렵지 않게 */
   ok(!/\\/4$/.test(got[3])&&+got[3].split('/')[0]<=8,'유예가 끝난 4년차는 평소 목표여야 함: '+got[3]);
   team(tid).born=G.year; G.goals=null; G.mail=[]; goalsPreseason(); ok(G.goals.youth===1&&G.goals.sup>=1,'유예 목표에 육성·재정 완화 없음');
   const m=G.mail.find(x=>(x.subj||'').includes('시즌 구단 목표')); ok(m&&m.body.includes('창단 1년차')&&m.body.includes('순위 목표 없음'),'목표 메일에 창단 유예 안내 없음');
