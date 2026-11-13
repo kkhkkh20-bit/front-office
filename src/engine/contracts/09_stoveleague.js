@@ -407,6 +407,7 @@ function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.us
   let pool=domestic(t.id).filter(p=>!core.has(p.id)&&healthy(p)&&!p.ys&&!hasNtc(p)).map(p=>({p,v:tval(t,p,'out'),u:tval(U,p,'in')})).filter(x=>x.v>0&&x.u>.3).sort((a,b)=>a.v-b.v);
   /* 운영 전략: 유망주 수집·긴축 구단은 스물일곱 넘은 선수를 내놓고(어린 선수는 지킨다), 우승 도전 구단은 주전 대신 어린 선수를 내놓는다 */
   const pl=planOf(t); { const f=pl==='build'||pl==='tight'?pool.filter(x=>x.p.age>=27):pl==='win'?pool.filter(x=>x.p.age<=26||!startersOf(t.id).has(x.p.id)):pool; if(f.length)pool=f; }
+  { const D=domTradeTax(t,G.user,true); if(D.refuse)pool=pool.filter(x=>!startersOf(t.id).has(x.p.id)); } /* 독주 견제: 우리가 독주하면 우승 경쟁 구단은 주전을 제안하지 않는다(86b_dynasty) */
   const need=tradeNeed(t,0); const cap=tg.v-need,topRatio=startersOf(G.user).has(tg.p.id)?.9:.8; let best=null,bu=Infinity;
   /* 실제 단장처럼 상대(우리)가 받아들일 만한 가장 아까운 쪽 조합을 내민다: 우리 평가로 내주는 가치의 .97배 이상 중 가장 작은 것. 예전에는 조건 안에서 우리에게 가장 이득인 조합을 골라 받은 제안이 늘 후했다.
      성적 압박이 큰 단장(gmHeat)만 조금 더 얹을 수 있다. 우리 쪽 이득이 그 한도를 넘는 조합은 만들지 않는다 */
