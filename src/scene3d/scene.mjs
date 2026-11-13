@@ -45,7 +45,7 @@ function idle(a){return idleClip(a);}
 function pose(a,name,freeze=false,options={}){if(name!==idle(a))a.faceYaw=null;return playPose(a,name,{freeze,fade:freeze?0:.12,...options});}
 function roleOf(t){return /ctch/.test(t.cls)?'catcher':/bat/.test(t.cls)?'batter':/of run/.test(t.cls)?'runner':'field';}
 /* 심판(사용자 11-13): 주심은 포수 뒤 타자 쪽 안쪽에서 무릎에 손을 얹고, 누심 셋은 각 베이스 뒤. 선수 목록(s.actors)과 따로 두어 점수판·이름표·점검에 섞이지 않는다 */
-const UMPIRES=[{k:'home',pos:[0,0,-2.75]},{k:'first',pos:[-23.2,0,24]},{k:'second',pos:[4.5,0,44.5]},{k:'third',pos:[23.2,0,24]}];
+const UMPIRES=[{k:'home',pos:[0,0,-2.75]},{k:'first',pos:[-25.8,0,23.2]},{k:'second',pos:[4.5,0,44.5]},{k:'third',pos:[25.8,0,23.2]}]; /* 1·3루심은 베이스 뒤 파울 지역(선에서 약 1.8m 바깥). 선 위에 서면 선상 수비와 겹쳤다 */
 /* 심판 동작은 모델에 들어 있는 전용 클립을 쓴다: 준비 자세에서 일어나 신호하고 다시 준비 자세로 */
 const UMP_CLIP={ready:'ump_ready',strike:'ump_strike',strikeout:'ump_out_strikeout',out:'ump_out',safe:'ump_safe',foul:'ump_foul',homerun:'ump_homerun'};
 const UMP_COLOR={jersey:'#1d2430',dark:'#12161d',pants:'#565c66'};
