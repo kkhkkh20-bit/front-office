@@ -24,7 +24,7 @@ function staffView(){
 /* ---------- 코치진 ---------- */
 function clanName(id){ if(!id)return ''; const m=Object.values(G.mgr).find(x=>x&&x.id===id)||(G.mmarket||[]).find(x=>x.id===id); return m?m.name:''; }
 function coachTag(c){ const m=G.mgr[G.user]; if(!c||!c.clan)return ''; if(m&&c.clan===m.id)return '<span class="pill good" title="현재 지도·육성에 사단 보정 반영">감독 사단</span>'; const n=clanName(c.clan); return n?`<span class="pill">${esc(n)} 사단</span>`:''; }
-function coachBaseStats(c){ if(!c)return ''; return `<div class="csl-s coach-base-stats"><span class="cst"><span>기본 지도</span>${rchip(c.sk)}</span><span class="cst"><span>기본 육성</span>${rchip(c.dv)}</span></div><p class="small muted keep">기본 지도·육성은 세부 능력을 종합한 값입니다. 현재 근무 값에는 감독 사단·궁합이 반영됩니다.</p>`; }
+function coachBaseStats(c){ if(!c)return ''; return `<div class="csl-s coach-base-stats"><span class="cst"><span>기본 지도</span>${rchip(c.sk)}</span><span class="cst"><span>기본 육성</span>${rchip(c.dv)}</span></div><p class="small muted">기본 지도·육성은 세부 능력을 종합한 값입니다. 현재 근무 값에는 감독 사단·궁합이 반영됩니다.</p>`; }
 /* 코치 카드: 잘하는 분야 태그 + 세부 능력(맡은 자리 능력 먼저) */
 function coachAbBox(c){ if(!c)return ''; const a=cAb(c); const D=CDOM[c.role]||[]; const S=cStrong(c), W=cWeak(c); const order=[...new Set([...D,'yng','com','ana'])],all=[...order,...Object.keys(CAB).filter(k=>!order.includes(k))];
   return `<div class="cab-t"><span class="small muted">세부 기본 능력 · 100점 척도</span>${S.map(k=>`<span class="pill good">${CAB[k]} 강점</span>`).join('')}${W.map(k=>`<span class="pill warn">${CAB[k]} 약함</span>`).join('')}</div>

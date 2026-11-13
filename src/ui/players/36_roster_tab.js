@@ -78,7 +78,7 @@ function rosterView(){
   if(seg==='bat'){
     const lineup=orderList(d.start,tid);
     const posf=p=>posOf[p.id]?POSS[posOf[p.id]]+(posOf[p.id]!==p.pos&&posOf[p.id]!=='DH'?`(${POSS[p.pos]})`:''):POSS[p.pos];
-    groups=[['주전 (타순)',lineup,posf],[entryOn()?'1군 백업':'백업',d.bench],['부상·정지·미계약',d.inj.filter(p=>!p.isP)],['군 복무',awayOf(tid).filter(p=>!p.isP&&milServing(p))],['대표팀 차출',awayOf(tid).filter(p=>!p.isP&&!milServing(p)&&!(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p)))],['교육리그 파견',awayOf(tid).filter(p=>!p.isP&&!milServing(p)&&typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))],['입단 예정',rookies.filter(p=>!p.isP)]];
+    groups=[['주전',lineup,posf],[entryOn()?'1군 백업':'백업',d.bench],['부상·정지·미계약',d.inj.filter(p=>!p.isP)],['군 복무',awayOf(tid).filter(p=>!p.isP&&milServing(p))],['대표팀 차출',awayOf(tid).filter(p=>!p.isP&&!milServing(p)&&!(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p)))],['교육리그 파견',awayOf(tid).filter(p=>!p.isP&&!milServing(p)&&typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))],['입단 예정',rookies.filter(p=>!p.isP)]];
   } else {
     const role=arr=>p=>arr===d.pen?(arr.indexOf(p)===0?'마무리':arr.indexOf(p)<4?'필승조':'추격조'):arr===d.sp?(arr.indexOf(p)+1)+'선발':posLabel(p);
     groups=[['선발 로테이션',d.sp,role(d.sp)],[entryOn()?'1군 불펜':'불펜',d.pen,role(d.pen)],['부상·정지·미계약',d.inj.filter(p=>p.isP)],['군 복무',awayOf(tid).filter(p=>p.isP&&milServing(p))],['대표팀 차출',awayOf(tid).filter(p=>p.isP&&!milServing(p)&&!(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p)))],['교육리그 파견',awayOf(tid).filter(p=>p.isP&&!milServing(p)&&typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))],['입단 예정',rookies.filter(p=>p.isP)]];
@@ -121,7 +121,7 @@ function entView(){ const on=entryOn(), pit=UI.seg==='pit', k=pit?'pit':'bat'; c
   return `<section class="card"><div class="row between"><h2 class="sec">1군 ${pit?'투수':'야수'} ${e1.length}명</h2><span class="small muted">${y} 1군 성적</span></div>${intro}${e1.map(row1).join('')||'<p class="small muted">없습니다.</p>'}</section>
   <section class="card"><div class="row between wrapr"><h2 class="sec">2군 ${pit?'투수':'야수'} ${f2.length}명</h2><span class="small muted">${y} 퓨처스 성적순</span></div>${sorts}${f2.map(row2).join('')||'<p class="small muted">없습니다.</p>'}</section>`; }
 function statY(){ const per=period(); return per==='season'||per==='post'||(G.cal&&G.cal.y===G.year&&G.day>G.cal.end)?G.year:G.year-1; }
-function statBasis(){ if(UI.rsea==='car')return '통산(기록이 남은 시즌) 1군 성적 (F 표시는 2군 기록)'; const y=rSeaY(); return y===G.year&&period()!=='off'?`${G.year} 1군 성적 (F 표시는 2군 기록)`:`${y} 성적 기준 (F 표시는 2군 기록)`; }
+function statBasis(){ if(UI.rsea==='car')return '통산 1군 성적'; const y=rSeaY(); return y===G.year&&period()!=='off'?`${G.year} 1군 성적`:`${y} 성적`; }
 const RCOL_B=[['g','경기'],['pa','타석'],['avg','타율'],['obp','출루율'],['slg','장타율'],['ops','OPS'],['wrc','wRC+'],['hr','홈런'],['rbi','타점'],['sb','도루'],['bb','볼넷'],['so','삼진'],['bbk','볼삼비'],['war','WAR']];
 const RCOL_P=[['g','경기'],['gs','선발'],['ip','이닝'],['era','ERA'],['whip','WHIP'],['w','승'],['l','패'],['sv','세'],['hld','홀'],['so','탈삼진'],['bb','볼넷'],['k9','K/9'],['bb9','BB/9'],['war','WAR']];
 function rSeaY(){ return UI.rsea==='prev'?statY()-1:statY(); }
@@ -139,7 +139,7 @@ function rfmt(k,v,p){ if(v==null)return '-';
   if(k==='whip'||k==='fip')return v.toFixed(2); if(k==='ip')return ipStr(v); if(k==='war')return `<b style="color:${v>=3?'var(--good)':v<0?'var(--bad)':'inherit'}">${v.toFixed(1)}</b>`; return v; }
 /* ===== 선수 표 열 설정: 사용자가 보이는 열과 순서를 고른다(브라우저에 저장) ===== */
 const RCOL_X_B=[['h','안타'],['d','2루타'],['r','득점'],['cs','도루자']], RCOL_X_P=[['h','피안타'],['hra','피홈런'],['fip','FIP'],['arm','팔 부하']];
-const RBASE=[['cur','현재'],['chg','변화(1개월)'],['sal','연봉'],['pos','포지션'],['age','나이'],['fut','잠재력'],['mor','기분'],['fat','피로']];
+const RBASE=[['cur','현재'],['chg','1개월 변화'],['sal','연봉'],['pos','포지션'],['age','나이'],['fut','잠재력'],['mor','기분'],['fat','피로']];
 /* 능력 열: 선수 화면 스카우트 리포트와 같은 평가(우리 코치진·스카우트가 본 값). 다른 구단 선수는 담당 스카우트가 본 범위만, 못 본 선수는 '-' */
 const RCOL_AB_P=[['t_stf','구위'],['t_ctl','제구'],['t_sta','체력'],['velo','구속'],['conf','평가 확신도']], RCOL_AB_B=[['t_con','컨택'],['t_pow','파워'],['t_eye','선구'],['t_spd','주력'],['t_def','수비'],['conf','평가 확신도']];
 function rcolAll(pit){ return RBASE.map(([k,l])=>[k,k==='pos'&&pit?'역할':l]).concat(pit?RCOL_AB_P:RCOL_AB_B,pit?RCOL_P:RCOL_B,pit?RCOL_X_P:RCOL_X_B,[['ct','계약'],['org','입단'],['inj','부상']]); }

@@ -33,7 +33,7 @@ function cpBar(b){ return `<div class="cpbar"><i style="width:${Math.round(b.pct
 
 /* 아무것도 고르지 않았을 때: 진행 중인 공사 전부 */
 function cpIdle(S){ const L=Object.entries(S.bmap);
-  return `<div class="cpph"><b>정보 패널</b></div><p class="small muted">지도에서 선수나 시설을 누르세요.</p>
+  return `<div class="cpph"><b>정보 패널</b></div><p class="small muted">선택한 대상이 없습니다.</p>
     <div class="eyebrow">진행 중인 공사 ${L.length}/2</div>
     ${L.length?L.map(([k,b])=>`<button class="cpbl" data-a="cpSel" data-v="f:${k}"><span><b>${esc(FACI[k].l)}</b> → ${esc(FACI[k].lv[b.lv])}</span>${cpBar(b)}</button>`).join(''):'<p class="small muted">진행 중인 공사가 없습니다.</p>'}`; }
 
