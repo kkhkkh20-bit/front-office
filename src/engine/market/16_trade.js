@@ -38,7 +38,7 @@ function seasonWorth(o){ return Math.pow(Math.max(0,o-40),1.6)/6; }
 function projO(p,i){ const o=ovr(p)+pvShift(p)+(i===0?condOf(p)*.3:0); const per=period(); const k=i+(per==='off'||per==='post'?1:0); if(k<=0)return o;
   if(p.age+k<=26){ const g=Math.max(0,p.pot-ovr(p)); return o+g*Math.min(1,k/Math.max(1.5,26-p.age+1.5)); } /* 성장 곡선(04_growth)과 같게: 정점(26세)까지 남은 해에 고르게 큰다 */
   const old=Math.max(0,Math.min(k,p.age+k-30)); /* 앞으로 31세 이상으로 보낼 해 수 */ return o-old*1.3; }
-function ctrlYears(p){ if(p.foreign)return 1; if(p.faC)return Math.max(1,p.yrs||1); if(p.extNext)return 1+p.extNext.years; return clamp(faLeft(p),1,6); } /* 보유 가능 기간: 선수 계약 설명(ctText)과 같은 FA 시점 */
+function ctrlYears(p){ if(p.foreign)return 1; if(p.faC||p.ext)return Math.max(1,p.yrs||1); /* 비FA 다년계약(ext)도 계약 연수로(커뮤니티 11-13: 다년계약한 선수가 코치진 보고에 FA로 나옴) */ if(p.extNext)return 1+p.extNext.years; return clamp(faLeft(p),1,6); } /* 보유 가능 기간: 선수 계약 설명(ctText)과 같은 FA 시점 */
 let _tcC={k:null,m:{}};
 function teamCtx(t){ const k=G.year+':'+G.day; if(_tcC.k!==k)_tcC={k,m:{}}; if(_tcC.m[t.id])return _tcC.m[t.id];
   const per=period(); const st=per==='season'&&G.day>G.cal.open+20?standingsNow():null; const rk=st?st.findIndex(x=>x.tid===t.id)+1:null;
