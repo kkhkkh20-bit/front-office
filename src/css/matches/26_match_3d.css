@@ -224,15 +224,40 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
   .match-dashboard[data-view="field"]:has(.has-3d) .md-team-panel .md-lineup{overflow-y:auto;min-height:0}
 }
 .cs-fw{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:6} /* 홈런 축포 */
-/* 경기 종료 카드: 경기장을 어둡게 덮고 가운데 결과 하나. 기존 스코어 버그처럼 평평한 사각형(띠·그라데이션·광택 없음) */
-.cs-endcard{position:absolute;inset:0;z-index:9;display:grid;place-items:center;padding:12px;background:#0000008c}.cs-endcard[hidden]{display:none}
-.ce-box{width:min(320px,100%);display:grid;background:#f4f5f7;color:#16202a;border-radius:3px;overflow:hidden}
-.ce-head{margin:0;padding:6px 12px;background:#1a2028;color:#fff;font-size:13px;font-weight:700}
-.ce-team{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding:6px 12px;border-bottom:1px solid #d9dde2;color:#6b7782}.ce-team span{font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ce-team b{font:800 22px var(--f-num)}
-.ce-team.win{color:#16202a}
-.ce-res{margin:0;padding:6px 12px;font-size:12px;color:#4a5560;border-bottom:1px solid #d9dde2}
-.ce-mvp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;padding:8px 12px;border:0;border-bottom:1px solid #d9dde2;background:none;color:inherit;text-align:left;cursor:pointer}.ce-mvp img,.ce-mvp svg{width:36px;height:36px;border-radius:50%}.ce-mvp span{display:grid;min-width:0}.ce-mvp em{font-style:normal;font-size:10.5px;color:#6b7782}.ce-mvp b{font-size:14px}.ce-mvp i{font-style:normal;font-size:11.5px;color:#4a5560;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ce-act{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px}.ce-act .btn{min-height:38px;font-weight:700}
+/* 경기 결과 화면: 경기 전 선발 라인업 소개(.cs-prep)와 같은 틀을 쓴다. 흐린 경기장 위에 구단색 패널 두 개(원정·홈), 아래 해설과 버튼 */
+.cs-endcard{position:absolute;inset:0;z-index:9;background:#050c1499;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}.cs-endcard[hidden]{display:none}
+.cs-endcard .cs-prep.cs-result{display:flex;inset:0;padding:14px 18px;z-index:1}
+.cs-result .cs-prep-foot{display:grid}
+body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;width:min(100%,860px);max-height:440px}
+.cs-rcard>.cs-pl+.cs-pl{border-left:1px solid #ffffff30}
+.cs-rs{margin-left:auto;font:800 40px/1 var(--f-num);letter-spacing:-.5px}
+.cs-result .cs-pl li b small{margin-left:6px;font-size:10.5px;font-weight:700;opacity:.85}
+.cs-result .cs-pl ol{overflow:auto}
+.cs-rmvp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;margin-top:6px;padding:6px 0 0;border:0;border-top:1px solid #54728255;background:none;color:inherit;text-align:left;cursor:pointer;width:100%}.cs-rmvp img,.cs-rmvp svg{width:34px;height:34px;border-radius:50%}.cs-rmvp span{display:grid;min-width:0}.cs-rmvp em{font-style:normal;font-size:10px;color:var(--muted)}.cs-rmvp b{font-size:13px}.cs-rmvp i{font-style:normal;font-size:11px;color:#c9d6de;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cs-result .cs-prep-go{gap:8px}.cs-result .cs-prep-go .btn{min-height:40px;font-size:14px;font-weight:700}
+.cs-result .cs-pl li{padding:1px 0;font-size:12.5px;line-height:1.3}
+.cs-result .cs-prep-talk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,250px);gap:2px 14px;align-content:start}.cs-result .cs-prep-talk>span,.cs-result .cs-prep-talk>p{grid-column:1}
+.cs-result .cs-rmvp{grid-column:2;grid-row:1/span 4;align-self:center;margin:0;padding:0 0 0 12px;border-top:0;border-left:1px solid #54728255}
+@media(max-width:700px){
+ .cs-endcard .cs-prep.cs-result{padding:6px;gap:5px}
+ .cs-result .cs-prep-heading>b{font-size:13px}
+ body .cs-result .cs-prep-heading{display:flex}
+ body .cs-result .cs-prep-teams{display:flex;align-items:stretch}
+ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;max-height:none;height:auto;align-self:stretch;border-radius:10px}
+ .cs-result .cs-pl ol{flex:1}
+ body .cs-result .cs-pl-h{display:grid}
+ body .cs-result .cs-prep-go .btn{display:block}
+ .cs-result .cs-pl{display:flex;padding:6px 7px 5px}
+ .cs-result .cs-pl header{gap:5px;margin-bottom:2px;flex-wrap:nowrap}.cs-result .cs-pl header>:first-child{width:20px;height:20px;flex:none}
+ .cs-result .cs-pl header>div{display:block;min-width:0;flex:1}.cs-result .cs-pl header b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-result .cs-pl header small{display:none}
+ .cs-rs{font-size:24px}
+ .cs-result .cs-pl-h,.cs-result .cs-pl li{grid-template-columns:12px minmax(0,1fr) 18px 18px 18px;gap:3px}.cs-result .cs-pl-h>span:nth-child(3),.cs-result .cs-pl li>span{display:none}
+ .cs-result .cs-pl-h{font-size:8.5px}.cs-result .cs-pl li{font-size:11px;line-height:1.22;padding:0}.cs-result .cs-pl li b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-result .cs-pl li b small{display:none}
+ .cs-result .cs-pl-sp{padding-top:3px;gap:0 5px}.cs-result .cs-pl-sp>span{font-size:9.5px}.cs-result .cs-pl-sp>b{font-size:11.5px}.cs-result .cs-pl-sp>em{display:none}
+ .cs-result .cs-prep-foot{grid-template-columns:minmax(0,1fr) 96px;gap:6px}
+ .cs-result .cs-prep-talk{display:block;padding:4px 7px}.cs-result .cs-prep-talk>p{font-size:10px;line-height:1.35;margin:0}.cs-result .cs-rmvp{display:none}
+ .cs-result .cs-prep-go{gap:4px}.cs-result .cs-prep-go .btn{min-height:30px;font-size:12px;padding:2px 6px}
+}
 .match-dashboard.md-ended .cs-stage>:is(.cs-cap,.cs-sit,.cs-fx,.cs-board-view,.md-count-panel){visibility:hidden}
 @media(min-width:1001px){.match-dashboard.md-ended .md-pitch-dock{visibility:hidden}} /* PC 투구판은 경기장 위에 겹친다. 휴대폰은 아래 별도 칸이라 그대로 둔다 */
 /* PC 3D 중계: 좌우 라인업 칸 접기(기본). 점수·이닝은 상단 막대와 오른쪽 아래 스코어 버그에 이미 있다 */
