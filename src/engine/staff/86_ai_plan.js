@@ -15,8 +15,9 @@ function planYears(t){ return t&&t.plan?Math.max(0,sponSeason()-t.plan.y):0; }
 function aiPlanBase(rk,age,owner,cash){ if(cash<-5000)return 'rebuild'; if(rk<=3||(rk<=5&&owner==='win'))return 'contend'; if(rk>=8&&(age>=29.5||cash<-2000))return 'rebuild'; return 'mid'; }
 /* 계획을 고른다. c={rk(1~10으로 맞춘 전력 순위), rkL(실제 순위), age(주축 평균 나이), cash, owner, tr(단장 성향), mid}. cur: 지금 계획, yrs: 이어 온 시즌 수, free: 새 단장·첫 판단이라 관성 없음 */
 function aiPlanChoose(c,cur,yrs,free,prev){ const tr=c.tr, ow=c.owner; if(free)cur=null;
-  const tightIn=c.cash<-3000||(ow==='profit'&&c.cash<-500)||(tr==='miser'&&c.cash<-1500);
-  if(cur==='tight'?c.cash<1500:tightIn)return 'tight'; /* 긴축은 현금이 15억을 넘길 때까지 */
+  /* 긴축: 시즌 뒤에 정한다(시즌 중에는 빚이 40억을 넘을 때만). 빚을 다 갚거나 네 시즌이 지나면 푼다(빚이 30억 넘게 남았으면 계속) */
+  const tightIn=c.mid?c.cash<-4000:c.cash<-3000||((ow==='profit'||tr==='miser')&&c.cash<-1500);
+  if(cur==='tight'?(c.mid||c.cash<-3000||(c.cash<0&&yrs<4)):tightIn)return 'tight';
   const winIn=3.2+(ow==='win'?1:ow==='profit'?-.4:0)+(tr==='gambler'?1.2:tr==='data'||tr==='prospect'?-.6:tr==='miser'?-.4:0);
   const bldIn=7.6+(ow==='pr'?.9:ow==='win'?.5:0)+(tr==='gambler'?1.2:tr==='data'||tr==='prospect'?-1.1:0)+(c.age>=30?-.6:c.age<=26.5?.8:0);
   const soft=()=>ow==='pr'&&c.cash>1500?'star':'next';
@@ -24,8 +25,8 @@ function aiPlanChoose(c,cur,yrs,free,prev){ const tr=c.tr, ow=c.owner; if(free)c
     if(yrs<3||c.mid)return 'build'; if(c.rk<=winIn+.6)return 'win'; if(c.rk<=6.2||yrs>=6)return soft(); return 'build'; }
   if(c.mid){ /* 시즌 중에는 크게 어긋날 때만 */
     if(cur==='win')return c.rkL>=(tr==='gambler'?10:tr==='data'?7:8)?(c.age>=29.5&&c.rk>=bldIn-1.5?'build':soft()):'win';
-    if(cur&&c.rkL<=(tr==='gambler'?4:3)&&c.rk<=winIn+2.5)return 'win'; if(cur)return cur; }
-  if(cur==='win'&&c.rk<=winIn+2)return 'win'; /* 우승 도전은 두 계단 넘게 밀려야 접는다 */
+    if(cur&&c.rkL<=(tr==='gambler'?4:3)&&c.rk<=winIn+1.8)return 'win'; if(cur)return cur; }
+  if(cur==='win'&&c.rk<=winIn+(yrs<2?3.2:2))return 'win'; /* 우승 도전은 두 계단 넘게 밀려야 접는다(막 시작한 도전은 더 버틴다) */
   if(c.rk<=winIn)return 'win';
   if(c.rk>=bldIn&&!(prev==='build'&&yrs<2)&&!((cur==='next'||cur==='star')&&yrs<1&&c.rk<bldIn+1))return 'build';
   return soft(); }
@@ -35,7 +36,7 @@ function aiPlanList(t,k){ const ds=domestic(t.id).filter(p=>!p.ys&&!hasNtc(p)&&!
   for(const p of L){ p.aiListed=true; p.aiWhy=k==='tight'?'sal':'reb'; p.aiLd=G.day; } return L; }
 /* 계획을 정하고 t.mode·t.stance를 맞춘다. 바뀌면(quiet가 아니면) 리그 소식으로 알린다: 사용자가 다른 구단의 방향을 아는 길은 이 소식과 단장의 말뿐이다 */
 function aiPlanSet(t,k,why,quiet){ if(!AIPLAN[k])return false; const had=!!(t.plan&&AIPLAN[t.plan.k]), old=had?t.plan.k:null;
-  if(old!==k)t.plan={k,y:sponSeason(),d:G.day,...(old?{prev:old}:{})}; t.mode=AIPLAN[k].mode; t.stance=AIPLAN[k].st; t.modeY=G.year; t.modeD=G.day; if(old===k)return false;
+  if(old!==k)t.plan={k,y:sponSeason(),d:G.day,...(old?{prev:old}:{})}; t.mode=AIPLAN[k].mode; t.stance=AIPLAN[k].st; t.modeY=G.year; t.modeD=G.day; if(old===k)return false; try{ _tcC.k=null; }catch(e){} /* 같은 날 계산해 둔 구단 사정(teamCtx)은 버린다 */
   if(quiet)return true; const L=aiPlanList(t,k); const g=t.gm&&!t.gm.interim?`${t.gm.name} 단장`:'단장대행'; const nm=tshort(t.id), fn=tname(t.id);
   const who=L.length?` ${L.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세)`).join(', ')}이(가) 시장에 나올 수 있습니다.`:''; const w=why?`(${why})`:'';
   const N={build:[`${nm}, 리빌딩 선언… 베테랑 정리 나선다`,`${fn} ${g}이 "당장의 순위보다 몇 년 뒤를 보고 팀을 다시 짓겠다"고 밝혔습니다${w}. 신인 지명권과 어린 선수를 모으고, 2군 시설에도 투자할 계획으로 알려졌습니다.${who}`],
@@ -44,6 +45,8 @@ function aiPlanSet(t,k,why,quiet){ if(!AIPLAN[k])return false; const had=!!(t.pl
     next:[`${nm}, 내년을 본다… 20대 후반 주전감 물색`,`${fn} ${g}이 "올해는 전력을 가다듬고 내년에 승부를 건다"고 밝혔습니다${w}. 지명권은 지키면서 25~30세 주전감을 찾는다는 이야기입니다.`],
     star:[`${nm}, 스타 영입으로 흥행 노린다`,`${fn} 구단주가 관중과 화제를 먼저 챙기라고 주문했다는 소식입니다${w}. 이름값 있는 선수와 연고 출신 스타에게 지갑을 열 전망입니다.`]}[k];
   try{ news('리그',N[0],N[1],0,{tid:t.id}); }catch(e){} try{ wire('구단',N[0],{tid:t.id}); }catch(e){} return true; }
+/* 계획이 아직 없는 AI 구단(새 게임에서 우리가 고르기 전 자리였던 구단, 예전 저장, 우리가 떠난 구단)은 지금 방침(mode)에서 조용히 이어받는다 */
+function aiPlanEnsure(){ if(G.user==null)return; for(const t of G.teams){ if(t.id===ME()||(t.plan&&AIPLAN[t.plan.k])||!t.mode)continue; const k=planOf(t); aiPlanSet(t,k==='next'&&t.owner==='pr'?'star':k,'',true); } }
 /* 예전 이름(contend/mid/rebuild)으로 부르는 곳과 점검용 */
 function aiPlanApply(t,nw,why){ return aiPlanSet(t,{contend:'win',mid:'next',rebuild:'build'}[nw]||nw,why); }
 function aiPlanCtx(t,mid,rate){ const n=G.teams.length; rate=rate||G.teams.map(x=>({id:x.id,r:teamRating(x.id)})).sort((a,b)=>b.r-a.r); const rkS=rate.findIndex(x=>x.id===t.id)+1; let rkL=rkS;
@@ -54,7 +57,7 @@ function aiPlanCtx(t,mid,rate){ const n=G.teams.length; rate=rate||G.teams.map(x
   const ab=t.gm?gmAbil(t.gm):null; if(ab&&!mid&&u01('plm'+G.year,t.id*13+7)<(1-ab.plan/100)*.35)rk-=2;
   return {rk,rkL,rkS,age,cash:t.cash||0,owner:t.owner,tr:gmTrait(t.id),mid:!!mid}; }
 function aiPlanYear(mid,quiet){ const rate=G.teams.map(x=>({id:x.id,r:teamRating(x.id)})).sort((a,b)=>b.r-a.r);
-  for(const t of G.teams){ if(t.id===ME())continue; const had=!!(t.plan&&AIPLAN[t.plan.k]); const c=aiPlanCtx(t,mid,rate); const free=!had||!!t.plan.free; if(had)delete t.plan.free;
+  for(const t of G.teams){ if(t.id===ME())continue; const had=!!(t.plan&&AIPLAN[t.plan.k]); const c=aiPlanCtx(t,mid,rate); const free=!had||(!mid&&!!t.plan.free); if(had&&!mid)delete t.plan.free; /* 새 단장은 시즌이 끝난 뒤 계획을 새로 짠다 */
     const k=aiPlanChoose(c,had?t.plan.k:null,planYears(t),free,had?t.plan.prev:null);
     aiPlanSet(t,k,mid?`${Math.round(c.rkL)}위`:'',quiet||!had); } }
 /* 시즌 뒤 FA 시장이 열리기 직전(FA 공시)과 7월 1일에 다시 본다 */
@@ -73,6 +76,8 @@ function planStar(t,p){ try{ return !!p&&!p.foreign&&(starPower(p)>=15||(!!t.reg
 const planPickMul=t=>({build:1.5,tight:1.3,win:.7,next:1,star:.9}[planOf(t)]||null);
 /* FA 평가액 배율 */
 function planFaMul(t,p){ const pl=planOf(t); return pl==='star'&&planStar(t,p)?1.18:pl==='build'&&p.age>=29?.85:pl==='tight'?.8:pl==='win'&&ovr(p)>=58?1.05:1; }
+/* 구단 카드의 운영 방침 표시(예전부터 보이던 큰 갈래만: 세부 계획은 보여 주지 않는다). 예전에는 전력 정비(mid) 구단도 '리빌딩'으로 나왔다 */
+function modeLabel(t){ return t.mode==='contend'?'우승 경쟁':t.mode==='rebuild'?'리빌딩':'전력 정비'; }
 /* 단장 대화·트레이드 센터의 '구단 사정' 한마디 */
 function planTalk(t){ return {win:'올해 우승을 노림 · 당장 뛸 주전을 원함',next:'내년 승부 · 25~30세 주전감을 찾음',build:'몇 년 뒤를 봄 · 지명권과 어린 선수를 원함',tight:'지갑을 닫음 · 연봉 큰 선수는 사절',star:'흥행 우선 · 이름값 있는 선수에 관심'}[planOf(t)]||''; }
 /* AI 감독 선임: 후보 여럿 중 지금 선수단과 맞는 감독(원하는 역할을 이미 갖춘 정도)을 구단 설계 능력만큼 더 본다 */

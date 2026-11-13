@@ -61,7 +61,7 @@ const gmAbOf=tid=>{ if(tid==null||tid===G.user)return null; const t=team(tid); r
 function gmRecord(tid){ const g=team(tid).gm; if(!g||g.interim)return null; const H=(G.history||[]).filter(h=>h.y>=g.since&&h.order); const rk=H.map(h=>h.order.findIndex(o=>o.tid===tid)+1).filter(x=>x>0); return {n:rk.length,avg:rk.length?rk.reduce((a,x)=>a+x,0)/rk.length:null,best:rk.length?Math.min(...rk):null,ch:H.filter(h=>h.champ===tid).length,ps:rk.filter(x=>x<=5).length}; }
 function gmOf(tid){ if(tid===ME())return null; /* 야인이면 전 구단도 그 구단 단장(검수 11-07) */ const t=team(tid); if(!t.gm)t.gm=mkGM(tid); return t.gm; }
 function gmTrait(tid){ const g=tid===G.user?null:team(tid).gm; return g&&!g.interim?g.trait:null; }
-function gmInit(){ for(const t of G.teams){ if(t.id!==G.user&&!t.gm)t.gm=mkGM(t.id); } if(G.rep==null)G.rep=50; G.gmc=G.gmc||{}; G.jobs=G.jobs||[]; G.lgTrades=G.lgTrades||[]; }
+function gmInit(){ for(const t of G.teams){ if(t.id!==G.user&&!t.gm)t.gm=mkGM(t.id); } if(G.rep==null)G.rep=50; G.gmc=G.gmc||{}; G.jobs=G.jobs||[]; G.lgTrades=G.lgTrades||[]; try{ aiPlanEnsure(); }catch(e){} }
 function relLabel(r){ return r>=80?'막역한 사이':r>=65?'친한 편':r>=45?'무난한 사이':r>=30?'서먹한 사이':'껄끄러운 사이'; }
 function teamNeeds(tid){ const rk=slotRanks(tid); const weak=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r).filter(x=>x.r>=6).slice(0,2).map(x=>x.k);
   const t=team(tid); const c=teamCtx(t); const ci=capInfo(tid); const money=t.indie||ci.over>0||t.owner==='profit'?'tight':ci.cap-ci.pay>2500?'rich':'normal';
@@ -148,7 +148,7 @@ function aiTradeTry(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>t.y
    창단 드래프트로 전력이 고르게 나뉜 리그에 실제처럼 강팀·약팀 차이를 만든다. 구단당 두 건까지 */
 /* 운영 방향별 보강(o 없으면 창단 직후): 우승 도전 구단은 상한 95%까지 리빌딩 구단의 29세 이상 베테랑을, 내년 도전 구단은 26~30세 주전급을 사 온다.
    해마다 겨울(1월)과 트레이드 마감 전(6~7월)에 aiStanceBuy가 부른다. o.per: 구단당 건수, o.wantF: 파는 쪽이 받으려는 남은 가치 비율 */
-function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filter(t=>t.id!==U); const Rb=ai.filter(t=>t.mode==='rebuild'); if(!Rb.length)return 0;
+function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filter(t=>t.id!==U); const Rb=o.sellers||ai.filter(t=>t.mode==='rebuild'); if(!Rb.length)return 0;
   const C=o.buyers||ai.filter(t=>t.mode!=='rebuild').sort((a,b)=>teamRating(b.id)-teamRating(a.id)).slice(0,4); let n=0;
   for(const A of C)for(let k=0;k<(o.per||2);k++){ const base=teamRating(A.id); const cands=[]; const nx=stanceOf(A)==='next'&&o.buyers;
     if(o.buyers&&(capPay(A.id)>capOf(sponSeason())*.98||lgTradeN(A.id)>=5||lgTradeN()>=20))break; /* 일반 AI 거래와 같은 한도: 구단당 5건, 리그 20건(검수 11-09w) */
@@ -172,6 +172,13 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     if(!done)break; }
   return n; }
 /* 해마다 한 번씩(겨울 1월, 시즌 6월 15일~마감): 상한 여유가 있는 우승 도전·내년 도전 구단이 리빌딩 구단에서 전력을 사 온다. 리그 트레이드 한도(20건) 안에서 */
+/* 유망주 수집·긴축 구단이 먼저 움직여 베테랑을 판다(여름 6월 15일~마감, 겨울 11월 중순~1월). 사 가는 쪽은 우승 도전·내년 도전·흥행 구단이고 값은 지명권이나 어린 선수로 받는다.
+   한 주에 구단마다 22% 확률로 한 번, 리그 트레이드 한도(20건·구단당 5건) 안에서 */
+function aiBuilderSell(){ const per=period(), o=dobj(G.day); const win=per==='season'?G.day>=KD(6,15)&&G.day<=tradeDL():(per==='off'||per==='pre')&&(o.m===1||o.m===12||(o.m===11&&o.d>=15)); if(!win||(G.draft&&!G.draft.done))return 0; let n=0;
+  for(const B of G.teams){ if(B.id===ME()||!['build','tight'].includes(planOf(B))||lgTradeN(B.id)>=4||lgTradeN()>=18)continue; if(R()>=.22)continue;
+    const cap=capOf(sponSeason()); const A=G.teams.filter(t=>t.id!==ME()&&t.id!==B.id&&['win','next','star'].includes(planOf(t))&&(t.cash||0)>-2000&&capPay(t.id)<cap*.96&&lgTradeN(t.id)<5).sort((a,b)=>(planOf(a)==='win'?0:1)-(planOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,2);
+    for(const a of A){ if(fdStrengthen({buyers:[a],sellers:[B],per:1,wantF:.4})){ n++; break; } } }
+  return n; }
 function aiStanceBuy(){ const per=period(), o=dobj(G.day); const win=per==='season'?G.day>=KD(6,15)&&G.day<=tradeDL():(per==='off'||per==='pre')&&o.m===1; if(!win)return 0;
   const key=G.year+(per==='season'?'s':'w'); if(G.aiBuyK===key)return 0; if((G.lgTrades||[]).filter(t=>t.y===G.year).length>=18)return 0; G.aiBuyK=key;
   const cap=capOf(sponSeason()); const TR={}; for(const t of G.teams)TR[t.id]=teamRating(t.id); const mean=avg(Object.values(TR)); /* 평준화(사용자 11-12): 이미 리그 평균보다 크게 센 구단(+1.0 이상)은 베테랑을 더 사 오지 않는다. 강팀이 해마다 더 강해져 승률 .700 시즌이 나오던 것 */
@@ -186,7 +193,7 @@ function marketWeek(){ if(!tradeOpen()||G.gameOver)return; gmInit(); const per=p
       let pr=.07+gmHeat(t.id)*.1+Math.min(2,weak)*.03+(dl?.16:0); if(per!=='season')pr*=.75; if(R()<pr&&!aiTradeTry(t.id)&&R()<.06){ const B=pick(G.teams.filter(x=>x.id!==ME()&&x.id!==t.id)); wire('루머',`${tshort(t.id)}, ${tshort(B.id)}에 트레이드를 제안했지만 조건이 맞지 않았다는 소식입니다.`,{tid:t.id}); } }
     /* 맞트레이드: 서로 약한 자리를 남는 자원으로 바꾼다(AI끼리 밀어주기). 가치가 비슷한 선수끼리라 전력 쏠림 없이 시장만 활발해진다 */
     let swN=0; for(const t of G.teams){ if(lgTradeN()>=20)break; if(t.id===ME()||lgTradeN(t.id)>=4)continue; if(swN>=3)break; if(R()<(per==='season'?(dl?.2:.09):.06)){ swN++; aiTradeTry(t.id,{swap:1}); } /* 한 주 맞트레이드 시도 3번까지(코드 리뷰 11-13: 시도 한 번이 무겁다) */ } } }
-  try{ aiStanceBuy(); }catch(e){}
+  try{ aiStanceBuy(); }catch(e){} try{ aiBuilderSell(); }catch(e){}
   if(G.unemp)return;
   const teams=G.teams.filter(t=>t.id!==ME()); const t=pick(teams); const n=teamNeeds(t.id);
   if(n.weak.length&&R()<.6)wire('루머',`${t.city} ${t.nick} ${gmOf(t.id).name} 단장, ${SLOTK[n.weak[0]]} 보강을 추진 중이라는 소문입니다.`,{tid:t.id});
