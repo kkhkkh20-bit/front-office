@@ -5,7 +5,7 @@ const ntAvg=(h,ab)=>ab?(h/ab).toFixed(3).replace(/^0/,''):'-';
 const ntEra=(er,o)=>o?(er*27/o).toFixed(2):'-';
 function ntOps(S){ const ob=(S.h+S.bb)/Math.max(1,S.pa||0), sl=(S.h+(S.d||0)+2*(S.tr||0)+3*(S.hr||0))/Math.max(1,S.ab||0); return S.ab?(ob+sl).toFixed(3).replace(/^0/,''):'-'; }
 /* 선수 이름(대회 기록 키): 한국 실제 선수는 선수 화면, 상대국 선수는 카드 */
-function ntKeyName(T,key){ if(/^\d+$/.test(String(key))){ const p=G.players[+key]; return p?{n:p.name,a:'player',v:p.id,c:'KR',team:p.team}:{n:'',c:'KR'}; }
+function ntKeyName(T,key){ if(/^\d+$/.test(String(key))){ const p=G.players[+key]; if(p)return {n:p.name,a:'player',v:p.id,c:'KR',team:p.team}; const ar=G.arch&&G.arch[+key]; let n=ar&&ar.name||''; if(!n&&T){ for(const g of (T.games||[])){ const B=g&&g.box; if(!B)continue; for(const sd of ['h','a'])for(const k of ['bat','pit']){ const x=((B[sd]||{})[k]||[]).find(r=>String(r.id)===String(key)); if(x&&(x.n||x.name)){ n=x.n||x.name; break; } } if(n)break; } } return {n:n||'은퇴 선수',c:'KR'}; } /* 지워진 선수도 기록실에 이름이 남게(UI 리뷰 11-13) */
   if(String(key).startsWith('o')){ const x=(G.nt&&G.nt.ovs||[]).find(o=>'o'+o.id===key); return {n:x?x.name:'해외파',c:'KR',ovs:x}; }
   const pl=ntFindPl(key); return {n:pl?pl.nm:'',a:'ntCard',v:key,c:String(key).replace(/\d+$/,'')}; }
 function ntKeyLink(T,key){ const x=ntKeyName(T,key); return x.a?`<button class="lnk" data-a="${x.a}" data-v="${esc(String(x.v))}">${esc(x.n)}</button>`:esc(x.n); }

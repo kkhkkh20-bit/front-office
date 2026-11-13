@@ -1468,24 +1468,24 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 
 /* 모바일 무적 선수(커뮤니티 11-13 꺼끼꺼): 검색·필터를 접고, 표는 나이·상태 열을 빼서 잠재력까지 한 화면에 보이게. 계약 버튼 열은 고정하지 않는다 */
 .free-flt{flex:none;display:grid;gap:8px}.free-flt>summary{cursor:pointer;font-size:13px;color:var(--muted)}
-@media(min-width:701px){.free-flt>summary{display:none}}
-@media(max-width:700px){.free-table{min-width:0;width:100%}.free-table th:nth-child(4),.free-table td:nth-child(4),.free-table th:nth-child(6),.free-table td:nth-child(6){display:none}.free-table th:last-child,.free-table td:last-child{position:static}.free-table .free-player{min-width:118px;max-width:140px;width:auto}.free-table th,.free-table td{padding:8px 6px}.free-action .btn{min-width:0;padding-inline:6px;font-size:12px}}
-@media(max-width:700px){.free-table{font-size:12px}.free-table .free-player{max-width:112px;min-width:104px}.free-table .pm-n .av{width:24px;height:24px}.free-action .btn{white-space:nowrap;font-size:11px;padding:5px}.free-table th,.free-table td{padding:7px 4px}}
-@media(max-width:700px){.free-table td.free-action{width:auto;min-width:58px}.free-table td.free-action .btn{white-space:nowrap;word-break:keep-all}}
+@media(min-width:701px){.free-flt[open]>summary{display:none}} /* 접힌 채 넓은 화면으로 돌리면 펼칠 단추가 보이게 */
+@media(max-width:700px){.free-table{min-width:0;width:100%;font-size:12px}.free-table th:nth-child(4),.free-table td:nth-child(4),.free-table th:nth-child(6),.free-table td:nth-child(6){display:none}.free-table th:last-child,.free-table td:last-child{position:static}.free-table .free-player{min-width:104px;max-width:112px;width:auto}.free-table .pm-n .av{width:24px;height:24px}.free-table th,.free-table td{padding:7px 4px}.free-action .btn{min-width:0;white-space:nowrap;font-size:11px;padding:5px}.free-table td.free-action{width:auto;min-width:58px}.free-table td.free-action .btn{white-space:nowrap;word-break:keep-all}} /* 병합 때 겹친 세 블록을 하나로(UI 리뷰 11-13) */
 /* 플레이 테스트 11-13: FA 예정자 '자격' 열이 글자마다 줄바꿈되고 '신청 전망'이 잘림, 외국인 후보 관찰·협상 버튼이 오른쪽에서 잘림 */
-#app .tf-up .tf-t td.wrap{min-width:7.5em;white-space:normal;word-break:keep-all}
+#app .tf-up .tf-t td.wrap{min-width:6em;white-space:normal;word-break:keep-all}
 #app .tf-up .tf-t td:last-child,#app .tf-up .tf-t th:last-child{white-space:nowrap}
 #app .foreign-candidates .tf-t td:last-child{white-space:nowrap;min-width:4.5em;padding-left:4px;padding-right:4px}
-#app .foreign-candidates .tf-t td:last-child .tc-i,#app .foreign-candidates .tf-t td:last-child .btn{display:block;width:100%;margin:2px 0}
+@media(max-width:1440px){#app .foreign-candidates .tf-t td:last-child .tc-i,#app .foreign-candidates .tf-t td:last-child .btn{display:block;width:100%;margin:2px 0}} /* 좁은 PC·태블릿만 버튼을 세로로(넓은 화면은 한 줄, UI 리뷰 11-13) */
 #app .foreign-candidates .sf-tw,#app .tf-up .sf-tw{overflow-x:auto}
 /* 플레이 테스트 11-13: 스폰서 표가 가로로 밀려 '자리' 열이 잘림 → 자리 열 고정, 좁은 화면은 줄바꿈 */
 #app .spt-w .spt th:first-child,#app .spt-w .spt td:first-child{position:sticky;left:0;z-index:1;background:var(--panel,var(--bg));min-width:7.5em}
 #app .spt-w .spt td{white-space:normal;word-break:keep-all}
 #app .tf-up .tf-t td:nth-child(5){max-width:9em;white-space:normal;word-break:keep-all}
-#app .tf-up .tf-t td.wrap{min-width:6em}
-#app .foreign-candidates .tf-t td:nth-child(3),#app .foreign-candidates .tf-t td:nth-child(5){max-width:9em;white-space:normal;word-break:keep-all}
+@media(max-width:1440px){#app .foreign-candidates .tf-t td:nth-child(3),#app .foreign-candidates .tf-t td:nth-child(5){max-width:9em;white-space:normal;word-break:keep-all}}
 #app .foreign-candidates .tf-t td:first-child{min-width:11em;word-break:keep-all}
 #app .foreign-candidates .tf-t td:nth-child(5) *{white-space:normal!important}
+/* 해외 스카우트망 표: '찾을 포지션'을 지역 칸 아래로 옮긴 뒤에도 1366에서 비용 열이 잘리지 않게 촘촘히(UI 리뷰 11-13) */
+#app .tf-net .tf-t{font-size:12px}#app .tf-net .tf-t td,#app .tf-net .tf-t th{padding-left:4px;padding-right:4px}
+#app .tf-net .tf-lv button{min-width:0;padding:2px 6px}#app .tf-net .tf-focus{max-width:7.5em;font-size:12px}
 /* 읽기·누르기 개선: 작은 글씨 11px, 버튼 높이 30px 이상 */
 .tc-rt span,.tc-tools span,.tc-tools i,.teamc-top i,.fsq em,.sbr .small,.pc-l,.cnd,table.rt i.f,.trend,.rd,.tp-r i,.tp-g i,.posfit i,table.tcmp td i,.cmp-k i,.sl span,.growth span,.prchart span{font-size:11px}
 button.pill,.pill[data-a]{min-height:30px;display:inline-flex;align-items:center;padding-top:0;padding-bottom:0}
@@ -5874,10 +5874,12 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
    4) 선수단 이름·배지 잘림  6) 감독 후보 페이지 버튼이 카드 내용을 덮음. 데스크톱(>600px)은 바꾸지 않는다 */
 
 /* 넘치는 탭 줄: 오른쪽·왼쪽에 더 있으면 가장자리를 흐린다(tabRowHints가 .hrow·.more-l·.more-r를 붙인다) */
+@media (max-width:700px){
 :is(#app,#sheet) .hrow.more-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}
 :is(#app,#sheet) .hrow.more-l{-webkit-mask-image:linear-gradient(to right,transparent,#000 28px);mask-image:linear-gradient(to right,transparent,#000 28px)}
 :is(#app,#sheet) .hrow.more-l.more-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
 :is(#app,#sheet) .hrow{scroll-behavior:smooth;scrollbar-width:none}
+} /* 넘침 표시·스크롤바 숨김은 휴대폰만: PC에서 탭 줄 스크롤바가 사라지던 문제(UI 리뷰 11-13) */
 
 @media (max-width:480px){
   /* 1) 상단: 화면 제목을 한 단계 줄여 '트레이…'처럼 잘리지 않게, 진행 버튼 보조 문구는 짧은 앞부분만(goSub) */
@@ -25775,7 +25777,7 @@ const slotKey=n=>`${SAVE}-s${n}`;
      이어서 지금 진행 중이 아닌 다른 슬롯 본문도 IndexedDB로 옮겨 localStorage 공간을 비운다(복사를 확인한 뒤에만 지운다).
    - 이 탭에서 쓴 본문은 메모리(SB)에 두고 읽는다. 부팅 때 idb 표시 슬롯이 있으면 IndexedDB에서 먼저 읽어 온 뒤 이어하기를 연다.
    - localStorage 쓰기가 다시 성공하면 그 슬롯은 localStorage로 돌아오고 IndexedDB 사본과 표시를 지운다. */
-const SB=new Map(), SB_SEQ={}; let SB_DB=null;
+const SB=new Map(), SB_SEQ={}, SB_PEND=new Set(); let SB_DB=null; /* SB_PEND: 이 탭이 IndexedDB에 쓰는 중인 슬롯(표시가 붙기 전) */
 /* 다른 사이트(itch 껍데기 등) 안에 끼워 열린 화면인가(카페 11-13 쌉싸코: 휴대폰에서 저장해도 다시 켜면 이어하기가 없음).
    아이폰·아이패드(모든 브라우저가 WebKit)는 다른 사이트 안에서 쓴 저장을 그 사이트별로 따로 두고, 첫 화면으로 직접 방문한 기록이 없으면 7일 안에 지운다.
    그래서 끼워 연 화면에서는 저장이 사라질 수 있다고 알리고, 이 주소를 새 창으로 바로 열게 한다 */
@@ -25791,15 +25793,17 @@ const sbPut=(n,d)=>sbTx('readwrite',st=>st.put(d,n)), sbRead=n=>sbTx('readonly',
 const sbFlag=(m,n)=>!!(m&&m.slots&&m.slots[n]&&m.slots[n].idb);
 function sbLsGet(n){ try{ return localStorage.getItem(slotKey(n)); }catch(e){ return null; } }
 /* 본문 읽기: 이 탭이 IndexedDB에서 읽었거나 쓴 본문(SB)이 먼저, 없으면 localStorage */
-function sbGet(n){ if(SB.has(n))return SB.get(n); return sbLsGet(n); }
+function sbGet(n){ if(SB.has(n)){ if(SB_PEND.has(n)||sbFlag(meta(),n))return SB.get(n); const ls=sbLsGet(n); if(ls!=null){ SB.delete(n); return ls; } return SB.get(n); } return sbLsGet(n); } /* idb 표시가 없고 localStorage에 본문이 있으면 다른 탭이 더 새로 쓴 것: 메모리 사본은 버린다(UI 리뷰 11-13: 옛 본문을 열어 덮어씀) */
+/* 다른 탭이 목록을 바꾸면 표시가 없는 슬롯의 메모리 사본을 버린다 */
+try{ window.addEventListener('storage',e=>{ try{ if(e.key!==META&&!(e.key||'').startsWith(SAVE+'-s'))return; const m=meta(); for(const n of [...SB.keys()])if(!SB_PEND.has(n)&&!sbFlag(m,n))SB.delete(n); }catch(x){} }); }catch(e){}
 /* 목록의 idb 표시를 고친다(판번호가 그대로일 때만) */
 function sbMark(n,on,rev){ try{ const m=meta(); const it=m.slots[n]; if(!it||(rev!=null&&it.rev!==rev))return false; if(!!it.idb===!!on)return true; if(on)it.idb=true; else delete it.idb; return setMeta(m); }catch(e){ return false; } }
 /* 본문 쓰기: localStorage 우선, 공간이 없으면 IndexedDB. true면 이 탭에서는 바로 읽을 수 있다 */
 function sbSet(n,data){ let ls=false; try{ localStorage.setItem(slotKey(n),data); ls=localStorage.getItem(slotKey(n))===data; }catch(e){}
-  if(ls){ if(SB.has(n)){ SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; } if(sbFlag(meta(),n)){ sbMark(n,false); if(sbOk())sbDrop(n).catch(()=>{}); } return true; }
+  if(ls){ SB_PEND.delete(n); try{ const m=meta(); if(m.slots[n]&&m.slots[n].fail){ delete m.slots[n].fail; setMeta(m); } }catch(e){} if(SB.has(n)){ SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; } if(sbFlag(meta(),n)){ sbMark(n,false); if(sbOk())sbDrop(n).catch(()=>{}); } return true; }
   if(!sbOk())return false;
-  SB.set(n,data); const seq=SB_SEQ[n]=(SB_SEQ[n]||0)+1, rev=revOf(meta(),n);
-  sbPut(n,data).then(()=>{ if(SB_SEQ[n]!==seq)return; if(sbMark(n,true,rev)){ try{ localStorage.removeItem(slotKey(n)); }catch(e){} } sbOffload(n); }).catch(()=>{ if(SB_SEQ[n]!==seq)return; SAVE_ERR='브라우저 저장 공간이 가득 차고 보조 저장소(IndexedDB)에도 쓰지 못했습니다. 파일로 내보내기로 백업하세요.'; try{ toast(SAVE_ERR); }catch(e){} });
+  SB.set(n,data); SB_PEND.add(n); const seq=SB_SEQ[n]=(SB_SEQ[n]||0)+1, rev=revOf(meta(),n);
+  sbPut(n,data).then(()=>{ if(SB_SEQ[n]!==seq)return; SB_PEND.delete(n); if(sbMark(n,true,rev)){ try{ localStorage.removeItem(slotKey(n)); }catch(e){} } sbOffload(n); }).catch(()=>{ if(SB_SEQ[n]!==seq)return; SB_PEND.delete(n); SB.delete(n); try{ const m=meta(); if(m.slots[n]){ m.slots[n].fail=G?G.day:1; setMeta(m); } }catch(e){} /* 실패한 저장은 목록에 표시하고 메모리 사본도 버린다: 새로고침 뒤 옛 본문이 조용히 열리지 않게 */ SAVE_ERR='브라우저 저장 공간이 가득 차고 보조 저장소(IndexedDB)에도 쓰지 못했습니다. 파일로 내보내기로 백업하세요.'; try{ toast(SAVE_ERR); }catch(e){} });
   return true; }
 /* 진행 중이 아닌 슬롯 본문을 IndexedDB로 옮겨 localStorage 공간을 비운다(사본 확인 뒤 삭제) */
 let _sbOff=false; async function sbOffload(keep){ if(_sbOff||!sbOk())return; _sbOff=true; try{ for(const k of SLOT_IDS){ if(k===keep||k===CUR_SLOT)continue; const body=sbLsGet(k); if(body==null)continue; const m=meta(); if(!m.slots[k])continue; const rev=m.slots[k].rev;
@@ -26081,7 +26085,7 @@ function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenE
 if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
-function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; UI.trade.counters=null; } } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
+function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
@@ -26150,7 +26154,7 @@ function unempCfg(){ return patchCard()+`<section class="card"><div class="row b
 function anySave(){ try{ return contSlot()!=null; }catch(e){ return false; } }
 function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+slotSize(n),0); const has={}; for(const n of SLOT_IDS)has[n]=slotHas(n); const sv=n=>has[n]?(m.slots[n]||{name:'(목록 정보 없음)',y:''}):m.slots[n]?Object.assign({},m.slots[n],{nobody:1}):null; /* 목록과 본문이 어긋나도 칸은 사용 중으로 센다: 새 게임·복사가 쓰는 slotUsed와 같은 기준(검수 11-07, 11-09 #13) */
   const rows=SLOT_IDS.filter(n=>sv(n)||n===SLOT_IDS.find(k=>!sv(k))||UI.slotAll).map(n=>{ const s=sv(n); const cur=G&&curSlot()===n; /* 이 탭이 연 슬롯만 진행 중(검수 11-07: 다른 탭이 바꾼 활성 기록을 따르면 진행 중 슬롯에 삭제 버튼) */
-    return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s&&s.nobody?`${esc(s.name||'')} · 저장 본문 없음(불러올 수 없음)`:s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.over?' · 경질됨':''} · ${slotSize(n)}KB${s.at?` · 저장 ${new Date(s.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`:''}`:'비어 있음'}</div>${s?`<input class="slot-memo" data-a="slotMemo" data-v="${n}" maxlength="30" placeholder="메모(예: 외국인 교체 전)" value="${esc(s.memo||'')}" aria-label="슬롯 ${n} 메모">`:''}</div>
+    return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s&&s.nobody?`${esc(s.name||'')} · 저장 본문 없음(불러올 수 없음)`:s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.over?' · 경질됨':''}${s.fail?' · <b class="bad">마지막 저장 실패(내보내기로 백업하세요)</b>':''} · ${slotSize(n)}KB${s.at?` · 저장 ${new Date(s.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`:''}`:'비어 있음'}</div>${s?`<input class="slot-memo" data-a="slotMemo" data-v="${n}" maxlength="30" placeholder="메모(예: 외국인 교체 전)" value="${esc(s.memo||'')}" aria-label="슬롯 ${n} 메모">`:''}</div>
       <div class="row">${s&&cur?`<button class="btn small" data-a="slotCopy" title="지금 진행 상황을 빈 슬롯에 따로 저장해 둡니다. 계속 진행하는 곳은 이 슬롯입니다">빈 슬롯에 따로 저장</button>`:''}${s&&cur&&SAVE_CONFL&&has[n]?`<button class="btn small" data-a="slotLoad" data-v="${n}" title="다른 탭이 저장한 최신 진행을 엽니다">최신 저장 다시 열기</button>`:''}${s&&!cur&&has[n]?`<button class="btn small primary" data-a="slotLoad" data-v="${n}">이어하기</button>`:''}${s&&!cur&&!start&&G&&curSlot()!=null?`<button class="btn small${UI.overAsk===n?' danger':''}" data-a="slotOver" data-v="${n}" title="지금 진행을 이 슬롯에 덮어 저장합니다. 계속 진행하는 곳은 지금 슬롯입니다">${UI.overAsk===n?'한 번 더 눌러 덮어쓰기':'여기에 덮어 저장'}</button>`:''}${start?`<button class="btn small" data-a="slotNew" data-v="${n}">${s?'덮어쓰고 새 게임':'새 게임'}</button>`:''}${s&&!cur?`<button class="btn small danger" data-a="slotDel" data-v="${n}">삭제</button>`:''}</div></div>`; }).join('');
   const filled=SLOT_IDS.filter(n=>sv(n)).length;
   return `<section class="card"><div class="row between"><h2 class="sec">저장 슬롯</h2><span class="small muted">${filled}/${SLOTS} 사용 · 약 ${(used/1024).toFixed(1)}MB</span></div><div class="slots">${rows}</div>${filled+1<SLOTS?`<button class="btn small" data-a="slotAll">${UI.slotAll?'빈 슬롯 숨기기':'빈 슬롯 모두 보기'}</button>`:''}<p class="small muted">슬롯은 ${SLOTS}개까지입니다. 기본 저장 공간(보통 5MB 안팎)이 차면 진행 중이 아닌 슬롯부터 브라우저의 보조 저장소(IndexedDB, 훨씬 큼)로 자동으로 옮겨 계속 저장합니다. 브라우저 데이터를 지우면 둘 다 사라지니, 중요한 세이브는 "파일로 내보내기"로도 보관하세요.</p>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
@@ -27098,7 +27102,7 @@ function freeWorkspace(){if((G.comp||[]).some(c=>(c.stage==='protect'&&c.to===G.
   const option=(k,l,options,value)=>`<label>${l}<select data-free-option="${k}" aria-label="${l}">${options.map(([v,t])=>`<option value="${v}" ${String(value)===String(v)?'selected':''}>${t}</option>`).join('')}</select></label>`;
   const sort=(k,l)=>`<button type="button" data-a="freeSort" data-v="${k}">${l}${f.sort===k?(f.dir===1?' ↑':' ↓'):''}</button>`;
   const rows=D.items.map(({p,rp,ask,why})=>{const left=FREE_YEARS-(G.year-p.freeSince);return `<tr data-free-id="${p.id}"><td class="free-player">${tfP(p,`${esc(posLabel(p))} · ${p.age}세${p.relT!=null?' · 전 '+esc(tshort(p.relT)):''}`)}</td><td>${rchip(rp.cur)}</td><td>${tfPot(rp,p)}</td><td>${p.age}</td><td class="num">${money(ask)}</td><td class="free-status">${why?`<span class="warn">${esc(why)}</span>`:left<=1?'<span class="pill warn">무적 마지막 해</span>':'계약 가능'}${p.school?`<span class="small muted">${esc(p.school)}</span>`:''}</td><td class="free-action"><button class="btn small primary" data-a="signFree" data-v="${p.id}" ${why?'disabled':''} aria-label="${esc(p.name)} 1년 계약" title="${esc(why||'요구 연봉 '+money(ask)+' · 1년 계약')}">1년 계약</button></td></tr>`;}).join('');
-  return `<section class="free-workspace ws-own" aria-label="국내 무적 선수 영입"><header class="free-heading"><div><h2 class="sec">무적 선수</h2><p class="small muted">전체 ${D.all.length}명 · 검색 결과 ${D.rows.length}명 · 정식 선수 ${rosterN(G.user)}/${ROSTER_MAX}명</p></div><button class="btn small" data-a="go" data-v="transfer:fa">FA 시장</button></header><details class="free-flt"${(typeof window!=='undefined'&&window.innerWidth<=700)&&!f.q&&f.type==='all'&&f.pos==='all'?'':' open'}><summary>검색·필터${f.q||f.type!=='all'||f.pos!=='all'?' (적용 중)':''}</summary><form class="free-search" data-free-search-form><label for="free-search">후보 검색</label><input id="free-search" type="search" name="q" value="${esc(f.q)}" placeholder="이름·이전 구단·학교" autocomplete="off"><button class="btn small" type="submit">검색</button><button class="btn small" type="button" data-a="freeReset">초기화</button></form><div class="free-filters">${option('type','타자·투수',[['all','전체'],['H','타자'],['P','투수']],f.type)}${option('pos','포지션',[['all','모든 포지션'],['SP','선발투수'],['RP','불펜투수'],...POS_F.map(k=>[k,POSK[k]])],f.pos)}${option('sort','정렬',[['rating','종합 평가'],['potential','잠재력 평가'],['age','나이'],['salary','요구 연봉'],['name','이름']],f.sort)}${option('size','한 페이지',[25,50,100].map(n=>[n,n+'명']),f.size)}</div></details><details class="free-rules"><summary>계약·평가 기준</summary><p class="small muted">방출·FA 미계약 국내 선수와 1년 계약합니다. 능력과 잠재력은 스카우트 평가이며 미확인 값은 ?로 표시합니다. 포스트시즌·결산 전 신규 등록, 정원 초과, 방출 구단의 1년 재계약 제한은 기존 계약 규칙을 따릅니다. 모든 후보는 아래 페이지에서 확인할 수 있습니다.</p></details><div class="free-list" tabindex="0" role="region" aria-label="무적 선수 전체 후보 표" data-reading-key="free-agent-list"><table class="free-table"><thead><tr><th>선수</th><th>${sort('rating','종합')}</th><th>${sort('potential','잠재력')}</th><th>${sort('age','나이')}</th><th>${sort('salary','요구 연봉')}</th><th>상태</th><th>계약</th></tr></thead><tbody>${rows||'<tr><td colspan="7" class="free-empty">조건에 맞는 선수가 없습니다. 검색이나 포지션 필터를 바꿔 주세요.</td></tr>'}</tbody></table></div><footer class="free-pages"><span>${D.rows.length?f.page*f.size+1:0}–${Math.min(D.rows.length,(f.page+1)*f.size)} / ${D.rows.length}명</span><div><button class="btn small" data-a="freePage" data-v="0" ${f.page===0?'disabled':''}>처음</button><button class="btn small" data-a="freePage" data-v="${f.page-1}" ${f.page===0?'disabled':''}>이전</button><span class="num">${f.page+1} / ${D.pages}</span><button class="btn small" data-a="freePage" data-v="${f.page+1}" ${f.page>=D.pages-1?'disabled':''}>다음</button><button class="btn small" data-a="freePage" data-v="${D.pages-1}" ${f.page>=D.pages-1?'disabled':''}>마지막</button></div></footer></section>`;
+  return `<section class="free-workspace ws-own" aria-label="국내 무적 선수 영입"><header class="free-heading"><div><h2 class="sec">무적 선수</h2><p class="small muted">전체 ${D.all.length}명 · 검색 결과 ${D.rows.length}명 · 정식 선수 ${rosterN(G.user)}/${ROSTER_MAX}명</p></div><button class="btn small" data-a="go" data-v="transfer:fa">FA 시장</button></header><details class="free-flt" ontoggle="UI.freeFltOpen=this.open"${(typeof window!=='undefined'&&window.innerWidth<=700)&&!UI.freeFltOpen&&!f.q&&f.type==='all'&&f.pos==='all'?'':' open'}><summary>검색·필터${f.q||f.type!=='all'||f.pos!=='all'?' (적용 중)':''}</summary><form class="free-search" data-free-search-form><label for="free-search">후보 검색</label><input id="free-search" type="search" name="q" value="${esc(f.q)}" placeholder="이름·이전 구단·학교" autocomplete="off"><button class="btn small" type="submit">검색</button><button class="btn small" type="button" data-a="freeReset">초기화</button></form><div class="free-filters">${option('type','타자·투수',[['all','전체'],['H','타자'],['P','투수']],f.type)}${option('pos','포지션',[['all','모든 포지션'],['SP','선발투수'],['RP','불펜투수'],...POS_F.map(k=>[k,POSK[k]])],f.pos)}${option('sort','정렬',[['rating','종합 평가'],['potential','잠재력 평가'],['age','나이'],['salary','요구 연봉'],['name','이름']],f.sort)}${option('size','한 페이지',[25,50,100].map(n=>[n,n+'명']),f.size)}</div></details><details class="free-rules"><summary>계약·평가 기준</summary><p class="small muted">방출·FA 미계약 국내 선수와 1년 계약합니다. 능력과 잠재력은 스카우트 평가이며 미확인 값은 ?로 표시합니다. 포스트시즌·결산 전 신규 등록, 정원 초과, 방출 구단의 1년 재계약 제한은 기존 계약 규칙을 따릅니다. 모든 후보는 아래 페이지에서 확인할 수 있습니다.</p></details><div class="free-list" tabindex="0" role="region" aria-label="무적 선수 전체 후보 표" data-reading-key="free-agent-list"><table class="free-table"><thead><tr><th>선수</th><th>${sort('rating','종합')}</th><th>${sort('potential','잠재력')}</th><th>${sort('age','나이')}</th><th>${sort('salary','요구 연봉')}</th><th>상태</th><th>계약</th></tr></thead><tbody>${rows||'<tr><td colspan="7" class="free-empty">조건에 맞는 선수가 없습니다. 검색이나 포지션 필터를 바꿔 주세요.</td></tr>'}</tbody></table></div><footer class="free-pages"><span>${D.rows.length?f.page*f.size+1:0}–${Math.min(D.rows.length,(f.page+1)*f.size)} / ${D.rows.length}명</span><div><button class="btn small" data-a="freePage" data-v="0" ${f.page===0?'disabled':''}>처음</button><button class="btn small" data-a="freePage" data-v="${f.page-1}" ${f.page===0?'disabled':''}>이전</button><span class="num">${f.page+1} / ${D.pages}</span><button class="btn small" data-a="freePage" data-v="${f.page+1}" ${f.page>=D.pages-1?'disabled':''}>다음</button><button class="btn small" data-a="freePage" data-v="${D.pages-1}" ${f.page>=D.pages-1?'disabled':''}>마지막</button></div></footer></section>`;
 }
 /* ---------- 인물 관계도 ---------- */
 const relEx=r=>r==null?null:r>=65?'smile':r<35?'angry':'flat';
@@ -30969,7 +30973,7 @@ function foreignFM(o){ const {asia,yb,as,tot,capT,mid,open,ff,regs,used,max,mark
   const W=(G.fwatch||[]).map(w=>({w,p:G.players[w.id]})).filter(x=>x.p&&(x.p.foreign==='아시아')===asia);
   const watch=tfBox('tf-watch','관찰 명단',`${(G.fwatch||[]).length}/8명`,tfT(['선수','추정','현장 관찰',''],W.map(({w,p})=>{ const f=fScout(p); return `<tr><td>${tfP(p,`${esc(p.nat)} · ${esc(posLabel(p))} · ${money(p.ask)}`)}${w.auto?' <span class="pill">스카우트 추천</span>':''}</td><td>${f.mid!=null?`${f.lo}~${f.hi}`:'평가 전'}</td><td><span class="scn-pg"><i class="scn-k"><u style="width:${w.k}%"></u></i>${w.k}%</span></td><td><button class="tc-i" data-a="fwatch" data-v="${p.id}">빼기</button></td></tr>`; }),'후보 표에서 관찰을 누르면 매주 스카우트 보고가 쌓여 평가 오차가 줄어듭니다.'));
   const cnt=r=>(G.fmarket||[]).filter(id=>G.players[id]&&G.players[id].team==null&&origOf(G.players[id])===r).length;
-  const net=tfBox('tf-net','해외 스카우트망',`연 ${money(sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c)))}`,tfT(['지역 · 후보','단계','찾을 포지션','비용'],regs.map(r=>{ const lv=intlLv(r), sp=G.scouts.some(s=>s.role==='intl'&&s.region===r); return `<tr><td title="${esc(IREG[r].lg)}${sp?' · 스카우트 파견 +1단계':''}">${IREG[r].l} <span class="muted">${cnt(r)}명</span></td><td><span class="chips tf-lv">${INET.map((x,i)=>`<button data-a="setIntl" data-v="${r}:${i}" class="${lv===i?'on':''}" title="${esc(x.l)}">${i}</button>`).join('')}</span></td><td><select data-a="intlFocus" data-r="${r}" aria-label="${IREG[r].l} 찾을 포지션" title="그 지역 우리 발굴의 약 4분의 3이 이 포지션">${FFOC.map(([k,l])=>`<option value="${k}" ${((G.intlFocus||{})[r]||'all')===k?'selected':''}>${l}</option>`).join('')}</select></td><td title="${esc(INET[lv].l)}">${INET[lv].c?money(INET[lv].c):'무료'}</td></tr>`; }))
+  const net=tfBox('tf-net','해외 스카우트망',`연 ${money(sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c)))}`,tfT(['지역 · 후보 · 찾을 포지션','단계','비용'],regs.map(r=>{ const lv=intlLv(r), sp=G.scouts.some(s=>s.role==='intl'&&s.region===r); return `<tr><td title="${esc(IREG[r].lg)}${sp?' · 스카우트 파견 +1단계':''}">${IREG[r].l} <span class="muted">${cnt(r)}명</span><br><select class="tf-focus" style="max-width:9em;margin-top:2px" data-a="intlFocus" data-r="${r}" aria-label="${IREG[r].l} 찾을 포지션" title="그 지역 우리 발굴의 약 4분의 3이 이 포지션">${FFOC.map(([k,l])=>`<option value="${k}" ${((G.intlFocus||{})[r]||'all')===k?'selected':''}>${l}</option>`).join('')}</select></td><td><span class="chips tf-lv">${INET.map((x,i)=>`<button data-a="setIntl" data-v="${r}:${i}" class="${lv===i?'on':''}" title="${esc(x.l)}">${i}</button>`).join('')}</span></td><td title="${esc(INET[lv].l)}">${INET[lv].c?money(INET[lv].c):'무료'}</td></tr>`; }))
 +'<p class="small muted tipme">단계: 0 에이전트 자료 · 1 현지 통신원 · 2 전담 스카우트 · 3 현지 사무소. 올리면 그 지역 후보 평가가 바로 정확해지고, 다음 달 1일 후보 교체부터 더 많고 좋은 후보가 들어옵니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.</p>');
   return tfWrap(top,cand,our+watch+net,'','minmax(0,auto) minmax(110px,1fr) minmax(0,auto)'); }
 /* PC 계약(FM 계약 화면처럼): 위 연봉 요약, 왼쪽 우리 선수 계약 표(연봉 협상 기간에는 위에 협상 칸), 오른쪽 구단별 연봉 · 비FA 다년계약 */
@@ -37372,7 +37376,7 @@ const PATCH=[
     '창단 드래프트의 비교 후보 추천 카드를 뺐습니다.',
     '창단 드래프트 장래성은 스카우트 탭에만 둡니다. 뜻도 장래 최고 능력에서 3년 뒤 예상 능력으로 바꿔, 30대 중반 선수는 하락을 반영해 낮게, 젊은 선수는 성장을 반영해 높게 나옵니다.',
   ]},
-  {id:'2026-11-02i',d:'11월 2일',t:'구종 수 · 역할 · 첫걸음',items:[
+  {id:'2026-11-02i-old',d:'11월 2일',t:'구종 수 · 역할 · 첫걸음',items:[
     '구종 수가 경기에 반영됩니다. 타순이 세 바퀴째 돌 때(타자 18명 상대 뒤)부터 투수가 맞기 쉬워지고, 구종이 많을수록 덜합니다. 선수 능력의 투구 정보에 표시합니다.',
     '우리 선수 화면에 팀 내 역할(주전·선발 순번·마무리·필승조·장타 대타 후보·대주자 요원 등), 기회 만족(기분과 따로), 1군 출전이 없는 선수의 보유 이유를 적었습니다.',
     '구단주·사장과 함께 보는 경기에서 리드를 잡거나 빼앗긴 순간 등에 한마디를 합니다(중계 중, 경기 보고에도 남음).',
@@ -37380,32 +37384,32 @@ const PATCH=[
     '도전과제에 첫걸음(첫 승·첫 데뷔·첫 선두·첫 거래·첫 완공)을 더했습니다. 소식함 대신 활동 기록에 남습니다.',
     '리더십 화면에 주장·감독 교체 이력과 주장 교체 때 기강 변화를 보여 줍니다.'
   ]},
-  {id:'2026-11-02h',d:'11월 2일',t:'분석 보고 · 영입 판단 · 트레이드 위임',items:[
+  {id:'2026-11-02h-old',d:'11월 2일',t:'분석 보고 · 영입 판단 · 트레이드 위임',items:[
     '주간 경기 정리를 이번 주 핵심, 검토할 행동, 판단 근거(선발·불펜 ERA, 득점), 경기별 상세 순서로 바꿨습니다. 불펜 실점이 한 투수에게 몰리면 그 투수 점검부터 권합니다.',
     '팀 빌딩의 내가 꾸린 핵심 선수에 지명 경로(직접·자동·조건 위임)와 데려올 때의 판단(지명 당시 우리 추정, 트레이드·FA는 직전 시즌 WAR)을 적었습니다.',
     '받은 트레이드 제안을 부단장에게 맡길 때 모두 거절과 우리 평가로 공정 이상인 제안만 올리기 중에서 고를 수 있습니다.'
   ]},
-  {id:'2026-11-02g',d:'11월 2일',t:'선수단 계획 · 코치 후보',items:[
+  {id:'2026-11-02g-old',d:'11월 2일',t:'선수단 계획 · 코치 후보',items:[
     '선수단 계획은 프런트 예상 배치(감독 실제 기용과 다를 수 있음)라고 밝히고, 해마다 예상 연봉 합계와 캡 여유를 계산해 보여 줍니다.',
     '코치 채용 후보에 성격(유망주 성장에 강함·즉시 전력 지도에 강함·낮은 비용)을 붙였고, 감독이 바뀌면 함께 떠날 수 있는 사단 코치를 코치진 화면에 적었습니다.'
   ]},
-  {id:'2026-11-02f',d:'11월 2일',t:'추천 트레이드 공백 · 예산 이름',items:[
+  {id:'2026-11-02f-old',d:'11월 2일',t:'추천 트레이드 공백 · 예산 이름',items:[
     '추천 트레이드에 다른 자리에 생기는 공백(선발·필승조·주전 이탈), 줄어드는 투수 수, 거래 성격(단기 보강·미래 투자)을 붙였습니다.',
     '홈의 예산 여유 타일에 연봉 상한 잔여와 보유 현금을 함께 보여 주고, 창단 드래프트·구단 고르기의 예산 이름을 예산 여유로 맞췄습니다.',
     '포지션 후보 비교에 타율 대신 타석 수를 보여 줍니다(표본 크기).'
   ]},
-  {id:'2026-11-02e',d:'11월 2일',t:'다년계약 비교 · 드래프트 순번 · 외국인 발굴 알림',items:[
+  {id:'2026-11-02e-old',d:'11월 2일',t:'다년계약 비교 · 드래프트 순번 · 외국인 발굴 알림',items:[
     '비FA 다년계약 제안에 이 계약(기간·FA 포함 여부·보장 총액)과 계약하지 않을 때(해마다 연봉 협상·FA 예상 몸값)를 나란히 보여 줍니다.',
     '신인 드래프트 추천을 우리 순번 기준으로 나눴습니다(내려오면 우선 검토 · 우리 순번에 남을 가능성 · 다음 라운드까지 기다려 볼 선수).',
     '감독이 미는 선수를 함께 밀어주면 같은 자리 경쟁자는 기분이 내려갑니다. 선택지에 누가 영향을 받는지 적었습니다.',
     '우리만 아는 외국인 발굴 후보가 곧 다른 구단에 알려질 때(3일 전)와 알려졌을 때 소식이 옵니다.'
   ]},
-  {id:'2026-11-02d',d:'11월 2일',t:'경기 성격 · 기사 분류 · 지명 후보',items:[
+  {id:'2026-11-02d-old',d:'11월 2일',t:'경기 성격 · 기사 분류 · 지명 후보',items:[
     '경기 결과에 역전패·역전승·완패·빈타 같은 경기 성격을 먼저 보여 주고, 팬 반응도 그 성격에 맞게 나옵니다.',
     '다른 구단 일반 기사는 홈의 우리 구단 기사에 넣지 않습니다.',
     '창단 드래프트 우리 차례에 비교해 볼 후보 셋(즉시 전력·저평가·미래 투자)을 이유와 위험과 함께 보여 줍니다. 정답이 아니라 고민의 출발점입니다.'
   ]},
-  {id:'2026-11-02c',d:'11월 2일',t:'시설·스카우트·경기 복기·저장',items:[
+  {id:'2026-11-02c-old',d:'11월 2일',t:'시설·스카우트·경기 복기·저장',items:[
     '구장 시설에 연 순수익과 회수 기간, 계산 전제(올해 예상 관중 기준)를 보여 줍니다. 프리미엄석은 단계마다 일반석 300석이 준다고 적었고, 신구장은 구단 실부담(약 27억~48억)을 본문에 적었습니다.',
     '스카우트팀장 배치안에 비게 되는 담당과 적응이 끝나는 날짜를 함께 보여 줍니다.',
     '박스스코어 이닝 표에 실책(E), 실책한 선수를 붙였고 투수 칸은 자책점으로 표시합니다. 시즌 성적 칸은 현재 누적임을 적었습니다.',
@@ -37413,13 +37417,13 @@ const PATCH=[
     '감독의 엔트리 변경 소식에 이유(인원 초과·빈자리 보충·2군 기록)를 붙였습니다.',
     '저장 슬롯에 메모를 달 수 있고 저장 시각이 나옵니다. 단장 통산은 마친 시즌 기준이며 진행 중인 시즌 성적을 따로 보여 줍니다.'
   ]},
-  {id:'2026-11-02b',d:'11월 2일',t:'후보·위험·스폰서 표시',items:[
+  {id:'2026-11-02b-old',d:'11월 2일',t:'후보·위험·스폰서 표시',items:[
     '계약 전 외국인 후보는 잠재력 대신 올해 역할을 보여 주고, 목록에 선발형·불펜형을 붙였습니다.',
     '선수 정보의 위험도를 평가 불확실성과 건강 위험으로 나눴습니다.',
     '스폰서 빈자리가 있으면 메뉴에 주황 점과 이유가 뜹니다. 영업 조건(3천만 원·1~2주·30일에 한 번)과 보너스 중복 지급(가을야구+우승 둘 다)을 적었습니다.',
     'FA 자격 진행도에 경기·이닝(타석) 중 하나만 채우면 된다고 적었습니다. 포지션 진단의 순위는 전력 순위로 표시하고 옆 기록에 연도를 붙였습니다.'
   ]},
-  {id:'2026-11-02a',d:'11월 2일',t:'판단에 필요한 정보 잇기',items:[
+  {id:'2026-11-02a-old',d:'11월 2일',t:'판단에 필요한 정보 잇기',items:[
     '부상 관리 첫머리에 지금 빠져 있는 선수와 복귀 뒤 실전 회복 중인 선수를 보여 줍니다. 병원을 바꾸면 다음 부상부터 적용된다는 점도 적었습니다.',
     '받은 트레이드 제안에 받는·보내는 선수의 포지션·나이·연봉·병역, 거래 뒤 연봉·인원 변화, 빠지는 역할(주전·선발·필승조)을 붙였습니다.',
     '국가대표 화면에 우리 팀 영향(인원·역할·미필)을 요약하고, 달력에 대표 소집 기간을 표시합니다.',
@@ -37563,7 +37567,7 @@ const ntAvg=(h,ab)=>ab?(h/ab).toFixed(3).replace(/^0/,''):'-';
 const ntEra=(er,o)=>o?(er*27/o).toFixed(2):'-';
 function ntOps(S){ const ob=(S.h+S.bb)/Math.max(1,S.pa||0), sl=(S.h+(S.d||0)+2*(S.tr||0)+3*(S.hr||0))/Math.max(1,S.ab||0); return S.ab?(ob+sl).toFixed(3).replace(/^0/,''):'-'; }
 /* 선수 이름(대회 기록 키): 한국 실제 선수는 선수 화면, 상대국 선수는 카드 */
-function ntKeyName(T,key){ if(/^\d+$/.test(String(key))){ const p=G.players[+key]; return p?{n:p.name,a:'player',v:p.id,c:'KR',team:p.team}:{n:'',c:'KR'}; }
+function ntKeyName(T,key){ if(/^\d+$/.test(String(key))){ const p=G.players[+key]; if(p)return {n:p.name,a:'player',v:p.id,c:'KR',team:p.team}; const ar=G.arch&&G.arch[+key]; let n=ar&&ar.name||''; if(!n&&T){ for(const g of (T.games||[])){ const B=g&&g.box; if(!B)continue; for(const sd of ['h','a'])for(const k of ['bat','pit']){ const x=((B[sd]||{})[k]||[]).find(r=>String(r.id)===String(key)); if(x&&(x.n||x.name)){ n=x.n||x.name; break; } } if(n)break; } } return {n:n||'은퇴 선수',c:'KR'}; } /* 지워진 선수도 기록실에 이름이 남게(UI 리뷰 11-13) */
   if(String(key).startsWith('o')){ const x=(G.nt&&G.nt.ovs||[]).find(o=>'o'+o.id===key); return {n:x?x.name:'해외파',c:'KR',ovs:x}; }
   const pl=ntFindPl(key); return {n:pl?pl.nm:'',a:'ntCard',v:key,c:String(key).replace(/\d+$/,'')}; }
 function ntKeyLink(T,key){ const x=ntKeyName(T,key); return x.a?`<button class="lnk" data-a="${x.a}" data-v="${esc(String(x.v))}">${esc(x.n)}</button>`:esc(x.n); }
@@ -37837,7 +37841,7 @@ function bootLoad(){ { let bad=''; for(let i=0;i<=SLOTS&&(G=load());i++){ try{ m
 render(); /* 공간이 빠듯하면(본문 합계 약 3MB 이상) 진행 중이 아닌 슬롯을 IndexedDB로 미리 옮긴다 */ try{ if(sbOk()&&SLOT_IDS.reduce((a,k)=>a+((sbLsGet(k)||'').length),0)>1.5e6)setTimeout(()=>sbOffload(CUR_SLOT),3000); }catch(e){} }
 let DL=null; try{ if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{ DL=d; if(G&&UI.tab==='club')render(); }).catch(()=>{}); }catch(e){}
 /* IndexedDB에 둔 슬롯이 있으면 먼저 읽어 온 뒤 연다. 없으면 예전처럼 바로 연다(사용자 11-12) */
-if(sbNeedBoot())sbRefresh().catch(()=>{}).then(bootLoad); else bootLoad();
+if(sbNeedBoot()){ let done=false; const go=()=>{ if(done)return; done=true; bootLoad(); }; sbRefresh().catch(()=>{}).then(go); setTimeout(()=>{ if(!done){ go(); try{ toast('보조 저장소(IndexedDB)가 응답하지 않아 일부 슬롯을 읽지 못했을 수 있습니다. 새로고침해 보세요.'); }catch(e){} } },2500); } else bootLoad(); /* 일부 Safari에서 indexedDB.open이 응답하지 않으면 첫 화면이 영영 안 뜨던 문제(UI 리뷰 11-13) */
 try{ savePersistAsk(); }catch(e){} /* 저장 영구 보관 요청(모바일 정리로 지워지지 않게) */
 
 try{performance.mark('fronttime-menu-ready');}catch(e){}
