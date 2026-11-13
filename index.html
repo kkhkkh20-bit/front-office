@@ -14584,7 +14584,9 @@ const GOOD={vit:'체력이 좋아 연속 출장에도 지치지 않습니다.',c
 const BAD={vit:'체력이 약해 연속 출장이 이어지면 성적이 떨어집니다.',con:'변화구 대처가 약해 삼진이 많습니다.',pow:'장타력이 부족합니다.',eye:'유인구에 방망이가 쉽게 나갑니다.',spd:'주력이 느립니다.',def:'수비에서 실수가 잦습니다.',stf:'구위가 평범해 정타를 자주 허용합니다.',ctl:'제구가 흔들려 볼넷이 많습니다.',sta:'투구 수가 늘면 구위가 떨어집니다.'};
 /* 숨은 재능을 못 알아본 만큼 잠재력에서 뺀다: 1군 기록이 쌓여 드러나면(hidR) 0. 스카우트 능력 3부터 알아볼 수 있고(능력 5면 45%), 우리 팀에서 지켜본 시즌만큼 줄어든다 */
 function hidPen(p,sc,own){ if(!p||!p.hidT||p.hidR)return 0; const ak=sc&&p.prospect?areaOf(p):null, nb=ak?(areaNet(G.user,ak)-50)*.003:0; /* 권역 정보망이 촘촘할수록 더 알아본다(정보망 100이면 +15%p, 검수 11-09e #18) */ if(sc&&(sc.skill||1)>=3&&u01('hid'+sc.id,p.id)<((sc.skill||1)-2)*.15+nb)return 0; return own?p.hidT*Math.max(0,1-ownObs(p)*.5):p.hidT; }
-function coverOf(tid){ const reg=team(tid).region; return {reg,sc:scoutOf('pro',reg)}; }
+/* 구단의 스카우트 담당 지역(수도권·영남·호남·충청): 창단·연고 이전 구단은 '강원·충청·호남'처럼 세부 지역으로 저장돼 프로 담당 스카우트와 이어지지 않았다(카페 11-13 dddddd: 원주 신생 구단 선수가 '미확인') */
+function teamScoutReg(tid){ const t=team(tid); const r=t&&t.region; if(REG.includes(r))return r; const a=t&&typeof AREA!=='undefined'?AREA.find(x=>x.city.includes(t.city)):null; if(a)return a.reg; return r==='강원'||r==='경기'||r==='인천'?'수도권':r==='영남'||r==='경남'||r==='경북'?'영남':'호남·충청'; }
+function coverOf(tid){ const reg=teamScoutReg(tid); return {reg,sc:scoutOf('pro',reg)}; }
 function publicP(p){ return p.hist.some(h=>h.lvl==='1군'&&h.y>=G.year-1&&(h.pa>=10||h.outs>=9)); }
 /* 아마추어 후보 오차: 스카우트 실력·특기·정보망에 실제로 본 횟수까지 */
 const prosSd=(sc,p)=>scSd(sc,p)*(1.35-.35*Math.min(1,dcEvalObs(p,sc)/6));
@@ -20569,7 +20571,7 @@ function scoutWorkStatus(){
   return {delegated,missing,shortage,needs:shortage>0||(!delegated&&scoutDraftSea()&&missing.length>0)};
 }
 function scoutSlots(){ const draftSea=scoutDraftSea(); const S=[];
-  const proN=r=>G.teams.filter(t=>t.id!==G.user&&t.region===r).length;
+  const proN=r=>G.teams.filter(t=>t.id!==G.user&&teamScoutReg(t.id)===r).length;
   const asiaNeed=(()=>{ try{ return foreignOf(G.user).filter(p=>p.foreign==='아시아').length<1; }catch(e){ return false; } })();
   REG.forEach((r,i)=>S.push({role:'am',key:r,w:(draftSea?10:5.5)-i*.3,why:draftSea?'드래프트 시즌 아마추어 관찰':'내년 드래프트 후보 미리 관찰'}));
   REG.forEach(r=>{ const n=proN(r); if(n)S.push({role:'pro',key:r,w:(draftSea?3.5:6.5)+n*.6,why:`${r} 구단 ${n}곳 선수 평가(트레이드·FA)`}); });
@@ -31584,7 +31586,7 @@ function dataFM(){ const {y,cur,T}=dhTeams(), me=T.find(t=>t.tid===G.user), has=
    배치는 '배치 바꾸기'를 누른 뒤 지식 범위 칸을 누른다(선택 상자 없음) */
 function scoutFM(){ const S=G.scouts||[], ch=scoutChief(), sel=UI.scSel&&S.find(s=>s.id===UI.scSel)||null, slot=s=>scoutSlotTxt(s.role||'am',s.region);
   const draft=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect), fm=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null);
-  const proT=r=>G.teams.filter(t=>t.id!==G.user&&t.region===r), dDone=!!(G.draft&&G.draft.done&&(G.draft.y||G.year)===G.year), dd=G.cal&&G.cal.draft;
+  const proT=r=>G.teams.filter(t=>t.id!==G.user&&teamScoutReg(t.id)===r), dDone=!!(G.draft&&G.draft.done&&(G.draft.y||G.year)===G.year), dd=G.cal&&G.cal.draft;
   /* 스카우트 배정 */
   const asg=`<section class="card scn-asg"><div class="row between"><h3>스카우트 배정 <em>${S.length}/${scoutMax()}명</em></h3>${sel?`<span class="small warn">${esc(sel.name)}: 옆 '지식 범위'에서 새 담당 칸을 누르세요</span>`:'<button class="btn small" data-a="smkGo" data-v="sc">채용</button>'}</div><div class="sf-tw"><table class="sf-t scn-t"><thead><tr><th>이름</th><th>능력</th><th>담당</th><th>연봉</th><th></th></tr></thead><tbody>${S.map(s=>{ const ad=G.day-(s.since??-999)<30;
     return `<tr class="${sel&&sel.id===s.id?'sel':''}"><td><button class="lnk" data-a="person" data-v="sc:${s.id}">${esc(s.name)}</button>${ch&&ch.id===s.id?' <span class="pill acc">팀장</span>':''}<span class="scn-s">${s.age?s.age+'세 · ':''}${s.spec?SC_SPEC[s.spec]:'특기 없음'}${s.car?` · ${esc(s.car)}`:''}</span></td><td>${sfStars(s.skill||0)}</td><td>${esc(slot(s))}<span class="scn-s ${ad?'warn':''}">${ad?`적응 중 · ${dmd(s.since+30)}까지 능력 -1`:'정상 근무'}</span></td><td>${money(s.sal||0)}</td><td><button class="btn small${sel&&sel.id===s.id?' primary':''}" data-a="scSel" data-v="${s.id}">${sel&&sel.id===s.id?'취소':'배치 바꾸기'}</button> <button class="btn small" data-a="fireScout" data-v="${s.id}">해지</button></td></tr>`; }).join('')}${S.length<scoutMax()?`<tr class="miss"><td colspan="4">빈자리 ${scoutMax()-S.length}명</td><td><button class="btn small" data-a="smkGo" data-v="sc">채용</button></td></tr>`:''}</tbody></table></div></section>`;
