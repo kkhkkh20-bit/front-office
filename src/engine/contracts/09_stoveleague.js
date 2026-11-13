@@ -148,7 +148,7 @@ function payTarget(t){ const pl=planOf(t); if(pl)return ({win:.94,star:.88,next:
    돈이 없는 구단(현금 마이너스)·리빌딩 구단은 얹지 않는다: 그런 구단은 FA 대신 유망주를 모은다 */
 function faRoomPush(t,p){ if(!t||t.id===ME()||(t.cash||0)<0)return 1; const r=capPay(t.id)/capOf(sponSeason()); const k=clamp(1+(payTarget(t)-r)*1.1,1,1.4); if(!p)return k; if(t.mode==='rebuild'&&p.age>=29)return 1; const o=ovr(p), st=o>=60?1:o>=56?.6:.25; return 1+(k-1)*st; }
 function faTgt(t,p){ const F=G.fa; return !!(t&&p&&F&&F.tgt&&F.tgt[t.id]===p.id); }
-function faOverpay(t){ return t.allIn===sponSeason()?1.35:t.owner==='win'?1.25:1.15; }
+function faOverpay(t){ return t.allIn===sponSeason()?1.35:t.owner==='win'||despOf(t)>=.5?1.25:1.15; } /* 자리가 위태로운 단장도 웃돈을 쓴다 */
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;
@@ -168,7 +168,8 @@ function faInterest(t,p){
   const low=(capPay(t.id)<capOf(sponSeason())*.5?.22:capPay(t.id)<capOf(sponSeason())*.65?.1:0)+(t.cash>6000?.08:0);
   /* 운영 방향: 우승 도전은 상한 92%까지 채우려 적극적, 내년 도전은 25~30세를, 리빌딩은 서른 넘은 외부 FA를 거의 보지 않는다 */
   const st=t.id===ME()||t.id===p.faFrom?null:stanceOf(t); const stB=st==='win'?(capPay(t.id)<capOf(sponSeason())*.92?.15:0):st==='next'?(p.age>=25&&p.age<=30?.08:p.age>=32?-.1:0):st==='rebuild'?(p.age<=27?.1:p.age>=28?-.2:0):0; const plB=pl==='star'&&t.id!==p.faFrom&&planStar(t,p)?.25:0; /* 흥행 구단은 이름값·연고 스타에 달려든다 */
-  return compF*clamp(.12+low+stB+plB+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(rosterN(t.id)>=ROSTER_MAX-1?.25:0)+(tg?.35:0),0,1)*debt;
+  const dB=t.id!==ME()&&t.id!==p.faFrom&&domFaMul(t,p)>1?.15:0; /* 독주 구단 FA·노리는 FA에 경쟁 구단이 달려든다 */
+  return compF*clamp(.12+low+stB+plB+dB+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(rosterN(t.id)>=ROSTER_MAX-1?.25:0)+(tg?.35:0),0,1)*debt;
 }
 function faDay(day){
   const F=G.fa; const since=day-F.openDay;
@@ -210,7 +211,7 @@ function faDay(day){
 function faScore(p,o){ const home=1.08+((p.pers?p.pers.loy:10)-10)/100+((p.mor??60)-60)/300; const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id]; const ag=agentOf(p);
   const relK=(agRel(ag)-50)/1000*(ag.size==='big'?2:1)*(ag.style==='rel'?2:1);
   if(o.tid===G.user&&ng&&ng.closed)return -1;
-  return o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===G.user&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*(o.tid===G.user?1+relK:1)*(1+agDealBonus(ag,o.tid)*.25)*faAppeal(p,o.tid).f*(o.tid===G.user&&HARD()?.92:1); /* 구단 매력: 명성·우승 가능성·출전 기회·연고. 하드 모드: 우리 제안은 8% 덜 끌린다 */ }
+  return o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===G.user&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*(o.tid===G.user?1+relK:1)*(1+agDealBonus(ag,o.tid)*.25)*faAppeal(p,o.tid).f*domFaPull(p,o.tid)*(o.tid===G.user&&HARD()?.92:1); /* 구단 매력: 명성·우승 가능성·출전 기회·연고. 하드 모드: 우리 제안은 8% 덜 끌린다 */ }
 /* 고향 팀으로 온 FA: 팬과 구단주에게 명분이 선다. 우리 구단은 기사(팬 여론)·구단주 신뢰 +1(33세 이상 귀향은 +2), 다른 구단은 인기 조금 */
 function homeReturn(p,tid,h){ h=h||homeTie(p,tid); /* h: 소속을 바꾸기 전에 구한 판정(바꾼 뒤엔 친정 여부가 사라진다, 검수 11-09s) */ if(!h)return null; const n=h.vet?2:1;
   if(tid===G.user&&!G.unemp){ const t=team(G.user); news('FA',`고향 팀으로 돌아온 ${p.name}`,`${h.sch} 출신 ${p.name}이(가) ${h.vet?'선수 생활의 마지막을 ':''}고향 ${t.city} 팀 ${tname(G.user)} 유니폼을 입습니다.${h.first?' 처음 지명받은 친정이기도 합니다.':''} 지역 팬들이 반기고 있습니다.`,n,{ref:p.id});
@@ -231,6 +232,7 @@ function faSign(p,offers){
   if(!best)best=offers.find(o=>o.tid!==G.user); if(!best)return; /* 우리와 협상을 접은 선수는 우리 제안만 남아 있어도 사인하지 않는다 */
   try{ agDealAdd(p,best.tid); const ag=agentOf(p); if(best.tid===G.user)agRelAdd(ag,5,`${p.name} 계약`); else if(G.fa.offers[p.id])agRelAdd(ag,1,`${p.name} 끝까지 경쟁`); }catch(e){}
   if(G.faFund&&!G.faFund.done&&best.tid===(G.faFund.tid??G.user)&&p.faFrom!==best.tid)G.faFund.used=true; /* 받은 구단 기준(이직 뒤에도, 검수 11-09zn) */
+  try{ const L=domLead(); if(L&&best.tid!==L.tid&&(p.faFrom===L.tid||offers.some(o=>o.tid===L.tid))&&domFaMul(team(best.tid),p)>1)domLog('outbid',p.id); }catch(e){} /* 독주 구단의 FA·노린 FA를 경쟁 구단이 가져감 */
   let ht=null; try{ ht=homeTie(p,best.tid); }catch(e){} const from=p.faFrom; p.team=best.tid; p.sal=Math.max(MIN_SAL,best.annual); p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.lastFA=stoveY(); /* 같은 겨울 계약은 1월에 해도 그 시즌 회차 */ p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
   termsClear(p); const BT=best.tid===G.user&&best.terms?best.terms:null; if(BT){ p.sal=Math.max(MIN_SAL,BT.annual); termsApply(p,BT,'fa',ctSeason()); } else if(best.tid!==G.user)aiFaBonus(p,best);
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:BT?BT.annual+Math.round((BT.bonus||0)/best.years):best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null,...(BT?{terms:BT}:{})};

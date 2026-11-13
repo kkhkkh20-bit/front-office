@@ -128,7 +128,9 @@ function aiTradeTry(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>t.y
   const cands=[]; for(const B of teams){ if(B.id===A.id||(o.swap&&!bNeed[B.id]))continue; for(const p of domestic(B.id)){ if(p.ys||!healthy(p)||hasNtc(p)||faLock(p)||recentTr(p))continue; if(k==='SP'||k==='RP'){ if(pSlot(p)!==k)continue; } else if(p.isP||(p.pos!==k&&!subsOf(p).includes(k)))continue;
       const up=slotGain(k,p)-base+(p.aiListed?(p.aiUrg?4:2.5):0); if(up>=(o.swap?2:3))cands.push({B,p,up}); } }
   cands.sort((a,b)=>b.up-a.up);
-  for(const c of cands.slice(0,8)){ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue; const needB=tradeNeed(B,vOut);
+  for(const c of cands.slice(0,8)){ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue;
+    const DX=domTradeTax(B,A.id,startersOf(B.id).has(p.id)&&!p.aiListed); if(DX.refuse){ domLog('ref',B.id+':'+p.id); domRumor(B.id,A.id); continue; } if(DX.k>=.1)domLog('over',B.id+':'+p.id); /* 독주 견제(86b_dynasty) */
+    const needB=tradeNeed(B,vOut)+Math.max(1.5,vOut)*DX.k;
     /* 2대2: B의 블록 선수 한 명을 끼워 함께 받는 경우 */
     const extra=!o.swap&&R()<.3?domestic(B.id).find(q=>q.aiListed&&q.id!==p.id&&healthy(q)&&!q.ys&&!(hasNtc(q)||faLock(q))&&!recentTr(q)):null; const gets=extra?[p,extra]:[p];
     const vOutAll=sum(gets.map(q=>tval(B,q,'out'))), vInAAll=stackIn(gets.map(q=>tval(A,q,'in')));
@@ -151,20 +153,22 @@ function aiTradeTry(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>t.y
 function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filter(t=>t.id!==U); const Rb=o.sellers||ai.filter(t=>t.mode==='rebuild'); if(!Rb.length)return 0;
   const C=o.buyers||ai.filter(t=>t.mode!=='rebuild').sort((a,b)=>teamRating(b.id)-teamRating(a.id)).slice(0,4); let n=0;
   for(const A of C)for(let k=0;k<(o.per||2);k++){ const base=teamRating(A.id); const cands=[]; const nx=stanceOf(A)==='next'&&o.buyers;
-    if(o.buyers&&(capPay(A.id)>capOf(sponSeason())*.98||lgTradeN(A.id)>=5||lgTradeN()>=20))break; /* 일반 AI 거래와 같은 한도: 구단당 5건, 리그 20건(검수 11-09w) */
+    const hotA=A.allIn===sponSeason()||despOf(A)>=.5; /* 올인·벼랑 끝: 상한을 넘기고, 1라운드 지명권도 내준다(86b_dynasty) */
+    if(o.buyers&&(capPay(A.id)>capOf(sponSeason())*(hotA?1.06:.98)||lgTradeN(A.id)>=5||lgTradeN()>=20))break; /* 일반 AI 거래와 같은 한도: 구단당 5건, 리그 20건(검수 11-09w) */
     for(const B of Rb)for(const p of domestic(B.id)){ if(o.buyers&&lgTradeN(B.id)>=5)break; if(p.ys||!healthy(p)||hasNtc(p)||faLock(p)||recentTr(p)||(nx?p.age<26||p.age>30||ovr(p)<56:p.age<29||ovr(p)<54))continue; p.team=A.id; const d=teamRating(A.id)-base; p.team=B.id; if(d>=.15)cands.push({B,p,d}); }
     cands.sort((x,y)=>y.d-x.d); let done=false;
     for(const best of cands.slice(0,6)){ /* 가장 도움 되는 선수부터, 값이 안 맞으면 다음 후보 */
     const B=best.B, p=best.p; const vOut=tval(B,p,'out'), vin=tval(A,p,'in'); const core=new Set(domestic(A.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id));
     /* 리빌딩 구단은 서른 안팎 베테랑의 남은 계약 가치보다 젊은 선수를 받는 것을 앞세운다: 남은 가치의 30%만 채워도 판다(AI끼리만. 우리 구단과의 트레이드는 평소 기준) */
-    const want=vOut*(nx?.6:o.wantF||.3)+1; const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
+    const DX=domTradeTax(B,A.id,false); if(DX.k>=.1)domLog('over',B.id+':'+p.id); const want=vOut*(nx?.6:o.wantF||.3)+1+Math.max(1.5,vOut)*DX.k; /* 독주 구단에는 리빌딩 구단도 비싸게 판다 */ const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
     let pay=null, pkGive=null;
     /* 유망주 수집 구단에 파는 쪽이면 지명권으로 값을 치른다(지명권만, 또는 어린 선수 한 명 + 지명권). 사는 쪽이 우승 도전이면 지명권을 싸게 보고 파는 쪽은 비싸게 봐서 거래가 선다. 1라운드는 특급(종합 60 이상)을 살 때만 */
-    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeld(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=60&&r1(HB)<PK_R1_MAX)); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)})).sort((x,y)=>x.b-y.b);
+    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeld(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=(hotA?56:60)&&r1(HB)<PK_R1_MAX)); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)})).sort((x,y)=>x.b-y.b);
         for(const x of H){ if(x.b>=want&&vin-x.a>=0){ pay=[]; pkGive=x.k; break; } }
         if(!pkGive)for(const q of pool){ const x=H.find(x=>stackIn([q.b])+x.b>=want&&vin-q.a-x.a>=0); if(x){ pay=[q]; pkGive=x.k; break; } } }catch(e){ pay=null; pkGive=null; } }
     for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<0)continue; pay=arr; break; }
-    if(!pay)continue; const give=pay.map(x=>x.q.id); const pkNm=pkGive?pkName(pkGive):null; if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year))continue;
+    if(!pay)continue; const give=pay.map(x=>x.q.id); const pkNm=pkGive?pkName(pkGive):null; if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year)*(hotA&&o.buyers?1.06:1))continue;
+    if(hotA&&o.buyers&&(pkGive||pay.some(x=>x.q.age<=24)))try{ domLog('allinBuy'); if(pkGive&&+pkGive.split(':')[0]===1)domLog('allinR1'); }catch(e){}
     const snap=tradeSnap([p.id,...give]); tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
     give.forEach(id=>{ const q=G.players[id]; tradeTerms(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
     G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]),snap,...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive){ const [rd,og]=pkGive.split(':').map(Number); G.pkOwn=G.pkOwn||{}; if(og===B.id)delete G.pkOwn[pkYear()+':'+rd+':'+og]; else G.pkOwn[pkYear()+':'+rd+':'+og]=B.id; } { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } if(G.lgTrades.length>60)G.lgTrades.length=60;
@@ -183,8 +187,10 @@ function aiBuilderSell(){ const per=period(), o=dobj(G.day); const win=per==='se
 function aiStanceBuy(){ const per=period(), o=dobj(G.day); const win=per==='season'?G.day>=KD(6,15)&&G.day<=tradeDL():(per==='off'||per==='pre')&&o.m===1; if(!win)return 0;
   const key=G.year+(per==='season'?'s':'w'); if(G.aiBuyK===key)return 0; if((G.lgTrades||[]).filter(t=>t.y===G.year).length>=18)return 0; G.aiBuyK=key;
   const cap=capOf(sponSeason()); const TR={}; for(const t of G.teams)TR[t.id]=teamRating(t.id); const mean=avg(Object.values(TR)); /* 평준화(사용자 11-12): 이미 리그 평균보다 크게 센 구단(+1.0 이상)은 베테랑을 더 사 오지 않는다. 강팀이 해마다 더 강해져 승률 .700 시즌이 나오던 것 */
-  const B=G.teams.filter(t=>t.id!==ME()&&t.mode!=='rebuild'&&(t.cash||0)>-3000&&capPay(t.id)<cap*.96&&TR[t.id]<mean+1).sort((a,b)=>(stanceOf(a)==='win'?0:1)-(stanceOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,3);
-  return B.length?fdStrengthen({buyers:B,per:1,wantF:.45}):0; }
+  /* 올인·벼랑 끝 구단(86b_dynasty)은 상한을 넘겨서라도 산다(대가는 세금·빚). 독주 구단은 여기서 더 사 오지 않는다 */
+  const sy=sponSeason(), L=domLead(), hot=t=>t.allIn===sy||despOf(t)>=.5;
+  const B=G.teams.filter(t=>t.id!==ME()&&t.mode!=='rebuild'&&(t.cash||0)>(hot(t)?-5000:-3000)&&capPay(t.id)<cap*(hot(t)?1.06:.96)&&TR[t.id]<mean+(hot(t)&&!(L&&L.tid===t.id)?1.6:1)).sort((a,b)=>(hot(a)?0:1)-(hot(b)?0:1)||(stanceOf(a)==='win'?0:1)-(stanceOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,3);
+  let n=0; for(const b of B)n+=fdStrengthen({buyers:[b],per:hot(b)?2:1,wantF:.45})||0; return n; }
 /* 올해 AI끼리 거래 건수(tid 없으면 리그 전체) */
 const lgTradeN=tid=>(G.lgTrades||[]).filter(t=>t.y===G.year&&(tid==null||t.a===tid||t.b===tid)).length;
 function marketWeek(){ if(!tradeOpen()||G.gameOver)return; gmInit(); const per=period(); const dl=per==='season'&&G.day>=KD(7,1);
