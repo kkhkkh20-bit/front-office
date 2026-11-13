@@ -256,6 +256,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   sndStop('chant',.9); if(runs){ cScorePop(x[0]%2?'h':'a'); cBurst(CHM,oc,12); if(o==='OUT'||o==='BB')sfx('cheer_hit',homeBat?.6:.25); }
   const finalCall=pbpCall(g,k);cBoard(g,st2,null);if(scene3d)Match3D.scoreboard(c3DScore(g,k,st2,true)); { const prev=c.wp; const s3=outsA>=3?{...st2,half:x[0]+1,outs:0,bases:[0,0,0]}:st2; const w=k===L.length-1?(g.hs>g.as?1:0):wpHome(s3,wpMax(g)); c.wp=cWp(g,s3,prev)??w;  }
   await cResultCall(finalCall,o==='HR'?'hr':runs?'good':'');cCap('');
+  if(scene3d){const party=c3DPartyKind(g,k);if(party)await c3DParty(g,k,party);}
   { const S=G.cwS; const z=UI.cwAfter&&S&&S.id===UI.cwAfter&&(S.live||[]).find(q=>q.k===k); if(z){ cCap(`${cwNm(S.who)} "${z.l}"`,'good'); await cSleep(1700); cCap(''); } } /* 함께 보는 구단주·사장 반응 */ }
 /* Pausing resets the pose; replay the terminal pitch so contact still has a swing. */
 function castResumePitch(){const c=UI.cast;if(!c||c.pitch?.k!==c.k)return;const seq=cPitchSeq(G.games[c.g],c.k);if(seq.length&&c.pitch.shown>=seq.length)c.pitch.shown=seq.length-1;}
