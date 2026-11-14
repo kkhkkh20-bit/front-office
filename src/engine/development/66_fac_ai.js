@@ -70,7 +70,7 @@ function aiFacPlan(t,S,summer,o){ o=o||{}; const nb=Object.keys(S.bld).length; i
   /* 먼저 하고 싶은 공사를 고르고, 돈은 그다음에 본다: 모기업 요청 → 명명권·지자체 → 적립금, 안 되면 작은 공사로 바꾸거나 접는다 */
   let r=facU(key,'pick')*sum(C.map(x=>x.w)), x=C[C.length-1]; for(const y of C){ r-=y.w; if(r<=0){ x=y; break; } }
   const go=(x)=>{ const I=facRouteInfo(t.id,x.k), cashOk=cash-x.c>=reserve;
-    if(I.cap.ok){ t.capexD=G.day; /* 사람 단장처럼 먼저 모기업에 요청해 본다(같은 승인 식·간격) */ if(facU(key,'cap'+x.k)<I.cap.p){ t.capexY=sponSeason(); t.capN=(t.capN||0)+1; return 'cap'; } t.trust=clamp((t.trust??55)-1,0,100); }
+    if(I.cap.ok){ t.capexD=G.day; /* 사람 단장처럼 먼저 모기업에 요청해 본다(같은 승인 식·간격) */ if(facU(key,'cap'+x.k)<I.cap.p){ t.capexY=sponSeason(); t.capN=(t.capN||0)+1; return 'cap'; } t.trust=clamp((t.trust??55)-1,0,100); if(typeof aiPushTry==='function'&&aiPushTry(t,{k:'cap',amt:x.c})){ t.capexY=sponSeason(); t.capN=(t.capN||0)+1; return 'cap'; } } /* 반려되면 다시 설득(94_owner_push) */
     if(o.capOnly)return null;
     for(const rt of ['spon','city'])if(I[rt].ok&&cash-x.c*(1-(rt==='spon'?FAC_SPON.share:FAC_CITY.share))>=reserve&&(x.c>=2000||!cashOk)){ (t.facAsk=t.facAsk||{})[rt]=G.day; if(facU(key,rt+x.k)<I[rt].p)return rt; }
     return cashOk?'cash':null; };

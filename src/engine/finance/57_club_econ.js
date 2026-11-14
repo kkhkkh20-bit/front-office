@@ -121,6 +121,7 @@ function aiOwnerYear(h){ const ord=h.order||[]; const EI=ecoIdx(sponSeason());
     if(h.champ===t.id)d+=5; else if(h.runner===t.id)d+=2;
     if(f){ d+=clamp((f.net+(f.back||0))/2500,-3,3)*(t.owner==='profit'?1.5:1); if(f.supCap)d-=(f.support/f.supCap-.5)*3; }
     if((t.cash||0)<0)d-=3;
+    try{ d+=opPromSettle(t.id,h.y,rk); }catch(e){} /* 다시 설득하며 한 성적 약속(우리와 같은 +2/-8, 94_owner_push) */
     t.trust=clamp(Math.round((t.trust??55)+d+(55-(t.trust??55))*.1),5,95);
     /* 우승 포상: 우승을 바라거나 홍보를 중시하는 구단주는 FA 특별 자금을 낸다 */
     if(h.champ===t.id&&(t.owner==='win'||t.owner==='pr')){ const g=Math.round(2000*EI); t.cash+=g; wire('구단',`${t.city} ${t.nick} 구단주, 우승 포상으로 FA 영입 자금 ${money(g)} 지원`,{tid:t.id}); }

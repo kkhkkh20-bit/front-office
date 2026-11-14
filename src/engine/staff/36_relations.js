@@ -135,7 +135,7 @@ function ownerAsk(amt,pur,w){ const t=team(G.user); if(t.indie)return '독립구
   if(w)g.why=w.k; grantAdd(g); if(G.grants.length>40)G.grants.length=40; const what=w?`${OWN_WHY[w.k].l} 자금${pur&&pur.k==='fa'?`(${G.players[pur.pid]?.name||''})`:pur&&pur.k==='frep'?`(${G.players[pur.pid]?.name||''})`:''}`:pur?pur.k==='fa'?`FA ${G.players[pur.pid]?.name||''} 영입 자금`:pur.k==='frep'?'외국인 교체 자금':'운영 자금':'운영비 증액';
   const say=w?(ok?w.lineOk:w.lineNo):null; if(w)w.said=say;
   if(ok){ grantApply(amt); if(!pur)g.st='done'; mail('구단주실',`구단주 승인: ${what} ${money(amt)}`,`${B.own.name} 회장이 ${what} ${money(amt)}을(를) 승인했습니다.${say?` "${say}"`:''} ${pur?pur.k==='fac'?'두 달 안에 공사를 시작하지 않으면 돌려받습니다. ':'목적대로 쓰지 않으면 신뢰가 깎입니다. ':''}${g.y>G.year?`${g.y}시즌`:'올해'} 모기업 지원 한도와 구단주 목표가 그만큼 늘었습니다.`,{kind:'구단주'}); return `승인됐습니다. ${what} ${money(amt)}.`; }
-  t.trust=clamp(t.trust-1,0,100); mail('구단주실',`구단주 반려: ${what}`,`${B.own.name} 회장이 요청을 반려했습니다. "${say||(t.owner==='profit'?'지금 적자부터 줄이세요.':t.owner==='win'?'성적으로 먼저 증명하세요.':'지금은 때가 아닙니다.')}" 구단주 신뢰 조금 하락.`,{kind:'구단주'}); return `반려됐습니다. 구단주 신뢰 조금 하락.`; }
+  t.trust=clamp(t.trust-1,0,100); { const sj=`구단주 반려: ${what}`, bd=`${B.own.name} 회장이 요청을 반려했습니다. "${say||(t.owner==='profit'?'지금 적자부터 줄이세요.':t.owner==='win'?'성적으로 먼저 증명하세요.':'지금은 때가 아닙니다.')}" 구단주 신뢰 조금 하락.`; if(!ownPushOffer({k:'fund',amt},sj,bd,g))mail('구단주실',sj,bd,{kind:'구단주'}); } /* 7일 안에 다시 설득하기(94_owner_push) */ return `반려됐습니다. 구단주 신뢰 조금 하락.`; }
 /* ===== 사유를 들고 가는 자금 요청: 사유 × 상황(구단주 성향·신뢰·순위·시기·재정·지난 지원의 결과)으로 확률과 대답이 달라진다 ===== */
 const OWN_WHY={fa:{l:'FA 영입',d:'FA 시장에서 데려올 선수 몫'},frep:{l:'외국인 교체',d:'부진한 외국인을 바꿀 돈'},fac:{l:'시설 투자',d:'훈련·구장 시설에 쓸 돈'},dev:{l:'육성·스카우트',d:'2군·스카우트에 쓸 돈. 금액이 작다'},push:{l:'우승 도전 보강',d:'트레이드·외국인으로 당장 전력을 채울 돈'},deficit:{l:'재정 적자 메우기',d:'구멍 난 살림을 메울 돈'}};
 const OWN_AMT={fac:[1000,2000,3000],dev:[500,1000,1500],push:[1000,2000,3000],deficit:[1000,2000,3000],fa:[1000,2000,3000]};
@@ -156,7 +156,7 @@ function ownWhy(k,amt,pid){ const t=team(G.user); const W=OWN_WHY[k]; if(!W)retu
   if(k==='deficit'){ const hole=(t.cash||0)<0||room<0; if(!hole)f(-.7,'적자도 아닌데 무슨 메울 구멍이 있다는 거예요.'); /* 메울 적자가 없으면 사실상 반려(구단주 대사와 결과가 어긋나지 않게) */ else if(tr<40)f(-.3,'구멍을 낸 사람에게 또 돈을 맡기라는 거예요?'); else if(tr>=65)f(.06,'살림 사정은 알아요. 이번엔 막아 줄게요.'); if(ow==='profit')f(-.12,'적자는 메우는 게 아니라 안 내는 거예요.'); if(ow==='pr')f(.04,'팬들 앞에서 구단이 휘청이는 건 보기 싫어요.'); }
   /* 지난 1년 지원금의 결과: 목적을 지킨 돈은 믿음, 못 지킨 돈은 의심 */
   const past=grants().filter(g=>g.by==='gm'&&g.ok&&g.pur&&(g.tid==null||g.tid===G.user)&&g.d>G.day-365); const nf=past.filter(g=>g.st==='fail').length, nd=past.filter(g=>g.st==='done').length;
-  if(nf)f(-Math.min(.3,nf*.12),`지난번 받아 간 돈은 목적대로 못 썼잖소(${nf}건).`); else if(nd)f(Math.min(.15,nd*.05),`지난번 돈은 제대로 썼더군(${nd}건).`);
+  if(nf)f(-Math.min(.3,nf*.12),`지난번 받아 간 돈은 목적대로 못 썼잖아요(${nf}건).`); else if(nd)f(Math.min(.15,nd*.05),`지난번 돈은 제대로 썼더군요(${nd}건).`);
   const base=ownOdds(amt,pur&&pur.k!=='boost'&&pur.k!=='fac'?pur:null); const p=clamp(base+sum(F.map(x=>x[0])),.03,.92);
   if(tr>=65)F.push([0,'단장을 믿는 편이에요.']); else if(tr<35)F.push([0,'요즘 단장 하는 일이 영 미덥지 않아요.']);
   const pos=F.filter(x=>x[0]>=0).sort((a,b)=>b[0]-a[0])[0], neg=F.filter(x=>x[0]<0).sort((a,b)=>a[0]-b[0])[0];
@@ -232,8 +232,9 @@ function mgrEyeReport(){ const m=G.mgr[G.user]; const P=G.mpick; if(!m||!P||P.y!
 /* 관계가 주는 것: 선수단 분위기(경기력), 좋으면 공개 지지, 나쁘면 언론 불화설·사퇴 */
 function mgrRelBoost(p){ if(p.team==null)return 0; const m=G.mgr[p.team]; if(!m||m.interim)return 0; const rel=p.team===G.user?m.rel:65; /* AI 구단은 프런트·감독이 무난한 관계(65)로 본다: 우리만 받던 보정의 비대칭(검수 11-05) */ return clamp((rel-55)/60,-.5,.4); }
 function mgrRelWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||period()!=='season')return; mgrFix(m); prInit();
-  if(m.rel>=78&&R()<.08){ news('언론',`${m.name} 감독 "단장님과 호흡 최고"`,'프런트와 현장이 한 방향을 보고 있다는 평가입니다.',2); G.pr.press=clamp(G.pr.press+1,0,100); }
-  if(m.rel<=25&&R()<.15){ news('언론',`${tshort(G.user)} 감독-단장 불화설`,`${m.name} 감독이 프런트 결정에 불만을 드러냈습니다.`,-2); G.pr.fan=clamp(G.pr.fan-1,0,100); G.pr.press=clamp(G.pr.press-2,0,100);
+  /* 도움말은 관계 단계 말(relLabel)로 안내한다(11-14): 예전 78 이상·25 이하를 가장 가까운 단계 경계(막역한 사이 80 이상·껄끄러운 사이 30 미만)로 맞췄다 */
+  if(m.rel>=80&&R()<.08){ news('언론',`${m.name} 감독 "단장님과 호흡 최고"`,'프런트와 현장이 한 방향을 보고 있다는 평가입니다.',2); G.pr.press=clamp(G.pr.press+1,0,100); }
+  if(m.rel<30&&R()<.15){ news('언론',`${tshort(G.user)} 감독-단장 불화설`,`${m.name} 감독이 프런트 결정에 불만을 드러냈습니다.`,-2); G.pr.fan=clamp(G.pr.fan-1,0,100); G.pr.press=clamp(G.pr.press-2,0,100);
     if(m.ego>=65&&m.rel<=15&&R()<.3){ const nm=m.name; resignMgr(); mail('감독실',`${nm} 감독 자진 사퇴`,`${nm} 감독이 "더는 함께하기 어렵다"며 물러났습니다. 수석코치가 감독대행을 맡습니다. 새 감독을 선임하세요.`,{imp:true,kind:'감독',acts:[{l:'감독 후보',a:'go',v:'staff:mgr'}]}); } } }
 /* ===== 스타 파워: 수상·기록·활약이 마케팅 수입이 된다 ===== */
 function starPower(p){ let s=0; for(const a of (p.aw||[])){ const y=+String(a).slice(0,4); const age=G.year-y; if(age>2||isNaN(y))continue; const w=age===0?1:age===1?.7:.4;
@@ -283,5 +284,5 @@ function ownerPitch(pid,args,cmts){ const I=pitchInfo(pid); const t=team(G.user)
     return `승인: ${money(I.amt)}을(를) 받았습니다.`; }
   t.trust=clamp(t.trust-1,0,100);
   const why=weak.length?`${weak.map(a=>PITCH_ARG[a].l).join(', ')} 근거가 약합니다.`:t.owner==='profit'?'숫자로 보면 아직 확신이 안 섭니다.':t.owner==='win'?'그 돈이면 다른 데 쓰는 게 낫겠습니다.':'지금은 때가 아닙니다.';
-  mail('구단주실',`구단주 반려: FA ${I.p.name} 영입 자금`,`${B.own.name} 회장: "${why}" 구단주 신뢰 조금 하락.`,{kind:'구단주'});
+  { const sj=`구단주 반려: FA ${I.p.name} 영입 자금`, bd=`${B.own.name} 회장: "${why}" 구단주 신뢰 조금 하락.`; if(!ownPushOffer({k:'fund',amt:I.amt},sj,bd,g))mail('구단주실',sj,bd,{kind:'구단주'}); }
   return `반려: ${why}`; }

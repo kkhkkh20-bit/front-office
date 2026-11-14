@@ -28,7 +28,7 @@ function ownerAskView(){ const t=team(G.user); if(t.indie)return csec('구단주
   const btn=(l,v,amt,pur)=>{ const o=ownOdds(amt,pur); return `<button class="oa" data-a="ownAsk" data-v="${v}" ${left?'':'disabled'}><b>${l}</b><span>${money(amt)} · ${oddsTxt(o)}</span></button>`; };
   const H=grants().slice(0,8);
   return csec(`구단주에게 요청 ${hiI(`승인 여부는 구단주 신뢰, 성향(${OWNER[t.owner].label}), 순위, 요청 금액과 목적에 따라 달라집니다. 반려되면 신뢰 조금 하락, 한 해에 자주 요청할수록 승인이 어려워집니다. 목적을 정해 받은 돈은 그 목적을 이루면 신뢰가 오르고, 못 이루면 깎입니다. 구단주가 먼저 스타 FA 영입이나 7월 우승 보강을 주문하며 돈을 내놓기도 합니다.`)}`,`<p class="small">지금 예산 여유 <b>${money(b.roomGoal)}</b> · 올해 추가 지원 ${money(grantAmt())}${b.extra>0?` · 예상보다 더 들어온 수입 <b class="ok">${money(b.extra)}</b>(요청 근거)`:''} · 구단주 신뢰 ${t.trust}</p>
-    ${ownFundView()}${meetDoor('own')}
+    ${ownFundView()}${opPushView()}${meetDoor('own')}
     <p class="small muted keep">${left?'한 시즌 세 번까지, 시간을 두고 요청할 수 있습니다.':ownAskNote()}</p>
     ${H.length?`<div class="eyebrow" style="margin-top:8px">요청·지원 기록</div><div class="rql">${H.map(grantLine).join('')}</div>`:''}`); }
 function reqHomeCard(){ const M=mreqs().filter(r=>r.st==='open'); const O=grants().filter(g=>g.st==='open'&&g.pur); if(!M.length&&!O.length)return '';
@@ -44,7 +44,7 @@ function mgrBondView(){ const m=G.mgr[G.user]; if(!m||m.interim)return ''; mgrAt
   const P=G.mpick&&G.mpick.y===G.year&&G.mpick.mid===m.id?G.mpick:null; const picks=P?P.ids.map(id=>G.players[id]).filter(Boolean):[];
   const log=(G.mpickLog||[]).filter(x=>x.mid===m.id).slice(0,4);
   return csec('감독과의 호흡',`<div class="mbond"><div><span class="small muted">관계</span><b class="num" style="color:${relCol(m.rel)}">${relLabel(m.rel)}</b><i></i></div><div><span class="small muted">선수단 경기력</span><b class="num" style="color:${bo>=0?'var(--good)':'var(--bad)'}">${bo>=0?'+':''}${bo.toFixed(2)}</b><i>관계에서 오는 보정</i></div><div><span class="small muted">안목(선수 보는 눈)</span><b class="num" style="color:${rcol(m.eye)}">${dv(m.eye)}</b><i>잠재력 예측 오차 ±${Math.max(1.5,9.5-m.eye/10).toFixed(1)}</i></div></div>
-    <p class="small muted">관계가 좋을수록 선수단이 더 잘 뛰고(최대 +0.4), 지시를 잘 따르고, 선수 정보에서 감독의 솔직한 잠재력 예측을 볼 수 있습니다(사이가 껄끄러우면 말을 아낍니다). 관계 78 이상이면 언론에 "호흡 최고" 기사가 나고, 25 이하면 불화설이 돌며 고집 센 감독은 스스로 물러나기도 합니다.</p>
+    <p class="small muted">관계가 좋을수록 선수단이 더 잘 뛰고(최대 +0.4), 지시를 잘 따르고, 선수 정보에서 감독의 솔직한 잠재력 예측을 볼 수 있습니다(사이가 껄끄러우면 말을 아낍니다). 관계가 "막역한 사이"면 언론에 "호흡 최고" 기사가 나고, "껄끄러운 사이"면 불화설이 돌며 고집 센 감독은 스스로 물러나기도 합니다.</p>
     <div class="eyebrow" style="margin-top:8px">감독이 미는 선수</div>${picks.length?`<div class="intl">${picks.map(p=>`<button class="pill ${P.back?'good':''}" data-a="player" data-v="${p.id}">${esc(p.name)} · ${posLabel(p)} ${p.age}세</button>`).join('')}</div><p class="small">${P.back?'함께 밀어주는 중 · 올해 성장이 빨라집니다':P.back===false?'단장이 성적을 우선했습니다':'답변 대기'}</p>`:'<p class="small muted">시즌이 시작되면 감독이 올해 키우고 싶은 젊은 선수를 고릅니다.</p>'}
     ${log.length?`<p class="small muted">지난 안목 기록: ${log.map(x=>`${x.y} ${esc(x.txt)}${x.back?' (함께 밀어줌)':''}`).join(' / ')} (겨울 종합 능력 변화)</p>`:''}
     <div class="eyebrow" style="margin-top:8px">운용 성향과 단장 지시</div>

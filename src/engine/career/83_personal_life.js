@@ -68,9 +68,12 @@ function plHeatMonth(S){ const h=S.heat||0; if(h<=0)return; if(!G.unemp&&h>=6&&R
 function plBondDecay(S){ for(const k in S.contacts){ const C=S.contacts[k]; if(!C||typeof C.bond!=='number')continue; const last=(C.history&&C.history[0]&&C.history[0].day)??-1e9; if(G.day-last>60)C.bond=Math.round((C.bond+(30-C.bond)*.06)*10)/10; } }
 function playerTalkContext(p){return JSON.stringify([squadRole(p),p.injOut||0,p.promise?.until,p.promise?playPromKept(p):null,p.sal,p.yrs,p.listed,Math.floor((p.mor??60)/20),talkEvent(p)?.t]);}
 function personalTalkReply(p,kind,line){const C=contactRecord('pl:'+p.id),last=C.talk[kind],key=playerTalkContext(p);if(last&&last.key===key&&last.day===G.day)return `앞서 말씀드린 상황은 그대로입니다. ${last.line}`;
- const warm=C.bond>=55?'단장님께는 편하게 말씀드릴 수 있겠네요. ':p.pers?.temp>=15?'솔직하게 말씀드리겠습니다. ':p.pers?.pro>=15?'제 역할부터 제대로 해내겠습니다. ':'';
- const promise=p.promise?playPromKept(p)?' 지난번 출전 기회 약속을 챙겨주신 건 기억하고 있습니다.':` ${dmd(p.promise.until)}까지 기회를 건의해 주신 약속은 기다리고 있습니다.`:'';
- const context=kind==='ask'?p.injOut>0?` 지금은 ${p.injOut}일 남은 재활을 마치는 게 먼저입니다.`:` 지금 맡은 역할은 ${squadRole(p)}입니다.`:'';
+ /* 첫마디·약속·보직 덧말은 매번 같은 문장이 붙어 반복이 심했다(사용자 11-14): 첫마디는 말투별로 가끔만, 본문이 이미 말한 약속·보직은 다시 붙이지 않는다 */
+ const pw=typeof pvWarm==='function'; const warm=C.bond>=55?(pw?pvWarm(p):'단장님께는 편하게 말씀드릴 수 있겠네요. '):pw?'':p.pers?.temp>=15?'솔직하게 말씀드리겠습니다. ':p.pers?.pro>=15?'제 역할부터 제대로 해내겠습니다. ':'';
+ const said=/약속|출전 기회/.test(line)||!!(p.promise&&line.includes(dmd(p.promise.until)));
+ const promise=p.promise&&!said?playPromKept(p)?' 지난번 출전 기회 약속을 챙겨주신 건 기억하고 있습니다.':` ${dmd(p.promise.until)}까지 기회를 건의해 주신 약속은 기다리고 있습니다.`:'';
+ const role=squadRole(p);
+ const context=kind==='ask'?p.injOut>0?(line.includes(p.injOut+'일')?'':` 지금은 ${p.injOut}일 남은 재활을 마치는 게 먼저입니다.`):(!role||line.includes(role)?'':[` 지금 맡은 역할은 ${role}입니다.`,` 요즘은 ${role}(으)로 나가고 있습니다.`,` 지금 자리는 ${role}입니다.`][Math.floor(u01('ptr'+p.id+':'+(p.pvN||0),G.day)*3)%3]):'';
  const answer=warm+line+promise+context;C.talk[kind]={day:G.day,key,line};personNetworkNote(C,{day:G.day,kind,text:answer});C.history.unshift({day:G.day,kind,text:answer});C.history.length=Math.min(C.history.length,12);return answer;
 }
 function ownerPersonalReport(){const t=team(G.user),goal=goalStatus(),C=personalOwnerContact(),rank=goal?.rank.cur;const focus=t.owner==='profit'?`현금 ${money(t.cash)}과 다음 시즌 고정 지출부터 관리하세요.`:t.owner==='pr'?`팬 여론 ${Math.round(G.pr?.fan??50)}을 지켜보고 있어요. 지역 팬들과도 만나세요.`:rank?`현재 ${rank}위예요. 목표 ${goal.rank.t}위까지 선수단의 부족한 자리를 메워 주세요.`:'개막 전에 약한 포지션과 예산 계획부터 보고하세요.';const prior=C.talk.report;const key=JSON.stringify([G.year,rank,Math.round(t.cash/100),t.owner,Math.round(t.trust/10)]);const result=(prior?.key===key?'지난 보고 이후 큰 변화는 없군요. ':t.trust>=70?'계속 맡겨 볼 만하군요. ':'상황을 구체적으로 봅시다. ')+focus;C.talk.report={day:G.day,key,line:result};return result;}
