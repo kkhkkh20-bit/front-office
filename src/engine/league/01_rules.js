@@ -213,7 +213,11 @@ function capDeadA(tid){ const D=G.capDead; if(!D||D.y!==G.year)return []; return
 function capDeadAdd(p,tid){ if(!p||p.foreign||tid==null||!G.cal||G.day<G.cal.open||(G.last&&G.last.y>=G.year))return; if(isRookie(p)||milServing(p))return; /* 신인·복무 선수는 원래 산정에서 빠진다 */
   const a=capAmt(p,tid,p.sal+(p.capB&&p.ctT===tid&&p.capB.until>=G.year?p.capB.a:0)); if(!(a>0))return; if(!G.capDead||G.capDead.y!==G.year)G.capDead={y:G.year,L:[]}; G.capDead.L.push({pid:p.id,t:tid,a:Math.round(a)}); }
 function capDeadDrop(pid){ const D=G.capDead; if(D&&D.L)D.L=D.L.filter(x=>x.pid!==pid); }
-function capPay(tid){ const fid=franId(tid); const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)).concat(capDeadA(tid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
+/* FA 하루 입찰 캐시(성능): faDay가 도는 동안만 켠다. 구단별 연봉 합계(capPay)와 뎁스(needScore의 depth)를 한 번씩만 계산한다.
+   같은 날·같은 이동 기록(mvN)·같은 트레이드 수일 때만 쓰고, 계약(faSign) 중에는 끄고 끝나면 비운다(계약·보상선수로 연봉 합계가 바뀐다) */
+let _faPC=null;
+function faPC(){ const C=_faPC; if(!C)return null; const k=G.year+':'+G.day+':'+(G.mvN||0)+':'+(G.trades||[]).length; if(C.k!==k||C.g!==G){ C.k=k; C.g=G; C.pay.clear(); C.dep.clear(); } return C; }
+function capPay(tid){ const C=faPC(); if(C&&C.pay.has(tid))return C.pay.get(tid); const fid=franId(tid); const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)).concat(capDeadA(tid)).sort((a,b)=>b-a).slice(0,40); const v=sum(s); if(C)C.pay.set(tid,v); return v; }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign&&!p.frehab); /* 재활 선수 명단에 오른 외국인은 등록 인원·총액에서 빠진다(대체 선수가 그 자리) */
 /* 시장가(연 환산, 백만원): 능력 60까지는 제곱으로 오르고, 그 위는 완만하게(최상위 FA 연평균 20~25억: 2026 최상위 계약 4년 80억~100억) */
 function marketSal(o){ const x=Math.max(0,o-37); const v=o<=60?30+x*x*1.8:982+(o-60)*138; return Math.round(Math.min(3000,v)*ecoCap(G.year)/15117); }

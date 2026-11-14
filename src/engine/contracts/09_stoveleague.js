@@ -173,7 +173,8 @@ function faInterest(t,p){
   const dB=t.id!==ME()&&t.id!==p.faFrom&&domFaMul(t,p)>1?.15:0; /* 독주 구단 FA·노리는 FA에 경쟁 구단이 달려든다 */
   return compF*clamp(.12+low+stB+plB+dB+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(rosterN(t.id)>=ROSTER_MAX-1?.25:0)+(tg?.35:0),0,1)*debt;
 }
-function faDay(day){
+function faDay(day){ _faPC={k:null,g:null,pay:new Map(),dep:new Map()}; try{ faDayRun(day); }finally{ _faPC=null; } } /* 입찰 캐시는 하루 입찰 동안만(01_rules faPC) */
+function faDayRun(day){
   const F=G.fa; const since=day-F.openDay;
   /* 우리 구단 이름의 AI 제안은 없어야 한다: 이직해 온 구단의 전임 단장이 낸 제안이 남아 있으면, 단장 모르게 그 조건으로 계약돼 버린다 */
   if(!G.unemp&&F.ai)for(const id in F.ai){ if(F.ai[id]&&F.ai[id][G.user])delete F.ai[id][G.user]; }
@@ -226,7 +227,8 @@ function faBestOf(p,offers){ let b=null,bs=-1; for(const o of offers){ const s=f
 function aiFaBonus(p,best){ const y=Math.max(1,best.years||1), o=ovr(p); const tot=p.sal*y; if(tot<600)return;
   const bs=(o>=60?.45:o>=55?.38:.28)*(y===1?.7:1); const bonus=round5(tot*bs); const an=round5(Math.max(MIN_SAL,(tot-bonus)/y)); if(an>=p.sal)return;
   const sy=ctSeason(); p.sal=an; p.ctT=p.team; p.capB={a:Math.round(bonus/y),until:sy+y-1,b:bonus,pd:-1}; p.ctB={b:bonus,sy}; const t=team(p.team); if(t)t.faBDue=(t.faBDue||0)+bonus; } /* 계약금은 현금에서 바로 빼지 않고 그 구단 다음 결산 지출로 잡는다: 모기업 지원(적자 보전) 계산에 들어가야 한다(재정 시뮬 11-13: 바로 빼니 구단이 큰 빚을 지고 선수를 내다 팔았다) */
-function faSign(p,offers){
+function faSign(p,offers){ const C=_faPC; _faPC=null; try{ return faSignRun(p,offers); }finally{ if(C){ C.k=null; _faPC=C; } } } /* 계약 중에는 입찰 캐시를 끄고, 끝나면 비운다 */
+function faSignRun(p,offers){
   offers=offers.filter(o=>!faOutBlocked(o.tid,p)&&rosterN(o.tid)<ROSTER_MAX); if(!offers.length)return; /* 정식 선수가 꽉 찬 구단은 계약할 수 없다(검수 11-09r) */
   let capC=null; { const uo=G.unemp?null:offers.find(o=>o.tid===G.user); if(uo){ capC=faCapCheck(p,uo); if(capC&&!capC.ok){ offers=offers.filter(o=>o!==uo); delete G.fa.offers[p.id]; stop('FA',`${p.name} 측이 우리 조건에 사인하려 했지만 구단주 결재가 나지 않아 제안을 거둬들였습니다. ${capC.msg}`,p.id); capC=null; if(!offers.length)return; } } } /* 사인 직전에 구단주가 그때 연봉 합계로 다시 본다: 여러 FA에게 동시에 낸 제안이 하나씩은 통과해도 합치면 한도를 넘는다(사용자 11-13) */
   let best=null,bs=-1; const shop=agShopN(p)>0; const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id];
@@ -399,7 +401,8 @@ function gmHeat(tid){ const t=team(tid); let h=gmTrait(tid)==='gambler'?.25:0; c
   const g=t.gm; if(g&&G.year-g.since>=3)h+=.1; return clamp(h,0,1); }
 function incomingOfferFair(receive,give){const U=team(G.user),a=receive.map(id=>G.players[id]).filter(Boolean),b=give.map(id=>G.players[id]).filter(Boolean);if(!a.length||!b.length)return false;const incoming=a.map(p=>tval(U,p,'in')),outgoing=b.map(p=>tval(U,p,'out')),total=sum(outgoing),value=stackIn(incoming),top=Math.max(...outgoing),core=startersOf(G.user);if(value<Math.max(0,total)*.97)return false;if(a.length>b.length&&Math.max(...incoming)<top*(b.some(p=>core.has(p.id))?.9:.8))return false;return true;}
 function offerContactOk(tid,pid){const c=G.offerContact||{},pending=G.offers||[];if(pending.length>=2||pending.some(o=>o.from===tid))return false;const last=Object.values(c).filter(Number.isFinite);if(last.length&&G.day-Math.max(...last)<10)return false;if(c[tid+':*']!=null&&G.day-c[tid+':*']<21)return false;if(pid!=null&&c['p:'+pid]!=null&&G.day-c['p:'+pid]<45)return false;return true;}
-function aiOffer(){ const ts=G.teams.filter(x=>x.id!==G.user&&!tradeCool(x.id)) /* 막 거래한 구단은 30일 동안 새 제안을 하지 않는다 */.map(t=>({t,w:gmHeat(t.id)+R()*.8})).sort((a,b)=>b.w-a.w).slice(0,3);
+function aiOffer(){ return slotsHold(aiOfferRun); } /* 리그 자리표 열쇠는 한 번만(26_trade_ai slotsHold) */
+function aiOfferRun(){ const ts=G.teams.filter(x=>x.id!==G.user&&!tradeCool(x.id)) /* 막 거래한 구단은 30일 동안 새 제안을 하지 않는다 */.map(t=>({t,w:gmHeat(t.id)+R()*.8})).sort((a,b)=>b.w-a.w).slice(0,3);
   for(const x of ts){ if(aiOfferFrom(x.t))return true; } return false; }
 function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.user);
   const mine=domestic(G.user).filter(p=>!(p.joinY>G.year)&&healthy(p)&&!hasNtc(p)&&!faLock(p)&&!p.noTrade&&offerContactOk(t.id,p.id)) /* 단장이 '트레이드 불가'로 정한 선수는 다른 구단이 묻지 않는다(커뮤니티 11-12) */.map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
