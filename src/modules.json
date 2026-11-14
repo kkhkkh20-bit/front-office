@@ -141,7 +141,8 @@
       "src/engine/league/95_game_rules.js",
       "src/engine/league/97_spring_camp.js",
       "src/engine/league/98_sister_club.js",
-      "src/engine/staff/99_ai_parity.js"
+      "src/engine/staff/99_ai_parity.js",
+      "src/engine/finance/38_promotions.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -224,6 +225,7 @@
       "src/ui/finance/43_sponsor.js",
       "src/ui/finance/44_fan_ops.js",
       "src/ui/finance/44b_cheer_squad.js",
+      "src/ui/finance/44c_promotions.js",
       "src/ui/market/44_moves.js",
       "src/ui/league/45_awards.js",
       "src/ui/league/77_league_events.js",
@@ -284,6 +286,7 @@
       "src/css/inbox/07_inbox_coach.css",
       "src/css/matches/08_cast_cards.css",
       "src/css/finance/09_budget_desk_motion.css",
+      "src/css/finance/10_promotions.css",
       "src/css/contracts/10_fa_and_patches.css",
       "src/css/foundation/11_readability.css",
       "src/css/foundation/12_title_typography.css",

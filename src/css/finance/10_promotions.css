@@ -1,0 +1,7 @@
+/* 프로모션 데이(44c_promotions) */
+.promo-r{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line,#333)}
+.promo-r:last-child{border-bottom:0}
+.promo-r>.small{grid-column:1/3;min-width:0;overflow-wrap:anywhere}
+.promo-r>.btn,.promo-r>.hi-i{grid-column:3;grid-row:1/3}
+.promo-d{font-variant-numeric:tabular-nums;opacity:.8;font-size:.86em}
+.gpl.promo .btn i{font-style:normal;margin-left:2px}
