@@ -1,0 +1,7 @@
+/* ---------- 구단주에게 다시 설득하기(94_owner_push): 반려 뒤 7일 동안 근거 하나로 한 번 더 ---------- */
+function opPushView(){ const t=team(G.user); if(!t||t.indie||G.unemp)return ''; const E=evOpen().filter(e=>e.k==='opush'&&e.data&&e.data.tid===G.user&&!evExpired(e)); const lv=opLevel(G.user);
+  const tip='반려된 자금·시설 투자 요청은 7일 안에 근거 하나를 들고 다시 설득해 볼 수 있습니다. 근거는 실제 상황이 받쳐 줄 때만 나오고, 구단주 성향마다 잘 듣는 근거가 다릅니다(성적 우선: 우승 기회·라이벌, 수익 우선: 숫자, 홍보 우선: 팬·언론). 성공해도 신뢰 -1, 실패 -2, 약한 근거로 실패하면 -4. 성적 약속은 결산 때 지키면 +2, 못 지키면 -8. 최근 반년 사이 자주 밀어붙이면 구단주가 경고하고, 그 뒤에 또 실패하면 사퇴 권고를 받을 수 있습니다. 사퇴 카드는 잘 통하지만 안 통하면 사표가 수리되기도 합니다. 한 시즌 한 번, 쓰고 나면 두 시즌 뒤에야 다시 꺼낼 수 있고, 한 번 통했던 카드는 구단주가 기억해 덜 먹힙니다. 이 구단에서 오래 맡아 우승을 안긴 단장이면 구단주가 더 쉽게 물러섭니다. 다른 구단 단장도 같은 규칙입니다.';
+  if(!E.length&&!lv&&!opResignWhy(G.user))return `<p class="small muted">다시 설득하기 ${hiI(tip)} · ${esc(opPatience(G.user))}</p>`;
+  const rows=E.map(e=>`<div class="rq"><span class="pill warn">D-${Math.max(0,e.exp-G.day)}</span><div><b>${esc(e.title)}</b><span class="intl">${e.opts.map((o,i)=>`<button class="btn small${i===e.opts.length-1?'':' primary'}" data-a="evPick" data-v="${e.id}:${i}" title="${esc(o.fx)}">${esc(o.l)}</button>`).join('')}</span></div></div>`).join('');
+  const rw=opResignWhy(G.user);
+  return `<div class="eyebrow" style="margin-top:8px">다시 설득하기 ${hiI(tip)}</div><p class="small ${lv>=2?'warn':'muted'}">${esc(opPatience(G.user))}.${rw?` ${esc(rw)}.`:''}</p>${rows?`<div class="rql">${rows}</div>`:''}`; }

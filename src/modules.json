@@ -141,7 +141,8 @@
       "src/engine/league/95_game_rules.js",
       "src/engine/league/97_spring_camp.js",
       "src/engine/league/98_sister_club.js",
-      "src/engine/staff/99_ai_parity.js"
+      "src/engine/staff/99_ai_parity.js",
+      "src/engine/staff/94_owner_push.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -172,6 +173,7 @@
       "src/ui/career/08_ob_feats_abroad.js",
       "src/ui/players/09_player_detail.js",
       "src/ui/contracts/10_requests.js",
+      "src/ui/contracts/10b_owner_push.js",
       "src/ui/matches/11_cast_panels.js",
       "src/ui/media/12_fanboard.js",
       "src/ui/players/13_squad_quick.js",

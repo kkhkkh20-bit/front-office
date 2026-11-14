@@ -28,7 +28,7 @@ function ownerAskView(){ const t=team(G.user); if(t.indie)return csec('구단주
   const btn=(l,v,amt,pur)=>{ const o=ownOdds(amt,pur); return `<button class="oa" data-a="ownAsk" data-v="${v}" ${left?'':'disabled'}><b>${l}</b><span>${money(amt)} · ${oddsTxt(o)}</span></button>`; };
   const H=grants().slice(0,8);
   return csec(`구단주에게 요청 ${hiI(`승인 여부는 구단주 신뢰, 성향(${OWNER[t.owner].label}), 순위, 요청 금액과 목적에 따라 달라집니다. 반려되면 신뢰 조금 하락, 한 해에 자주 요청할수록 승인이 어려워집니다. 목적을 정해 받은 돈은 그 목적을 이루면 신뢰가 오르고, 못 이루면 깎입니다. 구단주가 먼저 스타 FA 영입이나 7월 우승 보강을 주문하며 돈을 내놓기도 합니다.`)}`,`<p class="small">지금 예산 여유 <b>${money(b.roomGoal)}</b> · 올해 추가 지원 ${money(grantAmt())}${b.extra>0?` · 예상보다 더 들어온 수입 <b class="ok">${money(b.extra)}</b>(요청 근거)`:''} · 구단주 신뢰 ${t.trust}</p>
-    ${ownFundView()}${meetDoor('own')}
+    ${ownFundView()}${opPushView()}${meetDoor('own')}
     <p class="small muted keep">${left?'한 시즌 세 번까지, 시간을 두고 요청할 수 있습니다.':ownAskNote()}</p>
     ${H.length?`<div class="eyebrow" style="margin-top:8px">요청·지원 기록</div><div class="rql">${H.map(grantLine).join('')}</div>`:''}`); }
 function reqHomeCard(){ const M=mreqs().filter(r=>r.st==='open'); const O=grants().filter(g=>g.st==='open'&&g.pur); if(!M.length&&!O.length)return '';
