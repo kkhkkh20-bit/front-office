@@ -131,7 +131,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     acts=[btn('코치진','go','staff:coach',1)]; }
   else if(k.startsWith('gm:')){ const tid=+k.slice(3); const o=team(tid); const g=gmOf(tid); const ni=negInfo(tid); const c=(G.gmc||{})[tid]||{};
     info=`<p class="small">${g?`${g.age}세 · ${esc(g.car)} · ${g.since}년부터 재임`:'단장대행 체제'}${g&&g.ob?obTag(g.ob):''}</p>${g&&g.ob&&obOf(g.ob)?`<p class="small muted">선수 시절: ${esc(tshort(obOf(g.ob).team))} ${esc(obOf(g.ob).pos)} · ${obOf(g.ob).seasons}시즌 · 통산 WAR ${obOf(g.ob).war}</p>`:''}${g?`<p><span class="pill acc">${GMT[g.trait].l}</span> ${esc(GMT[g.trait].d)}</p>`:''}<p class="small">${esc(needText(tid))}</p>
-      <p class="small">${ni.free?'<b style="color:#6fe39a">맞대결 중 · 협상 제한 없음</b>':`이번 달 협상 <b>${ni.left}</b>/${ni.cap} ${ni.cap>NEG_MONTH?' · 친분 덕에 1회 추가':ni.cap<NEG_MONTH?' · 친분이 낮아 1회 줄어듦':''}`}</p>`;
+      <p class="small">${ni.free?`<b style="color:#6fe39a">맞대결 중 · 협상 ${ni.left}/${ni.cap}</b>`:`이번 달 협상 <b>${ni.left}</b>/${ni.cap} ${ni.cap>NEG_MONTH?' · 친분 덕에 1회 추가':ni.cap<NEG_MONTH?' · 친분이 낮아 1회 줄어듦':''}`}</p>`;
     moves=['안부 연락은 조금, 식사는 꽤 친분을 올립니다. 의리파는 더 쉽게, 강경파는 더디게 오릅니다','거래가 성사되면 오르고, 헐값 제안은 깎입니다','강경파 단장에게 한 달에 여러 번 거절당하면 조금 깎입니다'];
     fx=['친분이 높을수록 같은 선수를 덜 비싸게 넘깁니다','아주 가까우면 월 협상이 1회 늘고, 사이가 나쁘면 1회 줄어듭니다','사이가 서먹하면 상대가 원하는 것을 읽기 어렵습니다'];
     const tr=(G.trades||[]).filter(z=>z.with===tid).slice(-3).reverse(); recent=tr.map(z=>`<div class="ps-r small">${z.y} ${dsh(z.d)} · 보냄 ${esc(z.give.join(', ')||'없음')} ↔ 받음 ${esc(z.get.join(', ')||'없음')}</div>`).join('');

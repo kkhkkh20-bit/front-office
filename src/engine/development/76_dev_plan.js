@@ -65,7 +65,7 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
  특정 선수 강도는 단장이 코치에게 건의하는 예외(G.trnI)로만 둔다. 다른 구단도 같은 배분을 쓰고, 방침은 그 구단 계획에서 온다(trnPolOf, 사용자 11-13).
  KBO 현실: 시즌 중 개인 고강도 훈련은 드물다(경기 피로 관리가 우선). 그래서 균형 방침에서 아주 강하게는 나오지 않는다.
  - 성장: 주간 집중 훈련 증가분 × g, 겨울 성장(잠재력 여지 몫)에 그 시즌 평균 g. 아주 강하게(×1.3) 한 시즌이면 겨울 순성장 약 +40%, 캠프 몫까지 합친 한 해 성장 약 +30~35%
- - 부상: 경기·2군 부상 확률(injMult) × 위험 배수. 증가분은 내구성(투수는 체력)이 낮을수록, 32세·34세 이상일수록 크고, 컨디셔닝코치가 좋으면 조금 작다. 내구성 80이면 아주 강하게도 +6%, 35면 +55%(피로가 덜 풀려 경기 부상이 더 붙는다)
+ - 부상: 경기·2군 부상 확률(injMult) × 위험 배수. 증가분은 내구성(투수는 체력)이 낮을수록, 32세·34세 이상일수록 크고, 컨디셔닝코치가 좋으면 조금 작다. 내구성 80이면 아주 강하게 +20% 안팎(아주 강하게는 하한 .4, 공략 방지), 35면 +55%(피로가 덜 풀려 경기 부상이 더 붙는다)
  - 피로: 매일 피로 회복 속도(recoverAll)를 늦춘다. 1군 주전은 경기 피로가 덜 풀려 위험이 겹친다
  - 회복 위주: 성장 -15%, 부상 -15%, 피로 회복 +15%. 회복 우선 방침이거나 단장이 건의했으면 재활 중 한 주에 하루씩 복귀가 당겨진다 */
 const TRNI=[{l:'회복 위주',s:'회복',g:.85,inj:-.15,fat:-.15},{l:'보통',s:'보통',g:1,inj:0,fat:0},{l:'강하게',s:'강하게',g:1.15,inj:.25,fat:.12},{l:'아주 강하게',s:'아주 강',g:1.3,inj:.55,fat:.25}];
@@ -82,7 +82,7 @@ const trnInjN=p=>(p.injHist||[]).filter(h=>h.d!=null&&G.day-h.d<=365).length; /*
 /* 코치진이 고르는 강도와 그 이유: 점수 = 내구성 + 젊음 + 컨디셔닝코치 - 나이 - 최근 부상 - 피로, 방침만큼 위아래로 */
 function trnIAuto(p){ const pol=trnPolOf(p.team), o=TRNPOL[pol].o; if(p.injOut>0)return {i:pol==='rec'?0:1,w:'재활 중'};
   const d=trnDur(p), n=trnInjN(p), f=p.fat||0; const W=[[(d-50)/10,d>=60?'내구성 높음':d<42?'내구성 낮음':''],[p.age<=24?1:0,'젊은 선수'],[-(p.age>=34?2:p.age>=31?1:0),'30대 체력 관리'],[-Math.min(3,n),'최근 부상'],[-(f>=60?2:f>=40?1:0),'피로 누적'],[(trnCn(p.team)-55)/20,'']];
-  const s=W.reduce((a,x)=>a+x[0],0)+o; let i=s>=3?3:s>=1.2?2:s>=-2.5?1:0; /* 균형 방침에서 보통이 대부분이 되게(리그 기본과 비슷) */ if(pol==='bal')i=Math.min(i,2); if(pol==='rec')i=Math.min(i,1);
+  const s=W.reduce((a,x)=>a+x[0],0)+o; let i=s>=3?3:s>=1.2?2:s>=-2.5?1:0; /* 균형 방침에서 보통이 대부분이 되게(리그 기본과 비슷) */ const dy=p.age<=24&&d>=70&&n===0&&f<40; /* 튼튼한 젊은 선수는 어느 방침이든 코치진이 아주 강하게까지 올릴 수 있다(AI도 같은 수단) */ if(!(dy&&s>=3)){ if(pol==='bal')i=Math.min(i,2); if(pol==='rec')i=Math.min(i,1); } else i=3;
   const top=W.filter(x=>x[1]).sort((a,b)=>Math.abs(b[0])-Math.abs(a[0]))[0]; return {i,w:top&&Math.abs(top[0])>=.5?top[1]:'무난한 몸 상태'}; }
 /* 지시는 현재 영입 회차에만 귀속한다. 같은 선수를 재영입해도 예전 강도 건의가 되살아나지 않는다. */
 function trnICommand(p){ const v=G.trnI&&G.trnI[p.id];if(!TRNI[v])return null;const key=G.user+':'+(p.acq?.n??0),S=G.trnIS=G.trnIS||{};if(S[p.id]!=null&&S[p.id]!==key){delete G.trnI[p.id];delete S[p.id];return null;}if(S[p.id]==null)S[p.id]=key;return v; }
@@ -92,9 +92,9 @@ function trnI(p){ if(!p||p.team==null)return 1; if(G.unemp||p.team!==G.user)retu
 const trnIByGm=p=>!!p&&!G.unemp&&p.team===G.user&&trnICommand(p)!=null&&(!(p.injOut>0)||trnICommand(p)===0);
 /* 부하 효과는 실제 구단 훈련이 있는 기간·대상에만. 겨울·PS·차출·합류 전 선수의 경기/회복에 저장된 강도를 얹지 않는다. */
 function trnActive(p){ const per=period();return !!p&&p.team!=null&&!(p.team===G.user&&G.unemp)&&!p.prospect&&!(p.joinY>G.year)&&!p.hold&&!isAway(p)&&!ovsAbroad(p)&&(per==='pre'||per==='season'); }
-function trnIF(p){ const vf=clamp((85-trnDur(p))/50,.1,1.3), af=p.age>=34?1.5:p.age>=32?1.2:1, cq=clamp(1.1-(trnCn(p.team)-55)/150,.9,1.2); return vf*af*cq; } /* 위험 증가분 배율 */
-function trnIRisk(p,i){ if(!trnActive(p))return 1;i=i??trnI(p); const T=TRNI[i]||TRNI[1]; return T.inj<=0?1+T.inj:1+T.inj*trnIF(p); }
-function trnIFat(p,i){ if(!trnActive(p))return 1;i=i??trnI(p); const T=TRNI[i]||TRNI[1]; return T.fat<=0?1-T.fat:1/(1+T.fat*trnIF(p)); } /* 피로 회복 속도 배수 */
+function trnIF(p,i){ const vf=clamp((85-trnDur(p))/50,i>=3?.4:.1,1.3), /* 아주 강하게는 튼튼한 선수도 위험이 남는다(공략 방지: 하한 .1이라 거의 공짜였다) */ af=p.age>=34?1.5:p.age>=32?1.2:1, cq=clamp(1.1-(trnCn(p.team)-55)/150,.9,1.2); return vf*af*cq; } /* 위험 증가분 배율 */
+function trnIRisk(p,i){ if(!trnActive(p))return 1;i=i??trnI(p); const T=TRNI[i]||TRNI[1]; return T.inj<=0?1+T.inj:1+T.inj*trnIF(p,i); }
+function trnIFat(p,i){ if(!trnActive(p))return 1;i=i??trnI(p); const T=TRNI[i]||TRNI[1]; return T.fat<=0?1-T.fat:1/(1+T.fat*trnIF(p,i)); } /* 피로 회복 속도 배수 */
 /* 팀 육성 방침(단장) */
 function trnPolSet(k){ if(G.unemp)return '구단을 맡고 있지 않습니다.';if(!TRNPOL[k]||trnPol()===k)return ''; G.trnPol=k; return `육성 방침을 ${TRNPOL[k].l}(으)로 정했습니다. 코치진이 선수마다 강도를 다시 나눕니다. 재활 중인 선수는 회복 상태를 우선합니다. ${trnIMgr(k==='grow'?2:k==='rec'?0:1,domestic(G.user).filter(p=>trnI(p)>=2))}`; }
 /* 특정 선수 강도 건의(예외). 'coach'면 코치진 판단으로 돌린다 */

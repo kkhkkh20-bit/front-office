@@ -375,7 +375,7 @@ function pitchCard(p){ if(G.unemp||team(G.user).indie)return ''; const I=pitchIn
   const lv=v=>v>=.7?'강함':v>=.4?'보통':v>0?'약함':'해당 없음';
   const argB=Object.entries(PITCH_ARG).map(([k,a])=>`<button class="pa${st.args.includes(k)?' on':''}" data-a="pitchArg" data-v="${k}" ${I.S[k]<=0?'disabled':''}><b>${a.l}</b><span>${a.d}</span><em>근거 ${lv(I.S[k])} · 회장 관심 ${I.w[k]>=.9?'높음':I.w[k]>=.5?'보통':'낮음'}</em></button>`).join('');
   const cmtB=Object.entries(PITCH_CMT).map(([k,c])=>`<label class="chk"><input type="checkbox" data-a="pitchCmt" data-v="${k}" ${st.cmts.includes(k)?'checked':''}> ${c.l}</label>`).join('');
-  const blocked=!I.capOK?`샐러리캡을 넘습니다(남은 캡 ${money(I.capRoom)}).`:I.done?'올해 이미 보고했습니다.':!ownAskLeft()?'이번 달에는 이미 구단주에게 요청했습니다.':'';
+  const blocked=!I.capOK?`샐러리캡을 넘습니다(남은 캡 ${money(I.capRoom)}).`:I.done?'올해 이미 보고했습니다.':!ownAskLeft()?ownAskNote():'';
   return `<section class="card pitch"><div class="row between"><h3 class="sec">구단주 설득: 영입 자금 요청</h3><span class="small muted">${esc(B.own.name)} 회장 · ${OWNER[t.owner].label} · 신뢰 ${t.trust}</span></div>
     <p class="small">요구 연봉 <b>${money(I.amt)}</b> · 지금 예산 여유 ${money(I.room)}${I.need>0?` · <b class="bad">${money(I.need)} 부족</b>`:' · 예산 안에서 가능'} · 남은 캡 ${money(I.capRoom)}</p>
     <p class="small muted">${I.slot} 리그 ${I.rank}위 자리${I.gap>0?`, 지금 주전보다 능력 +${Math.round(I.gap)}`:''}. 근거를 2개까지 고르세요. 근거의 힘은 실제 기록·나이·순위로 정해지고, 회장 성향에 맞는 근거가 잘 먹힙니다.</p>

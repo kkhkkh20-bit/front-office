@@ -89,7 +89,7 @@ function tradeHint(tid,give,get,cash,pk){ // 상대가 무엇을 더 원할지 �
   const sd=1.2+Math.max(0,75-t.rel)/10;
   const add=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)&&!p.ys&&!ntcOf([p.id])) /* 거부권·육성선수는 제안할 수 없으니 추천하지 않는다 */.map(p=>({p,v:tval(t,p,'in')*.72+hn('th'+tid+G.year,p.id)*sd*.4})).filter(x=>x.v>=gap*.9).sort((a,b)=>a.v-b.v)[0];
   const drop=get.length>1?get.map(id=>({p:G.players[id],v:tval(t,G.players[id],'out')+hn('td'+tid+G.year,id)*sd*.4})).filter(x=>x.v>=gap*.9).sort((a,b)=>a.v-b.v)[0]:null;
-  const cn=cashFor(t,gap+hn('tc'+tid+G.year,G.day)*sd*.3); return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12,cash:cn&&cn+(cash||0)<=3000?cn+(cash||0):null}; }
+  const cn=cashFor(t,gap+hn('tc'+tid+G.year,G.day)*sd*.3,Math.max(0,CASH_SHARE*Math.max(1.5,e.outV)-(e.cashV||0))); /* 현금 한도로 못 메우면 현금 안내를 하지 않는다 */ return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12,cash:cn&&cn+(cash||0)<=3000?cn+(cash||0):null}; }
 
 function draftPickOrder(){ // 드래프트 전: 실제 드래프트와 같은 기준(끝난 지난 시즌 순위의 역순, 경쟁균형세 벌칙 반영) 1라운드
   { const P=draftPlan(); if(P)return P.filter(k=>k.rd===1); } /* 지명권 거래 반영: 넘긴 순번은 받은 구단 차례(검수 11-06) */

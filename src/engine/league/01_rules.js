@@ -193,26 +193,34 @@ function capPayAs(tid,inIds,outIds){ const y=sponSeason(), nx=y>G.year||preSeaso
   const amt=(p,inn=inS.has(p.id))=>{ const wc=inn&&p.wv&&p.team==null?p.wv.c:null; /* 웨이버 양수: 승계하는 계약과 계약금 반영액(검수 11-06·11-07·11-08) */ if(nx)return wc?(wc.extNext?wc.extNext.annual:wc.sal)+(wc.capB&&wc.capB.until>=y?wc.capB.a:0):inn?salNext(p):salNext(p)+capBAt(p,y); return wc?wc.sal+(wc.capB&&wc.capB.until>=G.year?wc.capB.a:0):inn?p.newSal??p.sal:p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0); }; /* 받는 선수는 옛 계약 조건의 상한 반영액이 끝난다. 재계약 합의 연봉은 이적 때 확정(mvLog) */
   const fid=franId(tid,outIds,inIds,amt,nx?y:null); /* 예외 대상도 합계와 같은 금액으로 고른다(웨이버 양수 선수가 방출 뒤 연봉으로 뽑혔다, 검수 11-09zzb) */
   const L=(nx?domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)):domPayOf(tid).filter(p=>!isRookie(p))).filter(p=>!out.has(p.id)).map(p=>capAmt(p,tid,amt(p,false),fid));
-  if(!nx)L.push(...capDeadA(tid)); /* 시즌 중 방출한 선수 몫(capPay와 같게) */
+  L.push(...capDeadA(tid,nx?y:G.year)); /* 방출·계약금 남은 몫(capPay와 같게, 겨울은 다음 시즌 몫) */
   for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||(nx?(p.draft&&p.draft.y===y-1)||milCapOut(p,y):isRookie(p)||milServing(p)))continue; /* 복무 선수는 실제 합계와 같게(검수 11-09g) */ L.push(capAmt(p,tid,amt(p,true),fid)); }
   return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */
-function capPayNext(tid){ const y=sponSeason(), fid=franId(tid,null,null,p=>salNext(p)+capBAt(p,y),y); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+capBAt(p,y),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
+function capPayNext(tid){ const y=sponSeason(), fid=franId(tid,null,null,p=>salNext(p)+capBAt(p,y),y); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+capBAt(p,y),fid)).concat(capDeadA(tid,y)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 /* 계약 하나를 바꿨을 때의 상한 합계: 실제 샐러리캡과 같은 방식(선수별 금액 정렬 → 상위 40명). s는 계약이 적용되는 시즌.
    지금 시즌(sponSeason)이면 지금 연봉 기준, 그 뒤 시즌이면 다음 시즌 기준(합의한 다음 시즌 계약·재계약 중 금액, 그 시즌까지 남는 계약금 상한 반영) */
 function capPayWith(tid,pid,amt,s){ const y0=sponSeason(); s=s??y0; const nxt=s>y0||preSeason(s); const cb=q=>q.capB&&q.ctT===q.team&&q.capB.until>=G.year?q.capB.a:0; const fid=franId(tid,null,pid!=null?[pid]:null,q=>q.id===pid&&amt!=null?amt /* 새 계약 금액에 이미 새 계약금 반영액이 들어 있다: 옛 계약금은 새 계약이 대신한다(검수 11-09zzb) */:nxt?salNext(q)+capBAt(q,s):q.sal+cb(q),nxt?s:null); /* 예외 선수는 바뀐 금액(계약금 연 반영액 포함)으로 다시 고른다(검수 11-09s·11-09y) */ /* 개막 전이면 합의한 인상분까지 */ const L=[];
   for(const p of (nxt?domPayNext(tid,s):domPayOf(tid))){ if(p.id===pid)continue; if(nxt){ if(p.draft&&p.draft.y===s-1)continue; L.push(capAmt(p,tid,salNext(p)+capBAt(p,s),fid)); } else { if(isRookie(p))continue; L.push(capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)); } }
-  if(!nxt)L.push(...capDeadA(tid)); /* 시즌 중 방출한 선수 몫(capPay와 같게) */
+  L.push(...capDeadA(tid,nxt?s:G.year)); /* 방출·계약금 남은 몫(capPay와 같게) */
   const so=[...L].sort((a,b)=>b-a); const base=sum(so.slice(0,40)), k40=so.length>=40?so[39]:0; const pp=pid!=null?G.players[pid]:null; if(amt!=null&&!(pp&&!nxt&&isRookie(pp))&&!(pp&&nxt&&pp.draft&&pp.draft.y===s-1)&&!(pp&&(nxt?milCapOut(pp,s):milServing(pp)))) /* 복무 선수는 기존 합계와 같은 기준으로(검수 11-09zk) */L.push(pid!=null&&pid===fid?amt*.5:amt); /* 예외 선수가 없을 때(null===null) 외부 선수가 반값으로 잡혔다(검수 11-09zzb) */ /* 신인 제외 조건은 바꾸려는 선수에게도 똑같이(검수 11-06) */ const tot=sum(L.sort((a,b)=>b-a).slice(0,40)); const room0=capOf(s)-base+k40; return {tot,base,cap:capOf(s),s,room:pid!=null&&pid===fid?room0*2:room0}; } /* 프랜차이즈 예외 선수는 보수의 절반만 들어가니 쓸 수 있는 연봉은 두 배(검수 11-06) */ /* room: 이 선수 금액으로 쓸 수 있는 최대(40번째 선수를 밀어내는 몫 포함) */
 /* 프랜차이즈 예외(KBO 2025-09 의결, 2026~): 구단마다 한 해 1명, 그 구단 소속 7시즌 이상인 국내 선수 보수의 50%를 상한 산정에서 뺀다. 가장 많이 받는 대상자를 자동으로 지정한다 */
 let _franC={k:null}; function franId(tid,outIds,inIds,sf,s){ const sv=p=>sf?sf(p):p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0); /* 상한 반영액(연봉+계약금 연 반영액)이 가장 큰 선수(검수 11-09y). sf: 다음 시즌 합계는 다음 시즌 금액으로(검수 11-07) */ if(G.year<2026)return null; const out=new Set(outIds||[]); const pool=(sf&&s!=null?domPayNext(tid,s):domPayOf(tid)).filter(p=>!out.has(p.id)); /* 다음 시즌 전망은 그 시즌 연봉을 받는 선수 중에서(개막 전 전역 포함, 검수 11-09zk) */ for(const id of inIds||[]){ const p=G.players[id]; if(p&&!p.foreign&&!pool.includes(p)&&!(sf&&s!=null?milCapOut(p,s):milServing(p)))pool.push(p); } /* 데려올 선수도 예외 대상 후보(예상 계산이 실제 소속 뒤 계산과 같게) */ const k=(sf?'n'+s:'c')+G.year+':'+G.day+':'+tid+':'+pool.map(p=>p.id+':'+sv(p)+':'+(p.hist||[]).filter(h=>h.t===tid).map(h=>h.y).join(',')).join(';'); if(_franC.k===k)return _franC.v; let b=null; for(const p of pool){ const ys=new Set((p.hist||[]).filter(h=>h.t===tid).map(h=>h.y)); if(ys.size<7)continue; if(!b||sv(p)>sv(b))b=p; } _franC={k,v:b?b.id:null}; return _franC.v; }
 const capAmt=(p,tid,a,fid=franId(tid))=>p.id===fid?a*.5:a; /* 합계 한 번당 예외 대상도 한 번만 조회 */
 /* 시즌 중 방출한 선수 연봉은 그해 상한 산정에 남는다(사용자 11-13 "셀캡 깨는 유저": 결산 직전 방출로 경쟁균형세를 피하던 허점, 보류 선수는 정산금도 없었다).
    개막~결산 사이 방출만 남기고, 웨이버로 다른 구단이 계약을 이어받으면 뺀다. 그해 연봉으로 잡으니 다음 시즌 전망(capPayNext)에는 들어가지 않는다 */
-function capDeadA(tid){ const D=G.capDead; if(!D||D.y!==G.year)return []; return D.L.filter(x=>x.t===tid).map(x=>x.a); }
-function capDeadAdd(p,tid){ if(!p||p.foreign||tid==null||!G.cal||G.day<G.cal.open||(G.last&&G.last.y>=G.year))return; if(isRookie(p)||milServing(p))return; /* 신인·복무 선수는 원래 산정에서 빠진다 */
-  const a=capAmt(p,tid,p.sal+(p.capB&&p.ctT===tid&&p.capB.until>=G.year?p.capB.a:0)); if(!(a>0))return; if(!G.capDead||G.capDead.y!==G.year)G.capDead={y:G.year,L:[]}; G.capDead.L.push({pid:p.id,t:tid,a:Math.round(a)}); }
-function capDeadDrop(pid){ const D=G.capDead; if(D&&D.L)D.L=D.L.filter(x=>x.pid!==pid); }
+/* 개막 전·결산 뒤 겨울 방출도 상한에 남는다(공략 방지): 겨울에는 다음 시즌(sponSeason) 몫으로. 다음 시즌 이후 몫은 G.capDeadF({pid,t,a,y,k}) */
+function capDeadA(tid,y){ y=y??G.year; const D=G.capDead, L=D&&D.y===y?D.L.filter(x=>x.t===tid).map(x=>x.a):[]; for(const x of G.capDeadF||[])if(x.t===tid&&x.y===y)L.push(x.a); return L; }
+function capDeadF(x){ const F=G.capDeadF=(G.capDeadF||[]).filter(e=>e.y>=G.year); F.push(x); }
+function capDeadAdd(p,tid){ if(!p||p.foreign||tid==null||!G.cal)return; if(isRookie(p)||milServing(p))return; /* 신인·복무 선수는 원래 산정에서 빠진다 */
+  const inS=G.day>=G.cal.open&&!(G.last&&G.last.y>=G.year);
+  if(inS){ const a=capAmt(p,tid,p.sal+(p.capB&&p.ctT===tid&&p.capB.until>=G.year?p.capB.a:0)); if(!(a>0))return; if(!G.capDead||G.capDead.y!==G.year)G.capDead={y:G.year,L:[]}; G.capDead.L.push({pid:p.id,t:tid,a:Math.round(a)}); return; }
+  /* 겨울·개막 전: 그 시즌에 줘야 할 보장 연봉(정산금이 있는 계약)과 계약금 반영액만 */
+  const y=sponSeason(), c=relCost(p); const sal=y>G.year?(c.next>0&&p.extNext?p.extNext.annual:c.fut>0?salNext(p):0):(c.cur>0?p.sal:0); const b=p.capB&&p.ctT===tid&&p.capB.until>=y?p.capB.a:0;
+  const a=Math.round(capAmt(p,tid,sal+b)); if(a>0)capDeadF({pid:p.id,t:tid,a,y}); }
+/* 트레이드로 옮기는 FA의 계약금 반영액은 낸 구단에 남는다(계약금 세탁 방지, 공략 방지): 그 시즌부터 반영 끝 시즌까지 */
+function capDeadBonus(p){ if(!p||p.team==null||p.foreign||!(p.capB&&p.ctT===p.team&&p.capB.a>0))return; const y0=G.cal&&G.day>=G.cal.open&&!(G.last&&G.last.y>=G.year)?G.year:sponSeason(); for(let y=y0;y<=p.capB.until;y++)capDeadF({pid:p.id,t:p.team,a:p.capB.a,y,k:'b'}); }
+function capDeadDrop(pid){ const D=G.capDead; if(D&&D.L)D.L=D.L.filter(x=>x.pid!==pid); if(G.capDeadF)G.capDeadF=G.capDeadF.filter(x=>x.pid!==pid||x.k==='b'); }
 /* FA 하루 입찰 캐시(성능): faDay가 도는 동안만 켠다. 구단별 연봉 합계(capPay)와 뎁스(needScore의 depth)를 한 번씩만 계산한다.
    같은 날·같은 이동 기록(mvN)·같은 트레이드 수일 때만 쓰고, 계약(faSign) 중에는 끄고 끝나면 비운다(계약·보상선수로 연봉 합계가 바뀐다) */
 let _faPC=null;

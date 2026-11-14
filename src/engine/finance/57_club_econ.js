@@ -55,7 +55,8 @@ function capexOddsT(tid,c){ const t=team(tid); if(!t||t.indie)return 0; const me
 function capexWait(tid){ const t=team(tid), d=t&&t.capexD; return d!=null&&G.day-d<CAPEX_CD?d+CAPEX_CD:0; }
 
 /* --- 명명권 후원·지자체 보조 --- */
-const FAC_SPON={share:.5,yrs:3,k:['indoor','weight','lab','fut'],rk:6,occ:.75,back:.3};
+const FAC_SPON={share:.5,yrs:3,k:['indoor','weight','lab','fut'],rk:4,occ:.8,back:.8}; /* 공략 방지: 4위 안 그리고 관중 80%를 지켜야 하고, 후원금은 세 시즌에 나눠 받으며, 어기면 받은 돈의 80%를 돌려준다(예전 6위 또는 75%, 한 번에, 30%) */
+const facOwnPart=(route,c)=>route==='spon'?c-Math.round(c*FAC_SPON.share/FAC_SPON.yrs):Math.round(c*(1-FAC_CITY.share)); /* 착공 때 구단이 먼저 내는 몫 */
 const FAC_CITY={share:.4,yrs:4,k:['fut','dorm','indoor'],prog:.03,up:.1};
 const facSponCo=()=>{ const L=Object.values(SPON_CO).flat(); return L.length?L:['한빛']; }; /* 명명권 기업 이름은 스폰서 기업 목록에서 */
 function facLastRank(tid){ const o=G.last&&G.last.order; if(!o)return 5.5; const i=o.findIndex(x=>(x.tid??x)===tid); return i<0?5.5:i+1; }
@@ -66,8 +67,8 @@ function facRouteWait(tid,r){ const t=team(tid), d=t&&t.facAsk&&t.facAsk[r]; ret
 function facRouteInfo(tid,k){ const t=team(tid), S=facSt(tid), lv=(S.it[k]||0), c=FACI[k].c[lv+1]; const R0={};
   R0.cash={ok:spendable(tid)>=c,why:spendable(tid)>=c?'':'자금이 부족합니다.'};
   R0.cap=t.indie?{ok:false,why:'모기업이 없습니다.'}:capexWait(tid)?{ok:false,why:`${dmd(capexWait(tid))}부터 다시 요청할 수 있습니다.`}:{ok:true,p:capexOddsT(tid,c)};
-  R0.spon=!FAC_SPON.k.includes(k)?{ok:false,why:'명명권을 붙일 시설이 아닙니다.'}:t.facSpon?{ok:false,why:'이미 명명권 계약이 있습니다.'}:facRouteWait(tid,'spon')?{ok:false,why:`${dmd(facRouteWait(tid,'spon'))}부터 다시 찾을 수 있습니다.`}:spendable(tid)<c*(1-FAC_SPON.share)?{ok:false,why:'구단 부담분이 부족합니다.'}:{ok:true,p:facSponOdds(tid)};
-  R0.city=!FAC_CITY.k.includes(k)?{ok:false,why:'지역과 함께 쓸 시설이 아닙니다.'}:(t.cityOb||[]).length>=2?{ok:false,why:'지자체와 맺은 약속이 이미 많습니다.'}:facRouteWait(tid,'city')?{ok:false,why:`${dmd(facRouteWait(tid,'city'))}부터 다시 협의할 수 있습니다.`}:spendable(tid)<c*(1-FAC_CITY.share)?{ok:false,why:'구단 부담분이 부족합니다.'}:{ok:true,p:facCityOdds(tid)};
+  R0.spon=!FAC_SPON.k.includes(k)?{ok:false,why:'명명권을 붙일 시설이 아닙니다.'}:t.facSpon?{ok:false,why:'이미 명명권 계약이 있습니다.'}:facRouteWait(tid,'spon')?{ok:false,why:`${dmd(facRouteWait(tid,'spon'))}부터 다시 찾을 수 있습니다.`}:spendable(tid)<facOwnPart('spon',c)?{ok:false,why:'구단 부담분이 부족합니다.'}:{ok:true,p:facSponOdds(tid)};
+  R0.city=!FAC_CITY.k.includes(k)?{ok:false,why:'지역과 함께 쓸 시설이 아닙니다.'}:(t.cityOb||[]).length>=2?{ok:false,why:'지자체와 맺은 약속이 이미 많습니다.'}:facRouteWait(tid,'city')?{ok:false,why:`${dmd(facRouteWait(tid,'city'))}부터 다시 협의할 수 있습니다.`}:spendable(tid)<facOwnPart('city',c)?{ok:false,why:'구단 부담분이 부족합니다.'}:{ok:true,p:facCityOdds(tid)};
   return R0; }
 /* 확률을 말로만 */
 const oddsWord=p=>p>=.65?'높음':p>=.4?'보통':p>=.2?'낮음':'매우 낮음';
@@ -87,26 +88,28 @@ function facFund(k,route){ if(G.unemp)return '맡은 구단이 없습니다.'; f
   const I=facRouteInfo(tid,k)[route]; if(!I)return '없는 방법입니다.'; if(!I.ok)return I.why; (t.facAsk=t.facAsk||{})[route]=G.day; const lv=G.fac.it[k], c=FACI[k].c[lv+1];
   if(R()>=I.p)return route==='spon'?'명명권을 살 기업을 찾지 못했습니다. 성적이나 관중이 오르면 관심이 생깁니다.':`${t.city}시가 올해는 예산을 잡기 어렵다고 합니다. 지역 관계가 좋아지면 잘 됩니다.`;
   return facFundGo(tid,k,route,c); }
-function facFundGo(tid,k,route,c){ const t=team(tid), me=tid===G.user&&!G.unemp, share=route==='spon'?FAC_SPON.share:FAC_CITY.share, own=Math.round(c*(1-share)), help=c-own;
+function facFundGo(tid,k,route,c){ const t=team(tid), me=tid===G.user&&!G.unemp, share=route==='spon'?FAC_SPON.share:FAC_CITY.share, help=Math.round(c*share), own=facOwnPart(route,c), up=c-own; /* 명명권은 첫해 몫(up)만 먼저 받는다 */
   let k0=own; if(me){ k0=spendPay(own); G.spend.facB=(G.spend.facB||0)+k0; } else t.cash-=own;
-  const o={src:route,help}; if(route==='spon'){ { const L=facSponCo(); o.sponN=L[Math.floor(facU('spn'+G.year,tid+k)*L.length)]; } t.facSpon={k,n:o.sponN,y0:sponSeason(),y1:sponSeason()+FAC_SPON.yrs-1,help,miss:0}; }
-  else (t.cityOb=t.cityOb||[]).push({k,y1:sponSeason()+FAC_CITY.yrs-1,prog:Math.round(c*FAC_CITY.prog),miss:0});
+  const o={src:route,help}; if(route==='spon'){ { const L=facSponCo(); o.sponN=L[Math.floor(facU('spn'+G.year,tid+k)*L.length)]; } t.facSpon={k,n:o.sponN,y0:sponSeason(),y1:sponSeason()+FAC_SPON.yrs-1,help,paid:up,miss:0}; }
+  else (t.cityOb=t.cityOb||[]).push({k,y1:sponSeason()+FAC_CITY.yrs-1,prog:Math.round(c*FAC_CITY.prog),help,miss:0});
   const S=facSt(tid), b=facStartBuild(tid,k,o); S.inv=(S.inv||0)+c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k,lv:b.lv,c,src:route}); if(S.hist.length>40)S.hist.shift();
   clubFacilityHistory('fac',tid,FACI[k].l,'착공',{...b,src:`${facSrcTxt(route)} ${money(help)} · 구단 ${money(own)}`}); facStartNews(tid,k,b);
   if(me){ addLog(`${FACI[k].l} ${FACI[k].lv[b.lv]} 공사: ${facSrcTxt(route)}로 공사비 일부를 덜었습니다(구단 부담 ${money(own)}).`);
-    mail(route==='spon'?'마케팅팀':'운영팀',route==='spon'?`명명권 계약: ${o.sponN}`:`지자체 보조 합의: ${FACI[k].l}`,route==='spon'?`${o.sponN}이(가) ${FACI[k].l}에 이름을 걸고 공사비 절반을 냅니다. 대신 ${FAC_SPON.yrs}시즌 동안 성적이나 관중이 기대에 못 미치면 후원을 거두고 일부를 돌려받으려 합니다.`:`${t.city}시가 공사비 일부를 냅니다. 대신 ${FAC_CITY.yrs}시즌 동안 해마다 지역 야구 교실을 열고 지역 인력을 써야 합니다. 그만큼 운영비가 조금 늘어납니다.`,{kind:'시설'}); }
+    mail(route==='spon'?'마케팅팀':'운영팀',route==='spon'?`명명권 계약: ${o.sponN}`:`지자체 보조 합의: ${FACI[k].l}`,route==='spon'?`${o.sponN}이(가) ${FACI[k].l}에 이름을 걸고 공사비 절반을 ${FAC_SPON.yrs}시즌에 나눠 냅니다. 대신 그동안 상위권 성적과 꽉 찬 관중을 함께 지켜야 하고, 못 지키면 후원을 거두고 받은 돈 대부분을 돌려받으려 합니다.`:`${t.city}시가 공사비 일부를 냅니다. 대신 ${FAC_CITY.yrs}시즌 동안 해마다 지역 야구 교실을 열고 지역 인력을 써야 합니다. 그만큼 운영비가 조금 늘어납니다.`,{kind:'시설'}); }
   return ''; }
 /* 지자체 약속으로 늘어나는 연 운영비(지역 채용): 결산 증설분 유지비에 더한다 */
 function facCityUp(t){ return sum((t.cityOb||[]).map(o=>{ const S=facSt(t.id), lv=S&&S.it?S.it[o.k]||0:0; return Math.round(FACI[o.k].up[lv]*FAC_CITY.up); })); }
 
 /* --- 해마다(결산 직후) 조건 점검: 명명권 성적·관중, 지자체 지역 교실 --- */
 function facDealsYear(t){ const me=t.id===G.user&&!G.unemp, y=G.last&&G.last.y; if(y==null)return;
-  const D=t.facSpon; if(D&&y>=D.y0){ const A=G.sea&&G.sea.att&&G.sea.att[t.id], occ=A&&A.cap?A.sum/A.cap:.8, rk=facLastRank(t.id), ok=rk<=FAC_SPON.rk||occ>=FAC_SPON.occ;
-    if(!ok)D.miss++; if(D.miss>=2){ const back=Math.round(D.help*FAC_SPON.back); if(me){ if(t.indie)spendPay(back); else G.spend.etc=(G.spend.etc||0)+back; } else t.cash-=back; /* 우리 구단은 결산 장부로(다른 일회성 지출과 같게, 검수 11-14) */ t.facSpon=null; if(me){ prInit(); G.pr.fan=clamp(G.pr.fan-1,0,100); news('구단',`${D.n}, ${FACI[D.k].l} 명명권 조기 해지`,`성적과 관중이 약속에 못 미쳤다며 ${D.n}이(가) 후원을 거뒀습니다. 구단은 후원금 일부(${money(back)})를 돌려줍니다.`,-1); } else wire('구단',`${t.city} ${t.nick}, ${D.n} 명명권 해지`,{tid:t.id}); }
+  const D=t.facSpon; if(D&&y>=D.y0){ const A=G.sea&&G.sea.att&&G.sea.att[t.id], occ=A&&A.cap?A.sum/A.cap:.8, rk=facLastRank(t.id), ok=rk<=FAC_SPON.rk&&occ>=FAC_SPON.occ;
+    if(!ok)D.miss++; if(D.miss>=2){ const back=Math.round((D.paid??D.help)*FAC_SPON.back); if(me){ if(t.indie)spendPay(back); else G.spend.etc=(G.spend.etc||0)+back; } else t.cash-=back; /* 우리 구단은 결산 장부로(검수 11-14) */ t.facSpon=null; if(me){ prInit(); G.pr.fan=clamp(G.pr.fan-1,0,100); news('구단',`${D.n}, ${FACI[D.k].l} 명명권 조기 해지`,`성적과 관중이 약속에 못 미쳤다며 ${D.n}이(가) 후원을 거뒀습니다. 구단은 후원금 일부(${money(back)})를 돌려줍니다.`,-1); } else wire('구단',`${t.city} ${t.nick}, ${D.n} 명명권 해지`,{tid:t.id}); }
+    else { if(ok&&y>D.y0&&D.paid!=null&&D.paid<D.help){ const a=Math.min(D.help-D.paid,Math.round(D.help/FAC_SPON.yrs)); D.paid+=a; t.cash=(t.cash||0)+a; if(me)note('시설',`${D.n} 명명권 후원금 ${money(a)}이 들어왔습니다.`); } } /* 해마다 조건을 지켰을 때만 다음 몫 */
+    if(!t.facSpon){}
     else if(y>=D.y1){ t.facSpon=null; t.pop=clamp((t.pop||1)+.01,.7,1.45); if(me)news('구단',`${D.n} 명명권 계약 만료`,`${D.n}과 함께한 ${FACI[D.k].l} 후원이 약속대로 끝났습니다. 다른 기업들도 구단을 다시 보고 있습니다.`,1); }
     else if(me&&!ok)mail('마케팅팀',`${D.n}: "이대로면 곤란합니다"`,`명명권 후원사가 올해 성적과 관중에 실망했습니다. 한 번 더 기대에 못 미치면 후원을 거두고 일부를 돌려받으려 합니다.`,{kind:'시설'}); }
-  const L=t.cityOb||[]; for(const o of [...L]){ if(y>o.y1){ t.cityOb=(t.cityOb||[]).filter(x=>x!==o); /* 같은 해 두 건이 끝나도 앞서 지운 건이 되살아나지 않게(검수 11-14) */ cityRelAdd(t.id,3); continue; }
-    if((t.cash||0)-o.prog<-2000){ o.miss++; cityRelAdd(t.id,-8); if(me)mail('운영팀','지역 야구 교실을 열지 못했습니다',`돈이 모자라 ${t.city}시와 약속한 지역 야구 교실을 올해 열지 못했습니다. 시와의 관계가 나빠졌습니다.`,{kind:'시설'}); continue; }
+  const L=t.cityOb||[]; for(const o of [...L]){ if(y>o.y1){ t.cityOb=L.filter(x=>x!==o); cityRelAdd(t.id,3); continue; }
+    if((t.cash||0)-o.prog<-2000){ o.miss++; cityRelAdd(t.id,-8); if(o.miss>=2&&o.help){ const back=Math.round(o.help*FAC_SPON.back); t.cash-=back; t.cityOb=(t.cityOb||[]).filter(x=>x!==o); if(me)mail('운영팀',`${t.city}시, 시설 보조금 회수`,`약속한 지역 야구 교실을 두 해 열지 못해 ${t.city}시가 보조금 대부분(${money(back)})을 돌려받았습니다.`,{kind:'시설',imp:true}); continue; } /* 약속을 두 번 어기면 지자체도 돌려받는다(공략 방지) */ if(me)mail('운영팀','지역 야구 교실을 열지 못했습니다',`돈이 모자라 ${t.city}시와 약속한 지역 야구 교실을 올해 열지 못했습니다. 시와의 관계가 나빠졌습니다.`,{kind:'시설'}); continue; }
     if(me){ const k0=spendPay(o.prog); G.spend.fac=(G.spend.fac||0)+k0; } else t.cash-=o.prog; cityRelAdd(t.id,2); } }
 
 /* ===== AI 구단 구단주(모기업): 신뢰·우승 포상·운영비 절감·단장 경질 압박 =====
@@ -148,4 +151,6 @@ function clubEconDaily(){ if(!G||!G.teams)return; const E=G.ceco=G.ceco||{}; con
   const o=dobj(G.day); const winter=o.m===11&&o.d===20, summer=o.m===7&&o.d===1;
   if(winter||summer){ const k=G.year+(winter?'w':'s'); if(E.sp!==k){ E.sp=k; for(const t of G.teams){ if(t.id===ME())continue; try{ aiSpend(t,winter); }catch(e){} if(summer)try{ aiOwnerAsk(t,'mid'); }catch(e){} } } }
   /* FA 시장이 열린 날: 다른 구단 단장도 구단주에게 영입 자금을 요청한다(우리와 같은 승인 식·간격·신뢰 비용) */
-  if(G.fa&&G.fa.open&&!G.fa.closed&&G.day>=G.fa.openDay&&E.oa!==sponSeason()){ E.oa=sponSeason(); for(const t of G.teams){ if(t.id===ME())continue; try{ aiOwnerAsk(t,'fa'); }catch(e){} } } }
+  if(G.fa&&G.fa.open&&!G.fa.closed&&G.day>=G.fa.openDay&&E.oa!==sponSeason()){ E.oa=sponSeason(); for(const t of G.teams){ if(t.id===ME())continue; try{ aiOwnerAsk(t,'fa'); }catch(e){} } }
+  /* 매달 1일: 우리처럼 언제든 찾아갈 수 있다(같은 달력이 횟수를 막는다). 목적 있는 지원금은 그때 판정 */
+  if(o.d===1&&E.om!==G.day){ E.om=G.day; const faOn=G.fa&&G.fa.open&&!G.fa.closed; for(const t of G.teams){ if(t.id===ME())continue; try{ aiGrantCheck(t); }catch(e){} try{ aiOwnerAsk(t,faOn?'fa':'mid'); }catch(e){} } } }

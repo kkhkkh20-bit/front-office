@@ -49,7 +49,7 @@ function offerOne(o){ { const t=team(o.from); const why=offerBlockMsg(o); /* 그
     return `<section class="card hero"><div class="row between"><span class="eyebrow">트레이드 제안 · ${dmd(o.exp)}까지</span><span class="small muted">관계 ${relLabel(t.rel)}</span></div>
     <h2 class="sec">${tname(o.from)}</h2>
     <div class="tcols2"><div><div class="eyebrow">받는 선수</div><div class="tgrid">${o.give.map(li).join('')}</div></div><div><div class="eyebrow">보내는 선수</div><div class="tgrid">${o.get.map(li).join('')}</div></div></div>
-    ${(t=>`<p class="small ${t.includes('정리 필요')?'bad':'muted'}">${t}</p>`)(tradeRosterTxt(o.get,o.give))}${offerAdvBox(o)}
+    ${(o.cash||0)<0?`<p class="small good">상대가 현금 ${money(-o.cash)}을(를) 함께 보냅니다.</p>`:''}${(t=>`<p class="small ${t.includes('정리 필요')?'bad':'muted'}">${t}</p>`)(tradeRosterTxt(o.get,o.give))}${offerAdvBox(o)}
     ${why?`<p class="small bad">지금은 수락할 수 없습니다: ${esc(why)}</p>`:''}<div class="btns">${why?'':`<button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button>`}<button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div></section>`; }
 }
 function campCard(){

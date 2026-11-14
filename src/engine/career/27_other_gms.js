@@ -69,13 +69,16 @@ function teamNeeds(tid){ const rk=slotRanks(tid); const weak=PSLOTS.filter(k=>k!
 function needText(tid){ const n=teamNeeds(tid); const pt=planTalk(team(tid)); return `${pt||(n.contend?'우승 경쟁':'리빌딩')} · ${n.weak.length?n.weak.map(k=>SLOTK[k]).join('·')+' 보강 원함':'급한 자리 없음'} · 연봉 ${n.money==='tight'?'여유 없음':n.money==='rich'?'여유 많음':'보통'}`; }
 /* 친분은 높을수록 더 쌓기 어렵고(60 넘으면 줄어듦), 해마다 50 쪽으로 조금씩 돌아간다(gmRelYear) */
 function gmRelDim(t){ return t.rel>60?Math.max(.25,1-(t.rel-60)/40):1; }
-function gmRelYear(){ for(const t of G.teams){ if(t.id===G.user||t.rel==null)continue; t.rel=Math.round(50+(t.rel-50)*.75); } }
+/* 연락·식사로는 친분이 60 언저리까지만 오른다(공략 방지: 공짜 일괄 연락으로 85를 유지). 그 위는 성사된 거래·오래 함께한 세월로 */
+const GM_TALK_CAP=60;
+function gmTalkRel(r0,d){ return d<=0?clamp(r0+d,0,100):r0>=GM_TALK_CAP?r0:Math.min(GM_TALK_CAP,r0+d); }
+function gmRelYear(){ const uLong=G.gmSinceD!=null&&G.day-G.gmSinceD>=3*365; for(const t of G.teams){ if(t.id===G.user||t.rel==null)continue; t.rel=Math.round(50+(t.rel-50)*.75); const g=t.gm; if(uLong&&g&&!g.interim&&G.year-(g.since??G.year)>=3&&t.rel>=45)t.rel=clamp(t.rel+3,0,80); } } /* 세 해 넘게 마주한 두 단장은 조금씩 가까워진다 */
 function gmContact(tid,kind){ const t=team(tid), g=gmOf(tid); if(!g)return {msg:''}; G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={});
   if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return {msg:`${g.name} 단장과는 ${dmd(c.call+14)}부터 다시 연락할 수 있습니다.`};
-    c.call=G.day; const d=Math.round(Math.max(0,(g.trait==='loyal'?2:1)*ri(1,2)-(g.trait==='hard'?1:0))*gmRelDim(t)); t.rel=clamp(t.rel+d,0,100);
+    c.call=G.day; const d=Math.round(Math.max(0,(g.trait==='loyal'?2:1)*ri(1,2)-(g.trait==='hard'?1:0))*gmRelDim(t)); t.rel=gmTalkRel(t.rel,d);
     return {msg:`${g.name} 단장: "${aiSay(tid,'hello')||pick(GMTALK)}" 친분 상승. 들어 보니 ${needText(tid)}입니다.`,ok:true}; }
   if(kind==='meal'){ if(c.meal!=null&&c.meal>G.day-30)return {msg:`식사 자리는 한 달에 한 번입니다(${dmd(c.meal+30)}부터).`};
-    c.meal=G.day; G.spend.etc=(G.spend.etc||0)+10; const d=Math.round(ri(3,5)*(g.trait==='loyal'?1.5:g.trait==='hard'?.6:1)*gmRelDim(t)); t.rel=clamp(t.rel+d,0,100);
+    c.meal=G.day; G.spend.etc=(G.spend.etc||0)+10; const d=Math.round(ri(3,5)*(g.trait==='loyal'?1.5:g.trait==='hard'?.6:1)*gmRelDim(t)); t.rel=gmTalkRel(t.rel,d);
     return {msg:`${g.name} 단장과 저녁 식사를 했습니다(1천만 원). 친분 상승. ${g.trait==='hard'?'식사는 즐겁게 했지만 협상은 별개라고 선을 긋습니다.':'다음 거래 때 잘 봐 달라는 말이 오갔습니다.'}${(()=>{ /* 식사 자리에서 속내를 조금 듣는다: 우리 선수 중 누구를 탐내는지 */ try{ const L=aiInterest(tid).map(x=>typeof x==='object'?x:G.players[x]).filter(Boolean); return L.length?` 술잔이 돌자 ${pidName(L[0])}(${posLabel(L[0])}) 이야기를 슬쩍 꺼냈습니다.`:' 지금은 우리 선수에게 특별히 눈독 들이는 사람은 없어 보입니다.'; }catch(e){ return ''; } })()}`,ok:true}; }
   return {msg:''}; }
 /* 역제안: 조금 모자랄 때 상대가 조건을 바꿔 다시 제시 */
@@ -93,9 +96,10 @@ function counterOffer(tid,give,get,cash,pk){ cash=cash||0; const ev=(g,t)=>evalT
   return gmTrait(tid)==='hard'?out.slice(0,1):out.slice(0,2); }
 const NEG_MONTH=4;
 function negTurn(tid){ G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={}); const o=dobj(G.day); const mk=o.y*100+o.m; if(c.negM!==mk){ c.negM=mk; c.neg=0; } delete c.negDay; c.seen=c.seen||{}; for(const k in c.seen)if(c.seen[k]<G.day-30)delete c.seen[k]; return c; }
-/* 맞대결: 오늘(쉬는 날이면 내일) 우리와 경기하는 구단은 경기장에서 만나므로 횟수 제한이 없다 */
+/* 맞대결: 오늘(쉬는 날이면 내일) 우리와 경기하는 구단은 경기장에서 만나므로 협상을 두 번 더 할 수 있다 */
 function seriesOpp(){ const c=G.cal; if(!c||!c.sched)return null; for(const d of [G.day,G.day+1]){ const m=(c.sched[d]||[]).find(x=>x.includes(G.user)); if(m)return m[0]===G.user?m[1]:m[0]; if(d===G.day){ const k=(G.makeup||[]).find(x=>x.y===G.year&&(x.h===G.user||x.a===G.user)); if(k)return k.h===G.user?k.a:k.h; } } return null; } /* 다음 경기일에 치를 우리 연기 경기 상대도 맞대결(검수 11-09w) */ /* 오늘 다른 구단만 경기해도 우리 일정 기준으로 내일을 본다(검수 11-08c) */
-function negInfo(tid){ const c=negTurn(tid); const free=seriesOpp()===tid; const o=dobj(G.day); const nx=o.m===12?1:o.m+1; const cap=negCap(tid); return {used:c.neg,cap,left:free?99:Math.max(0,cap-c.neg),free,next:`${nx}월 1일`}; }
+function negInfo(tid){ const c=negTurn(tid); const free=seriesOpp()===tid; const o=dobj(G.day); const nx=o.m===12?1:o.m+1; const cap=negCap(tid); return {used:c.neg,cap:cap+(free?NEG_H2H:0),left:Math.max(0,cap+(free?NEG_H2H:0)-c.neg),free,next:`${nx}월 1일`}; } /* 맞대결 기간에는 경기장에서 만나 두 번 더(예전 무제한, 공략 방지) */
+const NEG_H2H=2;
 const tsig=(give,get,cash)=>[...give].sort((a,b)=>a-b).join(',')+'|'+[...get].sort((a,b)=>a-b).join(',')+(cash?'|c'+cash:''); /* 받는 현금(음수)도 조건으로 구분(검수 11-06) */
 /* 트레이드 기록과 성적표 */
 const warSoFar=(p,y)=>{ const h=seasonTotal(p,y,'1군'); return h?warOf(h,p):0; };
@@ -115,6 +119,8 @@ function tradeReport(tr){ if(!tr.gi)return null; const me=tr.me??G.user; const K
   const got=sum([...tr.gi,...dp(K.get)].map(id=>warSince(id,tr.y,tr.snap,me))), gave=sum([...tr.go,...dp(K.give)].map(id=>warSince(id,tr.y,tr.snap,tr.with))); return {got,gave,net:got-gave}; } /* 받은·준 지명권으로 뽑은 신인도 성과에(검수 11-09w) */
 function tradeGrade(tid,give,get,cash,pk){ const U=team(G.user); pk=pkNorm(pk); const d=stackIn(get.map(id=>tval(U,G.players[id],'in')))-sum(give.map(id=>tval(U,G.players[id],'out')))-(cash||0)/250+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); /* 지명권도 등급에(검수 11-06) */ /* cash: 우리가 낸 현금(+) 받은 현금(-). 10억이면 4점 */ return d>=8?'A':d>=3?'B':d>=-3?'C':d>=-8?'D':'F'; }
 /* 다른 구단끼리 트레이드 */
+/* AI가 얹을 현금: 받는 쪽(B) 눈에 모자란 값(gap)을 메울 만큼, 한 거래 20억·쓸 수 있는 현금 안에서(cashFor·cashVal과 같은 식) */
+function aiCashTop(A,B,gap,outV){ if(!(gap>0))return 0; const c=cashFor(B,gap,outV!=null?CASH_SHARE*Math.max(1.5,outV):null); /* 우리와 같은 현금 한도: 내주는 값의 22%까지 */ if(!c)return 0; if(c>2000||c>(A.cash||0)-AI_CASH_BUF)return 0; return c; }
 /* 그 자리 현재 기준값(가장 약한 주전/선발 5번째/불펜 4번째) */
 function slotBase(tid,k){ const L=leagueSlots()[tid]; return k==='SP'?(L.SP.ps.length<5?30:Math.min(...L.SP.ps.map(spV))):k==='RP'?(L.RP.ps.length<4?30:Math.min(...L.RP.ps.map(penV))):L[k].v; }
 const slotFits=(p,k)=>(k==='SP'||k==='RP')?pSlot(p)===k:(!p.isP&&(p.pos===k||subsOf(p).includes(k)));
@@ -139,12 +145,13 @@ function aiTradeTryRun(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>
     const pool=corePool(A.id).filter(q=>healthy(q)&&!q.ys&&!faLock(q)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in')*(q.aiListed?1.1:1),a:tval(A,q,'out')})).filter(x=>x.b>.3&&(!o.swap||(slotFits(x.q,bNeed[B.id].k)&&slotGain(bNeed[B.id].k,x.q)-bNeed[B.id].base>=1))).sort((x,y)=>x.b-y.b).slice(0,22); const nm=o.swap?.5:1;
     let best=null,bo=1e9; const tryS=arr=>{ const bv=stackIn(arr.map(x=>x.b)); if(bv<vOutAll+needB*nm)return; if(arr.length>gets.length&&((vOut>=2&&Math.max(...arr.map(x=>x.b))<vOut*.75)||(ovr(p)>=56&&Math.max(...arr.map(x=>ovr(x.q)))<ovr(p)-5)))return; const av=sum(arr.map(x=>x.a)); if(vInAAll-av<tradeNeed(A,av,relA)*nm)return; const ob=bv-vOutAll-needB*nm+arr.length*.5; if(ob<bo){ bo=ob; best=arr; } };
     for(let i=0;i<pool.length;i++){ tryS([pool[i]]); for(let j=i+1;j<pool.length;j++)tryS([pool[i],pool[j]]); }
+    let cashC=0; if(!best&&!o.swap&&aiCashRich(A)){ for(const x of pool){ const c=aiCashTop(A,B,vOutAll+needB*nm-x.b,vOutAll); if(!c)continue; const ca=c/100*teamCtx(A).money*.9; if(vInAAll-x.a-ca<tradeNeed(A,x.a+ca,relA)*nm)continue; if(!best||c<cashC){ best=[x]; cashC=c; } } } /* 돈 많은 구단은 모자란 값을 현금으로(우리와 같은 cashVal: 10억 넘는 몫은 절반 값) */
     if(!best)continue;
     if(rosterN(B.id)+best.length-gets.length>ROSTER_MAX)continue;
     { const gs=sum(best.map(x=>x.q.sal)), ps=sum(gets.map(q=>q.sal)); const capY=capOf(G.year); const gI=gets.map(q=>q.id), bI=best.map(x=>x.q.id); if((ps>gs&&capPayAs(A.id,gI,bI)>capY)||(gs>ps&&capPayAs(B.id,bI,gI)>capY))continue; }
-    const give=best.map(x=>x.q.id); const snap=tradeSnap([...gets.map(q=>q.id),...give]);
+    const give=best.map(x=>x.q.id); const snap=tradeSnap([...gets.map(q=>q.id),...give]); if(cashC){ payOut(A.id,cashC,'etc'); payIn(B.id,cashC); }
     gets.forEach(q=>{ tradeTerms(q); q.team=A.id; story(q,`트레이드로 ${tname(A.id)} 이적`,'move'); delete q.aiListed; delete q.aiWhy; delete q.aiUrg; }); give.forEach(id=>{ tradeTerms(G.players[id]); /* 달성한 옵션은 원소속 구단이 지급(양쪽 같게, 검수 11-09v) */ G.players[id].team=B.id; story(G.players[id],`트레이드로 ${tname(B.id)} 이적`,'move'); delete G.players[id].aiListed; });
-    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:gets.map(q=>q.id),bg:give,an:gets.map(q=>q.name),bn:give.map(id=>G.players[id].name),snap,...(o.swap?{sw:1}:{})}); /* an·bn: 은퇴 뒤에도 이름을 보이게(검수 11-08d) */ { const tr=mvTr(); gets.forEach(q=>mvLog('트레이드',q,B.id,A.id,'',0,tr)); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
+    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:gets.map(q=>q.id),bg:give,an:gets.map(q=>q.name),bn:give.map(id=>G.players[id].name).concat(cashC?['현금 '+money(cashC)]:[]),snap,...(o.swap?{sw:1}:{}),...(cashC?{cash:cashC}:{})}); /* an·bn: 은퇴 뒤에도 이름을 보이게(검수 11-08d) */ { const tr=mvTr(); gets.forEach(q=>mvLog('트레이드',q,B.id,A.id,'',0,tr)); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
     wire('트레이드',`${tshort(A.id)}–${tshort(B.id)} ${gets.length}대${give.length} 트레이드. ${tshort(A.id)}은(는) ${gets.map(q=>`${q.name}(${posLabel(q)})`).join(', ')}을(를) 얻고 ${give.map(id=>G.players[id].name).join(', ')}을(를) 내줬습니다.${o.swap?' 서로 약한 자리를 메우는 맞트레이드입니다.':gets.some(q=>q.aiWhy)?' 매물로 나와 있던 선수입니다.':''}`,{tid:A.id,ref:p.id});
     return true; }
   return null; }
@@ -171,11 +178,12 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
         for(const x of H){ if(x.b>=want&&vin-x.a>=needA){ pay=[]; pkGive=x.k; break; } }
         if(!pkGive)for(const q of pool){ const x=H.find(x=>stackIn([q.b])+x.b>=want&&vin-q.a-x.a>=needA); if(x){ pay=[q]; pkGive=x.k; break; } } }catch(e){ pay=null; pkGive=null; } }
     for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<needA)continue; pay=arr; break; }
-    if(!pay)continue; const give=pay.map(x=>x.q.id); const pkNm=pkGive?pkName(pkGive):null; if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year)*(hotA&&o.buyers?1.06:1))continue;
+    let cashC=0; if(!pay&&o.buyers&&aiCashRich(A)){ for(const q of [null,...pool.slice(0,8)]){ const qb=q?q.b:0, qa=q?q.a:0; const c=aiCashTop(A,B,want-qb,vOut); if(!c)continue; const ca=c/100*teamCtx(A).money*.9; if(vin-qa-ca<needA)continue; pay=q?[q]:[]; cashC=c; break; } } /* 현금 트레이드: 돈 많은 구단은 모자란 값을 현금으로 */
+    if(!pay||(!pay.length&&!pkGive&&!cashC))continue; const give=pay.map(x=>x.q.id); const pkNm=pkGive?pkName(pkGive):null; if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year)*(hotA&&o.buyers?1.06:1))continue;
     if(hotA&&o.buyers&&(pkGive||pay.some(x=>x.q.age<=24)))try{ domLog('allinBuy'); if(pkGive&&+pkGive.split(':')[0]===1)domLog('allinR1'); }catch(e){}
-    const snap=tradeSnap([p.id,...give]); tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
+    const snap=tradeSnap([p.id,...give]); if(cashC){ payOut(A.id,cashC,'etc'); payIn(B.id,cashC); } tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
     give.forEach(id=>{ const q=G.players[id]; tradeTerms(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
-    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]),snap,...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive){ const [rd,og]=pkGive.split(':').map(Number); G.pkOwn=G.pkOwn||{}; if(og===B.id)delete G.pkOwn[pkYear()+':'+rd+':'+og]; else G.pkOwn[pkYear()+':'+rd+':'+og]=B.id; } { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
+    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]).concat(cashC?['현금 '+money(cashC)]:[]),snap,...(cashC?{cash:cashC}:{}),...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive){ const [rd,og]=pkGive.split(':').map(Number); G.pkOwn=G.pkOwn||{}; if(og===B.id)delete G.pkOwn[pkYear()+':'+rd+':'+og]; else G.pkOwn[pkYear()+':'+rd+':'+og]=B.id; } { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
     wire('트레이드',`${tshort(A.id)}, 리빌딩 ${tshort(B.id)}에서 ${p.name}(${posLabel(p)}, ${p.age}세) 영입: ${[...give.map(id=>G.players[id].name),...(pkNm?[pkNm+' 지명권']:[])].join(', ')} 내줌`,{tid:A.id,ref:p.id}); n++; done=true; break; }
     if(!done)break; }
   return n; }

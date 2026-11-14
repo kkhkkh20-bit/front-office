@@ -111,7 +111,12 @@ function mreqCheck(){ const m=G.mgr[G.user]; if(!m)return; for(const r of mreqs(
 function grantAdd(g){ if(g&&g.an==null)g.an=G.acqSeq||0; if(g&&g.tid==null)g.tid=G.user; /* 어느 구단 구단주에게 받은 지원인지 */ grants().unshift(g); }
 function grants(){ const L=G.grants=G.grants||[]; for(const g of L)if(g.an==null)g.an=G.acqSeq||0; return L; } /* an: 지원금을 받을 때까지의 영입 순번(그 뒤 영입만 '목적대로 씀'으로 센다) */
 function grantAmt(y){ return sum(grants().filter(g=>g.y===(y??G.year)&&g.ok&&g.st!=='void'&&(g.tid==null||g.tid===G.user)).map(g=>g.amt)); } /* 지금 구단이 받은 것만(이직 전 구단 지원금 제외, 검수 11-08) */
-function ownAskLeft(){ const o=dobj(G.day); const mk=o.y*100+o.m; return grants().some(g=>g.mk===mk&&g.by==='gm'&&(g.tid==null||g.tid===G.user))?0:1; } /* 이직하면 새 구단주에게는 처음 요청 */
+/* 구단주 자금 요청 달력(우리·AI 같은 규칙, 공략 방지): 한 시즌(sponSeason) 3번까지, 지난 요청 뒤 45일은 쉰다 */
+const OWN_ASK_N=3, OWN_ASK_GAP=45;
+function ownAskGate(L,sy){ L=(L||[]).filter(g=>g&&g.d!=null); if(L.filter(g=>g.y===sy).length>=OWN_ASK_N)return 'season'; const last=Math.max(-1e9,...L.map(g=>g.d)); return G.day-last<OWN_ASK_GAP?'gap':''; }
+function ownAskMine(){ return grants().filter(g=>g.by==='gm'&&(g.tid==null||g.tid===G.user)); }
+function ownAskLeft(){ return ownAskGate(ownAskMine(),sponSeason())?0:1; } /* 이직하면 새 구단주에게는 처음 요청 */
+function ownAskNote(){ const k=ownAskGate(ownAskMine(),sponSeason()); return k==='season'?'이번 시즌 요청은 다 했습니다. 다음 시즌에 다시 요청할 수 있습니다.':k==='gap'?'얼마 전에 요청했습니다. 시간을 두고 다시 요청할 수 있습니다.':''; }
 /* 성사 가능성: 신뢰, 구단주 성향, 순위, 목적 */
 function ownOdds(amt,pur){ return ownOddsT(G.user,amt,pur); }
 /* 어느 구단 단장이든 같은 승인 식(사용자 11-13: AI 단장도 구단주에게 자금을 요청한다). 우리 구단만 쓰는 몫: 예산 외 수입 여유·구단주 동석 친밀도 */
@@ -124,12 +129,12 @@ function rankNowT(tid){ try{ const i=standingsNow().findIndex(x=>x.tid===tid); r
 function oddsShort(p){ return p>=.7?'가능성 높음':p>=.45?'반반':p>=.25?'가능성 낮음':'거의 어려움'; }
 function oddsTxt(p){ return p>=.7?'받아들일 가능성이 큽니다':p>=.45?'반반입니다':p>=.25?'쉽지 않습니다':'거의 어렵습니다'; }
 /* w: 사유를 고른 요청(ownWhy 결과). 승인 확률·목적·구단주 대답이 사유에 따라 정해진다. 없으면 예전 방식(면담·동석 관람) */
-function ownerAsk(amt,pur,w){ const t=team(G.user); if(t.indie)return '독립구단이라 모기업 지원이 없습니다. 스폰서와 자체 수익으로 운영합니다.'; if(pur&&pur.k==='frep'&&G.day>foreignDL())return '외국인 등록 마감이 지나 교체 자금을 요청할 수 없습니다.'; if(pur&&pur.k==='fa'){ const q=G.players[pur.pid]; if(!(G.fa&&G.fa.open&&!G.fa.closed&&q&&q.team==null&&q.ask&&G.fa.pool.includes(q.id)&&!faOutBlocked(G.user,q)))return '지금 계약할 수 있는 FA가 아니라 영입 자금을 요청할 수 없습니다.'; } /* 시장이 닫혔거나 외부 FA 한도를 채운 선수(검수 11-09zzd) */ /* 이행할 수 없는 요청은 받지 않는다(검수 11-08) */ if(!ownAskLeft())return '이번 달에는 이미 요청했습니다. 다음 달에 다시 요청할 수 있습니다.'; if(w&&w.block)return w.block;
+function ownerAsk(amt,pur,w){ const t=team(G.user); if(t.indie)return '독립구단이라 모기업 지원이 없습니다. 스폰서와 자체 수익으로 운영합니다.'; if(pur&&pur.k==='frep'&&G.day>foreignDL())return '외국인 등록 마감이 지나 교체 자금을 요청할 수 없습니다.'; if(pur&&pur.k==='fa'){ const q=G.players[pur.pid]; if(!(G.fa&&G.fa.open&&!G.fa.closed&&q&&q.team==null&&q.ask&&G.fa.pool.includes(q.id)&&!faOutBlocked(G.user,q)))return '지금 계약할 수 있는 FA가 아니라 영입 자금을 요청할 수 없습니다.'; } /* 시장이 닫혔거나 외부 FA 한도를 채운 선수(검수 11-09zzd) */ /* 이행할 수 없는 요청은 받지 않는다(검수 11-08) */ if(!ownAskLeft())return ownAskNote(); if(w&&w.block)return w.block;
   /* 자주·크게 요청할수록 더 자주 거절한다(설문 11-12: 좋은 구단주는 너무 쉽게 내준다): 최근 120일 요청 1건마다 ×0.85, 2천만 원 단위 이상 큰 요청 ×0.9 */ const rec=grants().filter(g=>g.by==='gm'&&(g.tid==null||g.tid===G.user)&&G.day-(g.d||0)<=120).length;
-  const p=(w?w.p:ownOdds(amt,pur))*(HARD()?.75:1)*Math.pow(.85,rec)*(amt>=2000?.9:1); /* 하드 모드: 구단주 승인이 더 어렵다 */ const ok=R()<p; const B=bossOf(G.user); const o=dobj(G.day); const g={y:sponSeason(),mk:o.y*100+o.m,d:G.day,amt,pur:pur||null,ok,by:'gm', /* y: 이 돈이 들어가는 시즌(겨울 승인분은 다음 시즌, 검수 11-08) */st:ok?'open':'no',until:pur&&pur.k==='fa'?grantFaEnd():pur&&pur.k==='frep'?Math.min(G.day+30,foreignDL()):pur&&pur.k==='boost'?(w&&w.until):null};
+  const p=(w?w.p:ownOdds(amt,pur))*(HARD()?.75:1)*Math.pow(.85,rec)*(amt>=2000?.9:1); /* 하드 모드: 구단주 승인이 더 어렵다 */ const ok=R()<p; const B=bossOf(G.user); const o=dobj(G.day); const g={y:sponSeason(),mk:o.y*100+o.m,d:G.day,amt,pur:pur||null,ok,by:'gm', /* y: 이 돈이 들어가는 시즌(겨울 승인분은 다음 시즌, 검수 11-08) */st:ok?'open':'no',until:pur&&pur.k==='fa'?grantFaEnd():pur&&pur.k==='frep'?Math.min(G.day+30,foreignDL()):pur&&(pur.k==='boost'||pur.k==='fac')?(w&&w.until):null};
   if(w)g.why=w.k; grantAdd(g); if(G.grants.length>40)G.grants.length=40; const what=w?`${OWN_WHY[w.k].l} 자금${pur&&pur.k==='fa'?`(${G.players[pur.pid]?.name||''})`:pur&&pur.k==='frep'?`(${G.players[pur.pid]?.name||''})`:''}`:pur?pur.k==='fa'?`FA ${G.players[pur.pid]?.name||''} 영입 자금`:pur.k==='frep'?'외국인 교체 자금':'운영 자금':'운영비 증액';
   const say=w?(ok?w.lineOk:w.lineNo):null; if(w)w.said=say;
-  if(ok){ grantApply(amt); if(!pur)g.st='done'; mail('구단주실',`구단주 승인: ${what} ${money(amt)}`,`${B.own.name} 회장이 ${what} ${money(amt)}을(를) 승인했습니다.${say?` "${say}"`:''} ${pur?'목적대로 쓰지 않으면 신뢰가 깎입니다. ':''}${g.y>G.year?`${g.y}시즌`:'올해'} 모기업 지원 한도와 구단주 목표가 그만큼 늘었습니다.`,{kind:'구단주'}); return `승인됐습니다. ${what} ${money(amt)}.`; }
+  if(ok){ grantApply(amt); if(!pur)g.st='done'; mail('구단주실',`구단주 승인: ${what} ${money(amt)}`,`${B.own.name} 회장이 ${what} ${money(amt)}을(를) 승인했습니다.${say?` "${say}"`:''} ${pur?pur.k==='fac'?'두 달 안에 공사를 시작하지 않으면 돌려받습니다. ':'목적대로 쓰지 않으면 신뢰가 깎입니다. ':''}${g.y>G.year?`${g.y}시즌`:'올해'} 모기업 지원 한도와 구단주 목표가 그만큼 늘었습니다.`,{kind:'구단주'}); return `승인됐습니다. ${what} ${money(amt)}.`; }
   t.trust=clamp(t.trust-1,0,100); mail('구단주실',`구단주 반려: ${what}`,`${B.own.name} 회장이 요청을 반려했습니다. "${say||(t.owner==='profit'?'지금 적자부터 줄이세요.':t.owner==='win'?'성적으로 먼저 증명하세요.':'지금은 때가 아닙니다.')}" 구단주 신뢰 조금 하락.`,{kind:'구단주'}); return `반려됐습니다. 구단주 신뢰 조금 하락.`; }
 /* ===== 사유를 들고 가는 자금 요청: 사유 × 상황(구단주 성향·신뢰·순위·시기·재정·지난 지원의 결과)으로 확률과 대답이 달라진다 ===== */
 const OWN_WHY={fa:{l:'FA 영입',d:'FA 시장에서 데려올 선수 몫'},frep:{l:'외국인 교체',d:'부진한 외국인을 바꿀 돈'},fac:{l:'시설 투자',d:'훈련·구장 시설에 쓸 돈'},dev:{l:'육성·스카우트',d:'2군·스카우트에 쓸 돈. 금액이 작다'},push:{l:'우승 도전 보강',d:'트레이드·외국인으로 당장 전력을 채울 돈'},deficit:{l:'재정 적자 메우기',d:'구멍 난 살림을 메울 돈'}};
@@ -146,13 +151,13 @@ function ownWhy(k,amt,pid){ const t=team(G.user); const W=OWN_WHY[k]; if(!W)retu
       if(inS){ if(rk<=3)f(.25,`지금 ${rk}위요. 이럴 때 밀어줘야지.`); else if(rk<=5)f(.06,`${rk}위면 가을야구는 보이지만 우승은 아직 멀었소.`); else if(rk>=7)f(-.28,`${rk}위에서 우승 보강이라니, 꿈이 크시군.`); }
       else { if(lastRk<=3)f(.12,`지난해 ${lastRk}위였으니 한 번 더 노려 볼 만하오.`); else if(lastRk>=7)f(-.2,`지난해 ${lastRk}위 팀이 우승 보강이라니 순서가 틀렸소.`); }
       if(ow==='win')f(.08,'우승이라면 내가 마다할 리 있소.'); if(ow==='profit')f(-.06,'우승도 좋지만 돈은 돌아와야 하오.'); } }
-  if(k==='fac'){ if(!inS)f(.06,'공사는 비시즌에 하는 게 맞소.'); else f(-.04,'시즌 한복판에 공사판을 벌이자는 거요?'); if(tr>=60)f(.06,'그동안 맡긴 일은 해냈으니 믿어 보겠소.'); if((t.cash||0)<0)f(-.12,'통장이 마이너스인데 시설부터 짓자는 거요?'); if(ow==='pr')f(.05,'팬들이 좋아할 시설이면 환영이오.'); if(ow==='profit')f(-.06,'시설은 돈 먹는 하마요.'); }
+  if(k==='fac'){ pur={k:'fac'}; until=G.day+FAC_GRANT_DAYS; if(!inS)f(.06,'공사는 비시즌에 하는 게 맞소.'); else f(-.04,'시즌 한복판에 공사판을 벌이자는 거요?'); if(tr>=60)f(.06,'그동안 맡긴 일은 해냈으니 믿어 보겠소.'); if((t.cash||0)<0)f(-.12,'통장이 마이너스인데 시설부터 짓자는 거요?'); if(ow==='pr')f(.05,'팬들이 좋아할 시설이면 환영이오.'); if(ow==='profit')f(-.06,'시설은 돈 먹는 하마요.'); }
   if(k==='dev'){ if(t.mode==='rebuild'||rk>=7||lastRk>=7)f(.12,'멀리 보는 건 좋소. 이번엔 씨앗에 투자합시다.'); else if(ow==='win'&&rk<=3)f(-.06,'우승 경쟁 중에 2군 걱정이오?'); if(ow==='profit')f(.06,'적은 돈으로 오래 쓸 선수를 만든다니 마음에 드오.'); f(.04,'액수가 크지 않으니 부담은 덜하오.'); }
   if(k==='deficit'){ const hole=(t.cash||0)<0||room<0; if(!hole)f(-.7,'적자도 아닌데 무슨 메울 구멍이 있다는 거요.'); /* 메울 적자가 없으면 사실상 반려(구단주 대사와 결과가 어긋나지 않게) */ else if(tr<40)f(-.3,'구멍을 낸 사람에게 또 돈을 맡기라는 거요?'); else if(tr>=65)f(.06,'살림 사정은 아오. 이번엔 막아 주겠소.'); if(ow==='profit')f(-.12,'적자는 메우는 게 아니라 안 내는 거요.'); if(ow==='pr')f(.04,'팬들 앞에서 구단이 휘청이는 건 보기 싫소.'); }
   /* 지난 1년 지원금의 결과: 목적을 지킨 돈은 믿음, 못 지킨 돈은 의심 */
   const past=grants().filter(g=>g.by==='gm'&&g.ok&&g.pur&&(g.tid==null||g.tid===G.user)&&g.d>G.day-365); const nf=past.filter(g=>g.st==='fail').length, nd=past.filter(g=>g.st==='done').length;
   if(nf)f(-Math.min(.3,nf*.12),`지난번 받아 간 돈은 목적대로 못 썼잖소(${nf}건).`); else if(nd)f(Math.min(.15,nd*.05),`지난번 돈은 제대로 썼더군(${nd}건).`);
-  const base=ownOdds(amt,pur&&pur.k!=='boost'?pur:null); const p=clamp(base+sum(F.map(x=>x[0])),.03,.92);
+  const base=ownOdds(amt,pur&&pur.k!=='boost'&&pur.k!=='fac'?pur:null); const p=clamp(base+sum(F.map(x=>x[0])),.03,.92);
   if(tr>=65)F.push([0,'단장을 믿는 편이오.']); else if(tr<35)F.push([0,'요즘 단장 하는 일이 영 미덥지 않소.']);
   const pos=F.filter(x=>x[0]>=0).sort((a,b)=>b[0]-a[0])[0], neg=F.filter(x=>x[0]<0).sort((a,b)=>a[0]-b[0])[0];
   const ok0=ow==='win'?'좋소. 대신 결과로 보여 주시오.':ow==='profit'?'...이번만이오. 쓴 만큼 벌어 오시오.':'알겠소. 팬들을 실망시키지 마시오.', no0=ow==='profit'?'지금 적자부터 줄이시오.':ow==='win'?'성적으로 먼저 증명하시오.':'지금은 때가 아니오.';
@@ -163,12 +168,18 @@ function frepAmtOf(p){ return round5(Math.max(500,p.sal*.6)); }
 function ownerAskWhy(k,amt,pid){ const w=ownWhy(k,amt,pid); if(!w)return {msg:'사유를 고르세요.'}; if(w.block)return {msg:w.block,w}; const r=ownerAsk(w.amt,w.pur,w); return {msg:r,w,ok:/^승인/.test(r),said:w.said}; }
 /* 겨울(결산 뒤)에 받은 지원금은 다음 시즌 몫이다. FA 자금 기한은 FA 시장이 닫히는 1월 24일 */
 function grantFaEnd(){ return dnum(G.year+(dobj(G.day).m>=10?1:0),1,24); }
+const BOOST_SAL=.5, FAC_GRANT_DAYS=60;
+/* d~until 사이에 착공한 시설·구장 공사비 합(우리 구단) */
+function grantFacSpent(d,until){ const F=(G.fac&&G.fac.hist||[]).filter(h=>h.d>=d&&h.d<=until&&h.k!=='acad'); const S=(stadOf(G.user).build||[]).filter(b=>b.st!=null&&b.st>=d&&b.st<=until); return sum(F.map(h=>h.c||0))+sum(S.map(b=>b.totalC??b.c??0)); }
+/* 목적대로 쓰지 않은 지원금 반납: 아직 그 시즌이면 지원 한도에서, 결산이 끝났으면 구단 현금에서 */
+function grantReturn(g){ const t=team(g.tid??G.user); if(g.y===sponSeason()&&t.grant&&t.grant.y===g.y)grantApply(-Math.min(g.amt,t.grant.amt)); else t.cash=(t.cash||0)-g.amt; }
 function grantApply(amt){ const t=team(G.user); const sy=sponSeason(); const cap0=supportCap(t); t.grant=(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt; t.grant={y:sy,amt:t.grant}; const g=G.goals; if(g&&g.y===sy){ const cap1=supportCap(t); g.sup=clamp((g.sup*cap0+amt)/Math.max(1,cap1),0,1.5); } } /* 지원 목표(비율×한도)가 정확히 받은 금액만큼 늘게: 한도도 함께 늘어나므로 비율은 새 한도로 다시 계산한다 */
 /* 목적이 있는 지원금: 지켰는지 */
 function grantCheck(){ const t=team(G.user); for(const g of grants()){ if(g.st!=='open'||!g.pur)continue; let ok=false, fail=false;
     if(g.pur.k==='fa'){ const tid=g.tid??G.user; const M=(G.moves||[]).filter(m=>m.t==='FA'&&m.pid===g.pur.pid&&m.d>=g.d); ok=M.some(m=>m.to===tid&&m.d<=g.until); fail=!ok&&(M.some(m=>m.to!==tid)||G.fa&&G.fa.closed||G.day>g.until); } /* FA 계약 기록으로 판정: 점검 날 소속(뒤이은 트레이드)이 아니라 실제 FA 계약 상대(검수 11-09zzd) */
     else if(g.pur.k==='frep'){ const s=fRepState(g.pur.pid,g.an,g.d,g.until); ok=s.ok; fail=!ok&&G.day>g.until; } /* 내보내고 새로 데려와야 교체(감독 요청과 같은 판정) */
-    else if(g.pur.k==='boost'){ const fit=(o,q)=>o&&o.tid===G.user&&(o.k==='트레이드'||o.k==='외국인')&&!o.tmp&&!(q&&q.ftmp)&&(o.n!=null?o.n>(g.an||0):o.d>g.d)&&(g.until==null||o.d<=g.until); ok=(G.mineL||[]).some(x=>fit(x.o,G.players[x.id]))||Object.values(G.players).some(p=>p.team===G.user&&fit(p.acq,p)); /* 영입 기록으로 판정(점검 날 로스터에 남았는지와 무관), 부상 대체 임시 계약은 보강이 아니다(검수 11-08) */ /* 구단주가 요구한 대로: 마감 전 트레이드·외국인 교체만 */ /* 자금을 받은 뒤 실제로 데려온 선수(트레이드·FA·외국인·무적 영입 등)가 있어야 한다 */ fail=!ok&&G.day>g.until; }
+    else if(g.pur.k==='boost'){ const fit=(o,q)=>o&&o.tid===G.user&&(o.k==='트레이드'||o.k==='외국인')&&!o.tmp&&!(q&&q.ftmp)&&(o.n!=null?o.n>(g.an||0):o.d>g.d)&&(g.until==null||o.d<=g.until); const got=new Map(); for(const x of (G.mineL||[])){ const q=G.players[x.id]; if(fit(x.o,q))got.set(x.id,q?q.sal||0:0); } for(const q of Object.values(G.players))if(q.team===G.user&&fit(q.acq,q))got.set(q.id,q.sal||0); ok=got.size>0&&sum([...got.values()])>=g.amt*BOOST_SAL; /* 데려온 선수 연봉 합이 지원금의 절반은 돼야 보강(공략 방지: 아무 트레이드나 1건으로 끝나지 않게) */ /* 영입 기록으로 판정(점검 날 로스터에 남았는지와 무관), 부상 대체 임시 계약은 보강이 아니다(검수 11-08) */ /* 구단주가 요구한 대로: 마감 전 트레이드·외국인 교체만 */ /* 자금을 받은 뒤 실제로 데려온 선수(트레이드·FA·외국인·무적 영입 등)가 있어야 한다 */ fail=!ok&&G.day>g.until; }
+    else if(g.pur.k==='fac'){ const c=grantFacSpent(g.d,g.until); ok=c>=g.amt*BOOST_SAL; if(!ok&&G.day>g.until){ grantReturn(g); g.st='back'; t.trust=clamp(t.trust-1,0,100); mail('구단주실','구단주: "시설에 쓰라던 돈은 돌려받겠습니다"',`시설 투자 자금을 받고도 기한 안에 공사를 시작하지 않았습니다. 지원금은 모기업으로 돌아갔고 구단주 신뢰가 조금 떨어졌습니다.`,{kind:'구단주',imp:true}); continue; } }
     if(ok){ g.st='done'; t.trust=clamp(t.trust+(g.by==='own'?4:2),0,100); note('구단주',`구단주가 지원한 돈이 목적대로 쓰였습니다. 구단주 신뢰 상승.`); }
     else if(fail){ g.st='fail'; t.trust=clamp(t.trust-(g.by==='own'?4:3),0,100); mail('구단주실','구단주: "지원한 목적이 이뤄지지 않았습니다"',`기한까지 지원 목적(${g.pur.k==='fa'?'FA 영입':g.pur.k==='frep'?'외국인 교체':'전력 보강'})을 이루지 못했습니다. 돈을 다른 데 쓴 것으로 보지는 않고, 약속한 보강이 없었던 점을 문제 삼습니다. 구단주 신뢰 하락.`,{kind:'구단주',imp:true}); } } }
 /* 구단주가 먼저: FA 기간 스타 영입 주문, 7월 우승 보강 자금 */
@@ -256,7 +267,7 @@ function pitchOdds(pid,args,cmts){ const I=pitchInfo(pid); if(!I)return 0; const
   return clamp(o,.03,.95); }
 function ownerPitch(pid,args,cmts){ const I=pitchInfo(pid); const t=team(G.user); const B=bossOf(G.user); if(!I)return '대상 선수가 없습니다.';
   if(t.indie)return '독립구단이라 모기업 지원이 없습니다.'; if(!I.capOK)return `샐러리캡 안에서만 요청할 수 있습니다. 남은 캡 ${money(I.capRoom)}, 필요 ${money(I.amt)}.`;
-  if(I.done)return '이 선수 건은 올해 이미 구단주에게 보고했습니다.'; if(!ownAskLeft())return '이번 달에는 이미 구단주에게 요청했습니다.';
+  if(I.done)return '이 선수 건은 올해 이미 구단주에게 보고했습니다.'; if(!ownAskLeft())return ownAskNote();
   args=(args||[]).filter(a=>PITCH_ARG[a]).slice(0,2); cmts=(cmts||[]).filter(c=>PITCH_CMT[c]); if(!args.length)return '설득할 근거를 하나 이상 고르세요.';
   const pr=pitchOdds(pid,args,cmts); const ok=R()<pr; (G.pitched=G.pitched||{})[pid]=G.year; const o=dobj(G.day);
   const best=[...args].sort((a,b)=>I.w[b]*I.S[b]-I.w[a]*I.S[a])[0]; const weak=args.filter(a=>I.S[a]<.35);

@@ -47,7 +47,7 @@ function personalActivity(kind,target){const A=PERSONAL_ACT[kind];if(!A||G.unemp
  if(kind==='ob'){text=obSupport(S,m);if(!text)return '우리 구단 출신 OB가 아직 없습니다.';}
  if(['chat','meal','rehab'].includes(kind)){p=G.players[+target];if(!p||p.team!==G.user)return '우리 구단 선수를 골라 주세요.';if(kind==='rehab'&&!(p.injOut>0))return '현재 재활 중인 선수가 아닙니다.';contact=contactRecord('pl:'+p.id);const mc=plDim(contact.uses&&contact.uses.meet);plUse(contact,'meet');contact.bond=clamp(contact.bond+A.bond*mc,0,100);p.mor=clamp((p.mor??60)+A.fx.mor*mc,0,100);text=`${p.name} · ${A.l}: ${friendshipLabel(p)}.${mc<.6?' 자주 만나 새로운 이야기는 줄었습니다.':''} 능력치·출전은 바꾸지 않습니다.`;}
  if(kind==='network'){const t=G.teams.find(t=>t.id===+target&&t.id!==G.user);if(!t)return '다른 구단 단장을 골라 주세요.';contact=personalGMContact(t.id);if(contact.meal!=null&&G.day-contact.meal<45)return `${gmOf(t.id).name} 단장과는 ${dmd(contact.meal+45)}부터 다시 식사할 수 있습니다.`;
-  const mc=plDim(contact.uses&&contact.uses.meal);plUse(contact,'meal');contact.meal=G.day;contact.bond=clamp(contact.bond+A.bond*mc,0,100);const r0=t.rel??50;t.rel=clamp(r0+plRound(A.fx.rel*mc),0,100);
+  const mc=plDim(contact.uses&&contact.uses.meal);plUse(contact,'meal');contact.meal=G.day;contact.bond=clamp(contact.bond+A.bond*mc,0,100);const r0=t.rel??50;t.rel=gmTalkRel(r0,plRound(A.fx.rel*mc));
   /* 최근 거래한 구단 단장과 잦은 식사는 뒷말이 더 붙는다 */ const traded=(G.trades||[]).some(x=>x.with===t.id&&x.d!=null&&G.day-x.d<90);plHeat(S,'network',PL_HEAT.network+(traded?2:0));
   const N=teamNeeds(t.id),rumor=N.weak.length?`식사 자리에서 ${SLOTK[N.weak[0]]} 보강을 고민한다는 이야기를 들었습니다.`:N.money==='tight'?'연봉 부담을 덜고 싶어 한다는 눈치입니다.':'급한 자리는 없다며 말을 아꼈습니다.';
   text=`${tname(t.id)} ${gmOf(t.id).name} 단장과 식사했습니다. ${rumor} 관계는 ${plWord(t.rel-r0,1)}.`;}

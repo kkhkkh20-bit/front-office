@@ -1,6 +1,10 @@
 /* ===== 다른 구단 코치 빼 오기 ===== */
 const PROMO={fp:'pc',fb:'bc',fm:'hc',pc:'hc',bc:'hc',cc:'hc',rc:'hc',dc:'hc',bp:'pc',ab:'bc',fd:'dc',fc:'cc',r1:'rc',rs:'fp',rb:'fb'};
 function poachOff(){ const per=period(); return per!=='season'&&per!=='post'; }
+/* 코치 빼 오기 한도(공략 방지): 비시즌(sponSeason 단위)마다 구단당 성공 2건, 시즌·포스트시즌 중에는 못 한다. 우리·AI 같은 한도 */
+const POACH_MAX=2;
+function poachN(tid){ const P=G.poachN=G.poachN||{}, k=sponSeason(); const x=P[tid]; return x&&x.k===k?x.n:0; }
+function poachAdd(tid){ const P=G.poachN=G.poachN||{}, k=sponSeason(); const x=P[tid]&&P[tid].k===k?P[tid]:(P[tid]={k,n:0}); x.n++; }
 function poachTerms(tid,role,toRole){ const c=G.coach&&G.coach[tid]&&G.coach[tid][role]; if(!c||typeof c!=='object'||!CKEYS.includes(c.role)||!Number.isFinite(c.sal)||c.sal<0)return null; const support=coachSupportView(c,tid), loyalty=support.loyalty, loyaltyBonus=support.bonus; const promo=toRole!==role; const sal=round5(c.sal*(promo?1.15:1.35));
   const comp=poachOff()&&c.yrs<=1?0:Math.round(c.sal*Math.max(.5,c.yrs-(poachOff()?1:.5))*.5); const m=G.mgr[tid]; const clan=!!(c.clan&&m&&c.clan===m.id);
   let ch=.42+(promo?.25:0)-(clan?.35:0)-(c.yrs>=2&&!poachOff()?.08:0); const ur=uRank(); const st=standingsNow(); const tr=st.findIndex(x=>x.tid===tid)+1; if(period()==='season'&&tr>0)ch+=(tr-ur)*.015;
@@ -8,14 +12,14 @@ function poachTerms(tid,role,toRole){ const c=G.coach&&G.coach[tid]&&G.coach[tid
   if(team(tid).rel<35)ch-=.1; stAttr(c); ch+=(clubPrestige(G.user)-clubPrestige(tid))*.004-(loyalty-20)*.002; /* 구단 위상 차이와 충성도(11-08c) */
   const X=cmCtrOf(c); if(X&&X.tid===tid&&X.by===G.user&&X.to===toRole)return {c,sal:X.need,comp,promo,clan,chance:clan?.5:.97,toRole,ctr:true,loyalty,loyaltyBonus}; /* 역제안을 넘는 조건으로 다시 제의 */
   return {c,sal,comp,promo,clan,chance:clamp(ch,.05,.9),toRole,loyalty,loyaltyBonus}; }
-function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상이 아닙니다.'; const target=G.coach[tid]&&G.coach[tid][role]; if(staffPending(target))return '아직 합류 전인 코치에게는 영입을 제의할 수 없습니다.'; const T=poachTerms(tid,role,toRole); if(!T)return '그 자리에 코치가 없습니다.'; const c=T.c; G.poachCd=G.poachCd||{};
+function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상이 아닙니다.'; if(!poachOff())return '시즌 중에는 다른 구단 코치를 데려올 수 없습니다. 시즌이 끝난 뒤 제의하세요.'; if(poachN(G.user)>=POACH_MAX)return `이번 겨울에는 이미 코치 ${POACH_MAX}명을 데려왔습니다. 다음 비시즌에 다시 제의할 수 있습니다.`; const target=G.coach[tid]&&G.coach[tid][role]; if(staffPending(target))return '아직 합류 전인 코치에게는 영입을 제의할 수 없습니다.'; const T=poachTerms(tid,role,toRole); if(!T)return '그 자리에 코치가 없습니다.'; const c=T.c; G.poachCd=G.poachCd||{};
   if(G.poachCd[c.id]>G.day)return `${c.name} 코치는 ${dmd(G.poachCd[c.id])}까지 다시 만나 주지 않습니다.`; const t=team(tid);
   if(R()>=T.chance){ G.poachCd[c.id]=G.day+30; t.rel=clamp(t.rel-1,0,100); return `${c.name} 코치가 제의를 거절했습니다. "${T.clan?`${G.mgr[tid].name} 감독님을 두고 갈 수 없습니다`:'지금 팀에서 하던 일을 마무리하고 싶습니다'}." (${tshort(tid)} 단장 친분 조금 하락)`; }
   if(T.ctr)delete G.poachCtr[c.id]; else { const ct=cmCounter(tid,c,T); if(ct)return ct; } /* 원 소속 구단의 역제안 */
   const C=G.coach[G.user]; const old=C[toRole]; if(old){ const pay=coachSev(old); /* 직접 해지와 같은 정산(검수 11-08) */ G.spend.coach=(G.spend.coach||0)+pay; addLog(`${CROLE[toRole].l} ${old.name}와(과) 결별했습니다(잔여 연봉 정산 ${money(pay)}).`); staffHistory('coach',old,'계약 종료',G.user,`${CROLE[toRole].l} · ${c.name} 영입으로 교체 · 잔여 연봉 정산 ${money(pay)}`);old.yrs=0; old.clan=null; G.cmarket.push(old); }
   if(T.comp){ G.spend.coach=(G.spend.coach||0)+T.comp; t.cash+=T.comp; }
   G.coach[tid][role]=null; const rep=obAiCoach(tid,role,c.ob)||mkCoach(role); if(!rep.yrs)rep.yrs=ri(1,3); G.coach[tid][role]=rep;staffHistory('coach',c,'이적',tid,`${CROLE[role].l} → ${tshort(G.user)} ${CROLE[toRole].l}${T.comp?` · 보상금 ${money(T.comp)}`:''}`);staffHistory('coach',rep,'선임',tid,`${CROLE[role].l} · ${c.name} 이적 후임`);
-  c.role=toRole; try{ coachSync(c); }catch(e){} c.sal=T.sal; staffCt(c,2); c.clan=null; c.from=tid; /* 새 계약 시작·종료 시즌으로 다시 잡는다 */ C[toRole]=c;if(old)interimLeft(old);staffHistory('coach',c,'영입',G.user,`${tshort(tid)} ${CROLE[role].l} 출신 · ${CROLE[toRole].l} · 연봉 ${money(c.sal)} · 2년`);t.rel=clamp(t.rel-(T.comp?2:4),0,100); obHireBonus(c.ob,CROLE[toRole].l);
+  c.role=toRole; try{ coachSync(c); }catch(e){} c.sal=T.sal; staffCt(c,2); c.clan=null; c.from=tid; /* 새 계약 시작·종료 시즌으로 다시 잡는다 */ C[toRole]=c;if(old)interimLeft(old);staffHistory('coach',c,'영입',G.user,`${tshort(tid)} ${CROLE[role].l} 출신 · ${CROLE[toRole].l} · 연봉 ${money(c.sal)} · 2년`);t.rel=clamp(t.rel-(T.comp?2:4),0,100); obHireBonus(c.ob,CROLE[toRole].l); poachAdd(G.user);
   wire('코치',`${tshort(G.user)}, ${tshort(tid)} ${CROLE[role].l} ${c.name} 영입${T.promo?` (${CROLE[toRole].l} 승격)`:''}`,{tid}); addLog(`${tname(tid)}에서 ${c.name} 코치를 ${CROLE[toRole].l}로 데려왔습니다. 연 ${money(T.sal)}${T.comp?` · 보상금 ${money(T.comp)}`:''}.`);
   return `${c.name} 코치가 ${CROLE[toRole].l}(으)로 합류합니다. 연 ${money(T.sal)} 2년${T.comp?`, ${tshort(tid)}에 보상금 ${money(T.comp)}`:''}. ${tshort(tid)} 단장 친분 하락.`; }
 
