@@ -99,6 +99,7 @@
       "src/engine/progression/72_delegate.js",
       "src/engine/staff/73_firings.js",
       "src/engine/media/74_press_play.js",
+      "src/engine/media/74b_ai_press.js",
       "src/engine/career/75_gm_profile.js",
       "src/engine/development/76_dev_plan.js",
       "src/engine/staff/77_pitch_role.js",

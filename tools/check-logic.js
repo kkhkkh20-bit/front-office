@@ -4607,7 +4607,7 @@ T('[AI 동등·면담] 같은 선수·같은 상태·같은 난수면 우리 tal
   for(const p of ps)for(const kind of ['praise','push','promise','ask','contract'])for(const m of [40,70,TALK_MOR_CAP-2]){ initPers(p); p.tk={}; p.tkH=kind==='praise'&&m>60?[G.day-3]:[]; delete p.promise; delete p.form; p.mor=m;
     const snap=JSON.stringify(p); __seed(9001+n); aiTalk(p.id,kind); const A=pick(p);
     G.players[p.id]=Object.assign(p,JSON.parse(snap)); __seed(9001+n); G.user=ai; let U; try{ talk(p.id,kind); U=pick(p); } finally{ G.user=u0; }
-    ok(JSON.stringify(A)===JSON.stringify(U),`${kind}/${m} 결과가 다름: AI ${JSON.stringify(A)} 우리 ${JSON.stringify(U)}`); n++; }
+    ok(JSON.stringify(A)===JSON.stringify(U),kind+'/'+m+' 결과가 다름: AI '+JSON.stringify(A)+' 우리 '+JSON.stringify(U)); n++; }
   ok(n>=200,'비교 수 '+n);
   const q=domestic(ai).find(x=>!x.ys&&!x.e1&&!x.foreign); if(q){ const snap=JSON.stringify(q); __seed(77); const o1=talkOutcome(q,'futreq',{}); const f1=q.futReq; Object.assign(q,JSON.parse(snap)); delete q.futReq; __seed(77); G.user=ai; let o2,f2; try{ o2=talkOutcome(q,'futreq',{}); f2=q.futReq; } finally{ G.user=u0; } ok(o1.d===o2.d&&JSON.stringify(f1)===JSON.stringify(f2),'2군 요청 결과 계산이 구단마다 다름'); } });
 T('[AI 동등·팀 분위기] 분위기가 나쁘면 AI는 분위기를 흐리는 비주축 선수를 매물로 내놓고, 주축·분위기가 좋을 때는 건드리지 않는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+8); const ai=G.teams.find(t=>t.id!==G.user).id;
