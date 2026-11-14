@@ -4611,7 +4611,7 @@ T('[AI 동등·면담] 같은 선수·같은 상태·같은 난수면 우리 tal
   ok(n>=200,'비교 수 '+n);
   const q=domestic(ai).find(x=>!x.ys&&!x.e1&&!x.foreign); if(q){ const snap=JSON.stringify(q); __seed(77); const o1=talkOutcome(q,'futreq',{}); const f1=q.futReq; Object.assign(q,JSON.parse(snap)); delete q.futReq; __seed(77); G.user=ai; let o2,f2; try{ o2=talkOutcome(q,'futreq',{}); f2=q.futReq; } finally{ G.user=u0; } ok(o1.d===o2.d&&JSON.stringify(f1)===JSON.stringify(f2),'2군 요청 결과 계산이 구단마다 다름'); } });
 T('[AI 동등·언론 플레이] AI도 우리와 같은 규칙으로 스타를 띄운다: 30일 간격·서먹한 기자 거절·같은 띄우기 크기·45일 뒤 같은 평가',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+25); const ai=G.teams.find(t=>t.id!==G.user).id;
-  const p=domestic(ai).find(x=>!x.ys&&healthy(x)); delete p.hype; const L=pressInit(); G.aiRep={}; for(const r of L)aiRepAdd(ai,r.id,-20);
+  const p=domestic(ai).find(x=>!x.ys&&healthy(x)); delete p.hype; const L=pressInit(); G.aiRep={}; G.aiPP={}; for(const r of L)aiRepAdd(ai,r.id,-20); /* 시즌 중 이미 띄운 기록(30일 간격)을 지우고 시작 */
   ok(aiHype(ai,p.id)==null,'서먹한 기자만 있는데 띄움'); aiRepAdd(ai,L[0].id,40); const s0=starPower(p); const r=aiHype(ai,p.id); ok(r&&[14,9,4].includes(p.hype.v)&&p.hype.until===G.day+120,'띄우기 크기가 우리와 다름');
   ok(starPower(p)-s0===p.hype.v,'스타성에 반영되지 않음'); const q=domestic(ai).find(x=>!x.ys&&x!==p); delete q.hype; ok(aiHype(ai,q.id)==null,'30일 안에 또 띄움');
   ok(aiHype(G.user,domestic(G.user)[0].id)==null,'AI 경로로 우리 선수를 띄움');
