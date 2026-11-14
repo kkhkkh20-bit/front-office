@@ -6,8 +6,8 @@ function pressLabel(v){ return v>=70?'우호적':v>=55?'호의적':v>=40?'중립
 function relPeople(){
   prInit(); const t=team(G.user); const B=bossOf(G.user); const m=G.mgr[G.user]; const C=G.coach?coachesOf(G.user):{};
   const top=[
-    {k:'own',name:B.own.name,role:'구단주 · 모기업 회장',av:{persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name},rel:t.trust,rl:'신뢰',lab:t.trust>=60?'두터운 신임':t.trust>=40?'지켜보는 중':t.trust>=25?'불신':'경질 검토',sub:`${OWNER[t.owner].label} · 친밀도 ${cwRap('own')}`},
-    {k:'ceo',name:B.ceo.name,role:'대표이사 사장',av:{persona:'staff',pid:B.ceo.id,team:G.user,age:B.ceo.age,name:B.ceo.name},rel:null,lab:'예산 창구',sub:`예산 여유 ${money(budget().roomGoal)} · 친밀도 ${cwRap('ceo')}`}];
+    {k:'own',name:B.own.name,role:'구단주 · 모기업 회장',av:{persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name},rel:t.trust,rl:'신뢰',lab:t.trust>=60?'두터운 신임':t.trust>=40?'지켜보는 중':t.trust>=25?'불신':'경질 검토',sub:`${OWNER[t.owner].label} · 친밀도 ${cwRapLbl(cwRap('own'))}`},
+    {k:'ceo',name:B.ceo.name,role:'대표이사 사장',av:{persona:'staff',pid:B.ceo.id,team:G.user,age:B.ceo.age,name:B.ceo.name},rel:null,lab:'예산 창구',sub:`예산 여유 ${money(budget().roomGoal)} · 친밀도 ${cwRapLbl(cwRap('ceo'))}`}];
   const field=[];
   if(m)field.push({k:'mgr',name:m.name,role:m.interim?'감독대행':'1군 감독',av:{persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name},rel:m.rel,rl:'관계',lab:relLabel(m.rel),sub:m.fame>=70?'스타 감독':m.ego>=70?'고집 센 편':'무난한 성격'});
   for(const r of CKEYS){ const c=C[r]; if(!c)continue; const clan=m&&c.clan===m.id;
@@ -29,10 +29,10 @@ function relPeople(){
   return [['구단 수뇌부',top],['코치·스카우트·데이터팀',field],['선수단',pl],['다른 구단 단장',gms],['바깥',out],['기자단',reps]];
 }
 function relKey(x){ return x.k.startsWith('p:')?['player',x.k.slice(2)]:['person',x.k]; }
-function dChip(k){ const d=relDelta(k); return d?`<i class="rd ${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</i>`:''; }
+function dChip(k){ const d=relDelta(k); const pub=k==='fan'||k==='press'; return d?`<i class="rd ${d>0?'up':'dn'}">${d>0?'▲':'▼'}${pub?Math.abs(d):''}</i>`:''; } /* 사람 사이 관계는 수치 대신 방향만(사용자 11-14) */
 function relCard(x){ const [a,v]=relKey(x);
   return `<button class="rp" data-a="${a}" data-v="${v}">${avImg(x.av)}<span class="rp-t"><b>${esc(x.name)}</b><i>${esc(x.role)}</i><em>${esc(x.sub||'')}</em></span>
-    <span class="rp-r">${x.rel!=null?`<span class="rp-n"><b class="num" style="color:${relCol(x.rel)}">${x.rel}</b>${dChip(x.k)}</span>${relBar(x.rel)}<i>${esc(x.rl)} · ${esc(x.lab)}</i>`:`<i class="rp-tag">${esc(x.lab)}</i>`}</span></button>`; }
+    <span class="rp-r">${x.rel!=null?`<span class="rp-n"><b class="num" style="color:${relCol(x.rel)}">${(x.k==='fan'||x.k==='press')?x.rel:''}</b>${dChip(x.k)}</span>${relBar(x.rel)}<i>${esc(x.rl)} · ${esc(x.lab)}</i>`:`<i class="rp-tag">${esc(x.lab)}</i>`}</span></button>`; }
 /* 관계 지도: 나를 가운데 두고 안쪽은 구단 사람, 바깥 오른쪽은 다른 구단 단장 */
 function relMap(groups){ const by={}; for(const [,L] of groups)for(const x of L)by[x.k]=x;
   const cx=158, cy=214; const nodes=[];
@@ -55,7 +55,7 @@ function relMap(groups){ const by={}; for(const [,L] of groups)for(const x of L)
     <p class="small muted">선 색은 관계(초록 좋음 · 노랑 보통 · 빨강 나쁨), 굵기는 관계의 깊이입니다. 점선은 수치로 관리하지 않는 관계입니다. 얼굴을 누르면 인물 정보가 열립니다.</p>`; }
 function relView(){ const groups=relPeople();
   const warn=[]; const t=team(G.user); const m=G.mgr[G.user];
-  if(t.trust<25)warn.push(`구단주 신뢰 ${t.trust}: 시즌 종료 때 12 아래면 경질됩니다.`); if(m&&m.rel<35)warn.push(`감독과의 관계 ${m.rel}: 콜업·말소 요청과 운영 기조가 잘 먹히지 않습니다.`);
+  if(t.trust<25)warn.push(`구단주 신뢰 ${t.trust}: 시즌 종료 때 12 아래면 경질됩니다.`); if(m&&m.rel<35)warn.push(`감독과의 관계 ${relLabel(m.rel)}: 콜업·말소 요청과 운영 기조가 잘 먹히지 않습니다.`);
   const sad=groups[2][1].filter(x=>x.rel<40).length; if(sad)warn.push(`불만 선수 ${sad}명: 기분이 낮으면 경기력이 떨어집니다.`);
   const G2=groups.filter(([,L])=>L.length); const it=inTabs('relv',[['map','지도'],['network','내 인맥'],...G2.map(([h,L])=>[h,`${h} ${L.length}`])],'map'); /* 지도와 사람 묶음을 안쪽 탭으로 */
   const W=warn.length?`<div class="note bad">${warn.map(esc).join('<br>')}</div>`:''; const g=G2.find(([h])=>h===it.cur);
@@ -66,7 +66,7 @@ function relView(){ const groups=relPeople();
 function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); const pick2=k=>{ for(const [,L] of gs)for(const x of L)if(x.k===k)return x; return null; };
   const L=['own','mgr','fan','press'].map(pick2).filter(Boolean); const g=gs[3][1]; if(g.length)L.push(g[0],g[g.length-1]);
   return `<section class="card relstrip"><div class="row between"><h2 class="sec">관계</h2><button class="btn small" data-a="go" data-v="club:rel">관계도</button></div>
-    <div class="rs">${L.map(x=>{ const [a,v]=relKey(x); return `<button data-a="${a}" data-v="${v}">${avImg(x.av)}<b>${esc(x.k==='own'?'구단주':x.k==='mgr'?'감독':x.k==='fan'?'팬':x.k==='press'?'언론':tshort(x.tid)+' 단장')}</b><span style="color:${relCol(x.rel)}">${x.rel}${dChip(x.k)}</span></button>`; }).join('')}</div></section>`; }
+    <div class="rs">${L.map(x=>{ const [a,v]=relKey(x); return `<button data-a="${a}" data-v="${v}">${avImg(x.av)}<b>${esc(x.k==='own'?'구단주':x.k==='mgr'?'감독':x.k==='fan'?'팬':x.k==='press'?'언론':tshort(x.tid)+' 단장')}</b><span style="color:${relCol(x.rel)}">${(x.k==='fan'||x.k==='press')?x.rel:esc(x.rl)}${dChip(x.k)}</span></button>`; }).join('')}</div></section>`; }
 /* 인물 카드 시트 */
 /* 같은 묶음(코치·스카우트·데이터팀, 선수단, 다른 구단 단장, 기자단 등) 안에서 이전·다음 사람으로 바로 넘긴다(카페 11-10) */
 function peopleGroup(k,groups){
@@ -160,7 +160,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
   const d=relDelta(k); /* 관계를 움직이는 것·주는 영향은 본문 대신 i 설명으로 */ const relTip=moves.length||fx.length?hiI([moves.length?'관계를 움직이는 것\n'+moves.map(s=>'· '+s).join('\n'):'',fx.length?'관계가 주는 영향\n'+fx.map(s=>'· '+s).join('\n'):''].filter(Boolean).join('\n\n')):'';
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
     <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
-    ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${x.rel}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${d>0?'+':''}${d}`:''}${relTip}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span>${relTip}</div>`}
+    ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${(x.k==='fan'||x.k==='press')?x.rel:''}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${(k==='fan'||k==='press')?(d>0?'+':'')+d:d>0?'가까워짐':'멀어짐'}`:''}${relTip}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span>${relTip}</div>`}
     ${personTop(k)}${info}${relLikesCard(k)}${(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()}${sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
 

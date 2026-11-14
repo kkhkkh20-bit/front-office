@@ -2,8 +2,8 @@
    한 화면: 라인스코어, 주요 장면 몇 줄, 구단주 한두 마디(면담 화면 말풍선), 신뢰·친밀도 변화와 선물,
    (a) 단장 건의 한 가지(안 해도 됨) → (b) 구단주 지시 */
 function cwWho(S){ const B=bossOf(G.user); const t=team(G.user);
-  if(S.who==='ceo')return {name:`${B.ceo.name} 사장`,role:`대표이사 사장 · 친밀도 ${cwRap('ceo')}`,av:avImg({persona:'staff',pid:B.ceo.id,team:G.user,age:B.ceo.age,name:B.ceo.name})};
-  return {name:`${B.own.name} 회장`,role:`${OWNER[t.owner]?OWNER[t.owner].label+' ':''}구단주 · 관심사 ${CW_SECL[cwSec()]} · 친밀도 ${cwRap('own')}`,av:avImg({persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name})}; }
+  if(S.who==='ceo')return {name:`${B.ceo.name} 사장`,role:`대표이사 사장 · 친밀도 ${cwRapLbl(cwRap('ceo'))}`,av:avImg({persona:'staff',pid:B.ceo.id,team:G.user,age:B.ceo.age,name:B.ceo.name})};
+  return {name:`${B.own.name} 회장`,role:`${OWNER[t.owner]?OWNER[t.owner].label+' ':''}구단주 · 관심사 ${CW_SECL[cwSec()]} · 친밀도 ${cwRapLbl(cwRap('own'))}`,av:avImg({persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name})}; }
 /* 주요 장면: 우리 득점·홈런을 앞에, 상대 큰 득점을 뒤에. 최대 5줄 */
 function cwKeys(g){ const L=g.pbp||[]; const myTop=g.away===G.user; const K=[];
   L.forEach((x,i)=>{ if(typeof x[1]!=='number')return; const runs=x[6]||0; if(!(runs>0||x[3]==='HR'))return; const mine=(x[0]%2===0)===myTop; K.push({i,h:x[0],mine,w:(mine?2:1)*(runs+(x[3]==='HR'?1:0))}); });

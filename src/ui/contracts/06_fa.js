@@ -3,7 +3,7 @@ function agAv(ag,expr){ return avImg({persona:'agent',pid:'agt'+ag.id+ag.name,ag
 function agentAv(p,expr){ return agAv(agentOf(p),expr); }
 /* 에이전트 소개 한 줄: 규모 · 스타일 · 친분 · 우리와 계약 실적 */
 function agLine(ag){ const st=AG_STYLE[ag.style]||AG_STYLE.rel; const r=agRel(ag); const dl=(ag.deals&&ag.deals[G.user])||0;
-  return `<span class="pill ${ag.size==='big'?'acc':''}">${AG_SIZE[ag.size]}</span><span class="pill" title="${esc(st.d)}">${st.l}</span><span class="pill ${r>=60?'good':r<40?'bad':''}">친분 ${r} · ${agRelLab(r)}</span>${dl?`<span class="small muted">우리와 계약 ${dl}건</span>`:''}`; }
+  return `<span class="pill ${ag.size==='big'?'acc':''}">${AG_SIZE[ag.size]}</span><span class="pill" title="${esc(st.d)}">${st.l}</span><span class="pill ${r>=60?'good':r<40?'bad':''}">친분 ${agRelLab(r)}</span>${dl?`<span class="small muted">우리와 계약 ${dl}건</span>`:''}`; }
 function agClients(ag){ const F=G.fa; if(!F)return []; return F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&agentOf(p)===ag).sort((a,b)=>ovr(b)-ovr(a)); }
 /* 에이전트 명단: 이번 겨울 누가 어떤 고객을 맡았는지, 우리와 친분은 어떤지 */
 function agDirCard(){ const A=agInit(); const rows=A.map(ag=>{ const cl=agClients(ag); return `<div class="agr">${agAv(ag)}<div class="agm"><b>${esc(ag.name)} <span class="small muted">${esc(ag.firm)}</span></b><span class="agl">${agLine(ag)}</span><span class="small">${cl.length?`이번 겨울 고객 ${cl.length}명: ${cl.slice(0,4).map(p=>`<button class="lnk" data-a="faSel" data-v="${p.id}">${esc(p.name)}</button>`).join(', ')}${cl.length>4?' 등':''}`:'<span class="muted">이번 겨울 FA 고객 없음</span>'}</span></div></div>`; }).join('');
