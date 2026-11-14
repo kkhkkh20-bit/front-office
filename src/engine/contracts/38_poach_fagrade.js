@@ -3,7 +3,7 @@ const PROMO={fp:'pc',fb:'bc',fm:'hc',pc:'hc',bc:'hc',cc:'hc',rc:'hc',dc:'hc',bp:
 function poachOff(){ const per=period(); return per!=='season'&&per!=='post'; }
 /* 코치 빼 오기 한도(공략 방지): 비시즌(sponSeason 단위)마다 구단당 성공 2건, 시즌·포스트시즌 중에는 못 한다. 우리·AI 같은 한도 */
 const POACH_MAX=2;
-function poachN(tid){ const P=G.poachN=G.poachN||{}, k=sponSeason(); const x=P[tid]; return x&&x.k===k?x.n:0; }
+function poachN(tid){ const P=G.poachN||{}, k=sponSeason(); /* 읽기만: 거절 판정이 저장 상태를 만들지 않게(check-feedback-staff-market #89) */ const x=P[tid]; return x&&x.k===k?x.n:0; }
 function poachAdd(tid){ const P=G.poachN=G.poachN||{}, k=sponSeason(); const x=P[tid]&&P[tid].k===k?P[tid]:(P[tid]={k,n:0}); x.n++; }
 function poachTerms(tid,role,toRole){ const c=G.coach&&G.coach[tid]&&G.coach[tid][role]; if(!c||typeof c!=='object'||!CKEYS.includes(c.role)||!Number.isFinite(c.sal)||c.sal<0)return null; const support=coachSupportView(c,tid), loyalty=support.loyalty, loyaltyBonus=support.bonus; const promo=toRole!==role; const sal=round5(c.sal*(promo?1.15:1.35));
   const comp=poachOff()&&c.yrs<=1?0:Math.round(c.sal*Math.max(.5,c.yrs-(poachOff()?1:.5))*.5); const m=G.mgr[tid]; const clan=!!(c.clan&&m&&c.clan===m.id);
