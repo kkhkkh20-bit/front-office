@@ -56,13 +56,15 @@ function aiCapMul(t){ if(!t||t.id===ME())return 1; if(t.allIn===sponSeason())ret
 /* FA 시장이 열릴 때 올인 구단을 고른다: 구단주가 우승형·현금 여유·전력 상위·최근 3년 올인 없음·연속 초과 2회 미만. 한 해 한 구단(독주 구단이 있으면 두 구단까지) */
 function allInPick(){ const sy=sponSeason(); const ord=(G.last&&G.last.order)||[]; const rk=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?6:i+1; };
   /* 독주 견제(86b_dynasty): 한 구단이 달아나면 상위권 경쟁 구단이, 자리가 위태로운 단장은 빚을 져서라도 올인한다(한 해 두 구단까지). 독주 구단 자신은 올인하지 않는다 */
-  let L=null; try{ L=domLead(); }catch(e){} const max=L?2:1; if(G.teams.filter(t=>t.allIn===sy).length>=max)return;
+  let L=null; try{ L=domLead(); }catch(e){} const max=L?2:1;
+  for(let n=G.teams.filter(t=>t.allIn===sy).length;n<max;n++)if(!allInPick1(sy,rk,L))break; } /* 독주 구단이 있으면 두 번째 구단도 같은 기준으로 한 번 더 뽑는다(검수 11-14: 두 구단까지라면서 한 구단만 뽑았다) */
+function allInPick1(sy,rk,L){
   const ok0=t=>t.id!==ME()&&!t.indie&&planOf(t)==='win'&&t.allIn!==sy&&(t.capOver||0)<2&&!(t.allInY&&sy-t.allInY<3)&&!(L&&L.tid===t.id);
   const ds=t=>{ try{ return despOf(t); }catch(e){ return 0; } };
   const C=G.teams.filter(t=>ok0(t)&&(((t.owner==='win'||(t.owner==='pr'&&gmTrait(t.id)==='gambler'))&&(t.cash||0)>5000&&rk(t.id)<=4)||((ds(t)>=.5||(L&&rk(t.id)<=5))&&(t.cash||0)>-1000)));
-  if(!C.length||R()>=.22+(L?.25:0)+.2*Math.max(0,...C.map(ds)))return;
+  if(!C.length||R()>=.22+(L?.25:0)+.2*Math.max(0,...C.map(ds)))return false;
   const t=C[Math.floor(R()*C.length)]; t.allIn=sy; t.allInY=sy; const dp=ds(t)>=.5; if(L||dp)try{ domLog('allin'); }catch(e){}
-  news('구단',`${tshort(t.id)}, ${L&&!dp?`${tshort(L.tid)} 독주 막겠다… `:dp?'벼랑 끝 승부수… ':''}경쟁균형세 감수하고 우승 올인`,`${t.city} ${t.nick} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다.${dp?' 성적이 나지 않으면 단장 자리도 장담할 수 없다는 이야기가 함께 나옵니다.':''} 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); }
+  news('구단',`${tshort(t.id)}, ${L&&!dp?`${tshort(L.tid)} 독주 막겠다… `:dp?'벼랑 끝 승부수… ':''}경쟁균형세 감수하고 우승 올인`,`${t.city} ${t.nick} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다.${dp?' 성적이 나지 않으면 단장 자리도 장담할 수 없다는 이야기가 함께 나옵니다.':''} 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); return true; }
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
 /* 초과액으로 낼 제재금 예상: 지금까지 연속 초과 횟수에 이번을 더한 단계(재계약 화면에서 넘길지 고르게, 유저 피드백 11-07) */
 function capTaxEst(over,tid=G.user){ const n=((team(tid)||{}).capOver||0)+1; return {n,tax:Math.round(Math.max(0,over)*capRate(n)),pen:n>=3}; }
