@@ -192,7 +192,7 @@ function armOkM(m){ const d=mgrDir(); return !!(m&&!m.interim&&d.arm&&d.arm.ok&&
 function armDirOn(tid){ return armOkM(G.mgr&&G.mgr[tid]); } /* 지시를 받아들인 그 감독이면 이직한 전 구단에서도 투구 수 제한과 성향 보정을 함께(검수 11-09m) */
 function mgrArmEff(m){ mgrAttr(m); return armOkM(m)?Math.min(m.arm,35):m.arm; }
 /* 거절된 지시는 관계가 5 이상 오르거나 30일이 지나야 다시 꺼낼 수 있다(같은 날 다시 눌러 관계만 깎이지 않게) */
-function mgrDirWait(k){ const m=G.mgr[G.user]; const x=mgrDir()[k]; if(!m||!x||x.ok||x.mid!==m.id)return null; const dd=x.day+30-G.day, need=(x.rel0??m.rel)+5; if(dd<=0||m.rel>=need)return null; return `관계 개선 후 재논의(관계 ${need} 이상 또는 ${dmd(x.day+30)}부터)`; }
+function mgrDirWait(k){ const m=G.mgr[G.user]; const x=mgrDir()[k]; if(!m||!x||x.ok||x.mid!==m.id)return null; const dd=x.day+30-G.day, need=(x.rel0??m.rel)+5; if(dd<=0||m.rel>=need)return null; const lv=relLabel(need); return `관계가 ${lv!==relLabel(m.rel)?lv+'에 이르거나':'조금 더 나아지거나'} ${dmd(x.day+30)}부터 재논의`; }
 function setMgrDir(k,on){ const m=G.mgr[G.user]; if(!m||m.interim)return '감독이 없습니다.'; mgrAttr(m); mgrFix(m); const d=mgrDir(); G._push=null; /* 그날 캐시된 투수 운용 값을 버린다(검수 11-09m) */
   if(on){ const w=mgrDirWait(k); if(w)return `${m.name} 감독이 얼마 전 거절한 지시입니다. ${w}.`; }
   if(!on){ delete d[k]; return k==='arm'?'투수 관리 지시를 풀었습니다. 감독 본래 성향대로 운영합니다.':'휴식 보장 지시를 풀었습니다.'; }

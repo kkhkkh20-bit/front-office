@@ -24,7 +24,7 @@ function schNewCoach(S,seed,skip){ let ob=null;
 function schSetCoach(S,c,why){ const old=S.coach; if(old&&old.id!==c.id)schDropMarket(old.id); if(old&&old.ob&&G.ob){ const o=G.ob.find(x=>x.id===old.ob); if(o&&o.alt&&o.alt.k==='hs')o.alt=null; } S.coach=c;
   for(const t in S.rel){ const r0=schRel0(S,+t); S.rel[t]=Math.round(r0+(S.rel[t]-r0)*.25); }
   if(c.ob){ const o=G.ob&&G.ob.find(x=>x.id===c.ob); if(o&&(o.fame>=60||o.team===G.user))try{ wire('아마',`${tshort(o.team)} 출신 ${c.name}, ${c.alma?'모교 ':''}${S.n} 감독 부임`,{tid:o.team}); }catch(e){}
-    if(o&&o.team===G.user)try{ mail('스카우트팀',`우리 구단 출신 ${c.name}, ${S.n} 감독으로`,`${c.name}(${c.car})이(가) ${S.n} 감독을 맡았습니다. 우리 구단 출신이라 친분이 ${schRel(S)}에서 시작합니다. 그 학교 선수 정보가 더 잘 들어옵니다.`,{kind:'스카우트'}); }catch(e){} }
+    if(o&&o.team===G.user)try{ mail('스카우트팀',`우리 구단 출신 ${c.name}, ${S.n} 감독으로`,`${c.name}(${c.car})이(가) ${S.n} 감독을 맡았습니다. 우리 구단 출신이라 처음부터 ${schRelLbl(schRel(S))} 사이입니다. 그 학교 선수 정보가 더 잘 들어옵니다.`,{kind:'스카우트'}); }catch(e){} }
   return why; }
 /* 겨울: 감독 나이·은퇴·교체, 학교 전력 변화, 이름난 감독은 스태프 시장으로 */
 function schYear(){ const L=Object.values(schList()); let out=0;
@@ -88,11 +88,11 @@ function schTip(){ const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p
   const L=Object.values(schList()).filter(S=>schRel(S)>=60&&C.some(p=>p.school===S.n)).sort((a,b)=>schRel(b)-schRel(a));
   for(const S of L){ if(R()>.35+(schRel(S)-60)*.01)continue; const p=C.filter(q=>q.school===S.n).sort((a,b)=>(b.pot||0)-(a.pot||0))[0]; if(p.schTip!=null&&!p.schTips){p.schTips={};if(p.schTipT!=null)p.schTips[p.schTipT]=p.schTip;else p.schTipLegacy=p.schTip;} (p.schTips=p.schTips||{})[G.user]=G.year; p.schTip=G.year; p.schTipT=G.user; /* 귀띔은 받은 구단만 쓴다(검수 11-09e #13) */ const c=S.coach;
     const line={엄격형:`성실함은 제가 보증합니다. ${pidName(p)}, 새벽 훈련 한 번을 안 빠졌어요.`,자율형:`${pidName(p)}은(는) 시키지 않아도 알아서 하는 놈입니다. 프로 가면 더 클 겁니다.`,데이터형:`${pidName(p)} 지난달 기록표 보내 드릴게요. 숫자보다 내용이 더 좋습니다.`,육성형:`${pidName(p)}, 아직 덜 컸습니다. 그래서 더 기대가 돼요. 2~3년 뒤를 보세요.`}[c.sty]||'';
-    mail('스카우트팀',`${S.n} ${c.name} 감독: "우리 애 하나 좋은 놈 있습니다"`,`${S.n} ${c.name} 감독(${c.sty})이 전화를 걸어왔습니다.\n"단장님 구단이니까 먼저 말씀드리는 겁니다. ${line}"\n\n${pidName(p)}(${posLabel(p)}) 평가 오차가 줄어듭니다. 친분 ${schRel(S)}(${schRelLbl(schRel(S))}).`,{kind:'스카우트',acts:[{l:'선수 보기',a:'player',v:p.id}]}); return p; }
+    mail('스카우트팀',`${S.n} ${c.name} 감독: "우리 애 하나 좋은 놈 있습니다"`,`${S.n} ${c.name} 감독(${c.sty})이 전화를 걸어왔습니다.\n"단장님 구단이니까 먼저 말씀드리는 겁니다. ${line}"\n\n${pidName(p)}(${posLabel(p)}) 평가 오차가 줄어듭니다. 친분 ${schRelLbl(schRel(S))}.`,{kind:'스카우트',acts:[{l:'선수 보기',a:'player',v:p.id}]}); return p; }
   return null; }
 /* 학교 후원(야구부 장비·전지훈련 지원): 구단마다 한 해 한 번, 1천만 원, 친분 +8 */
 const schGave=(S,tid)=>!!S&&!!S.gy&&typeof S.gy==='object'&&S.gy[tid??G.user]===G.year;
 function schGift(n){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const S=schList()[n]; if(!S)return '학교가 없습니다.'; if(schGave(S))return `${n}에는 올해 이미 후원했습니다.`;
-  if(!S.gy||typeof S.gy!=='object')S.gy={}; S.gy[G.user]=G.year; try{ _dcc=null; }catch(e){} /* 스카우트 주장 캐시도 새로(검수 11-09e #24) */ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+10; schAdd(S,8); return `${n} 야구부에 장비를 후원했습니다(${money(10)}). ${S.coach.name} 감독과 친분 ${schRel(S)}.`; }
+  if(!S.gy||typeof S.gy!=='object')S.gy={}; S.gy[G.user]=G.year; try{ _dcc=null; }catch(e){} /* 스카우트 주장 캐시도 새로(검수 11-09e #24) */ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+10; schAdd(S,8); return `${n} 야구부에 장비를 후원했습니다(${money(10)}). ${S.coach.name} 감독과 친분 ${schRelLbl(schRel(S))}.`; }
 /* 학교 친분이 평가 오차에 주는 배수(우리 구단만): 친분 0이면 1.08배, 100이면 0.92배, 귀띔받은 선수는 0.85배 더 */
 function schSdM(p){ const S=p&&p.prospect?schOf(p):null; if(!S)return 1; return clamp((1.08-schRel(S)*.0016)*(schTipKnown(p)?.85:1),.75,1.08); }

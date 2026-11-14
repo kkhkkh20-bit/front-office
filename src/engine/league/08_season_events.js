@@ -14,15 +14,14 @@ function recoverAll(n){ const rb=1+facImpact(facOf('rehab'))*.06; for(const p of
 const FORM_K=.4; /* 시즌 컨디션·타구 운의 크기(능력과 무관한 한 해의 흔들림). 1이면 타구 운(확률상 어쩔 수 없는 흔들림) 위에 한 해 컨디션이 크게 얹혀 능력과 기록이 너무 어긋났다 */
 function rollForm(){ G.formY=G.year; for(const p of Object.values(G.players)){ if(p.team==null)continue; const sd=p.foreign?3.0:p.age>=33?2.4:2.0; const x=R(); /* 9%는 한 해 크게 부진하고 6%는 커리어 하이를 찍는다 */ const v0=x<.09?N(-4.2,1.1):x<.15?N(3.4,1):N(0,sd); p.sf={y:G.year,v:clamp(v0*FORM_K,-6.5,6),m:0,lk:clamp(N(0,.012)*FORM_K,-.03,.03)}; p.wear=0; p.fat=0; p.l10=[]; } }
 function campSnap(){ const o={}; for(const p of domestic(G.user).concat(foreignOf(G.user)))o[p.id]={o:Math.round(ovr(p)*10)/10,r:Object.assign({},p.r)}; return o; }
-function campStart(){ rollForm(); try{ for(const t of G.teams)electCaptain(t.id,'새 시즌 선수단 투표'); }catch(e){} G.camp={focus:'balance',done:false,snap:campSnap()}; for(const t of G.teams){ delete t.campInj; delete t.form; } /* 다른 구단 지난 캠프 효과도 새 캠프에서 다시 정한다 */ stop('캠프','스프링캠프가 시작되었습니다. 훈련 → 육성 탭에서 훈련 방향을 정하세요. 3월 5일에 결과가 나옵니다.'); }
+function campStart(){ rollForm(); try{ for(const t of G.teams)electCaptain(t.id,'새 시즌 선수단 투표'); }catch(e){} G.camp={focus:'balance',done:false,snap:campSnap()}; for(const t of G.teams){ delete t.campInj; delete t.form; } G.campInj=null; /* 지난 캠프 효과는 새 캠프에서 다시 정한다: 우리 구단도 다른 구단과 같은 때(캠프 기간은 균형 값) */ stop('캠프','스프링캠프가 시작되었습니다. 훈련 → 육성 탭에서 훈련 방향을 정하세요. 3월 5일에 결과가 나옵니다.'); }
 const CAMP={balance:'균형',skill:'기술 훈련',fitness:'체력·부상 방지',game:'실전 감각'};
 function campEnd(){
-  if(!G.camp)return; const f=G.camp.focus; G.campInj=1; G.form=null; const ups=[];
+  if(!G.camp)return; const f=G.camp.focus; G.campInj=CAMP_INJ[f]||1; G.form=null; const ups=[];
   const cev=campGrowAll('spring',f); /* 모든 구단 캠프 성장·구종 추가·폼 수정(79_camps.js) */
-  if(f==='fitness')G.campInj=.78; if(f==='balance')G.campInj=.92;
   if(f==='game')G.form={until:dnum(G.year,4,30),b:2};
   for(const t of G.teams){ if(t.id===ME())continue; const af=(G.camp.byT&&G.camp.byT[t.id])||campFocusAi(t.id,'spring'); /* 다른 구단도 고른 캠프 방향의 부상·컨디션 효과를 같은 값으로 받는다 */
-    if(af==='fitness')t.campInj=.78; else if(af==='balance')t.campInj=.92; else delete t.campInj; if(af==='game')t.form={until:dnum(G.year,4,30),b:2}; else delete t.form; }
+    t.campInj=CAMP_INJ[af]||1; if(af==='game')t.form={until:dnum(G.year,4,30),b:2}; else delete t.form; }
   G.camp.done=true;
   { const ps=domestic(G.user).concat(foreignOf(G.user)).filter(p=>p.sf).map(p=>({p,v:p.sf.v+N(0,1.2)})).sort((a,b)=>b.v-a.v); if(ps.length>6)mail('코칭스태프','캠프에서 본 선수들 컨디션',`캠프 기간 코치진 눈에 몸 상태가 특히 좋아 보인 선수: ${ps.slice(0,3).map(x=>x.p.name).join(', ')}.\n\n반대로 컨디션이 올라오지 않은 선수: ${ps.slice(-3).map(x=>x.p.name).join(', ')}.\n\n같은 선수라도 해마다 몸 상태와 감이 달라 성적이 오르내립니다. 외국인 선수는 그 폭이 더 큽니다.`,{kind:'캠프'}); }
   /* 캠프 결산: 캠프 시작 때와 비교해 능력이 오르거나 내린 선수를 정리해 보낸다 */
@@ -143,12 +142,13 @@ function settlement(){
     { const bn=G.sea.bonus&&G.sea.bonus[t.id]; if(bn)exp.push(['신인 계약금',bn]); }
     { const due=newStadDue(t.id); if(due){ exp.push(['신구장 분담금',due]); if(!t.indie)inc.push(['모기업 신구장 출자(분담금의 70%)',Math.round(due*.7)]); /* 독립구단은 모기업 출자 없음 */ { const N=newStadAcct(t.id); N.paid=(N.paid||0)+due; if(N===stadOf(t.id).debt&&N.paid>=N.cost)delete stadOf(t.id).debt; } } }
     { const up=SPj.up; if(up>0)exp.push(['구장 시설 유지비',up]); } /* 경기별 집계(검수 11-07) */
-    if(t.id!==ME()){ const fu=aiFacUpExtra(t); if(fu>0)exp.push(['훈련 시설 유지비(증설분)',fu]); try{ for(const [l,v] of aiOpsCost(t,y))if(v>0)exp.push([l,v]); }catch(e){} } /* 부상 방지·병원·보조 코치·응원단: 우리 구단과 같은 값(99_ai_parity) */
+    if(t.id!==ME()){ const fu=aiFacUpExtra(t); if(fu>0)exp.push(['훈련 시설 유지비(증설분)',fu]); } /* 부상 방지·병원·보조 코치·응원단은 아래에서 AI가 맡은 날수만큼(aiOpsDue) */
     if(flo)exp.push(['하한 미달 발전기금',flo]);
     if(t.id===ME()){ const gs=myCPay(); if(gs>0)exp.push(['단장 연봉',gs]); const gb=myCBonus(ps,order); if(gb>0)exp.push(['단장 성과급',gb]); }
     if(t.id===G.user&&G.unemp){ G.spEp=(G.spEp||0)+1; G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,scout:0}; } /* 야인 기간: 전 소속 구단은 AI 구단처럼 운영비 안에서 스태프·감독 비용을 처리한다(따로 더 내지 않는다) */
     if(t.id!==G.user){ const o=optSettle(t.id)+((G.sea.optPd||{})[t.id]||0); if(o>0)exp.push(['계약 옵션 지급',o]); } /* AI도 달성한 옵션을 낸다 */
     if(t.id===G.user){ const S=G.spend; [['감독 연봉',S.mgr],['코치진 연봉',S.coach||0],['부상 방지 프로그램',S.med],['병원 제휴',S.hosp],['해외 연수',S.dev],['해외 스카우트망',S.intl||0],['전력분석원 연봉',S.data||0],['훈련 시설 유지비',S.fac||0],['단장 결정 지출',S.etc||0],['팬 마케팅·구단 이벤트',S.fan||0],['FA 보상금·양도금',S.comp||0],['방출 정산금',S.rel||0],['FA·다년 계약금',S.faB||0],['계약 옵션 지급',optSettle(t.id)+((G.sea.optPd||{})[t.id]||0)]].forEach(x=>{ if(x[1]>0)exp.push([x[0],Math.round(x[1])]); }); if(S.compIn>0)inc.push(['보상금·양도금 수령',Math.round(S.compIn)]); if(S.tradeIn>0)inc.push(['트레이드 현금 수령',Math.round(S.tradeIn)]); { const gd=Math.min(S.fanIn||0,S.goods||0); if((S.fanIn||0)-gd>0)inc.push(['구단 이벤트·채널 수입',Math.round(S.fanIn-gd)]); if(gd>0)inc.push(['기념 유니폼 판매',Math.round(gd)]); } if(S.postIn>0)inc.push(['포스팅 수입',Math.round(S.postIn)]); if(S.devRef>0)inc.push(['연수비 환급',Math.round(S.devRef)]); G.spEp=(G.spEp||0)+1; G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,scout:0}; }
+    try{ for(const [l,v] of aiOpsDue(t,y)){ const r=exp.find(x=>x[0]===l); if(r)r[1]+=v; else exp.push([l,v]); } }catch(e){} /* 그해 AI가 맡은 기간의 운영 비용(99_ai_parity): 지금 우리 구단이어도 부임 전 몫은 이 구단이 낸다 */
     if(HO){ const add=(A,o)=>{ for(const [l,v] of Object.entries(o)){ const r=A.find(x=>x[0]===l); if(r)r[1]+=v; else A.push([l,v]); } }; add(inc,HO.inc); add(exp,HO.exp); }
     const gap=sum(exp.map(x=>x[1]))-sum(inc.map(x=>x[1]));
     let support=0; const supCap=supportCap(t);

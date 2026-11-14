@@ -79,7 +79,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
     if(p.aiListed){} else if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); } /* 매물로 내놓은 선수는 핵심 보호 하한을 두지 않는다 */
   return v; }
 function stackIn(vals){ const pos=vals.filter(x=>x>0).sort((a,b)=>b-a), neg=vals.filter(x=>x<=0); const w=[1,.62,.42,.3,.25]; return sum(pos.map((x,i)=>x*(w[i]??.25)))+sum(neg); }
-function tradeNeed(t,outVal,relOv){ const tr=gmTrait(t.id); const ab=gmAbOf(t.id); const rel=relOv??t.rel; /* relOv: AI끼리 거래는 두 단장 사이 친분(84b_person_rels) */ let n=.9+Math.max(0,outVal)*.075-(rel-50)/15*(tr==='loyal'?2:1)+(ab?(ab.neg-60)/30:0); /* 협상력이 높을수록 더 받아 내려 한다 */ if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&rel>=70)n-=1; return n; }
+function tradeNeed(t,outVal,relOv){ const tr=gmTrait(t.id); const ab=gmAbOf(t.id); const rel=relOv??t.rel; /* relOv: AI끼리 거래는 두 단장 사이 친분(84b_person_rels) */ let n=.9+Math.max(0,outVal)*.075-(rel-50)/15*(tr==='loyal'?2:1)+(ab?(ab.neg-60)/30:0); /* 협상력이 높을수록 더 받아 내려 한다 */ if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&rel>=70)n-=1; return relOv!=null?Math.max(0,n):n; } /* AI끼리: 친분으로 요구치가 음수가 되지 않는다 */
 function trueVal(p){ const o=ovr(p); const eff=p.age<=25?o+Math.max(0,p.pot-o)*.6:p.age>=32?o-(p.age-31)*1.3:o; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
 /* 한국시리즈가 끝나고 결산 전(이틀)에는 끝난 시즌 장부가 바뀌지 않게 막는다 */
 function preSettle(){ return !!(G.ps&&G.ps.done&&G.ps.finDay!=null&&G.day<G.ps.finDay&&!(G.last&&G.last.y>=G.year)); }
@@ -210,7 +210,7 @@ function proposeTrade(tid,give,get,cash,pk){
     addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash>0?` + 현금 ${money(cash)}`:''}${pkG} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}${cash<0?` + 현금 ${money(-cash)}`:''}${pkR}`);
     if(cc0&&cc0.ok)capOwnerOk(cc0,`${tname(tid)}와(과) 트레이드`);
     if(oc0&&oc0.ok&&oc0.over>0)tradeOwnerOk(oc0); /* 승인 판정은 거래 전 한 번으로(검수 11-06: 거래 뒤 다시 계산하면 승인 대상이 사라져 신뢰 차감이 빠짐) */
-    offerDropMoved([...give,...get]); offerDropCool(); /* 직접 거래로 옮긴 선수가 걸린 받은 제안·메일은 닫는다(검수 11-08c) */ mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${aiQ(tid,'yes')}${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}(관계 ${mv.r>0?'+':''}${mv.r}).`:''}`};
+    offerDropMoved([...give,...get]); offerDropCool(); /* 직접 거래로 옮긴 선수가 걸린 받은 제안·메일은 닫는다(검수 11-08c) */ mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${aiQ(tid,'yes')}${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}.`:''}`};
   }
   const gap=e.need-e.gain; if(!ni.free&&!isCtr)nt.neg++; nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ if(tradeUrgent(tid,G.players[id]))continue; const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }
   for(const id of give){ const q=G.players[id]; if(q&&R()<.12){ q.mor=clamp((q.mor??60)-4,0,100); if(R()<.5)wire('루머',`${q.name}, ${t.city} ${t.nick}와(과) 트레이드 대상으로 거론됐다는 소문`,{ref:q.id}); } } if(gmTrait(tid)==='hard'&&nt.neg>=3)t.rel=clamp(t.rel-1,0,100);

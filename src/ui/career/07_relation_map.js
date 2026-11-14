@@ -44,7 +44,7 @@ function relMap(groups){ const by={}; for(const [,L] of groups)for(const x of L)
     return `<g class="rm-n" data-a="${a}" data-v="${v}"><circle cx="${n.px.toFixed(1)}" cy="${n.py.toFixed(1)}" r="${n.s+2.5}" fill="#0f141a" stroke="${relCol(n.x.rel)}" stroke-width="2.5"/>
       ${src?`<image href="${src}" x="${(n.px-n.s).toFixed(1)}" y="${(n.py-n.s).toFixed(1)}" width="${n.s*2}" height="${n.s*2}" clip-path="url(#rmc${i})"/>`:''}
       <clipPath id="rmc${i}"><circle cx="${n.px.toFixed(1)}" cy="${n.py.toFixed(1)}" r="${n.s}"/></clipPath>
-      <text x="${(n.gm?n.px+n.s+6:n.px).toFixed(1)}" y="${(n.gm?n.py+4:n.py+n.s+14).toFixed(1)}" text-anchor="${n.gm?'start':'middle'}" class="rm-l">${esc(lab)}${n.x.rel!=null?` <tspan fill="${relCol(n.x.rel)}">${n.x.rl?esc(n.x.rl)+' ':''}${n.x.rel}</tspan>`:''}</text></g>`; };
+      <text x="${(n.gm?n.px+n.s+6:n.px).toFixed(1)}" y="${(n.gm?n.py+4:n.py+n.s+14).toFixed(1)}" text-anchor="${n.gm?'start':'middle'}" class="rm-l">${esc(lab)}${n.x.rel!=null?` <tspan fill="${relCol(n.x.rel)}">${['own','fan','press'].includes(n.x.k)?(n.x.rl?esc(n.x.rl)+' ':'')+n.x.rel:esc(n.x.lab||'')}</tspan>`:''}</text></g>`; }; /* 사람 사이 관계는 말로(구단주 신뢰·팬·언론 지수만 숫자) */
   const t=team(G.user);
   return `<svg class="relmap" style="max-width:570px" viewBox="-28 0 500 432" role="img" aria-label="관계 지도">
     <ellipse cx="${cx}" cy="${cy}" rx="96" ry="105" fill="none" stroke="#2a333e" stroke-dasharray="2 4"/>
@@ -66,7 +66,7 @@ function relView(){ const groups=relPeople();
 function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); const pick2=k=>{ for(const [,L] of gs)for(const x of L)if(x.k===k)return x; return null; };
   const L=['own','mgr','fan','press'].map(pick2).filter(Boolean); const g=gs[3][1]; if(g.length)L.push(g[0],g[g.length-1]);
   return `<section class="card relstrip"><div class="row between"><h2 class="sec">관계</h2><button class="btn small" data-a="go" data-v="club:rel">관계도</button></div>
-    <div class="rs">${L.map(x=>{ const [a,v]=relKey(x); return `<button data-a="${a}" data-v="${v}">${avImg(x.av)}<b>${esc(x.k==='own'?'구단주':x.k==='mgr'?'감독':x.k==='fan'?'팬':x.k==='press'?'언론':tshort(x.tid)+' 단장')}</b><span style="color:${relCol(x.rel)}">${(x.k==='fan'||x.k==='press')?x.rel:esc(x.rl)}${dChip(x.k)}</span></button>`; }).join('')}</div></section>`; }
+    <div class="rs">${L.map(x=>{ const [a,v]=relKey(x); return `<button data-a="${a}" data-v="${v}">${avImg(x.av)}<b>${esc(x.k==='own'?'구단주':x.k==='mgr'?'감독':x.k==='fan'?'팬':x.k==='press'?'언론':tshort(x.tid)+' 단장')}</b><span style="color:${relCol(x.rel)}">${(x.k==='fan'||x.k==='press')?x.rel:esc(x.lab)}${dChip(x.k)}</span></button>`; }).join('')}</div></section>`; }
 /* 인물 카드 시트 */
 /* 같은 묶음(코치·스카우트·데이터팀, 선수단, 다른 구단 단장, 기자단 등) 안에서 이전·다음 사람으로 바로 넘긴다(카페 11-10) */
 function peopleGroup(k,groups){
