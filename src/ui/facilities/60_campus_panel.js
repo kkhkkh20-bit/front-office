@@ -13,9 +13,9 @@ function cpWhy(q,S){ const per=period(); const inSea=per==='season'||per==='post
   if(q.where==='rehab')return {real:true,t:'부상으로 재활·회복 센터에서 재활 중'};
   if(q.where==='club')return {real:true,t:'1군 선수 · 피로가 쌓여 클럽하우스에서 휴식'};
   if(q.where==='main')return {real:true,t:`1군 엔트리 · 홈구장 ${S.mainNote}`};
-  if(q.dev)return {real:true,t:`훈련 방향(${DEVP[q.dev]?DEVP[q.dev].l:'육성'}) · ${q.where==='lab'?'피칭·타격 랩':'실내 연습장'}에서 훈련`,note:'연수 배정은 실제, 랩과 실내 연습장 중 어디에 그리는지는 연출입니다.'};
+  if(q.dev)return {real:true,t:`훈련 방향 ${DEVP[q.dev]?DEVP[q.dev].l:'육성'} · ${q.where==='lab'?'피칭·타격 랩':'실내 연습장'}에서 훈련`};
   const place={fut:'2군 구장',indoor:'실내 연습장',weight:'웨이트·컨디셔닝',dorm:'선수 숙소·식당',lab:'피칭·타격 랩',road:'훈련장 도로'}[q.where]||'훈련장';
-  return {real:false,t:`${inSea?'1군 엔트리 밖 선수':'비시즌 훈련'} · ${place}${q.where==='fut'?` (${S.futNote})`:''}`,note:'어느 시설에 있는지와 동작은 연출입니다. 머리 위 표시(부상·피로·상승세)는 실제입니다.'}; }
+  return {real:false,t:`${inSea?'1군 엔트리 밖 선수':'비시즌 훈련'} · ${place}${q.where==='fut'?` · ${S.futNote}`:''}`}; }
 
 /* 시설과 관련된 운영 기록 한 줄: 지금 데이터로 셀 수 있는 것만 센다 */
 function cpFacStat(k){ const ps=playersOf(G.user); const dev=(G.devProg||[]).length; const young=ps.filter(p=>p.age<=23).length;
@@ -42,7 +42,7 @@ function cpPlayerPanel(S,id){ const p=G.players[id]; const q=S.players.find(x=>x
   const prog=dv?`${DEVP[dv.prog]?DEVP[dv.prog].l:'2군 연수'} · ${Math.max(0,Math.floor((G.day-dv.since)/7))}주째`:ov&&OVS[ov.prog]?`${OVS[ov.prog].l}(예정)`:'없음';
   return `<div class="cpph"><span class="cpnm">${esc(p.name)}</span><button class="cpx" data-a="cpSel" data-v="" aria-label="선택 해제">닫기</button></div>
     <div class="small muted">${posLabel(p)} · ${p.age}세 · ${p.e1?'1군':'2군'}</div>
-    <div class="cptag ${w.real?'real':'stage'}">${w.real?'실제 상태를 반영한 자리':'자리·동작은 연출'}</div>
+    ${w.real?'<div class="cptag real">지금 있는 자리</div>':''}
     <dl class="cpdl"><div><dt>지금</dt><dd>${esc(w.t)}</dd></div>
       <div><dt>부상</dt><dd>${p.injOut>0?`<b class="bad">${esc(injNow(p))}</b> · ${p.injOut}일 남음`:'없음'}</dd></div>
       <div><dt>피로</dt><dd><span class="cpfat"><i class="${fat>=60?'hi':''}" style="width:${clamp(fat,0,100)}%"></i></span> <b class="num ${fat>=60?'warn':''}">${fat}</b>${fat>=60?' · 쉬어야 함':''}</dd></div>

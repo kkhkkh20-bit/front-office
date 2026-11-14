@@ -2478,7 +2478,7 @@ T('[피드백 11-09b] 해외 네트워크: 가상 해외 구단 20곳·자매결
   const ban=['자이언츠','타이거스','호크스','라이온즈','마린스','파이터스','스왈로즈','카프','드래건스','베이스타즈','이글스','버펄로즈','다저스','양키스','컵스','레드삭스','브레이브스','에인절스','파드리스','메츠','필리스','카디널스','레이스'];
   ok(!OCL.some(c=>ban.some(b=>c.n.includes(b))),'실제 구단 이름이 섞임');
   const ptn=Object.values(S.p); ok(ptn.length===6&&!ptn.some(x=>x.tid===G.user),'처음 다른 구단 결연 '+ptn.length);
-  const jp=OCL.find(c=>c.c==='jp'&&sisPtn(c.id)==null&&c.s[0]===2); ok(sisPropose(jp.id).includes('55'),'관계 낮은데 제안됨');
+  const jp=OCL.find(c=>c.c==='jp'&&sisPtn(c.id)==null&&c.s[0]===2); ok(sisPropose(jp.id).includes('관계가 가깝지 않아'),'관계 낮은데 제안됨');
   S.r[G.user+':'+jp.id]=95; G.rep=95; const e0=G.spend.etc||0; let n=0; while(sisPtn(jp.id)!==G.user&&n++<60){ S.cd={}; sisPropose(jp.id); } ok(sisPtn(jp.id)===G.user,'결연 실패');
   ok((G.spend.etc||0)-e0===sisFee(jp),'연회비 미반영'); const jp2=OCL.find(c=>c.c==='jp'&&sisPtn(c.id)==null); S.r[G.user+':'+jp2.id]=95; ok(sisCan(jp2.id).includes('하나'),'나라마다 하나 제한 없음');
   G.day=dnum(G.year-1,12,1); const k=jp.s[1]; const P=sprcPlan(G.user); for(const t of G.teams.filter(t=>t.id!==G.user))sprcPlan(t.id).s2=k;

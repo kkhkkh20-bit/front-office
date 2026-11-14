@@ -146,8 +146,8 @@ function medBody(){ const IL=injNowList();
   return `<div class="eyebrow">지금 부상 · 회복 중 ${IL.length}명</div>${IL.length?`<div class="list">${IL.map(x=>`<button class="item" data-a="player" data-v="${x.p.id}"><span class="nm">${esc(x.p.name)} <span class="small muted">${posLabel(x.p)} · ${x.p.age}세</span> ${x.st==='out'?'<span class="pill bad">이탈</span>':'<span class="pill warn">회복 중</span>'}</span><span class="sub">${esc(x.t)}</span></button>`).join('')}</div>`:'<p class="small muted">지금 빠져 있는 선수가 없습니다.</p>'}
   <div class="eyebrow">부상 방지 프로그램</div>
   <div class="chips prevc">${PREV.map((x,i)=>`<button data-a="setPrev" data-v="${i}" class="${G.med.prev===i?'on':''}">${x.l}<small>${x.c?`연 ${money(x.c)}`:'비용 없음'}</small></button>`).join('')}</div>
-  <p class="small muted">연 ${money(PREV[G.med.prev].c)} · 경기 중 부상 위험 ${Math.round((1-PREV[G.med.prev].m)*100)}% 감소</p>
-  <div class="eyebrow">제휴 병원 ${hiI('병원을 바꾸면 새 부상은 물론, 지금 재활 중인 선수(남은 기간 14일 이상)의 남은 기간에도 그날부터 새 병원의 재활 효과가 적용됩니다. 짧은 부상은 그대로입니다.\n병원 이름은 모두 가상입니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.')}</div><div class="list">${Object.entries(HOSP).map(([k,h])=>`<button class="item" data-a="setHosp" data-v="${k}"><span class="nm">${G.med.hosp===k?'<span class="pill good">선택됨</span> ':''}${esc(h.name)}</span><span class="sub">${esc(h.d.replace(/ ?재활 기간이 [^.]*\./,''))}${h.rec?` 재활 ${Math.round(h.rec*100)}% 단축 · 장기 수술 ${Math.round((1-Math.sqrt(1-h.rec))*100)}%`:''}</span><span class="rt num">${h.c?money(h.c):'-'}</span></button>`).join('')}</div>
+  <p class="small muted">연 ${money(PREV[G.med.prev].c)} · ${PREV[G.med.prev].m<1?`경기 중 부상 위험 ${effWord(1-PREV[G.med.prev].m,.25,.15)} 감소`:'부상 위험 그대로'}</p>
+  <div class="eyebrow">제휴 병원 ${hiI('병원을 바꾸면 새 부상은 물론, 재활이 2주 넘게 남은 선수에게도 그날부터 새 병원 효과가 적용됩니다. 짧은 부상은 그대로입니다.\n병원 이름은 모두 가상입니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.')}</div><div class="list">${Object.entries(HOSP).map(([k,h])=>`<button class="item" data-a="setHosp" data-v="${k}"><span class="nm">${G.med.hosp===k?'<span class="pill good">선택됨</span> ':''}${esc(h.name)}</span><span class="sub">${esc(h.d)}</span><span class="rt num">${h.c?money(h.c):'-'}</span></button>`).join('')}</div>
   <p class="small muted">지난 결산 이후 의료비 ${money(G.spend.med+G.spend.hosp)}</p>
   ${G.medSet?'':'<button class="btn primary block" data-a="medOk">이대로 운영</button>'}`;
 }
@@ -172,7 +172,7 @@ function capCard(ci){
   return `<section class="card">
     <div class="row between"><h2 class="sec">샐러리캡</h2><span class="pill ${ci.over?'bad':'good'}">${ci.over?'초과 '+money(ci.over):'여유 '+money(ci.cap-ci.pay)}</span></div>
     <div class="bar"><i class="${ci.over?'over':''}" style="width:${pct}%"></i>${ci.floor?`<b style="left:${fl}%"></b>`:''}</div>
-    <p class="small muted">외국인과 신인을 뺀 연봉 상위 40명 합계 ${money(ci.pay)} · 상한 ${money(ci.cap)}${ci.floor?` · 하한 ${money(ci.floor)}(세로선)`:' · 하한은 2027년부터 적용'}. 넘기면 초과분의 30%, 2년 연속이면 50%를 야구발전기금으로 냅니다. 3년 연속이면 초과분 전액을 내고 다음 해 1라운드 지명 순서가 9단계 내려갑니다.${(y=>y>2028&&!(G.capY&&G.capY[y])?` ${y}년 상한은 아직 이사회가 정하지 않아 연 3% 인상으로 가정했습니다.`:'')(sponSeason())}</p>
+    <p class="small muted">외국인과 신인을 뺀 연봉 상위 40명 합계 ${money(ci.pay)} · 상한 ${money(ci.cap)}${ci.floor?` · 하한 ${money(ci.floor)}`:' · 하한은 2027년부터 적용'}. 넘기면 초과분의 30%, 2년 연속이면 50%를 야구발전기금으로 냅니다. 3년 연속이면 초과분 전액을 내고 다음 해 1라운드 지명 순서가 9단계 내려갑니다.${(y=>y>2028&&!(G.capY&&G.capY[y])?` ${y}년 상한은 아직 정해지지 않은 예상치입니다.`:'')(sponSeason())}</p>
   </section>`;
 }
 function scoutBody(){
