@@ -856,6 +856,47 @@ T('[면담] 고민 묻기는 다른 이야기를 막지 않고, 방금 진 경�
   const r3=talk(p.id,'push'); ok(/이미/.test(r3.msg),'칭찬 뒤 같은 주 분발 촉구가 또 됨');
   const r4=talk(p.id,'ask'); ok(!/이미/.test(r4.msg)&&!r4.d,'고민 묻기는 다시 할 수 있고 기분은 한 주에 한 번만');
   ok((p.talkLog||[]).length>=2&&p.talkLog[0].a,'면담 기록 없음'); });
+const PV_PLAIN=p=>{ initPers(p); p.foreign=null; p.age=27; p.svc=5; p.pers={pro:10,amb:10,loy:10,temp:10}; return p; };
+const PV_DUMMY={nm:'홍길동',isP:false,nx:'경기',at:'타석',ev:'지난 경기 4타수 무안타',role:'주전 유격수',reg:false,e2:true,form:{k:'hot',t:'최근 10경기 40타수 16안타'},faY:1,injBack:true,trade:'서울',home:'서울고',prom:'wait',promUntil:'5월 3일',team:{st:-4,bad:true},star:true,cap:false,fmax:4,yrs:2,faTxt:'이번 시즌이 끝나면 FA입니다',block:'김철수',subs:'3루수',loyal:true,market:false,milBy:2030,injOut:true,mor:30};
+const PV_ALL=()=>{ const out=[]; const walk=x=>{ if(x==null)return; if(typeof x==='string')out.push(x); else if(typeof x==='function'){ const t=x(PV_DUMMY); if(typeof t==='string')out.push(t); } else if(Array.isArray(x))x.forEach(walk); else if(typeof x==='object'){ if(x.s&&x.f)walk(x.f); else Object.values(x).forEach(walk); } };
+  [PV_BANK,PV_CONCERN,PV_GM,PV_HI,PV_WARM,PV_LEAVE,TI_OP,TI_UNSURE,TI_OWN_HI,TC_IL_O,TC_IL_M,TC_CUT_O,TC_CUT_M,TC_PART_O,TC_PART_M,TC_WARM_O,TC_SOUR_O,TC_WARM_M,TC_SOUR_M,TC_FLAV_O,TC_OPEN_O,OSCN_BYE].forEach(walk); return out.filter(Boolean); };
+T('[면담] 효과 계산(talkOutcome)은 문장과 나뉘어 있고, 같은 난수에서 talk()와 같은 효과를 내며 결과 이름과 효과가 규칙대로 맞는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+25);
+  const rule={pr_good:d=>d>=0,pr_bad_t:d=>d<0,pr_bad:d=>d>=0,pr_mid:d=>d>=0,pu_ok:d=>d===4,pu_no:d=>d<=-7,pu_unfair:d=>d<=-9,pm_reg:d=>d===0,pm_dup:d=>d<=-2,pm_new:d=>d===8,fr_e1:d=>d===0,fr_full:d=>d===0,fr_ok:d=>d===3,ct_for:d=>d===1,ct_multi:d=>d===1,ct_fa_loy:d=>d===1,ct_fa_mkt:d=>d===1,ct_young:d=>d===1,ct_other:d=>d===1};
+  let n=0; for(const p of playersOf(G.user).slice(0,18))for(const k of ['praise','push','promise','futreq','contract','ask']){ p.tk={}; const snap=JSON.stringify(p), rng=__rngState(); const O=talkOutcome(p,k,{});
+    if(O.out){ ok(rule[O.out]&&rule[O.out](O.d),'결과와 효과가 어긋남 '+O.out+' '+O.d); if(O.out==='pm_new')ok(p.promise,'약속 없음'); if(O.out==='pu_ok')ok(p.form&&p.form.b===1,'분발 효과 없음'); if(O.out==='fr_ok')ok(p.futReq,'2군 기용 요청 없음'); }
+    const after={promise:JSON.stringify(p.promise),form:JSON.stringify(p.form),futReq:JSON.stringify(p.futReq)}; const S=JSON.parse(snap); for(const x of Object.keys(p))delete p[x]; Object.assign(p,S); __seed(rng);
+    const r=talk(p.id,k); ok(r.d===O.d,'talk()와 효과가 다름 '+k+' '+r.d+'/'+O.d); ok(JSON.stringify(p.promise)===after.promise&&JSON.stringify(p.form)===after.form&&JSON.stringify(p.futReq)===after.futReq,'약속·분발·요청이 다름 '+k); n++; }
+  ok(n>=60,'점검 수 부족 '+n); });
+T('[면담] 말투마다 같은 결과도 문장이 다르고, 최근 기록 같은 실제 상황을 넣으며, 같은 선수에게 바로 앞 문장을 되풀이하지 않는다',()=>{ fresh(); const P=domestic(G.user).filter(p=>!p.prospect&&!p.isP).slice(0,2); const a=P[0], b=P[1]; initPers(a); initPers(b);
+  a.foreign=null; a.age=21; a.svc=0; b.foreign=null; b.age=33; b.svc=12; b.pers={pro:16,amb:9,loy:15,temp:8}; ok(pvVoice(a)==='rookie'&&pvVoice(b)==='leader','말투 판정 '+pvVoice(a)+'/'+pvVoice(b));
+  const A=new Set(), B=new Set(); for(let i=0;i<8;i++){ A.add(pvTalk(a,'praise','pr_mid','','x',{})); B.add(pvTalk(b,'praise','pr_mid','','x',{})); } ok(![...A].some(x=>B.has(x)&&!/^감사합니다\\. 힘이 됩니다\\.$/.test(x))||A.size>1,'말투가 달라도 같은 문장');
+  ok([...A].some(x=>/^감사합니다!|아, 감사/.test(x))&&[...B].some(x=>/선수단|고마워요/.test(x)),'말투 특징이 안 보임 '+[...A].join('/')+' | '+[...B].join('/'));
+  a.gl={y:G.year,g:Array.from({length:10},(_,i)=>[G.day-10+i,4,4,i<6?2:1,3,0,1,0,0,0,0])}; const f=pvForm(a); ok(f.k==='hot'&&f.t==='최근 10경기 40타수 16안타','최근 기록 계산 '+JSON.stringify(f));
+  const L=[]; for(let i=0;i<12;i++)L.push(pvTalk(a,'praise','pr_good','','x',{})); ok(L.some(x=>x.includes('40타수 16안타')),'뜨거운 타격을 말하지 않음');
+  for(let i=1;i<L.length;i++)ok(L[i]!==L[i-1],'바로 앞 문장 반복: '+L[i]); ok((a.pvM||[]).length<=4,'기억이 4개를 넘음'); });
+T('[면담] 고민 묻기는 실제 상태(약속 대기·트레이드 명단·다른 구단 제안·FA)를 말하고, 친분이 낮은 과묵형은 같은 고민을 두루뭉술하게 말한다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const p=PV_PLAIN(domestic(G.user).find(q=>!q.prospect)); p.mor=50;
+  p.promise=mkPromise(p,30); p.promise.b={y:G.year,pa:99999,outs:99999,g:999}; ok(/기다리/.test(pvAsk(p,null,30)),'약속 대기를 말하지 않음'); delete p.promise;
+  p.listed=true; ok(/트레이드/.test(pvAsk(p,null,30)),'트레이드 명단을 말하지 않음'); p.listed=false;
+  const X=G.teams.find(t=>t.id!==G.user).id; const o0=G.offers; G.offers=[{id:'z',from:X,give:[],get:[p.id],exp:G.day+3}]; const t1=pvAsk(p,null,30); G.offers=o0; ok(/다른 구단|다른 팀/.test(t1),'실제 제안을 말하지 않음: '+t1);
+  ok(!/다른 구단|다른 팀/.test(pvAsk(p,null,30)),'제안이 없는데 관심을 말함');
+  p.pers={pro:10,amb:8,loy:10,temp:5}; p.age=27; p.listed=true; ok(pvVoice(p)==='quiet','과묵형 아님'); const v=pvAsk(p,null,10); ok(/이런저런/.test(v)&&!/트레이드/.test(v),'친분 낮은 과묵형의 두루뭉술한 말: '+v); p.listed=false; });
+T('[감독 대화] 귀띔은 실제 상태에서: 부진하다고 말한 주전은 정말 최근 부진하고, 연투한 불펜은 실제로 나흘에 세 번 이상 던졌으며, 같은 귀띔은 곧바로 되풀이하지 않는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10); const m=G.mgr[G.user]; m.rel=60; const d=depth(G.user);
+  for(const p of [...d.start,...d.sp,...(d.bench||[]),...d.pen])p.gl={y:G.year,g:[]}; const c=d.start[2]; c.gl={y:G.year,g:Array.from({length:10},(_,i)=>[G.day-12+i,4,4,i<6?1:0,1,0,1,0,0,0,0])};
+  const r=d.pen[1]; r.gl={y:G.year,g:[[G.day-3,4,3,1,0,1,0,0,0],[G.day-2,4,3,1,0,1,0,0,0],[G.day-1,4,3,1,0,1,0,0,0]]};
+  const F=tiMgrFacts(m); const cf=F.find(x=>x.k==='cold'); ok(cf&&cf.t.includes(c.name)&&pvForm(c).k==='cold','부진 주전 귀띔 '+JSON.stringify(F.map(x=>x.t))); ok(cf.t.includes('40타수 6안타'),'실제 최근 기록이 아님: '+cf.t);
+  const pf=F.find(x=>x.k==='pen'); ok(pf&&pf.t.includes(r.name)&&tiRecentPen(r)>=3,'불펜 연투 귀띔');
+  ok(!F.some(x=>x.k==='cold'&&!x.t.includes(c.name)),'부진하지 않은 선수를 부진하다고 함');
+  const D={kind:'mgr',mem:m}, st={id:'x',beat:0,X:{}}; const seen=[]; for(let i=0;i<6;i++){ st.beat=i; const t=tiLine(D,st); if(t)seen.push(t); } ok(seen.length>=2&&new Set(seen).size===seen.length,'같은 귀띔 반복 '+seen.join(' / '));
+  m.rel=20; const F2=tiMgrFacts(m); ok(F2.every(x=>!TI_OP.cold[mgrVoice(m)]||!x.t.includes(TI_OP.cold[mgrVoice(m)])),'서먹한데 의견까지 길게 말함'); });
+T('[구단주] 귀띔은 신뢰·여론·지원 요청 분위기에서 나오고 실제 상태와 맞는다',()=>{ fresh(); const t=team(G.user); const X=ownScnCtx();
+  t.trust=20; ok(tiOwnFacts(X).some(x=>x.k==='trust'&&/믿음이 많이 줄었/.test(x.t)),'낮은 신뢰를 말하지 않음'); t.trust=80; ok(tiOwnFacts(X).some(x=>x.k==='trust'&&/맡겨/.test(x.t)),'높은 신뢰를 말하지 않음'); t.trust=50; ok(!tiOwnFacts(X).some(x=>x.k==='trust'),'보통 신뢰인데 신뢰 얘기');
+  prInit(); G.pr.fan=20; ok(tiOwnFacts(X).some(x=>x.k==='fan'),'여론 악화를 말하지 않음'); G.pr.fan=55; ok(!tiOwnFacts(X).some(x=>x.k==='fan'),'보통 여론인데 여론 얘기');
+  const A=tiOwnFacts(X).find(x=>x.k==='ask'); if(A){ const o=ownOdds(1000,null); ok(!ownAskLeft()||(o>=.6?/들어/.test(A.t):o<=.3?/때가 아니|꺼내지/.test(A.t):false),'지원 분위기와 말이 다름'); }
+  ok(['단장, 잘 왔어요. 요즘 분위기가 좋더군요. 앉으세요.','어서 와요. 요즘 표정이 밝아 보이네요.','왔어요? 차 한잔 내오라고 할게요.'].includes(tiOwnGreet(80)),'구단주 인사'); });
+T('[면담] 선수·감독·구단주 대화 문장에 하오체·하게체가 없고, 귀띔의 숫자는 보이는 기록뿐이다',()=>{ fresh(); const L=PV_ALL(); ok(L.length>200,'문장 은행이 작음 '+L.length); const bad=L.filter(x=>/했소|하오|겠소|구려|자네|하겠네/.test(x)); ok(!bad.length,'하오체·하게체: '+bad.slice(0,3).join(' / '));
+  simTo(()=>period()==='season'&&G.day>=G.cal.open+30); const m=G.mgr[G.user]; const F=[...tiMgrFacts(m),...tiOwnFacts(ownScnCtx())].map(x=>x.t);
+  const strip=s=>s.replace(/[12]군|[123]루수|\\d선발|\\d+경기 \\d+이닝/g,'').replace(/OPS \\.\\d+|평균자책점 \\d+\\.\\d+|\\d+(\\.\\d)?이닝|\\d+(경기|타수|안타|홈런|자책|승|패|위|세|명|년|월|일)/g,''); const num=F.filter(x=>/\\d/.test(strip(x))); ok(!num.length,'숨은 값처럼 보이는 숫자: '+num.join(' / '));
+  for(const p of playersOf(G.user).slice(0,10)){ const t=pvAsk(p,null,60); ok(!/했소|하오|겠소|구려|자네|하겠네/.test(t),'하오체 '+t); ok(!/\\d/.test(strip(t)),'고민 문장 숫자 '+t); } });
 T('[코치] 코치는 세부 능력이 있고, 제구 훈련은 담당 코치의 제구 지도가 성장 속도를 바꾸며, 은퇴 선수는 선수 시절 강점이 지도 강점이 된다',()=>{ fresh(); ok(typeof cAb==='function'&&typeof trnCoachV==='function','함수 없음');
   const c=mkCoach('pc'); ok(c.ab&&c.ab.ctl!=null&&c.ab.yng!=null,'세부 능력 없음');
   const c2=JSON.parse(JSON.stringify(c)); c2.ab.ctl=c.ab.ctl+20; ok(trnCoachV(c2,G.user,'ctl')>trnCoachV(c,G.user,'ctl'),'제구 지도가 훈련에 안 들어감');

@@ -232,8 +232,9 @@ function mgrEyeReport(){ const m=G.mgr[G.user]; const P=G.mpick; if(!m||!P||P.y!
 /* 관계가 주는 것: 선수단 분위기(경기력), 좋으면 공개 지지, 나쁘면 언론 불화설·사퇴 */
 function mgrRelBoost(p){ if(p.team==null)return 0; const m=G.mgr[p.team]; if(!m||m.interim)return 0; const rel=p.team===G.user?m.rel:65; /* AI 구단은 프런트·감독이 무난한 관계(65)로 본다: 우리만 받던 보정의 비대칭(검수 11-05) */ return clamp((rel-55)/60,-.5,.4); }
 function mgrRelWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||period()!=='season')return; mgrFix(m); prInit();
-  if(m.rel>=78&&R()<.08){ news('언론',`${m.name} 감독 "단장님과 호흡 최고"`,'프런트와 현장이 한 방향을 보고 있다는 평가입니다.',2); G.pr.press=clamp(G.pr.press+1,0,100); }
-  if(m.rel<=25&&R()<.15){ news('언론',`${tshort(G.user)} 감독-단장 불화설`,`${m.name} 감독이 프런트 결정에 불만을 드러냈습니다.`,-2); G.pr.fan=clamp(G.pr.fan-1,0,100); G.pr.press=clamp(G.pr.press-2,0,100);
+  /* 도움말은 관계 단계 말(relLabel)로 안내한다(11-14): 예전 78 이상·25 이하를 가장 가까운 단계 경계(막역한 사이 80 이상·껄끄러운 사이 30 미만)로 맞췄다 */
+  if(m.rel>=80&&R()<.08){ news('언론',`${m.name} 감독 "단장님과 호흡 최고"`,'프런트와 현장이 한 방향을 보고 있다는 평가입니다.',2); G.pr.press=clamp(G.pr.press+1,0,100); }
+  if(m.rel<30&&R()<.15){ news('언론',`${tshort(G.user)} 감독-단장 불화설`,`${m.name} 감독이 프런트 결정에 불만을 드러냈습니다.`,-2); G.pr.fan=clamp(G.pr.fan-1,0,100); G.pr.press=clamp(G.pr.press-2,0,100);
     if(m.ego>=65&&m.rel<=15&&R()<.3){ const nm=m.name; resignMgr(); mail('감독실',`${nm} 감독 자진 사퇴`,`${nm} 감독이 "더는 함께하기 어렵다"며 물러났습니다. 수석코치가 감독대행을 맡습니다. 새 감독을 선임하세요.`,{imp:true,kind:'감독',acts:[{l:'감독 후보',a:'go',v:'staff:mgr'}]}); } } }
 /* ===== 스타 파워: 수상·기록·활약이 마케팅 수입이 된다 ===== */
 function starPower(p){ let s=0; for(const a of (p.aw||[])){ const y=+String(a).slice(0,4); const age=G.year-y; if(age>2||isNaN(y))continue; const w=age===0?1:age===1?.7:.4;

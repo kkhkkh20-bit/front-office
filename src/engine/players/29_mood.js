@@ -161,31 +161,42 @@ function talk(id,kind){
   initPers(p); const wk=Math.floor(G.day/7); const grp=TALK_GRP[kind];
   if(talkUsed(p,kind))return {msg:`${p.name}: 이번 주 ${TALK_GRPL[grp]}는 이미 했습니다. 다음 주에 다시 이야기하세요.`};
   p.tk=p.tk||{}; const askAgain=kind==='ask'&&p.tk.ask===wk; if(grp)p.tk[grp]=wk; else p.tk.ask=wk; p.talkWk=wk; G.tutFlags.talk=true;
+  const O=talkOutcome(p,kind,{askAgain}); let {d,line}=O; const {out,rep,ex,ev}=O;
+  /* 여기부터는 문장만(효과는 talkOutcome에서 끝났다). 고민 묻기는 실제 고민(29d_player_concerns.js)으로: 친분에 따라 털어놓는 깊이가 다르다 */
+  if(kind==='ask'){ try{ const t=pvAsk(p,ev,contactRecord('pl:'+p.id).bond??30); if(t)line=t; }catch(e){} }
+  if(out)line=pvTalk(p,kind,out,rep,line,ex); /* 같은 결과도 선수 말투·지금 상황에 맞춰 다른 문장(효과는 그대로) */
+  line=personalTalkReply(p,kind,line);if(d){const C=contactRecord('pl:'+p.id);C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
+  return {msg:`${p.name}: "${line}"`,d};
+}
+/* 면담 결과(효과)만 정한다: 기분 변화 d(아직 적용 전)·출전 약속·분발(form)·2군 기용 요청·칭찬 체감 감소 기록(tkH).
+   문장(out·rep·ex는 말투 문장 고르기용 결과 이름, line은 기본 문장)은 talk()가 고른다. AI 구단 면담도 같은 결과 계산을 쓸 수 있게 나눠 둔다.
+   o.askAgain: 이번 주 이미 고민을 물었음(기분 변화 없음). 호출한 쪽이 p.mor에 d를 더한다 */
+function talkOutcome(p,kind,o){ o=o||{}; initPers(p); const askAgain=!!o.askAgain, tid=p.team;
   const h=curLine(p); const pf=perfOf(h,p.isP); const good=pf==null?null:pf>=ovr(p)+1.5?true:pf<=ovr(p)-3?false:null;
-  let d=0, line='';
-  if(kind==='praise'){ if(good===true){d=rnd(6,10);line='고맙습니다. 계속 잘하겠습니다.';} else if(good===false){ if(p.pers.temp>=14){d=-3;line='요즘 못하는 건 저도 압니다. 빈말은 괜찮습니다.';} else {d=2;line='감사합니다. 분발하겠습니다.';} } else {d=3;line='감사합니다. 힘이 됩니다.';} }
-  if(kind==='push'){ if(good===false){ if(p.pers.pro>=12){d=4;p.form={until:G.day+21,b:1};line='맞는 말씀입니다. 훈련량을 늘리겠습니다.';} else {d=-7;line='저도 최선을 다하고 있습니다.';} } else {d=-9;line='제가 뭘 더 해야 합니까? 납득하기 어렵습니다.';} }
-  if(kind==='promise'){ if(isRegular(p)){d=0;line='이미 주전으로 뛰고 있습니다. 마음만 받겠습니다.';} else if(p.promise){d=-2;line='지난번 약속부터 지켜 주세요.';} else {d=8;p.promise=mkPromise(p,30);line='감독님께 말씀해 주신다니 감사합니다. 기회가 오면 보여 드리겠습니다.';} }
-  if(kind==='futreq'){ const n=futReqList(G.user).filter(q=>q.id!==p.id).length;
-    if(p.e1){ d=0; line='지금은 1군에 있습니다. 2군 감독님께 따로 말씀하실 필요는 없을 것 같습니다.'; }
-    else if(n>=FUTREQ_MAX){ d=0; line=`2군 감독님이 이미 ${FUTREQ_MAX}명을 챙기고 계신다고 들었습니다. 자리가 나면 다시 말씀해 주십시오.`; }
-    else { p.futReq={until:G.day+42}; d=3; line=`2군에서 꾸준히 ${p.isP?'선발로 던지면서':'주전으로 나가면서'} 보여 드리겠습니다.`; } }
+  let d=0, line='', out='', rep='', ex={}; /* out: 결과 이름(말투 문장 고르기용, 29c_player_voice.js). 효과(d·약속·분발)는 여기서만 정한다 */
+  if(kind==='praise'){ if(good===true){d=rnd(6,10);line='고맙습니다. 계속 잘하겠습니다.';out='pr_good';} else if(good===false){ if(p.pers.temp>=14){d=-3;line='요즘 못하는 건 저도 압니다. 빈말은 괜찮습니다.';out='pr_bad_t';} else {d=2;line='감사합니다. 분발하겠습니다.';out='pr_bad';} } else {d=3;line='감사합니다. 힘이 됩니다.';out='pr_mid';} }
+  if(kind==='push'){ if(good===false){ if(p.pers.pro>=12){d=4;p.form={until:G.day+21,b:1};line='맞는 말씀입니다. 훈련량을 늘리겠습니다.';out='pu_ok';} else {d=-7;line='저도 최선을 다하고 있습니다.';out='pu_no';} } else {d=-9;line='제가 뭘 더 해야 합니까? 납득하기 어렵습니다.';out='pu_unfair';} }
+  if(kind==='promise'){ if(isRegular(p)){d=0;line='이미 주전으로 뛰고 있습니다. 마음만 받겠습니다.';out='pm_reg';} else if(p.promise){d=-2;line='지난번 약속부터 지켜 주세요.';out='pm_dup';} else {d=8;p.promise=mkPromise(p,30);line='감독님께 말씀해 주신다니 감사합니다. 기회가 오면 보여 드리겠습니다.';out='pm_new';} }
+  if(kind==='futreq'){ const n=futReqList(tid).filter(q=>q.id!==p.id).length;
+    ex.fmax=FUTREQ_MAX; if(p.e1){ d=0; line='지금은 1군에 있습니다. 2군 감독님께 따로 말씀하실 필요는 없을 것 같습니다.'; out='fr_e1'; }
+    else if(n>=FUTREQ_MAX){ d=0; line=`2군 감독님이 이미 ${FUTREQ_MAX}명을 챙기고 계신다고 들었습니다. 자리가 나면 다시 말씀해 주십시오.`; out='fr_full'; }
+    else { p.futReq={until:G.day+42}; d=3; line=`2군에서 꾸준히 ${p.isP?'선발로 던지면서':'주전으로 나가면서'} 보여 드리겠습니다.`; out='fr_ok'; } }
   if(kind==='contract'){ d=1;
-    if(p.foreign)line='재계약은 성적으로 말씀드리겠습니다.';
-    else if(p.faC&&p.yrs>1)line='계약 기간이 남았으니 야구에만 집중하겠습니다.';
-    else if(p.svc>=faSvc(p)-2)line=`${Math.max(0,faSvc(p)-p.svc)<=1?'이번 시즌이 끝나면 FA입니다':`${Math.max(0,faSvc(p)-p.svc)}시즌 뒤에 FA입니다`}. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`;
-    else line=p.age<=24?'아직은 1군에서 자리 잡는 게 먼저입니다.':'좋은 대우를 받으려면 성적부터 내야죠.'; }
-  if(kind==='ask'){ d=askAgain?0:2; const ev=talkEvent(p); const why=moraleWhy(p); const plain=/즐겁습니다|특별한 고민은 없습니다/.test(why);
-    if(ev){ line=eventLine(p,ev)+(plain?'':` 그리고 ${why}`); if(ev.k==='bad'&&p.pers.temp>=15&&d)d=1; } else line=why; }
+    if(p.foreign){line='재계약은 성적으로 말씀드리겠습니다.';out='ct_for';}
+    else if(p.faC&&p.yrs>1){line='계약 기간이 남았으니 야구에만 집중하겠습니다.';out='ct_multi';ex.yrs=p.yrs;}
+    else if(p.svc>=faSvc(p)-2){ ex.faTxt=Math.max(0,faSvc(p)-p.svc)<=1?'이번 시즌이 끝나면 FA입니다':`${Math.max(0,faSvc(p)-p.svc)}시즌 뒤에 FA입니다`; line=`${ex.faTxt}. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`; out=p.pers.loy>=13?'ct_fa_loy':'ct_fa_mkt'; }
+    else {line=p.age<=24?'아직은 1군에서 자리 잡는 게 먼저입니다.':'좋은 대우를 받으려면 성적부터 내야죠.';out=p.age<=24?'ct_young':'ct_other';} }
+  let ev=null; if(kind==='ask'){ d=askAgain?0:2; ev=talkEvent(p); const why=moraleWhy(p); const plain=/즐겁습니다|특별한 고민은 없습니다/.test(why);
+    if(ev){ line=eventLine(p,ev)+(plain?'':` 그리고 ${why}`); if(ev.k==='bad'&&p.pers.temp>=15&&d)d=1; } else line=why;
+ }
   if(d<0&&p.pers.temp>=15)d*=1.4;
   /* 면담만으로 기분 100 만들기 막기(카페 11-11 고양스톰 20년차): 칭찬·고민 묻기의 기분 상승은 최근 4주 안에 기분이 오른 면담 횟수만큼 줄고(1·0.6·0.35·0.2배), 85를 넘기지 못한다.
      출전 기회 건의는 감독 요청·약속 이행이 따르는 일이라 그대로 둔다 */
   if(d>0&&(kind==='praise'||kind==='ask')){ p.tkH=(p.tkH||[]).filter(x=>G.day-x<28); const n=p.tkH.length; const f=[1,.6,.35,.2][Math.min(n,3)]; const cap=TALK_MOR_CAP;
     let d2=Math.round(d*f*10)/10; if(p.mor>=cap)d2=0; else d2=Math.min(d2,cap-p.mor); if(d2>0)p.tkH.push(G.day);
     /* 줄어든 효과는 숫자 안내 대신 선수의 말투로 드러난다(사용자 11-13) */
-    if(d2<d){ if(kind==='praise')line=p.mor>=cap?'말씀은 감사합니다. 지금도 충분히 좋습니다.':n>=2?'자꾸 그러시면 민망합니다. 경기로 보여 드리겠습니다.':n?line+' 지난번에도 같은 말씀을 해 주셨습니다.':line; } d=d2; }
-  line=personalTalkReply(p,kind,line);if(d){const C=contactRecord('pl:'+p.id);C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
-  return {msg:`${p.name}: "${line}"`,d};
+    if(d2<d){ if(kind==='praise'){ line=p.mor>=cap?'말씀은 감사합니다. 지금도 충분히 좋습니다.':n>=2?'자꾸 그러시면 민망합니다. 경기로 보여 드리겠습니다.':n?line+' 지난번에도 같은 말씀을 해 주셨습니다.':line; rep=p.mor>=cap?'cap':n>=2?'rep2':n?'rep1':''; } } d=d2; }
+  return {d,line,out,rep,ex,ev};
 }
 function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(p.foreign)return; /* 외국인 선수는 트레이드 대상이 아니다(커뮤니티 제보 11-11) */ p.listed=true; const req=p.treq&&!p.treq.done; if(req){ p.treq.done=true; p.mor=clamp(p.mor+6,0,100); } /* 기분은 트레이드 요청에 응했을 때 한 번만 */ note('면담',`${p.name}을(를) 트레이드 명단에 올렸습니다. 다른 구단이 관심을 보이면 제안이 올 수 있습니다.`,id); }
 function keepPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(!(p.treq&&!p.treq.done)){ note('면담',`${p.name}: "이미 말씀 나눴습니다."`,id); return; } p.treq.done=true; const ok=p.pers.loy>=11||R()<.35; p.mor=clamp(p.mor+(ok?8:-6),0,100); note('면담',ok?`${p.name}: "단장님 말씀을 믿고 한 번 더 해 보겠습니다."`:`${p.name}: "생각은 달라지지 않았습니다."`,id); }
