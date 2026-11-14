@@ -4,7 +4,7 @@ function standView0(){
   const {order,live,y}=standOrder(); const top=order[0]; const hasTl=G.teams.some(t=>tlOf(t.id).length);
   const cols=hasTl?'<th>최근10</th><th>연속</th><th>홈</th><th>원정</th><th>득점</th><th>실점</th><th>득실</th>':'';
   const rows=order.map((o,i)=>{ const sp=splitOf(o.tid); const l=l10Of(o.tid); const g=o.w+o.l+(o.t||0);
-    return `<tr class="${o.tid===G.user?'me':''}${i===4?' cut':''}"><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}"><span class="ticker">${live?stRank(order,o.tid):i+1}</span>${badge(o.tid,18)}${tname(o.tid)}</button></td><td>${g}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td>${hasTl?`<td>${l.n?wlStr(l):'-'}</td><td>${strkPill(o.tid)}</td><td>${sp.home}</td><td>${sp.away}</td><td>${sp.rs}</td><td>${sp.ra}</td><td class="${sp.rs-sp.ra>0?'pos':sp.rs-sp.ra<0?'neg':''}">${sp.rs-sp.ra>0?'+':''}${sp.rs-sp.ra}</td>`:''}</tr>`; }).join('');
+    return `<tr class="${o.tid===G.user?'me':''}${i===4?' cut':''}"><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}"><span class="ticker">${live?stRank(order,o.tid):i+1}</span>${badge(o.tid,18)}${tname(o.tid)}</button></td><td>${g}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o,order)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td>${hasTl?`<td>${l.n?wlStr(l):'-'}</td><td>${strkPill(o.tid)}</td><td>${sp.home}</td><td>${sp.away}</td><td>${sp.rs}</td><td>${sp.ra}</td><td class="${sp.rs-sp.ra>0?'pos':sp.rs-sp.ra<0?'neg':''}">${sp.rs-sp.ra>0?'+':''}${sp.rs-sp.ra}</td>`:''}</tr>`; }).join('');
   const fifth=order[4]; const mi=order.findIndex(o=>o.tid===G.user); const me=order[mi];
   const msg=live&&period()==='season'?(mi<=4?`가을야구권 ${stRank(order,G.user)}위 · 6위와 ${Math.max(0,gbOf(me,order[5])).toFixed(1)}경기 차`:`5위 ${tshort(fifth.tid)}와(과) ${gbOf(fifth,me).toFixed(1)}경기 차`):'';
   // 상대 전적
@@ -14,7 +14,7 @@ function standView0(){
   if(tt.cur==='pwr')return tt.bar+pwrView();
   if(tt.cur==='last')return tt.bar+lastStandCard();
   if(tt.cur==='tbl'&&fmOn())return tt.bar+standFm(order,live,y);
-  if(tt.cur==='tbl')return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">${live?`${G.year} 정규시즌 순위`:`${y} 최종 순위`}</h2>${msg?`<span class="small">${msg}</span>`:''}</div>
+  if(tt.cur==='tbl')return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">${live?`${G.year} 정규시즌 순위`:`${y} 최종 순위`} ${hiI(standRules(order.length))}</h2>${msg?`<span class="small">${msg}</span>`:''}</div>
     <div class="tw"><table class="stt"><thead><tr><th class="stk">순위 · 구단</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th>${cols}</tr></thead><tbody>${rows}</tbody></table></div>
     <p class="small muted">점선 위 1~5위가 가을야구(와일드카드·준플레이오프·플레이오프·한국시리즈)에 나갑니다. 구단 이름을 누르면 그 구단 선수단을 봅니다.</p></section>`;
   if(tt.cur==='chart')return tt.bar+`${live&&rankChart(false)?`<section class="card"><div class="row between"><h2 class="sec">순위 변동</h2><span class="small muted">굵은 선이 우리 팀 · 점선 위가 가을야구권</span></div>${rankChart(false)}</section>`:''}`;
@@ -186,6 +186,8 @@ function psBracket(){
     return `<path class="${R[k]?'on':''}" d="M${x0} ${y0}H${m}V${y1}H${x1}"/>`; }).join('')
     +[[0,BK_W*.25],[0,BK_W*.75],[1,BK_W/2],[2,BK_W/2],[3,BK_W/2]].map(([c,dx])=>`<path d="M${BK_X[c]+dx} ${BK_SY}V${bot(c)}"/>`).join(''); /* 일정 칸이 줄기를 덮는다 */
   return `<div class="bk ws-own"${v3('bracket')?` style="--bk-bg:url(${v3('bracket')})"`:''}>${head}<svg class="bk-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ln}</svg>${BK_R.map(x=>bkCard(D,x,sel)+bkSched(D,x)).join('')}${ch}${bkDet(D,sel)}${seeds}${D.tbHtml||''}${rule}</div>`; }
+/* 순위·가을야구 규칙(카페 11-14: 규칙을 한곳에서). standingsNow(07_daily)·psLadder와 같은 내용 */
+function standRules(n){ return `${n}개 구단이 팀당 144경기를 치릅니다. 승률은 무승부를 빼고 승÷(승+패)로 셉니다. 승률이 같으면 그 구단들끼리 상대 전적, 다음은 득실차, 다음은 지난 시즌 순위로 가립니다. 1~5위가 가을야구에 나갑니다. 와일드카드는 4위와 5위가 최대 2경기를 치르고 4위가 1승을 안고 시작합니다. 준플레이오프는 3위와, 플레이오프는 2위와 5전 3선승제, 한국시리즈는 1위와 7전 4선승제입니다.`; }
 function standFm(order,live,y){
   const me=G.user, n=order.length, top=order[0], rk=live?stRank(order,me):order.findIndex(o=>o.tid===me)+1, gs=G.unemp?null:goalStatus(), od=live?playoffOdds():null, om=new Map((od||[]).map(o=>[o.tid,o]));
   const R=playerRows(y), mine=playerRowsT(y,me), B=mine.filter(x=>!x.p.isP), P=mine.filter(x=>x.p.isP), rc=fxRankLine();
@@ -193,8 +195,8 @@ function standFm(order,live,y){
   /* 개막 전에는 지난 시즌 최종 순위를 보여 준다: 득실도 그 시즌 기록에서, 새 시즌 경기 기록(최근 5)은 섞지 않는다(검수 11-07) */
   let TS=null; if(!live)try{ TS=new Map(teamStats(y).map(r=>[r.tid,r])); }catch(e){}
   const rows=order.map((o,i)=>{ const sp=live?splitOf(o.tid):null, ts=TS&&TS.get(o.tid), d=live?sp.rs-sp.ra:ts&&ts.rs!=null&&ts.ra!=null?ts.rs-ts.ra:null, has=live?sp.n:d!=null;
-    return `<tr class="${o.tid===me?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,16)}${esc(team(o.tid).nick)}</button></td><td>${o.w+o.l+(o.t||0)}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${has?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(o.tid).slice(-5)):'<span class="muted">지난 시즌</span>'}</td></tr>`; }).join('');
-  const reg=fxBox('fx-reg',fxHead(`${y} 정규시즌 ${hiI(`${n}개 구단이 팀당 144경기를 치릅니다. 5위까지 가을야구에 나갑니다.`)}`),
+    return `<tr class="${o.tid===me?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,16)}${esc(team(o.tid).nick)}</button></td><td>${o.w+o.l+(o.t||0)}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o,order)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${has?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(o.tid).slice(-5)):'<span class="muted">지난 시즌</span>'}</td></tr>`; }).join('');
+  const reg=fxBox('fx-reg',fxHead(`${y} 정규시즌 ${hiI(standRules(n))}}`),
     (live&&rk?fxExp(gs?goalRankTxt(gs.rank.t):'목표 없음',(n+1-rk)/n*100,gs?(n+1-gs.rank.t)/n*100:null,gs?rk<=gs.rank.t:null,`${rk}위`):fxExp(gs?`${G.year} ${goalRankTxt(gs.rank.t)}`:'목표 없음',null,null,null,rk?`${y} 최종 ${rk}위 · 개막 전`:'개막 전'))
     +`<div class="fx-two"><div><h4>최근 경기력</h4>${tlOf(me).length?fxForm(tlOf(me).slice(-10)):'<p class="fx-none">경기 전</p>'}</div><div><h4>리그 순위</h4>${rc||'<p class="fx-none">사흘 이상 치르면 그립니다</p>'}</div></div>`
     +`<div class="fx-tw"><table class="fx-t fx-st"><thead><tr><th>순위</th><th>구단</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th><th>득실</th><th>최근 5</th></tr></thead><tbody>${rows}</tbody></table></div>`
