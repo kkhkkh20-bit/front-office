@@ -4606,10 +4606,22 @@ T('[AI 동등·면담] 같은 선수·같은 상태·같은 난수면 우리 tal
   let n=0; const ps=domestic(ai).filter(x=>!x.ys&&!x.foreign).slice(0,14);
   for(const p of ps)for(const kind of ['praise','push','promise','ask','contract'])for(const m of [40,70,TALK_MOR_CAP-2]){ initPers(p); p.tk={}; p.tkH=kind==='praise'&&m>60?[G.day-3]:[]; delete p.promise; delete p.form; p.mor=m;
     const snap=JSON.stringify(p); __seed(9001+n); aiTalk(p.id,kind); const A=pick(p);
-    G.players[p.id]=Object.assign(p,JSON.parse(snap)); __seed(9001+n); G.user=ai; let U; try{ talk(p.id,kind); U=pick(p); } finally{ G.user=u0; }
+    { const S=JSON.parse(snap); for(const k of Object.keys(p))if(!(k in S))delete p[k]; Object.assign(p,S); } __seed(9001+n); G.user=ai; let U; try{ talk(p.id,kind); U=pick(p); } finally{ G.user=u0; }
     ok(JSON.stringify(A)===JSON.stringify(U),kind+'/'+m+' 결과가 다름: AI '+JSON.stringify(A)+' 우리 '+JSON.stringify(U)); n++; }
   ok(n>=200,'비교 수 '+n);
   const q=domestic(ai).find(x=>!x.ys&&!x.e1&&!x.foreign); if(q){ const snap=JSON.stringify(q); __seed(77); const o1=talkOutcome(q,'futreq',{}); const f1=q.futReq; Object.assign(q,JSON.parse(snap)); delete q.futReq; __seed(77); G.user=ai; let o2,f2; try{ o2=talkOutcome(q,'futreq',{}); f2=q.futReq; } finally{ G.user=u0; } ok(o1.d===o2.d&&JSON.stringify(f1)===JSON.stringify(f2),'2군 요청 결과 계산이 구단마다 다름'); } });
+T('[AI 동등·언론 플레이] AI도 우리와 같은 규칙으로 스타를 띄운다: 30일 간격·서먹한 기자 거절·같은 띄우기 크기·45일 뒤 같은 평가',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+25); const ai=G.teams.find(t=>t.id!==G.user).id;
+  const p=domestic(ai).find(x=>!x.ys&&healthy(x)); delete p.hype; const L=pressInit(); G.aiRep={}; for(const r of L)aiRepAdd(ai,r.id,-20);
+  ok(aiHype(ai,p.id)==null,'서먹한 기자만 있는데 띄움'); aiRepAdd(ai,L[0].id,40); const s0=starPower(p); const r=aiHype(ai,p.id); ok(r&&[14,9,4].includes(p.hype.v)&&p.hype.until===G.day+120,'띄우기 크기가 우리와 다름');
+  ok(starPower(p)-s0===p.hype.v,'스타성에 반영되지 않음'); const q=domestic(ai).find(x=>!x.ys&&x!==p); delete q.hype; ok(aiHype(ai,q.id)==null,'30일 안에 또 띄움');
+  ok(aiHype(G.user,domestic(G.user)[0].id)==null,'AI 경로로 우리 선수를 띄움');
+  const g=G.aiPledges.find(x=>x.pid===p.id); g.until=G.day; const f0=hypeForm; try{ hypeForm=()=>'good'; const v0=p.hype.v; aiPressDaily(); ok(g.done&&p.hype.v===v0+6,'활약 평가가 우리와 다름');
+    const q2=domestic(ai).find(x=>!x.ys&&x!==p&&x!==q); delete q2.hype; G.aiPP[ai].last=G.day-PP_COOL; ok(aiHype(ai,q2.id),'30일 뒤에도 못 띄움'); const g2=G.aiPledges.find(x=>x.pid===q2.id); g2.until=G.day; hypeForm=()=>'bad'; aiPressDaily(); ok(q2.hype.v===0&&q2.hype.until<G.day,'거품 역풍이 없음'); } finally{ hypeForm=f0; }
+  for(let i=0;i<20;i++){ G.day+=7; try{ aiPressWeek(); }catch(e){ throw e; } } ok(Object.keys(G.aiPP).length>=G.teams.length-2,'AI 구단 대부분이 기자와 연락하지 않음'); });
+T('[프로모션·테마 데이] 같은 날 테마 데이와 프로모션이 겹치면 곱하지 않고 둘 중 큰 효과만 난다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+5); const U=G.user; const P=promoOf(U); P.bk={};
+  let d=null; for(let x=G.day+1;x<G.day+30&&d==null;x++)if(promoHomeOpp(U,x)!=null)d=x; ok(d!=null,'준비 실패: 홈경기 없음'); const a=promoHomeOpp(U,d); const F=fanOps();
+  delete F.boost; const base=fanAttM(d); F.boost={from:d-1,until:d+1}; const th=fanAttM(d); ok(Math.abs(th/base-1.08)<1e-9,'테마 데이 효과가 8%가 아님');
+  for(const k of ['jersey','legend']){ P.bk[d]={k}; const pm=promoAttM(U,a,d); const both=fanAttM(d)*pm; ok(Math.abs(both/base-Math.max(1.08,pm))<1e-9,k+' 겹친 날 효과 '+(both/base)+' 기대 '+Math.max(1.08,pm)); delete P.bk[d]; } });
 T('[AI 동등·팀 분위기] 분위기가 나쁘면 AI는 분위기를 흐리는 비주축 선수를 매물로 내놓고, 주축·분위기가 좋을 때는 건드리지 않는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+8); const ai=G.teams.find(t=>t.id!==G.user).id;
   const D=domestic(ai).filter(p=>!p.ys).sort((a,b)=>ovr(b)-ovr(a)); const top=D[0], p=D.find((x,i)=>i>=6&&!hasNtc(x)); for(const x of [top,p]){ initPers(x); x.pers.temp=18; x.pers.pro=4; delete x.mvD; delete x.aiListed; }
   G.chem[ai]={v:60,T:60,f:{trbP:[top.id,p.id]},d:G.day}; aiChemWeek(); ok(!p.aiListed,'분위기가 좋은데 매물로 내놓음');

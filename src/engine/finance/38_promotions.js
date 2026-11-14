@@ -62,7 +62,7 @@ function promoEst(tid,d,k,a){ if(a==null)a=promoHomeOpp(tid,d); if(a==null)retur
   const keep=P.bk[d]; P.bk[d]={k}; let w0,w1; try{ w1=attOf(tid,a,d,null); _promoOff=true; w0=attOf(tid,a,d,null); } finally{ _promoOff=false; if(keep)P.bk[d]=keep; else delete P.bk[d]; }
   const L=promoLift(tid,a,d,k), eco=ecoIdx(), tk1=TICKET*eco*PRICE[S.price].m; const xa=Math.max(0,w1-w0), cap=stadCap(tid);
   const tk=xa*tk1, conc=(E.conc||0)*w1*eco*L.fat, mg=(E.mg||0)*w1*eco*L.fat*(L.sp?1+L.sp.s/50:1), disc=(E.disc||0)*w1*tk1, cost=E.c*eco+disc;
-  const why=[...L.why]; if(w0>=cap*.97)why.unshift('원래 매진이라 더 들어올 자리가 없습니다'); else if(w1>=cap*.97)why.push('매진에 막혀 효과가 줄었습니다');
+  const why=[...L.why]; if(w0>=cap*.97)why.unshift('원래 매진이라 더 들어올 자리가 없습니다'); else if(w1>=cap*.97)why.push('매진에 막혀 효과가 줄었습니다'); if(tid===G.user&&!G.unemp&&G.fanOps&&G.fanOps.boost&&d>=(G.fanOps.boost.from??0)&&d<=G.fanOps.boost.until)why.push('테마 데이 기간이라 둘 중 큰 효과만 납니다');
   return {k,d,a,w0,w1,xa,tk,inc:conc+mg,conc,mg,disc,cost,fan:E.fan*L.fat,net:tk+conc+mg-cost,why,sp:L.sp}; }
 /* 예약·취소: 사람 단장과 다른 구단이 같은 함수를 쓴다 */
 function promoBook(tid,d,k){ d=+d; if(!PROMO_EV[k])return '없는 행사입니다.'; if(!(d>G.day))return '지난 날짜에는 잡을 수 없습니다.'; const a=promoHomeOpp(tid,d); if(a==null)return '그날은 정규시즌 홈경기가 없습니다.';
