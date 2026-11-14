@@ -38,6 +38,7 @@ test('기록 알림도 미래 선수 수치와 무관하며 좁은 화면에서�
  const {ctx,game}=fixture(),g=game([[0,10,1,'HR',0,[0,0,0],1,1,0]]);g.broadcast={regular:true,players:{10:{season:{hr:19,h:100},career:{hr:199,h:999}}}};
  const before=JSON.stringify(ctx.pcRecords(g,0));ctx.G.players[10].r.pow=90;ctx.G.players[10].hist=[{hr:999,h:9999}];assert.equal(JSON.stringify(ctx.pcRecords(g,0)),before);
  const text='김상수, 사이클링 히트! 네 종류의 안타를 모두 해냅니다!',parts=ctx.pcCaptionParts(text,18);assert.ok(parts.every(s=>s.length<=18));assert.equal(parts.join(' '),text);assert.ok(parts.length>1);
+ for(const [t,l] of [['결정적인 순간에 터진 시원한 한 방!',14],['첫 타석부터 큰 것 한 방! 관중석이 들썩입니다!',20]]){const p=ctx.pcCaptionParts(t,l);assert.equal(p.join(' '),t);assert.ok(p.every(s=>s.length<=l));assert.ok(p.every(s=>!/(^| )한$/.test(s)&&!/^방!/.test(s)),JSON.stringify(p));} /* '~한 / 방!'처럼 어절이 갈리지 않는다(사용자 11-14) */
 });
 test('정규시즌 부진을 포스트시즌 기록으로 부르지 않고 야수선택을 실책으로 단정하지 않는다',()=>{
  const {ctx,game}=fixture(),g=game([[0,10,1,'1B',0,[10,0,0],0,0,0]]);g.broadcast={regular:false,players:{10:{hitless:7}}};assert.doesNotMatch(ctx.pbpCall(g,0).c,/경기 만/);
