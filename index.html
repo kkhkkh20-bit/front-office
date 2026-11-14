@@ -18338,7 +18338,7 @@ const PROMO={fp:'pc',fb:'bc',fm:'hc',pc:'hc',bc:'hc',cc:'hc',rc:'hc',dc:'hc',bp:
 function poachOff(){ const per=period(); return per!=='season'&&per!=='post'; }
 /* 코치 빼 오기 한도(공략 방지): 비시즌(sponSeason 단위)마다 구단당 성공 2건, 시즌·포스트시즌 중에는 못 한다. 우리·AI 같은 한도 */
 const POACH_MAX=2;
-function poachN(tid){ const P=G.poachN=G.poachN||{}, k=sponSeason(); const x=P[tid]; return x&&x.k===k?x.n:0; }
+function poachN(tid){ const P=G.poachN||{}, k=sponSeason(); /* 읽기만: 거절 판정이 저장 상태를 만들지 않게(check-feedback-staff-market #89) */ const x=P[tid]; return x&&x.k===k?x.n:0; }
 function poachAdd(tid){ const P=G.poachN=G.poachN||{}, k=sponSeason(); const x=P[tid]&&P[tid].k===k?P[tid]:(P[tid]={k,n:0}); x.n++; }
 function poachTerms(tid,role,toRole){ const c=G.coach&&G.coach[tid]&&G.coach[tid][role]; if(!c||typeof c!=='object'||!CKEYS.includes(c.role)||!Number.isFinite(c.sal)||c.sal<0)return null; const support=coachSupportView(c,tid), loyalty=support.loyalty, loyaltyBonus=support.bonus; const promo=toRole!==role; const sal=round5(c.sal*(promo?1.15:1.35));
   const comp=poachOff()&&c.yrs<=1?0:Math.round(c.sal*Math.max(.5,c.yrs-(poachOff()?1:.5))*.5); const m=G.mgr[tid]; const clan=!!(c.clan&&m&&c.clan===m.id);
@@ -21182,7 +21182,7 @@ function facDealsYear(t){ const me=t.id===G.user&&!G.unemp, y=G.last&&G.last.y; 
     if(!t.facSpon){}
     else if(y>=D.y1){ t.facSpon=null; t.pop=clamp((t.pop||1)+.01,.7,1.45); if(me)news('구단',`${D.n} 명명권 계약 만료`,`${D.n}과 함께한 ${FACI[D.k].l} 후원이 약속대로 끝났습니다. 다른 기업들도 구단을 다시 보고 있습니다.`,1); }
     else if(me&&!ok)mail('마케팅팀',`${D.n}: "이대로면 곤란합니다"`,`명명권 후원사가 올해 성적과 관중에 실망했습니다. 한 번 더 기대에 못 미치면 후원을 거두고 일부를 돌려받으려 합니다.`,{kind:'시설'}); }
-  const L=t.cityOb||[]; for(const o of [...L]){ if(y>o.y1){ t.cityOb=L.filter(x=>x!==o); cityRelAdd(t.id,3); continue; }
+  const L=t.cityOb||[]; for(const o of [...L]){ if(y>o.y1){ t.cityOb=(t.cityOb||[]).filter(x=>x!==o); cityRelAdd(t.id,3); continue; }
     if((t.cash||0)-o.prog<-2000){ o.miss++; cityRelAdd(t.id,-8); if(o.miss>=2&&o.help){ const back=Math.round(o.help*FAC_SPON.back); t.cash-=back; t.cityOb=(t.cityOb||[]).filter(x=>x!==o); if(me)mail('운영팀',`${t.city}시, 시설 보조금 회수`,`약속한 지역 야구 교실을 두 해 열지 못해 ${t.city}시가 보조금 대부분(${money(back)})을 돌려받았습니다.`,{kind:'시설',imp:true}); continue; } /* 약속을 두 번 어기면 지자체도 돌려받는다(공략 방지) */ if(me)mail('운영팀','지역 야구 교실을 열지 못했습니다',`돈이 모자라 ${t.city}시와 약속한 지역 야구 교실을 올해 열지 못했습니다. 시와의 관계가 나빠졌습니다.`,{kind:'시설'}); continue; }
     if(me){ const k0=spendPay(o.prog); G.spend.fac=(G.spend.fac||0)+k0; } else t.cash-=o.prog; cityRelAdd(t.id,2); } }
 
