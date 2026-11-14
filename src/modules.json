@@ -134,6 +134,7 @@
       "src/engine/media/92_gg_voting.js",
       "src/engine/career/83_personal_life.js",
       "src/engine/career/84_person_network.js",
+      "src/engine/career/84b_person_rels.js",
       "src/engine/market/93_waivers.js",
       "src/engine/draft/94_second_draft.js",
       "src/engine/market/96_pick_trade.js",

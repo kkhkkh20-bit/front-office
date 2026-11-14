@@ -300,7 +300,7 @@ function renderSheet0(){
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
-   ${p.prospect||p.fdPool?'':careerHub(p)}${personTimelineBox('pl:'+p.id)}${st}
+   ${p.prospect||p.fdPool?'':careerHub(p)}${personTimelineBox('pl:'+p.id)}${p.prospect||p.fdPool?'':relLikesBox('pl:'+p.id)}${st}
    `:''}
    ${T==='mgmt'?`
    <div id="s-bond"></div>${p.team===G.user&&!(p.joinY>G.year)?bondCard(p):''}${personalAdviceBox(p,'contract')}
