@@ -7,7 +7,7 @@
    shortcut: AI 구단끼리의 지명권 거래와 AI가 먼저 지명권을 제안하는 일은 없다. 필요해지면 AI 트레이드 쪽에 붙인다 */
 /* 11-13 측정(AI 리그 12시즌): 1라운드 1~3순위는 6년 안에 주전이 될 확률 46%·간판급 21%, 4~7순위 34%·0%, 8~10순위 13%·0%, 2라운드 4%.
    잠재력이 다 터지지 않는 성장 모형이라 지명권 값은 '주전이 될 확률 × 주전 몇 해의 값'으로 맞췄다(1라운드 앞 순번 18.8 → 끝 순번 5.3, 2라운드 3.9~2.3) */
-const PK_V=[15,3,1.6,1.1,.8,.6,.45,.35,.3,.25,.2];
+const PK_V=[15,3,1.6,.05,.05,.05,.05,.05,.05,.05,.05]; /* 4라운드부터는 주전 확률이 거의 없어 값이 거의 없다(공략 방지) */
 const PK_R1S=[1.25,1.15,1.05,.85,.8,.75,.7,.45,.4,.35]; /* 1라운드 순번별 배율: 상위 세 순번과 하위 세 순번의 차이가 크다 */
 const PK_KEEP=1.2; /* 지명권은 내줄 때 더 아낀다(사용자 11-13: 지명권을 소중히). 올인·벼랑 끝 구단만 그대로 내준다 */
 const pkKeep=t=>t&&t.id!==ME()&&(t.allIn===sponSeason()||despOf(t)>=.5)?1:PK_KEEP; /* 1라운드는 순번이 앞설수록 훨씬 비싸다(커뮤니티 피드백 11-07: 상위 지명권을 너무 싸게 모음) */ /* 라운드별 가치(트레이드 가치 단위, 현금 1억 ≈ 0.9) */
@@ -19,8 +19,10 @@ function pkHeld(tid){ const y=pkYear(), L=[]; for(let rd=1;rd<=DRAFT_ROUNDS;rd++
 function pkName(k){ const [rd,o]=k.split(':').map(Number); return `${pkYear()} 드래프트 ${rd}라운드(${tshort(o)} 순번)`; }
 /* 예상 순번(0이 첫 순번): 올해 드래프트 전이면 정해진 순서, 끝났으면 지금 순위의 역순 */
 function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; let o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); if(!D&&rd===1)o=penOrder(o,G.teams.filter(t=>t.pickPen===pkYear()).map(t=>t.id)); /* 이미 확정된 다음 드래프트 순번 하락 제재: 실제 순번과 같은 식(검수 11-07, 11-08d: 두 구단이 같은 순번으로 잡힘) */ let i=o.indexOf(orig); if(i<0)i=5; return i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
-function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=planPickMul(t)||(t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1); /* 운영 전략: 유망주 수집 1.5배·긴축 1.3배·우승 도전 0.7배(우리 구단은 예전 기준) */ const sl=pkSlot(o,rd); const own=rd===1&&o===t.id&&sl<3?PK_TOP3:1; /* 상위 3순번 자기 1라운드 지명권: 안 파는 게 아니라 아주 비싸게 판다(유저 피드백 11-07) */ return (PK_V[rd-1]||.2)*(rd===1?PK_R1S[Math.min(sl,PK_R1S.length-1)]:1.3-.06*sl)*m*own; }
+function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=planPickMul(t)||(t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1); /* 운영 전략: 유망주 수집 1.5배·긴축 1.3배·우승 도전 0.7배(우리 구단은 예전 기준) */ const sl=pkSlot(o,rd); const own=rd===1&&o===t.id?pkTopMul(t,sl):1; /* 상위 3순번 자기 1라운드 지명권: 안 파는 게 아니라 아주 비싸게 판다(유저 피드백 11-07) */ return (PK_V[rd-1]||.05)*(rd===1?PK_R1S[Math.min(sl,PK_R1S.length-1)]*m:1.3-.06*sl)*own; } /* 운영 전략 배율은 1라운드에만 */
 const PK_TOP3=2;
+/* 자기 상위 1라운드 지명권(1~5순번): 아주 비싸게 판다. 유망주 수집·내년 도전·긴축 구단은 더(공략 방지 11-14: 애매한 선수+현금으로 상위 지명권을 해마다 사 가던 것). AI끼리도 같은 값 */
+const pkTopMul=(t,sl)=>{ const keen=['build','next','tight'].includes(planOf(t)); return sl<3?(keen?2.6:PK_TOP3):sl<5?(keen?1.7:1.4):1; };
 const pkNorm=pk=>({give:[...new Set((pk&&pk.give)||[])],get:[...new Set((pk&&pk.get)||[])],y:pk&&pk.y!=null?pk.y:pkYear()}); /* y: 거래안에 넣을 때의 드래프트 연도. 드래프트가 끝나도 다음 해 것으로 바뀌지 않게(검수 11-06) */ /* 같은 지명권을 두 번 넣어도 한 장(검수 11-06) */
 const pkSig=pk=>{ pk=pkNorm(pk); return pk.give.length||pk.get.length?'|p'+pk.y+':'+[...pk.give].sort().join(',')+'/'+[...pk.get].sort().join(','):''; };
 function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.length)return '';

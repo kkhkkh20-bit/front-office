@@ -30,7 +30,7 @@
   /* 6) 페이지 버튼이 카드 내용을 덮지 않게: 불투명 배경, 내용과 겹치지 않는 자리 */
   #app .ws-panel>.pgr,#app .pgr{position:relative;z-index:2;background:var(--panel,var(--card,#1b2533));padding-block:4px}
 
-  /* 하단 탭바 높이만큼 본문 끝 여백: 마지막 버튼이 탭바에 가리지 않게 */
-  #app main.content:not(.ws-frame){padding-bottom:calc(var(--bnav-h,58px) + env(safe-area-inset-bottom,0px) + 8px)}
+  /* 하단 탭바 높이만큼 본문 끝 여백: 마지막 버튼이 탭바에 가리지 않게. 홈·소식함은 바깥 틀이 이미 탭바 자리를 비우므로 빼야 화면 아래가 비지 않는다(사용자 11-14) */
+  #app main.content:not(.ws-frame):not(.inbox-workspace):not(:has(.home-workspace)){padding-bottom:calc(var(--bnav-h,58px) + env(safe-area-inset-bottom,0px) + 8px)}
   #sheet .sheet .sh-foot,#sheet .sheet .pn-foot{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 }

@@ -26,8 +26,13 @@ function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P
   drop(); P[d]={k,x:x||null,done:false,...(k==='attend'?{op:ops[0],tid:G.user,...(['owner','ceo'].includes(x)?{person:bossOf(G.user)[x==='ceo'?'ceo':'own'].id}:{})}:{})};
   if(k==='attend'&&+d===G.day+1)gmAttendWarn(P[d]); /* 내일 경기를 오늘 잡으면 전날 알림을 바로 보낸다(검수 11-06) */
   return k==='attend'?`${dmd(d)} 경기 직관을 잡았습니다${x==='owner'?'(구단주 동행)':x==='ceo'?'(사장 동행)':''}. 전날 알려 드립니다.`:k==='scout'?`${dmd(d)} ${x} ${gmTourn(d)} 관전 출장을 잡았습니다.`:`${dmd(d)} 2군 방문을 잡았습니다.`; }
+/* 한꺼번에 잡기(카페 11-14: 하루하루 말고 기간·대회 단위로). 출장만: 오늘 다음 날부터 고른 날까지, 또는 그 대회 기간 전체. 이미 잡은 직관·방문은 그대로 둔다 */
+function gmTournSpan(d){ const o=dobj(d); for(const t of GM_TOURN){ const a=dnum(o.y,t[0],t[1]), b=dnum(o.y,t[2],t[3]); if(d>=a&&d<=b)return [a,b,t[4]]; } return null; }
+function gmPlanBulk(d,x,mode){ if(!REG.includes(x))return '지역을 고르세요.'; d=+d; let a=G.day+1, b=d; if(mode==='tourn'){ const S=gmTournSpan(d); if(!S)return '대회 기간이 아닙니다.'; a=Math.max(a,S[0]); b=S[1]; }
+  const P=gmPlans(); let n=0, kept=0; for(let i=a;i<=b;i++){ if(!gmTourn(i))continue; const o=P[i]; if(o&&o.k!=='scout'){ kept++; continue; } if(gmPlanSet(i,'scout',x).includes('출장을 잡았습니다'))n++; }
+  return n?`${dmd(a)}~${dmd(b)} 고교 대회 ${n}일을 ${x} 출장으로 잡았습니다.${kept?` 직관·2군 방문을 잡은 ${kept}일은 그대로 둡니다.`:''}`:'그 기간에 잡을 고교 대회 날이 없습니다.'; }
 /* 전날: 직관 알림(진행을 멈춘다). 당일: 출장·방문 결과 */
-function gmPlanDaily(){ if(G.unemp)return; const P=gmPlans(); const tm=P[G.day+1];
+function gmPlanDaily(){ if(G.unemp)return; try{ const o=dobj(G.day); if(o.m===3&&o.d>=1&&G.gmPlanTip!==o.y&&!G.gmPlanTipSeen){ G.gmPlanTip=o.y; G.gmPlanTipSeen=1; mail('스카우트팀장','달력에서 단장 일정을 잡을 수 있습니다','일정 화면의 달력에서 앞으로의 날짜를 누르면 고교 대회 출장, 경기 직관, 2군 방문을 잡을 수 있습니다. 출장을 잡은 날에는 그 지역 유망주 평가가 더 정확해지고, 2군 방문은 선수단 기분을 올립니다. 출장은 대회 기간이나 원하는 날까지 한꺼번에 잡을 수도 있습니다.',{kind:'운영',acts:[{l:'일정 열기',a:'go',v:'league:score'}]}); } }catch(e){} /* 카페 11-14: 60시즌을 해도 몰랐다는 기능을 한 번 알린다 */ const P=gmPlans(); const tm=P[G.day+1];
   if(tm&&!tm.done&&tm.k==='attend'&&!tm.warned)gmAttendWarn(tm);
   /* 우천 순연 등으로 열리지 않은 직관 일정은 취소한다(구단주 동행 한도를 계속 차지하지 않게). 오늘 할 일이 없어도 먼저 정리한다 */
   for(const d in P){ const q=P[d]; if(+d<G.day&&!q.done&&q.k==='attend'){ q.done=true; q.miss=true; if(q.mid){G.mail=G.mail.filter(m=>m.id!==q.mid);G.stops=(G.stops||[]).filter(m=>m.id!==q.mid);} note('일정',`${dmd(+d)} 직관하려던 경기가 열리지 않아 일정을 취소했습니다.`); } }

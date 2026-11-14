@@ -283,3 +283,6 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 }
 /* 하이라이트·전체 전환: 고른 쪽이 눈에 띄게(플레이테스트 4 #7) */
 .match-dashboard .cs-top .cs-mode button.on,.match-dashboard .md-mobile-nav button.on{background:#2f6fb0;border-color:#7cbcff;color:#fff;font-weight:700;box-shadow:inset 0 0 0 1px #7cbcff55}
+
+/* 3D 중계에서는 구장 위에 뜨는 붉은 상황 표시(득점권 찬스 띠, 결정적 순간 카드)를 띄우지 않는다(사용자 11-13) */
+.match-dashboard .cs-stage.has-3d>:is(.cs-sit,.md-clutch){display:none!important}

@@ -6,7 +6,7 @@ function streakOf(tid){ const L=tlOf(tid); if(!L.length)return ''; const s=L[L.l
 function splitOf(tid){ const L=tlOf(tid); const f=h=>{ const r=wlOf(L.filter(x=>x[3]===h)); return `${r.w}-${r.l}${r.t?'-'+r.t:''}`; }; return {home:f(1),away:f(0),rs:sum(L.map(x=>x[1])),ra:sum(L.map(x=>x[2])),n:L.length}; }
 function h2hOf(tid,opp){ return wlOf(tlOf(tid).filter(x=>x[4]===opp)); }
 const wlStr=r=>`${r.w}-${r.l}${r.t?'-'+r.t:''}`;
-const pctStr=o=>o.w+o.l?fmt3(o.w/(o.w+o.l)):'-';
+const pctStr=(o,L)=>{ if(!(o.w+o.l))return '-'; const p=o.w/(o.w+o.l), t=fmt3(p); if(L&&L.some(x=>x!==o&&x.w+x.l&&fmt3(x.w/(x.w+x.l))===t&&Math.abs(x.w/(x.w+x.l)-p)>1e-9))return p.toFixed(4).replace(/^0/,''); return t; }; /* 셋째 자리까지 같은데 실제 승률이 다르면 넷째 자리까지(카페 11-14: 순위가 뒤바뀐 것처럼 보임) */
 function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:per!=='season'&&G.ps&&G.ps.order&&G.ps.order.length?G.ps.order:standingsNow()}; /* 정규시즌이 끝나면 순위 결정전 결과가 반영된 순서(시드와 같게, 검수 11-06) */ const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order.concat(G.teams.filter(t=>!lh.order.some(o=>o.tid===t.id)).map(t=>({tid:t.id,w:0,l:0,t:0}))):standingsNow()}; } /* 지난 시즌 뒤 들어온 신생 구단도 목록에(89_league_expansion) */
 /* 결산이 끝난 뒤(다음 시즌)와 개막 전에는 지난 시즌 대신 새 시즌 0승 0패와 예상 순위를 보인다(사용자 11-09). 그 시즌 연도, 아니면 0 */
 function preSeasonY(){ const per=period(); if(per==='pre')return G.year; if(per==='off'&&!preSettle()&&G.last&&G.last.y>=G.year)return G.year+1; return 0; }

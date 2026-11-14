@@ -32,16 +32,26 @@ function pickStarter(tid,d,day,ps,o){
   for(let k=0;k<sp.length;k++){ const i=((t.rot||0)+k)%sp.length; const p=sp[i]; if((p.lastStart==null||day-p.lastStart>=5)&&fresh(p)){ if(o)o.rot=(i+1)%sp.length; return p; } } /* 순번은 경기를 저장할 때(applyGame) 넘긴다: 실패·재시도로 두 칸 넘지 않게(검수 11-09zh) */
   const pool=[...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0)); return pool.find(fresh)||d.pen.find(fresh)||pool.find(p=>p.lastApp!==day)||d.pen.find(p=>p.lastApp!==day)||sp[0]; /* 쉬어 온 투수(불펜 포함)를 전날 등판한 투수보다 먼저(검수 11-08) */
 }
+/* 타순(카페 11-14: 외국인 거포·최고 타자가 1번에 몰림. 감독마다 달라야 한다). 실제로 쓰이는 짜임새를 감독 성향으로 고른다(같은 감독은 늘 같은 짜임새).
+   - 클래식(KBO 전통): 1번 출루·발, 2번 맞히기·번트, 3번 최고 타자, 4번 최고 거포, 5번 다음 거포, 6~9번은 잘 치는 순
+   - 세이버(The Book): 가장 좋은 타자 셋을 1·2·4번에(1번 출루 최고, 2번 팀 최고 타자, 4번 장타 최고), 다음 둘을 3·5번
+   - OPS 순: 출루+장타가 높은 순서대로 1번부터
+   - 스몰볼: 발 빠른 출루형 1번, 번트·밀어치기 2번, 장타 3~5번 / 빅볼: 출루형 1번, 최고 타자 2번, 장타자 몰아 놓기
+   출루율·OPS는 능력치에 올해 1군 성적(100타석 이상)을 섞는다. 어느 짜임새든 출루가 좋은 타자가 위쪽에 온다 */
 function orderList(start,tid){
-  const s=[...start]; const by=f=>s.sort((a,b)=>f(b)-f(a)); const m=tid!=null?mgrOf(tid):null; const sm=m&&!m.interim?m.small:50;
-  if(sm<=38){ /* 빅볼: 출루 좋은 1번 뒤에 팀 최고 타자를 2번에 두고 장타자를 몰아 놓는다 */
-    by(p=>p.r.eye*1.2+p.r.con+p.r.spd*.3); const lead=s.splice(0,1); by(offV); const two=s.splice(0,1); by(p=>p.r.pow+p.r.con*.4); const mid=s.splice(0,3); by(offV); return [...lead,...two,...mid,...s]; }
-  if(sm>=62){ /* 스몰볼: 빠른 1번, 번트·밀어치기가 되는 2번 */
-    by(p=>p.r.spd*1.2+p.r.con+p.r.eye*.6); const lead=s.splice(0,1); by(p=>p.r.con*1.3+p.r.eye*.5-p.r.pow*.4+p.r.spd*.3); const two=s.splice(0,1); by(p=>p.r.pow+p.r.con*.5); const mid=s.splice(0,3); by(offV); return [...lead,...two,...mid,...s]; }
-  by(p=>p.r.con+p.r.eye+p.r.spd*.7); const top=s.splice(0,2);
-  by(p=>p.r.pow+p.r.con*.5); const mid=s.splice(0,3);
-  by(offV); return [...top,...mid,...s];
-}
+  const s=[...start]; const by=f=>s.sort((a,b)=>f(b)-f(a)); const take=(f,n)=>{ by(f); return s.splice(0,n); };
+  const m=tid!=null?mgrOf(tid):null; const ok=m&&!m.interim; const sm=ok?m.small:50, tac=ok?(m.tac??50):50;
+  const h=ok?[...String(m.id||m.name||'')].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7)%100:50; /* 감독마다 고정된 버릇 */
+  const C=new Map(); const st=p=>{ if(C.has(p.id))return C.get(p.id); let o=null; try{ const t=seasonTotal(p,G.year,'1군'); if(t&&t.pa>=100){ const r=bRate(t); o={obp:r.obp,ops:r.ops,w:Math.min(.6,t.pa/500)}; } }catch(e){} C.set(p.id,o); return o; };
+  const obpR=p=>.24+(p.r.eye-20)*.0022+(p.r.con-20)*.0018, opsR=p=>obpR(p)+.25+(p.r.pow-20)*.0055+(p.r.con-20)*.002;
+  const obp=p=>{ const o=st(p); return o?obpR(p)*(1-o.w)+o.obp*o.w:obpR(p); }, ops=p=>{ const o=st(p); return o?opsR(p)*(1-o.w)+o.ops*o.w:opsR(p); };
+  const lead=p=>obp(p)*100+p.r.spd*.25-p.r.pow*.18, two=p=>p.r.con*1.2+p.r.eye*.4+p.r.spd*.3-p.r.pow*.25, slug=p=>p.r.pow+p.r.con*.45;
+  if(sm>=62){ const a=take(p=>obp(p)*80+p.r.spd*.6-p.r.pow*.2,1), b=take(p=>p.r.con*1.3+p.r.eye*.3+p.r.spd*.3-p.r.pow*.5,1), mid=take(slug,3); by(ops); return [...a,...b,...mid,...s]; }
+  if(sm<=38){ const a=take(lead,1), b=take(ops,1), mid=take(slug,3); by(ops); return [...a,...b,...mid,...s]; }
+  if(tac>=64&&h<50){ const top3=take(ops,3); const one=top3.sort((x,y)=>obp(y)-obp(x)).shift(); const four=top3.sort((x,y)=>slug(y)-slug(x)).shift(); const twoP=top3[0]; const nx=take(ops,2).sort((x,y)=>slug(x)-slug(y)); by(ops); return [one,twoP,nx[0],four,nx[1],...s]; }
+  if(h>=82){ by(ops); return [...s]; }
+  const four=take(slug,1), three=take(ops,1), five=take(slug,1); const a=take(lead,1), b=take(two,1); by(ops);
+  return [...a,...b,...three,...four,...five,...s]; }
 function gameSide(tid,day,ps){
   const d=depth(tid); const ln=Object.assign({},d.ln); const bench=[...d.bench];
   const ov={}, rest=new Set();
@@ -80,10 +90,14 @@ function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k'
 /* 홈 어드밴티지 크기(능력 보정 단위). 같은 전력이면 홈 승률 약 53~54%(MLB 장기 평균 약 .54, KBO도 비슷한 수준)에 맞춘 값 */
 let HOME_ADV=1.5;
 let RSP0=false;
+/* 성능: 경기 한 판 동안 변하지 않는 값(배터리 코치 계획, 구단별 전력분석 효과)은 수비 쪽 객체마다 한 번만 계산한다. 저장되지 않게 WeakMap에 둔다 */
+const _sideMemo=new WeakMap();
+function sideMemo(fs){ let M=_sideMemo.get(fs); if(!M){ M={cbp:coachBatteryPlan(fs.tid),ana:new Map()}; _sideMemo.set(fs,M); } return M; }
+function sideAna(M,tid){ if(!M)return anaEff(tid); let v=M.ana.get(tid); if(!v){ v=anaEff(tid); M.ana.set(tid,v); } return v; }
 function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */
-  const lead=fs?((fs.cLead??CL0)-CL0)*.28+chemOf(p,fs.cId)+coachBatteryPlan(fs.tid):0; /* 포수 리드·블로킹·배터리 호흡 */ const cb=CLUTCH?CLUTCH*2.0*mentalOf(b):0, cp=CLUTCH?CLUTCH*2.0*mentalOf(p):0; /* 승부처: 멘탈 */ const ha=fs&&PARK!=null&&HOME_ADV?(fs.tid===PARK?-HOME_ADV:HOME_ADV):0; /* 홈 어드밴티지(사용자 11-11): 수비 쪽이 홈이면 투수에, 아니면 타자에 */
+  const SM=fs?sideMemo(fs):null; const lead=fs?((fs.cLead??CL0)-CL0)*.28+chemOf(p,fs.cId)+SM.cbp:0; /* 포수 리드·블로킹·배터리 호흡 */ const cb=CLUTCH?CLUTCH*2.0*mentalOf(b):0, cp=CLUTCH?CLUTCH*2.0*mentalOf(p):0; /* 승부처: 멘탈 */ const ha=fs&&PARK!=null&&HOME_ADV?(fs.tid===PARK?-HOME_ADV:HOME_ADV):0; /* 홈 어드밴티지(사용자 11-11): 수비 쪽이 홈이면 투수에, 아니면 타자에 */
   const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5+cb+Math.max(0,ha)),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5-(fp||0)+lead+cp+Math.max(0,-ha)),TWP,QCP,QOF);
-  const bb=comb(qb.bb,qp.bb,LGP.bb)*(1-LRULE.zone*.06), k=comb(qb.k,qp.k,LGP.k)*(1+LRULE.zone*.04), /* ABS 존(88_league_rules) */ hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
+  const bb=comb(qb.bb,qp.bb,LGP.bb)*(1-LRULE.zone*.06), k=comb(qb.k,qp.k,LGP.k)*(1+LRULE.zone*.04), /* ABS 존(88_league_rules) */ hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?sideAna(SM,p.team).bab-.0016:0)+(b.team!=null?sideAna(SM,b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
   LBIP=null; const pm=parkHRM(PARK,bipSide(b,p))*LRULE.ball, hrA=hr*pm; /* 공인구 반발계수(88_league_rules)도 홈런 지수에 곱한다 */ /* 구장: 담장 거리·높이에 따른 홈런 지수 */ const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hrA){ LBIP=bipHR(b,p); return 'HR'; }
   const hbp=clamp(.0085+(50-(p.r.ctl||50))*.00010+(fp||0)*.00008,.004,.014);
   if(x>=bb+k+Math.max(hr,hrA)&&x<bb+k+Math.max(hr,hrA)+hbp)return 'HBP'; /* 제구·피로에 따른 사구. 볼넷/삼진/홈런 구간과 분리 */

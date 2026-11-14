@@ -41,6 +41,7 @@ function aiOpsPlan(t,ex,W){ const out={cash:0,fanY:0}; const pl=planOf(t)||'next
   return out; }
 /* 운영 비용 연간 단가(우리 구단과 같은 값): 부상 방지·병원·보조 코치 연봉·응원단. 다음 시즌부터인 코치 계약은 빼고(coachSal now와 같은 기준) */
 function aiOpsCost(t){ const M=medOf(t.id), L=[['부상 방지 프로그램',PREV[M.prev].c],['병원 제휴',HOSP[M.hosp].c]];
+  { const af=acadFee(t.id); if(af>0)L.push(['특수 아카데미 제휴비',af]); } /* 우리와 같은 연 제휴비 */
   L.push(['보조 코치 연봉',Math.round(sum(axOf(t.id).filter(c=>c&&!(c.cs!=null&&c.cs>G.year)).map(c=>c.sal||0)))]);
   const F=t.fanOps; if(F&&!(G.fanYrT&&G.fanYrT[t.id]))L.push(['팬 마케팅·구단 이벤트',(FAN_OPS.cheer.m[F.cheer||0]||0)*12]);
   return L; }
@@ -59,18 +60,24 @@ function aiPriceYear(t){ const A=G.sea&&G.sea.att&&G.sea.att[t.id]; if(!A||!A.ca
 
 /* --- 구단주 자금 요청: FA 시장이 열린 날(영입 자금)과 7월 1일(우승 도전 보강·적자) --- */
 function aiOwnerAsk(t,kind){ if(!t||t.id===ME()||t.indie)return null; const pl=planOf(t)||'next', sy=sponSeason(); const o=dobj(G.day), mk=o.y*100+o.m;
-  const L=t.ownAsk=(t.ownAsk||[]).filter(g=>G.day-g.d<=400); if(L.some(g=>g.mk===mk))return null; /* 한 달에 한 번(우리와 같은 간격) */
+  const L=t.ownAsk=(t.ownAsk||[]).filter(g=>G.day-g.d<=400); if(ownAskGate(L,sy))return null; /* 우리와 같은 달력: 한 시즌 3번·45일 간격(36_relations ownAskGate) */
   let amt=0, pur=null;
   if(kind==='fa'){ if(!['win','next','star'].includes(pl)||!(G.fa&&G.fa.open&&!G.fa.closed))return null;
     const q=(G.fa.pool||[]).map(id=>G.players[id]).filter(p=>{ if(!p||p.team!=null||!p.ask||ovr(p)<60||p.faFrom===t.id)return false; try{ return !faOutBlocked(t.id,p); }catch(e){ return true; } }).sort((a,b)=>ovr(b)-ovr(a))[0];
     if(!q)return null; amt=q.ask.annual; pur={k:'fa',pid:q.id}; }
-  else { const rk=rankNowT(t.id), cash=t.cash||0; if(cash<-1000)amt=cash<-3000?2000:1000; else if((pl==='win'||pl==='next')&&rk<=5){ amt=pl==='win'?2000:1000; pur={k:'push'}; } else return null; }
+  else { const rk=rankNowT(t.id), cash=t.cash||0; if(cash<-1000)amt=cash<-3000?2000:1000; else if((pl==='win'||pl==='next')&&rk<=5&&period()==='season'&&G.day<=tradeDL()){ amt=pl==='win'?2000:1000; pur={k:'push'}; } else return null; }
   const p0=ownOddsT(t.id,amt,pur); if(p0<.25)return null; /* 사람 단장처럼 될 성싶을 때만 찾아간다 */
   const rec=L.filter(g=>G.day-g.d<=120).length; const p=p0*Math.pow(.85,rec)*(amt>=2000?.9:1); const ok=R()<p; /* ownerAsk와 같은 감쇠 */
-  L.push({d:G.day,mk,y:sy,amt,ok}); if(L.length>12)L.shift();
+  L.push({d:G.day,mk,y:sy,amt,ok,...(ok&&pur?{k:pur.k,pid:pur.pid,an:G.acqSeq||0,until:pur.k==='fa'?grantFaEnd():tradeDL(),st:'open'}:{})}); if(L.length>12)L.shift();
   if(ok){ t.grant={y:sy,amt:(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt}; try{ wire('구단',`${t.city} ${t.nick} 모기업, 추가 지원`,{tid:t.id}); }catch(e){} }
   else t.trust=clamp((t.trust??55)-1,0,100);
   return {ok,amt,p}; }
+
+/* 목적이 있는 AI 지원금도 우리와 같은 판정(36_relations grantCheck): FA는 그 선수 계약, 보강은 받은 뒤 데려온 선수 연봉 합이 지원금의 절반 이상 */
+function aiGrantCheck(t){ for(const g of t.ownAsk||[]){ if(g.st!=='open')continue; let ok=false, fail=false;
+    if(g.k==='fa'){ const M=(G.moves||[]).filter(m=>m.t==='FA'&&m.pid===g.pid&&m.d>=g.d); ok=M.some(m=>m.to===t.id&&m.d<=g.until); fail=!ok&&(M.some(m=>m.to!==t.id)||G.fa&&G.fa.closed||G.day>g.until); }
+    else { const P=Object.values(G.players).filter(q=>q.team===t.id&&q.acq&&q.acq.tid===t.id&&(q.acq.k==='트레이드'||q.acq.k==='외국인')&&!q.ftmp&&q.acq.n>(g.an||0)&&q.acq.d<=g.until); ok=P.length>0&&sum(P.map(q=>q.sal||0))>=g.amt*BOOST_SAL; fail=!ok&&G.day>g.until; }
+    if(ok){ g.st='done'; t.trust=clamp((t.trust??55)+2,0,100); } else if(fail){ g.st='fail'; t.trust=clamp((t.trust??55)-3,0,100); } } }
 
 /* --- 감독이 미는 선수(시즌 개막 한 주 뒤, 해마다): 그 감독 안목으로 1~2명. 받아 주면 그해 성장 ×1.3, 같은 자리 경쟁자 기분 하락(우리와 같은 값) --- */
 function aiMpickPlan(){ for(const t of G.teams){ if(t.id===ME())continue; const m=G.mgr[t.id], mid=m&&!m.interim?m.id:null, P=t.mpick; if(P&&P.y===G.year&&P.mid===mid)continue;
@@ -86,7 +93,7 @@ function aiMpickMult(p){ const t=G.teams[p.team], P=t&&t.mpick, m=G.mgr[p.team];
 function aiMentorPick(){ if(period()!=='season')return; for(const t of G.teams){ if(t.id===ME()||t.mentorY===G.year)continue; t.mentorY=G.year;
     const cur=t.id===G.user?G.mentor:((G.clubT||{})[t.id]||{}).mentor; if(cur&&cur.y===G.year)continue; if(planOf(t)==='tight'||(t.cash||0)<50)continue;
     const p=playersOf(t.id).filter(q=>{ initPers(q); return q.age>=33&&q.pers.pro>=13&&!q.foreign; }).sort((a,b)=>b.age-a.age)[0]; if(!p||!domestic(t.id).some(q=>q.age<=24))continue;
-    t.cash-=50; p.mor=clamp((p.mor??60)+8,0,100); const M={id:p.id,y:G.year}; if(t.id===G.user)G.mentor=M; else { const K=G.clubT=G.clubT||{}; (K[t.id]=K[t.id]||{}).mentor=M; } } }
+    t.cash-=50; p.mor=clamp((p.mor??60)+8,0,100); const M={id:p.id,y:G.year}; if(t.id===G.user)G.mentor=M; else { const K=G.clubT=G.clubT||{}, fy=sponSeason(); if(!K[t.id]||K[t.id].fy!==fy)K[t.id]={fy,ai:1}; /* fy가 있어야 그 구단으로 부임한 단장이 멘토를 이어받는다(검수 11-14). ai: 사람 단장이 남긴 기록이 아님(구단주 신뢰 등은 이어받지 않는다) */ K[t.id].mentor=M; } } }
 
 /* --- 보조 코치: 매달 1일 코치 시장(cmAiMonthly 끝). 시설이 줄어 정원을 넘으면 정리(잔여 연봉 절반) --- */
 function aiAsstMonthly(tid,off){ const t=team(tid); if(!t||tid===ME())return; const O=orgOf(tid); const X=O.coachX=O.coachX||[]; const n=axSlots(tid);
