@@ -2762,7 +2762,7 @@ T('[검수 11-09k] 연기 경기: 최종일에 미룬 경기를 치르기 전에
 T('[검수 11-09k] 가을야구 확률: 남은 연기 경기로 5위가 바뀔 수 있으면 100%가 아니다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); G.day=G.cal.end; const o=G.teams.map(t=>t.id); const S=G.sea.rec;
   o.forEach((t,i)=>{ S[t].w=i<4?90-i*3:50; S[t].l=i<4?50+i*3:90; S[t].t=0; }); S[o[4]].w=70; S[o[4]].l=70; S[o[5]].w=70; S[o[5]].l=71; G.makeup=[{y:G.year,h:o[4],a:o[5],d:G.day}];
   const v=playoffOdds(); const x=v&&v.find(z=>z.tid===o[4]); ok(x&&x.ps<1&&x.ps>0,'연기 경기가 남았는데 5위 확률 '+(x&&x.ps)); G.makeup=[]; const y=playoffOdds().find(z=>z.tid===o[4]); ok(y.ps===1,'연기 경기가 없으면 확정이어야 함 '+y.ps); });
-T('[검수 11-09k] 포스트시즌: 한 경기 오류는 시리즈를 멈추지 않고 하루 미뤄 치르며, 지나간 차전 날짜도 다시 잡는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); G.day=G.cal.end; G.res=null; G.stops=[]; processDay(); ok(G.ps&&G.ps.cur,'포스트시즌 준비 실패');
+T('[검수 11-09k] 포스트시즌: 한 경기 오류는 시리즈를 멈추지 않고 하루 미뤄 치르며, 지나간 차전 날짜도 다시 잡는다',()=>{ fresh(); G.noRain=true; /* 비로 하루 미루는 경우는 [우천 포스트시즌]에서 따로 본다: 여기서는 오류 처리만 */ simTo(()=>period()==='season'&&G.day>=G.cal.open+3); G.day=G.cal.end; G.res=null; G.stops=[]; processDay(); ok(G.ps&&G.ps.cur,'포스트시즌 준비 실패');
   let n=0; while(G.ps.cur.days[G.ps.cur.gi]!==G.day+1&&n++<9){ G.res=null; G.stops=[]; processDay(); } const s=G.ps.cur, gi0=s.gi, r0=s.round, d1=G.day+1;
   const sg=simGame; simGame=function(){ throw new Error('주입 오류'); }; try{ G.res=null; G.stops=[]; processDay(); } finally { simGame=sg; }
   ok(G.day===d1&&G.ps.cur===s&&s.gi===gi0&&s.days[gi0]===G.day+1,'오류 난 차전이 다음 날로 다시 잡히지 않음: '+JSON.stringify(s.days)+' gi '+s.gi);
