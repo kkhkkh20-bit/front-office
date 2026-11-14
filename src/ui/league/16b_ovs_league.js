@@ -42,4 +42,4 @@ function ovlChampView(){ const M=G.ovl.MLB.h||[], P=G.ovl.NPB.h||[]; const ys=[.
 /* 해외파 한 줄(인물 창·선수 기록 공통): 연도 · 수준 · 구단 · 기록 · 시상 */
 function ovsLineRow(a,l){ return `${l.y}${l.live?' 진행 중':''} ${esc(ovsLvlL(l.lvl))}${l.c!=null&&l.c>=0?` · ${esc(ovlNm(a.lg,l.c))}`:''}: ${lineTxt(l,a.isP)}${l.aw?' '+ovsAwPills(l,a.lg):''}`; }
 /* 선수 기록 표에 넣을 해외 시즌 줄(복귀 선수·다시 온 선수) */
-function ovsStatRows(p){ const out=[]; for(const a of G.abroad||[]){ if(String(a.id)!==String(p.id))continue; for(const l of a.lines||[])out.push(Object.assign({},l,{pre:`${ovsLvlL(l.lvl)}${l.c!=null&&l.c>=0?' '+ovlNm(a.lg,l.c).split(' ')[0]:''}`})); } return out; }
+function ovsStatRows(p){ const out=[]; for(const a of G.abroad||[]){ if(String(a.id)!==String(p.id))continue; for(const l of a.lines||[])out.push(Object.assign({r:0,rbi:0,sb:0,cs:0,g:0},l,{pre:`${ovsLvlL(l.lvl)}${l.c!=null&&l.c>=0?' '+ovlNm(a.lg,l.c).split(' ')[0]:''}`})); } return out; }
