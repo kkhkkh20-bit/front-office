@@ -232,6 +232,7 @@ function doPick(pid){
   { G.sea.bonus=G.sea.bonus||{}; G.sea.bonus[pk.tid]=(G.sea.bonus[pk.tid]||0)+p.draft.bonus; } pk.pid=pid; d.cur++;
   chron('draft',`신인 ${pk.rd}라운드 ${pk.no}순위 ${p.name}(${posLabel(p)}, ${p.age}세) 지명 · 계약금 ${money(p.draft.bonus)} · ${p.joinY}년 합류`,p.id,pk.tid,{source:'draft:'+d.y+':'+pk.no+':'+pk.rd+':'+pk.tid});
   if(mine&&p.father)try{ sonDrafted(p); }catch(e){} /* 옛 선수의 아들(11-09r) */
+  if(p.gmVis&&p.gmVis.t===pk.tid&&p.gmVis.y===G.year)p.mor=clamp((p.mor??62)+4,0,100); /* 단장이 직접 찾아왔던 구단에 지명되면 조금 반긴다 */
   if(mine)addLog(`${pk.rd}라운드 ${pk.no}순위로 ${p.name}(${p.college?'대졸':'고졸'}·${posLabel(p)})을(를) 지명했습니다.`);
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid)){ (d.lost=d.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,no:pk.no,nm:p.name}); }
   G.shortlist=(G.shortlist||[]).filter(x=>x!==pid);

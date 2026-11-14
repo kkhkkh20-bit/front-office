@@ -188,6 +188,6 @@ function usHsWhy(e,i){ const p=G.players[e.data.pid]; if(i===2||!p||!p.usOff)ret
   const cost=Math.round(p.usOff.bonus*1.3); if(i===0&&spendable(G.user)<cost)return `추가 약속 ${money(cost)}을 낼 수 없습니다(${spendTxt()}).`; return ''; }
 EVH.usHs={ can:usHsWhy, pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.prospect||!p.usOff)return '이미 정리된 일입니다.'; const mv=mlbOf(p), b=p.usOff.bonus, t=team(G.user);
   if(i===2){ return `${p.name}의 선택을 존중하기로 했습니다.`; } { const why=usHsWhy(e,i); if(why){ e.pick=2; return why+' 설득하지 않았습니다.'; } } /* 자동 처리로 와도 같은 조건 */
-  const ch=i===0?clamp(.92-(mv-50)/120,.55,.95):clamp(.55-(mv-50)/90,.15,.7); const cost=i===0?Math.round(b*1.3):0;
+  const ch=i===0?clamp(.92-(mv-50)/120,.55,.95):clamp(.55-(mv-50)/90+(p.gmVis&&p.gmVis.t===G.user&&p.gmVis.y===G.year?.08:0),.15,.75); /* 고교 방문을 기억하는 선수는 직접 설득이 조금 낫다 */ const cost=i===0?Math.round(b*1.3):0;
   if(R()<ch){ p.usStay=true; delete p.usOff; if(cost)spendPay(cost); p.usKeepT=G.user; news('드래프트',`${p.name}, 미국 대신 국내 잔류 · ${tshort(G.user)} 설득 통했다`,i===0?`${tshort(G.user)}이(가) 최고 대우를 약속했다는 후문입니다.`:`단장이 직접 집을 찾아가 육성 계획을 설명한 것이 마음을 돌렸다는 후문입니다.`,1,{ref:p.id}); return `설득에 성공했습니다. ${p.name}은(는) 국내 신인 드래프트에 나옵니다${cost?`(추가 약속 ${money(cost)} 지출)`:''}. 1순위로 지명하세요.`; }
   p.mlb=clamp(mv+5,0,100); return `설득에 실패했습니다. ${p.name}은(는) 미국행 쪽으로 기울었습니다. 8월 20일 전후로 결정합니다.`; } };

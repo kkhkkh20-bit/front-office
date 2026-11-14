@@ -24,9 +24,20 @@ function flSeedSM(){ const sv=Object.values(G.players).filter(p=>p.team!=null&&m
 function flDay(d){ const w=dobj(d).w; return w!==1&&w!==5; } /* 월·금 휴식 */
 /* 원 돌리기(circle method) 대진: 홀수면 '쉼'을 넣는다 */
 function flRR(L,r){ const a=L.slice(); if(a.length%2)a.push(null); const n=a.length, fix=a[0], rest=a.slice(1); const k=r%(n-1); const rot=rest.slice(k).concat(rest.slice(0,k)); const A=[fix,...rot]; const P=[]; for(let i=0;i<n/2;i++){ const x=A[i], y=A[n-1-i]; if(x!=null&&y!=null)P.push((r+i)%2?[x,y]:[y,x]); } return P; }
-function flPairs(F){ const all=flTeams(); const cyc=all.length+5, r=F.round++, i=r%cyc; let P;
+function flPairs(F){ return flPairsR(F,F.round++); }
+/* 대진은 라운드 번호만으로 정해진다(난수 없음): 앞날의 우리 2군 경기도 미리 알 수 있다 */
+function flPairsR(F,r){ const all=flTeams(); const cyc=all.length+5, i=r%cyc; let P;
   if(i<all.length)P=flRR(all,Math.floor(r/cyc)*3+i); else { const j=i-all.length; P=flRR(F.div.N,j).concat(flRR(F.div.S,j)); }
   return P.map(([h,a])=>h===FL_SM?[a,h]:[h,a]); } /* 상무는 원정 */
+/* 그날 퓨처스 경기가 열리는 날인지(flPlayDay와 같은 조건) */
+function flOpenOn(d){ const c=G.cal; return G.flOn!==false&&!!c&&d>=c.open&&d<=c.end&&flDay(d)&&!!(c.sched&&c.sched[d]); }
+/* 앞날 그 구단 2군 경기: {op,home} 또는 null. 오늘까지 치른 라운드에서 열리는 날만큼 센다(우천·인원 부족 취소는 당일에 확인) */
+function flGameOn(tid,d){ d=+d; if(!flOpenOn(d)||d<=G.day)return null; const y=dobj(d).y; const F0=G.fl&&G.fl.y===y?G.fl:null; let F=F0;
+  if(!F){ const ids=G.teams.map(t=>t.id); F={div:{N:ids.filter(id=>FL_NORTH_REG.has(team(id).region)),S:ids.filter(id=>!FL_NORTH_REG.has(team(id).region)).concat([FL_SM])},round:0}; }
+  let r=F.round; for(let i=F0?G.day+1:G.cal.open;i<d;i++)if(flOpenOn(i))r++;
+  const m=flPairsR(F,r).find(x=>x[0]===tid||x[1]===tid); return m?{op:m[0]===tid?m[1]:m[0],home:m[0]===tid}:null; }
+/* 오늘 치른 우리 2군 경기(박스스코어 포함) */
+function flOurGame(d){ const F=G.fl; if(!F||F.y!==dobj(d).y)return null; for(let i=F.games.length-1;i>=0;i--){ const x=F.games[i]; if(x.d===d&&(x.h===G.user||x.a===G.user)&&x.box)return x; if(x.d<d)break; } return null; }
 /* 그날 나갈 수 있는 2군 선수 */
 function flPool(t,d){
   if(t===FL_SM){ const L=Object.values(G.players).filter(p=>p.team!=null&&milServing(p)&&milPeriod(p).unit==='상무'&&healthy(p)&&!(p.ntAway>d&&p.ntFrom<=d)); return {B:L.filter(p=>!p.isP),P:L.filter(p=>p.isP)}; }
