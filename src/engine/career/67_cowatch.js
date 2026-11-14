@@ -68,13 +68,13 @@ function cwInvite(){ const c=cwSt(); const per=period(); const C=G.cal; if(!(per
   G.stops=(G.stops||[]).filter(x=>x.id!==ev.mid); /* 진행을 막지 않는다 */ }
 function cwInvLine(why,who,d,op){ const ow=team(G.user).owner;
   if(who==='ceo')return `단장님, ${dmd(d)} 홈경기에 가려고 합니다. 올해 예산 이야기도 할 겸 같이 보시겠습니까?`;
-  if(why==='open')return ow==='pr'?'홈 개막전은 그룹 행사나 다름없소. 관중석에서 같이 보겠소?':ow==='profit'?'개막전 관중이 얼마나 오는지 직접 보고 싶소. 같이 가겠소?':'올해 첫 홈경기요. 같이 보면서 올해 구상을 들어 보고 싶소.';
-  if(why==='streak')return `요즘 경기가 답답하오. ${dmd(d)} ${op}전은 직접 보려는데, 시간 되면 같이 봅시다.`;
-  if(why==='dl')return '트레이드 마감이 코앞이오. 경기 보면서 이야기 좀 나눕시다.';
-  if(why==='race')return '순위 싸움이 한창이라던데, 직접 보고 싶소. 같이 가겠소?';
-  if(why==='last')return '올해 마지막 홈경기요. 한 해를 같이 마무리합시다.';
+  if(why==='open')return ow==='pr'?'홈 개막전은 그룹 행사나 다름없어요. 관중석에서 같이 보겠어요?':ow==='profit'?'개막전 관중이 얼마나 오는지 직접 보고 싶어요. 같이 가겠어요?':'올해 첫 홈경기예요. 같이 보면서 올해 구상을 들어 보고 싶어요.';
+  if(why==='streak')return `요즘 경기가 답답해요. ${dmd(d)} ${op}전은 직접 보려는데, 시간 되면 같이 봅시다.`;
+  if(why==='dl')return '트레이드 마감이 코앞이에요. 경기 보면서 이야기 좀 나눕시다.';
+  if(why==='race')return '순위 싸움이 한창이라던데, 직접 보고 싶어요. 같이 가겠어요?';
+  if(why==='last')return '올해 마지막 홈경기예요. 한 해를 같이 마무리합시다.';
   return '같이 경기 봅시다.'; }
-EVH.cwInv={ pick(e,i){ const d=e.data; if(!cwActorMatches(d.who,d.tid,d.person))return '초대한 인물이 자리를 떠나 이 초대는 종료됐습니다.'; if(i!==0)return `${d.who==='ceo'?'사장':'구단주'}에게 사정을 전했습니다. "다음에 봅시다." 변화는 없습니다.`;
+EVH.cwInv={ pick(e,i){ const d=e.data; if(!cwActorMatches(d.who,d.tid,d.person))return '초대한 사람이 자리를 떠나 초대가 종료됐습니다.'; if(i!==0)return `${d.who==='ceo'?'사장':'구단주'}에게 사정을 전했습니다. "다음에 봅시다." 변화는 없습니다.`;
   const P=gmPlans(); if(d.d<=G.day)return '경기 날짜가 지났습니다.'; P[d.d]={k:'attend',x:d.who==='ceo'?'ceo':'owner',cw:d.why,tid:d.tid??G.user,person:d.person??bossOf(G.user)[d.who==='ceo'?'ceo':'own'].id,done:false};
   return `${dmd(d.d)} 홈경기 직관 일정을 ${d.who==='ceo'?'사장':'구단주'} 동석으로 잡았습니다. 전날 다시 알려 드립니다.`; } };
 
@@ -95,13 +95,13 @@ function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=p
   return true; }
 /* 함께 본 경기 중 반응: 리드를 잡거나 빼앗긴 순간, 동점, 우리 홈런, 한 번에 3점 이상 내준 순간. 최대 4번, 구단주 성향별 말투(사장은 수익 쪽) */
 const CW_LIVE={
-  flip:{win:'됐어, 뒤집었어! 이래야지.',profit:'이런 경기가 관중을 다시 부르지.',pr:'방금 장면은 내일 기사 첫머리감이오.'},
-  lead:{win:'앞서 나가는군. 이대로 끝냅시다.',profit:'분위기 좋소. 관중석이 들썩이는군.',pr:'중계 화면에 우리 응원석이 잡히겠군.'},
-  tie:{win:'따라붙었어. 아직 모르지.',profit:'원점이군. 끝까지 보고 가야겠소.',pr:'이런 접전이 화제가 되지.'},
-  lost:{win:'어허, 뒤집혔잖소. 마운드가 왜 이래요?',profit:'관중들 표정이 굳는군.',pr:'역전당하는 장면이 상대 하이라이트로 계속 돌겠군. 체면이 말이 아니오.'},
-  behind:{win:'먼저 내줬군. 아직 갈 길이 멀지만 기분은 별로요.',profit:'선취점을 내주니 관중석이 조용하군.',pr:'상대 쪽 장면이 하이라이트 첫머리에 나오겠군.'}, /* 동점에서 먼저 내준 것은 '뒤집혔다'가 아니다(플레이테스트 4 #24) */
-  hurt:{win:'한 번에 {r}점이라... 단장, 저건 설명 좀 들어야겠소.',profit:'{r}점을 한꺼번에 주다니. 표값 아깝다는 말 나오겠소.',pr:'{r}점이라니, 기자들이 가만있지 않겠군.'},
-  hr:{win:'{n}, 저 친구 힘 좋네.',profit:'{n} 홈런이면 유니폼 좀 팔리겠군.',pr:'{n}, 저런 선수가 구단 얼굴이 돼야 해.'}};
+  flip:{win:'됐어요, 뒤집었어요! 이래야죠.',profit:'이런 경기가 관중을 다시 부르죠.',pr:'방금 장면은 내일 기사 첫머리감이에요.'},
+  lead:{win:'앞서 나가는군요. 이대로 끝냅시다.',profit:'분위기 좋아요. 관중석이 들썩이는군요.',pr:'중계 화면에 우리 응원석이 잡히겠군요.'},
+  tie:{win:'따라붙었어요. 아직 모르죠.',profit:'원점이군요. 끝까지 보고 가야겠어요.',pr:'이런 접전이 화제가 되죠.'},
+  lost:{win:'어허, 뒤집혔잖아요. 마운드가 왜 이래요?',profit:'관중들 표정이 굳는군요.',pr:'역전당하는 장면이 상대 하이라이트로 계속 돌겠군요. 체면이 말이 아니에요.'},
+  behind:{win:'먼저 내줬군요. 아직 갈 길이 멀지만 기분은 별로예요.',profit:'선취점을 내주니 관중석이 조용하군요.',pr:'상대 쪽 장면이 하이라이트 첫머리에 나오겠군요.'}, /* 동점에서 먼저 내준 것은 '뒤집혔다'가 아니다(플레이테스트 4 #24) */
+  hurt:{win:'한 번에 {r}점이라... 단장, 저건 설명 좀 들어야겠어요.',profit:'{r}점을 한꺼번에 주다니. 표값 아깝다는 말 나오겠어요.',pr:'{r}점이라니, 기자들이 가만있지 않겠군요.'},
+  hr:{win:'{n}, 저 친구 힘 좋네요.',profit:'{n} 홈런이면 유니폼 좀 팔리겠군요.',pr:'{n}, 저런 선수가 구단 얼굴이 돼야 해.'}};
 function cwLive(g,who){ if(!g||!g.pbp)return []; const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!me)return []; const ow=who==='ceo'?'profit':(team(G.user).owner||'win'); let pa=0,ph=0; const L=[];
   g.pbp.forEach((x,k)=>{ if(typeof x[1]!=='number'||x.length<9)return; const a=x[7],h=x[8]; const runs=(a-pa)+(h-ph); const d0=me==='h'?ph-pa:pa-ph, d1=me==='h'?h-a:a-h; const usBat=(x[0]%2===1)===(me==='h'); pa=a; ph=h; if(runs<=0)return;
     let t=null; if(usBat&&d0<=0&&d1>0)t=d0<0?'flip':'lead'; else if(!usBat&&d0>=0&&d1<0)t=d0>0?'lost':'behind'; else if(usBat&&d0<0&&d1===0)t='tie'; else if(usBat&&x[3]==='HR')t='hr'; else if(!usBat&&runs>=3)t='hurt';
@@ -128,22 +128,22 @@ function cwGift(tags){ const c=cwSt(); if(c.gift>=2)return null; const t=team(G.
 /* 구단주 한두 마디: 결과 한 줄 + 실제 기록에서 고른 한 줄(겉으로 보이는 것만, 성향에 따라 다르게) */
 function cwRemarks(rec,me,who,ms,tags){ const ow=team(G.user).owner; const ceo=who==='ceo'; const out=[];
   out.push(ceo?(ms>0?'좋은 경기였습니다. 회장님께도 좋게 말씀드리겠습니다.':ms<=-5?'오늘은 보고드리기가 민망하네요.':ms<0?'아쉽습니다. 다음 경기는 이기겠죠.':'비겼네요. 쉽지 않은 경기였습니다.')
-    :tags.includes('walkoff')?'끝내기라니! 이런 맛에 야구장에 오는 거요.':tags.includes('snap')?'드디어 연패를 끊었군. 오늘 오길 잘했소.':ms>=6?'시원하게 이겼군. 오늘 같은 경기를 자주 보고 싶소.':ms>0?(ow==='profit'?'이겼으니 됐소. 관중들 표정도 좋더군.':'수고했소. 이기는 경기는 늘 좋군.'):ms<=-5?(ow==='win'?'이런 경기를 보려고 온 건 아니오.':'관중들 보기 민망한 경기였소.'):ms<0?'아쉽군. 다음엔 이기는 걸 봅시다.':'비겼군. 쉽지 않은 경기였소.');
+    :tags.includes('walkoff')?'끝내기라니! 이런 맛에 야구장에 오는 거예요.':tags.includes('snap')?'드디어 연패를 끊었군요. 오늘 오길 잘했어요.':ms>=6?'시원하게 이겼군요. 오늘 같은 경기를 자주 보고 싶어요.':ms>0?(ow==='profit'?'이겼으니 됐어요. 관중들 표정도 좋더군요.':'수고했어요. 이기는 경기는 늘 좋군요.'):ms<=-5?(ow==='win'?'이런 경기를 보려고 온 건 아니에요.':'관중들 보기 민망한 경기였어요.'):ms<0?'아쉽군요. 다음엔 이기는 걸 봅시다.':'비겼군요. 쉽지 않은 경기였어요.');
   const W=ceo?CW_W.ceo:CW_W[ow]||CW_W.win; const SW=ceo?{}:(CW_SECW[cwSec()]||{}); const C=[];
   for(const k of Object.keys(CW_RM)){ if(W[k]==null)continue; let x=null; try{ x=CW_RM[k](rec,me,ceo); }catch(e){} if(x)C.push([W[k]*(SW[k]||1)*(.7+R()*.6),x]); }
   C.sort((a,b)=>b[0]-a[0]); if(C[0])out.push(C[0][1]); return out; }
 const CW_RM={
   slump(rec,me,ceo){ const side=rec.box[me]; for(const b of side.bat){ if(!b.pos||b.o>4)continue; const p=G.players[b.id]; if(!p||p.team!==G.user)continue; const r=cwRecentB(p,10); if(r.pa<25||r.avg>.230)continue;
-    return ceo?`${p.name} 선수 연봉이 ${money(p.sal)}인데, 최근 ${r.g}경기 타율이 ${fmt3(r.avg)}네요.`:`${b.o+1}번 타자 ${p.name}, 요즘 왜 저러오? 최근 ${r.g}경기 타율이 ${fmt3(r.avg)}이던데.`; } return null; },
+    return ceo?`${p.name} 선수 연봉이 ${money(p.sal)}인데, 최근 ${r.g}경기 타율이 ${fmt3(r.avg)}네요.`:`${b.o+1}번 타자 ${p.name}, 요즘 왜 저래요? 최근 ${r.g}경기 타율이 ${fmt3(r.avg)}이던데.`; } return null; },
   hook(rec,me,ceo){ const sp=rec.box[me].pit[0]; const m=G.mgr[G.user]; if(ceo||!sp||!m||m.interim||!((sp.er>=5&&sp.outs>=12)||(sp.er>=4&&sp.outs>=18)))return null; const p=G.players[sp.id];
-    return `${m.name} 감독은 투수를 너무 늦게 바꾸는 것 같은데. ${p?p.name:'선발'}이(가) ${sp.er}점이나 줬는데 ${ipStr(sp.outs)}이닝까지 던지게 하오?`; },
+    return `${m.name} 감독은 투수를 너무 늦게 바꾸는 것 같은데. ${p?p.name:'선발'}이(가) ${sp.er}점이나 줬는데 ${ipStr(sp.outs)}이닝까지 던지게 해요?`; },
   rookie(rec,me,ceo){ if(ceo)return null; for(const b of rec.box[me].bat){ const p=G.players[b.id]; if(!p||p.team!==G.user||p.foreign||!(p.age<=23)||!(b.h>=1))continue; const s=seasonTotal(p,G.year,'1군'); if(s&&s.pa>=200)continue;
-    return `저 ${p.age<=21?'신인':'젊은 친구'} ${p.name} 괜찮던데. 오늘 ${b.hr?'홈런까지 쳤잖소':b.h+'안타를 쳤잖소'}. 1군에서 더 쓰지 그러오?`; } return null; },
+    return `저 ${p.age<=21?'신인':'젊은 친구'} ${p.name} 괜찮던데. 오늘 ${b.hr?'홈런까지 쳤잖아요':b.h+'안타를 쳤잖아요'}. 1군에서 더 쓰지 그래요?`; } return null; },
   crowd(rec,me,ceo){ if(!rec.att)return null; const r=rec.att/stadCap(G.user); const n=rec.att.toLocaleString('ko-KR');
-    if(r>=.95)return ceo?`오늘 ${n}명, 거의 매진입니다. 입장 수입이 괜찮겠네요.`:`관중석이 꽉 찼군. ${n}명이라니 보기 좋소.`; if(r<.6)return ceo?`오늘 관중이 ${n}명, 좌석의 ${cwPct(r)}입니다. 입장 수입이 걱정입니다.`:`오늘 관중석이 왜 이렇게 비었소? ${n}명이라니.`; return null; },
-  star(rec,me,ceo){ const L=rec.pbp||[]; const half0=me==='h'?1:0; for(const x of L){ if(x[0]%2!==half0||x[3]!=='HR')continue; const p=G.players[x[1]]; if(!p||p.team!==G.user)continue; return ceo?`${p.name} 선수 홈런 때 관중 반응이 좋더군요. 저런 선수가 표를 팝니다.`:`${p.name}, 시원하게 넘기는구먼. 저런 장면을 보러 오는 거요.`; } return null; },
+    if(r>=.95)return ceo?`오늘 ${n}명, 거의 매진입니다. 입장 수입이 괜찮겠네요.`:`관중석이 꽉 찼군요. ${n}명이라니 보기 좋아요.`; if(r<.6)return ceo?`오늘 관중이 ${n}명, 좌석의 ${cwPct(r)}입니다. 입장 수입이 걱정입니다.`:`오늘 관중석이 왜 이렇게 비었어요? ${n}명이라니.`; return null; },
+  star(rec,me,ceo){ const L=rec.pbp||[]; const half0=me==='h'?1:0; for(const x of L){ if(x[0]%2!==half0||x[3]!=='HR')continue; const p=G.players[x[1]]; if(!p||p.team!==G.user)continue; return ceo?`${p.name} 선수 홈런 때 관중 반응이 좋더군요. 저런 선수가 표를 팝니다.`:`${p.name}, 시원하게 넘기네요. 저런 장면을 보러 오는 거예요.`; } return null; },
   foreign(rec,me,ceo){ const p=cwBadF().sort((a,b)=>b.sal-a.sal)[0]; if(!p)return null; return ceo?`외국인 ${p.name} 선수 연봉이 ${money(p.sal)}인데 기록이 좋지 않네요.`:`외국인 ${p.name}, 돈값을 못 하는 것 같은데.`; },
-  money(rec,me,ceo){ let b=null; try{ b=budget(); }catch(e){ return null; } if(!b||b.roomGoal>=0)return null; return ceo?`올해 예산 여유가 ${money(b.roomGoal)}입니다. 남은 시즌은 아껴 써야 합니다.`:`올해 적자가 ${money(-b.roomGoal)}라던데, 돈 관리는 잘하고 있는 거요?`; },
+  money(rec,me,ceo){ let b=null; try{ b=budget(); }catch(e){ return null; } if(!b||b.roomGoal>=0)return null; return ceo?`올해 예산 여유가 ${money(b.roomGoal)}입니다. 남은 시즌은 아껴 써야 합니다.`:`올해 적자가 ${money(-b.roomGoal)}라던데, 돈 관리는 잘하고 있는 거예요?`; },
 };
 
 /* ---------- (a) 단장 건의: 기존 규칙 + 경기 결과 보정 (친밀도 보정은 기존 규칙 안에 상시 들어가 있다) ---------- */
@@ -163,7 +163,7 @@ function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const l
   else { L.push(['ops:1000','운영비 10억 증액 요청',`${od(ownOdds(1000,null))} · 반려되면 신뢰 조금 하락`,noL]);
     const fa=ownWhyFA()[0]; /* 계약할 수 있는 FA만(외부 FA 한도, 검수 11-09zzd) */
     if(fa)L.push(['fa:'+fa.id,`FA ${fa.name} 영입 자금 요청`,`${money(fa.ask.annual)} · ${od(ownOdds(fa.ask.annual,{k:'fa',pid:fa.id}))} · 목적대로 못 쓰면 신뢰 하락`,noL]);
-    const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 조금 하락, 감독 관계 악화`,(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]||{w:0,l:0}, gp=r.w+r.l; return gp<20?'시즌 20경기를 치른 뒤 성적을 보고 건의할 수 있습니다':uRank()>=6||m.rel<40||r.w/Math.max(1,gp)<.45?'':'성적 부진(6위 아래·승률 4할 5푼 미만)이나 감독과의 갈등(관계 40 미만)이 있을 때 건의할 수 있습니다'; })()]); /* 사용자 피드백 11-05: 새 감독 첫 경기 패배 직후에도 교체 건의가 떴다 */
+    const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 조금 하락, 감독 관계 악화`,(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]||{w:0,l:0}, gp=r.w+r.l; return gp<20?'시즌 20경기를 치른 뒤 성적을 보고 건의할 수 있습니다':uRank()>=6||m.rel<40||r.w/Math.max(1,gp)<.45?'':'성적 부진(6위 아래·승률 4할 5푼 미만)이나 감독과 사이가 틀어졌을 때 건의할 수 있습니다'; })()]); /* 사용자 피드백 11-05: 새 감독 첫 경기 패배 직후에도 교체 건의가 떴다 */
     if(fac)L.push(['fac:'+fac.k,`대형 투자: ${FACI[fac.k].l} 모기업 투자 요청`,`공사비 ${money(fac.c)} · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 조금 하락`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
   return L; }
 function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||!cwActorMatches(S.who,S.tid,S.person))return '건의할 수 있는 때가 아닙니다.'; const o=cwSuggOpts(S).find(x=>x[0]===v); if(!o)return '지금은 건의할 수 없는 일입니다.'; if(o[3])return o[3];
@@ -174,7 +174,7 @@ function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||!cwActorMatches(S.w
   else if(k==='fire'){ const m=G.mgr[G.user]; const p=cwFireOdds(S); ok=R()<p;
     if(ok){ const pay=mgrSevPay(m).pay; const help=pay>0?round5(pay/2):0; fireMgr(); if(help>0)grantApply(help); txt=`승인됐습니다. ${m.name} 감독을 경질했고, 구단주가 잔여 연봉의 절반 ${money(help)}을(를) 지원합니다. 새 감독은 스태프·육성 → 감독에서 선임하세요.`; }
     else { t.trust=clamp(t.trust-2,0,100); m.rel=clamp(m.rel-5,0,100); txt='반려됐습니다. 구단주 신뢰 조금 하락, 건의 소문에 감독 관계 악화.'; } }
-  const ow=t.owner; const say=S.who==='ceo'?(ok?'회장님 결재가 났습니다. 쓰임새는 분명히 해 주세요.':'이번에는 어렵다고 하십니다.'):ok?(ow==='win'?'좋소. 대신 결과로 보여 주시오.':ow==='profit'?'...이번만이오. 돈 쓴 만큼 해내시오.':'알겠소. 팬들을 실망시키지 마시오.'):(ow==='profit'?'지금은 돈을 더 쓸 때가 아니오.':ow==='win'?'성적으로 먼저 증명하시오.':'지금은 때가 아니오.');
+  const ow=t.owner; const say=S.who==='ceo'?(ok?'회장님 결재가 났습니다. 쓰임새는 분명히 해 주세요.':'이번에는 어렵다고 하십니다.'):ok?(ow==='win'?'좋아요. 대신 결과로 보여 주세요.':ow==='profit'?'...이번만이에요. 돈 쓴 만큼 해내세요.':'알겠어요. 팬들을 실망시키지 마세요.'):(ow==='profit'?'지금은 돈을 더 쓸 때가 아니에요.':ow==='win'?'성적으로 먼저 증명하세요.':'지금은 때가 아니에요.');
   S.sugg={k:v,l:o[1],ok,txt,say,dT:Math.round((t.trust-tr0)*10)/10,mod}; S.done=true; const h=cwSt().hist.find(z=>z.d===S.day); if(h)h.sugg={k,ok}; return ''; }
 function cwSkipSugg(){ const S=G.cwS; if(S&&!S.done){ S.done=true; S.sugg={k:'none'}; } }
 function cwGame(S){ S=S||G.cwS; if(!S)return null; return (G.games||[]).find(g=>S.gk.gid!=null?g.gid===S.gk.gid:g.day===S.gk.d&&g.home===S.gk.h&&g.away===S.gk.a)||null; } /* 같은 상대 더블헤더는 경기 id로(검수 11-09zzc #15) */
@@ -188,17 +188,17 @@ function cwOrd(){ const o=G.ownOrder; return o&&o.st==='open'?o:null; }
 function cwOrdCands(){ const t=team(G.user); const sec=cwSec(); const C=G.cal; const end=Math.min(G.day+21,C.end); const L=[]; const left=homeGames(G.user,G.day+1,end).length; const games=(()=>{ let n=0; for(let d=G.day+1;d<=end;d++)n+=dayGames(d).filter(m=>m.includes(G.user)).length; return n; })(); /* 경기 수: 같은 날 두 경기·보충 경기도 센다(검수 11-09zzd) */
   if(period()!=='season')return L;
   if(games>=10&&!expYr(G.user)){ const tg=cwWinTg(); L.push({k:'win',w:(t.owner==='win'?3:1)*(tg<.45?.6:1),t:`앞으로 3주 승률 ${cwWinTxt(tg)} 이상`,crit:`${dmd(end)}까지 우리 경기 승률 ${cwWinTxt(tg)} 이상(무승부 제외)`,until:end,base:{tg}}); } /* 기준 승률은 우리 전력(예상 순위)에 맞춘다(사용자 11-13) */
-  if(left>=5){ const A=cwHomeAtt(); const full=A.ratio>=.97; const tg=full?.95:Math.min(1,A.ratio+.03); L.push({k:'att',w:(t.owner==='pr'?3:.8)*(sec==='crowd'?2:1),t:full?'매진 행진 이어 가게':'홈 관중 늘려 보게',crit:`${dmd(end)}까지 홈경기 평균 좌석 점유율 ${cwPct(tg)} 이상${full?' 유지':''}(지금까지 ${cwPct(A.ratio)})`,until:end,base:{ratio:A.ratio,tg}}); } /* 이미 꽉 찬 구장에 '더 늘리라'는 목표는 이룰 수 없다 */
-  let b=null; try{ b=budget(); }catch(e){} if(b){ const e2=Math.min(G.day+28,C.end+30); if(b.roomGoal<0)L.push({k:'cut',w:(t.owner==='profit'?3:.8)*(sec==='money'?2:1),t:'이번 분기 적자 줄이게',crit:`${dmd(e2)}까지 예산 여유를 3억 이상 개선(지금 ${money(b.roomGoal)})`,until:e2,base:{room:b.roomGoal}});
-    else L.push({k:'keep',w:(t.owner==='profit'?1.5:.4)*(sec==='money'?1.5:1),t:'예산 여유 지키게',crit:`${dmd(e2)}까지 예산 여유를 0원 이상으로 유지(지금 ${money(b.roomGoal)})`,until:e2,base:{room:b.roomGoal}}); }
-  if(games>=10&&playersOf(G.user).some(p=>!p.foreign&&p.age<=23))L.push({k:'young',w:(sec==='youth'?3:.6)*(t.owner==='pr'?1.2:1),t:'유망주 한 명 1군에서 써 보게',crit:`${dmd(end)}까지 23세 이하 선수 한 명이 1군 30타석 또는 8이닝 이상(지시 이후 기록)`,until:end,base:{snap:cwYoungSnap()}});
+  if(left>=5){ const A=cwHomeAtt(); const full=A.ratio>=.97; const tg=full?.95:Math.min(1,A.ratio+.03); L.push({k:'att',w:(t.owner==='pr'?3:.8)*(sec==='crowd'?2:1),t:full?'매진 행진 이어 가기':'홈 관중 늘리기',crit:`${dmd(end)}까지 홈경기 평균 좌석 점유율 ${cwPct(tg)} 이상${full?' 유지':''}(지금까지 ${cwPct(A.ratio)})`,until:end,base:{ratio:A.ratio,tg}}); } /* 이미 꽉 찬 구장에 '더 늘리라'는 목표는 이룰 수 없다 */
+  let b=null; try{ b=budget(); }catch(e){} if(b){ const e2=Math.min(G.day+28,C.end+30); if(b.roomGoal<0)L.push({k:'cut',w:(t.owner==='profit'?3:.8)*(sec==='money'?2:1),t:'이번 분기 적자 줄이기',crit:`${dmd(e2)}까지 예산 여유를 3억 이상 개선(지금 ${money(b.roomGoal)})`,until:e2,base:{room:b.roomGoal}});
+    else L.push({k:'keep',w:(t.owner==='profit'?1.5:.4)*(sec==='money'?1.5:1),t:'예산 여유 지키기',crit:`${dmd(e2)}까지 예산 여유를 0원 이상으로 유지(지금 ${money(b.roomGoal)})`,until:e2,base:{room:b.roomGoal}}); }
+  if(games>=10&&playersOf(G.user).some(p=>!p.foreign&&p.age<=23))L.push({k:'young',w:(sec==='youth'?3:.6)*(t.owner==='pr'?1.2:1),t:'유망주 한 명 1군에서 써 보기',crit:`${dmd(end)}까지 23세 이하 선수 한 명이 1군 30타석 또는 8이닝 이상(지시 이후 기록)`,until:end,base:{snap:cwYoungSnap()}});
   const st=playersOf(G.user).filter(p=>!p.foreign&&canExtend(p)&&!p.extNext&&(p.faC?p.yrs<=1:Math.max(0,faSvc(p)-(p.svc||0))<=1)).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&warOf(h,p)>=1.5; }).sort((a,b)=>ovr(b)-ovr(a))[0];
   if(st)L.push({k:'ext',w:(sec==='star'?3:.6)*(t.owner==='pr'?1.3:1),t:`${st.name} 붙잡게`,crit:`${dmd(Math.min(G.day+28,C.end+30))}까지 ${st.name}와(과) 다년계약 합의`,until:Math.min(G.day+28,C.end+30),base:{pid:st.id}});
   return L; }
 function cwYoungSnap(){ const o={}; for(const p of playersOf(G.user)){ if(p.foreign||p.age>23)continue; const h=seasonTotalT(p,G.year,'1군',G.user); o[p.id]=[(h&&h.pa)||0,(h&&h.outs)||0]; } return o; }
 function cwOrdIssue(who){ if(cwOrd())return null; const L=cwOrdCands(); if(!L.length)return null; let x=R()*sum(L.map(c=>c.w)); let c=L[0]; for(const y of L){ x-=y.w; if(x<=0){ c=y; break; } }
   const O={k:c.k,t:c.t,crit:c.crit,until:c.until,base:c.base,d0:G.day,tid:G.user,person:bossOf(G.user)[who==='ceo'?'ceo':'own'].id,who,st:'open',say:cwOrdSay(c.k)}; G.ownOrder=O; return O; }
-function cwOrdSay(k){ const ow=team(G.user).owner; return {win:(()=>{ const x=cwWinTxt(cwWinTg()); return ow==='win'?`이기는 게 먼저요. 앞으로 3주는 승률 ${x} 밑으로 떨어지지 마시오.`:`성적도 좀 챙기시오. 3주 동안 승률 ${x}는 하시오.`; })(),att:'관중석이 차야 그룹 체면이 서오. 홈 관중을 늘려 보게.',cut:'적자는 줄이시오. 한 달 뒤에 숫자로 봅시다.',keep:'지금처럼 예산 안에서 운영하시오. 적자는 안 되오.',young:'젊은 선수 하나쯤은 1군에서 크는 걸 보고 싶소. 한 명 써 보게.',ext:'저런 선수는 놓치면 안 되오. 계약을 매듭지으시오.'}[k]||''; }
+function cwOrdSay(k){ const ow=team(G.user).owner; return {win:(()=>{ const x=cwWinTxt(cwWinTg()); return ow==='win'?`이기는 게 먼저예요. 앞으로 3주는 승률 ${x} 밑으로 떨어지지 마세요.`:`성적도 좀 챙기세요. 3주 동안 승률 ${x}는 하세요.`; })(),att:'관중석이 차야 그룹 체면이 서요. 홈 관중을 늘려 보세요.',cut:'적자는 줄이세요. 한 달 뒤에 숫자로 봅시다.',keep:'지금처럼 예산 안에서 운영하세요. 적자는 안 돼요.',young:'젊은 선수 하나쯤은 1군에서 크는 걸 보고 싶어요. 한 명 써 보세요.',ext:'저런 선수는 놓치면 안 돼요. 계약을 매듭지으세요.'}[k]||''; }
 function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
   if(O.k==='win'){ const A0=cwUlog().filter(u=>u.d>O.d0&&u.d<=O.until), L=A0.filter(u=>u.res!=='무'), t=A0.length-L.length; const w=L.filter(u=>u.res==='승').length; const ok=L.length?w/L.length>=((O.base&&O.base.tg)??.5)-1e-9:false; return {done:end,ok,txt:`${w}승 ${L.length-w}패${t?` ${t}무`:''}`}; } /* 무승부도 적는다: 기한 당일 무승부를 '경기 전 판정'처럼 보이게 하지 않게 */
   if(O.k==='att'){ const H=(G.games||[]).filter(g=>g.day>O.d0&&g.home===G.user&&g.att); const r=H.length?sum(H.map(g=>g.att))/sum(H.map(g=>g.cap||stadCap(G.user))):0; /* 경기 당시 좌석 수 기준 */ const tg=O.base.tg??Math.min(1,O.base.ratio+.03); return {done:end,ok:H.length>0&&r>=tg,txt:H.length?`홈 ${H.length}경기 점유율 ${cwPct(r)}(목표 ${cwPct(tg)})`:'아직 홈경기 없음'}; }
@@ -207,8 +207,8 @@ function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
     const ok=!!best&&best.sc>=1; return {done:ok||end,ok,txt:best&&best.sc>0?`${best.p.name} ${best.p.isP&&best.ou>=best.pa?`${ipStr(best.ou)}이닝`:`${best.pa}타석`}`:'아직 없음'}; }
   if(O.k==='ext'){ const p=G.players[O.base.pid]; const gone=!p||p.team!==G.user; const ok=!!(p&&p.extNext)&&!gone; /* 합의 뒤 트레이드로 보냈으면 붙잡은 게 아니다(검수 11-09zzd) */ return {done:ok||end||gone,ok,txt:ok?'다년계약 합의':gone?'팀을 떠났습니다':'아직 합의 전'}; }
   void C; return {done:true,ok:false,txt:''}; }
-function cwOrdDaily(){ const O=cwOrd(); if(!O)return; if(!cwActorMatches(O.who,O.tid,O.person)){O.st='cancelled';O.end=G.day;O.txt='지시한 인물이 자리를 떠나 종료';return;} const e=cwOrdEval(O); if(!e.done)return; const t=team(G.user); O.st=e.ok?'ok':'fail'; O.end=G.day; O.txt=e.txt;
-  if(e.ok){ t.trust=clamp(t.trust+2,0,100); cwRapAdd('own',3); mail('구단주실',`구단주 지시 달성: ${O.t}`,`${cwNm('own')}: "말한 대로 해냈군. 그런 단장이 좋소."\n\n${e.txt}. 구단주 신뢰 조금 상승 · 구단주 친밀도 상승.`,{kind:'구단주'}); }
+function cwOrdDaily(){ const O=cwOrd(); if(!O)return; if(!cwActorMatches(O.who,O.tid,O.person)){O.st='cancelled';O.end=G.day;O.txt='지시한 사람이 자리를 떠나 취소';return;} const e=cwOrdEval(O); if(!e.done)return; const t=team(G.user); O.st=e.ok?'ok':'fail'; O.end=G.day; O.txt=e.txt;
+  if(e.ok){ t.trust=clamp(t.trust+2,0,100); cwRapAdd('own',3); mail('구단주실',`구단주 지시 달성: ${O.t}`,`${cwNm('own')}: "말한 대로 해냈군요. 그런 단장이 좋아요."\n\n${e.txt}. 구단주 신뢰 조금 상승 · 구단주 친밀도 상승.`,{kind:'구단주'}); }
   else { t.trust=clamp(t.trust-1,0,100); mail('구단주실',`구단주 지시 미달: ${O.t}`,`${cwNm('own')}: "지난번에 한 말, 잊지는 않았겠지요."\n\n${e.txt}. 구단주 신뢰 조금 하락.`,{kind:'구단주'}); }
   const h=cwSt().hist.find(z=>z.d===O.d0); if(h)h.ordRes=O.st; }
 /* 홈 신뢰 설명용 한 줄 */
@@ -230,9 +230,9 @@ function ownershipPeopleChanged(tid,oldBoss,newBoss,{ownerChanged=false,ceoChang
   }
   /* 현직 단장의 화면 상태는 다른 구단의 교체로 닫지 않는다. */
   if(tid===G.user){
-    const endMail=mid=>{if(mid==null)return;const m=(G.mail||[]).find(m=>m.id===mid);if(m){m.acts=[];m.imp=false;m.read=true;m.body=(m.body||'')+'\n\n[종료] 동행 인물의 교체로 개인에게 받은 일정을 취소했습니다.';}G.stops=(G.stops||[]).filter(m=>m.id!==mid);};
+    const endMail=mid=>{if(mid==null)return;const m=(G.mail||[]).find(m=>m.id===mid);if(m){m.acts=[];m.imp=false;m.read=true;m.body=(m.body||'')+'\n\n[종료] 함께 가기로 한 사람이 바뀌어 일정을 취소했습니다.';}G.stops=(G.stops||[]).filter(m=>m.id!==mid);};
     for(const e of G.evs||[])if(e.k==='cwInv'&&!e.done&&changed(e.data?.who)&&(e.data?.tid==null||e.data.tid===tid)){
-      A.invitations.push(copy(e));e.done=true;e.void=true;e.res='초대한 인물이 자리를 떠나 불이익 없이 종료됐습니다.';endMail(e.mid);
+      A.invitations.push(copy(e));e.done=true;e.void=true;e.res='초대한 사람이 자리를 떠나 취소됐습니다. 불이익은 없습니다.';endMail(e.mid);
     }
     for(const [d,p] of Object.entries(G.gmPlan||{}))if(p.k==='attend'&&!p.done&&['owner','ceo'].includes(p.x)&&changed(p.x==='ceo'?'ceo':'own')&&(p.tid==null||p.tid===tid)){
       A.plans.push({day:+d,...copy(p)});p.done=true;p.cancelled='인물 교체';endMail(p.mid);
@@ -243,7 +243,7 @@ function ownershipPeopleChanged(tid,oldBoss,newBoss,{ownerChanged=false,ceoChang
       if(G.castHold?.cw===S.id)delete G.castHold.cw;
     }
     const O=G.ownOrder;
-    if(O&&O.st==='open'&&changed(O.who)&&(O.tid==null||O.tid===tid)){A.ownOrder=copy(O);O.st='cancelled';O.end=G.day;O.txt='지시한 인물이 자리를 떠나 불이익 없이 종료';}
+    if(O&&O.st==='open'&&changed(O.who)&&(O.tid==null||O.tid===tid)){A.ownOrder=copy(O);O.st='cancelled';O.end=G.day;O.txt='지시한 사람이 자리를 떠나 취소(불이익 없음)';}
     if(roles.includes('own')&&G.ownReq&&(G.ownReq.tid==null||G.ownReq.tid===tid)){A.ownReq=copy(G.ownReq);delete G.ownReq;}
     for(const h of G.cw?.hist||[])if(changed(h.who)&&h.person==null&&(h.tid==null||h.tid===tid)){const p=oldBoss[h.who==='ceo'?'ceo':'own'];h.tid=tid;h.person=p.id;h.name=p.name;}
     if(typeof UI!=='undefined'&&UI){

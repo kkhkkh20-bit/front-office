@@ -133,7 +133,7 @@ function coachYear(){ // 겨울: 계약 정리
     }
   }
   const kept=(G.cmarket||[]).filter(c=>c.fromY===G.year); refreshCoachMarket(); { const ko=new Set(kept.map(c=>c.ob).filter(Boolean)); G.cmarket=G.cmarket.filter(c=>!(c.ob&&ko.has(c.ob))); }
-  G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64)); const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 코치 후보 목록에 남아 있어 다시 영입(재계약)할 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
+  G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64)); const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 후보 목록에 남아 있어 다시 데려올 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
 const COACH_GRADE={bat:{l:'타격',ks:['bc','ab','hc'],k:'sk'},pit:{l:'투수',ks:['pc','bp','cc'],k:'sk'},run:{l:'주루',ks:['rc','r1'],k:'sk'},def:{l:'수비',ks:['dc','cc'],k:'sk'},dev1:{l:'1군 육성',ks:['pc','bp','bc','ab','hc'],k:'dv'},dev2:{l:'2군 육성',ks:['fm','fp','fb','fd','fc','rs','rb'],k:'dv'}};
 function coachGrade(tid){ const C=coachesOf(tid); return Object.fromEntries(Object.entries(COACH_GRADE).map(([key,{ks,k}])=>{ const v=avg(ks.map(r=>effC(C[r],tid,k)));return [key,{v:Math.round(v),l:v>=66?'A':v>=59?'B':v>=52?'C':'D'}]; })); }
 
@@ -141,7 +141,7 @@ function coachGrade(tid){ const C=coachesOf(tid); return Object.fromEntries(Obje
 function cRetTxt(L){ const o=L.filter(c=>c.age>=63); return o.length?`\n단, ${o.map(c=>`${c.name}(${c.age}세)`).join(', ')}은(는) 은퇴를 앞둬 계약이 끝나면 코치 후보로 남지 않습니다. 함께하려면 시즌 중에 연장해야 합니다.`:''; }
 /* 계약 만료 예고(사용자 피드백 11-05: 코치 재계약이 안 되는 줄 알았다): 9월 1일, 올해로 계약이 끝나는 우리 코치를 알리고 연장 방법을 안내한다 */
 function coachExpNote(){ if(G.unemp||!G.coach||!G.coach[G.user])return; const C=G.coach[G.user]; const L=CKEYS.map(k=>C[k]).filter(c=>c&&c.yrs<=1&&!(c.cs!=null&&c.cs>G.year)&&c.expN!==G.year); if(!L.length)return; L.forEach(c=>c.expN=G.year);
-  mail('운영팀',`올해로 계약이 끝나는 코치 ${L.length}명`,`${L.map(c=>`${CROLE[c.role].l} ${c.name}(${c.age}세)`).join(', ')}의 계약이 이번 시즌으로 끝납니다.\n남기려면 시즌이 끝나기 전에 스태프·육성 → 코치진에서 코치를 눌러 1~2년 연장하세요(연장 1년마다 연봉 3%, 스타 코치 6% 인상, 계약은 최대 4년).\n연장하지 않으면 시즌 뒤 코치 후보로 나가고, 그때도 코치 후보 목록에서 다시 영입할 수 있습니다.${cRetTxt(L)}`,{kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
+  mail('운영팀',`올해로 계약이 끝나는 코치 ${L.length}명`,`${L.map(c=>`${CROLE[c.role].l} ${c.name}(${c.age}세)`).join(', ')}의 계약이 이번 시즌으로 끝납니다.\n남기려면 시즌이 끝나기 전에 스태프·육성 → 코치진에서 1~2년 연장하세요. 연장 1년마다 연봉이 3%(스타 코치는 6%) 오르고, 계약은 최대 4년입니다.\n연장하지 않으면 시즌 뒤 코치 후보로 나가지만 후보 목록에서 다시 영입할 수 있습니다.${cRetTxt(L)}`,{kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
 
 /* 보조 코치(커뮤니티 요청 11-07: 훈련 시설 단계가 높으면 코치를 더 둘 수 있게): 4단계 이상 세부 시설 하나마다 1자리, 최대 3자리.
    투수·타격 쪽 후보(1·2군 투수·타격·배터리 코치)를 데려와 그 분야 선수 성장에 작게 보탠다(1명당 육성력에 따라 최대 +2.5%) */

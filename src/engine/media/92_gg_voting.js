@@ -33,5 +33,5 @@ function ggVotingDaily(){
   V.news[stage]=G.day;const race=ggPublicRace(A);
   const text=race.map(x=>`${x.pos==='P'?'투수':x.pos==='OF'?'외야수':POSS[x.pos]||x.pos}: ${x.candidates.map(c=>`${c.name}(${tshort(c.t)})${c.milestones.length?' · '+c.milestones.join('·'):''}`).join(', ')}`).join('\n');
   const title=stage==='closed'?`${A.y} 골든글러브 기자단 투표 마감`:stage==='mid'?`${A.y} 골든글러브 기자단 투표 진행 중… 유력 후보는`: `${A.y} 골든글러브 기자단 투표 시작`;
-  news('분석',title,`기자 ${V.voters}명이 포지션별로 투표합니다. 외야수는 기자 한 명이 서로 다른 세 명을 고릅니다. 수상자는 ${dmd(dnum(A.y,12,9))}에 발표합니다.\n\n유력 후보 전망\n${text}\n\nWAR와 주요 타격·투구 기록, 200안타·20승 같은 이정표, 팀 성적을 함께 보는 게임 내 기자 모형의 전망입니다. 최종 득표와 다를 수 있습니다.`,0,{tid:G.user});
+  news('분석',title,`기자 ${V.voters}명이 포지션별로 투표합니다. 외야수는 기자 한 명이 서로 다른 세 명을 고릅니다. 수상자는 ${dmd(dnum(A.y,12,9))}에 발표합니다.\n\n유력 후보 전망\n${text}\n\nWAR와 주요 타격·투구 기록, 200안타·20승 같은 이정표, 팀 성적을 함께 본 전망입니다. 실제 득표와 다를 수 있습니다.`,0,{tid:G.user});
 }

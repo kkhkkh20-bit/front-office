@@ -92,7 +92,7 @@ function scoutReport0(p){
     if(p.inj>.24&&sd<=7.5)notes.push('잔부상이 잦은 체질입니다. 부상 위험이 높습니다.');
     if(p.hidT&&!p.hidR&&!hp)notes.push('다른 구단 스카우트들이 놓치기 쉬운 재능으로 봅니다. 잠재력이 겉보기보다 큽니다.');
     if(p.prospect&&p.amLevel&&sc&&sc.skill>=4)notes.push(`아마추어 기록은 ${p.amLevel}니다.`);
-  } else notes.push(p.foreign&&p.team==null?'에이전트가 보낸 영상과 기록뿐이라 실제 기량과 잠재력은 불확실합니다. 해외 스카우트망을 넓히면 정확해집니다.':p.prospect?(sc?'담당 스카우트의 실제 관찰은 아직 0회입니다. 현재능력은 관찰 전 임시 추정이고 잠재력 수치는 첫 관찰 뒤 제공합니다.':'이 지역을 맡은 스카우트가 없어 잠재력은 판단하지 못했습니다. 현재능력은 관찰 전 임시 추정입니다.'):'스카우트가 없어 잠재력은 판단하지 못했습니다.');
+  } else notes.push(p.foreign&&p.team==null?'에이전트가 보낸 영상과 기록뿐이라 실제 기량과 잠재력은 불확실합니다. 해외 스카우트망을 넓히면 정확해집니다.':p.prospect?(sc?'담당 스카우트가 아직 직접 보지 못했습니다. 현재 능력은 관찰 전 임시 추정이고, 잠재력은 첫 관찰 뒤에 나옵니다.':'이 지역을 맡은 스카우트가 없어 잠재력은 판단하지 못했습니다. 현재능력은 관찰 전 임시 추정입니다.'):'스카우트가 없어 잠재력은 판단하지 못했습니다.');
   const risk=!futKnown?'판단 불가':(gap>14||p.inj>.26)&&p.age<=24?'높음':gap>8||p.inj>.22?'보통':'낮음';
   const eta=p.prospect&&futKnown?Math.max(1,Math.ceil((48-cur)/4)):null;
   const conf=sdConf(sd);
