@@ -45,7 +45,7 @@ function facDis(S,k){ const b=S&&S.bld&&S.bld[k]; return b&&!(b.pm>G.day)?FAC_DI
 
 /* --- 모기업 투자 승인(우리·AI 같은 식) --- */
 const CAPEX_CD=120;
-function capexLastFin(tid){ const h=(G.history||[])[G.history.length-1]; return h&&h.fins&&h.fins[tid]; }
+function capexLastFin(tid){ const H=G.history||[], h=H[H.length-1]; return h&&h.fins&&h.fins[tid]; }
 function capexOddsT(tid,c){ const t=team(tid); if(!t||t.indie)return 0; const me=tid===G.user&&!G.unemp;
   const bond=me?((G.personal&&G.personal.contacts&&G.personal.contacts['own:'+G.user]||{}).bond??30):30;
   const f=capexLastFin(tid), deficit=f&&f.net<0?.12:0, debt=(t.cash||0)<0?.1:0;
@@ -102,10 +102,10 @@ function facCityUp(t){ return sum((t.cityOb||[]).map(o=>{ const S=facSt(t.id), l
 /* --- 해마다(결산 직후) 조건 점검: 명명권 성적·관중, 지자체 지역 교실 --- */
 function facDealsYear(t){ const me=t.id===G.user&&!G.unemp, y=G.last&&G.last.y; if(y==null)return;
   const D=t.facSpon; if(D&&y>=D.y0){ const A=G.sea&&G.sea.att&&G.sea.att[t.id], occ=A&&A.cap?A.sum/A.cap:.8, rk=facLastRank(t.id), ok=rk<=FAC_SPON.rk||occ>=FAC_SPON.occ;
-    if(!ok)D.miss++; if(D.miss>=2){ const back=Math.round(D.help*FAC_SPON.back); t.cash-=back; t.facSpon=null; if(me){ prInit(); G.pr.fan=clamp(G.pr.fan-1,0,100); news('구단',`${D.n}, ${FACI[D.k].l} 명명권 조기 해지`,`성적과 관중이 약속에 못 미쳤다며 ${D.n}이(가) 후원을 거뒀습니다. 구단은 후원금 일부(${money(back)})를 돌려줍니다.`,-1); } else wire('구단',`${t.city} ${t.nick}, ${D.n} 명명권 해지`,{tid:t.id}); }
+    if(!ok)D.miss++; if(D.miss>=2){ const back=Math.round(D.help*FAC_SPON.back); if(me){ if(t.indie)spendPay(back); else G.spend.etc=(G.spend.etc||0)+back; } else t.cash-=back; /* 우리 구단은 결산 장부로(다른 일회성 지출과 같게, 검수 11-14) */ t.facSpon=null; if(me){ prInit(); G.pr.fan=clamp(G.pr.fan-1,0,100); news('구단',`${D.n}, ${FACI[D.k].l} 명명권 조기 해지`,`성적과 관중이 약속에 못 미쳤다며 ${D.n}이(가) 후원을 거뒀습니다. 구단은 후원금 일부(${money(back)})를 돌려줍니다.`,-1); } else wire('구단',`${t.city} ${t.nick}, ${D.n} 명명권 해지`,{tid:t.id}); }
     else if(y>=D.y1){ t.facSpon=null; t.pop=clamp((t.pop||1)+.01,.7,1.45); if(me)news('구단',`${D.n} 명명권 계약 만료`,`${D.n}과 함께한 ${FACI[D.k].l} 후원이 약속대로 끝났습니다. 다른 기업들도 구단을 다시 보고 있습니다.`,1); }
     else if(me&&!ok)mail('마케팅팀',`${D.n}: "이대로면 곤란합니다"`,`명명권 후원사가 올해 성적과 관중에 실망했습니다. 한 번 더 기대에 못 미치면 후원을 거두고 일부를 돌려받으려 합니다.`,{kind:'시설'}); }
-  const L=t.cityOb||[]; for(const o of [...L]){ if(y>o.y1){ t.cityOb=L.filter(x=>x!==o); cityRelAdd(t.id,3); continue; }
+  const L=t.cityOb||[]; for(const o of [...L]){ if(y>o.y1){ t.cityOb=(t.cityOb||[]).filter(x=>x!==o); /* 같은 해 두 건이 끝나도 앞서 지운 건이 되살아나지 않게(검수 11-14) */ cityRelAdd(t.id,3); continue; }
     if((t.cash||0)-o.prog<-2000){ o.miss++; cityRelAdd(t.id,-8); if(me)mail('운영팀','지역 야구 교실을 열지 못했습니다',`돈이 모자라 ${t.city}시와 약속한 지역 야구 교실을 올해 열지 못했습니다. 시와의 관계가 나빠졌습니다.`,{kind:'시설'}); continue; }
     if(me){ const k0=spendPay(o.prog); G.spend.fac=(G.spend.fac||0)+k0; } else t.cash-=o.prog; cityRelAdd(t.id,2); } }
 
@@ -124,8 +124,8 @@ function aiOwnerYear(h){ const ord=h.order||[]; const EI=ecoIdx(sponSeason());
     /* 적자가 나고 지원을 많이 쓴 구단에 신뢰가 낮으면 운영비 절감 지시(다음 시즌 지원 한도 축소) */
     if(f&&f.net<0&&f.supCap&&f.support>=f.supCap*.8&&t.trust<45){ const amt=Math.round(800*EI/10)*10; t.ownCut={y:sponSeason(),amt}; wire('구단',`${t.city} ${t.nick} 모기업, 운영비 절감 지시`,{tid:t.id}); }
     /* 신뢰가 바닥이면 구단주가 단장을 바꾼다(성적 경질과 별개, 재임 2년 이상) */
-    const g=gmOf(t.id); if(g&&!g.interim&&t.trust<22&&G.year-(g.since??G.year)>=2&&!expYr(t.id)){ const old=g.name; t.gm=mkGM(t.id); t.rel=clamp(Math.round(N(50,6)),35,65); if(t.plan)t.plan.free=1; t.trust=45;
-      chron('fired',`${old} 단장 경질 · 구단주 신뢰 하락`,null,t.id); chron('join',`${t.gm.name} 단장 취임 · 전임 ${old}`,null,t.id); wire('단장',`${t.city} ${t.nick} 구단주, ${old} 단장 교체…후임 ${t.gm.name}`,{tid:t.id}); } } }
+    const g=gmOf(t.id); if(g&&!g.interim&&t.trust<22&&G.year-(g.since??G.year)>=2&&!expYr(t.id)){ t.trust=45; /* 성적 경질과 같은 길: 물러난 단장 후보 명단·내부 승격·사용자 단장직 제의(검수 11-14) */
+      gmReplace(t,g,{chron:`${g.name} 단장 경질 · 구단주 신뢰 하락`,why:'구단주의 신뢰를 잃었다는 평가입니다'}); } } }
 
 /* ===== AI 구단 지출 정책: 상대 게임이라 돈을 쌓아 두지 않고 계획에 맞게 쓴다 =====
    겨울(11월 20일)과 여름(7월 1일)에 남는 돈(현금 - 완충액)을 계획별 비율로 나눠 시설·구장·스태프·팬 행사에 쓴다. 비용과 규칙은 우리 구단과 같다 */
@@ -143,7 +143,7 @@ function aiSpend(t,winter){ if(t.id===ME())return null; const pl=planOf(t)||'nex
   (t.spendLog=t.spendLog||[]).push(L); if(t.spendLog.length>12)t.spendLog.shift(); return L; }
 
 /* ===== 매일(aiFacDaily 끝에서): 결산 직후 처리, 지출 시점 ===== */
-function clubEconDaily(){ if(!G||!G.teams)return; const E=G.ceco=G.ceco||{}; const h=(G.history||[])[G.history.length-1];
+function clubEconDaily(){ if(!G||!G.teams)return; const E=G.ceco=G.ceco||{}; const H=G.history||[], h=H[H.length-1];
   if(h&&h.y!=null&&E.yr!==h.y&&G.last&&G.last.y===h.y){ E.yr=h.y; try{ aiOwnerYear(h); }catch(e){} for(const t of G.teams)try{ facDealsYear(t); }catch(e){} for(const t of G.teams){ if(t.id!==ME())try{ aiPriceYear(t); }catch(e){} } }
   const o=dobj(G.day); const winter=o.m===11&&o.d===20, summer=o.m===7&&o.d===1;
   if(winter||summer){ const k=G.year+(winter?'w':'s'); if(E.sp!==k){ E.sp=k; for(const t of G.teams){ if(t.id===ME())continue; try{ aiSpend(t,winter); }catch(e){} if(summer)try{ aiOwnerAsk(t,'mid'); }catch(e){} } } }
