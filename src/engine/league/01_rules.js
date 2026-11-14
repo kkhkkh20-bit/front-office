@@ -125,7 +125,9 @@ const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
 const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return x.city+' '+x.nick; } return team(id).city+' '+team(id).nick; }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
-const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day); /* fLeave: 외국인 선수 귀국 휴가·결장 요청(73_foreign_drama) */ /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
+let PROJ_LENS=0; /* 시즌 예상 전력을 볼 때만 1: 개막 전후에 돌아올 선수는 빠진 것으로 보지 않는다(사용자 11-14: 시범경기 중 대표팀 차출로 1위 전력이 7위 목표) */
+const projBack=()=>Math.max(0,((G.cal&&G.cal.open)||G.day)-G.day)+14; /* 개막까지 남은 날 + 2주 */
+const healthy=p=>PROJ_LENS?!(p.injOut>projBack())&&!(p.susp>G.day+projBack())&&!p.frehab:!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day); /* 예상 전력: 짧은 부상·출장정지·귀국 휴가·연봉 미계약은 개막 무렵 돌아오는 것으로 본다 */ /* fLeave: 외국인 선수 귀국 휴가·결장 요청(73_foreign_drama) */ /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
 
 function genRatings(isP,base,pos){
   const g=()=>clamp(N(base,7),20,80);

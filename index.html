@@ -11280,7 +11280,9 @@ const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
 const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return x.city+' '+x.nick; } return team(id).city+' '+team(id).nick; }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
-const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day); /* fLeave: 외국인 선수 귀국 휴가·결장 요청(73_foreign_drama) */ /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
+let PROJ_LENS=0; /* 시즌 예상 전력을 볼 때만 1: 개막 전후에 돌아올 선수는 빠진 것으로 보지 않는다(사용자 11-14: 시범경기 중 대표팀 차출로 1위 전력이 7위 목표) */
+const projBack=()=>Math.max(0,((G.cal&&G.cal.open)||G.day)-G.day)+14; /* 개막까지 남은 날 + 2주 */
+const healthy=p=>PROJ_LENS?!(p.injOut>projBack())&&!(p.susp>G.day+projBack())&&!p.frehab:!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day); /* 예상 전력: 짧은 부상·출장정지·귀국 휴가·연봉 미계약은 개막 무렵 돌아오는 것으로 본다 */ /* fLeave: 외국인 선수 귀국 휴가·결장 요청(73_foreign_drama) */ /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
 
 function genRatings(isP,base,pos){
   const g=()=>clamp(N(base,7),20,80);
@@ -11680,7 +11682,7 @@ function roleSync(tid){ const d=depth(tid); for(const p of actOf(tid))if(p.isP&&
    정규시즌·포스트시즌이 아니면 일반 외국인(fMaxYB)·아시아쿼터(1명) 빈자리를 채운다고 보고 한 자리마다 FSLOT_V를 더한다.
    FSLOT_V: 개막일 구단별 '외국인 4명 있을 때 - 뺐을 때' 전력 차이 평균 약 1.8(0.8~2.9, 시드 3개 30구단) ÷ 4 */
 const FSLOT_V=.45;
-function projRating(tid){ const r=teamRating(tid); const per=period(); if(per==='season'||per==='post')return r; const F=foreignOf(tid); const yb=F.filter(x=>x.foreign==='용병').length, as=F.filter(x=>x.foreign==='아시아').length; let mx=3; try{ mx=fMaxYB(tid,per==='off'&&G.last&&G.last.y>=G.year?G.year+1:G.year); }catch(e){} return r+(Math.max(0,mx-yb)+Math.max(0,1-as))*FSLOT_V; }
+function projRating(tid){ const per=period(); if(per==='season'||per==='post')return teamRating(tid); let r; PROJ_LENS=1; try{ r=teamRating(tid); } finally { PROJ_LENS=0; } /* 개막 전 예상은 대표팀 차출·짧은 부상으로 잠시 빠진 선수까지 넣는다 */ const F=foreignOf(tid); const yb=F.filter(x=>x.foreign==='용병').length, as=F.filter(x=>x.foreign==='아시아').length; let mx=3; try{ mx=fMaxYB(tid,per==='off'&&G.last&&G.last.y>=G.year?G.year+1:G.year); }catch(e){} return r+(Math.max(0,mx-yb)+Math.max(0,1-as))*FSLOT_V; }
 function teamRating(tid){
   const d=depth(tid);
   const off=avg(d.start.map(offV))*(Math.min(9,d.start.length)/9);
@@ -15132,7 +15134,7 @@ function budgetSplit(){ const b=budget(), t=team(G.user), ci=b.ci, S=G.spend||{}
 const MIL_DAYS=548, SANGMU_SLOTS=14;
 function milPeriod(p){const m=p&&p.mil;if(!m)return null;const from=m.from??m.pf,until=m.until??m.pu;return Number.isFinite(from)&&Number.isFinite(until)&&until>from?{from,until,unit:m.unit}:null;}
 const milOn=(p,d)=>{const m=milPeriod(p);return !!(m&&m.from<=d&&d<m.until);}, milServing=p=>milOn(p,G.day); /* 실제 입대일부터 전역일 전까지만 복무 중(milOn: 그날 병역 처리 뒤 기준, 검수 11-09zk) */
-const isAway=p=>!!(milServing(p)||(p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day)||(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p)));
+const isAway=p=>!!(milServing(p)||(!PROJ_LENS&&((p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day)||(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))))); /* 예상 전력(PROJ_LENS)에서는 대표팀 차출·자매 구단 연수처럼 곧 돌아오는 자리는 있는 것으로 본다 */
 /* 복무 중 훈련 환경: 상무는 상무 야구단 시설·코치진 아래 퓨처스리그에서 뛰고(구단 시설·코치·감독 영향 없음), 현역은 야구 훈련을 하지 못해 늘지 않고 조금씩 떨어진다 */
 const MIL_FAC={'상무':{l:'상무 야구단 시설',g:1,d:1},'현역':{l:'군 복무(야구 훈련 없음)',g:1,d:1}};
 function milTrainTxt(p){ if(!p||!milServing(p))return ''; const no='우리 구단 시설·코치진·훈련 지시·포지션 전환·해외 연수는 적용되지 않습니다.';
