@@ -50,7 +50,7 @@ function gameSheet(i){
   const g=G.games[i]; if(!g)return '';
   const tab=UI.gtab||'box'; const has=!!(g.pbp&&g.pbp.length);
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="경기 기록">
-    <div class="sheet-head"><div><div class="eyebrow">${dstr(g.day)}${g.kind?' · '+esc(g.kind):''}</div><h2 class="sec">${tname(g.away)} ${g.as} : ${g.hs} ${tname(g.home)}</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+    <div class="sheet-head"><div><div class="eyebrow">${dstr(g.day)}${g.kind?' · '+esc(g.kind):''}${rainTag(g)?' · '+esc(rainTag(g)):''}</div><h2 class="sec">${tname(g.away)} ${g.as} : ${g.hs} ${tname(g.home)}</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${has?`<div class="row"><div class="seg" style="flex:1"><button data-a="gtab" data-v="pbp" class="${tab==='pbp'?'on':''}">문자 중계</button><button data-a="gtab" data-v="box" class="${tab!=='pbp'?'on':''}">박스스코어</button></div><button class="btn primary" data-a="cast" data-v="${i}">그래픽 중계</button></div>`:''}
     ${has&&tab==='pbp'?pbpView(i):fullBox(g,true)}
   </div></div>`;

@@ -485,6 +485,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   anF(v){ UI.anF=v; render(); },
   frF(v){ UI.frF=v; render(); }, ctF(v){ UI.ctF=v; render(); },
   signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
+  trySign(v){ const [id,ys]=String(v).split(':'); const r=trySign(+id,G.user,ys==='1'); try{ toast(r||'계약했습니다.'); }catch(e){} save(); render(); },
+  tryF(v){ UI.tryF=v; render(); },
   scF(v){ UI.scF=v; render(); },
   hireScout(v){ const [sid,rz]=String(v).split(':'); const res=stOffer('sc',sid,+rz||0); toast(res.msg); if(!res.ok){ save(); render(); return; } const s=res.s; v=sid; if(s&&G.scouts.length<scoutMax()){ s.since=G.day; s.role=s.role||'am';
     /* 이미 사람이 있는 자리면 같은 지역의 빈 업무, 없으면 다른 지역 빈자리로 보낸다 */

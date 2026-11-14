@@ -36,7 +36,7 @@ function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.l
   const ser=post?'':seriesTag(gs.map(x=>x.g)); const title=ser||(gs.length===1?(w?'승리':l?'패배':'무승부'):w>l?'좋은 흐름':w<l?'아쉬운 결과':'반타작');
   const row=({g,i})=>{ const home=g.home===G.user; const op=home?g.away:g.home; const ms=home?g.hs:g.as, os=home?g.as:g.hs; const k=gmKey(g);
     return `<div class="wk-g ${g.res==='승'?'w':g.res==='패'?'l':''}">
-      <div class="wk-top"><span class="wk-d">${dsh(g.day)} ${WD[dobj(g.day).w]}${g.kind?` · ${esc(g.kind)}`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span>${badge(op,22)}<b class="wk-op">${home?'vs':'@'} ${esc(tname(op))}</b><span class="num wk-sc">${ms} : ${os}</span><button class="btn small" data-a="openGame" data-v="${i}">박스스코어</button></div>
+      <div class="wk-top"><span class="wk-d">${dsh(g.day)} ${WD[dobj(g.day).w]}${g.kind?` · ${esc(g.kind)}`:''}${rainTag(g)?` · ${esc(rainTag(g))}`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span>${badge(op,22)}<b class="wk-op">${home?'vs':'@'} ${esc(tname(op))}</b><span class="num wk-sc">${ms} : ${os}</span><button class="btn small" data-a="openGame" data-v="${i}">박스스코어</button></div>
       ${k.gw?`<p class="wk-gw"><span class="eyebrow">결승</span> ${esc(k.gw)}</p>`:''}
       <p class="small muted">${esc(k.dec)}</p>
       <p class="small wk-us">${k.bat?`<button class="lnk" data-a="player" data-v="${k.bat.id}">${esc(k.bat.t)}</button>`:''}${k.bat&&k.sp?' · ':''}${k.sp?`<button class="lnk" data-a="player" data-v="${k.sp.id}">${esc(k.sp.t)}</button>`:''}</p></div>`; };
