@@ -52,7 +52,7 @@ function relMap(groups){ const by={}; for(const [,L] of groups)for(const x of L)
     ${nodes.map(line).join('')}
     <circle cx="${cx}" cy="${cy}" r="27" fill="${tpal(t)[0]}" stroke="#e8ecf3" stroke-width="2"/><text x="${cx}" y="${cy-2}" text-anchor="middle" class="rm-me">단장</text><text x="${cx}" y="${cy+12}" text-anchor="middle" class="rm-me2">${esc(t.city)}</text>
     ${nodes.map(node).join('')}</svg>
-    <p class="small muted">선 색은 관계(초록 좋음 · 노랑 보통 · 빨강 나쁨), 굵기는 관계의 깊이입니다. 점선은 수치로 관리하지 않는 관계입니다. 얼굴을 누르면 인물 정보가 열립니다.</p>`; }
+    <p class="small muted">선 색은 관계(초록 좋음 · 노랑 보통 · 빨강 나쁨), 굵기는 깊이입니다. 점선은 관계 지표가 없는 사람입니다. 얼굴을 누르면 인물 정보가 열립니다.</p>`; }
 function relView(){ const groups=relPeople();
   const warn=[]; const t=team(G.user); const m=G.mgr[G.user];
   if(t.trust<25)warn.push(`구단주 신뢰 ${t.trust}: 시즌 종료 때 12 아래면 경질됩니다.`); if(m&&m.rel<35)warn.push(`감독과의 관계 ${relLabel(m.rel)}: 콜업·말소 요청과 운영 기조가 잘 먹히지 않습니다.`);
@@ -61,7 +61,7 @@ function relView(){ const groups=relPeople();
   const W=warn.length?`<div class="note bad">${warn.map(esc).join('<br>')}</div>`:''; const g=G2.find(([h])=>h===it.cur);
   if(it.cur==='network')return it.bar+personalNetworkUI();
   const bulk=g&&relBulkKind(g[0]);if(bulk)return it.bar+csec(g[0],relBulkGroup(bulk,g[1]),relBulkModeButton(bulk)).replace('<section class="card">','<section class="card rel-bulk-group">');
-  return it.bar+(g?csec(g[0],`${g[0]==='선수단'?'<p class="small muted">이 목록의 수치는 선수 기분(사기)입니다. 단장 개인 친밀도와 교류 기록은 ‘내 인맥’에서 확인하세요.</p>':''}<div class="rpg">${g[1].map(relCard).join('')}</div>`):csec('관계 지도',relMap(groups))+W); }
+  return it.bar+(g?csec(g[0],`${g[0]==='선수단'?'<p class="small muted">이 목록은 선수 기분(사기)을 보여 줍니다. 단장 개인 친밀도와 교류 기록은 ‘내 인맥’에서 보세요.</p>':''}<div class="rpg">${g[1].map(relCard).join('')}</div>`):csec('관계 지도',relMap(groups))+W); }
 /* 홈: 핵심 관계 한 줄 */
 function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); const pick2=k=>{ for(const [,L] of gs)for(const x of L)if(x.k===k)return x; return null; };
   const L=['own','mgr','fan','press'].map(pick2).filter(Boolean); const g=gs[3][1]; if(g.length)L.push(g[0],g[g.length-1]);
@@ -109,7 +109,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
   let info=x.info||'', moves=[], fx=[], acts=x.acts||[], recent=''; /* info·acts: 떠난 사람 카드(personGone) */
   if(k==='own'){ const B=bossOf(G.user); const s=goalStatus(); const w=OWNER[t.owner].w;
     info=`<p>${esc(OWNER[t.owner].msg)} ${esc(OWNTRAIT[t.owner])}</p><p class="small muted">평가 비중 · 순위 ${w[0]} · 재정 ${w[2]} · 여론 ${w[3]}</p>${s?`<p class="small">목표: ${goalRankTxt(s.rank.t)} ${s.rank.ok==null?'':s.rank.ok?'(달성 중)':'(미달)'} · 팬 여론 ${s.fan.t} 이상 ${s.fan.ok?'(달성 중)':'(미달)'}</p>`:''}<p class="small">친밀도 ${cwRapLbl(cwRap('own'))} · 관심사 ${CW_SECL[cwSec()]}${cwOrdLine()?` · ${esc(cwOrdLine())}`:''}</p>`;
-    moves=['매달 말 보고: 순위, 팬 여론, 언론 논조, 예상 적자 보전','시즌 결산: 목표 달성 여부와 언론 논조가 크게 반영','홈경기 동석 초대를 받아 함께 보면 친밀도가 오릅니다(신뢰와 별개)'];
+    moves=['매달 말 보고: 순위, 팬 여론, 언론 논조, 예상 적자 보전을 봅니다','시즌 결산: 목표 달성 여부와 언론 논조를 크게 봅니다','홈경기 동석 초대를 받아 함께 보면 친밀도가 오릅니다(신뢰와 별개)'];
     fx=[`모기업 지원 한도가 신뢰에 따라 달라집니다. 지금 한도 ${money(supportCap(t))}`,'시즌이 끝날 때 12 아래면 경질됩니다'];
     recent=(G.ownerLog||[]).slice(0,3).map(o=>`<div class="ps-r"><span class="pill ${o.mood==='만족'?'good':o.mood==='관망'?'':'bad'}">${o.m}월 ${o.mood}</span> <span class="small">신뢰 ${o.trust} (${o.delta>=0?'+':''}${o.delta})</span></div>`).join('');
     acts=[btn('구단주에게 요청','go','club:owner',1),btn('재정','go','club:fin')]; }
@@ -121,11 +121,11 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
   else if(k==='mgr'){ const m=G.mgr[G.user]; const C=coachesOf(G.user); const clan=CKEYS.filter(r=>C[r]&&C[r].clan===m.id).map(r=>C[r].name);
     info=`<p class="small">${esc(m.career||'')} · ${m.age}세 · 계약 ${m.yrs}년 남음 · 연봉 ${money(m.sal)}</p><p class="small muted">${m.ego>=70?'고집이 셉니다':m.ego<=35?'유연한 편입니다':'고집은 보통입니다'} · ${m.fame>=70?'스타 감독':m.fame<=35?'인지도 낮음':'인지도 보통'} · ${m.small>=62?'작전 야구':m.small<=38?'선 굵은 야구':'작전 보통'} · ${mgrYouthWord(m.youth)}</p>${clan.length?`<p class="small">사단: ${clan.map(esc).join(', ')}</p>`:''}`;
     moves=['트레이드: 포지션별 전력이 좋아지면 오르고, 약해지거나 주전·유망주(육성형 감독)를 내주면 내려갑니다','결정 이벤트: 연패 때 감독을 믿어 주면 오르고, 출전을 약속하는 등 감독 권한에 끼어들면 내려갑니다','보강 약속: 지키면 크게 오르고, 어기면 크게 내려갑니다','운영 기조 지시: 감독이 받아들이면 조금 오르고, 거부하면 크게 내려갑니다'];
-    fx=['사이가 좋으면 선수단 경기력이 조금 오르고, 나쁘면 떨어집니다','콜업·말소 요청, 운영 기조, 휴식·투수 관리 지시를 따르는 정도','어느 정도 가까워지면 선수 정보에서 감독의 잠재력 예측을 볼 수 있음','자존심이 높고 명성이 높을수록 같은 관계에서도 덜 따릅니다'];
+    fx=['사이가 좋으면 선수단 경기력이 조금 오르고, 나쁘면 떨어집니다','콜업·말소 요청, 운영 기조, 휴식·투수 관리 지시를 얼마나 따르는지','어느 정도 가까워지면 선수 정보에서 감독의 잠재력 예측이 보입니다','자존심이 높고 명성이 높을수록 같은 관계에서도 덜 따릅니다'];
     acts=[btn('감독·요청','go','staff:mreq',1),btn('코치진','go','staff:coach')];
     recent=(G.mail||[]).filter(x=>x.from==='감독실').slice(0,3).map(x=>`<div class="ps-r small">${dsh(x.day)} · ${esc(x.subj)}</div>`).join(''); }
   else if(k.startsWith('c:')){const ref=k.slice(2),c=coachesOf(G.user)[ref]||staffOwned('coach',ref);if(!c)return '';const r=c.role;const m=G.mgr[G.user];
-    info=`<p class="small">${esc(c.car)} · ${c.age}세 · 연봉 ${money(c.sal)}</p><p>${esc(c.ax?'선수 육성을 돕는 보조 코치입니다.':CROLE[r].d)}</p><p class="small">지도력 ${dv(effC(c,G.user,'sk',1))} · 육성 ${dv(effC(c,G.user,'dv',1))}(코치진 화면과 같은 값, 감독 궁합 반영)</p>`;
+    info=`<p class="small">${esc(c.car)} · ${c.age}세 · 연봉 ${money(c.sal)}</p><p>${esc(c.ax?'선수 육성을 돕는 보조 코치입니다.':CROLE[r].d)}</p><p class="small">지도력 ${dv(effC(c,G.user,'sk',1))} · 육성 ${dv(effC(c,G.user,'dv',1))}(감독 궁합 반영)</p>`;
     moves=[c.clan&&m&&c.clan===m.id?`${m.name} 감독 사단입니다. 감독이 바뀌면 함께 떠날 수 있습니다`:'감독 사단이 아닌 구단 코치입니다'];
     fx=[c.ax?'선수 육성 보조':CROLE[r].g===2?'2군 선수 성장 속도':'1군 경기력과 성장 속도'];
     acts=[btn('코치진','go','staff:coach',1)]; }
@@ -133,7 +133,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     info=`<p class="small">${g?`${g.age}세 · ${esc(g.car)} · ${g.since}년부터 재임`:'단장대행 체제'}${g&&g.ob?obTag(g.ob):''}</p>${g&&g.ob&&obOf(g.ob)?`<p class="small muted">선수 시절: ${esc(tshort(obOf(g.ob).team))} ${esc(obOf(g.ob).pos)} · ${obOf(g.ob).seasons}시즌 · 통산 WAR ${obOf(g.ob).war}</p>`:''}${g?`<p><span class="pill acc">${GMT[g.trait].l}</span> ${esc(GMT[g.trait].d)}</p>`:''}<p class="small">${esc(needText(tid))}</p>
       <p class="small">${ni.free?`<b style="color:#6fe39a">맞대결 중 · 협상 ${ni.left}/${ni.cap}</b>`:`이번 달 협상 <b>${ni.left}</b>/${ni.cap} ${ni.cap>NEG_MONTH?' · 친분 덕에 1회 추가':ni.cap<NEG_MONTH?' · 친분이 낮아 1회 줄어듦':''}`}</p>`;
     moves=['안부 연락은 조금, 식사는 꽤 친분을 올립니다. 의리파는 더 쉽게, 강경파는 더디게 오릅니다','거래가 성사되면 오르고, 헐값 제안은 깎입니다','강경파 단장에게 한 달에 여러 번 거절당하면 조금 깎입니다'];
-    fx=['친분이 높을수록 같은 선수를 덜 비싸게 넘깁니다','아주 가까우면 월 협상이 1회 늘고, 사이가 나쁘면 1회 줄어듭니다','사이가 서먹하면 상대가 원하는 것을 읽기 어렵습니다'];
+    fx=['친분이 높을수록 같은 선수를 더 싸게 넘깁니다','아주 가까우면 월 협상이 1회 늘고, 사이가 나쁘면 1회 줄어듭니다','사이가 서먹하면 상대가 원하는 것을 읽기 어렵습니다'];
     const tr=(G.trades||[]).filter(z=>z.with===tid).slice(-3).reverse(); recent=tr.map(z=>`<div class="ps-r small">${z.y} ${dsh(z.d)} · 보냄 ${esc(z.give.join(', ')||'없음')} ↔ 받음 ${esc(z.get.join(', ')||'없음')}</div>`).join('');
     acts=[btn('트레이드 협상','tpartnerGo',tid,1),`<button class="btn" data-a="gmCall" data-v="${tid}" ${c.call!=null&&c.call>G.day-14?'disabled':''}>안부 연락</button>`,`<button class="btn" data-a="gmMeal" data-v="${tid}" ${c.meal!=null&&c.meal>G.day-30?'disabled':''}>식사 (1천만)</button>`]; }
   else if(k.startsWith('rep:')){ const r=repById(k.slice(4)); if(r){ const O=OUTLET_DEF[r.outlet]||{};
