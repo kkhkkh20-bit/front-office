@@ -7,7 +7,7 @@ function contractMoneyRead(text,min,max=Number.MAX_SAFE_INTEGER/16){
   const raw=String(text).trim().replace(/,/g,'');
   if(!/^(?:\d+(?:\.\d{0,2})?|\.\d{1,2})$/.test(raw))return {error:'금액을 소수점 둘째 자리까지 입력하세요.'};
   const value=Math.round(Number(raw)*100);
-  if(!Number.isSafeInteger(value)||value>max)return {error:'입력할 수 있는 금액을 초과했습니다.'};
+  if(!Number.isSafeInteger(value)||value>max)return {error:'입력할 수 있는 금액을 넘었습니다.'};
   if(value<min)return {error:`최소 ${money(min)}부터 입력하세요.`};
   return {value};
 }

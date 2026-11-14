@@ -39,7 +39,7 @@ function campView(){ const ct=inTabs('cmap',[['home','1군 홈구장'],['farm','
     ${UI.cz?'<button class="btn small" data-a="campZoom" data-v="">전체 보기</button>':''}
     <div class="cpwrap"><div class="campst" id="campst">${renderCampus(S)}</div>${cpPanel(S,ct.cur)}</div>
     ${cpLegend(ct.cur)}
-    <p class="small muted">${ct.cur==='farm'?'2군 선수와 재활·연수 선수가 지내는 별도 훈련장입니다(실제 구단처럼 홈구장과 떨어져 있습니다).':'1군 엔트리 선수는 홈구장에서 훈련합니다.'} 버스는 원정 경기 피로에 영향을 줍니다(${BUS[busLv()].l}).</p></section>`; }
+    <p class="small muted">${ct.cur==='farm'?'2군 선수와 재활·연수 선수가 지내는 훈련장입니다. 실제 구단처럼 홈구장과 떨어져 있습니다.':'1군 엔트리 선수는 홈구장에서 훈련합니다.'} 버스는 원정 경기 피로에 영향을 줍니다(${BUS[busLv()].l}).</p></section>`; }
 function leadCard(){ if(G.unemp)return ''; const cl=climateOf(G.user); const c=cl.cap; const m=G.mgr[G.user]; const ld=c?leadOf(c):null; const adj=G.leadAdj&&G.leadAdj.until>G.day?G.leadAdj:null;
   const band={loose:['bad','느슨함','집중력이 떨어지고 기행이 잦아집니다'],ok:['','보통','큰 영향은 없습니다'],good:['good','알맞음','선수들이 집중하고 분위기가 좋습니다'],rigid:['warn','너무 엄격','경직된 플레이가 나오고 젊은 선수 불만이 쌓입니다']}[cl.band];
     return `<section class="card"><div class="row between"><h2 class="sec">선수단 리더십</h2><span class="pill ${band[0]}">기강 ${cl.S} · ${band[1]}</span></div>

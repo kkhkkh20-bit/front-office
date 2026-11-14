@@ -25,6 +25,6 @@ function gmProfileView(){ const s=meStats(), M=s.M, T=s.T; const tags=meTags(); 
   const seas=(G.myC&&G.myC.seas||[]).slice().reverse().slice(0,12).map(x=>`<div class="row between small"><span>${x.y} · ${badge(x.tid,14)} ${esc(tshort(x.tid))}</span><span>${x.w}승 ${x.l}패${x.t?` ${x.t}무`:''}${x.part?` · 시즌 중 ${esc(x.how||'이직')}`:` · ${x.rank}위`}${x.ch===1?' · <b class="good">우승</b>':x.ch===2?' · 준우승':''}</span></div>`).join('');
   return `<section class="card gmcard"><div class="row between"><h2 class="sec">단장 프로필</h2>${nick?`<span class="small muted">언론이 부르는 별명: <b>${esc(nick)}</b></span>`:''}</div>
     <div class="eyebrow">스타일</div>${tg}
-    <div class="eyebrow" style="margin-top:8px">행동 기록</div>${grid}${meTrades().some(t=>!t.snap?.byTeam)?'<p class="small muted">옛 거래 중 구단별 기준선이 없는 기록은 거래 전 기여가 포함될 수 있습니다. 새 거래부터 거래 이후의 구단별 기여를 구분합니다.</p>':''}
+    <div class="eyebrow" style="margin-top:8px">행동 기록</div>${grid}${meTrades().some(t=>!t.snap?.byTeam)?'<p class="small muted">예전 거래 일부는 거래 전 기여가 섞여 있을 수 있습니다. 새 거래부터는 거래 뒤 기여만 구단별로 셉니다.</p>':''}
     <details class="mfold"><summary>트레이드 성적</summary>${tr||'<p class="small muted">아직 트레이드가 없습니다.</p>'}${T.best&&T.n>1?`<p class="small">최고: ${T.best.t.y} ${esc(tshort(T.best.t.with))} (${T.best.r.net>=0?'+':''}${T.best.r.net.toFixed(1)}) · 최악: ${T.worst.t.y} ${esc(tshort(T.worst.t.with))} (${T.worst.r.net.toFixed(1)})</p>`:''}</details>
     <details class="mfold"><summary>시즌별 팀 성적</summary>${seas||'<p class="small muted">아직 마친 시즌이 없습니다.</p>'}</details></section>`; }

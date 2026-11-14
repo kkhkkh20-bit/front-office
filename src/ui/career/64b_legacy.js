@@ -26,11 +26,11 @@ function lgHofView(){ const L=legPeople(), me=L.findIndex(p=>p.u&&p.k===legMeK()
   const top=L.slice(0,20);
   return csec('단장 명예의 전당',(me>=0?`<div class="tiles"><div class="tile"><span class="g">${me+1}위</span><span class="l">내 순위 / ${L.length}명</span></div><div class="tile"><span class="g">${L[me].c}</span><span class="l">우승</span></div><div class="tile"><span class="g">${L[me].s}</span><span class="l">시즌</span></div></div>`:'')
     +(top.length?`<div class="list">${top.map(row).join('')}${me>=20?row(L[me],me):''}</div>`:'<p class="small muted">시즌을 마치면 순위가 생깁니다.</p>')
-    +`<p class="small muted">점수 = 우승 ×10 + 재임 시즌 + (승률 − .500) ×100(5시즌 미만은 그만큼 줄임). 리그의 AI 단장도 함께 셉니다. 이 기능 전 저장은 지금 재임 중인 단장과 내 경력부터 셉니다. 기록은 최대 ${LEG_MAX}줄까지 남깁니다.</p>`); }
+    +`<p class="small muted">점수 = 우승 ×10 + 재임 시즌 + (승률 − .500) ×100(5시즌 미만은 그만큼 줄임). 리그의 AI 단장도 함께 셉니다. 예전 저장 파일은 지금 재임 중인 단장과 내 경력부터 셉니다. 기록은 최대 ${LEG_MAX}줄까지 남깁니다.</p>`); }
 function lgDynView(){ const W=legWins5(), me=W.me; const row=(x,mine)=>`<div class="item wa${mine?' lg-me':''}" style="cursor:default">${badge(x.t,22)}<span class="nm">${x.y0}~${x.y1} ${esc(tshort(x.t))}${x.gm?` <span class="small muted">${esc(x.gm)} 단장</span>`:''}</span><span class="sub">${x.w}승 ${x.l}패 · 승률 ${lgPct(x)}</span><span class="rt"><b>우승 ${x.c}</b></span></div>`;
   const mineTop=x=>me&&x.t===me.t&&x.y0===me.y0;
   return csec('내 최고 5년',me?`<div class="list">${row(me,true)}</div><p class="small">리그 역대 5년 구간 가운데 ${me.rk}위입니다(우승 수, 같으면 승률 순).</p>`:'<p class="small muted">한 구단에서 다섯 시즌을 이어서 치르면 비교할 수 있습니다.</p>')
-   +csec('리그 역대 최고 5년',W.top.length?`<div class="list">${W.top.slice(0,10).map((x,i)=>row(x,mineTop(x))).join('')}</div><p class="small muted">한 구단의 겹치는 구간은 가장 좋은 하나만 보여 줍니다. 단장은 구간 가운데 해 기준입니다.</p>`:'<p class="small muted">다섯 시즌이 쌓이면 보여 줍니다.</p>'); }
+   +csec('리그 역대 최고 5년',W.top.length?`<div class="list">${W.top.slice(0,10).map((x,i)=>row(x,mineTop(x))).join('')}</div><p class="small muted">한 구단의 겹치는 구간은 가장 좋은 하나만 보여 줍니다. 표시한 단장은 구간 가운데 해의 단장입니다.</p>`:'<p class="small muted">다섯 시즌이 쌓이면 보여 줍니다.</p>'); }
 /* 연대기 한 장: 카페에 올릴 수 있게 한 화면에 연도순으로 */
 function lgTimeline(){ const C=G.myC||{}, S=(C.seas||[]).slice().sort((a,b)=>a.y-b.y); const ev={}; const add=(y,k,t)=>{ if(y==null)return; (ev[y]=ev[y]||[]).push({k,t}); };
   let prev=null; for(const s of S){ if(s.tid!==prev)add(s.y,'구단',`${tname(s.tid)} 단장 취임`); prev=s.tid; if(s.ch===1)add(s.y,'우승',`${tshort(s.tid)} 한국시리즈 우승 (${s.w}승 ${s.l}패)`); else if(s.ch===2)add(s.y,'가을',`${tshort(s.tid)} 준우승`); }

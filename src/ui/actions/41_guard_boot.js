@@ -105,8 +105,8 @@ function pendMailId(){ const n=ibNeedList(); if(n.length)return (n.find(m=>!m.re
 function advTargetTxt(v){ const per=period();
   if(G.unemp)return '제의가 오거나 1주일이 지날 때까지 진행합니다.';
   if(v==='event'&&(per==='off'||per==='pre')&&!nextGames(1).some(x=>x.d<=G.day+7))return `${dmd(G.day+7)}까지 최대 7일 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`;
-  if(v==='event'&&!G.unemp)return '최대 3경기를 자동 진행합니다. 휴식일은 경기 수에 포함하지 않으며 예약한 직관과 설정한 중단 조건에서 먼저 멈춥니다. 경기가 없는 비시즌에는 최대 7일 진행합니다.';
-  if(v==='week')return `${dmd(G.day+7)}까지 최대 1주일 자동 진행합니다. 직접 예약한 경기와 우리 팀 포스트시즌 경기는 중계로 보며 중요한 소식이나 결정이 생기면 먼저 멈춥니다.`;
+  if(v==='event'&&!G.unemp)return '최대 3경기를 자동으로 진행합니다. 휴식일은 경기 수에 넣지 않고, 예약한 직관이나 설정한 중단 조건이 오면 먼저 멈춥니다. 경기가 없는 비시즌에는 최대 7일 진행합니다.';
+  if(v==='week')return `${dmd(G.day+7)}까지 최대 1주일 자동 진행합니다. 직접 예약한 경기와 우리 팀 포스트시즌 경기는 중계로 봅니다. 중요한 소식이나 결정이 생기면 먼저 멈춥니다.`;
   if(v==='day')return `${dmd(G.day+1)}(${WD[dobj(G.day+1).w]}) 하루를 진행합니다.`;
   const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?` 비시즌·시즌 준비 기간에는 한 번에 최대 7일(${dmd(G.day+7)})까지 진행합니다.`:''}`; }
 function advAskDoc(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}

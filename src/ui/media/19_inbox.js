@@ -113,7 +113,7 @@ function inboxView(){
   if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=order[ids.indexOf(UI.ibOpen)];
       return `<div class="ibx-mback"><button class="btn small" data-a="ibBack">◀ 목록</button><span class="small muted">${IB_CAT.find(c=>c[0]===f)[1]}</span></div>${mailCard(m,nav).replace(/<\/article>\s*$/,ibAtt(m)+'</article>')}`; }
     UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}</nav>`; }
-  const pane=si>=0?(fmOn()?`<div class="ibx-fm">${mailCard(order[si],nav).replace(/<\/article>\s*$/,ibAtt(order[si])+'</article>')}</div>`:mailCard(order[si],nav)):fmOn()?ibDash(need):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
+  const pane=si>=0?(fmOn()?`<div class="ibx-fm">${mailCard(order[si],nav).replace(/<\/article>\s*$/,ibAtt(order[si])+'</article>')}</div>`:mailCard(order[si],nav)):fmOn()?ibDash(need):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 확인할 소식부터 안 읽은 소식을 차례로 열고, 다 읽으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
   return bar+`<div class="ibx"><div class="ibx-lw">${fmOn()&&si>=0?ibFrom(order[si]):''}<nav class="ibx-list" aria-label="소식 목록">${rows}</nav><button class="ibx-up" data-a="ibTop" hidden>맨 위로 ↑</button></div><div class="ibx-read">${pane}</div></div>`;
 }
 /* PC(FM식): 목록 칸 위에 보낸 사람 큰 얼굴, 소식 본문 아래에 첨부 자료 상자들(관련 선수·능력·기록·같은 사람의 소식) */
@@ -143,7 +143,7 @@ function ibDash(need){ const N=ibNeedList().slice(0,6), D=ibDecideList().slice(0
   const latest=G.mail.slice(0,8);
   return `<div class="ibx-dash"><section class="card ibs-box"><h3>확인할 소식 <em>${need}건</em></h3>${N.length?N.map(li).join(''):'<p class="small muted">새로 확인할 소식이 없습니다.</p>'}${need?'<button class="btn primary small block" data-a="ibNeedGo">확인할 소식 차례로 열기</button>':''}</section>
     <section class="card ibs-box"><h3>결정할 일 <em>${D.length}건</em></h3>${D.length?D.map(x=>li(x).replace('</span>',ibDue(x)!=null?` · D-${Math.max(0,ibDue(x)-G.day)}</span>`:'</span>')).join(''):'<p class="small muted">답을 기다리는 일이 없습니다.</p>'}</section>
-    <section class="card ibs-box"><h3>분류별 안 읽음</h3><div class="ibs-cats">${cats.map(([k,l])=>{ const n=mailFilter(k).filter(m=>!m.read).length; return `<button data-a="mf" data-v="${k}"><span>${l}</span><b>${n}</b></button>`; }).join('')}</div><p class="small muted">스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p></section>
+    <section class="card ibs-box"><h3>분류별 안 읽음</h3><div class="ibs-cats">${cats.map(([k,l])=>{ const n=mailFilter(k).filter(m=>!m.read).length; return `<button data-a="mf" data-v="${k}"><span>${l}</span><b>${n}</b></button>`; }).join('')}</div><p class="small muted">스페이스바를 누르면 확인할 소식부터 안 읽은 소식을 차례로 열고, 다 읽으면 진행합니다.</p></section>
     <section class="card ibs-box"><h3>최근 소식</h3>${latest.map(li).join('')}</section></div>`; }
 /* 화면에 보인 메일은 읽음으로. 다시 그리지 않고 표시만 바꾼다 */
 let _ibSave=null, _ibOn=false, _ibRaf=0;
