@@ -4516,6 +4516,32 @@ T('[스토리라인] 늦깎이 데뷔는 오래 기다린 선수만, 리그 상�
   G.sl.yr.debN=4; const c=P[2]; c.age=29; c.draft={y:G.year-7}; c.cum={h:0,hr:0,w:0,sv:0,so:0}; c.fl={}; storyGame(c,{ab:3,h:0},G.day,G.user,{},{}); ok(!slOf(c.id).length,'한 해 상한을 넘겨 데뷔 이야기');
   G.sl.yr.n=SL.yAll; ok(!slCan('mentor',G.user,[c.id]),'한 해 시작 상한을 넘김'); G.sl.yr.n=0; for(let i=0;i<SL.act;i++)G.sl.act.push({id:'f'+i,k:'mentor',t:op,p:[-1-i],st:'on',d:G.day,y:G.year,x:{}}); ok(!slCan('feud',G.user,[c.id]),'리그 동시 진행 상한을 넘김');
   const txt=G.news.map(n=>n.t+' '+n.b).join(' '); ok(!/했소|하오[.!" ]|겠소|있소|없소|이오[.!"]/.test(txt),'하오체 문장: '+txt.slice(0,200)); });
+T('[프로모션 관중] 매진 상한: 행사를 잡아도 관중이 좌석 수를 넘지 않고, 원래 매진이면 효과가 거의 없다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const H=homeGames(G.user,G.day+1,G.cal.end).map(x=>x[0]); const d=H.find(x=>[1,2,3,4].includes(dobj(x).w))||H[0]; ok(d,'준비 실패: 홈경기');
+  const cap=stadCap(G.user); const t=team(G.user); const e0=promoEst(G.user,d,'jersey'); ok(e0&&e0.xa>0&&e0.w1<=cap,'평소 행사 효과가 없음: '+JSON.stringify(e0&&{xa:e0.xa,w1:e0.w1,cap}));
+  t.pop=1.6; t.market=2.5; ok(promoBook(G.user,d,'jersey').includes('잡았습니다'),'예약 실패'); const a=promoHomeOpp(G.user,d); for(let i=0;i<200;i++)ok(attOf(G.user,a,d)<=cap,'좌석 수를 넘음');
+  const e1=promoEst(G.user,d,'jersey'); ok(e1.w1<=cap&&e1.xa<e0.xa,'매진 상한에 막히지 않음: '+e1.xa+' / '+e0.xa); ok(e1.why.join(' ').includes('매진'),'매진 이유를 말하지 않음: '+e1.why.join('|')); });
+T('[프로모션] 반복 피로·시즌 상한: 같은 행사를 또 하면 효과가 줄고, 시즌 횟수를 넘으면 잡히지 않는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const H=homeGames(G.user,G.day+1,G.cal.end).map(x=>x[0]).filter((x,i,L)=>L.indexOf(x)===i); ok(H.length>PROMO_MAX+2,'준비 실패');
+  const d2=H[6], a2=promoHomeOpp(G.user,d2); const solo=promoLift(G.user,a2,d2,'cap').m; promoBook(G.user,H[0],'cap'); const two=promoLift(G.user,a2,d2,'cap').m; promoBook(G.user,H[3],'cap'); const three=promoLift(G.user,a2,d2,'cap').m;
+  ok(solo>two&&two>three&&three>1,'반복 피로가 없음: '+[solo,two,three]);
+  for(const d of H.slice(1))if(promoUsed(G.user)<PROMO_MAX)promoBook(G.user,d,'univ'); ok(promoUsed(G.user)===PROMO_MAX,'상한까지 잡히지 않음 '+promoUsed(G.user)); const last=H.find(d=>!promoOf(G.user).bk[d]); ok(promoBook(G.user,last,'univ').includes('까지'),'상한을 넘겨 잡힘'); ok(promoBook(G.user,G.day,'cap').includes('지난'),'지난 날짜가 잡힘'); });
+T('[프로모션 재정] 비용은 경기 날 장부에 들고 결산 줄에 남는다. 취소한 행사는 비용이 없다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const H=homeGames(G.user,G.day+1,G.cal.end).map(x=>x[0]); const d=H[0], d2=H[2]; ok(d&&d2,'준비 실패');
+  promoBook(G.user,d,'chimac'); promoBook(G.user,d2,'jersey'); ok(promoCancel(G.user,d2).includes('취소'),'취소 실패'); const b=budget(); ok(b.exp.some(x=>x[0]==='프로모션 데이 비용'),'예산에 잡아 둔 행사비가 없음');
+  simTo(()=>G.day>d); const P=promoOf(G.user); ok(P.log.length===1&&P.log[0].k==='chimac','행사가 열리지 않음: '+JSON.stringify(P.log)); const c=PROMO_EV.chimac.c*ecoIdx(); ok(P.cost>=c-1&&P.cost<=c+1,'행사비가 다름 '+P.cost+' / '+c); ok(P.inc>0,'치맥 매출이 없음');
+  ok(!P.bk[d2],'취소한 예약이 남음'); ok(G.mail.some(m=>m.subj.includes('프로모션')&&m.body.includes('비용')),'결과 보고 없음'); const L=P.log[0]; ok(L.net===L.tk+L.inc-L.cost,'손익 계산이 맞지 않음');
+  const inc=[],exp=[]; promoSettle(G.user,inc,exp); ok(exp.some(x=>x[0]==='프로모션 데이 비용'&&x[1]===Math.round(P.cost))&&inc.some(x=>x[0]==='프로모션 부대 수입'),'결산 줄이 없음'); });
+T('[프로모션 관중] 다른 구단도 같은 규칙: 개막 전에 잡고, 상한·비용·효과가 같다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+12); const A=G.teams.filter(t=>t.id!==G.user);
+  const n=A.map(t=>promoUsed(t.id)); ok(n.filter(x=>x>0).length>=A.length-2,'다른 구단이 행사를 잡지 않음: '+n); ok(n.every(x=>x<=PROMO_MAX),'상한 초과');
+  for(const t of A){ const P=promoOf(t.id); for(const d of Object.keys(P.bk))ok(promoHomeOpp(t.id,+d)!=null,'홈경기가 아닌 날 예약'); for(const L of P.log){ const E=PROMO_EV[L.k]; ok(L.cost>=Math.round(E.c*ecoIdx())-1,'다른 구단 행사비가 다름'); } }
+  const held=A.flatMap(t=>promoOf(t.id).log); ok(held.length>0,'다른 구단 행사가 열리지 않음'); const t=A.find(t=>Object.keys(promoOf(t.id).bk).length); ok(t,'남은 예약 없음'); const d=+Object.keys(promoOf(t.id).bk)[0], a=promoHomeOpp(t.id,d);
+  const w1=attOf(t.id,a,d,null); _promoOff=true; const w0=attOf(t.id,a,d,null); _promoOff=false; ok(w1>=w0,'다른 구단 행사가 관중에 반영되지 않음'); });
+T('[스타 관중] 원정 팀 스타가 관중을 부르고, 리그 전체 평균은 그대로다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const op=G.teams.find(t=>t.id!==G.user).id;
+  for(const p of playersOf(op).slice(0,3))p.aw=[...(p.aw||[]),G.year+' MVP',(G.year-1)+' 골든글러브']; _promoVC={k:null}; _saC={k:null,v:{}}; const m=visStarM(op); ok(m>1.01,'원정 스타 배율이 없음 '+m);
+  const ms=G.teams.map(t=>visStarM(t.id)); const mean=ms.reduce((s,v)=>s+v,0)/ms.length; ok(Math.abs(mean-1)<.005,'리그 평균이 바뀜 '+mean);
+  const w1=attOf(G.user,op,G.day+1,null); _visOff=true; const w0=attOf(G.user,op,G.day+1,null); _visOff=false; ok(w1>w0,'원정 스타가 관중을 늘리지 않음');
+  const h=G.teams.find(t=>t.id!==op&&t.id!==G.user).id; visDrawRec(G.day+1,h,op); const V=G.sea.vdraw[op]; ok(V&&V.out>0&&V.top,'원정 관중 기록 없음'); const L=starDrawLines(op); ok(L.some(x=>x.includes('원정 관중')),'원정 스타 효과 문구 없음: '+L.join('|')); });
+T('[프로모션] 저장·불러오기 뒤에도 예약·장부가 그대로이고 같은 효과를 낸다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const H=homeGames(G.user,G.day+1,G.cal.end).map(x=>x[0]); ok(!promoWhyNot(G.user,H[5],'fire')||stadOf(G.user).dome,'');
+  const k2=stadOf(G.user).dome?'cap':'fire'; promoBook(G.user,H[5],k2); promoBook(G.user,H[0],'women'); simTo(()=>G.day>H[0]);
+  const P0=promoOf(G.user), e0=promoEst(G.user,H[5],k2); G=JSON.parse(JSON.stringify(G)); const P1=promoOf(G.user); ok(P1.log.length===P0.log.length&&P1.log.length===1&&P1.cost===P0.cost&&P1.bk[H[5]]&&P1.bk[H[5]].k===k2,'저장 뒤 장부·예약이 달라짐 '+JSON.stringify({l0:P0.log.length,l1:P1.log.length,c0:P0.cost,c1:P1.cost,bk:P1.bk,H:H.slice(0,3),day:G.day})); const e1=promoEst(G.user,H[5],k2); ok(Math.abs(e1.xa-e0.xa)<1,'저장 뒤 효과가 달라짐 '+e0.xa+' '+e1.xa); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
