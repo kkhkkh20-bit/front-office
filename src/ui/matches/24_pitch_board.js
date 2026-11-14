@@ -13,7 +13,7 @@ function cPitchClass(q){return /볼|몸에 맞는 공/.test(q.res)?'ball':/타�
 function cPitchPanel(g,k,seq,shown){
   const x=g.pbp[k],q=seq[shown-1],saved=!!storedPitchSequence(x),source=document.getElementById('cs-pitch-source'),info=document.getElementById('cs-pitch');
   if(!info)return;
-  if(source){source.textContent=!x?'경기 종료':typeof x[1]!=='number'?'투구 대기':saved?'투구 기록':'투구 재현';source.title=saved?'시뮬레이션에서 생성·저장한 투구 기록입니다. 타석 결과에 맞춰 구성한 좌표이며 실측 자료는 아닙니다.':'기존 경기에는 공별 구종·구속 측정 기록이 없습니다. 보존된 타석 결과에 맞춰 순서·카운트·좌표만 추정 재현하며 현재 선수 능력은 사용하지 않습니다.';}
+  if(source){source.textContent=!x?'경기 종료':typeof x[1]!=='number'?'투구 대기':saved?'투구 기록':'투구 재현';source.title=saved?'이 경기의 투구 기록입니다.':'이 경기는 공별 기록이 없어 타석 결과로 투구 순서와 위치를 추정해 그렸습니다.';}
   const list=seq.slice(0,shown),start=Math.max(0,list.length-6);
   mdSet('md-pitch-dots',list.slice(start).map((p,i)=>`<span class="md-pitch-dot ${cPitchClass(p)}${i===list.length-start-1?' latest':''}" style="left:${p.res==='몸에 맞는 공'?(p.x<0?5:95):20+60*p.x}%;top:${15+70*p.y}%" title="${esc((start+i+1)+'구 '+p.t+' '+(Number.isFinite(p.v)?p.v+'km/h':'구속 미기록')+' · '+p.res+' · '+cPitchLocationText(p))}" data-index="${start+i+1}" data-x="${p.x}" data-y="${p.y}">${start+i+1}</span>`).join(''));
   mdSet('md-pitch-history',list.slice(-4).map((p,i)=>`<li><i>${list.length-Math.min(4,list.length)+i+1}</i><b>${esc(p.t)}</b><span>${Number.isFinite(p.v)?p.v+'<small> km/h</small>':'구속 미기록'}</span><em class="${cPitchClass(p)}">${esc(p.res)}</em></li>`).join(''));

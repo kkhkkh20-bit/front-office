@@ -315,7 +315,7 @@ function wireFm(){ const all=G.wire||[], ks=[...new Set(all.map(w=>w.k))], W=UI.
 function flTeamCell(t){ return t==='sm'?`<span class="tname"><b>상무</b></span>`:`<button class="lnk tname" data-a="lteamGo" data-v="${t}">${badge(t,16)}${esc(tshort(t))}</button>`; }
 function futStandView(){ const F=G.fl; if(!F)return '<p class="small muted">퓨처스리그 기록이 아직 없습니다.</p>';
   const tbl=div=>{ const L=flStand(div); const top=L[0]; return `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${div==='N'?'북부리그':'남부리그'}</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>승차</th><th>득점</th><th>실점</th></tr></thead><tbody>${L.map((r,i)=>`<tr class="${r.t===G.user?'me':''}"><td>${i+1} ${flTeamCell(r.t)}</td><td>${r.w+r.l+r.d}</td><td>${r.w}</td><td>${r.l}</td><td>${r.d}</td><td class="key">${r.w+r.l?(r.w/(r.w+r.l)).toFixed(3).replace(/^0/,''):'-'}</td><td>${i&&top?(((top.w-r.w)+(r.l-top.l))/2).toFixed(1):'-'}</td><td>${r.rs}</td><td>${r.ra}</td></tr>`).join('')}</tbody></table></div>`; };
-  return csec(`${F.y} 퓨처스리그`,tbl('N')+tbl('S')+`<p class="small muted">2군 경기는 1군과 같은 경기 엔진으로 한 타석씩 계산합니다. 북부리그는 수도권 구단, 남부리그는 그 밖의 구단과 상무입니다. 화·수·목·토·일에 열리고 순위는 승률(무승부 제외) 순입니다.</p>`)+flRecent(12); }
+  return csec(`${F.y} 퓨처스리그`,tbl('N')+tbl('S')+`<p class="small muted">북부리그는 수도권 구단, 남부리그는 그 밖의 구단과 상무입니다. 화·수·목·토·일에 열리고 순위는 무승부를 뺀 승률 순입니다.</p>`)+flRecent(12); }
 function flRecent(n){ const F=G.fl; if(!F)return ''; const L=F.games.filter(x=>x.h===G.user||x.a===G.user).slice(-n).reverse(); if(!L.length)return '';
   return csec(`우리 2군 최근 경기 ${L.length}경기`,`<div class="fl-g">${L.map(flGameRow).join('')}</div>`); }
 function flGameRow(x){ const me=x.h===G.user?'h':'a', ms=me==='h'?x.hs:x.as, os=me==='h'?x.as:x.hs, opp=me==='h'?x.a:x.h; const r=ms>os?'승':ms<os?'패':'무';

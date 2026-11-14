@@ -23,7 +23,7 @@ function scoutMapPage(){ const S=areaSummary(G.user), home=teamArea(G.user); con
   const mo=dobj(G.day).m, det=`<div class="scm-det">${sceneImg(sceneOf(mo===12||mo<=2?'scout_winter':period()==='season'&&mo>=6&&mo<=8?'scout_tournament':'scout_weekend',sel),'스카우트 출장','scm-scene')}<div class="row between"><h3 class="sec">${esc(sel)}</h3><span><b style="color:${netCol(A.net)}">정보망 ${A.net}</b> · ${netLbl(A.net)}</span></div>
     <div class="scm-bar"><i style="width:${A.net}%;background:${netCol(A.net)}"></i></div>
     <p class="small">${why.join(' · ')}</p>
-    <p class="small muted">정보망이 높을수록 이 권역 후보의 평가 오차가 줄고(최대 25%), 숨은 재능을 알아볼 확률이 오릅니다. ${A.reg} 담당 스카우트를 오래 둘수록, 이 권역이 고향인 스카우트가 있을수록, 단장이 이 권역 대회를 직접 볼수록 올라갑니다. 학교마다 감독과의 친분도 따로 있어, 친할수록 그 학교 선수 평가가 정확해지고 감독이 좋은 선수를 먼저 귀띔합니다(스카우트 방문·대회 관전·그 학교 선수 지명·후원으로 오름).</p>
+    <p class="small muted">정보망이 높을수록 이 권역 후보를 더 정확히 보고 숨은 재능도 잘 찾습니다. ${hiI(`${A.reg} 담당 스카우트를 오래 둘수록, 이 권역이 고향인 스카우트가 있을수록, 단장이 이 권역 대회를 직접 볼수록 정보망이 올라갑니다. 학교 감독과 친할수록 그 학교 선수 평가가 정확해지고, 감독이 좋은 선수를 먼저 귀띔합니다. 친분은 스카우트 방문, 대회 관전, 그 학교 선수 지명, 후원으로 쌓입니다.`)}</p>
     <h4 class="small">학교 · 올해 드래프트 후보 ${A.n}명</h4><div class="scm-schs">${schools.map(rowS).join('')}</div></div>`;
   return `<div class="scm ws-own"><section class="card scm-l">${map}${list}</section><section class="card scm-r">${det}</section></div>`; }
 function scoutPage2(base){ const nW=(G.pwatch||[]).filter(id=>G.players[id]&&G.players[id].team!==G.user).length; /* 타 구단 관심 선수는 하위 탭으로 따로(울브즈 11-11) */
