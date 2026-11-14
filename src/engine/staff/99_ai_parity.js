@@ -39,11 +39,17 @@ function aiOpsPlan(t,ex,W){ const out={cash:0,fanY:0}; const pl=planOf(t)||'next
   if((pl==='win'||pl==='star')&&busLv(t.id)<2&&left>=BUS[2].c*4){ pay(BUS[2].c); busSetT(t.id,2); try{ clubFacilityHistory('fac',t.id,`구단 버스 ${BUS[2].l}`,'교체',{lv:2,c:BUS[2].c,costLabel:'구입비'}); }catch(e){} }
   out.fanY=aiFanPlan(t,left,W,pay);
   return out; }
-/* 결산 지출(우리 구단과 같은 값): 부상 방지·병원·보조 코치 연봉·응원단 */
-function aiOpsCost(t,y){ const M=medOf(t.id), L=[['부상 방지 프로그램',PREV[M.prev].c],['병원 제휴',HOSP[M.hosp].c]];
-  L.push(['보조 코치 연봉',Math.round(sum(axOf(t.id).filter(c=>c&&!(c.cs!=null&&c.cs>y)).map(c=>c.sal||0)))]);
+/* 운영 비용 연간 단가(우리 구단과 같은 값): 부상 방지·병원·보조 코치 연봉·응원단. 다음 시즌부터인 코치 계약은 빼고(coachSal now와 같은 기준) */
+function aiOpsCost(t){ const M=medOf(t.id), L=[['부상 방지 프로그램',PREV[M.prev].c],['병원 제휴',HOSP[M.hosp].c]];
+  L.push(['보조 코치 연봉',Math.round(sum(axOf(t.id).filter(c=>c&&!(c.cs!=null&&c.cs>G.year)).map(c=>c.sal||0)))]);
   const F=t.fanOps; if(F&&!(G.fanYrT&&G.fanYrT[t.id]))L.push(['팬 마케팅·구단 이벤트',(FAN_OPS.cheer.m[F.cheer||0]||0)*12]);
   return L; }
+/* 매일(dailyCost): 사람 단장이 날마다 1/365씩 내는 것처럼, AI가 맡은 날만 쌓는다(t.opsA, 결산 연도 fy별).
+   시즌 중 이직·야인·재부임 때도 맡은 날수만큼만: 떠난 구단은 떠난 날부터, 새로 맡은 구단은 그 전 AI 기간 몫을 결산에서 낸다. 보조 코치도 고용한 날만큼 */
+function aiOpsDaily(){ if(!G||!G.teams)return; const fy=fyNow(), me=ME(); for(const t of G.teams){ if(t.id===me)continue; let A=t.opsA; if(!A||A.fy!==fy)A=t.opsA={fy,v:{}};
+    for(const [l,v] of aiOpsCost(t))if(v>0)A.v[l]=(A.v[l]||0)+v/365; } }
+/* 결산: 그해 AI가 맡은 기간에 쌓인 운영 비용(옛 저장은 기록이 없으면 불러온 날부터만 쌓인다) */
+function aiOpsDue(t,y){ const A=t.opsA; return A&&A.fy===y?Object.entries(A.v).map(([l,v])=>[l,Math.round(v)]).filter(x=>x[1]>0):[]; }
 
 /* --- 티켓 가격: 결산 직후 지난 시즌 점유율을 보고 한 단계씩. 수익형 구단주·긴축 구단은 조금 일찍 올리고, 흥행 구단은 비싸게 받지 않는다 --- */
 function aiPriceYear(t){ const A=G.sea&&G.sea.att&&G.sea.att[t.id]; if(!A||!A.cap||!A.n)return; const occ=A.sum/A.cap, S=stadOf(t.id), pl=planOf(t); let p=PRICE[S.price]?S.price:1; const p0=p;

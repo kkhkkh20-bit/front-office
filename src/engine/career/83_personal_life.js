@@ -82,7 +82,7 @@ function gmPersonalReply(tid,topic){const t=team(tid);if(!t||tid===G.user)return
  const styles={hard:'선수값에서는 쉽게 물러서지 않겠습니다.',prospect:'어린 선수의 성장 여지와 남은 보유 기간을 높게 봅니다.',data:'한동안의 컨디션보다 여러 시즌의 기록과 계약을 비교합니다.',loyal:C.bond>=55?'서로 약속을 지켜 온 관계는 협상에서도 생각하겠습니다.':'한 번의 좋은 말보다 거래를 지키는 모습을 보고 관계를 쌓겠습니다.',gambler:'우승 경쟁에 필요한 확실한 전력이라면 큰 거래도 검토하겠습니다.',miser:'같은 역할이면 연봉 부담이 적은 선수가 먼저입니다.'};
  const listed=domestic(tid).filter(p=>p.aiListed&&!p.ys).sort((a,b)=>b.sal-a.sal||a.id-b.id)[0],market=listed?`공개 매물에는 ${listed.name}(${posLabel(listed)}, ${listed.age}세)이 있습니다.`:'현재 공개한 매물은 없습니다.';
  const key=JSON.stringify([m.id,m.trait,mode,N.weak,N.money,listed?.id,Math.floor(C.bond/15),Math.floor((t.rel??50)/5)]),old=C.talk[topic],repeat=old?.day===G.day&&old.key===key;
- const line=topic==='plan'?strategy+' '+need+' '+budget:topic==='trade'?need+' '+market+' '+budget+' '+(styles[m.trait]||styles.hard):(C.bond>=55?'편하게 이야기할 사이가 됐네요. ':'인사는 나눴지만 관계는 차근차근 쌓아갑시다. ')+`개인 친밀도는 ${Math.round(C.bond)}, 양 구단 관계는 ${Math.round(t.rel??50)}입니다. `+(styles[m.trait]||'');
+ const line=topic==='plan'?strategy+' '+need+' '+budget:topic==='trade'?need+' '+market+' '+budget+' '+(styles[m.trait]||styles.hard):(C.bond>=55?'편하게 이야기할 사이가 됐네요. ':'인사는 나눴지만 관계는 차근차근 쌓아갑시다. ')+`개인 친밀도는 ${relLabel(C.bond)}, 양 구단 관계는 ${relLabel(t.rel??50)}입니다. `+(styles[m.trait]||'');
  C.talk[topic]={day:G.day,key,line};if(!repeat){C.history.unshift({day:G.day,kind:'talk:'+topic,text:line});C.history.length=Math.min(C.history.length,12);}
  return `${m.name}: ${repeat?'오늘 말씀드린 기준은 같습니다. '+(topic==='plan'?strategy:topic==='trade'?need:'양 구단 관계와 개인 친분은 따로 쌓아가겠습니다.'):line}`;}
 /* ===== 사비 쓰기 2(사용자 11-09): 기자 접대·OB 후원·장학재단·해외 프런트 견학·재테크·야인 생활비. 모두 개인 지갑만 쓰고, 옛 저장은 필드가 없으면 처음 상태로 본다 ===== */

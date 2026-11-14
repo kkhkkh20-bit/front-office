@@ -75,7 +75,9 @@ const trnPol=()=>TRNPOL[G.trnPol]?G.trnPol:'bal'; /* 저장본에 없으면 균�
 const AI_TRNPOL={build:'grow',win:'bal',next:'bal',star:'bal',tight:'rec'};
 function trnPolOf(tid){ if(tid==null)return 'bal'; if(tid===G.user&&!G.unemp)return trnPol(); const t=G.teams&&G.teams[tid]; if(t&&TRNPOL[t.trnPol])return t.trnPol; return AI_TRNPOL[planOf(t)]||'bal'; }
 const trnDur=p=>(p.isP?p.r.sta:p.r.vit)??50; /* 투수는 내구성 대신 체력 */
-function trnCn(tid){ try{ if(tid==null||!G.coach)return 55; const C=coachesOf(tid); return C.cn?effC(C.cn,tid,'sk'):C.cn===undefined?55:45; }catch(e){ return 55; } } /* 컨디셔닝코치 지도력(빈자리 45) */
+let _trnCnC={g:null,d:-1,m:{}}; /* 구단별 컨디셔닝코치 값: 하루 한 번(선수마다 부르지 않게). 코치·감독이 바뀌면 그날도 다시 */
+function trnCn(tid){ try{ if(tid==null||!G.coach)return 55; if(_trnCnC.g!==G||_trnCnC.d!==G.day)_trnCnC={g:G,d:G.day,m:{}}; const C=coachesOf(tid), m=G.mgr&&G.mgr[tid], k=(C.cn?C.cn.id:C.cn===undefined?'u':'-')+':'+(m?m.id:'');
+    const h=_trnCnC.m[tid]; if(h&&h.k===k)return h.v; const v=C.cn?effC(C.cn,tid,'sk'):C.cn===undefined?55:45; _trnCnC.m[tid]={k,v}; return v; }catch(e){ return 55; } } /* 컨디셔닝코치 지도력(빈자리 45) */
 const trnInjN=p=>(p.injHist||[]).filter(h=>h.d!=null&&G.day-h.d<=365).length; /* 최근 1년 부상 */
 /* 코치진이 고르는 강도와 그 이유: 점수 = 내구성 + 젊음 + 컨디셔닝코치 - 나이 - 최근 부상 - 피로, 방침만큼 위아래로 */
 function trnIAuto(p){ const pol=trnPolOf(p.team), o=TRNPOL[pol].o; if(p.injOut>0)return {i:pol==='rec'?0:1,w:'재활 중'};
@@ -84,8 +86,8 @@ function trnIAuto(p){ const pol=trnPolOf(p.team), o=TRNPOL[pol].o; if(p.injOut>0
   const top=W.filter(x=>x[1]).sort((a,b)=>Math.abs(b[0])-Math.abs(a[0]))[0]; return {i,w:top&&Math.abs(top[0])>=.5?top[1]:'무난한 몸 상태'}; }
 /* 지시는 현재 영입 회차에만 귀속한다. 같은 선수를 재영입해도 예전 강도 건의가 되살아나지 않는다. */
 function trnICommand(p){ const v=G.trnI&&G.trnI[p.id];if(!TRNI[v])return null;const key=G.user+':'+(p.acq?.n??0),S=G.trnIS=G.trnIS||{};if(S[p.id]!=null&&S[p.id]!==key){delete G.trnI[p.id];delete S[p.id];return null;}if(S[p.id]==null)S[p.id]=key;return v; }
-let _trnAiC={d:-1,m:new Map()}; /* 다른 구단 선수 강도: 하루 한 번만 계산(경기마다 부상 판정에서 부른다) */
-function trnIAi(p){ if(_trnAiC.d!==G.day)_trnAiC={d:G.day,m:new Map()}; const k=p.id+':'+p.team; let v=_trnAiC.m.get(k); if(v==null){ v=p.injOut>0?(trnPolOf(p.team)==='rec'?0:1):trnIAuto(p).i; _trnAiC.m.set(k,v); } return v; }
+let _trnAiC={g:null,w:-1,m:new Map()}; /* 다른 구단 선수 강도: 코치진이 한 주 단위로 정한다(경기마다 부상 판정에서 부르므로 주마다 한 번만 계산). 재활 중이면 바로 회복 쪽 */
+function trnIAi(p){ if(p.injOut>0)return trnPolOf(p.team)==='rec'?0:1; const w=Math.floor(G.day/7); if(_trnAiC.g!==G||_trnAiC.w!==w)_trnAiC={g:G,w,m:new Map()}; const k=p.id+':'+p.team+':'+trnPolOf(p.team); let v=_trnAiC.m.get(k); if(v==null){ v=trnIAuto(p).i; _trnAiC.m.set(k,v); } return v; }
 function trnI(p){ if(!p||p.team==null)return 1; if(G.unemp||p.team!==G.user)return trnIAi(p); const v=trnICommand(p);if(p.injOut>0)return trnPol()==='rec'||v===0?0:1;return v!=null?v:trnIAuto(p).i; }
 const trnIByGm=p=>!!p&&!G.unemp&&p.team===G.user&&trnICommand(p)!=null&&(!(p.injOut>0)||trnICommand(p)===0);
 /* 부하 효과는 실제 구단 훈련이 있는 기간·대상에만. 겨울·PS·차출·합류 전 선수의 경기/회복에 저장된 강도를 얹지 않는다. */

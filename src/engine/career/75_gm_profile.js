@@ -40,7 +40,7 @@ function meTags(){ const s=meStats(), M=s.M, T=s.T; const L=[];
   if(T.aIn>=4&&T.yIn>=T.aIn*.55)L.push({k:'young',l:'유망주를 선호한다',d:`트레이드로 받은 ${T.aIn}명 중 24세 이하 ${T.yIn}명`,nick:'육성 신봉자',w:T.yIn/T.aIn*2});
   else if(T.aIn>=4&&T.oIn>=T.aIn*.55)L.push({k:'now',l:'즉시 전력을 원한다',d:`트레이드로 받은 ${T.aIn}명 중 30세 이상 ${T.oIn}명`,nick:'윈나우 단장',w:T.oIn/T.aIn*2});
   if(M.faBig>=2||M.fa>=4)L.push({k:'fa',l:'FA 시장의 큰손',d:`외부 FA ${M.fa}명 영입 · 대형 계약 ${M.faBig}건`,nick:'큰손 단장',w:M.fa/s.S+M.faBig});
-  if(s.mrel!=null&&s.mrel>=72)L.push({k:'mgr',l:'감독과 가깝다',d:`감독과의 관계 ${Math.round(s.mrel)}`,nick:'',w:.8});
+  if(s.mrel!=null&&s.mrel>=72)L.push({k:'mgr',l:'감독과 가깝다',d:`감독과 ${relLabel(s.mrel)}`,nick:'',w:.8});
   if(M.mgrFire>=2)L.push({k:'mgrF',l:'감독을 자주 바꾼다',d:`감독 경질 ${M.mgrFire}회`,nick:'',w:M.mgrFire/s.S*2});
   if(M.fRep>=3)L.push({k:'fRep',l:'외국인 교체를 망설이지 않는다',d:`시즌 중 외국인 교체 ${M.fRep}회`,nick:'',w:M.fRep/s.S});
   if(s.autos>=5)L.push({k:'deleg',l:'실무를 맡기는 단장',d:`업무 ${s.autos}가지를 비서·팀장에게 넘김`,nick:'',w:.3}); else if(s.autos===0&&s.S>=2)L.push({k:'hands',l:'실무를 손수 챙긴다',d:'반복 업무도 직접 처리',nick:'',w:.3});

@@ -128,8 +128,10 @@ const INJ_RATE=.55; /* .58→.55(사용자 11-13): 모든 구단이 훈련 강�
 /* 구단 몫 부상 배수: 모든 구단이 같은 식(사용자 11-13: AI도 사람 단장과 같은 규칙). 캠프 방향 × 부상 방지 단계 × 웨이트 시설.
    리그 기본(기본 프로그램·웨이트 2단계·균형 캠프 = .9×.9×.92)을 1로 맞춰 리그 전체 부상 빈도(INJ_RATE 보정)는 그대로 둔다.
    예전에는 AI만 따로 식(2단계면 1)을 써서 같은 조건에서 우리 구단 부상이 25%쯤 적었다 */
-const INJ_STD=.9*.9*.92;
-function campInjOf(tid){ if(tid===G.user&&!G.unemp)return G.campInj||1; const t=G.teams&&G.teams[tid]; return t&&t.campInj||1; }
+/* 캠프 방향별 부상 배수. 기록이 없으면(캠프 시작~끝, 첫 캠프 전, 옛 저장) 균형 캠프 값: INJ_STD와 같은 기준이라 리그 기본이 1 */
+const CAMP_INJ={fitness:.78,balance:.92,skill:1,game:1};
+const INJ_STD=.9*.9*CAMP_INJ.balance;
+function campInjOf(tid){ const v=tid===G.user&&!G.unemp?G.campInj:(G.teams&&G.teams[tid]||{}).campInj; return v>0?v:CAMP_INJ.balance; }
 function teamInjM(tid){ if(tid==null)return 1; return campInjOf(tid)*PREV[medOf(tid).prev].m*(1-facImpact(facLvK(tid,'weight'))*.05)/INJ_STD; }
 function injMult(p){ const sv=milServing(p), tm=sv?null:p.team; /* 상무 복무 중에는 원소속 구단 부상 방지·시설·코치·훈련 지시를 받지 않는다(검수 11-09zk) */ return INJ_RATE*teamInjM(tm)*(p.rush&&G.day<=p.rush?3:1)*(p.reInj&&p.reInj.left>0?p.reInj.m:1)*(sv?1:p.trnF==='sta'?.92:p.trnF==='stf'?1.05:1)*injStam(p)*coachCondMult(tm)*(sv?1:trnIRisk(p)); } /* 선수별 훈련 강도(76_dev_plan) */
 function injStam(p){ const s=(p.isP?p.r&&p.r.sta:p.r&&p.r.vit)??50; return clamp(1-(s-50)*.012,.7,1.3); } /* 체력이 높으면 부상이 덜 난다(체력 75 기준 약 30% 적게, 사용자 11-08) */ /* 훈련 방향: 체력 집중은 부상이 조금 줄고, 구위 집중은 조금 는다 */
@@ -150,7 +152,7 @@ function facWeek(){ for(const t of G.teams){ const dl=facImpact(facLvK(t.id,'dor
 function scoutSpent(){ const S=G.spend||{}; if(S.scout!=null)return S.scout; const el=clamp(G.day-(finYearEnd()-365),0,365)/365; return sum((G.scouts||[]).map(s=>s.sal||0))*el; }
 function scoutFire(id){ const s=(G.scouts||[]).find(x=>x.id===id); if(!s)return ''; G.spend=G.spend||{}; G.spend.scout=scoutSpent(); G.scouts=G.scouts.filter(x=>x.id!==id); staffHistory('scout',s,'계약 종료',G.user,'단장 결정'); addLog(`스카우트 ${s.name}와(과) 계약을 끝냈습니다. 올해 일한 기간 연봉(${money(Math.round(s.sal*clamp(G.day-(finYearEnd()-365),0,365)/365))} 안팎)은 그대로 비용에 남습니다.`); return s.name; }
 function dailyCost(){ try{ smCheck(); }catch(e){} const m=G.mgr[G.user]; if(m&&!(m.cs!=null&&m.cs>G.year&&period()!=='post'))G.spend.mgr+=m.sal/365; /* 다음 시즌 계약이어도 가을야구 지휘를 맡았으면 그 기간 연봉은 낸다(검수 11-08) */ /* 다음 시즌부터인 계약은 올해 연봉이 나가지 않는다(검수 11-07) */ G.spend.scout=scoutSpent()+sum((G.scouts||[]).map(s=>s.sal||0))/365; if(G.coach)G.spend.coach=(G.spend.coach||0)+coachSal(G.user,true)/365; G.spend.med+=PREV[G.med.prev].c/365; G.spend.hosp+=HOSP[G.med.hosp].c/365; G.spend.intl=(G.spend.intl||0)+sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c))/365; G.spend.fac=(G.spend.fac||0)+facUpkeep()/365; G.spend.data=(G.spend.data||0)+anaSal()/365;
-  try{ facDaily(); }catch(e){} try{ aiFacDaily(); }catch(e){}
+  try{ facDaily(); }catch(e){} try{ aiFacDaily(); }catch(e){} try{ aiOpsDaily(); }catch(e){}
   if(G.fac&&G.fac.build&&G.day>=G.fac.build.done){ G.fac.lv=G.fac.build.lv; G.fac.build=null; mail('육성팀','훈련 시설 완공',`훈련 시설이 ${FAC[G.fac.lv].l}(${G.fac.lv}단계)로 완공되었습니다. 다음 겨울 성장부터 반영됩니다.`,{kind:'일반'}); } }
 
 

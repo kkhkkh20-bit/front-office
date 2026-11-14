@@ -23,12 +23,12 @@ function outletRep(name){ const L=pressInit().filter(r=>r.outlet===name); return
 /* ---------- 기자 친분 쌓기 ---------- */
 function repContact(id,kind){ const r=repById(id); if(!r)return '기자를 찾을 수 없습니다.'; G.repc=G.repc||{}; const c=G.repc[id]=G.repc[id]||{};
   const dim=r.rel>60?Math.max(.3,1-(r.rel-60)/40):1; const sty=r.style==='cr'?.7:r.style==='fr'?1.2:1;
-  if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return `${r.name} 기자와는 ${dmd(c.call+14)}부터 다시 통화할 수 있습니다.`; c.call=G.day; const d=Math.max(1,Math.round(ri(1,3)*dim*sty)); repRel(r,d,'단장 전화'); return `${r.outlet} ${r.name} 기자와 통화했습니다. 친분 상승(${r.rel}).`; }
-  if(kind==='meal'){ if(c.meal!=null&&c.meal>G.day-30)return `${r.name} 기자와 식사는 ${dmd(c.meal+30)}부터 가능합니다.`; c.meal=G.day; G.spend.etc=(G.spend.etc||0)+10; const d=Math.max(1,Math.round(ri(3,6)*dim*sty)); repRel(r,d,'단장과 식사'); return `${r.outlet} ${r.name} 기자와 저녁을 먹었습니다(1천만 원). 친분 상승(${r.rel}).${r.style==='cr'?' 비판적인 기자라 쉽게 가까워지지는 않습니다.':''}`; }
+  if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return `${r.name} 기자와는 ${dmd(c.call+14)}부터 다시 통화할 수 있습니다.`; c.call=G.day; const d=Math.max(1,Math.round(ri(1,3)*dim*sty)); repRel(r,d,'단장 전화'); return `${r.outlet} ${r.name} 기자와 통화했습니다. 친분이 올라 ${relLabel(r.rel)}입니다.`; }
+  if(kind==='meal'){ if(c.meal!=null&&c.meal>G.day-30)return `${r.name} 기자와 식사는 ${dmd(c.meal+30)}부터 가능합니다.`; c.meal=G.day; G.spend.etc=(G.spend.etc||0)+10; const d=Math.max(1,Math.round(ri(3,6)*dim*sty)); repRel(r,d,'단장과 식사'); return `${r.outlet} ${r.name} 기자와 저녁을 먹었습니다(1천만 원). 친분이 올라 ${relLabel(r.rel)}입니다.${r.style==='cr'?' 비판적인 기자라 쉽게 가까워지지는 않습니다.':''}`; }
   return ''; }
 
 /* ---------- 언론 플레이 ---------- */
-const PP_COOL=30, PP_MIN_REL=40; /* 내가 먼저 연락할 때: 친분 40 미만이면 거절, 60 이상이면 호의적으로 써 줄 가능성이 크다. 친분은 인터뷰 응답과 단독 정보 제공으로 쌓인다 */
+const PP_COOL=30, PP_MIN_REL=45; /* 내가 먼저 연락할 때: 서먹한 사이(relLabel 45 미만)면 거절, 60 이상이면 호의적으로 써 줄 가능성이 크다. 친분은 인터뷰 응답과 단독 정보 제공으로 쌓인다 */
 function ppReady(){ return G.ppLast==null||G.day-G.ppLast>=PP_COOL; }
 /* 기자가 어떻게 써 주나: 친분·성향·언론사 논조 */
 function ppFrame(r){ const O=outletOf(r.outlet); const s=r.rel+O.lean*8+(r.style==='fr'?10:r.style==='cr'?-12:0)+N(0,8); return s>=62?'good':s>=45?'flat':'bad'; }
@@ -37,7 +37,7 @@ function ppTargets(){ const L=[]; const add=p=>{ if(p&&p.team!==G.user&&!p.forei
   Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12).forEach(add); return L.slice(0,24); }
 function ppFA(p){ return !!(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id)); }
 function pressPlay(repId,kind,pid,via){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const r=repById(repId); if(!r)return '기자를 고르세요.'; if(!ppReady())return `언론 플레이는 30일에 한 번입니다. ${dmd(G.ppLast+PP_COOL)}부터 다시 할 수 있습니다.`;
-  if(via!=='iv'&&r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 친분이 ${PP_MIN_REL} 이상이어야 먼저 연락한 이야기를 받아 줍니다(지금 ${r.rel}). 이 기자의 인터뷰 요청에 성실히 응하거나 단독 정보를 주면 가까워집니다.`;
+  if(via!=='iv'&&r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 서먹한 사이에서는 먼저 연락한 이야기를 받아 주지 않습니다. 지금은 ${relLabel(r.rel)}입니다. 이 기자의 인터뷰 요청에 성실히 응하거나 단독 정보를 주면 가까워집니다.`;
   { const p=pid!=null?G.players[pid]:null; /* 실패할 요청은 재사용 대기·기록 전에 거른다 */
     if(kind==='sign'&&(!p||p.team===G.user))return '대상 선수를 고르세요.';
     if(kind==='hype'){ if(!p||p.team!==G.user)return '띄울 우리 선수를 고르세요.'; if(p.hype&&p.hype.until>=G.day&&p.hype.v>0)return `${p.name}은(는) 이미 띄우는 중입니다(${dmd(p.hype.until)}까지).`; } }
