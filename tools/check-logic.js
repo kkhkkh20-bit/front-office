@@ -4206,7 +4206,7 @@ T('[인물 관계] 경질된 감독은 경질한 단장을 싫어하고, 선임�
   const um=G.mgr[G.user], uk=relKeyOf(um,'mgr'); staffHistory('mgr',um,'경질',G.user,'검수'); G.mgr[G.user]=null; ok(relVal(uk,'me')<0,'우리가 경질한 감독이 우리를 싫어하지 않음'); ok(relLikes(uk).dis.some(x=>x.me&&x.w==='경질당한 악연'),'우리 단장 이름이 싫어하는 인물에 없음');
   const before=relHireBias(t.id,n,'mgr'); ok(before>0,'좋아하는 사람을 더 보지 않음'); G.rels[relPK(relKeyOf(n,'mgr'),relGmKey(t.id))].v=-70; ok(relHireBias(t.id,n,'mgr')<-10,'싫어하는 사람을 피하지 않음'); });
 T('[인물 관계] 좋아하는·싫어하는 인물에는 숫자가 보이지 않는다',()=>{ fresh(); G.rels={}; for(let i=0;i<12;i++){ G.day+=30; relNetMonth(); } relsSeason(G.year); relWorkYear(); const t=G.teams.find(x=>x.id!==G.user&&x.gm&&!x.gm.interim);
-  const keys=[relGmKey(t.id),relKeyOf(G.mgr[t.id],'mgr'),...Object.values(coachesOf(t.id)).filter(Boolean).slice(0,3).map(c=>relKeyOf(c,'coach')),'me']; let n=0;
+  const keys=[...G.teams.filter(x=>x.id!==G.user).flatMap(x=>[relGmKey(x.id),relKeyOf(G.mgr[x.id],'mgr')]),...Object.values(coachesOf(t.id)).filter(Boolean).slice(0,3).map(c=>relKeyOf(c,'coach')),'me'].filter(Boolean); let n=0;
   for(const k of keys){ const R=relLikes(k); for(const x of [...R.like,...R.dis]){ n++; ok(!/[0-9]/.test(x.n+x.r+x.w),'카드에 숫자: '+JSON.stringify(x)); ok(x.w&&x.w.length<=12&&!/[()]/.test(x.w),'사유가 길거나 괄호: '+x.w); } } ok(n>=3,'카드에 나올 인물이 너무 적음 '+n);
   ok(relCardKey('gm:'+t.id)===relGmKey(t.id)&&relCardKey('omgr:'+t.id)===relKeyOf(G.mgr[t.id],'mgr'),'카드 키 연결 실패'); });
 T('[인물 관계] 우리 단장과 다른 구단 단장 사이는 기존 친분(t.rel)과 항상 같다',()=>{ fresh(); G.rels={}; const t=G.teams.find(x=>x.id!==G.user&&x.gm&&!x.gm.interim), k=relGmKey(t.id); t.rel=80; ok(relVal('me',k)===60&&relVal(k,'me')===60,'t.rel과 다름 '+relVal('me',k));

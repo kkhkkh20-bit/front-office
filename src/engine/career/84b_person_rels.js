@@ -7,8 +7,10 @@
  관계가 생기는 길(우리와 AI가 같다): 식사·안부 연락(쿨다운·자주 만나면 효과 감소는 우리 식사와 같음), 트레이드(성사 +, 시즌 뒤 손해 본 쪽 -),
  선임·재계약(+)·경질·교체(-), 같은 구단에서 함께 일함(+), 감독 아래 출전 기회(+/-), 멘토 지정(+). 해마다 0 쪽으로 돌아간다(gmRelYear와 같은 비율).
  효과는 작게: AI끼리 트레이드 요구치(tradeNeed)가 친분을 따르고 아주 사이가 나쁘면 거래하지 않는다. 감독·코치를 뽑을 때 좋아하는 사람을 조금 더, 싫어하는 사람은 피한다.
- 무작위는 u01(날짜·구단으로 고정)만 쓴다: 경기 난수 흐름을 건드리지 않는다 */
+ 무작위는 relU(날짜·구단으로 고정)만 쓴다: 경기 난수 흐름을 건드리지 않는다 */
 const REL_CAP=1600, REL_LIKE=12;
+/* 고정 균등 난수 [0,1): u01은 정규 잡음을 눌러 만든 값이라 확률 문턱(p)으로 쓰면 치우친다 */
+function relU(a,b){ let h=2166136261>>>0; const s=a+'|'+b; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } h^=h>>>13; h=Math.imul(h,2246822507)>>>0; h=(h^(h>>>16))>>>0; return h/4294967296; }
 /* 사유 코드 → 카드에 보일 말. [주체 쪽에서 본 말, 상대 쪽에서 본 말, 좋은 일(1)/나쁜 일(-1)] */
 const REL_WHY={col:['같이 일한 사이','같이 일한 사이',1],clan:['감독 사단','감독 사단',1],men:['아끼는 제자','스승',1],hir:['데려온 사람','발탁해 준 은인',1],ren:['믿어 준 사이','믿어 준 사이',1],
   fir:['내보낸 사이','경질당한 악연',-1],let:['내보낸 사이','내쳐진 사이',-1],pla:['아끼던 선수','믿어 준 감독',1],ben:['기회를 못 준 선수','기회를 안 준 감독',-1],
@@ -40,13 +42,13 @@ function relSyncMe(){ const R0=relsG(); for(const t of G.teams){ if(t.id===G.use
 /* ----- 식사·안부 연락: 우리 식사(gmContact)와 같은 쿨다운·크기, 같은 사람을 자주 만나면 효과 감소(plDim) ----- */
 const relTraitMul=g=>g&&g.trait==='loyal'?1.5:g&&g.trait==='hard'?.6:1;
 function relMeet(t,o,kind){ const a=relKeyOf(t.gm,'gm'), b=relKeyOf(o.gm,'gm'); if(!a||!b)return 0; const R0=relsG(), pk=relPK(a,b); const e0=R0[pk];
-  if(kind==='meal'){ if(e0&&e0.m!=null&&G.day-e0.m<30)return 0; const u=u01('rmeal'+G.day,t.id*17+o.id); const base=3+Math.floor(u*3); /* ri(3,5)과 같은 폭 */
+  if(kind==='meal'){ if(e0&&e0.m!=null&&G.day-e0.m<30)return 0; const u=relU('rmeal'+G.day,t.id*17+o.id); const base=3+Math.floor(u*3); /* ri(3,5)과 같은 폭 */
     const dim=plDim(e0&&e0.u); const d=base*(relTraitMul(t.gm)+relTraitMul(o.gm))/2*dim*2; const e=relAdd(a,b,d,'meal'); e.m=G.day; e.u=[G.day,...(e.u||[]).filter(x=>G.day-x<365)].slice(0,8); t.cash=(t.cash||0)-10; /* 1천만 원: 우리 식사와 같은 비용 */ return d; }
-  if(e0&&e0.c!=null&&G.day-e0.c<14)return 0; const u=u01('rcall'+G.day,t.id*19+o.id); const tr=o.gm.trait; const d=Math.max(0,(tr==='loyal'?2:1)*(1+Math.floor(u*2))-(tr==='hard'?1:0))*2; const e=relAdd(a,b,d,d>0?'call':null); if(e)e.c=G.day; return d; }
+  if(e0&&e0.c!=null&&G.day-e0.c<14)return 0; const u=relU('rcall'+G.day,t.id*19+o.id); const tr=o.gm.trait; const d=Math.max(0,(tr==='loyal'?2:1)*(1+Math.floor(u*2))-(tr==='hard'?1:0))*2; const e=relAdd(a,b,d,d>0?'call':null); if(e)e.c=G.day; return d; }
 /* 매달 1일: AI 단장끼리 만난다. 의리파는 자주, 강경파는 드물게. 상대는 친한 단장을 더 자주 고르되 새 얼굴도 만난다 */
 function relNetMonth(){ if(!G.teams)return 0; const L=G.teams.filter(t=>t.id!==ME()&&t.gm&&!t.gm.interim); let n=0;
-  for(const t of L){ const g=t.gm, p=g.trait==='loyal'?.7:g.trait==='hard'?.25:.45; if(u01('rnet'+G.day,t.id)>=p)continue; const a=relKeyOf(g,'gm');
-    const C=L.filter(o=>o!==t).map(o=>{ const e=relsG()[relPK(a,relKeyOf(o.gm,'gm'))]; return {o,e,s:(e?e.v:0)*.5+u01('rnetp'+G.day,t.id*31+o.id)*50}; }).sort((x,y)=>y.s-x.s);
+  for(const t of L){ const g=t.gm, p=g.trait==='loyal'?.7:g.trait==='hard'?.25:.45; if(relU('rnet'+G.day,t.id)>=p)continue; const a=relKeyOf(g,'gm');
+    const C=L.filter(o=>o!==t).map(o=>{ const e=relsG()[relPK(a,relKeyOf(o.gm,'gm'))]; return {o,e,s:(e?e.v:0)*.5+relU('rnetp'+G.day,t.id*31+o.id)*50}; }).sort((x,y)=>y.s-x.s);
     for(const x of C.slice(0,3)){ const ok=x.e&&x.e.m!=null&&G.day-x.e.m<30; const d=relMeet(t,x.o,ok?'call':'meal'); if(d||!ok){ n++; break; } } }
   return n; }
 
@@ -98,8 +100,8 @@ function gmInvOpen(){ return (G.evs||[]).some(e=>e.k==='gmInv'&&!e.done); }
 function gmInvMonth(){ if(G.unemp||G.gameOver||G.user==null||!G.teams||gmInvOpen())return null; if(G.gmInvD!=null&&G.day-G.gmInvD<25)return null; try{ if(personalAway())return null; }catch(e){}
   const L=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim).map(t=>{ const g=t.gm, c=(G.gmc||{})[t.id]||{}; const meal=!(c.meal!=null&&c.meal>G.day-30), call=!(c.call!=null&&c.call>G.day-14); if(!meal&&!call)return null;
       let want=false; try{ want=(t.rel??50)>=45&&aiInterest(t.id).length>0; }catch(e){}
-      const p=(.035+((t.rel??50)>=65?.03:(t.rel??50)<35?-.025:0)+(want?.025:0))*(g.trait==='loyal'?1.5:g.trait==='hard'?.5:1); return {t,g,meal,want,p}; }).filter(Boolean);
-  for(const x of L){ if(u01('ginv'+G.day,x.t.id)>=x.p)continue; return gmInvite(x.t.id,x.meal&&(x.want||(x.t.rel??50)>=55||u01('ginvk'+G.day,x.t.id)<.5)?'meal':'call',x.want); }
+      const p=(.03+((t.rel??50)>=65?.025:(t.rel??50)<35?-.02:0)+(want?.02:0))*(g.trait==='loyal'?1.5:g.trait==='hard'?.5:1); return {t,g,meal,want,p}; }).filter(Boolean);
+  for(const x of L){ if(relU('ginv'+G.day,x.t.id)>=x.p)continue; return gmInvite(x.t.id,x.meal&&relU('ginvk'+G.day,x.t.id)<(x.want||(x.t.rel??50)>=60?.7:.35)?'meal':'call',x.want); }
   return null; }
 function gmInvite(tid,kind,want){ const t=team(tid), g=gmOf(tid); if(!g||g.interim)return null; G.gmInvD=G.day; const nm=`${tshort(tid)} ${g.name} 단장`;
   const sit=kind==='meal'?`${nm}이 저녁 식사를 하자고 연락해 왔습니다.${want?' 우리 선수 이야기를 꺼내고 싶은 눈치입니다.':' 시즌 이야기나 하자고 합니다.'}${aiQ(tid,'hello')}`:`${nm}이 통화하자고 연락해 왔습니다.${want?' 거래 이야기를 슬쩍 떠보려는 것 같습니다.':' 안부를 묻고 싶다고 합니다.'}`;
