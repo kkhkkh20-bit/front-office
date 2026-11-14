@@ -55,7 +55,7 @@ function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
   const PR=G.unemp?[]:wvPri(); /* 같은 날 정하는데 빈자리가 모자라면 이 순서대로 받는다(검수 11-09g) */
   const pri=PR.length>=2?`<div class="eyebrow" style="margin-top:8px">우리 신청 순위</div><p class="small muted">같은 날 정해지는 선수 중 정원이 모자라면 위 순위부터 받습니다. 기본은 신청한 순서입니다.</p>${PR.map((id,i)=>`<div class="market-player-row"><span class="small">${i+1}. ${esc(G.players[id].name)} <span class="muted">${dsh(G.players[id].wv.end)} 결정</span></span><span class="btns market-player-actions"><button class="btn small" data-a="wvPri" data-v="${id}:-1" ${i?'':'disabled'}>위로</button><button class="btn small" data-a="wvPri" data-v="${id}:1" ${i<PR.length-1?'':'disabled'}>아래로</button></span></div>`).join('')}`:'';
   if(!L.length&&!log)return `<p class="small muted"><b>웨이버 공시</b> 지금 공시 중인 선수가 없습니다.${hiI(rule)}</p>`; /* 비어 있으면 칸 대신 한 줄 */
-  return csec('웨이버 공시',`<p class="small muted">${rule}</p>
+  return csec('웨이버 공시',`<p class="small muted">방출 선수는 ${WV_DAYS}일 동안 공시되고, 신청 구단 중 지금 성적이 낮은 구단이 계약을 이어받습니다. ${hiI(rule)}</p>
     ${L.length?L.map(row).join(''):'<p class="small muted">지금 공시 중인 선수가 없습니다.</p>'}${pri}${log?`<div class="eyebrow" style="margin-top:8px">최근 결과</div>${log}`:''}`); }
 function sdBox(){ const S=G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'?G.sd2:null; /* 진행 중인 회차만. 끝난 회차는 대기 화면에서 해마다 따로 본다(검수 11-09ze) */
   const rule=hiI(`2차 드래프트는 홀수 해 11월에 열립니다. 구단마다 보호선수 최대 ${SD_PROT}명을 내고, 다른 구단이 지난 시즌 성적 역순으로 명단 밖 선수를 ${SD_RD}라운드까지(하위 3개 구단은 5라운드) 지명합니다. 한 구단에서 최대 ${SD_LOSS}명. 양도금 1라운드 4억·2라운드 3억·3라운드 2억·4라운드 이하 1억. 1·2라운드 지명자는 두 시즌 안에 1군 ${SD_REG[0]}일·${SD_REG[1]}일을 채우지 못하면 원소속 구단으로 돌아갑니다. 외국인·입단 1~3년 차·육성선수·군 보류·이번 겨울 FA 계약 선수는 대상이 아닙니다.`);
