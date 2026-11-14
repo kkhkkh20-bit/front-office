@@ -145,7 +145,13 @@ function roleSync(tid){ const d=depth(tid); for(const p of actOf(tid))if(p.isP&&
    정규시즌·포스트시즌이 아니면 일반 외국인(fMaxYB)·아시아쿼터(1명) 빈자리를 채운다고 보고 한 자리마다 FSLOT_V를 더한다.
    FSLOT_V: 개막일 구단별 '외국인 4명 있을 때 - 뺐을 때' 전력 차이 평균 약 1.8(0.8~2.9, 시드 3개 30구단) ÷ 4 */
 const FSLOT_V=.45;
-function projRating(tid){ const per=period(); if(per==='season'||per==='post')return teamRating(tid); let r; PROJ_LENS=1; try{ r=teamRating(tid); } finally { PROJ_LENS=0; } /* 개막 전 예상은 대표팀 차출·짧은 부상으로 잠시 빠진 선수까지 넣는다 */ const F=foreignOf(tid); const yb=F.filter(x=>x.foreign==='용병').length, as=F.filter(x=>x.foreign==='아시아').length; let mx=3; try{ mx=fMaxYB(tid,per==='off'&&G.last&&G.last.y>=G.year?G.year+1:G.year); }catch(e){} return r+(Math.max(0,mx-yb)+Math.max(0,1-as))*FSLOT_V; }
+const FNEW_W=.5; /* KBO 실적 없는 외국인은 평균 외국인 한 자리(FSLOT_V)와의 차이를 절반만 센다(커뮤니티 11-14: 10위 전력이 고오버롤 용병만으로 예상 4위가 되어 경질 압박). 실적 있는 외국인은 그대로 */
+function projRating(tid,open){ const per=period(); if(!open&&(per==='season'||per==='post'))return teamRating(tid); /* open: 개막일 예상·기대 승률(08_season_events). 렌즈 없이 지금 명단, 외국인 보정만 */
+  let mx=3; try{ mx=fMaxYB(tid,per==='off'&&G.last&&G.last.y>=G.year?G.year+1:G.year); }catch(e){}
+  const rate=fx=>{ let r,F; PROJ_LENS=open?0:1; PROJ_FX=fx; try{ r=teamRating(tid); F=foreignOf(tid); } finally { PROJ_LENS=0; PROJ_FX=0; } /* 개막 전 예상은 대표팀 차출·짧은 부상으로 잠시 빠진 선수까지 넣는다. 외국인 빈자리도 같은 기준으로 센다(내년 합류 외국인을 전력에 넣고 빈자리로도 채우면 두 번 셈) */
+    const yb=F.filter(x=>x.foreign==='용병').length, as=F.filter(x=>x.foreign==='아시아').length; return r+(Math.max(0,mx-yb)+Math.max(0,1-as))*FSLOT_V; };
+  const full=rate(0); let any=false; PROJ_LENS=open?0:1; try{ any=foreignOf(tid).some(fUnproven); } finally { PROJ_LENS=0; } if(!any)return full;
+  const empty=rate(1); return empty+(full-empty)*FNEW_W; } /* empty: 새 외국인 자리를 평균(FSLOT_V)으로 본 전력 */
 function teamRating(tid){
   const d=depth(tid);
   const off=avg(d.start.map(offV))*(Math.min(9,d.start.length)/9);

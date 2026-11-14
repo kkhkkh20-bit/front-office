@@ -126,7 +126,8 @@ const tname=id=>id==null?'무소속':tshort(id);
 const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return x.city+' '+x.nick; } return team(id).city+' '+team(id).nick; }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
 let PROJ_LENS=0; /* 시즌 예상 전력을 볼 때만 1: 개막 전후에 돌아올 선수는 빠진 것으로 보지 않는다(사용자 11-14: 시범경기 중 대표팀 차출로 1위 전력이 7위 목표) */
-const projBack=()=>Math.max(0,((G.cal&&G.cal.open)||G.day)-G.day)+14; /* 개막까지 남은 날 + 2주 */
+const projOpen=()=>{ const o=G.cal&&G.cal.open; if(o==null)return G.day; return o<G.day&&period()==='off'?FrontOfficeCore.onOrAfter(G.year+1,3,25,6):o; }; /* 예상 대상 시즌 개막일: 스토브리그에는 다음 해 개막(buildCalendar와 같은 날, 검수 11-14: 11월에 넉 달 재활 선수가 다음 시즌 예상에서 빠짐) */
+const projBack=()=>Math.max(0,projOpen()-G.day)+14; /* 개막까지 남은 날 + 2주 */
 const healthy=p=>PROJ_LENS?!(p.injOut>projBack())&&!(p.susp>G.day+projBack())&&!p.frehab:!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day); /* 예상 전력: 짧은 부상·출장정지·귀국 휴가·연봉 미계약은 개막 무렵 돌아오는 것으로 본다 */ /* fLeave: 외국인 선수 귀국 휴가·결장 요청(73_foreign_drama) */ /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
 
 function genRatings(isP,base,pos){
@@ -163,7 +164,9 @@ function newPlayer(o){
   if(p.isP)p.delivery=o.delivery||pitchDelivery(p);
   G.players[p.id]=p; return p;
 }
-const playersOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!isAway(p));
+let PROJ_FX=0; /* 1이면 KBO 1군 실적이 없는 외국인을 빼고 본다(예상 전력의 외국인 불확실성, 03_depth projRating) */
+const fUnproven=p=>!!p&&!!p.foreign&&(()=>{ const L=(p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2); return sum(L.map(h=>h.pa||0))<100&&sum(L.map(h=>h.outs||0))<90; })(); /* KBO 1군 100타석·30이닝 미만 */
+const playersOf=tid=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); return Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p))); }; /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
 const awayOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&isAway(p));
 const domestic=tid=>playersOf(tid).filter(p=>!p.foreign);
 /* 구단이 돈을 주는 선수(계약 기준): 국가대표 차출로 잠시 빠진 선수도 소속 선수로 연봉·샐러리캡·선수 수에 넣는다. 군 복무 중인 선수만 지급에서 뺀다.
