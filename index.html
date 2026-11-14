@@ -20508,7 +20508,8 @@ function champDaily(){ try{ champParade(); }catch(e){} { const o=dobj(G.day); if
    비슷한 금액이면 명성 높고 이길 수 있고 주전으로 뛸 수 있고 고향 팀인 구단이 이긴다(대략 ±20% 범위) */
 let _faCtx=null;
 function faCtx(){ const k=G.year+':'+G.day+':'+(G.mvN||0); /* 같은 날 방출·영입하면 다시 계산(검수 11-09zl) */ if(_faCtx&&_faCtx.k===k)return _faCtx; const R=G.teams.map(t=>({t:t.id,v:teamRating(t.id)})).sort((a,b)=>b.v-a.v); const rank={}; R.forEach((x,i)=>rank[x.t]=i+1);
-  const slot={}; for(const t of G.teams){ const d=depth(t.id); const s={}; for(const k in d.ln){ if(d.ln[k])s[k]=ovr(d.ln[k]); } s.SP5=d.sp.length>=5?spV(d.sp[4]):0; slot[t.id]=s; }
+  const winter=sponSeason()!==G.year; const unsure=p=>winter&&p.foreign&&!fNextOwed(p); /* 결산 뒤 겨울: 다음 시즌 계약이 없는 외국인은 그 자리 주전으로 치지 않는다(사용자 11-14: FA가 재계약 미정인 외국인과 같은 포지션이라고 바로 불리하게 봄) */
+  const slot={}; for(const t of G.teams){ const d=depth(t.id); const ln=Object.values(d.ln).some(q=>q&&unsure(q))?makeLineupFrom(t.id,actOf(t.id).filter(q=>!unsure(q))):d.ln; const s={}; for(const k in ln){ if(ln[k])s[k]=ovr(ln[k]); } const sps=d.sp.filter(q=>!unsure(q)); s.SP5=sps.length>=5?spV(sps[4]):0; slot[t.id]=s; }
   const pres={}; for(const t of G.teams)pres[t.id]=clubPrestige(t.id); return _faCtx={k,rank,slot,pres}; }
 function faAppeal(p,tid){ const C=faCtx(); const P=[]; const t=team(tid);
   const pr=(C.pres[tid]-55)/300; P.push([`명성 ${starTxt(prestigeStars(C.pres[tid]))}`,pr]);

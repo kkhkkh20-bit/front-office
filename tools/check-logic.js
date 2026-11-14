@@ -1542,6 +1542,9 @@ T('[구단주 목표] 시범경기 중 대표팀 차출·짧은 부상으로 빠
   top.slice(0,4).forEach(p=>{ p.ntAway=G.day+20; p.ntFrom=G.day; }); top[4].injOut=5; top[5].fLeave=G.day+3; ok(isAway(top[0])&&!healthy(top[4]),'준비 실패: 차출·부상 상태가 아님');
   const r1=projRating(tid); ok(Math.abs(r1-r0)<.01,'잠시 빠진 선수 때문에 예상 전력이 '+r0.toFixed(2)+' → '+r1.toFixed(2)); ok(isAway(top[0])&&!healthy(top[4]),'예상 계산 뒤에도 실제 경기 명단 판정은 그대로여야 함');
   top[4].injOut=200; ok(projRating(tid)<r1,'시즌 대부분을 빠지는 장기 부상은 예상에서 빠져야 함'); });
+T('[FA 주전 기회] 겨울에 다음 시즌 계약이 없는 외국인은 그 자리 주전으로 치지 않는다(사용자 11-14)',()=>{ fresh(); simTo(()=>G.fa&&G.fa.open&&!G.fa.closed); const f=Object.values(depth(G.user).ln).find(q=>q&&q.foreign); ok(f,'준비 실패: 주전 외국인 타자 없음'); f.fy=null; f.fMulti=0; f.fCtY=0; ok(sponSeason()!==G.year&&!fNextOwed(f),'준비 실패: 재계약 미정 상태가 아님');
+  const d=depth(G.user); const pos=Object.keys(d.ln).find(k=>d.ln[k]&&d.ln[k].id===f.id); ok(pos,'준비 실패: 외국인이 주전이 아님'); G.mvN=(G.mvN||0)+1; const C=faCtx(); ok(C.slot[G.user][pos]!==ovr(f)||Object.values(depth(G.user).ln).filter(q=>q&&!q.foreign&&q.pos===f.pos&&ovr(q)===ovr(f)).length>0,'재계약 미정 외국인 '+f.name+'('+pos+')을 주전 기준으로 계산함');
+  f.fCtY=sponSeason(); G.mvN++; ok(faCtx().slot[G.user][pos]===ovr(f),'재계약한 외국인은 주전 기준에 들어가야 함'); });
 T('[구단주] 외부 FA 영입 한도를 다 채웠으면 구단주가 FA 영입을 주문하지 않는다(데려올 수 없는 선수 주문)',()=>{ fresh(); const t=team(G.user); t.owner='pr'; t.trust=70; const s=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; s.faFrom=s.team; s.team=null; s.ask={annual:800,years:4};
   G.fa={pool:[s.id],offers:{},ai:{},open:true,openDay:G.day,closed:false,results:[],cap:2,outN:{[G.user]:2},y0:G.year}; for(let k=0;k<30;k++){ try{ ownerPush(); }catch(e){} }
   ok(!grants().some(g=>g.by==='own'&&g.kind==='fa'),'한도를 다 채웠는데 구단주가 '+s.name+' 영입을 주문함'); G.fa.outN[G.user]=0; for(let k=0;k<30;k++){ try{ ownerPush(); }catch(e){} } ok(grants().some(g=>g.by==='own'&&g.kind==='fa'),'한도가 남았을 때도 주문이 없음(점검 설정 확인)'); });
