@@ -187,14 +187,15 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   const homeBat=x[0]%2===1; if(homeBat&&(b.bases[1]||b.bases[2]))sndLoop('chant','chant',.45,.5);
   if(c.mode&&c.mode!=='all')await cSleep(250);
   /* 타구 방향은 먼저 정한다(타석 장면과 필드 장면이 같은 타구를 보여주도록) */
-  let spot=null, arc=false, flight=650, kind='', opos=null; c.gb=false; c.errPos=null;
+  const scene3d0=c3DActive(); let spot=null, arc=false, flight=650, kind='', opos=null; c.gb=false; c.errPos=null; c.infHit=false;
   if(o==='HR'){ const th=-38+rnd()*76; spot=cPolar(th,96); arc=true; flight=1100; kind='홈런'; }
   /* 장타는 외야수 사이(좌중간·우중간)를 가르거나 선상으로 빠진다. 외야수 바로 앞뒤가 아니라 뛰어가서 줍는 거리(사용자 피드백 11-08). 외야수 자리: 좌·우 약 ±29도, 중견 0도, 홈에서 66~72 */
   else if(o==='3B'){ const gap=rnd()<.6, th=(rnd()<.5?-1:1)*(gap?11+rnd()*8:39+rnd()*5); spot=cPolar(th,gap?84+rnd()*8:76+rnd()*8); arc=true; flight=900; kind='3루타'; }
   else if(o==='2B'){ const gap=rnd()<.65, th=(rnd()<.5?-1:1)*(gap?11+rnd()*8:38+rnd()*6); spot=cPolar(th,gap?76+rnd()*12:64+rnd()*12); arc=rnd()<.6; flight=800; kind='2루타'; }
   else if(o==='1B'){ c.gb=false; if(rnd()<.6){ const th=-36+rnd()*72; spot=cPolar(th,44+rnd()*10); arc=rnd()<.5; } else { const th=[-28,-9,9,28][Math.floor(rnd()*4)]+rnd()*6-3; spot=cPolar(th,46); c.gb=true; } flight=650; kind='안타';  /* 해설이 말하는 방향·종류와 화면을 맞춘다(좌전·중전·우전·3유간·1·2루간·유격수 키). 예전에는 화면 방향을 따로 뽑아 해설과 어긋날 수 있었다(사용자 11-13) */
     try{ const bp=G.players[x[1]], h=t=>pcH(g,k,t), inf=bp&&bp.r.spd>=64&&h('if')<.25;
-      if(!inf){ /* 내야 안타(해설: 느린 땅볼, 1루 세이프)는 아직 화면에 따로 그리지 않는다: 늦은 1루 송구 장면이 필요하다 */ const t=pcPick(g,k,'t1',['좌전','중전','우전','3유간을 빠지는','1·2루간을 꿰뚫는','유격수 키를 넘기는']), j=h('t1j')*2-1;
+      if(inf&&scene3d0){ /* 내야 안타(사용자 11-14): 해설이 말한 야수 앞 느린 땅볼. 야수가 달려 나와 1루로 던지지만 타자가 먼저 닿는다 */ opos=pcPick(g,k,'ip',['SS','3B','2B']); const fb=CFP[opos], j=h('ifj')*2-1; spot=[fb[0]*.62+CHM[0]*.38+j*2,fb[1]*.62+CHM[1]*.38]; arc=false; c.gb=true; c.infHit=true; kind='내야 안타'; }
+      else if(!inf){ const t=pcPick(g,k,'t1',['좌전','중전','우전','3유간을 빠지는','1·2루간을 꿰뚫는','유격수 키를 넘기는']), j=h('t1j')*2-1;
         if(t==='좌전'){ spot=cPolar(-26+j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
         else if(t==='중전'){ spot=cPolar(j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
         else if(t==='우전'){ spot=cPolar(26+j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
