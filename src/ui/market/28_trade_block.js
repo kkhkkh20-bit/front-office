@@ -9,7 +9,7 @@ function offerSum(o){ const P=id=>G.players[id]; const inP=o.give.map(P).filter(
   const dS=sum(inP.map(p=>p.sal))-sum(outP.map(p=>p.sal)), dN=inP.filter(p=>tradeCntN(p.id)).length-outP.filter(p=>tradeCntN(p.id)).length; /* 결재 문서와 같은 정식 인원 기준(복무·입단 예정 제외, 검수 11-09w) */ const gone=outP.map(p=>role(p)).filter(r=>/주전|선발|필승조/.test(r)); const mf=inP.filter(p=>mil(p)==='미필').length;
   const chip=(t,c)=>`<span class="of-c ${c||''}">${t}</span>`;
   return `<div class="of-sides"><div class="of-side in"><div class="of-lab">받는 선수 ${inP.length}</div>${inP.map(p=>row(p)).join('')||'<p class="small muted">없음</p>'}</div><div class="of-side out"><div class="of-lab">보내는 선수 ${outP.length}</div>${outP.map(p=>row(p,true)).join('')||'<p class="small muted">없음</p>'}</div></div>
-    <div class="of-chips">${chip(`연봉 ${dS>=0?'+':''}${money(dS)}/년`,dS>0?'bad':'good')}${chip(`정식 선수 ${dN>=0?'+':''}${dN}명`)}${gone.map(r=>chip(`${r} 빠짐`,'bad')).join('')}${mf?chip(`미필 ${mf}명`):''}</div>`; }
+    <div class="of-chips">${chip(`연봉 ${dS>=0?'+':''}${money(dS)}/년`,dS>0?'bad':'good')}${chip(`정식 선수 ${dN>=0?'+':''}${dN}명`)}${gone.map(r=>chip(`${r} 빠짐`,'bad')).join('')}${mf?chip(`미필 ${mf}명`):''}${(o.cash||0)<0?chip(`현금 ${money(-o.cash)} 받음`,'good'):(o.cash||0)>0?chip(`현금 ${money(o.cash)} 보냄`,'bad'):''}</div>`; }
 function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
   const mine=domestic(G.user).filter(p=>p.listed); const f=UI.blkF||'all';
   const ai=Object.values(G.players).filter(p=>p.aiListed&&p.team!=null&&p.team!==G.user).filter(p=>f==='all'||(f==='urg'&&p.aiUrg)||(f==='p'&&p.isP)||(f==='b'&&!p.isP)).sort((a,b)=>(b.aiUrg?1:0)-(a.aiUrg?1:0)||ovr(b)-ovr(a));

@@ -156,7 +156,7 @@ function cwFireOdds(S){ const m=G.mgr[G.user]; const t=team(G.user); const rk=uR
 function cwFacPick(){ if(typeof FACI==='undefined'||!G.fac||!G.fac.it)return null; if(Object.keys(G.fac.bld||{}).length>=2)return null; const L=Object.keys(FACI).filter(k=>G.fac.it[k]<FAC_MAX&&!(G.fac.bld||{})[k]).map(k=>({k,c:FACI[k].c[G.fac.it[k]+1]})); return L.sort((a,b)=>b.c-a.c)[0]||null; }
 function cwCapexLeft(){ const S=capexState(); return S.last.fac==null||G.day-S.last.fac>=60; }
 /* 건의할 수 있는 일: [키, 제목, 설명(승인 가능성 포함), 막힘 사유] */
-function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const left=ownAskLeft(); const L=[]; const od=p=>oddsTxt(clamp(p+mod,.03,.92)); const fac=cwFacPick(); const noL=left?'':'이번 달 지원 요청은 이미 했습니다';
+function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const left=ownAskLeft(); const L=[]; const od=p=>oddsTxt(clamp(p+mod,.03,.92)); const fac=cwFacPick(); const noL=left?'':'지원 요청은 지금 못 합니다';
   if(S.who==='ceo'){ L.push(['ops:500','운영비 5억 지원 요청',`사장이 구단주께 결재를 올림 · ${od(ownOdds(500,null))} · 반려되면 신뢰 조금 하락`,noL]);
     L.push(['pay:1500','연봉 재원 15억 요청(다년계약·연봉 인상분)',`모기업 지원 한도에 더해짐 · ${od(ownOdds(1500,null))} · 반려되면 신뢰 조금 하락`,noL]);
     if(fac)L.push(['fac:'+fac.k,`${FACI[fac.k].l} 시설 투자 결재 요청`,`공사비 ${money(fac.c)} 모기업 부담 · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 조금 하락`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }

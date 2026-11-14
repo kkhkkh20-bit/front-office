@@ -145,8 +145,13 @@ function trimCands(n){ return n>0?trimPool().slice(0,n):[]; } /* 한도 이하(�
 /* 일괄 방출(카페 피드백 11-09v): 후보 풀 안의 선수만, 한 명씩 방출과 같은 releasePlayer로(정산금·웨이버 그대로) */
 function relPick(ids){ const S=new Set((ids||[]).map(Number)); return trimPool().filter(p=>S.has(p.id)); }
 function releaseMany(ids){ const L=relPick(ids), cost=L.reduce((s,p)=>s+relCost(p).tot,0); L.forEach(p=>releasePlayer(p.id)); return {n:L.length,cost}; }
-/* 방출 정산금: 확정된 보장액의 50%. 지금 다년·FA 계약의 남은 해 + 이미 합의한 다음 시즌 시작 다년계약(extNext). 해마다 협상하는 연봉은 보장이 아니라 0 */
-function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,tot:0}; const gone=G.last&&G.last.y>=G.year&&G.rolled!==G.year?1:0; /* 결산을 마친 올해 연봉은 이미 지급했다(스토브리그 전까지 yrs에 남아 있다, 검수 11-09zzb) */ const cur=p.faC?Math.round(p.sal*Math.max(gone?0:1,(p.yrs||1)-gone)*.5):0, next=p.extNext?Math.round(p.extNext.annual*p.extNext.years*.5):0; return {cur,next,tot:cur+next}; }
+/* 방출 정산금(KBO: 웨이버 공시한 선수의 그 시즌 잔여 연봉은 구단이 준다, 다년·FA 보장액도 남는다. 공략 방지 11-14):
+   그 시즌 남은 연봉 100%(시즌 중이면 남은 기간 몫, 개막 전이면 계약한 연봉 전부) + 그 뒤 보장 연수 80% + 이미 합의한 다음 시즌 다년계약 80%.
+   결산 뒤 겨울에는 올해 연봉을 다 줬고, 해마다 협상하는 연봉은 아직 계약 전이라 보장이 아니다. 우리·AI 같은 식 */
+const REL_FUT=.8;
+const relSettled=()=>!!(G.last&&G.last.y>=G.year); /* 올해 결산을 마쳤다(올해 연봉은 다 줬다) */
+function relCurFrac(p){ if(relSettled())return 0; const per=period(); if(per==='season')return tradeYrFrac(); if(per==='pre')return trimUnsigned(p)||p.hold?0:1; return 0; }
+function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,fut:0,tot:0}; const c0=Math.round((p.sal||0)*relCurFrac(p)); const left=(p.yrs||1)-(relSettled()&&G.rolled===G.year?0:1); /* 계약 넘김(rolled) 뒤 겨울에는 남은 연수가 모두 다음 시즌부터 */ const fut=p.faC?Math.round(p.sal*Math.max(0,left)*REL_FUT):0, next=p.extNext?Math.round(p.extNext.annual*p.extNext.years*REL_FUT):0; const cur=c0+fut; return {cur,next,fut,tot:cur+next}; }
 function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;
   if(p.foreign){ releaseForeign(id); return; }

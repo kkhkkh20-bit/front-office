@@ -44,10 +44,12 @@ function relSyncMe(){ const R0=relsG(); for(const t of G.teams){ if(relMine(t.id
 
 /* ----- 식사·안부 연락: 우리 식사·연락(gmContact)과 같은 식. 쿨다운(식사 30일·연락 14일)·크기·성향(상대 단장)·가까울수록 덜 오름(gmRelDim)·반올림까지 같다 ----- */
 const relTraitMul=g=>g&&g.trait==='loyal'?1.5:g&&g.trait==='hard'?.6:1;
+/* 우리 연락·식사와 같은 상한(gmTalkRel, t.rel 60 = v 20) */
+function relTalkCap(e0,d){ const v=e0?e0.v:0, cap=(GM_TALK_CAP-50)*2; return d<=0?d:v>=cap?0:Math.min(d,cap-v); }
 function relMeet(t,o,kind){ const a=relKeyOf(t.gm,'gm'), b=relKeyOf(o.gm,'gm'); if(!a||!b)return 0; const R0=relsG(), pk=relPK(a,b); const e0=R0[pk]; const dim=relDim(e0?e0.v:0,1);
   if(kind==='meal'){ if(e0&&e0.m!=null&&G.day-e0.m<30)return 0; const u=relU('rmeal'+G.day,t.id*17+o.id); const base=3+Math.floor(u*3); /* ri(3,5)과 같은 폭 */
-    const d=Math.round(base*relTraitMul(o.gm)*dim)*2; /* 0~100 눈금(t.rel)의 값을 -100~100 눈금으로 */ const e=relAdd(a,b,d,'meal',null,true); e.m=G.day; t.cash=(t.cash||0)-10; /* 1천만 원: 우리 식사와 같은 비용 */ return d; }
-  if(e0&&e0.c!=null&&G.day-e0.c<14)return 0; const u=relU('rcall'+G.day,t.id*19+o.id); const tr=o.gm.trait; const d=Math.round(Math.max(0,(tr==='loyal'?2:1)*(1+Math.floor(u*2))-(tr==='hard'?1:0))*dim)*2; const e=relAdd(a,b,d,d>0?'call':null,null,true); if(e)e.c=G.day; return d; }
+    const d=relTalkCap(e0,Math.round(base*relTraitMul(o.gm)*dim)*2); /* 0~100 눈금(t.rel)의 값을 -100~100 눈금으로 */ const e=relAdd(a,b,d,'meal',null,true); e.m=G.day; t.cash=(t.cash||0)-10; /* 1천만 원: 우리 식사와 같은 비용 */ return d; }
+  if(e0&&e0.c!=null&&G.day-e0.c<14)return 0; const u=relU('rcall'+G.day,t.id*19+o.id); const tr=o.gm.trait; const d=relTalkCap(e0,Math.round(Math.max(0,(tr==='loyal'?2:1)*(1+Math.floor(u*2))-(tr==='hard'?1:0))*dim)*2); const e=relAdd(a,b,d,d>0?'call':null,null,true); if(e)e.c=G.day; return d; }
 /* 매달 1일: AI 단장끼리 만난다. 의리파는 자주, 강경파는 드물게. 상대는 거의 고르게 고른다(친한 사이는 아주 조금 더): 가까운 둘만 매달 만나 저절로 더 가까워지지 않게 */
 function relNetMonth(){ if(!G.teams)return 0; const L=G.teams.filter(t=>t.id!==ME()&&t.gm&&!t.gm.interim); let n=0;
   for(const t of L){ const g=t.gm, p=g.trait==='loyal'?.7:g.trait==='hard'?.25:.45; if(relU('rnet'+G.day,t.id)>=p)continue; const a=relKeyOf(g,'gm');
