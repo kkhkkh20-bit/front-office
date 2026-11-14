@@ -1,13 +1,14 @@
 /* ===== 다른 구단 단장의 언론 플레이: 스타 띄우기(사용자 11-14 "AI도 같은 기능을 같은 규칙으로") =====
  우리 pressPlay('hype')와 같은 규칙: 30일에 한 번(PP_COOL), 서먹한 기자(PP_MIN_REL 미만)는 거절, 기자가 써 주는 방식은 같은 ppFrame 식,
  같은 띄우기 크기(호의 14·그대로 9·비꼼 4)·같은 선수 기분 변화·45일 뒤 같은 hypeForm 평가(잘하면 +6·기간 연장, 부진하면 거품 역풍).
- 기자와의 친분은 구단마다 따로 쌓는다(G.aiRep). AI 단장도 우리처럼 2주에 한 번 기자에게 전화해 친분을 쌓는다(같은 repContact 'call' 식).
+ 기자와의 친분은 구단마다 따로 쌓는다(G.aiRep). AI 단장도 한 달에 한 번쯤 기자에게 전화해 친분을 쌓는다(같은 repContact 'call' 식).
  AI 단장이 보는 것은 사람 단장과 같다: 올해 성적(폼)·주전 여부. 시즌 중에만, 평가할 시간이 남았을 때만 띄운다. */
 const AI_PP_P=.25; /* 쉴 기간이 끝난 뒤 한 주에 띄울 확률: 대략 두 달에 한 번 */
+const AI_PP_CALL=28; /* AI 단장이 기자에게 전화하는 간격(우리는 14일마다 할 수 있다): 보통 단장처럼 한 달에 한 번 */
 function aiRepRel(tid,rid){ const A=(G.aiRep=G.aiRep||{})[tid]=G.aiRep[tid]||{}; return A[rid]??50; }
 function aiRepAdd(tid,rid,d){ const A=(G.aiRep=G.aiRep||{})[tid]=G.aiRep[tid]||{}; A[rid]=clamp((A[rid]??50)+d,0,100); }
 /* 우리 repContact('call')과 같은 식: 친분이 높을수록 덜 오르고, 비판 기자는 덜·우호 기자는 더 */
-function aiRepCall(tid){ const S=(G.aiPP=G.aiPP||{})[tid]=G.aiPP[tid]||{}; if(S.call!=null&&S.call>G.day-14)return; const L=pressInit(); if(!L.length)return; S.call=G.day;
+function aiRepCall(tid){ const S=(G.aiPP=G.aiPP||{})[tid]=G.aiPP[tid]||{}; if(S.call!=null&&S.call>G.day-AI_PP_CALL)return; const L=pressInit(); if(!L.length)return; S.call=G.day;
   const r=L.slice().sort((a,b)=>(aiRepRel(tid,b.id)+(b.style==='fr'?6:b.style==='cr'?-6:0))-(aiRepRel(tid,a.id)+(a.style==='fr'?6:a.style==='cr'?-6:0)))[Math.floor(R()*Math.min(3,L.length))];
   const rel=aiRepRel(tid,r.id), dim=rel>60?Math.max(.3,1-(rel-60)/40):1, sty=r.style==='cr'?.7:r.style==='fr'?1.2:1; aiRepAdd(tid,r.id,Math.max(1,Math.round(ri(1,3)*dim*sty))); }
 /* 띄울 선수: 1군 주전·국내 선수·건강·폼이 좋은 선수 가운데 성적이 가장 좋은 선수 */
