@@ -60,7 +60,7 @@ function abroadView(){ const A=G.abroad||[]; const f=UI.abf||'all';
   const mine=domestic(G.user).map(p=>({p,m:mlbOf(p)})).filter(x=>x.p.age<=33&&ovr(x.p)>=56&&x.m>=35).sort((a,b)=>b.m-a.m).slice(0,8);
   const row=a=>{ const last=a.lines[a.lines.length-1]; const yrs=(a.back?a.backY:G.year)-(a.y1??a.y+1)+1; /* 첫 해외 시즌(y1)이 1년차: 1월에 떠나 그해 뛴 선수가 0년차로 보이던 문제(검수 11-08) */
     return `<div class="abr" data-a="person" data-v="abr:${a.id}" role="button" tabindex="0">${a.from!=null?badge(a.from,26):''}<div><b>${esc(a.name)} <span class="small muted">${esc(a.pos)}${a.foreign?` · 외국인`:''}</span></b>
-      <span class="small">${a.y}년 ${a.how} → <b>${esc(a.club)}(${a.lg})</b> ${a.yrs}년 ${a.amt*a.yrs}만 달러${a.fee?` · 포스팅 비용 ${money(a.fee)}`:''}</span>
+      <span class="small">${a.y}년 ${a.how} → <b>${esc(a.club)}(${a.lg})</b> ${a.yrs}년 ${usdKw(a.amt*a.yrs)}${a.fee?` · 포스팅 비용 ${money(a.fee)}`:''}</span>
       ${a.lines.length?`<span class="small muted">${a.lines.slice(-3).map(l=>`${l.y} ${esc(l.lvl)}: ${lineTxt(l,a.isP)}`).join('<br>')}</span>`:''}</div>
       <span class="pill ${a.back?'good':a.foreign?'':'acc'}">${a.back?`${a.backY} 복귀`:a.foreign?'역수출':`해외 ${Math.max(0,yrs)}년차`}</span></div>`; };
   return csec('우리 선수의 해외 진출 의지',mine.length?`<div class="mlbl">${mine.map(({p,m})=>`<div class="mlb" data-a="player" data-v="${p.id}" role="button" tabindex="0">${avImg(p)}<div><b>${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세 · 서비스 ${p.svc}년</span></b>
