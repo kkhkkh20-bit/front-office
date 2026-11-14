@@ -4542,6 +4542,37 @@ T('[스타 관중] 원정 팀 스타가 관중을 부르고, 리그 전체 평�
 T('[프로모션] 저장·불러오기 뒤에도 예약·장부가 그대로이고 같은 효과를 낸다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const H=homeGames(G.user,G.day+1,G.cal.end).map(x=>x[0]); ok(!promoWhyNot(G.user,H[5],'fire')||stadOf(G.user).dome,'');
   const k2=stadOf(G.user).dome?'cap':'fire'; promoBook(G.user,H[5],k2); promoBook(G.user,H[0],'women'); simTo(()=>G.day>H[0]);
   const P0=promoOf(G.user), e0=promoEst(G.user,H[5],k2); G=JSON.parse(JSON.stringify(G)); const P1=promoOf(G.user); ok(P1.log.length===P0.log.length&&P1.log.length===1&&P1.cost===P0.cost&&P1.bk[H[5]]&&P1.bk[H[5]].k===k2,'저장 뒤 장부·예약이 달라짐 '+JSON.stringify({l0:P0.log.length,l1:P1.log.length,c0:P0.cost,c1:P1.cost,bk:P1.bk,H:H.slice(0,3),day:G.day})); const e1=promoEst(G.user,H[5],k2); ok(Math.abs(e1.xa-e0.xa)<1,'저장 뒤 효과가 달라짐 '+e0.xa+' '+e1.xa); });
+T('[AI 동등·팀 분위기] 기강: 다른 구단도 같은 규칙으로 기분이 움직이고, 사고는 AI 단장이 같은 징계 효과로 정리한다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+8); const ai=G.teams.find(t=>t.id!==G.user).id; const c0=climateOf; const most=(A,v)=>A.filter(p=>Math.abs(p.mor-v)<1e-6).length>=A.length-1; /* 드문 사고(1%)로 한 명은 달라질 수 있다 */
+  try{ climateOf=tid=>({S:55,w:1,boost:0,cap:null,band:'good'}); const L=[ai,G.user].map(tid=>domestic(tid).filter(p=>!p.ys&&healthy(p)&&!isAway(p))); for(const A of L)for(const p of A)p.mor=50; climateWeek();
+    for(const A of L)ok(most(A,50.4),'알맞은 기강 몫이 구단마다 다름'); climateOf=tid=>({S:80,w:1,boost:0,cap:null,band:'rigid'}); for(const A of L)for(const p of A){ p.mor=50; p.age=24; } climateWeek(); for(const A of L)ok(most(A,49.2),'너무 엄격한 기강 몫이 구단마다 다름'); } finally{ climateOf=c0; }
+  G._cl=null; const S0=climateOf(ai).S; const p=domestic(ai).find(q=>!q.ys&&!isRegular(q)); const q=domestic(G.user).find(x=>!x.ys); p.mor=60; q.mor=60; leadDisc(ai,p,0); ok(p.mor===48&&p.susp===G.day+5&&leadAdjOf(ai).v===6,'AI 출장 정지 효과가 다름');
+  G._cl=null; ok(climateOf(ai).S>S0,'AI 징계가 기강에 반영되지 않음 '+S0+' '+climateOf(ai).S); ok(!leadAdjOf(G.user),'다른 구단 징계가 우리 기강에 붙음');
+  EVH_LEAD.pick({data:{pid:q.id}},1); ok(q.mor===54&&leadAdjOf(G.user).v===3,'우리 벌금 효과가 다름');
+  const m=G.mgr[ai], d0=m.disc; try{ m.disc=70; ok(aiLeadPick(ai,p,{S:20})===2,'엄한 감독인데 선처하지 않음'); m.disc=40; ok(aiLeadPick(ai,p,{S:20})===0,'기강이 무너졌는데 비주전을 출장 정지하지 않음'); const rg=depth(ai).start[0]; ok(aiLeadPick(ai,rg,{S:20})===1,'주전은 벌금이 아님'); ok(aiLeadPick(ai,p,{S:38})===1,'가벼운 사고에 출장 정지'); } finally{ m.disc=d0; } });
+T('[AI 동등·면담·사기] AI 면담은 우리와 같은 talk 규칙·주간 횟수·감쇠를 쓰고, 지킬 수 있는 출전 약속만 하며 어기면 같은 벌점을 받는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+20); const ai=G.teams.find(t=>t.id!==G.user).id;
+  const p=domestic(ai).find(x=>!x.ys&&!x.foreign); initPers(p); p.tk={}; p.tkH=[]; p.mor=50; const r=talk(p.id,'praise',{ai:true}); ok(r&&r.d!=null&&Math.abs(p.mor-(50+r.d))<1e-6,'AI 칭찬 결과가 없음'); const m1=p.mor; const r2=talk(p.id,'praise',{ai:true}); ok(r2.d==null&&p.mor===m1,'같은 주에 칭찬을 두 번 함');
+  ok(talk(p.id,'futreq',{ai:true}).d==null,'AI가 우리 구단 전용 2군 요청을 씀'); ok(talk(domestic(G.user)[0].id,'praise',{ai:true}).d==null,'AI 면담이 우리 선수에게 감'); ok(talk(p.id,'praise').d==null,'우리가 남의 선수를 면담함');
+  p.mor=TALK_MOR_CAP; p.tk={}; ok(!aiTalkPlan(ai).some(x=>x.p===p&&x.k==='praise'),'기분 상한인데 칭찬 계획');
+  for(const q of playersOf(ai)){ initPers(q); q.tk={}; } const D=depth(ai); const P=aiTalkPlan(ai); const reg=new Set([...D.start,...D.sp,...D.pen.slice(0,4)].map(x=>x.id));
+  ok(P.filter(x=>x.k==='promise').every(x=>!reg.has(x.p.id)&&aiPromOk(ai,x.p,D)),'지킬 수 없는 약속 계획'); ok(P.filter(x=>x.k==='push').every(x=>aiPersEst(ai,x.p,'pro')>=13),'프로의식이 약해 보이는 선수에게 분발 촉구');
+  const cnt=()=>G.teams.map(t=>Object.values(((G.aiTalkLog&&G.aiTalkLog.n)||{})[t.id]||{}).reduce((s,v)=>s+v,0)); const c0=cnt(); const n=aiTalkWeek(); ok(n>0,'AI가 면담을 하지 않음'); const c1=cnt(); ok(c1.every((v,i)=>v-c0[i]<=AI_TALK_N)&&c1[G.user]===c0[G.user],'주간 면담 수 초과');
+  const b=domestic(ai).find(x=>!x.ys&&!reg.has(x.id)&&healthy(x)&&!x.promise); b.tk={}; b.mor=50; talk(b.id,'promise',{ai:true}); ok(b.promise&&b.promise.tid===ai&&b.mor===58,'AI 출전 약속이 우리와 다름');
+  leaveSweep(); ok(b.promise,'AI 약속이 하루 정리에서 지워짐'); ok(promB(ai,b)>0&&promB(G.user,b)===0,'약속한 감독만 기용 가산이 있어야 함');
+  const k0=playPromKept; try{ playPromKept=()=>false; b.promise.until=G.day; delete b.morL; moraleWeek(); ok(!b.promise&&(b.morL||[]).some(x=>x[1]==='prom'&&x[2]===-12),'AI 약속 불이행 벌점이 없음'); } finally{ playPromKept=k0; } });
+T('[AI 동등·팀 분위기] 분위기가 나쁘면 AI는 분위기를 흐리는 비주축 선수를 매물로 내놓고, 주축·분위기가 좋을 때는 건드리지 않는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+8); const ai=G.teams.find(t=>t.id!==G.user).id;
+  const D=domestic(ai).filter(p=>!p.ys).sort((a,b)=>ovr(b)-ovr(a)); const top=D[0], p=D.find((x,i)=>i>=6&&!hasNtc(x)); for(const x of [top,p]){ initPers(x); x.pers.temp=18; x.pers.pro=4; delete x.mvD; delete x.aiListed; }
+  G.chem[ai]={v:60,T:60,f:{trbP:[top.id,p.id]},d:G.day}; aiChemWeek(); ok(!p.aiListed,'분위기가 좋은데 매물로 내놓음');
+  G.chem[ai].v=22; aiChemWeek(); ok(p.aiListed&&p.aiWhy==='chem','분위기를 흐리는 선수를 내놓지 않음'); ok(!top.aiListed,'주축 선수를 내놓음'); ok(!domestic(G.user).some(x=>x.aiWhy==='chem'),'우리 선수를 건드림'); });
+T('[AI 동등·스토리라인] AI 단장은 신경전을 성향에 맞게 정리하고(차분하면 중재, 다혈질이면 기용 원칙), 출산 축하는 선물을 고른다',()=>{ fresh(); G.day=KD(6,3); slInit(); const op=G.teams.find(t=>t.id!==G.user).id; const m=G.mgr[op]; m.eye=90; m.hD=G.day-400;
+  const A=domestic(op).filter(p=>!p.isP&&!p.ys); A.forEach(initPers); const [a,b,c,d]=A; Object.assign(a.pers,{pro:19,loy:18,temp:6}); Object.assign(b.pers,{pro:19,loy:18,temp:6});
+  const s=slFeudStart(op,a,b); ok(slFeudAi(s)==='mediate','차분한 두 선수인데 중재하지 않음: '+slFeudAi(s)); slEnd(s,'test');
+  Object.assign(c.pers,{pro:4,loy:5,temp:19,amb:15}); Object.assign(d.pers,{pro:5,loy:5,temp:18,amb:15}); const s2=slFeudStart(op,c,d); ok(slFeudAi(s2)==='principle','다혈질 두 선수인데 기용 원칙을 고르지 않음: '+slFeudAi(s2));
+  const t=team(op); t.cash=500; ok(slFamAi(a)==='gift','현금이 있는데 선물하지 않음'); const c0=t.cash; slFamAct(a,'gift'); ok(t.cash===c0-3,'선물 비용이 우리와 다름'); });
+T('[AI 동등·프로모션] 다른 구단도 추천 예약과 같은 계산으로 시즌 한도까지, 기대 손익이 남는 날만 잡는다',()=>{ fresh(); simTo(()=>G.day>=G.cal.open); const A=G.teams.filter(t=>t.id!==G.user); ok(A.every(t=>promoAiN(t)===PROMO_MAX),'AI 한도가 우리와 다름');
+  const n=A.map(t=>promoUsed(t.id)); ok(n.filter(x=>x>=5).length>=A.length-2,'상반기 예약이 적음: '+n);
+  const t=A[0]; const P=promoOf(t.id); const keep=P.bk; const ks=Object.keys(keep).filter(d=>!keep[d].done); P.bk={}; const got=promoAuto(t.id,ks.length,dnum(G.year,7,1)-1); const same=ks.filter(d=>P.bk[d]&&P.bk[d].k===keep[d].k).length; P.bk=keep;
+  ok(got===ks.length&&same>=ks.length-1,'AI 예약이 추천 예약 계산과 다름: '+same+'/'+ks.length);
+  const E=ks.map(d=>promoEst(t.id,+d,keep[d].k)).filter(Boolean); ok(E.length&&E.reduce((s,e)=>s+e.net,0)>0,'AI 예약 기대 손익이 남지 않음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

@@ -144,7 +144,8 @@
       "src/engine/league/97_spring_camp.js",
       "src/engine/league/98_sister_club.js",
       "src/engine/staff/99_ai_parity.js",
-      "src/engine/finance/38_promotions.js"
+      "src/engine/finance/38_promotions.js",
+      "src/engine/staff/99b_ai_people.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",

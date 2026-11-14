@@ -15,7 +15,7 @@ const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';
 function persText(p){ const s=p.pers; const t=[]; if(s.pro>=15)t.push('프로의식이 강함'); if(s.pro<=7)t.push('훈련 태도가 들쭉날쭉'); if(s.amb>=15)t.push('야망이 큼'); if(s.loy>=15)t.push('구단 충성심이 높음'); if(s.loy<=6)t.push('시장 평가를 중시'); if(s.temp>=15)t.push('예민한 편'); if(s.temp<=6)t.push('무던한 편'); return t.length?t.join(' · '):'평범한 성향'; }
 /* 출전 약속: 약속한 날의 출전량(타석·아웃·경기)을 기준으로 저장하고, 그 뒤 늘어난 만큼으로 판정한다(약속 전 기록은 세지 않는다) */
 function playPromNow(p){ const h=seasonTotal(p,G.year,'1군')||{}; return {y:G.year,pa:h.pa||0,outs:h.outs||0,g:h.g||0}; }
-function mkPromise(p,days){ return {until:G.day+(days||30),b:playPromNow(p)}; }
+function mkPromise(p,days){ return {until:G.day+(days||30),b:playPromNow(p),tid:p.team}; } /* tid: 약속한 구단(다른 구단 약속도 같은 판정·같은 기용 몫, 95_audit leaveSweep) */
 function playPromKept(p,P=p.promise){ if(!P)return false; if(!P.b)return isRegular(p); const n=playPromNow(p); const b=P.b.y===G.year?P.b:{pa:0,outs:0,g:0};
   return p.isP?((n.outs-b.outs)>=15||(n.g-b.g)>=4):(n.pa-b.pa)>=25; } /* 약속 뒤 타자 25타석, 투수 5이닝 또는 4경기 이상 */
 function isRegular(p){ if(p.team==null)return false; const d=depth(p.team); return [...d.start,...d.sp,...d.pen.slice(0,4)].some(x=>x.id===p.id); }
@@ -158,11 +158,11 @@ function eventLine(p,ev){ const s=p.pers||{}; const nx=p.isP?'등판':'경기';
   if(ev.k==='bad'){ if(s.temp>=15)return `${ev.t}... 마지막 ${p.isP?'타구':'타석'}가 계속 생각납니다.`; if(s.amb>=15)return `${ev.t}. 그래도 다음에도 같은 상황이면 저한테 맡겨 주십시오.`; if(s.temp<=7)return `${ev.t}, 아쉽지만 털어 버렸습니다. 다음 ${nx}에서 만회하겠습니다.`; return `${ev.t}, 제 책임입니다. 다음 ${nx}에서 만회하겠습니다.`; }
   return s.temp>=15?`${ev.t}. 이제야 마음이 좀 놓입니다.`:`${ev.t}. 감이 좋습니다. 이 흐름 이어 가겠습니다.`; }
 function talkLogPush(p,kind,a){ (p.talkLog=p.talkLog||[]).unshift({d:G.day,k:kind,a}); if(p.talkLog.length>5)p.talkLog.length=5; }
-function talk(id,kind){
-  const p=G.players[id]; if(!p||p.team!==G.user)return {msg:'우리 선수만 면담할 수 있습니다.'};
+function talk(id,kind,o){ const ai=!!(o&&o.ai); /* ai: 다른 구단 단장의 면담(99b_ai_people). 같은 결과 규칙·같은 주간 횟수, 말투·연락 기록만 남기지 않는다 */
+  const p=G.players[id]; if(!p||(ai?p.team==null||p.team===ME()||kind==='futreq':p.team!==G.user))return {msg:'우리 선수만 면담할 수 있습니다.'};
   initPers(p); const wk=Math.floor(G.day/7); const grp=TALK_GRP[kind];
   if(talkUsed(p,kind))return {msg:`${p.name}: 이번 주 ${TALK_GRPL[grp]}는 이미 했습니다. 다음 주에 다시 이야기하세요.`};
-  p.tk=p.tk||{}; const askAgain=kind==='ask'&&p.tk.ask===wk; if(grp)p.tk[grp]=wk; else p.tk.ask=wk; p.talkWk=wk; G.tutFlags.talk=true;
+  p.tk=p.tk||{}; const askAgain=kind==='ask'&&p.tk.ask===wk; if(grp)p.tk[grp]=wk; else p.tk.ask=wk; p.talkWk=wk; if(!ai)G.tutFlags.talk=true;
   const h=curLine(p); const pf=perfOf(h,p.isP); const good=pf==null?null:pf>=ovr(p)+1.5?true:pf<=ovr(p)-3?false:null;
   let d=0, line='';
   if(kind==='praise'){ if(good===true){d=rnd(6,10);line='고맙습니다. 계속 잘하겠습니다.';} else if(good===false){ if(p.pers.temp>=14){d=-3;line='요즘 못하는 건 저도 압니다. 빈말은 괜찮습니다.';} else {d=2;line='감사합니다. 분발하겠습니다.';} } else {d=3;line='감사합니다. 힘이 됩니다.';} }
@@ -186,6 +186,7 @@ function talk(id,kind){
     let d2=Math.round(d*f*10)/10; if(p.mor>=cap)d2=0; else d2=Math.min(d2,cap-p.mor); if(d2>0)p.tkH.push(G.day);
     /* 줄어든 효과는 숫자 안내 대신 선수의 말투로 드러난다(사용자 11-13) */
     if(d2<d){ if(kind==='praise')line=p.mor>=cap?'말씀은 감사합니다. 지금도 충분히 좋습니다.':n>=2?'자꾸 그러시면 민망합니다. 경기로 보여 드리겠습니다.':n?line+' 지난번에도 같은 말씀을 해 주셨습니다.':line; } d=d2; }
+  if(ai){ p.mor=clamp(p.mor+d,0,100); return {d}; }
   line=personalTalkReply(p,kind,line);if(d){const C=contactRecord('pl:'+p.id);C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
   return {msg:`${p.name}: "${line}"`,d};
 }

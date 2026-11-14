@@ -217,7 +217,9 @@ function slBaby(p){ const F=slFam(p); const n=(F.k||0)+1; const boy=slU('boy'+G.
   if(slMe(p.team)&&G.sl.yr.decU<SL.decU&&!evOpen().some(e=>e.k==='slFam'||e.k==='slFeud')){ G.sl.yr.decU++;
     const O=[['gift','구단 이름으로 축하 선물을 보낸다','300만 원. 선수 기분이 오릅니다.'],['rest','감독에게 하루 쉬게 해 달라고 건의한다','피로가 풀리고 기분이 조금 오릅니다.'],['msg','축하 인사만 전한다','비용은 없습니다.']];
     evNew('slFam',`${p.name}, ${boy?'득남':'득녀'}`,`${slIp(p.name,`(${slPos(p)})`)} ${ord}를 얻었습니다. 구단이 어떻게 축하할지 정해 주세요.`,O.map(o=>({l:o[1],fx:o[2]})),{ref:p.id,face:p.id,from:'운영팀',data:{pid:p.id,sid:s.id,ks:O.map(o=>o[0])},def:2,exp:3}); }
-  else slFamAct(p,slMe(p.team)?'msg':(slU('famai',p.id)<.6?'gift':'msg')); }
+  else slFamAct(p,slMe(p.team)?'msg':slFamAi(p)); }
+/* AI 단장의 출산 축하: 선물(300만 원)이 기분 효과가 가장 크다. 현금이 바닥이면 시즌 중 지친 선수는 휴식 건의, 아니면 인사만 */
+function slFamAi(p){ const t=team(p.team); if(t&&(t.cash??0)>=3)return 'gift'; return period()==='season'&&(p.fat||0)>=30?'rest':'msg'; }
 function slFamAct(p,k){ if(k==='gift'){ slMor(p,5,90); if(slMe(p.team)){ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+3; } else { const t=team(p.team); if(t&&t.cash!=null)t.cash-=3; } return `${p.name}: "구단에서 이렇게까지 챙겨 주실 줄 몰랐습니다. 감사합니다." 기분 상승.`; }
   if(k==='rest'){ slMor(p,3,88); p.fat=Math.max(0,(p.fat||0)-20); return `감독이 ${p.name}에게 하루 휴식을 줬습니다. 피로가 풀리고 기분이 조금 올랐습니다.`; }
   slMor(p,1,85); return `${p.name}에게 축하 인사를 전했습니다.`; }
@@ -232,7 +234,15 @@ function slFeudStart(tid,a,b){ const s=slStart('feud',tid,[a.id,b.id],'rumor',{}
     evNew('slFeud',`${a.name}·${b.name} 신경전`,`${pw}를 두고 ${slW(a.name)} ${slI(b.name)} 날을 세우고 있습니다. 둘 다 기분이 처지고 있습니다.`,O.map(o=>({l:o[1],fx:o[2]})),{ref:a.id,face:a.id,from:'수석코치',data:{pid:a.id,sid:s.id,ks:O.map(o=>o[0])},def:3,exp:5}); }
   else if(slMe(tid))slFeudAct(s,'watch',true); /* 결정 상한이면 지켜보는 쪽으로 */
   return s; }
-function slFeudAi(s){ const u=slU('fdai'+s.d,s.t); return u<.5?'mediate':u<.75?'principle':u<.85?'separate':'watch'; }
+/* AI 단장의 신경전 정리: 사람 단장이 보는 것(감독·코치진이 본 성향, 주전 여부, 주장)으로 각 선택의 기대 기분 손익을 견줘 고른다.
+   중재 성공 확률은 slFeudOk와 같은 식에 성향 추정치를 넣는다(실제 성향을 엿보지 않는다) */
+function slFeudAiOk(s,a,b){ const E=p=>({pro:aiPersEst(s.t,p,'pro'),loy:aiPersEst(s.t,p,'loy'),temp:aiPersEst(s.t,p,'temp')}); const A=E(a), B=E(b); const cap=(()=>{ try{ return captainOf(s.t); }catch(e){ return null; } })(); const cb=cap&&cap!==a&&cap!==b&&cap.pers&&cap.pers.pro>=14?.1:0;
+  return {ok:clamp(.38+((A.pro+B.pro)/2-10)*.04+((A.loy+B.loy)/2-10)*.02-(Math.max(A.temp,B.temp)-14)*.03+cb,.12,.82),hot:Math.max(A.temp,B.temp)}; }
+function slFeudAi(s){ const a=slP(s.p[0]), b=slP(s.p[1]); if(!a||!b)return 'watch'; initPers(a); initPers(b); const {ok,hot}=slFeudAiOk(s,a,b);
+  /* 기대 기분(두 선수 합): 화해 +6 / 실패 -4 뒤 냉전·언쟁(-6, 매주 -1.2가 3~4주) · 원칙 -1, 냉전 위험(예민하면) · 떼어 놓기 -3과 벤치 선수 출전 불만 · 지켜보기 반은 냉전 */
+  const cold=-4-6-1.2*3.5; const v={mediate:ok*6+(1-ok)*cold,principle:-1+(hot>=16?.4:0)*(cold+4),separate:-3-2.5,watch:.5*(cold+4)};
+  if(ovr(a)>=ovr(b)-1)v.separate-=3; /* 실력이 비슷하면 2군으로 보내는 것은 전력 손해 */
+  return Object.entries(v).sort((x,y)=>y[1]-x[1])[0][0]; }
 function slFeudOk(a,b){ const cap=(()=>{ try{ return captainOf(a.team); }catch(e){ return null; } })(); const cb=cap&&cap!==a&&cap!==b&&cap.pers&&cap.pers.pro>=14?.1:0;
   return clamp(.38+((a.pers.pro+b.pers.pro)/2-10)*.04+((a.pers.loy+b.pers.loy)/2-10)*.02-(Math.max(a.pers.temp,b.pers.temp)-14)*.03+cb,.12,.82); }
 function slFeudAct(s,k,me){ const a=slP(s.p[0]), b=slP(s.p[1]); if(!a||!b||a.team!==s.t||b.team!==s.t){ slEnd(s,'left'); return '상황이 바뀌었습니다.'; } const tn=tshort(s.t);

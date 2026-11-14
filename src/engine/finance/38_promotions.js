@@ -73,13 +73,14 @@ function promoCancel(tid,d){ const P=promoOf(tid); const B=P&&P.bk[+d]; if(!B||B
 /* 추천 예약(사람 단장 일괄 예약·다른 구단): 남은 홈경기에서 기대값이 좋은 순서로 n개까지. 한 번 고를 때마다 반복 피로를 다시 계산한다 */
 function promoAuto(tid,n,until){ const c=G.cal; if(!c||!c.sched||G.sea.y!==G.year)return 0; const P=promoOf(tid); n=Math.min(n??PROMO_MAX,PROMO_MAX-promoUsed(tid)); if(n<=0)return 0;
   const days=[]; for(let d=Math.max(G.day+1,c.open);d<=Math.min(c.end,until??c.end);d++){ if(P.bk[d])continue; const a=promoHomeOpp(tid,d); if(a!=null)days.push([d,a]); }
-  const ks=Object.keys(PROMO_EV).filter(k=>!promoWhyNot(tid,G.day+1,k)); let got=0; const fv=PROMO_FANV*ecoIdx();
+  const ks=Object.keys(PROMO_EV).filter(k=>!promoWhyNot(tid,G.day+1,k)); let got=0; const fv=prOf(tid)?PROMO_FANV*ecoIdx():0; /* 팬 여론 장부가 없는 구단(다른 구단)은 여론 몫을 치지 않는다: 실제로 남는 표값·수입만으로 고른다 */
   const sc=(d,a,k)=>{ const e=promoEst(tid,d,k,a); return e?e.net+e.fan*fv:-1e9; };
   /* 날짜마다 그날 가장 좋은 행사를 고르고, 가장 좋은 날부터. 매번 전부 다시 재지 않게 후보를 줄인다(상위 24일) */
   const best=days.map(([d,a])=>{ let bk=null, bs=-1e9; for(const k of ks){ const s=sc(d,a,k); if(s>bs){ bs=s; bk=k; } } return {d,a,k:bk,s:bs}; }).sort((x,y)=>y.s-x.s).slice(0,24);
   while(got<n&&best.length){ for(const x of best){ x.s=-1e9; for(const k of ks){ const s=sc(x.d,x.a,k); if(s>x.s){ x.s=s; x.k=k; } } } best.sort((x,y)=>y.s-x.s); const x=best.shift(); if(!x||x.s<=0)break; P.bk[x.d]={k:x.k}; got++; }
   return got; }
-function promoAiN(t){ const pl=planOf(t)||'next', cash=t.cash||0; if(cash<0)return 0; let n=pl==='tight'?2:pl==='build'?4:pl==='star'?7:5; if(t.owner==='pr')n++; return Math.min(PROMO_MAX,n); }
+/* 다른 구단도 사람 단장 '추천대로 채우기'와 같이 시즌 한도까지, 기대 손익이 남는 날만(promoAuto가 0 이하에서 멈춘다). 사람 단장에게 현금·계획 제한이 없으니 AI도 없다 */
+function promoAiN(t){ return PROMO_MAX; }
 /* 매일(07_daily): 다른 구단은 개막 전날 상반기 몫, 7월 1일 나머지를 잡는다 */
 function promoDaily(){ const c=G.cal; if(!c||!c.sched||!G.sea||G.sea.y!==G.year)return; const jul=dnum(G.year,7,1);
   for(const t of G.teams){ const P=G.sea.promo&&G.sea.promo[t.id]; if(P)for(const d of Object.keys(P.bk))if(+d<G.day&&!P.bk[d].done)delete P.bk[d]; /* 열리지 않은 경기(순연)의 행사는 비용 없이 사라진다 */
