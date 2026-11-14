@@ -34,7 +34,7 @@ function fdEvalView(){ const F=G.fd; if(!F||!F.done)return csec('창단 지명 �
   const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&fdP(x.pid)).map(x=>({x,p:fdP(x.pid)})); /* 은퇴한 지명자도 보관 기록으로(평가 합계와 같은 명단, 검수 11-09zd) */
   const w0=fdEsd()*1.15+.8;
   const head=ev?`${isEnd?`${ev.y} 정규시즌 뒤 첫해 평가`:`${ev.y} 7월 1일 중간 평가`} 기준입니다. 같은 순번대(앞뒤 8순번) 지명자들이 그해 1군에서 낸 WAR과 비교했습니다.${isEnd?'':' 첫해 평가는 정규시즌이 끝난 다음 날 나옵니다.'}`
-    :`아직 평가 전입니다. 중간 평가는 ${F.y}년 7월 1일, 첫해 평가는 정규시즌이 끝난 다음 날 나옵니다. 지명 때 스카우트 추정과 지금 현재 능력을 비교해 보세요.`;
+    :`아직 평가 전입니다. 중간 평가는 ${F.y}년 7월 1일, 첫해 평가는 정규시즌이 끝난 다음 날 나옵니다. 지명 때 스카우트 추정과 지금 능력을 비교해 보세요.`;
   const sum=ev?`<dl class="tsum"><div><dt>우리 지명 WAR 합</dt><dd class="num">${ev.tot.toFixed(1)}</dd></div><div><dt>10개 구단 중</dt><dd class="num">${ev.rk||'-'}위</dd></div><div><dt>기대 이상</dt><dd class="num">${ev.rows.filter(r=>r.k==='good').length}명</dd></div><div><dt>기대 이하</dt><dd class="num">${ev.rows.filter(r=>r.k==='bad').length}명</dd></div></dl>`:'';
   const row=({x,p})=>{ const e0=fdE0(p,x); const r=p.arch?null:fdRange(p); const ev1=Rm.get(p.id); const s=fdSample(p); const w=fdWarY(p,F.y,G.user);
     const play=p.isP?(s.outs1?`${ipStr(Math.round(s.outs1))}이닝`:'1군 등판 없음'):(s.pa1?`${Math.round(s.pa1)}타석`:'1군 출전 없음');
