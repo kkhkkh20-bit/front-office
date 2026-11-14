@@ -1,5 +1,5 @@
 /* ===== 다른 구단 단장도 선수단을 돌본다(사용자 11-14: "무슨 기능이 추가되든 AI도 공평하게 잘 쓰고 이득 봐야 함") =====
- - 면담: 매주 시즌·캠프 중에 한 구단 최대 AI_TALK_N번. 우리와 같은 talk() 결과 규칙(확률·효과·주간 횟수·면담 감쇠·기분 상한·출전 약속 판정과 불이행 벌점)을 그대로 쓴다.
+ - 면담: 매주 시즌·캠프 중에 한 구단 최대 AI_TALK_N번. 우리와 같은 talkOutcome() 결과 규칙·같은 주간 횟수 기록(talkMark)(확률·효과·주간 횟수·면담 감쇠·기분 상한·출전 약속 판정과 불이행 벌점)을 그대로 쓴다.
    AI 단장이 아는 것은 사람 단장이 화면에서 보는 것과 같다: 올해 성적(폼), 기분, 주전 여부, 감독·코치진이 본 성향(우리 구단 mentalRead와 같은 크기 오차).
    칭찬: 폼이 좋은 선수, 기분이 처진 선수(예민한 선수가 부진할 때는 하지 않는다). 분발 촉구: 부진하고 프로의식이 강해 보이는 선수만.
    출전 기회 건의: 주전 바로 아래(감독 가산으로 실제로 뛸 수 있는) 선수만. 지킬 수 없는 약속은 하지 않는다.
@@ -25,7 +25,7 @@ function aiTalkPlan(tid){ const d=depth(tid); const reg=new Set([...d.start,...d
   return out.sort((a,b)=>b.v-a.v).filter(x=>x.v>=1); }
 function aiTalkWeek(){ const per=period(); if(per==='off'||!G.teams)return 0; let n=0; const Lg=G.aiTalkLog=G.aiTalkLog&&G.aiTalkLog.y===G.year?G.aiTalkLog:{y:G.year,n:{},d:{}};
   for(const t of G.teams){ if(t.id===ME()||!G.mgr[t.id])continue; const P=aiTalkPlan(t.id), seen=new Set(); let k=0;
-    for(const x of P){ if(k>=AI_TALK_N)break; const key=x.p.id+x.k; if(seen.has(key))continue; seen.add(key); const m0=x.p.mor; const r=talk(x.p.id,x.k,{ai:true}); if(!r||r.d==null)continue; k++; n++;
+    for(const x of P){ if(k>=AI_TALK_N)break; const key=x.p.id+x.k; if(seen.has(key))continue; seen.add(key); const m0=x.p.mor; const r=aiTalk(x.p.id,x.k); if(!r||r.d==null)continue; k++; n++;
       const L=Lg.n[t.id]=Lg.n[t.id]||{}; L[x.k]=(L[x.k]||0)+1; Lg.d[t.id]=(Lg.d[t.id]||0)+(x.p.mor-m0); } }
   return n; }
 /* 팀 분위기가 나쁠 때: 분위기를 흐리는 선수 가운데 주축이 아닌 선수를 매물로(국내 선수·거부권 없음·최근 이적 아님) */
