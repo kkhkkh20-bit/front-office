@@ -46,10 +46,10 @@ function offersCard(){
   return OS.map(offerOne).join('');
 }
 function offerOne(o){ { const t=team(o.from); const why=offerBlockMsg(o); /* 그사이 성사될 수 없게 된 제안은 수락 대신 사유 */ const li=id=>{const p=G.players[id]; return p?pcard(p,{foot:rosterFoot(p)}):''};
-    return `<section class="card hero"><div class="row between"><span class="eyebrow">트레이드 제안 · ${dmd(o.exp)}까지</span><span class="small muted">관계 ${t.rel}</span></div>
+    return `<section class="card hero"><div class="row between"><span class="eyebrow">트레이드 제안 · ${dmd(o.exp)}까지</span><span class="small muted">관계 ${relLabel(t.rel)}</span></div>
     <h2 class="sec">${tname(o.from)}</h2>
     <div class="tcols2"><div><div class="eyebrow">받는 선수</div><div class="tgrid">${o.give.map(li).join('')}</div></div><div><div class="eyebrow">보내는 선수</div><div class="tgrid">${o.get.map(li).join('')}</div></div></div>
-    ${(t=>`<p class="small ${t.includes('정리 필요')?'bad':'muted'}">${t}</p>`)(tradeRosterTxt(o.get,o.give))}${offerAdvBox(o)}
+    ${(o.cash||0)<0?`<p class="small good">상대가 현금 ${money(-o.cash)}을(를) 함께 보냅니다.</p>`:''}${(t=>`<p class="small ${t.includes('정리 필요')?'bad':'muted'}">${t}</p>`)(tradeRosterTxt(o.get,o.give))}${offerAdvBox(o)}
     ${why?`<p class="small bad">지금은 수락할 수 없습니다: ${esc(why)}</p>`:''}<div class="btns">${why?'':`<button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button>`}<button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div></section>`; }
 }
 function campCard(){
@@ -85,7 +85,7 @@ function mgrRow(x,act){ mgrFix(x); return `<div class="item wa" style="cursor:de
 function policyCard(m){
   const p=G.policy; const lean=teamLean(G.user); const cd=p&&G.day-p.day<14;
   const leanTxt=lean>.35?'육성 쪽':lean<-.35?'성적 쪽':'균형';
-  return `<section class="card polc"><div class="row between"><span class="eyebrow">운영 기조 지시 ${hiI('단장이 방향을 정하면 감독이 성향에 따라 받아들입니다. 출전 시간이 곧 성장이므로, 유망주를 키우려면 육성 기조가 필요합니다.\n고집이 센 감독일수록, 본래 성향과 다른 지시일수록, 관계가 나쁠수록 덜 따릅니다. 2주에 한 번 바꿀 수 있습니다.')}</span>${p?`<span class="small muted">감독이 ${followWord(p.follow)} · 관계 ${m.rel}</span>`:`<span class="small muted">지시 없음 · 감독 본래 성향대로 운영 · 관계 ${m.rel}</span>`}</div>
+  return `<section class="card polc"><div class="row between"><span class="eyebrow">운영 기조 지시 ${hiI('단장이 방향을 정하면 감독이 성향에 따라 받아들입니다. 출전 시간이 곧 성장이므로, 유망주를 키우려면 육성 기조가 필요합니다.\n고집이 센 감독일수록, 본래 성향과 다른 지시일수록, 관계가 나쁠수록 덜 따릅니다. 2주에 한 번 바꿀 수 있습니다.')}</span>${p?`<span class="small muted">감독이 ${followWord(p.follow)} · 관계 ${relLabel(m.rel)}</span>`:`<span class="small muted">지시 없음 · 감독 본래 성향대로 운영 · 관계 ${relLabel(m.rel)}</span>`}</div>
     <div class="seg">${Object.entries(POL).map(([k,x])=>`<button data-a="setPol" data-v="${k}" class="${p&&p.k===k?'on':''}" ${cd?'disabled':''}>${x.l}</button>`).join('')}</div>
     ${p?`<p class="small">${esc(POL[p.k].d)}</p>`:''}
     <div class="leanbar"><span>성적</span><div><i style="left:${(lean+1)*50}%"></i></div><span>육성</span></div>
@@ -95,7 +95,7 @@ function policyCard(m){
 function mgrChatCard(compact){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)return ''; const C=(G.mgrChat||[]).filter(c=>!compact||G.day-c.d<=14).slice(0,1); /* 지난 대화는 감독실에서: 화면에는 가장 최근 답 하나만 */
   const T=[['now','지금 팀 상황은?'],['foreign','어떤 외국인을 원하나?'],['need','가장 급한 자리는?'],['young','눈여겨보는 젊은 선수는?']];
   const tt=G.ttDay!=null&&G.day-G.ttDay<14;
-  return `<section class="card mchat"><div class="row between"><h2 class="sec">${compact?'감독실':'감독과 대화'}</h2><span class="small muted">${esc(m.name)} 감독 · ${esc(mgrType(m).n)} · 말투 ${MV[mgrVoice(m)].l} · 관계 ${m.rel}</span></div>${compact?'':`<p class="small muted keep">${esc(m.career||'')} · ${MV[mgrVoice(m)].d}</p>`}
+  return `<section class="card mchat"><div class="row between"><h2 class="sec">${compact?'감독실':'감독과 대화'}</h2><span class="small muted">${esc(m.name)} 감독 · ${esc(mgrType(m).n)} · 말투 ${MV[mgrVoice(m)].l} · 관계 ${relLabel(m.rel)}</span></div>${compact?'':`<p class="small muted keep">${esc(m.career||'')} · ${MV[mgrVoice(m)].d}</p>`}
     ${meetDoor('mgr')}
     ${C.length?`<div class="mc-l">${C.map(c=>`<div class="mc-a"><i>${dsh(c.d)} · ${esc((T.find(x=>x[0]===c.t)||['',''])[1])}</i><p>${esc(c.a)}</p></div>`).join('')}</div>`:''}
     
@@ -104,20 +104,20 @@ function pactCard(m){ const P=G.pact&&G.pact.y===G.year&&G.pact.on&&G.pact.mid==
   const dd=depth(G.user); const REGS=new Set([...dd.start,...dd.sp,...dd.pen.slice(0,4)].map(x=>x.id)); const cands=playersOf(G.user).filter(p=>pactPeriodOpen()&&pactCandidate(p,REGS)).sort((a,b)=>(scoutReport(b).ofp||0)-(scoutReport(a).ofp||0)).slice(0,12);
   sel=sel.filter(id=>cands.some(p=>p.id===id)); const cur=P?`<ul class="rec-w">${P.t.map(x=>{ const p=G.players[x.id]; return p?`<li><b>${esc(p.name)}</b> ${x.lv==='full'?'<span class="pill good">합의</span>':x.lv==='part'?'<span class="pill warn">부분 합의</span>':'<span class="pill bad">거절</span>'} ${esc(x.why)}</li>`:''; }).join('')}</ul>${P.log.length?`<p class="small muted">최근 점검: ${esc(P.log[P.log.length-1].m)}월 · ${esc(P.log[P.log.length-1].L.join(' / '))}</p>`:''}<div class="row"><button class="btn small" data-a="pactEnd">합의 끝내기</button></div>`:'';
   const pick=cands.length?`<div class="chips">${cands.map(p=>`<button data-a="pactSel" data-v="${p.id}" class="${sel.includes(p.id)?'on':''}">${esc(p.name)} <i>${posLabel(p)} ${p.age}세</i></button>`).join('')}</div><div class="row"><button class="btn small primary" data-a="pactGo" ${sel.length?'':'disabled'}>감독과 합의하기 (${sel.length}/2)</button></div>`:`<p class="small muted">${pactPeriodOpen()?'지금 출전 기회를 합의할 수 있는 25세 이하 비주전 선수가 없습니다.':'시즌이 끝나 출전 기회 합의는 다음 시즌 준비 때 다시 논의합니다.'}</p>`;
-  return `<section class="card"><div class="row between"><span class="eyebrow">유망주 기회 합의</span><span class="small muted">감독 관계 ${m.rel} · ${mgrYouthWord(m.youth)}</span></div>
-    <p class="small expl">${mplOn('youth')?'영입 때 유망주 기회 보장을 약속받아 합의가 잘 됩니다. ':''}1군 기회를 줄 유망주를 2명까지 정해 감독과 합의합니다. 감독은 실력 차이와 성향에 따라 받아들이거나 일부만 받아들이고, 매달 근거와 함께 보고합니다. 결과만으로 감독을 자동 평가하지 않습니다.</p>
+  return `<section class="card"><div class="row between"><span class="eyebrow">유망주 기회 합의</span><span class="small muted">감독 관계 ${relLabel(m.rel)} · ${mgrYouthWord(m.youth)}</span></div>
+    <p class="small expl">${mplOn('youth')?'영입 때 유망주 기회 보장을 약속받아 합의가 잘 됩니다. ':''}1군 기회를 줄 유망주를 2명까지 정해 감독과 합의합니다. 감독은 실력 차이와 성향을 보고 전부 또는 일부만 받아들이고, 매달 근거와 함께 보고합니다. ${hiI('결과만으로 감독을 자동 평가하지 않습니다.')}</p>
     ${cur}${P?`<div class="eyebrow" style="margin-top:8px">대상 다시 정하기</div>`:''}${pick}${UI.pactMsg?`<div class="note">${esc(UI.pactMsg).replace(/\n/g,'<br>')}</div>`:''}</section>`; }
 /* 감독 중도 재계약: 연장 기간별 요구 연봉과 경질 정산금 변화 */
 function mgrExtBox(m){ const T1=mgrExtTerms(1); if(!T1)return ''; const re=m.yrs<=0; const L=[1,2,3].map(a=>mgrExtTerms(a)).filter(T=>T&&!(T.why&&/최대/.test(T.why)));
   if(T1.why&&!/최대/.test(T1.why))return `<p class="small muted">${esc(T1.why)}</p>`; if(!L.length)return '<p class="small muted">감독 계약은 남은 기간 합계 최대 5년까지라 더 연장할 수 없습니다.</p>';
   return `<div class="row">${L.map(T=>`<button class="btn small" data-a="extMgr" data-v="${T.add}">${T.add}년 ${re?'재계약':'연장'}<i class="pc-s">연 ${money(T.sal)}(${T.up>=0?'+':''}${Math.round(T.up*100)}%)</i></button>`).join('')}</div>
-    <p class="small muted">연장하면 감독 관계 개선. 대신 경질할 때 줄 정산금이 커집니다(지금 ${money(T1.sev0)} → 1년 연장 시 ${money(T1.sev1)}). 요구 인상률은 명성${T1.rk!=null?'·현재 순위':''}·관계로 정해집니다. 한 해 한 번.</p>`; }
+    <p class="small muted">연장하면 감독과 관계가 좋아지지만, 경질할 때 줄 정산금이 커집니다(지금 ${money(T1.sev0)} → 1년 연장 시 ${money(T1.sev1)}). 요구 인상률은 명성${T1.rk!=null?'·현재 순위':''}·관계로 정해집니다. 한 해 한 번.</p>`; }
 function mgrCandidateCard(x){
   mgrFix(x);mgrAttr(x);const type=mgrType(x),b=budget(),cur=G.mgr[G.user];
   const pay=cur&&!cur.interim?mgrSevPay(cur).pay:0,clan=G.coach&&(x.clan||[]).length?sum(x.clan.map(c=>c.sal)):0;
   const cost=Math.round(x.sal*b.rem)+pay+Math.round(clan*b.rem)+(clan?clanSev(x):0);
   const deals=G.coach&&(x.clan||[]).length?`<button class="btn small primary" data-a="hireMgr" data-v="${x.id}:2:1">사단과 2년</button><button class="btn small" data-a="hireMgr" data-v="${x.id}:3:1">사단과 3년</button><button class="btn small" data-a="hireMgr" data-v="${x.id}:2:0">감독만 2년</button>`:`<button class="btn small primary" data-a="hireMgr" data-v="${x.id}:2">2년 계약</button><button class="btn small" data-a="hireMgr" data-v="${x.id}:3">3년 계약</button>`;
-  return `<div class="manager-overview"><aside class="card manager-bio">${avImg({persona:'mgr',pid:x.id,name:x.name,age:x.age,team:G.user},true)}<h3>${esc(x.name)} · ${x.age}세</h3><p class="small keep">${esc(x.career||'')}</p><p><b>${esc(type.n)}</b></p><p class="small keep">${esc(type.d)}</p>${mgrPersLine(x)}${obTag(x.ob)}</aside><section class="card"><h3>감독 능력</h3>${mgrAbilBox(x)}<h3>운영 성향</h3>${mgrStyleBox(x)}${mgrFitBox(x,false)}<p class="small muted">능력과 성향을 구분합니다. 고집·투수 혹사는 낮을수록 좋으며, 육성 우선·작전 선호는 운영 방식입니다.</p></section><aside class="card manager-contract"><h3>계약 검토</h3><dl class="kv"><dt>연봉</dt><dd>${money(x.sal)}</dd><dt>계약 시작</dt><dd>${ctStartS()} 시즌</dd>${pay?`<dt>현 감독 정산금</dt><dd>${money(pay)}</dd>`:''}</dl><div class="row">${budgetTag(cost)}</div>${mplPickCard()}${mplStanceBox(x)}<div class="row manager-deals">${deals}</div>${G.coach?clanBox(x):''}</aside></div>`;
+  return `<div class="manager-overview"><aside class="card manager-bio">${avImg({persona:'mgr',pid:x.id,name:x.name,age:x.age,team:G.user},true)}<h3>${esc(x.name)} · ${x.age}세</h3><p class="small keep">${esc(x.career||'')}</p><p><b>${esc(type.n)}</b></p><p class="small keep">${esc(type.d)}</p>${mgrPersLine(x)}${obTag(x.ob)}</aside><section class="card"><h3>감독 능력</h3>${mgrAbilBox(x)}<h3>운영 성향</h3>${mgrStyleBox(x)}${mgrFitBox(x,false)}<p class="small muted">고집·투수 혹사는 낮을수록 좋고, 육성 우선·작전 선호는 운영 방식입니다.</p></section><aside class="card manager-contract"><h3>계약 검토</h3><dl class="kv"><dt>연봉</dt><dd>${money(x.sal)}</dd><dt>계약 시작</dt><dd>${ctStartS()} 시즌</dd>${pay?`<dt>현 감독 정산금</dt><dd>${money(pay)}</dd>`:''}</dl><div class="row">${budgetTag(cost)}</div>${mplPickCard()}${mplStanceBox(x)}<div class="row manager-deals">${deals}</div>${G.coach?clanBox(x):''}</aside></div>`;
 }
 function mgrCandidatePage(){
   const x=(G.mmarket||[]).find(x=>x.id===UI.mgrCandidate);
@@ -134,8 +134,8 @@ function mgrBody(){
   if(UI._smk){ mv.cur='cand'; mv.bar=''; } const PGm=pager('mgc',(G.mmarket||[]),fmOn()?8:3);
   if(mv.cur==='rel')return mv.bar+mgrBondView()+mreqView()+pol;
   if(mv.cur==='cur'&&m&&!m.interim&&fmOn())return mv.bar+`<div class="mgfm"><section class="mgfm-c">${cur}</section><section class="mgfm-c"><h3>지시·요청</h3>${mgrBondView()}${mreqView()}</section><section class="mgfm-c">${mgrChatCard(false)}${pol}</section></div>`; /* PC: 감독 정보 | 지시·요청 | 대화·운영 방침을 한 화면에 */
-  if(mv.cur==='cur'&&m&&!m.interim)return mv.bar+cur+mgrChatCard(false)+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다.</p>`;
-  return mv.bar+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다. 감독을 바꾸면 남은 계약 연봉은 그대로 나갑니다.</p>`:mv.cur==='pol'?pol:((G.mmarket||[]).length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}<div class="tgrid mgrg" data-pg="mgc">${PGm.items.map(mgrCandCard).join('')}</div>${PGm.bar}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
+  if(mv.cur==='cur'&&m&&!m.interim)return mv.bar+cur+mgrChatCard(false)+`<p class="small muted">고집이 셀수록 단장 지시를 덜 받아들입니다. 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다.</p>`;
+  return mv.bar+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장 지시를 덜 받아들입니다. 감독을 바꿔도 남은 계약 연봉은 그대로 나갑니다. ${hiI('스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다.')}</p>`:mv.cur==='pol'?pol:((G.mmarket||[]).length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}<div class="tgrid mgrg" data-pg="mgc">${PGm.items.map(mgrCandCard).join('')}</div>${PGm.bar}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
 }
 /* 지금 빠져 있거나 복귀 뒤 실전으로 기량을 되찾는 중인 우리 선수 */
 function injNowList(){ const L=[]; for(const p of Object.values(G.players)){ if(p.team!==G.user||p.joinY>G.year)continue; const I=p.injK&&INJ[p.injK], sv=milServing(p)?p.mil.unit+' 복무 중 · ':''; /* 육성선수·상무 복무 선수도 의무 명단에(검수 11-09zy) */
@@ -146,8 +146,8 @@ function medBody(){ const IL=injNowList();
   return `<div class="eyebrow">지금 부상 · 회복 중 ${IL.length}명</div>${IL.length?`<div class="list">${IL.map(x=>`<button class="item" data-a="player" data-v="${x.p.id}"><span class="nm">${esc(x.p.name)} <span class="small muted">${posLabel(x.p)} · ${x.p.age}세</span> ${x.st==='out'?'<span class="pill bad">이탈</span>':'<span class="pill warn">회복 중</span>'}</span><span class="sub">${esc(x.t)}</span></button>`).join('')}</div>`:'<p class="small muted">지금 빠져 있는 선수가 없습니다.</p>'}
   <div class="eyebrow">부상 방지 프로그램</div>
   <div class="chips prevc">${PREV.map((x,i)=>`<button data-a="setPrev" data-v="${i}" class="${G.med.prev===i?'on':''}">${x.l}<small>${x.c?`연 ${money(x.c)}`:'비용 없음'}</small></button>`).join('')}</div>
-  <p class="small muted">연 ${money(PREV[G.med.prev].c)} · 경기 중 부상 위험 ${Math.round((1-PREV[G.med.prev].m)*100)}% 감소</p>
-  <div class="eyebrow">제휴 병원 ${hiI('병원을 바꾸면 새 부상은 물론, 지금 재활 중인 선수(남은 기간 14일 이상)의 남은 기간에도 그날부터 새 병원의 재활 효과가 적용됩니다. 짧은 부상은 그대로입니다.\n병원 이름은 모두 가상입니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.')}</div><div class="list">${Object.entries(HOSP).map(([k,h])=>`<button class="item" data-a="setHosp" data-v="${k}"><span class="nm">${G.med.hosp===k?'<span class="pill good">선택됨</span> ':''}${esc(h.name)}</span><span class="sub">${esc(h.d.replace(/ ?재활 기간이 [^.]*\./,''))}${h.rec?` 재활 ${Math.round(h.rec*100)}% 단축 · 장기 수술 ${Math.round((1-Math.sqrt(1-h.rec))*100)}%`:''}</span><span class="rt num">${h.c?money(h.c):'-'}</span></button>`).join('')}</div>
+  <p class="small muted">연 ${money(PREV[G.med.prev].c)} · ${PREV[G.med.prev].m<1?`경기 중 부상 위험 ${effWord(1-PREV[G.med.prev].m,.25,.15)} 감소`:'부상 위험 그대로'}</p>
+  <div class="eyebrow">제휴 병원 ${hiI('병원을 바꾸면 새 부상은 물론, 재활이 2주 넘게 남은 선수에게도 그날부터 새 병원 효과가 적용됩니다. 짧은 부상은 그대로입니다.\n병원 이름은 모두 가상입니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.')}</div><div class="list">${Object.entries(HOSP).map(([k,h])=>`<button class="item" data-a="setHosp" data-v="${k}"><span class="nm">${G.med.hosp===k?'<span class="pill good">선택됨</span> ':''}${esc(h.name)}</span><span class="sub">${esc(h.d)}</span><span class="rt num">${h.c?money(h.c):'-'}</span></button>`).join('')}</div>
   <p class="small muted">지난 결산 이후 의료비 ${money(G.spend.med+G.spend.hosp)}</p>
   ${G.medSet?'':'<button class="btn primary block" data-a="medOk">이대로 운영</button>'}`;
 }
@@ -172,7 +172,7 @@ function capCard(ci){
   return `<section class="card">
     <div class="row between"><h2 class="sec">샐러리캡</h2><span class="pill ${ci.over?'bad':'good'}">${ci.over?'초과 '+money(ci.over):'여유 '+money(ci.cap-ci.pay)}</span></div>
     <div class="bar"><i class="${ci.over?'over':''}" style="width:${pct}%"></i>${ci.floor?`<b style="left:${fl}%"></b>`:''}</div>
-    <p class="small muted">외국인과 신인을 뺀 연봉 상위 40명 합계 ${money(ci.pay)} · 상한 ${money(ci.cap)}${ci.floor?` · 하한 ${money(ci.floor)}(세로선)`:' · 하한은 2027년부터 적용'}. 넘기면 초과분의 30%, 2년 연속이면 50%를 야구발전기금으로 냅니다. 3년 연속이면 초과분 전액을 내고 다음 해 1라운드 지명 순서가 9단계 내려갑니다.${(y=>y>2028&&!(G.capY&&G.capY[y])?` ${y}년 상한은 아직 이사회가 정하지 않아 연 3% 인상으로 가정했습니다.`:'')(sponSeason())}</p>
+    <p class="small muted">외국인과 신인을 뺀 연봉 상위 40명 합계 ${money(ci.pay)} · 상한 ${money(ci.cap)}${ci.floor?` · 하한 ${money(ci.floor)}`:' · 하한은 2027년부터 적용'}. 넘기면 초과분의 30%, 2년 연속이면 50%를 야구발전기금으로 냅니다. 3년 연속이면 초과분 전액을 내고 다음 해 1라운드 지명 순서가 9단계 내려갑니다.${(y=>y>2028&&!(G.capY&&G.capY[y])?` ${y}년 상한은 아직 정해지지 않은 예상치입니다.`:'')(sponSeason())}</p>
   </section>`;
 }
 function scoutBody(){

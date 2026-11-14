@@ -92,10 +92,18 @@ function pcLiveCall(g,k,phase,ctx={}){const name=pcName(g,g.pbp[k][1]),pick=(key
  case 'bench-back':return {c:'됐어요! 각자의 자리로, 다시 야구로 승부합니다!',a:''};
  default:return {c:ctx.text||'',a:''};}}
 function cSpeak(g,k,phase,ctx={},cls=''){cCap(pcLiveCall(g,k,phase,ctx).c,cls);}
-/* Long calls become sequential single lines, including on phones. */
-function pcCaptionParts(text,limit){const words=String(text).split(/\s+/),out=[];let line='';for(let word of words){if(line.length+word.length+1>limit&&line){out.push(line);line='';}while(word.length>limit){if(line){out.push(line);line='';}out.push(word.slice(0,limit));word=word.slice(limit);}line+=(line?' ':'')+word;}if(line)out.push(line);return out;}
+/* Long calls become sequential single lines, including on phones.
+   어절을 가르지 않는다: 한 글자 관형어('한 방!', '첫 안타')는 뒤 어절과, 끝의 짧은 감탄('방!')은 앞 어절과 묶는다(사용자 11-14 '~한 / 방!').
+   쉼표·느낌표 뒤가 줄 중간쯤이면 거기서 나눠 구절 단위로 읽히게 한다 */
+function pcCaptionParts(text,limit){const words=String(text).split(/\s+/).filter(Boolean),bare=w=>w.replace(/[^\p{L}\p{N}]/gu,''),units=[];
+ for(let i=0;i<words.length;i++){let u=words[i];while(i+1<words.length&&bare(u.split(' ').pop()).length===1&&!/[,.!?…]$/.test(u)&&u.length+words[i+1].length+1<=limit)u+=' '+words[++i];units.push(u);}
+ if(units.length>1){const last=units[units.length-1];if(bare(last).length<=2&&units[units.length-2].length+last.length+1<=limit)units.splice(-2,2,units[units.length-2]+' '+last);}
+ const out=[];let line='';for(let k=0;k<units.length;k++){let word=units[k];if(line.length+word.length+1>limit&&line){out.push(line);line='';}while(word.length>limit){if(line){out.push(line);line='';}out.push(word.slice(0,limit));word=word.slice(limit);}line+=(line?' ':'')+word;
+  const rest=units.slice(k+1).join(' ');if(rest&&/[,!?…]$/.test(word)&&line.length>=limit*.45&&line.length+rest.length+1>limit&&bare(rest).length>2){out.push(line);line='';}}
+ if(line)out.push(line);return out;}
 async function cResultCall(call,cls=''){
  const box=document.getElementById('cs-cap'),limit=Math.max(12,Math.floor(((box?.clientWidth||innerWidth)-(innerWidth<700?65:95))/(innerWidth<700?12:15)));
  for(const beat of call.beats||[call.c])for(const line of pcCaptionParts(beat,limit)){cCap(line,cls);await cSleep(Math.max(1400,cSpd()*900,Math.min(2600,line.length*65)));}
  for(const record of call.records||[])for(const line of pcCaptionParts(record.text,limit)){cCap(line,'record '+(record.kind==='challenge'?'challenge':''));await cSleep(2200*cSpd());}
 }
+if(typeof A!=="undefined")Object.assign(A,{ castCam(){ const v=camPref()==='fixed'?'move':'fixed'; try{ localStorage.setItem('fo_cam',v); }catch(e){} cCamApply(); const b=document.getElementById('cs-cam'); if(b){ b.textContent=v==='fixed'?'화면 고정':'화면 움직임'; b.setAttribute('aria-pressed',v==='fixed'); } } }); /* 중계 카메라 고정·움직임 전환 */

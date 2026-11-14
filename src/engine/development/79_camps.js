@@ -16,13 +16,16 @@ function misbehaveMonth(){ const per=period(); if(per==='off'&&dobj(G.day).m===1
     else if(p.team!==ME()&&(k==='음주 소동'||k==='SNS 논란')&&ovr(p)>=52&&R()<.5)wire('구단',`${tname(p.team)} ${p.name}, ${k}`,{tid:p.team,ref:p.id}); } }
 const FCAMP={skill:'기술 훈련',pitch:'구종 개발',conv:'포지션 전환'};
 const CAMP_AMT={spring:{balance:.4,skill:.65,fitness:.18,game:.18},fall:{skill:.55,pitch:.32,conv:.28}}, WINTER_F=.7; /* 겨울 성장의 4분의 1을 캠프로 옮겨 한 해 총성장은 예전과 비슷하게 */
-function campFocusAi(tid,kind){ const m=mgrOf(tid); if(kind==='fall')return 'skill'; return m&&(m.youth||50)>=58?'skill':'balance'; }
+/* 다른 구단 캠프 방향: 감독 육성 성향과 구단 계획으로 정한다(우리가 고르는 네 가지와 같은 선택지·같은 효과). 해마다 구단·연도로 고정된 해시라 공용 난수를 건드리지 않는다 */
+function campFocusAi(tid,kind){ const m=mgrOf(tid); if(kind==='fall')return 'skill'; if(m&&(m.youth||50)>=58)return 'skill'; const t=G.teams&&G.teams[tid], pl=t?planOf(t):null, u=u01('campF'+G.year,tid);
+  if(pl==='build')return u<.5?'skill':'balance'; if(pl==='win')return u<.3?'game':u<.55?'fitness':'balance'; if(pl==='tight')return u<.4?'fitness':'balance'; return u<.15?'game':u<.3?'fitness':'balance'; }
 function addPitch(p,q){ const have=new Set(arsenalAll(p,p.r.stf).map(x=>x[0])); /* 보유 구종(계투라 안 쓰는 구종 포함)은 새로 익히지 않는다 */ const L=PITCHES.filter(k=>!have.has(k)); if(!L.length)return null; const k=L[Math.floor(u01('np'+G.year+(p.addP||[]).length,p.id)*L.length)];
   (p.addP=p.addP||[]).push({k,q:Math.round(q*10)/10,y:G.year}); return k; }
 function campGrow(p,kind,focus){ const ev=[]; if(p.hold||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
   const f=tbFactors(p,null); const ks=TRN_TOOLS[trnG(p)]; const o0=ovr(p), cap=Math.max(p.pot,o0)+4; const base=(CAMP_AMT[kind][focus]??1)*(p.age<=26?1:p.age<=30?.45:.15);
   let amt=base*f.room*f.will*f.fac*f.coach*f.mgr*rnd(.5,1.5)*(kind==='spring'&&p.team!=null?sprcGrowMul(p.team):1); /* 캠프 장소·날씨·훈련 강도(97_spring_camp.js) */ let tot=0;
   /* 확 늘어나는 선수 */ if(p.age<=25&&p.pot-ovr(p)>=4&&R()<(focus==='skill'?.05:.03)*f.will){ amt+=rnd(2,4); ev.push({t:'big'}); }
+  if(amt>0)amt*=eliteGrowF(o0); /* 정상급 꼬리 억제(10_draft)를 캠프 성장에도: 모든 구단이 같은 수단을 쓰면서 늘어난 정상급을 겨울 성장만으로는 못 잡았다(사용자 11-13) */
   if(amt>0){ const w=ks.map(()=>.3+R()); const ws=w.reduce((a,b)=>a+b,0); ks.forEach((k,i)=>{ if(p.r[k]<cap)tot+=addR(p,k,amt*w[i]/ws*(ks.length===3?1.6:1)*coachToolMult(p,k)); }); }
   /* 구종 추가 */ if(p.isP&&p.age<=31){ const pr=kind==='fall'?(focus==='pitch'?.2:.05):(focus==='skill'?.1:.06); const n=arsenal(p,p.r.stf).length; if(n<(isSPr(p)?6:4)&&R()<pr*clamp(f.will,.8,1.2)){ const q=N(-1.5,4)+(f.coach-1)*6; const k=addPitch(p,q); if(k)ev.push({t:'pitch',k,q}); } }
   /* 폼 수정 */ if(p.age<=32&&R()<.045){ const k=p.isP?(R()<.5?'stf':'ctl'):(R()<.5?'con':'pow'); const good=R()<.6; const d=good?rnd(1.5,3.5):-rnd(1,2.5); const v=clamp(p.r[k]+d,20,80); const dd=v-p.r[k]; p.r[k]=v; roundR(p); tot+=dd; ev.push({t:good?'form+':'form-',k,d:dd}); }

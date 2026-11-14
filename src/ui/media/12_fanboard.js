@@ -50,7 +50,7 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
   for(const t of (G.trades||[]).slice(-6)){ const gets=(t.gi||[]).map(sn).filter(Boolean), gives=(t.go||[]).map(sn).filter(Boolean); if(!gets.length&&!gives.length)continue;
     const gr=t.grade||'C'; const good=/[AB]/.test(gr), bad=/[DF]/.test(gr); const p0=G.players[(t.gi||[])[0]]; const pos=p0?(p0.isP?(isSPr(p0)?'선발':'불펜'):POSS[p0.pos]||''):'';
     const vars={p:gets[0]||'',q:gives[0]||'',pos,O:team(t.with).nick};
-    add({id:'tr'+t.d+(t.gi||[]).join('.'),d:t.d,cat:'오피셜',title:`${gets.join('·')} ↔ ${gives.join('·')} 트레이드`,body:`${tname(t.with)}와(과) 트레이드. 언론 평점 ${gr}(A 최고~F 최저, 받은 선수와 내준 선수 가치 비교).`,tid:me,ref:t.gi&&t.gi[0],hot:true,
+    add({id:'tr'+t.d+(t.gi||[]).join('.'),d:t.d,cat:'오피셜',title:`${gets.join('·')} ↔ ${gives.join('·')} 트레이드`,body:`${tname(t.with)}와(과) 트레이드. 언론 평점 ${gr}(A 최고~F 최저, 받은 선수와 내준 선수의 가치 비교).`,tid:me,ref:t.gi&&t.gi[0],hot:true,
       cm:fComments('tc'+t.d+gets.join(),good?'tradeG':bad?'tradeB':'tradeE',good?'pos':bad?'neg':'mix',vars,8,me,fa).concat(fComments('tr2'+t.d,'rival',bad?'pos':good?'neg':'mix',{...vars,O:team(t.with).nick,p:gives[0]||'',q:gets[0]||''},2,t.with,0))}); }
   /* 6) 다른 구단 트레이드 */
   for(const x of (G.lgTrades||[]).slice(0,5)){ const A=x.ag.map(id=>G.players[id]).filter(Boolean), B=x.bg.map(id=>G.players[id]).filter(Boolean); if(!A.length||!B.length)continue;

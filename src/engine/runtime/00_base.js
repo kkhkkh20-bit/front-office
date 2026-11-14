@@ -16,6 +16,8 @@ const avg=FrontOfficeCore.avg;
 const sum=FrontOfficeCore.sum;
 const r5=FrontOfficeCore.r5;
 const rr=FO_RANDOM.rr;
+/* 숨은 효과 크기를 말로: 크게/꽤/조금 (화면에 정확한 수치를 보이지 않는다) */
+function effWord(x,big,mid){x=Math.abs(+x||0);return x>=big?'크게':x>=mid?'꽤':'조금';}
 /* 능력치 화면 표시: 내부 계산은 20~80 스카우트 척도 그대로 두고, 보여 줄 때만 100점 척도로 바꾼다.
    1군 평균(51)=63, 상급(58)=73, 대박(65)=84, 초대형(72)=95, 유망주 평균(24)=42 */
 const DV_PTS=FrontOfficeCore.DV_PTS;

@@ -10,12 +10,16 @@ function lgStartAvg(){ const L=leagueSlots(); if(_lsaC.k===L)return _lsaC.v; con
   const grp=ks=>{ const v=L.flatMap(s=>ks.flatMap(k=>s[k].ps)).map(ovr); return v.length?avg(v):null; }; out.BAT=grp(PSLOTS.slice(0,9)); out.ALL=grp(PSLOTS); _lsaC={k:L,v:out}; return out; }
 function teamStartAvg(tid,k){ const s=leagueSlots()[tid]; if(!s)return null; const ks=k==='BAT'?PSLOTS.slice(0,9):[k]; const v=ks.flatMap(x=>s[x].ps).map(ovr); return v.length?avg(v):null; }
 function slotStartAvgOf(p){ if(!p)return null; const k=p.isP?(isSPr(p)?'SP':'RP'):p.pos; return PSLOTS.includes(k)?k:null; }
-function leagueSlots(){ const k=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.mvN||0)+':'+Object.values(G.players).filter(p=>p.team!=null&&p.team>=0).map(p=>p.id+':'+p.team+(p.role||'')+(p.e1?'+':'')+(p.injOut>0?'i':'')).join(',')+':'+JSON.stringify(G.lineup||{})+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.rotOrd||G.rot||null); /* 보직·엔트리·라인업·투수 기용 계획이 바뀌면 다시 계산 */ if(_slC.k===k&&_slC.g===G)return _slC.v; /* 모든 구단 선수·세이브가 바뀌면 다시(상대 에이스 부상 반영, 검수 11-09zh) */ const v=G.teams.map(t=>slotOf(t.id)); _slC={k,v,g:G}; return v; }
+/* 성능: AI 작업 하나(aiTradeTry·aiOffer) 동안은 리그 자리표 열쇠(모든 선수)를 한 번만 만든다. 그 사이 날짜·트레이드 수·이동 기록(mvN)이 바뀌면(거래 성사) 다시 만든다 */
+let _slHold=null;
+function slotsHold(fn){ if(_slHold)return fn(); _slHold={g:null}; try{ return fn(); }finally{ _slHold=null; } }
+function leagueSlots(){ const k0=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.mvN||0); const H=_slHold; if(H&&H.g===G&&H.k0===k0)return H.v; const v0=leagueSlotsKeyed(k0); if(H){ H.g=G; H.k0=k0; H.v=v0; } return v0; }
+function leagueSlotsKeyed(k0){ const k=k0+':'+Object.values(G.players).filter(p=>p.team!=null&&p.team>=0).map(p=>p.id+':'+p.team+(p.role||'')+(p.e1?'+':'')+(p.injOut>0?'i':'')).join(',')+':'+JSON.stringify(G.lineup||{})+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.rotOrd||G.rot||null); /* 보직·엔트리·라인업·투수 기용 계획이 바뀌면 다시 계산 */ if(_slC.k===k&&_slC.g===G)return _slC.v; /* 모든 구단 선수·세이브가 바뀌면 다시(상대 에이스 부상 반영, 검수 11-09zh) */ const v=G.teams.map(t=>slotOf(t.id)); _slC={k,v,g:G}; return v; }
 /* 트레이드 마감 주간: 사는 구단(상위권의 약한 자리)과 파는 구단(하위권의 베테랑) 루머 */
 function deadlineRumors(quiet){ const st=standingsNow(); const buyers=st.slice(0,5).map(x=>x.tid).filter(t=>t!==G.user); const sellers=st.slice(6).map(x=>x.tid).filter(t=>t!==G.user);
   const L=[]; for(const t of buyers.slice(0,3)){ const rk=slotRanks(t); const weak=PSLOTS.filter(k=>k!=='DH').sort((a,b)=>rk[b].rank-rk[a].rank)[0]; if(weak&&rk[weak].rank>=6)L.push(`${tshort(t)}(${st.findIndex(x=>x.tid===t)+1}위)은(는) ${SLOTK[weak]} 보강을 노립니다`); }
   for(const t of sellers.slice(0,3)){ const v=domestic(t).filter(p=>p.age>=29&&ovr(p)>=54&&!p.ys&&!(hasNtc(p)||faLock(p))&&!mvRecent(p)).sort((a,b)=>ovr(b)-ovr(a))[0]; if(v){ v.aiListed=true; L.push(`${tshort(t)}은(는) ${v.name}(${posLabel(v)}, ${v.age}세)을(를) 시장에 내놓을 수 있습니다`); } }
-  if(!L.length)return; news('트레이드',`트레이드 마감 앞두고 시장 꿈틀`,L.join('. ')+'.',0); if(!quiet)note('트레이드',`마감 주간 시장 소식: ${L.join('. ')}. 트레이드 → 추천·선수 찾기에서 해당 구단을 살펴보세요.`); }
+  if(!L.length)return; news('트레이드',`트레이드 마감 앞두고 시장 꿈틀`,L.join('. ')+'.',0); if(!quiet)note('트레이드',`마감 주간 시장 소식: ${L.join('. ')}. 트레이드 → 추천·선수 찾기에서 그 구단을 살펴보세요.`); }
 /* 마감 2주 전: 단장이 올해 방향(보강·유지·정리)을 정한다. 순위와 남은 경기로 부단장이 상황을 정리해 준다 */
 function deadlineDecision(){ if(G.dline&&G.dline.y===G.year)return; const st=standingsNow(); const rk=st.findIndex(x=>x.tid===G.user)+1; const r=G.sea.rec[G.user]; const gb5=(()=>{ const f=st[4]; return ((f.w-f.l)-(r.w-r.l))/2; })();
   const vets=domestic(G.user).filter(p=>p.age>=30&&ctrlYears(p)<=1&&ovr(p)>=52&&!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3);

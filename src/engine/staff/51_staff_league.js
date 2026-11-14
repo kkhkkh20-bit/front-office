@@ -4,7 +4,7 @@
    비시즌(11~1월)에는 다른 구단 스태프를 데려올 수 있고, 다른 구단도 우리 스태프에게 손을 뻗는다.
    스태프는 해마다 경험이 쌓여 성장하고(젊을수록), 오래 일하면 충성도가 올라 잘 떠나지 않는다 */
 /* 실제 인사 완료 시점에 구단 기록으로 남긴다. 제안·후보 조회에는 호출하지 않는다. */
-function staffHistory(kind,s,action,tid,detail){ if(!s||tid==null)return; personNetworkTrace(kind,s,action,tid,detail); const role=kind==='mgr'?'감독':kind==='coach'?(CROLE[s.role]?.l||'코치'):kind==='scout'?'스카우트':'전력분석원'; chron(kind,`${s.name} ${role} ${action}${detail?` (${detail})`:''}`,null,tid); }
+function staffHistory(kind,s,action,tid,detail){ if(!s||tid==null)return; personNetworkTrace(kind,s,action,tid,detail); try{ relCareer(kind,s,action,tid,detail); }catch(e){} /* 인물 관계(84b_person_rels) */ const role=kind==='mgr'?'감독':kind==='coach'?(CROLE[s.role]?.l||'코치'):kind==='scout'?'스카우트':'전력분석원'; chron(kind,`${s.name} ${role} ${action}${detail?` (${detail})`:''}`,null,tid); }
 const ST_SC_N=[4,7], ST_AN_N=[2,ANA_MAX];
 function stAttr(s){ if(s.amb==null)s.amb=Math.round(clamp(50+hn('stamb',s.id)*20,5,95)); if(s.loy==null)s.loy=20; if(s.age==null)s.age=Math.round(clamp(44+hn('stage',s.id)*7,30,58)); return s; } /* 후보 카드를 볼 때도 불리므로 난수를 쓰지 않는다(검수 11-09zw #28) */
 function stInit(){ if(G.lgStaff)return G.lgStaff; const L=G.lgStaff={}; for(const t of G.teams){ if(t.id===ME())continue; L[t.id]=stMakeTeam(t); stSync(t.id); }

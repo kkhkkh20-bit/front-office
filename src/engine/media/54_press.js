@@ -18,4 +18,4 @@ function pressTips(){ if(G.unemp)return; const r=pressInit().filter(x=>x.rel>=70
     const fit=p=>!p.foreign&&(pSlot(p)===k||(k==='SP'&&isSPr(p))||(k==='RP'&&p.isP&&!isSPr(p))); let want=[]; try{ want=(aiInterest(t.id)||[]).map(id=>G.players[id]).filter(Boolean); }catch(e){} /* 외국인 선수는 트레이드 대상이 아니므로 귀띔에서도 뺀다(커뮤니티 11-12). 실제 그 구단 관심 명단(aiInterest)에 있는 선수를 먼저 */
     const mine=want.find(fit)||playersOf(G.user).filter(fit).sort((a,b)=>ovr(b)-ovr(a))[0];
     txt=`${tname(t.id)}이(가) ${SLOTK[k]} 보강을 서두르고 있습니다.${mine?` 우리 ${mine.name}을(를) 눈여겨본다는 얘기가 있습니다.`:''}`; }catch(e){ return; }
-  mail(`${r.outlet} ${r.name} 기자`,`[귀띔] ${tshort(t.id)} 동향`,`"단장님께만 드리는 얘기입니다." ${txt}\n\n(관계 ${Math.round(r.rel)} 기자의 비공식 정보입니다. 기사로는 아직 나가지 않았습니다.)`,{kind:'언론'}); }
+  mail(`${r.outlet} ${r.name} 기자`,`[귀띔] ${tshort(t.id)} 동향`,`"단장님께만 드리는 얘기입니다." ${txt}\n\n${relLabel(r.rel)}인 기자가 따로 전한 정보입니다. 기사로는 아직 나가지 않았습니다.`,{kind:'언론'}); }

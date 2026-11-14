@@ -55,7 +55,7 @@ function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team==null||t
   const fv=FACE6.v==='6c'?3:2; if(G.f6v!==fv){ G.f6={}; G.f6r={}; G.f6v=fv; } /* 얼굴 세트가 바뀌면(v6b→v6c) 배정을 새로 */
   const M=G.f6, Rv=G.f6r, t=p.team, key=i=>t+':'+i; const cur=M[p.id]; if(cur!=null&&Rv[key(cur)]===p.id)return cur;
   const free=i=>{ const o=Rv[key(i)]; if(o==null||o===p.id)return true; const q=G.players[o]; return !q||q.team!==t; };
-  if(cur!=null&&free(cur)&&face6Pool(p).includes(cur)){ Rv[key(cur)]=p.id; return cur; } /* 이적해도 새 구단에서 비어 있으면 같은 얼굴 */
+  if(cur!=null&&face6Pool(p).includes(cur)){ if(free(cur))Rv[key(cur)]=p.id; return cur; } /* 이적해도 같은 얼굴(유니폼만 바뀜). 새 구단에 같은 얼굴이 있어도 바꾸지 않는다(사용자 11-14: 트레이드되면 얼굴이 바뀜) */
   const C=face6Pool(p).filter(free); if(!C.length)return null;
   /* 리그 전체에서 덜 쓰인 얼굴부터(사용자 11-08: 외국인 얼굴이 늘 같다) — 같은 구단 안 중복은 위 free가 막는다 */
   const U={}; for(const k in Rv){ const q=G.players[Rv[k]]; if(q&&q.team!=null&&q.id!==p.id&&String(q.team)===k.split(':')[0]){ const i=+k.split(':')[1]; U[i]=(U[i]||0)+1; } }

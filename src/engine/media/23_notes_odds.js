@@ -89,7 +89,7 @@ function tradeHint(tid,give,get,cash,pk){ // 상대가 무엇을 더 원할지 �
   const sd=1.2+Math.max(0,75-t.rel)/10;
   const add=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)&&!p.ys&&!ntcOf([p.id])) /* 거부권·육성선수는 제안할 수 없으니 추천하지 않는다 */.map(p=>({p,v:tval(t,p,'in')*.72+hn('th'+tid+G.year,p.id)*sd*.4})).filter(x=>x.v>=gap*.9).sort((a,b)=>a.v-b.v)[0];
   const drop=get.length>1?get.map(id=>({p:G.players[id],v:tval(t,G.players[id],'out')+hn('td'+tid+G.year,id)*sd*.4})).filter(x=>x.v>=gap*.9).sort((a,b)=>a.v-b.v)[0]:null;
-  const cn=cashFor(t,gap+hn('tc'+tid+G.year,G.day)*sd*.3); return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12,cash:cn&&cn+(cash||0)<=3000?cn+(cash||0):null}; }
+  const cn=cashFor(t,gap+hn('tc'+tid+G.year,G.day)*sd*.3,Math.max(0,CASH_SHARE*Math.max(1.5,e.outV)-(e.cashV||0))); /* 현금 한도로 못 메우면 현금 안내를 하지 않는다 */ return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12,cash:cn&&cn+(cash||0)<=3000?cn+(cash||0):null}; }
 
 function draftPickOrder(){ // 드래프트 전: 실제 드래프트와 같은 기준(끝난 지난 시즌 순위의 역순, 경쟁균형세 벌칙 반영) 1라운드
   { const P=draftPlan(); if(P)return P.filter(k=>k.rd===1); } /* 지명권 거래 반영: 넘긴 순번은 받은 구단 차례(검수 11-06) */
@@ -171,17 +171,17 @@ function amNotes(p){ const Y=p.amY; if(!Y||!Y.length)return []; const L=[];
     if(b9s.length>=2&&b9s.every(v=>v<=3))L.push(`학년 내내 볼넷이 적었습니다(9이닝당 ${b9.toFixed(1)}개). 제구는 프로에서도 비슷하게 이어지는 편입니다.`);
     else if(b9s.length>=2&&b9s.every(v=>v>=5))L.push(`학년 내내 볼넷이 많았습니다(9이닝당 ${b9.toFixed(1)}개). 제구 불안이 꾸준합니다.`);
     if(k9>=10)L.push(`탈삼진이 9이닝당 ${k9.toFixed(1)}개로 많습니다. 구위가 통한다는 신호입니다.`);
-    if(era<=2&&k9<6)L.push('평균자책점에 비해 탈삼진이 적습니다. 수비와 타구 결과의 영향이 섞였을 수 있어 함께 봐야 합니다.'); }
+    if(era<=2&&k9<6)L.push('평균자책점에 비해 탈삼진이 적습니다. 수비와 타구 운이 섞였을 수 있습니다.'); }
   return L.slice(0,2); }
 function statNotes(p){ // 프로 기록에서 읽히는 신호
   const h=seasonTotal(p,G.year,'1군')||seasonTotal(p,G.year-1,'1군'); if(!h)return [];
   const L=[]; const yy=h.y===G.year?'올해':'지난해';
   if(!p.isP&&h.pa>=150){ const b=babipOf(h); const bk=h.so?h.bb/h.so:h.bb;
-    if(b!=null&&b>=.37)L.push(`${yy} 인플레이 타구 타율(BABIP)이 ${fmt3(b)}로 높습니다. 타구 특성·주력·표본을 함께 확인해야 이 타율이 이어질지 판단할 수 있습니다.`);
-    else if(b!=null&&b<=.25)L.push(`${yy} BABIP ${fmt3(b)}로 낮습니다. 타구 특성·주력·표본을 함께 봐야 합니다. 타율이 오를 수는 있지만 지금 기록만으로 확정하기 어렵습니다.`);
+    if(b!=null&&b>=.37)L.push(`${yy} 인플레이 타구 타율(BABIP)이 ${fmt3(b)}로 높습니다. 이 타율이 이어질지는 타구 특성·주력·표본을 함께 봐야 압니다.`);
+    else if(b!=null&&b<=.25)L.push(`${yy} BABIP ${fmt3(b)}로 낮습니다. 타율이 오를 수 있지만 타구 특성·주력·표본을 함께 봐야 합니다.`);
     if(bk>=.9)L.push(`볼삼비 ${bk.toFixed(2)}. 선구안이 좋아 슬럼프가 길지 않은 유형입니다.`); else if(bk<=.3)L.push(`볼삼비 ${bk.toFixed(2)}. 삼진이 많아 기복이 클 수 있습니다.`); }
   if(p.isP&&h.outs>=120){ const k9=h.so*27/h.outs, b9=h.bb*27/h.outs, era=h.er*27/h.outs;
-    if(era<=3.2&&k9-b9<4)L.push(`${yy} 평균자책점(${era.toFixed(2)})에 비해 탈삼진·볼넷 차이가 작습니다. 수비와 타구 결과의 영향이 있었는지 함께 봐야 합니다.`);
-    else if(era>=5&&k9-b9>=5)L.push(`${yy} 평균자책점(${era.toFixed(2)})은 나쁘지만 탈삼진·볼넷 내용은 좋습니다. 수비와 타구 결과의 영향을 함께 확인해 보세요. 나아질 가능성은 있으나 지금 기록만으로 확정하기 어렵습니다.`); }
+    if(era<=3.2&&k9-b9<4)L.push(`${yy} 평균자책점(${era.toFixed(2)})에 비해 탈삼진·볼넷 차이가 작습니다. 수비와 타구 운의 덕을 봤을 수 있습니다.`);
+    else if(era>=5&&k9-b9>=5)L.push(`${yy} 평균자책점(${era.toFixed(2)})은 나쁘지만 탈삼진·볼넷 내용은 좋습니다. 수비와 타구 운이 따르지 않았을 수 있어 나아질 여지가 있습니다.`); }
   return L; }
 

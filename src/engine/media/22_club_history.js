@@ -87,10 +87,11 @@ function proDrift(p){ if(p.team==null||p.foreign||p.age>27)return 0; initPers(p)
 function climateOf(tid){ if(!G._cl||G._cl.d!==G.day)G._cl={d:G.day,v:{}}; const C=G._cl.v;
   const t=team(tid); const c=t&&t.cap!=null&&G.players[t.cap]&&G.players[t.cap].team===tid?G.players[t.cap]:null; const m=G.mgr[tid]; const md=m&&m.disc!=null?m.disc:45;
   const L=c?leadOf(c):{str:9,cha:6}; const adj=tid===G.user&&G.leadAdj&&G.leadAdj.until>G.day?G.leadAdj.v:0;
-  const key=[t&&t.cap,c&&c.id,c&&c.team,L.str,L.cha,m&&m.id,md,adj].join(':');if(C[tid]&&C[tid].key===key&&C[tid].cap===c)return C[tid];
+  const tc=t&&t.cap, mid=m&&m.id; { const x=C[tid]; if(x&&x.cap===c&&x.k&&x.k[0]===tc&&x.k[1]===(c&&c.team)&&x.k[2]===L.str&&x.k[3]===L.cha&&x.k[4]===mid&&x.k[5]===md&&x.k[6]===adj)return x; } /* 성능: 타석마다 불리므로 열쇠 문자열을 만들지 않고 값을 그대로 견준다(조건은 예전 열쇠와 같다) */
+  const key=[tc,c&&c.id,c&&c.team,L.str,L.cha,mid,md,adj].join(':');
   const S=clamp(Math.round(L.str*5*.6+md*.4+adj),0,100); const w=clamp(L.cha/14,.35,1.3);
   const boost=(S>=45&&S<=65?.4:0)*w-(S<40?1.2*(40-S)/40:0)*w-(S>70?.8*(S-70)/30:0)*w;
-  return C[tid]={S,w,boost,cap:c,band:S<40?'loose':S>70?'rigid':S>=45&&S<=65?'good':'ok',key}; }
+  const o={S,w,boost,cap:c,band:S<40?'loose':S>70?'rigid':S>=45&&S<=65?'good':'ok',key}; Object.defineProperty(o,'k',{value:[tc,c&&c.team,L.str,L.cha,mid,md,adj]}); /* 비교용 값은 저장하지 않는다 */ return C[tid]=o; }
 /* 주간: 느슨하면 기행, 너무 세면 젊은 선수 불만 */
 function climateWeek(){ if(G.unemp||period()==='off')return; const cl=climateOf(G.user); const ps=domestic(G.user).filter(p=>!p.ys&&healthy(p)&&!isAway(p)); if(!ps.length)return;
   if(cl.band==='rigid'){ for(const p of ps)if(p.age<=25||((p.pers&&p.pers.temp)||10)>=14)p.mor=clamp((p.mor??60)-.8,0,100); }

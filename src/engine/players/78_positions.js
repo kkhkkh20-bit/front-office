@@ -40,7 +40,7 @@ function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP
 /* ETA는 실제로 훈련할 수 있는 주 수다. 부상·차출·비시즌 대기는 따로 알린다. */
 function posConvStatus(p,pos=p.pconv?.pos){if(!pos)return '';const reasons=[];if(p.injOut>0)reasons.push(`부상 재활 ${p.injOut}일 남음(현재 예상 회복일 ${dmd(G.day+p.injOut)})`);if(milServing(p))reasons.push('군 복무');else if(isAway(p))reasons.push('대표팀·파견');if(p.hold)reasons.push('연봉 미계약');if(ovsAbroad(p))reasons.push('해외 연수');if(!['pre','season'].includes(period()))reasons.push('비시즌');
   const wk=posEtaW(p,pos,p.e1,p.team),eta=wk?`훈련 가능한 기간 기준 약 ${wk}주가 필요합니다`:'현재 훈련량으로는 숙련 90 도달이 어렵습니다';
-  if(reasons.length)return `현재 ${reasons.join(' · ')} 때문에 구단 전환 훈련은 대기합니다. 부상·복무·차출 등 출전 불가 기간에는 구단의 2군 실전도 없습니다. 회복·복귀 후 훈련 재개가 가능할 때부터 ${eta}. 대기 기간은 예상 훈련 주 수에 포함하지 않으며, 회복 경과·출전·시즌 일정에 따라 완료일은 달라집니다.`;
+  if(reasons.length)return `현재 ${reasons.join(' · ')} 때문에 구단 전환 훈련은 대기합니다. 부상·복무·차출로 뛸 수 없는 동안에는 2군 실전도 없습니다. 다시 훈련할 수 있을 때부터 ${eta}. 대기 기간은 예상 훈련 주 수에 포함하지 않았고, 회복·출전·시즌 일정에 따라 완료일은 달라집니다.`;
   return `${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가 출전하면 그 자리 실전에서도 배웁니다.':'2군 출전이 가능할 때 그 자리 실전에서도 배웁니다.'} 지금부터 ${eta}. 부상·차출·비시즌 대기 기간은 별도입니다.`;
 }
 function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }

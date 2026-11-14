@@ -31,24 +31,27 @@ function mergedBody(tab,s,H){ const ks=((MERGE[tab]&&MERGE[tab][s])||[s]).filter
 const GW={구장:['club','stad'],감독:['staff','mgr'],코치진:['staff','coach'],외국인선수:['transfer','foreign'],'부상방지·병원':['staff','med'],'2군연수':['staff','dev'],트레이드:['trade','block'],병역:['staff','mil'],비FA다년계약:['transfer','contract'],드래프트후보:['transfer','draft'],스카우트팀:['staff','scouts'],해외스카우트망:['scout','intl'],전력분석:['staff','data'],마케팅:['club','mkt'],일지:['club','log'],연봉협상:['transfer','contract'],신인드래프트:['transfer','draft'],FA시장:['transfer','fa'],시즌결산:['club','result'],스프링캠프:['staff','sc'],순위:['league','stand']};
 function curSub(tab){ if(tab==='league')return (ALIAS.league[UI.lseg]||UI.lseg); UI.sub=UI.sub||{}; const raw=UI.sub[tab]||SUBS[tab][0][0]; return (ALIAS[tab]&&ALIAS[tab][raw])||raw; }
 function faLive(){ return !!(G.fa&&!G.fa.closed&&(G.fa.open||G.day>=dnum(G.fa.y0??G.year,11,1))); } /* 해가 바뀐 1월에도 열린 시장(검수 11-08 카페 제보: 1월에 FA 예정자 화면이 떠서 미계약 FA와 협상할 수 없던 원인) */
+/* 하위 탭 알림 점: 묻는 항목 하나만 계산한다(성능: 한 화면에 80~100번 불린다). 후원 초기화(sponInit)는 예전처럼 매번 먼저 해 둔다(처음 부를 때 난수를 쓴다) */
+const SUB_ALERT={
+  'trade:block':()=>!!(G.offers&&G.offers.length),
+  'transfer:foreign':()=>foreignOpen()&&foreignOf(G.user).length<4&&period()!=='season',
+  'transfer:fa':()=>faLive(),
+  'transfer:contract':()=>!!(G.contract&&!G.contract.done),
+  'transfer:draft':()=>!!(G.draft&&!G.draft.done),
+  'transfer:kbo':()=>!!(G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'&&!G.unemp),
+  'staff:scouts':()=>scoutWorkStatus().needs,
+  'staff:mgr':()=>!G.mgr[G.user],
+  'staff:coach':()=>!!G.coach&&CKEYS.some(k=>!coachesOf(G.user)[k]),
+  'train:dev':()=>!!(G.camp&&!G.camp.done&&!G.camp.seen),
+  'staff:dev':()=>!!(G.camp&&!G.camp.done&&!G.camp.seen),
+  'staff:med':()=>!G.medSet,
+  'club:spon':()=>Object.keys(SPON_SLOT).some(k=>!SPON_SLOT[k].indie&&sponOpen(k)),
+  'staff:mil':()=>!!sangmuWave()&&domestic(G.user).some(p=>milFree(p)&&p.age>=27&&!(p.mil&&p.mil.app))};
 function subAlert(tab,k){
-  const f=foreignOf(G.user);
-  const A2={
-    'trade:block':!!(G.offers&&G.offers.length),
-    'transfer:foreign':foreignOpen()&&f.length<4&&period()!=='season',
-    'transfer:fa':faLive(),
-    'transfer:contract':!!(G.contract&&!G.contract.done),
-    'transfer:draft':!!(G.draft&&!G.draft.done),
-    'transfer:kbo':!!(G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'&&!G.unemp),
-    'staff:scouts':scoutWorkStatus().needs,
-    'staff:mgr':!G.mgr[G.user],
-    'staff:coach':!!G.coach&&CKEYS.some(k=>!coachesOf(G.user)[k]),
-    'train:dev':!!(G.camp&&!G.camp.done&&!G.camp.seen),
-    'staff:dev':!!(G.camp&&!G.camp.done&&!G.camp.seen),
-    'staff:med':!G.medSet,
-    'club:spon':(()=>{ try{ const S=sponInit(); return Object.keys(SPON_SLOT).some(k=>!SPON_SLOT[k].indie&&sponOpen(k)); }catch(e){ return false; } })(),
-    'staff:mil':!!sangmuWave()&&domestic(G.user).some(p=>milFree(p)&&p.age>=27&&!(p.mil&&p.mil.app))};
-  return !!A2[tab+':'+k];
+  let sp=true; try{ sponInit(); }catch(e){ sp=false; }
+  const key=tab+':'+k, f=SUB_ALERT[key]; if(!f)return false;
+  if(key==='club:spon'){ if(!sp)return false; try{ return !!f(); }catch(e){ return false; } }
+  return !!f();
 }
 function tabAlert(tab){ return (SUBS[tab]||[]).some(([k])=>((MERGE[tab]&&MERGE[tab][k])||[k]).some(x=>subAlert(tab,x))); }
 function subTabs(tab){ return fmOn()?'':subTabsRaw(tab); } /* PC(FM식)에서는 위 두 번째 줄이 하위 탭이다 */
@@ -63,8 +66,8 @@ const GLOSS={
   'WAR':'대체 선수 대비 승리 기여(Wins Above Replacement). 그 선수 대신 쉽게 구할 수 있는 선수가 뛰었을 때보다 팀이 몇 승을 더 했는지입니다. 한 시즌 2 이상이면 주전급, 5 이상이면 리그 정상급입니다.',
   'OPS':'출루율 + 장타율. 타자의 공격력을 한 숫자로 봅니다. .700 안팎이 리그 평균, .800 이상이면 좋은 타자, .900 이상이면 리그 정상급입니다.',
   '보류권 해제 조항':'재계약하지 않으면 보류권을 풀어 이 선수가 국내 다른 구단과 계약할 수 있게 하는 약속입니다. 선수에게는 매력이지만, 결별하면 경쟁 구단으로 갈 수 있습니다.',
-  '흑자 조정':'시즌 흑자가 나면 모기업이 그만큼 광고·후원을 덜 집행합니다(실제 KBO 방식). +10%p는 흑자 중 회수되는 비율이 보통보다 10%포인트 높다는 뜻입니다.',
-  '언론 평점':'트레이드를 본 언론의 평가입니다. A가 가장 좋고 F가 가장 나쁩니다. 받은 선수와 내준 선수의 가치를 견줘 매깁니다. C는 무난하다는 뜻입니다.',
+  '흑자 조정':'시즌 흑자가 나면 모기업이 그만큼 광고·후원을 덜 집행합니다. 하드 난이도에서는 회수되는 몫이 더 큽니다.',
+  '언론 평점':'언론이 매긴 트레이드 평가입니다. 받은 선수와 내준 선수의 가치를 견줘 A(가장 좋음)부터 F(가장 나쁨)까지 매기고, C는 무난하다는 뜻입니다.',
   '주장':'C는 주장(Captain)입니다. 선수단 분위기와 팀 케미스트리에 영향을 줍니다.'};
 function gl(term,txt){ const t=GLOSS[term]; return t?`<span class="gl" tabindex="0" role="button" data-tip="${esc(t)}">${esc(txt??term)}</span>`:esc(txt??term); }
 function hiI(t){ return `<button type="button" class="hi-i" data-tip="${esc(t)}">i</button>`; }

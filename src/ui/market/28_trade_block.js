@@ -9,7 +9,7 @@ function offerSum(o){ const P=id=>G.players[id]; const inP=o.give.map(P).filter(
   const dS=sum(inP.map(p=>p.sal))-sum(outP.map(p=>p.sal)), dN=inP.filter(p=>tradeCntN(p.id)).length-outP.filter(p=>tradeCntN(p.id)).length; /* 결재 문서와 같은 정식 인원 기준(복무·입단 예정 제외, 검수 11-09w) */ const gone=outP.map(p=>role(p)).filter(r=>/주전|선발|필승조/.test(r)); const mf=inP.filter(p=>mil(p)==='미필').length;
   const chip=(t,c)=>`<span class="of-c ${c||''}">${t}</span>`;
   return `<div class="of-sides"><div class="of-side in"><div class="of-lab">받는 선수 ${inP.length}</div>${inP.map(p=>row(p)).join('')||'<p class="small muted">없음</p>'}</div><div class="of-side out"><div class="of-lab">보내는 선수 ${outP.length}</div>${outP.map(p=>row(p,true)).join('')||'<p class="small muted">없음</p>'}</div></div>
-    <div class="of-chips">${chip(`연봉 ${dS>=0?'+':''}${money(dS)}/년`,dS>0?'bad':'good')}${chip(`정식 선수 ${dN>=0?'+':''}${dN}명`)}${gone.map(r=>chip(`${r} 빠짐`,'bad')).join('')}${mf?chip(`미필 ${mf}명`):''}</div>`; }
+    <div class="of-chips">${chip(`연봉 ${dS>=0?'+':''}${money(dS)}/년`,dS>0?'bad':'good')}${chip(`정식 선수 ${dN>=0?'+':''}${dN}명`)}${gone.map(r=>chip(`${r} 빠짐`,'bad')).join('')}${mf?chip(`미필 ${mf}명`):''}${(o.cash||0)<0?chip(`현금 ${money(-o.cash)} 받음`,'good'):(o.cash||0)>0?chip(`현금 ${money(o.cash)} 보냄`,'bad'):''}</div>`; }
 function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
   const mine=domestic(G.user).filter(p=>p.listed); const f=UI.blkF||'all';
   const ai=Object.values(G.players).filter(p=>p.aiListed&&p.team!=null&&p.team!==G.user).filter(p=>f==='all'||(f==='urg'&&p.aiUrg)||(f==='p'&&p.isP)||(f==='b'&&!p.isP)).sort((a,b)=>(b.aiUrg?1:0)-(a.aiUrg?1:0)||ovr(b)-ovr(a));
@@ -35,7 +35,7 @@ function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
   return top+bt.bar+(bt.cur==='off'?secOff:bt.cur==='mine'?secMine:secLg); }
 function negPanel(p){ const F=G.fa; if(!F||!F.neg)return ''; const n=F.neg[p.id]; const ag=agentOf(p);
   const log=n?n.log.slice(-8).map(x=>x.w==='구단'?`<div class="chat me"><span>우리 제안</span><b>${x.tm?esc(termsTxt(x.tm,true)):`${x.y}년 연 ${money(x.a)}`}${x.acc?' (역제안 수락)':''}</b></div>`:`<div class="chat ag"><span>${esc(ag.name)}</span><p>${esc(x.t)}</p></div>`).join(''):'';
-  return `<section class="card"><div class="row between"><span class="eyebrow">에이전트 협상 · ${esc(ag.name)} (${esc(ag.firm)})</span><span class="small muted">${(AG_STYLE[ag.style]||AG_STYLE.rel).l} · 친분 ${agRel(ag)}${n?` · 협상 ${n.rounds}/${agRoundsMax(p)}회 · 분위기 ${n.mood}`:''}</span></div>
+  return `<section class="card"><div class="row between"><span class="eyebrow">에이전트 협상 · ${esc(ag.name)} (${esc(ag.firm)})</span><span class="small muted">${(AG_STYLE[ag.style]||AG_STYLE.rel).l} · 친분 ${relLabel(agRel(ag))}${n?` · 협상 ${n.rounds}/${agRoundsMax(p)}회 · 분위기 ${n.mood}`:''}</span></div>
     ${n?`<span class="gauge"><i style="width:${n.mood}%;background:${n.mood>=60?'var(--good)':n.mood>=35?'var(--warn)':'var(--bad)'}"></i></span>`:''}
     ${log?`<div class="chats">${log}</div>`:'<p class="small muted">아직 제안하지 않았습니다. 조건을 내면 에이전트가 바로 답합니다. 너무 낮은 조건을 계속 내면 협상이 깨집니다.</p>'}
     ${n&&n.counter?`<div class="row"><button class="btn primary" data-a="faAccept" data-v="${p.id}">역제안 수락 (${n.counter.terms?esc(termsTxt(n.counter.terms,true)):`${n.counter.years}년 연 ${money(n.counter.annual)}`})</button></div>`:''}

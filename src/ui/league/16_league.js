@@ -4,7 +4,7 @@ function standView0(){
   const {order,live,y}=standOrder(); const top=order[0]; const hasTl=G.teams.some(t=>tlOf(t.id).length);
   const cols=hasTl?'<th>최근10</th><th>연속</th><th>홈</th><th>원정</th><th>득점</th><th>실점</th><th>득실</th>':'';
   const rows=order.map((o,i)=>{ const sp=splitOf(o.tid); const l=l10Of(o.tid); const g=o.w+o.l+(o.t||0);
-    return `<tr class="${o.tid===G.user?'me':''}${i===4?' cut':''}"><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}"><span class="ticker">${live?stRank(order,o.tid):i+1}</span>${badge(o.tid,18)}${tname(o.tid)}</button></td><td>${g}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td>${hasTl?`<td>${l.n?wlStr(l):'-'}</td><td>${strkPill(o.tid)}</td><td>${sp.home}</td><td>${sp.away}</td><td>${sp.rs}</td><td>${sp.ra}</td><td class="${sp.rs-sp.ra>0?'pos':sp.rs-sp.ra<0?'neg':''}">${sp.rs-sp.ra>0?'+':''}${sp.rs-sp.ra}</td>`:''}</tr>`; }).join('');
+    return `<tr class="${o.tid===G.user?'me':''}${i===4?' cut':''}"><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}"><span class="ticker">${live?stRank(order,o.tid):i+1}</span>${badge(o.tid,18)}${tname(o.tid)}</button></td><td>${g}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o,order)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td>${hasTl?`<td>${l.n?wlStr(l):'-'}</td><td>${strkPill(o.tid)}</td><td>${sp.home}</td><td>${sp.away}</td><td>${sp.rs}</td><td>${sp.ra}</td><td class="${sp.rs-sp.ra>0?'pos':sp.rs-sp.ra<0?'neg':''}">${sp.rs-sp.ra>0?'+':''}${sp.rs-sp.ra}</td>`:''}</tr>`; }).join('');
   const fifth=order[4]; const mi=order.findIndex(o=>o.tid===G.user); const me=order[mi];
   const msg=live&&period()==='season'?(mi<=4?`가을야구권 ${stRank(order,G.user)}위 · 6위와 ${Math.max(0,gbOf(me,order[5])).toFixed(1)}경기 차`:`5위 ${tshort(fifth.tid)}와(과) ${gbOf(fifth,me).toFixed(1)}경기 차`):'';
   // 상대 전적
@@ -14,7 +14,7 @@ function standView0(){
   if(tt.cur==='pwr')return tt.bar+pwrView();
   if(tt.cur==='last')return tt.bar+lastStandCard();
   if(tt.cur==='tbl'&&fmOn())return tt.bar+standFm(order,live,y);
-  if(tt.cur==='tbl')return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">${live?`${G.year} 정규시즌 순위`:`${y} 최종 순위`}</h2>${msg?`<span class="small">${msg}</span>`:''}</div>
+  if(tt.cur==='tbl')return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">${live?`${G.year} 정규시즌 순위`:`${y} 최종 순위`} ${hiI(standRules(order.length))}</h2>${msg?`<span class="small">${msg}</span>`:''}</div>
     <div class="tw"><table class="stt"><thead><tr><th class="stk">순위 · 구단</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th>${cols}</tr></thead><tbody>${rows}</tbody></table></div>
     <p class="small muted">점선 위 1~5위가 가을야구(와일드카드·준플레이오프·플레이오프·한국시리즈)에 나갑니다. 구단 이름을 누르면 그 구단 선수단을 봅니다.</p></section>`;
   if(tt.cur==='chart')return tt.bar+`${live&&rankChart(false)?`<section class="card"><div class="row between"><h2 class="sec">순위 변동</h2><span class="small muted">굵은 선이 우리 팀 · 점선 위가 가을야구권</span></div>${rankChart(false)}</section>`:''}`;
@@ -76,7 +76,7 @@ function recView(){ if(spoilG()&&period()==='season')return `<section class="car
     <div class="row">${tsel}<label class="chk"><input type="checkbox" data-a="lrfQ" ${f.q?'checked':''}> 비율 기록은 규정${pit?'이닝':'타석'} 이상${y===G.year&&period()==='season'?` (${pit?Math.round(g):Math.round(g*3.1)}${pit?'이닝':'타석'})`:''}</label></div>
     ${stbl(pit?'pit':'bat',cols,R,{def:pit?{k:'era',dir:1}:{k:'ops',dir:-1},num:true,limit:UI.lrAll?9999:25,me:x=>(x.h.t??x.p.team)===G.user,click:x=>` data-a="player" data-v="${x.p.id}"`})}
     ${R.length>25?`<button class="btn small" data-a="lrAll">${UI.lrAll?'25명만 보기':`전체 ${R.length}명 보기`}</button>`:''}
-    <p class="small muted">머리글을 누르면 그 기록 순으로 정렬합니다. 우리 선수는 강조 표시됩니다.${pit?'':' wRC+는 리그 평균을 100으로 한 득점 창출력입니다(구장 보정 없음).'} 규정 기준(팀 경기 수 × 3.1타석, × 1이닝)은 ${pit?'ERA·WHIP·K/9·BB/9':'타율·출루율·장타율·OPS·wRC+·BABIP·볼삼비'} 같은 비율 기록 순위에만 적용되고, ${pit?'승·세이브·탈삼진':'홈런·타점·안타'} 같은 누적 기록 순위에는 모든 선수가 나옵니다.</p></section>`;
+    <p class="small muted">머리글을 누르면 그 기록 순으로 정렬합니다. 우리 선수는 강조 표시됩니다. ${hiI(`${pit?'':'wRC+는 리그 평균을 100으로 한 득점 창출력입니다(구장 보정 없음). '}규정 기준(팀 경기 수 × 3.1타석, × 1이닝)은 ${pit?'ERA·WHIP·K/9·BB/9':'타율·출루율·장타율·OPS·wRC+·BABIP·볼삼비'} 같은 비율 기록 순위에만 적용되고, ${pit?'승·세이브·탈삼진':'홈런·타점·안타'} 같은 누적 기록 순위에는 모든 선수가 나옵니다.`)}</p></section>`;
 }
 function leaderTiles(rows,y){
   const T=leaderCats(rows,y);
@@ -186,6 +186,8 @@ function psBracket(){
     return `<path class="${R[k]?'on':''}" d="M${x0} ${y0}H${m}V${y1}H${x1}"/>`; }).join('')
     +[[0,BK_W*.25],[0,BK_W*.75],[1,BK_W/2],[2,BK_W/2],[3,BK_W/2]].map(([c,dx])=>`<path d="M${BK_X[c]+dx} ${BK_SY}V${bot(c)}"/>`).join(''); /* 일정 칸이 줄기를 덮는다 */
   return `<div class="bk ws-own"${v3('bracket')?` style="--bk-bg:url(${v3('bracket')})"`:''}>${head}<svg class="bk-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ln}</svg>${BK_R.map(x=>bkCard(D,x,sel)+bkSched(D,x)).join('')}${ch}${bkDet(D,sel)}${seeds}${D.tbHtml||''}${rule}</div>`; }
+/* 순위·가을야구 규칙(카페 11-14: 규칙을 한곳에서). standingsNow(07_daily)·psLadder와 같은 내용 */
+function standRules(n){ return `${n}개 구단이 팀당 144경기를 치릅니다. 승률은 무승부를 빼고 승÷(승+패)로 셉니다. 승률이 같으면 그 구단들끼리 상대 전적, 다음은 득실차, 다음은 지난 시즌 순위로 가립니다. 1~5위가 가을야구에 나갑니다. 와일드카드는 4위와 5위가 최대 2경기를 치르고 4위가 1승을 안고 시작합니다. 준플레이오프는 3위와, 플레이오프는 2위와 5전 3선승제, 한국시리즈는 1위와 7전 4선승제입니다.`; }
 function standFm(order,live,y){
   const me=G.user, n=order.length, top=order[0], rk=live?stRank(order,me):order.findIndex(o=>o.tid===me)+1, gs=G.unemp?null:goalStatus(), od=live?playoffOdds():null, om=new Map((od||[]).map(o=>[o.tid,o]));
   const R=playerRows(y), mine=playerRowsT(y,me), B=mine.filter(x=>!x.p.isP), P=mine.filter(x=>x.p.isP), rc=fxRankLine();
@@ -193,8 +195,8 @@ function standFm(order,live,y){
   /* 개막 전에는 지난 시즌 최종 순위를 보여 준다: 득실도 그 시즌 기록에서, 새 시즌 경기 기록(최근 5)은 섞지 않는다(검수 11-07) */
   let TS=null; if(!live)try{ TS=new Map(teamStats(y).map(r=>[r.tid,r])); }catch(e){}
   const rows=order.map((o,i)=>{ const sp=live?splitOf(o.tid):null, ts=TS&&TS.get(o.tid), d=live?sp.rs-sp.ra:ts&&ts.rs!=null&&ts.ra!=null?ts.rs-ts.ra:null, has=live?sp.n:d!=null;
-    return `<tr class="${o.tid===me?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,16)}${esc(team(o.tid).nick)}</button></td><td>${o.w+o.l+(o.t||0)}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${has?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(o.tid).slice(-5)):'<span class="muted">지난 시즌</span>'}</td></tr>`; }).join('');
-  const reg=fxBox('fx-reg',fxHead(`${y} 정규시즌 ${hiI(`${n}개 구단이 팀당 144경기를 치릅니다. 5위까지 가을야구에 나갑니다.`)}`),
+    return `<tr class="${o.tid===me?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,16)}${esc(team(o.tid).nick)}</button></td><td>${o.w+o.l+(o.t||0)}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o,order)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${has?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(o.tid).slice(-5)):'<span class="muted">지난 시즌</span>'}</td></tr>`; }).join('');
+  const reg=fxBox('fx-reg',fxHead(`${y} 정규시즌 ${hiI(standRules(n))}`),
     (live&&rk?fxExp(gs?goalRankTxt(gs.rank.t):'목표 없음',(n+1-rk)/n*100,gs?(n+1-gs.rank.t)/n*100:null,gs?rk<=gs.rank.t:null,`${rk}위`):fxExp(gs?`${G.year} ${goalRankTxt(gs.rank.t)}`:'목표 없음',null,null,null,rk?`${y} 최종 ${rk}위 · 개막 전`:'개막 전'))
     +`<div class="fx-two"><div><h4>최근 경기력</h4>${tlOf(me).length?fxForm(tlOf(me).slice(-10)):'<p class="fx-none">경기 전</p>'}</div><div><h4>리그 순위</h4>${rc||'<p class="fx-none">사흘 이상 치르면 그립니다</p>'}</div></div>`
     +`<div class="fx-tw"><table class="fx-t fx-st"><thead><tr><th>순위</th><th>구단</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th><th>득실</th><th>최근 5</th></tr></thead><tbody>${rows}</tbody></table></div>`
@@ -315,7 +317,7 @@ function wireFm(){ const all=G.wire||[], ks=[...new Set(all.map(w=>w.k))], W=UI.
 function flTeamCell(t){ return t==='sm'?`<span class="tname"><b>상무</b></span>`:`<button class="lnk tname" data-a="lteamGo" data-v="${t}">${badge(t,16)}${esc(tshort(t))}</button>`; }
 function futStandView(){ const F=G.fl; if(!F)return '<p class="small muted">퓨처스리그 기록이 아직 없습니다.</p>';
   const tbl=div=>{ const L=flStand(div); const top=L[0]; return `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${div==='N'?'북부리그':'남부리그'}</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>승차</th><th>득점</th><th>실점</th></tr></thead><tbody>${L.map((r,i)=>`<tr class="${r.t===G.user?'me':''}"><td>${i+1} ${flTeamCell(r.t)}</td><td>${r.w+r.l+r.d}</td><td>${r.w}</td><td>${r.l}</td><td>${r.d}</td><td class="key">${r.w+r.l?(r.w/(r.w+r.l)).toFixed(3).replace(/^0/,''):'-'}</td><td>${i&&top?(((top.w-r.w)+(r.l-top.l))/2).toFixed(1):'-'}</td><td>${r.rs}</td><td>${r.ra}</td></tr>`).join('')}</tbody></table></div>`; };
-  return csec(`${F.y} 퓨처스리그`,tbl('N')+tbl('S')+`<p class="small muted">2군 경기는 1군과 같은 경기 엔진으로 한 타석씩 계산합니다. 북부리그는 수도권 구단, 남부리그는 그 밖의 구단과 상무입니다. 화·수·목·토·일에 열리고 순위는 승률(무승부 제외) 순입니다.</p>`)+flRecent(12); }
+  return csec(`${F.y} 퓨처스리그`,tbl('N')+tbl('S')+`<p class="small muted">북부리그는 수도권 구단, 남부리그는 그 밖의 구단과 상무입니다. 화·수·목·토·일에 열리고 순위는 무승부를 뺀 승률 순입니다.</p>`)+flRecent(12); }
 function flRecent(n){ const F=G.fl; if(!F)return ''; const L=F.games.filter(x=>x.h===G.user||x.a===G.user).slice(-n).reverse(); if(!L.length)return '';
   return csec(`우리 2군 최근 경기 ${L.length}경기`,`<div class="fl-g">${L.map(flGameRow).join('')}</div>`); }
 function flGameRow(x){ const me=x.h===G.user?'h':'a', ms=me==='h'?x.hs:x.as, os=me==='h'?x.as:x.hs, opp=me==='h'?x.a:x.h; const r=ms>os?'승':ms<os?'패':'무';
@@ -328,8 +330,8 @@ function flBox(x){ const side=k=>{ const B=x.box[k]; const nm=(id,n)=>G.players[
   return `<div class="fl-box"><p class="small mono">${esc(flName(x.a))} ${ln('a')}<br>${esc(flName(x.h))} ${ln('h')}</p>${side('a')}${side('h')}</div>`; }
 
 /* 주간 파워랭킹(OOTP Power Rankings 참고) */
-function pwrView(){ const P=G.pwr; if(!P||P.y!==G.year){ const R0=G.teams.map(t=>({t:t.id,r:(()=>{ try{ return projRating(t.id); }catch(e){ return 0; } })()})).sort((a,b)=>b.r-a.r); if(!R0.length)return csec('파워랭킹','<p class="small muted">정규시즌 매주 월요일에 발표합니다.</p>'); /* 지금 전력으로 다시 줄 세운다(저장된 개막 예상은 그때 기준이라 지수와 어긋날 수 있다) */
-    const J=R0.map(x=>x.t), rt=R0.map(x=>x.r); return csec('개막 전 전력 예상',`<p class="small muted">지금 선수단 전력으로 본 예상 순위입니다(외국인 빈자리는 채운다고 보고 계산). 구단주 목표의 기준이 된 예상 순위는 정할 때 전력이라 다를 수 있습니다. 개막하면 매주 월요일 파워랭킹으로 바뀝니다.</p><div class="tw"><table class="sqt"><thead><tr><th>예상</th><th class="stk">구단</th><th>전력 지수</th></tr></thead><tbody>${J.map((t,i)=>`<tr class="${t===G.user?'me':''}"><td>${i+1}</td><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${t}">${badge(t,16)} ${esc(tshort(t))}</button></td><td class="num">${rt[i].toFixed(1)}</td></tr>`).join('')}</tbody></table></div>`); }
+function pwrView(){ const P=G.pwr; if(!P||P.y!==G.year){ let R0=[]; try{ R0=projNow().map(x=>({t:x.tid,r:x.r})); }catch(e){} /* 홈·구단주 목표 예상 순위와 같은 줄(전력 + 그 시즌 고정 잡음, 검수 11-14: 이 화면만 잡음 없이 줄 세워 순위가 달랐다) */ if(!R0.length)return csec('파워랭킹','<p class="small muted">정규시즌 매주 월요일에 발표합니다.</p>'); /* 지금 전력으로 다시 줄 세운다(저장된 개막 예상은 그때 기준이라 지수와 어긋날 수 있다) */
+    const J=R0.map(x=>x.t), rt=R0.map(x=>x.r); return csec('개막 전 전력 예상',`<p class="small muted">지금 선수단 전력으로 본 예상 순위입니다. 개막하면 매주 월요일 파워랭킹으로 바뀝니다. ${hiI('외국인 빈자리는 채운다고 보고, KBO 경력이 없는 외국인은 평균과의 차이를 절반만 반영합니다. 구단주 목표의 기준인 예상 순위는 목표를 정할 때의 전력이라 이 순위와 다를 수 있습니다.')}</p><div class="tw"><table class="sqt"><thead><tr><th>예상</th><th class="stk">구단</th><th>전력 지수</th></tr></thead><tbody>${J.map((t,i)=>`<tr class="${t===G.user?'me':''}"><td>${i+1}</td><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${t}">${badge(t,16)} ${esc(tshort(t))}</button></td><td class="num">${rt[i].toFixed(1)}</td></tr>`).join('')}</tbody></table></div>`); }
   const arr=r=>r.prev==null?'<span class="small muted">new</span>':r.prev>r.rk?`<span class="pos">▲${r.prev-r.rk}</span>`:r.prev<r.rk?`<span class="neg">▼${r.rk-r.prev}</span>`:'<span class="small muted">-</span>';
   const rows=P.rows.map(r=>`<tr class="${r.tid===G.user?'me':''}"><td>${r.rk}</td><td>${arr(r)}</td><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${r.tid}">${badge(r.tid,16)} ${esc(tshort(r.tid))}</button></td><td class="key">${r.s.toFixed(1)}</td><td>${r.w}-${r.l}-${r.t}</td><td>${r.r10}</td><td class="${r.rd>0?'pos':r.rd<0?'neg':''}">${r.rd>0?'+':''}${r.rd}</td><td>${r.py.toFixed(3).replace(/^0/,'')}</td></tr>`).join('');
-  return csec('파워랭킹',`<p class="small muted">${dmd(P.d)} 발표 · 시즌 승률, 득실점으로 본 기대 승률(피타고리안), 최근 10경기, 지금 전력을 합친 점수입니다. 시즌 초에는 전력 비중이 큽니다. 화살표는 지난주 대비 변동입니다.</p><div class="tw"><table class="sqt"><thead><tr><th>#</th><th>변동</th><th class="stk">구단</th><th>점수</th><th>승-패-무</th><th>최근10</th><th>득실</th><th>기대승률</th></tr></thead><tbody>${rows}</tbody></table></div>`); }
+  return csec('파워랭킹',`<p class="small muted">${dmd(P.d)} 발표 · 화살표는 지난주 대비 변동입니다. ${hiI('시즌 승률, 득실점으로 본 기대 승률(피타고리안), 최근 10경기, 지금 전력을 합친 점수입니다. 시즌 초에는 전력 비중이 큽니다.')}</p><div class="tw"><table class="sqt"><thead><tr><th>#</th><th>변동</th><th class="stk">구단</th><th>점수</th><th>승-패-무</th><th>최근10</th><th>득실</th><th>기대승률</th></tr></thead><tbody>${rows}</tbody></table></div>`); }
