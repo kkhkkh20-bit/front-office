@@ -31,24 +31,27 @@ function mergedBody(tab,s,H){ const ks=((MERGE[tab]&&MERGE[tab][s])||[s]).filter
 const GW={구장:['club','stad'],감독:['staff','mgr'],코치진:['staff','coach'],외국인선수:['transfer','foreign'],'부상방지·병원':['staff','med'],'2군연수':['staff','dev'],트레이드:['trade','block'],병역:['staff','mil'],비FA다년계약:['transfer','contract'],드래프트후보:['transfer','draft'],스카우트팀:['staff','scouts'],해외스카우트망:['scout','intl'],전력분석:['staff','data'],마케팅:['club','mkt'],일지:['club','log'],연봉협상:['transfer','contract'],신인드래프트:['transfer','draft'],FA시장:['transfer','fa'],시즌결산:['club','result'],스프링캠프:['staff','sc'],순위:['league','stand']};
 function curSub(tab){ if(tab==='league')return (ALIAS.league[UI.lseg]||UI.lseg); UI.sub=UI.sub||{}; const raw=UI.sub[tab]||SUBS[tab][0][0]; return (ALIAS[tab]&&ALIAS[tab][raw])||raw; }
 function faLive(){ return !!(G.fa&&!G.fa.closed&&(G.fa.open||G.day>=dnum(G.fa.y0??G.year,11,1))); } /* 해가 바뀐 1월에도 열린 시장(검수 11-08 카페 제보: 1월에 FA 예정자 화면이 떠서 미계약 FA와 협상할 수 없던 원인) */
+/* 하위 탭 알림 점: 묻는 항목 하나만 계산한다(성능: 한 화면에 80~100번 불린다). 후원 초기화(sponInit)는 예전처럼 매번 먼저 해 둔다(처음 부를 때 난수를 쓴다) */
+const SUB_ALERT={
+  'trade:block':()=>!!(G.offers&&G.offers.length),
+  'transfer:foreign':()=>foreignOpen()&&foreignOf(G.user).length<4&&period()!=='season',
+  'transfer:fa':()=>faLive(),
+  'transfer:contract':()=>!!(G.contract&&!G.contract.done),
+  'transfer:draft':()=>!!(G.draft&&!G.draft.done),
+  'transfer:kbo':()=>!!(G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'&&!G.unemp),
+  'staff:scouts':()=>scoutWorkStatus().needs,
+  'staff:mgr':()=>!G.mgr[G.user],
+  'staff:coach':()=>!!G.coach&&CKEYS.some(k=>!coachesOf(G.user)[k]),
+  'train:dev':()=>!!(G.camp&&!G.camp.done&&!G.camp.seen),
+  'staff:dev':()=>!!(G.camp&&!G.camp.done&&!G.camp.seen),
+  'staff:med':()=>!G.medSet,
+  'club:spon':()=>Object.keys(SPON_SLOT).some(k=>!SPON_SLOT[k].indie&&sponOpen(k)),
+  'staff:mil':()=>!!sangmuWave()&&domestic(G.user).some(p=>milFree(p)&&p.age>=27&&!(p.mil&&p.mil.app))};
 function subAlert(tab,k){
-  const f=foreignOf(G.user);
-  const A2={
-    'trade:block':!!(G.offers&&G.offers.length),
-    'transfer:foreign':foreignOpen()&&f.length<4&&period()!=='season',
-    'transfer:fa':faLive(),
-    'transfer:contract':!!(G.contract&&!G.contract.done),
-    'transfer:draft':!!(G.draft&&!G.draft.done),
-    'transfer:kbo':!!(G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'&&!G.unemp),
-    'staff:scouts':scoutWorkStatus().needs,
-    'staff:mgr':!G.mgr[G.user],
-    'staff:coach':!!G.coach&&CKEYS.some(k=>!coachesOf(G.user)[k]),
-    'train:dev':!!(G.camp&&!G.camp.done&&!G.camp.seen),
-    'staff:dev':!!(G.camp&&!G.camp.done&&!G.camp.seen),
-    'staff:med':!G.medSet,
-    'club:spon':(()=>{ try{ const S=sponInit(); return Object.keys(SPON_SLOT).some(k=>!SPON_SLOT[k].indie&&sponOpen(k)); }catch(e){ return false; } })(),
-    'staff:mil':!!sangmuWave()&&domestic(G.user).some(p=>milFree(p)&&p.age>=27&&!(p.mil&&p.mil.app))};
-  return !!A2[tab+':'+k];
+  let sp=true; try{ sponInit(); }catch(e){ sp=false; }
+  const key=tab+':'+k, f=SUB_ALERT[key]; if(!f)return false;
+  if(key==='club:spon'){ if(!sp)return false; try{ return !!f(); }catch(e){ return false; } }
+  return !!f();
 }
 function tabAlert(tab){ return (SUBS[tab]||[]).some(([k])=>((MERGE[tab]&&MERGE[tab][k])||[k]).some(x=>subAlert(tab,x))); }
 function subTabs(tab){ return fmOn()?'':subTabsRaw(tab); } /* PC(FM식)에서는 위 두 번째 줄이 하위 탭이다 */

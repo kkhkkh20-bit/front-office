@@ -156,7 +156,7 @@ function releasePlayer(id){
   for(const k in G.lineup) if(G.lineup[k]===id)delete G.lineup[k];
   toFree(p,`${tname(G.user)}에서 방출`,cost); /* 웨이버 공시 뒤 아무도 데려가지 않으면 무적 선수로 남는다 */
 }
-function needScore(tid,p){ const d=depth(tid); const o=ovr(p);
+function needScore(tid,p){ const C=faPC(); let d=C&&C.dep.get(tid); if(!d){ d=depth(tid); if(C)C.dep.set(tid,d); } const o=ovr(p); /* FA 하루 입찰 중에는 구단별 뎁스를 한 번만(01_rules faPC) */
   if(p.isP){ const arr=isSPr(p)?d.sp.map(spV):d.pen.map(penV); return arr.length&&o>Math.min(...arr)+2?1:0; }
   return d.start.length&&o>Math.min(...d.start.map(x=>ovr(x)))+2?1:0; }
 
