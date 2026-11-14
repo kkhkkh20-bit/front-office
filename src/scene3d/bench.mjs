@@ -34,7 +34,7 @@ export function createBench(scene,player){const find=n=>player.animations.find(c
   const put=(spot,v,hop,shade)=>{const set=b.sets[v],i=used[v]++;dummy.position.set(spot.x,state.floorY-set.pose.floor+hop,spot.z);dummy.rotation.set(0,spot.yaw,0);dummy.updateMatrix();set.body.setMatrixAt(i,dummy.matrix);set.skin.setMatrixAt(i,dummy.matrix);set.skin.setColorAt(i,tone.setScalar(shade));};
   b.decals.forEach(d=>d.visible=false);
   people.slice(0,SEATS).forEach((person,j)=>{const i=ORDER[j],seat=b.seats[i],v=cheer&&i%3!==1?2:seat.variant,hop=v===2?Math.abs(Math.sin((now-(cheer.start??now))/170+i*1.7))*.09:0; /* 환호: 셋 중 둘이 일어나 조금씩 뛴다 */
-   put(seat,v,hop,person.tone??1);const map=person.no!=null&&state.opts.tex?state.opts.tex(person.no,state.uniformOf?.[side]):null,d=b.decals[j];if(map&&b.on){if(d.material.map!==map){const fresh=!d.material.map;d.material.map=map;if(fresh)d.material.needsUpdate=true;}d.geometry=b.sets[v].pose.decal;d.matrix.copy(dummy.matrix);d.visible=true;}});
+   put(seat,v,hop,person.tone??1);const map=person.no!=null&&state.opts.tex?state.opts.tex(person.no,state.uniformOf?.[side]):null,d=b.decals[j];if(map&&b.on&&!b.cut){if(d.material.map!==map){const fresh=!d.material.map;d.material.map=map;if(fresh)d.material.needsUpdate=true;}d.geometry=b.sets[v].pose.decal;d.matrix.copy(dummy.matrix);d.visible=true;}});
   for(let k=0;k<staff;k++)if(b.sets[b.stands[k].variant])put(b.stands[k],b.stands[k].variant,0,.94);
   b.sets.forEach((set,v)=>{if(!set)return;for(const m of [set.body,set.skin]){m.count=used[v];m.instanceMatrix.needsUpdate=true;m.computeBoundingSphere();}if(set.skin.instanceColor)set.skin.instanceColor.needsUpdate=true;});state.count[side]=Math.min(SEATS,people.length);};
  return state;}
@@ -44,7 +44,9 @@ export function syncBench(state,data,opts){if(!state||!data)return;if(opts)state
   const list=data.bench?.[side];state.people[side]=list?list.players.slice(0,n).map(p=>({no:p.no,tone:state.opts.tone?state.opts.tone(p):1})):Array.from({length:n},()=>({no:null,tone:1}));state.staff[side]=list?list.staff:0;if(state.uniform[side])state.place(side);};
  set(bat,o?.u,9);set(fld,d?.u,6);showBench(state,true);}
 const meshesOf=b=>b.sets.flatMap(s=>s?[s.body,s.skin]:[]);
-export function showBench(state,on){if(!state)return;for(const b of Object.values(state.sides)){b.on=on;meshesOf(b).forEach(m=>m.visible=on);if(!on)b.decals.forEach(d=>d.visible=false);}if(on)for(const side of Object.keys(state.sides))if(state.uniform[side])state.place(side);}
+/* 더그아웃 구조물이 카메라 때문에 숨겨질 때 그 안의 사람도 함께 숨긴다(맨바닥에 앉은 것처럼 보이지 않게) */
+export function hideBenchSide(state,hide){if(!state)return;for(const [side,b] of Object.entries(state.sides)){const off=!!hide[side];if(b.cut===off)continue;b.cut=off;const on=b.on&&!off;meshesOf(b).forEach(m=>m.visible=on);if(!on)b.decals.forEach(d=>d.visible=false);else if(state.uniform[side])state.place(side);}}
+export function showBench(state,on){if(!state)return;for(const b of Object.values(state.sides)){b.on=on;meshesOf(b).forEach(m=>m.visible=on&&!b.cut);if(!on)b.decals.forEach(d=>d.visible=false);}if(on)for(const side of Object.keys(state.sides))if(state.uniform[side])state.place(side);}
 export function disposeBench(state){if(!state)return;for(const b of Object.values(state.sides)){for(const s of b.sets)if(s){s.body.removeFromParent();s.skin.removeFromParent();s.body.geometry.dispose();s.body.material.dispose();s.skin.material.dispose();}b.decals.forEach(d=>{d.removeFromParent();d.material.dispose();});}for(const p of state.poses)if(p){p.body.dispose();p.skin.dispose();p.decal.dispose();}}
 export function benchInfo(state){return state?{h:state.count.h||0,a:state.count.a||0,staff:{h:state.staff.h||0,a:state.staff.a||0},numbers:Object.values(state.sides).reduce((n,b)=>n+b.decals.filter(d=>d.visible).length,0),cheer:state.cheer?.side||null,visible:Object.values(state.sides).every(b=>b.on)}:null;}
 /* 득점·홈런 함성 때 그 팀 벤치가 일어난다. tickBench가 true를 돌려주는 동안은 계속 그려야 한다 */
