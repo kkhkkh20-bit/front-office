@@ -4422,6 +4422,48 @@ T('[단장 현장] 한꺼번에 잡기: 학교 방문은 한 주에 한 번씩�
 T('[단장 현장] AI 단장도 매달 고교 권역을 돌아 정보망이 오르고 상한은 같다',()=>{ fresh(); const A=G.teams.filter(x=>x.id!==G.user&&x.gm&&!x.gm.interim); ok(A.length,'준비 실패'); G.areaVisitT={};
   const ks=AREA.map(a=>a.k), n0=A.map(t=>ks.map(k=>areaNet(t.id,k))); let n=0; for(let r=0;r<3;r++)for(let m=4;m<=9;m++){ G.day=dnum(G.year,m,1); n+=gmAiFieldDaily(); } /* 같은 날을 여러 번 불러 상한까지 채운다 */ ok(n>0,'AI 현장 활동이 없음');
   const n1=A.map(t=>ks.map(k=>areaNet(t.id,k))); ok(n1.some((L,j)=>L.some((v,i)=>v>n0[j][i])),'AI 정보망이 오르지 않음'); ok(n1.every((L,j)=>L.every((v,i)=>v-n0[j][i]<=8)),'AI 상한이 우리보다 큼'); ok(!G.areaVisitT[G.user],'우리 구단 기록을 AI가 채움'); });
+const slByT=()=>{ const o={}; for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year)continue; (o[p.team]=o[p.team]||[]).push(p); } return o; };
+const slCum=p=>{ p.cum={h:0,hr:0,w:0,sv:0,so:0}; p.fl={deb:1}; };
+T('[스토리라인] 멘토: 같은 자리 베테랑·성향·어린 선수가 맞을 때만 시작하고 저장 뒤에도 이어지며 첫 홈런에 스승 이야기가 한 번 나온다',()=>{ fresh(); G.day=KD(5,6); slInit(); const u0=slU; slU=()=>0.01;
+  try{ const B=domestic(G.user).filter(p=>!p.isP&&!p.ys&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)); const v=B[0], y=B[B.length-1]; ok(v&&y&&v!==y,'준비 실패');
+    for(const p of playersOf(G.user)){ initPers(p); p.pers.pro=6; if(p!==y&&p.age<=23)p.age=26; }
+    v.age=34; v.pers.loy=15; y.age=21; y.svc=1; y.pos=v.pos; y.injOut=0;
+    SLH.mentor.scan(slByT(),'season'); ok(!G.sl.act.some(s=>s.k==='mentor'&&s.t===G.user),'프로의식이 낮은 베테랑인데 멘토가 시작됨');
+    v.pers.pro=16; G.sl.yr.wkN=0; for(const x of G.sl.act.slice())slEnd(x,'test'); SLH.mentor.scan(slByT(),'season'); const s=G.sl.act.find(s=>s.k==='mentor'&&s.t===G.user); ok(s&&s.p[0]===v.id&&s.p[1]===y.id,'조건이 맞는데 멘토가 시작되지 않음: '+JSON.stringify(G.sl.act.map(x=>[x.k,x.t,x.p])));
+    ok(slCard(y).includes(v.name)&&slCard(v).includes(y.name),'선수 화면에 이야기가 없음'); ok(!/[0-9]/.test(slLines(y).map(x=>x.t).join('')),'선수 화면 한 줄에 숫자');
+    G=JSON.parse(JSON.stringify(G)); const y2=G.players[y.id]; y2.mor=60; const s2=G.sl.act.find(x=>x.k==='mentor'&&x.t===G.user); ok(s2,'저장 뒤 이야기가 사라짐'); SLH.mentor.week(s2,'season'); ok(y2.mor>60,'저장 뒤 제자 기분 효과가 없음');
+    slCum(y2); const op=G.teams.find(t=>t.id!==G.user).id; storyGame(y2,{ab:4,h:1,hr:1,rbi:1},G.day,op,{},{}); ok(G.news[0]&&G.news[0].t.includes(G.players[v.id].name)&&G.news[0].t.includes('첫 홈런'),'첫 홈런 스승 기사 없음: '+(G.news[0]||{}).t);
+    storyGame(y2,{ab:4,h:1,hr:1},G.day,op,{},{}); ok(G.news.filter(n=>n.t.includes('첫 홈런')).length===1,'첫 홈런 기사가 두 번');
+    s2.x.w=8; SLH.mentor.season(s2); ok(y2.slGrow===G.year&&coachDevMult(y2)>0,'함께한 시즌 성장 표시가 없음');
+  } finally{ slU=u0; } });
+T('[스토리라인] 재시작 대기·연속 금지: 같은 구단에 같은 종류가 연달아 오지 않고 구단 대기가 지나야 다시 생기며, 같은 자리 문장은 바로 되풀이하지 않는다',()=>{ fresh(); G.day=KD(11,20); slInit(); const u0=slU; slU=()=>0.001;
+  try{ const L=domestic(G.user).filter(p=>!p.ys&&!p.foreign); for(const p of L)p.fam={m:G.year-3,b:G.day}; const a=L[0], b=L[1]; a.fam={}; b.fam={}; a.age=28; b.age=29;
+    SLH.fam.scan(slByT(),'off'); const s=G.sl.act.find(x=>x.k==='fam'&&x.t===G.user); ok(s&&s.st==='wed','결혼 이야기가 시작되지 않음'); ok((G.sl.lk[G.user]||[])[0]==='fam','구단 최근 종류 기억이 없음');
+    const first=s.p[0], other=first===a.id?b:a; SLH.fam.scan(slByT(),'off'); ok(G.sl.act.filter(x=>x.k==='fam'&&x.t===G.user).length===1,'같은 구단에 결혼 이야기가 연달아 생김');
+    slEnd(s,'test'); G.sl.lk[G.user]=[]; SLH.fam.scan(slByT(),'off'); ok(!G.sl.act.some(x=>x.k==='fam'&&x.t===G.user),'구단 대기 안인데 다시 생김');
+    G.day+=60; G.sl.lk[G.user]=[]; SLH.fam.scan(slByT(),'off'); const s2=G.sl.act.find(x=>x.k==='fam'&&x.t===G.user); ok(s2&&s2.p[0]===other.id,'대기가 지나도 다른 선수 결혼이 안 생김: '+JSON.stringify(s2&&s2.p)); ok(G.players[first].fam.m===G.year,'결혼 기록 없음');
+    const w=[slPick('t.x',['가','나','다'],1),slPick('t.x',['가','나','다'],1),slPick('t.x',['가','나','다'],1)]; ok(w[0]!==w[1]&&w[1]!==w[2],'같은 문장이 연달아 나옴: '+w);
+  } finally{ slU=u0; } });
+T('[스토리라인] 신경전: AI 구단은 AI 단장이 스스로 정리하고 우리 구단은 단장 결정으로 오며, 저장 뒤에 고른 결정도 적용된다',()=>{ fresh(); G.day=KD(6,3); slInit();
+  const op=G.teams.find(t=>t.id!==G.user).id; const A=domestic(op).filter(p=>!p.isP&&!p.ys).slice(0,2); A.forEach(initPers); const s=slFeudStart(op,A[0],A[1]);
+  ok(!evOpen().some(e=>e.k==='slFeud'),'다른 구단 신경전이 우리 결정으로 옴'); G.day+=8; SLH.feud.week(s,'season'); ok(s.st!=='rumor'||!G.sl.act.includes(s),'AI 단장이 정리하지 않음');
+  const U=domestic(G.user).filter(p=>!p.isP&&!p.ys).slice(0,2); U.forEach(initPers); const su=slFeudStart(G.user,U[0],U[1]); const e=evOpen().find(x=>x.k==='slFeud'); ok(e,'우리 신경전 결정이 없음'); ok(G.sl.yr.decU===1,'결정 수가 세어지지 않음');
+  G=JSON.parse(JSON.stringify(G)); const r=evPick(e.id,1); ok(typeof r==='string'&&r.includes('원칙'),'결정 결과가 없음: '+r); const su2=G.sl.act.find(x=>x.id===su.id); ok(su2&&su2.st!=='rumor','결정이 이야기 단계에 반영되지 않음');
+  const U2=domestic(G.user).filter(p=>!p.isP&&!p.ys).slice(2,4); U2.forEach(initPers); G.sl.yr.decU=SL.decU; const n=G.evs.length; slFeudStart(G.user,U2[0],U2[1]); ok(G.evs.length===n,'한 해 결정 상한을 넘김'); });
+T('[스토리라인] 부상 복귀: 45일 이상 부상만 이야기가 되고 복귀전 기사는 한 번, 시즌 뒤 최고의 재기 후보가 된다',()=>{ fresh(); G.day=KD(5,10); slInit();
+  const L=domestic(G.user).filter(p=>!p.ys&&!p.isP).sort((a,b)=>ovr(b)-ovr(a)); const a=L[0], b=L[1]; a.injOut=20; b.injOut=70; SLH.cb.scan(slByT()); ok(!slOf(a.id).length,'짧은 부상인데 이야기 시작');
+  const s=slOf(b.id).find(x=>x.k==='cb'); ok(s,'긴 부상인데 이야기가 없음'); ok(slCard(b).includes('재활'),'선수 화면에 재활 표시 없음');
+  b.injOut=0; SLH.cb.week(s); ok(s.st==='wait','재활 끝 상태가 아님: '+s.st); const op=G.teams.find(t=>t.id!==G.user).id; storyGame(b,{ab:4,h:2,hr:1,rbi:2},G.day,op,{},{});
+  ok(s.st==='back'&&G.news[0].t.includes(b.name)&&G.news[0].t.includes('복귀전'),'복귀전 기사 없음: '+(G.news[0]||{}).t); const n=G.news.length; storyGame(b,{ab:4,h:2,hr:1},G.day,op,{},{}); ok(G.news.length===n,'복귀전 기사가 두 번');
+  ok((G.sl.yr.cbBack||[]).includes(b.id),'재기 후보 명단에 없음'); });
+T('[스토리라인] 늦깎이 데뷔는 오래 기다린 선수만, 리그 상한을 지키고 기사 말투에 하오체가 없다',()=>{ fresh(); G.day=KD(6,10); slInit();
+  const op=G.teams.find(t=>t.id!==G.user).id; const P=domestic(op).filter(p=>!p.ys&&!p.isP); const a=P[0], b=P[1];
+  a.age=22; a.draft={y:G.year-1}; a.cum={h:0,hr:0,w:0,sv:0,so:0}; a.fl={}; storyGame(a,{ab:3,h:0},G.day,G.user,{},{}); ok(!slOf(a.id).some(s=>s.k==='deb'),'어린 신인 데뷔가 늦깎이 이야기가 됨');
+  b.age=28; b.draft={y:G.year-6}; b.cum={h:0,hr:0,w:0,sv:0,so:0}; b.fl={}; storyGame(b,{ab:3,h:0},G.day,G.user,{},{}); const s=slOf(b.id).find(x=>x.k==='deb'); ok(s,'늦깎이 데뷔 이야기가 없음'); ok(G.news[0].t.includes(b.name)&&G.news[0].oth,'리그 소식으로 나오지 않음');
+  storyGame(b,{ab:4,h:1},G.day+1,G.user,{},{}); ok(!G.sl.act.includes(s)&&G.news[0].t.includes('첫 안타'),'첫 안타 후속 기사가 없음: '+G.news[0].t);
+  G.sl.yr.debN=4; const c=P[2]; c.age=29; c.draft={y:G.year-7}; c.cum={h:0,hr:0,w:0,sv:0,so:0}; c.fl={}; storyGame(c,{ab:3,h:0},G.day,G.user,{},{}); ok(!slOf(c.id).length,'한 해 상한을 넘겨 데뷔 이야기');
+  G.sl.yr.n=SL.yAll; ok(!slCan('mentor',G.user,[c.id]),'한 해 시작 상한을 넘김'); G.sl.yr.n=0; for(let i=0;i<SL.act;i++)G.sl.act.push({id:'f'+i,k:'mentor',t:op,p:[-1-i],st:'on',d:G.day,y:G.year,x:{}}); ok(!slCan('feud',G.user,[c.id]),'리그 동시 진행 상한을 넘김');
+  const txt=G.news.map(n=>n.t+' '+n.b).join(' '); ok(!/했소|하오[.!" ]|겠소|있소|없소|이오[.!"]/.test(txt),'하오체 문장: '+txt.slice(0,200)); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

@@ -67,6 +67,7 @@
       "src/engine/staff/52_staff_profiles.js",
       "src/engine/media/52_interviews.js",
       "src/engine/players/29b_player_drama.js",
+      "src/engine/players/31_storylines.js",
       "src/engine/career/53_gm_schedule.js",
       "src/engine/media/54_press.js",
       "src/engine/finance/55_capex.js",
