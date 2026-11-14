@@ -4422,6 +4422,39 @@ T('[단장 현장] 한꺼번에 잡기: 학교 방문은 한 주에 한 번씩�
 T('[단장 현장] AI 단장도 매달 고교 권역을 돌아 정보망이 오르고 상한은 같다',()=>{ fresh(); const A=G.teams.filter(x=>x.id!==G.user&&x.gm&&!x.gm.interim); ok(A.length,'준비 실패'); G.areaVisitT={};
   const ks=AREA.map(a=>a.k), n0=A.map(t=>ks.map(k=>areaNet(t.id,k))); let n=0; for(let r=0;r<3;r++)for(let m=4;m<=9;m++){ G.day=dnum(G.year,m,1); n+=gmAiFieldDaily(); } /* 같은 날을 여러 번 불러 상한까지 채운다 */ ok(n>0,'AI 현장 활동이 없음');
   const n1=A.map(t=>ks.map(k=>areaNet(t.id,k))); ok(n1.some((L,j)=>L.some((v,i)=>v>n0[j][i])),'AI 정보망이 오르지 않음'); ok(n1.every((L,j)=>L.every((v,i)=>v-n0[j][i]<=8)),'AI 상한이 우리보다 큼'); ok(!G.areaVisitT[G.user],'우리 구단 기록을 AI가 채움'); });
+T('[팀 분위기·사기] 좋은 고참 리더는 분위기를 올리고, 분위기를 흐리는 주축·잦은 선수 이동·출전 불만은 내린다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10); const tid=G.user, L=playersOf(tid);
+  for(const p of L){ initPers(p); p.pers.pro=10; p.pers.temp=10; p.pers.loy=10; p.mor=60; delete p.grv; p.mvD=G.day-400; delete p.boy; }
+  const T0=chemCalc(tid).T; const ld=teamLeaders(tid); ok(ld.length>=2,'준비 실패: 리더 없음'); for(const p of ld){ p.pers.pro=18; p.pers.loy=17; p.mor=75; }
+  const c1=chemCalc(tid); ok(c1.T>T0+3&&c1.f.lead>0,'좋은 리더가 분위기를 못 올림: '+T0+' -> '+c1.T);
+  const d=depth(tid), core=[...d.start].filter(p=>!ld.includes(p)).slice(0,3); ok(core.length===3,'준비 실패: 주전'); for(const p of core){ p.pers.temp=18; p.pers.pro=4; }
+  const c2=chemCalc(tid); ok(c2.T<c1.T-2&&c2.f.trb<0,'말썽 선수가 분위기를 못 내림'); G.chem=G.chem||{}; G.chem[tid]={v:c2.T,T:c2.T,f:c2.f,d:G.day};
+  ok(chemWhy(tid,true).some(x=>x.k==='trb'&&(c2.f.trbP||[]).some(id=>x.t.includes(G.players[id].name))),'우리 구단 이유에 말썽 선수 이름이 없음');
+  ok(!chemWhy(tid,false).some(x=>core.some(p=>x.t.includes(p.name))),'다른 구단 시선(보도)에서 선수 이름이 드러남');
+  for(const p of L.slice(0,9))p.mvD=G.day-3; const c3=chemCalc(tid); ok(c3.f.chn<0&&c3.T<c2.T,'잦은 선수 이동이 분위기를 못 내림');
+  for(const p of L.slice(10,14))p.grv={pt:14}; const c4=chemCalc(tid); ok(c4.f.dsp<0&&c4.T<c3.T,'출전 불만이 분위기를 못 내림');
+  ok(c4.T>=5&&c4.T<=95&&Math.abs(c1.f.lead)<=7&&c4.f.trb>=-12,'분위기 몫이 상한을 넘음'); });
+T('[팀 분위기·사기] AI 구단도 같은 식으로 매주 계산되고, 같은 분위기면 선수 기분에 같은 몫이 붙고, AI 단장은 분위기 리더를 아낀다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+15);
+  ok(G.teams.every(t=>G.chem&&G.chem[t.id]&&G.chem[t.id].d>=G.day-7),'매주 계산되지 않은 구단이 있음'); const ai=G.teams.find(t=>t.id!==G.user).id;
+  const ks=tid=>Object.keys(chemCalc(tid).f).filter(k=>k!=='trbP'&&k!=='cl').sort().join(); ok(ks(ai)===ks(G.user),'AI와 우리 구단 분위기 요인이 다름');
+  G.chem[ai].v=80; G.chem[G.user].v=80; ok(Math.abs(chemMoodD(ai)-chemMoodD(G.user))<1e-9&&chemMoodD(ai)>0&&chemMoodD(ai)<=.5,'같은 분위기에 다른 기분 몫');
+  G.chem[ai].v=20; ok(chemMoodD(ai)<0&&chemMoodD(ai)>=-.5,'나쁜 분위기 몫이 이상함');
+  const P=playersOf(ai).filter(p=>!p.ys&&p.mor!=null); for(const p of P)p.mor=50; chemWeek(); const dd=chemMoodD(ai); ok(P.every(p=>Math.abs(p.mor-(50+dd))<1e-6&&(Math.abs(dd)<.05||p.morP.chem===Math.round(dd*100)/100)),'AI 선수 기분에 분위기 몫이 그대로 붙지 않음');
+  const lp=teamLeaders(ai)[0]; initPers(lp); lp.pers.pro=16; lp.mor=70; ok(chemLeader(lp)&&chemTradeMul(team(ai),lp,'out')>1,'AI 단장이 분위기 리더를 아끼지 않음');
+  const tp=playersOf(G.user).find(p=>!p.foreign); initPers(tp); tp.pers.temp=18; tp.pers.pro=4; ok(chemTradeMul(team(ai),tp,'in')<1,'말썽 선수를 덜 쳐주지 않음'); ok(chemTradeMul(team(ai),tp,'out')===1,'남의 선수를 내줄 값에 분위기를 붙임'); });
+T('[사기 이유] 목록은 실제로 기분을 움직인 요인만 보여 주고, 면담 같은 일은 실제 변화량과 방향이 같다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+20); const p=depth(G.user).start.find(q=>!q.foreign)||playersOf(G.user)[0];
+  for(const q of playersOf(G.user)){ delete q.morL; delete q.morW; } moraleWeek(); const P=p.morP||{}; const W=new Set(['pt','res','cap','hc','chem']);
+  for(const x of moraleList(p))if(W.has(x.k))ok(P[x.k]&&Math.sign(P[x.k])===Math.sign(x.v),'지난주 실제 몫에 없는 요인이 목록에 있음: '+x.k+' '+x.t);
+  for(const k of ['pt','res'])if(P[k])ok(moraleList(p).some(x=>x.k===k),'실제 몫이 있는데 목록에 없음: '+k);
+  ok(!moraleList(p).some(x=>x.t.includes('군 복무')||x.t.includes('병역')||x.t.includes('향수')),'기분을 움직이지 않는 요인(병역·향수)이 보임');
+  p.tk={}; p.tkH=[]; p.mor=50; talk(p.id,'praise'); const d=p.mor-50; const e=(p.morL||[]).find(x=>x[1]==='talk:praise');
+  if(Math.abs(d)>=.05){ ok(e&&Math.abs(e[2]-Math.round(d*10)/10)<.06,'면담 변화량이 일지와 다름: '+d+' '+JSON.stringify(e)); const it=moraleList(p).find(x=>x.k==='talk:praise'); ok(it&&Math.sign(it.v)===Math.sign(d),'면담 항목 방향이 실제와 다름'); } else ok(!e,'움직이지 않은 면담이 일지에 남음');
+  const q=playersOf(G.user).find(x=>x!==p&&!x.foreign); q.promise={until:G.day+30,b:playPromNow(q)}; ok(moraleList(q)[0].wait,'기다리는 출전 약속이 맨 위에 없음');
+  const o=playersOf(G.teams.find(t=>t.id!==G.user).id)[0]; const c0=coverOf; try{ coverOf=()=>({sc:null}); ok(moraleScout(o).length===0,'스카우트 없이 다른 구단 선수 사정이 보임'); coverOf=()=>({sc:{name:'검수',skill:3}}); o.morP={pt:-3,res:-1}; const S=moraleScout(o); ok(S.length>=1&&S.length<=3&&S.every(x=>x.t.endsWith('이야기')),'스카우트 이야기 형식이 틀림'); } finally{ coverOf=c0; }
+  ok(moraleList(p).every(x=>!/[0-9]/.test(x.t)),'기분 이유에 숫자가 보임'); });
+T('[팀 분위기·사기] 저장·불러오기 뒤에도 분위기와 기분 이유가 그대로 이어지고, 옛 저장(값 없음)도 바로 계산된다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+22); const p=playersOf(G.user).find(q=>q.morP)||playersOf(G.user)[0]; p.tk={}; talk(p.id,'ask');
+  const before=G.teams.map(t=>clubChem(t.id).v).join(), L0=JSON.stringify(moraleList(p)); G=JSON.parse(JSON.stringify(G)); const q=G.players[p.id];
+  ok(G.teams.map(t=>clubChem(t.id).v).join()===before,'저장 뒤 분위기 값이 바뀜'); ok(JSON.stringify(moraleList(q))===L0,'저장 뒤 기분 이유가 바뀜'); if(typeof saveCheck==='function')ok(!saveCheck(G),'저장 검사 실패');
+  delete G.chem; for(const x of Object.values(G.players)){ delete x.morP; delete x.morL; delete x.morW; } const c=clubChem(G.user); ok(c&&c.v>=5&&c.v<=95&&chemWord(c.v),'옛 저장에서 분위기를 못 만듦'); ok(moraleList(q).every(x=>x.wait||x.grv),'옛 저장에서 없는 몫이 보임'); moraleWeek(); ok(G.chem[G.user].d===G.day,'옛 저장에서 주간 갱신이 안 됨'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

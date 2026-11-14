@@ -65,6 +65,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   const gt=gmTrait(t.id); if(v>0){ if(gt==='prospect'&&p.age<=24)v*=1.22; if(gt==='gambler'&&dir==='in'&&ovr(p)>=60)v*=1.15; if(gt==='data'){ const cd=condOf(p); v*=1-cd*.02; } }
   if(v>0)v*=planTradeMul(t,p,dir); /* 운영 전략(86_ai_plan): 유망주 수집 구단은 어린 선수를 높게·서른 가까운 주전을 낮게, 우승 도전은 반대 */
   const m=G.mgr[t.id]; if(m&&v>0){ if(m.youth>=65&&p.age<=25)v*=1.1; v*=mgrFitMul(t.id,p,dir); } /* 감독 야구에 맞는 역할, 특히 모자란 역할의 선수를 더 쳐준다(85_mgr_fit) */
+  if(v>0)v*=chemTradeMul(t,p,dir); /* 팀 분위기(30_chemistry): 분위기를 잡는 리더는 아끼고 말썽 선수는 덜 쳐준다 */
   if(v>0&&p.mor!=null&&p.mor<30)v*=dir==='in'?.92:.85;
   if(v>0&&dir==='in'&&ovr(p)<40&&p.age<=24)v*=.8; /* 아직 1군 근처에도 못 온 유망주는 불확실하다 */
   if(v>0&&dir==='out'&&(p.listed||p.aiListed))v*=p.aiListed?(p.aiUrg?.7:.8):(p.urgent?.75:.85); /* 매물로 내놓은 선수는 정리하고 싶은 선수다(그래도 헐값은 아니다) */

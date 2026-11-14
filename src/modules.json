@@ -67,6 +67,7 @@
       "src/engine/staff/52_staff_profiles.js",
       "src/engine/media/52_interviews.js",
       "src/engine/players/29b_player_drama.js",
+      "src/engine/players/30_chemistry.js",
       "src/engine/career/53_gm_schedule.js",
       "src/engine/media/54_press.js",
       "src/engine/finance/55_capex.js",
@@ -214,6 +215,7 @@
       "src/ui/players/37_player_readout.js",
       "src/ui/players/35_full_player_profile.js",
       "src/ui/players/39_player_sheet.js",
+      "src/ui/players/39b_morale.js",
       "src/ui/actions/40_actions.js",
       "src/ui/career/83_personal_life.js",
       "src/ui/career/84_personal_network.js",
@@ -315,7 +317,8 @@
       "src/css/career/84_personal_network.css",
       "src/css/career/85_bulk_relations.css",
       "src/css/staff/32_operations_art.css",
-      "src/css/shell/40_mobile_playtest2.css"
+      "src/css/shell/40_mobile_playtest2.css",
+      "src/css/players/41_morale.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
