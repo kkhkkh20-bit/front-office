@@ -31,6 +31,6 @@ function mktBidOk(t,p,fa){ if(t.id===ME()||(t.cash||0)<=-3000)return false; cons
   if(fa){ if(faOutBlocked(t.id,p)||rosterN(t.id)>=ROSTER_MAX)return false; if(!own){ if(ovr(p)<47)return false; const cc=mktCompCost(p); if(cc&&t.cash-cc<-2500)return false; } }
   return true; }
 function mktCompCost(p){ if(!p.faGrade)return 0; const ps=p.faPrevSal??p.sal??0; return p.faGrade==='A'?ps*2:p.faGrade==='B'?ps:ps*1.5; }
-function mktBid(t,p,fa){ let w=mktWTP(t,p)*(typeof planFaMul==='function'?planFaMul(t,p):1); if(fa&&t.id!==p.faFrom){ const cc=mktCompCost(p), y=p.ask&&p.ask.years?p.ask.years:p.age<=31?4:p.age<=33?3:p.age<=35?2:1; w=Math.max(MIN_SAL,w-cc/Math.max(1,y)); } return w; }
+function mktBid(t,p,fa){ let w=mktWTP(t,p)*(typeof planFaMul==='function'?planFaMul(t,p):1); return w; } /* 보상 부담은 입찰 여부(faInterest의 compF)에만 반영한다. 실제 입찰가는 보상을 빼지 않으므로 시장가에서도 빼지 않는다(11-14) */
 function mktPrice(p){ const k=mktKey(); if(_mkP.k!==k||_mkP.g!==G)_mkP={k,g:G,m:{}}; if(_mkP.m[p.id]!=null)return _mkP.m[p.id];
   const fa=p.team==null&&p.faFrom!=null; const L=G.teams.filter(t=>mktBidOk(t,p,fa)).map(t=>mktBid(t,p,fa)).sort((a,b)=>b-a); const v=L.length>=2?Math.max(L[1],L[0]*.7):L.length?L[0]*.7:MIN_SAL; return _mkP.m[p.id]=round5(Math.max(MIN_SAL,v)); }
