@@ -93,6 +93,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(o.d===1)try{ posReqMonth(); }catch(e){}
   if(o.d===1)try{ fAdaptMonthly(); }catch(e){} /* 외국인 선수 적응 곡선(73_foreign_drama) */
   if(o.w===1)try{ fDramaWeekly(); }catch(e){} /* 외국인 선수 향수병·불화·태업·꾀병 */
+  try{ slDaily(); }catch(e){} /* 선수 스토리라인(31_storylines) */
   if(o.d===1)try{ misbehaveMonth(); }catch(e){}
   if(o.d===1)try{ rSnapAll(); starCheck(); }catch(e){}
   if(o.d===1)try{ fanMonthly(); }catch(e){} if(o.d===1)try{ fanAwayMonthly(); }catch(e){} /* 팬 마케팅 운영비·채널 수입 */
