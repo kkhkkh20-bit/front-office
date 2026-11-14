@@ -174,7 +174,7 @@ function inboxWire(){ ibFit();document.documentElement.style.setProperty('--ibto
 function ibStep(d){ const rows=[...document.querySelectorAll('.ibx-list .ibr')],visible=new Set(rows.map(el=>el.dataset.mid)); const ids=(UI._ibOrder||ibList(UI.mf||'all').map(m=>m.id)).filter(id=>!rows.length||visible.has(String(id))||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
 function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(); /* 스페이스바: 안 읽은 소식이 있으면 차례로 연다(확인할 소식 먼저, 그다음 나머지, 오래된 것부터). 다 읽었으면 진행 */
-  const u=ibUnreadOrder(); if(u.length){ const m=u[0]; UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
+  const u=ibUnreadOrder(); if(u.length){ let m=u[0]; if(UI.tab==='inbox'){ const L=document.querySelector('.ibx-list'); const R=L?[...L.querySelectorAll('.ibr.unread[data-mid]')].map(e=>G.mail.find(x=>x.id===e.dataset.mid)).filter(x=>x&&!x.read):[]; const M=R.filter(ibMust); if(R.length)m=(M.length?M:R)[(M.length?M:R).length-1]; } /* 화면에 보이는 목록에서 아래부터 위로: 확인할 소식이 있으면 그중 맨 아래, 없으면 안 읽은 소식 맨 아래(사용자 제보 11-14: 소식이 많으면 위아래로 오감). 접힌 날짜·숨은 중복은 목록 순서로 */ UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
   if(G.live){ toast('경기를 먼저 끝까지 보세요.'); return; } const bl=blocker(); if(bl&&!G.res){ toast(bl); UI.tab='home'; render(); return; }
   const b=document.querySelector('button.continue:not([disabled])')||document.querySelector('button.continue'); const v=b?b.dataset.v:'next';
   /* 특별한 소식(남은 결정·제안·중요 소식)이 없으면 묻지 않고 바로 진행한다. 설정에서 '진행 전에 묻기'를 켜면 매번 묻는다 */
