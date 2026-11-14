@@ -6050,6 +6050,16 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
   #app main.content:not(.ws-frame):not(.inbox-workspace):not(:has(.home-workspace)){padding-bottom:calc(var(--bnav-h,58px) + env(safe-area-inset-bottom,0px) + 8px)}
   #sheet .sheet .sh-foot,#sheet .sheet .pn-foot{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 }
+/* 기분 이유 목록·팀 분위기(39b_morale): 한 줄에 한 가지, 오른쪽에 방향 표시 */
+.mrl-box{margin-top:8px}
+.mrl-h{font-size:var(--ui-caption,12px);color:var(--muted);margin-bottom:4px;display:flex;align-items:center}
+.mrl{list-style:none;margin:0;padding:0}
+.mrl li{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:3px 0;border-bottom:1px solid var(--line);font-size:var(--ui-caption,12px);line-height:1.35}
+.mrl li:last-child{border-bottom:0}
+.mrl li>span{min-width:0;overflow-wrap:anywhere}
+.mrl li>em{flex:none;font-style:normal;font-size:11px;color:var(--muted);white-space:nowrap}
+.mrl li>em.good{color:var(--good)} .mrl li>em.bad{color:var(--bad)} .mrl li>em.warn{color:var(--warn)}
+.chem-card .mrl{margin-top:6px}
 </style>
 </head>
 <body>
@@ -14664,6 +14674,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   const gt=gmTrait(t.id); if(v>0){ if(gt==='prospect'&&p.age<=24)v*=1.22; if(gt==='gambler'&&dir==='in'&&ovr(p)>=60)v*=1.15; if(gt==='data'){ const cd=condOf(p); v*=1-cd*.02; } }
   if(v>0)v*=planTradeMul(t,p,dir); /* 운영 전략(86_ai_plan): 유망주 수집 구단은 어린 선수를 높게·서른 가까운 주전을 낮게, 우승 도전은 반대 */
   const m=G.mgr[t.id]; if(m&&v>0){ if(m.youth>=65&&p.age<=25)v*=1.1; v*=mgrFitMul(t.id,p,dir); } /* 감독 야구에 맞는 역할, 특히 모자란 역할의 선수를 더 쳐준다(85_mgr_fit) */
+  if(v>0)v*=chemTradeMul(t,p,dir); /* 팀 분위기(30_chemistry): 분위기를 잡는 리더는 아끼고 말썽 선수는 덜 쳐준다 */
   if(v>0&&p.mor!=null&&p.mor<30)v*=dir==='in'?.92:.85;
   if(v>0&&dir==='in'&&ovr(p)<40&&p.age<=24)v*=.8; /* 아직 1군 근처에도 못 온 유망주는 불확실하다 */
   if(v>0&&dir==='out'&&(p.listed||p.aiListed))v*=p.aiListed?(p.aiUrg?.7:.8):(p.urgent?.75:.85); /* 매물로 내놓은 선수는 정리하고 싶은 선수다(그래도 헐값은 아니다) */
@@ -16870,18 +16881,20 @@ function moraleWeek(){
     const st=G.sea.rec[t.id]; const wp=(st.w+st.l)?st.w/(st.w+st.l):.5; const m=G.mgr[t.id]; const disc=m?m.disc:45;
     const cap=captainOf(t.id); /* 주장 효과는 모든 구단(사용자 11-13) */ const capB=cap&&healthy(cap)?((cap.pers&&cap.pers.pro)||10)>=14?.4:.2:0;
     const hcC=G.coach&&coachesOf(t.id).hc; const comB=hcC?(cAb(hcC).com-50)/80:-.1; /* 수석코치 소통: 주에 ±0.3 안팎 */
-    for(const p of playersOf(t.id)){ initPers(p); let dd=capB+comB; const star=ovr(p)>=55||p.sal>=500; const r=reg.has(p.id)||(per==='season'&&playedReg(p));
-      if(per==='season'){ if(star&&!r&&healthy(p))dd-=3*(p.pers.temp>=14?1.3:1); else if(!r&&healthy(p)&&p.age>=27&&ovr(p)>=46)dd-=1; else if(r)dd+=1; if(wp>.56)dd+=1; if(wp<.44)dd-=1; }
+    for(const p of playersOf(t.id)){ initPers(p); let dd=capB+comB; const star=ovr(p)>=55||p.sal>=500; const r=reg.has(p.id)||(per==='season'&&playedReg(p)); const MP={}; if(capB)MP.cap=capB; if(comB)MP.hc=Math.round(comB*100)/100; /* 이번 주에 실제로 더한 몫(기분 이유 목록, 30_chemistry) */
+      if(per==='season'){ let a=0; if(star&&!r&&healthy(p))a=-3*(p.pers.temp>=14?1.3:1); else if(!r&&healthy(p)&&p.age>=27&&ovr(p)>=46)a=-1; else if(r)a=1; const b=wp>.56?1:wp<.44?-1:0; dd+=a+b; if(a)MP.pt=a; if(b)MP.res=b; }
+      if(Object.keys(MP).length)p.morP=MP; else delete p.morP;
       if(p.promise&&G.day>=p.promise.until&&!healthy(p)&&per==='season'){ p.promise.until=G.day+Math.min(30,Math.max(7,p.injOut||7)); p.promise.inj=(p.promise.inj||0)+1; } /* 부상으로 뛸 수 없으면 평가를 미룬다(복귀 뒤 출전 가능 기간으로 본다) */
       if(p.promise&&G.day>=p.promise.until&&per!=='season'){ p.promise.until=G.day+30; p.promise.off=1; } /* 경기가 없는 기간은 약속 기한에서 빼고 시즌 경기로 평가한다 */
       if(p.promise&&G.day>=p.promise.until){ const r=playPromKept(p);
-        if(r){ dd+=5; try{ pdPromKept(p); }catch(e){} if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
-        else { dd-=12; try{ pdPromBroken(p); }catch(e){} if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
+        if(r){ dd+=5; try{ morLog(p,'prom',5); pdPromKept(p); }catch(e){} if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
+        else { dd-=12; try{ morLog(p,'prom',-12); pdPromBroken(p); }catch(e){} if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
         delete p.promise; }
       const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*(per==='season'?.08:.03),0,100); /* 비시즌에는 기분이 천천히 평소로 돌아온다(카페 11-09: 시즌 끝 100이 개막 때 60이 되던 문제). 시즌 중에는 그대로 */
       if(t.id===G.user)requestCheck(p);
     }
   }
+  try{ chemWeek(); }catch(e){} /* 팀 분위기(30_chemistry): 모든 구단 같은 식 */
 }
 /* 출전 시간 때문에 생긴 불만인가(주전에서 밀린 스타·고참) */
 function ptWhyP(p){ const per=period(); if(per!=='season'&&per!=='post')return false; if(p.promise)return false; const reg=isRegular(p)||playedReg(p); if(reg||!healthy(p)||isAway(p))return false; return ovr(p)>=55||p.sal>=500||p.age>=27; }
@@ -19978,6 +19991,130 @@ function pdIvAsk(p){ try{ if(p&&p.team===G.user&&!G.unemp)ivRequest('pdrama',{pi
 /* 1군을 원하는 2군 선수의 목소리: 3주째 2군 감독 보고, 5주째 에이전트 전화(있으면), 8주째부터는 불만이 공개될 수 있다(pdEscalate) */
 function pdUpVoice(p,w){ const n=p.upW; if(n===3)mail('2군 감독',`${p.name}, 1군 콜업을 기다리는 중`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) 3주째 1군 소식을 기다리고 있습니다. ${w.t}. ${w.why}이라 본인도 답답해합니다. 감독님께 콜업을 건의해 보시겠습니까?`,{kind:'선수',ref:p.id,face:p.id});
   else if(n===5){ let agt=false; try{ agt=hasAgent(p); }catch(e){} if(agt){ let nm='에이전트'; try{ nm=agentOf(p).name||nm; }catch(e){} mail('에이전트',`${p.name} 에이전트의 전화`,`${nm}: "${p.name} 선수가 2군에서 이만큼 하는데도 계속 묶여 있습니다. 구단 계획을 알고 싶습니다. 기회를 못 줄 거라면 다른 길도 생각해 주셨으면 합니다."`,{kind:'선수',ref:p.id,face:p.id}); } } }
+/* ===== 팀 분위기(더그아웃)와 선수 기분 이유(사용자 11-14: "팀 분위기 좋고", "선수 사기 목록은 FM에도 있는데 넣어주고") =====
+ 모든 구단이 같은 식이다(AI도 같다). 숫자는 화면에 나오지 않고 말(아주 좋음·좋음·보통·어수선함·험악함)로만 보인다.
+ 팀 분위기 목표값 = 50 + 아래 몫(매주 다시 보고, 실제 값은 목표 쪽으로 25%씩 천천히 옮겨 간다)
+  - 리더: 주장·고참 리더(teamLeaders)의 프로의식·충성심·연차·기분. 좋은 고참이 있으면 오르고, 불만 가득한 고참이면 내려간다
+  - 말썽: 예민하고 자기 관리가 안 되는 주축, 기분이 바닥인 스타, 훈련 거부 중인 선수. 프로의식 강한 주장은 반쯤 눌러 준다
+  - 성적: 시즌 승률과 최근 5경기 연승·연패(작게)
+  - 선수단 변화: 45일 안에 새로 온 선수가 많으면(시즌 3명, 비시즌 5명 넘게) 어색해진다
+  - 감독·기강: 감독 공석·대행, 기강(climateOf)이 알맞음/느슨함/너무 엄격함
+  - 출전 불만: 쌓인 불만(grvHeat)이 큰 선수
+  - 선수들 기분: 주축 선수 기분 평균(작게)
+ 효과(작게): 매주 그 구단 선수 기분이 최대 ±0.5(비시즌 절반). 기분이 평소로 돌아오는 힘(moraleWeek)과 맞물려 오래 이어지면 기분 몇 점 차이가 난다.
+ AI 단장은 트레이드 값(tval)에서 분위기를 잡아 주는 고참 리더를 조금 더 아끼고, 말썽 선수는 조금 덜 쳐준다(chemTradeMul). 사람 단장은 화면의 팀 분위기·리더 표시로 같은 정보를 본다.
+ 기분 이유 목록: 매주 실제로 더한 몫(p.morP)과 기분을 움직인 일(p.morL: 면담·결정·연봉·부상·대표팀 등, 실제 변화량을 잰다)만 보여 준다. 없는 요인은 보이지 않는다 */
+const CHEM_B=[[72,'아주 좋음','good','아주 좋습니다'],[58,'좋음','good','좋습니다'],[42,'보통','','보통입니다'],[28,'어수선함','warn','어수선합니다'],[-1e9,'험악함','bad','험악합니다']];
+const chemBand=v=>CHEM_B.findIndex(x=>v>=x[0]);
+const chemWord=v=>CHEM_B[chemBand(v)][1];
+const chemCls=v=>CHEM_B[chemBand(v)][2];
+const chemPred=v=>CHEM_B[chemBand(v)][3];
+const chR1=x=>Math.round(x*10)/10;
+function chemCalc(tid){ const t=team(tid), f={}; if(!t)return {T:50,f}; const per=period(), live=per==='season'||per==='post';
+  const L=playersOf(tid).filter(p=>!p.ys&&!(p.joinY>G.year)); if(!L.length)return {T:50,f};
+  let reg=new Set(); try{ const d=depth(tid); reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); }catch(e){}
+  const core=L.filter(p=>reg.has(p.id)||p.e1||ovr(p)>=55);
+  let ld=[]; try{ ld=teamLeaders(tid); }catch(e){}
+  let a=0; ld.forEach((p,i)=>{ initPers(p); let n=0; try{ n=teamTenure(p,tid).n; }catch(e){} a+=((p.pers.pro-11)*.35+(p.pers.loy-10)*.15+Math.min(n,8)*.15+((p.mor??60)-60)/8)*(i===0?1:.6); });
+  f.lead=chR1(clamp(a,-7,7));
+  const cap=ld[0]||null, damp=cap&&cap.pers&&cap.pers.pro>=14&&(cap.mor??60)>=45?.6:1; const tr=[];
+  for(const p of core){ initPers(p); let x=0; if(p.boy>G.day)x=4; else { if(p.pers.temp>=14&&p.pers.pro<=8)x+=1.5; if(ovr(p)>=55&&(p.mor??60)<35)x+=2; } if(x)tr.push([p.id,x]); }
+  tr.sort((x,y)=>y[1]-x[1]); f.trb=-chR1(clamp(sum(tr.map(x=>x[1]))*damp,0,12)); if(tr.length)f.trbP=tr.slice(0,2).map(x=>x[0]);
+  if(live&&G.sea&&G.sea.rec){ const r=G.sea.rec[tid], g=r?r.w+r.l:0; let x=g>=10?(r.w/g-.5)*18:0; const l5=(((G.sea.tl)||[])[tid]||[]).slice(-5); if(l5.length===5){ if(l5.every(z=>z[0]>0))x+=1.5; else if(l5.every(z=>z[0]<0))x-=1.5; } f.res=chR1(clamp(x,-5,5)); }
+  const nw=L.filter(p=>p.mvD!=null&&G.day-p.mvD<=45).length; f.chn=-chR1(clamp((nw-(live?3:5))*.8,0,6));
+  const m=G.mgr&&G.mgr[tid]; if(!m||m.interim)f.mgr=-2; else { let b='ok'; try{ b=climateOf(tid).band; }catch(e){} f.mgr={good:2.5,ok:0,loose:-3,rigid:-2}[b]||0; f.cl=b; }
+  let ds=0; for(const p of L){ const h=p.grv?grvHeat(p):0; ds+=h>=12?2:h>=6?1:0; } f.dsp=-clamp(ds,0,5);
+  const M=core.length?sum(core.map(p=>p.mor??60))/core.length:60; f.mood=chR1(clamp((M-65)*.15,-3,3)); /* 리그 평균 기분(65 안팎)을 기준으로 */
+  const T=clamp(50+f.lead+f.trb+(f.res||0)+f.chn+f.mgr+f.dsp+f.mood,5,95); return {T:chR1(T),f}; }
+/* 화면·판단용: 저장된 값이 없으면(옛 저장·창단 직후) 지금 목표값으로 시작한다. 난수를 쓰지 않는다 */
+function clubChem(tid){ const C=G.chem=G.chem||{}; let c=C[tid]; if(!c||c.v==null){ const x=chemCalc(tid); c=C[tid]={v:x.T,T:x.T,f:x.f,d:G.day,wb:chemBand(x.T)}; } return c; }
+/* 분위기가 선수 기분에 주는 몫(한 주): 비시즌 절반 */
+function chemMoodD(tid){ const c=clubChem(tid), live=period()==='season'||period()==='post'; return clamp((c.v-50)/50,-1,1)*.5*(live?1:.5); }
+function chemWeek(){ if(!G||!G.teams)return; for(const t of G.teams){ const x=chemCalc(t.id), c=clubChem(t.id), b0=chemBand(c.v); c.v=chR1(c.v+(x.T-c.v)*.25); c.T=x.T; c.f=x.f; c.d=G.day;
+    const d=chemMoodD(t.id); for(const p of playersOf(t.id)){ if(p.morL&&p.morL.some(x=>G.day-x[0]>MOR_KEEP)){ p.morL=p.morL.filter(x=>G.day-x[0]<=MOR_KEEP); if(!p.morL.length)delete p.morL; } if(Math.abs(d)<.05||p.ys||p.mor==null)continue; p.mor=clamp(p.mor+d,0,100); (p.morP=p.morP||{}).chem=Math.round(d*100)/100; }
+    chemNews(t.id,c,b0); } }
+/* 분위기가 크게 바뀌면 가끔 알린다: 우리 구단은 마지막으로 알린 단계에서 두 칸 움직이거나 양 끝에 닿을 때(35일에 한 번까지), 다른 구단은 양 끝에 닿을 때만 소식 한 줄(120일에 한 번까지) */
+function chemNews(tid,c,b0){ const b=chemBand(c.v); if(c.wb==null)c.wb=b0; if(b===b0||b===c.wb)return; const me=tid===G.user&&!G.unemp, edge=b===0||b===4;
+  if(me){ if(!(edge||Math.abs(b-c.wb)>=2)||G.day-(c.md??-999)<35)return; c.md=G.day; c.wb=b; const top=chemWhy(tid,true)[0];
+    mail('선수단',`팀 분위기: ${CHEM_B[b][1]}`,`더그아웃 분위기가 ${CHEM_B[b][3]}.${top?` ${top.t}.`:''}\n\n분위기는 선수 기분에 조금씩 영향을 줍니다. 자세한 이유는 스태프·육성 > 리더십에서 볼 수 있습니다.`,{kind:'선수'}); return; }
+  if(!edge||G.day-(c.md??-999)<120)return; c.md=G.day; c.wb=b; try{ wire('구단',b===4?`${tshort(tid)} 더그아웃 분위기가 험악하다는 소문`:`${tshort(tid)} 더그아웃 분위기가 최고라는 평`,{tid}); }catch(e){} }
+/* 분위기 이유를 말로(크기 순). me=true면 우리 구단: 이름까지 */
+function chemWhy(tid,me){ const c=clubChem(tid), f=c.f||{}, L=[]; const add=(k,v,good,bad)=>{ if(Math.abs(v||0)>=1)L.push({k,v,t:v>0?good:bad}); };
+  add('lead',f.lead,'주장·고참이 선수단을 잘 잡아 줍니다','고참들이 중심을 잡지 못합니다');
+  if(f.trb<=-1){ const nm=me&&(f.trbP||[]).map(id=>G.players[id]).filter(p=>p&&p.team===tid).map(p=>p.name); L.push({k:'trb',v:f.trb,t:`분위기를 흐리는 선수가 있습니다${nm&&nm.length?`(${nm.join(', ')})`:''}`}); }
+  add('res',f.res,'최근 성적이 좋습니다','최근 성적이 나쁩니다');
+  if(f.chn<=-1)L.push({k:'chn',v:f.chn,t:'새 얼굴이 많아 아직 어색합니다'});
+  if(f.mgr)L.push({k:'mgr',v:f.mgr,t:f.cl==null?'감독 자리가 비어 있습니다':f.cl==='good'?'기강이 알맞습니다':f.cl==='loose'?'기강이 느슨합니다':'기강이 너무 엄격합니다'});
+  if(f.dsp<=-1)L.push({k:'dsp',v:f.dsp,t:'출전 시간 불만이 쌓여 있습니다'});
+  add('mood',f.mood,'주축 선수들 기분이 좋습니다','주축 선수들 기분이 처져 있습니다');
+  return L.sort((a,b)=>Math.abs(b.v)-Math.abs(a.v)); }
+/* 이 구단에서 분위기를 잡아 주는 선수인가(트레이드 판단·화면 표시용) */
+function chemLeader(p){ if(!p||p.team==null)return false; let L=[]; try{ L=teamLeaders(p.team); }catch(e){} if(!L.includes(p))return false; initPers(p); return p.pers.pro>=12&&(p.mor??60)>=45; }
+function chemTrouble(p){ if(!p||!p.pers)return false; return p.boy>G.day||(p.pers.temp>=14&&p.pers.pro<=7); }
+/* AI 단장 트레이드 값: 분위기를 잡는 리더는 내줄 때 조금 더 받고, 말썽 선수는 데려올 때 조금 덜 쳐준다(사람 단장이 화면을 보고 하는 판단과 같은 크기) */
+function chemTradeMul(t,p,dir){ if(!p||!t)return 1; if(dir==='out'&&p.team===t.id&&chemLeader(p))return (team(t.id).cap===p.id?1.08:1.05);
+  if(dir==='in'&&chemTrouble(p))return .95; return 1; }
+
+/* ===== 기분 일지: 기분을 움직인 일을 실제 변화량으로 남긴다 =====
+ p.morL=[[날, 종류, 변화량, 이름표]] 최근 5주, 최대 8개. 같은 주 같은 종류는 합친다.
+ 기존 함수(면담·결정·연봉·부상·대표팀…)를 고치지 않고 감싸서, 부르기 전후 기분 차이를 잰다(겹쳐 부르면 바깥 것만 잰다) */
+const MOR_KEEP=35;
+const MOR_WK=new Set(['clim','dorm','pdw']); /* 매주 되풀이되는 몫: 일지에 쌓지 않고 지난주 값만(p.morW) */
+function morLog(p,k,v,lab){ if(!p||!(Math.abs(v)>=.05))return; if(MOR_WK.has(k)){ const W=p.morW=p.morW||{}, w=W[k]; if(w&&Math.floor(w[0]/7)===Math.floor(G.day/7))w[1]=chR1(w[1]+v); else W[k]=[G.day,chR1(v)]; return; } const L=p.morL=(p.morL||[]).filter(x=>G.day-x[0]<=MOR_KEEP); const wk=Math.floor(G.day/7);
+  const x=L.find(y=>y[1]===k&&(y[3]||'')===(lab||'')&&Math.floor(y[0]/7)===wk); if(x){ x[2]=chR1(x[2]+v); x[0]=G.day; if(!x[2])L.splice(L.indexOf(x),1); }
+  else { L.unshift(lab?[G.day,k,chR1(v),lab]:[G.day,k,chR1(v)]); if(L.length>8)L.length=8; } if(!L.length)delete p.morL; }
+const _mtS=[]; /* 겹쳐 부를 때: 안쪽 함수가 잰 몫은 바깥 함수 기준값에 더해 두 번 세지 않는다 */
+function morSnap(list){ const S=new Map(); if(list){ for(const p of list)if(p&&p.mor!=null)S.set(p,p.mor); return S; } for(const id in G.players){ const p=G.players[id]; if(p.team!=null&&p.mor!=null)S.set(p,p.mor); } return S; }
+function morTrack(fn,key,scope){ if(typeof fn!=='function'||fn._mt)return fn;
+  const w=function(...a){ if(typeof G==='undefined'||!G||!G.players)return fn.apply(this,a); let S=null,k=null; try{ k=typeof key==='function'?key(a):key; if(k)S=morSnap(scope?scope(a):null); }catch(e){ S=null; }
+    if(!S)return fn.apply(this,a); _mtS.push(S); try{ return fn.apply(this,a); } finally{ _mtS.pop(); try{ const [kk,lab]=Array.isArray(k)?k:[k]; for(const [p,m0] of S){ const d=(p.mor??m0)-m0; if(!(Math.abs(d)>=.05))continue; morLog(p,kk,d,lab); for(const O of _mtS)if(O.has(p))O.set(p,O.get(p)+d); } }catch(e){} } };
+  w._mt=1; return w; }
+/* 감싸는 곳: 하루·한 주에 여러 번 불리지 않는 입구만(경기 중 타석마다 불리는 함수는 감싸지 않는다) */
+talk=morTrack(talk,a=>'talk:'+a[1],a=>[G.players[a[0]]]);
+listPlayer=morTrack(listPlayer,'list',a=>[G.players[a[0]]]);
+keepPlayer=morTrack(keepPlayer,'keep',a=>[G.players[a[0]]]);
+evPick=morTrack(evPick,a=>{ const e=(G.evs||[]).find(x=>x.id===a[0]); return e&&!e.done?['ev',String(e.title||'').slice(0,40)]:null; });
+ivAnswer=morTrack(ivAnswer,'iv');
+injure=morTrack(injure,'inj',a=>[a[0]]);
+salOffer=morTrack(salOffer,'sal'); salArbDecide=morTrack(salArbDecide,'sal'); arbLeftDecide=morTrack(arbLeftDecide,'sal'); salTalkClose=morTrack(salTalkClose,'sal'); holdMid=morTrack(holdMid,'sal');
+holdDaily=morTrack(holdDaily,'hold'); hireMgr=morTrack(hireMgr,'mgr'); fireMgr=morTrack(fireMgr,'mgr'); ntAnnounce=morTrack(ntAnnounce,'nt'); ntRefuse=morTrack(ntRefuse,'nt'); ntResult=morTrack(ntResult,'nt');
+champCelebrate=morTrack(champCelebrate,'champ'); posReqAnswer=morTrack(posReqAnswer,'pos'); rolePromCheck=morTrack(rolePromCheck,'role'); mgrUseAsk=morTrack(mgrUseAsk,'use'); mgrPosAsk=morTrack(mgrPosAsk,'use');
+mpickPlan=morTrack(mpickPlan,'mpick'); aiMpickPlan=morTrack(aiMpickPlan,'mpick'); aiMentorPick=morTrack(aiMentorPick,'mentor'); churnCheck=morTrack(churnCheck,'churn'); proposeTrade=morTrack(proposeTrade,'rumor');
+climateWeek=morTrack(climateWeek,'clim'); pdWeek=morTrack(pdWeek,'pdw'); fDramaUser=morTrack(fDramaUser,'fdr'); fDramaAI=morTrack(fDramaAI,'fdr'); seasonTitles=morTrack(seasonTitles,'title'); aiPreFA=morTrack(aiPreFA,'ext');
+postingSeason=morTrack(postingSeason,'abroad'); mlbHype=morTrack(mlbHype,'abroad'); facWeek=morTrack(facWeek,'dorm'); mreqCloseOld=morTrack(mreqCloseOld,'mreq');
+
+/* ===== 기분 이유 목록(FM '행복도'처럼): 한 줄에 한 가지, 방향(좋게/나쁘게)과 크기(크게/조금)만 =====
+ 매주 몫(p.morP)은 지난주에 실제로 더한 값, 일지(p.morL)는 실제로 움직인 양. 크기: 매주 몫 2 이상·일 5 이상이면 '크게' */
+const MOR_EV={'talk:praise':['칭찬 면담이 힘이 됐습니다','칭찬이 빈말처럼 들렸습니다'],'talk:push':['분발 촉구에 자극을 받았습니다','분발 촉구 면담에 서운했습니다'],'talk:promise':['출전 기회를 건의해 줬습니다','출전 건의 면담이 실망스러웠습니다'],
+  'talk:futreq':['2군 기용을 챙겨 줬습니다','2군 기용 이야기가 아쉬웠습니다'],'talk:contract':['계약 이야기를 나눴습니다','계약 이야기가 아쉬웠습니다'],'talk:ask':['단장이 고민을 들어 줬습니다','고민 상담이 아쉬웠습니다'],
+  prom:['약속한 출전 기회를 받았습니다','출전 약속이 지켜지지 않았습니다'],list:['트레이드 요청을 들어줬습니다','트레이드 명단에 올랐습니다'],keep:['남아 달라는 설득에 마음을 돌렸습니다','남으라는 설득이 마음에 안 듭니다'],
+  iv:['단장의 인터뷰 발언이 고마웠습니다','단장의 인터뷰 발언에 서운했습니다'],inj:['부상에서 돌아와 안도했습니다','부상으로 빠져 속상합니다'],sal:['연봉 협상 결과에 만족합니다','연봉 협상에 실망했습니다'],hold:['연봉 계약이 정리됐습니다','연봉 미계약이 길어져 답답합니다'],
+  mgr:['새 감독 부임을 반깁니다','감독 교체로 마음이 어수선합니다'],nt:['국가대표 일로 기분이 좋습니다','국가대표 일로 실망했습니다'],champ:['우승의 기쁨이 남아 있습니다','우승 뒤 대우가 아쉽습니다'],pos:['포지션 요청을 들어줬습니다','포지션 요청이 거절됐습니다'],
+  role:['계약 때 약속한 역할을 받았습니다','계약 때 약속한 역할을 받지 못했습니다'],use:['감독에게 기용을 건의해 줬습니다','기용 건의가 받아들여지지 않았습니다'],mpick:['감독이 밀어 주는 선수가 됐습니다','경쟁자가 감독의 신임을 받습니다'],mentor:['후배 멘토를 맡아 보람을 느낍니다','멘토 일이 부담스럽습니다'],
+  churn:['선수단 이동이 정리됐습니다','잇단 트레이드로 어수선합니다'],rumor:['트레이드 소문이 가라앉았습니다','트레이드 소문에 흔들립니다'],clim:['선수단 기강이 알맞습니다','선수단 기강이 너무 엄격합니다'],pdw:['구단이 불만을 달래 줬습니다','동료의 불만이 번지고 있습니다'],
+  fdr:['구단이 사정을 챙겨 줬습니다','한국 생활과 팀 적응이 힘듭니다'],title:['개인 타이틀을 받았습니다','개인 타이틀을 놓쳤습니다'],ext:['다년계약으로 마음이 놓입니다','계약 문제로 마음이 쓰입니다'],abroad:['해외 진출 기대가 커졌습니다','해외 진출이 막혀 실망했습니다'],
+  dorm:['숙소 생활이 편합니다','숙소 생활이 불편합니다'],mreq:['감독 요청이 정리됐습니다','감독 요청 건으로 마음이 쓰입니다'],ev:['구단 결정이 마음에 듭니다','구단 결정에 서운합니다']};
+function moraleList(p){ if(!p||p.team==null)return []; const P=p.morP||{}, out=[]; const add=(k,t,v,wk,o)=>out.push({k,t,v:chR1(v||0),big:Math.abs(v||0)>=(wk?2:5),...(o||{})});
+  if(p.promise&&p.promise.until>=G.day)add('wait','출전 기회 약속을 기다리고 있습니다',0,1,{wait:true});
+  if(P.pt){ let r=''; try{ r=squadRole(p); }catch(e){} add('pt',P.pt>0?`${r||'지금'} 역할에 만족합니다`:P.pt<=-2?'주전으로 뛰지 못해 답답합니다':'1군 기회가 더 필요합니다',P.pt,1); }
+  if(P.res)add('res',P.res>0?'팀 성적이 좋아 즐겁습니다':'팀 성적이 나빠 마음이 무겁습니다',P.res,1);
+  if(P.chem){ const v=clubChem(p.team).v; if(chemBand(v)!==2)add('chem',`팀 분위기가 ${chemPred(v)}`,P.chem,1); }
+  if(P.cap){ let c=null; try{ c=captainOf(p.team); }catch(e){} add('cap',c===p?'주장으로서 책임감을 느낍니다':`주장${c?' '+c.name+'이(가)':'이'} 선수단을 잘 이끕니다`,P.cap,1); }
+  if(Math.abs(P.hc||0)>=.15)add('hc',P.hc>0?'수석코치와 말이 잘 통합니다':'수석코치와 말이 잘 안 통합니다',P.hc,1); else if(P.hc&&P.hc<0&&!(G.coach&&coachesOf(p.team).hc))add('hc','기댈 수석코치가 없습니다',P.hc,1);
+  for(const k in p.morW||{}){ const [d,v]=p.morW[k]; if(G.day-d<=8&&Math.abs(v)>=.05)add(k,MOR_EV[k][v>0?0:1],v,1); }
+  const J=new Map(); for(const [d,k,v,lab] of p.morL||[]){ if(G.day-d>MOR_KEEP)continue; const id=k+'|'+(lab||''), x=J.get(id); if(x)x.v+=v; else J.set(id,{d,k,v,lab}); } /* 몇 주에 걸친 같은 일은 한 줄로 */
+  for(const {d,k,v,lab} of J.values()){ if(!(Math.abs(v)>=.05))continue; const E=MOR_EV[k]||MOR_EV.ev; let t=v>0?E[0]:E[1]; if(k==='ev'&&lab)t=`‘${lab.length>22?lab.slice(0,21)+'…':lab}’ 결정${v>0?'이 마음에 듭니다':'에 서운합니다'}`; add(k,t,v,0,{d}); }
+  const g=p.grv&&grvTop(p); if(g&&p.grv[g]>=4)add('grv',`쌓인 불만: ${GRV_L[g]}`,0,0,{grv:true});
+  return out.sort((a,b)=>(b.wait?1:0)-(a.wait?1:0)||(b.grv?0:1)-(a.grv?0:1)||Math.abs(b.v)-Math.abs(a.v)).slice(0,8); }
+/* 다른 구단 선수: 스카우트가 들을 수 있는 것만(출전 상황·팀 성적·팀 분위기·공개된 일), 세 줄까지, '~라는 이야기' */
+function moraleScout(p){ if(!p||p.team==null||p.team===G.user)return []; let sc=null; try{ sc=coverOf(p.team).sc; }catch(e){} if(!sc)return [];
+  const P=p.morP||{}, out=[]; const add=(t,v)=>out.push({t,v:v>0?1:-1});
+  if(P.pt&&P.pt<0)add('주전 경쟁에서 밀려 답답해한다는 이야기',-1); else if(P.pt>0&&ovr(p)>=55)add('지금 역할에 만족한다는 이야기',1);
+  if(p.pd&&p.pd.st>=1)add(p.boy>G.day?'훈련을 거부하고 있다는 이야기':'구단에 불만을 드러냈다는 이야기',-1);
+  if(P.chem){ const b=chemBand(clubChem(p.team).v); if(b<=1)add('팀 분위기가 좋다는 이야기',1); else if(b>=3)add('더그아웃이 어수선하다는 이야기',-1); }
+  if(P.res)add(P.res>0?'팀이 잘나가 분위기가 밝다는 이야기':'팀 성적 때문에 분위기가 무겁다는 이야기',P.res);
+  for(const [d,k,v] of p.morL||[]){ if(G.day-d>21)continue; if(k==='inj'&&v<0)add('부상으로 속상해한다는 이야기',-1); else if(k==='nt')add(v>0?'대표팀 일로 들떠 있다는 이야기':'대표팀 일로 실망했다는 이야기',v); else if(k==='sal'&&v<0)add('연봉 협상에 실망했다는 이야기',-1); }
+  const seen=new Set(); return out.filter(x=>!seen.has(x.t)&&seen.add(x.t)).slice(0,3); }
 /* ===== 단장 일정: 경기 직관·스카우팅 출장·2군 방문 =====
    단장은 모든 경기를 보지 않는다. 결과는 보고로 받고, 볼 경기를 골라 경기장에 간다(혼자, 구단주와, 사장과).
    경기가 없는 날이나 시즌 중 다른 날에는 고교 대회를 보러 가거나 2군을 찾는다.
@@ -28399,7 +28536,7 @@ function homeSpDuel(n){ const guess=tid=>{ const d=depth(tid), rest=p=>p.lastSta
 function homeRosterPanel(){ const P=playersOf(G.user), g=p=>p.isP?'투수':p.pos==='C'?'포수':['1B','2B','3B','SS'].includes(p.pos)?'내야수':['LF','CF','RF'].includes(p.pos)?'외야수':'지명타자', K=['투수','포수','내야수','외야수'];
   const out=p=>milServing(p)||isAway(p), act=new Set(actOf(G.user).map(p=>p.id)), one=P.filter(p=>act.has(p.id)&&!out(p)), two=P.filter(p=>!act.has(p.id)&&!out(p)&&!p.prospect), /* 엔트리 등록 전(비시즌)은 1군 후보 기준(사용자 11-06: 1군 0명) */ cnt=(L,sc)=>K.map(k=>`<button class="hw-rs-b" data-a="homeRos" data-v="${sc}:${k==='투수'?'pit':'bat'}:${k}"><dt>${k}</dt><dd>${L.filter(p=>g(p)===k||(k==='내야수'&&g(p)==='지명타자')).length}명</dd></button>`).join('');
   const inj=P.filter(p=>p.injOut>0).length, mil=P.filter(milServing).length, fr=P.filter(p=>p.foreign&&!p.frehab).length;
-  return `<section class="hw-panel hw-roster"><header><h2>선수단 현황</h2><button class="tc-i" data-a="tab" data-v="roster">선수단</button></header><div class="hw-rs"><dl><dt class="hd">${entryOn()?'1군':'1군 후보'} <b>${one.length}명</b></dt>${cnt(one,'one')}</dl><dl><dt class="hd">2군 <b>${two.length}명</b></dt>${cnt(two,'two')}</dl><dl><dt class="hd">주요 상태</dt><div><dt>부상</dt><dd class="${inj?'bad':''}">${inj}명</dd></div><div><dt>군 복무</dt><dd>${mil}명</dd></div><div><dt>외국인</dt><dd>${fr}명</dd></div></dl></div></section>`; }
+  return `<section class="hw-panel hw-roster"><header><h2>선수단 현황</h2><button class="tc-i" data-a="tab" data-v="roster">선수단</button></header><div class="hw-rs"><dl><dt class="hd">${entryOn()?'1군':'1군 후보'} <b>${one.length}명</b></dt>${cnt(one,'one')}</dl><dl><dt class="hd">2군 <b>${two.length}명</b></dt>${cnt(two,'two')}</dl><dl><dt class="hd">주요 상태</dt><div><dt>부상</dt><dd class="${inj?'bad':''}">${inj}명</dd></div><div><dt>군 복무</dt><dd>${mil}명</dd></div><div><dt>외국인</dt><dd>${fr}명</dd></div><div><dt>분위기</dt><dd>${chemLine(G.user)}</dd></div></dl></div></section>`; }
 
 /* 미리보기 글: 칸마다 띄어 쓰고(붙어 버리던 '1234567891011RHE' 같은 점수표 방지), 제목·표·버튼 글자는 뺀다. 표는 '보고 열기'에서 본다 */
 function homeCardInfo(html){const t=document.createElement('template');t.innerHTML=html;const c=t.content,h=c.querySelector('h2,h3,.sec,.eyebrow'),title=h?.textContent.trim()||'구단 보고';h?.remove();c.querySelectorAll('table,svg,.hi-i,button:not(.lnk)').forEach(e=>e.remove());
@@ -32245,7 +32382,7 @@ function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); 
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="${esc(tname(tid))}">
     <div class="sheet-head"><div><div class="eyebrow">구단 정보</div><h2 class="sec">${esc(tname(tid))}</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${teamCard(t).replace(/ data-a="[a-zA-Z]+" data-v="[^"]*" role="button" tabindex="0"/,'').replace(/<button[^>]*data-a="tpartnerGo"[^>]*>[^<]*<\/button>/g,'')}
-    <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${relLabel(t.rel)}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd></dl>
+    <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${relLabel(t.rel)}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd><dt>팀 분위기</dt><dd>${chemLine(tid)}</dd></dl>
     ${teamPeople(tid)}
     <div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}${startAvgBox(tid)}
     <div class="eyebrow" style="margin-top:10px">우승 트로피</div>${trophyCase(tid,true)}
@@ -32642,7 +32779,7 @@ function staffView(){
     sc:sprcView,
     data:dataPage,
     fac:facView,
-    lead:leadCard,
+    lead:()=>chemCard(G.user)+leadCard(),
     mil:milView,
     med:()=>fmOn()?medFM():csec('부상 방지·병원',medArtSummary()+medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
   return subTabs('staff')+h;
@@ -33841,7 +33978,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const teamPos=mates.length>1?`<section class="card pf-fm-box pf-teampos"><h3>팀 내 위치</h3>${stateRow(p.isP?'투수 종합 순위':'야수 종합 순위',`${rankBy(ovr)} / ${mates.length}위`)}${stateRow('연봉 순위',`${rankBy(q=>q.sal||0)} / ${mates.length}위`)}${stateRow('나이 순',`${1+mates.filter(q=>q.age>p.age).length} / ${mates.length}번째`)}${p.pos&&!p.isP?stateRow('같은 포지션',`${mates.filter(q=>q.pos===p.pos).length}명`):''}${(()=>{ try{ const k=slotStartAvgOf(p), A=lgStartAvg(); return k&&A[k]!=null?stateRow(`리그 주전 평균(${SLOTK[k]})`,String(dv(A[k]))):''; }catch(e){ return ''; } })()}</section>`:'';
   const track=fmOn()&&!p.isP?trackCard(p):''; /* 투수는 구속 상자와 겹친다 */
   const ST=[...(p.story||[])].slice(-4).reverse(), storyBox=ST.length?`<section class="card pf-fm-box pf-story"><h3>최근 이력</h3>${ST.map(s=>`<div class="pf-st"><span>${s.y||''}</span><p>${esc(s.t)}</p></div>`).join('')}</section>`:'';
-  return `<div class="pf-overview"><aside class="pf-sidebar">${fmCard}<section class="card pr-readout pf-state"><h3>${fsx?'스카우트 조사':'현재 상태'}</h3><div class="pf-status">${state.labels.map(l=>`<span class="pill${state.blocked?' bad':''}">${esc(l)}</span>`).join('')}</div>${own?`${stateRow('피로',Math.round(state.fat)+'/100')}${stateRow('기분',state.morale==null?'미확인':moodLabel(state.morale))}${p.isP?`${stateRow('팔 부하',Math.round(state.arm*100)+'%')}${stateRow('최근 등판',state.rest==null?'기록 없음':(state.rest===0?'오늘':state.rest+'일 전')+(state.lastPc!=null?' · '+state.lastPc+'구':''))}`:''}${state.fat>45?'<p class="small bad keep">피로 누적으로 경기력 저하</p>':''}`:fsx?`${(G.fmarket||[]).includes(p.id)?negDoor('fm',p):''}${(()=>{ const e=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; return e?`<p class="small warn keep">${esc(e)}</p>`:''; })()}${stateRow('종합 추정',fsx.mid!=null?`${fsx.lo}~${fsx.hi}`:'미확인')}${stateRow('조사 단계',esc(fsx.l||'-'))}${stateRow('출신',esc(p.nat||'-'))}<p class="small muted keep">${esc(fsx.d||'')}</p><button class="btn small" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 명단에서 빼기':'관찰 명단에 올리기'}</button>`:'<p class="small muted keep">상세 컨디션은 우리 구단 선수만 확인합니다.</p>'}${own&&p.isP&&!state.blocked&&!isSPr(p)?`<p class="pf-availability ${relAvail(p,G.day,false)?'good':'warn'}">${relAvail(p,G.day,false)?'불펜 가용 조건 충족':'오늘 불펜 운용 제한'}</p>`:''}</section>${fmOn()?recent:''}<section class="card pf-bio"><h3>선수 정보</h3><div class="pf-dup">${stateRow('나이',p.age+'세')}</div>${!p.foreign?`<div class="pf-dup">${stateRow('고향',esc(homeTxt(p)))}</div>`:''}${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}<div class="pf-dup">${stateRow('손잡이',hand(p))}</div>${stateRow('병역',esc(milText(p)))}<div class="pf-dup">${stateRow('계약',esc(ctText(p)))}</div>${p.draft?stateRow('드래프트',p.draft.y+' · '+p.draft.rd+'R '+p.draft.no+'순위'):''}</section><section class="card pf-role"><h3>포지션·역할</h3><b>${posLabel(p)}</b>${!p.isP&&subsOf(p).length?`<p class="small keep">가능 포지션 ${subsOf(p).map(k=>POSK[k]||k).join(' · ')}</p>`:''}<p class="small keep">${esc(rp.arch||'평가 없음')}</p>${rp.role?`<p class="small keep"><span class="muted">${p.foreign?'올해 역할':'장래 예상'}</span> ${esc(rp.role)}</p>`:''}</section></aside>
+  return `<div class="pf-overview"><aside class="pf-sidebar">${fmCard}<section class="card pr-readout pf-state"><h3>${fsx?'스카우트 조사':'현재 상태'}</h3><div class="pf-status">${state.labels.map(l=>`<span class="pill${state.blocked?' bad':''}">${esc(l)}</span>`).join('')}</div>${own?`${stateRow('피로',Math.round(state.fat)+'/100')}${stateRow('기분',state.morale==null?'미확인':moodLabel(state.morale))}${moraleBox(p,4)}${p.isP?`${stateRow('팔 부하',Math.round(state.arm*100)+'%')}${stateRow('최근 등판',state.rest==null?'기록 없음':(state.rest===0?'오늘':state.rest+'일 전')+(state.lastPc!=null?' · '+state.lastPc+'구':''))}`:''}${state.fat>45?'<p class="small bad keep">피로 누적으로 경기력 저하</p>':''}`:fsx?`${(G.fmarket||[]).includes(p.id)?negDoor('fm',p):''}${(()=>{ const e=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; return e?`<p class="small warn keep">${esc(e)}</p>`:''; })()}${stateRow('종합 추정',fsx.mid!=null?`${fsx.lo}~${fsx.hi}`:'미확인')}${stateRow('조사 단계',esc(fsx.l||'-'))}${stateRow('출신',esc(p.nat||'-'))}<p class="small muted keep">${esc(fsx.d||'')}</p><button class="btn small" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 명단에서 빼기':'관찰 명단에 올리기'}</button>`:'<p class="small muted keep">상세 컨디션은 우리 구단 선수만 확인합니다.</p>'+moraleBox(p)}${own&&p.isP&&!state.blocked&&!isSPr(p)?`<p class="pf-availability ${relAvail(p,G.day,false)?'good':'warn'}">${relAvail(p,G.day,false)?'불펜 가용 조건 충족':'오늘 불펜 운용 제한'}</p>`:''}</section>${fmOn()?recent:''}<section class="card pf-bio"><h3>선수 정보</h3><div class="pf-dup">${stateRow('나이',p.age+'세')}</div>${!p.foreign?`<div class="pf-dup">${stateRow('고향',esc(homeTxt(p)))}</div>`:''}${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}<div class="pf-dup">${stateRow('손잡이',hand(p))}</div>${stateRow('병역',esc(milText(p)))}<div class="pf-dup">${stateRow('계약',esc(ctText(p)))}</div>${p.draft?stateRow('드래프트',p.draft.y+' · '+p.draft.rd+'R '+p.draft.no+'순위'):''}</section><section class="card pf-role"><h3>포지션·역할</h3><b>${posLabel(p)}</b>${!p.isP&&subsOf(p).length?`<p class="small keep">가능 포지션 ${subsOf(p).map(k=>POSK[k]||k).join(' · ')}</p>`:''}<p class="small keep">${esc(rp.arch||'평가 없음')}</p>${rp.role?`<p class="small keep"><span class="muted">${p.foreign?'올해 역할':'장래 예상'}</span> ${esc(rp.role)}</p>`:''}</section></aside>
   <main class="pf-main"><div class="pf-main-top"><section class="card pf-attributes"><div class="pf-section-title"><h3>세부 능력 <button class="tc-i" data-a="attrHelp" aria-label="능력치 설명" title="능력치마다 어디에 영향을 주는지">i</button></h3></div>${own&&rp.exact&&!p.prospect?attrCmpBar(p,cmpM,dl):''}<div class="pf-attribute-grid">${attributes}</div>${UI.attrHelpOpen?`<div class="note">${attrHelpList()}</div>`:''}</section>${fmOn()?(()=>{ let N=[],X=[]; try{ N=staffNotes(p); }catch(e){} try{ X=curExplain(p,rp)||[]; }catch(e){} const f=l10Text(p);
       return `<section class="card pf-report"><h3>보고서</h3>${f?`<div class="pf-rp-form"><span>최근 폼</span><b>${f}</b></div>`:''}${N.map(x=>`<div class="pf-rp-note"><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}${X.slice(0,3).map(t=>`<p class="pf-rp-why">${tipRest(t)}</p>`).join('')}${mop?`<div class="pf-rp-mop">${mop}</div>`:''}</section>`; })():''}</div><section class="card pf-season pf-season-inline pf-mobile-only"><h3>${h?h.y+' '+(h.lvl||'1군'):'시즌'} 성적</h3>${tiles?`<div class="pf-season-grid">${tiles.map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')}</div>`:'<p class="small muted keep">아직 경기 기록이 없습니다.</p>'}</section><section class="card pf-season-table"><h3>시즌 통계</h3><div class="tw">${statTable(p)}</div>${fmOn()?'':'</section>'}<details class="pf-more" data-k="player-more:${p.id}" ${UI.open['player-more:'+p.id]?'open':''}><summary>구종·성장 추이·코치 의견 자세히 보기</summary><div class="pf-more-grid">${injBox||''}${pitcherRepertoireCard(p,rp)}${mgrOpinion(p)}${detailCard(p)}${reportCard(p,true)}${!p.isP?posCard(p,true):''}${growthCard(p)}</div></details>${fmOn()?'</section>':''}</main>
   <aside class="pf-insights"><section class="card pf-radar"><h3>능력 차트</h3>${d?radarSVG(d.radar,rp.ofp!=null&&tools.some(t=>t.fut>t.cur),true,rsd>=1.5?rg:null):'<p>평가 미확인</p>'}<p class="small keep pf-rd-key"><i class="k1"></i>${rsd>=1.5?'추정':'현재'} ${rp.ofp!=null&&tools.some(t=>t.fut>t.cur)?'<i class="k2"></i>잠재력 ':''}<i class="k3"></i>1군 평균</p><div class="pf-core-compact"><div class="pf-core-caption">핵심 능력 <span>100점 · 63 = 1군 평균</span></div><div class="pf-core-grid${p.isP?' pitcher':''}">${core||'<p>평가 미확인</p>'}</div></div></section>${pitch?`<section class="card pf-pitch-head"><h3>구속·사용 구종</h3>${stateRow('평균',pitch.velo+' km/h')}${stateRow('최고 상한',pitch.max+' km/h')}<p class="small keep">경기 적용 ${pitch.activeCount}구종</p><div class="pf-status">${active.map(x=>`<span class="pill">${esc(x.name)} ${rg(x.value)}</span>`).join('')}</div></section>`:''}${proCon}${!p.isP?`<div class="pf-pos-mini">${fmOn()?posFieldBox(p):posCard(p,true)}</div>`:''}${track?`<div class="pf-track">${track}</div>`:''}</aside><aside class="pf-extra">${infoCard}${teamPos}${career.replace(/<\/section>$/,storyBox.replace(/^<section[^>]*>/,'').replace(/<\/section>$/,'')+'</section>')}</aside>
@@ -34291,12 +34428,31 @@ function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
 /* 인물 이력부(91_person_ledger): 선수 시절 구단·이적·수상·은퇴·지도자/프런트 경력을 연도순으로 */
 function personTimelineBox(key,title){ let L=[]; try{ L=personTimeline(key); }catch(e){} if(!L.length)return ''; const ic={play:'⚾',move:'↔',award:'★',retire:'■',start:'▶',end:'◀'};
   return `<section class="card pt-box"><h3 class="sec">${esc(title||'인물 이력')}</h3><ol class="pt-l">${L.map(x=>`<li class="pt-${x.k}"><b>${x.y}</b><span>${ic[x.k]||''}</span><em>${esc(x.t)}</em></li>`).join('')}</ol></section>`; }
+/* ===== 기분 이유 목록·팀 분위기 화면(엔진: 30_chemistry) =====
+ 한 줄에 한 가지, 오른쪽에 방향과 크기만 말로. 숫자는 보이지 않는다. 설명은 ⓘ 안에 */
+const MOR_TIP='기분은 매주 출전·팀 성적·팀 분위기·주장·수석코치로 조금씩 움직이고, 면담·약속·연봉·부상 같은 일로 한 번에 움직입니다. 최근 5주 동안 실제로 기분을 움직인 것만 보입니다. 쌓인 불만은 기분과 따로 쌓이며, 커지면 언론 플레이·트레이드 요구로 번집니다.';
+const MOR_TIP_SC='맡은 프로 스카우트가 그 구단 주변에서 들은 이야기입니다. 출전 상황·팀 성적·팀 분위기·밖으로 알려진 일만 들립니다.';
+function morMark(x,scout){ if(x.wait)return ['','대기']; if(x.grv)return ['warn','불만']; const c=x.v>0?'good':'bad'; return [c,scout?(x.v>0?'좋게':'나쁘게'):`${x.big?'크게':'조금'} ${x.v>0?'좋게':'나쁘게'}`]; }
+function morRows(L,scout){ return `<ul class="mrl">${L.map(x=>{ const [c,m]=morMark(x,scout); return `<li><span>${esc(x.t)}</span><em class="${c}">${m}</em></li>`; }).join('')}</ul>`; }
+/* 선수 기분 이유: 우리 선수는 전체(max줄까지), 다른 구단 선수는 스카우트가 들은 것만 */
+function moraleBox(p,max){ if(!p||p.team==null||p.prospect)return ''; const mine=p.team===G.user&&!G.unemp;
+  if(mine){ const L=moraleList(p).slice(0,max||8); return `<div class="mrl-box"><div class="mrl-h">기분에 영향을 주는 것${hiI(MOR_TIP)}</div>${L.length?morRows(L):'<p class="small muted">요즘은 기분을 크게 움직인 일이 없습니다.</p>'}</div>`; }
+  const L=moraleScout(p); return `<div class="mrl-box"><div class="mrl-h">들리는 이야기${hiI(MOR_TIP_SC)}</div>${L.length?morRows(L,true):`<p class="small muted">${(()=>{ try{ return coverOf(p.team).sc; }catch(e){ return null; } })()?'특별히 들리는 이야기는 없습니다.':'이 구단을 맡은 프로 스카우트가 없어 들리는 이야기가 없습니다.'}</p>`}</div>`; }
+/* 팀 분위기 한 단어 + ⓘ(이유를 말로). 우리 구단은 이름까지, 다른 구단은 보도로 알려진 정도 */
+function chemTip(tid){ const me=tid===G.user&&!G.unemp; const W=chemWhy(tid,me).slice(0,me?4:2).map(x=>`${x.t}(${x.v>0?'좋게':'나쁘게'})`);
+  return `${me?'':'언론 보도와 소문으로 본 분위기입니다. '}${W.length?W.join(' · '):'눈에 띄는 이유는 없습니다.'} · 분위기는 주장·고참, 분위기를 흐리는 선수, 성적, 선수단 변화, 감독·기강, 출전 불만, 선수들 기분으로 정해지고 선수 기분에 조금씩 영향을 줍니다.`; }
+function chemLine(tid){ const c=clubChem(tid); return `<span class="pill ${chemCls(c.v)}">${chemWord(c.v)}</span>${hiI(chemTip(tid))}`; }
+/* 리더십 탭 카드: 분위기 단어, 흐름, 이유 몇 줄 */
+function chemCard(tid){ if(G.unemp||tid==null)return ''; const c=clubChem(tid), me=tid===G.user; const W=chemWhy(tid,me).slice(0,5);
+  const tr=c.T-c.v>=3?'좋아지는 중':c.T-c.v<=-3?'나빠지는 중':'';
+  return `<section class="card chem-card"><div class="row between"><h2 class="sec">팀 분위기${hiI('분위기는 주장·고참, 분위기를 흐리는 선수, 성적, 선수단 변화, 감독·기강, 출전 불만, 선수들 기분으로 정해집니다. 한 주에 조금씩 움직이고, 선수 기분에 조금씩 영향을 줍니다. 다른 구단도 같은 규칙입니다.')}</h2><span><span class="pill ${chemCls(c.v)}">${chemWord(c.v)}</span>${tr?` <span class="small muted">${tr}</span>`:''}</span></div>
+    ${W.length?morRows(W.map(x=>({t:x.t,v:x.v,big:Math.abs(x.v)>=4}))):'<p class="small muted">눈에 띄는 이유는 없습니다.</p>'}</section>`; }
 /* ---------- 동작 ---------- */
 function roleLines(p){ const r=squadRole(p), k=keepWhy(p), o=oppSat(p); const L=[]; if(r)L.push(`<b>팀 내 역할</b> ${esc(r)}`); if(o)L.push(`<b>기회 만족</b> ${esc(o.lv)} · ${esc(o.why)}${o.gap?` <span class="muted">${esc(o.gap)}</span>`:''}`); if(k)L.push(`<b>보유 이유</b> ${esc(k)}`); return L.length?`<p class="small">${L.join('<br>')}</p>`:''; }
 function bondCard(p){
   initPers(p); const m=p.mor;
   return `<section class="card"><div class="row between"><span class="eyebrow">선수와의 관계</span><span class="pill ${moodClass(m)}">기분 ${moodLabel(m)}</span></div>
-  <p class="small">${esc(moraleWhy(p))}</p>${p.team===G.user?roleLines(p):''}
+  <p class="small">${esc(moraleWhy(p))}</p>${moraleBox(p)}${p.team===G.user?roleLines(p):''}
   <p class="small muted">성향: ${esc(mentalSum(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
   ${p.team===G.user?`<button class="btn small mt-go" data-a="meetOpen" data-v="pl:${p.id}">${avImg(p)}<span><b>개인 면담</b><i>${talkUsed(p,'praise')?'이번 주 칭찬·분발 촉구는 했습니다 · 고민은 언제든':'칭찬, 분발 촉구, 출전 기회, 계약, 고민'}</i></span></button>`:''}
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
