@@ -4,11 +4,11 @@ function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(
    정보원이 없으면 '알 수 없음'. 추정 오차가 크면 '(불확실)' */
 function mentalRead(p,k){ if(!p||!p.pers)return {t:'알 수 없음',src:'',sd:99}; const v=p.pers[k];
   let sd=99, src='';
-  if(p.team===G.user&&!G.unemp){ const m=G.mgr&&G.mgr[G.user]; const kn=m?mgrKnow(m,p):0; sd=(1.6+(1-kn)*4.5)*(m?1-((m.eye||50)-50)/160:1.3); src=m?`${m.name} 감독·코치진(훈련 태도)`:'코치진(훈련 태도)'; }
-  else { const ref=p.team!=null?p.team:p.prospect?null:p.faFrom; let sc=null; try{ sc=ref!=null?coverOf(ref).sc:(p.prospect&&p.region?scoutOf('am',p.region):null); }catch(e){} if(sc){ sd=Math.max(3.5,8.5-(sc.skill||2)*1.0); src=`${sc.name} 스카우트(소문)`; } } /* 다른 구단 선수의 훈련 태도는 밖에서 보기 어렵다: 최고 스카우트도 오차가 크다 */
+  if(p.team===G.user&&!G.unemp){ const m=G.mgr&&G.mgr[G.user]; const kn=m?mgrKnow(m,p):0; sd=(1.6+(1-kn)*4.5)*(m?1-((m.eye||50)-50)/160:1.3); src=m?`${m.name} 감독과 코치진이 본 훈련 태도`:'코치진이 본 훈련 태도'; }
+  else { const ref=p.team!=null?p.team:p.prospect?null:p.faFrom; let sc=null; try{ sc=ref!=null?coverOf(ref).sc:(p.prospect&&p.region?scoutOf('am',p.region):null); }catch(e){} if(sc){ sd=Math.max(3.5,8.5-(sc.skill||2)*1.0); src=`${sc.name} 스카우트가 들은 이야기`; } } /* 다른 구단 선수의 훈련 태도는 밖에서 보기 어렵다: 최고 스카우트도 오차가 크다 */
   if(sd>=99)return {t:'알 수 없음',src:'정보원 없음',sd};
   const e=v+hn('mr'+k+(src||'')+halfK(),p.id)*sd; const t=k==='temp'?(e>=15.5?'매우 예민':e>=12?'예민한 편':e>=8.5?'보통':e>=5.5?'무던한 편':'매우 무던'):k==='amb'?(e>=15.5?'매우 강함':e>=12?'강한 편':e>=8.5?'보통':e>=5.5?'약한 편':'거의 없음'):(e>=15.5?'매우 좋음':e>=12?'좋은 편':e>=8.5?'보통':e>=5.5?'아쉬운 편':'나쁨');
-  return {t:t+(sd>=4?' (불확실)':''),src,sd}; }
+  return {t:t+(sd>=4?' 같음':''),src,sd}; }
 function mentalSum(p){ const r=mentalRead(p,'pro'), t=mentalRead(p,'temp'); if(r.sd>=99)return '성향 정보 없음'; const a=mentalRead(p,'amb'); return `${r.src}: 프로의식 ${r.t} · 야망 ${a.t} · 예민도 ${t.t}`; }
 const moodLabel=m=>m>=80?'매우 좋음':m>=65?'좋음':m>=45?'보통':m>=30?'불만':'매우 불만';
 const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';

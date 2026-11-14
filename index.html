@@ -16748,11 +16748,11 @@ function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(
    정보원이 없으면 '알 수 없음'. 추정 오차가 크면 '(불확실)' */
 function mentalRead(p,k){ if(!p||!p.pers)return {t:'알 수 없음',src:'',sd:99}; const v=p.pers[k];
   let sd=99, src='';
-  if(p.team===G.user&&!G.unemp){ const m=G.mgr&&G.mgr[G.user]; const kn=m?mgrKnow(m,p):0; sd=(1.6+(1-kn)*4.5)*(m?1-((m.eye||50)-50)/160:1.3); src=m?`${m.name} 감독·코치진(훈련 태도)`:'코치진(훈련 태도)'; }
-  else { const ref=p.team!=null?p.team:p.prospect?null:p.faFrom; let sc=null; try{ sc=ref!=null?coverOf(ref).sc:(p.prospect&&p.region?scoutOf('am',p.region):null); }catch(e){} if(sc){ sd=Math.max(3.5,8.5-(sc.skill||2)*1.0); src=`${sc.name} 스카우트(소문)`; } } /* 다른 구단 선수의 훈련 태도는 밖에서 보기 어렵다: 최고 스카우트도 오차가 크다 */
+  if(p.team===G.user&&!G.unemp){ const m=G.mgr&&G.mgr[G.user]; const kn=m?mgrKnow(m,p):0; sd=(1.6+(1-kn)*4.5)*(m?1-((m.eye||50)-50)/160:1.3); src=m?`${m.name} 감독과 코치진이 본 훈련 태도`:'코치진이 본 훈련 태도'; }
+  else { const ref=p.team!=null?p.team:p.prospect?null:p.faFrom; let sc=null; try{ sc=ref!=null?coverOf(ref).sc:(p.prospect&&p.region?scoutOf('am',p.region):null); }catch(e){} if(sc){ sd=Math.max(3.5,8.5-(sc.skill||2)*1.0); src=`${sc.name} 스카우트가 들은 이야기`; } } /* 다른 구단 선수의 훈련 태도는 밖에서 보기 어렵다: 최고 스카우트도 오차가 크다 */
   if(sd>=99)return {t:'알 수 없음',src:'정보원 없음',sd};
   const e=v+hn('mr'+k+(src||'')+halfK(),p.id)*sd; const t=k==='temp'?(e>=15.5?'매우 예민':e>=12?'예민한 편':e>=8.5?'보통':e>=5.5?'무던한 편':'매우 무던'):k==='amb'?(e>=15.5?'매우 강함':e>=12?'강한 편':e>=8.5?'보통':e>=5.5?'약한 편':'거의 없음'):(e>=15.5?'매우 좋음':e>=12?'좋은 편':e>=8.5?'보통':e>=5.5?'아쉬운 편':'나쁨');
-  return {t:t+(sd>=4?' (불확실)':''),src,sd}; }
+  return {t:t+(sd>=4?' 같음':''),src,sd}; }
 function mentalSum(p){ const r=mentalRead(p,'pro'), t=mentalRead(p,'temp'); if(r.sd>=99)return '성향 정보 없음'; const a=mentalRead(p,'amb'); return `${r.src}: 프로의식 ${r.t} · 야망 ${a.t} · 예민도 ${t.t}`; }
 const moodLabel=m=>m>=80?'매우 좋음':m>=65?'좋음':m>=45?'보통':m>=30?'불만':'매우 불만';
 const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';
@@ -33833,7 +33833,7 @@ function reportCard(p,noTools){
   return `<section class="card">
     <div class="row between"><h2 class="sec">스카우트 리포트</h2><span class="small muted">${esc(rp.who)} · ${rp.exact?'잠재력 추정 ':''}정확도 ${rp.conf}</span></div>
     <div class="tiles">${(()=>{ const cv=curView(p,rp); return `<div class="tile"><span class="g" style="color:${rcol(cv.v)}">${dv(cv.v)}</span><span class="l">${cv.est?`예상 종합 ${cv.lo}~${cv.hi}`:'현재 종합'}</span></div>`; })()}${p.foreign?(()=>{ const cv=curView(p,rp); const pj=projKBO(p,cv.v,cv.sd); return `<div class="tile key"><span class="g" style="font-size:16px">${pj?pj.mid:'?'}</span><span class="l">올해 예상 ${pj?(pj.k==='era'?'ERA':'OPS'):''}</span></div>`; })():`<div class="tile key"><span class="g" style="font-size:16px">${rp.ofp!=null?potStars(potTierP(rp,p).st):'?'}</span><span class="l">잠재력 추정</span></div>`}<div class="tile"><span class="g" style="font-size:16px">${rp.sd>=90?'판단 불가':rp.exact&&p.team!=null&&!p.foreign?'낮음':rp.sd>=8?'높음':rp.sd>=5?'보통':'낮음'}</span><span class="l">평가 불확실성</span></div><div class="tile"><span class="g" style="font-size:16px">${p.inj>.26?'높음':p.inj>.18?'보통':'낮음'}</span><span class="l">건강 위험</span></div>${rp.eta?`<div class="tile"><span class="g" style="font-size:16px">${rp.eta}년</span><span class="l">1군 도달 예상</span></div>`:''}</div>
-    ${rp.role&&!p.fdPool?`<p class="small"><span class="muted">${p.foreign?'올해 예상 역할':'장래 역할'}</span> <b>${esc(rp.role)}</b></p>`:''}${curExBox(p,rp)}
+    ${rp.role&&!p.fdPool?`<p class="small"><span class="muted">${p.foreign?'올해 예상 역할':'장래 역할'}</span> <b>${esc(rp.role)}</b></p>`:''}${curExBox(p,rp)}${!p.fdPool?`<p class="small"><span class="muted">성향</span> ${esc(mentalSum(p))}</p>`:''}
     ${noTools?'':`<div class="tools">${rp.tools.map(bar).join('')}</div>
     <p class="small muted">${p.foreign?'외국인 선수는 올해 기량만 평가합니다. 막대는 현재 수준입니다.':'왼쪽 숫자는 현재, 막대 끝은 스카우트가 보는 미래(추정)입니다.'}</p>`}
     <div class="quote">${rp.notes.map(n=>`<p>${esc(n)}</p>`).join('')}</div>
