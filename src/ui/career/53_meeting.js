@@ -7,7 +7,7 @@ function meetWho(M){ const t=team(G.user);
   if(M.k==='mgr'){ const m=G.mgr[G.user]; if(!m||(M.mid&&M.mid!==m.id))return null; return {name:`${m.name} 감독`,role:`${mgrType(m).n} · ${MTSTY[mgrTalkSty(m)].l}`,place:M.visit?'단장실':'감독실',av:avImg({persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name}),rel:`관계 ${relLabel(m.rel)}`}; }
   const p=G.players[M.id]; if(!p)return null; return {name:p.name,role:`${posLabel(p)} · ${p.age}세`,place:'선수 면담실',av:avImg(p),rel:`기분 ${moodLabel(p.mor??60)} · ${friendshipLabel(p)}`}; }
 function meetGreet(M){ const t=team(G.user);
-  if(M.k==='own'){ const tr=t.trust; return tr>=70?'단장, 잘 왔소. 요즘 분위기가 좋더군. 앉으시오.':tr>=45?'앉으시오. 무슨 일로 왔소?':tr>=25?'바쁘니 용건만 간단히 합시다.':'...할 말이 있으면 해 보시오. 내 인내심도 한계가 있소.'; }
+  if(M.k==='own'){ const tr=t.trust; return tr>=70?'단장, 잘 왔어요. 요즘 분위기가 좋더군요. 앉으세요.':tr>=45?'앉으세요. 무슨 일로 왔어요?':tr>=25?'바쁘니 용건만 간단히 합시다.':'...할 말이 있으면 해 보세요. 내 인내심도 한계가 있어요.'; }
   if(M.k==='gm')return gmPersonalReply(M.id,'check');
   if(M.k==='mgr')return mvGreeting(G.mgr[G.user],M);
   const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
@@ -55,7 +55,7 @@ function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const s
     const [k,x]=v.split(':'); const p=k==='gen'?null:G.players[+x]; const amt=k==='gen'?+x:k==='fa'?p.ask.annual:frepAmt(p); const tr0=t.trust;
     say('me',k==='gen'?`회장님, 운영비를 ${money(amt)} 더 받고 싶습니다. 보강할 자리가 있습니다.`:k==='fa'?`FA ${p.name} 선수를 잡으려면 ${money(amt)}이(가) 더 듭니다. 도와주십시오.`:`외국인 ${p.name}을(를) 바꿔야겠습니다. 새 선수를 데려오려면 ${money(amt)}이(가) 듭니다.`);
     const r=k==='gen'?ownerAsk(amt,null):ownerAsk(amt,{k,pid:+x}); if(!/^(승인|반려)/.test(r)){ say('sys',r); return; } const ok=/^승인/.test(r);
-    say('them',ok?(t.owner==='win'?'좋소. 대신 결과로 보여 주시오.':t.owner==='profit'?'...이번만이오. 돈 쓴 만큼 벌어 오시오.':'알겠소. 팬들을 실망시키지 마시오.'):(t.owner==='profit'?'적자부터 줄이시오.':t.owner==='win'?'성적부터 내 오시오.':'지금은 때가 아니오.'));
+    say('them',ok?(t.owner==='win'?'좋아요. 대신 결과로 보여 주세요.':t.owner==='profit'?'...이번만이에요. 돈 쓴 만큼 벌어 오세요.':'알겠어요. 팬들을 실망시키지 마세요.'):(t.owner==='profit'?'적자부터 줄이세요.':t.owner==='win'?'성적부터 내 오세요.':'지금은 때가 아니에요.'));
     say('sys',ok?`승인: ${money(amt)} 지원${k==='fa'?' · 이 선수 영입에만 써야 합니다':''}`:`반려${t.trust<tr0?' · '+fxSoft('tr',t.trust-tr0):''}`); save(); return; }
   if(M.k==='mgr'){const mm0=G.mgr[G.user];if(!meetWho(M)){say('sys','면담 상대가 자리를 떠났습니다.');return;}
     if(v==='talk'){ say('me','감독님, 잠깐 이야기 좀 하시죠.'); const r=mgrTalkStart(mm0); r.say.forEach(x=>say('them',x)); M.sc=r.st; save(); return; } /* 스타일 대화(11-08c) */

@@ -67,7 +67,7 @@ function pdStatement(p){ const k=grvTop(p)||'pt', me=p.team===G.user, tn=tshort(
   news('선수',title,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) ${via}을(를) 통해 불만을 드러냈습니다. ${pdSay(p,k)} 구단 대응이 주목됩니다.`,me?-2:0,{ref:p.id,tid:p.team});
   if(!me){ pdAiReact(p,1); return; }
   const m=G.mgr[G.user], side=pdMgrSide(m); const mL=!m||m.interim?'':side<0?`\n\n${m.name} 감독은 "선수가 할 말이 있으면 안에서 하라"며 언짢아합니다.`:side>0?`\n\n${m.name} 감독은 "선수 마음도 이해한다"며 선수 쪽에 서는 분위기입니다.`:'';
-  const O=[['talk','따로 불러 면담한다','성격·관계에 따라 풀릴 수도, 같은 말만 되풀이할 수도 있습니다.'],['rebut','구단 입장을 공개적으로 밝힌다','언론에는 단호해 보이지만 선수는 체면을 구깁니다. 기억에 남습니다.'],['disc','벌금 등 내부 징계','기강은 서지만 선수 불만이 커지고, 구단주 성향에 따라 반응이 다릅니다.'],['list','트레이드 명단에 올린다','선수는 누그러지지만 다른 구단이 약점으로 봅니다.'],['ignore','대응하지 않는다','시간이 해결할 수도, 더 큰 요구로 이어질 수도 있습니다.']];
+  const O=[['talk','따로 불러 면담한다','성격·관계에 따라 풀릴 수도, 같은 말만 되풀이할 수도 있습니다.'],['rebut','구단 입장을 공개적으로 밝힌다','언론에는 단호해 보이지만 선수는 체면을 구기고, 이 일을 기억합니다.'],['disc','벌금 등 내부 징계','기강은 서지만 선수 불만이 커지고, 구단주 성향에 따라 반응이 다릅니다.'],['list','트레이드 명단에 올린다','선수는 누그러지지만 다른 구단이 약점으로 봅니다.'],['ignore','대응하지 않는다','시간이 해결할 수도, 더 큰 요구로 이어질 수도 있습니다.']];
   evNew('pmed',`${p.name}의 공개 불만`,`${title}.\n\n${pdSay(p,k)}\n\n${p.name}(${posLabel(p)}, ${p.age}세, ${squadRole(p)||'선수'}) · ${evLine(p)}${mL}`,O.map(o=>({l:o[1],fx:o[2]})),{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,ks:O.map(o=>o[0]),k,side},def:O.length-1,exp:4}); }
 /* 단장 선택과 감독 편: 감독과 같은 편이면 관계 +, 반대면 - */
 function pdMgrAgree(e,stance){ const m=G.mgr[G.user]; if(!m||m.interim||!e.data.side)return ''; const ok=e.data.side===stance; m.rel=clamp(m.rel+(ok?2:-2),0,100); return ok?` 감독 관계 조금 개선(같은 편)`:` 감독 관계 조금 악화(감독은 다른 생각)`; }

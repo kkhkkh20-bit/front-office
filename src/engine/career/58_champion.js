@@ -40,7 +40,7 @@ function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.
   G.champPop0=record.sales; /* 우승 효과: 다음 시즌 관중·유니폼·굿즈 판매가 늘어난다(인기는 해마다 조금씩 원래대로 돌아간다) */ prInit(); G.pr.fan=clamp(G.pr.fan+12,0,100); G.pr.press=clamp(G.pr.press+8,0,100);
   /* 구단주 포상: 세 가지 중 하나 */
   const B=bossOf(G.user);
-  evNew('champGift',`구단주 포상: ${tag}`,`${B.own.name} 회장이 라커룸까지 내려와 단장의 손을 잡았습니다. "약속을 지켜 줘서 고맙소. 원하는 걸 말해 보시오."\n\n포상 하나를 고르세요.`,
+  evNew('champGift',`구단주 포상: ${tag}`,`${B.own.name} 회장이 라커룸까지 내려와 단장의 손을 잡았습니다. "약속을 지켜 줘서 고마워요. 원하는 걸 말해 보세요."\n\n포상 하나를 고르세요.`,
     champGiftOpts(t,y), /* 현금 포상은 줄였다: 우승팀이 바로 전력을 사 오면 쏠림이 커진다. 보상은 인기·명성·판매로 */
     {exp:14,def:0,from:'구단주실'});
   /* 우승 직후 스폰서 제안 쇄도: 비거나 올해 끝나는 자리에 웃돈 제안 */

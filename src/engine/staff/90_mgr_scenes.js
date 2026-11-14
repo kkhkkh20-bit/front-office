@@ -191,7 +191,7 @@ function mgrReqBlock(k){
   if(rosterN(G.user)>=ROSTER_MAX)return `정식 선수 정원 ${ROSTER_MAX}명이 가득 찼습니다. 먼저 기존 선수단을 정리해야 합니다.`;
   if(period()==='post'||preSettle()||!(freeOpen()||tradeOpen()||G.fa?.open&&!G.fa.closed))return '지금은 선수 영입·등록을 진행할 수 있는 기간이 아닙니다.';
   if(mgrReqUntil(k)-G.day<7)return '정규시즌 종료까지 보강을 협의할 시간이 부족합니다.';
-  const need=mgrReqNeed(k);if(!need)return '해당 자리는 리그 하위권이 아니거나 곧 돌아올 내부 대안이 있습니다.';
+  const need=mgrReqNeed(k);if(!need)return '이 자리는 리그 하위권이 아니거나 곧 돌아올 선수가 있습니다.';
   if(entryOn()&&playersOf(G.user).some(p=>!p.e1&&canUp(p)&&mreqOk(k,p)&&pSlot(p)===need.slot&&ovr(p)>=Math.max(mreqMin(k),need.v+3)))return '먼저 2군의 출전 가능한 내부 대안을 검토하겠습니다.';
   return '';
 }
@@ -212,7 +212,7 @@ function mgrTalkStart(m){ if(!m||m.interim||G.unemp||G.mgr?.[G.user]?.id!==m.id)
   return {say:cb?[cb,op]:[op],st,ch:talkChoices(st)}; }
 const mgrTalkChoices=st=>talkChoices(st);
 const mgrTD=m=>({kind:'mgr',mem:m,sm:mscnMem(m),sty:mgrTalkSty(m),qs:MSQ.map(q=>({...q,a:(X,s)=>mgrReqTree({c:q.a(X,s)}).c})),qm:(mscnMem(m).q=mscnMem(m).q||{}),fx:(fx,X)=>mgrScnFx(m,fx,X)});
-function mgrTalkPick(m,st,i){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id||(st?.tid!=null&&st.tid!==G.user)||(st?.mid!=null&&st.mid!==m.id))return {me:'',say:['요청한 감독 또는 구단이 바뀌어 이전 대화를 종료합니다.'],sys:[],st:null,ch:[]};const ch=st?.node?.c?.[i];if(ch){const why=mgrReqChoiceBlock(ch);if(why){st.node=null;return {me:gvL(ch.me||ch.l),say:[why+' 추가 보강 약속은 만들지 않습니다.'],sys:[],st:null,ch:[]};}}return talkPick(mgrTD(m),st,i);}
+function mgrTalkPick(m,st,i){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id||(st?.tid!=null&&st.tid!==G.user)||(st?.mid!=null&&st.mid!==m.id))return {me:'',say:['감독이나 구단이 바뀌어 이전 대화는 끝났습니다.'],sys:[],st:null,ch:[]};const ch=st?.node?.c?.[i];if(ch){const why=mgrReqChoiceBlock(ch);if(why){st.node=null;return {me:gvL(ch.me||ch.l),say:[why+' 추가 보강 약속은 만들지 않습니다.'],sys:[],st:null,ch:[]};}}return talkPick(mgrTD(m),st,i);}
 
 /* ===== 주고받는 대화(11-09e: 감독·구단주 대화가 티키타카가 되게) =====
    한 장면은 3~5마디. 장면에 준비된 마디가 끝났는데 목표 마디 수(3~4)에 못 미치면, 상대가 지금 상황(순위·연패·부상·최근 영입·예산·곧 FA)을 두고
@@ -326,7 +326,7 @@ const mreqOk=(k,p)=>k==='rp'?p.isP&&!isSPr(p):k==='sp'?isSPr(p):k==='def'?!p.isP
 function mgrReqCond(Q){ if(!Q)return ''; if(Q.k==='an')return '새 전력분석원 채용'; return `${dmd(Q.d)} 이후 새로 데려온(트레이드·FA·웨이버·외국인) ${Q.slot?SLOTK[Q.slot]+' 선수':MREQ[Q.k]}, 종합 ${dv(Q.min)} 이상, 1군에 바로 올릴 수 있는 상태(부상·군 복무·육성선수·합류 전 신인 제외)`; }
 function mreqMin(k){ const L=playersOf(G.user).filter(p=>mreqOk(k,p)).map(ovr).sort((a,b)=>b-a); return Math.round(clamp(L.length?L[Math.floor(L.length/2)]:50,45,68)); }
 function mgrReqDaily(){ const Q=G.mgrReq; if(!Q)return; const m=G.mgr&&G.mgr[G.user]; if(G.unemp||!m||m.interim||m.id!==Q.mid||(Q.tid!=null&&Q.tid!==G.user)||!MREQ[Q.k]){ delete G.mgrReq; return; }
-  if(Q.k==='an'&&Q.n0>=ANA_MAX){ delete G.mgrReq; mail('감독실',`${m.name} 감독의 분석원 보강 요청을 정리했습니다`,`요청 당시 이미 전력분석원 정원 ${ANA_MAX}명을 채워 추가 채용이 불가능했습니다. 요청을 종료하며 감독 관계는 변하지 않습니다.`,{kind:'감독'}); return; }
+  if(Q.k==='an'&&Q.n0>=ANA_MAX){ delete G.mgrReq; mail('감독실',`${m.name} 감독의 분석원 보강 요청을 정리했습니다`,`요청할 때 이미 전력분석원 정원 ${ANA_MAX}명이 차 있어 더 뽑을 수 없었습니다. 요청은 끝내고, 감독 관계는 그대로입니다.`,{kind:'감독'}); return; }
   const done=Q.k==='an'?anaList().length>Q.n0&&anaList().some(a=>(!Q.sids||!Q.sids.includes(a.id))&&a.since>=Q.d&&a.since<=Q.until):Object.values(G.players).some(p=>{const a=p.acq;return mgrReinforceReady(p)&&!(Q.ids||[]).includes(p.id)&&mreqOk(Q.k,p)&&(!Q.slot||pSlot(p)===Q.slot)&&ovr(p)>=Q.min&&a&&a.tid===G.user&&a.d>=Q.d&&a.d<=Q.until&&(Q.an==null||a.n>Q.an);});
   if(done){ m.rel=clamp(m.rel+6,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독: "부탁 들어주셔서 고맙습니다"`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강을 반겼습니다. 감독 관계 개선.`,{kind:'감독'}); return; }
   if(G.day>Q.until){ m.rel=clamp(m.rel-3,0,100); delete G.mgrReq; mail('감독실',`${m.name} 감독의 부탁이 흐지부지됐습니다`,`${m.name} 감독이 부탁했던 ${MREQ[Q.k]} 보강이 기한 안에 이뤄지지 않았습니다. 감독 관계 악화.\n인정 조건: ${mgrReqCond(Q)}`,{kind:'감독'}); } }

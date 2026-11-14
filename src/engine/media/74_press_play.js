@@ -37,7 +37,7 @@ function ppTargets(){ const L=[]; const add=p=>{ if(p&&p.team!==G.user&&!p.forei
   Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12).forEach(add); return L.slice(0,24); }
 function ppFA(p){ return !!(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id)); }
 function pressPlay(repId,kind,pid,via){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const r=repById(repId); if(!r)return '기자를 고르세요.'; if(!ppReady())return `언론 플레이는 30일에 한 번입니다. ${dmd(G.ppLast+PP_COOL)}부터 다시 할 수 있습니다.`;
-  if(via!=='iv'&&r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 서먹한 사이에서는 먼저 연락한 이야기를 받아 주지 않습니다. 지금은 ${relLabel(r.rel)}입니다. 이 기자의 인터뷰 요청에 성실히 응하거나 단독 정보를 주면 가까워집니다.`;
+  if(via!=='iv'&&r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 사이가 서먹하면 먼저 건넨 이야기를 받아 주지 않습니다. 지금은 ${relLabel(r.rel)}입니다. 이 기자의 인터뷰 요청에 성실히 응하거나 단독 정보를 주면 가까워집니다.`;
   { const p=pid!=null?G.players[pid]:null; /* 실패할 요청은 재사용 대기·기록 전에 거른다 */
     if(kind==='sign'&&(!p||p.team===G.user))return '대상 선수를 고르세요.';
     if(kind==='hype'){ if(!p||p.team!==G.user)return '띄울 우리 선수를 고르세요.'; if(p.hype&&p.hype.until>=G.day&&p.hype.v>0)return `${p.name}은(는) 이미 띄우는 중입니다(${dmd(p.hype.until)}까지).`; } }
@@ -57,7 +57,7 @@ function pressPlay(repId,kind,pid,via){ if(G.unemp)return '지금은 구단 단�
     G.pledges.unshift({k:'hype',pid,day:G.day,until:G.day+45,rep:r.id,done:false,tid:G.user});
     const title=fr==='bad'?`${tshort(G.user)} '${p.name} 띄우기'…성적이 따라줄까`:`"${p.name}, 리그를 대표할 선수 된다" ${meCall()} 극찬`;
     news('언론',title,`${r.outlet} ${r.name} 기자. ${tname(G.user)} 단장이 ${p.name}(${posLabel(p)}, ${p.age}세)을(를) 구단의 얼굴로 키우겠다고 밝혔습니다.${fr==='bad'?' 다만 기사 논조는 회의적입니다.':''}`,fr==='bad'?0:1,{outlet:r.outlet,by:r.name,ref:p.id});
-    return `${r.outlet} ${r.name} 기자를 통해 ${p.name}을(를) 띄웠습니다(${fr==='good'?'호의적으로 실림':fr==='flat'?'그대로 실림':'비꼬듯 실림'}). 스타성 상승, 팬 여론 ${fd>0?'호전':fd<0?'악화':'변화 없음'}, 선수 기분 ${fr==='bad'?'조금 하락':'상승'}. 45일 뒤 성적으로 평가받습니다: 잘하면 진짜 스타로, 부진하면 '거품' 역풍이 붑니다.`; }
+    return `${r.outlet} ${r.name} 기자를 통해 ${p.name}을(를) 띄웠습니다(${fr==='good'?'호의적으로 실림':fr==='flat'?'그대로 실림':'비꼬듯 실림'}). 스타성 상승, 팬 여론 ${fd>0?'호전':fd<0?'악화':'변화 없음'}, 선수 기분 ${fr==='bad'?'조금 하락':'상승'}. 45일 뒤 성적으로 평가받습니다. 잘하면 진짜 스타가 되고, 부진하면 '거품' 역풍이 붑니다.`; }
   if(kind==='invest'){ const base=capPay(G.user); const fd=fanD(5); G.pr.press=clamp(G.pr.press+(fr==='bad'?-1:1),0,100);
     const open=G.cal&&G.cal.open>G.day?G.cal.open:onOrAfter(dobj(G.day).y+1,3,25,6); G.pledges.unshift({k:'invest',base,day:G.day,until:open,rep:r.id,done:false,tid:G.user});
     let own=''; if(!t.indie){ if(t.owner==='profit'){ t.trust=clamp(t.trust-4,0,100); own=`구단주 신뢰 하락. ${B.own.name} 회장: "돈 이야기는 내가 먼저 합니다. 지갑은 단장 것이 아닙니다."`; }

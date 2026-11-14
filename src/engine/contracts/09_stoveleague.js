@@ -10,7 +10,7 @@ function lifeTags(p){ const T=[]; if(!p||p.foreign)return T; try{ const R=(p.his
 /* 9월 1일: 이번 시즌 뒤 은퇴가 유력한 우리 선수 미리 알림. 오래 뛴 선수에게는 은퇴 투어를 제안한다 */
 /* 은퇴 면담 설득 확률: 기분이 좋고 아직 쓸 만할수록, 나이가 적을수록 */
 function retTalkP(p){ return clamp(.3+((p.mor??60)-60)/150+(ovr(p)>=48?.15:0)-(p.age>=39?.2:p.age>=37?.1:0),.08,.75); }
-function retireNotice(){ if(G.unemp)return; const L=playersOf(G.user).filter(retireLikely); if(!L.length)return; mail('운영팀',`시즌 뒤 은퇴가 유력한 선수 ${L.length}명`,L.map(p=>`· ${p.name}(${posLabel(p)}, ${p.age}세, 연봉 ${money(p.sal)})`).join('\n')+'\n\n나이와 능력으로 보아 이번 시즌이 끝나면 유니폼을 벗을 가능성이 큽니다. 다음 시즌 연봉 계획과 전력 구성에 참고하세요.',{kind:'선수'});
+function retireNotice(){ if(G.unemp)return; const L=playersOf(G.user).filter(retireLikely); if(!L.length)return; mail('운영팀',`시즌 뒤 은퇴가 유력한 선수 ${L.length}명`,L.map(p=>`· ${p.name}(${posLabel(p)}, ${p.age}세, 연봉 ${money(p.sal)})`).join('\n')+'\n\n나이와 능력으로 보아 이번 시즌이 끝나면 유니폼을 벗을 가능성이 큽니다.',{kind:'선수'});
   const star=L.filter(p=>{ const ys=new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)); return ys.size>=8||p.fr; }).sort((a,b)=>(b.svc||0)-(a.svc||0))[0];
   { const ten=p=>new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)).size; /* 선수가 먼저 은퇴 의사를 밝힌다(사용자 11-11): 우리 구단 1군 3시즌 이상 뛴 선수, 많아야 3명 */
     for(const q of L.filter(p=>p.age<=40&&p.retDelay!==G.year&&ten(p)>=3).sort((a,b)=>ten(b)-ten(a)).slice(0,3)){ if((G.evs||[]).some(x=>x.k==='retTalk'&&!x.done&&x.data&&x.data.pid===q.id))continue; const pr=retTalkP(q);
@@ -287,7 +287,7 @@ function faClose(){
   note('FA',`FA 시장이 사실상 끝났습니다. 스프링캠프 전까지 계약하지 못한 선수 중 ${cheap}명은 원소속 구단과 헐값 계약했고, ${floorN?`${floorN}명은 연봉 하한을 채워야 하는 구단과 계약했고, `:''}${gone}명은 무적 선수로 남거나 은퇴했습니다. 무적 선수는 풀린 해 다음 해까지(두 번째 새해를 맞기 전) 계약하지 못하면 은퇴합니다.`); }
 /* 1월 10일: 우리 구단 출신 미계약 FA가 있으면 알린다 */
 function faUnsignedNote(){ const F=G.fa; if(!F||F.closed)return; const L=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom===ME()); if(!L.length)return;
-  stop('FA',`우리 구단 출신 미계약 FA ${L.length}명: ${L.map(p=>`${p.name}(요구 ${p.ask.years}년 연 ${money(p.ask.annual)})`).join(', ')}. 스프링캠프 전날(1월 24일)까지 아무 데서도 계약하지 못하면 원소속 구단 헐값 재계약이나 연봉 하한을 채워야 하는 구단의 영입이 없는 한, 35세 이하로 기량이 남은 선수는 무적 선수로 남고(2년 안에 계약하지 못하면 은퇴), 그 밖에는 은퇴합니다. 잡으려면 FA 시장에서 제안하세요.`); }
+  stop('FA',`우리 구단 출신 미계약 FA ${L.length}명: ${L.map(p=>`${p.name}(요구 ${p.ask.years}년 연 ${money(p.ask.annual)})`).join(', ')}. 스프링캠프 전날(1월 24일)까지 계약하지 못하면 원소속 구단이 헐값에 다시 잡거나 연봉 하한을 채워야 하는 구단이 데려갈 수 있습니다. 그마저 없으면 35세 이하로 기량이 남은 선수는 무적 선수로 남고(2년 안에 계약하지 못하면 은퇴), 나머지는 은퇴합니다. 잡으려면 FA 시장에서 제안하세요.`); }
 /* 다른 구단의 예비 FA 대우: 팀 연봉 상위 핵심이고 붙잡을 생각이 있으면 프리미엄을 얹는다(돈 사정이 나쁘면 못 한다) */
 /* 연봉 여유가 있는 AI 구단은 잘한 선수 연봉을 후하게 올려 준다(연봉 목표에서 모자란 만큼, 최대 +35%). 보류 선수 연차별 상한(preCap)은 넘지 않는다 */
 function aiPayGen(p){ if(p.newSal==null||p.foreign||p.faC||p.ext)return; const t=team(p.team); if(!t)return; const k=faRoomPush(t); if(k<=1)return; let w=0; try{ const h=seasonTotal(p,G.year,'1군'); w=h?warOf(h,p):0; }catch(e){} if(w<.8)return;

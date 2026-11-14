@@ -70,7 +70,7 @@ function psShiftDays(s,sh){ if(!s||!sh)return; const old=s.days.slice(s.gi), op=
   /* 먼저 모두 수집·삭제한 뒤 재배치해야 연속 차전의 예약이 서로 덮이지 않는다. */
   for(const {from} of mv)delete P[from];
   for(const {from,to,q} of mv){ if(q.mid){ G.mail=(G.mail||[]).filter(m=>m.id!==q.mid); G.stops=(G.stops||[]).filter(m=>m.id!==q.mid); } delete q.mid; delete q.warned;
-    if(P[to]&&!P[to].done){ q.done=true;q.cancelled='연기 일정 충돌';note('일정',`${dmd(from)} 직관 경기가 ${dmd(to)}로 미뤄졌지만 그날 기존 일정이 있어 직관 예약을 취소했습니다. 기존 일정은 유지되며 다시 예약할 수 있습니다.`); }
+    if(P[to]&&!P[to].done){ q.done=true;q.cancelled='연기 일정 충돌';note('일정',`${dmd(from)} 직관 경기가 ${dmd(to)}로 미뤄졌지만 그날 기존 일정이 있어 직관 예약을 취소했습니다. 기존 일정은 그대로이고, 직관은 다시 예약할 수 있습니다.`); }
     else P[to]=q;
   }
   for(const k of planned)G[k]={...G[k],day:G[k].day+sh};

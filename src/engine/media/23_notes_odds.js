@@ -171,17 +171,17 @@ function amNotes(p){ const Y=p.amY; if(!Y||!Y.length)return []; const L=[];
     if(b9s.length>=2&&b9s.every(v=>v<=3))L.push(`학년 내내 볼넷이 적었습니다(9이닝당 ${b9.toFixed(1)}개). 제구는 프로에서도 비슷하게 이어지는 편입니다.`);
     else if(b9s.length>=2&&b9s.every(v=>v>=5))L.push(`학년 내내 볼넷이 많았습니다(9이닝당 ${b9.toFixed(1)}개). 제구 불안이 꾸준합니다.`);
     if(k9>=10)L.push(`탈삼진이 9이닝당 ${k9.toFixed(1)}개로 많습니다. 구위가 통한다는 신호입니다.`);
-    if(era<=2&&k9<6)L.push('평균자책점에 비해 탈삼진이 적습니다. 수비와 타구 결과의 영향이 섞였을 수 있어 함께 봐야 합니다.'); }
+    if(era<=2&&k9<6)L.push('평균자책점에 비해 탈삼진이 적습니다. 수비와 타구 운이 섞였을 수 있습니다.'); }
   return L.slice(0,2); }
 function statNotes(p){ // 프로 기록에서 읽히는 신호
   const h=seasonTotal(p,G.year,'1군')||seasonTotal(p,G.year-1,'1군'); if(!h)return [];
   const L=[]; const yy=h.y===G.year?'올해':'지난해';
   if(!p.isP&&h.pa>=150){ const b=babipOf(h); const bk=h.so?h.bb/h.so:h.bb;
-    if(b!=null&&b>=.37)L.push(`${yy} 인플레이 타구 타율(BABIP)이 ${fmt3(b)}로 높습니다. 타구 특성·주력·표본을 함께 확인해야 이 타율이 이어질지 판단할 수 있습니다.`);
-    else if(b!=null&&b<=.25)L.push(`${yy} BABIP ${fmt3(b)}로 낮습니다. 타구 특성·주력·표본을 함께 봐야 합니다. 타율이 오를 수는 있지만 지금 기록만으로 확정하기 어렵습니다.`);
+    if(b!=null&&b>=.37)L.push(`${yy} 인플레이 타구 타율(BABIP)이 ${fmt3(b)}로 높습니다. 이 타율이 이어질지는 타구 특성·주력·표본을 함께 봐야 압니다.`);
+    else if(b!=null&&b<=.25)L.push(`${yy} BABIP ${fmt3(b)}로 낮습니다. 타율이 오를 수 있지만 타구 특성·주력·표본을 함께 봐야 합니다.`);
     if(bk>=.9)L.push(`볼삼비 ${bk.toFixed(2)}. 선구안이 좋아 슬럼프가 길지 않은 유형입니다.`); else if(bk<=.3)L.push(`볼삼비 ${bk.toFixed(2)}. 삼진이 많아 기복이 클 수 있습니다.`); }
   if(p.isP&&h.outs>=120){ const k9=h.so*27/h.outs, b9=h.bb*27/h.outs, era=h.er*27/h.outs;
-    if(era<=3.2&&k9-b9<4)L.push(`${yy} 평균자책점(${era.toFixed(2)})에 비해 탈삼진·볼넷 차이가 작습니다. 수비와 타구 결과의 영향이 있었는지 함께 봐야 합니다.`);
-    else if(era>=5&&k9-b9>=5)L.push(`${yy} 평균자책점(${era.toFixed(2)})은 나쁘지만 탈삼진·볼넷 내용은 좋습니다. 수비와 타구 결과의 영향을 함께 확인해 보세요. 나아질 가능성은 있으나 지금 기록만으로 확정하기 어렵습니다.`); }
+    if(era<=3.2&&k9-b9<4)L.push(`${yy} 평균자책점(${era.toFixed(2)})에 비해 탈삼진·볼넷 차이가 작습니다. 수비와 타구 운의 덕을 봤을 수 있습니다.`);
+    else if(era>=5&&k9-b9>=5)L.push(`${yy} 평균자책점(${era.toFixed(2)})은 나쁘지만 탈삼진·볼넷 내용은 좋습니다. 수비와 타구 운이 따르지 않았을 수 있어 나아질 여지가 있습니다.`); }
   return L; }
 

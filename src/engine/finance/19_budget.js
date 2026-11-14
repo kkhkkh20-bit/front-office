@@ -61,7 +61,7 @@ function staffReport(when){ if(G.unemp||!G.mgr[G.user])return; const tid=G.user;
     slump.forEach(x=>items.push(`[부진] ${x.p.name}: ${statLine(x.h,x.p)}. 감독은 계속 기용하고 있습니다. 대체 자원이 있는지 보세요.`)); }
   { const nx=PSLOTS.filter(k=>{ if(k==='SP'||k==='RP')return false; const p=d.ln[k]; return p&&!p.foreign&&ctrlYears(p)<=1; }); if(nx.length)items.push(`[내년] 주전 중 ${nx.map(k=>SLOTK[k]).join(', ')} 자리 선수가 이번 시즌 뒤 FA입니다. 선수단 화면의 선수단 계획에서 내년 공백을 확인하세요.`); }
   if(!items.length)return; if(acts.length<3)acts.push({l:'선수단 계획',a:'go',v:'roster:plan'});
-  mail('코치진',`${when} 코치진 보고: 단장 확인 ${items.length}건`,`${items.join('\n\n')}\n\n버튼을 누르면 해당 화면으로 바로 갑니다.`,{kind:'업무',acts:acts.slice(0,3)}); }
+  mail('코치진',`${when} 코치진 보고: 단장 확인 ${items.length}건`,`${items.join('\n\n')}\n\n버튼을 누르면 그 화면으로 바로 갑니다.`,{kind:'업무',acts:acts.slice(0,3)}); }
 /* 구단주 신뢰 경고(플레이 테스트 3차: 경고 없이 신뢰가 무너져 경질): 35·20·10 이하로 처음 내려갈 때마다 진행을 멈추는 중요 메일을 보낸다.
    한 단계 위(기준 +5)로 회복해야 그 단계 경고가 다시 켜진다(기준선 근처에서 오르내릴 때 매일 울리지 않게) */
 const TRUST_WARN=[35,20,10];

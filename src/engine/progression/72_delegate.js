@@ -7,7 +7,7 @@ const AUTO_AREAS=[
   ['ev','일상 결정','기강·면담·콜업 여론·팬 행사 같은 일상 결정을 비서가 기본안으로 처리합니다(감독 갈등·징계 같은 핵심 결정은 계속 직접).'],
   ['mgr','감독 요청','감독이 올리는 영입·기용·드래프트 방향 요청에 비서가 기본안으로 답합니다. 직접 답하면 감독과의 관계를 더 잘 챙길 수 있습니다.'],
   ['scout','스카우트 배치','스카우트팀장이 시기에 맞게 배치합니다.'],
-  ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다(모두 거절, 또는 우리 평가로 공정에 가까운 제안(손해 1 이내)만 올리기). 주간 요약에 남깁니다.'],
+  ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다. 모두 거절하거나, 우리 평가로 공정에 가까운 제안(손해 1 이내)만 올립니다. 주간 요약에 남깁니다.'],
   ['raid','스태프 빼가기 대응','별 4개 이상(★★★★, 5개 만점) 스카우트·분석원은 상대 제시액에 맞춰 붙잡고, 그 아래는 보내 줍니다. 상대 제시액이 지금 연봉의 1.5배를 넘으면 붙잡기 전에 단장 승인을 받습니다.']];
 function autoOn(k){ if(!G)return false; if(k==='scout')return !!G.scoutAuto; if(k==='ev')return !!(G.deleg&&Object.keys(EV_NAME).every(e=>G.deleg[e])); return !!(G.auto&&G.auto[k]); }
 function autoSet(k,v){ G.auto=G.auto||{}; const prev=G.auto[k]; G.auto[k]=k==='tro'&&v==='good'?'good':!!v; if(k==='tro'&&G.auto.tro&&prev!==G.auto.tro)for(const o of [...(G.offers||[])])try{ autoTradeOffer(o); }catch(e){} /* 새 필터는 이미 받은 제안에도 적용한다. */
