@@ -67,6 +67,8 @@
       "src/engine/staff/52_staff_profiles.js",
       "src/engine/media/52_interviews.js",
       "src/engine/players/29b_player_drama.js",
+      "src/engine/players/30_chemistry.js",
+      "src/engine/players/31_storylines.js",
       "src/engine/career/53_gm_schedule.js",
       "src/engine/media/54_press.js",
       "src/engine/finance/55_capex.js",
@@ -141,7 +143,9 @@
       "src/engine/league/95_game_rules.js",
       "src/engine/league/97_spring_camp.js",
       "src/engine/league/98_sister_club.js",
-      "src/engine/staff/99_ai_parity.js"
+      "src/engine/staff/99_ai_parity.js",
+      "src/engine/finance/38_promotions.js",
+      "src/engine/staff/99b_ai_people.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -214,6 +218,7 @@
       "src/ui/players/37_player_readout.js",
       "src/ui/players/35_full_player_profile.js",
       "src/ui/players/39_player_sheet.js",
+      "src/ui/players/39b_morale.js",
       "src/ui/actions/40_actions.js",
       "src/ui/career/83_personal_life.js",
       "src/ui/career/84_personal_network.js",
@@ -224,6 +229,7 @@
       "src/ui/finance/43_sponsor.js",
       "src/ui/finance/44_fan_ops.js",
       "src/ui/finance/44b_cheer_squad.js",
+      "src/ui/finance/44c_promotions.js",
       "src/ui/market/44_moves.js",
       "src/ui/league/45_awards.js",
       "src/ui/league/77_league_events.js",
@@ -284,6 +290,7 @@
       "src/css/inbox/07_inbox_coach.css",
       "src/css/matches/08_cast_cards.css",
       "src/css/finance/09_budget_desk_motion.css",
+      "src/css/finance/10_promotions.css",
       "src/css/contracts/10_fa_and_patches.css",
       "src/css/foundation/11_readability.css",
       "src/css/foundation/12_title_typography.css",
@@ -315,7 +322,8 @@
       "src/css/career/84_personal_network.css",
       "src/css/career/85_bulk_relations.css",
       "src/css/staff/32_operations_art.css",
-      "src/css/shell/40_mobile_playtest2.css"
+      "src/css/shell/40_mobile_playtest2.css",
+      "src/css/players/41_morale.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

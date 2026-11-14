@@ -1,0 +1,10 @@
+/* 기분 이유 목록·팀 분위기(39b_morale): 한 줄에 한 가지, 오른쪽에 방향 표시 */
+.mrl-box{margin-top:8px}
+.mrl-h{font-size:var(--ui-caption,12px);color:var(--muted);margin-bottom:4px;display:flex;align-items:center}
+.mrl{list-style:none;margin:0;padding:0}
+.mrl li{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:3px 0;border-bottom:1px solid var(--line);font-size:var(--ui-caption,12px);line-height:1.35}
+.mrl li:last-child{border-bottom:0}
+.mrl li>span{min-width:0;overflow-wrap:anywhere}
+.mrl li>em{flex:none;font-style:normal;font-size:11px;color:var(--muted);white-space:nowrap}
+.mrl li>em.good{color:var(--good)} .mrl li>em.bad{color:var(--bad)} .mrl li>em.warn{color:var(--warn)}
+.chem-card .mrl{margin-top:6px}
