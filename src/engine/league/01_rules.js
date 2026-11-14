@@ -33,8 +33,8 @@ const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
 /* 외국인 연봉 규정의 물가 반영(커뮤니티 11-12): 리그 샐러리캡이 오른 만큼 협회가 상한을 10% 단위로 올린다(시작 시점 1.0). 실제 KBO 신규 상한 100만 달러는 2019년부터 그대로지만, 수십 년 플레이에서는 국내 연봉만 오르고 외국인 금액이 멈춰 있게 된다 */
 function fEcoK(){ try{ return Math.max(1,Math.round(ecoIdx(sponSeason())*10)/10); }catch(e){ return 1; } } /* 겨울에는 다음 시즌 기준(샐러리캡과 같은 시즌 구분) */
 function asiaCap(){ return Math.round(ASIA_CAP*fEcoK()); }
-/* 아시아쿼터 재계약 상한: 신규는 20만 달러, 재계약은 직전 연봉에서 해마다 10만 달러까지 올릴 수 있다(KBO 2026 아시아쿼터 규정, 유저 제보 11-07) */
-function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return asiaCap(); const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); return Math.max(asiaCap(),b+Math.round(10*USD*fEcoK())); } /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */
+/* 아시아쿼터 재계약 상한: 신규는 20만 달러. 재계약은 직전 연봉+10만 달러, 또는 20만+10만×KBO에서 뛴 시즌 수 가운데 큰 쪽(KBO 2026 아시아쿼터 규정, 유저 제보 11-07·11-14) */
+function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return asiaCap(); const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); const n=new Set((p.hist||[]).filter(h=>h&&!h.y2&&(h.lvl==='1군'||h.lvl==='2군')&&h.y<(G.contract&&!G.contract.done?G.contract.y:G.year)+0).map(h=>h.y)).size; return Math.max(asiaCap(),b+Math.round(10*USD*fEcoK()),asiaCap()+Math.round(n*10*USD*fEcoK())); } /* 카페 11-14: KBO 문구('매년 10만 달러씩 상향 가능')를 연차 상한으로도 읽는다. 직전 연봉+10만과 20만+10만×KBO 연차 중 큰 쪽(20→30→30→50 허용) */ /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */
 /* 외국인 선수 한 명이 총액 한도에 차지하는 금액: 보장 연봉 + 아직 유효한 인센티브(신규·재계약·화면이 모두 이 계산을 쓴다) */
 function fCommit(p,sy){ sy=sy>999?sy:ctSeason(); /* map(fCommit)이 넘기는 순번을 시즌으로 보지 않게(검수 11-09a: 끝난 인센티브가 한도에 남음) */ return (p.sal||0)+(p.opt&&p.ctT===p.team&&p.opt.until>=sy?(p.opt.a||0):0); } /* sy: 계약 대상 시즌(기본: 지금 계약이 잡히는 시즌 — 겨울이면 다음 시즌). 그 시즌에 유효한 인센티브만 더한다(달력 연도로 보지 않음) */
 /* 신생 구단 혜택(89_league_expansion): 1군 첫 두 시즌은 일반 외국인 4명까지, 총액 한도 +100만 달러(KBO 9·10구단 창단 혜택을 본뜸) */

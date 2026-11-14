@@ -11186,8 +11186,8 @@ const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
 /* 외국인 연봉 규정의 물가 반영(커뮤니티 11-12): 리그 샐러리캡이 오른 만큼 협회가 상한을 10% 단위로 올린다(시작 시점 1.0). 실제 KBO 신규 상한 100만 달러는 2019년부터 그대로지만, 수십 년 플레이에서는 국내 연봉만 오르고 외국인 금액이 멈춰 있게 된다 */
 function fEcoK(){ try{ return Math.max(1,Math.round(ecoIdx(sponSeason())*10)/10); }catch(e){ return 1; } } /* 겨울에는 다음 시즌 기준(샐러리캡과 같은 시즌 구분) */
 function asiaCap(){ return Math.round(ASIA_CAP*fEcoK()); }
-/* 아시아쿼터 재계약 상한: 신규는 20만 달러, 재계약은 직전 연봉에서 해마다 10만 달러까지 올릴 수 있다(KBO 2026 아시아쿼터 규정, 유저 제보 11-07) */
-function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return asiaCap(); const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); return Math.max(asiaCap(),b+Math.round(10*USD*fEcoK())); } /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */
+/* 아시아쿼터 재계약 상한: 신규는 20만 달러. 재계약은 직전 연봉+10만 달러, 또는 20만+10만×KBO에서 뛴 시즌 수 가운데 큰 쪽(KBO 2026 아시아쿼터 규정, 유저 제보 11-07·11-14) */
+function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return asiaCap(); const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); const n=new Set((p.hist||[]).filter(h=>h&&!h.y2&&(h.lvl==='1군'||h.lvl==='2군')&&h.y<(G.contract&&!G.contract.done?G.contract.y:G.year)+0).map(h=>h.y)).size; return Math.max(asiaCap(),b+Math.round(10*USD*fEcoK()),asiaCap()+Math.round(n*10*USD*fEcoK())); } /* 카페 11-14: KBO 문구('매년 10만 달러씩 상향 가능')를 연차 상한으로도 읽는다. 직전 연봉+10만과 20만+10만×KBO 연차 중 큰 쪽(20→30→30→50 허용) */ /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */
 /* 외국인 선수 한 명이 총액 한도에 차지하는 금액: 보장 연봉 + 아직 유효한 인센티브(신규·재계약·화면이 모두 이 계산을 쓴다) */
 function fCommit(p,sy){ sy=sy>999?sy:ctSeason(); /* map(fCommit)이 넘기는 순번을 시즌으로 보지 않게(검수 11-09a: 끝난 인센티브가 한도에 남음) */ return (p.sal||0)+(p.opt&&p.ctT===p.team&&p.opt.until>=sy?(p.opt.a||0):0); } /* sy: 계약 대상 시즌(기본: 지금 계약이 잡히는 시즌 — 겨울이면 다음 시즌). 그 시즌에 유효한 인센티브만 더한다(달력 연도로 보지 않음) */
 /* 신생 구단 혜택(89_league_expansion): 1군 첫 두 시즌은 일반 외국인 4명까지, 총액 한도 +100만 달러(KBO 9·10구단 창단 혜택을 본뜸) */
@@ -32107,7 +32107,7 @@ function foreignView(){
   const capT=fCap(G.user), rsyN=sum(yb.map(x=>x.rsy||0)); const pct=Math.min(100,tot/capT*100);
   const rule=asia
     ?`<dl class="tsum"><div><dt>아시아쿼터</dt><dd class="num" style="color:${as.length?'var(--good)':'var(--warn)'}">${as.length} / 1</dd></div><div><dt>연봉 상한</dt><dd class="num">신규 ${Math.round(asiaCap()/USD)}만 달러 · 재계약 +${Math.round(10*fEcoK())}만/년</dd></div><div><dt>대상</dt><dd>일본·대만·호주</dd></div></dl>
-      <p class="small muted">아시아쿼터 규정 <button type="button" class="hi-i" data-tip="${esc(`아시아쿼터는 일반 외국인 3명과 별도로 1명을 더 쓸 수 있는 자리이며, 시즌 중 교체도 일반 외국인과 별도로 1회까지입니다. 신규 계약 연봉은 ${Math.round(asiaCap()/USD)}만 달러(약 ${money(asiaCap())})까지이고, 재계약하면 직전 연봉에서 해마다 10만 달러까지 올릴 수 있으며, 외국인 연봉 총액 400만 달러에는 들어가지 않습니다.`)}">i</button></p>`
+      <p class="small muted">아시아쿼터 규정 <button type="button" class="hi-i" data-tip="${esc(`아시아쿼터는 일반 외국인 3명과 별도로 1명을 더 쓸 수 있는 자리이며, 시즌 중 교체도 일반 외국인과 별도로 1회까지입니다. 신규 계약 연봉은 ${Math.round(asiaCap()/USD)}만 달러(약 ${money(asiaCap())})까지이고, 재계약 상한은 KBO에서 뛴 시즌마다 10만 달러씩 늘며, 외국인 연봉 총액 400만 달러에는 들어가지 않습니다.`)}">i</button></p>`
     :`<dl class="tsum"><div><dt>외국인</dt><dd class="num" style="color:${yb.length<3?'var(--warn)':'var(--good)'}">${yb.length} / 3</dd></div><div><dt>투수 · 타자</dt><dd class="num">${yb.filter(p=>p.isP).length} · ${yb.filter(p=>!p.isP).length}</dd></div><div><dt>총액 / 한도</dt><dd class="num">${Math.round(tot/USD)}만 / ${Math.round(capT/USD)}만 달러</dd></div></dl>
       <div class="bar"><i class="${tot>capT?'over':''}" style="width:${pct}%"></i></div>
       <p class="small muted">외국인 선수 규정 <button type="button" class="hi-i" data-tip="${esc(`신규 계약은 1인 ${Math.round(F_NEW_CAP*fEcoK()/USD)}만 달러(연봉·계약금·이적료·인센티브 포함)까지입니다. 재계약 선수는 개인 상한이 없습니다. 3명 총액 한도는 400만 달러이고, 재계약 선수의 재계약 연차 1년마다 10만 달러씩 늘어납니다(지금 연차 합 ${rsyN}년 → 한도 ${Math.round(capT/USD)}만 달러). 3명을 모두 투수나 모두 타자로 채울 수 없습니다. 보류권: 원소속 구단이 재계약을 제안했는데 선수가 받아들이지 않으면 5년 동안 국내 다른 구단에 입단할 수 없습니다(원소속 구단이 동의하면 예외). 그래서 다른 구단 외국인은 데려올 수 없고, 보류권이 풀린 선수만 시장에 나옵니다.`)}">i</button></p>${(()=>{ const L=(G.fRes||[]).filter(x=>x.until>=G.year); return L.length?`<details class="frule"><summary class="small">보류권으로 묶인 외국인 ${L.length}명</summary><ul class="small muted">${L.slice(0,12).map(x=>`<li>${esc(x.name)}(${esc(x.nat||'')} ${esc(x.pos)}) · ${esc(tshort(x.tid))} 보류 · ${x.until}년까지</li>`).join('')}</ul></details>`:''; })()}`;
@@ -36700,7 +36700,7 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
   const step=(k,d,l)=>`<button class="btn small" data-a="foStep" data-v="${k}:${d}">${l} 달러</button>`; const h=seasonTotal(p,C.y,'1군');
   return `<section class="card fo"><div class="row between"><h2 class="sec">재계약 협상</h2><span class="small muted">보류권 · 국내 경쟁 없음</span></div>
     <p class="small">지금 ${usdT(p.sal)} · 요구 ${usdT(p.newSal)}(${money(p.newSal)}) · 지난 시즌 ${h?statLine(h,p):'기록 없음'}${h?` · WAR ${warOf(h,p).toFixed(1)}`:''}</p>
-    ${p.foreign==='아시아'?`<p class="small">아시아쿼터 재계약 상한 <b>${usdT(asiaReCap(p))}</b> · 직전 연봉 ${usdT(p.sal)}에서 해마다 10만 달러까지 올릴 수 있습니다(신규 계약은 ${Math.round(asiaCap()/USD)}만 달러).</p>`:''}
+    ${p.foreign==='아시아'?`<p class="small">아시아쿼터 재계약 상한 <b>${usdT(asiaReCap(p))}</b> ${hiI(`신규 계약은 ${Math.round(asiaCap()/USD)}만 달러까지입니다. 재계약 상한은 KBO에서 뛴 시즌마다 10만 달러씩 늘고, 직전 연봉보다 10만 달러 더 주는 것도 됩니다.`)}</p>`:''}
     <p class="small">보류권 때문에 국내 다른 구단은 이 선수와 협상할 수 없습니다. 경쟁 상대는 해외 제안뿐입니다: <b>${O&&!O.none?`${O.k} 구단 ${usdT(O.v)} 수준`:'해외 제안 없음'}</b></p>
     <div class="fo-in">
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>
