@@ -42,7 +42,7 @@ function areaNet(tid,k){ const a=areaDef(k); if(!a)return 0; const home=teamArea
     const sc=(G.scouts||[]).filter(s=>(s.role||'am')==='am'&&s.region===a.reg);
     for(const s of sc){ const mon=Math.max(0,Math.min(36,(G.day-(s.since??-999))/30)); const nA=AREA.filter(x=>x.reg===a.reg).length; v+=Math.min(22,(mon*.6+effSkill(s)*2.5)*(k===home?1:3/nA)); if(scHome(s)===k)v+=12; }
     v+=Math.min(8,(areaVisits(tid)[k]||0)*.5); /* 그 권역 대회를 직접 본 횟수(구단별, 해마다 절반, 상한) */
-  } else v+=10; /* 다른 구단은 기본 배치를 둔 것으로 본다 */
+  } else v+=10+Math.min(8,(areaVisits(tid)[k]||0)*.5); /* 다른 구단은 기본 배치를 둔 것으로 본다. AI 단장 현장 활동(gmAiFieldDaily)도 우리와 같은 상한 */
   return Math.round(clamp(v,0,100)); }
 const netLbl=v=>v>=75?'촘촘함':v>=55?'좋음':v>=35?'보통':v>=20?'약함':'거의 없음';
 /* 스카우트 고향(연줄) 권역: 배치와 상관없이 고정. 그 권역 학교 감독·코치와 아는 사이 */

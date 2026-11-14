@@ -4391,6 +4391,33 @@ T('[공략 방지] 13 명명권: 4위 안 그리고 관중 80%, 후원금은 세
   G.sea.att[a.id]={sum:70,cap:100,n:1}; const paid=a.facSpon.paid; a.facSpon.miss=1; G.last.y=y+1; const c2=a.cash; facDealsYear(a); ok(!a.facSpon&&c2-a.cash===Math.round(paid*.8),'어겼을 때 받은 돈 80%를 돌려주지 않음 '+(c2-a.cash)+'/'+paid); });
 T('[공략 방지] 14 AI 단장도 성적 운에 크게 속지 않는다(가중 .3·±4)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const p=domestic(G.user).find(x=>!x.foreign); _lkC={k:G.year+':'+G.day,m:new Map([[p.id,{d:40,dF:40,rel:1}]])}; const v=seenDelta(t,p); ok(v<=4&&v>0,'성적 운 반영이 크다 '+v); _lkC={k:'',m:new Map()}; });
 T('[공략 방지] 15 맞대결 기간 협상은 두 번 더까지만',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const sv=seriesOpp; try{ seriesOpp=()=>t.id; const ni=negInfo(t.id); ok(ni.free&&ni.left===negCap(t.id)+NEG_H2H&&ni.left<20,'맞대결 협상 한도 '+ni.left); const c=negTurn(t.id); c.neg=ni.cap; ok(negInfo(t.id).left===0,'맞대결 한도를 다 쓴 뒤에도 남음'); } finally{ seriesOpp=sv; } });
+const gmNoNum=s=>!/[0-9]/.test(String(s||'').replace(/[123]루|[12]군/g,'')); /* 단장 현장 보고: 숨은 능력 숫자를 쓰지 않는다(1루·2루·3루, 1군·2군 같은 이름만 예외) */
+T('[단장 현장] 고교 방문: 그 학교 후보만 평가가 정확해지고, 다시 가면 덜 오르며, 보고에 숫자가 없다',()=>{ fresh(); G.day=KD(4,7); const S=gmSchools().find(s=>s.L.length>=1); ok(S,'준비 실패: 후보가 있는 학교 없음');
+  const other=(G.draftClass||[]).map(id=>G.players[id]).find(p=>p&&p.prospect&&!p.college&&p.school!==S.n); ok(other,'준비 실패: 다른 학교 후보 없음'); const p=S.L[0], Sc=schList()[S.n];
+  const sd0=scoutReport(p).sd, so0=scoutReport(other).sd, r0=schRel(Sc);
+  gmSchoolVisit(S.n); const sd1=scoutReport(p).sd, r1=schRel(Sc); ok(sd1<sd0,'방문한 학교 후보 오차가 줄지 않음: '+sd0+' '+sd1); ok(scoutReport(other).sd===so0&&gmSchK(other)===1,'다른 학교 후보까지 정확해짐'); ok(r1>r0||r0>=100,'학교 감독 친분이 오르지 않음');
+  ok(gmSchK(p)<.85,'학교 방문 보정이 지역 출장과 같음'); ok(mentalRead(p,'pro').src==='단장 직접 면담','면담 인상이 성향 읽기에 남지 않음');
+  const m=G.mail.find(x=>x.subj===S.n+' 방문'); ok(m&&m.body.includes('면담 인상')&&m.body.includes('성실함'),'방문 보고가 없음'); ok(gmNoNum(m.body)&&gmNoNum(m.subj),'방문 보고에 숫자: '+m.body);
+  gmSchoolVisit(S.n); const sd2=scoutReport(p).sd, r2=schRel(Sc); ok(sd2<=sd1&&sd0-sd1>sd1-sd2,'두 번째 방문 효과가 줄지 않음: '+[sd0,sd1,sd2]); ok(r2-r1<r1-r0||r1>=100,'두 번째 방문 친분 상승이 줄지 않음: '+[r0,r1,r2]);
+  ok(G.mail[0].body.includes('두 번째 방문'),'다시 간 방문을 보고가 말하지 않음'); });
+T('[단장 현장] 2군 경기 관전: 우리 2군 경기 날만 잡히고, 예측한 상대와 치르며, 기분 상승은 한 달 두 번까지',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); G.gmPlan={};
+  let d=0, nd=0; for(let i=G.day+2;i<G.day+30;i++){ if(!d&&flGameOn(G.user,i))d=i; if(!nd&&!flGameOn(G.user,i)&&dobj(i).m>=4&&dobj(i).m<=9)nd=i; } ok(d&&nd,'준비 실패: 2군 경기일·휴식일');
+  const e=gmPlanSet(nd,'fut'); ok(!gmPlanAt(nd)&&e.includes('없습니다'),'2군 경기가 없는 날 관전이 잡힘: '+e); gmPlanSet(nd,'farm'); ok(gmPlanAt(nd)&&gmPlanAt(nd).k==='farm','경기 없는 날 훈련장 방문이 잡히지 않음');
+  gmPlanSet(d,'farm'); const q=gmPlanAt(d); ok(q&&q.k==='fut'&&q.op!=null,'2군 경기 날 방문이 관전으로 바뀌지 않음');
+  simTo(()=>G.day>=d); ok(gmPlanAt(d).done,'관전이 처리되지 않음'); const g=flOurGame(d); ok(g,'예측한 날 우리 2군 경기가 없음'); ok(g.h===q.op||g.a===q.op,'예측한 상대가 틀림');
+  const m=G.mail.find(x=>x.subj.startsWith('2군 경기 관전')); ok(m&&m.body.includes('젊은 선수 흐름')||m&&m.body.includes('잘한 선수'),'관전 보고가 없음'); ok(gmNoNum(m.body)&&gmNoNum(m.subj),'관전 보고에 숫자: '+(m.subj+m.body).replace(/[123]루|[12]군/g,'').match(/.{0,20}[0-9].{0,10}/));
+  const ids=g.box[g.h===G.user?'h':'a'].bat.map(r=>r[0]).filter(id=>G.players[id]&&G.players[id].team===G.user); const pl=G.players[ids[0]]; ok(pl,'준비 실패: 뛴 선수');
+  ok(pl.gmFw&&pl.gmFw.n>=1,'직접 본 선수 표시가 없음'); G.gmFld=null; const gains=[]; for(let i=0;i<4;i++){ pl.mor=50; gmFutWatch(g); gains.push(pl.mor-50); } ok(gains[0]>0&&gains[1]>0&&gains[2]===0&&gains[3]===0,'한 달 두 번 상한이 안 지켜짐: '+gains);
+  pl.mor=50; gmFarmVisit(); ok(pl.mor===50,'훈련장 방문이 같은 달 상한을 우회함'); ok(pl.gmFw.n<=3,'직접 본 횟수가 끝없이 쌓임'); });
+T('[단장 현장] 한꺼번에 잡기: 학교 방문은 한 주에 한 번씩만, 2군 관전은 경기 날만 잡히고 다른 일정은 그대로',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); G.gmPlan={};
+  const S=gmSchools()[0]; ok(S,'준비 실패: 학교'); const reg=S.reg; const r=gmPlanBulk(G.day+29,reg,'school'); const D=Object.keys(G.gmPlan).filter(x=>G.gmPlan[x].k==='school').map(Number).sort((a,b)=>a-b);
+  ok(D.length>=3&&D.length<=5,'학교 방문 묶음 수가 이상함: '+D.length+' '+r); for(let i=1;i<D.length;i++)ok(D[i]-D[i-1]>=7,'한 주에 두 번 잡힘'); ok(gmPlanSet(D[0]+2,'school',S.n).includes('한 주에 한 번'),'주 1회 제한이 없음');
+  const kept=Object.keys(G.gmPlan).length; gmPlanBulk(G.day+29,'all','fut'); const F=Object.keys(G.gmPlan).filter(x=>G.gmPlan[x].k==='fut').map(Number);
+  ok(F.length>0&&F.every(x=>flGameOn(G.user,x)),'2군 경기가 없는 날까지 관전이 잡힘'); ok(D.every(x=>G.gmPlan[x].k==='school'),'묶어 잡기가 학교 방문을 덮어씀'); ok(Object.keys(G.gmPlan).length>=kept,'');
+  const H=Object.keys(G.gmPlan).filter(x=>G.gmPlan[x].k==='fut'); for(const x of H)delete G.gmPlan[x]; gmPlanBulk(G.day+29,'home','fut'); ok(Object.keys(G.gmPlan).filter(x=>G.gmPlan[x].k==='fut').every(x=>flGameOn(G.user,+x).home),'홈 경기만 잡기에 원정이 섞임'); });
+T('[단장 현장] AI 단장도 매달 고교 권역을 돌아 정보망이 오르고 상한은 같다',()=>{ fresh(); const A=G.teams.filter(x=>x.id!==G.user&&x.gm&&!x.gm.interim); ok(A.length,'준비 실패'); G.areaVisitT={};
+  const ks=AREA.map(a=>a.k), n0=A.map(t=>ks.map(k=>areaNet(t.id,k))); let n=0; for(let r=0;r<3;r++)for(let m=4;m<=9;m++){ G.day=dnum(G.year,m,1); n+=gmAiFieldDaily(); } /* 같은 날을 여러 번 불러 상한까지 채운다 */ ok(n>0,'AI 현장 활동이 없음');
+  const n1=A.map(t=>ks.map(k=>areaNet(t.id,k))); ok(n1.some((L,j)=>L.some((v,i)=>v>n0[j][i])),'AI 정보망이 오르지 않음'); ok(n1.every((L,j)=>L.every((v,i)=>v-n0[j][i]<=8)),'AI 상한이 우리보다 큼'); ok(!G.areaVisitT[G.user],'우리 구단 기록을 AI가 채움'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

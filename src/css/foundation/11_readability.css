@@ -420,7 +420,7 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .iv-end{padding:12px;border-top:1px solid var(--line,#333);margin-top:10px}
 /* 단장 일정 */
 .cal-plan{display:block;font-size:var(--ui-micro);line-height:1.2;margin-top:2px;padding:1px 4px;border-radius:3px;background:color-mix(in srgb,var(--acc,#4a8) 25%,transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-plan.k-scout{background:color-mix(in srgb,#d4a017 30%,transparent)}.cal-plan.k-farm{background:color-mix(in srgb,#5a8 25%,transparent)}
+.cal-plan.k-scout{background:color-mix(in srgb,#d4a017 30%,transparent)}.cal-plan.k-farm,.cal-plan.k-fut{background:color-mix(in srgb,#5a8 25%,transparent)}.cal-plan.k-school{background:color-mix(in srgb,#c77 28%,transparent)}
 .gpl{margin:10px 0;padding:10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:8px}
 .gpl-r{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.gpl-r>.small{min-width:120px;opacity:.8}
 /* 인물 카드 공통 */
