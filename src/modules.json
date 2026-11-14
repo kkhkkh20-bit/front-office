@@ -337,6 +337,7 @@
       "src/scene3d/athletic-motion.mjs",
       "src/scene3d/scoreboard.mjs",
       "src/scene3d/labels.mjs",
+      "src/scene3d/bench.mjs",
       "src/scene3d/visibility.mjs"
     ]
   },
