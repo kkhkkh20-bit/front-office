@@ -6,7 +6,7 @@
    - 이벤트: 연예인 시구, 테마 데이(어린이날·밀리터리 데이), 팬 사인회, 캐릭터·브랜드 콜라보 유니폼, 창단 기념 레트로 유니폼.
    비용은 G.spend.fan(결산 '팬 마케팅·구단 이벤트'), 수입은 G.spend.fanIn(결산 '구단 이벤트·채널 수입')으로 잡는다.
    운영 단계·이벤트 기록은 그 구단 것이라 이직·사임하면 끝난다(leaveTeamState).
-   shortcut: AI 구단은 이 기능을 쓰지 않는다. 리그 전체 경쟁이 필요해지면 AI 운영을 붙인다 */
+   다른 구단은 가벼운 판으로 쓴다: 응원단 단계와 서포터즈만, 같은 비용(99_ai_parity aiFanPlan, 사용자 11-13) */
 const FAN_OPS={
   cheer:{l:'응원단·치어리더',lv:['기본 응원단','응원단 확대','응원단 대폭 확대'],m:[0,25,55],att:[0,.025,.05],fan:[0,.3,.6],d:'응원 문화가 관중을 부릅니다. 홈 관중이 늘고 팬 여론이 매달 조금 오릅니다.'},
   yt:{l:'구단 유튜브 채널',lv:['운영 안 함','채널 운영','전담 제작팀'],m:[0,15,40],d:'경기 뒤 이야기·선수 일상 영상으로 구독자를 모읍니다. 구독자가 늘면 광고 수입과 팬 여론이 오릅니다. 성적이 좋으면 빨리 늘어납니다.'}
@@ -28,7 +28,7 @@ function fanAway(tid,fn,book){ const F=(G.fanYrT||{})[tid]; if(!F||!F.log||(tid=
 /* 떠난 구단 여론: 야인 기간 전 구단은 G.pr, 이직한 구단은 남긴 여론. 없으면 처음 계산한 여론을 그 구단에 남긴다(검수 11-09zza: 매번 55에서 시작) */
 function fanAwayPr(tid,P){ let p=tid===G.user?G.pr:P&&P.pr; if(p)return p; p={fan:55,press:50,hist:[]}; if(tid===G.user)G.pr=p; else (G.clubT=G.clubT||{})[tid]=Object.assign(P||{fy:sponSeason()},{pr:p}); return p; }
 function fanAwayMonthly(){ for(const k of Object.keys(G.fanYrT||{}))fanAway(+k,fanMonthly,true); } /* 떠난 구단도 매달 유튜브 성장·응원단 청구, 1월엔 응원단장 나이·계약이 흐른다 */
-function fanAttM(day,tid){ if(tid!=null&&(tid!==G.user||G.unemp))return fanAway(tid,()=>fanAttM(day))??1; /* 서포터즈·테마 데이는 그 구단에 남아 계속 효과(검수 11-09zs) */ if(G.unemp||!G.fanOps)return 1; const F=G.fanOps; const nx=typeof _stY!=='undefined'&&_stY!=null; /* 다음 시즌 전망: 지난 테마 데이는 빼고 그 시즌 서포터즈만(검수 11-08) */ return (1+FAN_OPS.cheer.att[F.cheer||0]+crewAtt()+cheerAtt(day))*(!nx&&F.boost&&day>=(F.boost.from??0)&&day<=F.boost.until?1.08:1)*(F.sup===(nx?_stY:G.year)?1.03:1); }
+function fanAttM(day,tid){ if(tid!=null&&(tid!==G.user||G.unemp))return fanAway(tid,()=>fanAttM(day))??aiFanAttM(day,tid); /* 우리가 운영한 적 없는 구단은 그 구단 응원단·서포터즈(99_ai_parity) */ /* 서포터즈·테마 데이는 그 구단에 남아 계속 효과(검수 11-09zs) */ if(G.unemp||!G.fanOps)return 1; const F=G.fanOps; const nx=typeof _stY!=='undefined'&&_stY!=null; /* 다음 시즌 전망: 지난 테마 데이는 빼고 그 시즌 서포터즈만(검수 11-08) */ return (1+FAN_OPS.cheer.att[F.cheer||0]+crewAtt()+cheerAtt(day))*(!nx&&F.boost&&day>=(F.boost.from??0)&&day<=F.boost.until?1.08:1)*(F.sup===(nx?_stY:G.year)?1.03:1); }
 function fanLog(t){ const F=fanOps(); F.log.unshift({d:G.day,t}); F.log.length=Math.min(F.log.length,12); }
 function fanSet(k,lv){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const O=FAN_OPS[k]; lv=+lv; if(!O||!(lv>=0&&lv<O.lv.length))return '고를 수 없는 단계입니다.'; const F=fanOps(); if(F[k]===lv)return `이미 ${O.lv[lv]}입니다.`;
   F.mx=F.mx||{}; F.mx[k]=Math.max(F.mx[k]||0,F[k]||0,lv); F[k]=lv; if(k==='cheer'&&F.cs)cheerFill(F.cs); /* 단원 수를 새 단계에 맞춘다 */ fanLog(`${O.l}: ${O.lv[lv]}`); return `${O.l}을(를) '${O.lv[lv]}'(으)로 바꿨습니다.${O.m[lv]?` 매달 ${money(O.m[lv])}이 듭니다.`:' 추가 비용은 없습니다.'}`; }

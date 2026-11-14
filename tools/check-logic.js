@@ -1551,7 +1551,7 @@ T('[트레이드] 한 시즌에 트레이드를 많이 할수록 다른 단장�
 T('[트레이드] 한 구단과 트레이드를 마치면 30일 동안은 그 구단과 다시 거래하지 않는다(새 선수가 자리 잡는 기간)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); G.trades.push({y:G.year,d:G.day,with:t.id,give:[],get:[]}); const q=domestic(t.id).filter(x=>!x.foreign)[8], p=domestic(G.user).filter(x=>!x.foreign)[8];
   const r=proposeTrade(t.id,[p.id],[q.id],0); ok(!r.ok&&r.cool,'거래 직후 같은 구단과 또 협상됨: '+(r.msg||'').slice(0,60)); G.day+=31; const r2=proposeTrade(t.id,[p.id],[q.id],0); ok(!r2.cool,'30일이 지났는데도 막힘'); });
 T('[트레이드] 예산을 넘겨 연봉을 떠안는 트레이드는 구단주 승인이 필요하다(신뢰가 낮거나 초과가 크면 막힌다)',()=>{ fresh(); const u=team(G.user); u.trust=30; const b=budget(); G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+Math.max(0,b.roomGoal);
-  const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).filter(x=>!x.foreign).sort((a,c)=>c.sal-a.sal)[0]; const p=domestic(G.user).filter(x=>!x.foreign).sort((a,c)=>a.sal-c.sal)[0];
+  const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).filter(x=>!x.foreign).sort((a,c)=>c.sal-a.sal)[0]; const p=domestic(G.user).filter(x=>!x.foreign).sort((a,c)=>a.sal-c.sal)[0]; q.sal=Math.max(q.sal,p.sal+2500); /* 세계마다 상대 최고 연봉이 달라 구단주 허용 폭(최대 22.5억) 안에 들던 경우 */
   const r=proposeTrade(t.id,[p.id],[q.id],0); ok(!r.ok&&r.owner,'예산 초과 '+money(q.sal-p.sal)+' 연봉 증가인데 구단주 확인 없이 진행: '+(r.msg||'').slice(0,60));
   G.offers=[{id:'tchk',from:t.id,give:[q.id],get:[p.id]}]; const r2=answerOffer('tchk',true); ok(!r2.ok&&r2.owner,'AI 제안 수락도 구단주 확인 없이 진행'); });
 T('[리그] 창단 드래프트 뒤 AI 구단끼리 보강 트레이드가 일어나 상위 구단이 리빌딩 구단의 베테랑을 사 온다(강팀·약팀 차이)',()=>{const original=fdStrengthen;try{fdStrengthen=()=>0;fresh();}finally{fdStrengthen=original;} const ai=G.teams.filter(t=>t.id!==G.user); let B=ai.find(t=>t.mode==='rebuild'); if(!B){ B=ai[ai.length-1]; B.mode='rebuild'; }
@@ -3947,7 +3947,7 @@ T('[카페 건의 11-09] 훈련 강도: 강할수록 겨울 성장이 크고, �
   const hi=inc(80), lo=inc(35); ok(hi<1.15&&lo>1.4&&hi<lo,'아주 강하게 부상 배수 내구성 80 '+hi.toFixed(2)+' / 35 '+lo.toFixed(2));
   h.r.vit=50; G.trnI[h.id]=3; const r26=trnIRisk(h); h.age=35; ok(trnIRisk(h)>r26,'34세 이상 위험 가중'); h.age=26;
   ok(trnIFat(h)<1&&trnIFat(h,0)>1,'강하면 피로 회복이 느리고 회복 위주는 빠르다'); G.trnI[h.id]=0; ok(trnIRisk(h)<1,'회복 위주는 부상 위험이 준다');
-  const ai=playersOf(G.teams.find(t=>t.id!==G.user).id)[0]; G.trnI[ai.id]=3; ok(trnI(ai)===1&&trnIRisk(ai)===1,'다른 구단 선수는 보통');
+  const ai=playersOf(G.teams.find(t=>t.id!==G.user).id)[0]; G.trnI[ai.id]=3; ok(trnI(ai)===trnIAuto(ai).i,'다른 구단 선수는 그 구단 코치진 배분(우리 건의는 닿지 않음)');
   delete G.trnI; delete G.trnPol; G.trn={}; G.trn[h.id]={f:'con',by:'gm',tid:G.user,since:G.day,base:{},snap:{lv:1,a:{},b:{}}}; ok(trnPol()==='bal'&&trnI(h)===trnIAuto(h).i&&trnI(h)<=2,'옛 저장본은 균형 방침, 코치진 배분');
   G.day=KD(5,10); let err=''; try{ trnWeek(); }catch(e){ err=e.message; } ok(!err,'옛 저장 주간 훈련 오류 '+err);
   const p2=P[0]; delete p2.trI; const s2=JSON.stringify(p2); __seed(5); develop(p2); const r1=JSON.stringify(p2.r); Object.assign(p2,JSON.parse(s2)); p2.trI={y:G.year,s:7,n:7}; __seed(5); develop(p2); ok(JSON.stringify(p2.r)===r1,'보통 강도 기록은 성장을 바꾸지 않는다');
@@ -4218,6 +4218,33 @@ T('[인물 관계] 다른 구단 단장이 먼저 식사를 청한다: 응하면
   const e2=gmInvite(t.id,'call',false); const r1=t.rel; evPick(e2.id,1); ok(t.rel===r1-1,'거절해도 그대로 '+r1+'→'+t.rel); ok(relLikes(relGmKey(t.id)).like.some(x=>x.k==='me')||t.rel<56,'카드 연결');
   G.gmInvD=null; G.gmc={}; for(const x of G.evs)x.done=true; let n=0; for(let i=0;i<24;i++){ G.day+=30; const v=gmInvMonth(); if(v){ n++; ok(gmInvOpen(),'초대가 열리지 않음'); ok(gmInvMonth()===null,'열린 초대가 있는데 또 초대'); evPick(v.id,1,true); } } ok(n>=1&&n<=12,'두 시즌 초대 횟수 '+n); });
 
+
+/* AI 동등(사용자 11-13: AI도 사람 단장과 같은 수단·같은 식·같은 비용) */
+T('[AI 동등] 같은 부상 방지·병원·시설·캠프면 우리 구단과 다른 구단의 부상·재활 배수가 같다',()=>{ fresh(); const a=G.teams.find(t=>t.id!==G.user&&!t.indie); const S=aiFacInit(a); facInit();
+  const p=domestic(G.user).find(q=>!q.foreign&&!milServing(q)), q=domestic(a.id).find(x=>!x.foreign&&!milServing(x)); ok(p&&q,'준비 실패');
+  for(const [prev,hosp,w,rh,ci] of [[1,'none',2,2,.92],[2,'b',3,1,.78],[0,'a',4,3,1]]){ G.med={prev,hosp}; medSetT(a.id,{prev,hosp}); G.fac.it.weight=w; S.it.weight=w; G.fac.it.rehab=rh; S.it.rehab=rh; G.campInj=ci; a.campInj=ci;
+    ok(Math.abs(teamInjM(G.user)-teamInjM(a.id))<1e-12,'부상 배수 다름 '+prev+hosp+w+': '+teamInjM(G.user)+' vs '+teamInjM(a.id)); ok(Math.abs(recMult(p)-recMult(q))<1e-12,'재활 배수 다름 '+recMult(p)+' vs '+recMult(q)); }
+  G.med={prev:1,hosp:'none'}; delete orgOf(a.id).med; G.fac.it.weight=2; S.it.weight=2; G.campInj=.92; a.campInj=.92; ok(Math.abs(teamInjM(a.id)-1)<1e-9&&Math.abs(teamInjM(G.user)-1)<1e-9,'리그 기본이 1이 아님 '+teamInjM(a.id));
+  const sv=q.mil; q.mil={unit:'상무',from:G.day-5,until:G.day+400}; ok(teamInjM(null)===1&&recMult(q)===1,'상무 선수에 원소속 구단 몫'); q.mil=sv; });
+T('[AI 동등] 돈이 있는 다른 구단은 겨울에 부상 방지·병원·아카데미에 쓰고, 결산에 우리와 같은 비용이 붙는다. 빚진 구단은 줄인다',()=>{ fresh(); G.day=dnum(G.year,11,20); const L=G.teams.filter(t=>t.id!==G.user&&!t.indie); const a=L[0], b=L[1];
+  a.cash=30000; a.plan={k:'next',y:G.year,d:G.day}; const c0=a.cash; aiSpend(a,true); const M=medOf(a.id); ok(M.prev>=2&&M.hosp!=='none','부상 방지·병원 그대로 '+JSON.stringify(M)); ok(acadLv(a.id)>=1&&ovsLim(OVS.us,a.id)===OVS.us.lim+acadLv(a.id),'아카데미 없음'); ok(a.cash<c0,'현금 그대로'); ok(a.trnPol==='bal','방침 '+a.trnPol);
+  const oc=aiOpsCost(a,G.year); ok(oc.find(x=>x[0]==='부상 방지 프로그램')[1]===PREV[M.prev].c&&oc.find(x=>x[0]==='병원 제휴')[1]===HOSP[M.hosp].c,'결산 비용이 우리와 다름 '+JSON.stringify(oc));
+  b.cash=-2000; b.plan={k:'tight',y:G.year,d:G.day}; const cb=b.cash; aiSpend(b,true); ok(medOf(b.id).prev===0&&medOf(b.id).hosp==='none'&&b.cash===cb&&b.trnPol==='rec','빚진 긴축 구단 '+JSON.stringify(medOf(b.id))+' '+b.trnPol);
+  const u=team(G.user); ok(JSON.stringify(medOf(G.user))===JSON.stringify(G.med),'우리 구단 설정은 G.med'); const tid=a.id; switchTeam(tid); ok(G.med.prev===M.prev&&G.med.hosp===M.hosp&&acadLv()>=1,'이직하면 그 구단 부상 방지·아카데미를 이어받지 않음 '+JSON.stringify(G.med)); });
+T('[AI 동등] 다른 구단 육성 방침이 선수별 강도·겨울 성장 몫(p.trI)에 들어간다',()=>{ fresh(); G.day=G.cal.open+1; const L=G.teams.filter(t=>t.id!==G.user); const a=L[0], b=L[1]; a.trnPol='grow'; b.trnPol='rec';
+  ok(trnPolOf(a.id)==='grow'&&trnPolOf(b.id)==='rec','방침 읽기'); for(let i=0;i<4;i++){ trnWeek(); G.day+=7; }
+  const avg=t=>{ const L=domestic(t.id).filter(p=>p.trI&&p.trI.n); return L.length?sum(L.map(p=>p.trI.s/p.trI.n))/L.length:null; }; const ga=avg(a), gb=avg(b); ok(ga!=null&&gb!=null,'다른 구단 선수 훈련 강도 기록 없음'); ok(ga>gb,'성장 우선 '+ga+' ≤ 회복 우선 '+gb); ok(gb<=1&&ga>1,'방침 대가 '+ga+'/'+gb);
+  const h=domestic(a.id).find(p=>!(p.injOut>0)&&trnActive(p)); ok(h&&trnIRisk(h)===trnIRisk(h,trnIAuto(h).i),'부상 위험도 같은 배분'); });
+T('[AI 동등] 다른 구단 단장의 구단주 자금 요청은 우리와 같은 승인 식·같은 간격·같은 신뢰 비용',()=>{ fresh(); const a=G.teams.find(t=>t.id!==G.user&&!t.indie&&rankNowT(t.id)<=5); ok(a,'준비 실패'); const u=team(G.user);
+  const oU=uRank, oB=budgetExtra, oC=cwRapMod; try{ uRank=()=>rankNowT(a.id); budgetExtra=()=>0; cwRapMod=()=>0; G.grants=[]; a.ownAsk=[];
+    for(const [tr,ow,amt] of [[50,'pr',1000],[70,'win',2000],[35,'profit',1500]]){ u.trust=a.trust=tr; u.owner=a.owner=ow; ok(Math.abs(ownOdds(amt,null)-ownOddsT(a.id,amt,null))<1e-12,'승인 확률 다름 '+ow+': '+ownOdds(amt,null)+' vs '+ownOddsT(a.id,amt,null)); } }finally{ uRank=oU; budgetExtra=oB; cwRapMod=oC; }
+  a.trust=80; a.owner='win'; a.plan={k:'win',y:G.year,d:G.day}; a.cash=2000; a.ownAsk=[]; delete a.grant; const t0=a.trust, c0=supportCap(a); const r=aiOwnerAsk(a,'mid'); ok(r,'요청하지 않음');
+  if(r.ok)ok(a.grant&&a.grant.amt===r.amt&&supportCap(a)===c0+r.amt,'승인됐는데 지원 한도 그대로'); else ok(a.trust===t0-1,'반려됐는데 신뢰 그대로');
+  ok(aiOwnerAsk(a,'mid')===null,'같은 달 두 번 요청'); a.trust=5; a.owner='profit'; a.ownAsk=[]; G.day+=40; ok(aiOwnerAsk(a,'mid')===null,'될 리 없는 요청을 함'); });
+T('[AI 동등] 다른 구단도 캠프 방향 효과·감독 추천 선수·보조 코치 정원·주장 효과를 같은 값으로 받는다',()=>{ fresh(); const a=G.teams.find(t=>t.id!==G.user);
+  G.camp={focus:'balance',done:false,snap:{},byT:{[a.id]:'fitness'}}; campEnd(); ok(a.campInj===.78&&campInjOf(a.id)===.78,'체력 캠프 부상 효과 없음 '+a.campInj); G.camp={focus:'balance',done:false,snap:{},byT:{[a.id]:'game'}}; campEnd(); ok(!a.campInj&&a.form&&a.form.b===2,'실전 감각 효과 없음');
+  const p=domestic(a.id).find(q=>q.age<=26); const m=G.mgr[a.id]; ok(p&&m,'준비 실패'); a.mpick={y:G.year,mid:m.id,ids:[p.id],back:true}; ok(mpickMult(p)===1.3,'감독 추천 선수 성장 우대 없음'); a.mpick.back=false; ok(mpickMult(p)===1,'받지 않았는데 우대');
+  const S=aiFacInit(a); for(const k of FACK)S.it[k]=2; ok(axSlots(a.id)===0,'정원'); S.it.rehab=4; S.it.lab=4; ok(axSlots(a.id)===2,'시설 4단계 두 곳이면 두 자리 '+axSlots(a.id)); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

@@ -146,7 +146,7 @@ function coachExpNote(){ if(G.unemp||!G.coach||!G.coach[G.user])return; const C=
 /* 보조 코치(커뮤니티 요청 11-07: 훈련 시설 단계가 높으면 코치를 더 둘 수 있게): 4단계 이상 세부 시설 하나마다 1자리, 최대 3자리.
    투수·타격 쪽 후보(1·2군 투수·타격·배터리 코치)를 데려와 그 분야 선수 성장에 작게 보탠다(1명당 육성력에 따라 최대 +2.5%) */
 const AX_ROLES=['pc','fp','bc','fb','cc'], AX_MAX=3;
-function axSlots(){ return Math.min(AX_MAX,FACK.filter(k=>facOf(k)>=4).length); }
+function axSlots(tid){ return Math.min(AX_MAX,FACK.filter(k=>(tid==null||tid===G.user?facOf(k):facLvK(tid,k))>=4).length); } /* 어느 구단이든 그 구단 시설 단계로(다른 구단은 99_ai_parity가 코치 시장에서 채운다) */
 const axP=c=>['pc','fp','cc'].includes(c.role);
 function axBoost(p){ const X=p.team!=null?axOf(p.team):[]; /* 떠난 구단에 남긴 보조 코치도 그 구단 선수를 맡는다(검수 11-09zs·zv #4) */ if(!X.length)return 1; return 1+sum(X.filter(c=>axP(c)===!!p.isP&&!(c.jy>G.year)&&!(c.sisAway>G.day)).map(c=>clamp((c.dv-50)/800,0,.025))); }
 function hireAsst(id,years){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; years=Math.round(+years); if(!(years>=1&&years<=3))return '보조 코치 계약은 1~3년입니다.'; const X=G.coachX=G.coachX||[]; if(X.length>=axSlots())return `보조 코치 자리가 없습니다(4단계 이상 세부 시설 하나마다 1자리, 지금 ${axSlots()}자리).`;

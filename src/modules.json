@@ -140,7 +140,8 @@
       "src/engine/market/96_pick_trade.js",
       "src/engine/league/95_game_rules.js",
       "src/engine/league/97_spring_camp.js",
-      "src/engine/league/98_sister_club.js"
+      "src/engine/league/98_sister_club.js",
+      "src/engine/staff/99_ai_parity.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",

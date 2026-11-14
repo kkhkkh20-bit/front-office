@@ -132,16 +132,20 @@ function aiOwnerYear(h){ const ord=h.order||[]; const EI=ecoIdx(sponSeason());
 const AI_SPEND={win:{fac:.45,stad:.15,st:.3,fan:.1},next:{fac:.5,stad:.2,st:.2,fan:.1},build:{fac:.7,stad:.05,st:.25,fan:0},star:{fac:.3,stad:.4,st:.1,fan:.2},tight:{fac:0,stad:0,st:0,fan:0}};
 const AI_STAD_PREF={win:['turf','seat','vis'],next:['seat','fnb','turf'],build:['fnb','seat'],star:['seat','vis','fnb','prem'],tight:[]};
 function aiBuffer(t){ const EI=ecoIdx(sponSeason()); return Math.round((1500+(t.owner==='profit'?1500:0)+(t.owner==='win'?-500:0))*EI)+(t.indie?2000+newStadDue(t.id):0); }
-function aiSpend(t,winter){ if(t.id===ME())return null; const pl=planOf(t)||'next', W=AI_SPEND[pl]||AI_SPEND.next; const buf=aiBuffer(t); let ex=(t.cash||0)-buf; if(ex<800||pl==='tight')return null;
-  if(!winter)ex*=.5; /* 시즌 중에는 절반만 */ const L={y:G.year,w:winter?1:0,ex:Math.round(ex),fac:0,stad:0,st:0,fan:0};
+function aiSpend(t,winter){ if(t.id===ME())return null; const pl=planOf(t)||'next', W=AI_SPEND[pl]||AI_SPEND.next; const buf=aiBuffer(t); let ex=(t.cash||0)-buf;
+  let ops=null; if(winter){ try{ ops=aiOpsPlan(t,ex,W); ex-=ops.cash; }catch(e){} } /* 겨울: 사람 단장이 쓰는 운영 수단(부상 방지·병원·육성 방침·아카데미·응원단·버스)부터 같은 값으로 정한다(99_ai_parity) */
+  if(ex<800||pl==='tight')return null;
+  if(!winter)ex*=.5; /* 시즌 중에는 절반만 */ const L={y:G.year,w:winter?1:0,ex:Math.round(ex),fac:0,stad:0,st:0,fan:0,ops:ops?Math.round(ops.cash):0};
   /* 시설: 계획 비중만큼, 많아야 두 건 */ const S=aiFacInit(t); let fb=ex*W.fac; for(let i=0;i<2&&fb>300;i++){ const c0=t.cash; const k=aiFacPlan(t,S,!winter,{force:true,budget:fb,reserve:buf}); if(!k)break; const used=Math.max(0,c0-t.cash); L.fac+=used||S.bld[k].c-(S.bld[k].help||0); fb-=Math.max(used,300); }
   /* 구장: 겨울에만, 계획에 맞는 항목 */ if(winter&&stadWindow()){ const St=stadOf(t.id); let sb=ex*W.stad; for(const k of AI_STAD_PREF[pl]||[]){ const lv=St.lv[k]; if(lv>=STAD_MAX||(St.build||[]).some(b=>b.k===k))continue; const c=STAD_COST[lv+1]; if(c>sb*2||t.cash-c<buf)continue; /* 몫의 두 배까지는 한 건 */ t.cash-=c; sb-=c; L.stad+=c; St.build=(St.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c}); clubFacilityHistory('stad',t.id,`${stadName(t.id)} ${STAD_ITEMS.find(x=>x.k===k).l}`,'착공',St.build[St.build.length-1]); } }
   /* 스태프: 다음 시즌 스카우트·분석원 인건비 여유(stAiPlan이 읽는다). 겨울에 다시 정한다 */ if(winter){ t.stBoost=Math.round(clamp(ex*W.st/2,0,800)); L.st=t.stBoost; }
-  /* 팬 행사·지역 공헌: 인기 조금, 지역 관계 조금 */ const fb2=Math.round(Math.min(ex*W.fan,1500)); if(fb2>=200){ t.cash-=fb2; t.pop=clamp((t.pop||1)+fb2/60000,.7,1.45); cityRelAdd(t.id,fb2/500); L.fan=fb2; }
+  /* 팬 행사·지역 공헌: 인기 조금, 지역 관계 조금 */ const fb2=Math.round(Math.min(ex*W.fan-(ops?ops.fanY:0),1500)); /* 응원단 운영비로 쓴 만큼 뺀다 */ if(fb2>=200){ t.cash-=fb2; t.pop=clamp((t.pop||1)+fb2/60000,.7,1.45); cityRelAdd(t.id,fb2/500); L.fan=fb2; }
   (t.spendLog=t.spendLog||[]).push(L); if(t.spendLog.length>12)t.spendLog.shift(); return L; }
 
 /* ===== 매일(aiFacDaily 끝에서): 결산 직후 처리, 지출 시점 ===== */
 function clubEconDaily(){ if(!G||!G.teams)return; const E=G.ceco=G.ceco||{}; const h=(G.history||[])[G.history.length-1];
-  if(h&&h.y!=null&&E.yr!==h.y&&G.last&&G.last.y===h.y){ E.yr=h.y; try{ aiOwnerYear(h); }catch(e){} for(const t of G.teams)try{ facDealsYear(t); }catch(e){} }
+  if(h&&h.y!=null&&E.yr!==h.y&&G.last&&G.last.y===h.y){ E.yr=h.y; try{ aiOwnerYear(h); }catch(e){} for(const t of G.teams)try{ facDealsYear(t); }catch(e){} for(const t of G.teams){ if(t.id!==ME())try{ aiPriceYear(t); }catch(e){} } }
   const o=dobj(G.day); const winter=o.m===11&&o.d===20, summer=o.m===7&&o.d===1;
-  if(winter||summer){ const k=G.year+(winter?'w':'s'); if(E.sp!==k){ E.sp=k; for(const t of G.teams){ if(t.id===ME())continue; try{ aiSpend(t,winter); }catch(e){} } } } }
+  if(winter||summer){ const k=G.year+(winter?'w':'s'); if(E.sp!==k){ E.sp=k; for(const t of G.teams){ if(t.id===ME())continue; try{ aiSpend(t,winter); }catch(e){} if(summer)try{ aiOwnerAsk(t,'mid'); }catch(e){} } } }
+  /* FA 시장이 열린 날: 다른 구단 단장도 구단주에게 영입 자금을 요청한다(우리와 같은 승인 식·간격·신뢰 비용) */
+  if(G.fa&&G.fa.open&&!G.fa.closed&&G.day>=G.fa.openDay&&E.oa!==sponSeason()){ E.oa=sponSeason(); for(const t of G.teams){ if(t.id===ME())continue; try{ aiOwnerAsk(t,'fa'); }catch(e){} } } }

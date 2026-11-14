@@ -113,11 +113,14 @@ function grants(){ const L=G.grants=G.grants||[]; for(const g of L)if(g.an==null
 function grantAmt(y){ return sum(grants().filter(g=>g.y===(y??G.year)&&g.ok&&g.st!=='void'&&(g.tid==null||g.tid===G.user)).map(g=>g.amt)); } /* 지금 구단이 받은 것만(이직 전 구단 지원금 제외, 검수 11-08) */
 function ownAskLeft(){ const o=dobj(G.day); const mk=o.y*100+o.m; return grants().some(g=>g.mk===mk&&g.by==='gm'&&(g.tid==null||g.tid===G.user))?0:1; } /* 이직하면 새 구단주에게는 처음 요청 */
 /* 성사 가능성: 신뢰, 구단주 성향, 순위, 목적 */
-function ownOdds(amt,pur){ const t=team(G.user); if(t.indie)return 0; const ow=t.owner; const rk=uRank(); let p=.35+(t.trust-50)/80;
+function ownOdds(amt,pur){ return ownOddsT(G.user,amt,pur); }
+/* 어느 구단 단장이든 같은 승인 식(사용자 11-13: AI 단장도 구단주에게 자금을 요청한다). 우리 구단만 쓰는 몫: 예산 외 수입 여유·구단주 동석 친밀도 */
+function ownOddsT(tid,amt,pur){ const t=team(tid); if(t.indie)return 0; const me=tid===G.user&&!G.unemp; const ow=t.owner; const rk=me?uRank():rankNowT(tid); let p=.35+(t.trust-50)/80;
   const contend=rk<=5||teamCtx(t).contend; if(ow==='win')p+=contend?.2:-.05; if(ow==='profit')p-=.18; if(austOn(t)?.strict)p-=.1; if(ow==='pr')p+=.05;
   if(pur&&pur.k==='fa'){ const q=G.players[pur.pid]; if(q){ if(ovr(q)>=62)p+=ow==='pr'?.2:.1; } p+=.08; } if(pur&&pur.k==='frep')p+=.05;
-  { const ex=budgetExtra(); if(ex>0)p+=clamp(ex/Math.max(500,amt),0,1)*.2; } /* 예상보다 수입이 늘었으면(관중·광고) 구단주도 더 내줄 여유가 있다 */
-  p-=Math.max(0,amt-1000)/4000; const asked=grants().filter(g=>g.y===sponSeason()&&g.by==='gm'&&(g.tid==null||g.tid===G.user)).length; p-=asked*.08; p+=cwRapMod(); /* 구단주·사장 친밀도(동석 관람) */ return clamp(p,.03,.92); }
+  if(me){ const ex=budgetExtra(); if(ex>0)p+=clamp(ex/Math.max(500,amt),0,1)*.2; } /* 예상보다 수입이 늘었으면(관중·광고) 구단주도 더 내줄 여유가 있다 */
+  p-=Math.max(0,amt-1000)/4000; const asked=me?grants().filter(g=>g.y===sponSeason()&&g.by==='gm'&&(g.tid==null||g.tid===G.user)).length:(t.ownAsk||[]).filter(g=>g.y===sponSeason()).length; p-=asked*.08; if(me)p+=cwRapMod(); /* 구단주·사장 친밀도(동석 관람) */ return clamp(p,.03,.92); }
+function rankNowT(tid){ try{ const i=standingsNow().findIndex(x=>x.tid===tid); return i>=0?i+1:5; }catch(e){ return 5; } }
 function oddsShort(p){ return p>=.7?'가능성 높음':p>=.45?'반반':p>=.25?'가능성 낮음':'거의 어려움'; }
 function oddsTxt(p){ return p>=.7?'받아들일 가능성이 큽니다':p>=.45?'반반입니다':p>=.25?'쉽지 않습니다':'거의 어렵습니다'; }
 /* w: 사유를 고른 요청(ownWhy 결과). 승인 확률·목적·구단주 대답이 사유에 따라 정해진다. 없으면 예전 방식(면담·동석 관람) */
@@ -204,14 +207,14 @@ function mgrView(p){ const m=G.mgr[G.user]; if(!m||m.interim||!p||p.team!==G.use
   const line=fut-cur>=8?(fut>=62?'2~3년 안에 팀의 기둥이 됩니다':'꾸준히 쓰면 1군 주전감입니다'):fut-cur>=3?'조금 더 올라옵니다':p.age>=31?'내려가는 길입니다. 길게 보지 않는 게 좋습니다':'지금이 거의 다 큰 모습입니다';
   return {fut,line,sd,eye:m.eye}; }
 /* 감독이 미는 선수: 시즌마다 1~2명. 단장이 함께 밀어주면 성장이 빨라진다 */
-function mpickPlan(){ const m=G.mgr[G.user]; if(!m||m.interim)return; mgrAttr(m); const P=G.mpick; if(P&&P.y===G.year&&P.mid===m.id)return;
+function mpickPlan(){ try{ aiMpickPlan(); }catch(e){} try{ aiMentorPick(); }catch(e){} /* 다른 구단 감독도 미는 선수를 정하고, 단장이 받아 준다(99_ai_parity) */ const m=G.mgr[G.user]; if(!m||m.interim)return; mgrAttr(m); const P=G.mpick; if(P&&P.y===G.year&&P.mid===m.id)return;
   const last=P&&P.y===G.year-1&&P.mid===m.id?new Set(P.ids||[]):new Set(); /* 작년에 민 선수는 빼고(플레이 테스트 11-13: 해마다 같은 선수·같은 문장) */
   const cands=domestic(G.user).filter(p=>p.age<=26&&!p.ys&&!(p.joinY>G.year)&&!last.has(p.id)).map(p=>({p,v:mgrView(p)})).filter(x=>x.v&&!x.v.mute&&x.v.fut-ovr(x.p)>=5).sort((a,b)=>(b.v.fut-ovr(b.p)*.3)-(a.v.fut-ovr(a.p)*.3)).slice(0,2);
   G.mpick={y:G.year,mid:m.id,ids:cands.map(x=>x.p.id),back:null,day:G.day}; if(!cands.length)return;
   evNew('mpick',`${m.name} 감독이 미는 선수`,`"${cands.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}. 제가 보기엔 ${cands[0].v.line.replace(/[.]$/,'')}. 올해 출전 기회와 훈련을 몰아주고 싶습니다." 감독의 선수 보는 눈(안목) ${dv(m.eye)}.`,
     [{l:'함께 밀어준다',fx:`올해 이 선수들의 성장이 눈에 띄게 빨라지고 기분이 오릅니다. 감독 관계 개선. 대신 같은 자리 경쟁자${(()=>{ const L=[]; for(const x of cands)for(const q of playersOf(G.user))if(q!==x.p&&!cands.some(c=>c.p===q)&&q.isP===x.p.isP&&pSlot(q)===pSlot(x.p)&&!q.ys&&!L.includes(q.name))L.push(q.name); return L.length?`(${L.slice(0,3).join('·')}${L.length>3?' 등':''})`:''; })()}는 출전 기회가 줄어 기분이 내려가고, 시즌 중 이 선수를 트레이드하면 감독이 크게 서운해합니다(-6).`},{l:'성적이 먼저다',fx:'변화 없음. 감독 관계 조금 악화.'}],{from:'감독실',ref:cands[0].p.id,data:{ids:cands.map(x=>x.p.id),mid:m.id},def:0,exp:7}); }
 EVH.mpick={ pick(e,i){ const m=G.mgr[G.user]; if(!m)return ''; const P=G.mpick; if(m.interim||!P||P.mid!==m.id||(e.data.mid!==undefined?e.data.mid!==m.id:String(P.ids)!==String(e.data.ids)))return '제안한 감독이 팀을 떠나 이 제안은 끝났습니다. 아무것도 바꾸지 않았습니다.'; /* 전임 감독 제안(검수 11-09m) */ if(i===0){ G.mpick.back=true; m.rel=clamp(m.rel+4,0,100); for(const id of e.data.ids){ const p=G.players[id]; if(p)p.mor=clamp((p.mor??60)+5,0,100); } const hurt=[]; for(const id of e.data.ids){ const p=G.players[id]; if(!p)continue; for(const q of playersOf(G.user))if(q!==p&&!e.data.ids.includes(q.id)&&q.isP===p.isP&&pSlot(q)===pSlot(p)&&!q.ys){ q.mor=clamp((q.mor??60)-3,0,100); hurt.push(q.name); } } /* 같은 자리 경쟁자는 출전 기회가 줄어 기분이 내려간다 */ return '감독과 함께 밀어주기로 했습니다. 감독 관계 개선.'; } G.mpick.back=false; m.rel=clamp(m.rel-2,0,100); return '감독 관계 조금 악화.'; } };
-function mpickMult(p){ const P=G.mpick; const m=G.mgr[G.user]; return P&&P.back&&P.y===G.year&&P.ids.includes(p.id)&&p.team===G.user&&m&&!m.interim&&(P.mid==null||P.mid===m.id)?1.3:1; } /* 그 감독이 밀던 선수: 감독이 바뀌거나 대행 체제면 끝 */
+function mpickMult(p){ if(p.team!=null&&(p.team!==G.user||G.unemp))return aiMpickMult(p); const P=G.mpick; const m=G.mgr[G.user]; return P&&P.back&&P.y===G.year&&P.ids.includes(p.id)&&p.team===G.user&&m&&!m.interim&&(P.mid==null||P.mid===m.id)?1.3:1; } /* 그 감독이 밀던 선수: 감독이 바뀌거나 대행 체제면 끝 */
 /* 감독 안목 성적표: 예측과 실제 성장 비교 (시즌 끝에) */
 function mgrEyeReport(){ const m=G.mgr[G.user]; const P=G.mpick; if(!m||!P||P.y!==G.year||!P.ids.length)return; const L=P.ids.map(id=>G.players[id]).filter(Boolean); if(!L.length)return;
   const txt=L.map(p=>{ const h=(p.oh||[]).slice(-2); const d=h.length===2?h[1].o-h[0].o:0; return `${p.name} ${d>=0?'+':''}${d}`; }).join(', '); (G.mpickLog=G.mpickLog||[]).unshift({y:G.year,mid:m.id,txt,back:P.back}); if(G.mpickLog.length>10)G.mpickLog.length=10; }

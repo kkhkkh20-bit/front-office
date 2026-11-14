@@ -62,7 +62,7 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
 /* ===== 훈련 강도(카페 건의 11-09, 설계 수정: 선수별 강도는 코치진 영역) =====
  FM은 선수마다 훈련 부하(Light/Average/Heavy)를 정하고, 부하가 높을수록 성장은 빠르지만 부상 위험·피로가 오른다. 부상 내성·체력이 위험 폭을 가른다.
  실제 구단에서 선수별 강도는 컨디셔닝·파트 코치가 정한다. 단장은 팀 '육성 방침'(회복 우선·균형·성장 우선) 하나만 정하고, 코치진이 그 안에서 내구성·나이·피로·최근 부상을 보고 선수마다 배분한다.
- 특정 선수 강도는 단장이 코치에게 건의하는 예외(G.trnI)로만 둔다. AI 구단은 리그 균형을 위해 모두 보통.
+ 특정 선수 강도는 단장이 코치에게 건의하는 예외(G.trnI)로만 둔다. 다른 구단도 같은 배분을 쓰고, 방침은 그 구단 계획에서 온다(trnPolOf, 사용자 11-13).
  KBO 현실: 시즌 중 개인 고강도 훈련은 드물다(경기 피로 관리가 우선). 그래서 균형 방침에서 아주 강하게는 나오지 않는다.
  - 성장: 주간 집중 훈련 증가분 × g, 겨울 성장(잠재력 여지 몫)에 그 시즌 평균 g. 아주 강하게(×1.3) 한 시즌이면 겨울 순성장 약 +40%, 캠프 몫까지 합친 한 해 성장 약 +30~35%
  - 부상: 경기·2군 부상 확률(injMult) × 위험 배수. 증가분은 내구성(투수는 체력)이 낮을수록, 32세·34세 이상일수록 크고, 컨디셔닝코치가 좋으면 조금 작다. 내구성 80이면 아주 강하게도 +6%, 35면 +55%(피로가 덜 풀려 경기 부상이 더 붙는다)
@@ -71,17 +71,22 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
 const TRNI=[{l:'회복 위주',s:'회복',g:.85,inj:-.15,fat:-.15},{l:'보통',s:'보통',g:1,inj:0,fat:0},{l:'강하게',s:'강하게',g:1.15,inj:.25,fat:.12},{l:'아주 강하게',s:'아주 강',g:1.3,inj:.55,fat:.25}];
 const TRNPOL={rec:{l:'회복 우선',o:-2,d:'부상·피로 관리가 먼저입니다. 성장은 조금 느립니다.'},bal:{l:'균형',o:0,d:'몸이 받쳐 주는 젊은 선수만 강하게, 약한 선수는 회복 위주로 코치진이 나눕니다.'},grow:{l:'성장 우선',o:2,d:'튼튼한 선수는 아주 강하게까지 올립니다. 성장이 빠르지만 부상이 늘어납니다.'}};
 const trnPol=()=>TRNPOL[G.trnPol]?G.trnPol:'bal'; /* 저장본에 없으면 균형 */
+/* 어느 구단이든 육성 방침: 맡은 구단은 단장이 정한 것, 다른 구단은 그 구단 계획에서(유망주 수집 → 성장 우선, 긴축 → 회복 우선). 사람 단장과 같은 배분·같은 대가(사용자 11-13) */
+const AI_TRNPOL={build:'grow',win:'bal',next:'bal',star:'bal',tight:'rec'};
+function trnPolOf(tid){ if(tid==null)return 'bal'; if(tid===G.user&&!G.unemp)return trnPol(); const t=G.teams&&G.teams[tid]; if(t&&TRNPOL[t.trnPol])return t.trnPol; return AI_TRNPOL[planOf(t)]||'bal'; }
 const trnDur=p=>(p.isP?p.r.sta:p.r.vit)??50; /* 투수는 내구성 대신 체력 */
 function trnCn(tid){ try{ if(tid==null||!G.coach)return 55; const C=coachesOf(tid); return C.cn?effC(C.cn,tid,'sk'):C.cn===undefined?55:45; }catch(e){ return 55; } } /* 컨디셔닝코치 지도력(빈자리 45) */
 const trnInjN=p=>(p.injHist||[]).filter(h=>h.d!=null&&G.day-h.d<=365).length; /* 최근 1년 부상 */
 /* 코치진이 고르는 강도와 그 이유: 점수 = 내구성 + 젊음 + 컨디셔닝코치 - 나이 - 최근 부상 - 피로, 방침만큼 위아래로 */
-function trnIAuto(p){ const pol=trnPol(), o=TRNPOL[pol].o; if(p.injOut>0)return {i:pol==='rec'?0:1,w:'재활 중'};
+function trnIAuto(p){ const pol=trnPolOf(p.team), o=TRNPOL[pol].o; if(p.injOut>0)return {i:pol==='rec'?0:1,w:'재활 중'};
   const d=trnDur(p), n=trnInjN(p), f=p.fat||0; const W=[[(d-50)/10,d>=60?'내구성 높음':d<42?'내구성 낮음':''],[p.age<=24?1:0,'젊은 선수'],[-(p.age>=34?2:p.age>=31?1:0),'30대 체력 관리'],[-Math.min(3,n),'최근 부상'],[-(f>=60?2:f>=40?1:0),'피로 누적'],[(trnCn(p.team)-55)/20,'']];
   const s=W.reduce((a,x)=>a+x[0],0)+o; let i=s>=3?3:s>=1.2?2:s>=-2.5?1:0; /* 균형 방침에서 보통이 대부분이 되게(리그 기본과 비슷) */ if(pol==='bal')i=Math.min(i,2); if(pol==='rec')i=Math.min(i,1);
   const top=W.filter(x=>x[1]).sort((a,b)=>Math.abs(b[0])-Math.abs(a[0]))[0]; return {i,w:top&&Math.abs(top[0])>=.5?top[1]:'무난한 몸 상태'}; }
 /* 지시는 현재 영입 회차에만 귀속한다. 같은 선수를 재영입해도 예전 강도 건의가 되살아나지 않는다. */
 function trnICommand(p){ const v=G.trnI&&G.trnI[p.id];if(!TRNI[v])return null;const key=G.user+':'+(p.acq?.n??0),S=G.trnIS=G.trnIS||{};if(S[p.id]!=null&&S[p.id]!==key){delete G.trnI[p.id];delete S[p.id];return null;}if(S[p.id]==null)S[p.id]=key;return v; }
-function trnI(p){ if(!p||G.unemp||p.team!==G.user)return 1;const v=trnICommand(p);if(p.injOut>0)return trnPol()==='rec'||v===0?0:1;return v!=null?v:trnIAuto(p).i; }
+let _trnAiC={d:-1,m:new Map()}; /* 다른 구단 선수 강도: 하루 한 번만 계산(경기마다 부상 판정에서 부른다) */
+function trnIAi(p){ if(_trnAiC.d!==G.day)_trnAiC={d:G.day,m:new Map()}; const k=p.id+':'+p.team; let v=_trnAiC.m.get(k); if(v==null){ v=p.injOut>0?(trnPolOf(p.team)==='rec'?0:1):trnIAuto(p).i; _trnAiC.m.set(k,v); } return v; }
+function trnI(p){ if(!p||p.team==null)return 1; if(G.unemp||p.team!==G.user)return trnIAi(p); const v=trnICommand(p);if(p.injOut>0)return trnPol()==='rec'||v===0?0:1;return v!=null?v:trnIAuto(p).i; }
 const trnIByGm=p=>!!p&&!G.unemp&&p.team===G.user&&trnICommand(p)!=null&&(!(p.injOut>0)||trnICommand(p)===0);
 /* 부하 효과는 실제 구단 훈련이 있는 기간·대상에만. 겨울·PS·차출·합류 전 선수의 경기/회복에 저장된 강도를 얹지 않는다. */
 function trnActive(p){ const per=period();return !!p&&p.team!=null&&!(p.team===G.user&&G.unemp)&&!p.prospect&&!(p.joinY>G.year)&&!p.hold&&!isAway(p)&&!ovsAbroad(p)&&(per==='pre'||per==='season'); }
@@ -105,10 +110,10 @@ function trnIMgr(i,ps){ const m=G.mgr[G.user]; if(!m||m.interim)return '코치�
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
   for(const p of Object.values(G.players)){ if(!trnActive(p))continue;if(p.injOut>1&&trnI(p)===0)p.injOut--; /* 구단 훈련에 참여하는 재활 선수만 회복 우선의 주간 단축 */
     if(p.team==null||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 외국인도 구단 집중 훈련을 한다(지시를 받아 놓고 빠지지 않게, 검수 11-06) */ /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)||ovsAbroad(p))continue; /* 해외 연수 중이면 구단 훈련 없음 */
-    const ti=trnI(p); if(p.team===G.user){ if(!p.trI||p.trI.y!==G.year)p.trI={y:G.year,s:0,n:0}; p.trI.s+=p.boy>G.day?0:TRNI[ti].g; p.trI.n++; } /* 훈련 불참(시위) 주는 훈련 효과 없음 */ /* 그 시즌 훈련한 주의 평균 강도 → 겨울 성장(develop). 우리 구단 선수만 */
+    const ti=trnI(p); { if(!p.trI||p.trI.y!==G.year)p.trI={y:G.year,s:0,n:0}; p.trI.s+=p.boy>G.day?0:TRNI[ti].g; p.trI.n++; } /* 훈련 불참(시위) 주는 훈련 효과 없음 */ /* 그 시즌 훈련한 주의 평균 강도 → 겨울 성장(develop). 모든 구단(사용자 11-13) */
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; { const T=G.trn&&G.trn[p.id]; if(T&&T.by==='gm'&&T.f===f&&T.aw!=null)T.aw++; } /* 회고·보고의 훈련 주수: 비시즌·부상·연수 주는 빼고 실제 훈련한 주만(검수 11-09o) */ const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
-    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g; const got=addR(p,k,add);
+    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g*eliteGrowF(ovr(p)); const got=addR(p,k,add); /* 정상급 꼬리 억제(10_draft) */
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
 /* 겨울 기회비용: 집중 훈련으로 얻은 만큼(×1.1) 같은 묶음의 다른 항목 성장이 준다.
