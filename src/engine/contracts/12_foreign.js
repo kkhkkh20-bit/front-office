@@ -58,6 +58,9 @@ function newForeign(kind,opts){
   const env=N(0,FENV[lvl[0]]??2), win=/윈터리그/.test(lvl[0]); /* 윈터리그는 시즌이 짧아 표본도 작다 */
   p.prev=isP?Object.assign({lvl:lvl[0]},simPit(p,mlb?Math.round(mg*rnd(2.6,4.2)):win?ri(90,200):ri(150,420),lvl[2]+env*1.6)):Object.assign({lvl:lvl[0]},simBat(p,mlb?Math.round(mg*rnd(2.4,3.6)):win?ri(150,260):ri(280,520),lvl[1]+env));
   p.prev.g=mlb?mg:isP?(win?ri(10,22):ri(18,40)):Math.round(p.prev.pa/4.1);
+  /* 그 전 시즌 기록(같은 리그, 한 살 어릴 때·그해 리그 환경으로): 두 시즌 기록이면 실력이 더 또렷하다. 공개 기록이라 우리와 AI 구단이 같은 줄을 본다(fRecEst) */
+  if(R()<.8){ const dy=age<=26?-1.5:age>=32?1:0, e2=N(0,FENV[lvl[0]]??2), n2=mlb?(isP?ri(20,80):ri(40,180)):win?(isP?ri(90,200):ri(150,260)):(isP?ri(120,380):ri(220,480));
+    p.prev2=isP?Object.assign({lvl:lvl[0]},simPit(p,n2,lvl[2]+dy+e2*1.6)):Object.assign({lvl:lvl[0]},simBat(p,n2,lvl[1]+dy+e2)); p.prev2.g=isP?Math.max(1,Math.round(n2/(isSPr(p)?17:3.5))):Math.round(n2/4.1); }
   /* 메이저 경력(통산 경기 수): 실력이 좋을수록 콜업 경험이 많다. KBO 구단이 MLB 경력을 반기는 데에는 이유가 있다 */
   { const o0=ovr(p); let g=0; if(mlb)g=mg+(R()<.5?ri(0,120):0);
     else if(!asia){ const ch=lvl[0]==='트리플A'?clamp(.12+(o0-52)*.045,.04,.75):lvl[0]==='더블A'?.04:clamp(.06+(o0-52)*.02,.02,.3); if(R()<ch)g=Math.round(ri(4,60)*(1+Math.max(0,o0-52)*.08)); }
@@ -78,9 +81,12 @@ const FSTEP=[{l:'조사 전',cls:'bad',d:'에이전트가 보낸 영상과 기�
 /* 기록 해석표: 리그·투타별로 지난 리그 기록(타자 OPS, 투수 WHIP·K-BB/9·HR/9)과 MLB 통산 경기 수로 실제 능력을 추정하는 식.
    [절편, 계수…, 남는 오차]. 후보 2만 7천 명을 만들어 최소제곱으로 맞췄다(node tools/fit-frec.js. 후보 생성을 바꾸면 다시 맞춘다). 트리플A·MLB 기록이 가장 덜 흔들린다 */
 const FREC={'ABL':[[27.031, 25.306, 0, 3.36],[49.783, -5.356, 0.985, -0.063, 0, 3.29]],'CPBL':[[25.32, 28.196, 0, 3.31],[50.113, -3.766, 1.062, -0.321, 0, 3.36]],'MLB':[[38.639, 27.467, -0.322, 4.16],[58.179, -0.861, 0.981, -0.554, 0.028, 3.78]],'NPB 1군':[[33.265, 29.684, 0, 3.15],[55.522, -3.131, 1.244, -0.386, 0, 2.95]],'NPB 2군':[[27.354, 31.048, 0, 3.27],[47.961, -3.449, 1.217, -0.749, 0, 3.1]],'더블A':[[24.897, 29.487, -0.094, 3.64],[50.494, -7.252, 1.323, -0.395, 0.025, 3.28]],'도미니카 윈터리그':[[33.016, 21.761, 0.754, 4.13],[50.067, -2.641, 0.993, -0.868, 0.748, 3.93]],'독립리그':[[30.831, 22.172, 0.76, 3.59],[46.813, -5.254, 1.355, -0.515, 0.785, 3.58]],'멕시코리그':[[28.923, 24.212, 0.584, 4.01],[53.853, -3.904, 0.945, -0.102, 0.722, 3.76]],'베네수엘라 윈터리그':[[33.132, 21.823, 0.95, 4.21],[52.218, -4.521, 0.953, -0.242, 0.843, 4.09]],'일본 독립리그':[[25.343, 27.255, 0, 3.45],[44.652, -3.011, 1.199, -1.162, 0, 3.37]],'트리플A':[[29.3, 29.461, 0.628, 3.29],[55.057, -5.182, 1.199, -0.566, 0.561, 3.06]]};
-function fRecEst(p){ const c=(FREC[p.prevLvl]||[])[p.isP?1:0], h=p.prev; if(!c||!h)return null; const g=Math.log1p(p.mlbG||0); let x;
-  if(p.isP){ if(!h.outs)return null; x=[1,(h.h+h.bb)*3/h.outs,(h.so-h.bb)*27/h.outs,h.hr*27/h.outs,g]; } else { if(!h.pa)return null; x=[1,bRate(h).ops,g]; }
-  return {m:x.reduce((s,v,i)=>s+v*c[i],0),sd:c[c.length-1]}; }
+function fRecEst(p){ const c=(FREC[p.prevLvl]||[])[p.isP?1:0]; if(!c||!p.prev)return null; const g=Math.log1p(p.mlbG||0);
+  const one=h=>{ if(!h)return null; let x; if(p.isP){ if(!h.outs)return null; x=[1,(h.h+h.bb)*3/h.outs,(h.so-h.bb)*27/h.outs,h.hr*27/h.outs,g]; } else { if(!h.pa)return null; x=[1,bRate(h).ops,g]; } return {m:x.reduce((s,v,i)=>s+v*c[i],0),n:p.isP?h.outs:h.pa}; };
+  const a=one(p.prev); if(!a)return null; const sd=c[c.length-1];
+  /* 그 전 시즌(한 해 묵어 0.7배)·올해 기록(같은 리그에서 쌓는 중)이 있으면 표본만큼 섞고, 범위는 조금(최대 10%) 좁힌다. 해석식은 지난 시즌 한 줄로 맞춘 것이라 남는 오차는 그대로 둔다 */
+  const L=[[a,1]], b=one(p.prev2), nw=p.now&&p.now.y===G.year&&(p.now.lvl||p.prevLvl)===p.prevLvl?one(p.now):null; if(b)L.push([b,.7]); if(nw)L.push([nw,1]); if(L.length===1)return {m:a.m,sd};
+  const W=L.map(([e,w])=>Math.max(1,e.n)*w), tw=W.reduce((s,v)=>s+v,0); return {m:L.reduce((s,[e],i)=>s+e.m*W[i],0)/tw,sd:sd*clamp(Math.sqrt(Math.max(1,a.n)/tw),.9,1),k:L.length}; }
 const fRelL=lg=>{ const e=FENV[lg]??2; return e<=1?'믿을 만함':e<=1.5?'보통':'흔들림 큼'; };
 /* 조사 단계(스카우트가 얼마나 봤나)와 종합 추정(스카우트 평가 + 기록 해석). 종합 추정은 두 정보를 믿을 만한 만큼 섞는다.
    예상 능력순은 종합 추정 그대로 줄 세운다(화면에 보이는 숫자와 순서가 같게). 얼마나 믿을지는 조사 단계와 범위로 본다 */
@@ -96,7 +102,7 @@ function fScout(p,rp){ rp=rp||scoutReport(p); const sd=rp.sd||0; const n=sd>=8?0
   /* 조사 전 흐림(사용자 피드백 11-09f: 처음부터 예상이 거의 정확해 하위 후보를 안 봄): 선수마다 고정된 착시를 얹고 범위도 넓힌다. 관찰 파악도·스카우트망·파견 스카우트 능력·직접 발굴로 줄어든다. 드물게 '예상 60인데 실제 70'(또는 그 반대)이 나온다 */
   const m0=m, fog=3.5*(1-k/100*.8)*(lv>=3?.5:lv>=2?.75:1)*(isc?1-(isc.skill||0)*.08:1)*(mine?.6:1); if(m!=null&&fog>.3){ m+=clamp(hn('fblur',p.id),-2.5,2.5)*fog; ms=Math.sqrt(ms**2+fog**2); }
   const mid=m==null?null:dv(m), band=m==null?null:dvSd(m,ms*1.3);
-  const h=p.prev, rec=h?(p.isP?`${p.prevLvl} ${ipStr(h.outs||0)}이닝`:`${p.prevLvl} ${h.pa||0}타석`):'';
+  const h=p.prev, rec=h?(p.isP?`${p.prevLvl} ${ipStr(h.outs||0)}이닝`:`${p.prevLvl} ${h.pa||0}타석`)+(p.prev2?' 외 1시즌':'')+(p.now&&p.now.y===G.year?' · 올해 기록 포함':''):'';
   const why=[]; if(rec)why.push(`기록: ${rec}(리그 기록 ${fRelL(p.prevLvl)})`); if(p.mlbG)why.push(`MLB 통산 ${p.mlbG}경기`);
   why.push(`스카우트: ${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 파견`:''}${fwatchOn(p.id)?` · 관찰 파악도 ${k}%`:''}${mine?' · 직접 발굴':''}`);
   let tip=''; if(n<3){ if(!fwatchOn(p.id))tip='관찰 명단에 올리면 매주 보고가 쌓여 범위가 좁아집니다.'; else if(k<100)tip=`관찰 중입니다. 파악도가 오를수록 범위가 좁아집니다.`; if(lv<3)tip+=(tip?' ':'')+`${IREG[r].l} 스카우트망을 넓히거나 스카우트를 파견해도 정확해집니다.`; }
@@ -190,7 +196,11 @@ function fNeed(tid){ const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign===
   if(tid!==ME()&&period()!=='season'&&period()!=='post'&&yb.length>=fMaxYB(tid)&&team(tid).cash>-2000){ const w=yb.slice().sort((a,b)=>ovr(a)-ovr(b))[0]; if(w&&ovr(w)<54)return {kind:'용병',isP:w.isP,up:w.id,upO:ovr(w)}; }
   return null; }
 /* 우리 구단이 관찰(fwatch) 중인 후보는 소문이 나서 다른 구단도 더 눈여겨본다(경쟁) */
-function fScoreBy(tid,q){ const t=team(tid); return ovr(q)-(q.team==null?(q.sx||0)*.9:0)+hn('fv'+tid,q.id)*(t.scoutSd||6)*.6-q.ask/600+(q.team==null&&tid!==G.user&&fwatchOn(q.id)?2:0); }
+function fScoreBy(tid,q){ return fAiEst(tid,q)-q.ask/600+(q.team==null&&tid!==G.user&&fwatchOn(q.id)?2:0); }
+/* AI 구단의 외국인 후보 평가: 스카우트 툴 평가(실전 감각 sx는 거의 못 본다, 스카우트 수준만큼 오차)에 지난 리그 기록 해석(fRecEst, 우리 화면의 '기록으로 본 수준'과 같은 식·같은 기록)을 믿을 만한 만큼 섞는다.
+   예전에는 AI가 기록을 전혀 보지 않아, 기록을 읽어 실전형 선수를 고르는 쪽이 우리 구단에만 열려 있었다(사용자 11-14 해외 리그: 정보는 AI도 똑같이) */
+function fAiEst(tid,q){ const sd=(team(tid)||{}).scoutSd||6; const te=ovr(q)-(q.team==null?(q.sx||0)*.9:0)+hn('fv'+tid,q.id)*sd*.6; if(q.team!=null||!q.foreign)return te; const rc=fRecEst(q); if(!rc)return te;
+  const ss=Math.sqrt((sd*.6)**2+2.9**2), ws=1/ss**2, wr=1/rc.sd**2; return (te*ws+rc.m*wr)/(ws+wr); }
 /* 이 구단이 노리는 후보 상위 3명: 계약할 수 있는 후보만(보류권·총액 한도·교체 기준), 우리와 협상 중인 다른 후보는 뺀다. AI 영입·경쟁 구단·관심 집계가 같은 목록을 쓴다(검수 11-09zl: 계약 불가 후보가 상위 칸을 차지) */
 function fTop3(tid,nd,q){ const L=(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&(x===q||!foHeld(x))&&fKnows(tid,x)&&x.foreign===nd.kind&&(nd.isP==null||x.isP===nd.isP)&&(!nd.up||ovr(x)>=nd.upO+6)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a));
   const out=[]; for(const x of L){ if(!foreignCheck(tid,x,nd.up))out.push(x); if(out.length>=3)break; } return out; }

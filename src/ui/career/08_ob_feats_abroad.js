@@ -56,13 +56,13 @@ function fwatchBox(asia){ const W=(G.fwatch||[]).map(w=>({w,p:G.players[w.id]}))
       :`<p class="small muted">아래 후보의 "관찰"을 누르면 명단에 올라갑니다.</p>`}
     <p class="small muted tipme">관찰 중인 후보는 매주 스카우트 보고가 쌓여 평가 오차가 줄어듭니다(해외 스카우트망 단계와 파견 스카우트 능력이 높을수록 빠름). 시장 후보가 바뀔 때도 사라지지 않습니다. 외국인 시장은 10개 구단이 함께 씁니다. 다른 구단이 먼저 계약하면 사라지고, 여러 구단이 노리는 선수는 몸값이 오릅니다. 시즌 중에는 MLB 콜업이나 일본 계약으로도 빠질 수 있습니다. 우리 외국인이 부상이나 부진에 빠지면 스카우트팀장이 같은 유형의 관찰 후보를 올려 줍니다.</p></section>`; }
 function abroadView(){ const A=G.abroad||[]; const f=UI.abf||'all';
-  const L=A.filter(a=>f==='all'||f==='mine'&&a.from===G.user||f==='kr'&&!a.foreign||f==='fo'&&a.foreign);
+  const L=A.filter(a=>f==='all'||f==='mine'&&a.from===G.user||f==='kr'&&!a.foreign&&!a.cand||f==='fo'&&(a.foreign||a.cand));
   const mine=domestic(G.user).map(p=>({p,m:mlbOf(p)})).filter(x=>x.p.age<=33&&ovr(x.p)>=56&&x.m>=35).sort((a,b)=>b.m-a.m).slice(0,8);
   const row=a=>{ const last=a.lines[a.lines.length-1]; const yrs=(a.back?a.backY:G.year)-(a.y1??a.y+1)+1; /* 첫 해외 시즌(y1)이 1년차: 1월에 떠나 그해 뛴 선수가 0년차로 보이던 문제(검수 11-08) */
     return `<div class="abr" data-a="person" data-v="abr:${a.id}" role="button" tabindex="0">${a.from!=null?badge(a.from,26):''}<div><b>${esc(a.name)} <span class="small muted">${esc(a.pos)}${a.foreign?` · 외국인`:''}</span></b>
-      <span class="small">${a.y}년 ${a.how} → <b>${esc(a.club)}(${a.lg})</b> ${a.yrs}년 ${usdKw(a.amt*a.yrs)}${a.fee?` · 포스팅 비용 ${money(a.fee)}`:''}</span>
-      ${a.lines.length?`<span class="small muted">${a.lines.slice(-3).map(l=>`${l.y} ${esc(l.lvl)}: ${lineTxt(l,a.isP)}`).join('<br>')}</span>`:''}</div>
-      <span class="pill ${a.back?'good':a.foreign?'':'acc'}">${a.back?`${a.backY} 복귀`:a.foreign?'역수출':`해외 ${Math.max(0,yrs)}년차`}</span></div>`; };
+      <span class="small">${a.y}년 ${esc(a.how)} → <b>${esc(a.club)}${a.club!==a.lg?`(${a.lg})`:''}</b>${a.yrs?` ${a.yrs}년 ${usdKw(a.amt*a.yrs)}`:''}${a.fee?` · 포스팅 비용 ${money(a.fee)}`:''}</span>
+      ${a.lines.length?`<span class="small muted">${a.lines.slice(-3).map(l=>ovsLineRow(a,l)).join('<br>')}</span>`:''}</div>
+      <span class="pill ${a.back?'good':a.foreign||a.cand?'':'acc'}">${a.back?`${a.backY} 복귀`:a.end!=null?`${a.end} 은퇴`:a.cand?'관찰했던 후보':a.how==='KBO 퇴단'?'KBO 출신':a.foreign?'역수출':`해외 ${Math.max(0,yrs)}년차`}</span></div>`; };
   return csec('우리 선수의 해외 진출 의지',mine.length?`<div class="mlbl">${mine.map(({p,m})=>`<div class="mlb" data-a="player" data-v="${p.id}" role="button" tabindex="0">${avImg(p)}<div><b>${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세 · 서비스 ${p.svc}년</span></b>
       <span class="fwk"><i style="width:${m}%;background:${m>=55?'#ff8a5b':'#e6b93b'}"></i></span><em>의지 ${m}${m>=55?' · 비시즌에 포스팅을 요청할 수 있음':''} · ${p.svc>=9?'해외 FA 가능':ovsBeen(p)?'포스팅 대상 아님(해외 이력)':p.svc>=7?(postDone(p)?'구단 주도 포스팅만 가능(FA 계약 이력)':'포스팅 자격 있음'):`포스팅까지 ${7-p.svc}년`}${p.postPromise?` · ${p.postPromise}년 포스팅 약속`:''}</em></div></div>`).join('')}</div>`:'<p class="small muted">해외 진출 의지가 눈에 띄는 선수가 없습니다.</p>')
     +`<p class="small muted">야망이 큰 선수일수록 의지가 높고, 활약할 때 언론이 "메이저리그 스카우트 집결" 같은 기사를 내면 더 오릅니다. 서비스 7년부터 구단 동의로 포스팅, 9년부터 해외 FA가 가능합니다. 포스팅이 성사되면 계약 보장액에 따라 포스팅 비용(2,500만 달러까지 20%, 다음 2,500만 달러 17.5%, 그 이상 15%)을 받습니다.</p>`

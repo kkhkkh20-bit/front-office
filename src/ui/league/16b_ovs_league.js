@@ -1,0 +1,45 @@
+/* ---------- 해외 리그(MLB·NPB): KBO 출신 해외파 · 순위 · 역대 우승 · 진출 기록 ----------
+   경기를 돌리지 않는 가벼운 리그(35a_ovs_league). 화면은 읽기만 한다(만들기는 날짜 진행 때) */
+const ovsLvlL=l=>l==='NPB'?'NPB 1군':l||'';
+const ovsAwPills=(L,lg)=>(L&&L.aw||[]).map(k=>`<span class="pill warn">${esc(ovsAwNm(k,lg))}</span>`).join(' ');
+function ovlView(){ if(!G.ovl||!G.ovl.MLB||!G.ovl.NPB)return csec('해외 리그','<p class="small muted">다음 날짜 진행 때 해외 리그 기록이 시작됩니다.</p>');
+  const t=inTabs('ovlv',[['alum','KBO 출신'],['MLB','MLB'],['NPB','NPB'],['champ','역대 우승'],['moves','진출 기록']],'alum');
+  if(t.cur==='MLB'||t.cur==='NPB')return t.bar+ovlStandView(t.cur);
+  if(t.cur==='champ')return t.bar+ovlChampView();
+  if(t.cur==='moves')return t.bar+abroadView();
+  return t.bar+ovlAlumView(); }
+function ovlYears(lg){ const L=G.ovl[lg]; const S=new Set([...(L.cur?[L.cur.y]:[]),...(L.h||[]).map(h=>h.y)]); return [...S].sort((a,b)=>b-a); }
+/* 그 시즌 그 구단에서 뛴(뛰는) KBO 출신 */
+function ovlAlumMap(lg,y){ const M={}; for(const a of G.abroad||[]){ if(a.lg!==lg||a.ci==null||a.ci<0)continue; const on=(a.lines||[]).some(l=>l.y===y&&l.c===a.ci)||(a.cur&&a.cur.y===y&&!a.back&&a.end==null); if(on)(M[a.ci]=M[a.ci]||[]).push(a); } return M; }
+function ovlStandView(lg){ const ys=ovlYears(lg); if(!ys.length)return csec(lg,'<p class="small muted">기록이 없습니다.</p>');
+  const yt=inTabs('ovly'+lg,ys.slice(0,5).map(y=>[String(y),String(y)]),String(ys[0])); const y=+yt.cur; const T=ovlTable(lg,y); if(!T)return yt.bar;
+  const S=T.S, AL=ovlAlumMap(lg,y), pct=r=>r.w+r.l?fmt3(r.w/(r.w+r.l)):'-';
+  const head=T.live?(T.gp?`정규시즌 진행 중 · 팀당 ${T.gp}경기(${OVL_G[lg]}경기 중)`:`${y} 시즌 개막 전 · 3월 말 개막`)+(T.gp>=OVL_G[lg]?' · 포스트시즌은 시즌을 마치면 발표':''):`${OVL_PS[lg]} <b>${esc(ovlNm(lg,S.ch))}</b> ${esc(S.sr||'')} · 준우승 ${esc(ovlNm(lg,S.ru))}`;
+  const D=T.div.map((d,k)=>{ const top=d.L[0], has=d.L.some(r=>AL[r.i]), key=`ovd_${lg}_${k}`, op=UI.open&&UI.open[key]!=null?UI.open[key]:has||(lg==='NPB');
+    const rows=d.L.map((r,i)=>{ const A=AL[r.i]||[]; const tag=!T.live&&S.ch===r.i?' <span class="pill warn">우승</span>':!T.live&&(S.pn||[]).includes(r.i)?' <span class="pill acc">리그 우승</span>':!T.live&&(S.po||[]).includes(r.i)?' <span class="pill">가을야구</span>':'';
+      return `<tr class="${A.length?'me':''}"><td class="ovl-c">${i+1} ${esc(ovlNm(lg,r.i))}${tag}${A.length?`<span class="ovl-al">${A.map(a=>`<button class="lnk" data-a="person" data-v="abr:${a.id}">${esc(a.name)}</button>`).join(' ')}</span>`:''}</td><td>${r.w}</td><td>${r.l}</td><td class="key">${pct(r)}</td><td>${i?r.gb.toFixed(1):'-'}</td></tr>`; }).join('');
+    return `<details class="ovl-d" data-k="${key}"${op?' open':''}><summary><b>${esc(d.nm)}</b><span class="small muted">1위 ${esc(ovlNm(lg,top.i))} ${top.w}승 ${top.l}패${has?' · KBO 출신 있음':''}</span></summary><div class="tbl-wrap"><table class="tbl ovl-t"><thead><tr><th>구단</th><th>승</th><th>패</th><th>승률</th><th>차</th></tr></thead><tbody>${rows}</tbody></table></div></details>`; }).join('');
+  return yt.bar+csec(`${y} ${lg}${hiI(lg==='MLB'?'30개 구단, 팀당 162경기. 지구 1위 3팀과 승률 상위 3팀이 리그마다 가을야구에 나갑니다(와일드카드 3전 2승 → 디비전 5전 3승 → 챔피언십 7전 4승 → 월드시리즈). 구단 전력은 해마다 조금씩 바뀝니다.':'12개 구단, 팀당 143경기. 리그마다 3위까지 클라이맥스 시리즈(1위는 1승을 안고 시작)를 거쳐 재팬시리즈에서 맞붙습니다. 구단 전력은 해마다 조금씩 바뀝니다.')}`,`<p class="small">${head}</p>${D}`); }
+/* KBO 출신 해외파: 지금 해외에 있는 선수(국내 선수·KBO를 떠난 외국인·관찰하던 후보) */
+function ovlAlumView(){ const FT=inTabs('ovla',[['all','전체'],['mine','우리 구단 출신'],['kr','국내 선수'],['fo','외국인']],'all'), f=FT.cur, ft=FT.bar;
+  const A=(G.abroad||[]).filter(a=>!a.back&&a.end==null&&(f==='all'||f==='mine'&&a.from===G.user||f==='kr'&&!a.foreign&&!a.cand||f==='fo'&&(a.foreign||a.cand)));
+  const fr=ovlFrac(G.year), cur=a=>a.cur&&a.cur.y===G.year&&fr>0?ovsPart(a.cur,fr):null;
+  const rk=a=>(a.from===G.user?0:10)+(a.lg==='MLB'?0:a.lg==='NPB'?1:3)+(a.foreign||a.cand?4:0);
+  const L=A.map(a=>({a,c:cur(a),l:(a.lines||[]).slice(-1)[0]})).sort((x,y)=>rk(x.a)-rk(y.a)||(y.l?ovsVal(y.l,y.a.isP):0)-(x.l?ovsVal(x.l,x.a.isP):0));
+  const row=({a,c,l})=>{ const y1=a.y1??a.y+1, h=c||l, tr=a.ci!=null&&a.ci>=0?ovlTeamRec(a.lg,a.ci,h?h.y:G.year):null;
+    const ln=h?`<span class="small">${h.y}${h.live?' 진행 중':''} ${esc(ovsLvlL(h.lvl))} · ${lineTxt(h,a.isP)}</span>${h.aw?` ${ovsAwPills(h,a.lg)}`:''}`:`<span class="small muted">${y1>G.year?`${y1} 시즌부터 뜁니다`:'시즌 기록 집계 전'}</span>`;
+    const tm=tr?`<span class="small muted">팀 ${tr.w}승 ${tr.l}패 · ${esc(tr.dn)} ${tr.rk}위${tr.ch?' · 우승':tr.pn?' · 리그 우승':tr.po?' · 가을야구':''}</span>`:'';
+    return `<div class="abr" data-a="person" data-v="abr:${a.id}" role="button" tabindex="0">${a.from!=null?badge(a.from,26):''}<div><b>${esc(a.name)} <span class="small muted">${esc(a.pos)}${a.foreign?' · 외국인':''}${a.cand?' · 관찰했던 후보':''}</span></b>
+      <span class="small"><b>${esc(a.club||a.lg)}</b>${a.club&&a.club!==a.lg?` (${esc(a.lg)})`:''}</span>${ln}${tm}</div></div>`; };
+  return csec(`KBO 출신 해외파 ${A.length}명${hiI('해외로 간 국내 선수, KBO를 떠나 해외에서 뛰는 외국인, 우리가 관찰하다 놓친 후보의 해외 성적입니다. 시즌 중에는 지금까지의 기록이고, 시즌을 마치면 확정됩니다. 해외 기록은 외국인 영입·복귀 협상에서 우리와 다른 구단이 똑같이 참고합니다.')}`,
+    ft+(L.length?`<div class="abl">${L.map(row).join('')}</div>`:'<p class="small muted">지금 해외에서 뛰는 KBO 출신 선수가 없습니다.</p>'));
+}
+function ovlChampView(){ const M=G.ovl.MLB.h||[], P=G.ovl.NPB.h||[]; const ys=[...new Set([...M,...P].map(h=>h.y))].sort((a,b)=>b-a);
+  const c=(lg,H)=>H?`<b>${esc(ovlNm(lg,H.ch))}</b><span class="small muted"> ${esc(H.sr||'')} · ${esc(ovlNm(lg,H.ru))}</span>`:'-';
+  const cnt=lg=>{ const C={}; for(const h of G.ovl[lg].h||[])C[h.ch]=(C[h.ch]||0)+1; return Object.entries(C).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([i,n])=>`${esc(ovlNm(lg,+i))} ${n}회`).join(' · '); };
+  return csec(`역대 우승${hiI(`최근 ${OVL_KEEP}시즌까지 남깁니다.`)}`,ys.length?`<div class="tbl-wrap"><table class="tbl ovl-ch"><thead><tr><th>시즌</th><th>월드시리즈</th><th>재팬시리즈</th></tr></thead><tbody>${ys.map(y=>`<tr><td>${y}</td><td>${c('MLB',M.find(h=>h.y===y))}</td><td>${c('NPB',P.find(h=>h.y===y))}</td></tr>`).join('')}</tbody></table></div>
+    <p class="small muted">최다 우승 · MLB ${cnt('MLB')||'-'} · NPB ${cnt('NPB')||'-'}</p>`:'<p class="small muted">아직 끝난 시즌이 없습니다.</p>'); }
+/* 해외파 한 줄(인물 창·선수 기록 공통): 연도 · 수준 · 구단 · 기록 · 시상 */
+function ovsLineRow(a,l){ return `${l.y}${l.live?' 진행 중':''} ${esc(ovsLvlL(l.lvl))}${l.c!=null&&l.c>=0?` · ${esc(ovlNm(a.lg,l.c))}`:''}: ${lineTxt(l,a.isP)}${l.aw?' '+ovsAwPills(l,a.lg):''}`; }
+/* 선수 기록 표에 넣을 해외 시즌 줄(복귀 선수·다시 온 선수) */
+function ovsStatRows(p){ const out=[]; for(const a of G.abroad||[]){ if(String(a.id)!==String(p.id))continue; for(const l of a.lines||[])out.push(Object.assign({},l,{pre:`${ovsLvlL(l.lvl)}${l.c!=null&&l.c>=0?' '+ovlNm(a.lg,l.c).split(' ')[0]:''}`})); } return out; }

@@ -9,7 +9,7 @@ function careerBoard(){ const L=[], seen=new Set(), A=G.arch||{};
   for(const p of Object.values(G.players)){ if(p.fdPool||!p.hist.some(h=>h.lvl==='1군'))continue; seen.add(String(p.id)); const c=careerOf(p);
     L.push({name:p.name,id:p.id,t:p.team,isP:!!p.isP,war:c.war,h:c.h,hr:c.hr,w:c.w,sv:c.sv,act:p.team!=null,lab:p.team!=null?'':p.retY!=null?`${p.retY} 은퇴`:p.faFrom!=null?'FA':'무적'}); }
   for(const id in A){ const a=A[id]; if(seen.has(id)||!a||!a.rows)continue; seen.add(id); const s=k=>a.rows.reduce((t,r)=>t+(r[k]||0),0);
-    L.push({name:a.name,id:a.id,isP:!!a.isP,war:s('war'),h:s('h'),hr:s('hr'),w:s('w'),sv:s('sv'),act:false,lab:(G.abroad||[]).some(r=>r.id===a.id&&!r.back)?'해외':`${a.y} 은퇴`}); }
+    L.push({name:a.name,id:a.id,isP:!!a.isP,war:s('war'),h:s('h'),hr:s('hr'),w:s('w'),sv:s('sv'),act:false,lab:(G.abroad||[]).some(r=>r.id===a.id&&!r.back&&r.end==null)?'해외':`${a.y} 은퇴`}); }
   for(const r of (G.legends||[]).concat(G.hof||[])){ const id=String(r.pid??r.id); if(seen.has(id))continue; /* 옛 저장의 G.hof에만 남은 헌액자도(hofList와 같은 대상, 검수 11-09zz) */ seen.add(id); const est=!!r.est&&r.warA==null;
     L.push({name:r.name,id:r.pid??r.id,isP:!!r.isP,war:r.warA??r.war,h:r.h,hr:r.hr,w:r.w,sv:r.sv,act:false,lab:`${r.y} 은퇴${est?' · 추정 포함':''}`}); }
   return L; }
