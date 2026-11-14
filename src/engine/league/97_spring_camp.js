@@ -177,7 +177,8 @@ function exhEnd(){ const E=G.exh; E.done=true; const st=exhStand(); const top=st
  실제: 한 구단은 2024년 말 투수 5명을, 2024년 6월 4명을 미국 사설 투구 아카데미에 구단 비용으로 보냈다(코치·데이터팀·트레이너 동행).
  게임: 해외 연수 프로그램(31_dev_medical.js OVS)에 보낼 수 있는 인원과 성과를 제휴 단계가 올린다. 한 번 투자하는 구단 시설 투자다 */
 const ACAD=[{l:'제휴 없음',c:0,d:'프로그램마다 정해진 인원만 보냅니다.'},{l:'연구소 단기 제휴',c:300,d:'프로그램마다 1명 더 보내고, 현지 측정 자료를 받아 크게 늘 가능성이 조금 오릅니다.'},{l:'아카데미 연간 제휴',c:700,d:'프로그램마다 2명 더, 우리 코치가 현지 과정을 함께 받아 부상 위험이 줄어듭니다.'},{l:'R&D 공동 연구 협약',c:1200,d:'프로그램마다 3명 더, 선수별 맞춤 과정을 짜 성과가 가장 좋습니다.'}];
-const acadLv=()=>Math.min(3,(G.acad&&G.acad.lv)||0);
-const ovsLim=o=>o.lim+acadLv();
+/* 어느 구단이든 제휴 단계: 맡은 구단은 G.acad, 다른 구단은 그 구단 기록(G.orgT, 이직하면 그대로 이어받는다) */
+const acadLv=tid=>Math.min(3,((tid==null||tid===G.user?G.acad:((G.orgT||{})[tid]||{}).acad)||{}).lv||0);
+const ovsLim=(o,tid)=>o.lim+acadLv(tid);
 function acadUp(){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const lv=acadLv(); if(lv>=3)return '이미 최고 단계입니다.'; const n=ACAD[lv+1], t=team(G.user); if(spendable(G.user)<n.c)return `쓸 수 있는 돈이 부족합니다(${money(n.c)} 필요, ${spendTxt()}).`;
   const k0=spendPay(n.c); G.spend.facB=(G.spend.facB||0)+k0; facInit(); G.fac.inv=(G.fac.inv||0)+n.c; (G.fac.hist=G.fac.hist||[]).push({d:G.day,k:'acad',lv:lv+1,c:n.c,src:'cash',...(k0<n.c?{sup:n.c-k0}:{})}); G.acad={lv:lv+1,d:G.day}; addLog(`특수 아카데미 제휴: ${n.l}(${money(n.c)}).`); return ''; }

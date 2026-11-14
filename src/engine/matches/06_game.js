@@ -57,7 +57,7 @@ function gameSide(tid,day,ps){
   if(sp)s.box.set(sp.id,pz()); order.forEach(p=>s.box.set(p.id,bz())); sideTraits(s);
   return s;
 }
-function boostOf(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 코치·감독·분위기를 받지 않는다(검수 11-09zk) */ let b=(tm!=null&&G.coach)?coachBoost(p):0; if(SIMDAY!=null&&p.gcD===SIMDAY)b+=p.gc||0; if(tm!=null)b+=mgrRelBoost(p); const f=G.form; if(f&&tm!=null&&tm===G.user&&G.day<=f.until)b+=f.b; if(p.form&&G.day<=p.form.until)b+=p.form.b; if(p.mor!=null)b+=clamp((p.mor-60)/36,-1.1,.8); /* 사기: 이기는 팀일수록 오르므로 효과가 크면 강팀이 더 강해진다(되먹임). 폭을 줄였다 */ if(tm!=null){ b+=(mgrOf(tm).tac-50)/60; b+=climateOf(tm).boost; } if(p.foreign&&p.fy===G.year&&p.adapt!=null)b+=(p.adapt-50)/22; if(p.foreign)b+=fBoost(p); /* 숨은 KBO 적합도·태업(73_foreign_drama) */
+function boostOf(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 코치·감독·분위기를 받지 않는다(검수 11-09zk) */ let b=(tm!=null&&G.coach)?coachBoost(p):0; if(SIMDAY!=null&&p.gcD===SIMDAY)b+=p.gc||0; if(tm!=null)b+=mgrRelBoost(p); const f=G.form; if(f&&tm!=null&&tm===G.user&&!G.unemp&&G.day<=f.until)b+=f.b; else if(tm!=null&&tm!==ME()){ const tf=G.teams[tm]&&G.teams[tm].form; if(tf&&G.day<=tf.until)b+=tf.b; } /* 다른 구단도 캠프 실전 감각 효과(사용자 11-13) */ if(p.form&&G.day<=p.form.until)b+=p.form.b; if(p.mor!=null)b+=clamp((p.mor-60)/36,-1.1,.8); /* 사기: 이기는 팀일수록 오르므로 효과가 크면 강팀이 더 강해진다(되먹임). 폭을 줄였다 */ if(tm!=null){ b+=(mgrOf(tm).tac-50)/60; b+=climateOf(tm).boost; } if(p.foreign&&p.fy===G.year&&p.adapt!=null)b+=(p.adapt-50)/22; if(p.foreign)b+=fBoost(p); /* 숨은 KBO 적합도·태업(73_foreign_drama) */
   if(p.sf&&p.sf.y===G.year)b+=p.sf.v+(p.sf.m||0);
   if(p.fat>45)b-=(p.fat-45)/18;
   if(p.wear){ const cap=p.isP?40+p.r.sta*1.7:70+(p.r.vit||52)*1.0; if(p.wear>cap)b-=Math.min(3,(p.wear-cap)/25); }
