@@ -4,7 +4,7 @@
 const MIL_DAYS=548, SANGMU_SLOTS=14;
 function milPeriod(p){const m=p&&p.mil;if(!m)return null;const from=m.from??m.pf,until=m.until??m.pu;return Number.isFinite(from)&&Number.isFinite(until)&&until>from?{from,until,unit:m.unit}:null;}
 const milOn=(p,d)=>{const m=milPeriod(p);return !!(m&&m.from<=d&&d<m.until);}, milServing=p=>milOn(p,G.day); /* 실제 입대일부터 전역일 전까지만 복무 중(milOn: 그날 병역 처리 뒤 기준, 검수 11-09zk) */
-const isAway=p=>!!(milServing(p)||(!PROJ_LENS&&((p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day)||(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))))); /* 예상 전력(PROJ_LENS)에서는 대표팀 차출·자매 구단 연수처럼 곧 돌아오는 자리는 있는 것으로 본다 */
+const isAway=p=>!!((PROJ_LENS?milOn(p,G.day+projBack()):milServing(p))||(!PROJ_LENS&&((p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day)||(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))))); /* 예상 전력(PROJ_LENS)에서는 대표팀 차출·자매 구단 연수처럼 곧 돌아오는 자리는 있는 것으로 본다. 군 복무는 개막+2주 날 기준(그 전에 전역하면 넣고, 그 전에 입대하면 뺀다) */
 /* 복무 중 훈련 환경: 상무는 상무 야구단 시설·코치진 아래 퓨처스리그에서 뛰고(구단 시설·코치·감독 영향 없음), 현역은 야구 훈련을 하지 못해 늘지 않고 조금씩 떨어진다 */
 const MIL_FAC={'상무':{l:'상무 야구단 시설',g:1,d:1},'현역':{l:'군 복무(야구 훈련 없음)',g:1,d:1}};
 function milTrainTxt(p){ if(!p||!milServing(p))return ''; const no='우리 구단 시설·코치진·훈련 지시·포지션 전환·해외 연수는 적용되지 않습니다.';

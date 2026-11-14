@@ -1542,6 +1542,22 @@ T('[구단주 목표] 시범경기 중 대표팀 차출·짧은 부상으로 빠
   top.slice(0,4).forEach(p=>{ p.ntAway=G.day+20; p.ntFrom=G.day; }); top[4].injOut=5; top[5].fLeave=G.day+3; ok(isAway(top[0])&&!healthy(top[4]),'준비 실패: 차출·부상 상태가 아님');
   const r1=projRating(tid); ok(Math.abs(r1-r0)<.01,'잠시 빠진 선수 때문에 예상 전력이 '+r0.toFixed(2)+' → '+r1.toFixed(2)); ok(isAway(top[0])&&!healthy(top[4]),'예상 계산 뒤에도 실제 경기 명단 판정은 그대로여야 함');
   top[4].injOut=200; ok(projRating(tid)<r1,'시즌 대부분을 빠지는 장기 부상은 예상에서 빠져야 함'); });
+T('[구단주 목표] 스토브리그 예상 전력은 다음 개막 기준: 겨울에 낫는 부상·내년 합류 신인·개막 전 전역은 넣고 개막 전 입대는 뺀다',()=>{ fresh(); G.day=G.cal.end+40; G.ps=null; ok(period()==='off','준비 실패: 스토브리그 아님'); ok(projBack()>100,'다음 개막까지 남은 날로 보지 않음: '+projBack());
+  const tid=G.user; const top=domestic(tid).filter(p=>!p.foreign&&!p.mil).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3); const r0=projRating(tid);
+  top[0].injOut=100; ok(Math.abs(projRating(tid)-r0)<.01,'겨울 동안 낫는 부상(100일)이 다음 시즌 예상에서 빠짐'); top[0].injOut=400; ok(projRating(tid)<r0,'준비 실패: 빠져도 전력이 그대로인 선수'); top[0].injOut=0;
+  const t0=teamRating(tid); top[1].joinY=G.year+1; ok(teamRating(tid)<t0,'준비 실패: 빠져도 전력이 그대로인 선수'); ok(Math.abs(projRating(tid)-r0)<.01,'내년 합류할 선수가 다음 시즌 예상에서 빠짐'); ok(!playersOf(tid).includes(top[1]),'예상 밖에서는 아직 합류 전이어야 함'); delete top[1].joinY;
+  top[2].mil={unit:'상무',from:G.day-500,until:G.day+30}; ok(Math.abs(projRating(tid)-r0)<.01,'개막 전에 전역하는 선수가 예상에서 빠짐'); ok(isAway(top[2]),'실제로는 아직 복무 중');
+  top[2].mil={unit:'상무',from:G.day+20,until:G.day+20+MIL_DAYS}; ok(projRating(tid)<r0,'개막 전에 입대하는 선수가 다음 시즌 예상에 들어감'); ok(!isAway(top[2]),'입대 전에는 아직 팀에 있음'); top[2].mil=null; ok(PROJ_LENS===0,'예상 렌즈가 남음'); });
+T('[구단주 목표] KBO 실적 없는 외국인은 예상 전력에 평균과의 차이를 절반만, 실적 있는 외국인은 그대로 넣는다(커뮤니티 11-14: 10위 전력이 고오버롤 용병만으로 예상 4위)',()=>{ fresh(); ok(period()==='pre','준비 실패');
+  const tid=G.teams.find(t=>foreignOf(t.id).some(fUnproven)).id; const p=foreignOf(tid).filter(fUnproven).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패: 실적 없는 외국인');
+  const r0=p.r, t0=teamRating(tid), p0=projRating(tid); p.r=Object.fromEntries(Object.entries(r0).map(([k,v])=>[k,typeof v==='number'?Math.min(99,v+15):v])); const t1=teamRating(tid), p1=projRating(tid);
+  ok(t1-t0>.3,'준비 실패: 능력을 올려도 전력이 그대로 '+(t1-t0).toFixed(2)); ok(Math.abs((p1-p0)-(t1-t0)*FNEW_W)<.05,'새 외국인 능력 차이가 절반으로 반영되지 않음: 전력 +'+(t1-t0).toFixed(2)+' 예상 +'+(p1-p0).toFixed(2));
+  p.hist=(p.hist||[]).concat([{y:G.year-1,t:tid,lvl:'1군',g:120,pa:450,outs:450}]); ok(!fUnproven(p),'KBO 기록이 있는데 실적 없음으로 봄'); const p2=projRating(tid); p.r=r0; const p3=projRating(tid); ok(Math.abs((p2-p3)-(t1-t0))<.05,'실적 있는 외국인은 그대로 세야 함: 전력 +'+(t1-t0).toFixed(2)+' 예상 +'+(p2-p3).toFixed(2)); ok(PROJ_FX===0&&PROJ_LENS===0,'예상 렌즈가 남음'); });
+T('[구단주 목표] 개막 전 다른 구단으로 옮기면 지난 개막 예상(G.proj)이 아니라 지금 예상으로 목표를 받고 상의할 수 있다',()=>{ fresh(); G.day=G.cal.exh+2; ok(period()==='pre','준비 실패'); const to=G.teams.find(t=>t.id!==G.user).id; G.proj=G.teams.map(t=>t.id).reverse(); G.projR={};
+  switchTeam(to); ok(G.user===to,'준비 실패: 이직'); ok(G.goals&&G.goals.y===G.year&&G.goals.pre,'개막 전 부임 목표가 상의 가능한 시즌 전 목표가 아님: '+JSON.stringify(G.goals));
+  const A=G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); ok(JSON.stringify(G.proj)===JSON.stringify(A),'목표 기준 예상 순위가 지금 전력 예상과 다름');
+  const m=G.mail.find(x=>x.subj===G.year+' 시즌 구단 목표'); ok(m&&m.body.includes('예상 순위는 '+(A.indexOf(to)+1)+'위'),'목표 메일 예상 순위가 다름'); ok((m.acts||[]).some(a=>a.a==='goalTalk'),'상의 버튼 없음');
+  const back=G.teams.find(t=>t.id!==to).id; G.day=G.cal.exh-5; G.clubT={}; switchTeam(back); ok(!(G.goals&&G.goals.y===G.year),'시범경기 전 부임인데 지난 예상으로 목표를 정함'); });
 T('[구단주] 외부 FA 영입 한도를 다 채웠으면 구단주가 FA 영입을 주문하지 않는다(데려올 수 없는 선수 주문)',()=>{ fresh(); const t=team(G.user); t.owner='pr'; t.trust=70; const s=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; s.faFrom=s.team; s.team=null; s.ask={annual:800,years:4};
   G.fa={pool:[s.id],offers:{},ai:{},open:true,openDay:G.day,closed:false,results:[],cap:2,outN:{[G.user]:2},y0:G.year}; for(let k=0;k<30;k++){ try{ ownerPush(); }catch(e){} }
   ok(!grants().some(g=>g.by==='own'&&g.kind==='fa'),'한도를 다 채웠는데 구단주가 '+s.name+' 영입을 주문함'); G.fa.outN[G.user]=0; for(let k=0;k<30;k++){ try{ ownerPush(); }catch(e){} } ok(grants().some(g=>g.by==='own'&&g.kind==='fa'),'한도가 남았을 때도 주문이 없음(점검 설정 확인)'); });
