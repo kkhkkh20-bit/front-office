@@ -130,19 +130,20 @@ function aiTradeTry(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>t.y
   cands.sort((a,b)=>b.up-a.up);
   for(const c of cands.slice(0,8)){ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue;
     const DX=domTradeTax(B,A.id,startersOf(B.id).has(p.id)&&!p.aiListed); if(DX.refuse){ domLog('ref',B.id+':'+p.id); domRumor(B.id,A.id); continue; } if(DX.k>=.1)domLog('over',B.id+':'+p.id); /* 독주 견제(86b_dynasty) */
-    const needB=tradeNeed(B,vOut)+Math.max(1.5,vOut)*DX.k;
+    if(relTradeRefuse(B.id,A.id))continue; /* 사이가 아주 나쁜 단장과는 거래하지 않는다(84b_person_rels) */ const relB=relAsRel(B.id,A.id), relA=relAsRel(A.id,B.id);
+    const needB=tradeNeed(B,vOut,relB)+Math.max(1.5,vOut)*DX.k;
     /* 2대2: B의 블록 선수 한 명을 끼워 함께 받는 경우 */
     const extra=!o.swap&&R()<.3?domestic(B.id).find(q=>q.aiListed&&q.id!==p.id&&healthy(q)&&!q.ys&&!(hasNtc(q)||faLock(q))&&!recentTr(q)):null; const gets=extra?[p,extra]:[p];
     const vOutAll=sum(gets.map(q=>tval(B,q,'out'))), vInAAll=stackIn(gets.map(q=>tval(A,q,'in')));
     const pool=corePool(A.id).filter(q=>healthy(q)&&!q.ys&&!faLock(q)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in')*(q.aiListed?1.1:1),a:tval(A,q,'out')})).filter(x=>x.b>.3&&(!o.swap||(slotFits(x.q,bNeed[B.id].k)&&slotGain(bNeed[B.id].k,x.q)-bNeed[B.id].base>=1))).sort((x,y)=>x.b-y.b).slice(0,22); const nm=o.swap?.5:1;
-    let best=null,bo=1e9; const tryS=arr=>{ const bv=stackIn(arr.map(x=>x.b)); if(bv<vOutAll+needB*nm)return; if(arr.length>gets.length&&((vOut>=2&&Math.max(...arr.map(x=>x.b))<vOut*.75)||(ovr(p)>=56&&Math.max(...arr.map(x=>ovr(x.q)))<ovr(p)-5)))return; const av=sum(arr.map(x=>x.a)); if(vInAAll-av<tradeNeed(A,av)*nm)return; const ob=bv-vOutAll-needB*nm+arr.length*.5; if(ob<bo){ bo=ob; best=arr; } };
+    let best=null,bo=1e9; const tryS=arr=>{ const bv=stackIn(arr.map(x=>x.b)); if(bv<vOutAll+needB*nm)return; if(arr.length>gets.length&&((vOut>=2&&Math.max(...arr.map(x=>x.b))<vOut*.75)||(ovr(p)>=56&&Math.max(...arr.map(x=>ovr(x.q)))<ovr(p)-5)))return; const av=sum(arr.map(x=>x.a)); if(vInAAll-av<tradeNeed(A,av,relA)*nm)return; const ob=bv-vOutAll-needB*nm+arr.length*.5; if(ob<bo){ bo=ob; best=arr; } };
     for(let i=0;i<pool.length;i++){ tryS([pool[i]]); for(let j=i+1;j<pool.length;j++)tryS([pool[i],pool[j]]); }
     if(!best)continue;
     if(rosterN(B.id)+best.length-gets.length>ROSTER_MAX)continue;
     { const gs=sum(best.map(x=>x.q.sal)), ps=sum(gets.map(q=>q.sal)); const capY=capOf(G.year); const gI=gets.map(q=>q.id), bI=best.map(x=>x.q.id); if((ps>gs&&capPayAs(A.id,gI,bI)>capY)||(gs>ps&&capPayAs(B.id,bI,gI)>capY))continue; }
     const give=best.map(x=>x.q.id); const snap=tradeSnap([...gets.map(q=>q.id),...give]);
     gets.forEach(q=>{ tradeTerms(q); q.team=A.id; story(q,`트레이드로 ${tname(A.id)} 이적`,'move'); delete q.aiListed; delete q.aiWhy; delete q.aiUrg; }); give.forEach(id=>{ tradeTerms(G.players[id]); /* 달성한 옵션은 원소속 구단이 지급(양쪽 같게, 검수 11-09v) */ G.players[id].team=B.id; story(G.players[id],`트레이드로 ${tname(B.id)} 이적`,'move'); delete G.players[id].aiListed; });
-    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:gets.map(q=>q.id),bg:give,an:gets.map(q=>q.name),bn:give.map(id=>G.players[id].name),snap,...(o.swap?{sw:1}:{})}); /* an·bn: 은퇴 뒤에도 이름을 보이게(검수 11-08d) */ { const tr=mvTr(); gets.forEach(q=>mvLog('트레이드',q,B.id,A.id,'',0,tr)); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } if(G.lgTrades.length>60)G.lgTrades.length=60;
+    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:gets.map(q=>q.id),bg:give,an:gets.map(q=>q.name),bn:give.map(id=>G.players[id].name),snap,...(o.swap?{sw:1}:{})}); /* an·bn: 은퇴 뒤에도 이름을 보이게(검수 11-08d) */ { const tr=mvTr(); gets.forEach(q=>mvLog('트레이드',q,B.id,A.id,'',0,tr)); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
     wire('트레이드',`${tshort(A.id)}–${tshort(B.id)} ${gets.length}대${give.length} 트레이드. ${tshort(A.id)}은(는) ${gets.map(q=>`${q.name}(${posLabel(q)})`).join(', ')}을(를) 얻고 ${give.map(id=>G.players[id].name).join(', ')}을(를) 내줬습니다.${o.swap?' 서로 약한 자리를 메우는 맞트레이드입니다.':gets.some(q=>q.aiWhy)?' 매물로 나와 있던 선수입니다.':''}`,{tid:A.id,ref:p.id});
     return true; }
   return null; }
@@ -171,7 +172,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     if(hotA&&o.buyers&&(pkGive||pay.some(x=>x.q.age<=24)))try{ domLog('allinBuy'); if(pkGive&&+pkGive.split(':')[0]===1)domLog('allinR1'); }catch(e){}
     const snap=tradeSnap([p.id,...give]); tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
     give.forEach(id=>{ const q=G.players[id]; tradeTerms(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
-    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]),snap,...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive){ const [rd,og]=pkGive.split(':').map(Number); G.pkOwn=G.pkOwn||{}; if(og===B.id)delete G.pkOwn[pkYear()+':'+rd+':'+og]; else G.pkOwn[pkYear()+':'+rd+':'+og]=B.id; } { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } if(G.lgTrades.length>60)G.lgTrades.length=60;
+    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]),snap,...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive){ const [rd,og]=pkGive.split(':').map(Number); G.pkOwn=G.pkOwn||{}; if(og===B.id)delete G.pkOwn[pkYear()+':'+rd+':'+og]; else G.pkOwn[pkYear()+':'+rd+':'+og]=B.id; } { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
     wire('트레이드',`${tshort(A.id)}, 리빌딩 ${tshort(B.id)}에서 ${p.name}(${posLabel(p)}, ${p.age}세) 영입: ${[...give.map(id=>G.players[id].name),...(pkNm?[pkNm+' 지명권']:[])].join(', ')} 내줌`,{tid:A.id,ref:p.id}); n++; done=true; break; }
     if(!done)break; }
   return n; }

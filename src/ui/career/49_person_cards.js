@@ -127,3 +127,11 @@ function personTopExt(k){ const P=String(k).split(':'), kind=P[0]; let ab=[], pe
 /* 팀 닥터(의무팀장): 의료 효과는 제휴 병원·시설이 정하고, 이 사람은 그 정보를 보여 주는 얼굴이다. 이름·나이·경력은 구단마다 고정(저장 없이 같은 값) */
 const DOC_STY={보수형:'복귀를 서두르지 않습니다. 재발을 가장 경계합니다.',적극형:'선수가 빨리 돌아오도록 재활을 몰아붙입니다.',데이터형:'투구 수와 피로 기록을 꼼꼼히 봅니다.'};
 function teamDoc(tid){ tid=tid??G.user; const s='doc'+tid+':'+(team(tid).code||tid); return {name:nameH(s),age:40+Math.floor(u01(s,'da')*20),sty:Object.keys(DOC_STY)[Math.floor(u01(s,'ds')*3)],car:['정형외과 전문의','스포츠의학 전문의','재활의학 전문의','대학병원 스포츠의학센터 출신'][Math.floor(u01(s,'dc')*4)]}; }
+
+/* 좋아하는 인물·싫어하는 인물(사용자 11-14, FM의 Favoured/Disliked personnel처럼). 수치 없이 이름과 사유 한 마디만. 규칙은 i 설명에 */
+const REL_TIP='함께 일한 시간, 선임과 경질, 식사와 연락, 트레이드 결과, 출전 기회가 쌓여 정해집니다. 오래 만나지 않으면 옅어집니다.\n단장끼리 사이가 좋으면 트레이드가 조금 수월하고, 아주 나쁘면 거래하지 않습니다. 감독·코치를 뽑을 때도 단장이 좋아하는 사람을 조금 더 봅니다.';
+function relLikesBox(key){ if(!key||typeof relLikes!=='function')return ''; let R; try{ R=relLikes(key,3); }catch(e){ return ''; } if(!R.like.length&&!R.dis.length)return '';
+  const row=x=>`<li>${x.link?`<button class="lnk" data-a="${esc(x.link.a)}" data-v="${esc(x.link.v)}">${esc(x.n)}</button>`:`<b>${esc(x.n)}</b>`} <span class="small muted">${esc(x.r)} · ${esc(x.w)}</span></li>`;
+  const sec=(h,L,tip)=>L.length?`<div class="ps-s rel-likes"><div class="eyebrow">${h}${tip?hiI(REL_TIP):''}</div><ul class="ps-l">${L.map(row).join('')}</ul></div>`:'';
+  return `<div class="rel-likes-box">${sec('좋아하는 인물',R.like,true)}${sec('싫어하는 인물',R.dis,!R.like.length)}</div>`; }
+function relLikesCard(k){ try{ return relLikesBox(relCardKey(k)); }catch(e){ return ''; } }

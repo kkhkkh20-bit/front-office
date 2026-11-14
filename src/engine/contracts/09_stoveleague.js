@@ -361,7 +361,7 @@ function compactPlayers(){ const y=G.year; let n=0;
   return n; }
 function newYear(){
   try{ compactPlayers(); }catch(e){}
-  try{ gmRelYear(); }catch(e){}
+  try{ gmRelYear(); }catch(e){} try{ relsYear(); }catch(e){} /* 인물 관계도 같은 비율로 되돌림(84b_person_rels) */
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
   if(G.mgr[G.user]&&G.mgr[G.user].yrs<=0&&!G.mgr[G.user].interim){ const m=G.mgr[G.user]; staffHistory('mgr',m,'계약 만료',G.user); G.mgr[G.user]=null; try{ mreqCloseOld(); }catch(e){} mail('운영팀','감독 계약 종료',`${m.name} 감독과의 계약이 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.`,{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.mgr[G.user]&&G.mgr[G.user].interim){ G.mgr[G.user]=null; mail('운영팀','감독대행 체제 종료','감독대행 체제가 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.',{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }

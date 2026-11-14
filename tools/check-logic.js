@@ -4191,6 +4191,33 @@ T('[독주 견제] 드래프트: 그해 대어 셋은 잠재력 최상위이고 
 T('[독주 견제] 소식: 독주 구단이 생기면 다른 구단들이 견제에 나선다는 기사가 나온다',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X); const riv=topRival(X); aiPlanSet(riv,'win','',true); _domC.k=null; G.domNewsK=null; domNews();
   ok((G.news||[]).some(n=>n.t.includes('독주에 다른 구단들 견제')),'견제 기사 없음'); });
 
+T('[인물 관계] AI 단장끼리 한 시즌 동안 식사·연락으로 관계를 쌓고, 같은 사람을 자주 만나면 효과가 준다',()=>{ fresh(); G.rels={}; const L=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim); const K=new Set(L.map(t=>relKeyOf(t.gm,'gm')));
+  const r0=globalThis.__rngState(); for(let i=0;i<12;i++){ G.day+=30; relNetMonth(); } ok(globalThis.__rngState()===r0,'AI 단장 교류가 경기 난수를 썼다');
+  const E=Object.entries(G.rels).filter(([k])=>k.split('|').every(x=>K.has(x))); ok(E.length>=6,'단장끼리 관계가 너무 적음 '+E.length); ok(E.some(([,e])=>e.v>=REL_LIKE),'친해진 단장이 없음');
+  const lone=L.filter(t=>!E.some(([k])=>k.split('|').includes(relKeyOf(t.gm,'gm')))); ok(lone.length<=1,'한 시즌 동안 아무도 만나지 않은 단장 '+lone.length);
+  const [A,B]=L; const ka=relKeyOf(A.gm,'gm'), kb=relKeyOf(B.gm,'gm'); delete G.rels[relPK(ka,kb)]; const g1=relMeet(A,B,'meal'); ok(g1>0,'첫 식사 효과 없음'); ok(relMeet(A,B,'meal')===0,'30일 쿨다운이 없음'); G.day+=31; ok(plDim(G.rels[relPK(ka,kb)].u)<1,'같은 단장과 거듭 식사해도 효과가 그대로(우리 식사와 같은 plDim)'); ok(relMeet(A,B,'meal')>0,'쿨다운 뒤 다시 식사 못 함'); const c=A.cash; relMeet(A,B,'call'); ok(A.cash===c,'안부 연락에 돈이 듦'); });
+T('[인물 관계] AI끼리 트레이드에서 손해 본 단장은 상대 단장을 싫어하고, 사이가 아주 나쁘면 거래하지 않는다',()=>{ fresh(); G.rels={}; const [A,B]=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim);
+  const tr={y:G.year,d:G.day,a:A.id,b:B.id,ag:[],bg:[]}; G.lgTrades=[tr]; relTradeLog(tr); const ka=relGmKey(A.id), kb=relGmKey(B.id); ok(relVal(ka,kb)>0,'거래 성사 친분 없음'); tr.dv=12; relTradeYear(G.year);
+  ok(relVal(kb,ka)<0,'손해 본 쪽 관계가 나쁘지 않음 '+relVal(kb,ka)); const D=relLikes(kb).dis; ok(D[0]&&D[0].n===A.gm.name&&D[0].w==='손해 본 트레이드','손해 본 단장 카드 '+JSON.stringify(D)); ok(relLikes(ka).dis[0].w==='앙금 남은 트레이드','이긴 쪽 사유 '+JSON.stringify(relLikes(ka).dis));
+  ok(relAsRel(B.id,A.id)<50,'사이가 나빠도 트레이드 요구치가 그대로'); ok(tradeNeed(B,2,relAsRel(B.id,A.id))>tradeNeed(B,2,50),'요구치가 친분을 따르지 않음'); G.rels[relPK(ka,kb)].v=-60; ok(relTradeRefuse(B.id,A.id),'사이가 아주 나쁜데 거래를 받는다'); });
+T('[인물 관계] 경질된 감독은 경질한 단장을 싫어하고, 선임한 단장은 좋아한다(우리 구단도 같다)',()=>{ fresh(); G.rels={}; const t=G.teams.find(x=>x.id!==G.user&&x.gm&&!x.gm.interim); const m=G.mgr[t.id], mk=relKeyOf(m,'mgr');
+  staffHistory('mgr',m,'경질',t.id,'검수'); ok(relVal(mk,relGmKey(t.id))<=-20,'경질 악연이 없음 '+relVal(mk,relGmKey(t.id))); const D=relLikes(mk).dis; ok(D[0]&&D[0].n===t.gm.name&&D[0].w==='경질당한 악연','감독 카드 '+JSON.stringify(D)); ok(relLikes(relGmKey(t.id)).dis.some(x=>x.w==='내보낸 사이'),'단장 쪽 사유');
+  const n=mkMgr(); staffHistory('mgr',n,'선임',t.id,'검수'); ok(relLikes(relKeyOf(n,'mgr')).like.some(x=>x.n===t.gm.name&&x.w==='발탁해 준 은인'),'선임 은인이 없음');
+  const um=G.mgr[G.user], uk=relKeyOf(um,'mgr'); staffHistory('mgr',um,'경질',G.user,'검수'); G.mgr[G.user]=null; ok(relVal(uk,'me')<0,'우리가 경질한 감독이 우리를 싫어하지 않음'); ok(relLikes(uk).dis.some(x=>x.me&&x.w==='경질당한 악연'),'우리 단장 이름이 싫어하는 인물에 없음');
+  const before=relHireBias(t.id,n,'mgr'); ok(before>0,'좋아하는 사람을 더 보지 않음'); G.rels[relPK(relKeyOf(n,'mgr'),relGmKey(t.id))].v=-70; ok(relHireBias(t.id,n,'mgr')<-10,'싫어하는 사람을 피하지 않음'); });
+T('[인물 관계] 좋아하는·싫어하는 인물에는 숫자가 보이지 않는다',()=>{ fresh(); G.rels={}; for(let i=0;i<12;i++){ G.day+=30; relNetMonth(); } relsSeason(G.year); relWorkYear(); const t=G.teams.find(x=>x.id!==G.user&&x.gm&&!x.gm.interim);
+  const keys=[...G.teams.filter(x=>x.id!==G.user).flatMap(x=>[relGmKey(x.id),relKeyOf(G.mgr[x.id],'mgr')]),...Object.values(coachesOf(t.id)).filter(Boolean).slice(0,3).map(c=>relKeyOf(c,'coach')),'me'].filter(Boolean); let n=0;
+  for(const k of keys){ const R=relLikes(k); for(const x of [...R.like,...R.dis]){ n++; ok(!/[0-9]/.test(x.n+x.r+x.w),'카드에 숫자: '+JSON.stringify(x)); ok(x.w&&x.w.length<=12&&!/[()]/.test(x.w),'사유가 길거나 괄호: '+x.w); } } ok(n>=3,'카드에 나올 인물이 너무 적음 '+n);
+  ok(relCardKey('gm:'+t.id)===relGmKey(t.id)&&relCardKey('omgr:'+t.id)===relKeyOf(G.mgr[t.id],'mgr'),'카드 키 연결 실패'); });
+T('[인물 관계] 우리 단장과 다른 구단 단장 사이는 기존 친분(t.rel)과 항상 같다',()=>{ fresh(); G.rels={}; const t=G.teams.find(x=>x.id!==G.user&&x.gm&&!x.gm.interim), k=relGmKey(t.id); t.rel=80; ok(relVal('me',k)===60&&relVal(k,'me')===60,'t.rel과 다름 '+relVal('me',k));
+  relSyncMe(); ok(G.rels[relPK('me',k)].v===60,'동기화 기록이 다름'); G.gmc={}; gmContact(t.id,'meal'); ok(relVal('me',k)===Math.round((t.rel-50)*2),'식사 뒤 t.rel을 따르지 않음'); const L=relLikes(k).like.find(x=>x.k==='me'); ok(L&&L.n===(meName()||'우리 단장'),'단장 카드에 우리 단장이 없음 '+JSON.stringify(relLikes(k)));
+  t.rel=20; ok(relLikes(k).dis.some(x=>x.k==='me'),'사이가 나쁘면 싫어하는 인물에 우리 단장'); relsYear(); ok(Math.round(t.rel)===Math.round(t.rel)&&relVal('me',k)===Math.round((t.rel-50)*2),'새해 정리 뒤 어긋남'); });
+T('[인물 관계] 다른 구단 단장이 먼저 식사를 청한다: 응하면 우리가 청한 식사와 같고, 거절하면 조금 식으며, 리그 전체에서 한 시즌 몇 번이다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user&&x.gm&&!x.gm.interim); G.gmc={}; t.rel=60;
+  const e=gmInvite(t.id,'meal',false); ok(e&&G.mail.some(m=>m.id===e.mid&&(m.acts||[]).length===2),'초대 소식·버튼 없음'); const r0=t.rel, sp=G.spend.etc||0; evPick(e.id,0); ok(t.rel>r0,'응해도 친분이 오르지 않음'); ok(G.gmc[t.id].meal===G.day&&(G.spend.etc||0)===sp+10,'우리가 청한 식사와 비용·쿨다운이 다름');
+  ok((relsG()[relPK('me',relGmKey(t.id))].why||[]).some(w=>w[0]==='meal'),'관계 사유에 식사 없음');
+  const e2=gmInvite(t.id,'call',false); const r1=t.rel; evPick(e2.id,1); ok(t.rel===r1-1,'거절해도 그대로 '+r1+'→'+t.rel); ok(relLikes(relGmKey(t.id)).like.some(x=>x.k==='me')||t.rel<56,'카드 연결');
+  G.gmInvD=null; G.gmc={}; for(const x of G.evs)x.done=true; let n=0; for(let i=0;i<24;i++){ G.day+=30; const v=gmInvMonth(); if(v){ n++; ok(gmInvOpen(),'초대가 열리지 않음'); ok(gmInvMonth()===null,'열린 초대가 있는데 또 초대'); evPick(v.id,1,true); } } ok(n>=1&&n<=12,'두 시즌 초대 횟수 '+n); });
+
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
