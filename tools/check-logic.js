@@ -2886,7 +2886,7 @@ T('[검수 11-09r] FA: 최고 조건 맞추기는 계약할 수 없는 구단 �
   const s=mk(70,1300,3); const m=agMk(s); ok(m,'준비 실패: 시장 확인 대상'); m.round=m.need-1; m.next=G.day; G.fa.offers[s.id]={annual:965,years:3,terms:{years:3,annual:300,bonus:1500,opt:300}}; G.fa.ai[s.id]={[op]:{annual:500,years:3}};
   agShopTick(s,m,G.fa.ai[s.id],G.day); const ml=G.mail.find(x=>x.subj.includes(s.name)&&x.subj.includes('시장 보고')); ok(ml,'시장 보고 메일 없음');
   ok(ml.body.includes('보장 총액 '+money(2400))&&ml.body.includes('계약금 '+money(1500))&&!ml.body.includes(money(965*3)),'환산값을 실제 총액처럼 보여 줌: '+ml.body); });
-T('[검수 11-09r] FA 전망: 옵트아웃할 선수와 구단 옵션을 포기하는 선수(재자격 예외)도 실제 공시 규칙대로 올라간다',()=>{ fresh(); G.rolled=null; G.fa=null; const [a,b]=domestic(G.user).filter(q=>!q.foreign&&!q.extNext&&!(q.joinY>G.year));
+T('[검수 11-09r] FA 전망: 옵트아웃할 선수와 구단 옵션을 포기하는 선수(재자격 예외)도 실제 공시 규칙대로 올라간다',()=>{ fresh(); G.rolled=null; G.fa=null; const [a,b]=domestic(G.user).filter(q=>!q.foreign&&!q.extNext&&!(q.joinY>G.year)).sort((x,y)=>ovr(y)-ovr(x)); /* 옵트아웃은 시장가가 연봉보다 15% 이상 높아야 하므로 주전급으로 */
   a.age=29; a.svc=faSvc(a)+3; a.faC=true; a.yrs=3; a.cyrs=3; a.sal=MIN_SAL; a.ctT=a.team; a.pOut={y:G.year}; delete a.cOpt; a.lastFA=null; ok(pOutDecide(a),'준비 실패: 옵트아웃 조건');
   b.age=30; b.svc=faSvc(b)+3; b.faC=true; b.yrs=1; b.ctT=b.team; b.cOpt={y:1,a:b.sal,dec:false}; delete b.pOut; b.lastFA=G.year-1;
   const U=faUpcoming(); ok(U.some(x=>x.p.id===a.id&&x.why==='out'),'옵트아웃 가능 선수가 전망에서 빠짐'); const xb=U.find(x=>x.p.id===b.id); ok(xb&&xb.dp===1,'구단 옵션 포기 선수의 재자격 예외를 놓침'); });
