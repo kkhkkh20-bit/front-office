@@ -196,7 +196,7 @@ function standFm(order,live,y){
   let TS=null; if(!live)try{ TS=new Map(teamStats(y).map(r=>[r.tid,r])); }catch(e){}
   const rows=order.map((o,i)=>{ const sp=live?splitOf(o.tid):null, ts=TS&&TS.get(o.tid), d=live?sp.rs-sp.ra:ts&&ts.rs!=null&&ts.ra!=null?ts.rs-ts.ra:null, has=live?sp.n:d!=null;
     return `<tr class="${o.tid===me?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,16)}${esc(team(o.tid).nick)}</button></td><td>${o.w+o.l+(o.t||0)}</td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td class="key">${pctStr(o,order)}</td><td>${i?gbStr(gbOf(top,o)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${has?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(o.tid).slice(-5)):'<span class="muted">지난 시즌</span>'}</td></tr>`; }).join('');
-  const reg=fxBox('fx-reg',fxHead(`${y} 정규시즌 ${hiI(standRules(n))}}`),
+  const reg=fxBox('fx-reg',fxHead(`${y} 정규시즌 ${hiI(standRules(n))}`),
     (live&&rk?fxExp(gs?goalRankTxt(gs.rank.t):'목표 없음',(n+1-rk)/n*100,gs?(n+1-gs.rank.t)/n*100:null,gs?rk<=gs.rank.t:null,`${rk}위`):fxExp(gs?`${G.year} ${goalRankTxt(gs.rank.t)}`:'목표 없음',null,null,null,rk?`${y} 최종 ${rk}위 · 개막 전`:'개막 전'))
     +`<div class="fx-two"><div><h4>최근 경기력</h4>${tlOf(me).length?fxForm(tlOf(me).slice(-10)):'<p class="fx-none">경기 전</p>'}</div><div><h4>리그 순위</h4>${rc||'<p class="fx-none">사흘 이상 치르면 그립니다</p>'}</div></div>`
     +`<div class="fx-tw"><table class="fx-t fx-st"><thead><tr><th>순위</th><th>구단</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th><th>득실</th><th>최근 5</th></tr></thead><tbody>${rows}</tbody></table></div>`
