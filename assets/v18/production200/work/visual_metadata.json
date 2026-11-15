@@ -1,0 +1,942 @@
+{
+  "round01/v18_001": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_002": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_006": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_008": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_009": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_011": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_012": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_013": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_016": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_018": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_020": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_021": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_022": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_023": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_024": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_025": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_026": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_027": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_028": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_029": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_030": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_031": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_033": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_034": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_036": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_037": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_038": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_039": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_040": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_045": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_046": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_048": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_051": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_052": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_054": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_055": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_061": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_064": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_066": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_070": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_071": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_073": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_075": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_076": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_077": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_078": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_079": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_080": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_084": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_085": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_098": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_122": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_135": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_152": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_154": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_198": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_199": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round02_natural/v18_092": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round02_natural/v18_102": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round02_natural/v18_106": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round02_natural/v18_109": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_002": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_003": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_011": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_007": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_014": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_015": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_017": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_010": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_019": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_035": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_042": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_040": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_043": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_041": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_046": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_047": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_049": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_050": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_053": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_056": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_057": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_059": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_060": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_058": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_064": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_069": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_072": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_086": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_087": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_088": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_089": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_090": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_091": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_093": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_094": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_099": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_100": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_107": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_113": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_110": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_118": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_112": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_119": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_126": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_122": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_124": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_125": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_130": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_131": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_136": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_133": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_135": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_138": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_142": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_143": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_146": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_139": {
+    "glasses": true,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_140": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_147": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_149": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_150": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_151": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_155": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_162": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_168": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "firefly/round03/v18_170": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_082": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_090": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_108": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_115": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_116": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_128": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_134": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_148": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_169": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_177": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_179": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_182": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_184": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_188": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_190": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_192": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_191": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_197": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b01_v18_189": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b02_v18_176": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b02_v18_068": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "r05_b05_v18_160": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b06_v18_161": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "r05_b06_v18_180": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b06_v18_172": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "r05_b06_v18_186": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b07_v18_198": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b09_v18_198": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b11_v18_145": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b11_v18_189": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b12_v18_096": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b12_v18_175": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b12_v18_189": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b08_v18_156": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "nano/v18_145": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "cleanup/v18_083": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "nano/v18_153": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "cleanup/v18_104": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "cleanup/v18_106": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "cleanup/v18_109": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "pilot_012": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "pilot_019": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r06_b01_07": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "r06_b01_08": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r06_b01_14": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r06_b10_05": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r06_b13_13": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_00": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "freechar_01": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_02": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "freechar_03": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_04": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_05": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_06": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "freechar_07": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "freechar_08": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "freechar_09": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_10": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_11": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "freechar_12": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_13": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  }
+}

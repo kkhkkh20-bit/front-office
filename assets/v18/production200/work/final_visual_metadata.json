@@ -1,0 +1,117 @@
+{
+  "r07_b06_03": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r08_b02_05": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r08_b01_01": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r08_b01_02": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r08_b01_08": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "r08_b09_15": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "freechar_14": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "round01/v18_063": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round01/v18_096": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round02_natural/v18_081": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round02_natural/v18_101": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round02_natural/v18_105": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "round04_single/v18_114": {
+    "glasses": true,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b00_v18_163": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "r05_b05_v18_129": {
+    "glasses": false,
+    "facial_hair": true,
+    "visual_review_passed": true
+  },
+  "r05_b06_v18_123": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r05_b07_v18_180": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r06_b04_04": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r08_b02_13": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r08_b01_03": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r08_b09_09": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r08_b04_00": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  },
+  "r09_07": {
+    "glasses": false,
+    "facial_hair": false,
+    "visual_review_passed": true
+  }
+}

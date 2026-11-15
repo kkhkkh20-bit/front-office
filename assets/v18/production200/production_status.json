@@ -3,25 +3,48 @@
   "asset_validation_passed": false,
   "review_status": "identity_prescreen_in_progress",
   "planned_identity_count": 200,
-  "pilot_generated_count": 20,
-  "round01_actual_portrait_count": 199,
-  "round01_scored_identity_count": 189,
-  "round01_grid_invalid_slots": 5,
-  "round01_detection_failed_slots": 6,
-  "exaggerated_candidates_rejected_count": 20,
-  "natural_replacements_generated_count": 20,
-  "numerically_compatible_identity_count": 77,
+  "candidate_count_measured": 1212,
+  "numerically_compatible_identity_count": 191,
   "accepted_identity_count": 0,
-  "identities_requiring_replacement_or_resolution": 123,
   "completed_variant_count": 0,
   "completed_sheet_count": 0,
-  "full_prescreen_within_pairs_expected": 19900,
-  "full_prescreen_reference_pairs_expected": 32000,
+  "remaining_quota": [
+    {
+      "group": "Korean18-20",
+      "missing": 2
+    },
+    {
+      "group": "Korean21-24",
+      "missing": 4
+    },
+    {
+      "group": "Korean25-28",
+      "missing": 3
+    }
+  ],
+  "prescreen_metrics": {
+    "128": {
+      "within_pairs": 18145,
+      "reference_pairs": 30560,
+      "within_max": 0.3998124599456787,
+      "reference_max": 0.3996201753616333
+    },
+    "256": {
+      "within_pairs": 18145,
+      "reference_pairs": 30560,
+      "within_max": 0.3992614150047302,
+      "reference_max": 0.39979010820388794
+    }
+  },
+  "protocol": "work/canonical/protocol.json",
+  "original_reference_count": 160,
+  "visual_approval_complete": false,
+  "free_character_generations_completed": 15,
+  "free_character_paid_credits": 0,
+  "updated_utc": "2026-11-15T09:10:46.967496+00:00",
   "notes": [
-    "The numerical subset is not a completed delivery or visual approval.",
-    "All 20 exaggerated candidates are excluded per user correction.",
-    "Natural proportions and subtle friendly expressions are mandatory.",
-    "No wardrobe rendering until full identity prescreen and visual checks pass.",
-    "No final manifest or runtime files have been published."
+    "Full200 identity and visual gates must pass before wardrobe production.",
+    "Natural proportions and subtle smiles required; no exaggerated rejected candidates reused.",
+    "Completion flags remain false until 2000 variants and40 sheets pass actual decoded WebP checks."
   ]
 }

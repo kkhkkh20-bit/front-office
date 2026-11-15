@@ -1,0 +1,3553 @@
+[
+  {
+    "candidate_key": "round01/v18_001",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_001.png",
+    "sha256": "ed1699621e3e81b758ace3b708c3e703d644c06755b032823ca4f2fcb5ef6343",
+    "attributes": {
+      "id": "v18_001",
+      "sheet": "A",
+      "index": 0,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 23; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short crew cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_002",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_002.png",
+    "sha256": "e6a3e4115c564f938074472a1268dc096b865db84427f05ec269c2365d7a15a2",
+    "attributes": {
+      "id": "v18_002",
+      "sheet": "A",
+      "index": 1,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 30; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short tight curls; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_006",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_006.png",
+    "sha256": "ad166451b9be0b5e8529fd45f1d5b908841cb262219f80adec0f1fafbc722173",
+    "attributes": {
+      "id": "v18_006",
+      "sheet": "A",
+      "index": 5,
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 34; face: heart shaped; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_008",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_008.png",
+    "sha256": "5fbec375a1fc24e0728a53b20948d98c2d5b8c6a4bfe8c12a4c19a22736425f2",
+    "attributes": {
+      "id": "v18_008",
+      "sheet": "A",
+      "index": 7,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 24; face: heart shaped; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: full lower lip; hair: short two block cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_009",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_009.png",
+    "sha256": "01c9cf3e48cbc828fea7b28e7fe615eb814ecca9e953d5284cc3948883e6da27",
+    "attributes": {
+      "id": "v18_009",
+      "sheet": "A",
+      "index": 8,
+      "age": 31,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 31; face: long rectangular; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: close buzz cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_011",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_011.png",
+    "sha256": "f499d4fe1f928c98aae315b7eb2686ef901f3157dada9a4f47ef187bd9237aaa",
+    "attributes": {
+      "id": "v18_011",
+      "sheet": "A",
+      "index": 10,
+      "age": 33,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 33; face: square wide jaw; eyes: round open eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: thin wide lips; hair: close buzz cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_012",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_012.png",
+    "sha256": "2d9eef1d910d9d5bf1e228ed690060b5a08effc9c2aa6ad29ae660661962e52c",
+    "attributes": {
+      "id": "v18_012",
+      "sheet": "A",
+      "index": 11,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 28; face: heart shaped; eyes: round open eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: wide curved mouth; hair: short tight curls; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_013",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_013.png",
+    "sha256": "72f39a9e60c79322744ad8060a2122e12de04d346c2118a8172da14abb0e3ebb",
+    "attributes": {
+      "id": "v18_013",
+      "sheet": "A",
+      "index": 12,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 23; face: triangular narrow chin; eyes: upswept eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: wide curved mouth; hair: long tied back hair; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_016",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_016.png",
+    "sha256": "57ec950f4d12bdd1b71856ecc558552514e40e90111aacc80522fc22f349e5e6",
+    "attributes": {
+      "id": "v18_016",
+      "sheet": "A",
+      "index": 15,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 32; face: heart shaped; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: thin wide lips; hair: long tied back hair; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_018",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_018.png",
+    "sha256": "6f7f6cf551f4d0edcccdad2201a94e42dbb8fdef66c8de29b17fdd2e848d5d67",
+    "attributes": {
+      "id": "v18_018",
+      "sheet": "A",
+      "index": 17,
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 34; face: oval high cheekbones; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short tight curls; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_020",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_020.png",
+    "sha256": "2c2179b0f5ac2ef6df0ba4881e7fb8d95991103f13ce2d0a1d9a5e2f862de884",
+    "attributes": {
+      "id": "v18_020",
+      "sheet": "A",
+      "index": 19,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 24; face: heart shaped; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: low wide nose; mouth: full lower lip; hair: short two block cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_021",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_021.png",
+    "sha256": "67adbe0a69ad2e008ef4d3cea370827a3b439273fc2cfda9dff88205b2ed2190",
+    "attributes": {
+      "id": "v18_021",
+      "sheet": "A",
+      "index": 20,
+      "age": 31,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 31; face: long rectangular; eyes: wide set almond eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short straight fringe; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_022",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_022.png",
+    "sha256": "2b6216dff8aaab04226eeaaf39ab66cb684fd60e06a2306a6d2cbd9773a762eb",
+    "attributes": {
+      "id": "v18_022",
+      "sheet": "A",
+      "index": 21,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 26; face: heart shaped; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short side part; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_023",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_023.png",
+    "sha256": "b5163e4191203e624db40c66e43c6bde25a78828f41f45d08666edcca9c5f6d1",
+    "attributes": {
+      "id": "v18_023",
+      "sheet": "A",
+      "index": 22,
+      "age": 33,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 33; face: heart shaped; eyes: wide set almond eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: small defined mouth; hair: short tight curls; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_024",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_024.png",
+    "sha256": "dc8aad88fa00dae792ecf4ba8d8ccaf37c4211d8a179a9fa59cfc0a32b49dc68",
+    "attributes": {
+      "id": "v18_024",
+      "sheet": "A",
+      "index": 23,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 28; face: square wide jaw; eyes: upswept eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_025",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_025.png",
+    "sha256": "3c65aace245b60f7a37c6bf374b07722b878404fb35923e9d4bc953d31986e32",
+    "attributes": {
+      "id": "v18_025",
+      "sheet": "A",
+      "index": 24,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 23; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_026",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_026.png",
+    "sha256": "23dfbb960fc7e1869ad1de5c3f9db9430aa86442b3b11c51d1eb40fec8d681cb",
+    "attributes": {
+      "id": "v18_026",
+      "sheet": "A",
+      "index": 25,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 30; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: full lower lip; hair: short two block cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_027",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_027.png",
+    "sha256": "89f3430357e36556028622b0d58ed3aaae9f2211ad75c1613eaa4938e1abe316",
+    "attributes": {
+      "id": "v18_027",
+      "sheet": "A",
+      "index": 26,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 25; face: triangular narrow chin; eyes: round open eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: full lower lip; hair: short two block cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_028",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_028.png",
+    "sha256": "de4979826b6198675161a75d2fee6b6f1c930b3b3e6e428680485360d09f0611",
+    "attributes": {
+      "id": "v18_028",
+      "sheet": "A",
+      "index": 27,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 32; face: triangular narrow chin; eyes: upswept eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short crew cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_029",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_029.png",
+    "sha256": "9d236dc5937a3db73002bbff21f055db840c3bde33b1342236c5d253f6179e5c",
+    "attributes": {
+      "id": "v18_029",
+      "sheet": "A",
+      "index": 28,
+      "age": 27,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 27; face: heart shaped; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: short straight fringe; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_030",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_030.png",
+    "sha256": "e0a1dd4197d02d0bf484454656d59246b6062acc15f6ceed0e1e6fa2c5a4901c",
+    "attributes": {
+      "id": "v18_030",
+      "sheet": "A",
+      "index": 29,
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 34; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short two block cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_031",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_031.png",
+    "sha256": "9271137155d66f858b82a47637a8aa8d5713692afbd8748f48262575feed88fd",
+    "attributes": {
+      "id": "v18_031",
+      "sheet": "A",
+      "index": 30,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 29; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_033",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_033.png",
+    "sha256": "9f2e08b1e29dc4f27759502c16cd89b2163c9dbef4e33fe9ba778077c26e3a04",
+    "attributes": {
+      "id": "v18_033",
+      "sheet": "A",
+      "index": 32,
+      "age": 31,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 31; face: square wide jaw; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_034",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_034.png",
+    "sha256": "be0647ec506647c08f15f268d8a8d2116f4914899421d1907b3dfd2c4e7bb111",
+    "attributes": {
+      "id": "v18_034",
+      "sheet": "A",
+      "index": 33,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 26; face: long rectangular; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: long tied back hair; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_036",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_036.png",
+    "sha256": "a0e8f38353831503f382eac911280299cc0b768d8ed74915a3945f19358f66a3",
+    "attributes": {
+      "id": "v18_036",
+      "sheet": "A",
+      "index": 35,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 28; face: long rectangular; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: wide curved mouth; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_037",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_037.png",
+    "sha256": "213d53a2ec0cd5d7161242e06b9d4ae72c718f8720654e37ac58c83ca9b538fc",
+    "attributes": {
+      "id": "v18_037",
+      "sheet": "A",
+      "index": 36,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 23; face: long rectangular; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: close buzz cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_038",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_038.png",
+    "sha256": "d36ca904be2868c766f9f4cbb4d49c4fe029621353fe1831415c62ee2914ecee",
+    "attributes": {
+      "id": "v18_038",
+      "sheet": "A",
+      "index": 37,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 30; face: long rectangular; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: small defined mouth; hair: short side part; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_040",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_040.png",
+    "sha256": "fe63ec609860f24991eefe4b8d82fc56ae7ff353d6e6762e74ed21e264c3e81b",
+    "attributes": {
+      "id": "v18_040",
+      "sheet": "A",
+      "index": 39,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 32; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_039",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_039.png",
+    "sha256": "3a515a8600a8278fa5cbd3ce5e7e4416d88ea0e553efdc4a2ed41ad6ad04d212",
+    "attributes": {
+      "id": "v18_039",
+      "sheet": "A",
+      "index": 38,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 25; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: long tied back hair; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_045",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_045.png",
+    "sha256": "157ea407c26d4abdb1aa602f5cced6d0474e2688d25e40e6fafa622d61739ec7",
+    "attributes": {
+      "id": "v18_045",
+      "sheet": "A",
+      "index": 44,
+      "age": 31,
+      "sex": "male",
+      "ethnicity": "Venezuelan Latino",
+      "appearance_brief": "Venezuelan Latino male, apparent age 31; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_046",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_046.png",
+    "sha256": "9ae04f2a106c8a1fac4d834185f99a52c4ef08075ebc57069f16059ee552295c",
+    "attributes": {
+      "id": "v18_046",
+      "sheet": "A",
+      "index": 45,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Venezuelan Latino",
+      "appearance_brief": "Venezuelan Latino male, apparent age 26; face: oval high cheekbones; eyes: round open eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_048",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_048.png",
+    "sha256": "841c4104678e2b795fe242cd5b2d90765bdfa914f21528e1bfcb7b54ed7b7ead",
+    "attributes": {
+      "id": "v18_048",
+      "sheet": "A",
+      "index": 47,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Venezuelan Latino",
+      "appearance_brief": "Venezuelan Latino male, apparent age 28; face: long rectangular; eyes: round open eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: thin wide lips; hair: long tied back hair; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_051",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_051.png",
+    "sha256": "63b107d594d69d39d1074a5a25b205df39429ccc6773840a91fc80fd6d6e1335",
+    "attributes": {
+      "id": "v18_051",
+      "sheet": "A",
+      "index": 50,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "Mexican Latino",
+      "appearance_brief": "Mexican Latino male, apparent age 25; face: triangular narrow chin; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short side part; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_052",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_052.png",
+    "sha256": "7869545c2fd9b5237c140bf0366e610b9a4df84502a42fe559738a58bcac5cc7",
+    "attributes": {
+      "id": "v18_052",
+      "sheet": "A",
+      "index": 51,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "Mexican Latino",
+      "appearance_brief": "Mexican Latino male, apparent age 32; face: oval high cheekbones; eyes: round open eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_054",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_054.png",
+    "sha256": "0fd81f40222113674c086b8205b1c1a91a964912d84b253db01ae3734391c738",
+    "attributes": {
+      "id": "v18_054",
+      "sheet": "A",
+      "index": 53,
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "Cuban Latino",
+      "appearance_brief": "Cuban Latino male, apparent age 34; face: heart shaped; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: short tight curls; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_055",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_055.png",
+    "sha256": "4cdf174cccd0f31e5eff756fe26ccf681c00ddc67614c953308be0e370b3f810",
+    "attributes": {
+      "id": "v18_055",
+      "sheet": "A",
+      "index": 54,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "Puerto Rican Latino",
+      "appearance_brief": "Puerto Rican Latino male, apparent age 29; face: round full cheeks; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: short straight fringe; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_061",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_061.png",
+    "sha256": "9991a0699a3d6c6acebf4615a1ef0a54b5c937e91d4407fe56d407f9589e1079",
+    "attributes": {
+      "id": "v18_061",
+      "sheet": "A",
+      "index": 60,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Japanese",
+      "appearance_brief": "Japanese male, apparent age 23; face: heart shaped; eyes: upswept eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: short side part; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_064",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_064.png",
+    "sha256": "dd1f971b473b1e4b95d18513b7bad350b6b3de5ee7966bb498be3ed6d0c2c6bf",
+    "attributes": {
+      "id": "v18_064",
+      "sheet": "A",
+      "index": 63,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "Japanese",
+      "appearance_brief": "Japanese male, apparent age 32; face: heart shaped; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_066",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_066.png",
+    "sha256": "b1af70be180d17b8e4bd8700e4ee8a5ced4c80571d7e1b4b62a21761293cd9c9",
+    "attributes": {
+      "id": "v18_066",
+      "sheet": "A",
+      "index": 65,
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "Japanese",
+      "appearance_brief": "Japanese male, apparent age 34; face: round full cheeks; eyes: wide set almond eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_070",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_070.png",
+    "sha256": "e5a0033a6a507366b79449c308e9a0264656719cd7a12748b8ae100a22d8d57c",
+    "attributes": {
+      "id": "v18_070",
+      "sheet": "A",
+      "index": 69,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Taiwanese",
+      "appearance_brief": "Taiwanese male, apparent age 26; face: triangular narrow chin; eyes: round open eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_071",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_071.png",
+    "sha256": "2eb4639a2f8ea94a33eca5660fb77b571231449a3215b55bbc2e0a2e7ecf3aaf",
+    "attributes": {
+      "id": "v18_071",
+      "sheet": "A",
+      "index": 70,
+      "age": 33,
+      "sex": "male",
+      "ethnicity": "Taiwanese",
+      "appearance_brief": "Taiwanese male, apparent age 33; face: heart shaped; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short two block cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_073",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_073.png",
+    "sha256": "28efd356014da9c15c5b67a105f6b311655eaf9043b1f09313606e8aca941423",
+    "attributes": {
+      "id": "v18_073",
+      "sheet": "A",
+      "index": 72,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Taiwanese",
+      "appearance_brief": "Taiwanese male, apparent age 23; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short side part; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_075",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_075.png",
+    "sha256": "10fbcfde74d3cd7c80599e071710c5dc77aec5e0397602973f11d2758a166665",
+    "attributes": {
+      "id": "v18_075",
+      "sheet": "A",
+      "index": 74,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "Australian",
+      "appearance_brief": "Australian male, apparent age 25; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: long tied back hair; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_076",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_076.png",
+    "sha256": "eac85cf51e27d600ffedbc18611d96730b45f26fdf3cd69532427f89e8ab2538",
+    "attributes": {
+      "id": "v18_076",
+      "sheet": "A",
+      "index": 75,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "Australian",
+      "appearance_brief": "Australian male, apparent age 32; face: long rectangular; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short two block cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_078",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_078.png",
+    "sha256": "2bc983608eb69937642f7cbbcb8d9587a8b050031572c9cbbf1e21019efd5562",
+    "attributes": {
+      "id": "v18_078",
+      "sheet": "A",
+      "index": 77,
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "Australian",
+      "appearance_brief": "Australian male, apparent age 34; face: heart shaped; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short crew cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_077",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_077.png",
+    "sha256": "d541858b484765959f44f6f795063770d8b4dfa7b2b4def0113a87fc5ef50310",
+    "attributes": {
+      "id": "v18_077",
+      "sheet": "A",
+      "index": 76,
+      "age": 27,
+      "sex": "male",
+      "ethnicity": "Australian",
+      "appearance_brief": "Australian male, apparent age 27; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: full lower lip; hair: long tied back hair; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_079",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_079.png",
+    "sha256": "69f18d64e27bfa771196eae975c0b5dd03adb5a19e99ed7c08053abc2d17e8f4",
+    "attributes": {
+      "id": "v18_079",
+      "sheet": "A",
+      "index": 78,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "Filipino",
+      "appearance_brief": "Filipino male, apparent age 29; face: triangular narrow chin; eyes: upswept eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_080",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_080.png",
+    "sha256": "2bce23ceebec87783cb0d41ea0b94eb8e368d0088585dc8d3844dc39c559adf2",
+    "attributes": {
+      "id": "v18_080",
+      "sheet": "A",
+      "index": 79,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Filipino",
+      "appearance_brief": "Filipino male, apparent age 24; face: long rectangular; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: small defined mouth; hair: close buzz cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_084",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_084.png",
+    "sha256": "6668533caef9f7ce1cb1a111a46f8480793fffd5f4bfea8831cd4cb1e9abc44b",
+    "attributes": {
+      "id": "v18_084",
+      "sheet": "A",
+      "index": 83,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 18; face: heart shaped; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: full lower lip; hair: short two block cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_085",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_085.png",
+    "sha256": "a84f7f6e6b5baab63052202437ce9baf308e99a32428adec3b87b8c032f38424",
+    "attributes": {
+      "id": "v18_085",
+      "sheet": "A",
+      "index": 84,
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 21; face: heart shaped; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: wide curved mouth; hair: short tight curls; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_098",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_098.png",
+    "sha256": "2e5d70bf9cf37e65a9cf57ef7017e79f0be3f3420d50437a3611f57a82b3fc8f",
+    "attributes": {
+      "id": "v18_098",
+      "sheet": "A",
+      "index": 97,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 29; face: long rectangular; eyes: wide set almond eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: full lower lip; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_122",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_122.png",
+    "sha256": "42888af2bf15003b2e20d11da64d8315a24a13ace08fc52d2000c2b32492096c",
+    "attributes": {
+      "id": "v18_122",
+      "sheet": "B",
+      "index": 21,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 18; face: triangular narrow chin; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short crew cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_135",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_135.png",
+    "sha256": "8970de8deebca16a0fea0543628dcb262c0d9ae759d5999f1b9e2c8724f453a6",
+    "attributes": {
+      "id": "v18_135",
+      "sheet": "B",
+      "index": 34,
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 21; face: long rectangular; eyes: upswept eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short tight curls; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_144",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_144.png",
+    "sha256": "55c27d7718237cb4b77f6cfa8d8e46e141dbb0784d023ff9d02ebea3ec9f2492",
+    "attributes": {
+      "id": "v18_144",
+      "sheet": "B",
+      "index": 43,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: long rectangular; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: close buzz cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_152",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_152.png",
+    "sha256": "6ea07363712059e1ff03193585fef5b176013adfb604a486acdab774ee794edb",
+    "attributes": {
+      "id": "v18_152",
+      "sheet": "B",
+      "index": 51,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: heart shaped; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: long tied back hair; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_154",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_154.png",
+    "sha256": "f8929dff13e1d72a2a1db5a4d21ae2af390292f04e130e45f64f9e1f04b6ef58",
+    "attributes": {
+      "id": "v18_154",
+      "sheet": "B",
+      "index": 53,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: triangular narrow chin; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: full lower lip; hair: short crew cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_185",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_185.png",
+    "sha256": "88194e8336c609139a61f15eacecc74c20e6ba60d935565f52fd4aceb312c5e1",
+    "attributes": {
+      "id": "v18_185",
+      "sheet": "B",
+      "index": 84,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 29; face: oval high cheekbones; eyes: round open eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short crew cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_198",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_198.png",
+    "sha256": "e1551ce812a6cb907b8e8f5eacc614f931a4a0e7a49503dd26fea5c06e865dab",
+    "attributes": {
+      "id": "v18_198",
+      "sheet": "B",
+      "index": 97,
+      "age": 36,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 36; face: round full cheeks; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round01/v18_199",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round01__v18_199.png",
+    "sha256": "e29046b53c57dbbb886bbd56e21e9f90d9cf1f3a3c3f8c3e6368296ee4d1eeb1",
+    "attributes": {
+      "id": "v18_199",
+      "sheet": "B",
+      "index": 98,
+      "age": 37,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 37; face: round full cheeks; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: full lower lip; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round02_natural/v18_092",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round02_natural__v18_092.png",
+    "sha256": "c87c47b2f050e7f112fae813a3f0b6c4526b2407f327164e922942a3449e436c",
+    "attributes": {
+      "id": "v18_092",
+      "sheet": "A",
+      "index": 91,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: heart shaped; eyes: upswept eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short two block cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round02_natural/v18_102",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round02_natural__v18_102.png",
+    "sha256": "929f399a8c4946960454941b81df683b1bd297809cf294afb28811b3f509315a",
+    "attributes": {
+      "id": "v18_102",
+      "sheet": "B",
+      "index": 1,
+      "age": 19,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round02_natural/v18_106",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round02_natural__v18_106.png",
+    "sha256": "f7257063f8d2084c71ce90303064d0d3d173dd986d3226ec7716651aece672c8",
+    "attributes": {
+      "id": "v18_106",
+      "sheet": "B",
+      "index": 5,
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 20; face: long rectangular; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: average athletic; skin tone: light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round02_natural/v18_109",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round02_natural__v18_109.png",
+    "sha256": "259b7e02bb9fa6e4279a0e1a018372f74a778dd8bf8f0d82a0141d6d364c7a27",
+    "attributes": {
+      "id": "v18_109",
+      "sheet": "B",
+      "index": 8,
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 20; face: long rectangular; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short straight fringe; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_002",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_002.png",
+    "sha256": "92162fd7d99074ca6c1ac622a4b986ff17e731e118d83be9e2515567d2a710b3",
+    "attributes": {
+      "id": "v18_002",
+      "sheet": "A",
+      "index": 1,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 30; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short tight curls; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_003",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_003.png",
+    "sha256": "6ae13072e7bb035fbd52d3ece4ba52a538f7cd3e829558fc05b851d66e1dcfcb",
+    "attributes": {
+      "id": "v18_003",
+      "sheet": "A",
+      "index": 2,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 25; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: thin wide lips; hair: short straight fringe; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_007",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_007.png",
+    "sha256": "45f9158b7718cd32d7342459a654c74d88031e2009a75e7e2b34b44cbd03f9ff",
+    "attributes": {
+      "id": "v18_007",
+      "sheet": "A",
+      "index": 6,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 29; face: heart shaped; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short tight curls; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_014",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_014.png",
+    "sha256": "df5108c9015310c6ab026e07b96c2d86c10cf2defaef32a0f6031dc7e9d40dc2",
+    "attributes": {
+      "id": "v18_014",
+      "sheet": "A",
+      "index": 13,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 30; face: heart shaped; eyes: round open eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: thin wide lips; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_015",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_015.png",
+    "sha256": "499866e50f0bacb9c2fa640b34a06c55c6e7a6a06eca1013be96c758811e809a",
+    "attributes": {
+      "id": "v18_015",
+      "sheet": "A",
+      "index": 14,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 25; face: long rectangular; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: long tied back hair; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_017",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_017.png",
+    "sha256": "b997e8604d8bfd4676e8c4bff23f0e6423bfad6ea6a0ab3a476af25cdaabac13",
+    "attributes": {
+      "id": "v18_017",
+      "sheet": "A",
+      "index": 16,
+      "age": 27,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 27; face: square wide jaw; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_010",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_010.png",
+    "sha256": "6dd82cf01aa5ed09fa374106838940a11d365bdd1bcfe99318aedc2987925422",
+    "attributes": {
+      "id": "v18_010",
+      "sheet": "A",
+      "index": 9,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "US White",
+      "appearance_brief": "US White male, apparent age 26; face: heart shaped; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_019",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_019.png",
+    "sha256": "c43a2ddf1ab0ff44e96992103c5f2c447bc05c3fd358adb7ff68362b1e42b845",
+    "attributes": {
+      "id": "v18_019",
+      "sheet": "A",
+      "index": 18,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "US Black",
+      "appearance_brief": "US Black male, apparent age 29; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_042",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_042.png",
+    "sha256": "63fc5fd8f1ce061adf8d51f73332b1d36d98aa652430c6ecf8f006a46b18f43b",
+    "attributes": {
+      "id": "v18_042",
+      "sheet": "A",
+      "index": 41,
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "Venezuelan Latino",
+      "appearance_brief": "Venezuelan Latino male, apparent age 34; face: triangular narrow chin; eyes: upswept eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: thin wide lips; hair: long tied back hair; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_040",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_040.png",
+    "sha256": "90faefa86d51e0fc60edfe4cbaea942bf6a89b35392436ab778b3b632a560942",
+    "attributes": {
+      "id": "v18_040",
+      "sheet": "A",
+      "index": 39,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "appearance_brief": "Dominican Latino male, apparent age 32; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_041",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_041.png",
+    "sha256": "ba4d846d0b3d10e6b13dbb1f6ca744df8f5ecf497a95dd85fe2188cb1b5b082d",
+    "attributes": {
+      "id": "v18_041",
+      "sheet": "A",
+      "index": 40,
+      "age": 27,
+      "sex": "male",
+      "ethnicity": "Venezuelan Latino",
+      "appearance_brief": "Venezuelan Latino male, apparent age 27; face: oval high cheekbones; eyes: round open eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_043",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_043.png",
+    "sha256": "11ed152ab1627c5132dafd0b76f8764a36e72e4095b8025c6704d618d69b8fd1",
+    "attributes": {
+      "id": "v18_043",
+      "sheet": "A",
+      "index": 42,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "Venezuelan Latino",
+      "appearance_brief": "Venezuelan Latino male, apparent age 29; face: long rectangular; eyes: round open eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_046",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_046.png",
+    "sha256": "6ba77baee39e53c2bbd9e88731183f8ef28af3424603f39ff7f1a68d62288b32",
+    "attributes": {
+      "id": "v18_046",
+      "sheet": "A",
+      "index": 45,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Venezuelan Latino",
+      "appearance_brief": "Venezuelan Latino male, apparent age 26; face: oval high cheekbones; eyes: round open eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_047",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_047.png",
+    "sha256": "bcaf7cf5940eca53b6896ec821c5a0cb034e9ec7aa412df81ce6738c25901c6a",
+    "attributes": {
+      "id": "v18_047",
+      "sheet": "A",
+      "index": 46,
+      "age": 33,
+      "sex": "male",
+      "ethnicity": "Venezuelan Latino",
+      "appearance_brief": "Venezuelan Latino male, apparent age 33; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: thin wide lips; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_050",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_050.png",
+    "sha256": "c5b5c0b7fac5674f7470fcd19379fa9fca75b41d34bb1dc2160a742c50b6d695",
+    "attributes": {
+      "id": "v18_050",
+      "sheet": "A",
+      "index": 49,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "Mexican Latino",
+      "appearance_brief": "Mexican Latino male, apparent age 30; face: heart shaped; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_049",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_049.png",
+    "sha256": "3dbe7c9e5fd6d68a691d28ad1ec56797d62543fdc742852bd5d614ff5fa9f4c7",
+    "attributes": {
+      "id": "v18_049",
+      "sheet": "A",
+      "index": 48,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Mexican Latino",
+      "appearance_brief": "Mexican Latino male, apparent age 23; face: square wide jaw; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: wide curved mouth; hair: long tied back hair; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_053",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_053.png",
+    "sha256": "1da3d6859be1d1b2faa0e481c49f65e83c143c1f7d53ee0ae080b54283ff3aac",
+    "attributes": {
+      "id": "v18_053",
+      "sheet": "A",
+      "index": 52,
+      "age": 27,
+      "sex": "male",
+      "ethnicity": "Cuban Latino",
+      "appearance_brief": "Cuban Latino male, apparent age 27; face: heart shaped; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: short tight curls; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_056",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_056.png",
+    "sha256": "8dc6f3b69fc50af4b7ff3788f48f7880d54ef828fb9b30afd2ef4a6ce3f62710",
+    "attributes": {
+      "id": "v18_056",
+      "sheet": "A",
+      "index": 55,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Puerto Rican Latino",
+      "appearance_brief": "Puerto Rican Latino male, apparent age 24; face: long rectangular; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_057",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_057.png",
+    "sha256": "04aeadde1d9c2d931b4e0a4d5dcdc6c83c4e2604fec1d40e3a61b7d478181a58",
+    "attributes": {
+      "id": "v18_057",
+      "sheet": "A",
+      "index": 56,
+      "age": 31,
+      "sex": "male",
+      "ethnicity": "Canadian White",
+      "appearance_brief": "Canadian White male, apparent age 31; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short side part; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_059",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_059.png",
+    "sha256": "3fdd8a5a0e8737ce22bfc45f3452eb17132d212b12dc62d03ed0e3b2db98c7c3",
+    "attributes": {
+      "id": "v18_059",
+      "sheet": "A",
+      "index": 58,
+      "age": 33,
+      "sex": "male",
+      "ethnicity": "Caribbean Black",
+      "appearance_brief": "Caribbean Black male, apparent age 33; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_060",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_060.png",
+    "sha256": "1f8928b14145ab61eac16c63e12dd43c75eee281497e7b3e627f455e76773d6c",
+    "attributes": {
+      "id": "v18_060",
+      "sheet": "A",
+      "index": 59,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Caribbean Black",
+      "appearance_brief": "Caribbean Black male, apparent age 28; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: full lower lip; hair: short tight curls; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_058",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_058.png",
+    "sha256": "102fd7ca425a637f4ddaba00636786c6e4aaf091c98f0922e2132c4fd3fbca27",
+    "attributes": {
+      "id": "v18_058",
+      "sheet": "A",
+      "index": 57,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Canadian White",
+      "appearance_brief": "Canadian White male, apparent age 26; face: heart shaped; eyes: upswept eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_064",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_064.png",
+    "sha256": "69e0dba0f46163d543101220fa879a76962a27b269d9c3f76b11845171d314ca",
+    "attributes": {
+      "id": "v18_064",
+      "sheet": "A",
+      "index": 63,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "Japanese",
+      "appearance_brief": "Japanese male, apparent age 32; face: heart shaped; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_069",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_069.png",
+    "sha256": "d97f0a457af213679efb2ae6f47804710a6edbffeecc2bcbdb9b42a9ffe591c2",
+    "attributes": {
+      "id": "v18_069",
+      "sheet": "A",
+      "index": 68,
+      "age": 31,
+      "sex": "male",
+      "ethnicity": "Taiwanese",
+      "appearance_brief": "Taiwanese male, apparent age 31; face: long rectangular; eyes: wide set almond eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_072",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_072.png",
+    "sha256": "b0f85eec90d49e82ba8df951579da6020930765d49490f106fa6dabce4be88ae",
+    "attributes": {
+      "id": "v18_072",
+      "sheet": "A",
+      "index": 71,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Taiwanese",
+      "appearance_brief": "Taiwanese male, apparent age 28; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_086",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_086.png",
+    "sha256": "9abffac533338b4de4ccb74715589b1c840d9ab10615ebc7c351d910e523f4f0",
+    "attributes": {
+      "id": "v18_086",
+      "sheet": "A",
+      "index": 85,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: close buzz cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_087",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_087.png",
+    "sha256": "8a98251e898d1bef8bb6061f8faa5aec166e19b1bb8658571ac917ec37348b50",
+    "attributes": {
+      "id": "v18_087",
+      "sheet": "A",
+      "index": 86,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 23; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: thin wide lips; hair: close buzz cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_088",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_088.png",
+    "sha256": "c92144670ee23dd784f356245b047a9506f48fd1c7b1f70315ab94b9a5afbd79",
+    "attributes": {
+      "id": "v18_088",
+      "sheet": "A",
+      "index": 87,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: short straight fringe; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_089",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_089.png",
+    "sha256": "f251a3f34bb171b5a25204ec791bd982b123ddea08cebfdcafce106d85806bd9",
+    "attributes": {
+      "id": "v18_089",
+      "sheet": "A",
+      "index": 88,
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 21; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: short two block cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_090",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_090.png",
+    "sha256": "12d4fed914db67764f8b1bb07ac445674bdea2f20852742381157c5ab4f7d024",
+    "attributes": {
+      "id": "v18_090",
+      "sheet": "A",
+      "index": 89,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: long rectangular; eyes: round open eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short side part; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_091",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_091.png",
+    "sha256": "f2fb333cc4102acca07681f0b9d493fa31d1d63d86448fea2e5de2e2496f174e",
+    "attributes": {
+      "id": "v18_091",
+      "sheet": "A",
+      "index": 90,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 23; face: triangular narrow chin; eyes: upswept eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short two block cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_093",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_093.png",
+    "sha256": "70c3edc0282d80c2dda884898fca958fffa02d7bf19a09d31e8cfb46f15f03ab",
+    "attributes": {
+      "id": "v18_093",
+      "sheet": "A",
+      "index": 92,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 25; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_094",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_094.png",
+    "sha256": "3546546fec0cbed57b6538a12808cf49449f368c127ea9db0a435a12d76fb9bc",
+    "attributes": {
+      "id": "v18_094",
+      "sheet": "A",
+      "index": 93,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 26; face: round full cheeks; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short two block cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_099",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_099.png",
+    "sha256": "c4354f2065e4283cb13c35195e134451f1ad32e5d862a551e786a2d2bc79e9e0",
+    "attributes": {
+      "id": "v18_099",
+      "sheet": "A",
+      "index": 98,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 30; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: small defined mouth; hair: short straight fringe; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_100",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_100.png",
+    "sha256": "e789009d178fce48f7605f477b532d850d2444d99666520e2207a6194a6034ad",
+    "attributes": {
+      "id": "v18_100",
+      "sheet": "A",
+      "index": 99,
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 34; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: long tied back hair; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_107",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_107.png",
+    "sha256": "eaa04706ddf8be02ac8d6852bf7ab6b7ba9e169fac24dc8177219a3af8de1f6c",
+    "attributes": {
+      "id": "v18_107",
+      "sheet": "B",
+      "index": 6,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 18; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: full lower lip; hair: short side part; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_113",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_113.png",
+    "sha256": "c074fc0ecb1d4af5826558475ac192bfae61f267840deb5d44ab2737a78e4efa",
+    "attributes": {
+      "id": "v18_113",
+      "sheet": "B",
+      "index": 12,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 18; face: square wide jaw; eyes: upswept eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_112",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_112.png",
+    "sha256": "d27da0d8ebb82df726ca863fff947d904df6b546336ffe19f0877bfac43248f3",
+    "attributes": {
+      "id": "v18_112",
+      "sheet": "B",
+      "index": 11,
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 20; face: heart shaped; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_119",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_119.png",
+    "sha256": "52fb739b02fa71eebe99bc8b17ce866cbe50bfc2c982e234457dc5c868345824",
+    "attributes": {
+      "id": "v18_119",
+      "sheet": "B",
+      "index": 18,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 18; face: heart shaped; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_126",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_126.png",
+    "sha256": "5f832d86e1f7ce857495b2fab1f7769278d275b3e663a934a831b7214b5fbc7c",
+    "attributes": {
+      "id": "v18_126",
+      "sheet": "B",
+      "index": 25,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_125",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_125.png",
+    "sha256": "c7fbef31e9e047ba0f6c458b6ebd12d41518d492950746f9a0383699c36dafbd",
+    "attributes": {
+      "id": "v18_125",
+      "sheet": "B",
+      "index": 24,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 23; face: oval high cheekbones; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short tight curls; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_130",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_130.png",
+    "sha256": "87d8fa9e879617c056fba10065428f9049773e7064dd2d1b45cdc5a15f41b8bc",
+    "attributes": {
+      "id": "v18_130",
+      "sheet": "B",
+      "index": 29,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: long rectangular; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_131",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_131.png",
+    "sha256": "67d8ebe32c52a57311d54903c9a4fed1238fafe8d35594a891f8a7720385b917",
+    "attributes": {
+      "id": "v18_131",
+      "sheet": "B",
+      "index": 30,
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 21; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_133",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_133.png",
+    "sha256": "9fb2f0721a6bd3d7f24b734758c59c4197b2a165ff6b641242a21698450a0c75",
+    "attributes": {
+      "id": "v18_133",
+      "sheet": "B",
+      "index": 32,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 23; face: long rectangular; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_138",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_138.png",
+    "sha256": "7f7dfbe7ae8e27896b57fb0aa815a718086ef01221ba1ac605afbf796c579067",
+    "attributes": {
+      "id": "v18_138",
+      "sheet": "B",
+      "index": 37,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: full lower lip; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_142",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_142.png",
+    "sha256": "ae1f5cd25471dff2449533ef1a3a922b7563193a9a36e08715b74227ad3e1fb0",
+    "attributes": {
+      "id": "v18_142",
+      "sheet": "B",
+      "index": 41,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: thin wide lips; hair: long tied back hair; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_146",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_146.png",
+    "sha256": "0581e08e02ef0e9c61e1ac17b7bfb5417a433f68bbbca548fcaf5d98fb8caf7c",
+    "attributes": {
+      "id": "v18_146",
+      "sheet": "B",
+      "index": 45,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: long rectangular; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_140",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_140.png",
+    "sha256": "7ce40f92b85c940438634158af7688fd1a7f3e27ffcd41af2e6c9819ff849959",
+    "attributes": {
+      "id": "v18_140",
+      "sheet": "B",
+      "index": 39,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: square wide jaw; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short tight curls; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_149",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_149.png",
+    "sha256": "5cd50cc7f30326c075d85f864f29abb5f5e306036fde07d6e22e51b39707c6d8",
+    "attributes": {
+      "id": "v18_149",
+      "sheet": "B",
+      "index": 48,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 23; face: heart shaped; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: thin wide lips; hair: short straight fringe; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_150",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_150.png",
+    "sha256": "90911dccfe62ea5c7e6c1417057b96ca6673e1d12a7f42c11fa8dbafdce3f836",
+    "attributes": {
+      "id": "v18_150",
+      "sheet": "B",
+      "index": 49,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short two block cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_155",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_155.png",
+    "sha256": "527445b1558f5447ece9f6893d1aa9f379cfafc0c17bf6a10a09e9f4e3ab74f3",
+    "attributes": {
+      "id": "v18_155",
+      "sheet": "B",
+      "index": 54,
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 21; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: small defined mouth; hair: close buzz cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_162",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_162.png",
+    "sha256": "8765cc7a8ad3cde15553166a9b505f330c70347c37e3ce85167d39ea5bb9e6aa",
+    "attributes": {
+      "id": "v18_162",
+      "sheet": "B",
+      "index": 61,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 26; face: heart shaped; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: thin wide lips; hair: long tied back hair; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_168",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_168.png",
+    "sha256": "9b86ee6ee6966cce121eec80ebd93657a27104362e65237301f8e273dbb4e08a",
+    "attributes": {
+      "id": "v18_168",
+      "sheet": "B",
+      "index": 67,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 28; face: square wide jaw; eyes: round open eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: thin wide lips; hair: short tight curls; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "firefly/round03/v18_170",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/firefly__round03__v18_170.png",
+    "sha256": "8caba6c0b91620d16674475c982ad9fa9f6944cb849bd58988f28b5df2d588b6",
+    "attributes": {
+      "id": "v18_170",
+      "sheet": "B",
+      "index": 69,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 26; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_082",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_082.png",
+    "sha256": "58dda42cff186a03df5af6cac533257a65f77142fbd4d5bdba6d84ad9a637d0b",
+    "attributes": {
+      "id": "v18_082",
+      "sheet": "A",
+      "index": 81,
+      "age": 19,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_090",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_090.png",
+    "sha256": "0c1c3c70280d9947b4961dbfcd17c5dbee598493164b82d205d22ba0ec3475dd",
+    "attributes": {
+      "id": "v18_090",
+      "sheet": "A",
+      "index": 89,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: long rectangular; eyes: round open eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short side part; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_108",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_108.png",
+    "sha256": "01388a77d7d82a9296d3142931806aec9f9064f96adf92e6ef00db4a8b2ba791",
+    "attributes": {
+      "id": "v18_108",
+      "sheet": "B",
+      "index": 7,
+      "age": 19,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: upswept eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_115",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_115.png",
+    "sha256": "0d3177b4b98d574d64c72edeee9bb3113b702281b23474efefe6c03466ca85a1",
+    "attributes": {
+      "id": "v18_115",
+      "sheet": "B",
+      "index": 14,
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 20; face: round full cheeks; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_116",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_116.png",
+    "sha256": "db812fd68daa69d8a5f7d8a6c0655613c3f940beaf627f44518e79ac404f98dc",
+    "attributes": {
+      "id": "v18_116",
+      "sheet": "B",
+      "index": 15,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 18; face: heart shaped; eyes: round open eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: full lower lip; hair: close buzz cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_128",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_128.png",
+    "sha256": "d0a2140d1c586d957cdd730695a297749509bdd278ea1ca8a0ff548915126562",
+    "attributes": {
+      "id": "v18_128",
+      "sheet": "B",
+      "index": 27,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: round full cheeks; eyes: upswept eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_134",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_134.png",
+    "sha256": "52e0f7cc91279e1ef144aaf43bd6f644c3edc32d1f2355b2ccf17c1feed607d4",
+    "attributes": {
+      "id": "v18_134",
+      "sheet": "B",
+      "index": 33,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 24; face: heart shaped; eyes: round open eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: thin wide lips; hair: short side part; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_148",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_148.png",
+    "sha256": "58840d9df0c05568c26a9cedc35b616b14ea11a3656c990d6920e1947adbce5f",
+    "attributes": {
+      "id": "v18_148",
+      "sheet": "B",
+      "index": 47,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: square wide jaw; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: thin wide lips; hair: long tied back hair; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_169",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_169.png",
+    "sha256": "1a3b18cf1b172fc4033f92cebf54f193684b6f1ed21d9a150b900ec384c3e62f",
+    "attributes": {
+      "id": "v18_169",
+      "sheet": "B",
+      "index": 68,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 25; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_177",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_177.png",
+    "sha256": "18f7fffc19decde5b77e063c0ec50cf24948ef9d4c395143bc5a3859307be637",
+    "attributes": {
+      "id": "v18_177",
+      "sheet": "B",
+      "index": 76,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 25; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: wide curved mouth; hair: close buzz cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_179",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_179.png",
+    "sha256": "1ca05c4cbeb2c3e79901419ce006dfdffbecaef7586f28c6708ea02c2b7fbc44",
+    "attributes": {
+      "id": "v18_179",
+      "sheet": "B",
+      "index": 78,
+      "age": 27,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 27; face: square wide jaw; eyes: upswept eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_182",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_182.png",
+    "sha256": "538966642fbdcd85b3dd4607725b26d5f419ad2b96961624ae8b9dafcf1f1df5",
+    "attributes": {
+      "id": "v18_182",
+      "sheet": "B",
+      "index": 81,
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 26; face: heart shaped; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: short two block cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_184",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_184.png",
+    "sha256": "b584ab8475114059d7c3fc915914049f67f5b55bbd20cbb3690ad118297249be",
+    "attributes": {
+      "id": "v18_184",
+      "sheet": "B",
+      "index": 83,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 28; face: oval high cheekbones; eyes: upswept eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: small defined mouth; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_188",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_188.png",
+    "sha256": "7e06f8f7b15e72005755b5095619cdc9dc9f5751884f2a574cf39d0d31f17568",
+    "attributes": {
+      "id": "v18_188",
+      "sheet": "B",
+      "index": 87,
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 32; face: triangular narrow chin; eyes: upswept eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: thin wide lips; hair: short tight curls; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_190",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_190.png",
+    "sha256": "5d074e65931633097a5d6c75bc073d22c5e02df0214e28b4079a6bba7870fe7a",
+    "attributes": {
+      "id": "v18_190",
+      "sheet": "B",
+      "index": 89,
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 29; face: round full cheeks; eyes: round open eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: thin wide lips; hair: short side part; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_192",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_192.png",
+    "sha256": "0ea39df5debd82384074ccf9e26b877e9fe9ca83d62aee56b983292264abc80f",
+    "attributes": {
+      "id": "v18_192",
+      "sheet": "B",
+      "index": 91,
+      "age": 31,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 31; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: thin wide lips; hair: long tied back hair; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_191",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_191.png",
+    "sha256": "1d6606780e07e73af0481062a14393f50922e3ae5e552599041353c0e0a19658",
+    "attributes": {
+      "id": "v18_191",
+      "sheet": "B",
+      "index": 90,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 30; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: short tight curls; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "round04_single/v18_197",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/round04_single__v18_197.png",
+    "sha256": "c684ef95a29ea7841831666167f9135a0e6434e7f412caa25cfc12572af12569",
+    "attributes": {
+      "id": "v18_197",
+      "sheet": "B",
+      "index": 96,
+      "age": 35,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 35; face: square wide jaw; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b01_v18_189",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b01_v18_189.png",
+    "sha256": "046f57b843f0dad9c9a399888d6ec868fdb79d862bf2b4159db51576df57baf3",
+    "attributes": {
+      "id": "v18_189",
+      "sheet": "B",
+      "index": 88,
+      "age": 33,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 33; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b02_v18_176",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b02_v18_176.png",
+    "sha256": "b93817f9aa48d3f59562ec4cac76895d102cb2e477a3fca8b360becca5b005ab",
+    "attributes": {
+      "id": "v18_176",
+      "sheet": "B",
+      "index": 75,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 28; face: heart shaped; eyes: upswept eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b02_v18_068",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b02_v18_068.png",
+    "sha256": "1f4d18bf4db70af422b70f0c2e164423a2441afc9656a8b8038a5ab902d8636a",
+    "attributes": {
+      "id": "v18_068",
+      "sheet": "A",
+      "index": 67,
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Japanese",
+      "appearance_brief": "Japanese male, apparent age 24; face: square wide jaw; eyes: upswept eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: full lower lip; hair: long tied back hair; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b05_v18_129",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b05_v18_129.png",
+    "sha256": "b2a3c8b78a48d9ea0418afc1d8bd3148cc81d575715fefa72e897895462f9faf",
+    "attributes": {
+      "id": "v18_129",
+      "sheet": "B",
+      "index": 28,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 23; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b05_v18_160",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b05_v18_160.png",
+    "sha256": "85b458b7d119adfed8e203078134a7952e6e51ea43b7f93d6331732111aa7b0e",
+    "attributes": {
+      "id": "v18_160",
+      "sheet": "B",
+      "index": 59,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: square wide jaw; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b05_v18_176",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b05_v18_176.png",
+    "sha256": "0539cf6ee44492043932fa04f5c878b682d2a5b09a1dc031df6a00c49406329e",
+    "attributes": {
+      "id": "v18_176",
+      "sheet": "B",
+      "index": 75,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 28; face: heart shaped; eyes: upswept eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b06_v18_161",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b06_v18_161.png",
+    "sha256": "617ecaf5d6a120f3ac178d1d4d2add2f52e79ee0bacde6848b1a9348b7fceebf",
+    "attributes": {
+      "id": "v18_161",
+      "sheet": "B",
+      "index": 60,
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 25; face: round full cheeks; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b06_v18_180",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b06_v18_180.png",
+    "sha256": "d722912fe8e9d2e544a5ca16b9437dab78daa60a07b4bea81169537dcf3513f4",
+    "attributes": {
+      "id": "v18_180",
+      "sheet": "B",
+      "index": 79,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 28; face: long rectangular; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: long tied back hair; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b06_v18_172",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b06_v18_172.png",
+    "sha256": "6d3d420f616eaeaa85a2085961e651d93f7fa0725497e18e94fc7439e14ff084",
+    "attributes": {
+      "id": "v18_172",
+      "sheet": "B",
+      "index": 71,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 28; face: long rectangular; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: small defined mouth; hair: short tight curls; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b06_v18_186",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b06_v18_186.png",
+    "sha256": "b7fb21ec48458dc5a3bc0c262f83b04f65fd559317a16c6b209d5935432df976",
+    "attributes": {
+      "id": "v18_186",
+      "sheet": "B",
+      "index": 85,
+      "age": 30,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 30; face: heart shaped; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: full lower lip; hair: long tied back hair; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b07_v18_198",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b07_v18_198.png",
+    "sha256": "ed10415e3dba19db261c6d195bdad8d28c72ef76981247b3d2db0efbfdafed45",
+    "attributes": {
+      "id": "v18_198",
+      "sheet": "B",
+      "index": 97,
+      "age": 36,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 36; face: round full cheeks; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b09_v18_198",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b09_v18_198.png",
+    "sha256": "262a4a739521dee32f7b8f0f992b36e8ebc8ebe10011646ebebc9a8f12f7bf66",
+    "attributes": {
+      "id": "v18_198",
+      "sheet": "B",
+      "index": 97,
+      "age": 36,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 36; face: round full cheeks; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b12_v18_096",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b12_v18_096.png",
+    "sha256": "7f13bcbb5b4e06e2231e9f62341ca0d5c452b8b1fae99cc3b699226ff3a3b520",
+    "attributes": {
+      "id": "v18_096",
+      "sheet": "A",
+      "index": 95,
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 28; face: long rectangular; eyes: round open eyes; eyebrows: low broad brows; nose: low wide nose; mouth: wide curved mouth; hair: short straight fringe; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b12_v18_189",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b12_v18_189.png",
+    "sha256": "3ea70cd7edfed2e6b4858a924c0351ac3419360e8add8db24eedd39c7e21c343",
+    "attributes": {
+      "id": "v18_189",
+      "sheet": "B",
+      "index": 88,
+      "age": 33,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 33; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r05_b08_v18_156",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r05_b08_v18_156.png",
+    "sha256": "5acd3e4f5fad849aad381fd0db8103c6a051f3c6b6062041b6a742e5f47441b3",
+    "attributes": {
+      "id": "v18_156",
+      "sheet": "B",
+      "index": 55,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: short two block cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "nano/v18_145",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/nano__v18_145.png",
+    "sha256": "fa80f58d83cba83fbcc86a1d12ac5e819a1a8f5950e42164fadb5fb97c0ffed9",
+    "attributes": {
+      "id": "v18_145",
+      "sheet": "B",
+      "index": 44,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 23; face: heart shaped; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: short two block cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "nano/v18_153",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/nano__v18_153.png",
+    "sha256": "ac2e53872926090853cafdfc072b833370142eb2af2100831c1495f12a399100",
+    "attributes": {
+      "id": "v18_153",
+      "sheet": "B",
+      "index": 52,
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 23; face: heart shaped; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "cleanup/v18_083",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/cleanup__v18_083.png",
+    "sha256": "a3d0d686180c06c4b6a3d35b9e4fc2de9bc84e447f3c85c6e6d2d6edc0dc3e02",
+    "attributes": {
+      "id": "v18_083",
+      "sheet": "A",
+      "index": 82,
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male age20; oval face; almond dark eyes; gently arched brows; straight medium bridge nose; defined upper lip and fuller lower lip; short side swept dark hair; lean athletic build; medium-light skin; no accessories; clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "cleanup/v18_104",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/cleanup__v18_104.png",
+    "sha256": "0b986f8c7fa0a4c7c2cd5eb41f8936df25e01fde223418ed9841e4ca59beacdd",
+    "attributes": {
+      "id": "v18_104",
+      "sheet": "B",
+      "index": 3,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male age18; oval face with gently prominent cheekbones; dark almond eyes; thick arched brows; straight nose; moderate full lips; very close buzz cut; average athletic build; medium-light skin; thin rectangular metal glasses; clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "cleanup/v18_106",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/cleanup__v18_106.png",
+    "sha256": "46eeff57717a56f9e950b65165b8a271d301977a52a6ae2542e67244e5b9f503",
+    "attributes": {
+      "id": "v18_106",
+      "sheet": "B",
+      "index": 5,
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male age20; narrow rounded oval face; slightly upswept almond eyes; straight medium brows; rounded nose tip; softly defined lips; short dark side fringe; lean athletic build; light skin; slim dark rectangular glasses; clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "cleanup/v18_109",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/cleanup__v18_109.png",
+    "sha256": "27021700578fc1358d49fe3e5c491766a07ff285d15e2e06fc0b2bb3ed071e07",
+    "attributes": {
+      "id": "v18_109",
+      "sheet": "B",
+      "index": 8,
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male age20; oval face and moderate cheekbones; small almond eyes; straight thick brows; straight medium-width nose; defined upper and fuller lower lip; neat short side part; lean athletic build; medium-light skin; no accessories; clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "pilot_012",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/pilot_012.png",
+    "sha256": "36cf2eec5541e567616c40a47ddc0cb12915134a7bac5ce6f5cb17911cd2ccdd",
+    "attributes": {
+      "id": "v18_082",
+      "sheet": "A",
+      "index": 81,
+      "age": 19,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "pilot_019",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/pilot_019.png",
+    "sha256": "12317bb0b4dcad54b54c4c0d3ac6b65957aedb537adf392d7cb8806474e9e710",
+    "attributes": {
+      "id": "v18_082",
+      "sheet": "A",
+      "index": 81,
+      "age": 19,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "r06_b01_07",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r06_b01_07.png",
+    "sha256": "64e19766e09e7b18793d6b71931d77823ec4ee6c5a5db98d3488b4c36d0650aa",
+    "attributes": {
+      "id": "r06_b01_07",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 25,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Korean male, apparent age 25; face: long oval face; eyes: almond eyes with a subtle natural double eyelid; eyebrows: softly sloping medium brows; nose: a subtly convex bridge and a neat tip; mouth: a softly curved medium-width mouth; hair: short natural loose waves in natural black or dark brown; body: solid athletic catcher build; skin: light tan within a natural East Asian range; accessories: none; facial hair: a neat modest moustache and chin beard."
+    }
+  },
+  {
+    "candidate_key": "r06_b01_14",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r06_b01_14.png",
+    "sha256": "ac5161f97ec8671034397e17ceea4cfc5a550c7658804df9a0be4c2eff59c5f3",
+    "attributes": {
+      "id": "r06_b01_14",
+      "sex": "male",
+      "ethnicity": "Japanese",
+      "age": 27,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Japanese male, apparent age 27; face: rounded cheeks and a balanced chin; eyes: medium rounded almond eyes; eyebrows: gently arched finer brows; nose: a short straight bridge and rounded nose tip; mouth: a thinner upper and fuller lower lip; hair: close buzz cut in natural black or dark brown; body: lean athletic; skin: naturally medium tan within a natural East Asian range; accessories: none; facial hair: freshly clean shaven."
+    }
+  },
+  {
+    "candidate_key": "r06_b13_13",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r06_b13_13.png",
+    "sha256": "98f0f82448dea6579d28ddd324b5b961f23a3bcee249af0f82989368201d80f3",
+    "attributes": {
+      "id": "r06_b13_13",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 20,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 20; face: long oval face; eyes: medium rounded almond eyes; eyebrows: softly sloping medium brows; nose: a subtly convex bridge and a neat tip; mouth: a defined Cupid bow and natural medium lips; hair: short natural loose waves in natural black or dark brown; body: solid athletic catcher build; skin: fair neutral within a natural East Asian range; accessories: none; facial hair: freshly clean shaven."
+    }
+  },
+  {
+    "candidate_key": "r08_b02_05",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r08_b02_05.png",
+    "sha256": "d81e63a033562679c1c84f8314ae413f9623298da57855fab6da01198ebd36ff",
+    "attributes": {
+      "id": "r08_b02_05",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 27,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 27; face: broad oval with rounded jaw and full cheeks; eyes: medium almond eyes with subtle eyelid folds; eyebrows: fine straight brows; nose: medium broad nose with natural nostrils; mouth: moderate narrow mouth and defined lips; hair: black short unstyled straight hair; build: stocky strong athlete; skin: deep warm tan; accessories: none; facial hair: clean shaven."
+    }
+  },
+  {
+    "candidate_key": "r08_b01_01",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r08_b01_01.png",
+    "sha256": "b906417e12825d7bff62614f8e2b67758bdc96c5252058ed994a2061afe179d2",
+    "attributes": {
+      "id": "r08_b01_01",
+      "sex": "male",
+      "ethnicity": "US White",
+      "age": 33,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "US White male, apparent age 33; face: subtly square face and soft chin; eyes: medium almond eyes with subtle eyelid folds; eyebrows: softly arched full brows; nose: medium broad nose with natural nostrils; mouth: broad softly curved mouth; hair: black short soft wavy hair; build: broad muscular catcher; skin: medium warm tan; accessories: none; facial hair: clean shaven."
+    }
+  },
+  {
+    "candidate_key": "r08_b01_02",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r08_b01_02.png",
+    "sha256": "058d3ec12ec7ec5583012199395326f7b60357af18066d25afcb9dfb2d642c92",
+    "attributes": {
+      "id": "r08_b01_02",
+      "sex": "male",
+      "ethnicity": "Dominican Latino",
+      "age": 25,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Dominican Latino male, apparent age 25; face: heart shaped face with moderate chin; eyes: slender slightly downturned almond eyes; eyebrows: fine straight brows; nose: slender moderate bridge and a soft tip; mouth: moderate narrow mouth and defined lips; hair: black short side part; build: stocky strong athlete; skin: fair neutral; accessories: none; facial hair: clean shaven."
+    }
+  },
+  {
+    "candidate_key": "r08_b01_08",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r08_b01_08.png",
+    "sha256": "be2b4a35ef5f3bb5a93c850ddae817eca0f250276ce400e1d65dbe576f4314a8",
+    "attributes": {
+      "id": "r08_b01_08",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 32,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Korean male, apparent age 32; face: broad oval with rounded jaw and full cheeks; eyes: ordinary hooded eyes with a soft crease; eyebrows: short straight medium brows; nose: slightly convex bridge with normal-sized tip; mouth: thin upper lip and fuller lower lip; hair: black short natural crew cut; build: average athletic; skin: fair neutral; accessories: none; facial hair: neat moustache and chin stubble."
+    }
+  },
+  {
+    "candidate_key": "r08_b09_10",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r08_b09_10.png",
+    "sha256": "fa37931f0614152a516e417e0c2431b125b4d38acbe57b4cabdce4565a15b14c",
+    "attributes": {
+      "id": "r08_b09_10",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 26,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 26; face: heart shaped face with moderate chin; eyes: ordinary hooded eyes with a soft crease; eyebrows: fine straight brows; nose: slightly convex bridge with normal-sized tip; mouth: moderate narrow mouth and defined lips; hair: black short side part; build: stocky strong athlete; skin: medium neutral; accessories: none; facial hair: clean shaven."
+    }
+  },
+  {
+    "candidate_key": "r08_b21_04",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r08_b21_04.png",
+    "sha256": "38e4fbab853608928bf904983c1af96bc27658f11f123a2987b4ebd5e0c3cdb2",
+    "attributes": {
+      "id": "r08_b21_04",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 32,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 32; face: broad oval with rounded jaw and full cheeks; eyes: small straight monolid eyes; eyebrows: fine straight brows; nose: low bridge and moderately wide rounded tip; mouth: thin upper lip and fuller lower lip; hair: black short natural crew cut; build: average athletic; skin: medium neutral; accessories: none; facial hair: clean shaven."
+    }
+  },
+  {
+    "candidate_key": "r09_07",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r09_07.png",
+    "sha256": "bef75f98683d3bbbcb5f15193fc09eb4d7e527e055f5913f46f7c59f931122f4",
+    "attributes": {
+      "id": "r09_07",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 26,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 26; oval face with gently angular jaw, medium almond eyes set at normal distance, soft thick brows, slightly convex medium nose, moderate narrow lips, short naturally curled black hair, ordinary athletic build, light warm tan skin; accessories: none; facial hair: clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_00",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_00.png",
+    "sha256": "184318e91cd2fd75541ad5a045a19e3162e61a84ce7ce523d7f547909c53f8bd",
+    "attributes": {
+      "id": "freechar_00",
+      "sex": "male",
+      "ethnicity": "Japanese",
+      "age": 27,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Japanese male, apparent age 27; soft oval face, almond eyes, straight medium brows, a straight medium nose and defined natural lips; short neat parted hair in black; athletic athletic build; natural medium-light to tan skin; no eyewear or other accessories; neat goatee."
+    }
+  },
+  {
+    "candidate_key": "freechar_01",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_01.png",
+    "sha256": "f01e423a268a6df050e204430e411493d5492bdd917f63a405a1e3d6f4f926b9",
+    "attributes": {
+      "id": "freechar_01",
+      "sex": "male",
+      "ethnicity": "Japanese",
+      "age": 30,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Japanese male, apparent age 30; gently angular face, slightly hooded eyes, softly arched brows, a rounded nose tip and moderate lips; short neat parted hair in dark brown; slim athletic build; natural medium-light to tan skin; no eyewear or other accessories; completely clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_02",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_02.png",
+    "sha256": "83c738e6a1bcd371a1f57f7dcda64c9cc16b1bae13181cf029e4391a7744a65e",
+    "attributes": {
+      "id": "freechar_02",
+      "sex": "male",
+      "ethnicity": "Taiwanese",
+      "age": 26,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Taiwanese male, apparent age 26; rounder cheeks, narrow almond eyes, medium straight brows, a low-to-medium nasal bridge and a gentle curved mouth; close buzz cut in black; athletic athletic build; natural medium-light to tan skin; no eyewear or other accessories; neat moustache."
+    }
+  },
+  {
+    "candidate_key": "freechar_03",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_03.png",
+    "sha256": "4b804bace36de26e19ce33e618613ee382945fe2f9d91abe2cd318fc1fd2cd89",
+    "attributes": {
+      "id": "freechar_03",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 19,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 19; long oval face, ordinary open almond eyes, natural thick brows, a straight nose and a fuller lower lip; short neat parted hair in black; slim athletic build; natural medium-light to tan skin; no eyewear or other accessories; completely clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_04",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_04.png",
+    "sha256": "6e33f7556f561142dab3927a333d58068af019a29bfec18fcb48b99496150108",
+    "attributes": {
+      "id": "freechar_04",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 21,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 21; soft oval face, almond eyes, straight medium brows, a straight medium nose and defined natural lips; short neat parted hair in black; athletic athletic build; natural medium-light to tan skin; no eyewear or other accessories; completely clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_05",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_05.png",
+    "sha256": "d4170bbeeb3e5b644402eb9e1cbb3962d99be328d918fbb6dd5ce76899e7b9df",
+    "attributes": {
+      "id": "freechar_05",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 22,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 22; gently angular face, slightly hooded eyes, softly arched brows, a rounded nose tip and moderate lips; close buzz cut in black; muscular athletic build; natural medium-light to tan skin; no eyewear or other accessories; completely clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_06",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_06.png",
+    "sha256": "e797247e93aca1093cdfdf4c29f89c11d7e66d36446584c562beab06ffbd43db",
+    "attributes": {
+      "id": "freechar_06",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 23,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Korean male, apparent age 23; rounder cheeks, narrow almond eyes, medium straight brows, a low-to-medium nasal bridge and a gentle curved mouth; short neat parted hair in dark brown; athletic athletic build; natural medium-light to tan skin; no eyewear or other accessories; neat moustache."
+    }
+  },
+  {
+    "candidate_key": "freechar_07",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_07.png",
+    "sha256": "d3d0137c5206ee4432f17cd2c51cc57a439d54f62057c255292f095292b34438",
+    "attributes": {
+      "id": "freechar_07",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 24,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 24; long oval face, ordinary open almond eyes, natural thick brows, a straight nose and a fuller lower lip; short neat parted hair in black; slim athletic build; natural medium-light to tan skin; no eyewear or other accessories; completely clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_08",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_08.png",
+    "sha256": "d365c686877684d2d9e263dd54775fb679562bf001b92b6f41c933ecbc6bd705",
+    "attributes": {
+      "id": "freechar_08",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 25,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Korean male, apparent age 25; soft oval face, almond eyes, straight medium brows, a straight medium nose and defined natural lips; short neat parted hair in black; athletic athletic build; natural medium-light to tan skin; no eyewear or other accessories; neat goatee."
+    }
+  },
+  {
+    "candidate_key": "freechar_09",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_09.png",
+    "sha256": "13bb751350a288bd549400829db18f19967b6092b76ae80893017b5dffa61ddb",
+    "attributes": {
+      "id": "freechar_09",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 26,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 26; gently angular face, slightly hooded eyes, softly arched brows, a rounded nose tip and moderate lips; short neat parted hair in dark brown; slim athletic build; natural medium-light to tan skin; no eyewear or other accessories; completely clean shaven."
+    }
+  },
+  {
+    "candidate_key": "r09_20",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/r09_20.png",
+    "sha256": "26a9ce5098035bd3d43d7a3c990792234a8d0c49f2be4df1ef0c5d1b1f12647b",
+    "attributes": {
+      "id": "r09_20",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 23,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 23; moderate rectangular face with natural prominent cheekbones, medium natural double eyelid eyes, thick straight brows, low bridge with narrow tip, thin upper and medium lower lip, close cropped hair with slightly high hairline, lean athletic build, medium olive tan skin; accessories: none; facial hair: clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_10",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_10.png",
+    "sha256": "0193692d3e4085bcff59df0b56d92ce515d1792d21f43e10115d24531ac5c775",
+    "attributes": {
+      "id": "freechar_10",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 27,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Korean male, apparent age 27; rounder cheeks, narrow almond eyes, medium straight brows, a low-to-medium nasal bridge and a gentle curved mouth; close buzz cut in black; athletic athletic build; natural medium-light to tan skin; no eyewear or other accessories; neat stubble."
+    }
+  },
+  {
+    "candidate_key": "freechar_11",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_11.png",
+    "sha256": "81742fae3c1d53be7a47485a4c5c9d9cb8b9bdc32091731059d1cd300f62f1c5",
+    "attributes": {
+      "id": "freechar_11",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 28,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Korean male, apparent age 28; long oval face, ordinary open almond eyes, natural thick brows, a straight nose and a fuller lower lip; short neat parted hair in black; athletic athletic build; natural medium-light to tan skin; no eyewear or other accessories; neat moustache."
+    }
+  },
+  {
+    "candidate_key": "freechar_12",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_12.png",
+    "sha256": "5a423ceb65300f2d84787ae13a9578c783d32de6b963e98e93cffdd0f2f1a1af",
+    "attributes": {
+      "id": "freechar_12",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 25,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 25; soft oval face, almond eyes, straight medium brows, a straight medium nose and defined natural lips; short neat parted hair in black; slim athletic build; natural medium-light to tan skin; no eyewear or other accessories; completely clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_13",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_13.png",
+    "sha256": "ea2711aef3d3d6d4e35ef85d715304eb50468e8fcbe0c5b46bf209e23c989751",
+    "attributes": {
+      "id": "freechar_13",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 27,
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "appearance_brief": "Korean male, apparent age 27; gently angular face, slightly hooded eyes, softly arched brows, a rounded nose tip and moderate lips; short neat parted hair in dark brown; athletic athletic build; natural medium-light to tan skin; no eyewear or other accessories; completely clean shaven."
+    }
+  },
+  {
+    "candidate_key": "freechar_14",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/freechar_14.png",
+    "sha256": "b73b41ef11a89dbb2f0b147ca5a4bd9143fff3f72e8ad276c0d71f45aaa22a8b",
+    "attributes": {
+      "id": "freechar_14",
+      "sex": "male",
+      "ethnicity": "Korean",
+      "age": 31,
+      "tags": {
+        "glasses": false,
+        "facial_hair": true
+      },
+      "appearance_brief": "Korean male, apparent age 31; rounder cheeks, narrow almond eyes, medium straight brows, a low-to-medium nasal bridge and a gentle curved mouth; short neat parted hair in black; muscular athletic build; natural medium-light to tan skin; no eyewear or other accessories; neat goatee."
+    }
+  },
+  {
+    "candidate_key": "clean_young/firefly/round03/v18_118",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/clean_young__firefly__round03__v18_118.png",
+    "sha256": "1babf9e63c557df7f910707014a2bf30b23f6b56b60dc2c23cc05561dff1410a",
+    "attributes": {
+      "id": "v18_118",
+      "sheet": "B",
+      "index": 17,
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 20; face: heart shaped; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: full lower lip; hair: short straight fringe; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "clean_young/firefly/round03/v18_122",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/clean_young__firefly__round03__v18_122.png",
+    "sha256": "784d2c47be80d52065a84151128fd4f6917976d634fed27dd8e4d83978cb76f2",
+    "attributes": {
+      "id": "v18_122",
+      "sheet": "B",
+      "index": 21,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 18; face: triangular narrow chin; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short crew cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "clean_young/firefly/round03/v18_136",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/clean_young__firefly__round03__v18_136.png",
+    "sha256": "c197c82c5b4dcc99b267da4c6267b7ed4dc9e1e7f031a867404bdb09a45925eb",
+    "attributes": {
+      "id": "v18_136",
+      "sheet": "B",
+      "index": 35,
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 22; face: triangular narrow chin; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: close buzz cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "clean_young/firefly/round03/v18_139",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/clean_young__firefly__round03__v18_139.png",
+    "sha256": "a23b39aa417c2b8321e3053902708a178ed059e338bfbb56d5264187f1340905",
+    "attributes": {
+      "id": "v18_139",
+      "sheet": "B",
+      "index": 38,
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 21; face: round full cheeks; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: full lower lip; hair: short crew cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+      "tags": {
+        "glasses": true,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "clean_young/firefly/round03/v18_147",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/clean_young__firefly__round03__v18_147.png",
+    "sha256": "f2728306e82f2fb7fcd56b1bdd2b4f401c554aea360c3eedb3ec3452c67fb784",
+    "attributes": {
+      "id": "v18_147",
+      "sheet": "B",
+      "index": 46,
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 21; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: small defined mouth; hair: long tied back hair; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "clean_young/firefly/round03/v18_151",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/clean_young__firefly__round03__v18_151.png",
+    "sha256": "f83b738640a29d4d5f4043ff9a06d920223d85ed84634a0918e92005bfcc5974",
+    "attributes": {
+      "id": "v18_151",
+      "sheet": "B",
+      "index": 50,
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 21; face: heart shaped; eyes: upswept eyes; eyebrows: low broad brows; nose: low wide nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  },
+  {
+    "candidate_key": "clean_young/firefly/round03/v18_110",
+    "path": "assets/v18/production200/work/checkpoints/current_sources/clean_young__firefly__round03__v18_110.png",
+    "sha256": "9f6e4a3dff59916099f694c684be7623032a1948eb7683aa4618bcf4d09d0f08",
+    "attributes": {
+      "id": "v18_110",
+      "sheet": "B",
+      "index": 9,
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "Korean male, apparent age 18; face: long rectangular; eyes: wide set almond eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: thin wide lips; hair: short side part; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+      "tags": {
+        "glasses": false,
+        "facial_hair": false
+      },
+      "status": "planned"
+    }
+  }
+]

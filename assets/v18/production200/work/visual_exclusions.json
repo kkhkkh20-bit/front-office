@@ -1,0 +1,8 @@
+{
+  "excluded_keys": [
+    "firefly/round03/v18_035",
+    "firefly/round03/v18_081",
+    "firefly/round03/v18_011"
+  ],
+  "reason": "Overemphasized eyes or unnatural expression; user requests natural proportions."
+}

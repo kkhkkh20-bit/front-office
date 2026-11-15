@@ -1,0 +1,79 @@
+{
+  "scope": "Original v6c/v13 model and LMEDS protocol, all160 original prescreen masters",
+  "candidate_count": 1212,
+  "reference_compatible_candidates": 526,
+  "selected_count": 191,
+  "required_quotas": {
+    "US White": 16,
+    "US Black": 14,
+    "Dominican Latino": 10,
+    "Venezuelan Latino": 8,
+    "Mexican Latino": 4,
+    "Cuban Latino": 2,
+    "Puerto Rican Latino": 2,
+    "Canadian White": 2,
+    "Caribbean Black": 2,
+    "Japanese": 8,
+    "Taiwanese": 6,
+    "Australian": 4,
+    "Filipino": 2,
+    "Korean18-20": 26,
+    "Korean21-24": 46,
+    "Korean25-28": 29,
+    "Korean29-33": 13,
+    "Korean34-38": 6
+  },
+  "selected_quotas": {
+    "US White": 16,
+    "US Black": 14,
+    "Dominican Latino": 10,
+    "Venezuelan Latino": 8,
+    "Mexican Latino": 4,
+    "Cuban Latino": 2,
+    "Puerto Rican Latino": 2,
+    "Canadian White": 2,
+    "Caribbean Black": 2,
+    "Japanese": 8,
+    "Taiwanese": 6,
+    "Australian": 4,
+    "Filipino": 2,
+    "Korean18-20": 24,
+    "Korean21-24": 42,
+    "Korean25-28": 26,
+    "Korean29-33": 13,
+    "Korean34-38": 6
+  },
+  "remaining": [
+    {
+      "group": "Korean18-20",
+      "missing": 2
+    },
+    {
+      "group": "Korean21-24",
+      "missing": 4
+    },
+    {
+      "group": "Korean25-28",
+      "missing": 3
+    }
+  ],
+  "metrics": {
+    "128": {
+      "within_pairs": 18145,
+      "reference_pairs": 30560,
+      "within_max": 0.3998124599456787,
+      "reference_max": 0.3996201753616333
+    },
+    "256": {
+      "within_pairs": 18145,
+      "reference_pairs": 30560,
+      "within_max": 0.3992614150047302,
+      "reference_max": 0.39979010820388794
+    }
+  },
+  "solver_status": 0,
+  "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+  "visual_approval_complete": false,
+  "wardrobe_stage_unlocked": false,
+  "production_complete": false
+}

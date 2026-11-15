@@ -1,0 +1,25 @@
+{
+  "task": "Finish200 identities,2000 complete home-kit photos,40 WebP sheets, actual numerical/visual checks and handoff; do not stop at partial progress.",
+  "branch": "assets/v18-review",
+  "main_merge_allowed": false,
+  "natural_proportions_mandatory": true,
+  "canonical_progress": "canonical/progress.json",
+  "selection": "canonical/selection.json",
+  "production_status": "../production_status.json",
+  "active_generation_cells": {
+    "round08_pool": 106,
+    "round09_individual": 115
+  },
+  "extractors": {
+    "round08": 13683,
+    "round09": 99207
+  },
+  "free_generation_completed_count": 15,
+  "paid_credits": 0,
+  "new_generation_beyond15_free_not_authorized": true,
+  "wardrobe_script": "score_wardrobe.py",
+  "delivery_builder": "build_delivery.py",
+  "remaining_work": "Reach200 all pairwise and all160 old refs below.4, visually approve/tag200, allocateexactA/B, render2000 fullphotos, validateallpairs>=.6andtop1 at128/256,pack40WebP+previews+handoff, commit/pushreviewbranch.",
+  "adobe": "dailyquota100 reached; do not retry before reset",
+  "higgsfield": "15approvedfreecharacterjobs allcomplete; no additionalpaidgeneration"
+}
