@@ -1,0 +1,28 @@
+/* ⋯ 더보기 메뉴(src/ui/components/52_more_menu.js): PC는 버튼 아래 펼침, 휴대폰(700px 이하)은 바텀시트. 누르는 곳은 44px */
+.mmenu{position:relative;display:inline-flex;flex:0 0 auto}
+:is(#app,#sheet,body) .mmenu-b{display:inline-flex;align-items:center;justify-content:center;min-width:var(--ui-control,32px);padding-inline:8px}.mmenu-ico{display:block;fill:currentColor}
+.mmenu.open>.mmenu-b{background:var(--panel2);border-color:var(--acc)}
+.mmenu-p{position:absolute;top:calc(100% + 4px);right:0;z-index:60;display:grid;min-width:200px;max-width:min(320px,calc(100vw - 24px));padding:4px;background:var(--panel);border:1px solid var(--line2);border-radius:8px;box-shadow:0 10px 28px #000a}
+.mmenu-p[hidden]{display:none}
+.mmenu.left>.mmenu-p{right:auto;left:0}
+.mmenu.up>.mmenu-p{top:auto;bottom:calc(100% + 4px)}
+.mmenu-h{display:none}
+:is(#app,#sheet,body) .mmenu-i{display:flex;align-items:center;width:100%;min-height:44px;padding:8px 12px;margin:0;border:0;border-radius:5px;background:none;color:var(--ink);font:500 var(--ui-body,13px)/1.3 var(--f-ui);text-align:left;cursor:pointer;white-space:normal}
+.mmenu-i:hover,.mmenu-i:focus-visible{background:var(--panel2);outline:none}
+.mmenu-i:focus-visible{box-shadow:inset 0 0 0 2px var(--acc)}
+.mmenu-i.on::after{content:'✓';margin-left:auto;color:var(--good)}
+.mmenu-i.danger{color:var(--bad)}
+.mmenu-i[disabled]{opacity:.45;cursor:default}
+/* 대표 동작과 ⋯는 한 줄: 행동 줄이 여러 줄로 쌓이지 않게 */
+.qacts{align-items:center}.qacts .act-main{flex:0 1 auto}
+@media(max-width:700px){
+  :is(#app,#sheet,body) .qacts :is(.act-main,.mmenu-b){min-height:44px!important;min-width:44px} /* 12_ux_fixes의 .btn.small 36px!important보다 앞서게 */
+  .mmenu-p{position:fixed;inset:auto 0 var(--app-footer-h,0px) 0;top:auto;max-width:none;min-width:0;z-index:1000;padding:8px 12px 12px;border-radius:14px 14px 0 0;border-width:1px 0 0;box-shadow:0 0 0 100vmax #0009,0 -8px 24px #000a}
+  .mmenu.up>.mmenu-p,.mmenu.left>.mmenu-p{top:auto;bottom:var(--app-footer-h,0px);left:0;right:0}
+  .mmenu-h{display:block;padding:6px 12px 8px;font-size:var(--ui-caption,12px);color:var(--muted)}
+  :is(#app,#sheet,body) .mmenu-i{min-height:48px;font-size:15px}
+}
+/* PC 상세 이동 줄에 복사된 행동 버튼: 펼침 메뉴가 잘리지 않게 */
+@media(min-width:1100px){.fm-ptabs .detail-navigation .detail-acts:has(.mmenu){overflow:visible}}
+/* 선수 화면 머리(휴대폰): 연봉 아래 계약 한 줄은 남긴다(다른 작은 글씨는 숨김 그대로) */
+@media(max-width:900px){.pf-screen .pf-contract-head small.pf-ct{display:block;flex-basis:100%;text-align:center;font-size:var(--ui-micro,11px);color:var(--muted);white-space:nowrap}}

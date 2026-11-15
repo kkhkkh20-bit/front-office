@@ -6163,6 +6163,34 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .mrl li>em{flex:none;font-style:normal;font-size:11px;color:var(--muted);white-space:nowrap}
 .mrl li>em.good{color:var(--good)} .mrl li>em.bad{color:var(--bad)} .mrl li>em.warn{color:var(--warn)}
 .chem-card .mrl{margin-top:6px}
+/* ⋯ 더보기 메뉴(src/ui/components/52_more_menu.js): PC는 버튼 아래 펼침, 휴대폰(700px 이하)은 바텀시트. 누르는 곳은 44px */
+.mmenu{position:relative;display:inline-flex;flex:0 0 auto}
+:is(#app,#sheet,body) .mmenu-b{display:inline-flex;align-items:center;justify-content:center;min-width:var(--ui-control,32px);padding-inline:8px}.mmenu-ico{display:block;fill:currentColor}
+.mmenu.open>.mmenu-b{background:var(--panel2);border-color:var(--acc)}
+.mmenu-p{position:absolute;top:calc(100% + 4px);right:0;z-index:60;display:grid;min-width:200px;max-width:min(320px,calc(100vw - 24px));padding:4px;background:var(--panel);border:1px solid var(--line2);border-radius:8px;box-shadow:0 10px 28px #000a}
+.mmenu-p[hidden]{display:none}
+.mmenu.left>.mmenu-p{right:auto;left:0}
+.mmenu.up>.mmenu-p{top:auto;bottom:calc(100% + 4px)}
+.mmenu-h{display:none}
+:is(#app,#sheet,body) .mmenu-i{display:flex;align-items:center;width:100%;min-height:44px;padding:8px 12px;margin:0;border:0;border-radius:5px;background:none;color:var(--ink);font:500 var(--ui-body,13px)/1.3 var(--f-ui);text-align:left;cursor:pointer;white-space:normal}
+.mmenu-i:hover,.mmenu-i:focus-visible{background:var(--panel2);outline:none}
+.mmenu-i:focus-visible{box-shadow:inset 0 0 0 2px var(--acc)}
+.mmenu-i.on::after{content:'✓';margin-left:auto;color:var(--good)}
+.mmenu-i.danger{color:var(--bad)}
+.mmenu-i[disabled]{opacity:.45;cursor:default}
+/* 대표 동작과 ⋯는 한 줄: 행동 줄이 여러 줄로 쌓이지 않게 */
+.qacts{align-items:center}.qacts .act-main{flex:0 1 auto}
+@media(max-width:700px){
+  :is(#app,#sheet,body) .qacts :is(.act-main,.mmenu-b){min-height:44px!important;min-width:44px} /* 12_ux_fixes의 .btn.small 36px!important보다 앞서게 */
+  .mmenu-p{position:fixed;inset:auto 0 var(--app-footer-h,0px) 0;top:auto;max-width:none;min-width:0;z-index:1000;padding:8px 12px 12px;border-radius:14px 14px 0 0;border-width:1px 0 0;box-shadow:0 0 0 100vmax #0009,0 -8px 24px #000a}
+  .mmenu.up>.mmenu-p,.mmenu.left>.mmenu-p{top:auto;bottom:var(--app-footer-h,0px);left:0;right:0}
+  .mmenu-h{display:block;padding:6px 12px 8px;font-size:var(--ui-caption,12px);color:var(--muted)}
+  :is(#app,#sheet,body) .mmenu-i{min-height:48px;font-size:15px}
+}
+/* PC 상세 이동 줄에 복사된 행동 버튼: 펼침 메뉴가 잘리지 않게 */
+@media(min-width:1100px){.fm-ptabs .detail-navigation .detail-acts:has(.mmenu){overflow:visible}}
+/* 선수 화면 머리(휴대폰): 연봉 아래 계약 한 줄은 남긴다(다른 작은 글씨는 숨김 그대로) */
+@media(max-width:900px){.pf-screen .pf-contract-head small.pf-ct{display:block;flex-basis:100%;text-align:center;font-size:var(--ui-micro,11px);color:var(--muted);white-space:nowrap}}
 </style>
 </head>
 <body>
@@ -32673,18 +32701,28 @@ function draftCenter(all,mine){
 /* 선수 카드: 스태프 의견과 빠른 행동 */
 function staffCardP(p){ const L=staffNotes(p); if(!L.length)return '';
   return `<div class="stn">${L.map(x=>`<div><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}</div>`; }
+/* 선수 화면 위 행동(UI 2단계 2-2): 상황별 대표 동작 1개만 보이고 나머지는 ⋯ 메뉴로.
+   우리 선수: 계약이 곧 끝나면 연장 협상, 6주 이상 다친 외국인은 대체 외국인 고르기, 그 밖에는 면담. 다른 구단 선수: 트레이드 협상 */
+function extSoon(p){ if(!canExtend(p))return false; if(p.extCounter&&p.extCounter.until>=G.day)return true; return p.faC?(p.yrs||0)<=1:faLeft(p)<=1; }
 function quickActs(p){
-  const b=[]; const d=G.draft;
-  if(p.prospect){ if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); }
-  else if(p.team===G.user&&!(p.joinY>G.year)){
-    b.push(`<button class="btn small" data-a="jump" data-v="bond">면담</button>`);
-    if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드 협상</button>`); }
-    if(!p.foreign)b.push(p.listed?`<button class="btn small" data-a="blkOff" data-v="${p.id}">매물 목록에서 빼기</button>`:`<button class="btn small" data-a="blkOn" data-v="${p.id}">매물 목록에 올리기</button>`);
-    if(!p.foreign&&p.team===G.user)b.push(`<button class="btn small${p.noTrade?' primary':''}" data-a="noTrade" data-v="${p.id}" title="다른 구단이 이 선수를 트레이드로 달라고 묻지 않습니다(우리가 먼저 제안할 수는 있음)">${p.noTrade?'트레이드 불가 해제':'트레이드 불가로 지정'}</button>`);
-    if(canExtend(p))b.push(`<button class="btn small" data-a="jump" data-v="ext">연장 협상</button>`);
-    if(p.foreign==='용병'&&typeof fTmpErr==='function'&&!fTmpErr(G.user,p))b.push(`<button class="btn small primary" data-a="fTmpStart" data-v="${p.id}">부상 대체 외국인 고르기</button>`); /* 6주 이상 다친 외국인 화면에서 바로(카페 피드백 11-08) */
-  } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ if(tradeOpen()){ b.push(`<button class="btn small primary" data-a="findT" data-v="${p.id}">얻을 조건 보기</button>`); b.push(`<button class="btn small" data-a="toTrade" data-v="${p.id}">트레이드 협상</button>`); } b.push(`<button class="btn small" data-a="pwatch" data-v="${p.id}">${(G.pwatch||[]).includes(p.id)?'관심 해제':'관심 선수'}</button>`); }
-  return b.length?`<div class="qacts">${b.join('')}</div>`:''; }
+  const d=G.draft;
+  if(p.prospect){ const b=[]; if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); return `<div class="qacts">${b.join('')}</div>`; }
+  let main=null; const M=[];
+  if(p.team===G.user&&!(p.joinY>G.year)){
+    const talk={a:'jump',v:'bond',l:'면담'}, ext=canExtend(p)?{a:'jump',v:'ext',l:'연장 협상'}:null;
+    const tmp=p.foreign==='용병'&&typeof fTmpErr==='function'&&!fTmpErr(G.user,p)?{a:'fTmpStart',v:p.id,l:'부상 대체 외국인 고르기'}:null; /* 6주 이상 다친 외국인 화면에서 바로(카페 피드백 11-08) */
+    main=tmp||(ext&&extSoon(p)?ext:talk);
+    M.push(talk);
+    if(!p.foreign&&tradeOpen())M.push({a:'findMine',v:p.id,l:'시장 가치'},{a:'toTradeGive',v:p.id,l:'트레이드 협상'});
+    if(!p.foreign)M.push(p.listed?{a:'blkOff',v:p.id,l:'매물 목록에서 빼기'}:{a:'blkOn',v:p.id,l:'매물 목록에 올리기'});
+    if(!p.foreign)M.push({a:'noTrade',v:p.id,l:p.noTrade?'트레이드 불가 해제':'트레이드 불가로 지정',on:!!p.noTrade,title:'다른 구단이 이 선수를 트레이드로 달라고 묻지 않습니다(우리가 먼저 제안할 수는 있음)'});
+    M.push(ext,tmp);
+  } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){
+    if(tradeOpen()){ main={a:'toTrade',v:p.id,l:'트레이드 협상'}; M.push({a:'findT',v:p.id,l:'얻을 조건 보기'}); }
+    const on=(G.pwatch||[]).includes(p.id); M.push({a:'pwatch',v:p.id,l:on?'관심 해제':'관심 선수',on});
+  }
+  const html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기'});
+  return html?`<div class="qacts">${html}</div>`:''; }
 
 /* ---------- 아마추어 기록: 학년별 ---------- */
 function amYearTable(p){ const Y=p.amY; if(!Y||!Y.length)return `<p class="small">${esc(amLine(p))}</p>`;
@@ -35234,7 +35272,7 @@ function playerFullscreenHeader(p,rp,where,isFA){
   const fc=p.foreign&&p.team==null?fScout(p,rp):null; /* 외국인 후보: 종합은 추정 범위, 연봉은 요구액 */
   const cur=fc&&fc.mid!=null?`${fc.lo}~${fc.hi}`:rp.cur==null?'미확인':dv(rp.cur), pot=rp.ofp==null?'미확인':potTierP(rp,p).s;
   const door=isFA?negDoor('fa',p):p.foreign&&p.team==null&&(G.fmarket||[]).includes(p.id)?negDoor('fm',p):p.team===G.user&&p.foreign&&G.contract&&!G.contract.done&&G.contract.foreignEnd.includes(p.id)&&!G.contract.foreignDrop.includes(p.id)?negDoor('fre',p):'';
-  return `<header class="sheet-head pf-masthead"><div class="pf-name">${avImg(p,true)}<div><div class="eyebrow">${esc(where)}${p.foreign&&p.team!=null?' · '+(p.foreign==='아시아'?'아시아쿼터':'외국인')+(p.nat?' · '+esc(p.nat):''):''}${isFA?' · FA':''}</div><h2 class="sec">${p.team!=null?`<span class="pno">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></h2>${cimgBtns(cimgKey(p))}<p class="pinfo keep">${posLabel(p)}${!p.isP&&subsOf(p).length?' · '+subsOf(p).map(k=>POSK[k]||k).join('·')+' 가능':''} · ${p.age}세 · ${hand(p)} · ${esc(milText(p))}</p>${UI.pEdit===p.id?pEditBox(p):''}</div></div><div class="pf-contract-head"><span>${fc?'종합 추정':'현재 종합'} <b style="color:${fc&&fc.raw!=null?rcol(fc.raw):rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b>${currentAbilityStars(fc&&fc.raw!=null?{...rp,cur:fc.raw,exact:false}:rp)}<small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></span><span>잠재력 <b title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></span>${fc?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b><small>외국인 1년</small></span>`:`<span>연봉 <b>${money(p.sal||0)}</b><small>${esc(ctText(p))}</small></span>`}</div><div class="pf-window-actions"><button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div></header><div class="pf-toolbar">${quickActs(p)}${door}</div>`;
+  return `<header class="sheet-head pf-masthead"><div class="pf-name">${avImg(p,true)}<div><div class="eyebrow">${esc(where)}${p.foreign&&p.team!=null?' · '+(p.foreign==='아시아'?'아시아쿼터':'외국인')+(p.nat?' · '+esc(p.nat):''):''}${isFA?' · FA':''}</div><h2 class="sec">${p.team!=null?`<span class="pno">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></h2>${cimgBtns(cimgKey(p))}<p class="pinfo keep">${posLabel(p)}${!p.isP&&subsOf(p).length?' · '+subsOf(p).map(k=>POSK[k]||k).join('·')+' 가능':''} · ${p.age}세 · ${hand(p)} · ${esc(milText(p))}</p>${UI.pEdit===p.id?pEditBox(p):''}</div></div><div class="pf-contract-head"><span>${fc?'종합 추정':'현재 종합'} <b style="color:${fc&&fc.raw!=null?rcol(fc.raw):rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b>${currentAbilityStars(fc&&fc.raw!=null?{...rp,cur:fc.raw,exact:false}:rp)}<small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></span><span>잠재력 <b title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></span>${fc?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b><small>외국인 1년</small></span>`:`<span>연봉 <b>${money(p.sal||0)}</b><small class="pf-ct">${esc(ctText(p))}</small></span>`}</div><div class="pf-window-actions"><button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div></header><div class="pf-toolbar">${quickActs(p)}${door}</div>`;
 }
 function playerProfileOverview(p,rp,h,tiles,injBox){
   const own=p.team===G.user&&!G.unemp, state=playerState(p), keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit'];
@@ -37600,6 +37638,40 @@ function workspaceDetail(){
   let node=nav.nextSibling;while(node){const next=node.nextSibling;body.append(node);node=next;}
   sheet.append(body);workspaceFit(body);
 }
+/* ---------- ⋯ 더보기 메뉴(UI 2단계 2-1) ----------
+   부가 동작을 화면에서 걷어 내고 ⋯ 하나에 모은다. 휴대폰(700px 이하)은 바텀시트, PC는 버튼 아래(화면 아래쪽이면 위) 펼침.
+   항목은 보통 버튼과 같은 data-a/data-v를 쓰므로 누르면 원래 동작이 그대로 실행된다(중복 터치 보호 UI._clk 포함).
+   열고 닫기는 다시 그리지 않고 DOM만 바꾼다. 다시 그려지면 닫힌 상태로 돌아온다.
+   items: [{a, v, l, title, on, danger, disabled}] (거짓 값은 건너뜀). o: {label, cls} */
+function moreMenu(items,o){ o=o||{}; const L=(items||[]).filter(Boolean); if(!L.length)return ''; const lab=o.label||'더보기';
+  return `<span class="mmenu${o.cls?' '+o.cls:''}"><button type="button" class="btn small mmenu-b" data-mmenu aria-haspopup="menu" aria-expanded="false" aria-label="${esc(lab)}" title="${esc(lab)}"><svg class="mmenu-ico" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="4" cy="10" r="1.9"/><circle cx="10" cy="10" r="1.9"/><circle cx="16" cy="10" r="1.9"/></svg></button><span class="mmenu-p" role="menu" aria-label="${esc(lab)}" hidden><span class="mmenu-h" aria-hidden="true">${esc(lab)}</span>${L.map(it=>`<button type="button" role="menuitem" tabindex="-1" class="mmenu-i${it.on?' on':''}${it.danger?' danger':''}" data-a="${esc(it.a)}" data-v="${esc(String(it.v??''))}"${it.title?` title="${esc(it.title)}"`:''}${it.disabled?' disabled':''}>${esc(it.l)}</button>`).join('')}</span></span>`; }
+/* 대표 동작 1개 + 나머지는 ⋯. 항목이 하나뿐이면 메뉴 없이 그 버튼만 */
+function actionBar(main,rest,o){ const R=(rest||[]).filter(Boolean); if(!main&&R.length===1){ main=R[0]; R.length=0; } if(!main&&!R.length)return '';
+  const b=main?`<button class="btn small${main.plain?'':' primary'} act-main" data-a="${esc(main.a)}" data-v="${esc(String(main.v??''))}"${main.title?` title="${esc(main.title)}"`:''}>${esc(main.l)}</button>`:'';
+  return b+moreMenu(R,o); }
+let _mmSeq=0;
+function mmOpenNow(){ return document.querySelector('.mmenu.open'); }
+function mmClose(m,focus){ m=m||mmOpenNow(); if(!m)return; m.classList.remove('open','up','left'); const b=m.querySelector('.mmenu-b'), p=m.querySelector('.mmenu-p'); if(b)b.setAttribute('aria-expanded','false'); if(p)p.hidden=true; document.documentElement.classList.remove('mmenu-sheet-open'); if(focus&&b&&b.isConnected)b.focus({preventScroll:true}); }
+function mmOpen(m){ const cur=mmOpenNow(); if(cur&&cur!==m)mmClose(cur); const b=m.querySelector('.mmenu-b'), p=m.querySelector('.mmenu-p'); if(!b||!p)return;
+  if(!p.id)p.id='mmenu-'+(++_mmSeq); b.setAttribute('aria-controls',p.id);
+  const r=b.getBoundingClientRect(); m.classList.toggle('up',r.top>innerHeight*.55); m.classList.toggle('left',r.left+r.width/2<innerWidth/2); /* 화면 아래쪽 버튼(PC 오른쪽 아래 행동 줄)은 위로, 왼쪽 버튼은 왼쪽 맞춤 */
+  m.classList.add('open'); p.hidden=false; b.setAttribute('aria-expanded','true'); if(innerWidth<=700)document.documentElement.classList.add('mmenu-sheet-open');
+  const f=p.querySelector('.mmenu-i:not([disabled])'); if(f)f.focus({preventScroll:true}); }
+document.addEventListener('click',e=>{ const t=e.target; if(!t||!t.closest)return;
+  const b=t.closest('[data-mmenu]'); if(b){ e.preventDefault(); const m=b.closest('.mmenu'); if(m.classList.contains('open'))mmClose(m,true); else mmOpen(m); return; }
+  const it=t.closest('.mmenu-i'); if(it&&!it.disabled){ mmClose(it.closest('.mmenu')); return; } /* 항목 동작은 data-a 처리기가 실행한다 */
+});
+/* 바깥을 누르면 닫는다(그 누름은 원래 대상에도 그대로 간다). 바텀시트 바깥(어두운 바탕)은 닫기만 한다 */
+window.addEventListener('pointerdown',e=>{ const m=mmOpenNow(); if(!m)return; if(e.target&&e.target.closest&&e.target.closest('.mmenu.open'))return;
+  const sheet=m.querySelector('.mmenu-p'), st=sheet&&getComputedStyle(sheet).position==='fixed'; mmClose(m);
+  if(st){ e.preventDefault(); const stop=ev=>{ ev.stopPropagation(); ev.preventDefault(); }; window.addEventListener('click',stop,{capture:true,once:true}); setTimeout(()=>window.removeEventListener('click',stop,{capture:true}),500); } },true);
+/* Esc는 메뉴만 닫는다(선수 화면은 그대로). 화살표·Home·End로 항목 이동, Tab은 닫고 다음으로 */
+window.addEventListener('keydown',e=>{ const m=mmOpenNow(); if(!m)return;
+  if(e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); mmClose(m,true); return; }
+  const I=[...m.querySelectorAll('.mmenu-i:not([disabled])')]; if(!I.length)return; const k=I.indexOf(document.activeElement);
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); e.stopImmediatePropagation(); const n=e.key==='ArrowDown'?(k+1)%I.length:(k<=0?I.length-1:k-1); I[n].focus({preventScroll:true}); return; }
+  if(e.key==='Home'||e.key==='End'){ e.preventDefault(); e.stopImmediatePropagation(); I[e.key==='Home'?0:I.length-1].focus({preventScroll:true}); return; }
+  if(e.key==='Tab'){ mmClose(m); } },true);
 /* ---------- 인물 카드 공통 틀(감독·코치) ----------
    선수 상황판과 같은 틀을 쓴다: 큰 사진 카드(pf-fmcard), 능력 차트(radarSVG 큰 차트), 세부 능력 표(pf-attribute-*).
    화면에 숫자로 보이던 값만 숫자로, 말로 보이던 값(고집·인지도·성격)은 그대로 말로 보인다. 새로 드러내는 값은 없다. */
