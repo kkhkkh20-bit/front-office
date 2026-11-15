@@ -8,6 +8,13 @@
 
 `assets/v7/staff01/sheets/coaches/256`은 모자만 따로 그린 겹침용 판입니다. 얼굴 사진이 아니라서 큰 사진으로 쓸 수 없습니다.
 
+## 원본 위치
+- 512px 원본 ZIP 3개는 main이 아니라 v7 납품 리뷰 브랜치에 있습니다.
+- 브랜치: `assets/v7-staff01-review` (커밋 0ebd534a)
+- 경로: `assets/v7/staff01/archive/portraits_part01.zip` ~ `portraits_part03.zip` (각 약 13~14MB)
+- 목록: `assets/v7/staff01/archive_manifest.json`
+- manifest의 각 인물 `archive.png512_entry`(예: `512/v7_staff01_coach_001.png`)로 ZIP 안 파일을 찾으면 됩니다.
+
 ## 2. 요청
 
 - **대상 인물:** v7 `manager_coach` 60명입니다. `assets/v7/staff01/manifest.json`의 `identities` 중 `role_group`이 manager_coach인 인물입니다.
