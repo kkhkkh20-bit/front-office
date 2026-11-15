@@ -1,0 +1,2802 @@
+[
+  {
+    "id": "v18_001",
+    "sheet": "A",
+    "index": 0,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 23; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short crew cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_002",
+    "sheet": "A",
+    "index": 1,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 30; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short tight curls; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_003",
+    "sheet": "A",
+    "index": 2,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 25; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: thin wide lips; hair: short straight fringe; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_004",
+    "sheet": "A",
+    "index": 3,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 32; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short tight curls; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_005",
+    "sheet": "A",
+    "index": 4,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 27; face: square wide jaw; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_006",
+    "sheet": "A",
+    "index": 5,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 34; face: heart shaped; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_007",
+    "sheet": "A",
+    "index": 6,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 29; face: heart shaped; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short tight curls; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_008",
+    "sheet": "A",
+    "index": 7,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 24; face: heart shaped; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: full lower lip; hair: short two block cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_009",
+    "sheet": "A",
+    "index": 8,
+    "age": 31,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 31; face: long rectangular; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: close buzz cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_010",
+    "sheet": "A",
+    "index": 9,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 26; face: heart shaped; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_011",
+    "sheet": "A",
+    "index": 10,
+    "age": 33,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 33; face: square wide jaw; eyes: round open eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: thin wide lips; hair: close buzz cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_012",
+    "sheet": "A",
+    "index": 11,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 28; face: heart shaped; eyes: round open eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: wide curved mouth; hair: short tight curls; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_013",
+    "sheet": "A",
+    "index": 12,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 23; face: triangular narrow chin; eyes: upswept eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: wide curved mouth; hair: long tied back hair; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_014",
+    "sheet": "A",
+    "index": 13,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 30; face: heart shaped; eyes: round open eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: thin wide lips; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_015",
+    "sheet": "A",
+    "index": 14,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 25; face: long rectangular; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: long tied back hair; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_016",
+    "sheet": "A",
+    "index": 15,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "US White",
+    "appearance_brief": "US White male, apparent age 32; face: heart shaped; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: thin wide lips; hair: long tied back hair; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_017",
+    "sheet": "A",
+    "index": 16,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 27; face: square wide jaw; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_018",
+    "sheet": "A",
+    "index": 17,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 34; face: oval high cheekbones; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short tight curls; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_019",
+    "sheet": "A",
+    "index": 18,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 29; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_020",
+    "sheet": "A",
+    "index": 19,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 24; face: heart shaped; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: low wide nose; mouth: full lower lip; hair: short two block cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_021",
+    "sheet": "A",
+    "index": 20,
+    "age": 31,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 31; face: long rectangular; eyes: wide set almond eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short straight fringe; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_022",
+    "sheet": "A",
+    "index": 21,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 26; face: heart shaped; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short side part; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_023",
+    "sheet": "A",
+    "index": 22,
+    "age": 33,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 33; face: heart shaped; eyes: wide set almond eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: small defined mouth; hair: short tight curls; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_024",
+    "sheet": "A",
+    "index": 23,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 28; face: square wide jaw; eyes: upswept eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_025",
+    "sheet": "A",
+    "index": 24,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 23; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_026",
+    "sheet": "A",
+    "index": 25,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 30; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: full lower lip; hair: short two block cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_027",
+    "sheet": "A",
+    "index": 26,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 25; face: triangular narrow chin; eyes: round open eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: full lower lip; hair: short two block cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_028",
+    "sheet": "A",
+    "index": 27,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 32; face: triangular narrow chin; eyes: upswept eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short crew cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_029",
+    "sheet": "A",
+    "index": 28,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 27; face: heart shaped; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: short straight fringe; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_030",
+    "sheet": "A",
+    "index": 29,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "US Black",
+    "appearance_brief": "US Black male, apparent age 34; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short two block cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_031",
+    "sheet": "A",
+    "index": 30,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 29; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_032",
+    "sheet": "A",
+    "index": 31,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 24; face: square wide jaw; eyes: upswept eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: full lower lip; hair: short crew cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_033",
+    "sheet": "A",
+    "index": 32,
+    "age": 31,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 31; face: square wide jaw; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_034",
+    "sheet": "A",
+    "index": 33,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 26; face: long rectangular; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: long tied back hair; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_035",
+    "sheet": "A",
+    "index": 34,
+    "age": 33,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 33; face: long rectangular; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short straight fringe; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_036",
+    "sheet": "A",
+    "index": 35,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 28; face: long rectangular; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: wide curved mouth; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_037",
+    "sheet": "A",
+    "index": 36,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 23; face: long rectangular; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: close buzz cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_038",
+    "sheet": "A",
+    "index": 37,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 30; face: long rectangular; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: small defined mouth; hair: short side part; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_039",
+    "sheet": "A",
+    "index": 38,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 25; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: long tied back hair; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_040",
+    "sheet": "A",
+    "index": 39,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "Dominican Latino",
+    "appearance_brief": "Dominican Latino male, apparent age 32; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_041",
+    "sheet": "A",
+    "index": 40,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Venezuelan Latino",
+    "appearance_brief": "Venezuelan Latino male, apparent age 27; face: oval high cheekbones; eyes: round open eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_042",
+    "sheet": "A",
+    "index": 41,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "Venezuelan Latino",
+    "appearance_brief": "Venezuelan Latino male, apparent age 34; face: triangular narrow chin; eyes: upswept eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: thin wide lips; hair: long tied back hair; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_043",
+    "sheet": "A",
+    "index": 42,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Venezuelan Latino",
+    "appearance_brief": "Venezuelan Latino male, apparent age 29; face: long rectangular; eyes: round open eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_044",
+    "sheet": "A",
+    "index": 43,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Venezuelan Latino",
+    "appearance_brief": "Venezuelan Latino male, apparent age 24; face: triangular narrow chin; eyes: upswept eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: full lower lip; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_045",
+    "sheet": "A",
+    "index": 44,
+    "age": 31,
+    "sex": "male",
+    "ethnicity": "Venezuelan Latino",
+    "appearance_brief": "Venezuelan Latino male, apparent age 31; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_046",
+    "sheet": "A",
+    "index": 45,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Venezuelan Latino",
+    "appearance_brief": "Venezuelan Latino male, apparent age 26; face: oval high cheekbones; eyes: round open eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_047",
+    "sheet": "A",
+    "index": 46,
+    "age": 33,
+    "sex": "male",
+    "ethnicity": "Venezuelan Latino",
+    "appearance_brief": "Venezuelan Latino male, apparent age 33; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: thin wide lips; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_048",
+    "sheet": "A",
+    "index": 47,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Venezuelan Latino",
+    "appearance_brief": "Venezuelan Latino male, apparent age 28; face: long rectangular; eyes: round open eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: thin wide lips; hair: long tied back hair; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_049",
+    "sheet": "A",
+    "index": 48,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Mexican Latino",
+    "appearance_brief": "Mexican Latino male, apparent age 23; face: square wide jaw; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: wide curved mouth; hair: long tied back hair; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_050",
+    "sheet": "A",
+    "index": 49,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "Mexican Latino",
+    "appearance_brief": "Mexican Latino male, apparent age 30; face: heart shaped; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_051",
+    "sheet": "A",
+    "index": 50,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Mexican Latino",
+    "appearance_brief": "Mexican Latino male, apparent age 25; face: triangular narrow chin; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short side part; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_052",
+    "sheet": "A",
+    "index": 51,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "Mexican Latino",
+    "appearance_brief": "Mexican Latino male, apparent age 32; face: oval high cheekbones; eyes: round open eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_053",
+    "sheet": "A",
+    "index": 52,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Cuban Latino",
+    "appearance_brief": "Cuban Latino male, apparent age 27; face: heart shaped; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: short tight curls; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_054",
+    "sheet": "A",
+    "index": 53,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "Cuban Latino",
+    "appearance_brief": "Cuban Latino male, apparent age 34; face: heart shaped; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: short tight curls; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_055",
+    "sheet": "A",
+    "index": 54,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Puerto Rican Latino",
+    "appearance_brief": "Puerto Rican Latino male, apparent age 29; face: round full cheeks; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: short straight fringe; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_056",
+    "sheet": "A",
+    "index": 55,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Puerto Rican Latino",
+    "appearance_brief": "Puerto Rican Latino male, apparent age 24; face: long rectangular; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_057",
+    "sheet": "A",
+    "index": 56,
+    "age": 31,
+    "sex": "male",
+    "ethnicity": "Canadian White",
+    "appearance_brief": "Canadian White male, apparent age 31; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short side part; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_058",
+    "sheet": "A",
+    "index": 57,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Canadian White",
+    "appearance_brief": "Canadian White male, apparent age 26; face: heart shaped; eyes: upswept eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_059",
+    "sheet": "A",
+    "index": 58,
+    "age": 33,
+    "sex": "male",
+    "ethnicity": "Caribbean Black",
+    "appearance_brief": "Caribbean Black male, apparent age 33; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_060",
+    "sheet": "A",
+    "index": 59,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Caribbean Black",
+    "appearance_brief": "Caribbean Black male, apparent age 28; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: full lower lip; hair: short tight curls; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_061",
+    "sheet": "A",
+    "index": 60,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Japanese",
+    "appearance_brief": "Japanese male, apparent age 23; face: heart shaped; eyes: upswept eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: short side part; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_062",
+    "sheet": "A",
+    "index": 61,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "Japanese",
+    "appearance_brief": "Japanese male, apparent age 30; face: long rectangular; eyes: upswept eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short side part; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_063",
+    "sheet": "A",
+    "index": 62,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Japanese",
+    "appearance_brief": "Japanese male, apparent age 25; face: square wide jaw; eyes: round open eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short straight fringe; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_064",
+    "sheet": "A",
+    "index": 63,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "Japanese",
+    "appearance_brief": "Japanese male, apparent age 32; face: heart shaped; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_065",
+    "sheet": "A",
+    "index": 64,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Japanese",
+    "appearance_brief": "Japanese male, apparent age 27; face: oval high cheekbones; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: full lower lip; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_066",
+    "sheet": "A",
+    "index": 65,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "Japanese",
+    "appearance_brief": "Japanese male, apparent age 34; face: round full cheeks; eyes: wide set almond eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_067",
+    "sheet": "A",
+    "index": 66,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Japanese",
+    "appearance_brief": "Japanese male, apparent age 29; face: heart shaped; eyes: round open eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_068",
+    "sheet": "A",
+    "index": 67,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Japanese",
+    "appearance_brief": "Japanese male, apparent age 24; face: square wide jaw; eyes: upswept eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: full lower lip; hair: long tied back hair; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_069",
+    "sheet": "A",
+    "index": 68,
+    "age": 31,
+    "sex": "male",
+    "ethnicity": "Taiwanese",
+    "appearance_brief": "Taiwanese male, apparent age 31; face: long rectangular; eyes: wide set almond eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_070",
+    "sheet": "A",
+    "index": 69,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Taiwanese",
+    "appearance_brief": "Taiwanese male, apparent age 26; face: triangular narrow chin; eyes: round open eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_071",
+    "sheet": "A",
+    "index": 70,
+    "age": 33,
+    "sex": "male",
+    "ethnicity": "Taiwanese",
+    "appearance_brief": "Taiwanese male, apparent age 33; face: heart shaped; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short two block cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_072",
+    "sheet": "A",
+    "index": 71,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Taiwanese",
+    "appearance_brief": "Taiwanese male, apparent age 28; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_073",
+    "sheet": "A",
+    "index": 72,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Taiwanese",
+    "appearance_brief": "Taiwanese male, apparent age 23; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short side part; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_074",
+    "sheet": "A",
+    "index": 73,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "Taiwanese",
+    "appearance_brief": "Taiwanese male, apparent age 30; face: heart shaped; eyes: upswept eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: small defined mouth; hair: short tight curls; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_075",
+    "sheet": "A",
+    "index": 74,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Australian",
+    "appearance_brief": "Australian male, apparent age 25; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: long tied back hair; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_076",
+    "sheet": "A",
+    "index": 75,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "Australian",
+    "appearance_brief": "Australian male, apparent age 32; face: long rectangular; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short two block cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_077",
+    "sheet": "A",
+    "index": 76,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Australian",
+    "appearance_brief": "Australian male, apparent age 27; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: full lower lip; hair: long tied back hair; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_078",
+    "sheet": "A",
+    "index": 77,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "Australian",
+    "appearance_brief": "Australian male, apparent age 34; face: heart shaped; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short crew cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_079",
+    "sheet": "A",
+    "index": 78,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Filipino",
+    "appearance_brief": "Filipino male, apparent age 29; face: triangular narrow chin; eyes: upswept eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_080",
+    "sheet": "A",
+    "index": 79,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Filipino",
+    "appearance_brief": "Filipino male, apparent age 24; face: long rectangular; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: small defined mouth; hair: close buzz cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_081",
+    "sheet": "A",
+    "index": 80,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: round full cheeks; eyes: wide set almond eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short crew cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_082",
+    "sheet": "A",
+    "index": 81,
+    "age": 19,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_083",
+    "sheet": "A",
+    "index": 82,
+    "age": 20,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 20; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short straight fringe; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_084",
+    "sheet": "A",
+    "index": 83,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: heart shaped; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: full lower lip; hair: short two block cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_085",
+    "sheet": "A",
+    "index": 84,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: heart shaped; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: wide curved mouth; hair: short tight curls; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_086",
+    "sheet": "A",
+    "index": 85,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: close buzz cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_087",
+    "sheet": "A",
+    "index": 86,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: thin wide lips; hair: close buzz cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_088",
+    "sheet": "A",
+    "index": 87,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: short straight fringe; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_089",
+    "sheet": "A",
+    "index": 88,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: short two block cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_090",
+    "sheet": "A",
+    "index": 89,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: long rectangular; eyes: round open eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short side part; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_091",
+    "sheet": "A",
+    "index": 90,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: triangular narrow chin; eyes: upswept eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short two block cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_092",
+    "sheet": "A",
+    "index": 91,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: heart shaped; eyes: upswept eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short two block cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_093",
+    "sheet": "A",
+    "index": 92,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 25; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_094",
+    "sheet": "A",
+    "index": 93,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 26; face: round full cheeks; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short two block cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_095",
+    "sheet": "A",
+    "index": 94,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 27; face: long rectangular; eyes: wide set almond eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short two block cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_096",
+    "sheet": "A",
+    "index": 95,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 28; face: long rectangular; eyes: round open eyes; eyebrows: low broad brows; nose: low wide nose; mouth: wide curved mouth; hair: short straight fringe; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_097",
+    "sheet": "A",
+    "index": 96,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 25; face: round full cheeks; eyes: upswept eyes; eyebrows: low broad brows; nose: low wide nose; mouth: small defined mouth; hair: short two block cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_098",
+    "sheet": "A",
+    "index": 97,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 29; face: long rectangular; eyes: wide set almond eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: full lower lip; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_099",
+    "sheet": "A",
+    "index": 98,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 30; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: small defined mouth; hair: short straight fringe; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_100",
+    "sheet": "A",
+    "index": 99,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 34; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: long tied back hair; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_101",
+    "sheet": "B",
+    "index": 0,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: round full cheeks; eyes: wide set almond eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_102",
+    "sheet": "B",
+    "index": 1,
+    "age": 19,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_103",
+    "sheet": "B",
+    "index": 2,
+    "age": 20,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 20; face: heart shaped; eyes: upswept eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_104",
+    "sheet": "B",
+    "index": 3,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: square wide jaw; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: small defined mouth; hair: close buzz cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_105",
+    "sheet": "B",
+    "index": 4,
+    "age": 19,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: upswept eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_106",
+    "sheet": "B",
+    "index": 5,
+    "age": 20,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 20; face: long rectangular; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: average athletic; skin tone: light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_107",
+    "sheet": "B",
+    "index": 6,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: full lower lip; hair: short side part; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_108",
+    "sheet": "B",
+    "index": 7,
+    "age": 19,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: upswept eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_109",
+    "sheet": "B",
+    "index": 8,
+    "age": 20,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 20; face: long rectangular; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short straight fringe; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_110",
+    "sheet": "B",
+    "index": 9,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: long rectangular; eyes: wide set almond eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: thin wide lips; hair: short side part; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_111",
+    "sheet": "B",
+    "index": 10,
+    "age": 19,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 19; face: long rectangular; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: full lower lip; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_112",
+    "sheet": "B",
+    "index": 11,
+    "age": 20,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 20; face: heart shaped; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_113",
+    "sheet": "B",
+    "index": 12,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: square wide jaw; eyes: upswept eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_114",
+    "sheet": "B",
+    "index": 13,
+    "age": 19,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 19; face: heart shaped; eyes: upswept eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_115",
+    "sheet": "B",
+    "index": 14,
+    "age": 20,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 20; face: round full cheeks; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: full lower lip; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_116",
+    "sheet": "B",
+    "index": 15,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: heart shaped; eyes: round open eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: full lower lip; hair: close buzz cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_117",
+    "sheet": "B",
+    "index": 16,
+    "age": 19,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 19; face: oval high cheekbones; eyes: round open eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_118",
+    "sheet": "B",
+    "index": 17,
+    "age": 20,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 20; face: heart shaped; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: full lower lip; hair: short straight fringe; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_119",
+    "sheet": "B",
+    "index": 18,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: heart shaped; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_120",
+    "sheet": "B",
+    "index": 19,
+    "age": 19,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 19; face: triangular narrow chin; eyes: upswept eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: thin wide lips; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_121",
+    "sheet": "B",
+    "index": 20,
+    "age": 20,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 20; face: square wide jaw; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short side part; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_122",
+    "sheet": "B",
+    "index": 21,
+    "age": 18,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 18; face: triangular narrow chin; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short crew cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_123",
+    "sheet": "B",
+    "index": 22,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: small defined mouth; hair: long tied back hair; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_124",
+    "sheet": "B",
+    "index": 23,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: short two block cut; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_125",
+    "sheet": "B",
+    "index": 24,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: oval high cheekbones; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short tight curls; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_126",
+    "sheet": "B",
+    "index": 25,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_127",
+    "sheet": "B",
+    "index": 26,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: long rectangular; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: thin wide lips; hair: short crew cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_128",
+    "sheet": "B",
+    "index": 27,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: round full cheeks; eyes: upswept eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_129",
+    "sheet": "B",
+    "index": 28,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: close buzz cut; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_130",
+    "sheet": "B",
+    "index": 29,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: long rectangular; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_131",
+    "sheet": "B",
+    "index": 30,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_132",
+    "sheet": "B",
+    "index": 31,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: full lower lip; hair: short side part; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_133",
+    "sheet": "B",
+    "index": 32,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: long rectangular; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short crew cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_134",
+    "sheet": "B",
+    "index": 33,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: heart shaped; eyes: round open eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: thin wide lips; hair: short side part; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_135",
+    "sheet": "B",
+    "index": 34,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: long rectangular; eyes: upswept eyes; eyebrows: short angled brows; nose: slender straight nose; mouth: small defined mouth; hair: short tight curls; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_136",
+    "sheet": "B",
+    "index": 35,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: triangular narrow chin; eyes: upswept eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: close buzz cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_137",
+    "sheet": "B",
+    "index": 36,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: round full cheeks; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: close buzz cut; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_138",
+    "sheet": "B",
+    "index": 37,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: full lower lip; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_139",
+    "sheet": "B",
+    "index": 38,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: round full cheeks; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: full lower lip; hair: short crew cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_140",
+    "sheet": "B",
+    "index": 39,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: square wide jaw; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short tight curls; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_141",
+    "sheet": "B",
+    "index": 40,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: long rectangular; eyes: round open eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: wide curved mouth; hair: short side part; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_142",
+    "sheet": "B",
+    "index": 41,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: thin wide lips; hair: long tied back hair; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_143",
+    "sheet": "B",
+    "index": 42,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: heart shaped; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short side part; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_144",
+    "sheet": "B",
+    "index": 43,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: long rectangular; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: close buzz cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_145",
+    "sheet": "B",
+    "index": 44,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: heart shaped; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: short two block cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_146",
+    "sheet": "B",
+    "index": 45,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: long rectangular; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_147",
+    "sheet": "B",
+    "index": 46,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: round full cheeks; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: small defined mouth; hair: long tied back hair; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_148",
+    "sheet": "B",
+    "index": 47,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: square wide jaw; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: prominent bridge nose; mouth: thin wide lips; hair: long tied back hair; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_149",
+    "sheet": "B",
+    "index": 48,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: heart shaped; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: thin wide lips; hair: short straight fringe; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_150",
+    "sheet": "B",
+    "index": 49,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short two block cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_151",
+    "sheet": "B",
+    "index": 50,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: heart shaped; eyes: upswept eyes; eyebrows: low broad brows; nose: low wide nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_152",
+    "sheet": "B",
+    "index": 51,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: heart shaped; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: long tied back hair; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_153",
+    "sheet": "B",
+    "index": 52,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: heart shaped; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_154",
+    "sheet": "B",
+    "index": 53,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: triangular narrow chin; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: full lower lip; hair: short crew cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_155",
+    "sheet": "B",
+    "index": 54,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: small defined mouth; hair: close buzz cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_156",
+    "sheet": "B",
+    "index": 55,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: short two block cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_157",
+    "sheet": "B",
+    "index": 56,
+    "age": 23,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 23; face: long rectangular; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short two block cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_158",
+    "sheet": "B",
+    "index": 57,
+    "age": 24,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 24; face: triangular narrow chin; eyes: wide set almond eyes; eyebrows: low broad brows; nose: low wide nose; mouth: wide curved mouth; hair: short straight fringe; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_159",
+    "sheet": "B",
+    "index": 58,
+    "age": 21,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 21; face: square wide jaw; eyes: round open eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: small defined mouth; hair: short side part; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_160",
+    "sheet": "B",
+    "index": 59,
+    "age": 22,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 22; face: square wide jaw; eyes: round open eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short straight fringe; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_161",
+    "sheet": "B",
+    "index": 60,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 25; face: round full cheeks; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: thin wide lips; hair: close buzz cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_162",
+    "sheet": "B",
+    "index": 61,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 26; face: heart shaped; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: thin wide lips; hair: long tied back hair; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_163",
+    "sheet": "B",
+    "index": 62,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 27; face: heart shaped; eyes: upswept eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: long tied back hair; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_164",
+    "sheet": "B",
+    "index": 63,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 28; face: long rectangular; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: full lower lip; hair: close buzz cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_165",
+    "sheet": "B",
+    "index": 64,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 25; face: long rectangular; eyes: round open eyes; eyebrows: short angled brows; nose: low wide nose; mouth: full lower lip; hair: short two block cut; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_166",
+    "sheet": "B",
+    "index": 65,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 26; face: long rectangular; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: wide curved mouth; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_167",
+    "sheet": "B",
+    "index": 66,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 27; face: square wide jaw; eyes: upswept eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_168",
+    "sheet": "B",
+    "index": 67,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 28; face: square wide jaw; eyes: round open eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: thin wide lips; hair: short tight curls; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_169",
+    "sheet": "B",
+    "index": 68,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 25; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: lean athletic; skin tone: medium tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_170",
+    "sheet": "B",
+    "index": 69,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 26; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_171",
+    "sheet": "B",
+    "index": 70,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 27; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: short angled brows; nose: low wide nose; mouth: wide curved mouth; hair: short tight curls; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_172",
+    "sheet": "B",
+    "index": 71,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 28; face: long rectangular; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: small defined mouth; hair: short tight curls; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_173",
+    "sheet": "B",
+    "index": 72,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 25; face: square wide jaw; eyes: round open eyes; eyebrows: low broad brows; nose: low wide nose; mouth: thin wide lips; hair: short tight curls; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_174",
+    "sheet": "B",
+    "index": 73,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 26; face: triangular narrow chin; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: thin wide lips; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_175",
+    "sheet": "B",
+    "index": 74,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 27; face: heart shaped; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: prominent bridge nose; mouth: thin wide lips; hair: short crew cut; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_176",
+    "sheet": "B",
+    "index": 75,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 28; face: heart shaped; eyes: upswept eyes; eyebrows: arched fine brows; nose: prominent bridge nose; mouth: small defined mouth; hair: short crew cut; build: average athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_177",
+    "sheet": "B",
+    "index": 76,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 25; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: wide curved mouth; hair: close buzz cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_178",
+    "sheet": "B",
+    "index": 77,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 26; face: square wide jaw; eyes: wide set almond eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: close buzz cut; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_179",
+    "sheet": "B",
+    "index": 78,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 27; face: square wide jaw; eyes: upswept eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: average athletic; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_180",
+    "sheet": "B",
+    "index": 79,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 28; face: long rectangular; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: long tied back hair; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_181",
+    "sheet": "B",
+    "index": 80,
+    "age": 25,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 25; face: long rectangular; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: low wide nose; mouth: small defined mouth; hair: short crew cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_182",
+    "sheet": "B",
+    "index": 81,
+    "age": 26,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 26; face: heart shaped; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: short two block cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_183",
+    "sheet": "B",
+    "index": 82,
+    "age": 27,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 27; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: prominent bridge nose; mouth: wide curved mouth; hair: short straight fringe; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_184",
+    "sheet": "B",
+    "index": 83,
+    "age": 28,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 28; face: oval high cheekbones; eyes: upswept eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: small defined mouth; hair: short two block cut; build: average athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_185",
+    "sheet": "B",
+    "index": 84,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 29; face: oval high cheekbones; eyes: round open eyes; eyebrows: arched fine brows; nose: low wide nose; mouth: wide curved mouth; hair: short crew cut; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_186",
+    "sheet": "B",
+    "index": 85,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 30; face: heart shaped; eyes: wide set almond eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: full lower lip; hair: long tied back hair; build: stocky catcher build; skin tone: medium tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_187",
+    "sheet": "B",
+    "index": 86,
+    "age": 31,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 31; face: round full cheeks; eyes: slightly hooded eyes; eyebrows: straight thick brows; nose: rounded broad nose; mouth: full lower lip; hair: close buzz cut; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_188",
+    "sheet": "B",
+    "index": 87,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 32; face: triangular narrow chin; eyes: upswept eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: thin wide lips; hair: short tight curls; build: lean athletic; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_189",
+    "sheet": "B",
+    "index": 88,
+    "age": 33,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 33; face: oval high cheekbones; eyes: narrow deep set eyes; eyebrows: short angled brows; nose: rounded broad nose; mouth: thin wide lips; hair: short two block cut; build: stocky catcher build; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_190",
+    "sheet": "B",
+    "index": 89,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 29; face: round full cheeks; eyes: round open eyes; eyebrows: arched fine brows; nose: slender straight nose; mouth: thin wide lips; hair: short side part; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_191",
+    "sheet": "B",
+    "index": 90,
+    "age": 30,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 30; face: oval high cheekbones; eyes: wide set almond eyes; eyebrows: short angled brows; nose: low wide nose; mouth: thin wide lips; hair: short tight curls; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_192",
+    "sheet": "B",
+    "index": 91,
+    "age": 31,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 31; face: triangular narrow chin; eyes: slightly hooded eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: thin wide lips; hair: long tied back hair; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_193",
+    "sheet": "B",
+    "index": 92,
+    "age": 32,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 32; face: square wide jaw; eyes: slightly hooded eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: small defined mouth; hair: close buzz cut; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_194",
+    "sheet": "B",
+    "index": 93,
+    "age": 33,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 33; face: heart shaped; eyes: round open eyes; eyebrows: arched fine brows; nose: rounded broad nose; mouth: small defined mouth; hair: short tight curls; build: stocky catcher build; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_195",
+    "sheet": "B",
+    "index": 94,
+    "age": 29,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 29; face: square wide jaw; eyes: narrow deep set eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: wide curved mouth; hair: short straight fringe; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_196",
+    "sheet": "B",
+    "index": 95,
+    "age": 34,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 34; face: round full cheeks; eyes: wide set almond eyes; eyebrows: straight thick brows; nose: slender straight nose; mouth: wide curved mouth; hair: short straight fringe; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: thin sports glasses; facial hair: clean shaven.",
+    "tags": {
+      "glasses": true,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_197",
+    "sheet": "B",
+    "index": 96,
+    "age": 35,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 35; face: square wide jaw; eyes: narrow deep set eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: short straight fringe; build: lean athletic; skin tone: light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_198",
+    "sheet": "B",
+    "index": 97,
+    "age": 36,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 36; face: round full cheeks; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: full lower lip; hair: close buzz cut; build: lean athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_199",
+    "sheet": "B",
+    "index": 98,
+    "age": 37,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 37; face: round full cheeks; eyes: upswept eyes; eyebrows: low broad brows; nose: slender straight nose; mouth: full lower lip; hair: short side part; build: average athletic; skin tone: deep tan within natural ancestry range; accessories: none; facial hair: neatly trimmed moustache and chin beard.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": true
+    },
+    "status": "planned"
+  },
+  {
+    "id": "v18_200",
+    "sheet": "B",
+    "index": 99,
+    "age": 38,
+    "sex": "male",
+    "ethnicity": "Korean",
+    "appearance_brief": "Korean male, apparent age 38; face: round full cheeks; eyes: round open eyes; eyebrows: low broad brows; nose: rounded broad nose; mouth: wide curved mouth; hair: short crew cut; build: stocky catcher build; skin tone: medium light within natural ancestry range; accessories: none; facial hair: clean shaven.",
+    "tags": {
+      "glasses": false,
+      "facial_hair": false
+    },
+    "status": "planned"
+  }
+]

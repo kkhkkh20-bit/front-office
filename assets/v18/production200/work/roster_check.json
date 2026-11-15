@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "identity_count": 200,
+  "ethnicity_counts": {
+    "US White": 16,
+    "US Black": 14,
+    "Dominican Latino": 10,
+    "Venezuelan Latino": 8,
+    "Mexican Latino": 4,
+    "Cuban Latino": 2,
+    "Puerto Rican Latino": 2,
+    "Canadian White": 2,
+    "Caribbean Black": 2,
+    "Japanese": 8,
+    "Taiwanese": 6,
+    "Australian": 4,
+    "Filipino": 2,
+    "Korean": 120
+  },
+  "Korean_under25": 72,
+  "Korean_beards": 18,
+  "foreign_beards": 32,
+  "glasses": 20,
+  "scope": "planned metadata only; photos not validated"
+}

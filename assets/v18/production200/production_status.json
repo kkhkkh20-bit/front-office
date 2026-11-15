@@ -1,0 +1,20 @@
+{
+  "production_complete": false,
+  "asset_validation_passed": false,
+  "review_status": "identity_prescreen_in_progress",
+  "planned_identity_count": 200,
+  "generated_candidate_count": 20,
+  "accepted_identity_count": 0,
+  "completed_variant_count": 0,
+  "completed_sheet_count": 0,
+  "full_prescreen_within_pairs_expected": 19900,
+  "full_prescreen_reference_pairs_expected": 32000,
+  "pilot_result": "failed",
+  "pilot_violations": 58,
+  "notes": [
+    "Pilot IDs are provisional, not assigned to planned identities.",
+    "The initial candidate prompt differs from planned metadata; tags and features must be reconciled after identity acceptance.",
+    "No final manifest or runtime files published.",
+    "Next: regenerate colliding faces and visually assess apparent age, then run full-200 prescreen before wardrobe variants."
+  ]
+}
