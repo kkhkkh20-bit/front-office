@@ -883,7 +883,7 @@ T('[드래프트 아마 기록] 카페 11-15: 상위권 고교 투수는 대부�
   const tp=P.flatMap(x=>x.t), bp=P.flatMap(x=>x.b), tb=B.flatMap(x=>x.t), bb=B.flatMap(x=>x.b); const era=p=>pRate(p.am).era, k9=p=>pRate(p.am).k9, av=p=>bRate(p.am).avg, m=(L,f)=>L.reduce((a,p)=>a+f(p),0)/L.length;
   ok(tp.filter(p=>era(p)<3).length>=tp.length*.7,'상위 투수 ERA 3 미만 비율 낮음: '+tp.map(p=>era(p).toFixed(2)).join(','));
   ok(tp.filter(p=>era(p)>5).length<=Math.max(2,tp.length*.08),'상위 투수 ERA 5 초과가 흔함: '+tp.map(p=>era(p).toFixed(2)).join(','));
-  ok(m(tp,k9)>=10,'상위 투수 K/9 낮음 '+m(tp,k9).toFixed(1));
+  ok(m(tp,k9)>=9.7,'상위 투수 K/9 낮음 '+m(tp,k9).toFixed(2)); /* 11-15: 아마 기록 생성은 그대로인데 세계마다 9.8~10.7(예전 엔진도 9.89·9.97이 나온다, 세계 6개 측정)이라 10은 분포 한가운데였다. 사전 시즌 난수 흐름만 바뀌어도 갈려 9.7로 */
   ok(tb.filter(p=>av(p)>.35).length>=tb.length*.7,'상위 타자 타율 .350 초과 비율 낮음: '+tb.map(p=>av(p).toFixed(3)).join(','));
   ok(m(bp,era)>m(tp,era)+1.5&&m(bb,av)<m(tb,av)-.07,'상위·하위 기록 차이가 작음 ERA '+m(tp,era).toFixed(2)+'/'+m(bp,era).toFixed(2)+' AVG '+m(tb,av).toFixed(3)+'/'+m(bb,av).toFixed(3));
   ok(G.draftClass.every(id=>{ const p=G.players[id]; return !p||!p.am||(p.amV===2||p.ovsRet)&&p.amZ!=null; }),'새 기록 표시(amV·amZ)가 없음'); });
@@ -1229,7 +1229,7 @@ T('[리뷰 11-02p] 전임 감독의 미응답 요청은 감독이 바뀌면 끝�
 T('[리뷰 11-02p] 보직을 바꾸면 같은 날에도 전력 비교(자리별 순위)가 새 구성으로 다시 계산된다',()=>{ fresh(); const v0=leagueSlots(); const d=depth(G.user); const rp=d.pen.find(q=>q.role!=='SP')||d.pen[0]; ok(rp,'준비 실패'); rp.role='SP'; rp.r.stf=95; rp.r.ctl=95; rp.r.sta=90; const v1=leagueSlots(); ok(v1!==v0,'보직 변경 뒤에도 같은 계산 재사용'); ok(JSON.stringify(PSLOTS.map(k=>v1[G.user][k].v))===JSON.stringify(PSLOTS.map(k=>slotOf(G.user)[k].v)),'비교 자료가 실제 배치와 다름'); });
 T('[리뷰 11-02p] 지난 시즌 백분위 비교 집단은 그 시즌 기준을 채운 선수로 정하고, 지금 방출·은퇴로 바뀌지 않는다',()=>{ fresh(); const y=G.year-1; const L=Object.values(G.players).filter(q=>!q.isP&&!q.fdPool&&pctQual(false,seasonTotal(q,y,'1군'))); ok(L.length>=15,'준비 실패: 지난 시즌 기준 충족 '+L.length+'명');
   const n0=pctPool(false,y).length; const x=L.find(q=>q.team!==G.user); toFree(x,'테스트'); G.day++; const n1=pctPool(false,y).length; ok(n1===n0,'방출로 지난 시즌 비교 집단 '+n0+' → '+n1); const id=x.id; dropP(id); G.day++; const n2=pctPool(false,y).length; ok(n2===n0,'리그를 떠난 선수 보관 기록이 빠짐 '+n0+' → '+n2); });
-T('[리뷰 11-02q] 퓨처스 선발 등판도 마지막 선발일·등판일·투구 수·피로에 남아 이틀 뒤 1군 선발로 바로 뽑히지 않는다',()=>{ __seed(1115); /* 시드 고정: 앞선 시나리오의 난수 소비에 결과가 흔들리지 않게(11-15) */ fresh(); simTo(()=>period()==='season'); const p=Object.values(G.players).find(q=>q.isP&&q.team===G.user&&!q.foreign&&!q.e1&&healthy(q))||Object.values(G.players).find(q=>q.isP&&q.team===G.user&&!q.foreign); /* 퓨처스에 실제로 나갈 2군 투수(1군 엔트리 투수는 퓨처스 등판이 없다, 11-11) */ p.role='SP'; delete p.lastStart; delete p.lastApp; p.fat=0; p.ld=[];
+T('[리뷰 11-02q] 퓨처스 선발 등판도 마지막 선발일·등판일·투구 수·피로에 남아 이틀 뒤 1군 선발로 바로 뽑히지 않는다',()=>{ __seed(1115); /* 시드 고정: 앞선 시나리오의 난수 소비에 결과가 흔들리지 않게(11-15) */ fresh(); simTo(()=>period()==='season'); const p=Object.values(G.players).find(q=>q.isP&&q.team===G.user&&!q.foreign&&!q.e1&&healthy(q)&&!futUpToday(q)&&futEligibleDay(q,G.user,G.day))||Object.values(G.players).find(q=>q.isP&&q.team===G.user&&!q.foreign&&!q.e1&&healthy(q))|| /* 오늘 막 말소됐거나 1군에서 던졌거나 오늘 합류해 퓨처스에 못 나가는 투수는 기록이 남지 않는다(11-15: 난수 흐름이 바뀌어 그런 투수가 뽑혀 거짓 실패) */Object.values(G.players).find(q=>q.isP&&q.team===G.user&&!q.foreign); /* 퓨처스에 실제로 나갈 2군 투수(1군 엔트리 투수는 퓨처스 등판이 없다, 11-11) */ p.role='SP'; delete p.lastStart; delete p.lastApp; p.fat=0; p.ld=[];
   futPit(p,G.user); ok(p.lastStart===G.day&&p.lastApp===G.day&&p.lastPc>0,'퓨처스 선발 뒤 기록 '+JSON.stringify({ls:p.lastStart,la:p.lastApp,pc:p.lastPc})); ok(p.fat>0,'퓨처스 선발 피로 없음');
   const d={sp:[p],pen:[]}; const t=team(G.user); t.rot=0; const day=G.day+2; const q=Object.values(G.players).find(x=>x.isP&&x.team===G.user&&x!==p); q.role='SP'; delete q.lastStart; d.sp=[p,q]; ok(pickStarter(G.user,d,day,null)===q,'이틀 전 퓨처스 선발이 다시 선발로 뽑힘'); });
 T('[리뷰 11-02q] 1군·퓨처스 등판이 섞여도 등판 기록은 날짜순이라 3연투를 3연투로 센다',()=>{ fresh(); const p=Object.values(G.players).find(q=>q.isP&&q.team!=null); p.role='RP'; p.ld=[]; const D=G.day; loadLog(p,D-1,20,false); loadLog(p,D-2,20,false); loadLog(p,D,19,false);
@@ -1609,13 +1609,13 @@ T('[엔진] 타자 능력 균형(11-15 커뮤니티 "컨택·선구안보다 파
   ok(dCE>=dP*.9,'컨택+선구안 고유 설명 '+(dCE*100).toFixed(0)+'%가 파워 '+(dP*100).toFixed(0)+'%보다 작음'); ok(F.b.con+F.b.eye>=F.b.pow*1.15,'표준화 기여 컨택 '+F.b.con.toFixed(2)+'+선구안 '+F.b.eye.toFixed(2)+' vs 파워 '+F.b.pow.toFixed(2)); ok(F.b.pow>=.25,'파워 기여가 너무 작음 '+F.b.pow.toFixed(2));
   const K=ols(X,'k'), B=ols(X,'bb'); ok(K.b.eye<=-.22,'선구안의 삼진 억제가 작음 '+K.b.eye.toFixed(2)); ok(B.b.eye>=.6,'선구안의 볼넷 기여 '+B.b.eye.toFixed(2));
   const avg=L.h/L.ab, kp=L.so/L.pa, bp=L.bb/L.pa, hp=L.hr/L.pa; ok(avg>=.260&&avg<=.276&&kp>=.19&&kp<=.215&&bp>=.08&&bp<=.095&&hp>=.022&&hp<=.029,'리그 평균이 움직임: 타율 '+avg.toFixed(3)+' 삼진 '+kp.toFixed(3)+' 볼넷 '+bp.toFixed(3)+' 홈런 '+hp.toFixed(4)); });
-T('[엔진] 투수도 능력이 성적에 반영된다: 100이닝 이상 투수의 평균자책점을 능력치(구위·제구·체력)가 35% 이상 설명한다(11-12 투수 폭 조정 뒤 측정 39%: 한 시즌 ERA는 실제로도 능력이 30~40% 설명)(9개 구단 시작 표본)',()=>{ const R=[];
+T('[엔진] 투수도 능력이 성적에 반영된다: 100이닝 이상 투수의 평균자책점을 능력치(구위·제구·체력)가 30% 이상 설명한다(11-12 투수 폭 조정 뒤 측정 39%: 한 시즌 ERA는 실제로도 능력이 30~40% 설명)(9개 구단 시작 표본)',()=>{ const R=[];
   for(const tid of [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9]) /* 표본을 늘려 시드 차이에 흔들리지 않게(11-07). 9개 세계 묶음도 37~44%로 흔들려(11-09 측정) 27개 세계로 */{ const snap={}; const u0=updateLg; updateLg=function(y){ if(y===2025)for(const p of Object.values(G.players))snap[p.id]={...p.r}; return u0.apply(this,arguments); }; try{ DEMO.on=false; newGame(tid); }finally{ updateLg=u0; }
     for(const p of Object.values(G.players)){ const s=snap[p.id]; if(!s||!p.isP)continue; const h=seasonTotal(p,2025,'1군'); if(!h||h.outs<300)continue; R.push({x:[1,s.stf,s.ctl,s.sta,p.foreign?(p.kfit??0):0],y:h.er*27/h.outs}); } } /* 외국인은 숨은 KBO 적합도(kfit, 73_foreign_drama 11-12)가 능력치 밖에서 평균자책점을 ±1~2점 움직인다(의도된 설계): 이 몫을 설명 변수에 넣지 않으면 외국인 표본(약 20%)의 설명력이 17~26%로 떨어져 전체가 29~31%로 보였다(국내만 35~36%, 적합도 포함 42%) */
   ok(R.length>=120,'준비 실패: 100이닝 투수 '+R.length); const n=R.length, p=5; const A=Array.from({length:p},()=>Array(p).fill(0)), b=Array(p).fill(0);
   for(const r of R)for(let i=0;i<p;i++){ b[i]+=r.x[i]*r.y; for(let j=0;j<p;j++)A[i][j]+=r.x[i]*r.x[j]; }
   for(let i=0;i<p;i++){ for(let j=i+1;j<p;j++){ const f=A[j][i]/A[i][i]; for(let c=i;c<p;c++)A[j][c]-=f*A[i][c]; b[j]-=f*b[i]; } } const w=Array(p).fill(0); for(let i=p-1;i>=0;i--){ let s2=b[i]; for(let c=i+1;c<p;c++)s2-=A[i][c]*w[c]; w[i]=s2/A[i][i]; }
-  const my=R.reduce((s2,r)=>s2+r.y,0)/n; let sst=0, sse=0; for(const r of R){ const pr=r.x.reduce((s2,v,i)=>s2+v*w[i],0); sst+=(r.y-my)**2; sse+=(r.y-pr)**2; } const r2=1-sse/sst; ok(r2>=.35,'능력치가 평균자책점을 설명하는 정도 '+(r2*100).toFixed(0)+'%(35% 이상이어야 함)'); /* 시작 표본의 난수 흐름에 따라 38~46%로 흔들려(11-07 측정) 기준을 40%로 */ });
+  const my=R.reduce((s2,r)=>s2+r.y,0)/n; let sst=0, sse=0; for(const r of R){ const pr=r.x.reduce((s2,v,i)=>s2+v*w[i],0); sst+=(r.y-my)**2; sse+=(r.y-pr)**2; } const r2=1-sse/sst; ok(r2>=.30,'능력치가 평균자책점을 설명하는 정도 '+(r2*100).toFixed(0)+'%(30% 이상이어야 함)'); /* 11-15 밸런스: 투수 결과 폭(TWP)을 줄여 평균자책점 1위를 KBO 띠(중앙값 2.4)에 맞추면서 39%→32%(실제 한 시즌 30~40% 범위 안). 기준 35→30 */ /* 시작 표본의 난수 흐름에 따라 38~46%로 흔들려(11-07 측정) 기준을 40%로 */ });
 T('[엔진] 수비 능력이 실점에 반영된다(11-15 수비 감사): 수비 범위가 좋은 야수에게 간 타구는 덜 안타가 되고, 팀 수비가 좋으면 인플레이 피안타율이 낮으며, 포구가 나쁘면 실책이 늘고, 포수 어깨가 좋으면 도루 성공률·시도가 줄고, 병살은 팀당 시즌 80~130개',()=>{
   const Bk={hi:[0,0],lo:[0,0]}, Ek={hi:[0,0],lo:[0,0]}, TM={}, CA={hi:[0,0,0],lo:[0,0,0]}; let DP=0, TG=0, W=0;
   const b0=bipResolve, s0=simGame;
@@ -4431,6 +4431,37 @@ const topRival=X=>G.teams.filter(t=>t.id!==X&&t.id!==G.user).sort((a,b)=>teamRat
 T('[성장] 정상급 꼬리 억제: 표시 80 이상이 처음보다 많아지면 76+ 선수 성장이 줄고, 86+는 더 줄며, 76 미만은 그대로',()=>{ fresh(); G.elN=null; G.elBase=null; const f0=eliteN80().f; ok(f0>=.99,'처음부터 억제 '+f0);
   const P=Object.values(G.players).filter(p=>!p.prospect&&p.team!=null&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a)).slice(0,40); for(const p of P)setOvr(p,Math.max(ovr(p),dvInv(83))); G.elN=null; const E=eliteN80(); ok(E.n>=40&&E.f<.7,'억제 약함 '+JSON.stringify(E));
   ok(eliteGrowF(dvInv(70))===1,'76 미만도 억제'); ok(eliteGrowF(dvInv(88))<eliteGrowF(dvInv(80)),'86+ 추가 억제 없음'); });
+T('[성장] 정상급 꼬리 억제는 국내 선수만 센다(11-15): 외국인이 상위권을 채워도 국내 76+ 성장이 깎이지 않고, 국내 정상급이 구단당 1명(10명)까지는 억제가 없다',()=>{ fresh(); G.elN=null; const n0=eliteN80().n;
+  const F=Object.values(G.players).filter(p=>p.foreign&&p.team!=null); ok(F.length>=5,'준비 실패: 외국인 '+F.length); /* 시즌 전이라 AI 구단 외국인은 아직 다 차지 않았다(세계마다 5~15명) */ for(const p of F)setOvr(p,Math.max(ovr(p),dvInv(88))); G.elN=null; const E=eliteN80(); ok(E.n===n0&&E.f>=1,'외국인을 셈 '+JSON.stringify(E)+' 처음 '+n0);
+  const D=Object.values(G.players).filter(p=>!p.prospect&&p.team!=null&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a)); for(const p of D.slice(0,10))setOvr(p,Math.max(ovr(p),dvInv(82))); for(const p of D.slice(10))if(FrontOfficeCore.dv(ovr(p))>=80)setOvr(p,dvInv(78)); G.elN=null; ok(eliteN80().n===10&&eliteN80().f>=1,'국내 10명인데 억제 '+JSON.stringify(eliteN80()));
+  for(const p of D.slice(10,20))setOvr(p,dvInv(82)); G.elN=null; ok(eliteN80().n===20&&eliteN80().f<=.35,'국내 20명인데 억제 약함 '+JSON.stringify(eliteN80())); });
+T('[나이] 시작 세계 베테랑(31세 이상) 표시 85 이상은 드물다(플레이어 제보 11-15: 30대 베테랑이 80 후반으로 시작): 새 세계 8개 평균 1.5명 이하, 한 세계 4명 이하',()=>{ let s=0, mx=0; const N=8; for(let r=0;r<N;r++){ DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let g=0; while(G.fd&&!G.fd.done&&g++<500)fdAdvance(true);
+    const n=Object.values(G.players).filter(p=>p.team!=null&&!p.prospect&&p.age>=31&&FrontOfficeCore.dv(ovr(p))>=85).length; s+=n/N; mx=Math.max(mx,n); }
+  ok(s<=1.5&&mx<=4,'31세 이상 85+ 평균 '+s.toFixed(2)+'명 · 최대 '+mx); });
+T('[타격] 타이틀 극단 느슨한 띠(KBO 2015~2025 기준, 11-15): 세계 2개 한 시즌씩, 타격왕 .320~.400·평균자책점왕 1.6~3.3(두 세계 평균), 리그 타율 .250~.285·평균자책점 3.9~5.1',()=>{ const A=[], E=[], L=[]; for(const sd of [101,202]){ globalThis.__seed(sd); fresh(); G.auto={sal:true,fre:true,mgr:true,tro:true,raid:true};
+    simTo(()=>period()==='season'); simTo(()=>period()!=='season'); const y=G.year; const B=titleBoard(y,'avg',0,0), P=titleBoard(y,'era',1,1); ok(B.length>=40&&P.length>=12,'규정 인원 '+B.length+'/'+P.length); A.push(B[0].v); E.push(P[0].v);
+    let ab=0,h=0,o=0,er=0; for(const p of Object.values(G.players)){ const t=seasonTotal(p,y,'1군'); if(!t)continue; if(p.isP){ o+=t.outs||0; er+=t.er||0; } else { ab+=t.ab||0; h+=t.h||0; } } L.push([h/ab,er*27/o]); }
+  ok(A.every(v=>v>=.32&&v<=.4),'타격왕 '+A.map(v=>v.toFixed(3)).join(',')); const e=(E[0]+E[1])/2; ok(e>=1.6&&e<=3.3,'평균자책점왕 '+E.map(v=>v.toFixed(2)).join(','));
+  ok(L.every(([a,b])=>a>=.25&&a<=.285&&b>=3.9&&b<=5.1),'리그 평균 '+L.map(x=>x[0].toFixed(3)+'/'+x[1].toFixed(2)).join(' ')); });
+T('[보직] 보직 유지(플레이어 제보 11-15): 잘 던지는 마무리는 체력·구위가 좋아도 선발로 돌리지 않고, 잘 던지는 선발은 비슷한 계투에게 자리를 뺏기지 않으며, 부진하면 다시 능력대로 · 사용자 구단 감독도 같다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+2);
+  const y=G.year; const reset=()=>{ _rkD=null; }; const row=(p,o)=>{ p.hist=(p.hist||[]).filter(h=>!(h.y===y&&h.lvl==='1군')); p.hist.push(Object.assign({},ZP,{y,lvl:'1군',t:p.team},o)); reset(); };
+  for(const tid of [G.teams.find(t=>t.id!==G.user).id,G.user]){ const P=playersOf(tid).filter(p=>p.isP&&healthy(p)&&p.e1); for(const p of P)row(p,{}); /* 올해 기록 비우기: 지난해 기록만 남는다 */ for(const p of P){ p.hist=p.hist.filter(h=>h.y!==y-1); } reset();
+    const d0=depth(tid); const c=d0.pen[0], m=d0.sp[1]; ok(c&&m,'준비 실패: 불펜 없음'); const c0={...c.r}; c.r.stf=m.r.stf+1; c.r.ctl=m.r.ctl; c.r.sta=m.r.sta; c.rAdj=m.rAdj; delete c.roleProm; if(G.prole)delete G.prole[c.id]; if(G.rplan)delete G.rplan[c.id]; reset();
+    ok(depth(tid).sp.includes(c),'대조 실패: 기록 없는 최고 투수가 선발이 아님 '+tid);
+    row(c,{g:30,gs:0,sv:18,outs:90,er:8}); ok(!depth(tid).sp.includes(c)&&depth(tid).pen[0]===c,'잘 던지는 마무리가 선발로 감 '+tid);
+    row(c,{g:30,gs:0,sv:18,outs:90,er:70}); ok(depth(tid).sp.includes(c),'부진한 마무리도 보직이 고정됨 '+tid);
+    row(c,{}); c.r=c0; reset();
+    const d1=depth(tid); const s=d1.sp[d1.sp.length-1], r=d1.pen.find(q=>q!==s); ok(s&&r,'준비 실패');
+    r.r.stf=s.r.stf+3; r.age=s.age; r.r.ctl=s.r.ctl; r.r.sta=s.r.sta; r.rAdj=s.rAdj; delete r.roleProm; delete s.roleProm; if(G.prole){ delete G.prole[r.id]; delete G.prole[s.id]; } if(G.rplan){ delete G.rplan[r.id]; delete G.rplan[s.id]; } reset();
+    ok(depth(tid).sp.includes(r)&&!depth(tid).sp.includes(s),'대조 실패: 조금 나은 투수가 선발이 아님 '+tid);
+    row(s,{g:8,gs:8,outs:140,er:15}); row(r,{g:15,gs:0,hld:6,outs:45,er:4}); const d2=depth(tid); ok(d2.sp.includes(s)&&!d2.sp.includes(r),'잘 던지는 선발이 비슷한 계투에게 자리를 뺏김 '+tid);
+    row(s,{g:8,gs:8,outs:120,er:90}); row(r,{}); ok(roleKeepSP(s)===0&&!depth(tid).sp.includes(s),'부진한 선발도 자리가 고정됨 '+tid); } });
+T('[성장] 투수 체력 성장(플레이어 제보 11-15): 계투로만 던진 투수는 체력이 덜 크고, 선발로 던진 투수는 그대로 큰다. 등판이 적으면 그대로',()=>{ fresh(); const y=G.year; const p=playersOf(G.user).find(q=>q.isP&&!q.foreign);
+  const set=o=>{ p.hist=(p.hist||[]).filter(h=>h.y!==y); p.hist.push(Object.assign({},ZP,{y,lvl:'1군',t:p.team},o)); };
+  set({g:55,gs:0,outs:180}); const fr=staUseF(p); set({g:28,gs:28,outs:500}); const fs=staUseF(p); set({g:5,gs:0,outs:15}); const f0=staUseF(p);
+  ok(fr<=.4&&fs>=1&&f0===1,'체력 성장 몫 계투 '+fr+' 선발 '+fs+' 적은 등판 '+f0);
+  const grow=o=>{ const q=JSON.parse(JSON.stringify(p)); q.age=21; q.pot=Math.max(q.pot,70); q.r.sta=40; q.r.stf=40; q.r.ctl=40; q.realK=1; q.potB=ovr(q); q.dt='norm'; q.pers=Object.assign({},q.pers||{},{pro:12,amb:12,temp:10}); q.hist=[Object.assign({},ZP,{y,lvl:'1군',t:q.team},o)]; G.players[q.id]=q; globalThis.__seed(777); develop(q); G.players[p.id]=p; return q.r.sta-40-(q.declP&&q.declP.sta||0); };
+  const gR=grow({g:55,gs:0,outs:300}), gS=grow({g:17,gs:17,outs:300}); ok(gS>0&&gR<gS,'계투 체력 성장 '+gR.toFixed(2)+' · 선발 '+gS.toFixed(2)); });
 T('[독주 견제] 최근 세 시즌을 휩쓴 구단만 독주 구단이 된다(우리 구단·AI 구단 같은 기준)',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; ok(!domLead()||domLead().tid!==X,'준비 실패: 처음부터 독주');
   mkDyn(X); ok(domOf(X)>=DOM_TH,'세 시즌 우승인데 독주 아님 '+domOf(X)); const L=domLead(); ok(L&&L.tid===X,'독주 구단이 다름'); ok(G.teams.filter(t=>t.id!==X).every(t=>domOf(t.id)<DOM_TH),'다른 구단도 독주로 잡힘');
   G.history=G.history.filter(h=>h.champ!==X); mkDyn(G.user); ok(domLead()&&domLead().tid===G.user,'우리 구단 독주를 못 잡음'); });
