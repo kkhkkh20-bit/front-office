@@ -4901,6 +4901,15 @@ T('[안정화] 결산: 빚이 남은 구단은 모기업이 갚아 준 부채 �
   simTo(()=>G.last&&G.last.y===G.year&&G.last.fins); const f=G.last.fins[t.id]; ok(f,'준비 실패: 결산 없음'); const v=(L,pre)=>(L.find(x=>x[0].startsWith(pre))||[0,0])[1];
   const relief=v(f.inc,'모기업 지원(부채 정리)'), back=v(f.exp,'모기업 광고·후원 조정'); ok(relief>0,'준비 실패: 부채 정리금이 없음 '+JSON.stringify(f.inc));
   ok(f.cash<0?back===0:true,'결산 뒤에도 빚인데 흑자 조정으로 '+back+' 가져감(부채 정리 '+relief+', 현금 '+f.cash+')'); });
+T('[제보 dddddd] 코치 교체: 정규시즌 뒤 계약은 우리·AI 모두 다음 시즌 합류, 능력은 그대로이고 영입 화면의 합류 후 값이 합류 뒤 실제 값과 같다',()=>{ fresh(); G.day=G.cal.end+10; ok(dobj(G.day).m===9||dobj(G.day).m===10,'준비 실패: 9~10월 비시즌이 아님 '+dmd(G.day)); ok(ctStartS()===G.year+1,'준비 실패: 우리 계약 시작 시즌');
+  team(G.user).cash=100000; const u=G.user, C=coachesOf(u), role=CKEYS.find(r=>C[r]&&(G.cmarket||[]).some(c=>c.role===r)); ok(role,'준비 실패: 교체할 자리 없음'); const c=G.cmarket.find(x=>x.role===role);
+  const ab0=JSON.stringify(cAb(c)), sk0=c.sk, dv0=c.dv, plan=[effC(c,u,'sk',1),effC(c,u,'dv',1)]; ok(hireCoach(c.id,2)==='','영입 실패');
+  ok(C[role]===c&&JSON.stringify(c.ab)===ab0&&c.sk===sk0&&c.dv===dv0,'영입 뒤 코치 능력 자체가 바뀜'); ok(staffPending(c)&&c.jy===G.year+1,'정규시즌 뒤 영입인데 다음 시즌 합류가 아님 jy='+c.jy);
+  ok(effC(c,u,'sk')===45,'합류 전에는 이 자리를 빈자리로 계산해야 함'); ok(effC(c,u,'sk',1)===plan[0]&&effC(c,u,'dv',1)===plan[1],'영입 화면 값과 합류 후 값이 다름');
+  G.year++; try{ ok(!staffPending(c)&&effC(c,u,'sk')===plan[0]&&effC(c,u,'dv')===plan[1],'합류한 뒤 실제 값이 영입 화면 값과 다름 '+[effC(c,u,'sk'),effC(c,u,'dv')]+' / '+plan); } finally{ G.year--; }
+  const mk=G.cmarket.map(x=>x.id); for(const t of G.teams){ if(t.id===u)continue; t.cash=100000; t.market=1.2; for(const x of Object.values(G.coach[t.id]))if(x){ x.sk=30; x.dv=30; } } for(const x of G.cmarket)x.sal=60;
+  const hired=[]; for(let i=0;i<60&&!hired.length;i++){ cmAiMonthly(); for(const t of G.teams)if(t.id!==u)for(const k of CKEYS){ const x=G.coach[t.id][k]; if(x&&mk.includes(x.id))hired.push(x); } }
+  ok(hired.length,'준비 실패: AI 구단 시장 영입이 없음'); ok(hired.every(x=>x.jy===G.year+1&&staffPending(x)),'AI 구단은 같은 때 영입한 코치를 바로 합류시킴(우리만 다음 시즌 합류) '+hired.map(x=>x.jy)); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
