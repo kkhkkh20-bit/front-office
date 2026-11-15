@@ -1,0 +1,167 @@
+[
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel00.jpg",
+    "keys": [
+      "gray_daejeon_redfox_165_r4_single",
+      "gray_daejeon_redfox_r3",
+      "gray_goyang_storm_165_r4_single",
+      "gray_goyang_storm_r3"
+    ],
+    "render_sha256": [
+      "6fab08c43c1c12e1180c6fcd01ad72012b773b18ea5d37d0a78d9bec3f69c32a",
+      "72e680e167573b8af63750e00862c1a4db5661d04a6cbd762e5a5ba3a9d71f9b",
+      "6fb212e0d4ccca1856ec745a5a5f5bbffdaa23a43adb034692949872cea3b114",
+      "3edbb13041d049fe5669f3c9ad398c7fd7f099c707522dd3d1d7017db08f4b47"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel01.jpg",
+    "keys": [
+      "gray_incheon_seagulls_r1",
+      "hires_busan_waves_g05",
+      "hires_busan_waves_g07",
+      "hires_busan_waves_g09"
+    ],
+    "render_sha256": [
+      "64541f1e5961ddd8d5eafdf99b2906509db82fb16a38f6392ed2d50e508ef58b",
+      "3fd20c3007ba0c89c98a2d156a238988045d59aaa4b2bf2e00d43063d2c70833",
+      "3e9f1be221dbbdea8663fb31a0bc3d03735dc59cfff8df01f82af09fb86e9c14",
+      "aefbb16d39d8ef32d256b1c1677b20ca740dfde9c4c98145af6a9e85220472f4"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel02.jpg",
+    "keys": [
+      "hires_busan_waves_g10",
+      "hires_busan_waves_g11",
+      "hires_busan_waves_g12",
+      "hires_busan_waves_g14"
+    ],
+    "render_sha256": [
+      "a25898ede97e85f490618bd048671ed073ca8f07c3d3822afc1fc4b2353d8912",
+      "dd7f1eb3f221e07280c179cabe36d6ba6791b1a3b7849fd204d383b6d8edd3cf",
+      "1e6d370957a958686d1be27cc72f6872c92cef469ac7d76688ad7a72529e8206",
+      "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel03.jpg",
+    "keys": [
+      "hires_busan_waves_g15",
+      "hires_busan_waves_g16",
+      "hires_busan_waves_g17",
+      "hires_busan_waves_g18"
+    ],
+    "render_sha256": [
+      "42f6dba50026aecab597b617efdfd403fa115b63c340728fbc8736775b52d066",
+      "6ae43eb80f1b77e553d8bac66dbb4f7df9fbf15768d3493443843ddf7ada4600",
+      "b25254647e295b0a72690fd74fe6777722c2eb3df85056a60a3885d0702bbd66",
+      "da325e2e1c411135006e6d133fa085d238b9b2bdeccf182797173ec362ca20ab"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel04.jpg",
+    "keys": [
+      "hires_busan_waves_g19",
+      "hires_busan_waves_g20",
+      "hires_busan_waves_g21",
+      "hires_changwon_anchors_g00"
+    ],
+    "render_sha256": [
+      "fcf04604e665073c9709c7a4507a687517022931a28f336e8b834397cedde878",
+      "698c8e034938c716d7497158f54eada3a5205281f9bd7ac7935c334d2bed3820",
+      "359d97690ec3d62f512178723b86fea1cb9085f9fea011015b3e7c8b4cfa3bac",
+      "5106b4f910f50eb9e9924dbca8c714ae0a1ae8dcc1993498d596f2680d6dd910"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel05.jpg",
+    "keys": [
+      "hires_changwon_anchors_g01",
+      "hires_changwon_anchors_g02",
+      "hires_changwon_anchors_g03",
+      "hires_changwon_anchors_g04"
+    ],
+    "render_sha256": [
+      "7f4674e316a203afaa2a12c046ac985bd1614ae2d3fe5e0598d38f41de3efc3b",
+      "1354b0ef6713efc1df321dba109ded34eb64256254969c89500617c19efa06c2",
+      "6dff71e99b0368fe2f70bc291dd2f0d6e6332a88fdea9dd276566a4848cdc009",
+      "89656ab1365075c2c47ab940b27b72922e9281119d40c1c316100d8e6c4e7141"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel06.jpg",
+    "keys": [
+      "hires_changwon_anchors_g05",
+      "hires_changwon_anchors_g06",
+      "hires_changwon_anchors_g07",
+      "hires_changwon_anchors_g08"
+    ],
+    "render_sha256": [
+      "c91dc809e0ca7717f148616e09887abdd303296b0e0fefbfd35de42578c54dd7",
+      "d0aa8dbc686927cefdf557cf0ab4c1a5d5a24491fa7320bb1427463ba9414bea",
+      "abc3cee470ea524b5ef683b17294d6ff67534b56827c8342a9c7990179356244",
+      "94ce4fd9320a700ccc3fbd877e3372beb33fe15f0472c4c5066847304dae8620"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel07.jpg",
+    "keys": [
+      "hires_changwon_anchors_g09",
+      "hires_changwon_anchors_g10",
+      "hires_changwon_anchors_g11",
+      "hires_changwon_anchors_g12"
+    ],
+    "render_sha256": [
+      "98fbc3225ed9acba2c4e5e0221faf9784fd0ad98716ed9c9c20236628718b637",
+      "5816021b21a77383f75f8d22dfda882fe9e05117f0ac45d72c73fa832aa796ec",
+      "80bc282b8f3e2c9408c25dde0346d09fd324dec4685894d83b838f99b8aef079",
+      "78209e76aca3f07f29290baa210af20851efd019a9826bf60952df73bd6bd009"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel08.jpg",
+    "keys": [
+      "hires_changwon_anchors_g13",
+      "hires_changwon_anchors_g14",
+      "hires_changwon_anchors_g15",
+      "hires_changwon_anchors_g16"
+    ],
+    "render_sha256": [
+      "4e716908904f2de6e89824e237cb7a8bd1dca5fa548c219d575282764e2b3e59",
+      "b3c56b8cf4c4f8ac8eaf055c26df9a848d4908f2d29118c71b6f22fc2069e201",
+      "1c2c2dfba6025b92ede7df39665d167594f2f3d88f2959b32bbf4880d74da485",
+      "22c7e64fe4bc0d5f0b5e7d96d6ae41936586a80b1192aa2fdc4ec5c89f2cabeb"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel09.jpg",
+    "keys": [
+      "hires_changwon_anchors_g18",
+      "hires_changwon_anchors_g19",
+      "hires_changwon_anchors_g20",
+      "hires_changwon_anchors_g21"
+    ],
+    "render_sha256": [
+      "1ace48a2c78bca8fcd739bc3467e6aa213d8ab5f6a3fab90fffc9c25627c020f",
+      "93998421a25bde1584ae8752a265b3e1e1f4e884d3da6321b514a7260e4aa933",
+      "c886198abcd77016f915a7213208ed3a1ce7868bc80bc2d0a2a29ff31c00f438",
+      "2dcbc4a2fc82ac63c90a5fded8b0fd4db6afe7f9bda20f87f4daf1f6fd457222"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass05_remaining/panel10.jpg",
+    "keys": [
+      "hires_daegu_thunders_g13",
+      "hires_gwangju_blazes_g01_retry",
+      "hires_incheon_seagulls_g16",
+      "hires_incheon_seagulls_g16_borderclean"
+    ],
+    "render_sha256": [
+      "661de2012a571dd6087e7b353cc12031289e6171b844370f774d90116e82ed7e",
+      "03288bdd254a1b30ac1ee33dd67fcfa58c001250f849f5bcea6fd3cb063f3fb1",
+      "8ed50116f42fe05956824e7132923cce7499b7df22942c0af1d8f05ab10332e1",
+      "52c00bc38b6a92393b0e8ef53ba723cccc9685b883392c5fb8af16b035470258"
+    ]
+  }
+]

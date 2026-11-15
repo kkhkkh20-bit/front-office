@@ -1,0 +1,1454 @@
+{
+  "key": "hires_seoul_comets_g15",
+  "kind": "hires",
+  "team": "seoul_comets",
+  "render": {
+    "key": "seoul_comets_g15",
+    "team": "seoul_comets",
+    "path": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/hires_inputs/seoul_comets_g15.png",
+    "expected_count": 9,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_136",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell00.png",
+      "native_sha256": "9758857b9d752356f8817420418f839048ed7559f90916ff405058a6d5ba29e5",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6809805631637573,
+          "same_original_all10_max": 0.7782840132713318,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.3072340488433838,
+          "other199_id": "v18_118",
+          "legacy160_max": 0.21509043872356415
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7223934531211853,
+          "same_original_all10_max": 0.7791891098022461,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.3136008381843567,
+          "other199_id": "v18_118",
+          "legacy160_max": 0.2572927176952362
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7120896577835083,
+          "same_original_all10_max": 0.776215136051178,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.3135426640510559,
+          "other199_id": "v18_118",
+          "legacy160_max": 0.26273584365844727
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_137",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell01.png",
+      "native_sha256": "584d779eb6b5f472b1fae85d6423d054eb3c737b77b7bb0b6315fb175498a772",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6990931630134583,
+          "same_original_all10_max": 0.7728773355484009,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.3451725244522095,
+          "other199_id": "v18_118",
+          "legacy160_max": 0.3433634638786316
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7177841663360596,
+          "same_original_all10_max": 0.807768702507019,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.35617291927337646,
+          "other199_id": "v18_142",
+          "legacy160_max": 0.3744596838951111
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7039535045623779,
+          "same_original_all10_max": 0.7995916604995728,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.3476486802101135,
+          "other199_id": "v18_105",
+          "legacy160_max": 0.3798368573188782
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_138",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell02.png",
+      "native_sha256": "a1eecfd7c243784d0369bff97451e179185cc09e9e70b7e484a1f8824d840656",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7668664455413818,
+          "same_original_all10_max": 0.8800411224365234,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.31822264194488525,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.33012378215789795
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8041538000106812,
+          "same_original_all10_max": 0.9010483026504517,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.3243030607700348,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3081497550010681
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.796521782875061,
+          "same_original_all10_max": 0.896305501461029,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.3235533833503723,
+          "other199_id": "v18_072",
+          "legacy160_max": 0.30818721652030945
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_139",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell03.png",
+      "native_sha256": "5609b3c8f641b0835aa27a2d24e888e5fc8c877ba83031a49b253551a2045df2",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7384064793586731,
+          "same_original_all10_max": 0.8516353368759155,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.38857027888298035,
+          "other199_id": "v18_126",
+          "legacy160_max": 0.3165794909000397
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7367461323738098,
+          "same_original_all10_max": 0.8514733910560608,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.38787519931793213,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.3245120048522949
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7424941062927246,
+          "same_original_all10_max": 0.8539533615112305,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.39771971106529236,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.34182626008987427
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_140",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell04.png",
+      "native_sha256": "fa62af5c579cf99f3835e048403dd53746c4d2f65d29dcc98565a080f0dc9eb1",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 4,
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6878396272659302,
+          "same_original_all10_max": 0.8089749813079834,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.28091514110565186,
+          "other199_id": "v18_137",
+          "legacy160_max": 0.27553868293762207
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.776416540145874,
+          "same_original_all10_max": 0.8267862796783447,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.288754403591156,
+          "other199_id": "v18_137",
+          "legacy160_max": 0.2762790322303772
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7537970542907715,
+          "same_original_all10_max": 0.8203603029251099,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.2939395308494568,
+          "other199_id": "v18_148",
+          "legacy160_max": 0.2689521908760071
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_141",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell05.png",
+      "native_sha256": "158a822bd56fdc02b8a3c15543371641d79e0181ef39dec3d21cb36dadd3d780",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 5,
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7139551043510437,
+          "same_original_all10_max": 0.8738168478012085,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.35935163497924805,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.39400041103363037
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7711443305015564,
+          "same_original_all10_max": 0.8968292474746704,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.35192692279815674,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.40320804715156555
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.771980881690979,
+          "same_original_all10_max": 0.8944160342216492,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.3406657576560974,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.39786237478256226
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_142",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell06.png",
+      "native_sha256": "73435b0c1eaf8dfba3a793da4388ade1ea7e5c315fdf59b84a3b33ca013795bb",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 6,
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7030128240585327,
+          "same_original_all10_max": 0.8150486946105957,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.3584294319152832,
+          "other199_id": "v18_131",
+          "legacy160_max": 0.3009197413921356
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7442371845245361,
+          "same_original_all10_max": 0.8551497459411621,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.3898111581802368,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.34044378995895386
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7292040586471558,
+          "same_original_all10_max": 0.8462788462638855,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.3748549818992615,
+          "other199_id": "v18_131",
+          "legacy160_max": 0.3330475091934204
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_143",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell07.png",
+      "native_sha256": "1a29b26936c8ff2616653a6a4c2318727df69838b3ed3eeed8d0657930bcca9e",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 7,
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7115079164505005,
+          "same_original_all10_max": 0.8100333213806152,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.4121135175228119,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.42154619097709656
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7671138048171997,
+          "same_original_all10_max": 0.8410017490386963,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.4295107126235962,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.4604552090167999
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.760493278503418,
+          "same_original_all10_max": 0.8403975367546082,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.41546598076820374,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.4573432207107544
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_144",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell08.png",
+      "native_sha256": "e172715439acfcc38f8b996d51d6efe03e48b73e2d24b7e18135a370f9ab53eb",
+      "source_render": "/workspace/generated_images/exec-f52cfd20-3a4b-4d62-b917-9f416bd5ddba.png",
+      "source_render_sha256": "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "source_cell": 8,
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.792096734046936,
+          "same_original_all10_max": 0.9062344431877136,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.36737939715385437,
+          "other199_id": "v18_177",
+          "legacy160_max": 0.3514747619628906
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8003064393997192,
+          "same_original_all10_max": 0.9134002923965454,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.36569610238075256,
+          "other199_id": "v18_095",
+          "legacy160_max": 0.3691147565841675
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8024861812591553,
+          "same_original_all10_max": 0.9130687713623047,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.365598201751709,
+          "other199_id": "v18_095",
+          "legacy160_max": 0.3675738573074341
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_136",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            33.04955291748047,
+            23.769506454467773,
+            84.15248107910156,
+            91.51763153076172,
+            0.8502737879753113
+          ],
+          "landmarks": [
+            [
+              48.767059326171875,
+              49.44361114501953
+            ],
+            [
+              72.71062469482422,
+              46.26390838623047
+            ],
+            [
+              64.36369323730469,
+              63.48663330078125
+            ],
+            [
+              51.97548294067383,
+              73.18777465820312
+            ],
+            [
+              74.2223892211914,
+              70.08724212646484
+            ]
+          ],
+          "pixel_sha256": "6c0113f47055f80c84084e810ab1a47ee19d4b40eadb434dcc2629fc3638df7a"
+        },
+        "256": {
+          "bbox": [
+            66.09504699707031,
+            48.10401153564453,
+            168.61004638671875,
+            183.18923950195312,
+            0.8582696914672852
+          ],
+          "landmarks": [
+            [
+              97.302734375,
+              98.8177490234375
+            ],
+            [
+              145.2794952392578,
+              92.20748138427734
+            ],
+            [
+              128.61764526367188,
+              127.68867492675781
+            ],
+            [
+              103.72047424316406,
+              146.1147918701172
+            ],
+            [
+              149.06375122070312,
+              139.64303588867188
+            ]
+          ],
+          "pixel_sha256": "491d25588525a84f3aef3b8ee19a84e2e44c5c70ca1ff369d72aec031ca60647"
+        },
+        "384": {
+          "bbox": [
+            99.42475128173828,
+            71.7374038696289,
+            252.83987426757812,
+            274.718505859375,
+            0.8581728339195251
+          ],
+          "landmarks": [
+            [
+              145.98678588867188,
+              148.02415466308594
+            ],
+            [
+              217.7327117919922,
+              138.08834838867188
+            ],
+            [
+              192.85781860351562,
+              191.51100158691406
+            ],
+            [
+              155.6445770263672,
+              218.95591735839844
+            ],
+            [
+              223.5568084716797,
+              209.22825622558594
+            ]
+          ],
+          "pixel_sha256": "36a6572023c9d3bc8af74c1278a1400fe65efd8724d6ec488198c55c79734f34"
+        }
+      },
+      "native_sha256": "9758857b9d752356f8817420418f839048ed7559f90916ff405058a6d5ba29e5"
+    },
+    {
+      "id": "v18_137",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell01.png",
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            40.27014923095703,
+            24.292776107788086,
+            90.57909393310547,
+            87.43745422363281,
+            0.8449640274047852
+          ],
+          "landmarks": [
+            [
+              53.583038330078125,
+              45.451053619384766
+            ],
+            [
+              77.87340545654297,
+              45.38258361816406
+            ],
+            [
+              65.90510559082031,
+              59.49595260620117
+            ],
+            [
+              54.14875411987305,
+              68.03919982910156
+            ],
+            [
+              77.0763931274414,
+              67.85078430175781
+            ]
+          ],
+          "pixel_sha256": "6207166371f0d16776997b81bd45e55b97dda90c4f34df453c33ff63826cef5e"
+        },
+        "256": {
+          "bbox": [
+            80.1166000366211,
+            48.30022048950195,
+            180.74227905273438,
+            175.0755615234375,
+            0.8542770147323608
+          ],
+          "landmarks": [
+            [
+              107.63983154296875,
+              90.69571685791016
+            ],
+            [
+              155.54710388183594,
+              90.63687896728516
+            ],
+            [
+              132.41322326660156,
+              118.88385009765625
+            ],
+            [
+              108.89041900634766,
+              136.1248016357422
+            ],
+            [
+              153.8041229248047,
+              135.94277954101562
+            ]
+          ],
+          "pixel_sha256": "433e6c13edfe3bdbf6f792a92d0bf5633ffdbaa0a60b58fe01806df7f807f8ed"
+        },
+        "384": {
+          "bbox": [
+            120.58038330078125,
+            72.53327941894531,
+            270.65673828125,
+            261.8299560546875,
+            0.8501474261283875
+          ],
+          "landmarks": [
+            [
+              161.44541931152344,
+              136.24143981933594
+            ],
+            [
+              232.81707763671875,
+              135.76095581054688
+            ],
+            [
+              198.55386352539062,
+              178.20347595214844
+            ],
+            [
+              163.64280700683594,
+              203.84661865234375
+            ],
+            [
+              230.77108764648438,
+              203.21351623535156
+            ]
+          ],
+          "pixel_sha256": "7d46578be055113a79e7cc85fac60a25d106ad896166c68d7280915966b53a6c"
+        }
+      },
+      "native_sha256": "584d779eb6b5f472b1fae85d6423d054eb3c737b77b7bb0b6315fb175498a772"
+    },
+    {
+      "id": "v18_138",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell02.png",
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            35.95892333984375,
+            23.73080825805664,
+            88.9308853149414,
+            93.83760070800781,
+            0.8454787731170654
+          ],
+          "landmarks": [
+            [
+              50.7784538269043,
+              47.577606201171875
+            ],
+            [
+              75.10030364990234,
+              47.547508239746094
+            ],
+            [
+              63.706321716308594,
+              63.1467399597168
+            ],
+            [
+              51.160667419433594,
+              71.10383605957031
+            ],
+            [
+              75.91385650634766,
+              70.9456787109375
+            ]
+          ],
+          "pixel_sha256": "f2292bd0e5f64518b9524a27d70ebdc6c80afd877e402c29707d9fa05a1885bc"
+        },
+        "256": {
+          "bbox": [
+            72.46475982666016,
+            48.562522888183594,
+            177.56625366210938,
+            188.2315673828125,
+            0.844014585018158
+          ],
+          "landmarks": [
+            [
+              101.36897277832031,
+              94.69337463378906
+            ],
+            [
+              150.09597778320312,
+              94.95018005371094
+            ],
+            [
+              126.84959411621094,
+              127.6143798828125
+            ],
+            [
+              101.866455078125,
+              142.67422485351562
+            ],
+            [
+              151.6348876953125,
+              142.85244750976562
+            ]
+          ],
+          "pixel_sha256": "3e0bd8ec8b7445ffe4daa4a31a7a9c3d73470669e9fd5b7b7e2a87875ae33d13"
+        },
+        "384": {
+          "bbox": [
+            110.23908233642578,
+            73.65498352050781,
+            266.04498291015625,
+            282.770263671875,
+            0.846865177154541
+          ],
+          "landmarks": [
+            [
+              151.9905548095703,
+              142.8383331298828
+            ],
+            [
+              224.49917602539062,
+              143.0346221923828
+            ],
+            [
+              189.3604278564453,
+              190.94993591308594
+            ],
+            [
+              153.05982971191406,
+              214.95059204101562
+            ],
+            [
+              226.89602661132812,
+              215.12802124023438
+            ]
+          ],
+          "pixel_sha256": "8a15d56206543f654bff82303ff61952ea14eaf20f1dd52ce32df108464ad8c1"
+        }
+      },
+      "native_sha256": "a1eecfd7c243784d0369bff97451e179185cc09e9e70b7e484a1f8824d840656"
+    },
+    {
+      "id": "v18_139",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell03.png",
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            32.34343719482422,
+            24.834299087524414,
+            81.0363998413086,
+            88.72174072265625,
+            0.8597476482391357
+          ],
+          "landmarks": [
+            [
+              43.615943908691406,
+              47.04389572143555
+            ],
+            [
+              65.71308898925781,
+              45.93633270263672
+            ],
+            [
+              54.35752487182617,
+              61.82120895385742
+            ],
+            [
+              45.860557556152344,
+              68.52790832519531
+            ],
+            [
+              67.64289855957031,
+              67.3988037109375
+            ]
+          ],
+          "pixel_sha256": "11cb66c4fbf5f2e0b1eb5c19a6853205c45725595554730a1688f80367c6fa64"
+        },
+        "256": {
+          "bbox": [
+            65.3118667602539,
+            48.84565353393555,
+            162.0989990234375,
+            177.2037811279297,
+            0.8647829294204712
+          ],
+          "landmarks": [
+            [
+              87.29366302490234,
+              93.97850036621094
+            ],
+            [
+              131.0598602294922,
+              91.87960815429688
+            ],
+            [
+              108.23641204833984,
+              124.1829605102539
+            ],
+            [
+              91.83799743652344,
+              137.16331481933594
+            ],
+            [
+              134.97866821289062,
+              135.01058959960938
+            ]
+          ],
+          "pixel_sha256": "b8ece82b561293cad0c7902dceff7885a6cb73dd7046f191063eded82f05825c"
+        },
+        "384": {
+          "bbox": [
+            98.70330047607422,
+            73.20820617675781,
+            243.1230926513672,
+            265.5215759277344,
+            0.8691397905349731
+          ],
+          "landmarks": [
+            [
+              131.2130584716797,
+              140.57901000976562
+            ],
+            [
+              196.23971557617188,
+              137.85792541503906
+            ],
+            [
+              161.8598175048828,
+              186.1328125
+            ],
+            [
+              137.8428497314453,
+              205.21421813964844
+            ],
+            [
+              202.05128479003906,
+              202.35736083984375
+            ]
+          ],
+          "pixel_sha256": "b4d63c4e23069a8b4396aae44dbf86cb30fc815182a10253a8d0cf26e6fa2ebd"
+        }
+      },
+      "native_sha256": "5609b3c8f641b0835aa27a2d24e888e5fc8c877ba83031a49b253551a2045df2"
+    },
+    {
+      "id": "v18_140",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell04.png",
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            31.14324951171875,
+            23.172985076904297,
+            77.35307312011719,
+            82.62785339355469,
+            0.8313090205192566
+          ],
+          "landmarks": [
+            [
+              38.337459564208984,
+              42.60492706298828
+            ],
+            [
+              57.61359786987305,
+              42.585792541503906
+            ],
+            [
+              43.142032623291016,
+              54.6829719543457
+            ],
+            [
+              39.474769592285156,
+              65.24307250976562
+            ],
+            [
+              56.06328582763672,
+              65.33241271972656
+            ]
+          ],
+          "pixel_sha256": "e119288f59d3758a70952539c64c47adbb139f965670e3857cc8075604b39ad7"
+        },
+        "256": {
+          "bbox": [
+            62.442649841308594,
+            48.00199508666992,
+            154.38656616210938,
+            165.17922973632812,
+            0.8367687463760376
+          ],
+          "landmarks": [
+            [
+              76.59263610839844,
+              84.70919036865234
+            ],
+            [
+              115.26473236083984,
+              85.09437561035156
+            ],
+            [
+              86.03612518310547,
+              109.9367904663086
+            ],
+            [
+              78.56034088134766,
+              129.97482299804688
+            ],
+            [
+              112.40985107421875,
+              130.53065490722656
+            ]
+          ],
+          "pixel_sha256": "2621e636657e1add2cbacc905da59637d7fc1ce2ad11c89f860b133bd56c4058"
+        },
+        "384": {
+          "bbox": [
+            93.92345428466797,
+            72.9118423461914,
+            231.9455108642578,
+            247.48733520507812,
+            0.8397072553634644
+          ],
+          "landmarks": [
+            [
+              115.01099395751953,
+              126.27680206298828
+            ],
+            [
+              173.1920623779297,
+              127.33079528808594
+            ],
+            [
+              128.83999633789062,
+              165.13192749023438
+            ],
+            [
+              117.40373229980469,
+              194.40013122558594
+            ],
+            [
+              168.9981231689453,
+              195.7120361328125
+            ]
+          ],
+          "pixel_sha256": "846c13965a4638a10e30b1bff4bde8e343f762f00bc15aba5b6c3155628d0562"
+        }
+      },
+      "native_sha256": "fa62af5c579cf99f3835e048403dd53746c4d2f65d29dcc98565a080f0dc9eb1"
+    },
+    {
+      "id": "v18_141",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell05.png",
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            38.9158821105957,
+            26.498516082763672,
+            92.58321380615234,
+            93.14112854003906,
+            0.8143117427825928
+          ],
+          "landmarks": [
+            [
+              53.1505241394043,
+              49.67658996582031
+            ],
+            [
+              78.18242645263672,
+              49.72761535644531
+            ],
+            [
+              65.69224548339844,
+              65.82577514648438
+            ],
+            [
+              55.530052185058594,
+              75.95418548583984
+            ],
+            [
+              75.91639709472656,
+              76.01881408691406
+            ]
+          ],
+          "pixel_sha256": "25d26ee5e9b1b92217cc76901a9b58b7f009b3b44ba5c92be582d494e5d126e9"
+        },
+        "256": {
+          "bbox": [
+            78.0084457397461,
+            58.472007751464844,
+            184.49658203125,
+            186.29769897460938,
+            0.8029928207397461
+          ],
+          "landmarks": [
+            [
+              106.14969635009766,
+              99.79609680175781
+            ],
+            [
+              155.93881225585938,
+              100.04533386230469
+            ],
+            [
+              131.00450134277344,
+              132.23587036132812
+            ],
+            [
+              111.2393798828125,
+              152.81105041503906
+            ],
+            [
+              151.82627868652344,
+              152.9260711669922
+            ]
+          ],
+          "pixel_sha256": "fa50b5d44bff7e9e8278c0be900e4bae7ea4f19015b11e94693026002a8e0f0a"
+        },
+        "384": {
+          "bbox": [
+            116.84163665771484,
+            87.6391372680664,
+            276.51556396484375,
+            279.6816101074219,
+            0.8049554824829102
+          ],
+          "landmarks": [
+            [
+              159.25955200195312,
+              149.63699340820312
+            ],
+            [
+              233.7960205078125,
+              149.9940948486328
+            ],
+            [
+              196.54800415039062,
+              198.56289672851562
+            ],
+            [
+              166.57347106933594,
+              228.8838348388672
+            ],
+            [
+              227.42880249023438,
+              229.06297302246094
+            ]
+          ],
+          "pixel_sha256": "60a38b87eeb65d2074d179aea9f19c8c704116b121851f8d079fc0a6052f6dc8"
+        }
+      },
+      "native_sha256": "158a822bd56fdc02b8a3c15543371641d79e0181ef39dec3d21cb36dadd3d780"
+    },
+    {
+      "id": "v18_142",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell06.png",
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.27613067626953,
+            26.274944305419922,
+            85.87623596191406,
+            87.48524475097656,
+            0.837417483329773
+          ],
+          "landmarks": [
+            [
+              49.55329513549805,
+              46.3685417175293
+            ],
+            [
+              72.73506164550781,
+              46.30949783325195
+            ],
+            [
+              60.910560607910156,
+              58.59777069091797
+            ],
+            [
+              51.109291076660156,
+              69.07774353027344
+            ],
+            [
+              71.72151184082031,
+              69.08888244628906
+            ]
+          ],
+          "pixel_sha256": "9e3c570a32d6f6ab748ea2ff8857c07724528ee69246b1ab920ee58243f6e7c2"
+        },
+        "256": {
+          "bbox": [
+            74.35604858398438,
+            53.05919647216797,
+            171.64686584472656,
+            175.46353149414062,
+            0.8470673561096191
+          ],
+          "landmarks": [
+            [
+              99.26737213134766,
+              92.42245483398438
+            ],
+            [
+              145.42320251464844,
+              92.31828308105469
+            ],
+            [
+              121.89127349853516,
+              118.4432373046875
+            ],
+            [
+              102.19448852539062,
+              138.56033325195312
+            ],
+            [
+              143.22036743164062,
+              138.66384887695312
+            ]
+          ],
+          "pixel_sha256": "7aa4939bf40ea2ed039c5638c75eaaef73d511918d3e4fc37ad75fcde687474d"
+        },
+        "384": {
+          "bbox": [
+            111.63399505615234,
+            80.2360610961914,
+            257.1416015625,
+            262.6756286621094,
+            0.8518353700637817
+          ],
+          "landmarks": [
+            [
+              149.04931640625,
+              138.30606079101562
+            ],
+            [
+              217.72268676757812,
+              138.05137634277344
+            ],
+            [
+              182.78074645996094,
+              177.8523712158203
+            ],
+            [
+              153.60499572753906,
+              207.8050994873047
+            ],
+            [
+              214.53756713867188,
+              207.8682861328125
+            ]
+          ],
+          "pixel_sha256": "2087c8e1bb1268a2c0bdc30a1e992ed323121197cd5d8b0df20e4b92a1119a6d"
+        }
+      },
+      "native_sha256": "73435b0c1eaf8dfba3a793da4388ade1ea7e5c315fdf59b84a3b33ca013795bb"
+    },
+    {
+      "id": "v18_143",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell07.png",
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            33.79497528076172,
+            26.681482315063477,
+            84.0696792602539,
+            89.12931823730469,
+            0.8592469692230225
+          ],
+          "landmarks": [
+            [
+              46.56348419189453,
+              46.872047424316406
+            ],
+            [
+              70.61616516113281,
+              46.782249450683594
+            ],
+            [
+              58.436973571777344,
+              60.54064178466797
+            ],
+            [
+              47.6658935546875,
+              70.39248657226562
+            ],
+            [
+              69.69953918457031,
+              70.3083724975586
+            ]
+          ],
+          "pixel_sha256": "7808758ebd21a843621b03dfc885057379c06e4004d316207e7ad64f7111f9b8"
+        },
+        "256": {
+          "bbox": [
+            67.36528015136719,
+            54.37968826293945,
+            168.18063354492188,
+            179.16409301757812,
+            0.8615467548370361
+          ],
+          "landmarks": [
+            [
+              93.11862182617188,
+              93.32896423339844
+            ],
+            [
+              141.02073669433594,
+              93.46815490722656
+            ],
+            [
+              116.5364990234375,
+              121.45892333984375
+            ],
+            [
+              95.37513732910156,
+              141.3268585205078
+            ],
+            [
+              138.69247436523438,
+              141.5341796875
+            ]
+          ],
+          "pixel_sha256": "5354870ebf70bafb84d706d3072b3b5f88677e1d3f26b6616874746943ef24c0"
+        },
+        "384": {
+          "bbox": [
+            101.41439819335938,
+            81.65052795410156,
+            252.22032165527344,
+            268.896240234375,
+            0.8617100715637207
+          ],
+          "landmarks": [
+            [
+              139.6649627685547,
+              140.07481384277344
+            ],
+            [
+              211.053955078125,
+              140.4457550048828
+            ],
+            [
+              174.29808044433594,
+              183.11212158203125
+            ],
+            [
+              143.094970703125,
+              211.9476318359375
+            ],
+            [
+              207.76966857910156,
+              212.34756469726562
+            ]
+          ],
+          "pixel_sha256": "cb378278e265c7da51e44f9ae7027f8656461ffcea4c4e2872ea179d53f0f394"
+        }
+      },
+      "native_sha256": "1a29b26936c8ff2616653a6a4c2318727df69838b3ed3eeed8d0657930bcca9e"
+    },
+    {
+      "id": "v18_144",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15/cell08.png",
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            31.712955474853516,
+            23.570175170898438,
+            82.38883972167969,
+            85.7824478149414,
+            0.7903295159339905
+          ],
+          "landmarks": [
+            [
+              45.55134582519531,
+              45.78750228881836
+            ],
+            [
+              69.63499450683594,
+              45.014930725097656
+            ],
+            [
+              58.680625915527344,
+              56.93080520629883
+            ],
+            [
+              47.907066345214844,
+              68.32878112792969
+            ],
+            [
+              69.23973846435547,
+              67.52681732177734
+            ]
+          ],
+          "pixel_sha256": "007dd5b51d7a1a4453501f23792f37e24d2cd1be8405826c489378dcdef0ed44"
+        },
+        "256": {
+          "bbox": [
+            63.776885986328125,
+            49.56182861328125,
+            164.49026489257812,
+            173.24710083007812,
+            0.8479070067405701
+          ],
+          "landmarks": [
+            [
+              91.28044128417969,
+              91.22679138183594
+            ],
+            [
+              138.73915100097656,
+              89.9750747680664
+            ],
+            [
+              116.70597076416016,
+              113.93287658691406
+            ],
+            [
+              95.75068664550781,
+              137.05043029785156
+            ],
+            [
+              137.50254821777344,
+              135.82327270507812
+            ]
+          ],
+          "pixel_sha256": "5613b3177c2a66995eaf4fffa52877cd854c0da5d92c906b3a34409b69904c24"
+        },
+        "384": {
+          "bbox": [
+            95.89405822753906,
+            75.18085479736328,
+            246.34603881835938,
+            260.8009948730469,
+            0.8591641187667847
+          ],
+          "landmarks": [
+            [
+              137.01109313964844,
+              136.55282592773438
+            ],
+            [
+              207.39381408691406,
+              134.52410888671875
+            ],
+            [
+              174.6393585205078,
+              171.45237731933594
+            ],
+            [
+              143.5823211669922,
+              205.314208984375
+            ],
+            [
+              205.83787536621094,
+              203.4294891357422
+            ]
+          ],
+          "pixel_sha256": "183a641712c5a573c1ece414566c1e6f756ebd561bb9b657bddce9f5c6fb0717"
+        }
+      },
+      "native_sha256": "e172715439acfcc38f8b996d51d6efe03e48b73e2d24b7e18135a370f9ab53eb"
+    }
+  ]
+}

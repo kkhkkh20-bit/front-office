@@ -1,0 +1,74 @@
+[
+  {
+    "id": "v18_013",
+    "team": "incheon_seagulls",
+    "measurement_key": "hires_incheon_seagulls_g01",
+    "crop_xyxy": [
+      8,
+      415,
+      410,
+      817
+    ],
+    "native_square_size": 402,
+    "source_render": "assets/v18/production200/sources/v18b_native/c761ceab12ef009262c2bed8.webp",
+    "original_generation_path": "/workspace/generated_images/exec-41a5a0eb-ba0a-48b3-8e6e-7b2c80aea134.png",
+    "original_generation_sha256": "c761ceab12ef009262c2bed85a76a7b8548ec22231a728364945c730717cb152",
+    "edge_difference": 61.516666666666666,
+    "suggested_top_shift": 3,
+    "new_crop_xyxy": [
+      8,
+      418,
+      410,
+      820
+    ],
+    "integer_top_shift": 3
+  },
+  {
+    "id": "v18_168",
+    "team": "incheon_seagulls",
+    "measurement_key": "hires_incheon_seagulls_g18",
+    "crop_xyxy": [
+      426,
+      424,
+      828,
+      826
+    ],
+    "native_square_size": 402,
+    "source_render": "assets/v18/production200/sources/v18b_native/22bce84283bcf8ccf393a1e1.webp",
+    "original_generation_path": "/workspace/generated_images/exec-c2fe49e4-9d85-4d35-9d01-4658df1633b1.png",
+    "original_generation_sha256": "22bce84283bcf8ccf393a1e124581b90192cbaf97af3128d299441a197e36835",
+    "edge_difference": 40.85972222222222,
+    "suggested_top_shift": 1,
+    "new_crop_xyxy": [
+      426,
+      426,
+      828,
+      828
+    ],
+    "integer_top_shift": 2
+  },
+  {
+    "id": "v18_171",
+    "team": "incheon_seagulls",
+    "measurement_key": "hires_incheon_seagulls_g18",
+    "crop_xyxy": [
+      844,
+      417,
+      1246,
+      819
+    ],
+    "native_square_size": 402,
+    "source_render": "assets/v18/production200/sources/v18b_native/22bce84283bcf8ccf393a1e1.webp",
+    "original_generation_path": "/workspace/generated_images/exec-c2fe49e4-9d85-4d35-9d01-4658df1633b1.png",
+    "original_generation_sha256": "22bce84283bcf8ccf393a1e124581b90192cbaf97af3128d299441a197e36835",
+    "edge_difference": 82.71805555555555,
+    "suggested_top_shift": null,
+    "new_crop_xyxy": [
+      844,
+      423,
+      1246,
+      825
+    ],
+    "integer_top_shift": 6
+  }
+]

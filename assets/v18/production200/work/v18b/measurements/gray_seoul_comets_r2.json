@@ -1,0 +1,658 @@
+{
+  "key": "gray_seoul_comets_r2",
+  "kind": "gray",
+  "team": "seoul_comets",
+  "render": {
+    "team": "seoul_comets",
+    "path": "/workspace/generated_images/exec-b07cc4df-d6e8-4507-b37e-4331a6a7aea2.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/gray_anchors_clean.png",
+    "round": 2,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-b07cc4df-d6e8-4507-b37e-4331a6a7aea2.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": false,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_165",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_seoul_comets_r2/cell00.png",
+      "native_sha256": "17a2fec18ed0e19f4d6b99745b96c9feb6fbeff53b01ed24109cca3c5229c9a8",
+      "source_render": "/workspace/generated_images/exec-b07cc4df-d6e8-4507-b37e-4331a6a7aea2.png",
+      "source_render_sha256": "00cb0e700744593637490a4f45ee7df68a16cd0f9482f840e4b20cffd9b3478d",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8382218480110168,
+          "same_original_all10_max": 0.8871253728866577,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3853585720062256,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.34084850549697876
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8671640753746033,
+          "same_original_all10_max": 0.9144487380981445,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.37740957736968994,
+          "other199_id": "v18_108",
+          "legacy160_max": 0.346193790435791
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8679006099700928,
+          "same_original_all10_max": 0.9132168292999268,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3823889493942261,
+          "other199_id": "v18_108",
+          "legacy160_max": 0.3488743007183075
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_169",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_seoul_comets_r2/cell01.png",
+      "native_sha256": "f643797bc4ed07173fbac16f1c6a7b3357f489cce9c060cb374576568db87c6f",
+      "source_render": "/workspace/generated_images/exec-b07cc4df-d6e8-4507-b37e-4331a6a7aea2.png",
+      "source_render_sha256": "00cb0e700744593637490a4f45ee7df68a16cd0f9482f840e4b20cffd9b3478d",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7743414044380188,
+          "same_original_all10_max": 0.866635262966156,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.35079923272132874,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.35824012756347656
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7849826216697693,
+          "same_original_all10_max": 0.8844810724258423,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.3236870765686035,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.36095964908599854
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.784591794013977,
+          "same_original_all10_max": 0.8798760771751404,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.32610419392585754,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.35854431986808777
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_170",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_seoul_comets_r2/cell02.png",
+      "native_sha256": "8668d75d79b63a863bbf3d215d0ae2c1032151ea87fa6fc5151f8ffeb2d00cdf",
+      "source_render": "/workspace/generated_images/exec-b07cc4df-d6e8-4507-b37e-4331a6a7aea2.png",
+      "source_render_sha256": "00cb0e700744593637490a4f45ee7df68a16cd0f9482f840e4b20cffd9b3478d",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.863745391368866,
+          "same_original_all10_max": 0.8967381715774536,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.32766175270080566,
+          "other199_id": "v18_093",
+          "legacy160_max": 0.2936326861381531
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8662574887275696,
+          "same_original_all10_max": 0.9155328273773193,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.328363299369812,
+          "other199_id": "v18_093",
+          "legacy160_max": 0.3062673807144165
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8685753345489502,
+          "same_original_all10_max": 0.9126588702201843,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.3411765396595001,
+          "other199_id": "v18_067",
+          "legacy160_max": 0.31739017367362976
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_174",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_seoul_comets_r2/cell03.png",
+      "native_sha256": "5907688931325de07407812882f201a34a6ed777dcd7297fd03215cb531496ef",
+      "source_render": "/workspace/generated_images/exec-b07cc4df-d6e8-4507-b37e-4331a6a7aea2.png",
+      "source_render_sha256": "00cb0e700744593637490a4f45ee7df68a16cd0f9482f840e4b20cffd9b3478d",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8206068277359009,
+          "same_original_all10_max": 0.8801677227020264,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.3809196949005127,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3786501884460449
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8213136792182922,
+          "same_original_all10_max": 0.8826344609260559,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.3557181656360626,
+          "other199_id": "v18_096",
+          "legacy160_max": 0.3970649540424347
+        },
+        "384": {
+          "passed": false,
+          "same_original_all10_min": 0.8076748251914978,
+          "same_original_all10_max": 0.8694398999214172,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.3607802987098694,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.40295296907424927
+        }
+      },
+      "numerical_passed": false,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_165",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_seoul_comets_r2/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.02812576293945,
+            23.99835777282715,
+            91.74253845214844,
+            91.88746643066406,
+            0.8442214727401733
+          ],
+          "landmarks": [
+            [
+              51.51646041870117,
+              47.60562515258789
+            ],
+            [
+              77.20686340332031,
+              47.556400299072266
+            ],
+            [
+              64.78382873535156,
+              63.8793830871582
+            ],
+            [
+              54.62255859375,
+              74.68359375
+            ],
+            [
+              75.22773742675781,
+              74.64498138427734
+            ]
+          ],
+          "pixel_sha256": "e690d06b478f82fd057ad3eb403269704968ff77fbf55598e65b39aa89d07b18"
+        },
+        "256": {
+          "bbox": [
+            74.45663452148438,
+            48.86771774291992,
+            183.08547973632812,
+            184.00515747070312,
+            0.8559738397598267
+          ],
+          "landmarks": [
+            [
+              103.19129943847656,
+              94.83824157714844
+            ],
+            [
+              154.16297912597656,
+              95.00730895996094
+            ],
+            [
+              129.43157958984375,
+              128.41986083984375
+            ],
+            [
+              109.1502914428711,
+              148.9475860595703
+            ],
+            [
+              150.5729522705078,
+              149.12542724609375
+            ]
+          ],
+          "pixel_sha256": "671e23deb5afd4cd2afb753674c38a51cce20569dd9adf8d42ae1616b93e74c2"
+        },
+        "384": {
+          "bbox": [
+            112.06813049316406,
+            74.63300323486328,
+            274.6589660644531,
+            276.06585693359375,
+            0.8623988628387451
+          ],
+          "landmarks": [
+            [
+              155.02679443359375,
+              142.32911682128906
+            ],
+            [
+              231.4068603515625,
+              142.61180114746094
+            ],
+            [
+              194.19644165039062,
+              192.9239501953125
+            ],
+            [
+              163.57081604003906,
+              223.31455993652344
+            ],
+            [
+              226.00904846191406,
+              223.60256958007812
+            ]
+          ],
+          "pixel_sha256": "a36fe5bebbbb1eecab2a847aca48d15834074f93b61ecfd9d7e91281faded085"
+        }
+      },
+      "native_sha256": "17a2fec18ed0e19f4d6b99745b96c9feb6fbeff53b01ed24109cca3c5229c9a8"
+    },
+    {
+      "id": "v18_169",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_seoul_comets_r2/cell01.png",
+      "native_crop_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            38.06315612792969,
+            24.478679656982422,
+            92.83596801757812,
+            94.18370056152344,
+            0.8442851305007935
+          ],
+          "landmarks": [
+            [
+              51.82231903076172,
+              47.65317916870117
+            ],
+            [
+              78.13655090332031,
+              47.40541458129883
+            ],
+            [
+              64.83285522460938,
+              63.13593292236328
+            ],
+            [
+              53.5319709777832,
+              74.32392883300781
+            ],
+            [
+              76.75436401367188,
+              74.18379211425781
+            ]
+          ],
+          "pixel_sha256": "66ba078b3cbf5c218b0c5e68e9b6d7e3aac006de92665d08924746b1fe4149fc"
+        },
+        "256": {
+          "bbox": [
+            75.79839324951172,
+            50.64179229736328,
+            185.58316040039062,
+            188.5194091796875,
+            0.8453372716903687
+          ],
+          "landmarks": [
+            [
+              103.9760971069336,
+              94.82111358642578
+            ],
+            [
+              156.3923797607422,
+              94.73064422607422
+            ],
+            [
+              130.06607055664062,
+              127.89332580566406
+            ],
+            [
+              107.24800872802734,
+              148.453857421875
+            ],
+            [
+              153.67312622070312,
+              148.54295349121094
+            ]
+          ],
+          "pixel_sha256": "6996c733615d694263fb2f24cd08ad5e80af6477a7c4c526812456740ce954cb"
+        },
+        "384": {
+          "bbox": [
+            114.16604614257812,
+            75.7929458618164,
+            278.3500671386719,
+            282.56317138671875,
+            0.8512834310531616
+          ],
+          "landmarks": [
+            [
+              156.2006378173828,
+              141.86004638671875
+            ],
+            [
+              234.70516967773438,
+              141.94302368164062
+            ],
+            [
+              195.20448303222656,
+              191.9654998779297
+            ],
+            [
+              161.2765350341797,
+              222.49380493164062
+            ],
+            [
+              230.44622802734375,
+              222.80279541015625
+            ]
+          ],
+          "pixel_sha256": "c1f5556b206c580dcf4c2a86ea96afbfbd9e583602202f06d338d29cc5ac1637"
+        }
+      },
+      "native_sha256": "f643797bc4ed07173fbac16f1c6a7b3357f489cce9c060cb374576568db87c6f"
+    },
+    {
+      "id": "v18_170",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_seoul_comets_r2/cell02.png",
+      "native_crop_xyxy": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.851776123046875,
+            28.338388442993164,
+            91.87797546386719,
+            93.42301940917969,
+            0.7851715087890625
+          ],
+          "landmarks": [
+            [
+              52.2668571472168,
+              50.544456481933594
+            ],
+            [
+              77.29086303710938,
+              50.324684143066406
+            ],
+            [
+              64.93804168701172,
+              66.36778259277344
+            ],
+            [
+              54.66529083251953,
+              75.65875244140625
+            ],
+            [
+              75.50660705566406,
+              75.50765228271484
+            ]
+          ],
+          "pixel_sha256": "e5154bcc534fbd2a485df56904b86803f26e77446610b8767b56c75cc82760e6"
+        },
+        "256": {
+          "bbox": [
+            75.38970184326172,
+            55.34682083129883,
+            183.8076629638672,
+            187.48904418945312,
+            0.7990186214447021
+          ],
+          "landmarks": [
+            [
+              104.72520446777344,
+              100.86751556396484
+            ],
+            [
+              154.42037963867188,
+              100.63987731933594
+            ],
+            [
+              129.91842651367188,
+              132.9141387939453
+            ],
+            [
+              109.44268798828125,
+              151.20376586914062
+            ],
+            [
+              150.971435546875,
+              151.03717041015625
+            ]
+          ],
+          "pixel_sha256": "ca2da5379924b9a7ba8b4bd02dea77b18472510eb696a83ee157c901b636f72c"
+        },
+        "384": {
+          "bbox": [
+            112.86803436279297,
+            82.40869903564453,
+            275.9012145996094,
+            281.45556640625,
+            0.8075238466262817
+          ],
+          "landmarks": [
+            [
+              157.23182678222656,
+              151.31341552734375
+            ],
+            [
+              231.52647399902344,
+              151.14047241210938
+            ],
+            [
+              194.77430725097656,
+              199.80490112304688
+            ],
+            [
+              163.72723388671875,
+              226.5308074951172
+            ],
+            [
+              226.3163299560547,
+              226.46078491210938
+            ]
+          ],
+          "pixel_sha256": "3cf988941ae487ebb66989ae4365439467d17b028a0cdf08dd489e91272bf821"
+        }
+      },
+      "native_sha256": "8668d75d79b63a863bbf3d215d0ae2c1032151ea87fa6fc5151f8ffeb2d00cdf"
+    },
+    {
+      "id": "v18_174",
+      "team": "seoul_comets",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_seoul_comets_r2/cell03.png",
+      "native_crop_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.53461456298828,
+            27.416812896728516,
+            88.52616882324219,
+            90.4793930053711,
+            0.8327592015266418
+          ],
+          "landmarks": [
+            [
+              50.8902702331543,
+              48.98601150512695
+            ],
+            [
+              74.74187469482422,
+              49.08823013305664
+            ],
+            [
+              62.88663864135742,
+              62.98072052001953
+            ],
+            [
+              53.43195724487305,
+              74.14437866210938
+            ],
+            [
+              72.7252426147461,
+              74.28990936279297
+            ]
+          ],
+          "pixel_sha256": "a7782ac5c0504f58a10b6aa0bf5a45895afa40c4a44408866669075122a5c4d8"
+        },
+        "256": {
+          "bbox": [
+            74.59080505371094,
+            55.919952392578125,
+            176.87185668945312,
+            181.37445068359375,
+            0.8378737568855286
+          ],
+          "landmarks": [
+            [
+              101.56617736816406,
+              97.61509704589844
+            ],
+            [
+              148.7732696533203,
+              97.91123962402344
+            ],
+            [
+              125.34611511230469,
+              127.18350982666016
+            ],
+            [
+              106.9916000366211,
+              148.4419708251953
+            ],
+            [
+              145.0557098388672,
+              148.85568237304688
+            ]
+          ],
+          "pixel_sha256": "e6ef7741f1d036a43d392a91a778b1e48fbccf61e79aacb882b941ca30be738b"
+        },
+        "384": {
+          "bbox": [
+            111.91981506347656,
+            83.77603912353516,
+            265.39599609375,
+            272.48199462890625,
+            0.8407771587371826
+          ],
+          "landmarks": [
+            [
+              152.1134033203125,
+              146.43701171875
+            ],
+            [
+              223.0785675048828,
+              146.86781311035156
+            ],
+            [
+              187.6550750732422,
+              191.3675079345703
+            ],
+            [
+              160.0601348876953,
+              222.74856567382812
+            ],
+            [
+              217.3403778076172,
+              223.35369873046875
+            ]
+          ],
+          "pixel_sha256": "5dab67b784971f950bd8deac9ed6e501b1fe997c35d2f0d8c4ea6fd1d2d900d4"
+        }
+      },
+      "native_sha256": "5907688931325de07407812882f201a34a6ed777dcd7297fd03215cb531496ef"
+    }
+  ]
+}

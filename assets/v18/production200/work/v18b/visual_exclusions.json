@@ -1,0 +1,9 @@
+{
+  "excluded_render_keys": [
+    "gray_incheon_seagulls_r1",
+    "hires_incheon_seagulls_g16"
+  ],
+  "reasons": {
+    "gray_incheon_seagulls_r1": "Extraneous thin jersey strip at the top edge. Whole-photo edge crop used only for cleaned identity anchor; this uncorrected render is excluded from delivery."
+  }
+}

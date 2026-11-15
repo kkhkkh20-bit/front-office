@@ -1,0 +1,1116 @@
+{
+  "reason": "Remove untracked derived high-resolution grid-cell PNG cache after lossless native source archive and all2000 crop pixel hashes were verified. Original generated renders, lossless native archives and exact compressed-pixel measurement cache are retained.",
+  "freed_bytes": 498339992,
+  "removed": [
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g00",
+      "bytes": 2248122,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g01",
+      "bytes": 2334323,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g02",
+      "bytes": 2353949,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g03",
+      "bytes": 2360384,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g04",
+      "bytes": 2304784,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g05",
+      "bytes": 2303722,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g06",
+      "bytes": 2202200,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g07",
+      "bytes": 2191376,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g08",
+      "bytes": 2142984,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g09",
+      "bytes": 2100624,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g10",
+      "bytes": 2158369,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g11",
+      "bytes": 2290976,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g12",
+      "bytes": 2148398,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g13",
+      "bytes": 2111849,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14",
+      "bytes": 2128465,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g15",
+      "bytes": 2186556,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g16",
+      "bytes": 2172253,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g17",
+      "bytes": 2328667,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g18",
+      "bytes": 2146942,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g19",
+      "bytes": 2237327,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g20",
+      "bytes": 2272515,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g21",
+      "bytes": 1771173,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g00",
+      "bytes": 2311521,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g01",
+      "bytes": 2356189,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g02",
+      "bytes": 2258041,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g03",
+      "bytes": 2285880,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g04",
+      "bytes": 2357928,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g05",
+      "bytes": 2344462,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g06",
+      "bytes": 2329522,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g07",
+      "bytes": 2269190,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g08",
+      "bytes": 2231230,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g09",
+      "bytes": 2132528,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g10",
+      "bytes": 2249367,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g11",
+      "bytes": 2142641,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g12",
+      "bytes": 2209196,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g13",
+      "bytes": 2268737,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g14",
+      "bytes": 2269665,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g15",
+      "bytes": 2290878,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g16",
+      "bytes": 2366078,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g17",
+      "bytes": 2202834,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g18",
+      "bytes": 2163953,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g19",
+      "bytes": 2191928,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g20",
+      "bytes": 2306574,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_changwon_anchors_g21",
+      "bytes": 1780093,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g00",
+      "bytes": 2383909,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g01",
+      "bytes": 2394255,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g02",
+      "bytes": 2415498,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g03",
+      "bytes": 2313864,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g04",
+      "bytes": 2263432,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g05",
+      "bytes": 2245184,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g06",
+      "bytes": 2281151,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g07",
+      "bytes": 2331450,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g08",
+      "bytes": 2391189,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g09",
+      "bytes": 2159277,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g10",
+      "bytes": 2199115,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g11",
+      "bytes": 2270850,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g12",
+      "bytes": 2258762,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g13",
+      "bytes": 2141112,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g14",
+      "bytes": 2298564,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15",
+      "bytes": 2272916,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g16",
+      "bytes": 2231961,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g17",
+      "bytes": 2260763,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g18",
+      "bytes": 2235517,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g19",
+      "bytes": 2232462,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g20",
+      "bytes": 2320802,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g21",
+      "bytes": 1822538,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g00",
+      "bytes": 2269763,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g01",
+      "bytes": 2410159,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g02",
+      "bytes": 2279750,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g03",
+      "bytes": 2302740,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g04",
+      "bytes": 2253155,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g05",
+      "bytes": 2280430,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g06",
+      "bytes": 2375036,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g07",
+      "bytes": 2259474,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g08",
+      "bytes": 2256544,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g09",
+      "bytes": 2113755,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g10",
+      "bytes": 2196666,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g11",
+      "bytes": 2205371,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g12",
+      "bytes": 2292815,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g13",
+      "bytes": 2250070,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g14",
+      "bytes": 2289730,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g15",
+      "bytes": 2197837,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g16",
+      "bytes": 2250461,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g17",
+      "bytes": 2224702,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g18",
+      "bytes": 2290432,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g19",
+      "bytes": 2291634,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g20",
+      "bytes": 2342437,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_daejeon_redfox_g21",
+      "bytes": 1807261,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g00",
+      "bytes": 2208540,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g01",
+      "bytes": 2387669,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g02",
+      "bytes": 2198597,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g03",
+      "bytes": 2292118,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g04",
+      "bytes": 2240856,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g05",
+      "bytes": 2212345,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g06",
+      "bytes": 2240023,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g07",
+      "bytes": 2161332,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g08",
+      "bytes": 2210282,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g09",
+      "bytes": 2098713,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10",
+      "bytes": 2204466,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g11",
+      "bytes": 2121135,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g12",
+      "bytes": 2230647,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g13",
+      "bytes": 2283873,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g14",
+      "bytes": 2258280,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g15",
+      "bytes": 2313967,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g16",
+      "bytes": 2210112,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g17",
+      "bytes": 2306645,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g18",
+      "bytes": 2274635,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g19",
+      "bytes": 2203436,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g20",
+      "bytes": 2204623,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g21",
+      "bytes": 1794179,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g00",
+      "bytes": 2410850,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g01",
+      "bytes": 2304981,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g01_retry",
+      "bytes": 2190538,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g02",
+      "bytes": 2340965,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g03",
+      "bytes": 2247629,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g04",
+      "bytes": 2231249,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g05",
+      "bytes": 2263052,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g06",
+      "bytes": 2302494,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g07",
+      "bytes": 2281819,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g08",
+      "bytes": 2343537,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g09",
+      "bytes": 2294985,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g10",
+      "bytes": 2389123,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g11",
+      "bytes": 2173440,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g12",
+      "bytes": 2193681,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g13",
+      "bytes": 2239705,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g14",
+      "bytes": 2212541,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15",
+      "bytes": 2361465,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g16",
+      "bytes": 2228371,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g17",
+      "bytes": 2379295,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g18",
+      "bytes": 2333127,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g19",
+      "bytes": 2170032,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g20",
+      "bytes": 2332414,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g21",
+      "bytes": 1843989,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g00",
+      "bytes": 2386925,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g01",
+      "bytes": 2475725,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g02",
+      "bytes": 2400443,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g03",
+      "bytes": 2302493,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g04",
+      "bytes": 2439113,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g05",
+      "bytes": 2266644,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06",
+      "bytes": 2432726,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g07",
+      "bytes": 2294646,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g08",
+      "bytes": 2459948,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g09",
+      "bytes": 2197092,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g10",
+      "bytes": 2358702,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g11",
+      "bytes": 2267245,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g12",
+      "bytes": 2201848,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g13",
+      "bytes": 2282755,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g14",
+      "bytes": 2386914,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g15",
+      "bytes": 2251176,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g16",
+      "bytes": 2332426,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g16_borderclean",
+      "bytes": 2069612,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g17",
+      "bytes": 2357683,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g18",
+      "bytes": 2285061,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g19",
+      "bytes": 2357950,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g20",
+      "bytes": 2399563,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g21",
+      "bytes": 1804393,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g00",
+      "bytes": 2331746,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g01",
+      "bytes": 2420232,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g02",
+      "bytes": 2348984,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g03",
+      "bytes": 2428670,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g04",
+      "bytes": 2285658,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g05",
+      "bytes": 2317134,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g06",
+      "bytes": 2416717,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g07",
+      "bytes": 2320844,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g08",
+      "bytes": 2389316,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g09",
+      "bytes": 2294643,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g10",
+      "bytes": 2245386,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g11",
+      "bytes": 2267985,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g12",
+      "bytes": 2292177,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g13",
+      "bytes": 2215717,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g14",
+      "bytes": 2340588,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g15",
+      "bytes": 2426861,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g16",
+      "bytes": 2238085,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g17",
+      "bytes": 2233724,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g18",
+      "bytes": 2312667,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g19",
+      "bytes": 2191490,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g20",
+      "bytes": 2239633,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_comets_g21",
+      "bytes": 1835663,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g00",
+      "bytes": 2171817,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g01",
+      "bytes": 2223023,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g02",
+      "bytes": 2242141,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g03",
+      "bytes": 2333355,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g04",
+      "bytes": 2327263,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g05",
+      "bytes": 2169105,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g06",
+      "bytes": 2349420,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g07",
+      "bytes": 2153465,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g08",
+      "bytes": 2245823,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g09",
+      "bytes": 2125871,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g10",
+      "bytes": 2364275,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g11",
+      "bytes": 2123379,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g12",
+      "bytes": 2145809,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g13",
+      "bytes": 2148259,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g14",
+      "bytes": 2169191,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g15",
+      "bytes": 2214427,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g16",
+      "bytes": 2198927,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g17",
+      "bytes": 2186386,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g18",
+      "bytes": 2147380,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g19",
+      "bytes": 2282643,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g20",
+      "bytes": 2327899,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_seoul_hounds_g21",
+      "bytes": 1754521,
+      "file_count": 7
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g00",
+      "bytes": 2284760,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g01",
+      "bytes": 2362250,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02",
+      "bytes": 2199779,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g03",
+      "bytes": 2380443,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g04",
+      "bytes": 2312857,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g05",
+      "bytes": 2198688,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g06",
+      "bytes": 2279269,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g07",
+      "bytes": 2292852,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g08",
+      "bytes": 2218499,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g09",
+      "bytes": 2089362,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g10",
+      "bytes": 2257445,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g11",
+      "bytes": 2139985,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g12",
+      "bytes": 2369110,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g13",
+      "bytes": 2206943,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g14",
+      "bytes": 2119560,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g15",
+      "bytes": 2286846,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g16",
+      "bytes": 2236096,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g17",
+      "bytes": 2148131,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g18",
+      "bytes": 2288039,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g19",
+      "bytes": 2256128,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g20",
+      "bytes": 2162681,
+      "file_count": 9
+    },
+    {
+      "path": "assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g21",
+      "bytes": 1735946,
+      "file_count": 7
+    }
+  ]
+}

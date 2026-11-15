@@ -1,0 +1,204 @@
+{
+  "key": "gray_busan_waves_174_originalframe_single",
+  "kind": "gray",
+  "team": "busan_waves",
+  "render": {
+    "id": "v18_174",
+    "team": "busan_waves",
+    "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_busan_waves_r2/cell03.png",
+    "source_grid_side": 1,
+    "whole_native_photo": true,
+    "round": "original_clean_whole_frame",
+    "generation_origin": {
+      "source_render": "/workspace/generated_images/exec-2b94fef8-ac2f-49f8-9325-fcee3ba01dd4.png",
+      "source_render_sha256": "68fa25431df702136a88a5ddc0c8596d2a8e12343455698ab1d5dff1dd55dabf",
+      "crop_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "native_photo_sha256": "b792ad37e1bed08acb7aafd8484638f8205c7b5ffe04d26ed3cf2314b57f17a7"
+    },
+    "reason": "The complete original native photograph is visually clean. Preserve its framing rather than applying the grid edge guard needed for contaminated frames."
+  },
+  "source_grid_side": 1,
+  "whole_native_photo": true,
+  "native_dimensions": [
+    627,
+    627
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_174",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_busan_waves_174_originalframe_single/v18_174.png",
+      "native_sha256": "b792ad37e1bed08acb7aafd8484638f8205c7b5ffe04d26ed3cf2314b57f17a7",
+      "source_render": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_busan_waves_r2/cell03.png",
+      "source_render_sha256": "b792ad37e1bed08acb7aafd8484638f8205c7b5ffe04d26ed3cf2314b57f17a7",
+      "source_grid_side": 1,
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7792973518371582,
+          "same_original_all10_max": 0.8319307565689087,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.38733911514282227,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3549174964427948
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8067855834960938,
+          "same_original_all10_max": 0.8581323027610779,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.39536362886428833,
+          "other199_id": "v18_096",
+          "legacy160_max": 0.3771306276321411
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8139684200286865,
+          "same_original_all10_max": 0.8622007369995117,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.3919721841812134,
+          "other199_id": "v18_096",
+          "legacy160_max": 0.3748044967651367
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false,
+      "whole_native_photo": true,
+      "generation_origin": {
+        "source_render": "/workspace/generated_images/exec-2b94fef8-ac2f-49f8-9325-fcee3ba01dd4.png",
+        "source_render_sha256": "68fa25431df702136a88a5ddc0c8596d2a8e12343455698ab1d5dff1dd55dabf",
+        "crop_xyxy": [
+          627,
+          627,
+          1254,
+          1254
+        ],
+        "native_photo_sha256": "b792ad37e1bed08acb7aafd8484638f8205c7b5ffe04d26ed3cf2314b57f17a7"
+      }
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_174",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_busan_waves_174_originalframe_single/v18_174.png",
+      "details": {
+        "128": {
+          "bbox": [
+            37.70732116699219,
+            28.325618743896484,
+            88.35606384277344,
+            90.27668762207031,
+            0.8293031454086304
+          ],
+          "landmarks": [
+            [
+              50.91094970703125,
+              49.09162139892578
+            ],
+            [
+              74.74229431152344,
+              49.10367965698242
+            ],
+            [
+              62.97698211669922,
+              62.88288116455078
+            ],
+            [
+              53.449188232421875,
+              73.90306091308594
+            ],
+            [
+              72.97221374511719,
+              73.94451141357422
+            ]
+          ],
+          "pixel_sha256": "90fb79ebab88844869a3189d78d76c93eba492cba599693d86ef84d021fba760"
+        },
+        "256": {
+          "bbox": [
+            75.0424575805664,
+            56.760948181152344,
+            176.54969787597656,
+            181.05148315429688,
+            0.8297579288482666
+          ],
+          "landmarks": [
+            [
+              101.53197479248047,
+              97.737548828125
+            ],
+            [
+              148.7637939453125,
+              97.80591583251953
+            ],
+            [
+              125.39653015136719,
+              126.34623718261719
+            ],
+            [
+              107.1119384765625,
+              148.34750366210938
+            ],
+            [
+              145.2281494140625,
+              148.501220703125
+            ]
+          ],
+          "pixel_sha256": "d6a5461bd096afe16a276856df551d411ae90f2f2b6515c4a5e8e29f806c98c7"
+        },
+        "384": {
+          "bbox": [
+            112.7658920288086,
+            86.24185943603516,
+            264.6025695800781,
+            271.9383239746094,
+            0.8292418718338013
+          ],
+          "landmarks": [
+            [
+              152.17396545410156,
+              146.3400115966797
+            ],
+            [
+              222.668212890625,
+              146.54563903808594
+            ],
+            [
+              187.5381622314453,
+              190.3442840576172
+            ],
+            [
+              160.30523681640625,
+              222.2869110107422
+            ],
+            [
+              217.21450805664062,
+              222.58729553222656
+            ]
+          ],
+          "pixel_sha256": "54e2a74ccdd5a07ef793017e2b762a83b9ecfe771a05599aa75faaad933da261"
+        }
+      },
+      "native_sha256": "b792ad37e1bed08acb7aafd8484638f8205c7b5ffe04d26ed3cf2314b57f17a7"
+    }
+  ],
+  "frame_protocol": "whole-photo adaptive horizontal grid boundaries within12px; integer square crop centered(.5,.25), native edge guard up to8px; no native upscaling"
+}

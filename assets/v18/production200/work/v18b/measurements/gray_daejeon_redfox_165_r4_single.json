@@ -1,0 +1,180 @@
+{
+  "key": "gray_daejeon_redfox_165_r4_single",
+  "kind": "gray",
+  "team": "daejeon_redfox",
+  "render": {
+    "id": "v18_165",
+    "team": "daejeon_redfox",
+    "path": "/workspace/generated_images/exec-e2fb9f9d-06f1-4e81-8504-cd941d054d1a.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/single_anchor_165.png",
+    "source_grid_side": 1,
+    "round": 4,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-e2fb9f9d-06f1-4e81-8504-cd941d054d1a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "source_grid_side": 1,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_165",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_165_r4_single/v18_165.png",
+      "native_sha256": "f7cc9593222ab907c1db79cb9dae932835414cef56532bcfe12d5b3633046bb5",
+      "source_render": "/workspace/generated_images/exec-e2fb9f9d-06f1-4e81-8504-cd941d054d1a.png",
+      "source_render_sha256": "6fab08c43c1c12e1180c6fcd01ad72012b773b18ea5d37d0a78d9bec3f69c32a",
+      "source_grid_side": 1,
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        8,
+        8,
+        1246,
+        1246
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8672690987586975,
+          "same_original_all10_max": 0.9203675985336304,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.36118707060813904,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.3488108813762665
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.881109356880188,
+          "same_original_all10_max": 0.9464355111122131,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3549391031265259,
+          "other199_id": "v18_105",
+          "legacy160_max": 0.34794095158576965
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8752344250679016,
+          "same_original_all10_max": 0.9390471577644348,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3596160411834717,
+          "other199_id": "v18_108",
+          "legacy160_max": 0.3593730330467224
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_165",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_165_r4_single/v18_165.png",
+      "details": {
+        "128": {
+          "bbox": [
+            36.66377639770508,
+            24.754669189453125,
+            91.556396484375,
+            91.10914611816406,
+            0.836707592010498
+          ],
+          "landmarks": [
+            [
+              51.2261962890625,
+              47.237037658691406
+            ],
+            [
+              77.15007019042969,
+              47.26096725463867
+            ],
+            [
+              64.69277954101562,
+              63.55628204345703
+            ],
+            [
+              54.47040939331055,
+              74.18508911132812
+            ],
+            [
+              75.32124328613281,
+              74.18632507324219
+            ]
+          ],
+          "pixel_sha256": "258c644275109a3d9ac736e293c6e89c99d63a91739d7b089a2af2a555e35440"
+        },
+        "256": {
+          "bbox": [
+            74.29855346679688,
+            50.860328674316406,
+            182.68663024902344,
+            182.4866485595703,
+            0.8456361293792725
+          ],
+          "landmarks": [
+            [
+              102.81486511230469,
+              94.18336486816406
+            ],
+            [
+              154.18096923828125,
+              94.42269897460938
+            ],
+            [
+              129.3319854736328,
+              127.99974060058594
+            ],
+            [
+              109.0160903930664,
+              148.28695678710938
+            ],
+            [
+              150.56825256347656,
+              148.4912872314453
+            ]
+          ],
+          "pixel_sha256": "505b5651580cb49493e1a153c964b4a8c5fc94e3518f6518f8dd37c161481c63"
+        },
+        "384": {
+          "bbox": [
+            111.75254821777344,
+            77.0188980102539,
+            273.8525390625,
+            273.7201843261719,
+            0.845655083656311
+          ],
+          "landmarks": [
+            [
+              154.4701385498047,
+              141.5144805908203
+            ],
+            [
+              231.49903869628906,
+              141.99227905273438
+            ],
+            [
+              194.23370361328125,
+              192.55438232421875
+            ],
+            [
+              163.5582275390625,
+              222.43226623535156
+            ],
+            [
+              225.98866271972656,
+              222.82273864746094
+            ]
+          ],
+          "pixel_sha256": "20739b6b29b932cbbf8692bec5b0c096c06e617ac06b8c9afb6f77b1c688c050"
+        }
+      },
+      "native_sha256": "f7cc9593222ab907c1db79cb9dae932835414cef56532bcfe12d5b3633046bb5"
+    }
+  ],
+  "frame_protocol": "whole-photo adaptive horizontal grid boundaries within12px; integer square crop centered(.5,.25), native edge guard up to8px; no native upscaling"
+}

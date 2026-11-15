@@ -1,0 +1,17 @@
+[
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass06_last/panel00.jpg",
+    "keys": [
+      "gray_incheon_seagulls_r1",
+      "hires_busan_waves_g08",
+      "hires_changwon_anchors_g17",
+      "hires_incheon_seagulls_g16"
+    ],
+    "render_sha256": [
+      "64541f1e5961ddd8d5eafdf99b2906509db82fb16a38f6392ed2d50e508ef58b",
+      "e94ddb3f6fe294e04208cb1f0105972cbb778445f39d10d262f7829c2bf19c8d",
+      "41325b65c69ac632e494758cb2b95b888e2b237f19e9bd5d1b376cd0441dd84e",
+      "8ed50116f42fe05956824e7132923cce7499b7df22942c0af1d8f05ab10332e1"
+    ]
+  }
+]

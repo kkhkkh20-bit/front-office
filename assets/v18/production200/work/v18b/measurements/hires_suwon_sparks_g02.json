@@ -1,0 +1,1454 @@
+{
+  "key": "hires_suwon_sparks_g02",
+  "kind": "hires",
+  "team": "suwon_sparks",
+  "render": {
+    "key": "suwon_sparks_g02",
+    "team": "suwon_sparks",
+    "path": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/hires_inputs/suwon_sparks_g02.png",
+    "expected_count": 9,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_019",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell00.png",
+      "native_sha256": "9cb34992120bc21741ab0ffa66861092d1fe144f1656639349fddd8082d98b6f",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7979861497879028,
+          "same_original_all10_max": 0.8983234167098999,
+          "old_gallery_top1": "v18_019",
+          "source_own_top1": "v18_019",
+          "other199_max": 0.22433334589004517,
+          "other199_id": "v18_028",
+          "legacy160_max": 0.289456307888031
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8185878992080688,
+          "same_original_all10_max": 0.9242998957633972,
+          "old_gallery_top1": "v18_019",
+          "source_own_top1": "v18_019",
+          "other199_max": 0.2206435650587082,
+          "other199_id": "v18_181",
+          "legacy160_max": 0.282850056886673
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8150448799133301,
+          "same_original_all10_max": 0.9193563461303711,
+          "old_gallery_top1": "v18_019",
+          "source_own_top1": "v18_019",
+          "other199_max": 0.22574099898338318,
+          "other199_id": "v18_181",
+          "legacy160_max": 0.27887704968452454
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_020",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell01.png",
+      "native_sha256": "d00425b216e3bf4146e41253802fda8bb5e499ececb37949bc23ed58fc7fe818",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7243133783340454,
+          "same_original_all10_max": 0.8345857858657837,
+          "old_gallery_top1": "v18_020",
+          "source_own_top1": "v18_020",
+          "other199_max": 0.24447554349899292,
+          "other199_id": "v18_028",
+          "legacy160_max": 0.29763051867485046
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7680767774581909,
+          "same_original_all10_max": 0.8845152854919434,
+          "old_gallery_top1": "v18_020",
+          "source_own_top1": "v18_020",
+          "other199_max": 0.25655895471572876,
+          "other199_id": "v18_018",
+          "legacy160_max": 0.31468284130096436
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.768273115158081,
+          "same_original_all10_max": 0.8784438371658325,
+          "old_gallery_top1": "v18_020",
+          "source_own_top1": "v18_020",
+          "other199_max": 0.2688034176826477,
+          "other199_id": "v18_018",
+          "legacy160_max": 0.31400614976882935
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_021",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell02.png",
+      "native_sha256": "62da6d350d40e03370a5009ea6dc818f1e0620a23267d846e3ec635a9e5b5f4b",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7441860437393188,
+          "same_original_all10_max": 0.8629851341247559,
+          "old_gallery_top1": "v18_021",
+          "source_own_top1": "v18_021",
+          "other199_max": 0.38513773679733276,
+          "other199_id": "v18_026",
+          "legacy160_max": 0.34202736616134644
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8062163591384888,
+          "same_original_all10_max": 0.8954027891159058,
+          "old_gallery_top1": "v18_021",
+          "source_own_top1": "v18_021",
+          "other199_max": 0.34911295771598816,
+          "other199_id": "v18_026",
+          "legacy160_max": 0.3545454144477844
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7979798316955566,
+          "same_original_all10_max": 0.8921846747398376,
+          "old_gallery_top1": "v18_021",
+          "source_own_top1": "v18_021",
+          "other199_max": 0.34645727276802063,
+          "other199_id": "v18_026",
+          "legacy160_max": 0.3509256839752197
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_022",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell03.png",
+      "native_sha256": "78c722690e3b12b0cf1e9f4d80d755f78ed5bdc80ee53e5368faf3dbf5ed4576",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7644996643066406,
+          "same_original_all10_max": 0.8460850715637207,
+          "old_gallery_top1": "v18_022",
+          "source_own_top1": "v18_022",
+          "other199_max": 0.21902865171432495,
+          "other199_id": "v18_028",
+          "legacy160_max": 0.3459811508655548
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7476378679275513,
+          "same_original_all10_max": 0.8780654668807983,
+          "old_gallery_top1": "v18_022",
+          "source_own_top1": "v18_022",
+          "other199_max": 0.2133081555366516,
+          "other199_id": "v18_028",
+          "legacy160_max": 0.3601718544960022
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7518057227134705,
+          "same_original_all10_max": 0.8786735534667969,
+          "old_gallery_top1": "v18_022",
+          "source_own_top1": "v18_022",
+          "other199_max": 0.22862538695335388,
+          "other199_id": "v18_028",
+          "legacy160_max": 0.3572239875793457
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_023",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell04.png",
+      "native_sha256": "0b90dd76ec0e784cd6f3097b3fbd877a45c176c7ae732a7a973285f94a9e4cd3",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 4,
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.753196120262146,
+          "same_original_all10_max": 0.8272472620010376,
+          "old_gallery_top1": "v18_023",
+          "source_own_top1": "v18_023",
+          "other199_max": 0.30690088868141174,
+          "other199_id": "v18_025",
+          "legacy160_max": 0.2512196898460388
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8028734922409058,
+          "same_original_all10_max": 0.902795672416687,
+          "old_gallery_top1": "v18_023",
+          "source_own_top1": "v18_023",
+          "other199_max": 0.30762916803359985,
+          "other199_id": "v18_025",
+          "legacy160_max": 0.2840929627418518
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7976189851760864,
+          "same_original_all10_max": 0.8962700963020325,
+          "old_gallery_top1": "v18_023",
+          "source_own_top1": "v18_023",
+          "other199_max": 0.30482378602027893,
+          "other199_id": "v18_025",
+          "legacy160_max": 0.29102951288223267
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_024",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell05.png",
+      "native_sha256": "46b0279c81f7f466d1cfe72af3d68b1fa0ccb948c3fc9bf2c63dee79c433d59c",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 5,
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8057767152786255,
+          "same_original_all10_max": 0.8810667395591736,
+          "old_gallery_top1": "v18_024",
+          "source_own_top1": "v18_024",
+          "other199_max": 0.26405811309814453,
+          "other199_id": "v18_027",
+          "legacy160_max": 0.3493475615978241
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8058944344520569,
+          "same_original_all10_max": 0.901637077331543,
+          "old_gallery_top1": "v18_024",
+          "source_own_top1": "v18_024",
+          "other199_max": 0.28846457600593567,
+          "other199_id": "v18_027",
+          "legacy160_max": 0.35663706064224243
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.809101939201355,
+          "same_original_all10_max": 0.9047191143035889,
+          "old_gallery_top1": "v18_024",
+          "source_own_top1": "v18_024",
+          "other199_max": 0.2792245149612427,
+          "other199_id": "v18_027",
+          "legacy160_max": 0.3599431812763214
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_025",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell06.png",
+      "native_sha256": "5a67a3c6c7221c2db7ebe386d75d4c91a7971ac4813899f4a03536746c998352",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 6,
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7197173833847046,
+          "same_original_all10_max": 0.8048126101493835,
+          "old_gallery_top1": "v18_025",
+          "source_own_top1": "v18_025",
+          "other199_max": 0.35394641757011414,
+          "other199_id": "v18_023",
+          "legacy160_max": 0.2467653751373291
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7709488272666931,
+          "same_original_all10_max": 0.8465653657913208,
+          "old_gallery_top1": "v18_025",
+          "source_own_top1": "v18_025",
+          "other199_max": 0.37000948190689087,
+          "other199_id": "v18_023",
+          "legacy160_max": 0.26179975271224976
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7619658708572388,
+          "same_original_all10_max": 0.8234715461730957,
+          "old_gallery_top1": "v18_025",
+          "source_own_top1": "v18_025",
+          "other199_max": 0.34290629625320435,
+          "other199_id": "v18_023",
+          "legacy160_max": 0.2718745172023773
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_026",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell07.png",
+      "native_sha256": "7626882a64cba04446c90a68bc03d5e7e4a9903f13480182b5d2dc3ba0e77fb9",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 7,
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7400696873664856,
+          "same_original_all10_max": 0.8411918878555298,
+          "old_gallery_top1": "v18_026",
+          "source_own_top1": "v18_026",
+          "other199_max": 0.35890424251556396,
+          "other199_id": "v18_021",
+          "legacy160_max": 0.38775473833084106
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7686071395874023,
+          "same_original_all10_max": 0.8662518262863159,
+          "old_gallery_top1": "v18_026",
+          "source_own_top1": "v18_026",
+          "other199_max": 0.3615378737449646,
+          "other199_id": "v18_021",
+          "legacy160_max": 0.3875685930252075
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.771730899810791,
+          "same_original_all10_max": 0.8695571422576904,
+          "old_gallery_top1": "v18_026",
+          "source_own_top1": "v18_026",
+          "other199_max": 0.370930552482605,
+          "other199_id": "v18_021",
+          "legacy160_max": 0.38500380516052246
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_027",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell08.png",
+      "native_sha256": "26644a97a7aafeff9ac449b71415a42591042c470b47076b978471180b3533df",
+      "source_render": "/workspace/generated_images/exec-5b09b395-30ba-4b97-8c59-6b2b8bdbf2e2.png",
+      "source_render_sha256": "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567",
+      "source_cell": 8,
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7520602941513062,
+          "same_original_all10_max": 0.8671963214874268,
+          "old_gallery_top1": "v18_027",
+          "source_own_top1": "v18_027",
+          "other199_max": 0.27454012632369995,
+          "other199_id": "v18_026",
+          "legacy160_max": 0.3729252219200134
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7708261013031006,
+          "same_original_all10_max": 0.8788600564002991,
+          "old_gallery_top1": "v18_027",
+          "source_own_top1": "v18_027",
+          "other199_max": 0.2694040536880493,
+          "other199_id": "v18_017",
+          "legacy160_max": 0.38720703125
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.767831563949585,
+          "same_original_all10_max": 0.8786979913711548,
+          "old_gallery_top1": "v18_027",
+          "source_own_top1": "v18_027",
+          "other199_max": 0.27360838651657104,
+          "other199_id": "v18_017",
+          "legacy160_max": 0.388217955827713
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_019",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            40.4872932434082,
+            28.015178680419922,
+            90.0930404663086,
+            92.66657257080078,
+            0.8211073875427246
+          ],
+          "landmarks": [
+            [
+              57.82025909423828,
+              47.10077667236328
+            ],
+            [
+              80.65498352050781,
+              47.05913543701172
+            ],
+            [
+              72.39383697509766,
+              61.960716247558594
+            ],
+            [
+              61.11806106567383,
+              75.04798889160156
+            ],
+            [
+              78.5999755859375,
+              74.88581085205078
+            ]
+          ],
+          "pixel_sha256": "cc6db8621fa409345c616b3b7ff660f0c94b4c94d72df5ece0a535633f48bd75"
+        },
+        "256": {
+          "bbox": [
+            81.24108123779297,
+            54.9132080078125,
+            179.3729248046875,
+            185.72244262695312,
+            0.8235712051391602
+          ],
+          "landmarks": [
+            [
+              116.0153579711914,
+              93.99201202392578
+            ],
+            [
+              160.9884796142578,
+              93.56813049316406
+            ],
+            [
+              145.27850341796875,
+              123.83897399902344
+            ],
+            [
+              122.0353012084961,
+              149.3601837158203
+            ],
+            [
+              157.50868225097656,
+              148.72894287109375
+            ]
+          ],
+          "pixel_sha256": "9f6726e2af4664cacebb0d0733294fa8e81bf8dbc1e804967c20e6ddef27d3b4"
+        },
+        "384": {
+          "bbox": [
+            121.57395935058594,
+            84.14053344726562,
+            268.9349060058594,
+            278.3215026855469,
+            0.8247586488723755
+          ],
+          "landmarks": [
+            [
+              173.82814025878906,
+              141.07186889648438
+            ],
+            [
+              241.40248107910156,
+              140.6056365966797
+            ],
+            [
+              217.85610961914062,
+              185.4696807861328
+            ],
+            [
+              182.77748107910156,
+              223.63290405273438
+            ],
+            [
+              236.45175170898438,
+              222.77076721191406
+            ]
+          ],
+          "pixel_sha256": "4bd60dcc9295079055e05e38137f9eb06da12ace10a492ece9d82e3ee2dbded9"
+        }
+      },
+      "native_sha256": "9cb34992120bc21741ab0ffa66861092d1fe144f1656639349fddd8082d98b6f"
+    },
+    {
+      "id": "v18_020",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell01.png",
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            40.964027404785156,
+            27.2525634765625,
+            93.25322723388672,
+            87.99815368652344,
+            0.789915919303894
+          ],
+          "landmarks": [
+            [
+              61.76591110229492,
+              45.755279541015625
+            ],
+            [
+              85.09481048583984,
+              46.620262145996094
+            ],
+            [
+              78.35774230957031,
+              57.333351135253906
+            ],
+            [
+              64.4354019165039,
+              70.73209381103516
+            ],
+            [
+              83.91545104980469,
+              71.18254089355469
+            ]
+          ],
+          "pixel_sha256": "956d74f4cf84cafee3790fc963498daeedc472bc6462d5a61660493710e3a1be"
+        },
+        "256": {
+          "bbox": [
+            82.42933654785156,
+            52.51500701904297,
+            186.57760620117188,
+            177.7640838623047,
+            0.793315052986145
+          ],
+          "landmarks": [
+            [
+              123.3406753540039,
+              92.14712524414062
+            ],
+            [
+              169.92214965820312,
+              93.52835845947266
+            ],
+            [
+              156.43209838867188,
+              114.5923843383789
+            ],
+            [
+              127.86250305175781,
+              141.09402465820312
+            ],
+            [
+              168.16041564941406,
+              141.639892578125
+            ]
+          ],
+          "pixel_sha256": "15467b3e0fb1f0e2654be9e016a507df2041b4377d3a3a2bc2e1d1d0e9e12db0"
+        },
+        "384": {
+          "bbox": [
+            123.45295715332031,
+            80.99614715576172,
+            279.706298828125,
+            267.55535888671875,
+            0.7950444221496582
+          ],
+          "landmarks": [
+            [
+              184.88526916503906,
+              138.3180389404297
+            ],
+            [
+              254.32949829101562,
+              139.77877807617188
+            ],
+            [
+              234.6339874267578,
+              172.1652374267578
+            ],
+            [
+              191.94532775878906,
+              211.9172821044922
+            ],
+            [
+              252.16758728027344,
+              212.13389587402344
+            ]
+          ],
+          "pixel_sha256": "574a9a0cb123f16f128480d9d0313ce0bf2071d79b56351cd9c7a0b235a7bb8c"
+        }
+      },
+      "native_sha256": "d00425b216e3bf4146e41253802fda8bb5e499ececb37949bc23ed58fc7fe818"
+    },
+    {
+      "id": "v18_021",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell02.png",
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            43.47160339355469,
+            25.53354835510254,
+            93.4029312133789,
+            83.5792007446289,
+            0.779316782951355
+          ],
+          "landmarks": [
+            [
+              59.77275848388672,
+              44.18553161621094
+            ],
+            [
+              82.43334197998047,
+              43.27947998046875
+            ],
+            [
+              74.62543487548828,
+              52.052330017089844
+            ],
+            [
+              63.47654342651367,
+              65.61933898925781
+            ],
+            [
+              83.06535339355469,
+              64.79127502441406
+            ]
+          ],
+          "pixel_sha256": "621d4e2174ed30420fee26ef00bef7abac10e0825266a01f61c65f9a1f88a27f"
+        },
+        "256": {
+          "bbox": [
+            86.81635284423828,
+            50.892120361328125,
+            186.13552856445312,
+            168.92355346679688,
+            0.7892628908157349
+          ],
+          "landmarks": [
+            [
+              119.7408447265625,
+              88.23251342773438
+            ],
+            [
+              163.98825073242188,
+              86.26609802246094
+            ],
+            [
+              149.10952758789062,
+              104.5465316772461
+            ],
+            [
+              127.2347412109375,
+              131.56533813476562
+            ],
+            [
+              165.41441345214844,
+              129.6881866455078
+            ]
+          ],
+          "pixel_sha256": "b46e51b91ac16181adc7327b662ebe967fdee00e523c59fc6329e081a19ddaf2"
+        },
+        "384": {
+          "bbox": [
+            130.253173828125,
+            77.7126693725586,
+            278.8941955566406,
+            253.9735870361328,
+            0.8026872277259827
+          ],
+          "landmarks": [
+            [
+              179.92892456054688,
+              132.00096130371094
+            ],
+            [
+              245.51651000976562,
+              129.05636596679688
+            ],
+            [
+              223.70118713378906,
+              156.84170532226562
+            ],
+            [
+              191.71946716308594,
+              197.84283447265625
+            ],
+            [
+              247.6524200439453,
+              195.049072265625
+            ]
+          ],
+          "pixel_sha256": "ed2fbefc69ce39d3686aaee71034dc124ae2346fdf9c6e685e4dd9597fa2cd42"
+        }
+      },
+      "native_sha256": "62da6d350d40e03370a5009ea6dc818f1e0620a23267d846e3ec635a9e5b5f4b"
+    },
+    {
+      "id": "v18_022",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell03.png",
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            35.299903869628906,
+            25.182079315185547,
+            84.73283386230469,
+            84.44864654541016,
+            0.7899377942085266
+          ],
+          "landmarks": [
+            [
+              52.03582763671875,
+              42.11572265625
+            ],
+            [
+              75.14625549316406,
+              41.462379455566406
+            ],
+            [
+              67.34257507324219,
+              52.37371063232422
+            ],
+            [
+              56.3594856262207,
+              67.19483947753906
+            ],
+            [
+              74.95518493652344,
+              66.63282775878906
+            ]
+          ],
+          "pixel_sha256": "7884c34f039d88a60950c6b876fb37d95a7370553a9b2f269b14941aee87f3fa"
+        },
+        "256": {
+          "bbox": [
+            71.56088256835938,
+            52.171974182128906,
+            168.9923095703125,
+            169.1756591796875,
+            0.8216222524642944
+          ],
+          "landmarks": [
+            [
+              104.07696533203125,
+              84.89801025390625
+            ],
+            [
+              149.8631591796875,
+              83.38966369628906
+            ],
+            [
+              134.4075927734375,
+              104.7865219116211
+            ],
+            [
+              112.36640930175781,
+              134.24871826171875
+            ],
+            [
+              149.92910766601562,
+              132.94752502441406
+            ]
+          ],
+          "pixel_sha256": "db34f087e64073d369b2ff7473388216afc2b8c2a61ea6a4a14de63e0e2404fe"
+        },
+        "384": {
+          "bbox": [
+            107.49270629882812,
+            78.94918060302734,
+            253.85980224609375,
+            253.9658660888672,
+            0.8276168704032898
+          ],
+          "landmarks": [
+            [
+              156.0746612548828,
+              127.2651138305664
+            ],
+            [
+              224.8099365234375,
+              124.88681030273438
+            ],
+            [
+              201.36305236816406,
+              157.1475372314453
+            ],
+            [
+              168.28733825683594,
+              201.4445343017578
+            ],
+            [
+              224.80899047851562,
+              199.3854217529297
+            ]
+          ],
+          "pixel_sha256": "21c60854fea9e83641ff82697ec114ea6f941ec43798043c8bf2cb11fed09c49"
+        }
+      },
+      "native_sha256": "78c722690e3b12b0cf1e9f4d80d755f78ed5bdc80ee53e5368faf3dbf5ed4576"
+    },
+    {
+      "id": "v18_023",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell04.png",
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            23.016433715820312,
+            24.432621002197266,
+            73.21612548828125,
+            86.50135803222656,
+            0.7731492519378662
+          ],
+          "landmarks": [
+            [
+              40.27327346801758,
+              43.829010009765625
+            ],
+            [
+              63.70914840698242,
+              43.9760856628418
+            ],
+            [
+              55.269187927246094,
+              55.060386657714844
+            ],
+            [
+              42.28327941894531,
+              67.4942855834961
+            ],
+            [
+              62.959991455078125,
+              67.54065704345703
+            ]
+          ],
+          "pixel_sha256": "c8622be0f83b4c4911f67e4894e2bd5d197753d96857f0fcde685d7e9ce0ec5c"
+        },
+        "256": {
+          "bbox": [
+            46.185787200927734,
+            50.47444534301758,
+            146.62887573242188,
+            173.2352752685547,
+            0.7957696318626404
+          ],
+          "landmarks": [
+            [
+              81.03375244140625,
+              87.55348205566406
+            ],
+            [
+              127.15156555175781,
+              87.99068450927734
+            ],
+            [
+              110.5443115234375,
+              110.0746841430664
+            ],
+            [
+              84.4950942993164,
+              134.23977661132812
+            ],
+            [
+              125.7647476196289,
+              134.5034942626953
+            ]
+          ],
+          "pixel_sha256": "dd12d0ef2a76c53d29e965749d9ca365903e8d6d04fb4b253aa1ecfcf5352e28"
+        },
+        "384": {
+          "bbox": [
+            69.4088363647461,
+            77.82625579833984,
+            219.94325256347656,
+            259.60015869140625,
+            0.8055604696273804
+          ],
+          "landmarks": [
+            [
+              121.27525329589844,
+              131.37525939941406
+            ],
+            [
+              190.4932861328125,
+              132.0541229248047
+            ],
+            [
+              165.2610321044922,
+              164.98838806152344
+            ],
+            [
+              126.61715698242188,
+              201.37815856933594
+            ],
+            [
+              188.4315948486328,
+              201.85423278808594
+            ]
+          ],
+          "pixel_sha256": "8874f5dda509a738e8429aa002bdf099ed1698ae9d1af3978b505c06b4cb9307"
+        }
+      },
+      "native_sha256": "0b90dd76ec0e784cd6f3097b3fbd877a45c176c7ae732a7a973285f94a9e4cd3"
+    },
+    {
+      "id": "v18_024",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell05.png",
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            17.4768009185791,
+            26.32720947265625,
+            66.26377868652344,
+            87.75491333007812,
+            0.8228200674057007
+          ],
+          "landmarks": [
+            [
+              35.00428009033203,
+              43.16074752807617
+            ],
+            [
+              58.00981521606445,
+              43.13025665283203
+            ],
+            [
+              50.70125198364258,
+              55.529693603515625
+            ],
+            [
+              37.75310134887695,
+              69.13536071777344
+            ],
+            [
+              57.373443603515625,
+              68.91482543945312
+            ]
+          ],
+          "pixel_sha256": "827b7e438a05f4181a94d62e086f0ebeecfcae4011193b08032f701f87597a39"
+        },
+        "256": {
+          "bbox": [
+            35.115623474121094,
+            52.85833740234375,
+            132.07460021972656,
+            176.03456115722656,
+            0.8392899036407471
+          ],
+          "landmarks": [
+            [
+              69.8099594116211,
+              87.12855529785156
+            ],
+            [
+              115.2622299194336,
+              86.15067291259766
+            ],
+            [
+              101.51863098144531,
+              111.09442138671875
+            ],
+            [
+              75.80843353271484,
+              138.19717407226562
+            ],
+            [
+              115.12823486328125,
+              136.9252166748047
+            ]
+          ],
+          "pixel_sha256": "1a4927a5d02ea76cda906a786b9904c963448738fdd836047f8df6d563ffe6c5"
+        },
+        "384": {
+          "bbox": [
+            52.14362335205078,
+            79.95911407470703,
+            197.93411254882812,
+            264.72247314453125,
+            0.84250807762146
+          ],
+          "landmarks": [
+            [
+              104.36859893798828,
+              130.81192016601562
+            ],
+            [
+              172.8667755126953,
+              129.10719299316406
+            ],
+            [
+              152.4296875,
+              167.066162109375
+            ],
+            [
+              113.47758483886719,
+              207.7222442626953
+            ],
+            [
+              172.8336639404297,
+              205.53273010253906
+            ]
+          ],
+          "pixel_sha256": "68747f3b5e4fa0b90d09b68731a7f4bad1eaa2042a0911655ce79d8635735cb1"
+        }
+      },
+      "native_sha256": "46b0279c81f7f466d1cfe72af3d68b1fa0ccb948c3fc9bf2c63dee79c433d59c"
+    },
+    {
+      "id": "v18_025",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell06.png",
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            42.22027587890625,
+            25.44027328491211,
+            92.152587890625,
+            88.85499572753906,
+            0.8101381063461304
+          ],
+          "landmarks": [
+            [
+              59.052207946777344,
+              45.17045211791992
+            ],
+            [
+              82.9052505493164,
+              45.452537536621094
+            ],
+            [
+              74.34056091308594,
+              58.18394088745117
+            ],
+            [
+              62.61555099487305,
+              71.8368911743164
+            ],
+            [
+              81.5409927368164,
+              71.88468933105469
+            ]
+          ],
+          "pixel_sha256": "82ae87f5692085e7e0a4bb449aed95c5a32318e511f3c50d235e1bb3ab0788c9"
+        },
+        "256": {
+          "bbox": [
+            84.95123291015625,
+            50.64631271362305,
+            183.7039031982422,
+            178.2342071533203,
+            0.823487401008606
+          ],
+          "landmarks": [
+            [
+              117.75628662109375,
+              90.9743881225586
+            ],
+            [
+              165.1269073486328,
+              90.63272857666016
+            ],
+            [
+              147.65762329101562,
+              116.76856994628906
+            ],
+            [
+              124.70416259765625,
+              144.1147918701172
+            ],
+            [
+              162.80897521972656,
+              143.42433166503906
+            ]
+          ],
+          "pixel_sha256": "e61399a0eb361519115a02079c81857210de12fb6f01dc6fcbcc7e2189cc8856"
+        },
+        "384": {
+          "bbox": [
+            126.855712890625,
+            78.40359497070312,
+            275.794677734375,
+            267.6732482910156,
+            0.8333790898323059
+          ],
+          "landmarks": [
+            [
+              177.28355407714844,
+              135.83578491210938
+            ],
+            [
+              248.29319763183594,
+              136.3271942138672
+            ],
+            [
+              223.2060546875,
+              174.58309936523438
+            ],
+            [
+              187.56417846679688,
+              215.95556640625
+            ],
+            [
+              244.92982482910156,
+              215.6529541015625
+            ]
+          ],
+          "pixel_sha256": "330fc3df370258ee59a3a962855bcf9f4a12e8bc02fd5f0753a3e69ebd2bfb4f"
+        }
+      },
+      "native_sha256": "5a67a3c6c7221c2db7ebe386d75d4c91a7971ac4813899f4a03536746c998352"
+    },
+    {
+      "id": "v18_026",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell07.png",
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            35.27631759643555,
+            23.853683471679688,
+            87.33307647705078,
+            84.44351959228516,
+            0.7528456449508667
+          ],
+          "landmarks": [
+            [
+              54.00328826904297,
+              42.102447509765625
+            ],
+            [
+              76.85347747802734,
+              41.52292251586914
+            ],
+            [
+              70.22586059570312,
+              50.69428634643555
+            ],
+            [
+              57.935585021972656,
+              65.6045150756836
+            ],
+            [
+              77.92835998535156,
+              64.8427734375
+            ]
+          ],
+          "pixel_sha256": "5de12db8e982a44842e246671368b14c7e4f8f99c49cbf37311fcc9d95aeda2f"
+        },
+        "256": {
+          "bbox": [
+            70.4179458618164,
+            47.465545654296875,
+            174.18423461914062,
+            167.61431884765625,
+            0.7540230751037598
+          ],
+          "landmarks": [
+            [
+              107.40950012207031,
+              84.30354309082031
+            ],
+            [
+              153.8011932373047,
+              82.58518981933594
+            ],
+            [
+              140.12655639648438,
+              101.51019287109375
+            ],
+            [
+              116.2433090209961,
+              131.55831909179688
+            ],
+            [
+              155.8528289794922,
+              129.80296325683594
+            ]
+          ],
+          "pixel_sha256": "3859cb5c224f6496ce8ff504a714fa26bed80751f73ebc4239a25b1d40630ecb"
+        },
+        "384": {
+          "bbox": [
+            105.81134033203125,
+            71.5982666015625,
+            260.9771423339844,
+            249.968017578125,
+            0.7700826525688171
+          ],
+          "landmarks": [
+            [
+              161.09535217285156,
+              126.35087585449219
+            ],
+            [
+              230.62713623046875,
+              123.810546875
+            ],
+            [
+              210.146484375,
+              151.89724731445312
+            ],
+            [
+              175.3441925048828,
+              197.62274169921875
+            ],
+            [
+              233.51556396484375,
+              194.9919891357422
+            ]
+          ],
+          "pixel_sha256": "f51d18d4a8e8bc8f85e0a54c43da1cd53e1fa8ae2cd1e7f0525b67c8b091ec5d"
+        }
+      },
+      "native_sha256": "7626882a64cba04446c90a68bc03d5e7e4a9903f13480182b5d2dc3ba0e77fb9"
+    },
+    {
+      "id": "v18_027",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_suwon_sparks_g02/cell08.png",
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            25.43526268005371,
+            24.40151596069336,
+            75.1196517944336,
+            85.07981872558594,
+            0.7954559326171875
+          ],
+          "landmarks": [
+            [
+              42.72562026977539,
+              43.259796142578125
+            ],
+            [
+              66.04785919189453,
+              43.22627639770508
+            ],
+            [
+              58.1018180847168,
+              54.02886199951172
+            ],
+            [
+              46.2087287902832,
+              68.16504669189453
+            ],
+            [
+              65.39116668701172,
+              67.97725677490234
+            ]
+          ],
+          "pixel_sha256": "ee4c1bdef6847b28c388801cdfc9b5af29ce5a5cb125e4dfde86e26f7c7db300"
+        },
+        "256": {
+          "bbox": [
+            50.866355895996094,
+            49.16367721557617,
+            149.6171112060547,
+            170.8108367919922,
+            0.8079555034637451
+          ],
+          "landmarks": [
+            [
+              86.21446228027344,
+              86.50782775878906
+            ],
+            [
+              131.46475219726562,
+              86.31703186035156
+            ],
+            [
+              116.6001968383789,
+              108.78369140625
+            ],
+            [
+              92.3820571899414,
+              135.59347534179688
+            ],
+            [
+              130.41061401367188,
+              135.13900756835938
+            ]
+          ],
+          "pixel_sha256": "dc146e609cf09ffcb76d7329e921b63dc7d412bd3105fd40e561efb941153b14"
+        },
+        "384": {
+          "bbox": [
+            75.92765808105469,
+            76.65856170654297,
+            224.29116821289062,
+            255.58737182617188,
+            0.8181930780410767
+          ],
+          "landmarks": [
+            [
+              129.56076049804688,
+              129.7949676513672
+            ],
+            [
+              197.48719787597656,
+              129.59375
+            ],
+            [
+              175.46620178222656,
+              163.91676330566406
+            ],
+            [
+              138.6630859375,
+              203.47105407714844
+            ],
+            [
+              195.7906951904297,
+              202.8794708251953
+            ]
+          ],
+          "pixel_sha256": "db3313978aaabf4faa87d954ed111c9d9831d40e0fdb5367f152d4b97da2e242"
+        }
+      },
+      "native_sha256": "26644a97a7aafeff9ac449b71415a42591042c470b47076b978471180b3533df"
+    }
+  ]
+}

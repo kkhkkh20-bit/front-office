@@ -1,0 +1,186 @@
+{
+  "seed": 1802,
+  "source": "actual final384 WebP cells; individual images are not resized",
+  "identities": [
+    {
+      "id": "v18_171",
+      "team": "seoul_comets",
+      "age": 27,
+      "path": "previews/v18b/random10/v18_171_seoul_comets.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/B/384/seoul_comets.webp",
+      "rect": [
+        8,
+        2808,
+        384,
+        384
+      ],
+      "sha256": "04059e9c6787a28d30dc7398291d910b5a97a42e8e5dfd4ff96fed1abc93ac98"
+    },
+    {
+      "id": "v18_139",
+      "team": "seoul_hounds",
+      "age": 23,
+      "path": "previews/v18b/random10/v18_139_seoul_hounds.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/B/384/seoul_hounds.webp",
+      "rect": [
+        3208,
+        1208,
+        384,
+        384
+      ],
+      "sha256": "dc811807151aa1e8b604631f4ddba3b28363236ea113b2f89fcba024767b35ca"
+    },
+    {
+      "id": "v18_168",
+      "team": "incheon_seagulls",
+      "age": 26,
+      "path": "previews/v18b/random10/v18_168_incheon_seagulls.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/B/384/incheon_seagulls.webp",
+      "rect": [
+        2808,
+        2408,
+        384,
+        384
+      ],
+      "sha256": "12c781e8034f7219847210d4716cc978794b23fa08c921bcb9e10b1a999e3b5f"
+    },
+    {
+      "id": "v18_173",
+      "team": "suwon_sparks",
+      "age": 28,
+      "path": "previews/v18b/random10/v18_173_suwon_sparks.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/B/384/suwon_sparks.webp",
+      "rect": [
+        808,
+        2808,
+        384,
+        384
+      ],
+      "sha256": "d86abcfbdd7e8a7168f2b1d37bd78070cf5e05bcaab72e9eec67605272213f69"
+    },
+    {
+      "id": "v18_182",
+      "team": "goyang_storm",
+      "age": 28,
+      "path": "previews/v18b/random10/v18_182_goyang_storm.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/B/384/goyang_storm.webp",
+      "rect": [
+        408,
+        3208,
+        384,
+        384
+      ],
+      "sha256": "5f465d52f27693bad3ff0d38df7722a1b5f38249ed4bab904169e2303303863b"
+    },
+    {
+      "id": "v18_097",
+      "team": "daejeon_redfox",
+      "age": 25,
+      "path": "previews/v18b/random10/v18_097_daejeon_redfox.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/A/384/daejeon_redfox.webp",
+      "rect": [
+        2408,
+        3608,
+        384,
+        384
+      ],
+      "sha256": "a27d87116421eacb8c8de7d6e92003b40704c34b9d4687f9c55b113609c3c18f"
+    },
+    {
+      "id": "v18_100",
+      "team": "gwangju_blazes",
+      "age": 34,
+      "path": "previews/v18b/random10/v18_100_gwangju_blazes.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/A/384/gwangju_blazes.webp",
+      "rect": [
+        3608,
+        3608,
+        384,
+        384
+      ],
+      "sha256": "5eacc1036f05ec0c2ed7586dcd104bb07a4b12c2182ee2ea66f98cd43850e590"
+    },
+    {
+      "id": "v18_130",
+      "team": "daegu_thunders",
+      "age": 22,
+      "path": "previews/v18b/random10/v18_130_daegu_thunders.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/B/384/daegu_thunders.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "sha256": "d05d879f3a807fa3f6a5a5b6425b916c306f57ae6f6fda2ff663465e47687703"
+    },
+    {
+      "id": "v18_113",
+      "team": "busan_waves",
+      "age": 19,
+      "path": "previews/v18b/random10/v18_113_busan_waves.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/B/384/busan_waves.webp",
+      "rect": [
+        808,
+        408,
+        384,
+        384
+      ],
+      "sha256": "c14bc59e92616df0e5a8d12ea88a6bd21c850532735ffd5a4adbe48bd26000b7"
+    },
+    {
+      "id": "v18_072",
+      "team": "changwon_anchors",
+      "age": 28,
+      "path": "previews/v18b/random10/v18_072_changwon_anchors.png",
+      "size": [
+        384,
+        384
+      ],
+      "source_webp": "assets/v18/production200/sheets/A/384/changwon_anchors.webp",
+      "rect": [
+        408,
+        2808,
+        384,
+        384
+      ],
+      "sha256": "b85bc673896379392658976e773ea15de9652972d9897a91cc5cf5f5f8f9cd54"
+    }
+  ]
+}

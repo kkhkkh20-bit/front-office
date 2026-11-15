@@ -1,0 +1,952 @@
+{
+  "passed": true,
+  "reviewed_panels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54
+  ],
+  "reviewed_grids": 220,
+  "reviewed_photos": 1960,
+  "checks": [
+    "square whole-photo crops",
+    "correct order and identity metadata",
+    "coherent original face/neck/shoulders",
+    "deep cap fit",
+    "original home uniforms",
+    "no geometric face deformation"
+  ],
+  "inputs": [
+    {
+      "key": "seoul_comets_g00",
+      "sha256": "c34088ac02ba91ecb9bd14f493777e109bf42ad913a97d13a6afd6c673dd6f91"
+    },
+    {
+      "key": "seoul_comets_g01",
+      "sha256": "913c9a68bfb5ea9de9235c53a815f507d9e06710cbf5ef9a3ed734b21f9e4ea1"
+    },
+    {
+      "key": "seoul_comets_g02",
+      "sha256": "dde7bfac8ec6d6a57de672efe4f76616a541350f9363fca342335752b462f383"
+    },
+    {
+      "key": "seoul_comets_g03",
+      "sha256": "d595ce218f4853462c9e5c9b0a85b543394a427f8255a4206fa7e0228d1d08a7"
+    },
+    {
+      "key": "seoul_comets_g04",
+      "sha256": "dd066c2003e0aa6efc8521ba5540443bcaa6e56ecec297aa1f871f4ee9f221d0"
+    },
+    {
+      "key": "seoul_comets_g05",
+      "sha256": "de2e00355eb9dd6f5c2e50190dcd985ff2d898033fcdb8e51d0cf8d5d78575b1"
+    },
+    {
+      "key": "seoul_comets_g06",
+      "sha256": "2c23a73faec55ab4f31d7374d328ddd29df14eeaa4b7d16ed695b19e483435a9"
+    },
+    {
+      "key": "seoul_comets_g07",
+      "sha256": "b5e4bb92186a979d15bf0f427ad7930815b50795812059695883f7d433b61694"
+    },
+    {
+      "key": "seoul_comets_g08",
+      "sha256": "39a54a9b623fecf20124340b152a58b0bf3cd678465a43b37dbe2644f92f96a3"
+    },
+    {
+      "key": "seoul_comets_g09",
+      "sha256": "c039c239d47c4bc807cfd854590a1bfc55bb9c50e2bccd3ae72918f1d6c83ead"
+    },
+    {
+      "key": "seoul_comets_g10",
+      "sha256": "2124e079edcd73d66525a687c33e0b916cf01073489ca62206d44577b2535e47"
+    },
+    {
+      "key": "seoul_comets_g11",
+      "sha256": "94699c8a3271b17f661898076a46de70da59579b7c4c1331778fe156adc525c3"
+    },
+    {
+      "key": "seoul_comets_g12",
+      "sha256": "edd9d77e7439483d73b9e69861e1cafa5ce15e99a4c9626243ce0ef608277606"
+    },
+    {
+      "key": "seoul_comets_g13",
+      "sha256": "403854d3933f5008f0efb344d5f0bfff2ee71dad44dabbd430e47f3b722848e0"
+    },
+    {
+      "key": "seoul_comets_g14",
+      "sha256": "89c63dd21950dc112b48853b46812dacdf1b47ee464ab6d32ab9661c99bf4b1f"
+    },
+    {
+      "key": "seoul_comets_g15",
+      "sha256": "07515d0923cd87a76ed563e042a7d5f15dc63d25a0440c003e828df85bb81787"
+    },
+    {
+      "key": "seoul_comets_g16",
+      "sha256": "3472bac22daebacdac8e699c561146d7c39ff2c5929d954a8f58169784514260"
+    },
+    {
+      "key": "seoul_comets_g17",
+      "sha256": "653dd1c1474de2072a54295e046bb3ff653b6c1dbaadf5549afdbabc3b0a2433"
+    },
+    {
+      "key": "seoul_comets_g18",
+      "sha256": "38507c1d9d1a45065814282319791d52b556fe031e2c0b95d51876109c145a7d"
+    },
+    {
+      "key": "seoul_comets_g19",
+      "sha256": "e0e45f9ea72f63050a2afde8ae5781d730000ee7b3da9eb783baa5f9582c7875"
+    },
+    {
+      "key": "seoul_comets_g20",
+      "sha256": "fdcd6cddc6ed4b72988426016a07195eee3008cb0bf4a0311d3167187a827584"
+    },
+    {
+      "key": "seoul_comets_g21",
+      "sha256": "8a886e5349a295e7f6f2fe9ce62e395b2de4d3a4e1e00689ee451e44939ef372"
+    },
+    {
+      "key": "seoul_hounds_g00",
+      "sha256": "2f982d1df0ea539e07d9992059053443ec0a4576c1df21fa1a1d1e470f98e21e"
+    },
+    {
+      "key": "seoul_hounds_g01",
+      "sha256": "6708c1d0fda2e21be034bc9e8c37cb7198323379741dec90add1fb349c07131c"
+    },
+    {
+      "key": "seoul_hounds_g02",
+      "sha256": "eaac7bad09b866b6789bf4e212ea1a81a55ff315c53d7af7c1537d5d86c469bf"
+    },
+    {
+      "key": "seoul_hounds_g03",
+      "sha256": "0137a7af2ff7263949d548907f3c805f34de092dba72c1870cd09f2a2d243d7b"
+    },
+    {
+      "key": "seoul_hounds_g04",
+      "sha256": "e6cb060f7af157c7d82abbee84fcd540689da3873c5d2eee97b44a78c2d957ab"
+    },
+    {
+      "key": "seoul_hounds_g05",
+      "sha256": "7b354ca9f6ad91c99567446a10e3c4104ce3974e33a011fdb5a7b62072a7170e"
+    },
+    {
+      "key": "seoul_hounds_g06",
+      "sha256": "7c23fda39e5c3b572d4c96cabdc86c9c8f6153162f9c265d139fa65b87264461"
+    },
+    {
+      "key": "seoul_hounds_g07",
+      "sha256": "00557373dc5045a12a8ad140d620c0d676015e4c048038f229e5fb63b00937f3"
+    },
+    {
+      "key": "seoul_hounds_g08",
+      "sha256": "0486ed921d5e60ad069a1388fa4469312b45f7eb6b75a64ccb1327cb897c0689"
+    },
+    {
+      "key": "seoul_hounds_g09",
+      "sha256": "23f0421b2af1c8fcdc324f5b102a0bc12cad4491b5eb95ef88a93ebe66fa7b77"
+    },
+    {
+      "key": "seoul_hounds_g10",
+      "sha256": "e9f2008067d056a3e79f6de02ea458cd08f3056a1e07fd965390bf14241dfadf"
+    },
+    {
+      "key": "seoul_hounds_g11",
+      "sha256": "a88fe9f88a570f4d04adb31ead8cbfc8b792ce8d5a9a9a113cd7d96eb2b9b5c5"
+    },
+    {
+      "key": "seoul_hounds_g12",
+      "sha256": "416687422f8f76e05be6daddf0d31e126e0576d3faddea9c6a5f772e90df3cf1"
+    },
+    {
+      "key": "seoul_hounds_g13",
+      "sha256": "740488bf20e5aa989b2aa0d28eccc220203b69c51d8700da2643a03aa0d57740"
+    },
+    {
+      "key": "seoul_hounds_g14",
+      "sha256": "24ccea494d47c24898aebc94b1e971eda78bbdadc4b0e1525227f2cb386f71b7"
+    },
+    {
+      "key": "seoul_hounds_g15",
+      "sha256": "1f8c593363ad1bfdb1e1f1a279b0c3894927c38965d8ee7396dc388414425bc7"
+    },
+    {
+      "key": "seoul_hounds_g16",
+      "sha256": "8eb90dcb87cba53ef3833b32274344c989acb8362495ea8afd4109737f5a15f6"
+    },
+    {
+      "key": "seoul_hounds_g17",
+      "sha256": "186bc7dce8de2a002121a3a0d61eca3865d0bbed8ce723b0769e4bcbae536bbb"
+    },
+    {
+      "key": "seoul_hounds_g18",
+      "sha256": "8e713d1e0c37e3f46fa11a29c6d372ac6c23141bcb2702fe029f3c7ee365fc01"
+    },
+    {
+      "key": "seoul_hounds_g19",
+      "sha256": "90dc94c10f78017a8d2e81efd167c6939c48238b0a7460cd2f3e222ec9090216"
+    },
+    {
+      "key": "seoul_hounds_g20",
+      "sha256": "c5be04e8a59d5266abb92f3d10add4df719f26334c65300a8ae0e00da3282cd7"
+    },
+    {
+      "key": "seoul_hounds_g21",
+      "sha256": "919bf16c423b4a13e63cdb4a4226329a732cfd10177c6b3a4e4c38e9e10dcc99"
+    },
+    {
+      "key": "incheon_seagulls_g00",
+      "sha256": "5204a0f3104742aa21e0c4dc555e9eb86d1876da6046cd8adf2b75dba869e65b"
+    },
+    {
+      "key": "incheon_seagulls_g01",
+      "sha256": "8c7d066870f63b401a808ecb0b7de49f06812857dbd427146b70adb3e38a088a"
+    },
+    {
+      "key": "incheon_seagulls_g02",
+      "sha256": "e22d3e4d831df7ccdb4c5b3145e5aa14a97c91e76dc883ac05e0f67efab91057"
+    },
+    {
+      "key": "incheon_seagulls_g03",
+      "sha256": "dbd26f080640258cf10a36ec37e9fc09ed439ccb5936a36fc83520c3e402fb6e"
+    },
+    {
+      "key": "incheon_seagulls_g04",
+      "sha256": "396d49bae2b6e9d39a3761d3eaff065b96ce8813096bac12b5b84a8b54a5fcdd"
+    },
+    {
+      "key": "incheon_seagulls_g05",
+      "sha256": "686dd6c1de5df364d64ce78c1aa68bee7f3cf75ca5d239d658897402db3da16a"
+    },
+    {
+      "key": "incheon_seagulls_g06",
+      "sha256": "ecba3b1fcbcbe50a2f6e977abc9edbbd7a2de1ba2dd3d3b1eeff4d28cffb58b3"
+    },
+    {
+      "key": "incheon_seagulls_g07",
+      "sha256": "668d43a76c09a93eaefef89ab331a5fc31a51f14aeead4017ed74e41a950f538"
+    },
+    {
+      "key": "incheon_seagulls_g08",
+      "sha256": "4d84f3b24431b689260da6414182b26a4f5ea06365834e665291135af03e2206"
+    },
+    {
+      "key": "incheon_seagulls_g09",
+      "sha256": "648f21f6dd3581db4f2888114b7ff40fb8f41d949bc3381ffc97a071fa914ab4"
+    },
+    {
+      "key": "incheon_seagulls_g10",
+      "sha256": "60feefe943dcbf47ab9810d47f08d32d4b2f8038fb7458c8b1aa1e82b692cb5a"
+    },
+    {
+      "key": "incheon_seagulls_g11",
+      "sha256": "268bdaf36cf57351c82bfa50a87e01f8a93797378e1880eb2810a9e15552ed0e"
+    },
+    {
+      "key": "incheon_seagulls_g12",
+      "sha256": "bf03daace2096653a02d436b2fb8b81e14d2638d6d4c791df8f541a55153b12a"
+    },
+    {
+      "key": "incheon_seagulls_g13",
+      "sha256": "0ea8d91d9a216664b9890eabd0c81c189eac83990b15d8416b23ca87ce8f47c1"
+    },
+    {
+      "key": "incheon_seagulls_g14",
+      "sha256": "956dd2dd96ccaa5ad5fadc6a4d3b925a0f00553a4b1b9623eebd38f9b746eda4"
+    },
+    {
+      "key": "incheon_seagulls_g15",
+      "sha256": "a53d14c02b6dd32f09f481b4c0d4af1f72ef95acbb75cc6d0315dba081505eea"
+    },
+    {
+      "key": "incheon_seagulls_g16",
+      "sha256": "e7e3dca79b73b3f3bcb8ef0a5c7363f331639cbb1ad249efdf6a314a59add67f"
+    },
+    {
+      "key": "incheon_seagulls_g17",
+      "sha256": "e7a78ad1868018637eb7b0d339a90576a0e45cd7ebeebbb3a4f17b3a7b241283"
+    },
+    {
+      "key": "incheon_seagulls_g18",
+      "sha256": "fe975ead795d37c05f7909a9ab4caf1e8a649dba508868281e97bb056e79e753"
+    },
+    {
+      "key": "incheon_seagulls_g19",
+      "sha256": "6a2dc7d28028a9a89b49d3e30c91e7f7ea85b5e8fa7e90d7f984fd1f523b5d78"
+    },
+    {
+      "key": "incheon_seagulls_g20",
+      "sha256": "9e4e6559aa771d63d047c1ff890ee2b2c747f052e6ea3f0a1911dea3de70a88a"
+    },
+    {
+      "key": "incheon_seagulls_g21",
+      "sha256": "652bbe044309d859dce989ea2657d1aa6956f3f6ebe0f30fe68c48a7b00c6091"
+    },
+    {
+      "key": "suwon_sparks_g00",
+      "sha256": "a79b6784e0d17ca3ad59724fab12d36cba23f890dfb42fd0141becd584c463d6"
+    },
+    {
+      "key": "suwon_sparks_g01",
+      "sha256": "238a6a453439e83beae40f64c37e18cb3a7b8f107f578de11a1153060debe2cb"
+    },
+    {
+      "key": "suwon_sparks_g02",
+      "sha256": "807e3aa2241e420c19c1fc66bdb1be23ec7722e7d95a59159facf9ee12fdb8fb"
+    },
+    {
+      "key": "suwon_sparks_g03",
+      "sha256": "8ce84b8b298e496bd3017f755247385b8e5ba9f01e0c54524a0e490ed8f422b1"
+    },
+    {
+      "key": "suwon_sparks_g04",
+      "sha256": "ec8e52c6283762168b5e77b28dc35ebbe14a6de6dce29f2d3f3f3fd875aeeafb"
+    },
+    {
+      "key": "suwon_sparks_g05",
+      "sha256": "5ec9c133f59484e205fdcb6d95ac21b4adb1d0d02ffa568ec873079d20c3ede9"
+    },
+    {
+      "key": "suwon_sparks_g06",
+      "sha256": "107add32137f2574d6c263991e5d1d980248e336af42fbd4d92c96c6a62719a6"
+    },
+    {
+      "key": "suwon_sparks_g07",
+      "sha256": "a7ed5feda5e4e7f1780be91c548b45bf066aec0f311421610649a2cd635f31d0"
+    },
+    {
+      "key": "suwon_sparks_g08",
+      "sha256": "ae0beec57ebda93ca652b1042f62d935932b7544c1f196dbdfad5ce9616bf39d"
+    },
+    {
+      "key": "suwon_sparks_g09",
+      "sha256": "2c8a2d9d4187bb7612b096cc92369bd71455277f8211226321ce13408f763b29"
+    },
+    {
+      "key": "suwon_sparks_g10",
+      "sha256": "51f1bddf4f4c57e0d88ef653e13234d4a89a5f3bb936cee9b06a38e668361535"
+    },
+    {
+      "key": "suwon_sparks_g11",
+      "sha256": "f92ae86e30b30870d8931b5b6bd9e213e65eecc7c61db8329630047bb0d87e6a"
+    },
+    {
+      "key": "suwon_sparks_g12",
+      "sha256": "375968ffc26ff056b18ad9356a8386a2f618e2cb3d6d0575c5db1db6afb587b3"
+    },
+    {
+      "key": "suwon_sparks_g13",
+      "sha256": "59683636ea94848f80012fc2579f4b01981efe2e7489cad56911c0d8566338d2"
+    },
+    {
+      "key": "suwon_sparks_g14",
+      "sha256": "9cc1f0b58d7f88b789fdcadf063570296b15592470d158adfc2048eb39b6fd93"
+    },
+    {
+      "key": "suwon_sparks_g15",
+      "sha256": "b6b423ec157ec3d923ed5fb65f40bed6eefddc2b13cf6c414ff64c61644deb59"
+    },
+    {
+      "key": "suwon_sparks_g16",
+      "sha256": "d1dadba651cb82510153d2d9d6a5ffda2f17a90726b45d70646eb58c2f6c9d55"
+    },
+    {
+      "key": "suwon_sparks_g17",
+      "sha256": "80ad795f3676f495af5dc87ee4f753b9759cb5d4fa2d0ddfac5e363935bdb406"
+    },
+    {
+      "key": "suwon_sparks_g18",
+      "sha256": "6922f78e815a5113e8692a70ca266f5875fc20f4bbf300672d3b3bc06190eb97"
+    },
+    {
+      "key": "suwon_sparks_g19",
+      "sha256": "9ee110ad46be3eb843d6a4d43959977572ca35f074e9edc334d8d7460e9abef2"
+    },
+    {
+      "key": "suwon_sparks_g20",
+      "sha256": "92291ddf82f27ce2f82d8c97e550b9450ad2c2fd3424d849a002b8ebb428a57d"
+    },
+    {
+      "key": "suwon_sparks_g21",
+      "sha256": "b5f437a54a99f9d27016939d043c00c0e6a4753a13fc8e7674724614deab5a88"
+    },
+    {
+      "key": "goyang_storm_g00",
+      "sha256": "7341efa7e89493bb96628bd66a522781e752ec4958bd644a44a180e314fe58d4"
+    },
+    {
+      "key": "goyang_storm_g01",
+      "sha256": "25184103d0ab38bba332c0586ee99dfe743af0c0c368d53cd4e395cc6588ac12"
+    },
+    {
+      "key": "goyang_storm_g02",
+      "sha256": "7fec76b05f4e57f30aa0b39db9618856f02467a8679261b97d6686d6eb07075e"
+    },
+    {
+      "key": "goyang_storm_g03",
+      "sha256": "1c8fec739f3b67c8cbed9c33c163b080dc8748f76517642a1aafd87c12b80fb8"
+    },
+    {
+      "key": "goyang_storm_g04",
+      "sha256": "c0be9e4628756f0a343c26bea126a88980e80d84d897ab6a0564c3c75952f0a5"
+    },
+    {
+      "key": "goyang_storm_g05",
+      "sha256": "5ac2603e3b990822cd54a94a10de71ec35e356339803dca5b800a8597d0c6e6d"
+    },
+    {
+      "key": "goyang_storm_g06",
+      "sha256": "1761e611b057b3c3de780aa9bf04b8f4246361e3c2abab3d11895af8e5866bf9"
+    },
+    {
+      "key": "goyang_storm_g07",
+      "sha256": "0722a26e0543de869b64667f4f1bac631d9ea7ada0444b39449c3108906d5add"
+    },
+    {
+      "key": "goyang_storm_g08",
+      "sha256": "ce3f65648e68a7b7fd2c2cb2ea69b41d374899585e4fc04cf8924afab0a992fe"
+    },
+    {
+      "key": "goyang_storm_g09",
+      "sha256": "c3a02652d96d16e7df20001587e7a92b671a310906a63df9c8a548c5cbe7a321"
+    },
+    {
+      "key": "goyang_storm_g10",
+      "sha256": "792e2b3777693587e0dd4a6fedc7af0fa8cdd798976c1952f5585671e78e07da"
+    },
+    {
+      "key": "goyang_storm_g11",
+      "sha256": "389bbec06d5da35ab7c9f61feaef59a903415395eb7d77d3f25ca035ed82472d"
+    },
+    {
+      "key": "goyang_storm_g12",
+      "sha256": "ad9f64757a4980bbdf17aab2d042d365bdf0512e2d532b58c781b9b800e4e218"
+    },
+    {
+      "key": "goyang_storm_g13",
+      "sha256": "ab36ce64e3a38ad4179327761ed9b2742dea92841722195e9a82f810f8dff419"
+    },
+    {
+      "key": "goyang_storm_g14",
+      "sha256": "fe152ab59e0330ae85845c093e6ff09409ddbc18bea15eb528676cb112cbfb75"
+    },
+    {
+      "key": "goyang_storm_g15",
+      "sha256": "41129c7577625861a6825806d5a5658be62185f23580ceab77a799646634efc0"
+    },
+    {
+      "key": "goyang_storm_g16",
+      "sha256": "eb8cb22afb9e66edf6d7d507687431b76dd949a27d37c53f876859774f608724"
+    },
+    {
+      "key": "goyang_storm_g17",
+      "sha256": "54ce053ddc844dd9c02b38803198ad52b039f18908de83fff1b2e87d457956b9"
+    },
+    {
+      "key": "goyang_storm_g18",
+      "sha256": "2a7e31ec7a4062657f4bd040d598668b2598f12c5128043755abaad4f35da82b"
+    },
+    {
+      "key": "goyang_storm_g19",
+      "sha256": "e1f2f7dfa78dffec4dd135b3d516334078e405799bbddb1f3be163601d42786e"
+    },
+    {
+      "key": "goyang_storm_g20",
+      "sha256": "a8c1b658d2001f19b2d7e070df8174f7b30927b01cea07a46646e07a06de356e"
+    },
+    {
+      "key": "goyang_storm_g21",
+      "sha256": "f46d1b4825f870c9f99d7183a52985ee078832f7614ddcb90d87853878773a6c"
+    },
+    {
+      "key": "daejeon_redfox_g00",
+      "sha256": "8816a25a42816ad4ff4d35b409fdb711722029646dbd614a7671ebc0a3486480"
+    },
+    {
+      "key": "daejeon_redfox_g01",
+      "sha256": "189fb254e73ca0cd477c4c8cdf0fc4d755e24ea0dc869e6a6ebbc168f49ef184"
+    },
+    {
+      "key": "daejeon_redfox_g02",
+      "sha256": "21298aa8013795add345343021ea0122cde25da3c6250f0e1f5ba1081a4a395d"
+    },
+    {
+      "key": "daejeon_redfox_g03",
+      "sha256": "620a4c852ae3bfa57c22a7d4203d04b36e165200ca34778dfc0a83ea4e21c431"
+    },
+    {
+      "key": "daejeon_redfox_g04",
+      "sha256": "b59bc7e91513a6490d832fab6d2b2711e8f3307178b118b6336f015f055b1cde"
+    },
+    {
+      "key": "daejeon_redfox_g05",
+      "sha256": "f8d99c83fdfa3f6a873e7eea8fb91490485bfb393fbf77ab1b14d34bd497e35b"
+    },
+    {
+      "key": "daejeon_redfox_g06",
+      "sha256": "ed19fc81a23349d5b23d8efd14a2c242e20b2b8af492fde9ea9ba86a0264a09c"
+    },
+    {
+      "key": "daejeon_redfox_g07",
+      "sha256": "1c6dcde003024bc90f7e1ffcc40085d347e23cfbe30b25bd31b18d06cd70aab7"
+    },
+    {
+      "key": "daejeon_redfox_g08",
+      "sha256": "67a094794b111a947e2dcf94731f297b88fac53ae8e3cbf63aeef095072bde26"
+    },
+    {
+      "key": "daejeon_redfox_g09",
+      "sha256": "c312d1a59688b3d2cf4147df6aaf09475ee39ae474cb63756d96d2e124a329cf"
+    },
+    {
+      "key": "daejeon_redfox_g10",
+      "sha256": "507c0bb73ff1ae0924b6fc0753eb7d0e14c71e4a2d37fb87ee196737b343b69c"
+    },
+    {
+      "key": "daejeon_redfox_g11",
+      "sha256": "ff556d08bc1bf0aa46461e4fa75909317d5767ab5470a0b3cc781e56b6139af3"
+    },
+    {
+      "key": "daejeon_redfox_g12",
+      "sha256": "b330f492b471e1e410f7aa62a6b314ac9eac5d5cf15cee27028ba8464ff01ef4"
+    },
+    {
+      "key": "daejeon_redfox_g13",
+      "sha256": "263ed911f7cf02979514a2b6faee72334b41a2bd0059b0fd3b0c671c0618502a"
+    },
+    {
+      "key": "daejeon_redfox_g14",
+      "sha256": "7d4665ad1a64bc60792141e5771cc555fcc998c4e9dd9e1c1f8fbf33e6f0e5d0"
+    },
+    {
+      "key": "daejeon_redfox_g15",
+      "sha256": "dead7f90cfbc97ebcc12dc31e28feedc7a8d862d3b217888b5f8d5019c47e413"
+    },
+    {
+      "key": "daejeon_redfox_g16",
+      "sha256": "330afb6d6f54a37ac0e729d8e71cae6cc791007ea7fe45755fccdab385a1b377"
+    },
+    {
+      "key": "daejeon_redfox_g17",
+      "sha256": "ba747038f8c77afb6d91ee74664b2ed0dca208ea2a6912815d5520e6d456a398"
+    },
+    {
+      "key": "daejeon_redfox_g18",
+      "sha256": "eab0b6a98e129beb2a13691ba622905870472e3e07f23810a8d8705e042a85dc"
+    },
+    {
+      "key": "daejeon_redfox_g19",
+      "sha256": "b8d3a64346940e2d45dc2a1e43524b94e37f409d21e46b9e1ee21022d62c7184"
+    },
+    {
+      "key": "daejeon_redfox_g20",
+      "sha256": "9c3313487ea155a01f3f28e6e77b490feca588288135e9c369d8f0af2299ea67"
+    },
+    {
+      "key": "daejeon_redfox_g21",
+      "sha256": "366292a270b8088f68827db3ba5760f086b97d075085d2ba6f8b792daef8cdbc"
+    },
+    {
+      "key": "gwangju_blazes_g00",
+      "sha256": "1510d074166ad397725cf630567b6d35fc117aeace36c3a6ba5ddbbb62bd00e7"
+    },
+    {
+      "key": "gwangju_blazes_g01",
+      "sha256": "6852971c3df3fdab389a0aaf6007611c3a38dd5fc515cc18713f06c36d6a5a8a"
+    },
+    {
+      "key": "gwangju_blazes_g02",
+      "sha256": "034cd8a86af5d2bfeb5324184c0c641189837bcb4c0db3e03cea521672949938"
+    },
+    {
+      "key": "gwangju_blazes_g03",
+      "sha256": "788a7c94cf0005b0b5348c449dc0b512a58ccd1bfc36f561f79cc3a4094b8ef3"
+    },
+    {
+      "key": "gwangju_blazes_g04",
+      "sha256": "7479ecefcf664034b6a1fca5200748ce79d01de97b315313367ba5747d4c8f18"
+    },
+    {
+      "key": "gwangju_blazes_g05",
+      "sha256": "ca2a2179cb86377cbdc8bd67aa8870c19007f1c2db54ca1cd1fa57049b3861b6"
+    },
+    {
+      "key": "gwangju_blazes_g06",
+      "sha256": "c09bd73dc90d5e5525f84cce69efbb2e47fad0973626cd2cfb167fa1c16165f8"
+    },
+    {
+      "key": "gwangju_blazes_g07",
+      "sha256": "3f175af63e72e40f6d53d96890d7d840d43b824e7c47c18670cd3b48e447f68b"
+    },
+    {
+      "key": "gwangju_blazes_g08",
+      "sha256": "89f362b9ac539abb5280243454ce149e514f10abfeef389af3766f3d0fa1c3a6"
+    },
+    {
+      "key": "gwangju_blazes_g09",
+      "sha256": "d451a1106453fe37fa0657dd1706d40ac58595168dded7aaf0efd74bac0cc986"
+    },
+    {
+      "key": "gwangju_blazes_g10",
+      "sha256": "8d68ce3112963114e520e11dc7b29faf5bb1e92fee7fc30e5d81221de5f188b0"
+    },
+    {
+      "key": "gwangju_blazes_g11",
+      "sha256": "a9ddabcff201921367020380b6d191b4d784c30786cb232e45c5636e6c6d1c8f"
+    },
+    {
+      "key": "gwangju_blazes_g12",
+      "sha256": "71405b27209fd70f41a77095ac05d34fb381566e783d581101d944cb42c618d3"
+    },
+    {
+      "key": "gwangju_blazes_g13",
+      "sha256": "bf498641e0eb3549c4fd1d255006fec8e02ca5fc26cb393fe79034be3910b85a"
+    },
+    {
+      "key": "gwangju_blazes_g14",
+      "sha256": "02a6bc8aafcee0668b970968e6ec2455c2bac4fc89099336b8576c9c8b5d1d66"
+    },
+    {
+      "key": "gwangju_blazes_g15",
+      "sha256": "289805a5b891f9fdf8e96538696097a0105ff2dd8ccb24d60b4960c89476f9e5"
+    },
+    {
+      "key": "gwangju_blazes_g16",
+      "sha256": "60239fb63d46557717449a36752fa460d3ddaec6a4c1ce41751c9b70854e5d1c"
+    },
+    {
+      "key": "gwangju_blazes_g17",
+      "sha256": "7747774dd77cbf56101038f9f6e23c9eaf9e029492005bcfb550325f79fb9613"
+    },
+    {
+      "key": "gwangju_blazes_g18",
+      "sha256": "ec4d31a40af07bdc98f60c57af340b67d84a332c4b7894f6fb6fd01eced135f4"
+    },
+    {
+      "key": "gwangju_blazes_g19",
+      "sha256": "6ad8fac2f09a94686a8e1cbabc7f6e47df16e766611fc72c2a90f298c3d8c0b6"
+    },
+    {
+      "key": "gwangju_blazes_g20",
+      "sha256": "2648aec2eea30c1ec70bef424f64bc059db1ccb14e7b01c09b2a82ab53c5cd2d"
+    },
+    {
+      "key": "gwangju_blazes_g21",
+      "sha256": "48a7601cc58f8294afc44e2a3f925eabed9f3720bd9bf25d496f887a3f2ca789"
+    },
+    {
+      "key": "daegu_thunders_g00",
+      "sha256": "7b2d5289b73b93659c63e8878e6f7e471975193e983c9e765e9dbc359e3b8ac8"
+    },
+    {
+      "key": "daegu_thunders_g01",
+      "sha256": "1a67bccf4b178e70c1bd23bce1fb4d715d3bf7a64a37da4acd0215d4b9e0dbce"
+    },
+    {
+      "key": "daegu_thunders_g02",
+      "sha256": "13d26f00c639f402686ee2c235df14e572cfd90d5b8e661f7675596d05815a45"
+    },
+    {
+      "key": "daegu_thunders_g03",
+      "sha256": "460e535c06e784a5bd6a33caddd0d8902e201c76dd06b933f59163c2f8a141a3"
+    },
+    {
+      "key": "daegu_thunders_g04",
+      "sha256": "0688fd9e9fe1f852f00d717a5b774f0623080468686e4805d8cd0aa4431e30cb"
+    },
+    {
+      "key": "daegu_thunders_g05",
+      "sha256": "0c3a56bd648242983b414ab96fa5b640cde3ed6b216a7a9f8ec2146dce122d6e"
+    },
+    {
+      "key": "daegu_thunders_g06",
+      "sha256": "677ea673a9f9cf52999bf8a3e288cf772710bb245c0be69ce7f7f92efb59640a"
+    },
+    {
+      "key": "daegu_thunders_g07",
+      "sha256": "140284581c7ae2a0706b8cdd43b35c7e8b9e313b695adea3f3b6736b0556d8a0"
+    },
+    {
+      "key": "daegu_thunders_g08",
+      "sha256": "221e0629069072fb6fd45e6de474f1f96f34241a92f702f27d654f83549330a3"
+    },
+    {
+      "key": "daegu_thunders_g09",
+      "sha256": "3ad7f4afe9fe907902342f50211af6b679e00829a13485eefa1531b37d9ab3ac"
+    },
+    {
+      "key": "daegu_thunders_g10",
+      "sha256": "b1c94cfa1fb5b89ce43e75cb78ca91440eecf3f7a44663e980ea209ecca62a7b"
+    },
+    {
+      "key": "daegu_thunders_g11",
+      "sha256": "37bf053f3721e37a927389e8b6e6c33d3433c5b1f0581664758bddbd02cc1bf4"
+    },
+    {
+      "key": "daegu_thunders_g12",
+      "sha256": "e7501d1c6c8d7c4b2a264929f5c438aebc658978a2ed0974c67198633b42c9c3"
+    },
+    {
+      "key": "daegu_thunders_g13",
+      "sha256": "b40eea406d714d6b8395dc64c3ab67431f6f4f88565b1acd99e21605c01d22b2"
+    },
+    {
+      "key": "daegu_thunders_g14",
+      "sha256": "0445ffa0819968accf88ce543e23ada34560e155199ec101194513c8350b7be6"
+    },
+    {
+      "key": "daegu_thunders_g15",
+      "sha256": "268db403b280771359740d7f7e8aa660cb18acb1768b20be779ccb0ca0da3c59"
+    },
+    {
+      "key": "daegu_thunders_g16",
+      "sha256": "db955d7e6bda53febc5d7dda6ea0c1f78c638f210022fb363138e30192828482"
+    },
+    {
+      "key": "daegu_thunders_g17",
+      "sha256": "4192fa0d763a3de560ce42b725424b776d6fc61c2611619f0710720670f91a20"
+    },
+    {
+      "key": "daegu_thunders_g18",
+      "sha256": "63aa4420b8d543db89a67fa11d8e9acebf88706091b8ae31a73f697b1cc41ea8"
+    },
+    {
+      "key": "daegu_thunders_g19",
+      "sha256": "998e26501910fa861144f03b331a9dae6da472db97ad7dd5194077f2ed7b5d9d"
+    },
+    {
+      "key": "daegu_thunders_g20",
+      "sha256": "da6216f1f70b92dbad18b9f177d510043e6c186f53d08b0454ccfac89a9e2c05"
+    },
+    {
+      "key": "daegu_thunders_g21",
+      "sha256": "8edbca2d18633acd5bc0602b2436e0c88c971575d1b2ca70aad1ae929811af86"
+    },
+    {
+      "key": "busan_waves_g00",
+      "sha256": "4f06d63e291dae992eb7154ab955760190d7286b860a1621a28e00aa02223eaf"
+    },
+    {
+      "key": "busan_waves_g01",
+      "sha256": "07493484b8b0755c725ab9bdeb3be07c92b91ff4bde41d063da5787ff87cb839"
+    },
+    {
+      "key": "busan_waves_g02",
+      "sha256": "91818aa6b09d1e84b9d980080cb441ef97a72dc38e819494b88f3e54c16b98f4"
+    },
+    {
+      "key": "busan_waves_g03",
+      "sha256": "5aa84c4852e5bff1411c790816e0c9761967cdbd7f8a5b706656a838c8c406eb"
+    },
+    {
+      "key": "busan_waves_g04",
+      "sha256": "96643226106579ecbef23c7af0451b5b1570e3c2ed62992d9cd585086d475c67"
+    },
+    {
+      "key": "busan_waves_g05",
+      "sha256": "b3de309d3de6b4ef11e0defbac202667ca7c22710dceafe3a8e0fbd8e0705453"
+    },
+    {
+      "key": "busan_waves_g06",
+      "sha256": "a21f6104682fac3da855fb742822a104b26cb530ceebd46cd4de1dbe129e5d51"
+    },
+    {
+      "key": "busan_waves_g07",
+      "sha256": "99bb9fbab593376152d0b7c45885797cabacaa0b0c45576770a41c837916bbb1"
+    },
+    {
+      "key": "busan_waves_g08",
+      "sha256": "fec836cf333e3a090b9d235a7218b0845f51e700dc96a77750d3f1168f4b12a7"
+    },
+    {
+      "key": "busan_waves_g09",
+      "sha256": "e91beb8da1571a195aabf9a3178d39cfbca84ced0646ef4a0b2de8feb1eaec84"
+    },
+    {
+      "key": "busan_waves_g10",
+      "sha256": "19f0523cc7337d3f281d5b594a9ae27d62a556fc85149402ecf6f9f19079cd8a"
+    },
+    {
+      "key": "busan_waves_g11",
+      "sha256": "46e41e88b7f70b7afd1a40e1d208ef574a3ae1f6b89731415529416825e9567a"
+    },
+    {
+      "key": "busan_waves_g12",
+      "sha256": "dc0c1e434bf27832d366f333f44283e6e1e202f063b1b2b0e13538360394e731"
+    },
+    {
+      "key": "busan_waves_g13",
+      "sha256": "5e7d5d49fea9f7ebb0831b3d5b5ef23dbddc3bb5c2615e50a4a963294f66029d"
+    },
+    {
+      "key": "busan_waves_g14",
+      "sha256": "5715f91ed34b6a32d7f85ae255f27ff16df15bd1232b95aaf26337975fdc0e2e"
+    },
+    {
+      "key": "busan_waves_g15",
+      "sha256": "4ce2d0390e103de319f175b6de3b05cc4f23fb67099f528c7d1f1d343f8633a0"
+    },
+    {
+      "key": "busan_waves_g16",
+      "sha256": "0a35ea7947bb2128e6ae800e88edc01cc338432cdd82ce3c0c756a7cebb101e7"
+    },
+    {
+      "key": "busan_waves_g17",
+      "sha256": "66f8fd97e6355f185f551b3c254f6cbe449c4e69998fc3bfc66aa50a8e11795e"
+    },
+    {
+      "key": "busan_waves_g18",
+      "sha256": "4f8a6a1bd65f9c8eb248b38062149bafe258c3b8c8915d55577775d740ab82ce"
+    },
+    {
+      "key": "busan_waves_g19",
+      "sha256": "e884bbe33132fe9089e10b553b6da50505b0372dfeab44731588ab9f3f5fa562"
+    },
+    {
+      "key": "busan_waves_g20",
+      "sha256": "4449d159e963839fe559983df3d88c97ca43c33cfcfa723c8e79aa8fa04ef707"
+    },
+    {
+      "key": "busan_waves_g21",
+      "sha256": "92cbec86549ce54426e06eb7aa24b486016fa99dda43c5fa98f8f6dbdf34d7a9"
+    },
+    {
+      "key": "changwon_anchors_g00",
+      "sha256": "3f37cfebfd10564adb551ec8d557449830997cd09e72b9bbdef8d5141a3cee0e"
+    },
+    {
+      "key": "changwon_anchors_g01",
+      "sha256": "f7f961c8d7f49f44d555f8bd127a2173da5e0b85152d2d65fdb3e45fb541f74a"
+    },
+    {
+      "key": "changwon_anchors_g02",
+      "sha256": "16cc748b3ee1219d6aa18b25418b919902b025562cc25838a684b05907961584"
+    },
+    {
+      "key": "changwon_anchors_g03",
+      "sha256": "3e8b1d079c6f275ffa134a9ac58143141574cc3953b847348bd24f4ef341df6b"
+    },
+    {
+      "key": "changwon_anchors_g04",
+      "sha256": "1af62132c3dac47fa87a9d67eba4de91299d62757535ebbb8a2eacca815254eb"
+    },
+    {
+      "key": "changwon_anchors_g05",
+      "sha256": "9d3d126b6fae2585cc24ad83aa71c7206943cb0692a4ca52a16e7071f6bc812b"
+    },
+    {
+      "key": "changwon_anchors_g06",
+      "sha256": "0e3894d02f149b85660ba99e69cc3c8d302353d2ae07ad90d522ff1d88c95b4f"
+    },
+    {
+      "key": "changwon_anchors_g07",
+      "sha256": "48b731c24530eae855a4fe8f499d3cabfb99b0d38d38f52dd49aca01dc7c5b8a"
+    },
+    {
+      "key": "changwon_anchors_g08",
+      "sha256": "ba7768a89c910d1ea588634f638e8a5fd41ff6cdd0544c3eb3d302401fb2d6d7"
+    },
+    {
+      "key": "changwon_anchors_g09",
+      "sha256": "61f9a481900d1a138debd36644161621126eea45386b34764c516c1db1516d9f"
+    },
+    {
+      "key": "changwon_anchors_g10",
+      "sha256": "8acce113ca4c131561e573959b6871643359bba961db4df7bd52854ed6f7c249"
+    },
+    {
+      "key": "changwon_anchors_g11",
+      "sha256": "a43892f542720b67cdd067853fbba41d01f1ee2cf9342b07be48706247e5619d"
+    },
+    {
+      "key": "changwon_anchors_g12",
+      "sha256": "e7e7148098b78c5e87904549ceee319112247c0b4e72e1f1efe5cc5a21379a8f"
+    },
+    {
+      "key": "changwon_anchors_g13",
+      "sha256": "06eddde7293b2f81f77f0a029551780d2452ef18ca31255b42adad631e45b735"
+    },
+    {
+      "key": "changwon_anchors_g14",
+      "sha256": "0dd88f1e4ccfe3c64e42d67d8111e613eabe2ec3c76dd0b94e632a0abf4b6902"
+    },
+    {
+      "key": "changwon_anchors_g15",
+      "sha256": "f4a343d6276ba430233cb37e0e90e07f89348eda09e2b81506a5d6066c5eb244"
+    },
+    {
+      "key": "changwon_anchors_g16",
+      "sha256": "eb8c9aa32fb98a61f2eb857b8986e65608da74131276102c53c4da56e4afd419"
+    },
+    {
+      "key": "changwon_anchors_g17",
+      "sha256": "9ad0a863f8ac42024037d359ef8ebcec751c16ef10db13b4b011be8549513fda"
+    },
+    {
+      "key": "changwon_anchors_g18",
+      "sha256": "64b93ddd9d1b5e668d5dffacead1dc0a4428a80e2be1048adbfda60179e36e3b"
+    },
+    {
+      "key": "changwon_anchors_g19",
+      "sha256": "c07d7de675e8497ce4aa505fde485bf02da36a60b0e4be0401624c71e78d2a2f"
+    },
+    {
+      "key": "changwon_anchors_g20",
+      "sha256": "f66229989e51248b337ae8d3a73b7b9c5d6b0cd25be5ab0f823d09cb32526120"
+    },
+    {
+      "key": "changwon_anchors_g21",
+      "sha256": "3f41e3ba747116542af0c86eb4dbca936426830d57487d603a8f85a0f9299b24"
+    }
+  ]
+}

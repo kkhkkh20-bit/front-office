@@ -1,0 +1,658 @@
+{
+  "key": "gray_suwon_sparks_r2",
+  "kind": "gray",
+  "team": "suwon_sparks",
+  "render": {
+    "team": "suwon_sparks",
+    "path": "/workspace/generated_images/exec-cfc054fc-3479-48ea-8c78-e1c077e90e71.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/gray_anchors_clean.png",
+    "round": 2,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-cfc054fc-3479-48ea-8c78-e1c077e90e71.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_165",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_suwon_sparks_r2/cell00.png",
+      "native_sha256": "8fbc821cfcc77171796e8d5cf1d116ed5f408b85f622381395903c5d3bcd9927",
+      "source_render": "/workspace/generated_images/exec-cfc054fc-3479-48ea-8c78-e1c077e90e71.png",
+      "source_render_sha256": "d677cca41f39bb65d11eee25fbf9bd9c245c48e83930de223222ec4a8c833ed9",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8493877649307251,
+          "same_original_all10_max": 0.906546950340271,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3845099210739136,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.33806517720222473
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8682591915130615,
+          "same_original_all10_max": 0.9138774871826172,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3678877651691437,
+          "other199_id": "v18_105",
+          "legacy160_max": 0.3589588403701782
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8716898560523987,
+          "same_original_all10_max": 0.9153472781181335,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.36539554595947266,
+          "other199_id": "v18_105",
+          "legacy160_max": 0.35951197147369385
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_169",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_suwon_sparks_r2/cell01.png",
+      "native_sha256": "7532577789e6265733fb5936122f6c06bf3fb4afd02ed5496638b7221faadd06",
+      "source_render": "/workspace/generated_images/exec-cfc054fc-3479-48ea-8c78-e1c077e90e71.png",
+      "source_render_sha256": "d677cca41f39bb65d11eee25fbf9bd9c245c48e83930de223222ec4a8c833ed9",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7766025066375732,
+          "same_original_all10_max": 0.8721877336502075,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.32254087924957275,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.3402627408504486
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.790891170501709,
+          "same_original_all10_max": 0.8915503621101379,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.29997050762176514,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.3441833257675171
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7899672985076904,
+          "same_original_all10_max": 0.8885418772697449,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.3087131977081299,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.3444533050060272
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_170",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_suwon_sparks_r2/cell02.png",
+      "native_sha256": "d077b472d3de8a98f0fe02c1f1f2920605f35e1bf758d735d5ae526d4ba53682",
+      "source_render": "/workspace/generated_images/exec-cfc054fc-3479-48ea-8c78-e1c077e90e71.png",
+      "source_render_sha256": "d677cca41f39bb65d11eee25fbf9bd9c245c48e83930de223222ec4a8c833ed9",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8442003726959229,
+          "same_original_all10_max": 0.8992844820022583,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.2939242720603943,
+          "other199_id": "v18_067",
+          "legacy160_max": 0.3294289708137512
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8655771017074585,
+          "same_original_all10_max": 0.9176535606384277,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.3074527978897095,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.3226907253265381
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.870147705078125,
+          "same_original_all10_max": 0.9192562103271484,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.3151400089263916,
+          "other199_id": "v18_067",
+          "legacy160_max": 0.3280799388885498
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_174",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_suwon_sparks_r2/cell03.png",
+      "native_sha256": "06b0f62dacc8cf24bea6e454f3b6cac09fcfb035e26a9ad9d4b380b8e565e0c4",
+      "source_render": "/workspace/generated_images/exec-cfc054fc-3479-48ea-8c78-e1c077e90e71.png",
+      "source_render_sha256": "d677cca41f39bb65d11eee25fbf9bd9c245c48e83930de223222ec4a8c833ed9",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8089478015899658,
+          "same_original_all10_max": 0.8680657744407654,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.3758149743080139,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3594488501548767
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8372291326522827,
+          "same_original_all10_max": 0.8850380182266235,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.37465324997901917,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.37363284826278687
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.839261531829834,
+          "same_original_all10_max": 0.8791912198066711,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.3741489350795746,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3764042258262634
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_165",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_suwon_sparks_r2/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.24680709838867,
+            25.125045776367188,
+            91.6509017944336,
+            91.68614959716797,
+            0.8446344137191772
+          ],
+          "landmarks": [
+            [
+              51.463050842285156,
+              47.684837341308594
+            ],
+            [
+              77.2026138305664,
+              47.651390075683594
+            ],
+            [
+              64.6751937866211,
+              63.72966766357422
+            ],
+            [
+              54.493186950683594,
+              74.52437591552734
+            ],
+            [
+              75.34931945800781,
+              74.50261688232422
+            ]
+          ],
+          "pixel_sha256": "98c27c7e35df9c55f437a37aa6e0f09b2e39f5697c7e0c82a418c028945136da"
+        },
+        "256": {
+          "bbox": [
+            74.55906677246094,
+            50.248260498046875,
+            183.128173828125,
+            183.53504943847656,
+            0.8548787236213684
+          ],
+          "landmarks": [
+            [
+              103.19600677490234,
+              95.0184555053711
+            ],
+            [
+              154.19448852539062,
+              95.2922134399414
+            ],
+            [
+              129.31756591796875,
+              128.35928344726562
+            ],
+            [
+              109.0125503540039,
+              148.87852478027344
+            ],
+            [
+              150.3983917236328,
+              149.12997436523438
+            ]
+          ],
+          "pixel_sha256": "52ae150fb0702c4b9f69a3edf9349e7c78ace280731065ecd7b2cd7ca8fed9bf"
+        },
+        "384": {
+          "bbox": [
+            112.44319152832031,
+            76.34429931640625,
+            274.6507263183594,
+            275.6574401855469,
+            0.8535407781600952
+          ],
+          "landmarks": [
+            [
+              155.0760955810547,
+              142.8298797607422
+            ],
+            [
+              231.481689453125,
+              143.23590087890625
+            ],
+            [
+              194.09524536132812,
+              192.60182189941406
+            ],
+            [
+              163.4431610107422,
+              223.239013671875
+            ],
+            [
+              225.9137725830078,
+              223.6085205078125
+            ]
+          ],
+          "pixel_sha256": "153d42db9b81d5bf52acde5db5575c4cfbb511c053c976ef82c21c2eef179df7"
+        }
+      },
+      "native_sha256": "8fbc821cfcc77171796e8d5cf1d116ed5f408b85f622381395903c5d3bcd9927"
+    },
+    {
+      "id": "v18_169",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_suwon_sparks_r2/cell01.png",
+      "native_crop_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            38.15913772583008,
+            26.089412689208984,
+            92.91996002197266,
+            94.04535675048828,
+            0.8243357539176941
+          ],
+          "landmarks": [
+            [
+              51.79869842529297,
+              47.8040657043457
+            ],
+            [
+              78.25425720214844,
+              47.49592208862305
+            ],
+            [
+              64.84651947021484,
+              63.32793426513672
+            ],
+            [
+              53.48212432861328,
+              74.31197357177734
+            ],
+            [
+              76.95772552490234,
+              74.10942077636719
+            ]
+          ],
+          "pixel_sha256": "8a0518cccf31408e902e16d2849ccf5e7c9904b01c2d1b328bdba79489deeb9d"
+        },
+        "256": {
+          "bbox": [
+            76.07466888427734,
+            53.240570068359375,
+            185.7166290283203,
+            188.31361389160156,
+            0.8293758630752563
+          ],
+          "landmarks": [
+            [
+              103.92545318603516,
+              95.09751892089844
+            ],
+            [
+              156.55226135253906,
+              94.97367858886719
+            ],
+            [
+              129.98345947265625,
+              128.070556640625
+            ],
+            [
+              107.111328125,
+              148.3103790283203
+            ],
+            [
+              154.00570678710938,
+              148.35586547851562
+            ]
+          ],
+          "pixel_sha256": "a38f21306795f1a2702404f43d2bf9a724c545ae49814e7c109de14f309f931d"
+        },
+        "384": {
+          "bbox": [
+            114.42924499511719,
+            79.4016342163086,
+            278.44830322265625,
+            282.642333984375,
+            0.8347201347351074
+          ],
+          "landmarks": [
+            [
+              155.86465454101562,
+              142.1917266845703
+            ],
+            [
+              234.8111572265625,
+              142.06541442871094
+            ],
+            [
+              194.86338806152344,
+              192.21560668945312
+            ],
+            [
+              160.68846130371094,
+              222.26959228515625
+            ],
+            [
+              230.97195434570312,
+              222.42843627929688
+            ]
+          ],
+          "pixel_sha256": "66db7977b18eaaa362ce8ac7a5f34dc326d0b3a6d8f6ade77b23903228e9bda3"
+        }
+      },
+      "native_sha256": "7532577789e6265733fb5936122f6c06bf3fb4afd02ed5496638b7221faadd06"
+    },
+    {
+      "id": "v18_170",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_suwon_sparks_r2/cell02.png",
+      "native_crop_xyxy": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.597869873046875,
+            29.14249038696289,
+            92.11076354980469,
+            93.70414733886719,
+            0.797188401222229
+          ],
+          "landmarks": [
+            [
+              52.15192794799805,
+              50.77099609375
+            ],
+            [
+              77.37496185302734,
+              50.57970428466797
+            ],
+            [
+              64.70750427246094,
+              66.05683898925781
+            ],
+            [
+              54.41715621948242,
+              75.6789779663086
+            ],
+            [
+              75.50894165039062,
+              75.46302795410156
+            ]
+          ],
+          "pixel_sha256": "9df7ffb35d4d8fdef96cb3f828c54400b311c15c3d7911cf414af7a644a27fc0"
+        },
+        "256": {
+          "bbox": [
+            75.00228881835938,
+            56.70560836791992,
+            183.987060546875,
+            187.82691955566406,
+            0.7960348129272461
+          ],
+          "landmarks": [
+            [
+              104.4983901977539,
+              101.39738464355469
+            ],
+            [
+              154.4789581298828,
+              101.11187744140625
+            ],
+            [
+              129.66030883789062,
+              132.6292266845703
+            ],
+            [
+              109.2350845336914,
+              151.4631805419922
+            ],
+            [
+              151.09518432617188,
+              151.10842895507812
+            ]
+          ],
+          "pixel_sha256": "918a1e93eda2638dcc7f3272170b8925a2c27efa76a1ecffa1ba842e8e49d549"
+        },
+        "384": {
+          "bbox": [
+            112.4921875,
+            86.8346939086914,
+            276.0618591308594,
+            281.8504638671875,
+            0.8115386962890625
+          ],
+          "landmarks": [
+            [
+              157.00625610351562,
+              151.78184509277344
+            ],
+            [
+              231.6406707763672,
+              151.6734619140625
+            ],
+            [
+              194.49810791015625,
+              199.06460571289062
+            ],
+            [
+              163.71292114257812,
+              226.9018096923828
+            ],
+            [
+              226.47283935546875,
+              226.68148803710938
+            ]
+          ],
+          "pixel_sha256": "77dd056c0f695b1550889cadcd4bc62fd5f84a4f69b663759c644a437db8dfe4"
+        }
+      },
+      "native_sha256": "d077b472d3de8a98f0fe02c1f1f2920605f35e1bf758d735d5ae526d4ba53682"
+    },
+    {
+      "id": "v18_174",
+      "team": "suwon_sparks",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_suwon_sparks_r2/cell03.png",
+      "native_crop_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.646583557128906,
+            28.900074005126953,
+            88.64637756347656,
+            90.44392395019531,
+            0.8267226219177246
+          ],
+          "landmarks": [
+            [
+              50.99883270263672,
+              49.1680908203125
+            ],
+            [
+              74.94917297363281,
+              49.112083435058594
+            ],
+            [
+              63.17525100708008,
+              62.667518615722656
+            ],
+            [
+              53.5244255065918,
+              73.87956237792969
+            ],
+            [
+              73.32015991210938,
+              73.84056091308594
+            ]
+          ],
+          "pixel_sha256": "7190a5a57364d830b44ad39be032fc5ede4201ed26a2bc9676630e56a05cae59"
+        },
+        "256": {
+          "bbox": [
+            74.83401489257812,
+            57.15612030029297,
+            176.98800659179688,
+            181.2040252685547,
+            0.8287279009819031
+          ],
+          "landmarks": [
+            [
+              101.7762680053711,
+              97.9334716796875
+            ],
+            [
+              149.19570922851562,
+              98.05303192138672
+            ],
+            [
+              125.78627014160156,
+              126.50042724609375
+            ],
+            [
+              107.1861343383789,
+              148.3654327392578
+            ],
+            [
+              145.5478515625,
+              148.5636749267578
+            ]
+          ],
+          "pixel_sha256": "9f5f875dc9683e38924ee3a94414f6463d5c81f2a5fd65795440e51ec669b6b2"
+        },
+        "384": {
+          "bbox": [
+            112.13284301757812,
+            85.55548858642578,
+            265.58489990234375,
+            272.2405700683594,
+            0.835625410079956
+          ],
+          "landmarks": [
+            [
+              152.419921875,
+              146.5373992919922
+            ],
+            [
+              223.59666442871094,
+              146.79689025878906
+            ],
+            [
+              188.2514190673828,
+              190.5435791015625
+            ],
+            [
+              160.19581604003906,
+              222.16404724121094
+            ],
+            [
+              218.19793701171875,
+              222.52017211914062
+            ]
+          ],
+          "pixel_sha256": "62031f6292706993a297408ab00b7af41d7056194cf81658f44561082f427137"
+        }
+      },
+      "native_sha256": "06b0f62dacc8cf24bea6e454f3b6cac09fcfb035e26a9ad9d4b380b8e565e0c4"
+    }
+  ]
+}

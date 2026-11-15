@@ -1,0 +1,47 @@
+[
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass07_background_repairs/panel00.jpg",
+    "keys": [
+      "gray_busan_waves_174_originalframe_single",
+      "gray_busan_waves_174_r5_single",
+      "gray_busan_waves_174_r6a_single",
+      "gray_busan_waves_174_r6b_single"
+    ],
+    "render_sha256": [
+      "b792ad37e1bed08acb7aafd8484638f8205c7b5ffe04d26ed3cf2314b57f17a7",
+      "f96332c7369983dd7b55ebfae7690950acff0098ffa241479a6761a023d81e70",
+      "8178c791ebf1f7fdf50b04bfad0e57304db225edcd62361a3e7630812a569936",
+      "9010e5754a7bb7f45504adbb3c0ed1a427d60b35b9a7b4b5db2cb2fd0e63e8b1"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass07_background_repairs/panel01.jpg",
+    "keys": [
+      "gray_gwangju_blazes_174_originalframe_single",
+      "gray_gwangju_blazes_174_r5_single",
+      "gray_gwangju_blazes_174_r6a_single",
+      "gray_gwangju_blazes_174_r6b_single"
+    ],
+    "render_sha256": [
+      "73464b3d2fef8212db3f54e738556306b18801cfaef69074c1f1df2e255e8b1c",
+      "616c8868cc3003d37ee78d949d06b3cdc5cffc44faaf6c869dcd406adf50d1fb",
+      "06be5c1e4461e1cd925bacd7d8a771d907bd7be87fb8a237c4fe5f4f04c35d06",
+      "e8841a0d1a34a11c95dc67043644d35c4f35a14acb5d5dc7231348899ffbb57e"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass07_background_repairs/panel02.jpg",
+    "keys": [
+      "gray_incheon_seagulls_165_r5_single",
+      "gray_incheon_seagulls_165_r6a_single",
+      "gray_incheon_seagulls_r1",
+      "hires_incheon_seagulls_g16"
+    ],
+    "render_sha256": [
+      "c81dc8eb69250528c0bf97613692306ade584d8d66cb9069566546c8e56f3d59",
+      "5cc18400b9197a29c9075219ef4eac7be72c005d0e2279005ef6db015078b0dc",
+      "64541f1e5961ddd8d5eafdf99b2906509db82fb16a38f6392ed2d50e508ef58b",
+      "8ed50116f42fe05956824e7132923cce7499b7df22942c0af1d8f05ab10332e1"
+    ]
+  }
+]

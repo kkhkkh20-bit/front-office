@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "updated_sheets": 9,
+  "updated_photographs": 3,
+  "replacement_keys": [
+    {
+      "id": "v18_165",
+      "team": "incheon_seagulls",
+      "measurement_key": "gray_incheon_seagulls_165_r5_single"
+    },
+    {
+      "id": "v18_174",
+      "team": "gwangju_blazes",
+      "measurement_key": "gray_gwangju_blazes_174_originalframe_single"
+    },
+    {
+      "id": "v18_174",
+      "team": "busan_waves",
+      "measurement_key": "gray_busan_waves_174_originalframe_single"
+    }
+  ]
+}

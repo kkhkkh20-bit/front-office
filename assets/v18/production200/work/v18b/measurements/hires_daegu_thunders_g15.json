@@ -1,0 +1,1454 @@
+{
+  "key": "hires_daegu_thunders_g15",
+  "kind": "hires",
+  "team": "daegu_thunders",
+  "render": {
+    "key": "daegu_thunders_g15",
+    "team": "daegu_thunders",
+    "path": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/hires_inputs/daegu_thunders_g15.png",
+    "expected_count": 9,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_136",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell00.png",
+      "native_sha256": "9a706f3c183d20890e3518dce1a89fc7759b573c42d08139d890c995ed12799a",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6785346865653992,
+          "same_original_all10_max": 0.7866426706314087,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.3309420347213745,
+          "other199_id": "v18_087",
+          "legacy160_max": 0.24890059232711792
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7102663516998291,
+          "same_original_all10_max": 0.8226616978645325,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.3211699426174164,
+          "other199_id": "v18_118",
+          "legacy160_max": 0.2838655114173889
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7097389698028564,
+          "same_original_all10_max": 0.8206332325935364,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.3295188248157501,
+          "other199_id": "v18_118",
+          "legacy160_max": 0.29345136880874634
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_137",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell01.png",
+      "native_sha256": "0a7e1ec6cdcf759bdb66d559a61a636e0239dcf839614b0fca35987ddb463874",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7763849496841431,
+          "same_original_all10_max": 0.8746243715286255,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.3558275103569031,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.3163696527481079
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7870804071426392,
+          "same_original_all10_max": 0.8525975942611694,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.37171757221221924,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.3353896737098694
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7835022807121277,
+          "same_original_all10_max": 0.8518619537353516,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.36900749802589417,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.34322303533554077
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_138",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell02.png",
+      "native_sha256": "37a184a72be74e62704270963212f20f1ea3cb1fbb61a8b2c493a64d7bda28f6",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7791231870651245,
+          "same_original_all10_max": 0.8495531678199768,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.33758652210235596,
+          "other199_id": "v18_096",
+          "legacy160_max": 0.3582765758037567
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8111088275909424,
+          "same_original_all10_max": 0.8857167959213257,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.33667874336242676,
+          "other199_id": "v18_096",
+          "legacy160_max": 0.32616129517555237
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8031980991363525,
+          "same_original_all10_max": 0.8714738488197327,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.33799174427986145,
+          "other199_id": "v18_096",
+          "legacy160_max": 0.3270190954208374
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_139",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell03.png",
+      "native_sha256": "1e70e32d1d6848b07ad7390159cc5b48adf57f3729380029b35c280eb20af9e3",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6837801337242126,
+          "same_original_all10_max": 0.7976022958755493,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.38348037004470825,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.33016109466552734
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7343499660491943,
+          "same_original_all10_max": 0.84511399269104,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.38909709453582764,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.3356146216392517
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7406660318374634,
+          "same_original_all10_max": 0.8429504632949829,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.36859193444252014,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.34047040343284607
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_140",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell04.png",
+      "native_sha256": "1a663566e1cd91dbea0e9034aed27773920bb838b7ce89f960177e858be9b202",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 4,
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7240613698959351,
+          "same_original_all10_max": 0.7867313623428345,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.22771570086479187,
+          "other199_id": "v18_137",
+          "legacy160_max": 0.28537556529045105
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.763370156288147,
+          "same_original_all10_max": 0.8232923746109009,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.26001113653182983,
+          "other199_id": "v18_137",
+          "legacy160_max": 0.3286747932434082
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7687488794326782,
+          "same_original_all10_max": 0.8092219233512878,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.24470172822475433,
+          "other199_id": "v18_137",
+          "legacy160_max": 0.31610560417175293
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_141",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell05.png",
+      "native_sha256": "a776575fcfcfe0fbe157b4085f91f40f5c9727bb773e9898fc1c8f29d65b4278",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 5,
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7218755483627319,
+          "same_original_all10_max": 0.8933931589126587,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.3601982593536377,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.38068294525146484
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7908672094345093,
+          "same_original_all10_max": 0.882274329662323,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.3478269577026367,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.36545461416244507
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7883402109146118,
+          "same_original_all10_max": 0.8828284740447998,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.3486066162586212,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.3702608048915863
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_142",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell06.png",
+      "native_sha256": "e0cf48e709497246d25ad64b5b9e2b72f0ba627235a1d5b2f3b89f35f51e1fb1",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 6,
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6929994225502014,
+          "same_original_all10_max": 0.8405354022979736,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.3551904559135437,
+          "other199_id": "v18_113",
+          "legacy160_max": 0.378329336643219
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7639597654342651,
+          "same_original_all10_max": 0.8498245477676392,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.3784226179122925,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3747475743293762
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7698652744293213,
+          "same_original_all10_max": 0.8589929938316345,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.39883965253829956,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.36101651191711426
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_143",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell07.png",
+      "native_sha256": "9d00656c3ad32a989ebfae882b702a447e77ec00b7f9c807bf8dc4e412cf4434",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 7,
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7511335611343384,
+          "same_original_all10_max": 0.857826292514801,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.4182005524635315,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.38402241468429565
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7577180862426758,
+          "same_original_all10_max": 0.8650888204574585,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.4438972473144531,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.41743582487106323
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.751220703125,
+          "same_original_all10_max": 0.8578134775161743,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.434722363948822,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.41879603266716003
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_144",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell08.png",
+      "native_sha256": "7c3b508abc5c8ea8ac60873f398ebd9bc1ebe0048bb1dd209ffe3363d4f58dd7",
+      "source_render": "/workspace/generated_images/exec-dcff1ebd-19ce-4f21-a073-2cc885e1aabb.png",
+      "source_render_sha256": "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "source_cell": 8,
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7764943838119507,
+          "same_original_all10_max": 0.8519552946090698,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.35520488023757935,
+          "other199_id": "v18_196",
+          "legacy160_max": 0.3449823558330536
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7614401578903198,
+          "same_original_all10_max": 0.8906424045562744,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.3396298885345459,
+          "other199_id": "v18_196",
+          "legacy160_max": 0.3468530774116516
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.764875590801239,
+          "same_original_all10_max": 0.877263069152832,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.35097193717956543,
+          "other199_id": "v18_196",
+          "legacy160_max": 0.33997198939323425
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_136",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            33.20306396484375,
+            25.128917694091797,
+            84.00154113769531,
+            92.7568588256836,
+            0.8574031591415405
+          ],
+          "landmarks": [
+            [
+              48.39091491699219,
+              49.249454498291016
+            ],
+            [
+              72.0767822265625,
+              46.281982421875
+            ],
+            [
+              63.48280715942383,
+              63.6754035949707
+            ],
+            [
+              51.671348571777344,
+              73.35320281982422
+            ],
+            [
+              73.74644470214844,
+              70.43136596679688
+            ]
+          ],
+          "pixel_sha256": "e6ed11c8e934792fdaf170ba306c3a5dd553f939152c397355108620fc773cc5"
+        },
+        "256": {
+          "bbox": [
+            65.65421295166016,
+            49.31867218017578,
+            167.93527221679688,
+            185.8413848876953,
+            0.8594560623168945
+          ],
+          "landmarks": [
+            [
+              96.83885192871094,
+              98.61431121826172
+            ],
+            [
+              144.14309692382812,
+              92.32861328125
+            ],
+            [
+              127.46223449707031,
+              127.86775207519531
+            ],
+            [
+              103.26678466796875,
+              146.69131469726562
+            ],
+            [
+              147.81289672851562,
+              140.53085327148438
+            ]
+          ],
+          "pixel_sha256": "bdfccdb44aaf4b2338e4ad8610c9150c5e19b896dc4962cc4876a8fd73c0618e"
+        },
+        "384": {
+          "bbox": [
+            98.02598571777344,
+            75.40640258789062,
+            251.7703857421875,
+            277.8114013671875,
+            0.8612032532691956
+          ],
+          "landmarks": [
+            [
+              145.16632080078125,
+              147.64590454101562
+            ],
+            [
+              216.09625244140625,
+              138.1947479248047
+            ],
+            [
+              191.4046173095703,
+              192.0225067138672
+            ],
+            [
+              155.381103515625,
+              219.8507080078125
+            ],
+            [
+              221.88214111328125,
+              210.5009307861328
+            ]
+          ],
+          "pixel_sha256": "86b4269678d196012e7650824aa5a317007a468954cc5c5d70dbac26948be933"
+        }
+      },
+      "native_sha256": "9a706f3c183d20890e3518dce1a89fc7759b573c42d08139d890c995ed12799a"
+    },
+    {
+      "id": "v18_137",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell01.png",
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            40.958335876464844,
+            24.723529815673828,
+            90.94209289550781,
+            87.3766860961914,
+            0.8427410125732422
+          ],
+          "landmarks": [
+            [
+              54.06428909301758,
+              45.3817253112793
+            ],
+            [
+              78.1319580078125,
+              45.37152862548828
+            ],
+            [
+              66.10447692871094,
+              59.54326248168945
+            ],
+            [
+              54.7282829284668,
+              68.11631774902344
+            ],
+            [
+              77.16648864746094,
+              68.00437927246094
+            ]
+          ],
+          "pixel_sha256": "db40bfb71443d150dc5d6538dd45cae5a9ded1432c8638e595cbb4218769a8f3"
+        },
+        "256": {
+          "bbox": [
+            81.68377685546875,
+            51.03558349609375,
+            181.4400634765625,
+            174.7506866455078,
+            0.8609746694564819
+          ],
+          "landmarks": [
+            [
+              108.1094741821289,
+              90.38426971435547
+            ],
+            [
+              155.97093200683594,
+              90.191650390625
+            ],
+            [
+              132.36831665039062,
+              119.1142578125
+            ],
+            [
+              109.5964126586914,
+              136.20986938476562
+            ],
+            [
+              154.30136108398438,
+              135.9007110595703
+            ]
+          ],
+          "pixel_sha256": "ce10157e2636528cc8031b78a4ae52d5427707da0429027bf92d0e2c6b4b523a"
+        },
+        "384": {
+          "bbox": [
+            122.59184265136719,
+            78.71675872802734,
+            271.85137939453125,
+            261.8992004394531,
+            0.867967963218689
+          ],
+          "landmarks": [
+            [
+              162.17039489746094,
+              135.41664123535156
+            ],
+            [
+              233.4949493408203,
+              134.76113891601562
+            ],
+            [
+              198.6134490966797,
+              178.57696533203125
+            ],
+            [
+              165.0100555419922,
+              204.44122314453125
+            ],
+            [
+              231.43971252441406,
+              203.67767333984375
+            ]
+          ],
+          "pixel_sha256": "0c922088ef1cda2a70f639cc9bf658f0949ab1c1f47d6b677f3e0087284d94b0"
+        }
+      },
+      "native_sha256": "0a7e1ec6cdcf759bdb66d559a61a636e0239dcf839614b0fca35987ddb463874"
+    },
+    {
+      "id": "v18_138",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell02.png",
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            36.183570861816406,
+            25.49555015563965,
+            89.08002471923828,
+            93.4212646484375,
+            0.838282585144043
+          ],
+          "landmarks": [
+            [
+              51.0671501159668,
+              47.44240188598633
+            ],
+            [
+              75.51100158691406,
+              47.579917907714844
+            ],
+            [
+              64.03126525878906,
+              63.458648681640625
+            ],
+            [
+              51.17107391357422,
+              70.8776626586914
+            ],
+            [
+              76.1269760131836,
+              70.94686126708984
+            ]
+          ],
+          "pixel_sha256": "0f7f74057bddc29a1440b6048dd6c4ef3e0953904b095500a3eff1cf4c0cce9a"
+        },
+        "256": {
+          "bbox": [
+            72.43190002441406,
+            49.4242057800293,
+            177.88796997070312,
+            188.3125,
+            0.8376682996749878
+          ],
+          "landmarks": [
+            [
+              102.16407775878906,
+              94.69483947753906
+            ],
+            [
+              150.43075561523438,
+              94.8179702758789
+            ],
+            [
+              127.5770492553711,
+              127.79570007324219
+            ],
+            [
+              102.335205078125,
+              142.4056396484375
+            ],
+            [
+              151.81167602539062,
+              142.483642578125
+            ]
+          ],
+          "pixel_sha256": "08a663e06989f502e75c46d9e039aa4c5ddf3830ba075ce884657b595f701f1b"
+        },
+        "384": {
+          "bbox": [
+            110.3916015625,
+            77.65682220458984,
+            266.7047424316406,
+            281.8024597167969,
+            0.8337839841842651
+          ],
+          "landmarks": [
+            [
+              153.15708923339844,
+              142.7530975341797
+            ],
+            [
+              224.8241729736328,
+              142.4237060546875
+            ],
+            [
+              190.14263916015625,
+              191.6420135498047
+            ],
+            [
+              154.1419219970703,
+              213.94485473632812
+            ],
+            [
+              226.72169494628906,
+              213.767822265625
+            ]
+          ],
+          "pixel_sha256": "a3d238610b00bbcf0b55bbb212dcd9a2dd3cc1448b670ad0db4fa549c92e7283"
+        }
+      },
+      "native_sha256": "37a184a72be74e62704270963212f20f1ea3cb1fbb61a8b2c493a64d7bda28f6"
+    },
+    {
+      "id": "v18_139",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell03.png",
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            32.7782096862793,
+            24.93390464782715,
+            81.19105529785156,
+            88.8828125,
+            0.8599333167076111
+          ],
+          "landmarks": [
+            [
+              43.88926696777344,
+              47.00590515136719
+            ],
+            [
+              65.9261703491211,
+              46.06541061401367
+            ],
+            [
+              54.41643524169922,
+              61.799476623535156
+            ],
+            [
+              45.63847732543945,
+              68.17343139648438
+            ],
+            [
+              67.81100463867188,
+              67.19465637207031
+            ]
+          ],
+          "pixel_sha256": "b6525346ee7e299da3099ea706f625359bfdb69d62dcf31e06791198cbba3576"
+        },
+        "256": {
+          "bbox": [
+            65.63088989257812,
+            51.3106689453125,
+            162.08035278320312,
+            177.65829467773438,
+            0.870153546333313
+          ],
+          "landmarks": [
+            [
+              87.81116485595703,
+              93.62305450439453
+            ],
+            [
+              131.20547485351562,
+              91.53094482421875
+            ],
+            [
+              108.51786041259766,
+              124.07359313964844
+            ],
+            [
+              91.6482925415039,
+              136.36257934570312
+            ],
+            [
+              135.1938018798828,
+              134.23414611816406
+            ]
+          ],
+          "pixel_sha256": "af243fe4dea3fa45d14c86970e397335c654828a0c86e7273e9de6084bd825ac"
+        },
+        "384": {
+          "bbox": [
+            98.9263916015625,
+            78.4913101196289,
+            242.6272430419922,
+            266.4607849121094,
+            0.8746347427368164
+          ],
+          "landmarks": [
+            [
+              132.23590087890625,
+              139.77528381347656
+            ],
+            [
+              196.9050750732422,
+              136.72366333007812
+            ],
+            [
+              163.0136260986328,
+              185.88070678710938
+            ],
+            [
+              137.49607849121094,
+              204.04022216796875
+            ],
+            [
+              202.60394287109375,
+              200.991455078125
+            ]
+          ],
+          "pixel_sha256": "8e0bae5da4773ab25bb4a9d87dd60dabf327121dd35a42f5a41de1b7f0dc78cb"
+        }
+      },
+      "native_sha256": "1e70e32d1d6848b07ad7390159cc5b48adf57f3729380029b35c280eb20af9e3"
+    },
+    {
+      "id": "v18_140",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell04.png",
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            30.676559448242188,
+            23.44281005859375,
+            77.00749969482422,
+            82.62196350097656,
+            0.8395528793334961
+          ],
+          "landmarks": [
+            [
+              38.01955795288086,
+              42.498756408691406
+            ],
+            [
+              57.0988883972168,
+              42.52067565917969
+            ],
+            [
+              42.48938751220703,
+              54.579315185546875
+            ],
+            [
+              38.93279266357422,
+              65.02828216552734
+            ],
+            [
+              55.28363800048828,
+              65.15436553955078
+            ]
+          ],
+          "pixel_sha256": "de94661d4df46f9d7038deddda83a0416ab3dfd0a62ec348dd8fe41c5af18db3"
+        },
+        "256": {
+          "bbox": [
+            61.41205596923828,
+            47.872528076171875,
+            153.82264709472656,
+            165.35140991210938,
+            0.8485465049743652
+          ],
+          "landmarks": [
+            [
+              75.79737091064453,
+              84.80719757080078
+            ],
+            [
+              114.14793395996094,
+              84.87445068359375
+            ],
+            [
+              84.8554916381836,
+              109.59893798828125
+            ],
+            [
+              77.52232360839844,
+              129.55569458007812
+            ],
+            [
+              111.37232971191406,
+              129.93655395507812
+            ]
+          ],
+          "pixel_sha256": "629c245d6423488572231ff20664ee97c0750a56993aaca513c1fe7ba8d47ad6"
+        },
+        "384": {
+          "bbox": [
+            92.18209075927734,
+            74.36039733886719,
+            230.8970947265625,
+            247.87283325195312,
+            0.8481513261795044
+          ],
+          "landmarks": [
+            [
+              113.5454330444336,
+              126.75839233398438
+            ],
+            [
+              171.32191467285156,
+              127.07771301269531
+            ],
+            [
+              126.7096176147461,
+              164.49891662597656
+            ],
+            [
+              115.48310852050781,
+              194.1631622314453
+            ],
+            [
+              166.91587829589844,
+              195.0166015625
+            ]
+          ],
+          "pixel_sha256": "59bfe3b497e0b3c5ab44b2bc52908004da4be7bab47e0376d0dd3ac1c80929ad"
+        }
+      },
+      "native_sha256": "1a663566e1cd91dbea0e9034aed27773920bb838b7ce89f960177e858be9b202"
+    },
+    {
+      "id": "v18_141",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell05.png",
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            39.39725875854492,
+            29.393939971923828,
+            92.32740783691406,
+            93.05790710449219,
+            0.7983545064926147
+          ],
+          "landmarks": [
+            [
+              53.3372688293457,
+              50.01427459716797
+            ],
+            [
+              78.47193145751953,
+              50.13165283203125
+            ],
+            [
+              65.93152618408203,
+              66.45237731933594
+            ],
+            [
+              55.654808044433594,
+              76.2026596069336
+            ],
+            [
+              76.64250183105469,
+              76.23307037353516
+            ]
+          ],
+          "pixel_sha256": "bb5c7c9afbfec881968b3f05f71d4c5b7416f5481b78f7ad22eefcaa3a1690c5"
+        },
+        "256": {
+          "bbox": [
+            78.6157455444336,
+            59.898597717285156,
+            184.3782501220703,
+            186.61355590820312,
+            0.8172381520271301
+          ],
+          "landmarks": [
+            [
+              106.78135681152344,
+              100.12709045410156
+            ],
+            [
+              156.34852600097656,
+              100.41792297363281
+            ],
+            [
+              131.61465454101562,
+              133.70297241210938
+            ],
+            [
+              111.66215515136719,
+              153.04238891601562
+            ],
+            [
+              152.5154266357422,
+              153.19805908203125
+            ]
+          ],
+          "pixel_sha256": "bf7296a409a93aec5cfae84fb3e793e22cf502d0f73b42e4c950826bf7d506fa"
+        },
+        "384": {
+          "bbox": [
+            118.23653411865234,
+            92.40023040771484,
+            276.2980041503906,
+            279.49578857421875,
+            0.8307647705078125
+          ],
+          "landmarks": [
+            [
+              159.86917114257812,
+              150.22508239746094
+            ],
+            [
+              234.59906005859375,
+              150.84683227539062
+            ],
+            [
+              197.21812438964844,
+              200.9193115234375
+            ],
+            [
+              167.21636962890625,
+              229.727783203125
+            ],
+            [
+              228.62600708007812,
+              230.10960388183594
+            ]
+          ],
+          "pixel_sha256": "c3e906e4d9a88cbdf2e22a2f8a8cd4e82dc52a702965f2cff484b111a1b9f10a"
+        }
+      },
+      "native_sha256": "a776575fcfcfe0fbe157b4085f91f40f5c9727bb773e9898fc1c8f29d65b4278"
+    },
+    {
+      "id": "v18_142",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell06.png",
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.682708740234375,
+            27.423641204833984,
+            86.19578552246094,
+            87.83158874511719,
+            0.857280433177948
+          ],
+          "landmarks": [
+            [
+              50.006011962890625,
+              46.45360565185547
+            ],
+            [
+              73.12007904052734,
+              46.476966857910156
+            ],
+            [
+              61.170166015625,
+              58.9080810546875
+            ],
+            [
+              51.079681396484375,
+              69.12226104736328
+            ],
+            [
+              72.01241302490234,
+              69.21142578125
+            ]
+          ],
+          "pixel_sha256": "1fec9e3be34024bcc75c840a40bd4c36f7eb924292ca993eb3ae112c2a3ef492"
+        },
+        "256": {
+          "bbox": [
+            75.23331451416016,
+            55.216331481933594,
+            171.763916015625,
+            175.9950408935547,
+            0.8593401908874512
+          ],
+          "landmarks": [
+            [
+              99.63482666015625,
+              92.67169189453125
+            ],
+            [
+              145.96377563476562,
+              92.79124450683594
+            ],
+            [
+              122.1790542602539,
+              118.46336364746094
+            ],
+            [
+              102.17587280273438,
+              138.7266845703125
+            ],
+            [
+              143.88841247558594,
+              138.95323181152344
+            ]
+          ],
+          "pixel_sha256": "590ea00c18a385cc72c89f1d15f7db6bb9c9f1fdd09fd37ee16cc772625afc66"
+        },
+        "384": {
+          "bbox": [
+            113.00553894042969,
+            84.40672302246094,
+            257.3793029785156,
+            263.7568359375,
+            0.8652920722961426
+          ],
+          "landmarks": [
+            [
+              149.89442443847656,
+              138.7769317626953
+            ],
+            [
+              218.57322692871094,
+              138.89013671875
+            ],
+            [
+              183.27703857421875,
+              177.73033142089844
+            ],
+            [
+              153.63038635253906,
+              207.9259033203125
+            ],
+            [
+              215.32090759277344,
+              208.2015838623047
+            ]
+          ],
+          "pixel_sha256": "072faaee73aee1fefab986bba338661e4975413285b1d943d12142655ef5921d"
+        }
+      },
+      "native_sha256": "e0cf48e709497246d25ad64b5b9e2b72f0ba627235a1d5b2f3b89f35f51e1fb1"
+    },
+    {
+      "id": "v18_143",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell07.png",
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            33.577266693115234,
+            27.82045555114746,
+            83.59928131103516,
+            89.36553955078125,
+            0.8670451045036316
+          ],
+          "landmarks": [
+            [
+              46.565093994140625,
+              47.2154426574707
+            ],
+            [
+              70.17228698730469,
+              47.11845779418945
+            ],
+            [
+              58.2302360534668,
+              60.921669006347656
+            ],
+            [
+              47.59333038330078,
+              70.46318054199219
+            ],
+            [
+              69.31962585449219,
+              70.36634826660156
+            ]
+          ],
+          "pixel_sha256": "5af2373bdea8cf8388109e34b6cd3fcb17f969a72d2acda0eea639a8d6c968e1"
+        },
+        "256": {
+          "bbox": [
+            66.83049011230469,
+            56.288108825683594,
+            167.502685546875,
+            180.1820831298828,
+            0.8622997403144836
+          ],
+          "landmarks": [
+            [
+              93.048095703125,
+              93.83419036865234
+            ],
+            [
+              140.19210815429688,
+              94.27281188964844
+            ],
+            [
+              115.91548919677734,
+              122.52140045166016
+            ],
+            [
+              94.6798095703125,
+              141.17874145507812
+            ],
+            [
+              137.91648864746094,
+              141.63565063476562
+            ]
+          ],
+          "pixel_sha256": "2cb0c44452068c0f7be7478307fd4182b3bbe12b40bc19b205b2abf4d94ea591"
+        },
+        "384": {
+          "bbox": [
+            100.40916442871094,
+            87.03953552246094,
+            251.42803955078125,
+            270.74761962890625,
+            0.8574236631393433
+          ],
+          "landmarks": [
+            [
+              139.44700622558594,
+              140.49920654296875
+            ],
+            [
+              210.07008361816406,
+              141.53713989257812
+            ],
+            [
+              173.33575439453125,
+              183.91357421875
+            ],
+            [
+              141.6884765625,
+              211.61849975585938
+            ],
+            [
+              206.72967529296875,
+              212.65789794921875
+            ]
+          ],
+          "pixel_sha256": "d131ed7e21e925f196c8ee9e979bfbf8626537162d15be4b2fd299754bd23067"
+        }
+      },
+      "native_sha256": "9d00656c3ad32a989ebfae882b702a447e77ec00b7f9c807bf8dc4e412cf4434"
+    },
+    {
+      "id": "v18_144",
+      "team": "daegu_thunders",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_daegu_thunders_g15/cell08.png",
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            31.404882431030273,
+            26.728525161743164,
+            81.824462890625,
+            86.24102783203125,
+            0.8399084210395813
+          ],
+          "landmarks": [
+            [
+              44.9962043762207,
+              46.42654800415039
+            ],
+            [
+              68.86311340332031,
+              45.86932373046875
+            ],
+            [
+              57.69335174560547,
+              56.83790969848633
+            ],
+            [
+              47.034393310546875,
+              68.62748718261719
+            ],
+            [
+              68.44425964355469,
+              68.04472351074219
+            ]
+          ],
+          "pixel_sha256": "d805eeef01e34da0e4ea4f174af329f5b5c299027a08b17385be8c51a411a766"
+        },
+        "256": {
+          "bbox": [
+            63.153343200683594,
+            54.0496711730957,
+            163.13389587402344,
+            174.20335388183594,
+            0.8598024845123291
+          ],
+          "landmarks": [
+            [
+              89.85572052001953,
+              92.2729721069336
+            ],
+            [
+              136.94625854492188,
+              90.6993637084961
+            ],
+            [
+              114.8784408569336,
+              114.27479553222656
+            ],
+            [
+              94.44994354248047,
+              137.91941833496094
+            ],
+            [
+              136.41700744628906,
+              136.40234375
+            ]
+          ],
+          "pixel_sha256": "6d6c89000b2e243e62798803019ab1044e226e42232fb2b3c687a8da119bc042"
+        },
+        "384": {
+          "bbox": [
+            95.04515838623047,
+            82.74906921386719,
+            244.9080352783203,
+            262.12701416015625,
+            0.8699110746383667
+          ],
+          "landmarks": [
+            [
+              135.1497802734375,
+              138.3242950439453
+            ],
+            [
+              205.04791259765625,
+              135.80508422851562
+            ],
+            [
+              172.14234924316406,
+              171.53956604003906
+            ],
+            [
+              141.86752319335938,
+              206.66268920898438
+            ],
+            [
+              204.50811767578125,
+              204.26828002929688
+            ]
+          ],
+          "pixel_sha256": "89e69039b1cdd726aad368f3aee337455ac1b1a2cda0857c9fad75d2b13e8349"
+        }
+      },
+      "native_sha256": "7c3b508abc5c8ea8ac60873f398ebd9bc1ebe0048bb1dd209ffe3363d4f58dd7"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "key": "gray_incheon_seagulls_165_r5_single",
+  "kind": "gray",
+  "team": "incheon_seagulls",
+  "render": {
+    "team": "incheon_seagulls",
+    "id": "v18_165",
+    "path": "/workspace/generated_images/exec-17daf555-a4a3-4901-a69e-65a356a7bcdd.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/single_anchor_165.png",
+    "source_grid_side": 1,
+    "round": 5,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-17daf555-a4a3-4901-a69e-65a356a7bcdd.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "source_grid_side": 1,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_165",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_incheon_seagulls_165_r5_single/v18_165.png",
+      "native_sha256": "f63947c08a4931c66c2012395e284fef133460d91918bd6b401a77c6395a6cf0",
+      "source_render": "/workspace/generated_images/exec-17daf555-a4a3-4901-a69e-65a356a7bcdd.png",
+      "source_render_sha256": "c81dc8eb69250528c0bf97613692306ade584d8d66cb9069566546c8e56f3d59",
+      "source_grid_side": 1,
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        8,
+        8,
+        1246,
+        1246
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8347069025039673,
+          "same_original_all10_max": 0.8892245888710022,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3801793158054352,
+          "other199_id": "v18_170",
+          "legacy160_max": 0.36173129081726074
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8631772994995117,
+          "same_original_all10_max": 0.9215684533119202,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3752434253692627,
+          "other199_id": "v18_170",
+          "legacy160_max": 0.35989078879356384
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8633837699890137,
+          "same_original_all10_max": 0.923214316368103,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.38645511865615845,
+          "other199_id": "v18_105",
+          "legacy160_max": 0.36133792996406555
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_165",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_incheon_seagulls_165_r5_single/v18_165.png",
+      "details": {
+        "128": {
+          "bbox": [
+            38.94047927856445,
+            25.03168296813965,
+            89.66439056396484,
+            86.2499008178711,
+            0.8276948928833008
+          ],
+          "landmarks": [
+            [
+              52.4837646484375,
+              45.722740173339844
+            ],
+            [
+              76.321533203125,
+              45.540122985839844
+            ],
+            [
+              64.83329772949219,
+              60.00792694091797
+            ],
+            [
+              55.259490966796875,
+              70.17427062988281
+            ],
+            [
+              74.66797637939453,
+              69.98353576660156
+            ]
+          ],
+          "pixel_sha256": "55bc4a7311523c0a44cbfe5fbc98f0097986620d2f4eaf944c766aa427a9f858"
+        },
+        "256": {
+          "bbox": [
+            77.64958190917969,
+            50.83835983276367,
+            179.10537719726562,
+            172.2804718017578,
+            0.851576566696167
+          ],
+          "landmarks": [
+            [
+              104.92454528808594,
+              90.93069458007812
+            ],
+            [
+              152.5479736328125,
+              90.6966781616211
+            ],
+            [
+              129.5513458251953,
+              120.19062805175781
+            ],
+            [
+              110.46917724609375,
+              140.6634521484375
+            ],
+            [
+              149.0277557373047,
+              140.42819213867188
+            ]
+          ],
+          "pixel_sha256": "76ad5f2f10f5c278ae541c25d2860eed43054d5902cec829a9953c752afb4c0f"
+        },
+        "384": {
+          "bbox": [
+            116.58233642578125,
+            77.61372375488281,
+            268.7369689941406,
+            258.31011962890625,
+            0.8654811978340149
+          ],
+          "landmarks": [
+            [
+              157.60433959960938,
+              136.42054748535156
+            ],
+            [
+              228.88279724121094,
+              135.99720764160156
+            ],
+            [
+              194.48178100585938,
+              180.3456573486328
+            ],
+            [
+              165.8781280517578,
+              211.07565307617188
+            ],
+            [
+              223.56097412109375,
+              210.6882781982422
+            ]
+          ],
+          "pixel_sha256": "2e3bbb47390f919a7c9a262e0cd19f27ff292f3599f2969bddbba9d349c5ae68"
+        }
+      },
+      "native_sha256": "f63947c08a4931c66c2012395e284fef133460d91918bd6b401a77c6395a6cf0"
+    }
+  ],
+  "frame_protocol": "whole-photo adaptive horizontal grid boundaries within12px; integer square crop centered(.5,.25), native edge guard up to8px; no native upscaling"
+}

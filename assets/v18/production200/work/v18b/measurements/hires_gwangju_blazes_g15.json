@@ -1,0 +1,1454 @@
+{
+  "key": "hires_gwangju_blazes_g15",
+  "kind": "hires",
+  "team": "gwangju_blazes",
+  "render": {
+    "key": "gwangju_blazes_g15",
+    "team": "gwangju_blazes",
+    "path": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/hires_inputs/gwangju_blazes_g15.png",
+    "expected_count": 9,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_136",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell00.png",
+      "native_sha256": "c00709155b1b243d838b90185524892d3abdadffa43d9320a8afba273aec5710",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6370606422424316,
+          "same_original_all10_max": 0.7713924646377563,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.3056012988090515,
+          "other199_id": "v18_082",
+          "legacy160_max": 0.24347847700119019
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.6727861762046814,
+          "same_original_all10_max": 0.7722517848014832,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.296433687210083,
+          "other199_id": "v18_082",
+          "legacy160_max": 0.26752519607543945
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.6828939914703369,
+          "same_original_all10_max": 0.7778174877166748,
+          "old_gallery_top1": "v18_136",
+          "source_own_top1": "v18_136",
+          "other199_max": 0.29781171679496765,
+          "other199_id": "v18_082",
+          "legacy160_max": 0.2679067850112915
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_137",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell01.png",
+      "native_sha256": "98f31ff1c3b1c21b33c505e16c50f3a1f3bc7a8807c3e7c9259e3ae43a8cf5d6",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7548330426216125,
+          "same_original_all10_max": 0.8360896110534668,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.36415791511535645,
+          "other199_id": "v18_118",
+          "legacy160_max": 0.30804285407066345
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7985968589782715,
+          "same_original_all10_max": 0.8386458158493042,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.3539849519729614,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.30640026926994324
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7858109474182129,
+          "same_original_all10_max": 0.8283355236053467,
+          "old_gallery_top1": "v18_137",
+          "source_own_top1": "v18_137",
+          "other199_max": 0.3500308692455292,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.3198721408843994
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_138",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell02.png",
+      "native_sha256": "f7291e33eb773c38d3e999826349e3b06e627e97080a5726ab53f32efeae9bd5",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8152501583099365,
+          "same_original_all10_max": 0.8824809789657593,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.3639737665653229,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.35342973470687866
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.860970675945282,
+          "same_original_all10_max": 0.9099688529968262,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.33675628900527954,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.3300587832927704
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8401407599449158,
+          "same_original_all10_max": 0.8962077498435974,
+          "old_gallery_top1": "v18_138",
+          "source_own_top1": "v18_138",
+          "other199_max": 0.3521152436733246,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.3310445547103882
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_139",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell03.png",
+      "native_sha256": "310e3a261ca1dba0ec89987d1ba2c6fec0a14a33eed759414fcf355c4228cefd",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7286514639854431,
+          "same_original_all10_max": 0.8244941234588623,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.39821305871009827,
+          "other199_id": "v18_126",
+          "legacy160_max": 0.3142417073249817
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7858691215515137,
+          "same_original_all10_max": 0.839993953704834,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.3955869674682617,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.34423184394836426
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7935659289360046,
+          "same_original_all10_max": 0.8348546028137207,
+          "old_gallery_top1": "v18_139",
+          "source_own_top1": "v18_139",
+          "other199_max": 0.3850059509277344,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.3372991979122162
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_140",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell04.png",
+      "native_sha256": "cebc53b07bf207711cc2561184e9b5ed492fb0164f8a200c334c26cb9894bd47",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 4,
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7198030948638916,
+          "same_original_all10_max": 0.7892096638679504,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.20569968223571777,
+          "other199_id": "v18_150",
+          "legacy160_max": 0.26196911931037903
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7712698578834534,
+          "same_original_all10_max": 0.8251184821128845,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.21856789290905,
+          "other199_id": "v18_148",
+          "legacy160_max": 0.2886298596858978
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7698266506195068,
+          "same_original_all10_max": 0.8129145503044128,
+          "old_gallery_top1": "v18_140",
+          "source_own_top1": "v18_140",
+          "other199_max": 0.21787308156490326,
+          "other199_id": "v18_089",
+          "legacy160_max": 0.26897135376930237
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_141",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell05.png",
+      "native_sha256": "9ea15064efa953f6b4793ed83233fb15f57d593be950f27710e8ab092d124aa4",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 5,
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7526130676269531,
+          "same_original_all10_max": 0.8796919584274292,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.3788341283798218,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.36411821842193604
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7843942046165466,
+          "same_original_all10_max": 0.8746330142021179,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.37084484100341797,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.366885781288147
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.791494607925415,
+          "same_original_all10_max": 0.876350998878479,
+          "old_gallery_top1": "v18_141",
+          "source_own_top1": "v18_141",
+          "other199_max": 0.3820401728153229,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.3692306578159332
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_142",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell06.png",
+      "native_sha256": "ab77760453fad4d1aad79d7bed82cb273de1931df40c5fc18ae8bdfb572ad149",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 6,
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7297266721725464,
+          "same_original_all10_max": 0.8573637008666992,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.3776487708091736,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.36025846004486084
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7702389359474182,
+          "same_original_all10_max": 0.8631430864334106,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.3816785216331482,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3711532950401306
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7451661825180054,
+          "same_original_all10_max": 0.8502020239830017,
+          "old_gallery_top1": "v18_142",
+          "source_own_top1": "v18_142",
+          "other199_max": 0.39295709133148193,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3573843240737915
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_143",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell07.png",
+      "native_sha256": "85e270c367556e15771af0602ef52c86d4d344cadaef3245e8945bfff31763c6",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 7,
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7110368013381958,
+          "same_original_all10_max": 0.8293255567550659,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.42479968070983887,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.37513965368270874
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7447223663330078,
+          "same_original_all10_max": 0.8621397614479065,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.43639662861824036,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.3878174424171448
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7281367778778076,
+          "same_original_all10_max": 0.8603226542472839,
+          "old_gallery_top1": "v18_143",
+          "source_own_top1": "v18_143",
+          "other199_max": 0.4226570129394531,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.3784449100494385
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_144",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell08.png",
+      "native_sha256": "d7caf0d8e4f303073c5bdbbb85fa39f83d5ec2be0314db573cf8f2eaf3ffd43f",
+      "source_render": "/workspace/generated_images/exec-cbfe69d8-405f-4d74-ba25-4e398d6335c5.png",
+      "source_render_sha256": "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "source_cell": 8,
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7772140502929688,
+          "same_original_all10_max": 0.8823529481887817,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.34513333439826965,
+          "other199_id": "v18_177",
+          "legacy160_max": 0.3744480609893799
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7974455952644348,
+          "same_original_all10_max": 0.908856987953186,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.3253173828125,
+          "other199_id": "v18_177",
+          "legacy160_max": 0.34812647104263306
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.790693461894989,
+          "same_original_all10_max": 0.9049090147018433,
+          "old_gallery_top1": "v18_144",
+          "source_own_top1": "v18_144",
+          "other199_max": 0.3311081528663635,
+          "other199_id": "v18_177",
+          "legacy160_max": 0.34065043926239014
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_136",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            32.62103271484375,
+            25.047473907470703,
+            83.29835510253906,
+            92.137451171875,
+            0.8595963716506958
+          ],
+          "landmarks": [
+            [
+              47.95952606201172,
+              49.079254150390625
+            ],
+            [
+              71.8957290649414,
+              46.21125411987305
+            ],
+            [
+              63.29126739501953,
+              63.856719970703125
+            ],
+            [
+              51.078857421875,
+              73.17708587646484
+            ],
+            [
+              73.37374114990234,
+              70.35139465332031
+            ]
+          ],
+          "pixel_sha256": "a0828d7de3c5f6ca8e499665de0402f209cadef9b5751065e32b4975b546986c"
+        },
+        "256": {
+          "bbox": [
+            65.41511535644531,
+            48.750579833984375,
+            166.31381225585938,
+            185.09852600097656,
+            0.8630417585372925
+          ],
+          "landmarks": [
+            [
+              95.92662811279297,
+              98.30625915527344
+            ],
+            [
+              143.26687622070312,
+              92.39743041992188
+            ],
+            [
+              126.5616226196289,
+              127.54890441894531
+            ],
+            [
+              101.93460083007812,
+              146.0325469970703
+            ],
+            [
+              147.1129913330078,
+              140.15695190429688
+            ]
+          ],
+          "pixel_sha256": "bb0ddef785596ae4acf4b80c7e7ac17306f82941f9c22d5b8061970d7df5c355"
+        },
+        "384": {
+          "bbox": [
+            98.1134033203125,
+            72.3874282836914,
+            249.49241638183594,
+            277.3891296386719,
+            0.863883376121521
+          ],
+          "landmarks": [
+            [
+              143.9619598388672,
+              147.361328125
+            ],
+            [
+              215.0650634765625,
+              138.50335693359375
+            ],
+            [
+              190.1142120361328,
+              191.35826110839844
+            ],
+            [
+              153.3285675048828,
+              219.08480834960938
+            ],
+            [
+              220.83447265625,
+              210.25555419921875
+            ]
+          ],
+          "pixel_sha256": "3ab4e1959a8cc38530d2fcd726a8a60d534e340aee4d9a300b950841b3b1861e"
+        }
+      },
+      "native_sha256": "c00709155b1b243d838b90185524892d3abdadffa43d9320a8afba273aec5710"
+    },
+    {
+      "id": "v18_137",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell01.png",
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            40.71473693847656,
+            24.95462989807129,
+            90.38341522216797,
+            87.11470031738281,
+            0.8541784286499023
+          ],
+          "landmarks": [
+            [
+              53.544586181640625,
+              45.392356872558594
+            ],
+            [
+              77.83367156982422,
+              45.11149215698242
+            ],
+            [
+              65.91984558105469,
+              58.84489822387695
+            ],
+            [
+              54.36956787109375,
+              68.03831481933594
+            ],
+            [
+              77.28410339355469,
+              67.68089294433594
+            ]
+          ],
+          "pixel_sha256": "af7004a3119b1e6de3854d16cec492c7d1f7787428a856899d43ad6a5fbadd97"
+        },
+        "256": {
+          "bbox": [
+            81.048583984375,
+            50.15757369995117,
+            180.40841674804688,
+            174.4539031982422,
+            0.8650665283203125
+          ],
+          "landmarks": [
+            [
+              107.97879791259766,
+              90.53880310058594
+            ],
+            [
+              155.35098266601562,
+              90.18355560302734
+            ],
+            [
+              132.41314697265625,
+              118.35562896728516
+            ],
+            [
+              109.30378723144531,
+              135.90463256835938
+            ],
+            [
+              153.8297119140625,
+              135.41766357421875
+            ]
+          ],
+          "pixel_sha256": "7d26c7adcf411df2beb5bddbc84ce9d2c829378a18d882fe98eb27b45ed9b1cc"
+        },
+        "384": {
+          "bbox": [
+            121.71636199951172,
+            76.70687103271484,
+            269.90509033203125,
+            261.22186279296875,
+            0.8658790588378906
+          ],
+          "landmarks": [
+            [
+              162.31101989746094,
+              135.7221221923828
+            ],
+            [
+              232.3173065185547,
+              134.92868041992188
+            ],
+            [
+              198.9720001220703,
+              177.98663330078125
+            ],
+            [
+              165.18687438964844,
+              204.00868225097656
+            ],
+            [
+              230.47341918945312,
+              203.02569580078125
+            ]
+          ],
+          "pixel_sha256": "98428fc7e5df1bb034a6c45eca64c4b61ceb6368327d4dd50a01c5bf4af11140"
+        }
+      },
+      "native_sha256": "98f31ff1c3b1c21b33c505e16c50f3a1f3bc7a8807c3e7c9259e3ae43a8cf5d6"
+    },
+    {
+      "id": "v18_138",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell02.png",
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            35.983055114746094,
+            24.396224975585938,
+            88.23407745361328,
+            92.80304718017578,
+            0.8473379611968994
+          ],
+          "landmarks": [
+            [
+              50.496341705322266,
+              47.02989196777344
+            ],
+            [
+              74.87821960449219,
+              47.171226501464844
+            ],
+            [
+              63.33347702026367,
+              63.0937614440918
+            ],
+            [
+              50.89271926879883,
+              70.9542007446289
+            ],
+            [
+              75.09009552001953,
+              71.07525634765625
+            ]
+          ],
+          "pixel_sha256": "c46059bf213996771566c05850d870d0272bc688abd08631e5de8e8b9ea869ca"
+        },
+        "256": {
+          "bbox": [
+            72.1880874633789,
+            48.80421829223633,
+            176.49636840820312,
+            186.9978790283203,
+            0.8520163297653198
+          ],
+          "landmarks": [
+            [
+              100.88499450683594,
+              93.74864196777344
+            ],
+            [
+              149.1474609375,
+              94.3915023803711
+            ],
+            [
+              125.74593353271484,
+              127.05472564697266
+            ],
+            [
+              101.97344970703125,
+              142.63197326660156
+            ],
+            [
+              149.57034301757812,
+              143.2281951904297
+            ]
+          ],
+          "pixel_sha256": "925c8959c9130912f2907430e1d1cc6a965ec3bae9663f73bdb02471f41c1f25"
+        },
+        "384": {
+          "bbox": [
+            109.21835327148438,
+            74.97746276855469,
+            264.21539306640625,
+            280.14642333984375,
+            0.8444679975509644
+          ],
+          "landmarks": [
+            [
+              151.34739685058594,
+              141.44725036621094
+            ],
+            [
+              223.25189208984375,
+              141.79458618164062
+            ],
+            [
+              188.58087158203125,
+              190.85020446777344
+            ],
+            [
+              153.66522216796875,
+              214.5275115966797
+            ],
+            [
+              224.34042358398438,
+              214.8285369873047
+            ]
+          ],
+          "pixel_sha256": "5f45f801ac5039fafcff4711d96fcbb0dfc1221029167a2e823a19e8a2efa05b"
+        }
+      },
+      "native_sha256": "f7291e33eb773c38d3e999826349e3b06e627e97080a5726ab53f32efeae9bd5"
+    },
+    {
+      "id": "v18_139",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell03.png",
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            32.298561096191406,
+            25.33169937133789,
+            80.89271545410156,
+            88.54689025878906,
+            0.8739372491836548
+          ],
+          "landmarks": [
+            [
+              43.386322021484375,
+              46.626277923583984
+            ],
+            [
+              65.3620834350586,
+              45.937530517578125
+            ],
+            [
+              53.69451141357422,
+              61.8450927734375
+            ],
+            [
+              45.30272674560547,
+              68.0992431640625
+            ],
+            [
+              67.09072875976562,
+              67.38032531738281
+            ]
+          ],
+          "pixel_sha256": "f07c9f1224d252e5b49db9d6a6799af12b624475c9fc57bcd92b575028c3f419"
+        },
+        "256": {
+          "bbox": [
+            64.78105926513672,
+            51.23736572265625,
+            161.48281860351562,
+            177.07754516601562,
+            0.8749149441719055
+          ],
+          "landmarks": [
+            [
+              86.79884338378906,
+              92.91259765625
+            ],
+            [
+              130.16880798339844,
+              91.39698791503906
+            ],
+            [
+              106.9557876586914,
+              124.219482421875
+            ],
+            [
+              91.0206069946289,
+              136.6249237060547
+            ],
+            [
+              133.40036010742188,
+              135.03842163085938
+            ]
+          ],
+          "pixel_sha256": "4eddbaa3acced506778415529f65384434fe7e031b687bf02f6ce8487004584c"
+        },
+        "384": {
+          "bbox": [
+            98.20763397216797,
+            78.53569793701172,
+            242.1591796875,
+            265.1855163574219,
+            0.8776952028274536
+          ],
+          "landmarks": [
+            [
+              130.613037109375,
+              139.1504669189453
+            ],
+            [
+              195.47702026367188,
+              136.9980010986328
+            ],
+            [
+              160.5086212158203,
+              186.69595336914062
+            ],
+            [
+              136.45249938964844,
+              203.94996643066406
+            ],
+            [
+              200.6730194091797,
+              201.71868896484375
+            ]
+          ],
+          "pixel_sha256": "c5f208d07f1812da67ade99a57e79e3ca83f8ec47e3f1b23f5a18f769d080d94"
+        }
+      },
+      "native_sha256": "310e3a261ca1dba0ec89987d1ba2c6fec0a14a33eed759414fcf355c4228cefd"
+    },
+    {
+      "id": "v18_140",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell04.png",
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            30.67778968811035,
+            23.271251678466797,
+            76.81690979003906,
+            82.31291198730469,
+            0.8482446670532227
+          ],
+          "landmarks": [
+            [
+              37.94108581542969,
+              42.531463623046875
+            ],
+            [
+              56.998008728027344,
+              42.5252571105957
+            ],
+            [
+              42.51580810546875,
+              54.45908737182617
+            ],
+            [
+              38.95441436767578,
+              64.97843170166016
+            ],
+            [
+              55.192970275878906,
+              65.10099792480469
+            ]
+          ],
+          "pixel_sha256": "ff3eff34bc9793a1c2ac241b2d04c4db5d2da521cd034f90629b86bbc7963288"
+        },
+        "256": {
+          "bbox": [
+            61.110931396484375,
+            48.463775634765625,
+            153.99160766601562,
+            164.6805419921875,
+            0.8552120327949524
+          ],
+          "landmarks": [
+            [
+              75.6882553100586,
+              84.40690612792969
+            ],
+            [
+              114.14726257324219,
+              84.7316665649414
+            ],
+            [
+              84.89707946777344,
+              109.43263244628906
+            ],
+            [
+              77.50140380859375,
+              129.3331298828125
+            ],
+            [
+              111.08412170410156,
+              129.95803833007812
+            ]
+          ],
+          "pixel_sha256": "c8e5b44f902604b29e6fff4a278f60063f408891832faa1beb42eb33c87222a2"
+        },
+        "384": {
+          "bbox": [
+            91.52497863769531,
+            73.7679672241211,
+            230.83209228515625,
+            246.85316467285156,
+            0.8574527502059937
+          ],
+          "landmarks": [
+            [
+              113.27847290039062,
+              125.71080780029297
+            ],
+            [
+              171.36599731445312,
+              127.04987335205078
+            ],
+            [
+              127.01878356933594,
+              164.67539978027344
+            ],
+            [
+              115.50767517089844,
+              193.23292541503906
+            ],
+            [
+              166.83560180664062,
+              194.97811889648438
+            ]
+          ],
+          "pixel_sha256": "6cd7ba43a049bcaa81a1be1ad5b1fa0fc8a5c9a6098faf339ab4255bc0a49ba5"
+        }
+      },
+      "native_sha256": "cebc53b07bf207711cc2561184e9b5ed492fb0164f8a200c334c26cb9894bd47"
+    },
+    {
+      "id": "v18_141",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell05.png",
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            39.27373123168945,
+            28.574344635009766,
+            92.45928955078125,
+            93.3349838256836,
+            0.7942399978637695
+          ],
+          "landmarks": [
+            [
+              53.3210563659668,
+              50.103363037109375
+            ],
+            [
+              78.4495620727539,
+              50.127342224121094
+            ],
+            [
+              65.9134292602539,
+              66.25847625732422
+            ],
+            [
+              55.6677360534668,
+              76.32666778564453
+            ],
+            [
+              76.64173126220703,
+              76.29183197021484
+            ]
+          ],
+          "pixel_sha256": "111ebd72d11ffe27a3b8f3e21fd72b8995f03c7519e32eae3daf8360256e2b9d"
+        },
+        "256": {
+          "bbox": [
+            78.58845520019531,
+            57.46936798095703,
+            184.57920837402344,
+            187.06399536132812,
+            0.8041952848434448
+          ],
+          "landmarks": [
+            [
+              106.62370300292969,
+              100.0501480102539
+            ],
+            [
+              156.353759765625,
+              100.33943939208984
+            ],
+            [
+              131.37290954589844,
+              133.0103759765625
+            ],
+            [
+              111.3935775756836,
+              153.0784454345703
+            ],
+            [
+              152.2774658203125,
+              153.2677764892578
+            ]
+          ],
+          "pixel_sha256": "f7109d119c21d31058bea337dca2e2d38422d95dc108be94a4479d2c986bcd90"
+        },
+        "384": {
+          "bbox": [
+            117.938232421875,
+            86.96185302734375,
+            276.8227844238281,
+            280.7098388671875,
+            0.8051570653915405
+          ],
+          "landmarks": [
+            [
+              159.73170471191406,
+              150.1054229736328
+            ],
+            [
+              234.44488525390625,
+              150.60934448242188
+            ],
+            [
+              196.9239501953125,
+              199.69992065429688
+            ],
+            [
+              167.10581970214844,
+              229.454345703125
+            ],
+            [
+              228.54776000976562,
+              229.80166625976562
+            ]
+          ],
+          "pixel_sha256": "db524e958a9cc85b081ae1fa9bc6f72443d6442f465ddf8b8329f244ac56a427"
+        }
+      },
+      "native_sha256": "9ea15064efa953f6b4793ed83233fb15f57d593be950f27710e8ab092d124aa4"
+    },
+    {
+      "id": "v18_142",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell06.png",
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.27527618408203,
+            27.223678588867188,
+            86.08723449707031,
+            87.70472717285156,
+            0.858360767364502
+          ],
+          "landmarks": [
+            [
+              49.731178283691406,
+              46.53173828125
+            ],
+            [
+              72.93528747558594,
+              46.6826286315918
+            ],
+            [
+              60.977638244628906,
+              58.906166076660156
+            ],
+            [
+              50.94704055786133,
+              69.1279525756836
+            ],
+            [
+              71.8245620727539,
+              69.2947006225586
+            ]
+          ],
+          "pixel_sha256": "cb3a63d34fec48ef7f48e81184f36812846d6afd29041e0514edaa7af9192e6f"
+        },
+        "256": {
+          "bbox": [
+            74.2411117553711,
+            54.824668884277344,
+            171.96835327148438,
+            175.91943359375,
+            0.8555359840393066
+          ],
+          "landmarks": [
+            [
+              99.13493347167969,
+              92.57200622558594
+            ],
+            [
+              145.5336151123047,
+              92.51793670654297
+            ],
+            [
+              121.64308166503906,
+              118.55744934082031
+            ],
+            [
+              101.90611267089844,
+              138.78610229492188
+            ],
+            [
+              143.37379455566406,
+              138.84359741210938
+            ]
+          ],
+          "pixel_sha256": "75cd3f802b2f2afbcc705ce2501b5bd301406f24bbdf34482f2c57a4349f8192"
+        },
+        "384": {
+          "bbox": [
+            111.12467956542969,
+            82.69010162353516,
+            257.7198486328125,
+            263.7080993652344,
+            0.8583773374557495
+          ],
+          "landmarks": [
+            [
+              148.81500244140625,
+              138.54013061523438
+            ],
+            [
+              217.9207763671875,
+              138.3031005859375
+            ],
+            [
+              182.5689697265625,
+              178.1245574951172
+            ],
+            [
+              153.42828369140625,
+              208.2939910888672
+            ],
+            [
+              214.81240844726562,
+              208.2371368408203
+            ]
+          ],
+          "pixel_sha256": "145992df5b63e673a1c7bd3dfe183a5e22b844bc989502e9d66d8a82141e5960"
+        }
+      },
+      "native_sha256": "ab77760453fad4d1aad79d7bed82cb273de1931df40c5fc18ae8bdfb572ad149"
+    },
+    {
+      "id": "v18_143",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell07.png",
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            33.29917907714844,
+            27.850231170654297,
+            83.26919555664062,
+            88.83946228027344,
+            0.864272952079773
+          ],
+          "landmarks": [
+            [
+              46.273101806640625,
+              47.392578125
+            ],
+            [
+              70.20075988769531,
+              47.17748260498047
+            ],
+            [
+              58.35524368286133,
+              61.01598358154297
+            ],
+            [
+              47.659523010253906,
+              70.64178466796875
+            ],
+            [
+              69.35973358154297,
+              70.42179870605469
+            ]
+          ],
+          "pixel_sha256": "569de36ab266c3271666945af12e4529fd1ae9f7c783bf713e411fc413bb39b5"
+        },
+        "256": {
+          "bbox": [
+            66.77418518066406,
+            55.3893928527832,
+            166.488525390625,
+            179.61264038085938,
+            0.8669846057891846
+          ],
+          "landmarks": [
+            [
+              92.70419311523438,
+              94.34661102294922
+            ],
+            [
+              139.83547973632812,
+              94.6239242553711
+            ],
+            [
+              115.73262786865234,
+              122.97635650634766
+            ],
+            [
+              94.67146301269531,
+              141.4418487548828
+            ],
+            [
+              137.32479858398438,
+              141.72744750976562
+            ]
+          ],
+          "pixel_sha256": "fd92c6d9003bffcf54e77fba502ffcbb93d1eea03498fb4069b6a8db2f23ec29"
+        },
+        "384": {
+          "bbox": [
+            100.38232421875,
+            84.73649597167969,
+            250.215087890625,
+            269.3407287597656,
+            0.8648190498352051
+          ],
+          "landmarks": [
+            [
+              138.9677734375,
+              141.2294921875
+            ],
+            [
+              209.26174926757812,
+              141.8525390625
+            ],
+            [
+              172.76499938964844,
+              185.0348663330078
+            ],
+            [
+              141.82618713378906,
+              211.78778076171875
+            ],
+            [
+              205.69078063964844,
+              212.4562225341797
+            ]
+          ],
+          "pixel_sha256": "9390843138d14464b27df449e459e9a268a1458a80f5b1e061a6a85606b75990"
+        }
+      },
+      "native_sha256": "85e270c367556e15771af0602ef52c86d4d344cadaef3245e8945bfff31763c6"
+    },
+    {
+      "id": "v18_144",
+      "team": "gwangju_blazes",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_gwangju_blazes_g15/cell08.png",
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            31.350467681884766,
+            26.43776512145996,
+            81.41862487792969,
+            85.9057846069336,
+            0.8382449150085449
+          ],
+          "landmarks": [
+            [
+              44.887779235839844,
+              46.24319839477539
+            ],
+            [
+              68.71188354492188,
+              45.28330612182617
+            ],
+            [
+              57.8092155456543,
+              56.90424728393555
+            ],
+            [
+              47.392887115478516,
+              68.67005920410156
+            ],
+            [
+              68.37378692626953,
+              67.74170684814453
+            ]
+          ],
+          "pixel_sha256": "a63926765317002526917134b182f88a670c8d09ce8b3a5a0c4be0dec4e48432"
+        },
+        "256": {
+          "bbox": [
+            63.07542037963867,
+            52.63800811767578,
+            162.5758819580078,
+            174.4378662109375,
+            0.858524739742279
+          ],
+          "landmarks": [
+            [
+              89.79457092285156,
+              92.37223815917969
+            ],
+            [
+              136.39682006835938,
+              90.23926544189453
+            ],
+            [
+              114.76771545410156,
+              114.5099105834961
+            ],
+            [
+              94.70048522949219,
+              138.0437774658203
+            ],
+            [
+              135.99920654296875,
+              136.02980041503906
+            ]
+          ],
+          "pixel_sha256": "23419036607702102ee375d3d815814f3996ee356749389e788743986b2ab4c6"
+        },
+        "384": {
+          "bbox": [
+            95.25648498535156,
+            79.64656066894531,
+            243.572021484375,
+            261.777587890625,
+            0.8612504005432129
+          ],
+          "landmarks": [
+            [
+              135.00315856933594,
+              138.7220916748047
+            ],
+            [
+              203.99591064453125,
+              135.3251495361328
+            ],
+            [
+              171.91734313964844,
+              171.96432495117188
+            ],
+            [
+              142.17066955566406,
+              206.68760681152344
+            ],
+            [
+              203.86911010742188,
+              203.52645874023438
+            ]
+          ],
+          "pixel_sha256": "5c799eab8159868d498be22c6cc9e05167e9cdae2e273dd422d51ac548838c78"
+        }
+      },
+      "native_sha256": "d7caf0d8e4f303073c5bdbbb85fa39f83d5ec2be0314db573cf8f2eaf3ffd43f"
+    }
+  ]
+}

@@ -1,0 +1,1454 @@
+{
+  "key": "hires_incheon_seagulls_g06",
+  "kind": "hires",
+  "team": "incheon_seagulls",
+  "render": {
+    "key": "incheon_seagulls_g06",
+    "team": "incheon_seagulls",
+    "path": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/hires_inputs/incheon_seagulls_g06.png",
+    "expected_count": 9,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_055",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell00.png",
+      "native_sha256": "5f3de2e7c7873d43d277be578f757de68db2e2e94c33cb56b7461158e6dddea3",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7069010138511658,
+          "same_original_all10_max": 0.8383578062057495,
+          "old_gallery_top1": "v18_055",
+          "source_own_top1": "v18_055",
+          "other199_max": 0.2875704765319824,
+          "other199_id": "v18_039",
+          "legacy160_max": 0.4851713180541992
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7631676197052002,
+          "same_original_all10_max": 0.8611263036727905,
+          "old_gallery_top1": "v18_055",
+          "source_own_top1": "v18_055",
+          "other199_max": 0.29556071758270264,
+          "other199_id": "v18_039",
+          "legacy160_max": 0.4918256998062134
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7764802575111389,
+          "same_original_all10_max": 0.8609102964401245,
+          "old_gallery_top1": "v18_055",
+          "source_own_top1": "v18_055",
+          "other199_max": 0.29224127531051636,
+          "other199_id": "v18_079",
+          "legacy160_max": 0.47946590185165405
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_056",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell01.png",
+      "native_sha256": "d6074d0b41aeb343c773a96dd3de5dafb1f0be78bca8cbce2bf26fecfa2d6d3e",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.782782793045044,
+          "same_original_all10_max": 0.8685138821601868,
+          "old_gallery_top1": "v18_056",
+          "source_own_top1": "v18_056",
+          "other199_max": 0.23861248791217804,
+          "other199_id": "v18_153",
+          "legacy160_max": 0.4495861530303955
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7867426872253418,
+          "same_original_all10_max": 0.9164677262306213,
+          "old_gallery_top1": "v18_056",
+          "source_own_top1": "v18_056",
+          "other199_max": 0.23928919434547424,
+          "other199_id": "v18_153",
+          "legacy160_max": 0.45893391966819763
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7783836126327515,
+          "same_original_all10_max": 0.9142014980316162,
+          "old_gallery_top1": "v18_056",
+          "source_own_top1": "v18_056",
+          "other199_max": 0.24003687500953674,
+          "other199_id": "v18_153",
+          "legacy160_max": 0.4617450535297394
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_057",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell02.png",
+      "native_sha256": "ea68288ff3579ca1dba463c939b5495ce466fb2caef1aab9b3a25a5d6968e890",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7679523229598999,
+          "same_original_all10_max": 0.8556920289993286,
+          "old_gallery_top1": "v18_057",
+          "source_own_top1": "v18_057",
+          "other199_max": 0.15118342638015747,
+          "other199_id": "v18_200",
+          "legacy160_max": 0.16455431282520294
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7877192497253418,
+          "same_original_all10_max": 0.8834448456764221,
+          "old_gallery_top1": "v18_057",
+          "source_own_top1": "v18_057",
+          "other199_max": 0.154368057847023,
+          "other199_id": "v18_200",
+          "legacy160_max": 0.15554679930210114
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.777647852897644,
+          "same_original_all10_max": 0.8795126080513,
+          "old_gallery_top1": "v18_057",
+          "source_own_top1": "v18_057",
+          "other199_max": 0.14819476008415222,
+          "other199_id": "v18_162",
+          "legacy160_max": 0.1531405746936798
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_058",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell03.png",
+      "native_sha256": "3f7613f88f25a744c70088396c17e111bf58aa57251d1b1a897f7236198c8c64",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8034317493438721,
+          "same_original_all10_max": 0.8776059746742249,
+          "old_gallery_top1": "v18_058",
+          "source_own_top1": "v18_058",
+          "other199_max": 0.2824302315711975,
+          "other199_id": "v18_007",
+          "legacy160_max": 0.18898390233516693
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8207678198814392,
+          "same_original_all10_max": 0.8979591131210327,
+          "old_gallery_top1": "v18_058",
+          "source_own_top1": "v18_058",
+          "other199_max": 0.3009570240974426,
+          "other199_id": "v18_007",
+          "legacy160_max": 0.22517341375350952
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.819687008857727,
+          "same_original_all10_max": 0.9033229351043701,
+          "old_gallery_top1": "v18_058",
+          "source_own_top1": "v18_058",
+          "other199_max": 0.308815062046051,
+          "other199_id": "v18_007",
+          "legacy160_max": 0.2227587252855301
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_059",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell04.png",
+      "native_sha256": "09601859cd58efda74e0bc97d696628455577055f0c329863e07b1f729c179a4",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 4,
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7536237835884094,
+          "same_original_all10_max": 0.8503071069717407,
+          "old_gallery_top1": "v18_059",
+          "source_own_top1": "v18_059",
+          "other199_max": 0.2863636016845703,
+          "other199_id": "v18_024",
+          "legacy160_max": 0.29700055718421936
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7963840365409851,
+          "same_original_all10_max": 0.8782609701156616,
+          "old_gallery_top1": "v18_059",
+          "source_own_top1": "v18_059",
+          "other199_max": 0.2942442297935486,
+          "other199_id": "v18_024",
+          "legacy160_max": 0.3122217059135437
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7956146597862244,
+          "same_original_all10_max": 0.8814635276794434,
+          "old_gallery_top1": "v18_059",
+          "source_own_top1": "v18_059",
+          "other199_max": 0.29934966564178467,
+          "other199_id": "v18_024",
+          "legacy160_max": 0.307900607585907
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_060",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell05.png",
+      "native_sha256": "25e41e0b493ae35cbc873d9033de5d5b372389c3afe3d64cdb63acbba6f25d25",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 5,
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.728672206401825,
+          "same_original_all10_max": 0.8782642483711243,
+          "old_gallery_top1": "v18_060",
+          "source_own_top1": "v18_060",
+          "other199_max": 0.209113210439682,
+          "other199_id": "v18_032",
+          "legacy160_max": 0.2387891709804535
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7713349461555481,
+          "same_original_all10_max": 0.8840544819831848,
+          "old_gallery_top1": "v18_060",
+          "source_own_top1": "v18_060",
+          "other199_max": 0.263938307762146,
+          "other199_id": "v18_032",
+          "legacy160_max": 0.22631412744522095
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.772736668586731,
+          "same_original_all10_max": 0.8840234279632568,
+          "old_gallery_top1": "v18_060",
+          "source_own_top1": "v18_060",
+          "other199_max": 0.25820159912109375,
+          "other199_id": "v18_032",
+          "legacy160_max": 0.22822971642017365
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_061",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell06.png",
+      "native_sha256": "ec34ad6e61bf93606c1bcbacabf7018ba864a3a5d1a4eaa7848c7ee1b5f15fdc",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 6,
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.738806962966919,
+          "same_original_all10_max": 0.8385603427886963,
+          "old_gallery_top1": "v18_061",
+          "source_own_top1": "v18_061",
+          "other199_max": 0.400093138217926,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.4034412205219269
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7322515249252319,
+          "same_original_all10_max": 0.8801918625831604,
+          "old_gallery_top1": "v18_061",
+          "source_own_top1": "v18_061",
+          "other199_max": 0.3976741135120392,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.34919852018356323
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7422773241996765,
+          "same_original_all10_max": 0.8757447004318237,
+          "old_gallery_top1": "v18_061",
+          "source_own_top1": "v18_061",
+          "other199_max": 0.4051112234592438,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.3462974727153778
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_062",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell07.png",
+      "native_sha256": "1d46ae58f025c4a157f50161639e7f0159ae99b0868c315350857aba848ce1a2",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 7,
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7188708186149597,
+          "same_original_all10_max": 0.8576208353042603,
+          "old_gallery_top1": "v18_062",
+          "source_own_top1": "v18_062",
+          "other199_max": 0.3057878315448761,
+          "other199_id": "v18_189",
+          "legacy160_max": 0.3840693235397339
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7561872005462646,
+          "same_original_all10_max": 0.8744022250175476,
+          "old_gallery_top1": "v18_062",
+          "source_own_top1": "v18_062",
+          "other199_max": 0.32212796807289124,
+          "other199_id": "v18_189",
+          "legacy160_max": 0.35409700870513916
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7611966729164124,
+          "same_original_all10_max": 0.8584108352661133,
+          "old_gallery_top1": "v18_062",
+          "source_own_top1": "v18_062",
+          "other199_max": 0.32479116320610046,
+          "other199_id": "v18_189",
+          "legacy160_max": 0.35558831691741943
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_063",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell08.png",
+      "native_sha256": "eeca24c781739c46254ad70e7b9d803617ffc9acda3d6bc3eb355494f9e5f24f",
+      "source_render": "/workspace/generated_images/exec-e4976240-1db1-4054-9b53-0be85a8743ca.png",
+      "source_render_sha256": "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "source_cell": 8,
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.754478394985199,
+          "same_original_all10_max": 0.8607808947563171,
+          "old_gallery_top1": "v18_063",
+          "source_own_top1": "v18_063",
+          "other199_max": 0.2742234766483307,
+          "other199_id": "v18_079",
+          "legacy160_max": 0.2881496548652649
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7845524549484253,
+          "same_original_all10_max": 0.8697822093963623,
+          "old_gallery_top1": "v18_063",
+          "source_own_top1": "v18_063",
+          "other199_max": 0.2720297574996948,
+          "other199_id": "v18_199",
+          "legacy160_max": 0.2663048505783081
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7847882509231567,
+          "same_original_all10_max": 0.8637186288833618,
+          "old_gallery_top1": "v18_063",
+          "source_own_top1": "v18_063",
+          "other199_max": 0.27113693952560425,
+          "other199_id": "v18_199",
+          "legacy160_max": 0.2769964635372162
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_055",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            39.914615631103516,
+            22.874256134033203,
+            103.5877914428711,
+            88.10014343261719,
+            0.7694271802902222
+          ],
+          "landmarks": [
+            [
+              61.50550079345703,
+              41.84577178955078
+            ],
+            [
+              89.83036804199219,
+              42.005855560302734
+            ],
+            [
+              79.3154067993164,
+              48.58253860473633
+            ],
+            [
+              65.02265930175781,
+              67.25730895996094
+            ],
+            [
+              89.57571411132812,
+              67.23983764648438
+            ]
+          ],
+          "pixel_sha256": "8c5365cc777426fd2b11161f01faa50775c2a9aa9621dd639949c512a5dca174"
+        },
+        "256": {
+          "bbox": [
+            80.44011688232422,
+            46.23358154296875,
+            206.48764038085938,
+            178.7013702392578,
+            0.7857978940010071
+          ],
+          "landmarks": [
+            [
+              122.3816909790039,
+              83.58033752441406
+            ],
+            [
+              178.66529846191406,
+              82.83363342285156
+            ],
+            [
+              157.92837524414062,
+              97.97579193115234
+            ],
+            [
+              130.32757568359375,
+              135.9103240966797
+            ],
+            [
+              179.18931579589844,
+              135.0070037841797
+            ]
+          ],
+          "pixel_sha256": "50f8dcdea011f8eae210b77995196ba88ecff4a1143c8203bc81887e1cf5be97"
+        },
+        "384": {
+          "bbox": [
+            119.80357360839844,
+            69.68275451660156,
+            308.3655700683594,
+            270.0015563964844,
+            0.7797080874443054
+          ],
+          "landmarks": [
+            [
+              183.14247131347656,
+              125.1170425415039
+            ],
+            [
+              267.3180847167969,
+              124.10478973388672
+            ],
+            [
+              236.7700958251953,
+              147.02626037597656
+            ],
+            [
+              194.69764709472656,
+              204.2209930419922
+            ],
+            [
+              268.16888427734375,
+              202.90899658203125
+            ]
+          ],
+          "pixel_sha256": "7ab99f611794aca17233dd1c00983178e81ef06bb67c20666fc5192f54295e9a"
+        }
+      },
+      "native_sha256": "5f3de2e7c7873d43d277be578f757de68db2e2e94c33cb56b7461158e6dddea3"
+    },
+    {
+      "id": "v18_056",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell01.png",
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.47919845581055,
+            24.732772827148438,
+            94.40400695800781,
+            95.57939147949219,
+            0.8199987411499023
+          ],
+          "landmarks": [
+            [
+              52.679664611816406,
+              48.63483428955078
+            ],
+            [
+              80.31416320800781,
+              49.21454620361328
+            ],
+            [
+              66.7276611328125,
+              65.60584259033203
+            ],
+            [
+              51.767311096191406,
+              72.48822021484375
+            ],
+            [
+              80.44377136230469,
+              72.9234619140625
+            ]
+          ],
+          "pixel_sha256": "6b434c5d1fc7d3bf60618ce321db442b1e63e24561f30b230e5e216752bf4c80"
+        },
+        "256": {
+          "bbox": [
+            75.2610855102539,
+            50.927032470703125,
+            187.9442901611328,
+            191.63104248046875,
+            0.8152236938476562
+          ],
+          "landmarks": [
+            [
+              104.98982238769531,
+              96.59698486328125
+            ],
+            [
+              160.81790161132812,
+              97.50357818603516
+            ],
+            [
+              133.6165771484375,
+              130.87435913085938
+            ],
+            [
+              103.73388671875,
+              145.9688262939453
+            ],
+            [
+              160.80111694335938,
+              146.67616271972656
+            ]
+          ],
+          "pixel_sha256": "107f1cd70a3dcb9570a5c5da6b3cade4b73af34c435c72c4d23146b8a03a9f6e"
+        },
+        "384": {
+          "bbox": [
+            113.6884765625,
+            77.60420227050781,
+            282.3802185058594,
+            288.3658447265625,
+            0.8016411066055298
+          ],
+          "landmarks": [
+            [
+              157.4421844482422,
+              145.03662109375
+            ],
+            [
+              240.93338012695312,
+              146.48817443847656
+            ],
+            [
+              199.67393493652344,
+              196.3209686279297
+            ],
+            [
+              155.66537475585938,
+              219.13583374023438
+            ],
+            [
+              241.20115661621094,
+              220.22772216796875
+            ]
+          ],
+          "pixel_sha256": "1c4ff5444206358b8c1cd89c8156f83b3db2c5f1542070637f82df2fc061456c"
+        }
+      },
+      "native_sha256": "d6074d0b41aeb343c773a96dd3de5dafb1f0be78bca8cbce2bf26fecfa2d6d3e"
+    },
+    {
+      "id": "v18_057",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell02.png",
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            36.78318405151367,
+            25.50946617126465,
+            90.98226165771484,
+            85.62236785888672,
+            0.813662052154541
+          ],
+          "landmarks": [
+            [
+              53.615142822265625,
+              47.06705856323242
+            ],
+            [
+              76.37940979003906,
+              45.2507209777832
+            ],
+            [
+              67.1719970703125,
+              57.61382293701172
+            ],
+            [
+              55.3365364074707,
+              66.51045227050781
+            ],
+            [
+              77.79229736328125,
+              64.81790161132812
+            ]
+          ],
+          "pixel_sha256": "1bc755ccda728689b65b264a9a2f10f033dbf5d8c7b6e9d598003409179bf450"
+        },
+        "256": {
+          "bbox": [
+            74.33399200439453,
+            49.37260055541992,
+            181.7235870361328,
+            171.89840698242188,
+            0.8196306228637695
+          ],
+          "landmarks": [
+            [
+              107.65782165527344,
+              94.24332427978516
+            ],
+            [
+              152.45416259765625,
+              90.45352172851562
+            ],
+            [
+              134.34408569335938,
+              115.86358642578125
+            ],
+            [
+              110.88322448730469,
+              133.24281311035156
+            ],
+            [
+              155.60214233398438,
+              129.66616821289062
+            ]
+          ],
+          "pixel_sha256": "42cfb8b4f28992de6b4c8b6d610e0f0d374c87b79c0288a45d42b3b9f5d164c9"
+        },
+        "384": {
+          "bbox": [
+            112.93912506103516,
+            74.5861587524414,
+            271.96392822265625,
+            258.1725769042969,
+            0.8272411227226257
+          ],
+          "landmarks": [
+            [
+              161.81597900390625,
+              141.338623046875
+            ],
+            [
+              228.26651000976562,
+              135.5629119873047
+            ],
+            [
+              201.32235717773438,
+              173.58966064453125
+            ],
+            [
+              167.0951690673828,
+              199.9234619140625
+            ],
+            [
+              233.0955352783203,
+              194.50921630859375
+            ]
+          ],
+          "pixel_sha256": "995611887790348f8c3cd6eed40bb4af61cfdde0dee0e5796bd5a7bce3b3a1ab"
+        }
+      },
+      "native_sha256": "ea68288ff3579ca1dba463c939b5495ce466fb2caef1aab9b3a25a5d6968e890"
+    },
+    {
+      "id": "v18_058",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell03.png",
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            39.41373825073242,
+            27.060665130615234,
+            86.13860321044922,
+            92.48145294189453,
+            0.8328511118888855
+          ],
+          "landmarks": [
+            [
+              51.40971755981445,
+              48.6731071472168
+            ],
+            [
+              73.61309814453125,
+              48.21774673461914
+            ],
+            [
+              62.97760009765625,
+              63.74980545043945
+            ],
+            [
+              51.5821647644043,
+              69.92364501953125
+            ],
+            [
+              74.98082733154297,
+              69.42204284667969
+            ]
+          ],
+          "pixel_sha256": "a25cd3460ae55bedfb7d6e60e7c1acb883202dd2082df181d2fea2412b699e4f"
+        },
+        "256": {
+          "bbox": [
+            78.59010314941406,
+            55.18244552612305,
+            172.3109588623047,
+            185.5637969970703,
+            0.8323397040367126
+          ],
+          "landmarks": [
+            [
+              102.78645324707031,
+              97.18875885009766
+            ],
+            [
+              146.94967651367188,
+              96.42185974121094
+            ],
+            [
+              125.65792083740234,
+              128.00791931152344
+            ],
+            [
+              102.64207458496094,
+              139.6087188720703
+            ],
+            [
+              149.91708374023438,
+              138.75650024414062
+            ]
+          ],
+          "pixel_sha256": "4c6ba022ab91dfd380f64eca417191679b4979d47686a4bb146583af670ab789"
+        },
+        "384": {
+          "bbox": [
+            118.47116088867188,
+            81.24301147460938,
+            257.83721923828125,
+            278.8958435058594,
+            0.8331537842750549
+          ],
+          "landmarks": [
+            [
+              154.4549560546875,
+              145.6447296142578
+            ],
+            [
+              220.39987182617188,
+              145.04443359375
+            ],
+            [
+              188.59925842285156,
+              191.86441040039062
+            ],
+            [
+              153.7539520263672,
+              209.139404296875
+            ],
+            [
+              224.91326904296875,
+              208.2991180419922
+            ]
+          ],
+          "pixel_sha256": "bb2d42495d0de1ad709cc8b49d17addb6453d66b135ffaf7345433443def5559"
+        }
+      },
+      "native_sha256": "3f7613f88f25a744c70088396c17e111bf58aa57251d1b1a897f7236198c8c64"
+    },
+    {
+      "id": "v18_059",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell04.png",
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            31.630178451538086,
+            23.224170684814453,
+            83.66961669921875,
+            90.674560546875,
+            0.8647130131721497
+          ],
+          "landmarks": [
+            [
+              44.18495559692383,
+              44.41582107543945
+            ],
+            [
+              69.98289489746094,
+              42.2857551574707
+            ],
+            [
+              57.98267364501953,
+              57.097740173339844
+            ],
+            [
+              45.703346252441406,
+              68.44976806640625
+            ],
+            [
+              71.26263427734375,
+              66.51232147216797
+            ]
+          ],
+          "pixel_sha256": "c7eb94de6dcf6e8f921d83d1fc7d46adafbd8884f7dbe95bc2ecc9c38f301a35"
+        },
+        "256": {
+          "bbox": [
+            62.95543670654297,
+            46.13535690307617,
+            166.9491424560547,
+            181.18246459960938,
+            0.8707665205001831
+          ],
+          "landmarks": [
+            [
+              88.68858337402344,
+              88.03501892089844
+            ],
+            [
+              140.4730682373047,
+              85.039306640625
+            ],
+            [
+              116.04740142822266,
+              114.18888092041016
+            ],
+            [
+              90.0860595703125,
+              136.03762817382812
+            ],
+            [
+              142.30517578125,
+              133.4018096923828
+            ]
+          ],
+          "pixel_sha256": "80618a9099876068dc605f47381d2a26eadbde7892d63ca673b16fd1f3a2505b"
+        },
+        "384": {
+          "bbox": [
+            94.53597259521484,
+            70.9315414428711,
+            250.84999084472656,
+            272.1758117675781,
+            0.873236894607544
+          ],
+          "landmarks": [
+            [
+              133.0177764892578,
+              131.69207763671875
+            ],
+            [
+              209.99366760253906,
+              127.618896484375
+            ],
+            [
+              173.3190155029297,
+              171.74468994140625
+            ],
+            [
+              135.51416015625,
+              204.0483856201172
+            ],
+            [
+              213.1878204345703,
+              200.36920166015625
+            ]
+          ],
+          "pixel_sha256": "d403bb1f08afdf3ca4077d7cbb1b61c7d3d1898293ba4a478761a1373a8daa19"
+        }
+      },
+      "native_sha256": "09601859cd58efda74e0bc97d696628455577055f0c329863e07b1f729c179a4"
+    },
+    {
+      "id": "v18_060",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell05.png",
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            40.0623893737793,
+            30.019384384155273,
+            92.58926391601562,
+            98.2320556640625,
+            0.8539528250694275
+          ],
+          "landmarks": [
+            [
+              54.32758331298828,
+              53.95719528198242
+            ],
+            [
+              79.87431335449219,
+              54.1656494140625
+            ],
+            [
+              67.68374633789062,
+              67.31819152832031
+            ],
+            [
+              54.45795440673828,
+              77.06803894042969
+            ],
+            [
+              79.35122680664062,
+              77.22651672363281
+            ]
+          ],
+          "pixel_sha256": "37d64f5769251cb810c7822d5c394a6daab5d282e87727c37e6ef6c796f09863"
+        },
+        "256": {
+          "bbox": [
+            80.30450439453125,
+            60.8761100769043,
+            184.43125915527344,
+            196.51046752929688,
+            0.8601963520050049
+          ],
+          "landmarks": [
+            [
+              108.7687759399414,
+              107.38975524902344
+            ],
+            [
+              159.3509979248047,
+              107.8146743774414
+            ],
+            [
+              135.44302368164062,
+              134.4418487548828
+            ],
+            [
+              109.12483215332031,
+              154.21315002441406
+            ],
+            [
+              158.38552856445312,
+              154.54208374023438
+            ]
+          ],
+          "pixel_sha256": "f21503dbec93c1620026b607805ce5452aea2d9b98c87db7830ecbc8358b66f4"
+        },
+        "384": {
+          "bbox": [
+            119.86068725585938,
+            91.10829162597656,
+            276.14971923828125,
+            294.1956481933594,
+            0.8587435483932495
+          ],
+          "landmarks": [
+            [
+              162.9873504638672,
+              161.3712158203125
+            ],
+            [
+              239.04153442382812,
+              161.50201416015625
+            ],
+            [
+              203.7637481689453,
+              201.41851806640625
+            ],
+            [
+              164.2294921875,
+              231.7067413330078
+            ],
+            [
+              237.86624145507812,
+              231.67706298828125
+            ]
+          ],
+          "pixel_sha256": "a5a92469cf1d386cd61e0a286d8ba406f50aa8621149ce752982882490f8d15c"
+        }
+      },
+      "native_sha256": "25e41e0b493ae35cbc873d9033de5d5b372389c3afe3d64cdb63acbba6f25d25"
+    },
+    {
+      "id": "v18_061",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell06.png",
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            39.90411376953125,
+            28.6683292388916,
+            88.56581115722656,
+            85.67002868652344,
+            0.8568929433822632
+          ],
+          "landmarks": [
+            [
+              55.716041564941406,
+              48.50096893310547
+            ],
+            [
+              78.2255859375,
+              48.10920333862305
+            ],
+            [
+              69.24153137207031,
+              61.358360290527344
+            ],
+            [
+              58.63786697387695,
+              71.5641860961914
+            ],
+            [
+              76.6739730834961,
+              71.09960174560547
+            ]
+          ],
+          "pixel_sha256": "afc53f367b323d8867f4913340772e352b7effe3964fc08b84b70569db6b07e2"
+        },
+        "256": {
+          "bbox": [
+            79.57144927978516,
+            56.52463912963867,
+            177.01315307617188,
+            171.47232055664062,
+            0.8655701875686646
+          ],
+          "landmarks": [
+            [
+              111.63150787353516,
+              96.53074645996094
+            ],
+            [
+              156.28897094726562,
+              95.61100006103516
+            ],
+            [
+              138.64620971679688,
+              123.50797271728516
+            ],
+            [
+              117.55845642089844,
+              142.95950317382812
+            ],
+            [
+              153.44149780273438,
+              141.93594360351562
+            ]
+          ],
+          "pixel_sha256": "b1c4ceae639bcff3ca7f57b9db6c5b945676d538c1fccbfdae17b6647e8bf32b"
+        },
+        "384": {
+          "bbox": [
+            119.17301940917969,
+            84.79983520507812,
+            265.43939208984375,
+            256.5099792480469,
+            0.8608828783035278
+          ],
+          "landmarks": [
+            [
+              167.65582275390625,
+              144.59317016601562
+            ],
+            [
+              234.70957946777344,
+              143.1276092529297
+            ],
+            [
+              208.424560546875,
+              185.2214813232422
+            ],
+            [
+              176.4064178466797,
+              214.28163146972656
+            ],
+            [
+              230.14654541015625,
+              212.72650146484375
+            ]
+          ],
+          "pixel_sha256": "9c1fde8278bb68729c4bdef62f270e8cb89facff32f0d7a2502261dec0ef0ffb"
+        }
+      },
+      "native_sha256": "ec34ad6e61bf93606c1bcbacabf7018ba864a3a5d1a4eaa7848c7ee1b5f15fdc"
+    },
+    {
+      "id": "v18_062",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell07.png",
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            32.443382263183594,
+            26.04433822631836,
+            81.79629516601562,
+            85.290771484375,
+            0.8368589282035828
+          ],
+          "landmarks": [
+            [
+              49.048484802246094,
+              44.73180389404297
+            ],
+            [
+              71.49401092529297,
+              44.4591178894043
+            ],
+            [
+              62.8979606628418,
+              58.35602569580078
+            ],
+            [
+              50.967079162597656,
+              68.05107116699219
+            ],
+            [
+              70.44883728027344,
+              67.69917297363281
+            ]
+          ],
+          "pixel_sha256": "0ae39bcafeb65bfa021bdc8636e0bfc22b6ce6bbf85a8b43b0ce905557f383e6"
+        },
+        "256": {
+          "bbox": [
+            64.3596420288086,
+            52.29779815673828,
+            163.17112731933594,
+            172.8043670654297,
+            0.8546919822692871
+          ],
+          "landmarks": [
+            [
+              98.34141540527344,
+              89.58528900146484
+            ],
+            [
+              142.19569396972656,
+              88.74348449707031
+            ],
+            [
+              125.98445892333984,
+              116.2573013305664
+            ],
+            [
+              102.7602767944336,
+              137.01669311523438
+            ],
+            [
+              140.7108612060547,
+              136.04640197753906
+            ]
+          ],
+          "pixel_sha256": "50b560ef6b81c7413f70d5aef0ca98ae361b1cbeaf7d38aa8cb9c1120882bf60"
+        },
+        "384": {
+          "bbox": [
+            96.78060913085938,
+            80.17089080810547,
+            244.41055297851562,
+            260.364990234375,
+            0.8629664182662964
+          ],
+          "landmarks": [
+            [
+              146.97640991210938,
+              133.91868591308594
+            ],
+            [
+              213.07257080078125,
+              132.9260711669922
+            ],
+            [
+              188.17884826660156,
+              174.1204833984375
+            ],
+            [
+              153.2840576171875,
+              205.779052734375
+            ],
+            [
+              210.756591796875,
+              204.56495666503906
+            ]
+          ],
+          "pixel_sha256": "dfee5109afd02290719689eb98372716f5918865d80efef11caf933cee859324"
+        }
+      },
+      "native_sha256": "1d46ae58f025c4a157f50161639e7f0159ae99b0868c315350857aba848ce1a2"
+    },
+    {
+      "id": "v18_063",
+      "team": "incheon_seagulls",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_incheon_seagulls_g06/cell08.png",
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            24.884841918945312,
+            25.609119415283203,
+            78.9371337890625,
+            84.8501205444336,
+            0.7623928785324097
+          ],
+          "landmarks": [
+            [
+              41.71036911010742,
+              45.697181701660156
+            ],
+            [
+              65.58001708984375,
+              44.45429611206055
+            ],
+            [
+              56.04602813720703,
+              55.3707160949707
+            ],
+            [
+              44.79741668701172,
+              67.4874038696289
+            ],
+            [
+              66.09974670410156,
+              66.30706787109375
+            ]
+          ],
+          "pixel_sha256": "2bde09e17f12cb0ec20b88ba478a1a85a52d5d242bda904f12113a69f7d32928"
+        },
+        "256": {
+          "bbox": [
+            50.028167724609375,
+            51.21970748901367,
+            157.7877197265625,
+            169.94801330566406,
+            0.7917537689208984
+          ],
+          "landmarks": [
+            [
+              83.09931945800781,
+              91.88478088378906
+            ],
+            [
+              130.53289794921875,
+              88.66958618164062
+            ],
+            [
+              111.53294372558594,
+              111.29747009277344
+            ],
+            [
+              89.35005187988281,
+              135.27000427246094
+            ],
+            [
+              132.13754272460938,
+              132.25131225585938
+            ]
+          ],
+          "pixel_sha256": "93d7c622397dc7bef3841970402c81df756fa2c2ccebf6e77299f62018a2f66d"
+        },
+        "384": {
+          "bbox": [
+            75.403564453125,
+            76.92782592773438,
+            236.25503540039062,
+            254.92254638671875,
+            0.7831254005432129
+          ],
+          "landmarks": [
+            [
+              124.5824203491211,
+              137.7230987548828
+            ],
+            [
+              195.2406005859375,
+              132.37884521484375
+            ],
+            [
+              167.1386260986328,
+              168.05718994140625
+            ],
+            [
+              134.42001342773438,
+              203.06752014160156
+            ],
+            [
+              198.25674438476562,
+              198.04348754882812
+            ]
+          ],
+          "pixel_sha256": "5ccd2b675eb00b1daab832f1eb5907076a964618010074ccfe3aa47090288046"
+        }
+      },
+      "native_sha256": "eeca24c781739c46254ad70e7b9d803617ffc9acda3d6bc3eb355494f9e5f24f"
+    }
+  ]
+}

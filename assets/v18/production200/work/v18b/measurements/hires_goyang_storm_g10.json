@@ -1,0 +1,1454 @@
+{
+  "key": "hires_goyang_storm_g10",
+  "kind": "hires",
+  "team": "goyang_storm",
+  "render": {
+    "key": "goyang_storm_g10",
+    "team": "goyang_storm",
+    "path": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/hires_inputs/goyang_storm_g10.png",
+    "expected_count": 9,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_091",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell00.png",
+      "native_sha256": "34708babfd0d9b87c7db34a772e46f836c95000080d86bd4e691db90a2fd200f",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7508603930473328,
+          "same_original_all10_max": 0.8441817760467529,
+          "old_gallery_top1": "v18_091",
+          "source_own_top1": "v18_091",
+          "other199_max": 0.329329252243042,
+          "other199_id": "v18_071",
+          "legacy160_max": 0.3450348377227783
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7829297780990601,
+          "same_original_all10_max": 0.8660318851470947,
+          "old_gallery_top1": "v18_091",
+          "source_own_top1": "v18_091",
+          "other199_max": 0.3193475008010864,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.3487417995929718
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7815814018249512,
+          "same_original_all10_max": 0.8655685782432556,
+          "old_gallery_top1": "v18_091",
+          "source_own_top1": "v18_091",
+          "other199_max": 0.3239631950855255,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.33693498373031616
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_092",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell01.png",
+      "native_sha256": "54f0a7edce7b4d238bbe835bbff1a69173fa9f4eb47fdccfbc42a3cde5de55a5",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7382329106330872,
+          "same_original_all10_max": 0.8104838132858276,
+          "old_gallery_top1": "v18_092",
+          "source_own_top1": "v18_092",
+          "other199_max": 0.3979637622833252,
+          "other199_id": "v18_104",
+          "legacy160_max": 0.3005930781364441
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7716577649116516,
+          "same_original_all10_max": 0.86732017993927,
+          "old_gallery_top1": "v18_092",
+          "source_own_top1": "v18_092",
+          "other199_max": 0.380010187625885,
+          "other199_id": "v18_104",
+          "legacy160_max": 0.3229336142539978
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.765913724899292,
+          "same_original_all10_max": 0.8592967987060547,
+          "old_gallery_top1": "v18_092",
+          "source_own_top1": "v18_092",
+          "other199_max": 0.39602768421173096,
+          "other199_id": "v18_104",
+          "legacy160_max": 0.33126378059387207
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_093",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell02.png",
+      "native_sha256": "da8f7ca154ea0b993571c1537130c90349c647b8fc8239ae9d80a16b8e12b2df",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8218526244163513,
+          "same_original_all10_max": 0.8916900753974915,
+          "old_gallery_top1": "v18_093",
+          "source_own_top1": "v18_093",
+          "other199_max": 0.39296984672546387,
+          "other199_id": "v18_074",
+          "legacy160_max": 0.33866026997566223
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8556088805198669,
+          "same_original_all10_max": 0.9071828126907349,
+          "old_gallery_top1": "v18_093",
+          "source_own_top1": "v18_093",
+          "other199_max": 0.4010247588157654,
+          "other199_id": "v18_074",
+          "legacy160_max": 0.35784491896629333
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8525782823562622,
+          "same_original_all10_max": 0.9033981561660767,
+          "old_gallery_top1": "v18_093",
+          "source_own_top1": "v18_093",
+          "other199_max": 0.39940011501312256,
+          "other199_id": "v18_074",
+          "legacy160_max": 0.355985552072525
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_094",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell03.png",
+      "native_sha256": "f58b1513bd5ed5c85756e5296d017ee8fd0978ea93c87b7ee03a24abcd9d97f4",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7347352504730225,
+          "same_original_all10_max": 0.8471823930740356,
+          "old_gallery_top1": "v18_094",
+          "source_own_top1": "v18_094",
+          "other199_max": 0.34918713569641113,
+          "other199_id": "v18_061",
+          "legacy160_max": 0.3257564902305603
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7954370975494385,
+          "same_original_all10_max": 0.8697566986083984,
+          "old_gallery_top1": "v18_094",
+          "source_own_top1": "v18_094",
+          "other199_max": 0.3471042215824127,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.32216447591781616
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7883825302124023,
+          "same_original_all10_max": 0.8654783368110657,
+          "old_gallery_top1": "v18_094",
+          "source_own_top1": "v18_094",
+          "other199_max": 0.3547854721546173,
+          "other199_id": "v18_061",
+          "legacy160_max": 0.32487809658050537
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_095",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell04.png",
+      "native_sha256": "931f66734db25ab7504c232fba0f19c76b776a33170093e0b1fc956dec2d3b5a",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 4,
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7766662240028381,
+          "same_original_all10_max": 0.8772826194763184,
+          "old_gallery_top1": "v18_095",
+          "source_own_top1": "v18_095",
+          "other199_max": 0.34535884857177734,
+          "other199_id": "v18_191",
+          "legacy160_max": 0.38030481338500977
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7937777042388916,
+          "same_original_all10_max": 0.8907198905944824,
+          "old_gallery_top1": "v18_095",
+          "source_own_top1": "v18_095",
+          "other199_max": 0.36726322770118713,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.369630366563797
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.808179497718811,
+          "same_original_all10_max": 0.8972346782684326,
+          "old_gallery_top1": "v18_095",
+          "source_own_top1": "v18_095",
+          "other199_max": 0.355516254901886,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.3778228461742401
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_096",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell05.png",
+      "native_sha256": "5d89a3200498c0ad71c83f3953b766f8d9e07e028358fa0f49465ff4646ea135",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 5,
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6271418929100037,
+          "same_original_all10_max": 0.7780921459197998,
+          "old_gallery_top1": "v18_096",
+          "source_own_top1": "v18_096",
+          "other199_max": 0.3636557459831238,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.49146151542663574
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.718211829662323,
+          "same_original_all10_max": 0.8058334589004517,
+          "old_gallery_top1": "v18_096",
+          "source_own_top1": "v18_096",
+          "other199_max": 0.3758457899093628,
+          "other199_id": "v18_189",
+          "legacy160_max": 0.49767398834228516
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7024946808815002,
+          "same_original_all10_max": 0.7900728583335876,
+          "old_gallery_top1": "v18_096",
+          "source_own_top1": "v18_096",
+          "other199_max": 0.36380094289779663,
+          "other199_id": "v18_166",
+          "legacy160_max": 0.4906368851661682
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_097",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell06.png",
+      "native_sha256": "16c4abb649f475ff62f7e3c4f7764bb36f000876eb9b52116061c0d9350246ff",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 6,
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7249099016189575,
+          "same_original_all10_max": 0.8008147478103638,
+          "old_gallery_top1": "v18_097",
+          "source_own_top1": "v18_097",
+          "other199_max": 0.35923120379447937,
+          "other199_id": "v18_122",
+          "legacy160_max": 0.32118403911590576
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.774922251701355,
+          "same_original_all10_max": 0.8590437769889832,
+          "old_gallery_top1": "v18_097",
+          "source_own_top1": "v18_097",
+          "other199_max": 0.36414894461631775,
+          "other199_id": "v18_122",
+          "legacy160_max": 0.3153875470161438
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7661603093147278,
+          "same_original_all10_max": 0.849222719669342,
+          "old_gallery_top1": "v18_097",
+          "source_own_top1": "v18_097",
+          "other199_max": 0.36841556429862976,
+          "other199_id": "v18_122",
+          "legacy160_max": 0.3177148699760437
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_098",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell07.png",
+      "native_sha256": "156f156faf085e3f3553c75b04181ef95c1bc05fbe5e913766b3bc1f4df0bf96",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 7,
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7596163749694824,
+          "same_original_all10_max": 0.8518270254135132,
+          "old_gallery_top1": "v18_098",
+          "source_own_top1": "v18_098",
+          "other199_max": 0.33133235573768616,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.3816989064216614
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.780994176864624,
+          "same_original_all10_max": 0.8764724731445312,
+          "old_gallery_top1": "v18_098",
+          "source_own_top1": "v18_098",
+          "other199_max": 0.3227640390396118,
+          "other199_id": "v18_191",
+          "legacy160_max": 0.35667160153388977
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7755119800567627,
+          "same_original_all10_max": 0.8785690069198608,
+          "old_gallery_top1": "v18_098",
+          "source_own_top1": "v18_098",
+          "other199_max": 0.3155031204223633,
+          "other199_id": "v18_147",
+          "legacy160_max": 0.34707111120224
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_099",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell08.png",
+      "native_sha256": "15c317270c1e99561f9f7aecae09b8701a551015888d0f36814d073d709fdd47",
+      "source_render": "/workspace/generated_images/exec-040fd361-f6b2-46c2-af36-bcfa18b70632.png",
+      "source_render_sha256": "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "source_cell": 8,
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7648254632949829,
+          "same_original_all10_max": 0.8171170949935913,
+          "old_gallery_top1": "v18_099",
+          "source_own_top1": "v18_099",
+          "other199_max": 0.3914679288864136,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.374599814414978
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7736228108406067,
+          "same_original_all10_max": 0.846146285533905,
+          "old_gallery_top1": "v18_099",
+          "source_own_top1": "v18_099",
+          "other199_max": 0.3754584491252899,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.40911865234375
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7763909101486206,
+          "same_original_all10_max": 0.8446808457374573,
+          "old_gallery_top1": "v18_099",
+          "source_own_top1": "v18_099",
+          "other199_max": 0.37819838523864746,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.40409889817237854
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_091",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            35.297752380371094,
+            27.757732391357422,
+            95.09721374511719,
+            104.63482666015625,
+            0.8008919954299927
+          ],
+          "landmarks": [
+            [
+              51.008087158203125,
+              52.84431838989258
+            ],
+            [
+              78.90599060058594,
+              53.25700759887695
+            ],
+            [
+              64.73585510253906,
+              71.15025329589844
+            ],
+            [
+              54.04526901245117,
+              84.70328521728516
+            ],
+            [
+              75.49366760253906,
+              85.05125427246094
+            ]
+          ],
+          "pixel_sha256": "67871921697831c59160e8e432d04056adaad65a80d04c92072a56a164f8ac80"
+        },
+        "256": {
+          "bbox": [
+            71.11528778076172,
+            55.23161697387695,
+            190.08998107910156,
+            209.1330108642578,
+            0.8062623143196106
+          ],
+          "landmarks": [
+            [
+              102.10052490234375,
+              106.0073013305664
+            ],
+            [
+              157.5280303955078,
+              106.66629791259766
+            ],
+            [
+              129.20083618164062,
+              143.5504150390625
+            ],
+            [
+              108.65750885009766,
+              170.07911682128906
+            ],
+            [
+              150.43675231933594,
+              170.70704650878906
+            ]
+          ],
+          "pixel_sha256": "975e30fc43ec2cd36ce72c6754145c650fc5c4a60714c4d6609332e81175e6d9"
+        },
+        "384": {
+          "bbox": [
+            107.55140686035156,
+            83.85651397705078,
+            285.66339111328125,
+            313.6121520996094,
+            0.7987791299819946
+          ],
+          "landmarks": [
+            [
+              153.36373901367188,
+              159.17872619628906
+            ],
+            [
+              236.35398864746094,
+              160.2946014404297
+            ],
+            [
+              193.5387725830078,
+              215.50076293945312
+            ],
+            [
+              163.03517150878906,
+              254.87612915039062
+            ],
+            [
+              225.8083953857422,
+              255.86825561523438
+            ]
+          ],
+          "pixel_sha256": "be93a1b75384036b58fe08283d6de1da2645c8f972e079591dff45f670c9ee16"
+        }
+      },
+      "native_sha256": "34708babfd0d9b87c7db34a772e46f836c95000080d86bd4e691db90a2fd200f"
+    },
+    {
+      "id": "v18_092",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell01.png",
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            40.579811096191406,
+            26.25484275817871,
+            92.65269470214844,
+            94.53250885009766,
+            0.7977774143218994
+          ],
+          "landmarks": [
+            [
+              54.53669357299805,
+              51.574432373046875
+            ],
+            [
+              79.1501235961914,
+              51.46088409423828
+            ],
+            [
+              67.15623474121094,
+              64.9659194946289
+            ],
+            [
+              55.66827392578125,
+              74.92455291748047
+            ],
+            [
+              78.27839660644531,
+              74.7815933227539
+            ]
+          ],
+          "pixel_sha256": "36532cf770a3c6c9c43b17ea14a7bf3bbdd3500965a2cc81fbe9b53954d6a021"
+        },
+        "256": {
+          "bbox": [
+            81.23196411132812,
+            52.94562911987305,
+            185.2229461669922,
+            189.70611572265625,
+            0.8056555986404419
+          ],
+          "landmarks": [
+            [
+              109.56622314453125,
+              103.2511215209961
+            ],
+            [
+              158.1508331298828,
+              102.75370025634766
+            ],
+            [
+              134.59701538085938,
+              130.81845092773438
+            ],
+            [
+              111.96533203125,
+              150.15231323242188
+            ],
+            [
+              156.5658416748047,
+              149.65057373046875
+            ]
+          ],
+          "pixel_sha256": "183073ddf3f5e168459df2fd96796cfbad17d158e0b1be29a2b711b14e992f65"
+        },
+        "384": {
+          "bbox": [
+            122.54505157470703,
+            81.9539566040039,
+            277.37762451171875,
+            285.1934814453125,
+            0.7920939922332764
+          ],
+          "landmarks": [
+            [
+              164.64820861816406,
+              155.0876007080078
+            ],
+            [
+              236.57252502441406,
+              154.70147705078125
+            ],
+            [
+              201.12875366210938,
+              196.8504638671875
+            ],
+            [
+              167.95301818847656,
+              225.14114379882812
+            ],
+            [
+              234.046630859375,
+              224.63546752929688
+            ]
+          ],
+          "pixel_sha256": "2430090677c96bc87099b2ed498514b2621d94ef4dd3905215f6381820b700c1"
+        }
+      },
+      "native_sha256": "54f0a7edce7b4d238bbe835bbff1a69173fa9f4eb47fdccfbc42a3cde5de55a5"
+    },
+    {
+      "id": "v18_093",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell02.png",
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            39.55785369873047,
+            26.556629180908203,
+            98.35063171386719,
+            100.1426010131836,
+            0.8095667362213135
+          ],
+          "landmarks": [
+            [
+              55.593833923339844,
+              50.131324768066406
+            ],
+            [
+              83.18365478515625,
+              50.266136169433594
+            ],
+            [
+              70.16970825195312,
+              68.36839294433594
+            ],
+            [
+              59.5168342590332,
+              81.76094818115234
+            ],
+            [
+              80.62288665771484,
+              81.76206970214844
+            ]
+          ],
+          "pixel_sha256": "84e98b64bbea5122f117166425700795c2fea3f2f5520f71a21cb0dfd8f2b389"
+        },
+        "256": {
+          "bbox": [
+            79.65663146972656,
+            53.99016189575195,
+            196.28448486328125,
+            200.797607421875,
+            0.8213378190994263
+          ],
+          "landmarks": [
+            [
+              111.39045715332031,
+              100.41983795166016
+            ],
+            [
+              165.87777709960938,
+              100.55705261230469
+            ],
+            [
+              139.88235473632812,
+              137.1763458251953
+            ],
+            [
+              118.68463134765625,
+              163.4076385498047
+            ],
+            [
+              160.75851440429688,
+              163.36312866210938
+            ]
+          ],
+          "pixel_sha256": "43fc57c8d95e01bfa38fe52e99f856c95a9263358409eb5e44b7a138416570ae"
+        },
+        "384": {
+          "bbox": [
+            119.40568542480469,
+            81.01028442382812,
+            294.3559265136719,
+            301.5111389160156,
+            0.8193644881248474
+          ],
+          "landmarks": [
+            [
+              167.39205932617188,
+              150.7985076904297
+            ],
+            [
+              248.40670776367188,
+              150.97891235351562
+            ],
+            [
+              209.822265625,
+              206.41249084472656
+            ],
+            [
+              178.24191284179688,
+              244.92919921875
+            ],
+            [
+              240.91807556152344,
+              244.84329223632812
+            ]
+          ],
+          "pixel_sha256": "247d276fb0d9d6c0056ee58bc156cfbe5e6f0366ff14b1fe668b4987cadde843"
+        }
+      },
+      "native_sha256": "da8f7ca154ea0b993571c1537130c90349c647b8fc8239ae9d80a16b8e12b2df"
+    },
+    {
+      "id": "v18_094",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell03.png",
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.045982360839844,
+            29.43105697631836,
+            95.6036148071289,
+            103.51481628417969,
+            0.7879164218902588
+          ],
+          "landmarks": [
+            [
+              52.50090789794922,
+              56.45868682861328
+            ],
+            [
+              79.32223510742188,
+              55.6424560546875
+            ],
+            [
+              66.3825454711914,
+              71.97777557373047
+            ],
+            [
+              57.106468200683594,
+              85.5870132446289
+            ],
+            [
+              77.73421478271484,
+              84.86052703857422
+            ]
+          ],
+          "pixel_sha256": "24b8a5a023cfcca50645eb6f7136ccda4dfb42377980137c359bcc0067ddf4e0"
+        },
+        "256": {
+          "bbox": [
+            74.34071350097656,
+            58.65312957763672,
+            190.93222045898438,
+            207.0785369873047,
+            0.7870273590087891
+          ],
+          "landmarks": [
+            [
+              104.98283386230469,
+              113.32340240478516
+            ],
+            [
+              158.75747680664062,
+              111.51356506347656
+            ],
+            [
+              132.75576782226562,
+              144.9107666015625
+            ],
+            [
+              114.15409851074219,
+              171.38131713867188
+            ],
+            [
+              155.3185272216797,
+              169.85374450683594
+            ]
+          ],
+          "pixel_sha256": "c504e7d0240b21f70ed9be07bb6deee646ea88a462742643524e78453e198b4e"
+        },
+        "384": {
+          "bbox": [
+            111.60313415527344,
+            87.79163360595703,
+            286.3506164550781,
+            310.0783996582031,
+            0.7897707223892212
+          ],
+          "landmarks": [
+            [
+              157.6033172607422,
+              169.9589385986328
+            ],
+            [
+              237.74282836914062,
+              167.35255432128906
+            ],
+            [
+              198.87339782714844,
+              218.08065795898438
+            ],
+            [
+              171.41050720214844,
+              256.8728942871094
+            ],
+            [
+              232.5088348388672,
+              254.68597412109375
+            ]
+          ],
+          "pixel_sha256": "5376d970718487117196092b7a45c0d000b81d72f1c8f00b688f600b5f50a551"
+        }
+      },
+      "native_sha256": "f58b1513bd5ed5c85756e5296d017ee8fd0978ea93c87b7ee03a24abcd9d97f4"
+    },
+    {
+      "id": "v18_095",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell04.png",
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.3307991027832,
+            25.176563262939453,
+            93.81742095947266,
+            91.34721374511719,
+            0.837405264377594
+          ],
+          "landmarks": [
+            [
+              55.8283576965332,
+              47.77717208862305
+            ],
+            [
+              81.11717224121094,
+              48.33342361450195
+            ],
+            [
+              70.56961822509766,
+              59.914276123046875
+            ],
+            [
+              56.70857620239258,
+              71.1897964477539
+            ],
+            [
+              80.0879898071289,
+              71.5225830078125
+            ]
+          ],
+          "pixel_sha256": "db1e40e5d7b850a931509082c14a0fbf477b46d6931ce7819267c319682509ef"
+        },
+        "256": {
+          "bbox": [
+            75.18645477294922,
+            50.809600830078125,
+            187.2086181640625,
+            184.6114044189453,
+            0.8463638424873352
+          ],
+          "landmarks": [
+            [
+              112.5169448852539,
+              95.42298889160156
+            ],
+            [
+              161.44195556640625,
+              96.31649780273438
+            ],
+            [
+              141.15834045410156,
+              121.07832336425781
+            ],
+            [
+              113.74064636230469,
+              142.860595703125
+            ],
+            [
+              159.39871215820312,
+              143.5399932861328
+            ]
+          ],
+          "pixel_sha256": "768fd365a4746635df0c7353b7380a2f60ed22b9aec64cf5401f71aa7c702ea3"
+        },
+        "384": {
+          "bbox": [
+            113.90729522705078,
+            75.10014343261719,
+            281.0930480957031,
+            278.0948181152344,
+            0.8447721004486084
+          ],
+          "landmarks": [
+            [
+              168.3330535888672,
+              142.9236297607422
+            ],
+            [
+              241.9596710205078,
+              143.84185791015625
+            ],
+            [
+              210.93145751953125,
+              181.88096618652344
+            ],
+            [
+              170.0917510986328,
+              214.1700897216797
+            ],
+            [
+              239.5916748046875,
+              214.8331298828125
+            ]
+          ],
+          "pixel_sha256": "879f42d015984c4521c9ad5a874a3ae577bcc7c60113ca33726468b7edfb5e09"
+        }
+      },
+      "native_sha256": "931f66734db25ab7504c232fba0f19c76b776a33170093e0b1fc956dec2d3b5a"
+    },
+    {
+      "id": "v18_096",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell05.png",
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.22936248779297,
+            25.824050903320312,
+            91.23734283447266,
+            92.0848617553711,
+            0.8449984192848206
+          ],
+          "landmarks": [
+            [
+              51.6044807434082,
+              46.80915832519531
+            ],
+            [
+              76.5246810913086,
+              46.89067459106445
+            ],
+            [
+              64.20536804199219,
+              61.498497009277344
+            ],
+            [
+              53.559417724609375,
+              72.76148986816406
+            ],
+            [
+              75.31080627441406,
+              72.86186981201172
+            ]
+          ],
+          "pixel_sha256": "a17557622f0e08dd1efe26cb7ca18b507c76f62be13be6ec292b5bdd62c6349f"
+        },
+        "256": {
+          "bbox": [
+            74.42937469482422,
+            52.156982421875,
+            182.5532989501953,
+            185.7571258544922,
+            0.8444212675094604
+          ],
+          "landmarks": [
+            [
+              103.4897689819336,
+              93.13777160644531
+            ],
+            [
+              152.84669494628906,
+              93.30653381347656
+            ],
+            [
+              128.46914672851562,
+              123.54783630371094
+            ],
+            [
+              107.54469299316406,
+              146.03509521484375
+            ],
+            [
+              150.51231384277344,
+              146.3169708251953
+            ]
+          ],
+          "pixel_sha256": "8426f7ced9fa65c545e4a7bd19a6123a94069c4c775f3109955e82db06d27a8e"
+        },
+        "384": {
+          "bbox": [
+            111.8992919921875,
+            78.13928985595703,
+            273.2706604003906,
+            278.5563049316406,
+            0.8468469977378845
+          ],
+          "landmarks": [
+            [
+              155.1484832763672,
+              139.6737823486328
+            ],
+            [
+              228.806396484375,
+              139.73121643066406
+            ],
+            [
+              192.4589385986328,
+              185.6466064453125
+            ],
+            [
+              161.41439819335938,
+              218.7730255126953
+            ],
+            [
+              225.55645751953125,
+              219.0591278076172
+            ]
+          ],
+          "pixel_sha256": "797e5216fcdc46b56a64dff471651bc2c07b42ab82b394d3b6674f5c2dbcf884"
+        }
+      },
+      "native_sha256": "5d89a3200498c0ad71c83f3953b766f8d9e07e028358fa0f49465ff4646ea135"
+    },
+    {
+      "id": "v18_097",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell06.png",
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            34.909767150878906,
+            26.0548038482666,
+            97.46406555175781,
+            99.74409484863281,
+            0.7880570292472839
+          ],
+          "landmarks": [
+            [
+              53.8654899597168,
+              51.50969696044922
+            ],
+            [
+              82.13729858398438,
+              52.089622497558594
+            ],
+            [
+              69.12627410888672,
+              64.35555267333984
+            ],
+            [
+              55.22821807861328,
+              78.66388702392578
+            ],
+            [
+              80.08968353271484,
+              79.11226654052734
+            ]
+          ],
+          "pixel_sha256": "5b770e07d61b8d1df26861d02dbc196894010eeaac50d5be797e44f43720dff8"
+        },
+        "256": {
+          "bbox": [
+            70.14022064208984,
+            53.59601974487305,
+            194.5990447998047,
+            199.96290588378906,
+            0.7965779304504395
+          ],
+          "landmarks": [
+            [
+              107.4915542602539,
+              103.416015625
+            ],
+            [
+              164.1596221923828,
+              104.65998840332031
+            ],
+            [
+              137.81027221679688,
+              129.08055114746094
+            ],
+            [
+              110.00761413574219,
+              157.7516632080078
+            ],
+            [
+              159.8826141357422,
+              158.67372131347656
+            ]
+          ],
+          "pixel_sha256": "15e22e9d57e8ec1b1bb1eb69e6add036cd909c7f26660cc3d3689721d2769c8c"
+        },
+        "384": {
+          "bbox": [
+            105.95455169677734,
+            83.08470153808594,
+            291.591064453125,
+            300.05908203125,
+            0.8018713593482971
+          ],
+          "landmarks": [
+            [
+              161.8120574951172,
+              155.10597229003906
+            ],
+            [
+              246.0260467529297,
+              156.88995361328125
+            ],
+            [
+              206.88011169433594,
+              193.59744262695312
+            ],
+            [
+              165.57664489746094,
+              236.70574951171875
+            ],
+            [
+              239.50836181640625,
+              238.02886962890625
+            ]
+          ],
+          "pixel_sha256": "3ecbf5e58d90127d31c190856016e5ee4c2d52d29529849593057d7cbebc4b37"
+        }
+      },
+      "native_sha256": "16c4abb649f475ff62f7e3c4f7764bb36f000876eb9b52116061c0d9350246ff"
+    },
+    {
+      "id": "v18_098",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell07.png",
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            38.97938919067383,
+            24.01808738708496,
+            91.39644622802734,
+            90.76780700683594,
+            0.8479939699172974
+          ],
+          "landmarks": [
+            [
+              54.389862060546875,
+              45.288761138916016
+            ],
+            [
+              78.87705993652344,
+              45.47631072998047
+            ],
+            [
+              67.69783020019531,
+              59.157470703125
+            ],
+            [
+              54.055885314941406,
+              67.82332611083984
+            ],
+            [
+              78.51080322265625,
+              67.99406433105469
+            ]
+          ],
+          "pixel_sha256": "b295ea649b6c4fd75cba21e3d390edda37cf741669af2b1f846a278ae0add721"
+        },
+        "256": {
+          "bbox": [
+            78.84138488769531,
+            48.06535720825195,
+            182.5224609375,
+            181.97171020507812,
+            0.8605232238769531
+          ],
+          "landmarks": [
+            [
+              109.21827697753906,
+              90.1458511352539
+            ],
+            [
+              158.24362182617188,
+              90.52362060546875
+            ],
+            [
+              135.67007446289062,
+              118.74101257324219
+            ],
+            [
+              107.44657135009766,
+              135.38059997558594
+            ],
+            [
+              157.31527709960938,
+              135.8441162109375
+            ]
+          ],
+          "pixel_sha256": "9246d2539c7cb083d2574befe9d71f712123a1925ef8880b8406cdf5bfbb2fed"
+        },
+        "384": {
+          "bbox": [
+            118.7926254272461,
+            73.09674072265625,
+            273.8415832519531,
+            271.5900573730469,
+            0.8629621863365173
+          ],
+          "landmarks": [
+            [
+              163.7255096435547,
+              135.14535522460938
+            ],
+            [
+              237.33676147460938,
+              135.4868927001953
+            ],
+            [
+              203.19625854492188,
+              178.05010986328125
+            ],
+            [
+              161.45407104492188,
+              202.9591064453125
+            ],
+            [
+              235.75729370117188,
+              203.52281188964844
+            ]
+          ],
+          "pixel_sha256": "0210be48125f2e60c0ee1f6b18cbf3bbae1a542fbb3fc7a971dd987efb36f9f2"
+        }
+      },
+      "native_sha256": "156f156faf085e3f3553c75b04181ef95c1bc05fbe5e913766b3bc1f4df0bf96"
+    },
+    {
+      "id": "v18_099",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_goyang_storm_g10/cell08.png",
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            41.61175537109375,
+            25.718318939208984,
+            95.2635498046875,
+            93.0301742553711,
+            0.8108583688735962
+          ],
+          "landmarks": [
+            [
+              59.10474395751953,
+              49.479061126708984
+            ],
+            [
+              83.60298156738281,
+              50.25856399536133
+            ],
+            [
+              73.58438873291016,
+              61.62034225463867
+            ],
+            [
+              59.78773880004883,
+              72.56562805175781
+            ],
+            [
+              82.9585189819336,
+              73.05216979980469
+            ]
+          ],
+          "pixel_sha256": "21f61a4b0ef10e721964745ff47e648d6d0a826ae4ba0757f1d637ee45742716"
+        },
+        "256": {
+          "bbox": [
+            83.30819702148438,
+            51.54783248901367,
+            190.843017578125,
+            186.60525512695312,
+            0.8126341700553894
+          ],
+          "landmarks": [
+            [
+              118.18156433105469,
+              99.15907287597656
+            ],
+            [
+              167.1435546875,
+              99.83512878417969
+            ],
+            [
+              147.1248779296875,
+              124.99638366699219
+            ],
+            [
+              119.7523422241211,
+              145.78208923339844
+            ],
+            [
+              166.09121704101562,
+              146.0543670654297
+            ]
+          ],
+          "pixel_sha256": "8542d431c04485a39ca585ddae05c75a96f6191776a5fe8d6d14e58150adc69e"
+        },
+        "384": {
+          "bbox": [
+            125.21089172363281,
+            78.1209945678711,
+            286.2637634277344,
+            279.87835693359375,
+            0.8140783309936523
+          ],
+          "landmarks": [
+            [
+              177.34999084472656,
+              148.4722137451172
+            ],
+            [
+              250.44923400878906,
+              148.90017700195312
+            ],
+            [
+              220.81658935546875,
+              187.85484313964844
+            ],
+            [
+              180.2130584716797,
+              218.82522583007812
+            ],
+            [
+              249.26731872558594,
+              218.70333862304688
+            ]
+          ],
+          "pixel_sha256": "529ab962da9b722805be31897ae60772bd3a268cb33ae049753f4c392e284f1b"
+        }
+      },
+      "native_sha256": "15c317270c1e99561f9f7aecae09b8701a551015888d0f36814d073d709fdd47"
+    }
+  ]
+}

@@ -1,0 +1,780 @@
+[
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel00.jpg",
+    "keys": [
+      "gray_busan_waves_r1",
+      "gray_busan_waves_r2",
+      "gray_changwon_anchors_r1",
+      "gray_changwon_anchors_r2"
+    ],
+    "render_sha256": [
+      "51ba6f027f96b388163624035af708d6fc3bec3bbd63f9383122c00eea5b544c",
+      "68fa25431df702136a88a5ddc0c8596d2a8e12343455698ab1d5dff1dd55dabf",
+      "6eb6ef39423bd3a734aad23933f92818926c763362902c13c8481f9f6f2b46cd",
+      "3467d3afd65b272da9b6c59bb25fed7ab9dcd43b055abdaf603fdbbf680520bf"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel01.jpg",
+    "keys": [
+      "gray_daegu_thunders_r1",
+      "gray_daegu_thunders_r2",
+      "gray_daejeon_redfox_clean_v18_165",
+      "gray_daejeon_redfox_r1"
+    ],
+    "render_sha256": [
+      "a98924ad2efca4f1d3b877e09b47cf017a98e5046c9442de648b883c1f5b7922",
+      "363fd1fe2f81728f54a317da214d1d08569874790b800ff393b6c16521197b9b",
+      "beae8d798cfa500f66e5a1a120d73457dcf41a5b799dd8a281c2f93e5a6bb732",
+      "beae8d798cfa500f66e5a1a120d73457dcf41a5b799dd8a281c2f93e5a6bb732"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel02.jpg",
+    "keys": [
+      "gray_daejeon_redfox_r2",
+      "gray_goyang_storm_clean_v18_165",
+      "gray_goyang_storm_r1",
+      "gray_goyang_storm_r2"
+    ],
+    "render_sha256": [
+      "4e899e104fadb61caba9c514b30e9b205e6eeaf3642f9c2750addb947c99ffd3",
+      "156a59267e3453f673f52b24a9b56da2d641b02083357dca586355076ee603df",
+      "406158800164bce2c4628875f4a32dfb54afac0adb7c8a220bcf7eceda958c84",
+      "156a59267e3453f673f52b24a9b56da2d641b02083357dca586355076ee603df"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel03.jpg",
+    "keys": [
+      "gray_gwangju_blazes_r1",
+      "gray_gwangju_blazes_r2",
+      "gray_incheon_seagulls_r1",
+      "gray_incheon_seagulls_r2"
+    ],
+    "render_sha256": [
+      "0ece6580bcf374e9cbe0945f391e1faa987b49d5abb80da54dc86d1e0e638642",
+      "ab79acbd8b68868ee9684e0d6b1ee1af8427d0bfde8c6511c48eb06467fce090",
+      "64541f1e5961ddd8d5eafdf99b2906509db82fb16a38f6392ed2d50e508ef58b",
+      "53eaaab12f9dfbe301c2a8835c2e6354655f433709989787f45b025bb29c90ba"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel04.jpg",
+    "keys": [
+      "gray_seoul_comets_clean_v18_174",
+      "gray_seoul_comets_r0",
+      "gray_seoul_comets_r1",
+      "gray_seoul_comets_r2"
+    ],
+    "render_sha256": [
+      "00cb0e700744593637490a4f45ee7df68a16cd0f9482f840e4b20cffd9b3478d",
+      "c3e51db1dd10f30f492b2b2568d43f1828a356c1bd3561b4b29c06fdc19609bd",
+      "11615c2b9a4004c14db6685e9878ed6d16cb547279a7128ef1df1b36d561732e",
+      "00cb0e700744593637490a4f45ee7df68a16cd0f9482f840e4b20cffd9b3478d"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel05.jpg",
+    "keys": [
+      "gray_seoul_comets_r3",
+      "gray_seoul_hounds_r1",
+      "gray_seoul_hounds_r2",
+      "gray_suwon_sparks_r1"
+    ],
+    "render_sha256": [
+      "2fc686b5b41f7fe07c882dc772b6b2cb135a282493e03c0b5d51fb17dbc8f58c",
+      "316122f7d765f7867da558b1efb88c64ce7a1c477117a662760cc968d37f8072",
+      "daab328282148521145a715899bea13d56d4b230f6ceb63ea9902c5bd9d6b216",
+      "eb667b6f2e9178097518bd210683f64eb2a7f09b6b53005c103c7570e58e8f81"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel06.jpg",
+    "keys": [
+      "gray_suwon_sparks_r2",
+      "hires_busan_waves_g00",
+      "hires_busan_waves_g01",
+      "hires_busan_waves_g02"
+    ],
+    "render_sha256": [
+      "d677cca41f39bb65d11eee25fbf9bd9c245c48e83930de223222ec4a8c833ed9",
+      "e12b813401c799e57cca2d3cfdb54cb80c97770228a9a2fb969c0eca5bded327",
+      "88bdf002ca0d9e8836ca0b42ef14cb05c1cc8b08c96746d87300ba0a537a4335",
+      "a31a86323184b020504291fbcd8b47f40efe99f7098d1f39a1a0d02232903f66"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel07.jpg",
+    "keys": [
+      "hires_busan_waves_g03",
+      "hires_busan_waves_g04",
+      "hires_busan_waves_g06",
+      "hires_busan_waves_g13"
+    ],
+    "render_sha256": [
+      "c0f8b688f61626cd60ba6b6aca1f5c28c0ec53a0367ec76805c5f820d5ae0636",
+      "b1e41034cb7795931a89ab1466a8e2649e5516b9e2e08a171811784afd80f9a7",
+      "8670dced2a9afa8ebb5c43ef76fb4611e16cbc33a6ea1db0ccd2c7361df47a2c",
+      "d3adf9ffcd0cdb2dc8b02b9971c2e50b01ee40ec096472ede7f72d4f9e3074ab"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel08.jpg",
+    "keys": [
+      "hires_daegu_thunders_g00",
+      "hires_daegu_thunders_g01",
+      "hires_daegu_thunders_g02",
+      "hires_daegu_thunders_g03"
+    ],
+    "render_sha256": [
+      "9543e0202c40faf558b71688040f8d8b4e9f3fd79955f11cd6a98f0f6b5010d6",
+      "398005d2ca1299453f6b406fa5e5ea47aa6421d13240c03db86629557f1b45d3",
+      "85066a77aa49104fcc74b00e1b815fb8ba595ebc39eec8bc9d6b5c4c1646020e",
+      "5a21e06f8f3b0f3df947927114e8fa83842749bd9759cf5c335d386fa934984e"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel09.jpg",
+    "keys": [
+      "hires_daegu_thunders_g04",
+      "hires_daegu_thunders_g05",
+      "hires_daegu_thunders_g06",
+      "hires_daegu_thunders_g07"
+    ],
+    "render_sha256": [
+      "115e1784e48789be4775b9f133b805b677ae234dfb70c46c005643a7f36d3454",
+      "d75093a9af0a52f9705af3463a26079feea4ed085e922c685a2d4a5301b1ddbd",
+      "cbf58c0501c7ff50caba844ad6c4092cc9c3441c1855134561b0d72f6b7cac2b",
+      "e12c8a54235a6957dbf251b637b3efb5e36bb32dab289383e375ac544fe727c9"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel10.jpg",
+    "keys": [
+      "hires_daegu_thunders_g08",
+      "hires_daegu_thunders_g09",
+      "hires_daegu_thunders_g10",
+      "hires_daegu_thunders_g11"
+    ],
+    "render_sha256": [
+      "1ffc704961065202b8146ef53758193bf11afe2b825b7abcb515fa53eb7cd045",
+      "576754f742c744f8f1c71f18f2210528d8bed933aa768da3ad2e9b2e3d32f7c6",
+      "f04e7c4cb133c00cc9de5af84dc50088b16fdc3c2ca9a0b82240a0153d23282b",
+      "113dbd61b11bb8bc42b1c18b3cf5664db97b85a0f891f14b786630099f86b75c"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel11.jpg",
+    "keys": [
+      "hires_daegu_thunders_g12",
+      "hires_daegu_thunders_g14",
+      "hires_daegu_thunders_g15",
+      "hires_daegu_thunders_g16"
+    ],
+    "render_sha256": [
+      "1dffadad90f88bf7934ff7ae93e04fb335fa20ff3fe09f8b59395a82541cbe07",
+      "850b4c5ee1c9caeba43611d18d4d2ebd63588fc28cd61d2f20180b5ad68ed88e",
+      "bdd57688fc905c1dc2d623f8b8263836972dc9a7ebc07e6849f95f83eb2c6e7e",
+      "4d0c918a6bedf0472e48cb5c7b405cabf48022c7954ac47ad5d36328ea6b289e"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel12.jpg",
+    "keys": [
+      "hires_daegu_thunders_g17",
+      "hires_daegu_thunders_g18",
+      "hires_daegu_thunders_g19",
+      "hires_daegu_thunders_g20"
+    ],
+    "render_sha256": [
+      "63038ca5d351c35d4d372690980c6ece512bceadb84587eb217ee59f902ac25d",
+      "09ef8fbcf09145a16457310e691e3e534f770c4549b76bd207b1ddc2914cc698",
+      "e98c611c85fb268d0182b4ead58afe2b8a841905643ed017bd75391fdca55a63",
+      "f3c54853f4121790b2a7549a809101a675aab924c890dd912e3a86d7b446ca4c"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel13.jpg",
+    "keys": [
+      "hires_daegu_thunders_g21",
+      "hires_daejeon_redfox_g00",
+      "hires_daejeon_redfox_g01",
+      "hires_daejeon_redfox_g02"
+    ],
+    "render_sha256": [
+      "79906c559880690a4e5d79708d5d4ed16fa3e87bfceb1fdabe67bd695ed2b51e",
+      "6e12d502b32e2df279d5a495aea2924148af2d1fe8d4f2f581b83a476e4654a2",
+      "92a1818bb944386f6ab870e856296ad9916dd0284c515c3a7d7cdf335b010a75",
+      "08ed5df9e4525be934ed05ea6160dd5f31fd664db1ae6662298122db698c407b"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel14.jpg",
+    "keys": [
+      "hires_daejeon_redfox_g03",
+      "hires_daejeon_redfox_g04",
+      "hires_daejeon_redfox_g05",
+      "hires_daejeon_redfox_g06"
+    ],
+    "render_sha256": [
+      "d551eb8482c2cbc9fb8f4a5a447bd4a2bea935d159102812a00383e696615719",
+      "6ce3c10a78c8c9701b5b4dc84ae3fddd54ae33876a4a14f8c89944ae958c4fbe",
+      "269cb1ff3fb0281d3f930acd1723a174018277538ea367122720232fd9a76028",
+      "fbc61922f3a8bbc11310c6bca5e3dcbcdb235d3497f92581da02636f4f4d129c"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel15.jpg",
+    "keys": [
+      "hires_daejeon_redfox_g07",
+      "hires_daejeon_redfox_g08",
+      "hires_daejeon_redfox_g09",
+      "hires_daejeon_redfox_g10"
+    ],
+    "render_sha256": [
+      "8fd71144a2540111db9f79d24b09ce4104bb068ee9521e29ce6a53878a8a7bec",
+      "f1cd0764319a52a255e70f741e8d8660645d2be4652547f7adc19104386bec98",
+      "da18275c63a7419dba5ebc4e13549d4601b3fc0051c6b69a63e35423311147bf",
+      "d10c5a006712ed81fc73c2f37f1821adc690f8b38e3fef80d7753acdf581224b"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel16.jpg",
+    "keys": [
+      "hires_daejeon_redfox_g11",
+      "hires_daejeon_redfox_g12",
+      "hires_daejeon_redfox_g13",
+      "hires_daejeon_redfox_g14"
+    ],
+    "render_sha256": [
+      "bf8475ac242768a73b8c5142ebebb93a6d3756fd7f58e20d00e295d9d193ea26",
+      "471b38d192ede50aaf1afc5c77e08a43513fbc63b53fb29541511873219dd6fc",
+      "94c6c0a8175ec3ff5f3a5c089089ad941eb2760c7e6b5eaba737a8199fbbf0b4",
+      "b3885a8fdca60baaa565e98cd96493c24d306ad7c1ad9cda1bdb5cff2f42b650"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel17.jpg",
+    "keys": [
+      "hires_daejeon_redfox_g15",
+      "hires_daejeon_redfox_g16",
+      "hires_daejeon_redfox_g17",
+      "hires_daejeon_redfox_g18"
+    ],
+    "render_sha256": [
+      "a2b76ba87742632688873f064fc70570c754dec049c05ecacbc3c71c0372415c",
+      "8c868482daf1169ad3fb41431301d870db79ea1ce86127666c438d29952cb5b2",
+      "46c3b817a98d8fdaf27eac25751a8593ae05d48dce1ab7ae2f89c3b754c69cec",
+      "de8f141787432c5b7c16527f65cee5f75a5e2399db5cf14d45243a14b08756fa"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel18.jpg",
+    "keys": [
+      "hires_daejeon_redfox_g19",
+      "hires_daejeon_redfox_g20",
+      "hires_daejeon_redfox_g21",
+      "hires_goyang_storm_g00"
+    ],
+    "render_sha256": [
+      "6629ff6d4bd925c972ebeedea9fd8076c51c9915f39f574be570f1a86e221dcd",
+      "6e39a75b36e5b63e235acdfc108147a8cd951ffa5b77bd941457a208b5d4b876",
+      "091bb5aeab83210570a02cb94d2fd288d698264643e99a7aeac5ffe4e7337ef3",
+      "f2f43a6ed3a7c2f169655e34e9b251060941a99270042c70a90a479eb266adde"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel19.jpg",
+    "keys": [
+      "hires_goyang_storm_g01",
+      "hires_goyang_storm_g02",
+      "hires_goyang_storm_g03",
+      "hires_goyang_storm_g04"
+    ],
+    "render_sha256": [
+      "8ecdafb888976be0c4e064436f1a021bda8a94fa1d20d842855e203c0b4cd6a8",
+      "f6fa02cbfd6562ceff8929ad1762738da4b45663f9446f9f663493590a8dd51b",
+      "4e5638448cef600816f764e7c7dfef2a210401874adc841455d69cd1782f0379",
+      "121262846e40db339c34689bef48203bae95a2a164bb2a6b530ebbc65a0c6b5c"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel20.jpg",
+    "keys": [
+      "hires_goyang_storm_g05",
+      "hires_goyang_storm_g06",
+      "hires_goyang_storm_g07",
+      "hires_goyang_storm_g08"
+    ],
+    "render_sha256": [
+      "b7301644b0fed2bc8a122662141b4455bd4c32f5d41cd8556726323b7a7b924c",
+      "842bf67b1b990ee8b6b16e225bbe72e12c0427ae36432c52b3fc09112e9e5480",
+      "bf38719f28c72df5d8631d1a6aafd843cac75684dec78db09ea7731078170f2e",
+      "fadfb1a14dca8b3c913e8862de89f27403d82955ab31ad620bb56d1f65b94031"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel21.jpg",
+    "keys": [
+      "hires_goyang_storm_g09",
+      "hires_goyang_storm_g10",
+      "hires_goyang_storm_g11",
+      "hires_goyang_storm_g12"
+    ],
+    "render_sha256": [
+      "c01e7cb664e6f21eeb78f2cc6ba395557cf89ed1e46fc961fb3021771ca5bc1e",
+      "d1df152f53acca9ba63a11043fa4f2038a480693b2799af435fd84a9e03cf311",
+      "3170ba32f1c1116ee49c5c07645817538ba28f202ed30ad05af122974db467cd",
+      "dd7ca10c4cd37b84813ff836ff1c2c085380dc73b947c27a187000ea513608e4"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel22.jpg",
+    "keys": [
+      "hires_goyang_storm_g13",
+      "hires_goyang_storm_g14",
+      "hires_goyang_storm_g15",
+      "hires_goyang_storm_g16"
+    ],
+    "render_sha256": [
+      "eb28d9d41cd99b3499a09864fcf6d5f12451232de7dce5b059ee382ffba3f88b",
+      "f62632db3b157cfe3e0e194fa5afc0bae9215aea4aab8059a27a8b085a4a65db",
+      "9087b7919144786a207db37fbbb0ca7da6603aa3a3cf78fef2da94e20f940388",
+      "9954d22c3ad59a4d63d8c43c9d497e78a0d54ad4cbe4bc360729d5d1a9d60bd9"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel23.jpg",
+    "keys": [
+      "hires_goyang_storm_g17",
+      "hires_goyang_storm_g18",
+      "hires_goyang_storm_g19",
+      "hires_goyang_storm_g20"
+    ],
+    "render_sha256": [
+      "a2c6bb246e04b096e21ca0dfd0c5e189509380750b589de77219a96b404b34ab",
+      "65e98b76166e5a8742b47618ddd5822d6a05ec475d2f7af7a1825fa0563c4701",
+      "666c9907963c9942de7e346b442beddff7c931d04c9227b9072eee161d4f32d8",
+      "d1865e25af3626fad3744e6ea62a732d44a771f279b8a5a4263fb2b155ebf619"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel24.jpg",
+    "keys": [
+      "hires_goyang_storm_g21",
+      "hires_gwangju_blazes_g00",
+      "hires_gwangju_blazes_g01",
+      "hires_gwangju_blazes_g02"
+    ],
+    "render_sha256": [
+      "ab8c19d48bd3eb85a3f0f19b155e7a83fc533f86d2d371632bf1d5d20da885bf",
+      "d56f537c333077356c41cee5f0bff9720b274c725944299cdb0ef5be0a0f9f26",
+      "fe862d31e85659af05eaacce40ca0f8d1fee357478dfa3e964e0c07b95d6b9ad",
+      "8f4c2ae13226ef1bc0496b9e5cf988f5b2790c8de7158a1b1415ac7e722f68ec"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel25.jpg",
+    "keys": [
+      "hires_gwangju_blazes_g03",
+      "hires_gwangju_blazes_g04",
+      "hires_gwangju_blazes_g05",
+      "hires_gwangju_blazes_g06"
+    ],
+    "render_sha256": [
+      "2c106d37d420b533c885e25eb9749f12da8c042ba06a127ae88188ec198b596d",
+      "e14cc28760825dac7226d21efaff35dc755181c57ed881d140632137ac194ad0",
+      "de1dabc3a70ba46f1d5c0fa6611db89b4003669de6e1df351096816f60c6b1ba",
+      "0fe26bf7482fc02ed5cfc85509b992dcb4d666a96d2d22b98063a9b75ac6eaaf"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel26.jpg",
+    "keys": [
+      "hires_gwangju_blazes_g07",
+      "hires_gwangju_blazes_g08",
+      "hires_gwangju_blazes_g09",
+      "hires_gwangju_blazes_g10"
+    ],
+    "render_sha256": [
+      "5c902f6e7eec54c9cb7563d8cc835106eaac542257dad79338627ffeede7fa30",
+      "9dd2418d7b3560070569103b5e9ba4a59ae1bf923b4b24e70d02e70e4e677bb2",
+      "07af03be48951fc09ff2f28c385aaed6ba50ae3b7a2b07b74f0278436a4976d5",
+      "bdb7f14993bba40eb6d5e8a8795faee44434f0035adbbc18c7398eb5f9832ca2"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel27.jpg",
+    "keys": [
+      "hires_gwangju_blazes_g11",
+      "hires_gwangju_blazes_g12",
+      "hires_gwangju_blazes_g13",
+      "hires_gwangju_blazes_g14"
+    ],
+    "render_sha256": [
+      "add64da672e0cb3fd3939e4f03d42483b62fbaf6a49078eb7a549a9819aa7216",
+      "95e1cb8ac233fee4b8d8936c4a71718587d2e01f2624b8ea2f425f306ac803d5",
+      "fe7e9e412f37171fb3301800878dbfe03fa9789a11ece7aaa5c6e8ac82fba18f",
+      "0e3bab911c23e3489ef850bb0d24b9e1a98018092c34420d677b5328b2b2c412"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel28.jpg",
+    "keys": [
+      "hires_gwangju_blazes_g15",
+      "hires_gwangju_blazes_g16",
+      "hires_gwangju_blazes_g17",
+      "hires_gwangju_blazes_g18"
+    ],
+    "render_sha256": [
+      "2469afe83c93c892c7a7de9eb65ccaaa458bc968e0bb1a1aa6e170b642e77eee",
+      "60f1314fe74955e63246051f0bf376aa06849f692d6ffa3c724c83ee3dae6b8f",
+      "ae408ce153266081d1904378fd92c5049a58a447ba2c07f66be7aa1d171318a3",
+      "353f7d7df5ca4acbf20b05d03777920a7f244e2a4a96c80b3a501cdd1380e495"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel29.jpg",
+    "keys": [
+      "hires_gwangju_blazes_g19",
+      "hires_gwangju_blazes_g20",
+      "hires_gwangju_blazes_g21",
+      "hires_incheon_seagulls_g00"
+    ],
+    "render_sha256": [
+      "d6ac9786b437f88b136dfb879348c48abf9963948addcc13e7759249381a8633",
+      "8b570ce41780b76aabdcc4440799efa2d4d1e129da5cba6cfa7c2a98531d18eb",
+      "de90d5da6eb88941997a4052b3dca8aad599116b3ec77495d942d14b918deb12",
+      "63bc05e3b3bfa6f66a4f04cf9650f6a310fe0446d32d069fb099eb3363727868"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel30.jpg",
+    "keys": [
+      "hires_incheon_seagulls_g01",
+      "hires_incheon_seagulls_g02",
+      "hires_incheon_seagulls_g03",
+      "hires_incheon_seagulls_g04"
+    ],
+    "render_sha256": [
+      "c761ceab12ef009262c2bed85a76a7b8548ec22231a728364945c730717cb152",
+      "ebf077596ad6cd192808cd0ec0f25c83e3ad7942c2154a0d691e7851c4e46b18",
+      "c24aeeed722f9ee901388648106825e6295feff7d81d8b715eeb50c07b9774f8",
+      "9298120097fd835492e91d9e8d891653e342f6f17f8e33ecded21de8ea51bd5b"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel31.jpg",
+    "keys": [
+      "hires_incheon_seagulls_g05",
+      "hires_incheon_seagulls_g06",
+      "hires_incheon_seagulls_g07",
+      "hires_incheon_seagulls_g08"
+    ],
+    "render_sha256": [
+      "b847257f964aaeb58027d01124e542a840aa70caf6c421d13dec4ad6d262f7ba",
+      "12c27900fffc798e095ad1f5e3ecb5c1c95dacda119fcfe55cf1ea6cf2327c24",
+      "ebf2c00805f02438acc8cea6a781d39495674338313132d761af89a20420f7bb",
+      "86ecd587b13e90b7392975617cc00b118f704b0c648b38284b15c121dd1690f1"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel32.jpg",
+    "keys": [
+      "hires_incheon_seagulls_g09",
+      "hires_incheon_seagulls_g10",
+      "hires_incheon_seagulls_g11",
+      "hires_incheon_seagulls_g12"
+    ],
+    "render_sha256": [
+      "c679b78d5c315807d01ef61a63345c9bacb83b40bcd25defa3f465e2add05ab7",
+      "248509341c34966481f89ac68e1bc84c264cc48baf4c4ed391eb9ce2c9e94c2a",
+      "a5c447cd66acf0a6310dbc62f8d4b04fe8e85796e0116947ea6667a80ed84652",
+      "a7102ea9fb4bbc2e8ca02f8c8f7e8600dc1d73816b3223bcf52836d850c766a0"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel33.jpg",
+    "keys": [
+      "hires_incheon_seagulls_g13",
+      "hires_incheon_seagulls_g14",
+      "hires_incheon_seagulls_g15",
+      "hires_incheon_seagulls_g16"
+    ],
+    "render_sha256": [
+      "3e7b704f0de30b2fcf03af9a0515f8c9efe93f73e92b2c9a45499654edaee03b",
+      "c2a8ab21e7748eec737b1e7081c941f19911b3e00f7d54bc3ffbafa72822a601",
+      "55b5110d0623cbb492a2a55f34e5b672c2f9671a1772f9283bee593f35f8033a",
+      "8ed50116f42fe05956824e7132923cce7499b7df22942c0af1d8f05ab10332e1"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel34.jpg",
+    "keys": [
+      "hires_incheon_seagulls_g17",
+      "hires_incheon_seagulls_g18",
+      "hires_incheon_seagulls_g19",
+      "hires_incheon_seagulls_g20"
+    ],
+    "render_sha256": [
+      "ec84d6bbba4517702af42803c2ee962b5f155ec2b002dd4a09c33509d24d1515",
+      "22bce84283bcf8ccf393a1e124581b90192cbaf97af3128d299441a197e36835",
+      "2fa65b34723f83a193cdbb47a6b6dd72efb85397318237071bab468d13bc357d",
+      "2b8407c8c1d05dfdb91b8dae08c7ee13c3c93b7cb643953b5ee3321bf8971448"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel35.jpg",
+    "keys": [
+      "hires_incheon_seagulls_g21",
+      "hires_seoul_comets_g00",
+      "hires_seoul_comets_g01",
+      "hires_seoul_comets_g02"
+    ],
+    "render_sha256": [
+      "00ecd5dc470dd6a853d3688029827ab70ac7e684082025b7b294ce3c2d5886f3",
+      "1e5cb168a298ff3d09fc371dcd8f7b7cf6db3dc5a4110f41f6e82dbf652dbd1d",
+      "a6ff5c9180eda0c96e6705c3bc0e4d231588fcd029ea3ac2cf60fbd65c29e811",
+      "94abef2175d770cf97fc5df609fdf8b2cf8caf0791936b57f91a30667f942623"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel36.jpg",
+    "keys": [
+      "hires_seoul_comets_g03",
+      "hires_seoul_comets_g04",
+      "hires_seoul_comets_g05",
+      "hires_seoul_comets_g06"
+    ],
+    "render_sha256": [
+      "44b58838b85f2b1a336a968372b849457e961b3fe72c69c84ee870a9825b1ece",
+      "6fd0b0b304258c3a8fdd6b3b6a393c6ab96642dc754e361011d3ec29ea82f9db",
+      "7518b70dd68180baf6103efa35984bf494899bb8f8f3fed887501eaab9c97dc7",
+      "518b908e18def8145e293b1aa62c9cd36ec555a4678c531db198a9648ce4ed6b"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel37.jpg",
+    "keys": [
+      "hires_seoul_comets_g07",
+      "hires_seoul_comets_g08",
+      "hires_seoul_comets_g09",
+      "hires_seoul_comets_g10"
+    ],
+    "render_sha256": [
+      "bcdc21392fc5dc27437754e9c163f1a0caa85880d7e5a1ade05745fdc0abbc18",
+      "a5b0f6b5acf0d2d0741288f2196530c27b85baa5cf4128039e49fd4121becef5",
+      "76de4631cef319de4cffc345d5aec3e85addcbf9e658b4d14665c71d855e8837",
+      "dfe4ef91e93ad4bef70336924c10431871147fc5c940cea04c8cf57b1adc7a4e"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel38.jpg",
+    "keys": [
+      "hires_seoul_comets_g11",
+      "hires_seoul_comets_g12",
+      "hires_seoul_comets_g13",
+      "hires_seoul_comets_g14"
+    ],
+    "render_sha256": [
+      "82d5d266f00b456c900110fac5b8e49169ac82862ab49a0b7a4510dd0818cb91",
+      "fbf9a7d035cea97b3f3f786f6284e231741226213f21ffa4b8c2501a832dc464",
+      "3a03377763f961abf2f54af5b0fc2c37f240c964ec5f059b27f8fe4ea35930cd",
+      "4eda4ee801366159eac329c709803c3b3f0e4d8b07b8881780f7763b237fdfe7"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel39.jpg",
+    "keys": [
+      "hires_seoul_comets_g15",
+      "hires_seoul_comets_g16",
+      "hires_seoul_comets_g17",
+      "hires_seoul_comets_g18"
+    ],
+    "render_sha256": [
+      "14ea1921b54fec9ebba00151fc6c745d43cccf00230a979f61a6d1ae4894564d",
+      "6ef244393e2e386ab83b34f5d2e34e4141d5fa02079a5439758e5e4a27531259",
+      "354560b6af5bf02e639061f386c6fda992c7f69a2de6f2e5663eff5404b9bebd",
+      "a32f77b22e0044a8ba334c79942ddd863fd5c4d445da37f1093a217f72f955ad"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel40.jpg",
+    "keys": [
+      "hires_seoul_comets_g19",
+      "hires_seoul_comets_g20",
+      "hires_seoul_comets_g21",
+      "hires_seoul_hounds_g00"
+    ],
+    "render_sha256": [
+      "b8642cb902a52a35b7b44e56bfefeacd60d2555952a37cade1da9d3b786341c0",
+      "1b9b87504fc52fa3dadc1fe584b13b07b228d64b59f0486145e8d6ef823361f2",
+      "de2822f9c83fdbda4c87f764f70bcd8893f7b99130fdcb133de27ded7a2248a3",
+      "7795b6b4b93b539f33cda49814bf84acae0fc877e667fe9a4f312d71eeadbcbe"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel41.jpg",
+    "keys": [
+      "hires_seoul_hounds_g01",
+      "hires_seoul_hounds_g02",
+      "hires_seoul_hounds_g03",
+      "hires_seoul_hounds_g04"
+    ],
+    "render_sha256": [
+      "a26b1eb4ec821a874307a37ab2ddf36c1b3bfbd27078a9ac14320d22f77fa39e",
+      "b16c2c4782d57d16026cd321007dfa4ea99b17a9484b6dc85c8f1cc0ffd866d2",
+      "c7559595325aa5164dedd00fc827f160f22a9743984a54bd0106a09ba18aeaae",
+      "b44ac757f5d67f2e82900cab4758019573418f0c1be46a80a305d05526834935"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel42.jpg",
+    "keys": [
+      "hires_seoul_hounds_g05",
+      "hires_seoul_hounds_g06",
+      "hires_seoul_hounds_g07",
+      "hires_seoul_hounds_g08"
+    ],
+    "render_sha256": [
+      "44ce29c9d1608cc2593fea3ec28f259e6c4cbceddba36caf2859e9e6a32e4e76",
+      "faef8b131262cb260b76f79b78ceb910832d4932d182167a0a9892e3bbef0d96",
+      "50b85209f2cb744c6daa3ab169a1f202fa99666506510034cc5d7649a38611d5",
+      "f7012f00f2a8efcd828b3484c4aed2e4c7067b3bbd4a8ca7e278824f22050bab"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel43.jpg",
+    "keys": [
+      "hires_seoul_hounds_g09",
+      "hires_seoul_hounds_g10",
+      "hires_seoul_hounds_g11",
+      "hires_seoul_hounds_g12"
+    ],
+    "render_sha256": [
+      "69bce8e1d0ce5db2b4049cc559f6236ee9198d88a9c622bb1feb1b5e4b982a72",
+      "940c22dff46f55ed03f5f9145c10329d4f4159e0dc116c13596ddbd15704f9ea",
+      "f05d6cad9ea873c1f01a7b412edf8f7e62f78590e9b9cc6e524eb910b992c7eb",
+      "0f8556f0f31148a0ea36194024cfb23db3e5f32409e445a22a55e149abc2fc95"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel44.jpg",
+    "keys": [
+      "hires_seoul_hounds_g13",
+      "hires_seoul_hounds_g14",
+      "hires_seoul_hounds_g15",
+      "hires_seoul_hounds_g16"
+    ],
+    "render_sha256": [
+      "8ad2932ebbdfcfda3a5804875e64198314026357e79ebd836eee77688d3ab8d7",
+      "7a67371634db8c4fed3f6ad311e563d4e15af5fc7a3c0d5efdd3fef6c341fe73",
+      "bfcfb1f9825b65a680f5a598e9c1ba2399a5ccd184f3d3ba36447fbc90c7f42d",
+      "9db0de7a24e8faa09dd7c3572523e9c912bdc53afbdf585cab76b65cc594ec91"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel45.jpg",
+    "keys": [
+      "hires_seoul_hounds_g17",
+      "hires_seoul_hounds_g18",
+      "hires_seoul_hounds_g19",
+      "hires_seoul_hounds_g20"
+    ],
+    "render_sha256": [
+      "47e6c7e38c281828302bce469adad8b40a0f78e0e194afba5ac325f910f0aa2e",
+      "003fe5568a2459c2e8cf8b7d439d2821544654d94e0b5862cae0d513deb78bef",
+      "c0a78997b31c9e9e383c66a5aa5fbcab135a39452be8ec2e272533147f24b4b5",
+      "b839415dca5095fbb92088a159c5fc5bc6752bb15f0d5cd503805eb37382710b"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel46.jpg",
+    "keys": [
+      "hires_seoul_hounds_g21",
+      "hires_suwon_sparks_g00",
+      "hires_suwon_sparks_g01",
+      "hires_suwon_sparks_g02"
+    ],
+    "render_sha256": [
+      "9be46ba4a410e98a491778467531931e61d86037d447992fab05b3bad35b3b97",
+      "2e299ac97986b31425a6331a0407f06a3d6d7340ce83b7c70436ab0b4ba8e35f",
+      "f338958bc558e0d893b40981fd3edf9b330e7fea3d699115f2278ff710869a7b",
+      "195b15da147478de3c4c05cf44cb77603532e96f8441c19b3fd74862b30f3567"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel47.jpg",
+    "keys": [
+      "hires_suwon_sparks_g03",
+      "hires_suwon_sparks_g04",
+      "hires_suwon_sparks_g05",
+      "hires_suwon_sparks_g06"
+    ],
+    "render_sha256": [
+      "9116dbada688bc4c05ab84495caa5b9943e73243acc4859b5b531d4b6ba44b84",
+      "5e51cc672840830c385884f050d191c2295668e37084ac478fceb0026d8e0c00",
+      "92a0d3eb975d5482f2137c03e4cd033ab6d70de7f347739bb728b0549beeeaee",
+      "8f4e3325d3f24508e76dcf6259025b74f7afd7dd548f9d6ba668839aa3076bce"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel48.jpg",
+    "keys": [
+      "hires_suwon_sparks_g07",
+      "hires_suwon_sparks_g08",
+      "hires_suwon_sparks_g09",
+      "hires_suwon_sparks_g10"
+    ],
+    "render_sha256": [
+      "83c708cf6acc843a2c92ebcdff9152967e3ca05d3d053b2664a2e734819817b9",
+      "deca05cb0cde5cafd8fbdf2b2ef1fe9f021fff27883b47cbc32db8e9d4a6d543",
+      "e00f275843db63fb9ccd41561fd5c32a94cc748fa2fd1f2c8ed87e0979cf9f7b",
+      "d2f3ade0b8eddde0ff18b5deae5308777b0949c3c1a98f08543e5949501ba998"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel49.jpg",
+    "keys": [
+      "hires_suwon_sparks_g11",
+      "hires_suwon_sparks_g12",
+      "hires_suwon_sparks_g13",
+      "hires_suwon_sparks_g14"
+    ],
+    "render_sha256": [
+      "98329427497411ae73016fb5a9c23c624bc97f35234baef94ff346f96cc49fb0",
+      "94a0231862c9ac6b8f7cb0562b8b3f5fb4cc0c74033aac5c887336a38eedbffd",
+      "e8526ae00873e94cc43c18fadc184c038b86698420178fcbfc362d607983fac2",
+      "74cca7cf5c9c701a836aa654142b2ed5e894673dc377ef08ebc169e79c101cbf"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel50.jpg",
+    "keys": [
+      "hires_suwon_sparks_g15",
+      "hires_suwon_sparks_g16",
+      "hires_suwon_sparks_g17",
+      "hires_suwon_sparks_g18"
+    ],
+    "render_sha256": [
+      "7ae1fce9ee517f3db5a00bf8512d4377a07b5842fc97719efc3a0d486b1e2bd5",
+      "597dea0858bb5986bbba548178d355bb0bd409f26cc62d1c2584ca3065b3392d",
+      "3a182ba83cdd86b7dbc1af088630eab71bf2e51a8464c1ffdc1509a50db5835d",
+      "9b36839cc44cd4a32ddc47a64b3271279fa847b7b7d3e2e8bbc8ccaf1004f10b"
+    ]
+  },
+  {
+    "file": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel51.jpg",
+    "keys": [
+      "hires_suwon_sparks_g19",
+      "hires_suwon_sparks_g20",
+      "hires_suwon_sparks_g21"
+    ],
+    "render_sha256": [
+      "1171ca049420f54776ce9728a94f08f2c978923063f8751c675e4a8e3e86ad3d",
+      "cfe840864e19376c1b639960b7a34849135a7a7bc985c31adc302e50a4421e5d",
+      "64ec0f0c9b36b5051c2b0a66dd14311f65429b9dbb816ec92f5d0909983ad8e4"
+    ]
+  }
+]

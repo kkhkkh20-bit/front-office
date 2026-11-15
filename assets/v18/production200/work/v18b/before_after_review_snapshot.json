@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "before_after_identity_count": 4,
+  "review_method": "Explicit visual inspection of all four before/after panels, each showing the same identity in all10 clubs at actual256 pixels. Gray backgrounds, natural proportions, retained hair/facial hair/glasses, deep cap fit and coherent neck/shoulders verified.",
+  "files": [
+    {
+      "path": "assets/v18/production200/previews/v18b/v18_165_before_after_10clubs.png",
+      "sha256": "d215334d77c96118428e88e92135c5288883538259394ed4ffe35a40c44e6c77"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/v18_169_before_after_10clubs.png",
+      "sha256": "3df8e36be10d3a0fe6db6d992006eae0af88a11081d5bf2b4f377d7f284bedd9"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/v18_170_before_after_10clubs.png",
+      "sha256": "da09ff46a9467541df2b31b60a9d7b257f1701deceadd33ff8302d31912645a5"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/v18_174_before_after_10clubs.png",
+      "sha256": "bcb703dce976a1951a2d849e2a18fe2c7cf4adde24113e4bc1ca8b3d2c95ec4d"
+    }
+  ]
+}

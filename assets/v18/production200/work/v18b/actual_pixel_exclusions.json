@@ -1,0 +1,101 @@
+[
+  {
+    "id": "v18_165",
+    "team": "incheon_seagulls",
+    "measurement_key": "gray_incheon_seagulls_r2",
+    "reason": "Failed the actual compressed128 WebP distinctness gate; replace this extraction with a separately measured and visually reviewed complete photograph.",
+    "actual_compressed_metrics": {
+      "128": {
+        "passed": false,
+        "other199_max": 0.40845251083374023,
+        "legacy160_max": 0.3145865499973297,
+        "same_original_all10_min": 0.8257557153701782
+      },
+      "256": {
+        "passed": true,
+        "other199_max": 0.36671605706214905,
+        "legacy160_max": 0.3362995982170105,
+        "same_original_all10_min": 0.8604326248168945
+      },
+      "384": {
+        "passed": true,
+        "other199_max": 0.36713796854019165,
+        "legacy160_max": 0.34057337045669556,
+        "same_original_all10_min": 0.8564504384994507
+      }
+    }
+  },
+  {
+    "id": "v18_174",
+    "team": "gwangju_blazes",
+    "measurement_key": "gray_gwangju_blazes_r2",
+    "reason": "Failed the actual compressed128 WebP distinctness gate; replace this extraction with a separately measured and visually reviewed complete photograph.",
+    "actual_compressed_metrics": {
+      "128": {
+        "passed": false,
+        "other199_max": 0.4009959101676941,
+        "legacy160_max": 0.36683404445648193,
+        "same_original_all10_min": 0.8024201989173889
+      },
+      "256": {
+        "passed": true,
+        "other199_max": 0.3686380982398987,
+        "legacy160_max": 0.3827650249004364,
+        "same_original_all10_min": 0.84355628490448
+      },
+      "384": {
+        "passed": true,
+        "other199_max": 0.37397778034210205,
+        "legacy160_max": 0.38924169540405273,
+        "same_original_all10_min": 0.8513484001159668
+      }
+    }
+  },
+  {
+    "id": "v18_174",
+    "team": "busan_waves",
+    "measurement_key": "gray_busan_waves_r2",
+    "reason": "Failed the actual compressed128 WebP distinctness gate; replace this extraction with a separately measured and visually reviewed complete photograph.",
+    "actual_compressed_metrics": {
+      "128": {
+        "passed": false,
+        "other199_max": 0.4019414186477661,
+        "legacy160_max": 0.3528459966182709,
+        "same_original_all10_min": 0.7479320764541626
+      },
+      "256": {
+        "passed": true,
+        "other199_max": 0.3964252471923828,
+        "legacy160_max": 0.35270142555236816,
+        "same_original_all10_min": 0.7921226024627686
+      },
+      "384": {
+        "passed": true,
+        "other199_max": 0.38806599378585815,
+        "legacy160_max": 0.3694878816604614,
+        "same_original_all10_min": 0.8059288263320923
+      }
+    }
+  },
+  {
+    "id": "v18_013",
+    "team": "incheon_seagulls",
+    "measurement_key": "hires_incheon_seagulls_g01",
+    "reason": "Visible previous-photo residue at the native upper edge; replace with the visually reviewed complete square frame at the correct integer boundary.",
+    "evidence": "native_edge_fixes/before_after.jpg"
+  },
+  {
+    "id": "v18_168",
+    "team": "incheon_seagulls",
+    "measurement_key": "hires_incheon_seagulls_g18",
+    "reason": "Visible previous-photo residue at the native upper edge; replace with the visually reviewed complete square frame at the correct integer boundary.",
+    "evidence": "native_edge_fixes/before_after.jpg"
+  },
+  {
+    "id": "v18_171",
+    "team": "incheon_seagulls",
+    "measurement_key": "hires_incheon_seagulls_g18",
+    "reason": "Visible previous-photo residue at the native upper edge; replace with the visually reviewed complete square frame at the correct integer boundary.",
+    "evidence": "native_edge_fixes/before_after.jpg"
+  }
+]

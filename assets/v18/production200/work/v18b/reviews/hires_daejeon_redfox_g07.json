@@ -1,0 +1,19 @@
+{
+  "key": "hires_daejeon_redfox_g07",
+  "passed": true,
+  "review_method": "Explicit visual review of whole-photo frames cropped on actual contact-sheet boundaries",
+  "frame_protocol": "whole-photo adaptive horizontal grid boundaries within12px; integer square crop centered(.5,.25), native edge guard up to8px; no native upscaling",
+  "frame_extractor_sha256": "79dc75fb3e419cb2c77396aeb3c1ae87171a01480adc60a9254688dfbbd4ee58",
+  "panel": "assets/v18/production200/work/v18b/render_qc/pass04_frozen/panel15.jpg",
+  "render_sha256": "8fd71144a2540111db9f79d24b09ce4104bb068ee9521e29ce6a53878a8a7bec",
+  "checks": {
+    "identity_and_apparent_age": true,
+    "natural_human_proportions": true,
+    "deep_cap_fit_eyes_visible": true,
+    "correct_home_uniform": true,
+    "coherent_head_neck_shoulders": true,
+    "ears_glasses_facial_hair": true,
+    "neutral_gray_background": true,
+    "no_extra_figures_or_anatomical_defects": true
+  }
+}

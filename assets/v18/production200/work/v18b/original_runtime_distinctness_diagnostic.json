@@ -1,0 +1,46 @@
+[
+  {
+    "id": "v18_165",
+    "128": {
+      "original_vs_other199_all_old_club_photos_max": 0.5730217099189758,
+      "original_same_team_other199_max": 0.5730217099189758
+    },
+    "256": {
+      "original_vs_other199_all_old_club_photos_max": 0.5459375977516174,
+      "original_same_team_other199_max": 0.5403582453727722
+    }
+  },
+  {
+    "id": "v18_169",
+    "128": {
+      "original_vs_other199_all_old_club_photos_max": 0.45968616008758545,
+      "original_same_team_other199_max": 0.4345281720161438
+    },
+    "256": {
+      "original_vs_other199_all_old_club_photos_max": 0.5118674039840698,
+      "original_same_team_other199_max": 0.5118674039840698
+    }
+  },
+  {
+    "id": "v18_170",
+    "128": {
+      "original_vs_other199_all_old_club_photos_max": 0.5706537961959839,
+      "original_same_team_other199_max": 0.5706536173820496
+    },
+    "256": {
+      "original_vs_other199_all_old_club_photos_max": 0.5420311093330383,
+      "original_same_team_other199_max": 0.5120807886123657
+    }
+  },
+  {
+    "id": "v18_174",
+    "128": {
+      "original_vs_other199_all_old_club_photos_max": 0.5535538196563721,
+      "original_same_team_other199_max": 0.5338184237480164
+    },
+    "256": {
+      "original_vs_other199_all_old_club_photos_max": 0.5743317604064941,
+      "original_same_team_other199_max": 0.5264797210693359
+    }
+  }
+]

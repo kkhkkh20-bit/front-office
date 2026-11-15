@@ -1,0 +1,83 @@
+{
+  "passed": true,
+  "native384_preview_count": 10,
+  "before_after_identity_count": 4,
+  "review_method": "Explicit visual inspection of all10 actual384 portraits at native size in random10_384.png after the edge corrections; all four256 before/after panels were inspected and their hashes remain identical.",
+  "pixel_verified_native384_crops": true,
+  "checks": {
+    "natural_proportions": true,
+    "gentle_natural_expressions": true,
+    "deep_cap_fit_eyes_visible": true,
+    "coherent_neck_shoulders": true,
+    "correct_home_kits": true,
+    "gray_backgrounds": true,
+    "clean_top_edges": true,
+    "retained_identity_hair_glasses_moustache": true
+  },
+  "files": [
+    {
+      "path": "assets/v18/production200/previews/v18b/v18_165_before_after_10clubs.png",
+      "sha256": "d215334d77c96118428e88e92135c5288883538259394ed4ffe35a40c44e6c77"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/v18_169_before_after_10clubs.png",
+      "sha256": "3df8e36be10d3a0fe6db6d992006eae0af88a11081d5bf2b4f377d7f284bedd9"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/v18_170_before_after_10clubs.png",
+      "sha256": "da09ff46a9467541df2b31b60a9d7b257f1701deceadd33ff8302d31912645a5"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/v18_174_before_after_10clubs.png",
+      "sha256": "bcb703dce976a1951a2d849e2a18fe2c7cf4adde24113e4bc1ca8b3d2c95ec4d"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10_384.png",
+      "sha256": "17880575eca170b8f12ee810b0c4fcfc0b387d2657a5ed7992aef6fcd3294618"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/index.json",
+      "sha256": "1386bcc5737c6ceb4e94b73f6c27701f9b44ae331374b08a394f8fe42ee7ae29"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_171_seoul_comets.png",
+      "sha256": "04059e9c6787a28d30dc7398291d910b5a97a42e8e5dfd4ff96fed1abc93ac98"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_139_seoul_hounds.png",
+      "sha256": "dc811807151aa1e8b604631f4ddba3b28363236ea113b2f89fcba024767b35ca"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_168_incheon_seagulls.png",
+      "sha256": "12c781e8034f7219847210d4716cc978794b23fa08c921bcb9e10b1a999e3b5f"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_173_suwon_sparks.png",
+      "sha256": "d86abcfbdd7e8a7168f2b1d37bd78070cf5e05bcaab72e9eec67605272213f69"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_182_goyang_storm.png",
+      "sha256": "5f465d52f27693bad3ff0d38df7722a1b5f38249ed4bab904169e2303303863b"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_097_daejeon_redfox.png",
+      "sha256": "a27d87116421eacb8c8de7d6e92003b40704c34b9d4687f9c55b113609c3c18f"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_100_gwangju_blazes.png",
+      "sha256": "5eacc1036f05ec0c2ed7586dcd104bb07a4b12c2182ee2ea66f98cd43850e590"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_130_daegu_thunders.png",
+      "sha256": "d05d879f3a807fa3f6a5a5b6425b916c306f57ae6f6fda2ff663465e47687703"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_113_busan_waves.png",
+      "sha256": "c14bc59e92616df0e5a8d12ea88a6bd21c850532735ffd5a4adbe48bd26000b7"
+    },
+    {
+      "path": "assets/v18/production200/previews/v18b/random10/v18_072_changwon_anchors.png",
+      "sha256": "b85bc673896379392658976e773ea15de9652972d9897a91cc5cf5f5f8f9cd54"
+    }
+  ]
+}

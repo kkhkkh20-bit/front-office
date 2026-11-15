@@ -1,0 +1,1454 @@
+{
+  "key": "hires_busan_waves_g14",
+  "kind": "hires",
+  "team": "busan_waves",
+  "render": {
+    "key": "busan_waves_g14",
+    "team": "busan_waves",
+    "path": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/hires_inputs/busan_waves_g14.png",
+    "expected_count": 9,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_127",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell00.png",
+      "native_sha256": "b7cf0327e82b04d84a7526656ac9df0871dbe062d9b1efec232152d45ac6bf99",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8041813373565674,
+          "same_original_all10_max": 0.8792708516120911,
+          "old_gallery_top1": "v18_127",
+          "source_own_top1": "v18_127",
+          "other199_max": 0.3994815945625305,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.3445975184440613
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8028907775878906,
+          "same_original_all10_max": 0.9053053855895996,
+          "old_gallery_top1": "v18_127",
+          "source_own_top1": "v18_127",
+          "other199_max": 0.37806156277656555,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.3401018977165222
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8066701889038086,
+          "same_original_all10_max": 0.9025110006332397,
+          "old_gallery_top1": "v18_127",
+          "source_own_top1": "v18_127",
+          "other199_max": 0.37464314699172974,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.3372509479522705
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_128",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell01.png",
+      "native_sha256": "92bd6f606eea2f7ce7e41c5ae753bcab2874461327632dfa19700a1ba6f8f165",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7979220747947693,
+          "same_original_all10_max": 0.893185019493103,
+          "old_gallery_top1": "v18_128",
+          "source_own_top1": "v18_128",
+          "other199_max": 0.3394095301628113,
+          "other199_id": "v18_159",
+          "legacy160_max": 0.38849520683288574
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8221331238746643,
+          "same_original_all10_max": 0.8942094445228577,
+          "old_gallery_top1": "v18_128",
+          "source_own_top1": "v18_128",
+          "other199_max": 0.36168670654296875,
+          "other199_id": "v18_159",
+          "legacy160_max": 0.4074435532093048
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8298311829566956,
+          "same_original_all10_max": 0.8962709903717041,
+          "old_gallery_top1": "v18_128",
+          "source_own_top1": "v18_128",
+          "other199_max": 0.36002248525619507,
+          "other199_id": "v18_159",
+          "legacy160_max": 0.4089786112308502
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_129",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell02.png",
+      "native_sha256": "0a1aa501a1747c9779e1585cfdf9dd88ddc8b4bbede7168760621974fed41322",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7380257844924927,
+          "same_original_all10_max": 0.8213722109794617,
+          "old_gallery_top1": "v18_129",
+          "source_own_top1": "v18_129",
+          "other199_max": 0.4394111633300781,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.4037977159023285
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8012478947639465,
+          "same_original_all10_max": 0.8556181788444519,
+          "old_gallery_top1": "v18_129",
+          "source_own_top1": "v18_129",
+          "other199_max": 0.42088907957077026,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.40330076217651367
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7964281439781189,
+          "same_original_all10_max": 0.8491969108581543,
+          "old_gallery_top1": "v18_129",
+          "source_own_top1": "v18_129",
+          "other199_max": 0.41937702894210815,
+          "other199_id": "v18_176",
+          "legacy160_max": 0.40573567152023315
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_130",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell03.png",
+      "native_sha256": "c4ced8c8135300b13298a4648fb7536102f0fdce24375ffb963f5c55c7f9a38c",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.6818184852600098,
+          "same_original_all10_max": 0.7618029713630676,
+          "old_gallery_top1": "v18_130",
+          "source_own_top1": "v18_130",
+          "other199_max": 0.42765530943870544,
+          "other199_id": "v18_185",
+          "legacy160_max": 0.3999406695365906
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7529054880142212,
+          "same_original_all10_max": 0.8311788439750671,
+          "old_gallery_top1": "v18_130",
+          "source_own_top1": "v18_130",
+          "other199_max": 0.3825194835662842,
+          "other199_id": "v18_185",
+          "legacy160_max": 0.38937848806381226
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7580336332321167,
+          "same_original_all10_max": 0.836774468421936,
+          "old_gallery_top1": "v18_130",
+          "source_own_top1": "v18_130",
+          "other199_max": 0.38569021224975586,
+          "other199_id": "v18_185",
+          "legacy160_max": 0.37533843517303467
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_131",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell04.png",
+      "native_sha256": "b4349131d91e2944fe4eef1cc9c75930143916e84e3ccf01fe74ac29efe32ce3",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 4,
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8047477602958679,
+          "same_original_all10_max": 0.8819012641906738,
+          "old_gallery_top1": "v18_131",
+          "source_own_top1": "v18_131",
+          "other199_max": 0.3299922049045563,
+          "other199_id": "v18_178",
+          "legacy160_max": 0.3099074959754944
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8003251552581787,
+          "same_original_all10_max": 0.9061715602874756,
+          "old_gallery_top1": "v18_131",
+          "source_own_top1": "v18_131",
+          "other199_max": 0.31752389669418335,
+          "other199_id": "v18_178",
+          "legacy160_max": 0.3089153468608856
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8028746247291565,
+          "same_original_all10_max": 0.903092622756958,
+          "old_gallery_top1": "v18_131",
+          "source_own_top1": "v18_131",
+          "other199_max": 0.32166722416877747,
+          "other199_id": "v18_178",
+          "legacy160_max": 0.31562626361846924
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_132",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell05.png",
+      "native_sha256": "cd24c4a61d9c44c94af0840637182cbc4cfd2f3a39019dd3a428bbd4e57c5254",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 5,
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.767751932144165,
+          "same_original_all10_max": 0.8519007563591003,
+          "old_gallery_top1": "v18_132",
+          "source_own_top1": "v18_132",
+          "other199_max": 0.3808768391609192,
+          "other199_id": "v18_096",
+          "legacy160_max": 0.3562316298484802
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8148763179779053,
+          "same_original_all10_max": 0.9005769491195679,
+          "old_gallery_top1": "v18_132",
+          "source_own_top1": "v18_132",
+          "other199_max": 0.36787980794906616,
+          "other199_id": "v18_096",
+          "legacy160_max": 0.3655569851398468
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8083807229995728,
+          "same_original_all10_max": 0.8923614621162415,
+          "old_gallery_top1": "v18_132",
+          "source_own_top1": "v18_132",
+          "other199_max": 0.3742540776729584,
+          "other199_id": "v18_167",
+          "legacy160_max": 0.3626096248626709
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_133",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell06.png",
+      "native_sha256": "1665b021208b49ad649d6cb372d7c71595fae18268dd8431eddf7ad4b07a5283",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 6,
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7875735759735107,
+          "same_original_all10_max": 0.838324248790741,
+          "old_gallery_top1": "v18_133",
+          "source_own_top1": "v18_133",
+          "other199_max": 0.35704559087753296,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.38306760787963867
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7843948602676392,
+          "same_original_all10_max": 0.8607419729232788,
+          "old_gallery_top1": "v18_133",
+          "source_own_top1": "v18_133",
+          "other199_max": 0.36889904737472534,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.3515375256538391
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7851890325546265,
+          "same_original_all10_max": 0.8614076375961304,
+          "old_gallery_top1": "v18_133",
+          "source_own_top1": "v18_133",
+          "other199_max": 0.3787158727645874,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.3595917820930481
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_134",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell07.png",
+      "native_sha256": "7ed2ad256818f31ca6e3620d7d05e2cf6ca34a47a1d5b435c86bc61a7442a2b8",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 7,
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7677468061447144,
+          "same_original_all10_max": 0.8222950100898743,
+          "old_gallery_top1": "v18_134",
+          "source_own_top1": "v18_134",
+          "other199_max": 0.4147702157497406,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.40710699558258057
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7970325946807861,
+          "same_original_all10_max": 0.8782024383544922,
+          "old_gallery_top1": "v18_134",
+          "source_own_top1": "v18_134",
+          "other199_max": 0.4442211985588074,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.41930338740348816
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7955827713012695,
+          "same_original_all10_max": 0.8798857927322388,
+          "old_gallery_top1": "v18_134",
+          "source_own_top1": "v18_134",
+          "other199_max": 0.44405505061149597,
+          "other199_id": "v18_065",
+          "legacy160_max": 0.40858420729637146
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_135",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell08.png",
+      "native_sha256": "4a7b839647258679292d42266d8367b62dabca7dd0e294abc2b595400673df27",
+      "source_render": "/workspace/generated_images/exec-a6db8bd9-81ea-4b74-b3a3-394c613ad364.png",
+      "source_render_sha256": "2d594bef253526b12a60e4a54c04bd4b6f062b050ff8f43f32ca9003c5b8b166",
+      "source_cell": 8,
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7713386416435242,
+          "same_original_all10_max": 0.8264281153678894,
+          "old_gallery_top1": "v18_135",
+          "source_own_top1": "v18_135",
+          "other199_max": 0.3758426308631897,
+          "other199_id": "v18_146",
+          "legacy160_max": 0.40228337049484253
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.7980496883392334,
+          "same_original_all10_max": 0.8708310127258301,
+          "old_gallery_top1": "v18_135",
+          "source_own_top1": "v18_135",
+          "other199_max": 0.3991609215736389,
+          "other199_id": "v18_146",
+          "legacy160_max": 0.4152830243110657
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7898709774017334,
+          "same_original_all10_max": 0.8486136198043823,
+          "old_gallery_top1": "v18_135",
+          "source_own_top1": "v18_135",
+          "other199_max": 0.4107277989387512,
+          "other199_id": "v18_146",
+          "legacy160_max": 0.3902982175350189
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_127",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            34.867759704589844,
+            25.06239891052246,
+            87.63832092285156,
+            90.49913024902344,
+            0.8062390685081482
+          ],
+          "landmarks": [
+            [
+              49.07196044921875,
+              47.35508346557617
+            ],
+            [
+              74.13914489746094,
+              46.85612869262695
+            ],
+            [
+              62.54021453857422,
+              62.17577362060547
+            ],
+            [
+              52.3931770324707,
+              73.58830261230469
+            ],
+            [
+              72.78655242919922,
+              73.016845703125
+            ]
+          ],
+          "pixel_sha256": "3d40dda94851fc6e89fdac4e1e59aa544179067078f00ea0ad0dfa278b3a17bd"
+        },
+        "256": {
+          "bbox": [
+            70.43675231933594,
+            50.994468688964844,
+            175.0794677734375,
+            181.26095581054688,
+            0.8156585693359375
+          ],
+          "landmarks": [
+            [
+              98.44010925292969,
+              94.46136474609375
+            ],
+            [
+              147.84408569335938,
+              93.52850341796875
+            ],
+            [
+              124.7020034790039,
+              125.25798034667969
+            ],
+            [
+              105.00838470458984,
+              147.26524353027344
+            ],
+            [
+              144.86972045898438,
+              146.2955780029297
+            ]
+          ],
+          "pixel_sha256": "bae9859fbc09ef4e95dca18976fc957cf0f3936a681942261ca7124a47a8915a"
+        },
+        "384": {
+          "bbox": [
+            106.45914459228516,
+            77.7844467163086,
+            262.2701416015625,
+            271.6406555175781,
+            0.8253995180130005
+          ],
+          "landmarks": [
+            [
+              147.8265380859375,
+              142.11480712890625
+            ],
+            [
+              221.60218811035156,
+              140.51593017578125
+            ],
+            [
+              186.989013671875,
+              188.42286682128906
+            ],
+            [
+              157.74160766601562,
+              220.80999755859375
+            ],
+            [
+              217.68038940429688,
+              219.19442749023438
+            ]
+          ],
+          "pixel_sha256": "7005025a53032813035d0b7dc50d95bbd1b5cda2d47c67b41bcabfb6976c11c8"
+        }
+      },
+      "native_sha256": "b7cf0327e82b04d84a7526656ac9df0871dbe062d9b1efec232152d45ac6bf99"
+    },
+    {
+      "id": "v18_128",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell01.png",
+      "native_crop_xyxy": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            35.69850158691406,
+            25.109447479248047,
+            87.48601531982422,
+            86.5455093383789,
+            0.7946661710739136
+          ],
+          "landmarks": [
+            [
+              49.81916046142578,
+              46.01860809326172
+            ],
+            [
+              73.84629821777344,
+              45.90594482421875
+            ],
+            [
+              62.346282958984375,
+              56.42566680908203
+            ],
+            [
+              51.55030059814453,
+              68.55390930175781
+            ],
+            [
+              73.08546447753906,
+              68.45061492919922
+            ]
+          ],
+          "pixel_sha256": "296d1e81b7f0c0f5f2ff04dc0b7e2c1381e5996ae9100ddddf3c2f4a0728758a"
+        },
+        "256": {
+          "bbox": [
+            71.50242614746094,
+            49.295921325683594,
+            174.82504272460938,
+            173.8318328857422,
+            0.806106686592102
+          ],
+          "landmarks": [
+            [
+              99.77078247070312,
+              91.78581237792969
+            ],
+            [
+              147.65762329101562,
+              91.6150894165039
+            ],
+            [
+              124.71366119384766,
+              113.97755432128906
+            ],
+            [
+              103.14752197265625,
+              136.90585327148438
+            ],
+            [
+              146.25259399414062,
+              136.80613708496094
+            ]
+          ],
+          "pixel_sha256": "f4a8c75719b15aca685f6efe5e7a1f65773edd3efb1b9ceefeb8727920923dbf"
+        },
+        "384": {
+          "bbox": [
+            107.63848876953125,
+            74.80167388916016,
+            262.2474060058594,
+            260.2513732910156,
+            0.8127292394638062
+          ],
+          "landmarks": [
+            [
+              150.063232421875,
+              137.80421447753906
+            ],
+            [
+              221.30819702148438,
+              137.60098266601562
+            ],
+            [
+              187.0133514404297,
+              171.26885986328125
+            ],
+            [
+              154.94935607910156,
+              205.27899169921875
+            ],
+            [
+              219.06015014648438,
+              205.22494506835938
+            ]
+          ],
+          "pixel_sha256": "9175de8f036b114106b35d1019859ae11729b5f1b80fb5486e58a6ff67740e97"
+        }
+      },
+      "native_sha256": "92bd6f606eea2f7ce7e41c5ae753bcab2874461327632dfa19700a1ba6f8f165"
+    },
+    {
+      "id": "v18_129",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell02.png",
+      "native_crop_xyxy": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            43.68955612182617,
+            25.994380950927734,
+            90.77957153320312,
+            84.95856475830078,
+            0.7956455945968628
+          ],
+          "landmarks": [
+            [
+              56.43639373779297,
+              45.646018981933594
+            ],
+            [
+              78.38108825683594,
+              45.26671600341797
+            ],
+            [
+              67.91749572753906,
+              59.42863082885742
+            ],
+            [
+              57.73883056640625,
+              66.69283294677734
+            ],
+            [
+              78.28636169433594,
+              66.23689270019531
+            ]
+          ],
+          "pixel_sha256": "8bf4eb6cbc1a0dd35f53145ec0a8492bd15c7397b4c20e9fe7af81c01225bfa2"
+        },
+        "256": {
+          "bbox": [
+            86.99181365966797,
+            52.4832878112793,
+            181.84622192382812,
+            170.91542053222656,
+            0.8232300281524658
+          ],
+          "landmarks": [
+            [
+              112.83171081542969,
+              91.76810455322266
+            ],
+            [
+              156.57052612304688,
+              91.02877807617188
+            ],
+            [
+              135.63853454589844,
+              119.4192123413086
+            ],
+            [
+              115.35550689697266,
+              133.87155151367188
+            ],
+            [
+              156.37876892089844,
+              132.99818420410156
+            ]
+          ],
+          "pixel_sha256": "4aa66fc402ccf979f894bf95378911ddd1ff4e713a5fb4e70ad825a54599215a"
+        },
+        "384": {
+          "bbox": [
+            130.60008239746094,
+            80.3191909790039,
+            272.875,
+            256.243408203125,
+            0.8373047709465027
+          ],
+          "landmarks": [
+            [
+              169.50367736816406,
+              137.34585571289062
+            ],
+            [
+              234.8145751953125,
+              136.71351623535156
+            ],
+            [
+              203.344970703125,
+              179.57656860351562
+            ],
+            [
+              172.88014221191406,
+              200.28500366210938
+            ],
+            [
+              234.47235107421875,
+              199.45838928222656
+            ]
+          ],
+          "pixel_sha256": "f7b93c8dbe92d10483b6d2ba799de6c3e1affb48d2a4507854e757e9df4c5b53"
+        }
+      },
+      "native_sha256": "0a1aa501a1747c9779e1585cfdf9dd88ddc8b4bbede7168760621974fed41322"
+    },
+    {
+      "id": "v18_130",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell03.png",
+      "native_crop_xyxy": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            41.0648307800293,
+            22.624130249023438,
+            86.56074523925781,
+            81.33921813964844,
+            0.8600900769233704
+          ],
+          "landmarks": [
+            [
+              53.22663497924805,
+              43.6442756652832
+            ],
+            [
+              74.85407257080078,
+              43.48731231689453
+            ],
+            [
+              64.28572082519531,
+              55.05773162841797
+            ],
+            [
+              54.43143844604492,
+              64.57170104980469
+            ],
+            [
+              73.91719055175781,
+              64.38319396972656
+            ]
+          ],
+          "pixel_sha256": "fe659ac0f81e78663bb02086bc9ff0f1770fe1062be8d5978df2fe378eedd947"
+        },
+        "256": {
+          "bbox": [
+            81.97831726074219,
+            46.4500732421875,
+            173.0360565185547,
+            163.41793823242188,
+            0.8661707639694214
+          ],
+          "landmarks": [
+            [
+              106.4697494506836,
+              86.89476013183594
+            ],
+            [
+              149.62594604492188,
+              86.39036560058594
+            ],
+            [
+              128.68846130371094,
+              110.50227355957031
+            ],
+            [
+              108.91950988769531,
+              129.27523803710938
+            ],
+            [
+              148.015380859375,
+              128.72665405273438
+            ]
+          ],
+          "pixel_sha256": "87107564ae8215b8dc038847bd507cd8ead6f93642d2fb4b11c26df0d11e6336"
+        },
+        "384": {
+          "bbox": [
+            122.751953125,
+            71.09928131103516,
+            259.9640808105469,
+            245.5313262939453,
+            0.8696487545967102
+          ],
+          "landmarks": [
+            [
+              159.73687744140625,
+              130.20989990234375
+            ],
+            [
+              224.14614868164062,
+              129.5698699951172
+            ],
+            [
+              192.71340942382812,
+              165.866455078125
+            ],
+            [
+              163.426025390625,
+              193.9158172607422
+            ],
+            [
+              221.69696044921875,
+              193.17459106445312
+            ]
+          ],
+          "pixel_sha256": "020c61577d6a6566162a566453b20f623adfb5518c18956771db42ef46d8f52d"
+        }
+      },
+      "native_sha256": "c4ced8c8135300b13298a4648fb7536102f0fdce24375ffb963f5c55c7f9a38c"
+    },
+    {
+      "id": "v18_131",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell04.png",
+      "native_crop_xyxy": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            38.66379165649414,
+            23.46901512145996,
+            88.45832824707031,
+            88.37826538085938,
+            0.8469498157501221
+          ],
+          "landmarks": [
+            [
+              53.45798873901367,
+              45.18448257446289
+            ],
+            [
+              77.10260772705078,
+              44.62862014770508
+            ],
+            [
+              67.06660461425781,
+              57.423858642578125
+            ],
+            [
+              55.05286407470703,
+              68.71337890625
+            ],
+            [
+              76.72315216064453,
+              68.14026641845703
+            ]
+          ],
+          "pixel_sha256": "91fe07c49d878c03883e203366b58525a9f0016c941b8975dac49b336f9265c3"
+        },
+        "256": {
+          "bbox": [
+            77.82697296142578,
+            48.20149612426758,
+            176.48562622070312,
+            177.5304718017578,
+            0.8587075471878052
+          ],
+          "landmarks": [
+            [
+              107.3094482421875,
+              90.3941650390625
+            ],
+            [
+              154.0004119873047,
+              89.25369262695312
+            ],
+            [
+              134.28958129882812,
+              115.7586441040039
+            ],
+            [
+              110.28562927246094,
+              137.55055236816406
+            ],
+            [
+              153.27073669433594,
+              136.3708038330078
+            ]
+          ],
+          "pixel_sha256": "ebc07a2baef8b81ee4a662adaaee4ef4dc77a01252844d3d4c63097ab7f7f68a"
+        },
+        "384": {
+          "bbox": [
+            116.50890350341797,
+            73.25782775878906,
+            265.06011962890625,
+            266.0614013671875,
+            0.8621448874473572
+          ],
+          "landmarks": [
+            [
+              161.0728302001953,
+              135.40342712402344
+            ],
+            [
+              230.70718383789062,
+              133.59312438964844
+            ],
+            [
+              201.26690673828125,
+              174.35336303710938
+            ],
+            [
+              165.9864044189453,
+              206.55120849609375
+            ],
+            [
+              229.559326171875,
+              204.68630981445312
+            ]
+          ],
+          "pixel_sha256": "d53ee42f2c945ab529ccb9d678d7493d7888e8c519c62bf2badff83d2ca6361d"
+        }
+      },
+      "native_sha256": "b4349131d91e2944fe4eef1cc9c75930143916e84e3ccf01fe74ac29efe32ce3"
+    },
+    {
+      "id": "v18_132",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell05.png",
+      "native_crop_xyxy": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            35.91427230834961,
+            23.939754486083984,
+            87.99113464355469,
+            86.24259948730469,
+            0.7738369703292847
+          ],
+          "landmarks": [
+            [
+              51.791412353515625,
+              44.18315887451172
+            ],
+            [
+              75.52902221679688,
+              43.81930160522461
+            ],
+            [
+              65.68172454833984,
+              56.17010498046875
+            ],
+            [
+              55.3446159362793,
+              69.35511779785156
+            ],
+            [
+              74.60746002197266,
+              68.89312744140625
+            ]
+          ],
+          "pixel_sha256": "3f37e09fa691361f262d229fce9a582afb5717ee835a71a0774c1a7a446106ef"
+        },
+        "256": {
+          "bbox": [
+            71.54442596435547,
+            48.52056121826172,
+            176.09886169433594,
+            172.2650146484375,
+            0.7837884426116943
+          ],
+          "landmarks": [
+            [
+              103.45268249511719,
+              88.52010345458984
+            ],
+            [
+              151.47647094726562,
+              87.32313537597656
+            ],
+            [
+              131.76589965820312,
+              113.21517181396484
+            ],
+            [
+              111.07975769042969,
+              139.32998657226562
+            ],
+            [
+              149.6365203857422,
+              138.03878784179688
+            ]
+          ],
+          "pixel_sha256": "fa1cd58c2b0e6fa7baaea00953cfc477bcd1a562f27e6de5a80dad6941586f3a"
+        },
+        "384": {
+          "bbox": [
+            107.41394805908203,
+            74.33952331542969,
+            263.7606506347656,
+            258.3006286621094,
+            0.793495774269104
+          ],
+          "landmarks": [
+            [
+              155.34791564941406,
+              132.21859741210938
+            ],
+            [
+              226.5355987548828,
+              130.5538787841797
+            ],
+            [
+              197.3544158935547,
+              170.1477508544922
+            ],
+            [
+              166.9739532470703,
+              208.8824462890625
+            ],
+            [
+              223.68280029296875,
+              207.08389282226562
+            ]
+          ],
+          "pixel_sha256": "5e2a942d3d692b0e07b7d6e8f83e492f0191ee96b6a16ca9d26e560ae8ee9705"
+        }
+      },
+      "native_sha256": "cd24c4a61d9c44c94af0840637182cbc4cfd2f3a39019dd3a428bbd4e57c5254"
+    },
+    {
+      "id": "v18_133",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell06.png",
+      "native_crop_xyxy": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            46.813079833984375,
+            24.503381729125977,
+            91.87944030761719,
+            81.51049041748047,
+            0.8489651679992676
+          ],
+          "landmarks": [
+            [
+              59.99424362182617,
+              43.04652404785156
+            ],
+            [
+              80.8233642578125,
+              43.06640625
+            ],
+            [
+              71.32154846191406,
+              55.14387893676758
+            ],
+            [
+              60.921966552734375,
+              63.40520477294922
+            ],
+            [
+              80.31254577636719,
+              63.31254196166992
+            ]
+          ],
+          "pixel_sha256": "4028d700563f5a60ca9013fd7aaeaa45d5f6f4aca929a0814c720dae2f014267"
+        },
+        "256": {
+          "bbox": [
+            93.6155776977539,
+            48.92621612548828,
+            183.20350646972656,
+            163.0996551513672,
+            0.8525623679161072
+          ],
+          "landmarks": [
+            [
+              120.1668930053711,
+              86.11227416992188
+            ],
+            [
+              161.56735229492188,
+              86.01826477050781
+            ],
+            [
+              143.03762817382812,
+              111.02445983886719
+            ],
+            [
+              122.1059799194336,
+              127.10969543457031
+            ],
+            [
+              160.6404571533203,
+              126.74920654296875
+            ]
+          ],
+          "pixel_sha256": "5b84d800108984692a33a66b6733ff89fc6972316874a4259097042bf8781d34"
+        },
+        "384": {
+          "bbox": [
+            140.30636596679688,
+            74.11034393310547,
+            274.6109924316406,
+            244.50714111328125,
+            0.8530925512313843
+          ],
+          "landmarks": [
+            [
+              180.24417114257812,
+              129.2971649169922
+            ],
+            [
+              242.0966033935547,
+              128.95285034179688
+            ],
+            [
+              214.58486938476562,
+              166.53494262695312
+            ],
+            [
+              183.30148315429688,
+              190.66845703125
+            ],
+            [
+              240.8798065185547,
+              189.93215942382812
+            ]
+          ],
+          "pixel_sha256": "934cb86d80a514c012cd560180551439ab40767409a7ba6b6b4ff2339bc7de2d"
+        }
+      },
+      "native_sha256": "1665b021208b49ad649d6cb372d7c71595fae18268dd8431eddf7ad4b07a5283"
+    },
+    {
+      "id": "v18_134",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell07.png",
+      "native_crop_xyxy": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            41.6800422668457,
+            24.114355087280273,
+            87.29444885253906,
+            82.6760482788086,
+            0.8438155651092529
+          ],
+          "landmarks": [
+            [
+              53.1903190612793,
+              44.79472351074219
+            ],
+            [
+              74.80830383300781,
+              43.61244583129883
+            ],
+            [
+              64.6803970336914,
+              56.1895751953125
+            ],
+            [
+              55.633689880371094,
+              65.86112976074219
+            ],
+            [
+              75.30330657958984,
+              64.68550872802734
+            ]
+          ],
+          "pixel_sha256": "b4c58f73ca69b37aff17b97a96b1f17c7fe95ec37913b5c451d4b5a2cd4a0a48"
+        },
+        "256": {
+          "bbox": [
+            83.34858703613281,
+            47.64702606201172,
+            174.4911346435547,
+            165.8397216796875,
+            0.8471851348876953
+          ],
+          "landmarks": [
+            [
+              106.40301513671875,
+              89.49726867675781
+            ],
+            [
+              149.6588134765625,
+              87.33831024169922
+            ],
+            [
+              129.31565856933594,
+              113.03861999511719
+            ],
+            [
+              110.97023010253906,
+              131.8845977783203
+            ],
+            [
+              150.4896697998047,
+              129.79917907714844
+            ]
+          ],
+          "pixel_sha256": "8f3c94e71bab75337ec07516dc08544e429f2ec281a36527dc8a2c11ab27ffa1"
+        },
+        "384": {
+          "bbox": [
+            125.11221313476562,
+            70.13460540771484,
+            261.77850341796875,
+            248.49269104003906,
+            0.8567600846290588
+          ],
+          "landmarks": [
+            [
+              159.35794067382812,
+              134.15879821777344
+            ],
+            [
+              224.2259063720703,
+              130.83285522460938
+            ],
+            [
+              193.54339599609375,
+              169.97213745117188
+            ],
+            [
+              166.3588104248047,
+              197.7102813720703
+            ],
+            [
+              225.6300048828125,
+              194.52203369140625
+            ]
+          ],
+          "pixel_sha256": "d9f4dfe15a11b276b783d2b9cef3256c76e76f34bb975792d98bc24ca32bbfeb"
+        }
+      },
+      "native_sha256": "7ed2ad256818f31ca6e3620d7d05e2cf6ca34a47a1d5b435c86bc61a7442a2b8"
+    },
+    {
+      "id": "v18_135",
+      "team": "busan_waves",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/hires_busan_waves_g14/cell08.png",
+      "native_crop_xyxy": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            38.29890823364258,
+            23.4851131439209,
+            83.20661926269531,
+            81.2904281616211,
+            0.832980751991272
+          ],
+          "landmarks": [
+            [
+              50.0748176574707,
+              44.320884704589844
+            ],
+            [
+              71.22649383544922,
+              43.503543853759766
+            ],
+            [
+              61.32792282104492,
+              54.798316955566406
+            ],
+            [
+              51.67313766479492,
+              64.35655975341797
+            ],
+            [
+              71.23638916015625,
+              63.61829376220703
+            ]
+          ],
+          "pixel_sha256": "307e2cec37b3c2f4fdcad646e3b9d3722ab281b708a426918a488b20fceff1fd"
+        },
+        "256": {
+          "bbox": [
+            76.91568756103516,
+            48.068824768066406,
+            166.61581420898438,
+            163.0967559814453,
+            0.8351489305496216
+          ],
+          "landmarks": [
+            [
+              100.42851257324219,
+              88.61511993408203
+            ],
+            [
+              142.63516235351562,
+              86.84523010253906
+            ],
+            [
+              122.81436920166016,
+              110.79937744140625
+            ],
+            [
+              103.44108581542969,
+              129.21786499023438
+            ],
+            [
+              142.77853393554688,
+              127.65413665771484
+            ]
+          ],
+          "pixel_sha256": "49753fb505819df2e27a3cad3a5193fd78ee45f2b19056bb9baafa0f552a7434"
+        },
+        "384": {
+          "bbox": [
+            115.33602905273438,
+            72.8724594116211,
+            249.92373657226562,
+            244.7728271484375,
+            0.8378522992134094
+          ],
+          "landmarks": [
+            [
+              150.69947814941406,
+              132.82656860351562
+            ],
+            [
+              213.85568237304688,
+              130.2110595703125
+            ],
+            [
+              184.13429260253906,
+              166.84103393554688
+            ],
+            [
+              155.36993408203125,
+              193.89468383789062
+            ],
+            [
+              214.01348876953125,
+              191.6363525390625
+            ]
+          ],
+          "pixel_sha256": "f1a3f1e0b15f7566aa13ae4e9ab3581fd6e5b6839a9c16cd95879a2fd8dcb0ce"
+        }
+      },
+      "native_sha256": "4a7b839647258679292d42266d8367b62dabca7dd0e294abc2b595400673df27"
+    }
+  ]
+}

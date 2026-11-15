@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "sheet_count": 60,
+  "runtime_file_count": 40,
+  "runtime_sheet_bytes": 47196322,
+  "options": {
+    "update128_targets": true,
+    "reexport256": true,
+    "distinctness_gallery": "canonical",
+    "interpretation": "Preserve the established v18 canonical identity pre-screen gallery; compare revised faces with all ten original team versions separately for identity retention. Preserve128 source/geometry/quality except the four requested background corrections."
+  },
+  "max256bytes": 902640,
+  "max384bytes": 2367772
+}

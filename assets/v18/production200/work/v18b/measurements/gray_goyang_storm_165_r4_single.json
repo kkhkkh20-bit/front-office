@@ -1,0 +1,180 @@
+{
+  "key": "gray_goyang_storm_165_r4_single",
+  "kind": "gray",
+  "team": "goyang_storm",
+  "render": {
+    "id": "v18_165",
+    "team": "goyang_storm",
+    "path": "/workspace/generated_images/exec-4b147e6f-8803-4226-970e-87de5a36994b.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/single_anchor_165.png",
+    "source_grid_side": 1,
+    "round": 4,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-4b147e6f-8803-4226-970e-87de5a36994b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "source_grid_side": 1,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": true,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_165",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_goyang_storm_165_r4_single/v18_165.png",
+      "native_sha256": "dbb42ed0046f62f97cb3e1877cab120c36f0262500c91776ae0f2bf5298b1eae",
+      "source_render": "/workspace/generated_images/exec-4b147e6f-8803-4226-970e-87de5a36994b.png",
+      "source_render_sha256": "6fb212e0d4ccca1856ec745a5a5f5bbffdaa23a43adb034692949872cea3b114",
+      "source_grid_side": 1,
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        8,
+        8,
+        1246,
+        1246
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8552330732345581,
+          "same_original_all10_max": 0.9065749645233154,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.37532368302345276,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.3215962052345276
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8633275628089905,
+          "same_original_all10_max": 0.9319333434104919,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3691084086894989,
+          "other199_id": "v18_108",
+          "legacy160_max": 0.33844077587127686
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8593826293945312,
+          "same_original_all10_max": 0.931007444858551,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.36978960037231445,
+          "other199_id": "v18_108",
+          "legacy160_max": 0.3565204441547394
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_165",
+      "team": "goyang_storm",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_goyang_storm_165_r4_single/v18_165.png",
+      "details": {
+        "128": {
+          "bbox": [
+            36.968318939208984,
+            24.840473175048828,
+            91.7625961303711,
+            91.86800384521484,
+            0.839059054851532
+          ],
+          "landmarks": [
+            [
+              51.31415557861328,
+              47.498600006103516
+            ],
+            [
+              77.35508728027344,
+              47.48499298095703
+            ],
+            [
+              64.71488952636719,
+              63.82508087158203
+            ],
+            [
+              54.382713317871094,
+              74.59700775146484
+            ],
+            [
+              75.47522735595703,
+              74.58785247802734
+            ]
+          ],
+          "pixel_sha256": "65612c94c033a933f9ee2cee59a908cbc618cc38bb0c97f9457c130bfbec0ad2"
+        },
+        "256": {
+          "bbox": [
+            74.06336212158203,
+            50.467796325683594,
+            183.21937561035156,
+            184.01193237304688,
+            0.8516888618469238
+          ],
+          "landmarks": [
+            [
+              102.7370834350586,
+              94.67696380615234
+            ],
+            [
+              154.7021026611328,
+              94.59635162353516
+            ],
+            [
+              129.6240692138672,
+              128.3847198486328
+            ],
+            [
+              108.9158935546875,
+              149.27407836914062
+            ],
+            [
+              151.13449096679688,
+              149.22579956054688
+            ]
+          ],
+          "pixel_sha256": "72e79fbb7ec1c9faf2f9430c6ecc43733f102e458ec94e3bfe99a0e46fb2b71f"
+        },
+        "384": {
+          "bbox": [
+            111.21292877197266,
+            75.60246276855469,
+            275.1041564941406,
+            276.1376647949219,
+            0.8537562489509583
+          ],
+          "landmarks": [
+            [
+              154.40528869628906,
+              141.98536682128906
+            ],
+            [
+              232.14752197265625,
+              142.19053649902344
+            ],
+            [
+              194.5246124267578,
+              193.15350341796875
+            ],
+            [
+              163.51438903808594,
+              223.76461791992188
+            ],
+            [
+              226.6542205810547,
+              223.92788696289062
+            ]
+          ],
+          "pixel_sha256": "817ac36b7f11c0a10d6c71d2037e0793c4fe9eecd82e38d7a1eb79d1ac881fca"
+        }
+      },
+      "native_sha256": "dbb42ed0046f62f97cb3e1877cab120c36f0262500c91776ae0f2bf5298b1eae"
+    }
+  ],
+  "frame_protocol": "whole-photo adaptive horizontal grid boundaries within12px; integer square crop centered(.5,.25), native edge guard up to8px; no native upscaling"
+}

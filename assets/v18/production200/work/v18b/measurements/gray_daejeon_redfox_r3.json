@@ -1,0 +1,660 @@
+{
+  "key": "gray_daejeon_redfox_r3",
+  "kind": "gray",
+  "team": "daejeon_redfox",
+  "render": {
+    "team": "daejeon_redfox",
+    "path": "/workspace/generated_images/exec-112ffd66-ddd2-46c4-a0f6-d73f3cc94c5d.png",
+    "source": "/workspace/front-office/assets/v18/production200/work/v18b/gray_anchors_clean.png",
+    "round": 3,
+    "expected_count": 4,
+    "output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-112ffd66-ddd2-46c4-a0f6-d73f3cc94c5d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "prompt": "Make an exact high-resolution photographic wardrobe edit of reference 1: four fictional adult male professional baseball players in a strict equal 2 by 2 contact sheet, no borders, no text. Preserve the exact four individual faces in the exact positions, their real human head widths, eye shapes, distinct nose and lip shapes, age, ears, hair, subtle smiles, and bottom right man's moustache. Do not beautify, blend, homogenize or redesign the faces. Change ONLY their jersey and baseball cap colors and embroidered team symbol to the home uniform and cap design in reference 2. Ignore reference 2's labels and flat product layout. Keep deeply pulled-down fitted caps with brims close above brows, eyes visible, normal small cap crown resting fully on the head. All four whole photographs have clean uniform neutral medium gray studio background and matching soft studio light, chest up, natural visible skin texture, normal coherent neck and shoulders. Frame all four at identical scale and place ALL of each photo in its own square with absolutely no intruding strips from another photo. Output a square image at least 1254 by 1254, four equal square photographic cells. Identity fidelity is the first priority."
+  },
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "passed": false,
+  "errors": [],
+  "photos": [
+    {
+      "id": "v18_165",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_r3/cell00.png",
+      "native_sha256": "313b0f7b7af56f41b80f381642fd72ec84d81f80a4a5bff019494d20ce2f238d",
+      "source_render": "/workspace/generated_images/exec-112ffd66-ddd2-46c4-a0f6-d73f3cc94c5d.png",
+      "source_render_sha256": "72e680e167573b8af63750e00862c1a4db5661d04a6cbd762e5a5ba3a9d71f9b",
+      "source_cell": 0,
+      "native_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "metrics": {
+        "128": {
+          "passed": false,
+          "same_original_all10_min": 0.8221076726913452,
+          "same_original_all10_max": 0.8645832538604736,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.40726739168167114,
+          "other199_id": "v18_161",
+          "legacy160_max": 0.32782861590385437
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8439176678657532,
+          "same_original_all10_max": 0.8958343863487244,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.39700785279273987,
+          "other199_id": "v18_108",
+          "legacy160_max": 0.32419323921203613
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8428078889846802,
+          "same_original_all10_max": 0.8932638168334961,
+          "old_gallery_top1": "v18_165",
+          "source_own_top1": "v18_165",
+          "other199_max": 0.3918280005455017,
+          "other199_id": "v18_108",
+          "legacy160_max": 0.3355036675930023
+        }
+      },
+      "numerical_passed": false,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_169",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_r3/cell01.png",
+      "native_sha256": "47a1b3a384b0b242b8c49ff77f797ad421715aab5b511c48a09e4c2df3e7d09f",
+      "source_render": "/workspace/generated_images/exec-112ffd66-ddd2-46c4-a0f6-d73f3cc94c5d.png",
+      "source_render_sha256": "72e680e167573b8af63750e00862c1a4db5661d04a6cbd762e5a5ba3a9d71f9b",
+      "source_cell": 1,
+      "native_crop_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7588844299316406,
+          "same_original_all10_max": 0.8545845150947571,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.3053623139858246,
+          "other199_id": "v18_144",
+          "legacy160_max": 0.3627086281776428
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.774246871471405,
+          "same_original_all10_max": 0.8667235374450684,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.30589237809181213,
+          "other199_id": "v18_091",
+          "legacy160_max": 0.3551406264305115
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.7752267122268677,
+          "same_original_all10_max": 0.866163969039917,
+          "old_gallery_top1": "v18_169",
+          "source_own_top1": "v18_169",
+          "other199_max": 0.309018611907959,
+          "other199_id": "v18_091",
+          "legacy160_max": 0.3599705398082733
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_170",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_r3/cell02.png",
+      "native_sha256": "1643292f9e977ce03e883e0e698cbd6124e824aaf521a35728c85bcc0b9228ab",
+      "source_render": "/workspace/generated_images/exec-112ffd66-ddd2-46c4-a0f6-d73f3cc94c5d.png",
+      "source_render_sha256": "72e680e167573b8af63750e00862c1a4db5661d04a6cbd762e5a5ba3a9d71f9b",
+      "source_cell": 2,
+      "native_crop_xyxy": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.8347582817077637,
+          "same_original_all10_max": 0.867711067199707,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.3356984853744507,
+          "other199_id": "v18_067",
+          "legacy160_max": 0.368924617767334
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8633139133453369,
+          "same_original_all10_max": 0.9046796560287476,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.33666175603866577,
+          "other199_id": "v18_067",
+          "legacy160_max": 0.36648136377334595
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8577448129653931,
+          "same_original_all10_max": 0.9017237424850464,
+          "old_gallery_top1": "v18_170",
+          "source_own_top1": "v18_170",
+          "other199_max": 0.3510679602622986,
+          "other199_id": "v18_067",
+          "legacy160_max": 0.3568169176578522
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    },
+    {
+      "id": "v18_174",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_r3/cell03.png",
+      "native_sha256": "e61e5cd97d3c78aad4bea10b7acf6fcc0acfd38440b75d656d7c5891ce6cd8ee",
+      "source_render": "/workspace/generated_images/exec-112ffd66-ddd2-46c4-a0f6-d73f3cc94c5d.png",
+      "source_render_sha256": "72e680e167573b8af63750e00862c1a4db5661d04a6cbd762e5a5ba3a9d71f9b",
+      "source_cell": 3,
+      "native_crop_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "metrics": {
+        "128": {
+          "passed": true,
+          "same_original_all10_min": 0.7931613922119141,
+          "same_original_all10_max": 0.8539451360702515,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.35457655787467957,
+          "other199_id": "v18_145",
+          "legacy160_max": 0.36537274718284607
+        },
+        "256": {
+          "passed": true,
+          "same_original_all10_min": 0.8201692700386047,
+          "same_original_all10_max": 0.8773016929626465,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.35944870114326477,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.37133124470710754
+        },
+        "384": {
+          "passed": true,
+          "same_original_all10_min": 0.8166502714157104,
+          "same_original_all10_max": 0.8737989068031311,
+          "old_gallery_top1": "v18_174",
+          "source_own_top1": "v18_174",
+          "other199_max": 0.36867713928222656,
+          "other199_id": "v18_129",
+          "legacy160_max": 0.3690425455570221
+        }
+      },
+      "numerical_passed": true,
+      "visual_review_passed": false
+    }
+  ],
+  "detection_records": [
+    {
+      "id": "v18_165",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_r3/cell00.png",
+      "native_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.38065719604492,
+            24.846593856811523,
+            91.1009750366211,
+            91.6374282836914,
+            0.8417352437973022
+          ],
+          "landmarks": [
+            [
+              51.47919845581055,
+              47.79196548461914
+            ],
+            [
+              77.15040588378906,
+              47.835723876953125
+            ],
+            [
+              64.76985931396484,
+              63.644569396972656
+            ],
+            [
+              54.461402893066406,
+              74.52008056640625
+            ],
+            [
+              75.2236099243164,
+              74.57200622558594
+            ]
+          ],
+          "pixel_sha256": "1225ff754027d3b436d1b8f6c038bdf05f447acb4031534c2698851fb3d2e27a"
+        },
+        "256": {
+          "bbox": [
+            74.71151733398438,
+            50.11530303955078,
+            182.15322875976562,
+            183.6800994873047,
+            0.8450485467910767
+          ],
+          "landmarks": [
+            [
+              103.18306732177734,
+              95.57249450683594
+            ],
+            [
+              154.14784240722656,
+              95.87773132324219
+            ],
+            [
+              129.5176544189453,
+              128.12930297851562
+            ],
+            [
+              108.7638931274414,
+              148.78965759277344
+            ],
+            [
+              150.484619140625,
+              149.06845092773438
+            ]
+          ],
+          "pixel_sha256": "f9f0ce1145c3637fb1ea80dfa1562b20d4a9cdab219f53c91be70ba1d7b4f225"
+        },
+        "384": {
+          "bbox": [
+            112.06840515136719,
+            77.24513244628906,
+            273.2403564453125,
+            275.5646057128906,
+            0.850385308265686
+          ],
+          "landmarks": [
+            [
+              154.97549438476562,
+              143.16664123535156
+            ],
+            [
+              231.26641845703125,
+              143.6479949951172
+            ],
+            [
+              194.48243713378906,
+              192.56007385253906
+            ],
+            [
+              163.3920440673828,
+              223.2198028564453
+            ],
+            [
+              225.99761962890625,
+              223.5938720703125
+            ]
+          ],
+          "pixel_sha256": "30db21dcae7812031a919bb5d78ba54860b5986660c8884b015429bfdfbb6ed8"
+        }
+      },
+      "native_sha256": "313b0f7b7af56f41b80f381642fd72ec84d81f80a4a5bff019494d20ce2f238d"
+    },
+    {
+      "id": "v18_169",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_r3/cell01.png",
+      "native_crop_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.923126220703125,
+            26.536651611328125,
+            91.76573181152344,
+            93.81907653808594,
+            0.8376850485801697
+          ],
+          "landmarks": [
+            [
+              51.4713134765625,
+              47.89232635498047
+            ],
+            [
+              77.5825424194336,
+              47.64405059814453
+            ],
+            [
+              64.52928924560547,
+              63.0698356628418
+            ],
+            [
+              53.17748260498047,
+              74.2505874633789
+            ],
+            [
+              76.39476013183594,
+              74.11529541015625
+            ]
+          ],
+          "pixel_sha256": "c90198091b60e6b9382e18cd2b95feee698e5c75636751eadccb016b05929880"
+        },
+        "256": {
+          "bbox": [
+            75.51535034179688,
+            54.375877380371094,
+            183.2263641357422,
+            187.84524536132812,
+            0.831683874130249
+          ],
+          "landmarks": [
+            [
+              103.18157958984375,
+              95.40941619873047
+            ],
+            [
+              154.9744873046875,
+              95.30411529541016
+            ],
+            [
+              129.185302734375,
+              127.42974853515625
+            ],
+            [
+              106.5416259765625,
+              148.29391479492188
+            ],
+            [
+              152.515869140625,
+              148.3885498046875
+            ]
+          ],
+          "pixel_sha256": "bf7e32e61916d928e864272d76c3db2d0e54f28a44d7ccda8f1c42979da30d69"
+        },
+        "384": {
+          "bbox": [
+            113.65054321289062,
+            81.34143829345703,
+            274.93792724609375,
+            282.21746826171875,
+            0.835902214050293
+          ],
+          "landmarks": [
+            [
+              154.94125366210938,
+              143.15267944335938
+            ],
+            [
+              232.52357482910156,
+              143.13397216796875
+            ],
+            [
+              193.72251892089844,
+              191.289794921875
+            ],
+            [
+              159.76364135742188,
+              222.26803588867188
+            ],
+            [
+              228.96600341796875,
+              222.52325439453125
+            ]
+          ],
+          "pixel_sha256": "6ecadd686641fa511b479201064a822535690c97de405af3f3d191899549bec4"
+        }
+      },
+      "native_sha256": "47a1b3a384b0b242b8c49ff77f797ad421715aab5b511c48a09e4c2df3e7d09f"
+    },
+    {
+      "id": "v18_170",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_r3/cell02.png",
+      "native_crop_xyxy": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.793968200683594,
+            28.716632843017578,
+            91.67627716064453,
+            93.18778228759766,
+            0.7944861650466919
+          ],
+          "landmarks": [
+            [
+              51.829437255859375,
+              50.59705352783203
+            ],
+            [
+              76.83010864257812,
+              50.31043243408203
+            ],
+            [
+              64.41390228271484,
+              66.17253112792969
+            ],
+            [
+              54.410072326660156,
+              75.47898864746094
+            ],
+            [
+              75.43921661376953,
+              75.26307678222656
+            ]
+          ],
+          "pixel_sha256": "69600fcd6542ecb7d2178ed6d1b645268c43392924fb450f2d20ffdb10ba52f5"
+        },
+        "256": {
+          "bbox": [
+            74.74476623535156,
+            58.87263107299805,
+            183.40048217773438,
+            187.4670867919922,
+            0.8155560493469238
+          ],
+          "landmarks": [
+            [
+              104.01896667480469,
+              101.25140380859375
+            ],
+            [
+              153.61849975585938,
+              101.23175048828125
+            ],
+            [
+              128.86703491210938,
+              132.7323455810547
+            ],
+            [
+              108.76960754394531,
+              150.99790954589844
+            ],
+            [
+              150.52268981933594,
+              150.931884765625
+            ]
+          ],
+          "pixel_sha256": "a464a95b793434507b00c7bba0951ffdd9b0aa8c2e0431a9b9d9cf851fd8589e"
+        },
+        "384": {
+          "bbox": [
+            112.27901458740234,
+            90.6556167602539,
+            274.9797668457031,
+            280.9483337402344,
+            0.8279908895492554
+          ],
+          "landmarks": [
+            [
+              156.3395233154297,
+              151.92445373535156
+            ],
+            [
+              230.16134643554688,
+              152.07337951660156
+            ],
+            [
+              193.35606384277344,
+              199.33006286621094
+            ],
+            [
+              163.4313201904297,
+              226.33689880371094
+            ],
+            [
+              225.61196899414062,
+              226.39950561523438
+            ]
+          ],
+          "pixel_sha256": "b096d7029bbe9bd4d52bb6fad0ef389f273c0c5299c54dfd02b203cbeb3c1d0c"
+        }
+      },
+      "native_sha256": "1643292f9e977ce03e883e0e698cbd6124e824aaf521a35728c85bcc0b9228ab"
+    },
+    {
+      "id": "v18_174",
+      "team": "daejeon_redfox",
+      "path": "/workspace/front-office/assets/v18/production200/work/v18b/native_candidates/gray_daejeon_redfox_r3/cell03.png",
+      "native_crop_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "details": {
+        "128": {
+          "bbox": [
+            37.58448028564453,
+            28.823928833007812,
+            88.39140319824219,
+            90.4496078491211,
+            0.8359293937683105
+          ],
+          "landmarks": [
+            [
+              50.9618034362793,
+              49.06161880493164
+            ],
+            [
+              74.68180847167969,
+              49.07030487060547
+            ],
+            [
+              63.014556884765625,
+              62.828529357910156
+            ],
+            [
+              53.499610900878906,
+              73.94109344482422
+            ],
+            [
+              73.0345687866211,
+              73.9766845703125
+            ]
+          ],
+          "pixel_sha256": "b39127827c952db77271ba8215791fcd66ec56833714e4d8ca09090808712f90"
+        },
+        "256": {
+          "bbox": [
+            74.48307800292969,
+            58.51802444458008,
+            176.64688110351562,
+            181.0837860107422,
+            0.8244988918304443
+          ],
+          "landmarks": [
+            [
+              101.39884948730469,
+              97.6231460571289
+            ],
+            [
+              148.8170166015625,
+              97.89329528808594
+            ],
+            [
+              125.49813079833984,
+              126.65202331542969
+            ],
+            [
+              107.06819152832031,
+              148.2804718017578
+            ],
+            [
+              145.46070861816406,
+              148.6085968017578
+            ]
+          ],
+          "pixel_sha256": "0c8bb9ac99ebedf7312c8082cce94cb56cc20d64b6e04941d9165adebb3f2bed"
+        },
+        "384": {
+          "bbox": [
+            111.7217025756836,
+            89.70625305175781,
+            265.03564453125,
+            271.8995361328125,
+            0.8237944841384888
+          ],
+          "landmarks": [
+            [
+              151.87892150878906,
+              146.39810180664062
+            ],
+            [
+              222.9863739013672,
+              146.88392639160156
+            ],
+            [
+              187.762939453125,
+              190.2594757080078
+            ],
+            [
+              160.31484985351562,
+              222.54124450683594
+            ],
+            [
+              217.86309814453125,
+              223.06304931640625
+            ]
+          ],
+          "pixel_sha256": "9a892b50a5263664d95aa557eeea149586f6ef58e2025e79009bc04caf68b2cd"
+        }
+      },
+      "native_sha256": "e61e5cd97d3c78aad4bea10b7acf6fcc0acfd38440b75d656d7c5891ce6cd8ee"
+    }
+  ]
+}
