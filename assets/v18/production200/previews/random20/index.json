@@ -1,0 +1,347 @@
+{
+  "seed": 18,
+  "sampling": "random.Random(18).sample(manifest.identities,20)",
+  "source": "actual decoded delivered256WebP rects",
+  "identities": [
+    {
+      "id": "v18_047",
+      "age": 26,
+      "path": "previews/random20/v18_047.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_032",
+      "age": 31,
+      "path": "previews/random20/v18_032.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_170",
+      "age": 27,
+      "path": "previews/random20/v18_170.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_115",
+      "age": 20,
+      "path": "previews/random20/v18_115.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_086",
+      "age": 21,
+      "path": "previews/random20/v18_086.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_062",
+      "age": 32,
+      "path": "previews/random20/v18_062.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_051",
+      "age": 23,
+      "path": "previews/random20/v18_051.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_126",
+      "age": 22,
+      "path": "previews/random20/v18_126.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_161",
+      "age": 25,
+      "path": "previews/random20/v18_161.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_127",
+      "age": 22,
+      "path": "previews/random20/v18_127.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_123",
+      "age": 21,
+      "path": "previews/random20/v18_123.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_076",
+      "age": 32,
+      "path": "previews/random20/v18_076.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_118",
+      "age": 20,
+      "path": "previews/random20/v18_118.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_068",
+      "age": 30,
+      "path": "previews/random20/v18_068.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_065",
+      "age": 24,
+      "path": "previews/random20/v18_065.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_178",
+      "age": 28,
+      "path": "previews/random20/v18_178.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_031",
+      "age": 29,
+      "path": "previews/random20/v18_031.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_084",
+      "age": 18,
+      "path": "previews/random20/v18_084.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_134",
+      "age": 22,
+      "path": "previews/random20/v18_134.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    },
+    {
+      "id": "v18_173",
+      "age": 28,
+      "path": "previews/random20/v18_173.png",
+      "team_order": [
+        "seoul_comets",
+        "seoul_hounds",
+        "incheon_seagulls",
+        "suwon_sparks",
+        "goyang_storm",
+        "daejeon_redfox",
+        "gwangju_blazes",
+        "daegu_thunders",
+        "busan_waves",
+        "changwon_anchors"
+      ]
+    }
+  ]
+}

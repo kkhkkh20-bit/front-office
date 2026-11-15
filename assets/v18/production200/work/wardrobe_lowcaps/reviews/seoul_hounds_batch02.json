@@ -1,0 +1,21 @@
+{
+  "team": "seoul_hounds",
+  "batch": 2,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/seoul_hounds_batch02.png",
+  "render_sha256": "df5de1badf334d2f4e4227a89e8b4c5ff67f657fbd73dfb2a3118cb13f3a61cf",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#131230",
+  "home_kit_reference": {
+    "kit_overlay": "seoul_hounds_kit_overlay",
+    "chest": "seoul_hounds_chest",
+    "cap": "seoul_hounds_cap",
+    "cap_color": "#131230",
+    "catalog_front": "seoul_hounds_home_front",
+    "catalog_back": "seoul_hounds_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:52:58.727307+00:00"
+}

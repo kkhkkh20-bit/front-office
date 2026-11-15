@@ -1,0 +1,21 @@
+{
+  "team": "busan_waves",
+  "batch": 2,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/busan_waves_batch02.png",
+  "render_sha256": "70dd9c81f7dd5e9018b9b45aee29b222f3600f0e4a84df755f994726050c133b",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#041E42",
+  "home_kit_reference": {
+    "kit_overlay": "busan_waves_kit_overlay",
+    "chest": "busan_waves_chest",
+    "cap": "busan_waves_cap",
+    "cap_color": "#041E42",
+    "catalog_front": "busan_waves_home_front",
+    "catalog_back": "busan_waves_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:47:51.173939+00:00"
+}

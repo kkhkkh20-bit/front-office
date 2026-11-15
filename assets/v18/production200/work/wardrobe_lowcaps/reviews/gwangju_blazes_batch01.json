@@ -1,0 +1,21 @@
+{
+  "team": "gwangju_blazes",
+  "batch": 1,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/gwangju_blazes_batch01.png",
+  "render_sha256": "0553ef906a628aa767d73a81b8313794e6e88411b4377f2da2909a9db40901ac",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#EA0029",
+  "home_kit_reference": {
+    "kit_overlay": "gwangju_blazes_kit_overlay",
+    "chest": "gwangju_blazes_chest",
+    "cap": "gwangju_blazes_cap",
+    "cap_color": "#EA0029",
+    "catalog_front": "gwangju_blazes_home_front",
+    "catalog_back": "gwangju_blazes_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:25:24.935246+00:00"
+}

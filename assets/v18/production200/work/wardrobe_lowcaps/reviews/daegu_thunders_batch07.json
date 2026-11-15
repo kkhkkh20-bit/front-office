@@ -1,0 +1,21 @@
+{
+  "team": "daegu_thunders",
+  "batch": 7,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/daegu_thunders_batch07.png",
+  "render_sha256": "067df52124034783c884de75ddb9ee6d7e57b18da82676d8eaa830ebecfbb69a",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#074CA1",
+  "home_kit_reference": {
+    "kit_overlay": "daegu_thunders_kit_overlay",
+    "chest": "daegu_thunders_chest",
+    "cap": "daegu_thunders_cap",
+    "cap_color": "#074CA1",
+    "catalog_front": "daegu_thunders_home_front",
+    "catalog_back": "daegu_thunders_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:49:33.455662+00:00"
+}

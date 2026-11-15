@@ -1,0 +1,21 @@
+{
+  "team": "suwon_sparks",
+  "batch": 4,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/suwon_sparks_batch04.png",
+  "render_sha256": "aee5ed5d760771ab50e5d7d84725c3316b8ecc548c34cc401b534b17f0d8ff7e",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#141414",
+  "home_kit_reference": {
+    "kit_overlay": "suwon_sparks_kit_overlay",
+    "chest": "suwon_sparks_chest",
+    "cap": "suwon_sparks_cap",
+    "cap_color": "#141414",
+    "catalog_front": "suwon_sparks_home_front",
+    "catalog_back": "suwon_sparks_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:54:03.228552+00:00"
+}

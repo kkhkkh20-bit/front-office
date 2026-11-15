@@ -1,0 +1,21 @@
+{
+  "team": "changwon_anchors",
+  "batch": 8,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/changwon_anchors_batch08.png",
+  "render_sha256": "17752918fa0eda82e6ccc8c80f3a8e81a6fa53d56b86d4aac9bae6e0bef0c0c2",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#1D467B",
+  "home_kit_reference": {
+    "kit_overlay": "changwon_anchors_kit_overlay",
+    "chest": "changwon_anchors_chest",
+    "cap": "changwon_anchors_cap",
+    "cap_color": "#1D467B",
+    "catalog_front": "changwon_anchors_home_front",
+    "catalog_back": "changwon_anchors_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:54:52.687565+00:00"
+}

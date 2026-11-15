@@ -26,7 +26,9 @@ def pack(ids,photos):
  quota_check(ids);assert len(photos)==2000
  assert all(x.get('visual_review_passed') is True for x in ids),'Visual identity review required'
  lookup={(x['id'],x['team']):x for x in photos};assert len(lookup)==2000
- for x in photos:assert x.get('visual_review_passed') is True,'Every jersey/cap photo requires review'
+ for x in photos:
+  assert x.get('visual_review_passed') is True,'Every jersey/cap photo requires review'
+  assert x.get('cap_fit_passed') is True and x.get('uniform_review_passed') is True,'User requires deep cap fit and correct home kit in every photo'
  manifest={'schema_version':'v18-production200-1','path_base':str(OUT.relative_to(ROOT)),'identity_count':200,'accepted_identity_count':200,'variant_count':2000,'production_complete':False,'asset_validation_passed':False,'review_status':'validation_in_progress','delivery_branch':'assets/v18-review','image_mode':'RGB','alpha':False,'grid':{'columns':10,'rows':10,'padding':8,'pitch':{'128':144,'256':272}},'teams':TEAMS,'sheets':[],'runtime_files':[],'runtime_sheet_bytes':0,'identities':ids,'validation':'validation.json','integration_notes':['All image paths are repository relative; rect excludes 8px black padding.','Only 128 sheets are runtime files; 256 and previews are review assets.','Game code unchanged; do not merge main automatically.']}
  for sheet in ['A','B']:
   group=[x for x in ids if x['sheet']==sheet]
@@ -60,7 +62,7 @@ def validate_pixels(manifest):
   assert hashlib.sha256((ROOT/item['path']).read_bytes()).hexdigest()==item['sha256']
 
 def validate_embeddings(manifest,master_e,reference_e,variant_e):
- vdir=OUT/'validation';vdir.mkdir(exist_ok=True);ids=[x['id'] for x in manifest['identities']];results={};complete=True
+ reference_names=np.load(OUT/'identity_prescreen/embeddings.npz')['reference_ids'];vdir=OUT/'validation';vdir.mkdir(exist_ok=True);ids=[x['id'] for x in manifest['identities']];results={};complete=True
  for size in [128,256]:
   e=master_e[size];ref=reference_e[size];v=variant_e[size];assert e.shape==(200,512) and ref.shape==(160,512) and v.shape==(10,200,512)
   assert np.allclose(np.linalg.norm(e,axis=-1),1,atol=1e-4) and np.allclose(np.linalg.norm(v,axis=-1),1,atol=1e-4)
@@ -69,22 +71,32 @@ def validate_embeddings(manifest,master_e,reference_e,variant_e):
    writer=csv.writer(f);writer.writerow(['kind','a','b','cosine'])
    for i in range(200):
     for j in range(i+1,200):writer.writerow(['within',ids[i],ids[j],float(w[i,j])])
-    for j in range(160):writer.writerow(['reference',ids[i],j,float(c[i,j])])
-  pair_min=1.;pair_max=-1.;own_top1=True;source_top1=bool(all(np.all(np.argmax(v[t]@e.T,axis=1)==np.arange(200)) for t in range(10)));count=0;pair_scores=[]
+    for j in range(160):writer.writerow(['reference',ids[i],str(reference_names[j]),float(c[i,j])])
+  pair_min=1.;pair_max=-1.;own_top1=True;source_top1=bool(all(np.all(np.argmax(v[t]@e.T,axis=1)==np.arange(200)) for t in range(10)));count=0;pair_scores=[];top1_rows=[]
   for i,j in itertools.combinations(range(10),2):
    matrix=v[i]@v[j].T;diagonal=np.diag(matrix);pair_min=min(pair_min,float(diagonal.min()));pair_max=max(pair_max,float(diagonal.max()));count+=200;own_top1&=bool(np.all(np.argmax(matrix,axis=1)==np.arange(200)) and np.all(np.argmax(matrix,axis=0)==np.arange(200)))
+   for a,b,table in [(i,j,matrix),(j,i,matrix.T)]:
+    for k in range(200):
+     predicted=int(np.argmax(table[k]));other=table[k].copy();other[k]=-2.;top1_rows.append({'id':ids[k],'query_team':KEYS[a],'gallery_team':KEYS[b],'predicted_id':ids[predicted],'own_cosine':float(table[k,k]),'best_other_cosine':float(other.max()),'passed':predicted==k})
    pair_scores.extend([{'id':ids[k],'team_a':KEYS[i],'team_b':KEYS[j],'cosine':float(diagonal[k])} for k in range(200)])
-  assert count==9000;dump(vdir/f'same_identity_{size}.json',pair_scores)
+  assert count==9000;dump(vdir/f'same_identity_{size}.json',pair_scores);dump(vdir/f'cross_team_top1_{size}.json',top1_rows)
+  source_top1_rows=[]
+  for t in range(10):
+   matrix=v[t]@e.T
+   for k in range(200):
+    predicted=int(np.argmax(matrix[k]));source_top1_rows.append({'id':ids[k],'team':KEYS[t],'predicted_id':ids[predicted],'own_cosine':float(matrix[k,k]),'passed':predicted==k})
+  dump(vdir/f'source_top1_{size}.json',source_top1_rows)
   passed=bool(w[upper].max()<.4 and c.max()<.4 and pair_min>=.6 and own_top1 and source_top1);complete&=passed
   results[str(size)]={'passed':passed,'within_pairs':19900,'reference_pairs':32000,'within_min':float(w[upper].min()),'within_max':float(w[upper].max()),'reference_min':float(c.min()),'reference_max':float(c.max()),'same_identity_pairs':count,'same_identity_min':pair_min,'same_identity_max':pair_max,'source_to_variant_min':float(min(np.diag(v[t]@e.T).min() for t in range(10))),'mutual_cross_team_own_identity_top1':own_top1,'prescreen_own_identity_top1':source_top1}
- dump(OUT/'validation.json',{'passed':bool(complete),'metrics':results,'scope':'actual decoded final WebP portraits, raw normalized ArcFace cosine','model':'buffalo_l/w600k_r50.onnx'})
+ dump(OUT/'validation.json',{'passed':bool(complete),'metrics':results,'scope':'actual decoded final WebP portraits, raw normalized ArcFace cosine','model':'buffalo_l/w600k_r50.onnx','protocol':json.loads((OUT/'identity_prescreen/protocol.json').read_text()),'identity_count':200,'reference_count':160,'variant_count':2000,'visually_reviewed_photos':2000})
  # This function receives measured embeddings only; flags remain false on any failure.
  if complete:
   required=['previews/A_all100_256.png','previews/B_all100_256.png','previews/B_by_age_256.png','CLAUDE_HANDOFF.md','previews/random20/index.json']
   assert all((OUT/f).exists() for f in required),'Required review artifacts missing'
   random20=json.loads((OUT/'previews/random20/index.json').read_text());assert len(random20['identities'])==20 and all((OUT/x['path']).exists() for x in random20['identities'])
   assert len(json.loads((P/'approved_wardrobe_photos.json').read_text()))==2000
-  manifest.update({'production_complete':True,'asset_validation_passed':True,'review_status':'pending_game_review'});dump(OUT/'manifest.json',manifest)
+  # Numerical success is not delivery completion; finalize_delivery.py checks all artifacts and writes final flags.
+  manifest.update({'production_complete':False,'asset_validation_passed':False,'review_status':'final_delivery_checks_pending'});dump(OUT/'manifest.json',manifest)
  return bool(complete)
 
 if __name__=='__main__':

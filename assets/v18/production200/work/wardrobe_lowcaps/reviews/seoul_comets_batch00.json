@@ -1,0 +1,21 @@
+{
+  "team": "seoul_comets",
+  "batch": 0,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/seoul_comets_batch00.png",
+  "render_sha256": "c85ec30339baae1ad4cc24241605cecad4053a80260c68a957ed0bc27ba1f33f",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#A50034",
+  "home_kit_reference": {
+    "kit_overlay": "seoul_comets_kit_overlay",
+    "chest": "seoul_comets_chest",
+    "cap": "seoul_comets_cap",
+    "cap_color": "#A50034",
+    "catalog_front": "seoul_comets_home_front",
+    "catalog_back": "seoul_comets_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:09:02.204739+00:00"
+}

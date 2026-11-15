@@ -1,0 +1,111 @@
+{
+  "passed": true,
+  "review_type": "visual inspection of actual delivered 256 WebP previews",
+  "random_seed": 18,
+  "reviewed_identities": 20,
+  "reviewed_team_photos": 200,
+  "checks": [
+    "deeply seated caps with eyes visible",
+    "natural facial proportions",
+    "consistent identity across all ten teams",
+    "natural neutral or slight smile",
+    "compressed image quality"
+  ],
+  "files": [
+    {
+      "path": "assets/v18/production200/previews/random20/v18_031.png",
+      "sha256": "14fa50be235dc2f5d617bbaeacea63252de66006daf2478411016a8c72e86090"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_032.png",
+      "sha256": "38b3f70d552002f8f379ce1bc34ef52476adb046abd11da78709c37bca946e85"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_047.png",
+      "sha256": "85faa83927d59feb671658dd413e32814b1a7d4df7180489ccd2a3dc8d5d1571"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_051.png",
+      "sha256": "20df18cdba38f3b36565538893bf52c51f025b360acae15c30568c219f9124a3"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_062.png",
+      "sha256": "d1ef62f603f9a316c4452eecf629f8b6357aa1a5bc1f6a64bf63b648c38993d4"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_065.png",
+      "sha256": "4b155be737e67d11aeab7039dcc1dbfef6f98f1de0b803a432f22fb9998d91e3"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_068.png",
+      "sha256": "de480621b1208797c48db59c29818a5d125897013bd8c0195a8d3f6231c92bb9"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_076.png",
+      "sha256": "8c675958d7f45cfd8500e0e4266847e8fa660132bef70d17c1242c11498c8351"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_084.png",
+      "sha256": "1e5d84e848944256d3f04e69d1552a151272f3c9bde510e387ba61d2bdf261df"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_086.png",
+      "sha256": "b7c7ee6c153b16f8820d6450ec48338984226de3429ba63eff1393461b3c0413"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_115.png",
+      "sha256": "154f6c8bcf9c22a95a487853ec894e72c8253998b050e2a521de68f0f16740c3"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_118.png",
+      "sha256": "db11906a9df359d518c03c81117d0027c30776c637740368d5fc3c98876f1498"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_123.png",
+      "sha256": "c9b117df21a56fcc0787745757adaa6e940915a84c5dc5bbded6194fdb51069c"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_126.png",
+      "sha256": "8c12f2a7f6797a1ff4f5411ebe7889154e311e5cd07278b9108c3e3104c66b71"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_127.png",
+      "sha256": "d21a3a28561e906565445eea94b0de6e5da154cc5deff1b4702c0667a338477d"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_134.png",
+      "sha256": "57aff22b7b3a467dc94eac7e3e7f2e608c4bdac882ba1f6dd5261371ef751f86"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_161.png",
+      "sha256": "695fe7a15c8e6611a43dc9d1cd66401080469b93e336abbc4634be35733584ca"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_170.png",
+      "sha256": "3ac13d4619e33151a6523b85b9b669e14fe10d1085323a237e43d2c5522d936a"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_173.png",
+      "sha256": "381dc8e8eb2a6c5e3a2995b918e869a1dcf0b967db10ad4ccf1af6f8768a6459"
+    },
+    {
+      "path": "assets/v18/production200/previews/random20/v18_178.png",
+      "sha256": "3afe9c5fd2f3a8a87893e5cd817b0b16923e87cbade151b5ba2e884809b3698b"
+    }
+  ],
+  "all_people_overview_review_passed": true,
+  "all_people_overview_files": [
+    {
+      "path": "assets/v18/production200/previews/A_all100_256.png",
+      "sha256": "cf37810adea2e03c1012dbf4548074eba126899e15415f70e887e561349b6144"
+    },
+    {
+      "path": "assets/v18/production200/previews/B_all100_256.png",
+      "sha256": "201007c7b08fdbc3503bae5c7cbe2faa4e51b63ac2966f009afff8b823f6c466"
+    },
+    {
+      "path": "assets/v18/production200/previews/B_by_age_256.png",
+      "sha256": "201007c7b08fdbc3503bae5c7cbe2faa4e51b63ac2966f009afff8b823f6c466"
+    }
+  ]
+}

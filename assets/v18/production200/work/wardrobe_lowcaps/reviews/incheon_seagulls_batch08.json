@@ -1,0 +1,21 @@
+{
+  "team": "incheon_seagulls",
+  "batch": 8,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/incheon_seagulls_batch08.png",
+  "render_sha256": "c60bebb13d15454da4c505ad3c4084b3fa8db5795cc7a82c517d0b6e86300c2b",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#CE0E2D",
+  "home_kit_reference": {
+    "kit_overlay": "incheon_seagulls_kit_overlay",
+    "chest": "incheon_seagulls_chest",
+    "cap": "incheon_seagulls_cap",
+    "cap_color": "#CE0E2D",
+    "catalog_front": "incheon_seagulls_home_front",
+    "catalog_back": "incheon_seagulls_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:55:12.423399+00:00"
+}

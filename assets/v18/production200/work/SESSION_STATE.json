@@ -6,9 +6,7 @@
   "canonical_progress": "canonical/progress.json",
   "selection": "canonical/selection.json",
   "production_status": "../production_status.json",
-  "active_generation_cells": {
-    "Comets20x10": 202
-  },
+  "active_generation_cells": {},
   "extractors": {
     "round08": 13683,
     "round09": 99207
@@ -25,7 +23,7 @@
   "canonical_candidates": 1481,
   "latest_compatible_selection": 197,
   "pending_solvers": {},
-  "last_pushed_commit": "6535e4c",
+  "last_pushed_commit": "63e769b",
   "last_pushed_checkpoint_faces": 191,
   "visual_metadata": [
     "visual_metadata.json",
@@ -34,10 +32,31 @@
   "source_face_criterion": "raw original ArcFace/LMEDS, all new pairs and all160 original references below.4 at128and256; no rescaling",
   "nearby_age_diagnostic": "Optional at most10 fictional age assignments ±1onlyat cohort boundaries, with original generation_age recorded and final individual visual age review mandatory. Prefer strict native-age solution.",
   "wardrobe_started": true,
-  "completion": false,
+  "completion": true,
   "accepted_identity_count": 200,
   "full_identity_gate": "full_identity_gate.json",
   "source_roster_frozen": true,
-  "wardrobe_score_session": 2131,
-  "source_age_assignments": 5
+  "wardrobe_score_session": null,
+  "source_age_assignments": 5,
+  "cap_fit_update": "cap_fit_update.json",
+  "final_wardrobe_directory": "wardrobe_lowcaps",
+  "old_wardrobe": "wardrobe is superseded intermediate high/perched-cap material; DO NOT DELIVER",
+  "next_step": "Asset production complete. Game integration is a separate Claude task; do not merge main automatically.",
+  "pending_visual_view_cell": 220,
+  "anchor_approved_batches": [
+    0,
+    4
+  ],
+  "completed_generation_count": 2000,
+  "visually_approved_photos": 2000,
+  "raw_same_identity_pairs_passed": 18000,
+  "raw_same_identity_min": {
+    "128": 0.741503119468689,
+    "256": 0.6896551847457886
+  },
+  "final_webp_measure_session": 68773,
+  "packed_webp_sheets": 40,
+  "final_flags_still_false": true,
+  "completed_variant_count": 2000,
+  "completed_sheet_count": 40
 }

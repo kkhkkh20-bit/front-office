@@ -1,0 +1,21 @@
+{
+  "team": "goyang_storm",
+  "batch": 9,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/goyang_storm_batch09.png",
+  "render_sha256": "20743784eb0f02a7a6d13d71774c8836eab854e337284d825e6174cad96ec0c6",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#570514",
+  "home_kit_reference": {
+    "kit_overlay": "goyang_storm_kit_overlay",
+    "chest": "goyang_storm_chest",
+    "cap": "goyang_storm_cap",
+    "cap_color": "#570514",
+    "catalog_front": "goyang_storm_home_front",
+    "catalog_back": "goyang_storm_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:55:12.318120+00:00"
+}

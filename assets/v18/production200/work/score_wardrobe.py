@@ -7,10 +7,10 @@ import numpy as np
 from PIL import Image,ImageOps
 from scipy.optimize import linear_sum_assignment
 import canonical_rescreen as recognition
-P=Path(__file__).resolve().parent;ROOT=P.parents[3];D=P/'wardrobe';APP=None
+P=Path(__file__).resolve().parent;ROOT=P.parents[3];D=P/'wardrobe_lowcaps';APP=None
 
 def init():
- recognition.D=D/'measurement';recognition.initialize()
+ recognition.D=D/'measurement';recognition.D.mkdir(parents=True,exist_ok=True);recognition.initialize()
 def task(x):return recognition.measure(x)
 
 def score_batch(job,pool):
@@ -29,7 +29,8 @@ def score_batch(job,pool):
  return {'job':job,'passed':passed,'metrics':scores,'photos':photos}
 
 if __name__=='__main__':
- D.mkdir(exist_ok=True);done=set();outputs=[]
+ D.mkdir(exist_ok=True);outputs=[json.loads(f.read_text()) for f in sorted(D.glob('render_*_validation.json'))];done={Path(x['job']['path']).stem.replace('seoul_comets_batch','render_seoul_comets_batch')+'.json' for x in outputs}
+ done={f.name.replace('_validation.json','.json') for f in D.glob('render_*_validation.json')}
  with concurrent.futures.ProcessPoolExecutor(max_workers=2,mp_context=multiprocessing.get_context('spawn'),initializer=init) as pool:
   while True:
    changed=False

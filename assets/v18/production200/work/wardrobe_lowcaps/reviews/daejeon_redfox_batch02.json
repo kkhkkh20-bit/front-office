@@ -1,0 +1,21 @@
+{
+  "team": "daejeon_redfox",
+  "batch": 2,
+  "render_source": "assets/v18/production200/work/wardrobe_lowcaps/renders/daejeon_redfox_batch02.png",
+  "render_sha256": "d29591c8a3823e5ed0f5df971a12dc8e8e50b57c38d733ca15dc6ab23dcc09d2",
+  "visual_review_passed": true,
+  "cap_fit_passed": true,
+  "uniform_review_passed": true,
+  "identity_anatomy_glasses_ears_passed": true,
+  "cap_color_reference": "#F37321",
+  "home_kit_reference": {
+    "kit_overlay": "daejeon_redfox_kit_overlay",
+    "chest": "daejeon_redfox_chest",
+    "cap": "daejeon_redfox_cap",
+    "cap_color": "#F37321",
+    "catalog_front": "daejeon_redfox_home_front",
+    "catalog_back": "daejeon_redfox_home_back"
+  },
+  "cap_fit": "fully/deeply seated, front fringe hidden, brim just above eyebrows",
+  "reviewed_utc": "2026-11-15T10:25:24.861187+00:00"
+}

@@ -1,0 +1,9 @@
+{
+  "user_instruction": "모자를 걸쳐 쓰지말고 푹 눌러써야해",
+  "reference": "User-supplied professional baseball roster screenshot, 6 portraits",
+  "fit": "Cap pulled fully down, wraps skull and temples, forehead mostly covered, brim just above eyebrows, fringe hidden, both eyes visible",
+  "applies_to": "All200 identities and all10 teams",
+  "supersedes": "All earlier perched/high-cap wardrobe renders underwork/wardrobe",
+  "final_wardrobe_directory": "work/wardrobe_lowcaps",
+  "updated_utc": "2026-11-15T10:00:35.608048+00:00"
+}
