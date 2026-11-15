@@ -15975,6 +15975,7 @@ function statNotes(p){ // 프로 기록에서 읽히는 신호
     else if(era>=5&&k9-b9>=5)L.push(`${yy} 평균자책점(${era.toFixed(2)})은 나쁘지만 탈삼진·볼넷 내용은 좋습니다. 수비와 타구 운이 따르지 않았을 수 있어 나아질 여지가 있습니다.`); }
   return L; }
 
+const STAFF_RET_AGE=70; /* 감독·코치 은퇴 나이: 이 나이부터 재계약·연장을 하지 않는다. 우리·AI 같음(dddddd 11-15) */
 /* ===== 코치진과 감독 사단 =====
  지도력(sk): 1군 경기력에 작게 영향. 육성력(dv): 맡은 선수들의 성장 속도.
  사단: 감독과 함께 다니는 코치 묶음. 같은 사단이면 손발이 맞아 실력이 더 나온다(+6). 고집 센 감독은 남의 코치와 덜 맞는다(-2). */
@@ -16072,7 +16073,7 @@ function fireCoach(role){ if(G.unemp)return; const C=G.coach[G.user]; const c=C[
 function interimLeft(c){ const m=G.mgr[G.user]; if(m&&m.interim&&(m.cid===c.id||(m.cid==null&&m.name===`${c.name}(감독대행)`))){ staffHistory('mgr',m,'감독대행 임무 종료',G.user,`${c.name} 코치 퇴임`); G.mgr[G.user]=mkInterim(); staffHistory('mgr',G.mgr[G.user],'감독대행 선임',G.user,'전임 대행 코치 퇴임에 따른 교체'); addLog(`감독대행은 ${G.mgr[G.user].name.replace('(감독대행)','')}이(가) 맡습니다.`); } }
 /* 코치 중도 재계약: 계약 중 언제든 1~2년 연장(계약은 최대 4년). 연장 1년마다 연봉 3%(스타 코치 6%) 인상. 64세 이상은 은퇴를 생각해 1년만. 한 해 한 번 */
 function coachExtTerms(role,add){ const c=coachesOf(G.user)[role]; if(!c)return null; const sal=round5(c.sal*(1+(c.star?.06:.03)*add)); let why='';
-  if(c.extY===G.year)why=`${c.name} 코치와는 올해 이미 계약을 손봤습니다.`; else if(c.age>=64&&add>1)why=`${c.name} 코치(${c.age}세)는 은퇴를 생각하고 있어 1년만 연장합니다.`; else if(c.yrs+add>4)why='코치 계약은 최대 4년까지입니다.';
+  if((c.age||0)>=STAFF_RET_AGE)why=`${c.name} 코치(${c.age}세)가 이번 계약을 끝으로 은퇴하겠다고 합니다.`; else if(c.extY===G.year)why=`${c.name} 코치와는 올해 이미 계약을 손봤습니다.`; else if(c.age>=64&&add>1)why=`${c.name} 코치(${c.age}세)는 은퇴를 생각하고 있어 1년만 연장합니다.`; else if(c.yrs+add>4)why='코치 계약은 최대 4년까지입니다.';
   return {c,add,sal,why}; }
 function extendCoach(role,add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!(+add===1||+add===2))return '연장은 1~2년입니다.'; const T=coachExtTerms(role,+add); if(!T)return '그 자리에 코치가 없습니다.'; if(T.why)return T.why; const c=T.c;
   staffCtExtend(c,T.add); c.sal=T.sal; c.extY=G.year; c.raidSafe=G.day+365; /* 연장 뒤 1년은 다른 구단이 영입 제안하지 않는다(커뮤니티 11-15) */ staffHistory('coach',c,'연장 계약',G.user,`${T.add}년 연장 · 연 ${money(c.sal)}`); addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
@@ -16104,7 +16105,7 @@ function coachYear(){ // 겨울: 계약 정리
       if(b&&v(b)>=v(c)+4){ G.cmarket=G.cmarket.filter(x=>x!==b); staffCt(b,ri(1,3),G.year+1); C[k]=b;
         if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); }
         staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',b,'영입',t.id,`${c.name} 코치 계약 만료 · ${b.yrs}년`);
-      } else if((c.age||0)<70&&R()<.55){ staffRenew(c,ri(1,2),G.year+1); staffHistory('coach',c,'재계약',t.id,`${c.yrs}년`);
+      } else if((c.age||0)<STAFF_RET_AGE&&R()<.55){ staffRenew(c,ri(1,2),G.year+1); staffHistory('coach',c,'재계약',t.id,`${c.yrs}년`);
       } else { if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); }
         C[k]=obAiCoach(t.id,k)||mkCoach(k); staffCt(C[k],C[k].yrs||ri(1,3),G.year+1); staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',C[k],'영입',t.id,`${c.name} 코치 계약 만료 · ${C[k].yrs}년`); }
     }
@@ -16636,7 +16637,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     const want=Math.max(want0*.5,want0+relNeedAdj(B.id,A.id)), needA=Math.max(0,relNeedAdj(A.id,B.id)); /* 두 단장 사이 친분(tradeNeed와 같은 몫): 친하면 덜, 나쁘면 더 받으려 한다. 사는 쪽도 사이가 나쁘면 남는 거래만 */ const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
     let pay=null, pkGive=null;
     /* 유망주 수집 구단에 파는 쪽이면 지명권으로 값을 치른다(지명권만, 또는 어린 선수 한 명 + 지명권). 사는 쪽이 우승 도전이면 지명권을 싸게 보고 파는 쪽은 비싸게 봐서 거래가 선다. 1라운드는 특급(종합 60 이상)을 살 때만 */
-    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeld(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=(hotA?56:60)&&r1(HB)<PK_R1_MAX)); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)*pkKeep(A)})).sort((x,y)=>x.b-y.b);
+    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeld(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=(hotA?56:60)&&r1(HB)<pkR1Max())); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)*pkKeep(A)})).sort((x,y)=>x.b-y.b);
         for(const x of H){ if(x.b>=want&&vin-x.a>=needA){ pay=[]; pkGive=x.k; break; } }
         if(!pkGive)for(const q of pool){ const x=H.find(x=>stackIn([q.b])+x.b>=want&&vin-q.a-x.a>=needA); if(x){ pay=[q]; pkGive=x.k; break; } } }catch(e){ pay=null; pkGive=null; } }
     for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<needA)continue; pay=arr; break; }
@@ -17768,20 +17769,20 @@ function offseasonMgr(){
   try{ obYear(); }catch(e){} try{ obMinorPrune(); }catch(e){}
   if(G.coach){ coachYear(); try{ asstYear(); }catch(e){} /* 무직이어도 떠난 구단 보조 코치 계약은 흐른다(검수 11-09zv #3) */ } try{ schYear(); }catch(e){} /* 코치 시장을 새로 짠 뒤 고교 감독 후보를 올린다 */ try{ gmTurnover(); }catch(e){} try{ mgrFireOff(); }catch(e){}
   for(const t of G.teams){ const m=G.mgr[t.id]; if(!m)continue; if(m.age)m.age++; if(m.cs!=null&&m.cs>G.year)continue; /* 시즌이 끝난 뒤 맺은 계약은 다음 시즌부터 센다 */ m.yrs--;
-    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<70&&R()<.6){staffCt(m,2,G.year+1);staffHistory('mgr',m,'재계약',t.id,`2년 · ${m.ce}시즌까지`);} else {staffHistory('mgr',m,'계약 만료',t.id,'시즌 종료 후 재계약하지 않음'); try{ exMgrAdd(m,t.id); }catch(e){} const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||(()=>{ try{ return aiMgrHire(t); }catch(e){ return mkMgr(); } })(); /* 선수단에 맞는 감독을 고른다(86_ai_plan) */ staffCt(n,n.yrs||ri(2,3),G.year+1); G.mgr[t.id]=n;staffHistory('mgr',n,'선임',t.id,`전임 ${m.name} 계약 만료 · ${n.yrs}년`); n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){const prev=G.coach[t.id][c.role];if(prev)staffHistory('coach',prev,'계약 종료',t.id,'감독 교체에 따른 코치진 개편'); staffCt(c,n.yrs,G.year+1); G.coach[t.id][c.role]=c;staffHistory('coach',c,'선임',t.id,`${n.name} 감독 사단 합류`); } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
+    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<STAFF_RET_AGE&&R()<.6){staffCt(m,2,G.year+1);staffHistory('mgr',m,'재계약',t.id,`2년 · ${m.ce}시즌까지`);} else {staffHistory('mgr',m,'계약 만료',t.id,'시즌 종료 후 재계약하지 않음'); try{ exMgrAdd(m,t.id); }catch(e){} const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||(()=>{ try{ return aiMgrHire(t); }catch(e){ return mkMgr(); } })(); /* 선수단에 맞는 감독을 고른다(86_ai_plan) */ staffCt(n,n.yrs||ri(2,3),G.year+1); G.mgr[t.id]=n;staffHistory('mgr',n,'선임',t.id,`전임 ${m.name} 계약 만료 · ${n.yrs}년`); n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){const prev=G.coach[t.id][c.role];if(prev)staffHistory('coach',prev,'계약 종료',t.id,'감독 교체에 따른 코치진 개편'); staffCt(c,n.yrs,G.year+1); G.coach[t.id][c.role]=c;staffHistory('coach',c,'선임',t.id,`${n.name} 감독 사단 합류`); } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
   refreshMgrMarket();
   const m=G.mgr[G.user];
-  if(m&&!m.interim&&m.yrs<=0) mail('운영팀','감독 계약이 끝납니다',`${m.name} 감독의 계약이 올해로 끝납니다. 재계약하거나 새 감독을 선임해야 합니다. 연말까지 정하지 않으면 감독 자리가 비게 됩니다.`,{imp:true,kind:'감독',acts:[{l:'2년 재계약',a:'renewMgr',v:'2:'+G.user+':'+m.id},{l:'감독 후보 보기',a:'goWork',v:'감독'}]});
+  if(m&&!m.interim&&m.yrs<=0) { const ret=(m.age||0)>=STAFF_RET_AGE; mail('운영팀',ret?'감독이 은퇴합니다':'감독 계약이 끝납니다',ret?`${m.name} 감독(${m.age}세)이 이번 시즌을 끝으로 은퇴합니다. 연말까지 새 감독을 선임해야 합니다.`:`${m.name} 감독의 계약이 올해로 끝납니다. 재계약하거나 새 감독을 선임해야 합니다. 연말까지 정하지 않으면 감독 자리가 비게 됩니다.`,{imp:true,kind:'감독',acts:ret?[{l:'감독 후보 보기',a:'goWork',v:'감독'}]:[{l:'2년 재계약',a:'renewMgr',v:'2:'+G.user+':'+m.id},{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
 }
 /* 감독 중도 재계약: 계약 중 언제든 1~3년 연장(남은 계약 합계 최대 5년), 한 해 한 번. 감독은 명성·성적·관계를 보고 연봉 인상을 요구한다.
    관계 30 미만이면 응하지 않는다. 연장하면 감독은 안정감에 관계 +5, 대신 경질할 때 정산금(남은 연봉)이 커진다 */
 function mgrExtTerms(add){ const m=G.mgr[G.user]; if(!m||m.interim)return null; mgrFix(m); const per=period(); const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; const rk=(per==='season'||per==='post')&&r&&r.w+r.l>=20?uRank():null;
   const up=Math.max(.02,.04*add+(m.fame>=70?.06:0)+(rk!=null&&rk<=3?.05:0)-(rk!=null&&rk>=8?.03:0)+(m.rel<50?.04:0)); const sal=round5(m.sal*(1+up)); const yrs=Math.max(0,m.yrs)+add; let why='';
-  if(m.extY===G.year)why=`${m.name} 감독과는 올해 이미 계약을 손봤습니다. 다음 해에 다시 이야기할 수 있습니다.`; else if(yrs>5)why='감독 계약은 남은 기간 합계 최대 5년까지입니다.'; else if(m.rel<30)why=`${m.name} 감독이 "지금은 계약 이야기를 할 때가 아닙니다"라며 응하지 않습니다. 관계부터 풀어야 합니다.`;
+  if((m.age||0)>=STAFF_RET_AGE)why=`${m.name} 감독(${m.age}세)이 "이번 계약을 끝으로 물러나겠습니다"라며 연장을 고사합니다. 계약이 끝나면 은퇴합니다.`; else if(m.extY===G.year)why=`${m.name} 감독과는 올해 이미 계약을 손봤습니다. 다음 해에 다시 이야기할 수 있습니다.`; else if((m.age||0)>=STAFF_RET_AGE-4&&add>1)why=`${m.name} 감독(${m.age}세)은 은퇴를 생각하고 있어 1년만 연장합니다.`; else if(yrs>5)why='감독 계약은 남은 기간 합계 최대 5년까지입니다.'; else if(m.rel<30)why=`${m.name} 감독이 "지금은 계약 이야기를 할 때가 아닙니다"라며 응하지 않습니다. 관계부터 풀어야 합니다.`;
   return {m,add,sal,yrs,why,up,rk,sev0:mgrSevPay(m).pay,sev1:mgrSevPay(Object.assign({},m,{sal,yrs})).pay}; } /* 정산금은 실제 경질과 같은 계산(mgrSevPay) */
 function extendMgr(add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!([1,2,3].includes(+add)))return '연장은 1~3년입니다.'; const T=mgrExtTerms(+add); if(!T)return '감독이 없습니다.'; if(T.why)return T.why; const m=T.m; const re=m.yrs<=0;
   staffCtExtend(m,T.add); m.sal=T.sal; m.extY=G.year; m.rel=clamp(m.rel+5,0,100); addLog(`${m.name} 감독과 ${T.add}년 ${re?'재계약':'연장 계약'}했습니다(연 ${money(m.sal)}, 계약 ${m.yrs}년 남음).`); staffHistory('mgr',m,re?'재계약':'계약 연장',G.user,`${T.add}년 · 연 ${money(m.sal)}`); return ''; }
-function renewMgr(y,tid,mid){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const m=G.mgr[G.user]; if(!m||m.interim)return; if((tid!=null&&+tid!==G.user)||(mid!=null&&mid!==m.id))return '이 재계약 요청은 현재 구단·감독의 요청이 아닙니다.'; if(m.yrs>0)return `${m.name} 감독과는 이미 계약 기간이 남아 있습니다(${m.yrs}년).`; if(![1,2,3].includes(+y))return '재계약은 1~3년입니다.'; /* 이미 처리한 재계약 제안을 다시 눌러도 연봉이 또 오르지 않게 */ mgrFix(m); if(m.rel<30)return `${m.name} 감독이 "지금은 계약 이야기를 할 때가 아닙니다"라며 응하지 않습니다. 관계부터 풀어야 합니다.`; /* 계약 화면과 같이 관계 30 미만이면 거절하고, 재계약도 올해 계약을 손본 것으로 남긴다(검수 11-09zv #8·9). 끝난 계약의 재계약은 올해 연장 여부와 관계없이 받는다 */ staffCt(m,+y); m.sal=round5(m.sal*1.1); m.extY=G.year; addLog(`${m.name} 감독과 ${y}년 재계약했습니다(연 ${money(m.sal)}).`);staffHistory('mgr',m,'재계약',G.user,`${y}년 · 연 ${money(m.sal)}`); }
+function renewMgr(y,tid,mid){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const m=G.mgr[G.user]; if(!m||m.interim)return; if((tid!=null&&+tid!==G.user)||(mid!=null&&mid!==m.id))return '이 재계약 요청은 현재 구단·감독의 요청이 아닙니다.'; if(m.yrs>0)return `${m.name} 감독과는 이미 계약 기간이 남아 있습니다(${m.yrs}년).`; if(![1,2,3].includes(+y))return '재계약은 1~3년입니다.'; if((m.age||0)>=STAFF_RET_AGE)return `${m.name} 감독(${m.age}세)이 재계약을 고사하고 은퇴하겠다고 합니다. 새 감독을 선임해 주세요.`; /* AI 구단과 같은 은퇴 나이(dddddd 11-15) */ /* 이미 처리한 재계약 제안을 다시 눌러도 연봉이 또 오르지 않게 */ mgrFix(m); if(m.rel<30)return `${m.name} 감독이 "지금은 계약 이야기를 할 때가 아닙니다"라며 응하지 않습니다. 관계부터 풀어야 합니다.`; /* 계약 화면과 같이 관계 30 미만이면 거절하고, 재계약도 올해 계약을 손본 것으로 남긴다(검수 11-09zv #8·9). 끝난 계약의 재계약은 올해 연장 여부와 관계없이 받는다 */ staffCt(m,+y); m.sal=round5(m.sal*1.1); m.extY=G.year; addLog(`${m.name} 감독과 ${y}년 재계약했습니다(연 ${money(m.sal)}).`);staffHistory('mgr',m,'재계약',G.user,`${y}년 · 연 ${money(m.sal)}`); }
 
 /* ===== 인물 관계도: 구단주·사장·감독·코치·선수·타 구단 단장·팬·언론 ===== */
 function nameH(k){ for(let i=0;i<9;i++){ const a=u01(k+'s'+i,7),b=u01(k+'a'+i,11),c=u01(k+'b'+i,13); const n=surAt(a)+GN[Math.floor(b*GN.length)]; if(!BLOCK.has(n)&&!nameBad(n))return n; } return SUR[0]+'도윤'; }
@@ -27218,7 +27219,7 @@ const PK_V=[15,3,1.6,.05,.05,.05,.05,.05,.05,.05,.05]; /* 4라운드부터는 �
 const PK_R1S=[1.25,1.15,1.05,.85,.8,.75,.7,.45,.4,.35]; /* 1라운드 순번별 배율: 상위 세 순번과 하위 세 순번의 차이가 크다 */
 const PK_KEEP=1.2; /* 지명권은 내줄 때 더 아낀다(사용자 11-13: 지명권을 소중히). 올인·벼랑 끝 구단만 그대로 내준다 */
 const pkKeep=t=>t&&t.id!==ME()&&(t.allIn===sponSeason()||despOf(t)>=.5)?1:PK_KEEP; /* 1라운드는 순번이 앞설수록 훨씬 비싸다(커뮤니티 피드백 11-07: 상위 지명권을 너무 싸게 모음) */ /* 라운드별 가치(트레이드 가치 단위, 현금 1억 ≈ 0.9) */
-const PK_R1_MAX=2; /* 게임 규정: 1라운드 지명권은 자기 것 포함 두 장까지(커뮤니티 피드백 11-07) */
+const PK_R1_OPTS=[2,3]; const pkR1Max=()=>PK_R1_OPTS.includes(G&&G.cfg&&G.cfg.pkR1)?G.cfg.pkR1:2; /* 게임 규정: 1라운드 지명권은 자기 것 포함 기본 두 장까지(커뮤니티 피드백 11-07). 설정에서 세 장까지 늘릴 수 있고 AI도 같은 한도를 쓴다(코코영진 11-15) */
 const pkYear=()=>G.draft&&G.draft.y===G.year?G.year+1:G.year;
 function pkOwner(y,rd,orig){ const o=G.pkOwn&&G.pkOwn[y+':'+rd+':'+orig]; return o??orig; }
 /* 그 구단이 가진 다음 드래프트 지명권: 'rd:원래 구단' 목록 */
@@ -27236,8 +27237,8 @@ function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.le
   if(G.draft&&!G.draft.done)return '신인 드래프트가 진행 중이라 지명권을 주고받을 수 없습니다.';
   if(pk.y!==pkYear())return `거래안의 지명권은 ${pk.y} 드래프트 것입니다. 지금 주고받을 수 있는 것은 ${pkYear()} 드래프트 지명권입니다. 다시 골라 주세요.`;
   const mine=pkHeld(G.user), their=pkHeld(tid); if(pk.give.some(k=>!mine.includes(k))||pk.get.some(k=>!their.includes(k)))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
-  if(mine.filter(k=>+k.split(':')[0]===1).length-pk.give.filter(k=>+k.split(':')[0]===1).length+pk.get.filter(k=>+k.split(':')[0]===1).length>PK_R1_MAX)return `한 드래프트에서 1라운드 지명권은 ${PK_R1_MAX}장까지 가질 수 있습니다. 한 구단이 지명권을 독차지하지 못하게 한 규정입니다.`;
-  { const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; if(r1(their)-r1(pk.get)+r1(pk.give)>PK_R1_MAX)return `${tshort(tid)}은(는) 이 거래로 1라운드 지명권이 ${PK_R1_MAX}장을 넘습니다. 한 구단이 지명권을 독차지하지 못하게 한 규정입니다.`; } /* 상대 구단도 같은 한도(검수 11-08) */
+  if(mine.filter(k=>+k.split(':')[0]===1).length-pk.give.filter(k=>+k.split(':')[0]===1).length+pk.get.filter(k=>+k.split(':')[0]===1).length>pkR1Max())return `한 드래프트에서 1라운드 지명권은 ${pkR1Max()}장까지 가질 수 있습니다. 한 구단이 지명권을 독차지하지 못하게 한 규정입니다.`;
+  { const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; if(r1(their)-r1(pk.get)+r1(pk.give)>pkR1Max())return `${tshort(tid)}은(는) 이 거래로 1라운드 지명권이 ${pkR1Max()}장을 넘습니다. 한 구단이 지명권을 독차지하지 못하게 한 규정입니다.`; } /* 상대 구단도 같은 한도(검수 11-08) */
   if((pk.give.length&&!get.length)||(pk.get.length&&!give.length))return '리그 규약상 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 지명권을 주려면 선수를 받고, 지명권을 받으려면 선수를 보내야 합니다.';
   return ''; }
 function pkMove(pk,tid){ pk=pkNorm(pk); const y=pkYear(); G.pkOwn=G.pkOwn||{};
@@ -34306,10 +34307,11 @@ function clubBody(s){
       const dif=`<section class="card"><h2 class="sec">난이도</h2><p class="small">${HARD()?'<b>하드</b> · 트레이드 요구 많음, FA 선호 낮음, 스폰서·광고 수입 줄어듦, '+gl('흑자 조정')+' 커짐, 구단주 신뢰 하락 빠름, 지원 승인 어려움':G.cfg&&G.cfg.hardOffY?`보통 · ${G.cfg.hardOffY}년에 하드에서 낮춤`:'보통'}</p>${HARD()?'<button class="btn small" data-a="hardOff">보통으로 낮추기 · 되돌릴 수 없음</button>':''}</section>`;
       const ivf=`<section class="card"><h2 class="sec">인터뷰 후속 질문</h2><div class="chips">${[['0','직접 답하기'],['1','홍보팀에 맡기기']].map(([v,l])=>`<button data-a="ivFolDel" data-v="${v}" class="${(G.cfg&&G.cfg.ivFolDel?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">앞선 인터뷰 발언이 크게 화제가 되면 다른 매체가 후속 질문을 요청합니다. 홍보팀에 맡기면 팬·언론 손해가 가장 작은 무난한 답을 대신 하고 결과만 알려 줍니다.</p></section>`;
       const psc=`<section class="card"><h2 class="sec">가을야구 중계</h2><div class="chips">${[['0','우리 경기는 중계로 열기'],['1','결과만 보기']].map(([v,l])=>`<button data-a="psNoCast" data-v="${v}" class="${(G.cfg&&G.cfg.psNoCast?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">포스트시즌 우리 경기를 자동으로 중계 화면에서 열지 정합니다. 결과만 보기로 두어도 일정에서 원하는 경기는 따로 관전할 수 있습니다.</p></section>`; /* 플레이 테스트 11-13 */
+      const pkr=`<section class="card"><h2 class="sec">1라운드 지명권 보유 한도</h2><div class="chips">${PK_R1_OPTS.map(v=>`<button data-a="pkR1" data-v="${v}" class="${pkR1Max()===v?'on':''}">${v}장</button>`).join('')}</div><p class="small muted">자기 지명권을 포함해 한 해 1라운드 지명권을 몇 장까지 가질 수 있는지 정합니다. AI 구단도 같은 한도를 씁니다. 이미 가진 지명권은 그대로 둡니다.</p></section>`;
       const scl=`<section class="card"><h2 class="sec">능력치 표기</h2><div class="chips">${[['100','100점 척도'],['2080','20-80 스카우트 척도']].map(([v,l])=>`<button data-a="ratScale" data-v="${v}" class="${((G.cfg&&G.cfg.scale)||'100')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">20-80은 메이저리그 스카우트가 쓰는 척도입니다. 50이 평균, 60 좋음, 70 최상급, 80 리그 최고 수준이며 10점이 표준편차 하나입니다. 표시만 바뀌고 실제 능력과 계산은 같습니다(100점 척도 63 = 20-80 51, 73 = 58, 84 = 65).</p></section>`;
       const ret=`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴하면 영구결번을 지정할 수 있습니다. 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 최상위급이어야 닿습니다.</p></section>`;
       const more=`<section class="card"><details class="mfold"><summary>패치 노트</summary>${patchCard()}</details>${creditsLine()}</section>`;
-      return `<div class="setx ws-own">${fb}<div class="setc"><h3 class="set-g">진행</h3>${advSetCard()}${stopCard()}${psc}</div><div class="setc"><h3 class="set-g">저장</h3>${slotsCard(false)}${exportCard()}${teleCard()}</div><div class="setc"><h3 class="set-g">구단·기록</h3>${scl}${ivf}${dif}${teamNameCard()}${ret}${more}</div></div>`; }}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
+      return `<div class="setx ws-own">${fb}<div class="setc"><h3 class="set-g">진행</h3>${advSetCard()}${stopCard()}${psc}</div><div class="setc"><h3 class="set-g">저장</h3>${slotsCard(false)}${exportCard()}${teleCard()}</div><div class="setc"><h3 class="set-g">구단·기록</h3>${scl}${pkr}${ivf}${dif}${teamNameCard()}${ret}${more}</div></div>`; }}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
   const h=mergedBody('club',s,H0);
   return h;
 }
@@ -35997,6 +35999,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ivFolNow(){ if(G.iv&&G.iv.k==='follow'&&!G.iv.done){ ivAuto(); toast('홍보팀이 후속 질문에 대신 답했습니다.'); save(); try{ renderSheet(); }catch(e){} render(); } },
   psNoCast(v){ G.cfg=G.cfg||{}; G.cfg.psNoCast=v==='1'; save(); render(); },
   ivFolDel(v){ G.cfg=G.cfg||{}; G.cfg.ivFolDel=v==='1'; if(v==='1'&&G.iv&&G.iv.k==='follow'&&!G.iv.done)ivAuto(); save(); render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} },
+  pkR1(v){ G.cfg=G.cfg||{}; G.cfg.pkR1=PK_R1_OPTS.includes(+v)?+v:2; save(); render(); }, /* 1라운드 지명권 보유 한도(코코영진 11-15) */
   ratScale(v){ G.cfg=G.cfg||{}; G.cfg.scale=v==='2080'?'2080':'100'; save(); render(); if(UI.sheet!=null)try{ renderSheet(); }catch(e){} }, /* 능력치 표기 */
   obAct(v){ const [id,k]=v.split(':'); const ob=obOf(id); if(!ob)return; G.obFace=G.obFace||{};
     if(k==='coach'){ let c=(G.cmarket||[]).find(x=>x.ob===id); if(!c){ c=obCoach(ob); G.cmarket.unshift(c); } UI.crole=c.role; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); return; }
