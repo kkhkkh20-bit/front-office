@@ -34,7 +34,7 @@ function stadDim(tid){ const S=stadOf(tid); return S.dim||STAD_DIM[tid]||STAD_DI
 const PK_DREF={lf:98.7,cf:122.1,rf:98.4}, PK_WREF={l:3.37,c:3.37,r:3.84};
 function parkSideF(D,s){ const d=s==='l'?D.lf:s==='c'?D.cf:D.rf, w=s==='l'?D.wl:s==='c'?D.wc:D.wr; return Math.exp(-(d-PK_DREF[s==='l'?'lf':s==='c'?'cf':'rf'])/27)*Math.exp(-(w-PK_WREF[s])/24); }
 function parkRaw(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; return .6*parkSideF(D,pl)+.28*parkSideF(D,'c')+.12*parkSideF(D,op); }
-let _pkN={k:null}; function parkNorm(){ const k=G.teams.map(t=>JSON.stringify(stadDim(t.id))).join('|'); if(_pkN.k===k)return _pkN.v; const v=G.teams.reduce((a,t)=>a+(parkRaw(t.id,'R')+parkRaw(t.id,'L'))/2,0)/G.teams.length; _pkN={k,v}; return v; }
+let _pkN={k:null}; function parkNorm(){ const T=G.teams; if(_pkN.k!=null&&_pkN.g===G&&_pkN.D&&_pkN.D.length===T.length&&T.every((t,i)=>stadDim(t.id)===_pkN.D[i]))return _pkN.v; /* 성능: 타석마다 열 구단 구장 크기를 문자열로 만들었다. 구장 크기는 늘 새 객체로 바뀌므로(담장 공사·확장) 같은 객체면 같은 값 */ const k=T.map(t=>JSON.stringify(stadDim(t.id))).join('|'); if(_pkN.k===k){ _pkN.g=G; _pkN.D=T.map(t=>stadDim(t.id)); return _pkN.v; } const v=G.teams.reduce((a,t)=>a+(parkRaw(t.id,'R')+parkRaw(t.id,'L'))/2,0)/G.teams.length; _pkN={k,v,g:G,D:T.map(t=>stadDim(t.id))}; return v; }
 function parkHRM(tid,side){ if(tid==null||!G||!G.teams)return 1; return parkRaw(tid,side)/parkNorm(); }
 /* 홈런 방향: 기본 비중에 그 구장 방향별 홈런 쉬움을 곱해 고른다 */
 function parkHRDir(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; const w=[.6*parkSideF(D,pl),.28*parkSideF(D,'c'),.12*parkSideF(D,op)]; let x=R()*(w[0]+w[1]+w[2]); return x<w[0]?'pull':x<w[0]+w[1]?'mid':'oppo'; }

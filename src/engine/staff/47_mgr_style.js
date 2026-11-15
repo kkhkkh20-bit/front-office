@@ -31,7 +31,9 @@ const MTYPE={combo_d:['수비·작전 야구형','수비가 좋은 선수를 쓰
   youth:['육성형','젊은 선수에게 기회를 줍니다. 당장 성적보다 성장을 봅니다.'],dfn:['수비 중시형','수비가 좋은 선수를 주전으로 쓰고, 근소하게 앞서면 수비 강화 교체를 합니다.'],bat:['타격 중시형','수비보다 타격을 보고 주전을 정합니다.'],
   small:['스몰볼형','번트·도루로 한 점씩 쌓습니다.'],big:['빅볼형','번트를 거의 대지 않고 최고 타자를 2번에 두며 장타로 승부합니다.'],gamble:['승부사형','이길 경기는 투수를 무리해서라도 잡습니다.'],care:['투수 보호형','투구 수와 연투를 엄격히 관리합니다.'],bal:['균형형','특정 방식에 치우치지 않습니다.']};
 /* 가장 두드러진 성향 조합으로 유형을 정한다 */
-function mgrType(m){ if(!m)return {n:'-',d:''}; mgrAttr(m); const s=(m.small-50)*.8, d=(m.dfn-50)*1.05, p=(m.pen-50)*.8, a=(m.arm-50)*1.05, y=(m.youth-50)*.8;
+const _mtC=new WeakMap(); /* 성능: 기용 점수마다 불려 같은 감독 유형을 매번 다시 골랐다. 성향 값이 그대로면 같은 답(새 객체로 돌려 호출한 쪽이 고쳐도 안전) */
+function mgrType(m){ if(!m)return {n:'-',d:''}; mgrAttr(m); const ck=m.small+','+m.dfn+','+m.pen+','+m.arm+','+m.youth, c0=_mtC.get(m); if(c0&&c0.ck===ck)return {k:c0.k,n:c0.n,d:c0.d}; const r=mgrType0(m); _mtC.set(m,{ck,...r}); return r; }
+function mgrType0(m){ const s=(m.small-50)*.8, d=(m.dfn-50)*1.05, p=(m.pen-50)*.8, a=(m.arm-50)*1.05, y=(m.youth-50)*.8;
   const c=[['combo_d',Math.min(s,d)+6],['combo_o',Math.min(-s,-d)+6],['pen_all',Math.min(p,a)+6],['sp_care',Math.min(-p,-a)+6],['youth',y-4],['dfn',d],['bat',-d],['small',s],['big',-s],['gamble',a-3],['care',-a-3]];
   c.sort((x,z)=>z[1]-x[1]); const k=c[0][1]>=14?c[0][0]:'bal'; return {k,n:MTYPE[k][0],d:MTYPE[k][1]}; }
 /* 성향 축 5개: 화면 표시용 */
