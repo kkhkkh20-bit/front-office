@@ -144,7 +144,7 @@ document.addEventListener('keydown',e=>{if(!UI.advRun)return;e.stopImmediateProp
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
-  if(UI.advRun&&a!=='adv'&&a!=='advStop'){e.preventDefault();return;}
+  if(UI.advRun&&a!=='adv'&&a!=='advStop'){e.preventDefault(); const now=Date.now(); if(!(UI._advTapT>now-1500)){ UI._advTapT=now; toast(`${dmd(G.day)} 날짜를 진행하는 중이라 다른 버튼은 멈춘 뒤에 됩니다. 위의 "진행 멈추기"를 누르세요.`); } return;} /* 진행 중 누른 버튼이 말없이 무시돼 고장처럼 보였다(제보 11-15) */
   if(a==='start'&&el.matches('.tmk.open')&&!e.target.closest('.tp-h'))return;
   if(['playerTab','castSeek','analysisY','tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','blkWant','impFile','recF','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
   if(el.matches('select,input[type=range],input[type=file],textarea'))return;

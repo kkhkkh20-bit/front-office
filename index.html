@@ -28823,7 +28823,7 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
       <button class="mailbtn" data-a="inbox" aria-label="소식함">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button><button class="btn small" data-a="toTitle">처음 화면</button></div>${F&&!G.fdWait?`<div class="wrap">${fdTicker()}</div>`:''}</div></header>
       <div class="gut"><div class="wrap"><main class="content dcontent">${G.fdWait?fdWaitView():fdView()}</main></div></div></div>${patchPop()}`;
     document.body.classList.toggle('help',helpOn()); markHints(app); renderSheet(); KS.forEach((q,i)=>{ const e=document.querySelector(q); if(e&&keep[i]){ e.scrollTop=keep[i][0]; e.scrollLeft=keep[i][1]; } }); const fw=document.querySelector('.fdt-w'); if(fw&&fdCompact())fw.onscroll=()=>{ if(fw.scrollTop+fw.clientHeight>=fw.scrollHeight-200&&document.querySelector('.fdmore')&&!UI._fdMoreT){ UI._fdMoreT=1; A.fdListMore(); setTimeout(()=>{ UI._fdMoreT=0; },500); } }; const pc=document.querySelector('.fpcs-m'), on=pc&&pc.querySelector('.fpc.on'); if(on){ const x=on.getBoundingClientRect().left-pc.getBoundingClientRect().left; if(x<0||x+on.offsetWidth>pc.clientWidth)pc.scrollLeft+=x-8; } /* 휴대폰: 끝까지 내리면 다음 60명 */ if(fw&&fdCompact())fdNoBounce(fw); return; }
-  if(fmOn()){ fmNavRec(); app.innerHTML=fmShell(t,per,unread,b); document.body.classList.toggle('help',helpOn()); document.body.classList.add('fm'); markHints(app); renderSheet(); try{ autoLink($('#app')); }catch(e){} if(UI.tab==='inbox')inboxWire(); if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); } return; }
+  if(fmOn()){ fmNavRec(); app.innerHTML=fmShell(t,per,unread,b); { const mc=app.querySelector('main.content'); if(mc)mc.dataset.tab=UI.tab; } document.body.classList.toggle('help',helpOn()); document.body.classList.add('fm'); markHints(app); renderSheet(); try{ autoLink($('#app')); }catch(e){} if(UI.tab==='inbox')inboxWire(); if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); } return; }
   document.body.classList.remove('fm');
   const dk=draftTopOn(); const nav=NAV; const ic=i=>ICO[i]||ICO2[i]; const inMenu=!BNAV.includes(UI.tab); const menuAlert=NAV.some(([k])=>!BNAV.includes(k)&&tabAlert(k));
   app.innerHTML=`<div class="shell">
@@ -28840,6 +28840,7 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   </div>
   <nav class="bnav" aria-label="메뉴"><div class="in">${nav.filter(([k])=>BNAV.includes(k)).map(([k,l,i])=>`<button data-a="tab" data-v="${k}" class="${UI.tab===k?'on':''}">${ic(i)}<span>${l}</span>${k==='inbox'&&unread?`<span class="bcnt">${unread>99?'99+':unread}</span>`:k!=='inbox'&&tabAlert(k)?'<span class="dot"></span>':''}</button>`).join('')}<button data-a="menu" class="${inMenu?'on':''}">${ICO2.menu}<span>메뉴</span>${menuAlert?'<span class="dot"></span>':''}</button></div></nav>
   </div>`;
+  { const mc=app.querySelector('main.content'); if(mc)mc.dataset.tab=UI.tab; } /* workspaceFit이 다른 탭 화면을 감싸지 않게 */
   document.body.classList.toggle('help',helpOn()); markHints(app);
   renderSheet(); try{ autoLink($('#app')); }catch(e){}
   if(UI.tab==='inbox')inboxWire();
@@ -28868,8 +28869,16 @@ function tabBody(){
   if(!TITLE[UI.tab])UI.tab='home';
   if(G.unemp&&UI.tab==='cfg')return unempCfg(); /* 야인이어도 저장·불러오기·내보내기는 쓸 수 있어야 한다 */
   if(G.unemp&&!['home','inbox','league','me'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요. 내 경력과 재임 구단의 마지막 결산은 단장 탭에서 볼 수 있습니다.</p><div class="row"><button class="btn small" data-a="tab" data-v="me">내 경력·재임 결산</button><button class="btn small" data-a="tab" data-v="cfg">게임 설정</button></div><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
-  return {cal:calView,home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,cfg:cfgView,me:meView,league:leagueView,club:clubView}[UI.tab]();
+  const view={cal:calView,home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,cfg:cfgView,me:meView,league:leagueView,club:clubView}[UI.tab];
+  try{ return view(); }catch(e){ return tabFail(e,view); }
 }
+/* 화면 하나가 그리다 오류가 나면 render 전체가 멈춰 이전 화면(소식함 등)이 그대로 남고, 누른 버튼은 아무 반응이 없는 것처럼 보였다(제보 11-15).
+   그 화면의 작업 상태를 비우고 한 번 더 그려 보고, 그래도 안 되면 무엇이 안 되는지와 갈 곳을 보여 준다 */
+function tabUiReset(tab){ if(tab==='trade'){ UI.trade={tid:null,give:[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'}; UI.findM=null; UI.findT=null; UI._mkt=null; UI._tsug=null; UI._find=null; UI._rec=null; } }
+function tabFail(e,view){ try{ console.error('화면 오류',UI.tab,e); }catch(x){}
+  if(!tabFail._busy){ tabFail._busy=true; try{ tabUiReset(UI.tab); return view(); }catch(e2){ e=e2; }finally{ tabFail._busy=false; } }
+  const nm=TITLE[UI.tab]||'이 화면'; setTimeout(()=>{ try{ toast(`${nm} 화면을 그리지 못했습니다. 다른 화면으로 갔다가 다시 열어 보세요.`); }catch(x){} throw e; },0); /* 오류는 감추지 않는다: 오류 기록·점검 도구(pageerror)에 그대로 잡히게 다시 던진다 */
+  return `<section class="card tab-fail" role="alert"><h2 class="sec">${esc(nm)} 화면을 그리지 못했습니다</h2><p>진행 상황은 그대로입니다. 아래 버튼으로 다른 화면에 갔다가 다시 열어 보세요. 계속되면 아래 문구를 알려 주세요.</p><p><code>${esc(String(e&&e.message||e).slice(0,160))}</code></p><div class="row"><button class="btn small primary" data-a="tab" data-v="inbox">소식함</button><button class="btn small" data-a="tab" data-v="home">홈</button></div></section>`; }
 function unempCfg(){ return patchCard()+`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard(); }
 function anySave(){ try{ return contSlot()!=null; }catch(e){ return false; } }
 function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+slotSize(n),0); const has={}; for(const n of SLOT_IDS)has[n]=slotHas(n); const sv=n=>has[n]?(m.slots[n]||{name:'(목록 정보 없음)',y:''}):m.slots[n]?Object.assign({},m.slots[n],{nobody:1}):null; /* 목록과 본문이 어긋나도 칸은 사용 중으로 센다: 새 게임·복사가 쓰는 slotUsed와 같은 기준(검수 11-07, 11-09 #13) */
@@ -28900,6 +28909,7 @@ function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
 /* 슬롯 전환·백업 가져오기·새로고침의 공통 지점(render·저장 직전 prepG가 부른다): 중계 위치·경기 전 사본·경기 요약·소식함 돌아가기·확인 절차·동석 자동 열기도 이전 게임 것을 버린다(검수 11-09zzc #1·#2·#21·#28·#29·#30) */
 let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; UI.peopleBrowse=null;UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0;
   if(UI.cast||UI.castRet){ try{ CT.tok++; CT.run=false; }catch(e){} } UI.cast=null; UI.castRet=null; UI._castHold=0; UI.cwAfter=null; UI.cwAuto=null; UI.cw=null; UI.game=null; UI.sheet=null; UI.posSheet=null; UI.fromMail=null; UI._ibJumpSig=null; UI._spoilD=null; try{ SPOIL_SNAP=null; }catch(e){}
+  UI.trade={tid:null,give:[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'}; UI.findM=null; UI.findT=null; UI._mkt=null; UI._tsug=null; UI._tsugK=null; UI._find=null; UI._rec=null; UI.gmRes=null; UI.deskMsg=null; UI.deskOk=null; /* 트레이드 작업안은 그 게임 것: 새 게임·다른 슬롯에서 옛 상대 구단(이제 우리 구단일 수 있음)·선수 번호가 남아 트레이드 화면이 그려지지 않았다(제보 11-15: 새로 시작 뒤 트레이드 버튼 무반응) */
   UI.wkres=G&&G.wkHold?Object.assign({},G.wkHold):null; /* 확인 전의 경기 요약 창은 그 세이브 것으로 다시 연다(검수 11-09zzc #20) */
   if(G&&Array.isArray(G.stops)&&Array.isArray(G.mail)){ const M=[...G.mail,...(G._mh||[])]; G.stops=G.stops.filter(x=>!(x&&/^m\d+$/.test(x.id||''))||M.some(m=>m.id===x.id)).map(x=>x&&x.id&&M.find(m=>m.id===x.id)||x); } } /* 저장하면 정지 알림이 원본 소식의 복사본이 된다: 원본으로 다시 잇고, 지워진 소식은 뺀다(검수 11-09zzc #25·#27) */
 /* to: 파일을 고른 시점의 대상({title,slot,g}). 읽는 사이 슬롯이 바뀌면 가져오지 않는다(검수 11-09: 다른 슬롯에 덮어씀) */
@@ -34445,6 +34455,7 @@ function tradeView(){
     const g=gmOf(t.id)||{}; return `<button class="tp-card" data-a="opt" data-k="tpartner" data-v="${t.id}"><span class="tp-h">${gmAv(t.id)}<span><b>${badge(t.id,16)} ${esc(t.city+' '+t.nick)}</b><i>${g.interim?'단장대행':esc(g.name||'')+' 단장'+(g.age?` ${g.age}세`:'')}${rk?` · ${rk}위${r?` ${r.w}승 ${r.l}패`:''}`:''}</i></span>${g.trait&&GMT[g.trait]?`<span class="pill ${g.trait==='hard'||g.trait==='miser'?'warn':g.trait==='loyal'?'good':'acc'}">${GMT[g.trait].l}</span>`:''}</span><span class="tp-rel"><i>친분</i>${relBar(t.rel)}<b>${relLabel(t.rel)}</b></span><span class="tp-meta"><i>${esc(needText(t.id))}</i></span>${fmOn()?tpStars(t.id):''}<em>이 구단과 협상 ›</em></button>`; }).join('')}</div>`; };
   if(tr.tid==null){ const gv0=tr.give.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
     return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${pick()}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 상대 단장과 가까울수록 반응을 정확히 읽을 수 있습니다.</p></section>`; }
+  if(tr.tid===G.user||!G.teams.some(x=>x.id===tr.tid)){ tr.tid=null; tr.give=[]; tr.get=[]; tr.cash=0; tr.pk=null; return tradeView(); } /* 상대 구단이 우리 구단이 된 작업안(새 게임에서 그 구단을 고름 등)은 비우고 상대부터 다시 고른다 */
   const t=team(tr.tid);
   const ok=p=>p&&!p.foreign&&!(p.joinY>G.year);
   const lostP=[...tr.give.filter(id=>!(ok(G.players[id])&&G.players[id].team===G.user)),...tr.get.filter(id=>!(ok(G.players[id])&&G.players[id].team===tr.tid))];
@@ -34459,8 +34470,9 @@ function tradeView(){
     if(lostP.length||lostK){ tr.msg=`거래안이 바뀌었습니다: ${[lostP.length?`${lostP.map(id=>G.players[id]?G.players[id].name:'선수').join(', ')}(소속·신분이 바뀌어 거래할 수 없음)`:'',lostK?(same?`보유 구단이 바뀐 지명권 ${lostK}장`:`${P.y} 드래프트 지명권 ${lostK}장(지금은 ${pkYear()} 드래프트 지명권만 주고받을 수 있음)`):''].filter(Boolean).join(', ')}을(를) 뺐습니다. 남은 조건을 다시 확인하고 제안하세요.`; tr.ok=false; tr.want=null; tr.counters=null; } }
   const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);
   const want=tr.want&&G.players[tr.want]&&G.players[tr.want].team===G.user&&!tr.give.includes(tr.want)?G.players[tr.want]:null;
+  const tgm=gmOf(t.id)||{};
   const board=`<section class="card tboard">
-    <div class="tgm">${gmAv(t.id,mood?(mood.k==='ok'?'smile':mood.k==='more'?'flat':'angry'):null)}<div><b>${badge(t.id,16)} ${esc(tname(t.id))} · ${esc(gmOf(t.id).name)} 단장${gmOf(t.id).age?` · ${gmOf(t.id).age}세`:''}</b><span class="small muted">${GMT[gmOf(t.id).trait].l} · 친분 ${relLabel(t.rel)} · ${esc(needText(t.id))}</span></div></div>
+    <div class="tgm">${gmAv(t.id,mood?(mood.k==='ok'?'smile':mood.k==='more'?'flat':'angry'):null)}<div><b>${badge(t.id,16)} ${esc(tname(t.id))}${tgm.name?` · ${esc(tgm.name)} 단장`:''}${tgm.age?` · ${tgm.age}세`:''}</b><span class="small muted">${GMT[tgm.trait]?GMT[tgm.trait].l+' · ':''}친분 ${relLabel(t.rel)} · ${esc(needText(t.id))}</span></div></div>
     ${(()=>{ if(!interestKnown(t.id))return '<p class="small muted">아직 친분이 얕아 상대가 원하는 선수를 알기 어렵습니다.</p>'; const L=aiInterest(t.id).map(id=>G.players[id]).filter(Boolean); return L.length?`<div class="intl"><span class="small muted">상대가 원하는 우리 선수</span>${L.map(p=>`<button class="pill ${tr.give.includes(p.id)?'acc':'good'}" data-a="tpick" data-v="give:${p.id}">${tr.give.includes(p.id)?'보냄 ':'+ '}${esc(p.name)} · ${esc(interestWhy(t.id,p))}</button>`).join('')}</div><p class="small muted">이 선수를 넣으면 상대가 더 후하게 봅니다.</p>`:''; })()}
     <div class="tcols">
       <div><div class="eyebrow">보냄 · ${gv.length}명</div>${gv.map(p=>tmini(p,'give')).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="give">우리 선수에서 고르기</button>'}</div>
@@ -36396,7 +36408,7 @@ document.addEventListener('keydown',e=>{if(!UI.advRun)return;e.stopImmediateProp
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
-  if(UI.advRun&&a!=='adv'&&a!=='advStop'){e.preventDefault();return;}
+  if(UI.advRun&&a!=='adv'&&a!=='advStop'){e.preventDefault(); const now=Date.now(); if(!(UI._advTapT>now-1500)){ UI._advTapT=now; toast(`${dmd(G.day)} 날짜를 진행하는 중이라 다른 버튼은 멈춘 뒤에 됩니다. 위의 "진행 멈추기"를 누르세요.`); } return;} /* 진행 중 누른 버튼이 말없이 무시돼 고장처럼 보였다(제보 11-15) */
   if(a==='start'&&el.matches('.tmk.open')&&!e.target.closest('.tp-h'))return;
   if(['playerTab','castSeek','analysisY','tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','blkWant','impFile','recF','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
   if(el.matches('select,input[type=range],input[type=file],textarea'))return;
@@ -37336,6 +37348,7 @@ function wsRowHint(row){ if(!row||!row.isConnected)return; const on=row.querySel
 function workspaceFit(host){
   const main=host||document.querySelector('#app main.content');
   if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
+  if(!host&&(main.dataset.tab!==UI.tab||main.classList.contains('inbox-workspace')))return; /* 탭을 바꾼 직후(closeSheets→renderSheet)에는 아직 이전 탭 화면이다. 그 화면을 새 탭 기준으로 감싸면 소식함이 '보고·보고' 두 칸으로 나뉘고 목록 칸이 숨었다(제보 11-15) */
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
   if(main.querySelector(':scope > .ws-own,:scope > .fmd'))return; /* 직접 높이를 나누는 화면은 패널 재포장을 생략한다. */
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;

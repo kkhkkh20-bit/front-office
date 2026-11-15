@@ -49,6 +49,7 @@ function wsRowHint(row){ if(!row||!row.isConnected)return; const on=row.querySel
 function workspaceFit(host){
   const main=host||document.querySelector('#app main.content');
   if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
+  if(!host&&(main.dataset.tab!==UI.tab||main.classList.contains('inbox-workspace')))return; /* 탭을 바꾼 직후(closeSheets→renderSheet)에는 아직 이전 탭 화면이다. 그 화면을 새 탭 기준으로 감싸면 소식함이 '보고·보고' 두 칸으로 나뉘고 목록 칸이 숨었다(제보 11-15) */
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
   if(main.querySelector(':scope > .ws-own,:scope > .fmd'))return; /* 직접 높이를 나누는 화면은 패널 재포장을 생략한다. */
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
