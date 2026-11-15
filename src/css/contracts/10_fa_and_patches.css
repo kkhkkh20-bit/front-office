@@ -241,7 +241,8 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 @media(max-width:700px){.free-table .free-player{min-width:145px;max-width:160px;width:160px}}
 /* 모바일 무적 선수 화면(카페 11-11 바람소리): 검색·필터가 화면을 차지해 목록 칸이 두세 줄만 남고 그 안에서만 스크롤됐다.
    좁은 화면에서는 작업 화면 전체가 세로로 스크롤되고, 표는 가로로만 스크롤한다 */
-@media(max-width:700px){.free-workspace{overflow-y:auto;overflow-x:hidden;overscroll-behavior:auto;-webkit-overflow-scrolling:touch}.free-list{flex:none;min-height:0;overflow-x:auto;overflow-y:visible;overscroll-behavior-x:contain}.free-pages{flex:none}}
+/* 휴대폰: 표를 가로 스크롤 칸에 넣으면 iOS·네이버 앱에서 표 위를 끌 때 바깥 칸이 세로로 안 움직였다(고양스톰 20년차 11-15). 표는 화면 폭에 맞추고 바깥 칸 하나만 스크롤한다 */
+@media(max-width:700px){.free-workspace{overflow-y:auto;overflow-x:hidden;overscroll-behavior:auto;-webkit-overflow-scrolling:touch}.free-list{flex:none;min-height:0;overflow:visible}.free-table{width:100%;min-width:0}.free-table :is(th,td){padding-inline:4px}.free-pages{flex:none}}
 
 /* 보호명단 보기 편하게(리아네트 11-11): 현재·잠재 라벨, 큰 별, 정렬·필터 칩 */
 .pr-ctl{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 2px}.pr-ctl .chips{margin:0}
