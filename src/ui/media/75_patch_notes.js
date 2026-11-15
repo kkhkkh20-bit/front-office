@@ -4,6 +4,19 @@
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-15-stab',d:'11월 15일',t:'안정화 · 수비 능력 · 새 얼굴',items:[
+    '1라운드 지명권 보유 한도를 없앴습니다(실제 KBO도 받는 장수 제한이 없습니다). 대신 이미 1라운드를 여러 장 가진 구단이 더 사려고 하면 상대 단장이 더 비싸게 부릅니다. AI 구단끼리도 같습니다.',
+    '수비 세부 능력이 경기에 따로 쓰입니다. 수비 범위는 안타를 막고, 포구·송구는 실책에, 포수 송구는 도루 저지에 들어갑니다. 땅볼 때 1루 주자 포스아웃이 생겨 병살이 실제 수준으로 늘었고, 투수는 타순 두 바퀴째부터 조금씩 맞기 시작합니다.',
+    '감독·코치는 70세가 되면 연장·재계약을 고사하고 계약이 끝나면 은퇴합니다. 감독은 66세부터 1년씩만 연장합니다(AI 구단과 같습니다).',
+    '젊은 국내 선수와 외국인·아시아쿼터 선수 얼굴 200명이 늘었습니다. 새로 들어오는 선수부터 나이에 맞는 얼굴을 받습니다.',
+    '고교 후원은 지역별로, 자매결연 방문은 한 번에 할 수 있습니다. 해외 연수 후보 목록에 별점과 주요 능력치가 보입니다. 해외 구단 제안 금액에 원화가 함께 나옵니다.',
+    '첫 화면 아래에 공식 카페 버튼이 생겼습니다.']},
+  {id:'2026-11-15-ag-gold',d:'11월 15일',t:'아시안게임 금메달 · 병역법 개정',items:[
+    '아시안게임 상대국 전력을 실제에 맞췄습니다. 보통 전력의 한국 대표팀은 금메달을 열에 여덟 번쯤 땁니다(실제 1998~2026 여덟 대회 중 일곱). 대만·일본 사회인야구 대표는 여전히 한 경기씩 잡을 수 있고, 주축이 빠진 약한 대표팀은 더 자주 집니다.',
+    '아시안게임 금메달 병역 특례를 없애는 병역법 개정안(2026년 10월 발의)이 2027년부터 해마다 정기국회 뒤 통과될 수 있습니다. 통과하면 그 뒤 아시안게임은 금메달을 따도 특례가 없고, 올림픽 3위 이내 특례와 이미 받은 특례는 그대로입니다.']},
+  {id:'2026-11-15-staff-cap',d:'11월 15일',t:'스태프 정원 교체 영입',items:[
+    '스카우트·전력분석원 정원이 차 있어도 영입 제안을 보낼 수 있습니다. 후보가 수락하면 그 자리에서 누구 대신 데려올지 고르고, 영입과 계약 종료가 한 번에 처리됩니다. 철회하면 아무도 내보내지 않습니다.',
+    '정원을 넘겨 먼저 영입한 뒤 7일 안에 정리하던 방식은 없어졌습니다. 정원을 넘긴 채 저장된 게임은 실력이 가장 낮은 사람과 바로 계약을 끝내고 안내합니다.']},
   {id:'2026-11-14-release-2',d:'11월 14일',t:'팀 분위기 · 스토리라인 · 프로모션 데이',items:[
     '팀 분위기와 선수 사기가 생겼습니다. 선수 화면에서 기분이 오르내린 이유를 볼 수 있고, 좋은 리더는 분위기를 살리고 말썽 선수는 흐립니다.',
     '선수 스토리라인이 이어집니다. 멘토와 제자, 주전 경쟁 신경전, 부상 복귀, FA 앞둔 시즌, 결혼·출산, 신인 돌풍 같은 이야기가 몇 주에 걸쳐 펼쳐집니다.',
@@ -1595,7 +1608,7 @@ function patchBlock(x,fold){ const body=`<ul class="pn-l">${x.items.map(t=>`<li>
   return fold?`<details class="pn-i"><summary class="pn-h">${head}</summary>${body}</details>`:`<div class="pn-i"><div class="pn-h">${head}</div>${body}</div>`; }
 /* 게임 화면에서 한 번 띄우는 공지(자동화 점검에서는 UI.patchTest일 때만) */
 function patchPop(){ if(!G||UI.title||!PATCH.length)return ''; if(navigator.webdriver&&!UI.patchTest)return ''; if(UI.patchClosed)return ''; const L=patchUnseen(); if(!L.length)return '';
-  return `<div class="rv-w pn-w"><div class="rv pn"><div class="pn-top"><span class="eyebrow">업데이트 소식</span><span class="small muted">새 업데이트 ${L.length}개 · 위에서부터 최신</span></div><div class="pn-body">${L.map((x,i)=>patchBlock(x,i>=3)).join('')}</div><a class="pn-cafe" href="${FEEDBACK_URL}" target="_blank" rel="noopener"><b>공식 카페 · 프런트야구</b><span>질문·건의·버그 제보는 네이버 카페에 남겨 주세요. 다음 업데이트에 반영합니다.</span><i>카페 가기 ›</i></a><div class="pn-foot"><button class="btn primary block" data-a="patchOk">확인</button></div></div></div>`; }
+  return `<div class="rv-w pn-w"><div class="rv pn"><div class="pn-top"><span class="eyebrow">업데이트 소식</span><span class="small muted">새 업데이트 ${L.length}개 · 위에서부터 최신</span></div><div class="pn-body">${L.map((x,i)=>patchBlock(x,i>=3)).join('')}</div><a class="pn-cafe" href="${FEEDBACK_URL}" target="_blank" rel="noopener">${cafeMark(34)}<b>공식 카페 · 프런트야구</b><span>질문·건의·버그 제보는 네이버 카페에 남겨 주세요. 다음 업데이트에 반영합니다.</span><i>카페 가기 ›</i></a><div class="pn-foot"><button class="btn primary block" data-a="patchOk">확인</button></div></div></div>`; }
 /* 처음 화면·게임 설정용 카드 */
 function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map((x,i)=>patchBlock(x,all&&i>=3)).join('')}</section>`; }
 Object.assign(A,{ patchOk(){ patchMark(); UI.patchClosed=true; render(); }, patchAll(){ UI.patchAll=!UI.patchAll; render(); }, patchShow(){ UI.patchClosed=false; try{ localStorage.removeItem(PATCH_KEY); }catch(e){ UI.patchSeenMem=''; } render(); } });

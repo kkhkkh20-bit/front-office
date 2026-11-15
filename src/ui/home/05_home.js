@@ -115,7 +115,7 @@ function deskCard(){ const per=period(); if(G.gameOver)return ''; const rk=slotR
     <div class="eyebrow">우리 전력 · 자리별 리그 순위</div>${bar}${startAvgBox()}
     ${UI.deskMsg?`<div class="note ${UI.deskOk?'':'bad'}">${esc(UI.deskMsg)}</div>`:''}
     <div class="row between"><span class="eyebrow">추천 트레이드 · 상대가 받아들일 조건</span>${open?'<button class="tc-i" data-a="tsugMore">다른 추천</button>':''}</div>${deals}
-    ${S.length?`<div class="eyebrow">팔 만한 벤치 자원 · 매물로 내놓으면 제안이 옵니다</div><div class="sells">${S.map(x=>`<div class="sell">${pMini(x.p)}<span class="small muted">${tshort(x.t.id)} 관심</span><button class="tc-i go" data-a="listP" data-v="${x.p.id}">매물로 등록</button></div>`).join('')}</div>`:''}
+    ${S.length?`<div class="eyebrow">팔 만한 벤치 자원 · 매물로 내놓으면 제안이 옵니다</div><div class="sells">${S.map(x=>`<div class="sell">${pMini(x.p)}<span class="small muted">${tshort(x.t.id)} 관심</span><button class="tc-i" data-a="listP" data-v="${x.p.id}">매물로 등록</button></div>`).join('')}</div>`:''}
   </section>`; }
 /* 전력 비교 */
 function cmpView(T0,mini){ const L=nextGames(1); const def=L.length?L[0].op:standOrder().order.find(o=>o.tid!==G.user).tid;

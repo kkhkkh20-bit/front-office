@@ -1,5 +1,9 @@
 /* ===== 선수 기분과 성향 ===== */
-function initPers(p){ if(p.mor==null)p.mor=clamp(Math.round(N(62,8)),35,85); if(!p.pers){ const g=(m,sd)=>clamp(Math.round(N(m,sd)),3,20); p.pers={pro:g(9.5,3.5),amb:g(11,3.8),loy:g(10,3.8),temp:g(10.5,3.8)}; } /* 멘탈 좋은 선수는 드물다(사용자 11-12): 고른 분포(4~20) 대신 중간~낮음에 몰리게. 프로의식 15 이상 약 10%, 7 이하 약 25% */ }
+/* 성격·기분 첫 값. 선수를 만들 때(newPlayer) 한 번 난수로 뽑는다(roll). 그 뒤 읽기(리더 고르기·분위기·면담 등)에서 빈 값을 만나면(옛 저장)
+   선수 번호로 정해진 잡음(hn)으로 채운다: 읽는 순서가 난수를 소비해 결과가 호출 순서에 따라 달라지지 않게(안정화 11-14) */
+function initPers(p,roll){ const g=roll?(m,sd)=>N(m,sd):(m,sd,k)=>m+hn('pers:'+k,p.id)*sd; if(p.mor==null)p.mor=clamp(Math.round(g(62,8,'mor')),35,85); if(!p.pers){ const q=(m,sd,k)=>clamp(Math.round(g(m,sd,k)),3,20); p.pers={pro:q(9.5,3.5,'pro'),amb:q(11,3.8,'amb'),loy:q(10,3.8,'loy'),temp:q(10.5,3.8,'temp')}; } /* 멘탈 좋은 선수는 드물다(사용자 11-12): 고른 분포(4~20) 대신 중간~낮음에 몰리게. 프로의식 15 이상 약 10%, 7 이하 약 25% */ }
+/* 옛 저장 불러오기: 성격·리더십이 없는 선수를 정해진 값으로 한 번에 채운다(난수 소비 없음) */
+function persMigrate(){ for(const p of Object.values(G.players||{})){ if(p&&(p.pers==null||p.mor==null))initPers(p); } }
 /* 히든 멘탈(사용자 11-12): 성실성·야망·충성심·기질은 숫자로 보이지 않는다. 우리 선수는 감독(함께한 시간·안목), 다른 구단·아마추어는 그 지역 스카우트(실력)가 간접적으로 전한다.
    정보원이 없으면 '알 수 없음'. 추정 오차가 크면 '(불확실)' */
 function mentalRead(p,k){ if(!p||!p.pers)return {t:'알 수 없음',src:'',sd:99}; const v=p.pers[k];

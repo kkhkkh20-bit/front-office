@@ -1,20 +1,25 @@
 /* 능력치 설명(커뮤니티 11-12: 몸·성격 수치가 어디에 영향을 주는지 모호하다): 마우스를 올리면 보이고, 선수 상세 i에도 모은다 */
 const ATTR_HELP={
-  '컨택':'공을 맞히는 능력. 삼진이 줄고 안타·타율이 오릅니다.','파워':'장타력. 홈런·2루타가 늘어납니다.','선구안':'볼을 골라내는 능력. 볼넷이 늘고 삼진이 줄어 출루율이 오릅니다.','주루':'발 빠르기. 내야안타·도루·추가 진루가 늘어납니다.','수비':'포지션 수비 범위·처리. 실점을 막습니다(포지션마다 비중이 다름).',
+  '컨택':'공을 맞히는 능력. 삼진이 줄고 안타·타율이 오릅니다. 2루타(갭 파워)에도 절반이 들어갑니다.','파워':'장타력. 홈런이 늘고, 2루타(갭 파워)에도 절반이 들어갑니다.','선구안':'볼을 골라내는 능력. 볼넷이 늘고 삼진이 줄어 출루율이 오릅니다.','주루':'발 빠르기. 내야안타·도루·추가 진루가 늘어납니다.','수비':'포지션 수비 범위·처리. 실점을 막습니다(포지션마다 비중이 다름).',
   '구위':'공의 힘. 탈삼진이 늘고 강한 타구를 덜 맞습니다.','제구':'원하는 곳에 던지는 능력. 볼넷이 줄어듭니다.','스태미나':'투수가 긴 이닝을 던지는 힘. 선발로 오래 버티고 등판 뒤 회복도 빠릅니다.',
   '체력':'경기마다 쌓이는 피로가 적고 회복이 빨라 휴식이 덜 필요합니다. 높으면 30대 노화 하락도 덜합니다. 투수는 스태미나와 같습니다.',
-  '내구성':'부상을 잘 당하지 않는 정도. 낮으면 부상이 잦습니다.'};
-function attrHelp(l){ const k=String(l).replace(/\(.*?\)/g,'').replace(/·?\s*(결정구|보유.*)$/,'').trim(); for(const x in ATTR_HELP)if(k===x||k.startsWith(x))return ATTR_HELP[x]; return ''; }
+  '내구성':'부상을 잘 당하지 않는 정도. 낮으면 부상이 잦습니다.',
+  /* 세부 수비 능력: 경기 계산(48_sim_traits rngV·errV·catArm·catLead, 06_game dpF)과 같은 뜻 */
+  '수비 범위':'타구를 따라가 아웃으로 만드는 능력. 높을수록 그 자리로 간 타구가 안타가 덜 됩니다.','포구':'공을 놓치지 않는 능력. 낮으면 실책이 늘어납니다(내야 땅볼 실책은 송구도 40% 영향).',
+  '송구':'어깨. 내야 땅볼 송구 실책을 줄이고, 외야수는 주자의 추가 진루를 막습니다.','송구·도루 저지':'포수 어깨. 도루 시도와 성공률을 낮춥니다.',
+  '병살·중계':'유격·2루수의 병살 완성 능력.','블로킹':'원바운드 공을 막는 능력. 투수 리드에 15% 들어갑니다.',
+  '투수 리드':'포수 수비·리드 감각·블로킹·경험. 그 경기 투수 전원의 결과(삼진·볼넷·피안타)에 조금씩 더해집니다.','견제·수비':'견제와 투수 앞 타구 처리. 도루와 투수 앞 땅볼 안타를 줄입니다.'};
+function attrHelp(l){ const k=String(l).replace(/\(.*?\)/g,'').replace(/·?\s*(결정구|보유.*)$/,'').trim(); if(ATTR_HELP[k])return ATTR_HELP[k]; for(const x in ATTR_HELP)if(k===x||k.startsWith(x))return ATTR_HELP[x]; return ''; }
 function attrHelpList(){ return `<dl class="attr-help">${Object.entries(ATTR_HELP).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`; }
 /* ---------- 세부 능력치 · 레이더 · 성장 차트 ---------- */
 function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t.cur; tf[t.k]=t.fut; } const id=p.id; const o=(k,s)=>hn('dt'+k,id)*(s||4);
   const c=v=>clamp(v,20,80); const pers=p.pers||{pro:12,amb:12,loy:12,temp:12}; const ps=v=>c(20+(v-4)/16*60);
   const G2=[];
   if(!p.isP){ const L=p.bt==='좌'?-4:p.bt==='양'?0:2, Rr=p.bt==='좌'?2:p.bt==='양'?0:-1;
-    G2.push(['타격',[['평균 타구속도',evOf(p)+'km/h','t'],['컨택',c(tv.con)],['갭 파워',c((tv.con+tv.pow)/2+o('gap'))],['홈런 파워',c(tv.pow)],['선구안',c(tv.eye)],['삼진 회피',c(tv.con*.8+tv.eye*.2+o('k'))],['좌투수 상대',c(tv.con+L+o('vl',3))],['우투수 상대',c(tv.con+Rr+o('vr',3))]]]);
+    G2.push(['타격',[['평균 타구속도',evOf(p)+'km/h','t'],['컨택',c(tv.con)],['갭 파워',c((tv.con+tv.pow)/2+o('gap'))],['홈런 파워',c(tv.pow)],['선구안',c(tv.eye)],['삼진 회피',c(tv.con*.7+tv.eye*.3+o('k'))],['좌투수 상대',c(tv.con+L+o('vl',3))],['우투수 상대',c(tv.con+Rr+o('vr',3))]]]);
     G2.push(['주루',[['스피드',c(tv.spd)],['도루',c(tv.spd+o('sb'))],['주루 센스',c(tv.spd*.6+tv.eye*.4+o('br'))]]]);
     const arm=['C','RF','SS','3B'].includes(p.pos)?3:p.pos==='1B'?-4:0;
-    G2.push(['수비',[['수비 범위',c(tv.def+(['SS','CF'].includes(p.pos)?2:0)+o('rng'))],['포구',c(tv.def+o('fld'))],['송구(어깨)',c(tv.def+arm+o('arm'))],p.pos==='C'?['블로킹·도루 저지',c(tv.def+o('cat'))]:['병살·중계',c(tv.def+o('dp'))],...(p.pos==='C'?[['투수 리드(안방)',c(catLead(Object.assign({},p,{r:Object.assign({},p.r,{def:tv.def})})))]]:[])]]); } /* 포수 리드: 투수 전원의 결과에 더해진다 */
+    G2.push(['수비',[['수비 범위',c(tv.def+(['SS','CF'].includes(p.pos)?2:0)+o('rng'))],['포구',c(tv.def+o('fld'))],[p.pos==='C'?'송구(어깨)·도루 저지':'송구(어깨)',c(tv.def+arm+o('arm'))],p.pos==='C'?['블로킹',c(tv.def+o('cat'))]:['병살·중계',c(tv.def+o('dp'))],...(p.pos==='C'?[['투수 리드(안방)',c(catLead(Object.assign({},p,{r:Object.assign({},p.r,{def:tv.def})})))]]:[])]]); } /* 포수 리드: 투수 전원의 결과에 더해진다 */
   else { const velo=veloOf(p);
     const viewP={...p,r:{...p.r,stf:tv.stf}}; const arsenal=arsenal_(viewP,tv.stf).map(([k,v])=>[k,c(v)]); const best=[...arsenal].sort((a,b)=>b[1]-a[1])[0][0];
     const L=p.th==='좌'?3:-2;

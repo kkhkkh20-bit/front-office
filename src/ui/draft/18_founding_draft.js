@@ -180,6 +180,9 @@ function teamIdCard(){ const tid=G.user; if(G.unemp)return ''; const cap=captain
     ${last.length?`<div class="eyebrow">최근 구단사</div>${last.map(x=>`<p class="small">${x.y} · ${esc(x.t)}</p>`).join('')}`:''}</section>`; }
 /* 체험판 종료 화면: 한 시즌 기록과 다음 버전 안내 */
 const FEEDBACK_URL='https://cafe.naver.com/frontbaseball'; /* 공식 네이버 카페: 질문·피드백·버그 제보를 한곳에서(사용자 11-05) */
+/* 카페 표시: 초록 둥근 사각형 + 흰 말풍선 'C'(공식 로고 파일은 쓰지 않는다). 카페 링크 세 곳(패치 노트·제보 복사·자랑하기)에서 쓴다 */
+function cafeMark(sz){ sz=sz||20; return `<svg class="cafe-mk" viewBox="0 0 24 24" width="${sz}" height="${sz}" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="12" fill="#03C75A"/><path d="M6.3 8.6h9.4v4.1a4.2 4.2 0 0 1-4.2 4.2h-1a4.2 4.2 0 0 1-4.2-4.2z" fill="#fff"/><path d="M15.6 9.8h.9a2 2 0 0 1 0 4h-1.1" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M10.4 5.2c-.6.6-.6 1.3 0 1.9" fill="none" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/></svg>`; } /* 카페 아이콘: 초록 원 안의 흰 찻잔(사용자 11-15) */
+function cafeLink(label,cls){ return FEEDBACK_URL?`<a class="cafe-go${cls?' '+cls:''}" href="${FEEDBACK_URL}" target="_blank" rel="noopener">${cafeMark(18)}<span>${label}</span></a>`:''; }
 function demoEndView(){ const y=G.year; const H=(G.history||[]).find(h=>h.y===y); const u=H&&H.user; const gs=goalStatus(); const L=G.last&&G.last.y===y?G.last:null;
   const ps=L&&L.ps; const psr=ps?(ps.champ===G.user?'한국시리즈 우승':ps.runner===G.user?'한국시리즈 준우승':ps.poLose===G.user?'플레이오프 탈락':ps.spoLose===G.user?'준플레이오프 탈락':ps.wcLose===G.user?'와일드카드 탈락':'가을야구 탈락'):'';
   const best=playersOf(G.user).map(p=>({p,h:seasonTotal(p,y,'1군')})).filter(x=>x.h).map(x=>({...x,w:wOf(x.h,x.p)})).sort((a,b)=>b.w-a.w).slice(0,3);

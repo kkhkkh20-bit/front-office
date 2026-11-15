@@ -1,7 +1,7 @@
 /* ---------- 신인 드래프트 보드 ---------- */
 const DPOS={all:'전체',P:'투수',C:'포수',IF:'내야',OF:'외야'};
 function dposOf(p){ return p.isP?'P':p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':'OF'; }
-function dval(rp){ return draftVal(rp); }
+function dval(rp,p){ return draftVal(rp,p); }
 function draftPool(){ const live=G.draft&&!G.draft.done; return ((live?G.draft.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect); }
 /* 담당 스카우트 주장 표시: 정답 배지가 아니라 스카우트 의견. 틀릴 수 있다 */
 function dclaimTag(p){ const c=draftClaim(p); if(!c)return ''; return `<b class="${c.k==='up'?'good':'warn'}" title="${esc(draftClaimTxt(c))}">${c.k==='up'?'강력 추천':'신중론'}(확신도 ${c.conf})</b> · `; }
@@ -56,7 +56,7 @@ function draftBoard(){
   const live=G.draft&&!G.draft.done; const d=G.draft; const pk=live?d.picks[d.cur]:null; const mine=!!(pk&&pk.tid===G.user);
   const pool=draftPool();
   if(!pool.length&&!live)return `<p class="small muted keep"><b>신인 드래프트</b> 올해 드래프트는 끝났습니다. 다음 해 참가 선수 명단은 새해에 나옵니다.</p>`+(d&&d.done?draftResults():''); /* 안내는 패널 밖 한 줄, 칸은 지명 결과에 */
-  const all=pool.map(p=>({p,rp:scoutReport(p)})).sort((a,b)=>dval(b.rp)-dval(a.rp)); all.forEach((x,i)=>x.rk=i+1);
+  const all=pool.map(p=>({p,rp:scoutReport(p)})).sort((a,b)=>dval(b.rp,b.p)-dval(a.rp,a.p)); all.forEach((x,i)=>x.rk=i+1);
   const f=UI.df||(UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'board',more:20});
   const noScout=REG.filter(r=>!scoutOf('am',r)); /* 아마추어 담당 기준(프로 담당만 있으면 신인 잠재력은 ?, 검수 11-07) */
   const gmN=r=>pool.filter(p=>p.region===r&&p.gmSeen===G.year).length; /* 단장이 직접 본 후보는 담당이 없어도 잠재력을 본다(검수 11-09ze) */

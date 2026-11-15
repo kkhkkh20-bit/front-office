@@ -150,11 +150,12 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
   _evOut=new Set(get.map(id=>P(id)).filter(q=>{ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(q)]; return sl&&sl.ps.some(x=>x.id===q.id); }).map(pSlot));
-  let inV, outV, premiumV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=null; }
+  let inV, outV, premiumV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)*pkHoard(ME(),k)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=null; }
   const cashV=Math.min(cashVal(t,cash),CASH_SHARE*Math.max(1.5,outV)); inV+=cashV; /* 현금은 내주는 값의 22%까지만 메운다 */
   const theirN=rosterN(tid)+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
   const ov=Math.max(0,outV); let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?Math.min(1.5,ov*.3):0)-(hit.length?Math.min(.6,.2+ov*.1):0); /* 양보 폭은 선수 값에 비례(커뮤니티 피드백 11-11: 값 0.6짜리 급매 유망주를 1.5 고정 양보로 거의 공짜에 넘겼다) */ /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-Math.min(.9,ov*.3):-Math.min(.3,ov*.12)); /* 급매는 손해를 조금 보더라도 넘긴다(받을 값의 30%까지) */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
   const theirPay=capPayAs(tid,give,get); /* 연봉 차액을 더하지 않고 상위 40명을 다시 고른다 */
+  const capT=tid!==G.user?aiCapTake(tid,theirPay,capInfo(tid).pay):null; if(capT&&!capT.hard)need+=cashCost(t,-capT.tax); /* 상한을 넘겨 떠안으면 낼 세금만큼 값을 더 요구한다(소프트캡, 13_roster aiCapTake) */
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ if(tradeUrgent(tid,P(id)))continue; const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,premiumV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
   if(tid!==G.user){ const mine=x=>x.y===G.year&&(x.me==null||x.me===G.user); /* 지금 구단이 한 거래만(이직 전 구단 거래 제외, 검수 11-08c) */ const nT=(G.trades||[]).filter(x=>mine(x)&&x.with===tid).length; const urgentOnly=get.length&&get.every(id=>tradeUrgent(tid,P(id)))&&!pk.get.length&&cash>=0, repeatedV=urgentOnly?0:Math.max(1.5,premiumV); if(nT)need+=repeatedV*.25*nT;
@@ -173,8 +174,8 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=
   /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
   if(!get.some(id=>P(id)&&P(id).aiListed))need=Math.max(need,Math.max(0,outV)*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%는 더 받아야 한다(예전 -10%까지 손해 감수) */
-  const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse); if(domX&&tid!==G.user&&get.length){ const k=tid+':'+get.join(','); if(domX.refuse&&gain>=need)domLog('ref',k); else if(!ok&&gain>=need-Math.max(1.5,outV)*domX.k)domLog('over',k); } /* 견제가 결과를 바꾼 경우만 센다 */
-  return {gain,need,ok,theirN,theirPay,inV,outV,hit,cashV,...(domX?{dom:domX}:{})};
+  const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); if(domX&&tid!==G.user&&get.length){ const k=tid+':'+get.join(','); if(domX.refuse&&gain>=need)domLog('ref',k); else if(!ok&&gain>=need-Math.max(1.5,outV)*domX.k)domLog('over',k); } /* 견제가 결과를 바꾼 경우만 센다 */
+  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,...(domX?{dom:domX}:{})};
 }
 /* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
 let _faLk={k:null,s:null};
@@ -182,6 +183,8 @@ let _faLk={k:null,s:null};
 function faSignLock(p){ const y=p&&p.faTrY; if(y==null||p.team==null)return false; return G.year<y||(G.year===y&&!!G.cal&&G.day<G.cal.open); }
 function faLock(p){ if(faSignLock(p))return true; if(!p||p.team==null||p.foreign||!(G.last&&G.last.y>=G.year)||G.rolled===G.year)return false; const k=G.year+':'+G.day; if(_faLk.k!==k){ let L=[]; try{ L=faUpcoming(); }catch(e){} _faLk={k,s:new Set(L.filter(x=>x.why!=='svc'||x.sure).map(x=>x.p.id))}; } return _faLk.s.has(p.id); }
 function faLockMsg(ids){ { const S=ids.map(id=>G.players[id]).filter(faSignLock); if(S.length)return `${S.map(p=>p.name).join(', ')}: FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다.`; } const L=ids.map(id=>G.players[id]).filter(faLock); return L.length?`${L.map(p=>p.name).join(', ')}: FA 신청을 앞둔 선수는 FA 공시(스토브리그 시작) 전까지 트레이드할 수 없습니다.`:''; }
+/* 상대가 상한 때문에 연봉을 못 받는 이유(절대 한도·긴축) */
+function aiCapMsg(t,c){ return `${t.city} ${t.nick} 단장: ${c.tight?'모기업이 지갑을 닫아 상한을 넘겨 가며 연봉을 받을 수는 없습니다.':`이 거래로 저희 상위 40명 연봉이 ${money(c.pay)}이 돼 구단주가 허락하는 한도(${money(c.lim)})를 넘습니다.`} 연봉이 적은 선수로 바꾸거나 저희 쪽 연봉을 함께 받아 가 주십시오.`; }
 function proposeTrade(tid,give,get,cash,pk){
   const t=team(tid); cash=Math.round(cash||0); pk=pkNorm(pk); /* cash>0 우리가 얹음, cash<0 상대에게 현금을 받음(사용자 피드백 11-05) */
   if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'};
@@ -207,7 +210,7 @@ function proposeTrade(tid,give,get,cash,pk){
   const e=evalTrade(tid,give,get,cash,pk);
   if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${t.city} ${t.nick} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
   if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${t.city} ${t.nick} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
-  { const cy=sponSeason(); if(e.theirPay>capOf(cy)&&e.theirPay>(preSeason(cy)?capPayNext(tid):capPay(tid)))return {ok:false,msg:`${t.city} ${t.nick} 단장: 샐러리캡 때문에 연봉을 더 떠안을 수 없습니다.`}; }
+  if(e.capT&&e.capT.hard)return {ok:false,cap:true,msg:aiCapMsg(t,e.capT)};
   if(isCtr&&!e.ok&&e.gain>=e.need-Math.max(1.5,e.outV)*.15)e.ok=true; /* 자기가 낸 조건을 맞춰 오면 그날그날 기분(일일 변동)으로 뒤집지 않는다(커뮤니티 피드백 11-07) */
   if(e.ok){ const mv=mgrTradeView(tid,give,get); const grade=tradeGrade(tid,give,get,cash,pk); const snap=tradeSnap([...give,...get]);
     give.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=tid; story(G.players[id],`트레이드로 ${tname(tid)} 이적`,'move'); }); get.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); try{ leaveSweep(); }catch(e){} /* 보낸 선수에게 붙인 우리 구단 약속·명단 표시 정리 */
@@ -222,12 +225,12 @@ function proposeTrade(tid,give,get,cash,pk){
     addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash>0?` + 현금 ${money(cash)}`:''}${pkG} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}${cash<0?` + 현금 ${money(-cash)}`:''}${pkR}`);
     if(cc0&&cc0.ok)capOwnerOk(cc0,`${tname(tid)}와(과) 트레이드`);
     if(oc0&&oc0.ok&&oc0.over>0)tradeOwnerOk(oc0); /* 승인 판정은 거래 전 한 번으로(검수 11-06: 거래 뒤 다시 계산하면 승인 대상이 사라져 신뢰 차감이 빠짐) */
-    offerDropMoved([...give,...get]); offerDropCool(); /* 직접 거래로 옮긴 선수가 걸린 받은 제안·메일은 닫는다(검수 11-08c) */ mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${aiQ(tid,'yes')}${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}.`:''}`};
+    offerDropMoved([...give,...get]); offerDropCool(); /* 직접 거래로 옮긴 선수가 걸린 받은 제안·메일은 닫는다(검수 11-08c) */ mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${e.capT?` 상한을 넘겨 경쟁균형세 약 ${money(e.capT.tax)}를 감수합니다.`:''}${aiQ(tid,'yes')}${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}.`:''}`};
   }
   const gap=e.need-e.gain; if(!isCtr)nt.neg++; /* 맞대결 기간도 횟수를 센다(그 기간은 한도 +2, negInfo) */ nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ if(tradeUrgent(tid,G.players[id]))continue; const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }
   for(const id of give){ const q=G.players[id]; if(q&&R()<.12){ q.mor=clamp((q.mor??60)-4,0,100); if(R()<.5)wire('루머',`${q.name}, ${t.city} ${t.nick}와(과) 트레이드 대상으로 거론됐다는 소문`,{ref:q.id}); } } if(gmTrait(tid)==='hard'&&nt.neg>=3)t.rel=clamp(t.rel-1,0,100);
   if(e.dom&&e.dom.refuse&&e.gain>=e.need)return {ok:false,msg:`${gmn}: 우승 경쟁팀을 도와줄 수는 없습니다. 주전은 시즌이 끝날 때까지 내주지 않겠습니다.${aiQ(tid,'no')}`};
-  const why=((e.dom&&e.dom.k>=.12?'선두를 달리는 팀에 전력을 보태 주는 거래라 값을 더 받아야겠습니다. ':'')+tradeWhyNot(t,give,get,pk)).trim();
+  const why=((e.dom&&e.dom.k>=.12?'선두를 달리는 팀에 전력을 보태 주는 거래라 값을 더 받아야겠습니다. ':'')+(e.capT?`이 연봉을 받으면 상한을 넘겨 경쟁균형세(약 ${money(e.capT.tax)})를 내야 해 그만큼 더 받아야 합니다. `:'')+tradeWhyNot(t,give,get,pk)).trim();
   if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다.${why?` ${why}`:''}${aiQ(tid,'no')} (친분 조금 하락)`}; }
   const co=counterOffer(tid,give,get,cash,pk); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get,cash)+pkSig(c.pk||pk)]=G.day; /* 현금은 그대로 두고 선수 구성만 바꾼 안 */ if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.${aiQ(tid,'short')}`,counters:co};
   const yng=['build','tight'].includes(planOf(t)); /* 유망주 수집·긴축 구단은 얹을 선수도 어린 선수로 부른다 */

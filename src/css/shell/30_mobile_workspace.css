@@ -92,3 +92,13 @@
 /* 트레이드 선수 목록: 상대/우리 탭과 야수·투수·정렬 줄을 함께 위에 고정(커뮤니티 11-12) */
 .tpool-head{position:sticky;top:0;z-index:4;background:var(--panel);display:grid;gap:0;padding-bottom:2px}
 .tpool-head .trade-pool-options{margin:8px 0 4px}
+
+/* UI 검수 2026-11-15 1-6: 휴대폰 주요 조작은 44px 이상. 보조 버튼·칩은 사용자 요청(화면 밀도 44→36px)대로 36px를 두고,
+   강조 버튼·큰 버튼·하위 탭·상단 바 버튼·전체 메뉴 하위 항목만 44px로 올린다. 상단 '?'는 모양은 그대로 두고 눌리는 영역만 넓힌다 */
+@media(max-width:700px){
+ #app .shell :is(.btn.primary,.btn:not(.small),.tc-i.go,.subtabs>button,.seg.itabs>button):not(.home-workspace *){min-height:44px!important}
+ #app .shell .top .tbar>:is(button,.goset){min-height:44px}#app .shell .top .tbar>button.mailbtn{min-width:44px}
+ #app .shell .top .goset>button,#app .shell .top .goset .continue{min-height:44px}
+ #app .shell .subhead .helpbtn{position:relative}#app .shell .subhead .helpbtn::after{content:"";position:absolute;inset:-7px -6px} /* 떠 있는 '?'는 모양을 그대로 두고 눌리는 영역만 40px로(탭 줄을 덮지 않게) */
+ #sheet .menu-subs{gap:6px}#sheet .menu-subs button{min-height:44px;padding:8px 12px}#sheet .menu-h{min-height:44px}
+}
