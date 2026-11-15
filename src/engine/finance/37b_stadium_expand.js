@@ -14,7 +14,8 @@ const STADX=[
 const STADX_K=Object.fromEntries(STADX.map(x=>[x.k,x]));
 const STADX_RULE={max:25000,domeMax:19000,n:2,occ:.85,so:.3,city:.4,talk:45,retry:180,trust:40,minAge:3};
 function stadXpSeats(S,d){ let x=S.xp||0; const q=S.xq, X=q&&STADX_K[q.k]; if(X&&q.stage==='build'){ if(d>=q.done)x+=X.seats; else if(d>=q.pm)x-=X.close; } return x; } /* 완공일부터 늘고, 인허가가 끝나 공사하는 동안은 그 구역을 막는다 */
-function stadXpReset(S){ S.xp=0; S.xpN=0; S.xpUp=0; S.xq=null; delete S.xpRetry; delete S.xd; } /* 신구장 개장: 옛 구장 증설 기록은 이력에만 */
+function stadXpRefund(t,S){ const q=S&&S.xq; if(q&&q.esc>0&&q.stage!=='build'){ t.cash=(t.cash||0)+q.esc; q.esc=0; } } /* AI가 협의 때 떼어 둔 부담분을 돌려준다(결렬·만료·신구장) */
+function stadXpReset(S){ { const t=G.teams.find(x=>x.stad===S); if(t)stadXpRefund(t,S); } S.xp=0; S.xpN=0; S.xpUp=0; S.xq=null; delete S.xpRetry; delete S.xd; } /* 신구장 개장: 옛 구장 증설 기록은 이력에만 */
 function stadXpRaw(tid){ const S=stadOf(tid); return (S.cap||STAD_CAP[tid])+(S.xp||0); }
 function stadXpMax(tid){ return stadOf(tid).dome?STADX_RULE.domeMax:STADX_RULE.max; }
 function stadXpCost(k){ const X=STADX_K[k]; const c=Math.round(X.c*ecoIdx()/10)*10, club=Math.round(c*(1-STADX_RULE.city)/10)*10; return {c,club,city:c-club}; }
@@ -45,8 +46,9 @@ function stadXpTalk(tid,k){ const e=stadXpWhy(tid,k); if(e)return e; const S=sta
 function stadXpExp(){ const o=dobj(G.day); return dnum(o.m>=3?G.year+1:G.year,3,1)-1; }
 /* 2) 합의 뒤 착공: 구단 몫을 내고 인허가를 신청한다 */
 function stadXpStart(tid){ const S=stadOf(tid), q=S.xq; if(!q||q.stage!=='ok')return '시와 합의한 증설이 없습니다.'; if(!stadWindow())return '증설 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.'; if(S.proj)return '신구장 사업 중에는 옛 구장을 늘리지 않습니다.';
-  const X=STADX_K[q.k], C=stadXpCost(q.k), t=team(tid), me=tid===ME(); if(spendable(tid)<C.club)return `구단 부담분 ${money(C.club)}이 필요합니다(${me?spendTxt():'쓸 수 있는 돈 '+money(Math.max(0,spendable(tid)))}).`;
-  let sup=0; if(me){ const k0=spendPay(C.club); sup=C.club-k0; G.spend.stad=(G.spend.stad||0)+k0; } else t.cash-=C.club;
+  const X=STADX_K[q.k], C=stadXpCost(q.k), t=team(tid), me=tid===ME(); if((q.esc||0)<C.club&&spendable(tid)+(q.esc||0)<C.club)return `구단 부담분 ${money(C.club)}이 필요합니다(${me?spendTxt():'쓸 수 있는 돈 '+money(Math.max(0,spendable(tid)))}).`;
+  const esc=Math.min(C.club,q.esc||0), due=C.club-esc; /* AI가 협의 때 떼어 둔 몫은 이미 낸 돈 */
+  let sup=0; if(me){ const k0=due>0?spendPay(due):0; sup=due-k0; G.spend.stad=(G.spend.stad||0)+k0; } else t.cash-=due; if(esc<(q.esc||0))t.cash+=(q.esc-esc); q.esc=0;
   q.stage='build'; q.c=C.club; q.total=C.c; q.sup=sup; q.ep=me?G.spEp:null; q.st=G.day; q.pm=G.day+facPermitDays(tid); q.done=q.pm+X.days;
   clubFacilityHistory('stad',tid,`${stadName(tid)} ${X.l}`,'착공',{c:C.c,src:`구단 ${money(C.club)} · 지자체 ${money(C.city)}`,done:q.done});
   if(me)addLog(`${stadName(tid)} ${X.l} 공사를 시작했습니다(구단 ${money(C.club)} · ${t.city}시 ${money(C.city)}). 시 인허가 뒤 ${dmd(q.pm)}쯤 첫 삽, ${dmd(q.done)} 완공 예정.`);
@@ -55,9 +57,9 @@ function stadXpStart(tid){ const S=stadOf(tid), q=S.xq; if(!q||q.stage!=='ok')re
 function stadXpDaily(){ if(!G||!G.teams)return; try{ stadXpRec(); }catch(e){} for(const t of G.teams){ const S=t.stad, q=S&&S.xq; if(!q)continue; const me=t.id===ME(), X=STADX_K[q.k]; if(!X){ S.xq=null; continue; }
     if(q.stage==='talk'&&G.day>=q.res){ if(R()<(q.p??stadXpOdds(t.id))){ q.stage='ok'; q.exp=stadXpExp(); cityRelAdd(t.id,1);
         if(me){ stop('구장',`${t.city}시가 ${X.l}에 합의했습니다. 공사비의 40%를 시가 냅니다. ${dmd(q.exp)}까지 구장 관리 → 구장 시설에서 착공하세요.`); news('구단',`${t.city}시-${t.nick}, 관중석 증설 합의`,`${stadName(t.id)}에 ${X.seats.toLocaleString('ko-KR')}석이 늘어납니다.`,2); } }
-      else { S.xq=null; S.xpRetry=G.day+STADX_RULE.retry; if(me)stop('구장',`${t.city}시가 ${X.l}을(를) 올해 예산에 넣기 어렵다고 합니다. ${dmd(S.xpRetry)} 뒤 다시 협의할 수 있습니다. 지역 관계가 좋을수록 잘 됩니다.`); }
+      else { stadXpRefund(t,S); S.xq=null; S.xpRetry=G.day+STADX_RULE.retry; if(me)stop('구장',`${t.city}시가 ${X.l}을(를) 올해 예산에 넣기 어렵다고 합니다. ${dmd(S.xpRetry)} 뒤 다시 협의할 수 있습니다. 지역 관계가 좋을수록 잘 됩니다.`); }
       continue; }
-    if(q.stage==='ok'){ if(!me&&stadWindow())stadXpStart(t.id); if(S.xq&&S.xq.stage==='ok'&&G.day>q.exp){ S.xq=null; if(me)mail('운영팀','관중석 증설 합의 만료',`공사 기간 안에 착공하지 않아 ${X.l} 합의가 끝났습니다. 다시 하려면 시와 새로 협의해야 합니다.`,{kind:'구장'}); } continue; }
+    if(q.stage==='ok'){ if(!me&&stadWindow())stadXpStart(t.id); if(S.xq&&S.xq.stage==='ok'&&G.day>q.exp){ stadXpRefund(t,S); S.xq=null; if(me)mail('운영팀','관중석 증설 합의 만료',`공사 기간 안에 착공하지 않아 ${X.l} 합의가 끝났습니다. 다시 하려면 시와 새로 협의해야 합니다.`,{kind:'구장'}); } continue; }
     if(q.stage==='build'&&G.day>=q.done){ S.xp=(S.xp||0)+X.seats; S.xpN=(S.xpN||0)+1; S.xpUp=(S.xpUp||0)+X.up; (S.xh=S.xh||[]).push({k:q.k,y:G.year,d:G.day,seats:X.seats,c:q.total??q.c}); S.xq=null;
       clubFacilityHistory('stad',t.id,`${stadName(t.id)} ${X.l}`,'완공',{c:q.total??q.c,cap:stadCap(t.id)});
       if(!me){ wire('구장',`${t.city} ${t.nick}, ${stadName(t.id)} ${X.seats.toLocaleString('ko-KR')}석 증설 완공`,{tid:t.id}); continue; }
@@ -65,6 +67,8 @@ function stadXpDaily(){ if(!G||!G.teams)return; try{ stadXpRec(); }catch(e){} fo
 /* 예상 효과: 다음 시즌 전망(지금 가격·시설)으로 좌석만 늘려 본 차이. 관중·표값·매점 수입·유지비·회수 기간 */
 function stadXpGain(tid,k){ const S=stadOf(tid), X=STADX_K[k]; const keep={xp:S.xp,xpUp:S.xpUp,xq:S.xq}; let a,b; try{ S.xq=null; a=stadProj(tid,true); S.xp=(S.xp||0)+X.seats; S.xpUp=(S.xpUp||0)+X.up; b=stadProj(tid,true); } finally{ S.xp=keep.xp; S.xpUp=keep.xpUp; S.xq=keep.xq; if(S.xp==null)delete S.xp; if(S.xpUp==null)delete S.xpUp; if(S.xq==null)delete S.xq; }
   const att=b.att-a.att, inc=(b.ticket+b.fnb)-(a.ticket+a.fnb), up=X.up, net=inc-up, C=stadXpCost(k); return {att,inc,up,net,club:C.club,pay:net>0?C.club/net:null}; }
+/* 협의·합의 중인 증설의 구단 부담분: AI 구단은 착공 때까지 이 돈을 다른 데 쓰지 않는다(aiSpend) */
+function stadXpHold(tid){ const S=team(tid)&&team(tid).stad, q=S&&S.xq; return q&&(q.stage==='talk'||q.stage==='ok')?Math.max(0,stadXpCost(q.k).club-(q.esc||0)):0; }
 /* AI 구단: 매진이 잦고 돈이 넉넉하면 같은 조건으로 시에 제안한다(비시즌 11월, stadAI에서) */
 function stadXpAI(t){ const S=stadOf(t.id); if(S.xq||S.proj)return; const D=stadXpDem(t.id); if(!stadXpDemOk(D)||D.occ<.9&&D.so/Math.max(1,D.n)<.4)return; /* 사람보다 조금 보수적으로: 꽉 찬 구장만 */
-  const k=['of','up'].find(x=>!stadXpWhy(t.id,x)&&spendable(t.id)>=stadXpCost(x).club*1.5); if(!k||R()>.6)return; stadXpTalk(t.id,k); }
+  const k=['of','up'].find(x=>!stadXpWhy(t.id,x)&&spendable(t.id)>=stadXpCost(x).club*1.3); if(!k||R()>.6)return; if(stadXpTalk(t.id,k))return; const c=stadXpCost(k).club; t.cash-=c; S.xq.esc=c; } /* AI는 제안할 때 부담분을 떼어 둔다(겨울 FA·시설 지출에 써 버려 합의가 무산되지 않게). 결렬·만료면 돌려받는다 */
