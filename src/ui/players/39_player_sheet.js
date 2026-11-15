@@ -6,7 +6,7 @@ function psTable(p){ const Y=p.psY; if(!Y)return ''; const ys=Object.keys(Y).map
   return `<div class="eyebrow" style="margin-top:10px">포스트시즌</div><table><thead><tr><th>시즌</th><th>구단</th><th>경기</th>${p.isP?'<th>이닝</th><th>승-패-세</th><th class="key">ERA</th><th>탈삼진</th>':'<th>타석</th><th>타율</th><th>홈런</th><th>타점</th><th class="key">OPS</th>'}</tr></thead><tbody>${ys.length>1?row('통산',tot,''):''}${ys.map(y=>row(y,Y[y],Y[y].t!=null&&G.teams[Y[y].t]?esc(tshort(Y[y].t)):'')).join('')}</tbody></table>`; }
 function statTable0(p){
   const rows=[...p.hist].sort((a,b)=>b.y-a.y||(a.lvl<b.lvl?-1:1));
-  const pre=p.prev?[...(p.now&&p.now.y===G.year&&p.team==null?[Object.assign({},p.now,{y:G.year,pre:'올해 '+(p.now.lvl||p.prevLvl||'')})]:[]),Object.assign({y:G.year-1,pre:p.prev.lvl},p.prev),...(p.prev2?[Object.assign({y:G.year-2,pre:p.prev2.lvl},p.prev2)]:[])]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
+  const pre=p.prev?[...(p.now&&p.now.y===G.year&&p.team==null?[Object.assign({},p.now,{y:G.year,pre:'올해 '+ovlCandLvl(p,p.now.lvl||p.prevLvl||'',1)})]:[]),Object.assign({y:G.year-1,pre:ovlCandLvl(p,p.prev.lvl,1)},p.prev),...(p.prev2?[Object.assign({y:G.year-2,pre:ovlCandLvl(p,p.prev2.lvl,1)},p.prev2)]:[])]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
   try{ pre.push(...ovsStatRows(p)); }catch(e){} /* 해외에서 뛴 시즌(복귀 선수·KBO를 떠났다 돌아온 선수) */
   const one=p.hist.filter(h=>h.lvl==='1군'); let tot=null; if(one.length>1){ tot=Object.assign({},p.isP?ZP:ZB,{y:'통산',tot:true,war:sum(one.map(h=>wOf(h,p)))}); for(const h of one)addTo(tot,h); tot.y='통산'; }
   const all=[...(tot?[tot]:[]),...[...rows,...pre].sort((a,b)=>b.y-a.y)]; /* 해외 시즌도 연도 순서 안에(같은 해는 국내 기록 먼저) */ if(!all.length)return '<p class="small muted">기록이 없습니다.</p>';
