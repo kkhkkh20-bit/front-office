@@ -25711,6 +25711,10 @@ function schGift(n){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; 
   if(!S.gy||typeof S.gy!=='object')S.gy={}; S.gy[G.user]=G.year; try{ _dcc=null; }catch(e){} /* 스카우트 주장 캐시도 새로(검수 11-09e #24) */ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+10; schAdd(S,8); return `${n} 야구부에 장비를 후원했습니다(${money(10)}). ${S.coach.name} 감독과 친분 ${schRelLbl(schRel(S))}.`; }
 /* 학교 친분이 평가 오차에 주는 배수(우리 구단만): 친분 0이면 1.08배, 100이면 0.92배, 귀띔받은 선수는 0.85배 더 */
 function schSdM(p){ const S=p&&p.prospect?schOf(p):null; if(!S)return 1; return clamp((1.08-schRel(S)*.0016)*(schTipKnown(p)?.85:1),.75,1.08); }
+
+/* 권역 학교 한꺼번에 후원(카페 11-15: 하나씩 누르기 번거롭다). 학교마다 규칙은 schGift와 같다 */
+function schGiftTargets(area){ return Object.values(schList()).filter(S=>(area==='all'||S.area===area)&&!schGave(S)); }
+function schGiftMany(area){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const L=schGiftTargets(area); if(!L.length)return '이 권역 학교는 올해 모두 후원했습니다.'; for(const S of L)schGift(S.n); return `${area==='all'?'전국':area} 고교 ${L.length}곳 야구부에 장비를 후원했습니다(${money(10*L.length)}). 학교 감독들과 친분이 올랐습니다.`; }
 /* ===== 구단주와 이야기 나누기(11-09e: 구단주 대화도 주고받게) =====
    감독 장면과 같은 틀(talkPick)을 쓴다. 구단주 성향(성적 우선·수익 우선·그룹 홍보 우선)과 지금 상황(순위·연패·지출·팬 여론·최근 영입·비시즌)으로
    장면을 고르고, 장면이 끝나 가면 구단주가 단장에게 묻는다(목표 순위·감독 평가·광고 모델·연봉 1위·돈·곧 FA·가족).
@@ -27609,6 +27613,10 @@ function sisDaily(day){ const o=dobj(day); sisInit();
   if(o.m===10&&o.d===11)for(const F of sisFlAll())sisFlDepart(F);
   if(o.m===11&&o.d===15)for(const F of sisFlAll())sisFlRun(F);
   sisCoachBack(); coachStudyAi(day); }
+
+/* 교류 방문단 한꺼번에(카페 11-15): 다시 보낼 수 있는 구단만, 규칙은 sisVisit과 같다 */
+function sisVisitTargets(cn){ const S=sisInit(); return OCL.filter(c=>c.c===cn&&!(S.vis[G.user+':'+c.id]!=null&&G.day-S.vis[G.user+':'+c.id]<60)); }
+function sisVisitMany(cn){ if(G.unemp)return '지금은 할 수 없습니다.'; const L=sisVisitTargets(cn); if(!L.length)return '지금 방문단을 보낼 수 있는 구단이 없습니다.'; for(const c of L)sisVisit(c.id); return `${OCN[cn]} 구단 ${L.length}곳에 교류 방문단을 보냈습니다(${money(SIS_VIS*L.length)}, 관계 개선).`; }
 /* ===== 다른 구단도 사람 단장과 같은 수단을 쓴다(사용자 11-13: "유저가 하는 기능을 AI도 다 해야 공평하고 재미있다") =====
  같은 규칙·같은 식·같은 비용. 결정은 구단 계획(86_ai_plan)과 형편(남는 돈)으로 하고, 숫자는 화면에 보이지 않는다. 소식은 짧게만 남긴다.
  - 부상 방지 단계·제휴 병원: 구단 것이라 G.orgT[tid].med에 둔다(맡은 구단은 G.med, 이직하면 27_other_gms가 그대로 주고받는다).
@@ -38368,11 +38376,11 @@ function scoutMapPage(){ const S=areaSummary(G.user), home=teamArea(G.user); con
     <div class="scm-bar"><i style="width:${A.net}%;background:${netCol(A.net)}"></i></div>
     <p class="small">${why.join(' · ')}</p>
     <p class="small muted">정보망이 높을수록 이 권역 후보를 더 정확히 보고 숨은 재능도 잘 찾습니다. ${hiI(`${A.reg} 담당 스카우트를 오래 둘수록, 이 권역이 고향인 스카우트가 있을수록, 단장이 이 권역 대회를 직접 볼수록 정보망이 올라갑니다. 학교 감독과 친할수록 그 학교 선수 평가가 정확해지고, 감독이 좋은 선수를 먼저 귀띔합니다. 친분은 스카우트 방문, 대회 관전, 그 학교 선수 지명, 후원으로 쌓입니다.`)}</p>
-    <h4 class="small">학교 · 올해 드래프트 후보 ${A.n}명</h4><div class="scm-schs">${schools.map(rowS).join('')}</div></div>`;
+    <div class="row between"><h4 class="small">학교 · 올해 드래프트 후보 ${A.n}명</h4>${G.unemp?'':(()=>{ const n=schGiftTargets(sel).length; return n?`<button class="btn small" data-a="schGiftMany" data-v="${esc(sel)}">이 권역 ${n}곳 모두 후원 · ${money(10*n)}</button>`:'<span class="small muted">이 권역 올해 후원 완료</span>'; })()}</div><div class="scm-schs">${schools.map(rowS).join('')}</div></div>`;
   return `<div class="scm ws-own"><section class="card scm-l">${map}${list}</section><section class="card scm-r">${det}</section></div>`; }
 function scoutPage2(base){ const nW=(G.pwatch||[]).filter(id=>G.players[id]&&G.players[id].team!==G.user).length; /* 타 구단 관심 선수는 하위 탭으로 따로(울브즈 11-11) */
   const it=inTabs('scoutpg',[['team','스카우트 팀'],['map','지역 정보망'],['ovs','해외 네트워크'],['watch',`타구단 관심 선수${nW?' '+nW:''}`]]); if(it.cur==='team')return it.bar+base(); return it.bar+`<div class="ws-scroll scout-sub-scroll" tabindex="0">${it.cur==='map'?scoutMapPage():it.cur==='ovs'?sisPage():pwatchTable(false)}</div>`; } /* 지역 정보망·해외 네트워크·관심 선수: 낮은 화면(휴대폰 가로)에서 작업 틀이 넘친 부분을 숨겨 아래가 안 보이던 문제(일고회장 11-12) → 하위 탭 내용 전체를 스크롤 칸으로 */
-Object.assign(A,{ schGift(v){ toast(schGift(v)); save(); render(); }, scArea(v){ UI.scArea=v; UI.it=Object.assign(UI.it||{},{scoutpg:'map'}); render(); } });
+Object.assign(A,{ schGift(v){ toast(schGift(v)); save(); render(); }, schGiftMany(v){ toast(schGiftMany(v)); save(); render(); }, scArea(v){ UI.scArea=v; UI.it=Object.assign(UI.it||{},{scoutpg:'map'}); render(); } });
 /* ===== 스카우트 > 해외 네트워크: 일본·미국 지도 · 해외 구단 정보 · 자매결연(사용자 11-09) =====
  지도: 00h_overseas_map.js(Natural Earth·미국 인구조사국 공공 데이터). 구단은 모두 가상(98_sister_club.js OCL) */
 const SIS_SITE={oki:['오키나와',127.75,26.35],miy:['미야자키',131.42,31.91],jk:['가고시마',130.56,31.6],az:['애리조나',-111.7,34.3],fl:['플로리다',-81.6,28.2]};
@@ -38409,7 +38417,7 @@ function sisDetail(c){ const me=G.user, rel=sisRel(me,c.id), pt=sisPtn(c.id), mi
     out.push(`<div class="eyebrow">선수 정보 교환</div><p class="small muted">관계가 어느 정도 쌓이면 ${c.c==='jp'?'일본 리그':'마이너리그'}에서 눈여겨본 외국인 후보를 가끔 알려 줍니다. 오래 지켜본 구단의 정보라 평가 오차가 작습니다. ${rel>=50?'지금 정보를 받고 있습니다.':'지금은 관계가 낮아 정보가 오지 않습니다.'}</p>`); }
   return out.join(''); }
 function sisPage(){ if(G.unemp)return '<section class="card"><p class="small muted">구단을 맡고 있지 않습니다.</p></section>'; sisInit(); const cn=UI.sisC==='us'?'us':'jp'; const L=OCL.filter(c=>c.c===cn); const sel=L.find(c=>c.id===UI.sisSel)?UI.sisSel:(sisMine(G.user,cn)||L[0].id); const C=OCL_BY[sel];
-  const tabs=`<div class="talk">${['jp','us'].map(k=>`<button class="btn small ${cn===k?'on':''}" data-a="sisC" data-v="${k}">${OCN[k]}${sisMine(G.user,k)?' · 결연 1':''}</button>`).join('')}</div>`;
+  const nv=sisVisitTargets(cn).length; const tabs=`<div class="talk">${['jp','us'].map(k=>`<button class="btn small ${cn===k?'on':''}" data-a="sisC" data-v="${k}">${OCN[k]}${sisMine(G.user,k)?' · 결연 1':''}</button>`).join('')}${nv?`<button class="btn small" data-a="sisVisMany" data-v="${cn}">${OCN[cn]} ${nv}곳 모두 방문단 · ${money(SIS_VIS*nv)}</button>`:''}</div>`;
   const map=`<div class="scm-map">${sisMapSVG(cn,sel)}<p class="small muted scm-key">${[[75,'매우 가까움'],[55,'가까움'],[35,'보통'],[20,'서먹함']].map(([v,l])=>`<i style="background:${netCol(v)}"></i>${l}`).join(' ')} · 금색 고리 = 우리 자매구단 · 가운데 점 = 다른 구단과 결연${cn==='jp'?' · 마름모 = 캠프지':''}</p></div>`;
   const list=`<table class="tbl scm-tbl"><thead><tr><th>구단</th><th>관계</th><th>결연</th></tr></thead><tbody>${L.map(c=>{ const r=sisRel(G.user,c.id), p=sisPtn(c.id); return `<tr class="${c.id===sel?'on':''}" data-a="sisSel" data-v="${c.id}"><td>${esc(c.n)} <span class="small muted">${SIS_SITE[c.s[1]][0]}</span></td><td><b style="color:${netCol(r)}">${sisRelWord(r)}</b></td><td>${p===G.user?'<span class="pill good">우리</span>':p!=null?esc(tshort(p)):'<span class="muted">-</span>'}</td></tr>`; }).join('')}</tbody></table>`;
   const all=Object.entries(sisInit().p).map(([id,x])=>`${tshort(x.tid)}-${OCL_BY[id].n}`);
@@ -38419,6 +38427,7 @@ Object.assign(A,{
   sisSel(v){ UI.sisSel=v; UI.sisC=(OCL_BY[v]||{}).c||UI.sisC; UI.sisMsg=null; UI.it=Object.assign(UI.it||{},{scoutpg:'ovs'}); render(); },
   sisProp(v){ const r=sisPropose(v); UI.sisMsg=r||null; if(!r)toast(`${OCL_BY[v].n}와(과) 자매결연`); save(); render(); },
   sisVis(v){ UI.sisMsg=sisVisit(v)||null; save(); render(); },
+  sisVisMany(v){ toast(sisVisitMany(v)); save(); render(); },
   sisEnd(v){ const d=!UI._cfmPass&&GUARD.sisEnd(v); if(d){ UI.cfm={k:'sisEnd',v,doc:d}; cfmRender(); return; } /* 41_guard_boot보다 늦게 실려 결재 창을 직접 띄운다 */ UI.sisMsg=sisEnd(v)||null; save(); render(); },
   sisFl(v){ const [c,id]=String(v).split(':'); UI.sisMsg=sisFlToggle(c,+id||id)||null; save(); render(); },
   sisCt(v){const [cid,k]=String(v).split(':');A.coachStudyOpen(k+':'+(OCL_BY[cid]?.c==='us'?'us':'jp'));} });
