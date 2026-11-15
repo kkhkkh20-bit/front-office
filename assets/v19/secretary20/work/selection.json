@@ -1,0 +1,399 @@
+{
+  "solver_status": "OPTIMAL",
+  "count": 20,
+  "female_count": 16,
+  "male_count": 4,
+  "glasses_count": 3,
+  "source_candidates": 100,
+  "cross_reference_passed_candidates": 89,
+  "chosen": [
+    {
+      "candidate": "q06",
+      "f": 1,
+      "age": 24,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "narrow rounded oval face, clear softly downturned medium eyes, gentle long arched brows, short low-bridge straight nose, plump round lips and faint freckles across the nose, dark chin-length bob tucked behind one ear, cheerful soft smile",
+      "clothes": "a modest opaque white round-neck blouse with a loose light beige cardigan",
+      "skin": "natural pale warm skin with a few tiny freckles",
+      "ethnicity": "Korean",
+      "native_path": "/workspace/generated_images/exec-6d6973f4-6a09-4619-bad9-32d66a158501.png",
+      "native_sha256": "825ed976a233718199323d27b1b893647a1c58ad452632f3402c67a1ed45ae11",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q06_master.png",
+      "master_sha256": "a7c46dfb7f3dbef96d57c7d2dded35e67e0adcb1c212fc9a28914480952048a9"
+    },
+    {
+      "candidate": "q11",
+      "f": 1,
+      "age": 24,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "a graceful angular oval face, medium-sized widely spaced slightly downturned eyes, arched brows, medium low straight nose, slim lips and subtle beauty mole under one eye, wavy long side-part chestnut hair",
+      "clothes": "a modest opaque white round-neck blouse with a loose light beige cardigan",
+      "skin": "natural pale warm skin with a few tiny freckles",
+      "ethnicity": "Japanese",
+      "native_path": "/workspace/generated_images/exec-8fca5907-6adb-4df6-9b83-8e03e82c29db.png",
+      "native_sha256": "6a05c1052e88ae81c2baaf12de72244fb8ad78be3b2d03d285d1e60535acbfae",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q11_master.png",
+      "master_sha256": "bf773f0995ab84ad50da651feabc86ce702241fcac5e3af1de2374dd0233c705"
+    },
+    {
+      "candidate": "q16",
+      "f": 1,
+      "age": 24,
+      "tags": {
+        "glasses": true
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "soft high-cheekboned oval face, close-set rounded medium eyes, low horizontal thick brows, a short wide nose tip, delicate rosebud smile, dark-brown shoulder-length loose curls with side fringe",
+      "clothes": "a modest opaque white round-neck blouse with a loose light beige cardigan",
+      "skin": "natural pale warm skin with a few tiny freckles",
+      "ethnicity": "Taiwanese",
+      "native_path": "/workspace/generated_images/exec-f343a16f-4276-4ee1-8873-4185372a0daf.png",
+      "native_sha256": "308d6eac5a9cbfa98aa86ac2e04da37c33b1d77808797b932ccb84f150b71245",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q16_master.png",
+      "master_sha256": "34b98f87371f904ac3a953298ed6014634d1f71c55648fda9ad487c96702efc8"
+    },
+    {
+      "candidate": "s01",
+      "f": 1,
+      "age": 24,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "young_individual",
+      "brief": "24, a petite heart-shaped face, softly full rounded cheeks, notably wide-set slightly upturned eyes with subtle double lids, low soft nose bridge and small rounded nose, small cupid-bow mouth, long softly waved black hair, charming fresh gentle smile",
+      "clothes": "relaxed white collared blouse",
+      "skin": "fair neutral ivory",
+      "native_path": "/workspace/generated_images/exec-3c339696-814f-4c3a-b41e-e3f5c4736d44.png",
+      "native_sha256": "74b42a5ade7e770460b335df301b6baefef3c3ba96385f1a431ab00a0707b696",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/s01_master.png",
+      "master_sha256": "1def5021e7f7441d8daac1c50832c62ec6d9ee290f494e0a98a640ca2837b00b"
+    },
+    {
+      "candidate": "s09",
+      "f": 1,
+      "age": 24,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "young_individual",
+      "brief": "24, an elongated softly square oval face, narrow smiling monolid eyes, naturally thick level brows, a gently broad short nose, large warm smile with delicate cheek dimples, long dark brown hair with light front layers",
+      "clothes": "relaxed white collared blouse",
+      "skin": "clear light olive",
+      "native_path": "/workspace/generated_images/exec-b9440122-c31c-4b3e-a92b-f6d164d1fa1c.png",
+      "native_sha256": "95c05b23d4608d859c2fc422ded37f0c66e0d11db5de9bc1cd6166c99724b203",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/s09_master.png",
+      "master_sha256": "ffa1acf530f8a70a328bfff40d66d28e2cd57b6e4223fe8ddd79e151d152db24"
+    },
+    {
+      "candidate": "s12",
+      "f": 1,
+      "age": 24,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "young_individual",
+      "brief": "24, a delicate round heart-shaped face, long narrow deep-set eyes, fine soft straight brows, high bridge slightly upturned nose, plump broad lips, mid-length black hair softly tied half-up with fine wisps",
+      "clothes": "loose navy blazer over white high-neck shell",
+      "skin": "clear light olive",
+      "native_path": "/workspace/generated_images/exec-fba7f0dc-dcb0-496d-8999-3d670591c07b.png",
+      "native_sha256": "27528961e5cfc6d0a4974e4cfefa0bd309cfea4344e452e2338edac69b34f698",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/s12_master.png",
+      "master_sha256": "c8a8f4a559e8fbfcb5f723fe8880356598cb1db6ed1a87681a883c861aa2d633"
+    },
+    {
+      "candidate": "q12",
+      "f": 1,
+      "age": 25,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "a delicate round heart-shaped face, long narrow deep-set eyes, fine soft straight brows, high bridge slightly upturned nose, plump broad lips, mid-length black hair softly tied half-up with fine wisps",
+      "clothes": "a relaxed pale sky-blue button-up shirt",
+      "skin": "natural light neutral beige skin",
+      "ethnicity": "Japanese",
+      "native_path": "/workspace/generated_images/exec-7aa904a5-da6b-4593-bf89-a286d7138f6e.png",
+      "native_sha256": "e24e457c67fb7c079c75a4ef72ebede3402095fe34c6947f4af79ca1cd4f1ead",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q12_master.png",
+      "master_sha256": "2adf3dead1ec9b8f68eb255fcf30aeb361ea7e41343162199744496b1a0834de"
+    },
+    {
+      "candidate": "q17",
+      "f": 1,
+      "age": 25,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "a petite heart-shaped face, softly full rounded cheeks, notably wide-set slightly upturned eyes with subtle double lids, low soft nose bridge and small rounded nose, small cupid-bow mouth, long softly waved black hair, charming fresh gentle smile",
+      "clothes": "a relaxed pale sky-blue button-up shirt",
+      "skin": "natural light neutral beige skin",
+      "ethnicity": "Taiwanese",
+      "native_path": "/workspace/generated_images/exec-251c267a-abac-4747-ab04-d66315a0c596.png",
+      "native_sha256": "0ea2b0c78767f925df19726fc0b20705b47a564f347db5e415a7797f9cf3a9c4",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q17_master.png",
+      "master_sha256": "9ca601e748667b96c8018c6fb60707cd58c776a233c488497b83d15df04528fa"
+    },
+    {
+      "candidate": "s02",
+      "f": 1,
+      "age": 25,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "young_individual",
+      "brief": "25, an elegant long oval face, naturally narrow deep-set eyes and fine arched brows, a long graceful straight nose with high bridge, full bow-shaped lips, sleek mid-back dark-brown hair with side part, serene luminous expression",
+      "clothes": "light blue relaxed cotton shirt",
+      "skin": "fair neutral ivory",
+      "native_path": "/workspace/generated_images/exec-ec8192ce-9214-42dc-b7c0-74745ce7426d.png",
+      "native_sha256": "b8ae92aa2863138e5a29733c61c65d3b321a94be15e5bef02ac683add9ef52af",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/s02_master.png",
+      "master_sha256": "938bb9165111d3aeae9c29fe9b7f4cba67b6f2556a17faa50df1188df79d0db6"
+    },
+    {
+      "candidate": "s08",
+      "f": 1,
+      "age": 25,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "young_individual",
+      "brief": "25, compact rounded cheeks and softly angular jaw, open deep-set eyes and thick curved brows, elegantly long narrow nose, small pursed rose lips, short feminine pixie with swept longer top, playful calm smile",
+      "clothes": "soft sage modest shirt",
+      "skin": "light warm golden beige",
+      "native_path": "/workspace/generated_images/exec-182262b6-fa79-4994-81d2-e2fa1fb786f1.png",
+      "native_sha256": "a5a157d274b2408dff4963ae68d238343de78e2a0c6bff994ff91c5c4f0e2eb6",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/s08_master.png",
+      "master_sha256": "38449a81bce32f5dcb6c34e5169313a9011d6c9d40dcff072bcd71b784be96e8"
+    },
+    {
+      "candidate": "s14",
+      "f": 1,
+      "age": 25,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "young_individual",
+      "brief": "25, slender long oval face and soft rounded jawline, almond monolid eyes with soft outer corners, long level brows, delicate pointed but naturally sized nose, wide curved smiling lips, long shiny straight black hair",
+      "clothes": "soft pink round collar blouse",
+      "skin": "pale warm ivory",
+      "native_path": "/workspace/generated_images/exec-43e742c0-c689-4ab5-b0a3-83214b2439d7.png",
+      "native_sha256": "48aa313628678632697ccf0ee154a796a7f07d99b0427dec258cd0052daa878b",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/s14_master.png",
+      "master_sha256": "12f8f60cc62e5f5163f4d686d83a9513e15b964efbf7440900747b8b506064df"
+    },
+    {
+      "candidate": "q03",
+      "f": 1,
+      "age": 26,
+      "tags": {
+        "glasses": true
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "short softly square face with a softly broad chin, large natural round-almond eyes and short horizontal brows, short broad nose tip, thin smiling lips and dimpled cheeks, airy chin-length brown bob with wispy fringe, bright energetic smile",
+      "clothes": "a simple ivory crew-neck fine knit",
+      "skin": "natural warm medium beige skin",
+      "ethnicity": "Korean",
+      "native_path": "/workspace/generated_images/exec-9fcf5d07-5716-42af-9978-4dbd869db772.png",
+      "native_sha256": "0312e3cbf2d1d7ddb32f3db825e255c0d3a0666e00b3ad90312631278cca4134",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q03_master.png",
+      "master_sha256": "7df33610a4fb47df8fe8da471055c33e0160b2ce73881977fd8255ef1a91ad7a"
+    },
+    {
+      "candidate": "q13",
+      "f": 1,
+      "age": 26,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "medium oval face with fuller jaw and subtle cheekbones, bright naturally rounded almond eyes, short boldly arched brows, softly broad flat-bridge nose, thin upper and full lower lip, polished side-part bob",
+      "clothes": "a simple ivory crew-neck fine knit",
+      "skin": "natural warm medium beige skin",
+      "ethnicity": "Japanese",
+      "native_path": "/workspace/generated_images/exec-96fa4188-2718-444b-8c4b-a4c3dea2580b.png",
+      "native_sha256": "d46dde9cdc2cb1de783e74e4dbce57d170e4b30e8c0f656fedeefea3f9a6ce13",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q13_master.png",
+      "master_sha256": "be6bede317f2e5193dff1a63c396042b37057c1dd5256c9f8ab38f66e36fb89d"
+    },
+    {
+      "candidate": "q18",
+      "f": 1,
+      "age": 26,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "an elegant long oval face, naturally narrow deep-set eyes and fine arched brows, a long graceful straight nose with high bridge, full bow-shaped lips, sleek mid-back dark-brown hair with side part, serene luminous expression",
+      "clothes": "a simple ivory crew-neck fine knit",
+      "skin": "natural warm medium beige skin",
+      "ethnicity": "Taiwanese",
+      "native_path": "/workspace/generated_images/exec-54e576aa-5c27-44b2-b0f6-571127745f4e.png",
+      "native_sha256": "b12d91b693ee756147ffc4c0b0782c2e9f3990198faafab5d4535aec51c77754",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q18_master.png",
+      "master_sha256": "7b5f4709145dfd4404f22c5c0dff9889328381275745ab692df99165ee5d0dcf"
+    },
+    {
+      "candidate": "q19",
+      "f": 1,
+      "age": 27,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "short softly square face with a softly broad chin, large natural round-almond eyes and short horizontal brows, short broad nose tip, thin smiling lips and dimpled cheeks, airy chin-length brown bob with wispy fringe, bright energetic smile",
+      "clothes": "a soft charcoal blazer over a high-neck pale gray top",
+      "skin": "natural fair cool beige skin",
+      "ethnicity": "Filipino",
+      "native_path": "/workspace/generated_images/exec-c45eacda-c93f-404e-a06d-08ad7ffc5b5b.png",
+      "native_sha256": "33e74683819520e28ae9188b047e0058851829e025f903677ad0010e806c8d29",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q19_master.png",
+      "master_sha256": "0bf1e0180250687b6621976fe7cdb2e31da1deb4f6a3a4295c6f7ea7859a2f71"
+    },
+    {
+      "candidate": "q20",
+      "f": 1,
+      "age": 28,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "gently diamond-shaped face, distinct high but soft cheekbones, slightly hooded long eyes and fine dark brows, subtly aquiline narrow nose, broad full smiling lips, polished black low bun with side-swept strands, elegant lively warm gaze",
+      "clothes": "a loose modest sage green collared blouse",
+      "skin": "natural lightly sun-kissed golden skin",
+      "ethnicity": "Filipino",
+      "native_path": "/workspace/generated_images/exec-a3874c9a-a8c7-4922-9198-a37a3edd3d89.png",
+      "native_sha256": "15b7d3eda18d41b5f52c395eeb8545c783c7b5a0ed50b1e1371fc0ceab598464",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/q20_master.png",
+      "master_sha256": "fe655066d5d0441bb86b7cd2246823390448019f4303be679d4d582ff15662f7"
+    },
+    {
+      "candidate": "n06",
+      "f": 0,
+      "age": 26,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "young_individual",
+      "brief": "26, lean oblong oval face, wide-set open almond eyes, bold long straight brows, low broad nose tip, full pursed lips, black textured short crop, narrow natural shoulders",
+      "clothes": "cream shirt with a casual taupe blazer",
+      "skin": "warm medium golden beige",
+      "native_path": "/workspace/generated_images/exec-d028142b-6f94-43b4-b018-8064713f2eed.png",
+      "native_sha256": "7031111b3b1a949ac9e746a0a4f4c954e10175e483ad5ce02c934c3cc72c02e6",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/n06_master.png",
+      "master_sha256": "42d111efde644051255fc7505f8cb61f0186cd39d082f254712053bae2c4427c"
+    },
+    {
+      "candidate": "p01",
+      "f": 0,
+      "age": 26,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "26, long narrow oval face, close-set deep almond monolid eyes, softly arched brows, high graceful straight nose, thin broad smiling lips, black hair brushed to one side, slender shoulders",
+      "clothes": "pale blue loose collared shirt",
+      "skin": "warm medium tan skin",
+      "ethnicity": "Korean",
+      "native_path": "/workspace/generated_images/exec-e9955950-01ec-41ff-9ca6-80361c2904f2.png",
+      "native_sha256": "9d6f1016f43450f78e19cec2a045f429cfd0d73be6e19f9d17261e0618fb6467",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/p01_master.png",
+      "master_sha256": "2c34da390e2d0d2d3b42ae22a5ae8e8b28b56f2b9f26ce6aa97412b8ab9f9d06"
+    },
+    {
+      "candidate": "p08",
+      "f": 0,
+      "age": 27,
+      "tags": {
+        "glasses": false
+      },
+      "quality_tier": "natural_diverse_individual",
+      "brief": "28, soft oval face with round cheek apples, close-set narrow monolid eyes, long softly arched brows, short upturned nose, full small smiling lips, straight layered brown hair swept sideways, broad shoulders",
+      "clothes": "light gray linen shirt",
+      "skin": "light golden skin",
+      "ethnicity": "Taiwanese",
+      "native_path": "/workspace/generated_images/exec-35c69527-9ed8-49f6-a761-373163dccd5b.png",
+      "native_sha256": "6d7a22ecd12a9bd472e083ceebdf54e58de76077d30a24137f73a69d49b263f0",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/p08_master.png",
+      "master_sha256": "6e72f16ccac6949f766583a0d745a20e9a48e82b91e6f6b7381262259b9ac939"
+    },
+    {
+      "candidate": "n03",
+      "f": 0,
+      "age": 30,
+      "tags": {
+        "glasses": true
+      },
+      "quality_tier": "young_individual",
+      "brief": "30, diamond-shaped face with high cheekbones, narrow downturned eyes, fine long brows, gently hooked medium nose, thin small lips, neat dark crew cut, slender shoulders",
+      "clothes": "white loose open-collar shirt",
+      "skin": "fair cool beige",
+      "native_path": "/workspace/generated_images/exec-75defc51-dce9-41b8-bf0d-709bc510a602.png",
+      "native_sha256": "8b230e47846359d454f6beb7c63141f323ecb2813fb32257a8618a19877e8833",
+      "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/n03_master.png",
+      "master_sha256": "780238c84eaa7ac931a76dfe2b8d4a530e6fb6438a73eb9c8ffdecd6981fb7ca"
+    }
+  ],
+  "metrics": {
+    "128": {
+      "within_max": 0.39230823516845703,
+      "reference_max": 0.38552168011665344
+    },
+    "256": {
+      "within_max": 0.39144545793533325,
+      "reference_max": 0.3883100748062134
+    }
+  },
+  "rejected_reference": [
+    {
+      "candidate": "m05",
+      "max": 0.5648947954177856
+    },
+    {
+      "candidate": "m06",
+      "max": 0.4006248712539673
+    },
+    {
+      "candidate": "m07",
+      "max": 0.42435240745544434
+    },
+    {
+      "candidate": "m01",
+      "max": 0.41559019684791565
+    },
+    {
+      "candidate": "m03",
+      "max": 0.4948592782020569
+    },
+    {
+      "candidate": "n02",
+      "max": 0.42481428384780884
+    },
+    {
+      "candidate": "n05",
+      "max": 0.40272706747055054
+    },
+    {
+      "candidate": "n01",
+      "max": 0.4650057256221771
+    },
+    {
+      "candidate": "p06",
+      "max": 0.4880240261554718
+    },
+    {
+      "candidate": "p04",
+      "max": 0.40424561500549316
+    },
+    {
+      "candidate": "p03",
+      "max": 0.4524606168270111
+    }
+  ]
+}

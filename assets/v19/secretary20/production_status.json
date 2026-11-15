@@ -1,0 +1,12 @@
+{
+  "production_complete": true,
+  "asset_validation_passed": true,
+  "review_status": "pending_game_review",
+  "identity_count": 20,
+  "female_count": 16,
+  "male_count": 4,
+  "glasses_count": 3,
+  "sheet_count": 2,
+  "runtime_sheet_bytes": 1878134,
+  "completed_utc": "2026-11-15T16:34:25.006649+00:00"
+}

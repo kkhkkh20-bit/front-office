@@ -1,0 +1,191 @@
+{
+  "passed": true,
+  "metrics": {
+    "128": {
+      "passed": true,
+      "within_pairs": 190,
+      "within_min": -0.00899173691868782,
+      "within_max": 0.39230823516845703,
+      "unique_reference_identity_count": 406,
+      "reference_photo_count": 1406,
+      "cross_photo_pairs": 28120,
+      "reference_min": -0.15170852839946747,
+      "reference_max": 0.38552168011665344
+    },
+    "256": {
+      "passed": true,
+      "within_pairs": 190,
+      "within_min": -0.02072017639875412,
+      "within_max": 0.39144545793533325,
+      "unique_reference_identity_count": 406,
+      "reference_photo_count": 1406,
+      "cross_photo_pairs": 28120,
+      "reference_min": -0.133527472615242,
+      "reference_max": 0.3883100748062134
+    }
+  },
+  "identity_count": 20,
+  "female_count": 16,
+  "male_count": 4,
+  "glasses_count": 3,
+  "visual_review": {
+    "passed": true,
+    "approved_candidates": [
+      "q06",
+      "q11",
+      "q16",
+      "s01",
+      "s09",
+      "s12",
+      "q12",
+      "q17",
+      "s02",
+      "s08",
+      "s14",
+      "q03",
+      "q13",
+      "q18",
+      "q19",
+      "q20",
+      "n06",
+      "p01",
+      "p08",
+      "n03"
+    ],
+    "review_method": "Explicit visual inspection of all20 selected whole portraits in selected20_review.jpg; additional native-size inspection of individual examples including p08, s02 and s09.",
+    "source_preview_sha256": "d0d52505141f1c03e3b59190b9d3ad8a63851604ac0377336e5a48b5eb776062",
+    "sources": [
+      {
+        "candidate": "q06",
+        "master_sha256": "a7c46dfb7f3dbef96d57c7d2dded35e67e0adcb1c212fc9a28914480952048a9"
+      },
+      {
+        "candidate": "q11",
+        "master_sha256": "bf773f0995ab84ad50da651feabc86ce702241fcac5e3af1de2374dd0233c705"
+      },
+      {
+        "candidate": "q16",
+        "master_sha256": "34b98f87371f904ac3a953298ed6014634d1f71c55648fda9ad487c96702efc8"
+      },
+      {
+        "candidate": "s01",
+        "master_sha256": "1def5021e7f7441d8daac1c50832c62ec6d9ee290f494e0a98a640ca2837b00b"
+      },
+      {
+        "candidate": "s09",
+        "master_sha256": "ffa1acf530f8a70a328bfff40d66d28e2cd57b6e4223fe8ddd79e151d152db24"
+      },
+      {
+        "candidate": "s12",
+        "master_sha256": "c8a8f4a559e8fbfcb5f723fe8880356598cb1db6ed1a87681a883c861aa2d633"
+      },
+      {
+        "candidate": "q12",
+        "master_sha256": "2adf3dead1ec9b8f68eb255fcf30aeb361ea7e41343162199744496b1a0834de"
+      },
+      {
+        "candidate": "q17",
+        "master_sha256": "9ca601e748667b96c8018c6fb60707cd58c776a233c488497b83d15df04528fa"
+      },
+      {
+        "candidate": "s02",
+        "master_sha256": "938bb9165111d3aeae9c29fe9b7f4cba67b6f2556a17faa50df1188df79d0db6"
+      },
+      {
+        "candidate": "s08",
+        "master_sha256": "38449a81bce32f5dcb6c34e5169313a9011d6c9d40dcff072bcd71b784be96e8"
+      },
+      {
+        "candidate": "s14",
+        "master_sha256": "12f8f60cc62e5f5163f4d686d83a9513e15b964efbf7440900747b8b506064df"
+      },
+      {
+        "candidate": "q03",
+        "master_sha256": "7df33610a4fb47df8fe8da471055c33e0160b2ce73881977fd8255ef1a91ad7a"
+      },
+      {
+        "candidate": "q13",
+        "master_sha256": "be6bede317f2e5193dff1a63c396042b37057c1dd5256c9f8ab38f66e36fb89d"
+      },
+      {
+        "candidate": "q18",
+        "master_sha256": "7b5f4709145dfd4404f22c5c0dff9889328381275745ab692df99165ee5d0dcf"
+      },
+      {
+        "candidate": "q19",
+        "master_sha256": "0bf1e0180250687b6621976fe7cdb2e31da1deb4f6a3a4295c6f7ea7859a2f71"
+      },
+      {
+        "candidate": "q20",
+        "master_sha256": "fe655066d5d0441bb86b7cd2246823390448019f4303be679d4d582ff15662f7"
+      },
+      {
+        "candidate": "n06",
+        "master_sha256": "42d111efde644051255fc7505f8cb61f0186cd39d082f254712053bae2c4427c"
+      },
+      {
+        "candidate": "p01",
+        "master_sha256": "2c34da390e2d0d2d3b42ae22a5ae8e8b28b56f2b9f26ce6aa97412b8ab9f9d06"
+      },
+      {
+        "candidate": "p08",
+        "master_sha256": "6e72f16ccac6949f766583a0d745a20e9a48e82b91e6f6b7381262259b9ac939"
+      },
+      {
+        "candidate": "n03",
+        "master_sha256": "780238c84eaa7ac931a76dfe2b8d4a530e6fb6438a73eb9c8ffdecd6981fb7ca"
+      }
+    ],
+    "checks": {
+      "plausible_real_adult_people": true,
+      "female_age24_to28": true,
+      "attractive_natural_appearance": true,
+      "soft_window_light_and_shallow_office_background": true,
+      "natural_skin_and_flyaway_hair": true,
+      "gentle_authentic_expressions": true,
+      "normal_face_head_neck_shoulders": true,
+      "modest_professional_clothes": true,
+      "hair_and_face_variety": true,
+      "three_correct_glasses_tags": true,
+      "no_visible_hand_ear_eyewear_defects": true,
+      "no_readable_logos_or_badge_text": true,
+      "no_face_body_compositing_or_geometry_warps": true
+    },
+    "user_steering": "Women younger and prettier, plausibly real people; reference aesthetic only, fictional identities."
+  },
+  "actual_decoded_runtime_pixels": true,
+  "asset_geometry": "Full coherent photo crop and isotropic resize only; alignment only for recognition model input",
+  "protocol": {
+    "detector": "SCRFD det_10g, 640x640 RGB, threshold >0.55, highest-score face",
+    "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+    "detector_normalization": "(RGB-127.5)/128",
+    "recognizer": "ArcFace w600k_r50",
+    "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+    "alignment": "existing v6/v7 5-landmark canonical template; OpenCV estimateAffinePartial2D LMEDS; warpAffine 112x112 black border",
+    "recognizer_normalization": "(RGB-127.5)/127.5, CHW float32",
+    "embedding": "512D L2-normalized, unmodified dot product",
+    "resolution_scope": "128-to-128 and 256-to-256, each independently detected/aligned from final decoded runtime atlases",
+    "reference_scope": "100 v6c player identities, all 10 home variants =1000 portraits, plus all 126 v7 identities. Existing-reference-to-existing-reference pairs are outside this delivery validation.",
+    "onnxruntime": "1.31.1",
+    "opencv": "5.0.0",
+    "numpy": "2.5.4"
+  },
+  "cached_protocol_reproduction": {
+    "128": {
+      "cached_reference_reproduction_min_cosine": 0.9999998211860657,
+      "ids": [
+        "v8_people01_agent_001",
+        "v8_people01_sec_003",
+        "v7_staff01_gm_021"
+      ]
+    },
+    "256": {
+      "cached_reference_reproduction_min_cosine": 0.9999998211860657,
+      "ids": [
+        "v8_people01_agent_001",
+        "v8_people01_sec_003",
+        "v7_staff01_gm_021"
+      ]
+    }
+  }
+}

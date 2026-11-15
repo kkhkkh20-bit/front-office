@@ -1,0 +1,38 @@
+{
+  "unique_identity_count": 406,
+  "photo_embedding_count": 1406,
+  "identity_group_counts": {
+    "v8": 120,
+    "v7": 126,
+    "v6c": 100,
+    "v13": 60
+  },
+  "reference_scope": "All v8/v7 runtime portraits, all 10 v6c home variants, plus all v6c/v13 original prescreen masters. Each size measured independently.",
+  "sources": [
+    {
+      "path": "assets/v8/people01/validation/arcface_embeddings.npz",
+      "commit": "f9923508ab60d7a722cccd32366604b4a7f5d459",
+      "sha256": "cc504a01ada81ba5169022dcb092a490678b3d8903fd724714d65452b332a835"
+    },
+    {
+      "path": "assets/v18/production200/identity_prescreen/embeddings.npz",
+      "commit": "849709747d556129311dbffd677de35ad9662db4",
+      "sha256": "abb1b3b1632ca03d633756c5ed3e329cb42c8388d9517501a62e0d8e934a5511"
+    }
+  ],
+  "protocol": {
+    "detector": "SCRFD det_10g, 640x640 RGB, threshold >0.55, highest-score face",
+    "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+    "detector_normalization": "(RGB-127.5)/128",
+    "recognizer": "ArcFace w600k_r50",
+    "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+    "alignment": "existing v6/v7 5-landmark canonical template; OpenCV estimateAffinePartial2D LMEDS; warpAffine 112x112 black border",
+    "recognizer_normalization": "(RGB-127.5)/127.5, CHW float32",
+    "embedding": "512D L2-normalized, unmodified dot product",
+    "resolution_scope": "128-to-128 and 256-to-256, each independently detected/aligned from final decoded runtime atlases",
+    "reference_scope": "100 v6c player identities, all 10 home variants =1000 portraits, plus all 126 v7 identities. Existing-reference-to-existing-reference pairs are outside this delivery validation.",
+    "onnxruntime": "1.31.1",
+    "opencv": "5.0.0",
+    "numpy": "2.5.4"
+  }
+}

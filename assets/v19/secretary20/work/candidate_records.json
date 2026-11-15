@@ -1,0 +1,954 @@
+[
+  {
+    "candidate": "m05",
+    "f": 0,
+    "age": 26,
+    "tags": {
+      "glasses": false
+    },
+    "brief": "Fictional handsome Korean adult man age 26, soft rectangular face, thick straight brows, open monolid eyes, rounded lips, broad low nose, neat short side-part hair, pale blue open-collar loose shirt, fair neutral skin, slim natural build, clean-shaven, no glasses, relaxed slight smile and natural masculine face proportions",
+    "native_path": "/workspace/generated_images/exec-9d6c12e0-9d7c-48bf-9a7a-861a44085451.png",
+    "native_sha256": "306ca5fc8b0f745352fe6db91e620ac1f05284fa1fa33cfea884cf65e4e954c9",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/m05_master.png",
+    "master_sha256": "d04cd93c548a87b0a107cb975ea27f220ae707811bddb7ddb269286ab9533406"
+  },
+  {
+    "candidate": "m06",
+    "f": 0,
+    "age": 29,
+    "tags": {
+      "glasses": false
+    },
+    "brief": "Fictional handsome Korean adult man age 29, round full-cheeked face, fine natural brows, small deep-set eyes, broad warm smile, upturned nose, soft wavy cropped hair, white relaxed shirt with gray casual jacket, warm golden skin, average natural build, clean-shaven, no glasses, relaxed slight smile and natural masculine face proportions",
+    "native_path": "/workspace/generated_images/exec-9d6c12e0-9d7c-48bf-9a7a-861a44085451.png",
+    "native_sha256": "306ca5fc8b0f745352fe6db91e620ac1f05284fa1fa33cfea884cf65e4e954c9",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/m06_master.png",
+    "master_sha256": "8bb31ebab41feda3f0da2fda4a4242f7da1bc73fb57849255b23b27f84aa405e"
+  },
+  {
+    "candidate": "m07",
+    "f": 0,
+    "age": 33,
+    "tags": {
+      "glasses": true
+    },
+    "brief": "Fictional handsome Korean adult man age 33, angular oblong face, bold curved brows, downturned eyes, fine lips, high narrow nose, short textured crop, ivory collared shirt, no necktie, medium olive skin, broad-shouldered natural build, clean-shaven, thin rectangular glasses, relaxed slight smile and natural masculine face proportions",
+    "native_path": "/workspace/generated_images/exec-9d6c12e0-9d7c-48bf-9a7a-861a44085451.png",
+    "native_sha256": "306ca5fc8b0f745352fe6db91e620ac1f05284fa1fa33cfea884cf65e4e954c9",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/m07_master.png",
+    "master_sha256": "6dc9ceb0e80c19faf727b11a02420ccab844c24fba1d3d2000acaf7e417be0f2"
+  },
+  {
+    "candidate": "m08",
+    "f": 0,
+    "age": 36,
+    "tags": {
+      "glasses": false
+    },
+    "brief": "Fictional handsome Korean adult man age 36, compact softly square face, wide brow arch, uneven natural smile, shallow-lidded eyes, short nose, medium brushed-back hair, navy jacket and pale gray open collar shirt, light warm beige skin, athletic natural build, clean-shaven, no glasses, relaxed slight smile and natural masculine face proportions",
+    "native_path": "/workspace/generated_images/exec-9d6c12e0-9d7c-48bf-9a7a-861a44085451.png",
+    "native_sha256": "306ca5fc8b0f745352fe6db91e620ac1f05284fa1fa33cfea884cf65e4e954c9",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/m08_master.png",
+    "master_sha256": "4349af03c923aa3404dc0b66959688e61a919db2f231b63707bdc7c65ea0e0ea"
+  },
+  {
+    "candidate": "y01",
+    "f": 1,
+    "age": 24,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 24, looks unmistakably mid-twenties, delicate oval face, softly tapered natural jaw, bright almond eyes, straight slim brows, neat nose, rosebud lips, long glossy dark brown hair with soft loose waves, a relaxed ivory blouse with a modest soft V collar, collarbone only, no cleavage, clear fair neutral skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-cade2baa-4a7b-444e-a28b-752cc93e16cf.png",
+    "native_sha256": "513055e79d11af0cfcf3b6cb0baf327bafc5b1e71e215bceddbbbb78f686c830",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y01_master.png",
+    "master_sha256": "82eaf90375a708ec66c1bb01f740a256b0873a7172c2c810a48fa0b6cf3e5176"
+  },
+  {
+    "candidate": "y02",
+    "f": 1,
+    "age": 25,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 25, looks unmistakably mid-twenties, soft heart-shaped face, gentle cheek fullness, wide-set expressive eyes, curved fine brows, rounded small nose, warm cupid-bow smile, silky black shoulder-length hair with wispy see-through fringe, a pale blue polished relaxed collared shirt, clear light warm beige skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-cade2baa-4a7b-444e-a28b-752cc93e16cf.png",
+    "native_sha256": "513055e79d11af0cfcf3b6cb0baf327bafc5b1e71e215bceddbbbb78f686c830",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y02_master.png",
+    "master_sha256": "3b3172a64dd12185616f52d295b0ddb01635e0234cc7d431d6b7ce501289ac99"
+  },
+  {
+    "candidate": "y03",
+    "f": 1,
+    "age": 26,
+    "tags": {
+      "glasses": true
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 26, looks unmistakably mid-twenties, elegant medium oval face, clear deep-set almond eyes, soft dark brows, straight refined nose, fuller natural lips, a polished chin-length black bob with a center part, a cream lightweight fine-knit crew neck top, clear warm ivory skin, slim natural shoulders, fashionable thin gold oval eyeglasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-cade2baa-4a7b-444e-a28b-752cc93e16cf.png",
+    "native_sha256": "513055e79d11af0cfcf3b6cb0baf327bafc5b1e71e215bceddbbbb78f686c830",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y03_master.png",
+    "master_sha256": "4d5c917b4eaecd26bfbcb550e699a15486b0c044f0f419b8e8730fb0cf06d567"
+  },
+  {
+    "candidate": "y04",
+    "f": 1,
+    "age": 27,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 27, looks unmistakably mid-twenties, petite round-oval face, lively slightly upturned eyes, softly arched brows, subtle cheek dimples, delicate balanced nose, a chic dark chocolate collarbone bob with inward ends, a white modest blouse and taupe lightweight blazer, clear light olive skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-cade2baa-4a7b-444e-a28b-752cc93e16cf.png",
+    "native_sha256": "513055e79d11af0cfcf3b6cb0baf327bafc5b1e71e215bceddbbbb78f686c830",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y04_master.png",
+    "master_sha256": "ae459efaacda31d484ac78a839faa40071429397c3c562218799d3c055c1b6bc"
+  },
+  {
+    "candidate": "y05",
+    "f": 1,
+    "age": 28,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 28, looks unmistakably mid-twenties, graceful softly angular face, gently high cheekbones, calm almond eyes, elegant long brows, straight nose and defined lips, long straight espresso hair with a soft side part, a soft blush-pink blouse with a small round collar, clear fair neutral skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-77d9ff47-52a3-4b7f-a873-6247619a326d.png",
+    "native_sha256": "2d28bc8e84da41388ae8951b57259dd400dc71e57bc9bcbc6094d059518de097",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y05_master.png",
+    "master_sha256": "9fc325faf3c109c72f0dd6fc6d483cb92818312e9f0e8574ac73bc956a6b7362"
+  },
+  {
+    "candidate": "y06",
+    "f": 1,
+    "age": 24,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 24, looks unmistakably mid-twenties, soft rectangular oval face with youthful cheeks, bright narrow-lidded eyes, straight brows, gently broad natural nose, wide delicate smile, a feminine short layered dark-brown bob tucked behind one ear, a dove-gray relaxed jacket over a simple white round neck shell, clear light warm beige skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-77d9ff47-52a3-4b7f-a873-6247619a326d.png",
+    "native_sha256": "2d28bc8e84da41388ae8951b57259dd400dc71e57bc9bcbc6094d059518de097",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y06_master.png",
+    "master_sha256": "3ab0306c24d96c034ee2058455fdc5ee96775b572f42ae84c56209ddb7f29645"
+  },
+  {
+    "candidate": "y07",
+    "f": 1,
+    "age": 25,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 25, looks unmistakably mid-twenties, short oval face and rounded chin, softly hooded eyes, softly angled brows, fine bridge nose, plush subtle lips, glossy black hair in a loose low bun with delicate curtain strands, a neat navy knit top with a modest neckline, clear warm ivory skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-77d9ff47-52a3-4b7f-a873-6247619a326d.png",
+    "native_sha256": "2d28bc8e84da41388ae8951b57259dd400dc71e57bc9bcbc6094d059518de097",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y07_master.png",
+    "master_sha256": "ae5b3912cc8e1bcd4fd74fe9d5322a8747ba6af76c9b5c4ebe7a6c30ab51da1b"
+  },
+  {
+    "candidate": "y08",
+    "f": 1,
+    "age": 26,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 26, looks unmistakably mid-twenties, slender oblong-oval face, soft jawline, clear large but naturally sized almond eyes, short curved brows, gentle nose and thin smiling lips, a neat low ponytail with softly swept bangs, a soft beige button-up blouse with the top at the collarbone, clear light olive skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-77d9ff47-52a3-4b7f-a873-6247619a326d.png",
+    "native_sha256": "2d28bc8e84da41388ae8951b57259dd400dc71e57bc9bcbc6094d059518de097",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y08_master.png",
+    "master_sha256": "c4cb608a8e4e52c63797c1e3feda4e86a208aa865926d6e343c7b86923896836"
+  },
+  {
+    "candidate": "m01",
+    "f": 0,
+    "age": 26,
+    "tags": {
+      "glasses": false
+    },
+    "brief": "Fictional handsome Korean adult man age 26, soft broad oval face, gently arched brows, medium almond eyes, wide subtle smile, rounded nose tip, neat short side-part hair, pale blue open-collar loose shirt, fair neutral skin, slim natural build, clean-shaven, no glasses, relaxed slight smile and natural masculine face proportions",
+    "native_path": "/workspace/generated_images/exec-660771c1-df53-408a-9dea-7c788bebf725.png",
+    "native_sha256": "fa6f062d558d348a1152c9b78a397a231ddc515a70fbd1ed0d28e5c20f6d744f",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/m01_master.png",
+    "master_sha256": "82983d7c93bb147c762b16f7ce54602477b309ee0c2b9126aa056133ac0bef59"
+  },
+  {
+    "candidate": "m02",
+    "f": 0,
+    "age": 29,
+    "tags": {
+      "glasses": false
+    },
+    "brief": "Fictional handsome Korean adult man age 29, short heart-shaped face with softly broad chin, straight brows, softly hooded medium eyes, small full lips, low straight nose, soft wavy cropped hair, white relaxed shirt with gray casual jacket, warm golden skin, average natural build, clean-shaven, no glasses, relaxed slight smile and natural masculine face proportions",
+    "native_path": "/workspace/generated_images/exec-660771c1-df53-408a-9dea-7c788bebf725.png",
+    "native_sha256": "fa6f062d558d348a1152c9b78a397a231ddc515a70fbd1ed0d28e5c20f6d744f",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/m02_master.png",
+    "master_sha256": "e120195de9a8e79fd60679e79ba167caadca768b044aa323ee8120d9ca594cd5"
+  },
+  {
+    "candidate": "m03",
+    "f": 0,
+    "age": 33,
+    "tags": {
+      "glasses": true
+    },
+    "brief": "Fictional handsome Korean adult man age 33, elegant longer oval face, thin curved brows, narrow expressive eyes, wide lips, prominent gentle straight nose, short textured crop, ivory collared shirt, no necktie, medium olive skin, broad-shouldered natural build, clean-shaven, thin rectangular glasses, relaxed slight smile and natural masculine face proportions",
+    "native_path": "/workspace/generated_images/exec-660771c1-df53-408a-9dea-7c788bebf725.png",
+    "native_sha256": "fa6f062d558d348a1152c9b78a397a231ddc515a70fbd1ed0d28e5c20f6d744f",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/m03_master.png",
+    "master_sha256": "6b4b71c1df30f819ca684076920c0f7ebfbafa1bd6578e40a23aee98dd099cfc"
+  },
+  {
+    "candidate": "m04",
+    "f": 0,
+    "age": 36,
+    "tags": {
+      "glasses": false
+    },
+    "brief": "Fictional handsome Korean adult man age 36, soft rectangular face, thick straight brows, open monolid eyes, rounded lips, broad low nose, medium brushed-back hair, navy jacket and pale gray open collar shirt, light warm beige skin, athletic natural build, clean-shaven, no glasses, relaxed slight smile and natural masculine face proportions",
+    "native_path": "/workspace/generated_images/exec-660771c1-df53-408a-9dea-7c788bebf725.png",
+    "native_sha256": "fa6f062d558d348a1152c9b78a397a231ddc515a70fbd1ed0d28e5c20f6d744f",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/m04_master.png",
+    "master_sha256": "98ff8f6049c99d4f9fa857e7cd9189cc2ad06c265ee2fe95d9111056168fcdf9"
+  },
+  {
+    "candidate": "y09",
+    "f": 1,
+    "age": 27,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 27, looks unmistakably mid-twenties, petite round-oval face, lively slightly upturned eyes, softly arched brows, subtle cheek dimples, delicate balanced nose, a chic dark chocolate collarbone bob with inward ends, a pale blue polished relaxed collared shirt, clear fair neutral skin, balanced natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-8ae3489c-c78d-4c55-8d47-34bccddfaceb.png",
+    "native_sha256": "e1a798a8e253773d3b16b058a3dd1706940638a8269761b0dfe360692e9027e9",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y09_master.png",
+    "master_sha256": "3585bf4f73f0d29d4d6d0d11eff14e3d402a090f5fc05a82fc83066be476c78a"
+  },
+  {
+    "candidate": "y10",
+    "f": 1,
+    "age": 28,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 28, looks unmistakably mid-twenties, graceful softly angular face, gently high cheekbones, calm almond eyes, elegant long brows, straight nose and defined lips, long straight espresso hair with a soft side part, a cream lightweight fine-knit crew neck top, clear light warm beige skin, balanced natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-8ae3489c-c78d-4c55-8d47-34bccddfaceb.png",
+    "native_sha256": "e1a798a8e253773d3b16b058a3dd1706940638a8269761b0dfe360692e9027e9",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y10_master.png",
+    "master_sha256": "0770f2f99eeeaccbb4f94df472ac806a8b19f8ab7cc31fc0efeaad577f70842c"
+  },
+  {
+    "candidate": "y11",
+    "f": 1,
+    "age": 24,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 24, looks unmistakably mid-twenties, soft rectangular oval face with youthful cheeks, bright narrow-lidded eyes, straight brows, gently broad natural nose, wide delicate smile, a feminine short layered dark-brown bob tucked behind one ear, a white modest blouse and taupe lightweight blazer, clear warm ivory skin, balanced natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-8ae3489c-c78d-4c55-8d47-34bccddfaceb.png",
+    "native_sha256": "e1a798a8e253773d3b16b058a3dd1706940638a8269761b0dfe360692e9027e9",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y11_master.png",
+    "master_sha256": "13050b297ac2e749bdea2db8fcc4cd4b233a14bd3f56164ce45ec35cdf24e448"
+  },
+  {
+    "candidate": "y12",
+    "f": 1,
+    "age": 25,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 25, looks unmistakably mid-twenties, short oval face and rounded chin, softly hooded eyes, softly angled brows, fine bridge nose, plush subtle lips, glossy black hair in a loose low bun with delicate curtain strands, a soft blush-pink blouse with a small round collar, clear light olive skin, balanced natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-8ae3489c-c78d-4c55-8d47-34bccddfaceb.png",
+    "native_sha256": "e1a798a8e253773d3b16b058a3dd1706940638a8269761b0dfe360692e9027e9",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y12_master.png",
+    "master_sha256": "69e3d5a42e758b5464904bdf26af71be1aa89b84d9e1e3d94d3b37447d0e9494"
+  },
+  {
+    "candidate": "y37",
+    "f": 1,
+    "age": 25,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 25, looks unmistakably mid-twenties, delicate oval face, softly tapered natural jaw, bright almond eyes, straight slim brows, neat nose, rosebud lips, long glossy dark brown hair with soft loose waves, a relaxed ivory blouse with a modest soft V collar, collarbone only, no cleavage, clear fair neutral skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-304c9ad1-bc0c-4979-a21f-18641a1407a1.png",
+    "native_sha256": "37c1a622f7f87bd075c79228828424a7055914894265d346c740f40045c22e33",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y37_master.png",
+    "master_sha256": "afbd22b2863418798125480f9435cb2eb1357c35ff12e2833bee425ae7af88ec"
+  },
+  {
+    "candidate": "y38",
+    "f": 1,
+    "age": 26,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 26, looks unmistakably mid-twenties, soft heart-shaped face, gentle cheek fullness, wide-set expressive eyes, curved fine brows, rounded small nose, warm cupid-bow smile, silky black shoulder-length hair with wispy see-through fringe, a pale blue polished relaxed collared shirt, clear light warm beige skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-304c9ad1-bc0c-4979-a21f-18641a1407a1.png",
+    "native_sha256": "37c1a622f7f87bd075c79228828424a7055914894265d346c740f40045c22e33",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y38_master.png",
+    "master_sha256": "f72983936492472313c95269298c95fc769d6bbef5cd48622c597711c6543b65"
+  },
+  {
+    "candidate": "y39",
+    "f": 1,
+    "age": 27,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 27, looks unmistakably mid-twenties, elegant medium oval face, clear deep-set almond eyes, soft dark brows, straight refined nose, fuller natural lips, a polished chin-length black bob with a center part, a cream lightweight fine-knit crew neck top, clear warm ivory skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-304c9ad1-bc0c-4979-a21f-18641a1407a1.png",
+    "native_sha256": "37c1a622f7f87bd075c79228828424a7055914894265d346c740f40045c22e33",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y39_master.png",
+    "master_sha256": "94bbc58e83e0913470d808fad4671814fde1702f58d4e832d735ec6805b0003b"
+  },
+  {
+    "candidate": "y40",
+    "f": 1,
+    "age": 28,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 28, looks unmistakably mid-twenties, petite round-oval face, lively slightly upturned eyes, softly arched brows, subtle cheek dimples, delicate balanced nose, a chic dark chocolate collarbone bob with inward ends, a white modest blouse and taupe lightweight blazer, clear light olive skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-304c9ad1-bc0c-4979-a21f-18641a1407a1.png",
+    "native_sha256": "37c1a622f7f87bd075c79228828424a7055914894265d346c740f40045c22e33",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y40_master.png",
+    "master_sha256": "7049165d86f4aa5e90b79e44c97d824ebf5c869707818e182b336b8dc08015c7"
+  },
+  {
+    "candidate": "y13",
+    "f": 1,
+    "age": 26,
+    "tags": {
+      "glasses": true
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 26, looks unmistakably mid-twenties, slender oblong-oval face, soft jawline, clear large but naturally sized almond eyes, short curved brows, gentle nose and thin smiling lips, a neat low ponytail with softly swept bangs, a dove-gray relaxed jacket over a simple white round neck shell, clear fair neutral skin, balanced natural shoulders, fashionable thin gold oval eyeglasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-9b6910c5-5dc4-4c73-980e-a540d8e1d486.png",
+    "native_sha256": "82f99b7bdb98fec188033d6535f2aa0c63783e3b1d2f047dd778cf95af4d9ddb",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y13_master.png",
+    "master_sha256": "24eeb1aabd6ea6bcab198fb481957ee75fca8f51656cf9a1941144774bbd37d5"
+  },
+  {
+    "candidate": "y14",
+    "f": 1,
+    "age": 27,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 27, looks unmistakably mid-twenties, delicate oval face, softly tapered natural jaw, bright almond eyes, straight slim brows, neat nose, rosebud lips, long glossy dark brown hair with soft loose waves, a neat navy knit top with a modest neckline, clear light warm beige skin, balanced natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-9b6910c5-5dc4-4c73-980e-a540d8e1d486.png",
+    "native_sha256": "82f99b7bdb98fec188033d6535f2aa0c63783e3b1d2f047dd778cf95af4d9ddb",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y14_master.png",
+    "master_sha256": "054da8e2884918dcdf66b475def2ccc86f4461c86f664e400a9151b5f7870f88"
+  },
+  {
+    "candidate": "y15",
+    "f": 1,
+    "age": 28,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 28, looks unmistakably mid-twenties, soft heart-shaped face, gentle cheek fullness, wide-set expressive eyes, curved fine brows, rounded small nose, warm cupid-bow smile, silky black shoulder-length hair with wispy see-through fringe, a soft beige button-up blouse with the top at the collarbone, clear warm ivory skin, balanced natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-9b6910c5-5dc4-4c73-980e-a540d8e1d486.png",
+    "native_sha256": "82f99b7bdb98fec188033d6535f2aa0c63783e3b1d2f047dd778cf95af4d9ddb",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y15_master.png",
+    "master_sha256": "ee5c8a9bfa4fea04834b3d3c41597a2fba6f91402e108082da4aaf9680404d81"
+  },
+  {
+    "candidate": "y16",
+    "f": 1,
+    "age": 24,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 24, looks unmistakably mid-twenties, elegant medium oval face, clear deep-set almond eyes, soft dark brows, straight refined nose, fuller natural lips, a polished chin-length black bob with a center part, a relaxed ivory blouse with a modest soft V collar, collarbone only, no cleavage, clear light olive skin, balanced natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-9b6910c5-5dc4-4c73-980e-a540d8e1d486.png",
+    "native_sha256": "82f99b7bdb98fec188033d6535f2aa0c63783e3b1d2f047dd778cf95af4d9ddb",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y16_master.png",
+    "master_sha256": "9d086fd5d27ce45a7764d0d72ec0d4718f466466b9cf1f72b0a59e15bbd7e661"
+  },
+  {
+    "candidate": "y25",
+    "f": 1,
+    "age": 28,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 28, looks unmistakably mid-twenties, soft heart-shaped face, gentle cheek fullness, wide-set expressive eyes, curved fine brows, rounded small nose, warm cupid-bow smile, silky black shoulder-length hair with wispy see-through fringe, a white modest blouse and taupe lightweight blazer, clear fair neutral skin, average natural shoulder build, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-bb6a1dc0-e533-4caf-99e1-f521e722b2d0.png",
+    "native_sha256": "698e45026a5ca5efea69664cf3d8926de3cfdecfa5c9cf18c13c4ee3a6521edb",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y25_master.png",
+    "master_sha256": "0bb7fb68f63a60186c380d4e97aef2937b90db32935f2d7998edc28dd2aa4b30"
+  },
+  {
+    "candidate": "y26",
+    "f": 1,
+    "age": 24,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 24, looks unmistakably mid-twenties, elegant medium oval face, clear deep-set almond eyes, soft dark brows, straight refined nose, fuller natural lips, a polished chin-length black bob with a center part, a soft blush-pink blouse with a small round collar, clear light warm beige skin, average natural shoulder build, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-bb6a1dc0-e533-4caf-99e1-f521e722b2d0.png",
+    "native_sha256": "698e45026a5ca5efea69664cf3d8926de3cfdecfa5c9cf18c13c4ee3a6521edb",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y26_master.png",
+    "master_sha256": "29860878f10fffa02921872039060860b4a99a7edb6db269c0493f25766e0205"
+  },
+  {
+    "candidate": "y27",
+    "f": 1,
+    "age": 25,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 25, looks unmistakably mid-twenties, petite round-oval face, lively slightly upturned eyes, softly arched brows, subtle cheek dimples, delicate balanced nose, a chic dark chocolate collarbone bob with inward ends, a dove-gray relaxed jacket over a simple white round neck shell, clear warm ivory skin, average natural shoulder build, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-bb6a1dc0-e533-4caf-99e1-f521e722b2d0.png",
+    "native_sha256": "698e45026a5ca5efea69664cf3d8926de3cfdecfa5c9cf18c13c4ee3a6521edb",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y27_master.png",
+    "master_sha256": "de49efc4fbfe623693407b071d758c52ddb4e4c6e6c220361cc109d9d949cefe"
+  },
+  {
+    "candidate": "y28",
+    "f": 1,
+    "age": 26,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 26, looks unmistakably mid-twenties, graceful softly angular face, gently high cheekbones, calm almond eyes, elegant long brows, straight nose and defined lips, long straight espresso hair with a soft side part, a neat navy knit top with a modest neckline, clear light olive skin, average natural shoulder build, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-bb6a1dc0-e533-4caf-99e1-f521e722b2d0.png",
+    "native_sha256": "698e45026a5ca5efea69664cf3d8926de3cfdecfa5c9cf18c13c4ee3a6521edb",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y28_master.png",
+    "master_sha256": "9bd27c8c6b4a139a5ffef8ebb10f6d5ce9eae924d32a1dae79c4852cff968e3a"
+  },
+  {
+    "candidate": "y17",
+    "f": 1,
+    "age": 25,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 25, looks unmistakably mid-twenties, short oval face and rounded chin, softly hooded eyes, softly angled brows, fine bridge nose, plush subtle lips, glossy black hair in a loose low bun with delicate curtain strands, a cream lightweight fine-knit crew neck top, clear fair neutral skin, delicate natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-e7dc0370-1228-4f2c-8edb-12f058bb9b5b.png",
+    "native_sha256": "4fe95070454f089beb46cd6fbd8b20647fbbbd4f23e709190c6f53a48075a9f3",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y17_master.png",
+    "master_sha256": "96707b4d61f75cdb1d372b856994ded3fbf272d3be7c19bdb36f21fde832409c"
+  },
+  {
+    "candidate": "y18",
+    "f": 1,
+    "age": 26,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 26, looks unmistakably mid-twenties, slender oblong-oval face, soft jawline, clear large but naturally sized almond eyes, short curved brows, gentle nose and thin smiling lips, a neat low ponytail with softly swept bangs, a white modest blouse and taupe lightweight blazer, clear light warm beige skin, delicate natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-e7dc0370-1228-4f2c-8edb-12f058bb9b5b.png",
+    "native_sha256": "4fe95070454f089beb46cd6fbd8b20647fbbbd4f23e709190c6f53a48075a9f3",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y18_master.png",
+    "master_sha256": "bccd612366cc41cc88bf45527d2b9e5d5eda1335617ccf6dbc1cbc57ea760794"
+  },
+  {
+    "candidate": "y19",
+    "f": 1,
+    "age": 27,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 27, looks unmistakably mid-twenties, delicate oval face, softly tapered natural jaw, bright almond eyes, straight slim brows, neat nose, rosebud lips, long glossy dark brown hair with soft loose waves, a soft blush-pink blouse with a small round collar, clear warm ivory skin, delicate natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-e7dc0370-1228-4f2c-8edb-12f058bb9b5b.png",
+    "native_sha256": "4fe95070454f089beb46cd6fbd8b20647fbbbd4f23e709190c6f53a48075a9f3",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y19_master.png",
+    "master_sha256": "7e632b60d1da3485c3acb063e042a909880f641084107e2b4d4f6eb74f3a926a"
+  },
+  {
+    "candidate": "y20",
+    "f": 1,
+    "age": 28,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 28, looks unmistakably mid-twenties, soft heart-shaped face, gentle cheek fullness, wide-set expressive eyes, curved fine brows, rounded small nose, warm cupid-bow smile, silky black shoulder-length hair with wispy see-through fringe, a dove-gray relaxed jacket over a simple white round neck shell, clear light olive skin, delicate natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-e7dc0370-1228-4f2c-8edb-12f058bb9b5b.png",
+    "native_sha256": "4fe95070454f089beb46cd6fbd8b20647fbbbd4f23e709190c6f53a48075a9f3",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y20_master.png",
+    "master_sha256": "214b274eaf14cf7988423341aef4aaabfa47b50704a5da06ad4236035fb1e392"
+  },
+  {
+    "candidate": "y33",
+    "f": 1,
+    "age": 26,
+    "tags": {
+      "glasses": true
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 26, looks unmistakably mid-twenties, graceful softly angular face, gently high cheekbones, calm almond eyes, elegant long brows, straight nose and defined lips, long straight espresso hair with a soft side part, a soft blush-pink blouse with a small round collar, clear fair neutral skin, slim natural shoulders, fashionable thin gold oval eyeglasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-6b434100-507d-49ef-9d94-5b772b36578d.png",
+    "native_sha256": "f86b59d41306d7fb9c658202f7f738cbc2e54e8057942ce92ba0632174acadfc",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y33_master.png",
+    "master_sha256": "93c85f81e500b6759a633138035bfd7b90559f86a2f4cfafcb5eb40f8db1f72f"
+  },
+  {
+    "candidate": "y34",
+    "f": 1,
+    "age": 27,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 27, looks unmistakably mid-twenties, soft rectangular oval face with youthful cheeks, bright narrow-lidded eyes, straight brows, gently broad natural nose, wide delicate smile, a feminine short layered dark-brown bob tucked behind one ear, a dove-gray relaxed jacket over a simple white round neck shell, clear light warm beige skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-6b434100-507d-49ef-9d94-5b772b36578d.png",
+    "native_sha256": "f86b59d41306d7fb9c658202f7f738cbc2e54e8057942ce92ba0632174acadfc",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y34_master.png",
+    "master_sha256": "6ea6dc2c768d5768582ddf38f1a2404e0ddafce51a4d38ec857765a3f67adece"
+  },
+  {
+    "candidate": "y35",
+    "f": 1,
+    "age": 28,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 28, looks unmistakably mid-twenties, short oval face and rounded chin, softly hooded eyes, softly angled brows, fine bridge nose, plush subtle lips, glossy black hair in a loose low bun with delicate curtain strands, a neat navy knit top with a modest neckline, clear warm ivory skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-6b434100-507d-49ef-9d94-5b772b36578d.png",
+    "native_sha256": "f86b59d41306d7fb9c658202f7f738cbc2e54e8057942ce92ba0632174acadfc",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y35_master.png",
+    "master_sha256": "9026b10df168bcf9b1b52635e4cd89c6724688c1c17624873605428daaa10f80"
+  },
+  {
+    "candidate": "y36",
+    "f": 1,
+    "age": 24,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 24, looks unmistakably mid-twenties, slender oblong-oval face, soft jawline, clear large but naturally sized almond eyes, short curved brows, gentle nose and thin smiling lips, a neat low ponytail with softly swept bangs, a soft beige button-up blouse with the top at the collarbone, clear light olive skin, slim natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-6b434100-507d-49ef-9d94-5b772b36578d.png",
+    "native_sha256": "f86b59d41306d7fb9c658202f7f738cbc2e54e8057942ce92ba0632174acadfc",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y36_master.png",
+    "master_sha256": "07e0f1be2c7162d4f44a99c43b603cea5471692845da8e08ac9769077172d951"
+  },
+  {
+    "candidate": "y29",
+    "f": 1,
+    "age": 27,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 27, looks unmistakably mid-twenties, soft rectangular oval face with youthful cheeks, bright narrow-lidded eyes, straight brows, gently broad natural nose, wide delicate smile, a feminine short layered dark-brown bob tucked behind one ear, a soft beige button-up blouse with the top at the collarbone, clear fair neutral skin, average natural shoulder build, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-fc7caf86-bc52-4987-a248-bebbb4e1dfa8.png",
+    "native_sha256": "1e35aa3eaa30b303fd0811ea10d023d0233b63c7f48678b6f25d4733107ab9ce",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y29_master.png",
+    "master_sha256": "56130e8dcfd6121d6619f3e2761ced2b8fcce3b2db73d06a85dd53b16ce57fe7"
+  },
+  {
+    "candidate": "y30",
+    "f": 1,
+    "age": 28,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 28, looks unmistakably mid-twenties, short oval face and rounded chin, softly hooded eyes, softly angled brows, fine bridge nose, plush subtle lips, glossy black hair in a loose low bun with delicate curtain strands, a relaxed ivory blouse with a modest soft V collar, collarbone only, no cleavage, clear light warm beige skin, average natural shoulder build, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-fc7caf86-bc52-4987-a248-bebbb4e1dfa8.png",
+    "native_sha256": "1e35aa3eaa30b303fd0811ea10d023d0233b63c7f48678b6f25d4733107ab9ce",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y30_master.png",
+    "master_sha256": "3a5f0b27b5f2e26a698af5cd00df5604ef12a84be14bcce3d5b0b1d2adf9af43"
+  },
+  {
+    "candidate": "y31",
+    "f": 1,
+    "age": 24,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 24, looks unmistakably mid-twenties, slender oblong-oval face, soft jawline, clear large but naturally sized almond eyes, short curved brows, gentle nose and thin smiling lips, a neat low ponytail with softly swept bangs, a pale blue polished relaxed collared shirt, clear warm ivory skin, average natural shoulder build, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-fc7caf86-bc52-4987-a248-bebbb4e1dfa8.png",
+    "native_sha256": "1e35aa3eaa30b303fd0811ea10d023d0233b63c7f48678b6f25d4733107ab9ce",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y31_master.png",
+    "master_sha256": "d6824a3b9a5097cb6f453add5a667d30e4316c0ee8da5ac6805f2447144dacfd"
+  },
+  {
+    "candidate": "y32",
+    "f": 1,
+    "age": 25,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 25, looks unmistakably mid-twenties, delicate oval face, softly tapered natural jaw, bright almond eyes, straight slim brows, neat nose, rosebud lips, long glossy dark brown hair with soft loose waves, a cream lightweight fine-knit crew neck top, clear light olive skin, average natural shoulder build, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-fc7caf86-bc52-4987-a248-bebbb4e1dfa8.png",
+    "native_sha256": "1e35aa3eaa30b303fd0811ea10d023d0233b63c7f48678b6f25d4733107ab9ce",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y32_master.png",
+    "master_sha256": "6637debab39665d59e9dc00a398365f810ec63fe171bf84d3b0231186f45d24c"
+  },
+  {
+    "candidate": "y21",
+    "f": 1,
+    "age": 24,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 24, looks unmistakably mid-twenties, elegant medium oval face, clear deep-set almond eyes, soft dark brows, straight refined nose, fuller natural lips, a polished chin-length black bob with a center part, a neat navy knit top with a modest neckline, clear fair neutral skin, delicate natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-ae78137a-4ab1-41f1-8d71-308b6679d0f4.png",
+    "native_sha256": "47e44f5950cebeff0bdd6aca45939fcea2457dba5923f49c172ac5e1bade940a",
+    "native_crop_xyxy": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y21_master.png",
+    "master_sha256": "0f5bbd5a73af71fd87ba56031439080b4521673ce7b3cc49ceafd76a9d23fbae"
+  },
+  {
+    "candidate": "y22",
+    "f": 1,
+    "age": 25,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 25, looks unmistakably mid-twenties, petite round-oval face, lively slightly upturned eyes, softly arched brows, subtle cheek dimples, delicate balanced nose, a chic dark chocolate collarbone bob with inward ends, a soft beige button-up blouse with the top at the collarbone, clear light warm beige skin, delicate natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-ae78137a-4ab1-41f1-8d71-308b6679d0f4.png",
+    "native_sha256": "47e44f5950cebeff0bdd6aca45939fcea2457dba5923f49c172ac5e1bade940a",
+    "native_crop_xyxy": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y22_master.png",
+    "master_sha256": "ac1b126653124a2d2fffba44af2095ed4c14a4908c4cce479b7723ca65d7d6c1"
+  },
+  {
+    "candidate": "y23",
+    "f": 1,
+    "age": 26,
+    "tags": {
+      "glasses": true
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 26, looks unmistakably mid-twenties, graceful softly angular face, gently high cheekbones, calm almond eyes, elegant long brows, straight nose and defined lips, long straight espresso hair with a soft side part, a relaxed ivory blouse with a modest soft V collar, collarbone only, no cleavage, clear warm ivory skin, delicate natural shoulders, fashionable thin gold oval eyeglasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-ae78137a-4ab1-41f1-8d71-308b6679d0f4.png",
+    "native_sha256": "47e44f5950cebeff0bdd6aca45939fcea2457dba5923f49c172ac5e1bade940a",
+    "native_crop_xyxy": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y23_master.png",
+    "master_sha256": "1f84c3ed5cffd25ea34ca111ef25035f4ee9de149aaff3cce0a9a615fe83e5d8"
+  },
+  {
+    "candidate": "y24",
+    "f": 1,
+    "age": 27,
+    "tags": {
+      "glasses": false
+    },
+    "quality_tier": "young_beauty_revision",
+    "brief": "Exceptionally pretty, photogenic fictional Korean adult woman aged 27, looks unmistakably mid-twenties, soft rectangular oval face with youthful cheeks, bright narrow-lidded eyes, straight brows, gently broad natural nose, wide delicate smile, a feminine short layered dark-brown bob tucked behind one ear, a pale blue polished relaxed collared shirt, clear light olive skin, delicate natural shoulders, no glasses, tiny simple pearl or gold stud earrings, polished subtle everyday Korean beauty makeup, natural pink lips, healthy youthful skin with very fine real pores, radiant gentle closed-lip smile, bright welcoming eyes, no deep expression wrinkles",
+    "native_path": "/workspace/generated_images/exec-ae78137a-4ab1-41f1-8d71-308b6679d0f4.png",
+    "native_sha256": "47e44f5950cebeff0bdd6aca45939fcea2457dba5923f49c172ac5e1bade940a",
+    "native_crop_xyxy": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "master_path": "/workspace/front-office-v19/assets/v19/secretary20/work/candidates/y24_master.png",
+    "master_sha256": "2fdc7188dd0a6e90913097d2980c1091976c44db09c0a99a05347eef50ebf86d"
+  }
+]

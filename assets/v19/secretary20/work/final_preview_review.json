@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "portrait_count": 20,
+  "preview_sha256": "534bcfa65dae8e770efb95a6e00efdbf6b33e772a09844191ce58f3fe644edc5",
+  "review_method": "Explicit inspection of all20 actual256 WebP crops in the final preview; names/ages/order, natural youthful appearance, professional clothing, skin/hair detail, real human proportions, eye focus, gentle expressions, glasses and ears, clean blurred backgrounds and no logos/text verified.",
+  "checks": {
+    "female24_to28": true,
+    "female16_male4": true,
+    "three_glasses": true,
+    "plausible_real_people": true,
+    "natural_human_proportions": true,
+    "gentle_natural_expressions": true,
+    "modest_office_clothes": true,
+    "skin_texture_and_flyaway_hair": true,
+    "coherent_neck_shoulders": true,
+    "office_or_stadium_background_bokeh": true,
+    "no_visible_anatomical_defects_or_logos": true
+  }
+}

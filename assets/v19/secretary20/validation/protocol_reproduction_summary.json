@@ -1,0 +1,18 @@
+{
+  "128": {
+    "cached_reference_reproduction_min_cosine": 0.9999998211860657,
+    "ids": [
+      "v8_people01_agent_001",
+      "v8_people01_sec_003",
+      "v7_staff01_gm_021"
+    ]
+  },
+  "256": {
+    "cached_reference_reproduction_min_cosine": 0.9999998211860657,
+    "ids": [
+      "v8_people01_agent_001",
+      "v8_people01_sec_003",
+      "v7_staff01_gm_021"
+    ]
+  }
+}
