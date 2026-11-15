@@ -51,6 +51,12 @@ function gmTournSpan(d){ const o=dobj(d); for(const t of GM_TOURN){ const a=dnum
 function gmPlanBulk(d,x,mode){ if(mode==='fut')return gmPlanBulkFut(+d,x); if(mode==='school')return gmPlanBulkSch(+d,x); if(!REG.includes(x))return '지역을 고르세요.'; d=+d; let a=G.day+1, b=d; if(mode==='tourn'){ const S=gmTournSpan(d); if(!S)return '대회 기간이 아닙니다.'; a=Math.max(a,S[0]); b=S[1]; }
   const P=gmPlans(); let n=0, kept=0; for(let i=a;i<=b;i++){ if(!gmTourn(i))continue; const o=P[i]; if(o&&o.k!=='scout'){ kept++; continue; } if(gmPlanSet(i,'scout',x).includes('출장을 잡았습니다'))n++; }
   return n?`${dmd(a)}~${dmd(b)} 고교 대회 ${n}일을 ${x} 출장으로 잡았습니다.${kept?` 직관·2군 방문을 잡은 ${kept}일은 그대로 둡니다.`:''}`:'그 기간에 잡을 고교 대회 날이 없습니다.'; }
+/* 달력 표시용 묶음(카페 '그날 일정이 잡혔는지 하루하루 눌러봐야'): 같은 지역 출장은 빈 날 6일까지, 2군 관전은 3일까지 하나의 기간으로 잇는다. 다른 일정이 끼어도 기간은 이어진다. 읽기만 한다
+   [{k,key,x,a,b,days,p,multi}] — a~b 사이에 걸친 묶음만, 취소된 일정은 뺀다 */
+function gmPlanSpans(a,b){ const P=gmPlans(), out=[], open={}; const D=Object.keys(P).map(Number).filter(d=>P[d]&&!P[d].miss&&!P[d].cancelled).sort((x,y)=>x-y);
+  for(const d of D){ const p=P[d], key=p.k==='scout'?'scout:'+p.x:p.k==='fut'?'fut':null, r=key&&open[key];
+    if(r&&d-r.b-1<=(p.k==='scout'?6:3)){ r.b=d; r.days.push(d); continue; } const n={k:p.k,key,x:p.x,a:d,b:d,days:[d],p}; if(key)open[key]=n; out.push(n); }
+  return out.filter(s=>s.b>=a&&s.a<=b).map(s=>({...s,multi:s.days.length>1})); }
 /* 우리 2군 경기를 오늘 다음 날부터 고른 날까지 관전으로(x='home'이면 홈 경기만). 다른 일정은 그대로 둔다. 효과는 한 달 두 번 상한이라 많이 잡아도 쌓이지 않는다 */
 function gmPlanBulkFut(d,x){ const P=gmPlans(); let n=0, kept=0; for(let i=G.day+1;i<=d;i++){ const g=flGameOn(G.user,i); if(!g||x==='home'&&!g.home)continue; const o=P[i]; if(o&&o.k!=='fut'&&o.k!=='farm'){ kept++; continue; } gmPlanSet(i,'fut'); if(P[i]&&P[i].k==='fut')n++; }
   return n?`${dmd(G.day+1)}~${dmd(d)} 우리 2군 ${x==='home'?'홈 ':''}경기 ${n}경기를 관전으로 잡았습니다.${kept?` 다른 일정이 있는 ${kept}일은 그대로 둡니다.`:''} 선수단 기분은 한 달에 두 번까지만 오릅니다.`:'그 기간에 잡을 우리 2군 경기가 없습니다.'; }

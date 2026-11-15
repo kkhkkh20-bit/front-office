@@ -1,0 +1,26 @@
+/* 단장 일정 한눈에 보기(카페: '그날 일정이 잡혔는지 하루하루 눌러봐야'): 여러 날 출장이 달력의 모든 날에 띠로 이어지고,
+   하루짜리 고교 방문·2군 관전이 칸에 보이며, 이달 목록에서 그날을 열 수 있는지 390·1366에서 확인한다. 화면 사진은 CALPLANS_OUT에 남긴다. */
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
+(async()=>{const out=process.env.CALPLANS_OUT||'/tmp/calendar-plans';fs.mkdirSync(out,{recursive:true});const server=await startHtmlServer(process.env.CALENDAR_HTML||path.join(__dirname,'../index.html')),browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
+try{for(const [width,height] of [[390,844],[1366,900]]){const c=await browser.newContext({viewport:{width,height},isMobile:width<1100,hasTouch:width<1100}),p=await c.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+const fx=await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.fOkY=G.year;G.day=KD(7,31);G.res=null;G.stops=[];G.evs=[];G.offers=[];for(const m of G.mail){m.read=true;m.closed={text:'확인 완료'};}UI.title=false;
+  G.gmPlan={};const r1=gmPlanBulk(KD(8,16),'영남','upto');const S=gmSchools(),sch=S.find(s=>s.reg==='영남')||S[0];const r2=sch?gmPlanSet(KD(8,19),'school',sch.n):'학교 없음';const r3=gmPlanBulk(KD(8,31),'all','fut');
+  const trip=Object.keys(G.gmPlan).map(Number).filter(d=>G.gmPlan[d].k==='scout').sort((a,b)=>a-b);const fut=Object.keys(G.gmPlan).map(Number).filter(d=>G.gmPlan[d].k==='fut');UI.calYM={y:G.year,m:8};UI.calSel=KD(8,1);A.go('cal');return {r1,r2,r3,trip,fut,school:sch&&sch.n};});
+assert.ok(fx.trip.length>=12,'영남 출장 준비 실패: '+fx.r1);assert.match(fx.r2,/방문을 잡았습니다/,'고교 방문 준비 실패');assert.ok(fx.fut.length>0,'2군 관전 준비 실패: '+fx.r3);
+const before=await p.evaluate(()=>JSON.stringify(G.gmPlan));
+if(width<1100){/* 월 달력: 출장 묶음의 띠가 시작~끝 모든 날(사이 빈 날은 가는 선)을 덮는다 */
+  const cov=await p.evaluate(({a,b})=>{const grid=document.querySelector('.cal-grid'),gr=grid.getBoundingClientRect();const bars=[...grid.querySelectorAll('.cal-bar[data-span="'+a+'"]')].map(e=>e.getBoundingClientRect());const miss=[];for(let d=a;d<=b;d++){const cell=grid.querySelector('.cal-c[data-v="'+d+'"]').getBoundingClientRect();const cx=cell.left+cell.width/2;if(!bars.some(r=>r.left<=cx&&r.right>=cx&&r.top>=cell.top-1&&r.bottom<=cell.bottom+1))miss.push(d);}
+    const lbl=[...grid.querySelectorAll('.cal-bl')].map(e=>e.textContent);return {miss,n:bars.length,lbl,over:document.documentElement.scrollWidth-innerWidth,barW:bars.every(r=>r.width>0&&r.height>=8),inGrid:bars.every(r=>r.left>=gr.left-1&&r.right<=gr.right+5)};},{a:fx.trip[0],b:fx.trip[fx.trip.length-1]});
+  assert.deepEqual(cov.miss,[],'출장 띠가 빠진 날');assert.ok(cov.n>=3,'주를 건너 여러 조각');assert.ok(cov.barW,'띠가 보임');assert.ok(cov.inGrid,'띠가 달력 안');assert.ok(cov.lbl.some(t=>/^영남 출장 ~8\/16$/.test(t)),'시작에 이름 한 번: '+cov.lbl.join('|'));assert.ok(cov.over<=2,'가로 넘침 없음');
+  const chip=await p.evaluate(d=>document.querySelector('.cal-c[data-v="'+d+'"] .cal-plan')?.textContent,await p.evaluate(()=>KD(8,19)));assert.equal(chip,fx.school,'고교 방문 칩');
+  const inTrip=await p.evaluate(d=>!!document.querySelector('.cal-c[data-v="'+d+'"] .cal-plan'),fx.trip[3]);assert.equal(inTrip,false,'띠가 있는 날은 칸 칩을 겹쳐 쓰지 않음');
+}else{/* PC 한 주 띠: 출장 주간 모든 날에 같은 줄 띠 */
+  await p.evaluate(()=>{UI.calSel=KD(8,6);A.go('cal');});const wk=await p.evaluate(()=>[...document.querySelectorAll('.sch-d')].map(e=>({d:+e.dataset.v,pb:[...e.querySelectorAll('.sch-pb:not(.pb-nil)')].map(x=>x.textContent)})));
+  for(const x of wk)if(fx.trip.includes(x.d))assert.ok(x.pb.length>0,'PC 한 주 띠 빠진 날 '+x.d);assert.ok(wk.some(x=>x.pb.some(t=>/영남 출장/.test(t))),'PC 띠 이름');}
+/* 이달 목록: 기간·학교 방문, 누르면 그날을 연다 */
+const rows=await p.locator('.gpl-mon .gpl-mr').allInnerTexts();assert.ok(rows.some(t=>/영남 고교 대회 출장/.test(t)&&/~/.test(t)),'목록에 출장 기간');assert.ok(rows.some(t=>t.includes(fx.school+' 방문')),'목록에 고교 방문');assert.ok(rows.some(t=>/2군 경기 관전 · \d+경기/.test(t)),'목록에 2군 관전 묶음');
+await p.screenshot({path:path.join(out,width+'-calendar-plans.png'),fullPage:width<1100});
+if(width<1100){/* 휴대폰 업무 화면은 카드를 탭으로 나눈다: '8월 단장 일정' 탭 */const tab=p.locator('button:not(.gpl-mr)',{hasText:/8월 단장 일정|이번 달 단장 일정/}).first();if(await tab.count())await tab.tap();await p.locator('.gpl-mon').waitFor({state:'visible'});await p.locator('.gpl-mon').scrollIntoViewIfNeeded();await p.screenshot({path:path.join(out,width+'-month-list.png')});}
+const row=p.locator('.gpl-mon .gpl-mr',{hasText:fx.school+' 방문'}).first();if(width<1100)await row.tap();else await row.click();assert.equal(await p.evaluate(()=>UI.calSel),await p.evaluate(()=>KD(8,19)),'목록을 누르면 그날');assert.match(await p.locator('.cal-detail h2').first().innerText(),/8월 19일/);
+assert.equal(await p.evaluate(()=>JSON.stringify(G.gmPlan)),before,'표시만 하고 일정은 바꾸지 않음');
+assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'가로 넘침');assert.deepEqual(errors,[]);console.log(width+' 단장 일정 띠·칩·이달 목록 통과');await c.close();}}finally{await browser.close();await server.close();}})().catch(e=>{console.error(e.stack);process.exitCode=1});

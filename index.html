@@ -1918,8 +1918,32 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .iv-o:hover{border-color:var(--acc,#4a8)}.iv-o .pill{flex:none}
 .iv-end{padding:12px;border-top:1px solid var(--line,#333);margin-top:10px}
 /* 단장 일정 */
-.cal-plan{display:block;font-size:var(--ui-micro);line-height:1.2;margin-top:2px;padding:1px 4px;border-radius:3px;background:color-mix(in srgb,var(--acc,#4a8) 25%,transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-plan.k-scout{background:color-mix(in srgb,#d4a017 30%,transparent)}.cal-plan.k-farm,.cal-plan.k-fut{background:color-mix(in srgb,#5a8 25%,transparent)}.cal-plan.k-school{background:color-mix(in srgb,#c77 28%,transparent)}
+.cal-plan{display:block;font-size:var(--ui-micro);line-height:1.25;margin-top:2px;padding:1px 4px 1px 3px;border-radius:3px;border-left:3px solid var(--pc,#4a8);background:color-mix(in srgb,var(--pc,#4a8) 26%,transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
+.cal-plan.done{opacity:.6}
+/* 단장 일정 띠(27_calendar.js gplGrid): 여러 날 출장·2군 관전을 칸 아래에서 주를 건너 잇는다. 칸은 grid-area로 놓고, 띠는 같은 줄 위에 겹친다 */
+.cal-grid{--bh:12px;--bs:15px;--cg:4px}
+.cal-grid>.cal-c{padding-bottom:calc(var(--ln,0) * var(--bs) + 4px)}
+.cal-bar,.cal-bl{align-self:end;pointer-events:none;z-index:2;margin-bottom:calc(4px + var(--lane,0) * var(--bs));height:var(--bh);min-width:0}
+.cal-bar{background:var(--pc);opacity:.9}
+.cal-bar.cb-s{margin-left:3px;border-top-left-radius:6px;border-bottom-left-radius:6px}.cal-bar.cb-e{margin-right:3px;border-top-right-radius:6px;border-bottom-right-radius:6px}.cal-bar.cb-x{margin-right:calc(-1 * var(--cg))}
+.cal-bar.cb-gap{background:linear-gradient(var(--pc),var(--pc)) center/100% 2px no-repeat;opacity:.75}
+.cal-bar.cb-past{opacity:.45}
+.cal-bl{z-index:3;font-size:10px;font-weight:700;line-height:var(--bh);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.85),0 1px 1px rgba(0,0,0,.6);padding:0 5px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:600px){ .cal-grid{--bh:11px;--bs:13px;--cg:2px}.cal-bl{font-size:9px;padding:0 2px 0 4px;letter-spacing:-.2px}.cal-plan{font-size:9px;padding:0 2px;border-left-width:2px} }
+/* 이달 단장 일정 목록 */
+.gpl-ml{display:flex;flex-direction:column}
+.gpl-mr{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:8px;align-items:center;background:none;border:0;border-bottom:1px solid var(--line);padding:7px 2px;color:inherit;text-align:left;cursor:pointer;font:inherit;min-width:0}
+.gpl-mr.past{opacity:.6}.gpl-mr em{font-style:normal;font-size:11px;color:var(--muted,#9aa7b4);white-space:nowrap}
+.gpl-md{font:600 12px var(--f-num,inherit);white-space:nowrap}
+.gpl-mt{display:flex;align-items:center;gap:6px;min-width:0}.gpl-mt i{width:9px;height:9px;border-radius:2px;flex:none}.gpl-mt b{font-weight:500;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gpl-leg{margin-top:8px}
+/* PC 한 주 띠의 단장 일정 */
+.sch-pbw{display:flex;flex-direction:column;gap:2px;margin:0 -8px}
+.sch-pb{height:16px;line-height:16px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.7);background:var(--pc);padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:-1px}
+.sch-pb.pb-s{margin-left:8px;border-radius:8px 0 0 8px}.sch-pb.pb-e{margin-right:8px;border-top-right-radius:8px;border-bottom-right-radius:8px}
+.sch-pb.pb-gap{background:linear-gradient(var(--pc),var(--pc)) center/100% 2px no-repeat}
+.sch-pb.pb-nil{visibility:hidden}
+.sch-pl.done{opacity:.6}
 .gpl{margin:10px 0;padding:10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:8px}
 .gpl-r{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.gpl-r>.small{min-width:120px;opacity:.8}
 /* 인물 카드 공통 */
@@ -20733,6 +20757,12 @@ function gmTournSpan(d){ const o=dobj(d); for(const t of GM_TOURN){ const a=dnum
 function gmPlanBulk(d,x,mode){ if(mode==='fut')return gmPlanBulkFut(+d,x); if(mode==='school')return gmPlanBulkSch(+d,x); if(!REG.includes(x))return '지역을 고르세요.'; d=+d; let a=G.day+1, b=d; if(mode==='tourn'){ const S=gmTournSpan(d); if(!S)return '대회 기간이 아닙니다.'; a=Math.max(a,S[0]); b=S[1]; }
   const P=gmPlans(); let n=0, kept=0; for(let i=a;i<=b;i++){ if(!gmTourn(i))continue; const o=P[i]; if(o&&o.k!=='scout'){ kept++; continue; } if(gmPlanSet(i,'scout',x).includes('출장을 잡았습니다'))n++; }
   return n?`${dmd(a)}~${dmd(b)} 고교 대회 ${n}일을 ${x} 출장으로 잡았습니다.${kept?` 직관·2군 방문을 잡은 ${kept}일은 그대로 둡니다.`:''}`:'그 기간에 잡을 고교 대회 날이 없습니다.'; }
+/* 달력 표시용 묶음(카페 '그날 일정이 잡혔는지 하루하루 눌러봐야'): 같은 지역 출장은 빈 날 6일까지, 2군 관전은 3일까지 하나의 기간으로 잇는다. 다른 일정이 끼어도 기간은 이어진다. 읽기만 한다
+   [{k,key,x,a,b,days,p,multi}] — a~b 사이에 걸친 묶음만, 취소된 일정은 뺀다 */
+function gmPlanSpans(a,b){ const P=gmPlans(), out=[], open={}; const D=Object.keys(P).map(Number).filter(d=>P[d]&&!P[d].miss&&!P[d].cancelled).sort((x,y)=>x-y);
+  for(const d of D){ const p=P[d], key=p.k==='scout'?'scout:'+p.x:p.k==='fut'?'fut':null, r=key&&open[key];
+    if(r&&d-r.b-1<=(p.k==='scout'?6:3)){ r.b=d; r.days.push(d); continue; } const n={k:p.k,key,x:p.x,a:d,b:d,days:[d],p}; if(key)open[key]=n; out.push(n); }
+  return out.filter(s=>s.b>=a&&s.a<=b).map(s=>({...s,multi:s.days.length>1})); }
 /* 우리 2군 경기를 오늘 다음 날부터 고른 날까지 관전으로(x='home'이면 홈 경기만). 다른 일정은 그대로 둔다. 효과는 한 달 두 번 상한이라 많이 잡아도 쌓이지 않는다 */
 function gmPlanBulkFut(d,x){ const P=gmPlans(); let n=0, kept=0; for(let i=G.day+1;i<=d;i++){ const g=flGameOn(G.user,i); if(!g||x==='home'&&!g.home)continue; const o=P[i]; if(o&&o.k!=='fut'&&o.k!=='farm'){ kept++; continue; } gmPlanSet(i,'fut'); if(P[i]&&P[i].k==='fut')n++; }
   return n?`${dmd(G.day+1)}~${dmd(d)} 우리 2군 ${x==='home'?'홈 ':''}경기 ${n}경기를 관전으로 잡았습니다.${kept?` 다른 일정이 있는 ${kept}일은 그대로 둡니다.`:''} 선수단 기분은 한 달에 두 번까지만 오릅니다.`:'그 기간에 잡을 우리 2군 경기가 없습니다.'; }
@@ -32934,18 +32964,20 @@ function calGame(d){ const c=G.cal; let m=null, kind='';
 function calView(){ if(fmOn())return calFM(); /* PC: FM식 주요 일정 */ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
   const first=dnum(ym.y,ym.m,1); const w0=(dobj(first).w+6)%7; /* 월요일 시작 */ const last=dnum(ym.m===12?ym.y+1:ym.y,ym.m===12?1:ym.m+1,1)-1;
   const sel=UI.calSel!=null&&dobj(UI.calSel).m===ym.m&&dobj(UI.calSel).y===ym.y?UI.calSel:(now.y===ym.y&&now.m===ym.m?G.day:first);
-  let cells=''; for(let i=0;i<w0;i++)cells+='<div class="cal-c nil"></div>';
-  for(let d=first;d<=last;d++){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d);
+  /* 단장 일정: 하루짜리는 칸 안 표시, 여러 날 묶음(출장·2군 관전)은 칸 아래 띠로 주를 건너 잇는다(카페 '한눈에') */
+  const PL=gplGrid(first,last,w0);
+  let cells=''; for(let i=0;i<w0;i++)cells+=`<div class="cal-c nil" style="grid-area:1/${i+1}"></div>`;
+  for(let d=first;d<=last;d++){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d); const gi=w0+d-first, gr=Math.floor(gi/7)+1, gc=gi%7+1; const pin=PL.inSpan[d], ps=gmPlanAt(d), pc=ps&&!ps.miss&&!ps.cancelled&&!(pin&&pin.key&&pin.days.includes(d))?ps:null;
     /* 경기 있는 날: 상대 구단 로고를 크게, 홈·원정 표시, 지난 경기는 점수와 승패 */
     const gch=g?`<span class="cal-gm${g.res?(g.res.r==='승'?' w':g.res.r==='패'?' l':' t'):''}"><span class="cal-lg">${badge(g.op,34)}</span><b class="cal-nm">${esc(team(g.op).nick)}</b>${g.res?`<span class="cal-sc"><em>${g.res.r}</em>${g.res.my}:${g.res.op}</span>`:''}</span>`:'';
     const ha=g?`<span class="cal-ha ${g.home?'h':'a'}">${g.home?'홈':'원정'}</span>`:'';
     const evh=ev.slice(0,2).map(e=>`<span class="cal-e" style="--ec:${CAL_K[e.k].c}">${esc(e.t)}</span>`).join('')+(ev.length>2?`<span class="cal-more">외 ${ev.length-2}건</span>`:'');
-    cells+=`<button class="cal-c${g?' hasg':''}${d===G.day?' today':''}${d<G.day?' past':''}${d===sel?' sel':''}${o.w===1?' mon':''}" data-a="calDay" data-v="${d}" aria-label="${o.m}월 ${o.d}일${g?` ${g.home?'홈':'원정'} ${team(g.op).nick}${g.res?` ${g.res.r} ${g.res.my}대${g.res.op}`:''}`:''}"><span class="cal-top"><span class="cal-n">${o.d}${d===G.day?'<i>오늘</i>':''}</span>${ha}</span>${gch}${evh}${(()=>{ const pl=gmPlanAt(d); return pl?`<span class="cal-plan k-${pl.k}">${pl.k==='attend'?(pl.x==='owner'?'직관·구단주':pl.x==='ceo'?'직관·사장':'직관'):pl.k==='scout'?'출장':pl.k==='school'?'고교':pl.k==='fut'?'2군 경기':'2군'}</span>`:''; })()}</button>`; }
+    cells+=`<button class="cal-c${g?' hasg':''}${d===G.day?' today':''}${d<G.day?' past':''}${d===sel?' sel':''}${o.w===1?' mon':''}" style="grid-area:${gr}/${gc};--ln:${PL.rowLn[gr]||0}" data-a="calDay" data-v="${d}" aria-label="${o.m}월 ${o.d}일${g?` ${g.home?'홈':'원정'} ${team(g.op).nick}${g.res?` ${g.res.r} ${g.res.my}대${g.res.op}`:''}`:''}${PL.aria[d]?` · 단장 일정 ${esc(PL.aria[d])}`:''}"><span class="cal-top"><span class="cal-n">${o.d}${d===G.day?'<i>오늘</i>':''}</span>${ha}</span>${gch}${evh}${pc?`<span class="cal-plan k-${pc.k}${pc.done?' done':''}" style="--pc:${GPL_K[pc.k].c}">${esc(gplShort(pc))}</span>`:''}</button>`; }
   const pm=ym.m===1?{y:ym.y-1,m:12}:{y:ym.y,m:ym.m-1}, nm=ym.m===12?{y:ym.y+1,m:1}:{y:ym.y,m:ym.m+1};
   const nav=`<div class="row between cal-nav"><button class="btn small" data-a="calMon" data-v="${pm.y}:${pm.m}">◀ ${pm.m}월</button><b class="cal-ttl">${ym.y}년 ${ym.m}월</b><span class="row"><button class="btn small" data-a="calMon" data-v="${now.y}:${now.m}">오늘</button><button class="btn small" data-a="calMon" data-v="${nm.y}:${nm.m}">${nm.m}월 ▶</button></span></div>`;
   const leg=`<div class="cal-leg">${Object.values(CAL_K).map(x=>`<span><i style="background:${x.c}"></i>${x.l}</span>`).join('')}<span><i class="g"></i>우리 경기</span></div>`;
   const ug=upcomingGames(10).replace('<button class="btn small" data-a="calOpen">캘린더</button>','');
-  return `<section class="card">${nav}<div class="cal-w">${['월','화','수','목','금','토','일'].map(x=>`<span>${x}</span>`).join('')}</div><div class="cal-grid">${cells}</div>${leg}</section>${calDetail(sel)}${ug}${calUpcoming()}`; }
+  return `<section class="card">${nav}<div class="cal-w">${['월','화','수','목','금','토','일'].map(x=>`<span>${x}</span>`).join('')}</div><div class="cal-grid">${cells}${PL.bars}</div>${leg}</section>${calDetail(sel)}${gplMonth(ym.y,ym.m)}${ug}${calUpcoming()}`; }
 function calDetail(d){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d); const dd=d-G.day;
   let gh=''; if(g){ const sp=d>G.day&&d-G.day<=6?(()=>{ try{ const L=projStarters(G.user,6); const k=nextGames(8).findIndex(x=>x.d===d); const s=k>=0&&L[k]?L[k].sp:null; return s?` · 예상 선발 ${esc(s.name)}`:''; }catch(e){ return ''; } })():'';
     gh=`<div class="cal-dg">${badge(g.op,28)}<div><b>${g.kind?esc(g.kind)+' · ':''}${g.home?'홈':'원정'} ${g.home?'vs':'@'} ${esc(tname(g.op))}</b><span class="small muted">${g.res?`${g.res.r} ${g.res.my}:${g.res.op}`:d<G.day?'결과 기록 없음':`예정${sp}`}</span></div>${g.gi>=0&&G.games[g.gi]?`<button class="btn small" data-a="openGame" data-v="${g.gi}">박스스코어</button>`:''}</div>`; }
@@ -33062,13 +33094,45 @@ function gmPlanBox(d,g){ const pl=gmPlanAt(d); const T=gmTourn(d); const B=[]; c
   else if(dobj(d).m>=4&&dobj(d).m<=9)B.push(`<div class="gpl-r"><span class="small">2군 훈련장 방문</span><button class="btn small${pl&&pl.k==='farm'?' primary':''}" data-a="gmPlan" data-v="${d}:farm:">훈련장 방문</button></div>`);
   if(!B.length)return '';
   return `<div class="gpl"><div class="row between"><span class="eyebrow">단장 일정</span>${pl?`<span class="row"><span class="pill acc">${esc(lab)}</span><button class="btn small" data-a="gmPlan" data-v="${d}:">취소</button></span>`:'<span class="small muted">경기는 결과 보고로 받습니다. 볼 경기나 출장, 방문을 잡아 두세요.</span>'}</div>${B.join('')}<p class="small muted">2군 선수단 기분은 한 달에 두 번까지만 오릅니다. 학교 방문은 한 주에 한 번입니다.</p></div>`; }
+/* 단장 일정 한눈에 보기: 종류별 색·짧은 이름, 여러 날 묶음은 띠(gmPlanSpans), 이달 목록 */
+const GPL_K={scout:{c:'#d99a2b',l:'출장'},school:{c:'#d9667c',l:'고교 방문'},fut:{c:'#2fa878',l:'2군 관전'},farm:{c:'#4f97ad',l:'2군 시설'},attend:{c:'#8577e6',l:'직관'}};
+function gplShort(p){ return p.k==='attend'?(p.x==='owner'?'직관·구단주':p.x==='ceo'?'직관·사장':'직관'):p.k==='scout'?`${p.x} 출장`:p.k==='school'?String(p.x||'고교 방문'):p.k==='fut'?'2군 관전':'2군 시설'; }
+function gplLong(s){ const p=s.p, n=s.days.length; return p.k==='scout'?`${p.x} 고교 대회 출장${n>1?` · ${n}일`:''}`:p.k==='school'?`${p.x} 방문`:p.k==='fut'?(n>1?`2군 경기 관전 · ${n}경기`:`2군 ${p.op!=null?flName(p.op)+'전 ':''}관전`):p.k==='farm'?'2군 훈련장 방문':`경기 직관${p.op!=null?` · ${tshort(p.op)}전`:''}${p.x==='owner'?' · 구단주 동행':p.x==='ceo'?' · 사장 동행':''}`; }
+const gplMD=d=>{ const o=dobj(d); return o.m+'/'+o.d; };
+function gplBarLbl(s){ return `${gplShort(s.p)} ~${gplMD(s.b)}`; }
+/* 겹치는 묶음은 줄(lane)을 나눈다 */
+function gplLanes(M){ const end=[]; for(const s of [...M].sort((x,y)=>x.a-y.a||y.b-x.b)){ let i=0; while(end[i]!=null&&end[i]>=s.a)i++; end[i]=s.b; s.lane=i; } return M; }
+/* 월 달력용: 칸 위치(w0=첫 칸 앞 빈칸 수)로 주마다 띠 조각을 만든다. 잡은 날은 굵은 띠, 사이 빈 날은 가는 선, 이름은 시작에 한 번 */
+function gplGrid(first,last,w0){ const S=gmPlanSpans(first,last), M=gplLanes(S.filter(s=>s.multi)), pos=d=>{ const i=w0+d-first; return [Math.floor(i/7)+1,i%7+1]; }; const R={inSpan:{},rowLn:{},aria:{},bars:''};
+  for(const s of S)for(const d of s.multi?s.days:[s.a])R.aria[d]=s.multi?`${gplLong(s)} ${dmd(s.a)}~${dmd(s.b)}`:gplLong(s);
+  for(const s of M){ const c=GPL_K[s.k].c, own=new Set(s.days), a=Math.max(s.a,first), b=Math.min(s.b,last); let lab=false;
+    for(let d=a;d<=b;d++)if(!R.inSpan[d]||own.has(d))R.inSpan[d]=s;
+    for(let d=a;d<=b;){ const [r,c0]=pos(d), solid=own.has(d); let e=d; while(e<b&&pos(e+1)[0]===r&&own.has(e+1)===solid)e++; const c1=pos(e)[1]; R.rowLn[r]=Math.max(R.rowLn[r]||0,s.lane+1);
+      R.bars+=`<span class="cal-bar${solid?'':' cb-gap'}${e<G.day?' cb-past':''}${d===s.a?' cb-s':''}${e===s.b?' cb-e':''}${e<s.b&&c1<7?' cb-x':''}" style="grid-area:${r}/${c0}/${r+1}/${c1+1};--pc:${c};--lane:${s.lane}" aria-hidden="true" data-span="${s.a}"></span>`;
+      /* 이름: 시작 줄에서 그 주 끝(또는 묶음 끝)까지 쓴다. 시작이 주 끝이라 좁으면 다음 줄 첫머리에 한 번 더 */
+      if(!lab||(c0===1&&d>a&&lab==='narrow')){ let z=d; while(z<b&&pos(z+1)[0]===r)z++; const w=pos(z)[1]-c0+1; R.bars+=`<span class="cal-bl" style="grid-area:${r}/${c0}/${r+1}/${pos(z)[1]+1};--lane:${s.lane}" aria-hidden="true">${esc(lab?gplShort(s.p):gplBarLbl(s))}</span>`; lab=lab?true:w<3?'narrow':true; }
+      d=e+1; } }
+  return R; }
+/* 이달 단장 일정 목록: 기간과 할 일, 누르면 그날을 연다 */
+function gplMonth(y,m){ const a=dnum(y,m,1), b=dnum(m===12?y+1:y,m===12?1:m+1,1)-1, now=dobj(G.day), S=gmPlanSpans(a,b);
+  const rows=S.map(s=>{ const st=s.b<G.day?'지남':s.a<=G.day?'진행 중':'', v=Math.max(s.a,a), o=dobj(s.a);
+    return `<button class="gpl-mr${st==='지남'?' past':''}" data-a="calJump" data-v="${v}"><span class="gpl-md">${s.multi?`${gplMD(s.a)}~${gplMD(s.b)}`:`${gplMD(s.a)} (${WD[o.w]})`}</span><span class="gpl-mt"><i style="background:${GPL_K[s.k].c}"></i><b>${esc(gplLong(s))}</b></span>${st?`<em>${st}</em>`:''}</button>`; }).join('');
+  const leg=`<div class="cal-leg gpl-leg">${Object.values(GPL_K).map(x=>`<span><i style="background:${x.c}"></i>${x.l}</span>`).join('')}</div>`;
+  return `<section class="card gpl-mon"><div class="row between"><h2 class="sec">${now.y===y&&now.m===m?'이번 달':`${m}월`} 단장 일정</h2><span class="small muted">${S.length?`${S.length}건`:''}</span></div>${rows?`<div class="gpl-ml">${rows}</div>`:'<p class="small muted">잡은 일정이 없습니다. 앞으로의 날짜를 누르면 출장·고교 방문·2군 관전을 잡을 수 있습니다.</p>'}${leg}</section>`; }
+/* PC 한 주 띠: 묶음은 칸 위쪽 같은 줄에 이어 그리고, 하루짜리는 일정 아래 칩으로 */
+function gplWeek(days){ const S=gmPlanSpans(days[0],days[6]), M=gplLanes(S.filter(s=>s.multi)), n=M.reduce((x,s)=>Math.max(x,s.lane+1),0);
+  return d=>{ const own=s=>s.days.includes(d); let h=''; if(n){ h='<span class="sch-pbw">'; for(let i=0;i<n;i++){ const s=M.find(z=>z.lane===i&&d>=z.a&&d<=z.b); if(!s){ h+='<span class="sch-pb pb-nil"></span>'; continue; } const st=d===s.a||d===days[0];
+      h+=`<span class="sch-pb${own(s)?'':' pb-gap'}${d===s.a?' pb-s':''}${d===s.b?' pb-e':''}" style="--pc:${GPL_K[s.k].c}" title="${esc(gplLong(s))} ${dmd(s.a)}~${dmd(s.b)}">${st?esc(d===s.a?gplBarLbl(s):gplShort(s.p)):''}</span>`; } h+='</span>'; }
+    const p=gmPlanAt(d), one=p&&!p.miss&&!p.cancelled&&!M.some(s=>s.days.includes(d))?p:null;
+    return {top:h,chip:one?`<span class="sch-e sch-pl${one.done?' done':''}" style="--ec:${GPL_K[one.k].c}">${esc(gplShort(one))}</span>`:''}; }; }
 /* PC 일정(FM '주요 일정'처럼): 위 한 주 띠(경기·마감·리그 일정), 아래 왼쪽 시즌 경기 목록(지난 경기 결과·선발, 앞으로 경기 D-day·예상 선발), 오른쪽 고른 날 상세 */
 function calFM(){ const c=G.cal; const sel=UI.calSel??G.day; const so=dobj(sel), mon=sel-((so.w+6)%7);
   const days=Array.from({length:7},(_,i)=>mon+i);
+  const wk=gplWeek(days);
   const nx=nextGames(1)[0];
   const strip=`<section class="card sch-wk"><div class="row between sch-nav"><b>${so.y}년 ${so.m}월</b><span class="row">${nx?`<span class="small muted">다음 경기 ${dmd(nx.d)} ${nx.home?'홈':'원정'} vs ${esc(tshort(nx.op))}</span>`:''}<button class="btn small" data-a="calWk" data-v="${G.day-sel}">오늘</button><button class="btn small" data-a="calWk" data-v="-7" aria-label="지난주">◀</button><button class="btn small" data-a="calWk" data-v="7" aria-label="다음 주">▶</button></span></div>
-    <div class="sch-days">${days.map(d=>{ const o=dobj(d), g=calGame(d), ev=calEvents(d);
-      return `<button class="sch-d${d===G.day?' today':''}${d===sel?' sel':''}${d<G.day?' past':''}" data-a="calDay" data-v="${d}"><span class="sch-n"><b>${o.d}</b>${WD[o.w]}${d===G.day?' · 오늘':''}</span>${g?`<span class="sch-g${g.res?' '+({승:'w',패:'l'}[g.res.r]||'t'):''}${g.home?' h':''}">${badge(g.op,26)}<span><i>${g.kind?esc(g.kind):'정규시즌'} · ${g.home?'홈':'원정'}</i><b>${esc(tshort(g.op))}</b>${g.res?`<em>${g.res.r} ${g.res.my}:${g.res.op}</em>`:''}</span></span>`:''}${ev.slice(0,3).map(e=>`<span class="sch-e" style="--ec:${CAL_K[e.k].c}">${esc(e.t)}</span>`).join('')}${ev.length>3?`<span class="sch-e more">외 ${ev.length-3}건</span>`:''}</button>`; }).join('')}</div></section>`;
+    <div class="sch-days">${days.map(d=>{ const o=dobj(d), g=calGame(d), ev=calEvents(d), pw=wk(d);
+      return `<button class="sch-d${d===G.day?' today':''}${d===sel?' sel':''}${d<G.day?' past':''}" data-a="calDay" data-v="${d}"><span class="sch-n"><b>${o.d}</b>${WD[o.w]}${d===G.day?' · 오늘':''}</span>${pw.top}${g?`<span class="sch-g${g.res?' '+({승:'w',패:'l'}[g.res.r]||'t'):''}${g.home?' h':''}">${badge(g.op,26)}<span><i>${g.kind?esc(g.kind):'정규시즌'} · ${g.home?'홈':'원정'}</i><b>${esc(tshort(g.op))}</b>${g.res?`<em>${g.res.r} ${g.res.my}:${g.res.op}</em>`:''}</span></span>`:''}${ev.slice(0,3).map(e=>`<span class="sch-e" style="--ec:${CAL_K[e.k].c}">${esc(e.t)}</span>`).join('')}${ev.length>3?`<span class="sch-e more">외 ${ev.length-3}건</span>`:''}${pw.chip}</button>`; }).join('')}</div></section>`;
   /* 시즌 경기 목록: 지난 경기는 최근 8경기(전체 보기로 펼침), 앞으로는 끝까지 */
   const all=[]; const start=(c&&c.open)||G.day, end=Math.max((c&&c.end)||G.day,G.day+60); for(let d=start;d<=end;d++){ const g=calGame(d); if(g)all.push({d,g}); }
   const past=all.filter(x=>x.d<G.day||(x.d===G.day&&x.g.res)), fut=all.filter(x=>!past.includes(x)); const nP=Math.max(8,20-fut.length), showP=UI.calAll?past:past.slice(-nP); /* 남은 경기가 적으면(시즌 끝) 지난 경기를 더 보여 칸을 채운다 */
@@ -33077,7 +33141,7 @@ function calFM(){ const c=G.cal; const sel=UI.calSel??G.day; const so=dobj(sel),
   let lastM=null; const rows=[...showP,...fut].map(x=>{ const o=dobj(x.d), g=x.g, mh=o.m!==lastM?`<tr class="sch-mh"><td colspan="8">${o.y}년 ${o.m}월</td></tr>`:''; lastM=o.m; const dd=x.d-G.day, rk=(()=>{ const S=standOrder(), L=S.order||[]; const i=L.findIndex(y=>(y.tid??y)===g.op); return i<0?'':S.live?tieRank(L,g.op):i+1; })();
     return mh+`<tr class="${x.d===sel?'sel':''}${x.d===G.day?' today':''}" data-a="calDay" data-v="${x.d}"><td>${o.m}/${o.d} ${WD[o.w]}</td><td class="muted">${dd===0?'오늘':dd>0?dd+'일 뒤':-dd+'일 전'}</td><td class="muted">${g.kind?esc(g.kind):'정규시즌'}</td><td>${g.home?'홈':'원정'}</td><td class="muted">${rk?rk+'위':''}</td><td>${g.res?`<span class="sch-r ${({승:'w',패:'l'}[g.res.r]||'t')}">${g.res.r}</span> <b>${g.res.my}-${g.res.op}</b>`:''}</td><td>${badge(g.op,18)} ${esc(tshort(g.op))}</td><td class="sch-sp">${st(x)}</td></tr>`; }).join('');
   const list=`<section class="card sch-list"><div class="row between"><h3>경기 일정·결과 <em>${past.length}경기 치름 · ${fut.length}경기 남음</em></h3>${past.length>nP?`<button class="btn small" data-a="calAll">${UI.calAll?`최근 ${nP}경기만`:'지난 경기 모두 보기'}</button>`:''}</div><div class="sf-tw"><table class="sf-t sch-t"><thead><tr><th>날짜</th><th></th><th>대회</th><th>장소</th><th>상대 순위</th><th>결과</th><th>상대</th><th>선발 맞대결</th></tr></thead><tbody>${rows||'<tr><td colspan="8" class="muted">경기 일정이 없습니다.</td></tr>'}</tbody></table></div></section>`;
-  return `<div class="sch ws-own">${strip}${list}<div class="sch-side">${calDetail(sel)}${(()=>{ const g=calGame(sel); return g?`<section class="card sch-op">${ibdOpp(g.op,'상대 전력')}</section><section class="card sch-op">${ibdForm(g.op,'상대 수비 배치')}</section>`:''; })()}${calUpcoming(120)}</div></div>`; }
+  return `<div class="sch ws-own">${strip}${list}<div class="sch-side">${calDetail(sel)}${gplMonth(so.y,so.m)}${(()=>{ const g=calGame(sel); return g?`<section class="card sch-op">${ibdOpp(g.op,'상대 전력')}</section><section class="card sch-op">${ibdForm(g.op,'상대 수비 배치')}</section>`:''; })()}${calUpcoming(120)}</div></div>`; }
 
 /* ---------- 역사·시상 ---------- */
 function histView(){
