@@ -140,7 +140,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     info=`<p class="small">${esc(r.outlet)} · ${OUTLET_LEAN[O.lean]||''} · ${esc(O.d||'')}</p><p class="small">${PR_STYLE[r.style].l}: ${esc(PR_STYLE[r.style].d)} · 주로 ${esc(r.field)} · 영향력 ${'★'.repeat(r.inf)}</p>${repActs(r)}`;
     moves=['인터뷰 요청에 응하고 성실하게 답하면 오르고, 거절·회피하면 내려갑니다','단독을 주면 크게 오르고, 다른 매체 기자는 조금 내려갑니다'];
     fx=['친분이 높을수록 우리 기사를 호의적으로 씁니다','친분이 낮으면 언론 플레이를 거절합니다','아주 가까우면 인터뷰 때 다른 구단 동향을 귀띔해 줍니다'];
-    recent=(G.news||[]).filter(n=>n.o===r.outlet).slice(0,3).map(n=>`<div class="ps-r small">${dsh(n.d)} · ${esc(n.t)}</div>`).join('');
+    { const own=(G.news||[]).filter(n=>n.o===r.outlet&&n.by===r.name).slice(0,3); /* 본인이 쓴 기사만. 없으면 같은 매체 기사임을 밝힌다(백로그 210) */ recent=own.length?own.map(n=>`<div class="ps-r small">${dsh(n.d)} · ${esc(n.t)}</div>`).join(''):(G.news||[]).filter(n=>n.o===r.outlet).slice(0,3).map(n=>`<div class="ps-r small">${dsh(n.d)} · ${esc(r.outlet)} 기사 · ${esc(n.t)}</div>`).join(''); }
     acts=[btn('기자 목록','go','club:media')]; } }
   else if(k==='fan'){ const g=G.goals;
     info=`<p>팬 여론 ${x.rel} · ${x.lab}. 구단 인기 ${Math.round(t.pop*100)}.</p>${g&&g.y===G.year?`<p class="small">구단주 목표: 여론 ${g.fan} 이상</p>`:''}`;
