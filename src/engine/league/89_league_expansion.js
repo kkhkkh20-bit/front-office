@@ -49,7 +49,7 @@ function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid
     const p=newPlayer({age,isP,pos:isP?undefined:bpos[i%bpos.length],base:b,pot:b+ri(0,age<=25?12:4),team:tid,svc:clamp(age-20,0,8)}); p.sal=round5(Math.max(MIN_SAL,marketSal(ovr(p))*.5)); i++; }
   E.stage='done'; E.last=G.year; E.tid=tid; E.hist.push({y:G.year,city:E.city,ok:true,tid});
   news('리그',`${tshort(tid)} 특별지명 결과`,`구단마다 보호선수 20명 밖에서 1명씩 지명했습니다(보상금 구단당 10억, ${E.parent} 창단 출자금으로 지급).\n`+L.join('\n'),2,{tid});
-  if(E.userGm&&!G.gameOver){ try{ const wasU=!!G.unemp; if(!wasU&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); } G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid);
+  if(E.userGm&&!G.gameOver){ try{ const wasU=!!G.unemp, old=G.user; let loyL=[]; if(!wasU)try{ loyL=meLoyalLeave(old,'move'); }catch(e){} if(!wasU&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); } G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid); if(loyL.length)try{ aiCoachFill(old,'단장을 따라 떠난 코치 후임',loyRoles(loyL)); }catch(e){} try{ meLoyalOffer(tid); }catch(e){}
       try{ myCStart(tid,{sal:Math.max(myCBase(tid),wasU?0:(G.myC&&G.myC.sal)||0),yrs:EXP_GRACE+1},'창단 단장'); }catch(e){} /* 단장 계약도 새 구단으로(창단 테스트 11-13: 옛 구단 계약이 남아 유예 중 계약 만료 판정) */ mail(E.parent,`${tshort(tid)} 창단 단장 부임`,`특별지명으로 ${L.length}명을 데려왔습니다. 외국인 선수와 코칭스태프를 채우고 첫 시즌을 준비해 주십시오.\n\n당장 성적을 바라지는 않습니다. ${G.year+1}~${G.year+EXP_GRACE}시즌(창단 ${EXP_GRACE}년차까지)은 순위보다 선수 육성과 팬 기반을 보겠습니다. 첫해 순위 목표는 두지 않고, 2년차 탈꼴찌, 3년차부터 조금씩 올려 가겠습니다.\n\n`+L.join('\n'),{kind:'구단',imp:true}); }catch(e){} }
   return tid; }
 

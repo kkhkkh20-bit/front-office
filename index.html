@@ -13465,7 +13465,7 @@ function newYear(){
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){} try{ relsYear(); }catch(e){} /* 인물 관계도 같은 비율로 되돌림(84b_person_rels) */
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
-  if(G.mgr[G.user]&&G.mgr[G.user].yrs<=0&&!G.mgr[G.user].interim){ const m=G.mgr[G.user]; staffHistory('mgr',m,'계약 만료',G.user); G.mgr[G.user]=null; try{ mreqCloseOld(); }catch(e){} mail('운영팀','감독 계약 종료',`${m.name} 감독과의 계약이 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.`,{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
+  if(G.mgr[G.user]&&G.mgr[G.user].yrs<=0&&!G.mgr[G.user].interim){ const m=G.mgr[G.user]; let gone=[]; try{ if(G.coach)gone=clanLeave(m,G.user,(m.age||0)>=STAFF_RET_AGE?'retire':'expire'); }catch(e){} if(gone.length)addLog(`${m.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); try{ exMgrAdd(m,G.user); }catch(e){} staffHistory('mgr',m,'계약 만료',G.user); G.mgr[G.user]=null; try{ mreqCloseOld(); }catch(e){} mail('운영팀','감독 계약 종료',`${m.name} 감독과의 계약이 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.`,{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.mgr[G.user]&&G.mgr[G.user].interim){ G.mgr[G.user]=null; mail('운영팀','감독대행 체제 종료','감독대행 체제가 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.',{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.tut&&!G.tut.done)G.tut.done=true; /* 비서 업무 안내는 창단 첫해에만 */
   try{ warFreeze(G.year); }catch(e){} /* 능력치가 바뀌기 전에 올해 WAR을 고정 */
@@ -14417,8 +14417,8 @@ function assignScout(id,role,key){ const s=G.scouts.find(x=>x.id===id); if(!s)re
 function scoutLoad(){ const c={}; for(const s of G.scouts)c[(s.role||'am')+':'+s.region]=(c[(s.role||'am')+':'+s.region]||0)+1; return c; }
 /* 스카우트 후보 12명. 매달 일부가 다른 구단으로 가고 새 후보가 들어온다 */
 const SC_MKT=12; function scSkillRoll(){ return clamp(Math.round(N(2.45,1.0)),1,5); }
-function scoutMkt(){ const mk=G.year*100+dobj(G.day).m; if(!G.scoutMarket)G.scoutMarket=[]; if(G.scoutMarketM!==mk){ G.scoutMarket=G.scoutMarket.filter(s=>s.ob||s.acc||(s.bid&&s.bid.exp>=G.day)||R()<.6); /* 재제안 기한이 남은 후보는 월초 교체에서 빼지 않는다 */ while(G.scoutMarket.length<SC_MKT)G.scoutMarket.push(mkScout(scSkillRoll())); G.scoutMarketM=mk; } return G.scoutMarket; }
-function refreshScoutMarket(){ const keep=(G.scoutMarket||[]).filter(s=>s.acc||(s.bid&&s.bid.exp>=G.day)); /* 재제안 기한이 남은 후보는 새해 교체에도 남긴다(검수 11-07) */ G.scoutMarket=keep.concat(Array.from({length:Math.max(0,SC_MKT-keep.length)},()=>mkScout(scSkillRoll()))); G.scoutMarketM=G.year*100+dobj(G.day).m; try{ if(G.ob)G.scoutMarket=obCands('scout').slice(0,2).map(obScout).concat(G.scoutMarket); }catch(e){} }
+function scoutMkt(){ const mk=G.year*100+dobj(G.day).m; if(!G.scoutMarket)G.scoutMarket=[]; if(G.scoutMarketM!==mk){ G.scoutMarket=G.scoutMarket.filter(s=>s.ob||s.acc||(s.bid&&s.bid.exp>=G.day)||loyWait(s)||R()<.6); /* 재제안 기한이 남은 후보는 월초 교체에서 빼지 않는다 */ while(G.scoutMarket.length<SC_MKT)G.scoutMarket.push(mkScout(scSkillRoll())); G.scoutMarketM=mk; } return G.scoutMarket; }
+function refreshScoutMarket(){ const keep=(G.scoutMarket||[]).filter(s=>s.acc||(s.bid&&s.bid.exp>=G.day)||loyWait(s)); /* 단장을 따라 나와 기다리는 사람(89b_staff_loyalty) */ /* 재제안 기한이 남은 후보는 새해 교체에도 남긴다(검수 11-07) */ G.scoutMarket=keep.concat(Array.from({length:Math.max(0,SC_MKT-keep.length)},()=>mkScout(scSkillRoll()))); G.scoutMarketM=G.year*100+dobj(G.day).m; try{ if(G.ob)G.scoutMarket=obCands('scout').slice(0,2).map(obScout).concat(G.scoutMarket); }catch(e){} }
 function offerMailDone(oid){ for(const m of G.mail) if(m.oid===oid)m.read=true; }
 /* 거래로 소속이 바뀐 선수가 걸린 받은 제안은 성사될 수 없으니 메일과 함께 닫는다 */
 function offerDropMoved(ids){ G.offers=(G.offers||[]).filter(x=>{ if(![...x.give,...x.get].some(id=>ids.includes(id)))return true; offerMailDone(x.id); return false; }); }
@@ -16181,7 +16181,7 @@ function refreshCoachMarket(){ const L=[]; for(const k of CKEYS){ const n=ri(2,4
 /* 매달 초: 새 후보가 들어오고 오래된 후보 일부는 다른 일을 찾아 떠난다 */
 function coachMarketMonth(){ const o=dobj(G.day); const mk=o.y*100+o.m; if(G.cmMonth===mk)return; G.cmMonth=mk;
   if(o.m===8&&!G.unemp&&G.coach&&G.coach[G.user]&&G.cExpY!==G.year){ G.cExpY=G.year; const L=CKEYS.filter(k=>{ const c=G.coach[G.user][k]; return c&&c.yrs<=1&&!(c.cs!=null&&c.cs>G.year)&&c.expN!==G.year; }); L.forEach(k=>G.coach[G.user][k].expN=G.year); /* 같은 코치 만료 안내는 한 해 한 번(8월·9월 중복 방지, 검수 11-06) */ if(L.length)mail('운영팀','올해로 계약이 끝나는 코치',`${L.map(k=>{ const c=G.coach[G.user][k]; return `${CROLE[k].l} ${c.name}(${c.age}세)`; }).join(', ')}의 계약이 올 시즌으로 끝납니다. 남기려면 시즌이 끝나기 전에 코치진 화면에서 연장하세요. 그대로 두면 겨울에 코치 시장으로 나갑니다.${cRetTxt(L.map(k=>G.coach[G.user][k]))}`,{kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); } G.cmarket=G.cmarket||[];
-  const leave=G.cmarket.filter(c=>c.res!==G.user&&R()<.12).map(c=>c.id); /* 우선 협상 후보는 월간 정리에서도 남긴다(검수 11-09zw #21) */ G.cmarket=G.cmarket.filter(c=>!leave.includes(c.id)); const n=ri(3,5); for(let i=0;i<n;i++)G.cmarket.push(mkCandCoach(pick(CKEYS)));
+  const leave=G.cmarket.filter(c=>c.res!==G.user&&!loyWait(c)&&R()<.12).map(c=>c.id); /* 우선 협상 후보는 월간 정리에서도 남긴다(검수 11-09zw #21) */ G.cmarket=G.cmarket.filter(c=>!leave.includes(c.id)); const n=ri(3,5); for(let i=0;i<n;i++)G.cmarket.push(mkCandCoach(pick(CKEYS)));
   if(G.cmarket.length>90)G.cmarket=G.cmarket.filter((c,i,A)=>c.res===G.user||i>=A.length-90); }
 /* 보조 코치 명단: 단장이 맡은 구단은 G.coachX, 떠난 구단(야인이면 전 구단)은 그 구단에 남긴 명단(검수 11-09zs) */
 function axOf(tid){ return (tid===G.user&&!G.unemp?G.coachX:((G.orgT||{})[tid]||{}).coachX)||[]; }
@@ -16216,7 +16216,7 @@ const ctLeftTxt=x=>{ const e=ctEndY(x), cur=G.rolled===G.year?G.year+1:G.year; r
 const ctSeasonsTxt=n=>{ const s=ctStartS(); return n>1?`${s}~${s+n-1} 시즌`:`${s} 시즌`; };
 function hireCoach(id,years){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; years=Math.round(+years); if(!(years>=1&&years<=4))return '계약 기간은 1~4년입니다.'; const c=(G.cmarket||[]).find(x=>x.id===id); if(!c)return '후보가 없습니다.'; if(typeof schMarketWhy==='function'){ const why=schMarketWhy(c); if(why)return why; } const C=G.coach[G.user]; const old=C[c.role];
   if(old){ const pay=coachSev(old); G.spend.coach=(G.spend.coach||0)+pay; addLog(`${CROLE[c.role].l} ${old.name}와(과) 결별했습니다(잔여 연봉 정산 ${money(pay)}).`); staffHistory('coach',old,'계약 종료',G.user,'단장 결정에 따른 교체'); old.yrs=0; old.clan=null; G.cmarket.push(old); }
-  staffCt(c,years); C[c.role]=c; if(old)interimLeft(old); G.cmarket=G.cmarket.filter(x=>x.id!==id); if(typeof schStaffJoined==='function')schStaffJoined(c,G.user); try{ obTaken(c.ob,c); }catch(e){} obHireBonus(c.ob,CROLE[c.role].l); staffHistory('coach',c,'영입',G.user,`${years}년 · 연 ${money(c.sal)}`); addLog(`${CROLE[c.role].l}(으)로 ${c.name}을(를) ${years}년(${ctSeasonsTxt(years)}) 연 ${money(c.sal)}에 영입했습니다.`); return ''; }
+  staffCt(c,years); C[c.role]=c; if(old)interimLeft(old); G.cmarket=G.cmarket.filter(x=>x.id!==id); delete c.folM; delete c.gmFol; /* 다른 데 계약하면 기다림도 끝(89b_staff_loyalty) */ if(typeof schStaffJoined==='function')schStaffJoined(c,G.user); try{ obTaken(c.ob,c); }catch(e){} obHireBonus(c.ob,CROLE[c.role].l); staffHistory('coach',c,'영입',G.user,`${years}년 · 연 ${money(c.sal)}`); addLog(`${CROLE[c.role].l}(으)로 ${c.name}을(를) ${years}년(${ctSeasonsTxt(years)}) 연 ${money(c.sal)}에 영입했습니다.`); return ''; }
 function fireCoach(role){ if(G.unemp)return; const C=G.coach[G.user]; const c=C[role]; if(!c)return; const pay=coachSev(c); G.spend.coach=(G.spend.coach||0)+pay; C[role]=null; staffHistory('coach',c,'계약 종료',G.user,'단장 해임'); c.yrs=0; c.clan=null; G.cmarket.push(c); addLog(`${CROLE[role].l} ${c.name}을(를) 내보냈습니다(잔여 연봉 정산 ${money(pay)}).`); interimLeft(c); }
 /* 떠난 코치가 감독대행이었으면 남은 코치로 대행을 다시 정한다(해고 검수 11-08, 시장 교체 검수 11-09m) */
 function interimLeft(c){ const m=G.mgr[G.user]; if(m&&m.interim&&(m.cid===c.id||(m.cid==null&&m.name===`${c.name}(감독대행)`))){ staffHistory('mgr',m,'감독대행 임무 종료',G.user,`${c.name} 코치 퇴임`); G.mgr[G.user]=mkInterim(); staffHistory('mgr',G.mgr[G.user],'감독대행 선임',G.user,'전임 대행 코치 퇴임에 따른 교체'); addLog(`감독대행은 ${G.mgr[G.user].name.replace('(감독대행)','')}이(가) 맡습니다.`); } }
@@ -16239,10 +16239,8 @@ function promoteCoach(role){ if(G.unemp)return '구단을 맡고 있지 않습�
 function clanSev(m){ const C=G.coach&&G.coach[G.user]; if(!C)return 0; return sum((m.clan||[]).map(c=>{ const o=C[c.role]; return o?coachSev(o):0; })); }
 function hireClan(m,years){ // 감독과 함께 사단 코치를 데려온다
   const C=G.coach[G.user]; const got=[];
-  for(const c of (m.clan||[])){ const old=C[c.role]; if(old){ const pay=coachSev(old); G.spend.coach=(G.spend.coach||0)+pay; staffHistory('coach',old,'계약 종료',G.user,'단장 결정에 따른 교체'); old.yrs=0; old.clan=null; G.cmarket.push(old); } staffCt(c,Math.min(4,years)); C[c.role]=c; staffHistory('coach',c,'영입',G.user,`${m.name} 감독 사단 합류 · ${years}년`); got.push(`${CROLE[c.role].l} ${c.name}`); }
+  m.clan=clanNow(m); for(const c of (m.clan||[])){ G.cmarket=(G.cmarket||[]).filter(x=>x!==c); delete c.folM; delete c.res; c.clan=m.id; const old=C[c.role]; if(old){ const pay=coachSev(old); G.spend.coach=(G.spend.coach||0)+pay; staffHistory('coach',old,'계약 종료',G.user,'단장 결정에 따른 교체'); old.yrs=0; old.clan=null; G.cmarket.push(old); } staffCt(c,Math.min(4,years)); C[c.role]=c; staffHistory('coach',c,'영입',G.user,`${m.name} 감독 사단 합류 · ${years}년`); got.push(`${CROLE[c.role].l} ${c.name}`); }
   if(got.length)addLog(`${m.name} 감독 사단 합류: ${got.join(', ')}`); return got; }
-function clanLeave(m){ // 감독이 떠나면 사단 코치 상당수가 함께 떠난다
-  if(!m||!m.id)return []; const C=G.coach[G.user]; const out=[]; for(const k of CKEYS){ const c=C[k]; if(c&&c.clan===m.id&&R()<.7){ C[k]=null; const pay=coachSev(c); G.spend.coach=(G.spend.coach||0)+pay; c.yrs=0; c.clan=null; (G.cmarket=G.cmarket||[]).push(c); staffHistory('coach',c,'계약 종료',G.user,`${m.name} 감독 퇴임에 따른 사단 동반 퇴임`); out.push(`${CROLE[k].l} ${c.name}(정산 ${money(pay)})`); } } return out; } /* 함께 떠나는 사단 코치도 경질처럼 잔여 연봉 절반을 정산하고 코치 시장에 나온다(검수 11-07) */
 function coachYear(){ // 겨울: 계약 정리
   G.cmarket=(G.cmarket||[]).filter(c=>(c.age||0)<STAFF_RET_AGE); /* 은퇴 나이 코치는 시장에서도 빠진다 */
   for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue;
@@ -16255,7 +16253,7 @@ function coachYear(){ // 겨울: 계약 정리
       if(c.yrs>0)continue;
       if(t.id===ME()){ C[k]=null; c.from=G.user; c.fromY=G.year; G.cmarket.push(c); staffHistory('coach',c,'계약 만료',t.id); interimLeft(c); continue; }
       const v=x=>(x.sk||45)+(x.dv||45), b=(G.cmarket||[]).filter(x=>x.role===k&&x.age<66&&x.from!==t.id&&!x.ob&&x.fromY!==G.year&&x.res!==G.user).sort((a,b)=>v(b)-v(a))[0];
-      if(b&&v(b)>=v(c)+4){ G.cmarket=G.cmarket.filter(x=>x!==b); staffCt(b,ri(1,3),G.year+1); C[k]=b;
+      if(b&&v(b)>=v(c)+4){ G.cmarket=G.cmarket.filter(x=>x!==b); delete b.folM; delete b.gmFol; staffCt(b,ri(1,3),G.year+1); C[k]=b;
         if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); }
         staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',b,'영입',t.id,`${c.name} 코치 계약 만료 · ${b.yrs}년`);
       } else if((c.age||0)<STAFF_RET_AGE&&R()<.55){ staffRenew(c,ri(1,2),G.year+1); staffHistory('coach',c,'재계약',t.id,`${c.yrs}년`);
@@ -16263,7 +16261,7 @@ function coachYear(){ // 겨울: 계약 정리
         C[k]=obAiCoach(t.id,k)||mkCoach(k); staffCt(C[k],C[k].yrs||ri(1,3),G.year+1); staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',C[k],'영입',t.id,`${c.name} 코치 계약 만료 · ${C[k].yrs}년`); }
     }
   }
-  const kept=(G.cmarket||[]).filter(c=>c.fromY===G.year); refreshCoachMarket(); { const ko=new Set(kept.map(c=>c.ob).filter(Boolean)); G.cmarket=G.cmarket.filter(c=>!(c.ob&&ko.has(c.ob))); }
+  const kept=(G.cmarket||[]).filter(c=>c.fromY===G.year||(loyWait(c)&&c.res!==G.user)); /* 감독·단장을 따라 나와 기다리는 코치도 남는다(89b_staff_loyalty) */ refreshCoachMarket(); { const ko=new Set(kept.map(c=>c.ob).filter(Boolean)); G.cmarket=G.cmarket.filter(c=>!(c.ob&&ko.has(c.ob))); }
   G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64)); const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 후보 목록에 남아 있어 다시 데려올 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
 const COACH_GRADE={bat:{l:'타격',ks:['bc','ab','hc'],k:'sk'},pit:{l:'투수',ks:['pc','bp','cc'],k:'sk'},run:{l:'주루',ks:['rc','r1'],k:'sk'},def:{l:'수비',ks:['dc','cc'],k:'sk'},dev1:{l:'1군 육성',ks:['pc','bp','bc','ab','hc'],k:'dv'},dev2:{l:'2군 육성',ks:['fm','fp','fb','fd','fc','rs','rb'],k:'dv'}};
 function coachGrade(tid){ const C=coachesOf(tid); return Object.fromEntries(Object.entries(COACH_GRADE).map(([key,{ks,k}])=>{ const v=avg(ks.map(r=>effC(C[r],tid,k)));return [key,{v:Math.round(v),l:v>=66?'A':v>=59?'B':v>=52?'C':'D'}]; })); }
@@ -16852,18 +16850,18 @@ function gmTurnover(){ gmInit(); const st=G.last&&G.last.order?G.last.order:null
     gmReplace(t,g,{fx,rk,ten,chron:`${g.name} 단장 경질 · ${G.year}시즌 ${rk}위 · 재임 ${ten}년 · ${g.age}세`}); } }
 /* AI 구단 단장 교체 공통(성적 경질 gmTurnover·구단주 신뢰 경질 aiOwnerYear): 물러난 단장 후보 명단(gmExAdd), OB·내부 승격·개혁 단장, 사용자 단장직 제의까지 같은 길로(검수 11-14).
    o: fx(gmFireCheck 결과), rk·ten(기사용), chron(연표 문구), why(기사 사유, 없으면 성적 기사) */
-function gmReplace(t,g,o){ o=o||{}; const fx=o.fx||{}, old=g.name, rk=o.rk??5, ten=o.ten??(G.year-(g.since??G.year));
+function gmReplace(t,g,o){ o=o||{}; const fx=o.fx||{}, old=g.name, rk=o.rk??5, ten=o.ten??(G.year-(g.since??G.year)); try{ gmLoyalAI(t.id,g,fx.age?'retire':'fire'); }catch(e){} /* 단장을 좋아하던 직원 동반 사임(89b_staff_loyalty) */
   const fn=(succ)=>{ try{ if(o.why)news('리그',`${tshort(t.id)}, ${old} 단장 경질${succ?` · 후임 ${succ.name}`:''}`,`${tname(t.id)}이(가) ${old} 단장과 결별했습니다. ${o.why}. ${succ?`새 단장은 ${succ.name}(${succ.car||'프런트 출신'}, ${GMT[succ.trait]?GMT[succ.trait].l:''})입니다.`:'후임을 물색 중이며, 다른 구단 출신이나 야인 단장에게도 연락하고 있다는 이야기가 나옵니다.'}`,0); else gmFireNews(t,old,rk,ten,g.age,succ); }catch(e){} };
   chron('fired',o.chron||`${old} 단장 경질`,null,t.id); const want=G.unemp?R()<clamp((G.rep-10)/60,.15,.85):(G.rep>=45&&R()<clamp((G.rep-35)/50,.2,.7)); /* 현직이어도 명성 45부터 다른 구단이 빼 오려 한다 */
   if(want&&!G.gameOver&&!(G.unemp&&G.unemp.from===t.id)&&!(G.jobs||[]).some(j=>!j.done)){ t.gm={...mkGM(t.id),name:'단장대행',interim:true};chron('join','단장대행 취임 · 정식 후임 물색',null,t.id); jobOffer(t.id,false); wire('단장',`${t.city} ${t.nick}, ${old} 단장 경질. 후임을 물색 중입니다.`,{tid:t.id}); fn(null); return null; }
-  gmExAdd(g,t.id); const og=fx.run?null:(()=>{ try{ return obAiGM(t.id); }catch(e){ return null; } })(); t.gm=og||(fx.run?gmReformPick(t,fx.run):typeof ipGM==='function'?ipGM(t,mkGM(t.id)):mkGM(t.id)); /* 성적 경질이면 능력을 따져 개혁 단장을 데려온다 */chron('join',`${t.gm.name} 단장 취임${t.gm.inner?' · 내부 승격':''} · 전임 ${old} · ${GMT[t.gm.trait].l}`,null,t.id); if(!og)t.rel=clamp(Math.round(N(50,6)),35,65); if(t.plan)t.plan.free=1; /* 새 단장은 전임의 계획에 묶이지 않고 다음 점검 때 새로 짠다 */ wire('단장',`${t.city} ${t.nick}, ${old} 단장 후임으로 ${t.gm.inner?'내부 승격한 ':''}${t.gm.name} 단장 선임`,{tid:t.id}); fn(t.gm); if(fx.run){ t.reformY=G.year; try{ domLog('gmFire'); gmReformStaff(t,fx.run); }catch(e){} } return t.gm; }
+  gmExAdd(g,t.id); const og=fx.run?null:(()=>{ try{ return obAiGM(t.id); }catch(e){ return null; } })(); t.gm=og||(fx.run?gmReformPick(t,fx.run):typeof ipGM==='function'?ipGM(t,mkGM(t.id)):mkGM(t.id)); /* 성적 경질이면 능력을 따져 개혁 단장을 데려온다 */chron('join',`${t.gm.name} 단장 취임${t.gm.inner?' · 내부 승격':''} · 전임 ${old} · ${GMT[t.gm.trait].l}`,null,t.id); if(!og)t.rel=clamp(Math.round(N(50,6)),35,65); if(t.plan)t.plan.free=1; /* 새 단장은 전임의 계획에 묶이지 않고 다음 점검 때 새로 짠다 */ wire('단장',`${t.city} ${t.nick}, ${old} 단장 후임으로 ${t.gm.inner?'내부 승격한 ':''}${t.gm.name} 단장 선임`,{tid:t.id}); fn(t.gm); try{ gmLoyalJoin(t.id,t.gm); }catch(e){} /* 새 단장을 따라오는 직원 */ if(fx.run){ t.reformY=G.year; try{ domLog('gmFire'); gmReformStaff(t,fx.run); }catch(e){} } return t.gm; }
 function jobOffer(tid,fired,terms,exp0){ const t=team(tid); terms=terms||myCOffer(tid,fired); if(personalBroke()){ const s=Math.max(GMC_MIN,Math.round(terms.sal*.9/10)*10); if(s<terms.sal)terms={...terms,sal:s,broke:terms.sal}; } /* 하한에 걸려 그대로면 낮췄다고 하지 않는다(검수 11-09zc). broke=원래 금액 */ /* 야인 생활비가 바닥나면 구단이 사정을 알고 10% 낮춰 부른다(11-09) */ G.jobs.push({tid,exp:G.day+(fired?20:exp0?20:12),fired:!!fired,done:false,terms,exp0:!!exp0});
   mail(`${t.city} ${t.nick} 구단주실`,`${t.city} ${t.nick} 단장직 제의`,`${t.city} ${t.nick} 구단주실입니다. 단장님의 운영을 지켜봐 왔습니다. 저희 구단의 새 단장을 맡아 주실 수 있겠습니까?${exp0?' 계약이 끝나는 때라 미리 연락드립니다.':''}\n제시 조건: 연봉 ${money(terms.sal)}, ${terms.yrs}년${terms.broke?` (생활비가 바닥난 사정을 알고 평소 ${money(terms.broke)}보다 낮게 불렀습니다)`:''}${!G.unemp&&G.myC&&G.myC.tid!=null&&G.myC.sal?` (지금 연봉 ${money(G.myC.sal)})`:''}\n${tname(tid)} · 지난 시즌 ${G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===tid)+1:'-'}위 · ${needText(tid)}\n${G.unemp?`수락하면 바로 ${t.city} ${t.nick}를 맡아 단장 경력을 다시 시작합니다.`:`수락하면 바로 ${t.city} ${t.nick}를 맡게 되고, 지금 구단과는 작별합니다.`}\n${jobBrief(tid).join(' · ')}`,
     {imp:true,kind:'경력',acts:[{l:`수락: ${t.city} ${t.nick}(으)로 이동`,a:'jobYes',v:tid},{l:'거절',a:'jobNo',v:tid}]}); }
 function jobsDaily(){ for(const j of G.jobs||[]){ if(j.done||G.day<j.exp)continue; jobAnswer(j.tid,false,true); } }
 function jobAnswer(tid,yes,auto){ const j=(G.jobs||[]).find(x=>x.tid===tid&&!x.done); if(!j)return '제의가 없습니다.'; if(yes&&G.day>=j.exp){ jobAnswer(tid,false,true); return '제의 기한이 지났습니다.'; } /* 일일 처리 전에 눌러도 만료 제의는 받지 않는다(검수 11-06) */ j.done=true; const t=team(tid);
-  if(yes){ const wasU=!!G.unemp; if(!G.unemp&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); }
-    G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid); try{ myCStart(tid,j.terms,wasU?'':'이직'); }catch(e){} for(const o of [...G.jobs])if(!o.done&&o.tid!==tid)jobAnswer(o.tid,false,true); return `${tname(tid)} 단장으로 취임했습니다. 연봉 ${money(G.myC.sal)}, ${G.myC.y0}~${G.myC.y1}년.`; }
+  if(yes){ const wasU=!!G.unemp, old=G.user; let loyL=[]; if(!wasU)try{ loyL=meLoyalLeave(old,'move'); }catch(e){} /* 단장을 좋아하던 직원은 따라 나온다(89b_staff_loyalty) */ if(!G.unemp&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); }
+    G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid); if(loyL.length)try{ aiCoachFill(old,'단장을 따라 떠난 코치 후임',loyRoles(loyL)); }catch(e){} try{ meLoyalOffer(tid); }catch(e){} try{ myCStart(tid,j.terms,wasU?'':'이직'); }catch(e){} for(const o of [...G.jobs])if(!o.done&&o.tid!==tid)jobAnswer(o.tid,false,true); return `${tname(tid)} 단장으로 취임했습니다. 연봉 ${money(G.myC.sal)}, ${G.myC.y0}~${G.myC.y1}년.`; }
   if(t.gm&&t.gm.interim){ t.gm=mkGM(tid); t.rel=50;chron('join',`${t.gm.name} 단장 취임 · 정식 후임 선임`,null,tid); wire('단장',`${t.city} ${t.nick}, ${t.gm.name} 단장 선임 (${GMT[t.gm.trait].l})`,{tid}); }
   return auto?'':`${t.city} ${t.nick}의 제의를 거절했습니다.`; }
 /* 경질되면 야인이 된다. 시간은 계속 흐르고, 다른 구단에서 단장이 바뀔 때 명성에 따라 제의가 온다 */
@@ -16902,14 +16900,15 @@ function spendHandOff(old){ const S=G.spend||{}; const t=team(old); try{ const f
   G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,faB:0,scout:0}; G.spEp=(G.spEp||0)+1; /* 장부 회차: 웨이버 환급이 넘긴 장부 몫이면 현금으로(검수 11-09g) */ }
 /* 이직 때 현금으로 먼저 정산한 항목도 그해 그 구단 결산 명세에 총액으로 남긴다(검수 11-09h). net은 이미 현금에 넣은 몫: 결산이 되돌린 뒤 명세대로 다시 넣는다 */
 function hoBook(tid,inc,exp){ const k=fyNow()+':'+tid, H=G.hoL=G.hoL||{}, E=H[k]=H[k]||{inc:{},exp:{},net:0}; for(const [l,v] of inc)if(v>0){ E.inc[l]=(E.inc[l]||0)+Math.round(v); E.net+=Math.round(v); } for(const [l,v] of exp)if(v>0){ E.exp[l]=(E.exp[l]||0)+Math.round(v); E.net-=Math.round(v); } }
-function firedFlow(y,msg,kind){ try{ if(typeof teleEv==='function')teleEv('gm_out',{kind:kind||'fired',rep:G.rep}); }catch(e){} gmInit(); const old=G.user; const ot=team(old);
+function firedFlow(y,msg,kind){ try{ if(typeof teleEv==='function')teleEv('gm_out',{kind:kind||'fired',rep:G.rep}); }catch(e){} gmInit(); const old=G.user; const ot=team(old); let loyL=[]; try{ loyL=meLoyalLeave(old,kind||'fire'); }catch(e){} /* 단장을 좋아하던 직원 동반 사임(89b_staff_loyalty) */
   let pay=''; try{ if(kind){ if(G.myC&&G.myC.tid!=null)myCEnd(kind==='leave'?'재계약 고사':kind==='resign'?'자진 사임':'계약 만료',y); } else pay=myCFired(y); }catch(e){}
   chron('fired',`${meName()||'단장'} 단장 · ${kind==='leave'?'재계약 고사':kind==='expire'?'계약 만료':kind==='resign'?'자진 사임':'단장 경질'}: ${msg}`,null,old); G.unemp={y,msg,since:G.day,from:old,k:kind||'fired'}; (G.mktT=G.mktT||{})[old]={fy:sponSeason(),v:G.marketing}; /* 시즌 중 물러나도 그해 마케팅 설정은 그 구단 결산에(검수 11-09h). 결산 뒤면 다음 시즌 설정으로 남긴다(검수 11-09x) */ { const O=G.orgT=G.orgT||{}; O[old]=Object.assign(O[old]||{},{coachX:G.coachX||[]}); G.coachX=[]; } try{ const L=stInit(); L[old]={sc:G.scouts||[],an:anaList()}; stSync(old); G.scouts=[]; G.analysts=[]; }catch(e){} { const W=G.fwatchT=G.fwatchT||{}; W[old]=G.fwatch||[]; G.fwatch=[]; const X=G.fwNoT=G.fwNoT||{}; X[old]=G.fwNo||[]; G.fwNo=[]; } /* 스카우트·분석원도 구단에 남겨 후임 AI가 운영 */ /* 보조 코치는 구단 계약: 구단에 남긴다(돌아오면 이어받음, 새해엔 나이·계약이 흐름). 이직 때 새 구단 코치를 풀어 버리던 순서 문제도 없앤다(검수 11-08) */ ot.gm=mkGM(old); ot.rel=55;chron('join',`${ot.gm.name} 단장 취임 · 전임 ${meName()||'단장'} 퇴임 후 선임`,null,old); try{ contractHandOff(old); }catch(e){} /* 합의한 연봉은 후임이 바로 반영(이직과 같게, 검수 11-09zzb) */ try{ spendHandOff(old); }catch(e){} campInjLeave(old); try{ leaveTeamState(old); compHandOff(old); }catch(e){}
+  if(loyL.length)try{ aiCoachFill(old,'단장을 따라 떠난 코치 후임',loyRoles(loyL)); }catch(e){}
   wire('단장',`${tname(old)}, ${kind==='leave'?'단장 재계약 불발':kind==='expire'?'단장과 계약 만료로 결별':kind==='resign'?`${meName()?meName()+' ':''}단장 자진 사임`:'단장 경질'}. 후임에 ${ot.gm.name} 단장`,{tid:old});
   mail('야인','단장직에서 물러났습니다',`${msg}${pay}\n\n이제 야인입니다. 시간은 그대로 흐르고, 다른 구단이 단장을 바꿀 때 단장 명성(${G.rep})을 보고 제의가 올 수 있습니다. 명성이 높을수록 제의가 자주 옵니다. 제의는 소식함과 홈에 뜹니다.\n\n그동안 리그 탭에서 판도를 지켜보세요. 단장 경력을 끝내려면 홈의 '단장 경력 마치기'를 누르면 됩니다.`,{imp:true,kind:'경력'});
   /* 명성이 높으면 곧바로 연락이 오기도 한다 */
   const cands=G.teams.filter(t=>t.id!==old&&!(G.jobs||[]).some(j=>!j.done&&j.tid===t.id)).map(t=>({t,rk:G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===t.id)+1:5})).sort((a,b)=>b.rk-a.rk);
-  const n=G.rep>=70?2:G.rep>=55?1:0; for(const c of cands.slice(0,n)){ const og=gmOf(c.t.id).name; c.t.gm={...mkGM(c.t.id),name:'단장대행',interim:true};chron('fired',`${og} 단장과 결별 · 후임 물색`,null,c.t.id);chron('join','단장대행 취임 · 정식 후임 물색',null,c.t.id); wire('단장',`${c.t.city} ${c.t.nick}, ${og} 단장과 결별`,{tid:c.t.id}); jobOffer(c.t.id,true); } }
+  const n=G.rep>=70?2:G.rep>=55?1:0; for(const c of cands.slice(0,n)){ const og0=gmOf(c.t.id), og=og0.name; try{ gmLoyalAI(c.t.id,og0,'fire'); }catch(e){} c.t.gm={...mkGM(c.t.id),name:'단장대행',interim:true};chron('fired',`${og} 단장과 결별 · 후임 물색`,null,c.t.id);chron('join','단장대행 취임 · 정식 후임 물색',null,c.t.id); wire('단장',`${c.t.city} ${c.t.nick}, ${og} 단장과 결별`,{tid:c.t.id}); jobOffer(c.t.id,true); } }
 /* 야인 기간: 전 소속 구단은 새 단장(AI)이 운영한다 */
 function unempAuto(){ if(!G.unemp)return; if(G._unD===G.day)return; G._unD=G.day; /* 하루 한 번 */ const u=G.user;
   for(const e of (G.evs||[]))if(!e.done){ try{ evPick(e.id,e.def,true); }catch(x){ e.done=true; } }
@@ -16924,7 +16923,7 @@ function unempAuto(){ if(!G.unemp)return; if(G._unD===G.day)return; G._unD=G.day
   G.medSet=true; G.res=null; G.live=null;
   const o=dobj(G.day); if(o.d===1){ G.rep=clamp((G.rep??40)+(G.rep<50?1:0),0,100); }
   /* 7월 1일: 하위권 구단이 단장을 바꾸며 연락해 오기도 한다 */
-  if(o.m===7&&o.d===1&&!(G.jobs||[]).some(j=>!j.done)){ const st=standingsNow(); const t=team(st[st.length-1-ri(0,2)].tid); if(t.id!==u&&R()<clamp((G.rep-15)/80,.08,.6)){ const og=gmOf(t.id).name; t.gm={...mkGM(t.id),name:'단장대행',interim:true};chron('fired',`${og} 단장 시즌 중 경질 · 하위권 성적`,null,t.id);chron('join','단장대행 취임 · 정식 후임 물색',null,t.id); wire('단장',`${t.city} ${t.nick}, ${og} 단장 시즌 중 경질`,{tid:t.id}); try{ news('리그',`${tshort(t.id)}, ${og} 단장 시즌 중 경질`,`최하위권으로 처진 ${tname(t.id)}이(가) 시즌 도중 ${og} 단장을 경질했습니다. 후임을 물색 중입니다.`,0); }catch(e){} jobOffer(t.id,true); } } }
+  if(o.m===7&&o.d===1&&!(G.jobs||[]).some(j=>!j.done)){ const st=standingsNow(); const t=team(st[st.length-1-ri(0,2)].tid); if(t.id!==u&&R()<clamp((G.rep-15)/80,.08,.6)){ const og0=gmOf(t.id), og=og0.name; try{ gmLoyalAI(t.id,og0,'fire'); }catch(e){} t.gm={...mkGM(t.id),name:'단장대행',interim:true};chron('fired',`${og} 단장 시즌 중 경질 · 하위권 성적`,null,t.id);chron('join','단장대행 취임 · 정식 후임 물색',null,t.id); wire('단장',`${t.city} ${t.nick}, ${og} 단장 시즌 중 경질`,{tid:t.id}); try{ news('리그',`${tshort(t.id)}, ${og} 단장 시즌 중 경질`,`최하위권으로 처진 ${tname(t.id)}이(가) 시즌 도중 ${og} 단장을 경질했습니다. 후임을 물색 중입니다.`,0); }catch(e){} jobOffer(t.id,true); } } }
 /* 자진 사임: 남은 계약 연봉은 받지 않는다. 계약 기간 중이면 명성이 조금 깎인다(시즌 중이면 더). 야인이 되어 다른 구단 제의를 기다린다 */
 function resignGM(){ if(G.unemp)return '지금은 맡은 구단이 없습니다.'; const C=myCInit(); if(!C||C.tid==null)return '지금은 맡은 구단이 없습니다.'; const left=Math.max(0,C.y1-G.year); const mid=period()==='season'||period()==='post';
   const pen=(left>0?2:0)+(mid?3:0); G.rep=clamp((G.rep??50)-pen,0,100); try{ meInc('resign'); }catch(e){}
@@ -17625,11 +17624,11 @@ function mkInterim(){ const C=(G.coach&&G.coach[G.user])||{}; const active=c=>c&
 function hireMgr(id,years,withClan,pl){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; years=Math.round(+years); if(!(years>=1&&years<=5))return '계약 기간은 1~5년입니다.';
   const m=(G.mmarket||[]).find(x=>x.id===id); if(!m)return '후보가 없습니다.';
   if(pl&&pl.length){ if(pl.some(k=>mplStance(m,k)==='no'))return mplApply(m,pl); }
-  const cur=G.mgr[G.user]; if(G.coach&&cur&&!cur.interim){ const gone=clanLeave(cur); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
+  const cur=G.mgr[G.user]; if(G.coach&&cur&&!cur.interim){ const gone=clanLeave(cur,G.user,'fire'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
   if(cur&&!cur.interim){ try{ meInc('mgrFire'); }catch(e){} try{ exMgrAdd(cur,G.user); }catch(e){} staffHistory('mgr',cur,'경질',G.user,'단장 결정'); /* 새 감독을 바로 앉혀도 경질로 센다(검수 11-07) */ const {pay,brk,n}=mgrSevPay(cur); G.spend.mgr+=pay; G.spend.sev=(G.spend.sev||0)+pay; addLog(`${cur.name} 감독을 경질했습니다. 잔여 연봉 ${money(pay)}${brk?`(약속 위반 ${n}회로 계약 위반 조항 적용, 절반)`:''}.`); }
   if(cur&&cur.interim)staffHistory('mgr',cur,'감독대행 임무 종료',G.user,'정식 감독 선임'); delete m.pl; if(pl&&pl.length)mplApply(m,pl);
   staffCt(m,years); m.hD=G.day; /* 부임일: 선수를 얼마나 봤는지 */ G.mgr[G.user]=m; G.mmarket=G.mmarket.filter(x=>x.id!==id); try{ obTaken(m.ob,m); }catch(e){} try{ mreqCloseOld(); }catch(e){}
-  if(G.coach&&withClan&&m.clan&&m.clan.length){ const got=hireClan(m,years); if(got.length)note('감독',`${m.name} 감독 사단 코치 ${got.join(', ')}이(가) 함께 왔습니다. 같은 사단 코치는 감독과 손발이 맞아 지도 능력이 조금 더 나옵니다.`); }
+  if(G.coach&&!withClan)for(const c of clanFol(m))delete c.folM; /* 사단 없이 선임하면 기다리던 코치는 시장에 그대로 남는다 */ if(G.coach&&withClan&&(m.clan=clanNow(m)).length){ const got=hireClan(m,years); if(got.length)note('감독',`${m.name} 감독 사단 코치 ${got.join(', ')}이(가) 함께 왔습니다. 같은 사단 코치는 감독과 손발이 맞아 지도 능력이 조금 더 나옵니다.`); }
   addLog(`${m.name} 감독과 ${years}년 연 ${money(m.sal)}에 계약했습니다.`); staffHistory('mgr',m,'선임',G.user,`${years}년 · 연 ${money(m.sal)}`);
   mail('운영팀',`${m.name} 감독 선임`,`${m.name} 감독과 ${years}년 연 ${money(m.sal)}에 계약했습니다. ${mgrStyle(m)} 성향입니다.${m.pl?`\n영입 면담에서 받은 약속: ${Object.keys(m.pl).map(k=>MPL[k].l).join(', ')}.`:''}`,{kind:'감독'});
   wire('감독',`${tname(G.user)}, ${m.name} 감독 선임`,{tid:G.user,x:{mid:m.id,hire:1}});
@@ -17638,7 +17637,7 @@ function hireMgr(id,years,withClan,pl){ if(G.unemp)return '구단을 맡고 있�
   for(const p of playersOf(G.user)){ initPers(p); p.mor=clamp(p.mor+(m.disc-50)/10+(m.fame>=70?3:0),0,100); }
   return '';
 }
-function fireMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; try{ meInc('mgrFire'); }catch(e){} try{ exMgrAdd(cur,G.user); }catch(e){} if(G.coach){ const gone=clanLeave(cur); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); } const {pay,brk,n}=mgrSevPay(cur); G.spend.mgr+=pay; G.spend.sev=(G.spend.sev||0)+pay;
+function fireMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; try{ meInc('mgrFire'); }catch(e){} try{ exMgrAdd(cur,G.user); }catch(e){} if(G.coach){ const gone=clanLeave(cur,G.user,'fire'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); } const {pay,brk,n}=mgrSevPay(cur); G.spend.mgr+=pay; G.spend.sev=(G.spend.sev||0)+pay;
   addLog(`${cur.name} 감독을 경질했습니다. 잔여 연봉 ${money(pay)}${brk?`(약속 위반 ${n}회로 계약 위반 조항 적용, 절반)`:''}.`); staffHistory('mgr',cur,'경질',G.user,'단장 결정');
   G.mgr[G.user]=mkInterim(); staffHistory('mgr',G.mgr[G.user],'감독대행 선임',G.user,`${cur.name} 감독 퇴임 후 잔여 시즌 지휘`); try{ mreqCloseOld(); }catch(e){}
   if(!brk)for(const p of playersOf(G.user))p.mor=clamp(p.mor-4,0,100);
@@ -17646,7 +17645,7 @@ function fireMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.int
   try{ ivRequest('mgr_fire',{nm:cur.name}); }catch(e){}
   stop('감독',`${cur.name} 감독을 경질했습니다. 남은 기간은 수석코치가 감독대행을 맡습니다. 새 감독은 스태프·육성 → 감독에서 선임하세요.`); }
 /* 감독 자진 사퇴: 잔여 연봉·경질 기사·선수 기분 하락 없이 감독대행 체제로 */
-function resignMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; if(G.coach){ const gone=clanLeave(cur); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
+function resignMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; if(G.coach){ const gone=clanLeave(cur,G.user,'resign'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
   addLog(`${cur.name} 감독이 자진 사퇴했습니다. 잔여 연봉은 없습니다.`); staffHistory('mgr',cur,'자진 사퇴',G.user);
   G.mgr[G.user]=mkInterim(); staffHistory('mgr',G.mgr[G.user],'감독대행 선임',G.user,`${cur.name} 감독 퇴임 후 잔여 시즌 지휘`); try{ mreqCloseOld(); }catch(e){}
   wire('감독',`${tname(G.user)}, ${cur.name} 감독 자진 사퇴`,{tid:G.user,x:{fire:1,nm:cur.name}}); }
@@ -17921,9 +17920,9 @@ function faceSVG(o){ { const k=cimgKey(o); if(k&&typeof G!=='undefined'&&G&&G.ci
 }
 function offseasonMgr(){
   try{ obYear(); }catch(e){} try{ obMinorPrune(); }catch(e){}
-  if(G.coach){ coachYear(); try{ asstYear(); }catch(e){} /* 무직이어도 떠난 구단 보조 코치 계약은 흐른다(검수 11-09zv #3) */ } try{ schYear(); }catch(e){} /* 코치 시장을 새로 짠 뒤 고교 감독 후보를 올린다 */ try{ gmTurnover(); }catch(e){} try{ mgrFireOff(); }catch(e){}
+  if(G.coach){ try{ clanYear(); }catch(e){} /* 감독 사단이 자라고 줄어든다(89b_staff_loyalty) */ coachYear(); try{ asstYear(); }catch(e){} /* 무직이어도 떠난 구단 보조 코치 계약은 흐른다(검수 11-09zv #3) */ } try{ schYear(); }catch(e){} /* 코치 시장을 새로 짠 뒤 고교 감독 후보를 올린다 */ try{ gmTurnover(); }catch(e){} try{ mgrFireOff(); }catch(e){}
   for(const t of G.teams){ const m=G.mgr[t.id]; if(!m)continue; if(m.age)m.age++; if(m.cs!=null&&m.cs>G.year)continue; /* 시즌이 끝난 뒤 맺은 계약은 다음 시즌부터 센다 */ m.yrs--;
-    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<STAFF_RET_AGE&&R()<.6){staffCt(m,2,G.year+1);staffHistory('mgr',m,'재계약',t.id,`2년 · ${m.ce}시즌까지`);} else {staffHistory('mgr',m,'계약 만료',t.id,'시즌 종료 후 재계약하지 않음'); try{ exMgrAdd(m,t.id); }catch(e){} const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||(()=>{ try{ return aiMgrHire(t); }catch(e){ return mkMgr(); } })(); /* 선수단에 맞는 감독을 고른다(86_ai_plan) */ staffCt(n,n.yrs||ri(2,3),G.year+1); G.mgr[t.id]=n;staffHistory('mgr',n,'선임',t.id,`전임 ${m.name} 계약 만료 · ${n.yrs}년`); n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){const prev=G.coach[t.id][c.role];if(prev)staffHistory('coach',prev,'계약 종료',t.id,'감독 교체에 따른 코치진 개편'); staffCt(c,n.yrs,G.year+1); G.coach[t.id][c.role]=c;staffHistory('coach',c,'선임',t.id,`${n.name} 감독 사단 합류`); } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
+    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<STAFF_RET_AGE&&R()<.6){staffCt(m,2,G.year+1);staffHistory('mgr',m,'재계약',t.id,`2년 · ${m.ce}시즌까지`);} else {staffHistory('mgr',m,'계약 만료',t.id,'시즌 종료 후 재계약하지 않음'); try{ exMgrAdd(m,t.id); }catch(e){} const held0=coachHeld(t.id); try{ clanLeave(m,t.id,(m.age||0)>=STAFF_RET_AGE?'retire':'expire'); }catch(e){} const held=held0.filter(k=>!coachesOf(t.id)[k]); /* 계약이 끝나거나 은퇴하는 감독의 사단 코치(89b_staff_loyalty) */ const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||(()=>{ try{ return aiMgrHire(t); }catch(e){ return mkMgr(); } })(); /* 선수단에 맞는 감독을 고른다(86_ai_plan) */ staffCt(n,n.yrs||ri(2,3),G.year+1); G.mgr[t.id]=n;staffHistory('mgr',n,'선임',t.id,`전임 ${m.name} 계약 만료 · ${n.yrs}년`); n.clan=mgrClanFor(n); try{ aiClanInstall(n,t.id,G.year+1,'감독 교체에 따른 코치진 개편'); }catch(e){} try{ aiCoachFill(t.id,`${m.name} 감독 사단 코치 후임`,held); }catch(e){} wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
   refreshMgrMarket();
   const m=G.mgr[G.user];
   if(m&&!m.interim&&m.yrs<=0) { const ret=(m.age||0)>=STAFF_RET_AGE; mail('운영팀',ret?'감독이 은퇴합니다':'감독 계약이 끝납니다',ret?`${m.name} 감독(${m.age}세)이 이번 시즌을 끝으로 은퇴합니다. 연말까지 새 감독을 선임해야 합니다.`:`${m.name} 감독의 계약이 올해로 끝납니다. 재계약하거나 새 감독을 선임해야 합니다. 연말까지 정하지 않으면 감독 자리가 비게 됩니다.`,{imp:true,kind:'감독',acts:ret?[{l:'감독 후보 보기',a:'goWork',v:'감독'}]:[{l:'2년 재계약',a:'renewMgr',v:'2:'+G.user+':'+m.id},{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
@@ -18146,7 +18145,7 @@ function exMgrAdd(m,tid){ if(!m||m.interim||m.act||m.ob||!m.name)return; const L
   const tag=`전 ${tshort(tid)} 감독`; if(!String(m.career||'').includes(tag))m.career=(m.career?m.career+' · ':'')+tag; m.exT=tid; m.exY=G.year; L.unshift(m); if(L.length>12)L.length=12; }
 function exMgrMarket(){ if(!G.exMgr)return; const on=new Set(Object.values(G.mgr||{}).filter(Boolean).map(m=>m.id));
   G.exMgr=G.exMgr.filter(m=>!on.has(m.id)&&(m.age||0)<68&&G.year-m.exY<=5);
-  for(const m of G.exMgr.filter(m=>G.year-m.exY>=1).slice(0,2)){ if(G.mmarket.some(x=>x.id===m.id))continue; for(const k of ['plv','pl','hD','rel','yrs','cs','ce','jy','extY'])delete m[k]; m.rel=60; /* 새 감독과 같은 출발점: 관계를 지운 채 AI 구단에 부임하면 그 구단을 맡은 단장과의 관계가 NaN이 됐다(안정화 점검) */ m.clan=mkClan(m); G.mmarket.push(m); } }
+  for(const m of G.exMgr.filter(m=>G.year-m.exY>=1).slice(0,2)){ if(G.mmarket.some(x=>x.id===m.id))continue; for(const k of ['plv','pl','hD','rel','yrs','cs','ce','jy','extY'])delete m[k]; m.rel=60; m.clan=null; /* 새 감독과 같은 출발점: 관계를 지운 채 AI 구단에 부임하면 그 구단을 맡은 단장과의 관계가 NaN이 됐다(안정화 점검) */ m.clan=mgrClanFor(m); /* 함께 물러나 기다리던 사단 코치가 있으면 그 사람들(89b_staff_loyalty) */ G.mmarket.push(m); } }
 /* ===== 진기록: 경기·시즌·통산 이정표를 한곳에 모은다 ===== */
 const FEATK={cyc:'사이클링 히트',hr4:'한 경기 4홈런',hr3:'한 경기 3홈런',h6:'한 경기 6안타',h5:'한 경기 5안타',rbi8:'한 경기 8타점',hrc:'연타석 홈런',gs:'만루 홈런',wohr:'끝내기 홈런',woh:'끝내기 안타',pg:'퍼펙트게임',nh:'노히트노런',tnh:'팀 노히트노런',k15:'한 경기 15탈삼진',cg0:'무사사구 완봉',r20:'한 경기 20득점',hs:'연속 경기 안타',
   mile:'통산 이정표',s3030:'30-30',hr40:'시즌 40홈런',s330:'3할·30홈런·100타점',s4040:'40-40',hr50:'시즌 50홈런',h200:'시즌 200안타',avg400:'4할 타율',tcB:'타격 3관왕',tcP:'투수 3관왕',w20:'시즌 20승',sv40:'시즌 40세이브',k200:'시즌 200탈삼진',era0:'0점대 평균자책점',era1:'1점대 평균자책점',srec:'시즌 신기록',ovs:'해외 진출'};
@@ -19020,7 +19019,7 @@ function anaPow(role,tid){ if(tid==null)tid=G.user; if(tid!==G.user||G.unemp){ c
 function anaEff(tid){if(tid==null)tid=G.user; const o=anaPow('opp',tid)*anaRoleQuality(tid,'opp'), t=anaPow('trk',tid)*anaRoleQuality(tid,'trk'), v=anaPow('vid',tid)*anaRoleQuality(tid,'vid'); return {sdm:1-Math.min(.35,t*.045+v*.012),bab:Math.min(.007,o*.0008),bat:Math.min(.005,v*.0006),rep:clamp(Math.floor((anaPow('opp',tid)+anaPow('trk',tid)+anaPow('vid',tid))/3),0,3)}; }
 function dataLv(tid){ return anaEff(tid).rep; }
 function anaSal(){ return sum(anaList().map(a=>a.sal)); }
-function anaMarket(){ const mk=G.year*100+dobj(G.day).m; if(!G.amarket||G.amarketM!==mk){ const keep=(G.amarket||[]).filter(s=>s.acc||(s.bid&&s.bid.exp>=G.day)||R()<.4); /* 재제안 기한이 남은 후보는 월초 교체에서 빼지 않는다 */ G.amarket=keep; while(G.amarket.length<12){ const sk=R()<.05?5:R()<.17?4:R()<.42?3:R()<.75?2:1; G.amarket.push(mkAnalyst(sk)); } G.amarketM=mk; } return G.amarket; }
+function anaMarket(){ const mk=G.year*100+dobj(G.day).m; if(!G.amarket||G.amarketM!==mk){ const keep=(G.amarket||[]).filter(s=>s.acc||(s.bid&&s.bid.exp>=G.day)||loyWait(s)||R()<.4); /* 재제안 기한이 남은 후보는 월초 교체에서 빼지 않는다 */ G.amarket=keep; while(G.amarket.length<12){ const sk=R()<.05?5:R()<.17?4:R()<.42?3:R()<.75?2:1; G.amarket.push(mkAnalyst(sk)); } G.amarketM=mk; } return G.amarket; }
 function hireAna(id,outId){ const a=anaMarket().find(x=>x.id===id); if(!a)return '후보가 없습니다.'; const out=stFullMsg('an')?anaList().find(x=>x.id===outId):null; if(stFullMsg('an')&&!out)return stFullMsg('an'); if(a.acc)return '이미 오기로 한 후보입니다. 누구 대신 데려올지 고르세요.'; if(out)fireAna(out.id); /* 정원이 차면 내보낼 사람과 함께(사용자 결정 11-15) */ a.since=G.day; G.analysts.push(a); G.amarket=G.amarket.filter(x=>x.id!==id); staffHistory('analyst',a,'영입',G.user,`연 ${money(a.sal)}`); addLog(`${AROLE[a.role].l} 분석원 ${a.name}(능력 ${a.skill})을(를) 연 ${money(a.sal)}에 채용했습니다.`); return ''; }
 function fireAna(id){ const a=anaList().find(x=>x.id===id); if(!a)return ''; G.analysts=G.analysts.filter(x=>x.id!==id); staffHistory('analyst',a,'계약 종료',G.user,'단장 결정'); addLog(`분석원 ${a.name}과(와) 계약을 정리했습니다.`); return ''; }
 function setAnaRole(id,role){ const a=anaList().find(x=>x.id===id); if(!a||!AROLE[role])return ''; if(a.role!==role){staffAttach(a,'analyst'); a.role=role; a.since=G.day; } return ''; } /* 역할을 바꾸면 다시 30일 적응 */
@@ -19989,7 +19988,7 @@ function stAccDecide(outId){ const P=G.stAcc; if(!P)return '정할 영입 결정
   stSignOwn(P.k,s,P.sal,P.rv); return `${out.name}와(과) 계약을 끝내고 ${s.name}이(가) 연 ${money(P.sal)}에 합류합니다.`; }
 function stAccHold(kind,s,sal,rv,tid){ s.acc=1; G.stAcc={k:kind,id:s.id,name:s.name,sal,rv:rv??null,tid:tid??null,day:G.day}; }
 /* 우리 구단 계약 마무리(시장 후보) */
-function stSignOwn(kind,s,sal,rv){ s.sal=sal; s.since=G.day; s.loy=20; delete s.acc; if(kind==='sc')G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.id!==s.id); else G.amarket=(G.amarket||[]).filter(x=>x.id!==s.id); stPlaceOwn(kind,s);
+function stSignOwn(kind,s,sal,rv){ s.sal=sal; s.since=G.day; s.loy=20; delete s.acc; delete s.gmFol; if(kind==='sc')G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.id!==s.id); else G.amarket=(G.amarket||[]).filter(x=>x.id!==s.id); stPlaceOwn(kind,s);
   if(typeof schStaffJoined==='function')schStaffJoined(s,G.user); try{ obTaken(s.ob,s); }catch(e){} /* 고교 감독·은퇴 선수 출신이면 다른 자리를 비운다(검수 11-09e #15) */
   staffHistory(kind==='sc'?'scout':'analyst',s,'영입',G.user,`연 ${money(sal)}`); stResMail(kind,s,true,G.user,sal,true,rv||null);
   try{ if(kind==='sc')obHireBonus(s.ob,'스카우트'); }catch(e){} addLog(kind==='sc'?`스카우트 ${s.name}(${s.region}·능력 ${s.skill})을 영입했습니다.`:`${AROLE[s.role].l} 분석원 ${s.name}(능력 ${s.skill})을(를) 연 ${money(sal)}에 채용했습니다.`); }
@@ -20013,7 +20012,7 @@ function stOffer(kind,id,raise){ stInit(); if(stOwnList(kind).some(x=>x.id===id)
   if(stOwnList(kind).length>=stOwnCap(kind)){ stAccHold(kind,s,sal,B?B.t:null); return {ok:true,pend:true,s,msg:`${s.name}이(가) 연 ${money(sal)}에 오기로 했습니다.${tail} 정원이 차 있어 누구 대신 데려올지 고르세요.`}; } /* 수락 순간에 정한다(사용자 결정 11-15) */
   stSignOwn(kind,s,sal,B?B.t:null); return {ok:true,s,msg:`${s.name}이(가) 연 ${money(sal)}에 합류합니다.${tail}`}; }
 /* 돌려주는 값: 후보가 그 구단 명단에 실제로 남았는가(계약 완료 메일은 이때만 보낸다). 우리 구단(이직해 온 구단)이면 AI 명단이 없으니 처리하지 않는다 */
-function stJoin(kind,s,tid,sal,quiet,from){ const own=kind==='sc'?G.scouts:anaList(), moving=from===ME()&&own.includes(s); if(s.acc&&!moving)return false; /* 우리 구단에 오기로 한 후보(누구 대신 데려올지 고르는 중) */ if(!moving&&typeof schMarketWhy==='function'&&schMarketWhy(s))return false; const L=stTeamL(tid); if(!L||!team(tid))return false; { const l=kind==='sc'?L.sc:L.an, ev=l.length>=(kind==='sc'?ST_SC_N[1]+1:ANA_MAX)?[...l].sort((a,b)=>a.skill-b.skill)[0]:null; if(!stAiFits(tid,sal||s.sal||0,ev?ev.sal:0))return false; } /* AI 스태프 예산 한도는 모든 영입 경로에 적용(검수 11-09zw #25·#26) */ if(sal)s.sal=sal; /* 경쟁 구단이 제시한 연봉으로 계약 */ s.since=G.day; s.loy=20; const sc=kind==='sc', mk=sc?'scoutMarket':'amarket', list=sc?L.sc:L.an, cap=sc?ST_SC_N[1]+1:ANA_MAX;
+function stJoin(kind,s,tid,sal,quiet,from){ const own=kind==='sc'?G.scouts:anaList(), moving=from===ME()&&own.includes(s); if(s.acc&&!moving)return false; /* 우리 구단에 오기로 한 후보(누구 대신 데려올지 고르는 중) */ if(!moving&&typeof schMarketWhy==='function'&&schMarketWhy(s))return false; const L=stTeamL(tid); if(!L||!team(tid))return false; { const l=kind==='sc'?L.sc:L.an, ev=l.length>=(kind==='sc'?ST_SC_N[1]+1:ANA_MAX)?[...l].sort((a,b)=>a.skill-b.skill)[0]:null; if(!stAiFits(tid,sal||s.sal||0,ev?ev.sal:0))return false; } /* AI 스태프 예산 한도는 모든 영입 경로에 적용(검수 11-09zw #25·#26) */ if(sal)s.sal=sal; /* 경쟁 구단이 제시한 연봉으로 계약 */ s.since=G.day; s.loy=20; delete s.gmFol; const sc=kind==='sc', mk=sc?'scoutMarket':'amarket', list=sc?L.sc:L.an, cap=sc?ST_SC_N[1]+1:ANA_MAX;
   G[mk]=(G[mk]||[]).filter(x=>x.id!==s.id); list.push(s); if(typeof schStaffJoined==='function')schStaffJoined(s,tid); try{ obTaken(s.ob,s); }catch(e){} /* 한 사람은 한 곳에만(검수 11-09e #15) */
   if(list.length>cap){ const out=list.filter(x=>x!==s).sort((a,b)=>a.skill-b.skill)[0]; list.splice(list.indexOf(out),1); G[mk].push(out); staffHistory(sc?'scout':'analyst',out,'계약 종료',tid,'인원 조정'); } /* 인원을 줄일 때 방금 데려온 사람은 빼지 않고, 밀려난 사람은 시장으로 나간다(검수 11-06) */
   if(sc)stSync(tid); staffHistory(sc?'scout':'analyst',s,'영입',tid,`연 ${money(s.sal)}`);
@@ -23268,8 +23267,9 @@ function scoutSuggest(){ if(G.scoutAuto||G.unemp)return; let P=[]; try{ P=scoutP
  (실제 리그에서도 성적 부진에 따른 시즌 중 감독 교체·자진 사퇴와 감독대행 체제는 드물지 않다) */
 function gmFireNews(t,old,rk,ten,age,succ){ const why=age>=64&&rk<6?`${age}세로 물러났습니다`:`지난 시즌 ${rk}위에 그친 책임을 물었습니다${ten>=4?`(재임 ${ten}년)`:''}`;
   news('리그',`${tshort(t.id)}, ${old} 단장 ${age>=64&&rk<6?'퇴임':'경질'}${succ?` · 후임 ${succ.name}`:''}`,`${tname(t.id)}이(가) ${old} 단장과 결별했습니다. ${why}. ${succ?`새 단장은 ${succ.name}(${succ.car||'프런트 출신'}, ${GMT[succ.trait]?GMT[succ.trait].l:''})입니다.`:'후임을 물색 중이며, 다른 구단 출신이나 야인 단장에게도 연락하고 있다는 이야기가 나옵니다.'}`,0); }
-function mgrNew(tid,act){ try{ exMgrAdd(G.mgr[tid],tid); }catch(e){} const n=(!act&&(()=>{ try{ return obAiMgr(tid)||aiMgrHire(team(tid)); }catch(e){ return null; } })())||mkMgr(); n.yrs=act?1:(n.yrs||ri(2,3)); if(act)n.act=true; G.mgr[tid]=n; staffHistory('mgr',n,act?'감독대행 선임':'선임',tid,`${n.yrs}년`);
-  if(!act){ n.clan=n.ob||n.inner?[]:mkClan(n); /* 내부 승격 감독은 사단을 데려오지 않는다: 함께 일하던 코치진을 그대로 둔다(검수 11-14) */ if(G.coach&&G.coach[tid])for(const c of n.clan){ const old=G.coach[tid][c.role]; if(old)staffHistory('coach',old,'계약 종료',tid,'신임 감독 사단 합류에 따른 교체'); c.yrs=n.yrs; G.coach[tid][c.role]=c; staffHistory('coach',c,'영입',tid,`${n.name} 감독 사단 합류`); } } return n; }
+function mgrNew(tid,act,why){ const prev=G.mgr[tid]; try{ exMgrAdd(prev,tid); }catch(e){} const held0=coachHeld(tid); if(clanMgrOk(prev))try{ clanLeave(prev,tid,why||'fire'); }catch(e){} const held=held0.filter(k=>!coachesOf(tid)[k]); /* 사단이 떠나 빈 자리 */ /* 떠나는 감독의 사단 코치(89b_staff_loyalty) */ const n=(!act&&(()=>{ try{ return obAiMgr(tid)||aiMgrHire(team(tid)); }catch(e){ return null; } })())||mkMgr(); n.yrs=act?1:(n.yrs||ri(2,3)); if(act)n.act=true; G.mgr[tid]=n; staffHistory('mgr',n,act?'감독대행 선임':'선임',tid,`${n.yrs}년`);
+  if(!act){ n.clan=mgrClanFor(n); /* 내부 승격 감독은 사단을 데려오지 않는다: 함께 일하던 코치진을 그대로 둔다(검수 11-14). 함께 물러났던 사단 코치가 기다리면 그 사람들이 온다 */ try{ aiClanInstall(n,tid); }catch(e){} }
+  try{ aiCoachFill(tid,`${prev&&prev.name?prev.name+' 감독 사단 코치 후임':'코치진 공백 보강'}`,held); }catch(e){} return n; } /* 사단이 떠나 빈 자리만 채운다(내부 승격으로 빈 자리는 그대로) */
 /* 시즌 뒤: 성적이 나쁜 AI 구단 감독 경질(계약 기간이 남아 있어도) */
 function mgrFireOff(){ const st=G.last&&G.last.order; if(!st)return; for(const t of G.teams){ if(t.id===ME())continue; const m=G.mgr[t.id]; if(!m)continue; const rk=st.findIndex(o=>o.tid===t.id)+1;
     if(m.act){ if(rk<=5||R()<.35){ delete m.act; delete m.interim; m.yrs=3; staffHistory('mgr',m,'정식 감독 승격',t.id,`시즌 ${rk}위 · 2년 계약`); /* 아래 해마다 1년 빼는 처리 뒤 2년 */ news('리그',`${tshort(t.id)}, ${m.name} 감독대행 정식 감독 승격`,`시즌 중 지휘봉을 잡은 ${m.name} 감독대행이 ${rk}위로 시즌을 마치고 2년 계약으로 정식 감독이 됐습니다.`,0); } else { const old=m.name; staffHistory('mgr',m,'감독대행 임무 종료',t.id,`시즌 ${rk}위 · 정식 감독 선임`); const n=mgrNew(t.id,false); n.yrs++; news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${old} 감독대행 체제로 ${rk}위에 그친 ${tname(t.id)}이(가) ${n.name} 감독을 선임했습니다(${n.yrs-1}년).`,0); wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); } continue; }
@@ -23277,7 +23277,7 @@ function mgrFireOff(){ const st=G.last&&G.last.order; if(!st)return; for(const t
     news('리그',`${tshort(t.id)}, ${old} 감독 경질 · 후임 ${n.name}`,`${rk}위로 시즌을 마친 ${tname(t.id)}이(가) 계약 기간이 남은 ${old} 감독을 경질하고 ${n.name} 감독(${n.yrs-1}년)을 선임했습니다.`,0); wire('감독',`${tname(t.id)}, ${old} 감독 경질 · ${n.name} 감독 선임`,{tid:t.id,x:{mid:n.id,hire:1}}); } }
 /* 시즌 중(6·7·8월 1일): 최하위권 AI 구단은 감독대행 체제로 바꾸기도 한다 */
 function mgrMidSeason(){ if(period()!=='season')return; const st=standingsNow(); for(const x of st.filter((y,i)=>i>=st.length-2||team(y.tid).riftY===G.year)){ const t=team(x.tid); if(t.id===ME()||expYr(t.id))continue; const m=G.mgr[t.id]; if(!m||m.act)continue; const r=G.sea.rec[t.id]; const rift=t.riftY===G.year; /* 불화설이 난 구단은 하위 2위 밖이어도 감독이 바뀔 수 있다 */ if(!r||r.w+r.l<40||r.w/(r.w+r.l)>=(rift?.5:.42)||R()>=(rift?.35:.2))continue;
-    const old=m.name; const self=R()<.5; staffHistory('mgr',m,self?'자진 사퇴':'경질',t.id,rift?'구단 내 불화와 성적 부진':`성적 부진 ${r.w}승 ${r.l}패`); if(!self)t.cash=(t.cash||0)-Math.round((m.sal||0)*Math.max(0,(m.yrs||1)-.5)); /* 시즌 중 경질 잔여 연봉(자진 사퇴는 없음, 사용자와 같은 기준) */ const n=mgrNew(t.id,true); try{ gmInc(t.id,'mgrFire'); }catch(e){}
+    const old=m.name; const self=R()<.5; staffHistory('mgr',m,self?'자진 사퇴':'경질',t.id,rift?'구단 내 불화와 성적 부진':`성적 부진 ${r.w}승 ${r.l}패`); if(!self)t.cash=(t.cash||0)-Math.round((m.sal||0)*Math.max(0,(m.yrs||1)-.5)); /* 시즌 중 경질 잔여 연봉(자진 사퇴는 없음, 사용자와 같은 기준) */ const n=mgrNew(t.id,true,self?'resign':'fire'); try{ gmInc(t.id,'mgrFire'); }catch(e){}
     news('리그',`${tshort(t.id)} ${old} 감독 ${self?'자진 사퇴':'경질'}, ${n.name} 감독대행 체제`,`${r.w}승 ${r.l}패로 최하위권에 머문 ${tname(t.id)}의 ${old} 감독이 ${self?'성적 부진의 책임을 지고 물러났습니다':'경질됐습니다'}. 남은 시즌은 ${n.name} 감독대행이 이끕니다.`,0);
     wire('감독',`${tname(t.id)}, ${old} 감독 ${self?'자진 사퇴':'경질'} · ${n.name} 감독대행`,{tid:t.id,x:{fire:1,nm:old}}); } }
 /* 야인 기간: 전 소속 구단 스카우트·분석원 빈자리를 채운다(다른 AI 구단처럼) */
@@ -25224,7 +25224,7 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
       if(gain<8||!cmCanPay(t,c,cur)||(top>=2&&cmVal(c)>=128))continue; const sc=gain*2+cmScore(c,tid,c.sal,c.role,false)*.3+relHireBias(tid,c,'coach'); /* 단장과의 관계(84b_person_rels) */ if(!best||sc>best.sc)best={c,cur,sc}; }
     if(!best)continue; const {c,cur}=best; G.cmarket=G.cmarket.filter(x=>x!==c); if(cmVal(c)>=128)top++;
     if(cur){ staffHistory('coach',cur,'계약 종료',tid,'후임 코치 영입'); coachPaySev(tid,cur); /* 계약 중인 코치를 바꾸면 AI도 잔여 연봉 절반을 정산한다(검수 11-09zv #11) */ cur.yrs=0; cur.clan=null; cur.from=tid; cur.fromY=G.year; if(cur.age<64&&!cur.ob)G.cmarket.push(cur); }
-    c.clan=null; delete c.res; staffCt(c,ri(1,3),ctStartS()); C[c.role]=c; /* 우리 영입(hireCoach)과 같은 합류 시즌 규칙: 정규시즌이 끝난 뒤 계약은 다음 시즌 합류 */ staffHistory('coach',c,'영입',tid,`${c.yrs}년 · 연 ${money(c.sal)}`); stAttr(c); c.loy=20; if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ if(c.ob)obTaken(c.ob,c); }catch(e){}
+    c.clan=null; delete c.res; delete c.folM; delete c.gmFol; staffCt(c,ri(1,3),ctStartS()); C[c.role]=c; /* 우리 영입(hireCoach)과 같은 합류 시즌 규칙: 정규시즌이 끝난 뒤 계약은 다음 시즌 합류 */ staffHistory('coach',c,'영입',tid,`${c.yrs}년 · 연 ${money(c.sal)}`); stAttr(c); c.loy=20; if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ if(c.ob)obTaken(c.ob,c); }catch(e){}
     const txt=`${tshort(tid)}, ${CROLE[c.role].l}(으)로 ${c.name} 영입${c.star?' (스타 코치)':''}`; moved.push(txt); if(c.star||cmVal(c)>=122)try{ wire('코치',txt,{tid}); }catch(e){} }
   /* 비시즌: 부유한 구단이 다른 AI 구단 코치를 한 단계 높은 자리로 빼 간다 */
   if(m>=11||m<=1)for(const tid of ids){ const t=team(tid), P=stAiPlan(t); if(poachN(tid)>=POACH_MAX||R()>(P.rich>=.4?.2:P.rich>=0?.1:.04))continue; /* 비시즌 2건 한도(우리와 같게) */ /* 우리와 같은 조건: 돈이 적어도 승격 자리를 내걸면 빼 갈 수 있다 */ const C=G.coach[tid]; const pool=[];
@@ -25282,6 +25282,155 @@ function stFill(){ if(!G.lgStaff)return 0; let n=0; for(const tid in G.lgStaff){
 function coachCondMult(tid){ if(tid==null||!G.coach)return 1; const C=coachesOf(tid); const v=k=>C[k]?effC(C[k],tid,'sk'):C[k]===undefined?55:45; return clamp(1-(v('cn')*.75+v('rh')*.25-55)/500,.95,1.04); } /* 재활군 코치가 25% 몫 */
 /* 무작위로 만든 코치·감독도 선수 출신처럼 보이게(초기 세계·후보가 모자랄 때만 만든다) */
 function exCareer(role){ const pos=['pc','fp','bp','rs'].includes(role)?pick(['투수','투수','불펜 투수']):['cc','fc'].includes(role)?'포수':pick(['내야수','외야수','내야수']); let t=''; try{ t=G&&G.teams&&G.teams.length?tshort(pick(G.teams).id)+' ':''; }catch(e){} return `전 ${t}${pos}(통산 ${ri(3,15)}시즌)`; }
+/* ===== 사람을 따라 움직이는 스태프(사용자 11-16: 좋아하는 감독·단장이 떠나면 같이 나가고, 새 자리로 따라가기도 한다) =====
+ 1) 감독 사단은 자라고 줄어든다(겨울마다 clanYear, 우리·AI 같음):
+    - 같은 감독 밑에서 2시즌 넘게 일하고 감독과의 사이가 CLAN_JOIN(12, '좋아하는 인물' 기준) 이상이면 해마다 30%(고집 센 감독은 20%)로 사단에 든다. 사단 크기는 감독 명성에 따라 2~5명.
+    - 사이가 CLAN_DROP(-5) 이하로 나빠지면 50%로 사단에서 빠진다. 감독과 떨어져 2시즌이 지나면 사단 표시가 없어진다.
+    - 감독과의 사이 = 인물 관계(84b_person_rels, 함께 일하면 해마다 +3, 사단이면 +5) + 두 사람 궁합(±10, 고정) + 감독 관계(staffRel 'mgr', 50 기준).
+ 2) 감독이 떠나면(경질·사퇴·계약 만료·은퇴·AI 교체) 사단 코치는 사이·구단 애착에 따라 20~85%로 함께 사임한다(잔여 연봉 절반 정산, 예전과 같음).
+    68세 미만 감독을 따라 나간 코치는 코치 시장에 남아(다른 구단도 영입 가능, 시장 정리에서는 빠지지 않음) 2시즌까지 그 감독을 기다린다.
+    그 감독이 새 구단에 부임하면 아직 시장에 있는 사람이 사단으로 함께 간다(AI는 mgrNew·계약 만료 교체, 우리는 '사단과 계약').
+ 3) 단장이 떠나면 그 단장을 크게 좋아하는 코치·스카우트·분석원이 구단당 LOY_N(2)명까지 사임한다. 감독 사단 코치·합류 전 코치는 남는다.
+    AI 단장(경질·교체): 인물 관계 12(좋아하는 인물 기준) 이상, 확률 (관계-8)/60, 최대 30%. 우리 단장(이직·경질·사임·계약 만료): 단장 관계 72 이상, 확률 (관계-65)/100, 최대 35%.
+    그 단장이 400일 안에 새 구단을 맡으면 아직 시장에 있는 사람 LOY_N명까지 따라온다. AI는 같은 영입 규칙(자리·연봉 여력·정원)으로 바로, 우리 단장은 결정 메일로 묻는다.
+ 능력치는 바꾸지 않는다(사단 보정은 원래 있던 +6). 무작위는 겨울·인사 때만 R()로 쓴다 */
+const CLAN_JOIN=12, CLAN_DROP=-5, CLAN_SEP=2, CLAN_WAIT=2, LOY_N=2, LOY_DAYS=400;
+const clanMgrOk=m=>!!(m&&m.id&&!m.interim&&!m.act);
+function clanCap(m){ const f=(m&&m.fame)||0; return f>=80?5:f>=70?4:f>=55?3:2; }
+/* 코치와 감독 사이(-100~100 안팎). 조회만 한다 */
+/* 궁합: 두 사람마다 정해진 값(±10, 난수 흐름을 쓰지 않는다) */
+function clanChem(a,b){ return a&&b?Math.round((relU('clanchem',a+'|'+b)-.5)*20):0; }
+function clanBond(c,m,tid){ if(!c||!clanMgrOk(m))return 0; let v=0, s=50; try{ const a=relKeyOf(m,'mgr'), b=relKeyOf(c,'coach'); v=a&&b?relVal(a,b)+(c.clan===m.id?Math.max(0,clanChem(a,b)):clanChem(a,b)):0; }catch(e){} try{ s=G.mgr[tid]===m?staffRel(c,tid,'mgr'):50; }catch(e){} return Math.round((v||0)+((s??50)-50)); }
+function clanBondWord(v){ return v>=30?'감독과 아주 가깝습니다':v>=CLAN_JOIN?'감독과 사이가 좋습니다':v>CLAN_DROP?'감독과 무난한 사이입니다':v>=-20?'감독과 서먹합니다':'감독과 껄끄럽습니다'; }
+function mgrNameOf(id){ if(!id)return ''; const m=Object.values(G.mgr||{}).find(x=>x&&x.id===id)||(G.exMgr||[]).find(x=>x.id===id)||(G.mmarket||[]).find(x=>x.id===id); return m?m.name:''; }
+/* 코치 카드 한 줄: [말, 설명] */
+function clanCoachWord(c,tid){ const m=G.mgr&&G.mgr[tid]; if(!c)return null;
+  if(!clanMgrOk(m)){ const n=c.clan&&mgrNameOf(c.clan); return n?[`${n} 사단 출신`,'지금 감독과는 아직 함께 일한 시간이 없습니다.']:null; }
+  const v=clanBond(c,m,tid), n=c.um&&c.um.id===m.id&&c.um.tid===tid?c.um.n:0;
+  if(c.clan===m.id)return [`${m.name} 감독 사단`,`${clanBondWord(v)}. 감독이 떠나면 함께 떠날 수 있습니다.`];
+  const other=c.clan&&mgrNameOf(c.clan); const hint=v>=CLAN_JOIN?(n>=2?'사단에 들 수 있습니다':'조금 더 함께하면 사단에 들 수 있습니다'):v<=CLAN_DROP?'사단과는 거리가 있습니다':'';
+  return [clanBondWord(v).replace('감독과 ',''),`${n?`${m.name} 감독과 ${n}시즌 함께했습니다. `:''}${other?`${other} 사단 출신입니다. `:''}${hint?hint+'.':''}`.trim()]; }
+/* 감독 카드 줄: 사단 크기와 변화 */
+function clanMgrRows(m,tid){ const R0=[]; if(!m||!G.coach)return R0;
+  if(tid!=null&&G.mgr[tid]===m&&clanMgrOk(m)){ const C=coachesOf(tid), L=CKEYS.map(k=>C[k]).filter(Boolean); const n=L.filter(c=>c.clan===m.id).length; const near=L.filter(c=>c.clan!==m.id&&clanBond(c,m,tid)>=CLAN_JOIN).map(c=>c.name).slice(0,3);
+    R0.push(['사단 규모',`${n}명 · 많으면 ${clanCap(m)}명까지`]); if(near.length)R0.push(['가까워진 코치',near.join(', ')]); }
+  const F=clanFol(m); if(F.length)R0.push(['따라 나온 코치',`${F.map(c=>c.name).join(', ')} · 감독이 부임하면 함께 갑니다`]);
+  return R0; }
+
+/* ----- 겨울: 사단이 자라고 줄어든다 ----- */
+function clanYear(){ if(!G.coach||!G.teams)return; const mineJ=[], mineD=[];
+  for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue; const m=G.mgr&&G.mgr[t.id]; const ok=clanMgrOk(m)&&!(m.cs!=null&&m.cs>G.year); const mk=ok?relKeyOf(m,'mgr'):null; const mine=t.id===ME();
+    let size=ok?CKEYS.filter(k=>C[k]&&C[k].clan===m.id).length:0;
+    for(const k of CKEYS){ const c=C[k]; if(!c)continue;
+      if(c.clan&&!(ok&&c.clan===m.id)){ c.clanSep=(c.clanSep||0)+1; if(c.clanSep>=CLAN_SEP){ c.clan=null; delete c.clanSep; } } else delete c.clanSep; /* 감독과 떨어져 지낸 시즌 */
+      if(!ok||staffPending(c))continue;
+      if(c.um&&c.um.id===m.id&&c.um.tid===t.id)c.um.n++;
+      else c.um={id:m.id,tid:t.id,n:1};
+      const v=clanBond(c,m,t.id);
+      if(c.clan===m.id){ if(v<=CLAN_DROP&&R()<.5){ c.clan=null; if(mine)mineD.push(c); } continue; }
+      if(c.um.n>=2&&v>=CLAN_JOIN&&size<clanCap(m)&&R()<((m.ego||0)>=70?.2:.3)){ c.clan=m.id; delete c.clanSep; size++; const ck=relKeyOf(c,'coach'); if(mk&&ck)try{ relAdd(mk,ck,6,'clan',mk); }catch(e){} if(mine)mineJ.push(c); } } }
+  const m=G.mgr&&G.mgr[G.user];
+  if(!G.unemp&&m&&(mineJ.length||mineD.length))mail('코칭스태프','감독 사단 변화',[mineJ.length?`${mineJ.map(c=>`${CROLE[c.role].l} ${c.name}`).join(', ')} 코치가 ${m.name} 감독 사단에 들었습니다. 사단 코치는 감독과 손발이 맞아 지도 능력이 조금 더 나오지만, 감독이 떠나면 함께 떠날 수 있습니다.`:'',mineD.length?`${mineD.map(c=>c.name).join(', ')} 코치는 감독과 사이가 틀어져 사단에서 빠졌습니다.`:''].filter(Boolean).join('\n'),{kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]});
+  return mineJ.length+mineD.length; }
+
+/* ----- 감독이 떠날 때: 사단 코치 동반 사임 ----- */
+/* 기다리는 사람(시장 정리에서 빠지지 않는다): 감독을 따라 나와 2시즌 안, 단장을 따라 나와 400일 안 */
+function loyWait(s){ return !!s&&((s.folM&&G.year-s.folM.y<=CLAN_WAIT)||(s.gmFol&&G.day-s.gmFol.d<=LOY_DAYS)); }
+/* 감독을 기다리는 사단 코치(코치 시장에 남은 사람만) */
+function clanFol(m){ if(!m||!m.id)return []; return (G.cmarket||[]).filter(c=>c.folM&&c.folM.id===m.id&&G.year-c.folM.y<=CLAN_WAIT&&(c.age||0)<STAFF_RET_AGE&&c.res!==G.user); }
+/* 선임 때 데려올 사단: 기다리는 사람이 있으면 그 사람들, 없으면 예전처럼(이름난 감독은 새 사단) */
+function mgrClanFor(n){ const F=clanFol(n); if(F.length)return F; return n.ob||n.inner?[]:mkClan(n); }
+/* 후보 카드·선임 직전: 시장을 떠난 사람은 빼고 기다리는 사람을 더한다 */
+function clanNow(m){ const F=clanFol(m); return F.concat((m.clan||[]).filter(c=>!c.folM&&!F.some(f=>f.role===c.role))); }
+const CLAN_WHY={fire:'경질된',resign:'물러난',expire:'계약이 끝난',retire:'은퇴한',move:'떠난'};
+function clanLeave(m,tid,why){ tid=tid??G.user; if(!m||!m.id||!G.coach||!G.coach[tid])return []; const C=G.coach[tid], out=[], L=[]; const wait=!m.interim&&!m.act&&(m.age||0)<STAFF_RET_AGE-2&&why!=='retire';
+  for(const k of CKEYS){ const c=C[k]; if(!c||c.clan!==m.id)continue; stAttr(c); const v=clanBond(c,m,tid); let loy=20; try{ loy=coachLoyalty(c,tid); }catch(e){}
+    const p=clamp(.45+v/100-(loy-20)/250,.2,.85); if(R()>=p)continue;
+    C[k]=null; const pay=coachPaySev(tid,c); c.yrs=0; c.from=tid; c.fromY=G.year; delete c.um; delete c.clanSep;
+    if(wait&&R()<clamp(.6+v/200,.3,.9))c.folM={id:m.id,y:G.year}; else { c.clan=null; delete c.folM; }
+    (G.cmarket=G.cmarket||[]).push(c); staffHistory('coach',c,'계약 종료',tid,`${m.name} 감독 퇴임에 따른 사단 동반 퇴임`); if(tid===ME())try{ interimLeft(c); }catch(e){}
+    out.push(`${CROLE[k].l} ${c.name}(정산 ${money(pay)})`); L.push(c); }
+  if(L.length)try{ clanLeaveNews(m,tid,L,why); }catch(e){}
+  return out; } /* 함께 떠나는 사단 코치도 경질처럼 잔여 연봉 절반을 정산하고 코치 시장에 나온다(검수 11-07) */
+function clanLeaveNews(m,tid,L,why){ const w=CLAN_WHY[why]||'떠난', head=L.find(c=>c.role==='hc')||L[0], more=L.length>1?` 등 ${L.length}명`:'';
+  const title=`${head.name} ${CROLE[head.role].l}${more}, ${w} ${m.name} 감독 따라 사임`, body=`${tname(tid)}의 ${L.map(c=>`${CROLE[c.role].l} ${c.name}`).join(', ')} 코치가 ${m.name} 감독과 함께 팀을 떠났습니다.${L.some(c=>c.folM)?' 감독이 새 팀을 맡으면 다시 뭉칠 것이라는 이야기가 나옵니다.':''}`;
+  if(tid===ME()){ mail('코칭스태프',title,`${body}\n빈 자리는 코치진 화면에서 채워 주세요.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); return; }
+  if(L.length>=2||head.role==='hc'||(m.fame||0)>=70)news('리그',`${tshort(tid)} ${title}`,body,0,{tid}); }
+/* 새 감독 사단을 AI 구단 코치진에 앉힌다(mgrNew·계약 만료 교체 공통). start가 없으면 예전처럼 계약 연수만(바로 일함) */
+function aiClanInstall(n,tid,start,why){ const C=G.coach&&G.coach[tid]; if(!C)return []; const got=[];
+  for(const c of n.clan||[]){ if(!CKEYS.includes(c.role))continue; const old=C[c.role]; if(old&&old!==c)staffHistory('coach',old,'계약 종료',tid,why||'신임 감독 사단 합류에 따른 교체');
+    const fol=!!c.folM; G.cmarket=(G.cmarket||[]).filter(x=>x!==c); delete c.folM; delete c.res; c.clan=n.id; const y=Math.min(4,n.yrs||2);
+    if(fol||start!=null)staffCt(c,y,start??undefined); else c.yrs=y; C[c.role]=c; staffHistory('coach',c,'영입',tid,`${n.name} 감독 사단 합류`); if(fol)got.push(c); }
+  if(got.length)try{ news('리그',`${got.map(c=>c.name).join('·')} 코치, ${n.name} 감독 따라 ${tshort(tid)}행`,`${n.name} 감독이 ${tname(tid)} 지휘봉을 잡으면서, 전 팀에서 함께 물러났던 ${got.map(c=>`${c.name}(${CROLE[c.role].l})`).join(', ')} 코치도 합류했습니다.`,0,{tid}); }catch(e){}
+  return got; }
+/* AI 구단 코치 빈자리 채우기(동반 사임 뒤). roles를 주면 그 자리만 */
+const coachHeld=tid=>CKEYS.filter(k=>G.coach&&G.coach[tid]&&G.coach[tid][k]);
+function aiCoachFill(tid,why,roles){ if(tid===ME()||!G.coach||!G.coach[tid])return 0; const C=G.coach[tid]; let n=0;
+  for(const k of roles||CKEYS){ if(C[k])continue; let c=null; try{ c=obAiCoach(tid,k); }catch(e){} c=c||mkCoach(k); staffCt(c,c.yrs||ri(1,3)); C[k]=c; staffHistory('coach',c,'영입',tid,why||'코치진 공백 보강'); n++; } return n; }
+
+/* ----- 단장이 떠날 때: 단장을 좋아하는 직원 동반 사임 ----- */
+const loyRoles=L=>(L||[]).filter(x=>x.kind==='coach').map(x=>x.k);
+const LOY_KN={coach:'코치',scout:'스카우트',analyst:'전력분석원'};
+const loyRole=x=>x.kind==='coach'?(CROLE[x.s.role]?.l||'코치'):LOY_KN[x.kind];
+function gmFolKey(g){ if(g==='me')return 'me'; if(!g||g.interim)return null; try{ return relKeyOf(g,'gm'); }catch(e){ return null; } }
+/* 동반 사임 확률. 우리 단장은 단장 관계(0~100), AI 단장은 인물 관계(-100~100) */
+function gmLoyP(s,kind,tid,gk){ if(gk==='me'){ let r=50; try{ r=staffRel(s,tid,'gm'); }catch(e){} return r>=72?clamp((r-65)/100,0,.35):0; } let v=0; try{ const k=relKeyOf(s,kind); v=k?relVal(k,gk):0; }catch(e){} return v>=REL_LIKE?clamp((v-8)/60,0,.3):0; } /* 단장이 '좋아하는 인물'에 드는 사이(REL_LIKE)부터 */
+function gmStaffOf(tid,me){ const L=[], m=G.mgr&&G.mgr[tid], C=G.coach&&G.coach[tid];
+  if(C)for(const k of CKEYS){ const c=C[k]; if(!c||staffPending(c)||(m&&c.clan&&c.clan===m.id)||(c.age||0)>=STAFF_RET_AGE)continue; L.push({kind:'coach',s:c,k}); }
+  const S=me?{sc:G.scouts||[],an:anaList()}:(G.lgStaff&&G.lgStaff[tid])||{};
+  for(const s of S.sc||[])L.push({kind:'scout',s}); for(const s of S.an||[])L.push({kind:'analyst',s}); return L; }
+/* g: 떠나는 단장(AI 단장 객체 또는 'me'). 사임한 사람 목록 */
+function gmLoyalLeave(tid,g,why){ const gk=gmFolKey(g); if(!gk||!team(tid))return []; const me=gk==='me';
+  const go=gmStaffOf(tid,me).map(x=>({...x,p:gmLoyP(x.s,x.kind,tid,gk)})).filter(x=>x.p>0&&R()<x.p).sort((a,b)=>b.p-a.p).slice(0,LOY_N);
+  const nm=me?(meName()||'단장'):g.name; const S=me?null:G.lgStaff&&G.lgStaff[tid];
+  for(const x of go){ const s=x.s; s.gmFol={k:gk,y:G.year,d:G.day,from:tid,nm};
+    if(x.kind==='coach'){ G.coach[tid][x.k]=null; s.yrs=0; s.from=tid; s.fromY=G.year; delete s.um; (G.cmarket=G.cmarket||[]).push(s); if(me)try{ interimLeft(s); }catch(e){} }
+    else if(x.kind==='scout'){ if(me)G.scouts=(G.scouts||[]).filter(y=>y!==s); else S.sc=S.sc.filter(y=>y!==s); delete s.bid; (G.scoutMarket=G.scoutMarket||[]).push(s); }
+    else { if(me)G.analysts=anaList().filter(y=>y!==s); else S.an=S.an.filter(y=>y!==s); delete s.bid; (G.amarket=G.amarket||[]).push(s); }
+    staffHistory(x.kind,s,'사임',tid,`${nm} 단장 ${why==='move'?'이직':why==='fire'?'경질':'퇴임'}에 따른 동반 사임`); }
+  if(go.length&&!me)try{ stSync(tid); }catch(e){} return go; }
+const GM_WHY={retire:'물러난',fire:'경질된',move:'구단을 옮긴',resign:'사임한',expire:'계약이 끝난',leave:'계약이 끝난'};
+/* AI 단장 교체 공통 훅: 사임 → 코치 빈자리 보강 → 소식 */
+function gmLoyalAI(tid,g,why){ if(tid===ME()||!g||g.interim)return []; const L=gmLoyalLeave(tid,g,why||'fire'); if(!L.length)return L; aiCoachFill(tid,`${g.name} 단장을 따라 떠난 코치 후임`,loyRoles(L));
+  const head=L[0], more=L.length>1?` 등 ${L.length}명`:'';
+  try{ news('리그',`${tshort(tid)} ${head.s.name} ${loyRole(head)}${more}, ${GM_WHY[why]||'경질된'} ${g.name} 단장 따라 사임`,`${tname(tid)}의 ${L.map(x=>`${loyRole(x)} ${x.s.name}`).join(', ')}이(가) ${g.name} 단장과 함께 구단을 떠났습니다. ${g.name} 단장이 새 자리를 얻으면 다시 함께할 것이라는 말이 나옵니다.`,0,{tid}); }catch(e){}
+  return L; }
+/* 따라온 사람 후보: 시장에 남은 사람만 */
+function loyPool(gk,tid){ return [...(G.cmarket||[]).map(s=>({kind:'coach',s})),...(G.scoutMarket||[]).map(s=>({kind:'scout',s})),...(G.amarket||[]).map(s=>({kind:'analyst',s}))]
+  .filter(x=>{ const f=x.s.gmFol; return f&&f.k===gk&&f.from!==tid&&G.day-f.d<=LOY_DAYS&&!x.s.acc&&x.s.res!==G.user&&(x.s.age||0)<STAFF_RET_AGE; }); }
+/* AI 단장이 새 구단에 부임: 같은 영입 규칙으로 최대 LOY_N명 */
+function gmLoyalJoin(tid,g){ if(tid===ME()||!g||g.interim)return []; const gk=gmFolKey(g); if(!gk)return []; const t=team(tid); const got=[];
+  for(const x of loyPool(gk,tid).sort((a,b)=>gmLoyP(b.s,b.kind,tid,gk)-gmLoyP(a.s,a.kind,tid,gk))){ if(got.length>=LOY_N)break; const s=x.s;
+    if(x.kind==='coach'){ const C=G.coach&&G.coach[tid]; if(!C||!CKEYS.includes(s.role))continue; const cur=C[s.role], m=G.mgr[tid];
+      if(cur&&(staffPending(cur)||(m&&cur.clan===m.id)||cmVal(s)<cmVal(cur)-6))continue; if(!cmCanPay(t,s,cur))continue;
+      G.cmarket=G.cmarket.filter(y=>y!==s); if(cur){ staffHistory('coach',cur,'계약 종료',tid,'후임 코치 영입'); coachPaySev(tid,cur); cur.yrs=0; cur.clan=null; cur.from=tid; cur.fromY=G.year; if(cur.age<64&&!cur.ob)G.cmarket.push(cur); }
+      s.clan=null; delete s.res; delete s.gmFol; staffCt(s,ri(1,3)); C[s.role]=s; stAttr(s); s.loy=20; staffHistory('coach',s,'영입',tid,`${g.name} 단장을 따라 합류`); got.push(x); continue; }
+    const k=x.kind==='scout'?'sc':'an', f=s.gmFol; delete s.gmFol; let ok=false; try{ ok=stJoin(k,s,tid,s.sal,true); }catch(e){ ok=false; } if(ok)got.push(x); else s.gmFol=f; }
+  if(got.length)try{ news('리그',`${got.map(x=>x.s.name).join('·')}, ${g.name} 단장 따라 ${tshort(tid)}행`,`${tname(tid)} 새 단장 ${g.name}과(와) 전 구단에서 함께 일했던 ${got.map(x=>`${loyRole(x)} ${x.s.name}`).join(', ')}이(가) 합류했습니다.`,0,{tid}); }catch(e){}
+  return got; }
+
+/* ----- 우리 단장 ----- */
+/* 구단을 떠날 때(G.user가 아직 옛 구단일 때 부른다). 코치 빈자리는 구단이 AI 손에 넘어간 뒤 aiCoachFill로 */
+function meLoyalLeave(old,why){ if(G.unemp||old!==G.user)return []; const L=gmLoyalLeave(old,'me',why); if(!L.length)return L;
+  const nm=meName()||'단장';
+  try{ news('리그',`${tshort(old)} ${L[0].s.name} ${loyRole(L[0])}${L.length>1?` 등 ${L.length}명`:''}, ${GM_WHY[why]||'떠난'} ${nm} 단장 따라 사임`,`${tname(old)}의 ${L.map(x=>`${loyRole(x)} ${x.s.name}`).join(', ')}이(가) ${nm} 단장과 함께 구단을 떠났습니다.`,0,{tid:old}); }catch(e){}
+  mail('운영팀','단장님을 따라 떠난 직원',`${L.map(x=>`${loyRole(x)} ${x.s.name}`).join(', ')}이(가) "단장님이 안 계신 구단에는 남지 않겠습니다"라며 ${tname(old)}을(를) 떠났습니다.\n새 구단을 맡으면 함께 일하자는 연락이 올 수 있습니다. 데려올지는 그때 정합니다.`,{kind:'경력'});
+  return L; }
+/* 새 구단 부임 뒤: 따라 나온 사람 최대 LOY_N명에게 결정 메일 */
+function meLoyalOffer(tid){ if(G.unemp||tid!==G.user)return 0; const L=loyPool('me',tid).filter(x=>!x.s.gmFol.ask).sort((a,b)=>staffRel(b.s,G.user,'gm')-staffRel(a.s,G.user,'gm')).slice(0,LOY_N); let n=0;
+  for(const x of L){ const s=x.s; s.gmFol.ask=G.day; const role=loyRole(x), C=x.kind==='coach'?coachesOf(G.user):null, cur=C?C[s.role]:null, k=x.kind==='scout'?'sc':'an';
+    const fx=x.kind==='coach'?`${CROLE[s.role].l}(으)로 2년, 연 ${money(s.sal)}에 계약합니다.${cur?` 지금 ${cur.name} 코치와는 계약을 정리합니다(잔여 연봉 절반 정산).`:' 비어 있는 자리입니다.'}`:`${role}(으)로 연 ${money(s.sal)}에 채용합니다. 정원이 차 있으면 먼저 자리를 비워야 합니다.`;
+    evNew('loyFol',`${s.name} ${role}, 함께 일하고 싶다는 연락`,`${tname(s.gmFol.from)}에서 단장님과 일하다 함께 떠난 ${s.name} ${role}이(가) 연락해 왔습니다. "단장님이 계신 곳이라면 가겠습니다." 아직 다른 구단과 계약하지 않았습니다.`,
+      [{l:'함께 일한다',fx},{l:'정중히 사양한다',fx:'시장에 남아 다른 구단을 찾습니다.'}],{from:`${s.name} ${role}`,data:{kind:x.kind,id:s.id,tid:G.user,k},def:1,exp:10}); n++; }
+  return n; }
+function loyFolFind(D){ const L=D.kind==='coach'?G.cmarket:D.kind==='scout'?G.scoutMarket:G.amarket; return (L||[]).find(s=>s.id===D.id)||null; }
+function loyFolWhy(D){ if(G.unemp||D.tid!==G.user)return '그때 맡은 구단을 떠나 이 제안은 끝났습니다.'; const s=loyFolFind(D); if(!s)return '이미 다른 구단과 계약했습니다.';
+  if(D.kind==='coach')return ''; if(stOwnList(D.k).length>=stOwnCap(D.k))return `${stKindNm(D.k)} 정원이 찼습니다(${stOwnList(D.k).length}/${stOwnCap(D.k)}명). 먼저 자리를 비워 주세요.`; if(G.stAcc&&stAccBlock())return stAccBlock(); return ''; }
+EVH.loyFol={ can(e,i){ return i===0?loyFolWhy(e.data||{}):''; },
+  pick(e,i){ const D=e.data||{}, s=loyFolFind(D); if(i!==0){ if(s&&s.gmFol)s.gmFol.no=1; return s?`${s.name}의 제안을 사양했습니다.`:''; }
+    const why=loyFolWhy(D); if(why){ e.pick=1; return why; }
+    if(D.kind==='coach'){ const r=hireCoach(s.id,2); if(r){ e.pick=1; return r; } delete s.gmFol; return `${s.name} 코치가 ${CROLE[s.role].l}(으)로 합류합니다.`; }
+    delete s.gmFol; stSignOwn(D.k,s,s.sal); return `${s.name}이(가) 연 ${money(s.sal)}에 합류합니다.`; } };
 /* ===== 단장 레거시: 오래 한 단장에게 남는 것 (피드백 11-09p) =====
  실제 KBO에는 단장을 구단 레전드로 기리는 공식 제도가 뚜렷하지 않다. 그래서 과장하지 않고 '구단이 공로를 기리는' 정도로만 둔다.
  - G.gmRec: 리그 역대 단장 재임 요약. 사람·구단마다 한 줄 {k:사람, n:이름, t:구단, y0, y1, s:시즌, w, l, c:우승, u:내 계보}. 시즌 결산 때 그해 단장에게 한 시즌을 더한다.
@@ -26817,7 +26966,7 @@ function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid
     const p=newPlayer({age,isP,pos:isP?undefined:bpos[i%bpos.length],base:b,pot:b+ri(0,age<=25?12:4),team:tid,svc:clamp(age-20,0,8)}); p.sal=round5(Math.max(MIN_SAL,marketSal(ovr(p))*.5)); i++; }
   E.stage='done'; E.last=G.year; E.tid=tid; E.hist.push({y:G.year,city:E.city,ok:true,tid});
   news('리그',`${tshort(tid)} 특별지명 결과`,`구단마다 보호선수 20명 밖에서 1명씩 지명했습니다(보상금 구단당 10억, ${E.parent} 창단 출자금으로 지급).\n`+L.join('\n'),2,{tid});
-  if(E.userGm&&!G.gameOver){ try{ const wasU=!!G.unemp; if(!wasU&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); } G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid);
+  if(E.userGm&&!G.gameOver){ try{ const wasU=!!G.unemp, old=G.user; let loyL=[]; if(!wasU)try{ loyL=meLoyalLeave(old,'move'); }catch(e){} if(!wasU&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); } G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid); if(loyL.length)try{ aiCoachFill(old,'단장을 따라 떠난 코치 후임',loyRoles(loyL)); }catch(e){} try{ meLoyalOffer(tid); }catch(e){}
       try{ myCStart(tid,{sal:Math.max(myCBase(tid),wasU?0:(G.myC&&G.myC.sal)||0),yrs:EXP_GRACE+1},'창단 단장'); }catch(e){} /* 단장 계약도 새 구단으로(창단 테스트 11-13: 옛 구단 계약이 남아 유예 중 계약 만료 판정) */ mail(E.parent,`${tshort(tid)} 창단 단장 부임`,`특별지명으로 ${L.length}명을 데려왔습니다. 외국인 선수와 코칭스태프를 채우고 첫 시즌을 준비해 주십시오.\n\n당장 성적을 바라지는 않습니다. ${G.year+1}~${G.year+EXP_GRACE}시즌(창단 ${EXP_GRACE}년차까지)은 순위보다 선수 육성과 팬 기반을 보겠습니다. 첫해 순위 목표는 두지 않고, 2년차 탈꼴찌, 3년차부터 조금씩 올려 가겠습니다.\n\n`+L.join('\n'),{kind:'구단',imp:true}); }catch(e){} }
   return tid; }
 
@@ -37731,13 +37880,14 @@ function coachProfileView(c,o){ /* o.more: 성격·관계 말 줄, o.avTeam: 사
 function personProfileOf(k){ const [kind,a]=String(k).split(':');
   if(kind==='mgr'||kind==='omgr'||kind==='xmgr'){ const m=kind==='mgr'?G.mgr[G.user]:kind==='xmgr'?exMgrOf(a):G.mgr[+a]; if(!m)return null; const tid=kind==='mgr'?G.user:kind==='omgr'?+a:null, rel=[];
     if(kind==='mgr'&&G.coach){ const C=coachesOf(G.user), cl=CKEYS.filter(r=>C[r]&&C[r].clan===m.id).map(r=>C[r].name); if(cl.length)rel.push(['감독 사단',cl.join(', ')]); }
+    if(G.coach)try{ rel.push(...clanMgrRows(m,tid)); }catch(e){} /* 사단 규모·가까워진 코치·따라 나온 코치(89b_staff_loyalty) */
     if(kind==='mgr'){ const fav=playersOf(G.user).filter(p=>p.promise&&p.promise.until>=G.day).map(p=>p.name); if(fav.length)rel.push(['출전 약속',fav.join(', ')]); }
     return {html:mgrProfileView(m,{own:kind==='mgr',tid,eyebrow:kind==='mgr'?(m.interim?'감독대행':'1군 감독'):kind==='omgr'?`${tname(tid)} 감독`:'전 감독',rel}),rest:networkPersonBlock(m,'mgr')}; }
-  if(kind==='c'){ const st=staffPerson(k); if(!st)return null; return {html:coachProfileView(st.s,{tid:st.tid}),rest:staffBioBox(st.s,'coach',st.tid,true)+networkPersonBlock(st.s,'coach')}; }
+  if(kind==='c'){ const st=staffPerson(k); if(!st)return null; const cw=(()=>{ try{ return clanCoachWord(st.s,st.tid); }catch(e){ return null; } })(); return {html:coachProfileView(st.s,{tid:st.tid,more:cw?[['감독과의 사이',cw[0],cw[1]]]:[]}),rest:staffBioBox(st.s,'coach',st.tid,true)+networkPersonBlock(st.s,'coach')}; }
   if(kind==='sc'||kind==='an'||kind==='ost'){ const st=staffPerson(k); if(!st)return null; const J=st.kind==='scout'?'스카우트':'전력분석원';
     return {html:staffProfileView(st.s,st.kind,{tid:st.tid,eyebrow:st.tid!==G.user?`${tname(st.tid)} ${J}`:J}),rest:staffBioBox(st.s,st.kind,st.tid,true,true)+networkPersonBlock(st.s,st.kind)}; } /* 분야 능력 숫자는 카드 안 차트·표로, 아래 상자는 희망 보직·멘탈·관계·면담 */
   if(kind==='oc'){ const tid=+a, role=String(k).split(':')[2], c=G.coach&&coachesOf(tid)[role]; if(!c)return null; const h=u01('cpers',c.id), m=G.mgr[tid];
-    const more=[['성격',h<.33?'원칙형':h<.66?'소통형':'열정형',h<.33?'규율을 중시합니다':h<.66?'선수와 대화를 많이 합니다':'훈련량이 많고 목소리가 큽니다'],['감독',m?m.name:'-'],...(c.clan&&m&&c.clan===m.id?[['감독 사단','감독과 함께 온 코치']]:[])];
+    const more=[['성격',h<.33?'원칙형':h<.66?'소통형':'열정형',h<.33?'규율을 중시합니다':h<.66?'선수와 대화를 많이 합니다':'훈련량이 많고 목소리가 큽니다'],['감독',m?m.name:'-'],...((cw=>cw?[['감독과의 사이',cw[0],cw[1]]]:[])((()=>{ try{ return clanCoachWord(c,tid); }catch(e){ return null; } })()))];
     return {html:coachProfileView(c,{tid,eyebrow:`${tname(tid)} ${CROLE[role]?.l||'코치'}`,more}),rest:staffBioBox(c,'coach',tid,true)}; }
   if(kind==='gm'){ const tid=+a, g=team(tid)&&gmOf(tid); if(!g)return null; return {html:ogmProfileView(g,tid),rest:''}; }
   if(kind==='own'||kind==='ceo')return {html:bossProfileView(kind,G.user),rest:''};
