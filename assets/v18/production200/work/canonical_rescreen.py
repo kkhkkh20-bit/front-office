@@ -10,6 +10,10 @@ P=Path(__file__).resolve().parent;ROOT=P.parents[3];D=P/'canonical';D.mkdir(exis
 PROTO={'recognizer':'w600k_r50.onnx','recognizer_sha256':'4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43','detector':'det_10g.onnx','detector_sha256':'5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91','detector_size':640,'detector_threshold':.55,'alignment':'cv2.estimateAffinePartial2D LMEDS to standard ArcFace112, RGB [-1,1], raw L2-normalized cosine','source_resize':'PIL LANCZOS, isotropic square fit centered .5,.25; asset pixels are not affine aligned'}
 SIG=hashlib.sha256(json.dumps(PROTO,sort_keys=True).encode()).hexdigest()[:12]
 APP=None
+OLD_BY_KEY={}
+for prior_file in [D/"candidate_records.json",D/"reference_records.json"]:
+ if prior_file.exists():
+  for prior in json.loads(prior_file.read_text()):OLD_BY_KEY[prior["key"]]=prior
 
 def initialize():
  global APP
@@ -23,6 +27,11 @@ def measure(task):
  from PIL import Image,ImageOps
  key=task['key'];safe=key.replace('/','__');raw=Path(task['path']);source_sha=hashlib.sha256(raw.read_bytes()).hexdigest();cache=D/'cache'/(SIG+'_'+source_sha+'.npz');meta=D/'cache'/(SIG+'_'+source_sha+'.json');cache.parent.mkdir(exist_ok=True)
  out=D/('reference_masters' if task['kind']=='reference' else 'masters')/(safe+'.png');out.parent.mkdir(exist_ok=True)
+ prior=OLD_BY_KEY.get(key)
+ if prior and prior.get('source_sha256')==source_sha and out.exists() and cache.exists() and meta.exists():
+  master_sha=hashlib.sha256(out.read_bytes()).hexdigest()
+  if master_sha==prior.get('master_sha256'):
+   saved=json.loads(meta.read_text());data=np.load(cache);record={**task,'original_path':str(raw),'source_sha256':source_sha,'master_path':str(out.relative_to(ROOT)),'master_sha256':master_sha};return {**record,**saved},data['e128'],data['e256']
  im=Image.open(raw).convert('RGB');photo=ImageOps.fit(im,(256,256),Image.Resampling.LANCZOS,centering=(.5,.25));photo.save(out)
  record={**task,'original_path':str(raw),'source_sha256':source_sha,'master_path':str(out.relative_to(ROOT)),'master_sha256':hashlib.sha256(out.read_bytes()).hexdigest()}
  if cache.exists() and meta.exists():
@@ -53,7 +62,7 @@ def catalog():
  for i in range(20):
   x=dict(plan['v18_114' if i in [5,13] else 'v18_082']);x.update({'age':19,'ethnicity':'Korean','tags':{'glasses':i in [5,13],'facial_hair':False}})
   tasks.append({'key':f'pilot_{i+1:03d}','kind':'candidate','path':str(P/'candidates'/f'pilot_{i+1:03d}.png'),'attributes':x})
- for folder in ['round06_diverse','round07_targeted','round08_pool','round09_individual','free_characters','cleanup_young']:
+ for folder in ['round06_diverse','round07_targeted','round08_pool','round09_individual','round10_casting','round11_young_adults','round12_quads','free_characters','cleanup_young','cleanup_final']:
   extra=P/folder/'candidate_sources.json'
   if extra.exists():
    for item in json.loads(extra.read_text()):
@@ -63,6 +72,10 @@ def catalog():
  excluded=set(json.loads((P/'visual_exclusions.json').read_text())['excluded_keys'])
  excluded.update(x['replaces'] for x in json.loads((P/'cleanup_young/candidate_sources.json').read_text()))
  tasks=[t for t in tasks if t['key'] not in excluded]
+ final_clean=P/'cleanup_final/candidate_sources.json'
+ if final_clean.exists():
+  groups={t['key']:t['replaces'] for t in json.loads(final_clean.read_text())}
+  for t in tasks:t['same_person_group']=groups.get(t['key'],t['key'])
  assert sum(x['kind']=='reference' for x in tasks)==160
  assert len(set(x['key'] for x in tasks))==len(tasks)
  return tasks
@@ -81,7 +94,7 @@ if __name__=='__main__':
     (D/'progress.json').write_text(json.dumps({'processed':done,'total':len(tasks),'valid_candidates':len(records),'valid_references':len(refrows),'errors':errors},indent=2));print('canonical measured',done,'/',len(tasks),'errors',len(errors),flush=True)
  assert len(refrows)==160,'All160 original references must be measurable'
  order=sorted(range(160),key=lambda i:refrows[i]['key']);refrows=[refrows[i] for i in order];R={k:np.array(v)[order] for k,v in R.items()};E={k:np.array(v) for k,v in E.items()}
- np.savez_compressed(D/'embeddings.npz',candidate_keys=np.array([x['key'] for x in records]),e128=E[128],e256=E[256],reference_ids=np.array([x['key'] for x in refrows]),ref128=R[128],ref256=R[256]);(D/'candidate_records.json').write_text(json.dumps(records,ensure_ascii=False,indent=2));(D/'reference_records.json').write_text(json.dumps(refrows,indent=2));(D/'errors.json').write_text(json.dumps(errors,indent=2))
+ np.savez_compressed(D/'embeddings.partial.npz',candidate_keys=np.array([x['key'] for x in records]),e128=E[128],e256=E[256],reference_ids=np.array([x['key'] for x in refrows]),ref128=R[128],ref256=R[256]);(D/'embeddings.partial.npz').replace(D/'embeddings.npz');(D/'candidate_records.json').write_text(json.dumps(records,ensure_ascii=False,indent=2));(D/'reference_records.json').write_text(json.dumps(refrows,indent=2));(D/'errors.json').write_text(json.dumps(errors,indent=2))
  # Compare the reproduced reference features to the original v13 delivery's cached ones.
  legacy=np.load('/workspace/v13_prescreen_refs/assets/v6/batch01d/production60/identity_prescreen/arcface_embeddings.npz');oldids=list(legacy['ids']);newids=[x['key'] for x in refrows];check={}
  for n in [128,256]:

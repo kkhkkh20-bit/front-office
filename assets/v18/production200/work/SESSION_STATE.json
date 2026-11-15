@@ -7,8 +7,7 @@
   "selection": "canonical/selection.json",
   "production_status": "../production_status.json",
   "active_generation_cells": {
-    "round08_pool": 106,
-    "round09_individual": 115
+    "Comets20x10": 202
   },
   "extractors": {
     "round08": 13683,
@@ -19,7 +18,26 @@
   "new_generation_beyond15_free_not_authorized": true,
   "wardrobe_script": "score_wardrobe.py",
   "delivery_builder": "build_delivery.py",
-  "remaining_work": "Reach200 all pairwise and all160 old refs below.4, visually approve/tag200, allocateexactA/B, render2000 fullphotos, validateallpairs>=.6andtop1 at128/256,pack40WebP+previews+handoff, commit/pushreviewbranch.",
+  "remaining_work": "Selectall200 and visually approve200 inclactualtags and assignedages; prepare_approved.py passesallpair gate andallocatesA/B then20faceatlases; render10Cometsbatches, scoreandreview, renderother90team batches fromCometsatlas+kitreference, validateall2000pixels/identities,pack40WebP,actualWebPscore128/256,previews/handoff/checksums,reviewbranchcommitpush. Do not stop at partial progress.",
   "adobe": "dailyquota100 reached; do not retry before reset",
-  "higgsfield": "15approvedfreecharacterjobs allcomplete; no additionalpaidgeneration"
+  "higgsfield": "15approvedfreecharacterjobs allcomplete; no additionalpaidgeneration",
+  "all_generation_rounds_complete_through": 12,
+  "canonical_candidates": 1481,
+  "latest_compatible_selection": 197,
+  "pending_solvers": {},
+  "last_pushed_commit": "6535e4c",
+  "last_pushed_checkpoint_faces": 191,
+  "visual_metadata": [
+    "visual_metadata.json",
+    "final_visual_metadata.json"
+  ],
+  "source_face_criterion": "raw original ArcFace/LMEDS, all new pairs and all160 original references below.4 at128and256; no rescaling",
+  "nearby_age_diagnostic": "Optional at most10 fictional age assignments ±1onlyat cohort boundaries, with original generation_age recorded and final individual visual age review mandatory. Prefer strict native-age solution.",
+  "wardrobe_started": true,
+  "completion": false,
+  "accepted_identity_count": 200,
+  "full_identity_gate": "full_identity_gate.json",
+  "source_roster_frozen": true,
+  "wardrobe_score_session": 2131,
+  "source_age_assignments": 5
 }

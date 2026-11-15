@@ -1,50 +1,41 @@
 {
   "production_complete": false,
   "asset_validation_passed": false,
-  "review_status": "identity_prescreen_in_progress",
-  "planned_identity_count": 200,
-  "candidate_count_measured": 1212,
-  "numerically_compatible_identity_count": 191,
-  "accepted_identity_count": 0,
+  "review_status": "wardrobe_rendering_in_progress",
+  "identity_count": 200,
+  "accepted_identity_count": 200,
   "completed_variant_count": 0,
   "completed_sheet_count": 0,
-  "remaining_quota": [
-    {
-      "group": "Korean18-20",
-      "missing": 2
-    },
-    {
-      "group": "Korean21-24",
-      "missing": 4
-    },
-    {
-      "group": "Korean25-28",
-      "missing": 3
-    }
-  ],
-  "prescreen_metrics": {
+  "identity_prescreen": "identity_prescreen/validation.json",
+  "source_metrics": {
     "128": {
-      "within_pairs": 18145,
-      "reference_pairs": 30560,
+      "within_pairs": 19900,
+      "reference_pairs": 32000,
+      "within_min": -0.2158670723438263,
       "within_max": 0.3998124599456787,
+      "reference_min": -0.23618805408477783,
       "reference_max": 0.3996201753616333
     },
     "256": {
-      "within_pairs": 18145,
-      "reference_pairs": 30560,
+      "within_pairs": 19900,
+      "reference_pairs": 32000,
+      "within_min": -0.20293162763118744,
       "within_max": 0.3992614150047302,
+      "reference_min": -0.23578467965126038,
       "reference_max": 0.39979010820388794
     }
   },
-  "protocol": "work/canonical/protocol.json",
-  "original_reference_count": 160,
-  "visual_approval_complete": false,
-  "free_character_generations_completed": 15,
-  "free_character_paid_credits": 0,
-  "updated_utc": "2026-11-15T09:10:46.967496+00:00",
+  "source_tag_counts": {
+    "Foreign_clean": 50,
+    "Foreign_beard": 30,
+    "Korean_clean": 101,
+    "Korean_beard": 19
+  },
+  "glasses_count": 21,
+  "age_assignments_one_year": 5,
   "notes": [
-    "Full200 identity and visual gates must pass before wardrobe production.",
-    "Natural proportions and subtle smiles required; no exaggerated rejected candidates reused.",
-    "Completion flags remain false until 2000 variants and40 sheets pass actual decoded WebP checks."
+    "Full200 source prescreen and visual/quota checks passed.",
+    "2000 home-kit photo variants and40 final sheets are not complete yet.",
+    "Game code unchanged; review branch only."
   ]
 }

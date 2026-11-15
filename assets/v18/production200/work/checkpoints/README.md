@@ -1,1 +1,0 @@
-Numerical checkpoint only; not a completed delivery or visual approval. Candidate keys are not final player IDs. Source photographs and raw embeddings preserve this intermediate compatible set. All final flags remain false.

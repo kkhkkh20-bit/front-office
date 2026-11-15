@@ -10,8 +10,9 @@ if extra.exists():meta.update(json.loads(extra.read_text()))
 for x in rows:
  key=x['key'];v=meta.get(key)
  if key.startswith('clean_young/'):
-  v=dict(meta[key[len('clean_young/'):]]);v['facial_hair']=False
+  v=dict(meta[key[len('clean_young/'):]]);v.update(meta.get(key,{}));v['facial_hair']=False
  assert v and v.get('visual_review_passed'),f'Unreviewed source: {key}'
+ if x.get('age_assignment_requires_visual_review'):assert v.get('assigned_age_visual_review')==x['attributes']['age'],f'Assigned age needs visual review: {key}'
  x['attributes']['tags']={k:v[k] for k in ['glasses','facial_hair']}
  assert not (x['attributes']['ethnicity']=='Korean' and x['attributes']['age']<=22 and v['facial_hair']),key
 foreign=[]
@@ -25,7 +26,7 @@ for (lo,hi),cap in zip([(18,20),(21,24),(25,28),(29,33),(34,38)],[4,8,5,2,1]):
 ordered=foreign+ak+bk;assert len(ordered)==200
 ids=[];keys=[];source_dir=OUT/'identity_prescreen/masters256';source_dir.mkdir(parents=True,exist_ok=True)
 for i,row in enumerate(ordered):
- a=dict(row['attributes']);rid=f'v18_{i+1:03d}';a.update(id=rid,sheet='A' if i<100 else 'B',index=i%100,visual_review_passed=True,source_candidate_key=row['key']);a.pop('status',None);target=source_dir/(rid+'.png');shutil.copyfile(ROOT/row['master_path'],target);a['source_path']=str(target.relative_to(ROOT));a['source_sha256']=hashlib.sha256(target.read_bytes()).hexdigest()
+ a=dict(row['attributes']);rid=f'v18_{i+1:03d}';a.update(id=rid,sheet='A' if i<100 else 'B',index=i%100,visual_review_passed=True,source_candidate_key=row['key']);a.pop('status',None);a.pop('fictional_casting_name',None);target=source_dir/(rid+'.png');shutil.copyfile(ROOT/row['master_path'],target);a['source_path']=str(target.relative_to(ROOT));a['source_sha256']=hashlib.sha256(target.read_bytes()).hexdigest()
  brief=a['appearance_brief'];brief=brief.split('; accessories:')[0].split('; facial hair:')[0];kp=row['details']['256']['landmarks'];box=row['details']['256']['bbox'];distance=np.linalg.norm(np.array(kp[1])-kp[0])/(box[2]-box[0]);mouth=np.linalg.norm(np.array(kp[4])-kp[3])/(box[2]-box[0]);brief+=f'; observed eye spacing {distance:.4f} and mouth width {mouth:.4f} relative to face width; accessories: '+('thin framed glasses' if a['tags']['glasses'] else 'none')+'; facial hair: '+('neatly groomed moustache or chin beard' if a['tags']['facial_hair'] else 'clean shaven')+'.';a['appearance_brief']=brief;ids.append(a);keys.append(row['key'])
 from build_delivery import quota_check
 quota_check(ids);assert len(set(x['appearance_brief'] for x in ids))==200

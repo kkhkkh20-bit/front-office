@@ -1,0 +1,10 @@
+{
+  "128": {
+    "same_original_master_cosine_min": 0.9999998211860657,
+    "mean": 0.9999999592701594
+  },
+  "256": {
+    "same_original_master_cosine_min": 0.9999997615814209,
+    "mean": 0.9999999592701594
+  }
+}

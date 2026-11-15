@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "count": 200,
+  "metrics": {
+    "128": {
+      "within_pairs": 19900,
+      "reference_pairs": 32000,
+      "within_min": -0.2158670723438263,
+      "within_max": 0.3998124599456787,
+      "reference_min": -0.23618805408477783,
+      "reference_max": 0.3996201753616333
+    },
+    "256": {
+      "within_pairs": 19900,
+      "reference_pairs": 32000,
+      "within_min": -0.20293162763118744,
+      "within_max": 0.3992614150047302,
+      "reference_min": -0.23578467965126038,
+      "reference_max": 0.39979010820388794
+    }
+  },
+  "protocol": {
+    "recognizer": "w600k_r50.onnx",
+    "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+    "detector": "det_10g.onnx",
+    "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+    "detector_size": 640,
+    "detector_threshold": 0.55,
+    "alignment": "cv2.estimateAffinePartial2D LMEDS to standard ArcFace112, RGB [-1,1], raw L2-normalized cosine",
+    "source_resize": "PIL LANCZOS, isotropic square fit centered .5,.25; asset pixels are not affine aligned"
+  },
+  "visual_review_passed": true,
+  "quota_passed": true,
+  "tag_counts": {
+    "Foreign_clean": 50,
+    "Foreign_beard": 30,
+    "Korean_clean": 101,
+    "Korean_beard": 19
+  },
+  "glasses_count": 21,
+  "approved_roster_sha256": "d70b5cb8a6eaea2e0584c686e73a6d77a8c6b008affac40a062ee3d1a7470adf",
+  "frozen_utc": "2026-11-15T09:54:10.273976+00:00"
+}

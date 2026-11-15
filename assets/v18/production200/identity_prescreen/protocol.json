@@ -1,0 +1,10 @@
+{
+  "recognizer": "w600k_r50.onnx",
+  "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+  "detector": "det_10g.onnx",
+  "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+  "detector_size": 640,
+  "detector_threshold": 0.55,
+  "alignment": "cv2.estimateAffinePartial2D LMEDS to standard ArcFace112, RGB [-1,1], raw L2-normalized cosine",
+  "source_resize": "PIL LANCZOS, isotropic square fit centered .5,.25; asset pixels are not affine aligned"
+}
