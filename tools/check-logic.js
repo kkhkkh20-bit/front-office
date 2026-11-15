@@ -875,7 +875,7 @@ T('[면담] 말투마다 같은 결과도 문장이 다르고, 최근 기록 같
   const L=[]; for(let i=0;i<12;i++)L.push(pvTalk(a,'praise','pr_good','','x',{})); ok(L.some(x=>x.includes('40타수 16안타')),'뜨거운 타격을 말하지 않음');
   for(let i=1;i<L.length;i++)ok(L[i]!==L[i-1],'바로 앞 문장 반복: '+L[i]); ok((a.pvM||[]).length<=4,'기억이 4개를 넘음'); });
 T('[면담] 고민 묻기는 실제 상태(약속 대기·트레이드 명단·다른 구단 제안·FA)를 말하고, 친분이 낮은 과묵형은 같은 고민을 두루뭉술하게 말한다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const p=PV_PLAIN(domestic(G.user).find(q=>!q.prospect)); p.mor=50;
-  p.promise=mkPromise(p,30); p.promise.b={y:G.year,pa:99999,outs:99999,g:999}; ok(/기다리/.test(pvAsk(p,null,30)),'약속 대기를 말하지 않음'); delete p.promise;
+  p.promise=mkPromise(p,30); p.promise.b={y:G.year,pa:99999,outs:99999,g:999}; { const t0=pvAsk(p,null,30); ok(/기다리|기다려|지켜보|약속해 주신/.test(t0),'약속 대기를 말하지 않음: '+t0); } /* 약속 대기 문장 후보(기다리·기다려·지켜보·약속해 주신) 어느 것이든(11-15: 난수 흐름이 바뀌자 '기다려 보겠습니다'가 뽑혀 걸렸다) */ delete p.promise;
   p.listed=true; ok(/트레이드/.test(pvAsk(p,null,30)),'트레이드 명단을 말하지 않음'); p.listed=false;
   const X=G.teams.find(t=>t.id!==G.user).id; const o0=G.offers; G.offers=[{id:'z',from:X,give:[],get:[p.id],exp:G.day+3}]; const t1=pvAsk(p,null,30); G.offers=o0; ok(/다른 구단|다른 팀/.test(t1),'실제 제안을 말하지 않음: '+t1);
   ok(!/다른 구단|다른 팀/.test(pvAsk(p,null,30)),'제안이 없는데 관심을 말함');
@@ -1477,6 +1477,28 @@ T('[샐러리캡] 구단주 결재: 상한 +10%를 넘기는 FA 제안·다년�
   ok(faCapCheck(q,{annual:MIN_SAL,years:1})===null||capPayWith(G.user,q.id,MIN_SAL,s).tot>cap,'상한 안 계약에 결재'); });
 T('[샐러리캡] 트레이드로 상한 +10%를 넘겨 연봉을 떠안으면 구단주가 막는다',()=>{ fresh(); const u=team(G.user); u.indie=false; u.owner='profit'; u.trust=60; const {cap}=capFill(1.0); const op=G.teams.find(t=>t.id!==G.user).id; const big=domestic(op).filter(p=>!p.foreign&&!hasNtc(p)&&!isRookie(p)).sort((a,b)=>b.sal-a.sal)[0]; big.sal=Math.max(big.sal,Math.round(cap*.15)); delete big.newSal; delete big.extNext;
   const c=tradeCapCheck([],[big.id]); ok(c&&c.hard&&!c.ok,'상한 +15% 떠안기가 결재 대상 아님 '+JSON.stringify(c&&{pay:c.pay,cap:c.cap})); const mine=domestic(G.user).filter(p=>!p.foreign&&!hasNtc(p)&&p.sal<=100)[0]; const r=proposeTrade(op,[mine.id],[big.id],0); ok(!r.ok&&r.owner,'트레이드가 결재 없이 진행: '+r.msg); ok(big.team===op,'선수가 넘어옴'); });
+T('[샐러리캡] 소프트캡(11-15 커뮤니티): 상한을 2% 안쪽으로 더 넘기는 건은 구단주가 승인하고, 그 이상은 결재, 상한 +10%는 그대로 막는다',()=>{ fresh(); const u=team(G.user); u.indie=false; u.owner='profit'; u.trust=60; u.capOver=0; const {s,cap}=capFill(1.0);
+  const c=capOwnerCheck(Math.round(cap*1.015),cap,s,'soft1'); ok(c&&c.ok&&c.small,'상한 1.5% 초과 건이 자동 승인되지 않음 '+JSON.stringify(c&&{ok:c.ok,p:c.p})); ok(capOwnerTxt(c).includes('승인'),'미리보기 문구: '+capOwnerTxt(c));
+  const c2=capOwnerCheck(Math.round(cap*1.05),cap,s,'soft2'); ok(c2&&!c2.small&&!c2.hard&&c2.p<1,'상한 5% 초과는 결재(확률) 대상이어야 함');
+  const c3=capOwnerCheck(Math.round(cap*1.12),cap,s,'soft3'); ok(c3&&c3.hard&&!c3.ok,'상한 +12%가 막히지 않음');
+  const c4=capOwnerCheck(Math.round(cap*1.06),Math.round(cap*1.05),s,'soft4'); ok(c4&&c4.ok&&c4.small,'이미 넘긴 상태에서 1% 더 넘기는 건도 소폭으로 봐야 함');
+  const t1=u.trust; capOwnerOk(c,'점검'); ok(u.trust<t1,'소폭 승인도 신뢰 감점은 그대로'); });
+T('[샐러리캡] AI 구단도 같은 소프트캡: 상한을 넘겨 연봉을 떠안는 트레이드는 세금만큼 값을 더 요구하고, 구단주 한도(+10%)를 넘으면 거절한다(예전: 1원만 넘어도 거절)',()=>{ fresh(); const cap=capOf(sponSeason());
+  const t=G.teams.find(x=>x.id!==G.user&&!x.indie&&planOf(x)!=='tight'); ok(t,'준비 실패: 상대'); t.cash=5000; t.owner='pr'; t.trust=60; t.capOver=0; const op=t.id;
+  const fill=f=>{ const q=domestic(op).filter(x=>!isRookie(x)&&!x.ys&&!x.foreign).sort((a,b)=>b.sal-a.sal)[0]; delete q.newSal; delete q.extNext; q.sal=Math.max(MIN_SAL,q.sal+Math.round(cap*f-capInfo(op).pay)); };
+  const p=domestic(G.user).filter(x=>!x.foreign&&!hasNtc(x)&&!isRookie(x)&&!x.ys&&!faLock(x)).sort((a,b)=>b.sal-a.sal)[3]; delete p.newSal; delete p.extNext; p.sal=600; p.age=27; setOvr(p,66);
+  const q=domestic(op).filter(x=>!x.foreign&&!hasNtc(x)&&!x.ys&&!faLock(x)&&x.sal<=100&&!(x.joinY>G.year)).sort((a,b)=>ovr(a)-ovr(b))[0]; ok(q,'준비 실패: 상대 저연봉 선수');
+  fill(.99); const b0=capInfo(op).pay; ok(b0<=cap,'준비 실패: 상대 연봉 '+b0+'/'+cap);
+  const e=evalTrade(op,[p.id],[q.id]); ok(e.theirPay>cap,'준비 실패: 거래 뒤에도 상한 안 '+e.theirPay); ok(e.capT&&!e.capT.hard&&e.capT.tax===Math.round((e.theirPay-cap)*.3),'상한 +10% 안인데 세금 판단이 없음 '+JSON.stringify(e.capT));
+  ok(e.capT.lim===Math.floor(cap*(1+capOwnerLim(t))),'AI 한도가 사용자 구단주 한도와 다름');
+  const r=proposeTrade(op,[p.id],[q.id],0); ok(!r.cap&&!String(r.msg).includes('샐러리캡 때문에'),'상한을 조금 넘는다고 무조건 거절: '+r.msg);
+  if(r.ok){ ok(r.msg.includes('경쟁균형세'),'수락 문구에 세금 감수 설명 없음: '+r.msg); return; }
+  fill(1.08); const e2=evalTrade(op,[p.id],[q.id]); ok(e2.capT&&e2.capT.hard&&!e2.ok,'상한 +10%를 넘는데 거절하지 않음 '+JSON.stringify(e2.capT)); const r2=proposeTrade(op,[p.id],[q.id],0); ok(!r2.ok&&r2.cap&&r2.msg.includes('한도'),'한도 초과 거절 문구: '+r2.msg);
+  t.cash=-5000; fill(.99); const e3=evalTrade(op,[p.id],[q.id]); ok(e3.capT&&e3.capT.hard&&e3.capT.tight,'빚이 깊은 구단이 상한을 넘겨 받음'); });
+T('[샐러리캡] 상한 설명: 소프트캡·세금 단계(30·50·100%)·3회 연속 지명 9단계 하락을 짧은 합니다체로 알리고, 초과 상태에 세금 예상을 붙인다',()=>{ fresh(); const u=team(G.user); u.capOver=0; const cap=capOf(sponSeason()); const T0=capRuleTxt();
+  ok(['소프트캡','30%','50%','100%','9단계','구단주 결재','다른 구단도'].every(k=>T0.includes(k)),'설명 빠짐: '+T0); ok(!/(하오|하게|하시오|이오\.)/.test(T0),'말투');
+  const s1=capStateTxt(Math.round(cap*1.1)); ok(s1.includes('세금 약')&&s1.includes('30%'),'1회 초과 세금 예상: '+s1); u.capOver=2; const s3=capStateTxt(Math.round(cap*1.1)); ok(s3.includes('100%')&&s3.includes('9단계'),'3회째 경고: '+s3); u.capOver=0;
+  ok(capStateTxt(Math.round(cap*.9)).startsWith('여유'),'상한 안 문구'); u.indie=true; ok(!capRuleTxt().includes('구단주 결재'),'독립구단에 구단주 결재 설명'); u.indie=false; });
 T('[샐러리캡] 개막 뒤 방출한 선수 연봉은 그해 상한 산정에 남고(결산 직전 방출로 세금 회피 불가), 웨이버로 계약이 넘어가면 빠진다',()=>{ fresh(); G.day=G.cal.open+100; delete G.last; delete G.capDead; const ps=domestic(G.user).filter(p=>!isRookie(p)&&!p.ys&&!milServing(p)).sort((a,b)=>b.sal-a.sal); const p=ps[0], q=ps[1]; const b=capPay(G.user);
   releasePlayer(p.id); ok(p.team==null,'준비 실패: 방출 안 됨'); ok(capPay(G.user)===b,'방출로 상한 합계가 줄었다 '+b+' → '+capPay(G.user)); ok(capInfo(G.user).pay===b,'결산 산정(capInfo)이 줄었다');
   capDeadDrop(p.id); ok(capPay(G.user)<b,'계약이 넘어간 뒤에도 남음');
@@ -1515,6 +1537,19 @@ T('[엔진] 능력이 성적에 반영된다: 규정타석 타자의 한 시즌 
   /* 실제 KBO 규정 타석 wRC+는 실력 차가 MLB보다 좁아(2026 1위 175·10위 140), 600타석 운(wRC+ 약 18)과 합치면 한 시즌 기록을 실력이 설명하는 정도가 60% 안팎이다 */
   ok(re>=.5,'능력 기대 OPS가 실제 OPS를 설명하는 정도 '+(re*100).toFixed(0)+'%(50% 이상이어야 함)'); ok(r2>=.4,'세부 능력치(컨택·파워·선구·주루) 직선 관계가 OPS를 설명하는 정도 '+(r2*100).toFixed(0)+'%(40% 이상이어야 함)'); });
 
+T('[엔진] 타자 능력 균형(11-15 커뮤니티 "컨택·선구안보다 파워만 높으면 기록이 잘 나온다"): 300타석 이상 타자의 wOBA를 컨택·선구안이 파워 이상 설명하고, 선구안은 볼넷과 삼진 모두에 뚜렷하며, 리그 평균은 그대로',()=>{ const R=[]; const L={pa:0,ab:0,h:0,hr:0,bb:0,so:0};
+  for(const tid of [2,4,6,8]){ const snap={}; const u0=updateLg; updateLg=function(y){ if(y===2025)for(const p of Object.values(G.players))if(!p.isP)snap[p.id]={...p.r,gap:trt(p,'gap'),kt:trt(p,'k')}; return u0.apply(this,arguments); }; try{ DEMO.on=false; newGame(tid); }finally{ updateLg=u0; }
+    for(const p of Object.values(G.players)){ const s=snap[p.id]; if(!s)continue; const h=seasonTotal(p,2025,'1군'); if(!h||!h.pa)continue; for(const k in L)L[k]+=h[k]||0; if(h.pa<300)continue; R.push({con:s.con,eye:s.eye,pow:s.pow,spd:s.spd,gap:s.gap,kt:s.kt,w:wobaOf(h),k:h.so/h.pa,bb:h.bb/h.pa}); } }
+  ok(R.length>=250,'준비 실패: 300타석 '+R.length); const m=a=>a.reduce((x,y)=>x+y,0)/a.length, sd=a=>{ const u=m(a); return Math.sqrt(m(a.map(x=>(x-u)**2))); };
+  const ols=(xs,yk)=>{ const Z=xs.map(k=>{ const v=R.map(r=>r[k]); return [m(v),sd(v)]; }), ys=R.map(r=>r[yk]), uy=m(ys), sy=sd(ys), n=xs.length+1; const M=Array.from({length:n},()=>Array(n+1).fill(0));
+    for(const r of R){ const x=[1,...xs.map((k,i)=>(r[k]-Z[i][0])/Z[i][1])], y=(r[yk]-uy)/sy; for(let i=0;i<n;i++){ M[i][n]+=x[i]*y; for(let j=0;j<n;j++)M[i][j]+=x[i]*x[j]; } }
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(j!==i){ const f=M[j][i]/M[i][i]; for(let c=i;c<=n;c++)M[j][c]-=f*M[i][c]; } const b=M.map((row,i)=>row[n]/row[i]);
+    let se=0; for(const r of R){ const x=[1,...xs.map((k,i)=>(r[k]-Z[i][0])/Z[i][1])]; se+=((r[yk]-uy)/sy-x.reduce((a,v,i)=>a+v*b[i],0))**2; } return {b:Object.fromEntries(xs.map((k,i)=>[k,b[i+1]])),r2:1-se/R.length}; };
+  const X=['con','eye','pow','spd','gap','kt'], F=ols(X,'w'), noCE=ols(X.filter(k=>k!=='con'&&k!=='eye'),'w'), noP=ols(X.filter(k=>k!=='pow'&&k!=='gap'),'w'); const dCE=F.r2-noCE.r2, dP=F.r2-noP.r2;
+  /* 11-15 측정(세계 8개 × 2시드): 예전 wOBA 기여 컨택 .32·선구안 .19·파워 .44, 고유 설명 컨택+선구안 14% < 파워 17%, 선구안의 삼진 억제 -.19. 조정 뒤 .38·.24·.42, 20% > 16%, 삼진 -.29~-.34 */
+  ok(dCE>=dP*.9,'컨택+선구안 고유 설명 '+(dCE*100).toFixed(0)+'%가 파워 '+(dP*100).toFixed(0)+'%보다 작음'); ok(F.b.con+F.b.eye>=F.b.pow*1.15,'표준화 기여 컨택 '+F.b.con.toFixed(2)+'+선구안 '+F.b.eye.toFixed(2)+' vs 파워 '+F.b.pow.toFixed(2)); ok(F.b.pow>=.25,'파워 기여가 너무 작음 '+F.b.pow.toFixed(2));
+  const K=ols(X,'k'), B=ols(X,'bb'); ok(K.b.eye<=-.22,'선구안의 삼진 억제가 작음 '+K.b.eye.toFixed(2)); ok(B.b.eye>=.6,'선구안의 볼넷 기여 '+B.b.eye.toFixed(2));
+  const avg=L.h/L.ab, kp=L.so/L.pa, bp=L.bb/L.pa, hp=L.hr/L.pa; ok(avg>=.260&&avg<=.276&&kp>=.19&&kp<=.215&&bp>=.08&&bp<=.095&&hp>=.022&&hp<=.029,'리그 평균이 움직임: 타율 '+avg.toFixed(3)+' 삼진 '+kp.toFixed(3)+' 볼넷 '+bp.toFixed(3)+' 홈런 '+hp.toFixed(4)); });
 T('[엔진] 투수도 능력이 성적에 반영된다: 100이닝 이상 투수의 평균자책점을 능력치(구위·제구·체력)가 35% 이상 설명한다(11-12 투수 폭 조정 뒤 측정 39%: 한 시즌 ERA는 실제로도 능력이 30~40% 설명)(9개 구단 시작 표본)',()=>{ const R=[];
   for(const tid of [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9]) /* 표본을 늘려 시드 차이에 흔들리지 않게(11-07). 9개 세계 묶음도 37~44%로 흔들려(11-09 측정) 27개 세계로 */{ const snap={}; const u0=updateLg; updateLg=function(y){ if(y===2025)for(const p of Object.values(G.players))snap[p.id]={...p.r}; return u0.apply(this,arguments); }; try{ DEMO.on=false; newGame(tid); }finally{ updateLg=u0; }
     for(const p of Object.values(G.players)){ const s=snap[p.id]; if(!s||!p.isP)continue; const h=seasonTotal(p,2025,'1군'); if(!h||h.outs<300)continue; R.push({x:[1,s.stf,s.ctl,s.sta,p.foreign?(p.kfit??0):0],y:h.er*27/h.outs}); } } /* 외국인은 숨은 KBO 적합도(kfit, 73_foreign_drama 11-12)가 능력치 밖에서 평균자책점을 ±1~2점 움직인다(의도된 설계): 이 몫을 설명 변수에 넣지 않으면 외국인 표본(약 20%)의 설명력이 17~26%로 떨어져 전체가 29~31%로 보였다(국내만 35~36%, 적합도 포함 42%) */

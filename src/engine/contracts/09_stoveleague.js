@@ -451,7 +451,7 @@ function offerBlockMsg(o,strict){ /* strict: 제안을 만들 때는 evalTrade�
   {const why=pkCheck(o.from,o.get,o.give,pk);if(why)return why;}
   const ev=evalTrade(o.from,o.get,o.give,cash,pk);
   if(ev.theirN>ROSTER_MAX||ev.theirN<ROSTER_MIN)return `${t0.city} ${t0.nick} 로스터 사정이 바뀌어 성사되지 않았습니다(정식 ${ev.theirN}명).`;
-  { const cy=sponSeason(); if(ev.theirPay>capOf(cy)&&ev.theirPay>(preSeason(cy)?capPayNext(o.from):capPay(o.from)))return `${t0.city} ${t0.nick} 단장: 그사이 샐러리캡 여유가 줄어 이 제안을 지킬 수 없습니다.`; } /* 양쪽 모두 같은 시즌 기준(검수 11-08b) */
+  if(ev.capT&&ev.capT.hard)return `${t0.city} ${t0.nick} 단장: 그사이 연봉 사정이 바뀌어 구단주가 허락하는 한도를 넘게 됐습니다. 이 제안을 지킬 수 없습니다.`; /* 소프트캡(13_roster aiCapTake): 한도 안이면 세금만큼 값으로 따진다(아래 evalTrade) */
   { const tol=strict?0:Math.max(1.5,ev.outV)*.15; if(!ev.ok&&((ev.dom&&ev.dom.refuse)||ev.gain<ev.need-tol))return `${t0.city} ${t0.nick} 단장: 다시 따져 보니 이 조건으로는 어렵겠습니다.`; } /* 공략 방지: AI 제안도 직접 협상과 같은 값(evalTrade)으로 판정 */
   return null;
 }
