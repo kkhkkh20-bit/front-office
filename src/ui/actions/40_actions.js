@@ -461,7 +461,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ivFolNow(){ if(G.iv&&G.iv.k==='follow'&&!G.iv.done){ ivAuto(); toast('홍보팀이 후속 질문에 대신 답했습니다.'); save(); try{ renderSheet(); }catch(e){} render(); } },
   psNoCast(v){ G.cfg=G.cfg||{}; G.cfg.psNoCast=v==='1'; save(); render(); },
   ivFolDel(v){ G.cfg=G.cfg||{}; G.cfg.ivFolDel=v==='1'; if(v==='1'&&G.iv&&G.iv.k==='follow'&&!G.iv.done)ivAuto(); save(); render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} },
-  pkR1(v){ G.cfg=G.cfg||{}; G.cfg.pkR1=PK_R1_OPTS.includes(+v)?+v:2; save(); render(); }, /* 1라운드 지명권 보유 한도(코코영진 11-15) */
   ratScale(v){ G.cfg=G.cfg||{}; G.cfg.scale=v==='2080'?'2080':'100'; save(); render(); if(UI.sheet!=null)try{ renderSheet(); }catch(e){} }, /* 능력치 표기 */
   obAct(v){ const [id,k]=v.split(':'); const ob=obOf(id); if(!ob)return; G.obFace=G.obFace||{};
     if(k==='coach'){ let c=(G.cmarket||[]).find(x=>x.ob===id); if(!c){ c=obCoach(ob); G.cmarket.unshift(c); } UI.crole=c.role; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); return; }

@@ -11,7 +11,7 @@ const PK_V=[15,3,1.6,.05,.05,.05,.05,.05,.05,.05,.05]; /* 4라운드부터는 �
 const PK_R1S=[1.25,1.15,1.05,.85,.8,.75,.7,.45,.4,.35]; /* 1라운드 순번별 배율: 상위 세 순번과 하위 세 순번의 차이가 크다 */
 const PK_KEEP=1.2; /* 지명권은 내줄 때 더 아낀다(사용자 11-13: 지명권을 소중히). 올인·벼랑 끝 구단만 그대로 내준다 */
 const pkKeep=t=>t&&t.id!==ME()&&(t.allIn===sponSeason()||despOf(t)>=.5)?1:PK_KEEP; /* 1라운드는 순번이 앞설수록 훨씬 비싸다(커뮤니티 피드백 11-07: 상위 지명권을 너무 싸게 모음) */ /* 라운드별 가치(트레이드 가치 단위, 현금 1억 ≈ 0.9) */
-const PK_R1_OPTS=[2,3]; const pkR1Max=()=>PK_R1_OPTS.includes(G&&G.cfg&&G.cfg.pkR1)?G.cfg.pkR1:2; /* 게임 규정: 1라운드 지명권은 자기 것 포함 기본 두 장까지(커뮤니티 피드백 11-07). 설정에서 세 장까지 늘릴 수 있고 AI도 같은 한도를 쓴다(코코영진 11-15) */
+const PK_R1_MAX=3; const pkR1Max=()=>PK_R1_MAX; /* 게임 규칙: 한 드래프트의 1라운드 지명권은 자기 것 포함 세 장까지. KBO는 받는 장수 제한이 없지만 상위 지명권 독차지를 막으려고 둔다(11-07 두 장 → 11-15 사용자 결정으로 세 장, 설정 없이 통일). AI도 같은 한도 */
 const pkYear=()=>G.draft&&G.draft.y===G.year?G.year+1:G.year;
 function pkOwner(y,rd,orig){ const o=G.pkOwn&&G.pkOwn[y+':'+rd+':'+orig]; return o??orig; }
 /* 그 구단이 가진 다음 드래프트 지명권: 'rd:원래 구단' 목록 */
@@ -29,8 +29,8 @@ function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.le
   if(G.draft&&!G.draft.done)return '신인 드래프트가 진행 중이라 지명권을 주고받을 수 없습니다.';
   if(pk.y!==pkYear())return `거래안의 지명권은 ${pk.y} 드래프트 것입니다. 지금 주고받을 수 있는 것은 ${pkYear()} 드래프트 지명권입니다. 다시 골라 주세요.`;
   const mine=pkHeld(G.user), their=pkHeld(tid); if(pk.give.some(k=>!mine.includes(k))||pk.get.some(k=>!their.includes(k)))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
-  if(mine.filter(k=>+k.split(':')[0]===1).length-pk.give.filter(k=>+k.split(':')[0]===1).length+pk.get.filter(k=>+k.split(':')[0]===1).length>pkR1Max())return `한 드래프트에서 1라운드 지명권은 ${pkR1Max()}장까지 가질 수 있습니다. 한 구단이 상위 지명권을 독차지하지 못하게 한 게임 설정이며, 설정에서 3장까지 늘릴 수 있습니다.`;
-  { const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; if(r1(their)-r1(pk.get)+r1(pk.give)>pkR1Max())return `${tshort(tid)}은(는) 이 거래로 1라운드 지명권이 ${pkR1Max()}장을 넘습니다. 한 구단이 상위 지명권을 독차지하지 못하게 한 게임 설정이며, 설정에서 3장까지 늘릴 수 있습니다.`; } /* 상대 구단도 같은 한도(검수 11-08) */
+  if(mine.filter(k=>+k.split(':')[0]===1).length-pk.give.filter(k=>+k.split(':')[0]===1).length+pk.get.filter(k=>+k.split(':')[0]===1).length>pkR1Max())return `한 드래프트에서 1라운드 지명권은 ${pkR1Max()}장까지 가질 수 있습니다. 한 구단이 상위 지명권을 독차지하지 못하게 한 게임 규칙입니다.`;
+  { const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; if(r1(their)-r1(pk.get)+r1(pk.give)>pkR1Max())return `${tshort(tid)}은(는) 이 거래로 1라운드 지명권이 ${pkR1Max()}장을 넘습니다. 한 구단이 상위 지명권을 독차지하지 못하게 한 게임 규칙입니다.`; } /* 상대 구단도 같은 한도(검수 11-08) */
   if((pk.give.length&&!get.length)||(pk.get.length&&!give.length))return '리그 규약상 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 지명권을 주려면 선수를 받고, 지명권을 받으려면 선수를 보내야 합니다.';
   return ''; }
 function pkMove(pk,tid){ pk=pkNorm(pk); const y=pkYear(); G.pkOwn=G.pkOwn||{};
