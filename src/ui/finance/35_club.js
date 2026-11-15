@@ -178,6 +178,7 @@ function tradeView(){
     const g=gmOf(t.id)||{}; return `<button class="tp-card" data-a="opt" data-k="tpartner" data-v="${t.id}"><span class="tp-h">${gmAv(t.id)}<span><b>${badge(t.id,16)} ${esc(t.city+' '+t.nick)}</b><i>${g.interim?'단장대행':esc(g.name||'')+' 단장'+(g.age?` ${g.age}세`:'')}${rk?` · ${rk}위${r?` ${r.w}승 ${r.l}패`:''}`:''}</i></span>${g.trait&&GMT[g.trait]?`<span class="pill ${g.trait==='hard'||g.trait==='miser'?'warn':g.trait==='loyal'?'good':'acc'}">${GMT[g.trait].l}</span>`:''}</span><span class="tp-rel"><i>친분</i>${relBar(t.rel)}<b>${relLabel(t.rel)}</b></span><span class="tp-meta"><i>${esc(needText(t.id))}</i></span>${fmOn()?tpStars(t.id):''}<em>이 구단과 협상 ›</em></button>`; }).join('')}</div>`; };
   if(tr.tid==null){ const gv0=tr.give.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
     return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${pick()}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 상대 단장과 가까울수록 반응을 정확히 읽을 수 있습니다.</p></section>`; }
+  if(tr.tid===G.user||!G.teams.some(x=>x.id===tr.tid)){ tr.tid=null; tr.give=[]; tr.get=[]; tr.cash=0; tr.pk=null; return tradeView(); } /* 상대 구단이 우리 구단이 된 작업안(새 게임에서 그 구단을 고름 등)은 비우고 상대부터 다시 고른다 */
   const t=team(tr.tid);
   const ok=p=>p&&!p.foreign&&!(p.joinY>G.year);
   const lostP=[...tr.give.filter(id=>!(ok(G.players[id])&&G.players[id].team===G.user)),...tr.get.filter(id=>!(ok(G.players[id])&&G.players[id].team===tr.tid))];
@@ -192,8 +193,9 @@ function tradeView(){
     if(lostP.length||lostK){ tr.msg=`거래안이 바뀌었습니다: ${[lostP.length?`${lostP.map(id=>G.players[id]?G.players[id].name:'선수').join(', ')}(소속·신분이 바뀌어 거래할 수 없음)`:'',lostK?(same?`보유 구단이 바뀐 지명권 ${lostK}장`:`${P.y} 드래프트 지명권 ${lostK}장(지금은 ${pkYear()} 드래프트 지명권만 주고받을 수 있음)`):''].filter(Boolean).join(', ')}을(를) 뺐습니다. 남은 조건을 다시 확인하고 제안하세요.`; tr.ok=false; tr.want=null; tr.counters=null; } }
   const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);
   const want=tr.want&&G.players[tr.want]&&G.players[tr.want].team===G.user&&!tr.give.includes(tr.want)?G.players[tr.want]:null;
+  const tgm=gmOf(t.id)||{};
   const board=`<section class="card tboard">
-    <div class="tgm">${gmAv(t.id,mood?(mood.k==='ok'?'smile':mood.k==='more'?'flat':'angry'):null)}<div><b>${badge(t.id,16)} ${esc(tname(t.id))} · ${esc(gmOf(t.id).name)} 단장${gmOf(t.id).age?` · ${gmOf(t.id).age}세`:''}</b><span class="small muted">${GMT[gmOf(t.id).trait].l} · 친분 ${relLabel(t.rel)} · ${esc(needText(t.id))}</span></div></div>
+    <div class="tgm">${gmAv(t.id,mood?(mood.k==='ok'?'smile':mood.k==='more'?'flat':'angry'):null)}<div><b>${badge(t.id,16)} ${esc(tname(t.id))}${tgm.name?` · ${esc(tgm.name)} 단장`:''}${tgm.age?` · ${tgm.age}세`:''}</b><span class="small muted">${GMT[tgm.trait]?GMT[tgm.trait].l+' · ':''}친분 ${relLabel(t.rel)} · ${esc(needText(t.id))}</span></div></div>
     ${(()=>{ if(!interestKnown(t.id))return '<p class="small muted">아직 친분이 얕아 상대가 원하는 선수를 알기 어렵습니다.</p>'; const L=aiInterest(t.id).map(id=>G.players[id]).filter(Boolean); return L.length?`<div class="intl"><span class="small muted">상대가 원하는 우리 선수</span>${L.map(p=>`<button class="pill ${tr.give.includes(p.id)?'acc':'good'}" data-a="tpick" data-v="give:${p.id}">${tr.give.includes(p.id)?'보냄 ':'+ '}${esc(p.name)} · ${esc(interestWhy(t.id,p))}</button>`).join('')}</div><p class="small muted">이 선수를 넣으면 상대가 더 후하게 봅니다.</p>`:''; })()}
     <div class="tcols">
       <div><div class="eyebrow">보냄 · ${gv.length}명</div>${gv.map(p=>tmini(p,'give')).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="give">우리 선수에서 고르기</button>'}</div>
