@@ -160,7 +160,7 @@ function newPlayer(o){
     foreign:o.foreign||null,nat:o.nat||null,th,bt,velo:N(0,1.3)};
   setOvr(p,o.base);
   p.pot=clamp(Math.max(ovr(p),o.pot??ovr(p)),20,80); p.dt=rollDT();
-  initPers(p);
+  initPers(p,true); /* 성격은 만들 때 정한다(읽기 경로에서 난수를 쓰지 않게) */
   if(p.isP)p.delivery=o.delivery||pitchDelivery(p);
   G.players[p.id]=p; return p;
 }
