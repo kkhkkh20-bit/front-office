@@ -1406,7 +1406,7 @@ T('자리별 대형 선수의 드묾: 포수·유격 수는 줄이지 않되, �
 
 T('포지션 운용: 포수는 포수·지명 말고는 나가지 않고, 외야 셋 중 중견 수비가 가장 나은 선수가 중견을 맡는다',()=>{ fresh(); const me=G.user; { const mm=G.mgr[me]; mgrAttr(mm); mm.dfn=60; } /* 수비를 아주 가볍게 보는 감독(dfn 10대)은 낯선 자리 부담 때문에 일부러 안 바꾸기도 한다: 보통 감독 기준으로 본다 */ const L=makeLineup(me); const of=['LF','CF','RF'].map(k=>L[k]); ok(of.every(Boolean),'준비 실패: 외야 3명');
   const [a,b,c]=of; a.r.def=40; b.r.def=42; c.r.def=78; for(const k of ['con','pow','eye','spd'])c.r[k]=Math.max(a.r[k],b.r[k]); /* 방망이는 같게: 수비 차이로만 중견을 고르는지 본다 */ c.pexp=c.pexp||{}; c.pexp.CF=90; /* 중견 경험이 많은 코너 외야수: 60이면 어깨 좋은 우익수와 모형상 거의 동점이라 로스터에 따라 결과가 갈렸다 */ const cs=domestic(me).filter(q=>q.pos==='C').slice(0,3); ok(cs.length>=2,'준비 실패: 포수 '+cs.length); cs.forEach(q=>{ for(const k of ['con','pow','eye'])q.r[k]=80; });
-  const L2=makeLineup(me); const best=[L2.LF,L2.CF,L2.RF].filter(Boolean).sort((x,y)=>defAt(y,'CF')-defAt(x,'CF'))[0]; const tot=(x,y,z)=>[[x,'CF'],[y,'LF'],[z,'RF']].reduce((a,[q,k])=>a+(defAt(q,k)-DAVG[k])*DWR[k],0); ok(L2.CF===best||defAt(L2.CF,'CF')>=defAt(best,'CF')-2||tot(L2.CF,L2.LF,L2.RF)>=tot(best,L2.LF===best?L2.CF:L2.LF,L2.RF===best?L2.CF:L2.RF)-1, /* 라인업은 0.3점 넘게 나아질 때만 자리를 바꾼다(감독 수비 비중을 곱하면 이 정도 차이는 그대로 둔다) */ /* 수비 기여 합계가 사실상 같으면(코너 수비가 아주 좋은 선수를 코너에) 허용 */'중견 수비 '+Math.round(defAt(best,'CF'))+'인 외야수 대신 '+Math.round(defAt(L2.CF,'CF'))+'가 중견 '+[L2.LF,L2.CF,L2.RF].map(q=>q.name+q.pos+'/'+Math.round(defAt(q,'CF'))+'/'+Math.round(defAt(q,'LF'))+'/'+Math.round(defAt(q,'RF'))+(q===c?'*':'')).join(' ')+' tot '+tot(L2.CF,L2.LF,L2.RF).toFixed(2)+' alt '+tot(best,L2.LF===best?L2.CF:L2.LF,L2.RF===best?L2.CF:L2.RF).toFixed(2)); /* 실제로 나간 외야 셋 안에서 본다(방망이로 다른 외야수가 들어올 수 있음) */
+  const L2=makeLineup(me); const best=[L2.LF,L2.CF,L2.RF].filter(Boolean).sort((x,y)=>defAt(y,'CF')-defAt(x,'CF'))[0]; const tot=(x,y,z)=>[[x,'CF'],[y,'LF'],[z,'RF']].reduce((a,[q,k])=>a+(defAt(q,k)-DAVG[k])*DWR0[k],0); ok(L2.CF===best||defAt(L2.CF,'CF')>=defAt(best,'CF')-2||tot(L2.CF,L2.LF,L2.RF)>=tot(best,L2.LF===best?L2.CF:L2.LF,L2.RF===best?L2.CF:L2.RF)-1, /* 라인업은 0.3점 넘게 나아질 때만 자리를 바꾼다(감독 수비 비중을 곱하면 이 정도 차이는 그대로 둔다) */ /* 수비 기여 합계가 사실상 같으면(코너 수비가 아주 좋은 선수를 코너에) 허용 */'중견 수비 '+Math.round(defAt(best,'CF'))+'인 외야수 대신 '+Math.round(defAt(L2.CF,'CF'))+'가 중견 '+[L2.LF,L2.CF,L2.RF].map(q=>q.name+q.pos+'/'+Math.round(defAt(q,'CF'))+'/'+Math.round(defAt(q,'LF'))+'/'+Math.round(defAt(q,'RF'))+(q===c?'*':'')).join(' ')+' tot '+tot(L2.CF,L2.LF,L2.RF).toFixed(2)+' alt '+tot(best,L2.LF===best?L2.CF:L2.LF,L2.RF===best?L2.CF:L2.RF).toFixed(2)); /* 실제로 나간 외야 셋 안에서 본다(방망이로 다른 외야수가 들어올 수 있음) */
   for(const k in L2)if(L2[k].pos==='C')ok(k==='C'||k==='DH','포수가 '+k+'로 나감'); });
 
 T('포지션 정착: 지난 시즌 다른 자리에서 주로 뛰어 숙련이 오르면 그 자리로 굳는다(포수는 그대로)',()=>{ fresh(); const y=G.year; const ps=domestic(G.user).filter(q=>!q.isP); const s=ps.find(q=>q.pos==='SS')||ps.find(q=>q.pos!=='C'), c=ps.find(q=>q.pos==='C'); ok(s&&c,'준비 실패');
@@ -1591,6 +1591,41 @@ T('[엔진] 투수도 능력이 성적에 반영된다: 100이닝 이상 투수�
   for(const r of R)for(let i=0;i<p;i++){ b[i]+=r.x[i]*r.y; for(let j=0;j<p;j++)A[i][j]+=r.x[i]*r.x[j]; }
   for(let i=0;i<p;i++){ for(let j=i+1;j<p;j++){ const f=A[j][i]/A[i][i]; for(let c=i;c<p;c++)A[j][c]-=f*A[i][c]; b[j]-=f*b[i]; } } const w=Array(p).fill(0); for(let i=p-1;i>=0;i--){ let s2=b[i]; for(let c=i+1;c<p;c++)s2-=A[i][c]*w[c]; w[i]=s2/A[i][i]; }
   const my=R.reduce((s2,r)=>s2+r.y,0)/n; let sst=0, sse=0; for(const r of R){ const pr=r.x.reduce((s2,v,i)=>s2+v*w[i],0); sst+=(r.y-my)**2; sse+=(r.y-pr)**2; } const r2=1-sse/sst; ok(r2>=.35,'능력치가 평균자책점을 설명하는 정도 '+(r2*100).toFixed(0)+'%(35% 이상이어야 함)'); /* 시작 표본의 난수 흐름에 따라 38~46%로 흔들려(11-07 측정) 기준을 40%로 */ });
+T('[엔진] 수비 능력이 실점에 반영된다(11-15 수비 감사): 수비 범위가 좋은 야수에게 간 타구는 덜 안타가 되고, 팀 수비가 좋으면 인플레이 피안타율이 낮으며, 포구가 나쁘면 실책이 늘고, 포수 어깨가 좋으면 도루 성공률·시도가 줄고, 병살은 팀당 시즌 80~130개',()=>{
+  const Bk={hi:[0,0],lo:[0,0]}, Ek={hi:[0,0],lo:[0,0]}, TM={}, CA={hi:[0,0,0],lo:[0,0,0]}; let DP=0, TG=0, W=0;
+  const b0=bipResolve, s0=simGame;
+  bipResolve=function(b,p,babip,qb,qp,fs){ const r=b0.apply(this,arguments); if(!fs||fs.farm||!LBIP||LBIP.pos==='P'||!LBIP.fid)return r; const f=G.players[LBIP.fid]; if(!f)return r; const d=rngV(f,LBIP.pos)-(ERRN[LBIP.pos]||DEF0), hit=r!=='OUT'?1:0;
+    const k=d>=8?'hi':d<=-8?'lo':null, IF=['SS','3B','2B','1B'].includes(LBIP.pos); if(k&&LBIP.t==='GB'&&IF){ Bk[k][0]++; Bk[k][1]+=hit; } const t=TM[fs.tid+':'+W]||(TM[fs.tid+':'+W]={n:0,h:0,d:0}); t.n++; t.h+=hit; t.d+=d;
+    if(r==='OUT'&&LBIP.t==='GB'&&IF){ const e=errV(f,LBIP.pos,true)-(ERRN[LBIP.pos]||DEF0), ek=e>=8?'hi':e<=-8?'lo':null; if(ek)Ek[ek][0]++; } return r; };
+  simGame=function(day,hid,aid,ps,o){ const g=s0.apply(this,arguments); if(ps||(o&&o.sides))return g; TG++; for(const r of g.pbp||[])if(r[3]==='DP')DP++;
+    for(const k of ['h','a']){ const bat=g.S[k], fld=g.S[k==='h'?'a':'h']; let sb=0, cs=0; for(const x of bat.box.values()){ sb+=x.sb||0; cs+=x.cs||0; }
+      const c=fld.cArm>=CA0+8?'hi':fld.cArm<=CA0-8?'lo':null; if(c){ CA[c][0]+=sb; CA[c][1]+=cs; CA[c][2]++; }
+      for(const q of fld.order){ const x=fld.box.get(q.id), pos=fld.posOf[q.id]; if(x&&x.e&&['SS','3B','2B','1B'].includes(pos)){ const e=errV(q,pos,true)-(ERRN[pos]||DEF0), ek=e>=8?'hi':e<=-8?'lo':null; if(ek)Ek[ek][1]+=x.e; } } }
+    return g; };
+  try{ for(const tid of [3,5,7,9]){ W=tid; DEMO.on=false; newGame(tid); } }finally{ bipResolve=b0; simGame=s0; }
+  ok(TG>=2000,'준비 실패: 경기 '+TG); const hr=k=>Bk[k][1]/Bk[k][0];
+  /* 수비 범위가 그 자리 보통(ERRN)보다 8 이상 좋은 내야수에게 간 땅볼은 8 이상 나쁜 내야수보다 안타가 덜 된다(식으로는 약 .04) */
+  ok(Bk.hi[0]>2000&&Bk.lo[0]>2000,'준비 실패: 타구 '+Bk.hi[0]+'/'+Bk.lo[0]); ok(hr('lo')-hr('hi')>=.02,'수비 범위 좋은 내야수 땅볼 안타율 '+hr('hi').toFixed(3)+' vs 나쁜 야수 '+hr('lo').toFixed(3));
+  const T=Object.values(TM).filter(t=>t.n>2500), m=a=>a.reduce((x,y)=>x+y,0)/a.length; const xs=T.map(t=>t.d/t.n), ys=T.map(t=>t.h/t.n), mx=m(xs), my=m(ys); let sxy=0,sxx=0,syy=0; xs.forEach((x,i)=>{ sxy+=(x-mx)*(ys[i]-my); sxx+=(x-mx)**2; syy+=(ys[i]-my)**2; });
+  const r=sxy/Math.sqrt(sxx*syy), slope=sxy/sxx; ok(T.length>=36,'준비 실패: 팀 '+T.length); ok(r<=-.3,'팀 수비와 인플레이 피안타율 상관 '+r.toFixed(2)); /* 측정 -.5 안팎 */
+  const sx=Math.sqrt(sxx/xs.length), span=-slope*2*sx*m(T.map(t=>t.n))*.8; ok(span>=15,'팀 수비 ±1 표준편차 차이가 인플레이 타구로 시즌 실점을 '+span.toFixed(0)+'점밖에 바꾸지 않음(측정 약 30점, MLB 팀 수비 최고·최저 차 약 ±50점)');
+  const er=k=>Ek[k][1]/Math.max(1,Ek[k][0]); ok(Ek.lo[0]>400&&Ek.hi[0]>400,'준비 실패: 땅볼 아웃 '+Ek.hi[0]+'/'+Ek.lo[0]); ok(er('lo')>er('hi')*1.4,'포구·송구가 나쁜 내야수 실책 '+er('lo').toFixed(4)+' vs 좋은 내야수 '+er('hi').toFixed(4));
+  const sp=k=>CA[k][0]/Math.max(1,CA[k][0]+CA[k][1]), at=k=>(CA[k][0]+CA[k][1])/Math.max(1,CA[k][2]); ok(CA.hi[2]>300&&CA.lo[2]>300,'준비 실패: 포수 경기 '+CA.hi[2]+'/'+CA.lo[2]);
+  ok(sp('lo')-sp('hi')>=.06,'포수 어깨 좋은 팀 상대 도루 성공률 '+sp('hi').toFixed(3)+' vs 나쁜 팀 '+sp('lo').toFixed(3)); ok(at('hi')<at('lo')*.9,'포수 어깨 좋은 팀에 도루 시도가 줄지 않음 '+at('hi').toFixed(2)+' vs '+at('lo').toFixed(2));
+  const dps=DP/TG/2*144; /* 경기마다 두 팀 */ ok(dps>=80&&dps<=130,'팀당 시즌 병살 '+dps.toFixed(0)+'개(KBO·MLB 실제 100~120개)'); });
+T('[엔진] 투수 능력이 이름대로 반영된다(11-15 투수 감사): 구위는 삼진·피홈런, 제구는 볼넷·피홈런을 뚜렷하게 바꾸고, 리그 삼진·볼넷·홈런·평균자책점이 KBO 범위, 선발 이닝·불펜 등판 수가 현실적',()=>{ const R=[], L={bf:0,so:0,bb:0,hr:0,er:0,outs:0}; const gl=[]; let gs=0, gso=0;
+  for(const tid of [2,4,6,8]){ const snap={}; const u0=updateLg; updateLg=function(y){ if(y===2025)for(const p of Object.values(G.players))if(p.isP)snap[p.id]={...p.r,gb:gbT(p),mv:trt(p,'mv'),kf:p.foreign?(p.kfit??0):0}; return u0.apply(this,arguments); }; try{ DEMO.on=false; newGame(tid); }finally{ updateLg=u0; }
+    let gmax=0; for(const p of Object.values(G.players)){ const s=snap[p.id]; if(!s)continue; const h=seasonTotal(p,2025,'1군'); if(!h||!h.outs)continue; for(const k in L)L[k]+=h[k]||0; if(h.gs){ gs+=h.gs; gso+=h.outs*h.gs/h.g; } if(!h.gs)gmax=Math.max(gmax,h.g); if(h.outs<150)continue;
+      R.push({stf:s.stf,ctl:s.ctl,sta:s.sta,gb:s.gb,mv:s.mv,kf:s.kf,k:h.so/h.bf,bb:h.bb/h.bf,hr:h.hr/h.bf}); } gl.push(gmax); }
+  ok(R.length>=300,'준비 실패: 50이닝 투수 '+R.length); const m=a=>a.reduce((x,y)=>x+y,0)/a.length, sd=a=>{ const u=m(a); return Math.sqrt(m(a.map(x=>(x-u)**2))); };
+  const ols=(xs,yk)=>{ const Z=xs.map(k=>{ const v=R.map(r=>r[k]); return [m(v),sd(v)||1]; }), ys=R.map(r=>r[yk]), uy=m(ys), sy=sd(ys), n=xs.length+1; const M=Array.from({length:n},()=>Array(n+1).fill(0));
+    for(const r of R){ const x=[1,...xs.map((k,i)=>(r[k]-Z[i][0])/Z[i][1])], y=(r[yk]-uy)/sy; for(let i=0;i<n;i++){ M[i][n]+=x[i]*y; for(let j=0;j<n;j++)M[i][j]+=x[i]*x[j]; } }
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(j!==i){ const f=M[j][i]/M[i][i]; for(let c=i;c<=n;c++)M[j][c]-=f*M[i][c]; } return Object.fromEntries(xs.map((k,i)=>[k,M[i+1][n]/M[i+1][i+1]])); };
+  const X=['stf','ctl','sta','gb','mv','kf'], K=ols(X,'k'), B=ols(X,'bb'), H=ols(X,'hr');
+  /* 11-15 측정(세계 16개, 표준화 계수): 삼진 구위 .70 · 제구 -.02, 볼넷 제구 -.69 · 구위 .04, 피홈런 구위 -.28 · 제구 -.25 · 땅볼 성향 -.32 */
+  ok(K.stf>=.5&&Math.abs(K.ctl)<.2,'삼진: 구위 '+K.stf.toFixed(2)+' 제구 '+K.ctl.toFixed(2)); ok(B.ctl<=-.5&&Math.abs(B.stf)<.2,'볼넷: 제구 '+B.ctl.toFixed(2)+' 구위 '+B.stf.toFixed(2)); ok(H.stf<=-.12&&H.ctl<=-.1&&H.gb<=-.12,'피홈런: 구위 '+H.stf.toFixed(2)+' 제구 '+H.ctl.toFixed(2)+' 땅볼 '+H.gb.toFixed(2));
+  const kp=L.so/L.bf, bp=L.bb/L.bf, hp=L.hr/L.bf, era=L.er*27/L.outs, ipgs=gso/3/gs; ok(kp>=.18&&kp<=.215&&bp>=.078&&bp<=.096&&hp>=.022&&hp<=.029&&era>=4.2&&era<=4.9,'리그: 삼진 '+kp.toFixed(3)+' 볼넷 '+bp.toFixed(3)+' 홈런 '+hp.toFixed(4)+' 평균자책점 '+era.toFixed(2));
+  ok(ipgs>=4.8&&ipgs<=5.8,'선발 경기당 이닝 '+ipgs.toFixed(2)); ok(m(gl)<=84,'불펜 최다 등판 평균 '+m(gl).toFixed(1)+'경기(KBO 1위는 대개 70~80경기)'); });
 
 T('[트레이드] 고액 연봉이라도 성적·능력이 멀쩡한 선수는 공짜로 내주지 않는다(연봉 정리 매물·리빌딩 구단이라도)(커뮤니티 피드백)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10);
   const t=G.teams.find(x=>x.id!==G.user); t.mode='rebuild'; const ds=domestic(t.id).filter(q=>!q.ys&&healthy(q)&&!(q.joinY>G.year)); const p=ds.filter(q=>q.age>=28&&q.age<=31).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패');
