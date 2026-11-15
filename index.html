@@ -27058,7 +27058,7 @@ function sdTake(s,pid){ const q=G.players[pid]; const from=q.team, fee=sdFee(s.r
 function sdRun(quiet){ const S=G.sd2; if(!S||S.stage!=='pick')return;
   while(S.cur<S.seq.length){ const s=S.seq[S.cur];
     if(s.tid===ME()){ const can=rosterN(s.tid)<ROSTER_MAX&&sdCands(s.tid).length; if(can&&spendable(s.tid)<sdFee(s.rd))note('드래프트',`2차 드래프트 ${s.rd}라운드: 양도금 ${money(sdFee(s.rd))}을(를) 낼 현금이 없어 건너뛰었습니다.`); /* 아무도 지명할 수 없으면 멈추지 않는다(검수 11-09f) */
-      else if(can){ if(S.wait!==S.cur){ S.wait=S.cur; S.exp=G.day+1; if(!quiet)stop('드래프트',`2차 드래프트 ${s.rd}라운드, 우리 차례입니다. 지명하거나 건너뛰세요(내일까지 정하지 않으면 건너뜁니다).`); } return; } }
+      else if(can){ if(S.wait!==S.cur){ S.wait=S.cur; S.exp=G.day+1; if(!quiet){ const t=`2차 드래프트 ${s.rd}라운드, 우리 차례입니다. 지명하거나 건너뛰세요(내일까지 정하지 않으면 건너뜁니다).`; mail(FROM['드래프트']||'운영팀',headline(t),t,{imp:true,kind:'드래프트',acts:[{l:'2차 드래프트에서 지명',a:'go',v:'transfer:kbo'}]}); } /* 신인 드래프트 화면이 아니라 웨이버·2차 화면으로(사용자 제보 11-15) */ } return; } }
     else { const id=sdAiPick(s.tid,s.rd); if(id)sdTake(s,id); }
     if(!s.pid)s.pass=true; S.cur++; }
   S.stage='done'; S.done=G.day; const P=S.seq.filter(s=>s.pid);
