@@ -885,7 +885,7 @@ T('[면담] 말투마다 같은 결과도 문장이 다르고, 최근 기록 같
   const L=[]; for(let i=0;i<12;i++)L.push(pvTalk(a,'praise','pr_good','','x',{})); ok(L.some(x=>x.includes('40타수 16안타')),'뜨거운 타격을 말하지 않음');
   for(let i=1;i<L.length;i++)ok(L[i]!==L[i-1],'바로 앞 문장 반복: '+L[i]); ok((a.pvM||[]).length<=4,'기억이 4개를 넘음'); });
 T('[면담] 고민 묻기는 실제 상태(약속 대기·트레이드 명단·다른 구단 제안·FA)를 말하고, 친분이 낮은 과묵형은 같은 고민을 두루뭉술하게 말한다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const p=PV_PLAIN(domestic(G.user).find(q=>!q.prospect)); p.mor=50;
-  p.promise=mkPromise(p,30); p.promise.b={y:G.year,pa:99999,outs:99999,g:999}; ok(/기다리/.test(pvAsk(p,null,30)),'약속 대기를 말하지 않음'); delete p.promise;
+  p.promise=mkPromise(p,30); p.promise.b={y:G.year,pa:99999,outs:99999,g:999}; ok(/기다리|지켜보/.test(pvAsk(p,null,30)),'약속 대기를 말하지 않음'); /* prom_wait 문구 세 가지 중 하나는 '지켜보겠습니다'(문구 선택이 세계 난수에 달려 있음) */ delete p.promise;
   p.listed=true; ok(/트레이드/.test(pvAsk(p,null,30)),'트레이드 명단을 말하지 않음'); p.listed=false;
   const X=G.teams.find(t=>t.id!==G.user).id; const o0=G.offers; G.offers=[{id:'z',from:X,give:[],get:[p.id],exp:G.day+3}]; const t1=pvAsk(p,null,30); G.offers=o0; ok(/다른 구단|다른 팀/.test(t1),'실제 제안을 말하지 않음: '+t1);
   ok(!/다른 구단|다른 팀/.test(pvAsk(p,null,30)),'제안이 없는데 관심을 말함');
