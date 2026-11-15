@@ -158,10 +158,11 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     fx=['요구 기준(친하면 낮게)','우선 제안·라스트 룩','다른 구단 제안을 얼마나 정확히 알려 주는지'];
     acts=[cl.length?btn('협상','faOpen',cl[0].id,1):btn('FA 시장','go','transfer:fa',1)]; } /* 협상실 버튼이 정의되지 않은 id를 넘기던 문제: 이번 겨울 첫 고객의 협상실로 */
   const d=relDelta(k); /* 관계를 움직이는 것·주는 영향은 본문 대신 i 설명으로 */ const relTip=moves.length||fx.length?hiI([moves.length?'관계를 움직이는 것\n'+moves.map(s=>'· '+s).join('\n'):'',fx.length?'관계가 주는 영향\n'+fx.map(s=>'· '+s).join('\n'):''].filter(Boolean).join('\n\n')):'';
-  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
-    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+  const PF=personProfileOf(k); if(PF&&k==='mgr')info=''; /* 감독·코치: 선수 카드와 같은 큰 사진 카드·능력 차트·세부 능력(사진·나이·계약이 카드 안에 있다) */
+  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps${PF?' ps-pc':''}" data-stop="1" role="dialog" aria-label="인물 정보">
+    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${PF?'':avImg(x.av,true)+cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${(x.k==='fan'||x.k==='press')?x.rel:''}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${(k==='fan'||k==='press')?(d>0?'+':'')+d:d>0?'가까워짐':'멀어짐'}`:''}${relTip}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span>${relTip}</div>`}
-    ${personTop(k)}${info}${relLikesCard(k)}${(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()}${sec('최근',recent)}
+    ${PF?PF.html+PF.rest:personTop(k)}${info}${relLikesCard(k)}${(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()}${sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
 
 
