@@ -680,6 +680,28 @@ T('[국가대표] 상대국 명부: 해마다 나이·성장·은퇴가 반영�
   const old=JSON.parse(JSON.stringify(G)); void old; });
 T('[국가대표] 예전 저장: 대진 없이 대회 중이던 해는 예전 방식(전력 확률)으로 끝난다',()=>{ fresh(); G.year=2026; const e=NT_EV.ag, D=a=>KD(a[0],a[1]); G.day=D(e.ann); ntDaily(G.day); const N=G.nt; ok(N&&!N.tour,'대진 전');
   G.day=D(e.res); ntDaily(G.day); ok(!N.tour&&N.res,'대진 없이도 성적: '+N.res); });
+T('[아시안게임] 금메달 확률(사용자 제보 11-15): 보통 전력 한국은 실제 대회에서 금메달이 대부분(실제 8번 중 7번)이고, 대만·일본은 경기를 잡는 위협으로 남으며, 전력 확률(ntOdds)도 대회와 맞는다',()=>{ fresh(); G.year=2026; const e=NT_EV.ag, D=a=>KD(a[0],a[1]);
+  G.day=D(e.ann); ntDaily(G.day); const N=G.nt; ok(N&&N.k==='ag'&&N.ids.length===24,'최종 명단');
+  for(let d=D(e.from);d<D(e.res)-7;d++){ G.day=d; ntDaily(d); } ok(N.tour&&!N.tour.done,'대진 준비');
+  const keep=N.ids.map(id=>[id,JSON.stringify(G.players[id])]); const n=30; let gold=0, lost=0, med=0;
+  for(let i=0;i<n;i++){ for(const [id,s] of keep)G.players[id]=JSON.parse(s); N.tour=null; ntTourInit(N); const T=N.tour;
+    for(let d=D(e.res)-7;d<=D(e.res)&&!T.done;d++)ntTourDay(N,d); ok(T.done,'대회가 끝남'); if(T.lv===1)gold++; if(T.lv<=3)med++;
+    lost+=T.games.filter(g=>g.done&&(g.hc==='KR'&&g.win==='a'&&['TW','JPA'].includes(g.ac)||g.ac==='KR'&&g.win==='h'&&['TW','JPA'].includes(g.hc))).length; }
+  for(const [id,s] of keep)G.players[id]=JSON.parse(s);
+  ok(gold>=Math.round(n*.6)&&gold<=n-1,'보통 전력 한국 금메달 '+gold+'/'+n+'(실제 85%쯤, 느슨한 범위 60~97%)'); ok(med>=n-4,'메달 '+med+'/'+n); ok(lost>=1,'대만·일본에 한 번도 지지 않음(위협이 아님) '+lost);
+  const T=N.tour; ok(T.pen.TW>0&&T.pen.JPA>0,'아시안게임 대만·일본 사회인야구 전력 감소 '+JSON.stringify(T.pen));
+  const ref=ntKRef(), O=s=>ntOdds('ag',s).g; ok(O(ref-4.8)>=.72&&O(ref-4.8)<=.88,'보통 전력 확률 '+O(ref-4.8).toFixed(2)); ok(O(ref-9)<O(ref-4.8)-.15,'주축이 빠진 약한 대표팀은 확률이 낮다 '+O(ref-9).toFixed(2)); ok(O(ref)<=.93,'상한');
+  ok(ntOdds('ag',ref-4.8).s>O(ref-4.8)&&ntOdds('ag',ref-4.8).b<=.99,'은·동 누적 확률'); });
+T('[아시안게임] 병역법 개정: 통과 전에는 금메달이 특례, 통과(늦어도 2032) 뒤 아시안게임 금메달은 특례가 없고 올림픽 메달은 그대로, 이미 받은 특례는 유지',()=>{ fresh(); const e=NT_EV.ag, D=a=>KD(a[0],a[1]);
+  ok(!G.agExOff&&e.ex==='gold','예전 저장·새 게임: 아시안게임 금메달 특례 있음'); G.year=2026; ok(!agExLawCheck(),'2026년에는 개정을 굴리지 않는다');
+  G.day=D(e.ann); ntAnnounce('ag'); let N=G.nt; ok((G.mail||[]).some(m=>JSON.stringify(m).includes('2026 아시안게임 대표팀 명단')&&JSON.stringify(m).includes('병역 특례(체육요원)를 받습니다')),'발표 안내: 금메달이면 특례');
+  const sq=N.ids.map(id=>G.players[id]); const free=sq.filter(milFree); ok(free.length>0,'미필 선수 포함'); ok(ntResult('ag',0)==='금메달','강제 금메달'); ok(free.every(p=>p.mil&&p.mil.exempt),'통과 전: 금메달 미필 선수 특례');
+  G.year=2027; G.agExY=2027; ok(!agExLawCheck()&&!G.agExOff,'한 해에 한 번만 굴린다'); ok(AG_EX_LAW.from===2027&&AG_EX_LAW.p>0&&AG_EX_LAW.p<.5,'해마다 확률 '+AG_EX_LAW.p);
+  G.year=AG_EX_LAW.by; G.agExY=null; const nn=(G.news||[]).length; lgrDaily(KD(...AG_EX_LAW.d)); ok(G.agExOff===AG_EX_LAW.by,'늦어도 '+AG_EX_LAW.by+'년에는 통과 '+G.agExOff); ok((G.news||[]).length>nn&&(G.news||[]).some(x=>String(x.t||'').includes('병역법')),'리그 소식');
+  ok(e.ex==null&&NT_EV.oly.ex==='top3','아시안게임 특례 없음 · 올림픽 3위 이내 그대로'); ok(free.every(p=>p.mil&&p.mil.exempt),'이미 받은 특례는 유지'); ok(ntMilB('ag')===0&&ntMilB('oly')>0,'아시안게임은 미필 가산 없음');
+  G.year=2034; G.nt=null; G.day=D(e.ann); ntAnnounce('ag'); N=G.nt; const m=(G.mail||[]).find(x=>JSON.stringify(x).includes('2034 아시안게임 대표팀 명단')); ok(m&&JSON.stringify(m).includes('병역법 개정'),'발표 안내에 특례 폐지');
+  const f2=N.ids.map(id=>G.players[id]).filter(milFree); ok(f2.length>0,'2034 미필 선수 포함'); ok(ntResult('ag',0)==='금메달','강제 금메달'); ok(f2.every(milFree),'통과 뒤: 아시안게임 금메달은 특례 아님');
+  G.year=2036; G.nt=null; ntAnnounce('oly'); N=G.nt; const f3=N.ids.map(id=>G.players[id]).filter(milFree); ok(f3.length>0,'올림픽 미필 선수 포함'); ntResult('oly',0); ok(f3.every(p=>p.mil&&p.mil.exempt),'올림픽 메달은 여전히 특례'); });
 T('[국가대표] 우리 선수 차출 거부: 대체 선수가 들어오고 팬·언론 여론과 선수 사기가 떨어진다. 소집 뒤에는 거부할 수 없다',()=>{ fresh(); G.year=2026; G.day=KD(6,11); ntAnnounce('ag'); const N=G.nt;
   let id=N.ids.find(x=>G.players[x].team===G.user); if(id==null){ const p=domestic(G.user).filter(q=>ntU25(q)&&ntBucket(q)==='P')[0]; const out=N.ids.find(x=>ntBucket(G.players[x])==='P'); N.ids[N.ids.indexOf(out)]=p.id; id=p.id; }
   const p=G.players[id]; prInit(); const f0=G.pr.fan, m0=p.mor??60; const msg=ntRefuse(id); ok(/거부/.test(msg),msg); ok(!N.ids.includes(id)&&N.ref.includes(id),'명단에서 빠짐'); ok(N.ids.length===24,'대체 선수로 24명 유지'); ok(G.pr.fan<f0,'팬 여론 하락'); ok((p.mor??60)<m0,'선수 사기 하락');
@@ -2342,7 +2364,7 @@ T('[검수 11-08] 드래프트·병역: 2차 드래프트 누적 양도금, 시�
   const op=G.teams.find(t=>t.id!==G.user).id; const q=playersOf(op).find(p=>!p.foreign&&!p.prospect);
   G.sd2={y:G.year,stage:'pick',order:[G.user,op],prot:{},seq:[{rd:1,tid:G.user,pid:q.id,from:op,fee:400},{rd:2,tid:G.user}],cur:1,pool:{}}; team(G.user).cash=400; G.spend.comp=400; G.spend.compIn=0; G.spend.trC=0; ok(sdCash(G.user)===0,'첫 양도금을 빼지 않음 '+sdCash(G.user));
   for(const t of G.teams)G.sd2.pool[t.id]=[]; G.sd2.seq=[{rd:1,tid:G.user}]; ok(!sdCands(G.user).length,'지명 시작 때 명단 대상이 아닌 선수가 후보'); G.sd2=null;
-  const y=pkYear(); G.pkOwn=G.pkOwn||{}; const third=G.teams.find(t=>t.id!==G.user&&t.id!==op).id; G.pkOwn[y+':1:'+third]=op; const r=pkCheck(op,[],[q.id],{give:['1:'+G.user],get:[],y}); ok(/넘습니다/.test(r),'상대 구단 1라운드 3장: '+r); delete G.pkOwn[y+':1:'+third];
+  const y=pkYear(); G.pkOwn=G.pkOwn||{}; const third=G.teams.find(t=>t.id!==G.user&&t.id!==op).id; G.pkOwn[y+':1:'+third]=op; const r=pkCheck(op,[],[q.id],{give:['1:'+G.user],get:[],y}); ok(!/넘습니다/.test(r||''),'1라운드 보유 한도는 없어졌다(사용자 11-15): '+r); delete G.pkOwn[y+':1:'+third];
   const m=playersOf(G.user).find(p=>!p.foreign); const n0=milBackBy(G.user); m.mil={unit:'현역',from:G.day-300,until:G.day+30}; ok(milBackBy(G.user)===n0+1&&rosterProj(G.user)===rosterN(G.user)+draftedBy(G.user)+milBackBy(G.user),'개막 전 전역 예정자 '+milBackBy(G.user));
   const f=Object.values(G.players).find(p=>!p.foreign&&p.team!=null&&p.team!==G.user&&!p.prospect); f.team=null; f.freeSince=G.year; f.age=28; f.mil=null; const fr=signFree(f.id,G.user); ok(!fr||f.team===G.user,'계약 실패 '+fr); ok(f.mil&&f.mil.unit==='현역'&&f.mil.from>G.day,'28세 미필 무적 선수 입대 일정 없음 '+JSON.stringify(f.mil));
   const p=playersOf(G.user).find(x=>!x.foreign&&!x.ys&&!x.ext&&!x.extNext&&!x.faC&&!x.e1&&!(x.mil&&x.mil.from!=null)); p.sal=10000; /* 입대 예정 선수는 복무 기간 감액이 빠진다(검수 11-09x) */ const [w0,w1]=payWin(G.year); G.day=w0+30; ysSet(p); const low=p.sal; G.day=w0+91; while(rosterN(G.user)>=ROSTER_MAX){ const x=playersOf(G.user).find(z=>!z.ys&&z!==p&&!z.foreign); x.team=null; } const fy=fromYS(p.id); ok(!fy&&p.ysGap&&p.sal===10000,'정식 등록 실패 '+fy);

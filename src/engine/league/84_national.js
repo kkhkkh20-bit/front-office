@@ -10,9 +10,18 @@
 const NT_EV={
   wbc:{n:'WBC',yr:y=>y>=2030&&(y-2030)%4===0,ann:[1,20],from:[2,24],to:[3,22],res:[3,20],ex:null},
   oly:{n:'올림픽',yr:y=>olyYear(y),pre:[4,15],ann:[6,10],from:[7,13],to:[7,22],res:[7,21],ex:'top3'},
-  ag:{n:'아시안게임',yr:y=>y>=2026&&(y-2026)%4===0,pre:[4,15],ann:[6,11],from:[9,16],to:[9,28],res:[9,27],ex:'gold',u25:true,cap:3,min:1},
+  ag:{n:'아시안게임',yr:y=>y>=2026&&(y-2026)%4===0,pre:[4,15],ann:[6,11],from:[9,16],to:[9,28],res:[9,27],get ex(){ return agExOff()?null:'gold'; },u25:true,cap:3,min:1}, /* 병역법이 바뀌면(G.agExOff) 그 뒤 대회부터 특례 없음 */
   p12:{n:'프리미어12',yr:y=>y>=2027&&(y-2027)%4===0,ann:[10,8],from:[11,6],to:[11,20],res:[11,18],ex:null}
 };
+/* 아시안게임 금메달 병역 특례 폐지(병역법 개정): 2026년 10월 'AG 금 → 체육요원' 기준을 빼고 올림픽 3위 이내만 남기는 개정안이 발의됐고(국방부: 단계적 축소 뒤 폐지), 아직 통과 전.
+   2027년부터 해마다 정기국회가 끝난 뒤(12월 10일) 통과 여부를 굴린다. 해마다 p, 늦어도 by년에는 통과. 통과하면 G.agExOff=그해 → 다음 아시안게임부터 금메달 특례 없음.
+   이미 특례를 받은 선수는 그대로. 플래그가 없는 예전 저장은 지금처럼 특례가 있다. 모든 구단에 똑같다 */
+const AG_EX_LAW={from:2027,p:.3,by:2032,d:[12,10]};
+function agExOff(){ return typeof G!=='undefined'&&!!G&&!!G.agExOff; }
+function agExLawCheck(force){ if(G.agExOff||G.year<AG_EX_LAW.from||G.agExY===G.year&&!force)return false; G.agExY=G.year;
+  if(!(force||G.year>=AG_EX_LAW.by||R()<AG_EX_LAW.p))return false; G.agExOff=G.year;
+  news('리그',`병역법 개정안 국회 통과: 아시안게임 금메달 병역 특례 폐지`,`국회가 아시안게임 금메달 입상자를 예술·체육요원 편입 대상에서 빼는 병역법 개정안을 통과시켰습니다. ${G.year+1}년부터 열리는 아시안게임은 금메달을 따도 병역 특례가 없습니다. 올림픽 3위 이내 특례는 그대로이고, 이미 특례를 받은 선수는 그대로 인정됩니다.`,0,{});
+  return true; }
 const NT_SLOTS={P:11,C:2,IF:7,OF:4}, NT_WILD=3, NT_WILD_AGE=29;
 const ntBucket=p=>p.isP?'P':p.pos==='C'?'C':['LF','CF','RF'].includes(p.pos)?'OF':'IF';
 const ntProY=(p,y)=>{ y=y||G.year; return p.draft&&p.draft.y?Math.max(1,y-p.draft.y):Math.max(1,p.age+y-G.year-19); }; /* 프로 몇 년 차(지명 이듬해가 1년 차). y: 대회 연도(미래 대회 예상은 그해 기준, 검수 11-09u) */
@@ -71,7 +80,7 @@ function ntDaily(d){ ntState(); for(const k of Object.keys(NT_EV)){ const e=NT_E
 function ntAnnounce(k){ const e=NT_EV[k]; const M=ntMgr(); const pre=G.ntPre&&G.ntPre.k===k&&G.ntPre.y===G.year?G.ntPre.ids:null; const S=ntSquad(k,null,{only:pre}); G.nt={k,y:G.year,ids:S.map(x=>x.id),wild:S.filter(x=>x.wild).map(x=>x.id),ref:[],res:null,ovs:k==='wbc'?ntAbroad():[], /* 해외파는 실제처럼 WBC만(아시안게임·올림픽·프리미어12는 메이저리그 구단이 보내지 않는다) */bk:Object.fromEntries(S.map(x=>[x.id,ntBucket(G.players[x.id])]))}; /* bk: 발표 뒤 은퇴·해외로 기록이 지워져도 대체 자리를 알 수 있게 */
   const mine=S.map(x=>G.players[x.id]).filter(p=>p.team===G.user); const D=a=>KD(a[0],a[1]);
   for(const p of mine)p.mor=clamp((p.mor??60)+6,0,100);
-  const exTxt=e.ex==='gold'?'금메달이면 미필 선수는 병역 특례(체육요원)를 받습니다.':e.ex==='top3'?'3위 이상이면 미필 선수는 병역 특례(체육요원)를 받습니다.':'병역 특례는 없습니다.';
+  const exTxt=e.ex==='gold'?'금메달이면 미필 선수는 병역 특례(체육요원)를 받습니다.':e.ex==='top3'?'3위 이상이면 미필 선수는 병역 특례(체육요원)를 받습니다.':k==='ag'&&G.agExOff?`${G.agExOff}년 병역법 개정으로 아시안게임 금메달 병역 특례는 없어졌습니다(올림픽 3위 이내 특례는 그대로).`:'병역 특례는 없습니다.';
   mail('운영팀',`${G.year} ${e.n} 대표팀 명단 발표`,`${M.name} 대표팀 감독이 ${G.nt.ids.length}명을 뽑았습니다.${G.nt.ids.length<24?` (24명을 다 채우지 못했습니다)`:''}${G.nt.ovs.length?` 해외파 합류: ${G.nt.ovs.map(x=>`${x.name}(${x.lg} ${x.club})`).join(', ')}.`:''}${e.u25?' (만 25세 이하 또는 입단 4년 차 이하 + 와일드카드 3명, 구단당 1~3명)':''}\n\n우리 구단: ${mine.map(p=>`${p.name}(${posLabel(p)}${milFree(p)?', 미필':''}${G.nt.wild.includes(p.id)?', 와일드카드':''})`).join(', ')||'없음'}\n\n소집 ${dmd(D(e.from))} ~ ${dmd(D(e.to))}. 이 기간에는 우리 경기에 쓸 수 없습니다. ${exTxt}${mine.length?'\n\n차출을 거부할 수 있지만(리그 > 국가대표) 팬·언론 여론이 나빠지고, 미필 선수는 특례 기회를 잃어 크게 반발합니다.':''}`,{imp:mine.length>0,kind:e.ex?'병역':'선수',acts:[{l:'국가대표',a:'go',v:'league:nt'}]});
   if(mine.length)news('선수',`${tshort(G.user)} ${mine.map(p=>p.name).join('·')}, ${e.n} 대표 발탁`,`${M.name} 감독의 부름을 받았습니다.`,1); }
 /* 소집일 재검사: 발탁 뒤 다쳤거나(재활·출장 정지) 리그를 떠난(해외·입대·은퇴) 선수는 의료·사유 제외로 빼고 같은 자리 대체 선수를 뽑는다.
@@ -114,7 +123,7 @@ function ntRefuse(id){ if(G.unemp)return '단장직이 없어 차출을 거부�
 /* 대회 결과: 대표팀 전력(상위 20명 평균)과 대회 난이도로 정한다 */
 function ntOdds(k,str){ const z=str-58;
   /* 누적 확률: g=1위 이내, s=2위 이내, b=3위(4강) 이내 */
-  if(k==='ag'){ const g=clamp(.62+z*.05,.35,.9); return {g,s:Math.min(.97,g+.2),b:Math.min(.99,g+.28)}; } /* 실제: 2010~2026 다섯 대회 연속 금 */
+  if(k==='ag'){ const za=str-(ntKRef()-4.8); const g=clamp(.78+za*.08,.35,.93); return {g,s:Math.min(.97,g+.14),b:Math.min(.99,g+.17)}; } /* 실제 대회(84b, NT_EPEN.ag)와 맞춘다: 아시안게임 대표(나이 제한)는 보통 리그 상위 24명 평균보다 4.8쯤 낮고, 그 전력이면 대회에서 금 78%쯤(시드 64회 측정 77%), 1점마다 8%p. 실제: 1998~2026 여덟 대회 중 금 일곱 */
   if(k==='oly'){ const pm=clamp(.32+z*.05,.12,.75); return {g:pm*.3,s:pm*.62,b:pm}; }
   const g=clamp(.12+z*.03,.04,.4); return {g,s:Math.max(g+.08,clamp(.28+z*.04,.1,.6)),b:Math.max(g+.2,clamp(.5+z*.05,.25,.8))}; } /* WBC·프리미어12: 우승/결승/4강 */
 function ntResult(k,force){ const N=G.nt; const e=NT_EV[k]; const sq=N.ids.map(id=>G.players[id]).filter(Boolean); const ov=N.ovs||[]; const top=[...sq.map(ovr),...ov.map(x=>x.o)].sort((a,b)=>b-a).slice(0,20); /* 해외파도 전력에 넣는다 */
