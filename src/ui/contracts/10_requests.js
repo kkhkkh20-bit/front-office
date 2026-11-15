@@ -16,7 +16,7 @@ function ownFundView(){ const t=team(G.user); if(t.indie||G.unemp)return ''; con
     if(S.k==='fa'||S.k==='frep'){ const L=S.k==='fa'?ownWhyFA():ownWhyBadF(); if(L.length){ if(!L.some(p=>p.id===S.pid))S.pid=L[0].id; pick=`<div class="small">${S.k==='fa'?'영입할 FA':'바꿀 외국인'}</div><div class="chips">${L.map(p=>chip('owPid',p.id,`${esc(p.name)} · ${money(S.k==='fa'?p.ask.annual:frepAmtOf(p))}`,S.pid===p.id)).join('')}</div>`; } else S.pid=null; }
     if(!(S.k==='fa'&&S.pid!=null)&&S.k!=='frep'){ const A=OWN_AMT[S.k]; if(!A.includes(S.amt))S.amt=A[0]; pick+=`<div class="small">금액</div><div class="chips">${A.map(a=>chip('owAmt',a,money(a),S.amt===a)).join('')}</div>`; }
     const w=ownWhy(S.k,S.amt,S.pid); const F=w.f.filter(x=>x[0]).sort((a,b)=>Math.abs(b[0])-Math.abs(a[0])).slice(0,4);
-    body+=pick+`<div class="ow-box">${w.block?`<p class="small warn">${esc(w.block)}</p>`:`<p class="ow-odds"><b>가능성: ${ownChance(w.p)}</b><span class="small muted">${esc(W.d)}</span></p>
+    body+=pick+`<div class="ow-box">${w.block?`<p class="small warn">${esc(w.block)}</p>`:`<p class="ow-odds"><b>가능성: ${ownChance(ownAskP(w.amt??0,w.pur||null,w))}</b><span class="small muted">${esc(W.d)}</span></p>
       ${F.length?`<ul class="small ow-f">${F.map(x=>`<li class="${x[0]>0?'good':'bad'}">${x[0]>0?'+':'−'} ${esc(x[1])}</li>`).join('')}</ul>`:''}
       <p class="small ow-my">내 말: "${esc(w.my)}"</p><button class="btn primary block" data-a="owGo"${left?'':' disabled'}>${left?`${esc(W.l)} 자금 ${money(w.amt)} 요청하기`:'지금은 요청할 수 없습니다'}</button>`}</div>`; }
   const R0=S.res; if(R0)body+=`<div class="note ${R0.ok?'good':R0.said?'bad':''}" role="status">${R0.said?`${esc(B.own.name)} 회장: "${esc(R0.said)}"<br>`:''}${esc(R0.msg)}</div>`;

@@ -81,7 +81,7 @@ function staffCt(x,years,start){ x.yrs=years; x.cs=start??ctStartS(); x.ce=x.cs+
 function staffPending(x){ return !!(x&&(x.jy>G.year||x.cs>G.year)); }
 function staffRenew(x,years,start){ staffCt(x,years,start); delete x.jy; return x; }
 /* 연장은 기존 시작 시즌을 유지한다. 옛 저장은 현재 잔여 기간으로 종료 시즌을 복원한다. */
-function staffCtExtend(x,add){ const left=Math.max(0,x.yrs); if(!left)return staffRenew(x,add);
+function staffCtExtend(x,add){ if(x&&x.role)x.raidSafe=G.day+365; /* 연장한 코치는 1년간 영입 제안 대상에서 빠진다: 우리·AI 같게 */ const left=Math.max(0,x.yrs); if(!left)return staffRenew(x,add);
   if(x.ce==null){ if(x.cs==null)x.cs=G.rolled===G.year?G.year+1:G.year; x.ce=x.cs+left-1; } x.ce+=add; x.yrs=left+add; return x; }
 /* 계약 마지막 시즌: '잔여 1년'이 '올 시즌까지'라는 뜻인데 시즌이 끝난 뒤에도 1년 남은 것처럼 보여, 결산 때 한꺼번에 빠지면 갑자기 빈 것처럼 느껴졌다(카페 문의 11-07) */
 function ctEndY(x){ if(x.cs!=null&&x.cs>G.year)return x.cs+Math.max(0,x.yrs)-1; return (G.rolled===G.year?G.year+1:G.year)+Math.max(0,x.yrs)-1; }
@@ -98,7 +98,7 @@ function coachExtTerms(role,add){ const c=coachesOf(G.user)[role]; if(!c)return 
   if(c.extY===G.year)why=`${c.name} 코치와는 올해 이미 계약을 손봤습니다.`; else if(c.age>=64&&add>1)why=`${c.name} 코치(${c.age}세)는 은퇴를 생각하고 있어 1년만 연장합니다.`; else if(c.yrs+add>4)why='코치 계약은 최대 4년까지입니다.';
   return {c,add,sal,why}; }
 function extendCoach(role,add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!(+add===1||+add===2))return '연장은 1~2년입니다.'; const T=coachExtTerms(role,+add); if(!T)return '그 자리에 코치가 없습니다.'; if(T.why)return T.why; const c=T.c;
-  staffCtExtend(c,T.add); c.sal=T.sal; c.extY=G.year; staffHistory('coach',c,'연장 계약',G.user,`${T.add}년 연장 · 연 ${money(c.sal)}`); addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
+  staffCtExtend(c,T.add); c.sal=T.sal; c.extY=G.year; c.raidSafe=G.day+365; /* 연장 뒤 1년은 다른 구단이 영입 제안하지 않는다(커뮤니티 11-15) */ staffHistory('coach',c,'연장 계약',G.user,`${T.add}년 연장 · 연 ${money(c.sal)}`); addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
 /* 계약이 올해로 끝나는 코치를 한 번에 1년씩 연장(카페 11-09: 코치가 19명이라 하나씩 계약하기 번거롭다). 조건·연봉은 하나씩 할 때와 같다 */
 const coachBulkList=()=>G.unemp?[]:CKEYS.filter(k=>{ const c=coachesOf(G.user)[k]; if(!c||c.yrs>1||staffPending(c))return false; const T=coachExtTerms(k,1); return T&&!T.why; });
 function extendCoachesAll(){ const L=coachBulkList(); let n=0; for(const k of L)if(!extendCoach(k,1))n++; return n; }
