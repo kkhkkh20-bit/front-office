@@ -1626,6 +1626,37 @@ T('[스태프] 영입 경쟁은 소식함에 쌓지 않고 후보 카드에서 �
   const r=stOffer('sc',s.id,0); ok(r.bid,'경쟁 상황을 만들지 못함'); ok(!G.mail.slice(0,8).some(m=>m.subj.includes('영입 경쟁')),'영입 경쟁 메일이 소식함에 쌓임');
   G.day+=4; stBidExpire(); stScore=old; ok(G.mail.slice(0,8).some(m=>m.subj.includes(s.name)&&m.subj.includes('무산')),'경쟁에서 진 결과(무산)가 소식함에 없음');
   const r2=stOffer('sc',s2.id,0); ok(r2.ok,'경쟁 없는 영입 실패'); stInterest=oi; ok(G.mail.slice(0,8).some(m=>m.subj.includes(s2.name)&&m.subj.includes('영입 완료')),'영입 완료가 소식함에 없음'); });
+T('[스태프 채용] 스카우트 정원이 차도 제안은 보내고, 수락하면 그 자리에서 누구 대신 데려올지 고른다(두 번 눌러도·철회해도·해고해도 후보가 사라지지 않는다, 카페 11-15)',()=>{ fresh(); stInit(); const oi=stInterest; stInterest=()=>[]; try{
+  while(G.scouts.length<scoutMax())G.scouts.push(Object.assign(mkScout(2),{since:G.day-60})); const cap=scoutMax(), M=scoutMkt(), n0=M.length, c=M[0], id=c.id;
+  const r=stOffer('sc',id,0); ok(r.ok&&r.pend,'정원이 찼는데 수락 결정 대기로 가지 않음 '+r.msg); ok(r.msg.includes('누구 대신'),'수락 안내가 분명하지 않음: '+r.msg); ok(G.stAcc&&G.stAcc.id===id,'수락 결정이 저장되지 않음');
+  ok(G.scouts.length===cap&&!G.scouts.includes(c)&&scoutMkt().includes(c)&&scoutMkt().length===n0,'수락 대기 중에 정원이 넘거나 후보가 시장에서 사라짐 '+G.scouts.length+'/'+cap);
+  ok(blocker().includes('누구 대신'),'수락 결정이 남았는데 진행이 막히지 않음: '+blocker());
+  const r2=stOffer('sc',id,.2); ok(!r2.ok&&G.stAcc.id===id&&scoutMkt().includes(c)&&G.scouts.length===cap,'두 번 눌렀더니 후보가 사라지거나 상태가 바뀜 '+r2.msg);
+  const t2=G.teams.find(t=>t.id!==G.user).id; ok(stJoin('sc',c,t2,c.sal,true)===false&&scoutMkt().includes(c),'오기로 한 후보를 AI가 데려감');
+  ok(stAccDecide(null).includes('철회')&&!G.stAcc&&!c.acc,'철회가 되지 않음'); ok(G.scouts.length===cap&&scoutMkt().includes(c)&&scoutMkt().length===n0,'철회 뒤 누가 나가거나 후보가 사라짐'); ok(!blocker().includes('누구 대신'),'철회 뒤에도 진행이 막힘');
+  stOffer('sc',id,0); const out=stOutOrder('sc')[0]; ok(out.skill===Math.min(...G.scouts.map(x=>x.skill)),'추천이 능력 가장 낮은 사람이 아님'); const msg=stAccDecide(out.id); ok(msg.includes(out.name)&&msg.includes(c.name),'결정 안내가 없음 '+msg);
+  ok(G.scouts.length===cap&&G.scouts.filter(x=>x.id===id).length===1&&!G.scouts.includes(out),'영입과 계약 종료가 함께 일어나지 않음 '+G.scouts.length); ok(!scoutMkt().some(x=>x.id===id)&&!G.stAcc&&!c.acc,'영입된 스카우트가 시장에도 남음');
+  ok(!stOffer('sc',id,0).ok&&G.scouts.length===cap,'같은 후보를 두 번 영입함');
+  const c2=scoutMkt()[0]; stOffer('sc',c2.id,0); scoutFire(G.scouts[0].id); ok(scoutMkt().includes(c2),'제안 뒤 해고하자 후보가 사라짐'); ok(G.stAcc&&G.scouts.length===cap-1,'준비 실패');
+  const x=G.scouts[0]; stAccDecide(x.id); ok(G.scouts.length===cap-1&&G.scouts.includes(c2)&&!scoutMkt().includes(c2),'해고 뒤 결정에서 후보가 사라지거나 인원이 틀림 '+G.scouts.length);
+  ok(stOffer('sc',scoutMkt()[0].id,0).ok&&G.scouts.length===cap&&!G.stAcc,'빈자리가 있으면 바로 합류해야 함');
+  } finally{ stInterest=oi; } });
+T('[스태프 채용] 분석원 정원 9/9에서 제안·재제안·직접 채용·빼 오기 어느 경로로도 10/9가 되지 않고, 수락하면 누구 대신인지 바로 정한다(카페 11-15)',()=>{ fresh(); stInit(); const oi=stInterest, os=stScore; stInterest=()=>[]; try{ const roles=Object.keys(AROLE);
+  G.analysts=Array.from({length:ANA_MAX},(_,i)=>Object.assign(mkAnalyst(2,roles[i%3]),{since:G.day-60})); const M=anaMarket(), a=M[0], n0=M.length;
+  const rv=G.teams.find(t=>t.id!==G.user).id; a.bid={t:rv,sal:a.sal*1.1,v:-1e9,k:'an',exp:G.day+3}; const r=stOffer('an',a.id,1); ok(r.ok&&r.pend&&anaList().length===ANA_MAX&&anaMarket().includes(a),'경쟁 중 재제안 수락이 정원을 뚫거나 후보가 사라짐 '+r.msg);
+  ok(!stOffer('an',a.id,0).ok&&anaList().length===ANA_MAX,'두 번 눌러 10/9가 됨'); const lo=stOutOrder('an')[0]; stAccDecide(lo.id); ok(anaList().length===ANA_MAX&&anaList().includes(a)&&!anaList().includes(lo)&&!anaMarket().includes(a),'분석원 교체 영입이 한 번에 일어나지 않음');
+  const b=anaMarket()[0]; ok(hireAna(b.id).includes(ANA_MAX+'/'+ANA_MAX)&&anaList().length===ANA_MAX&&anaMarket().includes(b),'직접 채용이 정원을 뚫음'); const lo2=stOutOrder('an')[0]; ok(hireAna(b.id,lo2.id)===''&&anaList().length===ANA_MAX&&anaList().includes(b)&&!anaList().includes(lo2),'내보낼 사람과 함께한 직접 채용이 틀림');
+  G.day=KD(12,1); const L=stTeamL(rv); const tgt=Object.assign(mkAnalyst(4,'opp'),{since:G.day-60}); L.an.push(tgt); stScore=(x,tid,sal,cur)=>tid===G.user&&!cur?1e9:os(x,tid,sal,cur); const msg=stPoach('an',rv,tgt.id,.5); stScore=os;
+  ok(msg.includes('누구 대신')&&anaList().length===ANA_MAX&&L.an.includes(tgt)&&G.stAcc&&G.stAcc.tid===rv,'빼 오기가 정원을 뚫거나 결정 대기로 가지 않음: '+msg); const lo3=stOutOrder('an')[0]; stAccDecide(lo3.id); ok(anaList().length===ANA_MAX&&anaList().includes(tgt)&&!L.an.includes(tgt)&&!anaList().includes(lo3),'빼 오기 교체가 한 번에 일어나지 않음');
+  G.analysts.push(Object.assign(mkAnalyst(1,'opp'),{since:G.day-60}),Object.assign(mkAnalyst(1,'trk'),{since:G.day-60})); G.stOver={an:G.day-3}; G.mail=[]; stOverCheck(); ok(anaList().length===ANA_MAX&&!G.stOver,'옛 저장의 정원 초과가 바로 정리되지 않음 '+anaList().length); ok(G.mail.some(m=>m.subj.includes('정원 정리')),'정원 정리 안내 메일이 없음');
+  } finally{ stInterest=oi; stScore=os; } });
+T('[스태프 채용] AI 구단도 정원이 찬 채 영입하면 같은 순간 가장 낮은 사람을 내보내 상한을 넘지 않고, 코치 보직·보조 코치도 자리 수를 지킨다',()=>{ fresh(); stInit(); const oi=stInterest; stInterest=()=>[]; try{ G.day=KD(12,1);
+  const t2=G.teams.find(t=>t.id!==G.user).id, L2=stTeamL(t2); team(t2).stBoost=1e6; L2.sc=Array.from({length:ST_SC_N[1]+1},()=>Object.assign(mkScout(1),{since:G.day-60})); L2.an=Array.from({length:ANA_MAX},()=>Object.assign(mkAnalyst(1,'opp'),{since:G.day-60}));
+  const sc=scoutMkt()[0], an=anaMarket()[0], low=L2.an[0]; ok(stJoin('sc',sc,t2,sc.sal,true)&&stJoin('an',an,t2,an.sal,true),'AI 영입 실패'); ok(L2.sc.length===ST_SC_N[1]+1&&L2.an.length===ANA_MAX&&L2.sc.includes(sc)&&L2.an.includes(an),'AI 구단이 상한을 넘기거나 새 사람을 내보냄 '+L2.sc.length+'/'+L2.an.length); ok(G.amarket.some(x=>x.id===low.id)||!L2.an.includes(low),'밀려난 AI 분석원이 사라짐');
+  for(let i=0;i<6;i++){ G.day+=31; try{ stAiMonthly(); }catch(e){} try{ stAiStaff(); }catch(e){} } for(const tid in G.lgStaff){ const X=G.lgStaff[tid]; ok(X.sc.length<=ST_SC_N[1]+1&&X.an.length<=ANA_MAX,'AI 구단 '+tid+' 인원 상한 초과 '+X.sc.length+'/'+X.an.length); }
+  const n=axSlots(); G.coachX=G.coachX||[]; const ax=(G.cmarket||[]).filter(c=>AX_ROLES.includes(c.role)); if(ax.length){ while(G.coachX.length<n&&ax.length)ok(!hireAsst(ax.shift().id,2),'보조 코치 빈자리 영입 실패'); if(ax.length){ const k=G.coachX.length; ok(hireAsst(ax[0].id,2).includes('자리')&&G.coachX.length===k&&G.cmarket.includes(ax[0]),'보조 코치 정원이 뚫리거나 후보가 사라짐'); } }
+  const ok2=c=>!(typeof schMarketWhy==='function'&&schMarketWhy(c)); const role=Object.keys(G.coach[G.user]).find(r=>G.coach[G.user][r]&&G.cmarket.some(c=>c.role===r&&ok2(c))); if(role){ const nc=G.cmarket.find(c=>c.role===role&&ok2(c)), old=G.coach[G.user][role]; ok(!hireCoach(nc.id,2),'코치 교체 영입 실패'); ok(G.coach[G.user][role]===nc&&G.cmarket.includes(old)&&!G.cmarket.includes(nc),'코치 보직 교체 뒤 한 자리에 한 명·내보낸 코치는 시장으로가 아님'); ok(hireCoach(nc.id,2)==='후보가 없습니다.','같은 코치를 두 번 영입함'); }
+  } finally{ stInterest=oi; } });
 T('[투수] 혹사 금지 지시를 하면 선발 투구 수가 실제로 줄어든다(선발을 오래 끄는 감독이어도 평균 100구 이하), 리그 선발 평균은 KBO 수준(85~95구)',()=>{ fresh(); const m=G.mgr[G.user]; mgrAttr(m); m.pen=15; G.mgrDir={arm:{ok:true,mid:m.id}};
   const U=[], A=[]; const _ll=loadLog; loadLog=(p,d,pc,isS)=>{ if(isS&&p.e1&&period()==='season')(p.team===G.user?U:A).push(pc); return _ll(p,d,pc,isS); };
   simTo(()=>period()==='season'&&G.day>=G.cal.open+40); loadLog=_ll; const av=a=>a.reduce((x,y)=>x+y,0)/Math.max(1,a.length);
