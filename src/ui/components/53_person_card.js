@@ -57,13 +57,14 @@ function coachProfileView(c,o){ /* o.more: 성격·관계 말 줄, o.avTeam: 사
 function personProfileOf(k){ const [kind,a]=String(k).split(':');
   if(kind==='mgr'||kind==='omgr'||kind==='xmgr'){ const m=kind==='mgr'?G.mgr[G.user]:kind==='xmgr'?exMgrOf(a):G.mgr[+a]; if(!m)return null; const tid=kind==='mgr'?G.user:kind==='omgr'?+a:null, rel=[];
     if(kind==='mgr'&&G.coach){ const C=coachesOf(G.user), cl=CKEYS.filter(r=>C[r]&&C[r].clan===m.id).map(r=>C[r].name); if(cl.length)rel.push(['감독 사단',cl.join(', ')]); }
+    if(G.coach)try{ rel.push(...clanMgrRows(m,tid)); }catch(e){} /* 사단 규모·가까워진 코치·따라 나온 코치(89b_staff_loyalty) */
     if(kind==='mgr'){ const fav=playersOf(G.user).filter(p=>p.promise&&p.promise.until>=G.day).map(p=>p.name); if(fav.length)rel.push(['출전 약속',fav.join(', ')]); }
     return {html:mgrProfileView(m,{own:kind==='mgr',tid,eyebrow:kind==='mgr'?(m.interim?'감독대행':'1군 감독'):kind==='omgr'?`${tname(tid)} 감독`:'전 감독',rel}),rest:networkPersonBlock(m,'mgr')}; }
-  if(kind==='c'){ const st=staffPerson(k); if(!st)return null; return {html:coachProfileView(st.s,{tid:st.tid}),rest:staffBioBox(st.s,'coach',st.tid,true)+networkPersonBlock(st.s,'coach')}; }
+  if(kind==='c'){ const st=staffPerson(k); if(!st)return null; const cw=(()=>{ try{ return clanCoachWord(st.s,st.tid); }catch(e){ return null; } })(); return {html:coachProfileView(st.s,{tid:st.tid,more:cw?[['감독과의 사이',cw[0],cw[1]]]:[]}),rest:staffBioBox(st.s,'coach',st.tid,true)+networkPersonBlock(st.s,'coach')}; }
   if(kind==='sc'||kind==='an'||kind==='ost'){ const st=staffPerson(k); if(!st)return null; const J=st.kind==='scout'?'스카우트':'전력분석원';
     return {html:staffProfileView(st.s,st.kind,{tid:st.tid,eyebrow:st.tid!==G.user?`${tname(st.tid)} ${J}`:J}),rest:staffBioBox(st.s,st.kind,st.tid,true,true)+networkPersonBlock(st.s,st.kind)}; } /* 분야 능력 숫자는 카드 안 차트·표로, 아래 상자는 희망 보직·멘탈·관계·면담 */
   if(kind==='oc'){ const tid=+a, role=String(k).split(':')[2], c=G.coach&&coachesOf(tid)[role]; if(!c)return null; const h=u01('cpers',c.id), m=G.mgr[tid];
-    const more=[['성격',h<.33?'원칙형':h<.66?'소통형':'열정형',h<.33?'규율을 중시합니다':h<.66?'선수와 대화를 많이 합니다':'훈련량이 많고 목소리가 큽니다'],['감독',m?m.name:'-'],...(c.clan&&m&&c.clan===m.id?[['감독 사단','감독과 함께 온 코치']]:[])];
+    const more=[['성격',h<.33?'원칙형':h<.66?'소통형':'열정형',h<.33?'규율을 중시합니다':h<.66?'선수와 대화를 많이 합니다':'훈련량이 많고 목소리가 큽니다'],['감독',m?m.name:'-'],...((cw=>cw?[['감독과의 사이',cw[0],cw[1]]]:[])((()=>{ try{ return clanCoachWord(c,tid); }catch(e){ return null; } })()))];
     return {html:coachProfileView(c,{tid,eyebrow:`${tname(tid)} ${CROLE[role]?.l||'코치'}`,more}),rest:staffBioBox(c,'coach',tid,true)}; }
   if(kind==='gm'){ const tid=+a, g=team(tid)&&gmOf(tid); if(!g)return null; return {html:ogmProfileView(g,tid),rest:''}; }
   if(kind==='own'||kind==='ceo')return {html:bossProfileView(kind,G.user),rest:''};

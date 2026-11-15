@@ -120,6 +120,7 @@
       "src/engine/staff/86b_dynasty.js",
       "src/engine/staff/87_ai_events.js",
       "src/engine/staff/89_coach_market.js",
+      "src/engine/staff/89b_staff_loyalty.js",
       "src/engine/career/90_legacy.js",
       "src/engine/career/91_person_ledger.js",
       "src/engine/staff/90_mgr_scenes.js",
