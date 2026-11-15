@@ -36,18 +36,28 @@ function draftCenter(all,mine){
 /* 선수 카드: 스태프 의견과 빠른 행동 */
 function staffCardP(p){ const L=staffNotes(p); if(!L.length)return '';
   return `<div class="stn">${L.map(x=>`<div><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}</div>`; }
+/* 선수 화면 위 행동(UI 2단계 2-2): 상황별 대표 동작 1개만 보이고 나머지는 ⋯ 메뉴로.
+   우리 선수: 계약이 곧 끝나면 연장 협상, 6주 이상 다친 외국인은 대체 외국인 고르기, 그 밖에는 면담. 다른 구단 선수: 트레이드 협상 */
+function extSoon(p){ if(!canExtend(p))return false; if(p.extCounter&&p.extCounter.until>=G.day)return true; return p.faC?(p.yrs||0)<=1:faLeft(p)<=1; }
 function quickActs(p){
-  const b=[]; const d=G.draft;
-  if(p.prospect){ if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); }
-  else if(p.team===G.user&&!(p.joinY>G.year)){
-    b.push(`<button class="btn small" data-a="jump" data-v="bond">면담</button>`);
-    if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드 협상</button>`); }
-    if(!p.foreign)b.push(p.listed?`<button class="btn small" data-a="blkOff" data-v="${p.id}">매물 목록에서 빼기</button>`:`<button class="btn small" data-a="blkOn" data-v="${p.id}">매물 목록에 올리기</button>`);
-    if(!p.foreign&&p.team===G.user)b.push(`<button class="btn small${p.noTrade?' primary':''}" data-a="noTrade" data-v="${p.id}" title="다른 구단이 이 선수를 트레이드로 달라고 묻지 않습니다(우리가 먼저 제안할 수는 있음)">${p.noTrade?'트레이드 불가 해제':'트레이드 불가로 지정'}</button>`);
-    if(canExtend(p))b.push(`<button class="btn small" data-a="jump" data-v="ext">연장 협상</button>`);
-    if(p.foreign==='용병'&&typeof fTmpErr==='function'&&!fTmpErr(G.user,p))b.push(`<button class="btn small primary" data-a="fTmpStart" data-v="${p.id}">부상 대체 외국인 고르기</button>`); /* 6주 이상 다친 외국인 화면에서 바로(카페 피드백 11-08) */
-  } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ if(tradeOpen()){ b.push(`<button class="btn small primary" data-a="findT" data-v="${p.id}">얻을 조건 보기</button>`); b.push(`<button class="btn small" data-a="toTrade" data-v="${p.id}">트레이드 협상</button>`); } b.push(`<button class="btn small" data-a="pwatch" data-v="${p.id}">${(G.pwatch||[]).includes(p.id)?'관심 해제':'관심 선수'}</button>`); }
-  return b.length?`<div class="qacts">${b.join('')}</div>`:''; }
+  const d=G.draft;
+  if(p.prospect){ const b=[]; if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); return `<div class="qacts">${b.join('')}</div>`; }
+  let main=null; const M=[];
+  if(p.team===G.user&&!(p.joinY>G.year)){
+    const talk={a:'jump',v:'bond',l:'면담'}, ext=canExtend(p)?{a:'jump',v:'ext',l:'연장 협상'}:null;
+    const tmp=p.foreign==='용병'&&typeof fTmpErr==='function'&&!fTmpErr(G.user,p)?{a:'fTmpStart',v:p.id,l:'부상 대체 외국인 고르기'}:null; /* 6주 이상 다친 외국인 화면에서 바로(카페 피드백 11-08) */
+    main=tmp||(ext&&extSoon(p)?ext:talk);
+    M.push(talk);
+    if(!p.foreign&&tradeOpen())M.push({a:'findMine',v:p.id,l:'시장 가치'},{a:'toTradeGive',v:p.id,l:'트레이드 협상'});
+    if(!p.foreign)M.push(p.listed?{a:'blkOff',v:p.id,l:'매물 목록에서 빼기'}:{a:'blkOn',v:p.id,l:'매물 목록에 올리기'});
+    if(!p.foreign)M.push({a:'noTrade',v:p.id,l:p.noTrade?'트레이드 불가 해제':'트레이드 불가로 지정',on:!!p.noTrade,title:'다른 구단이 이 선수를 트레이드로 달라고 묻지 않습니다(우리가 먼저 제안할 수는 있음)'});
+    M.push(ext,tmp);
+  } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){
+    if(tradeOpen()){ main={a:'toTrade',v:p.id,l:'트레이드 협상'}; M.push({a:'findT',v:p.id,l:'얻을 조건 보기'}); }
+    const on=(G.pwatch||[]).includes(p.id); M.push({a:'pwatch',v:p.id,l:on?'관심 해제':'관심 선수',on});
+  }
+  const html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기'});
+  return html?`<div class="qacts">${html}</div>`:''; }
 
 /* ---------- 아마추어 기록: 학년별 ---------- */
 function amYearTable(p){ const Y=p.amY; if(!Y||!Y.length)return `<p class="small">${esc(amLine(p))}</p>`;
