@@ -4811,6 +4811,13 @@ T('[구단주 다시 설득] 사퇴 카드는 한 시즌 한 번·두 시즌 쉬
   const o=dobj(G.day); const g={y:sponSeason(),mk:o.y*100+o.m,d:G.day,amt:1000,pur:null,ok:false,by:'gm',st:'no'}; grantAdd(g); ownPushOffer({k:'fund',amt:1000},'구단주 반려: 운영비 증액','본문',g); const e=G.evs.find(x=>x.k==='opush'&&!x.done); ok(!e.data.args.includes('resign')&&G.mail.find(m=>m.id===e.mid).body.includes('이번 시즌에는 더 쓸 수 없습니다'),'반려 소식에 사퇴 카드 제한이 말로 보이지 않음');
   G.year=y+1; ok(opResignWhy(u).includes((y+2)+'시즌'),'쉬는 기간 안내가 없음: '+opResignWhy(u)); G.year=y+2; ok(!opResignWhy(u),'두 시즌 뒤에도 쓸 수 없음'); ok(opOdds(u,ctx,a)<pF-.08,'통했던 사퇴 카드가 약해지지 않음'); G.year=y;
   const ai=G.teams.find(x=>x.id!==u&&!x.indie); opRun(ai.id,ctx,a,[.99,.99]); ok(opResignWhy(ai.id).includes('이번 시즌')&&!opArgs(ai.id).some(x=>x.k==='resign'),'AI는 사퇴 카드 제한이 다름'); });
+T('[카페 유도] 자랑할 순간 소식에 카페 안내는 한 시즌 한 번, 옛 저장·야인도 깨지지 않는다',()=>{ fresh(); delete G.cafeAskY; const y=G.year;
+  const m=stop('결산',y+'시즌 결산이 나왔습니다. 카페 유도 점검.'); ok(m&&m.id,'stop이 소식을 돌려주지 않음'); cafeAsk(m,'season'); ok(m.cafe==='season'&&G.cafeAskY===y,'결산 소식에 카페 안내가 붙지 않음');
+  const m2=mail('홍보팀','카페 유도 점검 2','본문'); cafeAsk(m2,'champ'); ok(!m2.cafe,'같은 시즌에 두 번 붙음');
+  G.year=y+1; G.unemp=true; cafeAsk(m2,'champ'); ok(!m2.cafe&&G.cafeAskY===y,'야인일 때 붙음'); G.unemp=false; cafeAsk(m2,'champ'); ok(m2.cafe==='champ'&&G.cafeAskY===y+1,'다음 시즌에 다시 붙지 않음'); G.year=y;
+  ok(cafeAsk(null,'season')===null&&cafeAsk({read:true,acts:[]},'season').cafe==null,'빈 소식에서 깨짐'); });
+T('[카페 유도] 우승 퍼레이드 소식에 우승 안내가 붙는다',()=>{ fresh(); delete G.cafeAskY; prInit();
+  const P={tid:G.user,y:G.year,d:G.day,done:false}; champParadeRun(P); const m=G.mail.find(x=>x.subj==='우승 퍼레이드를 마쳤습니다'); ok(m&&m.cafe==='champ'&&G.cafeAskY===G.year,'퍼레이드 소식에 우승 안내가 없음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

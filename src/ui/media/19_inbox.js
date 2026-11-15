@@ -53,7 +53,7 @@ function mailCard(m,nav){
     ${status?`<div class="note ibm-status" role="status"><b>${esc(status.label)}</b><span>${esc(status.text)}${mailEvPick(m)} 아래는 받았던 당시 내용입니다.</span></div>`:warnLive(m)?`<div class="note warn ibm-warn">기한 임박: ${esc(warnTxt(m))}</div>`:''}
     ${L.length?`<div class="mailbody">${(L.length>4&&!mFull&&!mOpenAct?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4&&!mFull&&!mOpenAct?`<details class="mfold" data-k="mf:${m.id}" ${UI.open['mf:'+m.id]?'open':''}><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
     ${fth?`<div class="ibm-fth"><div class="small muted">댓글 ${fth.cm.length}개${(()=>{ try{ return ` · 분위기: ${fpMood(fth.cm)}`; }catch(e){ return ''; } })()}</div><div class="fcms">${fth.cm.map(cmtRow).join('')}</div></div>`:''}
-    ${m.rv?rvActsH(m):''}${handOffBtns(m)}
+    ${m.rv?rvActsH(m):''}${handOffBtns(m)}${m.cafe&&FEEDBACK_URL?`<div class="ibm-cafe"><p>${m.cafe==='champ'?'우승을 축하드립니다. 카페에서 다른 단장님들과 이 기쁨을 나눠 주시면 감사하겠습니다.':'한 시즌 수고 많으셨습니다. 이번 시즌 이야기를 카페에 남겨 주시면 다음 업데이트에 참고하겠습니다.'}</p>${cafeLink(m.cafe==='champ'?'카페에 자랑하기 ›':'카페에 남기기 ›')}</div>`:''}
     ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${acts.length?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}</div>`:''}
     ${o&&!status?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* 상단 숫자와 계속 버튼은 동일한 현재 미처리 업무만 센다. 단순 안내·보고는 제외한다. */
