@@ -206,6 +206,7 @@ function renderSheet0(){
   if(!G){ el.innerHTML=''; return; }
   if(UI.matchPreview){el.innerHTML=matchEntrySheet();return;}
   if(UI.fmKeys){el.innerHTML=fmKeysSheet();return;}
+  if(!UI.menu&&!UI.title&&G.stAcc&&stAccBlock()){el.innerHTML=stAccSheet();return;} /* 정원이 찬 상태에서 수락한 스태프 후보: 누구 대신 데려올지 */
   if(UI.meet&&!UI.menu&&!meetOver()){el.innerHTML='';return;}
   if(UI.mgrCandidate&&!UI.menu){ el.innerHTML=mgrCandidatePage(); return; }
   if(UI.ngt&&!UI.menu){ const sc=el.querySelector('.ng-rows'); const top=sc?sc.scrollTop:0; el.innerHTML=ngtSheet(); const s2=el.querySelector('.sheet.ngt'); if(s2&&UI._ngtY!=null)s2.scrollTop=UI._ngtY; return; }
