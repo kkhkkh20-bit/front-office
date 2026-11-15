@@ -66,7 +66,7 @@ function amYearStart(Y){ const U=amPipe(); if(U.yr!=null&&U.yr>=Y)return false;
 /* 처음 세계(새 게임)·예전 저장: 3년 전부터 시즌을 실제로 돌려 지금 학년까지의 기록을 만든다(그때부터 경기가 있었던 것처럼) */
 function amBoot(Y,minGy){ const U=amPipe(); if(U.yr!=null)return; const t0=Date.now(); const want=gy=>gy>=Y&&(minGy==null||gy>=minGy);
   for(let y=Y-3;y<=Y;y++){ if(y>Y-3)amGrowAll(); if(want(y+2))amGenCohort(y+2,false,AM_NH()); if(want(y+3))amGenCohort(y+3,true,AM_NC());
-    if(y<Y){ const S=amSimYear(y); try{ amLvDrift(S); }catch(e){} } }
+    if(y<Y){ const S=amSimYear(y); try{ amLvDrift(S); }catch(e){} const h=(G.amH||[]).find(x=>x.y===y); if(h)h.boot=1; } } /* 처음 세계의 지난 시즌은 학년이 다 차지 않아(저학년만) 시즌 환경 비교에서 뺀다 */
   U.yr=Y; G.amBootMs=Date.now()-t0; }
 /* ---------- 경기 단위(유닛): 후보(G.players)·저학년(G.amU)·일반 부원 ---------- */
 function amSimR(p){ return p.amR||p.r; }
@@ -217,7 +217,7 @@ function amHistPush(S){ const H=G.amH=G.amH||[]; const i=H.findIndex(x=>x.y===S.
   const lg={}; for(const g in S.rec){ const st=amStand(S,g); if(st[0])lg[g]=st[0].n; }
   const row={y:S.y,hs:amEnvSum(S.tot.hs),col:amEnvSum(S.tot.col),ch,lg,env:S.env}; if(i>=0)H[i]=row; else H.push(row); H.sort((a,b)=>a.y-b.y); if(H.length>30)H.shift(); return row; }
 /* 투고타저·타고투저: 지난 시즌들 평균과 견준다(기록이 없으면 평년) */
-function amEnvWord(y,lvl){ const H=(G.amH||[]), L=G.amL&&G.amL.y===y?G.amL:null; const cur=L&&!L.done?{y,hs:amEnvSum(L.tot.hs),col:amEnvSum(L.tot.col)}:H.find(x=>x.y===y); if(!cur)return null; /* 진행 중 시즌은 지금까지 경기로 */ const P=H.filter(x=>x.y<y&&x.y>=y-6&&x[lvl].g>50); const c=cur[lvl]; if(!P.length||c.g<50)return {w:'평년',c};
+function amEnvWord(y,lvl){ const H=(G.amH||[]), L=G.amL&&G.amL.y===y?G.amL:null; const cur=L&&!L.done?{y,hs:amEnvSum(L.tot.hs),col:amEnvSum(L.tot.col)}:H.find(x=>x.y===y); if(!cur)return null; /* 진행 중 시즌은 지금까지 경기로 */ const P=H.filter(x=>x.y<y&&x.y>=y-6&&x[lvl].g>50&&!x.boot); const c=cur[lvl]; if(!P.length||c.g<50)return {w:'평년',c};
   const m=k=>P.reduce((a,x)=>a+x[lvl][k],0)/P.length; const dA=c.avg-m('avg'), dE=c.era-m('era'), dH=c.hr-m('hr'); const s=dA/.012+dE/.35+dH/.25;
   return {w:s>=2.2?'타고투저':s<=-2.2?'투고타저':s>=1?'타격이 조금 셈':s<=-1?'투수가 조금 셈':'평년',c,m:{avg:m('avg'),era:m('era'),hr:m('hr')}}; }
 function amSeasonEnd(S){ if(S.done)return; S.done=1; amHistPush(S); S.rest={}; _amRos=null;
