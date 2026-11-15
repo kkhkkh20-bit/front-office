@@ -248,6 +248,7 @@
       "src/ui/career/49_person_cards.js",
       "src/ui/market/50_offer_consult.js",
       "src/ui/components/51_table_pager.js",
+      "src/ui/components/53_person_card.js",
       "src/ui/career/52_champion.js",
       "src/ui/career/53_meeting.js",
       "src/ui/contracts/53_money_input.js",
