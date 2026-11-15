@@ -18009,7 +18009,8 @@ const usd=m=>Math.round(m*USD); // 만 달러 → 게임 금액
 const usdKw=m=>{ m=Math.round(m); const e=Math.floor(m/10000), r=m%10000; return `${e?e+'억'+(r?' '+r.toLocaleString('ko-KR')+'만':''):r.toLocaleString('ko-KR')+'만'} 달러(약 ${money(usd(m))})`; }; /* 해외 제안 금액은 원화도 함께(커뮤니티 11-14: 달러만 나와 비교가 어려움) */
 function seasonWar(p,y){ const h=seasonTotal(p,y??G.year,'1군'); return h?warOf(h,p):0; }
 /* 외국인: 잘하면 MLB·NPB가 데려간다 */
-function fOverseas(){ for(const p of Object.values(G.players)){ if(!p.foreign||p.team==null||p.joinY>G.year)continue; const w=seasonWar(p); if(w<3.5||p.age>=35)continue;
+const fOvsLocked=p=>Math.max(p.fMulti||0,p.fCtY||0)>G.year; /* 다음 시즌 계약이 이미 있다 */
+function fOverseas(){ for(const p of Object.values(G.players)){ if(!p.foreign||p.team==null||p.joinY>G.year)continue; if(fOvsLocked(p))continue; /* 다음 시즌까지 계약이 남은 외국인(2년 계약 등)은 해외 구단이 데려가지 않는다(사용자 제보 11-14: 2년 재계약 첫해 뒤 NPB행) */ const w=seasonWar(p); if(w<3.5||p.age>=35)continue;
     const mlb=p.foreign==='용병'&&p.age<=32&&w>=5.5&&R()<.35+Math.min(.25,(w-5.5)*.08), npb=!mlb&&R()<(p.foreign==='아시아'?.45:.22)+(w>=5?.2:0); if(!mlb&&!npb)continue;
     const lg=mlb?'MLB':'NPB'; const yrs=mlb?ri(1,2):ri(1,3); const amt=Math.round(mlb?clamp(150+(w-5)*120+N(0,60),120,900):clamp(120+(w-3.5)*90+N(0,40),100,500)); const club=pick(lg==='MLB'?MLBT:NPBT);
     p.ovsOffer={lg,club,yrs,amt,y:G.year};
