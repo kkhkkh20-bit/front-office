@@ -843,6 +843,30 @@ T('[병역 조언] 시즌 초에는 몇 경기 안 된 출전 기록 대신 보�
   const tg=(r=>r.w+r.l+(r.t||0))(G.sea.rec[G.user]); ok(tg<20,'준비 실패 '+tg); let a=null, p=null;
   for(const q of domestic(G.user).filter(q=>milFree(q)&&q.age>=23&&q.age<=26).sort((x,y)=>ovr(x)-ovr(y))){ q.e1=true; G._dc=null; const r=milAdvice(q); if(r.k==='go'){ a=r; p=q; break; } }
   ok(a,'상무 추천 대상 없음'); ok(!/올해 1군 \\d+경기/.test(a.why),'적은 표본으로 판단: '+a.why); ok(/보직|주전|기용 순서/.test(a.why),'보직 근거 없음: '+a.why); });
+T('[드래프트 아마 기록] 카페 11-15: 상위권 고교 투수는 대부분 ERA 3 미만·높은 탈삼진, 상위권 타자는 대부분 타율 .350 초과, 하위권은 그보다 못하다',()=>{ DEMO.on=false; newGame(6); const P=[],B=[];
+  for(let c=0;c<4;c++){ makeDraftClass(); const L=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.am&&!p.college&&!p.ovsRet); const top=(A)=>A.sort((a,b)=>b.pot-a.pot); const lp=top(L.filter(p=>p.isP)), lb=top(L.filter(p=>!p.isP)); P.push({t:lp.slice(0,6),b:lp.slice(-8)}); B.push({t:lb.slice(0,6),b:lb.slice(-8)}); }
+  const tp=P.flatMap(x=>x.t), bp=P.flatMap(x=>x.b), tb=B.flatMap(x=>x.t), bb=B.flatMap(x=>x.b); const era=p=>pRate(p.am).era, k9=p=>pRate(p.am).k9, av=p=>bRate(p.am).avg, m=(L,f)=>L.reduce((a,p)=>a+f(p),0)/L.length;
+  ok(tp.filter(p=>era(p)<3).length>=tp.length*.7,'상위 투수 ERA 3 미만 비율 낮음: '+tp.map(p=>era(p).toFixed(2)).join(','));
+  ok(tp.filter(p=>era(p)>5).length<=Math.max(2,tp.length*.08),'상위 투수 ERA 5 초과가 흔함: '+tp.map(p=>era(p).toFixed(2)).join(','));
+  ok(m(tp,k9)>=10,'상위 투수 K/9 낮음 '+m(tp,k9).toFixed(1));
+  ok(tb.filter(p=>av(p)>.35).length>=tb.length*.7,'상위 타자 타율 .350 초과 비율 낮음: '+tb.map(p=>av(p).toFixed(3)).join(','));
+  ok(m(bp,era)>m(tp,era)+1.5&&m(bb,av)<m(tb,av)-.07,'상위·하위 기록 차이가 작음 ERA '+m(tp,era).toFixed(2)+'/'+m(bp,era).toFixed(2)+' AVG '+m(tb,av).toFixed(3)+'/'+m(bb,av).toFixed(3));
+  ok(G.draftClass.every(id=>{ const p=G.players[id]; return !p||!p.am||(p.amV===2||p.ovsRet)&&p.amZ!=null; }),'새 기록 표시(amV·amZ)가 없음'); });
+T('[드래프트 아마 기록] 1라운드 지명자의 아마 기록이 미지명 선수보다 평균적으로 낫다(지명과 기록이 따로 놀지 않는다)',()=>{ const r1=[],un=[];
+  for(const g of [3,7]){ DEMO.on=false; newGame(g); G.tut={done:true,step:99}; const snap=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.am&&!p.ovsRet); startDraft(); advanceDraft(false); const d=G.draft; const by=new Map(d.picks.filter(k=>k.pid>0).map(k=>[k.pid,k.rd]));
+    for(const p of snap){ const id=p.id; const rd=by.get(id); if(rd===1)r1.push(p); else if(!rd)un.push(p); } }
+  ok(r1.length>=15&&un.length>=15,'준비 실패: 1라운드 '+r1.length+'명, 미지명 '+un.length+'명');
+  const m=L=>L.reduce((a,p)=>a+p.amZ,0)/L.length; ok(m(r1)>m(un)+.8,'1라운드 아마 성적 표준점수 '+m(r1).toFixed(2)+' / 미지명 '+m(un).toFixed(2));
+  const P1=r1.filter(p=>p.isP), PU=un.filter(p=>p.isP); if(P1.length>=4&&PU.length>=4){ const e=L=>L.reduce((a,p)=>a+pRate(p.am).era,0)/L.length; ok(e(P1)<e(PU),'1라운드 투수 ERA가 미지명보다 나쁨 '+e(P1).toFixed(2)+'/'+e(PU).toFixed(2)); } });
+T('[드래프트 아마 기록] AI 지명 평가와 우리 스카우트 순위(보드·자동 지명)는 같은 공개 아마 성적 보정을 쓴다',()=>{ DEMO.on=false; newGame(6); const p=G.draftClass.map(id=>G.players[id]).find(q=>q&&q.am&&!q.ovsRet); const t=G.teams.find(x=>x.id!==G.user).id; const need=draftNeed(t), rp=scoutReport(p);
+  const z0=p.amZ; p.amZ=0; const a0=aiDraftScore(t,p,need), u0=draftVal(rp,p); p.amZ=2; const a1=aiDraftScore(t,p,need), u1=draftVal(rp,p); p.amZ=9; const a2=aiDraftScore(t,p,need), u2=draftVal(rp,p); p.amZ=z0;
+  ok(Math.abs((a1-a0)-(u1-u0))<1e-9&&a1-a0>0,'AI와 우리 평가의 아마 성적 보정이 다름 AI '+(a1-a0)+' / 우리 '+(u1-u0));
+  ok(Math.abs((a2-a0)-AM_DRAFT_W*2.5)<1e-9&&Math.abs((u2-u0)-AM_DRAFT_W*2.5)<1e-9,'보정 상한(2.5 표준편차)이 없음');
+  ok(Math.abs(a1-a0)<=4,'아마 성적 보정이 잠재력보다 커짐 '+(a1-a0)); });
+T('[드래프트 아마 기록] 예전 저장: 지명 전 후보의 옛 아마 기록만 새 식으로 바꾸고 이미 지명된 선수 기록은 건드리지 않는다',()=>{ DEMO.on=false; newGame(6); const L=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.am&&!p.ovsRet&&p.isP);
+  const a=L[0], b=L[1]; delete G.amV; for(const p of L)delete p.amV; a.am={outs:297,h:127,hr:9,bb:58,so:88,er:68,g:39}; a.amY=[Object.assign({gr:1},a.am)]; b.prospect=false; b.draft={y:G.year-1,rd:1,no:1,tid:G.user}; b.team=G.user; const keep=JSON.stringify([b.am,b.amY]);
+  G.draft=null; amMigrate(); ok(G.amV===2&&a.amV===2&&a.am.outs!==297&&a.amY.length===3,'지명 전 후보 기록을 다시 만들지 않음'); ok(JSON.stringify([b.am,b.amY])===keep,'이미 지명된 선수의 아마 기록이 바뀜'); ok(a.amZ!=null,'표준점수가 없음');
+  const s=JSON.stringify(a.am); amMigrate(); ok(JSON.stringify(a.am)===s,'두 번째 불러오기에서 또 바뀜'); });
 T('[드래프트] 같은 투수의 최고 구속은 어디서나 같고, 기록과 반대인 관찰 의견은 근거 부족을 밝히며, 미래는 상한 전망과 확신으로, 위험도는 원인을 나눈다',()=>{ fresh(); ok(typeof amVmax==='function'&&typeof draftView==='function'&&typeof riskWhy==='function','함수 없음');
   const p=Object.values(G.players).find(q=>q.prospect&&q.isP&&q.am&&q.am.outs>=90); ok(p,'준비 실패'); p.amVelo=133; ok(amVmax(p)===133,'최고 구속 불일치');
   p.am.bb=Math.round(p.am.outs/27*7.5); p.gmSeen=G.year; /* 관찰 0회면 관찰 의견이 없다(검수 11-09ze): 단장이 직접 본 후보로 */ const rp0=scoutReport(p); const rp=Object.assign({},rp0,{tools:rp0.tools.map(t=>t.k==='ctl'?Object.assign({},t,{cur:78}):t)}); const v=draftView(p,rp);
@@ -1587,7 +1611,7 @@ T('[FA 주전 기회] 겨울에 다음 시즌 계약이 없는 외국인은 그 
   const d=depth(G.user); const pos=Object.keys(d.ln).find(k=>d.ln[k]&&d.ln[k].id===f.id); ok(pos,'준비 실패: 외국인이 주전이 아님'); G.mvN=(G.mvN||0)+1; const C=faCtx(); ok(C.slot[G.user][pos]!==ovr(f)||Object.values(depth(G.user).ln).filter(q=>q&&!q.foreign&&q.pos===f.pos&&ovr(q)===ovr(f)).length>0,'재계약 미정 외국인 '+f.name+'('+pos+')을 주전 기준으로 계산함');
   f.fCtY=sponSeason(); G.mvN++; ok(faCtx().slot[G.user][pos]===ovr(f),'재계약한 외국인은 주전 기준에 들어가야 함'); });
 T('[구단주 목표] 스토브리그 예상 전력은 다음 개막 기준: 겨울에 낫는 부상·내년 합류 신인·개막 전 전역은 넣고 개막 전 입대는 뺀다',()=>{ fresh(); G.day=G.cal.end+40; G.ps=null; ok(period()==='off','준비 실패: 스토브리그 아님'); ok(projBack()>100,'다음 개막까지 남은 날로 보지 않음: '+projBack());
-  const tid=G.user; const top=domestic(tid).filter(p=>!p.foreign&&!p.mil).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3); const r0=projRating(tid);
+  const tid=G.user; const D0=depth(tid), inD=new Set([...D0.start,...D0.sp,...D0.pen].filter(Boolean).map(x=>x.id)); /* 실제 전력에 드는 선수만(명단 밖 고능력 백업이면 빠져도 전력이 그대로라 준비가 세계에 따라 흔들렸다) */ const top=domestic(tid).filter(p=>!p.foreign&&!p.mil&&inD.has(p.id)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3); const r0=projRating(tid);
   top[0].injOut=100; ok(Math.abs(projRating(tid)-r0)<.01,'겨울 동안 낫는 부상(100일)이 다음 시즌 예상에서 빠짐'); top[0].injOut=400; ok(projRating(tid)<r0,'준비 실패: 빠져도 전력이 그대로인 선수'); top[0].injOut=0;
   const t0=teamRating(tid); top[1].joinY=G.year+1; ok(teamRating(tid)<t0,'준비 실패: 빠져도 전력이 그대로인 선수'); ok(Math.abs(projRating(tid)-r0)<.01,'내년 합류할 선수가 다음 시즌 예상에서 빠짐'); ok(!playersOf(tid).includes(top[1]),'예상 밖에서는 아직 합류 전이어야 함'); delete top[1].joinY;
   top[2].mil={unit:'상무',from:G.day-500,until:G.day+30}; ok(Math.abs(projRating(tid)-r0)<.01,'개막 전에 전역하는 선수가 예상에서 빠짐'); ok(isAway(top[2]),'실제로는 아직 복무 중');

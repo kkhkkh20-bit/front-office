@@ -5,8 +5,8 @@ function batProbs(p,b){ const r=p.r; const be=b*.4, bc=b*.3, bh=b*.55; /* 기세
   return {bb:.01+cc(r.eye,be)*.145, k:clamp(.311-cc(r.con,bc)*.17-cc(r.eye,be)*.04-trt(p,'k')*.002,.06,.36), hr:.003+Math.pow(cc(r.pow,bh),1.6)*.06,
     babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc(r.pow,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
 }
-function simBat(p,pa,b,slot){
-  const q=shrinkQ(batProbs(p,b||0),TWB,QCB); /* 경기를 돌리지 않는 기록(아마추어·2군·해외·외국인 이전 리그·옛 시즌)도 1군 경기와 같은 폭으로 능력이 드러나게 */ const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0};
+function simBat(p,pa,b,slot,q0){
+  const q=q0||shrinkQ(batProbs(p,b||0),TWB,QCB); /* q0: 아마추어처럼 프로와 다른 척도의 확률을 직접 줄 때(10_draft amProbs) */ /* 경기를 돌리지 않는 기록(아마추어·2군·해외·외국인 이전 리그·옛 시즌)도 1군 경기와 같은 폭으로 능력이 드러나게 */ const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0};
   for(let i=0;i<pa;i++){ o.pa++; const x=R();
     if(x<q.bb){o.bb++;continue} o.ab++;
     if(x<q.bb+q.k){o.so++;continue}
@@ -29,8 +29,8 @@ function pitProbs(p,b){ const r=p.r; const be=b*.4, bk=b*.35;
   return {k:PW.k0+cc(r.stf,bk)*.24+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((PW.h0-cc(r.stf,b)*PW.hs-cc(r.ctl,be)*PW.hc-trt(p,'mv')*.0008)*(1-gbT(p)*.13),.006,.06), babip:clamp(PW.b0-cc(r.stf,b)*PW.bs-cc(r.ctl,be)*PW.bc-trt(p,'mv')*.0008+gbT(p)*.003-seasonLuck(p),.25,.36),
     x2:clamp(1-(cc(r.stf,b)-.5)*PW.xs-(cc(r.ctl,be)-.5)*PW.xc-gbT(p)*.05,.6,1.4)}; /* 땅볼형: 피홈런·장타가 줄고 땅볼 안타는 조금 는다 */ /* x2: 인플레이 안타 중 2루타·3루타가 되는 비율에 곱한다 */
 }
-function simPit(p,outs,b){
-  const q=shrinkQ(pitProbs(p,b||0),TWP,QCP); /* 1군 경기와 같은 폭 */ const o={outs:0,h:0,hr:0,bb:0,hbp:0,so:0,tb:0};
+function simPit(p,outs,b,q0){
+  const q=q0||shrinkQ(pitProbs(p,b||0),TWP,QCP); /* 1군 경기와 같은 폭 */ const o={outs:0,h:0,hr:0,bb:0,hbp:0,so:0,tb:0};
   let guard=0;
   while(o.outs<outs&&guard++<5000){ const x=R();
     if(x<q.bb){o.bb++;continue}
