@@ -49,7 +49,7 @@ for(const [width,height,touch] of [[1366,768,false],[390,664,true]]){
  await shot('watch');
  /* 4. 통산 기록: 1군만(기본) · 2군 포함 · 2군만 */
  const cid=await p.evaluate(()=>{const q=domestic(G.user).find(q=>!q.isP&&!q.ys);const Y=G.year;const B=(y,lvl,pa,h,hr)=>Object.assign({},ZB,{y,lvl,t:G.user,g:30,pa,ab:pa-5,h,hr,bb:5,so:20,d:5,tr:0,r:10,rbi:12,sb:1});q.hist=[B(Y-1,'1군',300,80,10),B(Y-2,'1군',200,50,5),B(Y-1,'퓨처스',100,30,4),B(Y-2,'퓨처스',150,40,6)];q.prev=null;q.am=null;UI.cLvl=undefined;A.player(q.id);return q.id;});
- const rows=()=>p.evaluate(()=>[...document.querySelectorAll('.sheet .tw table, .pf-season-table .tw table')].slice(0,1).flatMap(t=>[...t.querySelectorAll('tbody tr')].map(r=>r.children[1].textContent+'|'+r.children[13]?.textContent)));
+ const rows=()=>p.evaluate(()=>[...document.querySelectorAll('.sheet .tw table:not(.sqt), .pf-season-table .tw table:not(.sqt)')].slice(0,1).flatMap(t=>[...t.querySelectorAll('tbody tr')].map(r=>r.children[1].textContent+'|'+r.children[13]?.textContent)));
  await p.evaluate(()=>{const b=document.querySelector('[data-a="ptab"][data-v="stats"],[data-a="ptab"][data-v="rec"]');if(b)b.click();});
  let R=await rows();
  if(!R.length){ const tabs=await p.evaluate(()=>[...document.querySelectorAll('[data-a="ptab"]')].map(b=>b.dataset.v+':'+b.textContent)); throw Error('기록 표를 찾지 못함 '+tabs.join(',')); }
