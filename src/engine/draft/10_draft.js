@@ -40,7 +40,7 @@ const AM_DRAFT_W=1.5; /* 아마 성적 1표준편차 = 잠재력 1.5점. 툴(잠
 function amDraftAdj(p){ return p&&p.amZ!=null?clamp(p.amZ,-2.5,2.5)*AM_DRAFT_W:0; }
 /* 클래스 전체 아마 기록: 능력 조정(완성형·해외 복귀)까지 끝난 뒤 한 번에 만든다 */
 function amClass(cls){ const L=cls.map(id=>G.players[id]).filter(Boolean); const ref=amRef(L);
-  for(const p of L){ if(p.ovsRet){ if(!p.am)amHistory(p,17.5,ref,'ovs'); continue; } amHistory(p,p.amLv??17,ref); }
+  for(const p of L){ if(p.ovsRet){ if(!p.am)amHistory(p,17.5,ref,'ovs'); continue; } if(p.amSim){ amTotFix(p); continue; } /* 실제 아마 경기 기록(13_amateur_league) */ amHistory(p,p.amLv??17,ref); }
   amZSet(L); G.amV=2; }
 /* 언론 평가: 눈에 보이는 성적과 체격·구속만으로 매긴 순위.
    투수와 타자는 척도가 달라 각자 안에서 표준점수로 바꾼 뒤 합친다(그래야 언론 상위권에 투수와 타자가 섞인다) */
@@ -74,7 +74,9 @@ function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y)return G.elN; const n
 function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
-  for(let i=0;i<DRAFT_POOL;i++){
+  /* 고1·대1부터 실제 경기를 치러 온 졸업 학년(13_amateur_league). 아마 리그를 끈 저장·실패할 때만 예전처럼 새로 만든다 */
+  let sen=[]; try{ sen=amSeniors(G.year); }catch(e){ console.error(e); sen=[]; } for(const b of sen)cls.push(b.id);
+  for(let i=sen.length?DRAFT_POOL:0;i<DRAFT_POOL;i++){
     const college=R()<.3; const age=college?22:18; const T=clamp(N(43,8)+(R()<.04?rnd(3,8):0)-lvAdj,26,77); /* 해마다 리그 상위권(60+)으로 클 재목이 몇 명 섞인다. 커뮤니티 피드백(11-07: 탱킹 2~3년이면 주전이 대어로 채워짐)으로 폭을 줄였다 */
     const cur=clamp(T-(27-age)*rnd(2.2,3.4),20,60);
     const b=newPlayer({age,base:cur,pot:T,college}); b.prospect=true;
@@ -95,6 +97,7 @@ function makeDraftClass(){
     if(top[0]&&R()<.35){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
     top.slice(0,3).forEach(p=>{ p.blue=1; }); /* 대어 셋: 성장 실현율 하한이 높다(04_growth). 상위 지명과 하위 지명의 차이가 실제로 나게(사용자 11-13: 우승팀 10순위가 손해가 되게) */
     for(const p of top.filter(q=>q.ready)){ if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
+  for(const id of cls){ const p=G.players[id]; if(p&&p.amSim){ amSyncR(p); if(p.isP&&p.amVelo==null)p.amVelo=veloOf(p)-(p.college?ri(1,3):ri(3,6)); else if(!p.isP&&p.amRun==null)p.amRun=(+runOf(p)+.04).toFixed(2); } } /* 졸업 학년 후보: 구속·주력 표시 */
   /* 해외파 신인: 해외에서 돌아와 2년 유예를 마친 선수(KBO 규약 107조)는 이해 신인 드래프트에 나온다. 트라이아웃 기록 대신 해외 마지막 시즌 수준으로 아마 기록을 만든다 */
   for(const p of Object.values(G.players)){ if(p.ovsRet&&p.prospect&&p.team==null&&!p.retired){ if(!cls.includes(p.id))cls.push(p.id); continue; } /* 불러오기 보정으로 명단을 다시 만들 때 이미 참가한 복귀자(검수 11-09ze) */
     if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
@@ -113,7 +116,7 @@ function nameMigrate(){ if(G.nmFix>=1)return; G.nmFix=1; const M=new Map(); cons
   for(const m of (G.mail||[])){ m.subj=fix(m.subj); m.body=fix(m.body); if(m.from)m.from=fix(m.from); }
   for(const L of [G.news,G.wire,G.log])if(Array.isArray(L))for(const x of L){ if(!x||typeof x!=='object')continue; for(const k of ['t','h','b','title','body','txt'])if(typeof x[k]==='string')x[k]=fix(x[k]); } }
 function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* 불러온 저장의 지난 포스트시즌 차전은 다음 진행일로(검수 11-09zo) */ try{ syncMinSal(); }catch(e){} /* 불러온 해의 최저 연봉(검수 11-06: 2027년 세이브를 열자마자 2026년 기준으로 계약됨) */ /* 불러오기·가져오기 뒤 항상 부르는 자리 */
-  if(!G)return; champEventsInit(); try{ mailMigrate(); }catch(e){} try{ persMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ amMigrate(); }catch(e){ console.error(e); } try{ gmInit(); }catch(e){} if(!G.coach){ try{ coachInit(); }catch(e){} } else { try{ coachFill(); }catch(e){} } try{ stFill(); }catch(e){} if(G.goals&&!G.goals.v&&G.goals.y===G.year){ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
+  if(!G)return; champEventsInit(); try{ mailMigrate(); }catch(e){} try{ persMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ amMigrate(); }catch(e){ console.error(e); } try{ amLeagueMigrate(); }catch(e){ console.error(e); } try{ gmInit(); }catch(e){} if(!G.coach){ try{ coachInit(); }catch(e){} } else { try{ coachFill(); }catch(e){} } try{ stFill(); }catch(e){} if(G.goals&&!G.goals.v&&G.goals.y===G.year){ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
   for(const k in G.mgr)mgrFix(G.mgr[k]); (G.mmarket||[]).forEach(mgrFix);
   if(!G.r68){ G.r68=true; for(const t of G.teams){ if(t.id===G.user)continue; const add=fillRoster(t.id,54); for(const p of add)delete p.dev; }
     const ua=fillRoster(G.user,ROSTER_MIN); if(ua.length)mail('운영팀','소속선수 한도 확대',`협회 규정의 소속선수 한도에 맞춰 정식 등록 한도가 ${ROSTER_MAX}명으로 늘었습니다. 최소 인원(${ROSTER_MIN}명)을 맞추려고 2군 선수 ${ua.length}명을 등록했습니다.`,{kind:'운영'}); }

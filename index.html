@@ -12384,7 +12384,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(o.d===15)try{ smNews(); }catch(e){} /* 스타 마케팅 캠페인 기사 */ /* 능력치 변화 표시(약 6개월 전과 비교) */
   if(o.d===1&&o.m>=6&&o.m<=9&&period()==='season')try{ titleRaceNews(); }catch(e){}
   if(day===KD(11,5))try{ fcampStart(); }catch(e){} if(day===KD(11,25))try{ fcampEnd(); }catch(e){}
-  try{ draftPressNews(day); }catch(e){} try{ ovsStoryDaily(); }catch(e){}
+  try{ amDaily(day); }catch(e){ console.error(e); } /* 고교·대학 경기(13_amateur_league): 단장 관전(gmPlanDaily)보다 먼저 */ try{ draftPressNews(day); }catch(e){} try{ ovsStoryDaily(); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
   if(o.w===1)try{ tbWeek(); }catch(e){} if(G.cal&&day===G.cal.end+1)try{ tbWeek(true); }catch(e){}
   ownershipDaily();
@@ -13306,7 +13306,7 @@ function compactPlayers(){ const y=G.year; let n=0;
         const prevAgg=p.hist.filter(h=>h.lvl==='퓨처스'&&h.y2); for(const a of prevAgg){ const m=by[a.t]; if(m){ for(const f in (p.isP?ZP:ZB))m[f]+=(a[f]||0); m.y=Math.min(m.y,a.y); m.y2=Math.max(m.y2,a.y2); } }
         futLeagueCarry(p,old); /* 원본 연도 행을 없애기 전에 리그 평균의 분자·분모를 보존한다. */
         p.hist=p.hist.filter(h=>!(h.lvl==='퓨처스'&&(old.includes(h)||(h.y2&&by[h.t])))).concat(Object.values(by)); n++; } }
-    if(p.amY&&!p.prospect&&p.draft&&p.draft.y<y-2){ delete p.amY; n++; }
+    if(!p.prospect&&(p.amR||p.amObs)){ delete p.amR; delete p.amObs; } /* 아마 경기용 능력·관찰 횟수는 지명 뒤 필요 없다 */ if(p.amY&&!p.prospect&&p.draft&&p.draft.y<y-2){ delete p.amY; n++; }
     if(p.story&&p.story.length>45)p.story.splice(1,p.story.length-45);
   }
   return n; }
@@ -13467,7 +13467,7 @@ const AM_DRAFT_W=1.5; /* 아마 성적 1표준편차 = 잠재력 1.5점. 툴(잠
 function amDraftAdj(p){ return p&&p.amZ!=null?clamp(p.amZ,-2.5,2.5)*AM_DRAFT_W:0; }
 /* 클래스 전체 아마 기록: 능력 조정(완성형·해외 복귀)까지 끝난 뒤 한 번에 만든다 */
 function amClass(cls){ const L=cls.map(id=>G.players[id]).filter(Boolean); const ref=amRef(L);
-  for(const p of L){ if(p.ovsRet){ if(!p.am)amHistory(p,17.5,ref,'ovs'); continue; } amHistory(p,p.amLv??17,ref); }
+  for(const p of L){ if(p.ovsRet){ if(!p.am)amHistory(p,17.5,ref,'ovs'); continue; } if(p.amSim){ amTotFix(p); continue; } /* 실제 아마 경기 기록(13_amateur_league) */ amHistory(p,p.amLv??17,ref); }
   amZSet(L); G.amV=2; }
 /* 언론 평가: 눈에 보이는 성적과 체격·구속만으로 매긴 순위.
    투수와 타자는 척도가 달라 각자 안에서 표준점수로 바꾼 뒤 합친다(그래야 언론 상위권에 투수와 타자가 섞인다) */
@@ -13501,7 +13501,9 @@ function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y)return G.elN; const n
 function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
-  for(let i=0;i<DRAFT_POOL;i++){
+  /* 고1·대1부터 실제 경기를 치러 온 졸업 학년(13_amateur_league). 아마 리그를 끈 저장·실패할 때만 예전처럼 새로 만든다 */
+  let sen=[]; try{ sen=amSeniors(G.year); }catch(e){ console.error(e); sen=[]; } for(const b of sen)cls.push(b.id);
+  for(let i=sen.length?DRAFT_POOL:0;i<DRAFT_POOL;i++){
     const college=R()<.3; const age=college?22:18; const T=clamp(N(43,8)+(R()<.04?rnd(3,8):0)-lvAdj,26,77); /* 해마다 리그 상위권(60+)으로 클 재목이 몇 명 섞인다. 커뮤니티 피드백(11-07: 탱킹 2~3년이면 주전이 대어로 채워짐)으로 폭을 줄였다 */
     const cur=clamp(T-(27-age)*rnd(2.2,3.4),20,60);
     const b=newPlayer({age,base:cur,pot:T,college}); b.prospect=true;
@@ -13522,6 +13524,7 @@ function makeDraftClass(){
     if(top[0]&&R()<.35){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
     top.slice(0,3).forEach(p=>{ p.blue=1; }); /* 대어 셋: 성장 실현율 하한이 높다(04_growth). 상위 지명과 하위 지명의 차이가 실제로 나게(사용자 11-13: 우승팀 10순위가 손해가 되게) */
     for(const p of top.filter(q=>q.ready)){ if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
+  for(const id of cls){ const p=G.players[id]; if(p&&p.amSim){ amSyncR(p); if(p.isP&&p.amVelo==null)p.amVelo=veloOf(p)-(p.college?ri(1,3):ri(3,6)); else if(!p.isP&&p.amRun==null)p.amRun=(+runOf(p)+.04).toFixed(2); } } /* 졸업 학년 후보: 구속·주력 표시 */
   /* 해외파 신인: 해외에서 돌아와 2년 유예를 마친 선수(KBO 규약 107조)는 이해 신인 드래프트에 나온다. 트라이아웃 기록 대신 해외 마지막 시즌 수준으로 아마 기록을 만든다 */
   for(const p of Object.values(G.players)){ if(p.ovsRet&&p.prospect&&p.team==null&&!p.retired){ if(!cls.includes(p.id))cls.push(p.id); continue; } /* 불러오기 보정으로 명단을 다시 만들 때 이미 참가한 복귀자(검수 11-09ze) */
     if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
@@ -13540,7 +13543,7 @@ function nameMigrate(){ if(G.nmFix>=1)return; G.nmFix=1; const M=new Map(); cons
   for(const m of (G.mail||[])){ m.subj=fix(m.subj); m.body=fix(m.body); if(m.from)m.from=fix(m.from); }
   for(const L of [G.news,G.wire,G.log])if(Array.isArray(L))for(const x of L){ if(!x||typeof x!=='object')continue; for(const k of ['t','h','b','title','body','txt'])if(typeof x[k]==='string')x[k]=fix(x[k]); } }
 function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* 불러온 저장의 지난 포스트시즌 차전은 다음 진행일로(검수 11-09zo) */ try{ syncMinSal(); }catch(e){} /* 불러온 해의 최저 연봉(검수 11-06: 2027년 세이브를 열자마자 2026년 기준으로 계약됨) */ /* 불러오기·가져오기 뒤 항상 부르는 자리 */
-  if(!G)return; champEventsInit(); try{ mailMigrate(); }catch(e){} try{ persMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ amMigrate(); }catch(e){ console.error(e); } try{ gmInit(); }catch(e){} if(!G.coach){ try{ coachInit(); }catch(e){} } else { try{ coachFill(); }catch(e){} } try{ stFill(); }catch(e){} if(G.goals&&!G.goals.v&&G.goals.y===G.year){ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
+  if(!G)return; champEventsInit(); try{ mailMigrate(); }catch(e){} try{ persMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ amMigrate(); }catch(e){ console.error(e); } try{ amLeagueMigrate(); }catch(e){ console.error(e); } try{ gmInit(); }catch(e){} if(!G.coach){ try{ coachInit(); }catch(e){} } else { try{ coachFill(); }catch(e){} } try{ stFill(); }catch(e){} if(G.goals&&!G.goals.v&&G.goals.y===G.year){ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
   for(const k in G.mgr)mgrFix(G.mgr[k]); (G.mmarket||[]).forEach(mgrFix);
   if(!G.r68){ G.r68=true; for(const t of G.teams){ if(t.id===G.user)continue; const add=fillRoster(t.id,54); for(const p of add)delete p.dev; }
     const ua=fillRoster(G.user,ROSTER_MIN); if(ua.length)mail('운영팀','소속선수 한도 확대',`협회 규정의 소속선수 한도에 맞춰 정식 등록 한도가 ${ROSTER_MAX}명으로 늘었습니다. 최소 인원(${ROSTER_MIN}명)을 맞추려고 2군 선수 ${ua.length}명을 등록했습니다.`,{kind:'운영'}); }
@@ -13984,7 +13987,7 @@ function scHomeAuto(){ const am=(G.scouts||[]).filter(s=>(s.role||'am')==='am');
   for(const r of REG){ if(am.some(s=>s.region===r))continue; const by={}; for(const s of am)by[s.region]=(by[s.region]||0)+1; const d=am.filter(s=>by[s.region]>1).sort((a,b)=>a.skill-b.skill)[0]; if(d){ d.region=r; d.since=G.day; n++; } } /* 담당이 없는 지역은 후보 잠재력을 못 보니, 겹친 지역의 스카우트 한 명을 보낸다 */
   return n?`${n}명을 옮겼습니다.`:'이미 고향 지역에 배치돼 있습니다.'; }
 /* 평가 오차 배수: 정보망 100이면 0.75배, 0이면 1.3배 */
-function netSdM(p,tid){ if(!p||!p.prospect)return 1; const k=areaOf(p); if(!k)return 1; return (1.3-areaNet(tid??G.user,k)*.0055)*((tid??G.user)===G.user?schSdM(p):1); } /* 학교 감독 친분(91_schools.js) */
+function netSdM(p,tid){ if(!p||!p.prospect)return 1; const k=areaOf(p); if(!k)return 1; return (1.3-areaNet(tid??G.user,k)*.0055)*((tid??G.user)===G.user?schSdM(p):1)*amObsM(p,tid??G.user); } /* 실제 경기를 본 횟수(13_amateur_league, 모든 구단 같은 규칙) */ /* 학교 감독 친분(91_schools.js) */
 /* 권역 요약(지도·목록): 올해 드래프트 후보 */
 function areaSummary(tid){ const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect);
   return AREA.map(a=>{ const L=C.filter(p=>areaOf(p)===a.k); return {k:a.k,reg:a.reg,net:areaNet(tid,a.k),n:L.length,home:teamArea(tid)===a.k,L}; }); }
@@ -13998,6 +14001,309 @@ let _amZ=null;
 function amScore(p){ const x=amRaw(p); if(x==null)return -99; const rows=(G.draftClass||[]).map(id=>G.players[id]).filter(Boolean).map(q=>({id:q.id,isP:!!q.isP,v:amRaw(q)})),k=rows.map(q=>q.id+':'+q.isP+':'+q.v).join('|');
   if(!_amZ||_amZ.g!==G||_amZ.k!==k){const z={g:G,k};for(const P of [true,false]){const v=rows.filter(q=>q.isP===P&&q.v!=null).map(q=>q.v),m=v.length?sum(v)/v.length:0;z[P]={m,s:Math.sqrt(v.length?sum(v.map(y=>(y-m)**2))/v.length:1)||1};}_amZ=z;}
   const s=_amZ[!!p.isP];return (x-s.m)/s.s; }
+/* ===== 아마추어 야구: 고교·대학 선수들이 실제 경기를 치른다 (구단주 11-15 "실제 그 고교 선수들 가지고 리그 돌려야 해. 가라 성적이 아니라")
+   - 선수: 드래프트 후보는 고1(대학은 대1)부터 실제로 있다. 저학년은 G.amU에 짧게 저장하고(능력·학년별 기록만), 졸업 학년이 되는 해 1월 1일 드래프트 후보(G.players)가 된다.
+     해마다 겨울에 자란다(늦게 피는 선수·일찍 멈추는 선수가 섞인다). 학교 감독 성향이 성장과 기용에 조금씩 영향을 준다(어느 구단이 지켜보든 같다).
+   - 팀: 학교마다 실제 후보(전 학년) + 그날 경기에만 쓰는 일반 부원(학교·연도 고정 시드로 매번 같게 다시 만든다, 저장 안 함). 부원 수준은 학교 전력(lv)을 따른다.
+   - 일정: 고교 주말리그(8개 권역, 3~6월 주말, 두 바퀴) + 전국대회 5개(GM_TOURN 날짜, 단판 토너먼트. 황금사자기·청룡기는 주말리그 상위 32개교) +
+     대학 U-리그(3개 조, 4~8월 화·목) + 전국대학야구선수권(7월). 나무 배트, 콜드게임(5회 10점·7회 7점), 10회부터 승부치기.
+   - 투구 수: 하루 105개, 31개 이상 던지면 쉬는 날(1~4일), 사흘 연속 등판 금지(KBO 고교 규정). 대학도 같은 규정을 쓴다(게임 단순화).
+   - 경기: 타석 단위 간이 경기. 확률은 1군과 같은 능력 모형(batProbs, 투수는 pitProbs와 같은 식)에 아마 척도(능력을 그 무대 평균 기준으로 늘린 값)를 넣는다.
+   - 시즌 환경: 해마다 공·날씨·스트라이크 존 경향(env)이 조금 달라 투고타저·타고투저가 자연스럽게 나온다. 시즌 뒤 요약을 남긴다(G.amH).
+   - 저장: 선수별 시즌 기록·순위·대진표·학교별 최근 결과만. 박스스코어는 남기지 않는다 */
+const AM_LIM=105, AM_REST=[[76,4],[61,3],[46,2],[31,1]];
+const AMC={hs:{m:12,s:2.2,fm:2,fsd:7,fg:2.2,bab:.022,bbm:1.25},col:{m:20,s:2.2,fm:10,fsd:7,fg:1.6,bab:.008,bbm:1.15}};
+/* m·s: 아마 척도(능력 m이 1군 평균 50처럼 보이고, 차이는 s배로 벌어진다: 아마 무대는 선수 간 격차가 크다). fm·fsd: 일반 부원 능력(학교 전력 55 기준), fg: 학년당 차이.
+   bab·bbm: 아마 수준 보정(수비가 거칠어 인플레이 안타가 많고, 제구가 흔들려 볼넷이 많다). 3개 세계로 맞춘 값(측정 11-15: 졸업 학년 잠재력 상위 고교 타자 타율 중앙값 .39, 투수 ERA 1.3) */
+const AM_BK=['g','pa','ab','h','d','tr','hr','bb','hbp','so','r','rbi','sb','cs'], AM_PK=['g','gs','outs','bf','h','hr','bb','hbp','so','r','er','w','l','np'];
+const AM_STY_GROW={육성형:.55,엄격형:.1,데이터형:.2,자율형:0}; /* 겨울 성장 가산(능력 점수) */
+let AM_TRACE=null; /* 점검용: 배열을 넣으면 경기마다 박스스코어를 쌓는다 */
+let _amRos=null, _amToday={d:-1,L:[]};
+const amOn=()=>G&&G.amOff!==true;
+function amPipe(){ return G.amU||(G.amU={yr:null,L:{}}); }
+const amGrade=(e,y)=>(e.c?4:3)-(e.gy-y);
+/* 고교 전력: 학교 객체(91_schools)가 아직 없으면(새 게임 초기) 임시 표에 두고, 학교를 만들 때 그 값을 쓴다 */
+function amHsObj(n){ if(G.schools)return G.schools[n]||null; if(!AREA.some(a=>a.hs.includes(n)))return null; const T=G.amHsLv=G.amHsLv||{}; return T[n]||(T[n]={lv:Math.round(clamp(N(55,10),30,85)),lh:[]}); }
+const amLvOf=n=>{ const S=amHsObj(n); if(S)return S.lv; const C=amCols()[n]; return C?C.lv:55; };
+function amCols(){ if(G.amCol)return G.amCol; const o={}; for(const a of AREA)for(const n of a.un)o[n]={n,area:a.k,lv:Math.round(clamp(50+hn('acl',n)*9,30,80))}; return G.amCol=o; }
+const amSty=n=>{ const S=(G.schools||{})[n]; return S&&S.coach?S.coach.sty:null; };
+/* ---------- 권역 조 편성(주말리그·U-리그): 학교 이름 목록만으로 정해진다 ---------- */
+function amGroups(){ const by=k=>(areaDef(k)||{hs:[]}).hs, alt=(L,i)=>L.filter((_,j)=>j%2===i);
+  const s=by('서울'), g=by('인천·경기').concat(by('강원')), h=by('전북').concat(by('광주·전남'),by('제주')), y=by('대구·경북').concat(by('부산·울산·경남'));
+  return [['서울A',alt(s,0)],['서울B',alt(s,1)],['경기·강원A',alt(g,0)],['경기·강원B',alt(g,1)],['충청',by('충청')],['호남·제주',h],['경상A',alt(y,0)],['경상B',alt(y,1)]].filter(x=>x[1].length>1); }
+function amColGroups(){ const by=k=>(areaDef(k)||{un:[]}).un; return [['U-리그 A조',by('서울')],['U-리그 B조',by('인천·경기').concat(by('강원'),by('충청'),by('전북'))],['U-리그 C조',by('광주·전남').concat(by('대구·경북'),by('부산·울산·경남'),by('제주'))]]; }
+const AM_TOURS=()=>GM_TOURN.map((t,i)=>({k:'t'+i,n:t[4].replace(' 전국고교야구',''),a:[t[0],t[1]],b:[t[2],t[3]],top:i===1||i===3?32:0}));
+const AM_COLT={k:'ct',n:'전국대학야구선수권',a:[7,8],b:[7,20]};
+/* ---------- 선수(저학년 포함) 만들기 ---------- */
+function amGenR(isP,base,pos){ const g=()=>N(base,7); let r;
+  if(isP)r={stf:g(),ctl:g(),sta:N(base,11)}; else { r={con:g(),pow:g(),eye:g(),spd:g(),def:g()};
+    if(['SS','CF','2B'].includes(pos)){r.def+=6;r.spd+=5;r.pow-=4} if(['1B','LF','RF'].includes(pos)){r.pow+=5;r.def-=5} if(pos==='C'){r.spd-=8;r.def+=9;r.con-=3;r.pow-=2} }
+  const o=isP?r.stf*.44+r.ctl*.44+r.sta*.12:r.con*.3+r.pow*.25+r.eye*.15+r.spd*.1+r.def*.2; for(const k in r)r[k]=Math.round(clamp(r[k]+base-o,2,80)*10)/10; return r; }
+const amOvr=(isP,r)=>isP?r.stf*.44+r.ctl*.44+r.sta*.12:r.con*.3+r.pow*.25+r.eye*.15+r.spd*.1+r.def*.2;
+function amPickSchool(a,col,T){ const L=col?a.un:a.hs; const f=clamp(.5+(T-43)/16,.3,1.8); let tot=0; const w=L.map(n=>{ const v=Math.exp((amLvOf(n)-55)/20*f); tot+=v; return v; }); let x=R()*tot; for(let i=0;i<L.length;i++){ x-=w[i]; if(x<=0)return L[i]; } return L[L.length-1]; } /* 강한 학교일수록 좋은 신입생이 온다(재목일수록 더) */
+/* 졸업 학년(gy) 기준 한 명: 졸업 학년 능력을 먼저 정하고(예전 드래프트 후보와 같은 분포), 남은 겨울 성장분만큼 빼서 지금(1학년) 능력을 둔다 */
+function amGenEntry(gy,col,lvAdj){ const ageS=col?22:18; const T=clamp(N(43,8)+(R()<.04?rnd(3,8):0)-lvAdj,26,77); const curS=T-(27-ageS)*rnd(2.2,3.4);
+  const tmp=newPlayer({age:ageS,base:clamp(curS,20,60),pot:T,college:col}); delete G.players[tmp.id];
+  const a=pickArea(); const W=col?3:2; const u=R(); const ty=u<.15?'late':u<.27?'early':'';
+  const per=ty==='late'?4.3:ty==='early'?1.1:2.8, tot=per*W*rnd(.8,1.2);
+  const sh=W===2?(ty==='late'?[.15,.85]:ty==='early'?[.75,.25]:[.5,.5]):(ty==='late'?[.1,.25,.65]:ty==='early'?[.6,.3,.1]:[.34,.33,.33]);
+  const rS=amGenR(tmp.isP,curS,tmp.pos), r={}; for(const k in rS)r[k]=Math.round((rS[k]-tot)*10)/10;
+  const e={id:tmp.id,n:tmp.name,s:amPickSchool(a,col,T),a:a.k,c:col?1:0,gy,P:tmp.isP?1:0,pos:tmp.pos,t:tmp.th,b:tmp.bt,v:Math.round(tmp.velo*10)/10,pot:Math.round(T*10)/10,r,gp:sh.map(x=>Math.round(x*tot*10)/10),ty,
+    ht:Math.round(clamp(N(tmp.isP?184:179,5)-(W*1.5),164,196)),wt:0,inj:Math.round(tmp.inj*1000)/1000,y:[]};
+  e.wt=Math.round(clamp(e.ht-100+N(tmp.isP?-4:-6,6),55,108));
+  if(T<56&&R()<.07){ const h=ri(6,12); e.pot=Math.min(78,e.pot+h); e.hidT=h; }
+  if(tmp.inj>.22&&R()<.65){ e.ai=pick(tmp.isP?AM_INJ_P:AM_INJ_B); e.ig=gy-ri(0,W); } /* 부상 이력: 그 학년 시즌 전반을 쉰다 */
+  return e; }
+function amGenCohort(gy,col,n){ const U=amPipe(); const lv=draftLevelAdj(); for(let i=0;i<n;i++){ const e=amGenEntry(gy,col,lv); U.L[e.id]=e; } }
+const AM_NH=()=>Math.round(DRAFT_POOL*.7), AM_NC=()=>DRAFT_POOL-AM_NH();
+/* 겨울 성장: 계획분 + 개인 편차 + 감독 성향(육성형이 가장 크다) */
+function amGrowAll(){ const U=amPipe(); for(const e of Object.values(U.L)){ const sty=e.c?null:amSty(e.s); const inc=(e.gp.shift()||0)+N(0,.9)*(sty==='자율형'?1.35:1)+(AM_STY_GROW[sty]||0);
+    for(const k in e.r)e.r[k]=Math.round(clamp(e.r[k]+inc+N(0,.6),2,80)*10)/10;
+    if(e.ht<(e.P?190:186)&&R()<.5){ e.ht+=1; e.wt+=1; } e.wt+=ri(0,2); } }
+/* 해마다 1월 1일(makeDraftClass): 지난 시즌 정리(학교 전력 변화) → 겨울 성장 → 새 1학년 입학. 같은 해에 두 번 불러도 한 번만 */
+function amYearStart(Y){ const U=amPipe(); if(U.yr!=null&&U.yr>=Y)return false;
+  if(G.amL&&G.amL.y<Y){ try{ if(!G.amL.done)amSeasonEnd(G.amL); amLvDrift(G.amL); }catch(e){ console.error(e); } G.amLp=amLiteRes(G.amL); delete G.amL; }
+  if(U.yr!=null)amGrowAll(); U.yr=Y;
+  amGenCohort(Y+2,false,AM_NH()); amGenCohort(Y+3,true,AM_NC());
+  for(const id in U.L)if(U.L[id].gy<Y)delete U.L[id]; return true; }
+/* 처음 세계(새 게임)·예전 저장: 3년 전부터 시즌을 실제로 돌려 지금 학년까지의 기록을 만든다(그때부터 경기가 있었던 것처럼) */
+function amBoot(Y,minGy){ const U=amPipe(); if(U.yr!=null)return; const t0=Date.now(); const want=gy=>gy>=Y&&(minGy==null||gy>=minGy);
+  for(let y=Y-3;y<=Y;y++){ if(y>Y-3)amGrowAll(); if(want(y+2))amGenCohort(y+2,false,AM_NH()); if(want(y+3))amGenCohort(y+3,true,AM_NC());
+    if(y<Y){ const S=amSimYear(y); try{ amLvDrift(S); }catch(e){} } }
+  U.yr=Y; G.amBootMs=Date.now()-t0; }
+/* ---------- 경기 단위(유닛): 후보(G.players)·저학년(G.amU)·일반 부원 ---------- */
+function amSimR(p){ return p.amR||p.r; }
+function amUnit(src,kind,sch,lvl,y){ const isP=kind==='e'?!!src.P:!!src.isP; const r=kind==='e'?src.r:kind==='p'?amSimR(src):src.r;
+  const C=AMC[lvl], E={}; for(const k in r)if(k!=='vit')E[k]=50+(r[k]-C.m)*C.s;
+  const sty=lvl==='hs'?amSty(sch):null; if(!isP){ if(sty==='데이터형')E.eye+=4; if(sty==='자율형'){ E.pow+=3; E.con-=1; } }
+  const u={id:src.id,kind,src,sch,isP,E,gr:kind==='e'?amGrade(src,y):kind==='p'?(src.college?4:3):src.gr,out:(kind==='e'?src.ig===y:kind==='p'&&src.amIg===y)?dnum(y,6,1):0}; /* 부상 시즌: 6월부터 뛴다 */
+  const st={id:u.id,r:E,isP}; if(isP){ u.q=amPitQ(st); u.sv=E.stf*.44+E.ctl*.44+E.sta*.12; u.lim=Math.min(AM_LIM,Math.round(60+E.sta*.45)); u.ft=30+E.sta*.55; }
+  else { const q=batProbs(st,0); u.q=q; u.bv=E.con*.3+E.pow*.25+E.eye*.15+E.spd*.1+E.def*.2; u.ov=E.con*.4+E.pow*.35+E.eye*.25; }
+  return u; }
+function amPitQ(p){ const r=p.r, be=0, b=0; return {k:PW.k0+cc(r.stf,0)*.24, bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((PW.h0-cc(r.stf,b)*PW.hs-cc(r.ctl,be)*PW.hc-trt(p,'mv')*.0008)*(1-gbT(p)*.13),.006,.06),
+  babip:clamp(PW.b0-cc(r.stf,b)*PW.bs-cc(r.ctl,be)*PW.bc-trt(p,'mv')*.0008+gbT(p)*.003,.25,.36), x2:clamp(1-(cc(r.stf,b)-.5)*PW.xs-(cc(r.ctl,be)-.5)*PW.xc-gbT(p)*.05,.6,1.4), ctl:r.ctl}; } /* 1군 pitProbs와 같은 식(구종 가산 제외) */
+/* 일반 부원: 학교·연도 시드로 늘 같게 만든다. 학년마다 차이를 둔다 */
+function amFill(sch,y,lvl,lv){ const C=AMC[lvl], rnd0=seededRand('amf:'+sch+':'+y), n=(m,s)=>{ let u=0,v=0; while(!u)u=rnd0(); v=rnd0(); return m+s*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); };
+  const mu=C.fm+(lv-55)*.13, L=[]; const mk=(isP,i)=>{ const gr=1+Math.floor(rnd0()*(lvl==='hs'?3:4)), base=n(mu+(gr-(lvl==='hs'?2:2.5))*C.fg,C.fsd*.6); const r=isP?{stf:n(base,5),ctl:n(base,5),sta:n(base,7)}:{con:n(base,5),pow:n(base,5),eye:n(base,5),spd:n(base,6),def:n(base,5)};
+    return {id:'f'+sch+'#'+(isP?'p':'b')+i,isP,r,gr}; };
+  for(let i=0;i<10;i++)L.push(mk(false,i)); for(let i=0;i<7;i++)L.push(mk(true,i)); return L; }
+/* 그해 학교별 선수단(경기 단위). 진행 중 시즌은 메모리에 한 번만 만든다 */
+function amRosters(y){ const key=y+':'+(G.draftClass||[]).length+':'+Object.keys(amPipe().L).length; if(_amRos&&_amRos.k===key&&_amRos.g===G)return _amRos.m;
+  const m={}; const add=(sch,lvl,u)=>{ const R0=m[sch]||(m[sch]={lvl,B:[],P:[]}); (u.isP?R0.P:R0.B).push(u); };
+  const known=n=>AREA.some(a=>a.hs.includes(n)||a.un.includes(n));
+  for(const e of Object.values(amPipe().L)){ const g=amGrade(e,y); if(g<1||g>(e.c?4:3)||!known(e.s))continue; add(e.s,e.c?'col':'hs',amUnit(e,'e',e.s,e.c?'col':'hs',y)); }
+  if(y===G.year)for(const id of G.draftClass||[]){ const p=G.players[id]; if(!p||!p.prospect||p.ovsRet||!p.school||p.team!=null||!known(p.school))continue; const lvl=p.college?'col':'hs'; add(p.school,lvl,amUnit(p,'p',p.school,lvl,y)); }
+  const all=[...AREA.flatMap(a=>a.hs.map(n=>[n,'hs'])),...AREA.flatMap(a=>a.un.map(n=>[n,'col']))];
+  for(const [n,lvl] of all){ const R0=m[n]||(m[n]={lvl,B:[],P:[]}); for(const f of amFill(n,y,lvl,amLvOf(n)))(f.isP?R0.P:R0.B).push(amUnit(f,'f',n,lvl,y)); }
+  _amRos={k:key,g:G,m}; return m; }
+/* ---------- 시즌 상태 ---------- */
+function amEnv(y){ const r=seededRand('amenv:'+y), n=()=>{ let u=0; while(!u)u=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r()); };
+  return {hr:+clamp(1+n()*.16,.65,1.4).toFixed(3),bab:+clamp(n()*.01,-.025,.025).toFixed(4),bb:+clamp(1+n()*.07,.85,1.18).toFixed(3),k:+clamp(1+n()*.06,.86,1.15).toFixed(3)}; } /* 공 반발력·날씨·존 경향 */
+function amNewSeason(y,live){ const S={y,live:!!live,env:amEnv(y),rec:{},tour:{},res:{},rest:{},tot:{hs:amTot0(),col:amTot0()},from:live?G.day:-1e9,last:-1e9,news:{},lgD:null,clD:null};
+  for(const [g,L] of amGroups())S.rec[g]=Object.fromEntries(L.map(n=>[n,[0,0,0,0,0]]));
+  for(const [g,L] of amColGroups())S.rec[g]=Object.fromEntries(L.map(n=>[n,[0,0,0,0,0]]));
+  return S; }
+const amTot0=()=>({pa:0,ab:0,h:0,hr:0,bb:0,so:0,outs:0,er:0,r:0,g:0});
+function amLive(){ if(!G.amL||G.amL.y!==G.year)G.amL=amNewSeason(G.year,true); return G.amL; }
+/* 리그 경기일: 주말리그는 3월 둘째 토요일~6월 말 토·일(전국대회 기간 제외, 모자라면 7월 주말), U-리그는 4~8월 화·목(선수권 기간 제외) */
+function amTourSpan(y,t){ return [dnum(y,t.a[0],t.a[1]),dnum(y,t.b[0],t.b[1])]; }
+function amLeagueDays(y,col){ const sp=(col?[AM_COLT]:AM_TOURS()).map(t=>amTourSpan(y,t)); const inT=d=>sp.some(([a,b])=>d>=a&&d<=b); const L=[];
+  const a=col?dnum(y,4,1):dnum(y,3,7), b=col?dnum(y,8,31):dnum(y,7,31);
+  for(let d=a;d<=b;d++){ const w=dobj(d).w; if((col?(w===2||w===4):(w===0||w===6))&&!inT(d))L.push(d); } return L; }
+function amRounds(L){ const n=L.length+(L.length%2), half=n-1; const R0=[]; for(let r=0;r<half;r++)R0.push(flRR(L,r)); for(let r=0;r<half;r++)R0.push(flRR(L,r).map(([h,a])=>[a,h])); return R0; }
+function amDayGames(S,d){ const y=S.y, out=[];
+  if(!S.lgD)S.lgD=amLeagueDays(y,false); if(!S.clD)S.clD=amLeagueDays(y,true);
+  const li=S.lgD.indexOf(d); if(li>=0)for(const [g,L] of amGroups()){ const R0=amRounds(L); if(li<R0.length)for(const [h,a] of R0[li])out.push({h,a,g,lvl:'hs'}); }
+  const ci=S.clD.indexOf(d); if(ci>=0)for(const [g,L] of amColGroups()){ const R0=amRounds(L); if(ci<R0.length)for(const [h,a] of R0[ci])out.push({h,a,g,lvl:'col'}); }
+  for(const t of AM_TOURS().concat([AM_COLT])){ const [a,b]=amTourSpan(y,t); if(d<a||d>b)continue; const T=amTourGet(S,t,d); if(!T||T.ch)continue; const k=T.days.indexOf(d); if(k<0||k!==T.rd.length)continue;
+    const B=T.cur; for(let i=0;i<B.length;i+=2){ const h=B[i], aw=B[i+1]; if(h&&aw)out.push({h,a:aw,t:t.k,lvl:t.k==='ct'?'col':'hs',i}); } }
+  return out; }
+function amTourGet(S,t,d){ let T=S.tour[t.k]; if(T)return T; const [a,b]=amTourSpan(S.y,t); if(d!==a||d<S.from)return null;
+  const col=t.k==='ct'; let ent=col?AREA.flatMap(x=>x.un):AREA.flatMap(x=>x.hs);
+  if(t.top){ const st=amStandAll(S,false); ent=st.slice(0,t.top).map(x=>x.n); }
+  const rnd0=seededRand('amtour:'+S.y+':'+t.k); let P2=1; while(P2<ent.length)P2*=2; const byes=P2-ent.length;
+  const seed=[...ent].sort((x,z)=>amLvOf(z)-amLvOf(x)||(x<z?-1:1)); const top=seed.slice(0,byes), rest=seed.slice(byes).sort(()=>rnd0()-.5);
+  const pairs=[]; for(const n of top)pairs.push([n,null]); for(let i=0;i<rest.length;i+=2)pairs.push([rest[i],rest[i+1]??null]); pairs.sort(()=>rnd0()-.5);
+  const nR=Math.round(Math.log2(P2)), days=[]; for(let k=0;k<nR;k++)days.push(a+Math.round(k*(b-a)/Math.max(1,nR-1)));
+  T=S.tour[t.k]={k:t.k,n:t.n,cur:pairs.flat(),rd:[],days,ch:null,ru:null,n0:ent.length}; return T; }
+/* 그날 대회 한 라운드가 끝나면 다음 라운드 대진을 만든다. 부전승은 그대로 올라간다 */
+function amTourAdvance(S,t,res){ const T=S.tour[t.k]; if(!T||T.ch)return; const k=T.days.indexOf(S.last); if(k<0||k!==T.rd.length)return;
+  const B=T.cur, nx=[], row=[]; for(let i=0;i<B.length;i+=2){ const h=B[i], a=B[i+1]; if(!h||!a){ nx.push(h||a); row.push([h||a,null]); continue; } const g=res.find(x=>x.t===t.k&&x.i===i); if(!g){ nx.push(h); continue; } nx.push(g.w); row.push([h,a,g.hs,g.as,g.inn]); }
+  T.rd.push(row); T.cur=nx; if(nx.length===1){ T.ch=nx[0]; const f=row.find(x=>x[1]); T.ru=f?(f[0]===T.ch?f[1]:f[0]):null; amTourNews(S,T); } }
+/* ---------- 투수 휴식(규정) ---------- */
+function amCanPitch(S,u,d){ const x=S.rest[u.id]; if(!x)return true; if(d<x[0])return false; if(x[1]===d-1&&x[2]>=2)return false; return true; }
+function amRestSet(S,u,d,pc){ const x=S.rest[u.id]; const st=x&&x[1]===d-1?x[2]+1:1; let rd=0; for(const [n,k] of AM_REST)if(pc>=n){ rd=k; break; } S.rest[u.id]=[d+1+rd,d,st]; }
+/* ---------- 한 경기 ---------- */
+function amSide(S,sch,d,ko,R0){ const T=R0[sch]; const lvl=T.lvl; const ok=u=>!(u.out&&d<u.out);
+  const bk=u=>u.bv+(u.kind==='f'?0:6), pk=u=>u.sv+(u.kind==='f'?0:4); /* 드래프트 관심권 선수는 학교에서도 주전·주축 투수다 */
+  const B=T.B.filter(ok).sort((a,b)=>bk(b)-bk(a)).slice(0,9); const ord=B.slice().sort((a,b)=>b.ov-a.ov); const lineup=[ord[1],ord[0],ord[2],ord[3],ord[4],ord[5],ord[6],ord[7],ord[8]].filter(Boolean);
+  const dv=B.reduce((a,u)=>a+u.E.def,0)/Math.max(1,B.length); const P=T.P.filter(u=>ok(u)&&amCanPitch(S,u,d)).sort((a,b)=>pk(b)-pk(a));
+  return {sch,lvl,lineup,idx:0,dv,P,cur:null,pc:0,used:[],ko,sty:lvl==='hs'?amSty(sch):null,runs:0,line:[]}; }
+function amPitchIn(s,start){ const p=s.P.find(u=>!s.used.includes(u)); let u=p; if(!u){ u={id:'x'+s.sch,kind:'x',sch:s.sch,isP:true,E:{stf:35,ctl:35,sta:40},q:amPitQ({id:'x',r:{stf:35,ctl:35,sta:40}}),sv:35,lim:AM_LIM,ft:40}; } s.used.push(u); s.cur=u; s.pc=0; s.runAll=0;
+  const strict=s.sty==='엄격형'; s.lim=Math.min(AM_LIM,start?(s.ko||strict?u.lim+8:u.lim):Math.round(30+u.E.sta*.35)+(s.ko?10:0)); return u; }
+function amBoxB(M,u){ let b=M.get(u.id); if(!b){ b={u,pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0}; M.set(u.id,b); } return b; }
+function amBoxP(M,u){ let b=M.get(u.id); if(!b){ b={u,gs:0,outs:0,bf:0,h:0,hr:0,bb:0,hbp:0,so:0,r:0,er:0,np:0,w:0,l:0}; M.set(u.id,b); } return b; }
+function amGame(S,g,d,R0){ const rnd0=seededRand('amg:'+S.y+':'+d+':'+g.h+':'+g.a), ko=!!g.t; const env=S.env;
+  const H=amSide(S,g.h,d,ko,R0), A=amSide(S,g.a,d,ko,R0); if(H.lineup.length<9||A.lineup.length<9)return null;
+  const M=new Map(); for(const s of [H,A]){ const u=amPitchIn(s,true); amBoxP(M,u).gs=1; }
+  const sc={h:0,a:0}; let inn=0; const rec={w:{},l:{}}; const LG=LGP, LV=AMC[g.lvl]||AMC.hs;
+  const half=(bat,fld,k,tb)=>{ let outs=0; const bs=[null,null,null]; let runs=0;
+    if(tb){ const n=bat.lineup.length; bs[0]={u:bat.lineup[(bat.idx+n-1)%n],p:fld.cur,e:0}; bs[1]={u:bat.lineup[(bat.idx+n-2)%n],p:fld.cur,e:0}; } /* 승부치기: 무사 1·2루 */
+    const score=(rn,bx,rbi)=>{ runs++; amBoxB(M,rn.u).r++; const pb=amBoxP(M,rn.p); pb.r++; if(rn.e)pb.er++; if(rbi&&bx)bx.rbi++; fld.runAll++; const was=sc[k]<=sc[k==='h'?'a':'h']; sc[k]++; const lead=sc[k]>sc[k==='h'?'a':'h']; if(was&&lead){ rec.w[k]=bat.cur; rec.l[k==='h'?'a':'h']=fld.cur; } };
+    while(outs<3){ if(k==='h'&&inn>=9&&sc.h>sc.a)break; /* 끝내기 */
+      if(fld.pc>=fld.lim||fld.runAll>=7&&fld.used.length<4)amPitchIn(fld,false);
+      const p=fld.cur, pq=p.q, pb=amBoxP(M,p);
+      if(bs[0]&&!bs[1]&&outs<2){ const sp=bs[0].u.E.spd; if(rnd0()<clamp((sp-55)*.004,0,.16)){ const bx=amBoxB(M,bs[0].u); if(rnd0()<clamp(.55+(sp-50)*.006,.4,.88)){ bx.sb++; bs[1]=bs[0]; bs[0]=null; } else { bx.cs++; bs[0]=null; outs++; pb.outs++; continue; } } }
+      const b=bat.lineup[bat.idx%bat.lineup.length]; bat.idx++; const q=b.q, bx=amBoxB(M,b); bx.pa++; pb.bf++;
+      const f=Math.max(0,fld.pc-p.ft)/60;
+      const bb=comb(q.bb,pq.bb*(1+.5*f),LG.bb)*env.bb*LV.bbm, kk=comb(q.k,pq.k*(1-.35*f),LG.k)*env.k, hr=comb(q.hr,pq.hr*(1+.5*f),LG.hr)*env.hr, bab=comb(q.babip,pq.babip+.02*f,LG.babip)+env.bab+LV.bab-(fld.dv-50)*.0008;
+      const hbp=.011; const x=rnd0(); let o; const pitch=n=>{ const v=Math.max(1,Math.min(9,Math.round(n+(50-p.E.ctl)*.015+(rnd0()-.5)*2))); fld.pc+=v; pb.np+=v; };
+      if(x<hbp){ o='hbp'; pitch(3); bx.hbp++; pb.hbp++; }
+      else if(x<hbp+bb){ o='bb'; pitch(5.6); bx.bb++; pb.bb++; }
+      else if(x<hbp+bb+kk){ pitch(4.8); bx.ab++; bx.so++; pb.so++; pb.outs++; outs++; continue; }
+      else if(x<hbp+bb+kk+hr){ pitch(3.3); bx.ab++; bx.h++; bx.hr++; pb.h++; pb.hr++; for(let i=2;i>=0;i--)if(bs[i]){ score(bs[i],bx,1); bs[i]=null; } score({u:b,p,e:1},bx,1); continue; }
+      else { pitch(3.3); bx.ab++;
+        if(rnd0()<bab){ bx.h++; pb.h++; const y2=rnd0(); const t=y2<q.d3?3:y2<q.d3+q.d2*pq.x2?2:1; if(t===3)bx.tr++; else if(t===2)bx.d++;
+          const me={u:b,p,e:1};
+          if(t===3){ for(let i=2;i>=0;i--)if(bs[i]){ score(bs[i],bx,1); bs[i]=null; } bs[2]=me; }
+          else if(t===2){ if(bs[2]){ score(bs[2],bx,1); bs[2]=null; } if(bs[1]){ score(bs[1],bx,1); bs[1]=null; } if(bs[0]){ if(rnd0()<.45)score(bs[0],bx,1); else bs[2]=bs[0]; bs[0]=null; } bs[1]=me; }
+          else { if(bs[2]){ score(bs[2],bx,1); bs[2]=null; } if(bs[1]){ if(rnd0()<.6)score(bs[1],bx,1); else bs[2]=bs[1]; bs[1]=null; } if(bs[0]){ if(!bs[2]&&rnd0()<.28)bs[2]=bs[0]; else bs[1]=bs[0]; bs[0]=null; } bs[0]=me; }
+          continue; }
+        const err=clamp(.045-(fld.dv-50)*.0007,.012,.08); if(rnd0()<err){ if(bs[2]){ score(bs[2],bx,0); bs[2]=null; } if(bs[1]){ bs[2]=bs[1]; bs[1]=null; } if(bs[0]){ bs[1]=bs[0]; } bs[0]={u:b,p,e:0}; continue; }
+        if(bs[0]&&outs<2&&rnd0()<.12){ bs[0]=null; outs+=2; pb.outs+=2; if(outs<3&&bs[2]&&rnd0()<.5){ score(bs[2],null,0); bs[2]=null; } continue; }
+        outs++; pb.outs++; if(outs<3){ if(bs[2]&&rnd0()<.3){ score(bs[2],bx,1); bs[2]=null; } if(bs[1]&&!bs[2]&&rnd0()<.3){ bs[2]=bs[1]; bs[1]=null; } }
+        continue; }
+      /* 볼넷·몸에 맞는 공: 밀어내기 */
+      const me={u:b,p,e:1}; if(bs[0]){ if(bs[1]){ if(bs[2])score(bs[2],bx,1); bs[2]=bs[1]; } bs[1]=bs[0]; } bs[0]=me; }
+    bat.line.push(runs); return runs; };
+  const maxI=ko?20:12;
+  for(inn=1;inn<=maxI;inn++){ half(A,H,'a',inn>=10);
+    if(inn>=9&&sc.h>sc.a){ H.line.push('X'); break; }
+    half(H,A,'h',inn>=10);
+    const df=Math.abs(sc.h-sc.a); if(inn>=5&&df>=10||inn>=7&&df>=7)break; /* 콜드게임 */
+    if(inn>=9&&sc.h!==sc.a)break; }
+  inn=Math.min(inn,maxI); let w=null; if(sc.h!==sc.a)w=sc.h>sc.a?'h':'a'; else if(ko)w='h'; /* 20회까지 비기면 추첨(홈) */
+  if(w){ const lk=w==='h'?'a':'h'; const wp=rec.w[w]||(w==='h'?H:A).used[0], lp=rec.l[lk]||(lk==='h'?H:A).used[0]; amBoxP(M,wp).w=1; amBoxP(M,lp).l=1; }
+  for(const s of [H,A])for(const u of s.used)amRestSet(S,u,d,amBoxP(M,u).np);
+  return {h:g.h,a:g.a,hs:sc.h,as:sc.a,inn,w:w?(w==='h'?g.h:g.a):null,M,line:{h:H.line,a:A.line},H,A}; }
+/* ---------- 기록 반영 ---------- */
+function amRowOf(u,y){ const s=u.src; if(u.kind==='e'){ let r=s.y.find(x=>x[0]===y); if(!r){ r=[y,amGrade(s,y)].concat(new Array(s.P?AM_PK.length:AM_BK.length).fill(0)); s.y.push(r); } return {a:r}; }
+  if(u.kind==='p'&&s.amSim){ s.amY=s.amY||[]; let r=s.amY.find(x=>x.y===y); if(!r){ r={y,gr:s.college?4:3}; for(const k of s.isP?AM_PK:AM_BK)r[k]=0; s.amY.push(r); } return {o:r}; } return null; }
+function amAdd(u,y,b,isP){ const R0=amRowOf(u,y); if(!R0)return; const K=isP?AM_PK:AM_BK;
+  if(R0.a){ for(let i=1;i<K.length;i++)R0.a[2+i]+=b[K[i]]||0; R0.a[2]+=1; } else { for(let i=1;i<K.length;i++)R0.o[K[i]]+=b[K[i]]||0; R0.o.g+=1; amTotFix(u.src); } }
+function amTotFix(p){ const K=p.isP?AM_PK:AM_BK, t={}; for(const k of K)t[k]=0; for(const r of p.amY||[])for(const k of K)t[k]+=r[k]||0; p.am=t; }
+function amRecord(S,g,d,meta){ const y=S.y, live=S.live;
+  for(const b of g.M.values()){ const u=b.u; if(u.kind==='f'||u.kind==='x'){ } else amAdd(u,y,b,u.isP);
+    const T=S.tot[meta.lvl]; if(u.isP){ T.outs+=b.outs; T.er+=b.er; T.r+=b.r; } else { T.pa+=b.pa; T.ab+=b.ab; T.h+=b.h; T.hr+=b.hr; T.bb+=b.bb; T.so+=b.so; } }
+  S.tot[meta.lvl].g++;
+  if(meta.g){ const G0=S.rec[meta.g]; if(G0){ const a=G0[g.h], b=G0[g.a]; if(a&&b){ if(g.hs>g.as){ a[0]++; b[1]++; } else if(g.as>g.hs){ b[0]++; a[1]++; } else { a[2]++; b[2]++; } a[3]+=g.hs; a[4]+=g.as; b[3]+=g.as; b[4]+=g.hs; } } }
+  if(live){ const tag=meta.g?0:meta.t; for(const [n,o,rs,ra] of [[g.h,g.a,g.hs,g.as],[g.a,g.h,g.as,g.hs]]){ const L=S.res[n]||(S.res[n]=[]); L.push([d,o,rs,ra,tag,g.inn]); if(L.length>12)L.shift(); }
+    for(const b of g.M.values()){ const u=b.u; if(u.kind!=='p'&&u.kind!=='e')continue; _amToday.L.push({id:u.id,kind:u.kind,sch:u.sch,b:amBoxTxt(b,u.isP)}); }
+    try{ amGameNews(S,g,d,meta); }catch(e){} }
+  if(AM_TRACE)AM_TRACE.push({y,d,h:g.h,a:g.a,hs:g.hs,as:g.as,inn:g.inn,line:g.line,box:[...g.M.values()].map(b=>Object.assign({id:b.u.id,kind:b.u.kind,isP:b.u.isP,sch:b.u.sch},b,{u:undefined}))}); }
+function amBoxTxt(b,isP){ return isP?`${ipStr(b.outs)}이닝 ${b.r}실점 ${b.so}탈삼진 (${b.np}구)`:`${b.ab}타수 ${b.h}안타${b.hr?` ${b.hr}홈런`:''}${b.rbi?` ${b.rbi}타점`:''}${b.bb?` ${b.bb}볼넷`:''}`; }
+/* 하루 경기(시즌 상태 S). 진행 중 시즌이면 대회 다음 라운드 대진까지 */
+function amPlayDay(S,d){ if(d<=S.last||d<S.from)return 0; S.last=d; const L=amDayGames(S,d); if(!L.length)return 0; const R0=amRosters(S.y); const res=[];
+  for(const m of L){ const g=amGame(S,m,d,R0); if(!g)continue; amRecord(S,g,d,m); res.push(Object.assign({t:m.t,i:m.i},{w:g.w,hs:g.hs,as:g.as,inn:g.inn})); }
+  for(const t of AM_TOURS().concat([AM_COLT]))amTourAdvance(S,t,res); return res.length; }
+/* 지난 시즌을 처음부터 끝까지(처음 세계 만들 때) */
+function amSimYear(y,quiet){ const S=amNewSeason(y,false); const a=dnum(y,3,1), b=dnum(y,8,31); _amRos=null; for(let d=a;d<=b;d++)amPlayDay(S,d); if(!quiet)amHistPush(S); _amRos=null; return S; }
+/* 매일(07_daily): 3~8월 경기, 9월 1일 시즌 정리, 월요일마다 아마 성적 표준점수 갱신 */
+function amDaily(day){ if(!amOn()||!G.amU)return; const o=dobj(day); if(_amToday.d!==day)_amToday={d:day,L:[]};
+  if(o.m>=3&&o.m<=8){ const S=amLive(); try{ amPlayDay(S,day); }catch(e){ console.error(e); } if(o.w===1||o.d===1)try{ amZSet((G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&(p.prospect||p.amV))); }catch(e){} if(o.d===1&&o.m>=4)try{ pressRank(G.draftClass||[]); }catch(e){}
+    try{ amWatchDaily(day); }catch(e){} if(o.d===1)try{ amMonthNews(o); }catch(e){} try{ amAiFollow(o); }catch(e){} }
+  if(o.m===9&&o.d===1&&G.amL&&G.amL.y===o.y&&!G.amL.done)try{ amSeasonEnd(G.amL); }catch(e){ console.error(e); }
+  if(o.m===10&&o.d===1)for(const p of Object.values(G.players))if(!p.prospect&&(p.amR||p.amObs)){ delete p.amR; delete p.amObs; } } /* 지명 뒤에는 아마 경기 능력·관찰 횟수가 필요 없다(저장 크기) */
+/* ---------- 시즌 정리·환경 요약 ---------- */
+function amEnvSum(T){ return {avg:T.ab?+(T.h/T.ab).toFixed(3):0,era:T.outs?+(T.er*27/T.outs).toFixed(2):0,hr:T.pa?+(T.hr/T.pa*100).toFixed(2):0,k:T.pa?+(T.so/T.pa*100).toFixed(1):0,bb:T.pa?+(T.bb/T.pa*100).toFixed(1):0,rg:T.g?+(T.r/T.g/2).toFixed(2):0,g:T.g}; }
+function amHistPush(S){ const H=G.amH=G.amH||[]; const i=H.findIndex(x=>x.y===S.y); const ch={}; for(const k in S.tour)if(S.tour[k].ch)ch[k]=[S.tour[k].ch,S.tour[k].ru];
+  const lg={}; for(const g in S.rec){ const st=amStand(S,g); if(st[0])lg[g]=st[0].n; }
+  const row={y:S.y,hs:amEnvSum(S.tot.hs),col:amEnvSum(S.tot.col),ch,lg,env:S.env}; if(i>=0)H[i]=row; else H.push(row); H.sort((a,b)=>a.y-b.y); if(H.length>30)H.shift(); return row; }
+/* 투고타저·타고투저: 지난 시즌들 평균과 견준다(기록이 없으면 평년) */
+function amEnvWord(y,lvl){ const H=(G.amH||[]), L=G.amL&&G.amL.y===y?G.amL:null; const cur=L&&!L.done?{y,hs:amEnvSum(L.tot.hs),col:amEnvSum(L.tot.col)}:H.find(x=>x.y===y); if(!cur)return null; /* 진행 중 시즌은 지금까지 경기로 */ const P=H.filter(x=>x.y<y&&x.y>=y-6&&x[lvl].g>50); const c=cur[lvl]; if(!P.length||c.g<50)return {w:'평년',c};
+  const m=k=>P.reduce((a,x)=>a+x[lvl][k],0)/P.length; const dA=c.avg-m('avg'), dE=c.era-m('era'), dH=c.hr-m('hr'); const s=dA/.012+dE/.35+dH/.25;
+  return {w:s>=2.2?'타고투저':s<=-2.2?'투고타저':s>=1?'타격이 조금 셈':s<=-1?'투수가 조금 셈':'평년',c,m:{avg:m('avg'),era:m('era'),hr:m('hr')}}; }
+function amSeasonEnd(S){ if(S.done)return; S.done=1; amHistPush(S); S.rest={}; _amRos=null;
+  try{ const L=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&(p.prospect||p.amV)); amZSet(L); pressRank(G.draftClass||[]); }catch(e){}
+  try{ const w=amEnvWord(S.y,'hs'); if(w&&!G.unemp){ const c=w.c; const top=amLeaders(S.y,'hs',false,'avg',1)[0], tp=amLeaders(S.y,'hs',true,'era',1)[0];
+      wire('아마',`${S.y} 고교야구 결산: ${w.w==='평년'?'예년 수준':w.w} · 타율 ${fmt3(c.avg)} · 평균자책점 ${c.era.toFixed(2)}${top?` · 타율 1위 ${top.n}(${top.sch}) ${fmt3(top.v)}`:''}${tp?` · 평균자책점 1위 ${tp.n} ${tp.v.toFixed(2)}`:''}`);
+      const n4=amLeaders(S.y,'hs',false,'avg',99).filter(x=>x.v>=.4).length, n0=amLeaders(S.y,'hs',true,'era',99).filter(x=>x.v<1).length; if(n4||n0)wire('아마',`${S.y} 고교야구 규정 타석 4할 타자 ${n4}명 · 규정 이닝 0점대 투수 ${n0}명`); } }catch(e){} }
+/* 학교 전력 변화: 성적·우승·감독(명성·육성형)·평균 회귀. 강팀·떠오르는 팀·내려가는 팀이 생긴다 */
+function amLvDrift(S){ const W={}; const add=(n,w,l)=>{ const o=W[n]||(W[n]=[0,0]); o[0]+=w; o[1]+=l; };
+  for(const g in S.rec)for(const n in S.rec[g]){ const r=S.rec[g][n]; add(n,r[0],r[1]); }
+  for(const k in S.tour){ const T=S.tour[k]; for(const row of T.rd)for(const x of row){ if(x[1]==null)continue; const hw=x[2]>x[3]||x[2]===x[3]; add(x[0],hw?1:0,hw?0:1); add(x[1],hw?0:1,hw?1:0); } }
+  const ch={}; for(const k in S.tour){ const T=S.tour[k]; if(T.ch)ch[T.ch]=(ch[T.ch]||0)+2; if(T.ru)ch[T.ru]=(ch[T.ru]||0)+1; }
+  const one=(o,n)=>{ const w=W[n]; const wp=w&&w[0]+w[1]?w[0]/(w[0]+w[1]):.5; const S0=(G.schools||{})[n]; const c=S0&&S0.coach;
+    const d=(wp-.5)*5+(ch[n]||0)*.5+(c?(c.rep-50)*.02+(c.sty==='육성형'?.3:0):0)+(55-o.lv)*.1+N(0,1.5); o.lv=Math.round(clamp(o.lv+d,25,88)); /* 평균 회귀를 둬서 한 학교가 끝없이 강해지지 않는다(측정 11-15: 회귀가 약하면 전력 90 학교가 해마다 대회 대부분을 우승) */ (o.lh=o.lh||[]).push([S.y,o.lv]); if(o.lh.length>12)o.lh.shift(); };
+  for(const a of AREA)for(const n of a.hs){ const o=amHsObj(n); if(o)one(o,n); } for(const n in amCols())one(amCols()[n],n); }
+/* 지난 시즌 화면용 요약(순위표·대진은 남기고 최근 결과·휴식은 버린다) */
+function amLiteRes(S){ if(!S)return null; return {y:S.y,rec:S.rec,tour:S.tour,env:S.env}; }
+/* ---------- 순위·기록 순위 ---------- */
+function amStand(S,g){ const R0=S.rec[g]||{}; return Object.entries(R0).map(([n,r])=>({n,w:r[0],l:r[1],d:r[2],rs:r[3],ra:r[4],p:r[0]+r[1]?r[0]/(r[0]+r[1]):0})).sort((a,b)=>b.p-a.p||(b.rs-b.ra)-(a.rs-a.ra)||(a.n<b.n?-1:1)); }
+function amStandAll(S,col){ const L=[]; for(const g in S.rec){ if(g.startsWith('U-')!==!!col)continue; L.push(...amStand(S,g)); } return L.sort((a,b)=>b.p-a.p||(b.w-a.w)||(b.rs-b.ra)-(a.rs-a.ra)||(a.n<b.n?-1:1)); }
+/* 그해 선수 기록 행(저학년·후보 공통): {id,n,sch,gr,isP,row(object),kind} */
+function amYearRows(y,lvl){ const out=[]; for(const e of Object.values(amPipe().L)){ if(lvl&&(e.c?'col':'hs')!==lvl)continue; const r=e.y.find(x=>x[0]===y); if(r)out.push({id:e.id,n:e.n,sch:e.s,gr:r[1],isP:!!e.P,kind:'e',row:amRowObj(e,r),e}); }
+  for(const p of Object.values(G.players)){ if(!p.amY||p.ovsRet)continue; if(lvl&&(p.college?'col':'hs')!==lvl)continue; const r=p.amY.find(x=>x.y===y&&!x.syn); if(r&&(p.amSim||r.y!=null))out.push({id:p.id,n:p.name,sch:p.school,gr:r.gr,isP:!!p.isP,kind:'p',row:r,p}); }
+  return out; }
+function amRowObj(e,r){ const K=e.P?AM_PK:AM_BK, o={y:r[0],gr:r[1]}; K.forEach((k,i)=>o[k]=r[2+i]); return o; }
+/* 규정 타석·이닝: 그해 팀당 평균 경기 수 기준(타석 2.5배, 이닝 0.8배) */
+function amTeamG(y,lvl){ const S=G.amL&&G.amL.y===y?G.amL:null; const T=S?S.tot[lvl]:((G.amH||[]).find(h=>h.y===y)||{})[lvl]; const n=lvl==='hs'?AREA.reduce((a,x)=>a+x.hs.length,0):AREA.reduce((a,x)=>a+x.un.length,0); return T&&T.g?T.g*2/n:20; }
+function amLeaders(y,lvl,isP,k,n,gr){ const L=amYearRows(y,lvl).filter(x=>x.isP===isP&&(gr==null||x.gr===gr)); const tg=amTeamG(y,lvl), qPA=Math.max(10,tg*2.5), qO=Math.max(9,tg*2.4);
+  const val=x=>{ const h=x.row; if(isP){ if(k==='era')return h.outs>=qO?h.er*27/h.outs:null; if(k==='so')return h.so; if(k==='w')return h.w; return null; }
+    if(k==='avg')return h.pa>=qPA&&h.ab?h.h/h.ab:null; if(k==='ops')return h.pa>=qPA?bRate(h).ops:null; if(k==='hr')return h.hr; if(k==='sb')return h.sb; return null; };
+  const asc=isP&&k==='era'; return L.map(x=>Object.assign({v:val(x)},x)).filter(x=>x.v!=null&&(asc||x.v>0)).sort((a,b)=>asc?a.v-b.v:b.v-a.v).slice(0,n||10); }
+/* ---------- 드래프트 후보로(졸업 학년 1월 1일) ---------- */
+function amMat(e){ const ageS=e.c?22:18; const p=newPlayer({age:ageS,base:clamp(amOvr(!!e.P,e.r),20,60),pot:e.pot,college:!!e.c,isP:!!e.P,pos:e.pos,name:e.n});
+  delete G.players[p.id]; p.id=e.id; G.players[p.id]=p; p.th=e.t; p.bt=e.b; p.velo=e.v; p.inj=e.inj;
+  for(const k in e.r)p.r[k]=clamp(e.r[k],20,80); roundR(p); p.pot=clamp(Math.max(ovr(p),e.pot),20,80); p.prospect=true; p.school=e.s; p.area=e.a; p.region=(areaDef(e.a)||{}).reg||p.region; p.ht=e.ht; p.wt=e.wt;
+  if(e.hidT)p.hidT=e.hidT; if(e.ai){ p.amInj=e.ai; if(e.ig===e.gy)p.amIg=e.gy; } if(e.ty)p.amTy=e.ty; if(e.amObs)p.amObs=e.amObs; if(e.fw)p.amFw=e.fw;
+  p.amR={}; for(const k in e.r)p.amR[k]=e.r[k]; p.amY=e.y.map(r=>amRowObj(e,r)).sort((a,b)=>a.y-b.y); for(const r of p.amY){ if(e.ig===r.y)r.inj=1; } amTotFix(p); p.amV=3; p.amSim=1;
+  delete p.delivery; if(p.isP)p.delivery=pitchDelivery(p); p.schoolHue=Math.floor(u01('sh',p.school)*360); p.amLevel=''; return p; }
+/* 지명 준비가 끝난(완성형 등) 뒤: 1군 능력이 바뀐 항목은 아마 능력도 맞춘다(바닥 20 아래는 아마 능력 그대로) */
+function amSyncR(p){ if(!p.amR)return; for(const k in p.r){ if(k==='vit'||p.amR[k]==null)continue; if(p.r[k]>20.05)p.amR[k]=p.r[k]; else p.amR[k]=Math.min(20,p.amR[k]); } }
+function amSeniors(Y){ if(!amOn())return []; const U=amPipe(); if(U.yr==null)amBoot(Y); else amYearStart(Y);
+  let L=Object.values(U.L).filter(e=>e.gy===Y);
+  if(!L.length){ /* 같은 해에 다시 부르면(예전 저장·점검): 이 학년만 3~4년 전부터 경기를 돌려 만든다 */ const keep=U.L, yr0=U.yr; U.L={};
+    try{ for(let y=Y-3;y<Y;y++){ if(y>Y-3)amGrowAll(); if(y===Y-3)amGenCohort(Y,true,AM_NC()); if(y===Y-2)amGenCohort(Y,false,AM_NH()); amSimYear(y,true); } amGrowAll(); L=Object.values(U.L); } finally { U.L=keep; U.yr=yr0; } }
+  const out=L.map(amMat); for(const e of L)delete U.L[e.id]; _amRos=null; return out; }
+/* ---------- 관찰: 경기장에서 본 선수(구단 공통 규칙) ---------- */
+/* 구단이 아마추어 스카우트를 둔 지역(우리: 스카우트 배치, 다른 구단: 리그 스태프 명단. 없으면 연고 지역) */
+function amClubRegs(tid){ const L=(tid===G.user?G.scouts:(G.lgStaff&&G.lgStaff[tid]&&G.lgStaff[tid].sc))||[]; const R1=[...new Set(L.filter(s=>(s.role||'am')==='am'&&s.region).map(s=>s.region))]; if(R1.length)return R1; const t=team(tid); return t&&t.region&&REG.includes(t.region)?[t.region]:[]; }
+const amFollowL=tid=>{ G.amFw=G.amFw||{}; return G.amFw[tid]=G.amFw[tid]||[]; };
+function amFollowing(tid,id){ return amFollowL(tid).includes(id); }
+function amFollow(id,on,tid){ tid=tid??G.user; const L=amFollowL(tid), i=L.indexOf(id); if(on===false||on==null&&i>=0){ if(i>=0)L.splice(i,1); return false; } if(i<0){ L.push(id); if(L.length>40)L.shift(); } return true; }
+/* 경기가 열린 날: 스카우트를 둔 지역의 경기에 나온 선수, 관심 선수·관심 학교 선수는 그 구단의 관찰 횟수가 쌓인다(평가 오차 감소, 최대 15%) */
+function amWatchDaily(d){ if(_amToday.d!==d||!_amToday.L.length)return; const regOf=n=>{ const a=AREA.find(x=>x.hs.includes(n)||x.un.includes(n)); return a?a.reg:null; };
+  for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const regs=amClubRegs(tid), F=new Set(amFollowL(tid)); const seen=new Set();
+    for(const x of _amToday.L){ if(seen.has(x.id))continue; const fol=F.has(x.id)||F.has('s:'+x.sch); const here=regs.includes(regOf(x.sch)); if(!fol&&!(here&&u01('amw'+d+':'+tid,x.id)<.25))continue; seen.add(x.id);
+      const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(!s)continue; s.amObs=s.amObs||{}; s.amObs[tid]=Math.min(12,(s.amObs[tid]||0)+(fol?1:.5)); } } }
+function amObsM(p,tid){ const o=p&&p.amObs; const n=o?o[tid??G.user]||0:0; return 1-Math.min(.15,n*.0125); }
+/* AI 구단 관심 선수: 4월·7월 1일, 스카우트 지역에서 공개 기록이 좋은 저학년·후보를 고른다(우리 화면의 추천과 같은 기준) */
+function amAiFollow(o){ if(o.d!==1||(o.m!==4&&o.m!==7))return; const y=o.m===4?o.y-1:o.y; for(const t of G.teams){ if(t.id===G.user)continue; const regs=amClubRegs(t.id); const L=amSuggest(y,regs,8); const F=amFollowL(t.id); F.length=0; F.push(...L.map(x=>x.id));
+    const home=teamArea(t.id), A0=areaDef(home); if(!A0||!G.schools)continue; const cnt=n=>Object.values(amPipe().L).filter(e=>e.s===n).length; const sch=[...A0.hs].sort((p,q)=>cnt(q)-cnt(p)||(p<q?-1:1))[0]; if(sch){ F.push('s:'+sch);
+      const S=G.schools[sch]; if(o.m===4&&S&&!schGave(S,t.id)&&(t.cash||0)>50){ if(!S.gy||typeof S.gy!=='object')S.gy={}; S.gy[t.id]=G.year; t.cash-=10; schAdd(S,8,t.id); } } } } /* AI 구단도 연고 권역 학교 하나를 관심 학교로 두고 한 해 한 번 후원한다(우리와 같은 1천만 원·친분 +8) */
+/* 공개 기록 기준 눈에 띄는 선수(지역 한정): 타자 OPS, 투수 평균자책점·탈삼진을 학년 안에서 견준다 */
+function amSuggest(y,regs,n){ const reg=x=>{ const a=AREA.find(z=>z.hs.includes(x.sch)||z.un.includes(x.sch)); return a?a.reg:null; };
+  const L=amYearRows(y).filter(x=>!regs||regs.includes(reg(x))); const sc=x=>{ const h=x.row; if(x.isP){ if(h.outs<30)return -9; return (4.5-h.er*27/h.outs)*.6+(h.so*27/h.outs-7)*.25; } if(h.pa<35)return -9; return (bRate(h).ops-.8)*5; };
+  return L.map(x=>Object.assign({s:sc(x)+(x.gr<=2?.3:0)},x)).filter(x=>x.s>-9).sort((a,b)=>b.s-a.s).slice(0,n); }
+/* 단장 대회 관전: 그날 그 지역 학교가 치른 경기에서 본 선수(실제 경기 기록 한 줄) */
+function amTripSeen(reg){ if(_amToday.d!==G.day)return null; const regOf=n=>{ const a=AREA.find(x=>x.hs.includes(n)); return a?a.reg:null; }; const L=_amToday.L.filter(x=>regOf(x.sch)===reg); return L.length?L:null; }
+/* ---------- 소식(빈도 상한) ---------- */
+function amCap(S,k,n){ S.news[k]=(S.news[k]||0)+1; return S.news[k]<=n; }
+const amSchName=n=>n;
+function amTourNews(S,T){ if(!S.live)return; const nm=T.k==='ct'?T.n:T.n+' 고교야구'; const cnt=(G.amH||[]).filter(h=>h.ch&&h.ch[T.k]&&h.ch[T.k][0]===T.ch).length;
+  wire('아마',`${T.ch}, ${nm} 우승${cnt?` (${cnt+1}번째)`:''} · 준우승 ${T.ru||'-'}`); }
+function amGameNews(S,g,d,meta){ for(const k of ['H','A']){ const s=g[k], op=k==='H'?g.A:g.H; if(s.used.length!==1)continue; const u=s.used[0]; const b=g.M.get(u.id); if(!b||b.outs<21||u.kind==='f'||u.kind==='x')continue;
+    if(b.h===0&&b.bb===0&&b.hbp===0&&b.bf<=b.outs&&amCap(S,'pg',2)){ wire('아마',`${u.src.n||u.src.name}(${s.sch} ${u.gr}학년), 퍼펙트게임 · ${op.sch}전 ${b.so}탈삼진`,{ref:u.kind==='p'?u.id:null}); }
+    else if(b.h===0&&amCap(S,'nh',3)){ wire('아마',`${u.src.n||u.src.name}(${s.sch} ${u.gr}학년), 노히트노런 · ${op.sch}전`,{ref:u.kind==='p'?u.id:null}); } } }
+/* 매달 1일: 고교 최대어 경쟁(언론 순위 1·2위), 6·8월에는 1학년 돌풍 */
+function amMonthNews(o){ const S=G.amL; if(!S||!S.live||G.unemp)return; const y=o.y;
+  if(o.m>=5&&o.m<=8&&amCap(S,'big',4)){ const L=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.press).sort((a,b)=>a.press-b.press).slice(0,2); if(L.length===2)wire('아마',`고교 최대어 경쟁: ${L[0].name}(${L[0].school}) · ${L[1].name}(${L[1].school}) — ${amShortLine(L[0])} / ${amShortLine(L[1])}`,{ref:L[0].id}); }
+  if((o.m===6||o.m===8)&&amCap(S,'fr',2)){ const b=amLeaders(y,'hs',false,'ops',1,1)[0], p=amLeaders(y,'hs',true,'era',1,1)[0]; const x=b&&b.v>=1.0?b:p&&p.v<1.5?p:null; if(x)wire('아마',`1학년 돌풍: ${x.n}(${x.sch}) ${x.isP?`평균자책점 ${x.v.toFixed(2)}`:`OPS ${fmt3(x.v)}`}`); } }
+function amShortLine(p){ const h=(p.amY||[]).find(r=>r.y===G.year); if(!h)return '기록 없음'; if(p.isP)return h.outs?`ERA ${(h.er*27/h.outs).toFixed(2)}`:'등판 없음'; return h.ab?`타율 ${fmt3(h.h/h.ab)}`:'출전 없음'; }
+/* ---------- 예전 저장: 저학년 파이프라인을 만들고(지난 3년 경기 실제로), 올해 후보의 옛 기록은 그대로 둔다 ---------- */
+function amLeagueMigrate(){ if(!G||!G.teams||!amOn())return; const U=amPipe(); if(U.yr!=null)return; amBoot(G.year,G.year+1);
+  for(const id of G.draftClass||[]){ const p=G.players[id]; if(p&&p.amY&&!p.amSim)for(const r of p.amY)r.syn=1; } /* 시뮬레이션 전에 만든 기록(합성)임을 표시 */ }
 /* ===== 외국인 선수 ===== */
 /* KBO: 시즌 중 교체 외국인은 남은 기간 월 10만 달러까지. 지급은 남은 경기 비율(remainFrac)이라 연봉 기준 60만 달러(6개월)로 묶는다. shortcut: 시즌 6개월 고정 — 일정 길이가 바뀌면 남은 달 수로 */
 const fNewCap=()=>Math.round((period()==='season'?Math.min(F_NEW_CAP,60*USD):F_NEW_CAP)*fEcoK());
@@ -20810,10 +21116,14 @@ function gmAttendResult(rec){ const p=gmPlanAt(rec.day); if(!p||p.k!=='attend'||
   else note('일정',`직관을 마쳤습니다. ${L.join(' · ')}.`); }
 function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.region===reg&&!p.college);
   if(!C.length){ note('스카우트',`${reg} ${tn}을(를) 보고 왔지만 올해 드래프트 후보가 눈에 띄지 않았습니다.`); return; }
-  const seen=C.sort(()=>R()-.5).slice(0,Math.min(C.length,ri(5,9))); for(const p of seen)gmObserve(p); const vk=areaVisitAdd(seen); /* 다녀온 권역 정보망이 조금 오른다 */
+  const TS=typeof amTripSeen==='function'?amTripSeen(reg):null; /* 그날 실제로 열린 경기(13_amateur_league): 뛴 선수를 그 경기 기록과 함께 본다 */
+  const live=TS?TS.filter(x=>x.kind==='p').map(x=>G.players[x.id]).filter(p=>p&&C.includes(p)):[], low=TS?TS.filter(x=>x.kind==='e'):[];
+  const seen=live.length?[...new Set(live)].slice(0,12):C.sort(()=>R()-.5).slice(0,Math.min(C.length,ri(5,9))); for(const p of seen)gmObserve(p); const vk=areaVisitAdd(seen); /* 다녀온 권역 정보망이 조금 오른다 */
+  if(TS)for(const x of TS){ const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(s){ s.amObs=s.amObs||{}; s.amObs[G.user]=Math.min(12,(s.amObs[G.user]||0)+1); } }
+  const box=TS?`\n\n오늘 경기에서 본 기록\n${TS.filter(x=>x.kind==='p').slice(0,6).map(x=>{ const p=G.players[x.id]; return p?`${p.name}(${p.school}): ${x.b}`:''; }).filter(Boolean).join('\n')}${low.length?`\n저학년: ${low.slice(0,3).map(x=>{ const e=amPipe().L[x.id]; return e?`${e.n}(${e.s} ${amGrade(e,G.year)}학년) ${x.b}`:''; }).filter(Boolean).join(' · ')}`:''}`:'';
   /* 단장 눈에 들어온 선수도 실제 잠재력이 아니라 직접 본 평가(오차 포함)로 고른다 */ const ev=new Map(seen.map(p=>{ const rp=scoutReport(p); return [p.id,rp.ofp??rp.cur]; })); const top=[...seen].sort((a,b)=>ev.get(b.id)-ev.get(a.id)).slice(0,3); const gem=seen.find(p=>ev.get(p.id)>=58&&(p.press==null||p.press>30)&&R()<.5);
   if(gem){ gem.gmGem=G.year; (G.shortlist=G.shortlist||[]); if(!G.shortlist.includes(gem.id))G.shortlist.push(gem.id); }
-  mail('단장 노트',`${reg} ${tn} 관전`,`직접 본 후보 ${seen.length}명. 이 선수들은 평가 오차가 줄었습니다.\n눈에 들어온 선수: ${top.map(p=>`${p.name}(${posLabel(p)}, ${p.school||p.region})`).join(', ')}${gem?`\n\n눈여겨본 선수: ${gem.name}(${posLabel(gem)}) — 언론 순위는 낮지만 직접 보니 그릇이 커 보입니다. 한두 번 본 인상이라 틀릴 수 있습니다. 관심 명단에 넣었습니다.`:''}`,{kind:'스카우트',acts:[{l:'드래프트 후보',a:'go',v:'transfer:draft'}],ref:gem?gem.id:top[0]&&top[0].id}); }
+  mail('단장 노트',`${reg} ${tn} 관전`,`직접 본 후보 ${seen.length}명. 이 선수들은 평가 오차가 줄었습니다.\n눈에 들어온 선수: ${top.map(p=>`${p.name}(${posLabel(p)}, ${p.school||p.region})`).join(', ')}${box}${gem?`\n\n눈여겨본 선수: ${gem.name}(${posLabel(gem)}) — 언론 순위는 낮지만 직접 보니 그릇이 커 보입니다. 한두 번 본 인상이라 틀릴 수 있습니다. 관심 명단에 넣었습니다.`:''}`,{kind:'스카우트',acts:[{l:'드래프트 후보',a:'go',v:'transfer:draft'}],ref:gem?gem.id:top[0]&&top[0].id}); }
 /* 올해 초와 견준 실제 능력 변화를 말로 */
 function gmDirWord(p){ const b=G.ovr0&&G.ovr0.y===G.year?G.ovr0.m[p.id]:null; if(b==null)return '아직 지켜보는 중'; const x=ovr(p)-b; return x>=1.5?'올라오는 중':x>=.5?'조금씩 늘고 있음':x>-.5?'정체':'주춤'; }
 /* 코치 평: 실제 툴에서 가장 좋은 것과 가장 약한 것 */
@@ -25568,7 +25878,7 @@ function mgrReqDaily(){ const Q=G.mgrReq; if(!Q)return; const m=G.mgr&&G.mgr[G.u
    우리 구단 출신이 감독인 학교는 처음부터 친분이 높다 */
 const HS_STY=['엄격형','자율형','데이터형','육성형'];
 function schList(){ if(!G.schools)schInit(); return G.schools; }
-function schInit(){ G.schools={}; G.schOut=G.schOut||[]; for(const a of AREA)for(const n of a.hs){ const S={n,area:a.k,lv:Math.round(clamp(N(55,10),30,85)),coach:null,rel:{},gy:0}; G.schools[n]=S; S.coach=schNewCoach(S,true); } return G.schools; }
+function schInit(){ const B=G.amHsLv||{}; G.schools={}; G.schOut=G.schOut||[]; for(const a of AREA)for(const n of a.hs){ const S={n,area:a.k,lv:B[n]?B[n].lv:Math.round(clamp(N(55,10),30,85)),coach:null,rel:{},gy:0}; if(B[n]&&B[n].lh&&B[n].lh.length)S.lh=B[n].lh; /* 아마 리그가 먼저 쓴 전력(13_amateur_league) */ G.schools[n]=S; S.coach=schNewCoach(S,true); } delete G.amHsLv; return G.schools; }
 const schOf=p=>p&&p.school?schList()[p.school]||null:null;
 function schRel0(S,tid){ return Math.round(clamp(20+(teamArea(tid)===S.area?15:0)+(S.coach&&S.coach.from===tid?20:0),0,100)); }
 function schRel(S,tid){ tid=tid??G.user; if(S.rel[tid]==null)S.rel[tid]=schRel0(S,tid); return S.rel[tid]; }
@@ -25589,7 +25899,7 @@ function schSetCoach(S,c,why){ const old=S.coach; if(old&&old.id!==c.id)schDropM
   return why; }
 /* 겨울: 감독 나이·은퇴·교체, 학교 전력 변화, 이름난 감독은 스태프 시장으로 */
 function schYear(){ const L=Object.values(schList()); let out=0;
-  for(const S of L){ const c=S.coach; c.age++; for(const x of [...(G.cmarket||[]),...(G.scoutMarket||[])])if(schPerson(x)===c.id)x.age=c.age; S.lv=Math.round(clamp(S.lv+N(0,3)+(c.sty==='육성형'?.6:0),25,90));
+  for(const S of L){ const c=S.coach; c.age++; for(const x of [...(G.cmarket||[]),...(G.scoutMarket||[])])if(schPerson(x)===c.id)x.age=c.age; if(!G.amU)S.lv=Math.round(clamp(S.lv+N(0,3)+(c.sty==='육성형'?.6:0),25,90)); /* 아마 리그가 돌면 성적·감독으로 변한다(13_amateur_league amLvDrift) */
     if(c.age>=66||R()<.05){ if(c.ob&&G.ob){ const o=G.ob.find(x=>x.id===c.ob); if(o)o.log.push({y:G.year,t:`${S.n} 감독에서 물러남`}); } schSetCoach(S,schNewCoach(S,false)); continue; }
     if(out<3&&c.rep>=62&&c.age<=60&&R()<.15){ out++; schToMarket(S); } }
   for(const S of L)for(const t in S.rel)if(S.rel[t]>35)S.rel[t]=Math.round(S.rel[t]-(S.rel[t]-35)*.08); /* 안 챙기면 조금씩 식는다 */
@@ -32432,8 +32742,8 @@ function quickActs(p){
 /* ---------- 아마추어 기록: 학년별 ---------- */
 function amYearTable(p){ const Y=p.amY; if(!Y||!Y.length)return `<p class="small">${esc(amLine(p))}</p>`;
   const sch=p.college?'대':'고'; const rows=Y.concat([Object.assign({gr:'합계',tot:true},p.am)]);
-  if(p.isP)return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>이닝</th><th class="key">ERA</th><th>탈삼진</th><th>볼넷</th><th class="key">K/9</th><th class="key">BB/9</th><th>K/BB</th></tr></thead><tbody>${rows.map(x=>`<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':sch+x.gr+(x.inj?' (부상)':'')}</td><td>${x.g}</td><td>${ipStr(x.outs)}</td><td>${x.outs?((x.er||0)*27/x.outs).toFixed(2):'-'}</td><td>${x.so}</td><td>${x.bb}</td><td>${x.outs?(x.so*27/x.outs).toFixed(1):'-'}</td><td>${x.outs?(x.bb*27/x.outs).toFixed(1):'-'}</td><td>${x.bb?(x.so/x.bb).toFixed(2):'-'}</td></tr>`).join('')}</tbody></table></div>`;
-  return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>타석</th><th>타율</th><th class="key">OPS</th><th>홈런</th><th>볼넷</th><th>삼진</th><th class="key">볼삼비</th><th>도루</th></tr></thead><tbody>${rows.map(x=>{ const r=bRate(x); return `<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':sch+x.gr+(x.inj?' (부상)':'')}</td><td>${x.g}</td><td>${x.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.ops)}</td><td>${x.hr}</td><td>${x.bb}</td><td>${x.so}</td><td>${x.so?(x.bb/x.so).toFixed(2):'-'}</td><td>${x.sb}</td></tr>`; }).join('')}</tbody></table></div>`; }
+  if(p.isP)return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>이닝</th><th class="key">ERA</th><th>탈삼진</th><th>볼넷</th><th class="key">K/9</th><th class="key">BB/9</th><th>K/BB</th></tr></thead><tbody>${rows.map(x=>`<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':(x.y?x.y+' ':'')+sch+x.gr+(x.inj?' (부상)':'')}</td><td>${x.g}</td><td>${ipStr(x.outs)}</td><td>${x.outs?((x.er||0)*27/x.outs).toFixed(2):'-'}</td><td>${x.so}</td><td>${x.bb}</td><td>${x.outs?(x.so*27/x.outs).toFixed(1):'-'}</td><td>${x.outs?(x.bb*27/x.outs).toFixed(1):'-'}</td><td>${x.bb?(x.so/x.bb).toFixed(2):'-'}</td></tr>`).join('')}</tbody></table></div>`;
+  return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>타석</th><th>타율</th><th class="key">OPS</th><th>홈런</th><th>볼넷</th><th>삼진</th><th class="key">볼삼비</th><th>도루</th></tr></thead><tbody>${rows.map(x=>{ const r=bRate(x); return `<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':(x.y?x.y+' ':'')+sch+x.gr+(x.inj?' (부상)':'')}</td><td>${x.g}</td><td>${x.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.ops)}</td><td>${x.hr}</td><td>${x.bb}</td><td>${x.so}</td><td>${x.so?(x.bb/x.so).toFixed(2):'-'}</td><td>${x.sb}</td></tr>`; }).join('')}</tbody></table></div>`; }
 function amLine(p){ const h=p.am; if(!h)return '기록 없음';
   if(p.isP){ const r=pRate(h); return `ERA ${h.outs?r.era.toFixed(2):'-'} · ${ipStr(h.outs)}이닝 · K/9 ${h.outs?(h.so*27/h.outs).toFixed(1):'-'} · BB/9 ${h.outs?(h.bb*27/h.outs).toFixed(1):'-'} · 최고 ${amVmax(p)}km/h`; }
   const r=bRate(h); return `타율 ${fmt3(r.avg)} · OPS ${fmt3(r.ops)} · 홈런 ${h.hr} · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'} · 1루 ${p.amRun||runOf(p)}초`; }
@@ -37059,7 +37369,7 @@ function personXExt(k){ const P=String(k).split(':'), kind=P[0];
     const plist=L=>L.slice(0,8).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${p.team!=null&&!p.prospect?`<i class="small muted">(${esc(tshort(p.team))})</i>`:''}`).join(' · ');
     if(kind==='hs')return {k,name:n,role:`고교 야구부 · ${S.area}`,av:{img:hsCrest(n),name:n},rel:r,rl:'우리 구단 친분',lab:schRelLbl(r),sub:`전력 ${S.lv} · 감독 ${S.coach?S.coach.name:'공석'}`,
       info:`${cands.length?`<p class="small">올해 드래프트 후보: ${plist(cands)}</p>`:''}${pros.length?`<p class="small">프로에 있는 졸업생 ${pros.length}명: ${plist(pros)}</p>`:'<p class="small muted">아직 프로에 있는 졸업생이 없습니다.</p>'}`,
-      acts:[...(S.coach?[btn('고교 감독','person','hsc:'+n,1)]:[]),btn('지역 정보망','go','staff:scouts')]};
+      acts:[btn('학교 페이지','amSch',n,1),...(S.coach?[btn('고교 감독','person','hsc:'+n)]:[]),btn('지역 정보망','go','staff:scouts')]};
     const c=S.coach; if(!c)return null;
     return {k,name:c.name,role:`${n} 감독`,av:{persona:'coach',pid:c.id,age:c.age,name:c.name},rel:r,rl:'우리 구단 친분',lab:schRelLbl(r),sub:`${c.age}세 · ${c.sty}${c.alma?' · 모교 출신':''}`,
       info:`<p class="small">${esc(c.car||'')}</p><p class="small muted">친분은 스카우트 방문·단장 대회 관전·그 학교 선수 지명·후원으로 오릅니다. 높을수록 이 학교 후보 평가 오차가 줄고 귀띔 메일이 옵니다.</p>`,
@@ -38308,8 +38618,80 @@ function scoutMapPage(){ const S=areaSummary(G.user), home=teamArea(G.user); con
     <h4 class="small">학교 · 올해 드래프트 후보 ${A.n}명</h4><div class="scm-schs">${schools.map(rowS).join('')}</div></div>`;
   return `<div class="scm ws-own"><section class="card scm-l">${map}${list}</section><section class="card scm-r">${det}</section></div>`; }
 function scoutPage2(base){ const nW=(G.pwatch||[]).filter(id=>G.players[id]&&G.players[id].team!==G.user).length; /* 타 구단 관심 선수는 하위 탭으로 따로(울브즈 11-11) */
-  const it=inTabs('scoutpg',[['team','스카우트 팀'],['map','지역 정보망'],['ovs','해외 네트워크'],['watch',`타구단 관심 선수${nW?' '+nW:''}`]]); if(it.cur==='team')return it.bar+base(); return it.bar+`<div class="ws-scroll scout-sub-scroll" tabindex="0">${it.cur==='map'?scoutMapPage():it.cur==='ovs'?sisPage():pwatchTable(false)}</div>`; } /* 지역 정보망·해외 네트워크·관심 선수: 낮은 화면(휴대폰 가로)에서 작업 틀이 넘친 부분을 숨겨 아래가 안 보이던 문제(일고회장 11-12) → 하위 탭 내용 전체를 스크롤 칸으로 */
+  const it=inTabs('scoutpg',[['team','스카우트 팀'],['map','지역 정보망'],['ovs','해외 네트워크'],['am','아마추어 야구'],['watch',`타구단 관심 선수${nW?' '+nW:''}`]]); if(it.cur==='team')return it.bar+base(); return it.bar+`<div class="ws-scroll scout-sub-scroll" tabindex="0">${it.cur==='map'?scoutMapPage():it.cur==='ovs'?sisPage():it.cur==='am'?amHubPage():pwatchTable(false)}</div>`; } /* 지역 정보망·해외 네트워크·관심 선수: 낮은 화면(휴대폰 가로)에서 작업 틀이 넘친 부분을 숨겨 아래가 안 보이던 문제(일고회장 11-12) → 하위 탭 내용 전체를 스크롤 칸으로 */
 Object.assign(A,{ schGift(v){ toast(schGift(v)); save(); render(); }, scArea(v){ UI.scArea=v; UI.it=Object.assign(UI.it||{},{scoutpg:'map'}); render(); } });
+/* ===== 아마추어 야구 화면(13_amateur_league): 시즌 요약·주말리그·전국대회·대학·선수·학교 =====
+   스카우트 화면의 하위 탭. 학교를 누르면 학교 페이지, 저학년 선수를 누르면 선수 카드(능력 수치 없이 기록과 말)로 간다 */
+function amSeasonOf(){ const y=G.year; if(G.amL&&G.amL.y===y)return G.amL; if(G.amLp)return G.amLp; return null; }
+const amLnkS=n=>`<button class="lnk" data-a="amSch" data-v="${esc(n)}">${esc(n)}</button>`;
+function amLnkP(x){ if(x.kind==='p'&&G.players[x.id])return `<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.n)}</button>`; return `<button class="lnk" data-a="amP" data-v="${x.id}">${esc(x.n)}</button>`; }
+const amTw=h=>`<div class="tw">${h}</div>`;
+function amEnvLine(y){ const w=amEnvWord(y,'hs'); if(!w)return ''; const c=w.c, m=w.m; return `<p><b>${y} 고교야구: ${esc(w.w)}</b></p><p class="small">타율 ${fmt3(c.avg)}${m?` (최근 평균 ${fmt3(m.avg)})`:''} · 평균자책점 ${c.era.toFixed(2)}${m?` (${m.era.toFixed(2)})`:''} · 타석당 홈런 ${c.hr.toFixed(2)}%${m?` (${m.hr.toFixed(2)}%)`:''} · ${c.g}경기</p>`; }
+function amLeadTbl(y,lvl,gr){ const row=(L,f)=>L.length?L.map((x,i)=>`<tr><td>${i+1}</td><td>${amLnkP(x)}</td><td class="small">${amLnkS(x.sch)} ${x.gr}학년</td><td class="num">${f(x)}</td></tr>`).join(''):'<tr><td colspan="4" class="small muted">기록 없음</td></tr>';
+  const sec=(t,L,f)=>`<h4 class="small">${t}</h4>${amTw(`<table class="tbl"><tbody>${row(L,f)}</tbody></table>`)}`;
+  return sec('타율',amLeaders(y,lvl,false,'avg',5,gr),x=>fmt3(x.v))+sec('홈런',amLeaders(y,lvl,false,'hr',5,gr),x=>x.v)+sec('평균자책점',amLeaders(y,lvl,true,'era',5,gr),x=>x.v.toFixed(2))+sec('탈삼진',amLeaders(y,lvl,true,'so',5,gr),x=>x.v); }
+function amStandTbl(S,g){ const L=amStand(S,g); return `<h4 class="small">${esc(g)}</h4>`+amTw(`<table class="tbl"><thead><tr><th>학교</th><th class="num">승</th><th class="num">패</th><th class="num">무</th><th class="num">득실</th></tr></thead><tbody>${L.map(x=>`<tr><td>${amLnkS(x.n)}</td><td class="num">${x.w}</td><td class="num">${x.l}</td><td class="num">${x.d}</td><td class="num">${x.rs-x.ra>0?'+':''}${x.rs-x.ra}</td></tr>`).join('')}</tbody></table>`); }
+function amTourBox(T){ if(!T)return ''; const nR=T.rd.length; const lab=i=>{ const left=(T.n0?Math.pow(2,Math.ceil(Math.log2(T.n0))):64)/Math.pow(2,i); return left===2?'결승':left===4?'4강':left===8?'8강':left+'강'; };
+  const show=T.rd.map((r,i)=>({r,i})).filter(x=>x.i>=nR-3);
+  return `<div class="card"><div class="row between"><b>${esc(T.n)}</b><span class="small">${T.ch?`우승 ${amLnkS(T.ch)} · 준우승 ${T.ru?amLnkS(T.ru):'-'}`:`진행 중 · ${T.cur.filter(Boolean).length}개교 남음`}</span></div>${show.map(({r,i})=>`<p class="small"><b>${lab(i)}</b> ${r.filter(x=>x[1]).map(x=>`${esc(x[0])} ${x[2]}:${x[3]} ${esc(x[1])}${x[4]<9?` (${x[4]}회 콜드)`:x[4]>9?` (${x[4]}회)`:''}`).join(' · ')}</p>`).join('')}</div>`; }
+function amHubPage(){ const S=amSeasonOf(), y=S?S.y:G.year-1;
+  const it=inTabs('amhub',[['sum','요약'],['lg','주말리그'],['tour','전국대회'],['col','대학'],['ply','선수'],['sch','학교']]);
+  if(UI.amSch)return amSchoolView(UI.amSch); if(UI.amP)return amPlayerView(UI.amP);
+  if(!S&&!(G.amH||[]).length)return it.bar+'<p class="small muted">아직 아마추어 시즌 기록이 없습니다. 3월 둘째 주말에 고교 주말리그가 시작합니다.</p>';
+  let body='';
+  if(it.cur==='sum'){ const H=(G.amH||[]).slice(-6).reverse(); const ch=S?Object.values(S.tour).filter(T=>T.ch):[];
+    body=csec(`${y} 아마추어 야구`,`${S&&!S.done&&S.y===G.year?`<p class="small muted">시즌 진행 중 · 고교 ${S.tot.hs.g}경기 · 대학 ${S.tot.col.g}경기</p>`:''}${amEnvLine(y)||''}${ch.length?`<p class="small">우승: ${ch.map(T=>`${esc(T.n)} ${amLnkS(T.ch)}`).join(' · ')}</p>`:''}`)
+      +csec('고교 기록 1위',amLeadTbl(y,'hs'))
+      +(H.length?csec('지난 시즌 비교',amTw(`<table class="tbl"><thead><tr><th>연도</th><th class="num">타율</th><th class="num">ERA</th><th class="num">HR%</th><th>경향</th></tr></thead><tbody>${H.map(h=>{ const w=amEnvWord(h.y,'hs'); return `<tr><td>${h.y}</td><td class="num">${fmt3(h.hs.avg)}</td><td class="num">${h.hs.era.toFixed(2)}</td><td class="num">${h.hs.hr.toFixed(2)}</td><td class="small">${w?esc(w.w):''}</td></tr>`; }).join('')}</tbody></table>`)):''); }
+  else if(it.cur==='lg'){ body=S?csec(`${S.y} 고교 주말리그`,amGroups().map(([g])=>amStandTbl(S,g)).join('')+'<p class="small muted">권역별로 두 바퀴 돕니다. 황금사자기·청룡기는 주말리그 상위 32개교가 나갑니다.</p>'):''; }
+  else if(it.cur==='tour'){ body=S?csec(`${S.y} 전국대회`,AM_TOURS().map(t=>S.tour[t.k]?amTourBox(S.tour[t.k]):`<p class="small muted">${esc(t.n)}: ${t.a[0]}월 ${t.a[1]}일 시작</p>`).join('')):''; }
+  else if(it.cur==='col'){ body=S?csec(`${S.y} 대학야구`,amColGroups().map(([g])=>amStandTbl(S,g)).join('')+(S.tour.ct?amTourBox(S.tour.ct):''))+csec('대학 기록 1위',amLeadTbl(S.y,'col')):''; }
+  else if(it.cur==='ply'){ const gr=UI.amGr||1; const F=amFollowL(G.user).filter(id=>typeof id==='number'); const regs=amClubRegs(G.user);
+    const fl=F.map(id=>{ const e=amPipe().L[id]; if(e)return {id,n:e.n,sch:e.s,gr:amGrade(e,G.year),kind:'e'}; const p=G.players[id]; return p?{id,n:p.name,sch:p.school||'',gr:p.college?4:3,kind:'p'}:null; }).filter(Boolean);
+    const sg=amSuggest(y,regs,8).filter(x=>!F.includes(x.id));
+    body=csec('학년별 기록',`<div class="seg">${[1,2,3].map(g=>`<button class="${gr===g?'on':''}" data-a="amGr" data-v="${g}">${g}학년</button>`).join('')}</div>${amLeadTbl(y,'hs',gr)}`)
+      +csec(`관심 선수 ${fl.length}`,fl.length?fl.map(x=>`<p class="small">${amLnkP(x)} · ${amLnkS(x.sch)} ${x.gr}학년 <button class="btn small" data-a="amFollow" data-v="${x.id}">해제</button></p>`).join(''):'<p class="small muted">관심 선수로 두면 그 선수가 나온 경기를 스카우트가 챙겨 봅니다. 졸업 학년이 되면 평가가 더 정확합니다.</p>')
+      +csec('스카우트 추천',sg.length?sg.map(x=>`<p class="small">${amLnkP(x)} · ${amLnkS(x.sch)} ${x.gr}학년 · ${x.isP?`ERA ${(x.row.er*27/Math.max(1,x.row.outs)).toFixed(2)}`:`OPS ${fmt3(bRate(x.row).ops)}`} <button class="btn small" data-a="amFollow" data-v="${x.id}">관심</button></p>`).join(''):'<p class="small muted">담당 지역에서 눈에 띄는 기록이 아직 없습니다.</p>'); }
+  else if(it.cur==='sch'){ const SL=schList(); body=csec('고교 야구부',AREA.map(a=>`<h4 class="small">${esc(a.k)}</h4><p class="small">${a.hs.map(n=>{ const o=SL[n]; const t=amLvTrend(o); return `${amLnkS(n)} <span class="muted">${o?o.lv:'-'}${t}</span>`; }).join(' · ')}</p>`).join('')+'<p class="small muted">숫자는 팀 전력입니다. 성적·감독·신입생에 따라 해마다 바뀝니다.</p>'); }
+  return it.bar+body; }
+function amLvTrend(o){ const L=o&&o.lh; if(!L||L.length<2)return ''; const d=L[L.length-1][1]-L[Math.max(0,L.length-4)][1]; return d>=4?' ▲':d<=-4?' ▼':''; }
+/* 학교 페이지 */
+function amSchoolView(n){ const SL=schList(), S=SL[n], C=amCols()[n], o=S||C; const col=!S; const Y=G.year, Ss=amSeasonOf();
+  const back=`<button class="btn small" data-a="amBack">← 아마추어 야구</button>`;
+  if(!o)return back+'<p class="small muted">학교 정보가 없습니다.</p>';
+  const c=S&&S.coach; const fol=amFollowing(G.user,'s:'+n);
+  const U=Object.values(amPipe().L).filter(e=>e.s===n), P=Object.values(G.players).filter(p=>p.prospect&&p.school===n&&p.team==null);
+  const yy=Ss&&Ss.y===Y?Y:Y-1;
+  const line=(isP,h)=>!h?'<span class="muted">기록 없음</span>':isP?`${ipStr(h.outs)}이닝 ERA ${h.outs?(h.er*27/h.outs).toFixed(2):'-'} · ${h.so}탈삼진`:`${h.pa}타석 타율 ${h.ab?fmt3(h.h/h.ab):'-'} · ${h.hr}홈런 · OPS ${h.pa?fmt3(bRate(h).ops):'-'}`;
+  const rows=[...P.map(p=>({id:p.id,n:p.name,kind:'p',gr:p.college?4:3,isP:!!p.isP,pos:posLabel(p),h:(p.amY||[]).find(r=>r.y===yy)})),...U.map(e=>{ const r=e.y.find(x=>x[0]===yy); return {id:e.id,n:e.n,kind:'e',gr:amGrade(e,Y),isP:!!e.P,pos:e.P?'투수':POSK[e.pos]||e.pos,h:r?amRowObj(e,r):null}; })].sort((a,b)=>b.gr-a.gr||a.n.localeCompare(b.n));
+  const grs=[...new Set(rows.map(r=>r.gr))];
+  const roster=grs.map(g=>`<h4 class="small">${g}학년${g===(col?4:3)?' · 올해 드래프트 후보':''}</h4>${rows.filter(r=>r.gr===g).map(r=>`<p class="small">${amLnkP(r)} ${esc(r.pos)} · ${line(r.isP,r.h)}</p>`).join('')}`).join('')||'<p class="small muted">눈에 띄는 선수가 없습니다.</p>';
+  const res=Ss&&Ss.res&&Ss.res[n]||[]; const TN=Object.fromEntries(AM_TOURS().concat([AM_COLT]).map(t=>[t.k,t.n]));
+  const recent=res.length?res.slice().reverse().map(r=>`<p class="small">${dmd(r[0])} ${r[2]>r[3]?'<b>승</b>':r[2]<r[3]?'패':'무'} ${r[2]}:${r[3]} ${amLnkS(r[1])} <span class="muted">${r[4]?esc(TN[r[4]]||''):'리그'}${r[5]<9?' · 콜드':''}</span></p>`).join(''):'<p class="small muted">올해 치른 경기가 없습니다.</p>';
+  const hist=(G.amH||[]).filter(h=>Object.values(h.ch||{}).some(x=>x[0]===n||x[1]===n)).reverse().slice(0,8).map(h=>`${h.y} ${Object.entries(h.ch).filter(([k,x])=>x[0]===n||x[1]===n).map(([k,x])=>`${TN[k]||k} ${x[0]===n?'우승':'준우승'}`).join(', ')}`);
+  const al=Object.values(G.players).filter(p=>p.school===n&&!p.prospect&&p.team!=null&&!p.retired).sort((a,b)=>ovr(b)-ovr(a));
+  const lh=(o.lh||[]).map(x=>`${x[0]} ${x[1]}`).join(' → ');
+  return `${back}${csec(esc(n),`<p class="small">${col?'대학':'고교'} · ${esc(o.area)} · 전력 <b>${o.lv}</b>${amLvTrend(o)}${lh?` <span class="muted">(${lh})</span>`:''}</p>
+    ${c?`<p class="small">${esc(c.name)} 감독 ${c.age}세 · <span class="pill">${esc(c.sty)}</span> ${esc(HS_STY_D[c.sty]||'')} · 친분 ${schRelLbl(schRel(S))}</p><p class="small muted">${esc(AM_STY_TXT[c.sty]||'')}</p>`:''}
+    <p><button class="btn small" data-a="amFollow" data-v="s:${esc(n)}">${fol?'관심 학교 해제':'관심 학교'}</button>${S?(schGave(S)?' <span class="small muted">올해 후원함</span>':` <button class="btn small" data-a="schGift" data-v="${esc(n)}">야구부 후원 ${money(10)}</button>`):''}</p>`)}
+    ${csec(`선수단 (${yy} 기록)`,roster+'<p class="small muted">드래프트 관심권 선수만 보입니다. 나머지는 일반 부원입니다.</p>')}
+    ${csec('최근 경기',recent)}
+    ${csec('대회 성적',hist.length?hist.map(x=>`<p class="small">${esc(x)}</p>`).join(''):'<p class="small muted">최근 전국대회 결승 기록이 없습니다.</p>')}
+    ${csec(`프로 졸업생 ${al.length}`,al.length?`<p class="small">${al.slice(0,12).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><i class="small muted">(${esc(tshort(p.team))})</i>`).join(' · ')}</p>`:'<p class="small muted">지금 프로에 있는 졸업생이 없습니다.</p>')}`; }
+const AM_STY_TXT={육성형:'겨울마다 선수들이 조금 더 자랍니다.',엄격형:'에이스를 규정 안에서 길게 던지게 합니다.',데이터형:'타자들이 공을 잘 고릅니다.',자율형:'장타가 많지만 성장 폭은 들쭉날쭉합니다.'};
+/* 저학년 선수 카드: 능력 수치 없이 기록·체격·스카우트 한마디 */
+function amWord(e){ const sd=6*(1.3-areaNet(G.user,e.a)*.0055)*amObsM(e,G.user); const v=e.pot-(e.hidT||0)+hn('amwd'+G.user,e.id)*sd+(amGrade(e,G.year)-2)*0; return v>=60?'대형 재목으로 봅니다':v>=52?'프로 지명감으로 봅니다':v>=45?'더 지켜볼 만합니다':'아직 판단하기 이릅니다'; }
+function amPlayerView(id){ const e=amPipe().L[id]; const back=`<button class="btn small" data-a="amBack">← 아마추어 야구</button>`;
+  if(!e){ const p=G.players[id]; if(p){ UI.amP=null; return back+`<p class="small"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> 선수 화면에서 볼 수 있습니다.</p>`; } return back+'<p class="small muted">선수 정보가 없습니다.</p>'; }
+  const p={isP:!!e.P,college:!!e.c,amY:e.y.map(r=>amRowObj(e,r)).sort((a,b)=>a.y-b.y)}; const K=e.P?AM_PK:AM_BK; p.am={}; for(const k of K)p.am[k]=p.amY.reduce((a,r)=>a+(r[k]||0),0);
+  const fol=amFollowing(G.user,e.id); const nObs=e.amObs&&e.amObs[G.user]||0;
+  return `${back}${csec(esc(e.n),`<p class="small">${amLnkS(e.s)} ${amGrade(e,G.year)}학년 · ${e.P?'투수':POSK[e.pos]||e.pos} · ${esc(e.t)}투${esc(e.b)}타 · ${e.ht}cm ${e.wt}kg · ${e.gy} 드래프트 대상</p>
+    <p class="small">스카우트 한마디: ${amWord(e)}${nObs?` · 경기 관찰 ${Math.round(nObs)}회`:''}</p>${e.ai&&e.ig<=G.year?`<p class="small muted">${esc(e.ai)}</p>`:''}
+    <p><button class="btn small" data-a="amFollow" data-v="${e.id}">${fol?'관심 해제':'관심 선수'}</button></p>`)}${csec('학년별 기록',amYearTable(p))}`; }
+const amGoHub=()=>{ UI.it=Object.assign(UI.it||{},{scoutpg:'am'}); if(UI.tab==='staff'&&UI.sub&&UI.sub.staff==='scouts'&&!UI.modal)render(); else A.go('staff:scouts'); };
+Object.assign(A,{ amSch(v){ UI.amSch=v; UI.amP=null; amGoHub(); }, amP(v){ UI.amP=+v; UI.amSch=null; amGoHub(); },
+  amBack(){ UI.amSch=null; UI.amP=null; render(); }, amGr(v){ UI.amGr=+v; render(); },
+  amFollow(v){ const id=String(v).startsWith('s:')?v:+v; const on=amFollow(id); toast(on?'관심 목록에 넣었습니다.':'관심 목록에서 뺐습니다.'); save(); render(); } });
 /* ===== 스카우트 > 해외 네트워크: 일본·미국 지도 · 해외 구단 정보 · 자매결연(사용자 11-09) =====
  지도: 00h_overseas_map.js(Natural Earth·미국 인구조사국 공공 데이터). 구단은 모두 가상(98_sister_club.js OCL) */
 const SIS_SITE={oki:['오키나와',127.75,26.35],miy:['미야자키',131.42,31.91],jk:['가고시마',130.56,31.6],az:['애리조나',-111.7,34.3],fl:['플로리다',-81.6,28.2]};

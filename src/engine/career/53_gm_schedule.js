@@ -81,10 +81,14 @@ function gmAttendResult(rec){ const p=gmPlanAt(rec.day); if(!p||p.k!=='attend'||
   else note('일정',`직관을 마쳤습니다. ${L.join(' · ')}.`); }
 function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.region===reg&&!p.college);
   if(!C.length){ note('스카우트',`${reg} ${tn}을(를) 보고 왔지만 올해 드래프트 후보가 눈에 띄지 않았습니다.`); return; }
-  const seen=C.sort(()=>R()-.5).slice(0,Math.min(C.length,ri(5,9))); for(const p of seen)gmObserve(p); const vk=areaVisitAdd(seen); /* 다녀온 권역 정보망이 조금 오른다 */
+  const TS=typeof amTripSeen==='function'?amTripSeen(reg):null; /* 그날 실제로 열린 경기(13_amateur_league): 뛴 선수를 그 경기 기록과 함께 본다 */
+  const live=TS?TS.filter(x=>x.kind==='p').map(x=>G.players[x.id]).filter(p=>p&&C.includes(p)):[], low=TS?TS.filter(x=>x.kind==='e'):[];
+  const seen=live.length?[...new Set(live)].slice(0,12):C.sort(()=>R()-.5).slice(0,Math.min(C.length,ri(5,9))); for(const p of seen)gmObserve(p); const vk=areaVisitAdd(seen); /* 다녀온 권역 정보망이 조금 오른다 */
+  if(TS)for(const x of TS){ const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(s){ s.amObs=s.amObs||{}; s.amObs[G.user]=Math.min(12,(s.amObs[G.user]||0)+1); } }
+  const box=TS?`\n\n오늘 경기에서 본 기록\n${TS.filter(x=>x.kind==='p').slice(0,6).map(x=>{ const p=G.players[x.id]; return p?`${p.name}(${p.school}): ${x.b}`:''; }).filter(Boolean).join('\n')}${low.length?`\n저학년: ${low.slice(0,3).map(x=>{ const e=amPipe().L[x.id]; return e?`${e.n}(${e.s} ${amGrade(e,G.year)}학년) ${x.b}`:''; }).filter(Boolean).join(' · ')}`:''}`:'';
   /* 단장 눈에 들어온 선수도 실제 잠재력이 아니라 직접 본 평가(오차 포함)로 고른다 */ const ev=new Map(seen.map(p=>{ const rp=scoutReport(p); return [p.id,rp.ofp??rp.cur]; })); const top=[...seen].sort((a,b)=>ev.get(b.id)-ev.get(a.id)).slice(0,3); const gem=seen.find(p=>ev.get(p.id)>=58&&(p.press==null||p.press>30)&&R()<.5);
   if(gem){ gem.gmGem=G.year; (G.shortlist=G.shortlist||[]); if(!G.shortlist.includes(gem.id))G.shortlist.push(gem.id); }
-  mail('단장 노트',`${reg} ${tn} 관전`,`직접 본 후보 ${seen.length}명. 이 선수들은 평가 오차가 줄었습니다.\n눈에 들어온 선수: ${top.map(p=>`${p.name}(${posLabel(p)}, ${p.school||p.region})`).join(', ')}${gem?`\n\n눈여겨본 선수: ${gem.name}(${posLabel(gem)}) — 언론 순위는 낮지만 직접 보니 그릇이 커 보입니다. 한두 번 본 인상이라 틀릴 수 있습니다. 관심 명단에 넣었습니다.`:''}`,{kind:'스카우트',acts:[{l:'드래프트 후보',a:'go',v:'transfer:draft'}],ref:gem?gem.id:top[0]&&top[0].id}); }
+  mail('단장 노트',`${reg} ${tn} 관전`,`직접 본 후보 ${seen.length}명. 이 선수들은 평가 오차가 줄었습니다.\n눈에 들어온 선수: ${top.map(p=>`${p.name}(${posLabel(p)}, ${p.school||p.region})`).join(', ')}${box}${gem?`\n\n눈여겨본 선수: ${gem.name}(${posLabel(gem)}) — 언론 순위는 낮지만 직접 보니 그릇이 커 보입니다. 한두 번 본 인상이라 틀릴 수 있습니다. 관심 명단에 넣었습니다.`:''}`,{kind:'스카우트',acts:[{l:'드래프트 후보',a:'go',v:'transfer:draft'}],ref:gem?gem.id:top[0]&&top[0].id}); }
 /* 올해 초와 견준 실제 능력 변화를 말로 */
 function gmDirWord(p){ const b=G.ovr0&&G.ovr0.y===G.year?G.ovr0.m[p.id]:null; if(b==null)return '아직 지켜보는 중'; const x=ovr(p)-b; return x>=1.5?'올라오는 중':x>=.5?'조금씩 늘고 있음':x>-.5?'정체':'주춤'; }
 /* 코치 평: 실제 툴에서 가장 좋은 것과 가장 약한 것 */
