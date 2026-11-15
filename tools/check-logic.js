@@ -6,6 +6,9 @@ const fs=require('fs'), path=require('path');
 const ENGINE=path.join(__dirname,'..','dist','engine.js'); if(!fs.existsSync(ENGINE)){ console.error('dist/engine.js가 없습니다. bash build.sh를 먼저 실행하세요.'); process.exit(2); }
 { let a=11; globalThis.__seed=v=>{ a=v; }; globalThis.__rngState=()=>a; /* 통계 시나리오가 같은 난수로 비교할 수 있게 */ Math.random=()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 const results=[]; const T=(name,fn)=>results.push({name,fn});
+/* [얼굴 v18] 시나리오용: 화면 쪽 얼굴 번호표(FACE6, 사진 data URI는 빼고)와 배정 함수(face6Pool·face6Idx)를 엔진 안에서 direct eval로 읽는다. 엄격 모드라 끝 식으로 꺼낸다 */
+globalThis.__faceSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=fs.readFileSync(path.join(__dirname,'..','src','ui','assets','77_assets_ui.js'),'utf8');
+  return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n;({FACE6,face6Pool,face6Idx})'; };
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
 const ok=(c,msg)=>{ if(!c)throw new Error(msg); };
@@ -4868,6 +4871,18 @@ T('[구단주 다시 설득] 사퇴 카드는 한 시즌 한 번·두 시즌 쉬
   const o=dobj(G.day); const g={y:sponSeason(),mk:o.y*100+o.m,d:G.day,amt:1000,pur:null,ok:false,by:'gm',st:'no'}; grantAdd(g); ownPushOffer({k:'fund',amt:1000},'구단주 반려: 운영비 증액','본문',g); const e=G.evs.find(x=>x.k==='opush'&&!x.done); ok(!e.data.args.includes('resign')&&G.mail.find(m=>m.id===e.mid).body.includes('이번 시즌에는 더 쓸 수 없습니다'),'반려 소식에 사퇴 카드 제한이 말로 보이지 않음');
   G.year=y+1; ok(opResignWhy(u).includes((y+2)+'시즌'),'쉬는 기간 안내가 없음: '+opResignWhy(u)); G.year=y+2; ok(!opResignWhy(u),'두 시즌 뒤에도 쓸 수 없음'); ok(opOdds(u,ctx,a)<pF-.08,'통했던 사퇴 카드가 약해지지 않음'); G.year=y;
   const ai=G.teams.find(x=>x.id!==u&&!x.indie); opRun(ai.id,ctx,a,[.99,.99]); ok(opResignWhy(ai.id).includes('이번 시즌')&&!opArgs(ai.id).some(x=>x.k==='resign'),'AI는 사퇴 카드 제한이 다름'); });
+T('[얼굴 v18] FACE6 360명(v18 160~359)·새 신인은 어린 얼굴·기존 저장 배정 유지·아시아쿼터 후보·흰 배경 제외',()=>{ const F=eval(globalThis.__faceSrc()), X=F.FACE6.ids; ok(X.length===360&&F.FACE6.v18&&F.FACE6.v18.o===160,'FACE6가 360명이 아님: '+X.length);
+  ok(X.slice(160).filter(x=>x.x).length===4&&[324,328,329,333].every(i=>X[i].x),'흰 배경 4명(v18_165·169·170·174) 제외 표시가 틀림');
+  const asia=F.face6Pool({foreign:'아시아'}); ok(asia.length>0&&asia.some(i=>i>=160)&&asia.every(i=>/Japanese|Taiwanese|Filipino|Australian/.test(X[i].e)),'아시아쿼터 후보가 비었거나 v18이 없음');
+  ok(F.face6Pool({foreign:'용병'}).some(i=>i>=160)&&F.face6Pool({age:20}).every(i=>!X[i].f&&!X[i].x),'용병·국내 후보가 틀림');
+  const all=()=>Object.values(G.players).filter(p=>p.team!=null).sort((a,b)=>a.id-b.id), dup=()=>{ const S=new Set(); for(const p of all()){ const i=G.f6[p.id]; if(i==null)continue; const k=p.team+':'+i; if(S.has(k))return k; S.add(k); } return null; };
+  fresh(); for(const p of all())F.face6Idx(p); const young=all().filter(p=>!p.foreign&&p.age>=18&&p.age<=21&&G.f6[p.id]!=null);
+  ok(young.length>=20,'준비 실패: 18~21세 국내 선수가 적음 '+young.length); const yo=young.filter(p=>X[G.f6[p.id]].a<=24).length; ok(yo>=young.length*.85,'어린 국내 선수가 어린 얼굴을 못 받음 '+yo+'/'+young.length);
+  ok(young.filter(p=>G.f6[p.id]>=160).length>=young.length*.5,'새 게임 신인이 v18 얼굴을 거의 안 받음'); ok(!Object.values(G.f6).some(i=>X[i].x),'제외한 흰 배경 얼굴이 배정됨'); ok(!dup(),'한 구단에 같은 얼굴이 둘: '+dup());
+  fresh(); const tail=X.splice(160); for(const p of all())F.face6Idx(p); ok(Object.values(G.f6).every(i=>i<160),'준비 실패: 옛 얼굴 160명으로 배정');
+  const b6=JSON.stringify(G.f6), b6r=JSON.stringify(G.f6r), v=G.f6v; X.push(...tail); G=JSON.parse(JSON.stringify(G));
+  for(const p of all())F.face6Idx(p); ok(G.f6v===v&&JSON.stringify(G.f6)===b6&&JSON.stringify(G.f6r)===b6r,'불러온 저장의 얼굴 배정이 바뀜');
+  const q=all().filter(p=>!p.foreign&&p.age<=21).sort((a,b)=>a.age-b.age)[0]; delete G.f6r[q.team+':'+G.f6[q.id]]; delete G.f6[q.id]; const ni=F.face6Idx(q); ok(ni>=160&&X[ni].a<=24,'새로 배정하는 어린 선수가 v18 어린 얼굴을 못 받음 '+ni); ok(!dup(),'새 배정 뒤 한 구단에 같은 얼굴이 둘'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
