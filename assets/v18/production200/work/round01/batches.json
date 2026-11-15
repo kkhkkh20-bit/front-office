@@ -1,0 +1,70 @@
+[
+  {
+    "batch": 0,
+    "path": "/workspace/generated_images/exec-2dee4e7e-46e1-430d-8701-04a066b1cfce.png",
+    "start": 1,
+    "source_path": "assets/v18/production200/work/round01/batch00.png"
+  },
+  {
+    "batch": 1,
+    "path": "/workspace/generated_images/exec-6cc0b5b5-0f41-4819-ac33-6a738621ff63.png",
+    "start": 21,
+    "source_path": "assets/v18/production200/work/round01/batch01.png"
+  },
+  {
+    "batch": 2,
+    "path": "/workspace/generated_images/exec-8a188971-f3ab-4692-92e1-307b3c6c5ee3.png",
+    "start": 41,
+    "source_path": "assets/v18/production200/work/round01/batch02.png",
+    "skip_cells": [
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "invalid_reason": "Generated last row contains 4 portraits instead of 5; cannot assign planned identities reliably."
+  },
+  {
+    "batch": 3,
+    "path": "/workspace/generated_images/exec-341fb343-15a2-448b-bf39-4f6ecb6eb875.png",
+    "start": 61,
+    "source_path": "assets/v18/production200/work/round01/batch03.png"
+  },
+  {
+    "batch": 4,
+    "path": "/workspace/generated_images/exec-56d39db6-8edf-44bf-bdd7-59e3a4051fef.png",
+    "start": 81,
+    "source_path": "assets/v18/production200/work/round01/batch04.png"
+  },
+  {
+    "batch": 5,
+    "path": "/workspace/generated_images/exec-3797db44-b3f5-4754-b447-2906eeb081d9.png",
+    "start": 101,
+    "source_path": "assets/v18/production200/work/round01/batch05.png"
+  },
+  {
+    "batch": 6,
+    "path": "/workspace/generated_images/exec-0f7e3e9b-fa13-44af-934a-1f256e2bc38e.png",
+    "start": 121,
+    "source_path": "assets/v18/production200/work/round01/batch06.png"
+  },
+  {
+    "batch": 7,
+    "path": "/workspace/generated_images/exec-dbcc8949-c41b-43b9-b6fd-2fd351c7e958.png",
+    "start": 141,
+    "source_path": "assets/v18/production200/work/round01/batch07.png"
+  },
+  {
+    "batch": 8,
+    "path": "/workspace/generated_images/exec-71919766-58ba-403d-8da2-93cb3eabf9d5.png",
+    "start": 161,
+    "source_path": "assets/v18/production200/work/round01/batch08.png"
+  },
+  {
+    "batch": 9,
+    "path": "/workspace/generated_images/exec-c79b85e7-2cfe-4b01-ae6c-163fddec048c.png",
+    "start": 181,
+    "source_path": "assets/v18/production200/work/round01/batch09.png"
+  }
+]

@@ -1,0 +1,1767 @@
+{
+  "reference_count": 160,
+  "embedding_cache": "work/first20_embeddings.npz",
+  "cache_sha256": "fba3e5f21ef902e33b41ca18c1c095f182316717747bdbb3a12ee82dfd46ff5b",
+  "sources": [
+    {
+      "id": "v6c100_001",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_002",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_003",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_004",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_005",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_006",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_007",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_008",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_009",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_010",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        8,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_011",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_012",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_013",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_014",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_015",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_016",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_017",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_018",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_019",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_020",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        152,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_021",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_022",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_023",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_024",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_025",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_026",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_027",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_028",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_029",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_030",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_031",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_032",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_033",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_034",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_035",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_036",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_037",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_038",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_039",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_040",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        440,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_041",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_042",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_043",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_044",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_045",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_046",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_047",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_048",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_049",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_050",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        584,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_051",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_052",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_053",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_054",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_055",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_056",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_057",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_058",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_059",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_060",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        728,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_061",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_062",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_063",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_064",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_065",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_066",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_067",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_068",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_069",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_070",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        872,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_071",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_072",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_073",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_074",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_075",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_076",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_077",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_078",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_079",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_080",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        1016,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_081",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_082",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_083",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_084",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_085",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_086",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_087",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_088",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_089",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_090",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        1160,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_091",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        8,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_092",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        152,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_093",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        296,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_094",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        440,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_095",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        584,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_096",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        728,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_097",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        872,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_098",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1016,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_099",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1160,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6c100_100",
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "rect": [
+        1304,
+        1304,
+        128,
+        128
+      ],
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88"
+    },
+    {
+      "id": "v6d60_001",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        8,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_002",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        152,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_003",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        296,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_004",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        440,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_005",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        584,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_006",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        728,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_007",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        872,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_008",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1016,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_009",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1160,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_010",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1304,
+        8,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_011",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        8,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_012",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        152,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_013",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        296,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_014",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        440,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_015",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        584,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_016",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        728,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_017",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        872,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_018",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1016,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_019",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1160,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_020",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1304,
+        152,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_021",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        8,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_022",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        152,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_023",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        296,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_024",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        440,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_025",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        584,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_026",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        728,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_027",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        872,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_028",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1016,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_029",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1160,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_030",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_031",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_032",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        152,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_033",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        296,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_034",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        440,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_035",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        584,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_036",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        728,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_037",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        872,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_038",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1016,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_039",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1160,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_040",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1304,
+        440,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_041",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        8,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_042",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        152,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_043",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        296,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_044",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        440,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_045",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        584,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_046",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        728,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_047",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        872,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_048",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1016,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_049",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1160,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_050",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1304,
+        584,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_051",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        8,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_052",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        152,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_053",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        296,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_054",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        440,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_055",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        584,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_056",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        728,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_057",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        872,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_058",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1016,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_059",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1160,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    },
+    {
+      "id": "v6d60_060",
+      "path": "assets/v6/batch01d/production60/sheets/seoul_comets_128.webp",
+      "rect": [
+        1304,
+        728,
+        128,
+        128
+      ],
+      "sha256": "423e2712a66e31dda98f40d22dcaf37e3dc46f58a2a2c480fe678ea75b6b9156"
+    }
+  ]
+}

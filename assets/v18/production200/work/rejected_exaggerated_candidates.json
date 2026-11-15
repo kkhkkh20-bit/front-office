@@ -1,0 +1,62 @@
+[
+  {
+    "batch": 0,
+    "ids": [
+      "v18_081",
+      "v18_082",
+      "v18_083",
+      "v18_085"
+    ],
+    "source": "/workspace/generated_images/exec-8ca1fbba-67ad-468f-8607-2ffb4eb0700d.png",
+    "status": "rejected_visual",
+    "reason": "User correction: exaggerated facial proportions, unnatural appearance. Do not use for identity acceptance or uniforms."
+  },
+  {
+    "batch": 1,
+    "ids": [
+      "v18_086",
+      "v18_087",
+      "v18_088",
+      "v18_089"
+    ],
+    "source": "/workspace/generated_images/exec-51fe2d7b-6a8a-407c-87a1-8e586c410b3c.png",
+    "status": "rejected_visual",
+    "reason": "User correction: exaggerated facial proportions, unnatural appearance. Do not use for identity acceptance or uniforms."
+  },
+  {
+    "batch": 2,
+    "ids": [
+      "v18_090",
+      "v18_091",
+      "v18_092",
+      "v18_101"
+    ],
+    "source": "/workspace/generated_images/exec-6eeea214-9248-4639-931f-790fd33457d8.png",
+    "status": "rejected_visual",
+    "reason": "User correction: exaggerated facial proportions, unnatural appearance. Do not use for identity acceptance or uniforms."
+  },
+  {
+    "batch": 3,
+    "ids": [
+      "v18_102",
+      "v18_104",
+      "v18_105",
+      "v18_106"
+    ],
+    "source": "/workspace/generated_images/exec-b2611733-8b63-4c94-97ec-c4e3f361e44f.png",
+    "status": "rejected_visual",
+    "reason": "User correction: exaggerated facial proportions, unnatural appearance. Do not use for identity acceptance or uniforms."
+  },
+  {
+    "batch": 4,
+    "ids": [
+      "v18_107",
+      "v18_108",
+      "v18_109",
+      "v18_110"
+    ],
+    "source": "/workspace/generated_images/exec-f78e0bee-bf84-4357-9105-8946fdf65ceb.png",
+    "status": "rejected_visual",
+    "reason": "User correction: exaggerated facial proportions, unnatural appearance. Do not use for identity acceptance or uniforms."
+  }
+]

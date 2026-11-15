@@ -1,0 +1,2459 @@
+[
+  {
+    "id": "v18_001",
+    "roster_index": 0,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      247,
+      313
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_001.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_002",
+    "roster_index": 1,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      251,
+      2,
+      497,
+      313
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_002.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_003",
+    "roster_index": 2,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      501,
+      2,
+      746,
+      313
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_003.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_004",
+    "roster_index": 3,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      750,
+      2,
+      996,
+      313
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_004.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_005",
+    "roster_index": 4,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      1000,
+      2,
+      1245,
+      313
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_005.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_006",
+    "roster_index": 5,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      2,
+      317,
+      247,
+      628
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_006.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_007",
+    "roster_index": 6,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      251,
+      317,
+      497,
+      628
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_007.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_008",
+    "roster_index": 7,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      501,
+      317,
+      746,
+      628
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_008.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_009",
+    "roster_index": 8,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      750,
+      317,
+      996,
+      628
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_009.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_010",
+    "roster_index": 9,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      1000,
+      317,
+      1245,
+      628
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_010.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_011",
+    "roster_index": 10,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      2,
+      632,
+      247,
+      944
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_011.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_012",
+    "roster_index": 11,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      251,
+      632,
+      497,
+      944
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_012.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_013",
+    "roster_index": 12,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      501,
+      632,
+      746,
+      944
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_013.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_014",
+    "roster_index": 13,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      750,
+      632,
+      996,
+      944
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_014.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_015",
+    "roster_index": 14,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      1000,
+      632,
+      1245,
+      944
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_015.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_016",
+    "roster_index": 15,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      2,
+      948,
+      247,
+      1259
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_016.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_017",
+    "roster_index": 16,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      251,
+      948,
+      497,
+      1259
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_017.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_018",
+    "roster_index": 17,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      501,
+      948,
+      746,
+      1259
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_018.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_019",
+    "roster_index": 18,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      750,
+      948,
+      996,
+      1259
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_019.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_020",
+    "roster_index": 19,
+    "source": "assets/v18/production200/work/round01/batch00.png",
+    "source_rect_xyxy": [
+      1000,
+      948,
+      1245,
+      1259
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_020.png",
+    "source_sha256": "e99bdba3082a819cef2d8f5b0385fb405f08a7807fa74ea0bcf71f67562c45ff"
+  },
+  {
+    "id": "v18_021",
+    "roster_index": 20,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      278,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_021.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_022",
+    "roster_index": 21,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      282,
+      2,
+      559,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_022.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_023",
+    "roster_index": 22,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      563,
+      2,
+      839,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_023.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_024",
+    "roster_index": 23,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      843,
+      2,
+      1120,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_024.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_025",
+    "roster_index": 24,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      1124,
+      2,
+      1400,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_025.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_026",
+    "roster_index": 25,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      2,
+      282,
+      278,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_026.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_027",
+    "roster_index": 26,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      282,
+      282,
+      559,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_027.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_028",
+    "roster_index": 27,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      563,
+      282,
+      839,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_028.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_029",
+    "roster_index": 28,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      843,
+      282,
+      1120,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_029.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_030",
+    "roster_index": 29,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      1124,
+      282,
+      1400,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_030.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_031",
+    "roster_index": 30,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      2,
+      563,
+      278,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_031.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_032",
+    "roster_index": 31,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      282,
+      563,
+      559,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_032.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_033",
+    "roster_index": 32,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      563,
+      563,
+      839,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_033.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_034",
+    "roster_index": 33,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      843,
+      563,
+      1120,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_034.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_035",
+    "roster_index": 34,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      1124,
+      563,
+      1400,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_035.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_036",
+    "roster_index": 35,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      2,
+      844,
+      278,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_036.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_037",
+    "roster_index": 36,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      282,
+      844,
+      559,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_037.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_038",
+    "roster_index": 37,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      563,
+      844,
+      839,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_038.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_039",
+    "roster_index": 38,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      843,
+      844,
+      1120,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_039.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_040",
+    "roster_index": 39,
+    "source": "assets/v18/production200/work/round01/batch01.png",
+    "source_rect_xyxy": [
+      1124,
+      844,
+      1400,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_040.png",
+    "source_sha256": "141434919059c9b65d09a14fea086dbeeea9bc16a33af34e3e223e35beeb7e73"
+  },
+  {
+    "id": "v18_041",
+    "roster_index": 40,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      278,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_041.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_042",
+    "roster_index": 41,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      282,
+      2,
+      559,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_042.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_043",
+    "roster_index": 42,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      563,
+      2,
+      839,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_043.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_044",
+    "roster_index": 43,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      843,
+      2,
+      1120,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_044.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_045",
+    "roster_index": 44,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      1124,
+      2,
+      1400,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_045.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_046",
+    "roster_index": 45,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      2,
+      282,
+      278,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_046.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_047",
+    "roster_index": 46,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      282,
+      282,
+      559,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_047.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_048",
+    "roster_index": 47,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      563,
+      282,
+      839,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_048.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_049",
+    "roster_index": 48,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      843,
+      282,
+      1120,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_049.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_050",
+    "roster_index": 49,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      1124,
+      282,
+      1400,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_050.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_051",
+    "roster_index": 50,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      2,
+      563,
+      278,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_051.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_052",
+    "roster_index": 51,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      282,
+      563,
+      559,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_052.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_053",
+    "roster_index": 52,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      563,
+      563,
+      839,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_053.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_054",
+    "roster_index": 53,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      843,
+      563,
+      1120,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_054.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_055",
+    "roster_index": 54,
+    "source": "assets/v18/production200/work/round01/batch02.png",
+    "source_rect_xyxy": [
+      1124,
+      563,
+      1400,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_055.png",
+    "source_sha256": "3d8a7331e3183d4b9b74b1abe8768dfb12ef54ae94833559fd6031a94c61f83f"
+  },
+  {
+    "id": "v18_061",
+    "roster_index": 60,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      278,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_061.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_062",
+    "roster_index": 61,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      282,
+      2,
+      559,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_062.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_063",
+    "roster_index": 62,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      563,
+      2,
+      839,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_063.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_064",
+    "roster_index": 63,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      843,
+      2,
+      1120,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_064.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_065",
+    "roster_index": 64,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      1124,
+      2,
+      1400,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_065.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_066",
+    "roster_index": 65,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      2,
+      282,
+      278,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_066.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_067",
+    "roster_index": 66,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      282,
+      282,
+      559,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_067.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_068",
+    "roster_index": 67,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      563,
+      282,
+      839,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_068.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_069",
+    "roster_index": 68,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      843,
+      282,
+      1120,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_069.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_070",
+    "roster_index": 69,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      1124,
+      282,
+      1400,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_070.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_071",
+    "roster_index": 70,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      2,
+      563,
+      278,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_071.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_072",
+    "roster_index": 71,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      282,
+      563,
+      559,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_072.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_073",
+    "roster_index": 72,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      563,
+      563,
+      839,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_073.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_074",
+    "roster_index": 73,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      843,
+      563,
+      1120,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_074.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_075",
+    "roster_index": 74,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      1124,
+      563,
+      1400,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_075.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_076",
+    "roster_index": 75,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      2,
+      844,
+      278,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_076.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_077",
+    "roster_index": 76,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      282,
+      844,
+      559,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_077.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_078",
+    "roster_index": 77,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      563,
+      844,
+      839,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_078.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_079",
+    "roster_index": 78,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      843,
+      844,
+      1120,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_079.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_080",
+    "roster_index": 79,
+    "source": "assets/v18/production200/work/round01/batch03.png",
+    "source_rect_xyxy": [
+      1124,
+      844,
+      1400,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_080.png",
+    "source_sha256": "ed4d10cf73f6f5ba2ae82d5113c9803b6b7eec4832c194170bd9f5b9fd8ae8a2"
+  },
+  {
+    "id": "v18_082",
+    "roster_index": 81,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      251,
+      2,
+      496,
+      314
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_082.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_084",
+    "roster_index": 83,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      750,
+      2,
+      995,
+      314
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_084.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_085",
+    "roster_index": 84,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      999,
+      2,
+      1244,
+      314
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_085.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_088",
+    "roster_index": 87,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      500,
+      318,
+      746,
+      630
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_088.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_089",
+    "roster_index": 88,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      750,
+      318,
+      995,
+      630
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_089.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_091",
+    "roster_index": 90,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      2,
+      634,
+      247,
+      945
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_091.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_092",
+    "roster_index": 91,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      251,
+      634,
+      496,
+      945
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_092.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_093",
+    "roster_index": 92,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      500,
+      634,
+      746,
+      945
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_093.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_094",
+    "roster_index": 93,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      750,
+      634,
+      995,
+      945
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_094.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_095",
+    "roster_index": 94,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      999,
+      634,
+      1244,
+      945
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_095.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_096",
+    "roster_index": 95,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      2,
+      949,
+      247,
+      1261
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_096.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_097",
+    "roster_index": 96,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      251,
+      949,
+      496,
+      1261
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_097.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_098",
+    "roster_index": 97,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      500,
+      949,
+      746,
+      1261
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_098.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_099",
+    "roster_index": 98,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      750,
+      949,
+      995,
+      1261
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_099.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_100",
+    "roster_index": 99,
+    "source": "assets/v18/production200/work/round01/batch04.png",
+    "source_rect_xyxy": [
+      999,
+      949,
+      1244,
+      1261
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_100.png",
+    "source_sha256": "69b38bdd18cb6fc1be3356b8940030eecfd7c046dffabede23600c80b6dafc66"
+  },
+  {
+    "id": "v18_101",
+    "roster_index": 100,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      278,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_101.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_102",
+    "roster_index": 101,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      282,
+      2,
+      559,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_102.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_103",
+    "roster_index": 102,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      563,
+      2,
+      839,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_103.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_104",
+    "roster_index": 103,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      843,
+      2,
+      1120,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_104.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_105",
+    "roster_index": 104,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      1124,
+      2,
+      1400,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_105.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_106",
+    "roster_index": 105,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      2,
+      282,
+      278,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_106.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_107",
+    "roster_index": 106,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      282,
+      282,
+      559,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_107.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_108",
+    "roster_index": 107,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      563,
+      282,
+      839,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_108.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_109",
+    "roster_index": 108,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      843,
+      282,
+      1120,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_109.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_110",
+    "roster_index": 109,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      1124,
+      282,
+      1400,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_110.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_111",
+    "roster_index": 110,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      2,
+      563,
+      278,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_111.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_112",
+    "roster_index": 111,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      282,
+      563,
+      559,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_112.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_113",
+    "roster_index": 112,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      563,
+      563,
+      839,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_113.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_114",
+    "roster_index": 113,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      843,
+      563,
+      1120,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_114.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_115",
+    "roster_index": 114,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      1124,
+      563,
+      1400,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_115.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_116",
+    "roster_index": 115,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      2,
+      844,
+      278,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_116.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_117",
+    "roster_index": 116,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      282,
+      844,
+      559,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_117.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_118",
+    "roster_index": 117,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      563,
+      844,
+      839,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_118.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_119",
+    "roster_index": 118,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      843,
+      844,
+      1120,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_119.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_120",
+    "roster_index": 119,
+    "source": "assets/v18/production200/work/round01/batch05.png",
+    "source_rect_xyxy": [
+      1124,
+      844,
+      1400,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_120.png",
+    "source_sha256": "0706ad57d5185502798111bc0a211b05e9325653c7a8bde4beacc19c4f7c8981"
+  },
+  {
+    "id": "v18_121",
+    "roster_index": 120,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      278,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_121.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_122",
+    "roster_index": 121,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      282,
+      2,
+      559,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_122.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_123",
+    "roster_index": 122,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      563,
+      2,
+      839,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_123.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_124",
+    "roster_index": 123,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      843,
+      2,
+      1120,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_124.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_125",
+    "roster_index": 124,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      1124,
+      2,
+      1400,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_125.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_126",
+    "roster_index": 125,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      2,
+      282,
+      278,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_126.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_127",
+    "roster_index": 126,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      282,
+      282,
+      559,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_127.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_128",
+    "roster_index": 127,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      563,
+      282,
+      839,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_128.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_129",
+    "roster_index": 128,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      843,
+      282,
+      1120,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_129.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_130",
+    "roster_index": 129,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      1124,
+      282,
+      1400,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_130.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_131",
+    "roster_index": 130,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      2,
+      563,
+      278,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_131.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_132",
+    "roster_index": 131,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      282,
+      563,
+      559,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_132.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_133",
+    "roster_index": 132,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      563,
+      563,
+      839,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_133.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_134",
+    "roster_index": 133,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      843,
+      563,
+      1120,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_134.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_135",
+    "roster_index": 134,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      1124,
+      563,
+      1400,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_135.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_136",
+    "roster_index": 135,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      2,
+      844,
+      278,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_136.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_137",
+    "roster_index": 136,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      282,
+      844,
+      559,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_137.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_138",
+    "roster_index": 137,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      563,
+      844,
+      839,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_138.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_139",
+    "roster_index": 138,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      843,
+      844,
+      1120,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_139.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_140",
+    "roster_index": 139,
+    "source": "assets/v18/production200/work/round01/batch06.png",
+    "source_rect_xyxy": [
+      1124,
+      844,
+      1400,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_140.png",
+    "source_sha256": "2ac37f59af327d7f93d043021dfa1d64aa0be87d2f12ce85ae3aa373886e7267"
+  },
+  {
+    "id": "v18_141",
+    "roster_index": 140,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      278,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_141.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_142",
+    "roster_index": 141,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      282,
+      2,
+      559,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_142.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_143",
+    "roster_index": 142,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      563,
+      2,
+      839,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_143.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_144",
+    "roster_index": 143,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      843,
+      2,
+      1120,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_144.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_145",
+    "roster_index": 144,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      1124,
+      2,
+      1400,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_145.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_146",
+    "roster_index": 145,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      2,
+      282,
+      278,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_146.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_147",
+    "roster_index": 146,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      282,
+      282,
+      559,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_147.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_148",
+    "roster_index": 147,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      563,
+      282,
+      839,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_148.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_149",
+    "roster_index": 148,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      843,
+      282,
+      1120,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_149.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_150",
+    "roster_index": 149,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      1124,
+      282,
+      1400,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_150.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_151",
+    "roster_index": 150,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      2,
+      563,
+      278,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_151.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_152",
+    "roster_index": 151,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      282,
+      563,
+      559,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_152.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_153",
+    "roster_index": 152,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      563,
+      563,
+      839,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_153.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_154",
+    "roster_index": 153,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      843,
+      563,
+      1120,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_154.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_155",
+    "roster_index": 154,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      1124,
+      563,
+      1400,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_155.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_156",
+    "roster_index": 155,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      2,
+      844,
+      278,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_156.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_157",
+    "roster_index": 156,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      282,
+      844,
+      559,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_157.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_158",
+    "roster_index": 157,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      563,
+      844,
+      839,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_158.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_159",
+    "roster_index": 158,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      843,
+      844,
+      1120,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_159.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_160",
+    "roster_index": 159,
+    "source": "assets/v18/production200/work/round01/batch07.png",
+    "source_rect_xyxy": [
+      1124,
+      844,
+      1400,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_160.png",
+    "source_sha256": "fe5d16e2ba4cd8b071f31a769fa0f6c595d4b72ffa8016ad388fb0b24bb23192"
+  },
+  {
+    "id": "v18_161",
+    "roster_index": 160,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      278,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_161.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_162",
+    "roster_index": 161,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      282,
+      2,
+      559,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_162.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_163",
+    "roster_index": 162,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      563,
+      2,
+      839,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_163.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_164",
+    "roster_index": 163,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      843,
+      2,
+      1120,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_164.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_165",
+    "roster_index": 164,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      1124,
+      2,
+      1400,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_165.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_166",
+    "roster_index": 165,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      2,
+      282,
+      278,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_166.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_167",
+    "roster_index": 166,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      282,
+      282,
+      559,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_167.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_168",
+    "roster_index": 167,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      563,
+      282,
+      839,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_168.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_169",
+    "roster_index": 168,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      843,
+      282,
+      1120,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_169.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_170",
+    "roster_index": 169,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      1124,
+      282,
+      1400,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_170.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_171",
+    "roster_index": 170,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      2,
+      563,
+      278,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_171.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_172",
+    "roster_index": 171,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      282,
+      563,
+      559,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_172.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_173",
+    "roster_index": 172,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      563,
+      563,
+      839,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_173.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_174",
+    "roster_index": 173,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      843,
+      563,
+      1120,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_174.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_175",
+    "roster_index": 174,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      1124,
+      563,
+      1400,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_175.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_176",
+    "roster_index": 175,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      2,
+      844,
+      278,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_176.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_177",
+    "roster_index": 176,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      282,
+      844,
+      559,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_177.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_178",
+    "roster_index": 177,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      563,
+      844,
+      839,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_178.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_179",
+    "roster_index": 178,
+    "source": "assets/v18/production200/work/round01/batch08.png",
+    "source_rect_xyxy": [
+      843,
+      844,
+      1120,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_179.png",
+    "source_sha256": "c6d2f276a5d2d15f94fbfdf67dd2188be0acf260e45aab0e849a961d8d4e6f88"
+  },
+  {
+    "id": "v18_181",
+    "roster_index": 180,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      278,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_181.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_182",
+    "roster_index": 181,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      282,
+      2,
+      559,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_182.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_183",
+    "roster_index": 182,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      563,
+      2,
+      839,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_183.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_184",
+    "roster_index": 183,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      843,
+      2,
+      1120,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_184.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_185",
+    "roster_index": 184,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      1124,
+      2,
+      1400,
+      278
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_185.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_186",
+    "roster_index": 185,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      2,
+      282,
+      278,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_186.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_187",
+    "roster_index": 186,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      282,
+      282,
+      559,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_187.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_188",
+    "roster_index": 187,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      563,
+      282,
+      839,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_188.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_189",
+    "roster_index": 188,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      843,
+      282,
+      1120,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_189.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_190",
+    "roster_index": 189,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      1124,
+      282,
+      1400,
+      559
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_190.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_191",
+    "roster_index": 190,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      2,
+      563,
+      278,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_191.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_192",
+    "roster_index": 191,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      282,
+      563,
+      559,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_192.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_193",
+    "roster_index": 192,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      563,
+      563,
+      839,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_193.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_194",
+    "roster_index": 193,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      843,
+      563,
+      1120,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_194.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_195",
+    "roster_index": 194,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      1124,
+      563,
+      1400,
+      840
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_195.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_196",
+    "roster_index": 195,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      2,
+      844,
+      278,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_196.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_197",
+    "roster_index": 196,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      282,
+      844,
+      559,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_197.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_198",
+    "roster_index": 197,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      563,
+      844,
+      839,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_198.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_199",
+    "roster_index": 198,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      843,
+      844,
+      1120,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_199.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  },
+  {
+    "id": "v18_200",
+    "roster_index": 199,
+    "source": "assets/v18/production200/work/round01/batch09.png",
+    "source_rect_xyxy": [
+      1124,
+      844,
+      1400,
+      1120
+    ],
+    "crop": "assets/v18/production200/work/round01/candidates/v18_200.png",
+    "source_sha256": "4eabb1afab9fe7fe44daf079e8d2fa5030e4abebcc80d94d2f4f7de471893a18"
+  }
+]

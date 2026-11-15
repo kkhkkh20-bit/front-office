@@ -1,0 +1,20 @@
+{
+  "scope": "77-person provisional subset; not the required full 200",
+  "threshold": 0.4,
+  "passed": true,
+  "metrics": {
+    "128": {
+      "within_pairs": 2926,
+      "reference_pairs": 12320,
+      "within_max": 0.398786336183548,
+      "reference_max": 0.3981800973415375
+    },
+    "256": {
+      "within_pairs": 2926,
+      "reference_pairs": 12320,
+      "within_max": 0.39940500259399414,
+      "reference_max": 0.39788711071014404
+    }
+  },
+  "model_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43"
+}

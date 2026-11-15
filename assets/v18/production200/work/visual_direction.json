@@ -1,0 +1,12 @@
+{
+  "natural_facial_proportions_required": true,
+  "expression": "relaxed, subtle friendly smile",
+  "diversity": "ordinary realistic differences in face shape, eyes, eyebrows, hairstyle and build",
+  "prohibited_direction": [
+    "exaggerated anatomical ratios",
+    "distorted face geometry to reduce ArcFace similarity",
+    "alien-like or caricatured appearance"
+  ],
+  "rejected_generation_count": 20,
+  "status": "mandatory user preference"
+}

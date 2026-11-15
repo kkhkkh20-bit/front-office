@@ -1,0 +1,222 @@
+[
+  {
+    "id": "v18_081",
+    "source": "assets/v18/production200/work/round02_natural/batch00.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_081.png"
+  },
+  {
+    "id": "v18_082",
+    "source": "assets/v18/production200/work/round02_natural/batch00.png",
+    "source_rect_xyxy": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_082.png"
+  },
+  {
+    "id": "v18_083",
+    "source": "assets/v18/production200/work/round02_natural/batch00.png",
+    "source_rect_xyxy": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_083.png"
+  },
+  {
+    "id": "v18_085",
+    "source": "assets/v18/production200/work/round02_natural/batch00.png",
+    "source_rect_xyxy": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_085.png"
+  },
+  {
+    "id": "v18_086",
+    "source": "assets/v18/production200/work/round02_natural/batch01.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_086.png"
+  },
+  {
+    "id": "v18_087",
+    "source": "assets/v18/production200/work/round02_natural/batch01.png",
+    "source_rect_xyxy": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_087.png"
+  },
+  {
+    "id": "v18_088",
+    "source": "assets/v18/production200/work/round02_natural/batch01.png",
+    "source_rect_xyxy": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_088.png"
+  },
+  {
+    "id": "v18_089",
+    "source": "assets/v18/production200/work/round02_natural/batch01.png",
+    "source_rect_xyxy": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_089.png"
+  },
+  {
+    "id": "v18_090",
+    "source": "assets/v18/production200/work/round02_natural/batch02.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_090.png"
+  },
+  {
+    "id": "v18_091",
+    "source": "assets/v18/production200/work/round02_natural/batch02.png",
+    "source_rect_xyxy": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_091.png"
+  },
+  {
+    "id": "v18_092",
+    "source": "assets/v18/production200/work/round02_natural/batch02.png",
+    "source_rect_xyxy": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_092.png"
+  },
+  {
+    "id": "v18_101",
+    "source": "assets/v18/production200/work/round02_natural/batch02.png",
+    "source_rect_xyxy": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_101.png"
+  },
+  {
+    "id": "v18_102",
+    "source": "assets/v18/production200/work/round02_natural/batch03.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_102.png"
+  },
+  {
+    "id": "v18_104",
+    "source": "assets/v18/production200/work/round02_natural/batch03.png",
+    "source_rect_xyxy": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_104.png"
+  },
+  {
+    "id": "v18_105",
+    "source": "assets/v18/production200/work/round02_natural/batch03.png",
+    "source_rect_xyxy": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_105.png"
+  },
+  {
+    "id": "v18_106",
+    "source": "assets/v18/production200/work/round02_natural/batch03.png",
+    "source_rect_xyxy": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_106.png"
+  },
+  {
+    "id": "v18_107",
+    "source": "assets/v18/production200/work/round02_natural/batch04.png",
+    "source_rect_xyxy": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_107.png"
+  },
+  {
+    "id": "v18_108",
+    "source": "assets/v18/production200/work/round02_natural/batch04.png",
+    "source_rect_xyxy": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_108.png"
+  },
+  {
+    "id": "v18_109",
+    "source": "assets/v18/production200/work/round02_natural/batch04.png",
+    "source_rect_xyxy": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_109.png"
+  },
+  {
+    "id": "v18_110",
+    "source": "assets/v18/production200/work/round02_natural/batch04.png",
+    "source_rect_xyxy": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "crop": "assets/v18/production200/work/round02_natural/candidates/v18_110.png"
+  }
+]
