@@ -57,6 +57,9 @@ function roleFactor(t,p,dir){ const L=leagueSlots()[t.id]; const k=pSlot(p); con
    보류 기간이 끝난 뒤에도 KBO는 원 소속 구단 잔류가 많아 그 뒤 가치도 일부 인정한다 */
 /* 11-12 커뮤니티(beeseo·마스터쉐프): 잠재력 가치가 너무 낮아 고잠재 유망주가 주전 한 명에 쉽게 오가고, 반대로 우리 유망주로는 스타를 못 데려왔다.
    성장 반영 .75/.55/.45→.85/.7/.6, 해마다 할인 .8→.85, 내다보는 기간 우승 경쟁 2년(그대로)·리빌딩 5년·그 밖 4년, 성장 반영은 리빌딩 구단이 더 크게(양쪽 방향 모두) */
+/* 구단 상위 6명(국내, 육성 제외): 성능을 위해 AI 작업 하나(slotsHold) 동안은 구단마다 한 번만 고른다. 그 사이 트레이드·이동(mvN)이 있으면 다시(26_trade_ai leagueSlots와 같은 기준) */
+function tvCore6(tid){ const pick6=()=>new Set(domestic(tid).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id)); const H=typeof _slHold!=='undefined'?_slHold:null; if(!H)return pick6();
+  const k0=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.mvN||0); if(!H.c6||H.c6.k0!==k0||H.c6.g!==G)H.c6={k0,g:G,m:{}}; return H.c6.m[tid]||(H.c6.m[tid]=pick6()); }
 function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p); let v=0; const sd=seenDelta(t,p); const cur=ovr(p)+sd; /* sd: AI 단장 눈에 보이는 능력(성적의 운 반영) */
   for(let i=0;i<c.H;i++){ let o=projO(p,i)+sd; if(o>cur){ const rb=t.mode==='rebuild'; o=cur+(o-cur)*(i===0?(rb?.85:.8):i<=1?(rb?.7:.62):(rb?.6:.5)); } /* 먼 미래 성장일수록 더 불확실하다 */ const d=Math.pow(.85,i); const w=seasonWorth(o)*(i===0?c.now:1)*d; /* KBO 구단은 먼 미래보다 지금을 더 친다 */
     if(i>=ny){ v+=w*.55; continue; }
@@ -75,7 +78,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   if(p.injOut>20)v-=Math.abs(v)*(p.injOut>150?.55:p.injOut>60?.32:.2); /* 수술·장기 재활 선수는 값이 크게 깎인다 */
   if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?Math.max(.6,seasonWorth(projO(p,0)+sd)*(p.aiUrg?.25:t.mode==='rebuild'?.35:.45)):starter?seasonWorth(projO(p,0)+sd)*(c.contend?1.5:t.mode==='rebuild'?.45:1.1):.4; /* 11-12: 유망주 가치를 올린 만큼 주전 하한도 함께 올림(예전 .8/.3/.6) */ /* 주전은 연봉이 많아도 그 자리 전력이라 쉽게 내주지 않는다(리빌딩 구단만 정리). 예전 .25는 고액 주전을 어린 백업 하나와 바꿔 줬다 */ v=Math.max(v,fl); }
   /* 연봉이 부담스러워도 주전급은 공짜로 내주지 않는다(다른 구단에 팔 수 있으므로) */
-  if(dir==='out'){ const core=domestic(t.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).some(q=>q.id===p.id); const w0=seasonWorth(projO(p,0)+sd);
+  if(dir==='out'){ const core=tvCore6(t.id).has(p.id); const w0=seasonWorth(projO(p,0)+sd);
     /* 팀 핵심(상위 6명)은 연봉과 상관없이 쉽게 내주지 않는다. 젊으면 더 비싸다 */
     if(p.aiListed){} else if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); } /* 매물로 내놓은 선수는 핵심 보호 하한을 두지 않는다 */
   return v; }
