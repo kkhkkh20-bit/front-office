@@ -41,12 +41,12 @@ function quickActs(p){
   if(p.prospect){ if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); }
   else if(p.team===G.user&&!(p.joinY>G.year)){
     b.push(`<button class="btn small" data-a="jump" data-v="bond">면담</button>`);
-    if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드 협상에 넣기</button>`); }
+    if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드 협상</button>`); }
     if(!p.foreign)b.push(p.listed?`<button class="btn small" data-a="blkOff" data-v="${p.id}">매물 목록에서 빼기</button>`:`<button class="btn small" data-a="blkOn" data-v="${p.id}">매물 목록에 올리기</button>`);
     if(!p.foreign&&p.team===G.user)b.push(`<button class="btn small${p.noTrade?' primary':''}" data-a="noTrade" data-v="${p.id}" title="다른 구단이 이 선수를 트레이드로 달라고 묻지 않습니다(우리가 먼저 제안할 수는 있음)">${p.noTrade?'트레이드 불가 해제':'트레이드 불가로 지정'}</button>`);
     if(canExtend(p))b.push(`<button class="btn small" data-a="jump" data-v="ext">연장 협상</button>`);
     if(p.foreign==='용병'&&typeof fTmpErr==='function'&&!fTmpErr(G.user,p))b.push(`<button class="btn small primary" data-a="fTmpStart" data-v="${p.id}">부상 대체 외국인 고르기</button>`); /* 6주 이상 다친 외국인 화면에서 바로(카페 피드백 11-08) */
-  } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ if(tradeOpen()){ b.push(`<button class="btn small primary" data-a="findT" data-v="${p.id}">얻을 조건 보기</button>`); b.push(`<button class="btn small" data-a="toTrade" data-v="${p.id}">데려오기 협상</button>`); } b.push(`<button class="btn small" data-a="pwatch" data-v="${p.id}">${(G.pwatch||[]).includes(p.id)?'관심 해제':'관심 선수'}</button>`); }
+  } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ if(tradeOpen()){ b.push(`<button class="btn small primary" data-a="findT" data-v="${p.id}">얻을 조건 보기</button>`); b.push(`<button class="btn small" data-a="toTrade" data-v="${p.id}">트레이드 협상</button>`); } b.push(`<button class="btn small" data-a="pwatch" data-v="${p.id}">${(G.pwatch||[]).includes(p.id)?'관심 해제':'관심 선수'}</button>`); }
   return b.length?`<div class="qacts">${b.join('')}</div>`:''; }
 
 /* ---------- 아마추어 기록: 학년별 ---------- */
@@ -114,7 +114,15 @@ function markHints(root){ if(!root)return; root.querySelectorAll('p.small.muted,
   /* 설명만 있던 카드가 비어 보이지 않게: 제목 말고 남는 내용이 없으면 설명을 그대로 펼친다 */
   root.querySelectorAll('section.card').forEach(sec=>{ const H=[...sec.querySelectorAll('.hint')].filter(h=>h.closest('section.card')===sec); if(!H.length)return;
     const rest=[...sec.children].filter(c=>!c.matches('h2,h3,.eyebrow,.hint,.hi-i')&&!(c.matches('.row.between')&&!c.querySelector('button:not(.hi-i),input,select,b,.pill,.num')));
-    if(rest.length)return; H.forEach(h=>h.classList.remove('hint')); sec.querySelectorAll('.hi-i').forEach(i=>{ if(i.closest('section.card')===sec)i.remove(); }); }); }
+    if(rest.length)return; H.forEach(h=>h.classList.remove('hint')); sec.querySelectorAll('.hi-i').forEach(i=>{ if(i.closest('section.card')===sec)i.remove(); }); });
+  mergeHints(root); }
+/* 도움말 ⓘ 줄이기(UI 검수 2026-11-15 1-4): 한 구역(가장 바깥 카드, 설정은 묶음 칸) 안에 ⓘ가 여러 개면 맨 위 하나로 합친다.
+   지운 ⓘ의 설명은 남는 ⓘ 말풍선에 차례로 붙여 내용은 그대로 둔다. 표 머리글 안의 ⓘ는 그 열 설명이라 그대로 둔다 */
+function hintGroup(el,root){ const g=el.closest('[data-hgrp],.setc'); if(g&&root.contains(g))return g; let c=el.closest('section.card,.card'), up=c; while(up&&up!==root){ up=up.parentElement&&up.parentElement.closest('section.card,.card'); if(up&&root.contains(up)&&up!==root&&!up.matches('.sheet'))c=up; else break; } return c&&root.contains(c)?c:null; }
+function mergeHints(root){ if(!root)return; const G2=new Map(); root.querySelectorAll('.hi-i').forEach(i=>{ if(i.closest('table,.mailbody'))return; const g=hintGroup(i,root); if(!g)return; if(!G2.has(g))G2.set(g,[]); G2.get(g).push(i); });
+  G2.forEach((L,g)=>{ if(L.length<2)return; const keep=L[0], nz=s=>s.replace(/[\d.,]+/g,'#'); let tips=(keep.dataset.tip||keep.getAttribute('title')||'').split('\n\n').filter(Boolean);
+    L.slice(1).forEach(i=>{ (i.dataset.tip||i.getAttribute('title')||'').split('\n\n').filter(Boolean).forEach(t=>{ if(!tips.map(nz).includes(nz(t)))tips.push(t); }); i.remove(); });
+    keep.dataset.tip=tips.join('\n\n'); keep.removeAttribute('title'); const gh=g.querySelector(':scope>.set-g'); if(gh){ keep.classList.remove('solo'); gh.appendChild(keep); } /* 설정 묶음은 묶음 제목(진행·저장·구단·기록) 옆에 */ keep.setAttribute('aria-label','이 구역 설명 보기'); }); }
 /* 말풍선: ⓘ(.hi-i)와 표 머리글 ⓘ(.ti)를 누르면 근처에 뜨고, 다른 곳을 누르면 닫힌다 */
 function tipShow(el){ let b=document.getElementById('tipb'); if(!b){ b=document.createElement('div'); b.id='tipb'; b.setAttribute('role','tooltip'); document.body.appendChild(b); }
   if(b._for===el&&b.classList.contains('on')){ tipHide(); return; } b._for=el; b._y=scrollY; b.textContent=el.dataset.tip||el.getAttribute('title')||''; b.classList.add('on');

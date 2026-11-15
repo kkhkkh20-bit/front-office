@@ -787,3 +787,6 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .gl{border-bottom:1px dotted currentColor;cursor:help}
 /* 태블릿: 떠 있는 ? 버튼이 선수단 머리 줄의 정리 모드 버튼을 가리지 않게(플레이테스트 4 E) */
 @media(max-width:1000px){#app .shell:has(.subhead.notitle) main.content .roster-heading{padding-right:36px}}
+
+/* 한 구역의 ⓘ를 하나로 합친 뒤(mergeHints) 말풍선이 길어질 수 있어 화면 안에서 스크롤 */
+#tipb{max-height:min(60vh,440px);overflow:auto}

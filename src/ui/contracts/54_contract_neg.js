@@ -121,7 +121,7 @@ function ngtCounter(){ const N=UI.ngt; const p=G.players[N.id];
 /* 입구 버튼: 지금 우리 제안 요약 */
 function ngtDoor(k,p){ const o=k==='fa'?G.fa.offers[p.id]:null; const ag=hasAgent(p)?agentOf(p):null;
   const cur=o?(o.terms?termsTxt(o.terms,true):`${o.years}년 연 ${money(o.annual)}`)+(o.rej?' (선수가 거절함)':''):null;
-  return `<button class="mt-door" data-a="ngtOpen" data-v="${k}:${p.id}">${ag?agAv(ag):avImg(p)}<span><b>협상 테이블 열기</b><i>${ag?`${esc(ag.name)} 에이전트 · ${esc(ag.firm)}`:`${esc(p.name)} 본인과 협상`}</i><i>${cur?`지금 우리 제안: ${esc(cur)}`:k==='fa'?`요구 ${p.ask.years}년 연 ${money(p.ask.annual)} 수준`:'기간 · 계약금 · 연봉 · 옵션을 정해 제안합니다'}</i></span><em>›</em></button>`; }
+  return `<button class="mt-door" data-a="ngtOpen" data-v="${k}:${p.id}">${ag?agAv(ag):avImg(p)}<span><b>협상</b><i>${ag?`${esc(ag.name)} 에이전트 · ${esc(ag.firm)}`:`${esc(p.name)} 본인과 협상`}</i><i>${cur?`지금 우리 제안: ${esc(cur)}`:k==='fa'?`요구 ${p.ask.years}년 연 ${money(p.ask.annual)} 수준`:'기간 · 계약금 · 연봉 · 옵션을 정해 제안합니다'}</i></span><em>›</em></button>`; }
 /* 슬라이더: 움직이는 동안은 숫자만, 놓으면 다시 그린다 */
 function ngtRange(el,fin){ const N=UI.ngt; if(!N)return; const f=el.dataset.ngr; N.T[f]=f==='annual'?Math.max(MIN_SAL,+el.value):+el.value; N.ed=true; N.kept=false; if(fin){ renderSheet(); return; } const o=document.querySelector(`[data-money="ngt:${f}"]`); if(o){o.value=(N.T[f]/100).toFixed(2);contractMoneyEdit(o);} }
 document.addEventListener('input',e=>{ const el=e.target.closest('[data-ngr]'); if(el)ngtRange(el,false); });

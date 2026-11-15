@@ -269,3 +269,13 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 /* 해외 스카우트망 표: '찾을 포지션'을 지역 칸 아래로 옮긴 뒤에도 1366에서 비용 열이 잘리지 않게 촘촘히(UI 리뷰 11-13) */
 #app .tf-net .tf-t{font-size:12px}#app .tf-net .tf-t td,#app .tf-net .tf-t th{padding-left:4px;padding-right:4px}
 #app .tf-net .tf-lv button{min-width:0;padding:2px 6px}#app .tf-net .tf-focus{max-width:7.5em;font-size:12px}
+/* UI 1단계(2026-11-15 검수 1-1): 1366 PC에서 표 오른쪽 버튼 열(계약 '연장 협상', FA '협상', 선수 찾기 '협상', 스태프 표 '채용'·'해지')이 잘려 보이지 않던 문제.
+   기록·계약 칸은 줄바꿈해 폭을 줄이고, 버튼 열은 표 오른쪽에 붙여 가로로 밀어도 항상 보이게 한다 */
+@media(min-width:1100px){
+  #app :is(.tf-fa,.tf-ct,.tf-ours) .tf-t td.small{white-space:normal;min-width:8.5em;word-break:keep-all}
+  #app .tf-ext .tf-t td:not(:last-child),#app .tf-ext .tf-t .pm-n i{white-space:normal;word-break:keep-all}
+  #app .sf-t td:last-child:has(>.tc-i,>.btn),#app .fnd-t td:last-child{position:sticky;right:0;z-index:1;background:var(--panel);box-shadow:-6px 0 6px -6px rgba(0,0,0,.6)}
+  #app .sf-t tr.sel td:last-child:has(>.tc-i,>.btn),#app .sf-t tr.me td:last-child:has(>.tc-i,>.btn){background:linear-gradient(color-mix(in srgb,var(--team-hi,#4fa3ff) 14%,transparent),color-mix(in srgb,var(--team-hi,#4fa3ff) 14%,transparent)),var(--panel)}
+  #app .fnd-t tr:hover td:last-child{background:var(--panel2)}
+  #app .fnd-t td.small{white-space:normal;min-width:7em;word-break:keep-all}
+}
