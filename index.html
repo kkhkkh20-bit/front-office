@@ -11462,9 +11462,13 @@ function injRoll(){ const x=R(); return x<.07?rnd(.28,.42):x<.19?rnd(.03,.07):cl
 /* ===== 기록: 타석 단위로 만든다 ===== */
 const cc=(x,b)=>clamp((x+b-20)/60,0,1.25);
 function seasonLuck(p){ return p.sf&&p.sf.y===G.year?(p.sf.lk||0):0; }
+/* 11-15 타자 균형(커뮤니티: "컨택·선구안보다 갭파워·홈런파워만 높으면 기록이 잘 나온다"). 측정(세계 8개 2025시즌, 300타석 이상 734명, 표준화 회귀):
+   wRC+ 기여 컨택 .31·선구안 .20·파워 .45, 선구안의 삼진 억제가 작고(.04), 화면의 갭 파워는 (컨택+파워)/2인데 경기 2루타는 파워만 썼다.
+   선구안 삼진 억제 .04→.08, 컨택 인플레이 안타 .07→.09, 2루타는 화면과 같은 (컨택+파워)/2, 볼넷 폭 .72→.80·홈런 폭 .85→.82(06_game TWB).
+   절편은 평균 능력(약 52)에서 리그 평균이 그대로 되게 옮겼다. 측정 뒤(세계 16개): wRC+ 기여 컨택 .38·선구안 .24·파워 .42, 고유 설명 컨택+선구안 20% · 파워 16%, 리그 타율·출루·장타·홈런·삼진·볼넷 평균은 ±2% 안, 홈런 1위 평균 37.8→36.4 */
 function batProbs(p,b){ const r=p.r; const be=b*.4, bc=b*.3, bh=b*.55; /* 기세(b)는 인플레이 타구에 주로 실리고 삼진·홈런은 실력대로(한 시즌에도 빨리 안정됨) */
-  return {bb:.01+cc(r.eye,be)*.145, k:clamp(.311-cc(r.con,bc)*.17-cc(r.eye,be)*.04-trt(p,'k')*.002,.06,.36), hr:.003+Math.pow(cc(r.pow,bh),1.6)*.06,
-    babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc(r.pow,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
+  return {bb:.01+cc(r.eye,be)*.145, k:clamp(.3325-cc(r.con,bc)*.17-cc(r.eye,be)*.08-trt(p,'k')*.002,.06,.36), hr:.003+Math.pow(cc(r.pow,bh),1.6)*.06,
+    babip:clamp(.2575+cc(r.con,b)*.09+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc((r.con+r.pow)/2,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
 }
 function simBat(p,pa,b,slot,q0){
   const q=q0||shrinkQ(batProbs(p,b||0),TWB,QCB); /* q0: 아마추어처럼 프로와 다른 척도의 확률을 직접 줄 때(10_draft amProbs) */ /* 경기를 돌리지 않는 기록(아마추어·2군·해외·외국인 이전 리그·옛 시즌)도 1군 경기와 같은 폭으로 능력이 드러나게 */ const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0};
@@ -12012,7 +12016,7 @@ const TALENT_W=1;
    평균자책점 1위 2.0~2.6·5위 2.8~3.2·10위 3.2~3.4. 한 시즌 OPS를 능력 기대치가 설명하는 정도는 약 60%(실력 폭 wRC+ 약 24, 600타석 운 약 18 — KBO 실력 폭에서 나올 수 있는 수준).
    타자·투수 결합(log5)이 극단 대결에서 안타를 늘리는 만큼 QOF로 되돌려 리그 평균(타율 .265 안팎·경기당 득점 4.6 안팎)은 그대로 둔다 */
 /* 11-12 재조정(커뮤니티: 파워 98인데 홈런 20개대·0점대 평균자책점): 타자 홈런 폭 .69→.85, 투수 폭 축소. 측정 홈런 1위 37~42·평균자책점 1위 2.15~2.35(KBO 실제 홈런왕 30 후반~40대, 평균자책점 1위 1.9~2.7) */
-const TWB={k:1.1,bb:.72,hr:.85,babip:1.0}, TWP={k:.85,bb:.85,hr:1.1,babip:.7}; /* 플레이 테스트 3차: 타율·안타 1위가 .390·210안타까지, 평균자책점 1위가 1점대로 자주 나와 인플레이 안타율 폭만 조금 좁혔다(홈런 폭은 그대로) */
+const TWB={k:1.1,bb:.8,hr:.82,babip:1.0}, TWP={k:.85,bb:.85,hr:1.1,babip:.7}; /* 11-15 타자 균형: 볼넷 .72→.80·홈런 .85→.82(02_records batProbs, 홈런 1위가 30 중후반에 남게) */ /* 플레이 테스트 3차: 타율·안타 1위가 .390·210안타까지, 평균자책점 1위가 1점대로 자주 나와 인플레이 안타율 폭만 조금 좁혔다(홈런 폭은 그대로) */
 const QCB={k:.207,bb:.0825,hr:.0248,babip:.320}, QCP={k:.204,bb:.0818,hr:.025,babip:.310}, QOF={babip:-.003,hr:-.0004,bb:.001,k:-.001};
 function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip']){ const c=C?C[k]:LGP[k]; o[k]=clamp(c+(q[k]-c)*TALENT_W*(W?W[k]:1)+(F&&F[k]||0),.002,.6); } return o; }
 /* 홈 어드밴티지 크기(능력 보정 단위). 같은 전력이면 홈 승률 약 53~54%(MLB 장기 평균 약 .54, KBO도 비슷한 수준)에 맞춘 값 */
@@ -13396,7 +13400,7 @@ function offerBlockMsg(o,strict){ /* strict: 제안을 만들 때는 evalTrade�
   {const why=pkCheck(o.from,o.get,o.give,pk);if(why)return why;}
   const ev=evalTrade(o.from,o.get,o.give,cash,pk);
   if(ev.theirN>ROSTER_MAX||ev.theirN<ROSTER_MIN)return `${t0.city} ${t0.nick} 로스터 사정이 바뀌어 성사되지 않았습니다(정식 ${ev.theirN}명).`;
-  { const cy=sponSeason(); if(ev.theirPay>capOf(cy)&&ev.theirPay>(preSeason(cy)?capPayNext(o.from):capPay(o.from)))return `${t0.city} ${t0.nick} 단장: 그사이 샐러리캡 여유가 줄어 이 제안을 지킬 수 없습니다.`; } /* 양쪽 모두 같은 시즌 기준(검수 11-08b) */
+  if(ev.capT&&ev.capT.hard)return `${t0.city} ${t0.nick} 단장: 그사이 연봉 사정이 바뀌어 구단주가 허락하는 한도를 넘게 됐습니다. 이 제안을 지킬 수 없습니다.`; /* 소프트캡(13_roster aiCapTake): 한도 안이면 세금만큼 값으로 따진다(아래 evalTrade) */
   { const tol=strict?0:Math.max(1.5,ev.outV)*.15; if(!ev.ok&&((ev.dom&&ev.dom.refuse)||ev.gain<ev.need-tol))return `${t0.city} ${t0.nick} 단장: 다시 따져 보니 이 조건으로는 어렵겠습니다.`; } /* 공략 방지: AI 제안도 직접 협상과 같은 값(evalTrade)으로 판정 */
   return null;
 }
@@ -14305,6 +14309,18 @@ function capTaxEst(over,tid=G.user){ const n=((team(tid)||{}).capOver||0)+1; ret
    우리 구단의 움직임(FA 영입·잔류, 비FA 다년계약, 연봉 협상에서 산정안보다 더 주기, 트레이드, 웨이버 양수, 무적 선수 영입)이 다음에 잴 상위 40명 연봉을 상한 위로 올리면 결재를 받는다.
    절대 한도: 상한 +10%(성적 우선 구단주이고 신뢰 70 이상이면 +15%). 그 안에서는 구단주 성향(성적 우선 너그럽고 수익 우선 깐깐)·신뢰·연속 초과 횟수·초과 폭으로 승인 가능성이 정해진다.
    같은 해 같은 건의 결재 결과는 고정(다시 올려도 결과가 바뀌지 않는다. 금액을 줄이면 가능성이 올라간다). 독립구단은 결재 없이 투자사 현금으로 세금을 낸다(capOverOwner·tradeOwnerCheck와 같게) */
+const CAP_SMALL=.02;
+/* 경쟁균형세 규칙 한 줄 설명(화면 ⓘ). 소프트캡: 넘길 수 있고, 넘긴 만큼 세금·지명 불이익 */
+function capRuleTxt(tid=G.user){ const t=team(tid)||{}; return `경쟁균형세 상한은 넘길 수 있는 상한(소프트캡)입니다. 시즌 결산 때 상위 40명 연봉이 상한을 넘으면 초과분의 30%(1회)·50%(2회 연속)·100%(3회 연속)를 야구발전기금으로 내고, 3회 연속이면 다음 해 1라운드 지명 순서가 9단계 밀립니다.${t.indie?'':` 상한을 더 넘기는 영입·트레이드는 구단주 결재가 필요합니다. 한 건에 상한의 2% 안쪽으로 더 넘기면 승인되고, 그보다 크면 구단주 성향·신뢰에 따라 갈리며, 상한의 ${Math.round(capOwnerLim(t)*100)}%를 넘는 지출은 허락하지 않습니다.`} 다른 구단도 같은 규칙입니다. 상한을 넘겨 연봉을 떠안는 구단은 낼 세금만큼 값을 더 요구합니다.`; }
+/* 초과 상태 짧은 문구: 상한 대비와 낼 세금 예상 */
+function capStateTxt(pay,tid=G.user){ const cap=capOf(sponSeason()), over=Math.round(pay-cap); if(over<=0)return `여유 ${money(-over)}`; const E=capTaxEst(over,tid); return `초과 ${money(over)} · 세금 약 ${money(E.tax)}(${E.n}회째 ${Math.round(capRate(E.n)*100)}%)${E.pen?' · 1라운드 9단계 하락':''}`; }
+/* 트레이드로 연봉을 떠안는 AI 구단의 상한 판단(11-15 커뮤니티 "다른 팀도 죄다 상한에 걸려 넘기지도 못한다"). 예전에는 상한을 1원이라도 넘기면 무조건 거절했다.
+   이제 상한은 세금만 내면 넘길 수 있다(사용자 구단주 결재와 같은 절대 한도 capOwnerLim: 상한 +10%, 성적 우선·신뢰 70 이상 +15%). 그 안에서는 늘어나는 초과분에 낼 세금만큼 값을 더 요구하고(evalTrade),
+   빚이 깊거나(현금 -30억 아래) 긴축 중인 구단은 상한을 넘겨 받지 않는다. pay: 거래 뒤 상위 40명, before: 지금 */
+function aiCapTake(tid,pay,before){ const t=team(tid); if(!t||tid===ME())return null; const cap=capOf(sponSeason()); pay=Math.round(pay); before=Math.round(before??0);
+  if(!(pay>cap)||pay<=before)return null; const inc=pay-Math.max(cap,before), lim=Math.floor(cap*(1+capOwnerLim(t))), n=(t.capOver||0)+1;
+  const tight=!t.indie&&((t.cash||0)<-3000||planOf(t)==='tight'), hard=pay>lim||tight;
+  return {hard,tight:tight&&pay<=lim,pay,inc,over:pay-cap,lim,n,tax:Math.round(inc*capRate(n))}; }
 function capOwnerLim(t){ return t.owner==='win'&&t.trust>=70?.15:.10; }
 function capOwnerP(t,r){ const L=capOwnerLim(t), n=t.capOver||0; return clamp((t.owner==='win'?.85:t.owner==='pr'?.6:.35)+((t.trust??50)-50)/100-.15*n-(n>=2?.15:0)-.5*clamp(r/L,0,1),.05,.95); } /* n: 지난 시즌까지 연속 초과 횟수(이번에 넘기면 n+1회째) */
 function capRoll(key){ let h=2166136261>>>0; const s='capOwn|'+G.year+'|'+G.user+'|'+key; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } h=Math.imul(h^(h>>>13),2246822507)>>>0; return (h>>>0)/4294967296; } /* 경기 난수를 쓰지 않는 고정값 */
@@ -14316,10 +14332,11 @@ function capOwnerCheck(pay,before,s,key){ if(G.unemp)return null; const t=team(G
   const base={pay,before,cap,s,over:pay-cap,r,lim,L,n,who,key};
   const why=`${s}시즌 상위 40명 연봉이 ${money(pay)}으로 상한 ${money(cap)}을 ${money(pay-cap)}(${Math.round(r*100)}%) 넘습니다`;
   if(pay>lim)return {...base,ok:false,hard:true,p:0,msg:`구단주 승인 불가 · ${why}. ${who}은(는) 상한의 ${Math.round(L*100)}%(${money(lim)})를 넘는 지출은 어떤 경우에도 허락하지 않습니다${L<.15?' (성적 우선 구단주가 단장을 크게 신뢰하면 15%까지)':''}. 금액을 줄이거나 연봉이 많은 선수를 먼저 정리하세요.`};
+  if(pay-Math.max(cap,before)<=Math.round(cap*CAP_SMALL))return {...base,ok:true,p:1,small:true,msg:''}; /* 소폭(상한의 2% 이하) 더 넘기는 건은 결재만 올리면 승인(11-15 커뮤니티: 상한을 조금 넘긴 뒤로는 연봉이 줄어드는 트레이드밖에 못 했다). 세금·신뢰 감점은 그대로 */
   const p=capOwnerP(t,r), ok=capRoll(key)<p;
   return {...base,ok,p,msg:ok?'':`구단주 결재 거절 · ${why}. ${who}: "${n>=3?'3년 연속 초과면 신인 1라운드 지명까지 밀립니다. ':n===2?'2년 연속이면 세금이 초과분의 절반입니다. ':''}${t.owner==='profit'?'세금까지 내 가며 쓸 돈은 없습니다.':t.owner==='pr'?'규정을 넘겨 가며 쓰는 건 그룹 이미지에 좋지 않습니다.':'상한을 넘길 만큼의 선수인지 아직 확신이 서지 않습니다.'}" 초과 폭을 줄이면 다시 결재를 올릴 수 있습니다.`}; }
 /* 화면 미리보기: 제출 전에 결재가 필요한지·허락하는 범위인지 */
-function capOwnerTxt(c){ if(!c)return ''; if(c.hard)return `구단주 허용 한도 ${money(c.lim)} 초과 · 구단주가 승인하지 않습니다`; return `상한 ${money(c.over)} 초과 · 구단주 결재 필요 · 승인 가능성 ${capPLabel(c.p)}`; } /* 결재 결과(고정값)는 미리 알려 주지 않는다: 올려 봐야 안다 */
+function capOwnerTxt(c){ if(!c)return ''; if(c.small)return `상한 ${money(c.over)} 초과 · 소폭이라 구단주가 승인합니다`; if(c.hard)return `구단주 허용 한도 ${money(c.lim)} 초과 · 구단주가 승인하지 않습니다`; return `상한 ${money(c.over)} 초과 · 구단주 결재 필요 · 승인 가능성 ${capPLabel(c.p)}`; } /* 결재 결과(고정값)는 미리 알려 주지 않는다: 올려 봐야 안다 */
 /* 결재 통과: 구단주 신뢰가 초과 폭만큼 깎인다(5% 넘으면 -2, 10% 넘으면 -3) */
 function capOwnerOk(c,what){ if(!c||!c.ok)return; const t=team(G.user); const d=c.r>.1?3:c.r>.05?2:1; t.trust=clamp(t.trust-d,0,100);
   try{ mail('구단주실',`구단주: 상한 초과 결재 (${what})`,`${c.who}: "${what}로 ${c.s}시즌 상위 40명 연봉이 상한을 ${money(c.over)}(${Math.round(c.r*100)}%) 넘지만 이번만 승인하겠습니다. 시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(c.n)*100)}%를 야구발전기금으로 내고, 모기업 지원도 그만큼 줄어듭니다." 구단주 신뢰 하락.`,{kind:'구단주'}); }catch(e){} }
@@ -14817,6 +14834,7 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=
   const theirN=rosterN(tid)+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
   const ov=Math.max(0,outV); let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?Math.min(1.5,ov*.3):0)-(hit.length?Math.min(.6,.2+ov*.1):0); /* 양보 폭은 선수 값에 비례(커뮤니티 피드백 11-11: 값 0.6짜리 급매 유망주를 1.5 고정 양보로 거의 공짜에 넘겼다) */ /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-Math.min(.9,ov*.3):-Math.min(.3,ov*.12)); /* 급매는 손해를 조금 보더라도 넘긴다(받을 값의 30%까지) */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
   const theirPay=capPayAs(tid,give,get); /* 연봉 차액을 더하지 않고 상위 40명을 다시 고른다 */
+  const capT=tid!==G.user?aiCapTake(tid,theirPay,capInfo(tid).pay):null; if(capT&&!capT.hard)need+=cashCost(t,-capT.tax); /* 상한을 넘겨 떠안으면 낼 세금만큼 값을 더 요구한다(소프트캡, 13_roster aiCapTake) */
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ if(tradeUrgent(tid,P(id)))continue; const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,premiumV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
   if(tid!==G.user){ const mine=x=>x.y===G.year&&(x.me==null||x.me===G.user); /* 지금 구단이 한 거래만(이직 전 구단 거래 제외, 검수 11-08c) */ const nT=(G.trades||[]).filter(x=>mine(x)&&x.with===tid).length; const urgentOnly=get.length&&get.every(id=>tradeUrgent(tid,P(id)))&&!pk.get.length&&cash>=0, repeatedV=urgentOnly?0:Math.max(1.5,premiumV); if(nT)need+=repeatedV*.25*nT;
@@ -14835,8 +14853,8 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=
   /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
   if(!get.some(id=>P(id)&&P(id).aiListed))need=Math.max(need,Math.max(0,outV)*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%는 더 받아야 한다(예전 -10%까지 손해 감수) */
-  const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse); if(domX&&tid!==G.user&&get.length){ const k=tid+':'+get.join(','); if(domX.refuse&&gain>=need)domLog('ref',k); else if(!ok&&gain>=need-Math.max(1.5,outV)*domX.k)domLog('over',k); } /* 견제가 결과를 바꾼 경우만 센다 */
-  return {gain,need,ok,theirN,theirPay,inV,outV,hit,cashV,...(domX?{dom:domX}:{})};
+  const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); if(domX&&tid!==G.user&&get.length){ const k=tid+':'+get.join(','); if(domX.refuse&&gain>=need)domLog('ref',k); else if(!ok&&gain>=need-Math.max(1.5,outV)*domX.k)domLog('over',k); } /* 견제가 결과를 바꾼 경우만 센다 */
+  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,...(domX?{dom:domX}:{})};
 }
 /* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
 let _faLk={k:null,s:null};
@@ -14844,6 +14862,8 @@ let _faLk={k:null,s:null};
 function faSignLock(p){ const y=p&&p.faTrY; if(y==null||p.team==null)return false; return G.year<y||(G.year===y&&!!G.cal&&G.day<G.cal.open); }
 function faLock(p){ if(faSignLock(p))return true; if(!p||p.team==null||p.foreign||!(G.last&&G.last.y>=G.year)||G.rolled===G.year)return false; const k=G.year+':'+G.day; if(_faLk.k!==k){ let L=[]; try{ L=faUpcoming(); }catch(e){} _faLk={k,s:new Set(L.filter(x=>x.why!=='svc'||x.sure).map(x=>x.p.id))}; } return _faLk.s.has(p.id); }
 function faLockMsg(ids){ { const S=ids.map(id=>G.players[id]).filter(faSignLock); if(S.length)return `${S.map(p=>p.name).join(', ')}: FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다.`; } const L=ids.map(id=>G.players[id]).filter(faLock); return L.length?`${L.map(p=>p.name).join(', ')}: FA 신청을 앞둔 선수는 FA 공시(스토브리그 시작) 전까지 트레이드할 수 없습니다.`:''; }
+/* 상대가 상한 때문에 연봉을 못 받는 이유(절대 한도·긴축) */
+function aiCapMsg(t,c){ return `${t.city} ${t.nick} 단장: ${c.tight?'모기업이 지갑을 닫아 상한을 넘겨 가며 연봉을 받을 수는 없습니다.':`이 거래로 저희 상위 40명 연봉이 ${money(c.pay)}이 돼 구단주가 허락하는 한도(${money(c.lim)})를 넘습니다.`} 연봉이 적은 선수로 바꾸거나 저희 쪽 연봉을 함께 받아 가 주십시오.`; }
 function proposeTrade(tid,give,get,cash,pk){
   const t=team(tid); cash=Math.round(cash||0); pk=pkNorm(pk); /* cash>0 우리가 얹음, cash<0 상대에게 현금을 받음(사용자 피드백 11-05) */
   if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'};
@@ -14869,7 +14889,7 @@ function proposeTrade(tid,give,get,cash,pk){
   const e=evalTrade(tid,give,get,cash,pk);
   if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${t.city} ${t.nick} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
   if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${t.city} ${t.nick} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
-  { const cy=sponSeason(); if(e.theirPay>capOf(cy)&&e.theirPay>(preSeason(cy)?capPayNext(tid):capPay(tid)))return {ok:false,msg:`${t.city} ${t.nick} 단장: 샐러리캡 때문에 연봉을 더 떠안을 수 없습니다.`}; }
+  if(e.capT&&e.capT.hard)return {ok:false,cap:true,msg:aiCapMsg(t,e.capT)};
   if(isCtr&&!e.ok&&e.gain>=e.need-Math.max(1.5,e.outV)*.15)e.ok=true; /* 자기가 낸 조건을 맞춰 오면 그날그날 기분(일일 변동)으로 뒤집지 않는다(커뮤니티 피드백 11-07) */
   if(e.ok){ const mv=mgrTradeView(tid,give,get); const grade=tradeGrade(tid,give,get,cash,pk); const snap=tradeSnap([...give,...get]);
     give.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=tid; story(G.players[id],`트레이드로 ${tname(tid)} 이적`,'move'); }); get.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); try{ leaveSweep(); }catch(e){} /* 보낸 선수에게 붙인 우리 구단 약속·명단 표시 정리 */
@@ -14884,12 +14904,12 @@ function proposeTrade(tid,give,get,cash,pk){
     addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash>0?` + 현금 ${money(cash)}`:''}${pkG} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}${cash<0?` + 현금 ${money(-cash)}`:''}${pkR}`);
     if(cc0&&cc0.ok)capOwnerOk(cc0,`${tname(tid)}와(과) 트레이드`);
     if(oc0&&oc0.ok&&oc0.over>0)tradeOwnerOk(oc0); /* 승인 판정은 거래 전 한 번으로(검수 11-06: 거래 뒤 다시 계산하면 승인 대상이 사라져 신뢰 차감이 빠짐) */
-    offerDropMoved([...give,...get]); offerDropCool(); /* 직접 거래로 옮긴 선수가 걸린 받은 제안·메일은 닫는다(검수 11-08c) */ mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${aiQ(tid,'yes')}${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}.`:''}`};
+    offerDropMoved([...give,...get]); offerDropCool(); /* 직접 거래로 옮긴 선수가 걸린 받은 제안·메일은 닫는다(검수 11-08c) */ mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${e.capT?` 상한을 넘겨 경쟁균형세 약 ${money(e.capT.tax)}를 감수합니다.`:''}${aiQ(tid,'yes')}${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}.`:''}`};
   }
   const gap=e.need-e.gain; if(!isCtr)nt.neg++; /* 맞대결 기간도 횟수를 센다(그 기간은 한도 +2, negInfo) */ nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ if(tradeUrgent(tid,G.players[id]))continue; const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }
   for(const id of give){ const q=G.players[id]; if(q&&R()<.12){ q.mor=clamp((q.mor??60)-4,0,100); if(R()<.5)wire('루머',`${q.name}, ${t.city} ${t.nick}와(과) 트레이드 대상으로 거론됐다는 소문`,{ref:q.id}); } } if(gmTrait(tid)==='hard'&&nt.neg>=3)t.rel=clamp(t.rel-1,0,100);
   if(e.dom&&e.dom.refuse&&e.gain>=e.need)return {ok:false,msg:`${gmn}: 우승 경쟁팀을 도와줄 수는 없습니다. 주전은 시즌이 끝날 때까지 내주지 않겠습니다.${aiQ(tid,'no')}`};
-  const why=((e.dom&&e.dom.k>=.12?'선두를 달리는 팀에 전력을 보태 주는 거래라 값을 더 받아야겠습니다. ':'')+tradeWhyNot(t,give,get,pk)).trim();
+  const why=((e.dom&&e.dom.k>=.12?'선두를 달리는 팀에 전력을 보태 주는 거래라 값을 더 받아야겠습니다. ':'')+(e.capT?`이 연봉을 받으면 상한을 넘겨 경쟁균형세(약 ${money(e.capT.tax)})를 내야 해 그만큼 더 받아야 합니다. `:'')+tradeWhyNot(t,give,get,pk)).trim();
   if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다.${why?` ${why}`:''}${aiQ(tid,'no')} (친분 조금 하락)`}; }
   const co=counterOffer(tid,give,get,cash,pk); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get,cash)+pkSig(c.pk||pk)]=G.day; /* 현금은 그대로 두고 선수 구성만 바꾼 안 */ if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.${aiQ(tid,'short')}`,counters:co};
   const yng=['build','tight'].includes(planOf(t)); /* 유망주 수집·긴축 구단은 얹을 선수도 어린 선수로 부른다 */
@@ -16369,7 +16389,7 @@ function myCoreIds(){ const d=depth(G.user); return new Set([...d.start,...d.sp.
 function buildPackage(t,p,core){ if(hasNtc(p))return null; /* 거부권 선수는 실제 제출 때 막히므로 추천하지 않는다(검수 11-05) */ const v=tval(t,p,'out'); const need=tradeNeed(t,v)-(p.aiListed?1.5:0); const target=v+need+.3;
   const pool=domestic(G.user).filter(q=>!q.ys&&!(hasNtc(q)||faLock(q))&&!core.has(q.id)&&healthy(q)&&!(q.joinY>G.year)&&!recentTr(q)).map(q=>({q,v:tval(t,q,'in')})).filter(x=>x.v>.2).sort((a,b)=>a.v-b.v);
   let best=null,bo=1e9; for(let i=0;i<pool.length;i++){ if(pool[i].v>=target&&pool[i].v-target<bo){ bo=pool[i].v-target; best=[pool[i].q.id]; } for(let j=i+1;j<pool.length;j++){ const sm=Math.max(pool[i].v,pool[j].v)+.72*Math.min(pool[i].v,pool[j].v); if(sm>=target&&sm-target<bo-.6){ bo=sm-target+.6; best=[pool[i].q.id,pool[j].q.id]; } } }
-  if(!best)return null; const e=evalTrade(t.id,best,[p.id]); if(!e.ok||e.theirN>ROSTER_MAX||e.theirN<ROSTER_MIN)return null; if(e.theirPay>capOf(G.year)&&e.theirPay>capPay(t.id))return null;
+  if(!best)return null; const e=evalTrade(t.id,best,[p.id]); if(!e.ok||e.theirN>ROSTER_MAX||e.theirN<ROSTER_MIN)return null; if(e.capT&&e.capT.hard)return null; /* 소프트캡: 한도 안 초과는 세금만큼 값으로 따졌다(evalTrade) */
   if(rosterN(G.user)-best.length+1>ROSTER_MAX)return null; return best; }
 function tsugValid(s){ const p=G.players[s.id]; if(!(p&&p.team===s.tid&&s.give.every(id=>G.players[id]&&G.players[id].team===G.user&&!recentTr(G.players[id]))))return false; if(ntcOf([s.id,...s.give])||tradeCool(s.tid,[s.id]))return false; /* 제출 때 막힐 거부권·거래 간격(검수 11-09w) */ return evalTrade(s.tid,s.give,[s.id]).ok; }
 /* 조건부 영입 요청: 자리·유형·나이·연봉 조건으로 스카우트가 후보를 추린다. 능력 순이 아니라 조건과 팀 사정으로 설명한다 */
@@ -19501,8 +19521,8 @@ function pitchDelivery(p){if(p&&DELIVERY_LABEL[p.delivery])return p.delivery;con
 const trt=(p,k,s)=>hn('dt'+k,p.id)*(s||4);
 const PITCHES=['슬라이더','커브','체인지업','포크','커터','투심','스위퍼'];
 function gbT(p){ return clamp(hn('gb',p.id),-1.6,1.6); } /* +면 땅볼형 */
-/* 삼진 회피(세부 능력): 경기 계산의 삼진 확률과 같은 비중(컨택 .8·선구 .2)과 삼진 성향 */
-function kAvoidV(p){ return p.r.con*.8+p.r.eye*.2+trt(p,'k'); }
+/* 삼진 회피(세부 능력): 경기 계산의 삼진 확률과 같은 비중(컨택 .7·선구 .3, 11-15)과 삼진 성향 */
+function kAvoidV(p){ return p.r.con*.7+p.r.eye*.3+trt(p,'k'); }
 /* 구종: 상세 화면과 같은 규칙으로 고른다 */
 /* 구종: 선수마다 보유 구종(직구 + 변화구 3~4개)과 완성도는 고정이고, 보직은 '쓰는 구종'만 정한다.
    선발은 보유 구종을 모두 쓰고, 계투는 주로 쓰는 1~2개만 던진다(나머지는 보유로 남아 선발로 돌아가면 다시 쓴다). 쓰는 구종 수가 경기 계산(타순 세 바퀴째)에 들어간다 */
@@ -29945,7 +29965,7 @@ function abroadView(){ const A=G.abroad||[]; const f=UI.abf||'all';
 
 /* 능력치 설명(커뮤니티 11-12: 몸·성격 수치가 어디에 영향을 주는지 모호하다): 마우스를 올리면 보이고, 선수 상세 i에도 모은다 */
 const ATTR_HELP={
-  '컨택':'공을 맞히는 능력. 삼진이 줄고 안타·타율이 오릅니다.','파워':'장타력. 홈런·2루타가 늘어납니다.','선구안':'볼을 골라내는 능력. 볼넷이 늘고 삼진이 줄어 출루율이 오릅니다.','주루':'발 빠르기. 내야안타·도루·추가 진루가 늘어납니다.','수비':'포지션 수비 범위·처리. 실점을 막습니다(포지션마다 비중이 다름).',
+  '컨택':'공을 맞히는 능력. 삼진이 줄고 안타·타율이 오릅니다. 2루타(갭 파워)에도 절반이 들어갑니다.','파워':'장타력. 홈런이 늘고, 2루타(갭 파워)에도 절반이 들어갑니다.','선구안':'볼을 골라내는 능력. 볼넷이 늘고 삼진이 줄어 출루율이 오릅니다.','주루':'발 빠르기. 내야안타·도루·추가 진루가 늘어납니다.','수비':'포지션 수비 범위·처리. 실점을 막습니다(포지션마다 비중이 다름).',
   '구위':'공의 힘. 탈삼진이 늘고 강한 타구를 덜 맞습니다.','제구':'원하는 곳에 던지는 능력. 볼넷이 줄어듭니다.','스태미나':'투수가 긴 이닝을 던지는 힘. 선발로 오래 버티고 등판 뒤 회복도 빠릅니다.',
   '체력':'경기마다 쌓이는 피로가 적고 회복이 빨라 휴식이 덜 필요합니다. 높으면 30대 노화 하락도 덜합니다. 투수는 스태미나와 같습니다.',
   '내구성':'부상을 잘 당하지 않는 정도. 낮으면 부상이 잦습니다.'};
@@ -29956,7 +29976,7 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
   const c=v=>clamp(v,20,80); const pers=p.pers||{pro:12,amb:12,loy:12,temp:12}; const ps=v=>c(20+(v-4)/16*60);
   const G2=[];
   if(!p.isP){ const L=p.bt==='좌'?-4:p.bt==='양'?0:2, Rr=p.bt==='좌'?2:p.bt==='양'?0:-1;
-    G2.push(['타격',[['평균 타구속도',evOf(p)+'km/h','t'],['컨택',c(tv.con)],['갭 파워',c((tv.con+tv.pow)/2+o('gap'))],['홈런 파워',c(tv.pow)],['선구안',c(tv.eye)],['삼진 회피',c(tv.con*.8+tv.eye*.2+o('k'))],['좌투수 상대',c(tv.con+L+o('vl',3))],['우투수 상대',c(tv.con+Rr+o('vr',3))]]]);
+    G2.push(['타격',[['평균 타구속도',evOf(p)+'km/h','t'],['컨택',c(tv.con)],['갭 파워',c((tv.con+tv.pow)/2+o('gap'))],['홈런 파워',c(tv.pow)],['선구안',c(tv.eye)],['삼진 회피',c(tv.con*.7+tv.eye*.3+o('k'))],['좌투수 상대',c(tv.con+L+o('vl',3))],['우투수 상대',c(tv.con+Rr+o('vr',3))]]]);
     G2.push(['주루',[['스피드',c(tv.spd)],['도루',c(tv.spd+o('sb'))],['주루 센스',c(tv.spd*.6+tv.eye*.4+o('br'))]]]);
     const arm=['C','RF','SS','3B'].includes(p.pos)?3:p.pos==='1B'?-4:0;
     G2.push(['수비',[['수비 범위',c(tv.def+(['SS','CF'].includes(p.pos)?2:0)+o('rng'))],['포구',c(tv.def+o('fld'))],['송구(어깨)',c(tv.def+arm+o('arm'))],p.pos==='C'?['블로킹·도루 저지',c(tv.def+o('cat'))]:['병살·중계',c(tv.def+o('dp'))],...(p.pos==='C'?[['투수 리드(안방)',c(catLead(Object.assign({},p,{r:Object.assign({},p.r,{def:tv.def})})))]]:[])]]); } /* 포수 리드: 투수 전원의 결과에 더해진다 */
@@ -34265,6 +34285,7 @@ function tradeMood(tid,give,get,cash,pk){
   { let cd=null; try{ cd=tradeCool(tid,get); }catch(e){} if(cd)return {k:'no',l:'거래 제한',s:cd.cap?`올해 이 구단과 거래 한도(${cd.max}번)를 채웠습니다`:`최근 거래해 ${dsh(cd.until)}부터 다시 거래할 수 있습니다`,c:'var(--bad)',w:3,sd:0}; } /* 보내기 전에 거래 제한을 반응 막대에(플레이 테스트 11-13) */
   if(faLockMsg([...give,...get]))return {k:'no',l:'트레이드 불가',s:[...give,...get].some(id=>faSignLock(G.players[id]))?'FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다':'FA 신청을 앞둔 선수는 FA 공시 전까지 트레이드할 수 없습니다',c:'var(--bad)',w:3,sd:0};
   const t=team(tid); const e=evalTrade(tid,give,get,cash,pk);
+  if(e.capT&&e.capT.hard)return {k:'no',l:'연봉 한도',s:'상대 구단 연봉이 구단주 허용 한도를 넘습니다',c:'var(--bad)',w:3,sd:0};
   const sd=1.2+Math.max(0,75-t.rel)/10; // 관계가 좋을수록 상대 속내를 정확히 읽는다
   const key=[...give].sort((a,b)=>a-b).join('-')+'|'+[...get].sort((a,b)=>a-b).join('-');
   const x=e.gain-e.need+hn('tm'+tid+'|'+key,G.year)*sd;
@@ -34297,6 +34318,7 @@ function tradeView(){
   const gv=tr.give.map(id=>G.players[id]), gt=tr.get.map(id=>G.players[id]);
   const dPay=tradeSalChg(tr.give,tr.get).d; /* 겨울엔 다음 시즌 연봉 기준(결재 문서와 같게) */
   const capAfter=capPayAs(G.user,tr.get||[],tr.give||[]), cap=capOf(sponSeason()); /* 엔진과 같이 상위 40명을 다시 고른다 */
+  const thAfter=capPayAs(tr.tid,tr.give||[],tr.get||[]), th0=capInfo(tr.tid).pay, thT=aiCapTake(tr.tid,thAfter,th0), my0=capInfo(G.user).pay; /* 상대 쪽 상한 영향(소프트캡: 넘기면 세금만큼 값을 더 요구, 한도를 넘으면 거절) */
   const myN=rosterN(G.user)-tr.give.filter(tradeCntN).length+tr.get.filter(tradeCntN).length, thN=rosterN(tr.tid)+tr.give.filter(tradeCntN).length-tr.get.filter(tradeCntN).length; /* 엔진·확인창과 같은 정식 선수 기준(육성·복무 제외, 검수 11-08c) */
   { const P=pkNorm(tr.pk), hm=pkHeld(G.user), ht=pkHeld(tr.tid), same=P.y===pkYear(); tr.pk={give:same?P.give.filter(k=>hm.includes(k)):[],get:same?P.get.filter(k=>ht.includes(k)):[],y:pkYear()}; /* 지명권 보유가 바뀌었으면 뺀다 */
     const lostK=P.give.length+P.get.length-tr.pk.give.length-tr.pk.get.length; /* 빠진 조건은 말없이 넘기지 않는다(검수 11-09v) */
@@ -34310,7 +34332,8 @@ function tradeView(){
       <div><div class="eyebrow">보냄 · ${gv.length}명</div>${gv.map(p=>tmini(p,'give')).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="give">우리 선수에서 고르기</button>'}</div>
       <div><div class="eyebrow">받음 · ${gt.length}명</div>${gt.map(p=>tmini(p,'get')).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="get">상대 선수에서 고르기</button>'}</div>
     </div>
-    <dl class="tsum"><div><dt>연봉 변화</dt><dd class="num" style="color:${dPay>0?'var(--warn)':dPay<0?'var(--good)':'inherit'}">${dPay>=0?'+':''}${money(dPay)}</dd></div><div><dt>트레이드 후 캡</dt><dd class="num" style="color:${capAfter>cap?'var(--bad)':'inherit'}">${money(capAfter)} / ${money(cap)}</dd></div><div><dt>선수 영입 자금</dt><dd class="num">${money(Math.max(0,spendable(G.user)))}</dd></div><div><dt>로스터</dt><dd class="num">우리 ${myN} · 상대 ${thN}</dd></div></dl>
+    <dl class="tsum"><div><dt>연봉 변화</dt><dd class="num" style="color:${dPay>0?'var(--warn)':dPay<0?'var(--good)':'inherit'}">${dPay>=0?'+':''}${money(dPay)}</dd></div><div><dt>트레이드 후 캡 ${hiI(capRuleTxt())}</dt><dd class="num" style="color:${capAfter>cap?'var(--bad)':'inherit'}">${money(capAfter)} / ${money(cap)}</dd></div><div><dt>상대 캡</dt><dd class="num" style="color:${thT&&thT.hard?'var(--bad)':thAfter>cap?'var(--warn)':'inherit'}">${money(thAfter)} / ${money(cap)}</dd></div><div><dt>선수 영입 자금</dt><dd class="num">${money(Math.max(0,spendable(G.user)))}</dd></div><div><dt>로스터</dt><dd class="num">우리 ${myN} · 상대 ${thN}</dd></div></dl>
+    ${(gv.length||gt.length)&&(capAfter>cap&&capAfter>my0||thT)?`<p class="small muted tcap-n">${capAfter>cap&&capAfter>my0?`우리: 상한 ${esc(capStateTxt(capAfter))}. `:''}${thT?(thT.hard?`상대: 구단주 허용 한도(${money(thT.lim)})를 넘어 받을 수 없습니다.`:`상대: 상한을 넘겨 세금 약 ${money(thT.tax)}를 내야 해 그만큼 값을 더 요구합니다.`):''}</p>`:''}
     ${mood?`<div class="tmood"><div class="row between"><span class="small muted">상대 단장 반응 예상</span><b style="color:${mood.c}">${mood.l}</b></div><p class="small" style="margin:2px 0">${mood.s}</p><div class="tbarm"><span style="width:${mood.w}%;background:${mood.c}"></span><i></i></div><p class="small muted">관계 ${relLabel(t.rel)} 기준 예측입니다. ${mood.sd>3.5?'관계가 낮아 오차가 큽니다.':'비교적 정확합니다.'}</p>${gt.some(p=>tradeUrgent(tr.tid,p))?`<p class="small muted">급매 선수는 싸게 데려올 수 있습니다. ${hiI('급매 선수는 일반 매물보다 낮게 평가하고, 거절 이력이나 거래 횟수에 따른 웃돈도 붙이지 않습니다. 함께 받는 일반 선수·지명권·현금은 따로 평가합니다. 받는 선수가 모두 급매이면 같은 구단과 연간 2건, 30일 간격 제한이 풀립니다. 월별 협상 횟수는 남아 있어야 합니다. 맞대결 기간에는 두 번 더 협상할 수 있고, 유효한 역제안은 예외입니다. 선수 옆 금액은 연봉이며 이적료가 아닙니다.')}</p>`:''}</div>`:''}
     ${tr.tid!=null&&tr.tid!==G.user?(tr.give||[]).map(id=>G.players[id]).filter(p=>p&&hasNtc(p)).map(p=>ntcFor(p,tr.tid)?`<div class="note warn"><b>${esc(p.name)}</b>: 트레이드 거부권(${p.ntc}년까지) — ${esc(tshort(tr.tid))}행 동의가 필요합니다. <button class="btn small" data-a="ntcAsk" data-v="${p.id}:${tr.tid}:0">선수에게 동의 구하기</button> <button class="btn small" data-a="ntcAsk" data-v="${p.id}:${tr.tid}:1" title="연봉의 30%를 거부권 포기 대가로 주고 묻습니다. 동의할 때만 냅니다">포기 대가 ${money(round5(Math.max(MIN_SAL,p.sal*NTC_BONUS_F)))} 걸고 묻기</button></div>`:`<div class="note good"><b>${esc(p.name)}</b>: ${esc(tshort(tr.tid))}행 동의(${dmd(p.ntcOk.until)}까지)</div>`).join(''):''}
     ${tr.msg?`<div class="note ${tr.ok?'good':''}">${esc(tr.msg)}${want?` <button class="btn small" data-a="tpick" data-v="give:${want.id}">${esc(want.name)} 얹기</button>`:''}</div>`:''}
@@ -34856,7 +34879,7 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
     <div><span class="eyebrow">외국인 선수 (${fStayOf(G.user).filter(p=>p.foreign==='용병').length}명)</span><b>${b.fUsed?`${Math.round(b.fUsed/USD)}만 / ${Math.round(b.fCap/USD)}만 달러`:`계약 없음 · 한도 ${Math.round(b.fCap/USD)}만 달러`}</b><i class="bar"><em style="width:${Math.min(100,b.fUsed/b.fCap*100)}%"></em></i><span class="small muted">남은 총액 ${Math.round((b.fCap-b.fUsed)/USD)}만 달러(약 ${money(b.fCap-b.fUsed)}) · 새 계약 1명당 ${Math.round(F_NEW_CAP*fEcoK()/USD)}만 달러 이하 · ${yb.length}/3명</span></div>
     <div><span class="eyebrow">아시아쿼터 (1명)</span><b>${as.length?`${Math.round(b.aUsed/USD)}만 달러`:'비어 있음'}</b><span class="small muted">1명당 ${Math.round(asiaCap()/USD)}만 달러 이하</span></div>
     <div><span class="eyebrow">감독</span><b>${m?`${esc(m.name)} 연 ${money(m.sal)}`:'빈자리'}</b><span class="small muted">${m&&!m.interim?`잔여 ${Math.max(0,m.yrs)}년 · 경질하면 정산금 ${money(pay)}`:'감독대행 체제'}${mm.length?` · 후보 연봉 ${money(Math.min(...mm))}~${money(Math.max(...mm))}`:''}</span></div>
-    <div><span class="eyebrow">국내 선수 연봉 · 샐러리캡</span><b>${money(b.ci.pay)} / ${money(b.ci.cap)}</b><i class="bar"><em class="${b.ci.over?'bad':''}" style="width:${Math.min(100,b.ci.pay/b.ci.cap*100)}%"></em></i><span class="small muted">${b.ci.over?`초과 ${money(b.ci.over)} · 경쟁균형세 부과`:`여유 ${money(b.ci.cap-b.ci.pay)}`}</span></div>
+    <div><span class="eyebrow">국내 선수 연봉 · 샐러리캡</span><b>${money(b.ci.pay)} / ${money(b.ci.cap)}</b><i class="bar"><em class="${b.ci.over?'bad':''}" style="width:${Math.min(100,b.ci.pay/b.ci.cap*100)}%"></em></i><span class="small muted">${esc(capStateTxt(b.ci.pay))} ${hiI(capRuleTxt())}</span></div>
   </div><p class="small muted">한도는 계약 규정입니다. 실제로 쓸 수 있는지는 위의 "예산 여유"로 판단하세요.</p></section>
   <section class="card"><h2 class="sec">어디에 쓰고 어디서 버나</h2><div class="eyebrow">연간 예상 지출</div>${[...b.exp].sort((x,y)=>y[1]-x[1]).map(x=>row(x[0],x[1],emax,'ex')).join('')}
     <div class="eyebrow">수입 (연간 예상${b.inc.some(x=>/포스트시즌 배당/.test(x[0]))?', 포스트시즌 배당 포함':', 포스트시즌 배당 제외'})</div>${b.inc.map(x=>row(x[0],x[1],imax,'in')).join('')}${(()=>{ const S=G.spend||{}, v=(S.stad||0)+(S.facB||0); return v>0?`<p class="small muted">시설·구장 공사비(보유 현금에서 낸 투자, 위 지출과 결산 비용에는 넣지 않음): <b class="num">${money(Math.round(v))}</b></p>`:''; })()}</section>`; /* 검수 11-08: 배당 포함 여부, 현금 공사비 추적 */
@@ -34881,13 +34904,13 @@ function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=(G.finLog||[]).
   room.push({l:'오늘',v:b.roomGoal});
   const chg=last&&last.y===G.year?last.top.slice(0,5):[];
   const li=(A,c)=>{ const mx=Math.max(1,...A.map(x=>x[1])); return A.map(x=>`<div class="fmd-li"><span>${esc(x[0])}</span>${`<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><rect width="${(x[1]/mx*100).toFixed(1)}" height="8" fill="var(${c})"/></svg>`}<b>${money(x[1])}</b></div>`).join(''); };
-  const R=[['샐러리캡',!ci.over,ci.over?`상한을 ${money(ci.over)} 넘었습니다. 결산 때 경쟁균형세를 냅니다.`:`국내 선수 연봉 ${money(ci.pay)}이 상한 ${money(ci.cap)} 안입니다.`],
+  const R=[['샐러리캡',!ci.over,ci.over?`상한을 ${money(ci.over)} 넘었습니다. 결산 때 세금 약 ${money(capTaxEst(ci.over).tax)}를 냅니다.`:`국내 선수 연봉 ${money(ci.pay)}이 상한 ${money(ci.cap)} 안입니다.`],
     ...(sponSeason()>=2027?[['샐러리캡 하한',ci.pay>=ci.floor,ci.pay>=ci.floor?`하한 ${money(ci.floor)} 이상입니다.`:`하한 ${money(ci.floor)}에 ${money(ci.floor-ci.pay)} 모자랍니다. 발전기금을 냅니다.`]]:[]),
     ['외국인 선수 총액',b.fUsed<=b.fCap,`${fStayOf(G.user).filter(p=>p.foreign==='용병').length}명 총액 ${Math.round(b.fUsed/USD)}만 달러 · 한도 ${Math.round(b.fCap/USD)}만 달러`],
     ...(b.indie?[]:[['구단주 지원 목표',b.support<=b.goalSup,`적자 보전 예상 ${money(b.support)} · 목표 ${money(b.goalSup)} 이하`]])];
   const bud=`<section class="card fmd-bud"><h3 class="fmd-h">예산</h3>
     <div class="fmd-s"><span class="fmd-k">구단주 목표 안 예산 여유</span><b class="fmd-big ${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</b>${b.indie?'<p>독립구단 · 모기업 지원 없음</p>':`<p>모기업 지원 예상 ${money(b.support)} · 목표 ${money(b.goalSup)}(${b.grant?`기본 한도의 ${Math.round(b.goalFrac*100)}% + 추가 지원 ${money(b.grant)}`:`한도의 ${Math.round(b.goalFrac*100)}%`}) · 한도 ${money(b.cap)}</p>${fmBar(b.support,b.cap,b.support>b.goalSup)}`}<p>${b.lockD!=null?dsh(b.lockD)+'에 시즌 예산 확정':'시즌 시작 때 예산 확정'}${b.extra?` · 예상보다 수입 ${b.extra>0?'+':''}${money(b.extra)}`:''}</p></div>
-    <div class="fmd-s"><span class="fmd-k">국내 선수 연봉 (샐러리캡)</span><b>${money(ci.pay)} / ${money(ci.cap)}</b>${fmBar(ci.pay,ci.cap,ci.over)}<p>${ci.over?`초과 ${money(ci.over)} · 경쟁균형세 부과`:`여유 ${money(ci.cap-ci.pay)}`}</p></div>
+    <div class="fmd-s"><span class="fmd-k">국내 선수 연봉 (샐러리캡)</span><b>${money(ci.pay)} / ${money(ci.cap)}</b>${fmBar(ci.pay,ci.cap,ci.over)}<p>${esc(capStateTxt(ci.pay))} ${hiI(capRuleTxt())}</p></div>
     <div class="fmd-s"><span class="fmd-k">외국인 선수 (${fStayOf(G.user).filter(p=>p.foreign==='용병').length}명)</span><b>${b.fUsed?`${Math.round(b.fUsed/USD)}만 / ${Math.round(b.fCap/USD)}만 달러`:`계약 없음 · 한도 ${Math.round(b.fCap/USD)}만 달러`}</b>${fmBar(b.fUsed,b.fCap,b.fUsed>b.fCap)}<p>배정 예산 남음 ${money(b.fRoom)}${b.aUsed?` · 아시아쿼터 ${Math.round(b.aUsed/USD)}만 달러`:''}</p></div>
     <div class="fmd-s"><span class="fmd-k">마케팅 예산</span>${period()==='pre'?marketingBody():`<b>${money(G.marketing)}</b><p>개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`}</div>
     <div class="fmd-s"><span class="fmd-k">예산 조정</span><div class="fmd-acts"><button class="btn small" data-a="go" data-v="club:owner">구단주에게 요청</button><button class="btn small" data-a="itab" data-v="fin:lim">한도·캡 자세히</button><button class="btn small" data-a="itab" data-v="fin:star">선수 홍보</button></div></div></section>`;
@@ -36100,7 +36123,7 @@ const pnm=id=>{ const p=G.players[id]; return p?`${p.name}(${posLabel(p)}, ${p.a
 function tradeDoc(tid,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm(pk); give=give.filter(id=>G.players[id]); get=get.filter(id=>G.players[id]); if(!give.length&&!get.length)return null;
   const ra=roomAfter(give,get);
   const sc=tradeSalChg(give,get); const cp0=capInfo(G.user).pay /* 겨울엔 다음 시즌 기준(cp1과 같게, 검수 11-09v) */, cp1=capPayAs(G.user,get,give), cap=capOf(sponSeason()); if(cash){ ra.after-=cash; } /* 얹는 현금도 예산 여유에서 나간다 */
-  return {subj:`${tshort(tid)}와(과) 트레이드`,kind:'트레이드',lines:[`보내는 선수: ${give.map(pnm).join(', ')||'없음'}`,`받는 선수: ${get.map(pnm).join(', ')||'없음'}`,pk.give.length?`보내는 지명권: ${pk.give.map(pkName).join(', ')}`:'',pk.get.length?`받는 지명권: ${pk.get.map(pkName).join(', ')}`:'',`${cash>0?`현금 ${money(cash)} 얹음 · `:cash<0?`현금 ${money(-cash)} 받음 · `:''}${sc.nx?'다음 시즌 연봉':'연봉'} ${sc.d>=0?'+':''}${money(sc.d)}/년 · 예산 여유 ${money(ra.before)} → ${money(ra.after)}`,Math.abs(ra.dI)>=10?`예산 여유 변화 = 올해 지출 ${ra.dE>=0?'+':'-'}${money(Math.abs(ra.dE))}, 예상 수입 ${ra.dI>=0?'+':'-'}${money(Math.abs(ra.dI))} (전력이 바뀌면 관중·광고 수입 전망도 바뀝니다)`:'',tradeRosterTxt(give,get),cp1>cap&&cp1>cp0?`샐러리캡 초과: 상위 40명 연봉 ${money(cp1)} / 상한 ${money(cap)} (시즌 끝까지 넘으면 경쟁균형세)`:''],warn:'상대가 받아들이면 바로 성사되고 되돌릴 수 없습니다.',chk:()=>(G.trades||[]).length}; }
+  return {subj:`${tshort(tid)}와(과) 트레이드`,kind:'트레이드',lines:[`보내는 선수: ${give.map(pnm).join(', ')||'없음'}`,`받는 선수: ${get.map(pnm).join(', ')||'없음'}`,pk.give.length?`보내는 지명권: ${pk.give.map(pkName).join(', ')}`:'',pk.get.length?`받는 지명권: ${pk.get.map(pkName).join(', ')}`:'',`${cash>0?`현금 ${money(cash)} 얹음 · `:cash<0?`현금 ${money(-cash)} 받음 · `:''}${sc.nx?'다음 시즌 연봉':'연봉'} ${sc.d>=0?'+':''}${money(sc.d)}/년 · 예산 여유 ${money(ra.before)} → ${money(ra.after)}`,Math.abs(ra.dI)>=10?`예산 여유 변화 = 올해 지출 ${ra.dE>=0?'+':'-'}${money(Math.abs(ra.dE))}, 예상 수입 ${ra.dI>=0?'+':'-'}${money(Math.abs(ra.dI))} (전력이 바뀌면 관중·광고 수입 전망도 바뀝니다)`:'',tradeRosterTxt(give,get),cp1>cap&&cp1>cp0?`샐러리캡: 상위 40명 연봉 ${money(cp1)} / 상한 ${money(cap)} · ${capStateTxt(cp1)} (시즌 끝까지 넘으면 결산 때 냅니다)`:''],warn:'상대가 받아들이면 바로 성사되고 되돌릴 수 없습니다.',chk:()=>(G.trades||[]).length}; }
 const GUARD={
   enlist(v){ const p=G.players[+v]; if(!p||!milFree(p))return null; const d=depth(G.user); const role=[...d.start].some(x=>x.id===p.id)?'주전':d.sp.some(x=>x.id===p.id)?'선발 로테이션':d.pen.slice(0,4).some(x=>x.id===p.id)?'필승조':p.e1?'1군 백업':'2군';
     const from=G.day+14, to=from+MIL_DAYS; return {subj:`${p.name} 현역 입대`,kind:'병역',lines:[`${posLabel(p)} · ${p.age}세 · 지금 ${role}`,`입대 ${dmd(from)} · 전역 예정 ${dmd(to)}(1년 6개월)`,'복무 중에는 로스터·연봉 총액에서 빠지고, 1군 기록이 없어 FA 연차로 치지 않습니다.','입대일 전까지는 병역 화면에서 예약을 취소할 수 있습니다.']}; },

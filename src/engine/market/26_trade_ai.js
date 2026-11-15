@@ -43,7 +43,7 @@ function myCoreIds(){ const d=depth(G.user); return new Set([...d.start,...d.sp.
 function buildPackage(t,p,core){ if(hasNtc(p))return null; /* 거부권 선수는 실제 제출 때 막히므로 추천하지 않는다(검수 11-05) */ const v=tval(t,p,'out'); const need=tradeNeed(t,v)-(p.aiListed?1.5:0); const target=v+need+.3;
   const pool=domestic(G.user).filter(q=>!q.ys&&!(hasNtc(q)||faLock(q))&&!core.has(q.id)&&healthy(q)&&!(q.joinY>G.year)&&!recentTr(q)).map(q=>({q,v:tval(t,q,'in')})).filter(x=>x.v>.2).sort((a,b)=>a.v-b.v);
   let best=null,bo=1e9; for(let i=0;i<pool.length;i++){ if(pool[i].v>=target&&pool[i].v-target<bo){ bo=pool[i].v-target; best=[pool[i].q.id]; } for(let j=i+1;j<pool.length;j++){ const sm=Math.max(pool[i].v,pool[j].v)+.72*Math.min(pool[i].v,pool[j].v); if(sm>=target&&sm-target<bo-.6){ bo=sm-target+.6; best=[pool[i].q.id,pool[j].q.id]; } } }
-  if(!best)return null; const e=evalTrade(t.id,best,[p.id]); if(!e.ok||e.theirN>ROSTER_MAX||e.theirN<ROSTER_MIN)return null; if(e.theirPay>capOf(G.year)&&e.theirPay>capPay(t.id))return null;
+  if(!best)return null; const e=evalTrade(t.id,best,[p.id]); if(!e.ok||e.theirN>ROSTER_MAX||e.theirN<ROSTER_MIN)return null; if(e.capT&&e.capT.hard)return null; /* 소프트캡: 한도 안 초과는 세금만큼 값으로 따졌다(evalTrade) */
   if(rosterN(G.user)-best.length+1>ROSTER_MAX)return null; return best; }
 function tsugValid(s){ const p=G.players[s.id]; if(!(p&&p.team===s.tid&&s.give.every(id=>G.players[id]&&G.players[id].team===G.user&&!recentTr(G.players[id]))))return false; if(ntcOf([s.id,...s.give])||tradeCool(s.tid,[s.id]))return false; /* 제출 때 막힐 거부권·거래 간격(검수 11-09w) */ return evalTrade(s.tid,s.give,[s.id]).ok; }
 /* 조건부 영입 요청: 자리·유형·나이·연봉 조건으로 스카우트가 후보를 추린다. 능력 순이 아니라 조건과 팀 사정으로 설명한다 */

@@ -7,8 +7,8 @@ function pitchDelivery(p){if(p&&DELIVERY_LABEL[p.delivery])return p.delivery;con
 const trt=(p,k,s)=>hn('dt'+k,p.id)*(s||4);
 const PITCHES=['슬라이더','커브','체인지업','포크','커터','투심','스위퍼'];
 function gbT(p){ return clamp(hn('gb',p.id),-1.6,1.6); } /* +면 땅볼형 */
-/* 삼진 회피(세부 능력): 경기 계산의 삼진 확률과 같은 비중(컨택 .8·선구 .2)과 삼진 성향 */
-function kAvoidV(p){ return p.r.con*.8+p.r.eye*.2+trt(p,'k'); }
+/* 삼진 회피(세부 능력): 경기 계산의 삼진 확률과 같은 비중(컨택 .7·선구 .3, 11-15)과 삼진 성향 */
+function kAvoidV(p){ return p.r.con*.7+p.r.eye*.3+trt(p,'k'); }
 /* 구종: 상세 화면과 같은 규칙으로 고른다 */
 /* 구종: 선수마다 보유 구종(직구 + 변화구 3~4개)과 완성도는 고정이고, 보직은 '쓰는 구종'만 정한다.
    선발은 보유 구종을 모두 쓰고, 계투는 주로 쓰는 1~2개만 던진다(나머지는 보유로 남아 선발로 돌아가면 다시 쓴다). 쓰는 구종 수가 경기 계산(타순 세 바퀴째)에 들어간다 */
