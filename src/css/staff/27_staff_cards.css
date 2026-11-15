@@ -273,3 +273,19 @@ button.st-n:hover b{text-decoration:underline}
   .pcx .pf-fmcard.ph .pf-fm-face>.av{width:min(100%,220px)}
   .pcx .pf-attribute-grid.pc-grid2{grid-template-columns:minmax(0,1fr);gap:0}
 }
+/* 인물 카드 틀 2단계: 스카우트·분석원·단장·구단주·사장·기자·에이전트. 차트가 없는 사람은 사진 카드 | 세부 표 두 칸 */
+.pcx.pcx2{grid-template-columns:240px minmax(0,1fr)}
+.pc-star{color:#e6b93b;letter-spacing:1px;white-space:nowrap}.pc-star i{font-style:normal;opacity:.25}
+.pcx .pc-keys b.pc-kv .pc-star{font-size:18px}
+.pc-hero .cimg-b{flex-wrap:wrap}.pc-hero .cimg-b .btn{min-height:36px;padding:4px 10px;font-size:12px}
+.pc-hero .cimg-b label.btn{display:inline-flex;align-items:center}
+/* 스태프 시장 후보 상세(목록 칸 안): 칸이 좁아 사진 | 차트, 세부 능력은 아래 한 줄 */
+.st-x .pcx{grid-template-columns:200px minmax(0,1fr)}.st-x .pcx .pc-attrs{grid-column:1/-1}
+.pc-cand.pcx-below{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pc-cand .csl-hire .btn{min-height:44px}
+@media(max-width:1099px){.pcx.pcx2 .pc-attrs{grid-column:auto}}
+@media(max-width:700px){.pcx.pcx2,.st-x .pcx,.pc-cand.pcx-below{grid-template-columns:minmax(0,1fr)}.st-x .pcx .pc-attrs{grid-column:auto}}
+/* 단장 프로필(작업 공간 PC에서는 반 칸): 칸 너비에 맞춰 사진 | 차트, 세부 정보는 아래 */
+.me-pc{container-type:inline-size;min-width:0}.me-pc>h2.sec{margin:0 0 4px}
+@container (min-width:480px) and (max-width:960px){.me-pc .pcx{grid-template-columns:220px minmax(0,1fr)}.me-pc .pcx .pc-attrs{grid-column:1/-1}}
+@container (max-width:479px){.me-pc .pcx{grid-template-columns:minmax(0,1fr)}.me-pc .pcx .pc-attrs{grid-column:auto}.me-pc .pcx .pf-attribute-grid.pc-grid2{grid-template-columns:minmax(0,1fr)}.me-pc .pcx .pf-fmcard.ph .pf-fm-face>.av{width:min(100%,220px)}}
+@media(max-width:700px){.pcx .pf-attribute-column:last-child{grid-template-columns:minmax(0,1fr);gap:0}} /* 선수 상세의 마지막 열 두 칸 규칙이 인물 카드 세부 표를 반쪽으로 줄이던 것 */
