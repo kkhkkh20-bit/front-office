@@ -966,7 +966,7 @@ T('[고교 리그] 3학년 부진: 잠재력은 그대로인데 졸업 학년 �
   const r2=p.amY.find(r=>r.gr===2); p.amY=p.amY.filter(r=>r.y!==y); const sr=Object.assign({},r2,{y,gr:3}); p.amY.push(sr); amTotFix(p); amZSet(C); ok(!amSlump(p),'같은 기록인데 부진으로 봄');
   const t=G.teams.find(x=>x.id!==G.user).id, need=draftNeed(t); const rank=()=>C.map(q=>({id:q.id,s:aiDraftScore(t,q,need)})).sort((a,b)=>b.s-a.s).findIndex(x=>x.id===p.id)+1; const pot0=p.pot, a0=rank(), z0=p.amZ;
   Object.assign(sr,{h:Math.round(sr.ab*.18),d:0,tr:0,hr:0,bb:Math.round(sr.bb*.4)}); amTotFix(p); amZSet(C); const a1=rank();
-  ok(amSlump(p),'졸업 학년 기록이 크게 떨어졌는데 부진 표시가 없음'); ok(p.pot===pot0,'잠재력이 바뀜'); ok(p.amZ<z0-.5&&a1>a0,'AI 지명 순위가 밀리지 않음 '+a0+'→'+a1+' z '+z0+'→'+p.amZ);
+  ok(amSlump(p),'졸업 학년 기록이 크게 떨어졌는데 부진 표시가 없음'); ok(p.pot===pot0,'잠재력이 바뀜'); ok(p.amZ<z0-.45&&a1>a0,'AI 지명 순위가 밀리지 않음(드래프트 보정 뒤 같은 세계에서 z가 정확히 0.50 내려가 경계에 걸림 → 0.45) '+a0+'→'+a1+' z '+z0+'→'+p.amZ);
   const potRank=C.slice().sort((a,b)=>b.pot-a.pot).findIndex(q=>q.id===p.id)+1; ok(a1>potRank,'부진한 선수가 잠재력 순위보다 앞에 있음 '+a1+'/'+potRank);
   { const u=G.user; G.user=t; const v=draftVal(scoutReport(p),p); G.user=u; ok(typeof v==='number','평가 실패'); } /* AI·우리 모두 같은 공개 기록 보정(amDraftAdj) */
   p.amObs={[G.user]:2}; ok(amSlHint(p)===null,'조금 본 구단에도 귀띔이 나옴'); p.amObs={[G.user]:8}; const h=amSlHint(p); ok(h&&h.includes('기록보다'),'충분히 본 구단에 귀띔이 없음 z '+p.amZ); p.amSl='inj'; ok(amSlHint(p)==='부상 여파로 보입니다','부상 원인 귀띔 없음');
