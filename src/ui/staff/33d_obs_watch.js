@@ -28,6 +28,7 @@ function obsDetail(x){ if(!x)return `<section class="card obs-det"><p class="sma
   if(x.k==='am'||x.k==='dr'){ const rv=obsRecVsEval(x); if(rv)L.push(`<p class="small"><b>기록 대 평가</b> ${esc(rv)}</p>`);
     L.push(`<p class="small"><b>학년 흐름</b> ${amTrendHtml(x.x,!!(x.k==='am'?x.x.P:x.x.isP),!!(x.k==='am'?x.x.c:x.x.college))}${x.k==='dr'?amSlTag(x.x):''}</p>`);
     const yy=amRecYear(), sp=amSplitLines(x.x,yy).concat(yy===G.year?[]:[]); if(sp.length)L.push(`<div class="small"><b>${yy} 대회별 기록</b>${sp.map(s=>`<div class="obs-sp"><span>${esc(s.n)}</span><span>${esc(s.t)}</span></div>`).join('')}</div>`);
+    { const op=obsOpinions(x.x); if(op)L.push(`<p class="small"><b>두 의견</b> ${op.map(z=>`${esc(z.s.name)} 스카우트 ${esc(z.t)}`).join(' · ')}</p>`); }
     L.push(`<p class="small"><b>평가</b> ${esc(x.ev)} · 신뢰도 ${esc(x.conf)} · 관찰 ${x.obs}회${x.last!=null?` · 마지막 ${obsDay(x.last)}`:''}</p>`);
     const lg=((G.obsLog||{})[x.id]||[]).slice().reverse(); L.push(`<div class="obs-log"><b class="small">방문 보고</b>${lg.length?lg.map(r=>`<p class="small"><span class="muted">${dmd(r[0])} · ${esc(r[1])}</span> ${esc(r[2])}</p>`).join(''):'<p class="small muted">아직 방문 보고가 없습니다. 집중으로 두면 담당 스카우트가 그 학교를 먼저 찾습니다.</p>'}</div>`); }
   else if(x.k==='fo'){ let f=null; try{ f=fScout(x.x); }catch(e){} const rp=scoutReport(x.x);

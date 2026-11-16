@@ -5,7 +5,7 @@
    - 방법: 후보의 '진짜 값'을 우리 평가와 언론 평가를 신뢰도만큼 섞어 뽑고, 다른 구단마다 제 눈의 오차를 더해 앞 순번부터 고르게 하는 모의를 240번 돌린다.
      우리 차례에는 우리 보드(관심 목록 순서, 없으면 스카우트 순위) 1순위를 고른다. 남은 횟수가 곧 '우리 차례까지 남을 확률'이다.
    - AI 구단의 숨은 평가(aiDraftScore·aiDraftChoose)는 읽지 않는다. 다른 구단(tid)도 같은 함수로 자기 평가를 넣어 쓸 수 있다. */
-const DO_N=240, DO_PUB_SD=8, DO_CLUB_SD=6, DO_RUM_B=2.5;
+const DO_N=240, DO_PUB_SD=8, DO_CLUB_SD=8, DO_RUM_B=2.5;
 /* 그 구단이 보는 후보 값과 오차: 우리는 스카우트 보고서, AI는 자기 추정(aiDraftEst) */
 function doOwn(tid,p){ if(tid===G.user){ const rp=scoutReport(p); return {v:rp.ofp??(rp.cur+4),sd:rp.ofp==null?11:Math.sqrt(clamp(rp.sd||6,2,10)**2+9),cur:rp.cur}; } /* 스카우트 버릇·인상 오차(약 3)는 확신도에 안 보이므로 더한다 */ const e=aiDraftEst(tid,p); return {v:e.v,sd:clamp(e.sd,2,10),cur:ovr(p)}; }
 /* 언론 순위를 잠재력 척도로(1위 60 안팎, 10위 48, 30위 43, 100위 37) */
