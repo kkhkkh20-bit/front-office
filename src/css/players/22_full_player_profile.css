@@ -269,3 +269,59 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-rd-key i{display:inline-block;width:14px;height:0;border-top:2.5px solid #fff;margin-left:6px}.pf-rd-key i.k2{border-top:2px dashed #ffd85a}.pf-rd-key i.k3{border-top:1.5px dashed #c5ccd4}
 /* 좁은 머리말: 긴 외국인 종합 추정이 잠재력·연봉 라벨을 세로로 밀지 않게 세 칸을 고정한다. */
 @media(max-width:600px){.pf-contract-head{display:grid;grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(0,1fr));align-items:start;gap:6px}.pf-contract-head>span{display:grid;justify-items:center;align-content:start;gap:3px;min-width:0;text-align:center;line-height:1.4}.pf-contract-head>span>b{font-size:17px;line-height:1.3;max-width:100%}.pf-contract-head>span>.current-rating-stars{flex-basis:auto}}
+/* ---------- 선수 상황판 PC: 한 화면에 맞춘다(UI 3단계 3-0, 구단주 11-16 "드래그 없게") ----------
+   페이지도, 상자 안도 스크롤하지 않는다. 줄은 위(내용만큼)·가운데(남는 높이)·아래(내용만큼) 세 줄.
+   들어가지 않는 상자는 pfFit()이 낮은 순서부터 접는다(.pf-off). 접힌 내용은 위 탭(기록·관리·경력·수상)에 그대로 있다.
+     | 인물 카드 | 세부 능력 | 보고서 | 현재 상태      | 계약·신분 |
+     |           |           |        | 능력 차트      |           |
+     |           | 시즌 통계(최근)    | 구속/수비 위치 | 경력      |   (1100~1599: 마지막 열 없음) */
+@media(min-width:1100px){
+  #sheet .sheet.pf-screen:has(.pf-overview){overflow:hidden!important}
+  #sheet .sheet.pf-screen:has(.pf-overview).pf-scroll{overflow-y:auto!important}
+  #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 1 auto;min-height:0}
+  #sheet .pf-overview{height:auto;min-height:0;padding:0 0 52px!important;grid-template-columns:250px minmax(0,1.5fr) minmax(0,1fr) 270px 250px;grid-template-rows:auto minmax(0,1fr) auto!important;gap:10px;align-content:stretch}
+  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{overflow:hidden!important}
+  #sheet .pf-overview :is(.pf-teampos,.pf-recent,.pf-track,.pf-procon,.pf-story,.pf-more),#sheet .pf-overview .pf-off{display:none!important}
+  #sheet .pf-overview .pf-fmcard,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-fmcard{grid-area:1/1/4/2}
+  #sheet .pf-overview .pf-attributes{grid-area:1/2/3/3}
+  #sheet .pf-overview .pf-report{grid-area:1/3/3/4}
+  #sheet .pf-overview .pf-season-table{grid-area:3/2/4/4}
+  #sheet .pf-overview .pf-state,#sheet .pf-overview:not(:has(.pf-track,.pf-pitch-head)) .pf-state{grid-area:1/4/2/5}
+  #sheet .pf-overview .pf-radar,#sheet .pf-overview:has(.pf-pitch-head) .pf-radar,#sheet .pf-overview:not(:has(.pf-recent)) .pf-radar{grid-area:2/4/3/5}
+  #sheet .pf-overview :is(.pf-pitch-head,.pf-pos-mini),#sheet .pf-overview:not(:has(.pf-recent)) .pf-pos-mini{grid-area:3/4/4/5}
+  #sheet .pf-overview:not(:has(:is(.pf-pitch-head,.pf-pos-mini):not(.pf-off))) .pf-radar{grid-area:2/4/4/5}
+  #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:1/5/3/6}
+  #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career,#sheet .pf-overview:not(:has(.pf-recent)) .pf-career{grid-area:3/5/4/6}
+  #sheet .pf-overview:has(.pf-career.pf-off) .pf-fm-info:not(.pf-career){grid-area:1/5/4/6}
+  #sheet .pf-overview:has(.pf-fm-info:not(.pf-career).pf-off) .pf-career{grid-area:1/5/4/6}
+  #sheet .pf-overview:has(.pf-fm-info:not(.pf-career).pf-off):has(.pf-career.pf-off){grid-template-columns:250px minmax(0,1.5fr) minmax(0,1fr) 270px}
+  /* 시즌 통계는 통산과 최근 세 시즌만(전체는 기록 탭) */
+  #sheet .pf-overview .pf-season-table tbody tr:nth-child(n+5){display:none}
+  #sheet .pf-overview .pf-season-table .tw{overflow:visible!important;flex:none}
+  #sheet .pf-overview .pf-season-table :is(th,td){padding:3px 4px;white-space:nowrap}
+  /* 인물 카드·현재 상태는 짧게: 사진 높이 상한, 기분 이유는 두 줄까지 */
+  #sheet .pf-overview .pf-fmcard{display:flex!important;flex-direction:column}
+  #sheet .pf-overview .pf-fm-face{max-height:clamp(150px,26vh,260px);overflow:hidden}
+  #sheet .pf-overview .pf-fmcard.ph .pf-fm-face>.av{height:100%;max-height:clamp(150px,26vh,260px);width:auto;max-width:100%;margin:0 auto;display:block}
+  #sheet .pf-overview .pf-state .mrl>li:nth-child(n+3){display:none}
+  #sheet .pf-overview .pf-state .pf-fact{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;width:calc(50% - 5px);margin-right:5px;padding:3px 0;vertical-align:top;border:0}
+  #sheet .pf-overview .pf-state .pf-fact>b{text-align:left}
+  /* 능력 차트는 남는 높이만큼(위·아래 상자 높이를 먼저 정하고) */
+  #sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;min-height:0}
+  #sheet .pf-overview .pf-radar .radar{flex:1 1 auto;min-height:0;height:auto;max-height:100%;width:100%}
+  #sheet .pf-overview .pf-pos-mini :is(.pf-field,svg){max-height:150px}
+  body.fm #sheet .sheet.pf-screen:has(.detail-navigation .detail-acts) .pf-overview{padding-bottom:8px!important} /* 면담·⋯가 위 줄에 있으면 아래 여백이 필요 없다 */
+}
+@media(min-width:1100px) and (max-width:1599px){
+  #sheet .pf-overview{grid-template-columns:210px minmax(0,1.3fr) minmax(0,1fr) 230px}
+  #sheet .pf-overview :is(.pf-fm-info,.pf-career){display:none!important}
+  #sheet .pf-overview .pf-season-table :is(th,td):nth-child(n+14){display:none} /* 좁은 폭은 앞 열만(전체는 기록 탭) */
+}
+@media(min-width:1100px) and (max-height:850px){
+  #sheet .pf-overview .pf-attribute-row{min-height:23px;padding-block:1px}
+  #sheet .pf-overview .pf-attribute-group{margin-bottom:6px}
+  #sheet .pf-overview .pf-attribute-group h3{margin-bottom:4px}
+  #sheet .pf-overview .pf-section-title h3{margin-bottom:4px}
+  #sheet .pf-overview .pf-cmp{margin:0 0 4px}
+  #sheet .pf-overview .card{padding:9px}
+}

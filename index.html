@@ -1235,6 +1235,24 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 .own-fb>.ownership-card{flex:none;padding:10px;border:1px solid var(--line2);background:var(--panel2)}.club-profile-grid>.ownership-card{margin:0}
 @media(max-width:699px){.ownership-card>header h3{font-size:13px}.ownership-facts{gap:8px 10px}.ownership-facts dd{font-size:12px}.ownership-history-list{max-height:220px}}
 .ownership-parties{color:var(--muted)}.ownership-goal-note{flex:none;font-size:12px;line-height:1.6;padding:8px 10px;margin:6px 0;border-left:3px solid var(--warn);background:var(--panel2);overflow-wrap:anywhere}
+
+/* 올해 예산(PC) 한 화면 배치(UI 3단계 3-0): 상자 안 스크롤바 없이 위 세 칸·가운데 추이 두 개·아래 규정, 오른쪽 예산 칸 */
+@media(min-width:1100px){
+ .fin-d{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 300px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"sum sum bud" "cash room bud" "rule rule bud";overflow:hidden}
+ .fin-d>.card{overflow:hidden}
+ .fin-d>.fmd-sum{grid-area:sum;padding:8px 12px}
+ .fin-d>.fmd-sum>h2{display:none}
+ .fin-d .fmd-room .fmd-chg{width:220px;overflow:hidden}
+ .fin-d .fmd-room .fmd-chg .fmd-li2:nth-of-type(n+5){display:none}
+ .fin-d .fmd-top{flex-wrap:wrap;gap:4px 16px}.fin-d .fmd-top>div:first-child{flex:1 0 100%}.fin-d .fmd-st{min-width:90px}
+ .fin-d .fmd-bud{justify-content:flex-start}
+ .fin-d .fmd-bud .fmd-s{padding:6px 0}
+ .fin-d .fmd-acts{grid-template-columns:1fr 1fr;gap:4px}
+ .fin-d .fmd-rl{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px}
+ .fin-d .fmd-rl>div{padding:5px 10px}.fin-d .fmd-rl p{font-size:var(--ui-caption)}
+ .fin-d .fmc{min-height:80px}
+}
+@media(min-width:1100px) and (max-width:1599px){.fin-d .fmd-room .fmd-chg{display:none} /* 좁은 폭: 바뀐 항목은 수입·지출 탭에서 */}
 /* 프로모션 데이(44c_promotions) */
 .promo-r{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line,#333)}
 .promo-r:last-child{border-bottom:0}
@@ -3973,6 +3991,62 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-rd-key i{display:inline-block;width:14px;height:0;border-top:2.5px solid #fff;margin-left:6px}.pf-rd-key i.k2{border-top:2px dashed #ffd85a}.pf-rd-key i.k3{border-top:1.5px dashed #c5ccd4}
 /* 좁은 머리말: 긴 외국인 종합 추정이 잠재력·연봉 라벨을 세로로 밀지 않게 세 칸을 고정한다. */
 @media(max-width:600px){.pf-contract-head{display:grid;grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(0,1fr));align-items:start;gap:6px}.pf-contract-head>span{display:grid;justify-items:center;align-content:start;gap:3px;min-width:0;text-align:center;line-height:1.4}.pf-contract-head>span>b{font-size:17px;line-height:1.3;max-width:100%}.pf-contract-head>span>.current-rating-stars{flex-basis:auto}}
+/* ---------- 선수 상황판 PC: 한 화면에 맞춘다(UI 3단계 3-0, 구단주 11-16 "드래그 없게") ----------
+   페이지도, 상자 안도 스크롤하지 않는다. 줄은 위(내용만큼)·가운데(남는 높이)·아래(내용만큼) 세 줄.
+   들어가지 않는 상자는 pfFit()이 낮은 순서부터 접는다(.pf-off). 접힌 내용은 위 탭(기록·관리·경력·수상)에 그대로 있다.
+     | 인물 카드 | 세부 능력 | 보고서 | 현재 상태      | 계약·신분 |
+     |           |           |        | 능력 차트      |           |
+     |           | 시즌 통계(최근)    | 구속/수비 위치 | 경력      |   (1100~1599: 마지막 열 없음) */
+@media(min-width:1100px){
+  #sheet .sheet.pf-screen:has(.pf-overview){overflow:hidden!important}
+  #sheet .sheet.pf-screen:has(.pf-overview).pf-scroll{overflow-y:auto!important}
+  #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 1 auto;min-height:0}
+  #sheet .pf-overview{height:auto;min-height:0;padding:0 0 52px!important;grid-template-columns:250px minmax(0,1.5fr) minmax(0,1fr) 270px 250px;grid-template-rows:auto minmax(0,1fr) auto!important;gap:10px;align-content:stretch}
+  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{overflow:hidden!important}
+  #sheet .pf-overview :is(.pf-teampos,.pf-recent,.pf-track,.pf-procon,.pf-story,.pf-more),#sheet .pf-overview .pf-off{display:none!important}
+  #sheet .pf-overview .pf-fmcard,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-fmcard{grid-area:1/1/4/2}
+  #sheet .pf-overview .pf-attributes{grid-area:1/2/3/3}
+  #sheet .pf-overview .pf-report{grid-area:1/3/3/4}
+  #sheet .pf-overview .pf-season-table{grid-area:3/2/4/4}
+  #sheet .pf-overview .pf-state,#sheet .pf-overview:not(:has(.pf-track,.pf-pitch-head)) .pf-state{grid-area:1/4/2/5}
+  #sheet .pf-overview .pf-radar,#sheet .pf-overview:has(.pf-pitch-head) .pf-radar,#sheet .pf-overview:not(:has(.pf-recent)) .pf-radar{grid-area:2/4/3/5}
+  #sheet .pf-overview :is(.pf-pitch-head,.pf-pos-mini),#sheet .pf-overview:not(:has(.pf-recent)) .pf-pos-mini{grid-area:3/4/4/5}
+  #sheet .pf-overview:not(:has(:is(.pf-pitch-head,.pf-pos-mini):not(.pf-off))) .pf-radar{grid-area:2/4/4/5}
+  #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:1/5/3/6}
+  #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career,#sheet .pf-overview:not(:has(.pf-recent)) .pf-career{grid-area:3/5/4/6}
+  #sheet .pf-overview:has(.pf-career.pf-off) .pf-fm-info:not(.pf-career){grid-area:1/5/4/6}
+  #sheet .pf-overview:has(.pf-fm-info:not(.pf-career).pf-off) .pf-career{grid-area:1/5/4/6}
+  #sheet .pf-overview:has(.pf-fm-info:not(.pf-career).pf-off):has(.pf-career.pf-off){grid-template-columns:250px minmax(0,1.5fr) minmax(0,1fr) 270px}
+  /* 시즌 통계는 통산과 최근 세 시즌만(전체는 기록 탭) */
+  #sheet .pf-overview .pf-season-table tbody tr:nth-child(n+5){display:none}
+  #sheet .pf-overview .pf-season-table .tw{overflow:visible!important;flex:none}
+  #sheet .pf-overview .pf-season-table :is(th,td){padding:3px 4px;white-space:nowrap}
+  /* 인물 카드·현재 상태는 짧게: 사진 높이 상한, 기분 이유는 두 줄까지 */
+  #sheet .pf-overview .pf-fmcard{display:flex!important;flex-direction:column}
+  #sheet .pf-overview .pf-fm-face{max-height:clamp(150px,26vh,260px);overflow:hidden}
+  #sheet .pf-overview .pf-fmcard.ph .pf-fm-face>.av{height:100%;max-height:clamp(150px,26vh,260px);width:auto;max-width:100%;margin:0 auto;display:block}
+  #sheet .pf-overview .pf-state .mrl>li:nth-child(n+3){display:none}
+  #sheet .pf-overview .pf-state .pf-fact{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;width:calc(50% - 5px);margin-right:5px;padding:3px 0;vertical-align:top;border:0}
+  #sheet .pf-overview .pf-state .pf-fact>b{text-align:left}
+  /* 능력 차트는 남는 높이만큼(위·아래 상자 높이를 먼저 정하고) */
+  #sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;min-height:0}
+  #sheet .pf-overview .pf-radar .radar{flex:1 1 auto;min-height:0;height:auto;max-height:100%;width:100%}
+  #sheet .pf-overview .pf-pos-mini :is(.pf-field,svg){max-height:150px}
+  body.fm #sheet .sheet.pf-screen:has(.detail-navigation .detail-acts) .pf-overview{padding-bottom:8px!important} /* 면담·⋯가 위 줄에 있으면 아래 여백이 필요 없다 */
+}
+@media(min-width:1100px) and (max-width:1599px){
+  #sheet .pf-overview{grid-template-columns:210px minmax(0,1.3fr) minmax(0,1fr) 230px}
+  #sheet .pf-overview :is(.pf-fm-info,.pf-career){display:none!important}
+  #sheet .pf-overview .pf-season-table :is(th,td):nth-child(n+14){display:none} /* 좁은 폭은 앞 열만(전체는 기록 탭) */
+}
+@media(min-width:1100px) and (max-height:850px){
+  #sheet .pf-overview .pf-attribute-row{min-height:23px;padding-block:1px}
+  #sheet .pf-overview .pf-attribute-group{margin-bottom:6px}
+  #sheet .pf-overview .pf-attribute-group h3{margin-bottom:4px}
+  #sheet .pf-overview .pf-section-title h3{margin-bottom:4px}
+  #sheet .pf-overview .pf-cmp{margin:0 0 4px}
+  #sheet .pf-overview .card{padding:9px}
+}
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
 .detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
@@ -5390,6 +5464,34 @@ button.st-n:hover b{text-decoration:underline}
 @media(max-width:700px){.pcx .pf-attribute-column:last-child{grid-template-columns:minmax(0,1fr);gap:0}} /* 선수 상세의 마지막 열 두 칸 규칙이 인물 카드 세부 표를 반쪽으로 줄이던 것 */
 
 .pcx .pc-note{margin:2px 0 0;font-size:12px;line-height:1.5;color:var(--muted)} /* 코치 카드 계산 기준(차트 대신 표 안에, 사용자 11-16) */
+/* 인물 카드 탭(UI 3단계 3-0): 한 번에 한 구역만. 개요 탭에서는 직원 정보 중 면담·희망 보직만 보이고, 멘탈·관계와 연수는 각 탭에서 */
+.ps-tabs{margin:4px 0 6px}
+.ps-body [data-pst]{display:none}
+.ps-body.pst-main [data-pst~=main],.ps-body.pst-rel [data-pst~=rel],.ps-body.pst-study [data-pst~=study],.ps-body.pst-car [data-pst~=car]{display:block}
+.ps-body.pst-main .ps-staff :is(.staff-more,.coach-study,.network-person-note){display:none!important}
+.ps-body.pst-rel .ps-staff .staff-bio>:not(.staff-more),.ps-body.pst-rel .ps-staff .coach-study{display:none!important}
+.ps-body.pst-rel .ps-staff .staff-more>summary{display:none}
+.ps-body.pst-study .ps-staff .staff-bio>:not(.coach-study),.ps-body.pst-study .ps-staff>:not(.staff-bio){display:none!important}
+.ps-body.pst-main .ps-staff .staff-bio{margin-top:8px}
+@media(min-width:1100px){
+ /* 사진 카드에 이름·직함이 있으므로 위 붉은 머리말은 접는다(한 화면에 맞추기) */
+ #sheet .sheet.ps-pc>.sheet-head{display:none}
+ #sheet .sheet.ps-pc .pc-attrs .pf-attribute-row{min-height:25px;padding-block:1px}
+ #sheet .sheet.ps-pc .pc-attrs .pf-attribute-group{margin-bottom:6px}
+ /* 개요 탭: 면담 버튼·희망 보직·성향을 한 줄로 */
+ .ps-body.pst-main .ps-staff .staff-bio{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 8px}
+ .ps-body.pst-main .ps-staff .staff-bio>*{margin:0}
+}
+@media(min-width:1100px){
+ #sheet .sheet.ps-pc .pc-hero .pf-fm-face{max-height:clamp(140px,22vh,260px);overflow:hidden}
+ #sheet .sheet.ps-pc .pc-hero .pf-fm-face>img{height:100%;max-height:clamp(140px,22vh,260px);width:auto;max-width:100%;margin:0 auto;display:block;object-fit:contain}
+ #sheet .sheet.ps-pc .ps-rel{margin-bottom:0}
+}
+@media(min-width:1100px){#sheet .sheet.ps-pc .ps-rel{margin-top:0;padding-top:0}}
+@media(min-width:1100px) and (max-height:800px){#sheet .sheet.ps-pc .pc-hero .pf-fm-face,#sheet .sheet.ps-pc .pc-hero .pf-fm-face>img{max-height:120px}#sheet .sheet.ps-pc .pc-attrs .pf-attribute-row{min-height:23px}#sheet .sheet.ps-pc .pc-attrs .pf-attribute-group h3{margin-bottom:3px}}
+@media(min-width:1100px){#sheet .sheet.ps-pc>.btns{margin-top:6px}#sheet .sheet.ps-pc>.ps-body{margin:0}#sheet .sheet.ps-pc .pcx{margin-block:0 4px}}
+@media(min-width:1100px){#sheet .sheet.ps-pc{padding-bottom:6px!important}#sheet .sheet.ps-pc .ps-tabs{margin:0 0 4px}#sheet .sheet.ps-pc>.ps-rel{margin-block:6px 4px!important}}
+@media(min-width:1100px){#sheet .sheet.ps-pc{row-gap:6px}#sheet .sheet.ps-pc>.ps-rel{margin-block:0!important}#sheet .sheet.ps-pc .ps-tabs{margin:0}#sheet .sheet.ps-pc>.btns{margin-top:0}}
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
@@ -31433,9 +31535,19 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps${PF?' ps-pc':''}" data-stop="1" role="dialog" aria-label="인물 정보">
     <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${PF?'':phWrap(avImg(x.av,true),cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${(x.k==='fan'||x.k==='press')?x.rel:''}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${(k==='fan'||k==='press')?(d>0?'+':'')+d:d>0?'가까워짐':'멀어짐'}`:''}${relTip}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span>${relTip}</div>`}
-    ${PF?PF.html+PF.rest:personTop(k)}${info}${relLikesCard(k)}${(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()}${sec('최근',recent)}
+    ${PF?personTabs(k,PF,info,recent,sec):personTop(k)+info+relLikesCard(k)+(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()+sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
 
+
+/* 감독·코치·직원 인물 카드: 긴 구역(관계·연수·경력)은 카드 안 탭으로 나눈다(UI 3단계 3-0, 구단주 11-16 "드래그 없게").
+   개요 탭에 사진 카드·세부 능력·면담 버튼을 두고, 아래 동작 버튼 줄은 탭과 상관없이 늘 보인다. */
+function personTabs(k,PF,info,recent,sec){
+  const car=(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()+sec('최근',recent), likes=relLikesCard(k), rest=PF.rest||'';
+  const T=[['main','개요'],['rel','관계·성향'],...(rest.includes('coach-study')?[['study','구단 지원 연수']]:[]),...(car?[['car','경력']]:[])].filter(([t])=>t!=='rel'||info||likes||/staff-more|network-person-note/.test(rest));
+  const cur=T.some(t=>t[0]===UI.psTab)?UI.psTab:'main';
+  return `<div class="chips ps-tabs" role="tablist" aria-label="인물 정보 구역">${T.map(([t,l])=>`<button type="button" role="tab" data-a="psTab" data-v="${t}" class="${t===cur?'on':''}" aria-selected="${t===cur}">${l}</button>`).join('')}</div>
+    <div class="ps-body pst-${cur}">${rest?`<div class="ps-pane ps-staff" data-pst="main rel study">${rest}</div>`:''}<div class="ps-pane" data-pst="main">${PF.html}</div>${info||likes?`<div class="ps-pane" data-pst="rel">${info}${likes}</div>`:''}${car?`<div class="ps-pane" data-pst="car">${car}</div>`:''}</div>`;
+}
 
 /* 관계 화면 사람 → 인물 이력부 키 */
 function relPlKey(k){ if(k==='mgr')return plKeyMgr(G.mgr[G.user]); if(k.startsWith('c:')){ const ref=k.slice(2), c=coachesOf(G.user)[ref]||staffOwned('coach',ref); return plKeyCoach(c); } if(k.startsWith('gm:')){ const g=gmOf(+k.slice(3)); return g?'gm:'+g.id:null; } return null; }
@@ -33287,6 +33399,7 @@ function sndSynth(c){ const sr=c.sampleRate, mk=(sec,fn,ch=1)=>{ const n=Math.fl
   SND.buf.thud=mk(.26,(d,n)=>{ let ph=0; for(let i=0;i<n;i++){ const t=i/sr, f=85+115*Math.exp(-t*38); ph+=2*Math.PI*f/sr; d[i]=Math.sin(ph)*Math.exp(-t*20)*.95+Math.sin(2*Math.PI*310*t)*Math.exp(-t*48)*.4+(Math.random()*2-1)*Math.exp(-t*240)*.45; } lp(d,.35); norm(d,.95); });
   SND.buf.crack=mk(.5,(d,n)=>{ for(let i=0;i<n;i++){ const t=i/sr; d[i]=(Math.random()*2-1)*Math.exp(-t*900)*.9+Math.sin(2*Math.PI*1180*t)*Math.exp(-t*38)*.55+Math.sin(2*Math.PI*2470*t)*Math.exp(-t*55)*.35+Math.sin(2*Math.PI*3900*t)*Math.exp(-t*80)*.2+Math.sin(2*Math.PI*150*t)*Math.exp(-t*30)*.5; } norm(d,.95); });
   /* 포수 미트 '퍽' */
+  SND.buf.bounce=mk(.18,(d,n)=>{ for(let i=0;i<n;i++){ const t=i/sr; d[i]=Math.sin(2*Math.PI*(120+90*Math.exp(-t*60))*t)*Math.exp(-t*34)*.9+(Math.random()*2-1)*Math.exp(-t*220)*.35; } lp(d,.3); norm(d,.7); }); /* 공이 잔디·흙에 튀는 둔한 소리 */
   SND.buf.mitt=mk(.25,(d,n)=>{ for(let i=0;i<n;i++){ const t=i/sr; d[i]=(Math.random()*2-1)*Math.exp(-t*160)+Math.sin(2*Math.PI*190*t)*Math.exp(-t*45)*.8; } lp(d,.25); norm(d,.8); });
   /* 바람 가르는 소리: 투구(길고 낮게), 스윙(짧고 날카롭게) */
   const whoosh=(sec,peak,a1,a2,v)=>mk(sec,(d,n)=>{ for(let i=0;i<n;i++)d[i]=Math.random()*2-1; let y=0,z=0; for(let i=0;i<n;i++){ const f=i/n, a=a1+(a2-a1)*Math.sin(Math.PI*f); y+=a*(d[i]-y); z+=a*(y-z); const env=Math.pow(Math.sin(Math.PI*Math.pow(f,peak)),2); d[i]=(y-z)*env; } norm(d,v); });
@@ -33524,16 +33637,16 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   /* 장타는 외야수 사이(좌중간·우중간)를 가르거나 선상으로 빠진다. 외야수 바로 앞뒤가 아니라 뛰어가서 줍는 거리(사용자 피드백 11-08). 외야수 자리: 좌·우 약 ±29도, 중견 0도, 홈에서 66~72 */
   else if(o==='3B'){ const gap=rnd()<.6, th=(rnd()<.5?-1:1)*(gap?11+rnd()*8:39+rnd()*5); spot=cPolar(th,gap?84+rnd()*8:76+rnd()*8); arc=true; flight=900; kind='3루타'; }
   else if(o==='2B'){ const gap=rnd()<.65, th=(rnd()<.5?-1:1)*(gap?11+rnd()*8:38+rnd()*6); spot=cPolar(th,gap?76+rnd()*12:64+rnd()*12); arc=rnd()<.6; flight=800; kind='2루타'; }
-  else if(o==='1B'){ c.gb=false; if(rnd()<.6){ const th=-36+rnd()*72; spot=cPolar(th,44+rnd()*10); arc=rnd()<.5; } else { const th=[-28,-9,9,28][Math.floor(rnd()*4)]+rnd()*6-3; spot=cPolar(th,46); c.gb=true; } flight=650; kind='안타';  /* 해설이 말하는 방향·종류와 화면을 맞춘다(좌전·중전·우전·3유간·1·2루간·유격수 키). 예전에는 화면 방향을 따로 뽑아 해설과 어긋날 수 있었다(사용자 11-13) */
+  else if(o==='1B'){ /* 외야 안타를 줍는 자리: 홈에서 약 75~85m. 외야수(홈에서 66~72칸, 약 90~98m)가 10~20m 달려 나와 잡는다. 예전에는 44~54칸(약 60~70m)이라 30m 넘게 달려 나와야 해서 공보다 사람이 느려 보였다(사용자 11-16) */ c.gb=false; if(rnd()<.6){ const th=-36+rnd()*72; spot=cPolar(th,56+rnd()*6); arc=rnd()<.5; } else { const th=[-28,-9,9,28][Math.floor(rnd()*4)]+rnd()*6-3; spot=cPolar(th,55); c.gb=true; } flight=650; kind='안타';  /* 해설이 말하는 방향·종류와 화면을 맞춘다(좌전·중전·우전·3유간·1·2루간·유격수 키). 예전에는 화면 방향을 따로 뽑아 해설과 어긋날 수 있었다(사용자 11-13) */
     try{ const bp=G.players[x[1]], h=t=>pcH(g,k,t), inf=bp&&bp.r.spd>=64&&h('if')<.25;
       if(inf&&scene3d0){ /* 내야 안타(사용자 11-14): 해설이 말한 야수 앞 느린 땅볼. 야수가 달려 나와 1루로 던지지만 타자가 먼저 닿는다 */ opos=pcPick(g,k,'ip',['SS','3B','2B']); const fb=CFP[opos], j=h('ifj')*2-1; spot=[fb[0]*.62+CHM[0]*.38+j*2,fb[1]*.62+CHM[1]*.38]; arc=false; c.gb=true; c.infHit=true; kind='내야 안타'; }
       else if(!inf){ const t=pcPick(g,k,'t1',['좌전','중전','우전','3유간을 빠지는','1·2루간을 꿰뚫는','유격수 키를 넘기는']), j=h('t1j')*2-1;
-        if(t==='좌전'){ spot=cPolar(-26+j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
-        else if(t==='중전'){ spot=cPolar(j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
-        else if(t==='우전'){ spot=cPolar(26+j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
-        else if(t==='3유간을 빠지는'){ spot=cPolar(-31+j*3,46); arc=false; c.gb=true; }
-        else if(t==='1·2루간을 꿰뚫는'){ spot=cPolar(31+j*3,46); arc=false; c.gb=true; }
-        else { spot=cPolar(-17+j*4,46+h('t1r')*4); arc=true; c.gb=false; } } }catch(e){} }
+        if(t==='좌전'){ spot=cPolar(-26+j*8,56+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
+        else if(t==='중전'){ spot=cPolar(j*8,56+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
+        else if(t==='우전'){ spot=cPolar(26+j*8,56+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
+        else if(t==='3유간을 빠지는'){ spot=cPolar(-31+j*3,55); arc=false; c.gb=true; }
+        else if(t==='1·2루간을 꿰뚫는'){ spot=cPolar(31+j*3,55); arc=false; c.gb=true; }
+        else { spot=cPolar(-17+j*4,52+h('t1r')*4); arc=true; c.gb=false; } } }catch(e){} }
   else if(o==='SAC'){ opos=['P','3B','1B'][Math.floor(rnd()*3)]; const base=CFP[opos]; spot=[base[0]+rnd()*4-2,base[1]+rnd()*6]; arc=false; flight=420; kind='희생번트'; }
   else if(o==='OUT'||o==='DP'){ /* 해설과 같은 결정(어느 야수 쪽, 땅볼·뜬공·직선타)을 그대로 쓴다 */
     const pk=(t,a)=>{ try{ return pcPick(g,k,t,a); }catch(e){ return a[0]; } }; const H=t=>{ try{ return pcH(g,k,t); }catch(e){ return rnd(); } };
@@ -33569,7 +33682,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   const runAll2=async(per)=>Promise.all(moves.map(async m=>{ const el=card('o'+m.id); if(!el)return; for(let i=m.from+1;i<=Math.min(4,m.to);i++){ cPlace(el,CPATH[i],per); await cSleep(per); } if(m.out||m.score)el.classList.add('gone'); }));
   let cap='', cls='';
   const oc=cTeamCol(x[0]%2?g.home:g.away);
-  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } else umpCall('스트라이크 아웃'); if(homeBat&&(b.bases[1]||b.bases[2]))sfx('sigh',.5); /* 홈 팀 득점권 삼진: 관중 탄식 */ if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
+  if(o==='K'){ if(!cam){ cFx('삼진','k'); } /* 삼진 전용 큰 포구음은 뺐다(사용자 11-16) */ else umpCall('스트라이크 아웃'); if(homeBat&&(b.bases[1]||b.bases[2]))sfx('sigh',.5); /* 홈 팀 득점권 삼진: 관중 탄식 */ if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
   else if(o==='BB'||o==='HBP'){if(o==='HBP'&&scene3d){Match3D.hitByPitch();await cSleep(650);} if(!cam)cFx(o==='HBP'?'몸에 맞는 공':'볼넷','bb'); const pr=[]; if(bat){ cPlace(bat,CBS[0],700); pr.push(cSleep(700)); } pr.push(runAll2(600)); await Promise.all(pr); }
   else if(scene3d){await c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo});}
   else {
@@ -33895,7 +34008,8 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
 
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');if(typeof Match3D.leave==='function')Match3D.leave('o'+id,3200/cSpd());else Match3D.hide('o'+id);}; /* 아웃된 주자는 사라지지 않고 뛰어 나간다 */
  const t0=performance.now(), arrive=(id,legs,start)=>t0+(start||0)+legs*c3DRunTime(id)/cSpd(); /* 아웃 판정: 주자는 끝까지 전력으로 뛰고, 송구가 그보다 먼저 도착하게 맞춘다(사용자 피드백 11-07) */
- const slideHome=new Set();if(!isHR&&f&&['LF','CF','RF'].includes(f.pos)&&!path&&!UI.cast.errPos){const out4=moves.find(m=>m.out&&m.to===4);if(out4)slideHome.add(out4.id);else if(!outPlay&&!moves.some(m=>m.out))for(const r of (Array.isArray(x[14])?x[14]:[]))if(r.to===4&&r.result!=='out'&&moves.some(m=>m.id===r.id&&m.score)){slideHome.add(r.id);break;}} /* 홈 승부(송구가 오는 주자)는 슬라이딩으로 들어온다 */
+ const homeGo=(typeof pcH==='function'?pcH(g,k,'hometry'):0)<.3; /* 홈 송구(사용자 11-16): 득점 안타마다 홈으로 던지면 늘 세이프만 보게 된다. 기록상 홈 아웃은 득점 25번에 1번 꼴이라, 세이프 득점에서는 열에 셋만 홈 승부로 그리고 나머지는 중계로 돌린다. 기록상 홈 아웃은 그대로 홈 승부 */
+ const slideHome=new Set();if(!isHR&&f&&['LF','CF','RF'].includes(f.pos)&&!path&&!UI.cast.errPos){const out4=moves.find(m=>m.out&&m.to===4);if(out4)slideHome.add(out4.id);else if(homeGo&&!outPlay&&!moves.some(m=>m.out))for(const r of (Array.isArray(x[14])?x[14]:[]))if(r.to===4&&r.result!=='out'&&moves.some(m=>m.id===r.id&&m.score)){slideHome.add(r.id);break;}} /* 홈 승부(송구가 오는 주자)는 슬라이딩으로 들어온다 */
  if(slideHome.size&&typeof Match3D.brace==='function'){const c=c3DFielder(g,k,'C');if(c)setTimeout(()=>{if(UI.cast&&g.pbp[k]===x)Match3D.brace('d'+c.id,spot);},1100/cSpd());} /* 포수는 송구가 오기 전에 홈에서 낮은 자세로 기다린다 */
  const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;for(let i=m.from+1;i<=Math.min(4,isHR?m.from+1:m.to);i++){if(retired.has(m.id))return;const duration=isHR?1500:c3DRunTime(m.id);cPlace(el,CPATH[i],duration);if(i===4&&slideHome.has(m.id)&&duration>1000&&typeof Match3D.slide==='function'){await cSleep(duration-900);if(retired.has(m.id))return;Match3D.slide('o'+m.id,CHM,900/cSpd(),false);await cSleep(900);}else await cSleep(duration);}if(retired.has(m.id))return;if(m.out||m.score)retire(m.id);}));
  runners.catch(()=>{});
@@ -33903,14 +34017,14 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  batter.catch(()=>{});
  const leap=!!(airOut&&!arc&&f&&pcH(g,k,'leap')<.3); /* 직선타 아웃 열에 셋은 뛰어올라 잡는다(기록은 그대로, 보이는 동작만) */
  sfx('crack',1,1);Match3D.batted(o,(isHR?1500:650)/cSpd(),leap); /* 홈런은 타석 화면을 1.5초 잡아 빠던을 보여 준 뒤 타구로 넘어간다 */
- const short=!path&&!outPlay&&!isHR&&f?[50+(spot[0]-50)*(UI.cast.gb?.7:.8),88+(spot[1]-88)*(UI.cast.gb?.7:.8)]:null; /* 안타: 야수 앞에 떨어져 야수 쪽으로 굴러간다(떨어진 자리에 멈춰 있지 않게, 사용자 11-13) */
+ const short=!path&&!outPlay&&!isHR&&f?[50+(spot[0]-50)*(UI.cast.gb?.7:.8),88+(spot[1]-88)*(UI.cast.gb?.7:.8)]:null,rollWait=short?Math.max(450,Match3D.distance(short,spot)/18*1000,timing.reaction+timing.run-timing.flight):0; /* 떨어진 뒤 굴러가는 시간: 구르는 공은 초속 18m를 넘지 않게(예전에는 0.45초에 20m 넘게 굴러 공이 떨어진 뒤 더 빨라 보였다) */ /* 안타: 야수 앞에 떨어져 야수 쪽으로 굴러간다(떨어진 자리에 멈춰 있지 않게, 사용자 11-13) */
  const ball=cBall([50,88],path?path.land:short||spot,timing.flight,arc,!!UI.cast.gb);if(airOut&&arc&&Match3D.distance(CHM,spot)>62)sfx('ooh',x[0]%2===1?.75:.4); /* 깊은 뜬공: 관중이 기대했다가 잡히면 아쉬워한다(녹음 한 덩어리) */
  if(f&&!isHR){
   cSpeak(g,k,'flight',{fielder:`${POSK[f.pos]||f.pos} ${c3DName(f)}`,arc,ground:!!UI.cast.gb});
-  await cSleep(timing.reaction);Match3D.focus('d'+f.id,'타구 추적');const charge=UI.cast.infHit?Math.max(run0,timing.flight+Math.max(450,timing.reaction+timing.run-timing.flight)-timing.reaction-120):run0; /* 내야 안타: 야수가 먼저 가서 기다리지 않고, 굴러오는 공에 맞춰 달려 들어온다 */Match3D.move('d'+f.id,chase,charge/cSpd());if(extra)setTimeout(()=>Match3D.move('d'+f.id,chase2,extra/cSpd()),run0/cSpd());
-  if(!outPlay){await ball;const landing=Match3D.landed(true);cCap(UI.cast.infHit?'느린 땅볼 · 1루 승부':landing,'good');if(path){const rollMs=Math.max(600,timing.reaction+run0-timing.flight);Match3D.roll(chase,rollMs/cSpd());await cSleep(rollMs);if(extra){Match3D.roll(chase2,extra/cSpd());await cSleep(extra);}}else{const wait=Math.max(short?450:0,timing.reaction+timing.run-timing.flight);if(short)Match3D.roll(spot,wait/cSpd());await cSleep(wait);}Match3D.receive('d'+f.id,'ground',timing.pickup/cSpd(),CHM);await cSleep(timing.pickup);}
-  else {const lead=airOut?(leap?480:180):timing.pickup;await cSleep(Math.max(0,Math.max(timing.reaction+timing.run,timing.flight-lead)-timing.reaction));Match3D.receive('d'+f.id,airOut?(arc?'fly':'line'):'ground',lead/cSpd(),CHM);await ball;if(!airOut)await cSleep(timing.pickup);}
-  if(UI.cast.errPos)await c3DError(g,k,f,spot); else {Match3D.caught('d'+f.id,airOut?'포구 · 아웃':'포구');sfx('mitt',.45,1.05);}
+  await cSleep(timing.reaction);Match3D.focus('d'+f.id,'타구 추적');const charge=UI.cast.infHit||short?Math.max(run0,timing.flight+rollWait-timing.reaction-120):run0; /* 내야 안타·외야 앞 안타: 야수가 먼저 가서 서서 기다리면 바로 잡을 수 있는 공을 일부러 흘려보낸 것처럼 보인다(사용자 11-16). 굴러오는 공에 맞춰 달려 들어온다 */Match3D.move('d'+f.id,chase,charge/cSpd());if(extra)setTimeout(()=>Match3D.move('d'+f.id,chase2,extra/cSpd()),run0/cSpd());
+  if(!outPlay){await ball;sfx('bounce',.5,.92+Math.random()*.16);const landing=Match3D.landed(true);cCap(UI.cast.infHit?'느린 땅볼 · 1루 승부':landing,'good');if(path){const rollMs=Math.max(600,timing.reaction+run0-timing.flight);Match3D.roll(chase,rollMs/cSpd());await cSleep(rollMs);if(extra){Match3D.roll(chase2,extra/cSpd());await cSleep(extra);}}else{const wait=short?rollWait:Math.max(0,timing.reaction+timing.run-timing.flight);if(short)Match3D.roll(spot,wait/cSpd());await cSleep(wait);}Match3D.receive('d'+f.id,'ground',timing.pickup/cSpd(),CHM);if(!UI.cast.errPos)setTimeout(()=>sfx('mitt',.4,1.1),timing.pickup*.45/cSpd());await cSleep(timing.pickup);} /* 포구 소리는 글러브에 공이 들어가는 때(줍는 동작 중간)에 */
+  else {const lead=airOut?(leap?480:180):timing.pickup;await cSleep(Math.max(0,Math.max(timing.reaction+timing.run,timing.flight-lead)-timing.reaction));Match3D.receive('d'+f.id,airOut?(arc?'fly':'line'):'ground',lead/cSpd(),CHM);await ball;if(!UI.cast.errPos)sfx('mitt',.45,1.05);if(!airOut)await cSleep(timing.pickup);} /* 아웃 타구: 공이 글러브에 닿는 순간 소리 */
+  if(UI.cast.errPos)await c3DError(g,k,f,spot); else Match3D.caught('d'+f.id,airOut?'포구 · 아웃':'포구');
   if(outPlay&&!UI.cast.errPos){
    if(airOut){cCap(`${POSK[f.pos]||f.pos} ${c3DName(f)} 포구 · 아웃`,'bad');cFx('아웃','out');}
    else if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);{ const fm=moves.find(m=>m.out); await c3DThrow(g,k,f,spot,pat[1],CBS[1],'포스 아웃',fm?arrive(fm.id,fm.to-fm.from):0); }for(const m of moves)if(m.out)retire(m.id);await c3DThrow(g,k,c3DFielder(g,k,pat[1]),CBS[1],'1B',CBS[0],'병살 · 아웃',arrive(x[1],1,620));cFx(pat[2]+' 병살','bad');if(x[0]%2===1)sfx('sigh',.6); /* 홈 팀 병살: 관중 탄식 */}
@@ -33919,7 +34033,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
    if(!after.includes(x[1])&&bat)retire(x[1]);
   }else{
    const thrownOut=moves.find(m=>m.out);
-   const homeTry=!thrownOut&&!path&&!UI.cast.errPos&&f&&['LF','CF','RF'].includes(f.pos)?(Array.isArray(x[14])?x[14]:[]).find(r=>r.to===4&&r.result!=='out'&&moves.some(m=>m.id===r.id&&m.score)):null;
+   const homeTry=homeGo&&!thrownOut&&!path&&!UI.cast.errPos&&f&&['LF','CF','RF'].includes(f.pos)?(Array.isArray(x[14])?x[14]:[]).find(r=>r.to===4&&r.result!=='out'&&moves.some(m=>m.id===r.id&&m.score)):null;
    if(thrownOut){const pos=['','1B','2B','3B','C'][thrownOut.to];const thrown=await c3DThrow(g,k,f,spot,pos,CPATH[thrownOut.to],'포구',arrive(thrownOut.id,thrownOut.to-thrownOut.from));await runners;if(thrown){Match3D.tag('d'+thrown.receiver.id,CPATH[Math.max(0,thrownOut.to-1)],240/cSpd());await cSleep(240);Match3D.focus('d'+thrown.receiver.id,thrownOut.to===4?'홈 태그 아웃':'주루 아웃');}retire(thrownOut.id);}
    else if(homeTry){ /* 홈 승부(사용자 11-13): 기록에 '홈으로 뛰어 세이프'가 있는 안타는 외야수가 홈으로 던지고, 공이 주자보다 조금 늦게 들어온다. 주심이 세이프를 선언한다 */
     const arm=G.players[f.id]?.r.arm??50,travel=FrontOfficeCore.throwTime(Match3D.distance(chase2,CHM),arm),wait=(arrive(homeTry.id,4-homeTry.from)-performance.now())*cSpd()+350-(travel+450);if(wait>0)await cSleep(wait);
@@ -36550,7 +36664,7 @@ function moneyView(){
   if(it.cur==='star')return it.bar+starPanel();
   if(it.cur==='fut')return it.bar+payFutureView();
   const bsp=`<section class="card bsp-sec"><h2 class="sec">예산 한눈에</h2>${bspCards()}</section>`; /* 세 칸 요약을 맨 위에(피드백 11-09q) */
-  if(it.cur==='bud'&&fmOn())return it.bar+bsp+finDash();
+  if(it.cur==='bud'&&fmOn())return it.bar+finDash(bsp); /* 한 화면에(UI 3단계 3-0): 예산 세 칸도 대시보드 칸 안에 */
   if(it.cur==='flow'||it.cur==='lim'){ const parts=budgetCards().split('<section class="card'); const pick=it.cur==='flow'?parts.find(x=>x.includes('어디에 쓰고 어디서 버나')):parts.find(x=>x.includes('용도별 한도')); return it.bar+(pick?'<section class="card'+pick:'')+(it.cur==='lim'?capCard(ci):''); }
   if(it.cur==='last')return it.bar+(f?`<section class="card"><h2 class="sec">${G.last.y} 결산${lme!==G.user?` · ${esc(tname(lme))}`:''}</h2>${finTable(f)}</section>`:'<section class="card"><p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p></section>')+`<section class="card"><h2 class="sec">재임 기록</h2>${hs.length?`<div class="tw"><table><thead><tr><th>시즌</th><th>성적</th><th>순위</th><th>순이익</th><th>신뢰</th></tr></thead><tbody>${hs.map(h=>`<tr><td>${h.y}</td><td>${h.user.w}-${h.user.l}${h.user.t?'-'+h.user.t:''}</td><td>${h.user.rank}</td><td>${money(h.user.net)}</td><td>${h.user.trust}</td></tr>`).join('')}</tbody></table></div>`:'<p class="small muted">첫 시즌을 마치면 기록이 쌓입니다.</p>'}</section>`;
   { const parts=budgetCards().split('<section class="card'); return it.bar+'<div class="fin-stack">'+bsp+finMonthCard()+parts.filter(x=>x&&!x.includes('어디에 쓰고 어디서 버나')&&!x.includes('용도별 한도')).map(x=>'<section class="card'+x).join('')+csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 마케팅 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`)+'</div>'; } /* 휴대폰: 카드마다 칩으로 나누지 않고 한 화면에 이어서 스크롤(사용자 요청 11-09) */
@@ -36616,9 +36730,9 @@ function fmArea(P,col,fmt=money,Q,col2,o){ /* o.nodot: 점 없이 선만(마지�
   return `<div class="fmc"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${grid.map(v=>`<line x1="0" x2="100" y1="${Y(v).toFixed(2)}" y2="${Y(v).toFixed(2)}" stroke="var(--line)" stroke-opacity=".6" vector-effect="non-scaling-stroke"/>`).join('')}${zero?`<line x1="0" x2="100" y1="${Y(0).toFixed(2)}" y2="${Y(0).toFixed(2)}" stroke="var(--muted)" vector-effect="non-scaling-stroke"/>`:''}<polyline points="${pts(P.slice(0,k),0)}" fill="none" stroke="${col}" stroke-width="2.5" vector-effect="non-scaling-stroke"/>${k<n?`<polyline points="${pts(P.slice(k-1),k-1)}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>`:''}${Q?`<polyline points="${pts(Q,0)}" fill="none" stroke="${col2}" stroke-width="2" vector-effect="non-scaling-stroke"/>`:''}</svg>${o&&o.nodot?'':P.map((p,i)=>`<i class="fmc-p${p.p?' est':''}" style="left:${X(i).toFixed(1)}%;top:${Y(p.v).toFixed(1)}%;--c:${col}" title="${esc(p.l||'')} ${fmt(p.v)}"></i>`).join('')}${(()=>{ const p=P[k-1]; return `<span class="fmc-v" style="left:${X(k-1).toFixed(1)}%;top:${Y(p.v).toFixed(1)}%">${fmt(p.v)}</span>`; })()}${[grid[3],grid[0]].map(v=>`<span class="fmc-y" style="top:${Y(v).toFixed(1)}%">${fmt(v)}</span>`).join('')}${zero?`<span class="fmc-y" style="top:${Y(0).toFixed(1)}%">${fmt(0)}</span>`:''}${P.map((p,i)=>p.l&&(n<=9||i%2===0||i===n-1)?`<span class="fmc-x" style="left:${X(i).toFixed(1)}%">${esc(p.l)}</span>`:'').join('')}</div>`; }
 function fmBar(v,mx,bad){ return `<svg class="fmd-bar" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true"><rect width="100" height="6" fill="var(--panel2)"/><rect width="${clamp(v/Math.max(1,mx)*100,0,100).toFixed(1)}" height="6" fill="var(${bad?'--bad':'--good'})"/></svg>`; }
 function fmBox(cls,h,big,stats,body){ return `<section class="card ${cls}"><div class="fmd-top"><div><h3 class="fmd-h">${h}</h3><b class="fmd-big">${big}</b></div>${stats.map(([k,v])=>`<div class="fmd-st"><span>${k}</span><b>${v}</b></div>`).join('')}</div>${body}</section>`; }
-/* PC 재정(FM 재정 화면처럼): 위 보유 현금 추이 · 예산 여유 추이, 아래 수입·지출, 오른쪽 예산 칸, 맨 아래 규정 준수 띠.
+/* PC 재정(FM 재정 화면처럼): 위 예산 세 칸, 가운데 보유 현금 추이 · 예산 여유 추이, 오른쪽 예산 칸, 아래 규정 준수 띠. 한 화면에 맞추려고 수입·지출 목록은 '수입·지출' 탭에만 둔다(UI 3단계 3-0).
    추이는 월말 재무팀 기록(G.finLog·G.finSnap)과 오늘 값, 결산 예상 현금(점선)으로 그린다 */
-function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=(G.finLog||[]).filter(x=>(x.tid??G.user)===G.user), s=G.finSnap&&(G.finSnap.tid??G.user)===G.user?G.finSnap:null, /* 전 구단 월간 기록은 추이에 넣지 않는다(검수 11-09h) */ last=L[L.length-1], st=!!(G.last&&G.last.y>=G.year);
+function finDash(sum){ const b=budget(), t=team(G.user), ci=b.ci, L=(G.finLog||[]).filter(x=>(x.tid??G.user)===G.user), s=G.finSnap&&(G.finSnap.tid??G.user)===G.user?G.finSnap:null, /* 전 구단 월간 기록은 추이에 넣지 않는다(검수 11-09h) */ last=L[L.length-1], st=!!(G.last&&G.last.y>=G.year);
   const f=G.last&&G.last.fins?G.last.fins[G.user]:null, ml=m=>((m+10)%12+1)+'월', same=!!(s&&last&&s.cash===last.cash1&&s.room===last.room1);
   const sg=v=>`<span class="${v>=0?'good':'bad'}">${v>=0?'+':''}${money(v)}</span>`;
   const cash=[...(L.length?[{l:ml(L[0].m),v:L[0].cash0}]:[]),...L.map(x=>({l:x.m+'월',v:x.cash1})),...(s&&!same?[{l:dsh(s.d),v:s.cash}]:[]),{l:'오늘',v:t.cash},{l:dsh(finYearEnd())+' 결산',v:b.endCash,p:1}];
@@ -36635,11 +36749,9 @@ function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=(G.finLog||[]).
     <div class="fmd-s"><span class="fmd-k">국내 선수 연봉 (샐러리캡)</span><b>${money(ci.pay)} / ${money(ci.cap)}</b>${fmBar(ci.pay,ci.cap,ci.over)}<p>${esc(capStateTxt(ci.pay))} ${hiI(capRuleTxt())}</p></div>
     <div class="fmd-s"><span class="fmd-k">외국인 선수 (${fStayOf(G.user).filter(p=>p.foreign==='용병').length}명)</span><b>${b.fUsed?`${Math.round(b.fUsed/USD)}만 / ${Math.round(b.fCap/USD)}만 달러`:`계약 없음 · 한도 ${Math.round(b.fCap/USD)}만 달러`}</b>${fmBar(b.fUsed,b.fCap,b.fUsed>b.fCap)}<p>배정 예산 남음 ${money(b.fRoom)}${b.aUsed?` · 아시아쿼터 ${Math.round(b.aUsed/USD)}만 달러`:''}</p></div>
     <div class="fmd-s"><span class="fmd-k">마케팅 예산</span>${period()==='pre'?marketingBody():`<b>${money(G.marketing)}</b><p>개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`}</div>
-    <div class="fmd-s"><span class="fmd-k">예산 조정</span><div class="fmd-acts"><button class="btn small" data-a="go" data-v="club:owner">구단주에게 요청</button><button class="btn small" data-a="itab" data-v="fin:lim">한도·캡 자세히</button><button class="btn small" data-a="itab" data-v="fin:star">선수 홍보</button></div></div></section>`;
-  return `<div class="fmd fin-d">${fmBox('fmd-cash','보유 현금',`<span class="${t.cash<0?'bad':''}">${money(t.cash)}</span>`,[['결산 후 예상 현금',money(b.endCash)],['결산일',dmd(finYearEnd())],['지난 결산 후 현금',f?money(f.cash):'기록 없음']],fmArea(cash,'var(--team-hi)')+'<p class="fmd-note">월말 재무팀 기록과 오늘 값 · 점선은 결산까지의 예상</p>')}
+    <div class="fmd-s"><span class="fmd-k">예산 조정</span><div class="fmd-acts"><button class="btn small" data-a="go" data-v="club:owner">구단주에게 요청</button><button class="btn small" data-a="itab" data-v="fin:flow">수입·지출 자세히</button><button class="btn small" data-a="itab" data-v="fin:lim">한도·캡 자세히</button><button class="btn small" data-a="itab" data-v="fin:star">선수 홍보</button></div></div></section>`;
+  return `<div class="fmd fin-d">${sum?sum.replace('class="card bsp-sec"','class="card bsp-sec fmd-sum"'):''}${fmBox('fmd-cash','보유 현금',`<span class="${t.cash<0?'bad':''}">${money(t.cash)}</span>`,[['결산 후 예상 현금',money(b.endCash)],['결산일',dmd(finYearEnd())],['지난 결산 후 현금',f?money(f.cash):'기록 없음']],fmArea(cash,'var(--team-hi)')+'<p class="fmd-note">월말 재무팀 기록과 오늘 값 · 점선은 결산까지의 예상</p>')}
     ${fmBox('fmd-room','예산 여유',`<span class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</span>`,[['올해 예상 수지',sg(b.I-b.E)],['모기업 지원 예상',b.indie?'없음':money(b.support)],['지난 시즌 순이익',f?sg(f.net):'기록 없음']],`<p class="fmd-note tipme">${roomFormula(b)}</p><div class="fmd-row">${fmArea(room,'var(--warn)')}<div class="fmd-chg"><span class="fmd-k">${chg.length?last.m+'월에 바뀐 항목':'바뀐 항목'}</span>${chg.map(z=>`<div class="fmd-li2"><span>${z.kind} · ${esc(z.l)}</span>${sg(z.eff)}</div>`).join('')||'<p class="fmd-note">월말 재무팀 보고가 오면 예산 여유를 바꾼 항목이 여기에 쌓입니다.</p>'}</div></div>`)}
-    ${fmBox('fmd-inc','올해 예상 수입',money(b.I),[],`<div class="fmd-l">${li(b.inc,'--good')}</div><p class="fmd-note">${dmd(finYearEnd())} 결산까지 연간 예상 · 포스트시즌 배당 ${b.inc.some(x=>/포스트시즌 배당/.test(x[0]))?'포함':'제외'}</p>`)}
-    ${fmBox('fmd-exp','올해 예상 지출',money(b.E),[],`<div class="fmd-l">${li([...b.exp].sort((x,y)=>y[1]-x[1]),'--warn')}</div>`)}
     ${bud}<section class="card fmd-rule"><h3 class="fmd-h">규정 준수</h3><div class="fmd-rl">${R.map(([l,ok,d])=>`<div class="${ok?'ok':'ng'}"><b>${l} <span class="pill ${ok?'good':'bad'}">${ok?'준수':/하한/.test(l)?'미달':'초과'}</span></b><p>${d}</p></div>`).join('')}</div></section></div>`; }
 function fBudgetTag(cost){ const b=budget(); if(cost<=b.fRoom)return '<span class="pill good" title="보장액(계약금+연봉)은 외국인 배정 예산(시즌 전에 따로 떼어 둔 돈) 안에서 씁니다. 인센티브는 달성할 것으로 보고 일반 예산의 계약 옵션(예상) 항목에 잡혀서, 계약하면 연봉 여유(예산 기준)가 그만큼 줄어듭니다">보장액은 배정 예산 안 · 인센티브는 일반 예산</span>'; const ex=cost-b.fRoom; return b.roomGoal>=ex?`<span class="pill warn" title="외국인 배정 예산을 넘는 ${money(ex)}은 연봉 여유(예산 기준)에서 씁니다">배정 예산 초과 ${money(ex)} · 연봉 여유 사용</span>`:b.roomMax>=ex?`<span class="pill warn">예산 초과 ${money(ex)}</span>`:'<span class="pill bad">자금 부족</span>'; }
 function budgetTag(cost){ const b=budget(); if(b.roomGoal>=cost)return `<span class="pill good">올해 부담 ${money(cost)} · 예산 안</span>`; if(b.roomCap>=cost||b.roomMax>=cost)return `<span class="pill warn">올해 부담 ${money(cost)} · 구단주 목표 초과</span>`; return `<span class="pill bad">올해 부담 ${money(cost)} · 자금 부족</span>`; }
@@ -36717,7 +36829,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const fcand=p.foreign&&p.team==null, fsx=fcand?fScout(p,rp):null, rsd=rp.exact?0:(rp.sd||0)*.9;
   const rg=v=>{ const b=rsd>=1.5?dvSd(v,rsd):0; return b>=2?`${Math.max(20,dv(v)-b)}~${Math.min(100,dv(v)+b)}`:dv(v); };
   const core=tools.map(t=>`<div class="pr-tool pf-core-cell"><span>${TOOLK[t.k]}</span><strong class="${typeof rg(t.cur)==='string'?'pf-rg':''}" style="color:${rcol(t.cur)}">${rg(t.cur)}</strong>${dl?dTag(t.cur,dl.r[t.k]):''}<small>${rp.ofp!=null&&t.fut>t.cur?'잠재 '+dv(t.fut):rp.exact?'현재':'추정'}</small></div>`).join('');
-  const cols=fmOn()?(p.isP?[['투구','체력·몸','구종'],['투구 정보','성격']]:[['타격','주루'],['수비','체력·몸','성격']]):p.isP?[['투구','체력·몸'],['구종','투구 정보'],['성격']]:[['타격','주루'],['수비','체력·몸'],['성격']];
+  const cols=fmOn()?(p.isP?[['투구','체력·몸'],['투구 정보','구종','성격']]:[['타격','체력·몸'],['수비','주루','성격']]):p.isP?[['투구','체력·몸'],['구종','투구 정보'],['성격']]:[['타격','주루'],['수비','체력·몸'],['성격']];
   const row=([label,v,type],gn)=>{const numeric=!type||type==='n'||type==='i',value=numeric?(type==='n'||type==='i'?Math.round(v):rg(v)):v;return `<div class="pf-attribute-row${numeric?'':' text'}" title="${esc(attrHelp(label))}"><span>${esc(label)}</span>${dOld&&numeric&&!type?dTag(v,oldV.get(gn+'|'+label),true):''}<b class="pf-score" style="color:${numeric&&type!=='n'?rcol(type==='i'?100-v:v):'var(--ink)'}">${esc(String(value))}</b></div>`;};
   const attributes=d?cols.map(col=>`<div class="pf-attribute-column">${col.map(name=>{const g=d.groups.find(g=>g[0]===name);return g?`<section class="pf-attribute-group" data-group="${name}"><h3>${name}</h3>${g[1].map(r=>row(r,name)).join('')}</section>`:'';}).join('')}</div>`).join(''):'<p class="small muted keep">평가 자료가 없습니다. 스카우트 관찰이 필요합니다.</p>';
   const stateRow=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`;
@@ -36794,6 +36906,17 @@ function attrCmpBar(p,m,dl){ const opts=[['1m','최근 1개월'],['sea','올해'
   const ch=dl?keys.map(k=>{ const x=dv(p.r[k])-dv(dl.r[k]??p.r[k]); return {k,x}; }):[]; const sum=ch.length?ch.reduce((a,c)=>a+c.x,0):0;
   return `<div class="pf-cmp"><div class="row" style="gap:4px;flex-wrap:wrap"><span class="small muted">능력 변화</span>${opts.map(([k,l])=>`<button class="chipn${m===k?' on':''}" data-a="attrCmp" data-v="${k}">${l}</button>`).join('')}${dl?`<span class="small muted">${dmd(dl.from)} 대비 · 핵심 합계 <b class="${sum>0?'good':sum<0?'bad':''}">${sum>0?'+':''}${sum}</b></span>`:m!=='off'?'<span class="small muted">비교할 기록이 아직 없습니다</span>':''}</div>
     ${L.length>=2?`<div class="pf-trend">${keys.map(k=>`<span><i>${TOOLK[k]}</i>${spark(k)}<b>${dv(p.r[k])}</b></span>`).join('')}</div>`:''}</div>`; }
+
+/* 선수 상황판 PC 맞춤(UI 3단계 3-0): 화면에 들어가지 않는 상자를 낮은 순서부터 접는다. 접힌 내용은 위 탭에 그대로 있다.
+   그래도 넘치면(아주 낮은 창) 상자를 자르지 않고 화면 전체를 한 번에 내린다(.pf-scroll). */
+const PF_FIT_ORDER=['.pf-career','.pf-pos-mini','.pf-pitch-head','.pf-attributes .pf-trend','.pf-report .pf-rp-why','.pf-report .pf-rp-mop','.pf-fm-info:not(.pf-career)','.pf-season-table'];
+function pfFit(){ if(typeof document==='undefined')return; const o=document.querySelector('#sheet .pf-overview'),sh=o&&o.closest('.sheet'); if(!o||!sh)return;
+  o.querySelectorAll('.pf-off').forEach(e=>e.classList.remove('pf-off')); sh.classList.remove('pf-scroll'); if(innerWidth<1100)return;
+  const boxes=()=>[...o.querySelectorAll(':scope>*>*,:scope .pf-main-top>*')].filter(e=>e.getClientRects().length&&!e.matches('.pf-main-top'));
+  const over=()=>o.scrollHeight>o.clientHeight+2||boxes().some(e=>e.scrollHeight>e.clientHeight+2);
+  for(const q of PF_FIT_ORDER){ if(!over())return; o.querySelectorAll(q).forEach(e=>{ if(e.getClientRects().length)e.classList.add('pf-off'); }); }
+  if(over())sh.classList.add('pf-scroll'); }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ pfFit(); }catch(e){} },120); }); }
 /* ---------- 선수 카드와 경기 기록 ---------- */
 function statTable(p){ return statTable0(p)+psTable(p); }
 /* 포스트시즌 기록(모든 구단, 2026-11-12 업데이트 이후): 정규시즌 표와 따로 */
@@ -37004,7 +37127,7 @@ function spoilMask0(g,p,keepDetail=false){ /* 경기 직전 사본이 있으면 
   const details=keepDetail?null:Object.fromEntries(['spl','spr','splP','sprP'].map(k=>[k,p[k]]));if(details)for(const k in details)p[k]=undefined; /* 옛 저장에 경기 전 분포가 없으면 최종 경기 분포를 노출하지 않는다. */
   const y=dobj(g.day).y, i=p.hist.map((h,j)=>[h,j]).filter(([h])=>h.y===y&&h.lvl==='1군'&&!h.y2).map(x=>x[1]).pop(); const H0=p.hist, GL0=p.gl; if(i!=null){ const h=Object.assign({},H0[i]); for(const k in q)if(k!=='id'&&typeof q[k]==='number'&&typeof h[k]==='number')h[k]=Math.max(0,h[k]-q[k]); if(typeof h.g==='number')h.g=Math.max(0,h.g-1); if(p.isP&&typeof h.w==='number'&&q.d==='승')h.w--; if(p.isP&&typeof h.l==='number'&&q.d==='패')h.l--; if(p.isP){ if(h.sv&&q.d==='세')h.sv--; if(h.hld&&q.d==='홀')h.hld--; if(h.gs&&['h','a'].some(sd=>g.box[sd]&&g.box[sd].pit&&g.box[sd].pit[0]&&g.box[sd].pit[0].id===p.id))h.gs--; } p.hist=H0.slice(); p.hist[i]=h; }
   if(GL0&&GL0.g&&GL0.y===y){ const has=x=>['h','a'].some(sd=>x.box&&x.box[sd]&&(x.box[sd][p.isP?'pit':'bat']||[]).some(z=>z.id===p.id)), pre=(G.games||[]).filter(x=>x!==g&&x.day===g.day&&(x.gid||0)<(g.gid||0)&&has(x)).length; let n=-1; p.gl={y,g:GL0.g.filter(r=>r[0]!==g.day||++n!==pre)}; } /* 같은 날 두 경기: 숨길 경기의 로그 한 줄만 뺀다(검수 11-09zzc #16) */ return ()=>{ p.hist=H0; p.gl=GL0;if(details)for(const k in details)p[k]=details[k]; }; }
-function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); twPager(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ twPager(); workspaceFit(); workspaceDetail(); twPager(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -37696,6 +37819,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(k==='scout'){ if(G.scouts.length>=scoutMax())return; const s=(G.scoutMarket||[]).find(x=>x.ob===id)||obScout(ob); G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.ob!==id); s.since=G.day; G.scouts.push(s); staffHistory('scout',s,'선임',G.user,'OB 출신 영입 · 연 '+money(s.sal)); obHireBonus(id,'스카우트'); addLog(`OB ${ob.name}을(를) 스카우트로 영입했습니다.`); save(); render(); return; }
     if(k==='front'){ ob.alt={k:'front',tid:G.user,t:`${tshort(G.user)} 프런트`}; ob.bond+=5; obHireBonus(id,'프런트'); addLog(`OB ${ob.name}이(가) 우리 프런트에 합류했습니다.`); save(); render(); } },
   reroll(){ UI.world=null; render(); },
+  psTab(v){ UI.psTab=v; renderSheet(); }, /* 인물 카드 구역 탭(UI 3단계 3-0) */
   person(v,el){ peopleCapture(v,el);UI.sheet=null; UI.person=v; UI.personMsg=null; UI.teamSh=null; renderSheet(); }, /* 선수 정보 안의 인물 링크(11-09r)와 구단 정보 창의 감독·코치(카페 11-09c)도 인물 창으로 */
   peopleStep(v){peopleStep(v);},
   relGo(v){ peopleCapture(v);const [a,id]=relKey({k:v}); UI.relK=v; A[a](id); }, /* 관계도 인물·선수 이전/다음(카페 11-10) */
@@ -38779,7 +38903,7 @@ function coachStudyPanel(c){if(typeof coachStudyOptions!=='function')return '';c
 function coachStudySelection(id){const c=staffOwned('coach',id);if(!c)return null;if(!UI.coachStudy||UI.coachStudy.id!==id||UI.coachStudy.tid!==G.user)UI.coachStudy={id,tid:G.user};return UI.coachStudy;}
 function coachStudyRefresh(){const y=sheetScrollY();UI._detailPendingScroll=y;renderSheet();sheetScrollTo(y);}
 Object.assign(A,{
-  coachStudyOpen(v){const parts=String(v).split(':'),program=['dom','jp','us'].includes(parts.at(-1))?parts.pop():null,raw=parts.join(':'),ref=raw.startsWith('ax:')?raw.slice(3):raw;const O=coachStudyOptions(ref),c=O?.coach;if(!c){toast('현재 우리 구단의 코치가 아닙니다.');return;}UI.coachStudy={id:c.id,tid:G.user,program:program||undefined,focus:O.fields[0]?.k};UI.sheet=null;UI.person='c:'+(Object.keys(coachesOf(G.user)).find(k=>coachesOf(G.user)[k]?.id===c.id)||c.id);UI.personMsg=null;renderSheet();requestAnimationFrame(()=>document.getElementById('coach-study-'+c.id)?.scrollIntoView({block:'start'}));},
+  coachStudyOpen(v){const parts=String(v).split(':'),program=['dom','jp','us'].includes(parts.at(-1))?parts.pop():null,raw=parts.join(':'),ref=raw.startsWith('ax:')?raw.slice(3):raw;const O=coachStudyOptions(ref),c=O?.coach;if(!c){toast('현재 우리 구단의 코치가 아닙니다.');return;}UI.coachStudy={id:c.id,tid:G.user,program:program||undefined,focus:O.fields[0]?.k};UI.sheet=null;UI.person='c:'+(Object.keys(coachesOf(G.user)).find(k=>coachesOf(G.user)[k]?.id===c.id)||c.id);UI.personMsg=null;UI.psTab='study';renderSheet();requestAnimationFrame(()=>document.getElementById('coach-study-'+c.id)?.scrollIntoView({block:'start'}));},
   coachStudyProgram(v){const [id,program]=String(v).split(':'),state=coachStudySelection(id);if(!state)return;state.program=program;coachStudyRefresh();},
   coachStudyFocus(v){const [id,focus]=String(v).split(':'),state=coachStudySelection(id);if(!state)return;state.focus=focus;coachStudyRefresh();},
   coachStudySend(v){const [tid,id,program,focus]=String(v).split(':');if(+tid!==G.user||!staffOwned('coach',id)){toast('요청한 코치나 구단이 바뀌었습니다.');return;}const why=coachStudyCheck(id,program,focus);if(why){(UI.coachStudyMsg=UI.coachStudyMsg||{})[id]=why;renderSheet();return;}if(!UI._cfmPass){const doc=GUARD.coachStudySend(v);if(doc){UI.cfm={k:'coachStudySend',v,doc};cfmRender();return;}}const result=coachStudySend(id,program,focus);(UI.coachStudyMsg=UI.coachStudyMsg||{})[id]=result||'구단 지원으로 연수를 보냈습니다. 결과는 귀국한 뒤 볼 수 있습니다.';save();renderSheet();}
@@ -39248,8 +39372,9 @@ function coachProfileView(c,o){ /* o.more: 성격·관계 말 줄, o.avTeam: 사
     keys:[['기본 지도',rchip(c.sk),''],['기본 육성',rchip(c.dv),'']],sum:{t:`연 ${money(c.sal||0)}${c.ce?` · ${c.ce}년까지`:''}`,d:c.ax?'선수 육성을 돕는 보조 코치입니다.':(CROLE[c.role]?.d||'')}});
   const radar=''; /* 코치는 능력 차트 없이 사진 카드 + 세부 능력 표만(사용자 11-16) */
   const tags=`${S.map(k=>`<span class="pill good">${CAB[k]} 강점</span>`).join('')}${W.map(k=>`<span class="pill warn">${CAB[k]} 약함</span>`).join('')}`;
-  const cols=[[{h:'맡은 자리 능력',rows:D.map(k=>[CAB[k],a[k],'n'])},{h:'공통 능력',rows:['yng','com','ana'].filter(k=>!D.includes(k)).map(k=>[CAB[k],a[k],'n'])}],[{h:'그 밖의 지도',rows:rest.map(k=>[CAB[k],a[k],'n'])},...(o.more&&o.more.length?[{h:'성격·관계',rows:o.more.map(([l,w,d])=>[l,w,'w',d])}]:[])]];
-  return personGrid(hero,radar,personAttrs('세부 능력 · 100점 척도',cols.map((c,i)=>i===cols.length-1?[...c,{h:'계산 기준',html:'<p class="pc-note">기본 지도·육성은 세부 능력을 종합한 값입니다. 현재 근무 값에는 감독 사단·궁합이 반영됩니다.</p>'}]:c),tags?`<div class="pc-tags">${tags}</div>`:''));
+  /* 두 열 높이를 맞춘다: 성격·관계는 짧은 왼쪽 열 아래로(한 화면에 맞추기, UI 3단계 3-0) */
+  const cols=[[{h:'맡은 자리 능력',rows:D.map(k=>[CAB[k],a[k],'n'])},{h:'공통 능력',rows:['yng','com','ana'].filter(k=>!D.includes(k)).map(k=>[CAB[k],a[k],'n'])},...(o.more&&o.more.length?[{h:'성격·관계',rows:o.more.map(([l,w,d])=>[l,w,'w',d])}]:[])],[{h:'그 밖의 지도',rows:rest.map(k=>[CAB[k],a[k],'n'])},{h:'계산 기준',html:'<p class="pc-note">기본 지도·육성은 세부 능력을 종합한 값입니다. 현재 근무 값에는 감독 사단·궁합이 반영됩니다.</p>'}]];
+  return personGrid(hero,radar,personAttrs('세부 능력 · 100점 척도',cols,tags?`<div class="pc-tags">${tags}</div>`:''));
 }
 
 /* 인물 창(personSheet)에서 쓰는 큰 카드. 없으면 null(옛 카드 그대로). rest: 카드 아래에 이어 붙일 면담·관계 상자 */
@@ -41175,6 +41300,9 @@ const PATCH=[
     '일정 화면에서 고교 방문을 권역별로 한 달 또는 시즌 끝까지 한꺼번에 잡을 수 있습니다. 한 주에 한 곳, 덜 가 본 학교부터 잡습니다.',
     '고교 야구부 후원, 자매구단 교류 방문단, 직원 희망 보직 면담을 매주 월요일 자동으로 맡길 수 있습니다. 비용과 횟수 제한은 직접 할 때와 같고, 처리 내역은 받은편지함과 주간 요약에 남습니다.',
   ]},
+  {id:'2026-11-16-pick',d:'11월 16일',t:'지명권 교환 · 화면 한 장에 맞춤',items:[
+    '1라운드 지명권을 두 장 가진 채 한 장을 다른 1라운드와 바꾸면, 거래 뒤에도 두 장이라 세 장째 웃돈을 받지 않습니다.',
+    'PC에서 선수 상세·감독·코치 카드·재정 올해 예산이 화면 한 장에 들어옵니다. 감독·코치 카드는 개요·관계·연수·경력 탭으로 나눴습니다.']},
   {id:'2026-11-16-ui2',d:'11월 16일',t:'화면 정리 · 기기 옮기기 · 국내 스타',items:[
     '인물 카드를 새로 만들었습니다. 감독·코치·스카우트·분석원·단장 화면이 큰 사진과 세부 능력 표로 시작하고, 조작 버튼은 아래로 내려갔습니다.',
     '선수 화면 위에는 상황에 맞는 버튼 하나만 두고 나머지는 ⋯ 메뉴로 모았습니다. 목록은 줄을 누르면 상세가 열리고, 필터는 검색창·필터 버튼 한 줄로 정리했습니다.',

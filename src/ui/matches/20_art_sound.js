@@ -29,6 +29,7 @@ function sndSynth(c){ const sr=c.sampleRate, mk=(sec,fn,ch=1)=>{ const n=Math.fl
   SND.buf.thud=mk(.26,(d,n)=>{ let ph=0; for(let i=0;i<n;i++){ const t=i/sr, f=85+115*Math.exp(-t*38); ph+=2*Math.PI*f/sr; d[i]=Math.sin(ph)*Math.exp(-t*20)*.95+Math.sin(2*Math.PI*310*t)*Math.exp(-t*48)*.4+(Math.random()*2-1)*Math.exp(-t*240)*.45; } lp(d,.35); norm(d,.95); });
   SND.buf.crack=mk(.5,(d,n)=>{ for(let i=0;i<n;i++){ const t=i/sr; d[i]=(Math.random()*2-1)*Math.exp(-t*900)*.9+Math.sin(2*Math.PI*1180*t)*Math.exp(-t*38)*.55+Math.sin(2*Math.PI*2470*t)*Math.exp(-t*55)*.35+Math.sin(2*Math.PI*3900*t)*Math.exp(-t*80)*.2+Math.sin(2*Math.PI*150*t)*Math.exp(-t*30)*.5; } norm(d,.95); });
   /* 포수 미트 '퍽' */
+  SND.buf.bounce=mk(.18,(d,n)=>{ for(let i=0;i<n;i++){ const t=i/sr; d[i]=Math.sin(2*Math.PI*(120+90*Math.exp(-t*60))*t)*Math.exp(-t*34)*.9+(Math.random()*2-1)*Math.exp(-t*220)*.35; } lp(d,.3); norm(d,.7); }); /* 공이 잔디·흙에 튀는 둔한 소리 */
   SND.buf.mitt=mk(.25,(d,n)=>{ for(let i=0;i<n;i++){ const t=i/sr; d[i]=(Math.random()*2-1)*Math.exp(-t*160)+Math.sin(2*Math.PI*190*t)*Math.exp(-t*45)*.8; } lp(d,.25); norm(d,.8); });
   /* 바람 가르는 소리: 투구(길고 낮게), 스윙(짧고 날카롭게) */
   const whoosh=(sec,peak,a1,a2,v)=>mk(sec,(d,n)=>{ for(let i=0;i<n;i++)d[i]=Math.random()*2-1; let y=0,z=0; for(let i=0;i<n;i++){ const f=i/n, a=a1+(a2-a1)*Math.sin(Math.PI*f); y+=a*(d[i]-y); z+=a*(y-z); const env=Math.pow(Math.sin(Math.PI*Math.pow(f,peak)),2); d[i]=(y-z)*env; } norm(d,v); });

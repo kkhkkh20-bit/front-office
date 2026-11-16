@@ -470,6 +470,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(k==='scout'){ if(G.scouts.length>=scoutMax())return; const s=(G.scoutMarket||[]).find(x=>x.ob===id)||obScout(ob); G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.ob!==id); s.since=G.day; G.scouts.push(s); staffHistory('scout',s,'선임',G.user,'OB 출신 영입 · 연 '+money(s.sal)); obHireBonus(id,'스카우트'); addLog(`OB ${ob.name}을(를) 스카우트로 영입했습니다.`); save(); render(); return; }
     if(k==='front'){ ob.alt={k:'front',tid:G.user,t:`${tshort(G.user)} 프런트`}; ob.bond+=5; obHireBonus(id,'프런트'); addLog(`OB ${ob.name}이(가) 우리 프런트에 합류했습니다.`); save(); render(); } },
   reroll(){ UI.world=null; render(); },
+  psTab(v){ UI.psTab=v; renderSheet(); }, /* 인물 카드 구역 탭(UI 3단계 3-0) */
   person(v,el){ peopleCapture(v,el);UI.sheet=null; UI.person=v; UI.personMsg=null; UI.teamSh=null; renderSheet(); }, /* 선수 정보 안의 인물 링크(11-09r)와 구단 정보 창의 감독·코치(카페 11-09c)도 인물 창으로 */
   peopleStep(v){peopleStep(v);},
   relGo(v){ peopleCapture(v);const [a,id]=relKey({k:v}); UI.relK=v; A[a](id); }, /* 관계도 인물·선수 이전/다음(카페 11-10) */

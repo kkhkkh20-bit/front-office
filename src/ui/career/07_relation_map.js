@@ -166,9 +166,19 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps${PF?' ps-pc':''}" data-stop="1" role="dialog" aria-label="인물 정보">
     <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${PF?'':phWrap(avImg(x.av,true),cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${(x.k==='fan'||x.k==='press')?x.rel:''}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${(k==='fan'||k==='press')?(d>0?'+':'')+d:d>0?'가까워짐':'멀어짐'}`:''}${relTip}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span>${relTip}</div>`}
-    ${PF?PF.html+PF.rest:personTop(k)}${info}${relLikesCard(k)}${(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()}${sec('최근',recent)}
+    ${PF?personTabs(k,PF,info,recent,sec):personTop(k)+info+relLikesCard(k)+(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()+sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
 
+
+/* 감독·코치·직원 인물 카드: 긴 구역(관계·연수·경력)은 카드 안 탭으로 나눈다(UI 3단계 3-0, 구단주 11-16 "드래그 없게").
+   개요 탭에 사진 카드·세부 능력·면담 버튼을 두고, 아래 동작 버튼 줄은 탭과 상관없이 늘 보인다. */
+function personTabs(k,PF,info,recent,sec){
+  const car=(()=>{ try{ return personTimelineBox(relPlKey(k),'경력 이력'); }catch(e){ return ''; } })()+sec('최근',recent), likes=relLikesCard(k), rest=PF.rest||'';
+  const T=[['main','개요'],['rel','관계·성향'],...(rest.includes('coach-study')?[['study','구단 지원 연수']]:[]),...(car?[['car','경력']]:[])].filter(([t])=>t!=='rel'||info||likes||/staff-more|network-person-note/.test(rest));
+  const cur=T.some(t=>t[0]===UI.psTab)?UI.psTab:'main';
+  return `<div class="chips ps-tabs" role="tablist" aria-label="인물 정보 구역">${T.map(([t,l])=>`<button type="button" role="tab" data-a="psTab" data-v="${t}" class="${t===cur?'on':''}" aria-selected="${t===cur}">${l}</button>`).join('')}</div>
+    <div class="ps-body pst-${cur}">${rest?`<div class="ps-pane ps-staff" data-pst="main rel study">${rest}</div>`:''}<div class="ps-pane" data-pst="main">${PF.html}</div>${info||likes?`<div class="ps-pane" data-pst="rel">${info}${likes}</div>`:''}${car?`<div class="ps-pane" data-pst="car">${car}</div>`:''}</div>`;
+}
 
 /* 관계 화면 사람 → 인물 이력부 키 */
 function relPlKey(k){ if(k==='mgr')return plKeyMgr(G.mgr[G.user]); if(k.startsWith('c:')){ const ref=k.slice(2), c=coachesOf(G.user)[ref]||staffOwned('coach',ref); return plKeyCoach(c); } if(k.startsWith('gm:')){ const g=gmOf(+k.slice(3)); return g?'gm:'+g.id:null; } return null; }
