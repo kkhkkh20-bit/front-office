@@ -4554,6 +4554,14 @@ T('[인맥 11-17] 친밀도: 관리하던 사람은 프리시즌(스프링캠프
   const t=G.teams.find(x=>x.id!==G.user); G.gmc=G.gmc||{}; G.gmc[t.id]={call:G.day-20}; t.rel=60; const u=G.teams.find(x=>x.id!==G.user&&x.id!==t.id); delete G.gmc[u.id]; u.rel=60; gmRelYear(); ok(t.rel>=59&&u.rel<=58,'연락한 단장과 안 한 단장의 새해 되돌림이 같음 '+t.rel+'/'+u.rel);
   G.rels={'a|b':{v:40,why:[],d:G.day-10},'c|d':{v:40,why:[],d:G.day-500}}; relsYear(); ok(G.rels['a|b'].v>G.rels['c|d'].v,'AI 관계도 최근에 만났으면 덜 되돌아가야 함');
   if(!team(G.user).indie){ const o=cwRapP('own'); o.rap=50; o.rapD=G.day-50; const p0=period(); G.day=dnum(G.year,1,5); for(let i=0;i<12;i++){ cwRapWeek(); G.day+=7; } ok(o.rap===50,'함께 볼 경기가 없는 겨울에 구단주 친밀도가 식음 '+o.rap+' '+p0); } });
+T('[훈련 11-17] 해외 연수 일괄 보내기: 입대 예정·상무 지원 선수는 빠지고, 비용은 한 명씩 보낸 합과 같으며 정원을 넘지 않는다',()=>{ fresh(); G.day=dnum(G.year,9,5); const k='jpl', o=OVS[k]; let V=ovsBulkView(k); ok(V.ok&&V.rows.length>=4,'준비 실패: 보낼 수 있는 선수 '+V.rows.length);
+  const a=G.players[V.rows[0].id], b=G.players[V.rows[1].id]; a.mil={unit:'상무',from:dnum(G.year+1,6,10),until:dnum(G.year+1,6,10)+540}; b.mil={app:'dec'}; V=ovsBulkView(k);
+  ok(!V.rows.some(r=>r.id===a.id||r.id===b.id)&&V.skip.some(x=>x.id===a.id)&&V.skip.some(x=>x.id===b.id),'입대 예정·상무 지원 선수가 목록에 남음');
+  const on=V.rows.filter(r=>r.on).map(r=>r.id); ok(on.length>0&&on.length<=V.left&&on.length<=ovsLim(o),'기본 선택 수 '+on.length+'/'+V.left);
+  ok(ovsBulk(k,V.rows.slice(0,V.left+1).map(r=>r.id)).n===0,'정원보다 많이 보냄');
+  const s0=G.spend.dev||0, r=ovsBulk(k,on); ok(r.n===on.length&&!r.fail.length,'일괄 신청 실패 '+r.msg); const bulk=(G.spend.dev||0)-s0; ok(Math.abs(bulk-on.length*o.c)<1e-6&&Math.abs(r.cost-bulk)<1e-6,'일괄 비용 '+bulk);
+  for(const id of on)setOvs(id,''); ok(Math.abs((G.spend.dev||0)-s0)<1e-6,'취소 환급이 맞지 않음'); const s1=G.spend.dev||0; for(const id of on)setOvs(id,k); ok(Math.abs(((G.spend.dev||0)-s1)-bulk)<1e-6,'한 명씩 보낸 합과 다름');
+  for(const id of on)setOvs(id,''); G.auto=G.auto||{}; autoSet('ovsb',[k]); G.ovsAutoY={}; autoRoutine(['ovsb']); ok((G.ovs||[]).filter(x=>x.prog===k).length===on.length,'업무 권한 자동 신청이 기본 선택과 다름'); autoRoutine(['ovsb']); ok((G.ovs||[]).filter(x=>x.prog===k).length===on.length,'한 해 두 번 채움'); });
 T('[단장 돈·시설] 장학재단을 오래 운영하면 연고 출신 FA가 우리 구단을 조금 더 반긴다(상한 있음)',()=>{ fresh(); const S=personalState(); S.cash=1000; personalFound(); const F=S.found; ok(F,'재단 없음');
   const p=Object.values(G.players).find(q=>q.team!=null&&q.team!==G.user&&!q.foreign&&homeTie(q,G.user)); ok(p,'준비 실패: 연고 출신 선수 없음'); const a0=faAppeal(p,G.user).f; F.y=G.year-3; const a1=faAppeal(p,G.user).f; F.y=G.year-40; const a2=faAppeal(p,G.user).f;
   ok(a1>a0,'재단 인연 없음 '+a0+' '+a1); ok(a2-a0<=FOUND_FA.max+1e-9,'상한 없음 '+(a2-a0)); ok(faAppeal(p,G.user).parts.some(x=>/장학재단/.test(x[0])),'항목 이름 없음'); });

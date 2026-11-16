@@ -151,7 +151,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0}; save(); render(); },
   devSet(v){ const [id,k]=v.split(':'); UI.devMsg=setDev(+id,k||null); if(!UI.devMsg&&k)sfx('confirm',.5); save(); if(UI.sheet!=null)renderSheet(); render(); },
   devOff(v){ setDev(+v,null); save(); render(); },
-  ovsSet(v){ const [id,k]=v.split(':'); UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
+  ovsSet(v){ const [id,k]=v.split(':'); UI.devOk=false; UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
   fallSet(v){ UI.devMsg=setFall(v||null); save(); render(); },
   listP(v){ listPlayer(+v); save(); render(); },
   tsugGo(v){ const [src,i]=v.split(':'); const s=(src==='k'?UI._tsugK:src==='f'?UI._find:src==='r'?((UI._rec&&UI._rec.list)||[]):UI._tsug||[])[+i]; if(!s||!tsugValid(s)){ UI.deskMsg='상황이 바뀌어 다시 찾아야 합니다.'; UI.deskOk=false; render(); return; }
