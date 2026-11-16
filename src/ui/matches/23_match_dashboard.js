@@ -81,12 +81,24 @@ function mdFaces(g,s,shown=s){ if(s.finished||!s.batter)return ''; const pid=s.t
     const vs=pitch?(G.players[s.batter]?.bt==='좌'?'좌':'우'):(G.players[pid]?.th==='좌'?'좌':'우');
     return `<button class="cs-face ${pitch?'r':'l'}" data-a="castPlayer" data-v="${id}"><span class="cs-face-ph">${G.players[id]?avImg(p):''}</span><span class="cs-face-tx"><i>${pitch?'투수':'타자'}${no!=null?' · #'+no:''}</i><b>${esc(p.name)}</b><em>${esc(sub)}</em><small>${esc(today)} ${mdWpa(w)}</small>${mdDuelMore(g,id,pitch,vs,total,pitch&&(g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id)}</span></button>`; };
   return card(s.batter,false)+card(pid,true); }
+/* 감독 운영(사용자 11-16): 경기 기록에 남는 감독 결정(투수 교체·도루 시도·희생번트)과 그 결과를 승리 확률 기여로. 지금 장면까지만.
+   투수 교체는 바뀐 투수가 그 뒤로 막은 기여, 도루·번트는 그 장면의 기여. 대타·고의사구는 기록에 없어 다루지 않는다 */
+function mdMgrEvents(g,upTo){ const L=g.pbp||[], D=typeof wpaDeltas==='function'?wpaDeltas(g):[], at=new Map(D.map(r=>[r[0],r])), W=typeof wpaUpTo==='function'?wpaUpTo(g,upTo):{}, out=[];
+  const cur={a:g.box.a?.pit?.[0]?.id??null,h:g.box.h?.pit?.[0]?.id??null};
+  for(let k=0;k<Math.min(upTo,L.length);k++){ const x=L[k], top=x[0]%2===0, def=top?'h':'a', off=top?'a':'h', inn=cHalfTxt(x[0]);
+    if(x[1]==='PC'){ const old=cur[def]; cur[def]=x[2]; out.push({side:def,inn,kind:'투수 교체',text:`${old?mdPlayer(g,old).name+' → ':''}${mdPlayer(g,x[2]).name}`,w:W[x[2]]??0,note:'교체 뒤 기여'}); }
+    else if(x[1]==='SB'||x[1]==='CS'){ const r=at.get(k); out.push({side:off,inn,kind:x[1]==='SB'?'도루 성공':'도루 실패',text:mdPlayer(g,x[2]).name,w:r?r[3]:0}); }
+    else if(typeof x[1]==='number'&&(x[3]==='SAC'||x[16])){ const r=at.get(k); out.push({side:off,inn,kind:x[16]?'번트 실패':'희생번트',text:mdPlayer(g,x[1]).name,w:r?r[3]:0}); } }
+  return out; }
+function mdMgr(g,s){ if(!g.box)return ''; const E=mdMgrEvents(g,s.k), name=side=>{ const tid=side==='h'?g.home:g.away, m=G.mgr&&G.mgr[tid]; return `${esc(tshort(tid))}${m&&m.name?' · '+esc(m.name)+' 감독':''}`; };
+  const sum=side=>E.filter(e=>e.side===side).reduce((a,e)=>a+e.w,0), row=e=>`<li style="--tc:${cTeamCol(e.side==='h'?g.home:g.away)}"><i>${e.inn}</i><b>${e.kind}</b><span>${esc(e.text)}</span>${mdWpa(e.w)}</li>`;
+  return `<button class="cs-mgr-h" data-a="castMgr" aria-expanded="${castPref('mgr')}">감독 운영 ${castPref('mgr')?'▾':'▴'}</button><div class="cs-mgr-sum">${['a','h'].map(sd=>`<span style="--tc:${cTeamCol(sd==='h'?g.home:g.away)}">${name(sd)} <em>${E.filter(e=>e.side===sd).length}건</em> ${mdWpa(sum(sd))}</span>`).join('')}</div><ol class="cs-mgr-list">${E.length?E.slice(-6).reverse().map(row).join(''):'<li class="z">아직 감독 결정이 없습니다</li>'}</ol>`; }
 function castDashboardUpdate(g,k){
   if(!document.querySelector('.match-dashboard'))return;
   const s=castSnapshot(g,k),c=UI.cast;
   for(const side of ['a','h']){const T=s.teams[side];mdSet('md-role-'+side,s.finished?'종료':side===s.attack?'공격':'수비');mdSet('md-field-'+side,mdMiniField(g,side,s));mdSet('md-lineup-'+side,mdLineup(g,side,s));mdSet('md-pitcher-'+side,`${s.legacy?'이전 기록 · 위치 일부 참고 · ':''}마운드 <b>${T.pitcher?esc(mdPlayer(g,T.pitcher).name):'기록 없음'}</b>${mdBullpen(g,side,s)}`);}
   mdSet('md-ticker',mdTicker(g,s));  mdSet('md-stats',mdStats(g,s));mdSet('md-events',mdEvents(g,s));mdSet('md-hits',mdHitBars(g,s));mdSet('md-flow',mdFlowChart(g,s,false));mdSet('md-prob',mdFlowChart(g,s,true));mdSet('md-linescore',mdScoreLine(g,s));
-  mdSet('cs-vs',mdDuel(g,s,c?.completed===k?castSnapshot(g,k+1):s));mdSet('cs-faces',mdFaces(g,s,c?.completed===k?castSnapshot(g,k+1):s));
+  mdSet('cs-vs',mdDuel(g,s,c?.completed===k?castSnapshot(g,k+1):s));mdSet('cs-faces',mdFaces(g,s,c?.completed===k?castSnapshot(g,k+1):s));mdSet('cs-mgr',mdMgr(g,s));
   const team=c?.team||((g.away===G.user)?'a':'h'),roster=document.getElementById('md-roster');if(roster)roster.dataset.team=team;mdSet('md-roster',mdRoster(g,s,team));
   document.querySelectorAll('[data-a="castTeam"]').forEach(b=>b.classList.toggle('on',b.dataset.v===team));
   const last=s.k?pbpCall(g,s.k-1):null;mdSet('md-comment',last?`<span>캐스터</span><b>${esc(last.c)}</b>`:'<span>경기 중계</span><b>플레이볼을 기다립니다.</b>');

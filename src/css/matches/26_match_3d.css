@@ -370,3 +370,12 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 
 /* 오늘 승리 확률 기여 표시 */
 .md-wpa{font:700 10px var(--f-num);font-style:normal;padding:0 4px;border-radius:3px;background:#ffffff12;color:#c6d3db}.md-wpa.p{color:#7fe0a0;background:#2e8a5133}.md-wpa.n{color:#ff9a8e;background:#a8433b33}
+
+/* 감독 운영 상자(왼쪽 위, 반투명, 접고 펼침) */
+.cs-mgr{display:none}
+.cs-stage.has-3d>.cs-mgr{display:block;position:absolute;left:10px;top:10px;z-index:5;width:268px;padding:6px 8px;border:1px solid #ffffff1c;border-radius:6px;background:#0b17208c;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);color:#e9f0f4;font-size:11px;text-shadow:0 1px 2px #000a}
+.cs-mgr-h{border:0;background:none;color:#e6eef3;font-weight:800;font-size:11.5px;padding:0;cursor:pointer}
+.cs-mgr-sum{display:grid;gap:2px;margin-top:4px}.cs-mgr-sum span{display:flex;align-items:center;gap:5px;padding-left:6px;border-left:3px solid var(--tc)}.cs-mgr-sum em{font-style:normal;color:#9fb6c3;margin-left:auto}
+.cs-mgr-list{list-style:none;margin:5px 0 0;padding:0;display:grid;gap:2px;max-height:132px;overflow:auto}.cs-mgr-list li{display:grid;grid-template-columns:44px 52px minmax(0,1fr) auto;gap:4px;align-items:center;padding:1px 0 1px 6px;border-left:3px solid var(--tc,#5b6b75)}.cs-mgr-list li.z{display:block;color:#9fb6c3}.cs-mgr-list i{font-style:normal;color:#9fb6c3;font-size:10px}.cs-mgr-list b{font-weight:700;font-size:10.5px}.cs-mgr-list span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.match-dashboard[data-mgr="closed"] .cs-mgr :is(.cs-mgr-sum,.cs-mgr-list){display:none}
+@media(max-width:1000px){.cs-stage.has-3d>.cs-mgr{display:none}}
