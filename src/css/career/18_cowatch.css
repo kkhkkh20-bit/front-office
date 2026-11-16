@@ -11,7 +11,7 @@
 .cw-ord{border-color:#e3b44c66;background:#e3b44c12}.cw-ord b{font-size:14.5px}.cw-ord p{margin:0;font-size:13px;line-height:1.5}
 .cw-o{grid-template-columns:auto 1fr;column-gap:8px;align-items:center;flex:1 1 100%}
 .cw-o>b{grid-column:2}.cw-o>i{grid-column:2;line-height:1.45}
-.cw-tag{grid-row:1/span 2;align-self:start;font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cw-tag{grid-row:1/span 2;align-self:start;font-size:var(--ui-caption);font-weight:700;padding:2px 6px;border-radius:6px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
 .cw-tag.t-sg{color:var(--warn);border-color:#e3b44c66}
 .cw-ctl{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px}
 .cw-ctl .btn{flex:1 1 auto}
@@ -21,12 +21,12 @@
 /* 창단 드래프트 후보 표(휴대폰): 이름 칸을 줄이고 숫자 칸을 최대한 많이 보이게 */
 @media (max-width:600px){
   .fdt th,.fdt td{padding:5px 3px}
-  .fdt thead th{font-size:11px}
+  .fdt thead th{font-size:var(--ui-caption)}
   .fdt tbody th,.fdt thead th.c0{min-width:0!important;max-width:150px;padding-left:2px}
   .fdn{gap:2px}.fds{min-width:16px;font-size:13px;padding:0}
   .fdnm b{font-size:12.5px;white-space:nowrap}.fdnm i{font-size:var(--ui-micro);white-space:nowrap!important;letter-spacing:-.2px}
-  .rkp{font-size:var(--ui-tiny);margin-left:3px;padding:0 3px}
-  .fdgo{padding:3px 5px!important;font-size:11px!important}
+  .rkp{font-size:var(--ui-caption);margin-left:3px;padding:0 3px}
+  .fdgo{padding:3px 5px!important;font-size:var(--ui-caption)!important}
   .fdt td.fdg{font-size:13px!important;min-width:26px}
   .fdt td{min-width:0}
 }
@@ -57,7 +57,7 @@
 .cg-w{max-height:520px;overflow:auto}.cg{border-collapse:separate;border-spacing:0;font-size:12px;min-width:520px}.cg th,.cg td{padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:left}
 .cg thead th{position:sticky;top:0;background:var(--panel);z-index:2}.cg tbody th,.cg tfoot th{position:sticky;left:0;background:var(--panel);z-index:1;font-weight:600}.cg tfoot td,.cg tfoot th{position:sticky;bottom:0;background:var(--panel);border-top:1px solid var(--line);font-weight:700}
 .cg-c.fix{font-weight:600}.cg-c.est{color:var(--muted);font-style:italic}.cg-c.fa{color:var(--warn)}.cg-c.none,.cg-c.neg{color:var(--muted)}.cg-m{font-style:normal;font-size:var(--ui-micro);padding:0 4px;border-radius:4px;border:1px solid var(--line);margin-left:3px}
-.cg-k{font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--line)}.cg-k.est{font-style:italic;color:var(--muted)}.cg-k.fa{color:var(--warn)}
+.cg-k{font-size:var(--ui-caption);padding:1px 6px;border-radius:4px;border:1px solid var(--line)}.cg-k.est{font-style:italic;color:var(--muted)}.cg-k.fa{color:var(--warn)}
 /* 리그 분포 산점도 */
 .ds-w{width:100%;overflow-x:auto}.ds{width:100%;min-width:320px;height:auto;display:block}.ds .gr{stroke:var(--line);stroke-width:1}.ds .md{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.7}.ds .tk,.ds .al{fill:var(--muted);font-size:11px}.ds .al{font-size:12px}
 .ds-p circle{fill:var(--muted);opacity:.35;stroke:var(--panel);stroke-width:1.5}.ds-p.w circle{fill:var(--warn);opacity:.9}.ds-p.me circle{fill:var(--acc);opacity:1}.ds-p .hit{fill:transparent;stroke:none;opacity:1}.ds-p text{fill:var(--ink);font-size:11px;paint-order:stroke;stroke:var(--panel);stroke-width:3}.ds-p{cursor:pointer}.ds-p:hover circle:not(.hit){opacity:1;r:6}
@@ -67,17 +67,17 @@
 .gl-b.w{fill:var(--acc)}.gl-b.l{fill:var(--bad);opacity:.75}.gl-b.t{fill:var(--muted)}.gl-l{fill:none;stroke:var(--acc);stroke-width:2}.gl-d{fill:var(--acc);stroke:var(--panel);stroke-width:2}.ds-k i.lsq{background:var(--bad);opacity:.75;border-radius:2px}
 /* 리그 백분위 */
 .pct{margin:4px 0 12px}.pct-r{display:grid;grid-template-columns:minmax(84px,30%) 1fr 48px 36px;align-items:center;gap:8px;font-size:12px;padding:3px 0}.pct-r.off{opacity:.5}
-.pct-b{position:relative;height:6px;background:var(--line);border-radius:3px}.pct-b i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;opacity:.55}.pct-b em{position:absolute;top:50%;transform:translate(-50%,-50%);min-width:22px;height:20px;line-height:20px;border-radius:10px;color:#fff;font-style:normal;font-size:11px;font-weight:700;text-align:center;border:2px solid var(--panel)}
+.pct-b{position:relative;height:6px;background:var(--line);border-radius:3px}.pct-b i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;opacity:.55}.pct-b em{position:absolute;top:50%;transform:translate(-50%,-50%);min-width:22px;height:20px;line-height:20px;border-radius:10px;color:#fff;font-style:normal;font-size:var(--ui-caption);font-weight:700;text-align:center;border:2px solid var(--panel)}
 .pct-r>b{text-align:right;font-variant-numeric:tabular-nums}.pct-r>i{font-style:normal;font-size:var(--ui-micro);color:var(--muted)}
 
 .ds{max-width:680px;margin-left:auto;margin-right:auto}
 
 /* 좌우 상대 비교 */
-.spl{margin:4px 0 12px}.spl-h,.spl-r{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:center;font-size:12px;padding:3px 0}.spl-h{color:var(--muted);font-size:11px}
+.spl{margin:4px 0 12px}.spl-h,.spl-r{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:center;font-size:12px;padding:3px 0}.spl-h{color:var(--muted);font-size:var(--ui-caption)}
 .spl-b{position:relative;display:flex;align-items:center;height:18px;background:var(--line);border-radius:4px;overflow:hidden}.spl-b i{position:absolute;left:0;top:0;bottom:0;background:var(--acc);opacity:.35}.spl-b.r i{background:var(--ink);opacity:.22}.spl-b b{position:relative;padding-left:6px;font-variant-numeric:tabular-nums}
 .roll{margin:4px 0 12px}
 /* 리그 분포 확장: 축·포지션 선택, 관심 선수 마름모, 선택 점 테두리, 선택 요약 */
-.ds-f{display:inline-flex;flex-direction:column;gap:2px;font-size:11px;color:var(--muted)}.ds-f select{min-height:36px;font-size:13px}
+.ds-f{display:inline-flex;flex-direction:column;gap:2px;font-size:var(--ui-caption);color:var(--muted)}.ds-f select{min-height:36px;font-size:13px}
 .ds-p path{fill:var(--warn);stroke:var(--panel);stroke-width:1.5}.ds-p.w:not(.me) circle.pt{display:none}
 .ds-p.sel circle.pt,.ds-p.sel path{stroke:var(--ink);stroke-width:2.5;opacity:1}.ds-p.sel circle.pt{r:6}
 .ds-k i.dia{border-radius:1px;transform:rotate(45deg);width:8px;height:8px}
@@ -87,12 +87,12 @@
 .ds-mine{margin:6px 0 4px}.chip-x{display:inline-flex;gap:2px}.ds-near{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}.ds-near .tc-i,.ds-mine .tc-i{min-height:32px}
 .pct-g{margin:10px 0 4px;font-size:12.5px;cursor:help}.pct-g b{font-weight:700}
 /* 에셋 v2.1: 유니폼·모자 줄, 대회 마크, 구장 분위기 배경, 포스트시즌 진출팀 */
-.uni-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:6px 0 10px}.uni-row figure{margin:0;display:grid;justify-items:center;gap:2px}.uni-row img{object-fit:contain;display:block}.uni-row figcaption{font-size:11px;color:var(--muted)}
+.uni-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:6px 0 10px}.uni-row figure{margin:0;display:grid;justify-items:center;gap:2px}.uni-row img{object-fit:contain;display:block}.uni-row figcaption{font-size:var(--ui-caption);color:var(--muted)}
 .tpg.cmp .tmk:not(.open) .tp-uni{display:none}.tp-uni{margin-top:6px}
 .bg-hero{background-size:cover;background-position:center 60%;border-radius:10px;padding:14px 14px 10px;margin:0 0 10px;color:#f4f6f8}.bg-hero .small,.bg-hero .sdesc{color:#d9dee4}.bg-hero dt{color:#c9d1d9}
 .ps-hero{display:flex;align-items:center;min-height:86px}.ps-head{display:flex;gap:12px;align-items:center}.ps-head b{display:block;font-size:18px}.ps-head .small{color:#d9dee4}
 .cmark{display:inline-block;vertical-align:middle;object-fit:contain}.ps-r{display:flex;gap:10px;align-items:center}.ps-m{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ps-t{display:inline-flex;align-items:center;gap:4px}.ps-t.me b,.ps-t.me{font-weight:700;color:var(--ink)}
-.ps-seeds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}.ps-seed{display:grid;justify-items:center;gap:3px;padding:8px 4px;border:1px solid var(--line);border-radius:10px;text-align:center}.ps-seed.me{border-color:var(--acc)}.ps-seed i{font-style:normal;font-size:var(--ui-micro);color:var(--muted);line-height:1.3}.ps-seed .num{font-size:11px;color:var(--muted)}
+.ps-seeds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}.ps-seed{display:grid;justify-items:center;gap:3px;padding:8px 4px;border:1px solid var(--line);border-radius:10px;text-align:center}.ps-seed.me{border-color:var(--acc)}.ps-seed i{font-style:normal;font-size:var(--ui-micro);color:var(--muted);line-height:1.3}.ps-seed .num{font-size:var(--ui-caption);color:var(--muted)}
 @media (max-width:600px){.ps-seeds{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .ps-champ{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid #d5b46a55;border-radius:10px;margin:0 0 10px;background:#d5b46a10}.ps-champ b{display:flex;align-items:center;gap:6px;font-size:17px}.ps-champ>div{display:grid;gap:2px}
 .nt-id{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 10px}.nt-id>div:not(.uni-row){display:grid;gap:2px}.nt-id .uni-row{margin:0 0 0 auto}

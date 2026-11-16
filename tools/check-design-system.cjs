@@ -15,6 +15,12 @@ for(const [width,height]of [[1366,768],[1024,768],[390,844]]){
   if(route==='roster'){const aligned=await p.evaluate(()=>{const h=document.querySelector('.roster-list h2'),first=document.querySelector('.roster-list tbody tr:not(.grp) td');return Math.abs(h.getBoundingClientRect().left-(first.getBoundingClientRect().left+parseFloat(getComputedStyle(first).paddingLeft)))<3;});assert.ok(aligned,'선수단 제목과 첫 열 시작점');}
   if(route==='staff:coach'&&width>=700){const lines=await p.evaluate(()=>{const cards=[...document.querySelectorAll('.cgrid>.csl:not(.empty)')].slice(0,2);if(cards.length<2||getComputedStyle(cards[0].parentElement).gridTemplateColumns.split(' ').length<2)return [];return ['.csl-h','.csl-n','.csl-s','.staff-primary-grid','.staff-bio'].filter(selector=>Math.abs(cards[0].querySelector(selector).getBoundingClientRect().top-cards[1].querySelector(selector).getBoundingClientRect().top)>1);});assert.deepEqual(lines,[],'코치 카드 이름·능력·설명 행 정렬');}
  }
+ /* 12px 하한(UI 3단계 3-2): 측정 화면 목록 전체에서 12px 미만 글이 없다(그림 SVG 안 글자와 경기 중계는 3-5에서 따로) */
+ for(const route of ['inbox','cal','roster','me','league:stand','league:score','league:rec','league:stat','league:wire','league:nt','league:hist','club:info','club:owner','club:fans','club:spon','club:inv','club:chron','cfg:set','transfer:fa','transfer:draft','transfer:kbo','transfer:contract','trade:market','trade:block','staff:mgr','staff:train','staff:scouts','staff:anl','staff:smkt']){
+  await p.evaluate(route=>{closeSheets();A.go(route);},route);
+  const tiny=await p.evaluate(()=>{const root=document.querySelector('#sheet .sheet')||document.querySelector('#app'),bad=[];for(const el of root.querySelectorAll('*')){if(el.closest('svg,script,style,.cast,.match-dashboard')||!el.getClientRects().length||![...el.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()))continue;const r=el.getBoundingClientRect(),s=getComputedStyle(el);if(!r.width||!r.height||s.visibility==='hidden')continue;if(parseFloat(s.fontSize)<12)bad.push([el.tagName,el.className,s.fontSize,el.textContent.trim().slice(0,20)]);}return bad.slice(0,6);});
+  if(tiny.length)typeFailures.push({width,route,tiny});
+ }
  /* 강조 버튼은 본문·시트마다 하나, 고른 상태(.on)는 채운 색이 아니다(UI 3단계 3-3) */
  for(const route of ['home','me','cfg:set','club:inv','club:fans','staff:scouts','staff:anl','trade:block','league:stat','player','contract']){
   await p.evaluate(route=>{closeSheets();if(route==='player')A.player(domestic(G.user)[0].id);else if(route==='contract')A.ngtOpen('ext:'+domestic(G.user).find(canExtend).id);else A.go(route);},route);
