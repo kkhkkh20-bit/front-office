@@ -71,7 +71,9 @@ function autoDaily(day){ if(!G.auto||G.unemp)return; if(dobj(day).w===1&&G.autoW
   if(dobj(day).m<=2&&day>=KD(1,5))try{ autoConfirm(); }catch(e){} } /* 확정일이 지난 뒤 위임하거나 대기 사유가 풀려도 다음 날부터 다시 확인 */
 /* 받은 트레이드 제안: 맡겼으면 부단장이 바로 거절한다 */
 /* 우리 평가(부단장 의견과 같은 기준)로 받는 쪽 가치 - 주는 쪽 가치 */
-function troDiff(off){ const U=team(G.user); const P=id=>G.players[id]; const pk=pkNorm(off.pk); return stackIn(off.give.map(P).filter(Boolean).map(p=>tval(U,p,'in')))-sum(off.get.map(P).filter(Boolean).map(p=>tval(U,p,'out')))-(off.cash||0)/250+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); }
+/* 현금은 트레이드 값 계산과 같은 식(cashVal·cashCost, 16_trade): 받는 현금(cash<0)은 체감 가치, 주는 현금은 그만큼 손해(점검 11-17: 예전 /250로 따로 셈) */
+const troCash=(U,c)=>c<0?cashVal(U,-c):-cashCost(U,-c);
+function troDiff(off){ const U=team(G.user); const P=id=>G.players[id]; const pk=pkNorm(off.pk); return stackIn(off.give.map(P).filter(Boolean).map(p=>tval(U,p,'in')))-sum(off.get.map(P).filter(Boolean).map(p=>tval(U,p,'out')))+troCash(U,off.cash||0)+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); }
 function autoTradeOffer(off){ if(!autoOn('tro'))return false;
   if(G.auto.tro==='good'){ let df=-99; try{ df=troDiff(off); }catch(e){} if(df>=-1){ off.asst=`부단장 1차 검토: 우리 평가로 ${df>=0?'공정 이상':'공정에 가까운(손해 1 이내)'} 제안이라 직접 보시도록 올립니다.`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장이 올림','유망한 제안'); return false; } } G.offers=(G.offers||[]).filter(x=>x.id!==off.id); try{ offerMailDone(off.id); }catch(e){} /* 부단장이 거절한 제안의 메일은 미결로 남기지 않는다(PR #4 검수) */ const d=`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 주고 ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 원한 제안`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',d); if(!off.blk)mail('부단장',`${tshort(off.from)} 트레이드 제안: 부단장이 거절`,`${tname(off.from)}이(가) ${d}을 보냈고, 맡기신 대로 부단장이 정중히 거절했습니다. 직접 검토하려면 설정 · 권한에서 '받은 트레이드 제안'을 가져오세요.`,{kind:'트레이드'}); /* 매물 제안은 매일 올 수 있어 메일 없이 위임 기록만 */ return true; }
 /* 스태프 빼가기: 맡겼으면 바로 정한다 */

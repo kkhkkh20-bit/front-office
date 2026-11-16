@@ -85,18 +85,28 @@ function gmContact(tid,kind){ const t=team(tid), g=gmOf(tid); if(!g)return {msg:
     return {msg:`${g.name} 단장과 저녁 식사를 했습니다(1천만 원). 친분 상승. ${g.trait==='hard'?'식사는 즐겁게 했지만 협상은 별개라고 선을 긋습니다.':'다음 거래 때 잘 봐 달라는 말이 오갔습니다.'}${(()=>{ /* 식사 자리에서 속내를 조금 듣는다: 우리 선수 중 누구를 탐내는지 */ try{ const L=aiInterest(tid).map(x=>typeof x==='object'?x:G.players[x]).filter(Boolean); return L.length?` 술잔이 돌자 ${pidName(L[0])}(${posLabel(L[0])}) 이야기를 슬쩍 꺼냈습니다.`:' 지금은 우리 선수에게 특별히 눈독 들이는 사람은 없어 보입니다.'; }catch(e){ return ''; } })()}`,ok:true}; }
   return {msg:''}; }
 /* 역제안: 조금 모자랄 때 상대가 조건을 바꿔 다시 제시 */
-function counterOffer(tid,give,get,cash,pk){ cash=cash||0; const ev=(g,t)=>evalTrade(tid,g,t,cash,pk); /* 지명권도 넣어 계산(검수 11-06) */ const e=ev(give,get); const gap=e.need-e.gain; if(gap<=0||gap>9)return [];
-  const out=[]; const U=team(G.user);
-  const add=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)&&!p.ys&&healthy(p)&&!ntcOf([p.id])) /* 거부권 선수는 역제안에 넣지 않는다(제출 검사와 같게) */.map(p=>({p,ng:give.concat(p.id)})).filter(x=>{ const e2=ev(x.ng,get); return e2.ok&&e2.theirN<=ROSTER_MAX; }).map(x=>({...x,c:tval(U,x.p,'out')})).sort((a,b)=>a.c-b.c)[0];
-  if(add)out.push({give:add.ng,get:[...get],why:`${add.p.name}을(를) 더 얹어 주시면 하겠습니다.`});
-  if(get.length>1){ for(const id of [...get].sort((a,b)=>tval(team(tid),G.players[b],'out')-tval(team(tid),G.players[a],'out'))){ const ng=get.filter(x=>x!==id); if(ev(give,ng).ok){ out.push({give:[...give],get:ng,why:`${G.players[id].name}은(는) 못 드립니다. 나머지로 하시죠.`}); break; } } }
-  if(out.length<2&&get.length===1){ const p=G.players[get[0]]; const k=pSlot(p); const alt=domestic(tid).filter(q=>q.id!==p.id&&!q.ys&&healthy(q)&&pSlot(q)===k&&!ntcOf([q.id])).map(q=>({q,e:ev(give,[q.id])})).filter(x=>x.e.ok).sort((a,b)=>ovr(b.q)-ovr(a.q))[0];
-    if(alt&&ovr(alt.q)>=ovr(p)-8)out.push({give:[...give],get:[alt.q.id],why:`${p.name} 대신 ${alt.q.name}(${posLabel(alt.q)})이면 됩니다.`}); }
-  /* 유망주 수집·긴축 구단은 선수보다 지명권을 먼저 부른다: 우리가 가진 지명권 중 값이 가장 작은 한 장으로 맞는지 본다 */
-  if(get.length&&['build','tight'].includes(planOf(team(tid)))&&!(G.draft&&!G.draft.done)){ try{ const p0=pkNorm(pk); if(p0.y===pkYear()){ const T=team(tid); const H=pkHeld(G.user).filter(k=>!p0.give.includes(k)).map(k=>({k,v:pkVal(T,k)})).sort((a,b)=>a.v-b.v);
-      for(const x of H){ const p2={give:[...p0.give,x.k],get:[...p0.get],y:p0.y}; if(pkCheck(tid,give,get,p2))continue; const e2=evalTrade(tid,give,get,cash,p2); if(e2.ok&&e2.theirN<=ROSTER_MAX){ out.unshift({give:[...give],get:[...get],pk:p2,why:`저희는 선수보다 지명권을 원합니다. ${pkName(x.k)} 지명권을 얹어 주시면 하겠습니다.`}); break; } } } }catch(e){} }
-  for(const c of out){ c.cash=cash; c.pk=c.pk||pkNorm(pk); } /* 역제안은 그때 현금·지명권 조건으로 고정 */
-  return gmTrait(tid)==='hard'?out.slice(0,1):out.slice(0,2); }
+/* 상대 단장의 역제안(사용자 거래 전용, AI끼리 거래는 쓰지 않는다): 우리 선수 더 얹기 · 자기 선수 하나 빼기 · 같은 자리 다른 선수 · 현금 · 지명권.
+   보여 주는 안은 모두 그대로 수락하면 성사된다(tradeCtrOk: proposeTrade와 같은 검사와 evalTrade, 점검 11-17) */
+function counterOffer(tid,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm(pk); const ev=(g,t,c,k)=>evalTrade(tid,g,t,c??cash,k||pk); /* 지명권도 넣어 계산(검수 11-06) */ const e=ev(give,get); const gap=e.need-e.gain; if(gap<=0||gap>9)return [];
+  const U=team(G.user), T=team(tid), L=[]; const yng=['build','tight'].includes(planOf(T)); /* 유망주 수집·긴축 구단은 지명권·어린 선수를 먼저 부른다 */
+  const mk=(c,why)=>({give:[...c.give],get:[...c.get],cash:c.cash??cash,pk:c.pk||pk,why});
+  const okC=c=>tradeCtrOk(tid,c);
+  /* 지명권: 우리가 가진 지명권 중 상대가 가장 덜 치는 한 장부터 */
+  const pkC=()=>{ if(!get.length||(G.draft&&!G.draft.done))return null; try{ if(pk.y!==pkYear())return null; const H=pkHeld(G.user).filter(k=>!pk.give.includes(k)).map(k=>({k,v:pkVal(T,k)})).sort((a,b)=>a.v-b.v);
+      for(const x of H){ const c=mk({give,get,pk:{give:[...pk.give,x.k],get:[...pk.get],y:pk.y}},`${pkName(x.k)} 지명권을 얹어 주시면 하겠습니다.`); if(!pkCheck(tid,give,get,c.pk)&&okC(c))return c; } }catch(e){} return null; };
+  let P=null; if(yng){ P=pkC(); if(P)L.push(P); }
+  /* 우리 선수 더 얹기: 우리에게 가장 덜 아까운 선수부터(거부권·육성·부상·값 없는 선수는 부르지 않는다) */
+  { const A=domestic(G.user).filter(p=>tradeAddable(tid,give,p)&&tval(T,p,'in')>TRADE_ADD_MIN).map(p=>({p,c:tval(U,p,'out')})).sort((a,b)=>(yng?(a.p.age<=25?0:1)-(b.p.age<=25?0:1):0)||a.c-b.c);
+    for(const x of A){ const c=mk({give:give.concat(x.p.id),get},`${x.p.name}(${posLabel(x.p)})도 함께 보내 주시면 받겠습니다.`); if(okC(c)){ L.push(c); break; } } }
+  /* 자기 선수 하나 빼기: 가장 아끼는 선수부터 */
+  if(get.length>1){ for(const id of [...get].sort((a,b)=>tval(T,G.players[b],'out')-tval(T,G.players[a],'out'))){ const ng=get.filter(x=>x!==id); const rest=ng.map(x=>G.players[x].name).join(', '); const c=mk({give,get:ng},`${G.players[id].name}은(는) 못 드립니다. ${rest}(이)라면 하겠습니다.`); if(okC(c)){ L.push(c); break; } } }
+  /* 같은 자리 다른 선수 */
+  if(get.length===1){ const p=G.players[get[0]]; const k=pSlot(p); const alt=domestic(tid).filter(q=>q.id!==p.id&&!q.ys&&healthy(q)&&pSlot(q)===k&&!ntcOf([q.id])&&ovr(q)>=ovr(p)-8).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>({q,c:mk({give,get:[q.id]},`${p.name} 대신 ${q.name}(${posLabel(q)})이면 됩니다.`)})).find(x=>okC(x.c)); if(alt)L.push(alt.c); }
+  /* 현금: 부족분만큼(5천만 원 단위로 올림), 현금으로 메울 수 있는 몫(CASH_SHARE) 안에서 */
+  { const room=Math.max(0,CASH_SHARE*Math.max(1.5,e.outV)-(e.cashV||0)); const need=cashFor(T,gap,room); if(need){ for(const m of [1,1.2]){ const add=Math.ceil(need*m/50)*50, tot=cash+add; if(tot>3000)break; const c=mk({give,get,cash:tot},tot>0?`현금 ${money(add)}을(를) ${cash>0?'더 ':''}얹어 주시면 하겠습니다.`:`받으실 현금을 ${tot<0?money(-tot)+'(으)로 줄여':'없애'} 주시면 하겠습니다.`); if(okC(c)){ L.push(c); break; } } } }
+  if(!yng){ P=pkC(); if(P)L.push(P); }
+  const S=new Set(), out=L.filter(c=>{ const k=tsig(c.give,c.get,c.cash||0)+pkSig(c.pk); if(S.has(k))return false; S.add(k); return true; });
+  return gmTrait(tid)==='hard'?out.slice(0,1):out.slice(0,3); }
 const NEG_MONTH=4;
 function negTurn(tid){ G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={}); const o=dobj(G.day); const mk=o.y*100+o.m; if(c.negM!==mk){ c.negM=mk; c.neg=0; } delete c.negDay; c.seen=c.seen||{}; for(const k in c.seen)if(c.seen[k]<G.day-30)delete c.seen[k]; return c; }
 /* 맞대결: 오늘(쉬는 날이면 내일) 우리와 경기하는 구단은 경기장에서 만나므로 협상을 두 번 더 할 수 있다 */
