@@ -5804,6 +5804,67 @@ T('[플레잉코치] AI 구단도 같은 자격·수락 식으로 맡기고, 한
   const cost=aiOpsCost(t).find(r=>r[0]==='보조 코치 연봉'); ok(cost[1]>=x.r.sal,'AI 운영비에 수당이 없음');
   const mate=playersOf(t.id).find(q=>q.isP===x.r.isP&&q!==x.p&&!q.prospect); const reg0=pcRegular; pcRegular=()=>false; try{ ok(Math.abs(pcAxBoost(mate)-clamp((x.r.dv-50)/800,0,.025)*.5)<1e-9,'AI 효과 식이 다름'); } finally{ pcRegular=reg0; }
   const p=x.p; retireOut(p,'시험 은퇴'); const ob=G.ob.find(o=>o.fid===p.id); const w=obWhere(ob); ok(w.k==='coach'&&w.tid===t.id,'AI 플레잉코치가 은퇴 뒤 그 구단 코치가 되지 않음 '+JSON.stringify(w)); });
+/* ===== 계약 1단계(2026-11-17): 구단별 친분 · 조건 잠금 · 역제안 · 라운드 한도 · 옵션 종류 · 외국인 ===== */
+const CT1_FA=(b,ask,y,style)=>{ const ts=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); if(!G.fa||!G.fa.pool)G.fa={pool:[],offers:{},ai:{},open:true,openDay:G.day-20,closed:false,results:[],cap:3,outN:{},y0:G.year};
+  const p=newPlayer({age:28,isP:false,base:b,pot:b+2,team:ts[0]}); p.team=null; p.faFrom=ts[0]; p.faGrade='B'; p.faPrevSal=100; p.sal=100; p.ask={annual:ask,years:y}; p.ask0=ask; G.fa.pool.push(p.id); G.fa.ai[p.id]={};
+  if(style){ const A=agInit(); p.agId=A.findIndex(a=>a.style===style&&a.size!=='big'); if(p.agId<0)p.agId=A.findIndex(a=>a.style===style); } negOf(p.id).mood=95; return p; };
+/* 요구 기준 대비 k배 가치의 묶음(요구 모양 그대로, 연봉으로 맞춤) */
+const CT1_T=(p,k)=>{ const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); const T={...D}; delete T.ov; const y=T.years; const V=faWantFor(p,G.user)*.97*k/(1+.06*(y-1)); T.annual=Math.round(V/termsMul(T,D)-(T.bonus||0)*CT_BON/y); return T; };
+T('[계약 1단계] 에이전트 친분은 구단마다 따로이고, 사용자와 AI 구단이 같은 규칙으로 오르내린다',()=>{ fresh(); const ag=agInit().find(a=>a.size!=='big'); const ai=G.teams.find(t=>t.id!==G.user).id;
+  delete ag.rels; ag.rel=70; ok(agRel(ag)===70&&agRel(ag,ai)===50,'옛 저장 친분이 우리 구단 몫으로 옮겨지지 않음: '+agRel(ag)+'/'+agRel(ag,ai)); ok(ag.rel==null,'옛 값이 남음');
+  ag.rels={}; for(const r of [1.05,.95,.8,.5,1.3]){ agOfferRel(ag,r,G.user,'시험'); agOfferRel(ag,r,ai,'시험'); ok(agRel(ag)===agRel(ag,ai),'같은 제안 수준인데 친분 변화가 다름 r='+r+': '+agRel(ag)+'/'+agRel(ag,ai)); }
+  const u0=agRel(ag); agRelAdd(ag,4,'시험',ai); ok(agRel(ag)===u0,'AI 구단 친분 변화가 우리 구단 몫을 바꿈');
+  ag.rels={[G.user]:80,[ai]:80}; agYear(); ok(agRel(ag)===agRel(ag,ai)&&agRel(ag)<80,'해마다 돌아오는 속도가 구단마다 다름');
+  /* 계약: 사인한 구단 +5, 끝까지 제안한 구단 +1(누가 사인하든 같은 규칙) */
+  const p=CT1_FA(52,300,2); const pa=agentOf(p); pa.rels={}; G.fa.offers[p.id]={annual:250,years:2}; faSign(p,[{tid:ai,annual:900,years:3},{tid:G.user,annual:250,years:2}]);
+  ok(p.team===ai,'준비 실패: AI 구단이 사인하지 않음'); ok(agRel(pa,ai)===55,'사인한 AI 구단 친분 +5가 아님: '+agRel(pa,ai)); ok(agRel(pa)===51,'끝까지 제안한 우리 구단 +1이 아님: '+agRel(pa));
+  /* FA 선택 점수: 친분은 그 구단 몫으로 모든 구단에 곱한다 */
+  const q=CT1_FA(52,300,2); const qa=agentOf(q); qa.rels={}; const s50=faScore(q,{tid:ai,annual:300,years:2}); qa.rels[ai]=90; ok(faScore(q,{tid:ai,annual:300,years:2})>s50,'AI 구단 친분이 선수 선택에 반영되지 않음');
+  qa.rels={[G.user]:90}; ok(Math.abs(faScore(q,{tid:ai,annual:300,years:2})-s50)<1e-9,'우리 친분이 AI 구단 점수를 바꿈'); });
+T('[계약 1단계] 잠근 조건은 역제안에서 바뀌지 않고, 다 잠그면 풀 잠금을 알려 준다',()=>{ fresh(); const p=CT1_FA(58,800,3,'rel'); const D=termsDemand(p,'fa',{annual:faWantA(p),years:3}); const T0={years:3,bonus:400,annual:500,opt:100,optC:'b',role:D.role,ntc:false};
+  const v=termsVal(T0,D)*1.15; const a=termsFit(T0,D,v,3,['annual'],'tot'); ok(a&&a.annual===500&&a.bonus>400&&termsVal(a,D)>=v,'연봉을 잠갔는데 연봉이 바뀌거나 모자람: '+JSON.stringify(a));
+  const b=termsFit(T0,D,v,4,['bonus','years'],'bonus'); ok(b&&b.bonus===400&&b.years===3&&b.annual>500&&termsVal(b,D)>=v,'계약금·기간을 잠갔는데 바뀜: '+JSON.stringify(b));
+  ok(termsFit(T0,D,v,3,['annual','bonus'])===null,'금액을 다 잠갔는데 역제안을 만듦');
+  const T=CT1_T(p,.95); const r=faNegotiate(p.id,{terms:T,lock:['annual','years']}); ok(r.st==='counter','준비 실패: 역제안이 아님 '+r.st+' '+r.msg); const c=negOf(p.id).counter.terms; ok(c.annual===T.annual&&c.years===T.years&&c.bonus>T.bonus,'잠근 연봉·기간이 역제안에서 바뀜: '+JSON.stringify(c));
+  const q=CT1_FA(58,800,3,'fast'); const U=CT1_T(q,.95); const r2=faNegotiate(q.id,{terms:U,lock:['annual','bonus','years','opt','role','ntc','cOpt']}); ok(r2.st==='no'&&!negOf(q.id).counter,'다 잠갔는데 역제안이 나옴: '+r2.st); ok(/잠금을 풀어/.test(r2.msg),'풀 잠금을 알려 주지 않음: '+r2.msg); });
+T('[계약 1단계] 화면에 보인 역제안은 그대로 다시 내면 받아들여진다(FA·다년·연봉)',()=>{ fresh(); const ai=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); let n=0;
+  for(const [st,k,lock,riv] of [['rel',.93,[]],['hard',.95,['annual']],['fast',.92,['bonus']],['auction',.96,['years']],['rel',.94,[],1],['hard',.91,['bonus','years'],1],['fast',.97,[],1]]){
+    const p=CT1_FA(55+n%6,500+n*120,2+n%3,st); n++; if(riv){ G.fa.ai[p.id]={[ai[1]]:{annual:round5(p.ask.annual*1.02),years:p.ask.years}}; }
+    const T=CT1_T(p,k); const r=faNegotiate(p.id,{terms:T,lock}); if(r.st!=='counter'){ ok(r.st==='wait'||r.st==='no','예상 밖 결과 '+r.st+' '+r.msg); continue; }
+    const c=negOf(p.id).counter; for(const f of lock)ok(c.terms[f]===T[f],'잠근 '+f+'가 바뀜'); const r2=faNegotiate(p.id,{terms:{...c.terms}}); ok(r2.st==='wait'||p.team===G.user,'보여 준 역제안을 그대로 냈는데 받지 않음('+st+'): '+r2.st+' '+r2.msg); }
+  ok(n>=5,'준비 실패');
+  const e=domestic(G.user).filter(q=>canExtend(q)&&hasAgent(q)&&!agExtTestMarket(q)&&extDemandAll(q,Math.max(3,extMinY(q)))>=300).sort((a,b)=>a.sal-b.sal); let done=0;
+  for(const p of e.slice(0,6)){ const y=Math.max(3,extMinY(p)); const d=extDemandAll(p,y); const D=termsDemand(p,'ext',{annual:d,years:y}); const T={...D,role:null}; delete T.ov; T.annual=round5(Math.max(MIN_SAL,(d*.94)/termsMul(T,D)-(T.bonus||0)*CT_BON/y));
+    const r=offerExtension(p.id,0,y,false,T,['bonus']); if(r.st==='owner'||r.ok)continue; ok(r.st==='counter','다년계약 준비 실패: '+r.st+' '+r.msg); const c=p.extCounter; ok(c.terms.bonus===T.bonus,'잠근 계약금이 바뀜');
+    const r2=offerExtension(p.id,0,y,false,{...c.terms}); ok(r2.ok,'다년계약 역제안을 그대로 냈는데 받지 않음: '+r2.st+' '+r2.msg); done++; }
+  ok(done>=1,'다년계약 시험 대상 없음');
+  simTo(()=>G.contract&&G.contract.ended&&G.contract.ended.length>0); const ids=Object.keys(salNeg(G.contract.ended[0])?G.contract.neg:{}); let sd=0;
+  for(const id of ids.slice(0,6)){ const sn=G.contract.neg[id]; if(!sn||sn.st!=='open')continue; const low=Math.max(MIN_SAL,round5(sn.ask*.8)); if(low>=sn.ask)continue; salOffer(+id,low,true); if(sn.st!=='open')continue; const ask=sn.ask; salOffer(+id,ask,true); ok(sn.st==='ok','연봉 협상 답(요구액)을 그대로 냈는데 합의 안 됨'); sd++; } ok(sd>=1,'연봉 협상 시험 대상 없음'); });
+T('[계약 1단계] 라운드 한도를 넘기면 에이전트가 협상을 접고, 마지막 라운드에 경고한다',()=>{ fresh(); const p=CT1_FA(56,700,3,'hard'); ok(agRoundsMax(p)===TRADE_ROUNDS-1,'강경형 라운드 한도가 트레이드 강경파와 다름'); const RM=agRoundsMax(p);
+  for(let i=1;i<RM;i++){ const r=faNegotiate(p.id,{terms:CT1_T(p,.8)}); ok(r.st==='no','준비 실패 '+r.st); if(i===RM-1)ok(/다음 제안이 마지막 라운드/.test(r.msg),'마지막 라운드 직전 경고 없음: '+r.msg); }
+  const rL=faNegotiate(p.id,{terms:CT1_T(p,.95)}); ok(rL.st==='counter'&&/이번이 마지막 조건/.test(rL.msg),'마지막 라운드 역제안에 경고 없음: '+rL.st+' '+rL.msg);
+  const rF=faNegotiate(p.id,{terms:CT1_T(p,.96)}); const n=negOf(p.id); ok(rF.st==='fold'&&n.fold>G.day&&!n.counter,'한도를 넘겼는데 접지 않음: '+rF.st+' '+rF.msg);
+  ok(faNegotiate(p.id,{terms:CT1_T(p,1.1)}).st==='cool','접은 뒤 바로 다시 받음'); G.day=n.fold; ok(faNegotiate(p.id,{terms:CT1_T(p,.8)}).st==='no','기간이 지나도 다시 열리지 않음');
+  const q=CT1_FA(56,700,3,'rel'); ok(agRoundsMax(q)===TRADE_ROUNDS+1,'관계형 한도'); faNegotiate(q.id,{terms:CT1_T(q,.8)}); G.day+=CT_ROUND_DAYS+1; const rd=faNegotiate(q.id,{terms:CT1_T(q,.95)}); ok(rd.st==='fold'&&/오래/.test(rd.msg),'기간을 넘겼는데 접지 않음: '+rd.st+' '+rd.msg);
+  /* AI 구단도 같은 한도: 요구에 못 미친 입찰을 한도까지 올렸으면 더 올리지 않는다 */
+  const A={annual:100,years:2,rounds:RM,d0:G.day}; ok(ctGate(A,RM)==='rounds','AI 입찰 라운드 한도가 적용되지 않음'); ctFold(A); ok(ctGate(A,RM)==='cool','AI 구단도 접은 뒤 기다리지 않음'); });
+T('[계약 1단계] 옵션은 종류별로 달성했을 때만 지급한다',()=>{ fresh(); const L=domestic(G.user).filter(q=>!q.isP&&!q.foreign).slice(0,4); const st0=seasonTotal; const H={};
+  seasonTotal=(p,y,l)=>H[p.id]||null; try{ const mk=(p,c,a)=>{ p.ctT=p.team; p.opt={a,from:G.year,until:G.year,c}; delete p.opt.paidY; };
+    const [a,b,c,d]=L; mk(a,'avg',300); H[a.id]={pa:520,ab:460,h:150,d:20,tr:1,hr:10,bb:50,hbp:3,sf:4,g:130}; mk(b,'avg',300); H[b.id]={pa:520,ab:460,h:110,d:20,tr:1,hr:10,bb:50,hbp:3,sf:4,g:130};
+    mk(c,'bg',200); H[c.id]={pa:300,ab:270,h:70,g:125}; mk(d,'as',150); H[d.id]={pa:100,ab:90,h:20,g:40};
+    ok(optEarned(a)&&!optEarned(b),'타율 옵션 판정이 틀림'); ok(optEarned(c),'경기 출전 옵션 판정이 틀림'); ok(!optEarned(d),'올스타가 아닌데 올스타 옵션 달성');
+    d.aw=[G.year+' 올스타(나눔)']; ok(optEarned(d),'올스타 선정인데 옵션 미달성'); d.aw=[];
+    const paid=optSettle(G.user); ok(paid===500,'달성한 옵션만 지급하지 않음: '+paid); ok(optSettle(G.user)===0,'옵션을 두 번 지급');
+    const g=L[1]; mk(g,'gg',250); ok(!optEarned(g),'골든글러브 옵션이 시상 전에 달성'); const t=team(G.user); delete t.optDue; optAward(g,G.year); ok(t.optDue===250,'골든글러브 옵션이 다음 결산 지출로 잡히지 않음'); optAward(g,G.year); ok(t.optDue===250,'골든글러브 옵션을 두 번 잡음');
+    const e=L[2]; mk(e,'bg',100); optAward(e,G.year); ok(t.optDue===250,'수상 옵션이 아닌데 시상식에서 지급'); } finally{ seasonTotal=st0; }
+  /* 옵션 가치: 종류·성향에 따라 보장액보다 낮게 본다 */
+  const D={years:3,role:null,ov:1}, Dh={...D,ov:agOptV({style:'hard'})}; const base={years:3,bonus:0,annual:300,opt:100,role:null,ntc:false};
+  ok(termsVal({...base,optC:'b'},D)>termsVal({...base,optC:'avg'},D)&&termsVal({...base,optC:'avg'},D)>termsVal({...base,optC:'gg'},D),'옵션 종류별 가치 순서가 틀림');
+  ok(termsVal({...base,optC:'b'},Dh)<termsVal({...base,optC:'b'},D),'강경형이 옵션을 더 낮게 보지 않음'); ok(termsVal({...base,optC:'b'},D)<termsVal({...base,opt:0,annual:400},D),'옵션을 보장액만큼 쳐 줌'); });
+T('[계약 1단계] 외국인 계약은 국내 에이전시 친분을 올리지 않는다',()=>{ fresh(); G.day=G.cal.open+20; for(const p of foreignOf(G.user).filter(p=>p.foreign==='아시아'))releaseForeign(p.id);
+  const snap=()=>JSON.stringify(agInit().map(a=>[a.rels||{},a.rel??null,(a.log||[]).length])); const s0=snap();
+  const q=newForeign('아시아',{market:true}); q.ask=ASIA_CAP/2; q.fknow=[G.user]; q.fpub=G.day; G.fmarket.push(q.id); const r=foOffer(q.id,ASIA_CAP,0); ok(r.ok&&q.team===G.user,'준비 실패: '+r.msg);
+  ok(snap()===s0,'외국인 계약으로 국내 에이전시 친분·기록이 바뀜'); ok(q.agId==null,'외국인에게 국내 에이전시가 붙음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
