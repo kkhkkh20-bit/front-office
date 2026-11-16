@@ -70,7 +70,7 @@ function aiOwnerAsk(t,kind){ if(!t||t.id===ME()||t.indie)return null; const pl=p
   const rec=L.filter(g=>G.day-g.d<=120).length; const p=p0*Math.pow(.85,rec)*(amt>=2000?.9:1); let ok=R()<p; /* ownerAsk와 같은 감쇠 */
   if(!ok){ t.trust=clamp((t.trust??55)-1,0,100); if(typeof aiPushTry==='function'&&aiPushTry(t,{k:'fund',amt,pur}))ok=true; } /* 반려되면 우리처럼 다시 설득해 볼 수 있다(94_owner_push, 같은 식·대가) */
   L.push({d:G.day,mk,y:sy,amt,ok,...(ok&&pur?{k:pur.k,pid:pur.pid,an:G.acqSeq||0,until:pur.k==='fa'?grantFaEnd():tradeDL(),st:'open'}:{})}); if(L.length>12)L.shift();
-  if(ok){ t.grant={y:sy,amt:(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt}; try{ wire('구단',`${t.city} ${t.nick} 모기업, 추가 지원`,{tid:t.id}); }catch(e){} }
+  if(ok){ t.grant={y:sy,amt:(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt}; try{ wire('구단',`${tfull(t)} 모기업, 추가 지원`,{tid:t.id}); }catch(e){} }
   return {ok,amt,p}; }
 
 /* 목적이 있는 AI 지원금도 우리와 같은 판정(36_relations grantCheck): FA는 그 선수 계약, 보강은 받은 뒤 데려온 선수 연봉 합이 지원금의 절반 이상 */

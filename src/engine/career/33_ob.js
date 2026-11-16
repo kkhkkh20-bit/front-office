@@ -36,8 +36,8 @@ function obFromPlayer(p,rec){ if(!G.ob)obInit(); const c=careerOf(p); let war=re
 function obMine(o){ return o.tys?!!(o.tys[G.user]&&o.tys[G.user].ys):o.team===G.user; }
 function obMineC(o){ return o.tys?(o.tys[G.user]||{ys:0,war:0}):o.team===G.user?{ys:o.ys,war:o.mineWar||0}:{ys:0,war:0}; }
 /* 지금 어디서 무엇을 하는가 */
-function obWhere(ob){ for(const t of G.teams){ const m=G.mgr[t.id]; if(m&&m.ob===ob.id)return {k:'mgr',tid:t.id,t:`${t.city} ${t.nick} 감독`}; if(t.gm&&t.gm.ob===ob.id)return {k:'gm',tid:t.id,t:`${t.city} ${t.nick} 단장`};
-    const C=G.coach&&G.coach[t.id]; if(C)for(const r of CKEYS)if(C[r]&&C[r].ob===ob.id)return {k:'coach',tid:t.id,role:r,t:`${t.city} ${t.nick} ${CROLE[r].l}`}; }
+function obWhere(ob){ for(const t of G.teams){ const m=G.mgr[t.id]; if(m&&m.ob===ob.id)return {k:'mgr',tid:t.id,t:`${tfull(t)} 감독`}; if(t.gm&&t.gm.ob===ob.id)return {k:'gm',tid:t.id,t:`${tfull(t)} 단장`};
+    const C=G.coach&&G.coach[t.id]; if(C)for(const r of CKEYS)if(C[r]&&C[r].ob===ob.id)return {k:'coach',tid:t.id,role:r,t:`${tfull(t)} ${CROLE[r].l}`}; }
   if((G.scouts||[]).some(s=>s.ob===ob.id))return {k:'scout',tid:G.user,t:`${tshort(G.user)} 스카우트`};
   for(const [tid,X] of [[G.user,G.coachX],...Object.entries(G.orgT||{}).map(([k,o])=>[+k,o&&o.coachX])]){ const c=(X||[]).find(x=>x.ob===ob.id); if(c)return {k:'coach',tid,ax:c,t:`${tshort(tid)} 보조 코치`}; } /* 떠난 구단에 남긴 보조 코치도 재직(검수 11-09zv #2). ax: 보조 코치 본인(정식 보직 role이 없다) */
   for(const tid in (G.lgStaff||{}))if((G.lgStaff[tid].sc||[]).some(s=>s.ob===ob.id))return {k:'scout',tid:+tid,t:`${tshort(+tid)} 스카우트`}; /* 다른 구단 스카우트도 재직으로 본다(검수 11-09e #15) */
@@ -97,12 +97,12 @@ function obRetireEvents(list){ const L=list.filter(o=>o&&o.mine&&(o.ys>=3)).sort
 EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)return ''; if(e.data.combo){ if(i===1){ const a=EVH.ret.pick({...e,data:{...e.data,combo:false}},0), b=EVH.ret.pick({...e,data:{...e.data,combo:false}},1); return a+' '+b; } if(i>=2)i--; } const t=team(G.user); const L=e.opts.length;
     if(i===0){ let r=''; const n0=(G.retNos||[]).length; if(e.data.rn!=null)r=retireNumber(e.data.rn); const rn=(G.retNos||[]).length>n0; /* 지정이 거절되면(이미 쓰인 번호 등) 일반 은퇴식 비용만, 결번 표시 없이(검수 11-09zz) */ const cost=rn?100:e.data.leg?50:20; G.spend.etc=(G.spend.etc||0)+cost; ob.bond+=rn?30:20; ob.ceremony=G.year;
       if(rn)ob.retNo=true; const f=rn?5:e.data.leg?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);
-      const lg=rn||e.data.leg; news('선수',`${t.city} ${t.nick} ${ob.name} ${lg?'레전드 ':''}은퇴식${rn?`, ${ob.no}번 영구결번`:''}`,lg?`만원 관중이 홈구장을 채운 가운데 ${ob.ys}시즌 동안 뛴 ${ob.name}의 레전드 은퇴식이 열렸습니다. 동료들의 헹가래와 은퇴 기념 영상, 가족과 함께한 시구 속에 마지막 인사를 했습니다.`:`${ob.ys}시즌 동안 뛴 ${ob.name}이(가) 팬들 앞에서 마지막 인사를 했습니다.`,rn?3:2,{fanW:1}); if(lg)try{ chron('honor',`${ob.name} 레전드 은퇴식${rn?` · ${ob.no}번 영구결번`:''}`,null,G.user,{source:'legcer:'+ob.id}); }catch(x){} /* 레전드 급은 제대로(사용자 11-11) */
+      const lg=rn||e.data.leg; news('선수',`${tfull(t)} ${ob.name} ${lg?'레전드 ':''}은퇴식${rn?`, ${ob.no}번 영구결번`:''}`,lg?`만원 관중이 홈구장을 채운 가운데 ${ob.ys}시즌 동안 뛴 ${ob.name}의 레전드 은퇴식이 열렸습니다. 동료들의 헹가래와 은퇴 기념 영상, 가족과 함께한 시구 속에 마지막 인사를 했습니다.`:`${ob.ys}시즌 동안 뛴 ${ob.name}이(가) 팬들 앞에서 마지막 인사를 했습니다.`,rn?3:2,{fanW:1}); if(lg)try{ chron('honor',`${ob.name} 레전드 은퇴식${rn?` · ${ob.no}번 영구결번`:''}`,null,G.user,{source:'legcer:'+ob.id}); }catch(x){} /* 레전드 급은 제대로(사용자 11-11) */
       return `${r?r+' ':''}은퇴식 비용 ${money(cost)}. 팬 여론 호전.`; }
     if(i===1&&e.data.stay){ ob.bond+=15; ob.readyY=G.year;
       if(ob.path==='coach'){ const c=obCoach(ob); c.sal=round5(c.sal*.8); c.res=G.user; G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==ob.id); G.cmarket.unshift(c); return `${ob.name}이(가) 코치 후보 맨 앞에 올라왔습니다(${CROLE[c.role].l}, 연 ${money(c.sal)}).`; }
       if(ob.path==='scout'){ const s=obScout(ob); if(G.scouts.length<scoutMax()){ s.since=G.day; G.scouts.push(s); return `${ob.name}이(가) 스카우트로 합류했습니다.`; } G.scoutMarket.unshift(s); return '스카우트 자리가 꽉 차서 후보 명단에 올렸습니다.'; }
-      ob.alt={k:'front',tid:G.user,t:`${t.city} ${t.nick} 프런트`}; return `${ob.name}이(가) 우리 프런트에서 일을 시작합니다.`; }
+      ob.alt={k:'front',tid:G.user,t:`${tfull(t)} 프런트`}; return `${ob.name}이(가) 우리 프런트에서 일을 시작합니다.`; }
     return ''; } };
 function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec=ob.isP?'P':'B'; s.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.isP?'투수':'타자'}를 더 정확히 봄`; /* 선수 출신 스카우트: 자기 쪽(투수·타자)을 더 잘 본다 */ s.fid=ob.fid; s.id='s'+ob.id; G.obFace[s.id]=ob.fid;if(ob.age!=null)s.age=ob.age;return applyPersonRelation(staffAttach(s,'scout'),'scout'); }
 
