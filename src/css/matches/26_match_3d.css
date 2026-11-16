@@ -367,3 +367,6 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 .match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label{flex:0 0 92px;display:grid;align-content:center;gap:3px}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label>b{display:none}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label>div{display:flex;flex-direction:column;gap:2px}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label button:not(.md-dugout-toggle){padding:1px 4px;font-size:10px}
 .match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player{gap:0}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player b{font-size:11px;line-height:1.2}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player small,.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-pos{font-size:9.5px;line-height:1.15}
 .md-dugout-toggle{border:0;background:none;color:#cfe0ea;font-weight:700;font-size:11px;padding:0 4px 0 0;cursor:pointer;white-space:nowrap}
+
+/* 오늘 승리 확률 기여 표시 */
+.md-wpa{font:700 10px var(--f-num);font-style:normal;padding:0 4px;border-radius:3px;background:#ffffff12;color:#c6d3db}.md-wpa.p{color:#7fe0a0;background:#2e8a5133}.md-wpa.n{color:#ff9a8e;background:#a8433b33}
