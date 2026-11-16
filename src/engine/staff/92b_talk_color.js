@@ -77,8 +77,10 @@ function tcIlCtx(D,X){ const L=[]; const own=D.kind==='own';
 /* 단장이 혼잣말을 듣고 넘기는 버튼(대답이 아니라 반응) */
 const TC_CONT=['(고개를 끄덕이며 듣는다)','(웃으며 듣는다)','(잠자코 듣는다)','그래서요?','(맞장구친다)','(차를 따르며 듣는다)'];
 function tcInterlude(D,st){ const X=st.X||{}; const base=D.kind==='own'?(TC_IL_O[D.sty]||TC_IL_O.win):(TC_IL_M[D.sty]||TC_IL_M.calm); const ctx=tcIlCtx(D,X);
+  /* 쓸모 있는 귀띔(11-14, 92c_talk_info.js): 혼잣말 마디의 절반쯤은 실제 상황 정보로 */ const info=!st.flav&&tcU(D,st,'ilinfo')<.5&&typeof tiLine==='function'?tiLine(D,st):''; if(info)return {line:info,lab:TC_INFO_LAB[Math.floor(tcU(D,st,'cli')*TC_INFO_LAB.length)]};
   const pool=(ctx.length&&tcU(D,st,'ilc')<.45)?ctx:base; const line=mvFresh(D.mem,'tc:il:'+(D.kind||'m'),pool); const lab=TC_CONT[Math.floor(tcU(D,st,'cl')*TC_CONT.length)];
   return {line,lab}; }
+const TC_INFO_LAB=['(수첩에 적는다)','(고개를 끄덕인다)','기억해 두겠습니다','(메모한다)'];
 
 /* ---- 말 끊기: 바쁘거나 화나서 대화를 먼저 끝낸다 ---- */
 const TC_CUT_M={d:['(전화가 울린다) ...죄송합니다, 트레이너실입니다. 이 얘기는 다음에 마저 하시죠.','아, 벌써 시간이. 타격 훈련 봐야 합니다. 나머지는 다음에요.','(코치가 문을 두드린다) 불펜 쪽에 일이 생겼답니다. 먼저 일어나겠습니다.','기자들이 기다린다고 해서요. 오늘은 여기까지 하시죠.'],
@@ -90,7 +92,9 @@ function tcCut(D,st,mood){ const T=D.kind==='own'?TC_CUT_O:TC_CUT_M; const pool=
 const TC_PART_M={old:['자, 저는 운동장 나가 봅니다. 땀 냄새가 그리워서요.','오늘 얘기는 제 수첩에 적어 두겠습니다. 저는 아직 수첩 씁니다.'],data:['오늘 얘기는 회의록에 남겨 두겠습니다. 나중에 맞았는지 같이 보시죠.','결과는 숫자로 다시 말씀드리겠습니다.'],warm:['애들 밥 먹는 거 보러 가야겠네요. 오늘 얘기 고맙습니다.','단장님도 식사 거르지 마세요. 요즘 얼굴이 많이 상했습니다.'],
   fire:['좋아요, 속이 좀 풀렸습니다. 나가서 소리 한 번 지르고 오겠습니다.','다음엔 좋은 소식 들고 오겠습니다. 안 되면 제가 먼저 찾아오죠.'],fun:['오늘 얘기는 제가 다음 주에 다른 버전으로 한 번 더 하겠습니다. 재방송이에요.','그럼 저는 이만. 나가서 선수들 놀리러 가 봐야겠습니다.'],media:['오늘 얘기, 기자들한텐 반만 하겠습니다.','좋습니다. 내일 인터뷰 멘트 하나 건졌네요.'],calm:['오늘 얘기는 하루 묵혀서 다시 생각해 보겠습니다.','천천히 가시죠. 급할수록 돌아가라고 하잖습니까.']};
 const TC_PART_O={win:['다음에 올 때는 이긴 얘기만 들고 오세요.','좋아요. 가서 일하세요.'],profit:['오늘 차값은 내가 낼게요. 이런 건 아끼는 게 아니에요.','숫자로 보여 주세요. 말은 여기까지.'],pr:['오늘 얘기는 홍보실에도 좀 흘려 두세요. 좋은 얘기니까.','팬들한테도 오늘 같은 얼굴을 보여 주세요.']};
-function tcPart(D,st){ const T=D.kind==='own'?TC_PART_O:TC_PART_M; const L=T[D.sty]||(D.kind==='own'?TC_PART_O.win:TC_PART_M.calm); return mvFresh(D.mem,'tc:part',L); }
+function tcPart(D,st){ const T=D.kind==='own'?TC_PART_O:TC_PART_M; const L=T[D.sty]||(D.kind==='own'?TC_PART_O.win:TC_PART_M.calm);
+  /* 헤어지면서 귀띔 하나(11-14): "아, 그리고" */ const info=st&&!st.flav&&tcU(D,st,'ptinfo')<.45&&typeof tiLine==='function'?tiLine(D,st):''; if(info)return (D.kind==='own'?'아, 그리고 하나 더. ':'아, 참. 하나만 더 말씀드리면, ')+info;
+  return mvFresh(D.mem,'tc:part',L); }
 
 /* ---- 같은 대답, 다른 반응: 기분에 따라 관계·신뢰 효과가 더 먹히거나 반만 먹힌다 ---- */
 const TC_WARM_M=['(웃음) 단장님이 그렇게 말해 주니 힘이 나네요.','역시 말이 통합니다.','그 말 기억해 두겠습니다. 좋은 쪽으로요.'];

@@ -91,6 +91,7 @@ Object.assign(A,{
 });
 
 /* 무적 선수 전용 목록의 화면 조작(A 로드 뒤 등록). */
-Object.assign(A,{freePage(v){UI.freeMarket={...freeWorkspaceState(),page:Math.max(0,+v||0)};render();},freeSort(k){const f=freeWorkspaceState();UI.freeMarket={...f,sort:k,dir:f.sort===k?-f.dir:(k==='age'||k==='salary'||k==='name'?1:-1),page:0};render();},freeReset(){UI.freeMarket={};render();}});
+Object.assign(A,{freePage(v){UI.freeMarket={...freeWorkspaceState(),page:Math.max(0,+v||0)};render();},freeSort(k){const f=freeWorkspaceState();UI.freeMarket={...f,sort:k,dir:f.sort===k?-f.dir:(k==='age'||k==='salary'||k==='name'?1:-1),page:0};render();},freeReset(){UI.freeMarket={};render();},freeOpt(v){const [k,x]=String(v).split(':');const f=freeWorkspaceState();UI.freeMarket={...f,[k]:x,page:0};if(k==='type')UI.freeMarket.pos='all';render();}});
+document.addEventListener('change',e=>{const f=e.target.closest&&e.target.closest('[data-free-search-form]');if(!f||e.target.name!=='q'||e.target.value.trim()===freeWorkspaceState().q)return;UI.freeMarket={...freeWorkspaceState(),q:e.target.value.trim(),page:0};render();});
 document.addEventListener('submit',e=>{if(!e.target.matches('[data-free-search-form]'))return;e.preventDefault();UI.freeMarket={...freeWorkspaceState(),q:e.target.elements.q.value.trim(),page:0};render();});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-free-option]');if(!el)return;const f=freeWorkspaceState(),key=el.dataset.freeOption;UI.freeMarket={...f,[key]:key==='size'?+el.value:el.value,page:0};if(key==='sort')UI.freeMarket.dir=['age','salary','name'].includes(el.value)?1:-1;if(key==='type')UI.freeMarket.pos='all';render();});

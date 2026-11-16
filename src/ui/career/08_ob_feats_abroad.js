@@ -26,7 +26,7 @@ function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
       <em>${OBPATH[o.path]}의 길${o.aim?` · ${o.aim==='mgr'?'감독':'단장'}을 꿈꿈`:''}${o.bond>=20?' · 구단과 각별함':''}</em></div><div class="obc-a">${act(o,w)}</div></div>`;
   const league=G.ob.map(o=>({o,w:obWhere(o)})).filter(x=>(x.w.k==='mgr'||x.w.k==='gm'||x.w.k==='coach')&&x.w.tid!==G.user).sort((a,b)=>({gm:0,mgr:1,coach:2}[a.w.k]-{gm:0,mgr:1,coach:2}[b.w.k])||(obMine(b.o)?1:0)-(obMine(a.o)?1:0));
   return csec('영구결번',wall+candH)
-    +csec(`${t.city} ${t.nick} 출신 OB ${mine.length}명`,(mine.length?`<div class="obg">${mine.map(row).join('')}</div>`:'<p class="small muted">아직 기록된 OB가 없습니다.</p>')+`<p class="small muted">은퇴한 선수는 지도자, 스카우트, 프런트, 해설위원의 길을 갑니다. 지도자 경력이 쌓이면 감독 후보가 되고, 프런트·스카우트 경력이 쌓이면 다른 구단 단장이 되기도 합니다. 우리 구단 출신이 다른 구단 단장이 되면 첫 친분이 높게 시작합니다. 은퇴식을 열어 주거나 구단에 남겨 둔 선수는 훗날 돌아올 가능성이 커집니다.</p>`)
+    +csec(`${tfull(t)} 출신 OB ${mine.length}명`,(mine.length?`<div class="obg">${mine.map(row).join('')}</div>`:'<p class="small muted">아직 기록된 OB가 없습니다.</p>')+`<p class="small muted">은퇴한 선수는 지도자, 스카우트, 프런트, 해설위원의 길을 갑니다. 지도자 경력이 쌓이면 감독 후보가 되고, 프런트·스카우트 경력이 쌓이면 다른 구단 단장이 되기도 합니다. 우리 구단 출신이 다른 구단 단장이 되면 첫 친분이 높게 시작합니다. 은퇴식을 열어 주거나 구단에 남겨 둔 선수는 훗날 돌아올 가능성이 커집니다.</p>`)
     +csec('리그의 OB 출신 지도자·단장',league.length?`<div class="obg">${league.slice(0,24).map(({o,w})=>`<div class="obc" data-a="person" data-v="ob:${o.id}" role="button" tabindex="0">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${obMine(o)?' <span class="pill good">우리 구단 출신</span>':''}</b><i>${esc(tshort(o.team))} ${esc(o.pos)} 출신 · 통산 WAR ${o.war}</i><span class="obc-w ${w.k}">${esc(w.t)}</span></div></div>`).join('')}</div>`:'<p class="small muted">아직 없습니다.</p>'); }
 
 /* ---------- 진기록 ---------- */

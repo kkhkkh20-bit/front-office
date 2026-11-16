@@ -89,8 +89,10 @@ const NT_FMT={
   ag:{grp:{A:['KR','TW','HK','THA'],B:['JPA','CHN','PHI','LAO']},ko:'sf',gd:7},
   oly:{grp:{A:['JP','DOM','MEX'],B:['KR','US','ISR']},ko:'sf',gd:6}
 };
-/* 대회별 전력 감소: 아시안게임 대만은 최정예가 다 오지 않는다(실업·아마추어 섞임) */
-const NT_EPEN={ag:{TW:4}};
+/* 대회별 전력 감소(경기 동안 능력에서 뺀다). 아시안게임: 한국은 리그 중단 없이 25세 이하·입단 4년 차 이하 + 와일드카드라 리그 상위 24명(ntKRef)보다 5쯤 낮은데,
+   상대도 1군 정예가 아니다. 대만은 프로 선수에 실업·아마추어·해외 마이너리거가 섞이고, 일본(JPA)은 사회인야구 선발팀, 중국은 그 아래.
+   실제 한국 금메달 1998~2026 여덟 대회 중 일곱(2006 동). 보통 전력 한국이 금메달 80%쯤, 대만·일본은 경기마다 15~20%쯤 이기는 위협으로 맞춘다(사용자 제보 11-15) */
+const NT_EPEN={ag:{TW:12,JPA:9,CHN:4}};
 const NT_STL={G:'조별리그',QF:'8강',SF:'4강',SR:'슈퍼라운드',B:'3위 결정전',F:'결승'};
 function ntRR(L){ const T=L.slice(); if(T.length%2)T.push(null); const n=T.length, R0=[]; for(let r=0;r<n-1;r++){ const M=[]; for(let i=0;i<n/2;i++){ const a=T[i], b=T[n-1-i]; if(a!=null&&b!=null)M.push(r%2?[b,a]:[a,b]); } R0.push(M); T.splice(1,0,T.pop()); } return R0; }
 /* 대회 만들기: 소집일에 명단이 정해진 뒤 */
@@ -147,7 +149,7 @@ function ntBoxOf(s,dec){ const nm=id=>{ const p=G.players[id]; return p?p.name:'
 function ntPlayGame(T,g,N,d){ g.hc=ntRef(T,g.h); g.ac=ntRef(T,g.a); if(!g.hc||!g.ac){ g.skip=1; return; }
   NT_TMP=[]; let r=null; const fat0=new Map(); try{ const sh=ntSide(T,g.hc,d,N), sa=ntSide(T,g.ac,d,N); for(const s0 of [sh,sa])for(const q of [...s0.order,...s0.bench,...s0.pen,s0.sp])if(q&&!q.ntTmp&&!fat0.has(q.id)){ fat0.set(q.id,q.fat||0); q.fat=Math.min(q.fat||0,15); } /* 소집 뒤 며칠 쉬고 나온다: 리그 시즌 피로를 그대로 들고 오지 않게(상대국 임시 선수와 같은 출발) */ r=simGame(d,null,null,false,{sides:{h:sh,a:sa},pitchRecords:false}); }catch(e){ (G.flErr=(G.flErr||[]).slice(-9)).push('nt:'+String(e&&e.message).slice(0,80)); }
   for(const [id,f] of fat0){ const q=G.players[id]; if(q)q.fat=f; }
-  try{ if(!r){ /* 엔진 오류: 전력 차로 점수만 */ const sv=c=>c==='KR'?ntKRef():ntKRef()+(NTN[c].off||0); const lam=x=>Math.max(.5,4.2*Math.exp((x)*.06)); const pois=l=>{ let n=0,p=Math.exp(-l),s=p,u=R(); while(u>s&&n<20){ n++; p*=l/n; s+=p; } return n; }; g.hs=pois(lam(sv(g.hc)-sv(g.ac))); g.as=pois(lam(sv(g.ac)-sv(g.hc))); }
+  try{ if(!r){ /* 엔진 오류: 전력 차로 점수만 */ const sv=c=>c==='KR'?ntKRef():ntKRef()+(NTN[c].off||0)-(T.pen[c]||0); const lam=x=>Math.max(.5,4.2*Math.exp((x)*.06)); const pois=l=>{ let n=0,p=Math.exp(-l),s=p,u=R(); while(u>s&&n<20){ n++; p*=l/n; s+=p; } return n; }; g.hs=pois(lam(sv(g.hc)-sv(g.ac))); g.as=pois(lam(sv(g.ac)-sv(g.hc))); }
     else { for(const [id,f] of fat0){ const q=G.players[id]; if(q)q.fat=f; } fat0.clear(); g.hs=r.score.h; g.as=r.score.a; g.inn=r.inn;
       for(const k of ['h','a']){ const s=r.S[k]; for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue; const key=ntKey(p); const isP=s.pitchers.includes(id); if(!isP&&!x.pa&&!x.ab)continue; ntStatAdd(T,key,isP&&p.isP,x,r.dec,{tid:id,sp:id===s.sp.id});
           if(isP&&p.isP){ const q=T.ps[key]||(T.ps[key]={}); q.la=d; q.lpc=x.pc||0; if(id===s.sp.id)q.ls=d; }

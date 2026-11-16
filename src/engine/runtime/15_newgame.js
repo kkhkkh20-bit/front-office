@@ -81,16 +81,20 @@ function claimTeam(userTid,austK){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=
     mail('운영팀','재정 압박 구단입니다',`올해 예상 지출이 구단주가 정한 지원 한도를 ${money(-Math.min(0,b.roomGoal))} 넘습니다.${ci.over>0?` 연봉 총액(${money(ci.pay)})이 샐러리캡(${money(ci.cap)})도 ${money(ci.over)} 넘어 경쟁균형세가 붙습니다.`:''}\n\n이 구단의 첫 과제는 연봉 정리입니다. 고액 연봉 선수를 트레이드하거나, 외국인 선수 몸값을 낮추거나, 구단주에게 지원을 요청할 수 있습니다. 한도를 넘긴 채 시즌을 마치면 구단주 신뢰가 떨어집니다.`,{kind:'재정',acts:[{l:'재정 보기',a:'go',v:'club:fin'}]}); } }catch(e){}
   sendTut(); tutTick(); G.stops=[];
 }
-function newGame(userTid){ buildWorld(); claimTeam(userTid); G.moves=[]; try{ stInit(); }catch(e){} try{ ovlInit(); }catch(e){} try{ lgTopBase(lgTopDom()); }catch(e){} } /* 리그 수준 기준을 시작 때 잡는다 */
+function newGame(userTid){ buildWorld(); claimTeam(userTid); G.moves=[]; try{ stInit(); }catch(e){} try{ ovlInit(); }catch(e){} try{ lgTopBase(lgTopDom()); }catch(e){} try{ delete team(G.user).fi; facInit(); }catch(e){} } /* facInit: 구단 시설 단계(team.fac)를 G.fac에 맞춘다. 예전엔 불러올 때 처음 맞춰져 저장·불러오기만으로 4→2로 바뀌었다 */ /* 우리 구단 시설은 G.fac에만(66_fac_ai): 세계를 만들 때 생긴 AI용 장부가 남으면 야인 기간 AI 투자가 거기 쌓였다가 불러올 때 지워졌다(안정화 점검) */ /* 리그 수준 기준을 시작 때 잡는다 */
 
 /* ===== 구단 이름 바꾸기 =====
-   기본은 가상 구단이다. 플레이어가 별칭을 직접 바꿀 수 있다(연고지는 고정). 실제 구단명처럼 바꾸는 것도 플레이어 몫. 엠블럼·구단색은 원래 구단 기준 그대로.
-   L: [{id,city,nick}]. 문제가 있으면 이유 문자열, 없으면 '' */
-function applyTeamNames(L){ if(!G||!G.teams||!Array.isArray(L))return '바꿀 구단이 없습니다.'; const next=G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick}));
+   기본은 가상 구단이다. 플레이어가 별칭을 직접 바꿀 수 있다(연고지는 고정). 표시 이름 disp(14자)·약칭 abbr(6자)은 선택: 있으면 화면에 '연고지 별칭' 대신 보인다(tfull·tnick). 실제 구단명처럼 바꾸는 것도 플레이어 몫. 엠블럼·구단색은 원래 구단 기준 그대로.
+   L: [{id,city,nick,disp?,abbr?}] (disp·abbr가 없는 항목은 그대로 둔다). 문제가 있으면 이유 문자열, 없으면 '' */
+function applyTeamNames(L){ if(!G||!G.teams||!Array.isArray(L))return '바꿀 구단이 없습니다.'; const next=G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick,disp:t.disp||'',abbr:t.abbr||''}));
+  const bad=v=>/[<>&"'`]/.test(v);
   for(const x of L){ const n=next.find(t=>t.id===+x.id); if(!n)continue; const c=String(x.city??'').trim(), k=String(x.nick??'').trim();
-    void c; if(!k)return '별칭을 적어 주세요.'; if(k.length>10)return '별칭은 10자까지입니다.'; if(/[<>&"'`]/.test(k))return '이름에 쓸 수 없는 기호가 있습니다.'; n.nick=k; } /* 연고지는 바꿀 수 없다(지역·시장 규모·연고 선수와 묶여 있다) */
-  const full=next.map(t=>t.city+' '+t.nick); if(new Set(full).size!==full.length)return '같은 이름의 구단이 둘 있습니다.'; if(new Set(next.map(t=>t.nick)).size!==next.length)return '별칭이 겹치는 구단이 있습니다(기사·기록에서 헷갈립니다).';
-  for(const n of next){ const t=G.teams[n.id]; t.city=n.city; t.nick=n.nick; } return ''; }
+    void c; if(!k)return '별칭을 적어 주세요.'; if(k.length>10)return '별칭은 10자까지입니다.'; if(bad(k))return '이름에 쓸 수 없는 기호가 있습니다.'; n.nick=k; /* 연고지는 바꿀 수 없다(지역·시장 규모·연고 선수와 묶여 있다) */
+    if('disp' in x){ const d=String(x.disp??'').trim().replace(/\s+/g,' '); if(d.length>14)return '구단 표시 이름은 14자까지입니다.'; if(bad(d))return '이름에 쓸 수 없는 기호가 있습니다.'; n.disp=d; } /* 표시 이름(선택): '연고지 별칭' 대신 보인다(마인2 11-16) */
+    if('abbr' in x){ const a=String(x.abbr??'').trim(); if(a.length>6)return '약칭은 6자까지입니다.'; if(/\s/.test(a))return '약칭에는 띄어쓰기를 쓸 수 없습니다.'; if(bad(a))return '이름에 쓸 수 없는 기호가 있습니다.'; n.abbr=a; } }
+  const full=next.map(tfull); if(new Set(full).size!==full.length)return '같은 이름의 구단이 둘 있습니다.'; if(new Set(next.map(t=>t.nick)).size!==next.length)return '별칭이 겹치는 구단이 있습니다(기사·기록에서 헷갈립니다).';
+  const sh=next.map(tnick); if(new Set(sh).size!==sh.length)return '약칭이 겹치는 구단이 있습니다(순위표에서 헷갈립니다).';
+  for(const n of next){ const t=G.teams[n.id]; t.city=n.city; t.nick=n.nick; if(n.disp)t.disp=n.disp; else delete t.disp; if(n.abbr)t.abbr=n.abbr; else delete t.abbr; } return ''; }
 /* ===== 구단 로고 바꾸기(사용자 2026-11-01 21:15) =====
    t.logo={emb 상징, c1 주색, c2 보조색(테두리), c3 바탕색, code 글자(대문자·숫자 3자), img 이미지(data:image png·jpeg·webp·gif, 64KB까지)}. 없으면 원래 로고.
    주색·보조색·바탕색은 구단 색(tpal)에도 쓰여 화면 강조색이 같이 바뀐다. 잘못된 값은 거절(이유 문자열), 문제없으면 '' */
@@ -102,7 +106,7 @@ function setTeamLogo(tid,patch){ const t=G&&G.teams&&G.teams[tid]; if(!t)return 
   if('code' in P){ const c=String(P.code??'').trim().toUpperCase(); if(c&&!/^[A-Z0-9]{1,3}$/.test(c))return '글자는 영문 대문자·숫자 3자까지입니다.'; L.code=c||null; }
   if('img' in P){ if(P.img!=null){ const s=String(P.img); if(!/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s))return '이미지 파일(png·jpg·webp·gif)만 쓸 수 있습니다.'; if(s.length>64000)return '이미지가 너무 큽니다(64KB까지). 작게 줄여서 올려 주세요.'; L.img=s; } else delete L.img; }
   for(const k of Object.keys(L))if(L[k]==null)delete L[k]; if(Object.keys(L).length)t.logo=L; else delete t.logo; return ''; }
-function resetTeamNames(){ if(!G||!G.teams)return; for(const t of G.teams){ const d=TEAM_DEF[t.id]; if(d){ t.city=d.city; t.nick=d.nick; } } }
+function resetTeamNames(){ if(!G||!G.teams)return; for(const t of G.teams){ const d=TEAM_DEF[t.id]; if(d){ t.city=d.city; t.nick=d.nick; } delete t.disp; delete t.abbr; } }
 
 /* 시작 세계 전력 고르기(사용자 11-12 "평준화"): 무작위로 만든 선수단은 표본 운만으로도 구단 전력 차가 커서(구단 전력 표준편차 1.3~2.4)
    첫해부터 승률 .65 대 .32가 나왔다. 가장 센 구단과 가장 약한 구단 사이에서 같은 자리(투수끼리·같은 포지션 타자끼리) 주전급 선수를 맞바꿔

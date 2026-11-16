@@ -1,12 +1,16 @@
 /* ===== 기록: 타석 단위로 만든다 ===== */
 const cc=(x,b)=>clamp((x+b-20)/60,0,1.25);
 function seasonLuck(p){ return p.sf&&p.sf.y===G.year?(p.sf.lk||0):0; }
+/* 11-15 타자 균형(커뮤니티: "컨택·선구안보다 갭파워·홈런파워만 높으면 기록이 잘 나온다"). 측정(세계 8개 2025시즌, 300타석 이상 734명, 표준화 회귀):
+   wRC+ 기여 컨택 .31·선구안 .20·파워 .45, 선구안의 삼진 억제가 작고(.04), 화면의 갭 파워는 (컨택+파워)/2인데 경기 2루타는 파워만 썼다.
+   선구안 삼진 억제 .04→.08, 컨택 인플레이 안타 .07→.09, 2루타는 화면과 같은 (컨택+파워)/2, 볼넷 폭 .72→.80·홈런 폭 .85→.82(06_game TWB).
+   절편은 평균 능력(약 52)에서 리그 평균이 그대로 되게 옮겼다. 측정 뒤(세계 16개): wRC+ 기여 컨택 .38·선구안 .24·파워 .42, 고유 설명 컨택+선구안 20% · 파워 16%, 리그 타율·출루·장타·홈런·삼진·볼넷 평균은 ±2% 안, 홈런 1위 평균 37.8→36.4 */
 function batProbs(p,b){ const r=p.r; const be=b*.4, bc=b*.3, bh=b*.55; /* 기세(b)는 인플레이 타구에 주로 실리고 삼진·홈런은 실력대로(한 시즌에도 빨리 안정됨) */
-  return {bb:.01+cc(r.eye,be)*.145, k:clamp(.311-cc(r.con,bc)*.17-cc(r.eye,be)*.04-trt(p,'k')*.002,.06,.36), hr:.003+Math.pow(cc(r.pow,bh),1.6)*.06,
-    babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc(r.pow,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
+  return {bb:.01+cc(r.eye,be)*.145, k:clamp(.3325-cc(r.con,bc)*.17-cc(r.eye,be)*.08-trt(p,'k')*.002,.06,.36), hr:.003+Math.pow(cc(r.pow,bh),1.6)*.06,
+    babip:clamp(.2575+cc(r.con,b)*.09+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc((r.con+r.pow)/2,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
 }
-function simBat(p,pa,b,slot){
-  const q=shrinkQ(batProbs(p,b||0),TWB,QCB); /* 경기를 돌리지 않는 기록(아마추어·2군·해외·외국인 이전 리그·옛 시즌)도 1군 경기와 같은 폭으로 능력이 드러나게 */ const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0};
+function simBat(p,pa,b,slot,q0){
+  const q=q0||shrinkQ(batProbs(p,b||0),TWB,QCB); /* q0: 아마추어처럼 프로와 다른 척도의 확률을 직접 줄 때(10_draft amProbs) */ /* 경기를 돌리지 않는 기록(아마추어·2군·해외·외국인 이전 리그·옛 시즌)도 1군 경기와 같은 폭으로 능력이 드러나게 */ const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0};
   for(let i=0;i<pa;i++){ o.pa++; const x=R();
     if(x<q.bb){o.bb++;continue} o.ab++;
     if(x<q.bb+q.k){o.so++;continue}
@@ -24,13 +28,14 @@ function simBat(p,pa,b,slot){
    - 제구: 볼넷, 맞춰 잡기(몰린 공이 줄어 피홈런·인플레이 안타 감소), 투구 수 절약(06_game 투구 수)
    - 체력: 투구 수가 늘수록 떨어지는 구위·제구를 늦게·덜 떨어지게(06_game 경기 중 피로), 선발 투구 수 한도
    +10 실험(1,500경기): 평균자책점 구위 -1.26 · 제구 -1.32 · 체력 -0.47(선발 +0.5이닝). 리그 평균(타율·평균자책점·득점)은 예전과 같게 맞췄다 */
-var PW={k0:.074,h0:.046,hs:.020,hc:.020,b0:.361,bs:.035,bc:.06,xs:.35,xc:.15,eff:.9,ft0:-5,fts:1,ftd:9,fm:1,l0:30,ls:.95};
+/* fm(경기 초반 투수 보정): 11-15 전 1이었다. 포수 리드 기준점(CL0)이 실제 주전 포수 평균보다 높아 생긴 투수 쪽 -1과 상쇄되던 값이라, 기준점을 실제 평균(57)으로 고치면서 0으로(리그 평균 그대로) */
+var PW={k0:.074,h0:.046,hs:.020,hc:.020,b0:.361,bs:.035,bc:.06,xs:.35,xc:.15,eff:.9,ft0:-5,fts:1,ftd:9,fm:0,l0:30,ls:.95};
 function pitProbs(p,b){ const r=p.r; const be=b*.4, bk=b*.35;
   return {k:PW.k0+cc(r.stf,bk)*.24+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((PW.h0-cc(r.stf,b)*PW.hs-cc(r.ctl,be)*PW.hc-trt(p,'mv')*.0008)*(1-gbT(p)*.13),.006,.06), babip:clamp(PW.b0-cc(r.stf,b)*PW.bs-cc(r.ctl,be)*PW.bc-trt(p,'mv')*.0008+gbT(p)*.003-seasonLuck(p),.25,.36),
     x2:clamp(1-(cc(r.stf,b)-.5)*PW.xs-(cc(r.ctl,be)-.5)*PW.xc-gbT(p)*.05,.6,1.4)}; /* 땅볼형: 피홈런·장타가 줄고 땅볼 안타는 조금 는다 */ /* x2: 인플레이 안타 중 2루타·3루타가 되는 비율에 곱한다 */
 }
-function simPit(p,outs,b){
-  const q=shrinkQ(pitProbs(p,b||0),TWP,QCP); /* 1군 경기와 같은 폭 */ const o={outs:0,h:0,hr:0,bb:0,hbp:0,so:0,tb:0};
+function simPit(p,outs,b,q0){
+  const q=q0||shrinkQ(pitProbs(p,b||0),TWP,QCP); /* 1군 경기와 같은 폭 */ const o={outs:0,h:0,hr:0,bb:0,hbp:0,so:0,tb:0};
   let guard=0;
   while(o.outs<outs&&guard++<5000){ const x=R();
     if(x<q.bb){o.bb++;continue}
