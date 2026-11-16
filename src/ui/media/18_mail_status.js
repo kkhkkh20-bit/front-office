@@ -1,5 +1,5 @@
 /* 당시 소식의 업무 상태. 읽음과 완료는 별개이며, 기록을 여는 링크는 계속 쓸 수 있다. */
-const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt']);
+const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt','expGmCancel']);
 const mailStamp=m=>m.day0??m.day;
 const mailEnd=(text,expired=false)=>({label:expired?'기한 종료':'처리 완료',text,expired});
 /* 이전 구단 업무: 같은 구단으로 돌아오면 다시 열리므로 종료 상태로 저장하지 않는다(검수 11-09za) */
@@ -8,7 +8,7 @@ const mailOldYear=m=>dobj(mailStamp(m)).y!==G.year;
 function mailActionStatus(m,a){
   if(a.done)return mailEnd(a.done==='skip'?'다른 안을 선택해 처리했습니다.':a.res||'이미 처리했습니다.');
   const id=String(a.v??'').split(':')[0],p=G.players[+id],d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{};
-  if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
+  if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo','expGmCancel'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
   if(a.a==='watchPlan'){const d=+a.v,P=gmPlanAt(d),nx=nextGames(1)[0];if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d)return mailEnd('열리지 않거나 이미 지난 경기입니다.',true);return null;} /* 시리즈가 끝나 열리지 않는 경기의 직관 버튼(검수 11-08) */
   if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리했거나 끝난 결정입니다.');if(e.done)return mailEnd(e.auto?(e.deleg?'맡긴 대로 담당 부서가 처리했습니다.':'답변 기한이 지나 기본안으로 처리했습니다.'):'이미 결정을 마쳤습니다.');if(evExpired(e))return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
   if(a.a==='ivOpen'||a.a==='ivSkip'){const v=G.iv;if(!v||String(v.id)!==String(a.v))return mailEnd('이 인터뷰 요청은 끝났습니다.',true);if(v.done)return mailEnd(v.ans?.length?'이미 인터뷰를 마쳤습니다.':'이미 인터뷰를 거절했습니다.');return G.day>v.exp?mailEnd('인터뷰 응답 기한이 지났습니다.',true):null;}
@@ -43,6 +43,7 @@ function mailActionStatus(m,a){
   }
   if(a.a==='retNo'){const r=String(a.v)[0]==='p'?(G.legends||[]).find(r=>'p'+r.pid===String(a.v)):(G.legends||[])[+a.v];return !r||r.retNo||!r.canRetNo||(r.tid!=null&&r.tid!==G.user)?mailEnd('이미 영구결번을 지정했거나 지정 대상이 아닙니다.'):null;}
   if(a.a==='cwOpen'){const S=G.cwS,id=c.cw??a.v,same=!!S&&(id!=null?String(S.id)===String(id):S.day===d);if(same&&S.done)return mailEnd('구단주와 함께 본 경기 이야기를 마쳤습니다.'); /* 마친 건의를 '기한 종료'로 표시하던 문제(플레이테스트 4 #23) */return !same||G.day>S.until?mailEnd('이 경기 관전 뒤 건의 기간은 끝났습니다.',true):null;}
+  if(a.a==='expGmCancel')return expGmCanCancel()?null:mailEnd(G.exp&&!G.exp.userGm&&G.exp.gmBack!=null?'창단 단장 수락을 취소했습니다.':'11월 20일 부임 뒤에는 되돌릴 수 없습니다.');
   if(a.a==='fdBegin')return !G.fdWait?mailEnd('이미 창단 드래프트를 시작했습니다.'):null;
   return null;
 }

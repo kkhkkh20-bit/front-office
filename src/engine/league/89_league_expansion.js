@@ -31,8 +31,15 @@ function expVote(){ const E=expInit(); const cashOk=avg(G.teams.map(t=>t.cash||0
   E.stage='approved'; E.ay=G.year; news('리그',`${tfull(E)}, ${G.teams.length+1}번째 구단 창단 승인`,`찬성 ${yes} · 반대 ${G.teams.length-yes}. 11월 20일 특별지명을 거쳐 ${G.year+1}시즌 1군에 들어옵니다.`,2,{});
   expGmOffer(); }
 function expGmOffer(){ const E=expInit(); if(G.gameOver||!(G.unemp||(G.rep??50)>=60))return; E.gmAsk=G.year;
-  evNew('expGm',`신생 구단 ${tfull(E)}의 창단 단장 제안`,`${E.parent}: "새 구단의 첫 단장을 맡아 주십시오. 특별지명부터 코칭스태프 구성까지 처음부터 함께 만들고 싶습니다."`,[{l:'창단 단장 수락',fx:`11월 20일 특별지명 때 ${tfull(E)} 단장으로 옮깁니다. 지금 구단은 그때 떠납니다.`},{l:'정중히 거절',fx:'지금 자리에 남습니다.'}],{def:1,exp:30,data:{},from:E.parent}); }
-EVH.expGm={ pick(e,i){ const E=expInit(); if(i===0){ E.userGm=true; return `${tfull(E)} 창단 단장으로 가기로 했습니다. 11월 20일 특별지명 때 부임합니다.`; } E.userGm=false; return '제안을 거절했습니다.'; } };
+  evNew('expGm',`신생 구단 ${tfull(E)}의 창단 단장 제안`,`${E.parent}: "새 구단의 첫 단장을 맡아 주십시오. 특별지명부터 코칭스태프 구성까지 처음부터 함께 만들고 싶습니다."`,[{l:'창단 단장 수락',fx:`11월 20일 특별지명 때 ${tfull(E)} 단장으로 옮깁니다. 지금 구단은 그때 떠납니다. 그 전에는 수락을 취소할 수 있고, 11월 20일 부임 뒤에는 되돌릴 수 없습니다.`},{l:'정중히 거절',fx:'지금 자리에 남습니다.'}],{def:1,exp:30,data:{},from:E.parent}); }
+EVH.expGm={ pick(e,i){ const E=expInit(); if(i===0){ E.userGm=true; return `${tfull(E)} 창단 단장으로 가기로 했습니다. 11월 20일 특별지명 때 부임합니다.`; } E.userGm=false; return '제안을 거절했습니다.'; },
+  acts(e,i){ return i===0&&expGmCanCancel()?[{l:'창단 단장 수락 취소',a:'expGmCancel',v:e.id}]:[]; } }; /* 수락 뒤 소식함 결과에 취소 버튼(카페 11-17: 잘못 눌러 수락) */
+/* 창단 단장 수락 취소(카페 11-17): 11월 20일 특별지명(부임) 전까지만. 거절했을 때와 같이 신생 구단은 AI 단장이 맡고(gmOf), 모기업과의 관계만 조금 상한다(소식·명성 -1). 지금 구단주에게는 불이익이 없다 */
+function expGmCanCancel(){ const E=G.exp; return !!(E&&E.userGm&&E.stage==='approved'&&!G.gameOver); }
+function expGmCancel(){ if(!expGmCanCancel())return '11월 20일 부임 뒤에는 되돌릴 수 없습니다.'; const E=G.exp; E.userGm=false; E.gmBack=G.year; G.rep=clamp((G.rep??50)-1,0,100);
+  news('리그',`${tfull(E)}, 창단 단장 다시 찾는다`,`창단 단장으로 내정됐던 ${G.unemp?'야인 단장':tshort(G.user)+' 단장'}이(가) 수락을 거둬들였습니다. ${E.parent}은(는) "아쉽지만 존중한다"며 다른 후보를 찾습니다.`,1,{});
+  mail(E.parent,'창단 단장 수락 취소 확인',`${tfull(E)} 창단 단장 수락을 취소했습니다. ${G.unemp?'야인으로 남아 다른 제의를 기다립니다.':`${tname(G.user)} 단장으로 그대로 남고, 지금 계약도 그대로입니다.`}\n\n${E.parent}: "아쉽지만 결정을 존중합니다. 창단 단장은 다른 분께 맡기겠습니다."`,{kind:'경력'});
+  return `${tfull(E)} 창단 단장 수락을 취소했습니다. ${G.unemp?'야인으로 남습니다.':`${tshort(G.user)}에 그대로 남습니다.`}`; }
 /* 새 구단 만들기 */
 function expAddTeam(){ const E=expInit(), id=G.teams.length; const t={id,city:E.city,nick:E.nick,code:E.city.slice(0,2),hue:Math.round(u01('expHue',id)*360),market:E.market||.88,region:E.region||'충청',cash:4000,pop:.9,trust:60,rel:50,owner:'pr',mode:'rebuild',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:2,born:G.year+1};
   G.teams.push(t); const S=stadOf(id); S.name=`${E.city} 야구장`; S.cap=17000; S.built=G.year-ri(5,25); S.dim={lf:98,cf:121,rf:98,wl:3,wc:3,wr:3};
