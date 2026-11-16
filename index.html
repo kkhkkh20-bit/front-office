@@ -19313,7 +19313,8 @@ function mreqWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||G.gameOver||G.unem
   const recent=mreqs().filter(r=>r.day>G.day-28).length; if(recent)return;
   const C=[];
   if(per==='season'&&tradeOpen()&&!open.some(r=>r.k==='slot')&&!mreqs().some(r=>r.k==='slot'&&r.day>G.day-50)){ const rk=slotRanks(G.user); const w=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0];
-    const back=w&&domestic(G.user).some(p=>pSlot(p)===w.k&&p.injOut>0&&p.injOut<=45&&ovr(p)>=rk[w.k].v+3); /* 그 자리 주전이 부상 중이고 곧 돌아오면 보강을 조르지 않는다(커뮤니티 피드백 11-07) */ if(w&&w.r>=8&&!back)C.push(['slot',w,1.2+(m.ego-50)/60]); }
+    const soon=p=>(p.injOut>0&&p.injOut<=45)||(p.ntAway&&p.ntAway>G.day&&p.ntAway-G.day<=45)||(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p)); /* 부상·대표팀 차출·자매구단 연수로 잠시 빠진 선수(커뮤니티 11-16: 중견수가 대표팀에 가 있는데 중견수 보강을 요청) */
+    const back=w&&Object.values(G.players).some(p=>p.team===G.user&&!p.foreign&&!(p.joinY>G.year)&&pSlot(p)===w.k&&soon(p)&&!milServing(p)&&ovr(p)>=rk[w.k].v+3); /* 그 자리 주전이 곧 돌아오면 보강을 조르지 않는다(커뮤니티 피드백 11-07). 대표팀·연수로 빠진 선수는 playersOf에 없으므로 소속 선수 전체에서 찾는다 */ if(w&&w.r>=8&&!back)C.push(['slot',w,1.2+(m.ego-50)/60]); }
   if(per==='season'&&G.day>G.cal.open+25&&!open.some(r=>r.k==='out')){ const bad=domestic(G.user).filter(p=>{ if(p.ys||p.age<29||!p.e1)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(h.outs>=60&&pRate(h).era>6):(h.pa>=90&&bRate(h).ops<.600); }).sort((a,b)=>b.sal-a.sal)[0]; if(bad&&!mreqs().some(r=>r.k==='out'&&r.data.pid===bad.id))C.push(['out',bad,.8+(m.disc-50)/80]); }
   if(per==='season'&&G.day<=foreignDL()&&!open.some(r=>r.k==='frep')){ const f=foreignOf(G.user).find(p=>{ if(fReplLeft(G.user,p.foreign)<=0)return false; const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=90&&pRate(h).era>5.4):(h.pa>=130&&bRate(h).ops<.690)); }); if(f)C.push(['frep',f,1]); }
   if((per==='season'&&tradeOpen()||G.fa&&G.fa.open&&!G.fa.closed)&&!open.some(r=>r.k==='fit')&&G.day-(G.mgrFitD??-99)>=50){ const nd=mgrNeedRole(G.user); if(nd)C.push(['fit',nd,1.3+(m.ego-50)/80]); }
@@ -41285,6 +41286,7 @@ const PATCH=[
     '사진 바꾸기 버튼을 얼굴 사진 모서리의 연필 버튼으로 옮겼습니다. 소식함 비서 사진도 사진 옆에서 바꾸고, 템플릿 사진·갤러리 사진·원래대로를 한 창에서 고릅니다.',
     '넣은 사진은 원본을 함께 남겨 두어 \'자르기 다시\'로 다시 자를 수 있습니다. 원본이 크면 남기지 않으니 사진을 다시 골라 주세요.']},
   {id:'2026-11-17-features',d:'11월 17일',t:'우천 취소 · 더블헤더 · 트라이아웃 · 해외 리그 · 단장 일정',items:[
+    '감독은 그 자리 주전이 대표팀 차출·부상·연수로 잠시 빠져 있을 때는 보강을 요청하지 않습니다.',
     '비가 오면 경기가 취소됩니다. 장마철인 7월에 가장 많고 지역마다 다릅니다. 돔구장 홈경기는 취소되지 않습니다.',
     '취소된 경기는 다음 날 더블헤더나 정규시즌 뒤 예비일, 9월 월요일로 다시 잡힙니다. 7·8월에는 더블헤더를 하지 않고, 올스타 휴식기와 대표팀 소집 기간은 피합니다.',
     '더블헤더 2차전에는 감독이 주전 포수를 대개 쉬게 하고, 지친 주전도 더 쉽게 뺍니다. 취소된 경기 입장권은 환불되고 그날 수입은 없습니다.',
