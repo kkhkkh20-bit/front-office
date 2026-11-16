@@ -7,7 +7,7 @@
    우리 구단 출신이 감독인 학교는 처음부터 친분이 높다 */
 const HS_STY=['엄격형','자율형','데이터형','육성형'];
 function schList(){ if(!G.schools)schInit(); return G.schools; }
-function schInit(){ G.schools={}; G.schOut=G.schOut||[]; for(const a of AREA)for(const n of a.hs){ const S={n,area:a.k,lv:Math.round(clamp(N(55,10),30,85)),coach:null,rel:{},gy:0}; G.schools[n]=S; S.coach=schNewCoach(S,true); } return G.schools; }
+function schInit(){ const B=G.amHsLv||{}; G.schools={}; G.schOut=G.schOut||[]; for(const a of AREA)for(const n of a.hs){ const S={n,area:a.k,lv:B[n]?B[n].lv:Math.round(clamp(N(55,10),30,85)),coach:null,rel:{},gy:0}; if(B[n]&&B[n].lh&&B[n].lh.length)S.lh=B[n].lh; /* 아마 리그가 먼저 쓴 전력(13_amateur_league) */ G.schools[n]=S; S.coach=schNewCoach(S,true); } delete G.amHsLv; return G.schools; }
 const schOf=p=>p&&p.school?schList()[p.school]||null:null;
 function schRel0(S,tid){ return Math.round(clamp(20+(teamArea(tid)===S.area?15:0)+(S.coach&&S.coach.from===tid?20:0),0,100)); }
 function schRel(S,tid){ tid=tid??G.user; if(S.rel[tid]==null)S.rel[tid]=schRel0(S,tid); return S.rel[tid]; }
@@ -28,7 +28,7 @@ function schSetCoach(S,c,why){ const old=S.coach; if(old&&old.id!==c.id)schDropM
   return why; }
 /* 겨울: 감독 나이·은퇴·교체, 학교 전력 변화, 이름난 감독은 스태프 시장으로 */
 function schYear(){ const L=Object.values(schList()); let out=0;
-  for(const S of L){ const c=S.coach; c.age++; for(const x of [...(G.cmarket||[]),...(G.scoutMarket||[])])if(schPerson(x)===c.id)x.age=c.age; S.lv=Math.round(clamp(S.lv+N(0,3)+(c.sty==='육성형'?.6:0),25,90));
+  for(const S of L){ const c=S.coach; c.age++; for(const x of [...(G.cmarket||[]),...(G.scoutMarket||[])])if(schPerson(x)===c.id)x.age=c.age; if(!G.amU)S.lv=Math.round(clamp(S.lv+N(0,3)+(c.sty==='육성형'?.6:0),25,90)); /* 아마 리그가 돌면 성적·감독으로 변한다(13_amateur_league amLvDrift) */
     if(c.age>=66||R()<.05){ if(c.ob&&G.ob){ const o=G.ob.find(x=>x.id===c.ob); if(o)o.log.push({y:G.year,t:`${S.n} 감독에서 물러남`}); } schSetCoach(S,schNewCoach(S,false)); continue; }
     if(out<3&&c.rep>=62&&c.age<=60&&R()<.15){ out++; schToMarket(S); } }
   for(const S of L)for(const t in S.rel)if(S.rel[t]>35)S.rel[t]=Math.round(S.rel[t]-(S.rel[t]-35)*.08); /* 안 챙기면 조금씩 식는다 */

@@ -103,7 +103,7 @@ function personXExt(k){ const P=String(k).split(':'), kind=P[0];
     const plist=L=>L.slice(0,8).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${p.team!=null&&!p.prospect?`<i class="small muted">(${esc(tshort(p.team))})</i>`:''}`).join(' · ');
     if(kind==='hs')return {k,name:n,role:`고교 야구부 · ${S.area}`,av:{img:hsCrest(n),name:n},rel:r,rl:'우리 구단 친분',lab:schRelLbl(r),sub:`전력 ${S.lv} · 감독 ${S.coach?S.coach.name:'공석'}`,
       info:`${cands.length?`<p class="small">올해 드래프트 후보: ${plist(cands)}</p>`:''}${pros.length?`<p class="small">프로에 있는 졸업생 ${pros.length}명: ${plist(pros)}</p>`:'<p class="small muted">아직 프로에 있는 졸업생이 없습니다.</p>'}`,
-      acts:[...(S.coach?[btn('고교 감독','person','hsc:'+n,1)]:[]),btn('지역 정보망','go','staff:scouts')]};
+      acts:[btn('학교 페이지','amSch',n,1),...(S.coach?[btn('고교 감독','person','hsc:'+n)]:[]),btn('지역 정보망','go','staff:scouts')]};
     const c=S.coach; if(!c)return null;
     return {k,name:c.name,role:`${n} 감독`,av:{persona:'coach',pid:c.id,age:c.age,name:c.name},rel:r,rl:'우리 구단 친분',lab:schRelLbl(r),sub:`${c.age}세 · ${c.sty}${c.alma?' · 모교 출신':''}`,
       info:`<p class="small">${esc(c.car||'')}</p><p class="small muted">친분은 스카우트 방문·단장 대회 관전·그 학교 선수 지명·후원으로 오릅니다. 높을수록 이 학교 후보 평가 오차가 줄고 귀띔 메일이 옵니다.</p>`,
