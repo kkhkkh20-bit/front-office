@@ -99,7 +99,7 @@ document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||
       const u=imgEnc(c); if(me){ if(G&&G.gmP){ G.gmP.img=u; save(); render(); toast('사진을 바꿨습니다.'); } } else { const g=gpSync(); g.img=u; render(); } }catch(err){ toast('사진을 읽지 못했습니다.'); } URL.revokeObjectURL(url); }; im.onerror=()=>{ URL.revokeObjectURL(url); toast(/\.(heic|heif)$/i.test(f.name||'')?'이 브라우저는 HEIC 사진을 읽지 못합니다. JPG나 PNG로 바꿔 넣어 주세요.':'사진을 읽지 못했습니다. JPG나 PNG로 다시 넣어 주세요.'); }; im.src=url; });
 
 /* 모든 선수·인물 사진을 갤러리 사진으로(사용자 요청 11-06). 이 기기의 저장에만 넣는다(256px JPEG 약 15KB) */
-function cimgBtns(k){ if(!k||!G)return ''; return `<span class="cimg-b"><label class="btn small" title="갤러리 사진으로 바꾸기">사진<input type="file" accept="image/*" data-cimg="${esc(k)}" hidden></label>${G.cimg&&G.cimg[k]?`<button class="btn small" data-a="cimgDel" data-v="${esc(k)}">원래대로</button>`:''}</span>`; }
+function cimgBtns(k){ if(!k||!G)return ''; return `<span class="cimg-b"><label class="btn small" title="갤러리 사진으로 바꾸기">사진<input type="file" accept="image/*" data-cimg="${esc(k)}" hidden></label>${G.cimg&&G.cimg[k]?`<button class="btn small" data-a="cimgDel" data-v="${esc(k)}">원래대로</button>`:''}</span>${typeof secPickHtml==='function'?secPickHtml(k):''}`; } /* 비서는 템플릿 사진(v19 20명·v8 8명)도 고른다(77_assets_ui.js secPickHtml) */
 Object.assign(A,{ cimgDel(v){ if(G&&G.cimg){ delete G.cimg[v]; save(); render(); try{ renderSheet(); }catch(e){} } } });
 /* 파일 선택 대리(카페 11-14 PC 사진 무반응): 파일 창이 열린 동안 화면이 다시 그려지면 원래 입력칸이 문서에서 빠져 change가 document까지 오지 않는다.
    앱 화면 밖(body 끝)에 복제한 입력칸으로 파일을 받아 같은 처리로 넘긴다 */

@@ -9,6 +9,9 @@ const results=[]; const T=(name,fn)=>results.push({name,fn});
 /* [얼굴 v18] 시나리오용: 화면 쪽 얼굴 번호표(FACE6, 사진 data URI는 빼고)와 배정 함수(face6Pool·face6Idx)를 엔진 안에서 direct eval로 읽는다. 엄격 모드라 끝 식으로 꺼낸다 */
 globalThis.__faceSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=fs.readFileSync(path.join(__dirname,'..','src','ui','assets','77_assets_ui.js'),'utf8');
   return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n;({FACE6,face6Pool,face6Idx})'; };
+/* [비서 v19] 시나리오용: FACE8(사진 빼고)·FACE19 번호표와 비서 배정 함수(secCands·secIdx) */
+globalThis.__secSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
+  return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function face19Load('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
 const ok=(c,msg)=>{ if(!c)throw new Error(msg); };
@@ -4941,7 +4944,7 @@ T('[구단주 다시 설득] 사퇴 카드는 한 시즌 한 번·두 시즌 쉬
   G.year=y+1; ok(opResignWhy(u).includes((y+2)+'시즌'),'쉬는 기간 안내가 없음: '+opResignWhy(u)); G.year=y+2; ok(!opResignWhy(u),'두 시즌 뒤에도 쓸 수 없음'); ok(opOdds(u,ctx,a)<pF-.08,'통했던 사퇴 카드가 약해지지 않음'); G.year=y;
   const ai=G.teams.find(x=>x.id!==u&&!x.indie); opRun(ai.id,ctx,a,[.99,.99]); ok(opResignWhy(ai.id).includes('이번 시즌')&&!opArgs(ai.id).some(x=>x.k==='resign'),'AI는 사퇴 카드 제한이 다름'); });
 T('[얼굴 v18] FACE6 360명(v18 160~359)·새 신인은 어린 얼굴·기존 저장 배정 유지·아시아쿼터 후보·흰 배경 제외',()=>{ const F=eval(globalThis.__faceSrc()), X=F.FACE6.ids; ok(X.length===360&&F.FACE6.v18&&F.FACE6.v18.o===160,'FACE6가 360명이 아님: '+X.length);
-  ok(X.slice(160).filter(x=>x.x).length===4&&[324,328,329,333].every(i=>X[i].x),'흰 배경 4명(v18_165·169·170·174) 제외 표시가 틀림');
+  ok(X.slice(160).filter(x=>x.x).length===0,'v18b: 배정 제외 얼굴이 남음(흰 배경 4명은 회색 배경으로 다시 납품됨)');
   const asia=F.face6Pool({foreign:'아시아'}); ok(asia.length>0&&asia.some(i=>i>=160)&&asia.every(i=>/Japanese|Taiwanese|Filipino|Australian/.test(X[i].e)),'아시아쿼터 후보가 비었거나 v18이 없음');
   ok(F.face6Pool({foreign:'용병'}).some(i=>i>=160)&&F.face6Pool({age:20}).every(i=>!X[i].f&&!X[i].x),'용병·국내 후보가 틀림');
   const all=()=>Object.values(G.players).filter(p=>p.team!=null).sort((a,b)=>a.id-b.id), dup=()=>{ const S=new Set(); for(const p of all()){ const i=G.f6[p.id]; if(i==null)continue; const k=p.team+':'+i; if(S.has(k))return k; S.add(k); } return null; };
@@ -4952,6 +4955,20 @@ T('[얼굴 v18] FACE6 360명(v18 160~359)·새 신인은 어린 얼굴·기존 �
   const b6=JSON.stringify(G.f6), b6r=JSON.stringify(G.f6r), v=G.f6v; X.push(...tail); G=JSON.parse(JSON.stringify(G));
   for(const p of all())F.face6Idx(p); ok(G.f6v===v&&JSON.stringify(G.f6)===b6&&JSON.stringify(G.f6r)===b6r,'불러온 저장의 얼굴 배정이 바뀜');
   const q=all().filter(p=>!p.foreign&&p.age<=21).sort((a,b)=>a.age-b.age)[0]; delete G.f6r[q.team+':'+G.f6[q.id]]; delete G.f6[q.id]; const ni=F.face6Idx(q); ok(ni>=160&&X[ni].a<=24,'새로 배정하는 어린 선수가 v18 어린 얼굴을 못 받음 '+ni); ok(!dup(),'새 배정 뒤 한 구단에 같은 얼굴이 둘'); });
+T('[얼굴 v18b] 회색 배경으로 다시 납품된 4명(324·328·329·333)이 국내 선수 배정 후보로 돌아오고 새 게임에서 배정될 수 있다·384 시트 칸 간격',()=>{ const F=eval(globalThis.__faceSrc()), X=F.FACE6.ids, four=[324,328,329,333], pool=F.face6Pool({age:24});
+  ok(four.every(i=>!X[i].x&&!X[i].f&&pool.includes(i)),'4명이 국내 후보에 없음: '+four.filter(i=>!pool.includes(i)));
+  ok(F.FACE6.v18.pitch&&F.FACE6.v18.pitch['384']===400&&F.FACE6.v18.h&&['A384','B384','B128','B256'].every(k=>/^[0-9a-f]{8}$/.test(F.FACE6.v18.h[k])),'384 칸 간격·시트 해시(캐시 갱신용)가 없음');
+  fresh(); const all=Object.values(G.players).filter(p=>p.team!=null&&!p.foreign).sort((a,b)=>a.age-b.age); const got=new Set(); for(let r=0;r<6&&!got.size;r++){ G.f6={}; G.f6r={}; for(const p of (r%2?all.slice().reverse():all)){ const i=F.face6Idx(p); if(four.includes(i))got.add(i); } }
+  ok(got.size>0,'새 배정에서 4명이 한 번도 나오지 않음'); });
+T('[비서 v19] 새 게임 비서는 v19 여성 사진·옛 저장의 v8 비서 배정은 v19로·사용자가 고른 사진(v8 포함)은 유지·한 구단 안 중복 없음',()=>{ const F=eval(globalThis.__secSrc());
+  ok(F.FACE19.ids.length===20&&F.FACE19.ids.filter(x=>x.f).length===16&&F.SEC8().length===8&&F.secCands().length===28,'후보 수가 틀림(v19 20 + v8 8)');
+  fresh(); const o={persona:'staff',pid:'st:비서:'+G.user,team:G.user,age:29,female:true}, key='staff:'+o.pid; const x=F.secIdx(o);
+  ok(x&&x.k==='19'&&F.FACE19.ids[x.c].f===1&&G.f19s[key].c===x.c,'새 게임 비서가 v19 여성 사진이 아님 '+JSON.stringify(x));
+  G=JSON.parse(JSON.stringify(G)); ok(F.secIdx(o).c===x.c,'불러온 뒤 비서 사진이 바뀜');
+  const o2={persona:'staff',pid:'st:비서2:'+G.user,team:G.user,female:true}, y=F.secIdx(o2); ok(y.k==='19'&&y.c!==x.c,'같은 구단 비서 둘이 같은 사진');
+  delete G.f19s; G.f7={[key]:F.SEC8()[2]}; G.f7r={['8Lsec:'+F.SEC8()[2]]:key}; const z=F.secIdx(o); ok(z&&z.k==='19','옛 저장의 v8 비서 배정이 v19로 바뀌지 않음');
+  const pick='8:'+F.SEC8()[3]; G.secPh={[key]:pick}; G=JSON.parse(JSON.stringify(G)); const w=F.secIdx(o); ok(w.k==='8'&&w.c===F.SEC8()[3]&&w.pick,'사용자가 고른 v8 비서 사진이 유지되지 않음 '+JSON.stringify(w));
+  G.secPh[key]='19:5'; ok(F.secIdx(o).c===5&&F.secIdx(o).k==='19','사용자가 고른 v19 사진이 유지되지 않음'); G.secPh[key]='8:0'; ok(F.secIdx(o).k==='19'&&F.secIdx(o).c===G.f19s[key].c,'비서 후보가 아닌 값은 무시해야 함'); });
 T('[안정화] 새 게임·불러오기는 날짜만 열쇠인 캐시(FA 잠금·중계 사본·견제 기록)를 비우고, 시나리오 세계는 앞 시나리오의 도전과제 보상을 받지 않는다',()=>{ fresh(); ok(!(G.achPerk&&(G.achPerk.cash||G.achPerk.rep||G.achPerk.trust)),'앞 시나리오 도전과제 보상이 새 세계에 들어감 '+JSON.stringify(G.achPerk));
   const p=domestic(G.user)[0]; faLock(p); if(_faLk.k==null)_faLk={k:G.year+':'+G.day,s:new Set([p.id])}; /* 겨울이 아니면 faLock이 열쇠를 만들지 않는다 */ spoilSnapTake(G.day,[G.user]); domLog('ref','x'); ok(_faLk.k!=null&&SPOIL_SNAP&&_domSeen.s.size===1,'준비 실패');
   const S=JSON.stringify(G); G=JSON.parse(S); migrateDraft(); ok(_faLk.k==null&&SPOIL_SNAP===null&&_domSeen.s.size===0,'불러온 뒤 다른 세계의 날짜 캐시가 남음'); fresh(); ok(_faLk.k==null&&SPOIL_SNAP===null,'새 게임 뒤 캐시가 남음'); });
