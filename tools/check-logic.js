@@ -4700,9 +4700,35 @@ T('[독주 견제] 단장 생존: 성적 우선 구단주는 두 시즌 연속 �
   const ab=x=>{ const a=gmAbil(x); return (a.eye+a.neg+a.plan+a.money)/4; }; let s0=0,s1=0; const N=150; for(let i=0;i<N;i++){ s0+=ab(mkGM(t.id)); s1+=ab(gmReformPick(t,3)); } ok(s1>s0+N*3,'개혁 단장 능력이 평범함 '+(s0/N).toFixed(1)+' → '+(s1/N).toFixed(1)); }); /* 평균 차는 세계(OB 후보 수)에 따라 약 4~7: 표본 30·기준 4는 시작 세계가 바뀌면 흔들렸다 */
 T('[독주 견제] 지명권: 우승 도전 구단도 1라운드 지명권을 헐값에 넘기지 않고, 올인 구단만 싸게 본다',()=>{ fresh(); const [w,b]=G.teams.filter(t=>t.id!==G.user); aiPlanSet(w,'win','',true); aiPlanSet(b,'build','',true); const k='1:'+G.teams[G.teams.length-1].id;
   const vw=pkVal(w,k), vb=pkVal(b,k); ok(vw>=vb*.55,'우승 도전 구단 지명권 값이 너무 낮음 '+vw.toFixed(1)+' / '+vb.toFixed(1)); w.allIn=sponSeason(); ok(pkVal(w,k)<vw,'올인인데 지명권 값이 그대로'); });
-T('[독주 견제] 드래프트: 그해 대어 셋은 잠재력 최상위이고 성장이 불발로 끝나는 일이 드물다(앞 순번 지명이 실제로 값지다)',()=>{ fresh(); makeDraftClass(); const C=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&!p.ovsRet); const B=C.filter(p=>p.blue);
+T('[독주 견제] 드래프트: 그해 대어 셋은 잠재력 최상위이고 불발이 덜하지만, 1~3순위도 실패할 수 있다(11-17 드래프트 보정)',()=>{ fresh(); makeDraftClass(); const C=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&!p.ovsRet); const B=C.filter(p=>p.blue);
   ok(B.length>=1&&B.length<=3,'대어 수 '+B.length); const pots=C.map(p=>p.pot).sort((a,b)=>b-a); ok(B.every(p=>p.pot>=pots[3]),'대어가 잠재력 최상위가 아님');
-  for(const p of B.filter(q=>q.pot<66)){ delete p.realK; develop(p); ok(p.realK>=.62,'대어 실현율이 낮음 '+p.realK); } const o=C.find(p=>!p.blue&&p.pot<pots[5]); if(o){ delete o.realK; develop(o); ok(o.realK!=null,'일반 후보 실현율 없음'); } });
+  const o=C.find(p=>!p.blue&&p.pot<pots[5]); ok(o,'준비: 일반 후보'); const roll=(p,blue)=>{ const s=JSON.stringify({r:p.r,age:p.age,pot:p.pot,pers:p.pers,dt:p.dt}); const K=[]; for(let i=0;i<2000;i++){ const x=JSON.parse(s); Object.assign(p,{r:x.r,age:20,pot:Math.min(x.pot,64),pers:Object.assign({},x.pers,{pro:10,temp:10,amb:10}),dt:'norm',blue:blue?1:0}); delete p.realK; develop(p); K.push(p.realK); } const x=JSON.parse(s); Object.assign(p,{r:x.r,age:x.age,pot:x.pot,pers:x.pers,dt:x.dt}); return K; };
+  const kb=roll(B[0],true), kn=roll(o,false), m=a=>a.reduce((s,v)=>s+v,0)/a.length, sh=(a,f)=>a.filter(f).length/a.length;
+  ok(m(kb)>m(kn)+.005,'대어 실현율이 일반 후보보다 높지 않음 '+m(kb).toFixed(2)+' / '+m(kn).toFixed(2));
+  ok(sh(kb,k=>k<.5)>=.03&&sh(kb,k=>k<.5)<=.3,'대어 불발(실현율 0.5 미만) 비율 '+sh(kb,k=>k<.5).toFixed(2)+' (기대 0.03~0.3: 대어도 실패할 수 있되 드물게)');
+  ok(sh(kn,k=>k<.6)>=.28&&sh(kn,k=>k<.6)<=.5,'일반 후보 불발(0.6 미만) 비율 '+sh(kn,k=>k<.6).toFixed(2)); ok(DRAFT_READY<=.35&&DRAFT_SUPER<=.3,'즉시 전력 비율이 다시 커짐'); });
+T('[드래프트 보정] 확대 엔트리: 1군 경험 없는 젊은 선수에게 9월 1군 자리 몇 개를 먼저 주고, 한 번 뛰면 다음 후보로 바꾼다(모든 구단 같은 식)',()=>{ fresh(); simTo(()=>period()==='season'); const t=G.teams.find(x=>x.id!==G.user).id;
+  for(const tid of [t,G.user]){ const k=newPlayer({age:21,isP:false,base:30,pot:50,team:tid}); k.draft={y:G.year-2,rd:8,no:3,tid}; k.joinY=G.year-1; ok(debutDue(k),'1군 경험 없는 지명 선수가 대상이 아님');
+    const old=newPlayer({age:27,isP:false,base:46,pot:50,team:tid}); old.draft={y:G.year-2,rd:8,no:3,tid}; ok(!debutDue(old),'27세도 대상'); const ys=newPlayer({age:21,isP:false,base:46,pot:58,team:tid}); ys.draft=k.draft; ys.ys=true; ok(!debutDue(ys),'육성선수가 대상(1군 등록 불가)');
+    k.hist.push({y:G.year,lvl:'1군',t:tid,g:1,pa:1}); ok(!debutDue(k),'1군에 뛴 뒤에도 대상'); }
+  const kids=[]; for(let i=0;i<6;i++){ const k=newPlayer({age:21,isP:i%2===0,base:28,pot:45,team:t}); k.draft={y:G.year-1,rd:9,no:i+1,tid:t}; k.joinY=G.year; kids.push(k); }
+  G.day=KD(7,1); ok(!debutOn(),'7월에 켜짐'); entryManage(t,false,true); ok(kids.filter(k=>k.e1).length===0,'7월에 능력 낮은 신인이 1군에 오름');
+  G.day=KD(9,3); ok(debutOn(),'9월 확대 엔트리에 꺼져 있음'); entryManage(t,false,true); const up=()=>playersOf(t).filter(p=>p.e1&&debutDue(p)).length; ok(up()>=DEBUT_N,'9월 첫 기회 자리 '+up()+' < '+DEBUT_N);
+  const d=depth(t); ok([...d.start,...d.sp].every(p=>p.e1),'주전·선발이 첫 기회 자리로 빠짐'); ok(playersOf(t).filter(p=>p.e1).length<=entryLimit(),'엔트리 초과');
+  const k0=playersOf(t).find(p=>p.e1&&debutDue(p)); k0.hist.push({y:G.year,lvl:'1군',t,g:1,pa:1}); G.day+=1; entryManage(t,true,true); ok(up()>=Math.min(DEBUT_N,playersOf(t).filter(p=>debutDue(p)&&(p.e1||canUp(p))).length),'뛴 신인 대신 다음 후보가 오르지 않음 '+up()); });
+T('[드래프트 보정] 육성선수 정식 등록: AI도 5월 1일부터 사람 단장과 같은 조건으로 올린다(미지명·트라이아웃 육성선수의 1군 길)',()=>{ fresh(); simTo(()=>period()==='season'); const t=G.teams.find(x=>x.id!==G.user).id;
+  const p=newPlayer({age:21,isP:true,base:60,pot:70,team:t}); p.tryS={y:G.year-1,k:'ud',ys:true,tid:t,d:G.day}; ysSet(p); ok(p.ys,'준비: 육성');
+  G.day=KD(4,20); ok(aiYsUp(t)===0&&p.ys,'5월 1일 전에 정식 등록'); G.day=KD(5,8); const n0=rosterN(t); const r=aiYsUp(t); ok(r===1&&!p.ys,'AI가 좋은 육성선수를 정식으로 올리지 않음'); ok(rosterN(t)<=ROSTER_MAX,'정원 초과 '+rosterN(t)+' (전 '+n0+')');
+  const q=newPlayer({age:21,isP:true,base:60,pot:70,team:G.user}); ysSet(q); ok(aiYsUp(G.user)===0&&q.ys,'우리 구단 육성선수를 AI 규칙이 올림(사람 단장이 정한다)');
+  const w=newPlayer({age:21,isP:true,base:24,pot:30,team:t}); ysSet(w); ok(aiYsUp(t)===0&&w.ys,'정식 2군 하위보다 못한 육성선수를 올림'); });
+T('[드래프트 보정] 지명 순번별 겨울 성장 결과(경기 없이 7년): 1라운드도 넷 중 하나 넘게 주전감이 못 되고, 6라운드 이하는 1라운드보다 훨씬 낮다(경기·캠프 없이 겨울 성장만이라 실제 비율보다 낮게 나온다)',()=>{ fresh(); const am=G.amOff; G.amOff=true; try{
+  const dom=Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!p.prospect).map(ovr).sort((a,b)=>b-a); const bar=dom[199]; /* 구단당 20명: 1군 주전·주요 투수 선 */
+  const R1=[],R6=[]; for(let c=0;c<8;c++){ G.draftClass=[]; makeDraftClass(); const C=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&!p.ovsRet).sort((a,b)=>b.pot-a.pot);
+    C.forEach((p,i)=>{ const rd=Math.floor(i/10)+1; if(rd!==1&&rd<6)return; p.prospect=false; let pk=ovr(p); for(let y=0;y<7;y++){ develop(p); pk=Math.max(pk,ovr(p)); } (rd===1?R1:R6).push(pk>=bar); });
+    for(const id of G.draftClass)delete G.players[id]; G.draftClass=[]; }
+  const sh=a=>a.filter(x=>x).length/a.length; ok(R1.length>=60&&R6.length>=200,'준비: 표본 '+R1.length+'/'+R6.length);
+  ok(sh(R1)<=.75,'1라운드 주전감 비율이 너무 높음(실패가 드묾) '+sh(R1).toFixed(2)); ok(sh(R1)>=.3,'1라운드 주전감 비율이 너무 낮음 '+sh(R1).toFixed(2)); ok(sh(R6)<=.12&&sh(R6)<sh(R1)/3,'6라운드 이하 주전감 비율 '+sh(R6).toFixed(3)+' (1라운드 '+sh(R1).toFixed(2)+', 기준 '+bar.toFixed(1)+')');
+  } finally { G.amOff=am; } });
 T('[독주 견제] 소식: 독주 구단이 생기면 다른 구단들이 견제에 나선다는 기사가 나온다',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X); const riv=topRival(X); aiPlanSet(riv,'win','',true); _domC.k=null; G.domNewsK=null; domNews();
   ok((G.news||[]).some(n=>n.t.includes('독주에 다른 구단들 견제')),'견제 기사 없음'); });
 
