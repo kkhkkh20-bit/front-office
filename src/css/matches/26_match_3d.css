@@ -328,3 +328,14 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
  .match-dashboard[data-view="field"] .md-pitch-dock>.cs-pitch{grid-column:1;grid-row:3;margin:3px 5px 5px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;white-space:nowrap}
  .match-dashboard[data-view="field"] .md-pitch-dock>header>span{display:none}
 }
+
+/* 휴대폰 중계(UI 3단계 3-5): 조작 줄 한 줄(재생·속도·더보기·나가기). 하이라이트/전체와 소리는 '더보기'에서.
+   위 점수 막대와 겹치는 경기장 안 작은 전광판은 숨기고, 이닝 시작 자막은 버튼과 겹치지 않게 아래쪽에. 화면 안 글자는 10px 이상 */
+@media(max-width:600px){
+ .match-dashboard:not([data-more]) .cs-top>.cs-mode,.match-dashboard:not([data-more]) .cs-top>#cs-snd{display:none}
+ .match-dashboard .cs-top>.md-control{white-space:nowrap}
+ .match-dashboard .cs-stage .md-bug{display:none!important}
+ .match-dashboard .cs-bn{place-items:end center}.match-dashboard .cs-bn>div{margin-bottom:22%}
+ .match-dashboard .cs-nameplate b,.match-dashboard .cs-nameplate span,.match-dashboard .cs-stage[data-renderer="ready"]>.cs-board-view,.match-dashboard .cs-cam-view{font-size:10px}
+ .match-dashboard .cs-cap .cs-voice>b{font-size:var(--ui-caption)}
+}

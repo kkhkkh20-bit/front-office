@@ -4911,6 +4911,17 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
  .match-dashboard[data-view="field"] .md-pitch-dock>.cs-pitch{grid-column:1;grid-row:3;margin:3px 5px 5px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;white-space:nowrap}
  .match-dashboard[data-view="field"] .md-pitch-dock>header>span{display:none}
 }
+
+/* 휴대폰 중계(UI 3단계 3-5): 조작 줄 한 줄(재생·속도·더보기·나가기). 하이라이트/전체와 소리는 '더보기'에서.
+   위 점수 막대와 겹치는 경기장 안 작은 전광판은 숨기고, 이닝 시작 자막은 버튼과 겹치지 않게 아래쪽에. 화면 안 글자는 10px 이상 */
+@media(max-width:600px){
+ .match-dashboard:not([data-more]) .cs-top>.cs-mode,.match-dashboard:not([data-more]) .cs-top>#cs-snd{display:none}
+ .match-dashboard .cs-top>.md-control{white-space:nowrap}
+ .match-dashboard .cs-stage .md-bug{display:none!important}
+ .match-dashboard .cs-bn{place-items:end center}.match-dashboard .cs-bn>div{margin-bottom:22%}
+ .match-dashboard .cs-nameplate b,.match-dashboard .cs-nameplate span,.match-dashboard .cs-stage[data-renderer="ready"]>.cs-board-view,.match-dashboard .cs-cam-view{font-size:10px}
+ .match-dashboard .cs-cap .cs-voice>b{font-size:var(--ui-caption)}
+}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 
   .fm-home .fmmain{height:calc(calc(100dvh / var(--z,1)) - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -33147,7 +33158,7 @@ function matchPrepLineups(g){UI.prepAt=Date.now();if(UI.prepSideG!==g.day){UI.pr
   const chip=(p,label,pos,n)=>{const xy=PREP_XY[pos]||PREP_XY.DH;return `<div class="cs-pc" style="left:${xy[0]/1.2}%;top:${xy[1]}%">${p?avImg(p):'<span class="av ini">?</span>'}<b><em>${label}</em>${esc(p?.name||n||'')}</b></div>`;};
   const bl=id=>g.box[side].bat.find(b=>b.id===id),ps=pit?prepSeason(g,pit.id,pit,true):null,pp=pit&&G.players[pit.id];
   const recT=(()=>{const r=prepTeamFacts(g)?.teams?.[tid]?.rec;return !r?'당시 전적 미보관':r.w+r.l+r.t?recStr(r):'시즌 첫 경기';})();
-  const list=`<div class="cs-pl" style="--tc:${col}"><header>${badge(tid,40)}<div><b>${esc(tname(tid))}</b><small>${side==='a'?'원정':'홈'} · ${esc(recT)}</small></div></header><div class="cs-pl-h"><span>#</span><span>선수</span><span>포지션</span><span>타율</span><span>홈런</span><span>타점</span></div><ol>${rows.map((r,i)=>{const st=prepSeason(g,r.id,bl(r.id));const q=G.players[r.id];return `<li><i>${i+1}</i><b>${esc(q?.name||r.n||'')}<small>${q?esc(q.bt+'타'):''}</small></b><span>${esc(POSK[r.pos]||r.pos)}</span><em>${st&&!st.unknown?st.avg:'-'}</em><em>${st&&!st.unknown?st.hr:'-'}</em><em>${st&&!st.unknown?(st.rbi??'-'):'-'}</em></li>`;}).join('')}</ol>${pit?`<div class="cs-pl-sp"><span>선발투수</span><b>${esc(pp?.name||pit.n||'')}<small>${pp?esc(pp.th+'투'):''}</small></b><em>${prepPitchText(ps)}</em></div>`:''}</div>`;
+  const list=`<div class="cs-pl" style="--tc:${col}"><header>${badge(tid,40)}<div><b>${esc(tname(tid))}</b><small>${side==='a'?'원정':'홈'} · ${esc(recT)}</small></div></header><div class="cs-pl-h"><span>#</span><span>선수</span><span>포지션</span><span>타율</span><span>홈런</span><span>타점</span></div><ol>${rows.map((r,i)=>{const st=prepSeason(g,r.id,bl(r.id));const q=G.players[r.id];return `<li><i>${i+1}</i><b>${esc(q?.name||r.n||'')}<small>${q?esc(q.bt+'타'):''}</small></b><span>${esc(r.pos==='DH'?'지명':POSK[r.pos]||r.pos)}</span><em>${st&&!st.unknown?st.avg:'-'}</em><em>${st&&!st.unknown?st.hr:'-'}</em><em>${st&&!st.unknown?(st.rbi??'-'):'-'}</em></li>`;}).join('')}</ol>${pit?`<div class="cs-pl-sp"><span>선발투수</span><b>${esc(pp?.name||pit.n||'')}<small>${pp?esc(pp.th+'투'):''}</small></b><em>${prepPitchText(ps)}</em></div>`:''}</div>`;
 
   const field=`<div class="cs-pf" style="--tc:${col}"><div class="cs-pfi"><svg viewBox="0 0 120 100" aria-hidden="true"><defs><pattern id="pfs" width="10" height="100" patternUnits="userSpaceOnUse"><rect width="5" height="100" fill="#ffffff0d"/></pattern></defs><path d="M60 92 L7.7 39.7 A74 74 0 0 1 112.3 39.7 Z" class="gr"/><path d="M60 92 L7.7 39.7 A74 74 0 0 1 112.3 39.7 Z" fill="url(#pfs)"/><path d="M60 95 L35.5 68.5 A34.6 34.6 0 0 1 84.5 68.5 Z" class="dt"/><path d="M60 88 L76 72 L60 56.5 L44 72 Z" class="ig"/><path d="M60 92 L7.7 39.7 M60 92 L112.3 39.7" class="ln"/><circle cx="60" cy="73.5" r="3.2" class="md"/><rect x="58.9" y="72.4" width="2.2" height=".6" class="bs"/>${[[77,75],[60,58],[43,75]].map(([x,y])=>`<rect x="${x-1.3}" y="${y-1.3}" width="2.6" height="2.6" transform="rotate(45 ${x} ${y})" class="bs"/>`).join('')}<path d="M58.6 91.2 h2.8 v1.3 l-1.4 1.3 l-1.4 -1.3 z" class="bs"/></svg><div class="cs-pfx tl"><b>${esc(tshort(tid))}</b><span>${esc(recT)}</span></div>${pit?`<div class="cs-pfx bl"><span>선발</span><b>${esc(pp?.name||pit.n||'')}</b><span>${ps?.unknown?'당시 기록 미보관':ps?`${ps.rec} · ${ps.era}`:'시즌 첫 등판'}</span></div>`:''}${rows.map((r,i)=>chip(G.players[r.id],i+1,r.pos,r.n)).join('')}${pit?chip(G.players[pit.id],'P','P',pit.n):''}</div></div>`;
   return `<section class="cs-pcard" data-side="${side}"${side===cur?'':' hidden'}>${field}${list}</section>`;};
