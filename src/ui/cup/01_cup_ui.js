@@ -59,11 +59,13 @@ function cupRec(i){ const V=CUP.view; if(!V)return render(); if(V.recs[i]){ rend
   cupApi('/game/'+V.id+'-g'+(i+1)).then(({r,j})=>{ if(CUP.view!==V)return; V.recs[i]=r.ok&&j&&typeof j.log==='string'?j:'bad'; render(); },()=>{ if(CUP.view!==V)return; V.recs[i]='bad'; render(); }); }
 /* 연재로 공개된 대회 진행(관리자 페이지 '결과 공개'): 날짜별 글·순위·경기 번호 */
 function cupPubLoad(){ if(CUP.pubSt||!xfAvail())return; CUP.pubSt='loading'; cupApi('/pub').then(({r,j})=>{ CUP.pub=r.ok&&j&&j.v?j:null; CUP.pubSt='ok'; },()=>{ CUP.pubSt='off'; }).finally(()=>{ try{ render(); }catch(e){} }); }
-function cupPubCard(){ cupPubLoad(); const P=CUP.pub; if(!P||!P.day)return '';
+function cupPubCard(){ cupPubLoad(); return cupPubHtml(CUP.pub); }
+/* 공개분 카드(관리자 미리보기도 같은 그림): pv면 경기 단추를 누르지 못하게 */
+function cupPubHtml(P,pv){ if(!P||!P.day)return '';
   const st=P.stand&&P.stand.length?`<table class="hof-tb small"><tr><th>순위</th><th>팀</th><th>승</th><th>패</th><th>무</th><th>승률</th></tr>${P.stand.map(x=>`<tr><td class="num">${x.rank}</td><td>${esc(x.name)}${x.ai?' <span class="muted">AI</span>':''}</td><td class="num">${x.w}</td><td class="num">${x.l}</td><td class="num">${x.t||0}</td><td class="num">${esc(x.pct)}</td></tr>`).join('')}</table>`:'';
   const last=P.days[P.days.length-1]; const gl=(P.games||[]).filter(g=>g.day===P.day);
   return `<section class="card cup-pub"><h2 class="sec">${esc(P.title)} 진행</h2><p class="small">${esc(last.t)}까지 공개${P.champ?` · 우승 <b>${esc(P.champ)}</b>`:''}</p>${st}
-    ${gl.length?`<p class="small muted">이날 경기(누르면 기록을 봅니다)</p><div class="chips">${gl.map(g=>`<button data-a="cupWatchId" data-v="${esc(g.id)}">${esc(g.a)} ${g.g.map(x=>x.join(':')).join(' ')} ${esc(g.b)}</button>`).join('')}</div>`:''}
+    ${gl.length?`<p class="small muted">이날 경기(누르면 기록을 봅니다)</p><div class="chips">${gl.map(g=>`<button${pv?' disabled':` data-a="cupWatchId" data-v="${esc(g.id)}"`}>${esc(g.a)} ${g.g.map(x=>x.join(':')).join(' ')} ${esc(g.b)}</button>`).join('')}</div>`:''}
     ${P.days.slice().reverse().map(d=>`<details class="hof-d"><summary class="small">${esc(d.t)}</summary><pre class="cup-pre">${esc(d.post)}</pre></details>`).join('')}</section>`; }
 function cupView(){ if(!G)return ''; cupProbe(); const C=FrontOfficeCore, t=team(G.user), on=xfAvail(), cfg=CUP.cfg;
   let now=null; try{ if(!G.unemp)now=cupEntryNow({name:CUP.name||t.nick}); }catch(e){ console.error(e); }

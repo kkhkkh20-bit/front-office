@@ -7,3 +7,12 @@
 .ul-up{color:#2f8a43}.ul-dn{color:#c33}.ulx .ul-res{font-size:16px;margin:4px 0}
 .ulx .ul-ec{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:4px 14px}.ulx .ul-er{display:grid;grid-template-columns:5.2em minmax(0,1fr) 2.2em;gap:6px;align-items:center;padding:2px 0}.ulx .ul-er select{min-width:0;width:100%}
 .ulx .ul-tiers{display:grid;gap:4px;margin:6px 0}.ulx .ul-trow{display:grid;grid-template-columns:6.5em 1fr auto;gap:8px;align-items:center;padding:6px;border-radius:8px;border:1px solid var(--line)}.ulx .ul-trow.on{border-color:var(--accent,#3b7dd8);background:color-mix(in srgb,var(--accent,#3b7dd8) 8%,transparent)}
+.ulx .ul-guide{margin:6px 0 10px;padding-left:1.4em;display:grid;gap:6px}.ulx .ul-guide b{margin-right:6px}.ulx .ul-big{font-size:16px;padding:10px 20px;min-width:14em}
+.ulx .ul-act{position:sticky;top:0;z-index:2;background:var(--card,var(--panel,#fff));padding:2px 0 6px;border-bottom:1px solid var(--line);margin-bottom:6px}.ulx .ul-sum{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}.ulx .ul-rank{font-size:20px}.ulx .ul-lineinfo{margin:2px 0 6px}
+.ulx .ul-st tr.ul-line td{padding:1px 5px;font-size:11px;font-weight:700;border-bottom:2px dashed}.ulx .ul-st tr.ul-line.up td{color:#2f8a43;border-color:#4a9d5b}.ulx .ul-st tr.ul-line.dn td{color:#c33;border-color:#c84a4a}
+.ulx .ul-next{margin:6px 0;padding:8px;border-radius:8px;background:var(--panel2,rgba(127,127,127,.08))}.ulx .ul-next p{margin:2px 0}
+.ulx .ul-feed{margin:6px 0;padding:6px 8px;border-radius:8px;border:1px solid var(--line);font:12px/1.5 var(--f-num,monospace);max-height:11em;overflow:hidden}.ulx .ul-feed p{margin:0;opacity:.75}.ulx .ul-feed p.me{opacity:1;font-weight:700}.ulx .ul-feed p.new{animation:ulIn .35s ease-out}
+@keyframes ulIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.ulx .ul-badge{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 4px;padding:10px;border-radius:10px;font-size:18px}.ulx .ul-b-up{background:color-mix(in srgb,#4a9d5b 22%,transparent);animation:ulIn .5s ease-out}.ulx .ul-b-down{background:color-mix(in srgb,#c84a4a 18%,transparent)}.ulx .ul-b-stay{background:var(--panel2,rgba(127,127,127,.1))}.ulx .ul-badge b{font-size:22px}
+.ulx .ul-here{color:var(--accent,#3b7dd8)}
+@media (max-width:640px){.ulx .ul-big{width:100%}}
