@@ -5548,6 +5548,7 @@ button.st-n:hover b{text-decoration:underline}
 .smk-raid .row{flex-wrap:wrap;gap:6px}
 .smk-news{margin:0;padding-left:16px;display:grid;gap:2px;font-size:13px}
 .smk-news li{overflow-wrap:anywhere}
+.smk-more>summary{cursor:pointer;font-size:var(--ui-caption,12px);color:var(--muted);margin-top:2px}.smk-more>ul{margin-top:2px}
 /* 코치 개인의 구단 지원 연수: 목록 고정 패널 없이 인물 카드 안에서 진행한다. */
 .coach-study{display:grid;gap:12px;min-width:0;margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--panel);scroll-margin-top:12px;overflow-wrap:anywhere}
 .coach-study>header{display:flex;align-items:center;justify-content:space-between;gap:8px}.coach-study h3,.coach-study p{margin:0}.coach-study h3{font-size:16px}
@@ -5652,6 +5653,9 @@ button.st-n:hover b{text-decoration:underline}
 @media(min-width:1100px){#sheet .sheet.ps-pc{row-gap:6px}#sheet .sheet.ps-pc>.ps-rel{margin-block:0!important}#sheet .sheet.ps-pc .ps-tabs{margin:0}#sheet .sheet.ps-pc>.btns{margin-top:0}}
 /* 분석원 관리(PC): 화면 높이 안에서 카드 목록만 쪽으로 넘긴다(UI 3단계 3-0, 57_fit_pages.js) */
 @media(min-width:1100px){#app main .ws-own.anl-fit{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}#app main .ws-own.anl-fit>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0}#app main .ws-own.anl-fit>section.card>*{flex:none}#app main .ws-own.anl-fit>section.card>.tgrid{flex:1 1 auto;min-height:0;overflow:auto;align-content:start}#app main .ws-own.smkt-fit>section.card>.tgrid~*{flex:none}}
+/* 핫픽스(커뮤니티 11-17 '스태프 시장 스크롤이 안 내려가요'): 코치·스카우트·분석원 시장은 목록이 .tgrid가 아니라 .cmk-split 안에 있어 스크롤 칸이 없었다.
+   목록 칸(.cmk-split)이 남은 높이 안에서 스크롤하고, 그래도 넘치면 카드 전체가 스크롤한다(잘려서 못 누르는 버튼이 없게) */
+@media(min-width:1100px){#app main .ws-own.anl-fit>section.card{overflow-y:auto;overscroll-behavior:contain}#app main .ws-own.anl-fit>section.card>.cmk-split{flex:1 1 auto;min-height:0;overflow-y:auto;align-content:start;align-items:start;overscroll-behavior:contain;scrollbar-width:thin}}
 .anl-fit.v-mk section.card>.eyebrow,.anl-fit.v-mk section.card>.eyebrow~*{display:none!important}
 .anl-fit.v-oth section.card>:is(.chips,.tgrid:not(.staff-other-cards),.eyebrow),.anl-fit.v-oth section.card>.chips~p.hint:not(.eyebrow~p){display:none!important}
 .anl-fit.v-oth section.card>p.hint:first-of-type{display:none}
@@ -36281,8 +36285,8 @@ function smkPulse(k){ const raids=k==='coach'?(G.cmRaid||[]).filter(cmOurs).map(
   const news=(G.wire||[]).filter(w=>w.k==='코치'||w.k==='스태프').slice(0,5);
   if(!raids.length&&!news.length)return '';
   const rv=raids.map(({r,c})=>`<div class="smk-raid"><b>${badge(r.tid,14)} ${esc(tshort(r.tid))} → 우리 ${esc(CROLE[r.role].l)} ${esc(c.name)}</b><span class="small muted">${r.to!==r.role?`${esc(CROLE[r.to].l)} 승격 · `:''}연 ${money(r.sal)}(현재 ${money(c.sal)}) · ${dmd(r.exp)}까지</span><div class="row"><button class="btn small primary" data-a="cmKeep" data-v="${c.id}:1:${r.exp}">연봉 맞춰 붙잡기</button><button class="btn small" data-a="cmKeep" data-v="${c.id}:0:${r.exp}">+10% 설득</button><button class="btn small" data-a="cmLet" data-v="${c.id}::${r.exp}">보내 주기</button></div></div>`).join('');
-  const nv=news.map(w=>`<li><span class="small muted">${dmd(w.d)}</span> ${esc(w.t)}</li>`).join('');
-  return `<div class="smk-pulse">${rv?`<div class="eyebrow">우리 코치를 노리는 제안</div>${rv}`:''}${nv?`<div class="eyebrow">최근 스태프 이동</div><ul class="smk-news">${nv}</ul>`:''}</div>`; }
+  const li=w=>`<li><span class="small muted">${dmd(w.d)}</span> ${esc(w.t)}</li>`, nv=news.slice(0,2).map(li).join(''), nm=news.slice(2).map(li).join(''); /* 최근 이동은 두 줄만, 나머지는 접어 목록이 더 보이게(제보 11-17) */
+  return `<div class="smk-pulse">${rv?`<div class="eyebrow">우리 코치를 노리는 제안</div>${rv}`:''}${nv?`<div class="eyebrow">최근 스태프 이동</div><ul class="smk-news">${nv}</ul>${nm?`<details class="smk-more"><summary>${news.length-2}건 더 보기</summary><ul class="smk-news">${nm}</ul></details>`:''}`:''}</div>`; }
 /* PC 스태프 개요(FM '스탭 기본 정보'처럼): 코치진 | 스카우트·전력분석 | 의무·부상 세 칸.
    칸마다 위에 인원 현황, 가운데 리그 10개 구단 비교 막대(우리 값·리그 최고·최저·평균), 아래 명단 표. */
 const sfStars=k=>`<span class="sf-st">${'★'.repeat(k)}<i>${'★'.repeat(Math.max(0,5-k))}</i></span>`;
