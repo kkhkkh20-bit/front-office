@@ -5484,6 +5484,12 @@ T('[제보 dddddd] 코치 교체: 정규시즌 뒤 계약은 우리·AI 모두 �
   const mk=G.cmarket.map(x=>x.id); for(const t of G.teams){ if(t.id===u)continue; t.cash=100000; t.market=1.2; for(const x of Object.values(G.coach[t.id]))if(x){ x.sk=30; x.dv=30; } } for(const x of G.cmarket)x.sal=60;
   const hired=[]; for(let i=0;i<60&&!hired.length;i++){ cmAiMonthly(); for(const t of G.teams)if(t.id!==u)for(const k of CKEYS){ const x=G.coach[t.id][k]; if(x&&mk.includes(x.id))hired.push(x); } }
   ok(hired.length,'준비 실패: AI 구단 시장 영입이 없음'); ok(hired.every(x=>x.jy===G.year+1&&staffPending(x)),'AI 구단은 같은 때 영입한 코치를 바로 합류시킴(우리만 다음 시즌 합류) '+hired.map(x=>x.jy)); });
+T('[제보 11-16 시설 완공] 전문화 공사는 완공일이 지나면 우리·다른 구단 모두 끝나고, 깨진 완공일·불러오기 때 지난 공사도 완공되며, 해를 넘기는 완공일은 연도까지 보인다',()=>{ fresh(); facInit(); G.fac.it.indoor=3; delete G.fac.bld.indoor; const b=facStartBuild(G.user,'indoor',{src:'cash'}); ok(b.lv===4&&b.done-G.day>365,'전문화 공사 기간 준비 실패');
+  ok(dmdA(b.done).includes(dobj(b.done).y+'년'),'해를 넘기는 완공일에 연도가 없다'); ok(!dmdA(G.day).includes('년'),'올해 날짜에 연도가 붙었다');
+  b.pm=G.day-10; b.done=G.day+2; const tgt=b.done+1; simTo(()=>G.day>=tgt); ok(!G.fac.bld.indoor&&G.fac.it.indoor===4,'완공일이 지났는데 공사가 남았다');
+  G.fac.it.weight=3; G.fac.bld.weight={lv:4,done:String(G.day-5),c:100}; G.fac.bld.lab={lv:(G.fac.it.lab||0)+1,c:100}; const t=G.teams.find(x=>x.id!==G.user), S=aiFacInit(t); S.it.rehab=3; S.bld.rehab={lv:4,done:G.day-30,c:100}; S.bld.dorm={lv:(S.it.dorm||0)+1,done:undefined,c:100};
+  facOverdueFix(); ok(!G.fac.bld.weight&&G.fac.it.weight===4,'문자열 완공일 공사가 안 끝났다'); ok(!G.fac.bld.lab,'완공일 없는 공사가 남았다'); ok(!S.bld.rehab&&S.it.rehab===4&&!S.bld.dorm,'다른 구단의 지난 공사가 불러오기 때 안 끝났다');
+  const t2=G.teams.find(x=>x.id!==G.user&&x.id!==t.id), S2=aiFacInit(t2); S2.it.fut=3; S2.bld.fut={lv:4,done:G.day+1,c:100}; simTo(()=>G.day>=tgt+3); ok(!S2.bld.fut&&S2.it.fut===4,'다른 구단 전문화 공사가 완공일 뒤에도 남았다'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
