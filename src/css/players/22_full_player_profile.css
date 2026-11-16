@@ -307,9 +307,14 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-state .pf-fact{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;width:calc(50% - 5px);margin-right:5px;padding:3px 0;vertical-align:top;border:0}
   #sheet .pf-overview .pf-state .pf-fact>b{text-align:left}
   /* 능력 차트는 남는 높이만큼(위·아래 상자 높이를 먼저 정하고) */
-  #sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;min-height:0}
-  #sheet .pf-overview .pf-radar .radar{flex:1 1 auto;min-height:0;height:auto;max-height:100%;width:100%}
+  /* 능력 차트가 다른 상자에 밀려 쪼그라들지 않게 최소 높이를 둔다(헬로봉쥬 11-16). 모자라면 pfFit()이 구속·수비 위치 같은 낮은 순서 상자를 접는다 */
+  #sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;min-height:clamp(240px,36vh,340px)}
+  #sheet .pf-overview .pf-radar .radar{flex:1 1 auto;min-height:200px;height:auto;max-height:100%;width:100%}
   #sheet .pf-overview .pf-pos-mini :is(.pf-field,svg){max-height:150px}
+  /* 아래 줄(시즌 통계·수비 위치/구속·경력)은 내용만큼 키우지 않고 높이를 묶는다: 남는 높이를 세부 능력·능력 차트에 준다(구단주 11-17 '능력치는 한눈에, 하단 공간이 너무 남는다') */
+  #sheet .pf-overview :is(.pf-season-table,.pf-pos-mini,.pf-pitch-head,.pf-career){max-height:clamp(150px,24vh,230px)}
+  #sheet .pf-overview .pf-season-table .tw{max-height:none}
+  #sheet .pf-overview .pf-pos-mini :is(.pf-field,svg){max-height:clamp(100px,16vh,150px)}
   body.fm #sheet .sheet.pf-screen:has(.detail-navigation .detail-acts) .pf-overview{padding-bottom:8px!important} /* 면담·⋯가 위 줄에 있으면 아래 여백이 필요 없다 */
 }
 @media(min-width:1100px) and (max-width:1599px){
