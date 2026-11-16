@@ -34,7 +34,7 @@ function contractMoneyPreview(scope){
   const template=document.createElement('template');template.innerHTML=scope==='ngt'?ngtSheet():(UI.fo.re?foRePanel(G.players[UI.fo.id]):foPanel(G.players[UI.fo.id]));
   const replace=selector=>{const old=host.querySelector(selector),next=template.content.querySelector(selector);if(old&&next)old.replaceWith(next);};
   if(scope==='ngt'){
-    replace('.ng-sum');const fresh=[...template.content.querySelectorAll('.ngr')];host.querySelectorAll('.ngr').forEach((row,i)=>{if(!fresh[i])return;row.className=fresh[i].className;const old=row.querySelector('.ngd'),next=fresh[i].querySelector('.ngd');if(old&&next)old.replaceWith(next);});
+    replace('.ng-sum');replace('.ng-tot');const fresh=[...template.content.querySelectorAll('.ngr')];host.querySelectorAll('.ngr').forEach((row,i)=>{if(!fresh[i])return;row.className=fresh[i].className;const old=row.querySelector('.ngd'),next=fresh[i].querySelector('.ngd');if(old&&next)old.replaceWith(next);});
     host.querySelectorAll('[data-ngr]').forEach(el=>{const v=UI.ngt.T[el.dataset.ngr];el.max=Math.max(+el.max,v);el.value=v;});
   }else {
     for(const selector of ['.fo-total','.fo-cmp','.fo-error'])replace(selector);

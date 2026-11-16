@@ -1063,6 +1063,12 @@ T('[드래프트] 같은 투수의 최고 구속은 어디서나 같고, 기록�
   p.am.bb=Math.round(p.am.outs/27*7.5); p.gmSeen=G.year; /* 관찰 0회면 관찰 의견이 없다(검수 11-09ze): 단장이 직접 본 후보로 */ const rp0=scoutReport(p); const rp=Object.assign({},rp0,{tools:rp0.tools.map(t=>t.k==='ctl'?Object.assign({},t,{cur:78}):t)}); const v=draftView(p,rp);
   ok(/기록/.test(v.obs)&&/근거/.test(v.obs),'기록과 반대인데 설명 없음: '+v.obs); ok(rp.ofp==null||/상한/.test(v.fut)&&/확신/.test(v.fut),'성장 전망 표현: '+v.fut);
   p.amInj='토미 존 수술(2학년)'; ok(riskWhy(p,rp).some(x=>/건강/.test(x)),'건강 위험 원인 없음'); p.amInj=null; });
+T('[영구결번 11-17] 이미 은퇴한 우리 구단 선수도 지금 기준을 채우면 후보가 되고 지정할 수 있다(기준을 낮추면 예전 선수도 올라온다)',()=>{ DEMO.on=false; newGame(6); G.legends=G.legends||[]; G.cfg=G.cfg||{};
+  const r={name:'가나다',isP:false,pos:'유격수',y:G.year-3,age:38,seasons:15,teams:[G.user],war:50,id:987654,pid:987654,aw:[],awP:[],no:7,noU:17,mine:{war:45,ys:9}}; G.legends.push(r);
+  G.cfg.retWar=60; ok(!retNoCands().some(x=>x.r===r),'기준(60·10시즌) 미달인데 후보가 됨');
+  G.cfg.retWar=40; ok(retNoCands().some(x=>x.r===r),'기준을 낮췄는데(40·8시즌) 은퇴한 선수가 후보로 오르지 않음'); ok(r.no===17,'우리 구단 등번호로 바뀌지 않음');
+  const o={...r,id:987655,pid:987655,name:'라마바',tid:(G.user+1)%10,mine:{war:80,ys:12}}; G.legends.push(o); ok(!retNoCands().some(x=>x.r===o),'다른 구단 후보가 우리 후보로 섞임');
+  const m=retireNumber('p'+r.pid); ok(r.retNo,'지정 실패: '+m); ok((G.retNos||[]).some(x=>x.no===17),'영구결번 목록에 없음'); });
 T('[면담] 고민 묻기는 다른 이야기를 막지 않고, 방금 진 경기를 성격대로 알아들으며, 면담 내용이 남는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3);
   const g=G.games.find(x=>x.home===G.user||x.away===G.user); ok(g,'경기 없음'); g.day=G.day; const me=g.home===G.user?'h':'a'; const B=g.box[me]; const x=B.pit[B.pit.length-1]; const p=G.players[x.id]; ok(p,'투수 없음');
   x.er=4; x.d='패'; initPers(p); p.pers.temp=5; p.pers.amb=10; p.tk={}; p.talkWk=null;
@@ -5248,6 +5254,29 @@ T('[해외 활성화 1-4] 해외파 계약 마지막 해: 새해에 복귀 여�
   const n=G.mail.length; const k0=JSON.stringify(a.bn); ovsPregen(); ok(JSON.stringify(a.bn)===k0&&G.mail.length===n,'새해 미리 정하기를 다시 굴림');
   b.bn={y:G.year,v:0}; c.bn={y:G.year,v:1}; ok(ovsBackTag(b)===''&&ovsBackTag(c)==='내년 복귀 가능 · 우선협상권 '+tshort(c.from),'남을 선수 표시·AI 원소속 표시');
   G.day=KD(11,1); ovlSeasonEnd(); abroadYear(); ok(a.back&&c.back,'미리 정한 복귀가 지켜지지 않음'); ok(!b.back,'남기로 정한 선수가 돌아옴'); ok(!a.bn&&!b.bn&&!c.bn,'정한 값이 남음'); });
+T('[해외 활성화 2-1] 포스팅 기준: 문턱은 국내 능력 56이고 잘할수록 의지가 덜 필요하며, 우리 선수 요청의 기본안은 AI 구단과 같은 판단이다',()=>{ fresh(); G.day=KD(11,20); G.rolled=G.year; G.posting=[]; G.evs=[];
+  const mk=tid=>{ const p=domestic(tid).find(q=>!q.foreign&&!q.prospect&&!q.ys&&!(G.posting||[]).some(x=>x.pid===q.id)); delete p.mil; p.svc=8; p.age=28; p.faC=false; p.ext=false; p.faN=0; delete p.lastFA; delete p.postPromise; p.joinY=G.year-8; return p; };
+  const u=mk(G.user), a=mk(otherT()); for(const p of [u,a]){ setOvr(p,57.5); p.mlb=40; } ok(!postWant(u),'의지 40·능력 57.5인데 포스팅을 원함');
+  setOvr(u,66); setOvr(a,66); ok(postWant(u)&&postWant(a),'능력 66·의지 40인데 원하지 않음');
+  setOvr(u,58); setOvr(a,58); u.mlb=a.mlb=60; postingSeason(); const e=(G.evs||[]).find(x=>x.k==='post'&&x.data.pid===u.id); ok(e,'능력 58·서비스 8년 우리 선수의 포스팅 요청이 없음(예전 문턱 60)');
+  ok(e.def===(aiPostDecide(u)==='allow'?0:1),'기본안이 AI 판단과 다름 '+e.def+' '+aiPostDecide(u)); ok(String(e.sit||e.body||e.txt||JSON.stringify(e)).includes('스카우트 예상'),'요청에 포스팅 예상이 없음');
+  ok((G.posting||[]).some(x=>x.pid===a.id)||a.postPromise===G.year+1,'같은 조건의 AI 선수는 포스팅도 약속도 없음');
+  setOvr(u,57); const E1=postEst(u); setOvr(u,66); const E2=postEst(u); ok(E2.pM>E1.pM&&E2.amt[0]>E1.amt[0]&&E2.fee[1]>E1.fee[1],'능력이 높은데 예상이 낮음'); ok(E2.amt[0]<=E2.amt[1]&&E2.fee[0]<=E2.fee[1]&&E2.n[0]<=E2.n[1],'범위 순서');
+  ok(postEst(u).pM===postEst(u).pM&&postEst(a).lv,'예상이 볼 때마다 바뀜'); });
+T('[해외 활성화 2-1] 보장 연 300만 달러 이상 MLB 계약 국내 선수는 빅리그 문턱이 2 낮고, 해외파 보관본에는 KBO 경기 단위 기록을 남기지 않는다',()=>{ fresh(); const p=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); delete p.mil; p.injOut=0; p.age=27; setOvr(p,61); p.gl={y:G.year,g:[1,2,3]}; p.vs={y:G.year,m:{}}; p.l10=[1,2];
+  ovsLeave(p,'MLB',MLBT[0],3,500,'포스팅',0); const a=G.abroad.find(x=>x.id===p.id); ok(ovsGt(a)&&!ovsGt({...a,amt:200})&&!ovsGt({...a,foreign:'용병'}),'보장 계약 판정'); const j=JSON.parse(a.pj); ok(j.gl==null&&j.vs==null&&j.l10==null&&j.r&&j.hist,'보관본 '+Object.keys(j).length);
+  let big=0, big0=0; for(let i=0;i<30;i++){ big+=ovsLine(j,'MLB',{gt:true}).lvl==='MLB'?1:0; big0+=ovsLine(j,'MLB',{}).lvl==='MLB'?1:0; } ok(big===30&&big0<30,'능력 61 보장 계약 선수의 빅리그 '+big+' / 일반 '+big0); });
+T('[해외 활성화 2-2] 6월 1일~7월 10일에는 트리플A 옵트아웃 후보가 매주 나오고 올해 트리플A 기록이 붙으며, AI 구단도 같은 후보를 본다',()=>{ fresh(); G.day=KD(5,20); ok(period()==='season','준비 실패: 시즌'); ok(fOptWeek().length===0,'5월에 옵트아웃 후보가 나옴');
+  G.day=KD(6,12); G.fmarket=[]; G.mail=[]; const O=fOptWeek(); ok(O.length>=2&&O.length<=3,'옵트아웃 후보 수 '+O.length);
+  for(const q of O){ ok(q.fopt===KD(6,1)&&q.prevLvl==='트리플A'&&q.foreign==='용병'&&G.fmarket.includes(q.id),'옵트아웃 날짜·리그 '+q.fopt+' '+q.prevLvl); ok(q.now&&q.now.y===G.year&&q.now.lvl==='트리플A'&&((q.now.pa||0)+(q.now.outs||0))>50,'올해 트리플A 기록이 없음'); ok(q.age>=28&&q.mlbG>=20,'MLB 경력 베테랑이 아님'); }
+  const ai=otherT(); ok(O.every(q=>fKnows(ai,q)&&Number.isFinite(fAiEst(ai,q))),'AI가 옵트아웃 후보를 모름');
+  G.day=KD(6,20); const O2=fOptWeek(); ok(O2.every(q=>q.fopt===KD(6,15)),'6월 하순 옵트아웃 날짜'); G.day=KD(7,12); ok(fOptWeek().length===0,'7월 중순에도 나옴');
+  G.day=KD(6,12); G.mail=[]; fNewWeek(); ok(G.mail.some(m=>/옵트아웃 후보/.test(m.subj)),'옵트아웃 후보 편지가 없음'); });
+T('[해외 활성화 2-3] 포스팅 예상: 우리 화면과 AI 판단이 같은 값을 보고, 예상 비용이 크면 우승 도전 구단도 2년 안에 FA가 될 주전을 보낸다',()=>{ fresh(); const tid=otherT(), t=team(tid); const p=domestic(tid).find(q=>!q.foreign&&!q.prospect&&!q.ys); delete p.mil; p.svc=8; p.age=27; p.faC=true; p.ext=false; p.yrs=2; delete p.postPromise;
+  const pl=planOf, ir=isRegular; try{ planOf=()=>'win'; isRegular=()=>true; setOvr(p,57); ok(aiPostDecide(p)==='promise','예상 비용이 작은 주전은 우승 도전 구단이 남겨야 함'); setOvr(p,68); const E=postEst(p); ok(E.fee[0]+E.fee[1]>=2*POST_T.feeSell,'준비 실패: 큰 예상 '+E.fee); ok(aiPostDecide(p)==='allow','예상 비용이 큰데 보내지 않음'); p.yrs=3; ok(aiPostDecide(p)==='promise','3년 남은 주전까지 보냄'); }finally{ planOf=pl; isRegular=ir; }
+  const s=postEstTxt(postEst(p)); ok(/^스카우트 예상: MLB 관심 (높음|보통|낮음|거의 없음)[(][0-9]+~[0-9]+개 구단[)] · 보장 연 [0-9,억 ]+만?~[0-9,억 ]+만? 달러 · [0-9~]+년 · 포스팅 비용 약 [0-9,억 ]+만?~[0-9,억 ]+만? 달러[.]$/.test(s),'예상 글 '+s); });
+T('[해외 활성화 2-5] 외국인 해외파 기록이 가득 차면 끝난 기록 다음으로 낮은 리그(CPBL·멕시코) 선수부터 지우고 MLB·트리플A·NPB 선수는 남긴다',()=>{ fresh(); G.abroad=[]; const mk=(i,lvl)=>({id:-500-i,name:'기록'+i,isP:false,pos:'1루수',foreign:'용병',from:null,lg:lvl==='트리플A'?'MLB':lvl,ci:0,how:'KBO 퇴단',y:G.year-1,y1:G.year,lines:[{y:G.year,lvl,pa:400}],back:false,fr:{id:-500-i,isP:false,age:30,r:{con:50}}});
+  for(let i=0;i<OVS_FMAX;i++)G.abroad.push(mk(i,i<10?'CPBL':i<20?'트리플A':'MLB')); G.abroad.unshift(mk(99,'NPB')); ovsTrim(); ok(G.abroad.length===OVS_FMAX,'한도 '+G.abroad.length); ok(G.abroad.filter(a=>a.lines[0].lvl==='CPBL').length===9&&G.abroad.some(a=>a.id===-599),'낮은 리그 기록을 먼저 지우지 않음'); });
 T('[해외 리그] 해외 소식은 한 시즌 6건까지, 중요한 소식(시상·우리 구단 출신)부터 낸다',()=>{ fresh(); G.wire=[]; const N=[]; for(let i=0;i<10;i++)N.push({pr:i,t:'소식 '+i,a:{id:-i-1,from:null}}); ovsWires(N); ok(G.wire.length===6,'소식 수 '+G.wire.length); ok(G.wire.some(w=>w.t==='소식 9')&&!G.wire.some(w=>w.t==='소식 0'),'중요도 순서가 아님'); });
 T('[해외 리그] 주목 선수: 기록을 쌓는 선수(KBO 출신·외국인 시장·관찰 명단)만 오르고, OPS·ERA 순서와 최소 타석·이닝을 지키며, 시즌 초반에는 지난 시즌 기록이다',()=>{ fresh();
   const p=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); ok(p,'준비 실패'); setOvr(p,70); p.injOut=0; delete p.mil; const aid=p.id; ovsLeave(p,'MLB',MLBT[0],2,500,'포스팅',0); const a=G.abroad.find(x=>x.id===aid); a.y1=Math.min(a.y1,G.year); ovsPregen(); ok(a.cur,'준비 실패: 올해 기록');
@@ -5634,6 +5663,156 @@ T('[제보 dddddd] 코치 교체: 정규시즌 뒤 계약은 우리·AI 모두 �
   const mk=G.cmarket.map(x=>x.id); for(const t of G.teams){ if(t.id===u)continue; t.cash=100000; t.market=1.2; for(const x of Object.values(G.coach[t.id]))if(x){ x.sk=30; x.dv=30; } } for(const x of G.cmarket)x.sal=60;
   const hired=[]; for(let i=0;i<60&&!hired.length;i++){ cmAiMonthly(); for(const t of G.teams)if(t.id!==u)for(const k of CKEYS){ const x=G.coach[t.id][k]; if(x&&mk.includes(x.id))hired.push(x); } }
   ok(hired.length,'준비 실패: AI 구단 시장 영입이 없음'); ok(hired.every(x=>x.jy===G.year+1&&staffPending(x)),'AI 구단은 같은 때 영입한 코치를 바로 합류시킴(우리만 다음 시즌 합류) '+hired.map(x=>x.jy)); });
+T('[단장 대전] 선수 풀(숨김): 크기·포지션·선발형·연봉 한도, 커리어 G와 무관',()=>{ const s='L2026W47'; delete LADDER_POOL_C[s]; fresh(); const g0=JSON.stringify(G); const P=ladderPool(s); ok(JSON.stringify(G)===g0,'풀 만들기가 커리어 G를 바꿈');
+  ok(P.players.length>=26*10&&P.mgrs.length>=10,'풀이 작음 '+P.players.length); const pos=k=>P.players.filter(p=>!p.isP&&p.pos===k).length; for(const k of ['C','1B','2B','3B','SS','LF','CF','RF'])ok(pos(k)>=20,k+' '+pos(k));
+  ok(P.players.filter(p=>p.role==='SP').length>=60&&P.players.every(p=>p.isP===(p.role!=null)),'선발형 표시'); ok(new Set(P.players.map(p=>p.id)).size===P.players.length&&P.players.every(p=>p.id>LADDER_ID0),'id 중복·범위');
+  ok(P.players.every(p=>p.sal>=MIN_SAL&&p.sal<=2500&&p.name&&p.age>=19&&p.age<=37&&p.r),'선수 값'); ok(P.cap>5000&&P.cap<20000,'연봉 한도 '+P.cap);
+  const top26=[...P.players].sort((x,y)=>y.sal-x.sal).slice(0,26); ok(sum(top26.map(p=>p.sal))>P.cap,'가장 비싼 26명도 한도 안이라 한도가 의미 없음');
+  { const id=ladderSeasonId(Date.UTC(2026,10,16,3)); ok(id.length===8&&id.startsWith('L2026W')&&+id.slice(6)>=1&&+id.slice(6)<=53,'시즌 id 형식 '+id); } ok(ladderSeasonId(Date.UTC(2026,10,15,16))===ladderSeasonId(Date.UTC(2026,10,22,14))&&ladderSeasonId(Date.UTC(2026,10,15,14))!==ladderSeasonId(Date.UTC(2026,10,15,16)),'한국 시간 월요일 0시에 주가 바뀌어야 함'); });
+T('[단장 대전] 구단 검증: 자동 편성은 통과하고, 한도 초과·인원·투수 수·포지션 최소·포수 자리·선발형·풀 밖 id·다른 시즌·중복은 거절한다',()=>{ const s='L2026W47', P=ladderPool(s), V=FrontOfficeCore.ladderValidate; const A=ladderAuto(s,{name:'시험 구단'});
+  const v=V(A,P); ok(v.ok,'자동 편성이 검증에 걸림 '+JSON.stringify(v.errors)); ok(v.pay<=P.cap&&v.left===P.cap-v.pay,'연봉 합');
+  const bad=(f,k)=>{ const x=JSON.parse(JSON.stringify(A)); f(x); const r=V(x,P); ok(!r.ok&&r.errors.some(e=>e.k===k),'거절해야 함('+k+'): '+JSON.stringify(r.errors).slice(0,200)); };
+  const Pm=new Map(P.players.map(p=>[p.id,p]));
+  bad(x=>{ const rich=[...P.players].filter(p=>!x.roster.includes(p.id)).sort((a,b)=>b.sal-a.sal); x.roster=x.roster.map(id=>{ const p=Pm.get(id); if(p.isP&&!x.rot.includes(id)&&x.cl!==id&&!x.su.includes(id)){ const q=rich.find(q=>q.isP&&!x.roster.includes(q.id)); rich.splice(rich.indexOf(q),1); return q.id; } if(!p.isP&&!x.lineup.some(l=>l[0]===id)){ const q=rich.find(q=>!q.isP&&q.pos===p.pos); if(q){ rich.splice(rich.indexOf(q),1); return q.id; } } return id; }); },'cap');
+  bad(x=>{ x.roster.pop(); },'roster'); bad(x=>{ x.roster.push(x.roster[0]); },'dup'); bad(x=>{ x.roster[x.roster.length-1]=123; },'id'); bad(x=>{ x.season='L2026W40'; },'season'); bad(x=>{ x.mgr='없음'; },'mgr'); bad(x=>{ x.name=''; },'name'); bad(x=>{ delete x.v; },'ver');
+  bad(x=>{ const cs=x.roster.filter(id=>Pm.get(id).pos==='C'&&!x.lineup.some(l=>l[0]===id)); const qs=P.players.filter(p=>!p.isP&&p.pos==='1B'&&!x.roster.includes(p.id)); cs.forEach((id,i)=>{ x.roster[x.roster.indexOf(id)]=qs[i].id; }); },'pos');
+  bad(x=>{ const L=x.lineup; const ci=L.findIndex(l=>l[1]==='C'), oi=L.findIndex(l=>l[1]!=='C'&&l[1]!=='DH'&&Pm.get(l[0]).pos!=='C'); const t=L[ci][1]; L[ci][1]=L[oi][1]; L[oi][1]=t; },'lineup');
+  bad(x=>{ x.lineup.pop(); },'lineup'); bad(x=>{ const rp=x.roster.find(id=>Pm.get(id).role==='RP'&&x.cl!==id&&!x.su.includes(id)); x.rot[0]=rp; },'rot'); bad(x=>{ x.cl=x.rot[0]; },'pen'); bad(x=>{ x.cl=null; },'pen');
+  bad(x=>{ const ps=x.roster.filter(id=>Pm.get(id).isP&&!x.rot.includes(id)&&x.cl!==id&&!x.su.includes(id)); const bs=P.players.filter(p=>!p.isP&&!x.roster.includes(p.id)).sort((a,b)=>a.sal-b.sal); ps.forEach((id,i)=>{ x.roster[x.roster.indexOf(id)]=bs[i].id; }); },'pitch');
+  ok(FrontOfficeCore.ladderSnapHash(A)===FrontOfficeCore.ladderSnapHash(JSON.parse(JSON.stringify(A)))&&FrontOfficeCore.ladderSnapHash(A)!==FrontOfficeCore.ladderSnapHash(Object.assign({},A,{name:'다른 이름'})),'스냅샷 해시');
+  ok(JSON.stringify(FrontOfficeCore.ladderSnapPack(A)).length<1500,'스냅샷이 작아야 함'); });
+T('[단장 대전] 시리즈(숨김): 승패·득실 합, 홈·원정 번갈아, 커리어 G를 건드리지 않는다',()=>{ const s='L2026W47', A=ladderAuto(s,{name:'가'}), B=ladderAuto(s,{name:'나',bias:2,mgr:'LM3'});
+  G=null; const r1=ladderSeries(A,B,{seed:'x',games:12}); ok(r1.ok,'시리즈 실패 '+JSON.stringify(r1.errors)); ok(r1.a.w+r1.a.l+r1.a.t===12&&r1.a.w===r1.b.l&&r1.a.runs===r1.b.allowed,'승패·득실 합');
+  ok(r1.scores.length===12&&r1.scores.filter(x=>x[2]==='A').length===6,'홈·원정 번갈아'); ok(r1.a.runs/12>1.5&&r1.a.runs/12<9,'득점 이상 '+r1.a.runs); ok(r1.a.bat.length&&r1.a.pit.length&&r1.b.pit.every(p=>p.id<LADDER_ID0+LADDER_B_OFF),'기록 요약');
+  fresh(); const g0=JSON.stringify(G); const r2=ladderSeries(A,B,{seed:'x',games:12}); ok(r2.ok&&JSON.stringify(G)===g0,'시리즈가 커리어 G를 바꿈');
+  const r4=ladderSeries(B,A,{seed:'x',games:12}); ok(r4.a.name==='나'&&r4.ok,'A·B 바꿔도 실행'); const bad=Object.assign({},A,{roster:A.roster.slice(1)}); const r5=ladderSeries(bad,B,{seed:'x'}); ok(!r5.ok&&r5.side==='A','검증에 걸린 구단으로 시리즈를 돌림'); });
+T('[대회 키트] 본게임 난수: origin/main 그대로(세계 시드·상태를 저장에 두지 않음). 같은 저장에서 다른 난수면 다른 미래, 옛 저장은 그대로, 대회 경기는 커리어 G를 건드리지 않는다',()=>{ fresh();
+  ok(G.rng===undefined&&typeof rngMode==='undefined'&&typeof rngForce==='undefined','본게임에 고정 난수(G.rng·rngForce)가 남음'); G.day=G.cal.open-1; for(const t of G.teams)setEntry(t.id);
+  const snap=JSON.stringify(G); const run=sd=>{ G=JSON.parse(snap); migrateDraft(); __seed(sd); simTo(()=>G.day>=G.cal.open+4); return JSON.stringify([G.sea.rec,Object.values(G.players).filter(p=>p.team===G.user).map(p=>[p.id,p.fat,p.injOut])]); };
+  const a=run(101), b=run(202); ok(a!==b,'같은 저장에서 난수가 달라도 같은 미래(본게임이 고정 난수로 바뀜)');
+  G=JSON.parse(snap); migrateDraft(); ok(G.rng===undefined&&G.amBootMs!==undefined===(JSON.parse(snap).amBootMs!==undefined),'불러오기가 난수 시드를 저장에 만듦');
+  const A=cupEntryNow({name:'와이'}), B=cupEntryNow({tid:(G.user+1)%G.teams.length,name:'제이지'}); const g0=JSON.stringify(G); const r=cupMatch(A,B,{cup:'t',round:'L1',match:'L1-1',best:3,all:1,tie:1}); ok(r.ok&&JSON.stringify(G)===g0,'대회 경기가 커리어 G를 바꿈'); });
+T('[단장 대전] 리그 팩(숨김): 커리어 G와 무관, 일정은 하루 한 경기·홈 원정 균형, 고친 팩·구단은 거절한다',()=>{ const s='L2026W47', C=FrontOfficeCore, P=ladderPool(s);
+  const pk=ladderPackDemo(s,4,{seed:'t',meet:2}); ok(C.ladderPackValidate(pk,P).ok,'시험 팩 검증 실패 '+JSON.stringify(C.ladderPackValidate(pk,P).errors));
+  ok(pk.sched.length===12,'4구단 2번 순환은 12경기 '+pk.sched.length); const cnt={}, home={}; for(const [d,h,a] of pk.sched){ for(const t of [h,a]){ const k=d+':'+t; ok(!cnt[k],'하루 두 경기'); cnt[k]=1; } home[h]=(home[h]||0)+1; } ok(Object.values(home).every(x=>x===3),'홈 경기 수가 고르지 않음 '+JSON.stringify(home));
+  ok(C.ladderSchedule(5,1).length===10&&C.ladderSchedule(10,2).length===90,'홀수·10구단 일정');
+  G=null; const r1=ladderPackRun(pk); ok(r1.ok,'팩 실행 실패 '+JSON.stringify(r1.errors)); fresh(); const g0=JSON.stringify(G); const r2=ladderPackRun(JSON.parse(JSON.stringify(pk))); ok(JSON.stringify(G)===g0,'팩 실행이 커리어 G를 바꿈');
+  ok(r2.ok,'팩 실행 실패'); ok(r1.standings.length===4&&sum(r1.standings.map(x=>x.w))===sum(r1.standings.map(x=>x.l))&&r1.games.length===12,'순위표 합');
+  ok(r1.standings[0].gb===0&&r1.standings.every((x,i,L)=>!i||x.pct<=L[i-1].pct),'순위 정렬'); ok(r1.leaders.hr.length&&r1.leaders.so.length,'기록 1위');
+  const bad=JSON.parse(JSON.stringify(pk)); bad.sched[0]=[0,0,0]; ok(!C.ladderPackValidate(bad,P).ok&&!ladderPackRun(bad).ok,'고친 일정을 받아들임');
+  const bad2=JSON.parse(JSON.stringify(pk)); bad2.clubs[1].roster.pop(); ok(!ladderPackRun(bad2).ok,'규칙에 어긋난 구단이 든 팩을 돌림'); });
+T('[대회 키트] 엔트리: 지금 1군을 담고(투수 피로 0, 부상 그대로), 팀 OVR 총점은 teamRating과 같고, 해시는 사진과 무관하며 난수를 쓰지 않는다',()=>{ fresh(); const C=FrontOfficeCore;
+  const sp=depth(G.user).sp[0]; sp.fat=50;  const st0=__rngState(), r0=JSON.stringify(G.rng);
+  const e=cupEntryNow({name:'  와이  '}); ok(__rngState()===st0&&JSON.stringify(G.rng)===r0,'엔트리가 난수를 씀'); ok(e.name==='와이','팀명 정리 '+e.name);
+  const v=C.cupValidate(e); ok(v.ok&&!v.flags.length,'검증 '+JSON.stringify(v.errors.concat(v.flags))); ok(e.P.length>=24&&e.P.length<=30,'1군 인원 '+e.P.length);
+  ok(e.P.find(p=>p.id===sp.id).fat===0,'투수 피로가 0이 아님'); ok(e.ovr.t===dv(teamRating(G.user))||e.ovr.t===C.dv(teamRating(G.user)),'OVR 총점이 teamRating과 다름 '+e.ovr.t+' '+teamRating(G.user));
+  ok(e.ln.length===9&&e.rot.length===5&&e.pen.length>=5,'타순·선발·불펜'); const e2=JSON.parse(JSON.stringify(e)); e2.P[0].f='data:image/webp;base64,AAAA'; ok(C.cupEntryHash(e2)===C.cupEntryHash(e),'사진이 해시를 바꿈');
+  e2.P[0].r[Object.keys(e2.P[0].r)[0]]+=1; ok(C.cupEntryHash(e2)!==C.cupEntryHash(e),'능력을 고쳐도 해시가 같음'); ok(JSON.stringify(e).length<20000,'엔트리 크기 '+JSON.stringify(e).length);
+  const hurt=G.players[e.ln[0][0]]; hurt.injOut=12; const e3=cupEntryNow({}); ok(!e3.ln.some(x=>x[0]===hurt.id),'다친 선수가 타순에 남음'); ok(G.wid===undefined,'세계 id는 신청할 때만 만든다'); });
+T('[대회 키트] 경기: 커리어 G·홈 어드밴티지를 건드리지 않고, 7전4선승은 4승에서 끝나고 무승부가 없으며, 커리어 없이도(처음 화면) 돈다',()=>{ fresh(); const C=FrontOfficeCore;
+  const A=cupEntryNow({name:'와이'}), B=cupEntryNow({tid:(G.user+1)%G.teams.length,name:'제이지'}); const g0=JSON.stringify(G), ha=HOME_ADV;
+  const r1=cupMatch(A,B,{cup:'t',round:'R8',match:'R4M1',best:7}); ok(r1.ok,'경기 실패 '+JSON.stringify(r1.errors)); ok(JSON.stringify(G)===g0&&HOME_ADV===ha,'경기가 커리어 G·홈 어드밴티지를 바꿈');
+  ok(Math.max(r1.wa,r1.wb)===4&&r1.games.length===r1.wa+r1.wb&&r1.games.length<=7,'7전4선승 '+r1.wa+'-'+r1.wb); ok(r1.games.every(g=>g.sa!==g.sb),'무승부'); ok(r1.games.map(g=>g.home).join('').startsWith('ABAB'),'홈 번갈아');
+  G=null; const r2=cupMatch(A,B,{cup:'t',round:'R8',match:'R4M1',best:7}); fresh(); ok(r2.ok&&Math.max(r2.wa,r2.wb)===4,'커리어 G 없이 경기 실패');
+  const g=r1.games[0], L=g.log.split('\\n'); ok(/^\\[1회초\\] .+ 공격$/.test(L[0]),'첫 줄 '+L[0]); ok(L.some(l=>/^투수 .+\\(\\d+\\) \\d번타자 .+\\(\\d+\\), .+#(무사|1사|2사|3아웃)/.test(l)),'타석 줄 형식');
+  ok(L.some(l=>/^\\[공수교대\\] 스코어 \\d+:\\d+ /.test(l)),'공수교대 줄'); ok(L.some(l=>/^\\[경기종료\\] 스코어 \\d+:\\d+ .+승리\\./.test(l)),'경기종료 줄'); ok(/^승리투수:.+ \\/ 세이브:.+ \\/ 패전투수:.+$/.test(L[L.length-1]),'승패 줄 '+L[L.length-1]);
+  ok(g.bat.split('\\n')[0]==='팀 연도 이름\\tAB\\tH\\tBB\\t HR\\tRBI\\tR\\tSB\\t교\\t결'&&g.pit.split('\\n')[0]==='팀 연도 이름\\tIP\\tH\\tBB\\tSO\\tR\\tER\\t승/패/세','박스 머리줄');
+  const H=g.stats.bat.filter(b=>b.k==='A').reduce((a,b)=>a+b.h,0); ok(g.line.split('\\n')[1].split('\\t').length===g.line.split('\\n')[0].split('\\t').length,'줄 점수 칸 수'); ok(H>=0&&g.sa===g.stats.bat.filter(b=>b.k==='A').reduce((a,b)=>a+b.r,0),'득점 합이 점수와 다름');
+  const one=cupMatch(A,B,{cup:'t',round:'R32',match:'R1M1',best:1}); ok(one.games.length===1&&one.games[0].sa!==one.games[0].sb,'단판'); const bad=JSON.parse(JSON.stringify(A)); bad.ln.pop(); ok(!cupMatch(bad,B,{}).ok,'타순 8명 엔트리로 경기'); });
+T('[대회 키트] 출전 로스터 앨범: 시즌 종료 자동 저장은 해마다 하나, 20개 상한(우승 시즌은 남김), 지우기, 크기',()=>{ fresh(); G.cupAlb=[];
+  cupAlbumAuto(G.year,1,true,{w:80,l:60,t:4}); ok(cupAlbum().length===1&&cupAlbum()[0].e.res.champ===1&&cupAlbum()[0].k==='auto','자동 저장'); cupAlbumAuto(G.year,2,false,{w:79,l:61}); ok(cupAlbum().length===1&&cupAlbum()[0].e.res.rank===2,'같은 해 자동 저장은 바꿔 씀');
+  const y0=G.year; for(let i=1;i<=25;i++){ G.year=y0+i; cupAlbumAuto(G.year,5,false,{w:70,l:70}); } G.year=y0; ok(cupAlbum().length===20,'상한 '+cupAlbum().length);
+  G.cupAlb=[]; cupAlbumAuto(y0,1,true,{w:1,l:0}); for(let i=1;i<=25;i++){ G.year=y0+i; cupAlbumAuto(G.year,5,false,{w:1,l:1}); } G.year=y0; ok(cupAlbum().some(a=>a.y===y0&&a.e.res.champ),'우승 시즌이 밀려남');
+  const x=cupAlbumAdd('hand',null); ok(x&&x.k==='hand'&&cupAlbum().length===20,'직접 저장'); ok(cupAlbumDel(x.id)&&!cupAlbum().some(a=>a.id===x.id),'지우기');
+  const kb=JSON.stringify(G.cupAlb).length/1024; ok(kb<20*14,'앨범 20개 크기 '+kb.toFixed(0)+'KB'); ok(FrontOfficeCore.cupValidate(cupAlbum()[0].e).ok,'앨범 엔트리 검증'); G.unemp=true; const n=cupAlbum().length; cupAlbumAuto(y0+40,1,false,{}); ok(cupAlbum().length===n,'무직일 때 저장'); G.unemp=false; });
+T('[대회 키트] 대진표: 26팀/32강은 1~6번 시드 부전승·7대26…16대17, 다음 경기·승자 올리기, 플레이인·Top-8 추첨·128강, 미션상·타이틀·파워랭킹',()=>{ const C=FrontOfficeCore;
+  const seeds=Array.from({length:26},(_,i)=>'e'+(i+1)); const B=C.cupBracket(seeds,{size:32}); ok(B.size===32&&B.rounds.length===5&&B.rounds[0].length===16,'32강 구조');
+  const real=B.rounds[0].filter(m=>m.a&&m.b).map(m=>[+m.a.slice(1),+m.b.slice(1)].sort((a,b)=>a-b).join('v')).sort(); ok(real.length===10&&real.includes('7v26')&&real.includes('16v17')&&real.includes('8v25'),'와일드카드 대진 '+real.join(','));
+  ok(B.rounds[0].filter(m=>!m.a||!m.b).map(m=>m.a||m.b).sort().join()===['e1','e2','e3','e4','e5','e6'].sort().join(),'부전승 시드');
+  let n=0, nx; while((nx=C.cupNext(B))&&n++<40){ nx.m.win=(+nx.a.slice(1)<+nx.b.slice(1))?nx.a:nx.b; } ok(n===25&&C.cupChampion(B)==='e1','경기 수·우승 '+n+' '+C.cupChampion(B));
+  ok(C.cupBracket(seeds,{size:32,best:{default:1,8:7}}).rounds[2][0].best===7&&C.cupBracket(seeds,{size:32,best:{default:1,8:7}}).rounds[1][0].best===1,'라운드별 경기 수');
+  const S1=C.cupBracket(Array.from({length:16},(_,i)=>'s'+(i+1)),{id:'x',size:16,shuffleTop:8}), S2=C.cupBracket(Array.from({length:16},(_,i)=>'s'+(i+1)),{id:'x',size:16,shuffleTop:8}), S0=C.cupBracket(Array.from({length:16},(_,i)=>'s'+(i+1)),{id:'x',size:16});
+  ok(JSON.stringify(S1)===JSON.stringify(S2),'추첨이 대회 id로 정해지지 않음'); ok(JSON.stringify(S1.rounds[0])!==JSON.stringify(S0.rounds[0]),'추첨으로 바뀌지 않음'); ok(S1.rounds[0].every(m=>{ const a=+m.a.slice(1), b=+m.b.slice(1); return (a<=8)!==(b<=8); }),'Top-8끼리 1라운드에서 만남');
+  const P=C.cupBracket(Array.from({length:40},(_,i)=>'p'+(i+1)),{size:16,playIn:{direct:12}}); ok(P.playIn.length===4&&P.playIn.every(g=>g.teams.length===7)&&P.rounds[0].length===8,'플레이인 4조');
+  let k=0; while((nx=C.cupNext(P))&&k++<80){ nx.m.win=nx.a; } ok(C.cupChampion(P)!=null&&k===24+15,'플레이인 포함 경기 수 '+k);
+  const X=C.cupBracket(Array.from({length:128},(_,i)=>'x'+i),{size:128}); ok(X.rounds.length===7&&X.rounds[0].length===64,'128강');
+  const M=C.cupMissions([{id:'a',label:'가',a:'A',b:'B',win:'B',seedA:1,seedB:9,block:'A',games:[{sa:3,sb:1},{sa:2,sb:1},{sa:5,sb:4},{sa:1,sb:2},{sa:2,sb:3},{sa:0,sb:2},{sa:3,sb:4,walk:true}]}]);
+  ok(['close','sweep','walk7','upset'].every(k=>M.some(m=>m.k===k)),'미션상 '+M.map(m=>m.k).join());
+  const T1=C.cupTitles([{key:'1',team:'t',name:'갑',pa:70,ab:60,h:24,bb:8,hr:5,rbi:20,sb:3},{key:'2',team:'t',name:'을',pa:20,ab:18,h:12,bb:1,hr:9,rbi:9,sb:0}],[{key:'3',team:'t',name:'병',outs:70,h:10,bb:5,er:3,w:3,sv:0,so:30}]);
+  ok(T1.find(t=>t.k==='타율').name==='갑'&&T1.find(t=>t.k==='홈런').name==='을'&&T1.find(t=>t.k==='평균자책점').name==='병','타이틀(기준 타석)');
+  const PR=C.cupPower([{no:1,deck:'와이',best:1},{no:2,deck:'와이',best:4},{no:3,deck:'와이',best:16},{no:3,deck:'와이',best:2},{no:3,deck:'제이지',best:1}],3); ok(PR[0].deck==='와이'&&PR[0].pts===16+12+17&&PR[1].pts===20,'파워랭킹 '+JSON.stringify(PR)); });
+T('[대회 키트] 검증: 금칙어·마감 시각·능력 상한·나이·자격(시즌 수·연봉 합)',()=>{ fresh(); const C=FrontOfficeCore; const e=cupEntryNow({name:'와이'});
+  ok(C.cupBadName('시 1 발')&&C.cupBadName('ㅅㅂ야구')&&!C.cupBadName('와이')&&!C.cupBadName('새벽별'),'금칙어'); ok(C.cupKstMs('2026-11-30 21:00')===Date.UTC(2026,10,30,12,0),'한국시간 마감');
+  const x=JSON.parse(JSON.stringify(e)); delete x.h; x.P[0].r[Object.keys(x.P[0].r)[0]]=99; x.P[1].age=60; const v=C.cupValidate(x); ok(v.ok&&v.flags.some(f=>f.k==='rating')&&v.flags.some(f=>f.k==='age'),'이상치 표시 '+JSON.stringify(v.flags));
+  const el=C.cupValidate(Object.assign({},e,{seasons:0,pay:1e9}),{minSeasons:2,payCap:5000}); ok(el.ok&&el.elig.length===2,'자격 '+JSON.stringify(el.elig)); ok(!C.cupValidate(Object.assign({},e,{name:'병신들'})).ok,'금칙어 팀명'); });
+T('[대회 키트 리그] 일정: 10팀이 짝마다 3연전(홈·원정·홈) 한 번씩, 팀당 27경기, 하루 한 경기, 27일, 홈 경기 13~14',()=>{ const C=FrontOfficeCore; const S=C.cupLeagueSched(10,3); ok(S.length===45,'연전 수 '+S.length);
+  const g=Array(10).fill(0), home=Array(10).fill(0), pair=new Map(), days=new Map();
+  for(const s of S){ ok(s.home.join('')==='101','홈 순서 '+s.home); const k=Math.min(s.a,s.b)+'-'+Math.max(s.a,s.b); pair.set(k,(pair.get(k)||0)+1);
+    for(let i=0;i<3;i++){ g[s.a]++; g[s.b]++; if(s.home[i])home[s.a]++; else home[s.b]++; const D=days.get(s.day0+i)||new Set(); ok(!D.has(s.a)&&!D.has(s.b),'하루 두 경기 '+s.id); D.add(s.a); D.add(s.b); days.set(s.day0+i,D); } }
+  ok(g.every(x=>x===27),'팀당 경기 '+g); ok(pair.size===45&&[...pair.values()].every(x=>x===1),'짝마다 한 번'); ok(days.size===27,'날 수 '+days.size); ok(home.every(x=>x===13||x===14),'홈 경기 수 '+home);
+  ok(C.cupLeaguePart(1,9)===1&&C.cupLeaguePart(3,9)===1&&C.cupLeaguePart(4,9)===2&&C.cupLeaguePart(7,9)===3&&C.cupLeaguePart(9,9)===3,'게시 구간');
+  ok(C.CUP_DEFAULT.format==='league'&&C.CUP_DEFAULT.teams===10&&C.CUP_DEFAULT.meet===3,'기본 형식'); const q=C.cupQual(27); ok(q.pa===84&&q.outs===81,'규정 타석·이닝 '+JSON.stringify(q)); });
+T('[대회 키트 리그] 순위: 승률(무승부 제외) → 동률 팀끼리 맞대결 → 득실차',()=>{ const C=FrontOfficeCore; const G1=(a,b,sa,sb)=>({a,b,sa,sb});
+  const s1=C.cupStandings(['a','b','c','d'],[G1('b','a',2,1),G1('a','c',9,0),G1('a','d',9,0),G1('b','c',1,0),G1('d','b',1,0),G1('c','d',3,0),G1('d','c',1,0),G1('a','d',4,4)]);
+  ok(s1.map(x=>x.key).join('')==='badc','순위 '+s1.map(x=>x.key+x.w+'-'+x.l+'-'+x.t).join(' ')); const a=s1.find(x=>x.key==='a'); ok(a.t===1&&a.pct===2/3&&a.diff>s1[0].diff,'무승부는 승률에서 빠지고, 득실차가 더 좋아도 맞대결에서 진 팀이 아래');
+  ok(s1[0].tb==='맞대결'&&s1[1].tb==='맞대결'&&s1[2].tb===null,'동률 표시 '+s1.map(x=>x.tb)); ok(s1[1].gb===0&&s1[3].gb===1.5,'승차 '+s1.map(x=>x.gb));
+  const s2=C.cupStandings(['p','q','r'],[G1('p','q',1,0),G1('q','p',1,0),G1('p','r',10,0),G1('q','r',2,0)]); ok(s2.map(x=>x.key).join('')==='pqr'&&s2[0].tb==='득실차','맞대결 1승 1패면 득실차 '+JSON.stringify(s2));
+  const s3=C.cupStandings(['q','p','r'],[G1('p','q',1,0),G1('q','p',1,0),G1('p','r',2,0),G1('q','r',2,0)]); ok(s3.map(x=>x.key).join('')==='pqr','모두 같으면 키 순서(결정적) '+s3.map(x=>x.key)); });
+T('[대회 키트 리그] 가을야구: 와일드카드는 4위가 1승을 안고 시작(이기거나 비기면 진출, 5위는 2연승), 준PO·PO 5전3선승, KS 7전4선승 길이',()=>{ fresh(); const C=FrontOfficeCore, W=C.CUP_POST.find(x=>x.id==='WC');
+  const st=L=>C.cupSeriesState(W,L.map(([sa,sb])=>({sa,sb})));
+  ok(st([[3,1]]).done&&st([[3,1]]).win==='A','4위 1차전 승리면 끝'); ok(st([[2,2]]).done&&st([[2,2]]).win==='A','4위 1차전 무승부여도 진출'); ok(!st([[1,3]]).done,'5위가 1승이면 2차전');
+  ok(st([[1,3],[4,4]]).win==='A'&&st([[1,3],[5,2]]).win==='A'&&st([[1,3],[2,5]]).win==='B','2차전: 4위 승·무면 4위, 5위 승이면 5위');
+  const S5=C.CUP_POST.find(x=>x.id==='SPO'), S7=C.CUP_POST.find(x=>x.id==='KS'); ok(S5.best===5&&C.CUP_POST.find(x=>x.id==='PO').best===5&&S7.best===7,'시리즈 길이 설정');
+  ok(!C.cupSeriesState(S5,[{sa:1,sb:0},{sa:1,sb:0}]).done&&C.cupSeriesState(S5,[{sa:1,sb:0},{sa:0,sb:1},{sa:1,sb:0},{sa:1,sb:0}]).win==='A','5전3선승'); ok(C.cupSeriesState(S7,[1,2,3,4].map(()=>({sa:0,sb:1}))).win==='B','7전4선승');
+  const A=cupEntryNow({name:'와이'}), B=cupEntryNow({tid:(G.user+1)%G.teams.length,name:'제이지'});
+  for(let k=0;k<4;k++){ const r=cupMatch(A,B,{cup:'t',round:'WC',match:'WC'+k,best:2,wc:1,tie:1,home:W.home}); ok(r.ok&&r.games.length>=1&&r.games.length<=2,'와일드카드 경기 수 '+r.games.length);
+    const g1=r.games[0]; if(g1.sa>=g1.sb)ok(r.games.length===1&&r.win==='A','4위가 1차전을 이기거나 비겼는데 2차전 '+r.games.map(g=>g.sa+':'+g.sb)); else ok(r.games.length===2&&r.win===(r.games[1].sb>r.games[1].sa?'B':'A'),'2차전 승자 '+r.games.map(g=>g.sa+':'+g.sb)+' '+r.win);
+    ok(r.games.every(g=>g.home==='A'),'와일드카드는 4위 홈'); }
+  const ks=cupMatch(A,B,{cup:'t',round:'KS',match:'KS',best:7,home:S7.home}); ok(Math.max(ks.wa,ks.wb)===4&&ks.games.length<=7&&ks.games.every(g=>g.sa!==g.sb),'KS '+ks.wa+'-'+ks.wb); ok('AABBAAA'.startsWith(ks.games.map(g=>g.home).join('')),'KS 홈 2-2-3 '+ks.games.map(g=>g.home).join(''));
+  const po=cupMatch(A,B,{cup:'t',round:'PO',match:'PO',best:5,home:S5.home}); ok(Math.max(po.wa,po.wb)===3&&po.games.length<=5,'PO '+po.wa+'-'+po.wb); });
+T('[대회 키트 리그] 진행: 리그 45연전(3경기씩·무승부 허용)·상위 5팀 가을야구·우승/준우승, 실제 엔진 연전·선발 순번 이어 가기',()=>{ fresh(); const C=FrontOfficeCore;
+  const fake=(a,b,o)=>{ const games=[]; for(let i=0;i<o.best;i++){ const st=C.cupSeriesState({best:o.best,wc:!!o.wc},games); if(!o.all&&st.done)break; const h=parseInt(C.cupHashStr(o.match+':'+a+':'+b+':'+i),16), sa=h%7, sb=(h>>>4)%7; games.push({sa,sb:!o.tie&&sa===sb?sb+1:sb}); } return {games}; };
+  const keys=['k0','k1','k2','k3','k4','k5','k6','k7','k8','k9'], strip=R=>JSON.stringify(Object.assign({},R,{series:R.series.map(s=>Object.assign({},s,{res:null}))}));
+  const R=C.cupLeagueRun(keys,{id:'t'},fake), R2=C.cupLeagueRun(keys,{id:'t'},fake); ok(strip(R)===strip(R2),'같은 입력인데 진행이 다름');
+  const L=R.series.filter(s=>s.kind==='L'); ok(L.length===45&&L.every(s=>s.games.length===3&&s.o.all&&s.o.tie),'리그 연전'); ok(R.stand.every(x=>x.g===27),'팀당 27경기 '+R.stand.map(x=>x.g)); ok(L.some(s=>s.games.some(g=>g.sa===g.sb)),'리그 무승부가 한 번도 없음(가짜 경기)');
+  ok(R.top.join()===R.stand.slice(0,5).map(x=>x.key).join(),'가을야구 5팀'); const P=id=>R.series.find(s=>s.id===id);
+  ok(P('WC').a===R.top[3]&&P('WC').b===R.top[4]&&P('SPO').a===R.top[2]&&P('SPO').b===P('WC').win&&P('PO').a===R.top[1]&&P('PO').b===P('SPO').win&&P('KS').a===R.top[0]&&P('KS').b===P('PO').win,'대진');
+  ok(P('WC').games.length<=2&&P('SPO').games.length<=5&&P('PO').games.length<=5&&P('KS').games.length<=7,'시리즈 길이'); ok(R.champ===P('KS').win&&R.runner!==R.champ&&[P('KS').a,P('KS').b].includes(R.runner),'우승·준우승');
+  ok(L.every(s=>s.o.ri[0]%3===0&&s.o.ri[1]%3===0)&&L.filter(s=>s.r===9).every(s=>s.o.ri[0]===24&&s.o.ri[1]===24),'선발 순번(앞서 치른 경기 수)');
+  const A=cupEntryNow({name:'와이'}), B=cupEntryNow({tid:(G.user+1)%G.teams.length,name:'제이지'}), o={cup:'t',round:'L1',match:'L1-1',best:3,all:1,tie:1,home:[1,0,1],ri:[0,0]};
+  const g0=JSON.stringify(G); const r1=cupMatch(A,B,o); ok(JSON.stringify(G)===g0,'경기가 커리어 G를 바꿈'); ok(r1.ok&&r1.games.length===3,'리그 연전 3경기');
+  ok(r1.games.map(g=>g.home).join('')==='ABA','연전 홈 순서'); const r3=cupMatch(A,B,Object.assign({},o,{ri:[1,1]})); ok(r3.games[0].sp.A.name===r1.games[1].sp.A.name||A.rot.length<2,'선발 순번을 이어 가지 않음 '+r3.games[0].sp.A.name+' / '+r1.games.map(g=>g.sp.A.name)); });
+T('[대회 키트 리그] AI 채우기: 리그 평균 AI 구단, 검증 통과, 개인 타이틀·주간 MVP에서 AI 선수는 빠진다',()=>{ fresh(); const C=FrontOfficeCore; const g0=JSON.stringify(G);
+  const L=cupAiEntries(3,'cupT'), L2=cupAiEntries(3,'cupT'); ok(JSON.stringify(G)===g0,'AI 만들기가 커리어 G를 바꿈'); ok(L.length===3&&L.every(e=>e.ai===1&&C.cupValidate(e,{}).ok&&/^AI /.test(e.name)),'AI 엔트리 '+L.map(e=>e.name));
+  ok(L2.length===3&&new Set(L.map(e=>e.h)).size===3,'같은 AI 구단이 겹침'); ok(L.every(e=>e.ovr.t>=50&&e.ovr.t<=80),'OVR '+L.map(e=>e.ovr.t));
+  const ai=L[0].h, bat=[{key:ai+':1',team:'AI',name:'에이',pa:120,ab:100,h:50,bb:10,hr:20,rbi:60,sb:9},{key:'hum:2',team:'와이',name:'갑',pa:90,ab:80,h:24,bb:8,hr:5,rbi:20,sb:3}], pit=[{key:ai+':3',team:'AI',name:'비',outs:100,h:10,bb:2,er:0,w:9,sv:5,so:80},{key:'hum:4',team:'와이',name:'을',outs:90,h:30,bb:10,er:10,w:3,sv:1,so:40}];
+  const T0=C.cupTitles(bat,pit,{pa:84,outs:81}), T1=C.cupTitles(bat,pit,{pa:84,outs:81,no:[ai]}); ok(T0.find(t=>t.k==='홈런').name==='에이','준비 실패: AI가 1위가 아님');
+  ok(T1.length&&T1.every(t=>!String(t.key).startsWith(ai)),'AI 선수가 타이틀을 받음 '+JSON.stringify(T1)); ok(T1.find(t=>t.k==='타율').name==='갑'&&T1.find(t=>t.k==='평균자책점').name==='을','사람 구단 1위');
+  const M=C.cupMvp(bat,pit,[ai]); ok(M&&!M.key.startsWith(ai),'AI 선수가 주간 MVP'); });
+T('[유저 레더] 단계 승강: 1·2위 승격, 9·10위 강등, 나머지 그대로(레전드·루키 끝은 그대로), 기록 요약(단계별 리그·우승, 최고 단계, 이 덱이 그 단계에 머문 리그 수)',()=>{ const C=FrontOfficeCore;
+  ok(C.UL_TIERS.join()==='루키,마이너,1부,챔피언스,레전드','단계 이름'); const f=(t,r)=>{ const x=C.ulTierAfter(t,r,10); return x.tier+x.move; };
+  ok(f(0,1)==='1up'&&f(0,2)==='1up'&&f(0,3)==='0stay'&&f(0,8)==='0stay'&&f(0,9)==='0stay'&&f(0,10)==='0stay','루키 '+[1,2,3,8,9,10].map(r=>f(0,r)));
+  ok(f(2,1)==='3up'&&f(2,5)==='2stay'&&f(2,9)==='1down'&&f(2,10)==='1down','1부'); ok(f(4,1)==='4stay'&&f(4,10)==='3down','레전드');
+  const H=[{tier:0,rank:1,to:1,move:'up',d:1},{tier:1,rank:2,to:2,move:'up',d:1},{tier:2,rank:2,to:3,move:'up',d:2},{tier:3,rank:5,to:3,move:'stay',d:2},{tier:3,rank:1,to:4,move:'up',d:2,name:'와이'},{tier:4,rank:10,to:3,move:'down',d:2},{tier:3,rank:4,to:3,move:'stay',d:3},{tier:3,rank:6,to:3,move:'stay',d:3,name:'제이'}];
+  const S=C.ulSummary(H,3); ok(S.leagues===8&&S.best===4&&S.by[3].n===4&&S.by[3].win===1&&S.by[0].win===1&&S.by[4].down===1,'요약 '+JSON.stringify(S.by)); ok(S.stay.tier===3&&S.stay.n===2&&S.stay.name==='제이','머문 리그 '+JSON.stringify(S.stay));
+  ok(C.ulPick([{wid:'a',ovr:{t:60}},{wid:'b',ovr:{t:66}},{wid:'c',ovr:{t:63}},{wid:'me',ovr:{t:64}},{wid:'h',ovr:{t:64},hide:1}],64,2,['me']).map(x=>x.wid).join()==='c,b','가까운 OVR 순·나·숨김 빼기'); });
+T('[유저 레더] 리그 만들기: 받은 덱이 모자라면 가져온 우승 덱(최대 2) 다음 단계 기준 AI 덱으로 10팀을 채우고, 가져온 남의 덱은 내 덱으로 등록할 수 없다',()=>{ fresh(); const C=FrontOfficeCore;
+  ok(ulMakeLeague({}).ok===false,'덱 없이 리그'); const me=cupEntryNow({name:'와이'}); ok(ulSetDeck(Object.assign({},me,{ro:1}),'now').length>0,'가져온 덱을 내 덱으로 등록'); ok(ulSetDeck(me,'now')==='','등록 실패');
+  ok(!JSON.stringify(G.uld.deck.e).includes('"wid"')&&G.uld.deck.e.h===C.cupEntryHash(G.uld.deck.e),'등록 덱 정리·해시');
+  let r=ulMakeLeague({fetched:[]}); ok(r.ok&&r.league.teams.length===10&&r.league.src.ai===9,'서버 덱 없음 → AI 9 '+JSON.stringify(r.league.src));
+  ok(r.league.teams.filter(t=>t.kind==='ai').every(t=>Math.abs(t.e.ovr.t-C.UL_TIER_OVR[0])<=2&&C.cupValidate(t.e,{}).ok&&t.e.ai===1),'AI 덱 기준 OVR '+r.league.teams.map(t=>t.e.ovr.t)); ok(new Set(r.league.teams.map(t=>t.e.h)).size===10,'같은 덱이 두 번');
+  const other=[1,2,3].map(k=>cupEntryNow({tid:(G.user+k)%G.teams.length,name:'유저'+k})), cups=[4,5,6].map(k=>cupEntryNow({tid:(G.user+k)%G.teams.length,name:'우승'+k}));
+  G.uld.tier=3; r=ulMakeLeague({fetched:other.concat([me]),cup:cups,avg:70,count:5}); ok(r.league.src.user===3&&r.league.src.cup===2&&r.league.src.ai===4,'받은 덱 3·우승 덱 2·AI 4 '+JSON.stringify(r.league.src)+'(내 덱이 다시 오면 빼야 함)');
+  ok(r.league.teams.filter(t=>t.kind==='ai').every(t=>Math.abs(t.e.ovr.t-70)<=2),'서버 평균으로 AI '+r.league.teams.filter(t=>t.kind==='ai').map(t=>t.e.ovr.t)); ok(r.league.tier===3&&r.league.sched.length===45,'일정'); });
+T('[유저 레더] 리그 진행: 연전 사이에 고친 덱은 다음 연전부터 나가고, 27경기 뒤 순위·승강·MVP·기록이 남으며, 커리어 G(본게임 난수·세계)는 G.uld 말고 그대로다',()=>{ fresh(); const C=FrontOfficeCore;
+  ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({}).league; const strip=()=>{ const x=JSON.parse(JSON.stringify(G)); delete x.uld; return JSON.stringify(x); }; const g0=strip();
+  const r1=ulRunRound(L); ok(r1.length===5&&L.next===5&&r1.every(s=>s.g.length===3),'1라운드 연전 5개'); const mine1=r1.find(s=>s.a===0||s.b===0), h0=G.uld.deck.e.h; ok((mine1.a===0?mine1.ha:mine1.hb)===h0,'1라운드는 등록 덱');
+  const e=JSON.parse(JSON.stringify(L.teams[0].e)); [e.ln[0],e.ln[1]]=[e.ln[1],e.ln[0]]; e.rot.push(e.rot.shift()); const pc=e.pen.find(id=>id!==e.pen[0]); e.bp={[pc]:'cl'}; ok(ulEditDeck(e)==='','덱 고치기 실패'); const h1=L.teams[0].e.h; ok(h1!==h0,'고친 덱 해시가 같음');
+  ok(ulEditDeck(Object.assign({},e,{ro:1})).length>0,'가져온 덱으로 고침'); const bad=JSON.parse(JSON.stringify(e)); bad.ln.pop(); ok(ulEditDeck(bad).length>0&&L.teams[0].e.h===h1,'타순 8명 덱으로 고침');
+  const r2=ulRunRound(L), mine2=r2.find(s=>s.a===0||s.b===0); ok((mine2.a===0?mine2.ha:mine2.hb)===h1,'고친 덱이 다음 연전에 안 나감'); ok((mine1.a===0?mine1.ha:mine1.hb)===h0,'지난 연전 기록이 바뀜'); ok(L.edits.length===1&&L.edits[0].at===5,'고친 시점');
+  while(L.next<L.sched.length)ulRunRound(L); ok(strip()===g0&&G.rng===undefined,'리그가 커리어 G를 바꿈'); const st=ulStand(L); ok(st.every(x=>x.g===27),'팀당 27경기 '+st.map(x=>x.g));
+  const res=ulFinish(); const mv=C.ulTierAfter(0,res.rank,10); ok(res&&res.stand.length===10&&res.to===mv.tier&&G.uld.tier===mv.tier&&G.uld.league===null,'승강 '+JSON.stringify([res.rank,res.to,G.uld.tier]));
+  ok(G.uld.hist.length===1&&G.uld.hist[0].d===G.uld.deck.id&&res.mvp&&res.myMvp&&!String(res.mvp.key).startsWith('t')||L.teams.find(t=>t.key===String(res.mvp.key).split(':')[0]).kind!=='ai','MVP·기록 '+JSON.stringify(res.mvp)); ok(JSON.stringify(G.uld).length<200000,'G.uld 크기 '+JSON.stringify(G.uld).length); });
 T('[제보 11-16 해외 복귀 기록] 돌아온 선수의 해외 시즌은 모두 연도 순서로 남고, 기록 정리에서 가장 나중에 지우며, 복귀 까닭이 협상·이력에 보이고, 선수 화면 시즌 통계가 최근 세 시즌만 남기고 줄을 숨기지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&!q.foreign&&q.age<=30); ok(p,'준비 실패'); const id=p.id;
   ovsLeave(p,'MLB',MLBT.find(c=>c.startsWith('보스턴'))||MLBT[0],5,800,'포스팅'); const a=G.abroad.find(x=>x.id===id); ok(a,'해외 기록 없음'); a.y1=G.year-5; for(let y=G.year-5;y<G.year;y++)a.lines.push({y,lvl:'MLB',g:30,outs:540,er:60,so:150,bb:40,h:160,hr:18,w:10,l:8});
   const q=JSON.parse(a.pj); q.age=34; a.pj=JSON.stringify(q); abroadYear(); const r=G.players[id]; ok(r&&a.back,'복귀 처리 실패'); ok(a.why&&a.why.includes('계약 만료'),'복귀 까닭이 없다: '+a.why); ok(!r.retAsk||(r.retAsk.why===a.why),'우선협상 요구에 까닭이 없다');
@@ -5702,6 +5881,67 @@ T('[플레잉코치] AI 구단도 같은 자격·수락 식으로 맡기고, 한
   const cost=aiOpsCost(t).find(r=>r[0]==='보조 코치 연봉'); ok(cost[1]>=x.r.sal,'AI 운영비에 수당이 없음');
   const mate=playersOf(t.id).find(q=>q.isP===x.r.isP&&q!==x.p&&!q.prospect); const reg0=pcRegular; pcRegular=()=>false; try{ ok(Math.abs(pcAxBoost(mate)-clamp((x.r.dv-50)/800,0,.025)*.5)<1e-9,'AI 효과 식이 다름'); } finally{ pcRegular=reg0; }
   const p=x.p; retireOut(p,'시험 은퇴'); const ob=G.ob.find(o=>o.fid===p.id); const w=obWhere(ob); ok(w.k==='coach'&&w.tid===t.id,'AI 플레잉코치가 은퇴 뒤 그 구단 코치가 되지 않음 '+JSON.stringify(w)); });
+/* ===== 계약 1단계(2026-11-17): 구단별 친분 · 조건 잠금 · 역제안 · 라운드 한도 · 옵션 종류 · 외국인 ===== */
+const CT1_FA=(b,ask,y,style)=>{ const ts=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); if(!G.fa||!G.fa.pool)G.fa={pool:[],offers:{},ai:{},open:true,openDay:G.day-20,closed:false,results:[],cap:3,outN:{},y0:G.year};
+  const p=newPlayer({age:28,isP:false,base:b,pot:b+2,team:ts[0]}); p.team=null; p.faFrom=ts[0]; p.faGrade='B'; p.faPrevSal=100; p.sal=100; p.ask={annual:ask,years:y}; p.ask0=ask; G.fa.pool.push(p.id); G.fa.ai[p.id]={};
+  if(style){ const A=agInit(); p.agId=A.findIndex(a=>a.style===style&&a.size!=='big'); if(p.agId<0)p.agId=A.findIndex(a=>a.style===style); } negOf(p.id).mood=95; return p; };
+/* 요구 기준 대비 k배 가치의 묶음(요구 모양 그대로, 연봉으로 맞춤) */
+const CT1_T=(p,k)=>{ const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); const T={...D}; delete T.ov; const y=T.years; const V=faWantFor(p,G.user)*.97*k/(1+.06*(y-1)); T.annual=Math.round(V/termsMul(T,D)-(T.bonus||0)*CT_BON/y); return T; };
+T('[계약 1단계] 에이전트 친분은 구단마다 따로이고, 사용자와 AI 구단이 같은 규칙으로 오르내린다',()=>{ fresh(); const ag=agInit().find(a=>a.size!=='big'); const ai=G.teams.find(t=>t.id!==G.user).id;
+  delete ag.rels; ag.rel=70; ok(agRel(ag)===70&&agRel(ag,ai)===50,'옛 저장 친분이 우리 구단 몫으로 옮겨지지 않음: '+agRel(ag)+'/'+agRel(ag,ai)); ok(ag.rel==null,'옛 값이 남음');
+  ag.rels={}; for(const r of [1.05,.95,.8,.5,1.3]){ agOfferRel(ag,r,G.user,'시험'); agOfferRel(ag,r,ai,'시험'); ok(agRel(ag)===agRel(ag,ai),'같은 제안 수준인데 친분 변화가 다름 r='+r+': '+agRel(ag)+'/'+agRel(ag,ai)); }
+  const u0=agRel(ag); agRelAdd(ag,4,'시험',ai); ok(agRel(ag)===u0,'AI 구단 친분 변화가 우리 구단 몫을 바꿈');
+  ag.rels={[G.user]:80,[ai]:80}; agYear(); ok(agRel(ag)===agRel(ag,ai)&&agRel(ag)<80,'해마다 돌아오는 속도가 구단마다 다름');
+  /* 계약: 사인한 구단 +5, 끝까지 제안한 구단 +1(누가 사인하든 같은 규칙) */
+  const p=CT1_FA(52,300,2); const pa=agentOf(p); pa.rels={}; G.fa.offers[p.id]={annual:250,years:2}; faSign(p,[{tid:ai,annual:900,years:3},{tid:G.user,annual:250,years:2}]);
+  ok(p.team===ai,'준비 실패: AI 구단이 사인하지 않음'); ok(agRel(pa,ai)===55,'사인한 AI 구단 친분 +5가 아님: '+agRel(pa,ai)); ok(agRel(pa)===51,'끝까지 제안한 우리 구단 +1이 아님: '+agRel(pa));
+  /* FA 선택 점수: 친분은 그 구단 몫으로 모든 구단에 곱한다 */
+  const q=CT1_FA(52,300,2); const qa=agentOf(q); qa.rels={}; const s50=faScore(q,{tid:ai,annual:300,years:2}); qa.rels[ai]=90; ok(faScore(q,{tid:ai,annual:300,years:2})>s50,'AI 구단 친분이 선수 선택에 반영되지 않음');
+  qa.rels={[G.user]:90}; ok(Math.abs(faScore(q,{tid:ai,annual:300,years:2})-s50)<1e-9,'우리 친분이 AI 구단 점수를 바꿈'); });
+T('[계약 1단계] 잠근 조건은 역제안에서 바뀌지 않고, 다 잠그면 풀 잠금을 알려 준다',()=>{ fresh(); const p=CT1_FA(58,800,3,'rel'); const D=termsDemand(p,'fa',{annual:faWantA(p),years:3}); const T0={years:3,bonus:400,annual:500,opt:100,optC:'b',role:D.role,ntc:false};
+  const v=termsVal(T0,D)*1.15; const a=termsFit(T0,D,v,3,['annual'],'tot'); ok(a&&a.annual===500&&a.bonus>400&&termsVal(a,D)>=v,'연봉을 잠갔는데 연봉이 바뀌거나 모자람: '+JSON.stringify(a));
+  const b=termsFit(T0,D,v,4,['bonus','years'],'bonus'); ok(b&&b.bonus===400&&b.years===3&&b.annual>500&&termsVal(b,D)>=v,'계약금·기간을 잠갔는데 바뀜: '+JSON.stringify(b));
+  ok(termsFit(T0,D,v,3,['annual','bonus'])===null,'금액을 다 잠갔는데 역제안을 만듦');
+  const T=CT1_T(p,.95); const r=faNegotiate(p.id,{terms:T,lock:['annual','years']}); ok(r.st==='counter','준비 실패: 역제안이 아님 '+r.st+' '+r.msg); const c=negOf(p.id).counter.terms; ok(c.annual===T.annual&&c.years===T.years&&c.bonus>T.bonus,'잠근 연봉·기간이 역제안에서 바뀜: '+JSON.stringify(c));
+  const q=CT1_FA(58,800,3,'fast'); const U=CT1_T(q,.95); const r2=faNegotiate(q.id,{terms:U,lock:['annual','bonus','years','opt','role','ntc','cOpt']}); ok(r2.st==='no'&&!negOf(q.id).counter,'다 잠갔는데 역제안이 나옴: '+r2.st); ok(/잠금을 풀어/.test(r2.msg),'풀 잠금을 알려 주지 않음: '+r2.msg); });
+T('[계약 1단계] 화면에 보인 역제안은 그대로 다시 내면 받아들여진다(FA·다년·연봉)',()=>{ fresh(); const ai=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); let n=0;
+  for(const [st,k,lock,riv] of [['rel',.93,[]],['hard',.95,['annual']],['fast',.92,['bonus']],['auction',.96,['years']],['rel',.94,[],1],['hard',.91,['bonus','years'],1],['fast',.97,[],1]]){
+    const p=CT1_FA(55+n%6,500+n*120,2+n%3,st); n++; if(riv){ G.fa.ai[p.id]={[ai[1]]:{annual:round5(p.ask.annual*1.02),years:p.ask.years}}; }
+    const T=CT1_T(p,k); const r=faNegotiate(p.id,{terms:T,lock}); if(r.st!=='counter'){ ok(r.st==='wait'||r.st==='no','예상 밖 결과 '+r.st+' '+r.msg); continue; }
+    const c=negOf(p.id).counter; for(const f of lock)ok(c.terms[f]===T[f],'잠근 '+f+'가 바뀜'); const r2=faNegotiate(p.id,{terms:{...c.terms}}); ok(r2.st==='wait'||p.team===G.user,'보여 준 역제안을 그대로 냈는데 받지 않음('+st+'): '+r2.st+' '+r2.msg); }
+  ok(n>=5,'준비 실패');
+  const e=domestic(G.user).filter(q=>canExtend(q)&&hasAgent(q)&&!agExtTestMarket(q)&&extDemandAll(q,Math.max(3,extMinY(q)))>=300).sort((a,b)=>a.sal-b.sal); let done=0;
+  for(const p of e.slice(0,6)){ const y=Math.max(3,extMinY(p)); const d=extDemandAll(p,y); const D=termsDemand(p,'ext',{annual:d,years:y}); const T={...D,role:null}; delete T.ov; T.annual=round5(Math.max(MIN_SAL,(d*.94)/termsMul(T,D)-(T.bonus||0)*CT_BON/y));
+    const r=offerExtension(p.id,0,y,false,T,['bonus']); if(r.st==='owner'||r.ok)continue; ok(r.st==='counter','다년계약 준비 실패: '+r.st+' '+r.msg); const c=p.extCounter; ok(c.terms.bonus===T.bonus,'잠근 계약금이 바뀜');
+    const r2=offerExtension(p.id,0,y,false,{...c.terms}); ok(r2.ok,'다년계약 역제안을 그대로 냈는데 받지 않음: '+r2.st+' '+r2.msg); done++; }
+  ok(done>=1,'다년계약 시험 대상 없음');
+  simTo(()=>G.contract&&G.contract.ended&&G.contract.ended.length>0); const ids=Object.keys(salNeg(G.contract.ended[0])?G.contract.neg:{}); let sd=0;
+  for(const id of ids.slice(0,6)){ const sn=G.contract.neg[id]; if(!sn||sn.st!=='open')continue; const low=Math.max(MIN_SAL,round5(sn.ask*.8)); if(low>=sn.ask)continue; salOffer(+id,low,true); if(sn.st!=='open')continue; const ask=sn.ask; salOffer(+id,ask,true); ok(sn.st==='ok','연봉 협상 답(요구액)을 그대로 냈는데 합의 안 됨'); sd++; } ok(sd>=1,'연봉 협상 시험 대상 없음'); });
+T('[계약 1단계] 라운드 한도를 넘기면 에이전트가 협상을 접고, 마지막 라운드에 경고한다',()=>{ fresh(); const p=CT1_FA(56,700,3,'hard'); ok(agRoundsMax(p)===TRADE_ROUNDS-1,'강경형 라운드 한도가 트레이드 강경파와 다름'); const RM=agRoundsMax(p);
+  for(let i=1;i<RM;i++){ const r=faNegotiate(p.id,{terms:CT1_T(p,.8)}); ok(r.st==='no','준비 실패 '+r.st); if(i===RM-1)ok(/다음 제안이 마지막 라운드/.test(r.msg),'마지막 라운드 직전 경고 없음: '+r.msg); }
+  const rL=faNegotiate(p.id,{terms:CT1_T(p,.95)}); ok(rL.st==='counter'&&/이번이 마지막 조건/.test(rL.msg),'마지막 라운드 역제안에 경고 없음: '+rL.st+' '+rL.msg);
+  const rF=faNegotiate(p.id,{terms:CT1_T(p,.96)}); const n=negOf(p.id); ok(rF.st==='fold'&&n.fold>G.day&&!n.counter,'한도를 넘겼는데 접지 않음: '+rF.st+' '+rF.msg);
+  ok(faNegotiate(p.id,{terms:CT1_T(p,1.1)}).st==='cool','접은 뒤 바로 다시 받음'); G.day=n.fold; ok(faNegotiate(p.id,{terms:CT1_T(p,.8)}).st==='no','기간이 지나도 다시 열리지 않음');
+  const q=CT1_FA(56,700,3,'rel'); ok(agRoundsMax(q)===TRADE_ROUNDS+1,'관계형 한도'); faNegotiate(q.id,{terms:CT1_T(q,.8)}); G.day+=CT_ROUND_DAYS+1; const rd=faNegotiate(q.id,{terms:CT1_T(q,.95)}); ok(rd.st==='fold'&&/오래/.test(rd.msg),'기간을 넘겼는데 접지 않음: '+rd.st+' '+rd.msg);
+  /* AI 구단도 같은 한도: 요구에 못 미친 입찰을 한도까지 올렸으면 더 올리지 않는다 */
+  const A={annual:100,years:2,rounds:RM,d0:G.day}; ok(ctGate(A,RM)==='rounds','AI 입찰 라운드 한도가 적용되지 않음'); ctFold(A); ok(ctGate(A,RM)==='cool','AI 구단도 접은 뒤 기다리지 않음'); });
+T('[계약 1단계] 옵션은 종류별로 달성했을 때만 지급한다',()=>{ fresh(); const L=domestic(G.user).filter(q=>!q.isP&&!q.foreign).slice(0,4); const st0=seasonTotal; const H={};
+  seasonTotal=(p,y,l)=>H[p.id]||null; try{ const mk=(p,c,a)=>{ p.ctT=p.team; p.opt={a,from:G.year,until:G.year,c}; delete p.opt.paidY; };
+    const [a,b,c,d]=L; mk(a,'avg',300); H[a.id]={pa:520,ab:460,h:150,d:20,tr:1,hr:10,bb:50,hbp:3,sf:4,g:130}; mk(b,'avg',300); H[b.id]={pa:520,ab:460,h:110,d:20,tr:1,hr:10,bb:50,hbp:3,sf:4,g:130};
+    mk(c,'bg',200); H[c.id]={pa:300,ab:270,h:70,g:125}; mk(d,'as',150); H[d.id]={pa:100,ab:90,h:20,g:40};
+    ok(optEarned(a)&&!optEarned(b),'타율 옵션 판정이 틀림'); ok(optEarned(c),'경기 출전 옵션 판정이 틀림'); ok(!optEarned(d),'올스타가 아닌데 올스타 옵션 달성');
+    d.aw=[G.year+' 올스타(나눔)']; ok(optEarned(d),'올스타 선정인데 옵션 미달성'); d.aw=[];
+    const paid=optSettle(G.user); ok(paid===500,'달성한 옵션만 지급하지 않음: '+paid); ok(optSettle(G.user)===0,'옵션을 두 번 지급');
+    const g=L[1]; mk(g,'gg',250); ok(!optEarned(g),'골든글러브 옵션이 시상 전에 달성'); const t=team(G.user); delete t.optDue; optAward(g,G.year); ok(t.optDue===250,'골든글러브 옵션이 다음 결산 지출로 잡히지 않음'); optAward(g,G.year); ok(t.optDue===250,'골든글러브 옵션을 두 번 잡음');
+    const e=L[2]; mk(e,'bg',100); optAward(e,G.year); ok(t.optDue===250,'수상 옵션이 아닌데 시상식에서 지급'); } finally{ seasonTotal=st0; }
+  /* 옵션 가치: 종류·성향에 따라 보장액보다 낮게 본다 */
+  const D={years:3,role:null,ov:1}, Dh={...D,ov:agOptV({style:'hard'})}; const base={years:3,bonus:0,annual:300,opt:100,role:null,ntc:false};
+  ok(termsVal({...base,optC:'b'},D)>termsVal({...base,optC:'avg'},D)&&termsVal({...base,optC:'avg'},D)>termsVal({...base,optC:'gg'},D),'옵션 종류별 가치 순서가 틀림');
+  ok(termsVal({...base,optC:'b'},Dh)<termsVal({...base,optC:'b'},D),'강경형이 옵션을 더 낮게 보지 않음'); ok(termsVal({...base,optC:'b'},D)<termsVal({...base,opt:0,annual:400},D),'옵션을 보장액만큼 쳐 줌'); });
+T('[계약 1단계] 외국인 계약은 국내 에이전시 친분을 올리지 않는다',()=>{ fresh(); G.day=G.cal.open+20; for(const p of foreignOf(G.user).filter(p=>p.foreign==='아시아'))releaseForeign(p.id);
+  const snap=()=>JSON.stringify(agInit().map(a=>[a.rels||{},a.rel??null,(a.log||[]).length])); const s0=snap();
+  const q=newForeign('아시아',{market:true}); q.ask=ASIA_CAP/2; q.fknow=[G.user]; q.fpub=G.day; G.fmarket.push(q.id); const r=foOffer(q.id,ASIA_CAP,0); ok(r.ok&&q.team===G.user,'준비 실패: '+r.msg);
+  ok(snap()===s0,'외국인 계약으로 국내 에이전시 친분·기록이 바뀜'); ok(q.agId==null,'외국인에게 국내 에이전시가 붙음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

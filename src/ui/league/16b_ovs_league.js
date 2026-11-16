@@ -2,9 +2,9 @@
    경기를 돌리지 않는 가벼운 리그(35a_ovs_league). 화면은 읽기만 한다(만들기는 날짜 진행 때) */
 const ovsAwPills=(L,lg)=>(L&&L.aw||[]).map(k=>`<span class="pill warn">${esc(ovsAwNm(k,lg))}</span>`).join(' ');
 function ovlView(){ if(!G.ovl||OVL_LGS.some(l=>!G.ovl[l]))return csec('해외 리그','<p class="small muted">다음 날짜 진행 때 해외 리그 기록이 시작됩니다.</p>');
-  const t=inTabs('ovlv',[['alum','KBO 출신'],['top','주목 선수'],['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['etc','기타 리그'],['champ','역대 우승'],['moves','진출 기록']],'alum');
-  if(t.cur==='MLB'||t.cur==='AAA'||t.cur==='NPB')return t.bar+ovlStandView(t.cur);
-  if(t.cur==='etc'){ const e=inTabs('ovle',[['CPBL','CPBL(대만)'],['LMB','멕시코리그']],'CPBL'); return t.bar+e.bar+ovlStandView(e.cur)+ovlChampMini(e.cur); }
+  { const I=UI.it=UI.it||{}, o=I.ovlv; if(['MLB','AAA','NPB'].includes(o)){ I.ovlv='stand'; I.ovls=o; } else if(o==='etc'){ I.ovlv='stand'; I.ovls=I.ovle==='LMB'?'LMB':'CPBL'; } } /* 예전 탭(리그별 5개) → 순위 한 탭(해외 활성화 2-4) */
+  const t=inTabs('ovlv',[['alum','KBO 출신'],['top','주목 선수'],['stand','순위'],['champ','역대 우승'],['moves','진출 기록']],'alum');
+  if(t.cur==='stand'){ const e=inTabs('ovls',[['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['CPBL','CPBL'],['LMB','멕시코리그']],'MLB'); return t.bar+e.bar+ovlStandView(e.cur); }
   if(t.cur==='top')return t.bar+ovlTopView();
   if(t.cur==='champ')return t.bar+ovlChampView();
   if(t.cur==='moves')return t.bar+abroadView();
@@ -54,14 +54,11 @@ function ovlAlumView(){ const FT=inTabs('ovla',[['all','전체'],['mine','우리
   return csec(`KBO 출신 해외파 ${A.length}명${hiI('해외로 간 국내 선수, KBO를 떠나 해외에서 뛰는 외국인, 우리가 관찰하다 놓친 후보의 해외 성적입니다. MLB 구단 소속이라도 실력이 모자라면 산하 트리플A에서 뜁니다. 시즌 중에는 지금까지의 기록이고, 시즌을 마치면 확정됩니다. 해외 기록은 외국인 영입·복귀 협상에서 우리와 다른 구단이 똑같이 참고합니다.')}`,
     ft+(L.length?`<div class="abl">${L.map(row).join('')}</div>`:emptyState('지금 해외에서 뛰는 KBO 출신 선수가 없습니다.')));
 }
-function ovlChampView(){ const K=['MLB','AAA','NPB'], H=K.map(lg=>G.ovl[lg].h||[]); const ys=[...new Set(H.flat().map(h=>h.y))].sort((a,b)=>b-a);
+function ovlChampView(){ const K=['MLB','AAA','NPB','CPBL','LMB'], H=K.map(lg=>G.ovl[lg].h||[]); const ys=[...new Set(H.flat().map(h=>h.y))].sort((a,b)=>b-a);
   const c=(lg,X)=>X?`<b>${esc(ovlNm(lg,X.ch))}</b><span class="small muted"> ${esc(X.sr||'')} · ${esc(ovlNm(lg,X.ru))}</span>`:'-';
   const cnt=lg=>{ const C={}; for(const h of G.ovl[lg].h||[])C[h.ch]=(C[h.ch]||0)+1; return Object.entries(C).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([i,n])=>`${esc(ovlNm(lg,+i))} ${n}회`).join(' · '); };
-  return csec(`역대 우승${hiI(`최근 ${OVL_KEEP}시즌까지 남깁니다. CPBL·멕시코리그는 기타 리그에 있습니다.`)}`,ys.length?`<div class="tbl-wrap"><table class="tbl ovl-ch"><thead><tr><th>시즌</th><th>우승 · 결승 점수 · 준우승</th></tr></thead><tbody>${ys.map(y=>`<tr><td>${y}</td><td>${K.map((lg,k)=>`<div class="ovl-chl"><span class="small muted">${esc(OVL_PS[lg])}</span> ${c(lg,H[k].find(h=>h.y===y))}</div>`).join('')}</td></tr>`).join('')}</tbody></table></div>
+  return csec(`역대 우승${hiI(`최근 ${OVL_KEEP}시즌까지 남깁니다.`)}`,ys.length?`<div class="tbl-wrap"><table class="tbl ovl-ch"><thead><tr><th>시즌</th><th>우승 · 결승 점수 · 준우승</th></tr></thead><tbody>${ys.map(y=>`<tr><td>${y}</td><td>${K.map((lg,k)=>`<div class="ovl-chl"><span class="small muted">${esc(OVL_PS[lg])}</span> ${c(lg,H[k].find(h=>h.y===y))}</div>`).join('')}</td></tr>`).join('')}</tbody></table></div>
     <p class="small muted">최다 우승 · ${K.map(lg=>`${OVL_LBL[lg]} ${cnt(lg)||'-'}`).join(' · ')}</p>`:emptyState('아직 끝난 시즌이 없습니다.')); }
-/* 기타 리그 역대 우승(짧게) */
-function ovlChampMini(lg){ const H=G.ovl[lg].h||[]; if(!H.length)return '';
-  return csec(`${esc(OVL_PS[lg])} 역대 우승`,`<div class="tbl-wrap"><table class="tbl ovl-ch"><thead><tr><th>시즌</th><th>우승</th><th>준우승</th></tr></thead><tbody>${H.map(h=>`<tr><td>${h.y}</td><td><b>${esc(ovlNm(lg,h.ch))}</b> <span class="small muted">${esc(h.sr||'')}</span></td><td>${esc(ovlNm(lg,h.ru))}</td></tr>`).join('')}</tbody></table></div>`); }
 /* 해외파 한 줄(인물 창·선수 기록 공통): 연도 · 수준 · 구단 · 기록 · 시상. 시즌 중 오르내린 다른 수준(x)은 뒤에 붙인다 */
 function ovsLineRow(a,l){ const one=q=>`${esc(ovsLvlL(q.lvl))}${ovsClubNm(q)?` · ${esc(ovsClubNm(q))}`:''}: ${lineTxt(q,a.isP)}`;
   return `${l.y}${l.live?' 진행 중':''} ${one(l)}${l.aw?' '+ovsAwPills(l,a.lg):''}${l.x?` / ${one(l.x)}`:''}`; }

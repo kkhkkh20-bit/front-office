@@ -71,9 +71,13 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   meetDo(v){ if(UI.meet){UI.meet.optsY=document.querySelector('.mt-opts')?.scrollTop||0;UI.meet.topic=v;}meetDo(v);render(); },
   ngtOpen(v){ const [k,id]=String(v).split(':'); UI._ngtY=0; ngtOpen(k,+id); },
   ngtSet(v){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); ngtSet(v); renderSheet(); },
-  ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); const D=ngtDemand(N); N.T={...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years}; if(N.k==='ext')N.T.role=null; N.ed='dem'; N.kept=false; renderSheet(); },
+  ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); const D=ngtDemand(N); N.T=ngtClean({...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years,optC:N.T.optC}); if(N.k==='ext')N.T.role=null; N.ed='dem'; N.kept=false; renderSheet(); },
   ngtSubmit(){ if(!contractMoneyValid())return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=0; ngtSubmit(); save(); render(); renderSheet(); },
   ngtCounter(){ UI._ngtY=0; ngtCounter(); save(); render(); renderSheet(); },
+  ngtLock(v){ UI._ngtY=sheetScrollY(); ngtLock(v); renderSheet(); },
+  ngtCtrNo(){ ngtCtrNo(); save(); renderSheet(); },
+  ngtCtrEdit(){ ngtCtrEdit(); renderSheet(); },
+  ngtChat(){ const N=UI.ngt; if(!N)return; N.chatOpen=!N.chatOpen; renderSheet(); },
   ngtWithdraw(){ const N=UI.ngt; if(!N)return; delete G.fa.offers[N.id]; N.msg='제안을 거둬들였습니다.'; save(); render(); renderSheet(); },
   ngtClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.ngt=null; renderSheet(); render(); },
   meetClose(){ const M=UI.meet,y=M?.returnY||0;meetKeep();UI.meet=null;if(M){UI.sheet=M.bs;UI.person=M.bp;}render();if(M?.returnDetail&&document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(y);else scrollTo(0,y); },
@@ -368,6 +372,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castStart(){ const c=UI.cast; if(!c||!c.pre)return; cPrepClose(c); c.play=true; const pb=document.getElementById('cs-play'); if(pb)pb.textContent='일시정지'; castResumePitch(); castLoop(); }, /* 경기 전 화면의 '경기 시작'(3D 준비 뒤 활성) */
   castDugout(){const open=!castPref('dugout');try{localStorage.setItem('fo-cast-dugout',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.dugout=open?'open':'closed';const b=document.querySelector('.md-dugout-toggle');if(b){b.setAttribute('aria-expanded',String(open));b.textContent=open?'선수단 ▾':'선수단 ▴';}},
   castMgr(){const open=!castPref('mgr');try{localStorage.setItem('fo-cast-mgr',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.mgr=open?'open':'closed';const b=document.querySelector('.cs-mgr-h');if(b){b.setAttribute('aria-expanded',String(open));b.textContent='감독 운영 '+(open?'▾':'▴');}},
+  castEndTab(v){const r=document.querySelector('.cs-result');if(!r)return;r.dataset.tab=v==='num'?'num':'box';r.querySelectorAll('.cs-rtabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===r.dataset.tab));},
   castFaces(){const open=!castPref('faces');try{localStorage.setItem('fo-cast-faces',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.faces=open?'open':'closed';const b=document.querySelector('.cs-faces-view');if(b){b.textContent=open?'선수 카드 접기':'선수 카드 보기';b.setAttribute('aria-pressed',String(open));}},
   castLineups(){const open=!castLineupsOpen();try{localStorage.setItem('fo-cast-lineups',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.lineups=open?'open':'closed';const b=document.querySelector('.cs-lineup-view');if(b){b.textContent=open?'라인업 접기':'라인업 보기';b.setAttribute('aria-pressed',String(open));}},
   castBoard(){const c=UI.cast;if(!c||!c3DActive())return;const on=Match3D.info().camera!=='scoreboard';if(c.play)A.castPlay();Match3D.viewBoard(on);const b=document.querySelector('.cs-board-view');if(b)b.textContent=on?'경기로 돌아가기':'전광판 보기';const st=document.getElementById('cs-stage');if(st)st.dataset.board=on?'1':'';}, /* 전광판을 볼 때는 감독 운영·선수 카드를 숨긴다: 왼쪽 상자가 전광판 글자를 가렸다(사용자 11-16) */

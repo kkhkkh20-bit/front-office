@@ -4,7 +4,10 @@
  *   GET    /api/transfer/CODE     → 200 {data, createdAt} 후 바로 삭제(한 번만) | 404
  *   DELETE /api/transfer/CODE     올린 사람이 미리 지우기 → 200 {ok:true}
  * 보관하는 것: 저장 본문과 올린 시각(metadata.t)뿐. 요청 횟수 제한 키에는 IP의 해시만 두고 1시간 뒤 사라진다.
- * SAVE_KV 바인딩이 없으면(아직 설정 전) 모든 API가 503 not_configured를 돌려준다. docs/save-transfer.md 참고. */
+ * SAVE_KV 바인딩이 없으면(아직 설정 전) 모든 API가 503 not_configured를 돌려준다. docs/save-transfer.md 참고.
+ * 유저 대회(/api/cup/*)는 worker/cup.js, 유저 래더(/api/ladder/*)는 worker/uladder.js. 같은 KV를 쓰고, 관리자 호출에는 비밀값 CUP_ADMIN이 필요하다. */
+import { handleCup } from './cup.js';
+import { handleLadder } from './uladder.js';
 
 export const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // 0·O·1·I·L 없음, 31자 → 8자리 약 39.6비트
 export const CODE_LEN = 8;
@@ -79,6 +82,16 @@ async function rateLimited(req, env, now) {
 export async function handle(req, env, now = Date.now()) {
   const url = new URL(req.url);
   if (!url.pathname.startsWith('/api/')) return env.ASSETS ? env.ASSETS.fetch(req) : new Response('Not found', { status: 404 });
+  if (/^\/api\/cup(\/|$)/.test(url.pathname)) {
+    if (!env.SAVE_KV) return err(503, 'not_configured');
+    if (req.method !== 'GET' && !sameOrigin(req, url) && !(req.headers.get('Authorization') || '').startsWith('Bearer ')) return err(403, 'cross_origin');
+    try { return await handleCup(req, env, url, now, rateLimited); } catch (e) { return err(500, 'server'); }
+  }
+  if (/^\/api\/ladder(\/|$)/.test(url.pathname)) {
+    if (!env.SAVE_KV) return err(503, 'not_configured');
+    if (req.method !== 'GET' && !sameOrigin(req, url) && !(req.headers.get('Authorization') || '').startsWith('Bearer ')) return err(403, 'cross_origin');
+    try { return await handleLadder(req, env, url, now); } catch (e) { return err(500, 'server'); }
+  }
   const m = url.pathname.match(/^\/api\/transfer(?:\/([^/]*))?\/?$/);
   if (!m) return json(404, { error: 'not_found', message: '' });
   if (!env.SAVE_KV) return err(503, 'not_configured');
