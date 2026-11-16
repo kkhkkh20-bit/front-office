@@ -5224,6 +5224,29 @@ T('[해외 활성화 1-4] 해외파 계약 마지막 해: 새해에 복귀 여�
   const n=G.mail.length; const k0=JSON.stringify(a.bn); ovsPregen(); ok(JSON.stringify(a.bn)===k0&&G.mail.length===n,'새해 미리 정하기를 다시 굴림');
   b.bn={y:G.year,v:0}; c.bn={y:G.year,v:1}; ok(ovsBackTag(b)===''&&ovsBackTag(c)==='내년 복귀 가능 · 우선협상권 '+tshort(c.from),'남을 선수 표시·AI 원소속 표시');
   G.day=KD(11,1); ovlSeasonEnd(); abroadYear(); ok(a.back&&c.back,'미리 정한 복귀가 지켜지지 않음'); ok(!b.back,'남기로 정한 선수가 돌아옴'); ok(!a.bn&&!b.bn&&!c.bn,'정한 값이 남음'); });
+T('[해외 활성화 2-1] 포스팅 기준: 문턱은 국내 능력 56이고 잘할수록 의지가 덜 필요하며, 우리 선수 요청의 기본안은 AI 구단과 같은 판단이다',()=>{ fresh(); G.day=KD(11,20); G.rolled=G.year; G.posting=[]; G.evs=[];
+  const mk=tid=>{ const p=domestic(tid).find(q=>!q.foreign&&!q.prospect&&!q.ys&&!(G.posting||[]).some(x=>x.pid===q.id)); delete p.mil; p.svc=8; p.age=28; p.faC=false; p.ext=false; p.faN=0; delete p.lastFA; delete p.postPromise; p.joinY=G.year-8; return p; };
+  const u=mk(G.user), a=mk(otherT()); for(const p of [u,a]){ setOvr(p,57.5); p.mlb=40; } ok(!postWant(u),'의지 40·능력 57.5인데 포스팅을 원함');
+  setOvr(u,66); setOvr(a,66); ok(postWant(u)&&postWant(a),'능력 66·의지 40인데 원하지 않음');
+  setOvr(u,58); setOvr(a,58); u.mlb=a.mlb=60; postingSeason(); const e=(G.evs||[]).find(x=>x.k==='post'&&x.data.pid===u.id); ok(e,'능력 58·서비스 8년 우리 선수의 포스팅 요청이 없음(예전 문턱 60)');
+  ok(e.def===(aiPostDecide(u)==='allow'?0:1),'기본안이 AI 판단과 다름 '+e.def+' '+aiPostDecide(u)); ok(String(e.sit||e.body||e.txt||JSON.stringify(e)).includes('스카우트 예상'),'요청에 포스팅 예상이 없음');
+  ok((G.posting||[]).some(x=>x.pid===a.id)||a.postPromise===G.year+1,'같은 조건의 AI 선수는 포스팅도 약속도 없음');
+  setOvr(u,57); const E1=postEst(u); setOvr(u,66); const E2=postEst(u); ok(E2.pM>E1.pM&&E2.amt[0]>E1.amt[0]&&E2.fee[1]>E1.fee[1],'능력이 높은데 예상이 낮음'); ok(E2.amt[0]<=E2.amt[1]&&E2.fee[0]<=E2.fee[1]&&E2.n[0]<=E2.n[1],'범위 순서');
+  ok(postEst(u).pM===postEst(u).pM&&postEst(a).lv,'예상이 볼 때마다 바뀜'); });
+T('[해외 활성화 2-1] 보장 연 300만 달러 이상 MLB 계약 국내 선수는 빅리그 문턱이 2 낮고, 해외파 보관본에는 KBO 경기 단위 기록을 남기지 않는다',()=>{ fresh(); const p=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); delete p.mil; p.injOut=0; p.age=27; setOvr(p,61); p.gl={y:G.year,g:[1,2,3]}; p.vs={y:G.year,m:{}}; p.l10=[1,2];
+  ovsLeave(p,'MLB',MLBT[0],3,500,'포스팅',0); const a=G.abroad.find(x=>x.id===p.id); ok(ovsGt(a)&&!ovsGt({...a,amt:200})&&!ovsGt({...a,foreign:'용병'}),'보장 계약 판정'); const j=JSON.parse(a.pj); ok(j.gl==null&&j.vs==null&&j.l10==null&&j.r&&j.hist,'보관본 '+Object.keys(j).length);
+  let big=0, big0=0; for(let i=0;i<30;i++){ big+=ovsLine(j,'MLB',{gt:true}).lvl==='MLB'?1:0; big0+=ovsLine(j,'MLB',{}).lvl==='MLB'?1:0; } ok(big===30&&big0<30,'능력 61 보장 계약 선수의 빅리그 '+big+' / 일반 '+big0); });
+T('[해외 활성화 2-2] 6월 1일~7월 10일에는 트리플A 옵트아웃 후보가 매주 나오고 올해 트리플A 기록이 붙으며, AI 구단도 같은 후보를 본다',()=>{ fresh(); G.day=KD(5,20); ok(period()==='season','준비 실패: 시즌'); ok(fOptWeek().length===0,'5월에 옵트아웃 후보가 나옴');
+  G.day=KD(6,12); G.fmarket=[]; G.mail=[]; const O=fOptWeek(); ok(O.length>=2&&O.length<=3,'옵트아웃 후보 수 '+O.length);
+  for(const q of O){ ok(q.fopt===KD(6,1)&&q.prevLvl==='트리플A'&&q.foreign==='용병'&&G.fmarket.includes(q.id),'옵트아웃 날짜·리그 '+q.fopt+' '+q.prevLvl); ok(q.now&&q.now.y===G.year&&q.now.lvl==='트리플A'&&((q.now.pa||0)+(q.now.outs||0))>50,'올해 트리플A 기록이 없음'); ok(q.age>=28&&q.mlbG>=20,'MLB 경력 베테랑이 아님'); }
+  const ai=otherT(); ok(O.every(q=>fKnows(ai,q)&&Number.isFinite(fAiEst(ai,q))),'AI가 옵트아웃 후보를 모름');
+  G.day=KD(6,20); const O2=fOptWeek(); ok(O2.every(q=>q.fopt===KD(6,15)),'6월 하순 옵트아웃 날짜'); G.day=KD(7,12); ok(fOptWeek().length===0,'7월 중순에도 나옴');
+  G.day=KD(6,12); G.mail=[]; fNewWeek(); ok(G.mail.some(m=>/옵트아웃 후보/.test(m.subj)),'옵트아웃 후보 편지가 없음'); });
+T('[해외 활성화 2-3] 포스팅 예상: 우리 화면과 AI 판단이 같은 값을 보고, 예상 비용이 크면 우승 도전 구단도 2년 안에 FA가 될 주전을 보낸다',()=>{ fresh(); const tid=otherT(), t=team(tid); const p=domestic(tid).find(q=>!q.foreign&&!q.prospect&&!q.ys); delete p.mil; p.svc=8; p.age=27; p.faC=true; p.ext=false; p.yrs=2; delete p.postPromise;
+  const pl=planOf, ir=isRegular; try{ planOf=()=>'win'; isRegular=()=>true; setOvr(p,57); ok(aiPostDecide(p)==='promise','예상 비용이 작은 주전은 우승 도전 구단이 남겨야 함'); setOvr(p,68); const E=postEst(p); ok(E.fee[0]+E.fee[1]>=2*POST_T.feeSell,'준비 실패: 큰 예상 '+E.fee); ok(aiPostDecide(p)==='allow','예상 비용이 큰데 보내지 않음'); p.yrs=3; ok(aiPostDecide(p)==='promise','3년 남은 주전까지 보냄'); }finally{ planOf=pl; isRegular=ir; }
+  const s=postEstTxt(postEst(p)); ok(/^스카우트 예상: MLB 관심 (높음|보통|낮음|거의 없음)[(][0-9]+~[0-9]+개 구단[)] · 보장 연 [0-9,억 ]+만?~[0-9,억 ]+만? 달러 · [0-9~]+년 · 포스팅 비용 약 [0-9,억 ]+만?~[0-9,억 ]+만? 달러[.]$/.test(s),'예상 글 '+s); });
+T('[해외 활성화 2-5] 외국인 해외파 기록이 가득 차면 끝난 기록 다음으로 낮은 리그(CPBL·멕시코) 선수부터 지우고 MLB·트리플A·NPB 선수는 남긴다',()=>{ fresh(); G.abroad=[]; const mk=(i,lvl)=>({id:-500-i,name:'기록'+i,isP:false,pos:'1루수',foreign:'용병',from:null,lg:lvl==='트리플A'?'MLB':lvl,ci:0,how:'KBO 퇴단',y:G.year-1,y1:G.year,lines:[{y:G.year,lvl,pa:400}],back:false,fr:{id:-500-i,isP:false,age:30,r:{con:50}}});
+  for(let i=0;i<OVS_FMAX;i++)G.abroad.push(mk(i,i<10?'CPBL':i<20?'트리플A':'MLB')); G.abroad.unshift(mk(99,'NPB')); ovsTrim(); ok(G.abroad.length===OVS_FMAX,'한도 '+G.abroad.length); ok(G.abroad.filter(a=>a.lines[0].lvl==='CPBL').length===9&&G.abroad.some(a=>a.id===-599),'낮은 리그 기록을 먼저 지우지 않음'); });
 T('[해외 리그] 해외 소식은 한 시즌 6건까지, 중요한 소식(시상·우리 구단 출신)부터 낸다',()=>{ fresh(); G.wire=[]; const N=[]; for(let i=0;i<10;i++)N.push({pr:i,t:'소식 '+i,a:{id:-i-1,from:null}}); ovsWires(N); ok(G.wire.length===6,'소식 수 '+G.wire.length); ok(G.wire.some(w=>w.t==='소식 9')&&!G.wire.some(w=>w.t==='소식 0'),'중요도 순서가 아님'); });
 T('[해외 리그] 주목 선수: 기록을 쌓는 선수(KBO 출신·외국인 시장·관찰 명단)만 오르고, OPS·ERA 순서와 최소 타석·이닝을 지키며, 시즌 초반에는 지난 시즌 기록이다',()=>{ fresh();
   const p=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); ok(p,'준비 실패'); setOvr(p,70); p.injOut=0; delete p.mil; const aid=p.id; ovsLeave(p,'MLB',MLBT[0],2,500,'포스팅',0); const a=G.abroad.find(x=>x.id===aid); a.y1=Math.min(a.y1,G.year); ovsPregen(); ok(a.cur,'준비 실패: 올해 기록');
