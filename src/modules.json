@@ -161,7 +161,8 @@
       "src/engine/ladder/01_ladder_pool.js",
       "src/engine/ladder/02_ladder_series.js",
       "src/engine/ladder/03_ladder_pack.js",
-      "src/engine/cup/01_cup.js"
+      "src/engine/cup/01_cup.js",
+      "src/engine/uladder/01_uladder.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -313,6 +314,7 @@
       "src/ui/ladder/01_ladder_ui.js",
       "src/ui/cup/01_cup_ui.js",
       "src/ui/cup/02_cup_admin.js",
+      "src/ui/uladder/01_uladder_ui.js",
       "src/ui/runtime/99_boot.js"
     ],
     "styles": [
@@ -365,7 +367,8 @@
       "src/css/components/54_list_tools.css",
       "src/css/career/86_photo_edit.css",
       "src/css/ladder/01_ladder.css",
-      "src/css/cup/01_cup.css"
+      "src/css/cup/01_cup.css",
+      "src/css/uladder/01_uladder.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
@@ -381,7 +384,8 @@
       "src/core/pitches.mjs",
       "src/core/play-timing.mjs",
       "src/core/ladder.mjs",
-      "src/core/cup.mjs"
+      "src/core/cup.mjs",
+      "src/core/uladder.mjs"
     ],
     "scene3d": [
       "src/scene3d/scene.mjs",
