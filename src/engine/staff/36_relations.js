@@ -1,6 +1,21 @@
 /* ===== 감독이 먼저 하는 요청: 보강·정리·외국인 교체·FA·드래프트 ===== */
 const MREQK={fit:'원하는 선수 유형 요청',slot:'보강 요청',out:'정리 요청',frep:'외국인 교체 요청',fa:'FA 영입 요청',draft:'드래프트 기조 추천'};
 function mreqs(){ return G.mreq=G.mreq||[]; }
+/* 감독이 보는 '잠시 빠진 선수'(사용자 11-16: 군입대·부상·대표팀·외국인 교체를 확인하고 요청). 모든 감독 요청·회의 안건이 같은 판정을 쓴다.
+ mgrBackIn: 며칠 뒤 뛸 수 있는지(0=지금, Infinity=올해 합류 전). 부상·출장 정지·귀국 휴가·훈련 거부·대표팀 차출·자매구단 연수·군 복무(상무 전역 임박 포함)
+ mgrLeaving: h일 안에 입대해 빠지는 선수(곧 돌아와도 '답'으로 세지 않는다) */
+function mgrLeaving(p,h){ const m=milPeriod(p); return !!(m&&m.from>G.day&&m.from-G.day<=h); }
+function mgrBackIn(p){ if(!p||p.joinY>G.year)return Infinity; let d=0; const up=x=>{ if(x>d)d=x; };
+  if(p.injOut>0)up(p.injOut); if(p.susp>G.day)up(p.susp-G.day); if(p.fLeave>G.day)up(p.fLeave-G.day); if(p.boy>G.day)up(p.boy-G.day);
+  if(p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day)up(p.ntAway-G.day);
+  if(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p)){ const a=p.sisFlAway; up(a&&a.until>G.day?a.until-G.day:Math.max(1,dnum(G.year,11,15)-G.day)); }
+  const m=milPeriod(p); if(m&&m.from<=G.day&&G.day<m.until)up(m.until-G.day);
+  return d; }
+function mgrSoonBack(p,h=45){ const d=mgrBackIn(p); return d>0&&d<=h&&!mgrLeaving(p,h); }
+/* 그 자리 주전감(지금 그 자리보다 3 이상 나은 선수)이 h일 안에 돌아오는지. 소속 선수 전체에서 찾는다(playersOf는 차출·복무 선수를 뺀다) */
+function mgrSlotBack(tid,sk,v,h=45){ return Object.values(G.players).find(p=>p.team===tid&&!p.ys&&!p.prospect&&pSlot(p)===sk&&ovr(p)>=v+3&&mgrSoonBack(p,h))||null; }
+/* 감독 요청 시기: 기한(트레이드·외국인 등록 마감)까지 일주일은 남아야 부탁한다 */
+const MREQ_MIN_DAYS=7;
 function mreqOpen(k){ return mreqs().filter(r=>r.st==='open'&&(!k||r.k===k)); }
 /* 외국인 교체 판정(감독 요청·구단주 지원금 공통): 기존 선수가 떠났는지(out)와 그 뒤 새 외국인을 데려왔는지(inn). 둘 다면 교체 완료 */
 function fRepState(pid,an,d0,until,kind0){ const p=G.players[pid]; const out=!p||p.team!==G.user; const kind=kind0||(p&&p.foreign); const inn=foreignOf(G.user).some(q=>q.acq&&q.acq.tid===G.user&&q.acq.k==='외국인'&&!q.ftmp&&(!kind||q.foreign===kind)&&(q.acq.n!=null?q.acq.n>(an||0):q.acq.d>(d0||0))&&(until==null||q.acq.d<=until)); return {out,inn,ok:out&&inn}; } /* 같은 쿼터(일반·아시아)를 마감 안에 채워야 교체(검수 11-08) */
@@ -14,16 +29,18 @@ function draftFit(p,k){ if(!k||!p)return false; return k==='P'?p.isP:k==='C'?p.p
 /* 요청은 생성·수락 시 실제 규정과 필요를 확인한다. 수락 후 자금·정원을 소비해 약속을 지우지는 않는다. */
 const MREQ_PLAYER=new Set(['fit','slot','frep','fa']);
 const mreqFaReady=p=>!!p&&!p.prospect&&!p.ys&&!isAway(p)&&healthy(p)&&!(p.joinY>ctSeason());
+/* 이 감독과 이미 진행 중인 선수 보강 요청(면담 부탁·감독 요청)이 있는지: 같은 부탁을 겹쳐 하지 않는다 */
+function mreqBusy(m,r){ if(!m)return false; const q=G.mgrReq;if(q&&['rp','sp','bat','def'].includes(q.k)&&q.mid===m.id&&(q.tid==null||q.tid===G.user)&&q.until>=G.day)return true;
+  return mreqs().some(x=>x!==r&&['ask','open'].includes(x.st)&&MREQ_PLAYER.has(x.k)&&(x.tid==null||x.tid===G.user)&&(x.mid==null||x.mid===m.id)); }
 function mreqGate(k,d,r){
   const m=G.mgr&&G.mgr[G.user],per=period();if(!m||m.interim||G.unemp||G.gameOver)return '요청한 감독이 지금 구단을 맡고 있지 않습니다.';
   if(r&&((r.mid!=null&&r.mid!==m.id)||(r.tid!=null&&r.tid!==G.user)||G.day>r.until))return '요청한 감독·구단이 바뀌었거나 기한이 지나 요청을 끝냅니다.';
   if(MREQ_PLAYER.has(k)){
-    const q=G.mgrReq;if(q&&['rp','sp','bat','def'].includes(q.k)&&q.mid===m.id&&(q.tid==null||q.tid===G.user)&&q.until>=G.day)return '이미 선수 보강 요청을 진행 중입니다.';
-    if(mreqs().some(x=>x!==r&&['ask','open'].includes(x.st)&&MREQ_PLAYER.has(x.k)&&(x.tid==null||x.tid===G.user)&&(x.mid==null||x.mid===m.id)))return '이미 선수 보강 요청을 진행 중입니다.';
+    if(mreqBusy(m,r))return '이미 선수 보강 요청을 진행 중입니다.';
     if(k!=='frep'&&rosterN(G.user)>=ROSTER_MAX)return '정식 선수 정원이 찼습니다. 선수단 정리 후 보강을 의논하겠습니다.';
   }
   if(k==='fit'){const role=d&&(d.role||d.k);G._rg=null;if(!MROLE[role]||roleGap(G.user,role)<=0)return '필요한 역할을 이미 갖추고 있습니다.';if(!(per==='season'&&tradeOpen()||G.fa&&G.fa.open&&!G.fa.closed))return '지금은 선수 보강을 약속할 수 있는 시기가 아닙니다.';}
-  if(k==='slot'){const sk=d&&(d.sk||d.k);if(per!=='season'||!tradeOpen()||!PSLOTS.includes(sk)||sk==='DH')return '지금은 트레이드로 이 자리를 보강할 수 없습니다.';const w=slotRanks(G.user)[sk];if(!w||w.rank<8)return '이 자리는 아직 보강을 조를 만큼 약하지 않습니다.';if(domestic(G.user).some(p=>pSlot(p)===sk&&p.injOut>0&&p.injOut<=45&&ovr(p)>=w.v+3))return '같은 자리의 주전이 곧 부상에서 복귀합니다.';}
+  if(k==='slot'){const sk=d&&(d.sk||d.k);if(per!=='season'||!tradeOpen()||!PSLOTS.includes(sk)||sk==='DH')return '지금은 트레이드로 이 자리를 보강할 수 없습니다.';const w=slotRanks(G.user)[sk];if(!w||w.rank<8)return '이 자리는 아직 보강을 조를 만큼 약하지 않습니다.';if(mgrSlotBack(G.user,sk,w.v))return '같은 자리의 주전이 곧 돌아옵니다(부상·대표팀·연수·전역).';}
   if(k==='frep'){const p=d&&G.players[d.pid||d.id];if(per!=='season'||!foreignOpen()||!p||p.team!==G.user||!p.foreign||fReplLeft(G.user,p.foreign)<=0)return '지금은 외국인 선수를 교체할 수 없습니다.';}
   if(k==='fa'){const F=G.fa;if(!F||!F.open||F.closed)return 'FA 시장이 닫혀 있습니다.';if(d&&d.pid){const p=G.players[d.pid];if(!mreqFaReady(p)||p.team!=null||!(F.pool||[]).includes(p.id)||faOutBlocked(G.user,p)||!p.ask||p.ask.annual>capOf(sponSeason())-capPayNext(G.user)||(p.relBan&&p.relBan[G.user]>G.day))return '지금 계약할 수 있는 FA가 아닙니다.';const w=slotRanks(G.user)[pSlot(p)];if(w&&w.rank<7)return '이 FA가 맡을 자리는 이미 갖춰져 있습니다.';}}
   if(k==='out'){const p=d&&G.players[d.pid||d.id];if(per!=='season'||!tradeOpen()||!p||p.team!==G.user||p.ys||!p.e1)return '지금은 트레이드나 말소로 정리할 수 없는 선수입니다.';}
@@ -31,30 +48,40 @@ function mreqGate(k,d,r){
   return '';
 }
 function mreqAcquired(p,r){const a=p&&p.acq;return !!(p&&p.team===G.user&&a&&a.tid===G.user&&a.d>=r.day&&a.d<=r.until&&(r.an==null||a.n>r.an)&&!(r.ids||[]).includes(p.id));}
+/* 정리 요청을 해도 공정한 선수인지: 지금 뛰고 있고, 부상에서 막 돌아온 게 아니고(3주), 막 데려온 선수가 아니며(3주), 이미 매물로 내놓았거나 곧 입대할 선수가 아니다 */
+function mgrOutFair(p){ if(!p||!healthy(p)||isAway(p)||p.listed||mgrLeaving(p,30))return false; const h=(p.injHist||[]).slice(-1)[0]; if(h&&h.bk!=null&&G.day-h.bk<21)return false; const a=p.acq; if(a&&a.tid===G.user&&G.day-a.d<21)return false; return true; }
+/* 외국인 교체 후보(우리 스카우트가 아는 시장 선수, 지금 계약할 수 있는 선수만), 감독 눈으로 좋은 순 */
+function mgrFrepAlts(p,thr){ return (G.fmarket||[]).map(id=>G.players[id]).filter(q=>{ if(!q||q.team!=null||q.foreign!==p.foreign||q.isP!==p.isP||!fKnows(G.user,q)||foHeld(q))return false; try{ if(foreignCheck(G.user,{...q,ask:Math.min(q.ask,fNewCap())},p.id))return false; return fAiEst(G.user,q)>=thr; }catch(e){ return false; } }).sort((a,b)=>fAiEst(G.user,b)-fAiEst(G.user,a)); }
+/* 외국인 교체를 부탁할 이유: 'bad'(기록 부진) · 'inj'(45일 넘는 부상, AI 구단과 같은 기준). 짧은 부상이면 돌아오길 기다리고, 교체 횟수가 없거나 같은 쿼터 새 외국인을 막 데려왔거나 시장에 나은 대안이 없으면 부탁하지 않는다 */
+function mgrFrepWhy(p){ if(!p||!p.foreign||p.ftmp||p.frehab||fReplLeft(G.user,p.foreign)<=0)return '';
+  if(foreignOf(G.user).some(q=>q!==p&&q.foreign===p.foreign&&!q.ftmp&&q.acq&&q.acq.tid===G.user&&q.acq.k==='외국인'&&G.day-q.acq.d<=21))return ''; /* 이미 새 외국인이 왔다 */
+  const longInj=p.injOut>45; if(!longInj&&!healthy(p))return ''; /* 짧은 부상·휴가: 돌아와서 다시 본다 */
+  const h=seasonTotal(p,G.year,'1군'); const bad=!!h&&(p.isP?(h.outs>=90&&pRate(h).era>5.4):(h.pa>=130&&bRate(h).ops<.690)); if(!longInj&&!bad)return '';
+  if(!mgrFrepAlts(p,longInj?ovr(p)-5:ovr(p)).length)return ''; return longInj?'inj':'bad'; }
 /* 매주: 새 요청을 꺼내고, 진행 중인 요청을 점검한다 */
 function mreqWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||G.gameOver||G.unemp)return; mgrFix(m); mreqCheck();
   const per=period(); const open=mreqs().filter(r=>r.st==='open'||r.st==='ask'); if(open.length>=2)return;
   const recent=mreqs().filter(r=>r.day>G.day-28).length; if(recent)return;
   const C=[];
-  if(per==='season'&&tradeOpen()&&!open.some(r=>r.k==='slot')&&!mreqs().some(r=>r.k==='slot'&&r.day>G.day-50)){ const rk=slotRanks(G.user); const w=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0];
-    const soon=p=>(p.injOut>0&&p.injOut<=45)||(p.ntAway&&p.ntAway>G.day&&p.ntAway-G.day<=45)||(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p)); /* 부상·대표팀 차출·자매구단 연수로 잠시 빠진 선수(커뮤니티 11-16: 중견수가 대표팀에 가 있는데 중견수 보강을 요청) */
-    const back=w&&Object.values(G.players).some(p=>p.team===G.user&&!p.foreign&&!(p.joinY>G.year)&&pSlot(p)===w.k&&soon(p)&&!milServing(p)&&ovr(p)>=rk[w.k].v+3); /* 그 자리 주전이 곧 돌아오면 보강을 조르지 않는다(커뮤니티 피드백 11-07). 대표팀·연수로 빠진 선수는 playersOf에 없으므로 소속 선수 전체에서 찾는다 */ if(w&&w.r>=8&&!back)C.push(['slot',w,1.2+(m.ego-50)/60]); }
-  if(per==='season'&&G.day>G.cal.open+25&&!open.some(r=>r.k==='out')){ const bad=domestic(G.user).filter(p=>{ if(p.ys||p.age<29||!p.e1)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(h.outs>=60&&pRate(h).era>6):(h.pa>=90&&bRate(h).ops<.600); }).sort((a,b)=>b.sal-a.sal)[0]; if(bad&&!mreqs().some(r=>r.k==='out'&&r.data.pid===bad.id))C.push(['out',bad,.8+(m.disc-50)/80]); }
-  if(per==='season'&&G.day<=foreignDL()&&!open.some(r=>r.k==='frep')){ const f=foreignOf(G.user).find(p=>{ if(fReplLeft(G.user,p.foreign)<=0)return false; const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=90&&pRate(h).era>5.4):(h.pa>=130&&bRate(h).ops<.690)); }); if(f)C.push(['frep',f,1]); }
-  if((per==='season'&&tradeOpen()||G.fa&&G.fa.open&&!G.fa.closed)&&!open.some(r=>r.k==='fit')&&G.day-(G.mgrFitD??-99)>=50){ const nd=mgrNeedRole(G.user); if(nd)C.push(['fit',nd,1.3+(m.ego-50)/80]); }
+  const tradeT=per==='season'&&tradeOpen()&&tradeDL()-G.day>=MREQ_MIN_DAYS; /* 트레이드 마감 직전에는 트레이드 보강을 조르지 않는다 */
+  if(tradeT&&!open.some(r=>r.k==='slot')&&!mreqs().some(r=>r.k==='slot'&&r.day>G.day-50)){ const rk=slotRanks(G.user); const w=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0];
+    const back=w&&mgrSlotBack(G.user,w.k,rk[w.k].v); /* 그 자리 주전이 곧 돌아오면(부상·대표팀 차출·자매구단 연수·상무 전역 임박) 보강을 조르지 않는다(커뮤니티 11-07·11-16 중견수). 곧 입대할 선수는 답이 아니다 */ if(w&&w.r>=8&&!back)C.push(['slot',w,1.2+(m.ego-50)/60]); }
+  if(tradeT&&G.day>G.cal.open+25&&!open.some(r=>r.k==='out')){ const bad=domestic(G.user).filter(p=>{ if(p.ys||p.age<29||!p.e1||!mgrOutFair(p))return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(h.outs>=60&&pRate(h).era>6):(h.pa>=90&&bRate(h).ops<.600); }).sort((a,b)=>b.sal-a.sal)[0]; if(bad&&!mreqs().some(r=>r.k==='out'&&r.data.pid===bad.id))C.push(['out',bad,.8+(m.disc-50)/80]); }
+  if(per==='season'&&foreignDL()-G.day>=MREQ_MIN_DAYS&&!open.some(r=>r.k==='frep')){ const f=foreignOf(G.user).find(p=>mgrFrepWhy(p)); if(f)C.push(['frep',f,1]); }
+  if((tradeT||G.fa&&G.fa.open&&!G.fa.closed)&&!open.some(r=>r.k==='fit')&&G.day-(G.mgrFitD??-99)>=50){ const nd=mgrNeedRole(G.user); if(nd)C.push(['fit',nd,1.3+(m.ego-50)/80]); }
   if(G.day>=KD(8,20)&&G.day<KD(9,10)&&!mreqs().some(r=>r.k==='draft'&&r.y===G.year&&(r.tid==null||r.tid===G.user)))C.push(['draft',null,3]); /* 이직한 구단 감독은 따로 낸다 */
   if(G.fa&&G.fa.open&&!G.fa.closed&&!mreqs().some(r=>r.k==='fa'&&r.y===G.year))C.push(['fa',null,3]);
   const ready=C.filter(c=>!mreqGate(c[0],c[1]));if(!ready.length||R()>.45)return;C.length=0;C.push(...ready); let x=R()*sum(C.map(c=>Math.max(.2,c[2]))); for(const c of C){ x-=Math.max(.2,c[2]); if(x<=0){ mreqMake(c[0],c[1]); return; } } }
 /* 현실적으로 데려오기 어려운 선수: 그 구단 핵심(능력 상위 3명)·프랜차이즈 스타·트레이드 거부권 보유·우리 상한 여유로 감당 못 할 연봉(커뮤니티 피드백 11-07: 다른 구단 간판을 자꾸 요구) */
 function mgrUnreal(p){ try{ const top=domestic(p.team).filter(q=>!q.ys).map(ovr).sort((a,b)=>b-a); if(ovr(p)>=(top[2]??99))return true; if(p.ntc||franId(p.team)===p.id)return true; if(p.sal>Math.max(0,capOf(sponSeason())-capPay(G.user))+3000)return true; }catch(e){} return false; }
 function mreqMake(k,d){ const m=G.mgr[G.user]; if(mreqGate(k,d))return;const nm=mgrSays(m);
-  if(k==='fit'){ G.mgrFitD=G.day; const R0=MROLE[d.k]; const cs=roleCands(G.user,d.k,3).filter(p=>!isAway(p)); const ins=roleInside(G.user,d.k); const ty=mgrType(m); const until=period()==='season'?Math.min(G.day+35,tradeDL()):G.day+40;
+  if(k==='fit'){ G.mgrFitD=G.day; const R0=MROLE[d.k]; const cs=roleCands(G.user,d.k,3).filter(p=>!isAway(p)); const ins=roleInside(G.user,d.k); const ty=mgrType(m); const until=period()==='season'?Math.min(G.day+35,tradeDL()):G.day+40; const bk=roleBack(G.user,d.k); /* 다친·차출된 역할 선수도 곧 돌아오면 있는 것으로 센다(없다고 말하지 않는다) */
     const r=mreqAdd('fit',{role:d.k,have:d.have,cands:cs.map(p=>p.id)},until);
-    mreqAsk(r,`${nm}: ${R0.l}이(가) 필요합니다`,`"제 야구는 ${ty.n}입니다. 지금 주전 중 ${R0.l}이(가) ${d.have}명뿐입니다(${R0.tgt}명은 있어야 합니다). ${R0.need}이(가) 좋은 선수를 찾아 주십시오. ${R0.acc}은(는) 감수하겠습니다. 쓰임새는 ${R0.role}입니다."
+    mreqAsk(r,`${nm}: ${R0.l}이(가) 필요합니다`,`"제 야구는 ${ty.n}입니다. 지금 주전 중 ${R0.l}이(가) ${d.have}명뿐입니다${bk?`(곧 돌아올 ${bk}명 포함)`:''}(${R0.tgt}명은 있어야 합니다). ${R0.need}이(가) 좋은 선수를 찾아 주십시오. ${R0.acc}은(는) 감수하겠습니다. 쓰임새는 ${R0.role}입니다."
 기준: ${crTxt(d.k)}${cs.length?`\n예: ${cs.map(p=>`${p.name}(${p.team!=null?tshort(p.team):'FA'}, ${posLabel(p)}, ${roleTags(p,d.k)})`).join(' / ')}`:''}\n내부 대안: ${ins?`${ins.name}(${posLabel(ins)}, ${roleTags(ins,d.k)})`:'없음'}. 꼭 이 선수들이 아니어도 조건에 맞는 선수면 됩니다.`,
       [{l:'맞는 선수를 찾아보겠다',fx:`${dmd(until)}까지 조건에 맞는 선수를 데려오면 감독과 사이가 좋아지고, 감독은 그 선수를 원하는 자리에 씁니다. 못 하면 감독이 실망합니다.`},{l:'지금 선수로 간다',fx:`감독 관계 악화.`}],1,cs[0]?cs[0].id:null); return; }
   if(k==='slot'){ if(G.day-(G.mgrReqD??-99)<45)return; G.mgrReqD=G.day; const sk=d.k; const cur=slotRanks(G.user)[sk]; const rv=cur.v;
-    const cands=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&!(p.joinY>G.year)&&pSlot(p)===sk&&ovr(p)>=rv+4&&healthy(p)&&!mgrUnreal(p)).sort((a,b)=>(ovr(b)+mgrFitB(G.user,b)*3)-(ovr(a)+mgrFitB(G.user,a)*3)).slice(0,8); /* 같은 자리라도 감독 야구에 맞는 선수를 먼저 */
+    const cands=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&!(p.joinY>G.year)&&pSlot(p)===sk&&ovr(p)>=rv+4&&healthy(p)&&!isAway(p)&&!mgrLeaving(p,60)&&!mgrUnreal(p)).sort((a,b)=>(ovr(b)+mgrFitB(G.user,b)*3)-(ovr(a)+mgrFitB(G.user,a)*3)).slice(0,8); /* 같은 자리라도 감독 야구에 맞는 선수를 먼저 */
     const t=cands.find(p=>{ try{ return findPackages(p.id).length>0; }catch(e){ return false; } })||null; const until=Math.min(G.day+30,tradeDL());
     const r=mreqAdd('slot',{sk,rank:d.r,v:rv,target:t?t.id:null},until);
     mreqAsk(r,`${nm}: ${SLOTK[sk]} 보강 요청`,`"${SLOTK[sk]} 자리가 리그 ${d.r}위입니다. 이대로는 버티기 어렵습니다.${t?` ${tname(t.team)}의 ${t.name}(${posLabel(t)}, ${t.age}세) 같은 선수가 필요합니다.`:''}" ${dmd(until)}까지 ${SLOTK[sk]}을(를) 보강해 달라고 합니다.`,
@@ -62,17 +89,17 @@ function mreqMake(k,d){ const m=G.mgr[G.user]; if(mreqGate(k,d))return;const nm=
   if(k==='out'){ const p=d; const h=seasonTotal(p,G.year,'1군'); const r=mreqAdd('out',{pid:p.id},G.day+30);
     mreqAsk(r,`${nm}: ${p.name} 정리 요청`,`"${p.name}은(는) ${statLine(h,p)}입니다. 엔트리 한 자리가 아깝습니다. 정리하고 그 자리를 다른 선수에게 주고 싶습니다." 연봉 ${money(p.sal)}${p.faC?` · 잔여 ${p.yrs}년`:''}.`,
       [{l:'트레이드 매물로 내놓는다',fx:'30일 안에 내보내면 감독 관계 개선. 매물로 내놓기만 해도 감독은 일단 받아들입니다.'},{l:'방출한다',fx:`바로 정리합니다. ${relCost(p).tot?`확정 보장액 절반(${money(relCost(p).tot)})을 지급합니다. `:''}감독 관계 개선, 선수단 분위기 조금 하락.`},{l:'2군으로 내린다',fx:'1군에서 말소합니다(계약은 그대로 두고 엔트리만 정리). 감독 관계 조금 개선, 선수 기분 조금 하락.'},{l:'더 기회를 준다',fx:`감독 관계 악화. 선수 기분은 오릅니다.`}],3,p.id); return; }
-  if(k==='frep'){ const p=d; const alt=(G.fwatch||[]).map(w=>G.players[w.id]).filter(q=>q&&q.isP===p.isP&&q.foreign===p.foreign); const dl=foreignDL(); const r=mreqAdd('frep',{pid:p.id,foreign:p.foreign},Math.min(G.day+21,dl)); r.an=G.acqSeq||0; const left=Math.max(0,r.until-G.day); /* 기한: 21일과 외국인 등록 마감 중 빠른 날 */
-    mreqAsk(r,`${nm}: 외국인 ${p.name} 교체 요청`,`"${p.name}로는 안 됩니다. 시즌을 포기할 수 없으니 바꿔 주십시오."${alt.length?` 관찰 명단의 ${alt.map(q=>q.name).join(', ')}을(를) 언급합니다.`:' 관찰 명단에 같은 유형 후보가 없습니다.'}`,
+  if(k==='frep'){ const p=d; const why=mgrFrepWhy(p); const mk=mgrFrepAlts(p,ovr(p)-5).slice(0,2); const alt=(G.fwatch||[]).map(w=>G.players[w.id]).filter(q=>q&&q.team==null&&q.isP===p.isP&&q.foreign===p.foreign); const dl=foreignDL(); const r=mreqAdd('frep',{pid:p.id,foreign:p.foreign},Math.min(G.day+21,dl)); r.an=G.acqSeq||0; const left=Math.max(0,r.until-G.day); /* 기한: 21일과 외국인 등록 마감 중 빠른 날 */
+    mreqAsk(r,`${nm}: 외국인 ${p.name} 교체 요청`,`"${why==='inj'?`${p.name}이(가) 부상으로 ${p.injOut}일은 더 빠집니다. 기다릴 수가 없으니 바꿔 주십시오.`:`${p.name}로는 안 됩니다. 시즌을 포기할 수 없으니 바꿔 주십시오.`}"${alt.length?` 관찰 명단의 ${alt.map(q=>q.name).join(', ')}을(를) 언급합니다.`:mk.length?` 시장의 ${mk.map(q=>q.name).join(', ')} 같은 선수를 언급합니다.`:' 관찰 명단에 같은 유형 후보가 없습니다.'}`,
       [{l:'교체를 추진한다',fx:`${dmd(r.until)}까지(${left}일${r.until===dl?', 외국인 등록 마감':''}) 기존 선수를 내보내고 새 외국인을 데려오면 감독과 사이가 좋아집니다. 못 하면 감독이 실망합니다. 내보내기만 하고 새 외국인을 데려오지 않으면 고마워하지 않습니다.`},{l:'좀 더 지켜본다',fx:'감독 관계 악화.'}],1,p.id); return; }
-  if(k==='fa'){ const rk=slotRanks(G.user); const weak=PSLOTS.filter(s=>s!=='DH'&&rk[s].rank>=7).sort((a,b)=>rk[b].rank-rk[a].rank).slice(0,3);
+  if(k==='fa'){ const rk=slotRanks(G.user); const hz=Math.max(45,dnum(G.year+(dobj(G.day).m>=10?1:0),3,25)-G.day); const weak=PSLOTS.filter(s=>s!=='DH'&&rk[s].rank>=7&&!mgrSlotBack(G.user,s,rk[s].v,hz)) /* 개막 전에 돌아올 주전(전역·재활)이 있는 자리는 약점으로 보지 않는다 */.sort((a,b)=>rk[b].rank-rk[a].rank).slice(0,3);
     const capRoom=capOf(sponSeason())-capPayNext(G.user); /* 연봉 상한 여유 안에서 잡을 수 있는 FA만 요청(커뮤니티 피드백 11-07: 돈만 보고 상한을 넘는 FA를 요구) */
-    const pool=G.fa.pool.map(id=>G.players[id]).filter(p=>mreqFaReady(p)&&p.team==null&&weak.includes(pSlot(p))&&!faOutBlocked(G.user,p)&&!(p.relBan&&p.relBan[G.user]>G.day)&&p.ask&&p.ask.annual<=capRoom).sort((a,b)=>ovr(b)-ovr(a)); const p=pool[0]; if(!p)return;
+    const pool=G.fa.pool.map(id=>G.players[id]).filter(p=>mreqFaReady(p)&&!mgrLeaving(p,hz+30)&&p.team==null&&weak.includes(pSlot(p))&&!faOutBlocked(G.user,p)&&!(p.relBan&&p.relBan[G.user]>G.day)&&p.ask&&p.ask.annual<=capRoom).sort((a,b)=>ovr(b)-ovr(a)); const p=pool[0]; if(!p)return;
     const o=dobj(G.day); const close=o.m<=2?KD(1,23):dnum(G.year+1,1,23); if(!G.fa||G.fa.closed||close-G.day<7)return;
     const r=mreqAdd('fa',{pid:p.id},Math.min(close,G.day+21)); const b=budget();
     mreqAsk(r,`${nm}: FA ${p.name} 영입 요청`,`"${SLOTK[pSlot(p)]}이(가) 우리 약점입니다. FA ${p.name}(${posLabel(p)}, ${p.age}세)만 잡아 주시면 내년은 다르게 싸울 수 있습니다." 선수 요구는 ${p.ask.years}년 연 ${money(p.ask.annual)}, 우리 예산 여유는 ${money(b.roomGoal)}, 연봉 상한 여유는 ${money(capRoom)}입니다.`,
       [{l:'영입에 나서겠다',fx:`${dmd(r.until)}까지 잡으면 감독과 사이가 크게 좋아집니다. 다른 팀에 뺏기거나 기한을 넘기면 감독이 실망합니다.`},{l:'예산상 어렵다',fx:'감독 관계 조금 악화. 감독도 사정은 압니다.'}],1,p.id); return; }
-  if(k==='draft'){ const ps=playersOf(G.user); const pit=ps.filter(p=>p.isP).length; const C=ps.filter(p=>p.pos==='C'&&!p.isP).length; const rk=slotRanks(G.user);
+  if(k==='draft'){ const hz=dnum(G.year+1,3,25)-G.day; const ps=Object.values(G.players).filter(p=>p.team===G.user&&!(p.joinY>G.year+1)&&(p.joinY>G.year||mgrBackIn(p)<=hz)&&!mgrLeaving(p,hz)); /* 드래프트는 내년 전력: 내년 봄까지 전역·복귀할 선수는 세고, 그 전에 입대할 선수는 뺀다 */ const pit=ps.filter(p=>p.isP).length; const C=ps.filter(p=>p.pos==='C'&&!p.isP).length; const rk=slotRanks(G.user);
     let pol=m.youth>=62?'HS':teamCtx(team(G.user)).contend?'COL':'HS'; if(pit<15||rk.SP.rank>=7)pol='P'; else if(C<3||rk.C.rank>=8)pol='C'; else if(['2B','SS','3B'].some(s=>rk[s].rank>=8))pol='IF'; else if(['LF','CF','RF'].some(s=>rk[s].rank>=8))pol='OF';
     const why={P:`투수가 ${pit}명뿐이고 선발진이 리그 ${rk.SP.rank}위입니다`,C:`포수가 ${C}명이고 포수 자리가 리그 ${rk.C.rank}위입니다`,IF:'내야가 약합니다',OF:'외야가 약합니다',HS:'당장보다 몇 년 뒤를 봐야 합니다',COL:'바로 쓸 선수가 필요합니다'}[pol];
     const r=mreqAdd('draft',{pol},G.cal.draft+1);

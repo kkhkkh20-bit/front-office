@@ -125,6 +125,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   recGo(v){ const [seg,k]=v.split(':'); UI.lrec=seg; UI.ls=UI.ls||{}; UI.ls[seg]={k,dir:['era','whip','bb9'].includes(k)?1:-1}; A.go('league:rec'); },
   pmgmt(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
   mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(!a)return; if(a.a==='meetOpen'&&a.v==='mgr'&&m.ref!=null&&/약속은 어디 갔습니까/.test(m.subj))a.v=`mgr|use:${m.ref}`; /* 예전 저장의 약속 위반 메일도 그 선수 건의로(카페 11-09) */const status=mailButtonStatus(m,a);if(status){toast(status.text);render();return;} UI.actRes=null; UI.actFail=null; if(a.a==='meetOpen'&&m.subj.includes('감독이 단장실에 들렀습니다'))meetOpen('mgr',null,{visit:true}); else if(a&&A[a.a])A[a.a](a.v); else render(); if(UI.actFail&&UI.actRes)try{ toast(UI.actRes); }catch(e){} if(a&&(MAIL_ONCE.test(a.a)||a.a==='pactKeep')&&!UI.actFail){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(a.a==='pactKeep')m.closed=mailEnd('유망주 기회 합의를 유지하기로 했습니다.'); if(/^(posReq|fcampSet)/.test(a.a)){ const g=a.a.startsWith('posReq')?/^posReq/:/^fcampSet$/; m.acts.forEach(x=>{ if(g.test(x.a))x.done=x.done||x!==a&&'skip'; }); } save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
+  expGmCancel(){ const r=expGmCancel(); save(); toast(r); render(); }, /* 창단 단장 수락 취소(11월 20일 부임 전까지) */
   evPick(v){ const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); const r=evPick(id,+i); save(); if(e&&!e.done){ if(r)toast(r); render(); return; } /* 고를 수 없는 선택이면 이유만 알린다(검수 11-09z) */ sfx('confirm',.6); if(e&&e.res)toast(e.res.split('\n')[0].slice(0,140)); /* 결정 결과를 바로 알린다(본문도 전부 펼침) */ if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.player(e.data.pid); UI.ptab='mgmt'; renderSheet(); render(); return; } if(e&&e.k==='fx'&&+i===0){ const fp=G.players[e.data&&e.data.pid]; UI.ff=Object.assign({t:'yb',r:'all',s:'cur'},UI.ff||{}); UI.ff.t=fp&&fp.foreign==='아시아'?'asia':'yb'; UI.ff.r='all'; A.go('transfer:foreign'); return; } /* 그 선수 종류의 후보 탭으로(플레이 테스트 11-13: 일반 외국인인데 아시아쿼터 탭이 열림) */ if(e&&e.k==='ret'&&/코치 우선 협상/.test((e.opts[+i]||{}).l||'')){ A.go('staff:coach'); return; } /* 은퇴 선수를 코치 후보로: 바로 코치진 계약 화면으로 */ render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
@@ -151,7 +152,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0}; save(); render(); },
   devSet(v){ const [id,k]=v.split(':'); UI.devMsg=setDev(+id,k||null); if(!UI.devMsg&&k)sfx('confirm',.5); save(); if(UI.sheet!=null)renderSheet(); render(); },
   devOff(v){ setDev(+v,null); save(); render(); },
-  ovsSet(v){ const [id,k]=v.split(':'); UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
+  ovsSet(v){ const [id,k]=v.split(':'); UI.devOk=false; UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
   fallSet(v){ UI.devMsg=setFall(v||null); save(); render(); },
   listP(v){ listPlayer(+v); save(); render(); },
   tsugGo(v){ const [src,i]=v.split(':'); const s=(src==='k'?UI._tsugK:src==='f'?UI._find:src==='r'?((UI._rec&&UI._rec.list)||[]):UI._tsug||[])[+i]; if(!s||!tsugValid(s)){ UI.deskMsg='상황이 바뀌어 다시 찾아야 합니다.'; UI.deskOk=false; render(); return; }
@@ -243,6 +244,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
   wk(v){ UI.wk=v||null; render(); },
+  stRenew(v){ const r=staffRenewOffer(v); toast(r.msg); save(); render(); }, /* 계약 만료 알림의 재계약 제안(24_coaches staffExpNote) */
+  stRenewAll(v){ const r=staffRenewAll(v?String(v).split(','):null); toast(r.msg); save(); render(); },
   extCoachAll(){ const n=extendCoachesAll(); toast(n?`코치 ${n}명과 1년씩 연장했습니다.`:'연장할 코치가 없습니다.'); save(); render(); },
   extCoach(v){ const [k,a]=v.split(':'); const r=extendCoach(k,+a); toast(r||`${CROLE[k].l} 계약을 ${a}년 연장했습니다.`); save(); render(); },
   cpromAsk(v){ UI.cprom=v; render(); }, cpromCancel(){ UI.cprom=null; render(); },
@@ -362,8 +365,11 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castResume(){ const c=UI.castRet; if(!c||!c.parked||!G.games[c.g])return; delete c.parked; UI.sheet=null;UI.posSheet=null;UI.game=null;UI.menu=false;UI.mail=null; UI.castRet=null; UI.cast=c; c.play=!!c.wasPlay&&c.k<G.games[c.g].pbp.length; renderSheet(); render(); window.scrollTo(0,0); },
   castClose(noCw){ sndStopAll(); CT.tok++; CT.run=false; UI.cast=null; UI.castRet=null; if(G&&G.castHold){ delete G.castHold; save(); } /* 닫은 중계가 새로고침 뒤 다시 열리지 않게 저장(검수 11-07) */ render(); spoilFlush(); const cw=UI.cwAfter; UI.cwAfter=null; if(!noCw&&cw&&G.cwS&&G.cwS.id===cw)A.cwOpen(); }, /* 함께 본 경기: 중계를 닫으면 동석 결과 */
   castStart(){ const c=UI.cast; if(!c||!c.pre)return; cPrepClose(c); c.play=true; const pb=document.getElementById('cs-play'); if(pb)pb.textContent='일시정지'; castResumePitch(); castLoop(); }, /* 경기 전 화면의 '경기 시작'(3D 준비 뒤 활성) */
+  castDugout(){const open=!castPref('dugout');try{localStorage.setItem('fo-cast-dugout',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.dugout=open?'open':'closed';const b=document.querySelector('.md-dugout-toggle');if(b){b.setAttribute('aria-expanded',String(open));b.textContent=open?'선수단 ▾':'선수단 ▴';}},
+  castMgr(){const open=!castPref('mgr');try{localStorage.setItem('fo-cast-mgr',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.mgr=open?'open':'closed';const b=document.querySelector('.cs-mgr-h');if(b){b.setAttribute('aria-expanded',String(open));b.textContent='감독 운영 '+(open?'▾':'▴');}},
+  castFaces(){const open=!castPref('faces');try{localStorage.setItem('fo-cast-faces',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.faces=open?'open':'closed';const b=document.querySelector('.cs-faces-view');if(b){b.textContent=open?'선수 카드 접기':'선수 카드 보기';b.setAttribute('aria-pressed',String(open));}},
   castLineups(){const open=!castLineupsOpen();try{localStorage.setItem('fo-cast-lineups',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.lineups=open?'open':'closed';const b=document.querySelector('.cs-lineup-view');if(b){b.textContent=open?'라인업 접기':'라인업 보기';b.setAttribute('aria-pressed',String(open));}},
-  castBoard(){const c=UI.cast;if(!c||!c3DActive())return;const on=Match3D.info().camera!=='scoreboard';if(c.play)A.castPlay();Match3D.viewBoard(on);const b=document.querySelector('.cs-board-view');if(b)b.textContent=on?'경기로 돌아가기':'전광판 보기';},
+  castBoard(){const c=UI.cast;if(!c||!c3DActive())return;const on=Match3D.info().camera!=='scoreboard';if(c.play)A.castPlay();Match3D.viewBoard(on);const b=document.querySelector('.cs-board-view');if(b)b.textContent=on?'경기로 돌아가기':'전광판 보기';const st=document.getElementById('cs-stage');if(st)st.dataset.board=on?'1':'';}, /* 전광판을 볼 때는 감독 운영·선수 카드를 숨긴다: 왼쪽 상자가 전광판 글자를 가렸다(사용자 11-16) */
   async castRetry3d(){const c=UI.cast,host=document.getElementById('cs-3d');if(!c||!host||typeof Match3D==='undefined')return;c.play=false;CT.tok++;CT.run=false;cBallHide();cDraw(c.k,0);await Match3D.mount(host,{day:[0,6].includes(dobj(G.games[c.g].day).w)});if(UI.cast===c&&host.isConnected)cDraw(c.k,0);},
   castPlay(){ const c=UI.cast; if(!c)return; if(c.pre){ if(document.querySelector('.cs-prep-start')?.disabled===false)A.castStart(); else castStart2D(c); return; } /* 3D 준비 중에 재생을 누르면 기본 중계로 바로 시작 */ const L=G.games[c.g].pbp; if(c.k>=L.length)c.k=0; c.play=!c.play; CT.tok++; CT.run=false; cBallHide(); if(c.play){castResumePitch();castLoop();} else { cDraw(c.k,250); sndStop('amb'); sndStop('chant'); } const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play?'일시정지':'재생'; },
   castStep(v){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp, pa=i=>i>=0&&i<L.length&&typeof L[i][1]==='number'; let i=c.k; if(+v>0){ i++; while(i<L.length&&!pa(i))i++; } else { i--; while(i>0&&!pa(i))i--; } castJump(i); }, /* 다음·이전 '타석'으로(도루·교체 줄은 건너뜀), 재생 상태는 그대로(검수 11-07) */
@@ -471,6 +477,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(k==='front'){ ob.alt={k:'front',tid:G.user,t:`${tshort(G.user)} 프런트`}; ob.bond+=5; obHireBonus(id,'프런트'); addLog(`OB ${ob.name}이(가) 우리 프런트에 합류했습니다.`); save(); render(); } },
   reroll(){ UI.world=null; render(); },
   psTab(v){ UI.psTab=v; renderSheet(); }, /* 인물 카드 구역 탭(UI 3단계 3-0) */
+  tsTab(v){ UI.tsTab=v; renderSheet(); }, /* 구단 정보 창 구역 탭(UI 3단계 3-0) */
+  ownView(v){ UI.ownView=v; render(); }, /* 구단주 화면 구역(UI 3단계 3-0) */
   person(v,el){ peopleCapture(v,el);UI.sheet=null; UI.person=v; UI.personMsg=null; UI.teamSh=null; renderSheet(); }, /* 선수 정보 안의 인물 링크(11-09r)와 구단 정보 창의 감독·코치(카페 11-09c)도 인물 창으로 */
   peopleStep(v){peopleStep(v);},
   relGo(v){ peopleCapture(v);const [a,id]=relKey({k:v}); UI.relK=v; A[a](id); }, /* 관계도 인물·선수 이전/다음(카페 11-10) */

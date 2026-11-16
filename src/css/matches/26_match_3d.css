@@ -26,6 +26,7 @@
 .cs-3d-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
 .cs-nameplate{position:absolute;left:0;top:0;display:grid;justify-items:center;gap:1px;min-width:70px;padding:3px 7px;background:#081724bf;border:1px solid #b6d2db55;border-radius:4px;pointer-events:auto;color:#fff;text-shadow:0 1px 3px #000;line-height:1.15;white-space:nowrap;will-change:transform}
 .cs-nameplate[hidden]{display:none}.cs-nameplate b{font-size:11px;font-weight:700}.cs-nameplate span{font-size:var(--ui-tiny);color:#b5d3d7}.cs-nameplate.active{background:#4b3d12e8;border-color:#f2cf73;box-shadow:0 0 13px #efcb5755;z-index:3}.cs-nameplate.active span{color:#ffe199;font-weight:700}
+/* 수비 배치 보기 카드: 번호·이름 / 포지션·수비·어깨 */.cs-nameplate.card{min-width:112px;padding:4px 9px;background:#0b2230e6;border-color:#d8c48a88}.cs-nameplate.card b{font-size:12px}.cs-nameplate.card span{font-size:10.5px;color:#e6d39b}
 @media(max-width:600px){.cs-nameplate{padding:2px 4px;min-width:55px}.cs-nameplate b{font-size:var(--ui-micro)}.cs-nameplate span{font-size:8px}}
 .cs-3d[data-state="pending"] canvas,.cs-3d[data-state="loading"] canvas,.cs-3d[data-state="fallback"] canvas{visibility:hidden}
 .cs-3d[data-state="pending"] .cs-3d-labels,.cs-3d[data-state="loading"] .cs-3d-labels,.cs-3d[data-state="fallback"] .cs-3d-labels{display:none}
@@ -328,3 +329,60 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
  .match-dashboard[data-view="field"] .md-pitch-dock>.cs-pitch{grid-column:1;grid-row:3;margin:3px 5px 5px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;white-space:nowrap}
  .match-dashboard[data-view="field"] .md-pitch-dock>header>span{display:none}
 }
+
+/* 휴대폰 중계(UI 3단계 3-5): 조작 줄 한 줄(재생·속도·더보기·나가기). 하이라이트/전체와 소리는 '더보기'에서.
+   위 점수 막대와 겹치는 경기장 안 작은 전광판은 숨기고, 이닝 시작 자막은 버튼과 겹치지 않게 아래쪽에. 화면 안 글자는 10px 이상 */
+@media(max-width:600px){
+ .match-dashboard:not([data-more]) .cs-top>.cs-mode,.match-dashboard:not([data-more]) .cs-top>#cs-snd{display:none}
+ .match-dashboard .cs-top>.md-control{white-space:nowrap}
+ .match-dashboard .cs-stage .md-bug{display:none!important}
+ .match-dashboard .cs-bn{place-items:end center}.match-dashboard .cs-bn>div{margin-bottom:22%}
+ .match-dashboard .cs-nameplate b,.match-dashboard .cs-nameplate span,.match-dashboard .cs-stage[data-renderer="ready"]>.cs-board-view,.match-dashboard .cs-cam-view{font-size:10px}
+ .match-dashboard .cs-cap .cs-voice>b{font-size:var(--ui-caption)}
+}
+
+/* 좌우 상시 타자·투수 카드(OOTP·FM 참고): 3D 화면에서만. 왼쪽 아래 타자, 오른쪽은 상황판 위 투수. '선수 카드 접기'로 숨긴다 */
+.cs-faces{display:none}
+.cs-stage.has-3d>.cs-faces{display:block;position:absolute;inset:0;pointer-events:none;z-index:4}
+.match-dashboard[data-faces="closed"] .cs-stage.has-3d>.cs-faces{display:none}
+.cs-face{position:absolute;display:grid;grid-template-columns:56px minmax(0,1fr);gap:8px;align-items:start;width:252px;padding:7px 9px;border:1px solid #ffffff1c;border-radius:6px;background:#0b17208c;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);color:#e9f0f4;text-align:left;pointer-events:auto;cursor:pointer;box-shadow:0 3px 10px #0004;text-shadow:0 1px 2px #000a} /* 투명도(사용자 11-16): 뒤 경기장이 비쳐 보이게 */
+.cs-face.l{left:10px;bottom:64px;border-left:3px solid #cc6674}.cs-face.r{right:10px;bottom:190px;border-left:3px solid #6ab5d4}
+.cs-face-ph .av{width:56px;height:56px;border-radius:5px;object-fit:cover}.cs-face-tx{display:grid;gap:1px;min-width:0}.cs-face-tx>i{font-style:normal;font-size:10.5px;color:#9fb6c3}.cs-face-tx>b{font-size:16px;line-height:1.2}.cs-face-tx>em{font-style:normal;font-size:11px;color:#b9ccd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-face-tx>small{font-size:11px;color:#f0d890}
+.cs-face .md-duel-more small{font-size:10.5px}.cs-face .md-stam{width:100%}
+.cs-faces-view{display:none;position:absolute;right:12px;top:84px;z-index:9;padding:6px 10px;background:#102431dd;border:1px solid #91aab777;border-radius:4px;color:#e1edf1;font-size:11px;cursor:pointer}
+@media(min-width:1001px){.match-dashboard[data-view="field"] .cs-stage[data-renderer="ready"]>.cs-faces-view{display:block}}.match-dashboard.md-ended .cs-stage>.cs-faces-view{visibility:hidden}
+@media(max-width:1000px){.cs-stage.has-3d>.cs-faces,.cs-faces-view{display:none}}
+/* 하단 선수단(FM 참고): 3D 경기 화면에서도 출전 선수 9명 + 현재 투수. '선수단'으로 접고 펼친다(접으면 한 줄) */
+@media(min-width:1001px){
+  :is(.detail-page-open,body) .cast.match-dashboard[data-view="field"]:has(.has-3d){grid-template-rows:44px minmax(0,1fr) 80px 28px}
+  :is(.detail-page-open,body) .cast.match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d){grid-template-rows:44px minmax(0,1fr) 26px 28px}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-dugout{display:flex;padding:3px 6px;overflow:hidden}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player{padding:1px 4px}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player .av{width:28px;height:28px}
+  .match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d) :is(.md-roster,.md-roster-label>div){display:none}
+  .match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d) .md-dugout{align-items:center;padding:0 6px}
+  .match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d) .md-roster-label{align-content:center;flex-basis:auto}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-dugout{background:#17212bb8}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player{background:#ffffff0a}
+}
+.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label{flex:0 0 92px;display:grid;align-content:center;gap:3px}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label>b{display:none}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label>div{display:flex;flex-direction:column;gap:2px}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label button:not(.md-dugout-toggle){padding:1px 4px;font-size:10px}
+.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player{gap:0}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player b{font-size:11px;line-height:1.2}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player small,.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-pos{font-size:9.5px;line-height:1.15}
+.md-dugout-toggle{border:0;background:none;color:#cfe0ea;font-weight:700;font-size:11px;padding:0 4px 0 0;cursor:pointer;white-space:nowrap}
+
+/* 오늘 승리 확률 기여 표시 */
+.md-wpa{font:700 10px var(--f-num);font-style:normal;padding:0 4px;border-radius:3px;background:#ffffff12;color:#c6d3db}.md-wpa.p{color:#7fe0a0;background:#2e8a5133}.md-wpa.n{color:#ff9a8e;background:#a8433b33}
+
+/* 감독 운영 상자(왼쪽 위, 반투명, 접고 펼침) */
+.cs-mgr{display:none}
+.cs-stage.has-3d>.cs-mgr{display:block;position:absolute;left:10px;top:10px;z-index:5;width:268px;padding:6px 8px;border:1px solid #ffffff1c;border-radius:6px;background:#0b17208c;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);color:#e9f0f4;font-size:11px;text-shadow:0 1px 2px #000a}
+.cs-mgr-h{border:0;background:none;color:#e6eef3;font-weight:800;font-size:11.5px;padding:0;cursor:pointer}
+.cs-mgr-sum{display:grid;gap:2px;margin-top:4px}.cs-mgr-sum span{display:flex;align-items:center;gap:5px;padding-left:6px;border-left:3px solid var(--tc)}.cs-mgr-sum em{font-style:normal;color:#9fb6c3;margin-left:auto}
+.cs-mgr-list{list-style:none;margin:5px 0 0;padding:0;display:grid;gap:2px;max-height:132px;overflow:auto}.cs-mgr-list li{display:grid;grid-template-columns:44px 52px minmax(0,1fr) auto;gap:4px;align-items:center;padding:1px 0 1px 6px;border-left:3px solid var(--tc,#5b6b75)}.cs-mgr-list li.z{display:block;color:#9fb6c3}.cs-mgr-list i{font-style:normal;color:#9fb6c3;font-size:10px}.cs-mgr-list b{font-weight:700;font-size:10.5px}.cs-mgr-list span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.match-dashboard[data-mgr="closed"] .cs-mgr :is(.cs-mgr-sum,.cs-mgr-list){display:none}
+@media(max-width:1000px){.cs-stage.has-3d>.cs-mgr{display:none}}
+/* 전광판 보기: 겹치는 상자를 숨긴다(사용자 11-16) */
+.cs-stage[data-board="1"]>:is(.cs-mgr,.cs-faces){display:none}
+/* 선수단·기록 화면: 접기 버튼은 경기 화면에서만 쓴다. 넓은 화면에서 이 버튼 때문에 칸이 넘쳐 점수표를 덮었다(사용자 11-16) */
+.match-dashboard:not([data-view="field"]) .md-dugout-toggle{display:none}
+@media(min-width:1001px){.match-dashboard:not([data-view="field"]) .md-dugout{padding:3px 6px;overflow:hidden}.match-dashboard:not([data-view="field"]) .md-roster-label{flex:0 0 92px;display:grid;align-content:center;gap:3px}.match-dashboard:not([data-view="field"]) .md-roster-label>b{display:none}.match-dashboard:not([data-view="field"]) .md-roster-label>div{display:flex;flex-direction:column;gap:2px}.match-dashboard:not([data-view="field"]) .md-roster-label button{padding:1px 4px;font-size:10px}.match-dashboard:not([data-view="field"]) .md-roster-player{padding:1px 4px;gap:0}.match-dashboard:not([data-view="field"]) .md-roster-player .av{width:20px;height:20px}.match-dashboard:not([data-view="field"]) .md-roster-player b{font-size:11px;line-height:1.2}.match-dashboard:not([data-view="field"]) :is(.md-roster-player small,.md-roster-pos){font-size:9.5px;line-height:1.15}}
+/* 투수 상태 경고(사용자 11-16) */
+.cs-alerts{display:flex;flex-wrap:wrap;gap:3px;margin:2px 0 1px}.cs-alerts>i{font-style:normal;font-size:10.5px;font-weight:700;line-height:1;padding:3px 5px;border-radius:999px;white-space:nowrap}.cs-alerts>i.y{background:#e7c55a2e;color:#f3d77a;border:1px solid #e7c55a66}.cs-alerts>i.r{background:#e9675d33;color:#ff9a90;border:1px solid #e9675d88}

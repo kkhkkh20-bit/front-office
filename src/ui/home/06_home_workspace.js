@@ -59,10 +59,10 @@ function homeRosterPanel(){ const P=playersOf(G.user), g=p=>p.isP?'투수':p.pos
 function homeCardInfo(html){const t=document.createElement('template');t.innerHTML=html;const c=t.content,h=c.querySelector('h2,h3,.sec,.eyebrow'),title=h?.textContent.trim()||'구단 보고';h?.remove();c.querySelectorAll('table,svg,.hi-i,button:not(.lnk)').forEach(e=>e.remove());
   const w=document.createTreeWalker(c,NodeFilter.SHOW_TEXT),L=[];for(let n=w.nextNode();n;n=w.nextNode()){const x=n.textContent.replace(/\s+/g,' ').trim();if(x)L.push(x);}return {title,text:L.join(' ').slice(0,220)};}
 /* 첫 30분 체크리스트(플레이테스트 4 #13): 취임 첫해 개막 전까지 홈 맨 앞에 해야 할 일과 진행 상황을 한눈에. 비서 업무 안내와 같은 기준으로 체크한다 */
-function homeStartPanel(){ if(G.unemp||!G.tut||!G.cal||G.day>=G.cal.open||G.year!==(G.startY??G.year))return ''; let L=[]; try{ L=TUT.filter(s=>s.k!=='welcome'&&s.k!=='go').map(s=>({t:s.title,ok:!!s.check(),go:s.go,prog:s.prog?s.prog():''})); }catch(e){ return ''; }
-  try{ const P=G.scp&&G.scp.t&&G.scp.t[G.user]; L.push({t:'스프링캠프 계획',ok:!!(P&&P.s1&&P.s2),go:['go','staff:sc'],prog:P&&P.s1&&P.s2?'':'1차·2차 장소'}); }catch(e){}
-  const n=L.filter(x=>x.ok).length; if(n===L.length)return '';
-  return `<section class="hw-panel hw-start"><header><h2>첫 시즌 준비 <small class="muted">${n}/${L.length} 완료</small></h2></header><ol class="hw-ck">${L.map(x=>`<li class="${x.ok?'ok':''}"><span class="hw-ck-m" aria-hidden="true">${x.ok?'✓':''}</span><b>${esc(x.t)}</b>${x.prog&&!x.ok?`<small>${esc(x.prog)}</small>`:''}${!x.ok&&x.go?`<button class="btn small" data-a="${x.go[0]}" data-v="${esc(x.go[1])}">하기</button>`:''}</li>`).join('')}</ol><p class="small muted">개막(${dmd(G.cal.open)}) 전까지 끝내면 됩니다. 다 하면 이 카드는 사라집니다.</p></section>`; }
+function homeStartPanel(){ if(!guideOn())return ''; const L=guideItems(); if(!L.length)return '';
+  const n=L.filter(x=>x.ok).length; if(n===L.length)return ''; const done=L.filter(x=>x.ok), todo=L.filter(x=>!x.ok);
+  /* 이번 시즌 할 일(UI 3단계 3-7): 첫 시즌 준비 카드와 비서 안내를 한 곳에. 끝낸 일은 한 줄로 접어 카드가 잘리지 않게 */
+  return `<section class="hw-panel hw-start"><header><h2>이번 시즌 할 일 <small class="muted">${n}/${L.length} 완료</small></h2><button class="tc-i" data-a="guideOff" data-v="1" title="설정에서 다시 켤 수 있습니다">숨기기</button></header><ol class="hw-ck">${todo.map(x=>`<li><span class="hw-ck-m" aria-hidden="true"></span><b>${esc(x.t)}</b>${x.prog?`<small>${esc(x.prog)}</small>`:''}${x.go?`<button class="btn small" data-a="guideGo" data-v="${esc(x.k)}">하기</button>`:''}</li>`).join('')}${done.length?`<li class="ok hw-ck-done"><span class="hw-ck-m" aria-hidden="true">✓</span><b>${done.map(x=>esc(x.t)).join(' · ')}</b></li>`:''}</ol><p class="small muted">개막(${dmd(G.cal.open)}) 전까지 끝내면 됩니다. 다 하면 이 카드는 사라집니다.</p></section>`; }
 function homeWorkspace(){
   // 메뉴·요약·페이지 버튼을 먼저 확보하고 카드 한 줄에 최소 220px을 배정한다.
   const device=innerWidth>=1100?'desktop':innerWidth>=700?'tablet':'mobile';
@@ -84,3 +84,8 @@ function homeWorkspace(){
 if(typeof document!=='undefined'&&!window._hwSwipe){ window._hwSwipe=1; let x0=null,y0=null;
   document.addEventListener('touchstart',e=>{ const t=e.target&&e.target.closest&&e.target.closest('.home-workspace .home-grid,.home-workspace .hw-work'); if(!t||e.target.closest('.hw-stand,.hw-wk')){ x0=null; return; } x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
   document.addEventListener('touchend',e=>{ if(x0==null)return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; x0=null; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){ try{ A.homePage(dx<0?1:-1); }catch(err){} } },{passive:true}); }
+
+/* 홈 리그 순위 칸(PC)이 줄을 다 담지 못하면 아래 순위부터 줄인다(우리 구단 줄은 남긴다). 전체는 칸 머리의 '전체'(UI 3단계 3-4: 앞 N줄 + 전체 보기) */
+function homeStandFit(){ if(typeof document==='undefined')return; const s=document.querySelector('#app .home-workspace .hw-stand'); if(!s)return; const rows=[...s.querySelectorAll('tbody tr')]; rows.forEach(r=>r.classList.remove('hw-cut')); if(innerWidth<1100)return;
+  const over=()=>{ const v=rows.filter(r=>!r.classList.contains('hw-cut')); const last=v[v.length-1]; return last&&last.getBoundingClientRect().bottom>s.getBoundingClientRect().bottom+1; };
+  for(let i=rows.length-1;i>=1&&over();i--){ const r=rows[i]; if(r.classList.contains('own')||r.classList.contains('me'))continue; r.classList.add('hw-cut'); } }

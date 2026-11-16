@@ -11,7 +11,7 @@ svg .isot{font-family:var(--f-ui);font-weight:700;fill:#f2f4f6;paint-order:strok
 .isobusl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 8px}
 .isobusl>div{background:#141a22;border:1px solid var(--line);border-radius:5px;padding:2px 4px 4px;opacity:.55;min-width:0}
 .isobusl>div.on{opacity:1;border-color:var(--good)}
-.isobusl span{display:block;font-size:11px;text-align:center;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.isobusl span{display:block;font-size:var(--ui-caption);text-align:center;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* 시설 카드 썸네일 */
 .isoth{display:block;width:76px;height:58px;flex:none;background:#141a22;border-radius:5px}
 .fci:has(>.isoth){grid-template-columns:76px minmax(0,1fr);column-gap:10px}

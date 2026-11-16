@@ -40,6 +40,10 @@ function acqOf(p){ if(!p||p.team!==G.user)return null; const nm=tname(G.user); c
 const ACQC={'트레이드':'tr','보상선수':'tr','FA 영입':'fa','FA 잔류':'fa','외국인':'fo','지명':'dr','복귀':'fa'};
 function acqTag(p){ const a=acqOf(p); return a?`<i class="acq ${ACQC[a.k]||''}" title="${esc(a.t)}">${a.k==='지명'?`${String(a.y).slice(2)}년 지명`:`${a.k} ${String(a.y).slice(2)}`}</i>`:''; }
 /* 타석별 승리 확률 기여 */
+/* 장면별 승리 확률 기여(타자·주자 +, 투수 -). 한 경기에 한 번만 계산해 두고, 중계 화면은 지금 장면까지만 더한다(앞으로의 결과를 미리 드러내지 않게) */
+const WPA_D=new WeakMap();
+function wpaDeltas(g){ let D=WPA_D.get(g); if(D&&D.n===(g.pbp||[]).length)return D.list; const list=[]; const L=g.pbp||[]; for(let k=0;k<L.length;k++){ const x=L[k]; const run=x[1]==='SB'||x[1]==='CS'; if(typeof x[1]!=='number'&&!run)continue; const b=cBefore(g,k); const o=run?x[3]:x[4], a={sa:run?b.sa:x[7],sh:run?b.sh:x[8],outs:o,bases:o>=3?[0,0,0]:run?x[4]:x[5],half:x[0]}; if(o>=3){ a.half=x[0]+1; a.outs=0; a.bases=[0,0,0]; } let d=(k===L.length-1?(g.hs>g.as?1:g.hs<g.as?0:.5):wpHome(a,wpMax(g)))-wpHome(b,wpMax(g)); if(x[0]%2===0)d=-d; list.push([k,run?x[2]:x[1],run?cPit(g,k):x[2],d]); } WPA_D.set(g,{n:L.length,list}); return list; }
+function wpaUpTo(g,upTo){ const S={}; for(const [k,bi,pi,d] of wpaDeltas(g)){ if(k>=upTo)break; S[bi]=(S[bi]||0)+d; if(pi!=null)S[pi]=(S[pi]||0)-d; } return S; }
 function wpaMap(g){ const L=g.pbp||[]; const S={}; for(let k=0;k<L.length;k++){ const x=L[k]; const run=x[1]==='SB'||x[1]==='CS'; if(typeof x[1]!=='number'&&!run)continue; const b=cBefore(g,k); const o=run?x[3]:x[4], a={sa:run?b.sa:x[7],sh:run?b.sh:x[8],outs:o,bases:o>=3?[0,0,0]:run?x[4]:x[5],half:x[0]}; /* 도루·도루 실패도 주자와 투수 기여에(검수 11-09zu) */
     if(o>=3){ a.half=x[0]+1; a.outs=0; a.bases=[0,0,0]; } let d=(k===L.length-1?(g.hs>g.as?1:g.hs<g.as?0:.5):wpHome(a,wpMax(g)))-wpHome(b,wpMax(g)); if(x[0]%2===0)d=-d; const bi=run?x[2]:x[1], pi=run?cPit(g,k):x[2]; S[bi]=(S[bi]||0)+d; if(pi!=null)S[pi]=(S[pi]||0)-d; }
   return S; }

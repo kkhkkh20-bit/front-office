@@ -32,11 +32,11 @@ function amLvTrend(o){ const L=o&&o.lh; if(!L||L.length<2)return ''; const d=L[L
 /* 학교 페이지 */
 function amSchoolView(n){ const SL=schList(), S=SL[n], C=amCols()[n], o=S||C; const col=!S; const Y=G.year, Ss=amSeasonOf();
   const back=`<button class="btn small" data-a="amBack">← 아마추어 야구</button>`;
-  if(!o)return back+'<p class="small muted">학교 정보가 없습니다.</p>';
+  if(!o)return back+emptyState('학교 정보가 없습니다.');
   const c=S&&S.coach; const fol=amFollowing(G.user,'s:'+n);
   const yy=Ss&&Ss.y===Y?Y:Y-1; const roster=amRosterHtml(n,col,Ss,yy);
   const res=Ss&&Ss.res&&Ss.res[n]||[]; const TN=Object.fromEntries(AM_TOURS().concat([AM_COLT]).map(t=>[t.k,t.n]));
-  const recent=res.length?res.slice().reverse().map(r=>`<p class="small">${dmd(r[0])} ${r[2]>r[3]?'<b>승</b>':r[2]<r[3]?'패':'무'} ${r[2]}:${r[3]} ${amLnkS(r[1])} <span class="muted">${r[4]?esc(TN[r[4]]||''):'리그'}${r[5]<9?' · 콜드':''}</span></p>`).join(''):'<p class="small muted">올해 치른 경기가 없습니다.</p>';
+  const recent=res.length?res.slice().reverse().map(r=>`<p class="small">${dmd(r[0])} ${r[2]>r[3]?'<b>승</b>':r[2]<r[3]?'패':'무'} ${r[2]}:${r[3]} ${amLnkS(r[1])} <span class="muted">${r[4]?esc(TN[r[4]]||''):'리그'}${r[5]<9?' · 콜드':''}</span></p>`).join(''):emptyState('올해 치른 경기가 없습니다.');
   const hist=(G.amH||[]).filter(h=>Object.values(h.ch||{}).some(x=>x[0]===n||x[1]===n)).reverse().slice(0,8).map(h=>`${h.y} ${Object.entries(h.ch).filter(([k,x])=>x[0]===n||x[1]===n).map(([k,x])=>`${TN[k]||k} ${x[0]===n?'우승':'준우승'}`).join(', ')}`);
   const al=Object.values(G.players).filter(p=>p.school===n&&!p.prospect&&p.team!=null&&!p.retired).sort((a,b)=>ovr(b)-ovr(a));
   const lh=(o.lh||[]).map(x=>`${x[0]} ${x[1]}`).join(' → ');
@@ -44,13 +44,13 @@ function amSchoolView(n){ const SL=schList(), S=SL[n], C=amCols()[n], o=S||C; co
     ${c?`<p class="small">${esc(c.name)} 감독 ${c.age}세 · <span class="pill">${esc(c.sty)}</span> ${esc(HS_STY_D[c.sty]||'')} · 친분 ${schRelLbl(schRel(S))}</p><p class="small muted">${esc(AM_STY_TXT[c.sty]||'')}</p>`:''}
     <p><button class="btn small" data-a="amFollow" data-v="s:${esc(n)}">${fol?'관심 학교 해제':'관심 학교'}</button>${S?(schGave(S)?' <span class="small muted">올해 후원함</span>':` <button class="btn small" data-a="schGift" data-v="${esc(n)}">야구부 후원 ${money(10)}</button>`):''}</p>`)}
     ${csec('최근 경기',recent)}
-    ${csec('대회 성적',hist.length?hist.map(x=>`<p class="small">${esc(x)}</p>`).join(''):'<p class="small muted">최근 전국대회 결승 기록이 없습니다.</p>')}
-    ${csec(`프로 졸업생 ${al.length}`,al.length?`<p class="small">${al.slice(0,12).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><i class="small muted">(${esc(tshort(p.team))})</i>`).join(' · ')}</p>`:'<p class="small muted">지금 프로에 있는 졸업생이 없습니다.</p>')}</div><div class="am-sch-r">${csec(`선수단 (${yy} 기록)`,roster+'<p class="small muted">학년별 전체 선수단입니다. 저학년은 능력 수치 없이 기록만 봅니다. 관심권은 드래프트 관심권 선수입니다.</p>')}</div></div>`; }
+    ${csec('대회 성적',hist.length?hist.map(x=>`<p class="small">${esc(x)}</p>`).join(''):emptyState('최근 전국대회 결승 기록이 없습니다.'))}
+    ${csec(`프로 졸업생 ${al.length}`,al.length?`<p class="small">${al.slice(0,12).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><i class="small muted">(${esc(tshort(p.team))})</i>`).join(' · ')}</p>`:emptyState('지금 프로에 있는 졸업생이 없습니다.'))}`; }
 const AM_STY_TXT={육성형:'겨울마다 선수들이 조금 더 자랍니다.',엄격형:'에이스를 규정 안에서 길게 던지게 합니다.',데이터형:'타자들이 공을 잘 고릅니다.',자율형:'장타가 많지만 성장 폭은 들쭉날쭉합니다.'};
 /* 저학년 선수 카드: 능력 수치 없이 기록·체격·스카우트 한마디 */
 function amWord(e){ const T=amTier(amEstU(e,G.user)); return T.lo===T.hi?`${T.t}(${T.w})`:`${T.t}(${T.lo}~${T.hi} · ${T.w})`; }
 function amPlayerView(id){ const e=amPipe().L[id]; const back=`<button class="btn small" data-a="amBack">← 아마추어 야구</button>`;
-  if(!e){ const p=G.players[id]; if(p){ UI.amP=null; return back+`<p class="small"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> 선수 화면에서 볼 수 있습니다.</p>`; } return back+'<p class="small muted">선수 정보가 없습니다.</p>'; }
+  if(!e){ const p=G.players[id]; if(p){ UI.amP=null; return back+`<p class="small"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> 선수 화면에서 볼 수 있습니다.</p>`; } return back+emptyState('선수 정보가 없습니다.'); }
   const p={isP:!!e.P,college:!!e.c,amY:e.y.map(r=>amRowObj(e,r)).sort((a,b)=>a.y-b.y)}; const K=e.P?AM_PK:AM_BK; p.am={}; for(const k of K)p.am[k]=p.amY.reduce((a,r)=>a+(r[k]||0),0);
   const fol=amFollowing(G.user,e.id);
   return `${back}${csec(esc(e.n),`<p class="small">${amLnkS(e.s)} ${amGrade(e,G.year)}학년 · ${e.P?'투수':POSK[e.pos]||e.pos} · ${esc(e.t)}투${esc(e.b)}타 · ${e.ht}cm ${e.wt}kg · ${e.gy} 드래프트 대상</p>
