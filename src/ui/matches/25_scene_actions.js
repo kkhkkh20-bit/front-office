@@ -1,4 +1,3 @@
-const HOLD_MAX=250; /* 야수가 송구 전에 공을 들고 기다려도 되는 최대 시간(ms). 이보다 길면 일부러 늦게 던지는 것처럼 보인다(사용자 11-16) */
 /* 3D presentation uses the same deterministic fielder as the existing commentary. */
 function c3DScore(g,k,st,includeCurrent=false){const n=Math.min(g.pbp.length,k+(includeCurrent?1:0)),snap=castSnapshot(g,n),x=g.pbp[k],pid=cPit(g,Math.min(k,g.pbp.length-1)),bid=typeof x?.[1]==='number'?x[1]:snap.batter;return {intro:null, /* 전광판을 새로 그리면(장면 이동·타석 결과) 타자 소개는 끝낸다 */xh:n>=g.pbp.length&&g.line&&Array.isArray(g.line.h)&&g.line.h.includes('X')?g.line.h.indexOf('X'):null, /* 끝난 경기 9회말 X(박스스코어와 같게, 검수 11-08) */away:tshort(g.away),home:tshort(g.home),sa:st.sa,sh:st.sh,half:st.half,inning:cHalfTxt(st.half),outs:Math.min(2,st.outs),innings:{a:snap.teams.a.innings,h:snap.teams.h.innings},hits:{a:snap.teams.a.stats.h,h:snap.teams.h.stats.h},errors:{a:snap.teams.a.stats.e,h:snap.teams.h.stats.e},batter:G.players[bid]?.name||'',pitcher:G.players[pid]?.name||'',batterLine:bid?cToday(g,n,bid,false):'',pitcherLine:pid?cToday(g,n,pid,true):'',b:0,s:0,pitch:null,playText:includeCurrent?pbpCall(g,k).c:'경기 중계'};}
 function c3DActive(){return typeof Match3D!=='undefined'&&Match3D.ready();}
@@ -6,15 +5,30 @@ function c3DFielder(g,k,pos){if(pos==='P'){const id=cPit(g,k);return id?{id,pos}
 function c3DRunTime(id){return FrontOfficeCore.baseRunTime(G.players[id]?.r.spd??50);}
 function c3DName(f){return f?G.players[f.id]?.name||'수비수':'수비수';}
 function c3DBeside(base,from,d=.75){ if(![CBS[0],CBS[1],CBS[2],CHM].some(b=>b[0]===base[0]&&b[1]===base[1]))return base; const dx=from[0]-base[0],dy=from[1]-base[1],l=Math.hypot(dx,dy); return l<.01?base:[base[0]+dx/l*d,base[1]+dy/l*d]; }
+/* 주자 속도 맞추기(사용자 11-16): 기록(세이프·아웃)은 엔진이 정하고, 화면은 주자와 송구 시간을 따로 추정해 공이 먼저 왔는데 세이프가 되곤 했다.
+   송구가 정해지면 그 공이 베이스에 닿는 시각을 기준으로 그 베이스로 가는 주자의 남은 달리기 속도를 바꾼다: 세이프 주자는 공보다 먼저, 아웃 주자는 공보다 늦게 */
+let CRUN=null, CRUNB={};
+async function cRunLegs(id,el,from,last,dur,o){ const c={el,from,to:last,leg:from,dur,legEnd:performance.now(),out:!!o.out,slid:false,done:false}; if(CRUN)CRUN.set(id,c);
+ for(let i=from+1;i<=last;i++){ if(o.retired.has(id))return false; c.leg=i; c.legEnd=performance.now()+c.dur/cSpd(); cPlace(el,CPATH[i],c.dur); if(i===from+1&&CRUNB[last])cRunNeed(id,last,CRUNB[last],true);
+  for(;;){ const left=c.legEnd-performance.now(); if(left<=1)break; if(i===4&&o.slide&&!c.slid&&left<=900/cSpd()&&c.dur>1000&&typeof Match3D.slide==='function'){ c.slid=true; Match3D.slide('o'+id,CHM,left,false); } await cSleep(Math.min(left*cSpd(),60)); if(o.retired.has(id))return false; } }
+ c.done=true; return true; }
+function cRunAt(id,base){ const c=CRUN&&CRUN.get(id); if(!c)return null; return c.legEnd+(base-c.leg)*c.dur/cSpd(); }
+function cRunNeed(id,base,ballAt,apply,est){ const c=CRUN&&CRUN.get(id); if(!c&&est){ const want=ballAt-180; return est.at<=want?1:Math.max(.5,(want-est.start)/Math.max(1,est.at-est.start)); } if(!c||c.done||c.slid||base>c.to||base<c.leg)return 1; const now=performance.now(), legReal=c.dur/cSpd(), frac=Math.max(0,(c.legEnd-now)/legReal), legs=frac+(base-c.leg); if(legs<=0)return 1;
+ const want=c.out?ballAt+200:ballAt-180, cur=c.legEnd+(base-c.leg)*legReal; if(c.out?cur>=want:cur<=want)return 1; const f=Math.max(.5,Math.min(1.8,(want-now)/(legs*legReal)));
+ if(apply){ c.dur*=f; c.legEnd=now+frac*c.dur/cSpd(); cPlace(c.el,CPATH[c.leg],frac*c.dur); } return f; }
+const CBASE={'1B':1,'2B':2,'3B':3,'C':4};
+function cRunFitBase(toPos,ballAt){ const b=CBASE[toPos]; if(!b||!CRUN)return; CRUNB[b]=ballAt; for(const [id,c] of CRUN)if(c.to===b&&!c.done)cRunNeed(id,b,ballAt,true); }
+const RUN_FIT_MIN=.62; /* 이보다 더 빨리 뛰어야 하면 그 베이스로 던지지 않는다(중계·송구 포기) */
 async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
  const receiver=c3DFielder(g,k,toPos);if(!from||!receiver)return;
  const arm=G.players[from.id]?.r.arm??G.players[from.id]?.r.stf??50;let travel=FrontOfficeCore.throwTime(Match3D.distance(fromPt,toPt),arm);
  const cover=(Match3D.actorDistance('d'+receiver.id,toPt)??Match3D.distance(CFP[toPos],toPt))/8*1000;let wind=Math.max(220,Math.min(650,cover-travel+60)); /* 받을 선수를 오래 기다리며 공을 쥐고 있지 않게(사용자 피드백 11-07) */
  if(by){ const left=(by-performance.now())*cSpd()-120, f=left>0?Math.min(1,left/(wind+travel)):.2; if(f<1){ const s=Math.max(.2,f); wind=Math.round(wind*s); travel=Math.round(Math.max(120,travel*s)); } } /* by: 주자가 베이스에 닿는 시각. 아웃이면 공이 그보다 먼저(빠른 송구) */
+ cRunFitBase(toPos,performance.now()+(wind+travel)/cSpd());
  const stand=c3DBeside(toPt,fromPt); /* 받는 야수는 베이스 한가운데가 아니라 송구 쪽 옆에 선다(들어오는 주자와 겹쳐 서지 않게) */
  Match3D.move('d'+receiver.id,stand,cover/cSpd());
  Match3D.throwing('d'+from.id,toPt,wind/cSpd());cSpeak(g,k,'throw',{fielder:c3DName(from),receiver:c3DName(receiver),relay:phase==='중계 플레이'});
- await cSleep(wind);sfx('pitch',.28,1.15);Match3D.receive('d'+receiver.id,toPos==='C'?'low':'stretch',travel/cSpd(),fromPt);await cBall(fromPt,toPt,travel,false);Match3D.caught('d'+receiver.id,phase);sfx('mitt',.5,1.1); /* 송구·포구 소리(사용자 11-08) */
+ await cSleep(wind);sfx('pitch',.28,1.15);Match3D.receive('d'+receiver.id,toPos==='C'?'low':'stretch',travel/cSpd(),fromPt);await cBall(fromPt,toPt,travel,false);Match3D.caught('d'+receiver.id,phase);sfx('mitt',.5,1.1);if(globalThis.__FO3D_DEBUG&&CRUN){const b=CBASE[toPos];if(b)for(const [id,c] of CRUN)if(c.to===b)(globalThis.__runlog||(globalThis.__runlog=[])).push({k,base:b,out:c.out,diff:Math.round(cRunAt(id,b)-performance.now())});} /* 점검용: 공이 잡힌 때와 주자 도착의 차(음수=주자가 먼저) */ /* 송구·포구 소리(사용자 11-08) */
  cCap(`${POSK[toPos]||toPos} ${c3DName(receiver)} · ${phase}`,phase.includes('아웃')?'bad':'');
  return {receiver,travel,wind};
 }
@@ -37,14 +51,14 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);cover(pat[1],CBS[1]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else if(UI.cast.infHit)cover('1B',CBS[0]);else{if(direct)cover(directPos,directPt);else cover(relayPos,relayPt2);if(path)cover(basePos,base);}}}
 
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');if(typeof Match3D.leave==='function')Match3D.leave('o'+id,3200/cSpd());else Match3D.hide('o'+id);}; /* 아웃된 주자는 사라지지 않고 뛰어 나간다 */
- const t0=performance.now(), arrive=(id,legs,start)=>t0+(start||0)+legs*c3DRunTime(id)/cSpd(); /* 아웃 판정: 주자는 끝까지 전력으로 뛰고, 송구가 그보다 먼저 도착하게 맞춘다(사용자 피드백 11-07) */
+ const t0=performance.now(), arrive=(id,legs,start)=>{const c=CRUN&&CRUN.get(id);return c?cRunAt(id,c.from+legs):t0+(start||0)+legs*c3DRunTime(id)/cSpd();};CRUN=new Map();CRUNB={}; /* 아웃 판정: 주자는 끝까지 전력으로 뛰고, 송구가 그보다 먼저 도착하게 맞춘다(사용자 피드백 11-07) */
  const homeGo=(typeof pcH==='function'?pcH(g,k,'hometry'):0)<.3; /* 홈 송구(사용자 11-16): 득점 안타마다 홈으로 던지면 늘 세이프만 보게 된다. 기록상 홈 아웃은 득점 25번에 1번 꼴이라, 세이프 득점에서는 열에 셋만 홈 승부로 그리고 나머지는 중계로 돌린다. 기록상 홈 아웃은 그대로 홈 승부 */
  const slideHome=new Set();if(!isHR&&f&&['LF','CF','RF'].includes(f.pos)&&!path&&!UI.cast.errPos){const out4=moves.find(m=>m.out&&m.to===4);if(out4)slideHome.add(out4.id);else if(homeGo&&!outPlay&&!moves.some(m=>m.out))for(const r of (Array.isArray(x[14])?x[14]:[]))if(r.to===4&&r.result!=='out'&&moves.some(m=>m.id===r.id&&m.score)){slideHome.add(r.id);break;}} /* 홈 승부(송구가 오는 주자)는 슬라이딩으로 들어온다 */
  if(slideHome.size&&typeof Match3D.brace==='function'){const c=c3DFielder(g,k,'C');if(c)setTimeout(()=>{if(UI.cast&&g.pbp[k]===x)Match3D.brace('d'+c.id,spot);},1100/cSpd());} /* 포수는 송구가 오기 전에 홈에서 낮은 자세로 기다린다 */
  const tagOut=f&&!isHR&&(!outPlay||UI.cast.errPos)?moves.find(m=>m.out):null; /* 송구로 잡히는 주자: 도착하자마자 물러나면 포수·야수가 태그하기 전에 주자가 지나가 버린다(사용자 11-16). 태그 뒤에 물러난다 */
- const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;for(let i=m.from+1;i<=Math.min(4,isHR?m.from+1:m.to);i++){if(retired.has(m.id))return;const duration=isHR?1500:c3DRunTime(m.id);cPlace(el,CPATH[i],duration);if(i===4&&slideHome.has(m.id)&&duration>1000&&typeof Match3D.slide==='function'){await cSleep(duration-900);if(retired.has(m.id))return;Match3D.slide('o'+m.id,CHM,900/cSpd(),false);await cSleep(900);}else await cSleep(duration);}if(retired.has(m.id))return;if(m.score||m.out&&m!==tagOut)retire(m.id);}));
+ const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;const ok=await cRunLegs(m.id,el,m.from,Math.min(4,isHR?m.from+1:m.to),isHR?1500:c3DRunTime(m.id),{out:m.out,slide:slideHome.has(m.id),retired});if(!ok||retired.has(m.id))return;if(m.score||m.out&&m!==tagOut)retire(m.id);}));
  runners.catch(()=>{});
- const batter=(async()=>{await cSleep(isHR?430:620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(540);} /* 빠던: 화면이 타구로 넘어가기 전에 다 보이도록 조금 일찍 던진다(사용자 11-13) */const target=isHR?2:bTo>0?Math.min(4,bTo):1;for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?1500:c3DRunTime(x[1]); /* 홈런은 2루까지만 돌고 넘긴다(사용자 요청 11-07) */cPlace(bat,CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&(bTo>=4||isHR))retire(x[1]);})();
+ const batter=(async()=>{await cSleep(isHR?430:620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(540);} /* 빠던: 화면이 타구로 넘어가기 전에 다 보이도록 조금 일찍 던진다(사용자 11-13) */const target=isHR?2:bTo>0?Math.min(4,bTo):1; /* 홈런은 2루까지만 돌고 넘긴다(사용자 요청 11-07) */if(!await cRunLegs(x[1],bat,0,target,isHR?1500:c3DRunTime(x[1]),{out:!isHR&&!after.includes(x[1])&&!(bTo>=4),retired}))return;if(!retired.has(x[1])&&(bTo>=4||isHR))retire(x[1]);})();
  batter.catch(()=>{});
  const leap=!!(airOut&&!arc&&f&&pcH(g,k,'leap')<.3); /* 직선타 아웃 열에 셋은 뛰어올라 잡는다(기록은 그대로, 보이는 동작만) */
  sfx('crack',1,1);Match3D.batted(o,(isHR?1500:650)/cSpd(),leap); /* 홈런은 타석 화면을 1.5초 잡아 빠던을 보여 준 뒤 타구로 넘어간다 */
@@ -67,15 +81,15 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
    const homeTry=homeGo&&!thrownOut&&!path&&!UI.cast.errPos&&f&&['LF','CF','RF'].includes(f.pos)?(Array.isArray(x[14])?x[14]:[]).find(r=>r.to===4&&r.result!=='out'&&moves.some(m=>m.id===r.id&&m.score)):null;
    if(thrownOut){const pos=['','1B','2B','3B','C'][thrownOut.to];let src=f,srcPt=spot;if(thrownOut.to===4&&['LF','CF','RF'].includes(f.pos)&&f.pos!==relayPos&&moves.some(m=>m.score&&!m.out)){const r=await c3DThrow(g,k,f,spot,relayPos,relayPt2,'중계 플레이');if(r){src=r.receiver;srcPt=relayPt2;const scoreAt=Math.max(0,...moves.filter(m=>m.score&&!m.out).map(m=>arrive(m.id,4-m.from))),tr=FrontOfficeCore.throwTime(Match3D.distance(relayPt2,CHM),G.players[src.id]?.r.arm??50),w=(scoreAt-performance.now())*cSpd()+700-(tr+450);if(w>0){Match3D.trackRunner('o'+x[1]);await cSleep(Math.min(w,1800));}}} /* 중계 선수는 앞 주자가 들어오는 것을 보고 뒤 주자를 잡으러 홈으로 던진다 */ /* 앞서 득점하는 주자가 있으면 중계를 거쳐 홈으로: 외야에서 바로 던지면 공이 먼저 와서 포수가 공을 든 채 득점 주자를 지켜보게 된다(사용자 11-16) */const thrown=await c3DThrow(g,k,src,srcPt,pos,CPATH[thrownOut.to],'포구',arrive(thrownOut.id,thrownOut.to-thrownOut.from));await runners;if(thrown){Match3D.tag('d'+thrown.receiver.id,CPATH[Math.max(0,thrownOut.to-1)],240/cSpd());await cSleep(240);Match3D.focus('d'+thrown.receiver.id,thrownOut.to===4?'홈 태그 아웃':'주루 아웃');}retire(thrownOut.id);}
    else if(homeTry){ /* 홈 승부(사용자 11-13): 기록에 '홈으로 뛰어 세이프'가 있는 안타는 외야수가 홈으로 던지고, 공이 주자보다 조금 늦게 들어온다. 주심이 세이프를 선언한다 */
-    const arm=G.players[f.id]?.r.arm??50,travel=FrontOfficeCore.throwTime(Match3D.distance(chase2,CHM),arm),wait=(arrive(homeTry.id,4-homeTry.from)-performance.now())*cSpd()+350-(travel+450);
-    if(wait>HOLD_MAX){ if(f.pos!==relayPos)await c3DThrow(g,k,f,chase2,relayPos,relayPt2,'중계 플레이'); Match3D.trackRunner('o'+x[1]); } /* 홈에서 잡을 수 있는 공을 들고 기다리면 일부러 늦게 던지는 것처럼 보인다(사용자 11-16): 그럴 때는 홈을 포기하고 중계로 */
-    else{ if(wait>0)await cSleep(wait); const thrown=await c3DThrow(g,k,f,chase2,'C',CHM,'홈 송구');if(thrown){Match3D.focus('d'+thrown.receiver.id,'홈 · 세이프');cCap(`홈 송구 · ${G.players[homeTry.id]?.name||'주자'} 세이프`,'good');}Match3D.trackRunner('o'+x[1]);}}
+    const arm=G.players[f.id]?.r.arm??50,travel=FrontOfficeCore.throwTime(Match3D.distance(chase2,CHM),arm),need=cRunNeed(homeTry.id,4,performance.now()+(travel+450)/cSpd(),false,{at:arrive(homeTry.id,4-homeTry.from),start:t0});
+    if(need<RUN_FIT_MIN){ if(f.pos!==relayPos)await c3DThrow(g,k,f,chase2,relayPos,relayPt2,'중계 플레이'); Match3D.trackRunner('o'+x[1]); } /* 홈에서 잡을 수 있는 공을 들고 기다리면 일부러 늦게 던지는 것처럼 보인다(사용자 11-16): 그럴 때는 홈을 포기하고 중계로 */
+    else{ const thrown=await c3DThrow(g,k,f,chase2,'C',CHM,'홈 송구');if(thrown){Match3D.focus('d'+thrown.receiver.id,'홈 · 세이프');cCap(`홈 송구 · ${G.players[homeTry.id]?.name||'주자'} 세이프`,'good');}Match3D.trackRunner('o'+x[1]);}}
    else if(UI.cast.infHit){ /* 내야 안타: 송구가 타자 주자보다 조금 늦게 1루에 닿는다(기록은 안타) */
-    const at=arrive(x[1],1,620),travel=FrontOfficeCore.throwTime(Match3D.distance(spot,CBS[0]),armF),wait=(at-performance.now())*cSpd()+260-(travel+450);
-    if(wait>HOLD_MAX){ Match3D.trackRunner('o'+x[1]); await cSleep(Math.max(0,(at-performance.now())*cSpd())); } /* 던지면 잡을 공을 일부러 들고 있지 않는다(사용자 11-16): 늦었다고 보고 송구를 포기 */
-    else{ if(wait>0)await cSleep(wait); const thrown=await c3DThrow(g,k,f,spot,'1B',CBS[0],'1루 송구');if(thrown)Match3D.focus('d'+thrown.receiver.id,'1루 · 세이프'); }umpCall('세이프');cCap(`${G.players[x[1]]?.name||'타자'} 1루 세이프 · 내야 안타`,'good');}
+    const at=arrive(x[1],1,620),travel=FrontOfficeCore.throwTime(Match3D.distance(spot,CBS[0]),armF),need=cRunNeed(x[1],1,performance.now()+(travel+450)/cSpd(),false,{at,start:t0+620/cSpd()});
+    if(need<RUN_FIT_MIN){ Match3D.trackRunner('o'+x[1]); await cSleep(Math.max(0,(at-performance.now())*cSpd())); } /* 던지면 잡을 공을 일부러 들고 있지 않는다(사용자 11-16): 늦었다고 보고 송구를 포기 */
+    else{ const thrown=await c3DThrow(g,k,f,spot,'1B',CBS[0],'1루 송구');if(thrown)Match3D.focus('d'+thrown.receiver.id,'1루 · 세이프'); }umpCall('세이프');cCap(`${G.players[x[1]]?.name||'타자'} 1루 세이프 · 내야 안타`,'good');}
    else if(direct){ /* 베이스로 바로 던진다. 뛰는 주자가 있으면 공이 주자보다 조금 늦게 닿게 맞춘다(기록은 세이프) */
-    const at=path?arrive(x[1],o==='3B'?3:2,620):lead3?arrive(lead3.id,3-lead3.from):0;let late=false;if(at){const travel=FrontOfficeCore.throwTime(Match3D.distance(chase2,directPt),armF),wait=(at-performance.now())*cSpd()+300-(travel+450);if(wait>HOLD_MAX)late=true;else if(wait>0)await cSleep(wait);}
+    const at=path?arrive(x[1],o==='3B'?3:2,620):lead3?arrive(lead3.id,3-lead3.from):0;let late=false;if(at){const travel=FrontOfficeCore.throwTime(Match3D.distance(chase2,directPt),armF),rid=path?x[1]:lead3.id,need=cRunNeed(rid,path?(o==='3B'?3:2):3,performance.now()+(travel+450)/cSpd(),false,{at,start:path?t0+620/cSpd():t0});if(need<RUN_FIT_MIN)late=true;}
     if(late&&f.pos!==relayPos)await c3DThrow(g,k,f,chase2,relayPos,relayPt2,'중계 플레이'); else await c3DThrow(g,k,f,chase2,directPos,directPt,directPos==='3B'?'3루 직접 송구':'2루 직접 송구');Match3D.trackRunner('o'+x[1]);} /* 바로 던지면 잡을 상황이면 들고 기다리지 않고 중계로(사용자 11-16) */
    else {if(f.pos!==relayPos&&!UI.cast.errPos){const relay=await c3DThrow(g,k,f,chase2,relayPos,relayPt2,'중계 플레이');if(path&&relay)await c3DThrow(g,k,relay.receiver,relayPt2,basePos,base,o==='3B'?'3루 송구':'2루 송구'); /* 중계 선수는 받자마자 멈추지 않고 베이스로 던진다. 커버 야수는 타구 직후부터 베이스로 가 먼저 서 있다. 공이 주자보다 늦는 것은 외야수가 갭·선상까지 뛰어가 줍는 시간 때문(사용자 피드백 11-08) */}Match3D.trackRunner('o'+x[1]);}
    cFx((o==='OUT'?'실책 출루':UI.cast.infHit?'내야 안타':OUTK[o]||'안타')+(thrownOut?' · 주루 아웃':''),'hit');
