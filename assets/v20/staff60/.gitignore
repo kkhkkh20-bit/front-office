@@ -3,3 +3,5 @@
 !/work/measure3.py
 !/work/SESSION_STATE.json
 /validation/__pycache__/
+!/work/baseline_audit.py
+!/work/test_baseline_audit.py

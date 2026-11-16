@@ -1,0 +1,102 @@
+[
+  {
+    "id": "v7_staff01_coach_055",
+    "status": "ready",
+    "measurement_scope": "all10 final decoded photos",
+    "same_min": 0.7283825278282166,
+    "baseline_limit_excess_max": -0.000429689884185791,
+    "new_collision_margin_min": 0.0026257872581482156,
+    "new_collision_count_max": 0,
+    "minimum_numeric_margin": 0.000429689884185791
+  },
+  {
+    "id": "v7_staff01_coach_024",
+    "status": "held",
+    "measurement_scope": "best available requested-q encoded3-size candidate; no complete passing10team set",
+    "same_min": 0.8161464929580688,
+    "baseline_limit_excess_max": -0.00228157639503479,
+    "new_collision_margin_min": -0.0007530808448791282,
+    "new_collision_count_max": 1,
+    "minimum_numeric_margin": -0.0007530808448791282
+  },
+  {
+    "id": "v7_staff01_coach_035",
+    "status": "ready",
+    "measurement_scope": "all10 final decoded photos",
+    "same_min": 0.6609487533569336,
+    "baseline_limit_excess_max": -0.02083641290664673,
+    "new_collision_margin_min": 0.0008363962173462136,
+    "new_collision_count_max": 0,
+    "minimum_numeric_margin": 0.0008363962173462136
+  },
+  {
+    "id": "v7_staff01_coach_004",
+    "status": "held",
+    "measurement_scope": "best available requested-q encoded3-size candidate; no complete passing10team set",
+    "same_min": 0.6990358233451843,
+    "baseline_limit_excess_max": -0.007505446672439575,
+    "new_collision_margin_min": -0.0012134671211242454,
+    "new_collision_count_max": 1,
+    "minimum_numeric_margin": -0.0012134671211242454
+  },
+  {
+    "id": "v7_staff01_coach_058",
+    "status": "ready",
+    "measurement_scope": "all10 final decoded photos",
+    "same_min": 0.7000526785850525,
+    "baseline_limit_excess_max": -0.004591524600982666,
+    "new_collision_margin_min": 0.002385401725769065,
+    "new_collision_count_max": 0,
+    "minimum_numeric_margin": 0.002385401725769065
+  },
+  {
+    "id": "v7_staff01_coach_045",
+    "status": "held",
+    "measurement_scope": "best available requested-q encoded3-size candidate; no complete passing10team set",
+    "same_min": 0.7978758811950684,
+    "baseline_limit_excess_max": 0.002963513135910034,
+    "new_collision_margin_min": -0.0030847847461700217,
+    "new_collision_count_max": 1,
+    "minimum_numeric_margin": -0.0030847847461700217
+  },
+  {
+    "id": "v7_staff01_coach_054",
+    "status": "held",
+    "measurement_scope": "best available requested-q encoded3-size candidate; no complete passing10team set",
+    "same_min": 0.7431586980819702,
+    "baseline_limit_excess_max": -0.013274461030960083,
+    "new_collision_margin_min": -0.006198024749755837,
+    "new_collision_count_max": 1,
+    "minimum_numeric_margin": -0.006198024749755837
+  },
+  {
+    "id": "v7_staff01_coach_006",
+    "status": "ready",
+    "measurement_scope": "all10 final decoded photos",
+    "same_min": 0.6820257902145386,
+    "baseline_limit_excess_max": -0.008720099925994873,
+    "new_collision_margin_min": 0.00938486456871035,
+    "new_collision_count_max": 0,
+    "minimum_numeric_margin": 0.008720099925994873
+  },
+  {
+    "id": "v7_staff01_coach_012",
+    "status": "held",
+    "measurement_scope": "best available requested-q encoded3-size candidate; no complete passing10team set",
+    "same_min": 0.7092905640602112,
+    "baseline_limit_excess_max": 0.009573757648468018,
+    "new_collision_margin_min": -0.008978015184402444,
+    "new_collision_count_max": 2,
+    "minimum_numeric_margin": -0.009573757648468018
+  },
+  {
+    "id": "v7_staff01_coach_033",
+    "status": "held",
+    "measurement_scope": "best available requested-q encoded3-size candidate; no complete passing10team set",
+    "same_min": 0.796662449836731,
+    "baseline_limit_excess_max": -0.006925374269485474,
+    "new_collision_margin_min": -0.010290360450744607,
+    "new_collision_count_max": 2,
+    "minimum_numeric_margin": -0.010290360450744607
+  }
+]

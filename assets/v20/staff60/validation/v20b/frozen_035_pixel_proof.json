@@ -1,0 +1,307 @@
+{
+  "unchanged_photos": 10,
+  "unchanged_photo_sizes": 30,
+  "proof": [
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "seoul_comets",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "4fd370caa1dc75646d1aa35a7424025878bb22380caf34fc2b500867da1a48f6",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "seoul_comets",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "f1063ae5de78b55e4383bc3e1899acbfa49366632ff258d643f02d1536f8cba5",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "seoul_comets",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "57e893c68b38fb87e39dc0d07b91796c0df4c61af519447f775a69179e8b5787",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "seoul_hounds",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "731624027ca990e86afd4aa21568b9f2ad401bcfc924e38e5a4bc9b5ccdd395a",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "seoul_hounds",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "7c6b687ec2a8ab6c82e7f73cc5f1f176c2d5cc3133a400eb844d43b4c7245d5e",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "seoul_hounds",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "09cccc2b581c02aa3bb6f0513b37af49302b6dd2e72b7aa90dd624b038f8f5c2",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "incheon_seagulls",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "660665e5edad875d25d483baa4462d870b75548b017ee55e0dd9cc928f14a335",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "incheon_seagulls",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "672c87bdd489b60ea912c6d2ae7971f91e0b0fac50456032fe511358081e5d01",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "incheon_seagulls",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "0effb0bb61aaadd4b72530678b62a7cdd394f51b382c18465eaf24cb8f9f1991",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "suwon_sparks",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "22c105ec007bdb6767d2c3db1b2b8889bfb02d9b13e38a8372a5e855eee15b31",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "suwon_sparks",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "6bfc867212313e555e065721b111bb6d15bdcda14d9520b3691b044671200258",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "suwon_sparks",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "d108f514ae56e3438d846948a4481ad0f5f5d011bdd03c2c9941d87f97301f57",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "goyang_storm",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "4fb6a3bbfc6b2690cc110335f05fb6ef8dbc1eb74693f63100d2cbcf10761f62",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "goyang_storm",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "cbff30b5b0be6de659ac57b177a1bba55f9dd123f9425258ba2ae0f060552d67",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "goyang_storm",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "9ed468c0c79180f3e5c60940d2d5b1fcc1de0aa61cbad5fa8d284317050f11d2",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "daejeon_redfox",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "7457580019d80b27c8c99b8526373ad39afbe992daaa52c22a8cec932adaabc0",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "daejeon_redfox",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "53fd7d7956a840bf56784485637617c4b4002430f1c6e2bdb5aab2a1bd467c13",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "daejeon_redfox",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "f7799d18347b5ac1c2383557b3a2b5520cd39051bbe1244468595dba9d4c8d4d",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "gwangju_blazes",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "b5336f37dd848961f9b7fcf4255e346b1bd10d5cea8a95bd36fcd5a5cfaacb31",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "gwangju_blazes",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "fd5e07de3c189558ee6763d62ee8084890616692e05467227a185dde1b28fd78",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "gwangju_blazes",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "f81ae1fd45697cabbfddd4f71545191df48b378e34f9b087b8fd831510b4248e",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "daegu_thunders",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "05b05262cecccd3fd9666d019cf2626a52311abba8ed3186d48c59fcdf608b7c",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "daegu_thunders",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "a153e2b9c3916dbe11f8e9b1ccb6c97de833dc60436b6dd8644b824c3f4d77b7",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "daegu_thunders",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "c8610db104c10192e5120fbde2cb2a6f8710721d5d89c70cd3ff362117700dd4",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "busan_waves",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "4b51cbe4a00e332e71e2923b727d7b79e6aee340ae93da3a42212d554f66adcd",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "busan_waves",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "ee4e19a5bf7ca1a5d8e749ebb314d6ad8c6b86ed0e25465cb34a7f2095c5ebaa",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "busan_waves",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "032f72c7c4ea60a96343e39d3d22939dd5c8702019f62c87c35a19c9ef9d1e66",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "changwon_anchors",
+      "size": 128,
+      "photo_quality": 85,
+      "pixel_sha256": "7f60d6174464c65a4acea4c872c03e1523d0cd0e031668a1c592e3383fd10cb6",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "changwon_anchors",
+      "size": 256,
+      "photo_quality": 88,
+      "pixel_sha256": "75225fe32048224a335e08d3bef8c7f44c1934471da9cac8b3e62953e2994500",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "team": "changwon_anchors",
+      "size": 384,
+      "photo_quality": 89,
+      "pixel_sha256": "79943533c761a9c3ef9e4050cd77d3f3646b688b85d4b3f5dee310854a3c0bd9",
+      "source_suite": "frozen_v20_035",
+      "validated_pixel_origin": "already validated original published photo",
+      "frozen_original_v20": true
+    }
+  ],
+  "verified_against": "70d5abdc original published photo RGB hashes before replacement; native sources and crops also unchanged"
+}

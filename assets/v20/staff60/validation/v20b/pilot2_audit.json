@@ -1,0 +1,434 @@
+{
+  "policy": "v20b",
+  "results": [
+    {
+      "photo_id": "v7_staff01_coach_001",
+      "identity_id": "v7_staff01_coach_001",
+      "sizes": {
+        "128": {
+          "passed": false,
+          "same_v7": 0.7247190475463867,
+          "reference_size": 128,
+          "other_max": 0.4635384678840637,
+          "nearest_id": "v7_staff01_coach_026",
+          "nearest_baseline": 0.4182150959968567,
+          "min_limit_excess": -0.5112048387527466,
+          "max_limit_excess": 0.02532336115837097,
+          "nonduplicate_other_max": 0.4282299876213074,
+          "nonduplicate_margin": -0.02822998762130735,
+          "nonduplicate_nearest_id": "v7_staff01_coach_038",
+          "nonduplicate_baseline": 0.38152629137039185,
+          "worst_limit_id": "v7_staff01_coach_026",
+          "worst_limit_baseline": 0.4182150959968567,
+          "worst_limit_new": 0.4635384678840637,
+          "new_collision_count": 1,
+          "baseline_limit_failure_count": 2,
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_026",
+              "baseline": 0.4182150959968567,
+              "new": 0.4635384678840637,
+              "limit": 0.43821510672569275,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_038",
+              "baseline": 0.38152629137039185,
+              "new": 0.4282299876213074,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            }
+          ]
+        },
+        "256": {
+          "passed": false,
+          "same_v7": 0.7225382924079895,
+          "reference_size": 256,
+          "other_max": 0.47041505575180054,
+          "nearest_id": "v7_staff01_coach_026",
+          "nearest_baseline": 0.522758960723877,
+          "min_limit_excess": -0.5366877913475037,
+          "max_limit_excess": -0.002497643232345581,
+          "nonduplicate_other_max": 0.41750237345695496,
+          "nonduplicate_margin": -0.017502373456954934,
+          "nonduplicate_nearest_id": "v7_staff01_coach_027",
+          "nonduplicate_baseline": 0.3853145241737366,
+          "worst_limit_id": "v7_staff01_coach_027",
+          "worst_limit_baseline": 0.3853145241737366,
+          "worst_limit_new": 0.41750237345695496,
+          "new_collision_count": 2,
+          "baseline_limit_failure_count": 0,
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_027",
+              "baseline": 0.3853145241737366,
+              "new": 0.41750237345695496,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_038",
+              "baseline": 0.3414691686630249,
+              "new": 0.4129728078842163,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            }
+          ]
+        }
+      },
+      "passed": false,
+      "suite": "pilot2"
+    },
+    {
+      "photo_id": "v7_staff01_coach_022",
+      "identity_id": "v7_staff01_coach_022",
+      "sizes": {
+        "128": {
+          "passed": false,
+          "same_v7": 0.7007843255996704,
+          "reference_size": 128,
+          "other_max": 0.4847085475921631,
+          "nearest_id": "v7_staff01_coach_042",
+          "nearest_baseline": 0.35843294858932495,
+          "min_limit_excess": -0.5531281232833862,
+          "max_limit_excess": 0.06470853090286255,
+          "nonduplicate_other_max": 0.4847085475921631,
+          "nonduplicate_margin": -0.08470854759216306,
+          "nonduplicate_nearest_id": "v7_staff01_coach_042",
+          "nonduplicate_baseline": 0.35843294858932495,
+          "worst_limit_id": "v7_staff01_coach_042",
+          "worst_limit_baseline": 0.35843294858932495,
+          "worst_limit_new": 0.4847085475921631,
+          "new_collision_count": 9,
+          "baseline_limit_failure_count": 7,
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_001",
+              "baseline": 0.4185031056404114,
+              "new": 0.4841451644897461,
+              "limit": 0.43850311636924744,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_008",
+              "baseline": 0.3582595884799957,
+              "new": 0.44242703914642334,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_011",
+              "baseline": 0.28043919801712036,
+              "new": 0.4002901315689087,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_017",
+              "baseline": 0.33916449546813965,
+              "new": 0.4153404235839844,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_026",
+              "baseline": 0.3727523684501648,
+              "new": 0.4234808683395386,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_038",
+              "baseline": 0.3737150728702545,
+              "new": 0.47131454944610596,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_042",
+              "baseline": 0.35843294858932495,
+              "new": 0.4847085475921631,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_050",
+              "baseline": 0.37709760665893555,
+              "new": 0.47466421127319336,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_054",
+              "baseline": 0.3639785647392273,
+              "new": 0.4806002378463745,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_front_003",
+              "baseline": 0.3102126717567444,
+              "new": 0.4010887145996094,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            }
+          ]
+        },
+        "256": {
+          "passed": false,
+          "same_v7": 0.7729637622833252,
+          "reference_size": 256,
+          "other_max": 0.5433748960494995,
+          "nearest_id": "v7_staff01_coach_038",
+          "nearest_baseline": 0.4546281695365906,
+          "min_limit_excess": -0.5540800094604492,
+          "max_limit_excess": 0.06874671578407288,
+          "nonduplicate_other_max": 0.452304482460022,
+          "nonduplicate_margin": -0.05230448246002195,
+          "nonduplicate_nearest_id": "v7_staff01_front_003",
+          "nonduplicate_baseline": 0.3142036199569702,
+          "worst_limit_id": "v7_staff01_coach_038",
+          "worst_limit_baseline": 0.4546281695365906,
+          "worst_limit_new": 0.5433748960494995,
+          "new_collision_count": 8,
+          "baseline_limit_failure_count": 8,
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_001",
+              "baseline": 0.4439573884010315,
+              "new": 0.46417972445487976,
+              "limit": 0.46395739912986755,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_008",
+              "baseline": 0.4730863571166992,
+              "new": 0.5059101581573486,
+              "limit": 0.4930863678455353,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_011",
+              "baseline": 0.335243821144104,
+              "new": 0.4093596041202545,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_026",
+              "baseline": 0.39536428451538086,
+              "new": 0.4070204794406891,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_029",
+              "baseline": 0.4364316463470459,
+              "new": 0.45993945002555847,
+              "limit": 0.45643165707588196,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_038",
+              "baseline": 0.4546281695365906,
+              "new": 0.5433748960494995,
+              "limit": 0.47462818026542664,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_043",
+              "baseline": 0.3257725238800049,
+              "new": 0.4032658636569977,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_046",
+              "baseline": 0.36724853515625,
+              "new": 0.40511560440063477,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_050",
+              "baseline": 0.435957670211792,
+              "new": 0.5113444328308105,
+              "limit": 0.45595768094062805,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_052",
+              "baseline": 0.3807927370071411,
+              "new": 0.41037824749946594,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_054",
+              "baseline": 0.4107515513896942,
+              "new": 0.4985279440879822,
+              "limit": 0.4307515621185303,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_coach_059",
+              "baseline": 0.26969465613365173,
+              "new": 0.402707576751709,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            },
+            {
+              "identity_id": "v7_staff01_coach_060",
+              "baseline": 0.3793065547943115,
+              "new": 0.4464089274406433,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            },
+            {
+              "identity_id": "v7_staff01_front_003",
+              "baseline": 0.3142036199569702,
+              "new": 0.452304482460022,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": true
+            }
+          ]
+        }
+      },
+      "passed": false,
+      "suite": "pilot2"
+    },
+    {
+      "photo_id": "v7_staff01_coach_043",
+      "identity_id": "v7_staff01_coach_043",
+      "sizes": {
+        "128": {
+          "passed": true,
+          "same_v7": 0.6498377919197083,
+          "reference_size": 128,
+          "other_max": 0.39829763770103455,
+          "nearest_id": "v7_staff01_coach_001",
+          "nearest_baseline": 0.32356610894203186,
+          "min_limit_excess": -0.545113205909729,
+          "max_limit_excess": -0.02170237898826599,
+          "nonduplicate_other_max": 0.39829763770103455,
+          "nonduplicate_margin": 0.0017023622989654763,
+          "nonduplicate_nearest_id": "v7_staff01_coach_001",
+          "nonduplicate_baseline": 0.32356610894203186,
+          "worst_limit_id": "v7_staff01_coach_001",
+          "worst_limit_baseline": 0.32356610894203186,
+          "worst_limit_new": 0.39829763770103455,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 0,
+          "conflicts": []
+        },
+        "256": {
+          "passed": false,
+          "same_v7": 0.7329526543617249,
+          "reference_size": 256,
+          "other_max": 0.42132773995399475,
+          "nearest_id": "v7_staff01_coach_013",
+          "nearest_baseline": 0.4553285241127014,
+          "min_limit_excess": -0.5468196272850037,
+          "max_limit_excess": -0.011572092771530151,
+          "nonduplicate_other_max": 0.4084279239177704,
+          "nonduplicate_margin": -0.008427923917770364,
+          "nonduplicate_nearest_id": "v7_staff01_coach_026",
+          "nonduplicate_baseline": 0.354295015335083,
+          "worst_limit_id": "v7_staff01_coach_026",
+          "worst_limit_baseline": 0.354295015335083,
+          "worst_limit_new": 0.4084279239177704,
+          "new_collision_count": 1,
+          "baseline_limit_failure_count": 0,
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_026",
+              "baseline": 0.354295015335083,
+              "new": 0.4084279239177704,
+              "limit": 0.42000001668930054,
+              "new_collision": true,
+              "baseline_limit_exceeded": false
+            }
+          ]
+        }
+      },
+      "passed": false,
+      "suite": "pilot2"
+    },
+    {
+      "photo_id": "v7_staff01_coach_059",
+      "identity_id": "v7_staff01_coach_059",
+      "sizes": {
+        "128": {
+          "passed": true,
+          "same_v7": 0.6912899017333984,
+          "reference_size": 128,
+          "other_max": 0.45874714851379395,
+          "nearest_id": "v7_staff01_coach_054",
+          "nearest_baseline": 0.48894137144088745,
+          "min_limit_excess": -0.5538637638092041,
+          "max_limit_excess": -0.03076443076133728,
+          "nonduplicate_other_max": 0.38923558592796326,
+          "nonduplicate_margin": 0.010764414072036765,
+          "nonduplicate_nearest_id": "v7_staff01_coach_052",
+          "nonduplicate_baseline": 0.3899013102054596,
+          "worst_limit_id": "v7_staff01_coach_052",
+          "worst_limit_baseline": 0.3899013102054596,
+          "worst_limit_new": 0.38923558592796326,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 0,
+          "conflicts": []
+        },
+        "256": {
+          "passed": true,
+          "same_v7": 0.7465532422065735,
+          "reference_size": 256,
+          "other_max": 0.4602202773094177,
+          "nearest_id": "v7_staff01_coach_054",
+          "nearest_baseline": 0.48234182596206665,
+          "min_limit_excess": -0.5867271423339844,
+          "max_limit_excess": -0.03728798031806946,
+          "nonduplicate_other_max": 0.378978431224823,
+          "nonduplicate_margin": 0.021021568775177024,
+          "nonduplicate_nearest_id": "v7_staff01_owner_020",
+          "nonduplicate_baseline": 0.33272719383239746,
+          "worst_limit_id": "v7_staff01_coach_052",
+          "worst_limit_baseline": 0.4225957989692688,
+          "worst_limit_new": 0.4053078293800354,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 0,
+          "conflicts": []
+        }
+      },
+      "passed": true,
+      "suite": "pilot2"
+    }
+  ]
+}

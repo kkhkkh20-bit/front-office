@@ -1,0 +1,363 @@
+{
+  "status": "partial_review_only",
+  "passed": false,
+  "request_fulfilled": false,
+  "published_subset_passed": true,
+  "thresholds_changed": false,
+  "user_policy": "2026-11-16 Asia/Seoul: all numeric criteria take priority; hold people requiring facial changes.",
+  "requested": {
+    "identities": 60,
+    "photos": 600,
+    "sheets": 30,
+    "same_person_pairs_per_size": 2700
+  },
+  "delivered": {
+    "identities": 1,
+    "photos": 10,
+    "sheets": 30,
+    "held_identities": 59
+  },
+  "strict_gates": {
+    "same_v7_min": 0.6,
+    "other_person_max_exclusive": 0.4,
+    "all_cross_team_same_person_pairs_min": 0.6,
+    "applied_to_sizes": [
+      128,
+      256,
+      384
+    ]
+  },
+  "references": {
+    "unique_identities": 486,
+    "v7": 126,
+    "v6c": 100,
+    "v13": 60,
+    "v18": 200,
+    "excluded_per_photo": "own v7 identity only",
+    "other_identities_per_photo": 485,
+    "gallery": "original canonical masters; 128 references for 128, 256 references for 256 and 384",
+    "v13_identity_ids": "v6d60_001 through v6d60_060, matching existing v13 canonical gallery"
+  },
+  "sizes": {
+    "128": {
+      "same_v7_min": 0.6609487533569336,
+      "other_reference_max": 0.39215970039367676,
+      "same_v7_comparisons": 10,
+      "other_reference_comparisons": 4850,
+      "cross_team_same_person_pairs": 45,
+      "cross_team_same_person_min": 0.8114745616912842
+    },
+    "256": {
+      "same_v7_min": 0.7600535750389099,
+      "other_reference_max": 0.3989354968070984,
+      "same_v7_comparisons": 10,
+      "other_reference_comparisons": 4850,
+      "cross_team_same_person_pairs": 45,
+      "cross_team_same_person_min": 0.8747953772544861
+    },
+    "384": {
+      "same_v7_min": 0.7644331455230713,
+      "other_reference_max": 0.3991636037826538,
+      "same_v7_comparisons": 10,
+      "other_reference_comparisons": 4850,
+      "cross_team_same_person_pairs": 45,
+      "cross_team_same_person_min": 0.8854422569274902
+    }
+  },
+  "sheets": [
+    {
+      "path": "sheets/128/seoul_comets.webp",
+      "size": 128,
+      "bytes": 6826,
+      "quality": 85,
+      "sha256": "1773b2c3f7562cdd0973cf58609020a559c6230449cf167451b33051d717e5b5"
+    },
+    {
+      "path": "sheets/128/seoul_hounds.webp",
+      "size": 128,
+      "bytes": 5876,
+      "quality": 85,
+      "sha256": "4e67bd57e3cc185603ea02df2ac02550676a0271c9655e9ff374e4a8a07e197b"
+    },
+    {
+      "path": "sheets/128/incheon_seagulls.webp",
+      "size": 128,
+      "bytes": 6838,
+      "quality": 85,
+      "sha256": "06bc2dfdfaedac935198ee25d0d51f4505eb176b60db8d22d0c878008d71eab9"
+    },
+    {
+      "path": "sheets/128/suwon_sparks.webp",
+      "size": 128,
+      "bytes": 6458,
+      "quality": 85,
+      "sha256": "b2b1e257803760e153a5ae8ab1ab9bbdf72742ded3a803178fe6ef355f09d423"
+    },
+    {
+      "path": "sheets/128/goyang_storm.webp",
+      "size": 128,
+      "bytes": 6674,
+      "quality": 85,
+      "sha256": "8c0cf8064814033bffad2742d3c8c1c59a6ed834eaa513b5f9e0a6dbc3d9b1eb"
+    },
+    {
+      "path": "sheets/128/daejeon_redfox.webp",
+      "size": 128,
+      "bytes": 7064,
+      "quality": 85,
+      "sha256": "1e23e3a402cd77e901dbf8e749e30508a606953623a5b3e9e37546186f106803"
+    },
+    {
+      "path": "sheets/128/gwangju_blazes.webp",
+      "size": 128,
+      "bytes": 7016,
+      "quality": 85,
+      "sha256": "a78b4eb98794f936e5d0b030a56cc1aba98b31609698330902cdfc3a79479296"
+    },
+    {
+      "path": "sheets/128/daegu_thunders.webp",
+      "size": 128,
+      "bytes": 7472,
+      "quality": 85,
+      "sha256": "62e6070c9f853cc4bd4e6550cc3af97c62699f545dd526f87fa8d34d08e61d35"
+    },
+    {
+      "path": "sheets/128/busan_waves.webp",
+      "size": 128,
+      "bytes": 6650,
+      "quality": 85,
+      "sha256": "1cb6f12222e57410fbe48f4a1f8079a1f4958c40ad9e1462b0e46d76a5db616e"
+    },
+    {
+      "path": "sheets/128/changwon_anchors.webp",
+      "size": 128,
+      "bytes": 5984,
+      "quality": 85,
+      "sha256": "be44c53c2175452d0ed3e65ebd7bffb89e90f7017b11dc731d12a4e65020bb31"
+    },
+    {
+      "path": "sheets/256/seoul_comets.webp",
+      "size": 256,
+      "bytes": 23838,
+      "quality": 88,
+      "sha256": "c3080cc8d9c82984d4a47c875e145d00f8272d62aa38195841a286148b006b4c"
+    },
+    {
+      "path": "sheets/256/seoul_hounds.webp",
+      "size": 256,
+      "bytes": 19794,
+      "quality": 88,
+      "sha256": "22d7f22b03d9296ebbb4ec450fba677f9bb3c3919438e129a1fc669746d64e30"
+    },
+    {
+      "path": "sheets/256/incheon_seagulls.webp",
+      "size": 256,
+      "bytes": 22542,
+      "quality": 88,
+      "sha256": "03f06a3319ce05ff94a8df1739b81b8c9a0032e3e286cc2ca92c53f60e0009cd"
+    },
+    {
+      "path": "sheets/256/suwon_sparks.webp",
+      "size": 256,
+      "bytes": 21768,
+      "quality": 88,
+      "sha256": "b7077a27a10068b76cb96e1ad580275742c0323f91e60d094ebbc1de946536bf"
+    },
+    {
+      "path": "sheets/256/goyang_storm.webp",
+      "size": 256,
+      "bytes": 22168,
+      "quality": 88,
+      "sha256": "8ae5102980abed477702d8adf727f88f47ef3065d9cc48b9fbaf96350dd1afa5"
+    },
+    {
+      "path": "sheets/256/daejeon_redfox.webp",
+      "size": 256,
+      "bytes": 23348,
+      "quality": 88,
+      "sha256": "bfeacd2fcffae4b789eb351abfd22e3ba464f6128d34a0829ef05865c24b5fc7"
+    },
+    {
+      "path": "sheets/256/gwangju_blazes.webp",
+      "size": 256,
+      "bytes": 23224,
+      "quality": 88,
+      "sha256": "4d2800e749c56d7e8b9b3bc6811c12befa405c32e2bf655dea49e9c218a7caf6"
+    },
+    {
+      "path": "sheets/256/daegu_thunders.webp",
+      "size": 256,
+      "bytes": 25564,
+      "quality": 88,
+      "sha256": "8dfe379e80754308c35f23b18ef53bb2e93463f97cf5cdbd98d0f54bad352243"
+    },
+    {
+      "path": "sheets/256/busan_waves.webp",
+      "size": 256,
+      "bytes": 22180,
+      "quality": 88,
+      "sha256": "87263d82049b58cbf70a8486bf937799c1f05cf6fa96af349afde668c1823752"
+    },
+    {
+      "path": "sheets/256/changwon_anchors.webp",
+      "size": 256,
+      "bytes": 20364,
+      "quality": 88,
+      "sha256": "c7f808f71379f4ad9df3f8ce7a8097460607a75a3abc7481095d9a477526b405"
+    },
+    {
+      "path": "sheets/384/seoul_comets.webp",
+      "size": 384,
+      "bytes": 50670,
+      "quality": 89,
+      "sha256": "835167708dfa369f08be0f2891f540aea5e329d7839387bf412aef2281e27fb4"
+    },
+    {
+      "path": "sheets/384/seoul_hounds.webp",
+      "size": 384,
+      "bytes": 40912,
+      "quality": 89,
+      "sha256": "77ff8c40caa6c4b085ec8bac2e3b912fc77564ce15c7f52af30fc9ec170b83e7"
+    },
+    {
+      "path": "sheets/384/incheon_seagulls.webp",
+      "size": 384,
+      "bytes": 46490,
+      "quality": 89,
+      "sha256": "278faaacbaeba32c152b9a6130a094a4ebcc1bdfb841b69db4298b2d33a988e2"
+    },
+    {
+      "path": "sheets/384/suwon_sparks.webp",
+      "size": 384,
+      "bytes": 44106,
+      "quality": 89,
+      "sha256": "c638ce589f10bdcfcc2b7d5d0ad5688159beddd7c8ab5fb5bb7625891e2a79f5"
+    },
+    {
+      "path": "sheets/384/goyang_storm.webp",
+      "size": 384,
+      "bytes": 45232,
+      "quality": 89,
+      "sha256": "94ab49e1fee593d35dd9cfdbbe321d9ca0a8932e4fe57c55c27f80c625cd53a9"
+    },
+    {
+      "path": "sheets/384/daejeon_redfox.webp",
+      "size": 384,
+      "bytes": 47560,
+      "quality": 89,
+      "sha256": "5f1ac3f294a4c420ceb98df64c8c12dbe04fa59a06616580bfcabfdafe01144e"
+    },
+    {
+      "path": "sheets/384/gwangju_blazes.webp",
+      "size": 384,
+      "bytes": 47198,
+      "quality": 89,
+      "sha256": "8ba61ed9e74349dfb32ca9410b37305430321b2d4b636e3c4d7935fd3d2b562e"
+    },
+    {
+      "path": "sheets/384/daegu_thunders.webp",
+      "size": 384,
+      "bytes": 51762,
+      "quality": 89,
+      "sha256": "32ba12346d42d980a32ea831385d33182c9e05f2ca8f2c537c13bee931cb9b0a"
+    },
+    {
+      "path": "sheets/384/busan_waves.webp",
+      "size": 384,
+      "bytes": 45692,
+      "quality": 89,
+      "sha256": "0e20dede34aabcc5c6d53b33fa6935ad2a79794144759b8da5d0abe91c1d5b8b"
+    },
+    {
+      "path": "sheets/384/changwon_anchors.webp",
+      "size": 384,
+      "bytes": 44594,
+      "quality": 89,
+      "sha256": "caee6c19a02a36b90afeb084ee0202a83744d514ee1859363fd341d3b793e700"
+    }
+  ],
+  "visual_qc": {
+    "status": "passed_for_published_subset",
+    "reviewed_photos": 10,
+    "source_people_reviewed": 60,
+    "checks": [
+      "same existing face and age, no glasses or beard added",
+      "complete deeply fitted caps with headroom",
+      "whole coherent head neck shoulders, natural ratios",
+      "neutral gray background, intact ears and eyes",
+      "ten home kit/cap emblems inspected against supplied home kit references",
+      "native 623px or 1254px whole photographs downsampled, no 128 upscale"
+    ]
+  },
+  "candidate_native_photos": 178,
+  "native_source_files": 30,
+  "native_source_lossless_rgb_verified": true,
+  "photo_transform": "whole square photo crop, isotropic LANCZOS downsample; no face/body compositing or photo geometry warp",
+  "held_ids": [
+    "v7_staff01_coach_001",
+    "v7_staff01_coach_002",
+    "v7_staff01_coach_003",
+    "v7_staff01_coach_004",
+    "v7_staff01_coach_005",
+    "v7_staff01_coach_006",
+    "v7_staff01_coach_007",
+    "v7_staff01_coach_008",
+    "v7_staff01_coach_009",
+    "v7_staff01_coach_010",
+    "v7_staff01_coach_011",
+    "v7_staff01_coach_012",
+    "v7_staff01_coach_013",
+    "v7_staff01_coach_014",
+    "v7_staff01_coach_015",
+    "v7_staff01_coach_016",
+    "v7_staff01_coach_017",
+    "v7_staff01_coach_018",
+    "v7_staff01_coach_019",
+    "v7_staff01_coach_020",
+    "v7_staff01_coach_021",
+    "v7_staff01_coach_022",
+    "v7_staff01_coach_023",
+    "v7_staff01_coach_024",
+    "v7_staff01_coach_025",
+    "v7_staff01_coach_026",
+    "v7_staff01_coach_027",
+    "v7_staff01_coach_028",
+    "v7_staff01_coach_029",
+    "v7_staff01_coach_030",
+    "v7_staff01_coach_031",
+    "v7_staff01_coach_032",
+    "v7_staff01_coach_033",
+    "v7_staff01_coach_034",
+    "v7_staff01_coach_036",
+    "v7_staff01_coach_037",
+    "v7_staff01_coach_038",
+    "v7_staff01_coach_039",
+    "v7_staff01_coach_040",
+    "v7_staff01_coach_041",
+    "v7_staff01_coach_042",
+    "v7_staff01_coach_043",
+    "v7_staff01_coach_044",
+    "v7_staff01_coach_045",
+    "v7_staff01_coach_046",
+    "v7_staff01_coach_047",
+    "v7_staff01_coach_048",
+    "v7_staff01_coach_049",
+    "v7_staff01_coach_050",
+    "v7_staff01_coach_051",
+    "v7_staff01_coach_052",
+    "v7_staff01_coach_053",
+    "v7_staff01_coach_054",
+    "v7_staff01_coach_055",
+    "v7_staff01_coach_056",
+    "v7_staff01_coach_057",
+    "v7_staff01_coach_058",
+    "v7_staff01_coach_059",
+    "v7_staff01_coach_060"
+  ],
+  "empty_slot_verification": {
+    "unused_40_entire_cells_exact_black": true,
+    "held_59_photo_rectangles_exact_black": true,
+    "note": "128px lossy WebP has at most value2 ringing in a neighboring held cell gutter; held photo rectangles remain exactly black."
+  },
+  "protocol_script_sha256": "61ff1803247ce9f280a7b35d6f74299381f2925b2cc5e6a0ed479e56b0f042f5"
+}

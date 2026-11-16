@@ -1,0 +1,1202 @@
+[
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "seoul_comets",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "4fd370caa1dc75646d1aa35a7424025878bb22380caf34fc2b500867da1a48f6",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "seoul_comets",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "1eb8e9d3e9a161575e881f25535e82e579bbcd9c6c18154d0fa7877506d67d5c",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "seoul_comets",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "f8a5b4ba06f3c53b065f47b60723fa7bd182ba6f68ad2a0ae035cad74ca321b3",
+    "source_suite": "individual_q",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/individual_q/v7_staff01_coach_006_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "seoul_comets",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "0533aa07e6a01d724fafb416729b9514d5b7cd89a1a2bd3742fffd24514e537f",
+    "source_suite": "pose_compressed",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/pose_pack/pixels/128/seoul_comets/v7_staff01_coach_058.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "seoul_comets",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "f1063ae5de78b55e4383bc3e1899acbfa49366632ff258d643f02d1536f8cba5",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "seoul_comets",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "9cd2df7459bb0c4c17b04a326751b8b6d1a4bb7f4d7e84ae6bb9febf861ebe45",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "seoul_comets",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "9b44ecdb1804963454b67524d300c2a839cba43c04098f2531d615bde7717fa6",
+    "source_suite": "individual_q",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/individual_q/v7_staff01_coach_006_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "seoul_comets",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "421ac39124e7778f470c065f7b7ef69206caa2b052c95268170723f7da23f18b",
+    "source_suite": "pose_compressed",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/pose_pack/pixels/256/seoul_comets/v7_staff01_coach_058.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "seoul_comets",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "57e893c68b38fb87e39dc0d07b91796c0df4c61af519447f775a69179e8b5787",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "seoul_comets",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "49a14a7d9c677d264351bb11917ea8f60c9850aedad84b856d674e3f55497584",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "seoul_comets",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "f99518a61f441d8c00184d68719800e8e0d3587beda7c70454540c545ad7f5d8",
+    "source_suite": "individual_q",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/individual_q/v7_staff01_coach_006_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "seoul_comets",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "b746c69f418a2f9d4cce1344181fadd241e1f8d8c317c40abb86a7ba3380e4ed",
+    "source_suite": "pose_compressed",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/pose_pack/pixels/384/seoul_comets/v7_staff01_coach_058.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "seoul_hounds",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "731624027ca990e86afd4aa21568b9f2ad401bcfc924e38e5a4bc9b5ccdd395a",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "seoul_hounds",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "5138cb0432a1ae325e782f8ad75106754b0fbbe5a046f69585d05bad615b40f7",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "seoul_hounds",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "e8b7fcc87a9c7fde4c3ac20040b36452e670889bad98d0ab7b7bd13ec0bf49b3",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__seoul_hounds__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "seoul_hounds",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "23c1df10ee6315f02acb5b122681b88f248151d006a215e63b7533a0b0af78d5",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__seoul_hounds__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "seoul_hounds",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "7c6b687ec2a8ab6c82e7f73cc5f1f176c2d5cc3133a400eb844d43b4c7245d5e",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "seoul_hounds",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "52f137d528ef518cc8c07ba9c89ccc1ae6a56f803504438231d67be4f2643b7a",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "seoul_hounds",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "7f149fba2e457fc7bfa1253a8beabd02c034cc41626c50a7cbc349958bd667ae",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__seoul_hounds__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "seoul_hounds",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "a15deea1269674cab7a17f9c35dfd98b258ca4c86e6feb09b01ef66afaa7b978",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__seoul_hounds__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "seoul_hounds",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "09cccc2b581c02aa3bb6f0513b37af49302b6dd2e72b7aa90dd624b038f8f5c2",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "seoul_hounds",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "9ee0fc6c27e743f99778841e2bd1837cea1df35ce321ac9d2eb9473a31ba77ce",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "seoul_hounds",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "7ac8f66bb61a83b8ab2c25125603241e26cc910fe33c061b64087979d575e9d8",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__seoul_hounds__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "seoul_hounds",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "48ff6afb54ccfa67bd586253f1ed3d34aa4f35f4d8e711c9b39d38e7675db44e",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__seoul_hounds__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "incheon_seagulls",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "660665e5edad875d25d483baa4462d870b75548b017ee55e0dd9cc928f14a335",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "incheon_seagulls",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "30c7d71c1b86548b91813abee89a4bc280afd3ea92b8fb9c03e7fa21df850f63",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "incheon_seagulls",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "7ee7c1220c7d0111243a6d9adf884977762eeda85aa41e85e852dab3cdf91d36",
+    "source_suite": "retry006",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/retry006_pixels/1_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "incheon_seagulls",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "3c104abdd8303ea50385e873f86f12ea549411a0173ae63083b5ca4ea1f60db9",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__incheon_seagulls__c1_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "incheon_seagulls",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "672c87bdd489b60ea912c6d2ae7971f91e0b0fac50456032fe511358081e5d01",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "incheon_seagulls",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "2289ba86874b85283d277df3687b7660271d6a22e71191a6de8fd4705fe6ffc4",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "incheon_seagulls",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "70cc14e306cd34511e603f3d64b255f75305d9c923c2d39a30873ded12aaa23e",
+    "source_suite": "retry006",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/retry006_pixels/1_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "incheon_seagulls",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "0c462be7e83b9ad3487d42da31c7e2ea93af6b3ceb0c7501dbf17057febbbace",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__incheon_seagulls__c1_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "incheon_seagulls",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "0effb0bb61aaadd4b72530678b62a7cdd394f51b382c18465eaf24cb8f9f1991",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "incheon_seagulls",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "66651e35fb728c0634a3c31ca9f3a4a5e1bd59296c7b76f66a9b03571567cee4",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "incheon_seagulls",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "7604ee6c1d3a284402f4fc33d7510128dbbb68d97fdca19fcaf31acc5a9d485c",
+    "source_suite": "retry006",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/retry006_pixels/1_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "incheon_seagulls",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "84e2cbd6137eddde85608215d7af664aba6f20aca66e539541024ad8fc103658",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__incheon_seagulls__c1_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "suwon_sparks",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "22c105ec007bdb6767d2c3db1b2b8889bfb02d9b13e38a8372a5e855eee15b31",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "suwon_sparks",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "908ff80ddc9d3e3e08341a42a0db4f400bcd7d5ed6dd3c38ef517c59ee81e50b",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "suwon_sparks",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "c69ed87d796c1cee61cbe368896f3add202fdd978882374ebc47d20580812691",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__suwon_sparks__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "suwon_sparks",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "366d98477d95f3640fbc782a5a3b43df103203588cce6d3bf02528d1dcad9ec6",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__suwon_sparks__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "suwon_sparks",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "6bfc867212313e555e065721b111bb6d15bdcda14d9520b3691b044671200258",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "suwon_sparks",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "a1a19626a6627a057c8b05d680372402c4ed04a0a435204d33e07bb974d0e589",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "suwon_sparks",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "c0e2a3663fb4c25ff87b82c79adafdadbf496190989c8bb0d4992b08624ea318",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__suwon_sparks__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "suwon_sparks",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "43d1fc05c0e63fc94266c31a5240ff609bd501450dd7b94489f6ae42736d3f14",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__suwon_sparks__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "suwon_sparks",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "d108f514ae56e3438d846948a4481ad0f5f5d011bdd03c2c9941d87f97301f57",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "suwon_sparks",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "ce02e63015d22cdcbff3950f28fb32a435b25372e2565391f5663c56336ccb06",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "suwon_sparks",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "ae47693e1af8f145e51ce112f0e24181495514bceb339f96fe07e952f3b2ddae",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__suwon_sparks__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "suwon_sparks",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "115b2d55ad006ad7ae77901790cfd297c7a71e38d1cf6236501cffc63f4b2c3e",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__suwon_sparks__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "goyang_storm",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "4fb6a3bbfc6b2690cc110335f05fb6ef8dbc1eb74693f63100d2cbcf10761f62",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "goyang_storm",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "25adb4b5b63e8d3d88fe9157b0454f7c8891d52d7318609c338a1fe7472f11fe",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "goyang_storm",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "6e063515056704e391f8e316664d6d3ca953555ae1fa5d56644229ac59cc03b6",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__goyang_storm__c1_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "goyang_storm",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "d1ef615f664220b3e0b3192a119b5db40e7b09ec9bcc8c445aee30ecd80b42d9",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__goyang_storm__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "goyang_storm",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "cbff30b5b0be6de659ac57b177a1bba55f9dd123f9425258ba2ae0f060552d67",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "goyang_storm",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "9eef23f506c5ddb9bf6f8484078b5e848cc42ef9262ad545247899a689fc86cb",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "goyang_storm",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "b282729a1ea13aaa8286412de8eb5ffb9e9d3fb710da8b30a715ac8267d2d3fc",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__goyang_storm__c1_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "goyang_storm",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "a40e076c7fb98ee7c0bf800e27aaff736e8140f819cff980d27f25f58b96f8d2",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__goyang_storm__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "goyang_storm",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "9ed468c0c79180f3e5c60940d2d5b1fcc1de0aa61cbad5fa8d284317050f11d2",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "goyang_storm",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "71f146a64f801d08832c83b9868a10117855f2f6aa57559c246b70bc31e45d81",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "goyang_storm",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "bcfb208ce013a7e4db5d24235b84a81142befec9409df5e0734d5e92bd2c53a9",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__goyang_storm__c1_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "goyang_storm",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "24c684b19c49f0184acc9e4ec256b6c2a05e371c49fbe020808f976e8e89f063",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__goyang_storm__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "daejeon_redfox",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "7457580019d80b27c8c99b8526373ad39afbe992daaa52c22a8cec932adaabc0",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "daejeon_redfox",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "794f3cc8ed0ec8d7d9b9b77f12983e39e00f42114d03b24c1df7e16813f2624d",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "daejeon_redfox",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "8339763bceefc69548260a70d4d7577dd88719e68496bb6c97789351f3ac6ef4",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__daejeon_redfox__c1_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "daejeon_redfox",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "19e4ddb48ef97f3d9ae6454d971052192fa60440438f66db34b91dc1a5d633b3",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__daejeon_redfox__c1_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "daejeon_redfox",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "53fd7d7956a840bf56784485637617c4b4002430f1c6e2bdb5aab2a1bd467c13",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "daejeon_redfox",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "4d84f2c7159f98b75246a7919363a0a05aedb09c9746e29cf930af38c74ab118",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "daejeon_redfox",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "39bf3c73985d2f0f21ea071b05f21ef0a3ee5839efe9e589ec0dde1bf23c17d4",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__daejeon_redfox__c1_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "daejeon_redfox",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "d8b12b228a82b5a5b1aefc236285aa18b1c09d2ea64455ab7a8a412eabec6e58",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__daejeon_redfox__c1_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "daejeon_redfox",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "f7799d18347b5ac1c2383557b3a2b5520cd39051bbe1244468595dba9d4c8d4d",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "daejeon_redfox",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "477b08d77f3b04af3d086fd3365980deaf1647458df193981718eeabb2ac9eee",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "daejeon_redfox",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "9998d4f73aa20979f042bc68f3285d8698ceaff98b6501b39db4974082b7461a",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__daejeon_redfox__c1_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "daejeon_redfox",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "a5d95629eda845b82035880f416aad5680afc95cc70a85ca743da5da4ca6034b",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__daejeon_redfox__c1_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "gwangju_blazes",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "b5336f37dd848961f9b7fcf4255e346b1bd10d5cea8a95bd36fcd5a5cfaacb31",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "gwangju_blazes",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "e1e2cafc7fa9d545c8499de98472f98339135f3e6f1035bc1e1931275018093f",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "gwangju_blazes",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "ce45a13d61eb2218ba85480ccde009a077421ed162d72fb2950dcf952b78e7cd",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__gwangju_blazes__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "gwangju_blazes",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "4980fb660812abd7358905be8a50a133d692aaaba4350c1acb2da119b0b42a56",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__gwangju_blazes__c1_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "gwangju_blazes",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "fd5e07de3c189558ee6763d62ee8084890616692e05467227a185dde1b28fd78",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "gwangju_blazes",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "00da7141b5d04582420815dab628ab3de7154655190a2166cd712b72cc1a2332",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "gwangju_blazes",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "435bfbce970093a66ab3c0551805723dbb7e1b23710097d0cd8e6ada3512fbd7",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__gwangju_blazes__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "gwangju_blazes",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "328b8637072fd815625d897ae3f61437d972f8fbdbc2980cc53d3d00d4b074c4",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__gwangju_blazes__c1_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "gwangju_blazes",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "f81ae1fd45697cabbfddd4f71545191df48b378e34f9b087b8fd831510b4248e",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "gwangju_blazes",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "79b88b929a4adde40fc5c6e582fde98c09ebe5bdb42f96579133d30c2be27b60",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "gwangju_blazes",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "9ae7a0fb62d91284b42771aa4e2f0de60de62be66d4604a7819b60effa6ad30e",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__gwangju_blazes__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "gwangju_blazes",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "55b5d54f6e7a31ff89c7670ccc965d6d5a928ff3c3224f0f148ff4a0c063f07f",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__gwangju_blazes__c1_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "daegu_thunders",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "05b05262cecccd3fd9666d019cf2626a52311abba8ed3186d48c59fcdf608b7c",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "daegu_thunders",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "e1d709b3d2b2d77f155a5614cb07c47583096479b8b2435e7c7224f7813b8d44",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "daegu_thunders",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "c95fbfe696e410630b10ca2a901042cd5d2f13d50e1a5230c10320d64243311b",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__daegu_thunders__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "daegu_thunders",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "df5626cc514cc66b158fe095d30d42c0a4d07db39c6666516970958ce5433387",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__daegu_thunders__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "daegu_thunders",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "a153e2b9c3916dbe11f8e9b1ccb6c97de833dc60436b6dd8644b824c3f4d77b7",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "daegu_thunders",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "857b0ab413b21322c4bf64ea72de7ba3a99ece0375bb093904debdfe51a0f863",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "daegu_thunders",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "dc2e6de75a04f8021174ecbe561e603e64f034d17bd30ddfd4ea0d35ebf0208b",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__daegu_thunders__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "daegu_thunders",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "abc945fe81334bc9a58fe27b6f4f62bb1d79c5648784fa2d8e9cece63890ac0d",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__daegu_thunders__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "daegu_thunders",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "c8610db104c10192e5120fbde2cb2a6f8710721d5d89c70cd3ff362117700dd4",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "daegu_thunders",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "eb06c3c7e7390e7e79eb5207d26287cb0d18dfa25fd08b8971d3f49e22891b06",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "daegu_thunders",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "5414199f1d32801a52b70d163be9bc1720c88079d020ee13816ed44817e34aba",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__daegu_thunders__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "daegu_thunders",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "272a7b3a4719a8e2becabcadb0fd67308a16dd3e1659c25fc39bdcdedae4db7b",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__daegu_thunders__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "busan_waves",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "4b51cbe4a00e332e71e2923b727d7b79e6aee340ae93da3a42212d554f66adcd",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "busan_waves",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "15e71c7a3f28ce118e79a869283edbb948b08c1353073140141b61700caae7a9",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "busan_waves",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "208416d99a4fc545701db758d92717d457dc6727e2c48f009096728214fea3d9",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__busan_waves__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "busan_waves",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "72ef0a27721655886acc3cf11fc2e49cc9fdbd8794c9933f673a045798e27259",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__busan_waves__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "busan_waves",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "ee4e19a5bf7ca1a5d8e749ebb314d6ad8c6b86ed0e25465cb34a7f2095c5ebaa",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "busan_waves",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "9d062f6e16e7c53a7cc487cf3f1ebd5a54ee9a4fb63e36a1b351cd6c3f10332c",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "busan_waves",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "140c23f15788fa41ae24b365c903b317d776b5b2d529d6f2866ba84600164b53",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__busan_waves__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "busan_waves",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "19602a8ec156952994df6e3753ee3ee495c365aa2b3b151cb5832fb282e77714",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__busan_waves__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "busan_waves",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "032f72c7c4ea60a96343e39d3d22939dd5c8702019f62c87c35a19c9ef9d1e66",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "busan_waves",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "49a7c9fb4a0113411a61301622a38667f3bb1e791b1e87ef0c937675888354c1",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "busan_waves",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "4481b785af66fc998d13dc04cca1c182b461ff599c2fed4670d38ab2febfb280",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__busan_waves__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "busan_waves",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "8725d4eb9930e708ce8bb9251b4d58f6ce62a38fdb7a8dbe1aea58161ca293ec",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__busan_waves__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "changwon_anchors",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "7f60d6174464c65a4acea4c872c03e1523d0cd0e031668a1c592e3383fd10cb6",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "changwon_anchors",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "92854a6318a58980b22b326989e4ae9296d1c556be114e64e68837f72b01d561",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "changwon_anchors",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "74edbcd0fd97c0a4d881624f17f684e84e07c4e014a7371dc935cde8cc99c687",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__changwon_anchors__c0_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "changwon_anchors",
+    "size": 128,
+    "photo_quality": 85,
+    "pixel_sha256": "d92d13edc4bdf600be6c1d2d0bfe700ba46eed95ccb47487881e60effcf38ed3",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__changwon_anchors__c1_128.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "changwon_anchors",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "75225fe32048224a335e08d3bef8c7f44c1934471da9cac8b3e62953e2994500",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "changwon_anchors",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "5e7a5c3b6ef00685ce32ed6bdff56bd2cca47c7788aca11ddceccee852ceb994",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "changwon_anchors",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "e5206bfad1e08106500a3d75c42a2e02f05791e8885b4bf57e93e4c5c918a76c",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__changwon_anchors__c0_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "changwon_anchors",
+    "size": 256,
+    "photo_quality": 88,
+    "pixel_sha256": "5a1a2177fb6699c307cb31c4d88b287ac5195f961eba2730674b4f12dd05e0c4",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__changwon_anchors__c1_256.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "team": "changwon_anchors",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "79943533c761a9c3ef9e4050cd77d3f3646b688b85d4b3f5dee310854a3c0bd9",
+    "source_suite": "frozen_v20_035",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": true
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "team": "changwon_anchors",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "7ca0d78c1a318a72e2bd6a9f03cb265b421936695098e48b53e0eb9e6185dee6",
+    "source_suite": "preserved_v20b",
+    "validated_pixel_origin": "already validated original published photo",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "team": "changwon_anchors",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "8b2c8155e7c875abe185280787c3726e44874fb970c9709a7ff2bb62dd3d9622",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_006__changwon_anchors__c0_384.png",
+    "frozen_original_v20": false
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "team": "changwon_anchors",
+    "size": 384,
+    "photo_quality": 89,
+    "pixel_sha256": "9506ba5467601b8214c76c1ac80e5fa358d70643335a210d08ee2cdda1cff68f",
+    "source_suite": "group2",
+    "validated_pixel_origin": "/workspace/front-office-v20/assets/v20/staff60/work/v20b/group2_pack/v7_staff01_coach_058__changwon_anchors__c1_384.png",
+    "frozen_original_v20": false
+  }
+]

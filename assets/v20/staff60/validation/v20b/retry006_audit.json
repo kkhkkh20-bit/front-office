@@ -1,0 +1,150 @@
+{
+  "policy": "v20b",
+  "results": [
+    {
+      "photo_id": "v7_staff01_coach_006__incheon_seagulls__retry0",
+      "identity_id": "v7_staff01_coach_006",
+      "sizes": {
+        "128": {
+          "passed": true,
+          "same_v7": 0.8284630179405212,
+          "reference_size": 128,
+          "other_max": 0.39667606353759766,
+          "nearest_id": "v7_staff01_coach_058",
+          "nearest_baseline": 0.3779708743095398,
+          "min_limit_excess": -0.5283826589584351,
+          "max_limit_excess": -0.02332395315170288,
+          "nonduplicate_other_max": 0.39667606353759766,
+          "nonduplicate_margin": 0.003323936462402366,
+          "nonduplicate_nearest_id": "v7_staff01_coach_058",
+          "nonduplicate_baseline": 0.3779708743095398,
+          "worst_limit_id": "v7_staff01_coach_058",
+          "worst_limit_baseline": 0.3779708743095398,
+          "worst_limit_new": 0.39667606353759766,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 0,
+          "conflicts": []
+        },
+        "256": {
+          "passed": false,
+          "same_v7": 0.854550838470459,
+          "reference_size": 256,
+          "other_max": 0.5009729266166687,
+          "nearest_id": "v7_staff01_coach_021",
+          "nearest_baseline": 0.5197494626045227,
+          "min_limit_excess": -0.536445140838623,
+          "max_limit_excess": 0.0002504885196685791,
+          "nonduplicate_other_max": 0.3496365547180176,
+          "nonduplicate_margin": 0.050363445281982444,
+          "nonduplicate_nearest_id": "v7_staff01_coach_053",
+          "nonduplicate_baseline": 0.372795432806015,
+          "worst_limit_id": "v7_staff01_coach_020",
+          "worst_limit_baseline": 0.46337032318115234,
+          "worst_limit_new": 0.483620822429657,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 1,
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_020",
+              "baseline": 0.46337032318115234,
+              "new": 0.483620822429657,
+              "limit": 0.4833703339099884,
+              "new_collision": false,
+              "baseline_limit_exceeded": true
+            }
+          ]
+        },
+        "384": {
+          "passed": true,
+          "same_v7": 0.8583906888961792,
+          "reference_size": 256,
+          "other_max": 0.4997769594192505,
+          "nearest_id": "v7_staff01_coach_021",
+          "nearest_baseline": 0.5197494626045227,
+          "min_limit_excess": -0.5667684674263,
+          "max_limit_excess": -0.007425427436828613,
+          "nonduplicate_other_max": 0.35573816299438477,
+          "nonduplicate_margin": 0.04426183700561526,
+          "nonduplicate_nearest_id": "v7_staff01_coach_053",
+          "nonduplicate_baseline": 0.372795432806015,
+          "worst_limit_id": "v7_staff01_coach_012",
+          "worst_limit_baseline": 0.4172687828540802,
+          "worst_limit_new": 0.42984336614608765,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 0,
+          "conflicts": []
+        }
+      },
+      "passed": false,
+      "suite": "retry006"
+    },
+    {
+      "photo_id": "v7_staff01_coach_006__incheon_seagulls__retry1",
+      "identity_id": "v7_staff01_coach_006",
+      "sizes": {
+        "128": {
+          "passed": true,
+          "same_v7": 0.7421548366546631,
+          "reference_size": 128,
+          "other_max": 0.3370573818683624,
+          "nearest_id": "v7_staff01_coach_012",
+          "nearest_baseline": 0.361269474029541,
+          "min_limit_excess": -0.5190004706382751,
+          "max_limit_excess": -0.08294263482093811,
+          "nonduplicate_other_max": 0.3370573818683624,
+          "nonduplicate_margin": 0.0629426181316376,
+          "nonduplicate_nearest_id": "v7_staff01_coach_012",
+          "nonduplicate_baseline": 0.361269474029541,
+          "worst_limit_id": "v7_staff01_coach_012",
+          "worst_limit_baseline": 0.361269474029541,
+          "worst_limit_new": 0.3370573818683624,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 0,
+          "conflicts": []
+        },
+        "256": {
+          "passed": true,
+          "same_v7": 0.814864993095398,
+          "reference_size": 256,
+          "other_max": 0.45318475365638733,
+          "nearest_id": "v7_staff01_coach_020",
+          "nearest_baseline": 0.46337032318115234,
+          "min_limit_excess": -0.5423862338066101,
+          "max_limit_excess": -0.029349803924560547,
+          "nonduplicate_other_max": 0.37730908393859863,
+          "nonduplicate_margin": 0.02269091606140139,
+          "nonduplicate_nearest_id": "v7_staff01_coach_004",
+          "nonduplicate_baseline": 0.35577481985092163,
+          "worst_limit_id": "v7_staff01_coach_012",
+          "worst_limit_baseline": 0.4172687828540802,
+          "worst_limit_new": 0.4079189896583557,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 0,
+          "conflicts": []
+        },
+        "384": {
+          "passed": true,
+          "same_v7": 0.82657390832901,
+          "reference_size": 256,
+          "other_max": 0.46271833777427673,
+          "nearest_id": "v7_staff01_coach_020",
+          "nearest_baseline": 0.46337032318115234,
+          "min_limit_excess": -0.5427607297897339,
+          "max_limit_excess": -0.02065199613571167,
+          "nonduplicate_other_max": 0.3777342438697815,
+          "nonduplicate_margin": 0.022265756130218528,
+          "nonduplicate_nearest_id": "v7_staff01_coach_004",
+          "nonduplicate_baseline": 0.35577481985092163,
+          "worst_limit_id": "v7_staff01_coach_020",
+          "worst_limit_baseline": 0.46337032318115234,
+          "worst_limit_new": 0.46271833777427673,
+          "new_collision_count": 0,
+          "baseline_limit_failure_count": 0,
+          "conflicts": []
+        }
+      },
+      "passed": true,
+      "suite": "retry006"
+    }
+  ]
+}

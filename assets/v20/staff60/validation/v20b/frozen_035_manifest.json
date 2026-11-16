@@ -1,0 +1,476 @@
+{
+  "identity_id": "v7_staff01_coach_035",
+  "v7_identity_id": "v7_staff01_coach_035",
+  "slot": 34,
+  "age": 50,
+  "tags": {
+    "glasses": false,
+    "beard": false,
+    "gray_hair": false,
+    "hair": "short black crew cut",
+    "body_type": "lean with narrow shoulders and a slender neck"
+  },
+  "status": "ready",
+  "variants": {
+    "seoul_comets": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/seoul_comets.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/seoul_comets.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/seoul_comets.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_09.webp",
+        "crop": [
+          629,
+          629,
+          1252,
+          1252
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "86c93cca3dbfbe642a3d89f084e70832ac2cf1e5a12c3f2ac8837d643594ca39",
+        "edge_guard": 2
+      }
+    },
+    "seoul_hounds": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/seoul_hounds.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/seoul_hounds.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/seoul_hounds.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_00.webp",
+        "crop": [
+          629,
+          2,
+          1252,
+          625
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "af24c671f07490a87851f274cb74fc0e6657f22d8a43bed5397ec47a8fed4b06",
+        "edge_guard": 2
+      }
+    },
+    "incheon_seagulls": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/incheon_seagulls.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/incheon_seagulls.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/incheon_seagulls.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_01.webp",
+        "crop": [
+          629,
+          629,
+          1252,
+          1252
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "7a80df1239298ef776048769afe0cd6334aa85f6633a631919ac9300947c7705",
+        "edge_guard": 2
+      }
+    },
+    "suwon_sparks": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/suwon_sparks.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/suwon_sparks.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/suwon_sparks.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_02.webp",
+        "crop": [
+          629,
+          629,
+          1252,
+          1252
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "c51f9b69e6d8acbe0335fcc4903192838f1d0a1303e123c2b4974843189aa1ba",
+        "edge_guard": 2
+      }
+    },
+    "goyang_storm": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/goyang_storm.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/goyang_storm.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/goyang_storm.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_03.webp",
+        "crop": [
+          629,
+          629,
+          1252,
+          1252
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "250eb3414a6cda4d71fb9444b49630b07d18c77d678003049c3842025df0e29e",
+        "edge_guard": 2
+      }
+    },
+    "daejeon_redfox": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/daejeon_redfox.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/daejeon_redfox.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/daejeon_redfox.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/redfox_00.webp",
+        "crop": [
+          0,
+          0,
+          1254,
+          1254
+        ],
+        "native_crop_size": [
+          1254,
+          1254
+        ],
+        "native_crop_rgb_sha256": "9b43cf72bc427d8b2b86be2a79488db7447b5f1c4e7c7b1c2f0797d7ca6691cb",
+        "edge_guard": 0
+      }
+    },
+    "gwangju_blazes": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/gwangju_blazes.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/gwangju_blazes.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/gwangju_blazes.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_05.webp",
+        "crop": [
+          629,
+          629,
+          1252,
+          1252
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "66109adc1c53bd29bccc98d01104e698eacc7ad6319632b553c430e9eb68e686",
+        "edge_guard": 2
+      }
+    },
+    "daegu_thunders": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/daegu_thunders.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/daegu_thunders.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/daegu_thunders.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_06.webp",
+        "crop": [
+          629,
+          629,
+          1252,
+          1252
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "8da14fa71aae35dfe03f9a89db33847f84167c992c0bb96ab461afa0cfadae8f",
+        "edge_guard": 2
+      }
+    },
+    "busan_waves": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/busan_waves.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/busan_waves.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/busan_waves.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_07.webp",
+        "crop": [
+          629,
+          629,
+          1252,
+          1252
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "95381c9973ba4d6bb8a677f378c4f54bd6cb052b2937a351765dc965d2d7cf91",
+        "edge_guard": 2
+      }
+    },
+    "changwon_anchors": {
+      "sheets": {
+        "128": {
+          "path": "assets/v20/staff60/sheets/128/changwon_anchors.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "assets/v20/staff60/sheets/256/changwon_anchors.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        },
+        "384": {
+          "path": "assets/v20/staff60/sheets/384/changwon_anchors.webp",
+          "rect": [
+            1608,
+            1208,
+            384,
+            384
+          ]
+        }
+      },
+      "source": {
+        "path": "assets/v20/staff60/sources/native/team_08.webp",
+        "crop": [
+          629,
+          629,
+          1252,
+          1252
+        ],
+        "native_crop_size": [
+          623,
+          623
+        ],
+        "native_crop_rgb_sha256": "a6a3b869b93832d39642392f55d532fb2a999747aa0ebaefa5102df2f62dbace",
+        "edge_guard": 2
+      }
+    }
+  }
+}

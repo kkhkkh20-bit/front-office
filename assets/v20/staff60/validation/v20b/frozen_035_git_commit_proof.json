@@ -1,0 +1,246 @@
+{
+  "original_commit": "70d5abdc087141269829ff50be6fbdffdc5b1b0b",
+  "verified_photo_sizes": 30,
+  "records": [
+    {
+      "team": "seoul_comets",
+      "size": 128,
+      "original_sheet_sha256": "1773b2c3f7562cdd0973cf58609020a559c6230449cf167451b33051d717e5b5",
+      "original_photo_rgb_sha256": "4fd370caa1dc75646d1aa35a7424025878bb22380caf34fc2b500867da1a48f6",
+      "current_photo_rgb_sha256": "4fd370caa1dc75646d1aa35a7424025878bb22380caf34fc2b500867da1a48f6",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "seoul_comets",
+      "size": 256,
+      "original_sheet_sha256": "c3080cc8d9c82984d4a47c875e145d00f8272d62aa38195841a286148b006b4c",
+      "original_photo_rgb_sha256": "f1063ae5de78b55e4383bc3e1899acbfa49366632ff258d643f02d1536f8cba5",
+      "current_photo_rgb_sha256": "f1063ae5de78b55e4383bc3e1899acbfa49366632ff258d643f02d1536f8cba5",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "seoul_comets",
+      "size": 384,
+      "original_sheet_sha256": "835167708dfa369f08be0f2891f540aea5e329d7839387bf412aef2281e27fb4",
+      "original_photo_rgb_sha256": "57e893c68b38fb87e39dc0d07b91796c0df4c61af519447f775a69179e8b5787",
+      "current_photo_rgb_sha256": "57e893c68b38fb87e39dc0d07b91796c0df4c61af519447f775a69179e8b5787",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "seoul_hounds",
+      "size": 128,
+      "original_sheet_sha256": "4e67bd57e3cc185603ea02df2ac02550676a0271c9655e9ff374e4a8a07e197b",
+      "original_photo_rgb_sha256": "731624027ca990e86afd4aa21568b9f2ad401bcfc924e38e5a4bc9b5ccdd395a",
+      "current_photo_rgb_sha256": "731624027ca990e86afd4aa21568b9f2ad401bcfc924e38e5a4bc9b5ccdd395a",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "seoul_hounds",
+      "size": 256,
+      "original_sheet_sha256": "22d7f22b03d9296ebbb4ec450fba677f9bb3c3919438e129a1fc669746d64e30",
+      "original_photo_rgb_sha256": "7c6b687ec2a8ab6c82e7f73cc5f1f176c2d5cc3133a400eb844d43b4c7245d5e",
+      "current_photo_rgb_sha256": "7c6b687ec2a8ab6c82e7f73cc5f1f176c2d5cc3133a400eb844d43b4c7245d5e",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "seoul_hounds",
+      "size": 384,
+      "original_sheet_sha256": "77ff8c40caa6c4b085ec8bac2e3b912fc77564ce15c7f52af30fc9ec170b83e7",
+      "original_photo_rgb_sha256": "09cccc2b581c02aa3bb6f0513b37af49302b6dd2e72b7aa90dd624b038f8f5c2",
+      "current_photo_rgb_sha256": "09cccc2b581c02aa3bb6f0513b37af49302b6dd2e72b7aa90dd624b038f8f5c2",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "incheon_seagulls",
+      "size": 128,
+      "original_sheet_sha256": "06bc2dfdfaedac935198ee25d0d51f4505eb176b60db8d22d0c878008d71eab9",
+      "original_photo_rgb_sha256": "660665e5edad875d25d483baa4462d870b75548b017ee55e0dd9cc928f14a335",
+      "current_photo_rgb_sha256": "660665e5edad875d25d483baa4462d870b75548b017ee55e0dd9cc928f14a335",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "incheon_seagulls",
+      "size": 256,
+      "original_sheet_sha256": "03f06a3319ce05ff94a8df1739b81b8c9a0032e3e286cc2ca92c53f60e0009cd",
+      "original_photo_rgb_sha256": "672c87bdd489b60ea912c6d2ae7971f91e0b0fac50456032fe511358081e5d01",
+      "current_photo_rgb_sha256": "672c87bdd489b60ea912c6d2ae7971f91e0b0fac50456032fe511358081e5d01",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "incheon_seagulls",
+      "size": 384,
+      "original_sheet_sha256": "278faaacbaeba32c152b9a6130a094a4ebcc1bdfb841b69db4298b2d33a988e2",
+      "original_photo_rgb_sha256": "0effb0bb61aaadd4b72530678b62a7cdd394f51b382c18465eaf24cb8f9f1991",
+      "current_photo_rgb_sha256": "0effb0bb61aaadd4b72530678b62a7cdd394f51b382c18465eaf24cb8f9f1991",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "suwon_sparks",
+      "size": 128,
+      "original_sheet_sha256": "b2b1e257803760e153a5ae8ab1ab9bbdf72742ded3a803178fe6ef355f09d423",
+      "original_photo_rgb_sha256": "22c105ec007bdb6767d2c3db1b2b8889bfb02d9b13e38a8372a5e855eee15b31",
+      "current_photo_rgb_sha256": "22c105ec007bdb6767d2c3db1b2b8889bfb02d9b13e38a8372a5e855eee15b31",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "suwon_sparks",
+      "size": 256,
+      "original_sheet_sha256": "b7077a27a10068b76cb96e1ad580275742c0323f91e60d094ebbc1de946536bf",
+      "original_photo_rgb_sha256": "6bfc867212313e555e065721b111bb6d15bdcda14d9520b3691b044671200258",
+      "current_photo_rgb_sha256": "6bfc867212313e555e065721b111bb6d15bdcda14d9520b3691b044671200258",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "suwon_sparks",
+      "size": 384,
+      "original_sheet_sha256": "c638ce589f10bdcfcc2b7d5d0ad5688159beddd7c8ab5fb5bb7625891e2a79f5",
+      "original_photo_rgb_sha256": "d108f514ae56e3438d846948a4481ad0f5f5d011bdd03c2c9941d87f97301f57",
+      "current_photo_rgb_sha256": "d108f514ae56e3438d846948a4481ad0f5f5d011bdd03c2c9941d87f97301f57",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "goyang_storm",
+      "size": 128,
+      "original_sheet_sha256": "8c0cf8064814033bffad2742d3c8c1c59a6ed834eaa513b5f9e0a6dbc3d9b1eb",
+      "original_photo_rgb_sha256": "4fb6a3bbfc6b2690cc110335f05fb6ef8dbc1eb74693f63100d2cbcf10761f62",
+      "current_photo_rgb_sha256": "4fb6a3bbfc6b2690cc110335f05fb6ef8dbc1eb74693f63100d2cbcf10761f62",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "goyang_storm",
+      "size": 256,
+      "original_sheet_sha256": "8ae5102980abed477702d8adf727f88f47ef3065d9cc48b9fbaf96350dd1afa5",
+      "original_photo_rgb_sha256": "cbff30b5b0be6de659ac57b177a1bba55f9dd123f9425258ba2ae0f060552d67",
+      "current_photo_rgb_sha256": "cbff30b5b0be6de659ac57b177a1bba55f9dd123f9425258ba2ae0f060552d67",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "goyang_storm",
+      "size": 384,
+      "original_sheet_sha256": "94ab49e1fee593d35dd9cfdbbe321d9ca0a8932e4fe57c55c27f80c625cd53a9",
+      "original_photo_rgb_sha256": "9ed468c0c79180f3e5c60940d2d5b1fcc1de0aa61cbad5fa8d284317050f11d2",
+      "current_photo_rgb_sha256": "9ed468c0c79180f3e5c60940d2d5b1fcc1de0aa61cbad5fa8d284317050f11d2",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "daejeon_redfox",
+      "size": 128,
+      "original_sheet_sha256": "1e23e3a402cd77e901dbf8e749e30508a606953623a5b3e9e37546186f106803",
+      "original_photo_rgb_sha256": "7457580019d80b27c8c99b8526373ad39afbe992daaa52c22a8cec932adaabc0",
+      "current_photo_rgb_sha256": "7457580019d80b27c8c99b8526373ad39afbe992daaa52c22a8cec932adaabc0",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "daejeon_redfox",
+      "size": 256,
+      "original_sheet_sha256": "bfeacd2fcffae4b789eb351abfd22e3ba464f6128d34a0829ef05865c24b5fc7",
+      "original_photo_rgb_sha256": "53fd7d7956a840bf56784485637617c4b4002430f1c6e2bdb5aab2a1bd467c13",
+      "current_photo_rgb_sha256": "53fd7d7956a840bf56784485637617c4b4002430f1c6e2bdb5aab2a1bd467c13",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "daejeon_redfox",
+      "size": 384,
+      "original_sheet_sha256": "5f1ac3f294a4c420ceb98df64c8c12dbe04fa59a06616580bfcabfdafe01144e",
+      "original_photo_rgb_sha256": "f7799d18347b5ac1c2383557b3a2b5520cd39051bbe1244468595dba9d4c8d4d",
+      "current_photo_rgb_sha256": "f7799d18347b5ac1c2383557b3a2b5520cd39051bbe1244468595dba9d4c8d4d",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "gwangju_blazes",
+      "size": 128,
+      "original_sheet_sha256": "a78b4eb98794f936e5d0b030a56cc1aba98b31609698330902cdfc3a79479296",
+      "original_photo_rgb_sha256": "b5336f37dd848961f9b7fcf4255e346b1bd10d5cea8a95bd36fcd5a5cfaacb31",
+      "current_photo_rgb_sha256": "b5336f37dd848961f9b7fcf4255e346b1bd10d5cea8a95bd36fcd5a5cfaacb31",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "gwangju_blazes",
+      "size": 256,
+      "original_sheet_sha256": "4d2800e749c56d7e8b9b3bc6811c12befa405c32e2bf655dea49e9c218a7caf6",
+      "original_photo_rgb_sha256": "fd5e07de3c189558ee6763d62ee8084890616692e05467227a185dde1b28fd78",
+      "current_photo_rgb_sha256": "fd5e07de3c189558ee6763d62ee8084890616692e05467227a185dde1b28fd78",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "gwangju_blazes",
+      "size": 384,
+      "original_sheet_sha256": "8ba61ed9e74349dfb32ca9410b37305430321b2d4b636e3c4d7935fd3d2b562e",
+      "original_photo_rgb_sha256": "f81ae1fd45697cabbfddd4f71545191df48b378e34f9b087b8fd831510b4248e",
+      "current_photo_rgb_sha256": "f81ae1fd45697cabbfddd4f71545191df48b378e34f9b087b8fd831510b4248e",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "daegu_thunders",
+      "size": 128,
+      "original_sheet_sha256": "62e6070c9f853cc4bd4e6550cc3af97c62699f545dd526f87fa8d34d08e61d35",
+      "original_photo_rgb_sha256": "05b05262cecccd3fd9666d019cf2626a52311abba8ed3186d48c59fcdf608b7c",
+      "current_photo_rgb_sha256": "05b05262cecccd3fd9666d019cf2626a52311abba8ed3186d48c59fcdf608b7c",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "daegu_thunders",
+      "size": 256,
+      "original_sheet_sha256": "8dfe379e80754308c35f23b18ef53bb2e93463f97cf5cdbd98d0f54bad352243",
+      "original_photo_rgb_sha256": "a153e2b9c3916dbe11f8e9b1ccb6c97de833dc60436b6dd8644b824c3f4d77b7",
+      "current_photo_rgb_sha256": "a153e2b9c3916dbe11f8e9b1ccb6c97de833dc60436b6dd8644b824c3f4d77b7",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "daegu_thunders",
+      "size": 384,
+      "original_sheet_sha256": "32ba12346d42d980a32ea831385d33182c9e05f2ca8f2c537c13bee931cb9b0a",
+      "original_photo_rgb_sha256": "c8610db104c10192e5120fbde2cb2a6f8710721d5d89c70cd3ff362117700dd4",
+      "current_photo_rgb_sha256": "c8610db104c10192e5120fbde2cb2a6f8710721d5d89c70cd3ff362117700dd4",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "busan_waves",
+      "size": 128,
+      "original_sheet_sha256": "1cb6f12222e57410fbe48f4a1f8079a1f4958c40ad9e1462b0e46d76a5db616e",
+      "original_photo_rgb_sha256": "4b51cbe4a00e332e71e2923b727d7b79e6aee340ae93da3a42212d554f66adcd",
+      "current_photo_rgb_sha256": "4b51cbe4a00e332e71e2923b727d7b79e6aee340ae93da3a42212d554f66adcd",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "busan_waves",
+      "size": 256,
+      "original_sheet_sha256": "87263d82049b58cbf70a8486bf937799c1f05cf6fa96af349afde668c1823752",
+      "original_photo_rgb_sha256": "ee4e19a5bf7ca1a5d8e749ebb314d6ad8c6b86ed0e25465cb34a7f2095c5ebaa",
+      "current_photo_rgb_sha256": "ee4e19a5bf7ca1a5d8e749ebb314d6ad8c6b86ed0e25465cb34a7f2095c5ebaa",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "busan_waves",
+      "size": 384,
+      "original_sheet_sha256": "0e20dede34aabcc5c6d53b33fa6935ad2a79794144759b8da5d0abe91c1d5b8b",
+      "original_photo_rgb_sha256": "032f72c7c4ea60a96343e39d3d22939dd5c8702019f62c87c35a19c9ef9d1e66",
+      "current_photo_rgb_sha256": "032f72c7c4ea60a96343e39d3d22939dd5c8702019f62c87c35a19c9ef9d1e66",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "changwon_anchors",
+      "size": 128,
+      "original_sheet_sha256": "be44c53c2175452d0ed3e65ebd7bffb89e90f7017b11dc731d12a4e65020bb31",
+      "original_photo_rgb_sha256": "7f60d6174464c65a4acea4c872c03e1523d0cd0e031668a1c592e3383fd10cb6",
+      "current_photo_rgb_sha256": "7f60d6174464c65a4acea4c872c03e1523d0cd0e031668a1c592e3383fd10cb6",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "changwon_anchors",
+      "size": 256,
+      "original_sheet_sha256": "c7f808f71379f4ad9df3f8ce7a8097460607a75a3abc7481095d9a477526b405",
+      "original_photo_rgb_sha256": "75225fe32048224a335e08d3bef8c7f44c1934471da9cac8b3e62953e2994500",
+      "current_photo_rgb_sha256": "75225fe32048224a335e08d3bef8c7f44c1934471da9cac8b3e62953e2994500",
+      "path_rect_unchanged": true
+    },
+    {
+      "team": "changwon_anchors",
+      "size": 384,
+      "original_sheet_sha256": "caee6c19a02a36b90afeb084ee0202a83744d514ee1859363fd341d3b793e700",
+      "original_photo_rgb_sha256": "79943533c761a9c3ef9e4050cd77d3f3646b688b85d4b3f5dee310854a3c0bd9",
+      "current_photo_rgb_sha256": "79943533c761a9c3ef9e4050cd77d3f3646b688b85d4b3f5dee310854a3c0bd9",
+      "path_rect_unchanged": true
+    }
+  ]
+}

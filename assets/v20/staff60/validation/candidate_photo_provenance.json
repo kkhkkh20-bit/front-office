@@ -2040,5 +2040,1071 @@
     ],
     "team": "daejeon_redfox",
     "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team00.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_055__seoul_hounds__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team00.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_059__seoul_hounds__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team00.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_055__seoul_hounds__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team00.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_059__seoul_hounds__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team01.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_055__incheon_seagulls__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team01.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_059__incheon_seagulls__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team01.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_055__incheon_seagulls__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team01.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_059__incheon_seagulls__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team02.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_055__suwon_sparks__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team02.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_059__suwon_sparks__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team02.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_055__suwon_sparks__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team02.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_059__suwon_sparks__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team03.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "goyang_storm",
+    "photo_id": "v7_staff01_coach_055__goyang_storm__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team03.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "goyang_storm",
+    "photo_id": "v7_staff01_coach_059__goyang_storm__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team03.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "goyang_storm",
+    "photo_id": "v7_staff01_coach_055__goyang_storm__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team03.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "goyang_storm",
+    "photo_id": "v7_staff01_coach_059__goyang_storm__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team04.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "daejeon_redfox",
+    "photo_id": "v7_staff01_coach_055__daejeon_redfox__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team04.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "daejeon_redfox",
+    "photo_id": "v7_staff01_coach_059__daejeon_redfox__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team04.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "daejeon_redfox",
+    "photo_id": "v7_staff01_coach_055__daejeon_redfox__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team04.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "daejeon_redfox",
+    "photo_id": "v7_staff01_coach_059__daejeon_redfox__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team05.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_055__gwangju_blazes__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team05.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_059__gwangju_blazes__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team05.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_055__gwangju_blazes__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team05.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_059__gwangju_blazes__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team06.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_055__daegu_thunders__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team06.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_059__daegu_thunders__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team06.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_055__daegu_thunders__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team06.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_059__daegu_thunders__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team07.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "busan_waves",
+    "photo_id": "v7_staff01_coach_055__busan_waves__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team07.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "busan_waves",
+    "photo_id": "v7_staff01_coach_059__busan_waves__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team07.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "busan_waves",
+    "photo_id": "v7_staff01_coach_055__busan_waves__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team07.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "busan_waves",
+    "photo_id": "v7_staff01_coach_059__busan_waves__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team08.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_055__changwon_anchors__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team08.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_059__changwon_anchors__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team08.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_055__changwon_anchors__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_variants",
+    "native_path": "sources/v20b_native/team08.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_059__changwon_anchors__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_singles",
+    "native_path": "sources/v20b_native/single00.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_055__changwon_anchors__single0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "v20b_singles",
+    "native_path": "sources/v20b_native/single01.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_055__changwon_anchors__single1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_singles",
+    "native_path": "sources/v20b_native/single02.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_059__seoul_hounds__single2"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_singles",
+    "native_path": "sources/v20b_native/single03.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_059__incheon_seagulls__single3"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_singles",
+    "native_path": "sources/v20b_native/single04.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_059__suwon_sparks__single4"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_singles",
+    "native_path": "sources/v20b_native/single05.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_059__gwangju_blazes__single5"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_singles",
+    "native_path": "sources/v20b_native/single06.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_059__daegu_thunders__single6"
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "v20b_singles",
+    "native_path": "sources/v20b_native/single07.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_059__changwon_anchors__single7"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_00.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_006__seoul_hounds__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_00.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_058__seoul_hounds__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_00.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_006__seoul_hounds__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_00.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "seoul_hounds",
+    "photo_id": "v7_staff01_coach_058__seoul_hounds__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_01.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_006__incheon_seagulls__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_01.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_058__incheon_seagulls__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_01.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_006__incheon_seagulls__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_01.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_058__incheon_seagulls__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_02.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_006__suwon_sparks__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_02.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_058__suwon_sparks__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_02.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_006__suwon_sparks__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_02.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "suwon_sparks",
+    "photo_id": "v7_staff01_coach_058__suwon_sparks__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_03.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "goyang_storm",
+    "photo_id": "v7_staff01_coach_006__goyang_storm__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_03.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "goyang_storm",
+    "photo_id": "v7_staff01_coach_058__goyang_storm__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_03.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "goyang_storm",
+    "photo_id": "v7_staff01_coach_006__goyang_storm__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_03.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "goyang_storm",
+    "photo_id": "v7_staff01_coach_058__goyang_storm__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_04.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "daejeon_redfox",
+    "photo_id": "v7_staff01_coach_006__daejeon_redfox__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_04.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "daejeon_redfox",
+    "photo_id": "v7_staff01_coach_058__daejeon_redfox__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_04.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "daejeon_redfox",
+    "photo_id": "v7_staff01_coach_006__daejeon_redfox__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_04.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "daejeon_redfox",
+    "photo_id": "v7_staff01_coach_058__daejeon_redfox__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_05.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_006__gwangju_blazes__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_05.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_058__gwangju_blazes__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_05.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_006__gwangju_blazes__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_05.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "gwangju_blazes",
+    "photo_id": "v7_staff01_coach_058__gwangju_blazes__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_06.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_006__daegu_thunders__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_06.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_058__daegu_thunders__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_06.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_006__daegu_thunders__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_06.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "daegu_thunders",
+    "photo_id": "v7_staff01_coach_058__daegu_thunders__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_07.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "busan_waves",
+    "photo_id": "v7_staff01_coach_006__busan_waves__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_07.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "busan_waves",
+    "photo_id": "v7_staff01_coach_058__busan_waves__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_07.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "busan_waves",
+    "photo_id": "v7_staff01_coach_006__busan_waves__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_07.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "busan_waves",
+    "photo_id": "v7_staff01_coach_058__busan_waves__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_08.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_006__changwon_anchors__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_08.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_058__changwon_anchors__c0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_08.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_006__changwon_anchors__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "v20b_group2",
+    "native_path": "sources/v20b_native/group2_08.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "changwon_anchors",
+    "photo_id": "v7_staff01_coach_058__changwon_anchors__c1"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_retry006",
+    "native_path": "sources/v20b_native/retry006_0.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_006__incheon_seagulls__retry0"
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "v20b_retry006",
+    "native_path": "sources/v20b_native/retry006_1.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "incheon_seagulls",
+    "photo_id": "v7_staff01_coach_006__incheon_seagulls__retry1"
   }
 ]

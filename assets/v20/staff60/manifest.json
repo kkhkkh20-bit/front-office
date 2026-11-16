@@ -4,10 +4,10 @@
   "request_fulfilled": false,
   "published_subset_passed": true,
   "requested_identities": 60,
-  "ready_identities": 1,
-  "held_identities": 59,
+  "ready_identities": 4,
+  "held_identities": 56,
   "requested_photos": 600,
-  "published_photos": 10,
+  "published_photos": 40,
   "teams": [
     "seoul_comets",
     "seoul_hounds",
@@ -73,7 +73,6 @@
       2,
       3,
       4,
-      5,
       6,
       7,
       8,
@@ -121,10 +120,8 @@
       51,
       52,
       53,
-      54,
       55,
       56,
-      57,
       58,
       59
     ],
@@ -133,21 +130,28 @@
         "pitch": 144,
         "quality": 85,
         "offset": 8,
-        "mode": "RGB"
+        "mode": "RGB",
+        "photo_quality": 85,
+        "atlas_lossless": true
       },
       "256": {
         "pitch": 272,
         "quality": 88,
         "offset": 8,
-        "mode": "RGB"
+        "mode": "RGB",
+        "photo_quality": 88,
+        "atlas_lossless": true
       },
       "384": {
         "pitch": 400,
         "quality": 89,
         "offset": 8,
-        "mode": "RGB"
+        "mode": "RGB",
+        "photo_quality": 89,
+        "atlas_lossless": true
       }
-    }
+    },
+    "encoding": "requested-q photo pixels, lossless RGB atlas packaging"
   },
   "identities": [
     {
@@ -164,7 +168,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_002",
@@ -180,7 +184,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_003",
@@ -196,7 +200,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_004",
@@ -212,7 +216,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_005",
@@ -228,7 +232,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_006",
@@ -242,9 +246,549 @@
         "hair": "short dark-brown hair",
         "body_type": "lean with narrow shoulders and a slender neck"
       },
-      "status": "held",
-      "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "status": "ready",
+      "variants": {
+        "seoul_comets": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/seoul_comets.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/seoul_comets.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/seoul_comets.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/master_05.webp",
+            "crop": [
+              0,
+              0,
+              418,
+              418
+            ],
+            "native_crop_size": [
+              418,
+              418
+            ],
+            "native_crop_rgb_sha256": "bc1e8b56dd09e6b78c1368cb191754a5382640f2a34ff5c36b2f2481c9b890f6",
+            "edge_guard": 0
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "seoul_hounds": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/seoul_hounds.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/seoul_hounds.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/seoul_hounds.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_00.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "ce9bbc579da24fcb455f4c70f2863ac35f6eef3ecadd73bd93b29ad4f325d40c",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "incheon_seagulls": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/incheon_seagulls.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/incheon_seagulls.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/incheon_seagulls.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/retry006_1.webp",
+            "crop": [
+              0,
+              0,
+              1254,
+              1254
+            ],
+            "native_crop_size": [
+              1254,
+              1254
+            ],
+            "native_crop_rgb_sha256": "10fd51574f2f048fca6b400b4c12168b81452aec898211cd21834227debbe80b",
+            "edge_guard": 0
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "suwon_sparks": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/suwon_sparks.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/suwon_sparks.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/suwon_sparks.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_02.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "f9e4a98cf73ab244d20f398ffcf8b7d6258a93cdc59328c69dab7b2401a7d53d",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "goyang_storm": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/goyang_storm.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/goyang_storm.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/goyang_storm.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_03.webp",
+            "crop": [
+              2,
+              629,
+              625,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "0bab1ac0a0f6703502e6dc5bd7ec8c0ded1a0bfdd08a2ab10a204202f1a8e9e5",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "daejeon_redfox": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/daejeon_redfox.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/daejeon_redfox.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/daejeon_redfox.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_04.webp",
+            "crop": [
+              2,
+              629,
+              625,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "2a599fd17ee70e0c00de71500cf8108e4f79e06f76a04f09239958f8ce1d1b29",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "gwangju_blazes": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/gwangju_blazes.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/gwangju_blazes.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/gwangju_blazes.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_05.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "35323c8875407f7e9ae0c2ae077e12ac6786384d84ff17d6dba68ffc8a048f6a",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "daegu_thunders": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/daegu_thunders.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/daegu_thunders.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/daegu_thunders.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_06.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "48698a78374c88a615047821b08282f76170f6a716c213cfca7987b0333461cb",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "busan_waves": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/busan_waves.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/busan_waves.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/busan_waves.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_07.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "ea175bee4ddff3b093427f6c852b94d06e2c570c41a6e7418d9c19dfc79cf37a",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "changwon_anchors": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/changwon_anchors.webp",
+              "rect": [
+                728,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/changwon_anchors.webp",
+              "rect": [
+                1368,
+                8,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/changwon_anchors.webp",
+              "rect": [
+                2008,
+                8,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_08.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "100cb70adc849f3b29291db597d832a4992dfa0070b79c712a68d72d6c9f0ff4",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        }
+      }
     },
     {
       "identity_id": "v7_staff01_coach_007",
@@ -260,7 +804,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_008",
@@ -276,7 +820,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_009",
@@ -292,7 +836,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_010",
@@ -308,7 +852,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_011",
@@ -324,7 +868,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_012",
@@ -340,7 +884,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_013",
@@ -356,7 +900,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_014",
@@ -372,7 +916,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_015",
@@ -388,7 +932,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_016",
@@ -404,7 +948,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_017",
@@ -420,7 +964,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_018",
@@ -436,7 +980,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_019",
@@ -452,7 +996,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_020",
@@ -468,7 +1012,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_021",
@@ -484,7 +1028,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_022",
@@ -500,7 +1044,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_023",
@@ -516,7 +1060,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_024",
@@ -532,7 +1076,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_025",
@@ -548,7 +1092,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_026",
@@ -564,7 +1108,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_027",
@@ -580,7 +1124,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_028",
@@ -596,7 +1140,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_029",
@@ -612,7 +1156,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_030",
@@ -628,7 +1172,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_031",
@@ -644,7 +1188,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_032",
@@ -660,7 +1204,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_033",
@@ -676,7 +1220,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_034",
@@ -692,7 +1236,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_035",
@@ -752,6 +1296,14 @@
             ],
             "native_crop_rgb_sha256": "86c93cca3dbfbe642a3d89f084e70832ac2cf1e5a12c3f2ac8837d643594ca39",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "seoul_hounds": {
@@ -798,6 +1350,14 @@
             ],
             "native_crop_rgb_sha256": "af24c671f07490a87851f274cb74fc0e6657f22d8a43bed5397ec47a8fed4b06",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "incheon_seagulls": {
@@ -844,6 +1404,14 @@
             ],
             "native_crop_rgb_sha256": "7a80df1239298ef776048769afe0cd6334aa85f6633a631919ac9300947c7705",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "suwon_sparks": {
@@ -890,6 +1458,14 @@
             ],
             "native_crop_rgb_sha256": "c51f9b69e6d8acbe0335fcc4903192838f1d0a1303e123c2b4974843189aa1ba",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "goyang_storm": {
@@ -936,6 +1512,14 @@
             ],
             "native_crop_rgb_sha256": "250eb3414a6cda4d71fb9444b49630b07d18c77d678003049c3842025df0e29e",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "daejeon_redfox": {
@@ -982,6 +1566,14 @@
             ],
             "native_crop_rgb_sha256": "9b43cf72bc427d8b2b86be2a79488db7447b5f1c4e7c7b1c2f0797d7ca6691cb",
             "edge_guard": 0
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "gwangju_blazes": {
@@ -1028,6 +1620,14 @@
             ],
             "native_crop_rgb_sha256": "66109adc1c53bd29bccc98d01104e698eacc7ad6319632b553c430e9eb68e686",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "daegu_thunders": {
@@ -1074,6 +1674,14 @@
             ],
             "native_crop_rgb_sha256": "8da14fa71aae35dfe03f9a89db33847f84167c992c0bb96ab461afa0cfadae8f",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "busan_waves": {
@@ -1120,6 +1728,14 @@
             ],
             "native_crop_rgb_sha256": "95381c9973ba4d6bb8a677f378c4f54bd6cb052b2937a351765dc965d2d7cf91",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         },
         "changwon_anchors": {
@@ -1166,6 +1782,14 @@
             ],
             "native_crop_rgb_sha256": "a6a3b869b93832d39642392f55d532fb2a999747aa0ebaefa5102df2f62dbace",
             "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
           }
         }
       }
@@ -1184,7 +1808,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_037",
@@ -1200,7 +1824,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_038",
@@ -1216,7 +1840,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_039",
@@ -1232,7 +1856,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_040",
@@ -1248,7 +1872,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_041",
@@ -1264,7 +1888,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_042",
@@ -1280,7 +1904,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_043",
@@ -1296,7 +1920,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_044",
@@ -1312,7 +1936,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_045",
@@ -1328,7 +1952,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_046",
@@ -1344,7 +1968,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_047",
@@ -1360,7 +1984,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_048",
@@ -1376,7 +2000,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_049",
@@ -1392,7 +2016,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_050",
@@ -1408,7 +2032,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_051",
@@ -1424,7 +2048,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_052",
@@ -1440,7 +2064,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_053",
@@ -1456,7 +2080,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_054",
@@ -1472,7 +2096,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_055",
@@ -1486,9 +2110,549 @@
         "hair": "very short silver-gray crop",
         "body_type": "heavyset with a rounded chest and pot belly, thick neck"
       },
-      "status": "held",
-      "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "status": "ready",
+      "variants": {
+        "seoul_comets": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/seoul_comets.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/seoul_comets.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/seoul_comets.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/master_05.webp",
+            "crop": [
+              420,
+              838,
+              834,
+              1252
+            ],
+            "native_crop_size": [
+              414,
+              414
+            ],
+            "native_crop_rgb_sha256": "cbcadfe9c129ecb92d535294f05f4d3ae2ca8fa2902eb729a6aec0722dccbf37",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "seoul_hounds": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/seoul_hounds.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/seoul_hounds.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/seoul_hounds.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/team00.webp",
+            "crop": [
+              2,
+              629,
+              625,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "b8e4e56acd7ebc366eb195335679afae5b68052fa3b271bca158fc6944c2b930",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "incheon_seagulls": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/incheon_seagulls.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/incheon_seagulls.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/incheon_seagulls.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/team01.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "9c959269dd01168c18541d4dfeab7b307bed862c3c1312700a8be2eafe79a2fc",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "suwon_sparks": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/suwon_sparks.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/suwon_sparks.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/suwon_sparks.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/team02.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "baf21b69e275c2c3b52cbc17f4a4923bb3518c591f1ee41e78c5304600acee78",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "goyang_storm": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/goyang_storm.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/goyang_storm.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/goyang_storm.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_03.webp",
+            "crop": [
+              2,
+              629,
+              625,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "23fd0905723962defa87ead6eed3eaed1276c91ce5f7456c9f123d84409a36d9",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "daejeon_redfox": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/daejeon_redfox.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/daejeon_redfox.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/daejeon_redfox.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_04.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "f17f7f643db1126216d0cfe0110137d25fb742c899068cd255757f4a3f40c398",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "gwangju_blazes": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/gwangju_blazes.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/gwangju_blazes.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/gwangju_blazes.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/team05.webp",
+            "crop": [
+              2,
+              629,
+              625,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "5357633c6226dc082b51c3a4af25b8128595da182123f35b2bf3e09d1b3b0ccc",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "daegu_thunders": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/daegu_thunders.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/daegu_thunders.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/daegu_thunders.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_06.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "061ac6c12e9131ba029fed6f3f7383029b057a28641e096156eda56cf7f16577",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "busan_waves": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/busan_waves.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/busan_waves.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/busan_waves.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/team07.webp",
+            "crop": [
+              2,
+              2,
+              625,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "6c9b29e8af1637fa5940a3b85c51f6633d8f7387d805c34775bbfd5d133e6e39",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "changwon_anchors": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/changwon_anchors.webp",
+              "rect": [
+                584,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/changwon_anchors.webp",
+              "rect": [
+                1096,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/changwon_anchors.webp",
+              "rect": [
+                1608,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/single01.webp",
+            "crop": [
+              0,
+              0,
+              1254,
+              1254
+            ],
+            "native_crop_size": [
+              1254,
+              1254
+            ],
+            "native_crop_rgb_sha256": "f254c3ee791d172fd94ec63c34b35045af6c8419bf074574e48d16bbf744a991",
+            "edge_guard": 0
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        }
+      }
     },
     {
       "identity_id": "v7_staff01_coach_056",
@@ -1504,7 +2668,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_057",
@@ -1520,7 +2684,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_058",
@@ -1534,9 +2698,549 @@
         "hair": "receding silver temples and short gray hair",
         "body_type": "compact average upper body"
       },
-      "status": "held",
-      "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "status": "ready",
+      "variants": {
+        "seoul_comets": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/seoul_comets.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/seoul_comets.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/seoul_comets.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/pose_01.webp",
+            "crop": [
+              836,
+              836,
+              1254,
+              1254
+            ],
+            "native_crop_size": [
+              418,
+              418
+            ],
+            "native_crop_rgb_sha256": "a7f6c7fe2e988b2ee232a0d17f82f086d540a07f1e99e9ba5295ad5065b61970",
+            "edge_guard": 0
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "seoul_hounds": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/seoul_hounds.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/seoul_hounds.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/seoul_hounds.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_00.webp",
+            "crop": [
+              629,
+              2,
+              1252,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "710af6478e3dca411c381d6fcfd1a732056138b38c752755d592c4ab27581f10",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "incheon_seagulls": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/incheon_seagulls.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/incheon_seagulls.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/incheon_seagulls.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_01.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "1ff25227b9a3b9503ca3638457e59035c928aee3f51d6336bc73835e4051ee9a",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "suwon_sparks": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/suwon_sparks.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/suwon_sparks.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/suwon_sparks.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_02.webp",
+            "crop": [
+              629,
+              2,
+              1252,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "70a57bdb7828a6222b6a20b2d00d38a713f80ce030cf15fa2a9ad0852c65b901",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "goyang_storm": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/goyang_storm.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/goyang_storm.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/goyang_storm.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_03.webp",
+            "crop": [
+              629,
+              2,
+              1252,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "bbbaf42cf6b4677de8b5be346b95b9da0789b3837dca70353b2f4cf788e95653",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "daejeon_redfox": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/daejeon_redfox.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/daejeon_redfox.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/daejeon_redfox.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_04.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "0466e82534189e281ed4fdc03aac28e5b898316076bac40d92b74aeb0851c2e6",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "gwangju_blazes": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/gwangju_blazes.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/gwangju_blazes.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/gwangju_blazes.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_05.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "fbad417e2c24efb8663e86167650f419cbbfa604f56288b754c7368961c4143e",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "daegu_thunders": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/daegu_thunders.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/daegu_thunders.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/daegu_thunders.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_06.webp",
+            "crop": [
+              629,
+              2,
+              1252,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "37d2d146b58807106dfb338f02348f1be57f756f5cb5c4222e7a45576bfdc099",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "busan_waves": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/busan_waves.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/busan_waves.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/busan_waves.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_07.webp",
+            "crop": [
+              629,
+              2,
+              1252,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "4c0fb6c0546bb2df71ec12f4b34e02c284631e2acbf0489cba2a12160890288f",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        },
+        "changwon_anchors": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/changwon_anchors.webp",
+              "rect": [
+                1016,
+                728,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/changwon_anchors.webp",
+              "rect": [
+                1912,
+                1368,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/changwon_anchors.webp",
+              "rect": [
+                2808,
+                2008,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/v20b_native/group2_08.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "c7ccfeb2c97fc05bc1efdf461b2857aa9117da50d74c11d648439f3fe6b4a5ae",
+            "edge_guard": 2
+          },
+          "encoding": {
+            "photo_quality_by_size": {
+              "128": 85,
+              "256": 88,
+              "384": 89
+            },
+            "atlas_lossless": true
+          }
+        }
+      }
     },
     {
       "identity_id": "v7_staff01_coach_059",
@@ -1552,7 +3256,7 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     },
     {
       "identity_id": "v7_staff01_coach_060",
@@ -1568,7 +3272,9 @@
       },
       "status": "held",
       "variants": {},
-      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+      "hold_reason": "v20b criteria not satisfied by available identity-preserving candidates across all10 teams; see validation.people and validation/v20b/all_candidate_results.json"
     }
-  ]
+  ],
+  "policy": "v20b",
+  "preserved_v20_035": true
 }
