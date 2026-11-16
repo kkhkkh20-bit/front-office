@@ -5543,6 +5543,54 @@ T('[제보 11-16 시설 완공] 전문화 공사는 완공일이 지나면 우�
   G.fac.it.weight=3; G.fac.bld.weight={lv:4,done:String(G.day-5),c:100}; G.fac.bld.lab={lv:(G.fac.it.lab||0)+1,c:100}; const t=G.teams.find(x=>x.id!==G.user), S=aiFacInit(t); S.it.rehab=3; S.bld.rehab={lv:4,done:G.day-30,c:100}; S.bld.dorm={lv:(S.it.dorm||0)+1,done:undefined,c:100};
   facOverdueFix(); ok(!G.fac.bld.weight&&G.fac.it.weight===4,'문자열 완공일 공사가 안 끝났다'); ok(!G.fac.bld.lab,'완공일 없는 공사가 남았다'); ok(!S.bld.rehab&&S.it.rehab===4&&!S.bld.dorm,'다른 구단의 지난 공사가 불러오기 때 안 끝났다');
   const t2=G.teams.find(x=>x.id!==G.user&&x.id!==t.id), S2=aiFacInit(t2); S2.it.fut=3; S2.bld.fut={lv:4,done:G.day+1,c:100}; simTo(()=>G.day>=tgt+3); ok(!S2.bld.fut&&S2.it.fut===4,'다른 구단 전문화 공사가 완공일 뒤에도 남았다'); });
+const pcPrep=isP=>{ fresh(); facInit(); for(const k of FACK)G.fac.it[k]=1; G.fac.it.lab=4; G.coachX=[]; G.pcoach={}; for(const k of CKEYS)if(!G.coach[G.user][k])G.coach[G.user][k]=mkCoach(k); ok(axSlots()===1,'준비 실패: 보조 코치 자리 '+axSlots()); ok(pcOffWin(),'준비 실패: 비시즌이 아님 '+period());
+  const p=domestic(G.user).filter(q=>!q.prospect&&!q.ys&&!q.foreign&&(isP?q.isP:!q.isP&&q.pos!=='C'))[0]; ok(p,'준비 실패: 선수 없음'); for(let i=1;i<=3;i++)if(!p.hist.some(h=>h.y===G.year-i&&h.lvl==='1군'&&h.t===G.user))p.hist.push({y:G.year-i,t:G.user,lvl:'1군',g:90,pa:320,ab:280,h:75,hr:6,bb:30,so:50,outs:240,er:30,w:5,l:5}); if(G.fd&&G.startY>G.year-3)G.startY=G.year-3; ok(obCareer(p,null).ys>=3,'준비 실패: 구단 경력 '+obCareer(p,null).ys); initPers(p); p.age=35; p.pers.pro=18; p.pers.loy=14; p.sal=Math.min(p.sal,100); p.pcNo=null; return p; };
+T('[플레잉코치] 자격: 33세 이상·이 구단 3시즌·지도자 의향이 있어야 하고 제안은 비시즌에만',()=>{ const p=pcPrep();
+  ok(pcWhy(p)==='','자격 있는 선수가 막힘: '+pcWhy(p)); ok(obCareer(p,null).ys>=3,'구단 경력 셈이 OB와 다름');
+  p.age=32; ok(pcWhy(p).includes('33세'),'32세가 통과: '+pcWhy(p)); p.age=35;
+  const f=playersOf(G.user).find(q=>q.foreign); if(f)ok(pcWhy(f)!=='','외국인 선수가 통과');
+  const d0=G.day; G.day=G.cal.open+3; ok(pcWhy(p).includes('비시즌'),'시즌 중 제안이 통과: '+pcWhy(p)); G.day=d0;
+  p.svc=0; p.hist=(p.hist||[]).filter(h=>h.y>=G.year-1); ok(pcWhy(p).includes('3시즌'),'구단 경력 2시즌 이하가 통과: '+pcWhy(p));
+  const L=Object.values(G.players).filter(q=>q.team!=null&&!q.foreign&&q.age>=33); ok(L.length>=10,'준비 실패: 베테랑 부족'); const n=L.filter(q=>pcWill(q)>=PC_WILL).length; ok(n>0&&n<L.length*.6,'지도자 의향이 베테랑 '+n+'/'+L.length+'명(모두 또는 아무도 아님이어야)'); });
+T('[플레잉코치] 제안: 의향·감독과 사이·연봉 비중으로 받거나 짧은 이유로 거절하고, 한 겨울에 한 번만 묻는다',()=>{ const p=pcPrep(); const m=G.mgr[G.user]; ok(m&&!m.interim,'준비 실패: 감독 없음');
+  p.pers.pro=4; p.pers.loy=4; let A=pcAnswer(p,G.user); ok(!A.ok&&A.k==='will'&&A.why.includes('지도자'),'의향 없는 선수가 받음 '+JSON.stringify(A));
+  p.pers.pro=18; p.pers.loy=14; const mk=relKeyOf(m,'mgr'); relAdd('pl:'+p.id,mk,-90,'ben',mk); A=pcAnswer(p,G.user); ok(!A.ok&&A.k==='mgr'&&A.why.includes('감독'),'감독과 껄끄러운데 받음 '+JSON.stringify(A));
+  relAdd('pl:'+p.id,mk,90,'pla',mk); const s0=p.sal; p.sal=Math.round(capPay(G.user)*.5); A=pcAnswer(p,G.user); ok(!A.ok&&A.k==='sal'&&A.why.includes('연봉'),'팀 연봉 절반을 받는 선수가 받음 '+JSON.stringify(A));
+  const r=pcOffer(p.id); ok(!r.ok&&r.msg.includes(p.name),'거절 사유가 없음'); ok(pcOffer(p.id).msg.includes('이미 거절'),'같은 겨울 다시 물을 수 있음');
+  p.pcNo=null; p.sal=s0; const ok2=pcOffer(p.id); ok(ok2.ok&&pcLive(p),'조건 좋은 선수가 거절: '+ok2.msg); ok(ok2.msg.includes('지도')&&ok2.msg.includes('육성'),'수락 안내에 코칭 수치가 없음');
+  const a=pcAbility(p), O=obCareer(p,null), b=obSkDv(O.war,false,p.pers,(sd,k)=>hn('pc'+k,String(p.id))*sd); ok(pcLive(p).sk===b.sk&&pcLive(p).dv===b.dv&&a.sk===b.sk,'코칭 능력이 OB 식(obSkDv)과 다름');
+  const before=JSON.stringify(p.r); pcDaily(); ok(JSON.stringify(p.r)===before,'선수 능력치가 바뀜'); });
+T('[플레잉코치] 보조 코치 자리 하나를 쓰고, 수당은 코치진 연봉에만 한 번 들어간다(선수 연봉·정원 이중 계산 없음)',()=>{ const p=pcPrep(); const pay0=capPay(G.user), cs0=coachSal(G.user), n0=G.coachX.length;
+  ok(axRoom(G.user)===1,'준비 실패: 빈자리 '+axRoom(G.user)); ok(pcOffer(p.id).ok,'준비 실패: 수락 안 함'); const r=pcLive(p);
+  ok(r.sal>=10&&r.sal<=20,'수당이 1,000~2,000만 밖: '+r.sal); ok(coachSal(G.user)===cs0+r.sal,'코치진 연봉에 수당이 한 번만 들어가야 함 '+cs0+' → '+coachSal(G.user));
+  ok(capPay(G.user)===pay0,'선수단 연봉(샐러리캡)이 바뀜'); ok(G.coachX.length===n0,'보조 코치 명단에 따로 들어감'); ok(axRoom(G.user)===0,'자리를 쓰지 않음');
+  const c=(G.cmarket||[]).find(x=>AX_ROLES.includes(x.role)); ok(c,'준비 실패: 보조 코치 후보 없음'); ok(hireAsst(c.id,2).includes('자리'),'자리가 찼는데 보조 코치를 또 영입');
+  G.fac.it.indoor=4; ok(axRoom(G.user)===1,'자리 하나 늘었는데 빈자리 '+axRoom(G.user)); const q=domestic(G.user).find(x=>x!==p&&!x.prospect&&!x.ys&&!x.foreign); initPers(q); q.age=35; q.svc=8; q.pers.pro=18; q.pers.loy=14; q.sal=50;
+  ok(pcWhy(q).includes('한 명'),'플레잉코치를 둘 둠: '+pcWhy(q)); ok(hireAsst(c.id,2)==='','빈자리에 보조 코치를 못 들임');
+  G.fac.it.indoor=1; asstYear(); ok(!pcLive(p)&&G.coachX.length===1,'자리가 줄면 플레잉코치부터 풀어야 함'); ok((G.mail||[]).some(m=>m.subj.includes('플레잉코치 역할 종료')),'자리 축소 소식 없음'); });
+T('[플레잉코치] 효과: 같은 육성력 보조 코치의 절반, 자기 쪽 선수만, 주전이면 더 줄고 본인은 받지 않는다',()=>{ const p=pcPrep(true); ok(pcOffer(p.id).ok,'준비 실패'); const r=pcLive(p); r.dv=70;
+  const mate=domestic(G.user).find(x=>x.isP&&x!==p&&!x.prospect), bat=domestic(G.user).find(x=>!x.isP&&!x.prospect); const full=clamp((70-50)/800,0,.025);
+  const reg0=pcRegular; pcRegular=()=>false; try{ ok(Math.abs(axBoost(mate)-1-full*.5)<1e-9,'투수 효과가 절반이 아님 '+(axBoost(mate)-1)); ok(axBoost(bat)===1,'야수에게도 효과'); ok(axBoost(p)===1,'본인 성장에도 효과');
+    G.coachX.push({id:'tx',role:'pc',dv:70,ax:true}); ok(Math.abs(axBoost(mate)-1-full*1.5)<1e-9,'같은 육성력 보조 코치와 비교가 틀림'); G.coachX.pop();
+    pcRegular=()=>true; ok(Math.abs(axBoost(mate)-1-full*.5*.7)<1e-9,'주전이면 0.7배가 아님 '+(axBoost(mate)-1)); } finally{ pcRegular=reg0; }
+  const y=G.year-1; ok(pcRegular(p)===!!(seasonTotal(p,y,'1군')&&seasonTotal(p,y,'1군').outs>=300),'주전 판정 시즌이 틀림'); });
+T('[플레잉코치] 은퇴하면 그 구단 코치로 바로 전환(능력 그대로), 정식 빈 보직 → 보조 코치 자리 → 없으면 우선 협상 후보',()=>{ const p=pcPrep(); ok(pcOffer(p.id).ok,'준비 실패'); const r={...pcLive(p)};
+  retireOut(p,'시험 은퇴'); ok(!G.pcoach[p.id],'은퇴 뒤 기록이 남음'); const ob=G.ob.find(o=>o.fid===p.id); ok(ob&&ob.path==='coach','OB 길이 지도자가 아님 '+(ob&&ob.path));
+  const c=G.coachX.find(x=>x.ob===ob.id); ok(c&&c.sk===r.sk&&c.dv===r.dv&&c.ax,'보조 코치로 전환되지 않았거나 능력이 바뀜'); ok(obWhere(ob).k==='coach','OB 위치가 코치가 아님'); ok((G.mail||[]).some(m=>m.subj.includes(p.name)&&m.subj.includes('코치')),'전환 소식 없음');
+  ok(!(G.cmarket||[]).some(x=>x.ob===ob.id),'코치 시장에도 남음');
+  const q=pcPrep(); G.coach[G.user].bc=null; ok(pcOffer(q.id).ok,'준비 실패 2'); retireOut(q,'시험 은퇴'); const o2=G.ob.find(o=>o.fid===q.id); ok(G.coach[G.user].bc&&G.coach[G.user].bc.ob===o2.id,'비어 있던 타격코치 자리로 가지 않음');
+  const s=pcPrep(); ok(pcOffer(s.id).ok,'준비 실패 3'); G.fac.it.lab=1; retireOut(s,'시험 은퇴'); const o3=G.ob.find(o=>o.fid===s.id); const cm=(G.cmarket||[]).find(x=>x.ob===o3.id); ok(cm&&cm.res===G.user,'자리가 없을 때 우선 협상 후보로 올라가지 않음'); ok((G.mail||[]).some(m=>m.subj.includes('코치 후보')),'자리 없음 안내가 없음'); });
+T('[플레잉코치] 방출·이적하면 역할이 끝나고 자리가 비며 소식으로 알린다',()=>{ const p=pcPrep(); ok(pcOffer(p.id).ok,'준비 실패'); toFree(p,'시험 방출'); ok(!pcLive(p)&&axRoom(G.user)===1,'방출 뒤에도 자리를 씀'); ok(pcSalOf(G.user)===0,'방출 뒤에도 수당');
+  pcSweep(); ok(!G.pcoach[p.id],'기록이 남음'); ok((G.mail||[]).some(m=>m.subj.includes('플레잉코치 역할 종료')&&m.body.includes('방출')),'방출 소식 없음');
+  const q=pcPrep(); ok(pcOffer(q.id).ok,'준비 실패 2'); const op=G.teams.find(t=>t.id!==G.user).id; q.team=op; ok(!pcLive(q),'이적한 선수가 여전히 플레잉코치'); pcSweep(); ok((G.mail||[]).some(m=>m.subj.includes(q.name)&&m.body.includes('이적')),'이적 소식 없음'); ok(!pcOf(op).length,'새 구단 플레잉코치가 됨'); });
+T('[플레잉코치] AI 구단도 같은 자격·수락 식으로 맡기고, 한 구단 한 명·보조 코치 정원을 지킨다',()=>{ fresh(); G.pcoach={}; const t=G.teams.find(x=>x.id!==G.user); t.fi=t.fi||{}; t.fi.it={}; for(const k of FACK)t.fi.it[k]=1; t.fi.it.lab=4; t.fi.it.indoor=4; orgOf(t.id).coachX=[];
+  ok(axSlots(t.id)===2,'준비 실패: AI 보조 코치 자리 '+axSlots(t.id)); const L=playersOf(t.id).filter(p=>!p.foreign&&!p.prospect&&!p.ys).slice(0,4); for(const p of L){ initPers(p); p.age=35; p.svc=8; p.pers.pro=18; p.pers.loy=14; p.sal=50; }
+  for(let i=0;i<30&&!pcN(t.id);i++){ G.pcAiY=null; pcAiYear(); } ok(pcN(t.id)===1,'AI 구단이 플레잉코치를 두지 않음'); const x=pcOf(t.id)[0];
+  for(let i=0;i<10;i++){ G.pcAiY=null; pcAiYear(); } ok(pcN(t.id)===1,'AI 구단이 플레잉코치를 둘 이상 둠');
+  for(let i=0;i<40;i++)aiAsstMonthly(t.id,true); ok(axOf(t.id).length+pcN(t.id)<=axSlots(t.id),'AI 보조 코치+플레잉코치가 정원 초과 '+axOf(t.id).length+'+'+pcN(t.id));
+  const cost=aiOpsCost(t).find(r=>r[0]==='보조 코치 연봉'); ok(cost[1]>=x.r.sal,'AI 운영비에 수당이 없음');
+  const mate=playersOf(t.id).find(q=>q.isP===x.r.isP&&q!==x.p&&!q.prospect); const reg0=pcRegular; pcRegular=()=>false; try{ ok(Math.abs(pcAxBoost(mate)-clamp((x.r.dv-50)/800,0,.025)*.5)<1e-9,'AI 효과 식이 다름'); } finally{ pcRegular=reg0; }
+  const p=x.p; retireOut(p,'시험 은퇴'); const ob=G.ob.find(o=>o.fid===p.id); const w=obWhere(ob); ok(w.k==='coach'&&w.tid===t.id,'AI 플레잉코치가 은퇴 뒤 그 구단 코치가 되지 않음 '+JSON.stringify(w)); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
