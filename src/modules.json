@@ -157,7 +157,11 @@
       "src/engine/staff/99c_playing_coach.js",
       "src/engine/staff/94_owner_push.js",
       "src/engine/league/93_rain.js",
-      "src/engine/players/94_tryout.js"
+      "src/engine/players/94_tryout.js",
+      "src/engine/ladder/01_ladder_pool.js",
+      "src/engine/ladder/02_ladder_series.js",
+      "src/engine/ladder/03_ladder_pack.js",
+      "src/engine/cup/01_cup.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -306,6 +310,9 @@
       "src/ui/league/76b_nt_tour.js",
       "src/ui/assets/77_assets_ui.js",
       "src/ui/league/97_spring_camp_ui.js",
+      "src/ui/ladder/01_ladder_ui.js",
+      "src/ui/cup/01_cup_ui.js",
+      "src/ui/cup/02_cup_admin.js",
       "src/ui/runtime/99_boot.js"
     ],
     "styles": [
@@ -356,7 +363,9 @@
       "src/css/players/41_morale.css",
       "src/css/components/52_more_menu.css",
       "src/css/components/54_list_tools.css",
-      "src/css/career/86_photo_edit.css"
+      "src/css/career/86_photo_edit.css",
+      "src/css/ladder/01_ladder.css",
+      "src/css/cup/01_cup.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
@@ -370,7 +379,9 @@
       "src/core/random.mjs",
       "src/core/ratings.mjs",
       "src/core/pitches.mjs",
-      "src/core/play-timing.mjs"
+      "src/core/play-timing.mjs",
+      "src/core/ladder.mjs",
+      "src/core/cup.mjs"
     ],
     "scene3d": [
       "src/scene3d/scene.mjs",

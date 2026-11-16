@@ -1,0 +1,23 @@
+/* 프런트컵(유저 대회) 화면: 설정 화면과 같은 세 줄 배치(.setx), PC에서는 칸마다 안에서만 스크롤 */
+.cupx .cup-h{margin:0 0 4px}.cupx .cup-my{margin:6px 0;padding:6px 8px;border-radius:6px;background:var(--panel2,rgba(127,127,127,.08))}
+.cupx .cup-in{display:flex;gap:8px;align-items:center;margin:8px 0}.cupx .cup-in input{flex:1;min-width:0;max-width:16em}
+.cupx .cup-tts{margin:0 0 6px}.cupx .cup-tt{display:inline-block;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,#d4a017 22%,transparent);font-weight:700;font-size:13px;margin:0 4px 4px 0}
+.cupx .cup-alb{display:grid;gap:6px;margin-top:8px}.cupx .cup-a{display:grid;gap:4px;padding:8px;border:1px solid var(--line);border-radius:8px}.cupx .cup-a>div:first-child{display:grid;gap:2px}
+.cupx .cup-v{margin-top:10px;display:grid;gap:6px}.cupx .cup-pre{max-height:min(60vh,520px);overflow:auto;white-space:pre-wrap;font:12px/1.5 var(--f-num,monospace);background:var(--panel2,rgba(127,127,127,.08));padding:8px;border-radius:6px;margin:0;tab-size:6}
+/* 프런트컵 명예의 전당(처음 화면·설정 › 정보·구단 › 프런트컵 공용) */
+.cuphof{display:grid;gap:8px}.cuphof .hof-cup{padding:8px 0;border-top:1px solid var(--line)}.cuphof .hof-cup:first-child{border-top:0}.cuphof p{margin:2px 0}
+.cuphof .hof-h{font-size:15px}.cuphof .hof-k{display:inline-block;min-width:3.5em;font-size:12px;font-weight:700;color:var(--muted)}
+.cuphof .hof-team{margin:4px 0}.cuphof .hof-d{margin:2px 0}.cuphof .hof-d>summary{cursor:pointer;color:var(--muted)}
+.cuphof .hof-ros{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0}.cuphof .hof-tb{border-collapse:collapse;margin:4px 0;max-width:100%}.cuphof .hof-tb td,.cuphof .hof-tb th{padding:2px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.cuphof .hof-win{padding:6px 8px;border-radius:8px;background:color-mix(in srgb,#d4a017 12%,transparent)}.cuphof .hof-badge{display:inline-block;padding:1px 8px;border-radius:999px;background:#d4a017;color:#1b1400;font-weight:800;font-size:12px}
+/* 덱 보기(명예의 전당·유저 래더) */
+.dk{display:grid;gap:6px;margin:6px 0}.dk-h{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}.dk-ovr b{font-size:15px}
+.dk-c{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:4px 14px}.dk-t{margin:4px 0 2px;font-size:12px;font-weight:700;color:var(--muted)}
+.dk-r{display:grid;grid-template-columns:28px 4.6em minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:2px 0;border-bottom:1px solid var(--line);font-size:13px}
+.dk-f{width:28px;height:28px;border-radius:6px;object-fit:cover;background:var(--panel2,rgba(127,127,127,.12))}.dk-f0{display:inline-block}
+.dk-l{color:var(--muted);font-size:12px;white-space:nowrap}.dk-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dk-o{font-weight:700}.dk-x{font-size:11px;color:var(--bad,#c33)}.dk-bn{margin:2px 0}
+/* 프런트컵 관리자 */
+.admx .adm-in{display:grid;grid-template-columns:11em minmax(0,1fr);gap:6px;align-items:center;margin:4px 0}.admx .adm-in input{min-width:0}
+.admx .adm-ents{display:grid;gap:4px;margin-top:6px}.admx .adm-e{border:1px solid var(--line);border-radius:8px;padding:4px 8px}.admx .adm-e>summary{cursor:pointer}.admx .adm-drop{opacity:.6}.admx .adm-warn{color:var(--bad,#c33)}
+.admx .adm-days{display:grid;gap:4px;margin:6px 0}.admx .adm-day{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--line);font-size:13px}.admx .adm-day.on>span:first-child{color:var(--muted)}
+.admx .adm-text{width:100%;min-height:10em;font:12px/1.5 var(--f-num,monospace)}.adm-link{margin:8px 0 0;text-align:right}
