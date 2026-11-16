@@ -223,3 +223,5 @@ a.cafe-go:hover,a.cafe-go:focus-visible{background:color-mix(in srgb,#03c75a 28%
 .cfm.advm .advm-l{display:grid;gap:6px;margin:10px 0 4px}
 .cfm.advm .advm-b{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;white-space:nowrap}
 .cfm.advm .advm-b .small{flex:none}
+/* 자매구단 표: 휴대폰에서 '결연' 열이 칸 밖으로 잘리던 것. 구단 이름은 두 줄까지, 표는 칸 폭에 맞춘다(UI 3단계 3-9) */
+@media(max-width:699px){.scm-tbl{width:100%;table-layout:fixed}.scm-tbl td,.scm-tbl th{white-space:normal;word-break:keep-all}.scm-tbl th:nth-child(2),.scm-tbl td:nth-child(2){width:30%}.scm-tbl th:nth-child(3),.scm-tbl td:nth-child(3){width:22%}}
