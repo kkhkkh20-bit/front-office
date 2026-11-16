@@ -112,3 +112,8 @@
  /* 고정 머리(제목·필터·안내)가 칸보다 길어지면 칸 안 목록·페이지 넘김 줄이 잘려 숨던 것: 잘라 버리지 않고 칸째 스크롤한다 */
  #app main.ws-frame>.ws-own,#app main.ws-frame .ws-panels>.ws-panel{overflow:hidden auto}
 }
+
+/* 휴대폰: 상단 캘린더 아이콘과 진행 ▾ 메뉴의 '날짜 지정'이 같은 동작이라 메뉴 쪽은 숨긴다(UI 3단계 3-9) */
+@media(max-width:700px){.top .mmenu-i[data-a="calOpen"]{display:none}}
+/* PC 트레이드 상대 고르기: 낮은 창(1366×768)에서도 9개 구단 카드가 한 화면에. '이 구단과 협상'은 매물 줄 오른쪽에, 원하는 보강은 한 줄로(UI 3단계 3-9) */
+@media(min-width:1100px) and (max-height:900px){.tp-grid{gap:6px}.tp-card{position:relative;gap:3px;padding:7px 12px}.tp-st{gap:1px}.tp-card>em{position:absolute;right:12px;bottom:8px}.tp-meta i{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}.tp-card .tp-h .av{width:40px;height:40px}}

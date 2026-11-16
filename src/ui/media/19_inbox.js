@@ -123,9 +123,11 @@ function ibFrom(m){ return `<div class="ibs-from"><div class="ibs-face">${sender
 /* 소식 안에 들어가는 자료(FM처럼 본문 아래 같은 문서 안에): 내용 종류에 따라 다른 구성 */
 function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`, S=[];
   const sec=(t,body,cls='')=>`<section class="ibd-sec ${cls}"><h3>${t}</h3>${body}</section>`;
-  if(p){ const rp=scoutReport(p), h=seasonTotal(p,G.year,'1군'), cur=rp.cur==null?'?':dv(rp.cur), pot=rp.ofp==null?'미확인':potTierP(rp,p).s;
-    const keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit'], tl=keys.map(k=>{ const t=(rp.tools||[]).find(t=>t.k===k); return t?{k,v:rp.exact?p.r[k]:t.cur}:null; }).filter(Boolean);
-    S.push(sec('선수',`<div class="ibd-pl">${avImg(p,true)}<div><b>${esc(p.name)}</b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}${p.team!=null?' · '+esc(tshort(p.team)):''}</span><div class="ibd-key"><span>현재 종합 <b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b></span><span>잠재력 <b title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></span></div></div></div>${tl.length?`<div class="ibd-core">${tl.map(t=>`<div><span>${TOOLK[t.k]}</span><b style="color:${rcol(t.v)}">${dv(t.v)}</b></div>`).join('')}</div>`:''}`,'ibd-wide'));
+  if(p){ const rp=scoutReport(p), h=seasonTotal(p,G.year,'1군'), pot=rp.ofp==null?'미확인':potTierP(rp,p).s;
+    /* 선수 정보와 같은 숫자(scoutShow): 남의 선수·외국인 후보는 스카우트 추정 중앙값과 범위. 예전에는 스카우트 평가만 범위 없이 보여 선수 정보(스카우트+기록 종합)와 달랐다(리아네트 11-16) */
+    const SS=scoutShow(p,rp), C=SS.cur, keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit'], tl=keys.map(k=>SS.tools.find(t=>t.k===k)).filter(Boolean), rs=SS.fc?fResid(p):null;
+    const curB=C==null?'?':`${C.mid}${C.lo!=null?`<small class="ibd-rg">${C.lo}~${C.hi}</small>`:''}`;
+    S.push(sec('선수',`<div class="ibd-pl">${avImg(p,true)}<div><b>${esc(p.name)}</b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}${p.team!=null?' · '+esc(tshort(p.team)):''}</span><div class="ibd-key"><span>${SS.fc?'종합 추정':SS.exact?'현재 종합':'현재 종합(추정)'} <b data-ibcur style="color:${C?rcol(C.v):'var(--muted)'}">${curB}</b></span><span>잠재력 <b title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></span></div></div></div>${tl.length?`<div class="ibd-core">${tl.map(t=>`<div><span>${TOOLK[t.k]}</span><b data-ibt="${t.k}"${t.lo!=null?' class="rg"':''} style="color:${rcol(t.v)}">${showRg(t)}</b></div>`).join('')}</div>`:''}${SS.fc&&rs!=null?`<div class="small muted ibd-resid">${esc(fResidTxt(rs))}</div>`:''}`,'ibd-wide'));
     if(m.kind==='부상'||p.injOut>0||(p.injHist||[]).length){ const H=(p.injHist||[]).slice(-4).reverse();
       S.push(sec('의무팀 기록',`${p.injOut>0?row('현재',esc(injNow(p))+' · 약 '+p.injOut+'일')+row('복귀 예정',esc(injRetTxt(p))||'-'):row('현재','출전 가능')}${H.length?H.map(x=>row(x.y+'년',(x.k?esc(injName(x.k))+' · ':'')+x.days+'일')).join(''):row('이력','없음')}`)); }
     if(p.isP&&(p.ld||[]).length){ const L=(p.ld||[]).slice(-7).reverse(); const mx=Math.max(...L.map(x=>x[1]),1);
@@ -133,10 +135,7 @@ function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v
     S.push(sec('기록·계약',`${row('올해 1군',esc(statLine(h,p)))}${l10Text(p)?row('최근 폼',l10Text(p)):''}${row('연봉',money(p.sal||0))}${row('계약',esc(ctText(p)))}${row('병역',esc(milText(p)))}<button class="btn small" data-a="player" data-v="${p.id}">선수 정보 보기 ›</button>`)); }
   else if(m.ref!=null&&pAttr(m.ref))S.push(sec('선수',`<p class="small muted">${esc((abrOf(m.ref)||{}).name||'')} 리그를 떠난 선수입니다.</p><button class="btn small"${pAttr(m.ref)}>선수 정보 보기 ›</button>`)); /* 포스팅 등으로 떠난 선수도 연다(카페 11-09c) */
   try{ S.push(...ibKindAtt(m,pid)); }catch(e){ console.warn('소식 자료',e); }
-  const same=G.mail.filter(x=>x.from===m.from&&x.id!==m.id).slice(0,S.length>3?3:5), cat=G.mail.filter(x=>x.id!==m.id&&x.from!==m.from&&ibCat(x)===ibCat(m)).slice(0,5);
-  const li=x=>`<button class="ibs-li" data-a="mailJump" data-v="${x.id}"><span>${dmd(x.day)}${x.from!==m.from?' · '+esc(x.from):''}</span><b>${esc(x.subj)}</b></button>`;
-  if(same.length&&S.length<6)S.push(sec(`${esc(m.from)}의 다른 소식`,same.map(li).join('')));
-  if(!p&&cat.length&&S.length<3)S.push(sec(`같은 분류 최근 소식`,cat.map(li).join('')));
+  /* '○○의 다른 소식'·'같은 분류 최근 소식' 목록은 칸만 길게 만들어 뺐다(사용자 11-16). 다른 소식은 왼쪽 목록에서 본다 */
   return S.length?`<div class="ibd-att" data-n="${S.length}">${S.join('')}</div>`:''; }
 /* PC(FM식): 소식을 고르기 전 오른쪽은 빈 안내 대신 요약 상자들 */
 function ibDash(need){ const N=ibNeedList().slice(0,6), D=ibDecideList().slice(0,6); /* '분류별 안 읽음' 상자는 위 탭 숫자와 같은 내용이라 뺐다(UI 검수 2026-11-15 1-5) */

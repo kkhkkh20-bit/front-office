@@ -432,7 +432,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.pk=null;UI.trade.cash=0;UI.trade.counters=null; /* 현금·지난 역제안도 비운다(검수 11-08c) */UI.trade.msg='';UI.trade.want=null;render();},
   tcash(v){ UI.trade.cash=+v||0; render(); },
   ntcAsk(v){ const [id,tid,b]=String(v).split(':'); const r=ntcAsk(+id,+tid,b==='1'); toast(r); if(UI.trade)UI.trade.msg=r; save(); render(); },
-  tpropose(){const tr=UI.trade;const r=proposeTrade(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);tr.msg=r.msg;tr.ok=r.ok;tr.want=r.want||null;tr.counters=r.counters||null;if(r.ok){tr.give=[];tr.get=[];tr.cash=0;tr.pk=null;UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade};sfx('cheer_hit',.5);sfx('confirm',.7);G.tsug=null;} else sfx('mitt',.4); save();render();},
+  tpropose(){const tr=UI.trade;const r=proposeTrade(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);tr.msg=r.msg;tr.ok=r.ok;tr.counters=r.counters||null;if(r.ok){tr.give=[];tr.get=[];tr.cash=0;tr.pk=null;UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade};sfx('cheer_hit',.5);sfx('confirm',.7);G.tsug=null;} else sfx('mitt',.4); save();render();},
+  tctrNo(){ const tr=UI.trade; tr.counters=null; tr.ok=false; tr.msg=`${tshort(tr.tid)} 단장의 수정 제안을 거절했습니다. 조건을 바꿔 다시 제안할 수 있습니다.`; render(); },
+  tctrEdit(v){ const tr=UI.trade; const c=(tr.counters||[])[+v]; if(!c)return; tr.give=[...c.give]; tr.get=[...c.get]; tr.cash=c.cash||0; tr.pk=c.pk||null; tr.counters=null; tr.ok=false; tr.msg='상대 단장의 수정 제안을 불러왔습니다. 고쳐서 다시 제안하세요(그대로 내면 그 조건을 수락하는 것과 같습니다).'; render(); }, /* 상대 조건을 출발점으로 다시 짠다 */
   tcounter(v){ const tr=UI.trade; const c=(tr.counters||[])[+v]; if(!c)return; const bk={give:[...tr.give],get:[...tr.get],cash:tr.cash,pk:tr.pk,counters:tr.counters,msg:tr.msg,ok:tr.ok,want:tr.want}; tr.give=[...c.give]; tr.get=[...c.get]; if(c.cash!=null)tr.cash=c.cash; if(c.pk)tr.pk=c.pk; tr.counters=null; A.tpropose();
     if(UI.cfm&&UI.cfm.k==='tpropose')UI.cfm.doc.noGo=()=>{ Object.assign(UI.trade,bk); render(); }; }, /* 상대가 낸 조건 그대로(현금·지명권 포함). 결재를 취소하면 작성하던 안과 역제안 카드로 돌아간다(검수 11-09v) */
   stampOff(){ UI.stamp=null; render(); },
@@ -469,6 +471,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ivFolNow(){ if(G.iv&&G.iv.k==='follow'&&!G.iv.done){ ivAuto(); toast('홍보팀이 후속 질문에 대신 답했습니다.'); save(); try{ renderSheet(); }catch(e){} render(); } },
   psNoCast(v){ G.cfg=G.cfg||{}; G.cfg.psNoCast=v==='1'; save(); render(); },
   ivFolDel(v){ G.cfg=G.cfg||{}; G.cfg.ivFolDel=v==='1'; if(v==='1'&&G.iv&&G.iv.k==='follow'&&!G.iv.done)ivAuto(); save(); render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} },
+  actMode(v){ try{ localStorage.setItem(ACT_MODE_KEY,v==='compact'?'compact':'all'); }catch(e){} render(); if(UI.sheet!=null)try{ renderSheet(); }catch(e){} }, /* 선수 화면 버튼 표시(기기마다) */
   ratScale(v){ G.cfg=G.cfg||{}; G.cfg.scale=v==='2080'?'2080':'100'; save(); render(); if(UI.sheet!=null)try{ renderSheet(); }catch(e){} }, /* 능력치 표기 */
   obAct(v){ const [id,k]=v.split(':'); const ob=obOf(id); if(!ob)return; G.obFace=G.obFace||{};
     if(k==='coach'){ let c=(G.cmarket||[]).find(x=>x.ob===id); if(!c){ c=obCoach(ob); G.cmarket.unshift(c); } UI.crole=c.role; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); return; }

@@ -29,7 +29,7 @@ function cpFacStat(k){ const ps=playersOf(G.user); const dev=(G.devProg||[]).len
   return ''; }
 
 function cpPips(lv,max,b){ return `<span class="fpip">${[...Array(max)].map((_,i)=>`<i class="${i+1<=lv?'on':''}${b&&i+1===b.lv?' bld':''}"></i>`).join('')}<em>${lv}/${max}</em></span>`; }
-function cpBar(b){ return `<div class="cpbar"><i style="width:${Math.round(b.pct*100)}%"></i></div><div class="small">진행 <b class="num">${Math.round(b.pct*100)}%</b> · 남은 <b class="num">${b.left}일</b> · ${dmd(b.done)} 완공${b.cap?' · 모기업 투자':''}</div>`; }
+function cpBar(b){ return `<div class="cpbar"><i style="width:${Math.round(b.pct*100)}%"></i></div><div class="small">진행 <b class="num">${Math.round(b.pct*100)}%</b> · 남은 <b class="num">${b.left}일</b> · ${dmdA(b.done)} 완공${b.cap?' · 모기업 투자':''}</div>`; }
 
 /* 아무것도 고르지 않았을 때: 진행 중인 공사 전부 */
 function cpIdle(S){ const L=Object.entries(S.bmap);

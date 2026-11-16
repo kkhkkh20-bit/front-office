@@ -341,3 +341,8 @@ button.st-n:hover b{text-decoration:underline}
 /* 보고 제목·이름은 자르지 않고 두 줄로(UI 3단계 3-2) */
 .dh-ri b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all}
 .scn-c b,.scn-c em{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+/* 스태프 시장·분석원 후보 카드: 제안·20% 더 버튼 줄을 이름 바로 아래로 올려 첫 화면에서 보이게(UI 3단계 3-9, 구단주 원칙: 자주 쓰는 동작은 보이게) */
+:is(.tgrid>.tcard:has([data-a=hireMgr],[data-a=hireScout],[data-a=anaHire],[data-a=hireCoach],[data-a^=stBid])){display:flex;flex-direction:column}
+:is(.tgrid>.tcard:has([data-a=hireMgr],[data-a=hireScout],[data-a=anaHire],[data-a=hireCoach],[data-a^=stBid]))>*{order:3}
+:is(.tgrid>.tcard:has([data-a=hireMgr],[data-a=hireScout],[data-a=anaHire],[data-a=hireCoach],[data-a^=stBid]))>:first-child{order:0}
+:is(.tgrid>.tcard:has([data-a=hireMgr],[data-a=hireScout],[data-a=anaHire],[data-a=hireCoach],[data-a^=stBid]))>:is(.row:not(:first-child),.tc-ft){order:1;margin-block:4px 6px}

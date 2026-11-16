@@ -295,9 +295,9 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview:has(.pf-career.pf-off) .pf-fm-info:not(.pf-career){grid-area:1/5/4/6}
   #sheet .pf-overview:has(.pf-fm-info:not(.pf-career).pf-off) .pf-career{grid-area:1/5/4/6}
   #sheet .pf-overview:has(.pf-fm-info:not(.pf-career).pf-off):has(.pf-career.pf-off){grid-template-columns:250px minmax(0,1.5fr) minmax(0,1fr) 270px}
-  /* 시즌 통계는 통산과 최근 세 시즌만(전체는 기록 탭) */
-  #sheet .pf-overview .pf-season-table tbody tr:nth-child(n+5){display:none}
-  #sheet .pf-overview .pf-season-table .tw{overflow:visible!important;flex:none}
+  /* 시즌 통계: 모든 시즌(국내·해외)을 연도 순서로 두고, 상자 높이를 넘는 지난 시즌은 표 안에서 내려 본다(제보 11-16: 통산과 최근 세 시즌만 남기고 줄을 숨겨 2024~2033 기록이 사라진 것처럼 보였다) */
+  #sheet .pf-overview .pf-season-table .tw{overflow:auto!important;max-height:156px;flex:none;scrollbar-width:thin}
+  #sheet .pf-overview .pf-season-table thead th{position:sticky;top:0;background:var(--panel);z-index:1}
   #sheet .pf-overview .pf-season-table :is(th,td){padding:3px 4px;white-space:nowrap}
   /* 인물 카드·현재 상태는 짧게: 사진 높이 상한, 기분 이유는 두 줄까지 */
   #sheet .pf-overview .pf-fmcard{display:flex!important;flex-direction:column}
@@ -307,9 +307,14 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-state .pf-fact{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;width:calc(50% - 5px);margin-right:5px;padding:3px 0;vertical-align:top;border:0}
   #sheet .pf-overview .pf-state .pf-fact>b{text-align:left}
   /* 능력 차트는 남는 높이만큼(위·아래 상자 높이를 먼저 정하고) */
-  #sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;min-height:0}
-  #sheet .pf-overview .pf-radar .radar{flex:1 1 auto;min-height:0;height:auto;max-height:100%;width:100%}
+  /* 능력 차트가 다른 상자에 밀려 쪼그라들지 않게 최소 높이를 둔다(헬로봉쥬 11-16). 모자라면 pfFit()이 구속·수비 위치 같은 낮은 순서 상자를 접는다 */
+  #sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;min-height:clamp(240px,36vh,340px)}
+  #sheet .pf-overview .pf-radar .radar{flex:1 1 auto;min-height:200px;height:auto;max-height:100%;width:100%}
   #sheet .pf-overview .pf-pos-mini :is(.pf-field,svg){max-height:150px}
+  /* 아래 줄(시즌 통계·수비 위치/구속·경력)은 내용만큼 키우지 않고 높이를 묶는다: 남는 높이를 세부 능력·능력 차트에 준다(구단주 11-17 '능력치는 한눈에, 하단 공간이 너무 남는다') */
+  #sheet .pf-overview :is(.pf-season-table,.pf-pos-mini,.pf-pitch-head,.pf-career){max-height:clamp(150px,24vh,230px)}
+  #sheet .pf-overview .pf-season-table .tw{max-height:none}
+  #sheet .pf-overview .pf-pos-mini :is(.pf-field,svg){max-height:clamp(100px,16vh,150px)}
   body.fm #sheet .sheet.pf-screen:has(.detail-navigation .detail-acts) .pf-overview{padding-bottom:8px!important} /* 면담·⋯가 위 줄에 있으면 아래 여백이 필요 없다 */
 }
 @media(min-width:1100px) and (max-width:1599px){

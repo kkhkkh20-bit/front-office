@@ -15,8 +15,12 @@
 .mmenu-i[disabled]{opacity:.45;cursor:default}
 /* 대표 동작과 ⋯는 한 줄: 행동 줄이 여러 줄로 쌓이지 않게 */
 .qacts{align-items:center}.qacts .act-main{flex:0 1 auto}
+/* 모두 보이기(기본): PC는 넘치면 다음 줄로, 휴대폰은 가로로 밀어 보는 한 줄(⋯ 없음) */
+.qacts.qacts-all{flex-wrap:wrap}.qacts.qacts-all>.btn{flex:0 0 auto;white-space:nowrap}
+@media(min-width:1100px){.fm-ptabs .detail-navigation .detail-acts.qacts-all{flex:1 1 0;min-width:0;flex-wrap:wrap;justify-content:flex-end;overflow:visible}}
 @media(max-width:700px){
-  :is(#app,#sheet,body) .qacts :is(.act-main,.mmenu-b){min-height:44px!important;min-width:44px} /* 12_ux_fixes의 .btn.small 36px!important보다 앞서게 */
+  :is(#app,#sheet,body) .qacts :is(.act-main,.act-sub,.mmenu-b){min-height:44px!important;min-width:44px}
+  .qacts.qacts-all{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;max-width:100%}.qacts.qacts-all::-webkit-scrollbar{display:none} /* 12_ux_fixes의 .btn.small 36px!important보다 앞서게 */
   .mmenu-p{position:fixed;inset:auto 0 var(--app-footer-h,0px) 0;top:auto;max-width:none;min-width:0;z-index:1000;padding:8px 12px 12px;border-radius:14px 14px 0 0;border-width:1px 0 0;box-shadow:0 0 0 100vmax #0009,0 -8px 24px #000a}
   .mmenu.up>.mmenu-p,.mmenu.left>.mmenu-p{top:auto;bottom:var(--app-footer-h,0px);left:0;right:0}
   .mmenu-h{display:block;padding:6px 12px 8px;font-size:var(--ui-caption,12px);color:var(--muted)}

@@ -163,6 +163,7 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
   .ibd-pl{display:flex;gap:12px;align-items:center}.ibd-pl .av{width:72px;height:72px}.ibd-pl b{display:block;font-size:17px}.ibd-pl span{font-size:12px;color:var(--muted)}
   .ibd-key{display:flex;gap:14px;margin-top:6px}.ibd-key span{font-size:12px;color:var(--muted)}.ibd-key b{display:inline;font:700 20px var(--f-num);color:var(--ink);margin-left:4px}
   .ibd-core{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:6px}.ibd-core>div{display:grid;justify-items:center;padding:4px 0;border-top:2px solid var(--line)}.ibd-core span{font-size:var(--ui-caption);color:var(--muted)}.ibd-core b{font:700 20px var(--f-num)}
+  .ibd-core b.rg{font-size:15px;white-space:nowrap}.ibd-key .ibd-rg{margin-left:4px;font:500 12px var(--f-num);color:var(--muted)}.ibd-resid{margin:4px 0 0} /* 추정 범위(선수 정보와 같은 숫자) */
   .ibd-bars>div{display:grid;grid-template-columns:44px minmax(0,1fr) 40px;gap:6px;align-items:center;font-size:12px;padding:2px 0}.ibd-bars span{color:var(--muted)}.ibd-bars i{display:block;height:8px;border-radius:2px;background:var(--team-hi,#4fa3ff)}.ibd-bars b{text-align:right;font-family:var(--f-num)}
   .ibd-sec .pf-fact{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line)}.ibd-sec .pf-fact span{color:var(--muted);flex:none}.ibd-sec .pf-fact b{text-align:right;font-weight:600}
   .ibd-sec>.btn{align-self:flex-start;margin-top:4px}
