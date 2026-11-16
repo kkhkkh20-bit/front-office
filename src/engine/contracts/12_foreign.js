@@ -124,7 +124,7 @@ function fScout(p,rp){ rp=rp||scoutReport(p); const sd=rp.sd||0; const n=sd>=8?0
   const I=fInfo(G.user,p), {r,lv,k,mine}=I, isc=I.isc, sc=rp.cur; let {m,ms,m0,rc}=fCandMix(p,I,sd,sc);
   const mid=m==null?null:dv(m), band=m==null?null:dvSd(m,ms*1.3);
   const h=p.prev, plv=ovlCandLvl(p), rec=h?(p.isP?`${plv} ${ipStr(h.outs||0)}이닝`:`${plv} ${h.pa||0}타석`)+(p.prev2?' 외 1시즌':'')+(p.now&&p.now.y===G.year?' · 올해 기록 포함':''):'';
-  const why=[]; if(rec)why.push(`기록: ${rec}(리그 기록 ${fRelL(p.prevLvl)})`); if(p.mlbG)why.push(`MLB 통산 ${p.mlbG}경기`);
+  const why=[]; if(rec)why.push(`기록: ${rec}(리그 기록 ${fRelL(p.prevLvl)})`); if(p.mlbG)why.push(`MLB 통산 ${p.mlbG}경기`); if(p.ovp>=2)why.push(`예전에도 한국행을 알아본 선수(${p.ovp}번째 · 지난 기록이 이어짐)`); /* 해외 후보군에서 다시 나온 후보(해외 활성화 3-3) */
   why.push(`스카우트: ${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 파견`:''}${fwatchOn(p.id)?` · 관찰 파악도 ${k}%`:''}${mine?' · 직접 발굴':''}`);
   let tip=''; if(n<3){ if(!fwatchOn(p.id))tip='관찰 명단에 올리면 매주 보고가 쌓여 범위가 좁아집니다.'; else if(k<100)tip=`관찰 중입니다. 파악도가 오를수록 범위가 좁아집니다.`; if(lv<3)tip+=(tip?' ':'')+`${IREG[r].l} 스카우트망을 넓히거나 스카우트를 파견해도 정확해집니다.`; }
   return {n,l:S.l,cls:S.cls,d:S.d,mid,lo:mid==null?null:Math.max(20,mid-band),hi:mid==null?null:Math.min(100,mid+band),band,why,tip,
@@ -175,14 +175,14 @@ function scoutFindWeek(silent){ const o=dobj(G.day); if(!(foreignOpen()||o.m===1
 function refreshFMarket(n,drop){
   /* 에이전트 공용 후보를 최소 인원으로 유지하고, 오래 팔리지 않은 후보는 시장을 떠난다(관찰 중이면 남김) */
   G.fmarket=(G.fmarket||[]).filter(id=>G.players[id]&&G.players[id].team==null); const W=new Set((G.fwatch||[]).concat(...Object.values(G.fwatchT||{})).map(w=>w&&w.id)); /* 이직 전 구단에 남겨 둔 관찰 명단도 보호(검수 11-09b) */ for(const id of G.fmarket){ const q=G.players[id]; if(q&&q.fneg&&q.fneg.dl)W.add(id); } /* 우리 답을 기다리는(협상 기한이 남았거나, 지났지만 아직 결과를 처리하지 않은) 후보도 정리·교체에서 뺀다(검수 11-09zl: 월초 정리가 마감 처리보다 먼저 돌아 삭제) */
-  for(const id of [...G.fmarket]){ const q=G.players[id]; if(q.fday==null)q.fday=G.day; if(!W.has(id)&&G.day-q.fday>80){ G.fmarket=G.fmarket.filter(x=>x!==id); dropP(id); } }
+  for(const id of [...G.fmarket]){ const q=G.players[id]; if(q.fday==null)q.fday=G.day; if(!W.has(id)&&G.day-q.fday>80){ G.fmarket=G.fmarket.filter(x=>x!==id); try{ ovpBack(q); }catch(e){} dropP(id); } } /* 팔리지 않은 후보는 해외 후보군으로 돌아간다(해외 활성화 3-3) */
   const ag=()=>G.fmarket.map(id=>G.players[id]).filter(q=>q&&q.fsrc!=='scout');
-  for(let i=0;i<(drop||0);i++){ const old=ag().filter(q=>!W.has(q.id)).sort((a,b)=>a.fday-b.fday)[0]; if(!old)break; G.fmarket=G.fmarket.filter(x=>x!==old.id); dropP(old.id); }
+  for(let i=0;i<(drop||0);i++){ const old=ag().filter(q=>!W.has(q.id)).sort((a,b)=>a.fday-b.fday)[0]; if(!old)break; G.fmarket=G.fmarket.filter(x=>x!==old.id); try{ ovpBack(old); }catch(e){} dropP(old.id); }
   /* 비시즌에는 후보가 넉넉해야 고르는 재미가 있다. 창단 첫해 겨울은 10개 구단이 한꺼번에 찾으므로 더 많이 */
   const fd0=G.startY===G.year&&period()!=='season'; const min=period()==='season'?12:fd0?54:32; /* 풀을 넉넉히(사용자 피드백 11-09f) */ let g=0;
   while(ag().length<min&&g++<40){ const ps=ag(); const asiaN=ps.filter(p=>p.foreign==='아시아').length; const yb=ps.filter(p=>p.foreign==='용병'); const batN=yb.filter(p=>!p.isP).length, pitN=yb.filter(p=>p.isP).length;
     const aMin=Math.round(min*.2), bMin=Math.round(min*.3), pMin=Math.round(min*.42);
-    if(asiaN<aMin)G.fmarket.push(newForeign('아시아',{market:true}).id); else if(pitN<pMin)G.fmarket.push(newForeign('용병',{isP:true,market:true}).id); else if(batN<bMin)G.fmarket.push(newForeign('용병',{isP:false,market:true}).id); else G.fmarket.push(newForeign('용병',{market:true}).id); }
+    if(asiaN<aMin)G.fmarket.push(fCandNew('아시아').id); else if(pitN<pMin)G.fmarket.push(fCandNew('용병',{isP:true}).id); else if(batN<bMin)G.fmarket.push(fCandNew('용병',{isP:false}).id); else G.fmarket.push(fCandNew('용병').id); } /* fCandNew: 해외 후보군에서 먼저(해외 활성화 3-3) */
 }
 function foreignOpen(){ const per=period(); if(per==='post')return false; if(per==='season')return G.day<=foreignDL(); return G.day>=KD(12,1)||per==='pre'; }
 /* 재계약 기간에 결별하기로 한 선수는 자리를 비운 것으로 본다(계약 확정 때 떠난다). 영입 검사·영입 화면·재정 표시가 같은 기준(검수 11-09c: 결별 선수까지 4명으로 셈) */
@@ -247,12 +247,12 @@ function aiForeignDaily(){ if(!foreignOpen()||period()==='season')return; const 
    KBO 시즌 중 교체 외국인이 이 무렵에 몰린다. 올해 트리플A 기록(p.now)을 그 주까지 채워서 낸다. 같은 시장이라 AI 교체 판단(aiForeignReview)도 같은 후보를 본다 */
 const F_OPT={d0:[6,1],d1:[7,10],max:24};
 function fOptWeek(){ if(period()!=='season'||G.day<KD(...F_OPT.d0)||G.day>KD(...F_OPT.d1))return []; const ag=(G.fmarket||[]).filter(id=>{ const q=G.players[id]; return q&&q.team==null&&q.fsrc!=='scout'; }).length; const n=Math.min(Math.max(0,F_OPT.max-ag),ri(2,3)); const out=[];
-  for(let i=0;i<n;i++){ const q=newForeign('용병',{market:true,lvl:'트리플A',age:ri(28,33)}); q.mlbG=Math.max(q.mlbG||0,ri(20,220)); const o=dobj(G.day); q.fopt=KD(o.m,G.day<KD(o.m,15)?1:15); /* 이번 달 1일 또는 15일(이미 지난 날짜) */
+  for(let i=0;i<n;i++){ const q=fCandNew('용병',{lvl:'트리플A',age:ri(28,33),amin:28,amax:33}); q.mlbG=Math.max(q.mlbG||0,ri(20,220)); const o=dobj(G.day); q.fopt=KD(o.m,G.day<KD(o.m,15)?1:15); /* 이번 달 1일 또는 15일(이미 지난 날짜) */
     const wk=Math.max(4,(G.day-G.cal.open)/7), LA=LG_ADJ['트리플A']; q.now=Object.assign({y:G.year,lvl:'트리플A'},q.isP?simPit(q,Math.round(wk*(isSPr(q)?15:6)*rnd(.8,1.1)),LA[1]):simBat(q,Math.round(wk*21*rnd(.8,1.1)),LA[0])); q.now.g=q.isP?Math.max(1,Math.round((q.now.outs||0)/(isSPr(q)?17:3.5))):Math.round((q.now.pa||0)/4.1);
     G.fmarket.push(q.id); out.push(q); } return out; }
 /* 매주 한국행에 새로 관심을 보인 후보가 시장에 들어온다(사용자 피드백 11-09f: 첫 주에 안 잡으면 남은 선수만 고르게 됨). 겨울 주 3~5명·시즌 중 2~3명, 에이전트 공용 후보는 겨울 48명·시즌 중 18명까지. 좋은 후보(예상 65 초과)만 소식 */
 function fNewWeek(){ G.fmarket=G.fmarket||[]; const ag=G.fmarket.filter(id=>{ const q=G.players[id]; return q&&q.team==null&&q.fsrc!=='scout'; }).length; const n=Math.min(Math.max(0,(period()==='season'?18:48)-ag),period()==='season'?ri(2,3):ri(3,5)); const hot=[];
-  for(let i=0;i<n;i++){ const k=R()<.22?'아시아':'용병'; let q=newForeign(k,{market:true}); if(dv(ovr(q))>65&&R()<.45){ delete G.players[q.id]; q=newForeign(k,{market:true}); } /* 시즌 준비가 한창일 때 새로 한국행을 알아보는 선수는 대체로 중하위권: 상위권은 일부만 다시 뽑아 줄인다 */ G.fmarket.push(q.id); if(fNewsOk(q))hot.push(q); }
+  for(let i=0;i<n;i++){ const k=R()<.22?'아시아':'용병'; let q=fCandNew(k); if(dv(ovr(q))>65&&R()<.45){ if(q.ovp){ try{ ovpBack(q); }catch(e){} } delete G.players[q.id]; q=fCandNew(k); } /* 시즌 준비가 한창일 때 새로 한국행을 알아보는 선수는 대체로 중하위권: 상위권은 일부만 다시 뽑아 줄인다 */ G.fmarket.push(q.id); if(fNewsOk(q))hot.push(q); }
   if(period()!=='season'){ let K=[]; try{ K=ovsRetWinter(); }catch(e){} /* KBO 경력 외국인 재등장: 겨울에 한 번(해외 활성화 1-1) */
     if(K.length&&!G.unemp)mail('스카우트팀',`KBO 경력 외국인 후보: ${K.map(q=>q.name).join(', ')}`,`KBO에서 뛰었던 선수가 다시 한국행을 알아봅니다. 우리 리그 기록과 떠난 뒤 해외 기록을 함께 보세요.\n${K.map(q=>`${q.name}(${posLabel(q)}, ${q.age}세 · ${fKboTxt(q)} · 전 소속 ${tshort(q.fkbo.from)} · 지난해 ${q.prevLvl} · 요구 ${Math.round(q.ask/USD)}만 달러)`).join('\n')}`,{kind:'외국인',acts:[...K.slice(0,2).map(q=>({l:`${q.name} 보기`,a:'player',v:q.id})),{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); }
   { const O=fOptWeek(); if(O.length&&!G.unemp)mail('스카우트팀',`트리플A 옵트아웃 후보: ${O.map(q=>q.name).join(', ')}`,`마이너 계약의 옵트아웃 날짜가 지나 빅리그에 오르지 못한 선수가 한국행을 알아봅니다. 올해 트리플A 기록이 붙어 있습니다. 다른 구단도 같은 후보를 봅니다.\n${O.map(q=>`${q.name}(${posLabel(q)}, ${q.age}세 · 옵트아웃 ${dmd(q.fopt)} · 요구 ${Math.round(Math.min(q.ask,fNewCap())/USD)}만 달러)`).join('\n')}`,{kind:'외국인',acts:[...O.slice(0,2).map(q=>({l:`${q.name} 보기`,a:'player',v:q.id})),{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); }

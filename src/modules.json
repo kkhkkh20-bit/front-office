@@ -50,6 +50,7 @@
       "src/engine/players/34_feats.js",
       "src/engine/market/35a_ovs_league.js",
       "src/engine/market/35_abroad.js",
+      "src/engine/market/35b_ovs_world.js",
       "src/engine/staff/36_relations.js",
       "src/engine/finance/37_stadium.js",
       "src/engine/finance/37b_stadium_expand.js",
