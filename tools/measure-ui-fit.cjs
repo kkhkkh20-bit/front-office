@@ -65,4 +65,4 @@ const MET=()=>{
     }catch(e){res.push({ph,w,h,name,err:e.message.slice(0,120)});console.log('ERR',ph,w,name,e.message.slice(0,100));}
    }}
  }
- fs.writeFileSync(path.join(OUT,'sweep.json'),JSON.stringify(res,null,1));await b.close();await srv.close();})().catch(e=>{console.error(e);process.exit(1);});
+ fs.writeFileSync(path.join(OUT,process.env.JSON_NAME||'sweep.json'),JSON.stringify(res,null,1));await b.close();await srv.close();})().catch(e=>{console.error(e);process.exit(1);});

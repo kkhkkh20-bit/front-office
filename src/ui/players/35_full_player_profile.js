@@ -17,7 +17,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const fcand=p.foreign&&p.team==null, fsx=fcand?fScout(p,rp):null, rsd=rp.exact?0:(rp.sd||0)*.9;
   const rg=v=>{ const b=rsd>=1.5?dvSd(v,rsd):0; return b>=2?`${Math.max(20,dv(v)-b)}~${Math.min(100,dv(v)+b)}`:dv(v); };
   const core=tools.map(t=>`<div class="pr-tool pf-core-cell"><span>${TOOLK[t.k]}</span><strong class="${typeof rg(t.cur)==='string'?'pf-rg':''}" style="color:${rcol(t.cur)}">${rg(t.cur)}</strong>${dl?dTag(t.cur,dl.r[t.k]):''}<small>${rp.ofp!=null&&t.fut>t.cur?'잠재 '+dv(t.fut):rp.exact?'현재':'추정'}</small></div>`).join('');
-  const cols=fmOn()?(p.isP?[['투구','체력·몸','구종'],['투구 정보','성격']]:[['타격','주루'],['수비','체력·몸','성격']]):p.isP?[['투구','체력·몸'],['구종','투구 정보'],['성격']]:[['타격','주루'],['수비','체력·몸'],['성격']];
+  const cols=fmOn()?(p.isP?[['투구','체력·몸'],['투구 정보','구종','성격']]:[['타격','체력·몸'],['수비','주루','성격']]):p.isP?[['투구','체력·몸'],['구종','투구 정보'],['성격']]:[['타격','주루'],['수비','체력·몸'],['성격']];
   const row=([label,v,type],gn)=>{const numeric=!type||type==='n'||type==='i',value=numeric?(type==='n'||type==='i'?Math.round(v):rg(v)):v;return `<div class="pf-attribute-row${numeric?'':' text'}" title="${esc(attrHelp(label))}"><span>${esc(label)}</span>${dOld&&numeric&&!type?dTag(v,oldV.get(gn+'|'+label),true):''}<b class="pf-score" style="color:${numeric&&type!=='n'?rcol(type==='i'?100-v:v):'var(--ink)'}">${esc(String(value))}</b></div>`;};
   const attributes=d?cols.map(col=>`<div class="pf-attribute-column">${col.map(name=>{const g=d.groups.find(g=>g[0]===name);return g?`<section class="pf-attribute-group" data-group="${name}"><h3>${name}</h3>${g[1].map(r=>row(r,name)).join('')}</section>`:'';}).join('')}</div>`).join(''):'<p class="small muted keep">평가 자료가 없습니다. 스카우트 관찰이 필요합니다.</p>';
   const stateRow=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`;
@@ -94,3 +94,14 @@ function attrCmpBar(p,m,dl){ const opts=[['1m','최근 1개월'],['sea','올해'
   const ch=dl?keys.map(k=>{ const x=dv(p.r[k])-dv(dl.r[k]??p.r[k]); return {k,x}; }):[]; const sum=ch.length?ch.reduce((a,c)=>a+c.x,0):0;
   return `<div class="pf-cmp"><div class="row" style="gap:4px;flex-wrap:wrap"><span class="small muted">능력 변화</span>${opts.map(([k,l])=>`<button class="chipn${m===k?' on':''}" data-a="attrCmp" data-v="${k}">${l}</button>`).join('')}${dl?`<span class="small muted">${dmd(dl.from)} 대비 · 핵심 합계 <b class="${sum>0?'good':sum<0?'bad':''}">${sum>0?'+':''}${sum}</b></span>`:m!=='off'?'<span class="small muted">비교할 기록이 아직 없습니다</span>':''}</div>
     ${L.length>=2?`<div class="pf-trend">${keys.map(k=>`<span><i>${TOOLK[k]}</i>${spark(k)}<b>${dv(p.r[k])}</b></span>`).join('')}</div>`:''}</div>`; }
+
+/* 선수 상황판 PC 맞춤(UI 3단계 3-0): 화면에 들어가지 않는 상자를 낮은 순서부터 접는다. 접힌 내용은 위 탭에 그대로 있다.
+   그래도 넘치면(아주 낮은 창) 상자를 자르지 않고 화면 전체를 한 번에 내린다(.pf-scroll). */
+const PF_FIT_ORDER=['.pf-career','.pf-pos-mini','.pf-pitch-head','.pf-attributes .pf-trend','.pf-report .pf-rp-why','.pf-report .pf-rp-mop','.pf-fm-info:not(.pf-career)','.pf-season-table'];
+function pfFit(){ if(typeof document==='undefined')return; const o=document.querySelector('#sheet .pf-overview'),sh=o&&o.closest('.sheet'); if(!o||!sh)return;
+  o.querySelectorAll('.pf-off').forEach(e=>e.classList.remove('pf-off')); sh.classList.remove('pf-scroll'); if(innerWidth<1100)return;
+  const boxes=()=>[...o.querySelectorAll(':scope>*>*,:scope .pf-main-top>*')].filter(e=>e.getClientRects().length&&!e.matches('.pf-main-top'));
+  const over=()=>o.scrollHeight>o.clientHeight+2||boxes().some(e=>e.scrollHeight>e.clientHeight+2);
+  for(const q of PF_FIT_ORDER){ if(!over())return; o.querySelectorAll(q).forEach(e=>{ if(e.getClientRects().length)e.classList.add('pf-off'); }); }
+  if(over())sh.classList.add('pf-scroll'); }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ pfFit(); }catch(e){} },120); }); }
