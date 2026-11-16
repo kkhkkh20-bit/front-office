@@ -479,6 +479,11 @@ textarea.code{width:100%;min-height:80px;background:#0b1014;color:var(--ink);bor
 .pf-bars{display:grid;gap:6px;margin:8px 0 12px}.pf-bar{display:grid;grid-template-columns:44px minmax(0,1fr) 72px 96px;gap:8px;align-items:center}.pf-bar .fx-bar{margin:0;height:9px;background:var(--panel2);border-radius:2px;position:relative}.pf-bar .fx-bar i{display:block;height:100%;background:var(--acc);border-radius:2px}
 @media(max-width:520px){.pf-bar{grid-template-columns:40px minmax(0,1fr) 64px}.pf-bar em{display:none}}
 .spl-xs{display:grid;gap:3px;margin-top:8px}.spl-x{display:grid;grid-template-columns:64px 56px minmax(0,1fr);gap:8px;align-items:center;font-size:13px}
+
+/* 선수단 표: 열마다 머리글과 칸을 같은 정렬로(구단주 11-17). 선수·포지션·글자 열은 왼쪽, 숫자·별·막대는 가운데. 현재 칸은 컨디션 표시 자리(오른쪽 26px)를 머리글에도 둔다 */
+table.rt.rt :is(th,td).rta-c{text-align:center}
+table.rt.rt :is(th,td).rta-l{text-align:left}
+table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
 /* 홈 대시보드 */
 .homeg{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:10px;align-items:start}
 .homeg .col{display:grid;gap:10px;min-width:0}
@@ -36563,13 +36568,14 @@ function rfmt(k,v,p){ if(v==null)return '-';
   if(k==='whip'||k==='fip')return v.toFixed(2); if(k==='ip')return ipStr(v); if(k==='war')return `<b style="color:${v>=3?'var(--good)':v<0?'var(--bad)':'inherit'}">${v.toFixed(1)}</b>`; return v; }
 /* ===== 선수 표 열 설정: 사용자가 보이는 열과 순서를 고른다(브라우저에 저장) ===== */
 const RCOL_X_B=[['h','안타'],['d','2루타'],['r','득점'],['cs','도루자']], RCOL_X_P=[['h','피안타'],['hra','피홈런'],['fip','FIP'],['arm','팔 부하']];
-const RBASE=[['cur','현재'],['chg','1개월 변화'],['sal','연봉'],['pos','포지션'],['age','나이'],['fut','잠재력'],['mor','기분'],['fat','피로']];
+/* '1개월 변화' 열은 뺐다(구단주 11-17: 따로 보여 줄 필요 없음). 저장된 열 설정에 남아 있어도 rcolKeys가 없는 열로 걸러 낸다 */
+const RBASE=[['cur','현재'],['sal','연봉'],['pos','포지션'],['age','나이'],['fut','잠재력'],['mor','기분'],['fat','피로']];
 /* 능력 열: 선수 화면 스카우트 리포트와 같은 평가(우리 코치진·스카우트가 본 값). 다른 구단 선수는 담당 스카우트가 본 범위만, 못 본 선수는 '-' */
 const RCOL_AB_P=[['t_stf','구위'],['t_ctl','제구'],['t_sta','체력'],['velo','구속'],['conf','평가 확신도']], RCOL_AB_B=[['t_con','컨택'],['t_pow','파워'],['t_eye','선구'],['t_spd','주력'],['t_def','수비'],['conf','평가 확신도']];
 function rcolAll(pit){ return RBASE.map(([k,l])=>[k,k==='pos'&&pit?'역할':l]).concat(pit?RCOL_AB_P:RCOL_AB_B,pit?RCOL_P:RCOL_B,pit?RCOL_X_P:RCOL_X_B,[['ct','계약'],['org','입단'],['inj','부상']]); }
 const rTool=(rp,k)=>{ const t=(rp.tools||[]).find(x=>x.k===k); return t?t.cur:null; };
 /* 휴대폰: 넘기기 전 첫 묶음에 종합·포지션·나이·잠재력이 함께 보이게 변화는 뒤로(카페 11-09b) */
-function rcolDef(pit){ return (typeof innerWidth!=='undefined'&&innerWidth<=TWP_W?['cur','pos','age','fut','chg','sal','fat']:['cur','chg','pos','age','fut','sal','fat']).concat(pit?['g','gs','ip','w','l','sv','hld','era','whip','so','war']:['g','pa','avg','obp','slg','ops','hr','rbi','sb','war']); }
+function rcolDef(pit){ return (typeof innerWidth!=='undefined'&&innerWidth<=TWP_W?['cur','pos','age','fut','sal','fat']:['cur','pos','age','fut','sal','fat']).concat(pit?['g','gs','ip','w','l','sv','hld','era','whip','so','war']:['g','pa','avg','obp','slg','ops','hr','rbi','sb','war']); }
 function rcolLoad(){ if(UI.rcols)return UI.rcols; try{ UI.rcols=JSON.parse(localStorage.getItem('danjang-rcols')||'null')||{}; }catch(e){ UI.rcols={}; } return UI.rcols; }
 function rvUser(){ try{ return JSON.parse(localStorage.getItem('danjang-rviewsU')||'{}')||{}; }catch(e){ return UI._rvU||(UI._rvU={}); } }
 function rvUserSave(U){ try{ localStorage.setItem('danjang-rviewsU',JSON.stringify(U)); }catch(e){ UI._rvU=U; } }
@@ -36581,25 +36587,28 @@ function rcolPanel(pit){ const on=rcolKeys(pit); const all=rcolAll(pit); const l
     <div class="rcp-on">${on.map((k,i)=>`<span class="rcp-c"><button class="rcp-m" data-a="rcolMv" data-v="${k}:-1" ${i?'':'disabled'} aria-label="${lab(k)} 앞으로">◀</button><b>${lab(k)}</b><button class="rcp-m" data-a="rcolMv" data-v="${k}:1" ${i<on.length-1?'':'disabled'} aria-label="${lab(k)} 뒤로">▶</button><button class="rcp-x" data-a="rcolTg" data-v="${k}" aria-label="${lab(k)} 숨기기">×</button></span>`).join('')}</div>
     ${off.length?`<div class="rcp-off"><span class="small muted">숨긴 열(누르면 맨 뒤에 추가)</span>${off.map(([k,l])=>`<button class="chipn" data-a="rcolTg" data-v="${k}">+ ${l}</button>`).join('')}</div>`:''}
     <div class="row" style="gap:6px;margin-top:6px"><input type="text" id="rvName" maxlength="12" placeholder="지금 열 구성을 내 보기로 저장(이름)" aria-label="보기 이름" style="flex:1;min-width:120px"><button class="tc-i go" data-a="rvSave">저장</button></div></div>`; }
+const RT_LEFT=new Set(['name','pos','ct','org','inj','conf']);
 function rosterTable(groups,pit,tail){
   const statL=(pit?RCOL_P:RCOL_B).concat(pit?RCOL_X_P:RCOL_X_B); const rs=UI.rs||{}; const sk=rs[pit?'pit':'bat']; const keys=rcolKeys(pit); const all=rcolAll(pit); const lab=k=>(all.find(x=>x[0]===k)||[k,k])[1];
-  const th=(k,l)=>`<th data-a="rsort" data-v="${k}" class="sortable${sk&&sk.k===k?' on':''}">${l}${sk&&sk.k===k?(sk.dir<0?' ▼':' ▲'):''}</th>`;
-  const head=`<tr>${th('name','선수')}${keys.map(k=>['ct','org'].includes(k)?`<th>${lab(k)}</th>`:th(k,lab(k))).join('')}</tr>`;
+  /* 머리글과 칸 정렬을 열마다 같게(구단주 11-17): 선수·포지션·글자 열(계약·입단·부상·확신도)은 왼쪽, 숫자·별·막대는 가운데 */
+  const al=k=>RT_LEFT.has(k)?'rta-l':'rta-c', th=(k,l)=>`<th data-a="rsort" data-v="${k}" class="sortable ${al(k)} rtc-${k}${sk&&sk.k===k?' on':''}">${l}${sk&&sk.k===k?(sk.dir<0?' ▼':' ▲'):''}</th>`;
+  const head=`<tr>${th('name','선수')}${keys.map(k=>['ct','org'].includes(k)?`<th class="${al(k)} rtc-${k}">${lab(k)}</th>`:th(k,lab(k))).join('')}</tr>`;
   const row=(p,pos,grp)=>{ const rp=scoutReport(p); const m=p.mor??60; const h=rline(p); const fut=h&&h.lvl==='퓨처스'; const mine=p.team===G.user;
     const tags=[p.injOut>0||p.susp>G.day?`<span class="pill bad">${outTxt(p)}</span>`:'',p.foreign?'<span class="pill">외국인</span>':'',isRookie(p)?'<span class="pill acc">신인</span>':'',...lifeTags(p).map(x=>`<span class="pill ${x.c}" title="${esc(x.d)}">${x.l}</span>`)].join('');
-    const td=k=>{ switch(k){ case 'cur':return `<td class="ovc"><span class="ovw">${rchip(rp.cur)}${condChip(p)}</span></td>`; case 'chg':{ const x=mine&&!p.prospect?ovrDelta(p,'1m'):null; return `<td class="num">${x==null?'-':x?`<i class="pf-dl ${x>0?'up':'dn'}">${x>0?'▲':'▼'}${Math.abs(x)}</i>`:'<span class="muted">0</span>'}</td>`; } /* FM처럼 한 달 사이 오르내림(사용자 11-08) */ case 'sal':return `<td class="num">${money(p.sal)}</td>`;
+    const td=k=>td0(k).replace(/^<td(?: class="([^"]*)")?/,(m,c)=>`<td class="${al(k)} rtc-${k}${c?' '+c:''}"`);
+    const td0=k=>{ switch(k){ case 'cur':return `<td class="ovc"><span class="ovw">${rchip(rp.cur)}${condChip(p)}</span></td>`; case 'sal':return `<td class="num">${money(p.sal)}</td>`;
       case 'pos':return `<td class="rtpos">${grp?`<span class="muted">${grp}</span> `:''}${pos||posLabel(p)}${!p.isP&&subsOf(p).length?` <i class="f">${subsOf(p).map(k=>POSS[k]).join('·')}</i>`:''}</td>`; case 'age':return `<td>${p.age}</td>`; case 'fut':return `<td>${potChip(rp,p)}</td>`;
       case 'mor':return `<td>${mine?`<span class="mood" style="--c:${m>=65?'var(--good)':m>=45?'var(--r50)':m>=30?'var(--warn)':'var(--bad)'}" title="${moodLabel(m)}"></span>`:'-'}</td>`; case 'fat':return `<td>${mine?fatBar(p):'-'}</td>`; case 'arm':{ const r=armRatio(p), cd=consecDays(p,G.day+1); return `<td class="num ${r>=1.3?'bad':r>=1.1?'warn':''}" title="${esc(loadText(p))}">${Math.round(r*100)}%${cd>=2?` <i class="f">${cd}연투</i>`:''}</td>`; }
       case 'velo':return `<td class="num">${p.isP?veloOf(p):'-'}</td>`; case 'conf':return `<td class="small">${esc(rp.conf||'-')}</td>`;
       case 'inj':return `<td class="small">${p.injOut>0?`${p.injOut}일 · ${dmd(G.day+p.injOut)} 복귀`:'-'}</td>`; case 'ct':return `<td class="small">${esc(tContract(p))}</td>`; case 'org':return `<td class="small"><span class="org">${esc(originOf(p))}</span></td>`;
       default:if(k.startsWith('t_')){ const v=rTool(rp,k.slice(2)); return `<td>${v==null?'-':rchip(v)}</td>`; } return `<td>${rfmt(k,rstat(p,k),p)}${fut&&k===(pit?'era':'ops')?' <i class="f">F</i>':''}</td>`; } };
-    return `<tr class="click${fut?' fut':''}" data-rowtap tabindex="0" role="button" data-a="player" data-v="${p.id}"><td><span class="pn">${avImg(p)}<span>${p.team!=null?`<i class="jn">${jno(p)}</i>`:''}${esc(p.name)} ${tags}</span></span></td>${keys.map(td).join('')}</tr>`; };
+    return `<tr class="click${fut?' fut':''}" data-rowtap tabindex="0" role="button" data-a="player" data-v="${p.id}"><td class="rta-l rtc-name"><span class="pn">${avImg(p)}<span>${p.team!=null?`<i class="jn">${jno(p)}</i>`:''}${esc(p.name)} ${tags}</span></span></td>${keys.map(td).join('')}</tr>`; };
   const n=keys.length+1; const tr2=tail?`<tr class="r2tr"><td colspan="${n}">${tail}</td></tr>`:'';
   const cfg=`<div class="row between rcp-bar">${UI._own?rviewBar(pit):'<span></span>'}<button class="tc-i${UI.rcolOpen?' on':''}" data-a="rcolCfg">열 설정</button></div>${UI.rcolOpen?rcolPanel(pit):''}`;
   if(!sk){ return cfg+`<div class="tw"><table class="sqt rt"><thead>${head}</thead><tbody>${groups.filter(g=>g[1].length).map(([g,arr,posf])=>`<tr class="grp"><td colspan="${n}">${g} · ${arr.length}명</td></tr>`+arr.map(p=>row(p,posf?posf(p):null)).join('')).join('')}${tr2}</tbody></table></div>`; }
   const allR=[]; for(const [g,arr,posf] of groups)for(const p of arr)allR.push({p,g,pos:posf?posf(p):null});
   const rpC=new Map(); const rpv=p=>{ if(!rpC.has(p.id))rpC.set(p.id,scoutReport(p)); return rpC.get(p.id); };
-  const val=x=>{ const p=x.p; switch(sk.k){ case 'name':return p.name; case 'pos':return x.pos||posLabel(p); case 'age':return p.age; case 'cur':return rpv(p).cur; case 'chg':return p.team===G.user?(ovrDelta(p,'1m')??-99):-99; case 'fut':return rpv(p).ofp??0; case 'mor':return p.mor??60; case 'fat':return p.fat||0; case 'arm':return armRatio(p); case 'sal':return p.sal; case 'inj':return p.injOut||0; case 'velo':return p.isP?veloOf(p):null; case 'conf':return -(rpv(p).sd||99); default:{ if(sk.k.startsWith('t_'))return rTool(rpv(p),sk.k.slice(2)); const v=rstat(p,sk.k); return v==null?null:v; } } };
+  const val=x=>{ const p=x.p; switch(sk.k){ case 'name':return p.name; case 'pos':return x.pos||posLabel(p); case 'age':return p.age; case 'cur':return rpv(p).cur; case 'fut':return rpv(p).ofp??0; case 'mor':return p.mor??60; case 'fat':return p.fat||0; case 'arm':return armRatio(p); case 'sal':return p.sal; case 'inj':return p.injOut||0; case 'velo':return p.isP?veloOf(p):null; case 'conf':return -(rpv(p).sd||99); default:{ if(sk.k.startsWith('t_'))return rTool(rpv(p),sk.k.slice(2)); const v=rstat(p,sk.k); return v==null?null:v; } } };
   const asc=['era','whip','l','bb9','fip','hra'].includes(sk.k)&&pit;
   allR.sort((a,b)=>{ const va=val(a),vb=val(b); if(va==null&&vb==null)return 0; if(va==null)return 1; if(vb==null)return -1; const c=typeof va==='string'?va.localeCompare(vb):va-vb; let s=sk.dir<0?-c:c; if(asc)s=-s; return s; });
   return cfg+`<div class="row between"><span class="small muted">${allR.length}명 · ${sk.k==='name'?'선수':lab(sk.k)} 기준 정렬</span><button class="tc-i" data-a="rsort" data-v="">기본 배치로</button></div>
