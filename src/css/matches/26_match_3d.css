@@ -398,3 +398,5 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 @media(max-width:700px){.cs-result[data-tab="num"] .cs-ncard{grid-template-columns:1fr;overflow:auto;max-height:none}}
 /* 투수 오늘 구종(사용자 11-16) */
 .cs-mix{display:grid;grid-template-columns:1fr;gap:2px 8px;margin:3px 0 2px;font-size:10.5px;color:#c7d6dd}.cs-mix>i{font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-mix b{color:#fff;font-weight:700}.cs-mix>i.tr{grid-column:1/-1}.cs-mix>i.dn{color:#ff9a90;font-weight:700}
+/* 불펜 휴식(사용자 11-16) */
+.md-pen .md-rest{display:block;font-size:10px;color:#9fb3bd;font-weight:600;line-height:1.1}.md-pen .md-rest.y{color:#f3d77a}.md-pen .md-rest.r{color:#ff9a90}
