@@ -4,7 +4,7 @@ function foFullNote(){ if(G.unemp)return ''; const n=rosterN(G.user)-(foreignOf(
 /* ---------- 영입·계약 ---------- */
 function transferView(){
   const s=curSub('transfer');
-  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,free:freeWorkspace,contract:contractPage,draft:draftPage,kbo:kboView,moves:movesView}[s]||faCenter)();
+  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,free:freeWorkspace,tryout:tryView,contract:contractPage,draft:draftPage,kbo:kboView,moves:movesView}[s]||faCenter)();
 }
 /* 외국인 후보 조사 단계: 추정 범위와 함께 한 칸에 */
 function fsPill(p,rp,f){ f=f||fScout(p,rp); return `<span class="pill fsp ${f.cls}" title="${esc(f.d+' 근거: '+f.why.join(', '))}">${f.l}</span>`; } /* 예상·범위는 카드 왼쪽 숫자에, 여기는 조사 단계만 */
@@ -81,7 +81,7 @@ function foreignFM(o){ const {asia,yb,as,tot,capT,mid,open,ff,regs,used,max,mark
   const rows=market.map(({p,rp,fs})=>{ const err=open?foListErr(p):'영입 기간이 아닙니다.', repl=mid&&fReplLeft(G.user,p.foreign)<=0, pay=mid?Math.round(p.ask*remainFrac()):p.ask, n=fInterest(p), h=p.now&&p.now.y===G.year?p.now:p.prev, fn=fFindNote(p,rp);
     return `<tr${rowTap('player',p.id)}><td>${rowQuiet(tfP(p,`${esc(posLabel(p))}${p.isP?(isSPr(p)?'(선발형)':'(불펜형)'):''} · ${esc(p.nat)} · ${p.age}세 · ${hand(p)}`))}</td>
       <td>${fs.mid!=null?`<b class="rc" style="--c:${rcol(fs.raw)}">${fs.mid}</b> <span class="muted">${fs.lo}~${fs.hi}</span>`:'<span class="muted">조사 전</span>'}<span class="scn-s">${fsPill(p,rp,fs)}${p.flaw?` <span class="pill bad">${FFLAW[p.flaw]}</span>`:''}${fn?` <span class="pill good" title="${esc(fn)}">우리 발굴</span>`:''}</span></td>
-      <td class="small"${lgLv(p.prevLvl)?` title="${esc(lgLv(p.prevLvl))}"`:''}>${esc(p.prevLvl||'')}<span class="scn-s">${lineTxt(h,p.isP)}${p.mlbG?` · MLB ${p.mlbG}경기`:''}</span></td>
+      <td class="small"${lgLv(p.prevLvl)?` title="${esc(lgLv(p.prevLvl))}"`:''}>${esc(ovlCandLvl(p,'',1))}<span class="scn-s">${lineTxt(h,p.isP)}${p.mlbG?` · MLB ${p.mlbG}경기`:''}</span></td>
       <td>${Math.round(p.ask/USD)}만 달러<span class="scn-s">${money(p.ask)}${mid?` · 실지급 ${money(pay)}`:''}${p.ask0&&p.ask>p.ask0?` · 몸값 +${Math.round((p.ask/p.ask0-1)*100)}%`:''}</span></td>
       <td class="wrap">${n?`<b class="${n>=2?'bad':''}">${n}개 구단 관심</b>`:'<span class="muted">관심 구단 없음</span>'}<span class="scn-s">${err||repl?`<span class="pill bad" title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':fErrShort(err)}</span>`:fBudgetTag(pay)}</span></td>
       <td class="fo-act">${fwatchOn(p.id)?`<span class="pill acc">관찰 ${fwatchK(p.id)}%</span> `:''}<button class="tc-i" data-a="negOpen" data-v="fm:${p.id}" ${err||repl?'disabled':''}>협상</button></td></tr>`; });
@@ -124,5 +124,5 @@ function fRows(market,open,mid){ if(!market.length)return '<p class="small muted
     return `<div class="fr-r"${rowTap('player',p.id)}><span class="st-n">${avImg(p)}<span><b>${esc(p.name)}</b><i>${esc(posLabel(p))}${p.isP?(isSPr(p)?' 선발':' 불펜'):''} · ${esc(p.nat)} · ${p.age}세</i></span></span>
       <span class="fr-est">${fs.mid!=null?`<b class="rc" style="--c:${rcol(fs.raw)}">${fs.mid}</b><i>${fs.lo}~${fs.hi}</i>`:'<i>조사 전</i>'}</span>
       <span class="fr-act">${!open?'':err||repl?`<button class="btn small" data-a="negOpen" data-v="fm:${p.id}" disabled title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':esc(fErrShort(err))}</button>`:`<button class="btn small primary" data-a="negOpen" data-v="fm:${p.id}">협상</button>`}${fwatchOn(p.id)?'<span class="pill acc">관찰 중</span>':''}</span>
-      <span class="fr-rec"><b>${Math.round(p.ask/USD)}만$</b>${n?` · <span class="${n>=2?'bad':''}">관심 ${n}구단</span>`:''} · ${esc(p.prevLvl||'')} ${lineTxt(h,p.isP)}${p.mlbG?` · MLB ${p.mlbG}경기`:''}</span></div>`; };
+      <span class="fr-rec"><b>${Math.round(p.ask/USD)}만$</b>${n?` · <span class="${n>=2?'bad':''}">관심 ${n}구단</span>`:''} · ${esc(ovlCandLvl(p))} ${lineTxt(h,p.isP)}${p.mlbG?` · MLB ${p.mlbG}경기`:''}</span></div>`; };
   return `${open?'':'<p class="small muted fr-off">영입 기간 아님(12월~8월 15일) · 후보를 눌러 관찰해 두면 조사가 쌓입니다</p>'}<div class="fr-list">${market.map(row).join('')}</div>`; }

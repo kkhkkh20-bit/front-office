@@ -58,6 +58,9 @@ function newForeign(kind,opts){
   const env=N(0,FENV[lvl[0]]??2), win=/윈터리그/.test(lvl[0]); /* 윈터리그는 시즌이 짧아 표본도 작다 */
   p.prev=isP?Object.assign({lvl:lvl[0]},simPit(p,mlb?Math.round(mg*rnd(2.6,4.2)):win?ri(90,200):ri(150,420),lvl[2]+env*1.6)):Object.assign({lvl:lvl[0]},simBat(p,mlb?Math.round(mg*rnd(2.4,3.6)):win?ri(150,260):ri(280,520),lvl[1]+env));
   p.prev.g=mlb?mg:isP?(win?ri(10,22):ri(18,40)):Math.round(p.prev.pa/4.1);
+  /* 그 전 시즌 기록(같은 리그, 한 살 어릴 때·그해 리그 환경으로): 두 시즌 기록이면 실력이 더 또렷하다. 공개 기록이라 우리와 AI 구단이 같은 줄을 본다(fRecEst) */
+  if(R()<.8){ const dy=age<=26?-1.5:age>=32?1:0, e2=N(0,FENV[lvl[0]]??2), n2=mlb?(isP?ri(20,80):ri(40,180)):win?(isP?ri(90,200):ri(150,260)):(isP?ri(120,380):ri(220,480));
+    p.prev2=isP?Object.assign({lvl:lvl[0]},simPit(p,n2,lvl[2]+dy+e2*1.6)):Object.assign({lvl:lvl[0]},simBat(p,n2,lvl[1]+dy+e2)); p.prev2.g=isP?Math.max(1,Math.round(n2/(isSPr(p)?17:3.5))):Math.round(n2/4.1); }
   /* 메이저 경력(통산 경기 수): 실력이 좋을수록 콜업 경험이 많다. KBO 구단이 MLB 경력을 반기는 데에는 이유가 있다 */
   { const o0=ovr(p); let g=0; if(mlb)g=mg+(R()<.5?ri(0,120):0);
     else if(!asia){ const ch=lvl[0]==='트리플A'?clamp(.12+(o0-52)*.045,.04,.75):lvl[0]==='더블A'?.04:clamp(.06+(o0-52)*.02,.02,.3); if(R()<ch)g=Math.round(ri(4,60)*(1+Math.max(0,o0-52)*.08)); }
@@ -78,9 +81,12 @@ const FSTEP=[{l:'조사 전',cls:'bad',d:'에이전트가 보낸 영상과 기�
 /* 기록 해석표: 리그·투타별로 지난 리그 기록(타자 OPS, 투수 WHIP·K-BB/9·HR/9)과 MLB 통산 경기 수로 실제 능력을 추정하는 식.
    [절편, 계수…, 남는 오차]. 후보 2만 7천 명을 만들어 최소제곱으로 맞췄다(node tools/fit-frec.js. 후보 생성을 바꾸면 다시 맞춘다). 트리플A·MLB 기록이 가장 덜 흔들린다 */
 const FREC={'ABL':[[27.031, 25.306, 0, 3.36],[49.783, -5.356, 0.985, -0.063, 0, 3.29]],'CPBL':[[25.32, 28.196, 0, 3.31],[50.113, -3.766, 1.062, -0.321, 0, 3.36]],'MLB':[[38.639, 27.467, -0.322, 4.16],[58.179, -0.861, 0.981, -0.554, 0.028, 3.78]],'NPB 1군':[[33.265, 29.684, 0, 3.15],[55.522, -3.131, 1.244, -0.386, 0, 2.95]],'NPB 2군':[[27.354, 31.048, 0, 3.27],[47.961, -3.449, 1.217, -0.749, 0, 3.1]],'더블A':[[24.897, 29.487, -0.094, 3.64],[50.494, -7.252, 1.323, -0.395, 0.025, 3.28]],'도미니카 윈터리그':[[33.016, 21.761, 0.754, 4.13],[50.067, -2.641, 0.993, -0.868, 0.748, 3.93]],'독립리그':[[30.831, 22.172, 0.76, 3.59],[46.813, -5.254, 1.355, -0.515, 0.785, 3.58]],'멕시코리그':[[28.923, 24.212, 0.584, 4.01],[53.853, -3.904, 0.945, -0.102, 0.722, 3.76]],'베네수엘라 윈터리그':[[33.132, 21.823, 0.95, 4.21],[52.218, -4.521, 0.953, -0.242, 0.843, 4.09]],'일본 독립리그':[[25.343, 27.255, 0, 3.45],[44.652, -3.011, 1.199, -1.162, 0, 3.37]],'트리플A':[[29.3, 29.461, 0.628, 3.29],[55.057, -5.182, 1.199, -0.566, 0.561, 3.06]]};
-function fRecEst(p){ const c=(FREC[p.prevLvl]||[])[p.isP?1:0], h=p.prev; if(!c||!h)return null; const g=Math.log1p(p.mlbG||0); let x;
-  if(p.isP){ if(!h.outs)return null; x=[1,(h.h+h.bb)*3/h.outs,(h.so-h.bb)*27/h.outs,h.hr*27/h.outs,g]; } else { if(!h.pa)return null; x=[1,bRate(h).ops,g]; }
-  return {m:x.reduce((s,v,i)=>s+v*c[i],0),sd:c[c.length-1]}; }
+function fRecEst(p){ const c=(FREC[p.prevLvl]||[])[p.isP?1:0]; if(!c||!p.prev)return null; const g=Math.log1p(p.mlbG||0);
+  const one=h=>{ if(!h)return null; let x; if(p.isP){ if(!h.outs)return null; x=[1,(h.h+h.bb)*3/h.outs,(h.so-h.bb)*27/h.outs,h.hr*27/h.outs,g]; } else { if(!h.pa)return null; x=[1,bRate(h).ops,g]; } return {m:x.reduce((s,v,i)=>s+v*c[i],0),n:p.isP?h.outs:h.pa}; };
+  const a=one(p.prev); if(!a)return null; const sd=c[c.length-1];
+  /* 그 전 시즌(한 해 묵어 0.7배)·올해 기록(같은 리그에서 쌓는 중)이 있으면 표본만큼 섞고, 범위는 조금(최대 10%) 좁힌다. 해석식은 지난 시즌 한 줄로 맞춘 것이라 남는 오차는 그대로 둔다 */
+  const L=[[a,1]], b=one(p.prev2), nw=p.now&&p.now.y===G.year&&(p.now.lvl||p.prevLvl)===p.prevLvl?one(p.now):null; if(b)L.push([b,.7]); if(nw)L.push([nw,1]); if(L.length===1)return {m:a.m,sd};
+  const W=L.map(([e,w])=>Math.max(1,e.n)*w), tw=W.reduce((s,v)=>s+v,0); return {m:L.reduce((s,[e],i)=>s+e.m*W[i],0)/tw,sd:sd*clamp(Math.sqrt(Math.max(1,a.n)/tw),.9,1),k:L.length}; }
 const fRelL=lg=>{ const e=FENV[lg]??2; return e<=1?'믿을 만함':e<=1.5?'보통':'흔들림 큼'; };
 /* 조사 단계(스카우트가 얼마나 봤나)와 종합 추정(스카우트 평가 + 기록 해석). 종합 추정은 두 정보를 믿을 만한 만큼 섞는다.
    예상 능력순은 종합 추정 그대로 줄 세운다(화면에 보이는 숫자와 순서가 같게). 얼마나 믿을지는 조사 단계와 범위로 본다 */
@@ -89,14 +95,30 @@ function curView(p,rp){ rp=rp||scoutReport(p); if(p&&p.foreign&&p.team==null){ c
 /* 종합 평가 신뢰도: 스카우트 평가와 기록을 합친 최종 범위의 폭으로(관찰 진행률과 별개) */
 function fRel(f){ const b=f&&f.band; return b==null?'판단 불가':b<=5?'매우 높음':b<=7?'높음':b<=10?'보통':'낮음'; }
 function fUnknown(p,f){ const L=[]; if(f.n<3)L.push('실전 감각(현지 경기 감각)'); const lv=intlLv(origOf(p)); if(lv<2||p.adapt==null)L.push('한국 생활·리그 적응'); if(!p.prev)L.push('지난 리그 기록'); return L; }
-function fScout(p,rp){ rp=rp||scoutReport(p); const sd=rp.sd||0; const n=sd>=8?0:sd>=5.5?1:sd>=3.5?2:3; const S=FSTEP[n];
-  const r=origOf(p), lv=intlLv(r), isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r), k=fwatchK(p.id), mine=fMineFind(p);
-  const bf=(lv>=3?.6:1)*(1-k/100*.6)*(mine?.6:1); const ss=Math.sqrt((sd*.55)**2+(3.2*bf)**2+2.2), sc=rp.cur, rc=fRecEst(p);
+/* 외국인 후보 정보 수준(구단별): 우리와 AI 구단이 같은 식(fCandSd·fCandCur·fCandMix)으로 후보를 본다. 다른 것은 정보 수준뿐이다.
+   우리: 해외 스카우트망 단계·파견 스카우트·관찰 명단 파악도·직접 발굴·자매구단 소개. AI: 해외망 투자 모형이 없어 스카우트진 수준(fScoutLv)을 망 단계로 쓰되 현지 사무소(3단계)까지는 못 가고, 관찰 명단·파견은 없으며, 직접 찾은 후보만 발굴로 친다.
+   예전 AI는 실제 능력(ovr)에 작은 오차를 얹어 봐서 우리 화면(조사 전 흐림·실전 감각 착시)보다 훨씬 정확했다(해외 리그 검수: AI도 우리보다 많이 알면 안 된다) */
+function fInfo(tid,p){ const r=origOf(p); if(tid==null||tid===G.user){ const isc0=(G.scouts||[]).filter(s=>s.role==='intl'&&s.region===r).sort((a,b)=>effSkill(b)-effSkill(a))[0];
+    return {r,lv:intlLv(r),k:fwatchK(p.id),mine:fMineFind(p),sis:!!p.fsis,isc0,isc:(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r),tag:''}; }
+  return {r,lv:Math.min(2,Math.floor(fScoutLv(tid)||0)),k:0,mine:!!(p.fsrc==='scout'&&(p.fknow||[])[0]===tid),sis:false,isc0:null,isc:null,tag:'t'+tid}; }
+/* 툴 평가 오차와 실전 감각(sx)을 못 보는 정도 */
+function fCandSd(p,I){ return INET[I.lv].sd*(1-I.k/100*.7)*(I.mine?.7:1)*(I.sis?.8:1)*(I.isc0?1-(effSkill(I.isc0)-1)*.06:1); }
+function fCandBias(p,I){ return -(p.sx||0)*(I.lv>=3?.6:1)*(1-I.k/100*.6)*(I.mine?.6:1); }
+/* 스카우트가 본 현재 능력: 구단마다 자기 스카우트 오차(같은 크기, 다른 난수) */
+function fCandCur(p,I,sd){ sd=sd??fCandSd(p,I); return clamp(r5(ovr(p)+fCandBias(p,I)+hn('c'+'intl'+I.r+I.lv+I.tag+G.year+halfK(),p.id)*sd*.55),20,80); }
+/* 스카우트 평가(sc, 오차 sd)와 지난 리그 기록 해석(fRecEst)을 섞고 조사 전 흐림을 얹는다 */
+function fCandMix(p,I,sd,sc){ const {lv,k,mine,isc}=I;
+  const bf=(lv>=3?.6:1)*(1-k/100*.6)*(mine?.6:1); const ss=Math.sqrt((sd*.55)**2+(3.2*bf)**2+2.2), rc=fRecEst(p);
   let m=null, ms=null; if(sc!=null&&rc){ const ws=1/ss**2, wr=1/rc.sd**2; m=(sc*ws+rc.m*wr)/(ws+wr); ms=1/Math.sqrt(ws+wr); } else if(sc!=null){ m=sc; ms=ss; } else if(rc){ m=rc.m; ms=rc.sd; }
-  /* 조사 전 흐림(사용자 피드백 11-09f: 처음부터 예상이 거의 정확해 하위 후보를 안 봄): 선수마다 고정된 착시를 얹고 범위도 넓힌다. 관찰 파악도·스카우트망·파견 스카우트 능력·직접 발굴로 줄어든다. 드물게 '예상 60인데 실제 70'(또는 그 반대)이 나온다 */
+  /* 조사 전 흐림(사용자 피드백 11-09f: 처음부터 예상이 거의 정확해 하위 후보를 안 봄): 선수마다 고정된 착시를 얹고 범위도 넓힌다. 관찰 파악도·스카우트망·파견 스카우트 능력·직접 발굴로 줄어든다. 드물게 '예상 60인데 실제 70'(또는 그 반대)이 나온다. 착시는 영상·소문이라 구단이 같이 속는다 */
   const m0=m, fog=3.5*(1-k/100*.8)*(lv>=3?.5:lv>=2?.75:1)*(isc?1-(isc.skill||0)*.08:1)*(mine?.6:1); if(m!=null&&fog>.3){ m+=clamp(hn('fblur',p.id),-2.5,2.5)*fog; ms=Math.sqrt(ms**2+fog**2); }
+  return {m,ms,m0,rc}; }
+/* 구단 tid가 보는 후보 종합 추정(우리 화면의 '예상'과 같은 값: tid가 우리면 fScout(p).raw와 같다) */
+function fCandEst(tid,p){ const I=fInfo(tid,p), sd=fCandSd(p,I); return Object.assign(fCandMix(p,I,sd,fCandCur(p,I,sd)),{sd,lv:I.lv}); }
+function fScout(p,rp){ rp=rp||scoutReport(p); const sd=rp.sd||0; const n=sd>=8?0:sd>=5.5?1:sd>=3.5?2:3; const S=FSTEP[n];
+  const I=fInfo(G.user,p), {r,lv,k,mine}=I, isc=I.isc, sc=rp.cur; let {m,ms,m0,rc}=fCandMix(p,I,sd,sc);
   const mid=m==null?null:dv(m), band=m==null?null:dvSd(m,ms*1.3);
-  const h=p.prev, rec=h?(p.isP?`${p.prevLvl} ${ipStr(h.outs||0)}이닝`:`${p.prevLvl} ${h.pa||0}타석`):'';
+  const h=p.prev, plv=ovlCandLvl(p), rec=h?(p.isP?`${plv} ${ipStr(h.outs||0)}이닝`:`${plv} ${h.pa||0}타석`)+(p.prev2?' 외 1시즌':'')+(p.now&&p.now.y===G.year?' · 올해 기록 포함':''):'';
   const why=[]; if(rec)why.push(`기록: ${rec}(리그 기록 ${fRelL(p.prevLvl)})`); if(p.mlbG)why.push(`MLB 통산 ${p.mlbG}경기`);
   why.push(`스카우트: ${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 파견`:''}${fwatchOn(p.id)?` · 관찰 파악도 ${k}%`:''}${mine?' · 직접 발굴':''}`);
   let tip=''; if(n<3){ if(!fwatchOn(p.id))tip='관찰 명단에 올리면 매주 보고가 쌓여 범위가 좁아집니다.'; else if(k<100)tip=`관찰 중입니다. 파악도가 오를수록 범위가 좁아집니다.`; if(lv<3)tip+=(tip?' ':'')+`${IREG[r].l} 스카우트망을 넓히거나 스카우트를 파견해도 정확해집니다.`; }
@@ -190,13 +212,16 @@ function fNeed(tid){ const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign===
   if(tid!==ME()&&period()!=='season'&&period()!=='post'&&yb.length>=fMaxYB(tid)&&team(tid).cash>-2000){ const w=yb.slice().sort((a,b)=>ovr(a)-ovr(b))[0]; if(w&&ovr(w)<54)return {kind:'용병',isP:w.isP,up:w.id,upO:ovr(w)}; }
   return null; }
 /* 우리 구단이 관찰(fwatch) 중인 후보는 소문이 나서 다른 구단도 더 눈여겨본다(경쟁) */
-function fScoreBy(tid,q){ const t=team(tid); return ovr(q)-(q.team==null?(q.sx||0)*.9:0)+hn('fv'+tid,q.id)*(t.scoutSd||6)*.6-q.ask/600+(q.team==null&&tid!==G.user&&fwatchOn(q.id)?2:0); }
+function fScoreBy(tid,q){ return fAiEst(tid,q)-q.ask/600+(q.team==null&&tid!==G.user&&fwatchOn(q.id)?2:0); }
+/* AI 구단의 외국인 후보 평가: 계약 전 후보는 우리 화면과 같은 종합 추정(fCandEst: 스카우트 툴 평가 + 지난 리그 기록 해석 + 조사 전 흐림)을 자기 정보 수준으로 본다.
+   KBO 소속 선수는 우리처럼 현재 능력이 공개돼 있으니 그대로 본다(구단마다 약간의 취향 차이) */
+function fAiEst(tid,q){ if(q.team!=null||!q.foreign){ const sd=(team(tid)||{}).scoutSd||6; return ovr(q)+hn('fv'+tid,q.id)*sd*.6; } const e=fCandEst(tid,q); return e.m??ovr(q); }
 /* 이 구단이 노리는 후보 상위 3명: 계약할 수 있는 후보만(보류권·총액 한도·교체 기준), 우리와 협상 중인 다른 후보는 뺀다. AI 영입·경쟁 구단·관심 집계가 같은 목록을 쓴다(검수 11-09zl: 계약 불가 후보가 상위 칸을 차지) */
-function fTop3(tid,nd,q){ const L=(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&(x===q||!foHeld(x))&&fKnows(tid,x)&&x.foreign===nd.kind&&(nd.isP==null||x.isP===nd.isP)&&(!nd.up||ovr(x)>=nd.upO+6)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a));
+function fTop3(tid,nd,q){ const L=(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&(x===q||!foHeld(x))&&fKnows(tid,x)&&x.foreign===nd.kind&&(nd.isP==null||x.isP===nd.isP)&&(!nd.up||fAiEst(tid,x)>=nd.upO+6)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a));
   const out=[]; for(const x of L){ if(!foreignCheck(tid,x,nd.up))out.push(x); if(out.length>=3)break; } return out; }
 function aiForeignPick(tid){ const nd=fNeed(tid); return nd&&fTop3(tid,nd)[0]||null; }
 function fInterest(q){ return !q||q.team!=null?0:foRivalTeams(q).length; } /* 보류권으로 다른 구단이 못 데려가는 선수는 관심도 0이라 몸값이 오르지 않는다 */
-function aiForeignSign(tid,q,why,T){ const c=q.fneg&&q.fneg.cut, nd=fNeed(tid); const up=c&&c.tid===tid?foUp(tid,q):nd&&nd.up&&ovr(q)>=nd.upO+6?nd.up:null; /* 끼어들기를 일으킨 구단은 그때 바꾸려던 선수를 내보낸다(검수 11-09zl) */ if(up&&G.players[up]){ const w=G.players[up]; { const a0=q.ask; if(T)q.ask=T.g+T.i; const e=foreignCheck(tid,q,w.id); q.ask=a0; if(e)return e; } /* 교체 계약이 성립하는지(총액 한도 등) 먼저 보고 나서 기존 선수를 내보낸다(검수 11-06) */ releaseForeign(w.id); wire('외국인',`${tshort(tid)}, 외국인 ${w.name} 대신 ${q.name} 영입 추진`,{tid,ref:q.id}); } const err=T?signForeignT(tid,q.id,T.g,T.i):signForeign(tid,q.id); /* T: 경쟁 구단이 실제로 제시한 보장·인센티브(검수 11-05: 협상을 압박한 조건과 실제 계약이 달랐다) */ if(err)return err; if(fwatchOn(q.id)&&!G._foNegSign)mail('스카우트팀장',`관찰 후보 ${q.name}, ${tshort(tid)}와(과) 계약`,`관찰 명단에 있던 ${q.name}(${posLabel(q)})을(를) ${tname(tid)}이(가) ${T?`보장 ${money(T.g)}${T.i?` + 인센티브 ${money(T.i)}`:''}`:`연 ${money(q.sal)}`}에 먼저 데려갔습니다.${why||''}`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); else if(ovr(q)>=60)wire('외국인',`${tshort(tid)}, 외국인 ${posLabel(q)} ${q.name} 영입 (${money(q.sal)})`,{tid,ref:q.id}); }
+function aiForeignSign(tid,q,why,T){ const c=q.fneg&&q.fneg.cut, nd=fNeed(tid); const up=c&&c.tid===tid?foUp(tid,q):nd&&nd.up&&fAiEst(tid,q)>=nd.upO+6?nd.up:null; /* 끼어들기를 일으킨 구단은 그때 바꾸려던 선수를 내보낸다(검수 11-09zl) */ if(up&&G.players[up]){ const w=G.players[up]; { const a0=q.ask; if(T)q.ask=T.g+T.i; const e=foreignCheck(tid,q,w.id); q.ask=a0; if(e)return e; } /* 교체 계약이 성립하는지(총액 한도 등) 먼저 보고 나서 기존 선수를 내보낸다(검수 11-06) */ releaseForeign(w.id); wire('외국인',`${tshort(tid)}, 외국인 ${w.name} 대신 ${q.name} 영입 추진`,{tid,ref:q.id}); } const err=T?signForeignT(tid,q.id,T.g,T.i):signForeign(tid,q.id); /* T: 경쟁 구단이 실제로 제시한 보장·인센티브(검수 11-05: 협상을 압박한 조건과 실제 계약이 달랐다) */ if(err)return err; if(fwatchOn(q.id)&&!G._foNegSign)mail('스카우트팀장',`관찰 후보 ${q.name}, ${tshort(tid)}와(과) 계약`,`관찰 명단에 있던 ${q.name}(${posLabel(q)})을(를) ${tname(tid)}이(가) ${T?`보장 ${money(T.g)}${T.i?` + 인센티브 ${money(T.i)}`:''}`:`연 ${money(q.sal)}`}에 먼저 데려갔습니다.${why||''}`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); else if(ovr(q)>=60)wire('외국인',`${tshort(tid)}, 외국인 ${posLabel(q)} ${q.name} 영입 (${money(q.sal)})`,{tid,ref:q.id}); }
 /* 스토브리그·캠프 기간: 구단들이 하루하루 시장에서 데려간다. 인기 선수는 몸값이 오른다 */
 function aiForeignDaily(){ if(!foreignOpen()||period()==='season')return; const o=dobj(G.day); const pr=G.startY===G.year&&o.m===1?.45:o.m===1||o.m===2?.12:.06; /* 창단 첫 1월: 모든 구단이 외국인 선수단을 새로 꾸리므로 각 구단이 자기 판단으로 바로 움직인다(순번 없이). 평소 겨울은 띄엄띄엄 */
   for(const t of G.teams){ if(t.id===ME()||!fNeed(t.id))continue; const q=aiForeignPick(t.id); if(q&&R()<pr*(fwatchOn(q.id)?1.8:1)&&!foCutIn(t.id,q)){ if(fwatchOn(q.id)&&!G.unemp){ const w=q.fwarn; if(!w||w.tid!==t.id||w.y!==G.year){ q.fwarn={tid:t.id,d:G.day,y:G.year}; stop('외국인',`${tname(t.id)}이(가) 우리가 관찰 중인 외국인 후보 ${q.name}(${posLabel(q)})과(와) 협상에 들어갔습니다. 3일쯤 뒤 계약할 것으로 보입니다. 잡으려면 외국인 시장에서 먼저 제안하세요.`); continue; } if(G.day-w.d<3)continue; } aiForeignSign(t.id,q); } } } /* 관찰 중인 후보: 다른 구단이 움직이면 먼저 알리고 3일 여유를 준다(커뮤니티 11-12: 관찰을 시키자마자 다음 날 다른 구단과 계약) */ /* 우리가 관찰 중인 후보를 노리는 구단은 서두른다 */

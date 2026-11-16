@@ -15,8 +15,9 @@ function trimRoster(tid,max){
 }
 /* AI 구단 겨울 정리: 육성선수는 25세가 넘거나 한도를 넘으면 내보낸다(실제 구단도 해마다 10명 안팎을 정리한다).
    정식 선수는 newYear에서 우리와 같은 정원(68명)까지 줄이고, 시즌 중 군 제대로 늘어나는 몫만 남겨 둔다 */
-function aiYsPrune(tid){ if(tid===ME())return 0; const ys=playersOf(tid).filter(p=>p.ys&&!p.foreign).sort((a,b)=>keepScore(b)-keepScore(a)); let n=0;
-  ys.forEach((p,i)=>{ if(p.age>=26||i>=AI_YS_MAX||p.pot<=ovr(p)+2){ if(p.age<=33&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출(육성선수 정리)`); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); n++; } }); return n; }
+function aiYsPrune(tid){ if(tid===ME())return 0; const ys=ysList(tid).filter(p=>!p.foreign).sort((a,b)=>keepScore(b)-keepScore(a)); let n=0; /* 한도는 ysN과 같은 명단으로 센다(내년 합류 포함, 군보류 제외) */
+  const fresh=p=>p.tryS&&p.tryS.tid===tid&&p.tryS.y>=G.year-1; /* 지난겨울 트라이아웃·미지명으로 데려온 선수는 한 시즌은 본다(계약하자마자 새해에 내보내지 않게) */
+  ys.forEach((p,i)=>{ if(i>=AI_YS_MAX||!fresh(p)&&(p.age>=26||p.pot<=ovr(p)+2)){ if(p.age<=33&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출(육성선수 정리)`); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); n++; } }); return n; }
 /* 스카우트 특기: 투수 감별·타자 감별은 그 유형 선수를 볼 때 능력이 한 단계 높다. 경력은 성격 묘사용 */
 const SC_SPEC={P:'투수 감별',B:'타자 감별'};
 const SC_CAR=['전 프로 투수','전 프로 포수','전 프로 내야수','전 프로 외야수','고교 감독 출신','대학 코치 출신','전력분석원 출신','야구 기자 출신','해외 리그 코치 출신','독립리그 감독 출신'];
@@ -107,10 +108,12 @@ function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
 /* 야인일 때는 전 소속 구단도 AI가 운영한다 */
 const ME=()=>G.unemp?-99:G.user;
+/* 정리 순서: 연봉 1원당 가치가 낮은 선수부터. 가치가 0 이하이면 나눗셈이 순서를 뒤집으므로(값 -5인 40억 선수가 값 -1인 3억 선수보다 뒤로 밀렸다) 그런 선수를 먼저, 연봉이 클수록 먼저 */
+const capCutKey=(t,p)=>{ const v=aiVal(t,p); return v>0?v/p.sal:v-p.sal/100; };
 function aiCapFix(tid,frac,noRel,maxN){ const t=team(tid); if(!t||tid===ME())return 0; if(t.allIn===sponSeason()&&(t.cash||0)>0)return 0; /* 올인 구단은 세금을 내고 버틴다 */ const cap=capOf(sponSeason())*(frac||.985)*Math.min(1,aiCapMul(t)); let n=0, guard=0;
   while(capPay(tid)>cap&&guard++<12&&n<(maxN||99)){
     const core=new Set(domestic(tid).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4).map(p=>p.id));
-    const c=domestic(tid).filter(p=>!core.has(p.id)&&!isRookie(p)&&p.sal>=150&&!(p.joinY>G.year)&&!hasNtc(p)) /* 거부권 선수는 동의 없이 보낼 수 없다(일반 트레이드와 같은 규칙). 못 맞추면 초과 제재를 받는다 */.sort((a,b)=>aiVal(t,a)/a.sal-aiVal(t,b)/b.sal)[0];
+    const c=domestic(tid).filter(p=>!core.has(p.id)&&!isRookie(p)&&p.sal>=150&&!(p.joinY>G.year)&&!hasNtc(p)) /* 거부권 선수는 동의 없이 보낼 수 없다(일반 트레이드와 같은 규칙). 못 맞추면 초과 제재를 받는다 */.sort((a,b)=>capCutKey(t,a)-capCutKey(t,b))[0];
     if(!c)break;
     const rc=G.teams.filter(x=>x.id!==tid&&x.id!==ME()&&(x.cash||0)>-2000&&capPayAs(x.id,[c.id],[])<=capOf(sponSeason())*.95&&rosterN(x.id)<ROSTER_MAX-1&&aiVal(x,c)>=Math.max(.5,c.sal/400)).sort((a,b)=>(capPay(a.id))-(capPay(b.id)))[0];
     if(rc){ tradeTerms(c); mvLog('트레이드',c,tid,rc.id,'연봉 덜어내기',0,mvTr()); c.team=rc.id; c.listed=false; for(const k in G.lineup)if(G.lineup[k]===c.id)delete G.lineup[k]; story(c,`연봉 덜어내기 트레이드로 ${tname(rc.id)} 이적`,'move'); wire('트레이드',`${tname(tid)}, ${noRel?'적자를 줄이려':'샐러리캡 맞추려'} ${c.name}(${money(c.sal)})을 ${tname(rc.id)}로 보냄`,{tid,ref:c.id}); }
