@@ -6,11 +6,11 @@ const LADDER_B_OFF=50000; /* 두 구단이 같은 풀 선수를 골라도 겹치
 let LADDER_WORLD=null;
 function ladderWorldJson(pool){ const key=pool.season+':'+LADDER_POOL_V; if(LADDER_WORLD&&LADDER_WORLD.key===key)return LADDER_WORLD.json;
   let json;
-  ladderSwap(null,()=>rngForce(rngHash('ladder-world',key),()=>{ buildWorld(rngHash('ladder-world-seed',key),{lite:true});
+  ladderSwap(null,()=>{ buildWorld({lite:true});
     G.user=G.teams.length-1; G.year=2026; G.cal=G.cal||buildCalendar(2026); G.day=G.cal.open+10; G.entryY=null; G.coach=null; G.stops=[]; G.mail=[]; G.log=[];
     for(const p of Object.values(G.players))if(p.team!=null)delete G.players[p.id]; for(const t of G.teams)G.mgr[t.id]=null; /* 원래 선수는 모두 뺀다: 리그 팩은 구단 자리 10개를 쓴다 */
     try{ const t0=team(0); stadOf(0); t0.stad.dim=JSON.parse(JSON.stringify(stadDim(0))); for(const t of G.teams){ if(t.id===0)continue; t.stad=JSON.parse(JSON.stringify(t0.stad)); for(const k of ['pop','fac','trust','rel','market'])t[k]=t0[k]; } }catch(e){} /* 모든 자리 구장 규격·인기를 같게: 홈 구장 운이 없게 */
-    json=JSON.stringify(G); }));
+    json=JSON.stringify(G); });
   LADDER_WORLD={key,json}; return json; }
 /* 구단 하나를 세계의 tid 자리에 넣고, 경기용 명단 묶음을 돌려준다 */
 function ladderInstall(tid,snap,pool){ const off=tid*LADDER_B_OFF; /* 자리마다 id를 띄워 같은 풀 선수를 여러 구단이 골라도 겹치지 않게 */ const P=new Map(pool.players.map(p=>[p.id,p]));
@@ -49,12 +49,12 @@ function ladderSeries(snapA,snapB,o){ o=o||{}; const Core=FrontOfficeCore; const
   for(const [k,s] of [['A',snapA],['B',snapB]]){ const v=Core.ladderValidate(s,pool); if(!v.ok)return {ok:false,side:k,errors:v.errors}; }
   const hA=Core.ladderSnapHash(snapA), hB=Core.ladderSnapHash(snapB);
   const json=ladderWorldJson(pool); const LG0=LRULE, PK0=PARK, SD0=SIMDAY;
-  try{ return ladderSwap(JSON.parse(json),()=>rngForce(rngHash('ladder-series',seed,hA,hB),()=>{
+  try{ return ladderSwap(JSON.parse(json),()=>{
     const CA=ladderInstall(0,snapA,pool), CB=ladderInstall(1,snapB,pool);
     const st={A:{w:0,l:0,t:0,r:0,ra:0},B:{w:0,l:0,t:0,r:0,ra:0}}, list=[], box={}; let day=G.day;
     const add=(id,x)=>{ const b=box[id]||(box[id]={}); for(const k in x)if(typeof x[k]==='number')b[k]=(b[k]||0)+x[k]; return b; };
     for(let i=0;i<n;i++){ const aHome=i%2===0, H=aHome?CA:CB, W=aHome?CB:CA; G.day=day;
-      const g=simGame(day,H.tid,W.tid,false,{sides:{h:ladderSide(H,day),a:ladderSide(W,day)},pitchRecords:false,rngKey:'ladder:'+seed+':'+hA+':'+hB+':'+i});
+      const g=simGame(day,H.tid,W.tid,false,{sides:{h:ladderSide(H,day),a:ladderSide(W,day)},pitchRecords:false});
       const a=aHome?g.score.h:g.score.a, b=aHome?g.score.a:g.score.h; st.A.r+=a; st.A.ra+=b; st.B.r+=b; st.B.ra+=a;
       if(a>b){ st.A.w++; st.B.l++; } else if(b>a){ st.B.w++; st.A.l++; } else { st.A.t++; st.B.t++; }
       for(const k of ['h','a'])for(const [id,x] of g.S[k].box){ const p=G.players[id]; if(!p)continue; const b=add(id,x); b.g=(b.g||0)+1; if(p.isP){ if(g.dec.w===id)b.w=(b.w||0)+1; if(g.dec.l===id)b.l=(b.l||0)+1; if(g.dec.sv===id)b.sv=(b.sv||0)+1; if(id===g.S[k].sp.id)b.gs=(b.gs||0)+1; } }
@@ -64,5 +64,5 @@ function ladderSeries(snapA,snapB,o){ o=o||{}; const Core=FrontOfficeCore; const
       const pit=ps.filter(p=>p.isP&&box[p.id]&&box[p.id].outs).map(p=>{ const b=box[p.id]; return {id:pid(p),name:p.name,g:b.g,gs:b.gs||0,ip:Math.floor(b.outs/3)+(b.outs%3)/10,w:b.w||0,l:b.l||0,sv:b.sv||0,so:b.so,era:+(b.er*27/b.outs).toFixed(2)}; }).sort((x,y)=>(y.gs-x.gs)||(x.era-y.era)||x.id-y.id);
       return {bat:bat.slice(0,5),pit:pit.slice(0,5)}; };
     const side=(k,s,h,tid,off)=>({name:s.name,hash:h,w:st[k].w,l:st[k].l,t:st[k].t,runs:st[k].r,allowed:st[k].ra,diff:st[k].r-st[k].ra,...top(tid,off)});
-    return {ok:true,v:FrontOfficeCore.LADDER_V,season:pool.season,seed,games:n,a:side('A',snapA,hA,0,0),b:side('B',snapB,hB,1,LADDER_B_OFF),winner:st.A.w>st.B.w?'A':st.B.w>st.A.w?'B':st.A.r>st.B.r?'A':st.B.r>st.A.r?'B':'-',scores:list}; })); }
+    return {ok:true,v:FrontOfficeCore.LADDER_V,season:pool.season,seed,games:n,a:side('A',snapA,hA,0,0),b:side('B',snapB,hB,1,LADDER_B_OFF),winner:st.A.w>st.B.w?'A':st.B.w>st.A.w?'B':st.A.r>st.B.r?'A':st.B.r>st.A.r?'B':'-',scores:list}; }); }
   finally{ LRULE=LG0; PARK=PK0; SIMDAY=SD0; } }

@@ -8,11 +8,15 @@
  *   GET    /api/cup/results            공개 결과(프런트컵 명예의 전당) JSON: 회차마다 우승·준우승 로스터, 순위, 개인 타이틀. 누구나(게임 처음 화면에서도) 읽는다
  *   GET    /api/cup/game/ID            대회 경기 다시 보기 묶음(두 엔트리 + 경기 키)
  *   주최자(Authorization: Bearer CUP_ADMIN 비밀값):
- *   PUT /api/cup/admin/config · GET /api/cup/admin/entries · PUT /api/cup/admin/results · PUT /api/cup/admin/game/ID
+ *   GET /api/cup/admin/check(키 확인) · PUT /api/cup/admin/config · GET /api/cup/admin/entries(전체 엔트리 + 제외 목록)
+ *   PUT /api/cup/admin/drop {h, undo}(제외·복구) · POST /api/cup/admin/entry(참가 파일 올리기) · GET·PUT /api/cup/admin/run(돌린 결과 전체, 공개 전 비공개)
+ *   PUT /api/cup/admin/pub(연재 공개분 → GET /api/cup/pub) · PUT /api/cup/admin/results(명예의 전당) · PUT /api/cup/admin/game/ID(경기 기록)
+ *   GET /api/cup/pub                    연재로 공개된 대회 진행(날짜별 결과·순위). 누구나
  * 보관: 엔트리 본문과 메타데이터(이름·연도·OVR·시각). IP는 기기 옮기기와 같이 해시로만 횟수를 센다. */
 import { CUP_DEFAULT, cupValidate, cupName, cupBadName, cupKstMs, cupKstDay, cupEntryHash, cupSeed, cupOvrTxt } from '../src/core/cup.mjs';
 
 export const CUP_MAX_BYTES = 400 * 1024;
+export const CUP_RUN_MAX = 12 * 1024 * 1024; /* 돌린 결과 전체(경기 기록 포함) */
 const MSG = {
   no_cup: '지금 열린 대회가 없습니다.',
   closed: '접수가 마감됐습니다.',
@@ -53,13 +57,27 @@ export async function handleCup(req, env, url, now, rateLimited) {
   if (rest.startsWith('admin/')) {
     if (!admin(req, env)) return err(401, 'auth');
     const sub = rest.slice(6);
+    if (sub === 'check' && req.method === 'GET') { const c = await cfgOf(kv); return json(200, { ok: true, cup: c ? Object.assign(pub(c), { open: c.open !== false }) : null }); }
+    if (sub === 'drop' && req.method === 'PUT') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); const b = JSON.parse(await req.text()); if (!b || !/^[0-9a-f]{8}$/.test(String(b.h || ''))) return err(400, 'bad_entry');
+      const k = 'cupX:' + c.id; let L = []; try { L = JSON.parse(await kv.get(k) || '[]'); } catch (e) {} L = L.filter(x => x !== b.h); if (!b.undo) L.push(b.h); await kv.put(k, JSON.stringify(L)); return json(200, { ok: true, drop: L }); }
+    if (sub === 'entry' && req.method === 'POST') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); const t = await req.text(); if (t.length > CUP_MAX_BYTES) return err(413, 'too_large');
+      let e; try { e = JSON.parse(t); } catch (x) { return err(400, 'bad_entry'); } if (!e) return err(400, 'bad_entry'); e.name = cupName(e.name); e.cup = c.id;
+      const v = cupValidate(Object.assign({}, e, { h: undefined }), c); if (!v.ok) return err(400, 'bad_entry', { errors: v.errors.map(x => x.msg) });
+      e.h = cupEntryHash(e); e.at = e.at || now; const key = WID.test(String(e.wid || '')) ? e.wid : 'f' + e.h; const meta = { name: e.name, year: e.year, ovr: e.ovr || null, seasons: e.seasons || 0, h: e.h, at: e.at, flags: v.flags.length, file: 1 };
+      await kv.put(`cupE:${c.id}:${key}`, JSON.stringify(e), { metadata: meta }); return json(201, Object.assign({ ok: true, elig: v.elig.map(x => x.msg) }, meta)); }
+    if (sub === 'run') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); const k = 'cupRun:' + c.id;
+      if (req.method === 'GET') { const t = await kv.get(k); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } }) : err(404, 'not_found'); }
+      if (req.method === 'PUT') { const t = await req.text(); if (t.length > CUP_RUN_MAX) return err(413, 'too_large'); JSON.parse(t); await kv.put(k, t); return json(200, { ok: true }); }
+      if (req.method === 'DELETE') { await kv.delete(k); return json(200, { ok: true }); } }
+    if (sub === 'pub' && req.method === 'PUT') { const t = await req.text(); if (t.length > 4 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cup:pub', t); return json(200, { ok: true }); }
     if (sub === 'config' && req.method === 'PUT') { const c = JSON.parse(await req.text()); if (!c || !GID.test(String(c.id || ''))) return err(400, 'bad_entry'); await kv.put('cup:cfg', JSON.stringify(c)); return json(200, { ok: true }); }
-    if (sub === 'entries' && req.method === 'GET') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); return json(200, { cup: c, entries: await listEntries(kv, c.id, true) }); }
+    if (sub === 'entries' && req.method === 'GET') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); let drop = []; try { drop = JSON.parse(await kv.get('cupX:' + c.id) || '[]'); } catch (e) {} return json(200, { cup: c, entries: await listEntries(kv, c.id, true), drop }); }
     if (sub === 'results' && req.method === 'PUT') { const t = await req.text(); JSON.parse(t); await kv.put('cup:results', t); return json(200, { ok: true }); }
     const g = sub.match(/^game\/(.+)$/); if (g && req.method === 'PUT' && GID.test(g[1])) { const t = await req.text(); if (t.length > 2 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cupG:' + g[1], t); return json(200, { ok: true }); }
     return err(405, 'method');
   }
   if (rest === '' && req.method === 'GET') { const c = await cfgOf(kv); return c ? json(200, { ok: true, cup: pub(c), now }) : err(404, 'no_cup'); }
+  if (rest === 'pub' && req.method === 'GET') { const t = await kv.get('cup:pub'); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } }) : err(404, 'not_found'); }
   if (rest === 'results' && req.method === 'GET') { const t = await kv.get('cup:results'); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=300' } }) : err(404, 'not_found'); }
   const gm = rest.match(/^game\/(.+)$/); if (gm && req.method === 'GET') { if (!GID.test(gm[1])) return err(400, 'bad_entry'); const t = await kv.get('cupG:' + gm[1]); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } }) : err(404, 'not_found'); }
   if (rest === 'entries' || rest === 'entries.html') {

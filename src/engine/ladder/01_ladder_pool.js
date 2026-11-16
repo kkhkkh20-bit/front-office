@@ -1,5 +1,5 @@
 /* ===== 단장 대전: 시즌 선수 풀 =====
-   시즌 id(예: 'L2026W47')만으로 같은 선수 풀이 나온다(rngForce). 커리어 저장과 무관하다: 순위전 구단은 이 풀에서만 만든다.
+   (숨김) 예산 드래프트용 시즌 선수 풀. 커리어 저장과 무관하다: 순위전 구단은 이 풀에서만 만든다.
    선수는 본게임 선수 생성(newPlayer: 능력치·포지션·투타·성격·투구 폼)을 그대로 쓰고, 얼굴은 선수 id로 정해진다.
    규칙·검증(26명, 연봉 한도, 포지션 최소 인원)은 공용 모듈 src/core/ladder.mjs(FrontOfficeCore.ladderValidate) */
 let LADDER_ON=false; /* 숨김 플래그: 서버(2단계)가 붙기 전에는 처음 화면에 버튼을 보이지 않는다 */
@@ -11,10 +11,10 @@ function ladderSwap(G1,fn){ const G0=G, sp=typeof SPOIL_SNAP!=='undefined'?SPOIL
 function ladderSeasonId(ms){ const d=new Date((ms==null?Date.now():ms)+9*3600e3); const t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())); const wd=t.getUTCDay()||7; t.setUTCDate(t.getUTCDate()+4-wd);
   const y=t.getUTCFullYear(), w=Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7); return 'L'+y+'W'+String(w).padStart(2,'0'); }
 const LADDER_MIX={C:28,'1B':22,'2B':24,'3B':24,SS:26,LF:22,CF:26,RF:22}, LADDER_PIT=186, LADDER_SP=84, LADDER_MGRS=12;
-/* 풀 만들기(같은 시즌 id → 같은 결과). 화면이 쓰는 가벼운 세계(LADDER_STUB)에 선수를 넣어 둔다: 능력·연봉 표시 함수가 G를 읽기 때문 */
+/* 풀 만들기(시즌 id마다 한 번 만들어 이 기기에 둔다). 화면이 쓰는 가벼운 세계(LADDER_STUB)에 선수를 넣어 둔다: 능력·연봉 표시 함수가 G를 읽기 때문 */
 function ladderPool(season){ season=String(season||ladderSeasonId()); if(LADDER_POOL_C[season])return LADDER_POOL_C[season];
-  const pool=ladderSwap(null,()=>rngForce(rngHash('ladder-pool',LADDER_POOL_V,season),()=>{
-    G={ver:4,rng:rngNew(rngHash('ladder-stub',season)),year:2026,day:dnum(2026,3,1),user:-1,players:{},teams:[],nextId:LADDER_ID0+1,cfg:{},lg:{},mgr:{},history:[],log:[],mail:[],stops:[],games:[],offers:[],lineup:{}};
+  const pool=ladderSwap(null,()=>{
+    G={ver:4,year:2026,day:dnum(2026,3,1),user:-1,players:{},teams:[],nextId:LADDER_ID0+1,cfg:{},lg:{},mgr:{},history:[],log:[],mail:[],stops:[],games:[],offers:[],lineup:{}};
     const tier=()=>{ const u=R(); return u<.12?['star',N(61,3.5)]:u<.5?['reg',N(52.5,3.5)]:u<.86?['bench',N(46,3.5)]:['young',N(41,4.5)]; };
     const mk=(isP,pos)=>{ const [k,b]=tier(); const young=k==='young'; const age=young?ri(19,23):clamp(Math.round(N(28.5,3.6)),21,37);
       const base=clamp(b-(age>=34?rnd(0,3):0),28,76), pot=young?base+rnd(4,12):base;
@@ -31,7 +31,7 @@ function ladderPool(season){ season=String(season||ladderSeasonId()); if(LADDER_
     const players=P.map(p=>Object.assign(JSON.parse(JSON.stringify(p)),{role:p.isP?p.lrole:null}));
     LADDER_STUB[season]=G;
     return {v:LADDER_POOL_V,season,cap,rules:FrontOfficeCore.LADDER_RULES,players,mgrs:M.map(m=>JSON.parse(JSON.stringify(m)))};
-  }));
+  });
   LADDER_POOL_C[season]=pool; return pool; }
 /* 풀 선수의 표시용 계산(종합 능력·포지션 가치)은 풀 세계에서: 커리어 G가 없거나(처음 화면) 다른 해여도 같은 값 */
 function ladderView(season,fn){ ladderPool(season); if(G===LADDER_STUB[season])return fn(G); return ladderSwap(LADDER_STUB[season],()=>fn(G)); }

@@ -75,11 +75,10 @@ function amYearStart(Y){ const U=amPipe(); if(U.yr!=null&&U.yr>=Y)return false;
   amGenCohort(Y+2,false,AM_NH()); amGenCohort(Y+3,true,AM_NC());
   for(const id in U.L)if(U.L[id].gy<Y)delete U.L[id]; return true; }
 /* 처음 세계(새 게임)·예전 저장: 3년 전부터 시즌을 실제로 돌려 지금 학년까지의 기록을 만든다(그때부터 경기가 있었던 것처럼) */
-let AM_BOOT_MS=0; /* 걸린 시간은 G 밖에(저장 해시가 실행마다 달라지지 않게, 11-17) */
 function amBoot(Y,minGy){ const U=amPipe(); if(U.yr!=null)return; const t0=Date.now(); const want=gy=>gy>=Y&&(minGy==null||gy>=minGy);
   for(let y=Y-3;y<=Y;y++){ if(y>Y-3)amGrowAll(); if(want(y+2))amGenCohort(y+2,false,AM_NH()); if(want(y+3))amGenCohort(y+3,true,AM_NC());
     if(y<Y){ const S=amSimYear(y); try{ amLvDrift(S); }catch(e){} const h=(G.amH||[]).find(x=>x.y===y); if(h)h.boot=1; if(y===Y-1&&!G.amL)G.amLp=amLiteRes(S); } } /* 지난 시즌 요약(학교 페이지 일반 부원 기록 포함) */ /* 처음 세계의 지난 시즌은 학년이 다 차지 않아(저학년만) 시즌 환경 비교에서 뺀다 */
-  U.yr=Y; AM_BOOT_MS=Date.now()-t0; delete G.amBootMs; }
+  U.yr=Y; G.amBootMs=Date.now()-t0; }
 /* ---------- 경기 단위(유닛): 후보(G.players)·저학년(G.amU)·일반 부원 ---------- */
 function amSimR(p){ return p.amR||p.r; }
 function amUnit(src,kind,sch,lvl,y){ const isP=kind==='e'?!!src.P:!!src.isP; const r=kind==='e'?src.r:kind==='p'?amSimR(src):src.r;

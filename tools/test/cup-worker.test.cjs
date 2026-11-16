@@ -54,3 +54,18 @@ test('명단: 시드 순(OVR), 세계 id는 공개하지 않음, HTML 페이지,
  assert.equal((await H('PUT','/api/cup/admin/results',JSON.stringify({v:1,cups:[]}),{Authorization:'Bearer s3cret',Origin:''})).status,200);
  assert.deepEqual(await (await H('GET','/api/cup/results')).json(),{v:1,cups:[]});
 });
+test('관리자 끝점: 틀린 키·키 없음은 401, 맞는 키로 확인·제외/복구·파일 올리기·결과 전체(비공개)·연재 공개',async()=>{
+ const clock={now:Date.UTC(2026,10,20,3)}; const {env,H}=await setup(clock); const AK={Authorization:'Bearer s3cret',Origin:''}, BAD={Authorization:'Bearer wrong',Origin:''};
+ for(const [m,p,b] of [['GET','/api/cup/admin/check'],['PUT','/api/cup/admin/drop','{"h":"0000abcd"}'],['POST','/api/cup/admin/entry',JSON.stringify(entry())],['GET','/api/cup/admin/run'],['PUT','/api/cup/admin/run','{"v":1}'],['PUT','/api/cup/admin/pub','{"v":1}'],['PUT','/api/cup/admin/results','{"v":1,"cups":[]}'],['PUT','/api/cup/admin/game/x','{}'],['GET','/api/cup/admin/entries']]){
+  assert.equal((await H(m,p,b,BAD)).status,401,'틀린 키 '+m+' '+p); assert.equal((await H(m,p,b,{Origin:''})).status,401,'키 없음 '+m+' '+p); }
+ const ck=await (await H('GET','/api/cup/admin/check',null,AK)).json(); assert.equal(ck.ok,true); assert.equal(ck.cup.id,'cup1');
+ const up=await H('POST','/api/cup/admin/entry',JSON.stringify(entry({wid:'',name:'파일팀'})),AK); assert.equal(up.status,201); const uj=await up.json(); assert.equal(uj.file,1);
+ assert.ok([...env.SAVE_KV.m.keys()].includes('cupE:cup1:f'+uj.h),'파일 엔트리 키');
+ const bad=entry(); bad.ln=bad.ln.slice(0,8); assert.equal((await H('POST','/api/cup/admin/entry',JSON.stringify(bad),AK)).status,400);
+ let d=await (await H('PUT','/api/cup/admin/drop',JSON.stringify({h:uj.h}),AK)).json(); assert.deepEqual(d.drop,[uj.h]);
+ const L=await (await H('GET','/api/cup/admin/entries',null,AK)).json(); assert.deepEqual(L.drop,[uj.h]); assert.equal(L.entries.length,1);
+ d=await (await H('PUT','/api/cup/admin/drop',JSON.stringify({h:uj.h,undo:true}),AK)).json(); assert.deepEqual(d.drop,[]);
+ assert.equal((await H('GET','/api/cup/admin/run',null,AK)).status,404); assert.equal((await H('PUT','/api/cup/admin/run',JSON.stringify({v:1,day:0,secret:'KS 결과'}),AK)).status,200);
+ assert.equal((await (await H('GET','/api/cup/admin/run',null,AK)).json()).secret,'KS 결과'); assert.equal((await H('GET','/api/cup/run')).status,404,'결과 전체는 공개 길이 없다');
+ assert.equal((await H('GET','/api/cup/pub')).status,404); assert.equal((await H('PUT','/api/cup/admin/pub',JSON.stringify({v:1,day:2}),AK)).status,200); assert.equal((await (await H('GET','/api/cup/pub')).json()).day,2);
+});

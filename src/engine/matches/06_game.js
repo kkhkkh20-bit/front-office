@@ -118,12 +118,7 @@ function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, �
 }
 let PARK=null; /* 지금 경기 구장(홈 팀) */
 let LRULE={ball:1,zone:0};
-/* 경기 난수는 경기마다 따로 흐름(00_base rngWith): 키 = 연도·날짜·홈·원정·종류·그날 같은 대진 순번. 다른 결정이 본 흐름을 몇 개 더 써도 그 경기의 공 순서는 같다.
-   options.rngKey를 주면 그 키를 쓴다(단장 대전 시리즈: 시리즈 시드·경기 번호) */
-function simGame(day,hid,aid,ps,options){ const gi=typeof RAIN_GI!=='undefined'&&RAIN_GI&&RAIN_GI.day===day&&RAIN_GI.h===hid&&RAIN_GI.a===aid?RAIN_GI.i:1;
-  const key=options&&options.rngKey!=null?'k:'+options.rngKey:['g',G.year,day,hid,aid,ps?'p':options&&options.sides?'s':'r',gi].join(':');
-  return rngWith(key,()=>simGame0(day,hid,aid,ps,options)); }
-function simGame0(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRULE={ball:1,zone:0}; } PARK=hid; SIMDAY=day; if(options&&options.sides){ for(const k of ['h','a']){ const s=options.sides[k]; for(const q of [...s.order,...s.bench,...s.pen,...(s.sp?[s.sp]:[])]){ q.gc=N(0,.55*volF(q)); q.gcD=day; } } } else for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
+function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRULE={ball:1,zone:0}; } PARK=hid; SIMDAY=day; if(options&&options.sides){ for(const k of ['h','a']){ const s=options.sides[k]; for(const q of [...s.order,...s.bench,...s.pen,...(s.sp?[s.sp]:[])]){ q.gc=N(0,.55*volF(q)); q.gcD=day; } } } else for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
   const S=options&&options.sides?options.sides:{h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)}; /* 퓨처스리그: 2군 라인업을 넘겨받는다(92_futures_league) */
   const broadcast=options?.pitchRecords===false?null:gameBroadcastContext(day,S,!ps);
   const psx=ps&&typeof ps==='object'?ps:null;

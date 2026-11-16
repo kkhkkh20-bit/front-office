@@ -7,7 +7,7 @@
    out/final     최종 결과, 개인 타이틀, 경기 다시 보기 번호 목록, 공개 결과(hall.json) */
 const fs = require('node:fs'), path = require('node:path');
 module.exports = function (H) {
-  const { C, engine, entryOf, addEntry, playable, humans, lab, jo, ovrTxt, save, W, J, postOf, addStats, stripFaces, opt } = H;
+  const { C, engine, entryOf, addEntry, playable, humans, lab, jo, ovrTxt, save, W, J, postOf, addStats, stripFaces, gameRecs, hallDeck, opt } = H;
   const DIR = () => H.DIR(), out = (...p) => path.join(DIR(), 'out', ...p);
   const ent = (S, h) => S.entries[h];
   const L = (S, h) => lab(ent(S, h));
@@ -71,7 +71,7 @@ module.exports = function (H) {
       const labs = { A: L(S, a), B: L(S, b) }; n += res.games.length;
       if (o.round[0] === 'L') { const part = Core.cupLeaguePart(+o.round.slice(1), R); addStats(S, res, S.stats.L, labs); addStats(S, res, S.stats['P' + part], labs); }
       else addStats(S, res, S.stats.PS, labs);
-      W(path.join(DIR(), 'games', `${S.cfg.id}-${o.match}.json`), JSON.stringify({ v: 1, id: `${S.cfg.id}-${o.match}`, a: stripFaces(entryOf(a)), b: stripFaces(entryOf(b)), o, sum: res.games.map(g => [g.sa, g.sb]) }));
+      gameRecs(`${S.cfg.id}-${o.match}`, o.round[0] === 'L' ? `리그 ${o.round.slice(1)}라운드` : (Core.CUP_POST.find(x => x.id === o.round) || {}).name || o.round, labs.A, labs.B, res);
       if (o.round[0] === 'L' && o.match.endsWith('-1')) process.stdout.write(`\r리그 ${o.round.slice(1)}/${R}라운드 · ${n}경기`);
       return res;
     });
@@ -128,7 +128,7 @@ module.exports = function (H) {
     const stand = Lg.stand.map(x => ({ rank: x.rank, name: L(S, x.key), ...(ent(S, x.key).ai ? { ai: true } : {}), w: x.w, l: x.l, t: x.t, pct: pct(x), gb: x.gb, diff: x.diff, ovr: ent(S, x.key).ovr }));
     const gTot = Lg.series.reduce((a, s) => a + s.games.length, 0);
     const res = { v: 1, id: S.cfg.id, title: S.cfg.title, format: 'league', date: new Date().toISOString().slice(0, 10), n: humans(S).length, ai: no.length, games: gTot, done: !!Lg.champ,
-      champ: Object.assign(who(Lg.champ), { roster: rosterOf(Lg.champ) }), runner: Object.assign(who(Lg.runner), { roster: rosterOf(Lg.runner) }), stand, post, titles, q,
+      champ: Object.assign(who(Lg.champ), { roster: rosterOf(Lg.champ), deck: hallDeck(Lg.champ) }), runner: Object.assign(who(Lg.runner), { roster: rosterOf(Lg.runner) }), stand, post, titles, q,
       codes: Lg.series.map(s => `${S.cfg.id}-${s.id}`) };
     W(out('results.json'), JSON.stringify(res, null, 1));
     /* 공개 결과(명예의 전당): 지난 회차를 이어 붙인 목록. 지난 hall.json은 CUP_HALL로 */
@@ -138,7 +138,7 @@ module.exports = function (H) {
     const T = [`[${S.cfg.title} 최종 결과]`, '', `우승 ${L(S, Lg.champ)}${ent(S, Lg.champ).ai ? ' (AI)' : ''} · 정규리그 ${ent(S, Lg.champ) && Lg.stand.find(x => x.key === Lg.champ).rank}위 · OVR ${ovrTxt(ent(S, Lg.champ).ovr)}`, `준우승 ${L(S, Lg.runner)}`, '',
       '■ 우승 로스터', ...res.champ.roster.map(r => `- ${r.pos} ${r.n} ${r.o}`), '', '■ 가을야구', ...post.map(p => `- ${p.name}: ${p.a} vs ${p.b} (${p.g.map(g => g.join(':')).join(', ')}) → ${p.win}`), '',
       '■ 정규리그 최종 순위', standTxt(S, Lg.stand), '', `■ 개인 타이틀 (타율·출루율 ${q.pa}타석, 평균자책점·WHIP·K/9 ${q.outs / 3}이닝 이상${no.length ? ', AI 구단 선수 제외' : ''})`, ...titles.map(t => `- ${t.k}: ${t.name}(${t.team}) ${t.v}`), '',
-      '■ 경기 다시 보기', `게임 › 구단 › 프런트컵 › 대회 경기 보기에 번호를 넣으면 같은 경기를 다시 돌려 봅니다. 번호 목록: final/codes.txt (예: ${S.cfg.id}-KS, ${S.cfg.id}-L1-1)`,
+      '■ 경기 다시 보기', `게임 › 구단 › 프런트컵 › 대회 경기 보기에 번호를 넣으면 그 경기의 중계·박스·줄 점수를 봅니다. 번호 목록: final/codes.txt (예: ${S.cfg.id}-KS, ${S.cfg.id}-L1-1)`,
       '■ 명예의 전당', '우승·준우승 로스터는 게임 처음 화면 › 프런트컵 명예의 전당, 설정 › 정보에서 누구나 볼 수 있습니다.'];
     W(out('results.txt'), T.join('\n') + '\n');
     W(out('final', 'post.txt'), T.join('\n') + '\n'); W(out('final', 'codes.txt'), res.codes.join('\n') + '\n');

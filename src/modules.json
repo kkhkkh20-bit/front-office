@@ -312,6 +312,7 @@
       "src/ui/league/97_spring_camp_ui.js",
       "src/ui/ladder/01_ladder_ui.js",
       "src/ui/cup/01_cup_ui.js",
+      "src/ui/cup/02_cup_admin.js",
       "src/ui/runtime/99_boot.js"
     ],
     "styles": [

@@ -128,6 +128,7 @@ function clubBody(s){
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     share:()=>teamShareView(),
     cup:()=>cupView(), /* 유저 대회(src/ui/cup) */
+    cupadm:()=>cupAdminView(), /* 프런트컵 관리자(키가 맞을 때만, 메뉴에 없음) */
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log club-log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
     set:()=>{ /* 설정 한 페이지(사용자 11-08): 칸을 묶음으로 넘기지 않고 세 줄로. 패치 노트·크레딧은 접어 둔다 */
@@ -140,9 +141,9 @@ function clubBody(s){
       const more=`<section class="card"><details class="mfold"><summary>패치 노트</summary>${patchCard()}</details>${creditsLine()}</section>`;
       if(!fmOn()){ /* 휴대폰·좁은 창: 한 줄로 쌓으면 5화면이 넘어 서로 따로 쓰는 묶음을 4탭으로(UI 3단계 3-9). PC는 세 줄 그대로 */
         const it=inTabs('setg',[['run','진행'],['view','표시'],['save','저장'],['info','정보']],'run');
-        const body={run:advSetCard()+stopCard()+psc+ivf+dif,view:actModeCard()+scl+teamNameCard()+ret,save:slotsCard(false)+exportCard()+teleCard(),info:fb+cupHofCard()+more}[it.cur];
+        const body={run:advSetCard()+stopCard()+psc+ivf+dif,view:actModeCard()+scl+teamNameCard()+ret,save:slotsCard(false)+exportCard()+teleCard(),info:fb+cupHofCard()+more+cupAdminLink()}[it.cur];
         return `<div class="setx set-tabs ws-own">${it.bar}<div class="setc">${body}</div></div>`; }
-      return `<div class="setx ws-own"><div class="setc"><h3 class="set-g">진행</h3>${advSetCard()}${stopCard()}${psc}</div><div class="setc"><h3 class="set-g">저장</h3>${slotsCard(false)}${exportCard()}${teleCard()}</div><div class="setc"><h3 class="set-g">구단·기록</h3>${actModeCard()}${scl}${ivf}${dif}${teamNameCard()}${ret}${cupHofCard()}${more}</div>${fb}</div>`; }}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
+      return `<div class="setx ws-own"><div class="setc"><h3 class="set-g">진행</h3>${advSetCard()}${stopCard()}${psc}</div><div class="setc"><h3 class="set-g">저장</h3>${slotsCard(false)}${exportCard()}${teleCard()}</div><div class="setc"><h3 class="set-g">구단·기록</h3>${actModeCard()}${scl}${ivf}${dif}${teamNameCard()}${ret}${cupHofCard()}${more}${cupAdminLink()}</div>${fb}</div>`; }}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
   const h=mergedBody('club',s,H0);
   return h;
 }

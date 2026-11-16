@@ -1,7 +1,7 @@
 /* ===== 유저 대회(프런트컵): 엔트리·출전 로스터 앨범·경기 실행·중계 글 =====
    엔트리(공용 형식 src/core/cup.mjs): 그 순간 우리 1군(능력·나이·포지션·투타·타순·선발·불펜·감독). 투수 피로만 0, 부상은 그대로.
    경기: 단장 대전의 가벼운 기준 세계(ladderWorldJson)에 두 엔트리를 0·1번 자리로 넣고 본게임 simGame(가을야구 규칙, 무승부 없음)으로 치른다.
-   같은 엔트리·같은 대회 id·라운드·경기 번호 → 어느 기기에서나 같은 결과(rngForce + 경기마다 따로 흐름). 홈 어드밴티지는 끈다 */
+   난수는 본게임과 같은 평범한 난수다: 같은 엔트리라도 돌릴 때마다 결과가 다르다(구단주 11-17: 공은 둥글다. 주최자가 돌린 그 결과가 정답). 홈 어드밴티지는 끈다 */
 const CUP_ALB_MAX=20;
 /* 경기 엔진이 읽는 선수 값만(기록·이력·계약은 뺀다). 사기는 60으로, 시즌 컨디션(sf)·누적 피로(wear)는 넣지 않는다: 그날 운이 대회 전력을 흔들지 않게 */
 const CUP_PK=['id','name','age','isP','pos','th','bt','r','pot','inj','injOut','role','velo','pers','delivery','pexp','vers','foreign','nat','addP','chem']; /* 경기 중 읽는 값(프록시로 확인, 11-17) + 표시용(잠재력·투구 폼·국적) */
@@ -59,26 +59,26 @@ function cupMatch(EA,EB,o){ o=o||{}; const Core=FrontOfficeCore; const best=Math
   for(const [k,e] of [['A',EA],['B',EB]]){ const v=Core.cupValidate(e,{}); if(!v.ok)return {ok:false,side:k,errors:v.errors}; }
   const hA=Core.cupEntryHash(EA), hB=Core.cupEntryHash(EB), key=[o.cup||'cup',o.round||'',o.match||'',hA,hB].join(':');
   const json=ladderWorldJson({season:'cup'}); const LG0=LRULE, PK0=PARK, SD0=SIMDAY, HA0=HOME_ADV;
-  try{ HOME_ADV=0; return ladderSwap(JSON.parse(json),()=>rngForce(rngHash('cup-match',key),()=>{
+  try{ HOME_ADV=0; return ladderSwap(JSON.parse(json),()=>{
     const kA=cupIdBase(EA), kB=cupIdBase(EB,kA), CA=cupInstall(0,EA,kA), CB=cupInstall(1,EB,kB); let day=G.day; const games=[];
     if(Array.isArray(o.ri)){ CA.ri=(o.ri[0]|0)%Math.max(1,CA.rot.length); CB.ri=(o.ri[1]|0)%Math.max(1,CB.rot.length); }
     for(let i=0;i<best;i++){ const st=Core.cupSeriesState(spec,games.map(g=>({sa:g.sa,sb:g.sb}))); if(!o.all&&st.done)break;
       const aHome=Array.isArray(o.home)&&o.home[i]!=null?!!o.home[i]:i%2===0, H=aHome?CA:CB, W=aHome?CB:CA; G.day=day;
       const need=st.need||2, elim=o.all?[]:[...(st.wb===need-1||best===1||o.wc?[CB.tid]:[]),...(st.wa===need-1||best===1||(o.wc&&i>0)?[CA.tid]:[])];
       const ps=o.all&&o.tie?false:{noTie:!o.tie,elimT:elim,cup:1};
-      const g=simGame(day,H.tid,W.tid,ps,{sides:{h:ladderSide(H,day),a:ladderSide(W,day)},pitchRecords:false,bipLog:true,rngKey:'cup:'+key+':'+i});
+      const g=simGame(day,H.tid,W.tid,ps,{sides:{h:ladderSide(H,day),a:ladderSide(W,day)},pitchRecords:false,bipLog:true});
       games.push(cupGameOut(g,{i,aHome,CA,CB,key,best})); ladderAfter(g,day); day++; ladderRest(); }
     const wa=games.filter(g=>g.sa>g.sb).length, wb=games.filter(g=>g.sb>g.sa).length, t=games.length-wa-wb, fin=Core.cupSeriesState(spec,games);
     const win=o.all?(wa>wb?'A':wb>wa?'B':'T'):fin.win||(wa>=wb?'A':'B');
     const side=(E,h,w)=>({name:E.name,year:E.year,h,w});
-    return {ok:true,v:Core.CUP_V,key,cup:o.cup||'',round:o.round||'',match:o.match||'',best,a:side(EA,hA,wa),b:side(EB,hB,wb),wa,wb,t,win,games}; })); }
+    return {ok:true,v:Core.CUP_V,key,cup:o.cup||'',round:o.round||'',match:o.match||'',best,a:side(EA,hA,wa),b:side(EB,hB,wb),wa,wb,t,win,games}; }); }
   finally{ LRULE=LG0; PARK=PK0; SIMDAY=SD0; HOME_ADV=HA0; } }
-/* 리그 평균 AI 구단: 대회 id로 정해지는 새 리그(가벼운 세계)의 구단 가운데 팀 OVR이 중간에 가까운 순으로 n개. 같은 대회 id → 같은 AI 구단 */
+/* 리그 평균 AI 구단: 새 리그(가벼운 세계)의 구단 가운데 팀 OVR이 중간에 가까운 순으로 n개(seed는 이름표일 뿐, 만들 때마다 새 구단) */
 function cupAiEntries(n,seed){ seed=String(seed||'cup'); let out=[];
-  ladderSwap(null,()=>rngForce(rngHash('cup-ai',seed),()=>{ buildWorld(rngHash('cup-ai-seed',seed),{lite:true}); G.year=2026; G.cal=G.cal||buildCalendar(2026); G.day=G.cal.open+10; G.user=0;
+  ladderSwap(null,()=>{ buildWorld({lite:true}); G.year=2026; G.cal=G.cal||buildCalendar(2026); G.day=G.cal.open+10; G.user=0;
     const L=G.teams.map(t=>{ const e=cupEntryNow({tid:t.id,name:FrontOfficeCore.cupName('AI '+t.nick),wid:''}); if(!e)return null; e.ai=1; delete e.club.badge; e.seasons=0; e.pay=0; e.h=FrontOfficeCore.cupEntryHash(e); e.ovr=cupOvr(e); return e; }).filter(Boolean);
     const ts=L.map(e=>e.ovr.t).sort((a,b)=>a-b), med=ts[Math.floor(ts.length/2)];
-    out=L.sort((a,b)=>Math.abs(a.ovr.t-med)-Math.abs(b.ovr.t-med)||a.club.tid-b.club.tid).slice(0,Math.max(0,n|0)); }));
+    out=L.sort((a,b)=>Math.abs(a.ovr.t-med)-Math.abs(b.ovr.t-med)||a.club.tid-b.club.tid).slice(0,Math.max(0,n|0)); });
   return out; }
 /* ===== 중계 글(카페 게시 형식) =====
    경기 기록(pbp)을 한 줄씩: '투수 이준서(91) 1번타자 손선준(81), 루킹 삼진 아웃. #1사 주자없음'. 타구 유형·방향은 경기 엔진이 정한 값(bipLog), 비거리·루킹/헛스윙은 경기 키로 정한 값 */

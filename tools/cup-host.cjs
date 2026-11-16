@@ -31,7 +31,6 @@ let E = null;
 function engine() {
   if (E) return E;
   if (!fs.existsSync(ENGINE)) { console.error('엔진 파일이 없습니다: ' + ENGINE + ' (bash build.sh --engine-out dist/engine.js)'); process.exit(2); }
-  globalThis.FO_RNG_MODE = 'seeded';
   E = new Function('console', fs.readFileSync(ENGINE, 'utf8') + `
 ;function __mock(seed,seasons,per,names){ DEMO.on=false; newGame(seed%10,seed); fdStart(); fdAdvance(false); let g0=0; while(G.fd&&!G.fd.done&&g0++<500)fdAdvance(true); G.tut={done:true,step:99}; hireMgr(G.mmarket[0].id,3); G.medSet=true;
   for(const id of [...(G.fmarket||[])]){ const p=G.players[id]; try{ if(p&&!foreignCheck(G.user,p))signForeign(G.user,id); }catch(e){} }
@@ -113,6 +112,14 @@ function cmdSeed() {
 /* 블록: 대진표를 같은 크기로 나눈 구간(A·B…). 경기가 한 블록 안이면 그 블록 */
 function blockOf(B, mid) { if (!B.blocks) return null; const m = mid.match(/^R(\d+)M(\d+)$/); if (!m) return null; const r = +m[1] - 1, i = +m[2] - 1, span = 2 ** (r + 1), per = B.size / B.blocks; if (span > per) return null; return String.fromCharCode(65 + Math.floor(i * span / per)); }
 function roundName(n, pi) { return pi ? `플레이인 ${pi}조` : C().cupRoundName(n); }
+/* 경기 다시 보기(게임 › 구단 › 프런트컵 › 대회 경기 보기): 주최자가 돌린 그 기록을 그대로 올린다(게임은 다시 돌리지 않는다).
+   games/ID.json = 시리즈 요약(팀·차전 점수), games/ID-gN.json = 그 차전의 중계·박스·줄 점수. 게임은 요약을 먼저 받고, 차전을 고를 때 그 차전만 받는다 */
+function gameRecs(id, title, A, B, res) {
+  W(path.join(DIR, 'games', id + '.json'), JSON.stringify({ v: 2, id, title, a: A, b: B, g: res.games.map(g => [g.sa, g.sb, g.inn || 9, g.walk ? 1 : 0]) }));
+  res.games.forEach((g, i) => W(path.join(DIR, 'games', `${id}-g${i + 1}.json`), JSON.stringify({ v: 2, id: `${id}-g${i + 1}`, sa: g.sa, sb: g.sb, log: g.log, bat: g.bat, pit: g.pit, line: g.line })));
+}
+/* 명예의 전당 우승 덱: 엔트리 그대로(타순·선발·불펜·감독·얼굴 사진). 세계 id는 빼고 해시만 남긴다. 게임에서 '이 덱 가져오기'로 유저 래더 도전 덱이 된다 */
+function hallDeck(h) { const e = JSON.parse(JSON.stringify(entryOf(h))); delete e.wid; delete e.ts; delete e.at; e.h = C().cupEntryHash(e); return e; }
 function stripFaces(e) { const x = JSON.parse(JSON.stringify(e)); for (const p of x.P) delete p.f; return x; }
 function addStats(S, res, T, labs) {
   T = T || S.stats; const tm = k => labs ? labs[k] : res[k.toLowerCase()].name + ' ' + res[k.toLowerCase()].year;
@@ -169,7 +176,7 @@ function runOne(S) {
     W(path.join(gd, 'EventLog.txt'), g.log + '\n'); W(path.join(gd, 'EventLog_bat.txt'), g.bat + '\n'); W(path.join(gd, 'EventLog_pit.txt'), g.pit + '\n'); W(path.join(gd, 'LineScore.txt'), g.line + '\n');
     W(path.join(gd, 'post.txt'), postOf(S, info, res, g, gi, nextNote(S, info, res, gi === res.games.length - 1)) + '\n');
   });
-  W(path.join(DIR, 'games', `${S.cfg.id}-${mid}.json`), JSON.stringify({ v: 1, id: `${S.cfg.id}-${mid}`, a: stripFaces(EA), b: stripFaces(EB), o: { cup: S.cfg.id, round: pi || ('R' + m.n), match: mid, best: m.best }, sum: res.games.map(g => [g.sa, g.sb]) }));
+  gameRecs(`${S.cfg.id}-${mid}`, rname, lab(S.entries[a]), lab(S.entries[b]), res);
   console.log(`${mid} ${rname}: ${lab(S.entries[a])} ${res.wa}-${res.wb} ${lab(S.entries[b])} → ${lab(S.entries[winKey])} (${res.games.map(g => g.sa + ':' + g.sb).join(', ')}) · ${ms}ms, 경기당 ${Math.round(ms / res.games.length)}ms`);
   return true;
 }
@@ -197,7 +204,7 @@ function cmdResults() {
   const q = { pa: Math.min(65, Math.max(3, Math.round(gpt * 3.1))), outs: Math.min(63, Math.max(3, Math.round(gpt * 3))) };
   const titles = Core.cupTitles(Object.values(S.stats.bat), Object.values(S.stats.pit), q);
   const out = { v: 1, id: S.cfg.id, title: S.cfg.title, date: new Date().toISOString().slice(0, 10), n: teams, games: gTot, done: !!champ,
-    champ: champ ? Object.assign(who(champ), { roster: ros(champ) }) : null, runner: runner ? Object.assign(who(runner), { roster: ros(runner) }) : null,
+    champ: champ ? Object.assign(who(champ), { roster: ros(champ), deck: hallDeck(champ) }) : null, runner: runner ? Object.assign(who(runner), { roster: ros(runner) }) : null,
     semis: lost(4).map(who), eight: lost(8).map(who), missions, titles, q };
   W(path.join(DIR, 'out', 'results.json'), JSON.stringify(out, null, 1));
   /* 서버 공개 결과(유저의 전당): 지난 회차를 이어 붙인 목록 */
@@ -313,7 +320,7 @@ function bracketHtml(S) {
 }
 async function cmdBracket() { const S = load(); if (!S.bracket) { console.error('시드가 없습니다.'); process.exit(1); } const { w, h, html } = bracketHtml(S); const br = await browser(), pg = await br.newPage(); const f = path.join(DIR, 'out', 'bracket.png'); await shot(pg, html, f, w, h); await br.close(); console.log(f); }
 
-const { seedLeague, runLeague, statusLeague, resultsLeague } = LEAGUE({ C, engine, entryOf, entryFile, addEntry, playable, humans, lab, jo, ovrTxt, save, load, W, J, postOf, addStats, stripFaces, DIR: () => DIR, opt });
+const { seedLeague, runLeague, statusLeague, resultsLeague } = LEAGUE({ C, engine, entryOf, entryFile, addEntry, playable, humans, lab, jo, ovrTxt, save, load, W, J, postOf, addStats, stripFaces, gameRecs, hallDeck, DIR: () => DIR, opt });
 const CMDS = { init: cmdInit, add: cmdAdd, pull: cmdPull, list: cmdList, drop: cmdDrop, seed: cmdSeed, next: () => cmdNext(false), run: () => cmdNext(true), status: cmdStatus, results: cmdResults, publish: cmdPublish, mock: cmdMock, faces: cmdFaces, cards: cmdCards, bracket: cmdBracket };
 if (!CMDS[cmd] || !DIR) { console.error(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 20).join('\n')); process.exit(2); }
 Promise.resolve(CMDS[cmd]()).catch(e => { console.error(e); process.exit(1); });

@@ -73,7 +73,7 @@ function faAsk(p){
 /* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */
 function faMktOf(y){ G.faMkt=G.faMkt||{}; if(G.faMkt[y]!=null)return G.faMkt[y]; const prev=G.faMkt[y-1]!=null?G.faMkt[y-1]:1.08;
   const rooms=G.teams.map(t=>Math.max(0,capOf(y)-capPay(t.id))/capOf(y)); const room=sum(rooms)/rooms.length;
-  return Math.round(clamp(1.08+(prev-1.08)*.35+((G.faMkR=G.faMkR||{})[y]??(G.faMkR[y]=clamp(rngGauss('famk:'+y),-2.5,2.5)))*.045+clamp((room-.2)*.4,-.04,.04),.92,1.18)*1000)/1000; } /* 과열 상한 1.25 → 1.18(커뮤니티 피드백 11-08) */ /* 그해 분위기 운(faMkR)은 세계 시드에서 바로 정한다: 연봉 화면을 언제 처음 여느냐에 따라 본 난수 흐름이 달라지지 않게(11-17) */
+  return Math.round(clamp(1.08+(prev-1.08)*.35+((G.faMkR=G.faMkR||{})[y]??(G.faMkR[y]=clamp(N(0,1),-2.5,2.5)))*.045+clamp((room-.2)*.4,-.04,.04),.92,1.18)*1000)/1000; } /* 과열 상한 1.25 → 1.18(커뮤니티 피드백 11-08) */
 function faMktNow(){ return G.fa&&!G.fa.closed&&G.fa.y0!=null?faMktOf(G.fa.y0):faMktOf(G.year); }
 function faMktFix(y){ G.faMkt=G.faMkt||{}; G.faMkt[y]=faMktOf(y); return G.faMkt[y]; }
 function faMktLabel(v){ return v>=1.15?'과열':v>=1.06?'뜨거움':v>.99?'보통':v>.95?'차가움':'냉각'; }

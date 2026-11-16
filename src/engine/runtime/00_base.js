@@ -4,32 +4,10 @@ if(!Object.hasOwn)Object.hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k)
 if(!String.prototype.at)Object.defineProperty(String.prototype,'at',{value:function(i){ i=Math.trunc(i)||0; if(i<0)i+=this.length; return i<0||i>=this.length?undefined:this.charAt(i); },writable:true,configurable:true});
 'use strict';
 /* ===== 기본 도구 ===== */
-/* 엔진 난수(단장 대전 준비, 11-17). 세계마다 시드를 G.rng에 두고, 상태도 G.rng에 둔다: 저장하면 난수 상태도 함께 저장되어 같은 시드·같은 결정이면 브라우저에서도 같은 결과가 나온다.
-   새 게임 시드는 기본 난수원(Math.random)에서 뽑으므로 평소 커리어는 지금처럼 판마다 다르다. 옛 저장(G.rng 없음)은 처음 쓸 때 새 시드를 만든다.
-   검사 도구가 엔진을 읽기 전에 Math.random을 바꿔 두었으면(시드형 검사·강제 난수 시나리오) 예전처럼 그 난수원을 그대로 쓴다(legacy). rngSetMode로 바꿀 수 있다.
-   용도별 흐름: rngWith(키, 함수)는 그 함수 안의 난수를 hash(세계 시드, 키)에서 새로 시작하는 따로 흐름으로 돌린다(경기마다 하나). 본 흐름은 건드리지 않는다 */
-const FO_RANDOM_BASE=FrontOfficeCore.createRandom(Math.random);
-const RNG_NATIVE=(()=>{ try{ return FO_RANDOM_BASE.R===Math.random&&/\[native code\]/.test(Function.prototype.toString.call(Math.random)); }catch(e){ return false; } })();
-let RNG_SEEDED=(()=>{ try{ const m=globalThis.FO_RNG_MODE; if(m==='seeded')return true; if(m==='legacy')return false; }catch(e){} return RNG_NATIVE; })();
-let RNG_SUB=null; /* 지금 쓰는 따로 흐름 {s} */
-function rngSetMode(m){ RNG_SEEDED=m==='seeded'; return RNG_SEEDED; }
-function rngMode(){ return RNG_SEEDED?'seeded':'legacy'; }
-/* 문자열·숫자 여러 개를 32비트 해시 하나로(FNV-1a + 마무리 섞기) */
+const FO_RANDOM=FrontOfficeCore.createRandom(Math.random);
+/* 해시(문자열 여러 개 → 32비트). 난수가 아니다: 대회·래더의 키·결과 요약용. 본게임·대회·래더 경기는 모두 평범한 난수(Math.random)로 돈다(구단주 11-17: 같은 전력이어도 돌릴 때마다 결과가 달라야 한다) */
 function rngHash(){ let h=2166136261>>>0; for(let k=0;k<arguments.length;k++){ const s=String(arguments[k]); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } h^=124; h=Math.imul(h,16777619)>>>0; }
   h^=h>>>16; h=Math.imul(h,2246822507)>>>0; h^=h>>>13; h=Math.imul(h,3266489909)>>>0; h^=h>>>16; return h>>>0; }
-function rngNew(seed){ seed=(seed==null?Math.floor(FO_RANDOM_BASE.R()*4294967296):+seed)>>>0; return {v:1,seed,s:rngHash('main',seed)|0}; }
-function rngStep(st){ const a=st.s=(st.s+0x6D2B79F5)|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }
-function rngEnsure(){ if(G&&typeof G==='object'&&!(G.rng&&Number.isFinite(G.rng.s)&&Number.isFinite(G.rng.seed)))G.rng=rngNew(); return G?G.rng:null; }
-function rngSeed(){ const r=rngEnsure(); return r?r.seed:0; }
-function rngNext(){ if(RNG_SUB)return rngStep(RNG_SUB); if(!RNG_SEEDED||!G||typeof G!=='object')return FO_RANDOM_BASE.R(); const st=G.rng; return rngStep(st&&Number.isFinite(st.s)?st:rngEnsure()); }
-/* 따로 흐름: fn 안의 난수는 hash(세계 시드, 키)에서 시작한다. 시드형일 때만(legacy는 예전 그대로 한 흐름) */
-function rngWith(key,fn){ if(!RNG_SEEDED)return fn(); const prev=RNG_SUB; RNG_SUB={s:rngHash('sub',rngSeed(),key)|0}; try{ return fn(); } finally{ RNG_SUB=prev; } }
-/* 정해진 시드로 fn을 돌린다(방식과 무관하게 시드형, 안의 경기도 경기별 흐름). 단장 대전 선수 풀·시리즈처럼 입력만으로 결과가 정해져야 하는 곳 */
-function rngForce(seed,fn){ const prev=RNG_SUB, m=RNG_SEEDED; RNG_SUB={s:(+seed)|0}; RNG_SEEDED=true; try{ return fn(); } finally{ RNG_SUB=prev; RNG_SEEDED=m; } }
-/* 시드에서 바로 정해지는 값(보는 시점과 무관): 화면이 처음 부를 때 본 흐름을 쓰지 않게 */
-function rngDerived(key){ const st={s:rngHash('der',rngSeed(),key)|0}; return ()=>rngStep(st); }
-function rngGauss(key){ const f=rngDerived(key); let u=0,v=0; while(!u)u=f(); while(!v)v=f(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
-const FO_RANDOM=FrontOfficeCore.createRandom(rngNext);
 const R=FO_RANDOM.R;
 const rnd=FO_RANDOM.rnd;
 const ri=FO_RANDOM.ri;

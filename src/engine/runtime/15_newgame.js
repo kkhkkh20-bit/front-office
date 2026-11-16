@@ -1,6 +1,6 @@
 /* ===== 새 게임 ===== */
-function buildWorld(seed,opts){ const lite=!!(opts&&opts.lite); /* lite: 지난 시즌(2025) 경기를 치르지 않은 가벼운 세계(단장 대전 실행기용. 커리어는 쓰지 않음) */ const userTid=0; worldReset(); const rng=rngNew(seed); /* 새 세계의 난수 시드(00_base). 시드를 주면 같은 세계 */
-  G={ver:4,rng,year:2026,day:0,user:userTid,teams:[],players:{},nextId:1,history:[],log:[],lg:{},lineup:{},mail:[],stops:[],games:[],offers:[],mgr:{},mmarket:[],med:{prev:1,hosp:'none'},spend:{scout:0,mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0},intl:{us:1,la:0,jp:0,tw:0,au:0},fac:{lv:2,build:null},devProg:[],ovs:[],tut:{step:0,done:false},tutFlags:{},
+function buildWorld(opts){ const lite=!!(opts&&opts.lite); /* lite: 지난 시즌(2025) 경기를 치르지 않은 가벼운 세계(대회·유저 래더 경기장용. 커리어는 쓰지 않음) */ const userTid=0; worldReset();
+  G={ver:4,year:2026,day:0,user:userTid,teams:[],players:{},nextId:1,history:[],log:[],lg:{},lineup:{},mail:[],stops:[],games:[],offers:[],mgr:{},mmarket:[],med:{prev:1,hosp:'none'},spend:{scout:0,mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0},intl:{us:1,la:0,jp:0,tw:0,au:0},fac:{lv:2,build:null},devProg:[],ovs:[],tut:{step:0,done:false},tutFlags:{},
      scouts:[],scoutMarket:[],marketing:2000,draft:null,fa:null,trades:[],last:null,gameOver:null,contract:null,fmarket:[],live:null};
   TEAM_DEF.forEach((d,i)=>G.teams.push(Object.assign({id:i,cash:4000,pop:1,trust:55,rel:50,owner:d.indie?'profit':pick(['win','profit','pr','win']),
     mode:'contend',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:ri(2,4)},d)));
@@ -81,7 +81,7 @@ function claimTeam(userTid,austK){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=
     mail('운영팀','재정 압박 구단입니다',`올해 예상 지출이 구단주가 정한 지원 한도를 ${money(-Math.min(0,b.roomGoal))} 넘습니다.${ci.over>0?` 연봉 총액(${money(ci.pay)})이 샐러리캡(${money(ci.cap)})도 ${money(ci.over)} 넘어 경쟁균형세가 붙습니다.`:''}\n\n이 구단의 첫 과제는 연봉 정리입니다. 고액 연봉 선수를 트레이드하거나, 외국인 선수 몸값을 낮추거나, 구단주에게 지원을 요청할 수 있습니다. 한도를 넘긴 채 시즌을 마치면 구단주 신뢰가 떨어집니다.`,{kind:'재정',acts:[{l:'재정 보기',a:'go',v:'club:fin'}]}); } }catch(e){}
   sendTut(); tutTick(); G.stops=[];
 }
-function newGame(userTid,seed){ buildWorld(seed); claimTeam(userTid); G.moves=[]; try{ stInit(); }catch(e){} try{ ovlInit(); }catch(e){} try{ lgTopBase(lgTopDom()); }catch(e){} try{ delete team(G.user).fi; facInit(); }catch(e){} } /* facInit: 구단 시설 단계(team.fac)를 G.fac에 맞춘다. 예전엔 불러올 때 처음 맞춰져 저장·불러오기만으로 4→2로 바뀌었다 */ /* 우리 구단 시설은 G.fac에만(66_fac_ai): 세계를 만들 때 생긴 AI용 장부가 남으면 야인 기간 AI 투자가 거기 쌓였다가 불러올 때 지워졌다(안정화 점검) */ /* 리그 수준 기준을 시작 때 잡는다 */
+function newGame(userTid){ buildWorld(); claimTeam(userTid); G.moves=[]; try{ stInit(); }catch(e){} try{ ovlInit(); }catch(e){} try{ lgTopBase(lgTopDom()); }catch(e){} try{ delete team(G.user).fi; facInit(); }catch(e){} } /* facInit: 구단 시설 단계(team.fac)를 G.fac에 맞춘다. 예전엔 불러올 때 처음 맞춰져 저장·불러오기만으로 4→2로 바뀌었다 */ /* 우리 구단 시설은 G.fac에만(66_fac_ai): 세계를 만들 때 생긴 AI용 장부가 남으면 야인 기간 AI 투자가 거기 쌓였다가 불러올 때 지워졌다(안정화 점검) */ /* 리그 수준 기준을 시작 때 잡는다 */
 
 /* ===== 구단 이름 바꾸기 =====
    기본은 가상 구단이다. 플레이어가 별칭을 직접 바꿀 수 있다(연고지는 고정). 표시 이름 disp(14자)·약칭 abbr(6자)은 선택: 있으면 화면에 '연고지 별칭' 대신 보인다(tfull·tnick). 실제 구단명처럼 바꾸는 것도 플레이어 몫. 엠블럼·구단색은 원래 구단 기준 그대로.
