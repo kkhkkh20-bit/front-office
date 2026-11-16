@@ -177,7 +177,7 @@ function talk(id,kind){
   /* 여기부터는 문장만(효과는 talkOutcome에서 끝났다). 고민 묻기는 실제 고민(29d_player_concerns.js)으로: 친분에 따라 털어놓는 깊이가 다르다 */
   if(kind==='ask'){ try{ const t=pvAsk(p,ev,contactRecord('pl:'+p.id).bond??30); if(t)line=t; }catch(e){} }
   if(out)line=pvTalk(p,kind,out,rep,line,ex); /* 같은 결과도 선수 말투·지금 상황에 맞춰 다른 문장(효과는 그대로) */
-  line=personalTalkReply(p,kind,line);if(d){const C=contactRecord('pl:'+p.id);C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
+  line=personalTalkReply(p,kind,line);{const C=contactRecord('pl:'+p.id);C.seen=G.day;/* 대화도 교류: 친분이 식는 시계를 멈춘다(83_personal_life) */if(d)C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
   return {msg:`${p.name}: "${line}"`,d};
 }
 /* 면담 결과(효과)만 정한다: 기분 변화 d(아직 적용 전)·출전 약속·분발(form)·2군 기용 요청·칭찬 체감 감소 기록(tkH).

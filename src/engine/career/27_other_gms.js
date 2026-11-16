@@ -72,7 +72,10 @@ function gmRelDim(t){ return t.rel>60?Math.max(.25,1-(t.rel-60)/40):1; }
 /* 연락·식사로는 친분이 60 언저리까지만 오른다(공략 방지: 공짜 일괄 연락으로 85를 유지). 그 위는 성사된 거래·오래 함께한 세월로 */
 const GM_TALK_CAP=60;
 function gmTalkRel(r0,d){ return d<=0?clamp(r0+d,0,100):r0>=GM_TALK_CAP?r0:Math.min(GM_TALK_CAP,r0+d); }
-function gmRelYear(){ const uLong=G.gmSinceD!=null&&G.day-G.gmSinceD>=3*365; for(const t of G.teams){ if(t.id===G.user||t.rel==null)continue; t.rel=Math.round(50+(t.rel-50)*.75); const g=t.gm; if(uLong&&g&&!g.interim&&G.year-(g.since??G.year)>=3&&t.rel>=45)t.rel=clamp(t.rel+3,0,80); } } /* 세 해 넘게 마주한 두 단장은 조금씩 가까워진다 */
+/* 해마다 되돌림은 마지막 교류가 얼마나 지났는지에 따른다(커뮤니티 11-17): 두 달 안에 만났으면 5%만, 여덟 달 넘게 안 봤으면 예전처럼 25%. 스프링캠프·출장 기간은 세지 않는다. AI 단장끼리(relsYear)도 같은 식 */
+function relYearK(idle){ return .75+.2*clamp(1-(idle-60)/180,0,1); }
+function gmLastContact(t){ const c=(G.gmc||{})[t.id]||{}; let d=Math.max(c.call??-1e9,c.meal??-1e9); const pc=G.personal&&G.personal.contacts&&G.personal.contacts['gm:'+t.id]; if(pc&&t.gm&&(!pc.person||pc.person===t.gm.id))d=Math.max(d,plContactLast(pc)); return d; }
+function gmRelYear(){ const uLong=G.gmSinceD!=null&&G.day-G.gmSinceD>=3*365; for(const t of G.teams){ if(t.id===G.user||t.rel==null)continue; t.rel=Math.round(50+(t.rel-50)*relYearK(plIdle(gmLastContact(t)))); const g=t.gm; if(uLong&&g&&!g.interim&&G.year-(g.since??G.year)>=3&&t.rel>=45)t.rel=clamp(t.rel+3,0,80); } } /* 세 해 넘게 마주한 두 단장은 조금씩 가까워진다 */
 function gmContact(tid,kind){ const t=team(tid), g=gmOf(tid); if(!g)return {msg:''}; G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={});
   if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return {msg:`${g.name} 단장과는 ${dmd(c.call+14)}부터 다시 연락할 수 있습니다.`};
     c.call=G.day; const d=Math.round(Math.max(0,(g.trait==='loyal'?2:1)*ri(1,2)-(g.trait==='hard'?1:0))*gmRelDim(t)); t.rel=gmTalkRel(t.rel,d);
