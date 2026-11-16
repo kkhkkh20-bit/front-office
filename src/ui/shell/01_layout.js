@@ -228,12 +228,16 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
       <nav class="fb-menu" aria-label="시작 메뉴">
         ${canCont?`<button class="fb-button primary" data-a="tsCont"><b>이어하기</b><span>${tn?esc(tn):`슬롯 ${cs}`}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
         <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다</span>'}</button>
-        <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b></button>
+        <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b></button>${LADDER_ON?`<button class="fb-button" data-a="ladOpen"><b>단장 대전</b><span>같은 선수 풀로 구단을 만들어 다른 단장과 겨룹니다</span></button>`:''}
+        <button class="fb-button" data-a="tsGo" data-v="cuphof"><b>프런트컵 명예의 전당</b><span>유저 대회 역대 우승 팀과 로스터</span></button>
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}
       ${inFrame()&&isIOS()?`<p class="small ts-warn">Safari에서는 설정의 '파일로 내보내기'로 가끔 백업해 두세요. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a></p>`:''}
       </div><div><footer class="fb-footer"><span>프런트야구 <i>v${GAME_VER}</i></span><button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button><a class="lnk fb-cafe" href="${FEEDBACK_URL}" target="_blank" rel="noopener">${cafeMark(22)}<span>공식 카페</span></a></footer><p class="fb-legal">가상의 리그를 다룬 게임으로, KBO 및 실제 구단·선수와 관련이 없습니다.</p></div></main>`; }
-  if(st==='settings')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">설정</h2><section class="card"><div class="row between"><h3 class="sec">화면 설명</h3><button class="btn" data-a="help">${helpOn()?'설명 접기':'설명 펼치기'}</button></div><p class="small muted">화면마다 기능 설명을 펼칠지 정합니다. 진행 방식과 구단 설정은 게임 안의 설정에서 바꿀 수 있습니다.</p></section>${teleCard()}${achStartLine()}<section class="card">${foot}${creditsLine(true)}</section></div></div>`;
+  if(st==='cuphof')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">프런트컵 명예의 전당</h2><section class="card"><p class="small muted">유저 대회 프런트컵의 역대 우승·준우승 팀과 로스터입니다. 참가하지 않았어도 볼 수 있습니다.</p>${cupHofBody()}</section></div></div>`;
+  if(st==='settings')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">설정</h2><section class="card"><div class="row between"><h3 class="sec">화면 설명</h3><button class="btn" data-a="help">${helpOn()?'설명 접기':'설명 펼치기'}</button></div><p class="small muted">화면마다 기능 설명을 펼칠지 정합니다. 진행 방식과 구단 설정은 게임 안의 설정에서 바꿀 수 있습니다.</p></section>${teleCard()}${achStartLine()}<section class="card">${foot}${creditsLine(true)}${cupAdminLink()}</section></div></div>`;
+  if(st==='cupadmin')return `<div class="gut"><div class="wrap" style="max-width:1400px">${back('settings','설정')}${cupAdminView()}</div></div>`;
+  if(st==='ladder')return ladScreen(); /* 단장 대전 구단 만들기(숨김 플래그 LADDER_ON) */
   if(st==='patch')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${patchCard()}</div></div>`;
   if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}${exportCard()}</div></div>`;
   if(st==='mode'){ ensureWorld();
