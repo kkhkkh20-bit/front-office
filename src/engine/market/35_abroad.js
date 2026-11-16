@@ -139,10 +139,12 @@ EVH.ovsback={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.retAsk)return 
 /* 대체 외국인 관찰 명단 */
 function fwatchOn(id){ G.fwatch=G.fwatch||[]; return G.fwatch.some(w=>w.id===id); }
 function fwatchToggle(id){ G.fwatch=G.fwatch||[]; if(fwatchOn(id)){ const w=G.fwatch.find(x=>x.id===id); if(w&&w.auto)(G.fwNo=G.fwNo||[]).push(id); G.fwatch=G.fwatch.filter(x=>x.id!==id); return '관찰 명단에서 뺐습니다.'; } if(G.fwatch.length>=8)return '관찰 명단은 8명까지입니다.'; G.fwatch.push({id,since:G.day,k:0}); return '관찰 명단에 올렸습니다. 매주 스카우트 보고가 쌓여 평가가 정확해집니다.'; }
+/* 파악 완료(100%)까지 남은 주: 이번 주 증가 속도로 */
+function fwatchEta(w){ const d=w&&w.dk>0?w.dk:null; if(!w||w.k>=100)return 0; return d?Math.ceil((100-w.k)/d):null; }
 function fwatchK(id){ const w=(G.fwatch||[]).find(x=>x.id===id); return w?w.k:0; }
 function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[];
   for(const w of G.fwatch){ const p=G.players[w.id]; if(!p||p.team!=null){ if(p&&p.team!=null&&p.team!==G.user)out.push(`${p.name}은(는) ${tshort(p.team)}와(과) 계약했습니다`); w.gone=true; continue; }
-    const r=origOf(p); const isc=G.scouts.find(s=>s.role==='intl'&&s.region===r); w.k=clamp(w.k+3+intlLv(r)*3+(isc?isc.skill*2:0),0,100);
+    const r=origOf(p); const isc=G.scouts.find(s=>s.role==='intl'&&s.region===r); const k0=w.k; w.k=clamp(w.k+3+intlLv(r)*3+(isc?isc.skill*2:0),0,100); w.dk=w.k-k0; /* 이번 주 파악도 증가(관찰 명단 표시, 스카우트 1단계) */
   }
   /* 시즌 중 MLB 콜업·NPB 계약으로 후보가 빠진다: 시장의 모든 후보가 같은 확률(해외 활성화 1-2: 예전에는 우리가 관찰하는 후보만 빠져 관찰할수록 후보를 잃었다). 해외 기록은 관찰 후보만 남긴다(저장 크기) */
   if(period()==='season')for(const id of [...(G.fmarket||[])]){ const p=G.players[id]; if(!p||p.team!=null||!p.foreign||foHeld(p))continue; /* 답을 기다려 주는 기한에는 해외로 빠지지 않는다(검수 11-09b) */

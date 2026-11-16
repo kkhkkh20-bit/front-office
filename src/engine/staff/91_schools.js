@@ -79,24 +79,39 @@ function schDaily(){ if(!G.teams)return; const SL=schList(), o=dobj(G.day);
   }
   if(o.d===1)for(const p of Object.values(G.players)){ if(p.schR||p.prospect||!p.draft||p.draft.y<G.year-1)continue; p.schR=1; const S=schOf(p); if(S&&team(p.draft.tid))schAdd(S,5,p.draft.tid); } /* 지명 친분은 지금 소속이 아니라 지명한 구단이 받는다(검수 11-09e #14) */
   if(G.unemp)return;
-  if(o.d===1){ /* 스카우트 방문: 담당 지역 학교 두 곳씩 */ for(const s of (G.scouts||[]).filter(s=>(s.role||'am')==='am')){ const L=Object.values(SL).filter(S=>areaDef(S.area).reg===s.region); for(let i=0;i<2&&L.length;i++)schAdd(L.splice(Math.floor(R()*L.length),1)[0],1+(s.skill||2)*.4); }
- }
+  /* 스카우트 방문 친분은 매주 학교 방문(64_scout_obs obsVisitWeek)에서 모든 구단 같은 규칙으로 쌓는다 */
   if(o.d===15&&o.m>=3&&o.m<=8)schTip(); }
 /* 귀띔 메일: 친분 60 이상 학교 감독이 올해 후보 중 좋은 선수를 알려 준다(한 달 한 통) */
 function schTipKnown(p,tid=G.user){return !!p&&(p.schTips?.[tid]===G.year||(p.schTip===G.year&&p.schTipT!=null&&p.schTipT===tid));}
-function schTip(){ const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.school&&!schTipKnown(p));
-  const L=Object.values(schList()).filter(S=>schRel(S)>=60&&C.some(p=>p.school===S.n)).sort((a,b)=>schRel(b)-schRel(a));
-  for(const S of L){ if(R()>.35+(schRel(S)-60)*.01)continue; const p=C.filter(q=>q.school===S.n).sort((a,b)=>(b.pot||0)-(a.pot||0))[0]; if(p.schTip!=null&&!p.schTips){p.schTips={};if(p.schTipT!=null)p.schTips[p.schTipT]=p.schTip;else p.schTipLegacy=p.schTip;} (p.schTips=p.schTips||{})[G.user]=G.year; p.schTip=G.year; p.schTipT=G.user; /* 귀띔은 받은 구단만 쓴다(검수 11-09e #13) */ const c=S.coach;
+function schTip(){ let r=null; for(const t of G.teams||[]){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const p=schTipFor(tid); if(tid===G.user)r=p; } return r; } /* 다른 구단도 같은 친분 규칙으로 귀띔을 받는다(메일은 우리만, 스카우트 1단계) */
+function schTipFor(tid){ const me=tid===G.user; const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.school&&!schTipKnown(p,tid));
+  const L=Object.values(schList()).filter(S=>schRel(S,tid)>=60&&C.some(p=>p.school===S.n)).sort((a,b)=>schRel(b,tid)-schRel(a,tid));
+  for(const S of L){ if((me?R():u01('stip'+G.day+':'+tid,S.n))>.35+(schRel(S,tid)-60)*.01)continue; const p=C.filter(q=>q.school===S.n).sort((a,b)=>(b.pot||0)-(a.pot||0))[0]; if(p.schTip!=null&&!p.schTips){p.schTips={};if(p.schTipT!=null)p.schTips[p.schTipT]=p.schTip;else p.schTipLegacy=p.schTip;} (p.schTips=p.schTips||{})[tid]=G.year; if(!me)return p; p.schTip=G.year; p.schTipT=G.user; /* 귀띔은 받은 구단만 쓴다(검수 11-09e #13) */ const c=S.coach;
     const line={엄격형:`성실함은 제가 보증합니다. ${pidName(p)}, 새벽 훈련 한 번을 안 빠졌어요.`,자율형:`${pidName(p)}은(는) 시키지 않아도 알아서 하는 놈입니다. 프로 가면 더 클 겁니다.`,데이터형:`${pidName(p)} 지난달 기록표 보내 드릴게요. 숫자보다 내용이 더 좋습니다.`,육성형:`${pidName(p)}, 아직 덜 컸습니다. 그래서 더 기대가 돼요. 2~3년 뒤를 보세요.`}[c.sty]||'';
     mail('스카우트팀',`${S.n} ${c.name} 감독: "우리 애 하나 좋은 놈 있습니다"`,`${S.n} ${c.name} 감독(${c.sty})이 전화를 걸어왔습니다.\n"단장님 구단이니까 먼저 말씀드리는 겁니다. ${line}"\n\n${pidName(p)}(${posLabel(p)}) 평가 오차가 줄어듭니다. 친분 ${schRelLbl(schRel(S))}.`,{kind:'스카우트',acts:[{l:'선수 보기',a:'player',v:p.id}]}); return p; }
   return null; }
 /* 학교 후원(야구부 장비·전지훈련 지원): 구단마다 한 해 한 번, 1천만 원, 친분 +8 */
 const schGave=(S,tid)=>!!S&&!!S.gy&&typeof S.gy==='object'&&S.gy[tid??G.user]===G.year;
 function schGift(n){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const S=schList()[n]; if(!S)return '학교가 없습니다.'; if(schGave(S))return `${n}에는 올해 이미 후원했습니다.`;
-  if(!S.gy||typeof S.gy!=='object')S.gy={}; S.gy[G.user]=G.year; try{ _dcc=null; }catch(e){} /* 스카우트 주장 캐시도 새로(검수 11-09e #24) */ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+10; schAdd(S,8); return `${n} 야구부에 장비를 후원했습니다(${money(10)}). ${S.coach.name} 감독과 친분 ${schRelLbl(schRel(S))}.`; }
+  schSponsor(S,G.user); try{ _dcc=null; }catch(e){} /* 스카우트 주장 캐시도 새로(검수 11-09e #24) */ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+10; return `${n} 야구부에 장비를 후원했습니다(${money(10)}). ${S.coach.name} 감독과 친분 ${schRelLbl(schRel(S))}.`; }
 /* 학교 친분이 평가 오차에 주는 배수(우리 구단만): 친분 0이면 1.08배, 100이면 0.92배, 귀띔받은 선수는 0.85배 더 */
-function schSdM(p){ const S=p&&p.prospect?schOf(p):null; if(!S)return 1; return clamp((1.08-schRel(S)*.0016)*(schTipKnown(p)?.85:1),.75,1.08); }
+function schSdM(p,tid){ tid=tid??G.user; const S=p&&p.prospect?schOf(p):null; if(!S)return 1; return clamp((1.08-schRel(S,tid)*.0016)*(schTipKnown(p,tid)?.85:1),.75,1.08); } /* 모든 구단 같은 식(스카우트 1단계) */
 
 /* 권역 학교 한꺼번에 후원(카페 11-15: 하나씩 누르기 번거롭다). 학교마다 규칙은 schGift와 같다 */
 function schGiftTargets(area){ return Object.values(schList()).filter(S=>(area==='all'||S.area===area)&&!schGave(S)); }
 function schGiftMany(area){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const L=schGiftTargets(area); if(!L.length)return '이 권역 학교는 올해 모두 후원했습니다.'; for(const S of L)schGift(S.n); return `${area==='all'?'전국':area} 고교 ${L.length}곳 야구부에 장비를 후원했습니다(${money(10*L.length)}). 학교 감독들과 친분이 올랐습니다.`; }
+
+/* ===== 지역 아마야구 후원(연고지 팜, 스카우트 1단계) =====
+   실제 KBO 구단들은 연고 지역 초·중·고 야구부에 연습구·장비를 지원하고(예: NC '드림 볼', kt 연고지 학교 용품 지원), 지명 선수 출신 학교에도 용품을 보낸다.
+   연고 1차 지명은 2023 신인 드래프트부터 없어져(전면 드래프트) 후원이 지명권을 주지는 않는다. 게임 규칙(모든 구단 같음):
+   - 학교 하나 한 해 1천만 원. 감독 친분 +8(평가 오차·귀띔), 스카우트 방문 우선·관찰 1.25배(64_scout_obs), 연고 권역 학교면 구단 인기 조금(한 해 +0.01까지).
+   - 후원받은 학교 선수는 그해 겨울 조금 더 자란다(+0.12, 육성형 감독 +0.55보다 훨씬 작다: 장비·전지훈련 지원 정도). */
+function schSponsor(S,tid){ if(!S.gy||typeof S.gy!=='object')S.gy={}; S.gy[tid]=G.year; schAdd(S,8,tid); const t=team(tid);
+  if(t&&S.area===teamArea(tid)){ const k=t.spPop&&t.spPop.y===G.year?t.spPop:(t.spPop={y:G.year,v:0}); const d=Math.min(.0015,.01-k.v); if(d>0){ k.v+=d; t.pop=(t.pop||1)+d; } } }
+/* 후원 학교 겨울 성장 가산: 지난해나 올해 어느 구단이든 후원했으면 */
+function schSponGrow(n){ const S=(G.schools||{})[n]; if(!S||!S.gy||typeof S.gy!=='object')return 0; return Object.values(S.gy).some(y=>y>=G.year-1)?.12:0; }
+/* AI 구단: 4월 1일 연고 권역 고교를 형편만큼(운영 자금 5천만 원은 남긴다) 후보 많은 학교부터 후원한다 */
+function schAiSponsor(t){ const A0=areaDef(teamArea(t.id)); if(!A0||!G.schools)return 0; const cnt=n=>Object.values(amPipe().L).filter(e=>e.s===n).length; let n=0;
+  for(const name of [...A0.hs].sort((p,q)=>cnt(q)-cnt(p)||(p<q?-1:1))){ const S=G.schools[name]; if(!S||schGave(S,t.id)||(t.cash||0)<60)continue; t.cash-=10; schSponsor(S,t.id); n++; } return n; }
+/* 후원 현황(화면): 그 구단이 올해 후원한 학교 수와 연고 권역 안 수 */
+function schSponSum(tid){ tid=tid??G.user; const L=Object.values(schList()).filter(S=>schGave(S,tid)); const home=teamArea(tid); return {n:L.length,home:L.filter(S=>S.area===home).length,homeAll:(areaDef(home)||{hs:[]}).hs.length}; }
