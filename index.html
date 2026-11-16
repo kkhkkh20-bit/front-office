@@ -15569,6 +15569,11 @@ function milPeriod(p){const m=p&&p.mil;if(!m)return null;const from=m.from??m.pf
 const milOn=(p,d)=>{const m=milPeriod(p);return !!(m&&m.from<=d&&d<m.until);}, milServing=p=>milOn(p,G.day); /* 실제 입대일부터 전역일 전까지만 복무 중(milOn: 그날 병역 처리 뒤 기준, 검수 11-09zk) */
 const isAway=p=>!!((PROJ_LENS?milOn(p,G.day+projBack()):milServing(p))||(!PROJ_LENS&&((p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day)||(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p))))); /* 예상 전력(PROJ_LENS)에서는 대표팀 차출·자매 구단 연수처럼 곧 돌아오는 자리는 있는 것으로 본다. 군 복무는 개막+2주 날 기준(그 전에 전역하면 넣고, 그 전에 입대하면 뺀다) */
 /* 복무 중 훈련 환경: 상무는 상무 야구단 시설·코치진 아래 퓨처스리그에서 뛰고(구단 시설·코치·감독 영향 없음), 현역은 야구 훈련을 하지 못해 늘지 않고 조금씩 떨어진다 */
+/* AI 구단의 입대 시기 판단(사용자 11-16): 대표팀에 뽑힐 만한 선수는 아시안게임·올림픽 특례를 노리고 상무 지원을 미루고,
+   1군 주전은 전력 공백 때문에 미룬다. 둘 다 26세부터는 상무에 지원한다(27세 입대가 상무 마지막). 대표 후보 = 국내 선수 종합 상위 60명 안 */
+function milNtThr(){ const k=G.year+':'+G.day; if(G._mnt&&G._mnt.k===k)return G._mnt.v; const L=Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!p.ys).map(ovr).sort((a,b)=>b-a); const v=L[Math.min(59,L.length-1)]||99; G._mnt={k,v}; return v; }
+function milEventAhead(p){ const last=G.year+Math.max(0,26-p.age); for(let y=G.year;y<=last;y++){ const age=p.age+(y-G.year); if(typeof NT_EV==='undefined')return false; if(NT_EV.oly.yr(y))return true; if(NT_EV.ag.yr(y)&&NT_EV.ag.ex&&(age<=25||ovr(p)>=milNtThr()+6))return true; } return false; }
+function milWait(p){ if(p.age>=26)return false; if(ovr(p)>=milNtThr()&&milEventAhead(p))return true; try{ if(p.age<=25&&typeof isRegular==='function'&&isRegular(p))return true; }catch(e){} return false; }
 const MIL_KEEP_POT=44; /* AI 구단: 이 잠재력 이상 20대 초반은 현역으로 일찍 보내지 않는다(국내 20~24세 저능력 선수 중 상위 약 40%) */
 const MIL_FAC={'상무':{l:'상무 야구단 시설',g:1,d:1},'현역':{l:'군 복무(야구 훈련 없음)',g:1,d:1}};
 function milTrainTxt(p){ if(!p||!milServing(p))return ''; const no='우리 구단 시설·코치진·훈련 지시·포지션 전환·해외 연수는 적용되지 않습니다.';
@@ -15615,7 +15620,7 @@ function milAdvice(p){ if(!p||!milFree(p))return {k:'none',who:'',why:''};
 function milRetAge(p){ const f=p.mil?.app?sangmuFrom(p.mil.app):sangmuPeriod().from; /* 지금 지원할 수 있는(또는 다음에 열리는) 기수의 입대일: 봄 마감 뒤에는 12월 입대(검수 11-09zk) */ return p.age+dobj(f+MIL_DAYS).y-G.year; }
 function milDaily(){ const d=G.day;
   if(d===KD(9,1)||d===KD(3,1)){ const w=d===KD(9,1)?'dec':'jun';
-    for(const p of Object.values(G.players)){ if(p.team==null||p.team===ME()||!milFree(p)||p.mil&&p.mil.app)continue; /* 야인 기간에는 전 구단도 AI(검수 11-09g) */ if(p.age>=24&&p.age<=27&&R()<(p.age>=26?.7:.25))p.mil={app:w}; else if(p.age>=22&&p.age<=23&&(p.pot||0)>=MIL_KEEP_POT&&ovr(p)>=38&&R()<.2)p.mil={app:w}; /* 유망주는 이르게 상무 지원(합격선은 같은 규칙) */ }
+    for(const p of Object.values(G.players)){ if(p.team==null||p.team===ME()||!milFree(p)||p.mil&&p.mil.app)continue; /* 야인 기간에는 전 구단도 AI(검수 11-09g) */ if(milWait(p))continue; /* 대표 후보(특례 대회 노림)·주전은 미룬다 */ if(p.age>=24&&p.age<=27&&R()<(p.age>=26?.7:.25))p.mil={app:w}; else if(p.age>=22&&p.age<=23&&(p.pot||0)>=MIL_KEEP_POT&&ovr(p)>=38&&R()<.2)p.mil={app:w}; /* 유망주는 이르게 상무 지원(합격선은 같은 규칙) */ }
     const mine=domPayOf(G.user).filter(p=>milFree(p)&&p.age<=27); /* 지원 승인 조건(sangmuApply)과 같게: 27세 이하 전부, 대표팀 차출 중인 선수도(검수 11-09zk) */
     if(mine.length)mail('운영팀',`상무 지원 기간입니다 (${w==='dec'?'12월':'6월'} 입대)`,`상무(국군체육부대) 야구단 지원을 받습니다. 복무는 1년 6개월이고, 복무 중에도 퓨처스리그에서 뛰며 기량을 유지할 수 있습니다. 현역으로 가면 1년 6개월 동안 야구를 거의 못 해 기량이 떨어집니다.\n\n${milAdviceTxt(mine)}\n\n우리 구단 미필 선수: ${mine.map(p=>`${p.name}(${p.age}세)`).join(', ')}\n\n${p28(mine)}지원은 ${dmd((w==='dec'?KD(10,15):KD(4,15))-1)}까지입니다(다음 날 합격자 발표).`,{imp:true,kind:'병역',acts:[{l:'병역 관리',a:'go',v:'staff:mil'}]}); }
   if(d===KD(10,15)||d===KD(4,15)){ const w=d===KD(10,15)?'dec':'jun'; const apps=Object.values(G.players).filter(p=>p.mil&&p.mil.app===w&&!(p.team==null&&(p.mil=null,true))); /* 방출돼 소속이 없는 지원자는 지원 무효(검수 11-07) */
