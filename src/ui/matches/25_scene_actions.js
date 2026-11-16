@@ -16,15 +16,15 @@ function cRunAt(id,base){ const c=CRUN&&CRUN.get(id); if(!c)return null; return 
 function cRunNeed(id,base,ballAt,apply,est){ const c=CRUN&&CRUN.get(id); if(!c&&est){ const want=ballAt-180; return est.at<=want?1:Math.max(0,(want-est.start)/Math.max(1,est.at-est.start)); } if(!c||c.done||c.slid||base>c.to||base<c.leg)return 1; const now=performance.now(), legReal=c.dur/cSpd(), frac=Math.max(0,(c.legEnd-now)/legReal), legs=frac+(base-c.leg); if(legs<=0)return 1;
  const cur=c.legEnd+(base-c.leg)*legReal; let want; if(c.out){ if(cur>=ballAt+200&&cur<=ballAt+600)return 1; if(cur<ballAt+200)return 1; want=ballAt+350; } /* 주자는 늦추지 않는다(사용자 11-16: 수비도 주자도 최선의 플레이). 아웃인데 주자가 빠르면 송구 쪽이 더 빨리 간다(c3DThrow의 by) */ else { if(cur<=ballAt-180)return 1; want=ballAt-180; } /* 아웃 주자도 공이 잡히고 0.2~0.6초 안에 들어온다: 야수가 공을 받아 놓고 오래 기다리지 않게(사용자 11-16) */ const raw=(want-now)/(legs*legReal); if(raw>=1)return 1; const f=Math.max(RUN_FIT_MIN,raw);
  if(apply){ c.dur*=f; c.legEnd=now+frac*c.dur/cSpd(); cPlace(c.el,CPATH[c.leg],frac*c.dur); } return raw; }
-const CBASE={'1B':1,'2B':2,'3B':3,'C':4};
-function cRunFitBase(toPos,ballAt){ const b=CBASE[toPos]; if(!b||!CRUN)return; CRUNB[b]=ballAt; for(const [id,c] of CRUN)if(c.to===b&&!c.done)cRunNeed(id,b,ballAt,true); }
+function cBaseOf(pt){ const B=[null,CBS[0],CBS[1],CBS[2],CHM]; for(let i=1;i<=4;i++)if(B[i]&&Math.hypot(B[i][0]-pt[0],B[i][1]-pt[1])<1.2)return i; return 0; } /* 공이 실제 베이스로 가는지(중계 위치로 가는 공은 아님) */
+function cRunFitBase(toPt,ballAt){ const b=cBaseOf(toPt); if(!b||!CRUN)return; CRUNB[b]=ballAt; for(const [id,c] of CRUN)if(c.to===b&&!c.done)cRunNeed(id,b,ballAt,true); }
 const RUN_FIT_MIN=.62, RUN_PLAN_MIN=.72; /* 이보다 더 빨리 뛰어야 하면 그 베이스로 던지지 않는다(중계·송구 포기) */
 async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
  const receiver=c3DFielder(g,k,toPos);if(!from||!receiver)return;
  const arm=G.players[from.id]?.r.arm??G.players[from.id]?.r.stf??50;let travel=FrontOfficeCore.throwTime(Match3D.distance(fromPt,toPt),arm);
  const cover=(Match3D.actorDistance('d'+receiver.id,toPt)??Match3D.distance(CFP[toPos],toPt))/8*1000;let wind=Math.max(220,Math.min(650,cover-travel+60)); /* 받을 선수를 오래 기다리며 공을 쥐고 있지 않게(사용자 피드백 11-07) */
  if(by){ const left=(by-performance.now())*cSpd()-120, f=left>0?Math.min(1,left/(wind+travel)):.2; if(f<1){ const s=Math.max(.6,f); /* 송구를 너무 압축하면 비현실적으로 빠른 공이 된다: 늦을 상황은 처리 시간을 미리 줄여 막는다(c3DHustle) */ wind=Math.round(wind*s); travel=Math.round(Math.max(120,travel*s)); } } /* by: 주자가 베이스에 닿는 시각. 아웃이면 공이 그보다 먼저(빠른 송구) */
- const ballAt=performance.now()+(wind+travel)/cSpd(); cRunFitBase(toPos,ballAt); if(globalThis.__FO3D_DEBUG&&CRUN){const b=CBASE[toPos];if(b)for(const [id,c] of CRUN)if(c.to===b&&!c.done)(globalThis.__runlog||(globalThis.__runlog=[])).push({k,base:b,out:c.out,diff:Math.round((cRunAt(id,b)-ballAt)*cSpd())});} /* 점검용: 계획상 주자 도착-공 도착(게임 ms, 음수=주자가 먼저) */
+ const ballAt=performance.now()+(wind+travel)/cSpd(); cRunFitBase(toPt,ballAt); if(globalThis.__FO3D_DEBUG&&CRUN){const b=cBaseOf(toPt);if(b)for(const [id,c] of CRUN)if(c.to===b&&!c.done)(globalThis.__runlog||(globalThis.__runlog=[])).push({k,base:b,out:c.out,diff:Math.round((cRunAt(id,b)-ballAt)*cSpd())});} /* 점검용: 계획상 주자 도착-공 도착(게임 ms, 음수=주자가 먼저) */
  const stand=c3DBeside(toPt,fromPt); /* 받는 야수는 베이스 한가운데가 아니라 송구 쪽 옆에 선다(들어오는 주자와 겹쳐 서지 않게) */
  Match3D.move('d'+receiver.id,stand,cover/cSpd());
  Match3D.throwing('d'+from.id,toPt,wind/cSpd());cSpeak(g,k,'throw',{fielder:c3DName(from),receiver:c3DName(receiver),relay:phase==='중계 플레이'});
