@@ -53,9 +53,9 @@ function personGone(kind,a,k){ const P=s=>`<p class="small">${s}</p>`, L=a=>a.le
       acts:[pgRecBtn(o.fid,'선수 시절 기록'),obMine(o)?`<button class="btn" data-a="go" data-v="club:ob">구단 OB</button>`:''].filter(Boolean)}; }
   if(kind==='abr'){ const r=abrOf(a); if(!r)return null; const yrs=(r.back?r.backY:G.year)-(r.y1??r.y+1)+1; let pj=null; try{ pj=r.pj?JSON.parse(r.pj):null; }catch(e){}
     const av=G.players[r.id]||pj||{id:r.id,name:r.name,age:r.age,isP:r.isP,foreign:r.foreign};
-    const info=P(`${r.from!=null?`${esc(tshort(r.from))} · `:''}${r.y}년 ${esc(r.how)} → <b>${esc(r.club)}(${esc(r.lg)})</b> ${r.yrs}년 ${r.amt*r.yrs}만 달러${r.fee?` · 포스팅 비용 ${money(r.fee)}`:''}`)
-      +(r.back?P(`${r.backY}년 국내 복귀`):'')+`<div class="ps-s"><div class="eyebrow">해외 성적</div>${r.lines.length?L(r.lines.map(l=>`${l.y} ${esc(l.lvl)}: ${lineTxt(l,r.isP)}`)):'<p class="small muted">아직 해외 시즌 기록이 없습니다.</p>'}</div>`;
-    return {k,name:r.name,role:r.back?`${r.backY}년 국내 복귀`:`${r.lg} ${r.club}`,av,rel:null,lab:r.back?'복귀':r.foreign?'역수출':`해외 ${Math.max(0,yrs)}년차`,sub:`${r.pos} · ${r.foreign?r.age+(G.year-r.y):av.age}세${r.foreign?' · 외국인':''}`,info,
+    const info=P(`${r.from!=null?`${esc(tshort(r.from))} · `:''}${r.y}년 ${esc(r.how)} → <b>${esc(r.club)}${r.club!==r.lg?`(${esc(r.lg)})`:''}</b>${r.yrs?` ${r.yrs}년 ${r.amt*r.yrs}만 달러`:''}${r.fee?` · 포스팅 비용 ${money(r.fee)}`:''}`)
+      +(r.back?P(`${r.backY}년 국내 복귀`):r.end!=null?P(`${r.end}년 시즌 뒤 은퇴(기록 종료)`):'')+(()=>{ const fr=ovlFrac(G.year), c=!r.back&&r.end==null&&r.cur&&r.cur.y===G.year&&fr>0?ovsPart(r.cur,fr):null; const ls=[...(c?[c]:[]),...(r.lines||[]).slice().reverse()]; return `<div class="ps-s"><div class="eyebrow">해외 성적</div>${ls.length?L(ls.map(l=>ovsLineRow(r,l))):'<p class="small muted">아직 해외 시즌 기록이 없습니다.</p>'}</div>`; })();
+    return {k,name:r.name,role:r.back?`${r.backY}년 국내 복귀`:`${r.lg} ${r.club}`,av,rel:null,lab:r.back?'복귀':r.end!=null?'은퇴':r.cand?'관찰했던 후보':r.how==='KBO 퇴단'?'KBO 출신':r.foreign?'역수출':`해외 ${Math.max(0,yrs)}년차`,sub:`${r.pos} · ${r.foreign?r.age+(G.year-r.y):av.age}세${r.foreign?' · 외국인':''}`,info,
       acts:[pgRecBtn(r.id,G.players[r.id]?'선수 정보':'국내 시절 기록')].filter(Boolean)}; }
   if(kind==='xmgr'){ const m=exMgrOf(a); if(!m)return null; mgrFix(m); const inM=(G.mmarket||[]).includes(m);
     return {k,name:m.name,role:inM?'감독 후보':'쉬고 있는 전 감독',av:{persona:'mgr',pid:m.id,age:m.age,name:m.name},rel:null,lab:mgrType(m).n,sub:`${m.age}세 · ${m.career||''}`,
@@ -103,7 +103,7 @@ function personXExt(k){ const P=String(k).split(':'), kind=P[0];
     const plist=L=>L.slice(0,8).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${p.team!=null&&!p.prospect?`<i class="small muted">(${esc(tshort(p.team))})</i>`:''}`).join(' · ');
     if(kind==='hs')return {k,name:n,role:`고교 야구부 · ${S.area}`,av:{img:hsCrest(n),name:n},rel:r,rl:'우리 구단 친분',lab:schRelLbl(r),sub:`전력 ${S.lv} · 감독 ${S.coach?S.coach.name:'공석'}`,
       info:`${cands.length?`<p class="small">올해 드래프트 후보: ${plist(cands)}</p>`:''}${pros.length?`<p class="small">프로에 있는 졸업생 ${pros.length}명: ${plist(pros)}</p>`:'<p class="small muted">아직 프로에 있는 졸업생이 없습니다.</p>'}`,
-      acts:[...(S.coach?[btn('고교 감독','person','hsc:'+n,1)]:[]),btn('지역 정보망','go','staff:scouts')]};
+      acts:[btn('학교 페이지','amSch',n,1),...(S.coach?[btn('고교 감독','person','hsc:'+n)]:[]),btn('지역 정보망','go','staff:scouts')]};
     const c=S.coach; if(!c)return null;
     return {k,name:c.name,role:`${n} 감독`,av:{persona:'coach',pid:c.id,age:c.age,name:c.name},rel:r,rl:'우리 구단 친분',lab:schRelLbl(r),sub:`${c.age}세 · ${c.sty}${c.alma?' · 모교 출신':''}`,
       info:`<p class="small">${esc(c.car||'')}</p><p class="small muted">친분은 스카우트 방문·단장 대회 관전·그 학교 선수 지명·후원으로 오릅니다. 높을수록 이 학교 후보 평가 오차가 줄고 귀띔 메일이 옵니다.</p>`,

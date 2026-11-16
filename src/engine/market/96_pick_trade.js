@@ -11,7 +11,7 @@ const PK_V=[15,3,1.6,.05,.05,.05,.05,.05,.05,.05,.05]; /* 4라운드부터는 �
 const PK_R1S=[1.25,1.15,1.05,.85,.8,.75,.7,.45,.4,.35]; /* 1라운드 순번별 배율: 상위 세 순번과 하위 세 순번의 차이가 크다 */
 const PK_KEEP=1.2; /* 지명권은 내줄 때 더 아낀다(사용자 11-13: 지명권을 소중히). 올인·벼랑 끝 구단만 그대로 내준다 */
 const pkKeep=t=>t&&t.id!==ME()&&(t.allIn===sponSeason()||despOf(t)>=.5)?1:PK_KEEP; /* 1라운드는 순번이 앞설수록 훨씬 비싸다(커뮤니티 피드백 11-07: 상위 지명권을 너무 싸게 모음) */ /* 라운드별 가치(트레이드 가치 단위, 현금 1억 ≈ 0.9) */
-const pkHoard=(buyer,k)=>{ if(+k.split(':')[0]!==1)return 1; const n=pkHeld(buyer).filter(x=>+x.split(':')[0]===1).length; return 1+.4*Math.max(0,n-1); }; /* 1라운드 지명권 보유 한도는 없다(KBO도 받는 장수 제한 없음, 사용자 11-15). 대신 이미 1라운드를 여러 장 쥔 구단에는 파는 단장이 더 비싸게 부른다: 두 장째부터 한 장마다 40%씩. 우리·AI 같음 */
+const pkHoard=(buyer,k,gv)=>{ if(+k.split(':')[0]!==1)return 1; const out=new Set(gv||[]); const n=pkHeld(buyer).filter(x=>+x.split(':')[0]===1&&!out.has(x)).length; return 1+.4*Math.max(0,n-1); }; /* gv: 같은 거래에서 내주는 지명권은 빼고 센다(국사왕 11-16: 1라 9·10번을 들고 10번을 4번과 바꾸면 거래 뒤에도 두 장인데 세 장째 값을 불렀다) */ /* 1라운드 지명권 보유 한도는 없다(KBO도 받는 장수 제한 없음, 사용자 11-15). 대신 이미 1라운드를 여러 장 쥔 구단에는 파는 단장이 더 비싸게 부른다: 두 장째부터 한 장마다 40%씩. 우리·AI 같음 */
 const pkYear=()=>G.draft&&G.draft.y===G.year?G.year+1:G.year;
 function pkOwner(y,rd,orig){ const o=G.pkOwn&&G.pkOwn[y+':'+rd+':'+orig]; return o??orig; }
 /* 그 구단이 가진 다음 드래프트 지명권: 'rd:원래 구단' 목록 */
