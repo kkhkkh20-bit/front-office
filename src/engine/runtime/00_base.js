@@ -4,7 +4,10 @@ if(!Object.hasOwn)Object.hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k)
 if(!String.prototype.at)Object.defineProperty(String.prototype,'at',{value:function(i){ i=Math.trunc(i)||0; if(i<0)i+=this.length; return i<0||i>=this.length?undefined:this.charAt(i); },writable:true,configurable:true});
 'use strict';
 /* ===== 기본 도구 ===== */
-const FO_RANDOM=FrontOfficeCore.createRandom(Math.random);
+const FO_RNG0=Math.random; let FO_RNG=null; /* FO_RNG: 잠깐 바꿔 끼우는 난수원(withRng). 평소에는 비어 있어 처음 묶인 난수원을 그대로 쓴다 */
+const FO_RANDOM=FrontOfficeCore.createRandom(()=>(FO_RNG||FO_RNG0)());
+/* 따로 씨앗을 둔 난수로 fn을 돌린다: 본 난수 흐름을 한 번도 쓰지 않는다(해외 활성화 3-1: 새 게임 해외파·후보군을 만들어도 시작 세계·이후 난수가 그대로) */
+function withRng(seed,fn){ const o=FO_RNG; FO_RNG=FrontOfficeCore.createSeededRandom(seed|0); try{ return fn(); }finally{ FO_RNG=o; } }
 /* 해시(문자열 여러 개 → 32비트). 난수가 아니다: 대회·래더의 키·결과 요약용. 본게임·대회·래더 경기는 모두 평범한 난수(Math.random)로 돈다(구단주 11-17: 같은 전력이어도 돌릴 때마다 결과가 달라야 한다) */
 function rngHash(){ let h=2166136261>>>0; for(let k=0;k<arguments.length;k++){ const s=String(arguments[k]); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } h^=124; h=Math.imul(h,16777619)>>>0; }
   h^=h>>>16; h=Math.imul(h,2246822507)>>>0; h^=h>>>13; h=Math.imul(h,3266489909)>>>0; h^=h>>>16; return h>>>0; }
