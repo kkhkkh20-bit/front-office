@@ -13,10 +13,10 @@ function mgrTalkSty(m){ if(!m)return 'calm'; if(m.sty&&MTSTY[m.sty])return m.sty
   return m.sty=s; }
 /* 장면에 쓰는 지금 상황 */
 function mgrScnCtx(){ const S=mgrSit(), P=playersOf(G.user); const X={S,st:S.streak||0,season:S.per==='season',rank:S.rank||0};
-  X.hot=S.hot?S.hot.p:null; X.cold=S.cold&&S.cold[0]?S.cold[0].p:null; X.inj=S.inj&&S.inj[0]||null; X.tired=(S.tired||[]).sort((a,b)=>(b.fat||0)-(a.fat||0))[0]||null;
+  X.hot=S.hot?S.hot.p:null; X.cold=S.cold&&S.cold[0]?S.cold[0].p:null; X.inj=(S.inj||[]).find(p=>p.injOut>21)||null; /* 며칠 뒤 돌아올 선수 때문에 밖에서 사람을 데려오자고 하지 않는다 */ X.tired=(S.tired||[]).sort((a,b)=>(b.fat||0)-(a.fat||0))[0]||null;
   X.young=P.filter(p=>p.age<=23&&!p.foreign&&!(p.injOut>0)).sort((a,b)=>(b.pot||0)-(a.pot||0))[0]||null;
   const tr=(G.trades||[]).filter(t=>t.me===G.user&&G.day-t.d<=21&&(t.gi||[]).length).slice(-1)[0]; X.trade=tr?G.players[tr.gi[0]]:null; if(X.trade&&X.trade.team!==G.user)X.trade=null;
-  const w=S.weak&&S.weak[0]; X.weak=w&&w.rank>=8?SLOTK[w.k]:null; X.weakReq=!X.weak?null:w.k==='SP'?'sp':w.k==='RP'?'rp':['C','SS','2B','CF'].includes(w.k)?'def':'bat';
+  const w=S.weak&&S.weak[0]; const rk0=w&&slotRanks(G.user)[w.k]; X.weak=w&&w.rank>=8&&!mgrSlotBack(G.user,w.k,rk0.v,30)?SLOTK[w.k]:null; /* 곧 돌아올 주전이 있는 자리는 '약점'으로 말하지 않는다 */ X.weakReq=!X.weak?null:w.k==='SP'?'sp':w.k==='RP'?'rp':['C','SS','2B','CF'].includes(w.k)?'def':'bat';
   try{ const st=standingsNow(); const i=st.findIndex(x=>x.tid===G.user); const o=st[i>0?i-1:1]; X.rival=o?tshort(o.tid):'상대'; }catch(e){ X.rival='상대'; }
   /* 상대가 단장에게 물을 거리(11-09e): 곧 FA가 되는 주전, 예산 여유, 팬 여론, 연봉 1위 */
   X.fa=P.filter(p=>!p.foreign&&!p.ys&&(p.faC?(p.yrs||0)<=1:(p.svc||0)>=faSvc(p)-1)).sort((a,b)=>ovr(b)-ovr(a))[0]||null; if(X.fa&&ovr(X.fa)<55)X.fa=null;
@@ -177,7 +177,7 @@ const MREQ={rp:'불펜 투수',sp:'선발 투수',bat:'주전급 타자',def:'�
 /* 즉시 전력 보강은 실제로 합류해 출전할 수 있는 선수만 인정한다. */
 function mgrReinforceReady(p,tid=G.user){return !!p&&p.team===tid&&!p.prospect&&!p.ys&&!(p.joinY>G.year)&&healthy(p)&&!isAway(p)&&!ovsAbroad(p)&&!milServing(p)&&psOk(p)&&!(p.isP&&rpPlanOf(tid,p)==='sp2');}
 const MREQ_SLOTS={rp:['RP'],sp:['SP'],bat:['C','1B','2B','3B','SS','LF','CF','RF','DH'],def:['C','SS','2B','CF']};
-function mgrReqNeed(k){const rk=slotRanks(G.user);return (MREQ_SLOTS[k]||[]).map(slot=>({slot,...rk[slot]})).filter(x=>x.rank>=8&&!Object.values(G.players).some(p=>p.team===G.user&&!p.ys&&!(p.joinY>G.year)&&pSlot(p)===x.slot&&p.injOut>0&&p.injOut<=30&&ovr(p)>=x.v+3)).sort((a,b)=>b.rank-a.rank)[0]||null;}
+function mgrReqNeed(k){const rk=slotRanks(G.user);return (MREQ_SLOTS[k]||[]).map(slot=>({slot,...rk[slot]})).filter(x=>x.rank>=8&&!mgrSlotBack(G.user,x.slot,x.v,30)) /* 부상·대표팀·연수·전역 임박으로 곧 돌아올 주전이 있으면 그 자리는 조르지 않는다(감독 요청과 같은 판정) */.sort((a,b)=>b.rank-a.rank)[0]||null;}
 function mgrReqUntil(k){return k!=='an'&&period()==='season'?Math.min(G.day+30,G.cal.end):G.day+30;}
 /* 생성·수락 조건. 수락 후 예산이나 정원을 소비해 약속을 취소할 수는 없다. */
 function mgrReqBlock(k){

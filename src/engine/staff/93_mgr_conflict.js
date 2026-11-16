@@ -59,7 +59,7 @@ function mcfUse(p){ const h=seasonTotal(p,G.year,'1군'); return h?(p.isP?(h.out
 
 /* ---------- 2. 안건이 있을 때만 여는 주간 회의 ---------- */
 /* 2군에서 올라가고 싶어 하는 선수: 선수 쪽 기능(playerWantsUp)이 있으면 그것을, 없으면 2군 호성적·1군 자리 막힘으로 본다 */
-function mcfWantsUp(){ const L=playersOf(G.user).filter(p=>!p.e1&&(typeof canUp!=='function'||canUp(p)));
+function mcfWantsUp(){ const L=playersOf(G.user).filter(p=>!p.e1&&(typeof canUp!=='function'||canUp(p))&&!mgrLeaving(p,21)); /* 곧 입대할 선수는 콜업 안건으로 올리지 않는다 */
   if(typeof playerWantsUp==='function'){ let W=[]; try{ W=(playerWantsUp(G.user)||[]).map(x=>x&&x.p).filter(Boolean); }catch(e){} const ids=new Set(W.map(p=>p.id)); return L.filter(p=>ids.has(p.id)&&seasonTotal(p,G.year,'퓨처스')); } /* 선수 쪽 훅: playerWantsUp(tid) → [{p,t,gap,why,weeks,heat}] */
   return L.filter(p=>{ const h=seasonTotal(p,G.year,'퓨처스'); return h&&(p.isP?h.outs>=60&&pRate(h).era<=3.0:h.pa>=60&&bRate(h).ops>=.85); }); }
 function mcfAgenda(){ const m=G.mgr[G.user]; const S=mcf(); const X=mgrSit(); const d=depth(G.user); const A=[]; const nm=`${m.name} 감독`; mgrAttr(m);
@@ -71,9 +71,9 @@ function mcfAgenda(){ const m=G.mgr[G.user]; const S=mcf(); const X=mgrSit(); co
   /* 불펜 과부하: 투수코치와 감독 의견 충돌 */ { const P=d.pen.slice(0,4).filter(p=>{ try{ return armRatio(p)>=1.25; }catch(e){ return false; } }).sort((a,b)=>armRatio(b)-armRatio(a))[0]; if(P){ const C=(coachesOf(G.user)||{}); const pc=C.bp||C.pc; const push=(m.pen||50)>=58||(m.arm||50)>=58;
       A.push({k:'pen:'+P.id,sc:1+(armRatio(P)-1.25)*4,pid:P.id,t:`${P.name} 과부하(누적 부하 ${Math.round(armRatio(P)*100)}%)`,s:`${pc?`${CROLE[C.bp?'bp':'pc'].l} ${pc.name}: "${P.name}은(는) 쉬어야 합니다. 이대로면 팔이 탈 납니다."`:''} ${nm}: "${push?`지금 ${P.name} 빼면 경기를 못 잡습니다.`:'저도 걱정입니다만, 대안이 마땅치 않습니다.'}"`,
         o:[{l:pc?'투수코치 의견대로 쉬게 하십시오':'사흘 쉬게 하십시오',fx:push?'감독 관계 조금 악화, 부상 위험 감소':'부상 위험 감소',a:'rest',coach:pc?pc.name:null},{l:'감독님 판단대로',fx:'계속 쓰입니다. 부상 위험이 남습니다',a:'none',coach:pc?pc.name:null}]}); } }
-  /* 선발 공백 */ { const inj=(X.inj||[]).find(p=>p.isP&&isSPr(p)); if(inj){ const cand=playersOf(G.user).filter(p=>p.isP&&!p.e1&&(typeof canUp!=='function'||canUp(p))).sort((a,b)=>spV(b)-spV(a))[0];
+  /* 선발 공백 */ { const inj=(X.inj||[]).find(p=>p.isP&&isSPr(p)&&p.injOut>5); /* 등판 한 번 거르지 않을 짧은 부상은 공백이 아니다 */ if(inj){ const cand=playersOf(G.user).filter(p=>p.isP&&!p.e1&&(typeof canUp!=='function'||canUp(p))&&!mgrLeaving(p,21)).sort((a,b)=>spV(b)-spV(a))[0];
       A.push({k:'rot:'+inj.id,sc:1.3,pid:inj.id,t:`선발 공백(${inj.name} 부상)`,s:`${nm}: "${inj.name} 자리가 비었습니다. ${cand?`2군에서 ${cand.name}을(를) 올리든지, `:''}불펜으로 버티든지 정해야 합니다."`,
-        o:[...(cand?[{l:`${cand.name}을(를) 올리십시오`,fx:'2군 선발 콜업',a:'upsp',cid:cand.id}]:[]),{l:'불펜으로 버티십시오',fx:'불펜 부하가 늘어납니다',a:'none'},{l:'트레이드로 메우겠습니다',fx:'시장에 나온 선발을 알아봅니다',a:'shop'}]}); } }
+        o:[...(cand?[{l:`${cand.name}을(를) 올리십시오`,fx:'2군 선발 콜업',a:'upsp',cid:cand.id}]:[]),{l:'불펜으로 버티십시오',fx:'불펜 부하가 늘어납니다',a:'none'},...(tradeOpen()?[{l:'트레이드로 메우겠습니다',fx:'시장에 나온 선발을 알아봅니다',a:'shop'}]:[])]}); } } /* 트레이드 마감 뒤에는 트레이드 선택지를 내지 않는다 */
   /* 구상 약속 점검: 받아 놓고 안 쓰는지 */ { const P=S.plan; if(P&&P.y===G.year&&G.cal&&G.day>=G.cal.open+21)for(const it of P.items){ if(it.st==='no'||it.done)continue; const p=G.players[it.pid]; if(!p||p.team!==G.user){ it.done=true; continue; }
       if(it.k==='yng'){ const u=mcfUse(p)-(it.h0||0); if(u<(p.isP?30:25)){ A.push({k:'plan:'+p.id,sc:1.5+(it.esc||0)*.5,pid:p.id,it,t:`구상 약속 점검: ${p.name} 기용`,s:`개막 전 ${nm}은 ${p.name}에게 기회를 주기로 했지만 지금까지 ${p.isP?ipStr(u)+'이닝':u+'타석'}뿐입니다. ${nm}: "${mcfStake()>0?'지금은 이겨야 할 때입니다.':'기회를 보고 있었습니다.'}"`,
         o:[{l:'약속을 지키십시오',fx:'강하게 요구. 감독 관계 악화, 기용이 확실히 늘어납니다',a:'force'},{l:'성적이 우선입니다. 넘어가죠',fx:'약속을 접습니다',a:'drop'}]}); } } } }
