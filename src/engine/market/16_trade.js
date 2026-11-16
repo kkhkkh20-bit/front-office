@@ -21,7 +21,7 @@ function seenDelta(t,p){ if(!t||!p||t.id===G.user||t.id===ME())return 0; const L
    남의 선수는 자기 스카우트 눈으로 본 추정: 구단 스카우트 오차(scoutSd, 드래프트·외국인 평가와 같은 값)만큼 어긋나고, 숨은 재능(hidT)은 지명 때처럼 대부분 놓친다.
    예전 tval(projO)은 남의 유망주 실제 잠재력을 그대로 읽었다. 구단·선수마다 고정된 값이라 난수 흐름을 건드리지 않는다 */
 function potSeenD(t,p){ if(!t||!p||t.id===G.user||t.id===ME()||p.team===t.id)return 0; const sd=Math.max(2.5,(t.scoutSd||6)*.7);
-  const hid=p.hidT&&u01('aih'+t.id,p.id)>=.2?-p.hidT:0; return clamp(hn('q'+t.id,p.id)*sd+hid,-12,8); }
+  const hid=p.hidT&&!p.hidR&&u01('aih'+t.id,p.id)>=.2?-p.hidT:0; /* 1군 기록으로 드러난 숨은 재능(hidR)은 모두가 안다: 우리 스카우트 평가(hidPen)도 그때부터 빼지 않는다 */ return clamp(hn('q'+t.id,p.id)*sd+hid,-12,8); }
 /* 데려올 때 쓰는 값: 스카우트가 좋게 본 몫은 믿지 않고(파는 구단이 자기 선수를 더 잘 안다: 사람 단장도 남이 내놓는 유망주의 장밋빛 보고는 깎아 듣는다), 나쁘게 본 몫은 그대로 믿는다.
    그래서 AI는 남의 유망주를 실제보다 좋게 보고 주전을 내주는 일은 없고(공략 방지), 숨은 재능이나 저평가된 유망주는 놓칠 수 있다 */
 function potSeenIn(t,p){ return Math.min(0,potSeenD(t,p)); }
