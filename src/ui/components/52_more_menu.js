@@ -7,8 +7,15 @@ const MM_DOTS='<svg class="mmenu-ico" viewBox="0 0 20 20" width="18" height="18"
 const MM_CHEV='<svg class="mmenu-ico" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false"><path d="M5 7.5 10 12.5 15 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function moreMenu(items,o){ o=o||{}; const L=(items||[]).filter(Boolean); if(!L.length)return ''; const lab=o.label||'더보기';
   return `<span class="mmenu${o.cls?' '+o.cls:''}"><button type="button" class="${o.bcls||'btn small'} mmenu-b" data-mmenu aria-haspopup="menu" aria-expanded="false" aria-label="${esc(lab)}" title="${esc(lab)}">${o.ico||MM_DOTS}</button><span class="mmenu-p" role="menu" aria-label="${esc(lab)}" hidden><span class="mmenu-h" aria-hidden="true">${esc(lab)}</span>${L.map(it=>`<button type="button" role="menuitem" tabindex="-1" class="mmenu-i${it.on?' on':''}${it.danger?' danger':''}" data-a="${esc(it.a)}" data-v="${esc(String(it.v??''))}"${it.title?` title="${esc(it.title)}"`:''}${it.disabled?' disabled':''}>${it.s?`<span class="mmenu-t"><b>${esc(it.l)}</b><small>${esc(it.s)}</small></span>`:esc(it.l)}</button>`).join('')}</span></span>`; }
-/* 대표 동작 1개 + 나머지는 ⋯. 항목이 하나뿐이면 메뉴 없이 그 버튼만 */
-function actionBar(main,rest,o){ const R=(rest||[]).filter(Boolean); if(!main&&R.length===1){ main=R[0]; R.length=0; } if(!main&&!R.length)return '';
+/* 선수 화면 버튼 표시(설정 › 게임 설정, 이 기기에만 저장·세이브와 별개): 모두 보이기(기본) · 간단히(대표 동작 + ⋯).
+   리아네트 11-16: 매물 올리기처럼 자주 쓰던 버튼이 ⋯ 안으로 들어가 한 번 더 눌러야 했다 */
+const ACT_MODE_KEY='fo-act-mode';
+function actModeAll(){ try{ return localStorage.getItem(ACT_MODE_KEY)!=='compact'; }catch(e){ return true; } }
+function actModeCard(){ const all=actModeAll(); return `<section class="card"><h2 class="sec">선수 화면 버튼</h2><div class="chips">${[['all','모두 보이기'],['compact','간단히(⋯ 메뉴)']].map(([v,l])=>`<button data-a="actMode" data-v="${v}" class="${(all?'all':'compact')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">모두 보이기는 면담·매물·트레이드·연장 협상 같은 동작을 모두 버튼으로 보입니다. 간단히는 대표 동작 하나만 두고 나머지를 ⋯ 안에 모읍니다. 이 기기에만 저장됩니다.</p></section>`; }
+/* 대표 동작 1개 + 나머지는 ⋯(간단히). 모두 보이기면 나머지도 보통 버튼으로 나란히. 항목이 하나뿐이면 메뉴 없이 그 버튼만 */
+function actionBar(main,rest,o){ o=o||{}; const R=(rest||[]).filter(Boolean); if(!main&&R.length===1){ main=R[0]; R.length=0; } if(!main&&!R.length)return '';
+  if(o.all){ const bt=(x,pri)=>`<button class="btn small${pri?' primary act-main':' act-sub'}${x.danger?' danger':''}" data-a="${esc(x.a)}" data-v="${esc(String(x.v??''))}"${x.title?` title="${esc(x.title)}"`:''}${x.on!=null?` aria-pressed="${!!x.on}"`:''}${x.disabled?' disabled':''}>${esc(x.l)}</button>`;
+    return (main?bt(main,!main.plain):'')+R.map(x=>bt(x,false)).join(''); }
   const b=main?`<button class="btn small${main.plain?'':' primary'} act-main" data-a="${esc(main.a)}" data-v="${esc(String(main.v??''))}"${main.title?` title="${esc(main.title)}"`:''}>${esc(main.l)}</button>`:'';
   return b+moreMenu(R,o); }
 let _mmSeq=0;

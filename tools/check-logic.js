@@ -18,6 +18,8 @@ globalThis.__amNoInterim=()=>{ const dir=path.join(__dirname,'..','src','ui','as
 /* [비서 v19] 시나리오용: FACE8(사진 빼고)·FACE19 번호표와 비서 배정 함수(secCands·secIdx) */
 globalThis.__secSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
   return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function face19Load('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
+/* [스카우트 표시] 시나리오용: 소식함 첨부·선수 정보 화면 소스(같은 표시 함수를 쓰는지) */
+globalThis.__uiSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'); return {inbox:R('media/19_inbox.js'),prof:R('players/35_full_player_profile.js')}; };
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
 const ok=(c,msg)=>{ if(!c)throw new Error(msg); };
@@ -652,6 +654,19 @@ T('외국인 후보 조사 단계: 여러 세계의 추정 범위가 실제 능�
   sample(); const resume=globalThis.__rngState(), world=G;
   try{ for(const seed of [101,211,307,401,503,601,709,811]){globalThis.__seed(seed);fresh();sample();} /* 세계 9개: 세계마다 후보 구성이 달라 4~5개로는 비율이 ±4%p 흔들렸다 */ }finally{G=world;globalThis.__seed(resume);}
   console.log('  외국인 후보 범위 검증: '+hit+'/'+n+'명 · '+Math.round(hit/n*100)+'%'); ok(hit/n>=.7,'9개 세계 추정 범위 안에 든 후보 '+Math.round(hit/n*100)+'%');ok(w1<w0*.75,'관찰 후 범위가 25% 이상 좁아지지 않음'); });
+
+T('외국인 관찰 후보·스카우트 표시(리아네트 11-16): 소식함 첨부와 선수 정보가 같은 추정(scoutShow=fScout·curView)을 보이고, 관찰 100%여도 실전 감각 범위가 남는다',()=>{ fresh();
+  const L=Object.values(G.players).filter(p=>p.foreign&&p.team==null).slice(0,40); ok(L.length>=10,'준비 실패: 후보 '+L.length); let exactLeak=0, tn=0;
+  for(const p of L){ G.fwatch=[{id:p.id,k:100}]; const rp=scoutReport(p), f=fScout(p,rp), S=scoutShow(p,rp), cv=curView(p,rp); if(f.mid==null)continue;
+    ok(S.cur.mid===f.mid&&S.cur.lo===f.lo&&S.cur.hi===f.hi,p.name+' 종합: 표시 '+JSON.stringify(S.cur)+' / 선수 정보 '+f.mid+' '+f.lo+'~'+f.hi);
+    ok(cv.v===S.cur.v&&cv.lo===S.cur.lo&&cv.hi===S.cur.hi,p.name+' curView와 다름');
+    ok(S.cur.mid!==dv(rp.cur)||f.sc===f.mid,'스카우트 평가만(범위 없이) 보이는 예전 숫자');
+    const rs=fResid(p); ok(rs===f.band,p.name+' 100% 관찰 남는 폭 '+rs+' / 실제 범위 ±'+f.band); ok(rs>=1&&S.cur.hi>S.cur.lo,p.name+' 100% 관찰인데 범위가 없음');
+    const sd=(rp.sd||0)*.9; for(const t of S.tools){ const r=rp.tools.find(x=>x.k===t.k); tn++; if(t.mid===dv(p.r[t.k])&&t.lo==null)exactLeak++; const b=sd>=1.5?dvSd(r.cur,sd):0; ok(b>=2?(t.lo===Math.max(20,dv(r.cur)-b)&&t.hi===Math.min(100,dv(r.cur)+b)):(t.lo==null&&t.mid===dv(r.cur)),p.name+' '+t.k+' 툴 범위가 선수 정보 식과 다름'); } }
+  ok(exactLeak<tn*.5,'남의 선수 툴이 실제 능력 그대로 '+exactLeak+'/'+tn);
+  const own=domestic(G.user).find(q=>!q.prospect), so=scoutShow(own); ok(so.exact&&so.cur.lo==null&&so.tools.every(t=>t.lo==null&&t.mid===dv(own.r[t.k])),'우리 선수는 확인된 능력 그대로');
+  const src=globalThis.__uiSrc(), ib=src.inbox.slice(src.inbox.indexOf('function ibAtt('),src.inbox.indexOf('function ibDash('));
+  ok(ib.includes('scoutShow(p,rp)')&&!ib.includes('dv(rp.cur)')&&!ib.includes('p.r[k]'),'소식함 첨부가 scoutShow를 안 씀'); ok(src.prof.includes('scoutShow(p,rp)'),'선수 정보가 scoutShow를 안 씀'); G.fwatch=[]; });
 
 T('외국인 예상 능력순: 기록·MLB 경력·스카우트를 합친 예상이 스카우트 평가 하나보다 실제 실력을 잘 고르고, 트리플A·MLB 출신을 앞에 둔다',()=>{ fresh(); const L=[]; for(let i=0;i<300;i++){ const p=newForeign('용병',{market:true}); const rp=scoutReport(p); L.push({p,rp,f:fScout(p,rp)}); }
   const top=(a,k)=>[...a].sort(k).slice(0,20); const mean=a=>a.reduce((s,x)=>s+ovr(x.p),0)/a.length;
