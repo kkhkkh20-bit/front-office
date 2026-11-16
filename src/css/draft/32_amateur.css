@@ -1,0 +1,28 @@
+/* 아마추어 야구 › 선수 탭(1~3학년 목록)·학교 선수단. PC에서는 화면 전체가 스크롤되지 않고 목록이 제 칸 안에서 스크롤된다 */
+.am-ply{display:flex;flex-direction:column;gap:12px}
+.am-plist{display:flex;flex-direction:column;gap:6px}
+.am-pfilt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.am-pfilt .chips{margin:0}
+.am-pscroll{max-height:70vh;overflow:auto;margin:0}
+.am-pscroll thead th{position:sticky;top:0;background:var(--panel);z-index:2}
+.am-ptable td,.am-ptable th{font-size:12px;padding:6px 8px;vertical-align:top}
+.am-ptable small.block{font-size:12px}
+.am-ptable :is(td,th){text-align:left}.am-ptable :is(td,th).num{text-align:right}
+.am-ptable td.am-rec{white-space:normal;min-width:150px;max-width:240px}
+.am-roster{margin:0 0 6px}
+.am-roster td{font-size:12px;padding:4px 8px}
+@media(min-width:980px){
+  .am-ply{display:grid;grid-template-columns:minmax(0,1fr) 340px;align-items:stretch;height:calc(100dvh - 196px);min-height:420px}
+  .am-plist{min-height:0;margin:0;overflow:hidden}
+  .am-pscroll{flex:1 1 auto;min-height:0;max-height:none}
+  .am-pside{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:12px}
+  .am-pside>.card{margin:0}
+}
+.am-roster table td{text-align:left}.am-roster table td.num{text-align:right}
+@media(min-width:980px){
+  .am-schv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:12px;height:calc(100dvh - 206px);min-height:420px}
+  .am-sch-l,.am-sch-r{min-height:0;overflow:auto}
+  .am-sch-l>.card,.am-sch-r>.card{margin:0 0 12px}
+}
+.am-tr{white-space:nowrap}.am-tr.up{color:var(--good)}.am-tr.dn{color:var(--bad)}
+.am-star{background:none;border:0;padding:0 2px;font-size:15px;line-height:1;color:var(--muted);cursor:pointer}.am-star.on{color:var(--warn)}

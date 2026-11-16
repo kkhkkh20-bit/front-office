@@ -152,7 +152,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0}; save(); render(); },
   devSet(v){ const [id,k]=v.split(':'); UI.devMsg=setDev(+id,k||null); if(!UI.devMsg&&k)sfx('confirm',.5); save(); if(UI.sheet!=null)renderSheet(); render(); },
   devOff(v){ setDev(+v,null); save(); render(); },
-  ovsSet(v){ const [id,k]=v.split(':'); UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
+  ovsSet(v){ const [id,k]=v.split(':'); UI.devOk=false; UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
   fallSet(v){ UI.devMsg=setFall(v||null); save(); render(); },
   listP(v){ listPlayer(+v); save(); render(); },
   tsugGo(v){ const [src,i]=v.split(':'); const s=(src==='k'?UI._tsugK:src==='f'?UI._find:src==='r'?((UI._rec&&UI._rec.list)||[]):UI._tsug||[])[+i]; if(!s||!tsugValid(s)){ UI.deskMsg='상황이 바뀌어 다시 찾아야 합니다.'; UI.deskOk=false; render(); return; }
@@ -244,6 +244,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
   wk(v){ UI.wk=v||null; render(); },
+  stRenew(v){ const r=staffRenewOffer(v); toast(r.msg); save(); render(); }, /* 계약 만료 알림의 재계약 제안(24_coaches staffExpNote) */
+  stRenewAll(v){ const r=staffRenewAll(v?String(v).split(','):null); toast(r.msg); save(); render(); },
   extCoachAll(){ const n=extendCoachesAll(); toast(n?`코치 ${n}명과 1년씩 연장했습니다.`:'연장할 코치가 없습니다.'); save(); render(); },
   extCoach(v){ const [k,a]=v.split(':'); const r=extendCoach(k,+a); toast(r||`${CROLE[k].l} 계약을 ${a}년 연장했습니다.`); save(); render(); },
   cpromAsk(v){ UI.cprom=v; render(); }, cpromCancel(){ UI.cprom=null; render(); },
@@ -367,7 +369,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castMgr(){const open=!castPref('mgr');try{localStorage.setItem('fo-cast-mgr',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.mgr=open?'open':'closed';const b=document.querySelector('.cs-mgr-h');if(b){b.setAttribute('aria-expanded',String(open));b.textContent='감독 운영 '+(open?'▾':'▴');}},
   castFaces(){const open=!castPref('faces');try{localStorage.setItem('fo-cast-faces',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.faces=open?'open':'closed';const b=document.querySelector('.cs-faces-view');if(b){b.textContent=open?'선수 카드 접기':'선수 카드 보기';b.setAttribute('aria-pressed',String(open));}},
   castLineups(){const open=!castLineupsOpen();try{localStorage.setItem('fo-cast-lineups',open?'1':'0');}catch(e){}const d=document.querySelector('.match-dashboard');if(d)d.dataset.lineups=open?'open':'closed';const b=document.querySelector('.cs-lineup-view');if(b){b.textContent=open?'라인업 접기':'라인업 보기';b.setAttribute('aria-pressed',String(open));}},
-  castBoard(){const c=UI.cast;if(!c||!c3DActive())return;const on=Match3D.info().camera!=='scoreboard';if(c.play)A.castPlay();Match3D.viewBoard(on);const b=document.querySelector('.cs-board-view');if(b)b.textContent=on?'경기로 돌아가기':'전광판 보기';},
+  castBoard(){const c=UI.cast;if(!c||!c3DActive())return;const on=Match3D.info().camera!=='scoreboard';if(c.play)A.castPlay();Match3D.viewBoard(on);const b=document.querySelector('.cs-board-view');if(b)b.textContent=on?'경기로 돌아가기':'전광판 보기';const st=document.getElementById('cs-stage');if(st)st.dataset.board=on?'1':'';}, /* 전광판을 볼 때는 감독 운영·선수 카드를 숨긴다: 왼쪽 상자가 전광판 글자를 가렸다(사용자 11-16) */
   async castRetry3d(){const c=UI.cast,host=document.getElementById('cs-3d');if(!c||!host||typeof Match3D==='undefined')return;c.play=false;CT.tok++;CT.run=false;cBallHide();cDraw(c.k,0);await Match3D.mount(host,{day:[0,6].includes(dobj(G.games[c.g].day).w)});if(UI.cast===c&&host.isConnected)cDraw(c.k,0);},
   castPlay(){ const c=UI.cast; if(!c)return; if(c.pre){ if(document.querySelector('.cs-prep-start')?.disabled===false)A.castStart(); else castStart2D(c); return; } /* 3D 준비 중에 재생을 누르면 기본 중계로 바로 시작 */ const L=G.games[c.g].pbp; if(c.k>=L.length)c.k=0; c.play=!c.play; CT.tok++; CT.run=false; cBallHide(); if(c.play){castResumePitch();castLoop();} else { cDraw(c.k,250); sndStop('amb'); sndStop('chant'); } const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play?'일시정지':'재생'; },
   castStep(v){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp, pa=i=>i>=0&&i<L.length&&typeof L[i][1]==='number'; let i=c.k; if(+v>0){ i++; while(i<L.length&&!pa(i))i++; } else { i--; while(i>0&&!pa(i))i--; } castJump(i); }, /* 다음·이전 '타석'으로(도루·교체 줄은 건너뜀), 재생 상태는 그대로(검수 11-07) */

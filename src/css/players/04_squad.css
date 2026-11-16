@@ -122,3 +122,8 @@ textarea.code{width:100%;min-height:80px;background:#0b1014;color:var(--ink);bor
 .pf-bars{display:grid;gap:6px;margin:8px 0 12px}.pf-bar{display:grid;grid-template-columns:44px minmax(0,1fr) 72px 96px;gap:8px;align-items:center}.pf-bar .fx-bar{margin:0;height:9px;background:var(--panel2);border-radius:2px;position:relative}.pf-bar .fx-bar i{display:block;height:100%;background:var(--acc);border-radius:2px}
 @media(max-width:520px){.pf-bar{grid-template-columns:40px minmax(0,1fr) 64px}.pf-bar em{display:none}}
 .spl-xs{display:grid;gap:3px;margin-top:8px}.spl-x{display:grid;grid-template-columns:64px 56px minmax(0,1fr);gap:8px;align-items:center;font-size:13px}
+
+/* 선수단 표: 열마다 머리글과 칸을 같은 정렬로(구단주 11-17). 선수·포지션·글자 열은 왼쪽, 숫자·별·막대는 가운데. 현재 칸은 컨디션 표시 자리(오른쪽 26px)를 머리글에도 둔다 */
+table.rt.rt :is(th,td).rta-c{text-align:center}
+table.rt.rt :is(th,td).rta-l{text-align:left}
+table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}

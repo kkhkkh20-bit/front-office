@@ -41,6 +41,18 @@ function setOvs(id,prog){ const prev=(G.ovs||[]).find(x=>x.pid===id); if(prev&&p
   if((G.ovs||[]).filter(x=>x.prog===prog&&x.pid!==id).length>=ovsLim(o))return `${o.l}은(는) ${ovsLim(o)}명까지입니다(아카데미 제휴 단계로 늘릴 수 있습니다).${keep}`;
   refund();
   G.ovs.push({pid:id,prog,c:o.c,fy:fyNow()}); /* 참가 보상은 실제 출국 때: 신청·취소만으로는 기분이 오르지 않는다 */ G.spend.dev=(G.spend.dev||0)+o.c; addLog(`${p.name}을(를) ${o.l}에 보냅니다(1인 ${money(o.c)}, 동행 코치·직원 비용 ${money(o.fix)}은 출발 때 한 번).`); return ''; }
+/* 일괄 보내기(커뮤니티 11-17 랄프111112): 한 프로그램에 여러 명을 한 번에 신청한다. 비용·정원·자격은 한 명씩 보낼 때(setOvs)와 같다.
+   입대가 잡혔거나(날짜와 관계없이) 상무에 지원 중인 선수는 목록에서 뺀다. 기본 선택은 25세 이하 중 더 클 여지가 큰 순으로 남은 자리만큼 */
+function ovsBulkSkip(p){ const m=p&&p.mil; if(m&&m.from!=null&&!m.done&&!m.exempt&&(m.until||0)>G.day)return `입대 예정 ${dmd(m.from)}`; if(m&&m.app)return '상무 지원 중'; return ''; }
+function ovsBulkView(k){ const o=OVS[k]; if(!o||G.unemp||!ovsOpen(k))return {k,ok:false,rows:[],skip:[],left:0,c:o?o.c:0,fix:0};
+  const used=new Set((G.ovs||[]).map(x=>x.pid)), mine=(G.ovs||[]).filter(x=>x.prog===k), left=Math.max(0,ovsLim(o)-mine.length), rows=[], skip=[];
+  for(const p of domestic(G.user).filter(p=>!used.has(p.id)&&!p.foreign&&!p.prospect&&!(p.joinY>G.year))){ const why=p.age>30?'':ovsBulkSkip(p)||(ovsEnlBlock(p,k)?`입대 예정 ${dmd(p.mil.from)}`:'')||(p.injOut>0?`부상 ${p.injOut}일`:''); if(why){ skip.push({id:p.id,name:p.name,why}); continue; } if(ovsElig(p,k))rows.push({id:p.id,name:p.name,age:p.age,pos:posLabel(p),gap:potGapEst(p)}); }
+  rows.sort((a,b)=>b.gap-a.gap||a.age-b.age||a.id-b.id); const def=new Set(rows.filter(r=>r.age<=25).slice(0,left).map(r=>r.id)); for(const r of rows)r.on=def.has(r.id);
+  return {k,ok:true,l:o.l,c:o.c,fix:mine.length?0:o.fix,left,rows,skip}; }
+function ovsBulk(k,ids){ const V=ovsBulkView(k); if(!V.ok)return {n:0,cost:0,fail:[],msg:`${OVS[k]?OVS[k].l:'연수'} 신청 기간이 아닙니다.`}; const okId=new Set(V.rows.map(r=>r.id)), L=[...new Set((ids||[]).map(Number))].filter(id=>okId.has(id));
+  if(!L.length)return {n:0,cost:0,fail:[],msg:'보낼 선수를 골라 주세요.'}; if(L.length>V.left)return {n:0,cost:0,fail:[],msg:`남은 자리는 ${V.left}명입니다.`};
+  const s0=G.spend.dev||0, done=[], fail=[]; for(const id of L){ const r=setOvs(id,k); if(r)fail.push((G.players[id]||{}).name+': '+r); else done.push(G.players[id].name); }
+  const cost=Math.round(((G.spend.dev||0)-s0)*10)/10; return {n:done.length,cost,fail,names:done,msg:done.length?`${OVS[k].l}에 ${done.length}명을 신청했습니다(참가비 ${money(cost)}${V.fix?`, 동행비 ${money(V.fix)}은 출발 때 한 번`:''}).${fail.length?' 신청하지 못한 선수: '+fail.join(' · '):''}`:fail.join(' · ')}; }
 function setFall(k){ if(!fallOpen())return '가을 교육리그 참가 신청 기간이 아닙니다(9월 1일~10월 10일).'; const y=G.year; const prev=G.fall&&G.fall.y===y?G.fall.k:null; if(prev&&prev===k)return ''; if(prev){ if(G.fall.paid){ const t=team(G.user); if(t)t.cash+=FALL[prev].c; } else G.spend.dev=Math.max(0,(G.spend.dev||0)-FALL[prev].c); } /* 이어받은 신청은 옛 장부에서 냈으니 현금으로 돌려받는다 */
   G.fall={y,k:k||null}; if(!k)return ''; G.spend.dev=(G.spend.dev||0)+FALL[k].c; addLog(`가을 교육리그: ${FALL[k].l} 참가(${money(FALL[k].c)}).`); return ''; }
 function devWeek(){ if((G.devProg||[]).length){ for(const x of G.devProg){ const p=G.players[x.pid]; if(p&&p.team===G.user&&DEVP[x.prog])try{ trnSet(p.id,DEVP[x.prog].to); }catch(e){} } G.devProg=[]; } }

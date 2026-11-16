@@ -35,6 +35,10 @@ function amHistory(b,lvl,ref,lv){ // 학년별 아마추어 기록. 어릴수록
     rows.push(Object.assign({gr:i+1},x,inj?{inj:1}:{})); for(const k in tot)tot[k]+=x[k]||0; }
   b.amY=rows; b.am=tot; b.amV=2; }
 /* 아마 성적 표준점수(그해 후보 안, 투수·타자 따로): 언론·스카우트·AI 지명 평가가 같은 값을 쓴다(공개 기록이라 구단마다 다르지 않다) */
+/* 지명 평가·언론이 보는 아마 기록 합계: 졸업 학년을 두 배로 친다(마지막 해 기록을 더 무겁게 보는 것은 모든 구단·언론이 같다). 학년별 기록이 없으면 통산 */
+const AM_SR_W=2;
+function amAmW(p){ const h=p&&p.am; if(!h||!p.amSim||!(p.amY||[]).length)return h; const sg=p.college?4:3, t={}; for(const k in h)t[k]=0; let any=0;
+  for(const r of p.amY){ if(r.syn)continue; const w=r.gr===sg?AM_SR_W:1; for(const k in t)t[k]+=(r[k]||0)*w; any=1; } return any?t:h; }
 function amZSet(L){ L=L.filter(p=>p&&p.am); for(const P of [true,false]){ const A=L.filter(p=>!!p.isP===P); const v=A.map(amRaw); const m=v.length?avg(v):0; const sd=v.length?Math.sqrt(avg(v.map(x=>(x-m)**2)))||1:1; A.forEach((p,i)=>{ p.amZ=+clamp((v[i]-m)/sd,-3,3).toFixed(2); }); } }
 const AM_DRAFT_W=1.5; /* 아마 성적 1표준편차 = 잠재력 1.5점. 툴(잠재력) 평가가 중심이고 기록은 보조(±2.5σ까지) */
 function amDraftAdj(p){ return p&&p.amZ!=null?clamp(p.amZ,-2.5,2.5)*AM_DRAFT_W:0; }
@@ -44,7 +48,7 @@ function amClass(cls){ const L=cls.map(id=>G.players[id]).filter(Boolean); const
   amZSet(L); G.amV=2; }
 /* 언론 평가: 눈에 보이는 성적과 체격·구속만으로 매긴 순위.
    투수와 타자는 척도가 달라 각자 안에서 표준점수로 바꾼 뒤 합친다(그래야 언론 상위권에 투수와 타자가 섞인다) */
-function pressRank(cls){ const raw=cls.map(id=>G.players[id]).filter(p=>p&&p.am).map(p=>{ const h=p.am; let s;
+function pressRank(cls){ const raw=cls.map(id=>G.players[id]).filter(p=>p&&p.am).map(p=>{ const h=amAmW(p); let s;
     if(p.isP){ const r=pRate(h); s=-r.era*6+(h.so/Math.max(1,h.outs/3))*9*1.4+((p.amVelo||veloOf(p))-143)*1.2; }
     else { const r=bRate(h); s=r.ops*55+h.hr*.8+h.sb*.15; }
     return {p,s:s+(p.ht-180)*.15}; });
@@ -81,6 +85,7 @@ function growLevelF(){ const y=G.year; const u=lvUp(); if(G.lvF&&G.lvF.y===y&&G.
 const ELITE_N0=10;
 function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y&&G.elN.d===2)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&!p.foreign&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; const b=ELITE_N0; G.elN={y,n,d:2,f:+clamp(1-(n-b)/b*.7,.3,1.05).toFixed(3)}; return G.elN; }
 function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
+const DRAFT_READY=.15, DRAFT_SUPER=.2;
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
   /* 고1·대1부터 실제 경기를 치러 온 졸업 학년(13_amateur_league). 아마 리그를 끈 저장·실패할 때만 예전처럼 새로 만든다 */
@@ -100,10 +105,12 @@ function makeDraftClass(){
   }
   sonMake(cls); /* 옛 선수의 아들(2대 선수, 33_ob) */
   /* 즉시 전력 신인: 해마다 상위 재목 몇 명은 1년차부터 1군 주전급이다(실제 KBO도 매년 2~4명은 첫해부터 자리를 잡는다).
-     잠재력 상위 5명 중 55%가 완성형이 되고, 35% 확률로 리그 정상급으로 클 특급이 하나 나온다 */
+     잠재력 상위 5명 중 DRAFT_READY 비율이 완성형이 되고, DRAFT_SUPER 확률로 리그 정상급으로 클 특급이 하나 나온다.
+     드래프트 보정(11-17, docs/design/draft-calibration-2026-11-17.md): 55%·35%로는 1라운드 1~3순위의 43~48%가 1년차 주전이었다(지금 15%·20%).
+     이정후·강백호·소형준·이의리·김택연처럼 첫해부터 자리 잡는 상위 지명은 있지만 대부분은 아니다(가정 목표: 1년차 주전 20~30%) */
   { const top=cls.map(id=>G.players[id]).filter(p=>p.pot>=54).sort((a,b)=>b.pot-a.pot).slice(0,5);
-    for(const p of top){ if(R()<.55){ const t=clamp(p.pot-rnd(4,9),47,56); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
-    if(top[0]&&R()<.35){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
+    for(const p of top){ if(R()<DRAFT_READY){ const t=clamp(p.pot-rnd(4,9),47,56); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
+    if(top[0]&&R()<DRAFT_SUPER){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
     top.slice(0,3).forEach(p=>{ p.blue=1; }); /* 대어 셋: 성장 실현율 하한이 높다(04_growth). 상위 지명과 하위 지명의 차이가 실제로 나게(사용자 11-13: 우승팀 10순위가 손해가 되게) */
     for(const p of top.filter(q=>q.ready)){ if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
   for(const id of cls){ const p=G.players[id]; if(p&&p.amSim){ amSyncR(p); if(p.isP&&p.amVelo==null)p.amVelo=veloOf(p)-(p.college?ri(1,3):ri(3,6)); else if(!p.isP&&p.amRun==null)p.amRun=(+runOf(p)+.04).toFixed(2); } } /* 졸업 학년 후보: 구속·주력 표시 */

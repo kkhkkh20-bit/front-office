@@ -1,5 +1,5 @@
 /* 당시 소식의 업무 상태. 읽음과 완료는 별개이며, 기록을 여는 링크는 계속 쓸 수 있다. */
-const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt','expGmCancel']);
+const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt','expGmCancel','stRenew','stRenewAll']);
 const mailStamp=m=>m.day0??m.day;
 const mailEnd=(text,expired=false)=>({label:expired?'기한 종료':'처리 완료',text,expired});
 /* 이전 구단 업무: 같은 구단으로 돌아오면 다시 열리므로 종료 상태로 저장하지 않는다(검수 11-09za) */
@@ -44,6 +44,8 @@ function mailActionStatus(m,a){
   if(a.a==='retNo'){const r=String(a.v)[0]==='p'?(G.legends||[]).find(r=>'p'+r.pid===String(a.v)):(G.legends||[])[+a.v];return !r||r.retNo||!r.canRetNo||(r.tid!=null&&r.tid!==G.user)?mailEnd('이미 영구결번을 지정했거나 지정 대상이 아닙니다.'):null;}
   if(a.a==='cwOpen'){const S=G.cwS,id=c.cw??a.v,same=!!S&&(id!=null?String(S.id)===String(id):S.day===d);if(same&&S.done)return mailEnd('구단주와 함께 본 경기 이야기를 마쳤습니다.'); /* 마친 건의를 '기한 종료'로 표시하던 문제(플레이테스트 4 #23) */return !same||G.day>S.until?mailEnd('이 경기 관전 뒤 건의 기간은 끝났습니다.',true):null;}
   if(a.a==='expGmCancel')return expGmCanCancel()?null:mailEnd(G.exp&&!G.exp.userGm&&G.exp.gmBack!=null?'창단 단장 수락을 취소했습니다.':'11월 20일 부임 뒤에는 되돌릴 수 없습니다.');
+  if(a.a==='stRenew'){const f=staffRenewFind(a.v);if(!f)return mailEnd('이미 떠났거나 바뀐 사람입니다.',true);if(f.s.yrs>1)return mailEnd('이미 재계약했습니다.');const w=staffRenewWhy(a.v);return w?mailEnd(w,true):null;}
+  if(a.a==='stRenewAll'){const K=String(a.v||'').split(',');if(K.every(k=>{const f=staffRenewFind(k);return f&&f.s.yrs>1;}))return mailEnd('모두 재계약했습니다.');return K.some(k=>!staffRenewWhy(k))?null:mailEnd('지금 재계약할 수 있는 사람이 없습니다.',true);}
   if(a.a==='fdBegin')return !G.fdWait?mailEnd('이미 창단 드래프트를 시작했습니다.'):null;
   return null;
 }

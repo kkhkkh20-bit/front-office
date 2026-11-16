@@ -218,6 +218,7 @@ button.st-n:hover b{text-decoration:underline}
 .smk-raid .row{flex-wrap:wrap;gap:6px}
 .smk-news{margin:0;padding-left:16px;display:grid;gap:2px;font-size:13px}
 .smk-news li{overflow-wrap:anywhere}
+.smk-more>summary{cursor:pointer;font-size:var(--ui-caption,12px);color:var(--muted);margin-top:2px}.smk-more>ul{margin-top:2px}
 /* 코치 개인의 구단 지원 연수: 목록 고정 패널 없이 인물 카드 안에서 진행한다. */
 .coach-study{display:grid;gap:12px;min-width:0;margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--panel);scroll-margin-top:12px;overflow-wrap:anywhere}
 .coach-study>header{display:flex;align-items:center;justify-content:space-between;gap:8px}.coach-study h3,.coach-study p{margin:0}.coach-study h3{font-size:16px}
@@ -322,6 +323,9 @@ button.st-n:hover b{text-decoration:underline}
 @media(min-width:1100px){#sheet .sheet.ps-pc{row-gap:6px}#sheet .sheet.ps-pc>.ps-rel{margin-block:0!important}#sheet .sheet.ps-pc .ps-tabs{margin:0}#sheet .sheet.ps-pc>.btns{margin-top:0}}
 /* 분석원 관리(PC): 화면 높이 안에서 카드 목록만 쪽으로 넘긴다(UI 3단계 3-0, 57_fit_pages.js) */
 @media(min-width:1100px){#app main .ws-own.anl-fit{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}#app main .ws-own.anl-fit>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0}#app main .ws-own.anl-fit>section.card>*{flex:none}#app main .ws-own.anl-fit>section.card>.tgrid{flex:1 1 auto;min-height:0;overflow:auto;align-content:start}#app main .ws-own.smkt-fit>section.card>.tgrid~*{flex:none}}
+/* 핫픽스(커뮤니티 11-17 '스태프 시장 스크롤이 안 내려가요'): 코치·스카우트·분석원 시장은 목록이 .tgrid가 아니라 .cmk-split 안에 있어 스크롤 칸이 없었다.
+   목록 칸(.cmk-split)이 남은 높이 안에서 스크롤하고, 그래도 넘치면 카드 전체가 스크롤한다(잘려서 못 누르는 버튼이 없게) */
+@media(min-width:1100px){#app main .ws-own.anl-fit>section.card{overflow-y:auto;overscroll-behavior:contain}#app main .ws-own.anl-fit>section.card>.cmk-split{flex:1 1 auto;min-height:0;overflow-y:auto;align-content:start;align-items:start;overscroll-behavior:contain;scrollbar-width:thin}}
 .anl-fit.v-mk section.card>.eyebrow,.anl-fit.v-mk section.card>.eyebrow~*{display:none!important}
 .anl-fit.v-oth section.card>:is(.chips,.tgrid:not(.staff-other-cards),.eyebrow),.anl-fit.v-oth section.card>.chips~p.hint:not(.eyebrow~p){display:none!important}
 .anl-fit.v-oth section.card>p.hint:first-of-type{display:none}

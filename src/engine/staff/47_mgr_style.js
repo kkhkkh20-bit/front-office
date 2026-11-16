@@ -21,7 +21,7 @@ function blowSub(fs){ const m=mgrOf(fs.tid); const re=!m||m.interim?50:mgrRestEf
   for(let k=0;k<maxN;k++){ let best=null;
     for(const p of fs.order){ const pos=fs.posOf[p.id]; if(!pos||pos==='C'||(fs.subIn&&fs.subIn[p.id]!=null))continue;
       for(const q of fs.bench){ if(q.isP||!healthy(q)||fs.order.includes(q)||fs.out.includes(q)||(isC(q)&&freeC()<=1))continue; if(pos!=='DH'&&defAt(q,pos)<defAt(p,pos)-12)continue;
-        const sc=(p.fat||0)+(p.age>=32?6:0)+(ovr(q)-ovr(p))*.2; if(!best||sc>best.sc)best={p,q,pos,sc}; } }
+        const sc=(p.fat||0)+(p.age>=32?6:0)+(ovr(q)-ovr(p))*.2+(debutOn()&&debutDue(q)?8:0); /* 확대 엔트리 첫 1군 기회(03_depth DEBUT_N): 크게 앞선 경기에 먼저 낸다 */ if(!best||sc>best.sc)best={p,q,pos,sc}; } }
     if(!best)break; const i=fs.order.indexOf(best.p); (fs.outI=fs.outI||{})[best.p.id]=i; (fs.subIn=fs.subIn||{})[best.q.id]=i; fs.order[i]=best.q; fs.posOf[best.q.id]=best.pos; fs.out.push(best.p); fs.bench.splice(fs.bench.indexOf(best.q),1); fs.box.set(best.q.id,bz());
     out.push(`${best.p.name} → ${best.q.name}(${POSS[best.pos]||best.pos})`); }
   if(out.length){ fs.defv=sideDefV(fs); sideTraits(fs); } return out.join(', '); }
