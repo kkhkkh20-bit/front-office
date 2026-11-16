@@ -944,6 +944,39 @@ T('[아마 리그] 저장·불러오기를 해도 시즌이 같은 결과로 이
 T('[아마 리그] 예전 저장: 저학년 파이프라인을 만들고 올해 후보의 옛 기록은 그대로 둔다',()=>{ DEMO.on=false; newGame(6); delete G.amU; delete G.amH; delete G.amL; const p=G.draftClass.map(id=>G.players[id]).find(q=>q&&q.amSim); delete p.amSim; const keep=JSON.stringify(p.amY);
   amLeagueMigrate(); ok(G.amU&&G.amU.yr===G.year&&Object.keys(G.amU.L).length>=DRAFT_POOL*1.8,'저학년이 만들어지지 않음'); ok(!Object.values(G.amU.L).some(e=>e.gy<=G.year),'올해 졸업 학년이 또 만들어짐');
   ok(JSON.stringify(p.amY.map(r=>Object.assign({},r,{syn:undefined})))===JSON.stringify(JSON.parse(keep).map(r=>Object.assign({},r,{syn:undefined}))),'옛 기록이 바뀜'); ok(p.amY.every(r=>r.syn),'합성 기록 표시 없음'); const n=Object.keys(G.amU.L).length; amLeagueMigrate(); ok(Object.keys(G.amU.L).length===n,'두 번 만들어짐'); });
+T('[고교 리그] 1·2학년 관심 선수는 학년이 올라도 이어지고, 졸업 학년에 드래프트 관심 목록에 한 번만 들어간다(관찰 횟수도 이어진다)',()=>{ DEMO.on=false; newGame(6); const U=Object.values(G.amU.L);
+  const e2=U.find(x=>!x.c&&x.gy===G.year+1), e1=U.find(x=>!x.c&&x.gy===G.year+2), d2=U.find(x=>!x.c&&x.gy===G.year+1&&x!==e2); ok(e1&&e2&&d2,'준비 실패: 저학년 없음');
+  for(const e of [e1,e2,d2])amFollow(e.id,true); e2.amObs={[G.user]:4}; G.shortlist=(G.shortlist||[]).concat([d2.id]); ok(!G.players[e2.id],'저학년이 이미 선수 명단에 있음');
+  G.year++; for(const i of G.draftClass){ const p=G.players[i]; if(p&&p.prospect)dropP(i); } makeDraftClass();
+  const p=G.players[e2.id]; ok(p&&p.prospect&&G.draftClass.includes(p.id),'졸업 학년이 후보가 되지 않음'); ok(amFollowing(G.user,e2.id)&&amFollowing(G.user,e1.id),'관심 선수가 학년이 바뀌며 빠짐');
+  ok(G.shortlist.filter(id=>id===e2.id).length===1,'졸업 학년 관심 선수가 드래프트 관심 목록에 없음'); ok(G.shortlist.filter(id=>id===d2.id).length===1,'이미 담긴 선수가 두 번 들어감');
+  ok(!G.shortlist.includes(e1.id)&&amGrade(G.amU.L[e1.id],G.year)===2,'아직 2학년인 선수가 드래프트 관심 목록에 들어감');
+  ok(amObsN(p)===4&&amObsTxt(p).includes('관찰 4회')&&amObsTxt(p).includes('줄어듦'),'관찰 횟수가 이어지지 않음: '+amObsTxt(p));
+  makeDraftClass(); ok(G.shortlist.filter(id=>id===e2.id).length===1,'다시 만들어도 중복'); });
+T('[고교 리그] 저학년 평가는 등급·범위만 주고, 졸업까지 남은 해만큼 오차가 크며 관찰로 준다(우리·AI 구단 같은 식)',()=>{ DEMO.on=false; newGame(6); const e=Object.values(G.amU.L).find(x=>!x.c&&x.gy===G.year+2); ok(e,'준비 실패');
+  const ai=G.teams.find(t=>t.id!==G.user).id;
+  for(const tid of [G.user,ai]){ delete e.amObs; const s1=amEstU(e,tid,e.gy-2).sd, s3=amEstU(e,tid,e.gy).sd; ok(Math.abs(s1/s3-(1+AM_YR_SD*2))<1e-9,'1학년 오차 배수가 다름 '+tid+' '+(s1/s3));
+    e.amObs={[tid]:12}; const s1o=amEstU(e,tid,e.gy-2).sd; ok(Math.abs(s1o/s1-.85)<1e-9,'관찰로 오차가 줄지 않음 '+tid); }
+  const T0=amTier({v:50,sd:9}); ok(['t','lo','hi','w'].every(k=>typeof T0[k]==='string'&&!/\\d/.test(T0[k])),'평가에 숫자가 섞임 '+JSON.stringify(T0)); ok(T0.lo!==T0.hi,'넓은 오차인데 범위가 한 등급');
+  const L=amSuggest(G.year-1,null,5,ai), L2=amSuggest(G.year-1,null,5,ai); ok(L.length===5&&JSON.stringify(L.map(x=>x.id))===JSON.stringify(L2.map(x=>x.id)),'AI 추천이 같은 입력에 다름'); });
+T('[고교 리그] 3학년 부진: 잠재력은 그대로인데 졸업 학년 기록이 나쁘면 AI 지명 순위가 밀리고, 스카우트 귀띔은 충분히 본 구단만 받는다',()=>{ DEMO.on=false; newGame(6); const y=G.year;
+  const C=G.draftClass.map(id=>G.players[id]).filter(q=>q&&q.prospect&&!q.ovsRet); const B=C.filter(q=>!q.isP&&!q.college&&q.amSim&&(q.amY||[]).some(r=>r.gr===2&&r.pa>=40)).sort((a,b)=>ovr(b)-ovr(a)); const p=B[Math.floor(B.length/4)]; ok(p&&B.length>=8,'준비 실패: 2학년 기록이 있는 고교 타자 없음'); /* 상위권(경쟁자가 많은 자리) */
+  const r2=p.amY.find(r=>r.gr===2); p.amY=p.amY.filter(r=>r.y!==y); const sr=Object.assign({},r2,{y,gr:3}); p.amY.push(sr); amTotFix(p); amZSet(C); ok(!amSlump(p),'같은 기록인데 부진으로 봄');
+  const t=G.teams.find(x=>x.id!==G.user).id, need=draftNeed(t); const rank=()=>C.map(q=>({id:q.id,s:aiDraftScore(t,q,need)})).sort((a,b)=>b.s-a.s).findIndex(x=>x.id===p.id)+1; const pot0=p.pot, a0=rank(), z0=p.amZ;
+  Object.assign(sr,{h:Math.round(sr.ab*.18),d:0,tr:0,hr:0,bb:Math.round(sr.bb*.4)}); amTotFix(p); amZSet(C); const a1=rank();
+  ok(amSlump(p),'졸업 학년 기록이 크게 떨어졌는데 부진 표시가 없음'); ok(p.pot===pot0,'잠재력이 바뀜'); ok(p.amZ<z0-.5&&a1>a0,'AI 지명 순위가 밀리지 않음 '+a0+'→'+a1+' z '+z0+'→'+p.amZ);
+  const potRank=C.slice().sort((a,b)=>b.pot-a.pot).findIndex(q=>q.id===p.id)+1; ok(a1>potRank,'부진한 선수가 잠재력 순위보다 앞에 있음 '+a1+'/'+potRank);
+  { const u=G.user; G.user=t; const v=draftVal(scoutReport(p),p); G.user=u; ok(typeof v==='number','평가 실패'); } /* AI·우리 모두 같은 공개 기록 보정(amDraftAdj) */
+  p.amObs={[G.user]:2}; ok(amSlHint(p)===null,'조금 본 구단에도 귀띔이 나옴'); p.amObs={[G.user]:8}; const h=amSlHint(p); ok(h&&h.includes('기록보다'),'충분히 본 구단에 귀띔이 없음 z '+p.amZ); p.amSl='inj'; ok(amSlHint(p)==='부상 여파로 보입니다','부상 원인 귀띔 없음');
+  ok(amSlHint(p,t)===null,'보지 않은 AI 구단에 귀띔이 나옴');
+  const keep=JSON.stringify(p.r); const e0=amUnit(Object.assign({},p,{amSl:null}),'p',p.school,'hs',y).E.con, e1=amUnit(p,'p',p.school,'hs',y).E.con; ok(Math.abs(e0-e1-AM_SL_D)<1e-9&&JSON.stringify(p.r)===keep,'부진이 그해 아마 경기에만 들어가지 않음'); });
+T('[고교 리그] 학교 선수단: 일반 부원도 이름·학년이 있고, 입학 연도마다 같은 선수로 학년이 오르며 올해 기록 줄이 남는다(선수로 저장하지 않음)',()=>{ DEMO.on=false; newGame(6); const sch=AREA[0].hs[0], y=G.year;
+  const A=amFill(sch,y,'hs',55), B=amFill(sch,y+1,'hs',55); for(const g of [1,2,3])ok(A.filter(f=>f.gr===g).length===AM_FN.hs[0]+AM_FN.hs[1],'학년별 일반 부원 수 '+g);
+  for(const f of A.filter(x=>x.gr<3)){ const g=B.find(x=>x.ey===f.ey&&x.i===f.i&&x.isP===f.isP); ok(g&&g.gr===f.gr+1&&g.n===f.n&&g.pos===f.pos,'다음 해에 같은 부원이 한 학년 올라가지 않음'); const k=f.isP?'stf':'con'; ok(Math.abs(g.r[k]-f.r[k]-AMC.hs.fg)<1e-9,'학년이 오르며 능력이 같은 만큼 오르지 않음'); }
+  ok(!B.some(x=>x.ey===y-2),'졸업한 부원이 남음'); ok(A.every(f=>f.n&&f.n.length>=2&&f.ht>150),'이름·체격 없음');
+  for(let d=dnum(y,3,1);d<=dnum(y,5,10);d++)amDaily(d); const fr=G.amL.fr&&G.amL.fr[sch]; ok(fr,'일반 부원 기록이 없음');
+  const rows=A.map(f=>amFillRow(G.amL,sch,f.ey,f.isP,f.i)).filter(Boolean); ok(rows.some(r=>r.pa>0)&&rows.some(r=>r.outs>0),'일반 부원 타석·이닝 기록 없음');
+  const j=JSON.stringify(Object.assign({},G,{amL:Object.assign({},G.amL,{rest:null})})); ok(!A.some(f=>j.includes(f.id)),'일반 부원 이름표가 저장됨'); });
 T('[아마 리그] 고교 감독 성향: 육성형은 겨울에 더 키우고, 데이터형 타자는 볼넷이 많다(어느 구단이든 같다)',()=>{ DEMO.on=false; newGame(6); const SL=Object.values(schList()); const A=SL[0], B=SL[1]; A.coach.sty='육성형'; B.coach.sty='엄격형'; const keep=G.amU.L; G.amU.L={};
   const mk=(s,i)=>({id:900000+i,n:'가',s:s.n,a:s.area,c:0,gy:G.year+2,P:0,pos:'LF',t:'우',b:'우',v:0,pot:45,r:{con:20,pow:20,eye:20,spd:20,def:20},gp:[2,2],ty:'',ht:180,wt:75,inj:.1,y:[]}); for(let i=0;i<300;i++){ const e=mk(i%2?A:B,i); G.amU.L[e.id]=e; } amGrowAll(); const m=s=>{ const L=Object.values(G.amU.L).filter(e=>e.s===s.n); return L.reduce((a,e)=>a+e.r.con,0)/L.length; };
   ok(m(A)>m(B)+.25,'육성형 성장이 크지 않음 '+m(A).toFixed(2)+'/'+m(B).toFixed(2)); G.amU.L=keep;

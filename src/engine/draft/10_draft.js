@@ -35,6 +35,10 @@ function amHistory(b,lvl,ref,lv){ // 학년별 아마추어 기록. 어릴수록
     rows.push(Object.assign({gr:i+1},x,inj?{inj:1}:{})); for(const k in tot)tot[k]+=x[k]||0; }
   b.amY=rows; b.am=tot; b.amV=2; }
 /* 아마 성적 표준점수(그해 후보 안, 투수·타자 따로): 언론·스카우트·AI 지명 평가가 같은 값을 쓴다(공개 기록이라 구단마다 다르지 않다) */
+/* 지명 평가·언론이 보는 아마 기록 합계: 졸업 학년을 두 배로 친다(마지막 해 기록을 더 무겁게 보는 것은 모든 구단·언론이 같다). 학년별 기록이 없으면 통산 */
+const AM_SR_W=2;
+function amAmW(p){ const h=p&&p.am; if(!h||!p.amSim||!(p.amY||[]).length)return h; const sg=p.college?4:3, t={}; for(const k in h)t[k]=0; let any=0;
+  for(const r of p.amY){ if(r.syn)continue; const w=r.gr===sg?AM_SR_W:1; for(const k in t)t[k]+=(r[k]||0)*w; any=1; } return any?t:h; }
 function amZSet(L){ L=L.filter(p=>p&&p.am); for(const P of [true,false]){ const A=L.filter(p=>!!p.isP===P); const v=A.map(amRaw); const m=v.length?avg(v):0; const sd=v.length?Math.sqrt(avg(v.map(x=>(x-m)**2)))||1:1; A.forEach((p,i)=>{ p.amZ=+clamp((v[i]-m)/sd,-3,3).toFixed(2); }); } }
 const AM_DRAFT_W=1.5; /* 아마 성적 1표준편차 = 잠재력 1.5점. 툴(잠재력) 평가가 중심이고 기록은 보조(±2.5σ까지) */
 function amDraftAdj(p){ return p&&p.amZ!=null?clamp(p.amZ,-2.5,2.5)*AM_DRAFT_W:0; }
@@ -44,7 +48,7 @@ function amClass(cls){ const L=cls.map(id=>G.players[id]).filter(Boolean); const
   amZSet(L); G.amV=2; }
 /* 언론 평가: 눈에 보이는 성적과 체격·구속만으로 매긴 순위.
    투수와 타자는 척도가 달라 각자 안에서 표준점수로 바꾼 뒤 합친다(그래야 언론 상위권에 투수와 타자가 섞인다) */
-function pressRank(cls){ const raw=cls.map(id=>G.players[id]).filter(p=>p&&p.am).map(p=>{ const h=p.am; let s;
+function pressRank(cls){ const raw=cls.map(id=>G.players[id]).filter(p=>p&&p.am).map(p=>{ const h=amAmW(p); let s;
     if(p.isP){ const r=pRate(h); s=-r.era*6+(h.so/Math.max(1,h.outs/3))*9*1.4+((p.amVelo||veloOf(p))-143)*1.2; }
     else { const r=bRate(h); s=r.ops*55+h.hr*.8+h.sb*.15; }
     return {p,s:s+(p.ht-180)*.15}; });
