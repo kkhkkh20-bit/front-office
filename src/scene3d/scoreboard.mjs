@@ -1,8 +1,16 @@
 import {CanvasTexture,SRGBColorSpace} from 'three';
 // Match the physical board's aspect, and draw only the snapshot supplied by the replay UI.
-export function createScoreboard(){const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=625;const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;texture.flipY=false;let data={};
+/* 타자 소개(사용자 11-16, OOTP 전광판 참고): 새 타자가 나오면 몇 초 동안 사진·등번호·포지션·시즌 성적·오늘 기록을 크게 보여 준다 */
+const faces=new Map();
+function face(src,redraw){if(!src)return null;let f=faces.get(src);if(!f){const img=new Image();f={ok:false,bmp:null};img.onload=()=>{(typeof createImageBitmap==='function'?createImageBitmap(img):Promise.reject()).then(b=>{f.bmp=b;},()=>{f.bmp=img;}).finally(()=>{f.ok=true;redraw();});};img.src=src;faces.set(src,f);}return f.ok?f.bmp:null;} /* 다 풀린 그림(ImageBitmap)으로 그린다: 막 읽힌 <img>를 바로 그리면 빈 칸으로 올라가는 일이 있었다 */
+export function createScoreboard(onRedraw){const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=625;const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;texture.flipY=false;let data={};
  function update(next){data={...data,...next};const x=canvas.getContext('2d'),d=data;x.fillStyle='#04121a';x.fillRect(0,0,1600,625);
  const text=(s,px,py,size=38,color='#e3eced',align='left')=>{x.fillStyle=color;x.font=`700 ${size}px "Noto Sans KR",sans-serif`;x.textAlign=align;x.fillText(String(s??''),px,py);};
+ if(d.intro){const it=d.intro,col=it.color||'#123947';x.fillStyle=col;x.fillRect(0,0,1600,80);text(d.inning||'',1550,56,38,'#fff','right');text(it.team||'',45,56,37,'#fff');
+  const img=face(it.img,()=>{update({});onRedraw?.();});x.fillStyle='#0b222d';x.fillRect(40,110,430,470);if(img){const r=Math.min(410/img.width,450/img.height),w=img.width*r,h=img.height*r;x.drawImage(img,40+(430-w)/2,110+(470-h),w,h);}else text((it.name||'?').slice(0,1),255,400,200,'#3d5b66','center');
+  if(it.no!=null)text('#'+it.no,520,215,96,'#fff09c');text(it.name||'',520,330,96,'#ffffff');text([it.pos,it.hand].filter(Boolean).join(' · '),525,400,40,'#9fc0cb');
+  x.fillStyle='#23424d';x.fillRect(520,432,1040,2);text(it.season||'',525,500,44,'#e8f1f3');text(it.today||'',525,565,36,'#f0d890');
+  texture.needsUpdate=true;return data;}
  x.fillStyle='#123947';x.fillRect(0,0,1600,80);text(d.home?d.home+' 홈 경기  ·  LIVE':'LIVE BASEBALL',45,56,37,'#dcc58d'); /* 게임 이름 대신 홈 구단(예전 'FRONT OFFICE'는 게임 제목과 달랐다) */text(d.inning||'경기 준비',1550,56,38,'#fff','right');
  const innings=Math.max(9,Math.min(12,Math.floor((d.half??0)/2)+1)),cell=Math.min(80,850/Math.max(9,Math.floor((d.half??0)/2)+1)),start=405;
  text('TEAM',45,130,32,'#89a6b1');for(let i=0;i<innings;i++)text(i+1,start+i*cell,130,30,'#89a6b1','center');['R','H','E'].forEach((s,i)=>text(s,1310+i*100,130,34,'#d0b978','center'));

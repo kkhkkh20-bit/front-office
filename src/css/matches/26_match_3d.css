@@ -26,6 +26,7 @@
 .cs-3d-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
 .cs-nameplate{position:absolute;left:0;top:0;display:grid;justify-items:center;gap:1px;min-width:70px;padding:3px 7px;background:#081724bf;border:1px solid #b6d2db55;border-radius:4px;pointer-events:auto;color:#fff;text-shadow:0 1px 3px #000;line-height:1.15;white-space:nowrap;will-change:transform}
 .cs-nameplate[hidden]{display:none}.cs-nameplate b{font-size:11px;font-weight:700}.cs-nameplate span{font-size:var(--ui-tiny);color:#b5d3d7}.cs-nameplate.active{background:#4b3d12e8;border-color:#f2cf73;box-shadow:0 0 13px #efcb5755;z-index:3}.cs-nameplate.active span{color:#ffe199;font-weight:700}
+/* 수비 배치 보기 카드: 번호·이름 / 포지션·수비·어깨 */.cs-nameplate.card{min-width:112px;padding:4px 9px;background:#0b2230e6;border-color:#d8c48a88}.cs-nameplate.card b{font-size:12px}.cs-nameplate.card span{font-size:10.5px;color:#e6d39b}
 @media(max-width:600px){.cs-nameplate{padding:2px 4px;min-width:55px}.cs-nameplate b{font-size:var(--ui-micro)}.cs-nameplate span{font-size:8px}}
 .cs-3d[data-state="pending"] canvas,.cs-3d[data-state="loading"] canvas,.cs-3d[data-state="fallback"] canvas{visibility:hidden}
 .cs-3d[data-state="pending"] .cs-3d-labels,.cs-3d[data-state="loading"] .cs-3d-labels,.cs-3d[data-state="fallback"] .cs-3d-labels{display:none}

@@ -179,7 +179,20 @@ function cBall(from,to,ms,arc,gb){ if(typeof Match3D!=='undefined'&&Match3D.flig
 function cBallHide(){ if(typeof Match3D!=='undefined')Match3D.hideBall(); const b=document.getElementById('cs-ball'); if(b)b.getAnimations().forEach(a=>a.cancel()); }
 const cPolar=(th,d)=>[50+d*Math.sin(th*Math.PI/180),89-d*Math.cos(th*Math.PI/180)];
 const cDist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+/* 전광판 타자 소개(사용자 11-16, OOTP 전광판 참고): 새 타석이 시작되면 4초 남짓 사진·등번호·포지션·시즌 성적·오늘 기록 */
+function cIntro(g,k){ try{ const x=g.pbp[k], p=G.players[x[1]]; if(!p)return null; const side=x[0]%2?'h':'a', tid=side==='h'?g.home:g.away, row=(castLineup(g,side,k)||[]).find(r=>r.id===x[1]);
+  const h=typeof curLine==='function'?curLine(p):null, r=h&&h.ab?bRate(h):null, season=h?`${h.y}${h.lvl==='퓨처스'?' 2군':''} 타율 ${r?fmt3(r.avg):'-'} · ${h.hr||0}홈런 · ${h.rbi||0}타점`:'시즌 기록 없음';
+  const today=cToday(g,k,x[1],false);
+  return {name:p.name,no:typeof jno==='function'?jno(p):null,pos:row&&POSK[row.pos]||'',hand:p.bt==='좌'?'좌타':p.bt==='양'?'양타':'우타',season,today:!today?'오늘 첫 타석':/^오늘/.test(today)?today:'오늘 '+today,team:tshort(tid),color:cTeamCol(tid),img:p.img||(typeof faceSVG==='function'?faceSVG(p):null)}; }catch(e){ return null; } }
+/* 수비 배치 보기(사용자 11-16, OOTP 참고): 이닝이 바뀔 때 2.6초 동안 위에서 내려다보며 수비수마다 번호·이름·포지션·수비·어깨. 능력치는 선수 상세 화면과 같은 값(스카우트 평가) */
+function cDefCards(g,half,k){ const cards={}; const fs=[...cFielders(g,half,k)]; const pid=cPit(g,k); if(pid)fs.push({id:pid,pos:'P'});
+  for(const f of fs){ const p=G.players[f.id]; if(!p)continue; let line=f.pos==='P'?(p.th==='좌'?'좌완 투수':'우완 투수'):POSK[f.pos]||f.pos;
+    if(f.pos!=='P'){ try{ const grp=(detailOf(p,scoutReport(p)).groups||[]).find(x=>x[0]==='수비'); if(grp){ const v=n=>{ const it=grp[1].find(r=>n.test(r[0])); return it?it[1]:null; }, d=v(/수비 범위/), a=v(/송구/); const sh=n=>typeof dv==='function'?dv(Math.round(n)):Math.round(n); line+=(d!=null?` · 수비 ${sh(d)}`:'')+(a!=null?` · 어깨 ${sh(a)}`:''); /* 다른 화면과 같은 표시 척도(20~80을 화면 설정에 맞춰) */ } }catch(e){} }
+    const no=typeof jno==='function'?jno(p):null; cards['d'+f.id]={title:(no!=null?'#'+no+' ':'')+p.name,line}; }
+  return cards; }
+async function cDefense(g,k,half){ if(!c3DActive()||typeof Match3D.defenseView!=='function')return; const x=g.pbp[k]; if(!x||typeof x[1]!=='number')return; if(!Match3D.defenseView(cDefCards(g,half,k),2600/cSpd()))return; try{ await cSleep(2600); }finally{ Match3D.endDefenseView(); } }
 async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; const x=L[k]; const b=cBefore(g,k); const st=document.getElementById('cs-stage'); if(!st)return;
+  if(typeof x[1]==='number'&&c3DActive()&&!(c.pitch?.k===k&&c.pitch.shown)&&typeof Match3D.scoreboard==='function'){ const it=cIntro(g,k); if(it){ Match3D.scoreboard({intro:it}); setTimeout(()=>{ if(UI.cast&&UI.cast.k===k)Match3D.scoreboard({intro:null}); },4200/cSpd()); } }
   const card=key=>st.querySelector(`.cc[data-k="${key}"]`);if(c.incident?.k===k&&c.incident.pending){const pending=(g.incidents||[]).find(e=>e.k===k&&e.pitch===c.incident.index);if(pending)await c3DBenchClear(g,k,pending);}
   if(x[1]==='PC'){ const top=x[0]%2===0; const dug=CDUG[top?'h':'a']; const old=cPit(g,k); const oc=old&&card('d'+old);
     cCap(`투수 교체 · ${(G.players[x[2]]||{}).name||''}`); if(oc){ cPlace(oc,dug,700); oc.classList.add('gone'); }
@@ -281,7 +294,7 @@ async function castLoop(){ const host=document.getElementById('cs-3d');if(CT.run
   try{ while(UI.cast&&UI.cast.play&&my===CT.tok){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; if(c.k>=L.length){ c.play=false; cDraw(c.k,300); sndStop('amb',1.8); sndStop('chant',.5); /* 경기 종료 효과음(사이렌·함성·오르간)은 뺐다(사용자 11-08) */ break; }
       const x=L[c.k]; const md=c.mode||'all'; if(md!=='all'&&!cKeep(g,c.k,md)){ c.k++; continue; }
       cDraw(c.k,md==='all'?300:0); await cSleep(md==='all'?260:200);
-      if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); }
+      if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); if(md==='all')await cDefense(g,c.k,x[0]); }
       await cAnim(c.k); c.k++; } }
   catch(e){if(e!=='stop')console.error('중계 재생 오류',e);} finally{ if(my===CT.tok)CT.run=false; } }
 function castMount(){ const c=UI.cast; if(!c)return; CT.tok++; CT.run=false; setTimeout(()=>castStart2D(c),12000); requestAnimationFrame(async()=>{if(UI.cast!==c)return; cDraw(c.k,0); const host=document.getElementById('cs-3d'); const ok=host&&typeof Match3D!=='undefined'&&await Match3D.mount(host,{day:[0,6].includes(dobj(G.games[c.g].day).w)}); if(UI.cast!==c||!host?.isConnected)return; cPrepDone(ok); cDraw(c.k,0); if(c.play&&!CT.run){castResumePitch();castLoop();} }); }
