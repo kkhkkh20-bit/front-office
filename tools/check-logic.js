@@ -938,7 +938,7 @@ T('[아마 리그] 실제 경기 기록이 지명 평가에 우리·AI 구단 �
   const r=p.amY.find(x=>x.y===y); r.h+=12; r.hr+=4; amTotFix(p); amZSet(C); const a1=aiDraftScore(t,p,need), u1=draftVal(rp,p); ok(a1>a0&&Math.abs((a1-a0)-(u1-u0))<1e-9,'기록 변화가 AI·우리 평가에 다르게 들어감 '+(a1-a0)+'/'+(u1-u0));
   const cls=G.draftClass.slice(); pressRank(cls); ok(C.every(q=>q.press>0),'언론 순위 없음'); });
 T('[아마 리그] 저학년은 졸업 학년에 같은 선수(번호·기록)로 드래프트 후보가 된다',()=>{ DEMO.on=false; newGame(6); const nx=Object.values(G.amU.L).filter(e=>e.gy===G.year+1); ok(nx.length>=DRAFT_POOL*.9,'다음 해 졸업 학년 '+nx.length); const e=nx.find(x=>!x.c&&x.y.length); const id=e.id, rows=JSON.stringify(e.y);
-  { const H=G.draftClass.map(i=>G.players[i]).filter(p=>p&&!p.college&&p.amSim); ok(H.filter(p=>p.amY.length>=2&&p.amY[0].gr===1).length>=H.length*.6,'올해 고교 후보에 고1 기록이 없음 '+H.filter(p=>p.amY.length>=2&&p.amY[0].gr===1).length+'/'+H.length); }
+  { const H=G.draftClass.map(i=>G.players[i]).filter(p=>p&&!p.college&&p.amSim); ok(H.filter(p=>p.amY.length>=2&&p.amY[0].gr===1).length>=H.length*.45 /* 11-17부터 1학년은 주로 벤치라 고1 때 한 경기도 안 나온 후보가 많다(측정 약 40%) */,'올해 고교 후보에 고1 기록이 없음 '+H.filter(p=>p.amY.length>=2&&p.amY[0].gr===1).length+'/'+H.length); }
   G.year++; for(const i of G.draftClass){ const p=G.players[i]; if(p&&p.prospect)dropP(i); } makeDraftClass(); const p=G.players[id]; ok(p&&p.prospect&&G.draftClass.includes(id),'졸업 학년이 후보가 되지 않음'); ok(p.school===e.s&&p.name===e.n,'학교·이름이 바뀜');
   ok(JSON.stringify(p.amY.map(r=>[r.y,r.gr,r.pa||r.outs]))===JSON.stringify(JSON.parse(rows).map(r=>[r[0],r[1],r[3]||r[4]])),'학년별 기록이 이어지지 않음'); ok(!G.amU.L[id],'저학년 명단에 남음'); ok(Object.values(G.amU.L).some(x=>x.gy===G.year+2&&amGrade(x,G.year)===1),'새 1학년이 입학하지 않음'); });
 T('[아마 리그] 저장·불러오기를 해도 시즌이 같은 결과로 이어진다',()=>{ DEMO.on=false; newGame(6); const y=G.year, g0=JSON.stringify(G); const run=reload=>{ G=JSON.parse(g0); for(let d=dnum(y,3,1);d<=dnum(y,6,30);d++){ amDaily(d); if(reload&&d===dnum(y,4,28))G=JSON.parse(JSON.stringify(G)); } return JSON.stringify([G.amL.rec,G.amL.tour.t0&&G.amL.tour.t0.ch,G.amL.tour.t2&&G.amL.tour.t2.ch]); };
@@ -981,10 +981,10 @@ T('[고교 리그] 저학년 평가는 등급·범위만 주고, 졸업까지 �
   const T0=amTier({v:50,sd:9}); ok(['t','lo','hi','w'].every(k=>typeof T0[k]==='string'&&!/\\d/.test(T0[k])),'평가에 숫자가 섞임 '+JSON.stringify(T0)); ok(T0.lo!==T0.hi,'넓은 오차인데 범위가 한 등급');
   const L=amSuggest(G.year-1,null,5,ai), L2=amSuggest(G.year-1,null,5,ai); ok(L.length===5&&JSON.stringify(L.map(x=>x.id))===JSON.stringify(L2.map(x=>x.id)),'AI 추천이 같은 입력에 다름'); });
 T('[고교 리그] 3학년 부진: 잠재력은 그대로인데 졸업 학년 기록이 나쁘면 AI 지명 순위가 밀리고, 스카우트 귀띔은 충분히 본 구단만 받는다',()=>{ DEMO.on=false; newGame(6); const y=G.year;
-  const C=G.draftClass.map(id=>G.players[id]).filter(q=>q&&q.prospect&&!q.ovsRet); const B=C.filter(q=>!q.isP&&!q.college&&q.amSim&&(q.amY||[]).some(r=>r.gr===2&&r.pa>=40)).sort((a,b)=>ovr(b)-ovr(a)); const p=B[Math.floor(B.length/4)]; ok(p&&B.length>=8,'준비 실패: 2학년 기록이 있는 고교 타자 없음'); /* 상위권(경쟁자가 많은 자리) */
+  const C=G.draftClass.map(id=>G.players[id]).filter(q=>q&&q.prospect&&!q.ovsRet); const B=C.filter(q=>!q.isP&&!q.college&&q.amSim&&(q.amY||[]).some(r=>r.gr===2&&r.pa>=40&&bRate(r).ops>=.6)).sort((a,b)=>ovr(b)-ovr(a)); const p=B[Math.floor(B.length/4)]; ok(p&&B.length>=8,'준비 실패: 2학년 기록이 있는 고교 타자 없음'); /* 상위권(경쟁자가 많은 자리) */
   const r2=p.amY.find(r=>r.gr===2); p.amY=p.amY.filter(r=>r.y!==y); const sr=Object.assign({},r2,{y,gr:3}); p.amY.push(sr); amTotFix(p); amZSet(C); ok(!amSlump(p),'같은 기록인데 부진으로 봄');
   const t=G.teams.find(x=>x.id!==G.user).id, need=draftNeed(t); const rank=()=>C.map(q=>({id:q.id,s:aiDraftScore(t,q,need)})).sort((a,b)=>b.s-a.s).findIndex(x=>x.id===p.id)+1; const pot0=p.pot, a0=rank(), z0=p.amZ;
-  Object.assign(sr,{h:Math.round(sr.ab*.18),d:0,tr:0,hr:0,bb:Math.round(sr.bb*.4)}); amTotFix(p); amZSet(C); const a1=rank();
+  Object.assign(sr,{h:Math.round(sr.ab*.15),d:0,tr:0,hr:0,bb:0,hbp:0}); amTotFix(p); amZSet(C); const a1=rank();
   ok(amSlump(p),'졸업 학년 기록이 크게 떨어졌는데 부진 표시가 없음'); ok(p.pot===pot0,'잠재력이 바뀜'); ok(p.amZ<z0-.2&&a1>a0,'AI 지명 순위가 밀리지 않음 '+a0+'→'+a1+' z '+z0+'→'+p.amZ);
   const potRank=C.slice().sort((a,b)=>b.pot-a.pot).findIndex(q=>q.id===p.id)+1; ok(a1>potRank,'부진한 선수가 잠재력 순위보다 앞에 있음 '+a1+'/'+potRank);
   { const u=G.user; G.user=t; const v=draftVal(scoutReport(p),p); G.user=u; ok(typeof v==='number','평가 실패'); } /* AI·우리 모두 같은 공개 기록 보정(amDraftAdj) */

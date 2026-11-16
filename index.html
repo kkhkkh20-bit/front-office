@@ -14686,11 +14686,12 @@ function amScore(p){ const x=amRaw(p); if(x==null)return -99; const rows=(G.draf
    - 시즌 환경: 해마다 공·날씨·스트라이크 존 경향(env)이 조금 달라 투고타저·타고투저가 자연스럽게 나온다. 시즌 뒤 요약을 남긴다(G.amH).
    - 저장: 선수별 시즌 기록·순위·대진표·학교별 최근 결과만. 박스스코어는 남기지 않는다 */
 const AM_LIM=105, AM_REST=[[76,4],[61,3],[46,2],[31,1]];
-const AMC={hs:{m:12,s:2.35,fm:10,fmp:-3.5,fsd:7,fg:4,bab:.045,bbm:1.05,hrm:.45,grb:2,yg:10},col:{m:20,s:2.2,fm:16,fsd:7,fg:2.8,bab:.014,bbm:1.15,hrm:.5,grb:1.5,yg:3}};
+const AMC={hs:{m:12,s:2.5,fm:10,fsd:7,fg:4,bab:.04,bbm:.9,hrm:.45,grb:2,yg:7,ygp:1.7},col:{m:20,s:2.2,fm:16,fsd:7,fg:2.8,bab:.014,bbm:1.15,hrm:.5,grb:1.5,yg:3}};
 /* m·s: 아마 척도(능력 m이 1군 평균 50처럼 보이고, 차이는 s배로 벌어진다: 아마 무대는 선수 간 격차가 크다). fm·fsd: 일반 부원 능력(학교 전력 55 기준), fg: 학년당 차이.
    bab·bbm: 아마 수준 보정(수비가 거칠어 인플레이 안타가 많고, 제구가 흔들려 볼넷이 많다). 3개 세계로 맞춘 값(측정 11-15: 졸업 학년 잠재력 상위 고교 타자 타율 중앙값 .39, 투수 ERA 1.3)
-   fmp: 일반 부원 투수 가산(학교마다 쓸 만한 투수가 적다). yg: 저학년 경기 경험(졸업 학년보다 한 학년 아래마다 그해 아마 척도 감소, 능력·잠재력에는 안 들어감).
-   11-17 조정(세계 6개 측정): 일반 부원 수준을 올리고(fm 2→10) 학년 차(fg·yg)를 키워 학년이 높을수록 평균 기록이 좋게, 졸업 학년 상위 10명이 0점대 ERA·OPS 1.6을 흔히 넘지 않게 했다. 값은 패치 노트·보고의 표 참고 */
+   fmp: 일반 부원 투수 가산(기본 0). yg·ygp: 저학년 경기 경험(졸업 학년보다 n학년 아래면 그해 아마 척도 yg×n^ygp 감소, 능력·잠재력에는 안 들어감. 1학년이 2학년보다 뚜렷이 낮게).
+   11-17 조정(세계 6개 측정): 일반 부원 수준을 올리고(fm 2→10) 학년 차(fg·yg)를 키워 학년이 높을수록 평균 기록이 좋게, 졸업 학년 상위 10명이 0점대 ERA·OPS 1.6을 흔히 넘지 않게 했다.
+   볼넷을 줄이고(bbm 1.25→.9) 인플레이 안타를 늘려(bab .022→.04) 리그 ERA는 4점대 초중반(1학년 5점대 중반 이하), 상위 졸업 학년 타자는 타율 .350을 넘는다 */
 /* hrm: 나무 배트 홈런 배수. 가정: 국내 고교·대학 야구는 나무 배트를 쓰고(고교는 2004년 무렵 도입으로 알고 있으나 출처 확인 못 함) 홈런이 프로보다 훨씬 드물다.
    1군 확률식 그대로면 고교 타석당 홈런이 2.2~2.7%로 1군 수준이었고 규정 타석 상위 10명이 한 시즌(약 20경기) 9~12개를 쳤다(측정 11-17, 세계 6개).
    grb: 학년 기용 가산(학년 하나에 주전 선발 점수 몇 점). 1학년은 주로 벤치·대타, 주전은 2·3학년(1학년 타석 비중 22%→8%, 측정 11-17) */
@@ -14757,7 +14758,7 @@ function amSimR(p){ return p.amR||p.r; }
 function amUnit(src,kind,sch,lvl,y){ const isP=kind==='e'?!!src.P:!!src.isP; const r=kind==='e'?src.r:kind==='p'?amSimR(src):src.r;
   const C=AMC[lvl], E={}; for(const k in r)if(k!=='vit')E[k]=50+(r[k]-C.m)*C.s;
   if(kind==='p'&&src.amSl&&y===G.year)for(const k in E)E[k]-=AM_SL_D;
-  { const g0=kind==='e'?amGrade(src,y):kind==='p'?(src.college?4:3):src.gr, top=lvl==='hs'?3:4; if(g0<top&&C.yg)for(const k in E)E[k]-=(top-g0)*C.yg; } /* 저학년 경기 경험: 상급생과 붙으면 체격·경험이 덜 차 그해 경기력이 능력보다 조금 낮다(능력·잠재력 평가에는 들어가지 않는다) */
+  { const g0=kind==='e'?amGrade(src,y):kind==='p'?(src.college?4:3):src.gr, top=lvl==='hs'?3:4; if(g0<top&&C.yg)for(const k in E)E[k]-=Math.pow(top-g0,C.ygp||1)*C.yg; } /* 저학년 경기 경험: 상급생과 붙으면 체격·경험이 덜 차 그해 경기력이 능력보다 조금 낮다(능력·잠재력 평가에는 들어가지 않는다) */
   const sty=lvl==='hs'?amSty(sch):null; if(!isP){ if(sty==='데이터형')E.eye+=4; if(sty==='자율형'){ E.pow+=3; E.con-=1; } }
   const u={id:src.id,kind,src,sch,isP,E,gr:kind==='e'?amGrade(src,y):kind==='p'?(src.college?4:3):src.gr,out:(kind==='e'?src.ig===y:kind==='p'&&src.amIg===y)?dnum(y,6,1):0}; /* 부상 시즌: 6월부터 뛴다 */
   const st={id:u.id,r:E,isP}; if(isP){ u.q=amPitQ(st); u.sv=E.stf*.44+E.ctl*.44+E.sta*.12; u.lim=Math.min(AM_LIM,Math.round(60+E.sta*.45)); u.ft=30+E.sta*.55; }
