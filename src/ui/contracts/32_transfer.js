@@ -4,7 +4,7 @@ function foFullNote(){ if(G.unemp)return ''; const n=rosterN(G.user)-(foreignOf(
 /* ---------- 영입·계약 ---------- */
 function transferView(){
   const s=curSub('transfer');
-  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,free:freeWorkspace,tryout:tryView,contract:contractPage,draft:draftPage,kbo:kboView,moves:movesView}[s]||faCenter)();
+  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,free:freeWorkspace,tryout:tryView,contract:contractPage,agents:agentsView,draft:draftPage,kbo:kboView,moves:movesView}[s]||faCenter)();
 }
 /* 외국인 후보 조사 단계: 추정 범위와 함께 한 칸에 */
 function fsPill(p,rp,f){ f=f||fScout(p,rp); return `<span class="pill fsp ${f.cls}" title="${esc(f.d+' 근거: '+f.why.join(', '))}">${f.l}</span>`; } /* 예상·범위는 카드 왼쪽 숫자에, 여기는 조사 단계만 */

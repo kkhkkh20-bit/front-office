@@ -445,6 +445,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   stampOff(){ UI.stamp=null; render(); },
   faSel(v){ UI.faSel=UI.faSel===+v?null:+v; UI.offer=null; render(); if(UI.faSel){ const el=document.querySelector('.faroom'); if(el)el.scrollIntoView({block:'start'}); } },
   faPos(v){ UI.faPos=v; render(); },
+  agSel(v){ UI.agSel=+v; if(UI.tab==='transfer'&&curSub('transfer')==='agents'){ render(); return; } A.go('transfer:agents'); }, /* 에이전트 명단에서 담당자 고르기 */
   agPitchOk(v){ const r=agPitchOk(+v); note('FA',r); UI.faMsg={id:+v,t:r}; save(); render(); },
   faLL(v){ const r=agLastLook(+v); note('FA',r); UI.faMsg={id:+v,t:r}; save(); render(); },
   faMatch(v){ const id=+v; const o=agMatchOffer(id); UI.faSel=id; if(!o){ UI.faMsg={id,t:'맞출 다른 구단 제안이 없습니다.'}; A.go('transfer:fa'); return; } const r=faNegotiate(id,o); UI.faMsg={id,t:r.msg}; save(); A.go('transfer:fa'); },
