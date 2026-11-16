@@ -4523,6 +4523,13 @@ T('[창단 구단] 유예 중에는 단기 승률 지시가 없고, 신뢰가 �
   G.last={y:G.year-1,order:[...G.teams.filter(x=>x.id!==ai).map(x=>({tid:x.id})),{tid:ai}]}; const gid=g.id||g.name, mid=m.id;
   for(let i=0;i<25;i++){ gmTurnover(); mgrFireOff(); } ok((t.gm.id||t.gm.name)===gid,'AI 신생 구단 단장이 유예 중 경질'); ok(G.mgr[ai].id===mid,'AI 신생 구단 감독이 유예 중 경질');
   t.born=G.year-5; let fired=false; for(let i=0;i<25&&!fired;i++){ gmTurnover(); fired=(t.gm.id||t.gm.name)!==gid; } ok(fired,'유예가 끝난 꼴찌 구단 단장도 바뀌지 않음(점검이 무의미)'); });
+T('[창단 단장] 수락 뒤 11월 20일 전에는 취소할 수 있고, 취소하면 원래 구단에 남는다',()=>{ const go=cancel=>{ fresh(); G.rep=70; expPropose(); const E=G.exp; E.stage='approved'; E.ay=G.year; G.mail=[]; expGmOffer(); const e=G.evs.find(x=>x.k==='expGm'&&!x.done); ok(e,'준비 실패: 창단 단장 제안 없음');
+    ok(e.opts[0].fx.includes('11월 20일 부임 뒤에는 되돌릴 수 없습니다'),'수락 안내에 되돌릴 수 없는 시점 없음'); const old=G.user, rep0=G.rep; evPick(e.id,0); ok(E.userGm&&expGmCanCancel(),'수락했는데 취소할 수 없음');
+    const m=G.mail.find(x=>x.id===e.mid); ok(m&&(m.acts||[]).some(a=>a.a==='expGmCancel'),'소식함 결과에 수락 취소 버튼 없음');
+    if(cancel){ const r=expGmCancel(); ok(!E.userGm&&!expGmCanCancel()&&r.includes('취소'),'취소 처리 안 됨: '+r); ok(G.rep===rep0-1,'모기업 관계 비용(명성 -1) 없음 '+G.rep); ok(G.mail.some(x=>(x.subj||'').includes('수락 취소 확인')),'취소 확인 메일 없음'); }
+    const tid=expDraft(); return {old,tid,E}; };
+  let {old,tid,E}=go(true); ok(G.user===old&&!G.unemp,'취소했는데 신생 구단으로 옮김'); ok(G.myC&&G.myC.tid===old,'취소했는데 단장 계약이 바뀜'); const g=gmOf(tid); ok(g&&g.name,'신생 구단에 AI 단장이 없음'); ok(E.stage==='done'&&!expGmCanCancel()&&expGmCancel().includes('되돌릴 수 없습니다'),'부임 뒤에도 취소 가능');
+  ({old,tid}=go(false)); ok(G.user===tid&&tid!==old,'취소하지 않았는데 신생 구단으로 옮기지 않음'); ok(!expGmCanCancel(),'부임 뒤에도 취소 가능'); });
 T('[창단 구단] 강원(원주) 연고 신생 구단 선수도 수도권 프로 담당 스카우트가 평가한다',()=>{ const tid=expMake(false,'원주'); ok(team(tid).region==='강원','준비 실패: 강원 연고 아님');
   ok(teamScoutReg(tid)==='수도권','스카우트 지역 '+teamScoutReg(tid)); for(const s of G.scouts)if(s.role==='pro')s.region='영남';
   const sc=G.scouts.find(s=>s.role==='pro'); ok(sc,'준비 실패: 프로 스카우트 없음'); const ps=playersOf(tid).filter(p=>!p.foreign);

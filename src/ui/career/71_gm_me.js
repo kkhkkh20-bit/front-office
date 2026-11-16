@@ -39,8 +39,9 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
   const quit=G.unemp||G.gameOver||!C||C.tid==null?'':csec('사임',`<p class="small">스스로 물러나면 야인이 됩니다. 시간은 계속 흐르고, 다른 구단이 단장을 바꿀 때 명성을 보고 제의가 옵니다.</p>
     <ul class="small muted"><li>남은 계약 ${left}년 치 연봉은 받지 않습니다. 경질과 다른 점입니다.</li><li>${pen?`단장 명성이 ${pen>=4?'크게 ':''}떨어집니다${mid?'. 시즌 도중 사임이라 타격이 더 큽니다':''}`:'단장 명성은 그대로입니다'}.</li><li>구단은 새 단장이 맡습니다. 진행 중인 협상·약속은 넘어가지 않습니다.</li></ul>
     ${UI.rsAsk?`<div class="note bad">${esc(tname(G.user))} 단장직에서 물러납니다. 되돌릴 수 없습니다.</div><div class="row"><button class="btn danger" data-a="resignGo">사임합니다</button><button class="btn" data-a="resignAsk">취소</button></div>`:'<button class="btn" data-a="resignAsk">단장직 사임</button>'}`);
+  const expC=expGmCanCancel()?csec('창단 단장 내정',`<p class="small">${esc(tfull(G.exp))} 창단 단장으로 가기로 했습니다. 11월 20일 특별지명 때 부임${G.unemp?'합니다':`하고, ${esc(tname(G.user))}을(를) 떠납니다`}.</p><p class="small muted">11월 20일 부임 뒤에는 되돌릴 수 없습니다.</p><button class="btn" data-a="expGmCancel">창단 단장 수락 취소</button>`):''; /* 카페 11-17: 잘못 누른 수락을 부임 전에 되돌린다 */
   const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small" data-a="go" data-v="club:build">보기</button></div></section>`;
-  return head+tb+personalLifeView()+card+stints+lgMeCard()+gmSuccView()+quit; }
+  return head+expC+tb+personalLifeView()+card+stints+lgMeCard()+gmSuccView()+quit; }
 /* 단장 세대 교체와 단장 계보(100년 플레이) */
 /* 전임 단장 상세: 시즌별 성적과 거친 구단(계보에 남긴 기록). 예전 저장의 계보는 요약만 있다 */
 function gmLineDetail(x){ const S=(x.seasL||[]).filter(r=>!r.part).slice().sort((a,b)=>a.y-b.y), T=(x.stintL||[]);
