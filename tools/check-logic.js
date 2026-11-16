@@ -633,7 +633,7 @@ T('[감사] 육성 목표는 이적 전 다른 구단 기록을 세지 않고, �
 T('[감사] 결산을 사이에 둔 월간 재정 보고는 두 시즌 예산을 비교하지 않는다',()=>{ fresh(); G.finSnap=finSnapNow(); const n0=(G.finLog||[]).length; G.last=Object.assign({},G.last||{},{y:G.year}); finMonth(10);
   ok((G.finLog||[]).length===n0,'결산 전 예산과 결산 뒤(다음 시즌) 예산을 한 달 변화로 비교함'); });
 
-T('[감사] 결산이 11월 2일보다 늦어도 FA 공시가 열린다',()=>{ fresh(); simTo(()=>G.rolled===G.year); ok(G.day<KD(11,2),'준비 실패: 결산이 이미 11월 2일 뒤 '+dmd(G.day)); ok(G.fa&&!G.fa.open,'준비 실패: 이미 공시됨');
+T('[감사] 결산이 11월 2일보다 늦어도 FA 공시가 열린다',()=>{ fresh(); G.noRain=true; /* 비 순연이 겹치면 결산 자체가 11월 2일 뒤로 밀려 준비가 깨진다(93_rain). 이 시나리오는 결산 뒤 날짜를 직접 넘긴다 */ simTo(()=>G.rolled===G.year); ok(G.day<KD(11,2),'준비 실패: 결산이 이미 11월 2일 뒤 '+dmd(G.day)); ok(G.fa&&!G.fa.open,'준비 실패: 이미 공시됨');
   G.day=KD(11,3); simTo(()=>G.day>=KD(11,6)); ok(G.fa.open||G.fa.closed||G.faAnnY===G.year,'11월 2일을 넘긴 뒤 FA 공시가 열리지 않음'); });
 
 T('[감사] 희생플라이는 팀 기록 합계에 들어가고, 안타 없이 희생플라이만 친 경기는 연속 경기 안타를 끊는다',()=>{ fresh(); const y=G.year; const p=domestic(G.user).find(q=>!q.isP); p.hist.push(Object.assign({},ZB,{y,t:G.user,lvl:'1군',g:1,pa:4,ab:3,h:1,sf:1}));
@@ -3516,7 +3516,7 @@ T('[피드백 11-09f] 관찰 명단 후보만 AI 계약 전에 사흘 끼어들 
   const r=foOffer(q.id,foCap(q),0); ok(r.ok&&q.team===G.user,'끼어든 제안이 안 됨: '+r.msg);
   G.unemp={y:G.year}; const q3=newForeign('용병',{isP:true,market:true}); G.fmarket.push(q3.id); G.fwatch.push({id:q3.id,since:G.day,k:0}); const c3=foCutIn(t.id,q3); delete G.unemp; ok(!c3,'야인인데 기한'); });
 T('[피드백 11-09f] 끼어들기 기한이 지나도록 제안하지 않으면 경쟁 구단이 계약하고, 제안하지 않았다고 알린다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); for(const p of foreignOf(t.id))dropP(p.id); t.cash=5000;
-  const q=newForeign('용병',{isP:true,market:true}); for(const k in q.r)q.r[k]=75; roundR(q); q.ask=70*USD; G.fmarket.push(q.id); G.fwatch=[]; fwatchToggle(q.id);
+  const q=newForeign('용병',{isP:true,market:true}); for(const k in q.r)q.r[k]=75; roundR(q); delete q.prev; delete q.prev2; /* 지난 리그 기록은 올리기 전 능력으로 만든 것이라 지운다(AI도 기록을 보고 판단: fCandEst) */ q.ask=70*USD; G.fmarket.push(q.id); G.fwatch=[]; fwatchToggle(q.id);
   ok(foRivals(q).some(r=>r.tid===t.id),'준비 실패: 경쟁 구단 아님'); ok(foCutIn(t.id,q),'기한이 안 생김'); G.day+=4; foDaily(); ok(q.team!=null&&q.team!==G.user,'기한 뒤 계약 안 됨: '+q.team);
   ok(G.mail.some(m=>m.body.includes(q.name)&&m.body.includes('우리는 제안하지 않았습니다')),'제안 안 함 안내 없음'); });
 T('[피드백 11-09i] 2년차부터도 1월 지원 목표에 단장 재량 여유분이 있어 예산 여유가 1억 안팎(한도의 5%)에 묶이지 않는다(구단주 성향 무관)',()=>{ fresh(); const t=team(G.user); G.startY=G.year-1; delete G.goals; for(const ow of ['pr','profit','win']){ t.owner=ow; t.trust=75; planSup(); const b=budget(), R=foundReserve(); ok(b.goalFrac>=1||b.roomGoal>=R.cush-b.cap*.006,ow+' 예산 여유 '+b.roomGoal+' < 여유분 '+R.cush+' (한도 '+b.cap+', 목표율 '+b.goalFrac+')'); ok(R.cush>=1500,'여유분 15억 미만'); } });
@@ -3774,7 +3774,7 @@ T('[검수 11-09zl] AI 교체: 내보내면 줄어든 총액 한도로 대체 �
   ok(fReplLeft(t.id)>0,'준비 실패: 교체권'); for(let i=0;i<12;i++)aiForeignReview(t.id); ok(p.team===t.id,'대체 선수를 못 구하는데 부상 선수만 방출'); ok(foreignOf(t.id).filter(x=>x.foreign==='용병').length===3,'외국인 자리가 줄어듦'); });
 T('[검수 11-09zl] 관찰 후보 끼어들기: 교체를 추진한 AI 구단이 경쟁자로 남아 기한 뒤 실제로 바꾸고, 시즌 막판 기한은 마감일 안에 처리된다',()=>{ fresh(); G.day=G.cal.open+40; const t=G.teams.find(x=>x.id!==G.user); for(const p of foreignOf(t.id).filter(x=>x.foreign==='용병'))dropP(p.id);
   const mk=isP=>{ const p=newForeign('용병',{isP,team:t.id}); p.sal=300; p.rsy=0; delete p.opt; return p; }; const p=mk(true); mk(true); mk(false); p.injOut=400;
-  const q=newForeign('용병',{isP:true,market:true}); for(const k in q.r)q.r[k]=75; roundR(q); q.ask=50*USD; G.fmarket.push(q.id); G.fwatch=[]; fwatchToggle(q.id);
+  const q=newForeign('용병',{isP:true,market:true}); for(const k in q.r)q.r[k]=75; roundR(q); delete q.prev; delete q.prev2; /* 지난 리그 기록은 올리기 전 능력으로 만든 것이라 지운다(AI도 기록을 보고 판단: fCandEst) */ q.ask=50*USD; G.fmarket.push(q.id); G.fwatch=[]; fwatchToggle(q.id);
   for(let i=0;i<40&&q.fcut==null;i++)aiForeignReview(t.id); ok(q.fcut!=null&&q.fneg&&q.fneg.cut&&q.fneg.cut.tid===t.id,'준비 실패: 끼어들기 없음'); ok(foRivals(q).some(r=>r.tid===t.id),'영입을 추진한 구단이 경쟁자에서 빠짐');
   const up=q.fneg.cut.up; G.day=q.fneg.dl+1; aiForeignSign(t.id,q,'',foRivals(q).find(r=>r.tid===t.id)); ok(q.team===t.id,'기한 뒤 추진 구단이 계약하지 않음: '+q.team); ok(!(G.players[up]&&G.players[up].team===t.id),'바꾸려던 선수를 그대로 둠'); ok(foreignOf(t.id).filter(x=>x.foreign==='용병').length===3,'외국인 인원이 맞지 않음');
   fresh(); G.day=foreignDL()-2; ok(period()==='season'&&foreignOpen(),'준비 실패: 시즌 아님'); const t2=G.teams.find(x=>x.id!==G.user); for(const x of foreignOf(t2.id).filter(x=>x.foreign==='용병'))dropP(x.id);
@@ -3793,7 +3793,7 @@ T('[검수 11-09zl] 경쟁 중인 관찰 후보는 부상 대체(월 보수)로 
   const t=G.teams.find(x=>x.id!==G.user); for(const p of foreignOf(t.id).filter(x=>x.foreign==='용병'))dropP(p.id); const q=newForeign('용병',{isP:true,market:true}); for(const k in q.r)q.r[k]=75; roundR(q); q.ask=50*USD; G.fmarket.push(q.id);
   foNeg(q).dl=G.day+3; ok(foRivals(q).length>0,'준비 실패: 경쟁 구단 없음'); const e=signTempForeign(G.user,o.id,q.id); ok(e&&q.team==null,'경쟁 중인 후보를 대체로 바로 등록: '+e); });
 T('[검수 11-09zl] 경쟁 제시액: 감당 못 하는 구단은 빠지고 남은 구단 수로만 값이 오른다',()=>{ fresh(); G.fwatch=[]; const [t1,t2]=G.teams.filter(x=>x.id!==G.user); for(const t of [t1,t2])for(const p of foreignOf(t.id))dropP(p.id);
-  const q=newForeign('용병',{isP:true,market:true}); for(const k in q.r)q.r[k]=75; roundR(q); q.ask=60*USD; G.fmarket.push(q.id);
+  const q=newForeign('용병',{isP:true,market:true}); for(const k in q.r)q.r[k]=75; roundR(q); delete q.prev; delete q.prev2; /* 지난 리그 기록은 올리기 전 능력으로 만든 것이라 지운다(AI도 기록을 보고 판단: fCandEst) */ q.ask=60*USD; G.fmarket.push(q.id);
   const b1=newForeign('용병',{isP:false,team:t2.id}), b2=newForeign('용병',{isP:false,team:t2.id}); for(const b of [b1,b2]){ b.rsy=0; delete b.opt; } b1.sal=Math.round((F_TOTAL_CAP-q.ask-5)/2); b2.sal=F_TOTAL_CAP-q.ask-5-b1.sal;
   ok(foRivalTeams(q).includes(t2.id)&&foRivalTeams(q).includes(t1.id),'준비 실패: 두 구단이 관심 없음'); const R=foRivals(q); ok(!R.some(r=>r.tid===t2.id),'감당 못 하는 구단이 경쟁자로 남음'); ok(R.some(r=>r.tid===t1.id),'준비 실패');
   for(const r of R){ const want=Math.min(foCap(q),Math.round(q.ask*(1+.07*Math.max(0,R.length-1))*(1+.03*hn('fr'+r.tid,q.id)))); ok(r.g+r.i===want,tshort(r.tid)+' 제시 '+(r.g+r.i)+' ≠ '+want+'(탈락 구단이 값을 올림)'); } });
