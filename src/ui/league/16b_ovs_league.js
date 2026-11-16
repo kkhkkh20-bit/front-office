@@ -2,12 +2,25 @@
    경기를 돌리지 않는 가벼운 리그(35a_ovs_league). 화면은 읽기만 한다(만들기는 날짜 진행 때) */
 const ovsAwPills=(L,lg)=>(L&&L.aw||[]).map(k=>`<span class="pill warn">${esc(ovsAwNm(k,lg))}</span>`).join(' ');
 function ovlView(){ if(!G.ovl||OVL_LGS.some(l=>!G.ovl[l]))return csec('해외 리그','<p class="small muted">다음 날짜 진행 때 해외 리그 기록이 시작됩니다.</p>');
-  const t=inTabs('ovlv',[['alum','KBO 출신'],['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['etc','기타 리그'],['champ','역대 우승'],['moves','진출 기록']],'alum');
+  const t=inTabs('ovlv',[['alum','KBO 출신'],['top','주목 선수'],['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['etc','기타 리그'],['champ','역대 우승'],['moves','진출 기록']],'alum');
   if(t.cur==='MLB'||t.cur==='AAA'||t.cur==='NPB')return t.bar+ovlStandView(t.cur);
   if(t.cur==='etc'){ const e=inTabs('ovle',[['CPBL','CPBL(대만)'],['LMB','멕시코리그']],'CPBL'); return t.bar+e.bar+ovlStandView(e.cur)+ovlChampMini(e.cur); }
+  if(t.cur==='top')return t.bar+ovlTopView();
   if(t.cur==='champ')return t.bar+ovlChampView();
   if(t.cur==='moves')return t.bar+abroadView();
   return t.bar+ovlAlumView(); }
+/* 주목 선수: 게임이 기록을 쌓는 선수(KBO 출신 해외파·외국인 후보·관찰 명단)의 리그별 TOP 10. 공개 기록만 보인다(ovlTop) */
+function ovlTopView(){ const P=ovlTopPool(), K=[['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['etc','기타']], BB={}; for(const [k] of K)BB[k]=ovlTop(k,P);
+  const lt=inTabs('ovlt',K.map(([k,l])=>[k,`${l} ${BB[k].bat.length+BB[k].pit.length}`]),K.map(([k])=>k).sort((a,b)=>(BB[b].bat.length+BB[b].pit.length)-(BB[a].bat.length+BB[a].pit.length))[0]), B=BB[lt.cur];
+  const who=r=>{ if(!r.abr){ const p=G.players[r.id]; return {av:p,age:p.age}; } const a=(G.abroad||[]).find(z=>String(z.id)===String(r.id))||{}; let pj=null; try{ pj=a.pj?JSON.parse(a.pj):null; }catch(e){}
+    const av=G.players[a.id]||pj||{id:a.id,name:a.name,age:a.age,isP:a.isP,foreign:a.foreign}; return {av,age:a.foreign?a.age+(G.year-a.y):av.age}; };
+  const tg=r=>`<span class="pill${r.tag==='KBO 출신'?' acc':r.tag==='관찰 중'?' good':''}">${esc(r.tag)}</span>`;
+  const row=(r,i,cells)=>{ const w=who(r); return `<tr${rowTap(r.abr?'person':'player',r.abr?'abr:'+r.id:r.id,r.name)}><td>${i+1}</td><td class="ovt-n"><span class="pm-n">${avImg(Object.assign({},w.av,{name:r.name}))}<span><b>${esc(r.name)}</b><i>${w.age??'-'}세 · ${esc(r.pos)} · ${esc(r.club)}</i></span></span></td><td>${tg(r)}</td>${cells.map((c,k)=>`<td${k===0?' class="key"':''}>${c}</td>`).join('')}</tr>`; };
+  const tb=(ttl,head,L,cell,none)=>csec(ttl,L.length?`<div class="tw ovt-w"><table class="tbl ovt-t"><thead><tr><th>#</th><th>선수</th><th>구분</th>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${L.map((r,i)=>row(r,i,cell(r))).join('')}</tbody></table></div>`:`<div class="muted ovt-e">${none}</div>`);
+  const bat=tb(`타자 TOP 10 <span class="small muted">${B.minPA}타석 이상</span>`,['OPS','타율','홈런','타석'],B.bat,r=>[fmt3(r.s.ops),fmt3(r.s.avg),r.h.hr||0,r.h.pa],'기준 타석을 채운 타자가 없습니다.');
+  const pit=tb(`투수 TOP 10 <span class="small muted">${ipStr(B.minOuts)}이닝 이상</span>`,['ERA','이닝','삼진','WHIP'],B.pit,r=>[r.s.era.toFixed(2),ipStr(r.h.outs),r.h.so||0,r.s.whip.toFixed(2)],'기준 이닝을 채운 투수가 없습니다.');
+  const note=`<div class="note ovt-h">${B.last?`시즌 초반이라 ${B.y} 시즌 기록입니다.`:`${B.y} 시즌 진행 중 기록입니다.`} KBO 출신 해외파·외국인 후보·관찰 명단 선수만 집계합니다.${hiI('게임이 기록을 쌓는 선수만 순위에 오릅니다. 외국인 후보 기록은 시장 화면과 같은 공개 기록이고, 다른 구단도 똑같이 봅니다.')}</div>`;
+  return lt.bar+note+bat+pit; }
 function ovlYears(lg){ const L=G.ovl[lg]; const S=new Set([...(L.cur?[L.cur.y]:[]),...(L.h||[]).map(h=>h.y)]); return [...S].sort((a,b)=>b-a); }
 const OVL_HELP={MLB:'30개 구단, 팀당 162경기. 지구 1위 3팀과 승률 상위 3팀이 리그마다 가을야구에 나갑니다(와일드카드 3전 2승 → 디비전 5전 3승 → 챔피언십 7전 4승 → 월드시리즈). 구단 전력은 해마다 조금씩 바뀝니다.',
   AAA:'30개 구단, 팀당 150경기. 인터내셔널리그(IL) 20개·퍼시픽코스트리그(PCL) 10개 구단이고, 구단마다 MLB 구단 하나의 산하입니다. 리그마다 두 지구 1위가 3전 2승으로 리그 우승을 가리고, 두 리그 우승팀이 단판 트리플A 챔피언십을 치릅니다.',

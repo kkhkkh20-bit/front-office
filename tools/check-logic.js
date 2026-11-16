@@ -5002,6 +5002,22 @@ T('[해외 리그] 예전 저장(v1, MLB·NPB만): 다음 날 트리플A·CPBL·
   ok(ovsClubNm(a.lines[0])===''&&ovsStatRows({id:a.id})[0].pre==='CPBL','옛 줄(구단 없음) '+JSON.stringify(ovsStatRows({id:a.id})[0]&&ovsStatRows({id:a.id})[0].pre));
   G.year++; ovlNewYear(); ovlSeasonEnd(); abroadYear(); if(a.lines.length===2)ok(a.lines[1].c===a.ci&&a.lines[1].lvl==='CPBL','새 시즌 줄에 구단이 없음'); else ok(a.end!=null,'기록이 이어지지 않음'); });
 T('[해외 리그] 해외 소식은 한 시즌 6건까지, 중요한 소식(시상·우리 구단 출신)부터 낸다',()=>{ fresh(); G.wire=[]; const N=[]; for(let i=0;i<10;i++)N.push({pr:i,t:'소식 '+i,a:{id:-i-1,from:null}}); ovsWires(N); ok(G.wire.length===6,'소식 수 '+G.wire.length); ok(G.wire.some(w=>w.t==='소식 9')&&!G.wire.some(w=>w.t==='소식 0'),'중요도 순서가 아님'); });
+T('[해외 리그] 주목 선수: 기록을 쌓는 선수(KBO 출신·외국인 시장·관찰 명단)만 오르고, OPS·ERA 순서와 최소 타석·이닝을 지키며, 시즌 초반에는 지난 시즌 기록이다',()=>{ fresh();
+  const p=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); ok(p,'준비 실패'); setOvr(p,70); p.injOut=0; delete p.mil; const aid=p.id; ovsLeave(p,'MLB',MLBT[0],2,500,'포스팅',0); const a=G.abroad.find(x=>x.id===aid); a.y1=Math.min(a.y1,G.year); ovsPregen(); ok(a.cur,'준비 실패: 올해 기록');
+  const fw=(G.fmarket||[]).find(id=>G.players[id]&&G.players[id].prevLvl); ok(fw!=null,'준비 실패: 후보'); G.fwatch=[{id:fw,k:30}];
+  simTo(()=>G.day>=KD(7,15)); const pool=ovlTopPool(); ok(!pool.last&&pool.y===G.year&&pool.minPA>=100&&pool.minPA<200&&pool.minOuts<150,'7월 기준 '+JSON.stringify({l:pool.last,pa:pool.minPA,o:pool.minOuts}));
+  const AB=new Map((G.abroad||[]).filter(x=>!x.back&&x.end==null).map(x=>[String(x.id),x])), FM=new Set(G.fmarket||[]), WL=new Set((G.fwatch||[]).map(w=>w.id)); const cnt={};
+  /* 다른 구단 소속 선수를 시장 목록에 섞어도 오르지 않는다 */ const kp=domestic(otherT()).find(q=>!q.isP&&!q.foreign); G.fmarket.push(kp.id); const pool2=ovlTopPool(); G.fmarket=G.fmarket.filter(id=>id!==kp.id); ok(!pool2.R.some(r=>r.id===kp.id),'소속 선수가 주목 선수에');
+  for(const k of ['MLB','AAA','NPB','etc']){ const B=ovlTop(k,pool); cnt[k]=B.n+'명(타 '+B.bat.length+'·투 '+B.pit.length+')';
+    for(const r of [...B.bat,...B.pit]){ const src=r.abr?AB.get(String(r.id)):G.players[r.id]; ok(src&&(r.abr||(FM.has(r.id)||WL.has(r.id))&&src.team==null),'추적하지 않는 선수 '+r.name+' '+r.id);
+      ok(r.tag===(r.abr?(src.cand?'관찰했던 후보':'KBO 출신'):WL.has(r.id)?'관찰 중':'외국인 후보'),'구분 '+r.tag); ok(ovlTopKey(r.lvl)===k,'다른 리그 기록 '+r.lvl+' / '+k); ok(r.name===src.name,'이름'); }
+    ok(B.bat.length<=10&&B.pit.length<=10,'10명 넘음'); ok(B.bat.every(r=>r.h.pa>=pool.minPA)&&B.pit.every(r=>r.h.outs>=pool.minOuts),'최소 타석·이닝');
+    ok(B.bat.every((r,i,L)=>!i||L[i-1].s.ops>=r.s.ops)&&B.pit.every((r,i,L)=>!i||L[i-1].s.era<=r.s.era),k+' 순서');
+    const all=pool.R.filter(r=>ovlTopKey(r.lvl)===k); const qb=all.filter(r=>!r.isP&&r.h.pa>=pool.minPA).length; ok(B.bat.length===Math.min(10,qb),'기준을 채운 타자가 빠짐'); ok(!all.some(r=>!r.isP&&r.h.pa<pool.minPA&&B.bat.some(b=>b.id===r.id&&b.lvl===r.lvl)),'기준 미달 포함'); }
+  ok(pool.R.some(r=>r.id===aid&&r.abr&&(r.lvl==='MLB'||r.lvl==='트리플A')),'KBO 출신 해외파가 없음'); ok(!pool.R.some(r=>r.h&&'o' in r.h),'숨은 능력 값이 따라옴');
+  if(WL.has(fw)&&G.players[fw]&&G.players[fw].team==null&&G.players[fw].now)ok(pool.R.some(r=>r.id===fw&&r.tag==='관찰 중'),'관찰 명단 선수가 없음');
+  console.log('    7월 주목 선수 대상 · '+Object.entries(cnt).map(([k,v])=>k+' '+v).join(' · '));
+  G.day=KD(4,5); const e=ovlTopPool(); ok(e.last&&e.y===G.year-1&&e.minPA===200,'시즌 초반에 지난 시즌으로 바뀌지 않음'); ok(e.R.every(r=>r.abr?AB.get(String(r.id)).lines.some(l=>l.y===e.y):G.players[r.id].prev===r.h),'지난 시즌 기록이 아님'); });
 T('[팀 분위기·사기] 좋은 고참 리더는 분위기를 올리고, 분위기를 흐리는 주축·잦은 선수 이동·출전 불만은 내린다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10); const tid=G.user, L=playersOf(tid);
   for(const p of L){ initPers(p); p.pers.pro=10; p.pers.temp=10; p.pers.loy=10; p.mor=60; delete p.grv; p.mvD=G.day-400; delete p.boy; }
   const T0=chemCalc(tid).T; const ld=teamLeaders(tid); ok(ld.length>=2,'준비 실패: 리더 없음'); for(const p of ld){ p.pers.pro=18; p.pers.loy=17; p.mor=75; }
