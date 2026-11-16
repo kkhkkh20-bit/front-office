@@ -74,3 +74,12 @@
 .fp-off{display:none!important}
 .fp-bar{position:sticky;bottom:0;grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;padding:3px 4px 0;background:inherit;font-size:var(--ui-caption);color:var(--muted)}
 .fp-bar .tc-i{min-width:32px;min-height:26px;padding:0 8px;margin:0!important;flex:none}
+
+/* 첫 시즌 안내 띠(UI 3단계 3-7, 55_guide_bar.js): 화면 맨 위 한 줄. 덮개가 아니고 진행을 막지 않는다 */
+.guide-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:36px;margin:0 0 8px;padding:4px 6px 4px 12px;border:1px solid color-mix(in srgb,var(--acc) 45%,var(--line));border-left:3px solid var(--acc);border-radius:4px;background:color-mix(in srgb,var(--acc) 10%,var(--panel));font-size:var(--ui-body);flex:none}
+.guide-bar>b{color:var(--acc-hi,var(--acc));font-size:var(--ui-caption);white-space:nowrap}
+.guide-bar>span{flex:1 1 200px;min-width:0}
+.guide-bar>.btn.text{min-height:28px;white-space:nowrap}
+.guide-x{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;color:var(--muted);font-size:18px;border-radius:4px}.guide-x:hover{background:var(--panel2)}
+.hw-start .hw-ck li.hw-ck-done b{font-weight:500;color:var(--muted);text-decoration:none}
+

@@ -5161,6 +5161,10 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 .ibd-plist .lnk{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all;text-align:left}
 .fx-li-v .neg{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 .hw-stand tr.hw-cut{display:none}
+/* 이번 시즌 할 일 카드(UI 3단계 3-7): 줄을 낮게(진행 정도는 이름 옆, 하기 버튼은 작게). 남으면 칸 안에서 스크롤 */
+.hw-start{overflow:auto;scrollbar-width:thin}
+.hw-start .hw-ck>li{min-height:0;padding-block:4px;gap:2px 8px}
+@media(min-width:1100px){#app .home-workspace .hw-start .hw-ck .btn.small{min-height:26px!important;height:26px;padding:0 10px}#app .home-workspace .hw-start .hw-ck>li{padding-block:2px}}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -6493,6 +6497,15 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .fp-off{display:none!important}
 .fp-bar{position:sticky;bottom:0;grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;padding:3px 4px 0;background:inherit;font-size:var(--ui-caption);color:var(--muted)}
 .fp-bar .tc-i{min-width:32px;min-height:26px;padding:0 8px;margin:0!important;flex:none}
+
+/* 첫 시즌 안내 띠(UI 3단계 3-7, 55_guide_bar.js): 화면 맨 위 한 줄. 덮개가 아니고 진행을 막지 않는다 */
+.guide-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:36px;margin:0 0 8px;padding:4px 6px 4px 12px;border:1px solid color-mix(in srgb,var(--acc) 45%,var(--line));border-left:3px solid var(--acc);border-radius:4px;background:color-mix(in srgb,var(--acc) 10%,var(--panel));font-size:var(--ui-body);flex:none}
+.guide-bar>b{color:var(--acc-hi,var(--acc));font-size:var(--ui-caption);white-space:nowrap}
+.guide-bar>span{flex:1 1 200px;min-width:0}
+.guide-bar>.btn.text{min-height:28px;white-space:nowrap}
+.guide-x{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;color:var(--muted);font-size:18px;border-radius:4px}.guide-x:hover{background:var(--panel2)}
+.hw-start .hw-ck li.hw-ck-done b{font-weight:500;color:var(--muted);text-decoration:none}
+
 </style>
 </head>
 <body>
@@ -29406,7 +29419,7 @@ function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenE
 if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
-function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{ fitPages(); }catch(e){}try{ homeStandFit(); }catch(e){}try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
+function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{ fitPages(); }catch(e){}try{ guideMount(); }catch(e){}try{ homeStandFit(); }catch(e){}try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
@@ -29873,7 +29886,7 @@ function personaOf(from){ if(!G)return null; if(from&&from.startsWith('팀 닥�
   const x=PERSONA[from]||(from&&/팀|실$|본부|사무국/.test(from)&&!/구단주|감독/.test(from)?['staff',40,false]:null); return x?{persona:x[0],pid:'st:'+from+':'+G.user,team:G.user,age:x[1],female:x[2]}:null; } /* 목록에 없는 부서 발신자도 직원 실사 사진(글자 대신) */
 function senderAv(m){ if(typeof m.face==='string'&&m.face.startsWith('ob:')){ const o=obOf(m.face.slice(3)); if(o)return obAv(o,{k:'free'}); } if(m.face!=='sec'&&typeof m.face!=='number'&&!(m.kind==='부상'&&m.ref!=null&&G.players[m.ref])){ const pz=personaOf(m.from); if(pz)return avImg(pz); } if(m.face==='sec')return avImg(personaOf('비서')); if(typeof m.face==='number'&&G.players[m.face])return avImg(G.players[m.face]); if(m.kind==='부상'&&m.ref!=null&&G.players[m.ref])return avImg(G.players[m.ref]); return `<span class="av ini">${esc((m.from||'?').replace('비서 ','').slice(0,1))}</span>`; }
 function senderPhotoKey(m){ if(m.face==='sec')return cimgKey(personaOf('비서')); if(typeof m.face==='number'||typeof m.face==='string'&&m.face.startsWith('ob:')||m.kind==='부상'&&m.ref!=null&&G.players[m.ref])return null; return cimgKey(personaOf(m.from)); }
-function tutCard(){ const t=G.tut; if(!t||t.done)return ''; const s=TUT[t.step]; if(!s||s.k==='welcome')return '';
+function tutCard(){ const t=G.tut; if(!t||t.done)return ''; if(guideOn()&&homeStartPanel())return ''; /* 첫 시즌에는 홈 '이번 시즌 할 일' 카드 한 곳에서 안내(UI 3단계 3-7) */ const s=TUT[t.step]; if(!s||s.k==='welcome')return '';
   /* 같은 일이 '처리할 일'에 이미 있으면 안내 카드는 접는다 */
   { const W={'외국인선수':'transfer:foreign','감독':'staff:mgr','부상방지·병원':'staff:med','2군연수':'staff:dev','스카우트팀':'staff:scouts'}; const key=s.go&&s.go[0]==='goWork'?W[s.go[1]]:null;
     if(key&&TODO[key]&&key!=='staff:dev'){ const [tb,kk]=key.split(':'); try{ if(subAlert(tb,kk))return ''; }catch(e){} } }
@@ -30327,10 +30340,10 @@ function homeRosterPanel(){ const P=playersOf(G.user), g=p=>p.isP?'투수':p.pos
 function homeCardInfo(html){const t=document.createElement('template');t.innerHTML=html;const c=t.content,h=c.querySelector('h2,h3,.sec,.eyebrow'),title=h?.textContent.trim()||'구단 보고';h?.remove();c.querySelectorAll('table,svg,.hi-i,button:not(.lnk)').forEach(e=>e.remove());
   const w=document.createTreeWalker(c,NodeFilter.SHOW_TEXT),L=[];for(let n=w.nextNode();n;n=w.nextNode()){const x=n.textContent.replace(/\s+/g,' ').trim();if(x)L.push(x);}return {title,text:L.join(' ').slice(0,220)};}
 /* 첫 30분 체크리스트(플레이테스트 4 #13): 취임 첫해 개막 전까지 홈 맨 앞에 해야 할 일과 진행 상황을 한눈에. 비서 업무 안내와 같은 기준으로 체크한다 */
-function homeStartPanel(){ if(G.unemp||!G.tut||!G.cal||G.day>=G.cal.open||G.year!==(G.startY??G.year))return ''; let L=[]; try{ L=TUT.filter(s=>s.k!=='welcome'&&s.k!=='go').map(s=>({t:s.title,ok:!!s.check(),go:s.go,prog:s.prog?s.prog():''})); }catch(e){ return ''; }
-  try{ const P=G.scp&&G.scp.t&&G.scp.t[G.user]; L.push({t:'스프링캠프 계획',ok:!!(P&&P.s1&&P.s2),go:['go','staff:sc'],prog:P&&P.s1&&P.s2?'':'1차·2차 장소'}); }catch(e){}
-  const n=L.filter(x=>x.ok).length; if(n===L.length)return '';
-  return `<section class="hw-panel hw-start"><header><h2>첫 시즌 준비 <small class="muted">${n}/${L.length} 완료</small></h2></header><ol class="hw-ck">${L.map(x=>`<li class="${x.ok?'ok':''}"><span class="hw-ck-m" aria-hidden="true">${x.ok?'✓':''}</span><b>${esc(x.t)}</b>${x.prog&&!x.ok?`<small>${esc(x.prog)}</small>`:''}${!x.ok&&x.go?`<button class="btn small" data-a="${x.go[0]}" data-v="${esc(x.go[1])}">하기</button>`:''}</li>`).join('')}</ol><p class="small muted">개막(${dmd(G.cal.open)}) 전까지 끝내면 됩니다. 다 하면 이 카드는 사라집니다.</p></section>`; }
+function homeStartPanel(){ if(!guideOn())return ''; const L=guideItems(); if(!L.length)return '';
+  const n=L.filter(x=>x.ok).length; if(n===L.length)return ''; const done=L.filter(x=>x.ok), todo=L.filter(x=>!x.ok);
+  /* 이번 시즌 할 일(UI 3단계 3-7): 첫 시즌 준비 카드와 비서 안내를 한 곳에. 끝낸 일은 한 줄로 접어 카드가 잘리지 않게 */
+  return `<section class="hw-panel hw-start"><header><h2>이번 시즌 할 일 <small class="muted">${n}/${L.length} 완료</small></h2><button class="tc-i" data-a="guideOff" data-v="1" title="설정에서 다시 켤 수 있습니다">숨기기</button></header><ol class="hw-ck">${todo.map(x=>`<li><span class="hw-ck-m" aria-hidden="true"></span><b>${esc(x.t)}</b>${x.prog?`<small>${esc(x.prog)}</small>`:''}${x.go?`<button class="btn small" data-a="guideGo" data-v="${esc(x.k)}">하기</button>`:''}</li>`).join('')}${done.length?`<li class="ok hw-ck-done"><span class="hw-ck-m" aria-hidden="true">✓</span><b>${done.map(x=>esc(x.t)).join(' · ')}</b></li>`:''}</ol><p class="small muted">개막(${dmd(G.cal.open)}) 전까지 끝내면 됩니다. 다 하면 이 카드는 사라집니다.</p></section>`; }
 function homeWorkspace(){
   // 메뉴·요약·페이지 버튼을 먼저 확보하고 카드 한 줄에 최소 220px을 배정한다.
   const device=innerWidth>=1100?'desktop':innerWidth>=700?'tablet':'mobile';
@@ -35092,7 +35105,7 @@ function clubBody(s){
       const fb=`<section class="card set-cafe"><div class="set-cafe-t"><span class="eyebrow">공식 카페</span><h2>프런트야구 네이버 카페</h2><p>질문·건의·버그 제보는 카페에 남겨 주세요. 올라온 의견은 업데이트에 바로 반영합니다. 버그는 '제보용 정보 복사'로 게임 정보(버전·날짜·화면·기기)를 붙여 넣으면 빨리 고칠 수 있습니다.</p></div><div class="set-cafe-b"><a class="btn text" href="${FEEDBACK_URL}" target="_blank" rel="noopener">카페 가기 ›</a><button class="btn small" data-a="fbInfo">제보용 정보 복사</button>${UI.fbOk?`<span class="set-cafe-ok" role="status">게임 정보를 복사했습니다.</span>${cafeLink('카페에 붙여 넣기 ›')}`:''}</div><div class="set-ver"><span>버전 ${GAME_VER} · 진행은 자동 저장</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`;
       const dif=`<section class="card"><h2 class="sec">난이도</h2><p class="small">${HARD()?'<b>하드</b> · 트레이드 요구 많음, FA 선호 낮음, 스폰서·광고 수입 줄어듦, '+gl('흑자 조정')+' 커짐, 구단주 신뢰 하락 빠름, 지원 승인 어려움':G.cfg&&G.cfg.hardOffY?`보통 · ${G.cfg.hardOffY}년에 하드에서 낮춤`:'보통'}</p>${HARD()?'<button class="btn small" data-a="hardOff">보통으로 낮추기 · 되돌릴 수 없음</button>':''}</section>`;
       const ivf=`<section class="card"><h2 class="sec">인터뷰 후속 질문</h2><div class="chips">${[['0','직접 답하기'],['1','홍보팀에 맡기기']].map(([v,l])=>`<button data-a="ivFolDel" data-v="${v}" class="${(G.cfg&&G.cfg.ivFolDel?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">앞선 인터뷰 발언이 크게 화제가 되면 다른 매체가 후속 질문을 요청합니다. 홍보팀에 맡기면 팬·언론 손해가 가장 작은 무난한 답을 대신 하고 결과만 알려 줍니다.</p></section>`;
-      const psc=`<section class="card"><h2 class="sec">가을야구 중계</h2><div class="chips">${[['0','우리 경기는 중계로 열기'],['1','결과만 보기']].map(([v,l])=>`<button data-a="psNoCast" data-v="${v}" class="${(G.cfg&&G.cfg.psNoCast?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">포스트시즌 우리 경기를 자동으로 중계 화면에서 열지 정합니다. 결과만 보기로 두어도 일정에서 원하는 경기는 따로 관전할 수 있습니다.</p></section>`; /* 플레이 테스트 11-13 */
+      const psc=`${guideCfgCard()}<section class="card"><h2 class="sec">가을야구 중계</h2><div class="chips">${[['0','우리 경기는 중계로 열기'],['1','결과만 보기']].map(([v,l])=>`<button data-a="psNoCast" data-v="${v}" class="${(G.cfg&&G.cfg.psNoCast?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">포스트시즌 우리 경기를 자동으로 중계 화면에서 열지 정합니다. 결과만 보기로 두어도 일정에서 원하는 경기는 따로 관전할 수 있습니다.</p></section>`; /* 플레이 테스트 11-13 */
       const scl=`<section class="card"><h2 class="sec">능력치 표기</h2><div class="chips">${[['100','100점 척도'],['2080','20-80 스카우트 척도']].map(([v,l])=>`<button data-a="ratScale" data-v="${v}" class="${((G.cfg&&G.cfg.scale)||'100')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">20-80은 메이저리그 스카우트가 쓰는 척도입니다. 50이 평균, 60 좋음, 70 최상급, 80 리그 최고 수준이며 10점이 표준편차 하나입니다. 표시만 바뀌고 실제 능력과 계산은 같습니다(100점 척도 63 = 20-80 51, 73 = 58, 84 = 65).</p></section>`;
       const ret=`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴하면 영구결번을 지정할 수 있습니다. 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 최상위급이어야 닿습니다.</p></section>`;
       const more=`<section class="card"><details class="mfold"><summary>패치 노트</summary>${patchCard()}</details>${creditsLine()}</section>`;
@@ -38496,6 +38509,30 @@ window.addEventListener('scroll',()=>{ if(UI.fbarOpen!=null&&innerWidth>700)fbar
 /* 목록 안 ⋯(mm-fixed): 칸(ws-panel)이 넘침을 잘라 PC 펼침이 가려지지 않게 화면 기준으로 띄운다 */
 document.addEventListener('click',e=>{ const b=e.target&&e.target.closest&&e.target.closest('.mm-fixed>[data-mmenu]'); if(!b||innerWidth<=700)return; const m=b.closest('.mmenu'), p=m.querySelector('.mmenu-p'); if(!m.classList.contains('open')||!p)return;
   const r=b.getBoundingClientRect(), w=p.offsetWidth, h=p.offsetHeight, up=r.bottom+h+8>innerHeight; p.style.position='fixed'; p.style.top=Math.round(up?Math.max(8,r.top-h-4):r.bottom+4)+'px'; p.style.bottom='auto'; p.style.left=Math.round(Math.max(8,Math.min(r.right-w,innerWidth-w-8)))+'px'; p.style.right='auto'; });
+/* ---------- 첫 시즌 가이드 틀(UI 3단계 3-7) ----------
+   1) 홈 첫 카드 '이번 시즌 할 일'(homeStartPanel) 한 곳에 할 일을 모은다.
+   2) 카드의 '하기'로 간 화면 맨 위에 한 줄 띠(이 화면에서 할 일 · 다음 ›)를 둔다. 덮개·결재창이 아니고 진행을 막지 않는다.
+   3) 더 긴 설명은 화면 '?' 시트에 둔다(1단계 원칙). 홍보·카페 안내는 이 틀에 넣지 않는다.
+   4) 설정 '첫 시즌 안내'와 카드의 '숨기기'로 끌 수 있다(G.cfg.guideOff). */
+const GUIDE_HINT={mgr:'감독 후보를 비교하고 한 명을 고릅니다.',foreign:'외국인 3명과 아시아쿼터 1명을 채웁니다.',med:'부상 방지 단계와 병원 제휴를 정합니다.',dev:'훈련 방향과 해외 연수를 확인합니다.',scout:'빈 지역에 스카우트를 배치합니다.',lineup:'감독이 정한 배치를 확인합니다.',camp:'1차·2차 캠프 장소를 고릅니다.'};
+function guideOn(){ return !!(G&&!G.unemp&&!(G.cfg&&G.cfg.guideOff)&&G.tut&&G.cal&&G.day<G.cal.open&&G.year===(G.startY??G.year)); }
+/* 첫 시즌 할 일 목록(홈 카드와 띠가 같이 쓴다) */
+function guideItems(){ let L=[]; try{ L=TUT.filter(s=>s.k!=='welcome'&&s.k!=='go').map(s=>({k:s.k,t:s.title,ok:!!s.check(),go:s.go,prog:s.prog?s.prog():''})); }catch(e){ return []; }
+  try{ const P=G.scp&&G.scp.t&&G.scp.t[G.user]; L.push({k:'camp',t:'스프링캠프 계획',ok:!!(P&&P.s1&&P.s2),go:['go','staff:sc'],prog:P&&P.s1&&P.s2?'':'1차·2차 장소'}); }catch(e){}
+  return L; }
+function guideRoute(){ try{ return UI.tab+':'+(typeof curSub==='function'?curSub(UI.tab)||'':''); }catch(e){ return UI.tab; } }
+/* '하기'로 간 화면 맨 위 한 줄 띠 */
+function guideBar(){ const g=UI.guide; if(!g||!guideOn()||UI.sheet!=null||UI.person||UI.teamSh!=null)return ''; if(g.route!==guideRoute())return '';
+  const L=guideItems(), x=L.find(i=>i.k===g.k); if(!x)return ''; const next=L.find(i=>!i.ok&&i.k!==x.k);
+  return `<div class="guide-bar" role="status" aria-label="이번 시즌 할 일"><b>이번 시즌 할 일</b><span>${x.ok?`<i class="good">✓</i> ${esc(x.t)} 끝`:`${esc(x.t)} · ${esc(GUIDE_HINT[x.k]||'')}`}</span>${next?`<button type="button" class="btn text" data-a="guideGo" data-v="${esc(next.k)}">다음: ${esc(next.t)} ›</button>`:`<button type="button" class="btn text" data-a="tab" data-v="home">홈으로 ›</button>`}<button type="button" class="guide-x" data-a="guideClose" aria-label="안내 닫기">×</button></div>`; }
+function guideMount(){ if(typeof document==='undefined')return; document.querySelectorAll('#app .guide-bar').forEach(e=>e.remove()); const h=guideBar(); if(!h)return; const main=document.querySelector('#app main.content'); if(!main)return; main.insertAdjacentHTML('afterbegin',h); }
+/* 설정 카드 */
+function guideCfgCard(){ const off=!!(G.cfg&&G.cfg.guideOff); return `<section class="card"><h2 class="sec">첫 시즌 안내</h2><div class="chips">${[['0','보기'],['1','숨기기']].map(([v,l])=>`<button data-a="guideOff" data-v="${v}" class="${(off?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">홈 맨 위 '이번 시즌 할 일' 카드와 할 일 화면의 안내 띠를 보이거나 숨깁니다.</p></section>`; }
+Object.assign(A,{
+  guideGo(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.go)return; UI.guide={k:x.k}; A[x.go[0]]?.(x.go[1]); UI.guide={k:x.k,route:guideRoute()}; render(); },
+  guideClose(){ UI.guide=null; render(); },
+  guideOff(v){ G.cfg=G.cfg||{}; G.cfg.guideOff=v==='1'; if(G.cfg.guideOff)UI.guide=null; save(); render(); },
+});
 /* ---------- PC 목록 쪽 나눔(UI 3단계 3-0, 구단주 11-16 "드래그 없게, 넘치면 탭처럼") ----------
    PC(1100px 이상)에서 상자 안 목록·표가 칸보다 길어 스크롤바가 생기면, 칸에 들어가는 줄만 보이고 '‹ 1/4 ›'로 넘긴다.
    페이지와 상자가 같이 스크롤되는 이중 스크롤을 없앤다. 휴대폰은 화면 전체가 한 번에 내려가므로 그대로 둔다.

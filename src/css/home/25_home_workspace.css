@@ -234,3 +234,7 @@
 .ibd-plist .lnk{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all;text-align:left}
 .fx-li-v .neg{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 .hw-stand tr.hw-cut{display:none}
+/* 이번 시즌 할 일 카드(UI 3단계 3-7): 줄을 낮게(진행 정도는 이름 옆, 하기 버튼은 작게). 남으면 칸 안에서 스크롤 */
+.hw-start{overflow:auto;scrollbar-width:thin}
+.hw-start .hw-ck>li{min-height:0;padding-block:4px;gap:2px 8px}
+@media(min-width:1100px){#app .home-workspace .hw-start .hw-ck .btn.small{min-height:26px!important;height:26px;padding:0 10px}#app .home-workspace .hw-start .hw-ck>li{padding-block:2px}}
