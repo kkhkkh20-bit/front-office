@@ -27,6 +27,7 @@ test('상대 고르기: 같은 단계에서 내 OVR과 가까운 순, 나는 빼
  assert.deepEqual(o.decks.slice(0,2).map(d=>d.ovr.t).sort(),[64,66]); assert.ok(!o.decks.some(d=>d.name==='팀13'),'다른 단계 덱'); assert.ok(o.decks.every(d=>d.e&&d.e.P.length===24));
  assert.ok(Math.abs(o.avg-(66+5/11))<.2,'평균 '+o.avg);
  assert.equal((await H('PUT','/api/ladder/tier',{wid:wid(5),tier:4})).status,200); assert.ok(!env.SAVE_KV.m.has('ulT:3:'+wid(5))&&env.SAVE_KV.m.has('ulT:4:'+wid(5)),'단계 색인 이동');
+ assert.deepEqual((await (await H('GET','/api/ladder/tiers')).json()).counts,[0,2,0,11,1],'단계별 등록 덱 수');
  const e=await (await H('GET',`/api/ladder/opp?wid=${wid(99)}&tier=0&ovr=60`)).json(); assert.equal(e.decks.length,0); assert.equal(e.count,0);
 });
 test('관리자: 키 검사(틀린 키 401), 검색, 숨김(상대에서 빠짐)·복구, 삭제',async()=>{ const {env,H}=await setup(); const AK={Authorization:'Bearer s3cret',Origin:''};

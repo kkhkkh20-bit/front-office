@@ -2,6 +2,7 @@
  *   PUT    /api/ladder/deck             본문 {wid, tier, e(엔트리)} → 덱 등록·갱신(세계 id당 하나, 언제든 덮어쓰기). 사진은 빼고 저장(약 8KB)
  *   PUT    /api/ladder/tier             본문 {wid, tier} → 리그를 마친 뒤 단계만 바꾸기
  *   GET    /api/ladder/opp?wid=&tier=&ovr=&n=9  같은 단계에서 내 OVR과 가까운 덱 n개(나는 빼고) + 그 단계 평균 OVR. 리그를 시작할 때 한 번
+ *   GET    /api/ladder/tiers            단계별 등록 덱 수(숨긴 덱 빼고) {counts:[루키…레전드]}
  *   GET    /api/ladder/me/WID           내 등록 상태
  *   DELETE /api/ladder/deck/WID         등록 지우기
  *   관리자(Authorization: Bearer CUP_ADMIN): GET /api/ladder/admin/list?q= · PUT /api/ladder/admin/hide {wid, hide} · DELETE /api/ladder/admin/deck/WID
@@ -49,6 +50,8 @@ export async function handleLadder(req, env, url, now) {
   }
   if (rest === 'tier' && req.method === 'PUT') { const b = JSON.parse(await req.text() || '{}'); if (!b || !WID.test(String(b.wid || ''))) return err(400, 'bad_wid');
     const r = await kv.getWithMetadata('ulD:' + b.wid); if (r.value == null) return err(404, 'not_found'); const meta = Object.assign({}, r.metadata || {}); await setTier(kv, b.wid, meta, tierOf(b.tier)); await kv.put('ulD:' + b.wid, r.value, { metadata: meta }); return json(200, { ok: true, tier: meta.tier }); }
+  if (rest === 'tiers' && req.method === 'GET') { const counts = []; for (let t = 0; t < UL_TIERS.length; t++) counts.push((await listAll(kv, `ulT:${t}:`)).length);
+    return new Response(JSON.stringify({ ok: true, counts }), { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=60' } }); }
   if (rest === 'opp' && req.method === 'GET') {
     const tier = tierOf(url.searchParams.get('tier')), wid = String(url.searchParams.get('wid') || ''), ovr = +url.searchParams.get('ovr') || 0, n = Math.max(1, Math.min(9, +url.searchParams.get('n') || 9));
     const L = (await listAll(kv, `ulT:${tier}:`)).map(k => k.metadata).filter(Boolean);

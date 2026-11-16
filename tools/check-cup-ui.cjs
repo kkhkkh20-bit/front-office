@@ -64,23 +64,33 @@ const { chromium } = require('playwright');
     await p.evaluate(() => { A.go('cfg:set'); }); await p.click('[data-a="admAsk"]'); await p.fill('#admKey', 'wrong-key'); await p.click('[data-a="admKeyOk"]');
     await p.waitForFunction(() => /키가 맞지 않습니다/.test(document.body.innerText), null, { timeout: 10000 }); assert.equal(await p.evaluate(() => !!document.querySelector('[data-a="admOpen"]')), false, '틀린 키인데 관리자 메뉴');
     await p.fill('#admKey', 'test-admin'); await p.click('[data-a="admKeyOk"]'); await p.waitForSelector('[data-a="admOpen"]', { timeout: 10000 }); await p.click('[data-a="admOpen"]');
-    await p.waitForSelector('#admId', { timeout: 10000 }); await p.fill('#admId', 'cup2'); await p.fill('#admTitle', '제2회 프런트컵'); await p.fill('#admDl', '2099-12-31 21:00'); await p.click('[data-a="admCfg"][data-v="open"]');
+    p.on('dialog', d => d.accept());
+    await p.waitForSelector('#admId', { timeout: 10000 }); { const t = await p.evaluate(() => document.querySelector('.adm-now').innerText); assert.match(t, /서버 연결 OK · 관리자 키 맞음/); }
+    await p.fill('#admId', 'cup2'); await p.fill('#admTitle', '제2회 프런트컵'); await p.fill('#admDl', '2099-12-31 21:00'); await p.click('[data-a="admCfg"][data-v="open"]');
     await p.waitForFunction(() => /접수를 열었습니다/.test(document.body.innerText), null, { timeout: 10000 }); const cfg2 = JSON.parse(m.get('cup:cfg').v); assert.equal(cfg2.id, 'cup2'); assert.equal(cfg2.open, true); assert.equal(cfg2.format, 'league');
     const fp = path.join(require('node:os').tmpdir(), 'cup-entry-test.json'); fs.writeFileSync(fp, JSON.stringify(fe)); await p.setInputFiles('#admFiles', fp); await p.click('[data-a="admFile"]');
     await p.waitForFunction(() => /참가 파일 1개를 올렸습니다/.test(document.body.innerText) && document.querySelectorAll('.adm-e').length === 1, null, { timeout: 20000 }); console.log('관리자: 키 확인·대회 열기·참가 파일 올리기 통과');
-    await p.click('[data-a="admCfg"][data-v="close"]'); await p.waitForFunction(() => /접수는 닫혀/.test(document.body.innerText), null, { timeout: 10000 });
-    const t0 = Date.now(); await p.click('[data-a="admRun"]'); await p.waitForFunction(() => /다 돌렸습니다/.test(document.body.innerText), null, { timeout: 600000 });
+    assert.match(await p.evaluate(() => document.querySelector('.adm-steps li.now').innerText), /접수 중\(1팀\)/, '지금 할 일: 접수 중');
+    await p.selectOption('select[data-a="admSort"]', 'at'); await p.fill('#admQ', '없는팀'); await p.click('[data-a="admQ"]'); assert.equal(await p.evaluate(() => document.querySelectorAll('.adm-e').length), 0, '검색'); await p.fill('#admQ', ''); await p.click('[data-a="admQ"]');
+    await p.click('.adm-go[data-a="admCfg"][data-v="close"]'); await p.waitForFunction(() => /접수는 닫혀/.test(document.body.innerText), null, { timeout: 10000 });
+    assert.match(await p.evaluate(() => document.querySelector('.adm-now').innerText), /이 순서로 시드를 정합니다[\s\S]*AI 구단/, '시드 미리보기'); await p.click('.adm-go[data-a="admSeedOk"]');
+    const t0 = Date.now(); await p.click('.adm-go[data-a="admRun"]'); await p.waitForFunction(() => /다 돌렸습니다/.test(document.body.innerText), null, { timeout: 600000 });
     const run = JSON.parse(m.get('cupRun:cup2').v); assert.equal(run.seeds.length, 10); assert.equal(run.series.filter(x => x.kind === 'L').length, 45); assert.ok(run.champ && run.runner); assert.ok(!m.has('cup:pub'), '돌리기만 했는데 공개됨');
     console.log(`관리자: 리그+가을야구 돌리기 ${Math.round((Date.now() - t0) / 1000)}초, 결과 ${Math.round(m.get('cupRun:cup2').v.length / 1024)}KB 통과`);
     const fit2 = await p.evaluate(() => { window.scrollTo(0, 9999); return { scroll: scrollY, h: document.documentElement.scrollHeight, v: innerHeight }; }); assert.ok(fit2.scroll === 0 && fit2.h <= fit2.v + 2, '관리자 PC 화면이 통째로 스크롤됨 ' + JSON.stringify(fit2));
-    for (let d = 1; d <= 7; d++) { await p.click(`[data-a="admPub"][data-v="${d}"]`); await p.waitForFunction(d => /공개했습니다/.test(document.body.innerText) && document.querySelectorAll('.adm-day.on').length === d, d, { timeout: 60000 }); }
+    await p.click('[data-a="admPrev"][data-v="1"]'); assert.match(await p.evaluate(() => document.querySelector('.adm-prev').innerText), /게임에 이렇게 보입니다[\s\S]*1일차/); assert.ok(!m.has('cup:pub'), '미리보기가 공개됨');
+    for (let d = 1; d <= 7; d++) { await p.waitForTimeout(450); /* 같은 자리 연속 터치 보호(0.4초) */ await p.click(`[data-a="admPub"][data-v="${d}"]`); await p.waitForFunction(d => /공개했습니다/.test(document.body.innerText) && document.querySelectorAll('.adm-day.on').length === d, d, { timeout: 60000 });
+      if (d === 3 && process.env.SHOT_ADMIN) { for (const [w, h] of [[1440, 900], [390, 844]]) { await p.setViewportSize({ width: w, height: h }); await p.evaluate(() => { ADM.msg = ''; render(); window.scrollTo(0, 0); document.querySelectorAll('.setc').forEach(e => { e.scrollTop = 0; }); }); await p.waitForTimeout(300); await p.screenshot({ path: `${process.env.SHOT_ADMIN}_${w}.png` }); }
+        const sw = await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1); assert.ok(sw, '관리자 휴대폰 폭 가로 스크롤'); await p.setViewportSize({ width: 1280, height: 720 }); } }
+    await p.waitForTimeout(450); await p.click('[data-a="admUnpub"]'); await p.waitForFunction(() => /7일차 공개를 취소했습니다/.test(document.body.innerText), null, { timeout: 20000 }); assert.equal(JSON.parse(m.get('cup:pub').v).day, 6, '공개 취소');
+    await p.waitForTimeout(450); await p.click('.adm-go[data-a="admPub"][data-v="7"]'); await p.waitForFunction(() => document.querySelectorAll('.adm-day.on').length === 7 && !ADM.busy, null, { timeout: 60000 });
     const pub = JSON.parse(m.get('cup:pub').v); assert.equal(pub.day, 7); assert.equal(pub.days.length, 7); assert.ok(pub.champ); assert.ok(m.has('cupG:cup2-KS') && m.has('cupG:cup2-L1-1-g3'), '경기 기록이 올라가지 않음');
     const [png] = await Promise.all([p.waitForEvent('download'), p.click('[data-a="admPng"][data-v="stand"]')]); assert.match(png.suggestedFilename(), /^frontcup-cup2-stand\.png$/);
-    await p.fill('#admGm', '김단장'); await p.click('[data-a="admHof"]'); await p.waitForFunction(() => /명예의 전당에 올렸습니다/.test(document.body.innerText), null, { timeout: 20000 });
+    assert.match(await p.evaluate(() => document.querySelector('.adm-steps li.now').innerText), /명예의 전당/); await p.fill('#admGm', '김단장'); await p.click('.adm-go[data-a="admHof"]'); await p.waitForFunction(() => /명예의 전당에 올렸습니다/.test(document.body.innerText), null, { timeout: 20000 });
     const H2 = JSON.parse(m.get('cup:results').v), c2 = H2.cups.find(c => c.id === 'cup2'); assert.equal(c2.champ.gm, '김단장'); assert.ok(c2.champ.deck && c2.champ.deck.P.length >= 20 && !c2.champ.deck.wid); assert.ok(H2.cups.some(c => c.id === 'cup1'), '지난 회차가 사라짐');
-    if (process.env.SHOT_ADMIN) await p.screenshot({ path: process.env.SHOT_ADMIN });
     await p.evaluate(() => { CUP.pubSt = ''; CUP.pub = null; A.go('club:cup'); }); await p.waitForFunction(() => document.querySelector('.cup-pub') && /우승/.test(document.querySelector('.cup-pub').innerText), null, { timeout: 20000 });
-    console.log('관리자: 1~7일차 연재 공개·게임 화면 반영·그림 저장·명예의 전당 등록 통과');
+    assert.match(await p.evaluate(() => (A.go('club:cupadm'), document.querySelector('.adm-now').innerText)), /대회를 모두 마쳤습니다/);
+    console.log('관리자: 지금 할 일 단계·시드 미리보기·접수 정렬/검색·공개 미리보기·공개 취소·1~7일차 공개·게임 화면 반영·그림 저장·명예의 전당 등록 통과');
     assert.deepEqual(errs, []);
   } catch (e) { try { const ps = b.contexts().flatMap(c => c.pages()); console.error('화면 알림: ' + await ps[0].evaluate(() => [...document.querySelectorAll('.note')].map(x => x.innerText).join(' / '))); } catch (x) {} throw e; } finally { await b?.close(); server.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });
