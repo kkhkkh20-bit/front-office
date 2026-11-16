@@ -29013,7 +29013,8 @@ function schDaily(){ if(!G.teams)return; const SL=schList(), o=dobj(G.day);
   }
   if(o.d===1)for(const p of Object.values(G.players)){ if(p.schR||p.prospect||!p.draft||p.draft.y<G.year-1)continue; p.schR=1; const S=schOf(p); if(S&&team(p.draft.tid))schAdd(S,5,p.draft.tid); } /* 지명 친분은 지금 소속이 아니라 지명한 구단이 받는다(검수 11-09e #14) */
   if(G.unemp)return;
-  /* 스카우트 방문 친분은 매주 학교 방문(64_scout_obs obsVisitWeek)에서 모든 구단 같은 규칙으로 쌓는다 */
+  /* 스카우트 방문 친분은 매주 학교 방문(64_scout_obs obsVisitWeek)에서 모든 구단 같은 규칙으로 쌓는다. 예전 달마다 학교 두 곳을 고르던 난수 순서는 그대로 소비해 기존 세계(시드)의 진행이 바뀌지 않게 한다 */
+  if(o.d===1)for(const s of (G.scouts||[]).filter(s=>(s.role||'am')==='am')){ const n=Object.values(SL).filter(S=>areaDef(S.area).reg===s.region).length; for(let i=0;i<2&&i<n;i++)R(); }
   if(o.d===15&&o.m>=3&&o.m<=8)schTip(); }
 /* 귀띔 메일: 친분 60 이상 학교 감독이 올해 후보 중 좋은 선수를 알려 준다(한 달 한 통) */
 function schTipKnown(p,tid=G.user){return !!p&&(p.schTips?.[tid]===G.year||(p.schTip===G.year&&p.schTipT!=null&&p.schTipT===tid));}
