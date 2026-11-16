@@ -36,8 +36,8 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   const pool=[];
   for(const p of all){
     if(p.foreign)continue;
+    if(p.extNext){ extNextApply(p,G.year+1); continue; } /* 군 복무 중이어도 합의한 다음 시즌 다년계약은 이때 시작한다(제보 11-16: 상무 복무로 건너뛰어 옛 계약 마지막 해·옛 연봉이 남고 FA 예정으로 보였다). 계약 연차는 그다음 해부터 복무 동안 멈춘다 */
     if(milServing(p)){ if(p.faC&&(p.yrs||0)>0)p.milPause=(p.milPause||0)+1; continue; } /* 군 복무 중(군보류)은 계약 기간·FA 자격이 멈춘다: 복무 중 FA 신청·이적 불가(플레이 테스트 11-13: 상무 복무 중 FA 이적) */
-    if(p.extNext){ termsClear(p); if(p.extNext.terms)termsApply(p,p.extNext.terms,'ext',G.year+1,true); p.sal=p.extNext.annual; p.yrs=p.extNext.years; p.cyrs=p.extNext.years; p.faC=true; p.ext=true; delete p.extNext; continue; }
     if(p.faC){
       if(ctOn(p)&&p.pOut&&!p.pOut.used&&p.pOut.y===G.year&&(p.yrs||0)>1){ p.pOut.used=true; if(pOutDecide(p)){ p.yrs=1; p.ctFree=G.year; story(p,'옵트아웃: 남은 계약을 포기하고 FA 시장으로','move'); if(p.team===ME())mail('운영팀',`${p.name} 옵트아웃`,`${p.name}이(가) 계약의 옵트아웃 조항을 써서 남은 계약을 포기하고 FA 시장에 나갑니다. 우리 구단도 FA 협상으로 다시 잡을 수 있습니다.`,{kind:'연봉',ref:p.id}); } else story(p,'옵트아웃 하지 않고 계약 유지','move'); }
       if((p.yrs||0)===1&&ctOn(p)&&p.cOpt&&!p.cOpt.used&&p.ctFree!==G.year){ p.cOpt.used=true; const ex=p.cOpt.dec??cOptAI(p); /* 단장이 확정한 결정은 이직·사임 뒤 후임도 따른다(검수 11-09zzb) */ if(ex){ p.yrs+=p.cOpt.y; p.cyrs=(p.cyrs||0)+p.cOpt.y; p.sal=p.cOpt.a; p.cOptAdd={y:p.cOpt.y,a:p.cOpt.a}; story(p,`구단 연장 옵션 실행(${p.cOpt.y}년 연 ${money(p.cOpt.a)})`,'move'); } else { p.ctFree=G.year; story(p,(p.svc||0)>=faSvc(p)?'구단 연장 옵션 포기 → FA':'구단 연장 옵션 포기 → 보류 선수(연봉 협상)','move'); } }
@@ -97,6 +97,12 @@ function faUpcoming(){ if(G.rolled===G.year||(G.fa&&G.fa.y0===G.year))return [];
     L.push({p,why,sure,dp:free?1:faDeclP(p)}); }
   return L; }
 function faCapN(){ const F=G.fa; return F&&F.cap?F.cap:(F&&F.pool&&F.pool.length>20?3:2); }
+/* 합의한 다음 시즌 다년계약(extNext)을 지금 계약으로 바꾼다(결산·불러오기 수리 공통). sy: 계약 첫 시즌 */
+function extNextApply(p,sy){ const x=p.extNext; if(!x)return; termsClear(p); if(x.terms)termsApply(p,x.terms,'ext',sy,true); p.sal=x.annual; p.yrs=x.years; p.cyrs=x.years; p.faC=true; p.ext=true; delete p.extNext; }
+/* 불러오기 수리(제보 11-16): 결산을 이미 지났는데 시작하지 않은 다년계약(상무 복무 중이라 건너뛴 예전 저장)은 지금 계약으로 되살린다. 우리·다른 구단 선수 같게.
+   합의 시점은 선수 이력의 '비FA 다년계약' 기록으로 본다: 시즌 중(10월 전) 합의는 그해 결산에서, 결산 때 합의(AI)는 다음 해 결산에서 시작한다 */
+function extStaleFix(){ let n=0; for(const p of Object.values(G.players||{})){ if(!p||!p.extNext||p.foreign||p.team==null)continue; const e=[...(p.story||[])].reverse().find(s=>s&&/^비FA 다년계약/.test(s.t||'')); if(!e||e.y==null)continue;
+    const ins=e.d!=null&&e.d<dnum(e.y,10,1); /* 시즌 중 합의 */ const due=G.year-e.y>=2||(G.year-e.y===1&&(G.rolled===G.year||ins))||(G.year===e.y&&G.rolled===G.year&&ins); if(!due)continue; extNextApply(p,ctSeason()); n++; } return n; }
 function faOutN(tid){ const F=G.fa; return F&&F.outN?(F.outN[tid]||0):0; }
 function faOutBlocked(tid,p){ return tid!==p.faFrom&&faOutN(tid)>=faCapN(); }
 /* 우리 제안이 살아 있는지: 선수가 거절한 조건(rej)이나 외부 FA 한도에 걸린 제안은 없는 것과 같다 */

@@ -18,6 +18,7 @@ globalThis.__amNoInterim=()=>{ const dir=path.join(__dirname,'..','src','ui','as
 /* [비서 v19] 시나리오용: FACE8(사진 빼고)·FACE19 번호표와 비서 배정 함수(secCands·secIdx) */
 globalThis.__secSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
   return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function face19Load('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
+globalThis.__pfCss=()=>fs.readFileSync(path.join(__dirname,'..','src','css','players','22_full_player_profile.css'),'utf8'); /* [제보 11-16 해외 복귀 기록] 선수 화면 시즌 통계 줄 숨김 점검 */
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
 const ok=(c,msg)=>{ if(!c)throw new Error(msg); };
@@ -5484,6 +5485,26 @@ T('[제보 dddddd] 코치 교체: 정규시즌 뒤 계약은 우리·AI 모두 �
   const mk=G.cmarket.map(x=>x.id); for(const t of G.teams){ if(t.id===u)continue; t.cash=100000; t.market=1.2; for(const x of Object.values(G.coach[t.id]))if(x){ x.sk=30; x.dv=30; } } for(const x of G.cmarket)x.sal=60;
   const hired=[]; for(let i=0;i<60&&!hired.length;i++){ cmAiMonthly(); for(const t of G.teams)if(t.id!==u)for(const k of CKEYS){ const x=G.coach[t.id][k]; if(x&&mk.includes(x.id))hired.push(x); } }
   ok(hired.length,'준비 실패: AI 구단 시장 영입이 없음'); ok(hired.every(x=>x.jy===G.year+1&&staffPending(x)),'AI 구단은 같은 때 영입한 코치를 바로 합류시킴(우리만 다음 시즌 합류) '+hired.map(x=>x.jy)); });
+T('[제보 11-16 해외 복귀 기록] 돌아온 선수의 해외 시즌은 모두 연도 순서로 남고, 기록 정리에서 가장 나중에 지우며, 복귀 까닭이 협상·이력에 보이고, 선수 화면 시즌 통계가 최근 세 시즌만 남기고 줄을 숨기지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&!q.foreign&&q.age<=30); ok(p,'준비 실패'); const id=p.id;
+  ovsLeave(p,'MLB',MLBT.find(c=>c.startsWith('보스턴'))||MLBT[0],5,800,'포스팅'); const a=G.abroad.find(x=>x.id===id); ok(a,'해외 기록 없음'); a.y1=G.year-5; for(let y=G.year-5;y<G.year;y++)a.lines.push({y,lvl:'MLB',g:30,outs:540,er:60,so:150,bb:40,h:160,hr:18,w:10,l:8});
+  const q=JSON.parse(a.pj); q.age=34; a.pj=JSON.stringify(q); abroadYear(); const r=G.players[id]; ok(r&&a.back,'복귀 처리 실패'); ok(a.why&&a.why.includes('계약 만료'),'복귀 까닭이 없다: '+a.why); ok(!r.retAsk||(r.retAsk.why===a.why),'우선협상 요구에 까닭이 없다');
+  if(r.retAsk&&r.retFrom===G.user){ ovsBackSign(r); ok((r.story||[]).some(s=>s.t.includes(a.why)),'복귀 이력에 까닭이 없다'); }
+  const rows=ovsStatRows(r); ok(rows.length===a.lines.length&&rows.every((x,i)=>i===0||x.y>rows[i-1].y),'해외 시즌이 빠지거나 순서가 틀렸다 '+rows.map(x=>x.y).join(','));
+  r.team=G.user; for(let i=0;i<130;i++)G.abroad.push({id:-9000-i,name:'x',back:true,lines:[],y:G.year-9,from:0}); ovsTrim(); ok(G.abroad.some(x=>x.id===id),'국내에서 뛰는 복귀 선수의 해외 기록이 정리로 지워졌다');
+  const css=__pfCss(); ok(!css.includes('pf-season-table tbody tr:nth-child(n+5){display:none}'),'선수 화면 시즌 통계가 아직 최근 세 시즌만 남기고 줄을 숨긴다'); });
+T('[제보 11-16 전역 연장 계약] 상무 복무 중에도 합의한 다년계약이 결산 때 시작되고, 메달 특례 전역이 옛 연봉으로 되돌리지 않으며, 예전 저장의 건너뛴 연장은 불러오기 때 되살린다(AI 구단 같게)',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign&&q.age<=26&&!q.ys); ok(p,'준비 실패');
+  Object.assign(p,{faC:true,ext:true,yrs:1,cyrs:6,sal:800}); p.extNext={annual:2500,years:6,terms:{years:6,annual:2500,bonus:6730}}; story(p,'비FA 다년계약 6년 · 계약금 67.3억 · 연봉 25억','move'); p.mil={unit:'상무',from:G.day-30,until:G.day+400};
+  offseason(); ok(p.team===G.user&&!p.extNext&&p.sal===2500&&p.yrs===6&&p.cyrs===6,'복무 중 결산에서 연장 계약이 시작되지 않았다 '+JSON.stringify({t:p.team,s:p.sal,y:p.yrs,x:!!p.extNext}));
+  const m={unit:'상무',from:p.mil.from,until:p.mil.until,neg:{st:'open',v:800,ask:900}}; p.mil={exempt:true,unit:'상무',pf:m.from,pu:G.day}; milNegBack(p,m); ok(p.sal===2500&&p.yrs===6,'특례 전역이 옛 연봉으로 되돌렸다 '+p.sal);
+  const t=G.teams.find(x=>x.id!==G.user), q=domestic(t.id).find(x=>!x.foreign&&!x.ys); ok(q,'준비 실패 AI'); Object.assign(q,{faC:true,ext:true,yrs:1,cyrs:6,sal:800}); q.extNext={annual:2000,years:5}; (q.story=q.story||[]).push({y:G.year-1,d:dnum(G.year-1,5,1),t:'비FA 다년계약 5년 연 20억','k':'move'});
+  const w=domestic(t.id).find(x=>!x.foreign&&!x.ys&&x!==q); Object.assign(w,{faC:false,ext:false,sal:900}); w.extNext={annual:1500,years:4}; (w.story=w.story||[]).push({y:G.year,d:dnum(G.year,11,5),t:'비FA 다년계약 4년 연 15억','k':'move'}); const r0=G.rolled; G.rolled=G.year-1;
+  extStaleFix(); G.rolled=r0; ok(q.sal===2000&&q.yrs===5&&!q.extNext,'건너뛴 AI 구단 선수 연장이 되살아나지 않았다'); ok(w.extNext&&w.sal===900,'아직 시작 전인 연장을 앞당겼다'); });
+T('[제보 11-16 시설 완공] 전문화 공사는 완공일이 지나면 우리·다른 구단 모두 끝나고, 깨진 완공일·불러오기 때 지난 공사도 완공되며, 해를 넘기는 완공일은 연도까지 보인다',()=>{ fresh(); facInit(); G.fac.it.indoor=3; delete G.fac.bld.indoor; const b=facStartBuild(G.user,'indoor',{src:'cash'}); ok(b.lv===4&&b.done-G.day>365,'전문화 공사 기간 준비 실패');
+  ok(dmdA(b.done).includes(dobj(b.done).y+'년'),'해를 넘기는 완공일에 연도가 없다'); ok(!dmdA(G.day).includes('년'),'올해 날짜에 연도가 붙었다');
+  b.pm=G.day-10; b.done=G.day+2; const tgt=b.done+1; simTo(()=>G.day>=tgt); ok(!G.fac.bld.indoor&&G.fac.it.indoor===4,'완공일이 지났는데 공사가 남았다');
+  G.fac.it.weight=3; G.fac.bld.weight={lv:4,done:String(G.day-5),c:100}; G.fac.bld.lab={lv:(G.fac.it.lab||0)+1,c:100}; const t=G.teams.find(x=>x.id!==G.user), S=aiFacInit(t); S.it.rehab=3; S.bld.rehab={lv:4,done:G.day-30,c:100}; S.bld.dorm={lv:(S.it.dorm||0)+1,done:undefined,c:100};
+  facOverdueFix(); ok(!G.fac.bld.weight&&G.fac.it.weight===4,'문자열 완공일 공사가 안 끝났다'); ok(!G.fac.bld.lab,'완공일 없는 공사가 남았다'); ok(!S.bld.rehab&&S.it.rehab===4&&!S.bld.dorm,'다른 구단의 지난 공사가 불러오기 때 안 끝났다');
+  const t2=G.teams.find(x=>x.id!==G.user&&x.id!==t.id), S2=aiFacInit(t2); S2.it.fut=3; S2.bld.fut={lv:4,done:G.day+1,c:100}; simTo(()=>G.day>=tgt+3); ok(!S2.bld.fut&&S2.it.fut===4,'다른 구단 전문화 공사가 완공일 뒤에도 남았다'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
