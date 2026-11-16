@@ -170,6 +170,7 @@
       "src/ui/assets/00i_foreign17_data.js",
       "src/ui/assets/00j_faces_v18_data.js",
       "src/ui/assets/00k_people_v19_data.js",
+      "src/ui/assets/00l_amateur_faces_data.js",
       "src/ui/assets/00g_korea_map.js",
       "src/ui/assets/00h_overseas_map.js",
       "src/ui/assets/00e_staff_faces_data.js",
@@ -285,6 +286,7 @@
       "src/ui/staff/84_overseas_details.js",
       "src/ui/contracts/70_neg_window.js",
       "src/ui/career/71_gm_me.js",
+      "src/ui/career/71b_photo_edit.js",
       "src/ui/runtime/72_telemetry.js",
       "src/ui/players/73_team_build.js",
       "src/ui/matches/74_game_results.js",
@@ -341,7 +343,8 @@
       "src/css/shell/40_mobile_playtest2.css",
       "src/css/players/41_morale.css",
       "src/css/components/52_more_menu.css",
-      "src/css/components/54_list_tools.css"
+      "src/css/components/54_list_tools.css",
+      "src/css/career/86_photo_edit.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
