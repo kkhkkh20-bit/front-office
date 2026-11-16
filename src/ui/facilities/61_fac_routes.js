@@ -1,7 +1,7 @@
 /* 훈련 시설 공사 재원 버튼(구단 현금·모기업·명명권·지자체): 시설 화면·훈련 단지 지도·휴대폰 카드가 함께 쓴다(57_club_econ) */
 function facRouteBtns(k,wrap){ const t=team(G.user), lv=facOf(k), c=FACI[k].c[lv+1], pre=facCanStart(G.user,k), I=facRouteInfo(G.user,k);
   if(pre)return `<p class="small muted">${esc(pre)}</p>`;
-  const big=facBig(k,lv+1), b=(l,a,v,ok,tip)=>`<button class="btn small${a==='buildFacItem'?' primary':''}" data-a="${a}" data-v="${v}"${ok?'':' disabled'}${tip?` title="${esc(tip)}"`:''}>${l}</button>`;
+  const big=facBig(k,lv+1), b=(l,a,v,ok,tip)=>`<button class="btn small" data-a="${a}" data-v="${v}"${ok?'':' disabled'}${tip?` title="${esc(tip)}"`:''}>${l}</button>`;
   const L=[b(`구단 현금 · ${money(c)}`,'buildFacItem',k,I.cash.ok,I.cash.why)];
   if(!t.indie)L.push(b(`모기업 요청${I.cap.ok?` · 가능성 ${oddsWord(I.cap.p)}`:''}`,'capex','fac:'+k,I.cap.ok,I.cap.why));
   if(FAC_SPON.k.includes(k))L.push(b(`명명권 후원${I.spon.ok?` · ${oddsWord(I.spon.p)}`:''}`,'facFund',k+':spon',I.spon.ok,I.spon.ok?'공사비 절반을 기업이 냅니다. 성적이나 관중이 기대에 못 미치면 후원을 거두고 일부를 돌려받습니다.':I.spon.why));

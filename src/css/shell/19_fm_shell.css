@@ -24,10 +24,10 @@
   .fm-i{position:relative;width:34px;height:34px;border:0;background:none;color:#dfe7ee;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
   .fm-i:hover,.fm-i.on{background:#ffffff18;color:#fff}
   .fm-i .ico{width:19px;height:19px}
-  .fm-i>i{position:absolute;top:1px;right:0;min-width:16px;height:16px;border-radius:8px;background:var(--bad);color:#fff;font:700 10px/16px var(--f-num);font-style:normal;padding:0 4px}
+  .fm-i>i{position:absolute;top:1px;right:0;min-width:16px;height:16px;border-radius:8px;background:var(--bad);color:#fff;font:700 12px/16px var(--f-num);font-style:normal;padding:0 4px}
   .fm-date{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;margin:0 6px 0 4px;white-space:nowrap}
   .fm-date b{font:700 14px var(--f-num);color:#fff}
-  .fm-date span{font-size:11.5px;color:#d6dee5b3}
+  .fm-date span{font-size:var(--ui-caption);color:#d6dee5b3}
   .fm1 .goset .continue{min-height:40px;min-width:170px;justify-content:space-between}
   .fm2{display:flex;align-items:center;gap:10px;height:36px;padding:0 14px 0 82px;background:#00000038;border-top:1px solid #ffffff12}
   .fm-sub{display:flex;align-items:center;gap:2px;min-width:0;flex:1 1 auto;overflow:hidden}
@@ -76,12 +76,12 @@
   .fmside button span{overflow:hidden;text-overflow:ellipsis}
   .fmside button:hover{background:#ffffff12;color:#fff}
   .fmside button.on{background:color-mix(in srgb,var(--team-hi) 30%,#0b1116);color:#fff}
-  .fmside .cnt{margin-left:auto;font:700 10px/15px var(--f-num);font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px}
+  .fmside .cnt{margin-left:auto;font:700 12px/15px var(--f-num);font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px}
   .fm2{padding-left:150px}
   .fmmain{min-width:0}
 }
 @media (min-width:1100px){
-  .fm-i.fm-k{font:800 11px var(--f-num);letter-spacing:.02em;border:1px solid #ffffff2e;width:30px;height:26px}
+  .fm-i.fm-k{font:800 12px var(--f-num);letter-spacing:.02em;border:1px solid #ffffff2e;width:30px;height:26px}
   .sheet.fmkeys{max-width:760px}
   .fmk-l{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}
   .fmk{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--line)}
@@ -106,12 +106,12 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 /* FM처럼 날짜 진행(27_calendar.js dayTick): 오른쪽 위 날짜가 하루씩 넘어가고 계속 버튼 아래에 진행 막대가 찬다 */
 .fmtop .fm-date{position:relative}
 .fmtop .fm-date.fm-flip b{animation:fmFlip .22s ease-out}@keyframes fmFlip{0%{opacity:0;transform:translateY(-60%)}100%{opacity:1;transform:none}}
-.fmtop .fm-dres{position:absolute;top:100%;right:0;margin-top:3px;display:flex;align-items:center;gap:4px;font-style:normal;font-size:11px;white-space:nowrap;background:rgba(0,0,0,.55);padding:1px 6px;border-radius:3px}.fmtop .fm-dres:empty{display:none}
+.fmtop .fm-dres{position:absolute;top:100%;right:0;margin-top:3px;display:flex;align-items:center;gap:4px;font-style:normal;font-size:var(--ui-caption);white-space:nowrap;background:rgba(0,0,0,.55);padding:1px 6px;border-radius:3px}.fmtop .fm-dres:empty{display:none}
 .fmtop .fm-dres em{font-style:normal;font-weight:700}.fmtop .fm-dres em.w{color:var(--good)}.fmtop .fm-dres em.l{color:var(--bad)}
 .fmtop .goset>button.fm-busy{position:relative;overflow:hidden}
 .fmtop .goset>button.fm-busy::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:0;background:rgba(255,255,255,.85);animation:fmProg var(--fmdur,1200ms) linear forwards}
 @keyframes fmProg{to{width:100%}}
-.fmtop .goset>button.fm-busy .cl i{font-size:0}.fmtop .goset>button.fm-busy .cl i::after{content:'날짜 진행 중…';font-size:11px}
+.fmtop .goset>button.fm-busy .cl i{font-size:0}.fmtop .goset>button.fm-busy .cl i::after{content:'날짜 진행 중…';font-size:var(--ui-caption)}
 @media (prefers-reduced-motion: reduce){.fmtop .fm-date.fm-flip b{animation:none}} /* 진행 막대는 진행 상황이라 남긴다 */
 /* 진행하기 띠(FM식, 사용자 11-08): 다음 경기 요약 + 날짜 칸이 하루씩 왼쪽으로 지나간다 */
 #fmadv{position:fixed;left:var(--app-side-w,0px);right:0;top:var(--app-header-h,56px);z-index:130;background:var(--bg,#0e131a);border-bottom:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45);transform:translateY(-12px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
@@ -127,7 +127,7 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 #fmadv .fa-h{display:grid;padding:8px 2px 6px}#fmadv .fa-h b{font-size:20px;font-family:var(--f-num)}#fmadv .fa-h i{font-style:normal;font-size:12px;color:var(--muted)}
 #fmadv .fa-g{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:5px;align-items:center;background:var(--team-dk,#22303d);border-radius:3px;padding:5px 6px;margin-bottom:4px}#fmadv .fa-g span{display:grid;line-height:1.15}#fmadv .fa-g b{font-size:12px}#fmadv .fa-g i{font-style:normal;font-size:var(--ui-micro);color:var(--muted)}
 #fmadv .fa-g em{font-style:normal;font-size:12px;font-weight:700;opacity:0;transition:opacity .2s}#fmadv .fa-c.done .fa-g em{opacity:1}#fmadv .fa-g em.w{color:var(--good)}#fmadv .fa-g em.l{color:var(--bad)}
-#fmadv .fa-rest,#fmadv .fa-e{font-size:11px;padding:4px 6px;margin-bottom:4px;border-radius:3px;background:rgba(255,255,255,.05);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fmadv .fa-rest,#fmadv .fa-e{font-size:var(--ui-caption);padding:4px 6px;margin-bottom:4px;border-radius:3px;background:rgba(255,255,255,.05);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #fmadv .fa-e{background:rgba(139,92,246,.22);color:#e7dcff}
 @media (prefers-reduced-motion: reduce){#fmadv .fa-in{transition:none}}
 /* 우승 장면(사용자 11-08) */
@@ -140,7 +140,7 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .champ-scene .cs-team{display:flex;align-items:center;gap:12px}.champ-scene .cs-team b{font-size:clamp(22px,3.4vw,34px)}
 .champ-scene .cs-sub{margin:0;color:#dfe6ee;font-size:14px}
 .champ-scene .cs-team-photo{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:6px 0}.champ-scene figure{margin:0;display:grid;justify-items:center;gap:4px;width:96px}
-.champ-scene figure .av{width:84px;height:84px;border-radius:50%;border:3px solid #ffd24d;object-fit:cover;background:#111}.champ-scene figcaption{font-size:12px;display:grid}.champ-scene figcaption i{font-style:normal;color:#ffd24d;font-size:11px}
+.champ-scene figure .av{width:84px;height:84px;border-radius:50%;border:3px solid #ffd24d;object-fit:cover;background:#111}.champ-scene figcaption{font-size:12px;display:grid}.champ-scene figcaption i{font-style:normal;color:#ffd24d;font-size:var(--ui-caption)}
 @keyframes csFall{to{transform:translateY(110vh) rotate(540deg)}}@keyframes csGlow{50%{filter:drop-shadow(0 12px 60px rgba(255,210,77,.85))}}@keyframes csIn{from{opacity:0}}
 @media (prefers-reduced-motion: reduce){.champ-scene .cs-conf,.champ-scene .cs-trophy{animation:none}.champ-scene .cs-conf{display:none}}
 /* 휴대폰 상단 '하루 진행'은 진행하기 ▾ 메뉴로 옮겼다(UI 2단계 2-7) */
@@ -171,13 +171,13 @@ main.ws-frame>.setx.ws-own{flex:1;min-height:0;overflow:auto;overscroll-behavior
 .setx>.set-cafe{grid-column:1/-1;margin:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:center;padding:16px 18px;border:1px solid color-mix(in srgb,#03c75a 45%,var(--line));background:linear-gradient(110deg,color-mix(in srgb,#03c75a 22%,var(--panel)) 0%,var(--panel) 55%,color-mix(in srgb,var(--acc) 14%,var(--panel)) 100%)}
 .set-cafe .eyebrow{color:#2fd877}.set-cafe h2{margin:2px 0 4px;font-size:20px}.set-cafe p{margin:0;font-size:12.5px;color:var(--muted);max-width:760px;line-height:1.55}
 .set-cafe-b{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.set-cafe-b .btn.primary{background:#03c75a;border-color:#03c75a;color:#fff;font-weight:800;font-size:15px;padding:10px 22px}
-.set-ver{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.set-ver{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:var(--ui-caption);color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
 .set-g{margin:2px 2px -2px;font-size:12px;letter-spacing:.06em;color:var(--muted);font-weight:700}
 @media(max-width:700px){.setx>.set-cafe{grid-template-columns:1fr}.set-cafe-b{justify-content:flex-start}}
 /* 업데이트 소식 창의 카페 안내 */
 .pn-cafe{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 10px;align-items:center;margin:8px 0 0;padding:10px 12px;border-radius:8px;text-decoration:none;color:inherit;border:1px solid color-mix(in srgb,#03c75a 45%,var(--line));background:color-mix(in srgb,#03c75a 14%,var(--panel))}
 .pn-cafe>.cafe-mk{grid-row:1/3;grid-column:1;display:block;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
-.pn-cafe b{grid-column:2;font-size:13.5px}.pn-cafe span{grid-column:2;font-size:11.5px;color:var(--muted);line-height:1.45}.pn-cafe i{grid-row:1/3;grid-column:3;font-style:normal;font-weight:800;font-size:14px;color:#fff;background:#03c75a;border:1px solid #02b350;border-radius:8px;padding:9px 14px;white-space:nowrap;min-height:38px;display:inline-flex;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.pn-cafe b{grid-column:2;font-size:13.5px}.pn-cafe span{grid-column:2;font-size:var(--ui-caption);color:var(--muted);line-height:1.45}.pn-cafe i{grid-row:1/3;grid-column:3;font-style:normal;font-weight:800;font-size:14px;color:#fff;background:#03c75a;border:1px solid #02b350;border-radius:8px;padding:9px 14px;white-space:nowrap;min-height:38px;display:inline-flex;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.2)}
 .pn-cafe:hover i,.pn-cafe:focus-visible i{background:#02b350}
 @media(max-width:420px){.pn-cafe{gap:2px 8px;padding:10px}.pn-cafe>.cafe-mk{width:28px;height:28px}.pn-cafe i{padding:8px 10px;font-size:13px}}
 /* 카페로 가는 작은 버튼(제보 복사 뒤·팀 카드·자랑할 순간 소식) */
@@ -195,15 +195,15 @@ a.cafe-go:hover,a.cafe-go:focus-visible{background:color-mix(in srgb,#03c75a 28%
 .ipl-r{display:flex;align-items:stretch;gap:4px;overflow-x:auto}.ipl-ar{align-self:center;color:var(--muted);flex:none}
 .ipl-c{flex:1 1 0;min-width:128px;border:1px solid var(--line,#2a3540);border-radius:6px;padding:5px 6px;font-size:12px}
 .ipl-c.on{border-color:#e8b64a;box-shadow:0 0 0 1px #e8b64a inset}.ipl-c.my{background:rgba(232,182,74,.07)}
-.ipl-h{display:flex;justify-content:space-between;margin-bottom:3px}.ipl-h i{color:var(--muted);font-style:normal;font-size:11px}
+.ipl-h{display:flex;justify-content:space-between;margin-bottom:3px}.ipl-h i{color:var(--muted);font-style:normal;font-size:var(--ui-caption)}
 .ipl-t{display:flex;align-items:center;gap:4px;line-height:20px}.ipl-t b{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ipl-t b.me{color:#e8b64a}.ipl-t em{font-style:normal;font-weight:700;font-variant-numeric:tabular-nums}
-.ipl-gs{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}.ipl-g{font-size:11px;padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.06);white-space:nowrap}.ipl-g i{font-style:normal;color:var(--muted);margin-right:3px}
+.ipl-gs{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}.ipl-g{font-size:var(--ui-caption);padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.06);white-space:nowrap}.ipl-g i{font-style:normal;color:var(--muted);margin-right:3px}
 .ipl-g.w{background:rgba(42,138,60,.3)}.ipl-g.l{background:rgba(179,48,42,.3)}.ipl-g.nx{outline:1px dashed #e8b64a;outline-offset:-1px;white-space:normal}
 @media(max-width:700px){.ipl-c{min-width:118px}}
 
 /* 휴대폰 날짜 진행(사용자 11-09): PC와 같게 위 날짜가 하루씩 넘어가고 진행하기 버튼에 막대가 찬다 */
 .top .tbar .club>div>span.fm-flip b{display:inline-block;animation:fmFlip .22s ease-out}
-.top .tbar .club>div>span{position:relative}.top .fm-dres{position:absolute;top:100%;left:0;margin-top:2px;display:flex;align-items:center;gap:4px;font-style:normal;font-size:11px;white-space:nowrap;background:rgba(0,0,0,.6);padding:1px 6px;border-radius:3px;z-index:5}.top .fm-dres:empty{display:none}
+.top .tbar .club>div>span{position:relative}.top .fm-dres{position:absolute;top:100%;left:0;margin-top:2px;display:flex;align-items:center;gap:4px;font-style:normal;font-size:var(--ui-caption);white-space:nowrap;background:rgba(0,0,0,.6);padding:1px 6px;border-radius:3px;z-index:5}.top .fm-dres:empty{display:none}
 .top .fm-dres em{font-style:normal;font-weight:700}.top .fm-dres em.w{color:var(--good)}.top .fm-dres em.l{color:var(--bad)}
 .top .goset>button.fm-busy{position:relative;overflow:hidden}
 .top .goset>button.fm-busy::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:0;background:rgba(255,255,255,.85);animation:fmProg var(--fmdur,1200ms) linear forwards}

@@ -67,7 +67,7 @@ function aiPlanDaily(){ const o=dobj(G.day); if(o.m===7&&o.d===1&&G.aiPlanM!==G.
 function aiPlanOff(){ if(G.aiPlanY===G.year)return; G.aiPlanY=G.year; aiPlanYear(false); try{ domNews(); }catch(e){} } /* 독주 구단이 있으면 견제 소식(86b_dynasty) */
 /* ----- 계획별 판단 값(다른 파일이 여기서 읽는다) ----- */
 /* 트레이드 가치 배율: 유망주 수집 구단은 어린 선수를 훨씬 높게, 스물아홉 넘은 주전은 훨씬 낮게 본다. 우승 도전은 반대 */
-function planTradeMul(t,p,dir){ const pl=planOf(t); if(!pl)return 1; const a=p.age, gap=Math.max(0,p.pot-ovr(p));
+function planTradeMul(t,p,dir){ const pl=planOf(t); if(!pl)return 1; const a=p.age, gap=Math.max(0,p.pot+(dir==='in'?potSeenIn(t,p):potSeenD(t,p))-ovr(p)); /* 남의 선수 잠재력은 스카우트 추정(16_trade potSeenD) */
   if(pl==='build'){ if(dir==='in')return a<=23?(gap>=6?1.35:1.2):a<=25?1.18:a<=28?1:a<=31?.6:.4; return a<=25?1.2:a>=30?.8:1; }
   if(pl==='tight'){ if(dir==='in')return (p.sal>=500?.5:p.sal>=200?.75:1)*(a<=25?1.12:a>=31?.8:1); return p.sal>=500?.75:1; }
   if(pl==='win'){ const hot=t.allIn===sponSeason()||despOf(t)>=.5; /* 올인·벼랑 끝: 검증된 주전에 확실성 웃돈, 유망주는 더 싸게 본다(86b_dynasty) */

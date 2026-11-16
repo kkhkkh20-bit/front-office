@@ -13,7 +13,7 @@
 .item>.opz-risk{grid-column:1 / -1;margin-top:2px}
 .opz-risk .bad{color:var(--bad)}.opz-risk .warn{color:var(--warn)}.opz-risk .good{color:var(--good)}
 @media (max-width:640px){.opz-r{flex-direction:column;align-items:stretch}.opz-b{max-width:none;justify-content:flex-start}.opz-risk{text-align:left}}
-.kv dd.ctm-dd i{display:block;font-style:normal;font-family:var(--f-ui);font-size:11px;color:var(--muted)}
+.kv dd.ctm-dd i{display:block;font-style:normal;font-family:var(--f-ui);font-size:var(--ui-caption);color:var(--muted)}
 .rva{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 .rva-r{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
 .rva-r:last-child{border-bottom:0}
