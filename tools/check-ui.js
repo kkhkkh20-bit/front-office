@@ -111,17 +111,19 @@ const QUICK=process.env.QUICK==='1';
     const r=await ev(()=>{ const out={}; closeSheets(); A.tab('roster'); const L=playersOf(G.user).filter(p=>canExtend(p)).sort((a,b)=>ovr(b)-ovr(a)); if(L.length<2)return {skip:true};
       const a=L[0], b=L[1]; G.agRel=G.agRel||{};
       A.player(a.id); A.ngtOpen('ext:'+a.id); UI.ngt.T.annual=MIN_SAL; UI.ngt.T.bonus=0; UI.ngt.T.opt=0; A.ngtSubmit();
+      out.first=(document.querySelector('#sheet .ng-res')||{}).innerText||''; /* 계약 1단계: 한 주 한 번 대신 성향별 라운드 한도. 한도를 넘기면 에이전트가 접고 다시 받는 날을 알린다 */
+      for(let i=0;i<6&&!a.extNg?.fold;i++){ UI.ngt.T.annual=MIN_SAL; A.ngtSubmit(); }
       const res=document.querySelector('#sheet .ng-res'); out.noRes=res?res.innerText:''; const sb=document.querySelector('#sheet [data-a="ngtSubmit"]'); out.noBtn=sb?(sb.disabled?'off':'on'):'none';
-      A.ngtSubmit(); out.again=(document.querySelector('#sheet .ng-res')||{}).innerText||'';
+      out.again=out.noRes;
       closeSheets(); A.player(b.id); A.ngtOpen('ext:'+b.id); const d=ngtExtDem(b,UI.ngt.T.years); UI.ngt.T.annual=round5(d*1.5); UI.ngt.T.bonus=0; UI.ngt.T.opt=0; A.ngtSubmit();
       if(UI.ngt&&b.extCounter){ A.ngtCounter(); }
       out.done=!!b.extNext||(b.ext&&b.faC); const st=document.querySelector('.stamp-w'); out.stamp=!!st;
       if(st){ const r=st.getBoundingClientRect(); const e=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2); out.top=!!(e&&e.closest('.stamp-w')); }
       out.log=(b.extLast||{}).st||''; return out; });
     if(!r||r.skip)return;
-    if(!/거절|안 됩니다|시장/.test(r.noRes))add('협상 결과','낮은 다년계약 제안 뒤 결과 줄이 없음: '+JSON.stringify(r.noRes));
-    if(!/다음 주|\d+\/\d+/.test(r.noRes))add('협상 결과','거절 뒤 다음 제안 가능일이 안 보임: '+JSON.stringify(r.noRes));
-    if(r.noBtn==='on')add('협상 결과','이번 주에 더 제안할 수 없는데 제안하기 버튼이 그대로 켜져 있음');
+    if(!/거절|안 됩니다|시장/.test(r.first))add('협상 결과','낮은 다년계약 제안 뒤 결과 줄이 없음: '+JSON.stringify(r.first));
+    if(!/접었|\d+\/\d+/.test(r.noRes))add('협상 결과','라운드 한도 뒤 다시 제안할 수 있는 날이 안 보임: '+JSON.stringify(r.noRes));
+    if(r.noBtn==='on')add('협상 결과','에이전트가 협상을 접었는데 제안하기 버튼이 그대로 켜져 있음');
     if(!r.done)add('협상 결과','요구의 1.5배 제안에도 합의되지 않음(시나리오 준비 실패)');
     else if(!r.stamp)add('협상 결과','다년계약 합의 도장이 선수단 화면에 안 뜸');
     else if(!r.top)add('협상 결과','합의 도장이 선수 정보 창에 가려짐');
