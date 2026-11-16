@@ -1033,6 +1033,12 @@ T('[드래프트] 같은 투수의 최고 구속은 어디서나 같고, 기록�
   p.am.bb=Math.round(p.am.outs/27*7.5); p.gmSeen=G.year; /* 관찰 0회면 관찰 의견이 없다(검수 11-09ze): 단장이 직접 본 후보로 */ const rp0=scoutReport(p); const rp=Object.assign({},rp0,{tools:rp0.tools.map(t=>t.k==='ctl'?Object.assign({},t,{cur:78}):t)}); const v=draftView(p,rp);
   ok(/기록/.test(v.obs)&&/근거/.test(v.obs),'기록과 반대인데 설명 없음: '+v.obs); ok(rp.ofp==null||/상한/.test(v.fut)&&/확신/.test(v.fut),'성장 전망 표현: '+v.fut);
   p.amInj='토미 존 수술(2학년)'; ok(riskWhy(p,rp).some(x=>/건강/.test(x)),'건강 위험 원인 없음'); p.amInj=null; });
+T('[영구결번 11-17] 이미 은퇴한 우리 구단 선수도 지금 기준을 채우면 후보가 되고 지정할 수 있다(기준을 낮추면 예전 선수도 올라온다)',()=>{ DEMO.on=false; newGame(6); G.legends=G.legends||[]; G.cfg=G.cfg||{};
+  const r={name:'가나다',isP:false,pos:'유격수',y:G.year-3,age:38,seasons:15,teams:[G.user],war:50,id:987654,pid:987654,aw:[],awP:[],no:7,noU:17,mine:{war:45,ys:9}}; G.legends.push(r);
+  G.cfg.retWar=60; ok(!retNoCands().some(x=>x.r===r),'기준(60·10시즌) 미달인데 후보가 됨');
+  G.cfg.retWar=40; ok(retNoCands().some(x=>x.r===r),'기준을 낮췄는데(40·8시즌) 은퇴한 선수가 후보로 오르지 않음'); ok(r.no===17,'우리 구단 등번호로 바뀌지 않음');
+  const o={...r,id:987655,pid:987655,name:'라마바',tid:(G.user+1)%10,mine:{war:80,ys:12}}; G.legends.push(o); ok(!retNoCands().some(x=>x.r===o),'다른 구단 후보가 우리 후보로 섞임');
+  const m=retireNumber('p'+r.pid); ok(r.retNo,'지정 실패: '+m); ok((G.retNos||[]).some(x=>x.no===17),'영구결번 목록에 없음'); });
 T('[면담] 고민 묻기는 다른 이야기를 막지 않고, 방금 진 경기를 성격대로 알아들으며, 면담 내용이 남는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3);
   const g=G.games.find(x=>x.home===G.user||x.away===G.user); ok(g,'경기 없음'); g.day=G.day; const me=g.home===G.user?'h':'a'; const B=g.box[me]; const x=B.pit[B.pit.length-1]; const p=G.players[x.id]; ok(p,'투수 없음');
   x.er=4; x.d='패'; initPers(p); p.pers.temp=5; p.pers.amb=10; p.tk={}; p.talkWk=null;
