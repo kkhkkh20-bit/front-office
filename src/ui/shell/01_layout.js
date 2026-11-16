@@ -95,7 +95,7 @@ function exportCard(){ return `<section class="card"><h2 class="sec">내보내�
   ${UI.expCode?`<textarea class="code" id="expCodeBox" readonly>${UI.expCode}</textarea><div class="row"><button class="btn primary" data-a="expCopy">코드 복사하기</button><span class="small muted">길이 ${Math.round(UI.expCode.length/1024)}KB · 복사해서 메모장·메신저 '나에게 보내기' 등에 보관하세요.</span></div>`:''}
   <textarea class="code" id="impCode" placeholder="내보낸 코드를 여기에 붙여 넣으세요"></textarea>
   <div class="row"><button class="btn" data-a="impPaste">붙여넣기</button><button class="btn primary" data-a="impCode">코드로 불러오기 (현재 슬롯에 덮어씀)</button></div>
-  ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`; }
+  ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`+(typeof transferCard==='function'?transferCard():''); } /* 기기 옮기기(01c_transfer.js): 내보내기 카드 바로 아래, 설정 저장·처음 화면 불러오기 모두 */
 /* 가져올 세이브 검사: 게임이 바로 읽는 필수 항목이 없으면 아무것도 바꾸기 전에 거절한다(검수 11-09: 시즌 기록·사용자 구단이 빠진 백업이 정상 세이브를 덮어씀) */
 function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
   if(!o(g)||g.ver!==4)return '저장 형식';
@@ -115,7 +115,7 @@ let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; UI.peopleBrowse=nul
   UI.wkres=G&&G.wkHold?Object.assign({},G.wkHold):null; /* 확인 전의 경기 요약 창은 그 세이브 것으로 다시 연다(검수 11-09zzc #20) */
   if(G&&Array.isArray(G.stops)&&Array.isArray(G.mail)){ const M=[...G.mail,...(G._mh||[])]; G.stops=G.stops.filter(x=>!(x&&/^m\d+$/.test(x.id||''))||M.some(m=>m.id===x.id)).map(x=>x&&x.id&&M.find(m=>m.id===x.id)||x); } } /* 저장하면 정지 알림이 원본 소식의 복사본이 된다: 원본으로 다시 잇고, 지워진 소식은 뺀다(검수 11-09zzc #25·#27) */
 /* to: 파일을 고른 시점의 대상({title,slot,g}). 읽는 사이 슬롯이 바뀌면 가져오지 않는다(검수 11-09: 다른 슬롯에 덮어씀) */
-function importText(t,to){
+function importText(t,to,opt){ /* opt.empty: 게임 중에도 지금 슬롯 대신 빈 슬롯으로(기기 옮기기) */
  let g=null;t=String(t||'').trim().replace(/^\uFEFF/,'');
  /* 메신저·메모 앱이 긴 코드에 줄바꿈·띄어쓰기를 넣거나 '+'를 띄어쓰기로 바꾸는 경우가 있다: 차례로 고쳐 본다 */
  if(t[0]==='{'){try{g=JSON.parse(t);}catch(e){}}
@@ -123,7 +123,7 @@ function importText(t,to){
  if(!g||g.ver!==4||!Array.isArray(g.teams)||!g.players){UI.impMsg=t&&t[0]!=='{'&&t.length>100?`코드를 읽지 못했습니다(붙여 넣은 길이 ${t.length.toLocaleString()}자). 코드가 끝까지 복사되지 않았을 가능성이 큽니다. 저장 코드는 수십만 자라 메신저로 보내면 잘리기 쉽습니다. 기기를 옮길 때는 '파일로 내보내기'로 받은 .txt 파일을 불러오기에 넣어 주세요.`:'저장 파일을 읽지 못했습니다. 게임에서 내보낸 .txt 또는 .json 파일인지 확인해 주세요.';render();return;}
  { const bad=saveCheck(g); if(bad){ UI.impMsg=`백업의 ${bad}이(가) 없거나 손상돼 가져오지 않았습니다. 기존 세이브와 진행 중인 게임은 그대로입니다.`; render(); return; } }
  if(to&&(to.title!==!!UI.title||to.g!==G||(!to.title&&to.slot!==curSlot()))){ UI.impMsg='파일을 읽는 사이 슬롯(게임)이 바뀌어 가져오지 않았습니다. 가져올 곳에서 파일을 다시 골라 주세요.'; render(); return; }
- const m=meta(),fromTitle=!!UI.title,slot=fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot();
+ const m=meta(),fromTitle=!!UI.title||!!(opt&&opt.empty),slot=fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot();
  if(fromTitle&&!slot){UI.impMsg='빈 저장 슬롯이 없습니다. 보관할 저장을 내보내고 슬롯을 비운 뒤 불러와 주세요.';render();return;}
  if(G){ try{ saveFlush(); }catch(e){} } /* 기다리던 저장을 먼저 끝낸다: 가져오기를 되돌릴 때 그 진행이 사라지지 않게 */
  const old=G, cur0=CUR_SLOT, rev0=SLOT_REV, cf0=SAVE_CONFL, nw0=SLOT_NEW, err0=SAVE_ERR, stage0=_saveGStage; /* 저장을 끝낸 뒤의 판번호를 기억한다(검수 11-09zr #3: 먼저 기억하면 되돌릴 때 이 탭 저장을 다른 탭 충돌로 오인) */
