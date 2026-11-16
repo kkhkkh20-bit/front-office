@@ -105,10 +105,12 @@ const EVH={
     follow(d){ const p=evP(d.pid); if(!p||p.team!==G.user)return; const h=seasonTotal(p,G.year,'1군');
       const t=h?`${p.name} 콜업 한 달: 1군 ${statLine(h,p)}${p.e1?'':' · 지금은 2군으로 내려가 있습니다'}`:`${p.name} 콜업 한 달: 1군 기회를 거의 얻지 못했습니다.`; evResult(d.ev,t); note('엔트리',t,p.id); } },
   /* 감독의 보강 요청 */
-  reinf:{ w:1, check(){ const m=G.mgr[G.user]; if(!m||G.day>KD(7,24))return null; if(G.day-(G.mgrReqD??-99)<45)return null; /* 감독 보강 요청(자리 요청)과 겹치지 않게 */
+  reinf:{ w:1, check(){ const m=G.mgr[G.user]; if(!m||m.interim||G.day>KD(7,24)||!tradeOpen()||rosterN(G.user)>=ROSTER_MAX)return null; if(mreqBusy(m))return null; /* 진행 중인 감독 보강 요청이 있거나 정원이 찼으면 또 조르지 않는다 */ if(G.day-(G.mgrReqD??-99)<45)return null; /* 감독 보강 요청(자리 요청)과 겹치지 않게 */
       const all=G.teams.map(t=>({t:t.id,d:depth(t.id)})); const rk=f=>{ const vs=all.map(x=>({t:x.t,v:f(x.d)})).sort((a,b)=>b.v-a.v); return vs.findIndex(x=>x.t===G.user)+1; };
       const L=[['선발진',rk(d=>avg(d.sp.slice(0,5).map(spV)))],['불펜',rk(d=>avg(d.pen.slice(0,5).map(penV)))],['타선',rk(d=>avg(d.start.map(offV)))]].sort((a,b)=>b[1]-a[1]);
-      return L[0][1]>=8?{area:L[0][0],rank:L[0][1]}:null; },
+      if(L[0][1]<8)return null; const area=L[0][0]; const d=all.find(x=>x.t===G.user).d; const cur={선발진:d.sp.slice(0,5),불펜:d.pen.slice(0,5),타선:d.start}[area]; const fl=cur.length?Math.min(...cur.map(ovr)):0; const inA=p=>area==='타선'?!p.isP:p.isP&&pSlot(p)===(area==='선발진'?'SP':'RP');
+      if(Object.values(G.players).some(p=>p.team===G.user&&!p.ys&&inA(p)&&ovr(p)>=fl+3&&mgrSoonBack(p,30)))return null; /* 그 쪽 주전이 곧 돌아오면(부상·대표팀·연수·전역) 보강을 조르지 않는다(사용자 11-16, 감독 요청과 같은 판정) */
+      return {area,rank:L[0][1]}; },
     make(x){ const m=G.mgr[G.user]; G.mgrReqD=G.day; evNew('reinf',`감독의 ${x.area} 보강 요청`,`${m.name} 감독: "우리 ${x.area}이(가) 리그 ${x.rank}위입니다. 이대로는 버티기 어렵습니다. 보강을 부탁드립니다."`,
       [{l:'30일 안에 보강 약속',fx:'감독 관계가 오릅니다. 30일 안에 트레이드·외국인 교체 등으로 선수를 데려오지 못하면 크게 떨어집니다.'},
        {l:'지금 전력으로 버티자',fx:'감독 관계가 내려갑니다.'}],{from:'감독실',data:{area:x.area},def:1}); },
