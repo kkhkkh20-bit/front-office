@@ -23,6 +23,9 @@ function declApply(){ for(const p of Object.values(G.players)){ const D=p.declP;
 /* 투수 체력 성장 몫(플레이어 제보 11-15: 모든 능력이 같은 몫으로 커서 계투 투수 체력도 선발만큼 올라, 결국 누구나 선발 체력이 됐다).
    그해 1·2군 등판 중 선발 비중으로 정한다: 주로 선발 1.1배, 계투만 0.35배. 등판이 적으면(10경기 미만) 그대로. 모든 구단 같은 식 */
 function staUseF(p){ try{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,G.year,'퓨처스'); const g=(a?a.g||0:0)+(f?f.g||0:0), gs=(a?a.gs||0:0)+(f?f.gs||0:0); if(g<10)return 1; const s=gs/g; return clamp(.35+s*1.25,.35,1.1); }catch(e){ return 1; } }
+/* 실현율 불발 몫(11-17 드래프트 보정): 30%·0.3~0.6 → 38%·0.25~0.6. 지명 순번과 무관하게 모든 신인에게 같다.
+   KCI 논문(신인 드래프트 이후 프로야구선수의 1군 지위 성취가능성과 프로 지위 유지가능성 분석, 2010~2013 지명 320명 8년 추적): 8년째 프로에 남은 선수 약 50% */
+const REALK_LO=.38, BLUE_FLOOR_P=.35, BLOOM_P=.035;
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
@@ -34,7 +37,11 @@ function develop(p){
   /* 잠재력 실현율(숨김, 사용자 11-12: 잠재력만 믿고 모으면 망할 수도 있어야 한다. 잠재력만큼 크는 선수는 드물다).
      처음 성장할 때 정한다: 약 30%는 불발(잠재력까지 남은 몫의 30~60%), 50%는 부분(60~90%), 20%만 거의 다(90~100%). 프로의식이 좋을수록 높다.
      스카우트가 보는 잠재력(p.pot)은 그대로라 별 다섯 유망주도 안 터질 수 있다. 실현 상한 = 기준 능력 + (잠재력-기준)×실현율 */
-  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<.3?rnd(.3,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.035-Math.max(0,((p.pers&&p.pers.temp)||10)-13)*.02+(((p.pers&&p.pers.amb)||10)-10)*.012; /* 좋은 선수: 프로의식·야망 높고 예민도 낮음 */ /* 멘탈이 실현율을 크게 가른다(사용자 11-12): 성실성 4면 -0.21, 16이면 +0.21, 예민하면 더 낮게 */ if(p.blue&&p.pot<66)k=Math.max(k,rnd(.62,.8)); /* 대어(그해 신인 잠재력 상위 셋): 아마추어 시절부터 검증돼 불발이 드물다(10_draft). 국가대표감 이상은 그대로 둬서 S급은 여전히 드물게 */ p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; }
+  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<REALK_LO?rnd(.25,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.035-Math.max(0,((p.pers&&p.pers.temp)||10)-13)*.02+(((p.pers&&p.pers.amb)||10)-10)*.012; /* 좋은 선수: 프로의식·야망 높고 예민도 낮음 */ /* 멘탈이 실현율을 크게 가른다(사용자 11-12): 성실성 4면 -0.21, 16이면 +0.21, 예민하면 더 낮게 */ if(p.blue&&p.pot<66&&R()<BLUE_FLOOR_P)k=Math.max(k,rnd(.5,.7)); /* 대어(그해 신인 잠재력 상위 셋): 아마추어 시절부터 검증돼 불발이 드물다(10_draft). 국가대표감 이상은 그대로 둬서 S급은 여전히 드물게 */ /* 드래프트 보정(11-17): 하한 0.62~0.8을 늘 주던 것을 35%만, 0.5~0.7로. 1~3순위도 실패할 수 있다(구단주: 모든 1라운더가 성공하는 것도 아니고) */ p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; if(R()<BLOOM_P)p.bloomY=G.year+ri(1,4); }
+  /* 늦게 터지는 재능(11-17 드래프트 보정): 처음 성장 때 BLOOM_P 확률로 1~4년 뒤 잠재력이 60~68(원래 척도, 이미 높으면 +4~8)·실현율 0.85 이상이 되고, 그해 겨울에 남은 여지의 25~40%가 한꺼번에 큰다(30대 늦깎이와 같은 방식). 지명 순번·출신과 무관하다.
+     KBO 골든글러브 국내 수상자 2011–2025(51명, 위키백과 'KBO 골든글러브'와 선수별 드래프트 순위)는 단일 드래프트로 환산해 1라운드 27.5%·2라운드 29.4%·3라운드 5.9%·4~6라운드 21.6%·7라운드 이하 7.8%·미지명 7.8%에서 나왔다.
+     게임은 지명 때 잠재력이 결과를 거의 정해 특급의 80% 넘게 1라운드였다. 26세가 지나면 없어진다 */
+  let bl=false; if(p.bloomY!=null){ if(age>26)delete p.bloomY; else if(G.year>=p.bloomY){ bl=true; p.pot=Math.min(78,Math.max(p.pot+ri(4,8),rnd(60,68))); p.realK=Math.max(p.realK??0,Math.round(rnd(.85,1)*100)/100); delete p.bloomY; p.devLog.reasons.push('bloom'); story(p,`${G.year} 늦게 터진 재능: 잠재력이 크게 올랐다`); } }
   const potEff=p.realK!=null?p.potB+Math.max(0,p.pot-p.potB)*p.realK:p.pot;
   const gap=Math.max(0,potEff-o); let base=0;
   if(age<=T.grow){
@@ -49,6 +56,7 @@ function develop(p){
     if(T.vl&&svc!=='현역'&&age>=30&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */
   } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g*pg:0); }
   else { base=-(age-T.fall+1)*.6*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=36?-2.4:-3.6)-(age>=37?.8:0); if(age<T.fall)base=N(-.2,1); }
+  if(bl)base+=gap*rnd(.25,.4)*eliteGrowF(o+gap*.4); /* 늦게 터진 재능: 그해 한꺼번에(정상급 수 억제는 같은 식) */
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
   if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.02+Math.max(0,(p.pers.temp||10)-13)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */

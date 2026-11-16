@@ -12092,7 +12092,18 @@ function entryPerfOf(p,h,lv){ if(!h)return 0; const L=EP_LG[lv];
   const n=h.pa||0; if(n<(lv==='1군'?60:30))return 0; return (bRate(h).ops-L.ops)/.12*n/(n+150); }
 function entryPerf(tid,p){ if(period()!=='season')return 0; try{ if(!p.e1)return clamp(entryPerfOf(p,seasonTotalT(p,G.year,'퓨처스',tid),'퓨처스')*1.5,-.75,1.5);
   return clamp(entryPerfOf(p,seasonTotalT(p,G.year,'1군',tid),'1군')*1.2,-1,0); }catch(e){ return 0; } }
-function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; const yb=tid===G.user&&p.age<=24&&mplOn('youth')&&!p.e1&&(()=>{ const h=seasonTotalT(p,G.year,'퓨처스',tid); /* 이 구단 퓨처스 기록만(검수 11-09zx) */ return h&&(p.isP?h.outs>=30&&pRate(h).era<=3.8:h.pa>=40&&bRate(h).ops>=.76); })()?3:0; return yb+entryPerf(tid,p)+(p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*(1-mgrDefW(tid)*.74)+p.r.def*mgrDefW(tid)*.74)+polBonus(tid,p,lean)+(p.roleProm&&rpromK(tid,p)?30:0)+f-(p.fat||0)/25; }
+/* 확대 엔트리 첫 기회(11-17 드래프트 보정): 실제 KBO는 지명 선수 3분의 2가 1군 무대를 밟는다.
+   - KCI 논문 "신인 드래프트 이후 프로야구선수의 1군 지위 성취가능성과 프로 지위 유지가능성 분석": 2010~2013 지명 320명 8년 추적, 66%가 1군 경험
+   - yagoonara.com 드래프트 정리(확인 못 함): 2010~2020 지명 952명 중 607명(63.8%) 1군 데뷔, 1라운드 103명 중 98명(95.1%)
+   - 한겨레 김양희 칼럼(2021): 2020 지명 110명 중 46명이 약 1.7시즌 안에 1군, 2019 지명은 47명
+   게임은 1군 등록이 능력순이라 하위 지명은 1군을 거의 못 밟았다(지명 전체 약 32%). 확대 엔트리(9월) 동안 1군 경험이 없는 젊은 선수(지명·입단 6년 안, 26세 이하)에게
+   1군 자리 DEBUT_N개를 먼저 준다(entryManage). 1군에 한 번 서면 다음 후보와 바꾼다. 주전·선발·필승조·포수 2명은 건드리지 않는다. 모든 구단 같은 식.
+   (기용 점수에 가산 8을 더하는 첫 판은 2군 하위권과 차이가 커서 9월 1군 경험이 구단당 한 해 1명 늘어나는 데 그쳤다) */
+const DEBUT_N=ENTRY_EXP; /* 확대 엔트리 인원만큼(KBO 9월 확대 5명) */
+const debutOn=()=>period()==='season'&&entryLimit()>=ENTRY_BASE+ENTRY_EXP;
+function debutDue(p){ if(p.d1g||p.foreign||p.age>26||p.ys)return false; const y0=p.draft?p.draft.y:p.tryS?p.tryS.y:p.joinY; if(y0==null||G.year-y0>6)return false;
+  if((p.hist||[]).some(h=>h.lvl==='1군'&&(h.g||0)>0)){ p.d1g=1; return false; } return true; }
+function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; const yb=tid===G.user&&p.age<=24&&mplOn('youth')&&!p.e1&&(()=>{ const h=seasonTotalT(p,G.year,'퓨처스',tid); /* 이 구단 퓨처스 기록만(검수 11-09zx) */ return h&&(p.isP?h.outs>=30&&pRate(h).era<=3.8:h.pa>=40&&bRate(h).ops>=.76); })()?3:0; return yb+entryPerf(tid,p)+(p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*(1-mgrDefW(tid)*.74)+p.r.def*mgrDefW(tid)*.74)+polBonus(tid,p,lean)+(p.roleProm&&rpromK(tid,p)?30:0)+f-(p.fat||0)/25 }
 function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=teamLean(tid);
   const ps=playersOf(tid).filter(p=>!p.ys&&healthy(p)&&psOk(p)&&!(p.joinY>G.year)&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); const v=p=>entryVal(tid,p,lean); /* 개막 엔트리도 등록 가능 선수만(검수 11-07) */
   const bats=ps.filter(p=>!p.isP).sort((a,b)=>v(b)-v(a)), pits=ps.filter(p=>p.isP);
@@ -12118,8 +12129,12 @@ function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLim
     c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(건강한 야수 9명 채우기${futLn(c)})`); }
   while(ent.length<lim){ const np=ent.filter(p=>p.isP).length; const needP=np<Math.round(lim*.5); const pool=PS.filter(canUp);
     const c=pool.filter(p=>p.isP===needP).sort((a,b)=>v(b)-v(a))[0]||pool.sort((a,b)=>v(b)-v(a))[0]; if(!c)break; c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(${c.isP?'투수':'야수'} 빈자리 보충${futLn(c)})`); }
+  if(debutOn()){ const due=PS.filter(p=>p.e1&&debutDue(p)).length; if(due<DEBUT_N){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); /* 확대 엔트리 첫 기회(위 DEBUT_N) */
+      const C=PS.filter(p=>canUp(p)&&debutDue(p)).sort((a,b)=>v(b)-v(a)).slice(0,DEBUT_N-due);
+      for(const c of C){ ent=PS.filter(p=>p.e1); const out=ent.filter(p=>!core.has(p.id)&&!debutDue(p)&&!cProt(p,c,ent)&&G.day-(p.upDay||0)>=3).sort((a,b)=>v(a)-v(b))[0]; if(!out)break;
+        out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${out.name} 말소 · ${c.name} 콜업(확대 엔트리 첫 1군 기회${futLn(c)})`); } ent=PS.filter(p=>p.e1); } }
   if(weekly){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
-    for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7&&!(isC(p)&&cN(ent)<=2)).sort((a,b)=>v(a)-v(b))[0]; const inn=PS.filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
+    for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7&&!(isC(p)&&cN(ent)<=2)&&!(debutOn()&&debutDue(p))).sort((a,b)=>v(a)-v(b))[0]; const inn=PS.filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
       if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소(주전·필승조 밖, 최근 1주 넘게 쓰임 적음) · ${inn.name} 콜업(2군에서 더 나은 선수${futLn(inn)})`); } } }
   /* 포수는 1군에 2명 이상: 주전이 지치면 쉬게 할 백업이 있어야 한다(카페 피드백 11-08: 백업 포수를 2군으로 내려 지친 주전이 계속 나옴) */
   for(let g=0;g<3&&(ent=PS.filter(p=>p.e1)).filter(p=>isC(p)&&healthy(p)).length<2;g++){ /* 다친 포수는 세지 않는다(검수 11-09t) */ const c=PS.filter(p=>canUp(p)&&isC(p)).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
@@ -12159,8 +12174,18 @@ function ysAdj(p,y,tid){ tid=tid??p.team; let v=0; const c=p.ysCut; if(c&&c.y===
   for(const g of (p.ysGap||[]))if(g.y===y&&(g.t??tid)===tid)v-=(g.s0-g.s)*ysWinF(y,g.d0,g.d1,p); /* 육성으로 있던 기간은 깎인 연봉(정식 복귀 뒤에도, 검수 11-08) */ return v; }
 function toYS(id){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||p.ys)return '대상이 아닙니다.'; if(!ysOk(p))return '연봉 1억 원 이하이고 FA·다년계약이 아닌 선수만 육성선수로 돌릴 수 있습니다.'; if(ysN(G.user)>=YS_MAX)return `육성선수는 ${YS_MAX}명까지입니다.`;
   ysSet(p); /* 1군에서 빠지는 모든 길은 같은 말소 규칙(10일 뒤 재등록) */ addLog(`${p.name}을(를) 육성선수로 돌렸습니다. 정식 로스터에서 빠집니다.`); return ''; }
+function ysUnset(p){ p.ys=false; if(p.ysCut){ const c=p.ysCut; p.ysGap=(p.ysGap||[]).filter(g=>g.y>=G.year-1); p.ysGap.push({y:G.year,d0:c.y===G.year?c.d:dnum(G.year,1,1),d1:G.day,s0:p.ysSal0??c.s0,s:p.sal,t:p.team}); } delete p.ysCut; if(p.ysSal0!=null){ p.sal=Math.max(p.sal,p.ysSal0); delete p.ysSal0; } /* 육성으로 돌릴 때 깎인 연봉을 되돌린다 */ }
+/* fromYS와 같은 조건(5월 1일부터, 포스트시즌·결산 전 아님, 정원)으로 AI도 육성선수를 정식으로 올린다(11-17 드래프트 보정).
+   예전에는 AI 구단에 이 길이 없어 미지명·트라이아웃 육성선수가 AI 구단에서는 1군을 밟을 수 없었다(사람 단장만 fromYS).
+   주 1회, 가장 나은 육성선수가 정식 2군 하위(정식 국내 선수 keepScore 하위 10명 평균)보다 3 이상 나으면 올린다. 정원이 차 있으면 그중 가장 낮은 선수를 육성으로 돌릴 수 있을 때만(toYS와 같은 조건) 맞바꾼다 */
+function aiYsUp(tid){ if(tid===ME()||period()!=='season'||G.day<KD(5,1)||preSettle())return 0;
+  const c=ysList(tid).filter(p=>!p.foreign&&healthy(p)&&!(p.joinY>G.year)).sort((a,b)=>keepScore(b)-keepScore(a))[0]; if(!c)return 0;
+  const reg=domestic(tid).filter(p=>!p.ys&&!p.e1&&!(p.joinY>G.year)&&!milServing(p)).sort((a,b)=>keepScore(a)-keepScore(b)); if(reg.length<10)return 0;
+  const bar=reg.slice(0,10).reduce((a,p)=>a+keepScore(p),0)/10; if(keepScore(c)<bar+3)return 0;
+  if(rosterN(tid)>=ROSTER_MAX){ const w=reg.find(p=>ysOk(p)); if(!w||keepScore(c)<keepScore(w)+3)return 0; ysSet(w); }
+  if(rosterN(tid)>=ROSTER_MAX)return 0; ysUnset(c); return 1; }
 function fromYS(id){ const p=G.players[id]; if(!p||!p.ys||p.team!==G.user||G.unemp)return '대상이 아닙니다.'; if(period()==='season'&&G.day<KD(5,1))return '육성선수는 5월 1일부터 정식 선수로 등록할 수 있습니다.'; if(period()==='post'||preSettle())return '포스트시즌과 결산 전에는 정식 선수로 새로 등록할 수 없습니다.'; if(!milServing(p)&&rosterN(G.user)>=ROSTER_MAX)return `정식 로스터가 ${ROSTER_MAX}명으로 꽉 찼습니다.`;
-  p.ys=false; if(p.ysCut){ const c=p.ysCut; p.ysGap=(p.ysGap||[]).filter(g=>g.y>=G.year-1); p.ysGap.push({y:G.year,d0:c.y===G.year?c.d:dnum(G.year,1,1),d1:G.day,s0:p.ysSal0??c.s0,s:p.sal,t:p.team}); } delete p.ysCut; if(p.ysSal0!=null){ p.sal=Math.max(p.sal,p.ysSal0); delete p.ysSal0; } /* 육성으로 돌릴 때 깎인 연봉을 되돌린다 */ addLog(`${p.name}을(를) 정식 선수로 등록했습니다.`); return ''; }
+  ysUnset(p); addLog(`${p.name}을(를) 정식 선수로 등록했습니다.`); return ''; }
 function makeLineupFrom(tid,bats){ const save=G.entryY; G.entryY=-1; const ln=makeLineup(tid,bats); G.entryY=save; return ln; }
 function depth(tid){
   const ps=playersOf(tid); const act=actOf(tid); const actIds=new Set(act.map(p=>p.id));
@@ -12221,6 +12246,9 @@ function declApply(){ for(const p of Object.values(G.players)){ const D=p.declP;
 /* 투수 체력 성장 몫(플레이어 제보 11-15: 모든 능력이 같은 몫으로 커서 계투 투수 체력도 선발만큼 올라, 결국 누구나 선발 체력이 됐다).
    그해 1·2군 등판 중 선발 비중으로 정한다: 주로 선발 1.1배, 계투만 0.35배. 등판이 적으면(10경기 미만) 그대로. 모든 구단 같은 식 */
 function staUseF(p){ try{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,G.year,'퓨처스'); const g=(a?a.g||0:0)+(f?f.g||0:0), gs=(a?a.gs||0:0)+(f?f.gs||0:0); if(g<10)return 1; const s=gs/g; return clamp(.35+s*1.25,.35,1.1); }catch(e){ return 1; } }
+/* 실현율 불발 몫(11-17 드래프트 보정): 30%·0.3~0.6 → 38%·0.25~0.6. 지명 순번과 무관하게 모든 신인에게 같다.
+   KCI 논문(신인 드래프트 이후 프로야구선수의 1군 지위 성취가능성과 프로 지위 유지가능성 분석, 2010~2013 지명 320명 8년 추적): 8년째 프로에 남은 선수 약 50% */
+const REALK_LO=.38, BLUE_FLOOR_P=.35, BLOOM_P=.035;
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
@@ -12232,7 +12260,11 @@ function develop(p){
   /* 잠재력 실현율(숨김, 사용자 11-12: 잠재력만 믿고 모으면 망할 수도 있어야 한다. 잠재력만큼 크는 선수는 드물다).
      처음 성장할 때 정한다: 약 30%는 불발(잠재력까지 남은 몫의 30~60%), 50%는 부분(60~90%), 20%만 거의 다(90~100%). 프로의식이 좋을수록 높다.
      스카우트가 보는 잠재력(p.pot)은 그대로라 별 다섯 유망주도 안 터질 수 있다. 실현 상한 = 기준 능력 + (잠재력-기준)×실현율 */
-  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<.3?rnd(.3,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.035-Math.max(0,((p.pers&&p.pers.temp)||10)-13)*.02+(((p.pers&&p.pers.amb)||10)-10)*.012; /* 좋은 선수: 프로의식·야망 높고 예민도 낮음 */ /* 멘탈이 실현율을 크게 가른다(사용자 11-12): 성실성 4면 -0.21, 16이면 +0.21, 예민하면 더 낮게 */ if(p.blue&&p.pot<66)k=Math.max(k,rnd(.62,.8)); /* 대어(그해 신인 잠재력 상위 셋): 아마추어 시절부터 검증돼 불발이 드물다(10_draft). 국가대표감 이상은 그대로 둬서 S급은 여전히 드물게 */ p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; }
+  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<REALK_LO?rnd(.25,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.035-Math.max(0,((p.pers&&p.pers.temp)||10)-13)*.02+(((p.pers&&p.pers.amb)||10)-10)*.012; /* 좋은 선수: 프로의식·야망 높고 예민도 낮음 */ /* 멘탈이 실현율을 크게 가른다(사용자 11-12): 성실성 4면 -0.21, 16이면 +0.21, 예민하면 더 낮게 */ if(p.blue&&p.pot<66&&R()<BLUE_FLOOR_P)k=Math.max(k,rnd(.5,.7)); /* 대어(그해 신인 잠재력 상위 셋): 아마추어 시절부터 검증돼 불발이 드물다(10_draft). 국가대표감 이상은 그대로 둬서 S급은 여전히 드물게 */ /* 드래프트 보정(11-17): 하한 0.62~0.8을 늘 주던 것을 35%만, 0.5~0.7로. 1~3순위도 실패할 수 있다(구단주: 모든 1라운더가 성공하는 것도 아니고) */ p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; if(R()<BLOOM_P)p.bloomY=G.year+ri(1,4); }
+  /* 늦게 터지는 재능(11-17 드래프트 보정): 처음 성장 때 BLOOM_P 확률로 1~4년 뒤 잠재력이 60~68(원래 척도, 이미 높으면 +4~8)·실현율 0.85 이상이 되고, 그해 겨울에 남은 여지의 25~40%가 한꺼번에 큰다(30대 늦깎이와 같은 방식). 지명 순번·출신과 무관하다.
+     KBO 골든글러브 국내 수상자 2011–2025(51명, 위키백과 'KBO 골든글러브'와 선수별 드래프트 순위)는 단일 드래프트로 환산해 1라운드 27.5%·2라운드 29.4%·3라운드 5.9%·4~6라운드 21.6%·7라운드 이하 7.8%·미지명 7.8%에서 나왔다.
+     게임은 지명 때 잠재력이 결과를 거의 정해 특급의 80% 넘게 1라운드였다. 26세가 지나면 없어진다 */
+  let bl=false; if(p.bloomY!=null){ if(age>26)delete p.bloomY; else if(G.year>=p.bloomY){ bl=true; p.pot=Math.min(78,Math.max(p.pot+ri(4,8),rnd(60,68))); p.realK=Math.max(p.realK??0,Math.round(rnd(.85,1)*100)/100); delete p.bloomY; p.devLog.reasons.push('bloom'); story(p,`${G.year} 늦게 터진 재능: 잠재력이 크게 올랐다`); } }
   const potEff=p.realK!=null?p.potB+Math.max(0,p.pot-p.potB)*p.realK:p.pot;
   const gap=Math.max(0,potEff-o); let base=0;
   if(age<=T.grow){
@@ -12247,6 +12279,7 @@ function develop(p){
     if(T.vl&&svc!=='현역'&&age>=30&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */
   } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g*pg:0); }
   else { base=-(age-T.fall+1)*.6*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=36?-2.4:-3.6)-(age>=37?.8:0); if(age<T.fall)base=N(-.2,1); }
+  if(bl)base+=gap*rnd(.25,.4)*eliteGrowF(o+gap*.4); /* 늦게 터진 재능: 그해 한꺼번에(정상급 수 억제는 같은 식) */
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
   if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.02+Math.max(0,(p.pers.temp||10)-13)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
@@ -12879,7 +12912,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(3,1)&&day<c.draft)try{ draftSeasonMail(); }catch(e){}
   if(day===c.draft-14&&!G.unemp&&!(G.scouts||[]).some(s=>(s.role||'am')==='am'))try{ mail('스카우트팀','신인 드래프트 2주 전: 아마추어 스카우트가 없습니다','지금은 아마추어 담당 스카우트가 한 명도 없어 드래프트 후보의 잠재력이 모두 \'?\'로 나옵니다. 지역 아마추어 담당을 배치하면 그 지역 후보부터 잠재력 추정이 보입니다. 배치하지 않으면 자동 지명은 스카우트·언론 순위로만 고릅니다.',{kind:'스카우트',imp:true,acts:[{l:'스카우트 배치',a:'go',v:'staff:scouts'}]}); }catch(e){} /* 플레이 테스트 11-13: 드래프트 당일에야 스카우트가 없다는 걸 알았다 */
   if(day===c.draft)startDraft();
-  if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); } for(const t of G.teams)try{ roleSync(t.id); }catch(e){} /* 하루 한 번 보직 확정(뎁스 조회는 보직을 바꾸지 않는다, 검수 11-09zh) */ try{ regDaily(); }catch(e){} /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
+  if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); if(wk)for(const t of G.teams)try{ aiYsUp(t.id); }catch(e){ console.error(e); } } for(const t of G.teams)try{ roleSync(t.id); }catch(e){} /* 하루 한 번 보직 확정(뎁스 조회는 보직을 바꾸지 않는다, 검수 11-09zh) */ try{ regDaily(); }catch(e){} /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
   try{ rainDay(day); }catch(e){ console.error(e); } /* 우천 취소·재편성(93_rain): 그날 경기를 치르기 직전 */
   if(c.sched[day]||(G.makeup||[]).length&&period()==='season')playDay(day);
   if(period()==='season'&&!G.unemp&&(c.sched[day]||[]).some(m=>m.includes(G.user))&&seriesEnd(day)){ try{ seriesNews(day); }catch(e){} } /* 하루씩 진행해도 시리즈 결과 소식(코드 리뷰 11-13) */
@@ -13966,6 +13999,7 @@ function growLevelF(){ const y=G.year; const u=lvUp(); if(G.lvF&&G.lvF.y===y&&G.
 const ELITE_N0=10;
 function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y&&G.elN.d===2)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&!p.foreign&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; const b=ELITE_N0; G.elN={y,n,d:2,f:+clamp(1-(n-b)/b*.7,.3,1.05).toFixed(3)}; return G.elN; }
 function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
+const DRAFT_READY=.15, DRAFT_SUPER=.2;
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
   /* 고1·대1부터 실제 경기를 치러 온 졸업 학년(13_amateur_league). 아마 리그를 끈 저장·실패할 때만 예전처럼 새로 만든다 */
@@ -13985,10 +14019,12 @@ function makeDraftClass(){
   }
   sonMake(cls); /* 옛 선수의 아들(2대 선수, 33_ob) */
   /* 즉시 전력 신인: 해마다 상위 재목 몇 명은 1년차부터 1군 주전급이다(실제 KBO도 매년 2~4명은 첫해부터 자리를 잡는다).
-     잠재력 상위 5명 중 55%가 완성형이 되고, 35% 확률로 리그 정상급으로 클 특급이 하나 나온다 */
+     잠재력 상위 5명 중 DRAFT_READY 비율이 완성형이 되고, DRAFT_SUPER 확률로 리그 정상급으로 클 특급이 하나 나온다.
+     드래프트 보정(11-17, docs/design/draft-calibration-2026-11-17.md): 55%·35%로는 1라운드 1~3순위의 43~48%가 1년차 주전이었다(지금 15%·20%).
+     이정후·강백호·소형준·이의리·김택연처럼 첫해부터 자리 잡는 상위 지명은 있지만 대부분은 아니다(가정 목표: 1년차 주전 20~30%) */
   { const top=cls.map(id=>G.players[id]).filter(p=>p.pot>=54).sort((a,b)=>b.pot-a.pot).slice(0,5);
-    for(const p of top){ if(R()<.55){ const t=clamp(p.pot-rnd(4,9),47,56); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
-    if(top[0]&&R()<.35){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
+    for(const p of top){ if(R()<DRAFT_READY){ const t=clamp(p.pot-rnd(4,9),47,56); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
+    if(top[0]&&R()<DRAFT_SUPER){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
     top.slice(0,3).forEach(p=>{ p.blue=1; }); /* 대어 셋: 성장 실현율 하한이 높다(04_growth). 상위 지명과 하위 지명의 차이가 실제로 나게(사용자 11-13: 우승팀 10순위가 손해가 되게) */
     for(const p of top.filter(q=>q.ready)){ if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
   for(const id of cls){ const p=G.players[id]; if(p&&p.amSim){ amSyncR(p); if(p.isP&&p.amVelo==null)p.amVelo=veloOf(p)-(p.college?ri(1,3):ri(3,6)); else if(!p.isP&&p.amRun==null)p.amRun=(+runOf(p)+.04).toFixed(2); } } /* 졸업 학년 후보: 구속·주력 표시 */
@@ -20635,7 +20671,7 @@ function blowSub(fs){ const m=mgrOf(fs.tid); const re=!m||m.interim?50:mgrRestEf
   for(let k=0;k<maxN;k++){ let best=null;
     for(const p of fs.order){ const pos=fs.posOf[p.id]; if(!pos||pos==='C'||(fs.subIn&&fs.subIn[p.id]!=null))continue;
       for(const q of fs.bench){ if(q.isP||!healthy(q)||fs.order.includes(q)||fs.out.includes(q)||(isC(q)&&freeC()<=1))continue; if(pos!=='DH'&&defAt(q,pos)<defAt(p,pos)-12)continue;
-        const sc=(p.fat||0)+(p.age>=32?6:0)+(ovr(q)-ovr(p))*.2; if(!best||sc>best.sc)best={p,q,pos,sc}; } }
+        const sc=(p.fat||0)+(p.age>=32?6:0)+(ovr(q)-ovr(p))*.2+(debutOn()&&debutDue(q)?8:0); /* 확대 엔트리 첫 1군 기회(03_depth DEBUT_N): 크게 앞선 경기에 먼저 낸다 */ if(!best||sc>best.sc)best={p,q,pos,sc}; } }
     if(!best)break; const i=fs.order.indexOf(best.p); (fs.outI=fs.outI||{})[best.p.id]=i; (fs.subIn=fs.subIn||{})[best.q.id]=i; fs.order[i]=best.q; fs.posOf[best.q.id]=best.pos; fs.out.push(best.p); fs.bench.splice(fs.bench.indexOf(best.q),1); fs.box.set(best.q.id,bz());
     out.push(`${best.p.name} → ${best.q.name}(${POSS[best.pos]||best.pos})`); }
   if(out.length){ fs.defv=sideDefV(fs); sideTraits(fs); } return out.join(', '); }
@@ -37081,7 +37117,7 @@ function entryForm(p){
 function growthCard(p){
   if(p.prospect||p.team!==G.user||!p.oh||!p.oh.length)return '';
   const pts=p.oh.map(x=>({y:x.y,v:clamp(r5(x.o+hn('gh'+x.y,p.id)*1.5),20,80)}));
-  const lg=p.devLog,whyLabels={slump:'겨울 기량 퇴보','potential-reassessment':'잠재력 기대 재평가','training-opportunity':'집중훈련 성장기회 조정',aging:'노화에 따른 변화',military:'현역 복무 중 훈련 공백'},why=lg&&lg.tid===G.user&&Array.isArray(lg.reasons)?[...new Set(lg.reasons)].map(k=>whyLabels[k]).filter(Boolean):[]; const pl=lg?(lg.play>=1.08?'주전급 출전':lg.play>=1?'충분한 출전':lg.play>=.92?'출전 부족':'거의 못 뜀'):'';
+  const lg=p.devLog,whyLabels={slump:'겨울 기량 퇴보','potential-reassessment':'잠재력 기대 재평가','training-opportunity':'집중훈련 성장기회 조정',aging:'노화에 따른 변화',military:'현역 복무 중 훈련 공백',bloom:'늦게 터진 재능'},why=lg&&lg.tid===G.user&&Array.isArray(lg.reasons)?[...new Set(lg.reasons)].map(k=>whyLabels[k]).filter(Boolean):[]; const pl=lg?(lg.play>=1.08?'주전급 출전':lg.play>=1?'충분한 출전':lg.play>=.92?'출전 부족':'거의 못 뜀'):'';
   return `<section class="card"><div class="row between"><span class="eyebrow">연도별 코치진 평가</span><span class="small muted">겨울에 일부, 시즌 중 세 번(5/1·6/20·8/10) 나눠 반영</span></div>${(()=>{ const t=typeof devQText==='function'?devQText(p):''; return t?`<p class="small">${esc(t)}</p>`:''; })()}
     <div class="growth">${pts.map(x=>`<div><i style="height:${Math.max(6,(x.v-20)*1.6)}px;background:${rcol(x.v)}"></i><b>${dv(x.v)}</b><span>${String(x.y).slice(2)}</span></div>`).join('')}</div>
     ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${lg.tid===G.user&&lg.manager?` · ${esc(lg.manager.name)} 감독 · ${mgrYouthWord(lg.manager.youth)}`:''}</p>`:''}${why.length?`<p class="small muted">반영 요인: ${why.map(esc).join(' · ')} ${hiI('잠재력 평가는 성장을 보장하지 않습니다. 시즌 폼이나 컨디션은 기본 기량 변화와 다릅니다.')}</p>`:''}</section>`;
@@ -41301,6 +41337,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-draftcal',d:'11월 17일',t:'신인 성장 · 첫 1군 기회',items:[
+    '상위 지명 신인도 실패할 수 있습니다. 1라운드 앞 순번이 첫해부터 주전이 되는 일은 드물어지고, 하위 라운드 신인도 9월 확대 엔트리에서 첫 1군 기회를 얻습니다.',
+    'AI 구단도 5월부터 잘하는 육성선수를 정식 선수로 올립니다.']},
   {id:'2026-11-17-photo',d:'11월 17일',t:'사진 자르기 · 사진 옆 연필 버튼',items:[
     '갤러리에서 고른 사진을 바로 넣지 않고 자르기 화면을 거칩니다. 끌어서 옮기고, 두 손가락·마우스 휠·막대로 크기를 바꿉니다. 둥근 자리와 네모 자리 미리보기를 보고 적용합니다.',
     '사진 바꾸기 버튼을 얼굴 사진 모서리의 연필 버튼으로 옮겼습니다. 소식함 비서 사진도 사진 옆에서 바꾸고, 템플릿 사진·갤러리 사진·원래대로를 한 창에서 고릅니다.',
