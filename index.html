@@ -5195,6 +5195,9 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 @media(min-width:701px) and (max-width:1099px){.hw-lt .hw-lr{grid-template-columns:auto minmax(0,1fr) 14px auto;gap:4px}.hw-lt .hw-lr-f{display:none}.hw-lt .hw-lr>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 /* 사람 이름은 말줄임하지 않는다(UI 3단계 3-2): 좁으면 두 줄로 */
 .hw-lr>b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all;line-height:1.2}
+/* 이름 칸이 0까지 줄어 한 글자씩 내려가던 것(좁은 1280 홈): 이름은 최소 이름 길이만큼, 기록 이름(i)이 대신 줄어 두 줄로 */
+.hw-lr{grid-template-columns:24px minmax(0,auto) minmax(3.3em,1fr) 14px auto}.hw-lr>i{min-width:0;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}.hw-lr>em{white-space:nowrap}
+@media(min-width:701px) and (max-width:1099px){.hw-lt .hw-lr{grid-template-columns:minmax(0,auto) minmax(3.3em,1fr) 14px auto}}
 /* 선발 명단 이름은 자르지 않는다(UI 3단계 3-2·3-4) */
 .ibd-plist .lnk{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all;text-align:left}
 .fx-li-v .neg{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
