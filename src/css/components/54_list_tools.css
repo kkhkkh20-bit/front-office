@@ -7,7 +7,9 @@
 /* 줄 끝 › 표시: 누르면 상세가 열린다는 신호 */
 .rt-go{flex:none;margin-left:auto;color:var(--muted);font-size:18px;line-height:1;padding-left:4px}
 @media(max-width:700px){
-  :is(#app,#sheet) div[data-rowtap]{min-height:44px;box-sizing:border-box}
+  /* 최소 높이만 44px. 줄 높이는 내용으로 정한다: 높이가 정해진 grid·flex 목록 안에서 44px로 눌려 다음 줄과 겹치던 문제(UI 3단계 3-1, 비시즌 FA 목록) */
+  :is(#app,#sheet) div[data-rowtap]{min-height:44px;box-sizing:border-box;flex-shrink:0}
+  :is(#app,#sheet) :has(>div[data-rowtap]){grid-auto-rows:max-content}
   :is(#app,#sheet) tr[data-rowtap]>td{height:44px}
 }
 

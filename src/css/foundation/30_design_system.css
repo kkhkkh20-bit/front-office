@@ -248,6 +248,9 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  .flr:not(.fur){grid-template-columns:minmax(0,1fr) auto;row-gap:2px;padding-bottom:6px;border-bottom:1px solid var(--line)}
  .flr:not(.fur)>.small{grid-column:1/-1;grid-row:2;padding-left:4px}
  .flr:not(.fur)>.tc-i,.flr:not(.fur)>.flx{grid-column:2;grid-row:1}
+ /* 별점(.ptier)은 계약 줄 옆에 붙인다: 따로 한 줄을 차지하면 줄이 길어지고 다음 줄과 겹쳐 보였다(UI 3단계 3-1) */
+ .flr:not(.fur):has(>.ptier)>.small{grid-column:1;padding-right:36px}
+ .flr:not(.fur)>.ptier{grid-column:1/-1;grid-row:2;justify-self:end}
 }
 
 /* 낮은 가로 화면: 버튼 줄들을 위아래로 쌓지 않고 한 줄에 나란히(목록 높이 확보) */

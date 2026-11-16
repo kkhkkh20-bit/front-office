@@ -5896,6 +5896,9 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  .flr:not(.fur){grid-template-columns:minmax(0,1fr) auto;row-gap:2px;padding-bottom:6px;border-bottom:1px solid var(--line)}
  .flr:not(.fur)>.small{grid-column:1/-1;grid-row:2;padding-left:4px}
  .flr:not(.fur)>.tc-i,.flr:not(.fur)>.flx{grid-column:2;grid-row:1}
+ /* 별점(.ptier)은 계약 줄 옆에 붙인다: 따로 한 줄을 차지하면 줄이 길어지고 다음 줄과 겹쳐 보였다(UI 3단계 3-1) */
+ .flr:not(.fur):has(>.ptier)>.small{grid-column:1;padding-right:36px}
+ .flr:not(.fur)>.ptier{grid-column:1/-1;grid-row:2;justify-self:end}
 }
 
 /* 낮은 가로 화면: 버튼 줄들을 위아래로 쌓지 않고 한 줄에 나란히(목록 높이 확보) */
@@ -6251,7 +6254,9 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 /* 줄 끝 › 표시: 누르면 상세가 열린다는 신호 */
 .rt-go{flex:none;margin-left:auto;color:var(--muted);font-size:18px;line-height:1;padding-left:4px}
 @media(max-width:700px){
-  :is(#app,#sheet) div[data-rowtap]{min-height:44px;box-sizing:border-box}
+  /* 최소 높이만 44px. 줄 높이는 내용으로 정한다: 높이가 정해진 grid·flex 목록 안에서 44px로 눌려 다음 줄과 겹치던 문제(UI 3단계 3-1, 비시즌 FA 목록) */
+  :is(#app,#sheet) div[data-rowtap]{min-height:44px;box-sizing:border-box;flex-shrink:0}
+  :is(#app,#sheet) :has(>div[data-rowtap]){grid-auto-rows:max-content}
   :is(#app,#sheet) tr[data-rowtap]>td{height:44px}
 }
 

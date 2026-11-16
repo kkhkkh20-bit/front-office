@@ -7,6 +7,7 @@
 const path=require('path'),fs=require('fs');
 const ROOT=path.resolve(__dirname,'..');
 const {chromium}=require('playwright');const {startHtmlServer}=require('./lib/ui-server.cjs');
+const ONLY=process.env.ONLY?process.env.ONLY.split(','):null; /* ONLY=home,transfer-fa: 고른 화면만 잰다 */
 const OUT=process.env.OUT||path.join(require('os').tmpdir(),'ui-density');const SHOT=process.env.SHOT==='1';const PHASE=process.argv[2]||'mid';
 fs.mkdirSync(path.join(OUT,'shots'),{recursive:true});
 
@@ -59,10 +60,12 @@ const METRICS=()=>{
   const cards=[...root.querySelectorAll('.card,.panel,.hw-panel,.ws-panel,.md-panel,.tcard,.pcard,[class*="-card"],[class*="card-"]')].filter(e=>vis(e)&&!chromeOf(e)&&e.getBoundingClientRect().width>120);
   const csig=new Map();for(const e of cards){const s=getComputedStyle(e);if(s.display==='contents')continue;const k=[s.borderTopLeftRadius,s.backgroundColor,s.borderTopWidth+' '+s.borderTopColor,s.boxShadow==='none'?'':'sh',Math.round(parseFloat(s.paddingTop)/2)*2].join('|');if(!csig.has(k))csig.set(k,cls(e));}
   const tabbars=[...root.querySelectorAll('.subtabs,.itabs,.seg,.ptabs,[role=tablist],.tabs,.fm-subs,.chips')].filter(vis).filter(e=>e.querySelectorAll('button,[data-a]').length>=2&&inView(e.getBoundingClientRect())).length;
+  /* 줄 겹침(3-1): 같은 목록 안 이웃한 줄 누르기 줄이 세로로 겹치는 수 */
+  let rowOverlap=0;for(const e of root.querySelectorAll('[data-rowtap]')){const q=e.previousElementSibling;if(!q||!q.matches('[data-rowtap]')||!vis(e)||!vis(q))continue;const a=q.getBoundingClientRect(),b=e.getBoundingClientRect();if(b.top<a.top+Math.max(a.height,q.scrollHeight)-1)rowOverlap++;} /* 내용이 줄 높이를 넘쳐 다음 줄을 덮는 것도 겹침 */
   const s44=content.filter(e=>{const r=e.getBoundingClientRect();return inView(r)&&(r.height<36||r.width<36)&&e.matches('button,.btn,.tc-i,[role=tab],select');}).length;
   return {root:root.id||cls(root),total:content.length,above:above.length,primary:primEls.length,primAbove:primAbove.length,primL:primEls.map(lab).slice(0,8),filled:filled.length,filledL:filled.map(lab).slice(0,8),
     charsAbove,charsAll,small,smallAbove,smallChars,smallTop,trunc:trunc.length,truncL:[...new Set(trunc)].slice(0,8),empty:[...empty].slice(0,6),
-    scrollers:inner.length,nested:nested.length,scrollL:inner.slice(0,6).map(cls),pageVH:+(pageH/pageVH).toFixed(1),wide:wide.length,wideL:wide.slice(0,5),cardStyles:csig.size,cardL:[...csig.values()].slice(0,10),tabbars,small36:s44,overflow:document.documentElement.scrollWidth-W,renderer:(document.querySelector('.cs-stage')||{}).dataset?.renderer||null};
+    scrollers:inner.length,nested:nested.length,scrollL:inner.slice(0,6).map(cls),pageVH:+(pageH/pageVH).toFixed(1),wide:wide.length,wideL:wide.slice(0,5),cardStyles:csig.size,cardL:[...csig.values()].slice(0,10),tabbars,rowOverlap,small36:s44,overflow:document.documentElement.scrollWidth-W,renderer:(document.querySelector('.cs-stage')||{}).dataset?.renderer||null};
 };
 
 const other="Object.values(G.players).find(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&ovr(p)>=50)";
@@ -84,7 +87,7 @@ async function shoot(p,name,w,res,code){
   try{ if(code)await p.evaluate(code=>{UI._clk=null;try{closeSheets();UI.ngt=null;UI.negWin=null;UI.matchPreview=false;UI.menu=false;UI.title=false;}catch(e){}new Function(code)();},code);
     await p.waitForTimeout(350); await p.evaluate(()=>{window.scrollTo(0,0);document.querySelectorAll('.sf-tw,.tw,.fnd-w').forEach(e=>e.scrollLeft=0);});
     const m=await p.evaluate(METRICS); if(SHOT)await p.screenshot({path:path.join(OUT,'shots',`${PHASE}-${w}-${name}.png`)});
-    res.push({phase:PHASE,w,name,...m}); console.log(PHASE,w,name,'above',m.above,'prim',m.primary,'chars',m.charsAbove,'small',m.small,'trunc',m.trunc,'nest',m.nested,'wide',m.wide,'vh',m.pageVH);
+    res.push({phase:PHASE,w,name,...m}); console.log(PHASE,w,name,'above',m.above,'prim',m.primary,'chars',m.charsAbove,'small',m.small,'trunc',m.trunc,'nest',m.nested,'wide',m.wide,'vh',m.pageVH,'ovl',m.rowOverlap);
   }catch(e){ console.log('FAIL',PHASE,w,name,e.message.slice(0,150)); res.push({phase:PHASE,w,name,err:e.message.slice(0,200)}); }
 }
 async function cast(p,w,res,base){
@@ -133,12 +136,12 @@ async function cast(p,w,res,base){
       console.log('state',await p.evaluate(b=>{G=JSON.parse(b);return dstr(G.day)+' '+period();},base));
       for(const [w,h] of [[390,844],[1366,768]]){ await p.setViewportSize({width:w,height:h});
         await p.evaluate(b=>{DEMO.on=false;G=JSON.parse(b);UI.title=false;UI.menu=false;closeSheets();UI.tab='home';render();},base); await p.waitForTimeout(300);
-        for(const [name,code] of SCREENS){ if(name==='neg-fa'&&PHASE!=='off')continue; await shoot(p,name,w,res,code); }
+        for(const [name,code] of SCREENS){ if(name==='neg-fa'&&PHASE!=='off')continue; if(ONLY&&!ONLY.includes(name))continue; await shoot(p,name,w,res,code); }
         await p.evaluate(()=>{try{closeSheets();UI.menu=false;renderSheet();}catch(e){}});
-        if(process.env.CAST!=='0')await cast(p,w,res,base);
+        if(process.env.CAST!=='0'&&(!ONLY||ONLY.some(n=>n.startsWith('cast'))))await cast(p,w,res,base);
       }
     }
-    fs.writeFileSync(path.join(OUT,`metrics-${PHASE}.json`),JSON.stringify(res,null,1));
+    fs.writeFileSync(path.join(OUT,`metrics-${PHASE}${ONLY?'-part':''}.json`),JSON.stringify(res,null,1));
     console.log('errors',JSON.stringify(errs).slice(0,1500));
   }catch(e){console.error('setup',e.stack);process.exitCode=1;}
   finally{await browser.close();await srv.close();}
