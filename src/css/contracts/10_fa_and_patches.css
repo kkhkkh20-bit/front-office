@@ -293,3 +293,6 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
  #sheet .sheet.ngt:has(>.ng-rows){grid-template-rows:repeat(var(--ng-pre,5),auto) minmax(0,1fr)}
  #sheet .sheet.ngt:not(:has(>.ng-sum))>.ng-rows{grid-column:1/-1}
 }
+
+/* 웨이버·2차 드래프트 명단 줄에도 사진(UI 3단계 3-6): 다른 명단 줄과 같은 크기 */
+.market-player-info>img.av:first-child{width:40px;height:40px;border-radius:6px;object-fit:cover;float:left;margin:0 10px 0 0}
