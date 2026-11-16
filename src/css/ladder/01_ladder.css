@@ -50,7 +50,7 @@
 .lad-err{margin:4px 0;padding-left:18px;color:var(--warn);font-size:12px;line-height:18px}
 .lad-test{display:flex;flex-direction:column;gap:2px;margin:8px 0;padding:8px;border-radius:4px;background:var(--panel2);font-size:12px}.lad-test b{font-size:13px}
 .lad-acts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
-.lad-st{margin-top:4px}.lad-st td,.lad-st th{padding:2px 4px}
+.lad-st{margin-top:4px}.lad-st td,.lad-st th{padding:2px 4px;text-align:right}.lad-st :is(td,th):nth-child(-n+2){text-align:left}
 .lad .note{font-size:12px;margin:6px 0}
 @media (min-width:1100px){ .lad{height:100vh;overflow:hidden} }
 @media (max-width:1099px){ .lad-body{grid-template-columns:1fr} .lad-scroll{max-height:none;overflow:visible} .lad-pool .lad-scroll{max-height:60vh;overflow:auto} .lad-cap{margin-left:0;min-width:0;width:100%} .lad-cols{grid-template-columns:1fr} }
