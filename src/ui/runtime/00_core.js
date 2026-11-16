@@ -65,7 +65,7 @@ function slotBadCurrent(n,m){ if(!SLOT_BAD[n])return false; const old=SLOT_BAD_A
 /* 이어하기 대상: 활성 슬롯에 본문이 있으면 그것, 없으면(지워짐·첫 저장 실패·목록 유실) 본문이 남은 다른 슬롯(검수 11-09 #9·#11·#12) */
 function contSlot(m){ m=m||meta(); return [m.active,...SLOT_IDS].find(n=>SLOT_IDS.includes(n)&&!slotBadCurrent(n,m)&&slotHas(n))??null; }
 function setActive(n){ const m=meta(); m.active=n; return setMeta(m); } /* 목록을 새로 읽어 활성 번호만 바꾼다(검수 11-09 #4: 예전에 읽은 목록 전체를 다시 써 다른 탭 판번호를 되돌림) */
-function slotInfoOf(g){ const t=(g.teams||[]).find(x=>x.id===g.user); return {tid:g.user,name:t?`${t.city} ${t.nick}`:'',date:Number.isFinite(g.day)?dstr(g.day):'',day:g.day,y:g.year,at:Date.now()}; }
+function slotInfoOf(g){ const t=(g.teams||[]).find(x=>x.id===g.user); return {tid:g.user,name:t?`${tfull(t)}`:'',date:Number.isFinite(g.day)?dstr(g.day):'',day:g.day,y:g.year,at:Date.now()}; }
 /* 다른 탭과 겹쳐 저장하지 못한 진행을 버리기 전 한 번 묻는다(불러오기와 같은 방식). 같은 것을 다시 누르면 true(검수 11-09zr #5: 새 게임 준비만 열어도 진행이 사라짐) */
 function confDrop(k){ if(!G||!SAVE_CONFL||UI.confDrop===k){ UI.confDrop=null; return true; } UI.confDrop=k; UI.slotMsg=`이 탭의 진행(${dstr(G.day)})은 다른 탭과 겹쳐 저장되지 않았습니다. 새 게임을 시작하면 이 진행은 사라집니다. 남기려면 먼저 "빈 슬롯에 따로 저장"을 누르세요. 그래도 시작하려면 한 번 더 누르세요.`; try{ toast(UI.slotMsg); }catch(e){} try{ render(); }catch(e){} return false; }
 /* 화면을 옮기기 전 저장: 다른 탭과 겹쳐 저장을 막은 상태면 이미 안내했으니 그대로 옮긴다 */
@@ -180,10 +180,10 @@ const wide=()=>typeof matchMedia!=='undefined'&&matchMedia('(min-width:980px)').
 function rcol(v){ return v>=75?'var(--r75)':v>=65?'var(--r65)':v>=55?'var(--r55)':v>=50?'var(--r50)':v>=45?'var(--r45)':v>=35?'var(--r35)':'var(--r20)'; }
 /* 글 속 선수·구단 이름을 누를 수 있게 */
 let _lk={k:null};
-function linkMap(){ const ps=Object.values(G.players); const k0=(typeof UI!=='undefined'?UI._rN:0)+':'+G.year+':'+G.day+':'+(G.mvN||0)+':'+ps.length+':'+G.user; if(_lk.g===G&&_lk.k0===k0)return _lk; /* 성능: 한 화면(UI._rN)에서 날짜·이동 기록·선수 수·구단이 같으면 전체 열쇠를 다시 만들지 않는다 */ const k=G.year+':'+G.day+':'+G.user+':'+JSON.stringify(G.teams.map(t=>[t.id,t.city,t.nick]))+':'+JSON.stringify(ps.map(p=>[p.id,p.name,p.team,!!p.prospect])); if(_lk.g===G&&_lk.k===k){ _lk.k0=k0; return _lk; }
+function linkMap(){ const ps=Object.values(G.players); const k0=(typeof UI!=='undefined'?UI._rN:0)+':'+G.year+':'+G.day+':'+(G.mvN||0)+':'+ps.length+':'+G.user; if(_lk.g===G&&_lk.k0===k0)return _lk; /* 성능: 한 화면(UI._rN)에서 날짜·이동 기록·선수 수·구단이 같으면 전체 열쇠를 다시 만들지 않는다 */ const k=G.year+':'+G.day+':'+G.user+':'+JSON.stringify(G.teams.map(t=>[t.id,t.city,t.nick,t.disp||"",t.abbr||""]))+':'+JSON.stringify(ps.map(p=>[p.id,p.name,p.team,!!p.prospect])); if(_lk.g===G&&_lk.k===k){ _lk.k0=k0; return _lk; }
   const names={}; const sc=p=>(p.team===G.user?3:p.team!=null?2:p.foreign?1:0);
   for(const p of Object.values(G.players)){ if(!p.name||p.name.length<2||p.prospect&&!(G.draft&&!G.draft.done))continue; const c=names[p.name]; if(c==null||sc(p)>sc(G.players[c]))names[p.name]=p.id; }
-  const teams={}; for(const t of G.teams){ teams[t.city+' '+t.nick]=t.id; teams[t.nick]=t.id; }
+  const teams={}; for(const t of G.teams){ teams[tfull(t)]=t.id; teams[t.nick]=t.id; teams[tnick(t)]=t.id; }
   const ppl={}, pplT={}; const addP=(n,a,v)=>{ if(n&&n.length>=2){ if(!pplT[n])pplT[n]={a,v}; if(names[n]==null&&!ppl[n])ppl[n]={a,v}; } }; /* pplT: 선수와 이름이 같아도 직함(단장·감독·코치…)이 붙으면 그 사람으로(일고회장 11-12) */
   try{ const B=bossOf(G.user); addP(B.own.name,'person','own'); addP(B.ceo.name,'person','ceo'); }catch(e){}
   for(const t of G.teams){ const m=G.mgr[t.id]; if(m&&m.name)addP(m.name,t.id===G.user?'person':'lteam',t.id===G.user?'mgr':t.id);
@@ -236,9 +236,9 @@ const EMB={
   산:'<path d="M3.8 17.2 9.4 8.6l2.6 3.7 2.2-2.7 6 7.6Z" fill="#fff"/><path d="M8.2 10.4 9.4 8.6l1.2 1.7-1.2.7Z" fill="C1"/>'
 };
 function badge(tid,sz){ const t=(G&&G.teams[tid])||TEAM_DEF[tid]; if(!t)return ''; const P=tpal(t); const c1=P[0],c2=P[1]==='#ffffff'?'#e8ecf2':P[1],c3=P[2]; const LG=t.logo||{}; const code=LG.code||t.code;
-  const big=sz>=34; const shield='M12 1.2 21.4 4.4V11c0 5.8-4 9.9-9.4 11.8C6.6 20.9 2.6 16.8 2.6 11V4.4Z';
+  const big=sz>=34;
   { const B=!t.logo&&typeof BADGE_IMG!=='undefined'?BADGE_IMG[t.id!=null?t.id:tid]:null; /* 게임 전(구단 선택)은 TEAM_DEF라 id가 없어 번호로 찾는다 */ if(B)return `<img class="badge bimg${B.c?' bcrest':''}" data-bt="${t.id!=null?t.id:tid}" src="${B.c||(sz>32?B.l:B.s)}" width="${sz}" height="${sz}" alt="" decoding="async" draggable="false">`; } /* 구단 엠블럼은 크기와 관계없이 메인 로고(v2 crest)로 통일(사용자 11-07). 모자·유니폼 마크는 3D·사진 쪽에서 따로 쓴다. 예전 설명: 승인된 구단 원형 배지(assets/badges/v1): 이미지에 배경·테두리가 있어 효과를 더하지 않는다. 32px 이하는 64px, 그보다 크면 128px 원본. 플레이어가 로고를 바꾸면 그쪽이 우선 */
-  if(LG.img&&/^data:image\//.test(LG.img)){ const cid='lgc'+(t.id??tid); return `<svg class="badge" width="${sz}" height="${sz}" viewBox="0 0 24 24" aria-hidden="true"><defs><clipPath id="${cid}"><path d="${shield}"/></clipPath></defs><path d="${shield}" fill="${c3}"/><image href="${LG.img}" x="1.6" y="1" width="20.8" height="22" preserveAspectRatio="xMidYMid slice" clip-path="url(#${cid})"/></svg>`; } /* 플레이어가 올린 로고 이미지: 방패 모양으로 자른다 */
+  if(LG.img&&/^data:image\/[a-z]+;base64,[A-Za-z0-9+/=]+$/.test(LG.img))return `<img class="badge bimg bup" src="${LG.img}" width="${sz}" height="${sz}" alt="" decoding="async" draggable="false">`; /* 플레이어가 올린 로고 이미지: 방패에 넣어 자르지 않고 그림 그대로(contain, 투명 배경 유지. 마인2 11-16). 예전 96px 정사각형 저장도 그대로 보인다 */
   const ek=LG.emb||(TEAM_DEF[t.id]||t).nick; const g=ek==='글자'?null:(EMB[ek]||EMB[t.nick]); /* 구단 이름을 바꿔도 엠블럼은 원래 구단 것(로고를 따로 고르면 그것) */
   const inner=g?g.replace(/C1/g,c1).replace(/C3/g,c3):`<text x="12" y="14.4" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" font-size="${code.length>=3?6.6:8.2}" fill="#fff">${esc(code)}</text>`;
   return `<svg class="badge" width="${sz}" height="${sz}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.2 21.4 4.4V11c0 5.8-4 9.9-9.4 11.8C6.6 20.9 2.6 16.8 2.6 11V4.4Z" fill="${c3}"/><path d="M12 2.4 20.2 5.2V11c0 5-3.4 8.6-8.2 10.4C7.2 19.6 3.8 16 3.8 11V5.2Z" fill="${c1}" stroke="${c2}" stroke-width=".7"/>${big?`<path d="M3.8 15.2h16.4" stroke="${c2}" stroke-width=".35" opacity=".5"/>`:''}<g transform="translate(12 11.2) scale(${big?.86:.92}) translate(-12 -11)">${inner}</g>${big?`<text x="12" y="19.4" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" font-size="2.6" letter-spacing=".25" fill="#fff" opacity=".85">${esc(code)}</text>`:''}</svg>`; }

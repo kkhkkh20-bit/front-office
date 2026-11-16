@@ -1,9 +1,16 @@
 /* ---------- 리그 스태프 시장 화면 조각 ---------- */
 function stPrestigeLine(){ stInit(); const L=G.teams.map(t=>({t:t.id,v:clubPrestige(t.id)})).sort((a,b)=>b.v-a.v); const i=L.findIndex(x=>x.t===G.user); return `우리 구단 위상 ${clubPrestige(G.user)} (리그 ${i+1}위) · 위상은 시장 규모·인기·최근 성적·단장 평판·시설로 정해지고, 높을수록 좋은 사람이 옵니다`; }
 function stMktInfo(s){ stAttr(s); const I=stInterest(s); return `<span class="small ${I.length?'warn':'muted'}" style="display:block">${s.skill!=null&&typeof scHomeTxt==='function'?`고향 ${esc(scHomeTxt(s))} · `:''}${s.region?`${esc(s.region)} 담당 희망${typeof scHomeReg==='function'&&scHomeReg(s)===s.region?' · 고향 권역':''} · `:''}${I.length?`${I.map(t=>esc(tshort(t))).join('·')}도 관심`:'경쟁 구단 없음'}</span>${s.bid&&s.bid.exp>=G.day?`<span class="small warn" style="display:block">${esc(tshort(s.bid.t))} 연 ${money(s.bid.sal)} 제시 · ${dmd(s.bid.exp)}까지 다시 제안 가능</span>`:''}`; }
+/* 정원이 찬 상태에서 후보가 수락했을 때: 누구 대신 데려올지 바로 고른다(추천은 능력이 가장 낮은 사람). 철회하면 아무도 내보내지 않는다 */
+function stAccSheet(){ const P=G.stAcc, c=stAccCand(P); if(!P||!c)return ''; const k=P.k, L=stOutOrder(k), rec=L[0], sel=L.find(x=>x.id===UI.stAccSel)||rec; const job=s=>k==='sc'?(s.role==='intl'?`해외 ${IREG[s.region]?IREG[s.region].l:s.region}`:`${s.role==='pro'?'프로':'아마'} ${s.region||''}`):AROLE[s.role]?AROLE[s.role].l:'';
+  return `<div class="scrim"><div class="sheet gut stacc" data-stop="1" role="dialog" aria-label="누구 대신 데려올까요"><div class="sheet-head"><h2 class="sec">${esc(c.name)}이(가) 오기로 했습니다. 누구 대신 데려올까요?</h2></div>
+  <p class="small muted">${esc(c.name)} · ${esc(job(c))} · 능력 ${c.skill} · 연 ${money(P.sal)}${P.tid!=null?` · ${esc(tshort(P.tid))}에서 이적`:''}</p>
+  <p class="small muted">${stKindNm(k)} 정원이 찼습니다(${stOwnList(k).length}/${stOwnCap(k)}명). 고른 사람과 계약이 끝나는 동시에 ${esc(c.name)}이(가) 합류합니다. 철회하면 아무도 내보내지 않고 ${esc(c.name)}도 오지 않습니다.</p>
+  <div class="list">${L.map(s=>`<button class="item row between${s===sel?' sel':''}" data-a="stAccSel" data-v="${s.id}" aria-pressed="${s===sel}"><span><b>${esc(s.name)}</b> <span class="small muted">${esc(job(s))} · 능력 ${s.skill} · 연 ${money(s.sal||0)}</span></span>${s===rec?'<span class="pill">추천: 능력 가장 낮음</span>':''}</button>`).join('')}</div>
+  <div class="row" style="gap:6px;margin-top:10px">${sel?`<button class="btn primary" data-a="stAccOut" data-v="${sel.id}">${esc(sel.name)} 대신 데려오기</button>`:''}<button class="btn" data-a="stAccNo">영입 철회</button></div></div></div>`; }
 /* 영입 경쟁 중인 후보: 이기는 데 필요한 조건으로 다시 제안하거나 포기 */
 function stBidLive(s){ return !!(s&&s.bid&&s.bid.exp>=G.day); }
-function stBidBtns(kind,s,cls){ const n=stNeed(s); const a=kind==='sc'?'hireScout':'anaHire'; cls=cls||'btn small';
+function stBidBtns(kind,s,cls){ const n=stNeed(s); const a=kind==='sc'?'hireScout':'anaHire'; cls=cls||'btn small'; 
   return `${n?`<button class="${cls} go primary" data-a="${a}" data-v="${s.id}:${n.x}">다시 제안 · 연 ${money(n.sal)}</button>`:`<span class="small muted">연봉을 두 배로 올려도 이기기 어렵습니다</span>`}<button class="${cls}" data-a="stBidDrop" data-v="${s.id}">포기</button>`; }
 function stOtherView(kind){ stInit(); const open=stPoachOpen(); const P=stPoNow();
   const L=[]; for(const tid in G.lgStaff){ for(const s of (kind==='sc'?G.lgStaff[tid].sc:G.lgStaff[tid].an))if(s.skill>=3)L.push({s,tid:+tid}); }

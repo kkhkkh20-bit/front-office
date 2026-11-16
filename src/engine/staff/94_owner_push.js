@@ -141,5 +141,5 @@ function aiPushTry(t,ctx){ if(!t||t.indie||t.id===ME())return false; const g=gmO
   if(rs&&lv===0&&(t.trust??55)>=65&&rs.p>=(best?best.p:0)+.15)best=rs; /* 신뢰가 두터울 때만 사표를 건다 */
   if(!best||best.p<bar)return false; const r=opRun(t.id,ctx,best.a);
   if(r.out){ opForcedOut(t.id,r.out); return false; }
-  if(r.ok)try{ wire('구단',`${t.city} ${t.nick} 단장, 구단주 다시 설득해 ${ctx.k==='cap'?'시설 투자':'추가 지원'} 받아 내`,{tid:t.id}); }catch(e){}
+  if(r.ok)try{ wire('구단',`${tfull(t)} 단장, 구단주 다시 설득해 ${ctx.k==='cap'?'시설 투자':'추가 지원'} 받아 내`,{tid:t.id}); }catch(e){}
   return r.ok; }
