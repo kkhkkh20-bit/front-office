@@ -28,7 +28,7 @@ function contractGrid(){ const Y=sponSeason(); const K=[0,1,2,3]; const ps=Objec
   <div class="tw cg-w"><table class="cg"><thead><tr>${th('name','선수')}${th('exp','계약 만료')}${K.map(k=>`<th>${Y+k}${k===0?'':''}</th>`).join('')}</tr></thead>
   <tfoot><tr><th>확정 합계</th><td></td>${fix.map(v=>`<td class="num">${money(v)}</td>`).join('')}</tr><tr><th>협상 예상 포함</th><td></td>${K.map(k=>`<td class="num">${money(fix[k]+est[k])}</td>`).join('')}</tr><tr><th>샐러리캡</th><td></td>${K.map(k=>`<td class="num">${money(capOf(Y+k))}</td>`).join('')}</tr></tfoot>
   <tbody>${R.map(x=>`<tr class="click" data-a="player" data-v="${x.p.id}"><th><span class="pn">${esc(x.p.name)}</span> <i class="f">${esc(posLabel(x.p))} · ${x.p.age}세${x.p.foreign?' · 외국인':''}</i></th><td class="small">${(()=>{ const i=exp(x); return i>=9?`${Y+3} 이후`:`${Y+i-1}년까지`; })()}</td>${x.c.map(c=>`<td class="cg-c ${c.t}" title="${L[c.t]||''}">${c.h}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
-  <p class="small muted">확정은 이미 정해진 연봉(다년·FA 계약, 올해 연봉), 협상 예상(~)은 보류권 선수의 연봉 협상 추정(코치진 예상 능력 기준)입니다. FA 뒤는 0원이 아니라 미계약입니다. 복무 중인 시즌은 연봉이 예산·상한에서 빠지는 게임 규칙대로 합계에서 뺍니다. 외국인은 1년 계약이라 내년부터 재계약 협상입니다.</p>`; }
+  <p class="small muted">확정은 이미 정해진 연봉, ~ 표시는 연봉 협상 예상입니다. ${hiI('확정은 다년·FA 계약과 올해 연봉입니다. 협상 예상은 보류권 선수의 연봉을 코치진 예상 능력으로 어림한 값입니다. FA 뒤는 0원이 아니라 미계약입니다. 복무 중인 시즌은 연봉이 예산·상한에서 빠지므로 합계에서 뺍니다. 외국인은 1년 계약이라 내년부터 재계약 협상입니다.')}</p>`; }
 function projPlan(p,k){ let o=ovr(p), a=p.age; const pot=Math.max(scoutReport(p).ofp??o,o); /* 진짜 잠재력이 아니라 스카우트 추정으로 내다본다 */ for(let i=0;i<k;i++){ a++; o+=a<=24?(pot-o)*.3:a<=27?(pot-o)*.22:a<=30?0:a<=33?-1.5:-3; } return o; }
 /* 선수단 계획(모바일 plannerCard·PC planFM 공용). KBO 병역: 만 28세가 되는 해까지 입대(게임 규칙), 복무 1년 6개월.
    그해 7월(시즌 한가운데)에 복무 중이면 그 시즌 계획에서 뺀다. 아직 입대 일정이 없는 미필 선수는 기한 다음 해를 복무로 본다 */
@@ -81,7 +81,7 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
     <div class="tw"><table class="pl-t"><thead><tr><th></th>${[0,1].map(k=>`<th>${Y+k} ${k===0?'(올해)':'(내년)'}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
     <p class="small ${holes.length?'':'good'} keep">${holes.length?`내년 보강이 필요한 자리: <b>${holes.join(' · ')}</b>`:'내년까지 모든 자리가 채워져 있습니다.'}</p>
     ${exL.length?`<p class="small keep">내년 계획에서 뺀 선수: ${exL.map(p=>esc(p.name)).join(', ')} <button class="tc-i" data-a="plExClear">되돌리기</button></p>`:''}
-    <p class="small muted">FA는 계약이 끝나 그해 떠날 수 있는 선수, 재계약은 1년 계약 외국인입니다. 젊은 선수의 내년 값은 코치진 추정 범위입니다. 내년 칸의 ×로 계획에서 빼면 빈자리와 연봉 전망이 다시 계산됩니다. 실제 기용이나 선수 기분에는 영향이 없습니다.</p>
+    <p class="small muted">내년 칸의 ×로 계획에서 빼면 빈자리와 연봉 전망을 다시 계산합니다. 실제 기용이나 선수 기분은 그대로입니다. ${hiI('FA는 계약이 끝나 그해 떠날 수 있는 선수, 재계약은 1년 계약 외국인입니다. 젊은 선수의 내년 값은 코치진 추정 범위입니다.')}</p>
     ${risk.length?`<div class="eyebrow" style="margin-top:6px">2년 뒤 위험</div><ul class="pl-risk">${risk.slice(0,6).join('')}</ul>`:''}
     <div class="eyebrow" style="margin-top:6px">국내 선수 연봉 전망</div>${payT}<details class="cg-d" data-k="cgrid"${UI.open&&UI.open.cgrid?' open':''}><summary class="small"><b>선수별 장기 연봉표</b> · 합계가 왜 바뀌는지 선수·시즌별로</summary>${UI.open&&UI.open.cgrid?contractGrid():'<p class="small muted">펼치면 계산합니다.</p>'}</details><p class="small muted">확정은 남은 다년·FA 계약, 예상은 보류권 선수의 연봉 협상 추정, FA 재계약 시는 계약이 끝나는 주축(예상 능력 62 이상)을 시장가로 잡을 때입니다.</p>
     <div class="eyebrow" style="margin-top:6px">세대 구성 (국내 선수)</div><div class="gen">${gen}</div></section>`; }
@@ -146,7 +146,7 @@ function planFM(){ const Y=G.year; if(!G.plEx||G.plEx.y!==Y)G.plEx={y:Y,ids:[]};
     const d=planDueY(p); if(d!=null&&d<=Y+2)ev.push([d,p,'입대 기한','warn']);
     if(p.mil&&p.mil.until&&p.mil.until>G.day)ev.push([dobj(p.mil.until).y,p,milText(p),'']); }
   ev.sort((a,b)=>a[0]-b[0]||ovr(b[1])-ovr(a[1]));
-  const b3=`<section class="card"><h3>계약 만료 · 병역 <em>${Y}~${Y+2}</em></h3><div class="sf-tw"><table class="sf-t"><tbody>${ev.length?ev.map(([y,p,t,k])=>`<tr><td>${y}</td><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> ${rchip(Math.round(projPlan(p,0)))}</td><td class="${k}" title="${k==='warn'&&t==='입대 기한'?'만 28세가 되는 해까지 입대해야 합니다(게임 규칙).':''}">${esc(t)}</td></tr>`).join(''):'<tr><td class="muted">3년 안에 계약이 끝나거나 입대할 선수가 없습니다.</td></tr>'}</tbody></table></div></section>`;
+  const b3=`<section class="card"><h3>계약 만료 · 병역 <em>${Y}~${Y+2}</em></h3><div class="sf-tw"><table class="sf-t"><tbody>${ev.length?ev.map(([y,p,t,k])=>`<tr><td>${y}</td><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> ${rchip(Math.round(projPlan(p,0)))}</td><td class="${k}" title="${k==='warn'&&t==='입대 기한'?'만 28세가 되는 해까지 입대해야 합니다.':''}">${esc(t)}</td></tr>`).join(''):'<tr><td class="muted">3년 안에 계약이 끝나거나 입대할 선수가 없습니다.</td></tr>'}</tbody></table></div></section>`;
   const PY=[0,1,2].map(planPay);
   const b4=`<section class="card" title="캡 여유 = 캡 − (확정 + 협상 예상). FA 재계약은 빼고, 캡 산입 예외는 반영하지 않은 대략값입니다."><h3>국내 선수 연봉 전망 <em class="spn-t">대략값</em></h3><div class="sf-tw"><table class="sf-t spn-pay"><thead><tr><th></th>${PY.map((_,k)=>`<th>${Y+k}</th>`).join('')}</tr></thead><tbody>
     <tr><td>확정</td>${PY.map(x=>`<td>${money(x.fix)}</td>`).join('')}</tr><tr><td>협상 예상</td>${PY.map((x,k)=>`<td>${k?money(x.est):'-'}</td>`).join('')}</tr>
@@ -186,7 +186,7 @@ function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap()
   const glt=inTabs('gl'+(own?'':'o'),[...(own?[['st','현황']]:[]),['one','1군'],['two','2군'],...(own?[['plan','선수단 계획']]:[])],own?'st':'one');
   if(own&&glt.cur==='st')return glt.bar+`<section class="card"><h2 class="sec">우리 팀 현황</h2>${teamStatusBox()}</section>`+(awayT?csec('빠진 선수',awayT):'')+teamGrowCard();
   if(own&&glt.cur==='plan')return glt.bar+plannerCard();
-  if(glt.cur==='two')return glt.bar+(own&&typeof flRecent==='function'?flRecent(6):'')+csec('2군',two+`<p class="small sdesc">${FL?`${dobj(FL.d).y}년 ${dmd(FL.d)} 2군 라인업입니다. 2군 감독이 매주 짭니다: 전환 훈련 중인 선수는 그 자리에 먼저 넣고, 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다. 라인업에 든 선수는 한 주 3경기, 나머지는 1경기 정도 나갑니다.`:'2군 라인업은 1군에 없는 선수 중 자리별로 가장 나은 선수로 짠 예상입니다(정규시즌에는 실제 2군 라인업).'}</p>`);
+  if(glt.cur==='two')return glt.bar+(own&&typeof flRecent==='function'?flRecent(6):'')+csec('2군',two+`<p class="small sdesc">${FL?`${dobj(FL.d).y}년 ${dmd(FL.d)} 2군 라인업입니다. 2군 감독이 매주 짭니다. 전환 훈련 중인 선수를 그 자리에 먼저 넣고, 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다. 라인업에 든 선수는 한 주 3경기, 나머지는 1경기 정도 나갑니다.`:'2군 라인업은 1군에 없는 선수 중 자리별로 가장 나은 선수로 짠 예상입니다(정규시즌에는 실제 2군 라인업).'}</p>`);
   return glt.bar+csec(`1군 ${own?'감독 라인업':'예상 라인업'} <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독 · ':''}${entryOn()?playersOf(tid).filter(p=>p.e1).length+'명':''}</span>`,one,own?`<span class="small muted">왼쪽 ▲▼: 올해 들어 능력 변화</span>`:''); }
 /* 팀 성장 추이: 매달 1군 전력과 유망주 잠재를 기록 */
 function teamGrowCard(){ const T=(G.tgrow||[]).slice(-24); if(T.length<2)return '';

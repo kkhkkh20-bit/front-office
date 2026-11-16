@@ -14,7 +14,7 @@ function teamLean(tid){ const m=mgrOf(tid);
   if(!G.policy)return mgrLean(m); const f=G.policy.follow??1; return clamp(POL[G.policy.k].lean*f+mgrLean(m)*(1-f),-1,1); }
 function polBonus(tid,p,lean){ return polBonus0(tid,p,lean)+mgrFitB(tid,p)+promB(tid,p)+(typeof mcfB==='function'?mcfB(tid,p):0); } /* mcfB: 단장과 합의한 기용·감독의 검증된 선수 선호(93_mgr_conflict) */
 /* 출전 기회 약속(선수 면담·감독 상의): 약속 기간에는 1군 등록·라인업·불펜 기용에 가산. 기강을 중시하는 감독은 덜 따른다(사용자 제보 11-07: 약속해도 한 번도 안 뜀) */
-function promB(tid,p){ if(tid!==G.user||!p.promise||!(p.promise.until>=G.day))return 0; const m=G.mgr[tid]; return m&&!m.interim&&m.disc>=62?4:7; } /* 감독이 원하는 역할에 맞는 선수를 기용에서 조금 더 쳐준다(85_mgr_fit) */
+function promB(tid,p){ if(!p.promise||!(p.promise.until>=G.day)||(p.promise.tid??G.user)!==tid)return 0; /* 약속한 구단의 감독만(모든 구단 같은 몫) */ const m=G.mgr[tid]; return m&&!m.interim&&m.disc>=62?4:7; } /* 감독이 원하는 역할에 맞는 선수를 기용에서 조금 더 쳐준다(85_mgr_fit) */
 function polBonus0(tid,p,lean){ if(lean==null)lean=teamLean(tid); const pa=tid===G.user?pactB(p):0; if(Math.abs(lean)<.05)return pa;
   if(lean>0){ const gap=Math.max(0,p.pot-ovr(p)); return pa+lean*(p.age<=24?3+gap*.18:p.age<=26?1.5:p.age>=31?-1:0); }
   return pa-lean*(p.age>=28?1.5:p.age<=23?-1.5:0); }
@@ -37,7 +37,7 @@ function pactMonth(mo){ const P=G.pact; const m=G.mgr[G.user]; if(!P||P.y!==G.ye
     if(enough)r=x.lv==='no'?'합의는 거절했지만 경기 상황에 따라 1군 기회를 받았습니다.':'약속대로 기회를 줬습니다.'; /* 거절한 합의를 지켰다고 하지 않는다(검수 11-09zi) */ else if(p.injOut>0||(p.injHist||[]).some(z=>z.y===G.year&&z.d>=G.day-31))r='부상으로 쓰지 못했습니다.'; else if(isAway(p)||p.ys||p.hold||p.susp>G.day||p.joinY>G.year||!psOk(p))r=`현재 출전할 수 없습니다: ${upWhy({...p,e1:false})}`; else if(!p.e1)r=x.lv==='no'?'합의 때 말씀드린 대로 2군에서 보고 있습니다.':'1군 엔트리 경쟁에서 밀렸습니다. 지금 능력으로는 다른 선수가 먼저입니다.'; else { const hh=h&&(p.isP?h.outs>=30:h.pa>=40)?h:null; const bad=hh&&(p.isP?pRate(hh).era>=5:bRate(hh).ops<.7); /* 실제 성적이 나쁠 때만 부진이라고 한다(검수 11-09zi) */ r=bad?(p.isP?`부진(ERA ${pRate(hh).era.toFixed(2)})해서 비중을 줄였습니다.`:`부진(OPS ${fmt3(bRate(hh).ops)})해서 비중을 줄였습니다.`):hh?`성적(${p.isP?`ERA ${pRate(hh).era.toFixed(2)}`:`OPS ${fmt3(bRate(hh).ops)}`})은 좋지만 경기 상황상 기회가 적었습니다.`:'경기 상황상 기회가 적었습니다.'; }
     L.push(`${p.name}(${x.lv==='full'?'합의':x.lv==='part'?'부분 합의':'합의 거절 · 2군 육성'}): ${mo}월 1군 ${amt} · ${r}`); }
   if(!L.length)return; P.log.push({m:mo,L});
-  mail('감독실',`${mo}월 유망주 기회 점검`,`${m.name} 감독의 보고입니다.\n\n${L.join('\n')}\n\n합의는 그대로 두거나, 대상을 바꾸거나, 끝낼 수 있습니다. 결과만으로 자동 평가하지 않습니다.`,{kind:'감독',acts:[{l:'합의 유지',a:'pactKeep',v:''},{l:'대상 바꾸기',a:'go',v:'staff:pact'},{l:'합의 끝내기',a:'pactEnd',v:''}]}); }
+  mail('감독실',`${mo}월 유망주 기회 점검`,`${m.name} 감독의 보고입니다.\n\n${L.join('\n')}\n\n합의는 그대로 두거나, 대상을 바꾸거나, 끝낼 수 있습니다.`,{kind:'감독',acts:[{l:'합의 유지',a:'pactKeep',v:''},{l:'대상 바꾸기',a:'go',v:'staff:pact'},{l:'합의 끝내기',a:'pactEnd',v:''}]}); }
 function setPolicy(k){
   const m=G.mgr[G.user]; if(!m)return {msg:'감독이 없습니다.'};
   if(G.policy&&G.policy.k===k)return {msg:'이미 그 기조입니다.'};
@@ -63,11 +63,11 @@ function mkInterim(){ const C=(G.coach&&G.coach[G.user])||{}; const active=c=>c&
 function hireMgr(id,years,withClan,pl){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; years=Math.round(+years); if(!(years>=1&&years<=5))return '계약 기간은 1~5년입니다.';
   const m=(G.mmarket||[]).find(x=>x.id===id); if(!m)return '후보가 없습니다.';
   if(pl&&pl.length){ if(pl.some(k=>mplStance(m,k)==='no'))return mplApply(m,pl); }
-  const cur=G.mgr[G.user]; if(G.coach&&cur&&!cur.interim){ const gone=clanLeave(cur); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
+  const cur=G.mgr[G.user]; if(G.coach&&cur&&!cur.interim){ const gone=clanLeave(cur,G.user,'fire'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
   if(cur&&!cur.interim){ try{ meInc('mgrFire'); }catch(e){} try{ exMgrAdd(cur,G.user); }catch(e){} staffHistory('mgr',cur,'경질',G.user,'단장 결정'); /* 새 감독을 바로 앉혀도 경질로 센다(검수 11-07) */ const {pay,brk,n}=mgrSevPay(cur); G.spend.mgr+=pay; G.spend.sev=(G.spend.sev||0)+pay; addLog(`${cur.name} 감독을 경질했습니다. 잔여 연봉 ${money(pay)}${brk?`(약속 위반 ${n}회로 계약 위반 조항 적용, 절반)`:''}.`); }
   if(cur&&cur.interim)staffHistory('mgr',cur,'감독대행 임무 종료',G.user,'정식 감독 선임'); delete m.pl; if(pl&&pl.length)mplApply(m,pl);
   staffCt(m,years); m.hD=G.day; /* 부임일: 선수를 얼마나 봤는지 */ G.mgr[G.user]=m; G.mmarket=G.mmarket.filter(x=>x.id!==id); try{ obTaken(m.ob,m); }catch(e){} try{ mreqCloseOld(); }catch(e){}
-  if(G.coach&&withClan&&m.clan&&m.clan.length){ const got=hireClan(m,years); if(got.length)note('감독',`${m.name} 감독 사단 코치 ${got.join(', ')}이(가) 함께 왔습니다. 같은 사단 코치는 감독과 손발이 맞아 지도 능력이 조금 더 나옵니다.`); }
+  if(G.coach&&!withClan)for(const c of clanFol(m))delete c.folM; /* 사단 없이 선임하면 기다리던 코치는 시장에 그대로 남는다 */ if(G.coach&&withClan&&(m.clan=clanNow(m)).length){ const got=hireClan(m,years); if(got.length)note('감독',`${m.name} 감독 사단 코치 ${got.join(', ')}이(가) 함께 왔습니다. 같은 사단 코치는 감독과 손발이 맞아 지도 능력이 조금 더 나옵니다.`); }
   addLog(`${m.name} 감독과 ${years}년 연 ${money(m.sal)}에 계약했습니다.`); staffHistory('mgr',m,'선임',G.user,`${years}년 · 연 ${money(m.sal)}`);
   mail('운영팀',`${m.name} 감독 선임`,`${m.name} 감독과 ${years}년 연 ${money(m.sal)}에 계약했습니다. ${mgrStyle(m)} 성향입니다.${m.pl?`\n영입 면담에서 받은 약속: ${Object.keys(m.pl).map(k=>MPL[k].l).join(', ')}.`:''}`,{kind:'감독'});
   wire('감독',`${tname(G.user)}, ${m.name} 감독 선임`,{tid:G.user,x:{mid:m.id,hire:1}});
@@ -76,7 +76,7 @@ function hireMgr(id,years,withClan,pl){ if(G.unemp)return '구단을 맡고 있�
   for(const p of playersOf(G.user)){ initPers(p); p.mor=clamp(p.mor+(m.disc-50)/10+(m.fame>=70?3:0),0,100); }
   return '';
 }
-function fireMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; try{ meInc('mgrFire'); }catch(e){} try{ exMgrAdd(cur,G.user); }catch(e){} if(G.coach){ const gone=clanLeave(cur); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); } const {pay,brk,n}=mgrSevPay(cur); G.spend.mgr+=pay; G.spend.sev=(G.spend.sev||0)+pay;
+function fireMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; try{ meInc('mgrFire'); }catch(e){} try{ exMgrAdd(cur,G.user); }catch(e){} if(G.coach){ const gone=clanLeave(cur,G.user,'fire'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); } const {pay,brk,n}=mgrSevPay(cur); G.spend.mgr+=pay; G.spend.sev=(G.spend.sev||0)+pay;
   addLog(`${cur.name} 감독을 경질했습니다. 잔여 연봉 ${money(pay)}${brk?`(약속 위반 ${n}회로 계약 위반 조항 적용, 절반)`:''}.`); staffHistory('mgr',cur,'경질',G.user,'단장 결정');
   G.mgr[G.user]=mkInterim(); staffHistory('mgr',G.mgr[G.user],'감독대행 선임',G.user,`${cur.name} 감독 퇴임 후 잔여 시즌 지휘`); try{ mreqCloseOld(); }catch(e){}
   if(!brk)for(const p of playersOf(G.user))p.mor=clamp(p.mor-4,0,100);
@@ -84,7 +84,7 @@ function fireMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.int
   try{ ivRequest('mgr_fire',{nm:cur.name}); }catch(e){}
   stop('감독',`${cur.name} 감독을 경질했습니다. 남은 기간은 수석코치가 감독대행을 맡습니다. 새 감독은 스태프·육성 → 감독에서 선임하세요.`); }
 /* 감독 자진 사퇴: 잔여 연봉·경질 기사·선수 기분 하락 없이 감독대행 체제로 */
-function resignMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; if(G.coach){ const gone=clanLeave(cur); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
+function resignMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; if(G.coach){ const gone=clanLeave(cur,G.user,'resign'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
   addLog(`${cur.name} 감독이 자진 사퇴했습니다. 잔여 연봉은 없습니다.`); staffHistory('mgr',cur,'자진 사퇴',G.user);
   G.mgr[G.user]=mkInterim(); staffHistory('mgr',G.mgr[G.user],'감독대행 선임',G.user,`${cur.name} 감독 퇴임 후 잔여 시즌 지휘`); try{ mreqCloseOld(); }catch(e){}
   wire('감독',`${tname(G.user)}, ${cur.name} 감독 자진 사퇴`,{tid:G.user,x:{fire:1,nm:cur.name}}); }

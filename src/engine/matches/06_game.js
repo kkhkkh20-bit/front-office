@@ -3,10 +3,16 @@ const LGP={bb:.083,k:.198,hr:.024,babip:.312};
 const comb=(pb,pp,pl)=>{ const x=pb*pp/pl, y=(1-pb)*(1-pp)/(1-pl); return x/(x+y); };
 const bz=()=>({pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0,e:0});
 /* 실책을 범한 야수: 타구가 많이 가는 자리(유격수·3루·2루)일수록, 그 자리 수비력이 낮을수록 잦다 */
+/* 병살: 1루 주자가 있는 땅볼 아웃 가운데 병살이 되는 기본 확률, 병살이 아닌 포스 땅볼에서 야수 선택(앞 주자 아웃·타자 1루)의 비율.
+   11-15 수비 감사(세계 16개): 예전 .225로 팀당 시즌 병살 57개(KBO·MLB 실제 팀당 100~120개), 땅볼 아웃 때 1루 주자가 진루하지 않아 포스 진루가 빠져 있었다. 둘을 함께 고쳐 경기당 득점은 그대로 */
+const DP_GB=.38, FC_GB=.3;
 const ERRW={SS:1.5,'3B':1.2,'2B':1,'1B':.5,C:.5,LF:.35,CF:.35,RF:.35}, ERRN={SS:60,'2B':60,CF:63,C:56,'3B':52,'1B':49,LF:47,RF:46}; /* 실제 KBO 자리별 실책 비율에 맞춘 무게, 자리별 보통 수비력 */
 /* 실책: 먼저 공이 어느 자리로 갔는지(자리별 실책 비율 무게) 고르고, 그 자리 수비수의 실력으로 실책 확률을 정한다. 수비가 약한 유격수는 실책이 크게 는다 */
 function errLoc(fs){ const L=[]; let t=0; for(const p of fs.order){ const k=fs.posOf[p.id]; if(!k||!ERRW[k])continue; L.push([p,k,ERRW[k]]); t+=ERRW[k]; } if(!t)return null; let x=R()*t; for(const e of L){ x-=e[2]; if(x<=0)return e; } return L[L.length-1]; }
-const errChance=e=>.022*(e&&ERRN[e[1]]?clamp(1+(ERRN[e[1]]-fieldV(e[0],e[1]))/20,.4,2.2):1); /* 그 자리 보통 수비력(ERRN)보다 20 낮으면 실책 2배. 투수는 수비 능력치가 없어 기본 확률 */
+/* 자리별 실책 배수(타구 하나당): 강한 타구가 많은 3루가 가장 높고 1루가 가장 낮다(MLB 수비율 3루 .955 · 유격 .970 · 2루 .983 · 1루 .994).
+   11-15 전에는 모든 자리가 같아 3루 실책이 시즌 5개로 2루(13개)의 절반도 안 됐다. 땅볼 기회 수로 가중한 평균이 1이라 리그 실책 수는 그대로 */
+const EPOS={'3B':1.6,SS:1.15,'2B':.75,'1B':.6};
+const errChance=(e,gb)=>.022*(e&&EPOS[e[1]]||1)*(e&&(ERRN[e[1]]||e[1]==='P')?clamp(1+((ERRN[e[1]]||DEF0)-errV(e[0],e[1],gb))/20,.4,2.2):1); /* 그 자리 보통 수비력(ERRN)보다 20 낮으면 실책 2배. 투수는 수비 능력치가 없어 기본 확률 */
 function errFielder(fs){ const L=[]; let t=0; for(const p of fs.order){ const k=fs.posOf[p.id]; if(!k||!ERRW[k])continue; const w=ERRW[k]*clamp(1+(ERRN[k]-fieldV(p,k))/12,.35,3); L.push([p,k,w]); t+=w; }
   let x=R()*t; for(const e of L){ x-=e[2]; if(x<=0)return e; } return L[L.length-1]||null; }
 const pz=()=>({outs:0,h:0,hr:0,bb:0,hbp:0,so:0,r:0,er:0,pc:0,bf:0,e:0});
@@ -17,7 +23,9 @@ function pitFatGain(p,pc,isSP){ return (pc*(isSP?.55:.9)+(isSP?0:6))*staF(p); } 
 function relAvail(p,day,ps){ const ae=mgrPush(p.team)+(ps?18:0); /* 가을야구: 연투·혹사를 더 감수한다 */ if(!healthy(p)||p.lastApp===day||(p.fat||0)>72+(ae-50)*.4+((p.r.sta||45)-45)*.4)return false; /* 체력이 좋은 불펜은 연투를 더 버틴다 */
   const cd=consecDays(p,day); /* 연투: 이틀은 보통, 3연투는 밀어붙이는 감독만, 4연투는 강행군 감독만 */
   if(cd>=1&&(p.lastPc||0)>25+(ae-50)*.4)return false; if(cd>=2&&(ae<55||(p.lastPc||0)>22))return false; if(cd>=3&&ae<72)return false; if(cd>=4)return false;
-  if(ae<=38&&pc7(p,day)>60)return false; return true; }
+  if(ae<=38&&pc7(p,day)>60)return false;
+  { let n7=0; for(const x of (p.ld||[]))if(x[0]>=day-7&&x[0]<day)n7++; if(n7>=4+(ae>=68?1:0))return false; } /* 지난 7일에 네 번 던졌으면 쉰다(강행군 감독·가을야구 총력전은 다섯 번). 11-15 투수 감사: 불펜 등판 1위가 해마다 81~92경기, 70경기 이상이 시즌마다 12명(KBO는 1위가 대개 70~80경기) */
+  return true; }
 /* 가을야구 총력전: 좋은 선발 셋으로 돌리고(4일 휴식이면 등판), 탈락 위기면 에이스가 3일만 쉬고도 나온다 */
 function psStarter(tid,d,day,ps){ const rest=p=>p.lastStart==null?99:day-p.lastStart; const top=[...d.sp].filter(healthy).sort((a,b)=>spV(b)-spV(a)); const need=(ps.elimT?ps.elimT.includes(tid):ps.elim)?3:4;
   const ok=p=>p.lastApp!==day&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&day-p.lastApp<2); /* 어제 불펜으로 던진 투수는 쉬어 온 선발 뒤로(정규시즌과 같은 기준, 검수 11-08) */ return top.slice(0,3).find(p=>ok(p)&&rest(p)>=need)||top.find(p=>ok(p)&&rest(p)>=4)||null; }
@@ -32,16 +40,26 @@ function pickStarter(tid,d,day,ps,o){
   for(let k=0;k<sp.length;k++){ const i=((t.rot||0)+k)%sp.length; const p=sp[i]; if((p.lastStart==null||day-p.lastStart>=5)&&fresh(p)){ if(o)o.rot=(i+1)%sp.length; return p; } } /* 순번은 경기를 저장할 때(applyGame) 넘긴다: 실패·재시도로 두 칸 넘지 않게(검수 11-09zh) */
   const pool=[...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0)); return pool.find(fresh)||d.pen.find(fresh)||pool.find(p=>p.lastApp!==day)||d.pen.find(p=>p.lastApp!==day)||sp[0]; /* 쉬어 온 투수(불펜 포함)를 전날 등판한 투수보다 먼저(검수 11-08) */
 }
+/* 타순(카페 11-14: 외국인 거포·최고 타자가 1번에 몰림. 감독마다 달라야 한다). 실제로 쓰이는 짜임새를 감독 성향으로 고른다(같은 감독은 늘 같은 짜임새).
+   - 클래식(KBO 전통): 1번 출루·발, 2번 맞히기·번트, 3번 최고 타자, 4번 최고 거포, 5번 다음 거포, 6~9번은 잘 치는 순
+   - 세이버(The Book): 가장 좋은 타자 셋을 1·2·4번에(1번 출루 최고, 2번 팀 최고 타자, 4번 장타 최고), 다음 둘을 3·5번
+   - OPS 순: 출루+장타가 높은 순서대로 1번부터
+   - 스몰볼: 발 빠른 출루형 1번, 번트·밀어치기 2번, 장타 3~5번 / 빅볼: 출루형 1번, 최고 타자 2번, 장타자 몰아 놓기
+   출루율·OPS는 능력치에 올해 1군 성적(100타석 이상)을 섞는다. 어느 짜임새든 출루가 좋은 타자가 위쪽에 온다 */
 function orderList(start,tid){
-  const s=[...start]; const by=f=>s.sort((a,b)=>f(b)-f(a)); const m=tid!=null?mgrOf(tid):null; const sm=m&&!m.interim?m.small:50;
-  if(sm<=38){ /* 빅볼: 출루 좋은 1번 뒤에 팀 최고 타자를 2번에 두고 장타자를 몰아 놓는다 */
-    by(p=>p.r.eye*1.2+p.r.con+p.r.spd*.3); const lead=s.splice(0,1); by(offV); const two=s.splice(0,1); by(p=>p.r.pow+p.r.con*.4); const mid=s.splice(0,3); by(offV); return [...lead,...two,...mid,...s]; }
-  if(sm>=62){ /* 스몰볼: 빠른 1번, 번트·밀어치기가 되는 2번 */
-    by(p=>p.r.spd*1.2+p.r.con+p.r.eye*.6); const lead=s.splice(0,1); by(p=>p.r.con*1.3+p.r.eye*.5-p.r.pow*.4+p.r.spd*.3); const two=s.splice(0,1); by(p=>p.r.pow+p.r.con*.5); const mid=s.splice(0,3); by(offV); return [...lead,...two,...mid,...s]; }
-  by(p=>p.r.con+p.r.eye+p.r.spd*.7); const top=s.splice(0,2);
-  by(p=>p.r.pow+p.r.con*.5); const mid=s.splice(0,3);
-  by(offV); return [...top,...mid,...s];
-}
+  const s=[...start]; const by=f=>s.sort((a,b)=>f(b)-f(a)); const take=(f,n)=>{ by(f); return s.splice(0,n); };
+  const m=tid!=null?mgrOf(tid):null; const ok=m&&!m.interim; const sm=ok?m.small:50, tac=ok?(m.tac??50):50;
+  const h=ok?[...String(m.id||m.name||'')].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7)%100:50; /* 감독마다 고정된 버릇 */
+  const C=new Map(); const st=p=>{ if(C.has(p.id))return C.get(p.id); let o=null; try{ const t=seasonTotal(p,G.year,'1군'); if(t&&t.pa>=100){ const r=bRate(t); o={obp:r.obp,ops:r.ops,w:Math.min(.6,t.pa/500)}; } }catch(e){} C.set(p.id,o); return o; };
+  const obpR=p=>.24+(p.r.eye-20)*.0022+(p.r.con-20)*.0018, opsR=p=>obpR(p)+.25+(p.r.pow-20)*.0055+(p.r.con-20)*.002;
+  const obp=p=>{ const o=st(p); return o?obpR(p)*(1-o.w)+o.obp*o.w:obpR(p); }, ops=p=>{ const o=st(p); return o?opsR(p)*(1-o.w)+o.ops*o.w:opsR(p); };
+  const lead=p=>obp(p)*100+p.r.spd*.25-p.r.pow*.18, two=p=>p.r.con*1.2+p.r.eye*.4+p.r.spd*.3-p.r.pow*.25, slug=p=>p.r.pow+p.r.con*.45;
+  if(sm>=62){ const a=take(p=>obp(p)*80+p.r.spd*.6-p.r.pow*.2,1), b=take(p=>p.r.con*1.3+p.r.eye*.3+p.r.spd*.3-p.r.pow*.5,1), mid=take(slug,3); by(ops); return [...a,...b,...mid,...s]; }
+  if(sm<=38){ const a=take(lead,1), b=take(ops,1), mid=take(slug,3); by(ops); return [...a,...b,...mid,...s]; }
+  if(tac>=64&&h<50){ const top3=take(ops,3); const one=top3.sort((x,y)=>obp(y)-obp(x)).shift(); const four=top3.sort((x,y)=>slug(y)-slug(x)).shift(); const twoP=top3[0]; const nx=take(ops,2).sort((x,y)=>slug(x)-slug(y)); by(ops); return [one,twoP,nx[0],four,nx[1],...s]; }
+  if(h>=82){ by(ops); return [...s]; }
+  const four=take(slug,1), three=take(ops,1), five=take(slug,1); const a=take(lead,1), b=take(two,1); by(ops);
+  return [...a,...b,...three,...four,...five,...s]; }
 function gameSide(tid,day,ps){
   const d=depth(tid); const ln=Object.assign({},d.ln); const bench=[...d.bench];
   const ov={}, rest=new Set();
@@ -57,7 +75,7 @@ function gameSide(tid,day,ps){
   if(sp)s.box.set(sp.id,pz()); order.forEach(p=>s.box.set(p.id,bz())); sideTraits(s);
   return s;
 }
-function boostOf(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 코치·감독·분위기를 받지 않는다(검수 11-09zk) */ let b=(tm!=null&&G.coach)?coachBoost(p):0; if(SIMDAY!=null&&p.gcD===SIMDAY)b+=p.gc||0; if(tm!=null)b+=mgrRelBoost(p); const f=G.form; if(f&&tm!=null&&tm===G.user&&G.day<=f.until)b+=f.b; if(p.form&&G.day<=p.form.until)b+=p.form.b; if(p.mor!=null)b+=clamp((p.mor-60)/36,-1.1,.8); /* 사기: 이기는 팀일수록 오르므로 효과가 크면 강팀이 더 강해진다(되먹임). 폭을 줄였다 */ if(tm!=null){ b+=(mgrOf(tm).tac-50)/60; b+=climateOf(tm).boost; } if(p.foreign&&p.fy===G.year&&p.adapt!=null)b+=(p.adapt-50)/22; if(p.foreign)b+=fBoost(p); /* 숨은 KBO 적합도·태업(73_foreign_drama) */
+function boostOf(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 코치·감독·분위기를 받지 않는다(검수 11-09zk) */ let b=(tm!=null&&G.coach)?coachBoost(p):0; if(SIMDAY!=null&&p.gcD===SIMDAY)b+=p.gc||0; if(tm!=null)b+=mgrRelBoost(p); const f=G.form; if(f&&tm!=null&&tm===G.user&&!G.unemp&&G.day<=f.until)b+=f.b; else if(tm!=null&&tm!==ME()){ const tf=G.teams[tm]&&G.teams[tm].form; if(tf&&G.day<=tf.until)b+=tf.b; } /* 다른 구단도 캠프 실전 감각 효과(사용자 11-13) */ if(p.form&&G.day<=p.form.until)b+=p.form.b; if(p.mor!=null)b+=clamp((p.mor-60)/36,-1.1,.8); /* 사기: 이기는 팀일수록 오르므로 효과가 크면 강팀이 더 강해진다(되먹임). 폭을 줄였다 */ if(tm!=null){ b+=(mgrOf(tm).tac-50)/60; b+=climateOf(tm).boost; } if(p.foreign&&p.fy===G.year&&p.adapt!=null)b+=(p.adapt-50)/22; if(p.foreign)b+=fBoost(p); /* 숨은 KBO 적합도·태업(73_foreign_drama) */
   if(p.sf&&p.sf.y===G.year)b+=p.sf.v+(p.sf.m||0);
   if(p.fat>45)b-=(p.fat-45)/18;
   if(p.wear){ const cap=p.isP?40+p.r.sta*1.7:70+(p.r.vit||52)*1.0; if(p.wear>cap)b-=Math.min(3,(p.wear-cap)/25); }
@@ -74,16 +92,24 @@ const TALENT_W=1;
    평균자책점 1위 2.0~2.6·5위 2.8~3.2·10위 3.2~3.4. 한 시즌 OPS를 능력 기대치가 설명하는 정도는 약 60%(실력 폭 wRC+ 약 24, 600타석 운 약 18 — KBO 실력 폭에서 나올 수 있는 수준).
    타자·투수 결합(log5)이 극단 대결에서 안타를 늘리는 만큼 QOF로 되돌려 리그 평균(타율 .265 안팎·경기당 득점 4.6 안팎)은 그대로 둔다 */
 /* 11-12 재조정(커뮤니티: 파워 98인데 홈런 20개대·0점대 평균자책점): 타자 홈런 폭 .69→.85, 투수 폭 축소. 측정 홈런 1위 37~42·평균자책점 1위 2.15~2.35(KBO 실제 홈런왕 30 후반~40대, 평균자책점 1위 1.9~2.7) */
-const TWB={k:1.1,bb:.72,hr:.85,babip:1.0}, TWP={k:.85,bb:.85,hr:1.1,babip:.7}; /* 플레이 테스트 3차: 타율·안타 1위가 .390·210안타까지, 평균자책점 1위가 1점대로 자주 나와 인플레이 안타율 폭만 조금 좁혔다(홈런 폭은 그대로) */
+const TWB={k:1.1,bb:.8,hr:.82,babip:.9}, TWP={k:.7,bb:.85,hr:.9,babip:.4}; /* 11-15 타자 균형: 볼넷 .72→.80·홈런 .85→.82(02_records batProbs, 홈런 1위가 30 중후반에 남게) */ /* 플레이 테스트 3차: 타율·안타 1위가 .390·210안타까지, 평균자책점 1위가 1점대로 자주 나와 인플레이 안타율 폭만 조금 좁혔다(홈런 폭은 그대로) */ /* 11-15 밸런스(KBO 2015~2025 기준: 타격왕 중앙값 .355·보통 .335~.380, 평균자책점 1위 중앙값 2.4·보통 2.0~3.0, 1점대 1위는 5~10년에 한 번).
+   예전 측정(AI만, 세계 4개 × 16시즌): 평균자책점 1위 중앙값 1.98, 1점대 1위 23/44시즌, 규정 2.50 미만 시즌당 3.2명, 1~5위 평균 1.95·2.24·2.41·2.57·2.70.
+   같은 능력대 선발끼리 평균자책점 운 폭(표준편차 약 0.8)은 실제와 비슷했고, 상위 능력대가 리그 평균보다 1.6~2.0 낮아 폭이 컸다.
+   투수 폭: 인플레이 안타 .7→.4(실제 투수가 다스리는 인플레이 안타율 차이는 작다), 홈런 1.1→.9, 삼진 .85→.7, 볼넷 .85 그대로(구위·제구 WAR 기여 비율을 맞추려고 삼진을 더 줄였다).
+   국내 선수층이 커진 뒤(10_draft LV_UP) 타격왕 .380+가 잦아져 타자 인플레이 안타 폭도 1.0→.9 */
 const QCB={k:.207,bb:.0825,hr:.0248,babip:.320}, QCP={k:.204,bb:.0818,hr:.025,babip:.310}, QOF={babip:-.003,hr:-.0004,bb:.001,k:-.001};
 function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip']){ const c=C?C[k]:LGP[k]; o[k]=clamp(c+(q[k]-c)*TALENT_W*(W?W[k]:1)+(F&&F[k]||0),.002,.6); } return o; }
 /* 홈 어드밴티지 크기(능력 보정 단위). 같은 전력이면 홈 승률 약 53~54%(MLB 장기 평균 약 .54, KBO도 비슷한 수준)에 맞춘 값 */
 let HOME_ADV=1.5;
 let RSP0=false;
+/* 성능: 경기 한 판 동안 변하지 않는 값(배터리 코치 계획, 구단별 전력분석 효과)은 수비 쪽 객체마다 한 번만 계산한다. 저장되지 않게 WeakMap에 둔다 */
+const _sideMemo=new WeakMap();
+function sideMemo(fs){ let M=_sideMemo.get(fs); if(!M){ M={cbp:coachBatteryPlan(fs.tid),ana:new Map()}; _sideMemo.set(fs,M); } return M; }
+function sideAna(M,tid){ if(!M)return anaEff(tid); let v=M.ana.get(tid); if(!v){ v=anaEff(tid); M.ana.set(tid,v); } return v; }
 function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */
-  const lead=fs?((fs.cLead??CL0)-CL0)*.28+chemOf(p,fs.cId)+coachBatteryPlan(fs.tid):0; /* 포수 리드·블로킹·배터리 호흡 */ const cb=CLUTCH?CLUTCH*2.0*mentalOf(b):0, cp=CLUTCH?CLUTCH*2.0*mentalOf(p):0; /* 승부처: 멘탈 */ const ha=fs&&PARK!=null&&HOME_ADV?(fs.tid===PARK?-HOME_ADV:HOME_ADV):0; /* 홈 어드밴티지(사용자 11-11): 수비 쪽이 홈이면 투수에, 아니면 타자에 */
+  const SM=fs?sideMemo(fs):null; const lead=fs?((fs.cLead??CL0)-CL0)*CLW+chemOf(p,fs.cId)+SM.cbp:0; /* 포수 리드·블로킹·배터리 호흡 */ const cb=CLUTCH?CLUTCH*2.0*mentalOf(b):0, cp=CLUTCH?CLUTCH*2.0*mentalOf(p):0; /* 승부처: 멘탈 */ const ha=fs&&PARK!=null&&HOME_ADV?(fs.tid===PARK?-HOME_ADV:HOME_ADV):0; /* 홈 어드밴티지(사용자 11-11): 수비 쪽이 홈이면 투수에, 아니면 타자에 */
   const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5+cb+Math.max(0,ha)),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5-(fp||0)+lead+cp+Math.max(0,-ha)),TWP,QCP,QOF);
-  const bb=comb(qb.bb,qp.bb,LGP.bb)*(1-LRULE.zone*.06), k=comb(qb.k,qp.k,LGP.k)*(1+LRULE.zone*.04), /* ABS 존(88_league_rules) */ hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
+  const bb=comb(qb.bb,qp.bb,LGP.bb)*(1-LRULE.zone*.06), k=comb(qb.k,qp.k,LGP.k)*(1+LRULE.zone*.04), /* ABS 존(88_league_rules) */ hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?sideAna(SM,p.team).bab-.0016:0)+(b.team!=null?sideAna(SM,b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
   LBIP=null; const pm=parkHRM(PARK,bipSide(b,p))*LRULE.ball, hrA=hr*pm; /* 공인구 반발계수(88_league_rules)도 홈런 지수에 곱한다 */ /* 구장: 담장 거리·높이에 따른 홈런 지수 */ const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hrA){ LBIP=bipHR(b,p); return 'HR'; }
   const hbp=clamp(.0085+(50-(p.r.ctl||50))*.00010+(fp||0)*.00008,.004,.014);
   if(x>=bb+k+Math.max(hr,hrA)&&x<bb+k+Math.max(hr,hrA)+hbp)return 'HBP'; /* 제구·피로에 따른 사구. 볼넷/삼진/홈런 구간과 분리 */
@@ -167,8 +193,13 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
       else { xb.ab++;
         if(o==='K'){ xb.so++; xp.so++; outs++; xp.outs++; }
         else if(o==='OUT'){
-          const BT=LBIP&&LBIP.t; const eL=LBIP&&(ERRW[LBIP.pos]||LBIP.pos==='P')&&fielderAt(fs,LBIP.pos)?[fielderAt(fs,LBIP.pos),LBIP.pos]:errLoc(fs); if(R()<errChance(eL)*(BT?({GB:1.75,LD:.27,FB:.44,PU:.27})[BT]:1)){ xp.roe=(xp.roe||0)+1; eRun=true; eOuts++; ueR.add(b.id); if(base[2]&&!ueR.has(base[2].id))ph=resp.get(base[2].id)??p.id; { const ef=eL; if(ef){ eFld=ef[0].id; const eb=fs.box.get(ef[0].id); if(eb)eb.e=(eb.e||0)+1; if(ev.length<400)ev.push({h:half,t:`실책: ${POSK[ef[1]]||(ef[1]==='P'?'투수':ef[1])} ${ef[0].name}`}); } } if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
-          else if(base[0]&&outs<2&&(!BT||BT==='GB')&&R()<(BT?.225:.11)*dpF(b,p,fs)){ dp=true; outs+=2; xp.outs+=2; base[0]=null; if(outs<3){ if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=null; } } /* 2루·1루 병살(6-4-3): 3루 주자는 홈인, 2루 주자는 3루로(병살 득점은 타점 아님, 9.04(b)) */
+          const BT=LBIP&&LBIP.t; const eL=LBIP&&(ERRW[LBIP.pos]||LBIP.pos==='P')&&fielderAt(fs,LBIP.pos)?[fielderAt(fs,LBIP.pos),LBIP.pos]:errLoc(fs); if(R()<errChance(eL,BT==='GB')*(BT?({GB:1.75,LD:.27,FB:.44,PU:.27})[BT]:1)){ xp.roe=(xp.roe||0)+1; eRun=true; eOuts++; ueR.add(b.id); if(base[2]&&!ueR.has(base[2].id))ph=resp.get(base[2].id)??p.id; { const ef=eL; if(ef){ eFld=ef[0].id; const eb=fs.box.get(ef[0].id); if(eb)eb.e=(eb.e||0)+1; if(ev.length<400)ev.push({h:half,t:`실책: ${POSK[ef[1]]||(ef[1]==='P'?'투수':ef[1])} ${ef[0].name}`}); } } if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
+          else if(base[0]&&outs<2&&(!BT||BT==='GB')&&R()<(BT?DP_GB:.11)*dpF(b,p,fs)){ dp=true; outs+=2; xp.outs+=2; base[0]=null; if(outs<3){ if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=null; } } /* 2루·1루 병살(6-4-3): 3루 주자는 홈인, 2루 주자는 3루로(병살 득점은 타점 아님, 9.04(b)) */
+          else if(outs<2&&BT==='GB'&&base[0]){ outs++; xp.outs++; const r1=base[0]; /* 땅볼 아웃의 1루 주자는 포스: 2루로 가거나(타자 1루 아웃), 2루에서 잡히고 타자가 1루에 남는다(야수 선택). 11-15 전에는 1루에 그대로 서 있었다 */
+            if(base[1]){ if(base[2]){ sc.push(base[2]); moves.push({id:base[2].id,from:3,to:4,result:'safe'}); } moves.push({id:base[1].id,from:2,to:3,result:'safe'}); base[2]=base[1]; base[1]=null; } /* 1·2루(만루)면 앞 주자도 밀려 간다 */
+            else if(base[2]){ const z=advanceRunner(base[2],3,4,.22,.003); if(z==='safe')sc.push(base[2]); if(z!=='hold')base[2]=null; } /* 1·3루: 3루 주자는 포스가 아니라 예전처럼 판단 */
+            if(R()<FC_GB){ resp.set(b.id,resp.get(r1.id)??p.id); if(ueR.has(r1.id)){ ueR.delete(r1.id); ueR.add(b.id); } moves.push({id:r1.id,from:1,to:2,result:'out'}); base[0]=b; } /* 야수 선택: 아웃된 주자의 책임 투수·비자책 여부를 타자 주자가 잇는다(야구규칙 9.16(g)) */
+            else { moves.push({id:r1.id,from:1,to:2,result:'safe'}); base[1]=r1; base[0]=null; } }
           else { outs++; xp.outs++; if(outs<3&&base[2]&&(BT!=='PU'||!G.coach)){const z=advanceRunner(base[2],3,4,BT==='PU'?0:BT==='GB'?.22:BT==='LD'?.6:BT?.9:.4,.003);if(z==='safe'){sc.push(base[2]);if(BT!=='GB'){xb.ab--;xb.sf=(xb.sf||0)+1;sfN=1;}}if(z!=='hold')base[2]=null;} /* 희생플라이는 실제 득점한 때만 기록한다. 태그업 아웃은 추가 수비 아웃 */ if(outs<3&&base[1]&&!base[2]&&(BT!=='PU'||!G.coach)){const z=advanceRunner(base[1],2,3,.3,.003);if(z==='safe')base[2]=base[1];if(z!=='hold')base[1]=null;} }
         } else { xb.h++; xp.h++; hh++;
           if(o==='HR'){ xb.hr++; xp.hr++; sc.push(...[base[2],base[1],base[0]].filter(Boolean),b); /* 앞 주자부터 홈인: 결승 주자·패전 판정 */ base[0]=base[1]=base[2]=null; }
@@ -258,10 +289,11 @@ function injure(p,day,ctx){ ctx=ctx||{}; day=day??G.day;
   if(days>=30)story(p,`${I.n}(으)로 약 ${days>=300?Math.round(days/30)+'개월':days+'일'} 이탈`,'inj');
   if(p.team===G.user&&days>=30&&period()==='season'&&(ovr(p)>=55||p.sal>=800))news('선수',`${tshort(G.user)} 악재, ${p.name} ${I.surg?'수술':'장기 이탈'}`,`${p.name}이(가) ${I.n}(으)로 ${days>=300?Math.round(days/30)+'개월':'약 '+days+'일'} 빠집니다.${seasonOut?' 사실상 시즌 아웃입니다.':''}`,-1,{ref:p.id});
   else if(p.team!==G.user&&I.surg&&days>=200&&ovr(p)>=55)wire('부상',`${tshort(p.team)} ${p.name}, ${I.n}`,{tid:p.team,ref:p.id});
+  if(p.team!=null)p.mor=clamp((p.mor??60)-4,0,100); /* 부상 기분 하락은 모든 구단 같은 값(전에는 우리 선수만) */
   if(p.team===G.user){ const H=HOSP[G.med.hosp]; const len=days>=300?`약 ${Math.round(days/30)}개월`:`${H.dx?'':'약 '}${days}일`;
     const fxT=I.tj?' 복귀까지 보통 12~16개월이 걸리고, 복귀 첫해에는 제구가 흔들리는 경우가 많습니다. 구속은 떨어지는 선수가 더 많지만 젊으면 오히려 오르기도 합니다.':I.perm&&I.d[0]>=90?' 수술 뒤 예전 몸 상태를 완전히 되찾지 못할 수도 있습니다.':I.re?' 복귀 직후 재발이 잦은 부위입니다.':'';
     const msg=`${p.name}(${posLabel(p)})이(가) ${I.n}(으)로 ${len} 이탈합니다. 예상 복귀 ${ret}.${seasonOut?' 올 시즌은 사실상 끝났습니다.':''}${fxT}${H.c?` ${H.name}에서 치료합니다.`:''}${H.dx?` 정밀 검진 결과 재발 위험은 ${p.inj>.24?'높은':p.inj>.15?'보통':'낮은'} 편입니다.`:''}`;
-    p.mor=clamp((p.mor??60)-4,0,100); !ctx.farm&&((days>=10&&(()=>{ try{ return isRegular(p); }catch(e){ return true; } })())||days>=30)?stop('부상',msg,p.id):note('부상',(ctx.farm?'[퓨처스] ':'')+msg,p.id); }
+    !ctx.farm&&((days>=10&&(()=>{ try{ return isRegular(p); }catch(e){ return true; } })())||days>=30)?stop('부상',msg,p.id):note('부상',(ctx.farm?'[퓨처스] ':'')+msg,p.id); }
   if(!I.surg)try{ evInjury(p,days,reg); }catch(e){}
   if(p.team===G.user&&days>=30&&!ctx.farm&&ovr(p)>=58)try{ ivRequest('injury',{pid:p.id,days}); }catch(e){}
 }

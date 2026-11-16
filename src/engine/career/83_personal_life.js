@@ -47,7 +47,7 @@ function personalActivity(kind,target){const A=PERSONAL_ACT[kind];if(!A||G.unemp
  if(kind==='ob'){text=obSupport(S,m);if(!text)return '우리 구단 출신 OB가 아직 없습니다.';}
  if(['chat','meal','rehab'].includes(kind)){p=G.players[+target];if(!p||p.team!==G.user)return '우리 구단 선수를 골라 주세요.';if(kind==='rehab'&&!(p.injOut>0))return '현재 재활 중인 선수가 아닙니다.';contact=contactRecord('pl:'+p.id);const mc=plDim(contact.uses&&contact.uses.meet);plUse(contact,'meet');contact.bond=clamp(contact.bond+A.bond*mc,0,100);p.mor=clamp((p.mor??60)+A.fx.mor*mc,0,100);text=`${p.name} · ${A.l}: ${friendshipLabel(p)}.${mc<.6?' 자주 만나 새로운 이야기는 줄었습니다.':''} 능력치·출전은 바꾸지 않습니다.`;}
  if(kind==='network'){const t=G.teams.find(t=>t.id===+target&&t.id!==G.user);if(!t)return '다른 구단 단장을 골라 주세요.';contact=personalGMContact(t.id);if(contact.meal!=null&&G.day-contact.meal<45)return `${gmOf(t.id).name} 단장과는 ${dmd(contact.meal+45)}부터 다시 식사할 수 있습니다.`;
-  const mc=plDim(contact.uses&&contact.uses.meal);plUse(contact,'meal');contact.meal=G.day;contact.bond=clamp(contact.bond+A.bond*mc,0,100);const r0=t.rel??50;t.rel=clamp(r0+plRound(A.fx.rel*mc),0,100);
+  const mc=plDim(contact.uses&&contact.uses.meal);plUse(contact,'meal');contact.meal=G.day;contact.bond=clamp(contact.bond+A.bond*mc,0,100);const r0=t.rel??50;t.rel=gmTalkRel(r0,plRound(A.fx.rel*mc));
   /* 최근 거래한 구단 단장과 잦은 식사는 뒷말이 더 붙는다 */ const traded=(G.trades||[]).some(x=>x.with===t.id&&x.d!=null&&G.day-x.d<90);plHeat(S,'network',PL_HEAT.network+(traded?2:0));
   const N=teamNeeds(t.id),rumor=N.weak.length?`식사 자리에서 ${SLOTK[N.weak[0]]} 보강을 고민한다는 이야기를 들었습니다.`:N.money==='tight'?'연봉 부담을 덜고 싶어 한다는 눈치입니다.':'급한 자리는 없다며 말을 아꼈습니다.';
   text=`${tname(t.id)} ${gmOf(t.id).name} 단장과 식사했습니다. ${rumor} 관계는 ${plWord(t.rel-r0,1)}.`;}
@@ -68,12 +68,15 @@ function plHeatMonth(S){ const h=S.heat||0; if(h<=0)return; if(!G.unemp&&h>=6&&R
 function plBondDecay(S){ for(const k in S.contacts){ const C=S.contacts[k]; if(!C||typeof C.bond!=='number')continue; const last=(C.history&&C.history[0]&&C.history[0].day)??-1e9; if(G.day-last>60)C.bond=Math.round((C.bond+(30-C.bond)*.06)*10)/10; } }
 function playerTalkContext(p){return JSON.stringify([squadRole(p),p.injOut||0,p.promise?.until,p.promise?playPromKept(p):null,p.sal,p.yrs,p.listed,Math.floor((p.mor??60)/20),talkEvent(p)?.t]);}
 function personalTalkReply(p,kind,line){const C=contactRecord('pl:'+p.id),last=C.talk[kind],key=playerTalkContext(p);if(last&&last.key===key&&last.day===G.day)return `앞서 말씀드린 상황은 그대로입니다. ${last.line}`;
- const warm=C.bond>=55?'단장님께는 편하게 말씀드릴 수 있겠네요. ':p.pers?.temp>=15?'솔직하게 말씀드리겠습니다. ':p.pers?.pro>=15?'제 역할부터 제대로 해내겠습니다. ':'';
- const promise=p.promise?playPromKept(p)?' 지난번 출전 기회 약속을 챙겨주신 건 기억하고 있습니다.':` ${dmd(p.promise.until)}까지 기회를 건의해 주신 약속은 기다리고 있습니다.`:'';
- const context=kind==='ask'?p.injOut>0?` 지금은 ${p.injOut}일 남은 재활을 마치는 게 먼저입니다.`:` 지금 맡은 역할은 ${squadRole(p)}입니다.`:'';
+ /* 첫마디·약속·보직 덧말은 매번 같은 문장이 붙어 반복이 심했다(사용자 11-14): 첫마디는 말투별로 가끔만, 본문이 이미 말한 약속·보직은 다시 붙이지 않는다 */
+ const pw=typeof pvWarm==='function'; const warm=C.bond>=55?(pw?pvWarm(p):'단장님께는 편하게 말씀드릴 수 있겠네요. '):pw?'':p.pers?.temp>=15?'솔직하게 말씀드리겠습니다. ':p.pers?.pro>=15?'제 역할부터 제대로 해내겠습니다. ':'';
+ const said=/약속|출전 기회/.test(line)||!!(p.promise&&line.includes(dmd(p.promise.until)));
+ const promise=p.promise&&!said?playPromKept(p)?' 지난번 출전 기회 약속을 챙겨주신 건 기억하고 있습니다.':` ${dmd(p.promise.until)}까지 기회를 건의해 주신 약속은 기다리고 있습니다.`:'';
+ const role=squadRole(p);
+ const context=kind==='ask'?p.injOut>0?(line.includes(p.injOut+'일')?'':` 지금은 ${p.injOut}일 남은 재활을 마치는 게 먼저입니다.`):(!role||line.includes(role)?'':[` 지금 맡은 역할은 ${role}입니다.`,` 요즘은 ${role}(으)로 나가고 있습니다.`,` 지금 자리는 ${role}입니다.`][Math.floor(u01('ptr'+p.id+':'+(p.pvN||0),G.day)*3)%3]):'';
  const answer=warm+line+promise+context;C.talk[kind]={day:G.day,key,line};personNetworkNote(C,{day:G.day,kind,text:answer});C.history.unshift({day:G.day,kind,text:answer});C.history.length=Math.min(C.history.length,12);return answer;
 }
-function ownerPersonalReport(){const t=team(G.user),goal=goalStatus(),C=personalOwnerContact(),rank=goal?.rank.cur;const focus=t.owner==='profit'?`현금 ${money(t.cash)}과 다음 시즌 고정 지출부터 관리하시오.`:t.owner==='pr'?`팬 여론 ${Math.round(G.pr?.fan??50)}을 지켜보고 있소. 지역 팬들과도 만나시오.`:rank?`현재 ${rank}위요. 목표 ${goal.rank.t}위까지 선수단의 부족한 자리를 메워 주시오.`:'개막 전에 약한 포지션과 예산 계획부터 보고하시오.';const prior=C.talk.report;const key=JSON.stringify([G.year,rank,Math.round(t.cash/100),t.owner,Math.round(t.trust/10)]);const result=(prior?.key===key?'지난 보고 이후 큰 변화는 없군. ':t.trust>=70?'계속 맡겨 볼 만하군. ':'상황을 구체적으로 봅시다. ')+focus;C.talk.report={day:G.day,key,line:result};return result;}
+function ownerPersonalReport(){const t=team(G.user),goal=goalStatus(),C=personalOwnerContact(),rank=goal?.rank.cur;const focus=t.owner==='profit'?`현금 ${money(t.cash)}과 다음 시즌 고정 지출부터 관리하세요.`:t.owner==='pr'?`팬 여론 ${Math.round(G.pr?.fan??50)}을 지켜보고 있어요. 지역 팬들과도 만나세요.`:rank?`현재 ${rank}위예요. 목표 ${goal.rank.t}위까지 선수단의 부족한 자리를 메워 주세요.`:'개막 전에 약한 포지션과 예산 계획부터 보고하세요.';const prior=C.talk.report;const key=JSON.stringify([G.year,rank,Math.round(t.cash/100),t.owner,Math.round(t.trust/10)]);const result=(prior?.key===key?'지난 보고 이후 큰 변화는 없군요. ':t.trust>=70?'계속 맡겨 볼 만하군요. ':'상황을 구체적으로 봅시다. ')+focus;C.talk.report={day:G.day,key,line:result};return result;}
 function gmPersonalReply(tid,topic){const t=team(tid);if(!t||tid===G.user)return '지금은 면담할 수 없습니다.';if(!['plan','trade','check'].includes(topic))return '현재 구단 계획이나 선수 거래에 관해 이야기합시다.';
  const m=gmOf(tid),C=personalGMContact(tid),N=teamNeeds(tid),mode=['contend','mid','rebuild'].includes(t.mode)?t.mode:N.contend?'contend':'mid';
  const strategy={contend:'우승 도전 단계입니다. 당장 주전과 불펜의 빈자리를 채우는 쪽을 보겠습니다.',mid:'전력 정비 단계입니다. 필요한 자리만 보강하고 어린 주전의 자리는 지키겠습니다.',rebuild:'재건 단계입니다. 두세 시즌 뒤를 보고 젊고 오래 보유할 선수를 모으겠습니다.'}[mode];
@@ -82,7 +85,7 @@ function gmPersonalReply(tid,topic){const t=team(tid);if(!t||tid===G.user)return
  const styles={hard:'선수값에서는 쉽게 물러서지 않겠습니다.',prospect:'어린 선수의 성장 여지와 남은 보유 기간을 높게 봅니다.',data:'한동안의 컨디션보다 여러 시즌의 기록과 계약을 비교합니다.',loyal:C.bond>=55?'서로 약속을 지켜 온 관계는 협상에서도 생각하겠습니다.':'한 번의 좋은 말보다 거래를 지키는 모습을 보고 관계를 쌓겠습니다.',gambler:'우승 경쟁에 필요한 확실한 전력이라면 큰 거래도 검토하겠습니다.',miser:'같은 역할이면 연봉 부담이 적은 선수가 먼저입니다.'};
  const listed=domestic(tid).filter(p=>p.aiListed&&!p.ys).sort((a,b)=>b.sal-a.sal||a.id-b.id)[0],market=listed?`공개 매물에는 ${listed.name}(${posLabel(listed)}, ${listed.age}세)이 있습니다.`:'현재 공개한 매물은 없습니다.';
  const key=JSON.stringify([m.id,m.trait,mode,N.weak,N.money,listed?.id,Math.floor(C.bond/15),Math.floor((t.rel??50)/5)]),old=C.talk[topic],repeat=old?.day===G.day&&old.key===key;
- const line=topic==='plan'?strategy+' '+need+' '+budget:topic==='trade'?need+' '+market+' '+budget+' '+(styles[m.trait]||styles.hard):(C.bond>=55?'편하게 이야기할 사이가 됐네요. ':'인사는 나눴지만 관계는 차근차근 쌓아갑시다. ')+`개인 친밀도는 ${Math.round(C.bond)}, 양 구단 관계는 ${Math.round(t.rel??50)}입니다. `+(styles[m.trait]||'');
+ const line=topic==='plan'?strategy+' '+need+' '+budget:topic==='trade'?need+' '+market+' '+budget+' '+(styles[m.trait]||styles.hard):(C.bond>=55?'편하게 이야기할 사이가 됐네요. ':'인사는 나눴지만 관계는 차근차근 쌓아갑시다. ')+`개인 친밀도는 ${relLabel(C.bond)}, 양 구단 관계는 ${relLabel(t.rel??50)}입니다. `+(styles[m.trait]||'');
  C.talk[topic]={day:G.day,key,line};if(!repeat){C.history.unshift({day:G.day,kind:'talk:'+topic,text:line});C.history.length=Math.min(C.history.length,12);}
  return `${m.name}: ${repeat?'오늘 말씀드린 기준은 같습니다. '+(topic==='plan'?strategy:topic==='trade'?need:'양 구단 관계와 개인 친분은 따로 쌓아가겠습니다.'):line}`;}
 /* ===== 사비 쓰기 2(사용자 11-09): 기자 접대·OB 후원·장학재단·해외 프런트 견학·재테크·야인 생활비. 모두 개인 지갑만 쓰고, 옛 저장은 필드가 없으면 처음 상태로 본다 ===== */

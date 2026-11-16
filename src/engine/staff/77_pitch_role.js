@@ -64,7 +64,7 @@ function proleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.isP
     if(!ok){ m.rel=clamp(m.rel-2,0,100); (G.proleNo=G.proleNo||{})[pid]={u:G.day+7,mid:m.id}; return `${m.name} 감독: "${k==='sp'?`${p.name}은(는) 아직 선발로 길게 던질 몸이 아닙니다`:k==='sp2'?`${p.name}은(는) 지금 1군 불펜에 필요합니다`:`${p.name}은(는) 선발로 키울 선수입니다`}. 조금 더 지켜봐 주십시오." 요청을 받아들이지 않았습니다. 관계 조금 악화. 7일 뒤 다시 요청할 수 있습니다.`; }
     if(m.ego>=65&&!mplOn('listen'))m.rel=clamp(m.rel-1,0,100); }
   G.prole[pid]={k,d:G.day,tid:G.user}; if(k==='sp2'){ p.role='SP'; if(p.e1){ p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); } } else if(k==='rp'){ p.role='RP'; } else if(k==='sp'){ try{ roleSync(G.user); }catch(e){} }
-  const tail=same?'감독도 같은 생각입니다.':m&&mplOn('listen')?`${m.name} 감독이 약속대로 단장 건의를 받아들였습니다.`:m&&m.ego>=65?`${m.name} 감독이 썩 내켜하지 않지만 받아들였습니다. 관계 조금 악화.`:`${m?m.name+' 감독이':'코치진이'} 받아들였습니다.`;
+  const tail=same?'감독도 같은 생각입니다.':m&&mplOn('listen')?`${m.name} 감독이 약속대로 단장 건의를 받아들였습니다.`:m&&m.ego>=65?`${m.name} 감독이 썩 내켜 하지 않지만 받아들였습니다. 관계 조금 악화.`:`${m?m.name+' 감독이':'코치진이'} 받아들였습니다.`;
   return `${p.name}: ${PROLE[k]}. ${tail}${k==='sp'&&!p.e1&&entryOn()?' 지금 2군이라 1군에 올라와야 선발로 나갑니다.':k==='sp'&&p.role!=='SP'?' 선발 경쟁에 가산점을 받지만 아직 선발 5명에 들지 못해 당분간 계투로 나갑니다.':''}`; }
 /* ===== 불펜 역할(일고회장 11-12): 단장이 마무리·필승조·추격조·롱릴리프를 요청한다 =====
  - 기본은 감독이 정한 불펜 순서다(첫째 마무리, 둘째~넷째 필승조, 나머지 추격조).
@@ -89,5 +89,19 @@ function bproleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.is
   if(k==='cl')for(const id in G.bprole){ const x=G.bprole[id]; if(x.k==='cl'&&x.tid===G.user&&+id!==pid)x.k='su'; } /* 마무리는 한 명: 앞서 정한 마무리는 필승조로 */
   G.bprole[pid]={k,d:G.day,tid:G.user};
   const sp=p.role==='SP'||(G.prole&&G.prole[pid]&&G.prole[pid].k!=='rp'&&G.prole[pid].k!=='auto');
-  const tail=same?'감독도 같은 생각입니다.':m&&mplOn('listen')?`${m.name} 감독이 약속대로 단장 건의를 받아들였습니다.`:m&&m.ego>=65?`${m.name} 감독이 썩 내켜하지 않지만 받아들였습니다. 관계 조금 악화.`:`${m?m.name+' 감독이':'코치진이'} 받아들였습니다.`;
+  const tail=same?'감독도 같은 생각입니다.':m&&mplOn('listen')?`${m.name} 감독이 약속대로 단장 건의를 받아들였습니다.`:m&&m.ego>=65?`${m.name} 감독이 썩 내켜 하지 않지만 받아들였습니다. 관계 조금 악화.`:`${m?m.name+' 감독이':'코치진이'} 받아들였습니다.`;
   return `${p.name}: 불펜 ${BROLE[k]}. ${tail}${sp?' 지금은 선발 보직이라 계투로 나갈 때부터 적용됩니다.':!p.e1&&entryOn()?' 지금 2군이라 1군에 올라오면 적용됩니다.':''}`; }
+/* ===== 보직 유지(플레이어 제보 11-15, 34시즌 저장: 건강하고 잘 던지는 투수가 선발↔불펜, 마무리→선발로 너무 자주 바뀌어 승·세이브·홀드와 타이틀이 섞였다) =====
+ 감독은 맡긴 보직을 쉽게 바꾸지 않는다. 올해(올해 기록이 적으면 지난해) 주로 선발로 던졌고 내용이 괜찮으면 선발 고르기에 가산,
+ 주로 계투·마무리로 던졌고 내용이 괜찮으면 선발 고르기에 감산하고, 마무리는 불펜 첫째 자리에 가산한다.
+ 부진(평균자책점이 리그 평균+1.0 이상)하면 가산·감산이 없어 예전처럼 능력·체력으로 다시 정한다. 부상으로 빠지면 그동안은 다른 투수가 채우고, 돌아오면 원래 보직 쪽으로 돌아간다.
+ 모든 구단(사용자 구단 감독 포함) 같은 규칙. 단장 보직 요청(rpBias)이 더 크다. 숨김 값이며 화면에는 보직 결과만 보인다 */
+const RK={sp:7,rp:-5,cl:-18,clPen:8};
+let _rkC=new Map(), _rkD=null, _rkG=null;
+function roleKeep(p){ if(!p||!p.isP||!p.hist)return null; const key=G.year*400+G.day; if(_rkD!==key||_rkG!==G){ _rkC=new Map(); _rkD=key; _rkG=G; } let v=_rkC.get(p.id); if(v!==undefined)return v; v=null;
+  try{ const cur=seasonTotal(p,G.year,'1군'), prev=seasonTotal(p,G.year-1,'1군'); const curN=cur&&(cur.g||0)>=4; const h=curN?cur:prev&&(prev.g||0)>=12?prev:null;
+    if(h){ const g=h.g||0, gs=h.gs||0, sv=h.sv||0; const lgE=lgOf(h.y).era||4.6; const era=(h.outs||0)>=30?h.er*27/h.outs:null; const ok=era==null||era<lgE+1;
+      const k=gs>=g*.6?'sp':sv>=Math.max(curN?4:12,g*.22)?'cl':gs<=g*.2?'rp':null; v=ok&&k?k:null; } }catch(e){ v=null; }
+  _rkC.set(p.id,v); return v; }
+function roleKeepSP(p){ const k=roleKeep(p); return k==='sp'?RK.sp:k==='rp'?RK.rp:k==='cl'?RK.cl:0; }
+function roleKeepPen(p){ return roleKeep(p)==='cl'?RK.clPen:0; }

@@ -6,7 +6,7 @@ const DT={norm:{l:'정상 성장형',grow:28,peak:31,fall:33},early:{l:'조기 �
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
-  const y=G.year; const a=seasonTotal(p,y,'1군'), f=seasonTotal(p,y,'퓨처스'); const fw=.6+(p.team===G.user?facImpact(facOf('fut'))*.05:facAiFut(p.team)); /* 2군 구장이 좋을수록 2군 출전을 더 인정 */
+  const y=G.year; const a=seasonTotal(p,y,'1군'), f=seasonTotal(p,y,'퓨처스'); const fw=.6+facAiFut(p.team); /* 모든 구단 같은 식(우리만 +0.1이던 비대칭, 사용자 11-13) */ /* 2군 구장이 좋을수록 2군 출전을 더 인정 */
   if(p.isP){ const o=(a?a.outs:0)+(f?f.outs:0)*fw; return o>=420?1.15:o>=300?1.08:o>=180?1:o>=90?.92:.8; }
   const pa=(a?a.pa:0)+(f?f.pa:0)*fw; return pa>=450?1.15:pa>=320?1.08:pa>=200?1:pa>=100?.92:.8; }
 /* 성격이 성장을 가른다: 시설·출전·코치는 바탕이고, 프로의식(자기 관리)과 야망(더 올라가려는 마음)이 같은 환경에서도 성장을 크게 벌린다.
@@ -20,6 +20,9 @@ function hidReveal(p){ if(!p.hidT||p.hidR||p.prospect)return; const L=(p.hist||[
   const d=p.draft; story(p,`${G.year} 스카우트가 놓친 재능이 1군에서 드러남${d?`(${d.y} ${d.rd}라운드 지명)`:''}`);
   if(p.team===G.user)mail('스카우트팀',`스카우트가 놓친 선수: ${p.name}`,`${p.name}(${posLabel(p)}, ${p.age}세)${d?`은(는) ${d.y}년 ${d.rd}라운드 ${d.no}순위로 뽑힌 선수입니다.`:'은(는)'} 1군 기록이 쌓이면서 처음 평가보다 잠재력이 크다는 것이 드러났습니다. 스카우트 평가를 고쳤습니다.`,{kind:'선수',ref:p.id}); }
 function declApply(){ for(const p of Object.values(G.players)){ const D=p.declP; if(!D)continue; for(const k in D)if(p.r[k]!=null)p.r[k]=clamp(p.r[k]+D[k],20,80); delete p.declP; roundR(p); } } /* 6월 1일: 미뤄 둔 노화 하락 나머지 */
+/* 투수 체력 성장 몫(플레이어 제보 11-15: 모든 능력이 같은 몫으로 커서 계투 투수 체력도 선발만큼 올라, 결국 누구나 선발 체력이 됐다).
+   그해 1·2군 등판 중 선발 비중으로 정한다: 주로 선발 1.1배, 계투만 0.35배. 등판이 적으면(10경기 미만) 그대로. 모든 구단 같은 식 */
+function staUseF(p){ try{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,G.year,'퓨처스'); const g=(a?a.g||0:0)+(f?f.g||0:0), gs=(a?a.gs||0:0)+(f?f.gs||0:0); if(g<10)return 1; const s=gs/g; return clamp(.35+s*1.25,.35,1.1); }catch(e){ return 1; } }
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
@@ -63,6 +66,7 @@ function develop(p){
       if(p.dt==='vet'&&PHYS[k]<=0&&age<=36)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
     if(dk>0&&club)dk*=coachToolMult(p,k);
+    if(dk>0&&k==='sta'&&p.isP)dk*=staUseF(p); /* 체력은 길게 던져야 붙는다: 계투로만 던진 투수는 체력이 덜 큰다 */
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k]&&dk>0){dk=Math.max(0,dk-tc[k]);if(!p.devLog.reasons.includes('training-opportunity'))p.devLog.reasons.push('training-opportunity');} /* 성장 기회만 줄인다. 이미 퇴보 중인 능력은 더 깎지 않는다. */
     if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK;if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}

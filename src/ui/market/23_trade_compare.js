@@ -36,24 +36,34 @@ function draftCenter(all,mine){
 /* 선수 카드: 스태프 의견과 빠른 행동 */
 function staffCardP(p){ const L=staffNotes(p); if(!L.length)return '';
   return `<div class="stn">${L.map(x=>`<div><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}</div>`; }
+/* 선수 화면 위 행동(UI 2단계 2-2): 상황별 대표 동작 1개만 보이고 나머지는 ⋯ 메뉴로.
+   우리 선수: 계약이 곧 끝나면 연장 협상, 6주 이상 다친 외국인은 대체 외국인 고르기, 그 밖에는 면담. 다른 구단 선수: 트레이드 협상 */
+function extSoon(p){ if(!canExtend(p))return false; if(p.extCounter&&p.extCounter.until>=G.day)return true; return p.faC?(p.yrs||0)<=1:faLeft(p)<=1; }
 function quickActs(p){
-  const b=[]; const d=G.draft;
-  if(p.prospect){ if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); }
-  else if(p.team===G.user&&!(p.joinY>G.year)){
-    b.push(`<button class="btn small" data-a="jump" data-v="bond">면담</button>`);
-    if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드 협상에 넣기</button>`); }
-    if(!p.foreign)b.push(p.listed?`<button class="btn small" data-a="blkOff" data-v="${p.id}">매물 목록에서 빼기</button>`:`<button class="btn small" data-a="blkOn" data-v="${p.id}">매물 목록에 올리기</button>`);
-    if(!p.foreign&&p.team===G.user)b.push(`<button class="btn small${p.noTrade?' primary':''}" data-a="noTrade" data-v="${p.id}" title="다른 구단이 이 선수를 트레이드로 달라고 묻지 않습니다(우리가 직접 제안하는 것은 가능)">${p.noTrade?'트레이드 불가 해제':'트레이드 불가로 지정'}</button>`);
-    if(canExtend(p))b.push(`<button class="btn small" data-a="jump" data-v="ext">연장 협상</button>`);
-    if(p.foreign==='용병'&&typeof fTmpErr==='function'&&!fTmpErr(G.user,p))b.push(`<button class="btn small primary" data-a="fTmpStart" data-v="${p.id}">부상 대체 외국인 고르기</button>`); /* 6주 이상 다친 외국인 화면에서 바로(카페 피드백 11-08) */
-  } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ if(tradeOpen()){ b.push(`<button class="btn small primary" data-a="findT" data-v="${p.id}">얻을 조건 보기</button>`); b.push(`<button class="btn small" data-a="toTrade" data-v="${p.id}">데려오기 협상</button>`); } b.push(`<button class="btn small" data-a="pwatch" data-v="${p.id}">${(G.pwatch||[]).includes(p.id)?'관심 해제':'관심 선수'}</button>`); }
-  return b.length?`<div class="qacts">${b.join('')}</div>`:''; }
+  const d=G.draft;
+  if(p.prospect){ const b=[]; if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); return `<div class="qacts">${b.join('')}</div>`; }
+  let main=null; const M=[];
+  if(p.team===G.user&&!(p.joinY>G.year)){
+    const talk={a:'jump',v:'bond',l:'면담'}, ext=canExtend(p)?{a:'jump',v:'ext',l:'연장 협상'}:null;
+    const tmp=p.foreign==='용병'&&typeof fTmpErr==='function'&&!fTmpErr(G.user,p)?{a:'fTmpStart',v:p.id,l:'부상 대체 외국인 고르기'}:null; /* 6주 이상 다친 외국인 화면에서 바로(카페 피드백 11-08) */
+    main=tmp||(ext&&extSoon(p)?ext:talk);
+    M.push(talk);
+    if(!p.foreign&&tradeOpen())M.push({a:'findMine',v:p.id,l:'시장 가치'},{a:'toTradeGive',v:p.id,l:'트레이드 협상'});
+    if(!p.foreign)M.push(p.listed?{a:'blkOff',v:p.id,l:'매물 목록에서 빼기'}:{a:'blkOn',v:p.id,l:'매물 목록에 올리기'});
+    if(!p.foreign)M.push({a:'noTrade',v:p.id,l:p.noTrade?'트레이드 불가 해제':'트레이드 불가로 지정',on:!!p.noTrade,title:'다른 구단이 이 선수를 트레이드로 달라고 묻지 않습니다(우리가 먼저 제안할 수는 있음)'});
+    M.push(ext,tmp);
+  } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){
+    if(tradeOpen()){ main={a:'toTrade',v:p.id,l:'트레이드 협상'}; M.push({a:'findT',v:p.id,l:'얻을 조건 보기'}); }
+    const on=(G.pwatch||[]).includes(p.id); M.push({a:'pwatch',v:p.id,l:on?'관심 해제':'관심 선수',on});
+  }
+  const html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기'});
+  return html?`<div class="qacts">${html}</div>`:''; }
 
 /* ---------- 아마추어 기록: 학년별 ---------- */
 function amYearTable(p){ const Y=p.amY; if(!Y||!Y.length)return `<p class="small">${esc(amLine(p))}</p>`;
   const sch=p.college?'대':'고'; const rows=Y.concat([Object.assign({gr:'합계',tot:true},p.am)]);
-  if(p.isP)return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>이닝</th><th class="key">ERA</th><th>탈삼진</th><th>볼넷</th><th class="key">K/9</th><th class="key">BB/9</th><th>K/BB</th></tr></thead><tbody>${rows.map(x=>`<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':sch+x.gr}</td><td>${x.g}</td><td>${ipStr(x.outs)}</td><td>${x.outs?((x.er||0)*27/x.outs).toFixed(2):'-'}</td><td>${x.so}</td><td>${x.bb}</td><td>${x.outs?(x.so*27/x.outs).toFixed(1):'-'}</td><td>${x.outs?(x.bb*27/x.outs).toFixed(1):'-'}</td><td>${x.bb?(x.so/x.bb).toFixed(2):'-'}</td></tr>`).join('')}</tbody></table></div>`;
-  return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>타석</th><th>타율</th><th class="key">OPS</th><th>홈런</th><th>볼넷</th><th>삼진</th><th class="key">볼삼비</th><th>도루</th></tr></thead><tbody>${rows.map(x=>{ const r=bRate(x); return `<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':sch+x.gr}</td><td>${x.g}</td><td>${x.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.ops)}</td><td>${x.hr}</td><td>${x.bb}</td><td>${x.so}</td><td>${x.so?(x.bb/x.so).toFixed(2):'-'}</td><td>${x.sb}</td></tr>`; }).join('')}</tbody></table></div>`; }
+  if(p.isP)return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>이닝</th><th class="key">ERA</th><th>탈삼진</th><th>볼넷</th><th class="key">K/9</th><th class="key">BB/9</th><th>K/BB</th></tr></thead><tbody>${rows.map(x=>`<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':sch+x.gr+(x.inj?' (부상)':'')}</td><td>${x.g}</td><td>${ipStr(x.outs)}</td><td>${x.outs?((x.er||0)*27/x.outs).toFixed(2):'-'}</td><td>${x.so}</td><td>${x.bb}</td><td>${x.outs?(x.so*27/x.outs).toFixed(1):'-'}</td><td>${x.outs?(x.bb*27/x.outs).toFixed(1):'-'}</td><td>${x.bb?(x.so/x.bb).toFixed(2):'-'}</td></tr>`).join('')}</tbody></table></div>`;
+  return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>타석</th><th>타율</th><th class="key">OPS</th><th>홈런</th><th>볼넷</th><th>삼진</th><th class="key">볼삼비</th><th>도루</th></tr></thead><tbody>${rows.map(x=>{ const r=bRate(x); return `<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':sch+x.gr+(x.inj?' (부상)':'')}</td><td>${x.g}</td><td>${x.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.ops)}</td><td>${x.hr}</td><td>${x.bb}</td><td>${x.so}</td><td>${x.so?(x.bb/x.so).toFixed(2):'-'}</td><td>${x.sb}</td></tr>`; }).join('')}</tbody></table></div>`; }
 function amLine(p){ const h=p.am; if(!h)return '기록 없음';
   if(p.isP){ const r=pRate(h); return `ERA ${h.outs?r.era.toFixed(2):'-'} · ${ipStr(h.outs)}이닝 · K/9 ${h.outs?(h.so*27/h.outs).toFixed(1):'-'} · BB/9 ${h.outs?(h.bb*27/h.outs).toFixed(1):'-'} · 최고 ${amVmax(p)}km/h`; }
   const r=bRate(h); return `타율 ${fmt3(r.avg)} · OPS ${fmt3(r.ops)} · 홈런 ${h.hr} · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'} · 1루 ${p.amRun||runOf(p)}초`; }
@@ -89,7 +99,7 @@ function raceCard(){
   const left=144-(G.sea.rec[G.user].w+G.sea.rec[G.user].l+(G.sea.rec[G.user].t||0));
   return `<section class="card"><div class="row between"><h2 class="sec">리그 판도</h2><span class="small muted">남은 경기 ${left} · 남은 일정을 400번 모의 진행</span></div>
     ${groups.map(([z,arr])=>`<div class="zone"><div class="eyebrow">${z}</div>${arr.map(o=>{ const x=om.get(o.tid); const i=order.indexOf(o); return `<button class="race${o.tid===G.user?' me':''}" data-a="lteamGo" data-v="${o.tid}"><span class="rk">${i+1}</span>${badge(o.tid,20)}<b>${tshort(o.tid)}</b><span class="num rcd">${wlStr(o)}</span><span class="num gb">${i?gbStr(gbOf(top,o)):'-'}</span><span class="bar"><i style="width:${Math.max(2,x.ps*100)}%"></i></span><span class="num ppc">${pct(x.ps)}</span>${strkPill(o.tid)}</button>`; }).join('')}</div>`).join('')}
-    <p class="small muted">막대는 가을야구(5위 안) 진출 확률입니다. 지금 성적과 개막 전 전력 평가를 섞은 팀 전력으로 남은 경기를 모의 진행한 결과이고, 실제 결과와 다를 수 있습니다.</p></section>`; }
+    <p class="small muted">막대는 가을야구(5위 안) 진출 확률입니다. ${hiI('지금 성적과 개막 전 전력 평가를 섞은 팀 전력으로 남은 경기를 모의 진행한 결과입니다. 실제 결과와 다를 수 있습니다.')}</p></section>`; }
 function powerMap(){
   const S=allStrength(); const keys=FIELDK.concat(['SP','RP']); const lab=k=>k==='SP'?'선발':k==='RP'?'불펜':POSS[k];
   const {order,live}=standOrder(); const odds=playoffOdds(); const om=new Map((odds||[]).map(o=>[o.tid,o]));
@@ -114,14 +124,22 @@ function markHints(root){ if(!root)return; root.querySelectorAll('p.small.muted,
   /* 설명만 있던 카드가 비어 보이지 않게: 제목 말고 남는 내용이 없으면 설명을 그대로 펼친다 */
   root.querySelectorAll('section.card').forEach(sec=>{ const H=[...sec.querySelectorAll('.hint')].filter(h=>h.closest('section.card')===sec); if(!H.length)return;
     const rest=[...sec.children].filter(c=>!c.matches('h2,h3,.eyebrow,.hint,.hi-i')&&!(c.matches('.row.between')&&!c.querySelector('button:not(.hi-i),input,select,b,.pill,.num')));
-    if(rest.length)return; H.forEach(h=>h.classList.remove('hint')); sec.querySelectorAll('.hi-i').forEach(i=>{ if(i.closest('section.card')===sec)i.remove(); }); }); }
+    if(rest.length)return; H.forEach(h=>h.classList.remove('hint')); sec.querySelectorAll('.hi-i').forEach(i=>{ if(i.closest('section.card')===sec)i.remove(); }); });
+  mergeHints(root); }
+/* 도움말 ⓘ 줄이기(UI 검수 2026-11-15 1-4): 한 구역(가장 바깥 카드, 설정은 묶음 칸) 안에 ⓘ가 여러 개면 맨 위 하나로 합친다.
+   지운 ⓘ의 설명은 남는 ⓘ 말풍선에 차례로 붙여 내용은 그대로 둔다. 표 머리글 안의 ⓘ는 그 열 설명이라 그대로 둔다 */
+function hintGroup(el,root){ const g=el.closest('[data-hgrp],.setc'); if(g&&root.contains(g))return g; let c=el.closest('section.card,.card'), up=c; while(up&&up!==root){ up=up.parentElement&&up.parentElement.closest('section.card,.card'); if(up&&root.contains(up)&&up!==root&&!up.matches('.sheet'))c=up; else break; } return c&&root.contains(c)?c:null; }
+function mergeHints(root){ if(!root)return; const G2=new Map(); root.querySelectorAll('.hi-i').forEach(i=>{ if(i.closest('table,.mailbody'))return; const g=hintGroup(i,root); if(!g)return; if(!G2.has(g))G2.set(g,[]); G2.get(g).push(i); });
+  G2.forEach((L,g)=>{ if(L.length<2)return; const keep=L[0], nz=s=>s.replace(/[\d.,]+/g,'#'); let tips=(keep.dataset.tip||keep.getAttribute('title')||'').split('\n\n').filter(Boolean);
+    L.slice(1).forEach(i=>{ (i.dataset.tip||i.getAttribute('title')||'').split('\n\n').filter(Boolean).forEach(t=>{ if(!tips.map(nz).includes(nz(t)))tips.push(t); }); i.remove(); });
+    keep.dataset.tip=tips.join('\n\n'); keep.removeAttribute('title'); const gh=g.querySelector(':scope>.set-g'); if(gh){ keep.classList.remove('solo'); gh.appendChild(keep); } /* 설정 묶음은 묶음 제목(진행·저장·구단·기록) 옆에 */ keep.setAttribute('aria-label','이 구역 설명 보기'); }); }
 /* 말풍선: ⓘ(.hi-i)와 표 머리글 ⓘ(.ti)를 누르면 근처에 뜨고, 다른 곳을 누르면 닫힌다 */
 function tipShow(el){ let b=document.getElementById('tipb'); if(!b){ b=document.createElement('div'); b.id='tipb'; b.setAttribute('role','tooltip'); document.body.appendChild(b); }
   if(b._for===el&&b.classList.contains('on')){ tipHide(); return; } b._for=el; b._y=scrollY; b.textContent=el.dataset.tip||el.getAttribute('title')||''; b.classList.add('on');
   const z=uiZ(); const r=el.getBoundingClientRect(); const W=Math.min(320,innerWidth/z-24); b.style.maxWidth=W+'px'; const bw=Math.min(W,b.offsetWidth)*z,bh=b.offsetHeight*z; let x=r.left+r.width/2-bw/2; x=Math.max(12,Math.min(innerWidth-bw-12,x)); const below=r.bottom+bh+16<innerHeight; /* 화면 좌표는 확대 배율로 나눠 스타일 px로 */
   b.style.left=(x+scrollX)/z+'px'; b.style.top=((below?r.bottom+8:r.top-bh-8)+scrollY)/z+'px'; b.classList.toggle('up',!below); b.style.setProperty('--ax',(r.left+r.width/2-x)/z+'px'); }
 function tipHide(){ const b=document.getElementById('tipb'); if(b){ b.classList.remove('on'); b._for=null; } }
-if(typeof document!=='undefined'){ document.addEventListener('click',e=>{ const t=e.target.closest&&e.target.closest('.hi-i,.fdt .ti,.ptier[data-tip],.gl[data-tip]'); if(t){ e.preventDefault(); e.stopPropagation(); tipShow(t); return; } if(!(e.target.closest&&e.target.closest('#tipb')))tipHide(); },true); addEventListener('scroll',()=>{ const b=document.getElementById('tipb'); if(b&&b.classList.contains('on')&&Math.abs(scrollY-(b._y||0))>40)tipHide(); },{passive:true}); }
+if(typeof document!=='undefined'){ document.addEventListener('click',e=>{ const t=e.target.closest&&e.target.closest('.hi-i,.fdt .ti,.ptier[data-tip],.gl[data-tip],.trtag[data-tip]'); if(t){ e.preventDefault(); e.stopPropagation(); tipShow(t); return; } if(!(e.target.closest&&e.target.closest('#tipb')))tipHide(); },true); addEventListener('scroll',()=>{ const b=document.getElementById('tipb'); if(b&&b.classList.contains('on')&&Math.abs(scrollY-(b._y||0))>40)tipHide(); },{passive:true}); }
 
 /* ---------- 화면 안 탭 ---------- */
 function inTabs(key,tabs,def){ const cur=(UI.it||{})[key]||def||tabs[0][0]; const ok=tabs.some(t=>t[0]===cur)?cur:tabs[0][0];

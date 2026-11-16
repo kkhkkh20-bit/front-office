@@ -3,7 +3,7 @@ function roleLines(p){ const r=squadRole(p), k=keepWhy(p), o=oppSat(p); const L=
 function bondCard(p){
   initPers(p); const m=p.mor;
   return `<section class="card"><div class="row between"><span class="eyebrow">선수와의 관계</span><span class="pill ${moodClass(m)}">기분 ${moodLabel(m)}</span></div>
-  <p class="small">${esc(moraleWhy(p))}</p>${p.team===G.user?roleLines(p):''}
+  <p class="small">${esc(moraleWhy(p))}</p>${moraleBox(p)}${p.team===G.user?roleLines(p):''}
   <p class="small muted">성향: ${esc(mentalSum(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
   ${p.team===G.user?`<button class="btn small mt-go" data-a="meetOpen" data-v="pl:${p.id}">${avImg(p)}<span><b>개인 면담</b><i>${talkUsed(p,'praise')?'이번 주 칭찬·분발 촉구는 했습니다 · 고민은 언제든':'칭찬, 분발 촉구, 출전 기회, 계약, 고민'}</i></span></button>`:''}
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
@@ -122,7 +122,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   nk(v){ UI.nk=v; A.go('club:news'); },
   recGo(v){ const [seg,k]=v.split(':'); UI.lrec=seg; UI.ls=UI.ls||{}; UI.ls[seg]={k,dir:['era','whip','bb9'].includes(k)?1:-1}; A.go('league:rec'); },
   pmgmt(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
-  mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(!a)return; if(a.a==='meetOpen'&&a.v==='mgr'&&m.ref!=null&&/약속은 어디 갔습니까/.test(m.subj))a.v=`mgr|use:${m.ref}`; /* 예전 저장의 약속 위반 메일도 그 선수 건의로(카페 11-09) */const status=mailButtonStatus(m,a);if(status){toast(status.text);render();return;} UI.actRes=null; UI.actFail=null; if(a.a==='meetOpen'&&m.subj.includes('감독이 단장실에 들렀습니다'))meetOpen('mgr',null,{visit:true}); else if(a&&A[a.a])A[a.a](a.v); else render(); if(UI.actFail&&UI.actRes)try{ toast(UI.actRes); }catch(e){} if(a&&(MAIL_ONCE.test(a.a)||a.a==='pactKeep')&&!UI.actFail){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(a.a==='pactKeep')m.closed=mailEnd('유망주 기회 합의를 유지하기로 결정했습니다.'); if(/^(posReq|fcampSet)/.test(a.a)){ const g=a.a.startsWith('posReq')?/^posReq/:/^fcampSet$/; m.acts.forEach(x=>{ if(g.test(x.a))x.done=x.done||x!==a&&'skip'; }); } save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
+  mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(!a)return; if(a.a==='meetOpen'&&a.v==='mgr'&&m.ref!=null&&/약속은 어디 갔습니까/.test(m.subj))a.v=`mgr|use:${m.ref}`; /* 예전 저장의 약속 위반 메일도 그 선수 건의로(카페 11-09) */const status=mailButtonStatus(m,a);if(status){toast(status.text);render();return;} UI.actRes=null; UI.actFail=null; if(a.a==='meetOpen'&&m.subj.includes('감독이 단장실에 들렀습니다'))meetOpen('mgr',null,{visit:true}); else if(a&&A[a.a])A[a.a](a.v); else render(); if(UI.actFail&&UI.actRes)try{ toast(UI.actRes); }catch(e){} if(a&&(MAIL_ONCE.test(a.a)||a.a==='pactKeep')&&!UI.actFail){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(a.a==='pactKeep')m.closed=mailEnd('유망주 기회 합의를 유지하기로 했습니다.'); if(/^(posReq|fcampSet)/.test(a.a)){ const g=a.a.startsWith('posReq')?/^posReq/:/^fcampSet$/; m.acts.forEach(x=>{ if(g.test(x.a))x.done=x.done||x!==a&&'skip'; }); } save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
   evPick(v){ const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); const r=evPick(id,+i); save(); if(e&&!e.done){ if(r)toast(r); render(); return; } /* 고를 수 없는 선택이면 이유만 알린다(검수 11-09z) */ sfx('confirm',.6); if(e&&e.res)toast(e.res.split('\n')[0].slice(0,140)); /* 결정 결과를 바로 알린다(본문도 전부 펼침) */ if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.player(e.data.pid); UI.ptab='mgmt'; renderSheet(); render(); return; } if(e&&e.k==='fx'&&+i===0){ const fp=G.players[e.data&&e.data.pid]; UI.ff=Object.assign({t:'yb',r:'all',s:'cur'},UI.ff||{}); UI.ff.t=fp&&fp.foreign==='아시아'?'asia':'yb'; UI.ff.r='all'; A.go('transfer:foreign'); return; } /* 그 선수 종류의 후보 탭으로(플레이 테스트 11-13: 일반 외국인인데 아시아쿼터 탭이 열림) */ if(e&&e.k==='ret'&&/코치 우선 협상/.test((e.opts[+i]||{}).l||'')){ A.go('staff:coach'); return; } /* 은퇴 선수를 코치 후보로: 바로 코치진 계약 화면으로 */ render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
@@ -197,7 +197,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   invSel(v){ UI.invSel=v; UI.facMsg=null; UI.stadMsg=null; render(); },
   campZoom(v){ campZoomTo(null); },
   buyBus(v){ UI.facMsg=buyBus(v)||null; save(); render(); },
-  anaHire(v){ const [aid,rz]=String(v).split(':'); const res=stOffer('an',aid,+rz||0); toast(res.msg); if(res.ok){ G.analysts.push(res.s); addLog(`${AROLE[res.s.role].l} 분석원 ${res.s.name}(능력 ${res.s.skill})을(를) 연 ${money(res.s.sal)}에 채용했습니다.`); } save(); render(); },
+  anaHire(v){ const [aid,rz]=String(v).split(':'); const res=stOffer('an',aid,+rz||0); toast(res.msg); save(); render(); }, /* 명단 반영·기록은 stOffer. 정원이 차 있으면 수락 순간 누구 대신 데려올지 고르는 창이 뜬다(stAccSheet) */
+  stAccOut(v){ toast(stAccDecide(v)); save(); render(); }, stAccNo(){ toast(stAccDecide(null)); save(); render(); }, stAccSel(v){ UI.stAccSel=v; render(); },
   stPo(v){ const [k,t,id,r]=String(v).split(':'); toast(stPoach(k,+t,id,+r||.25)); save(); render(); },
   stKeep(v){ const [id,f]=String(v).split(':'); toast(stKeep(id,f==='1')); save(); render(); },
   stBidDrop(v){ toast(stBidDrop(v)); save(); render(); },
@@ -271,7 +272,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   blkSwap(v){ const [a,b]=v.split(':').map(Number); const q=G.players[a], m=G.players[b]; if(!q||!m)return; UI.trade={tid:q.team,give:[m.id],get:[q.id],msg:'',seg:q.isP?'pit':'bat',side:'give',sort:'cur'}; A.go('trade:table'); },
   offerMore(v){ UI.blkMsg={id:v,t:offerMore(v)}; save(); render(); },
   offerRevert(v){ UI.blkMsg={id:v,t:offerRevert(v)}; save(); render(); },
-  sangmu(v){ UI.milMsgD=G.day; UI.milMsg=sangmuApply(+v)||`${G.players[+v].name} 상무 지원 완료. 합격자는 ${sangmuWave()==='dec'?'10월 15일':'4월 15일'}에 발표됩니다.`; save(); render(); },
+  sangmu(v){ UI.milMsgD=G.day; UI.milMsg=sangmuApply(+v)||`${G.players[+v].name} 상무 지원을 마쳤습니다. 합격자는 ${sangmuWave()==='dec'?'10월 15일':'4월 15일'}에 발표됩니다.`; save(); render(); },
   enlist(v){ UI.milMsgD=G.day; UI.milMsg=enlistNow(+v)||`${G.players[+v].name} 현역 입대를 예약했습니다(2주 뒤 입대, 그 전까지 취소 가능).`; save(); render(); },
   enlistCancel(v){ UI.milMsgD=G.day; UI.milMsg=enlistCancel(+v)||`${G.players[+v].name} 입대 예약을 취소했습니다.`; save(); render(); },
   entSort(v){ const [k,c]=String(v).split(':'); UI.entSort=UI.entSort||{bat:'ops',pit:'era'}; UI.entSort[k]=c; render(); },
@@ -323,6 +324,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ivSkip(v){ if(G.iv&&G.iv.id===+v&&!G.iv.done){ ivSkip(); toast('인터뷰를 거절했습니다. 단장 침묵 기사가 나갑니다.'); save(); render(); } },
   ivAns(v){ ivAnswer(+v); save(); if(G.iv&&G.iv.done){ try{ render(); }catch(e){} } /* 마치면 바로 소식 상태·확인할 소식 수를 갱신(플레이테스트 4 #15) */ renderSheet(); try{ const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now,#sheet .iv-end'); if(sh&&q){if(document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(Math.max(0,sheetScrollY()+q.getBoundingClientRect().top-$('#sheet').getBoundingClientRect().top-12));else sh.scrollTop=Math.max(0,q.offsetTop-sh.offsetTop-12);} }catch(e){} }, /* 다시 그리면 창이 맨 위로 튀던 것: 새 질문(또는 끝 안내)이 보이게 */
   gmPlan(v){ const [d,k,x]=String(v).split(':'); toast(gmPlanSet(+d,k||null,x||null)); save(); render(); },
+  gmSchR(v){ UI.gmSchR=UI.gmSchR===v?null:v; render(); }, /* 고교 방문: 지역을 고르면 그 지역 학교 버튼이 열린다 */
+  gmPlanBulk(v){ const [d,x,m]=String(v).split(':'); toast(gmPlanBulk(+d,x,m)); save(); render(); },
   capex(v){ const [k,x]=String(v).split(':'); const r=capexAsk(k,x); toast(r||'공사를 시작했습니다.'); save(); render(); },
   offerAsk(v){ const [id,k]=String(v).split(':'); const o=(G.offers||[]).find(x=>String(x.id)===id); if(!o)return toast('끝난 제안입니다.'); offerAdvise(o,k); save(); render(); },
   offerCounter(v){ const o=(G.offers||[]).find(x=>String(x.id)===String(v)); if(!o)return toast('끝난 제안입니다.'); UI.trade={tid:o.from,give:[...o.get],get:[...o.give],cash:0,msg:'',seg:'bat',side:'give',sort:'cur'}; A.go('trade:table'); },
@@ -435,11 +438,11 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   csort(v){ UI.csort=v; render(); },
   protTog(v){ const [cid,pid]=String(v).split(':'); const c=(G.comp||[]).find(x=>x.id===cid); if(!c)return; const L=protOf(c), i=L.indexOf(+pid); if(i>=0)L.splice(i,1); else L.push(+pid); render(); }, /* 명단은 카드별(검수 11-09r) */
   protAuto(v){ const [cid,k]=String(v).split(':'); const c=(G.comp||[]).find(x=>x.id===cid); if(!c)return; protOf(c); UI.prot[c.id]=k==='ovr'?protByOvr(c):aiProtect(G.user,COMP[c.grade].prot); render(); },
-  protSubmit(v){ const c=(G.comp||[]).find(x=>x.id===v); if(!c)return; const g=COMP[c.grade]; const ids=protOf(c); if(ids.length>g.prot)return; const r=compSubmit(v,ids); if(c.stage==='protect'){ toast(r); render(); return; } /* 제출이 안 됐으면 완료 도장 대신 안내만(검수 11-08) */ delete UI.prot[c.id]; UI.stamp={title:'보호명단 제출',msg:r}; save(); render(); },
+  protSubmit(v){ if(G.unemp){ toast('지금은 맡은 구단이 없습니다.'); return; } const c=(G.comp||[]).find(x=>x.id===v); if(!c)return; const g=COMP[c.grade]; const ids=protOf(c); if(ids.length>g.prot)return; const r=compSubmit(v,ids); if(c.stage==='protect'){ toast(r); render(); return; } /* 제출이 안 됐으면 완료 도장 대신 안내만(검수 11-08) */ delete UI.prot[c.id]; UI.stamp={title:'보호명단 제출',msg:r}; save(); render(); },
   cpOpt(v){ const [k,x]=String(v).split(':'); UI['cp'+k]=x; render(); },
   cpPos(v){ UI.cpPos=v||'all'; render(); }, /* 구단 프로필 선수단 포지션 칩 */
   protOpt(v){ const [k,x]=String(v).split(':'); UI[k==='s'?'prS':'prF']=x; render(); }, /* 보호명단 정렬·필터 칩 */ /* 보상선수 후보 정렬·필터 칩 */
-  compPick(v){ const [id,pid]=v.split(':'); const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='pick'||c.from!==G.user)return; if(+pid&&!compCands(c).some(q=>q.id===+pid)){ toast('지명할 수 없는 선수입니다(보호선수이거나 소속이 바뀜).'); return; } if(+pid&&rosterN(G.user)>=ROSTER_MAX){ toast(`정식 선수가 ${ROSTER_MAX}명으로 꽉 차 보상선수를 받을 수 없습니다. 먼저 한 명을 정리하거나 보상금을 고르세요.`); return; } if(!compResolve(c,+pid||null)||c.stage!=='done'||(+pid&&G.players[+pid].team!==G.user)){ toast('지명하지 못했습니다. 보호 대상이거나 지명할 수 없는 선수입니다.'); render(); return; } /* 실제로 끝났을 때만 완료 화면(검수 11-06) */ UI.stamp={title:+pid?'보상선수 지명':'보상금 선택',msg:+pid?`${G.players[+pid].name}을(를) 보상선수로 데려옵니다. 보상금 ${money(c.cash)}.`:`선수 대신 보상금 ${money(c.cash)}을(를) 받습니다.`}; save(); render(); },
+  compPick(v){ if(G.unemp){ toast('지금은 맡은 구단이 없습니다.'); return; } /* 야인은 전 구단 보상선수를 고를 수 없다 */ const [id,pid]=v.split(':'); const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='pick'||c.from!==G.user)return; if(+pid&&!compCands(c).some(q=>q.id===+pid)){ toast('지명할 수 없는 선수입니다(보호선수이거나 소속이 바뀜).'); return; } if(+pid&&rosterN(G.user)>=ROSTER_MAX){ toast(`정식 선수가 ${ROSTER_MAX}명으로 꽉 차 보상선수를 받을 수 없습니다. 먼저 한 명을 정리하거나 보상금을 고르세요.`); return; } if(!compResolve(c,+pid||null)||c.stage!=='done'||(+pid&&G.players[+pid].team!==G.user)){ toast('지명하지 못했습니다. 보호 대상이거나 지명할 수 없는 선수입니다.'); render(); return; } /* 실제로 끝났을 때만 완료 화면(검수 11-06) */ UI.stamp={title:+pid?'보상선수 지명':'보상금 선택',msg:+pid?`${G.players[+pid].name}을(를) 보상선수로 데려옵니다. 보상금 ${money(c.cash)}.`:`선수 대신 보상금 ${money(c.cash)}을(를) 받습니다.`}; save(); render(); },
   cmode(v){ UI.cmode=v; UI.it=UI.it||{}; UI.it.coach=v==='other'?'po':'mk'; UI.poachMsg=null; render(); },
   poach(v){ const [t,k,to]=v.split(':'); UI.poachMsg=poachCoach(+t,k,to); note('감독',UI.poachMsg); save(); render(); },
   mgrDir(v){ const [k,on]=v.split(':'); UI.dirMsg=setMgrDir(k,on==='1'); note('감독',UI.dirMsg); save(); render(); },
@@ -484,10 +487,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   frF(v){ UI.frF=v; render(); }, ctF(v){ UI.ctF=v; render(); },
   signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
   scF(v){ UI.scF=v; render(); },
-  hireScout(v){ const [sid,rz]=String(v).split(':'); const res=stOffer('sc',sid,+rz||0); toast(res.msg); if(!res.ok){ save(); render(); return; } const s=res.s; v=sid; if(s&&G.scouts.length<scoutMax()){ s.since=G.day; s.role=s.role||'am';
-    /* 이미 사람이 있는 자리면 같은 지역의 빈 업무, 없으면 다른 지역 빈자리로 보낸다 */
-    { const L=scoutLoad(); if(L[s.role+':'+s.region]){ const fr=['am','pro'].flatMap(r=>[s.region,...REG.filter(x=>x!==s.region)].map(g=>r+':'+g)).sort((a,b)=>(b.endsWith(s.region)?1:0)-(a.endsWith(s.region)?1:0)).find(k=>!L[k]); if(fr){ const [r,g]=fr.split(':'); s.role=r; s.region=g; } } }
-    G.scouts.push(s);try{obHireBonus(s.ob,'스카우트');}catch(e){}addLog(`스카우트 ${s.name}(${s.region}·능력 ${s.skill})을 영입했습니다.`);save();render();}},
+  hireScout(v){ const [sid,rz]=String(v).split(':'); const res=stOffer('sc',sid,+rz||0); toast(res.msg); save(); render(); }, /* 명단 반영·기록은 stOffer가 한다(화면에서 넣다가 빠뜨려 후보가 사라졌다, 카페 11-15) */
   fireScout(v){ scoutFire(v); save();render();},
   signF(v){const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg=err;renderSheet();return;} signForeign(G.user,p.id); UI.sheet=null; save(); render();},
   offA(v,el){UI.offer={id:+v,annual:+el.value,years:(UI.offer&&UI.offer.id===+v?UI.offer.years:(G.fa.offers[+v]||G.players[+v].ask).years)};

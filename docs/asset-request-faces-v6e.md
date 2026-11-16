@@ -1,5 +1,7 @@
 # 에셋 요청서: 선수 실사 얼굴 추가 200명 (v6e production200)
 
+> 이 요청서는 납품되지 않았고 `docs/asset-requests/2026-11-14-codex-v18-player-faces-young.md`(v18)가 대신합니다.
+
 ## 1. 목적
 
 프런트야구 게임 안 선수 사진 얼굴의 수를 늘립니다.

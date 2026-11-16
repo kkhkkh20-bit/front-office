@@ -15,7 +15,7 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
       <div><span class="muted small">인센티브(규정 출전 시)</span>${contractMoneyInput('fo','i','인센티브',F.i,true)}<div class="row">${step('i',-5,'-5만')}${step('i',5,'+5만')}</div></div>
     </div>${atTop?`<p class="small muted fo-room">더 올릴 수 없습니다: ${esc(foRoomWhy(p,room))}</p>`:''}
     <p class="small">선수 성향: <b>${esc(FO_PREF[me.pref]||'')}</b></p>
-    <div class="row small" style="gap:6px;align-items:center"><button class="btn small${F.rel?' on':''}" data-a="foRel" aria-pressed="${!!F.rel}">${F.rel?'보류권 해제 조항 넣음':'보류권 해제 조항 넣기'}</button>${hiI('재계약하지 않으면 보류권을 풀어 이 선수가 국내 다른 구단과 계약할 수 있게 약속합니다. 선수에게는 매력(1년 뒤 자유를 원하는 선수는 두 배)이지만, 잘하면 재계약 협상에서 국내 다른 구단과도 경쟁해야 하고 결별하면 경쟁 구단으로 갈 수 있습니다.')}</div>
+    <div class="row small" style="gap:6px;align-items:center"><button class="btn small${F.rel?' on':''}" data-a="foRel" aria-pressed="${!!F.rel}">${F.rel?'보류권 해제 조항 넣음':'보류권 해제 조항 넣기'}</button>${hiI('재계약하지 않으면 보류권을 풀어, 이 선수가 국내 다른 구단과 계약할 수 있게 약속합니다. 선수에게는 매력적인 조건입니다(1년 뒤 자유를 원하는 선수는 두 배). 대신 잘하면 재계약 때 국내 다른 구단과도 경쟁해야 하고, 결별하면 경쟁 구단으로 갈 수 있습니다.')}</div>
     <p class="small fo-total">총액 ${usdT(F.g+F.i)} · 선수가 느끼는 가치 ${usdT(foVal(F.g,F.i))} x 우리 구단 매력 ${pct(me.f)}</p>
     <details class="small"${UI.foOpen?' open':''}><summary>우리 구단 매력 ${pct(me.f)} 근거</summary>${parts||'<p class="small muted">특별한 장단점이 없습니다.</p>'}</details>
     <div class="fo-cmp small"><div class="row between"><span>경쟁</span><b>${Rv.length?`${Rv.length}개 구단 관심`:'관심 구단 없음'}</b></div>
@@ -40,7 +40,7 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
   const step=(k,d,l)=>`<button class="btn small" data-a="foStep" data-v="${k}:${d}">${l} 달러</button>`; const h=seasonTotal(p,C.y,'1군');
   return `<section class="card fo"><div class="row between"><h2 class="sec">재계약 협상</h2><span class="small muted">보류권 · 국내 경쟁 없음</span></div>
     <p class="small">지금 ${usdT(p.sal)} · 요구 ${usdT(p.newSal)}(${money(p.newSal)}) · 지난 시즌 ${h?statLine(h,p):'기록 없음'}${h?` · WAR ${warOf(h,p).toFixed(1)}`:''}</p>
-    ${p.foreign==='아시아'?`<p class="small">아시아쿼터 재계약 상한 <b>${usdT(asiaReCap(p))}</b> · 직전 연봉 ${usdT(p.sal)}에서 해마다 10만 달러까지 올릴 수 있습니다(신규 계약은 ${Math.round(asiaCap()/USD)}만 달러).</p>`:''}
+    ${p.foreign==='아시아'?`<p class="small">아시아쿼터 재계약 상한 <b>${usdT(asiaReCap(p))}</b> ${hiI(`신규 계약은 ${Math.round(asiaCap()/USD)}만 달러까지입니다. 재계약 상한은 KBO에서 뛴 시즌마다 10만 달러씩 늘고, 직전 연봉보다 10만 달러 더 주는 것도 됩니다.`)}</p>`:''}
     <p class="small">보류권 때문에 국내 다른 구단은 이 선수와 협상할 수 없습니다. 경쟁 상대는 해외 제안뿐입니다: <b>${O&&!O.none?`${O.k} 구단 ${usdT(O.v)} 수준`:'해외 제안 없음'}</b></p>
     <div class="fo-in">
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>

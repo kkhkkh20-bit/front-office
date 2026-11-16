@@ -12,18 +12,18 @@ function tcData(){ const t=team(G.user); if(!t)return null; const y=G.year; cons
   const L=order.map(p=>({n:p.name,pos:POSS[posOf[p.id]]||posLabel(p),o:ov(p),s:bat(p)}));
   const SP=d.sp.slice(0,5).map(p=>({n:p.name,o:ov(p),s:pit(p)})); const CL=d.pen[0]?{n:d.pen[0].name,o:ov(d.pen[0]),s:pit(d.pen[0])}:null;
   let star=null; try{ const W=playersOf(G.user).map(p=>({p,w:(()=>{ const h=seasonTotal(p,y,'1군'); return h?warOf(h,p):0; })()})).sort((a,b)=>b.w-a.w)[0]; if(W&&W.w>0)star={n:W.p.name,pos:posLabel(W.p),w:+W.w.toFixed(1)}; }catch(e){}
-  return {v:1,y,city:t.city,nick:t.nick,code:t.code||'',tid:G.user,pal:P.slice(0,4),st,champs,gm,L,SP,CL,star,stad:(()=>{ try{ return stadName(G.user); }catch(e){ return ''; } })()}; }
+  return {v:1,y,city:t.city,nick:t.nick,...(t.disp?{disp:t.disp}:{}),...(t.abbr?{abbr:t.abbr}:{}),code:t.code||'',tid:G.user,pal:P.slice(0,4),st,champs,gm,L,SP,CL,star,stad:(()=>{ try{ return stadName(G.user); }catch(e){ return ''; } })()}; }
 const tcGmTxt=g=>`단장${g.n&&g.n!=='단장'?' '+g.n:''} · ${g.s}시즌째`; /* 통산 승패는 시즌이 끝나야 갱신되므로 시즌 수만 */
 function tcEncode(d){ return 'FT1:'+LZString.compressToEncodedURIComponent(JSON.stringify(d)); }
 function tcDecode(s){ try{ s=String(s||'').trim(); if(!s.startsWith('FT1:'))return null; const d=JSON.parse(LZString.decompressFromEncodedURIComponent(s.slice(4))); return d&&d.v===1&&d.nick?d:null; }catch(e){ return null; } }
 function tcCardHtml(d){ const P=d.pal||['#334','#ddd','#223','#889']; const rec=d.st?`${d.st.w}승 ${d.st.l}패${d.st.t?` ${d.st.t}무`:''} · ${d.st.rk}위`:'';
   const row=(a,b,c,e)=>`<div class="tcd-r"><span class="tcd-p">${esc(a)}</span><b>${esc(b)}</b>${c!=null?`<em>${c}</em>`:''}<i>${esc(e||'')}</i></div>`;
   const mine=d.tid===G?.user&&d.nick===team(G.user)?.nick;
-  return `<div class="tcd" style="--c1:${P[0]};--c2:${P[1]};--c3:${P[2]}"><header class="tcd-h">${mine?badge(d.tid,56):`<span class="tcd-em">${esc((d.code||d.nick).slice(0,3))}</span>`}<div><span class="tcd-y">${d.y} 시즌 · 프런트야구</span><h2>${esc(d.city)} ${esc(d.nick)}</h2><span class="tcd-rec">${esc(rec)}${d.stad?` · ${esc(d.stad)}`:''}</span></div></header>
+  return `<div class="tcd" style="--c1:${P[0]};--c2:${P[1]};--c3:${P[2]}"><header class="tcd-h">${mine?badge(d.tid,56):`<span class="tcd-em">${esc((d.code||d.nick).slice(0,3))}</span>`}<div><span class="tcd-y">${d.y} 시즌 · 프런트야구</span><h2>${esc(tfull(d))}</h2><span class="tcd-rec">${esc(rec)}${d.stad?` · ${esc(d.stad)}`:''}</span></div></header>
     <div class="tcd-meta"><span>${esc(tcGmTxt(d.gm))}</span><span>우승 <b>${d.champs.length}회</b>${d.champs.length?` (${d.champs.slice(-4).join(', ')})`:''}</span>${d.star?`<span>올해의 스타 <b>${esc(d.star.n)}</b> ${esc(d.star.pos)} · WAR ${d.star.w}</span>`:''}</div>
     <div class="tcd-g"><section><h3>주전 라인업</h3>${d.L.map((x,i)=>row(`${i+1} ${x.pos}`,x.n,x.o,x.s)).join('')}</section><section><h3>선발 로테이션</h3>${d.SP.map((x,i)=>row(`${i+1}선발`,x.n,x.o,x.s)).join('')}${d.CL?`<h3>마무리</h3>${row('마무리',d.CL.n,d.CL.o,d.CL.s)}`:''}</section></div></div>`; }
 function teamShareView(){ const own=G.unemp?null:tcData(); const imp=UI.tcImp?tcDecode(UI.tcImp):null;
-  const ownSec=own?csec('우리 팀 카드',`<div class="btns" style="margin-bottom:10px"><button class="btn primary" data-a="tcPng">이미지로 저장</button><button class="btn" data-a="tcCopy">공유 코드 복사</button></div>`+tcCardHtml(own)+`<p class="small muted">이미지는 카페에 바로 올릴 수 있습니다. 공유 코드를 받은 사람은 아래 칸에 붙여 넣으면 같은 카드를 볼 수 있습니다. 카드에는 화면에 보이는 정보(스카우트 평가 기준 능력)만 담깁니다.</p>${UI.tcMsg?`<p class="small">${esc(UI.tcMsg)}</p>`:''}`):'';
+  const ownSec=own?csec('우리 팀 카드',`<div class="btns" style="margin-bottom:10px"><button class="btn primary" data-a="tcPng">이미지로 저장</button><button class="btn" data-a="tcCopy">공유 코드 복사</button>${cafeLink('카페에 자랑하기')}</div>`+tcCardHtml(own)+`<p class="small muted">이미지는 카페에 바로 올릴 수 있습니다. 공유 코드를 아래 칸에 붙여 넣으면 같은 카드가 보입니다. 카드에는 화면에 보이는 정보(스카우트 평가 기준 능력)만 담깁니다.</p>${UI.tcMsg?`<p class="small">${esc(UI.tcMsg)}</p>`:''}`):'';
   const impSec=csec('다른 단장의 팀 카드 보기',`<textarea id="tc-in" rows="3" placeholder="FT1:로 시작하는 공유 코드를 붙여 넣으세요" style="width:100%">${esc(UI.tcImp||'')}</textarea><div class="btns"><button class="btn" data-a="tcImport">카드 보기</button>${UI.tcImp?'<button class="btn" data-a="tcClear">지우기</button>':''}</div>${UI.tcImp?(imp?tcCardHtml(imp):'<p class="small bad">공유 코드를 읽을 수 없습니다.</p>'):''}`);
   return ownSec+impSec; }
 /* 카드 이미지: 캔버스에 직접 그린다(외부 라이브러리 없이). 1080×1350 세로 */
@@ -31,7 +31,7 @@ async function tcPng(d){ const W=1080,H=1350, c=document.createElement('canvas')
   const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,P[0]); g.addColorStop(.32,P[2]||'#111'); g.addColorStop(1,'#0b0f14'); x.fillStyle=g; x.fillRect(0,0,W,H);
   try{ const B=typeof BADGE_IMG!=='undefined'?BADGE_IMG[d.tid]:null; const src=B&&(B.c||B.s||B.src); if(src&&d.tid===G.user){ const im=new Image(); im.src=src; await new Promise(r=>{ im.onload=r; im.onerror=r; setTimeout(r,1500); }); if(im.naturalWidth)x.drawImage(im,60,60,150,150); } }catch(e){}
   x.fillStyle='rgba(255,255,255,.85)'; x.font=`600 30px ${F}`; x.fillText(`${d.y} 시즌 · 프런트야구`,240,100);
-  x.fillStyle='#fff'; x.font=`800 72px ${F}`; x.fillText(`${d.city} ${d.nick}`,240,175);
+  x.fillStyle='#fff'; x.font=`800 72px ${F}`; x.fillText(`${tfull(d)}`,240,175);
   x.font=`500 32px ${F}`; x.fillStyle='rgba(255,255,255,.9)'; x.fillText(d.st?`${d.st.w}승 ${d.st.l}패${d.st.t?` ${d.st.t}무`:''} · ${d.st.rk}위`:'',240,225);
   let yy=290; x.font=`500 30px ${F}`; for(const s of [tcGmTxt(d.gm),`우승 ${d.champs.length}회${d.champs.length?` (${d.champs.slice(-4).join(', ')})`:''}`,d.star?`올해의 스타 ${d.star.n} ${d.star.pos} · WAR ${d.star.w}`:'']){ if(!s)continue; x.fillText(s,60,yy); yy+=44; }
   const col=(t,L,x0,y0)=>{ x.fillStyle='#fff'; x.font=`800 34px ${F}`; x.fillText(t,x0,y0); let y1=y0+16; x.font=`500 28px ${F}`;

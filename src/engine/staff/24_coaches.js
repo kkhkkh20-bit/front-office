@@ -1,3 +1,4 @@
+const STAFF_RET_AGE=70; /* 감독·코치 은퇴 나이: 이 나이부터 재계약·연장을 하지 않는다. 우리·AI 같음(dddddd 11-15) */
 /* ===== 코치진과 감독 사단 =====
  지도력(sk): 1군 경기력에 작게 영향. 육성력(dv): 맡은 선수들의 성장 속도.
  사단: 감독과 함께 다니는 코치 묶음. 같은 사단이면 손발이 맞아 실력이 더 나온다(+6). 고집 센 감독은 남의 코치와 덜 맞는다(-2). */
@@ -54,7 +55,7 @@ function refreshCoachMarket(){ const L=[]; for(const k of CKEYS){ const n=ri(2,4
 /* 매달 초: 새 후보가 들어오고 오래된 후보 일부는 다른 일을 찾아 떠난다 */
 function coachMarketMonth(){ const o=dobj(G.day); const mk=o.y*100+o.m; if(G.cmMonth===mk)return; G.cmMonth=mk;
   if(o.m===8&&!G.unemp&&G.coach&&G.coach[G.user]&&G.cExpY!==G.year){ G.cExpY=G.year; const L=CKEYS.filter(k=>{ const c=G.coach[G.user][k]; return c&&c.yrs<=1&&!(c.cs!=null&&c.cs>G.year)&&c.expN!==G.year; }); L.forEach(k=>G.coach[G.user][k].expN=G.year); /* 같은 코치 만료 안내는 한 해 한 번(8월·9월 중복 방지, 검수 11-06) */ if(L.length)mail('운영팀','올해로 계약이 끝나는 코치',`${L.map(k=>{ const c=G.coach[G.user][k]; return `${CROLE[k].l} ${c.name}(${c.age}세)`; }).join(', ')}의 계약이 올 시즌으로 끝납니다. 남기려면 시즌이 끝나기 전에 코치진 화면에서 연장하세요. 그대로 두면 겨울에 코치 시장으로 나갑니다.${cRetTxt(L.map(k=>G.coach[G.user][k]))}`,{kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); } G.cmarket=G.cmarket||[];
-  const leave=G.cmarket.filter(c=>c.res!==G.user&&R()<.12).map(c=>c.id); /* 우선 협상 후보는 월간 정리에서도 남긴다(검수 11-09zw #21) */ G.cmarket=G.cmarket.filter(c=>!leave.includes(c.id)); const n=ri(3,5); for(let i=0;i<n;i++)G.cmarket.push(mkCandCoach(pick(CKEYS)));
+  const leave=G.cmarket.filter(c=>c.res!==G.user&&!loyWait(c)&&R()<.12).map(c=>c.id); /* 우선 협상 후보는 월간 정리에서도 남긴다(검수 11-09zw #21) */ G.cmarket=G.cmarket.filter(c=>!leave.includes(c.id)); const n=ri(3,5); for(let i=0;i<n;i++)G.cmarket.push(mkCandCoach(pick(CKEYS)));
   if(G.cmarket.length>90)G.cmarket=G.cmarket.filter((c,i,A)=>c.res===G.user||i>=A.length-90); }
 /* 보조 코치 명단: 단장이 맡은 구단은 G.coachX, 떠난 구단(야인이면 전 구단)은 그 구단에 남긴 명단(검수 11-09zs) */
 function axOf(tid){ return (tid===G.user&&!G.unemp?G.coachX:((G.orgT||{})[tid]||{}).coachX)||[]; }
@@ -81,7 +82,7 @@ function staffCt(x,years,start){ x.yrs=years; x.cs=start??ctStartS(); x.ce=x.cs+
 function staffPending(x){ return !!(x&&(x.jy>G.year||x.cs>G.year)); }
 function staffRenew(x,years,start){ staffCt(x,years,start); delete x.jy; return x; }
 /* 연장은 기존 시작 시즌을 유지한다. 옛 저장은 현재 잔여 기간으로 종료 시즌을 복원한다. */
-function staffCtExtend(x,add){ const left=Math.max(0,x.yrs); if(!left)return staffRenew(x,add);
+function staffCtExtend(x,add){ if(x&&x.role)x.raidSafe=G.day+365; /* 연장한 코치는 1년간 영입 제안 대상에서 빠진다: 우리·AI 같게 */ const left=Math.max(0,x.yrs); if(!left)return staffRenew(x,add);
   if(x.ce==null){ if(x.cs==null)x.cs=G.rolled===G.year?G.year+1:G.year; x.ce=x.cs+left-1; } x.ce+=add; x.yrs=left+add; return x; }
 /* 계약 마지막 시즌: '잔여 1년'이 '올 시즌까지'라는 뜻인데 시즌이 끝난 뒤에도 1년 남은 것처럼 보여, 결산 때 한꺼번에 빠지면 갑자기 빈 것처럼 느껴졌다(카페 문의 11-07) */
 function ctEndY(x){ if(x.cs!=null&&x.cs>G.year)return x.cs+Math.max(0,x.yrs)-1; return (G.rolled===G.year?G.year+1:G.year)+Math.max(0,x.yrs)-1; }
@@ -89,16 +90,16 @@ const ctLeftTxt=x=>{ const e=ctEndY(x), cur=G.rolled===G.year?G.year+1:G.year; r
 const ctSeasonsTxt=n=>{ const s=ctStartS(); return n>1?`${s}~${s+n-1} 시즌`:`${s} 시즌`; };
 function hireCoach(id,years){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; years=Math.round(+years); if(!(years>=1&&years<=4))return '계약 기간은 1~4년입니다.'; const c=(G.cmarket||[]).find(x=>x.id===id); if(!c)return '후보가 없습니다.'; if(typeof schMarketWhy==='function'){ const why=schMarketWhy(c); if(why)return why; } const C=G.coach[G.user]; const old=C[c.role];
   if(old){ const pay=coachSev(old); G.spend.coach=(G.spend.coach||0)+pay; addLog(`${CROLE[c.role].l} ${old.name}와(과) 결별했습니다(잔여 연봉 정산 ${money(pay)}).`); staffHistory('coach',old,'계약 종료',G.user,'단장 결정에 따른 교체'); old.yrs=0; old.clan=null; G.cmarket.push(old); }
-  staffCt(c,years); C[c.role]=c; if(old)interimLeft(old); G.cmarket=G.cmarket.filter(x=>x.id!==id); if(typeof schStaffJoined==='function')schStaffJoined(c,G.user); try{ obTaken(c.ob,c); }catch(e){} obHireBonus(c.ob,CROLE[c.role].l); staffHistory('coach',c,'영입',G.user,`${years}년 · 연 ${money(c.sal)}`); addLog(`${CROLE[c.role].l}(으)로 ${c.name}을(를) ${years}년(${ctSeasonsTxt(years)}) 연 ${money(c.sal)}에 영입했습니다.`); return ''; }
+  staffCt(c,years); C[c.role]=c; if(old)interimLeft(old); G.cmarket=G.cmarket.filter(x=>x.id!==id); delete c.folM; delete c.gmFol; /* 다른 데 계약하면 기다림도 끝(89b_staff_loyalty) */ if(typeof schStaffJoined==='function')schStaffJoined(c,G.user); try{ obTaken(c.ob,c); }catch(e){} obHireBonus(c.ob,CROLE[c.role].l); staffHistory('coach',c,'영입',G.user,`${years}년 · 연 ${money(c.sal)}`); addLog(`${CROLE[c.role].l}(으)로 ${c.name}을(를) ${years}년(${ctSeasonsTxt(years)}) 연 ${money(c.sal)}에 영입했습니다.`); return ''; }
 function fireCoach(role){ if(G.unemp)return; const C=G.coach[G.user]; const c=C[role]; if(!c)return; const pay=coachSev(c); G.spend.coach=(G.spend.coach||0)+pay; C[role]=null; staffHistory('coach',c,'계약 종료',G.user,'단장 해임'); c.yrs=0; c.clan=null; G.cmarket.push(c); addLog(`${CROLE[role].l} ${c.name}을(를) 내보냈습니다(잔여 연봉 정산 ${money(pay)}).`); interimLeft(c); }
 /* 떠난 코치가 감독대행이었으면 남은 코치로 대행을 다시 정한다(해고 검수 11-08, 시장 교체 검수 11-09m) */
 function interimLeft(c){ const m=G.mgr[G.user]; if(m&&m.interim&&(m.cid===c.id||(m.cid==null&&m.name===`${c.name}(감독대행)`))){ staffHistory('mgr',m,'감독대행 임무 종료',G.user,`${c.name} 코치 퇴임`); G.mgr[G.user]=mkInterim(); staffHistory('mgr',G.mgr[G.user],'감독대행 선임',G.user,'전임 대행 코치 퇴임에 따른 교체'); addLog(`감독대행은 ${G.mgr[G.user].name.replace('(감독대행)','')}이(가) 맡습니다.`); } }
 /* 코치 중도 재계약: 계약 중 언제든 1~2년 연장(계약은 최대 4년). 연장 1년마다 연봉 3%(스타 코치 6%) 인상. 64세 이상은 은퇴를 생각해 1년만. 한 해 한 번 */
 function coachExtTerms(role,add){ const c=coachesOf(G.user)[role]; if(!c)return null; const sal=round5(c.sal*(1+(c.star?.06:.03)*add)); let why='';
-  if(c.extY===G.year)why=`${c.name} 코치와는 올해 이미 계약을 손봤습니다.`; else if(c.age>=64&&add>1)why=`${c.name} 코치(${c.age}세)는 은퇴를 생각하고 있어 1년만 연장합니다.`; else if(c.yrs+add>4)why='코치 계약은 최대 4년까지입니다.';
+  if((c.age||0)>=STAFF_RET_AGE)why=`${c.name} 코치(${c.age}세)가 이번 계약을 끝으로 은퇴하겠다고 합니다.`; else if(c.extY===G.year)why=`${c.name} 코치와는 올해 이미 계약을 손봤습니다.`; else if(c.age>=64&&add>1)why=`${c.name} 코치(${c.age}세)는 은퇴를 생각하고 있어 1년만 연장합니다.`; else if(c.yrs+add>4)why='코치 계약은 최대 4년까지입니다.';
   return {c,add,sal,why}; }
 function extendCoach(role,add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!(+add===1||+add===2))return '연장은 1~2년입니다.'; const T=coachExtTerms(role,+add); if(!T)return '그 자리에 코치가 없습니다.'; if(T.why)return T.why; const c=T.c;
-  staffCtExtend(c,T.add); c.sal=T.sal; c.extY=G.year; staffHistory('coach',c,'연장 계약',G.user,`${T.add}년 연장 · 연 ${money(c.sal)}`); addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
+  staffCtExtend(c,T.add); c.sal=T.sal; c.extY=G.year; c.raidSafe=G.day+365; /* 연장 뒤 1년은 다른 구단이 영입 제안하지 않는다(커뮤니티 11-15) */ staffHistory('coach',c,'연장 계약',G.user,`${T.add}년 연장 · 연 ${money(c.sal)}`); addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
 /* 계약이 올해로 끝나는 코치를 한 번에 1년씩 연장(카페 11-09: 코치가 19명이라 하나씩 계약하기 번거롭다). 조건·연봉은 하나씩 할 때와 같다 */
 const coachBulkList=()=>G.unemp?[]:CKEYS.filter(k=>{ const c=coachesOf(G.user)[k]; if(!c||c.yrs>1||staffPending(c))return false; const T=coachExtTerms(k,1); return T&&!T.why; });
 function extendCoachesAll(){ const L=coachBulkList(); let n=0; for(const k of L)if(!extendCoach(k,1))n++; return n; }
@@ -112,28 +113,30 @@ function promoteCoach(role){ if(G.unemp)return '구단을 맡고 있지 않습�
 function clanSev(m){ const C=G.coach&&G.coach[G.user]; if(!C)return 0; return sum((m.clan||[]).map(c=>{ const o=C[c.role]; return o?coachSev(o):0; })); }
 function hireClan(m,years){ // 감독과 함께 사단 코치를 데려온다
   const C=G.coach[G.user]; const got=[];
-  for(const c of (m.clan||[])){ const old=C[c.role]; if(old){ const pay=coachSev(old); G.spend.coach=(G.spend.coach||0)+pay; staffHistory('coach',old,'계약 종료',G.user,'단장 결정에 따른 교체'); old.yrs=0; old.clan=null; G.cmarket.push(old); } staffCt(c,Math.min(4,years)); C[c.role]=c; staffHistory('coach',c,'영입',G.user,`${m.name} 감독 사단 합류 · ${years}년`); got.push(`${CROLE[c.role].l} ${c.name}`); }
+  m.clan=clanNow(m); for(const c of (m.clan||[])){ G.cmarket=(G.cmarket||[]).filter(x=>x!==c); delete c.folM; delete c.res; c.clan=m.id; const old=C[c.role]; if(old){ const pay=coachSev(old); G.spend.coach=(G.spend.coach||0)+pay; staffHistory('coach',old,'계약 종료',G.user,'단장 결정에 따른 교체'); old.yrs=0; old.clan=null; G.cmarket.push(old); } staffCt(c,Math.min(4,years)); C[c.role]=c; staffHistory('coach',c,'영입',G.user,`${m.name} 감독 사단 합류 · ${years}년`); got.push(`${CROLE[c.role].l} ${c.name}`); }
   if(got.length)addLog(`${m.name} 감독 사단 합류: ${got.join(', ')}`); return got; }
-function clanLeave(m){ // 감독이 떠나면 사단 코치 상당수가 함께 떠난다
-  if(!m||!m.id)return []; const C=G.coach[G.user]; const out=[]; for(const k of CKEYS){ const c=C[k]; if(c&&c.clan===m.id&&R()<.7){ C[k]=null; const pay=coachSev(c); G.spend.coach=(G.spend.coach||0)+pay; c.yrs=0; c.clan=null; (G.cmarket=G.cmarket||[]).push(c); staffHistory('coach',c,'계약 종료',G.user,`${m.name} 감독 퇴임에 따른 사단 동반 퇴임`); out.push(`${CROLE[k].l} ${c.name}(정산 ${money(pay)})`); } } return out; } /* 함께 떠나는 사단 코치도 경질처럼 잔여 연봉 절반을 정산하고 코치 시장에 나온다(검수 11-07) */
 function coachYear(){ // 겨울: 계약 정리
+  G.cmarket=(G.cmarket||[]).filter(c=>(c.age||0)<STAFF_RET_AGE); /* 은퇴 나이 코치는 시장에서도 빠진다 */
   for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue;
     for(const k of CKEYS){ const c=C[k]; if(!c)continue;
       const o=c.ob&&G.ob?G.ob.find(x=>x.id===c.ob):null; if(o)c.age=o.age; else c.age++;
       if(c.cs!=null&&c.cs>G.year)continue;
-      c.yrs--; if(c.yrs>0)continue;
+      c.yrs--;
+      const ret=(c.age||0)>=STAFF_RET_AGE&&(c.yrs<=0||(c.age||0)>=STAFF_RET_AGE+2); /* 70세부터 계약이 끝나면, 72세부터는 계약이 남아도 은퇴한다. 우리·AI 같음(dddddd 11-16: 해를 넘겨도 그대로) */
+      if(ret){ C[k]=null; staffHistory('coach',c,'은퇴',t.id,`${c.age}세`); if(t.id===ME()){ interimLeft(c); mail('운영팀',`${c.name} 코치 은퇴`,`${c.name} 코치(${c.age}세)가 지도자 생활을 마치고 은퇴했습니다. 빈 자리는 코치 시장에서 채워 주세요.`,{kind:'코치',acts:[{l:'코치 시장',a:'goWork',v:'코치진'}]}); } else { C[k]=obAiCoach(t.id,k)||mkCoach(k); staffCt(C[k],C[k].yrs||ri(1,3),G.year+1); staffHistory('coach',C[k],'영입',t.id,`${c.name} 코치 은퇴 · ${C[k].yrs}년`); } continue; }
+      if(c.yrs>0)continue;
       if(t.id===ME()){ C[k]=null; c.from=G.user; c.fromY=G.year; G.cmarket.push(c); staffHistory('coach',c,'계약 만료',t.id); interimLeft(c); continue; }
       const v=x=>(x.sk||45)+(x.dv||45), b=(G.cmarket||[]).filter(x=>x.role===k&&x.age<66&&x.from!==t.id&&!x.ob&&x.fromY!==G.year&&x.res!==G.user).sort((a,b)=>v(b)-v(a))[0];
-      if(b&&v(b)>=v(c)+4){ G.cmarket=G.cmarket.filter(x=>x!==b); staffCt(b,ri(1,3),G.year+1); C[k]=b;
+      if(b&&v(b)>=v(c)+4){ G.cmarket=G.cmarket.filter(x=>x!==b); delete b.folM; delete b.gmFol; staffCt(b,ri(1,3),G.year+1); C[k]=b;
         if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); }
         staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',b,'영입',t.id,`${c.name} 코치 계약 만료 · ${b.yrs}년`);
-      } else if((c.age||0)<70&&R()<.55){ staffRenew(c,ri(1,2),G.year+1); staffHistory('coach',c,'재계약',t.id,`${c.yrs}년`);
+      } else if((c.age||0)<STAFF_RET_AGE&&R()<.55){ staffRenew(c,ri(1,2),G.year+1); staffHistory('coach',c,'재계약',t.id,`${c.yrs}년`);
       } else { if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); }
         C[k]=obAiCoach(t.id,k)||mkCoach(k); staffCt(C[k],C[k].yrs||ri(1,3),G.year+1); staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',C[k],'영입',t.id,`${c.name} 코치 계약 만료 · ${C[k].yrs}년`); }
     }
   }
-  const kept=(G.cmarket||[]).filter(c=>c.fromY===G.year); refreshCoachMarket(); { const ko=new Set(kept.map(c=>c.ob).filter(Boolean)); G.cmarket=G.cmarket.filter(c=>!(c.ob&&ko.has(c.ob))); }
-  G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64)); const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 코치 후보 목록에 남아 있어 다시 영입(재계약)할 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
+  const kept=(G.cmarket||[]).filter(c=>c.fromY===G.year||(loyWait(c)&&c.res!==G.user)); /* 감독·단장을 따라 나와 기다리는 코치도 남는다(89b_staff_loyalty) */ refreshCoachMarket(); { const ko=new Set(kept.map(c=>c.ob).filter(Boolean)); G.cmarket=G.cmarket.filter(c=>!(c.ob&&ko.has(c.ob))); }
+  G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64)); const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 후보 목록에 남아 있어 다시 데려올 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
 const COACH_GRADE={bat:{l:'타격',ks:['bc','ab','hc'],k:'sk'},pit:{l:'투수',ks:['pc','bp','cc'],k:'sk'},run:{l:'주루',ks:['rc','r1'],k:'sk'},def:{l:'수비',ks:['dc','cc'],k:'sk'},dev1:{l:'1군 육성',ks:['pc','bp','bc','ab','hc'],k:'dv'},dev2:{l:'2군 육성',ks:['fm','fp','fb','fd','fc','rs','rb'],k:'dv'}};
 function coachGrade(tid){ const C=coachesOf(tid); return Object.fromEntries(Object.entries(COACH_GRADE).map(([key,{ks,k}])=>{ const v=avg(ks.map(r=>effC(C[r],tid,k)));return [key,{v:Math.round(v),l:v>=66?'A':v>=59?'B':v>=52?'C':'D'}]; })); }
 
@@ -141,12 +144,12 @@ function coachGrade(tid){ const C=coachesOf(tid); return Object.fromEntries(Obje
 function cRetTxt(L){ const o=L.filter(c=>c.age>=63); return o.length?`\n단, ${o.map(c=>`${c.name}(${c.age}세)`).join(', ')}은(는) 은퇴를 앞둬 계약이 끝나면 코치 후보로 남지 않습니다. 함께하려면 시즌 중에 연장해야 합니다.`:''; }
 /* 계약 만료 예고(사용자 피드백 11-05: 코치 재계약이 안 되는 줄 알았다): 9월 1일, 올해로 계약이 끝나는 우리 코치를 알리고 연장 방법을 안내한다 */
 function coachExpNote(){ if(G.unemp||!G.coach||!G.coach[G.user])return; const C=G.coach[G.user]; const L=CKEYS.map(k=>C[k]).filter(c=>c&&c.yrs<=1&&!(c.cs!=null&&c.cs>G.year)&&c.expN!==G.year); if(!L.length)return; L.forEach(c=>c.expN=G.year);
-  mail('운영팀',`올해로 계약이 끝나는 코치 ${L.length}명`,`${L.map(c=>`${CROLE[c.role].l} ${c.name}(${c.age}세)`).join(', ')}의 계약이 이번 시즌으로 끝납니다.\n남기려면 시즌이 끝나기 전에 스태프·육성 → 코치진에서 코치를 눌러 1~2년 연장하세요(연장 1년마다 연봉 3%, 스타 코치 6% 인상, 계약은 최대 4년).\n연장하지 않으면 시즌 뒤 코치 후보로 나가고, 그때도 코치 후보 목록에서 다시 영입할 수 있습니다.${cRetTxt(L)}`,{kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
+  mail('운영팀',`올해로 계약이 끝나는 코치 ${L.length}명`,`${L.map(c=>`${CROLE[c.role].l} ${c.name}(${c.age}세)`).join(', ')}의 계약이 이번 시즌으로 끝납니다.\n남기려면 시즌이 끝나기 전에 스태프·육성 → 코치진에서 1~2년 연장하세요. 연장 1년마다 연봉이 3%(스타 코치는 6%) 오르고, 계약은 최대 4년입니다.\n연장하지 않으면 시즌 뒤 코치 후보로 나가지만 후보 목록에서 다시 영입할 수 있습니다.${cRetTxt(L)}`,{kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
 
 /* 보조 코치(커뮤니티 요청 11-07: 훈련 시설 단계가 높으면 코치를 더 둘 수 있게): 4단계 이상 세부 시설 하나마다 1자리, 최대 3자리.
    투수·타격 쪽 후보(1·2군 투수·타격·배터리 코치)를 데려와 그 분야 선수 성장에 작게 보탠다(1명당 육성력에 따라 최대 +2.5%) */
 const AX_ROLES=['pc','fp','bc','fb','cc'], AX_MAX=3;
-function axSlots(){ return Math.min(AX_MAX,FACK.filter(k=>facOf(k)>=4).length); }
+function axSlots(tid){ return Math.min(AX_MAX,FACK.filter(k=>(tid==null||tid===G.user?facOf(k):facLvK(tid,k))>=4).length); } /* 어느 구단이든 그 구단 시설 단계로(다른 구단은 99_ai_parity가 코치 시장에서 채운다) */
 const axP=c=>['pc','fp','cc'].includes(c.role);
 function axBoost(p){ const X=p.team!=null?axOf(p.team):[]; /* 떠난 구단에 남긴 보조 코치도 그 구단 선수를 맡는다(검수 11-09zs·zv #4) */ if(!X.length)return 1; return 1+sum(X.filter(c=>axP(c)===!!p.isP&&!(c.jy>G.year)&&!(c.sisAway>G.day)).map(c=>clamp((c.dv-50)/800,0,.025))); }
 function hireAsst(id,years){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; years=Math.round(+years); if(!(years>=1&&years<=3))return '보조 코치 계약은 1~3년입니다.'; const X=G.coachX=G.coachX||[]; if(X.length>=axSlots())return `보조 코치 자리가 없습니다(4단계 이상 세부 시설 하나마다 1자리, 지금 ${axSlots()}자리).`;

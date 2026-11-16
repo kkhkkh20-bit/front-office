@@ -20,10 +20,10 @@ function mdPlan(){ const open=G.cal.open; const m=G.mgr[G.user]; const who=m&&!m
   const young=pool.filter(p=>p.age<=24&&p!==rec).sort((a,b)=>(b.pot||0)-(a.pot||0))[0];
   const alts=pool.slice(1,3).concat(young&&!pool.slice(1,3).includes(young)?[young]:[]).slice(0,3);
   G.md={y:G.year,tid:G.user,day:open-2,cap:cap.id,rep:rec.id,rec:rec.id,res:null,alts:alts.map(p=>p.id)};
-  mail('감독실',`[미디어데이] 참석 선수 확인 (${dmd(open-2)})`,`${dmd(open-2)} 개막 미디어데이에는 구단마다 감독, 주장, 대표 선수 1명이 나갑니다. 단장은 나가지 않습니다.\n\n${who} 추천\n주장: ${cap.name} (${posLabel(cap)}, ${cap.age}세)\n대표 선수: ${rec.name} (${posLabel(rec)}, ${rec.age}세) · ${mdWhy(rec)}\n\n대표 선수를 다른 선수로 바꾸고 싶으면 감독에게 건의할 수 있습니다. 미디어데이에 나가는 선수는 기분이 오르고 팬 관심을 받습니다. 감독과 선수가 한 말은 다음 날 기사로 나옵니다. 답하지 않으면 감독 추천대로 갑니다.`,
+  mail('감독실',`[미디어데이] 참석 선수 확인 (${dmd(open-2)})`,`${dmd(open-2)} 개막 미디어데이에는 감독, 주장, 대표 선수 1명이 나갑니다. 단장은 나가지 않습니다.\n\n${who} 추천\n주장: ${cap.name} (${posLabel(cap)}, ${cap.age}세)\n대표 선수: ${rec.name} (${posLabel(rec)}, ${rec.age}세) · ${mdWhy(rec)}\n\n대표 선수를 바꾸고 싶으면 감독에게 건의하세요. 나가는 선수는 기분이 오르고 팬 관심을 받습니다. 그날 한 말은 다음 날 기사로 나옵니다. 답하지 않으면 감독 추천대로 갑니다.`,
     {imp:true,kind:'감독',acts:[{l:'감독 추천대로',a:'mdRep',v:'ok'}].concat(alts.map(p=>({l:`건의: ${p.name} (${posLabel(p)}, ${p.age}세)`,a:'mdRep',v:String(p.id)})))});
   /* 단장의 몫: 감독이 미디어데이에서 밝힐 목표 수위를 미리 맞춘다(플레이테스트 4 #20) */
-  if(m&&!m.interim)mail('홍보팀',`[미디어데이] 감독 출사표 방향 (${dmd(open-2)})`,`미디어데이에서 ${who}이(가) 올 시즌 목표를 밝힙니다. 단장이 미리 방향을 맞춰 둘 수 있습니다.\n\n1. 감독에게 맡기기: 감독 성향과 예상 순위대로 말합니다.\n2. 목표를 크게: 우승 또는 가을야구를 공언합니다. 팬 여론이 더 오르지만 못 지키면 시즌 뒤 실망이 큽니다. 감독은 조금 반깁니다.\n3. 신중하게: 공약 없이 한 계단씩을 말합니다. 팬 여론은 덜 오르고 부담도 없습니다. 감독이 큰소리를 좋아하는 성향이면 조금 서운해합니다.\n\n답하지 않으면 감독에게 맡깁니다.`,{kind:'감독',acts:[{l:'감독에게 맡기기',a:'mdGoal',v:'auto'},{l:'목표를 크게',a:'mdGoal',v:'bold'},{l:'신중하게',a:'mdGoal',v:'calm'}]}); }
+  if(m&&!m.interim)mail('홍보팀',`[미디어데이] 감독 출사표 방향 (${dmd(open-2)})`,`미디어데이에서 ${who}이(가) 올 시즌 목표를 밝힙니다. 어느 수위로 말할지 미리 맞춰 둘 수 있습니다.\n\n1. 감독에게 맡기기: 감독 성향과 예상 순위대로 말합니다.\n2. 목표를 크게: 우승 또는 가을야구를 공언합니다. 팬 여론이 더 오르지만 못 지키면 시즌 뒤 실망이 큽니다. 감독은 조금 반깁니다.\n3. 신중하게: 공약 없이 한 계단씩을 말합니다. 팬 여론은 덜 오르고 부담도 없습니다. 감독이 큰소리를 좋아하는 성향이면 조금 서운해합니다.\n\n답하지 않으면 감독에게 맡깁니다.`,{kind:'감독',acts:[{l:'감독에게 맡기기',a:'mdGoal',v:'auto'},{l:'목표를 크게',a:'mdGoal',v:'bold'},{l:'신중하게',a:'mdGoal',v:'calm'}]}); }
 function mdGoalPick(v){ const D=G.md; if(!D||D.y!==G.year||(D.tid!=null&&D.tid!==G.user)||G.unemp||G.day>=D.day)return '이미 지난 일입니다.'; if(D.gp)return '이미 정했습니다.'; if(!['auto','bold','calm'].includes(v))return '';
   const m=G.mgr[G.user]; D.gp=v; if(m&&!m.interim){ mgrFix(m); const bold=m.ego>=65||mgrVoice(m)==='fire'; if(v==='bold')m.rel=clamp(m.rel+1,0,100); else if(v==='calm'&&bold)m.rel=clamp(m.rel-1,0,100); }
   return v==='auto'?'감독에게 맡겼습니다.':v==='bold'?'감독이 목표를 크게 밝히기로 했습니다. 지키지 못하면 시즌 뒤 실망이 큽니다.':'감독이 공약 없이 신중하게 말하기로 했습니다.'; }
@@ -70,7 +70,7 @@ function mdRun(){ const open=G.cal.open; let D=G.md; if(!D||D.y!==G.year||(D.tid
   if(g.k&&m&&!m.interim)G.mdProm={y:G.year,k:g.k,mid:m.id,name:m.name,tid:G.user};
   const others=G.teams.filter(t=>t.id!==G.user).map(t=>{ const x=mdMgrGoal(t.id,proj.indexOf(t.id)+1); return `${tshort(t.id)} ${x.w}`; });
   /* 다른 구단: 우승 후보와 몇 팀의 주장 발언, 우리를 겨냥한 한마디 */
-  const riv=[], champ=G.last&&G.last.ps?G.last.ps.champ:null; const nk=team(G.user).nick;
+  const riv=[], champ=G.last&&G.last.ps?G.last.ps.champ:null; const nk=tnick(G.user);
   const pickT=[proj[0],proj[1],champ].filter((x,i,a)=>x!=null&&x!==G.user&&a.indexOf(x)===i).slice(0,2);
   const said=new Set(L.map(x=>x[1])); for(const tid of pickT){ const c=mdCaptain(tid); if(!c)continue; let t=mdPlayerLine(c,'cap'); if(said.has(t))t=mdPlayerLine(c,'cap2'); if(said.has(t))continue; said.add(t); riv.push([`${tshort(tid)} ${team(tid).cap===c.id?'주장':'주장 대행'} ${c.name}`,t]); } /* 같은 발언이 두 번 나오지 않게(리뷰 11-08) */
   let jab=null; for(const t of G.teams){ if(t.id===G.user||jab)continue; const m=G.mgr[t.id]; if(!m||m.interim)continue; mgrFix(m); const bold=m.ego>=68||mgrVoice(m)==='fire'; if(!bold)continue;
@@ -82,7 +82,7 @@ function mdRun(){ const open=G.cal.open; let D=G.md; if(!D||D.y!==G.year||(D.tid
 function mdPub(){ const D=G.md; if(!D||!D.out||D.pubd||G.day<D.pub)return; D.pubd=true; const O=D.out, tid=D.tid??G.user, own=!G.unemp&&tid===G.user;
   const n0=news('언론',`${tshort(tid)} ${O.L[0][0]} "${O.L[0][1].replace(/^"|"$/g,'').split('.')[0].slice(0,26)}"`,`개막 미디어데이에서 ${O.L.map(([w,t])=>`${w}: ${t}`).join(' ')}`,O.prom==='champ'?1:0,{tid});
   if(O.L[2])news('선수',`${O.L[2][0]} "${O.L[2][1].replace(/^"|"$/g,'').split('.')[0].slice(0,26)}"`,`개막 미디어데이 대표 선수로 나선 ${O.L[2][0]}: ${O.L[2][1]} 팬 질문 '${O.fq[0]}'에는 ${O.fq[1]}라고 답했습니다.`,1,{ref:O.rep,tid});
-  if(O.jab)news('경기',`${tshort(O.jab.tid)} 감독, ${team(tid).nick} 겨냥 "${O.jab.t.replace(/^"|"$/g,'').split('.')[0].slice(0,24)}"`,`개막 미디어데이에서 ${tname(O.jab.tid)} 감독이 ${tname(tid)}을(를) 겨냥했습니다. ${O.jab.t} ${tshort(tid)} 선수단은 자극을 받았습니다.`,0,{tid});
+  if(O.jab)news('경기',`${tshort(O.jab.tid)} 감독, ${tnick(tid)} 겨냥 "${O.jab.t.replace(/^"|"$/g,'').split('.')[0].slice(0,24)}"`,`개막 미디어데이에서 ${tname(O.jab.tid)} 감독이 ${tname(tid)}을(를) 겨냥했습니다. ${O.jab.t} ${tshort(tid)} 선수단은 자극을 받았습니다.`,0,{tid});
   news('언론',`${G.teams.length}개 구단 사령탑 출사표`,`개막 미디어데이에서 각 구단 감독이 목표를 밝혔습니다. ${O.others.join(' · ')} · ${tshort(tid)} ${O.g}.`,0,{tid});
   if(own)mail('홍보팀','[기사] 개막 미디어데이 기사가 나왔습니다',`${O.L.map(([w,t])=>`${w}: ${t}`).join('\n')}\n\n팬 질문 '${O.fq[0]}' → ${O.fq[1]}\n\n반응: 팬 여론 호전. 나간 선수들은 기분이 올랐습니다.${(O.riv||[]).length?`\n\n다른 구단\n${O.riv.map(([w,t])=>`${w}: ${t}`).join('\n')}${O.jab?'\n상대 감독의 도발에 우리 선수단이 자극을 받았습니다. 기분 조금 상승.':''}`:''}${O.prom?`\n감독이 '${O.prom==='champ'?'우승':'가을야구'}'를 공언했습니다. 시즌 뒤 지켰는지 다시 기사가 납니다(전력분석팀 예상 ${O.r}위).`:''}${fpNewsReact(n0)}`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'club:news'}]}); }
 /* 포스트시즌 미디어데이: 준플레이오프부터, 1차전 하루 전 */

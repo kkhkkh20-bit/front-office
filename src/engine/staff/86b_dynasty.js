@@ -80,7 +80,7 @@ function gmReformPick(t,run){ const C=[]; const n=3+Math.min(3,run||0); for(let 
   const w=.5+.3*Math.min(4,run||0); const sc=g=>{ const a=gmAbil(g); return (a?(a.eye+a.neg+a.plan+a.money)/4:50)*w+R()*12; };
   let b=C[0], bs=-1e9; for(const g of C){ const s=sc(g); if(s>bs){ bs=s; b=g; } }
   if(ob&&b.ob===ob.id){ try{ obAiGMTake(ob,b,t.id); }catch(e){} }
-  const ex=(G.exGM||[]).find(x=>x.g===b); if(ex){ G.exGM=G.exGM.filter(x=>x!==ex); b.since=G.year; b.tid=t.id; delete b.c; b.car=`${b.car||'프런트 출신'} · 전 ${tshort(ex.tid)} 단장`; }
+  const ex=(G.exGM||[]).find(x=>x.g===b); if(ex){ G.exGM=G.exGM.filter(x=>x!==ex); b.since=G.year; b.tid=t.id; delete b.c; delete b.inner; /* 다른 구단에서 온 단장은 내부 승격이 아니다(검수 11-14) */ b.car=`${String(b.car||'프런트 출신').replace(/ · 내부 승격/g,'')} · 전 ${tshort(ex.tid)} 단장`; }
   try{ const c=gmCon(b,t.id); if(c&&run)c.sal=Math.round(clamp(c.sal*(1+.08*Math.min(4,run)),150,500)/10)*10; }catch(e){} return b; }
 /* 물러난 단장은 몇 해 동안 다른 구단 후보로 남는다 */
 function gmExAdd(g,tid){ if(!g||g.interim||g.ob||g.age>=62)return; G.exGM=(G.exGM||[]).filter(x=>G.year-x.y<4&&x.g.id!==g.id); G.exGM.push({g,tid,y:G.year}); if(G.exGM.length>12)G.exGM.shift(); }

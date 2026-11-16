@@ -16,6 +16,8 @@ const avg=FrontOfficeCore.avg;
 const sum=FrontOfficeCore.sum;
 const r5=FrontOfficeCore.r5;
 const rr=FO_RANDOM.rr;
+/* 숨은 효과 크기를 말로: 크게/꽤/조금 (화면에 정확한 수치를 보이지 않는다) */
+function effWord(x,big,mid){x=Math.abs(+x||0);return x>=big?'크게':x>=mid?'꽤':'조금';}
 /* 능력치 화면 표시: 내부 계산은 20~80 스카우트 척도 그대로 두고, 보여 줄 때만 100점 척도로 바꾼다.
    1군 평균(51)=63, 상급(58)=73, 대박(65)=84, 초대형(72)=95, 유망주 평균(24)=42 */
 const DV_PTS=FrontOfficeCore.DV_PTS;
@@ -46,7 +48,9 @@ function GRD(v){ const c=grdCuts(); if(!c)return v>=75?'S':v>=65?'A':v>=55?'B':v
    화면 쪽 캐시는 엔진만 도는 점검에선 없으므로 있을 때만 비운다 */
 function worldReset(){ const L=x=>{ try{ return x(); }catch(e){ return null; } };
   L(()=>{ _spC={k:null}; _poC={k:null}; _dcc=null; _ftr=null; _xhrC=null; _ak.clear(); _lgbC={k:'',m:{}}; _subC.clear(); _pvC.clear(); _slC={k:null}; _grdC={k:null}; _franC={k:null}; _pjC={}; _faCtx=null; _intC={}; _lkC={k:'',m:new Map()}; _tcC={k:null,m:{}}; _evOut=null; _stC={k:'',m:{}}; _ldC.clear(); _nmSet=null; _nmDay=null; _pctC={k:null}; });
-  if(typeof _lk!=='undefined')L(()=>{ _lk={k:null}; _psC={k:null}; _tsC=null; _prC=null; _fdAllSet=null; }); }
+  if(typeof _lk!=='undefined')L(()=>{ _lk={k:null}; _psC={k:null}; _tsC=null; _prC=null; _fdAllSet=null; });
+  /* 열쇠가 날짜·선수 id뿐인 캐시: 다른 세계에서 같은 id·같은 날이면 남의 값을 썼다(구종 수·FA 잠금·중계 사본, 안정화 점검) */
+  for(const f of [()=>_pn.clear(),()=>{ _faLk={k:null,s:null}; },()=>{ _domSeen={d:-1,s:new Set()}; },()=>{ SPOIL_SNAP=null; },()=>{ _lsaC={v:null,k:null}; },()=>{ _faPC=null; }])L(f); }
 
 /* 이름 뒤에 보이지 않는 선수 번호 표시(⁣ + 0/1 비트 + ⁤). 화면에서 이름을 링크할 때 동명이인 대신 그 선수로 잇는다(네오클라우드 11-11: 단장 식사에서 동명이인 링크) */
 const PNM_A='\u2063', PNM_Z='\u2064';

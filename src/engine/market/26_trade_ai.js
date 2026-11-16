@@ -10,12 +10,17 @@ function lgStartAvg(){ const L=leagueSlots(); if(_lsaC.k===L)return _lsaC.v; con
   const grp=ks=>{ const v=L.flatMap(s=>ks.flatMap(k=>s[k].ps)).map(ovr); return v.length?avg(v):null; }; out.BAT=grp(PSLOTS.slice(0,9)); out.ALL=grp(PSLOTS); _lsaC={k:L,v:out}; return out; }
 function teamStartAvg(tid,k){ const s=leagueSlots()[tid]; if(!s)return null; const ks=k==='BAT'?PSLOTS.slice(0,9):[k]; const v=ks.flatMap(x=>s[x].ps).map(ovr); return v.length?avg(v):null; }
 function slotStartAvgOf(p){ if(!p)return null; const k=p.isP?(isSPr(p)?'SP':'RP'):p.pos; return PSLOTS.includes(k)?k:null; }
-function leagueSlots(){ const k=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.mvN||0)+':'+Object.values(G.players).filter(p=>p.team!=null&&p.team>=0).map(p=>p.id+':'+p.team+(p.role||'')+(p.e1?'+':'')+(p.injOut>0?'i':'')).join(',')+':'+JSON.stringify(G.lineup||{})+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.rotOrd||G.rot||null); /* 보직·엔트리·라인업·투수 기용 계획이 바뀌면 다시 계산 */ if(_slC.k===k&&_slC.g===G)return _slC.v; /* 모든 구단 선수·세이브가 바뀌면 다시(상대 에이스 부상 반영, 검수 11-09zh) */ const v=G.teams.map(t=>slotOf(t.id)); _slC={k,v,g:G}; return v; }
+/* 성능: AI 작업 하나(aiTradeTry·aiOffer) 동안은 리그 자리표 열쇠(모든 선수)를 한 번만 만든다. 그 사이 날짜·트레이드 수·이동 기록(mvN)이 바뀌면(거래 성사) 다시 만든다 */
+let _slHold=null;
+function slotsHold(fn){ if(_slHold)return fn(); _slHold={g:null}; try{ return fn(); }finally{ _slHold=null; } }
+function leagueSlots(){ const k0=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.mvN||0); const H=_slHold; if(H&&H.g===G&&H.k0===k0)return H.v; const v0=leagueSlotsKeyed(k0); if(H){ H.g=G; H.k0=k0; H.v=v0; } return v0; }
+function slotsRosterKey(){ let a=2166136261>>>0, b=5381, n=0; const mix=s=>{ for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); a=Math.imul(a^c,16777619)>>>0; b=(Math.imul(b,33)+c)>>>0; } }; for(const id in G.players){ const p=G.players[id]; if(!(p.team!=null&&p.team>=0))continue; mix(p.id+':'+p.team+(p.role||'')+(p.e1?'+':'')+(p.injOut>0?'i':'')+','); n++; } return n+'#'+a.toString(36)+'.'+b.toString(36); } /* 성능: 예전 열쇠는 모든 선수를 이어 붙인 긴 문자열(수만 자)을 부를 때마다 만들었다. 같은 내용을 두 개의 32비트 해시로 줄인다(안정화 점검: 후반 시즌 트레이드 평가가 느려짐) */
+function leagueSlotsKeyed(k0){ const k=k0+':'+slotsRosterKey()+':'+JSON.stringify(G.lineup||{})+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.rotOrd||G.rot||null); /* 보직·엔트리·라인업·투수 기용 계획이 바뀌면 다시 계산 */ if(_slC.k===k&&_slC.g===G)return _slC.v; /* 모든 구단 선수·세이브가 바뀌면 다시(상대 에이스 부상 반영, 검수 11-09zh) */ const v=G.teams.map(t=>slotOf(t.id)); _slC={k,v,g:G}; return v; }
 /* 트레이드 마감 주간: 사는 구단(상위권의 약한 자리)과 파는 구단(하위권의 베테랑) 루머 */
 function deadlineRumors(quiet){ const st=standingsNow(); const buyers=st.slice(0,5).map(x=>x.tid).filter(t=>t!==G.user); const sellers=st.slice(6).map(x=>x.tid).filter(t=>t!==G.user);
   const L=[]; for(const t of buyers.slice(0,3)){ const rk=slotRanks(t); const weak=PSLOTS.filter(k=>k!=='DH').sort((a,b)=>rk[b].rank-rk[a].rank)[0]; if(weak&&rk[weak].rank>=6)L.push(`${tshort(t)}(${st.findIndex(x=>x.tid===t)+1}위)은(는) ${SLOTK[weak]} 보강을 노립니다`); }
   for(const t of sellers.slice(0,3)){ const v=domestic(t).filter(p=>p.age>=29&&ovr(p)>=54&&!p.ys&&!(hasNtc(p)||faLock(p))&&!mvRecent(p)).sort((a,b)=>ovr(b)-ovr(a))[0]; if(v){ v.aiListed=true; L.push(`${tshort(t)}은(는) ${v.name}(${posLabel(v)}, ${v.age}세)을(를) 시장에 내놓을 수 있습니다`); } }
-  if(!L.length)return; news('트레이드',`트레이드 마감 앞두고 시장 꿈틀`,L.join('. ')+'.',0); if(!quiet)note('트레이드',`마감 주간 시장 소식: ${L.join('. ')}. 트레이드 → 추천·선수 찾기에서 해당 구단을 살펴보세요.`); }
+  if(!L.length)return; news('트레이드',`트레이드 마감 앞두고 시장 꿈틀`,L.join('. ')+'.',0); if(!quiet)note('트레이드',`마감 주간 시장 소식: ${L.join('. ')}. 트레이드 → 추천·선수 찾기에서 그 구단을 살펴보세요.`); }
 /* 마감 2주 전: 단장이 올해 방향(보강·유지·정리)을 정한다. 순위와 남은 경기로 부단장이 상황을 정리해 준다 */
 function deadlineDecision(){ if(G.dline&&G.dline.y===G.year)return; const st=standingsNow(); const rk=st.findIndex(x=>x.tid===G.user)+1; const r=G.sea.rec[G.user]; const gb5=(()=>{ const f=st[4]; return ((f.w-f.l)-(r.w-r.l))/2; })();
   const vets=domestic(G.user).filter(p=>p.age>=30&&ctrlYears(p)<=1&&ovr(p)>=52&&!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3);
@@ -39,7 +44,7 @@ function myCoreIds(){ const d=depth(G.user); return new Set([...d.start,...d.sp.
 function buildPackage(t,p,core){ if(hasNtc(p))return null; /* 거부권 선수는 실제 제출 때 막히므로 추천하지 않는다(검수 11-05) */ const v=tval(t,p,'out'); const need=tradeNeed(t,v)-(p.aiListed?1.5:0); const target=v+need+.3;
   const pool=domestic(G.user).filter(q=>!q.ys&&!(hasNtc(q)||faLock(q))&&!core.has(q.id)&&healthy(q)&&!(q.joinY>G.year)&&!recentTr(q)).map(q=>({q,v:tval(t,q,'in')})).filter(x=>x.v>.2).sort((a,b)=>a.v-b.v);
   let best=null,bo=1e9; for(let i=0;i<pool.length;i++){ if(pool[i].v>=target&&pool[i].v-target<bo){ bo=pool[i].v-target; best=[pool[i].q.id]; } for(let j=i+1;j<pool.length;j++){ const sm=Math.max(pool[i].v,pool[j].v)+.72*Math.min(pool[i].v,pool[j].v); if(sm>=target&&sm-target<bo-.6){ bo=sm-target+.6; best=[pool[i].q.id,pool[j].q.id]; } } }
-  if(!best)return null; const e=evalTrade(t.id,best,[p.id]); if(!e.ok||e.theirN>ROSTER_MAX||e.theirN<ROSTER_MIN)return null; if(e.theirPay>capOf(G.year)&&e.theirPay>capPay(t.id))return null;
+  if(!best)return null; const e=evalTrade(t.id,best,[p.id]); if(!e.ok||e.theirN>ROSTER_MAX||e.theirN<ROSTER_MIN)return null; if(e.capT&&e.capT.hard)return null; /* 소프트캡: 한도 안 초과는 세금만큼 값으로 따졌다(evalTrade) */
   if(rosterN(G.user)-best.length+1>ROSTER_MAX)return null; return best; }
 function tsugValid(s){ const p=G.players[s.id]; if(!(p&&p.team===s.tid&&s.give.every(id=>G.players[id]&&G.players[id].team===G.user&&!recentTr(G.players[id]))))return false; if(ntcOf([s.id,...s.give])||tradeCool(s.tid,[s.id]))return false; /* 제출 때 막힐 거부권·거래 간격(검수 11-09w) */ return evalTrade(s.tid,s.give,[s.id]).ok; }
 /* 조건부 영입 요청: 자리·유형·나이·연봉 조건으로 스카우트가 후보를 추린다. 능력 순이 아니라 조건과 팀 사정으로 설명한다 */

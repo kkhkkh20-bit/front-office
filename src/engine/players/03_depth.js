@@ -12,17 +12,22 @@ function defAt(p,pos){
    자리마다 그만한 선수가 드문 정도도 다르다. 그래서 값을 매길 때(트레이드·FA·연봉·WAR)는 이 둘을 종합 능력 단위로 바꿔 더한다.
    DWR: 그 자리 수비 1점이 시즌 실점을 몇 점 바꾸는가(엔진 식에서 계산: 인플레이 타구 안타 확률 + 자리별 실책). POS_ADJ: 자리 희소성(600타석당 득점).
    공격 종합 1점은 600타석당 약 1.56점. 자리는 그 선수가 가장 가치 있는 곳(1루·지명은 누구나 갈 수 있다) */
-const DWR={SS:1.1,'3B':.84,'2B':.82,CF:.7,C:.92, /* 포수: 리드·블로킹·도루 저지까지 맡아 유격 다음으로 수비 비중이 크다 */RF:.47,LF:.43,'1B':.39}, RUN_PER_OVR=1.56;
+const DWR={SS:1.4,'2B':1.25,C:1.25, /* 포수: 리드(투수 결과) 0.7 + 도루 저지 0.5 */CF:1.05,'3B':.8,LF:.8,RF:.75,'1B':.55}, RUN_PER_OVR=1.56;
+/* 11-15 수비 감사(세계 16개 × 2025시즌, 타구마다 '그 야수 대신 그 자리 보통 수비였다면' 안타·실책 기대를 빼서 잰 실점 ÷ 수비 1점, 144경기 기준.
+   수비 범위·포구·자리별 타구 몫·실책 배수(06_game EPOS) 조정 뒤): 유격 1.41 · 2루 1.26 · 포수 약 1.25(리드 .7 + 도루 저지 .5) · 중견 1.08 · 3루 .81 · 우익 .77 · 좌익 .76 · 1루 .52.
+   예전 값(유격 1.1·3루 .84·2루 .82·중견 .7·포수 .92·우익 .47·좌익 .43·1루 .39)은 엔진이 바뀐 뒤 다시 재지 않은 값이었다.
+   WAR(02_records warRaw)만 새 값을 쓰고, 주전 고르기(makeLineup·posScore)·선수 가치(posValAt·posValLearn: 연봉·트레이드·FA)는 예전 무게(DWR0)를 그대로 쓴다(안정화 릴리스: AI 판단을 바꾸지 않는다) */
+const DWR0={SS:1.1,'3B':.84,'2B':.82,CF:.7,C:.92,RF:.47,LF:.43,'1B':.39};
 /* DAVG: 리그 주전의 자리별 평균 수비력(새 게임 5개에서 잰 값). 그 자리 평균보다 잘하면 플러스 */
 const DAVG={SS:57.5,'2B':57.4,CF:56.7,C:54.5,'3B':53.8,'1B':48.2,RF:46.3,LF:46.3};
 /* 수비 난이도: 같거나 쉬운 자리로는 옮길 수 있다고 본다(유격→3루·1루 쉬움, 1루→유격 안 됨). 포수는 포수만 */
 const DSPEC={SS:6,C:6,CF:5,'2B':5,'3B':4,RF:3,LF:2,'1B':1,DH:0};
-function posValAt(p,pos){ const d=pos==='DH'?0:(defAt(p,pos)-DAVG[pos])*DWR[pos]; return ovr(p)-(p.r.def-50)*.2+((POS_ADJ[pos]||0)+d)/RUN_PER_OVR; }
+function posValAt(p,pos){ const d=pos==='DH'?0:(defAt(p,pos)-DAVG[pos])*DWR0[pos]; return ovr(p)-(p.r.def-50)*.2+((POS_ADJ[pos]||0)+d)/RUN_PER_OVR; }
 const _pvC=new Map();
 function posBest(p){ if(!p||p.isP)return {pos:'P',v:p?ovr(p):0}; const k=G.day+':'+p.pos+':'+p.r.def+':'+ovr(p).toFixed(2)+':'+JSON.stringify(p.pexp||'')+':'+(p.trt||''); const c=_pvC.get(p.id); if(c&&c.k===k)return c.b;
   let b={pos:'DH',v:posValAt(p,'DH')}; const lim=DSPEC[p.pos]??1; const sub=new Set(subsOf(p)); for(const q of ['C','SS','2B','CF','3B','RF','LF','1B']){ if(q===p.pos||sub.has(q)||(q!=='C'&&DSPEC[q]<=lim)){ /* 실제로 익힌 부 포지션(숙련 50 이상)도 후보: 유격수를 1루로 바꿔도 익힌 유격 가치는 그대로 */ const v=posValAt(p,q); if(v>b.v)b={pos:q,v}; } } if(_pvC.size>4000)_pvC.clear(); _pvC.set(p.id,{k,b}); return b; }
 const pvShift=p=>p&&!p.isP?posBest(p).v-ovr(p):0; /* 종합 능력에 더할 포지션 보정(투수 0) */
-const posScore=(p,pos)=>{ if(pos==='DH')return offV(p); const w=DWR[pos]!=null?.2+DWR[pos]*.3:.38; return offV(p)*(1-w)+defAt(p,pos)*w; }; /* 수비가 중요한 자리일수록 수비를 더 본다: 유격 .53 · 3루·2루 .45 · 중견 .41 · 포수 .4 · 코너 외야 .33 · 1루 .32 */
+const posScore=(p,pos)=>{ if(pos==='DH')return offV(p); const w=DWR0[pos]!=null?.2+DWR0[pos]*.3:.38; return offV(p)*(1-w)+defAt(p,pos)*w; }; /* 수비가 중요한 자리일수록 수비를 더 본다: 유격 .53 · 3루·2루 .45 · 중견 .41 · 포수 .4 · 코너 외야 .33 · 1루 .32 */
 const ORDER=['C','SS','CF','2B','3B','RF','LF','1B','DH'];
 function makeLineup(tid,pool){
   const bats=(pool||actOf(tid)).filter(p=>!p.isP&&healthy(p));
@@ -34,7 +39,7 @@ function makeLineup(tid,pool){
   const fitPen=(p,pos)=>{ if(pos==='DH')return p.pos==='C'?1:0; if(p.pos===pos)return 0; if(p.pos==='C')return 400; /* 포수는 포수·지명만(다른 자리는 대안이 아예 없을 때뿐). 40이면 방망이가 아주 좋은 포수가 코너 외야로 나갔다 */ const e=(pexpOf(p)[pos]||0)/100; const IF=['2B','SS','3B'], OF=['LF','CF','RF']; const cross=(IF.includes(p.pos)&&OF.includes(pos))||(OF.includes(p.pos)&&IF.includes(pos))||(p.pos==='1B'&&pos!=='DH'); const b=pos==='C'?40:pos==='1B'?3:cross?16:OF.includes(pos)?2:4; return e>=.5?Math.min(1,b):b-(b-1)*e/.5; }; /* 같은 무리(내야끼리·외야끼리) 이동은 쉽고, 내야↔외야는 경험 없이는 꺼린다 */
   const lean=teamLean(tid); const pb=p=>polBonus(tid,p,lean); const wD=mgrDefW(tid);
   const open=new Set(ORDER.filter(pos=>!ln[pos]));
-  const mf=wD/.38; const SC=new Map(); for(const p of bats){ const o=offV(p)*1.25, ex=promo(p)+pb(p)+rpB(tid,p,'B'); const m={}; for(const pos of ORDER)m[pos]=(pos==='DH'?o:o+(defAt(p,pos)-DAVG[pos])*DWR[pos]*mf)+ex-fitPen(p,pos)+(typeof posAskB==='function'?posAskB(tid,p,pos):0); /* 단장 포지션 기용 건의를 감독이 받아들이면 그 자리 쪽으로 */ SC.set(p.id,m); }
+  const mf=wD/.38; const SC=new Map(); for(const p of bats){ const o=offV(p)*1.25, ex=promo(p)+pb(p)+rpB(tid,p,'B'); const m={}; for(const pos of ORDER)m[pos]=(pos==='DH'?o:o+(defAt(p,pos)-DAVG[pos])*DWR0[pos]*mf)+ex-fitPen(p,pos)+(typeof posAskB==='function'?posAskB(tid,p,pos):0); /* 단장 포지션 기용 건의를 감독이 받아들이면 그 자리 쪽으로 */ SC.set(p.id,m); }
   while(open.size){ let bp=null,bq=null,bs=-1e9;
     for(const pos of open){ if(pos==='DH'&&open.size>1)continue; for(const p of bats){ if(used.has(p.id))continue; const s=SC.get(p.id)[pos]; if(s>bs){bs=s;bp=pos;bq=p;} } }
     if(!bq)break; ln[bp]=bq; used.add(bq.id); open.delete(bp); }
@@ -53,14 +58,20 @@ function actOf(tid){ const ps=playersOf(tid).filter(p=>psOk(p)); return entryOn(
 const psOk=p=>!(period()==='post'&&p.acq&&p.acq.tid===p.team&&p.acq.y===G.year&&p.acq.k!=='fd'&&p.acq.k!=='draft'&&p.acq.d>foreignDL());
 const canUp=p=>psOk(p)&&!(p.boy>G.day)&&!p.e1&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&(p.downDay==null||G.day-p.downDay>=10);
 /* 성적 보기(11-12, AI도 유저처럼 1·2군을 성적으로 돌린다): 감독은 능력치만이 아니라 올해 기록도 본다.
-   2군에서 잘 치고 잘 던지는 선수는 올리고(+2.5), 1군에서 오래 부진한 선수는 내린다(-2). 표본이 적으면 보지 않는다 */
-function entryPerf(tid,p){ return 0; /* 11-12 측정: 켜면 시험 세계 우리 구단이 55승→42승(작은 표본의 2군 호성적·1군 부진에 크게 흔들림). 능력 차가 작을 때만 쓰는 보조 기준으로 다시 설계할 때까지 끈다 */ if(period()!=='season')return 0; let v=0; try{ if(!p.e1){ const h=seasonTotalT(p,G.year,'퓨처스',tid); if(h&&(p.isP?h.outs>=30&&pRate(h).era<=3:h.pa>=60&&bRate(h).ops>=.85))v+=2.5; }
-  else { const h=seasonTotalT(p,G.year,'1군',tid); if(h&&(p.isP?h.outs>=75&&pRate(h).era>=6.5:h.pa>=80&&bRate(h).ops<.55))v-=2; } }catch(e){} return v; }
+   11-12 첫 판(2군 호성적 +2.5·1군 부진 -2 고정)은 작은 표본에 크게 흔들려 껐다. 안정화(11-14): 표본만큼만 믿는 보조 기준으로 다시 켠다.
+   기록이 리그 평균에서 벗어난 정도 × 표본 비중(타석/(타석+150), 아웃/(아웃+120))이라 60타석 호성적은 1점 안팎, 시즌 내내 압도해도 +1.5까지.
+   1군 부진은 -1까지만. 주간 교체 문턱(2.5)을 기록만으로는 넘기 어려워 능력 차가 작을 때 결정을 가른다. 모든 구단 같은 식 */
+const EP_LG={'퓨처스':{ops:.765,era:4.8},'1군':{ops:.76,era:4.65}};
+function entryPerfOf(p,h,lv){ if(!h)return 0; const L=EP_LG[lv];
+  if(p.isP){ const n=h.outs||0; if(n<(lv==='1군'?45:24))return 0; return (L.era-pRate(h).era)/1.7*n/(n+120); }
+  const n=h.pa||0; if(n<(lv==='1군'?60:30))return 0; return (bRate(h).ops-L.ops)/.12*n/(n+150); }
+function entryPerf(tid,p){ if(period()!=='season')return 0; try{ if(!p.e1)return clamp(entryPerfOf(p,seasonTotalT(p,G.year,'퓨처스',tid),'퓨처스')*1.5,-.75,1.5);
+  return clamp(entryPerfOf(p,seasonTotalT(p,G.year,'1군',tid),'1군')*1.2,-1,0); }catch(e){ return 0; } }
 function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; const yb=tid===G.user&&p.age<=24&&mplOn('youth')&&!p.e1&&(()=>{ const h=seasonTotalT(p,G.year,'퓨처스',tid); /* 이 구단 퓨처스 기록만(검수 11-09zx) */ return h&&(p.isP?h.outs>=30&&pRate(h).era<=3.8:h.pa>=40&&bRate(h).ops>=.76); })()?3:0; return yb+entryPerf(tid,p)+(p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*(1-mgrDefW(tid)*.74)+p.r.def*mgrDefW(tid)*.74)+polBonus(tid,p,lean)+(p.roleProm&&rpromK(tid,p)?30:0)+f-(p.fat||0)/25; }
 function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=teamLean(tid);
   const ps=playersOf(tid).filter(p=>!p.ys&&healthy(p)&&psOk(p)&&!(p.joinY>G.year)&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); const v=p=>entryVal(tid,p,lean); /* 개막 엔트리도 등록 가능 선수만(검수 11-07) */
   const bats=ps.filter(p=>!p.isP).sort((a,b)=>v(b)-v(a)), pits=ps.filter(p=>p.isP);
-  const sp=[...pits].sort((a,b)=>(spV(b)+roleBias(tid,b))-(spV(a)+roleBias(tid,a))).slice(0,5);
+  const sp=[...pits].sort((a,b)=>(spV(b)+roleBias(tid,b)+roleKeepSP(b))-(spV(a)+roleBias(tid,a)+roleKeepSP(a))).slice(0,5);
   const rp=pits.filter(p=>!sp.includes(p)).sort((a,b)=>v(b)-v(a)).slice(0,10);
   const ln=makeLineupFrom(tid,bats); const st=new Set(Object.values(ln).map(p=>p.id));
   const bench=bats.filter(p=>!st.has(p.id)); const c=bench.find(p=>p.pos==='C');
@@ -72,25 +83,25 @@ function futLn(p){ const h=seasonTotal(p,G.year,'퓨처스'); if(!h)return ''; r
 const isC=p=>!p.isP&&p.pos==='C', cN=L=>L.filter(p=>isC(p)&&healthy(p)).length; /* 포수 보호는 뛸 수 있는 포수만 센다(검수 11-09zh) */
 /* 포수가 아닌 선수를 올리려고 1군 포수를 2명 아래로 내리지 않는다(자동 등록·단장 콜업 공통, 검수 11-09) */
 const cProt=(x,c,L)=>isC(x)&&!isC(c)&&cN(L)<=2;
-function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLimit(); const lean=teamLean(tid); const v=p=>entryVal(tid,p,lean); const moves=[];
-  for(const p of playersOf(tid))if(p.e1&&(p.injOut>3||p.ys||p.hold||p.susp>G.day||p.boy>G.day||(p.isP&&rpPlanOf(tid,p)==='sp2')||!psOk(p))){ p.e1=false; p.downDay=G.day; moves.push(`${p.name} 말소(${p.injOut>3?'부상':p.ys?'육성':p.boy>G.day?'훈련 불참':p.hold?'연봉 미계약':p.susp>G.day?'출장 정지':!psOk(p)?'포스트시즌 등록 마감 뒤 영입':'2군 선발 수업'})`); } /* 미계약·출장 정지 선수가 1군 자리를 차지하지 않게(검수 11-07) */
-  let ent=playersOf(tid).filter(p=>p.e1);
-  if(ent.length>lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); ent.filter(p=>!core.has(p.id)&&!(isC(p)&&cN(ent)<=2)).sort((a,b)=>v(a)-v(b)).slice(0,ent.length-lim).forEach(p=>{p.e1=false;p.downDay=G.day;moves.push(`${p.name} 말소(엔트리 인원 초과 · 기용 순위 낮음)`);}); ent=playersOf(tid).filter(p=>p.e1); }
+function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLimit(); const lean=teamLean(tid); const VM=[new Map(),new Map()]; const v=p=>{ const M=VM[p.e1?1:0]; let x=M.get(p.id); if(x===undefined){ x=entryVal(tid,p,lean); M.set(p.id,x); } return x; }; /* 성능: 기용 점수는 한 번 호출 안에서 선수·1군 여부마다 한 번만(entryVal이 1군 여부를 본다) */ const PS=playersOf(tid); /* 이 안에서는 소속이 바뀌지 않는다: 명단은 한 번만 */ const moves=[];
+  for(const p of PS)if(p.e1&&(p.injOut>3||p.ys||p.hold||p.susp>G.day||p.boy>G.day||(p.isP&&rpPlanOf(tid,p)==='sp2')||!psOk(p))){ p.e1=false; p.downDay=G.day; moves.push(`${p.name} 말소(${p.injOut>3?'부상':p.ys?'육성':p.boy>G.day?'훈련 불참':p.hold?'연봉 미계약':p.susp>G.day?'출장 정지':!psOk(p)?'포스트시즌 등록 마감 뒤 영입':'2군 선발 수업'})`); } /* 미계약·출장 정지 선수가 1군 자리를 차지하지 않게(검수 11-07) */
+  let ent=PS.filter(p=>p.e1);
+  if(ent.length>lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); ent.filter(p=>!core.has(p.id)&&!(isC(p)&&cN(ent)<=2)).sort((a,b)=>v(a)-v(b)).slice(0,ent.length-lim).forEach(p=>{p.e1=false;p.downDay=G.day;moves.push(`${p.name} 말소(엔트리 인원 초과 · 기용 순위 낮음)`);}); ent=PS.filter(p=>p.e1); }
   /* 건강한 야수가 9명이 안 되면 다친 야수를 2군의 건강한 야수로 바꾼다: 8인 타순 경기 방지(검수 11-09zh) */
-  for(let g=0;g<9&&ent.filter(p=>!p.isP&&healthy(p)).length<9;g++){ const c=playersOf(tid).filter(p=>canUp(p)&&!p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
+  for(let g=0;g<9&&ent.filter(p=>!p.isP&&healthy(p)).length<9;g++){ const c=PS.filter(p=>canUp(p)&&!p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
     if(ent.length>=lim){ const d=depth(tid); const out=ent.filter(p=>!p.isP&&!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>p.isP&&!d.sp.includes(p)&&!d.pen.slice(0,4).includes(p)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; ent=ent.filter(p=>p!==out); moves.push(`${out.name} 말소(${healthy(out)?'야수 자리 확보':'부상'})`); }
     c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(건강한 야수 9명 채우기${futLn(c)})`); }
-  while(ent.length<lim){ const np=ent.filter(p=>p.isP).length; const needP=np<Math.round(lim*.5); const pool=playersOf(tid).filter(canUp);
+  while(ent.length<lim){ const np=ent.filter(p=>p.isP).length; const needP=np<Math.round(lim*.5); const pool=PS.filter(canUp);
     const c=pool.filter(p=>p.isP===needP).sort((a,b)=>v(b)-v(a))[0]||pool.sort((a,b)=>v(b)-v(a))[0]; if(!c)break; c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(${c.isP?'투수':'야수'} 빈자리 보충${futLn(c)})`); }
   if(weekly){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
-    for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7&&!(isC(p)&&cN(ent)<=2)).sort((a,b)=>v(a)-v(b))[0]; const inn=playersOf(tid).filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
+    for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7&&!(isC(p)&&cN(ent)<=2)).sort((a,b)=>v(a)-v(b))[0]; const inn=PS.filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
       if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소(주전·필승조 밖, 최근 1주 넘게 쓰임 적음) · ${inn.name} 콜업(2군에서 더 나은 선수${futLn(inn)})`); } } }
   /* 포수는 1군에 2명 이상: 주전이 지치면 쉬게 할 백업이 있어야 한다(카페 피드백 11-08: 백업 포수를 2군으로 내려 지친 주전이 계속 나옴) */
-  for(let g=0;g<3&&(ent=playersOf(tid).filter(p=>p.e1)).filter(p=>isC(p)&&healthy(p)).length<2;g++){ /* 다친 포수는 세지 않는다(검수 11-09t) */ const c=playersOf(tid).filter(p=>canUp(p)&&isC(p)).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
+  for(let g=0;g<3&&(ent=PS.filter(p=>p.e1)).filter(p=>isC(p)&&healthy(p)).length<2;g++){ /* 다친 포수는 세지 않는다(검수 11-09t) */ const c=PS.filter(p=>canUp(p)&&isC(p)).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
     if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>!p.isP&&!isC(p)&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!core.has(p.id)&&!isC(p)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; moves.push(`${out.name} 말소(백업 포수 자리)`); }
     c.e1=true; c.upDay=G.day; moves.push(`${c.name} 콜업(1군 포수 2명 유지${futLn(c)})`); }
   /* AI 구단은 건강한 1군 야수 9명 유지: 단기 부상 야수가 자리를 차지해 8명 타순으로 치르지 않게 2군에서 올린다(검수 11-09zn) */
-  if(tid!==G.user)for(let g=0;g<9&&(ent=playersOf(tid).filter(p=>p.e1)).filter(p=>!p.isP&&healthy(p)).length<9;g++){ const c=playersOf(tid).filter(p=>canUp(p)&&!p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
+  if(tid!==G.user)for(let g=0;g<9&&(ent=PS.filter(p=>p.e1)).filter(p=>!p.isP&&healthy(p)).length<9;g++){ const c=PS.filter(p=>canUp(p)&&!p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
     if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>!p.isP&&!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>p.isP&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; }
     c.e1=true; c.upDay=G.day; }
   if(tid===G.user&&moves.length&&!quiet)note('엔트리',`감독이 1군 엔트리를 조정했습니다: ${moves.join(', ')}.`); }
@@ -121,7 +132,7 @@ function ysSet(p){ { const C=G.contract; if(C&&!C.done&&(C.ended||[]).includes(p
 function ysWinF(y,a,b,p){ const [w0,w1]=payWin(y); const s=Math.max(a,w0), e=Math.min(b,w1); if(e<=s)return 0; const m=p&&p.mil, mf=m&&(m.from??m.pf), mu=m&&(m.until||m.pu), sv=mf==null||!mu?0:Math.max(0,Math.min(e,mu)-Math.max(s,mf)); return clamp((e-s-sv)/(w1-w0),0,1); } /* 군 복무한 날은 원래 연봉도 0이라 보정에서 뺀다(payFrac와 같은 기준, 검수 11-09x) */
 function ysAdj(p,y,tid){ tid=tid??p.team; let v=0; const c=p.ysCut; if(c&&c.y===y&&(c.t??p.team)===tid&&(p.ys||p.team!==tid))v+=(c.s0-(c.low??p.sal))*ysWinF(y,-1e9,c.d,p); /* 방출돼도 전환 전 기간은 원래 연봉(검수 11-08) */
   for(const g of (p.ysGap||[]))if(g.y===y&&(g.t??tid)===tid)v-=(g.s0-g.s)*ysWinF(y,g.d0,g.d1,p); /* 육성으로 있던 기간은 깎인 연봉(정식 복귀 뒤에도, 검수 11-08) */ return v; }
-function toYS(id){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||p.ys)return '대상이 아닙니다.'; if(!ysOk(p))return '연봉 1억 원 이하이고 FA·다년계약이 아닌 선수만 육성선수로 돌릴 수 있습니다.'; if(ysN(G.user)>=YS_MAX)return `육성선수는 ${YS_MAX}명까지입니다(게임 규칙).`;
+function toYS(id){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||p.ys)return '대상이 아닙니다.'; if(!ysOk(p))return '연봉 1억 원 이하이고 FA·다년계약이 아닌 선수만 육성선수로 돌릴 수 있습니다.'; if(ysN(G.user)>=YS_MAX)return `육성선수는 ${YS_MAX}명까지입니다.`;
   ysSet(p); /* 1군에서 빠지는 모든 길은 같은 말소 규칙(10일 뒤 재등록) */ addLog(`${p.name}을(를) 육성선수로 돌렸습니다. 정식 로스터에서 빠집니다.`); return ''; }
 function fromYS(id){ const p=G.players[id]; if(!p||!p.ys||p.team!==G.user||G.unemp)return '대상이 아닙니다.'; if(period()==='season'&&G.day<KD(5,1))return '육성선수는 5월 1일부터 정식 선수로 등록할 수 있습니다.'; if(period()==='post'||preSettle())return '포스트시즌과 결산 전에는 정식 선수로 새로 등록할 수 없습니다.'; if(!milServing(p)&&rosterN(G.user)>=ROSTER_MAX)return `정식 로스터가 ${ROSTER_MAX}명으로 꽉 찼습니다.`;
   p.ys=false; if(p.ysCut){ const c=p.ysCut; p.ysGap=(p.ysGap||[]).filter(g=>g.y>=G.year-1); p.ysGap.push({y:G.year,d0:c.y===G.year?c.d:dnum(G.year,1,1),d1:G.day,s0:p.ysSal0??c.s0,s:p.sal,t:p.team}); } delete p.ysCut; if(p.ysSal0!=null){ p.sal=Math.max(p.sal,p.ysSal0); delete p.ysSal0; } /* 육성으로 돌릴 때 깎인 연봉을 되돌린다 */ addLog(`${p.name}을(를) 정식 선수로 등록했습니다.`); return ''; }
@@ -134,8 +145,8 @@ function depth(tid){
   const bat=by(act.filter(p=>!p.isP&&healthy(p)&&!startIds.has(p.id)),p=>ovr(p)+pb(p));
   const futB0=by(ps.filter(p=>!p.isP&&healthy(p)&&!actIds.has(p.id)),ovr), futP0=by(ps.filter(p=>p.isP&&healthy(p)&&!actIds.has(p.id)),ovr);
   const pit=act.filter(p=>p.isP&&healthy(p));
-  const spF=p=>spV(p)+roleBias(tid,p)+pb(p)+rpB(tid,p,'SP')-rpB(tid,p,'RP'), sp=[...by(pit.filter(p=>rpPlanOf(tid,p)!=='rp'),spF),...by(pit.filter(p=>rpPlanOf(tid,p)==='rp'),spF)].slice(0,5); /* 계투로 정한 투수는 선발 자리가 남을 때만(검수 11-08: 계투 요청을 받아들였는데 선발 등판) */ /* 보직 저장은 roleSync에서만: 화면 조회가 보직·부하 한도를 바꾸지 않게(검수 11-09zh) */
-  const rest=penArrange(tid,by(pit.filter(p=>!sp.includes(p)),p=>penV(p)+pb(p)*.6+rpB(tid,p,'RP'))); /* 단장이 정한 불펜 역할(마무리·필승조·추격조·롱릴리프) 순서 반영 */ /* 감독이 받아들인 역할 약속(61_contract_terms mgrUseAsk) */
+  const spF=p=>spV(p)+roleBias(tid,p)+roleKeepSP(p)+pb(p)+rpB(tid,p,'SP')-rpB(tid,p,'RP'), sp=[...by(pit.filter(p=>rpPlanOf(tid,p)!=='rp'),spF),...by(pit.filter(p=>rpPlanOf(tid,p)==='rp'),spF)].slice(0,5); /* 계투로 정한 투수는 선발 자리가 남을 때만(검수 11-08: 계투 요청을 받아들였는데 선발 등판) */ /* 보직 저장은 roleSync에서만: 화면 조회가 보직·부하 한도를 바꾸지 않게(검수 11-09zh) */
+  const rest=penArrange(tid,by(pit.filter(p=>!sp.includes(p)),p=>penV(p)+roleKeepPen(p)+pb(p)*.6+rpB(tid,p,'RP'))); /* 단장이 정한 불펜 역할(마무리·필승조·추격조·롱릴리프) 순서 반영 */ /* 감독이 받아들인 역할 약속(61_contract_terms mgrUseAsk) */
   const start=ORDER.filter(k=>ln[k]).map(k=>ln[k]);
   const on=entryOn();
   return {ln,start,bench:on?bat:bat.slice(0,5),futB:on?futB0:bat.slice(5).concat(futB0),sp,pen:on?rest:rest.slice(0,7),futP:on?futP0:rest.slice(7).concat(futP0),inj:ps.filter(p=>!healthy(p))};
@@ -145,7 +156,13 @@ function roleSync(tid){ const d=depth(tid); for(const p of actOf(tid))if(p.isP&&
    정규시즌·포스트시즌이 아니면 일반 외국인(fMaxYB)·아시아쿼터(1명) 빈자리를 채운다고 보고 한 자리마다 FSLOT_V를 더한다.
    FSLOT_V: 개막일 구단별 '외국인 4명 있을 때 - 뺐을 때' 전력 차이 평균 약 1.8(0.8~2.9, 시드 3개 30구단) ÷ 4 */
 const FSLOT_V=.45;
-function projRating(tid){ const r=teamRating(tid); const per=period(); if(per==='season'||per==='post')return r; const F=foreignOf(tid); const yb=F.filter(x=>x.foreign==='용병').length, as=F.filter(x=>x.foreign==='아시아').length; let mx=3; try{ mx=fMaxYB(tid,per==='off'&&G.last&&G.last.y>=G.year?G.year+1:G.year); }catch(e){} return r+(Math.max(0,mx-yb)+Math.max(0,1-as))*FSLOT_V; }
+const FNEW_W=.5; /* KBO 실적 없는 외국인은 평균 외국인 한 자리(FSLOT_V)와의 차이를 절반만 센다(커뮤니티 11-14: 10위 전력이 고오버롤 용병만으로 예상 4위가 되어 경질 압박). 실적 있는 외국인은 그대로 */
+function projRating(tid,open){ const per=period(); if(!open&&(per==='season'||per==='post'))return teamRating(tid); /* open: 개막일 예상·기대 승률(08_season_events). 렌즈 없이 지금 명단, 외국인 보정만 */
+  let mx=3; try{ mx=fMaxYB(tid,per==='off'&&G.last&&G.last.y>=G.year?G.year+1:G.year); }catch(e){}
+  const rate=fx=>{ let r,F; PROJ_LENS=open?0:1; PROJ_FX=fx; try{ r=teamRating(tid); F=foreignOf(tid); } finally { PROJ_LENS=0; PROJ_FX=0; } /* 개막 전 예상은 대표팀 차출·짧은 부상으로 잠시 빠진 선수까지 넣는다. 외국인 빈자리도 같은 기준으로 센다(내년 합류 외국인을 전력에 넣고 빈자리로도 채우면 두 번 셈) */
+    const yb=F.filter(x=>x.foreign==='용병').length, as=F.filter(x=>x.foreign==='아시아').length; return r+(Math.max(0,mx-yb)+Math.max(0,1-as))*FSLOT_V; };
+  const full=rate(0); let any=false; PROJ_LENS=open?0:1; try{ any=foreignOf(tid).some(fUnproven); } finally { PROJ_LENS=0; } if(!any)return full;
+  const empty=rate(1); return empty+(full-empty)*FNEW_W; } /* empty: 새 외국인 자리를 평균(FSLOT_V)으로 본 전력 */
 function teamRating(tid){
   const d=depth(tid);
   const off=avg(d.start.map(offV))*(Math.min(9,d.start.length)/9);

@@ -31,4 +31,4 @@ function exMgrAdd(m,tid){ if(!m||m.interim||m.act||m.ob||!m.name)return; const L
   const tag=`전 ${tshort(tid)} 감독`; if(!String(m.career||'').includes(tag))m.career=(m.career?m.career+' · ':'')+tag; m.exT=tid; m.exY=G.year; L.unshift(m); if(L.length>12)L.length=12; }
 function exMgrMarket(){ if(!G.exMgr)return; const on=new Set(Object.values(G.mgr||{}).filter(Boolean).map(m=>m.id));
   G.exMgr=G.exMgr.filter(m=>!on.has(m.id)&&(m.age||0)<68&&G.year-m.exY<=5);
-  for(const m of G.exMgr.filter(m=>G.year-m.exY>=1).slice(0,2)){ if(G.mmarket.some(x=>x.id===m.id))continue; for(const k of ['plv','pl','hD','rel','yrs','cs','ce','jy','extY'])delete m[k]; m.clan=mkClan(m); G.mmarket.push(m); } }
+  for(const m of G.exMgr.filter(m=>G.year-m.exY>=1).slice(0,2)){ if(G.mmarket.some(x=>x.id===m.id))continue; for(const k of ['plv','pl','hD','rel','yrs','cs','ce','jy','extY'])delete m[k]; m.rel=60; m.clan=null; /* 새 감독과 같은 출발점: 관계를 지운 채 AI 구단에 부임하면 그 구단을 맡은 단장과의 관계가 NaN이 됐다(안정화 점검) */ m.clan=mgrClanFor(m); /* 함께 물러나 기다리던 사단 코치가 있으면 그 사람들(89b_staff_loyalty) */ G.mmarket.push(m); } }

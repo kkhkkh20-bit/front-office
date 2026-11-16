@@ -61,7 +61,7 @@ function allStarSelect(){
     const p=G.players[x.id],label=`${y} 올스타(${side})`;if(!(p.aw||[]).includes(label))addAward(p,label);
   }
   const mine=Object.values(A.teams).flat().filter(x=>x.t===G.user);
-  news('선수',`${y} 나눔·드림 올스타 선정 발표`,`${dmd(A.event-2)}~${dmd(A.event+1)}은 올스타 휴식기입니다. ${mine.length?`${tshort(G.user)}에서는 ${mine.map(x=>x.name+(x.starter?'(베스트12)':'(추천)')).join(', ')} 선수가 뽑혔습니다.`:'우리 구단의 선정 선수는 없습니다.'} 팬·선수 평가와 추천으로 구성한 게임 내 명단이며, 해당 시즌 1군 기록을 기준으로 합니다.`,0,{tid:G.user});
+  news('선수',`${y} 나눔·드림 올스타 선정 발표`,`${dmd(A.event-2)}~${dmd(A.event+1)}은 올스타 휴식기입니다. ${mine.length?`${tshort(G.user)}에서는 ${mine.map(x=>x.name+(x.starter?'(베스트12)':'(추천)')).join(', ')} 선수가 뽑혔습니다.`:'우리 구단의 선정 선수는 없습니다.'} 명단은 팬·선수 평가와 추천으로 꾸렸고, 올 시즌 1군 기록을 기준으로 했습니다.`,0,{tid:G.user});
   mail('홍보팀',`${y} 올스타 명단 발표`,`${dmd(A.event)} 나눔·드림 올스타 행사.\n우리 구단: ${mine.map(x=>x.name).join(', ')||'선정 선수 없음'}\n올스타 휴식기 ${dmd(A.event-2)}~${dmd(A.event+1)}에는 정규시즌 경기가 없습니다.`,{kind:'기록',acts:[{l:'올스타 명단',a:'leagueEvents',v:y}]});
   return A;
 }
@@ -109,7 +109,7 @@ function titleNews(ch,ru){ const y=G.year, ks=G.ps&&G.ps.res&&G.ps.res.ks; if(!k
   if(G.unemp||ch===G.user)return; const nm=tshort(G.user);
   if(ru===G.user){ const rn=titleYears(G.user,'runner').length+1; news('경기',`${nm}, 한국시리즈 준우승… 정상 문턱에서 멈췄다`,`${tname(G.user)}이(가) ${tname(ch)}에 ${ks[3]}승 ${ks[2]}패로 졌습니다. 이 리그 기록으로 ${rn}번째 준우승입니다. ${titleDrought(G.user)}.`,-1); return; }
   const r=((G.rivalries||{}).pairs||{})[rivalPair(ch,G.user)];
-  if(r&&r.label)news('분석',`라이벌 ${tshort(ch)} 정상에… 지켜본 ${nm} 속앓이`,`${r.label}의 상대 ${tname(ch)}이(가) ${tag}을 차지했습니다. ${tname(G.user)}은(는) 올해 정상에 오르지 못했습니다. ${titleDrought(G.user)}. 이 게임에서 두 팀은 ${r.games}번 맞붙었습니다.`,0,{tid:G.user}); }
+  if(r&&r.label)news('분석',`라이벌 ${tshort(ch)} 정상에… 지켜본 ${nm} 속앓이`,`${r.label}의 상대 ${tname(ch)}이(가) ${tag}을 차지했습니다. ${tname(G.user)}은(는) 올해 정상에 오르지 못했습니다. ${titleDrought(G.user)}. 두 팀은 그동안 ${r.games}번 맞붙었습니다.`,0,{tid:G.user}); }
 
 /* ===== 라이벌 효과(장기 기획 11-11): 관중·여론·이적 사건 =====
    열기 0~1: 이름 붙은 맞대결(전통 라이벌) 0.5에서, 포스트시즌 맞대결·접전·스타 이적 사건이 더한다. 해마다 사건 열기는 40% 식는다 */

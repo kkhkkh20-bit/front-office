@@ -7,8 +7,9 @@ function blocker(){
   if(G.fdWait)return '창단 드래프트를 시작하세요.';
   if(G.fd&&!G.fd.done)return '창단 드래프트를 먼저 마치세요.';
   if(G.draft&&!G.draft.done)return '신인 드래프트를 먼저 마치세요.';
-  const cp=(G.comp||[]).find(c=>((c.stage==='protect'&&c.to===G.user)||(c.stage==='pick'&&c.from===G.user))&&G.day>c.exp); /* 기한 전에는 진행할 수 있고, 기한 날 자동 처리(compDaily)된다 */
+  const cp=(G.comp||[]).find(c=>((c.stage==='protect'&&c.to===ME())||(c.stage==='pick'&&c.from===ME()))&&G.day>c.exp); /* 기한 전에는 진행할 수 있고, 기한 날 자동 처리(compDaily)된다 */
   if(cp)return cp.stage==='protect'?`${cp.name} 영입 보상: 보호선수 명단을 먼저 제출하세요.`:`${cp.name} 이적 보상: 보상선수(또는 보상금)를 먼저 고르세요.`;
+  { const sa=typeof stAccBlock==='function'?stAccBlock():''; if(sa)return sa; } /* 정원이 찬 상태에서 수락한 스태프 후보: 바로 정한다 */
   const per=period();
   if(per==='pre'&&!G.unemp&&G.day>=G.cal.open-1&&!G.mgr[G.user])return '감독이 없습니다. 스태프·육성 → 감독에서 감독을 선임해야 개막할 수 있습니다.';
   if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done&&((G.ps.seeds||[]).includes(G.user)||(G.ps.cur&&G.ps.cur.round==='tb'&&(G.ps.cur.hi===G.user||G.ps.cur.lo===G.user))||(G.ps.tbq||[]).some(q=>q[1]===G.user||q[2]===G.user))&&!Object.values(G.ps.res||{}).some(r=>r&&r[1]===G.user))){ const n=rosterN(G.user); /* 포스트시즌은 아직 남은 경기가 있는 팀만(탈락한 팀 정원 때문에 한국시리즈가 막히지 않게, 검수 11-07) */ /* 포스트시즌도 같은 등록 규정 */
@@ -84,14 +85,16 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }
   if(o.m===9&&o.d===1){ try{ coachExpNote(); }catch(e){} }
   if(o.d===1&&o.m!==1)try{ rmSnap(); }catch(e){} /* 우리 선수 월별 능력치 기록(1월은 겨울 성장 뒤에) */
-  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ rhSnap(); rmSnap(); }catch(e){} try{ gmTenYear(); }catch(e){} try{ facAgeYear(); }catch(e){} try{ G.projJan={y:G.year,L:G.teams.map(x=>({id:x.id,r:projRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id)}; }catch(e){} /* 언더독 업적용 1월 1일 전망 */ try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} }
+  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ rhSnap(); rmSnap(); }catch(e){} try{ gmTenYear(); }catch(e){} try{ facAgeYear(); }catch(e){} try{ projSet(); G.projJan={y:G.year,L:G.proj.slice()}; }catch(e){} /* 언더독 업적용 1월 1일 전망. G.proj도 새 시즌 예상으로 바꾼다(검수 11-14: 시범경기 전까지 지난 개막 예상이 남아 이직 목표·구단 전망에 쓰였다) */ try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} }
   else if(o.d===1&&foreignOpen())refreshFMarket(12,3);
   if(o.d===1)try{ freeAiMonthly(); sponMonthly(); }catch(e){}
   if(o.d===1)try{ scoutAutoMonthly(); }catch(e){}
   if(o.d===1)try{ stAiStaff(); }catch(e){}
+  if(o.d===1)try{ relsMonth(); }catch(e){} /* AI 단장끼리 식사·연락, 다른 구단 단장의 초대(84b_person_rels) */
   if(o.d===1)try{ posReqMonth(); }catch(e){}
   if(o.d===1)try{ fAdaptMonthly(); }catch(e){} /* 외국인 선수 적응 곡선(73_foreign_drama) */
   if(o.w===1)try{ fDramaWeekly(); }catch(e){} /* 외국인 선수 향수병·불화·태업·꾀병 */
+  try{ slDaily(); }catch(e){} /* 선수 스토리라인(31_storylines) */
   if(o.d===1)try{ misbehaveMonth(); }catch(e){}
   if(o.d===1)try{ rSnapAll(); starCheck(); }catch(e){}
   if(o.d===1)try{ fanMonthly(); }catch(e){} if(o.d===1)try{ fanAwayMonthly(); }catch(e){} /* 팬 마케팅 운영비·채널 수입 */
@@ -105,10 +108,10 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   try{ stDaily(); }catch(e){} try{ cmDaily(); }catch(e){}
   try{ ivDaily(); }catch(e){}
   try{ fanPulseDaily(); }catch(e){} try{ truckWeekly(); }catch(e){}
-  try{ cwDaily(); }catch(e){} try{ aiPlanDaily(); }catch(e){} try{ achFirstDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}
+  try{ cwDaily(); }catch(e){} try{ aiPlanDaily(); }catch(e){} try{ gmAiFieldDaily(); }catch(e){} try{ achFirstDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}
   if(day>=KD(11,24)&&day<=KD(12,31))try{ awardCeremony('mvp'); }catch(e){} /* 결산이 늦어 후보가 늦게 나와도 놓치지 않게 그 뒤 첫날 발표(검수 11-08) */
   if(day>=KD(12,9)&&day<=KD(12,31))try{ awardCeremony('gg'); }catch(e){}
-  dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ fPubDaily(); }catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ wvDaily(); }catch(e){} try{ sd2Daily(day); }catch(e){} try{ gameRulesMail(day); }catch(e){} try{ marketDaily(); }catch(e){}
+  dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{ promoDaily(); }catch(e){} try{evDaily();}catch(e){} try{ fPubDaily(); }catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ wvDaily(); }catch(e){} try{ sd2Daily(day); }catch(e){} try{ gameRulesMail(day); }catch(e){} try{ marketDaily(); }catch(e){}
   milDaily();
   recoverAll(1);
   if(o.w===0)for(const p of Object.values(G.players)){ if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)*.65+N(0,(p.foreign?.75:.55)*volF(p)),-2.5,2.5); /* 기복이 큰 선수는 슬럼프·상승세 폭도 크다 */ }
@@ -143,14 +146,14 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); } for(const t of G.teams)try{ roleSync(t.id); }catch(e){} /* 하루 한 번 보직 확정(뎁스 조회는 보직을 바꾸지 않는다, 검수 11-09zh) */ try{ regDaily(); }catch(e){} /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
   if(c.sched[day]||(G.makeup||[]).length&&period()==='season')playDay(day);
   if(period()==='season'&&!G.unemp&&(c.sched[day]||[]).some(m=>m.includes(G.user))&&seriesEnd(day)){ try{ seriesNews(day); }catch(e){} } /* 하루씩 진행해도 시리즈 결과 소식(코드 리뷰 11-13) */
-  try{ flPlayDay(day); }catch(e){ console.error(e); } /* 퓨처스리그(2군) 경기 */
+  try{ flPlayDay(day); }catch(e){ console.error(e); } /* 퓨처스리그(2군) 경기 */ try{ gmPlanFarmDaily(); }catch(e){} /* 단장 2군 관전·방문은 그날 2군 경기 뒤 */
   if(day===KD(9,1)){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} } /* 정규시즌이 끝난 뒤 올린 연봉은 그해 지급이 없어 하한 제재만 피했다: 시즌 뒤 보정은 하지 않는다(검수 11-09zzb) */ /* AI 구단은 시즌 막판 하한을 다시 확인해 주축과 연장계약으로 맞춘다 */
   if(day===c.end+1)seasonEnd();
   if(G.ps&&!G.ps.done)try{ psDay(day); }catch(e){ console.error('포스트시즌 경기 처리 실패',e); } /* 다음 날 psDay가 밀린 차전부터 다시 잡는다(검수 11-09k) */
   try{ if(cwOn()&&G.cal)cwOrdDaily(); }catch(e){}
   if(day===KD(10,1)&&!G.unemp){ try{ const t=team(G.user); if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0, T=Math.round(RES_CAP*ecoIdx(sponSeason()))+ear; if(t.cash>T)mail('재무팀','결산 때 유보금 회수 예정',`보유 현금 ${money(t.cash)}이(가) 유보금 상한 ${money(T)}을(를) 넘습니다. 시즌 결산 때 모기업이 넘은 돈의 60%를 회수합니다. 결산 전에 시설·선수 투자에 쓰면 회수되지 않습니다.`,{kind:'재정',imp:true}); } }catch(e){} } /* 회수 전에 미리 알린다(플레이 테스트 11-13) */ /* 구단주 지시 판정은 그날 경기를 치른 뒤: 기한 당일 경기 결과·관중·타석까지 넣는다(검수 11-09zzd) */
   try{ cheerDaily(); }catch(e){} /* 응원단 휴식은 그날 경기(무대)를 다 치른 뒤(검수 11-09zza) */
-  if(G.ps&&G.ps.done&&G.ps.finDay===day){ settlement(); try{ stadSeasonNote(); }catch(e){} try{ draftRetro(); }catch(e){} }
+  if(G.ps&&G.ps.done&&G.ps.finDay===day){ settlement(); try{ relsSeason(G.last&&G.last.y||G.year); }catch(e){} try{ stadSeasonNote(); }catch(e){} try{ draftRetro(); }catch(e){} }
   /* 스토브리그는 결산이 끝난 뒤에만 연다(포스트시즌이 길어져 결산이 11월로 밀려도 순서가 뒤집히지 않게) */
   if(day>=KD(11,1)&&dobj(day).m>=11&&G.rolled!==G.year&&G.last&&G.last.y===G.year){ offseason(); offseasonMgr(); try{ stadAI(); }catch(e){} }
   if(day>=KD(11,2)&&G.rolled===G.year&&G.fa&&!G.fa.open&&!G.fa.closed&&G.faAnnY!==G.year){ G.faAnnY=G.year; faAnnounce(); } /* 결산(스토브리그 시작)이 11월 2일보다 늦어도 공시한다 */
@@ -158,11 +161,11 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(12,1)){ contractStart(); aiCapAll(); try{ aiDebtDump(); }catch(e){} capWarnUser(); }
   try{ salTalkDaily(day); }catch(e){} try{ holdDaily(day); }catch(e){}
   if(day===KD(12,10)){ try{ capCouncil(); }catch(e){} }
-  try{ assocDaily(day); }catch(e){} try{ lgrDaily(day); }catch(e){} try{ plogDaily(); }catch(e){} try{ expDaily(day); }catch(e){} try{ pwatchDaily(); }catch(e){} try{ devQDaily(); }catch(e){} try{ devRemindDaily(); }catch(e){} try{ gmHofDaily(day); }catch(e){} { const od=dobj(day); if(od.m===9&&od.d===1)try{ retireNotice(); }catch(e){} } try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} if(od.d===1)try{ mplMonth(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
+  try{ assocDaily(day); }catch(e){} try{ lgrDaily(day); }catch(e){} try{ plogDaily(); }catch(e){} try{ expDaily(day); }catch(e){} try{ pwatchDaily(); }catch(e){} try{ devQDaily(); }catch(e){} try{ devRemindDaily(); }catch(e){} try{ gmHofDaily(day); }catch(e){} { const od=dobj(day); if(od.m===9&&od.d===1)try{ retireNotice(); }catch(e){} } try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} try{ aiPressDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} if(od.d===1)try{ mplMonth(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();
   if(o.w===0){ try{ pwrWeek(); }catch(e){} } /* 주간 파워랭킹 */
-  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(m.imp&&m.kind==='일정'&&G.day-m.day>=3)m.imp=false; } /* 날짜가 지난 일정 안내는 '중요'만 내린다. 소식을 저절로 읽음 처리하지 않는다(단장이 읽거나 '모두 읽음'을 눌러야 읽음) */ futuresWeek(); aiWeekly(); moraleWeek(); try{ pdWeek(); }catch(e){} try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} try{treqWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
+  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(m.imp&&m.kind==='일정'&&G.day-m.day>=3)m.imp=false; } /* 날짜가 지난 일정 안내는 '중요'만 내린다. 소식을 저절로 읽음 처리하지 않는다(단장이 읽거나 '모두 읽음'을 눌러야 읽음) */ futuresWeek(); aiWeekly(); moraleWeek(); try{ aiTalkWeek(); aiChemWeek(); }catch(e){} try{ aiPressWeek(); }catch(e){} /* 다른 구단 면담·분위기 관리(99b_ai_people) */ try{ pdWeek(); }catch(e){} try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} try{treqWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
   tutTick();
   const nx=dobj(day+1); if(nx.d===1&&day>=c.open&&day<=c.end+1)monthReport(o.m); if(nx.d===1){ try{ finMonth(o.m); }catch(e){} }
   if(day===c.end){ const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(c.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 정규시즌 마지막 날 남은 달을 바로 마감 */
@@ -180,7 +183,7 @@ function specialKind(day,hid,aid){
 /* 중계로 볼 우리 경기 직전 선수 기록(저장하지 않는 메모리 사본): 중계 중 선수 화면에서 그 경기 결과(투구 수·세이브·좌우·타구 분포)가 먼저 보이지 않게(검수 11-08) */
 let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','splP','sprP','fat','l10','hist','injOut','injK','injB','injC','injHist','inj','ucl','reInj']; /* 당일 부상도 경기 전 상태로(검수 11-09zzc #13) */
 const spoilLite=k=>!['gl','hist','l10'].includes(k); /* 좌우·타구 분포는 박스에서 역산할 수 없어 경기 전 사본을 함께 저장한다. 시즌·경기 로그는 박스로 빼 준다. */
-function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of playersOf(t)){ const o={}; for(const k of SPOIL_K)o[k]=p[k]===undefined?undefined:JSON.parse(JSON.stringify(p[k])); P[p.id]=o; } SPOIL_SNAP={day,y:G.year,P}; }
+function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of (entryOn()?actOf(t):playersOf(t))){ /* 성능: 경기에 나올 수 있는 1군만 사본을 뜬다(2군 선수는 그 경기로 바뀌지 않고, 사본이 없으면 화면은 박스 기준으로 가린다) */ const o={}; for(const k of SPOIL_K)o[k]=p[k]===undefined?undefined:JSON.parse(JSON.stringify(p[k])); P[p.id]=o; } SPOIL_SNAP={day,y:G.year,P}; }
 /* 경기 반영(applyGame) 도중 오류가 나면 그 경기에 나온 선수 상태(투구 부하·기록·피로)를 경기 전으로 되돌린다: 다시 치를 때 부하가 두 번 쌓이지 않게(검수 11-09zn) */
 function boxSnap(g){ const L=[]; for(const k of ['h','a'])for(const id of g.S[k].box.keys()){ const p=G.players[id]; if(p)L.push([p,JSON.stringify(p)]); } return ()=>{ for(const [p,j] of L){ for(const k of Object.keys(p))delete p[k]; Object.assign(p,JSON.parse(j)); } }; }
 function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
@@ -193,9 +196,10 @@ function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
     let g; try{ g=simGame(day,h,a,false); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,false); }catch(e2){ later(e2); continue; } } /* 한 경기 오류로 같은 날 다른 경기·날짜만 반영되고 이 경기가 사라지지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 다음 경기일에 치른다(검수 11-08) */
     { const r=G.sea.rec, n0=r[h].w+r[h].l+(r[h].t||0), back=boxSnap(g); try{ applyGame(day,h,a,g,false); }catch(e){ if(r[h].w+r[h].l+(r[h].t||0)===n0){ back(); later(e); continue; } console.error(e); } } /* 반영 도중 오류: 승패 전이면 선수 상태를 되돌려 미루고, 같은 날 남은 경기는 그대로 치른다(검수 11-09zn) */
     if(h!==G.user&&a!==G.user)try{ others.push({h,a,lh:(g.line&&g.line.h||[]).slice(),la:(g.line&&g.line.a||[]).slice()}); }catch(e){}
-    try{ gtAdd(gameMin(g)); }catch(e){} try{ rivalAfterGame(day,h,a,g,false); }catch(e){ console.error(e); } try{ cheerGame(day,h); }catch(e){} try{ fanPlansGame(h); }catch(e){} /* 실제로 열린 홈경기마다 응원단 무대(관중 계산 전, 검수 11-09zza) */ let st=null; try{ st=stadGame(day,h,a); }catch(e){}
+    try{ gtAdd(gameMin(g)); }catch(e){} try{ rivalAfterGame(day,h,a,g,false); }catch(e){ console.error(e); } try{ cheerGame(day,h); }catch(e){} try{ fanPlansGame(h); }catch(e){} /* 실제로 열린 홈경기마다 응원단 무대(관중 계산 전, 검수 11-09zza) */ let st=null; try{ st=stadGame(day,h,a); }catch(e){} try{ promoGame(day,h,a,st); }catch(e){} /* 프로모션 데이 결과·원정 스타 효과(38_promotions) */
     if(h===G.user||a===G.user)try{ if(userRec){ keepGame(userRec); ulog(userRec); try{ prAfterGame(userRec); }catch(e){} try{ campPitchHit(userRec); }catch(e){} try{ gmAttendResult(userRec); }catch(e){} } /* 더블헤더 첫 경기도 캠프 구종 활약 검사(검수 11-09zt) */ /* 직관 예약이 앞 경기 상대면 그 경기로(검수 11-09zo) */ /* 미룬 경기와 같은 날: 앞 경기도 기록 */ userRec=gameRecord(day,h,a,g,kind); try{ gmTenTick(); }catch(e){} if(st){ userRec.att=st.att; userRec.so=st.so; userRec.cap=st.cap; } /* 경기 당시 좌석 수(뒤에 공사로 좌석이 바뀌어도 지난 점유율 그대로, 검수 11-09zzd) */ milestones(g,h===G.user?'h':'a'); }catch(e){ console.error(e); } /* 우리 경기 기록 오류도 같은 날 남은 경기를 막지 않는다(검수 11-09zn) */
   }
+  try{ _saC={k:null,v:{}}; _promoVC={k:null}; _promoSC={k:null}; }catch(e){} /* 하루 한 번 재던 스타·원정 스타 관중 값은 그날 경기를 치른 뒤 다시 잰다: 경기 뒤 같은 날 본 전망이 불러온 뒤와 같게(안정화 점검) */
   if(userRec&&others.length)userRec.others=others;
   if(userRec){
     const me=userRec.home===G.user?'h':'a', op=me==='h'?'a':'h';

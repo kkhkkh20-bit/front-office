@@ -78,6 +78,8 @@ function sponSettle(y,ps,tid,S0){ tid=tid??G.user; const S=S0||G.spon; /* tid·S
 function sponMonthly(){ const L=[[G.user,G.spon]]; for(const k in (G.sponT||{}))L.push([+k,G.sponT[k]]); /* 떠난 구단 계약서도 그 구단 여론으로 검사(검수 11-09zza) */
   for(const [tid,S] of L){ const P=prOf(tid); if(!S||!P||P.fan>=25)continue; for(const k in S.c){ const c=S.c[k]; if(c.until<sponSeason()||R()>=.06)continue; /* 결산까지 끝난 계약은 해지 대상 아님 */ const x=sponCancel(k,'팬 여론 악화',S); if(tid!==ME()){ wire('구단',`${c.co}, ${tshort(tid)} 스폰서 철수`,{tid}); break; } const kept=Math.round(x.amt*x.cutF), done=sponSeason()>G.year, s0=Math.max(c.y0??x.until,x.until); /* 사라진 시즌을 앞세운다(시작 전 계약이면 시작 연도부터, 검수 11-09i) */ mail('마케팅팀',`${c.co} 스폰서 계약 해지`,`팬 여론 악화로 ${c.co}이(가) ${SPON_SLOT[k].l} 계약을 해지했습니다. 사라진 계약: ${s0<c.until?`${s0}~${c.until}`:s0}시즌 몫 ${money(x.cut.lost)}. ${done?`${G.year}시즌 몫은 이미 결산에 들어왔습니다.`:kept>0?`해지 전까지 지난 기간 몫 ${money(kept)}은 올해 결산에 들어옵니다.`:''} 이 자리에는 새 스폰서와 계약할 수 있습니다.`,{kind:'스폰서',imp:true}); news('구단',`${c.co}, ${tshort(G.user)} 스폰서 철수`,'성난 팬심이 기업 이미지에도 부담이 된다는 판단입니다.',-2); break; } } }
 /* AI 구단 스폰서 수입(결산용) */
+/* AI 구단 스폰서 성과 보너스: 우리 계약서와 같은 평균 조건(가을야구 기본액의 약 18%, 우승 약 36%)을 AI 기본 수입에 붙인다(사용자 11-13) */
+function sponAIBonus(tid,ps){ const b=sponAI(tid); if(!b)return 0; const inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(tid)); return Math.round(b*((inPS?.18:0)+(ps&&ps.champ===tid?.36:0))); }
 function sponAI(tid){ return Math.round(sum(Object.keys(SPON_SLOT).filter(k=>!SPON_SLOT[k].indie).map(k=>SPON_SLOT[k].b))*ecoIdx()*sponVal(tid)*.85); }
 /* 영업 활동: 단장이 마케팅팀에 빈자리 영업을 지시한다. 영업비 3천만 원, 1~2주 뒤 결과.
    성공률은 구단 가치 지수와 단장 평판을 따른다. 자리마다 한 달에 한 번 */

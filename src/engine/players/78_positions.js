@@ -40,7 +40,7 @@ function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP
 /* ETA는 실제로 훈련할 수 있는 주 수다. 부상·차출·비시즌 대기는 따로 알린다. */
 function posConvStatus(p,pos=p.pconv?.pos){if(!pos)return '';const reasons=[];if(p.injOut>0)reasons.push(`부상 재활 ${p.injOut}일 남음(현재 예상 회복일 ${dmd(G.day+p.injOut)})`);if(milServing(p))reasons.push('군 복무');else if(isAway(p))reasons.push('대표팀·파견');if(p.hold)reasons.push('연봉 미계약');if(ovsAbroad(p))reasons.push('해외 연수');if(!['pre','season'].includes(period()))reasons.push('비시즌');
   const wk=posEtaW(p,pos,p.e1,p.team),eta=wk?`훈련 가능한 기간 기준 약 ${wk}주가 필요합니다`:'현재 훈련량으로는 숙련 90 도달이 어렵습니다';
-  if(reasons.length)return `현재 ${reasons.join(' · ')} 때문에 구단 전환 훈련은 대기합니다. 부상·복무·차출 등 출전 불가 기간에는 구단의 2군 실전도 없습니다. 회복·복귀 후 훈련 재개가 가능할 때부터 ${eta}. 대기 기간은 예상 훈련 주 수에 포함하지 않으며, 회복 경과·출전·시즌 일정에 따라 완료일은 달라집니다.`;
+  if(reasons.length)return `현재 ${reasons.join(' · ')} 때문에 구단 전환 훈련은 대기합니다. 부상·복무·차출로 뛸 수 없는 동안에는 2군 실전도 없습니다. 다시 훈련할 수 있을 때부터 ${eta}. 대기 기간은 예상 훈련 주 수에 포함하지 않았고, 회복·출전·시즌 일정에 따라 완료일은 달라집니다.`;
   return `${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가 출전하면 그 자리 실전에서도 배웁니다.':'2군 출전이 가능할 때 그 자리 실전에서도 배웁니다.'} 지금부터 ${eta}. 부상·차출·비시즌 대기 기간은 별도입니다.`;
 }
 function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }
@@ -55,7 +55,7 @@ function posSettle(y){ const out=[]; for(const p of Object.values(G.players)){ i
    다른 사람이 없어 원래 자리를 지키는 선수는 그대로 둔다. 포수는 돌리지 않는다. 우리 구단은 감독이 제안하고 단장이 정한다 */
 /* 한 단계 쉬운 자리: 유격→3루·2루, 2루→3루·1루, 3루→1루·코너 외야, 중견→코너 외야, 코너 외야→1루 */
 const POS_STEP={SS:['3B','2B'],'2B':['3B','1B'],'3B':['1B','LF','RF'],CF:['LF','RF'],LF:['1B'],RF:['1B']};
-function posValLearn(p,q){ const dl=p.r.def-posRaw(p.pos,q)*versF(p)*(1-.9*.85); return ovr(p)-(p.r.def-50)*.2+((POS_ADJ[q]||0)+(dl-DAVG[q])*DWR[q])/RUN_PER_OVR; } /* 그 자리를 익혔다고(숙련 90) 칠 때의 가치 */
+function posValLearn(p,q){ const dl=p.r.def-posRaw(p.pos,q)*versF(p)*(1-.9*.85); return ovr(p)-(p.r.def-50)*.2+((POS_ADJ[q]||0)+(dl-DAVG[q])*DWR0[q])/RUN_PER_OVR; } /* 그 자리를 익혔다고(숙련 90) 칠 때의 가치 */
 function posPlan(tid){ const ln=makeLineup(tid); const out=[];
   for(const k in ln){ const p=ln[k]; if(!p||p.pos==='C'||p.pos==='DH'||p.age>=33||p.pconv)continue; let to=null;
     if(k==='DH'){ /* 방망이로 주전인데 수비 자리가 없다: 한 단계 쉬운 자리 중 익히면 가장 나은 곳 */ const c=(POS_STEP[p.pos]||[]).filter(q=>versOf(p)>=POS_NEED[q]&&posExp(p,q)<90).sort((a,b)=>posValLearn(p,b)-posValLearn(p,a))[0]; if(c&&posValLearn(p,c)>posValAt(p,p.pos))to=c; }

@@ -40,7 +40,7 @@ function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.
   G.champPop0=record.sales; /* 우승 효과: 다음 시즌 관중·유니폼·굿즈 판매가 늘어난다(인기는 해마다 조금씩 원래대로 돌아간다) */ prInit(); G.pr.fan=clamp(G.pr.fan+12,0,100); G.pr.press=clamp(G.pr.press+8,0,100);
   /* 구단주 포상: 세 가지 중 하나 */
   const B=bossOf(G.user);
-  evNew('champGift',`구단주 포상: ${tag}`,`${B.own.name} 회장이 라커룸까지 내려와 단장의 손을 잡았습니다. "약속을 지켜 줘서 고맙소. 원하는 걸 말해 보시오."\n\n포상 하나를 고르세요.`,
+  evNew('champGift',`구단주 포상: ${tag}`,`${B.own.name} 회장이 라커룸까지 내려와 단장의 손을 잡았습니다. "약속을 지켜 줘서 고마워요. 원하는 걸 말해 보세요."\n\n포상 하나를 고르세요.`,
     champGiftOpts(t,y), /* 현금 포상은 줄였다: 우승팀이 바로 전력을 사 오면 쏠림이 커진다. 보상은 인기·명성·판매로 */
     {exp:14,def:0,from:'구단주실'});
   /* 우승 직후 스폰서 제안 쇄도: 비거나 올해 끝나는 자리에 웃돈 제안 */
@@ -67,7 +67,7 @@ EVH.champGift={ pick(e,i){ const t=team(G.user); const y=G.year;
 /* 우승 퍼레이드(우승 사흘 뒤): 연고 도시 카퍼레이드. 팬 여론·인기가 한 번 더 오른다 */
 function champParade(){ champEventsInit(); for(const r of Object.values(G.champEvents||{}))champParadeRun(r.parade); }
 function champParadeRun(P){ if(!P||P.done||G.day<P.d)return; const tid=P.tid;chron('champ',`${P.y} 우승 퍼레이드 개최`,null,tid);
-  if(tid!==G.user||G.unemp){ P.done=true; const t=team(tid); t.pop=clamp(t.pop+.02,.7,1.5); wire('구단',`${t.city} ${t.nick}, 도심 우승 퍼레이드`,{tid}); return; } /* 우승 뒤 단장이 떠났으면 우승 구단이 퍼레이드를 하고, 새 구단에는 아무 일도 없다 */
+  if(tid!==G.user||G.unemp){ P.done=true; const t=team(tid); t.pop=clamp(t.pop+.02,.7,1.5); wire('구단',`${tfull(t)}, 도심 우승 퍼레이드`,{tid}); return; } /* 우승 뒤 단장이 떠났으면 우승 구단이 퍼레이드를 하고, 새 구단에는 아무 일도 없다 */
   P.done=true; const t=team(G.user); prInit(); const n=Math.round(4+t.market*7+(G.pr.fan-50)/8); P.n=n;
   news('구단',`${t.city} 도심 우승 퍼레이드…팬 ${n}만 명 운집`,`${tname(G.user)} 선수단이 오픈카를 타고 ${t.city} 도심을 돌았습니다. 거리를 메운 팬들이 선수 이름을 연호했고, 단장도 손을 흔들며 화답했습니다.`,3,{fanW:3});
   mail('홍보팀',`우승 퍼레이드를 마쳤습니다`,`${t.city} 도심 퍼레이드에 팬 약 ${n}만 명이 모였습니다. 우승 기념 유니폼과 굿즈 주문이 밀려들고 있습니다.
@@ -84,7 +84,8 @@ function champDaily(){ try{ champParade(); }catch(e){} { const o=dobj(G.day); if
    비슷한 금액이면 명성 높고 이길 수 있고 주전으로 뛸 수 있고 고향 팀인 구단이 이긴다(대략 ±20% 범위) */
 let _faCtx=null;
 function faCtx(){ const k=G.year+':'+G.day+':'+(G.mvN||0); /* 같은 날 방출·영입하면 다시 계산(검수 11-09zl) */ if(_faCtx&&_faCtx.k===k)return _faCtx; const R=G.teams.map(t=>({t:t.id,v:teamRating(t.id)})).sort((a,b)=>b.v-a.v); const rank={}; R.forEach((x,i)=>rank[x.t]=i+1);
-  const slot={}; for(const t of G.teams){ const d=depth(t.id); const s={}; for(const k in d.ln){ if(d.ln[k])s[k]=ovr(d.ln[k]); } s.SP5=d.sp.length>=5?spV(d.sp[4]):0; slot[t.id]=s; }
+  const winter=sponSeason()!==G.year; const unsure=p=>winter&&p.foreign&&!fNextOwed(p); /* 결산 뒤 겨울: 다음 시즌 계약이 없는 외국인은 그 자리 주전으로 치지 않는다(사용자 11-14: FA가 재계약 미정인 외국인과 같은 포지션이라고 바로 불리하게 봄) */
+  const slot={}; for(const t of G.teams){ const d=depth(t.id); const ln=Object.values(d.ln).some(q=>q&&unsure(q))?makeLineupFrom(t.id,actOf(t.id).filter(q=>!unsure(q))):d.ln; const s={}; for(const k in ln){ if(ln[k])s[k]=ovr(ln[k]); } const sps=d.sp.filter(q=>!unsure(q)); s.SP5=sps.length>=5?spV(sps[4]):0; slot[t.id]=s; }
   const pres={}; for(const t of G.teams)pres[t.id]=clubPrestige(t.id); return _faCtx={k,rank,slot,pres}; }
 function faAppeal(p,tid){ const C=faCtx(); const P=[]; const t=team(tid);
   const pr=(C.pres[tid]-55)/300; P.push([`명성 ${starTxt(prestigeStars(C.pres[tid]))}`,pr]);
