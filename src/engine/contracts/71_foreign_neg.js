@@ -26,7 +26,7 @@ function foAppeal(q,tid,o){ o=o||{}; const t=team(tid); const P=[]; let C=null; 
 /* 이 후보를 노리는 다른 구단: AI 영입 후보 상위 3명(fTop3, 계약할 수 있는 후보만)에 든 구단과, 관찰 명단 끼어들기를 일으킨 구단(foCutIn, 검수 11-09zl) */
 function foRivalTeams(q){ const c=q.fneg&&q.fneg.cut; const L=[]; for(const t of G.teams){ if(t.id===G.user||!fKnows(t.id,q))continue;
     if(c&&c.tid===t.id){ if(!foreignCheck(t.id,q,foUp(t.id,q)))L.push(t.id); continue; }
-    const nd=fNeed(t.id); if(!nd||nd.kind!==q.foreign||(nd.isP!=null&&nd.isP!==q.isP)||(nd.up&&ovr(q)<nd.upO+6))continue; if(fTop3(t.id,nd,q).includes(q))L.push(t.id); } return L; }
+    const nd=fNeed(t.id); if(!nd||nd.kind!==q.foreign||(nd.isP!=null&&nd.isP!==q.isP)||(nd.up&&fAiEst(t.id,q)<nd.upO+6))continue; if(fTop3(t.id,nd,q).includes(q))L.push(t.id); } return L; }
 /* 이 구단이 계약하면서 내보낼 선수: 끼어들기를 일으킨 교체 대상, 아니면 겨울 교체 대상 */
 function foUp(tid,q){ const c=q&&q.fneg&&q.fneg.cut; if(c&&c.tid===tid)return c.up!=null&&G.players[c.up]&&G.players[c.up].team===tid?c.up:undefined; const nd=fNeed(tid); return nd&&nd.up?nd.up:undefined; }
 function foVal(g,i){ return g+i*FO_INC_W; }

@@ -419,10 +419,35 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .iv-o:hover{border-color:var(--acc,#4a8)}.iv-o .pill{flex:none}
 .iv-end{padding:12px;border-top:1px solid var(--line,#333);margin-top:10px}
 /* 단장 일정 */
-.cal-plan{display:block;font-size:var(--ui-micro);line-height:1.2;margin-top:2px;padding:1px 4px;border-radius:3px;background:color-mix(in srgb,var(--acc,#4a8) 25%,transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-plan.k-scout{background:color-mix(in srgb,#d4a017 30%,transparent)}.cal-plan.k-farm,.cal-plan.k-fut{background:color-mix(in srgb,#5a8 25%,transparent)}.cal-plan.k-school{background:color-mix(in srgb,#c77 28%,transparent)}
+.cal-plan{display:block;font-size:var(--ui-micro);line-height:1.25;margin-top:2px;padding:1px 4px 1px 3px;border-radius:3px;border-left:3px solid var(--pc,#4a8);background:color-mix(in srgb,var(--pc,#4a8) 26%,transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
+.cal-plan.done{opacity:.6}
+/* 단장 일정 띠(27_calendar.js gplGrid): 여러 날 출장·2군 관전을 칸 아래에서 주를 건너 잇는다. 칸은 grid-area로 놓고, 띠는 같은 줄 위에 겹친다 */
+.cal-grid{--bh:12px;--bs:15px;--cg:4px}
+.cal-grid>.cal-c{padding-bottom:calc(var(--ln,0) * var(--bs) + 4px)}
+.cal-bar,.cal-bl{align-self:end;pointer-events:none;z-index:2;margin-bottom:calc(4px + var(--lane,0) * var(--bs));height:var(--bh);min-width:0}
+.cal-bar{background:var(--pc);opacity:.9}
+.cal-bar.cb-s{margin-left:3px;border-top-left-radius:6px;border-bottom-left-radius:6px}.cal-bar.cb-e{margin-right:3px;border-top-right-radius:6px;border-bottom-right-radius:6px}.cal-bar.cb-x{margin-right:calc(-1 * var(--cg))}
+.cal-bar.cb-gap{background:linear-gradient(var(--pc),var(--pc)) center/100% 2px no-repeat;opacity:.75}
+.cal-bar.cb-past{opacity:.45}
+.cal-bl{z-index:3;font-size:var(--ui-caption);font-weight:700;line-height:var(--bh);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.85),0 1px 1px rgba(0,0,0,.6);padding:0 5px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:600px){ .cal-grid{--bh:11px;--bs:13px;--cg:2px}.cal-bl{font-size:var(--ui-caption);padding:0 2px 0 4px;letter-spacing:-.2px}.cal-plan{font-size:var(--ui-caption);padding:0 2px;border-left-width:2px} }
+/* 이달 단장 일정 목록 */
+.gpl-ml{display:flex;flex-direction:column}
+.gpl-mr{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:8px;align-items:center;background:none;border:0;border-bottom:1px solid var(--line);padding:7px 2px;color:inherit;text-align:left;cursor:pointer;font:inherit;min-width:0}
+.gpl-mr.past{opacity:.6}.gpl-mr em{font-style:normal;font-size:var(--ui-caption);color:var(--muted,#9aa7b4);white-space:nowrap}
+.gpl-md{font:600 12px var(--f-num,inherit);white-space:nowrap}
+.gpl-mt{display:flex;align-items:center;gap:6px;min-width:0}.gpl-mt i{width:9px;height:9px;border-radius:2px;flex:none}.gpl-mt b{font-weight:500;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gpl-leg{margin-top:8px}
+/* PC 한 주 띠의 단장 일정 */
+.sch-pbw{display:flex;flex-direction:column;gap:2px;margin:0 -8px}
+.sch-pb{height:16px;line-height:16px;font-size:var(--ui-caption);font-weight:700;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.7);background:var(--pc);padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:-1px}
+.sch-pb.pb-s{margin-left:8px;border-radius:8px 0 0 8px}.sch-pb.pb-e{margin-right:8px;border-top-right-radius:8px;border-bottom-right-radius:8px}
+.sch-pb.pb-gap{background:linear-gradient(var(--pc),var(--pc)) center/100% 2px no-repeat}
+.sch-pb.pb-nil{visibility:hidden}
+.sch-pl.done{opacity:.6}
 .gpl{margin:10px 0;padding:10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:8px}
 .gpl-r{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.gpl-r>.small{min-width:120px;opacity:.8}
+.gpl-bulk{flex-direction:column;align-items:stretch;gap:4px;margin-top:10px}.gpl-bulk>.small{min-width:0}.gpl-bk{gap:6px;align-items:center}.gpl-bk>b{min-width:76px}
 /* 인물 카드 공통 */
 .pcard{display:grid;gap:10px;margin:10px 0;padding:10px;border:1px solid var(--line,#333);border-radius:10px;background:color-mix(in srgb,var(--card,#181b20) 60%,transparent)}
 .pc-sec{display:grid;gap:4px}
@@ -486,3 +511,5 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .fo-ev p{margin:2px 0 0}
 .rv-w>.still,.rv-w>.still *{animation:none!important}
 .iv-o .iv-hint{display:block;margin-top:4px;font-size:var(--ui-caption);color:var(--muted);font-weight:400;line-height:1.45} /* 언론 플레이 선택지 효과(플레이테스트 4 #16) */
+/* 관중석 증설 카드(35c): 선택지 사이 얇은 구분선 */
+.stadx .stadx-o{border-top:1px solid var(--line);padding-top:6px;display:grid;gap:4px}.stadx .stadx-o .row.between{gap:8px;flex-wrap:wrap}.stadx .stadx-o p{margin:0}

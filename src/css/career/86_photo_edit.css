@@ -1,0 +1,35 @@
+/* 사진 고치기·자르기(71b_photo_edit.js). 연필 버튼은 얼굴 사진 오른쪽 아래 모서리에 붙는다 */
+.ph-w{position:relative;display:inline-block;flex:none;line-height:0;align-self:start}
+.ph-pen{position:absolute;right:-6px;bottom:-6px;z-index:3;width:26px;height:26px;min-height:0;padding:0;border-radius:50%;display:grid;place-items:center;background:var(--panel2,#1d2833);color:var(--ink);border:1px solid var(--line2,var(--line));box-shadow:0 1px 4px rgba(0,0,0,.45);cursor:pointer;line-height:0}
+.ph-pen:hover,.ph-pen:focus-visible{background:var(--acc,#3d8bfd);color:#fff;border-color:transparent}
+.ph-pen:focus-visible{outline:2px solid var(--acc-hi,#7fb2ff);outline-offset:2px}
+@media (pointer:coarse){.ph-pen{width:30px;height:30px;right:-8px;bottom:-8px}}
+.ph-w>.av+.ph-pen{right:-7px;bottom:-7px}
+/* 큰 사진 카드·소식함 왼쪽 큰 사진: 안쪽 모서리 */
+.pf-fm-face>.ph-pen{right:8px;bottom:8px;width:32px;height:32px}
+.ibs-face{position:relative;line-height:0}.ibs-face>.ph-pen{right:2px;bottom:2px;width:30px;height:30px}
+.crew-av{position:relative}.crew-av>.ph-pen{right:-6px;bottom:-6px;width:24px;height:24px}
+/* 소식함 머리: 사진을 감싼 뒤에도 예전 크기 */
+.ibm-h>.ph-w>.av{width:44px;height:44px;font-size:15px}
+header.ibm-h>.ph-w>.av{width:76px;height:76px;border-radius:10px}
+@media (max-width:979px){header.ibm-h>.ph-w>.av{width:64px;height:64px}}
+@media (min-width:1100px){.ibx-fm .ibm-h>.ph-w{display:none}}
+.pf-name>.ph-w{margin-right:2px}
+/* 창 */
+.ph-scrim{position:fixed;inset:0;z-index:1100;background:var(--scrim,rgba(0,0,0,.6));display:grid;place-items:center;padding:16px;overscroll-behavior:contain}
+.ph-box{width:min(400px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:var(--bg);border:1px solid var(--line);border-top:3px solid var(--acc,#3d8bfd);border-radius:10px;padding:12px 16px 16px;display:grid;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.5);color:var(--ink)}
+.ph-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.ph-head b{font-size:17px}
+.ph-head .x{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink);font-size:20px;cursor:pointer}
+.ph-cur{display:flex;align-items:center;gap:12px}.ph-cur .av.big{width:72px;height:72px;font-size:24px}.ph-cur p{margin:0}
+.ph-acts{display:flex;flex-wrap:wrap;gap:8px}.ph-acts .btn{min-height:40px;display:inline-flex;align-items:center}
+.ph-tpl .sec-pick{margin:0}.ph-tpl .sec-pick>summary{cursor:pointer;padding:4px 0}
+.ph-crop>p{margin:0}
+.phc-stage{position:relative;width:min(320px,100%);aspect-ratio:1;margin:0 auto;touch-action:none;cursor:grab;border-radius:6px;overflow:hidden;border:1px solid var(--line2,var(--line));background:#0d1217;-webkit-user-select:none;user-select:none}
+.phc-stage:active{cursor:grabbing}.phc-stage:focus-visible{outline:2px solid var(--acc-hi,#7fb2ff);outline-offset:2px}
+.phc-stage canvas{display:block;width:100%;height:100%}
+.phc-ring{position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.36);border:1px dashed rgba(255,255,255,.55);pointer-events:none}
+.phc-zoom{display:flex;align-items:center;gap:10px;font-size:18px;color:var(--muted)}.phc-zoom input{flex:1;min-height:32px}
+.phc-prev{display:flex;justify-content:center;align-items:end;gap:24px}.phc-prev>span{display:grid;justify-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.phc-prev canvas{border:1px solid var(--line)}.phc-r{width:56px;height:56px;border-radius:50%}.phc-s{width:72px;height:72px;border-radius:4px}
+.phc-acts{display:flex;justify-content:flex-end;gap:8px}.phc-acts .btn{min-width:84px;min-height:40px}
+@media (max-width:599px){.ph-scrim{align-items:end;padding:8px}.ph-box{width:100%;max-height:calc(100dvh - 16px);border-radius:12px 12px 8px 8px}.phc-acts .btn{flex:1}}

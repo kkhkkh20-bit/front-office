@@ -200,16 +200,16 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   /* 장타는 외야수 사이(좌중간·우중간)를 가르거나 선상으로 빠진다. 외야수 바로 앞뒤가 아니라 뛰어가서 줍는 거리(사용자 피드백 11-08). 외야수 자리: 좌·우 약 ±29도, 중견 0도, 홈에서 66~72 */
   else if(o==='3B'){ const gap=rnd()<.6, th=(rnd()<.5?-1:1)*(gap?11+rnd()*8:39+rnd()*5); spot=cPolar(th,gap?84+rnd()*8:76+rnd()*8); arc=true; flight=900; kind='3루타'; }
   else if(o==='2B'){ const gap=rnd()<.65, th=(rnd()<.5?-1:1)*(gap?11+rnd()*8:38+rnd()*6); spot=cPolar(th,gap?76+rnd()*12:64+rnd()*12); arc=rnd()<.6; flight=800; kind='2루타'; }
-  else if(o==='1B'){ c.gb=false; if(rnd()<.6){ const th=-36+rnd()*72; spot=cPolar(th,44+rnd()*10); arc=rnd()<.5; } else { const th=[-28,-9,9,28][Math.floor(rnd()*4)]+rnd()*6-3; spot=cPolar(th,46); c.gb=true; } flight=650; kind='안타';  /* 해설이 말하는 방향·종류와 화면을 맞춘다(좌전·중전·우전·3유간·1·2루간·유격수 키). 예전에는 화면 방향을 따로 뽑아 해설과 어긋날 수 있었다(사용자 11-13) */
+  else if(o==='1B'){ /* 외야 안타를 줍는 자리: 홈에서 약 75~85m. 외야수(홈에서 66~72칸, 약 90~98m)가 10~20m 달려 나와 잡는다. 예전에는 44~54칸(약 60~70m)이라 30m 넘게 달려 나와야 해서 공보다 사람이 느려 보였다(사용자 11-16) */ c.gb=false; if(rnd()<.6){ const th=-36+rnd()*72; spot=cPolar(th,56+rnd()*6); arc=rnd()<.5; } else { const th=[-28,-9,9,28][Math.floor(rnd()*4)]+rnd()*6-3; spot=cPolar(th,55); c.gb=true; } flight=650; kind='안타';  /* 해설이 말하는 방향·종류와 화면을 맞춘다(좌전·중전·우전·3유간·1·2루간·유격수 키). 예전에는 화면 방향을 따로 뽑아 해설과 어긋날 수 있었다(사용자 11-13) */
     try{ const bp=G.players[x[1]], h=t=>pcH(g,k,t), inf=bp&&bp.r.spd>=64&&h('if')<.25;
       if(inf&&scene3d0){ /* 내야 안타(사용자 11-14): 해설이 말한 야수 앞 느린 땅볼. 야수가 달려 나와 1루로 던지지만 타자가 먼저 닿는다 */ opos=pcPick(g,k,'ip',['SS','3B','2B']); const fb=CFP[opos], j=h('ifj')*2-1; spot=[fb[0]*.62+CHM[0]*.38+j*2,fb[1]*.62+CHM[1]*.38]; arc=false; c.gb=true; c.infHit=true; kind='내야 안타'; }
       else if(!inf){ const t=pcPick(g,k,'t1',['좌전','중전','우전','3유간을 빠지는','1·2루간을 꿰뚫는','유격수 키를 넘기는']), j=h('t1j')*2-1;
-        if(t==='좌전'){ spot=cPolar(-26+j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
-        else if(t==='중전'){ spot=cPolar(j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
-        else if(t==='우전'){ spot=cPolar(26+j*8,48+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
-        else if(t==='3유간을 빠지는'){ spot=cPolar(-31+j*3,46); arc=false; c.gb=true; }
-        else if(t==='1·2루간을 꿰뚫는'){ spot=cPolar(31+j*3,46); arc=false; c.gb=true; }
-        else { spot=cPolar(-17+j*4,46+h('t1r')*4); arc=true; c.gb=false; } } }catch(e){} }
+        if(t==='좌전'){ spot=cPolar(-26+j*8,56+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
+        else if(t==='중전'){ spot=cPolar(j*8,56+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
+        else if(t==='우전'){ spot=cPolar(26+j*8,56+h('t1r')*6); arc=h('t1a')<.5; c.gb=!arc&&h('t1g')<.6; }
+        else if(t==='3유간을 빠지는'){ spot=cPolar(-31+j*3,55); arc=false; c.gb=true; }
+        else if(t==='1·2루간을 꿰뚫는'){ spot=cPolar(31+j*3,55); arc=false; c.gb=true; }
+        else { spot=cPolar(-17+j*4,52+h('t1r')*4); arc=true; c.gb=false; } } }catch(e){} }
   else if(o==='SAC'){ opos=['P','3B','1B'][Math.floor(rnd()*3)]; const base=CFP[opos]; spot=[base[0]+rnd()*4-2,base[1]+rnd()*6]; arc=false; flight=420; kind='희생번트'; }
   else if(o==='OUT'||o==='DP'){ /* 해설과 같은 결정(어느 야수 쪽, 땅볼·뜬공·직선타)을 그대로 쓴다 */
     const pk=(t,a)=>{ try{ return pcPick(g,k,t,a); }catch(e){ return a[0]; } }; const H=t=>{ try{ return pcH(g,k,t); }catch(e){ return rnd(); } };
@@ -245,7 +245,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   const runAll2=async(per)=>Promise.all(moves.map(async m=>{ const el=card('o'+m.id); if(!el)return; for(let i=m.from+1;i<=Math.min(4,m.to);i++){ cPlace(el,CPATH[i],per); await cSleep(per); } if(m.out||m.score)el.classList.add('gone'); }));
   let cap='', cls='';
   const oc=cTeamCol(x[0]%2?g.home:g.away);
-  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } else umpCall('스트라이크 아웃'); if(homeBat&&(b.bases[1]||b.bases[2]))sfx('sigh',.5); /* 홈 팀 득점권 삼진: 관중 탄식 */ if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
+  if(o==='K'){ if(!cam){ cFx('삼진','k'); } /* 삼진 전용 큰 포구음은 뺐다(사용자 11-16) */ else umpCall('스트라이크 아웃'); if(homeBat&&(b.bases[1]||b.bases[2]))sfx('sigh',.5); /* 홈 팀 득점권 삼진: 관중 탄식 */ if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
   else if(o==='BB'||o==='HBP'){if(o==='HBP'&&scene3d){Match3D.hitByPitch();await cSleep(650);} if(!cam)cFx(o==='HBP'?'몸에 맞는 공':'볼넷','bb'); const pr=[]; if(bat){ cPlace(bat,CBS[0],700); pr.push(cSleep(700)); } pr.push(runAll2(600)); await Promise.all(pr); }
   else if(scene3d){await c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo});}
   else {

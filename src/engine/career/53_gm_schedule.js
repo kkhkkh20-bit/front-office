@@ -31,10 +31,12 @@ function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P
   if(k==='scout'&&!REG.includes(x))return '지역을 고르세요.';
   if(k==='farm'&&!(dobj(d).m>=4&&dobj(d).m<=9))return '2군 경기가 없는 시기입니다.';
   if(k==='school'){ const w=gmSchWhy(d,x); if(w)return w; }
+  if(k==='tryout'&&!tryIsDay(+d))return '그날은 공개 트라이아웃이 없습니다.'; /* 94_tryout */
   const fg=k==='fut'||k==='farm'?flGameOn(G.user,d):null; if(k==='fut'&&!fg)return '그날은 우리 2군 경기가 없습니다.'; if(k==='farm'&&fg)k='fut'; /* 2군 경기가 있는 날 방문은 경기 관전으로 */
   if(k==='attend'&&x==='owner'){ const n=Object.entries(P).filter(([dd,p])=>p.k==='attend'&&p.x==='owner'&&!p.done&&+dd>G.day&&+dd!==+d&&gmPlanLive(dd,p)).length; /* 열리지 않을 경기(일찍 끝난 시리즈의 남은 차전) 예약은 세지 않는다(검수 11-09zo) */ /* 같은 날을 다시 잡는 것은 새 예약이 아니다 */ /* 앞으로 유효한 일정만 센다 */ if(n>=2)return '구단주와의 직관은 한 번에 두 경기까지만 잡을 수 있습니다.'; }
   drop(); P[d]={k,x:k==='fut'?null:x||null,done:false,...(k==='fut'?{op:fg.op,home:fg.home}:{}),...(k==='attend'?{op:ops[0],tid:G.user,...(['owner','ceo'].includes(x)?{person:bossOf(G.user)[x==='ceo'?'ceo':'own'].id}:{})}:{})};
   if(k==='attend'&&+d===G.day+1)gmAttendWarn(P[d]); /* 내일 경기를 오늘 잡으면 전날 알림을 바로 보낸다(검수 11-06) */
+  if(k==='tryout')return `${dmd(d)} 공개 트라이아웃 참관을 잡았습니다.`;
   return k==='attend'?`${dmd(d)} 경기 직관을 잡았습니다${x==='owner'?'(구단주 동행)':x==='ceo'?'(사장 동행)':''}. 전날 알려 드립니다.`:k==='scout'?`${dmd(d)} ${x} ${gmTourn(d)} 관전 출장을 잡았습니다.`:k==='school'?`${dmd(d)} ${x} 방문을 잡았습니다.`:k==='fut'?`${dmd(d)} 2군 ${flName(fg.op)}전 관전을 잡았습니다.`:`${dmd(d)} 2군 훈련장 방문을 잡았습니다.`; }
 /* 고교 시즌: 3~10월, 그해 드래프트 전까지 */
 function gmSchSeason(d){ const o=dobj(d); if(o.m<3||o.m>10)return false; const dr=G.cal&&G.cal.draft; return !(dr!=null&&d>=dr&&dobj(dr).y===o.y); }
@@ -48,17 +50,29 @@ function gmFld(){ let F=G.gmFld; if(!F||F.t!==G.user||F.y!==G.year)F=G.gmFld={t:
 function gmFarmFull(){ const F=gmFld(), m=dobj(G.day).m, n=F.mon[m]||0; F.mon[m]=n+1; return n<2; }
 /* 한꺼번에 잡기(카페 11-14: 하루하루 말고 기간·대회 단위로). 출장만: 오늘 다음 날부터 고른 날까지, 또는 그 대회 기간 전체. 이미 잡은 직관·방문은 그대로 둔다 */
 function gmTournSpan(d){ const o=dobj(d); for(const t of GM_TOURN){ const a=dnum(o.y,t[0],t[1]), b=dnum(o.y,t[2],t[3]); if(d>=a&&d<=b)return [a,b,t[4]]; } return null; }
-function gmPlanBulk(d,x,mode){ if(mode==='fut')return gmPlanBulkFut(+d,x); if(mode==='school')return gmPlanBulkSch(+d,x); if(!REG.includes(x))return '지역을 고르세요.'; d=+d; let a=G.day+1, b=d; if(mode==='tourn'){ const S=gmTournSpan(d); if(!S)return '대회 기간이 아닙니다.'; a=Math.max(a,S[0]); b=S[1]; }
+function gmPlanBulk(d,x,mode){ if(mode==='fut')return gmPlanBulkFut(+d,x); if(mode==='school')return gmPlanBulkSch(+d,x); if(mode==='schm'||mode==='schs'){ const R=gmSchRange(+d,mode); return R?gmPlanBulkSch(R[1],x,R[0]):'고교 시즌에 남은 날이 없습니다.'; } if(!REG.includes(x))return '지역을 고르세요.'; d=+d; let a=G.day+1, b=d; if(mode==='tourn'){ const S=gmTournSpan(d); if(!S)return '대회 기간이 아닙니다.'; a=Math.max(a,S[0]); b=S[1]; }
   const P=gmPlans(); let n=0, kept=0; for(let i=a;i<=b;i++){ if(!gmTourn(i))continue; const o=P[i]; if(o&&o.k!=='scout'){ kept++; continue; } if(gmPlanSet(i,'scout',x).includes('출장을 잡았습니다'))n++; }
   return n?`${dmd(a)}~${dmd(b)} 고교 대회 ${n}일을 ${x} 출장으로 잡았습니다.${kept?` 직관·2군 방문을 잡은 ${kept}일은 그대로 둡니다.`:''}`:'그 기간에 잡을 고교 대회 날이 없습니다.'; }
+/* 달력 표시용 묶음(카페 '그날 일정이 잡혔는지 하루하루 눌러봐야'): 같은 지역 출장은 빈 날 6일까지, 2군 관전은 3일까지 하나의 기간으로 잇는다. 다른 일정이 끼어도 기간은 이어진다. 읽기만 한다
+   [{k,key,x,a,b,days,p,multi}] — a~b 사이에 걸친 묶음만, 취소된 일정은 뺀다 */
+function gmPlanSpans(a,b){ const P=gmPlans(), out=[], open={}; const D=Object.keys(P).map(Number).filter(d=>P[d]&&!P[d].miss&&!P[d].cancelled).sort((x,y)=>x-y);
+  for(const d of D){ const p=P[d], key=p.k==='scout'?'scout:'+p.x:p.k==='fut'?'fut':null, r=key&&open[key];
+    if(r&&d-r.b-1<=(p.k==='scout'?6:3)){ r.b=d; r.days.push(d); continue; } const n={k:p.k,key,x:p.x,a:d,b:d,days:[d],p}; if(key)open[key]=n; out.push(n); }
+  return out.filter(s=>s.b>=a&&s.a<=b).map(s=>({...s,multi:s.days.length>1})); }
 /* 우리 2군 경기를 오늘 다음 날부터 고른 날까지 관전으로(x='home'이면 홈 경기만). 다른 일정은 그대로 둔다. 효과는 한 달 두 번 상한이라 많이 잡아도 쌓이지 않는다 */
 function gmPlanBulkFut(d,x){ const P=gmPlans(); let n=0, kept=0; for(let i=G.day+1;i<=d;i++){ const g=flGameOn(G.user,i); if(!g||x==='home'&&!g.home)continue; const o=P[i]; if(o&&o.k!=='fut'&&o.k!=='farm'){ kept++; continue; } gmPlanSet(i,'fut'); if(P[i]&&P[i].k==='fut')n++; }
   return n?`${dmd(G.day+1)}~${dmd(d)} 우리 2군 ${x==='home'?'홈 ':''}경기 ${n}경기를 관전으로 잡았습니다.${kept?` 다른 일정이 있는 ${kept}일은 그대로 둡니다.`:''} 선수단 기분은 한 달에 두 번까지만 오릅니다.`:'그 기간에 잡을 우리 2군 경기가 없습니다.'; }
 /* 그 지역 학교를 한 주에 한 곳씩: 덜 가 본 학교부터. 주 1회 제한은 gmPlanSet이 그대로 지킨다 */
-function gmPlanBulkSch(d,reg){ if(!REG.includes(reg))return '지역을 고르세요.'; const S=gmSchools(reg); if(!S.length)return '그 지역에는 올해 후보가 있는 학교가 없습니다.'; const P=gmPlans(), F=gmFld();
-  const cnt=n=>(F.sch[n]||0)+Object.entries(P).filter(([dd,p])=>p.k==='school'&&p.x===n&&+dd>G.day).length; let n=0;
-  for(let i=G.day+1;i<=d;i++){ if(P[i]||!gmSchSeason(i))continue; const s=[...S].sort((a,b)=>cnt(a.n)-cnt(b.n)||(a.n<b.n?-1:1))[0]; gmPlanSet(i,'school',s.n); if(P[i]&&P[i].k==='school')n++; }
-  return n?`${dmd(G.day+1)}~${dmd(d)} ${reg} 학교 방문 ${n}곳을 한 주에 한 번씩 잡았습니다.`:'그 기간에는 더 잡을 수 있는 학교 방문이 없습니다. 학교 방문은 한 주에 한 번입니다.'; }
+function gmPlanBulkSch(d,reg,from){ if(!REG.includes(reg))return '지역을 고르세요.'; const S=gmSchools(reg); if(!S.length)return '그 지역에는 올해 후보가 있는 학교가 없습니다.'; const P=gmPlans(), F=gmFld();
+  const cnt=n=>(F.sch[n]||0)+Object.entries(P).filter(([dd,p])=>p.k==='school'&&p.x===n&&+dd>G.day).length; let n=0; const a=Math.max(G.day+1,from||0);
+  for(let i=a;i<=d;i++){ if(P[i]||!gmSchSeason(i))continue; const s=[...S].sort((a,b)=>cnt(a.n)-cnt(b.n)||(a.n<b.n?-1:1))[0]; gmPlanSet(i,'school',s.n); if(P[i]&&P[i].k==='school')n++; }
+  return n?`${dmd(a)}~${dmd(d)} ${reg} 학교 방문 ${n}곳을 한 주에 한 번씩 잡았습니다.`:'그 기간에는 더 잡을 수 있는 학교 방문이 없습니다. 학교 방문은 한 주에 한 번입니다.'; }
+/* 국사왕 제안: 고교 방문을 달 단위·시즌 전체로 한꺼번에. schm은 d가 든 달, schs는 그해 고교 시즌(3~10월, 드래프트 전) 끝까지. 남은 날이 없으면 null.
+   주 1회·같은 학교 효과 감소·다른 일정 보존은 gmPlanBulkSch·gmPlanSet 규칙 그대로다 */
+function gmSchRange(d,mode){ const o=dobj(d); let a, b;
+  if(mode==='schm'){ a=dnum(o.y,o.m,1); b=dnum(o.m===12?o.y+1:o.y,o.m===12?1:o.m+1,1)-1; }
+  else { const y=dobj(G.day).y; a=dnum(y,3,1); b=dnum(y,10,31); }
+  a=Math.max(a,G.day+1); while(a<=b&&!gmSchSeason(b))b--; while(a<=b&&!gmSchSeason(a))a++; return a<=b?[a,b]:null; }
 /* 전날: 직관 알림(진행을 멈춘다). 당일: 출장·방문 결과 */
 function gmPlanDaily(){ if(G.unemp)return; try{ const o=dobj(G.day); if(o.m===3&&o.d>=1&&G.gmPlanTip!==o.y&&!G.gmPlanTipSeen){ G.gmPlanTip=o.y; G.gmPlanTipSeen=1; mail('스카우트팀장','달력에서 단장 일정을 잡을 수 있습니다','일정 화면의 달력에서 앞으로의 날짜를 누르면 고교 대회 출장, 고교 방문, 경기 직관, 2군 경기 관전을 잡을 수 있습니다. 출장은 그 지역 후보를 넓게, 고교 방문은 한 학교 후보를 깊게 봅니다. 2군 경기를 보면 선수들 흐름을 직접 확인합니다. 출장과 2군 관전은 기간을 정해 한꺼번에 잡을 수도 있습니다.',{kind:'운영',acts:[{l:'일정 열기',a:'go',v:'league:score'}]}); } }catch(e){} /* 카페 11-14: 60시즌을 해도 몰랐다는 기능을 한 번 알린다 */ const P=gmPlans(); const tm=P[G.day+1];
   if(tm&&!tm.done&&tm.k==='attend'&&!tm.warned)gmAttendWarn(tm);
@@ -81,10 +95,14 @@ function gmAttendResult(rec){ const p=gmPlanAt(rec.day); if(!p||p.k!=='attend'||
   else note('일정',`직관을 마쳤습니다. ${L.join(' · ')}.`); }
 function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.region===reg&&!p.college);
   if(!C.length){ note('스카우트',`${reg} ${tn}을(를) 보고 왔지만 올해 드래프트 후보가 눈에 띄지 않았습니다.`); return; }
-  const seen=C.sort(()=>R()-.5).slice(0,Math.min(C.length,ri(5,9))); for(const p of seen)gmObserve(p); const vk=areaVisitAdd(seen); /* 다녀온 권역 정보망이 조금 오른다 */
+  const TS=typeof amTripSeen==='function'?amTripSeen(reg):null; /* 그날 실제로 열린 경기(13_amateur_league): 뛴 선수를 그 경기 기록과 함께 본다 */
+  const live=TS?TS.filter(x=>x.kind==='p').map(x=>G.players[x.id]).filter(p=>p&&C.includes(p)):[], low=TS?TS.filter(x=>x.kind==='e'):[];
+  const seen=live.length?[...new Set(live)].slice(0,12):C.sort(()=>R()-.5).slice(0,Math.min(C.length,ri(5,9))); for(const p of seen)gmObserve(p); const vk=areaVisitAdd(seen); /* 다녀온 권역 정보망이 조금 오른다 */
+  if(TS)for(const x of TS){ const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(s){ s.amObs=s.amObs||{}; s.amObs[G.user]=Math.min(12,(s.amObs[G.user]||0)+1); } }
+  const box=TS?`\n\n오늘 경기에서 본 기록\n${TS.filter(x=>x.kind==='p').slice(0,6).map(x=>{ const p=G.players[x.id]; return p?`${p.name}(${p.school}): ${x.b}`:''; }).filter(Boolean).join('\n')}${low.length?`\n저학년: ${low.slice(0,3).map(x=>{ const e=amPipe().L[x.id]; return e?`${e.n}(${e.s} ${amGrade(e,G.year)}학년) ${x.b}`:''; }).filter(Boolean).join(' · ')}`:''}`:'';
   /* 단장 눈에 들어온 선수도 실제 잠재력이 아니라 직접 본 평가(오차 포함)로 고른다 */ const ev=new Map(seen.map(p=>{ const rp=scoutReport(p); return [p.id,rp.ofp??rp.cur]; })); const top=[...seen].sort((a,b)=>ev.get(b.id)-ev.get(a.id)).slice(0,3); const gem=seen.find(p=>ev.get(p.id)>=58&&(p.press==null||p.press>30)&&R()<.5);
   if(gem){ gem.gmGem=G.year; (G.shortlist=G.shortlist||[]); if(!G.shortlist.includes(gem.id))G.shortlist.push(gem.id); }
-  mail('단장 노트',`${reg} ${tn} 관전`,`직접 본 후보 ${seen.length}명. 이 선수들은 평가 오차가 줄었습니다.\n눈에 들어온 선수: ${top.map(p=>`${p.name}(${posLabel(p)}, ${p.school||p.region})`).join(', ')}${gem?`\n\n눈여겨본 선수: ${gem.name}(${posLabel(gem)}) — 언론 순위는 낮지만 직접 보니 그릇이 커 보입니다. 한두 번 본 인상이라 틀릴 수 있습니다. 관심 명단에 넣었습니다.`:''}`,{kind:'스카우트',acts:[{l:'드래프트 후보',a:'go',v:'transfer:draft'}],ref:gem?gem.id:top[0]&&top[0].id}); }
+  mail('단장 노트',`${reg} ${tn} 관전`,`직접 본 후보 ${seen.length}명. 이 선수들은 평가 오차가 줄었습니다.\n눈에 들어온 선수: ${top.map(p=>`${p.name}(${posLabel(p)}, ${p.school||p.region})`).join(', ')}${box}${gem?`\n\n눈여겨본 선수: ${gem.name}(${posLabel(gem)}) — 언론 순위는 낮지만 직접 보니 그릇이 커 보입니다. 한두 번 본 인상이라 틀릴 수 있습니다. 관심 명단에 넣었습니다.`:''}`,{kind:'스카우트',acts:[{l:'드래프트 후보',a:'go',v:'transfer:draft'}],ref:gem?gem.id:top[0]&&top[0].id}); }
 /* 올해 초와 견준 실제 능력 변화를 말로 */
 function gmDirWord(p){ const b=G.ovr0&&G.ovr0.y===G.year?G.ovr0.m[p.id]:null; if(b==null)return '아직 지켜보는 중'; const x=ovr(p)-b; return x>=1.5?'올라오는 중':x>=.5?'조금씩 늘고 있음':x>-.5?'정체':'주춤'; }
 /* 코치 평: 실제 툴에서 가장 좋은 것과 가장 약한 것 */
