@@ -9,7 +9,7 @@ function teamScoutReg(tid){ const t=team(tid); const r=t&&t.region; if(REG.inclu
 function coverOf(tid){ const reg=teamScoutReg(tid); return {reg,sc:scoutOf('pro',reg)}; }
 function publicP(p){ return p.hist.some(h=>h.lvl==='1군'&&h.y>=G.year-1&&(h.pa>=10||h.outs>=9)); }
 /* 아마추어 후보 오차: 스카우트 실력·특기·정보망에 실제로 본 횟수까지 */
-const prosSd=(sc,p)=>scSd(sc,p)*obsF(dcEvalObs(p,sc))*draftVis(p); /* 관찰 횟수와 이름난 정도(모든 구단 같은 식, 64_scout_obs·aiDraftScore) */
+const prosSd=(sc,p)=>scSd(sc,p)*obsF(dcEvalObs(p,sc))*draftVis(p)*obsTwoM(p,G.user); /* 두 스카우트가 본 선수는 0.9배(67_scout_trip) */ /* 관찰 횟수와 이름난 정도(모든 구단 같은 식, 64_scout_obs·aiDraftScore) */
 /* 담당 고르기: 후보를 주면 그 후보 오차가 가장 작은 사람(검수 11-09e #20). 지역 없이 부르면 국내(아마추어·프로) 담당 중 최고, 해외 파견자는 국내 선수를 보지 않는다(#26) */
 function bestScout(region,p){ if(region){ if(!p)return scoutOf('am',region); return G.scouts.filter(x=>(x.role||'am')==='am'&&x.region===region).map(s=>Object.assign({},s,{skill:effSkill(s)})).sort((a,b)=>prosSd(a,p)-prosSd(b,p))[0]||null; } const s=G.scouts.filter(x=>x.role!=='intl').sort((a,b)=>effSkill(b)-effSkill(a))[0]; return s?Object.assign({},s,{skill:effSkill(s)}):null; }
 function archetype(t,p){ // t: 평가된 도구 점수

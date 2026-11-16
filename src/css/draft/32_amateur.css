@@ -73,3 +73,12 @@
 .obs-m{display:flex;flex-direction:column;gap:4px;padding:8px 0;border-bottom:1px solid var(--line)}
 .obs-m.on{background:#3d7cc71f}
 .obs-m .candidate-name{background:none!important;justify-content:flex-start;text-align:left;width:100%}
+/* 스카우트 › 출장 일정(스카우트 2단계) */
+.trip{display:flex;flex-direction:column;gap:6px;margin:6px 0 10px}
+.trip-cal{margin:0;color:var(--muted)}
+.trip-t td,.trip-t th{font-size:12px;padding:5px 7px;text-align:left;vertical-align:middle;white-space:nowrap}
+.trip-t td.now{font-weight:700}
+.trip-pick .chips{margin:0;flex-wrap:wrap}
+.trip-pick .chips button{min-height:28px;font-size:12px;padding:2px 8px}
+.item.wa .av.ini.wire-assoc{white-space:nowrap;overflow:hidden;font-size:9px;letter-spacing:-.5px;line-height:1} /* 휴대폰 리그 소식: 협회 표시가 세로로 쪼개지지 않게 */
+.obs-m .candidate-name{border:0!important;box-shadow:none!important;padding-left:0}

@@ -187,7 +187,7 @@ function scoutBody(){
     return `<div class="sasg" aria-label="담당 업무">${G3.map(([l,os])=>`<div><i>${l}</i>${optRow('sAssign',cur,os,s.id,'wsx')}</div>`).join('')}</div>`; };
   const it={cur:UI._smk?(UI.smkSrc==='oth'?'oth':'mkt'):'team',bar:''}; /* 채용 후보·다른 구단은 스태프 시장으로 */
   const TEAM=`<p class="small muted">스카우트 한 명은 한 가지 업무만 맡습니다. 투수 감별·타자 감별 특기가 있으면 그 유형 선수를 볼 때 능력이 한 단계 높습니다. 아마추어는 그 지역 고교·대학 선수(드래프트), 프로는 그 지역 연고 구단 선수, 해외는 그 나라 외국인 시장을 봅니다. 해외 담당을 보내면 그 나라 정보 수준이 한 단계 올라갑니다. 업무를 바꾸면 30일 동안 적응 기간이라 능력이 1 낮게 적용됩니다. 최대 ${scoutMax()}명.</p>
-    ${matrix}${scoutChiefBox()}
+    ${matrix}${scoutChiefBox()}${tripBox()}
     <div class="tgrid">${G.scouts.map(s=>scoutCard(s,`${opt(s)}${G.day-(s.since??-999)<30?`<span class="pill warn">적응 중 · ${dmd(s.since+30)}까지</span>`:''}<span class="small muted">${staffLoyWord(stAttr(s).loy)}</span><button class="tc-i" data-a="person" data-v="sc:${s.id}">인물 카드</button><button class="tc-i danger" data-a="fireScout" data-v="${s.id}">계약 해지</button>`)).join('')||'<p class="small muted">스카우트가 없습니다.</p>'}</div>`;
   const MK=`<div class="eyebrow">고용 ${G.scouts.length}/${scoutMax()}명 · ${stPrestigeLine()}</div>
     ${(()=>{ const f=UI.scF||'all'; return `<div class="row between"><span class="small muted">채용 후보 ${scoutMkt().length}명 · 매달 일부가 바뀝니다</span>${UI._smkFb?'':`<div class="chips">${[['all','전체'],['P','투수 감별'],['B','타자 감별'],['hi','능력 4 이상']].map(([k,l])=>`<button data-a="scF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div>`}</div>`; })()}

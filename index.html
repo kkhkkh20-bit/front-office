@@ -3343,6 +3343,15 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .obs-m{display:flex;flex-direction:column;gap:4px;padding:8px 0;border-bottom:1px solid var(--line)}
 .obs-m.on{background:#3d7cc71f}
 .obs-m .candidate-name{background:none!important;justify-content:flex-start;text-align:left;width:100%}
+/* 스카우트 › 출장 일정(스카우트 2단계) */
+.trip{display:flex;flex-direction:column;gap:6px;margin:6px 0 10px}
+.trip-cal{margin:0;color:var(--muted)}
+.trip-t td,.trip-t th{font-size:12px;padding:5px 7px;text-align:left;vertical-align:middle;white-space:nowrap}
+.trip-t td.now{font-weight:700}
+.trip-pick .chips{margin:0;flex-wrap:wrap}
+.trip-pick .chips button{min-height:28px;font-size:12px;padding:2px 8px}
+.item.wa .av.ini.wire-assoc{white-space:nowrap;overflow:hidden;font-size:9px;letter-spacing:-.5px;line-height:1} /* 휴대폰 리그 소식: 협회 표시가 세로로 쪼개지지 않게 */
+.obs-m .candidate-name{border:0!important;box-shadow:none!important;padding-left:0}
 /* 훈련 시설 비교 표: 휴대폰 폭에서도 가로 스크롤 없이 8칸 */
 .fcmp{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12px;margin-top:4px}
 .fcmp th,.fcmp td{padding:5px 1px;text-align:center;border-bottom:1px solid var(--line);font-family:var(--f-num);font-variant-numeric:tabular-nums}
@@ -15602,7 +15611,7 @@ function draftNeed(tid){ const k=['C','IF','OF','SP','RP'], share={C:.08,IF:.27,
 function draftVis(p){ return p.ready?.5:p.press<=10?.6:p.press<=30?.8:1; }
 /* AI 구단의 후보 잠재력 추정(스카우트 1단계): 우리 스카우트 보고서와 같은 재료. 구단 스카우트 오차 × 권역 정보망·학교 친분·관찰 횟수(obsF)·이름난 정도,
    그리고 그 지역 담당 스카우트의 좋아하는 툴 버릇(clubLean, 우리와 같은 식). 지명 평가(aiDraftScore)와 저학년 관심 명단(amEstP)이 같이 쓴다 */
-function aiDraftSd(tid,p){ return ((team(tid)||{}).scoutSd||6)*netSdM(p,tid)*draftVis(p)*obsF(obsCount(p,tid)); }
+function aiDraftSd(tid,p){ return ((team(tid)||{}).scoutSd||6)*netSdM(p,tid)*draftVis(p)*obsF(obsCount(p,tid))*obsTwoM(p,tid); }
 function aiDraftEst(tid,p){ const sd=aiDraftSd(tid,p); const gap=Math.max(0,p.pot-ovr(p))*(p.age<=26?1:0); const sc=clubScoutFor(tid,p);
   const lean=clubLean(sc,p,k=>k&&p.r[k]!=null?p.r[k]+gap+hn('t'+k+'ai'+tid+G.year,p.id)*sd*.8:0);
   return {v:p.pot-(p.hidT&&u01('aih'+tid,p.id)>=.2?p.hidT:0)+ /* 숨은 재능은 AI 구단도 대부분 놓친다 */hn('ai'+tid+G.year,p.id)*sd+lean,sd}; }
@@ -15970,7 +15979,7 @@ function amRecord(S,g,d,meta){ const y=S.y, live=S.live;
   if(meta.g){ const upd=(a,b)=>{ if(g.hs>g.as){ a[0]++; b[1]++; } else if(g.as>g.hs){ b[0]++; a[1]++; } else { a[2]++; b[2]++; } a[3]+=g.hs; a[4]+=g.as; b[3]+=g.as; b[4]+=g.hs; }; const G0=S.rec[meta.g]; if(G0&&G0[g.h]&&G0[g.a]){ upd(G0[g.h],G0[g.a]);
       if(meta.h2){ const R2=(S.rec2||(S.rec2={}))[meta.g]||(S.rec2[meta.g]={}); upd(R2[g.h]||(R2[g.h]=[0,0,0,0,0]),R2[g.a]||(R2[g.a]=[0,0,0,0,0])); } } } /* 후반기 성적은 따로(전반기 = 시즌 합 - 후반기) */
   if(live){ const tag=meta.g?0:meta.t; for(const [n,o,rs,ra] of [[g.h,g.a,g.hs,g.as],[g.a,g.h,g.as,g.hs]]){ const L=S.res[n]||(S.res[n]=[]); L.push([d,o,rs,ra,tag,g.inn]); if(L.length>12)L.shift(); }
-    for(const b of g.M.values()){ const u=b.u; if(u.kind!=='p'&&u.kind!=='e')continue; _amToday.L.push({id:u.id,kind:u.kind,sch:u.sch,b:amBoxTxt(b,u.isP)}); }
+    for(const b of g.M.values()){ const u=b.u; if(u.kind!=='p'&&u.kind!=='e')continue; _amToday.L.push({id:u.id,kind:u.kind,sch:u.sch,b:amBoxTxt(b,u.isP),ev:meta.g?(meta.lvl==='col'?'ul:':'wl:')+meta.g:meta.t,gk:g.h+'-'+g.a}); } /* ev·gk: 출장 대회·경기(67_scout_trip) */
     try{ amGameNews(S,g,d,meta); }catch(e){} }
   try{ amPubRec(S,g,d,meta); }catch(e){ console.error(e); } /* 공개 측정 구속·대회별 기록·소식(66_am_public) */
   if(AM_TRACE)AM_TRACE.push({y,d,h:g.h,a:g.a,hs:g.hs,as:g.as,inn:g.inn,line:g.line,box:[...g.M.values()].map(b=>Object.assign({id:b.u.id,kind:b.u.kind,isP:b.u.isP,sch:b.u.sch,gr:b.u.gr},b,{u:undefined}))}); }
@@ -15984,8 +15993,9 @@ function amSimYear(y,quiet){ const S=amNewSeason(y,false); const a=dnum(y,3,1), 
 /* 매일(07_daily): 3~8월 경기, 9월 1일 시즌 정리, 월요일마다 아마 성적 표준점수 갱신 */
 function amDaily(day){ if(!amOn()||!G.amU)return; const o=dobj(day); if(_amToday.d!==day)_amToday={d:day,L:[]};
   if(o.m>=3&&o.m<=8){ const S=amLive(); try{ amPlayDay(S,day); }catch(e){ console.error(e); } if(o.w===1||o.d===1)try{ amZSet((G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&(p.prospect||p.amV))); }catch(e){} if(o.d===1&&o.m>=4)try{ pressRank(G.draftClass||[]); }catch(e){}
-    try{ amWatchDaily(day); }catch(e){} if(o.d===1)try{ amMonthNews(o); }catch(e){} }
+    try{ tripWatchDaily(day); }catch(e){ console.error(e); } /* 경기장 관찰은 출장한 대회에서만(스카우트 2단계, 예전 amWatchDaily) */ if(o.d===1)try{ amMonthNews(o); }catch(e){} }
   if(o.d===1)try{ amAiFollow(o); }catch(e){} /* 1·4·7월(1월은 시즌 밖) */
+  try{ tripDaily(day); }catch(e){ console.error(e); } /* 출장 안(월)·현장 보고(일), 67_scout_trip */
   try{ rchkDaily(); }catch(e){ console.error(e); } /* 빅보드 재확인 답(64_scout_obs) */
   if(o.w===3)try{ obsVisitWeek(day); }catch(e){ console.error(e); } /* 스카우트 학교 방문: 1년 내내 매주(겨울에는 동계훈련) */
   if(o.m===9&&o.d===1&&G.amL&&G.amL.y===o.y&&!G.amL.done)try{ amSeasonEnd(G.amL); }catch(e){ console.error(e); }
@@ -17170,7 +17180,7 @@ function teamScoutReg(tid){ const t=team(tid); const r=t&&t.region; if(REG.inclu
 function coverOf(tid){ const reg=teamScoutReg(tid); return {reg,sc:scoutOf('pro',reg)}; }
 function publicP(p){ return p.hist.some(h=>h.lvl==='1군'&&h.y>=G.year-1&&(h.pa>=10||h.outs>=9)); }
 /* 아마추어 후보 오차: 스카우트 실력·특기·정보망에 실제로 본 횟수까지 */
-const prosSd=(sc,p)=>scSd(sc,p)*obsF(dcEvalObs(p,sc))*draftVis(p); /* 관찰 횟수와 이름난 정도(모든 구단 같은 식, 64_scout_obs·aiDraftScore) */
+const prosSd=(sc,p)=>scSd(sc,p)*obsF(dcEvalObs(p,sc))*draftVis(p)*obsTwoM(p,G.user); /* 두 스카우트가 본 선수는 0.9배(67_scout_trip) */ /* 관찰 횟수와 이름난 정도(모든 구단 같은 식, 64_scout_obs·aiDraftScore) */
 /* 담당 고르기: 후보를 주면 그 후보 오차가 가장 작은 사람(검수 11-09e #20). 지역 없이 부르면 국내(아마추어·프로) 담당 중 최고, 해외 파견자는 국내 선수를 보지 않는다(#26) */
 function bestScout(region,p){ if(region){ if(!p)return scoutOf('am',region); return G.scouts.filter(x=>(x.role||'am')==='am'&&x.region===region).map(s=>Object.assign({},s,{skill:effSkill(s)})).sort((a,b)=>prosSd(a,p)-prosSd(b,p))[0]||null; } const s=G.scouts.filter(x=>x.role!=='intl').sort((a,b)=>effSkill(b)-effSkill(a))[0]; return s?Object.assign({},s,{skill:effSkill(s)}):null; }
 function archetype(t,p){ // t: 평가된 도구 점수
@@ -24670,14 +24680,14 @@ function obsBySchool(){ const by={}; for(const e of Object.values(amPipe().L))(b
 const obsSpon=(n,tid)=>{ const S=(G.schools||{})[n]; return !!S&&schGave(S,tid); };
 function clubAmScouts(tid){ return ((tid===G.user?G.scouts:G.lgStaff&&G.lgStaff[tid]&&G.lgStaff[tid].sc)||[]).filter(s=>(s.role||'am')==='am'&&s.region); }
 function obsVisitWeek(day){ if(!amOn()||!G.amU||!G.teams)return 0; const by=obsBySchool(); const win=(m=>m===12||m<=2)(dobj(day).m); let n=0; G.obsVis=G.obsVis||{};
-  for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const scs=clubAmScouts(tid); if(!scs.length)continue;
+  for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const scs=clubAmScouts(tid).filter(s=>{ const k=tripOf(s); return k==='sch'||k==='camp'; }); if(!scs.length)continue; /* 대회 출장 중인 스카우트는 학교 방문을 쉰다(스카우트 2단계) */
     const F=obsFollowSet(tid), P=obsPriL(tid), V=G.obsVis[tid]=G.obsVis[tid]||{}, used=new Set();
-    const mo=dobj(day).m, nV=mo>=3&&mo<=8?2:1; /* 시즌(3~8월)에는 한 주에 두 곳 */
-    for(let v=0;v<nV;v++)for(const s of scs){ const L=obsSchoolsOf(s.region).filter(x=>!used.has(x)); if(!L.length)continue;
+    const mo=dobj(day).m, nV=mo>=3&&mo<=8?2:1; /* 시즌(3~8월)에는 한 주에 두 곳, 겨울 전지훈련 출장도 두 곳 */
+    for(let v=0;v<2;v++)for(const s of scs){ if(v>=nV&&tripOf(s)!=='camp')continue; const L=obsSchoolsOf(s.region).filter(x=>!used.has(x)); if(!L.length)continue;
       const sc=x=>{ let v=0; for(const y of by[x]||[])v+=F.has(y.id)?OBS_W[P[y.id]??1]*1.2:.04; if(F.has('s:'+x))v+=1; if(obsSpon(x,tid))v+=.8; if(V[x]!=null&&day-V[x]<OBS_GAP)v-=50; return v+u01('scv'+day+':'+tid+':'+s.id,x)*1.5; };
       const best=L.map(x=>[x,sc(x)]).sort((a,b)=>b[1]-a[1])[0][0]; used.add(best); V[best]=day; n++;
       const k=obsSpon(best,tid)?1.25:1; /* 후원 학교는 훈련장 문이 더 열려 있다 */
-      for(const y of by[best]||[]){ const f=F.has(y.id); obsAdd(y,tid,(1+(f?OBS_VB[P[y.id]??1]:0))*k); if(tid===G.user&&(f||y.prospect))obsLogAdd(y,s,best,win,day); }
+      for(const y of by[best]||[]){ const f=F.has(y.id); obsAdd(y,tid,(1+(f?OBS_VB[P[y.id]??1]:0))*k); obsByAdd(y,tid,s.id); if(tid===G.user&&(f||y.prospect))obsLogAdd(y,s,best,win,day); }
       const S=(G.schools||{})[best]; if(S)schAdd(S,.5+(effSkill(s)||1)*.15,tid); } }
   try{ _dcc=null; }catch(e){} return n; }
 /* ---------- 방문 보고 한 줄(우리 구단) ---------- */
@@ -24734,8 +24744,8 @@ function dplanCheck(){ const P=dplanOf(), SL=(G.shortlist||[]).map(id=>G.players
 function dplanBonus(p){ const d=G.draft; if(!d||d.done)return 0; const P=dplanOf(), g=dplanG(p), r=P[g]; if(!r)return 0; const rd=d.picks[d.cur]&&d.picks[d.cur].rd; if(!rd||rd>r)return 0;
   return d.picks.some(k=>k.tid===G.user&&k.pid>0&&G.players[k.pid]&&dplanG(G.players[k.pid])===g)?0:4; }
 /* 경기장에서 본 관심 선수(우리 구단): 그날 박스 한 줄을 보고에 남긴다 */
-function obsLogGame(x,t,reg,day){ const sc=clubAmScouts(G.user).find(s=>s.region===reg); const Lg=G.obsLog=G.obsLog||{}; const L=Lg[x.id]=Lg[x.id]||[]; const prev=L.length?L[L.length-1][3]:null;
-  L.push([day,sc?sc.name:'스카우트팀',`경기 관전 · ${t.b}`,prev]); if(L.length>6)L.splice(0,L.length-6); }
+function obsLogGame(x,t,reg,day,who,ev){ const sc=who?null:clubAmScouts(G.user).find(s=>s.region===reg); const Lg=G.obsLog=G.obsLog||{}; const L=Lg[x.id]=Lg[x.id]||[]; const prev=L.length?L[L.length-1][3]:null;
+  L.push([day,who||(sc?sc.name:'스카우트팀'),`${ev?ev+' ':''}경기 관전 · ${t.b}`,prev]); if(L.length>6)L.splice(0,L.length-6); }
 /* ===== 드래프트 예상: 소문과 확률 (스카우트 1단계, 사용자 결정 11-17) =====
    예전 '예상 지명'은 AI의 실제 지명 함수(aiDraftChoose)를 돌려 거의 정답을 보여 줬다. 이제는 그 구단이 정당하게 아는 것만 쓴다.
    - 재료: 우리 평가(스카우트 보고서·신뢰도), 공개 정보(언론 순위·공개 아마 성적 amDraftAdj), 각 구단 로스터로 짐작한 자리 필요(draftNeed),
@@ -24743,7 +24753,7 @@ function obsLogGame(x,t,reg,day){ const sc=clubAmScouts(G.user).find(s=>s.region
    - 방법: 후보의 '진짜 값'을 우리 평가와 언론 평가를 신뢰도만큼 섞어 뽑고, 다른 구단마다 제 눈의 오차를 더해 앞 순번부터 고르게 하는 모의를 240번 돌린다.
      우리 차례에는 우리 보드(관심 목록 순서, 없으면 스카우트 순위) 1순위를 고른다. 남은 횟수가 곧 '우리 차례까지 남을 확률'이다.
    - AI 구단의 숨은 평가(aiDraftScore·aiDraftChoose)는 읽지 않는다. 다른 구단(tid)도 같은 함수로 자기 평가를 넣어 쓸 수 있다. */
-const DO_N=240, DO_PUB_SD=8, DO_CLUB_SD=6, DO_RUM_B=2.5;
+const DO_N=240, DO_PUB_SD=8, DO_CLUB_SD=8, DO_RUM_B=2.5;
 /* 그 구단이 보는 후보 값과 오차: 우리는 스카우트 보고서, AI는 자기 추정(aiDraftEst) */
 function doOwn(tid,p){ if(tid===G.user){ const rp=scoutReport(p); return {v:rp.ofp??(rp.cur+4),sd:rp.ofp==null?11:Math.sqrt(clamp(rp.sd||6,2,10)**2+9),cur:rp.cur}; } /* 스카우트 버릇·인상 오차(약 3)는 확신도에 안 보이므로 더한다 */ const e=aiDraftEst(tid,p); return {v:e.v,sd:clamp(e.sd,2,10),cur:ovr(p)}; }
 /* 언론 순위를 잠재력 척도로(1위 60 안팎, 10위 48, 30위 43, 100위 37) */
@@ -24825,6 +24835,79 @@ function amTourMvp(S,T){ const L=Object.values((S.tp||{})[T.k]||{}).filter(o=>o[
 function amSlumpNews(o){ const S=G.amL; if(!S||!S.live||(o.m!==6&&o.m!==7))return; const L=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.press&&p.press<=20&&amSlump(p)&&p.amSlN!==G.year).sort((a,b)=>a.press-b.press);
   const p=L[0]; if(!p||!amCap(S,'sl',2))return; p.amSlN=G.year; const T=amTrend(p,!!p.isP).filter(t=>t.k); const a=T[T.length-2], b=T[T.length-1]; const f=v=>p.isP?`ERA ${v.toFixed(2)}`:`OPS ${fmt3(v)}`;
   wire('아마',`언론 순위 ${p.press}위 ${p.name}(${p.school}), 졸업 학년 들어 주춤${a&&b?` · ${f(a.k.v)} → ${f(b.k.v)}`:''}`,{ref:p.id}); }
+/* ===== 스카우트 2단계: 대회 출장 배정 (2026-11-17) =====
+   아마추어 스카우트는 '대회'로 출장한다(s.trip={k,from,to,man}). k: 권역 주말리그 조(wl:조), 대학 U-리그 조(ul:조), 전국대회(t0~t4), 대학선수권(ct),
+   학교 방문(sch, 기본), 겨울 전지훈련(camp, 12~2월 학교 방문 두 배).
+   - 관찰은 출장한 대회 경기에 나온 선수에게만 쌓인다. 한 스카우트가 하루 경기 세 개까지 본다(관심 선수가 많이 나오는 경기 먼저).
+     관심 선수는 한 경기 1회(+집중 0.5·보통 0.25), 그 밖의 선수는 0.35회. 같은 선수를 우리 스카우트 둘이 보면 두 번째 의견이 생긴다(오차 0.9배).
+   - 출장이 없는 주(학교 방문·전지훈련)에만 학교 방문(obsVisitWeek)을 한다.
+   - 매주 월요일 스카우트팀장이 앞으로 4주 출장 안을 낸다. 팀장 맡기기(기본 켬)면 그대로 보낸다. 끄면 출장 안 메일 한 통([그대로]·[바꾸기]).
+   - 다른 구단도 같은 함수로 같은 출장 안을 만들어 그대로 보낸다(같은 관찰 함수).
+   - 우리 구단은 일요일마다 '현장 보고' 한 통(그 주에 본 경기·눈에 띈 선수 3명·집중 선수 소식, 출장이 있던 주만).
+   - 옛 저장: 출장 기록이 없으면 처음 맞는 날 바로 출장 안을 만든다(그 주부터 적용) */
+const TRIP_OTHER=.35, TRIP_PB=[0,.25,.5], TRIP_GAMES=3, TRIP_TWO=.9;
+const tripAutoOn=()=>G.tripAuto!==false; /* 기본 켬 */
+const tripWk0=d=>d-((dobj(d).w+6)%7); /* 그 주 월요일 */
+function amGroupReg(g){ return /서울|경기·강원/.test(g)?'수도권':/충청|호남/.test(g)?'호남·충청':/경상/.test(g)?'영남':null; }
+/* 그 주에 열리는 대회(출장 후보) */
+function tripOptions(w0,reg){ const y=dobj(w0).y, m=dobj(w0).m, w1=w0+6, out=[]; const S=G.amL&&G.amL.y===y?G.amL:null;
+  const win=m===12||m<=2; out.push({k:win?'camp':'sch',n:win?'동계 전지훈련(학교 방문 두 배)':'학교 방문',days:0});
+  for(const t of AM_TOURS().concat([AM_COLT])){ const [a,b]=amTourSpan(y,t); const T=S&&S.tour[t.k]; if(b<w0||a>w1||(T&&T.ch))continue; const n=Math.min(b,w1)-Math.max(a,w0)+1; out.push({k:t.k,n:t.n,days:n,nat:1}); }
+  const lgD=S&&S.lgD?S.lgD:amLeagueDays(y,false), clD=S&&S.clD?S.clD:amLeagueDays(y,true);
+  const nL=lgD.filter(d=>d>=w0&&d<=w1).length, nC=clD.filter(d=>d>=w0&&d<=w1).length;
+  if(nL)for(const [g] of amGroups())if(!reg||amGroupReg(g)===reg)out.push({k:'wl:'+g,n:`주말리그 ${g}조`,days:nL});
+  if(nC)for(const [g] of amColGroups())out.push({k:'ul:'+g,n:`대학 ${g}`,days:nC});
+  return out; }
+const tripName=k=>!k||k==='sch'?'학교 방문':k==='camp'?'동계 전지훈련':k.startsWith('wl:')?`주말리그 ${k.slice(3)}조`:k.startsWith('ul:')?`대학 ${k.slice(3)}`:amSpName(k);
+/* 출장 대회에 나오는 학교: 대회는 아직 남은 학교, 리그는 조 학교 */
+function tripSchools(k,y){ const S=G.amL&&G.amL.y===y?G.amL:null; if(k.startsWith('wl:'))return ((amGroups().find(x=>x[0]===k.slice(3))||[])[1])||[]; if(k.startsWith('ul:'))return ((amColGroups().find(x=>x[0]===k.slice(3))||[])[1])||[];
+  const T=S&&S.tour[k]; if(T)return T.cur.filter(Boolean); return k==='ct'?AREA.flatMap(a=>a.un):AREA.flatMap(a=>a.hs); }
+/* 출장 안: 그 주 대회마다 관심 선수 무게(집중 1.5·보통 1·참고 0.5) × 경기 날 수, 다른 스카우트와 겹치면 0.4배 */
+function tripPlanWeek(tid,w0,by){ by=by||obsBySchool(); const scs=clubAmScouts(tid); const F=obsFollowSet(tid), P=obsPriL(tid), y=dobj(w0).y; const out={}; const taken={};
+  const val=k=>{ let v=0, b=0; for(const n of tripSchools(k,y))for(const x of by[n]||[]){ if(F.has(x.id))v+=OBS_W[P[x.id]??1]; else b+=x.prospect?.08:.02; } return v+Math.min(1.2,b); }; /* 관심 밖 선수는 하루 세 경기만 보니 무게에 상한 */
+  for(const s of [...scs].sort((a,b)=>(b.skill||0)-(a.skill||0))){ const O=tripOptions(w0,s.region); let best=O[0], bs=.6; /* 학교 방문 기본 가치 */
+    for(const o of O){ if(!o.days)continue; const v=val(o.k)*Math.min(1,o.days/2)*(taken[o.k]?.25:1)+(o.nat?.3:0)+(o.k.startsWith('wl:')&&amGroupReg(o.k.slice(3))===s.region?.3:0)+u01('trp'+w0+':'+tid+':'+s.id,o.k)*.2; if(v>bs){ bs=v; best=o; } }
+    out[s.id]=best.k; if(best.days)taken[best.k]=1; }
+  return out; }
+function tripPlan4(tid,d){ const w0=tripWk0(d??G.day), by=obsBySchool(); return [0,1,2,3].map(i=>({w0:w0+i*7,P:tripPlanWeek(tid,w0+i*7,by)})); }
+function tripApply(tid,P,w0){ for(const s of clubAmScouts(tid)){ if(s.trip&&s.trip.man&&s.trip.from>=w0&&tid===G.user)continue; s.trip={k:P[s.id]||'sch',from:w0,to:w0+6}; } }
+const tripOf=s=>s&&s.trip&&s.trip.to>=G.day&&s.trip.from<=G.day?s.trip.k:'sch';
+/* 매주 월요일(모든 구단). 우리 구단은 팀장 맡기기면 그대로, 아니면 출장 안 메일 */
+function tripWeekly(day,force){ const w0=tripWk0(day); for(const t of G.teams||[]){ const tid=t.id; if(tid===G.user&&G.unemp)continue; if(!clubAmScouts(tid).length)continue; const P=tripPlanWeek(tid,w0);
+    if(tid!==G.user||tripAutoOn()){ tripApply(tid,P,w0); continue; }
+    G.tripPend={w0,P}; const sc=clubAmScouts(tid); const now=sc.filter(s=>tripOf(s)!==P[s.id]);
+    if(!force&&now.length)mail('스카우트팀',`다음 주 출장 안: ${now.length}명 바꿈`,sc.map(s=>`${s.name}: ${tripName(tripOf(s))} → ${tripName(P[s.id])}`).join('\n')+'\n\n그대로 두면 지금 출장을 이어 갑니다.',{kind:'스카우트',acts:[{l:'그대로',a:'tripPlanGo',v:''},{l:'바꾸기',a:'go',v:'staff:scouts'}]}); } }
+function tripPlanGo(){ const T=G.tripPend; if(!T)return '출장 안이 없습니다.'; tripApply(G.user,T.P,T.w0); delete G.tripPend; return '팀장 출장 안대로 보냈습니다.'; }
+function tripSet(sid,k){ const s=(G.scouts||[]).find(x=>String(x.id)===String(sid)); if(!s)return '스카우트가 없습니다.'; const w0=tripWk0(G.day); s.trip={k,from:G.day,to:w0+6,man:true}; return `${s.name} 스카우트를 ${tripName(k)}(으)로 보냅니다. 이번 주 일요일까지입니다.`; }
+/* 경기 날: 출장 중인 스카우트가 그 대회 경기를 본다(모든 구단 같은 식) */
+function tripWatchDaily(d){ if(_amToday.d!==d||!_amToday.L.length)return; const games={}; for(const x of _amToday.L){ if(!x.ev)continue; (games[x.ev+'|'+x.gk]=games[x.ev+'|'+x.gk]||{ev:x.ev,L:[]}).L.push(x); }
+  const GL=Object.values(games); if(!GL.length)return;
+  for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const F=obsFollowSet(tid), P=obsPriL(tid); const seenBy={};
+    for(const s of clubAmScouts(tid)){ const k=tripOf(s); if(k==='sch'||k==='camp')continue; const mine=GL.filter(g=>g.ev===k); if(!mine.length)continue;
+      const pick=mine.map(g=>({g,v:g.L.reduce((a,x)=>a+(F.has(x.id)?OBS_W[P[x.id]??1]:0),0)+u01('tg'+d+':'+tid+':'+s.id,g.L[0].id)*.1})).sort((a,b)=>b.v-a.v).slice(0,TRIP_GAMES);
+      for(const {g} of pick)for(const x of g.L){ const o=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(!o)continue; const f=F.has(x.id); const key=s.id+':'+x.id; if(seenBy[key])continue; seenBy[key]=1;
+        obsAdd(o,tid,f?1+TRIP_PB[P[x.id]??1]:TRIP_OTHER); obsByAdd(o,tid,s.id);
+        if(tid!==G.user)continue; if(f)try{ obsLogGame(o,x,s.region,d,s.name,tripName(k)); }catch(e){}
+        if(f||tripStand(x.b)){ const W=G.tripWk=G.tripWk&&G.tripWk.w0===tripWk0(d)?G.tripWk:{w0:tripWk0(d),L:[]}; if(W.L.length<200)W.L.push([s.name,k,x.id,x.b,x.kind]); } } } }
+  try{ _dcc=null; }catch(e){} }
+/* 눈에 띈 경기: 투수 7탈삼진 이상·6이닝 무실점, 타자 3안타 이상·홈런 */
+function tripStand(b){ b=b||''; const k=/(\d+)탈삼진/.exec(b), h=/(\d+)안타/.exec(b); return !!(k&&+k[1]>=7||/^[6-9](\.\d)?이닝 0실점/.test(b)||h&&+h[1]>=3||/홈런/.test(b)); }
+/* 두 번째 의견: 우리(또는 그 구단) 스카우트 둘 이상이 본 선수 */
+function obsByAdd(o,tid,sid){ const B=o.obsBy=o.obsBy||{}; const L=B[tid]=B[tid]||[]; if(!L.includes(sid)){ L.push(sid); if(L.length>3)L.shift(); } }
+const obsTwo=(o,tid)=>!!(o&&o.obsBy&&(o.obsBy[tid??G.user]||[]).length>=2);
+const obsTwoM=(o,tid)=>obsTwo(o,tid)?TRIP_TWO:1;
+/* 두 스카우트 의견(우리 화면): 같은 관찰을 각자 눈으로 본 등급 */
+function obsOpinions(o){ const L=(o&&o.obsBy&&o.obsBy[G.user]||[]).map(id=>(G.scouts||[]).find(s=>s.id===id)).filter(Boolean).slice(0,2); if(L.length<2)return null;
+  const est=o.prospect?(()=>{ const r=scoutReport(o); return {v:r.ofp??r.cur+6,sd:r.sd>=50?SCOUT_SD[0]:r.sd}; })():amEstU(o,G.user);
+  return L.map(s=>({s,t:amTierOf(est.v+hn('so'+s.id+G.year,o.id)*Math.max(2,est.sd)*.7)})); }
+/* 현장 보고(우리 구단, 일요일, 출장이 있던 주만) */
+function tripReport(day){ const W=G.tripWk; if(!W||W.w0!==tripWk0(day)||!W.L.length||G.unemp){ return null; } const by={}; for(const r of W.L)(by[r[0]]=by[r[0]]||{k:r[1],L:[]}).L.push(r);
+  const F=obsFollowSet(G.user), P=obsPriL(G.user); const nm=r=>{ const o=r[4]==='e'?amPipe().L[r[2]]:G.players[r[2]]; return o?`${o.n||o.name}(${o.s||o.school||''})`:''; };
+  const lines=Object.entries(by).map(([who,v])=>{ const top=[...v.L].sort((a,b)=>(F.has(b[2])?OBS_W[P[b[2]]??1]:0)+tripStand(b[3])-(F.has(a[2])?OBS_W[P[a[2]]??1]:0)-tripStand(a[3])).filter((r,i,A)=>A.findIndex(z=>z[2]===r[2])===i).slice(0,3);
+    return `${who} · ${tripName(v.k)}\n${top.map(r=>`  ${nm(r)}: ${r[3]}${F.has(r[2])&&P[r[2]]===2?' (집중)':''}`).join('\n')}`; });
+  delete G.tripWk; mail('스카우트팀',`현장 보고 ${dmd(W.w0)}~${dmd(W.w0+6)}`,lines.join('\n\n')+'\n\n본 선수들은 관찰이 쌓여 평가가 정확해졌습니다.',{kind:'스카우트',acts:[{l:'관찰 명단',a:'go',v:'staff:scouts'}]}); return lines.length; }
+function tripDaily(day){ if(!G.teams)return; const o=dobj(day); if(G.tripV!==1){ G.tripV=1; try{ tripWeekly(day,true); if(G.tripPend&&!tripAutoOn())tripPlanGo(); }catch(e){ console.error(e); } }
+  else if(o.w===1)tripWeekly(day); if(o.w===0)try{ tripReport(day); }catch(e){ console.error(e); } }
 /* ---------- 잠재력은 숫자가 아니라 스카우트의 '말'로 ----------
    진짜 잠재력(p.pot)은 화면에 내보내지 않는다. 스카우트·코치진·감독의 추정치를 등급 문장으로 바꿔 보여 주고,
    그대로 크지 못할 수 있는 이유(큰 부상, 출전 기회, 훈련 환경, 나이)를 함께 붙인다. 정렬·비교에는 추정치를 그대로 쓴다 */
@@ -33485,7 +33568,7 @@ function scoutBody(){
     return `<div class="sasg" aria-label="담당 업무">${G3.map(([l,os])=>`<div><i>${l}</i>${optRow('sAssign',cur,os,s.id,'wsx')}</div>`).join('')}</div>`; };
   const it={cur:UI._smk?(UI.smkSrc==='oth'?'oth':'mkt'):'team',bar:''}; /* 채용 후보·다른 구단은 스태프 시장으로 */
   const TEAM=`<p class="small muted">스카우트 한 명은 한 가지 업무만 맡습니다. 투수 감별·타자 감별 특기가 있으면 그 유형 선수를 볼 때 능력이 한 단계 높습니다. 아마추어는 그 지역 고교·대학 선수(드래프트), 프로는 그 지역 연고 구단 선수, 해외는 그 나라 외국인 시장을 봅니다. 해외 담당을 보내면 그 나라 정보 수준이 한 단계 올라갑니다. 업무를 바꾸면 30일 동안 적응 기간이라 능력이 1 낮게 적용됩니다. 최대 ${scoutMax()}명.</p>
-    ${matrix}${scoutChiefBox()}
+    ${matrix}${scoutChiefBox()}${tripBox()}
     <div class="tgrid">${G.scouts.map(s=>scoutCard(s,`${opt(s)}${G.day-(s.since??-999)<30?`<span class="pill warn">적응 중 · ${dmd(s.since+30)}까지</span>`:''}<span class="small muted">${staffLoyWord(stAttr(s).loy)}</span><button class="tc-i" data-a="person" data-v="sc:${s.id}">인물 카드</button><button class="tc-i danger" data-a="fireScout" data-v="${s.id}">계약 해지</button>`)).join('')||'<p class="small muted">스카우트가 없습니다.</p>'}</div>`;
   const MK=`<div class="eyebrow">고용 ${G.scouts.length}/${scoutMax()}명 · ${stPrestigeLine()}</div>
     ${(()=>{ const f=UI.scF||'all'; return `<div class="row between"><span class="small muted">채용 후보 ${scoutMkt().length}명 · 매달 일부가 바뀝니다</span>${UI._smkFb?'':`<div class="chips">${[['all','전체'],['P','투수 감별'],['B','타자 감별'],['hi','능력 4 이상']].map(([k,l])=>`<button data-a="scF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div>`}</div>`; })()}
@@ -35135,7 +35218,7 @@ function scoreView(){
 /* 리그 소식: 다른 구단 외국인 교체·감독 선임·FA 이적 */
 function wireView(){ if(fmOn())return wireFm(); const all=G.wire||[]; const ks=[...new Set(all.map(w=>w.k))]; const W=UI.wk?all.filter(w=>w.k===UI.wk):all;
   const kc=ks.length>1?`<div class="chips"><button data-a="wk" data-v="" class="${!UI.wk?'on':''}">전체</button>${ks.map(k=>`<button data-a="wk" data-v="${esc(k)}" class="${UI.wk===k?'on':''}">${esc(k)}</button>`).join('')}</div>`:'';
-  return csec('리그 소식',kc+(W.length?(()=>{ const P=pager('wire',W.slice(0,120),20); return `<div class="list">${P.items.map(w=>`<div class="item wa" ${pAttr(w.ref)||'style="cursor:default"'}>${w.tid!=null?badge(w.tid,24):`<span class="av ini">${ASSOC.s}</span>`}<span class="nm">${lk(w.t)}</span><span class="sub"><span class="pill">${esc(w.k)}</span> ${dsh(w.d)}</span></div>`).join('')}</div>${P.bar}`; })():'<p class="small muted">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>')); }
+  return csec('리그 소식',kc+(W.length?(()=>{ const P=pager('wire',W.slice(0,120),20); return `<div class="list">${P.items.map(w=>`<div class="item wa" ${pAttr(w.ref)||'style="cursor:default"'}>${w.tid!=null?badge(w.tid,24):w.ref!=null&&G.players[w.ref]&&w.k==='아마'?avImg(G.players[w.ref]):`<span class="av ini wire-assoc">${ASSOC.s}</span>`}<span class="nm">${lk(w.t)}</span><span class="sub"><span class="pill">${esc(w.k)}</span> ${dsh(w.d)}</span></div>`).join('')}</div>${P.bar}`; })():'<p class="small muted">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>')); }
 /* 우리 구단 기사(구단 > 팬·언론) */
 function ourNewsView(){ G.newsSeen=Math.max(newsSeen(),...(G.news||[]).map(n=>n.id||0));
   const own=(G.news||[]).filter(n=>!n.oth); /* 다른 구단 기사는 빼고 우리 구단 기사만(플레이테스트 4 #18) */ const kinds=[...new Set(own.map(n=>n.k).filter(Boolean))]; const ns=own.filter(n=>!UI.nk||n.k===UI.nk);
@@ -38692,7 +38775,7 @@ function scoutFM(){ const S=G.scouts||[], ch=scoutChief(), sel=UI.scSel&&S.find(
     if(role==='pro'){ const T=proT(key); return [who,`${T.map(t=>esc(tshort(t.id))).join(', ')||'다른 구단 없음'} 선수 평가`,`${T.reduce((a,t)=>a+playersOf(t.id).length,0)}명 · 잠재력 추정 가능`]; }
     const lv=intlLv(key); return [who,`${IREG[key].l}(${IREG[key].lg}) ${IREG[key].asia?'아시아쿼터':'외국인'} 시장`,`정보 수준 ${INET[lv].l} · 후보 ${fm.filter(p=>origOf(p)===key).length}명`]; };
   const gaps=REG.filter(r=>!S.some(s=>(s.role||'am')==='am'&&s.region===r)).map(r=>`<tr class="miss"><td>${esc(scoutSlotTxt('am',r))}</td><td colspan="2">담당 없음 · 이 지역 드래프트 후보는 잠재력을 판단하지 못합니다</td></tr>`).join('');
-  const tasks=`<section class="card scn-job"><h3>진행 중인 과제 <em>${K.length}곳</em></h3>${scoutChiefBox()}<div class="sf-tw"><table class="sf-t scn-t"><thead><tr><th>담당</th><th>하는 일</th><th>현황</th></tr></thead><tbody>${K.map(k=>{ const [r,key]=k.split(':'), [who,what,now]=job(r,key); return `<tr><td>${esc(scoutSlotTxt(r,key))}<span class="scn-s">${who}</span></td><td class="wrap">${what}</td><td>${now}</td></tr>`; }).join('')}${gaps}</tbody></table></div>${ch?`<div class="scn-chief"><div class="row between"><b>스카우트팀장 ${esc(ch.name)} ${'★'.repeat(effSkill(ch))}</b><span class="row"><button class="btn small${G.scoutAuto?' primary':''}" data-a="scoutAuto">${G.scoutAuto?'팀장 배치 중 · 끄기':'팀장에게 맡기기'}</button>${!G.scoutAuto&&scoutPlan().some(x=>x.move)?`<button class="btn small" data-a="scoutPlanGo">제안대로 배치 ${scoutPlan().filter(x=>x.move).length}명</button>`:''}</span></div><p class="scn-cp">${scoutDraftSea()?'드래프트 시즌 · 아마추어 우선':'외국인·FA 시즌 · 해외·프로 우선'} ${G.scoutAuto?'· 팀장 배치':scoutPlan().filter(x=>x.move).map(x=>`${esc(x.s.name)} → ${esc(scoutSlotTxt(x.role,x.key))}`).join(', ')||'지금 배치가 팀장 생각과 같습니다.'}</p></div>`:''}</section>`;
+  const tasks=`<section class="card scn-job"><h3>출장 일정·과제 <em>${K.length}곳</em></h3>${tripBox()}${scoutChiefBox()}<div class="sf-tw"><table class="sf-t scn-t"><thead><tr><th>담당</th><th>하는 일</th><th>현황</th></tr></thead><tbody>${K.map(k=>{ const [r,key]=k.split(':'), [who,what,now]=job(r,key); return `<tr><td>${esc(scoutSlotTxt(r,key))}<span class="scn-s">${who}</span></td><td class="wrap">${what}</td><td>${now}</td></tr>`; }).join('')}${gaps}</tbody></table></div>${ch?`<div class="scn-chief"><div class="row between"><b>스카우트팀장 ${esc(ch.name)} ${'★'.repeat(effSkill(ch))}</b><span class="row"><button class="btn small${G.scoutAuto?' primary':''}" data-a="scoutAuto">${G.scoutAuto?'팀장 배치 중 · 끄기':'팀장에게 맡기기'}</button>${!G.scoutAuto&&scoutPlan().some(x=>x.move)?`<button class="btn small" data-a="scoutPlanGo">제안대로 배치 ${scoutPlan().filter(x=>x.move).length}명</button>`:''}</span></div><p class="scn-cp">${scoutDraftSea()?'드래프트 시즌 · 아마추어 우선':'외국인·FA 시즌 · 해외·프로 우선'} ${G.scoutAuto?'· 팀장 배치':scoutPlan().filter(x=>x.move).map(x=>`${esc(x.s.name)} → ${esc(scoutSlotTxt(x.role,x.key))}`).join(', ')||'지금 배치가 팀장 생각과 같습니다.'}</p></div>`:''}</section>`;
   /* 지식 범위: 아마추어·프로 지역, 해외 나라별 정보 수준. 배치 중이면 칸이 버튼 */
   const cell=(role,key,label,sub)=>{ const sc=role==='intl'?S.find(s=>s.role==='intl'&&s.region===key):scoutOf(role,key), lv=role==='intl'?intlLv(key):0, v=role==='intl'?lv/3:sc?sc.skill/5:0;
     const here=sel&&(sel.role||'am')===role&&sel.region===key, pick=sel&&!here, tag=pick?'button':'div';
@@ -43536,6 +43619,7 @@ function obsDetail(x){ if(!x)return `<section class="card obs-det"><p class="sma
   if(x.k==='am'||x.k==='dr'){ const rv=obsRecVsEval(x); if(rv)L.push(`<p class="small"><b>기록 대 평가</b> ${esc(rv)}</p>`);
     L.push(`<p class="small"><b>학년 흐름</b> ${amTrendHtml(x.x,!!(x.k==='am'?x.x.P:x.x.isP),!!(x.k==='am'?x.x.c:x.x.college))}${x.k==='dr'?amSlTag(x.x):''}</p>`);
     const yy=amRecYear(), sp=amSplitLines(x.x,yy).concat(yy===G.year?[]:[]); if(sp.length)L.push(`<div class="small"><b>${yy} 대회별 기록</b>${sp.map(s=>`<div class="obs-sp"><span>${esc(s.n)}</span><span>${esc(s.t)}</span></div>`).join('')}</div>`);
+    { const op=obsOpinions(x.x); if(op)L.push(`<p class="small"><b>두 의견</b> ${op.map(z=>`${esc(z.s.name)} 스카우트 ${esc(z.t)}`).join(' · ')}</p>`); }
     L.push(`<p class="small"><b>평가</b> ${esc(x.ev)} · 신뢰도 ${esc(x.conf)} · 관찰 ${x.obs}회${x.last!=null?` · 마지막 ${obsDay(x.last)}`:''}</p>`);
     const lg=((G.obsLog||{})[x.id]||[]).slice().reverse(); L.push(`<div class="obs-log"><b class="small">방문 보고</b>${lg.length?lg.map(r=>`<p class="small"><span class="muted">${dmd(r[0])} · ${esc(r[1])}</span> ${esc(r[2])}</p>`).join(''):'<p class="small muted">아직 방문 보고가 없습니다. 집중으로 두면 담당 스카우트가 그 학교를 먼저 찾습니다.</p>'}</div>`); }
   else if(x.k==='fo'){ let f=null; try{ f=fScout(x.x); }catch(e){} const rp=scoutReport(x.x);
@@ -43563,6 +43647,23 @@ function obsWatchPage(){ if(G.unemp)return '<section class="card"><p class="smal
   return `<div class="obsw">${left}${obsDetail(sel)}</div>`; }
 Object.assign(A,{ obsF(v){ UI.obsF=v; render(); }, obsSel(v){ UI.obsSel=v; render(); },
   obsPri(v){ const [id,p]=String(v).split(':'); const e=obsSetPri(+id,+p); if(e)toast(e); save(); render(); } });
+/* ===== 스카우트 › 출장 일정 (스카우트 2단계) =====
+   위 한 줄: 앞으로 4주 대회 달력. 아래: 아마추어 스카우트마다 4주 출장(이번 주는 실제 출장, 다음 주부터 팀장 안).
+   이번 주 칸의 [다음 대회 ▾]를 누르면 그 주 고를 수 있는 대회가 칩으로 펼쳐진다 */
+function tripCalLine(w0){ const y=dobj(w0).y, L=[]; for(const t of AM_TOURS().concat([AM_COLT])){ const [a,b]=amTourSpan(y,t); if(b<w0||a>w0+27)continue; L.push(`${dmd(a)}~${dmd(b)} ${t.n}`); }
+  const S=G.amL&&G.amL.y===y?G.amL:null, lg=(S&&S.lgD?S.lgD:amLeagueDays(y,false)).filter(d=>d>=w0&&d<=w0+27).length; if(lg)L.unshift(`주말리그 ${lg}일`);
+  const m=dobj(w0).m; if(m===12||m<=2)L.unshift('동계 전지훈련(제주·남해)'); return L.length?L.join(' · '):'대회가 없는 기간입니다. 학교 방문으로 저학년을 봅니다'; }
+function tripBox(){ if(G.unemp)return ''; const sc=clubAmScouts(G.user); if(!sc.length)return '<p class="small muted">아마추어 스카우트가 없어 출장을 보낼 수 없습니다.</p>';
+  const W=tripPlan4(G.user), w0=W[0].w0, sel=UI.tripSel;
+  const cellT=(s,i)=>{ const k=i===0?tripOf(s):W[i].P[s.id]; return `<td class="${i===0?'now':''}">${esc(tripName(k))}${i===0&&s.trip&&s.trip.man?' <i class="small muted">직접</i>':''}${i===0?` <button class="tc-i" data-a="tripSel" data-v="${s.id}">${sel===String(s.id)?'닫기':'다음 대회 ▾'}</button>`:''}</td>`; };
+  const pick=s=>sel!==String(s.id)?'':`<tr class="trip-pick"><td colspan="5"><div class="chips">${tripOptions(w0,s.region).map(o=>`<button data-a="tripSet" data-v="${s.id}|${esc(o.k)}" class="${tripOf(s)===o.k?'on':''}">${esc(o.n)}${o.days?` · ${o.days}일`:''}</button>`).join('')}</div></td></tr>`;
+  const head=`<tr><th>스카우트</th>${W.map((w,i)=>`<th>${i?dmd(w.w0)+' 주':'이번 주'}</th>`).join('')}</tr>`;
+  const rows=sc.map(s=>`<tr><td><button class="lnk" data-a="person" data-v="sc:${s.id}">${esc(s.name)}</button><small class="block muted">${esc(s.region)} ${'★'.repeat(effSkill(s))}</small></td>${W.map((w,i)=>cellT(s,i)).join('')}</tr>${pick(s)}`).join('');
+  return `<div class="trip"><div class="row between wrapr"><b>출장 일정</b><span class="row"><button class="btn small${tripAutoOn()?' primary':''}" data-a="tripAuto">${tripAutoOn()?'팀장 맡기기 켬':'팀장 맡기기 끔'}</button>${!tripAutoOn()&&G.tripPend?'<button class="btn small" data-a="tripPlanGo">팀장 안대로</button>':''}</span></div>
+    <p class="small trip-cal">${esc(tripCalLine(w0))}</p><div class="tw"><table class="sqt trip-t"><thead>${head}</thead><tbody>${rows}</tbody></table></div>
+    <p class="small muted">출장한 대회 경기에 나온 선수만 관찰이 쌓입니다. 출장이 없는 주에는 학교를 찾아 1~3학년을 봅니다. ${tripAutoOn()?'팀장이 매주 월요일 출장을 정합니다.':'매주 월요일 팀장 출장 안이 메일로 옵니다.'}</p></div>`; }
+Object.assign(A,{ tripSel(v){ UI.tripSel=UI.tripSel===String(v)?null:String(v); render(); }, tripSet(v){ const [id,k]=String(v).split('|'); toast(tripSet(id,k)); UI.tripSel=null; save(); render(); },
+  tripAuto(){ G.tripAuto=!tripAutoOn(); if(tripAutoOn())tripApply(G.user,tripPlanWeek(G.user,tripWk0(G.day)),tripWk0(G.day)); save(); render(); }, tripPlanGo(){ toast(tripPlanGo()); save(); render(); } });
 /* ===== 아마추어 야구 화면(13_amateur_league): 시즌 요약·주말리그·전국대회·대학·선수·학교 =====
    스카우트 화면의 하위 탭. 학교를 누르면 학교 페이지, 저학년 선수를 누르면 선수 카드(능력 수치 없이 기록과 말)로 간다 */
 function amSeasonOf(){ const y=G.year; if(G.amL&&G.amL.y===y)return G.amL; if(G.amLp)return G.amLp; return null; }
@@ -44374,6 +44475,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-scout2',d:'11월 17일',t:'스카우트 대회 출장',items:[
+    '아마추어 스카우트를 주말리그 조·전국대회·대학 U-리그로 출장 보냅니다. 출장한 대회 경기에 나온 선수만 관찰이 쌓이고, 출장이 없는 주에는 학교를 찾아 1~3학년을 봅니다.',
+    '스카우트팀장이 매주 월요일 4주 출장 안을 냅니다. 팀장 맡기기는 처음부터 켜져 있고, 끄면 출장 안 메일에서 [그대로]·[바꾸기]를 고릅니다. 스카우트 화면 출장 일정에서 [다음 대회 ▾]로 직접 보낼 수 있습니다.',
+    '출장이 있던 주에는 일요일마다 현장 보고가 옵니다. 우리 스카우트 둘이 본 선수는 두 의견이 보이고 평가가 조금 더 정확해집니다. 다른 구단도 같은 규칙으로 출장합니다.']},
   {id:'2026-11-17-scout1',d:'11월 17일',t:'스카우트: 1학년부터 보는 관찰 명단과 소문으로 짐작하는 드래프트',items:[
     '스카우트 › 관찰 명단 탭 하나에 저학년·드래프트 후보·외국인·해외파·타구단 선수가 모입니다. 줄에서 바로 집중·보통·참고를 고르고, 집중은 스카우트 수 × 4명까지입니다.',
     '아마추어 스카우트가 매주 담당 지역 학교를 찾아 1학년부터 관찰이 쌓입니다. 방문마다 짧은 보고(날짜·스카우트·본 것)가 남고, 학년이 오를수록 평가 범위가 좁아집니다. 관찰 횟수는 모든 화면에서 같은 숫자입니다.',
