@@ -5459,6 +5459,11 @@ button.st-n:hover b{text-decoration:underline}
 @media(min-width:1100px){#sheet .sheet.ps-pc>.btns{margin-top:6px}#sheet .sheet.ps-pc>.ps-body{margin:0}#sheet .sheet.ps-pc .pcx{margin-block:0 4px}}
 @media(min-width:1100px){#sheet .sheet.ps-pc{padding-bottom:6px!important}#sheet .sheet.ps-pc .ps-tabs{margin:0 0 4px}#sheet .sheet.ps-pc>.ps-rel{margin-block:6px 4px!important}}
 @media(min-width:1100px){#sheet .sheet.ps-pc{row-gap:6px}#sheet .sheet.ps-pc>.ps-rel{margin-block:0!important}#sheet .sheet.ps-pc .ps-tabs{margin:0}#sheet .sheet.ps-pc>.btns{margin-top:0}}
+/* 분석원 관리(PC): 화면 높이 안에서 카드 목록만 쪽으로 넘긴다(UI 3단계 3-0, 57_fit_pages.js) */
+@media(min-width:1100px){#app main .ws-own.anl-fit{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}#app main .ws-own.anl-fit>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0}#app main .ws-own.anl-fit>section.card>*{flex:none}#app main .ws-own.anl-fit>section.card>.tgrid{flex:1 1 auto;min-height:0;overflow:auto;align-content:start}}
+.anl-fit.v-mk section.card>.eyebrow,.anl-fit.v-mk section.card>.eyebrow~*{display:none!important}
+.anl-fit.v-oth section.card>:is(.chips,.tgrid:not(.staff-other-cards),.eyebrow),.anl-fit.v-oth section.card>.chips~p.hint:not(.eyebrow~p){display:none!important}
+.anl-fit.v-oth section.card>p.hint:first-of-type{display:none}
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
@@ -6417,6 +6422,12 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .fbar-side .seg{flex-wrap:nowrap;margin:0}.fbar-side .seg button{white-space:nowrap}
 @media(max-width:700px){.fbar-side .seg button{padding-inline:8px}}
 @media(max-width:700px){#app .fbar .fbar-row .fbar-b.btn.small,#sheet .fbar .fbar-row .fbar-b.btn.small{min-height:44px!important;height:44px}#app .fbar .fbar-row .fbar-q,#sheet .fbar .fbar-row .fbar-q{min-height:44px!important;height:44px}}
+
+/* PC 목록 쪽 나눔(UI 3단계 3-0, 57_fit_pages.js): 상자 안 스크롤 대신 들어가는 줄만, 아래 '‹ 1/4 ›' */
+.fp-on{overflow:hidden!important}
+.fp-off{display:none!important}
+.fp-bar{position:sticky;bottom:0;grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;padding:3px 4px 0;background:inherit;font-size:var(--ui-caption);color:var(--muted)}
+.fp-bar .tc-i{min-width:32px;min-height:26px;padding:0 8px;margin:0!important;flex:none}
 </style>
 </head>
 <body>
@@ -29330,7 +29341,7 @@ function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenE
 if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
-function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
+function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{ fitPages(); }catch(e){}try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
@@ -34659,7 +34670,7 @@ function coachView(){ if(fmOn()&&!UI.coachCards&&!UI._smk)return staffFM(); /* P
 /* 스태프 시장(FM의 스태프 찾기처럼 한 곳): 감독·코치·스카우트·분석원 후보와 다른 구단 소속 스태프 */
 function smkLink(k,l){ return `<div class="row" style="margin:8px 0"><button class="btn small" data-a="smkGo" data-v="${k}">${l}</button></div>`; }
 /* 분석원 관리(사용자 11-06: 전력분석원 채용·해지가 데이터 화면 오른쪽 좁은 칸에 묻혀 있었다): 우리 분석원·역할·해지와 채용 후보를 한 화면에 크게 */
-function anlView(){ UI._smk=true; let mine='', mk=''; try{ UI._anlMine=true; mine=dataPage(); UI._anlMine=false; mk=dataPage(); }finally{ UI._smk=false; UI._anlMine=false; } const out=csec('우리 전력분석팀 · 역할·해지',mine,`<span class="small muted">${anaList().length}/${ANA_MAX}명 · 연 ${money(anaSal())}</span>`)+csec('채용 후보',mk,`<span class="small muted">${anaList().length}/${ANA_MAX}명 · 연 ${money(anaSal())}</span>`); return fmOn()?`<div class="ws-own sfw">${out}</div>`:out; }
+function anlView(){ UI._smk=true; let mine='', mk=''; try{ UI._anlMine=true; mine=dataPage(); UI._anlMine=false; mk=dataPage(); }finally{ UI._smk=false; UI._anlMine=false; } const cnt=`<span class="small muted">${anaList().length}/${ANA_MAX}명 · 연 ${money(anaSal())}</span>`; const oth=/staff-other-cards/.test(mk), it=inTabs('anlv',[['mine','우리 전력분석팀'],['mk',`채용 후보 ${anaMarket().length}`],...(oth?[['oth','다른 구단 분석원']]:[])],'mine'); /* 한 화면에(UI 3단계 3-0): 우리 팀과 채용 후보를 탭으로 나눈다. 후보 카드의 제안 버튼은 그대로 */ const out=it.cur!=='mine'?csec(it.cur==='oth'?'다른 구단 분석원':'채용 후보',mk,cnt):csec('우리 전력분석팀 · 역할·해지',mine,cnt); return it.bar+`<div class="${fmOn()?'ws-own sfw ':''}anl-fit v-${it.cur}">${out}</div>`; }
 function staffMarketView(){ const k=UI.smkK||'mgr'; const src=UI.smkSrc||'free'; const K=[['mgr','감독'],['coach','코치'],['sc','스카우트'],['an','분석원']];
   const sq=String(UI.smkQ||'').trim();
   const fb=k==='sc'?filterBar({id:'smk-sc',q:{k:'smkQ',v:sq,ph:'이름 검색',label:'스카우트 이름 검색'},groups:[{l:'후보',a:'smkSrc',cur:src,def:'free',opts:[['free','자유 계약 후보'],['oth','다른 구단 소속']]},src==='free'&&{l:'특기',a:'scF',cur:UI.scF||'all',def:'all',opts:[['all','전체'],['P','투수 감별'],['B','타자 감별'],['hi','능력 4 이상']]}]})
@@ -36038,7 +36049,7 @@ function spoilMask0(g,p,keepDetail=false){ /* 경기 직전 사본이 있으면 
   const details=keepDetail?null:Object.fromEntries(['spl','spr','splP','sprP'].map(k=>[k,p[k]]));if(details)for(const k in details)p[k]=undefined; /* 옛 저장에 경기 전 분포가 없으면 최종 경기 분포를 노출하지 않는다. */
   const y=dobj(g.day).y, i=p.hist.map((h,j)=>[h,j]).filter(([h])=>h.y===y&&h.lvl==='1군'&&!h.y2).map(x=>x[1]).pop(); const H0=p.hist, GL0=p.gl; if(i!=null){ const h=Object.assign({},H0[i]); for(const k in q)if(k!=='id'&&typeof q[k]==='number'&&typeof h[k]==='number')h[k]=Math.max(0,h[k]-q[k]); if(typeof h.g==='number')h.g=Math.max(0,h.g-1); if(p.isP&&typeof h.w==='number'&&q.d==='승')h.w--; if(p.isP&&typeof h.l==='number'&&q.d==='패')h.l--; if(p.isP){ if(h.sv&&q.d==='세')h.sv--; if(h.hld&&q.d==='홀')h.hld--; if(h.gs&&['h','a'].some(sd=>g.box[sd]&&g.box[sd].pit&&g.box[sd].pit[0]&&g.box[sd].pit[0].id===p.id))h.gs--; } p.hist=H0.slice(); p.hist[i]=h; }
   if(GL0&&GL0.g&&GL0.y===y){ const has=x=>['h','a'].some(sd=>x.box&&x.box[sd]&&(x.box[sd][p.isP?'pit':'bat']||[]).some(z=>z.id===p.id)), pre=(G.games||[]).filter(x=>x!==g&&x.day===g.day&&(x.gid||0)<(g.gid||0)&&has(x)).length; let n=-1; p.gl={y,g:GL0.g.filter(r=>r[0]!==g.day||++n!==pre)}; } /* 같은 날 두 경기: 숨길 경기의 로그 한 줄만 뺀다(검수 11-09zzc #16) */ return ()=>{ p.hist=H0; p.gl=GL0;if(details)for(const k in details)p[k]=details[k]; }; }
-function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ twPager(); workspaceFit(); workspaceDetail(); twPager(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ twPager(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -38113,7 +38124,7 @@ function workspaceFit(host){
   if(pages>1){
     /* 표·보고 묶음도 버튼 줄로: 묶음마다 제목 버튼 하나(한 번 눌러 바로 이동) */
     const bar=document.createElement('nav');bar.className='ws-pages ws-tab-row';bar.setAttribute('aria-label','표·보고 묶음');
-    const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');b.onclick=()=>{page=i;sync();};return b;});
+    const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');b.onclick=()=>{page=i;sync();try{ fitPages(); }catch(e){}};return b;}); /* 새로 보인 칸의 목록도 쪽으로 나눈다(UI 3단계 3-0) */
     const sync=()=>{show();buttons.forEach((b,i)=>{b.classList.toggle('on',i===page);b.setAttribute('aria-current',i===page?'true':'false');});wsRowHint(bar);};
     bar.append(...buttons);const navigation=root.querySelector(':scope > .ws-navigation');
     if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else root.insertBefore(bar,deck);sync();
@@ -38164,6 +38175,7 @@ function workspaceReveal(selector){
     const columns=+deck.style.getPropertyValue('--ws-columns')||1;
     bar?.querySelector(`[data-ws-page="${Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click(); }
   const fb=document.querySelector(selector)?.closest('.fbar-p[hidden]')?.closest('[data-fbar]'); if(fb)A.fbarTog(fb.dataset.fbar); /* 필터 바 칸 안의 조건이면 칸을 연다 */
+  try{ fitPagesReveal(document.querySelector(selector)); }catch(e){} /* PC 목록 쪽 나눔의 다른 쪽에 있으면 그 쪽으로(UI 3단계 3-0) */
 }
 
 function workspaceDetail(){
@@ -38411,6 +38423,54 @@ window.addEventListener('scroll',()=>{ if(UI.fbarOpen!=null&&innerWidth>700)fbar
 /* 목록 안 ⋯(mm-fixed): 칸(ws-panel)이 넘침을 잘라 PC 펼침이 가려지지 않게 화면 기준으로 띄운다 */
 document.addEventListener('click',e=>{ const b=e.target&&e.target.closest&&e.target.closest('.mm-fixed>[data-mmenu]'); if(!b||innerWidth<=700)return; const m=b.closest('.mmenu'), p=m.querySelector('.mmenu-p'); if(!m.classList.contains('open')||!p)return;
   const r=b.getBoundingClientRect(), w=p.offsetWidth, h=p.offsetHeight, up=r.bottom+h+8>innerHeight; p.style.position='fixed'; p.style.top=Math.round(up?Math.max(8,r.top-h-4):r.bottom+4)+'px'; p.style.bottom='auto'; p.style.left=Math.round(Math.max(8,Math.min(r.right-w,innerWidth-w-8)))+'px'; p.style.right='auto'; });
+/* ---------- PC 목록 쪽 나눔(UI 3단계 3-0, 구단주 11-16 "드래그 없게, 넘치면 탭처럼") ----------
+   PC(1100px 이상)에서 상자 안 목록·표가 칸보다 길어 스크롤바가 생기면, 칸에 들어가는 줄만 보이고 '‹ 1/4 ›'로 넘긴다.
+   페이지와 상자가 같이 스크롤되는 이중 스크롤을 없앤다. 휴대폰은 화면 전체가 한 번에 내려가므로 그대로 둔다.
+   표는 tbody 줄, 그 밖의 목록은 칸의 직계 자식(같은 모양 줄 4개 이상)을 나눈다. 이미 쪽 나눔이 있는 목록(.pgr 옆)과 경기 중계는 건드리지 않는다. */
+const FP_SKIP='.cast,.cs-bg,.match-dashboard,.fdl-main,.free-list,.pf-overview,.mmenu,.cfm,.ws-tab-row,.chips,.seg,.subtabs,.fbar-p,.ibx-list,.ibs-box,.talk,.meet';
+function fpRows(c){
+  const tb=c.matches('table')?c:c.querySelector(':scope>table,:scope>.tw>table,:scope>div>table');
+  if(tb&&tb.tBodies[0]&&c.contains(tb)){ const rows=[...tb.tBodies[0].rows].filter(r=>r.getClientRects().length); return {rows,table:tb}; }
+  const kids=[...c.children].filter(e=>e.getClientRects().length&&!e.matches('h2,h3,h4,.fp-bar,.pgr,.twpg,summary,p.small,p.note,.note'));
+  if(kids.length<4)return null;
+  const big=kids.filter(e=>e.getBoundingClientRect().height>c.clientHeight-34).length; if(big)return null; /* 한 쪽에 한 줄도 안 들어가면 목록이 아니다 */
+  return {rows:kids,table:null};
+}
+function fitPages(){
+  if(typeof document==='undefined')return;
+  document.querySelectorAll('.fp-bar').forEach(b=>b.remove()); document.querySelectorAll('.fp-off').forEach(r=>r.classList.remove('fp-off')); document.querySelectorAll('.fp-on').forEach(c=>c.classList.remove('fp-on'));
+  if(innerWidth<1100||(typeof workspaceCompact==='function'&&workspaceCompact()))return;
+  UI.fpPg=UI.fpPg||{}; let ix=0; const scope=(UI.sheet!=null||UI.person||UI.teamSh!=null)?'s':(UI.tab+':'+(UI.sub||''));
+  const roots=[...document.querySelectorAll('#app main.content,#sheet .sheet')];
+  for(const root of roots){
+    const cands=[...root.querySelectorAll('*')].filter(c=>{ const s=getComputedStyle(c); return /(auto|scroll)/.test(s.overflowY)&&c.scrollHeight>c.clientHeight+4&&c.clientHeight>=80&&c.getClientRects().length&&!c.closest(FP_SKIP)&&!(c.nextElementSibling&&c.nextElementSibling.matches('.pgr')); });
+    /* 안쪽부터: 바깥 칸이 안쪽 칸을 줄로 삼지 않게 */
+    for(const c of cands.reverse()){
+      if(c.querySelector('.fp-on'))continue;
+      const R=fpRows(c); if(!R||R.rows.length<4)continue;
+      const key=scope+':'+(ix++)+':'+R.rows.length;
+      const firstTop=R.rows[0].getBoundingClientRect().top, avail=c.clientHeight-(firstTop-c.getBoundingClientRect().top+c.scrollTop)-34;
+      if(avail<40)continue;
+      const pages=[]; let start=0, st=firstTop;
+      R.rows.forEach((r,i)=>{ const b=r.getBoundingClientRect(); if(i>start&&b.bottom-st>avail){ pages.push([start,i]); start=i; st=b.top; } }); pages.push([start,R.rows.length]);
+      if(pages.length<2)continue;
+      const pg=Math.min(UI.fpPg[key]||0,pages.length-1); const [a,z]=pages[pg];
+      R.rows.forEach((r,i)=>{ if(i<a||i>=z)r.classList.add('fp-off'); });
+      c.classList.add('fp-on'); c.scrollTop=0;
+      const bar=document.createElement('div'); bar.className='fp-bar';
+      bar.innerHTML=`<button type="button" class="tc-i" ${pg>0?'':'disabled'} aria-label="앞 쪽">‹</button><span class="num">${pg+1} / ${pages.length}</span><button type="button" class="tc-i" ${pg<pages.length-1?'':'disabled'} aria-label="다음 쪽">›</button>`;
+      const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.fpPg[key]=pg+d; fitPages(); };
+      bp.onclick=()=>go(-1); bn.onclick=()=>go(1); c._fpGo=go; c._fpPages=pages; c._fpKey=key; c._fpRows=R.rows;
+      c.append(bar); c._fpH=c.clientHeight; fpObs()?.observe(c);
+    }
+  }
+}
+/* 칸 높이가 나중에 바뀌면(작업 화면 높이 재계산·창 크기 변경) 다시 나눈다. 같은 높이면 아무것도 하지 않아 되풀이되지 않는다 */
+let _fpRO=null,_fpRAF=0;
+function fpObs(){ if(_fpRO||typeof ResizeObserver==='undefined')return _fpRO; _fpRO=new ResizeObserver(es=>{ if(!es.some(e=>e.target.isConnected&&Math.abs(e.target.clientHeight-(e.target._fpH||0))>2))return; cancelAnimationFrame(_fpRAF); _fpRAF=requestAnimationFrame(()=>{ try{ _fpRO.disconnect(); fitPages(); }catch(e){} }); }); return _fpRO; }
+/* 숨은 쪽에 있는 줄을 보여 준다(검색·바로 가기·검사용 workspaceReveal) */
+function fitPagesReveal(el){ const row=el&&el.closest('.fp-off'); if(!row)return; const c=row.closest('.fp-on'); if(!c||!c._fpPages)return; const i=(c._fpRows||[]).indexOf(row); if(i<0)return; const p=c._fpPages.findIndex(([a,z])=>i>=a&&i<z); if(p>=0){ UI.fpPg[c._fpKey]=p; fitPages(); } }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ try{ fitPages(); }catch(e){} cancelAnimationFrame(t); t=requestAnimationFrame(()=>{ try{ fitPages(); }catch(e){} }); }); } /* 크기가 바뀌는 그 자리에서 다시 나눈다(이전 크기의 쪽이 남아 줄이 잘려 보이지 않게) */
 /* ---------- 우승 순간 카드(홈 맨 위). 확인을 누를 때까지 남는다 ---------- */
 function trophySvg(){ return `<svg class="trophy" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 8h24v10c0 9-5 16-12 16S20 27 20 18z" fill="#f2c14e"/><path d="M20 12H10c0 9 5 13 11 13M44 12h10c0 9-5 13-11 13" fill="none" stroke="#f2c14e" stroke-width="3"/><rect x="29" y="33" width="6" height="11" fill="#d9a630"/><rect x="21" y="44" width="22" height="6" rx="1" fill="#d9a630"/><rect x="17" y="50" width="30" height="6" rx="1" fill="#b8871f"/></svg>`; }
 function champHomeCard(){ const c=G.champNew; if(!c||c.seen||G.unemp||(c.tid!=null&&c.tid!==G.user))return ''; const t=team(G.user); const ev=(G.evs||[]).find(e=>e.k==='champGift'&&!e.done);

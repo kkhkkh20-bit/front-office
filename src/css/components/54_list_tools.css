@@ -68,3 +68,9 @@
 .fbar-side .seg{flex-wrap:nowrap;margin:0}.fbar-side .seg button{white-space:nowrap}
 @media(max-width:700px){.fbar-side .seg button{padding-inline:8px}}
 @media(max-width:700px){#app .fbar .fbar-row .fbar-b.btn.small,#sheet .fbar .fbar-row .fbar-b.btn.small{min-height:44px!important;height:44px}#app .fbar .fbar-row .fbar-q,#sheet .fbar .fbar-row .fbar-q{min-height:44px!important;height:44px}}
+
+/* PC 목록 쪽 나눔(UI 3단계 3-0, 57_fit_pages.js): 상자 안 스크롤 대신 들어가는 줄만, 아래 '‹ 1/4 ›' */
+.fp-on{overflow:hidden!important}
+.fp-off{display:none!important}
+.fp-bar{position:sticky;bottom:0;grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;padding:3px 4px 0;background:inherit;font-size:var(--ui-caption);color:var(--muted)}
+.fp-bar .tc-i{min-width:32px;min-height:26px;padding:0 8px;margin:0!important;flex:none}

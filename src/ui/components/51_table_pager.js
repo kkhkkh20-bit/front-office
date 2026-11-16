@@ -136,7 +136,7 @@ function workspaceFit(host){
   if(pages>1){
     /* 표·보고 묶음도 버튼 줄로: 묶음마다 제목 버튼 하나(한 번 눌러 바로 이동) */
     const bar=document.createElement('nav');bar.className='ws-pages ws-tab-row';bar.setAttribute('aria-label','표·보고 묶음');
-    const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');b.onclick=()=>{page=i;sync();};return b;});
+    const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');b.onclick=()=>{page=i;sync();try{ fitPages(); }catch(e){}};return b;}); /* 새로 보인 칸의 목록도 쪽으로 나눈다(UI 3단계 3-0) */
     const sync=()=>{show();buttons.forEach((b,i)=>{b.classList.toggle('on',i===page);b.setAttribute('aria-current',i===page?'true':'false');});wsRowHint(bar);};
     bar.append(...buttons);const navigation=root.querySelector(':scope > .ws-navigation');
     if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else root.insertBefore(bar,deck);sync();
@@ -187,6 +187,7 @@ function workspaceReveal(selector){
     const columns=+deck.style.getPropertyValue('--ws-columns')||1;
     bar?.querySelector(`[data-ws-page="${Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click(); }
   const fb=document.querySelector(selector)?.closest('.fbar-p[hidden]')?.closest('[data-fbar]'); if(fb)A.fbarTog(fb.dataset.fbar); /* 필터 바 칸 안의 조건이면 칸을 연다 */
+  try{ fitPagesReveal(document.querySelector(selector)); }catch(e){} /* PC 목록 쪽 나눔의 다른 쪽에 있으면 그 쪽으로(UI 3단계 3-0) */
 }
 
 function workspaceDetail(){
