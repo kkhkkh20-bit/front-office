@@ -13,9 +13,9 @@ async function cRunLegs(id,el,from,last,dur,o){ const c={el,from,to:last,leg:fro
   for(;;){ const left=c.legEnd-performance.now(); if(left<=1)break; if(i===4&&o.slide&&!c.slid&&left<=900/cSpd()&&c.dur>1000&&typeof Match3D.slide==='function'){ c.slid=true; Match3D.slide('o'+id,CHM,left,false); } await cSleep(Math.min(left*cSpd(),60)); if(o.retired.has(id))return false; } }
  c.done=true; return true; }
 function cRunAt(id,base){ const c=CRUN&&CRUN.get(id); if(!c)return null; return c.legEnd+(base-c.leg)*c.dur/cSpd(); }
-function cRunNeed(id,base,ballAt,apply,est){ const c=CRUN&&CRUN.get(id); if(!c&&est){ const want=ballAt-180; return est.at<=want?1:Math.max(.5,(want-est.start)/Math.max(1,est.at-est.start)); } if(!c||c.done||c.slid||base>c.to||base<c.leg)return 1; const now=performance.now(), legReal=c.dur/cSpd(), frac=Math.max(0,(c.legEnd-now)/legReal), legs=frac+(base-c.leg); if(legs<=0)return 1;
- const want=c.out?ballAt+200:ballAt-180, cur=c.legEnd+(base-c.leg)*legReal; if(c.out?cur>=want:cur<=want)return 1; const f=Math.max(.5,Math.min(1.8,(want-now)/(legs*legReal)));
- if(apply){ c.dur*=f; c.legEnd=now+frac*c.dur/cSpd(); cPlace(c.el,CPATH[c.leg],frac*c.dur); } return f; }
+function cRunNeed(id,base,ballAt,apply,est){ const c=CRUN&&CRUN.get(id); if(!c&&est){ const want=ballAt-180; return est.at<=want?1:Math.max(0,(want-est.start)/Math.max(1,est.at-est.start)); } if(!c||c.done||c.slid||base>c.to||base<c.leg)return 1; const now=performance.now(), legReal=c.dur/cSpd(), frac=Math.max(0,(c.legEnd-now)/legReal), legs=frac+(base-c.leg); if(legs<=0)return 1;
+ const cur=c.legEnd+(base-c.leg)*legReal; let want; if(c.out){ if(cur>=ballAt+200&&cur<=ballAt+600)return 1; if(cur<ballAt+200)return 1; want=ballAt+350; } /* 주자는 늦추지 않는다(사용자 11-16: 수비도 주자도 최선의 플레이). 아웃인데 주자가 빠르면 송구 쪽이 더 빨리 간다(c3DThrow의 by) */ else { if(cur<=ballAt-180)return 1; want=ballAt-180; } /* 아웃 주자도 공이 잡히고 0.2~0.6초 안에 들어온다: 야수가 공을 받아 놓고 오래 기다리지 않게(사용자 11-16) */ const raw=(want-now)/(legs*legReal); if(raw>=1)return 1; const f=Math.max(RUN_FIT_MIN,raw);
+ if(apply){ c.dur*=f; c.legEnd=now+frac*c.dur/cSpd(); cPlace(c.el,CPATH[c.leg],frac*c.dur); } return raw; }
 const CBASE={'1B':1,'2B':2,'3B':3,'C':4};
 function cRunFitBase(toPos,ballAt){ const b=CBASE[toPos]; if(!b||!CRUN)return; CRUNB[b]=ballAt; for(const [id,c] of CRUN)if(c.to===b&&!c.done)cRunNeed(id,b,ballAt,true); }
 const RUN_FIT_MIN=.62; /* 이보다 더 빨리 뛰어야 하면 그 베이스로 던지지 않는다(중계·송구 포기) */
