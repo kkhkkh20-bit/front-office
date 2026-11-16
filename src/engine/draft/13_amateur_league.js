@@ -319,7 +319,7 @@ function amFollow(id,on,tid){ tid=tid??G.user; const L=amFollowL(tid), i=L.index
 function amWatchDaily(d){ if(_amToday.d!==d||!_amToday.L.length)return; const regOf=n=>{ const a=AREA.find(x=>x.hs.includes(n)||x.un.includes(n)); return a?a.reg:null; };
   for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const regs=amClubRegs(tid), F=obsFollowSet(tid), P=obsPriL(tid); const seen=new Set();
     for(const x of _amToday.L){ if(seen.has(x.id))continue; const fol=F.has(x.id); const here=regs.includes(regOf(x.sch))||F.has('s:'+x.sch); if(!fol&&!(here&&u01('amw'+d+':'+tid,x.id)<.25))continue; if(fol&&u01('amwf'+d+':'+tid,x.id)>=OBS_SP[P[x.id]??1])continue; seen.add(x.id);
-      const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(!s)continue; obsAdd(s,tid,fol?1:.5); } } } /* 관심 선수 경기는 우선순위만큼 더 자주 본다(집중 30%·보통 20%·참고 10% 경기, 스카우트 1단계) */
+      const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(!s)continue; obsAdd(s,tid,fol?1:.5); if(fol&&tid===G.user)try{ obsLogGame(s,x,regOf(x.sch),d); }catch(e){} } } } /* 관심 선수 경기는 우선순위만큼 더 자주 본다(집중 30%·보통 20%·참고 10% 경기, 스카우트 1단계) */
 function amObsM(p,tid){ const n=obsRaw(p,tid); return 1-Math.min(.2,n*.0125); } /* 1~3학년 내내 쌓인 관찰(최대 20% 감소) */
 const amObsN=(p,tid)=>obsCount(p,tid); /* 화면마다 같은 관찰 횟수(64_scout_obs) */
 const amObsTxt=(p,tid)=>{ const n=amObsN(p,tid); return n?`관찰 ${n}회 · 평가 오차 ${Math.round((1-amObsM(p,tid))*100)}% 줄어듦`:'관찰 전'; };

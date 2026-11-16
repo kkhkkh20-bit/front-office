@@ -95,3 +95,6 @@ function dplanCheck(){ const P=dplanOf(), SL=(G.shortlist||[]).map(id=>G.players
 /* 자동 지명 가산: 목표 라운드 안이고 이번 드래프트에서 아직 그 자리를 못 뽑았으면 +4 */
 function dplanBonus(p){ const d=G.draft; if(!d||d.done)return 0; const P=dplanOf(), g=dplanG(p), r=P[g]; if(!r)return 0; const rd=d.picks[d.cur]&&d.picks[d.cur].rd; if(!rd||rd>r)return 0;
   return d.picks.some(k=>k.tid===G.user&&k.pid>0&&G.players[k.pid]&&dplanG(G.players[k.pid])===g)?0:4; }
+/* 경기장에서 본 관심 선수(우리 구단): 그날 박스 한 줄을 보고에 남긴다 */
+function obsLogGame(x,t,reg,day){ const sc=clubAmScouts(G.user).find(s=>s.region===reg); const Lg=G.obsLog=G.obsLog||{}; const L=Lg[x.id]=Lg[x.id]||[]; const prev=L.length?L[L.length-1][3]:null;
+  L.push([day,sc?sc.name:'스카우트팀',`경기 관전 · ${t.b}`,prev]); if(L.length>6)L.splice(0,L.length-6); }

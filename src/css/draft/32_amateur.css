@@ -68,11 +68,8 @@
 .do-chip{align-self:flex-start;width:fit-content;max-width:100%}
 .fx-wr .av.ini{white-space:nowrap;overflow:hidden;font-size:8px;letter-spacing:-.5px} /* 소속 없는 소식의 협회 표시가 세로로 쪼개지지 않게 */
 .fx-wr img.av{width:18px;height:18px;border-radius:50%;object-fit:cover}
-@media(max-width:699px){ /* 휴대폰: 관찰 명단 줄을 카드처럼(우선순위 버튼이 첫 화면에 보이게) */
-  .obs-tbl{min-width:0!important;width:100%}
-  .obs-tbl thead{display:none}
-  .obs-tbl tbody tr{display:grid;grid-template-columns:auto auto auto minmax(0,1fr);gap:4px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
-  .obs-tbl tbody td{padding:0 2px;border:0}
-  .obs-tbl tbody td:first-child,.obs-tbl tbody td:nth-child(3){grid-column:1/-1}
-  .obs-tbl tbody td:nth-child(5){display:none}
-}
+.obs-scroll.hide{display:none}
+.obs-mlist{display:flex;flex-direction:column}
+.obs-m{display:flex;flex-direction:column;gap:4px;padding:8px 0;border-bottom:1px solid var(--line)}
+.obs-m.on{background:#3d7cc71f}
+.obs-m .candidate-name{background:none!important;justify-content:flex-start;text-align:left;width:100%}

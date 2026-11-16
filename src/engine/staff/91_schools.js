@@ -95,7 +95,7 @@ const schGave=(S,tid)=>!!S&&!!S.gy&&typeof S.gy==='object'&&S.gy[tid??G.user]===
 function schGift(n){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const S=schList()[n]; if(!S)return '학교가 없습니다.'; if(schGave(S))return `${n}에는 올해 이미 후원했습니다.`;
   schSponsor(S,G.user); try{ _dcc=null; }catch(e){} /* 스카우트 주장 캐시도 새로(검수 11-09e #24) */ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+10; return `${n} 야구부에 장비를 후원했습니다(${money(10)}). ${S.coach.name} 감독과 친분 ${schRelLbl(schRel(S))}.`; }
 /* 학교 친분이 평가 오차에 주는 배수(우리 구단만): 친분 0이면 1.08배, 100이면 0.92배, 귀띔받은 선수는 0.85배 더 */
-function schSdM(p,tid){ tid=tid??G.user; const S=p&&p.prospect?schOf(p):null; if(!S)return 1; return clamp((1.08-schRel(S,tid)*.0016)*(schTipKnown(p,tid)?.85:1),.75,1.08); } /* 모든 구단 같은 식(스카우트 1단계) */
+function schSdM(p,tid){ tid=tid??G.user; const S=p&&p.prospect&&p.school&&G.schools?G.schools[p.school]||null:null; /* 학교 목록을 여기서 만들지 않는다(난수 소비 없이, 저장·불러오기 결정성) */ if(!S)return 1; return clamp((1.08-schRel(S,tid)*.0016)*(schTipKnown(p,tid)?.85:1),.75,1.08); } /* 모든 구단 같은 식(스카우트 1단계) */
 
 /* 권역 학교 한꺼번에 후원(카페 11-15: 하나씩 누르기 번거롭다). 학교마다 규칙은 schGift와 같다 */
 function schGiftTargets(area){ return Object.values(schList()).filter(S=>(area==='all'||S.area===area)&&!schGave(S)); }
