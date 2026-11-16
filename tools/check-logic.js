@@ -9,6 +9,8 @@ const results=[]; const T=(name,fn)=>results.push({name,fn});
 /* [얼굴 v18] 시나리오용: 화면 쪽 얼굴 번호표(FACE6, 사진 data URI는 빼고)와 배정 함수(face6Pool·face6Idx)를 엔진 안에서 direct eval로 읽는다. 엄격 모드라 끝 식으로 꺼낸다 */
 globalThis.__faceSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=fs.readFileSync(path.join(__dirname,'..','src','ui','assets','77_assets_ui.js'),'utf8');
   return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n;({FACE6,face6Pool,face6Idx})'; };
+/* [얼굴 가운데] 시나리오용: 얼굴 칸별 머리 중심표(FACECTR)와 자르는 창 함수(fcAt·fcWin) */
+globalThis.__fcSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8'), ui=R('77_assets_ui.js'); return R('00j2_face_centers_data.js')+'\n'+ui.slice(ui.indexOf('function fcAt('),ui.indexOf('function face6Cut('))+'\n;({FACECTR,fcAt,fcWin})'; };
 /* [얼굴 아마추어] 시나리오용: FACE6 번호표와 배정 함수(face6Idx·amIdx). pre: 앞에 붙일 코드(시험용 FACE21 번호표) */
 globalThis.__amSrc=pre=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
   return (pre||'')+'\n'+R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n'+ui.slice(ui.indexOf('function amFaceOn('),ui.indexOf('function amLoad('))+'\n;({FACE6,face6Idx,amIdx,amVar})'; };
@@ -5348,6 +5350,16 @@ T('[얼굴 v18b] 회색 배경으로 다시 납품된 4명(324·328·329·333)�
   ok(F.FACE6.v18.pitch&&F.FACE6.v18.pitch['384']===400&&F.FACE6.v18.h&&['A384','B384','B128','B256'].every(k=>/^[0-9a-f]{8}$/.test(F.FACE6.v18.h[k])),'384 칸 간격·시트 해시(캐시 갱신용)가 없음');
   fresh(); const all=Object.values(G.players).filter(p=>p.team!=null&&!p.foreign).sort((a,b)=>a.age-b.age); const got=new Set(); for(let r=0;r<6&&!got.size;r++){ G.f6={}; G.f6r={}; for(const p of (r%2?all.slice().reverse():all)){ const i=F.face6Idx(p); if(four.includes(i))got.add(i); } }
   ok(got.size>0,'새 배정에서 4명이 한 번도 나오지 않음'); });
+T('[얼굴 가운데] 원본에서 한쪽으로 밀린 v18·v13 칸은 중심표(FACECTR)로 자르는 창을 옮겨 머리가 가운데에 온다·칸 밖으로 나가지 않는다·표에 없는 칸은 예전과 같다',()=>{ const F=eval(globalThis.__fcSrc());
+  const all=[]; for(const set of ['v18','v13'])for(const k in F.FACECTR[set])for(const c in F.FACECTR[set][k])all.push([set,k,+c,F.FACECTR[set][k][c]/1000]);
+  ok(all.length>=200&&all.length<=1200,'중심표 칸 수가 이상함 '+all.length); ok(all.every(a=>a[3]>.15&&a[3]<.85&&Math.abs(a[3]-.5)>=.04),'중심표 값 범위');
+  ok(F.fcAt('v18','A4',3)!=null&&F.fcAt('v18','A4',3)<.35,'고양 A시트 4번째 칸(v18_004, 머리 왼쪽 쏠림)이 표에 없음'); ok(F.fcAt('v18','A0',0)==null&&F.fcAt('nope','x',0)==null,'가운데 칸·없는 표는 null');
+  ok(JSON.stringify(F.fcWin(384,6,0,372,null))==='[6,0,372]','표에 없으면 창 그대로');
+  // 큰 사진(384: 6,0,372)·256·128 큰 사진, 작은 자리(128: 19,9,90), v13(256: 52,50,152 / 14,14,228)
+  const cuts=[['v18',384,6,0,372],['v18',256,4,0,248],['v18',128,2,0,124],['v18',128,19,9,90],['v13',256,52,50,152],['v13',256,14,14,228],['v13',128,26,25,76]];
+  const far=[]; for(const [set,cs,x,y,w] of cuts)for(const a of all.filter(a=>a[0]===set)){ const [X,Y,W]=F.fcWin(cs,x,y,w,a[3]); ok(X>=-1e-9&&Y>=-1e-9&&X+W<=cs+1e-9&&Y+W<=cs+1e-9,'창이 칸 밖 '+a+' '+[cs,X,Y,W]); ok(W>=w*.72-1e-9,'너무 확대 '+a);
+    const before=Math.abs(a[3]*cs-(x+w/2))/w, after=Math.abs(a[3]*cs-(X+W/2))/W; ok(after<=before+1e-9,'옮긴 뒤가 더 나쁨 '+a+' '+cs); ok(after<=.2,'옮긴 뒤에도 20% 넘게 쏠림 '+a+' '+cs+' '+after.toFixed(3)); if(after>.1&&!far.includes(a[0]+a[1]+':'+a[2]))far.push(a[0]+a[1]+':'+a[2]); if(y===0)ok(Y===0,'모자 끝 맞춤(위 0)이 바뀜'); }
+  ok(far.length<=10,'옮겨도 10% 넘게 쏠린 칸이 많음(원본 고침 요청 대상): '+far.length+' '+far.slice(0,12)); });
 T('[비서 v19] 새 게임 비서는 v19 여성 사진·옛 저장의 v8 비서 배정은 v19로·사용자가 고른 사진(v8 포함)은 유지·한 구단 안 중복 없음',()=>{ const F=eval(globalThis.__secSrc());
   ok(F.FACE19.ids.length===20&&F.FACE19.ids.filter(x=>x.f).length===16&&F.SEC8().length===8&&F.secCands().length===28,'후보 수가 틀림(v19 20 + v8 8)');
   fresh(); const o={persona:'staff',pid:'st:비서:'+G.user,team:G.user,age:29,female:true}, key='staff:'+o.pid; const x=F.secIdx(o);
