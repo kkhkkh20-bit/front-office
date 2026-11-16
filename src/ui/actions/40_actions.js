@@ -226,8 +226,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   passPick(){passPick();save();render();},
   draftRest(v){ if(v==='off'){ draftRestSet(null); save(); render(); return; } const [m,n]=String(v).split(':'); draftRestSet(m,+n||3); save(); if(G.draft&&!G.draft.done)dliveStart('am'); else render(); },
   dmove(v){ const [id,d]=v.split(':').map(Number); const L=G.shortlist||[]; const i=L.indexOf(id), j=i+d; if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; save(); render(); },
-  dchk(v){ const [id,k]=v.split(':'); const m=dmemoOf(+id); const i=m.chk.indexOf(k); i>=0?m.chk.splice(i,1):m.chk.push(k); save(); render(); },
-  star(v){G.shortlist=G.shortlist||[]; const id=+v; const i=G.shortlist.indexOf(id); i>=0?G.shortlist.splice(i,1):G.shortlist.push(id); save(); render(); renderSheet();},
+  dchk(v){ const [id,k]=v.split(':'); const m=dmemoOf(+id); const r=rchkAsk(+id,k); const q=rchkOf(+id,k), i=m.chk.indexOf(k); if(q&&i<0)m.chk.push(k); if(!q&&i>=0)m.chk.splice(i,1); toast(r); save(); render(); }, /* 재확인 칩: 실제 요청(64_scout_obs rchkAsk) */
+  dplan(v){ const [g,r]=String(v).split(':'); const P=dplanOf(); if(+r)P[g]=+r; else delete P[g]; save(); render(); },
+  star(v){G.shortlist=G.shortlist||[]; const id=+v; const i=G.shortlist.indexOf(id); i>=0?G.shortlist.splice(i,1):G.shortlist.push(id); if(i>=0&&amFollowing(G.user,id))amFollow(id,false); save(); render(); renderSheet();}, /* 보드에서 빼면 관찰 명단에서도(스카우트 1단계) */
   dset(v){const [k,x]=v.split(':'); UI.df=UI.df||{pos:'all',typ:'all',reg:'all',sort:'rk',seg:'board',more:20}; UI.df[k]=k==='more'?+x:x; if(k!=='more')UI.df.more=30; render();},
   autoPick(){const id=userAutoPick(); if(id)return A.pick(id); save();render();},
   pick(v){ const id=+v; const pk0=G.draft&&G.draft.picks[G.draft.cur]; { const e=userPick(id); if(e){ toast(e); return; } } if(pk0)dlFeedAdd('am',pk0,id); UI.sheet=null; const p=G.players[id]; if(p&&p.team===G.user&&p.draft&&p.draft.rd<=3){ const f=draftFan(p); UI.stamp={title:f.bank==='drSteal'?'스틸 지명':'지명',msg:`${p.draft.rd}라운드 ${p.draft.no}순위 · ${p.name} (${posLabel(p)}, ${p.school||''}) · 언론 순위 ${p.press||'-'}위`,fans:f.lines}; } save(); render(); if(G.draft&&!G.draft.done&&G.draft.picks[G.draft.cur]&&G.draft.picks[G.draft.cur].tid!==G.user)setTimeout(()=>dliveStart('am'),UI.stamp?1600:350); },

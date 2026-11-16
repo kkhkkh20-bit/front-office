@@ -292,6 +292,7 @@
       "src/ui/career/66_team_card.js",
       "src/ui/contracts/66_foreign_neg.js",
       "src/ui/staff/33b_scout_map.js",
+      "src/ui/staff/33d_obs_watch.js",
       "src/ui/draft/32_amateur_view.js",
       "src/ui/staff/33c_sister_club.js",
       "src/ui/decisions/67_delegate.js",

@@ -15,23 +15,27 @@ function tradeInsight(tid,give,get){
     <p class="small muted">숫자는 포지션별 주전의 현재 능력(오버롤)입니다. 선발은 상위 5명 평균(5명이 안 되면 불펜에서 돌려 막는 값)입니다.</p></div>`;
 }
 
-/* 드래프트 센터: 스카우트 추천과 모의 지명 */
-function draftCenter(all,mine){
-  const mk0=mockDraft(12); const oi=mk0.findIndex(m=>m.mine); const before=new Set(mk0.slice(0,oi<0?0:oi).map(m=>m.id)); const inMock=new Set(mk0.map(m=>m.id));
-  const grp=oi<0?[['스카우트 추천',all.slice(0,3)]]:(()=>{ const g1=all.filter(x=>before.has(x.p.id)).slice(0,2), g2=all.filter(x=>!before.has(x.p.id)).slice(0,3), g3=all.filter(x=>!inMock.has(x.p.id)&&!g2.includes(x)).slice(0,2); return [['내려오면 우선 검토(앞 순번에 뽑힐 듯)',g1],['우리 순번에 남을 가능성',g2],['다음 라운드까지 기다려 볼 선수',g3]].filter(x=>x[1].length); })();
-  const top=all.slice(0,3);
-  const row=x=>`<div class="dc-r"><button class="dc-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.p.age}세 · ${x.p.college?'대졸':'고졸'} · ${esc(x.p.region)}</i><em>${esc(x.rp.arch)}${x.rp.role?` · 장래 ${esc(x.rp.role)}`:''}</em></span></button><span class="dc-st small">${esc(amShort(x.p))}</span><span></span>${mine?`<button class="btn small primary" data-a="pick" data-v="${x.p.id}">지명</button>`:''}</div>`;
-  const rec=`<div class="dc-rec">${grp.map(([t,L])=>`<div class="eyebrow">${t}</div>${L.map(row).join('')}`).join('')}</div>`;
-  const recOld=`<div class="dc-rec"><div class="eyebrow">스카우트 추천 3명</div>${top.map(x=>`<div class="dc-r"><button class="dc-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.p.age}세 · ${x.p.college?'대졸':'고졸'} · ${esc(x.p.region)}</i><em>${esc(x.rp.arch)}${x.rp.role?` · 장래 ${esc(x.rp.role)}`:''}</em></span></button><span class="dc-st small">${esc(amShort(x.p))}</span><span></span>${mine?`<button class="btn small primary" data-a="pick" data-v="${x.p.id}">지명</button>`:''}</div>`).join('')}</div>`;
-  const mk=mockDraft(12); const live=G.draft&&!G.draft.done;
-  const mock=mk.length?`<div class="dc-mock"><div class="eyebrow">${live?'우리 다음 순번까지 예상 지명':'1라운드 모의 드래프트'}</div><ol>${mk.map(m=>{ const p=G.players[m.id]; return `<li class="${m.mine?'me':''}"><span class="num">${m.pk.rd}-${m.pk.no}</span>${badge(m.pk.tid,16)}<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><i>${posLabel(p)}</i></li>`; }).join('')}</ol><p class="small muted">우리 스카우트가 본 평가와 각 구단 성향으로 짐작한 예상입니다. 실제 지명과 다를 수 있습니다.</p></div>`:'';
+/* 드래프트 센터(스카우트 1단계): 정답 같은 모의 지명 대신 '우리 차례에 남을 확률'과 소문. AI의 실제 지명 함수는 쓰지 않는다(65_draft_odds) */
+function doChip(o){ if(!o)return ''; const v=o.av; return `<span class="do-chip ${v>=.7?'good':v>=.35?'':'warn'}" title="${esc(o.top?`가장 먼저 데려갈 듯한 구단: ${tshort(o.top.tid)} (${doPct(o.top.s)})`:'')}">남을 확률 ${doPct(v)}</span>`; }
+function draftCenter(all,mine){ const O=draftOdds(G.user), live=G.draft&&!G.draft.done; const pk=O.pick;
+  const L=all.slice(0,40).map(x=>Object.assign({o:O.P[x.p.id]},x)).filter(x=>x.o);
+  const hi=L.filter(x=>x.o.av>=.7).slice(0,3), mid=L.filter(x=>x.o.av>=.3&&x.o.av<.7).slice(0,3), lo=L.filter(x=>x.o.av<.3).slice(0,3);
+  const row=x=>`<div class="dc-r"><button class="dc-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.p.college?'대졸':'고졸'} · 스카우트 #${x.rk} · 언론 #${x.p.press||'-'}</i><em>${x.o.top&&x.o.top.s>=.15?`${esc(tshort(x.o.top.tid))}이(가) 먼저 데려갈 수 있습니다(${doPct(x.o.top.s)})`:esc(x.rp.arch)}</em></span></button>${doChip(x.o)}${O.pick2?`<span class="small muted">2번째 차례 ${doPct(x.o.av2)}</span>`:'<span></span>'}${mine?`<button class="btn small primary" data-a="pick" data-v="${x.p.id}">지명</button>`:''}</div>`;
+  const grp=[['우리 차례에도 남을 듯',hi],['반반',mid],['앞에서 데려갈 듯',lo]].filter(g=>g[1].length);
+  const where=pk?`${pk.rd}라운드 ${pk.no}순위`:'우리 차례';
+  const rec=`<div class="dc-rec"><div class="eyebrow">${esc(where)}까지 남을 확률</div>${grp.map(([t,G0])=>`<div class="small muted">${t}</div>${G0.map(row).join('')}`).join('')||'<p class="small muted">후보가 없습니다.</p>'}</div>`;
+  const rum=(O.rum||[]).filter(r=>G.players[r.id]).slice(0,8);
+  const rumH=`<div class="dc-mock"><div class="eyebrow">다른 구단 소문</div><ol>${rum.map(r=>{ const p=G.players[r.id]; return `<li>${badge(r.tid,16)}<span class="small">${esc(tshort(r.tid))}이(가) 노린다는 소문</span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><i>${esc(doRelL(r.q))}</i></li>`; }).join('')||'<li class="small muted">들리는 소문이 없습니다.</li>'}</ol><p class="small muted">소문은 그 구단 연고 지역 정보망이 좋을수록, 그 지역 프로 담당 스카우트가 있을수록 잘 맞습니다. 매주 새로 돕니다. 확률은 우리 평가·언론 순위·공개 기록·각 구단 로스터 사정·소문으로 ${DO_N}번 모의한 값입니다. 다른 구단 속마음은 모릅니다.</p></div>`;
+  const sl=all.filter(x=>amSlump(x.p)).slice(0,4).map(x=>({...x,o:O.P[x.p.id]}));
+  const bet=sl.length?`<div class="dc-bet"><div class="eyebrow">3학년 부진 베팅</div>${sl.map(x=>{ const T=amTrend(x.p,!!x.p.isP).filter(t=>t.k); const a=T[T.length-2], b=T[T.length-1]; const f0=v=>x.p.isP?v.toFixed(2):fmt3(v); const h=amSlHint(x.p); const r=!x.o?'':x.o.av>=.6?`우리 ${pk?pk.rd+'R':''} 차례에도 남을 듯`:O.pick2&&x.o.av2>=.5?'2번째 차례까지 남을 수 있음':'앞에서 뽑힐 수 있음';
+      return `<div class="dc-r"><button class="dc-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${esc(x.p.school||'')} · 언론 #${x.p.press||'-'}</i><em>${a&&b?`${x.p.isP?'ERA':'OPS'} ${f0(a.k.v)} → ${f0(b.k.v)}`:'졸업 학년 부진'} · ${h?`스카우트 귀띔: ${esc(h)}`:'귀띔 없음(관찰 5회 이상이면 이유를 듣습니다)'}</em></span></button><span class="small">${esc(r)}</span><span></span></div>`; }).join('')}</div>`:'';
   const rn=rosterN(G.user); const nw=Object.values(G.players).filter(p=>p.team===G.user&&p.joinY>G.year&&!p.ys).length; const tot=rn+nw;
   const rl=`<p class="small ${tot>ROSTER_MAX?'bad':'muted'}" style="margin:8px 0 0">지금 로스터 ${rn}명 + 내년 입단 ${nw}명 = ${tot}명 (상한 ${ROSTER_MAX}명).${tot>ROSTER_MAX?` 개막 전까지 ${tot-ROSTER_MAX}명을 줄여야 합니다. 계약 만료·방출로 정리하세요.`:''}</p>`;
   const lost=(live&&G.draft.lost||[]).slice(-3).reverse(); const left=live?(G.shortlist||[]).filter(id=>G.players[id]&&G.players[id].prospect).length:0;
   const ll=lost.length?`<div class="note warn">${lost.map(x=>`관심 선수 <b>${esc(x.nm)}</b>을(를) ${esc(tshort(x.tid))}이(가) ${x.rd}-${x.no}에 지명`).join('<br>')}${live?` · 관심 목록 남은 선수 ${left}명`:''}</div>`:'';
-  return `<section class="card dcenter">${ll}<div class="dc-g">${rec}${mock}</div>${rl}</section>`;
+  const cal=G.dOddsC&&!live?`<p class="small muted">지난 드래프트 예상 점검: 확률을 매긴 ${G.dOddsC.n}명 · 브라이어 점수 ${G.dOddsC.brier} (0에 가까울수록 잘 맞음)</p>`:'';
+  return `<section class="card dcenter">${ll}<div class="dc-g">${rec}${rumH}</div>${bet}${rl}${cal}</section>`;
 }
-
 /* 선수 카드: 스태프 의견과 빠른 행동 */
 function staffCardP(p){ const L=staffNotes(p); if(!L.length)return '';
   return `<div class="stn">${L.map(x=>`<div><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}</div>`; }

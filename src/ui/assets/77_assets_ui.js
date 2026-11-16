@@ -94,7 +94,7 @@ function face17Src(p){ const i=face17Idx(p); if(i==null)return null; const k='17
 function amFaceOn(p){ return !!p&&!!p.prospect&&!p.foreign&&p.team==null&&p.id!=null&&!p.persona; }
 function amIdx(p){ if(typeof FACE21==='undefined'||!FACE21.ids||!FACE21.ids.length||!G||G.f6off||!p||p.id==null)return null; const M=G.fam||(G.fam={}), cur=M[p.id];
   if(cur&&cur.k==='21'&&FACE21.ids[cur.c])return cur; if(!amFaceOn(p))return null; /* 지명된 선수는 받은 얼굴 그대로, 아마추어 때 배정이 없으면 새로 주지 않는다 */
-  const U={}; for(const id of Object.keys(M)){ const q=G.players[id]; if(!q){ delete M[id]; continue; } if(q.prospect&&M[id].k==='21')U[M[id].c]=(U[M[id].c]||0)+1; } /* 사라진 선수 배정은 지운다 */
+  const U={}; for(const id of Object.keys(M)){ const q=G.players[id]||(G.amU&&G.amU.L&&G.amU.L[id]); if(!q){ delete M[id]; continue; } if((q.prospect||q.gy)&&M[id].k==='21')U[M[id].c]=(U[M[id].c]||0)+1; } /* 저학년(G.amU)도 같은 얼굴을 지켜 졸업 학년까지 이어 간다(스카우트 1단계 관찰 명단) */ /* 사라진 선수 배정은 지운다 */
   const ad=c=>Math.round(Math.abs(FACE21.ids[c].a-(p.age||19))/3); const C=FACE21.ids.map((x,i)=>i).sort((a,b)=>(U[a]||0)-(U[b]||0)||ad(a)-ad(b)||hn('fam'+a,p.id)-hn('fam'+b,p.id));
   return M[p.id]={k:'21',c:C[0]}; }
 /* 시트 한 장: A·B × 128·256·384 × 변형(고교 hs_home, 대학 univ, 구단 열쇠) */
