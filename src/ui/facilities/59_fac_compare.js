@@ -6,7 +6,7 @@ function facCompare(){ try{ aiFacAll(); }catch(e){} if(!G||!G.teams)return '';
   rows.sort((a,b)=>(b.mine-a.mine)||(val(b,sk)-val(a,sk))||(b.S.lv-a.S.lv));
   const me=rows.find(r=>r.mine); const rank=k=>me?rows.filter(r=>val(r,k)>val(me,k)).length+1:'-';
   const cell=(r,k)=>{ const lv=r.S.it[k]||0, b=r.S.bld&&r.S.bld[k], dn=r.S.dn&&r.S.dn[k];
-    const tip=`${FACI[k].l}: ${FACI[k].lv[lv]}${dn!=null?` (${dobj(dn).y}년 ${dmd(dn)} 완공)`:''}${b?` · ${FACI[k].lv[b.lv]} 공사 중, ${dmd(b.done)} 완공 예정`:''}`;
+    const tip=`${FACI[k].l}: ${FACI[k].lv[lv]}${dn!=null?` (${dobj(dn).y}년 ${dmd(dn)} 완공)`:''}${b?` · ${FACI[k].lv[b.lv]} 공사 중, ${dmdA(b.done)} 완공 예정`:''}`;
     return `<td class="fcl${lv}" title="${esc(tip)}">${lv}${b?'<sup>↑</sup>':''}</td>`; };
   const head=`<tr><th>구단</th>${FACK.map(k=>`<th><button data-a="facCmpSort" data-v="${k}" class="${sk===k?'on':''}" title="${esc(FACI[k].l)} 순으로 보기">${FCMP_H[k]}</button></th>`).join('')}<th><button data-a="facCmpSort" data-v="lv" class="${sk==='lv'?'on':''}" title="종합 등급 순으로 보기">종합</button></th></tr>`;
   const body=rows.map(r=>`<tr class="${r.mine?'me':''}"><td title="${esc(tname(r.t.id))}">${esc(tnick(r.t))}</td>${FACK.map(k=>cell(r,k)).join('')}<td class="fcg">${r.S.lv}${Object.keys(r.S.bld||{}).length?'<sup>↑</sup>':''}</td></tr>`).join('');

@@ -90,3 +90,11 @@
 .loading-state>i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:ldot 1s infinite ease-in-out}.loading-state>i:nth-child(2){animation-delay:.15s}.loading-state>i:nth-child(3){animation-delay:.3s}.loading-state>span{margin-left:6px}
 @keyframes ldot{0%,80%,100%{opacity:.25}40%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.loading-state>i{animation:none;opacity:.6}}
+/* 펼친 필터(inline): 넓은 화면은 조건 칩을 목록 위에 바로 둔다. 휴대폰(700px 이하)은 기존 필터 버튼과 바텀시트 */
+.fbar-inl{display:none}
+@media(min-width:701px){
+  .fbar-inline .fbar-inl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;min-width:0;margin-top:6px}
+  .fbar-inline .fbar-ig{display:inline-flex;align-items:center;gap:6px;min-width:0}
+  .fbar-inline .fbar-ig .chips,.fbar-inline .fbar-ig .seg{flex-wrap:wrap;margin:0;overflow:visible}
+  .fbar-inline .fbar-row>.fbar-b,.fbar-inline .fbar-row>.fbar-chips,.fbar-inline>.fbar-p{display:none!important}
+}

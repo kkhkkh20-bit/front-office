@@ -10,16 +10,18 @@
    - 시즌 환경: 해마다 공·날씨·스트라이크 존 경향(env)이 조금 달라 투고타저·타고투저가 자연스럽게 나온다. 시즌 뒤 요약을 남긴다(G.amH).
    - 저장: 선수별 시즌 기록·순위·대진표·학교별 최근 결과만. 박스스코어는 남기지 않는다 */
 const AM_LIM=105, AM_REST=[[76,4],[61,3],[46,2],[31,1]];
-const AMC={hs:{m:12,s:2.5,fm:10,fsd:7,fg:4,bab:.04,bbm:.9,hrm:.45,grb:2,yg:7,ygp:1.7},col:{m:20,s:2.2,fm:16,fsd:7,fg:2.8,bab:.014,bbm:1.15,hrm:.5,grb:1.5,yg:3}};
+const AMC={hs:{m:12,s:2.9,fm:9,fsd:7,fg:4,bab:.033,bbm:.9,km:.93,hrm:.45,grb:0,yg:3,ygp:1.45},col:{m:20,s:2.2,fm:16,fsd:7,fg:2.8,bab:.014,bbm:1.15,hrm:.5,grb:0,yg:3}};
 /* m·s: 아마 척도(능력 m이 1군 평균 50처럼 보이고, 차이는 s배로 벌어진다: 아마 무대는 선수 간 격차가 크다). fm·fsd: 일반 부원 능력(학교 전력 55 기준), fg: 학년당 차이.
    bab·bbm: 아마 수준 보정(수비가 거칠어 인플레이 안타가 많고, 제구가 흔들려 볼넷이 많다). 3개 세계로 맞춘 값(측정 11-15: 졸업 학년 잠재력 상위 고교 타자 타율 중앙값 .39, 투수 ERA 1.3)
    fmp: 일반 부원 투수 가산(기본 0). yg·ygp: 저학년 경기 경험(졸업 학년보다 n학년 아래면 그해 아마 척도 yg×n^ygp 감소, 능력·잠재력에는 안 들어감. 1학년이 2학년보다 뚜렷이 낮게).
    11-17 조정(세계 6개 측정): 일반 부원 수준을 올리고(fm 2→10) 학년 차(fg·yg)를 키워 학년이 높을수록 평균 기록이 좋게, 졸업 학년 상위 10명이 0점대 ERA·OPS 1.6을 흔히 넘지 않게 했다.
-   볼넷을 줄이고(bbm 1.25→.9) 인플레이 안타를 늘려(bab .022→.04) 리그 ERA는 4점대 초중반(1학년 5점대 중반 이하), 상위 졸업 학년 타자는 타율 .350을 넘는다 */
+   볼넷을 줄이고(bbm 1.25→.9) 삼진을 조금 줄이고(km .93) 인플레이 안타를 늘려(bab .022→.033) 리그 ERA는 4점대 초중반(1학년 5점대 중반 이하).
+   기용은 실제 능력으로 정하므로(amSide·E0) 잘하는 1학년은 주전으로 뛰고, 학년 감점(yg)은 그해 기록 생산에만 들어간다. s를 키워(2.2→2.9) 상위 졸업 학년이 여전히 돋보인다 */
 /* hrm: 나무 배트 홈런 배수. 가정: 국내 고교·대학 야구는 나무 배트를 쓰고(고교는 2004년 무렵 도입으로 알고 있으나 출처 확인 못 함) 홈런이 프로보다 훨씬 드물다.
    1군 확률식 그대로면 고교 타석당 홈런이 2.2~2.7%로 1군 수준이었고 규정 타석 상위 10명이 한 시즌(약 20경기) 9~12개를 쳤다(측정 11-17, 세계 6개).
-   grb: 학년 기용 가산(학년 하나에 주전 선발 점수 몇 점). 1학년은 주로 벤치·대타, 주전은 2·3학년(1학년 타석 비중 22%→8%, 측정 11-17) */
+   grb: 학년 기용 가산(학년 하나에 주전 선발 점수 몇 점). 0: 기용은 학년이 아니라 실제 능력으로 정한다(사용자 11-17: 잘하는 애는 1학년부터 나온다). 1학년은 대개 능력이 낮아 덜 나온다 */
 const AM_BK=['g','pa','ab','h','d','tr','hr','bb','hbp','so','r','rbi','sb','cs'], AM_PK=['g','gs','outs','bf','h','hr','bb','hbp','so','r','er','w','l','np'];
+const AM_PPA={bb:5.8,k:5.2,ip:3.7}; /* 타석당 투구 수(볼넷·삼진·인플레이). 가정: 아마 타석은 프로(타석당 약 3.9개)와 비슷하거나 조금 길다. 예전 값(5.6·4.8·3.3)은 제구 좋은 투수가 이닝당 11개 남짓만 던져 105개로 거의 매 경기 완투했다(측정 11-17) */
 const AM_WALL=.8; /* 가정: 홈런이 줄어든 만큼의 큰 타구 가운데 이 비율은 2루타가 된다 */
 const AM_SL_P=.08, AM_SL_D=6; /* 졸업 학년 부진 확률·그해 아마 척도 감소(1군 척도 점수) */
 const AM_STY_GROW={육성형:.55,엄격형:.1,데이터형:.2,자율형:0}; /* 겨울 성장 가산(능력 점수) */
@@ -80,13 +82,13 @@ function amBoot(Y,minGy){ const U=amPipe(); if(U.yr!=null)return; const t0=Date.
 /* ---------- 경기 단위(유닛): 후보(G.players)·저학년(G.amU)·일반 부원 ---------- */
 function amSimR(p){ return p.amR||p.r; }
 function amUnit(src,kind,sch,lvl,y){ const isP=kind==='e'?!!src.P:!!src.isP; const r=kind==='e'?src.r:kind==='p'?amSimR(src):src.r;
-  const C=AMC[lvl], E={}; for(const k in r)if(k!=='vit')E[k]=50+(r[k]-C.m)*C.s;
+  const C=AMC[lvl], E={}; for(const k in r)if(k!=='vit')E[k]=50+(r[k]-C.m)*C.s; const E0=Object.assign({},E); /* 기용 판단(주전·선발 순서)은 실제 능력(E0): 학년 감점·부진은 기록 생산(E)에만 */
   if(kind==='p'&&src.amSl&&y===G.year)for(const k in E)E[k]-=AM_SL_D;
   { const g0=kind==='e'?amGrade(src,y):kind==='p'?(src.college?4:3):src.gr, top=lvl==='hs'?3:4; if(g0<top&&C.yg)for(const k in E)E[k]-=Math.pow(top-g0,C.ygp||1)*C.yg; } /* 저학년 경기 경험: 상급생과 붙으면 체격·경험이 덜 차 그해 경기력이 능력보다 조금 낮다(능력·잠재력 평가에는 들어가지 않는다) */
   const sty=lvl==='hs'?amSty(sch):null; if(!isP){ if(sty==='데이터형')E.eye+=4; if(sty==='자율형'){ E.pow+=3; E.con-=1; } }
   const u={id:src.id,kind,src,sch,isP,E,gr:kind==='e'?amGrade(src,y):kind==='p'?(src.college?4:3):src.gr,out:(kind==='e'?src.ig===y:kind==='p'&&src.amIg===y)?dnum(y,6,1):0}; /* 부상 시즌: 6월부터 뛴다 */
-  const st={id:u.id,r:E,isP}; if(isP){ u.q=amPitQ(st); u.sv=E.stf*.44+E.ctl*.44+E.sta*.12; u.lim=Math.min(AM_LIM,Math.round(60+E.sta*.45)); u.ft=30+E.sta*.55; }
-  else { const q=batProbs(st,0); u.q=q; u.bv=E.con*.3+E.pow*.25+E.eye*.15+E.spd*.1+E.def*.2; u.ov=E.con*.4+E.pow*.35+E.eye*.25; }
+  const st={id:u.id,r:E,isP}; if(isP){ u.q=amPitQ(st); u.sv=E0.stf*.44+E0.ctl*.44+E0.sta*.12; u.lim=Math.min(AM_LIM,Math.round(60+E.sta*.45)); u.ft=30+E.sta*.55; }
+  else { const q=batProbs(st,0); u.q=q; u.bv=E0.con*.3+E0.pow*.25+E0.eye*.15+E0.spd*.1+E0.def*.2; u.ov=E0.con*.4+E0.pow*.35+E0.eye*.25; }
   return u; }
 function amPitQ(p){ const r=p.r, be=0, b=0; return {k:PW.k0+cc(r.stf,0)*.24, bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((PW.h0-cc(r.stf,b)*PW.hs-cc(r.ctl,be)*PW.hc-trt(p,'mv')*.0008)*(1-gbT(p)*.13),.006,.06),
   babip:clamp(PW.b0-cc(r.stf,b)*PW.bs-cc(r.ctl,be)*PW.bc-trt(p,'mv')*.0008+gbT(p)*.003,.25,.36), x2:clamp(1-(cc(r.stf,b)-.5)*PW.xs-(cc(r.ctl,be)-.5)*PW.xc-gbT(p)*.05,.6,1.4), ctl:r.ctl}; } /* 1군 pitProbs와 같은 식(구종 가산 제외) */
@@ -169,7 +171,8 @@ function amBoxB(M,u){ let b=M.get(u.id); if(!b){ b={u,pa:0,ab:0,h:0,d:0,tr:0,hr:
 function amBoxP(M,u){ let b=M.get(u.id); if(!b){ b={u,gs:0,outs:0,bf:0,h:0,hr:0,bb:0,hbp:0,so:0,r:0,er:0,np:0,w:0,l:0}; M.set(u.id,b); } return b; }
 function amGame(S,g,d,R0){ const rnd0=seededRand('amg:'+S.y+':'+d+':'+g.h+':'+g.a), ko=!!g.t; const env=S.env;
   const H=amSide(S,g.h,d,ko,R0), A=amSide(S,g.a,d,ko,R0); if(H.lineup.length<9||A.lineup.length<9)return null;
-  const M=new Map(); for(const s of [H,A]){ const u=amPitchIn(s,true); amBoxP(M,u).gs=1; }
+  const M=new Map(); for(const s of [H,A]){ const last=!ko&&S.sp&&S.sp[s.sch]; if(last&&s.P.length>2){ const i=s.P.findIndex(u=>u.id===last); if(i>=0)s.P.push(s.P.splice(i,1)[0]); } /* 가정: 주말리그는 지난 리그 경기 선발을 다음 리그 경기에 연달아 내지 않는다(선발을 돌려 쓴다). 전국대회 단판은 에이스를 쉬는 날만 지켜 몰아 쓴다 */
+    const u=amPitchIn(s,true); amBoxP(M,u).gs=1; if(!ko)(S.sp||(S.sp={}))[s.sch]=u.id; }
   const sc={h:0,a:0}; let inn=0; const rec={w:{},l:{}}; const LG=LGP, LV=AMC[g.lvl]||AMC.hs;
   const half=(bat,fld,k,tb)=>{ let outs=0; const bs=[null,null,null]; let runs=0;
     if(tb){ const n=bat.lineup.length; bs[0]={u:bat.lineup[(bat.idx+n-1)%n],p:fld.cur,e:0}; bs[1]={u:bat.lineup[(bat.idx+n-2)%n],p:fld.cur,e:0}; } /* 승부치기: 무사 1·2루 */
@@ -180,13 +183,13 @@ function amGame(S,g,d,R0){ const rnd0=seededRand('amg:'+S.y+':'+d+':'+g.h+':'+g.
       if(bs[0]&&!bs[1]&&outs<2){ const sp=bs[0].u.E.spd; if(rnd0()<clamp((sp-55)*.004,0,.16)){ const bx=amBoxB(M,bs[0].u); if(rnd0()<clamp(.55+(sp-50)*.006,.4,.88)){ bx.sb++; bs[1]=bs[0]; bs[0]=null; } else { bx.cs++; bs[0]=null; outs++; pb.outs++; continue; } } }
       const b=bat.lineup[bat.idx%bat.lineup.length]; bat.idx++; const q=b.q, bx=amBoxB(M,b); bx.pa++; pb.bf++;
       const f=Math.max(0,fld.pc-p.ft)/60;
-      const bb=comb(q.bb,pq.bb*(1+.5*f),LG.bb)*env.bb*LV.bbm, kk=comb(q.k,pq.k*(1-.35*f),LG.k)*env.k, hr0=comb(q.hr,pq.hr*(1+.5*f),LG.hr)*env.hr, hr=hr0*(LV.hrm||1), hx=hr0-hr, bab=comb(q.babip,pq.babip+.02*f,LG.babip)+env.bab+LV.bab-(fld.dv-50)*.0008;
+      const bb=comb(q.bb,pq.bb*(1+.5*f),LG.bb)*env.bb*LV.bbm, kk=comb(q.k,pq.k*(1-.35*f),LG.k)*env.k*(LV.km||1), hr0=comb(q.hr,pq.hr*(1+.5*f),LG.hr)*env.hr, hr=hr0*(LV.hrm||1), hx=hr0-hr, bab=comb(q.babip,pq.babip+.02*f,LG.babip)+env.bab+LV.bab-(fld.dv-50)*.0008;
       const hbp=.011; const x=rnd0(); let o; const pitch=n=>{ const v=Math.max(1,Math.min(9,Math.round(n+(50-p.E.ctl)*.015+(rnd0()-.5)*2))); fld.pc+=v; pb.np+=v; };
       if(x<hbp){ o='hbp'; pitch(3); bx.hbp++; pb.hbp++; }
-      else if(x<hbp+bb){ o='bb'; pitch(5.6); bx.bb++; pb.bb++; }
-      else if(x<hbp+bb+kk){ pitch(4.8); bx.ab++; bx.so++; pb.so++; pb.outs++; outs++; continue; }
-      else if(x<hbp+bb+kk+hr){ pitch(3.3); bx.ab++; bx.h++; bx.hr++; pb.h++; pb.hr++; for(let i=2;i>=0;i--)if(bs[i]){ score(bs[i],bx,1); bs[i]=null; } score({u:b,p,e:1},bx,1); continue; }
-      else { pitch(3.3); bx.ab++; const wall=x<hbp+bb+kk+hr+hx*AM_WALL; /* 나무 배트로 담장을 못 넘긴 큰 타구 일부는 2루타 */
+      else if(x<hbp+bb){ o='bb'; pitch(AM_PPA.bb); bx.bb++; pb.bb++; }
+      else if(x<hbp+bb+kk){ pitch(AM_PPA.k); bx.ab++; bx.so++; pb.so++; pb.outs++; outs++; continue; }
+      else if(x<hbp+bb+kk+hr){ pitch(AM_PPA.ip); bx.ab++; bx.h++; bx.hr++; pb.h++; pb.hr++; for(let i=2;i>=0;i--)if(bs[i]){ score(bs[i],bx,1); bs[i]=null; } score({u:b,p,e:1},bx,1); continue; }
+      else { pitch(AM_PPA.ip); bx.ab++; const wall=x<hbp+bb+kk+hr+hx*AM_WALL; /* 나무 배트로 담장을 못 넘긴 큰 타구 일부는 2루타 */
         if(wall||rnd0()<bab){ bx.h++; pb.h++; const y2=wall?1:rnd0(); const t=wall?2:y2<q.d3?3:y2<q.d3+q.d2*pq.x2?2:1; if(t===3)bx.tr++; else if(t===2)bx.d++;
           const me={u:b,p,e:1};
           if(t===3){ for(let i=2;i>=0;i--)if(bs[i]){ score(bs[i],bx,1); bs[i]=null; } bs[2]=me; }
@@ -353,7 +356,11 @@ function amSlump(p){ if(!p||!p.prospect)return false; const L=amGrRows(p), sg=p.
   return a.pa>=AM_SL_MIN.pa&&b.pa>=AM_SL_MIN.pa&&bRate(a).ops-bRate(b).ops>=AM_SL_OPS; }
 /* 스카우트 귀띔: 그 선수를 충분히 본(관찰 5회 이상) 구단만, 실제 능력이 기록보다 뚜렷이 좋을 때 */
 function amSlHint(p,tid){ tid=tid??G.user; if(!amSlump(p)||amObsN(p,tid)<AM_SL_OBS)return null; const A=(G.draftClass||[]).map(id=>G.players[id]).filter(q=>q&&q.prospect&&!!q.isP===!!p.isP&&!!q.college===!!p.college&&!q.ovsRet); const tv=q=>ovr(q)*.5+q.pot*.5; /* 실제 능력·잠재력(같은 학력·투타 안에서) */
-  if(A.length<5)return null; const v=A.map(tv), m=v.reduce((a,b)=>a+b,0)/v.length, sd=Math.sqrt(v.reduce((a,b)=>a+(b-m)**2,0)/v.length)||1; if((tv(p)-m)/sd-(p.amZ??0)<.8)return null;
+  if(A.length<5)return null; const zOf=(L,f,x)=>{ const v=L.map(f).filter(a=>a!=null), m=v.reduce((a,b)=>a+b,0)/Math.max(1,v.length), sd=Math.sqrt(v.reduce((a,b)=>a+(b-m)**2,0)/Math.max(1,v.length))||1; return (f(x)-m)/sd; };
+  const rowV=(q,d)=>{ const r=amGrRows(q).find(x=>x.gr===(q.college?4:3)-d); if(!r||(q.isP?r.outs<AM_SL_MIN.outs:r.pa<AM_SL_MIN.pa))return null; if(q.isP){ const e=r.er*27/r.outs; return 10-e+(r.so/Math.max(1,r.outs/3))*.8; } return bRate(r).ops*10; }; /* 한 학년 기록(amRaw와 같은 식) */
+  const nS=A.filter(q=>rowV(q,0)!=null).length, ref=A.map(q=>rowV(q,nS>=10?0:1)).filter(v=>v!=null); if(ref.length<5)return null; /* 기준: 올해 졸업 학년 기록이 쌓이기 전에는 지난해(2학년) 기록 분포 */
+  const rm=ref.reduce((a,b)=>a+b,0)/ref.length, rsd=Math.sqrt(ref.reduce((a,b)=>a+(b-rm)**2,0)/ref.length)||1;
+  if(zOf(A,tv,p)-(rowV(p,0)-rm)/rsd<.8)return null; /* 실제 능력이 졸업 학년 기록보다 0.8 표준편차 넘게 좋을 때만 */
   return p.amSl==='inj'||p.amIg===G.year?'부상 여파로 보입니다':p.isP?'기록보다 공이 좋습니다':'기록보다 타구가 좋습니다'; }
 /* ---------- 소식(빈도 상한) ---------- */
 function amCap(S,k,n){ S.news[k]=(S.news[k]||0)+1; return S.news[k]<=n; }

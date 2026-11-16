@@ -46,10 +46,14 @@ function facMoveTeam(oldTid,newTid){ if(oldTid===newTid)return; const ot=team(ol
   ot.fi=S; ot.fac=S.lv; ot.bus=G.bus!=null?G.bus:1;
   const N=aiFacInit(nt); delete nt.fi; N.build=null; G.fac=N; G.bus=nt.bus!=null?nt.bus:1; delete nt.bus; facInit(); }
 /* 완공과 투자 결정(매일). 야인일 때 전 소속 구단 시설도 그 구단(AI)이 운영한다 */
+/* 다른 구단 공사 완공: 우리 구단(facDaily)과 같은 판정(facDue) */
+function aiFacDone(t,S){ for(const k of Object.keys(S.bld)){ const b=S.bld[k]; if(!FACI[k]){ delete S.bld[k]; continue; } if(!facDue(b))continue; const lv=Math.min(FAC_MAX,b.lv>0?b.lv:(S.it[k]||0)+1); S.it[k]=Math.max(S.it[k]||0,lv); S.dn[k]=G.day; delete S.bld[k]; S.lv=facCalcLv(S.it); t.fac=S.lv;
+  clubFacilityHistory('fac',t.id,FACI[k].l,'완공',b); wire('시설',`${t.city} ${FAC_NEWS[k][lv]} ${lv>=4?'개관':'완공'}`,{tid:t.id}); } }
+/* 불러오기 수리(제보 11-16): 완공일이 지났는데 남은 공사는 우리·다른 구단 모두 바로 완공한다 */
+function facOverdueFix(){ try{ facDaily(); }catch(e){} for(const t of G.teams||[]){ if(t.id===G.user)continue; const S=t.fi&&t.fi.it?aiFacInit(t):null; if(S)try{ aiFacDone(t,S); }catch(e){} } }
 function aiFacDaily(){ if(!G||!G.teams)return; const o=dobj(G.day); const plan=(o.m===12&&o.d===1)||(o.m===6&&o.d===15);
   for(const t of G.teams){ const mine=t.id===G.user; if(mine&&!G.unemp)continue; const S=mine?facSt(t.id):aiFacInit(t); if(!S)continue;
-    if(!mine)for(const k of Object.keys(S.bld)){ const b=S.bld[k]; if(G.day<b.done)continue; S.it[k]=Math.max(S.it[k]||0,b.lv); S.dn[k]=G.day; delete S.bld[k]; S.lv=facCalcLv(S.it); t.fac=S.lv;
-      clubFacilityHistory('fac',t.id,FACI[k].l,'완공',b); wire('시설',`${t.city} ${FAC_NEWS[k][b.lv]} ${b.lv>=4?'개관':'완공'}`,{tid:t.id}); }
+    if(!mine)aiFacDone(t,S);
     if(plan)try{ aiFacPlan(t,S,o.m===6); }catch(e){} }
   try{ clubEconDaily(); }catch(e){} }
 /* AI 시설 투자 결정. o={force,budget,reserve}: 지출 정책(57_club_econ)이 남는 돈을 쓸 때는 굴림 없이 정하고, 예산 안에서 고른다.

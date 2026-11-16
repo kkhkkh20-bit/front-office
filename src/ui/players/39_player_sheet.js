@@ -44,7 +44,7 @@ function curExBox(p,rp){ let L=null; try{ L=curExplain(p,rp); }catch(e){} return
 function fsBox(p,rp){ const f=fScout(p,rp); const st=[0,1,2,3].map(i=>`<i class="${i<=f.n?'on':''}"></i>`).join(''); const k=fwatchOn(p.id)?fwatchK(p.id):null; const U=fUnknown(p,f);
   return `<div class="fsbox ${f.cls}"><div class="fs-h"><span class="fs-st">${st}</span><b>종합 평가 신뢰도 ${fRel(f)}</b>${f.mid!=null?`<span class="fs-r">종합 추정 <b class="num">${f.lo}~${f.hi}</b></span>`:''}</div>${f.sc!=null||f.rec!=null?`<p class="small">${f.sc!=null?`스카우트 평가 <b class="num">${f.sc}</b>`:''}${f.sc!=null&&f.rec!=null?' · ':''}${f.rec!=null?`기록으로 본 수준 <b class="num">${f.rec}</b>`:''}</p>`:''}
     <dl class="kv fs-kv"><dt>현장 관찰</dt><dd>${k!=null?`관찰 명단 · 진행 ${k}%`:'관찰 명단 밖'} · 스카우트 정보 ${esc(f.l)}</dd><dt>종합 평가 신뢰도</dt><dd>${fRel(f)} · 스카우트 평가와 지난 리그 기록을 합친 범위 폭 ±${f.band??'-'}</dd><dt>미확인 항목</dt><dd>${U.length?esc(U.join(' · ')):'없음'}</dd></dl>
-    <p class="small fs-why">근거: ${esc(f.why.join(' · '))}</p>${f.tip?`<p class="small">${esc(f.tip)}</p>`:''}</div>`; }
+    <p class="small fs-why">근거: ${esc(f.why.join(' · '))}</p>${f.tip?`<p class="small">${esc(f.tip)}</p>`:''}${(()=>{ const rs=f.mid!=null?fResid(p):null; return rs!=null?`<div class="small muted fs-resid">${esc(fResidTxt(rs))}</div>`:''; })()}</div>`; }
 /* 선수 비교: 담은 2~3명을 같은 시즌·같은 군 기록과 같은 평가 기준으로 나란히. 추천 순위는 매기지 않는다 */
 function pcmpView(){ const P=(UI.pcmp||[]).map(id=>G.players[id]).filter(Boolean); if(!P.length)return '<p class="small muted">선수 정보 위쪽의 \'비교에 담기\'로 2~3명을 담으세요.</p>';
   const y=UI.pcSea==='prev'?statY()-1:statY(), lv=UI.pcLvl==='퓨처스'?'퓨처스':'1군'; const anyP=P.some(p=>p.isP), anyB=P.some(p=>!p.isP);
@@ -141,7 +141,7 @@ function entryForm(p){
 function growthCard(p){
   if(p.prospect||p.team!==G.user||!p.oh||!p.oh.length)return '';
   const pts=p.oh.map(x=>({y:x.y,v:clamp(r5(x.o+hn('gh'+x.y,p.id)*1.5),20,80)}));
-  const lg=p.devLog,whyLabels={slump:'겨울 기량 퇴보','potential-reassessment':'잠재력 기대 재평가','training-opportunity':'집중훈련 성장기회 조정',aging:'노화에 따른 변화',military:'현역 복무 중 훈련 공백'},why=lg&&lg.tid===G.user&&Array.isArray(lg.reasons)?[...new Set(lg.reasons)].map(k=>whyLabels[k]).filter(Boolean):[]; const pl=lg?(lg.play>=1.08?'주전급 출전':lg.play>=1?'충분한 출전':lg.play>=.92?'출전 부족':'거의 못 뜀'):'';
+  const lg=p.devLog,whyLabels={slump:'겨울 기량 퇴보','potential-reassessment':'잠재력 기대 재평가','training-opportunity':'집중훈련 성장기회 조정',aging:'노화에 따른 변화',military:'현역 복무 중 훈련 공백',bloom:'늦게 터진 재능'},why=lg&&lg.tid===G.user&&Array.isArray(lg.reasons)?[...new Set(lg.reasons)].map(k=>whyLabels[k]).filter(Boolean):[]; const pl=lg?(lg.play>=1.08?'주전급 출전':lg.play>=1?'충분한 출전':lg.play>=.92?'출전 부족':'거의 못 뜀'):'';
   return `<section class="card"><div class="row between"><span class="eyebrow">연도별 코치진 평가</span><span class="small muted">겨울에 일부, 시즌 중 세 번(5/1·6/20·8/10) 나눠 반영</span></div>${(()=>{ const t=typeof devQText==='function'?devQText(p):''; return t?`<p class="small">${esc(t)}</p>`:''; })()}
     <div class="growth">${pts.map(x=>`<div><i style="height:${Math.max(6,(x.v-20)*1.6)}px;background:${rcol(x.v)}"></i><b>${dv(x.v)}</b><span>${String(x.y).slice(2)}</span></div>`).join('')}</div>
     ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${lg.tid===G.user&&lg.manager?` · ${esc(lg.manager.name)} 감독 · ${mgrYouthWord(lg.manager.youth)}`:''}</p>`:''}${why.length?`<p class="small muted">반영 요인: ${why.map(esc).join(' · ')} ${hiI('잠재력 평가는 성장을 보장하지 않습니다. 시즌 폼이나 컨디션은 기본 기량 변화와 다릅니다.')}</p>`:''}</section>`;

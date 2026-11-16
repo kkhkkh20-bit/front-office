@@ -67,7 +67,18 @@ function entryPerfOf(p,h,lv){ if(!h)return 0; const L=EP_LG[lv];
   const n=h.pa||0; if(n<(lv==='1군'?60:30))return 0; return (bRate(h).ops-L.ops)/.12*n/(n+150); }
 function entryPerf(tid,p){ if(period()!=='season')return 0; try{ if(!p.e1)return clamp(entryPerfOf(p,seasonTotalT(p,G.year,'퓨처스',tid),'퓨처스')*1.5,-.75,1.5);
   return clamp(entryPerfOf(p,seasonTotalT(p,G.year,'1군',tid),'1군')*1.2,-1,0); }catch(e){ return 0; } }
-function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; const yb=tid===G.user&&p.age<=24&&mplOn('youth')&&!p.e1&&(()=>{ const h=seasonTotalT(p,G.year,'퓨처스',tid); /* 이 구단 퓨처스 기록만(검수 11-09zx) */ return h&&(p.isP?h.outs>=30&&pRate(h).era<=3.8:h.pa>=40&&bRate(h).ops>=.76); })()?3:0; return yb+entryPerf(tid,p)+(p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*(1-mgrDefW(tid)*.74)+p.r.def*mgrDefW(tid)*.74)+polBonus(tid,p,lean)+(p.roleProm&&rpromK(tid,p)?30:0)+f-(p.fat||0)/25; }
+/* 확대 엔트리 첫 기회(11-17 드래프트 보정): 실제 KBO는 지명 선수 3분의 2가 1군 무대를 밟는다.
+   - KCI 논문 "신인 드래프트 이후 프로야구선수의 1군 지위 성취가능성과 프로 지위 유지가능성 분석": 2010~2013 지명 320명 8년 추적, 66%가 1군 경험
+   - yagoonara.com 드래프트 정리(확인 못 함): 2010~2020 지명 952명 중 607명(63.8%) 1군 데뷔, 1라운드 103명 중 98명(95.1%)
+   - 한겨레 김양희 칼럼(2021): 2020 지명 110명 중 46명이 약 1.7시즌 안에 1군, 2019 지명은 47명
+   게임은 1군 등록이 능력순이라 하위 지명은 1군을 거의 못 밟았다(지명 전체 약 32%). 확대 엔트리(9월) 동안 1군 경험이 없는 젊은 선수(지명·입단 6년 안, 26세 이하)에게
+   1군 자리 DEBUT_N개를 먼저 준다(entryManage). 1군에 한 번 서면 다음 후보와 바꾼다. 주전·선발·필승조·포수 2명은 건드리지 않는다. 모든 구단 같은 식.
+   (기용 점수에 가산 8을 더하는 첫 판은 2군 하위권과 차이가 커서 9월 1군 경험이 구단당 한 해 1명 늘어나는 데 그쳤다) */
+const DEBUT_N=ENTRY_EXP; /* 확대 엔트리 인원만큼(KBO 9월 확대 5명) */
+const debutOn=()=>period()==='season'&&entryLimit()>=ENTRY_BASE+ENTRY_EXP;
+function debutDue(p){ if(p.d1g||p.foreign||p.age>26||p.ys)return false; const y0=p.draft?p.draft.y:p.tryS?p.tryS.y:p.joinY; if(y0==null||G.year-y0>6)return false;
+  if((p.hist||[]).some(h=>h.lvl==='1군'&&(h.g||0)>0)){ p.d1g=1; return false; } return true; }
+function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; const yb=tid===G.user&&p.age<=24&&mplOn('youth')&&!p.e1&&(()=>{ const h=seasonTotalT(p,G.year,'퓨처스',tid); /* 이 구단 퓨처스 기록만(검수 11-09zx) */ return h&&(p.isP?h.outs>=30&&pRate(h).era<=3.8:h.pa>=40&&bRate(h).ops>=.76); })()?3:0; return yb+entryPerf(tid,p)+(p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*(1-mgrDefW(tid)*.74)+p.r.def*mgrDefW(tid)*.74)+polBonus(tid,p,lean)+(p.roleProm&&rpromK(tid,p)?30:0)+f-(p.fat||0)/25 }
 function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=teamLean(tid);
   const ps=playersOf(tid).filter(p=>!p.ys&&healthy(p)&&psOk(p)&&!(p.joinY>G.year)&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); const v=p=>entryVal(tid,p,lean); /* 개막 엔트리도 등록 가능 선수만(검수 11-07) */
   const bats=ps.filter(p=>!p.isP).sort((a,b)=>v(b)-v(a)), pits=ps.filter(p=>p.isP);
@@ -93,8 +104,12 @@ function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLim
     c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(건강한 야수 9명 채우기${futLn(c)})`); }
   while(ent.length<lim){ const np=ent.filter(p=>p.isP).length; const needP=np<Math.round(lim*.5); const pool=PS.filter(canUp);
     const c=pool.filter(p=>p.isP===needP).sort((a,b)=>v(b)-v(a))[0]||pool.sort((a,b)=>v(b)-v(a))[0]; if(!c)break; c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(${c.isP?'투수':'야수'} 빈자리 보충${futLn(c)})`); }
+  if(debutOn()){ const due=PS.filter(p=>p.e1&&debutDue(p)).length; if(due<DEBUT_N){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); /* 확대 엔트리 첫 기회(위 DEBUT_N) */
+      const C=PS.filter(p=>canUp(p)&&debutDue(p)).sort((a,b)=>v(b)-v(a)).slice(0,DEBUT_N-due);
+      for(const c of C){ ent=PS.filter(p=>p.e1); const out=ent.filter(p=>!core.has(p.id)&&!debutDue(p)&&!cProt(p,c,ent)&&G.day-(p.upDay||0)>=3).sort((a,b)=>v(a)-v(b))[0]; if(!out)break;
+        out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${out.name} 말소 · ${c.name} 콜업(확대 엔트리 첫 1군 기회${futLn(c)})`); } ent=PS.filter(p=>p.e1); } }
   if(weekly){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
-    for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7&&!(isC(p)&&cN(ent)<=2)).sort((a,b)=>v(a)-v(b))[0]; const inn=PS.filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
+    for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7&&!(isC(p)&&cN(ent)<=2)&&!(debutOn()&&debutDue(p))).sort((a,b)=>v(a)-v(b))[0]; const inn=PS.filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
       if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소(주전·필승조 밖, 최근 1주 넘게 쓰임 적음) · ${inn.name} 콜업(2군에서 더 나은 선수${futLn(inn)})`); } } }
   /* 포수는 1군에 2명 이상: 주전이 지치면 쉬게 할 백업이 있어야 한다(카페 피드백 11-08: 백업 포수를 2군으로 내려 지친 주전이 계속 나옴) */
   for(let g=0;g<3&&(ent=PS.filter(p=>p.e1)).filter(p=>isC(p)&&healthy(p)).length<2;g++){ /* 다친 포수는 세지 않는다(검수 11-09t) */ const c=PS.filter(p=>canUp(p)&&isC(p)).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
@@ -134,8 +149,18 @@ function ysAdj(p,y,tid){ tid=tid??p.team; let v=0; const c=p.ysCut; if(c&&c.y===
   for(const g of (p.ysGap||[]))if(g.y===y&&(g.t??tid)===tid)v-=(g.s0-g.s)*ysWinF(y,g.d0,g.d1,p); /* 육성으로 있던 기간은 깎인 연봉(정식 복귀 뒤에도, 검수 11-08) */ return v; }
 function toYS(id){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||p.ys)return '대상이 아닙니다.'; if(!ysOk(p))return '연봉 1억 원 이하이고 FA·다년계약이 아닌 선수만 육성선수로 돌릴 수 있습니다.'; if(ysN(G.user)>=YS_MAX)return `육성선수는 ${YS_MAX}명까지입니다.`;
   ysSet(p); /* 1군에서 빠지는 모든 길은 같은 말소 규칙(10일 뒤 재등록) */ addLog(`${p.name}을(를) 육성선수로 돌렸습니다. 정식 로스터에서 빠집니다.`); return ''; }
+function ysUnset(p){ p.ys=false; if(p.ysCut){ const c=p.ysCut; p.ysGap=(p.ysGap||[]).filter(g=>g.y>=G.year-1); p.ysGap.push({y:G.year,d0:c.y===G.year?c.d:dnum(G.year,1,1),d1:G.day,s0:p.ysSal0??c.s0,s:p.sal,t:p.team}); } delete p.ysCut; if(p.ysSal0!=null){ p.sal=Math.max(p.sal,p.ysSal0); delete p.ysSal0; } /* 육성으로 돌릴 때 깎인 연봉을 되돌린다 */ }
+/* fromYS와 같은 조건(5월 1일부터, 포스트시즌·결산 전 아님, 정원)으로 AI도 육성선수를 정식으로 올린다(11-17 드래프트 보정).
+   예전에는 AI 구단에 이 길이 없어 미지명·트라이아웃 육성선수가 AI 구단에서는 1군을 밟을 수 없었다(사람 단장만 fromYS).
+   주 1회, 가장 나은 육성선수가 정식 2군 하위(정식 국내 선수 keepScore 하위 10명 평균)보다 3 이상 나으면 올린다. 정원이 차 있으면 그중 가장 낮은 선수를 육성으로 돌릴 수 있을 때만(toYS와 같은 조건) 맞바꾼다 */
+function aiYsUp(tid){ if(tid===ME()||period()!=='season'||G.day<KD(5,1)||preSettle())return 0;
+  const c=ysList(tid).filter(p=>!p.foreign&&healthy(p)&&!(p.joinY>G.year)).sort((a,b)=>keepScore(b)-keepScore(a))[0]; if(!c)return 0;
+  const reg=domestic(tid).filter(p=>!p.ys&&!p.e1&&!(p.joinY>G.year)&&!milServing(p)).sort((a,b)=>keepScore(a)-keepScore(b)); if(reg.length<10)return 0;
+  const bar=reg.slice(0,10).reduce((a,p)=>a+keepScore(p),0)/10; if(keepScore(c)<bar+3)return 0;
+  if(rosterN(tid)>=ROSTER_MAX){ const w=reg.find(p=>ysOk(p)); if(!w||keepScore(c)<keepScore(w)+3)return 0; ysSet(w); }
+  if(rosterN(tid)>=ROSTER_MAX)return 0; ysUnset(c); return 1; }
 function fromYS(id){ const p=G.players[id]; if(!p||!p.ys||p.team!==G.user||G.unemp)return '대상이 아닙니다.'; if(period()==='season'&&G.day<KD(5,1))return '육성선수는 5월 1일부터 정식 선수로 등록할 수 있습니다.'; if(period()==='post'||preSettle())return '포스트시즌과 결산 전에는 정식 선수로 새로 등록할 수 없습니다.'; if(!milServing(p)&&rosterN(G.user)>=ROSTER_MAX)return `정식 로스터가 ${ROSTER_MAX}명으로 꽉 찼습니다.`;
-  p.ys=false; if(p.ysCut){ const c=p.ysCut; p.ysGap=(p.ysGap||[]).filter(g=>g.y>=G.year-1); p.ysGap.push({y:G.year,d0:c.y===G.year?c.d:dnum(G.year,1,1),d1:G.day,s0:p.ysSal0??c.s0,s:p.sal,t:p.team}); } delete p.ysCut; if(p.ysSal0!=null){ p.sal=Math.max(p.sal,p.ysSal0); delete p.ysSal0; } /* 육성으로 돌릴 때 깎인 연봉을 되돌린다 */ addLog(`${p.name}을(를) 정식 선수로 등록했습니다.`); return ''; }
+  ysUnset(p); addLog(`${p.name}을(를) 정식 선수로 등록했습니다.`); return ''; }
 function makeLineupFrom(tid,bats){ const save=G.entryY; G.entryY=-1; const ln=makeLineup(tid,bats); G.entryY=save; return ln; }
 function depth(tid){
   const ps=playersOf(tid); const act=actOf(tid); const actIds=new Set(act.map(p=>p.id));

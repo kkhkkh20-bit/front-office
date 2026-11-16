@@ -6,13 +6,12 @@ function tradeInsight(tid,give,get){
   const tbl=`<div class="tw"><table class="tcmp"><thead><tr><th></th>${keys.map(k=>`<th>${lab(k)}</th>`).join('')}</tr></thead><tbody>
     <tr><td>${badge(G.user,16)} 우리</td>${keys.map(k=>cell(c.my[0][k],c.my[1][k])).join('')}</tr>
     <tr><td>${badge(tid,16)} 상대</td>${keys.map(k=>cell(c.th[0][k],c.th[1][k])).join('')}</tr></tbody></table></div>`;
-  const cash0=UI.trade&&UI.trade.tid===tid?(UI.trade.cash||0):0; const op=asstOpinion(tid,give,get,cash0,UI.trade&&UI.trade.tid===tid?UI.trade.pk:null); const hint=tradeHint(tid,give,get,cash0,UI.trade&&UI.trade.tid===tid?UI.trade.pk:null);
-  const hintH=hint?(hint.txt?`<p class="small muted">${esc(hint.txt)}</p>`:`<div class="thint">${hint.big?'<span class="small">차이가 커서 한두 명으로는 어려워 보입니다.</span>':''}${hint.add?`<span class="small">상대는 <b>${esc(hint.add.name)}</b>(${posLabel(hint.add)})을(를) 더 얹으면 받아들일 것 같습니다.</span><button class="btn small" data-a="tpick" data-v="give:${hint.add.id}">얹기</button>`:''}${(hint.cash?(()=>{ const tot=hint.cash; /* hint.cash는 이미 얹은 현금을 포함한 합계 */ const oc=tradeOwnerCheck(give,get,tot); const ra=roomAfter(give,get); const left=ra.after-tot; return tot<=0?`<span class="small">또는 상대에게 받을 현금을 ${tot<0?`<b>${money(-tot)}</b>(으)로 줄이면`:'<b>없애면</b>'} 받아들일 것 같습니다.</span><button class="btn small" data-a="tcash" data-v="${tot}">${tot<0?'받을 현금 줄이기':'받을 현금 없애기'}</button>`:`<span class="small">또는 현금 <b>${money(hint.cash)}</b>을(를) 얹으면 받아들일 것 같습니다. 얹으면 거래 후 예산 여유 ${money(left)}${oc&&!oc.ok?' · <b class="bad">구단주 승인 필요(허용 폭 초과)</b>':oc?` · 구단주 허용 폭 안(예산 ${money(oc.over)} 초과)`:''}.</span><button class="btn small" data-a="tcash" data-v="${hint.cash}">현금 얹기</button>`; })():'')}${hint.drop?`<span class="small">또는 받을 선수에서 <b>${esc(hint.drop.name)}</b>을(를) 빼면 될 것 같습니다.</span><button class="btn small" data-a="tpick" data-v="get:${hint.drop.id}">빼기</button>`:''}${!hint.add&&!hint.drop&&!hint.big?'<span class="small muted">맞춰 줄 만한 선수가 보이지 않습니다.</span>':''}</div>`):'';
+  const cash0=UI.trade&&UI.trade.tid===tid?(UI.trade.cash||0):0; const op=asstOpinion(tid,give,get,cash0,UI.trade&&UI.trade.tid===tid?UI.trade.pk:null);
   const mv=mgrTradeView(tid,give,get);
   const medH=get.map(id=>G.players[id]).filter(Boolean).map(p=>{ const r=medReport(p); return `<div class="medrow"><b>${esc(p.name)}</b> <span class="pill ${r.c}">${r.g}</span>${r.L.map(t=>`<div class="small">${esc(t)}</div>`).join('')}${r.note?`<div class="small muted">${r.note}</div>`:''}</div>`; }).join('');
   const lost=[...give,...get].map(id=>G.players[id]).filter(Boolean).map(p=>{ const t=termsLostTxt(p); return t?`${p.name}: ${t}`:''; }).filter(Boolean);
   return `<div class="tins">${lost.length?`<p class="small warn">이적하면 없어지는 계약 조건 — ${esc(lost.join(' / '))}. 남은 연봉·기간은 그대로 넘어갑니다.</p>`:''}${dealMoney(give,get,cash0)}${mv?`<p class="small">${esc(mv.txt)}</p>`:''}<div class="eyebrow">트레이드 후 예상 주전</div>${tbl}${(()=>{ const mine=rosterList(G.user); const after=mine.filter(p=>!give.includes(p.id)).concat(get.map(id=>G.players[id]).filter(Boolean)); const t=posSwapTxt(mine,after); return `<p class="small">${esc(t)}</p>`; })()}${(()=>{ const x=spSwap(tid,give,get); return x?`<p class="small">${esc(spSwapTxt(x))}</p>`:''; })()}${(()=>{ const mine=rosterList(G.user); const after=mine.filter(p=>!give.includes(p.id)).concat(get.map(id=>G.players[id]).filter(Boolean)); const D=posDepthList(after); return `<details class="small"><summary>트레이드 후 포지션별 가용 자원</summary><div class="tw"><table class="sqt"><tbody>${FIELDK.map(k=>`<tr><td>${POSS[k]}</td><td>${D[k].map(x=>`${esc(x.p.name)} <span class="muted">${dv(Math.round(x.v))}${x.p.pos!==k?'·이동':''}</span>`).join(', ')||'-'}</td></tr>`).join('')}</tbody></table></div></details>`; })()}
-    ${medH?`<div class="medchk"><span class="eyebrow">받는 선수 메디컬 체크</span>${medH}</div>`:''}<div class="asst"><span class="eyebrow">부단장 의견</span>${op.map(t=>`<p class="small">${esc(t)}</p>`).join('')}</div>${hintH}
+    ${medH?`<div class="medchk"><span class="eyebrow">받는 선수 메디컬 체크</span>${medH}</div>`:''}<div class="asst"><span class="eyebrow">부단장 의견</span>${op.map(t=>`<p class="small">${esc(t)}</p>`).join('')}</div>
     <p class="small muted">숫자는 포지션별 주전의 현재 능력(오버롤)입니다. 선발은 상위 5명 평균(5명이 안 되면 불펜에서 돌려 막는 값)입니다.</p></div>`;
 }
 
@@ -36,7 +35,7 @@ function draftCenter(all,mine){
 /* 선수 카드: 스태프 의견과 빠른 행동 */
 function staffCardP(p){ const L=staffNotes(p); if(!L.length)return '';
   return `<div class="stn">${L.map(x=>`<div><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}</div>`; }
-/* 선수 화면 위 행동(UI 2단계 2-2): 상황별 대표 동작 1개만 보이고 나머지는 ⋯ 메뉴로.
+/* 선수 화면 위 행동(UI 2단계 2-2): 상황별 대표 동작 1개(파란 버튼)와 나머지 동작. 기본은 모두 버튼으로 보이고, 설정에서 '간단히'를 고르면 나머지는 ⋯ 메뉴로.
    우리 선수: 계약이 곧 끝나면 연장 협상, 6주 이상 다친 외국인은 대체 외국인 고르기, 그 밖에는 면담. 다른 구단 선수: 트레이드 협상 */
 function extSoon(p){ if(!canExtend(p))return false; if(p.extCounter&&p.extCounter.until>=G.day)return true; return p.faC?(p.yrs||0)<=1:faLeft(p)<=1; }
 function quickActs(p){
@@ -56,8 +55,8 @@ function quickActs(p){
     if(tradeOpen()){ main={a:'toTrade',v:p.id,l:'트레이드 협상'}; M.push({a:'findT',v:p.id,l:'얻을 조건 보기'}); }
     const on=(G.pwatch||[]).includes(p.id); M.push({a:'pwatch',v:p.id,l:on?'관심 해제':'관심 선수',on});
   }
-  const html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기'});
-  return html?`<div class="qacts">${html}</div>`:''; }
+  const all=actModeAll(), html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기',all}); /* 설정 › 선수 화면 버튼: 모두 보이기(기본)·간단히 */
+  return html?`<div class="qacts${all?' qacts-all':''}">${html}</div>`:''; }
 
 /* ---------- 아마추어 기록: 학년별 ---------- */
 function amYearTable(p){ const Y=p.amY; if(!Y||!Y.length)return `<p class="small">${esc(amLine(p))}</p>`;
