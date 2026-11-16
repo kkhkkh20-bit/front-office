@@ -9,17 +9,23 @@ function fOverseas(){ for(const p of Object.values(G.players)){ if(!p.foreign||p
     const mlb=p.foreign==='용병'&&p.age<=32&&w>=5.5&&R()<.35+Math.min(.25,(w-5.5)*.08), npb=!mlb&&R()<(p.foreign==='아시아'?.45:.22)+(w>=5?.2:0); if(!mlb&&!npb)continue;
     const lg=mlb?'MLB':'NPB'; const yrs=mlb?ri(1,2):ri(1,3); const amt=Math.round(mlb?clamp(150+(w-5)*120+N(0,60),120,900):clamp(120+(w-3.5)*90+N(0,40),100,500)); const club=pick(lg==='MLB'?MLBT:NPBT);
     p.ovsOffer={lg,club,yrs,amt,y:G.year};
-    if(p.team!==G.user){ let stay=R()<(lg==='MLB'?.12:.3); if(stay&&p.foreign!=='아시아'){ const oth=sum(foreignOf(p.team).filter(x=>x.foreign==='용병'&&x.id!==p.id).map(fCommit)); const ns=round5(Math.min(Math.max(p.sal*1.35,usd(amt)*.9),fCap(p.team)-oth-(fCommit(p)-p.sal),Math.max(p.sal,200*USD)) /* 본인 인센티브까지 총액 한도에(검수 11-08) */); stay=ns>p.sal; if(stay){ p.sal=ns; p.kept={y:G.year,sal:ns}; } } else if(stay){ p.sal=round5(p.sal+10*USD); p.kept={y:G.year,sal:p.sal}; } if(stay){ wire('외국인',`${tname(p.team)} ${p.name}, ${lg} 제안 뿌리치고 잔류`,{tid:p.team,ref:p.id}); delete p.ovsOffer; }
+    if(p.team!==G.user){ let stay=false; const ns=fovsKeepSal(p,{amt}); if(fovsAiTry(p,ns)){ stay=R()<fovsKeepOdds(p,lg); if(stay){ p.kept={y:G.year,sal:ns,base:p.sal}; p.sal=ns; } } /* AI도 우리와 같은 판단·같은 조건: 붙잡을 가치가 있고 한도 안이면 설득하고(같은 연봉·같은 성공 확률), 아니면 보낸다(사용자 11-16. 예전: 12%·30% 무작위로 시도하면 무조건 성공) */ if(stay){ wire('외국인',`${tname(p.team)} ${p.name}, ${lg} 제안 뿌리치고 잔류`,{tid:p.team,ref:p.id}); delete p.ovsOffer; }
       else { ovsLeave(p,lg,club,yrs,amt,'외국인'); } continue; }
     evNew('fovs',`${p.name}에게 ${lg} 제안`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) 올 시즌 WAR ${w.toFixed(1)}을 기록하자 ${club} 구단(${lg})이 ${yrs}년 총 ${usdKw(amt*yrs)} 수준을 제시했습니다. 에이전트는 국내 잔류도 열어 두었지만 ${lg==='MLB'?'메이저리그 복귀를 원합니다':'조건이 맞으면 일본으로 가겠다고 합니다'}.`,
       [{l:`잔류 설득 (연봉 ${usdKw(Math.round(fovsKeepSal(p,{amt})/USD))})`,fx:`${lg==='MLB'?'성공 가능성이 낮습니다':'성공 확률은 절반 정도입니다'}. 실패하면 연봉 부담 없이 떠납니다. 재계약 선수는 개인 연봉 상한이 없지만 3명 총액 한도는 지켜야 합니다.`},
        {l:'축하하며 보내 준다',fx:'떠납니다. 대체 외국인을 찾아야 합니다.'}],{ref:p.id,face:p.id,from:'운영팀',data:{pid:p.id,ks:fovsKeepSal(p,{amt})},def:1,exp:12}); } } /* ks: 버튼에 적은 금액을 그대로 계약한다(그사이 연봉이 바뀌어도: 검수 11-06) */
+/* 잔류 설득 성공 확률: 우리 구단(EVH.fovs)과 AI 구단이 같은 식 */
+function fovsKeepOdds(p,lg){ return ((lg==='MLB'?.2:.5)+((p.mor??60)-60)/200)*(p.foreign==='아시아'?.5:1); }
+/* AI 구단의 설득 판단: 우리와 같은 총액 한도(본인 인센티브 포함)·아시아쿼터 상한 안에서만. 긴축 구단은 연봉이 크게 뛰면 보내고, 유망주 수집 구단은 서른 넘은 선수에게 큰돈을 쓰지 않는다 */
+function fovsAiTry(p,ns){ const t=team(p.team); if(!t)return false; const pl=planOf(t), asia=p.foreign==='아시아';
+  const own=p.opt&&p.ctT===p.team&&p.opt.until>=ctSeason()?(p.opt.a||0):0; const capOk=asia?ns<=asiaReCap(p):sum(foreignOf(p.team).filter(x=>x.foreign==='용병'&&x.id!==p.id).map(fCommit))+ns+own<=fCap(p.team); if(!capOk)return false;
+  if(pl==='tight'&&ns>p.sal*1.3)return false; if(pl==='build'&&p.age>=31&&ns>p.sal*1.3)return false; if((t.cash||0)<-4000&&ns>p.sal)return false; return true; }
 /* 해외 제안을 받은 외국인 잔류 연봉: 버튼 안내와 실제 계약이 같은 계산 */
 function fovsKeepSal(p,o){ return p.foreign==='아시아'?Math.min(asiaReCap(p),round5(p.sal+10*USD)) /* 아시아쿼터 상한(검수 11-07) */:round5(usd(Math.max(p.sal/USD*1.5,o.amt*.85))); }
 EVH.fovs={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.ovsOffer)return ''; const o=p.ovsOffer;
     if(i===0){ const asia=p.foreign==='아시아'; const ns=e.data.ks??fovsKeepSal(p,o); /* 버튼에 적은 금액 그대로 */ const yb=foreignOf(G.user).filter(x=>x.foreign==='용병'&&x.id!==p.id); const own=p.opt&&p.ctT===p.team&&p.opt.until>=ctSeason()?(p.opt.a||0):0; const capOk=asia?ns<=asiaReCap(p):sum(yb.map(fCommit))+ns+own<=fCap(G.user); /* 본인 인센티브도 총액에(검수 11-07) */
       if(!capOk)return `외국인 연봉 총액 한도(${money(fCap(G.user))})를 넘어 설득할 수 없습니다. ${ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인')}`;
-      const ok=R()<((o.lg==='MLB'?.2:.5)+((p.mor??60)-60)/200)*(asia?.5:1); if(ok){ p.kept={y:G.year,sal:ns,base:p.sal}; p.sal=ns; delete p.ovsOffer; news('선수',`${p.name}, ${o.lg} 제안 뿌리치고 잔류`,`${tshort(G.user)}이(가) 연봉 ${money(ns)}에 붙잡았습니다.`,2,{ref:p.id}); return `설득 성공. 연봉 ${money(ns)}.`; }
+      const ok=R()<fovsKeepOdds(p,o.lg); if(ok){ p.kept={y:G.year,sal:ns,base:p.sal}; p.sal=ns; delete p.ovsOffer; news('선수',`${p.name}, ${o.lg} 제안 뿌리치고 잔류`,`${tshort(G.user)}이(가) 연봉 ${money(ns)}에 붙잡았습니다.`,2,{ref:p.id}); return `설득 성공. 연봉 ${money(ns)}.`; }
       return `설득에 실패했습니다. ${ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인')}`; }
     return ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인'); } };
 /* 떠나는 선수를 해외파 명단으로 옮긴다 (국내 선수는 나중에 돌아올 수 있다) */
@@ -45,7 +51,7 @@ const ovsBeen=p=>p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.
 const postDone=p=>!!((p.faC&&!p.ext)||p.faN||p.lastFA!=null||p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.id));
 function postingSeason(){ G.posting=G.posting||[]; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.joinY>G.year||milServing(p))continue; /* 군 복무 중에는 해외에 나갈 수 없다(검수 11-06) */ if(p.postPromise&&p.postPromiseT!=null&&p.postPromiseT!==p.team){ delete p.postPromise; delete p.postPromiseT; } /* 약속은 약속한 구단만 지킨다(이적하면 끝). 자격 검사보다 먼저 지운다(검수 11-06) */ if(postDone(p))continue; /* KBO 포스팅은 FA 자격 전 보류 선수만: FA 계약을 한 적 있거나 해외에 다녀온 선수는 대상 아님(비FA 다년계약 ext는 FA 이력이 아님) */ if(p.faC&&p.yrs>1&&p.postPromise!==G.year)continue; /* 포스팅을 약속한 해에는 다년계약을 맺었어도 약속을 확인한다(조용히 넘어가지 않게) */ if(p.postPromise!==G.year&&(p.svc<7||p.age>32||ovr(p)<60))continue; mlbOf(p);
     const want=p.mlb>=55||(p.postPromise===G.year); if(!want)continue; if(G.posting.some(x=>x.pid===p.id&&x.y===G.year&&!x.void))continue;
-    if(p.team!==G.user||G.unemp){ const t=team(p.team); const allow=R()<(t.mode==='rebuild'?.75:.5); if(allow)postStart(p); else { p.mlb=clamp(p.mlb+5,0,100); } continue; }
+    if(p.team!==G.user||G.unemp){ const k=aiPostDecide(p); if(k==='allow')postStart(p); else if(k==='promise'){ p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); } /* 우리 '1년 뒤 약속'과 같은 효과 */ continue; }
     const promised=p.postPromise===G.year; const asked=(p.postAsk||0);
     evNew('post',`${p.name} 포스팅 요청`,`${p.name}(${posLabel(p)}, ${p.age}세, 서비스 ${p.svc}년)이(가) 메이저리그 도전을 위해 포스팅을 요청했습니다.${promised?' 지난해 "1년 뒤 보내 주겠다"고 약속했습니다.':asked?` 작년에도 요청했다가 거절당했습니다(${asked}회).`:''} 언론은 연일 해외 진출 가능성을 다루고 있습니다.`,
       [{l:'포스팅 허락',fx:`${dmd(postDay())}에 결과가 나옵니다.`+' 계약이 성사되면 포스팅 비용(계약 보장액의 약 20%)을 받고 선수는 떠납니다. 무산되면 남습니다.'},
@@ -58,6 +64,12 @@ EVH.post={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; if(p.team!
       p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); return `${p.name}에게 내년 포스팅을 약속했습니다. 기분 상승.`; }
     p.postAsk=(p.postAsk||0)+1; const d=e.data.promised?28:p.postAsk>=2?20:14; p.mor=clamp((p.mor??60)-d,0,100); G.pr.press=clamp(G.pr.press-(e.data.promised?5:2),0,100); G.pr.fan=clamp(G.pr.fan-(e.data.promised?3:0),0,100);
     news('언론',`${tshort(G.user)}, ${p.name} 포스팅 불허`,e.data.promised?'약속을 뒤집었다는 비판이 거셉니다.':'구단은 전력 유지를 택했습니다.',e.data.promised?-3:-1,{ref:p.id}); return `포스팅을 거절했습니다. 기분 하락.`; } };
+/* AI 구단의 포스팅 판단(사용자 11-16: AI도 유저처럼. 예전: 리빌딩 75%·그 밖 50% 무작위 허락, 거절해도 아무 대가 없음).
+   사람 단장처럼 본다: 약속한 해에는 지킨다. 계약으로 묶어 둘 해가 1년 이하면(곧 FA로 공짜로 잃는다) 포스팅 비용을 받고 보낸다.
+   2년 넘게 남은 주전을 우승·내년 도전 구단이 원하면 '1년 뒤'를 약속하고 남긴다(우리 선택지와 같은 효과). 그 밖에는 허락한다 */
+function aiPostDecide(p){ if(p.postPromise===G.year)return 'allow'; const t=team(p.team); if(!t)return 'allow'; const pl=planOf(t)||'next';
+  let ny=1; try{ ny=ctrlYears(p); }catch(e){} if(ny<=1||pl==='build'||pl==='tight')return 'allow';
+  let reg=false; try{ reg=isRegular(p); }catch(e){} if(reg&&(pl==='win'||pl==='next'||pl==='star'))return 'promise'; return 'allow'; }
 function postDay(){ return Math.max(G.day+20,KD(12,12)); } /* 결과 발표일: 안내 문구와 실제 처리일이 같은 계산 */
 function postStart(p,day){ G.posting=G.posting||[]; const x={pid:p.id,y:G.year,tid:p.team,day:day!=null&&day>G.day?day:postDay(), /* 요청 때 안내한 발표일(검수 11-07) */done:false}; G.posting.push(x); wire('해외',`${tname(p.team)} ${p.name}, 포스팅 신청`,{tid:p.team,ref:p.id}); if(p.team===G.user&&!G.unemp)news('선수',`${p.name}, 메이저리그 도전 공식화 · 포스팅 공시`,`${tname(p.team)}이(가) ${p.name}의 포스팅을 신청했습니다. 공시 뒤 협상 기간이 열리고 ${dmd(x.day)}에 결과가 나옵니다. 팬들은 아쉬움과 응원을 함께 보내고 있습니다.`,1,{ref:p.id}); delete p.postPromise; delete p.postPromiseT; return x; }
 /* 포스팅 결과: 능력이 높을수록 MLB 계약 가능성이 크다 */
