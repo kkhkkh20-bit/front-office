@@ -2,14 +2,16 @@
    PC(1100px 이상)에서 상자 안 목록·표가 칸보다 길어 스크롤바가 생기면, 칸에 들어가는 줄만 보이고 '‹ 1/4 ›'로 넘긴다.
    페이지와 상자가 같이 스크롤되는 이중 스크롤을 없앤다. 휴대폰은 화면 전체가 한 번에 내려가므로 그대로 둔다.
    표는 tbody 줄, 그 밖의 목록은 칸의 직계 자식(같은 모양 줄 4개 이상)을 나눈다. 이미 쪽 나눔이 있는 목록(.pgr 옆)과 경기 중계는 건드리지 않는다. */
-const FP_SKIP='.cast,.cs-bg,.match-dashboard,.fdl-main,.free-list,.pf-overview,.mmenu,.cfm,.ws-tab-row,.chips,.seg,.subtabs,.fbar-p,.ibx-list,.ibs-box,.talk,.meet';
+const FP_SKIP='.mt-opts,.ngt,.negw,.iv,.cw-opts,.cast,.cs-bg,.match-dashboard,.fdl-main,.free-list,.pf-overview,.mmenu,.cfm,.ws-tab-row,.chips,.seg,.subtabs,.fbar-p,.talk,.meet';
 function fpRows(c){
   const tb=c.matches('table')?c:c.querySelector(':scope>table,:scope>.tw>table,:scope>div>table');
   if(tb&&tb.tBodies[0]&&c.contains(tb)){ const rows=[...tb.tBodies[0].rows].filter(r=>r.getClientRects().length); return {rows,table:tb}; }
   const kids=[...c.children].filter(e=>e.getClientRects().length&&!e.matches('h2,h3,h4,.fp-bar,.pgr,.twpg,summary,p.small,p.note,.note'));
-  if(kids.length<4)return null;
-  const big=kids.filter(e=>e.getBoundingClientRect().height>c.clientHeight-34).length; if(big)return null; /* 한 쪽에 한 줄도 안 들어가면 목록이 아니다 */
-  return {rows:kids,table:null};
+  /* 묶음(예: 소식함의 날짜·종류 묶음)이 칸보다 크면 그 안의 줄을 펼쳐 나눈다 */
+  const lim=c.clientHeight-34, rows=kids.flatMap(k=>k.getBoundingClientRect().height>lim&&k.children.length>=2?[...k.children].filter(e=>e.getClientRects().length):[k]);
+  if(rows.length<4)return null;
+  if(rows.some(e=>e.getBoundingClientRect().height>lim))return null; /* 한 쪽에 한 줄도 안 들어가면 목록이 아니다 */
+  return {rows,table:null,groups:kids.filter(k=>!rows.includes(k))};
 }
 function fitPages(){
   if(typeof document==='undefined')return;
@@ -31,12 +33,14 @@ function fitPages(){
       if(pages.length<2)continue;
       const pg=Math.min(UI.fpPg[key]||0,pages.length-1); const [a,z]=pages[pg];
       R.rows.forEach((r,i)=>{ if(i<a||i>=z)r.classList.add('fp-off'); });
+      for(const g of R.groups||[])if([...g.children].every(e=>e.classList.contains('fp-off')||!R.rows.includes(e))&&[...g.children].some(e=>R.rows.includes(e)))g.classList.add('fp-off'); /* 이 쪽에 줄이 없는 묶음은 제목도 숨긴다 */
       c.classList.add('fp-on'); c.scrollTop=0;
       const bar=document.createElement('div'); bar.className='fp-bar';
       bar.innerHTML=`<button type="button" class="tc-i" ${pg>0?'':'disabled'} aria-label="앞 쪽">‹</button><span class="num">${pg+1} / ${pages.length}</span><button type="button" class="tc-i" ${pg<pages.length-1?'':'disabled'} aria-label="다음 쪽">›</button>`;
       const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.fpPg[key]=pg+d; fitPages(); };
       bp.onclick=()=>go(-1); bn.onclick=()=>go(1); c._fpGo=go; c._fpPages=pages; c._fpKey=key; c._fpRows=R.rows;
       c.append(bar); c._fpH=c.clientHeight; fpObs()?.observe(c);
+      if(!c._fpImg){ c._fpImg=1; c.addEventListener('load',e=>{ if(e.target&&e.target.tagName==='IMG'){ cancelAnimationFrame(_fpRAF); _fpRAF=requestAnimationFrame(()=>{ try{ fitPages(); }catch(x){} }); } },true); } /* 사진이 늦게 들어와 줄이 커지면 다시 나눈다 */
     }
   }
 }

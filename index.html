@@ -1247,6 +1247,20 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
  .fin-d .fmc{min-height:80px}
 }
 @media(min-width:1100px) and (max-width:1599px){.fin-d .fmd-room .fmd-chg{display:none} /* 좁은 폭: 바뀐 항목은 수입·지출 탭에서 */}
+/* 구단주 화면(PC) 한 화면에(UI 3단계 3-0): 두 구역으로 나눠 상자 안 스크롤 없이 */
+.own-views{margin:0 0 8px}
+@media(min-width:1100px){
+ .own-d.v-main{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"goal fb" "adj fb"}
+ .own-d.v-main>:is(.own-plan,.own-fin,.own-req,.own-dat){display:none!important}
+ .own-d.v-rec{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"plan plan req" "fin dat req"}
+ .own-d.v-rec:not(:has(.own-req .rql)){grid-template-areas:"plan plan plan" "fin dat dat"}
+ .own-d.v-rec:not(:has(.own-req .rql))>.own-req{display:none}
+ .own-d.v-rec>:is(.own-goal,.own-fb,.own-adj){display:none!important}
+ .own-d .own-adj .row{flex-wrap:wrap}
+ .own-d .own-fin .fmd-kv{font-size:var(--ui-caption);gap:1px 10px}
+ .own-d>.card{padding:8px 12px}
+}
+@media(min-width:1100px){.own-plan{display:flex;flex-direction:column}.own-plan>.ologs{flex:1 1 auto;min-height:0;overflow:auto}}
 /* 프로모션 데이(44c_promotions) */
 .promo-r{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line,#333)}
 .promo-r:last-child{border-bottom:0}
@@ -5464,6 +5478,15 @@ button.st-n:hover b{text-decoration:underline}
 .anl-fit.v-mk section.card>.eyebrow,.anl-fit.v-mk section.card>.eyebrow~*{display:none!important}
 .anl-fit.v-oth section.card>:is(.chips,.tgrid:not(.staff-other-cards),.eyebrow),.anl-fit.v-oth section.card>.chips~p.hint:not(.eyebrow~p){display:none!important}
 .anl-fit.v-oth section.card>p.hint:first-of-type{display:none}
+/* 구단 정보 창(PC): 화면 높이 안에서 탭 내용만, 사람 목록은 쪽으로 넘긴다(UI 3단계 3-0) */
+@media(min-width:1100px){
+ #sheet .sheet.ts-sheet{display:flex!important;flex-direction:column;height:var(--detail-height,100dvh);max-height:var(--detail-height,100dvh);overflow:hidden!important;gap:8px}
+ #sheet .sheet.ts-sheet>*{flex:none}
+ #sheet .sheet.ts-sheet>.ts-body{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:6px}
+ #sheet .sheet.ts-sheet>.ts-body>*{flex:none}
+ #sheet .sheet.ts-sheet>.ts-body.ts-ppl>.list:last-of-type{flex:1 1 auto;min-height:0;overflow:auto}
+ #sheet .sheet.ts-sheet>.sheet-head{padding-block:6px}
+}
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
@@ -6424,7 +6447,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 @media(max-width:700px){#app .fbar .fbar-row .fbar-b.btn.small,#sheet .fbar .fbar-row .fbar-b.btn.small{min-height:44px!important;height:44px}#app .fbar .fbar-row .fbar-q,#sheet .fbar .fbar-row .fbar-q{min-height:44px!important;height:44px}}
 
 /* PC 목록 쪽 나눔(UI 3단계 3-0, 57_fit_pages.js): 상자 안 스크롤 대신 들어가는 줄만, 아래 '‹ 1/4 ›' */
-.fp-on{overflow:hidden!important}
+.fp-on{overflow-y:hidden!important} /* 가로는 원래대로(넓은 표는 옆으로) */
 .fp-off{display:none!important}
 .fp-bar{position:sticky;bottom:0;grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;padding:3px 4px 0;background:inherit;font-size:var(--ui-caption);color:var(--muted)}
 .fp-bar .tc-i{min-width:32px;min-height:26px;padding:0 8px;margin:0!important;flex:none}
@@ -34118,9 +34141,10 @@ function ownerDash(){ prInit(); const t=team(G.user), currentOw=OWNER[t.owner], 
   const LG=G.last&&G.last.y>=G.year-1&&G.last.goals||[];
   const good=[...OL.filter(x=>x.mood==='만족').slice(0,4).map(x=>`${x.m}월 보고: ${x.txt}`),...LG.filter(g=>/달성/.test(g)&&!/미달/.test(g))], bad=[...OL.filter(x=>x.mood==='불만'||x.mood==='격노').slice(0,4).map(x=>`${x.m}월 보고: ${x.txt}`),...LG.filter(g=>/미달/.test(g))];
   const GM=grants().filter(g=>g.by==='gm'), ok=GM.filter(g=>g.ok).length, n=GM.length||1, GR=grants().slice(0,10);
-  return `<div class="fmd own-d"><section class="card own-goal"><h3 class="fmd-h">구단주 목표${hiI('구단주가 정한 올 시즌 목표입니다. 매달 말 보고와 시즌 결산 때 평가합니다.')}</h3>${ownershipGoalNote()}${goals}${info}</section>
+  const ov=UI.ownView==='rec'?'rec':'main', ovBar=`<div class="chips own-views" role="tablist" aria-label="구단주 화면 구역">${[['main','목표·요청'],['rec','평가 기록·재정']].map(([k,l])=>`<button type="button" role="tab" data-a="ownView" data-v="${k}" class="${k===ov?'on':''}" aria-selected="${k===ov}">${l}</button>`).join('')}</div>`; /* PC 한 화면에(UI 3단계 3-0): 목표·피드백·예산 조정과 평가 기록·재정을 나눠 본다. 휴대폰은 위아래로 모두 */
+  return `${fmOn()?ovBar:''}<div class="fmd own-d v-${fmOn()?ov:'all'}"><section class="card own-goal"><h3 class="fmd-h">구단주 목표${hiI('구단주가 정한 올 시즌 목표입니다. 매달 말 보고와 시즌 결산 때 평가합니다.')}</h3>${ownershipGoalNote()}${goals}${info}</section>
     <section class="card own-plan"><h3 class="fmd-h">구단주 평가 기록</h3>${it.bar}${plan}</section>
-    <section class="card own-fb">${ownershipCard(G.user)}${(()=>{ const g=G.goals; if(!g||g.y!==G.year||!g.pre||g.talk||period()!=='pre')return ''; return `<div class="note"><b>시즌 목표 상의</b> · 구단주 제시 ${g.rank}위 이내. 개막(${dmd(G.cal.open)}) 전까지 한 번 상의할 수 있습니다.<div class="row" style="margin-top:6px"><button class="btn small" data-a="goalTalk" data-v="ok">그대로 수락</button>${g.rank>1?`<button class="btn small" data-a="goalTalk" data-v="up">${g.rank-1}위로 높여 제안</button>`:''}<button class="btn small" data-a="goalTalk" data-v="down"${g.rank>=8?' disabled':''}>${Math.min(8,g.rank+1)}위로 낮춰 요청</button></div></div>`; })()}<div class="fmd-top"><div><h3 class="fmd-h">구단주 피드백</h3><p class="small">이번 시즌 평가 기준 <b>${ow.label}</b> · ${esc(ow.msg)}</p></div><div class="fmd-st"><span>구단주 신뢰</span><b class="fmd-big">${t.trust}</b>${gauge(t.trust,25,60)}</div></div>
+    <section class="card own-fb">${fmOn()?meetDoor('own'):''}${ownershipCard(G.user)}${(()=>{ const g=G.goals; if(!g||g.y!==G.year||!g.pre||g.talk||period()!=='pre')return ''; return `<div class="note"><b>시즌 목표 상의</b> · 구단주 제시 ${g.rank}위 이내. 개막(${dmd(G.cal.open)}) 전까지 한 번 상의할 수 있습니다.<div class="row" style="margin-top:6px"><button class="btn small" data-a="goalTalk" data-v="ok">그대로 수락</button>${g.rank>1?`<button class="btn small" data-a="goalTalk" data-v="up">${g.rank-1}위로 높여 제안</button>`:''}<button class="btn small" data-a="goalTalk" data-v="down"${g.rank>=8?' disabled':''}>${Math.min(8,g.rank+1)}위로 낮춰 요청</button></div></div>`; })()}<div class="fmd-top"><div><h3 class="fmd-h">구단주 피드백</h3><p class="small">이번 시즌 평가 기준 <b>${ow.label}</b> · ${esc(ow.msg)}</p></div><div class="fmd-st"><span>구단주 신뢰</span><b class="fmd-big">${t.trust}</b>${gauge(t.trust,25,60)}</div></div>
       <div class="own-sum ${band[1]}">구단주 신뢰 <b>${band[0]}</b>.${OL[0]?` 최근 ${OL[0].m}월 보고는 '${OL[0].mood}'였습니다.`:''}${t.trust<25?' 시즌이 끝날 때 12 아래로 떨어지면 경질됩니다.':''}</div>
       <h4 class="fmd-k">구단 명성 <span class="stars-t">${starTxt(prestigeStars(pv))}</span> ${pv}점 · 리그 ${PL.indexOf(pv)+1}위</h4><div class="own-pr">${parts.map(x=>`<span><i>${esc(x[0])}</i><b class="${x[1]>=0?'good':'bad'}">${x[1]>=0?'+':''}${Math.round(x[1])}</b></span>`).join('')||'<p class="small muted">기본 점수 외 요인이 없습니다.</p>'}</div>
       <h4 class="fmd-k">주요 사건</h4>${ev(good,'good','▲')}<h4 class="fmd-k">주요 비판점</h4>${ev(bad,'bad','▼')}
@@ -34130,7 +34154,7 @@ function ownerDash(){ prInit(); const t=team(G.user), currentOw=OWNER[t.owner], 
     <section class="card own-req"><h3 class="fmd-h">구단주 요청 기록</h3>${GR.length?`<div class="rql">${GR.map(grantLine).join('')}</div>`:'<p class="small muted">아직 구단주에게 요청하거나 구단주가 주문한 지원이 없습니다.</p>'}</section>
     <section class="card own-dat"><h3 class="fmd-h">요청 통계</h3><p class="small">역대 단장 요청</p><svg class="fmd-bar big" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><rect width="100" height="8" fill="var(--panel2)"/><rect width="${(ok/n*100).toFixed(1)}" height="8" fill="var(--good)"/><rect x="${(ok/n*100).toFixed(1)}" width="${((GM.length-ok)/n*100).toFixed(1)}" height="8" fill="var(--bad)"/></svg>
       <p class="small"><b class="good">승인 ${ok}건(${Math.round(ok/n*100)}%)</b> · <b class="bad">반려 ${GM.length-ok}건(${Math.round((GM.length-ok)/n*100)}%)</b></p>${kv([['올해 단장 요청',GM.filter(g=>g.y===G.year).length+'건'],['재임 기간 단장 요청',GM.length+'건'],['구단주 먼저 주문',grants().filter(g=>g.by!=='gm').length+'건'],['올해 추가 지원',money(grantAmt())],['지원 요청',ownAskLeft()?'가능':'쉬는 중']])}</section>
-    <section class="card own-adj"><h3 class="fmd-h">예산 조정</h3>${t.indie?'<p class="small muted">독립구단이라 모기업 지원이 없습니다. 스폰서와 자체 수익으로 운영합니다.</p>':`${ownFundView()}${meetDoor('own')}<p class="small">지금 예산 여유 <b>${money(b.roomGoal)}</b>${b.extra>0?` · 예상보다 더 들어온 수입 <b class="good">${money(b.extra)}</b>`:''}</p><p class="fmd-note">한 시즌 세 번까지, 시간을 두고 요청할 수 있습니다 ${hiI(`승인 여부는 구단주 신뢰, 성향(${currentOw.label}), 순위, 요청 금액과 목적에 따라 달라지고, 반려되면 신뢰가 조금 떨어집니다.`)}</p>`}</section></div>`; }
+    <section class="card own-adj"><h3 class="fmd-h">예산 조정</h3>${t.indie?'<p class="small muted">독립구단이라 모기업 지원이 없습니다. 스폰서와 자체 수익으로 운영합니다.</p>':`${ownFundView()}${fmOn()?'':meetDoor('own')}<p class="small">지금 예산 여유 <b>${money(b.roomGoal)}</b>${b.extra>0?` · 예상보다 더 들어온 수입 <b class="good">${money(b.extra)}</b>`:''}</p><p class="fmd-note">한 시즌 세 번까지, 시간을 두고 요청할 수 있습니다 ${hiI(`승인 여부는 구단주 신뢰, 성향(${currentOw.label}), 순위, 요청 금액과 목적에 따라 달라지고, 반려되면 신뢰가 조금 떨어집니다.`)}</p>`}</section></div>`; }
 function mediaView(){
   prInit(); const P=G.pr; const f=Math.round(P.fan), pr=Math.round(P.press);
   const hist=P.hist.slice(-12);
@@ -34168,13 +34192,13 @@ function trimCard(){
 }
 /* 다른 구단 요약: 리그 화면을 벗어나지 않고 본다 */
 function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); const m=G.mgr[tid]; const rk=slotRanks(tid);
-  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="${esc(tname(tid))}">
+  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ts-sheet" data-stop="1" role="dialog" aria-label="${esc(tname(tid))}">
     <div class="sheet-head"><div><div class="eyebrow">구단 정보</div><h2 class="sec">${esc(tname(tid))}</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
-    ${teamCard(t).replace(/ data-a="[a-zA-Z]+" data-v="[^"]*" role="button" tabindex="0"/,'').replace(/<button[^>]*data-a="tpartnerGo"[^>]*>[^<]*<\/button>/g,'')}
-    <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${relLabel(t.rel)}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd><dt>팀 분위기</dt><dd>${chemLine(tid)}</dd></dl>
-    ${teamPeople(tid)}
-    <div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}${startAvgBox(tid)}
-    <div class="eyebrow" style="margin-top:10px">우승 트로피</div>${trophyCase(tid,true)}
+    ${(()=>{ /* 한 화면에(UI 3단계 3-0): 개요·사람들·우승 트로피를 탭으로. 아래 동작 버튼 줄은 늘 보인다 */
+      const ppl=teamPeople(tid), T=[['main','개요'],['pos','포지션 순위'],...(ppl?[['ppl','구단 사람들']]:[]),['tro','우승 트로피']], cur=T.some(x=>x[0]===UI.tsTab)?UI.tsTab:'main';
+      const body=cur==='ppl'?ppl:cur==='tro'?trophyCase(tid,true):cur==='pos'?`<div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}${startAvgBox(tid)}`:`${teamCard(t).replace(/ data-a="[a-zA-Z]+" data-v="[^"]*" role="button" tabindex="0"/,'').replace(/<button[^>]*data-a="tpartnerGo"[^>]*>[^<]*<\/button>/g,'')}
+    <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${relLabel(t.rel)}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd><dt>팀 분위기</dt><dd>${chemLine(tid)}</dd></dl>`;
+      return `<div class="chips ps-tabs" role="tablist" aria-label="구단 정보 구역">${T.map(([k,l])=>`<button type="button" role="tab" data-a="tsTab" data-v="${k}" class="${k===cur?'on':''}" aria-selected="${k===cur}">${l}</button>`).join('')}</div><div class="ts-body ts-${cur}">${body}</div>`; })()}
     <div class="row" style="margin-top:10px"><button class="btn primary" data-a="teamInspect" data-v="${tid}">구단 정보·연대기</button><button class="btn" data-a="lteam" data-v="${tid}">선수단 보기</button>${tradeOpen()?`<button class="btn" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button>`:''}</div>
   </div></div>`; }
 /* 다른 구단 사람들(카페 11-09c): 구단주 성향·시즌 목표, 감독, 코치진. 감독·OB 출신 코치는 누르면 인물 창 */
@@ -36740,6 +36764,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(k==='front'){ ob.alt={k:'front',tid:G.user,t:`${tshort(G.user)} 프런트`}; ob.bond+=5; obHireBonus(id,'프런트'); addLog(`OB ${ob.name}이(가) 우리 프런트에 합류했습니다.`); save(); render(); } },
   reroll(){ UI.world=null; render(); },
   psTab(v){ UI.psTab=v; renderSheet(); }, /* 인물 카드 구역 탭(UI 3단계 3-0) */
+  tsTab(v){ UI.tsTab=v; renderSheet(); }, /* 구단 정보 창 구역 탭(UI 3단계 3-0) */
+  ownView(v){ UI.ownView=v; render(); }, /* 구단주 화면 구역(UI 3단계 3-0) */
   person(v,el){ peopleCapture(v,el);UI.sheet=null; UI.person=v; UI.personMsg=null; UI.teamSh=null; renderSheet(); }, /* 선수 정보 안의 인물 링크(11-09r)와 구단 정보 창의 감독·코치(카페 11-09c)도 인물 창으로 */
   peopleStep(v){peopleStep(v);},
   relGo(v){ peopleCapture(v);const [a,id]=relKey({k:v}); UI.relK=v; A[a](id); }, /* 관계도 인물·선수 이전/다음(카페 11-10) */
@@ -38427,14 +38453,16 @@ document.addEventListener('click',e=>{ const b=e.target&&e.target.closest&&e.tar
    PC(1100px 이상)에서 상자 안 목록·표가 칸보다 길어 스크롤바가 생기면, 칸에 들어가는 줄만 보이고 '‹ 1/4 ›'로 넘긴다.
    페이지와 상자가 같이 스크롤되는 이중 스크롤을 없앤다. 휴대폰은 화면 전체가 한 번에 내려가므로 그대로 둔다.
    표는 tbody 줄, 그 밖의 목록은 칸의 직계 자식(같은 모양 줄 4개 이상)을 나눈다. 이미 쪽 나눔이 있는 목록(.pgr 옆)과 경기 중계는 건드리지 않는다. */
-const FP_SKIP='.cast,.cs-bg,.match-dashboard,.fdl-main,.free-list,.pf-overview,.mmenu,.cfm,.ws-tab-row,.chips,.seg,.subtabs,.fbar-p,.ibx-list,.ibs-box,.talk,.meet';
+const FP_SKIP='.mt-opts,.ngt,.negw,.iv,.cw-opts,.cast,.cs-bg,.match-dashboard,.fdl-main,.free-list,.pf-overview,.mmenu,.cfm,.ws-tab-row,.chips,.seg,.subtabs,.fbar-p,.talk,.meet';
 function fpRows(c){
   const tb=c.matches('table')?c:c.querySelector(':scope>table,:scope>.tw>table,:scope>div>table');
   if(tb&&tb.tBodies[0]&&c.contains(tb)){ const rows=[...tb.tBodies[0].rows].filter(r=>r.getClientRects().length); return {rows,table:tb}; }
   const kids=[...c.children].filter(e=>e.getClientRects().length&&!e.matches('h2,h3,h4,.fp-bar,.pgr,.twpg,summary,p.small,p.note,.note'));
-  if(kids.length<4)return null;
-  const big=kids.filter(e=>e.getBoundingClientRect().height>c.clientHeight-34).length; if(big)return null; /* 한 쪽에 한 줄도 안 들어가면 목록이 아니다 */
-  return {rows:kids,table:null};
+  /* 묶음(예: 소식함의 날짜·종류 묶음)이 칸보다 크면 그 안의 줄을 펼쳐 나눈다 */
+  const lim=c.clientHeight-34, rows=kids.flatMap(k=>k.getBoundingClientRect().height>lim&&k.children.length>=2?[...k.children].filter(e=>e.getClientRects().length):[k]);
+  if(rows.length<4)return null;
+  if(rows.some(e=>e.getBoundingClientRect().height>lim))return null; /* 한 쪽에 한 줄도 안 들어가면 목록이 아니다 */
+  return {rows,table:null,groups:kids.filter(k=>!rows.includes(k))};
 }
 function fitPages(){
   if(typeof document==='undefined')return;
@@ -38456,12 +38484,14 @@ function fitPages(){
       if(pages.length<2)continue;
       const pg=Math.min(UI.fpPg[key]||0,pages.length-1); const [a,z]=pages[pg];
       R.rows.forEach((r,i)=>{ if(i<a||i>=z)r.classList.add('fp-off'); });
+      for(const g of R.groups||[])if([...g.children].every(e=>e.classList.contains('fp-off')||!R.rows.includes(e))&&[...g.children].some(e=>R.rows.includes(e)))g.classList.add('fp-off'); /* 이 쪽에 줄이 없는 묶음은 제목도 숨긴다 */
       c.classList.add('fp-on'); c.scrollTop=0;
       const bar=document.createElement('div'); bar.className='fp-bar';
       bar.innerHTML=`<button type="button" class="tc-i" ${pg>0?'':'disabled'} aria-label="앞 쪽">‹</button><span class="num">${pg+1} / ${pages.length}</span><button type="button" class="tc-i" ${pg<pages.length-1?'':'disabled'} aria-label="다음 쪽">›</button>`;
       const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.fpPg[key]=pg+d; fitPages(); };
       bp.onclick=()=>go(-1); bn.onclick=()=>go(1); c._fpGo=go; c._fpPages=pages; c._fpKey=key; c._fpRows=R.rows;
       c.append(bar); c._fpH=c.clientHeight; fpObs()?.observe(c);
+      if(!c._fpImg){ c._fpImg=1; c.addEventListener('load',e=>{ if(e.target&&e.target.tagName==='IMG'){ cancelAnimationFrame(_fpRAF); _fpRAF=requestAnimationFrame(()=>{ try{ fitPages(); }catch(x){} }); } },true); } /* 사진이 늦게 들어와 줄이 커지면 다시 나눈다 */
     }
   }
 }

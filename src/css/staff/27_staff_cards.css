@@ -325,3 +325,12 @@ button.st-n:hover b{text-decoration:underline}
 .anl-fit.v-mk section.card>.eyebrow,.anl-fit.v-mk section.card>.eyebrow~*{display:none!important}
 .anl-fit.v-oth section.card>:is(.chips,.tgrid:not(.staff-other-cards),.eyebrow),.anl-fit.v-oth section.card>.chips~p.hint:not(.eyebrow~p){display:none!important}
 .anl-fit.v-oth section.card>p.hint:first-of-type{display:none}
+/* 구단 정보 창(PC): 화면 높이 안에서 탭 내용만, 사람 목록은 쪽으로 넘긴다(UI 3단계 3-0) */
+@media(min-width:1100px){
+ #sheet .sheet.ts-sheet{display:flex!important;flex-direction:column;height:var(--detail-height,100dvh);max-height:var(--detail-height,100dvh);overflow:hidden!important;gap:8px}
+ #sheet .sheet.ts-sheet>*{flex:none}
+ #sheet .sheet.ts-sheet>.ts-body{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:6px}
+ #sheet .sheet.ts-sheet>.ts-body>*{flex:none}
+ #sheet .sheet.ts-sheet>.ts-body.ts-ppl>.list:last-of-type{flex:1 1 auto;min-height:0;overflow:auto}
+ #sheet .sheet.ts-sheet>.sheet-head{padding-block:6px}
+}

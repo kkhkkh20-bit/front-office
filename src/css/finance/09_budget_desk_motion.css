@@ -216,3 +216,17 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
  .fin-d .fmc{min-height:80px}
 }
 @media(min-width:1100px) and (max-width:1599px){.fin-d .fmd-room .fmd-chg{display:none} /* 좁은 폭: 바뀐 항목은 수입·지출 탭에서 */}
+/* 구단주 화면(PC) 한 화면에(UI 3단계 3-0): 두 구역으로 나눠 상자 안 스크롤 없이 */
+.own-views{margin:0 0 8px}
+@media(min-width:1100px){
+ .own-d.v-main{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"goal fb" "adj fb"}
+ .own-d.v-main>:is(.own-plan,.own-fin,.own-req,.own-dat){display:none!important}
+ .own-d.v-rec{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"plan plan req" "fin dat req"}
+ .own-d.v-rec:not(:has(.own-req .rql)){grid-template-areas:"plan plan plan" "fin dat dat"}
+ .own-d.v-rec:not(:has(.own-req .rql))>.own-req{display:none}
+ .own-d.v-rec>:is(.own-goal,.own-fb,.own-adj){display:none!important}
+ .own-d .own-adj .row{flex-wrap:wrap}
+ .own-d .own-fin .fmd-kv{font-size:var(--ui-caption);gap:1px 10px}
+ .own-d>.card{padding:8px 12px}
+}
+@media(min-width:1100px){.own-plan{display:flex;flex-direction:column}.own-plan>.ologs{flex:1 1 auto;min-height:0;overflow:auto}}
