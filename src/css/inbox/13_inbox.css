@@ -222,3 +222,5 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 @media(min-width:1600px){ .trp-g{grid-template-columns:repeat(3,minmax(0,1fr))} .trp-n3 .trp-chk{grid-column:span 3} }
 @media(max-width:1099px){ .ibd-sec.trp,.ibd-sec.trp:first-child{padding:12px 0;border-top:0} .trp-g{grid-template-columns:minmax(0,1fr)} .trp-c{overflow-x:auto} }
 @media all{ .trp .ds-w{margin-top:2px} .trp svg.ds{max-width:none;min-width:300px} }
+/* 확인할 소식·결정할 일 두 칸 아래에 최근 소식을 넓게(분류별 안 읽음 상자를 뺀 뒤, UI 검수 2026-11-15 1-5) */
+.ibx-dash>.ibs-wide{grid-column:1/-1}

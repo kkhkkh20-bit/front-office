@@ -4,16 +4,23 @@ function statTable(p){ return statTable0(p)+psTable(p); }
 function psTable(p){ const Y=p.psY; if(!Y)return ''; const ys=Object.keys(Y).map(Number).sort((a,b)=>b-a); if(!ys.length)return ''; const tot={g:0}; for(const y of ys)for(const k in Y[y])if(typeof Y[y][k]==='number')tot[k]=(tot[k]||0)+Y[y][k];
   const row=(l,o,t)=>p.isP?`<tr><td>${l}</td><td>${t}</td><td>${o.g}</td><td>${ipStr(o.outs||0)}</td><td>${o.w||0}-${o.l||0}${o.sv?`-${o.sv}`:''}</td><td class="key">${o.outs?((o.er||0)*27/o.outs).toFixed(2):'-'}</td><td>${o.so||0}</td></tr>`:`<tr><td>${l}</td><td>${t}</td><td>${o.g}</td><td>${o.pa||0}</td><td>${o.ab?((o.h||0)/o.ab).toFixed(3).replace(/^0/,''):'-'}</td><td>${o.hr||0}</td><td>${o.rbi||0}</td><td class="key">${(()=>{ const ob=((o.h||0)+(o.bb||0)+(o.hbp||0))/Math.max(1,(o.ab||0)+(o.bb||0)+(o.hbp||0)), sl=o.ab?((o.h||0)+(o.d||0)+2*(o.tr||0)+3*(o.hr||0))/o.ab:0; return (ob+sl).toFixed(3).replace(/^0/,''); })()}</td></tr>`;
   return `<div class="eyebrow" style="margin-top:10px">포스트시즌</div><table><thead><tr><th>시즌</th><th>구단</th><th>경기</th>${p.isP?'<th>이닝</th><th>승-패-세</th><th class="key">ERA</th><th>탈삼진</th>':'<th>타석</th><th>타율</th><th>홈런</th><th>타점</th><th class="key">OPS</th>'}</tr></thead><tbody>${ys.length>1?row('통산',tot,''):''}${ys.map(y=>row(y,Y[y],Y[y].t!=null&&G.teams[Y[y].t]?esc(tshort(Y[y].t)):'')).join('')}</tbody></table>`; }
+/* 통산 기록 범위(국사왕 11-15 #7): 1군만 · 2군 포함 · 2군만. 기본 1군만, 고른 값은 이번 접속 동안 UI에 남긴다. 2군 기록이 없는 선수는 고를 것이 없어 그대로 */
+function statLvl(p){ const v=UI.cLvl||'1'; return p&&p.hist&&p.hist.some(h=>h.lvl==='퓨처스')?v:'all'; }
+function statLvlBar(p){ if(!p||!p.hist||!p.hist.some(h=>h.lvl==='퓨처스'))return ''; return `<div class="st-lvl" role="group" aria-label="기록 범위">${optRow('cLvl',UI.cLvl||'1',[['1','1군만'],['all','2군 포함'],['2','2군만']])}</div>`; }
 function statTable0(p){
-  const rows=[...p.hist].sort((a,b)=>b.y-a.y||(a.lvl<b.lvl?-1:1));
-  const pre=p.prev?[Object.assign({y:G.year-1,pre:p.prev.lvl},p.prev)]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
-  const one=p.hist.filter(h=>h.lvl==='1군'); let tot=null; if(one.length>1){ tot=Object.assign({},p.isP?ZP:ZB,{y:'통산',tot:true,war:sum(one.map(h=>wOf(h,p)))}); for(const h of one)addTo(tot,h); tot.y='통산'; }
-  const all=[...(tot?[tot]:[]),...rows,...pre]; if(!all.length)return '<p class="small muted">기록이 없습니다.</p>';
-  const lab=h=>h.tot?'1군 합계':typeof h.pre==='string'?h.pre:`${h.t!=null&&G.teams[h.t]?tshort(h.t):'이전 소속'}${h.lvl==='퓨처스'?' F':''}`; /* pre:1은 지난 시즌 기록 표시(구단 이름 아님) */
+  const lv=statLvl(p), fut=h=>h.lvl==='퓨처스';
+  const rows=[...p.hist].filter(h=>lv==='all'||(lv==='2')===fut(h)).sort((a,b)=>b.y-a.y||(a.lvl<b.lvl?-1:1));
+  const pre=lv==='2'?[]:p.prev?[Object.assign({y:G.year-1,pre:p.prev.lvl},p.prev)]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
+  /* 합계는 고른 범위대로 다시 센다(국사왕 11-15 #7): 1군만 → 1군 합계, 2군만 → 2군 합계, 2군 포함 → 둘 다 */
+  const one=p.hist.filter(h=>!fut(h)), two=p.hist.filter(fut);
+  const mk=(L,l2)=>{ if(L.length<2)return null; const t=Object.assign({},p.isP?ZP:ZB,{tot:l2?2:1,war:sum(L.map(h=>wOf(h,p)))}); for(const h of L)addTo(t,h); delete t.y2; t.y='통산'; t.L=L; return t; };
+  const tots=[lv!=='2'?mk(one,0):null,lv!=='1'?mk(two,1):null].filter(Boolean);
+  const all=[...tots,...rows,...pre]; if(!all.length)return `<p class="small muted">${lv==='2'?'2군 기록이 없습니다.':lv==='1'&&two.length?'1군 기록이 없습니다. 2군 기록은 위에서 고르면 보입니다.':'기록이 없습니다.'}</p>`;
+  const lab=h=>h.tot?(h.tot===2?'2군 합계':'1군 합계'):typeof h.pre==='string'?h.pre:`${h.t!=null&&G.teams[h.t]?tshort(h.t):'이전 소속'}${h.lvl==='퓨처스'?' F':''}`; /* pre:1은 지난 시즌 기록 표시(구단 이름 아님) */
   if(p.isP){
     return `<table><thead><tr><th>시즌</th><th>구단</th><th class="key">ERA</th><th class="key">WAR</th><th>경기</th><th>선발</th><th>이닝</th><th>승</th><th>패</th><th>세</th><th>홀</th><th>탈삼진</th><th>볼넷</th><th>피안타</th><th>피홈런</th><th>WHIP</th><th>K/9</th><th>BB/9</th></tr></thead><tbody>${all.map(h=>{const r=pRate(h); return `<tr><td>${h.y2?`${h.y}~${String(h.y2).slice(2)}`:h.y}</td><td>${lab(h)}</td><td class="key">${h.outs?r.era.toFixed(2):'-'}</td><td class="key">${h.tot?h.war.toFixed(1):h.pre?'-':wOf(h,p).toFixed(1)}</td><td>${h.g||0}</td><td>${h.gs||0}</td><td>${ipStr(h.outs)}</td><td>${h.w||0}</td><td>${h.l||0}</td><td>${h.sv||0}</td><td>${h.hld||0}</td><td>${h.so}</td><td>${h.bb}</td><td>${h.h}</td><td>${h.hr}</td><td>${h.outs?r.whip.toFixed(2):'-'}</td><td>${h.outs?r.k9.toFixed(1):'-'}</td><td>${h.outs?r.bb9.toFixed(1):'-'}</td></tr>`}).join('')}</tbody></table>`;
   }
-  return `<table><thead><tr><th>시즌</th><th>구단</th><th class="key">OPS</th><th class="key">wRC+</th><th class="key">WAR</th><th>경기</th><th>타석</th><th>타율</th><th>출루율</th><th>장타율</th><th>안타</th><th>2루타</th><th>3루타</th><th>홈런</th><th>타점</th><th>득점</th><th>도루</th><th>볼넷</th><th>삼진</th><th>볼삼비</th><th>BABIP</th></tr></thead><tbody>${all.map(h=>{const r=bRate(h); return `<tr><td>${h.y2?`${h.y}~${String(h.y2).slice(2)}`:h.y}</td><td>${lab(h)}</td><td class="key">${h.pa?fmt3(r.ops):'-'}</td><td class="key">${h.tot?(wrcMulti(one)??'-'):h.pre||h.y2||!h.pa?'-':(wrcPlus(h,h.y)??'-')}</td><td class="key">${h.tot?h.war.toFixed(1):h.pre?'-':wOf(h,p).toFixed(1)}</td><td>${h.g||0}</td><td>${h.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.obp)}</td><td>${fmt3(r.slg)}</td><td>${h.h}</td><td>${h.d}</td><td>${h.tr}</td><td>${h.hr}</td><td>${h.rbi}</td><td>${h.r}</td><td>${h.sb}</td><td>${h.bb}</td><td>${h.so}</td><td>${h.so?(h.bb/h.so).toFixed(2):'-'}</td><td>${babipOf(h)!=null?fmt3(babipOf(h)):'-'}</td></tr>`}).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>시즌</th><th>구단</th><th class="key">OPS</th><th class="key">wRC+</th><th class="key">WAR</th><th>경기</th><th>타석</th><th>타율</th><th>출루율</th><th>장타율</th><th>안타</th><th>2루타</th><th>3루타</th><th>홈런</th><th>타점</th><th>득점</th><th>도루</th><th>볼넷</th><th>삼진</th><th>볼삼비</th><th>BABIP</th></tr></thead><tbody>${all.map(h=>{const r=bRate(h); return `<tr><td>${h.y2?`${h.y}~${String(h.y2).slice(2)}`:h.y}</td><td>${lab(h)}</td><td class="key">${h.pa?fmt3(r.ops):'-'}</td><td class="key">${h.tot?(wrcMulti(h.L)??'-'):h.pre||h.y2||!h.pa?'-':(wrcPlus(h,h.y)??'-')}</td><td class="key">${h.tot?h.war.toFixed(1):h.pre?'-':wOf(h,p).toFixed(1)}</td><td>${h.g||0}</td><td>${h.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.obp)}</td><td>${fmt3(r.slg)}</td><td>${h.h}</td><td>${h.d}</td><td>${h.tr}</td><td>${h.hr}</td><td>${h.rbi}</td><td>${h.r}</td><td>${h.sb}</td><td>${h.bb}</td><td>${h.so}</td><td>${h.so?(h.bb/h.so).toFixed(2):'-'}</td><td>${babipOf(h)!=null?fmt3(babipOf(h)):'-'}</td></tr>`}).join('')}</tbody></table>`;
 }
 function keyBar(p,rp,isFA,isFM){ if((p.fdPool&&G.fd)||fdHideNow(p))return fdKeyBar(p); const fsx=p.foreign&&p.team==null?fScout(p,rp):null; /* 외국인 후보: 스카우트 평가와 기록을 합친 종합 추정 */ const cur=p.fdPool?null:fsx&&fsx.raw!=null?fsx.raw:rp.cur, pot=p.fdPool?null:rp.ofp; const fg=p.fdPool?fdGrade(p):null; const sal=isFM?p.ask:isFA&&p.ask?p.ask.annual:p.sal;
   const ct=p.prospect?'드래프트 대상':p.fdPool?tContract(p):isFM?`요구 · ${Math.round(p.ask/USD)}만 달러`:isFA?`FA 요구 ${p.ask?p.ask.years+'년':''}`:ctText(p);
@@ -206,6 +213,7 @@ function renderSheet0(){
   if(!G){ el.innerHTML=''; return; }
   if(UI.matchPreview){el.innerHTML=matchEntrySheet();return;}
   if(UI.fmKeys){el.innerHTML=fmKeysSheet();return;}
+  if(!UI.menu&&!UI.title&&G.stAcc&&stAccBlock()){el.innerHTML=stAccSheet();return;} /* 정원이 찬 상태에서 수락한 스태프 후보: 누구 대신 데려올지 */
   if(UI.meet&&!UI.menu&&!meetOver()){el.innerHTML='';return;}
   if(UI.mgrCandidate&&!UI.menu){ el.innerHTML=mgrCandidatePage(); return; }
   if(UI.ngt&&!UI.menu){ const sc=el.querySelector('.ng-rows'); const top=sc?sc.scrollTop:0; el.innerHTML=ngtSheet(); const s2=el.querySelector('.sheet.ngt'); if(s2&&UI._ngtY!=null)s2.scrollTop=UI._ngtY; return; }
@@ -238,7 +246,7 @@ function renderSheet0(){
   if(isFA)actions=''; /* 협상은 위쪽 '협상 창 열기'에서 */
   if(isFM){ const err=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; const mid=per==='season'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0;
     actions=''; }
-  if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ actions=tradeOpen()?`<button class="btn block" data-a="toTrade" data-v="${p.id}">데려오기 협상</button>`:'<p class="small muted">트레이드 기간이 아닙니다.</p>'; }
+  if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ actions=tradeOpen()?`<button class="btn block" data-a="toTrade" data-v="${p.id}">트레이드 협상</button>`:'<p class="small muted">트레이드 기간이 아닙니다.</p>'; }
   if(isFree(p)&&!p.wv){ const why=!freeOpen()?'포스트시즌과 결산 전에는 국내 무적 선수를 새로 등록할 수 없습니다.':rosterN(G.user)>=ROSTER_MAX?`정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`:((p.relT===G.user&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[G.user]>G.day))?'방출한 구단은 1년 동안 다시 계약할 수 없습니다.':'';
     actions=`<button class="btn primary block" data-a="signFree" data-v="${p.id}" ${why?'disabled':''}>무적 선수 계약 · 1년 연 ${money(freeAsk(p))}</button>${why?`<p class="small muted">${why}</p>`:''}`; } /* 선수 카드에서도 바로 계약(전에는 FA 화면 목록에서만 가능) */
   if(isFM)actions+=`<div class="row"><button class="btn" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 명단에서 빼기':'대체 후보 관찰 명단에 올리기'}</button>${fwatchOn(p.id)?`<span class="small muted">스카우트 현장 관찰 ${fwatchK(p.id)}% · 스카우트 단독 오차 약 ±${dvSd(rp.cur,rp.sd)} · 기록을 합친 최종 범위 ${(f=>f.mid!=null?`${f.lo}~${f.hi}`:'-')(fScout(p,rp))}(판단에는 이 범위)</span>`:''}</div>${UI.fwMsg?`<p class="small muted">${esc(UI.fwMsg)}</p>`:''}`;
@@ -296,7 +304,7 @@ function renderSheet0(){
    ${T==='dev'?devTab(p)+personalAdviceBox(p,'training'):''}
    ${T==='analysis'?playerAnalysisTab(p):''}
    ${T==='rec'?`
-   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
+   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div>${statLvlBar(p)}<div class="tw">${statTable(p)}</div></div>
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`

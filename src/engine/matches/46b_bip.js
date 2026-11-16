@@ -13,12 +13,12 @@ function bipSide(b,p){ return b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?
 function bipDir(b){ const pw=cc(b.r.pow,0), h=hn('pull',b.id); const pull=clamp(.40+(pw-.5)*.18+h*.05,.28,.56), oppo=clamp(.25-(pw-.5)*.08-h*.03,.14,.33); const x=R(); return x<pull?'pull':x<pull+oppo?'oppo':'mid'; }
 /* 방향 → 맡는 자리. 'L3'은 3루·좌익 쪽, 'R1'은 1루·우익 쪽 */
 function bipPos(t,dir,side){ const d=dir==='mid'?'mid':(dir==='pull')===(side==='R')?'L3':'R1'; const x=R();
-  if(t==='GB')return d==='L3'?(x<.5?'3B':'SS'):d==='mid'?(x<.42?'SS':x<.84?'2B':'P'):(x<.45?'2B':'1B');
+  if(t==='GB')return d==='L3'?(x<.5?'3B':'SS'):d==='mid'?(x<.42?'SS':x<.84?'2B':'P'):(x<.55?'2B':'1B'); /* 1루 쪽 땅볼은 2루수가 55%(11-15: 1루수가 땅볼의 17%를 맡아 1루 수비 1점 무게가 유격의 절반을 넘었다. MLB 1루수 몫 약 13%) */
   if(t==='PU')return d==='L3'?(x<.6?'3B':'SS'):d==='mid'?(x<.4?'SS':x<.75?'2B':'C'):(x<.6?'1B':'2B');
-  return d==='L3'?'LF':d==='mid'?'CF':'RF'; }
+  return d==='mid'?'CF':x<.1?'CF':d==='L3'?'LF':'RF'; } /* 좌·우 쪽 뜬공·라이너의 10%는 중견수가 맡는다(좌중간·우중간): 11-15 수비 감사에서 중견수 몫이 외야 타구의 35%로 좌익수와 같아 중견 수비가 좌익만큼만 실점을 바꿨다(MLB 외야 자살 중견 약 41%) */
 function fielderAt(fs,pos){ if(!fs)return null; if(pos==='P')return fs.cur||null; for(const q of (fs.order||[]))if(fs.posOf&&fs.posOf[q.id]===pos)return q; return null; }
 function bipResolve(b,p,babip,qb,qp,fs){ const M=bipMix(b,p); let x=R(), t='PU'; for(const k of ['GB','LD','FB','PU']){ x-=M[k]; if(x<=0){ t=k; break; } }
-  const side=bipSide(b,p), pos=bipPos(t,bipDir(b),side), f=fielderAt(fs,pos); const base=ERRN[pos]||DEF0; const fv=f&&pos!=='P'?fieldV(f,pos):base;
+  const side=bipSide(b,p), pos=bipPos(t,bipDir(b),side), f=fielderAt(fs,pos); const base=ERRN[pos]||DEF0; const fv=f?rngV(f,pos):base; /* 수비 범위(투수는 견제·수비, 48_sim_traits rngV) */
   const norm=M.GB*BIP_TF.GB+M.LD*BIP_TF.LD+M.FB*BIP_TF.FB+M.PU*BIP_TF.PU; const ff=clamp(1-(fv-base)*BIP_FK[t],.7,1.35);
   const ph=clamp(babip*BIP_TF[t]/norm*ff*BIP_K,0,.95); LBIP={t,pos,side,fid:f?f.id:null};
   if(R()>=ph)return 'OUT';

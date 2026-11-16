@@ -25,5 +25,15 @@ await page.setViewportSize({width:1366,height:768});const rel=await page.evaluat
 await page.evaluate(()=>{A.go('staff:data');const a=anaList()[0];UI._staffTestPref=staffProfile(a,'analyst').pref;UI._staffTestId=a.id;});
 const id=await page.evaluate(()=>UI._staffTestId),role=await page.evaluate(()=>{const a=anaList().find(x=>x.id===UI._staffTestId);return Object.keys(AROLE).find(r=>r!==a.role);});await page.evaluate(()=>closeSheets());await page.locator('[data-a="anaRoleB"][data-v="'+id+':'+role+'"]').click(); /* PC 데이터 허브는 역할을 버튼으로 바꾼다 */check(await page.evaluate(()=>staffProfile(anaList().find(x=>x.id===UI._staffTestId),'analyst').pref===UI._staffTestPref),'현재 역할 변경으로 희망 보직도 바뀜');
 await page.evaluate(()=>A.person('an:'+UI._staffTestId));check(await page.locator('#sheet .staff-mental').count()>0,'분석원 전체 인물 카드의 멘탈 정보 누락');await page.keyboard.press('Escape');
+/* 제보 dddddd: 정규시즌 뒤 코치를 교체하면 새 코치의 지도·육성이 빈자리 값(58, 노란색)으로 바뀌어 능력이 떨어진 것처럼 보였다. 시장에서 본 값과 같은 값을 보이고 합류 전·빈자리 계산을 말로 알린다 */
+const swap=await page.evaluate(()=>{closeSheets();G.day=G.cal.end+45;team(G.user).cash=100000;const C=coachesOf(G.user),role=CKEYS.find(r=>C[r]&&(G.cmarket||[]).some(c=>c.role===r));const c=G.cmarket.find(x=>x.role===role);UI.crole=role;UI.cmkView='t';UI.cmkOpen=c.id;A.smkGo('coach');return {role,id:c.id};});await page.waitForTimeout(150);
+const chips=sel=>page.evaluate(sel=>{const r=document.querySelector(sel);return r?[...r.closest('.st-r').querySelectorAll('.st-v .rc')].map(x=>x.textContent+'@'+x.style.getPropertyValue('--c')):null;},sel);
+const pre=await chips('[data-a="cmkOpen"][data-v="'+swap.id+'"]');check(/합류 전까지 이 자리는 빈자리로 계산/.test(await page.locator('.coach-join-tip').first().innerText().catch(()=>'')),'비시즌 영입 화면에 다음 시즌 합류 안내 없음');
+await page.evaluate(id=>{UI._cfmPass=true;try{A.hireCoach(id+':2');}finally{UI._cfmPass=false;}},swap.id);await page.evaluate(r=>{closeSheets();UI.coachCards=1;UI.cslotOpen=r;A.go('staff:coach');},swap.role);await page.waitForTimeout(150);
+const post=await chips('[data-a="cslotOpen"][data-v="'+swap.role+'"]'),slot=(await page.locator('.csl[data-role="'+swap.role+'"]').first().innerText()).replace(/\s+/g,' ');
+check(await page.evaluate(r=>coachesOf(G.user)[r]&&staffPending(coachesOf(G.user)[r]),swap.role),'준비 실패: 비시즌 영입 코치가 합류 전이 아님');
+check(pre&&post&&JSON.stringify(pre)===JSON.stringify(post),'코치 교체 뒤 지도·육성이 영입 화면 값과 다름(노란 빈자리 값) '+JSON.stringify({pre,post}));
+check(/합류 후 지도/.test(slot)&&!/현재 지도/.test(slot)&&/빈자리로 계산/.test(slot),'합류 전 코치 카드에 합류 후 값·빈자리 계산 설명 없음 '+slot.slice(0,160));
+if(process.env.COACH_SWAP_OUT)await page.screenshot({path:path.join(process.env.COACH_SWAP_OUT,'after-fix-check-staff.png')});
 }finally{await browser?.close();await server.close();}
 assert.equal(errors.length,0,errors.join('\n'));console.log('직원 카드: 분야 능력·멘탈·희망 보직·면담·관계도·PC/모바일 통과');})().catch(e=>{console.error(e.message);process.exitCode=1;});

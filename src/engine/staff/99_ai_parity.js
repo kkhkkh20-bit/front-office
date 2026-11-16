@@ -70,7 +70,7 @@ function aiOwnerAsk(t,kind){ if(!t||t.id===ME()||t.indie)return null; const pl=p
   const rec=L.filter(g=>G.day-g.d<=120).length; const p=p0*Math.pow(.85,rec)*(amt>=2000?.9:1); let ok=R()<p; /* ownerAsk와 같은 감쇠 */
   if(!ok){ t.trust=clamp((t.trust??55)-1,0,100); if(typeof aiPushTry==='function'&&aiPushTry(t,{k:'fund',amt,pur}))ok=true; } /* 반려되면 우리처럼 다시 설득해 볼 수 있다(94_owner_push, 같은 식·대가) */
   L.push({d:G.day,mk,y:sy,amt,ok,...(ok&&pur?{k:pur.k,pid:pur.pid,an:G.acqSeq||0,until:pur.k==='fa'?grantFaEnd():tradeDL(),st:'open'}:{})}); if(L.length>12)L.shift();
-  if(ok){ t.grant={y:sy,amt:(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt}; try{ wire('구단',`${t.city} ${t.nick} 모기업, 추가 지원`,{tid:t.id}); }catch(e){} }
+  if(ok){ t.grant={y:sy,amt:(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt}; try{ wire('구단',`${tfull(t)} 모기업, 추가 지원`,{tid:t.id}); }catch(e){} }
   return {ok,amt,p}; }
 
 /* 목적이 있는 AI 지원금도 우리와 같은 판정(36_relations grantCheck): FA는 그 선수 계약, 보강은 받은 뒤 데려온 선수 연봉 합이 지원금의 절반 이상 */
@@ -100,5 +100,5 @@ function aiAsstMonthly(tid,off){ const t=team(tid); if(!t||tid===ME())return; co
   if(X.length>n){ for(const c of X.splice(n)){ staffHistory('coach',c,'보조 코치 계약 종료',tid,'시설 축소로 인한 정원 조정'); coachPaySev(tid,c); delete c.ax; c.yrs=0; (G.cmarket=G.cmarket||[]).push(c); } return; }
   if(X.length>=n||R()>(off?.5:.15))return; if(planOf(t)==='tight'||(t.cash||0)<0)return;
   const c=(G.cmarket||[]).filter(c=>c&&AX_ROLES.includes(c.role)&&!(typeof schMarketWhy==='function'&&schMarketWhy(c))&&c.res!==G.user&&c.age<66&&!(c.from===tid&&c.fromY===G.year)&&!(c.bid&&c.bid.exp>=G.day)&&(c.dv||0)>=55&&cmCanPay(t,c,null)).sort((a,b)=>(b.dv||0)-(a.dv||0))[0];
-  if(!c)return; G.cmarket=G.cmarket.filter(x=>x!==c); const m=dobj(G.day).m; staffCt(c,ri(1,3),off&&m>=11?G.year+1:G.year); c.ax=true; delete c.res; c.clan=null; X.push(c); stAttr(c); c.loy=20;
+  if(!c)return; G.cmarket=G.cmarket.filter(x=>x!==c); staffCt(c,ri(1,3),ctStartS()); c.ax=true; /* 우리와 같은 합류 시즌 규칙 */ delete c.res; c.clan=null; X.push(c); stAttr(c); c.loy=20;
   if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ if(c.ob)obTaken(c.ob,c); }catch(e){} staffHistory('coach',c,'보조 코치 영입',tid,`${c.yrs}년 · 연 ${money(c.sal)}`); }

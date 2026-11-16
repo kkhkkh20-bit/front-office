@@ -1,5 +1,5 @@
 // 이름 잘림 전수 점검: 모든 메뉴·하위 탭과 선수 정보 창 탭을 PC(1440·1280)·휴대폰(390)에서 열어, 구단·선수 이름이 든 글자가 칸에서 잘리면 실패. 소식함 제목 미리보기(.ibr-s)는 일부러 말줄임이라 제외. 사용: node tools/check-names.cjs
-const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const out={};
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});const out={};
 for(const vp of [{n:'pc',width:1440,height:900},{n:'pc1280',width:1280,height:800},{n:'phone',width:390,height:844}]){
  const p=await b.newPage({viewport:{width:vp.width,height:vp.height},hasTouch:vp.n==='phone'}); p.on('pageerror',e=>{});
  await p.goto('file://'+require('path').resolve(__dirname,'..','index.html'));await p.waitForTimeout(2000);
