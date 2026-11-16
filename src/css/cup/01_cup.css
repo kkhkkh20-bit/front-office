@@ -1,0 +1,7 @@
+/* 프런트컵(유저 대회) 화면: 설정 화면과 같은 세 줄 배치(.setx), PC에서는 칸마다 안에서만 스크롤 */
+.cupx .cup-h{margin:0 0 4px}.cupx .cup-my{margin:6px 0;padding:6px 8px;border-radius:6px;background:var(--panel2,rgba(127,127,127,.08))}
+.cupx .cup-in{display:flex;gap:8px;align-items:center;margin:8px 0}.cupx .cup-in input{flex:1;min-width:0;max-width:16em}
+.cupx .cup-tts{margin:0 0 6px}.cupx .cup-tt{display:inline-block;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,#d4a017 22%,transparent);font-weight:700;font-size:13px;margin:0 4px 4px 0}
+.cupx .cup-alb{display:grid;gap:6px;margin-top:8px}.cupx .cup-a{display:grid;gap:4px;padding:8px;border:1px solid var(--line);border-radius:8px}.cupx .cup-a>div:first-child{display:grid;gap:2px}
+.cupx .cup-hof{padding:6px 0;border-top:1px solid var(--line)}.cupx .cup-hof p{margin:2px 0}.cupx .cup-ros{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0}
+.cupx .cup-v{margin-top:10px;display:grid;gap:6px}.cupx .cup-pre{max-height:min(60vh,520px);overflow:auto;white-space:pre-wrap;font:12px/1.5 var(--f-num,monospace);background:var(--panel2,rgba(127,127,127,.08));padding:8px;border-radius:6px;margin:0;tab-size:6}

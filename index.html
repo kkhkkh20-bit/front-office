@@ -6744,6 +6744,13 @@ header.ibm-h>.ph-w>.av{width:76px;height:76px;border-radius:10px}
 .lad .note{font-size:12px;margin:6px 0}
 @media (min-width:1100px){ .lad{height:100vh;overflow:hidden} }
 @media (max-width:1099px){ .lad-body{grid-template-columns:1fr} .lad-scroll{max-height:none;overflow:visible} .lad-pool .lad-scroll{max-height:60vh;overflow:auto} .lad-cap{margin-left:0;min-width:0;width:100%} .lad-cols{grid-template-columns:1fr} }
+/* 프런트컵(유저 대회) 화면: 설정 화면과 같은 세 줄 배치(.setx), PC에서는 칸마다 안에서만 스크롤 */
+.cupx .cup-h{margin:0 0 4px}.cupx .cup-my{margin:6px 0;padding:6px 8px;border-radius:6px;background:var(--panel2,rgba(127,127,127,.08))}
+.cupx .cup-in{display:flex;gap:8px;align-items:center;margin:8px 0}.cupx .cup-in input{flex:1;min-width:0;max-width:16em}
+.cupx .cup-tts{margin:0 0 6px}.cupx .cup-tt{display:inline-block;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,#d4a017 22%,transparent);font-weight:700;font-size:13px;margin:0 4px 4px 0}
+.cupx .cup-alb{display:grid;gap:6px;margin-top:8px}.cupx .cup-a{display:grid;gap:4px;padding:8px;border:1px solid var(--line);border-radius:8px}.cupx .cup-a>div:first-child{display:grid;gap:2px}
+.cupx .cup-hof{padding:6px 0;border-top:1px solid var(--line)}.cupx .cup-hof p{margin:2px 0}.cupx .cup-ros{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0}
+.cupx .cup-v{margin-top:10px;display:grid;gap:6px}.cupx .cup-pre{max-height:min(60vh,520px);overflow:auto;white-space:pre-wrap;font:12px/1.5 var(--f-num,monospace);background:var(--panel2,rgba(127,127,127,.08));padding:8px;border-radius:6px;margin:0;tab-size:6}
 </style>
 </head>
 <body>
@@ -11634,6 +11641,10 @@ var FrontOfficeCore = (() => {
   // src/core/index.mjs
   var index_exports = {};
   __export(index_exports, {
+    CUP_DEFAULT: () => CUP_DEFAULT,
+    CUP_PTS: () => CUP_PTS,
+    CUP_RULES: () => CUP_RULES,
+    CUP_V: () => CUP_V,
     D0: () => D0,
     DV_PTS: () => DV_PTS,
     LADDER_PACK_V: () => LADDER_PACK_V,
@@ -11648,6 +11659,27 @@ var FrontOfficeCore = (() => {
     contactTiming: () => contactTiming,
     createRandom: () => createRandom,
     createSeededRandom: () => createSeededRandom,
+    cupBadName: () => cupBadName,
+    cupBracket: () => cupBracket,
+    cupChampion: () => cupChampion,
+    cupEntryCore: () => cupEntryCore,
+    cupEntryHash: () => cupEntryHash,
+    cupHashStr: () => cupHashStr,
+    cupKstDay: () => cupKstDay,
+    cupKstMs: () => cupKstMs,
+    cupLabel: () => cupLabel,
+    cupMatchById: () => cupMatchById,
+    cupMissions: () => cupMissions,
+    cupName: () => cupName,
+    cupNext: () => cupNext,
+    cupOvrTxt: () => cupOvrTxt,
+    cupPower: () => cupPower,
+    cupResolve: () => cupResolve,
+    cupRoundName: () => cupRoundName,
+    cupSeed: () => cupSeed,
+    cupSlots: () => cupSlots,
+    cupTitles: () => cupTitles,
+    cupValidate: () => cupValidate,
     dmd: () => dmd,
     dnum: () => dnum,
     dobj: () => dobj,
@@ -12025,6 +12057,332 @@ var FrontOfficeCore = (() => {
     if (JSON.stringify(pack.sched || []) !== JSON.stringify(ladderSchedule(n, pack.meet))) add("sched", "일정이 규칙(원형 순환)과 다릅니다.");
     const errors = err.filter((e, i) => err.findIndex((x) => x.msg === e.msg) === i);
     return { ok: !errors.length, errors };
+  }
+
+  // src/core/cup.mjs
+  var CUP_V = 1;
+  var CUP_RULES = Object.freeze({
+    nameMax: 12,
+    /* 팀명 12자 */
+    minPl: 20,
+    maxPl: 32,
+    /* 1군 인원 */
+    minP: 9,
+    /* 투수 최소 */
+    rot: 5,
+    ratingMax: 85,
+    /* 능력치 상한(게임 안 잠재력 상한 80 + 컨디션 여유). 넘으면 이상치 */
+    ageMin: 16,
+    ageMax: 48
+  });
+  var CUP_DEFAULT = Object.freeze({
+    id: "cup1",
+    title: "제1회 프런트컵",
+    size: 32,
+    format: "knockout",
+    best: Object.freeze({ default: 1, 8: 7, 4: 7, 2: 7 }),
+    /* 라운드(남은 팀 수)별 경기 수: 1=단판, 3=3판2선승, 7=7전4선승 */
+    playIn: null,
+    /* {direct: N, groupSize: k}: 상위 N 직행, 나머지는 조별 단판 → 본선 남은 자리 */
+    shuffleTop: 0,
+    /* 8이면 Top-8 시드 자리를 추첨으로 섞는다 */
+    blocks: 0,
+    /* 대진표를 블록(A·B…)으로 나눠 보여 준다(0이면 없음) */
+    minSeasons: 0,
+    payCap: 0,
+    deadline: ""
+    /* 접수 마감(한국시간 'YYYY-MM-DD HH:mm') */
+  });
+  var NUM = (x) => typeof x === "number" && isFinite(x) ? x : 0;
+  function cupHashStr(s) {
+    s = String(s);
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    h ^= h >>> 16;
+    h = Math.imul(h, 2246822507) >>> 0;
+    h ^= h >>> 13;
+    h = Math.imul(h, 3266489909) >>> 0;
+    h ^= h >>> 16;
+    return (h >>> 0).toString(16).padStart(8, "0");
+  }
+  function stable(v) {
+    if (Array.isArray(v)) return "[" + v.map(stable).join(",") + "]";
+    if (v && typeof v === "object") return "{" + Object.keys(v).filter((k) => v[k] !== void 0).sort().map((k) => JSON.stringify(k) + ":" + stable(v[k])).join(",") + "}";
+    return JSON.stringify(v === void 0 ? null : v);
+  }
+  function cupEntryCore(e) {
+    const o = Object.assign({}, e || {});
+    delete o.h;
+    delete o.ovr;
+    delete o.flags;
+    o.P = (o.P || []).map((p) => {
+      const q = Object.assign({}, p);
+      delete q.f;
+      return q;
+    });
+    return o;
+  }
+  function cupEntryHash(e) {
+    return cupHashStr(stable(cupEntryCore(e)));
+  }
+  function cupName(s) {
+    return [...String(s || "").replace(/[\u0000-\u001f<>"'`\\]/g, "").replace(/\s+/g, " ").trim()].slice(0, CUP_RULES.nameMax).join("");
+  }
+  var BAD = ["시발", "씨발", "ㅅㅂ", "ㅆㅂ", "병신", "ㅂㅅ", "좆", "존나", "지랄", "개새", "새끼", "썅", "미친놈", "미친년", "닥쳐", "꺼져", "느금", "니애미", "니미", "애미", "애비", "엠창", "섹스", "보지", "자지", "야동", "일베", "한남", "김치녀", "장애인", "틀딱", "좆밥", "빠구리", "fuck", "shit", "bitch", "sex", "porn", "nigg", "운영자", "관리자", "admin"];
+  function cupBadName(s) {
+    const t = String(s || "").toLowerCase().replace(/[\s0-9_.\-~!@#$%^&*()+=|/?,:;[\]{}]/g, "");
+    return BAD.some((w) => t.includes(w));
+  }
+  function cupKstMs(s) {
+    const m = String(s || "").match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})$/);
+    if (!m) return null;
+    return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) - 9 * 36e5;
+  }
+  var cupKstDay = (ms) => new Date(ms + 9 * 36e5).toISOString().slice(0, 10);
+  function cupValidate(e, cfg) {
+    const R = CUP_RULES, err = [], flags = [], add = (k, msg) => err.push({ k, msg }), flag = (k, msg) => flags.push({ k, msg });
+    cfg = Object.assign({}, CUP_DEFAULT, cfg || {});
+    if (!e || e.kind !== "cup-entry" || e.v !== CUP_V) {
+      add("ver", "대회 엔트리 형식이 아닙니다.");
+      return { ok: false, errors: err, flags, elig: [] };
+    }
+    const name = cupName(e.name);
+    if (!name) add("name", "팀명을 적어 주세요.");
+    else if (name !== e.name) add("name", `팀명은 ${R.nameMax}자 이하, 기호 없이 적어 주세요.`);
+    if (cupBadName(e.name)) add("name", "팀명에 쓸 수 없는 말이 들어 있습니다.");
+    const P = Array.isArray(e.P) ? e.P : [], ids = /* @__PURE__ */ new Map();
+    for (const p of P) {
+      if (!p || !Number.isFinite(p.id) || ids.has(p.id)) {
+        add("id", "선수 번호가 비었거나 겹칩니다.");
+        continue;
+      }
+      ids.set(p.id, p);
+    }
+    if (P.length < R.minPl || P.length > R.maxPl) add("roster", `1군은 ${R.minPl}~${R.maxPl}명이어야 합니다(지금 ${P.length}명).`);
+    const pit = P.filter((p) => p && p.isP), bat = P.filter((p) => p && !p.isP);
+    if (pit.length < R.minP) add("pitch", `투수가 ${R.minP}명 이상 있어야 합니다(지금 ${pit.length}명).`);
+    const ln = Array.isArray(e.ln) ? e.ln : [], seen = /* @__PURE__ */ new Set(), pos = /* @__PURE__ */ new Set();
+    if (ln.length !== 9) add("lineup", "타순 9명이 필요합니다.");
+    for (const x of ln) {
+      const p = ids.get(x && x[0]);
+      if (!p || p.isP) {
+        add("lineup", "타순에 1군 야수가 아닌 선수가 있습니다.");
+        continue;
+      }
+      if (seen.has(p.id)) add("lineup", "타순에 같은 선수가 두 번 있습니다.");
+      if (pos.has(x[1])) add("lineup", "타순에 같은 수비 자리가 두 번 있습니다.");
+      if (x[1] === "C" && p.pos !== "C") flag("lineup", `${p.name}: 포수가 아닌데 포수 자리에 있습니다(게임의 비상 배치).`);
+      seen.add(p.id);
+      pos.add(x[1]);
+    }
+    const rot = Array.isArray(e.rot) ? e.rot : [];
+    if (!rot.length || rot.length > R.rot || rot.some((id) => !(ids.get(id) || {}).isP)) add("rot", `선발은 1군 투수 1~${R.rot}명이어야 합니다.`);
+    if ((e.pen || []).some((id) => !(ids.get(id) || {}).isP || rot.includes(id))) add("pen", "불펜에 선발이거나 투수가 아닌 선수가 있습니다.");
+    if ((e.bn || []).some((id) => {
+      const p = ids.get(id);
+      return !p || p.isP || seen.has(id);
+    })) add("bench", "벤치에 타순 선수나 투수가 있습니다.");
+    for (const p of P) {
+      if (!p || !p.r) continue;
+      const vals = Object.entries(p.r).filter(([k]) => k !== "vit");
+      const hi = vals.filter(([, v]) => NUM(v) > R.ratingMax || NUM(v) < 1);
+      if (hi.length) flag("rating", `${p.name}: 능력치가 게임 범위를 벗어납니다(${hi.map(([k, v]) => k + " " + Math.round(v)).join(", ")}).`);
+      if (NUM(p.age) < R.ageMin || NUM(p.age) > R.ageMax) flag("age", `${p.name}: 나이 ${p.age}세는 게임에서 나올 수 없습니다.`);
+      if (p.pot != null && (NUM(p.pot) > 80.5 || NUM(p.pot) < 20)) flag("pot", `${p.name}: 잠재력 ${Math.round(p.pot)}은 게임 범위(20~80)를 벗어납니다.`);
+    }
+    const elig = [];
+    if (cfg.minSeasons && NUM(e.seasons) < cfg.minSeasons) elig.push({ k: "seasons", msg: `최소 ${cfg.minSeasons}시즌을 치른 저장만 참가할 수 있습니다(지금 ${NUM(e.seasons)}시즌).` });
+    if (cfg.payCap && NUM(e.pay) > cfg.payCap) elig.push({ k: "pay", msg: `1군 연봉 합이 상한(${cfg.payCap})을 넘습니다(${Math.round(NUM(e.pay))}).` });
+    if (e.h && e.h !== cupEntryHash(e)) flag("hash", "엔트리 해시가 맞지 않습니다(손으로 고친 파일일 수 있습니다).");
+    const errors = err.filter((x, i) => err.findIndex((y) => y.msg === x.msg) === i);
+    return { ok: !errors.length, errors, flags, elig };
+  }
+  var cupOvrTxt = (o) => o ? `${o.t}|${o.p} ${o.b}` : "-";
+  var cupLabel = (e) => `${e.name} ${e.year}`;
+  function cupSeed(list) {
+    return [...list].sort((a, b) => b.ovr.t - a.ovr.t || b.ovr.p - a.ovr.p || b.ovr.b - a.ovr.b || String(a.h).localeCompare(String(b.h)));
+  }
+  function cupSlots(size) {
+    let s = [1, 2];
+    while (s.length < size) {
+      const n = s.length * 2 + 1;
+      s = s.flatMap((x) => [x, n - x]);
+    }
+    return s;
+  }
+  function rng(seed) {
+    let a = parseInt(cupHashStr(seed), 16) | 0;
+    return () => {
+      a = a + 1831565813 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  var pow2 = (n) => {
+    let s = 2;
+    while (s < n) s *= 2;
+    return s;
+  };
+  function cupBracket(seeds, cfg) {
+    cfg = Object.assign({}, CUP_DEFAULT, cfg || {});
+    const bestOf = (n) => +(cfg.best && (cfg.best[n] ?? cfg.best.default)) || 1;
+    let main = seeds.slice(), playIn = [];
+    let size = Math.min(128, Math.max(2, cfg.size || pow2(seeds.length)));
+    if (cfg.playIn && cfg.playIn.direct != null && seeds.length > size) {
+      const D = Math.max(0, Math.min(size - 1, cfg.playIn.direct | 0)), rest = seeds.slice(D), G = size - D;
+      const groups = Array.from({ length: G }, () => []);
+      rest.forEach((k, i) => {
+        const r = Math.floor(i / G), c = i % G;
+        groups[r % 2 ? G - 1 - c : c].push(k);
+      });
+      playIn = groups.map((g, gi) => ({ id: "P" + (gi + 1), teams: g, bracket: g.length > 1 ? cupBracket(g, { size: pow2(g.length), best: { default: 1 }, playIn: null, shuffleTop: 0 }) : null }));
+      main = seeds.slice(0, D).concat(playIn.map((p) => "Q:" + p.id));
+    } else if (seeds.length > size) main = seeds.slice(0, size);
+    size = Math.max(size, pow2(main.length));
+    const order = cupSlots(size).map((s) => main[s - 1] ?? null);
+    if (cfg.shuffleTop > 1) {
+      const N = Math.min(cfg.shuffleTop | 0, main.length), at = [], who = [];
+      cupSlots(size).forEach((s, i) => {
+        if (s <= N) {
+          at.push(i);
+          who.push(order[i]);
+        }
+      });
+      const r = rng("draw:" + cfg.id);
+      for (let i = who.length - 1; i > 0; i--) {
+        const j = Math.floor(r() * (i + 1));
+        [who[i], who[j]] = [who[j], who[i]];
+      }
+      at.forEach((i, k) => {
+        order[i] = who[k];
+      });
+    }
+    const rounds = [];
+    let prev = null, R = 0;
+    for (let n = size; n >= 2; n /= 2, R++) {
+      const L = [];
+      for (let i = 0; i < n / 2; i++) {
+        const a = prev ? prev[2 * i] : order[2 * i], b = prev ? prev[2 * i + 1] : order[2 * i + 1];
+        L.push({ id: `R${R + 1}M${i + 1}`, n, a, b, best: bestOf(n), win: null, w: [0, 0], games: [] });
+      }
+      rounds.push(L);
+      prev = L.map((m) => "W:" + m.id);
+    }
+    const blocks = cfg.blocks > 1 ? Math.min(cfg.blocks, size / 2) : 0;
+    return { size, rounds, playIn, blocks };
+  }
+  var cupRoundName = (n) => n === 2 ? "결승" : n === 4 ? "4강" : `${n}강`;
+  function cupResolve(B, v) {
+    if (v == null) return null;
+    if (typeof v !== "string") return v;
+    if (v.startsWith("W:")) {
+      const m = cupMatchById(B, v.slice(2));
+      if (!m) return void 0;
+      const a = cupResolve(B, m.a), b = cupResolve(B, m.b);
+      if (a === null && b === null) return null;
+      if (a === null && b !== void 0) return b;
+      if (b === null && a !== void 0) return a;
+      return m.win ?? void 0;
+    }
+    if (v.startsWith("Q:")) {
+      const p = (B.playIn || []).find((x) => x.id === v.slice(2));
+      if (!p) return void 0;
+      if (!p.bracket) return p.teams[0] ?? null;
+      const f = p.bracket.rounds[p.bracket.rounds.length - 1][0];
+      return cupResolve(p.bracket, "W:" + f.id);
+    }
+    return v;
+  }
+  function cupMatchById(B, id) {
+    for (const L of B.rounds) for (const m of L) if (m.id === id) return m;
+    return null;
+  }
+  function cupNext(B) {
+    for (const p of B.playIn || []) if (p.bracket) {
+      const m = cupNext(p.bracket);
+      if (m) return Object.assign({ pi: p.id }, m);
+    }
+    for (const L of B.rounds) for (const m of L) {
+      if (m.win != null) continue;
+      const a = cupResolve(B, m.a), b = cupResolve(B, m.b);
+      if (a === void 0 || b === void 0) continue;
+      if (a === null || b === null) continue;
+      return { m, a, b };
+    }
+    return null;
+  }
+  function cupChampion(B) {
+    const f = B.rounds[B.rounds.length - 1][0];
+    return cupResolve(B, "W:" + f.id) ?? null;
+  }
+  function cupMissions(series) {
+    const out = [];
+    for (const s of series) {
+      const G = s.games || [];
+      if (!G.length) continue;
+      if (G.length >= 4 && G.every((g) => Math.abs(g.sa - g.sb) <= 3)) out.push({ k: "close", id: s.id, who: s.win, msg: `${s.label}: 모든 경기 3점 차 이내 시리즈` });
+      let wa = 0, wb = 0, down3 = null;
+      for (const g of G) {
+        if (g.sa > g.sb) wa++;
+        else if (g.sb > g.sa) wb++;
+        if (wa === 0 && wb === 3) down3 = "A";
+        if (wb === 0 && wa === 3) down3 = "B";
+      }
+      if (G.length === 7 && (down3 === "A" && wa === 4 || down3 === "B" && wb === 4)) out.push({ k: "sweep", id: s.id, who: s.win, msg: `${s.label}: 0-3에서 4-3 역스윕` });
+      const g7 = G[6];
+      if (g7 && g7.walk) out.push({ k: "walk7", id: s.id, who: s.win, msg: `${s.label}: 7차전 끝내기` });
+    }
+    const byB = {};
+    for (const s of series) {
+      if (s.win == null || s.seedA == null || s.seedB == null) continue;
+      const ws = s.win === s.a ? s.seedA : s.seedB, ls = s.win === s.a ? s.seedB : s.seedA, d = ws - ls;
+      if (d <= 0) continue;
+      const k = s.block || "-";
+      if (!byB[k] || d > byB[k].d) byB[k] = { d, s };
+    }
+    for (const k of Object.keys(byB).sort()) out.push({ k: "upset", id: byB[k].s.id, who: byB[k].s.win, block: k, msg: `${k === "-" ? "" : k + "블록 "}최대 시드 차 업셋(${byB[k].d}계단): ${byB[k].s.label}` });
+    return out;
+  }
+  function cupTitles(bat, pit, q) {
+    q = Object.assign({ pa: 65, outs: 63 }, q || {});
+    const top = (L2, f, okf, low) => {
+      const C = L2.filter(okf || (() => true)).map((x) => [f(x), x]).filter((x) => isFinite(x[0]));
+      if (!C.length) return null;
+      C.sort((a, b) => low ? a[0] - b[0] : b[0] - a[0]);
+      return { v: C[0][0], x: C[0][1] };
+    };
+    const avg2 = (x) => x.ab ? x.h / x.ab : 0, obp = (x) => {
+      const d = x.ab + x.bb + (x.hbp || 0) + (x.sf || 0);
+      return d ? (x.h + x.bb + (x.hbp || 0)) / d : 0;
+    };
+    const era = (x) => x.outs ? x.er * 27 / x.outs : 99, whip = (x) => x.outs ? (x.h + x.bb) * 3 / x.outs : 99, k9 = (x) => x.outs ? x.so * 27 / x.outs : 0;
+    const L = [
+      ["타율", top(bat, avg2, (x) => x.pa >= q.pa), (v) => v.toFixed(3).replace(/^0/, "")],
+      ["출루율", top(bat, obp, (x) => x.pa >= q.pa), (v) => v.toFixed(3).replace(/^0/, "")],
+      ["홈런", top(bat, (x) => x.hr), (v) => v + "개"],
+      ["타점", top(bat, (x) => x.rbi), (v) => v + "점"],
+      ["도루", top(bat, (x) => x.pa ? x.sb / x.pa : 0, (x) => x.sb > 0), (v) => "타석당 " + v.toFixed(3)],
+      ["평균자책점", top(pit, era, (x) => x.outs >= q.outs, true), (v) => v.toFixed(2)],
+      ["WHIP", top(pit, whip, (x) => x.outs >= q.outs, true), (v) => v.toFixed(2)],
+      ["다승", top(pit, (x) => x.w), (v) => v + "승"],
+      ["세이브", top(pit, (x) => x.sv), (v) => v + "세이브"],
+      ["K/9", top(pit, k9, (x) => x.outs >= q.outs), (v) => v.toFixed(2)]
+    ];
+    return L.filter((x) => x[1] && x[1].v > 0 || x[1] && ["평균자책점", "WHIP"].includes(x[0])).map(([k, t, f]) => ({ k, key: t.x.key, team: t.x.team, name: t.x.name, v: f(t.v) }));
+  }
+  var CUP_PTS = Object.freeze({ 1: 20, 2: 17, 4: 14, 8: 11, 16: 8 });
+  function cupPower(hist, nowNo) {
+    const by = {};
+    for (const h of hist) {
+      const p = Math.max(0, (CUP_PTS[h.best] || 0) - 2 * Math.max(0, nowNo - h.no));
+      if (!p) continue;
+      (by[h.deck] = by[h.deck] || []).push(p);
+    }
+    return Object.entries(by).map(([deck, L]) => ({ deck, pts: L.sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0) })).sort((a, b) => b.pts - a.pts || a.deck.localeCompare(b.deck));
   }
   return __toCommonJS(index_exports);
 })();
@@ -13072,7 +13430,7 @@ function simGame0(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LR
       CLUTCH=Math.min(1.1,((base[1]||base[2])?.5:0)+(inn>=7&&Math.abs(before)<=2?.4:0)+(ps?.4:0)); /* 득점권 · 7회 이후 2점 차 이내 · 포스트시즌 */
       o=outcome(b,p,fs.defv,Math.max(0,xp.pc-(PW.ft0+p.r.sta*PW.fts))/PW.ftd-PW.fm+ttoPen(p,xp.bf),fs); /* 체력만큼 던진 뒤부터 9구마다 능력 1씩 떨어진다 */ let eFld=0; /* 타구 분포·좌우 기록은 타석 결과(희생플라이·끝내기 루타 조정)가 확정된 뒤 */
       const rec=trace(half,b,p,o,xp.pc-pc0);xp.pc=pc0+(rec?rec.pitches.length:Math.max(o==='BB'?4:o==='K'?3:1,xp.pc-pc0)); /* 공별 기록을 꺼도 볼넷 4구·삼진 3구 최소 투구 수는 같게(buildPitchSequence와 같은 규칙): 기록 옵션이 경기 결과를 바꾸지 않게(검수 11-09zt) */
-      let chg=null, chgE=null, rbiN=0, sfN=0;const moves=[]; const PB=()=>{ if(pbp.length<1000){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); if(moves.length)r[14]=moves;if(rec)r[15]=rec; /* 공별 기록도 중계 줄 상한(1000)까지: 긴 경기 중간에 투구 수가 끊기지 않게(검수 11-08) */pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
+      let chg=null, chgE=null, rbiN=0, sfN=0;const moves=[]; const PB=()=>{ if(pbp.length<1000){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); if(moves.length)r[14]=moves;if(rec)r[15]=rec;if(options&&options.bipLog&&LBIP&&o!=='K'&&o!=='BB'&&o!=='HBP')r[17]=LBIP.t+':'+LBIP.pos; /* 유저 대회 중계 글(타구 방향·유형): 켤 때만 */ /* 공별 기록도 중계 줄 상한(1000)까지: 긴 경기 중간에 투구 수가 끊기지 않게(검수 11-08) */pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
       const b0=base.slice(); /* 타석 전 주자 위치: 끝내기 결승 주자가 몇 루에서 출발했는지 */ const advanceRunner=(r,from,to,chance,spd)=>{if(isBot&&inn>=9&&score[bk]+sc.length>score[opp(bk)])return 'hold'; /* 결승점이 들어오면 경기 끝: 뒤 주자의 추가 진루·아웃은 없다(검수 11-09k) */const z=runAdvance(r,fs,{base:chance,from,to,spd,outs});if(!z.send)return 'hold';const result=z.safe?'safe':'out';moves.push({id:r.id,from,to,result});if(!z.safe){outs++;xp.outs++;}if(ev.length<400)ev.push({h:half,t:`주루 판단: ${r.name} ${from}루 → ${to===4?'홈':to+'루'} ${z.safe?'진루':'아웃'}`});return result;};
       if(o==='BB'||o==='HBP'){ const key=o==='HBP'?'hbp':'bb';xb[key]++; xp[key]++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
       else { xb.ab++;
@@ -13766,6 +14124,7 @@ function settlement(){
   storySeason(y); const awards=seasonAwards(y); try{ seasonTitles(y); }catch(e){} try{ featSeason(y); mgrEyeReport(); }catch(e){} try{ ivPromCheck('season'); }catch(e){}
   G.history.push({y,d:G.day,fins:JSON.parse(JSON.stringify(fins)),order,champ:ps.champ,runner:ps.runner,ps:{wc:ps.wc,spo:ps.spo,po:ps.po,ks:ps.ks,days:P.days,tbRes:P.tbRes} /* 순위 결정전도 지난 대진표에 남긴다(검수 11-08) */,user:{w:uo.w,l:uo.l,t:uo.t,rank,net:fin.net,trust:u.trust}});
   try{ histSnapSeason(G.history[G.history.length-1]); }catch(e){} /* 우승팀 명단·감독 시즌 기록(OOTP 참고) */
+  try{ cupAlbumAuto(y,rank,ps.champ===G.user,uo); }catch(e){} /* 출전 로스터 앨범(유저 대회, 99_cup) */
   for(const t of G.teams){const f=fins[t.id];if(f)chron('finance',`${y} 결산 · 수입 ${money(sum(f.inc.map(x=>x[1])))} · 지출 ${money(sum(f.exp.map(x=>x[1])))} · 손익 ${money(f.net)} · 기말 현금 ${money(f.cash)}`,null,t.id,{source:'finance:'+y});}
   { const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(G.cal.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 마지막 달(9·10월) 잔여 경기도 결산에 넣는다 */
   try{ tsArchive(y); }catch(e){}
@@ -30429,6 +30788,148 @@ function ladderPackDemo(season,n,o){ o=o||{}; const pool=ladderPool(season); con
   const clubs=[]; if(o.mine)clubs.push(o.mine);
   for(let i=0;clubs.length<n;i++)clubs.push(ladderAuto(season,{name:names[i%names.length],hue:(i*37)%360,bias:i%5,mgr:pool.mgrs[i%pool.mgrs.length].id}));
   return FrontOfficeCore.ladderPackMake(clubs,{leagueId:o.leagueId||'demo',season,seed:o.seed??'demo',meet:o.meet??6}); }
+/* ===== 유저 대회(프런트컵): 엔트리·출전 로스터 앨범·경기 실행·중계 글 =====
+   엔트리(공용 형식 src/core/cup.mjs): 그 순간 우리 1군(능력·나이·포지션·투타·타순·선발·불펜·감독). 투수 피로만 0, 부상은 그대로.
+   경기: 단장 대전의 가벼운 기준 세계(ladderWorldJson)에 두 엔트리를 0·1번 자리로 넣고 본게임 simGame(가을야구 규칙, 무승부 없음)으로 치른다.
+   같은 엔트리·같은 대회 id·라운드·경기 번호 → 어느 기기에서나 같은 결과(rngForce + 경기마다 따로 흐름). 홈 어드밴티지는 끈다 */
+const CUP_ALB_MAX=20;
+/* 경기 엔진이 읽는 선수 값만(기록·이력·계약은 뺀다). 사기는 60으로, 시즌 컨디션(sf)·누적 피로(wear)는 넣지 않는다: 그날 운이 대회 전력을 흔들지 않게 */
+const CUP_PK=['id','name','age','isP','pos','th','bt','r','pot','inj','injOut','role','velo','pers','delivery','pexp','vers','foreign','nat','addP','chem']; /* 경기 중 읽는 값(프록시로 확인, 11-17) + 표시용(잠재력·투구 폼·국적) */
+const CUP_MK=['id','name','small','pen','youth','disc','tac','ego','rest','arm','dfn','eye','sty','voice'];
+const r1=x=>typeof x==='number'?Math.round(x*10)/10:x;
+/* 세계 id: 저장마다 하나(새 게임이면 새로). 대회 신청 때 처음 만든다(엔진 난수를 쓰지 않는다) */
+function cupWid(){ if(!G.wid){ let s=''; try{ const a=new Uint8Array(8); crypto.getRandomValues(a); s=[...a].map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){ s=(Date.now().toString(16)+String(Math.random()).slice(2)).slice(0,16); } G.wid='w'+s; } return G.wid; }
+function cupPSnap(p){ const q={}; for(const k of CUP_PK)if(p[k]!=null)q[k]=k==='r'?Object.fromEntries(Object.entries(p.r).map(([a,v])=>[a,r1(v)])):k==='pot'?r1(p[k]):k==='inj'||k==='velo'?Math.round(p[k]*1000)/1000:JSON.parse(JSON.stringify(p[k]));
+  q.fat=p.isP?0:Math.round(p.fat||0); const n=typeof jno==='function'?jno(p):p.no; if(n!=null)q.no=n; return q; }
+/* 지금 우리 1군으로 엔트리. o: {name(팀명), cup(대회 id)} */
+function cupEntryNow(o){ o=o||{}; const tid=o.tid??G.user, t=team(tid); if(!t)return null;
+  const d=depth(tid), act=actOf(tid); /* act: 1군 등록 */ const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
+  const order=orderList(ORDER.filter(k=>d.ln[k]).map(k=>d.ln[k]),tid);
+  /* 1군: 엔트리 제도가 켜진 시즌에는 등록 선수 전부(다친 선수 포함), 비시즌에는 감독 뎁스의 주전 9 + 벤치 5 + 선발 5 + 불펜 7 */
+  const seen=new Set(), P=[]; for(const p of [...order,...d.bench,...d.sp,...d.pen,...(entryOn()?act.filter(q=>!healthy(q)):[])])if(!seen.has(p.id)){ seen.add(p.id); P.push(cupPSnap(p)); }
+  const ln=order.map(p=>[p.id,posOf[p.id]]), lnIds=new Set(ln.map(x=>x[0]));
+  const bn=P.filter(p=>!p.isP&&!lnIds.has(p.id)).map(p=>p.id); /* 다친 야수도 벤치 뒤쪽에(시리즈 중 회복하면 쓴다) */
+  const rot=d.sp.map(p=>p.id).slice(0,5), pen=[...d.pen.map(p=>p.id)]; for(const p of P)if(p.isP&&!rot.includes(p.id)&&!pen.includes(p.id))pen.push(p.id);
+  const bp={}; for(const p of P){ const x=G.bprole&&G.bprole[p.id]; if(x&&x.tid===tid)bp[p.id]=x.k; }
+  const m=G.mgr[tid]||{}, mgr={}; for(const k of CUP_MK)if(m[k]!=null)mgr[k]=m[k];
+  const hist=(G.history||[]).filter(h=>h.user); const last=o.res||null;
+  const e={v:FrontOfficeCore.CUP_V,kind:'cup-entry',cup:String(o.cup||''),wid:o.wid||G.wid||'',name:FrontOfficeCore.cupName(o.name||t.nick),
+    club:{tid,city:t.city||'',nick:t.nick||'',code:t.code||'',hue:t.hue??0,pal:(()=>{ try{ return tpal(t).slice(0,4); }catch(x){ return null; } })()},year:G.year,seasons:hist.length,pay:Math.round(P.reduce((a,p)=>a+((G.players[p.id]||{}).sal||0),0)),
+    mgr,P,ln,bn,rot,pen,bp,...(last?{res:last}:{}),ts:o.ts||0};
+  e.h=FrontOfficeCore.cupEntryHash(e); e.ovr=cupOvr(e); return e; }
+/* 팀 OVR(표시 척도): 총 = 본게임 teamRating과 같은 식(공격 .4 · 투수 .45 · 수비 .15), 투수 = 선발 .65 + 불펜 .35, 타자 = 공격·수비만 */
+function cupOvr(e){ const P=new Map(e.P.map(p=>[p.id,p])), ok=p=>p&&!(p.injOut>0); const D=FrontOfficeCore.dv;
+  const L=e.ln.map(([id,pos])=>[P.get(id),pos]).filter(x=>x[0]);
+  const off=avg(L.map(x=>offV(x[0])))*(Math.min(9,L.length)/9), def=avg(L.filter(x=>x[1]!=='DH').map(x=>defAt(x[0],x[1])));
+  const rot=e.rot.map(id=>P.get(id)).filter(ok), pen=e.pen.map(id=>P.get(id)).filter(ok);
+  const sp=avg(rot.map(spV))*(Math.min(5,rot.length)/5), pv=pen.length?avg(pen.map(penV)):0, pit=sp*.65+pv*.35;
+  return {t:D(off*.4+pit*.45+def*.15),p:D(pit),b:D((off*.4+def*.15)/.55)}; }
+/* ===== 출전 로스터 앨범: 시즌이 끝날 때마다 자동으로, 또는 '지금 로스터 저장'. 최대 20개(오래된 자동 저장부터 지운다, 우승 시즌은 남긴다) ===== */
+function cupAlbum(){ return G.cupAlb||(G.cupAlb=[]); }
+function cupAlbumAdd(kind,res){ const e=cupEntryNow({res}); if(!e)return null; const A=cupAlbum(); const x={id:(G.cupAlbN=(G.cupAlbN||0)+1),y:G.year,d:G.day,k:kind,e};
+  if(kind==='auto'){ const i=A.findIndex(a=>a.k==='auto'&&a.y===G.year); if(i>=0)A.splice(i,1); }
+  A.push(x); while(A.length>CUP_ALB_MAX){ let i=A.findIndex(a=>a.k==='auto'&&!(a.e.res&&a.e.res.champ)); if(i<0)i=0; A.splice(i,1); } return x; }
+function cupAlbumAuto(y,rank,champ,uo){ try{ if(G.unemp||G.user==null)return; cupAlbumAdd('auto',{rank,champ:champ?1:0,w:uo&&uo.w||0,l:uo&&uo.l||0,t:uo&&uo.t||0}); }catch(e){ console.error(e); } }
+function cupAlbumDel(id){ const A=cupAlbum(), i=A.findIndex(a=>a.id===+id); if(i<0)return false; A.splice(i,1); return true; }
+
+/* ===== 경기 ===== */
+/* 엔트리를 세계의 tid 자리에. 선수 id = 원래 id + 100만 × k(엔트리 해시로 정한 1~256): 대회 내내 같은 선수는 같은 id(타구 방향 버릇 등 id로 정해지는 값이 경기마다 같게) */
+function cupIdBase(e,taken){ let k=1+parseInt(String(e.h||FrontOfficeCore.cupEntryHash(e)).slice(0,2),16); while(taken===k)k=k%256+1; return k; }
+function cupInstall(tid,e,k){ const off=k*1e6, get=id=>G.players[id+off];
+  for(const s of e.P){ const q=JSON.parse(JSON.stringify(s)); q.id=s.id+off; q.team=tid; if(q.chem&&typeof q.chem==='object'&&!Array.isArray(q.chem))q.chem=Object.fromEntries(Object.entries(q.chem).map(([c,v])=>[/^\d+$/.test(c)?String(+c+off):c,v])); /* 배터리 호흡: 포수 id도 같이 옮긴다 */ q.mor=60; q.injOut=s.injOut||0; q.fat=s.fat||0; q.sal=q.sal||MIN_SAL; if(!q.inj)q.inj=.15; G.players[q.id]=q; }
+  G.mgr[tid]=Object.assign({small:50,pen:50,youth:50,disc:50,tac:50,ego:50,rest:50,arm:50,dfn:50,eye:50},JSON.parse(JSON.stringify(e.mgr||{})),{interim:false,id:'CM'+tid+(e.mgr&&e.mgr.id||'')});
+  G.bprole=G.bprole||{}; for(const id in (e.bp||{}))G.bprole[+id+off]={tid,k:e.bp[id]};
+  const T=team(tid); T.city=''; T.nick=e.name; T.lname=e.name;
+  const lineup=e.ln.map(([id,pos])=>[get(id),pos]).filter(x=>x[0]);
+  return {tid,e,off,lineup,bench:e.bn.map(get).filter(Boolean),rot:e.rot.map(get).filter(Boolean),pen:e.pen.map(get).filter(Boolean),ri:0}; }
+/* 시리즈(단판이면 best=1). o: {cup, round, match, best}. 반환 {ok, key, a, b, wa, wb, win:'A'|'B', games:[…]} */
+function cupMatch(EA,EB,o){ o=o||{}; const Core=FrontOfficeCore; const best=Math.max(1,Math.min(9,o.best|0||1)), need=Math.floor(best/2)+1;
+  for(const [k,e] of [['A',EA],['B',EB]]){ const v=Core.cupValidate(e,{}); if(!v.ok)return {ok:false,side:k,errors:v.errors}; }
+  const hA=Core.cupEntryHash(EA), hB=Core.cupEntryHash(EB), key=[o.cup||'cup',o.round||'',o.match||'',hA,hB].join(':');
+  const json=ladderWorldJson({season:'cup'}); const LG0=LRULE, PK0=PARK, SD0=SIMDAY, HA0=HOME_ADV;
+  try{ HOME_ADV=0; return ladderSwap(JSON.parse(json),()=>rngForce(rngHash('cup-match',key),()=>{
+    const kA=cupIdBase(EA), kB=cupIdBase(EB,kA), CA=cupInstall(0,EA,kA), CB=cupInstall(1,EB,kB); let day=G.day; const games=[]; let wa=0, wb=0;
+    for(let i=0;i<best&&wa<need&&wb<need;i++){ const aHome=i%2===0, H=aHome?CA:CB, W=aHome?CB:CA; G.day=day;
+      const elim=[...(wa===need-1||best===1?[CB.tid]:[]),...(wb===need-1||best===1?[CA.tid]:[])];
+      const g=simGame(day,H.tid,W.tid,{noTie:true,elimT:elim,cup:1},{sides:{h:ladderSide(H,day),a:ladderSide(W,day)},pitchRecords:false,bipLog:true,rngKey:'cup:'+key+':'+i});
+      const sa=aHome?g.score.h:g.score.a, sb=aHome?g.score.a:g.score.h; if(sa>sb)wa++; else if(sb>sa)wb++;
+      games.push(cupGameOut(g,{i,aHome,CA,CB,key,best,wa,wb})); ladderAfter(g,day); day++; ladderRest(); }
+    const side=(E,h,w)=>({name:E.name,year:E.year,h,w});
+    return {ok:true,v:Core.CUP_V,key,cup:o.cup||'',round:o.round||'',match:o.match||'',best,a:side(EA,hA,wa),b:side(EB,hB,wb),wa,wb,win:wa>wb?'A':'B',games}; })); }
+  finally{ LRULE=LG0; PARK=PK0; SIMDAY=SD0; HOME_ADV=HA0; } }
+/* ===== 중계 글(카페 게시 형식) =====
+   경기 기록(pbp)을 한 줄씩: '투수 이준서(91) 1번타자 손선준(81), 루킹 삼진 아웃. #1사 주자없음'. 타구 유형·방향은 경기 엔진이 정한 값(bipLog), 비거리·루킹/헛스윙은 경기 키로 정한 값 */
+const CUP_OUTS=['무사','1사','2사','3아웃'];
+function cupBases(b){ const on=[0,1,2].filter(i=>b&&b[i]); return !on.length?'주자없음':on.length===3?'만루':on.map(i=>i+1).join(',')+'루'; }
+const cupU=(key,k)=>parseInt(FrontOfficeCore.cupHashStr(key+':'+k),16)/4294967296;
+const CUP_DIR={LF:'좌측',CF:'중앙',RF:'우측'};
+function cupBipTxt(o,bip,u,n,b){ const [t,pos]=String(bip||'').split(':'), PK=POSK[pos]||(pos==='P'?'투수':''); const of=pos==='LF'||pos==='CF'||pos==='RF';
+  if(o==='HR'){ const dir=CUP_DIR[pos]||'중앙', nm=['솔로','투런','쓰리런','만루'][Math.max(0,Math.min(3,n-1))], dist=Math.round(clamp(103+(((b&&b.r&&b.r.pow)||50)-50)*.45+(pos==='CF'?9:0)+u*16,98,145)); return `${dir}방향 ${nm} 홈런! (비거리: ${dist}m)`; }
+  if(o==='3B')return `${pos==='LF'?'좌중간':pos==='RF'?'우중간':'중견수 키를 넘기는'} 3루타!`;
+  if(o==='2B')return of?`${pos==='LF'?(u<.5?'좌익선상':'좌중간'):pos==='RF'?(u<.5?'우익선상':'우중간'):'중견수 키를 넘기는'} 2루타!`:`${PK||'3루'} 옆을 빠지는 2루타!`;
+  if(o==='1B')return of?`${pos==='LF'?'좌전':pos==='CF'?'중전':'우전'} 안타.`:t==='GB'||t==='PU'?`${PK||'내야'} 내야안타.`:`${PK||'내야'} 옆을 빠지는 안타.`;
+  if(o==='DP')return `${PK||'유격수'} 땅볼, 병살타.`;
+  if(o==='OUT'){ if(t==='GB')return `${PK||'유격수'} 땅볼 아웃.`; if(t==='LD')return `${PK||'중견수'} 직선타 아웃.`; if(t==='PU')return pos==='C'?'포수 파울플라이 아웃.':`${PK||'유격수'} 뜬공 아웃.`; return `${PK||'중견수'} 플라이 아웃.`; }
+  return ''; }
+/* 한 경기 → {sa, sb, inn, walk, log, bat, pit, line, hl, wh, dec, mvp, sp, stats} */
+function cupGameOut(g,c){ const {aHome,CA,CB,key,i}=c; const kOf=k=>(k==='h')===aHome?'A':'B', E={A:CA.e,B:CB.e}, off={A:CA.off,B:CB.off};
+  const lab=k=>E[kOf(k)].name, P=id=>G.players[id], dvO=p=>p?FrontOfficeCore.dv(ovr(p)):0, gk=key+':'+i;
+  const S=g.S, score={a:0,h:0}, L=[], hl=[]; let curH=-1, before=[0,0,0], outs=0, hlBuf=null, hlRuns=0, lastLead=null, wh=null;
+  const slotOf=(s,id,at)=>{ let ln=s.start; for(const ch of s.changes||[])if(ch.at<=at)ln=ch.lineup; const x=ln.find(q=>q.id===id); return x?x.o+1:null; };
+  const pitN={h:1,a:1}, curP={h:S.h.sp?S.h.sp.id:null,a:S.a.sp?S.a.sp.id:null};
+  const scoreTxt=()=>{ const a=score.a, h=score.h; if(a===h)return `스코어 ${a}:${h} 동점`; const k=a>h?'a':'h'; return `스코어 ${Math.max(a,h)}:${Math.min(a,h)} ${lab(k)} 리드`; };
+  const closeHalf=()=>{ if(curH<0)return; const bk=curH%2?'h':'a'; L.push(`[공수교대] ${scoreTxt()}. #무사 주자없음`); if(hlBuf&&hlRuns){ hl.push({inn:Math.floor(curH/2)+1,half:curH%2?'말':'초',team:lab(bk),k:kOf(bk),runs:hlRuns,plays:hlBuf,score:scoreTxt()}); } hlBuf=null; hlRuns=0; };
+  g.pbp.forEach((x,k)=>{ const half=x[0], bk=half%2?'h':'a', fk=bk==='h'?'a':'h';
+    if(half!==curH){ closeHalf(); curH=half; before=[0,0,0]; outs=0; L.push(`[${Math.floor(half/2)+1}회${half%2?'말':'초'}] ${lab(bk)} 공격`); hlBuf=[]; }
+    const st=()=>`#${CUP_OUTS[Math.min(3,outs)]} ${outs>=3?'':cupBases(before)}`.trim();
+    if(x[1]==='PC'){ const prev=P(curP[fk]), nx=P(x[2]); pitN[fk]++; L.push(`투수교체: ${prev?prev.name:'-'} out, ${pitN[fk]}번째 투수 ${nx?nx.name:'-'} in`); curP[fk]=x[2]; return; }
+    if(x[1]==='SB'||x[1]==='CS'){ const r=P(x[2]); outs=x[3]; before=x[4]; L.push(`${r?r.name:'주자'} ${x[1]==='SB'?'도루 성공':'도루 실패 아웃'}. ${st()}`); return; }
+    if(typeof x[1]!=='number')return;
+    const b=P(x[1]), p=P(x[2]), o=x[3], n=x[6]||0, slot=slotOf(S[bk],x[1],k), u=cupU(gk,k);
+    const head=`투수 ${p?p.name:'-'}(${dvO(p)}) ${slot?slot+'번타자':'대타'} ${b?b.name:'-'}(${dvO(b)}), `;
+    const lead0=score[bk]-score[fk], b0=before.slice(), o0=outs;
+    let body;
+    if(o==='K')body=`${u<.27?'루킹':'헛스윙'} 삼진 아웃.`; else if(o==='BB')body='볼넷 출루.'; else if(o==='HBP')body='몸에 맞는 공 출루.';
+    else if(o==='SAC')body=x[16]?'타격.\n번트 실패, 앞 주자 포스아웃.':'타격.\n희생번트 성공.';
+    else { const err=o==='OUT'&&!!x[9]; body='타격.\n'+(err?`${POSK[String(x[17]||'').split(':')[1]]||'야수'} 실책으로 출루.`:cupBipTxt(o,x[17],u,n,b)); if(o==='OUT'&&n>0&&x[13])body=body.replace(/플라이 아웃\./,'희생플라이 아웃.'); }
+    score.a=x[7]; score.h=x[8]; outs=x[4];
+    let runL='';
+    if(n>0){ const after=x[5]||[0,0,0], outIds=new Set((x[14]||[]).filter(m=>m.result==='out').map(m=>m.id)); const who=[];
+      for(const bi of [2,1,0]){ const id=b0[bi]; if(id&&!after.includes(id)&&!outIds.has(id)&&who.length<n)who.push(`${bi+1}루주자`); }
+      if(o==='HR'&&who.length<n)who.push('타자주자'); runL=`\n${who.join(' 및 ')} 홈인. `;
+      const lead1=score[bk]-score[fk]; const tag=lead1===0?'동점':lead0<=0&&lead1>0?(lead0===0&&score[fk]===0&&score[bk]===n?'선취점':'역전'):lead1>0?'리드 유지':'추격';
+      const sc=`스코어 ${Math.max(score.a,score.h)}:${Math.min(score.a,score.h)}`+(lead1===0?' 동점':` ${lab(lead1>0?bk:fk)} ${lead1>0?(tag==='리드 유지'?'리드 유지':tag==='역전'?'역전':'리드'):'리드 유지'}`);
+      runL+=`\n${sc}.`; hlRuns+=n; hlBuf.push(`${b?b.name:'-'} ${o==='HR'?['솔로','투런','쓰리런','만루'][Math.min(3,n-1)]+' 홈런':o==='1B'?'적시타':o==='2B'?'적시 2루타':o==='3B'?'적시 3루타':o==='BB'?'밀어내기 볼넷':o==='HBP'?'밀어내기 사구':o==='OUT'&&x[13]?'희생플라이':o==='OUT'?'땅볼 타점':'득점타'}(${n}점)`);
+      if(lead0<=0&&lead1>0)lastLead={bk,id:x[1],inn:Math.floor(half/2)+1,o0,b0,o,n}; }
+    before=x[5]||[0,0,0];
+    L.push(head+body+runL+' '+st()); });
+  closeHalf(); if(L[L.length-1].startsWith('[공수교대]'))L.pop();
+  const sa=aHome?g.score.h:g.score.a, sb=aHome?g.score.a:g.score.h, wK=g.score.h>g.score.a?'h':'a';
+  L.push(`[경기종료] 스코어 ${Math.max(g.score.a,g.score.h)}:${Math.min(g.score.a,g.score.h)} ${lab(wK)} ${g.walk?'끝내기 ':''}승리. #${CUP_OUTS[Math.min(3,outs)]} ${outs>=3?'':cupBases(before)}`.trim());
+  if(lastLead&&lastLead.bk===wK){ const b=P(lastLead.id), kd={HR:'홈런','1B':'안타','2B':'2루타','3B':'3루타',BB:'밀어내기 볼넷',HBP:'밀어내기 사구',OUT:'땅볼',DP:'병살타',SAC:'번트'}[lastLead.o]||'타격';
+    wh={id:lastLead.id,k:kOf(lastLead.bk),name:b?b.name:'-',txt:`${lastLead.inn}회 ${CUP_OUTS[lastLead.o0]} ${cupBases(lastLead.b0)} 상황에서 ${kd}`}; L.push(`결승타 ${wh.name} ${wh.txt}`); } else L.push('결승타 없음');
+  const nm=id=>id!=null&&P(id)?P(id).name:'없음'; L.push(`승리투수:${nm(g.dec.w)} / 세이브:${nm(g.dec.sv)} / 패전투수:${nm(g.dec.l)}`);
+  /* 박스: 타자·투수(탭 구분) */
+  const sideK={A:aHome?'h':'a',B:aHome?'a':'h'}, label=k=>`${E[k].name} ${E[k].year}`, bat=[`팀 연도 이름\tAB\tH\tBB\t HR\tRBI\tR\tSB\t교\t결`], pit=[`팀 연도 이름\tIP\tH\tBB\tSO\tR\tER\t승/패/세`], stats={bat:[],pit:[]};
+  const ip=o=>`${Math.floor(o/3)}${o%3?'.'+(o%3):''}`;
+  for(const k of ['A','B']){ const s=S[sideK[k]], st=new Set(s.start.map(q=>q.id));
+    const ids=[...s.start.map(q=>q.id),...[...s.box.keys()].filter(id=>!st.has(id)&&P(id)&&!P(id).isP)];
+    for(const id of ids){ const x=s.box.get(id), p=P(id); if(!x||!p)continue; bat.push(`${label(k)} ${p.name}\t${x.ab}\t${x.h}\t${x.bb+(x.hbp||0)}\t ${x.hr}\t${x.rbi}\t${x.r}\t${x.sb||0}\t${st.has(id)?'':'교'}\t${wh&&wh.id===id?'결':''}`);
+      stats.bat.push({key:E[k].h+':'+(id-off[k]),k,name:p.name,pa:x.pa,ab:x.ab,h:x.h,d:x.d,tr:x.tr,hr:x.hr,bb:x.bb,hbp:x.hbp||0,sf:x.sf||0,rbi:x.rbi,r:x.r,sb:x.sb||0,so:x.so}); }
+    for(const id of s.pitchers){ const x=s.box.get(id), p=P(id); if(!x||!p)continue; const dec=g.dec.w===id?'승':g.dec.l===id?'패':g.dec.sv===id?'세':(g.dec.hld||[]).includes(id)?'홀':'';
+      pit.push(`${label(k)} ${p.name}\t${ip(x.outs)}\t${x.h}\t${x.bb+(x.hbp||0)}\t${x.so}\t${x.r||0}\t${x.er}\t${dec}`);
+      stats.pit.push({key:E[k].h+':'+(id-off[k]),k,name:p.name,outs:x.outs,h:x.h,bb:x.bb+(x.hbp||0),so:x.so,r:x.r||0,er:x.er,hr:x.hr||0,w:dec==='승'?1:0,l:dec==='패'?1:0,sv:dec==='세'?1:0,gs:id===s.pitchers[0]?1:0}); } }
+  /* 줄 점수 */
+  const lineA=g.line[sideK.A], lineB=g.line[sideK.B], n=Math.max(lineA.length,lineB.length,9), err=k=>[...S[sideK[k]].box.values()].reduce((a,x)=>a+(x.e||0),0);
+  const row=(k,Ln,first)=>`${label(k)}\t${Array.from({length:n},(_,j)=>Ln[j]==null?(first?'':'-'):Ln[j]).join('\t')}\t${k==='A'?sa:sb}\t${stats.bat.filter(b=>b.k===k).reduce((a,b)=>a+b.h,0)}\t${err(k)}`;
+  const awayK=aHome?'B':'A', homeK=aHome?'A':'B';
+  const line=[`팀\t${Array.from({length:n},(_,j)=>j+1).join('\t')}\tR\tH\tE`,row(awayK,awayK==='A'?lineA:lineB,true),row(homeK,homeK==='A'?lineA:lineB,false)].join('\n');
+  /* 선발 매치업·MVP 후보 */
+  const spOf=k=>{ const s=S[sideK[k]], p=s.sp, x=p&&s.box.get(p.id); return p?{name:p.name,o:dvO(p),line:x?`${ip(x.outs)}이닝 ${x.h}피안타 ${x.so}탈삼진 ${x.er}자책`:''}:null; };
+  const wk=sa>sb?'A':'B'; let mvp=null, mv=-1e9;
+  for(const b of stats.bat.filter(b=>b.k===wk)){ const tb=b.h+b.d+2*b.tr+3*b.hr, v=tb*1.2+b.rbi*1.5+b.r+b.bb*.6+b.sb*.6+(wh&&wh.k===wk&&b.name===wh.name?2:0); if(v>mv){ mv=v; mvp={name:b.name,k:wk,txt:`${b.ab}타수 ${b.h}안타${b.hr?`(${b.hr}홈런)`:''} ${b.rbi}타점 ${b.r}득점`}; } }
+  for(const x of stats.pit.filter(x=>x.k===wk)){ const v=x.outs/3*1.1+x.so*.5-x.er*1.8-(x.h+x.bb)*.3+(x.w?2:0)+(x.sv?1.5:0); if(v>mv){ mv=v; mvp={name:x.name,k:wk,txt:`${ip(x.outs)}이닝 ${x.h}피안타 ${x.so}탈삼진 ${x.er}자책${x.w?' 승리':x.sv?' 세이브':''}`}; } }
+  return {i,home:homeK,sa,sb,inn:g.inn,walk:!!g.walk,log:L.join('\n'),bat:bat.join('\n'),pit:pit.join('\n'),line,hl,wh,dec:{w:nm(g.dec.w),l:nm(g.dec.l),sv:g.dec.sv!=null?nm(g.dec.sv):null},mvp,sp:{A:spOf('A'),B:spOf('B')},stats}; }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -31789,7 +32290,7 @@ const SUBS={
   staff:[['mgr','감독'],['coach','코치진'],['train','훈련·육성'],['scouts','스카우트'],['data','전력분석'],['anl','분석원 관리'],['smkt','스태프 시장'],['med','부상 관리']],
   cfg:[['set','게임 설정'],['auth','업무 권한']],
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['stat','통계'],['wire','리그 소식'],['assoc','협회'],['nt','국가대표'],['ovs','해외 리그'],['hist','역사']],
-  club:[['info','구단 정보'],['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['share','팀 카드']]};
+  club:[['info','구단 정보'],['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['share','팀 카드'],['cup','프런트컵']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
 const MERGE={trade:{block:['block']},staff:{train:['tc','camp','sc','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
   league:{hist:['hist','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','crew','news','media'],chron:['build','chron','result','ob','log']}};
@@ -37042,6 +37543,7 @@ function clubBody(s){
   const H0={auth:authView,rel:relView,ob:obView,owner:()=>fmOn()?ownerDash():fmCols(ownerView()+prestigeCard()+starPanel()+ownerAskView()),media:mediaView,fans:()=>fanOpsCard()+promoCard()+fanBoard(),crew:()=>G.unemp?'':csec('응원단장 · 치어리더 팀장',crewView())+csec('치어리더 단원',cheerView()),build:teamBuildView,news:ourNewsView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,ach:achView,legacy:legacyView,
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     share:()=>teamShareView(),
+    cup:()=>cupView(), /* 유저 대회(src/ui/cup) */
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
     set:()=>{ /* 설정 한 페이지(사용자 11-08): 칸을 묶음으로 넘기지 않고 세 줄로. 패치 노트·크레딧은 접어 둔다 */
@@ -44575,6 +45077,87 @@ function ladScreen0(L,pool){ const s=L.snap, R=pool.rules, V=FrontOfficeCore.lad
       <h1><span class="lad-dot"></span>단장 대전 · 구단 만들기 <small>${esc(L.season)} 시즌</small></h1>
       <div class="lad-cap${pay>cap?' over':''}" role="meter" aria-valuemin="0" aria-valuemax="${cap}" aria-valuenow="${pay}" aria-label="연봉 합"><span>연봉 합 <b>${money(pay)}</b> / 한도 ${money(cap)}</span><i style="width:${capPct}%"></i><em>${pay>cap?`${money(pay-cap)} 넘음`:`${money(cap-pay)} 남음`}</em></div></header>
     <div class="lad-body">${poolPanel}${clubPanel}${sidePanel}</div></main>`; }
+/* ===== 프런트컵(유저 대회) 화면: 구단 › 프런트컵 =====
+   참가 신청: 버튼 하나로 지금 1군(타순·선발·불펜·부상 그대로, 투수 피로만 0)을 게임 서버(worker/cup.js, /api/cup/entry)에 보낸다. 세계 id(G.wid)당 대회마다 1개, 다시 내면 덮어쓰기.
+   출전 로스터 앨범(엔진 cupAlbum): 시즌이 끝날 때마다 자동 저장, 지난 로스터로도 신청할 수 있다. 대회 경기 보기: 주최자가 올린 경기 묶음을 이 기기에서 같은 엔진으로 다시 돌린다.
+   유저의 전당: 주최자가 올린 공개 결과(/api/cup/results). 우리 세계 id가 우승·준우승이면 칭호를 저장에 붙인다(전력에 영향 없음) */
+const CUP={st:'',probing:false,cfg:null,my:null,busy:false,msg:'',bad:false,res:null,resSt:'',view:null,open:null,name:''};
+const cupApi=(p,o)=>fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ let j={}; try{ j=await r.json(); }catch(e){} return {r,j}; });
+function cupSay(m,bad){ CUP.msg=m; CUP.bad=!!bad; render(); }
+function cupProbe(){ if(CUP.st||CUP.probing||!xfAvail())return; CUP.probing=true;
+  cupApi('').then(({r,j})=>{ CUP.cfg=r.ok&&j.cup?j.cup:null; CUP.st=r.ok?'ok':r.status===404?'none':'off'; if(CUP.cfg&&G&&G.wid)return cupApi('/entry/'+G.wid).then(({j})=>{ CUP.my=j&&j.entered?j:null; }); },()=>{ CUP.st='off'; })
+    .then(()=>cupApi('/results').then(({r,j})=>{ CUP.res=r.ok?j:null; cupTitleSync(); },()=>{}))
+    .finally(()=>{ CUP.probing=false; try{ render(); }catch(e){} }); }
+/* 칭호: 공개 결과에 우리 세계 id(해시)가 우승·준우승·4강으로 있으면 저장에 남긴다 */
+function cupTitleSync(){ if(!G||!G.wid||!CUP.res||!Array.isArray(CUP.res.cups))return; const me=FrontOfficeCore.cupHashStr('wid:'+G.wid); const T=G.cupTt||[];
+  for(const c of CUP.res.cups)for(const [k,lab] of [['champ','우승'],['runner','준우승']]){ const x=c[k]; if(x&&x.wh===me&&!T.some(t=>t.cup===c.id&&t.k===k))T.push({cup:c.id,k,t:`${c.title} ${lab} 단장`,y:G.year}); }
+  if(T.length)G.cupTt=T; }
+const cupDate=ms=>{ try{ const d=new Date(ms); return `${d.getMonth()+1}월 ${d.getDate()}일`; }catch(e){ return ''; } };
+/* 얼굴 사진을 64px로 줄여 엔트리에 붙인다(카드 이미지용). 아직 못 불러온 사진은 빼고 보낸다(주최 도구가 같은 얼굴 묶음에서 다시 고른다) */
+async function cupFaces(e){ const tid=e.club.tid; for(const s of e.P){ const p=G.players[s.id]; if(!p)continue; let u=null; try{ u=face6Src(p.team===tid?p:Object.assign({},p,{team:tid})); }catch(x){} if(!u||u===F6WAIT||!/^data:/.test(u))continue;
+    try{ const im=new Image(); await new Promise((ok,no)=>{ im.onload=ok; im.onerror=no; im.src=u; }); const c=document.createElement('canvas'); c.width=c.height=64; c.getContext('2d').drawImage(im,0,0,64,64); s.f=c.toDataURL('image/webp',.72); if(!/^data:image\/webp/.test(s.f))s.f=c.toDataURL('image/jpeg',.7); }catch(x){} }
+  try{ const t=team(tid); e.club.pal=tpal(t).slice(0,4); const B=typeof BADGE_IMG!=='undefined'?BADGE_IMG[tid]:null; if(B&&B.k)e.club.badge=B.k; }catch(x){}
+  return e; }
+function cupNameIn(){ const el=document.getElementById('cupName'); const v=el?el.value:CUP.name; CUP.name=v; return FrontOfficeCore.cupName(v||team(G.user).nick); }
+async function cupSend(e){ const C=FrontOfficeCore; if(C.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true);
+  e.wid=cupWid(); e.cup=CUP.cfg.id; e.ts=Date.now(); await cupFaces(e); e.h=C.cupEntryHash(e);
+  const v=C.cupValidate(e,CUP.cfg); if(!v.ok)return cupSay(v.errors[0].msg,true); if(v.elig.length)return cupSay(v.elig[0].msg,true);
+  CUP.busy=true; cupSay('신청서를 보내는 중입니다.');
+  try{ const {r,j}=await cupApi('/entry',{method:'POST',body:JSON.stringify(e),headers:{'Content-Type':'application/json'}}); CUP.busy=false;
+    if(r.status===201){ CUP.my=Object.assign({entered:true},j); return cupSay(`신청했습니다. ${j.name} ${j.year} · OVR ${C.cupOvrTxt(j.ovr)}`); }
+    cupSay((j.errors&&j.errors[0])||j.message||'신청하지 못했습니다. 잠시 뒤 다시 시도해 주세요.',true); }
+  catch(x){ CUP.busy=false; cupSay('서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.',true); } }
+function cupFile(e,name){ try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(e)],{type:'application/json'})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); toast('엔트리 파일을 받았습니다.'); }catch(x){ toast('파일을 만들지 못했습니다.'); } }
+Object.assign(A,{
+  async cupApply(){ if(CUP.busy||!G||G.unemp||!CUP.cfg)return; const e=cupEntryNow({name:cupNameIn()}); if(!e)return; await cupSend(e); },
+  async cupApplyAlb(v){ if(CUP.busy||!CUP.cfg)return; const x=cupAlbum().find(a=>a.id===+v); if(!x)return; const e=JSON.parse(JSON.stringify(x.e)); e.name=cupNameIn(); e.ovr=cupOvr(e); await cupSend(e); },
+  cupFileNow(){ if(!G||G.unemp)return; const e=cupEntryNow({name:cupNameIn()}); if(!e)return; e.wid=cupWid(); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,`cup-entry-${e.year}.json`); }); },
+  cupFileAlb(v){ const x=cupAlbum().find(a=>a.id===+v); if(!x)return; const e=JSON.parse(JSON.stringify(x.e)); e.name=cupNameIn(); e.wid=cupWid(); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,`cup-entry-${e.year}.json`); }); },
+  cupWithdraw(){ if(CUP.busy||!G||!G.wid)return; CUP.busy=true; cupApi('/entry/'+G.wid,{method:'DELETE'}).then(({r,j})=>{ CUP.busy=false; if(r.ok){ CUP.my=null; cupSay('신청을 취소했습니다.'); } else cupSay(j.message||'취소하지 못했습니다.',true); },()=>{ CUP.busy=false; cupSay('서버에 연결하지 못했습니다.',true); }); },
+  cupAlbSave(){ if(!G||G.unemp)return; const x=cupAlbumAdd('hand',null); toast(x?`${G.year} 로스터를 앨범에 저장했습니다.`:'저장하지 못했습니다.'); render(); },
+  cupAlbDel(v){ if(cupAlbumDel(v)){ toast('앨범에서 지웠습니다.'); render(); } },
+  cupRoster(v){ CUP.open=CUP.open===v?null:v; render(); },
+  /* 대회 경기 보기: 경기 id(서버) 또는 붙여 넣은 묶음(JSON) → 이 기기 엔진으로 같은 경기를 다시 돌린다 */
+  async cupWatch(){ const el=document.getElementById('cupGame'), raw=(el?el.value:'').trim(); if(!raw)return; let pk=null;
+    if(raw.startsWith('{')){ try{ pk=JSON.parse(raw); }catch(x){ return cupSay('경기 묶음 형식이 아닙니다.',true); } }
+    else { if(!/^[A-Za-z0-9_-]{1,64}$/.test(raw))return cupSay('경기 번호를 확인해 주세요.',true); try{ const {r,j}=await cupApi('/game/'+raw); if(!r.ok)return cupSay(j.message||'경기를 찾지 못했습니다.',true); pk=j; }catch(x){ return cupSay('서버에 연결하지 못했습니다.',true); } }
+    if(!pk||!pk.a||!pk.b||!pk.o)return cupSay('경기 묶음이 비어 있습니다.',true);
+    cupSay('경기를 다시 돌리는 중입니다.'); setTimeout(()=>{ let res; try{ res=cupMatch(pk.a,pk.b,pk.o); }catch(x){ console.error(x); res={ok:false}; }
+      if(!res.ok)return cupSay('경기를 다시 돌리지 못했습니다.',true);
+      const same=!pk.sum||pk.sum.every((s,i)=>res.games[i]&&res.games[i].sa===s[0]&&res.games[i].sb===s[1]);
+      CUP.view={res,gi:0,tab:'log',same}; cupSay(same?'주최자 결과와 같은 경기입니다.':'주최자 결과와 다릅니다. 게임 판이 다를 수 있습니다.',!same); },30); },
+  cupVG(v){ if(CUP.view){ CUP.view.gi=+v; render(); } }, cupVT(v){ if(CUP.view){ CUP.view.tab=v; render(); } },
+  cupVClose(){ CUP.view=null; render(); },
+});
+function cupView(){ if(!G)return ''; cupProbe(); const C=FrontOfficeCore, t=team(G.user), on=xfAvail(), cfg=CUP.cfg;
+  let now=null; try{ if(!G.unemp)now=cupEntryNow({name:CUP.name||t.nick}); }catch(e){ console.error(e); }
+  const title=(G.cupTt||[]).map(x=>`<span class="cup-tt">${esc(x.t)}</span>`).join('');
+  const st=!on?'<p class="small muted">대회 신청은 웹 사이트에서 할 수 있습니다. 내려받은 게임에서는 엔트리 파일을 받아 주최자에게 보내 주세요.</p>':!CUP.st?'<p class="small muted">대회 정보를 불러오는 중입니다.</p>':CUP.st==='off'?'<p class="small muted">지금은 대회 서버에 연결할 수 없습니다.</p>':!cfg?'<p class="small muted">지금 열린 대회가 없습니다.</p>':
+    `<p class="cup-h"><b>${esc(cfg.title)}</b>${cfg.deadline?` · 접수 마감 ${esc(cfg.deadline)}`:''}</p>${cfg.minSeasons||cfg.payCap?`<p class="small muted">참가 자격: ${[cfg.minSeasons?`${cfg.minSeasons}시즌 이상 치른 저장`:'',cfg.payCap?`1군 연봉 합 ${money(cfg.payCap)} 이하`:''].filter(Boolean).join(' · ')}</p>`:''}
+    <p class="cup-my">${CUP.my?`내 신청: <b>${esc(CUP.my.name)} ${CUP.my.year}</b> · OVR ${C.cupOvrTxt(CUP.my.ovr)} · ${cupDate(CUP.my.at)} 신청`:'아직 신청하지 않았습니다.'}</p>`;
+  const form=G.unemp?'<p class="small muted">구단을 맡고 있을 때 신청할 수 있습니다.</p>':`<label class="cup-in"><span>팀명(12자)</span><input id="cupName" maxlength="12" value="${esc(CUP.name||t.nick)}" autocomplete="off"></label>
+    ${now?`<p class="small">지금 1군 ${now.P.length}명 · OVR <b class="num">${C.cupOvrTxt(now.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:''}
+    <div class="btns">${on&&cfg?`<button class="btn primary" data-a="cupApply"${CUP.busy?' disabled':''}>대회 참가 신청</button>`:''}<button class="btn" data-a="cupFileNow">엔트리 파일 받기</button>${CUP.my?`<button class="btn" data-a="cupWithdraw"${CUP.busy?' disabled':''}>신청 취소</button>`:''}</div>
+    <p class="small muted">신청하면 그 순간의 타순·선발·불펜·부상 상태가 그대로 들어갑니다(투수 피로만 0). 다시 신청하면 덮어쓰고, 하루에 한 번 할 수 있습니다.</p>`;
+  const apply=`<section class="card"><h2 class="sec">프런트컵 참가</h2>${title?`<p class="cup-tts">${title}</p>`:''}${st}${form}${CUP.msg?`<div class="note${CUP.bad?' bad':''}">${esc(CUP.msg)}</div>`:''}</section>`;
+  const AL=cupAlbum().slice().reverse();
+  const alb=`<section class="card"><h2 class="sec">출전 로스터 앨범 <small class="muted">${AL.length}/${CUP_ALB_MAX}</small></h2><p class="small muted">시즌이 끝날 때마다 1군 로스터를 자동으로 남깁니다. 지난 로스터로도 신청할 수 있습니다.</p>
+    <div class="btns"><button class="btn" data-a="cupAlbSave"${G.unemp?' disabled':''}>지금 로스터 저장</button></div>
+    <div class="cup-alb">${AL.map(x=>{ const e=x.e, r=e.res; return `<div class="cup-a"><div><b>${x.y} ${esc(e.club.nick||e.name)}</b><span class="small muted">${x.k==='auto'?'시즌 종료':'직접 저장'}${r?` · ${r.rank}위${r.champ?' · 우승':''} · ${r.w}승 ${r.l}패`:''} · OVR ${C.cupOvrTxt(e.ovr)}</span></div>
+      <div class="btns">${on&&cfg?`<button class="btn small" data-a="cupApplyAlb" data-v="${x.id}"${CUP.busy?' disabled':''}>이 로스터로 신청</button>`:''}<button class="btn small" data-a="cupFileAlb" data-v="${x.id}">파일</button><button class="btn small" data-a="cupAlbDel" data-v="${x.id}">삭제</button></div></div>`; }).join('')||'<p class="small muted">아직 저장한 로스터가 없습니다.</p>'}</div></section>`;
+  const V=CUP.view; let vw='';
+  if(V){ const g=V.res.games[V.gi]; vw=`<div class="cup-v"><p class="small"><b>${esc(V.res.a.name)} ${V.res.a.year}</b> ${V.res.wa}:${V.res.wb} <b>${esc(V.res.b.name)} ${V.res.b.year}</b></p>
+    ${V.res.games.length>1?`<div class="chips">${V.res.games.map((x,i)=>`<button data-a="cupVG" data-v="${i}" class="${i===V.gi?'on':''}">${i+1}차전 ${x.sa}:${x.sb}</button>`).join('')}</div>`:''}
+    <div class="chips">${[['log','중계'],['bat','타자'],['pit','투수'],['line','점수']].map(([k,l])=>`<button data-a="cupVT" data-v="${k}" class="${V.tab===k?'on':''}">${l}</button>`).join('')}<button data-a="cupVClose">닫기</button></div>
+    <pre class="cup-pre">${esc(g[V.tab]||'')}</pre></div>`; }
+  const watch=`<section class="card"><h2 class="sec">대회 경기 보기</h2><p class="small muted">주최자가 올린 경기 번호를 넣으면 이 기기에서 같은 경기를 다시 돌려 중계와 기록을 보여 줍니다.</p>
+    <div class="row"><input id="cupGame" placeholder="경기 번호(예: cup1-R1M3)" autocomplete="off" style="flex:1;min-width:0"><button class="btn" data-a="cupWatch">보기</button></div>${vw}</section>`;
+  const R=CUP.res&&Array.isArray(CUP.res.cups)?CUP.res.cups:[];
+  const ros=(c,k,x)=>{ const id=c.id+':'+k; return `<button class="btn small" data-a="cupRoster" data-v="${esc(id)}">${CUP.open===id?'로스터 닫기':'로스터 보기'}</button>${CUP.open===id&&x.roster?`<div class="cup-ros small">${x.roster.map(r=>`<span>${esc(r.pos)} ${esc(r.n)} <b class="num">${r.o}</b></span>`).join('')}</div>`:''}`; };
+  const hall=`<section class="card"><h2 class="sec">유저의 전당</h2>${R.length?R.slice().reverse().map(c=>`<div class="cup-hof"><p><b>${esc(c.title)}</b> <span class="small muted">${esc(c.date||'')} · ${c.n||''}팀</span></p>
+    ${c.champ?`<p>우승 <b>${esc(c.champ.name)} ${c.champ.year}</b> <span class="small muted">OVR ${C.cupOvrTxt(c.champ.ovr)}</span> ${ros(c,'champ',c.champ)}</p>`:''}${c.runner?`<p>준우승 <b>${esc(c.runner.name)} ${c.runner.year}</b> ${ros(c,'runner',c.runner)}</p>`:''}
+    ${(c.missions||[]).length?`<p class="small muted">미션상: ${c.missions.map(m=>esc(m.msg)).join(' · ')}</p>`:''}</div>`).join(''):'<p class="small muted">아직 끝난 대회가 없습니다.</p>'}</section>`;
+  return `<div class="setx ws-own cupx"><div class="setc">${apply}${hall}</div><div class="setc">${alb}</div><div class="setc">${watch}</div></div>`; }
 /* ===== 부팅: 모든 화면 파일이 읽힌 뒤 맨 마지막에 실행 =====
  앞 번호 파일에서 첫 화면을 그리면, 뒤 번호 파일의 상수(const)가 아직 만들어지지 않아 'before initialization' 오류로 화면이 빈다.
  그래서 저장 불러오기와 첫 화면 그리기는 항상 이 파일(가장 뒤)에서 한다. */
