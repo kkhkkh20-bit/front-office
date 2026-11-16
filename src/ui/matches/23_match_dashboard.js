@@ -106,13 +106,15 @@ function castDashboardUpdate(g,k){
   mdSet('md-status',s.finished?(g.hs===g.as?'경기 종료 · 무승부':'경기 종료'):cHalfTxt(s.state.half)+' · '+s.state.outs+'아웃');
 }
 /* 투수 체력(사용자 11-16, OOTP 체력 막대 참고): 스카우트 평가 스태미나로 정한 한도 대비 남은 비율. 선발·구원 한도는 엔진과 같은 식(PW.l0·ls, 구원 18+0.3×스태미나)에 조금 여유를 둔다 */
-function cStam(g,pid,pc,starter){ if(pc==null)return null; const p=G.players[pid]; if(!p)return null; let sta=45; try{ const grp=(detailOf(p,scoutReport(p)).groups||[]).find(x=>x[0]==='투구'), it=grp&&grp[1].find(r=>/^스태미나/.test(r[0])); if(it&&typeof it[1]==='number')sta=it[1]; }catch(e){} const cap=starter?PW.l0+sta*PW.ls+12:18+sta*.3+8; return clamp(1-pc/cap,0,1); }
+function cStamCap(pid,starter){ const p=G.players[pid]; if(!p)return null; let sta=45; try{ const grp=(detailOf(p,scoutReport(p)).groups||[]).find(x=>x[0]==='투구'), it=grp&&grp[1].find(r=>/^스태미나/.test(r[0])); if(it&&typeof it[1]==='number')sta=it[1]; }catch(e){} return Math.round(starter?PW.l0+sta*PW.ls+12:18+sta*.3+8); }
+function cStam(g,pid,pc,starter){ if(pc==null)return null; const cap=cStamCap(pid,starter); if(!cap)return null; return clamp(1-pc/cap,0,1); }
 /* 투수 상태 경고(사용자 11-16, 교체 판단을 숫자로): 지금 장면 전까지의 기록만 본다. 빨강=위험, 노랑=주의. 최대 3개 */
 function cPitchAlerts(g,k,pid,half,starter){ if(!pid||!g.pbp)return []; let bf=0,pc=0,ir=0,iob=0,ipc=0,ibf=0,pcOk=true;
   for(let i=0;i<Math.min(k,g.pbp.length);i++){ const x=g.pbp[i]; if(typeof x[1]!=='number'||x[2]!==pid)continue; bf++; const seq=storedPitchSequence(x), n=seq?seq.length:0; if(!seq)pcOk=false; pc+=n;
     if(x[0]===half){ ibf++; ipc+=n; ir+=x[6]||0; if(['1B','2B','3B','HR','BB','HBP'].includes(x[3]))iob++; } }
   const A=[], stam=pcOk?cStam(g,pid,pc,starter):null;
-  if(stam!=null&&stam<=.15)A.push(['r',`체력 ${Math.round(stam*100)}%`]); else if(stam!=null&&stam<=.3)A.push(['y',`체력 ${Math.round(stam*100)}%`]);
+  const cap=pcOk?cStamCap(pid,starter):null; if(cap&&pc>cap)A.push(['r',`예상 한계 +${pc-cap}구`]); /* 한계를 넘겨 던지면 얼마나 넘겼는지(감독의 투수 운용을 판단하게, 사용자 11-16) */
+  else if(stam!=null&&stam<=.15)A.push(['r',`체력 ${Math.round(stam*100)}%`]); else if(stam!=null&&stam<=.3)A.push(['y',`체력 ${Math.round(stam*100)}%`]);
   if(ir>=3)A.push(['r',`이번 이닝 ${ir}실점`]); else if(ir===2)A.push(['y','이번 이닝 2실점']);
   if(iob>=3&&ir<3)A.push([iob>=4?'r':'y',`이번 이닝 ${iob}명 출루`]);
   if(pcOk&&ipc>=25)A.push([ipc>=35?'r':'y',`이번 이닝 ${ipc}구`]);
