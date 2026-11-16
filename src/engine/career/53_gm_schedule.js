@@ -98,7 +98,7 @@ function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.
   const TS=typeof amTripSeen==='function'?amTripSeen(reg):null; /* 그날 실제로 열린 경기(13_amateur_league): 뛴 선수를 그 경기 기록과 함께 본다 */
   const live=TS?TS.filter(x=>x.kind==='p').map(x=>G.players[x.id]).filter(p=>p&&C.includes(p)):[], low=TS?TS.filter(x=>x.kind==='e'):[];
   const seen=live.length?[...new Set(live)].slice(0,12):C.sort(()=>R()-.5).slice(0,Math.min(C.length,ri(5,9))); for(const p of seen)gmObserve(p); const vk=areaVisitAdd(seen); /* 다녀온 권역 정보망이 조금 오른다 */
-  if(TS)for(const x of TS){ const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(s){ s.amObs=s.amObs||{}; s.amObs[G.user]=Math.min(12,(s.amObs[G.user]||0)+1); } }
+  if(TS)for(const x of TS){ const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(s&&!seen.includes(s))obsAdd(s,G.user,1); } /* 단장이 직접 본 후보는 gmObserve로 센다(관찰 횟수 하나, 스카우트 1단계) */
   const box=TS?`\n\n오늘 경기에서 본 기록\n${TS.filter(x=>x.kind==='p').slice(0,6).map(x=>{ const p=G.players[x.id]; return p?`${p.name}(${p.school}): ${x.b}`:''; }).filter(Boolean).join('\n')}${low.length?`\n저학년: ${low.slice(0,3).map(x=>{ const e=amPipe().L[x.id]; return e?`${e.n}(${e.s} ${amGrade(e,G.year)}학년) ${x.b}`:''; }).filter(Boolean).join(' · ')}`:''}`:'';
   /* 단장 눈에 들어온 선수도 실제 잠재력이 아니라 직접 본 평가(오차 포함)로 고른다 */ const ev=new Map(seen.map(p=>{ const rp=scoutReport(p); return [p.id,rp.ofp??rp.cur]; })); const top=[...seen].sort((a,b)=>ev.get(b.id)-ev.get(a.id)).slice(0,3); const gem=seen.find(p=>ev.get(p.id)>=58&&(p.press==null||p.press>30)&&R()<.5);
   if(gem){ gem.gmGem=G.year; (G.shortlist=G.shortlist||[]); if(!G.shortlist.includes(gem.id))G.shortlist.push(gem.id); }

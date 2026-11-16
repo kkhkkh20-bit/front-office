@@ -55,7 +55,7 @@ function scHomeAuto(){ const am=(G.scouts||[]).filter(s=>(s.role||'am')==='am');
   for(const r of REG){ if(am.some(s=>s.region===r))continue; const by={}; for(const s of am)by[s.region]=(by[s.region]||0)+1; const d=am.filter(s=>by[s.region]>1).sort((a,b)=>a.skill-b.skill)[0]; if(d){ d.region=r; d.since=G.day; n++; } } /* 담당이 없는 지역은 후보 잠재력을 못 보니, 겹친 지역의 스카우트 한 명을 보낸다 */
   return n?`${n}명을 옮겼습니다.`:'이미 고향 지역에 배치돼 있습니다.'; }
 /* 평가 오차 배수: 정보망 100이면 0.75배, 0이면 1.3배 */
-function netSdM(p,tid){ if(!p||!p.prospect)return 1; const k=areaOf(p); if(!k)return 1; return (1.3-areaNet(tid??G.user,k)*.0055)*((tid??G.user)===G.user?schSdM(p):1)*amObsM(p,tid??G.user); } /* 실제 경기를 본 횟수(13_amateur_league, 모든 구단 같은 규칙) */ /* 학교 감독 친분(91_schools.js) */
+function netSdM(p,tid){ if(!p||!p.prospect)return 1; const k=areaOf(p); if(!k)return 1; return (1.3-areaNet(tid??G.user,k)*.0055)*schSdM(p,tid??G.user)*amObsM(p,tid??G.user); } /* 실제 경기를 본 횟수(13_amateur_league, 모든 구단 같은 규칙) */ /* 학교 감독 친분(91_schools.js) */
 /* 권역 요약(지도·목록): 올해 드래프트 후보 */
 function areaSummary(tid){ const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect);
   return AREA.map(a=>{ const L=C.filter(p=>areaOf(p)===a.k); return {k:a.k,reg:a.reg,net:areaNet(tid,a.k),n:L.length,home:teamArea(tid)===a.k,L}; }); }

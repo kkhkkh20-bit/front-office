@@ -188,7 +188,7 @@ function draftSeasonMail(){ if(G.unemp||G.user==null)return; const n=draftNo(G.u
   let own1=true, pkT=''; try{ const H=pkHeld(G.user); own1=H.includes('1:'+G.user); const gone=Array.from({length:DRAFT_ROUNDS},(_,i)=>i+1).filter(rd=>!H.includes(rd+':'+G.user)) /* 모든 라운드(검수 11-07) */, got=H.filter(k=>+k.split(':')[1]!==G.user); if(gone.length||got.length)pkT=` 지명권 거래 반영: ${gone.length?`넘긴 지명권 ${gone.map(rd=>rd+'라운드').join('·')}`:''}${gone.length&&got.length?', ':''}${got.length?`받은 지명권 ${got.map(pkName).join(', ')}`:''}.`; }catch(e){} /* 거래한 지명권을 반영해 안내(검수 11-06) */
   const f1=(draftPlan()||[]).find(k=>k.tid===G.user); /* 실제 첫 지명(받은 지명권 포함) */
   mail('스카우트팀',`${G.year} 신인 드래프트: ${f1?`우리 첫 지명은 ${f1.rd}라운드 ${f1.no}순위`:'이번 드래프트 지명권이 없습니다'}`,`${dmd(G.cal.draft)}에 ${G.year} 신인 드래프트가 열립니다. 지명 순서는 지난 시즌(${n.y}) 성적의 역순이라 원래 우리 순번은 1라운드 ${n.r1}순위${n.r2!==n.r1?`, 2라운드부터 ${n.r2}순위`:''}입니다.${f1&&!(f1.rd===1&&f1.no===n.r1)?` 지명권 거래를 반영한 실제 첫 지명은 ${f1.rd}라운드 ${f1.no}순위입니다.`:''}${pkT}${n.pen?` 경쟁균형세 3회 연속 초과로 1라운드 순서가 ${n.r2}순위에서 ${n.r1}순위로 내려갔습니다.`:''}\n\n오늘부터 드래프트 시즌입니다. ${c?`${c.name} 스카우트팀장이 `:''}아마추어 담당 스카우트를 고교·대학 선수 관찰에 보냅니다. 관찰이 쌓일수록 평가가 정확해집니다.\n영입·계약 → 신인 드래프트에서 후보 순위를 보고 관심 선수를 표시해 두세요. 지명한 신인은 내년 1월에 합류합니다.`,{kind:'업무',acts:[{l:'신인 드래프트 보기',a:'go',v:'transfer:draft'}]}); }
-function startDraft(){
+function startDraft(){ try{ draftOddsSnap(); }catch(e){} /* 예상 확률 보정 측정(65_draft_odds) */
   const D=draftOrders(); const order=D.r2, o1=D.r1;
   if(D.pen.includes(G.user)){ const a=D.r2.indexOf(G.user)+1, b=D.r1.indexOf(G.user)+1; if(b!==a)note('드래프트',`경쟁균형세 3회 연속 초과로 1라운드 지명 순서가 ${a}순위에서 ${b}순위로 내려갔습니다.`); } /* 실제로 바뀐 만큼만(검수 11-07) */
   pkClean(); const picks=draftPlan(); void order; void o1; /* 트레이드로 넘겨받은 지명권은 원래 구단 순번에 쓴다 */

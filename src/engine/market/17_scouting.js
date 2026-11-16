@@ -9,7 +9,7 @@ function teamScoutReg(tid){ const t=team(tid); const r=t&&t.region; if(REG.inclu
 function coverOf(tid){ const reg=teamScoutReg(tid); return {reg,sc:scoutOf('pro',reg)}; }
 function publicP(p){ return p.hist.some(h=>h.lvl==='1군'&&h.y>=G.year-1&&(h.pa>=10||h.outs>=9)); }
 /* 아마추어 후보 오차: 스카우트 실력·특기·정보망에 실제로 본 횟수까지 */
-const prosSd=(sc,p)=>scSd(sc,p)*(1.35-.35*Math.min(1,dcEvalObs(p,sc)/6));
+const prosSd=(sc,p)=>scSd(sc,p)*obsF(dcEvalObs(p,sc))*draftVis(p); /* 관찰 횟수와 이름난 정도(모든 구단 같은 식, 64_scout_obs·aiDraftScore) */
 /* 담당 고르기: 후보를 주면 그 후보 오차가 가장 작은 사람(검수 11-09e #20). 지역 없이 부르면 국내(아마추어·프로) 담당 중 최고, 해외 파견자는 국내 선수를 보지 않는다(#26) */
 function bestScout(region,p){ if(region){ if(!p)return scoutOf('am',region); return G.scouts.filter(x=>(x.role||'am')==='am'&&x.region===region).map(s=>Object.assign({},s,{skill:effSkill(s)})).sort((a,b)=>prosSd(a,p)-prosSd(b,p))[0]||null; } const s=G.scouts.filter(x=>x.role!=='intl').sort((a,b)=>effSkill(b)-effSkill(a))[0]; return s?Object.assign({},s,{skill:effSkill(s)}):null; }
 function archetype(t,p){ // t: 평가된 도구 점수
@@ -77,7 +77,7 @@ function scoutReport0(p){
   let ofp=futKnown?clamp(Math.max(cur,r5(pv+bias+hn('f'+key,p.id)*sd)),20,80):null;
   if(ofp!=null&&!p.prospect&&p.age>=29)ofp=Math.min(ofp,cur+Math.max(0,31-p.age)*2);
   /* 아마추어: 담당 스카우트마다 좋아하는 툴이 있어 그 툴이 좋아 보이면 잠재력을 후하게 보고, 선수마다 마음에 들고 안 드는 인상도 있다(관찰을 늘려도 줄지 않는 오차) */
-  if(ofp!=null&&p.prospect&&sc&&p.gmSeen!==G.year){ const pk=scoutPet(sc,p.isP); const t=tools.find(x=>x.k===pk); ofp=clamp(Math.max(cur,ofp+(t&&t.fut>=55?DC_PET_ADD:0)+hn('lk'+sc.id,p.id)*DC_LIKE_SD),20,80); } /* 인상 보정 뒤에도 현재 능력 아래로 내려가지 않는다(검수 11-06) */
+  if(ofp!=null&&p.prospect&&sc&&p.gmSeen!==G.year){ ofp=clamp(Math.max(cur,ofp+clubLean(sc,p,k=>{ const t=tools.find(x=>x.k===k); return t?t.fut:0; })),20,80); } /* AI 구단도 같은 버릇(clubLean, 스카우트 1단계) */ /* 인상 보정 뒤에도 현재 능력 아래로 내려가지 않는다(검수 11-06) */
   const tv={}; tools.forEach(t=>tv[t.k]=t.cur);
   const arch=archetype(tv,p);
   const sorted=[...tools].sort((a,b)=>b.cur-a.cur);

@@ -26,3 +26,50 @@
 }
 .am-tr{white-space:nowrap}.am-tr.up{color:var(--good)}.am-tr.dn{color:var(--bad)}
 .am-star{background:none;border:0;padding:0 2px;font-size:15px;line-height:1;color:var(--muted);cursor:pointer}.am-star.on{color:var(--warn)}
+/* 스카우트 › 관찰 명단(스카우트 1단계): 왼쪽 표·오른쪽 리포트. PC는 칸 안에서만 스크롤 */
+.obsw{display:flex;flex-direction:column;gap:12px}
+.obsw>.card{margin:0;min-width:0}
+.obs-list{display:flex;flex-direction:column;gap:6px}
+.obs-list .chips{margin:0}
+.obs-warn{margin:0}
+.obs-scroll{max-height:60vh;overflow:auto;margin:0}
+.obs-scroll thead th{position:sticky;top:0;background:var(--panel);z-index:2}
+.obs-tbl td,.obs-tbl th{font-size:12px;padding:5px 7px;vertical-align:middle;text-align:left}
+.obs-tbl td.num,.obs-tbl th.num{text-align:right}
+.obs-tbl tr.on td{background:#3d7cc71f}
+.obs-tbl td.warn{color:var(--warn)}
+.obs-pri{margin:0;flex-wrap:nowrap}
+.obs-pri button{min-height:28px;padding:2px 8px;font-size:12px}
+.obs-pri button.f.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.obs-det{display:flex;flex-direction:column;gap:6px}
+.obs-dh{display:flex;gap:10px;align-items:flex-start}
+.obs-dh .av.big{width:72px;height:72px;flex:0 0 72px}
+.obs-dh h3{margin:0}.obs-dh p{margin:2px 0}
+.obs-sp{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px;padding:2px 0;border-top:1px solid var(--line)}
+.obs-log p{margin:4px 0;padding-left:8px;border-left:2px solid var(--line)}
+@media(min-width:980px){
+  .obs-host{overflow:hidden!important}
+  .obsw{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr);align-items:stretch;height:calc(100dvh - 196px);min-height:420px}
+  .obs-list{min-height:0;overflow:hidden}
+  .obs-scroll{flex:1 1 auto;min-height:0;max-height:none}
+  .obs-det{min-height:0;overflow:auto}
+}
+/* 드래프트: 남을 확률·라운드 목표·구간·재확인·부진 베팅 */
+.do-chip{display:inline-block;font-size:12px;padding:1px 6px;border-radius:3px;border:1px solid var(--line);white-space:nowrap}
+.do-chip.good{color:var(--good);border-color:currentColor}.do-chip.warn{color:var(--warn);border-color:currentColor}
+.dplan{display:flex;flex-direction:column;gap:4px;margin:0 0 8px}
+.dplan .chips{margin:0;align-items:center}.dplan .chips i{font-style:normal;margin-right:2px}
+.dplan .chips button{min-height:26px;padding:1px 7px;font-size:12px}
+.dtier-h{font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);margin:8px 0 2px;padding-bottom:2px}
+.dbr .chips button.done{color:var(--good)}
+.dbr-a{margin:2px 0;color:var(--muted)}
+.dunseen{margin:6px 0 0}
+.dc-bet{display:grid;gap:6px;margin-top:10px}
+.do-chip{align-self:flex-start;width:fit-content;max-width:100%}
+.fx-wr .av.ini{white-space:nowrap;overflow:hidden;font-size:8px;letter-spacing:-.5px} /* 소속 없는 소식의 협회 표시가 세로로 쪼개지지 않게 */
+.fx-wr img.av{width:18px;height:18px;border-radius:50%;object-fit:cover}
+.obs-scroll.hide{display:none}
+.obs-mlist{display:flex;flex-direction:column}
+.obs-m{display:flex;flex-direction:column;gap:4px;padding:8px 0;border-bottom:1px solid var(--line)}
+.obs-m.on{background:#3d7cc71f}
+.obs-m .candidate-name{background:none!important;justify-content:flex-start;text-align:left;width:100%}

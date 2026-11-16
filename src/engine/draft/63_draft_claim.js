@@ -9,9 +9,9 @@ const DC_PET_ADD=4, DC_LIKE_SD=2.5;
 /* 직접 관전은 실제 관측일마다 누적한다. 옛 gmSeen 표시는 한 차례 관전으로 호환한다. */
 function gmObsCount(p){const o=p&&p.gmObs;return o&&o.y===G.year?Math.max(0,o.n||0):p&&p.gmSeen===G.year?1:0;}
 function gmObserve(p){if(!p)return;let o=p.gmObs;if(!o||o.y!==G.year)o=p.gmObs={y:G.year,n:gmObsCount(p),days:[]};if(!(o.days||[]).includes(G.day)){o.days=(o.days||[]).concat(G.day);o.n++;}p.gmSeen=G.year;}
-function dcScoutObs(p,sc){if(!sc)return 0;const end=G.cal&&G.cal.draft?Math.min(G.day,G.cal.draft):G.day,st=Math.max(dnum(G.year,3,1),sc.since||0);if(end<=st)return 0;const base=Math.max(0,(end-st)/30)*(.45+.15*(sc.skill||0));return Math.max(1,Math.round(base+u01('dob'+sc.id+G.year,p.id)*1.5));}
-/* 기존 단장 직접 관찰 한 번의 평가 가산(2회 상당)은 유지한다. 관전 횟수는 별도로 공개한다. */
-function dcObs(p,sc){return dcScoutObs(p,sc)+gmObsCount(p);}
+/* 스카우트 관찰(스카우트 1단계): 배치 기간으로 세지 않고 실제 학교 방문·경기장 관찰 횟수(64_scout_obs obsCount)를 쓴다 */
+function dcScoutObs(p,sc){ return sc?Math.round(obsRaw(p,G.user)):0; }
+function dcObs(p,sc){ return obsCount(p,G.user); }
 const dcEvalObs=(p,sc)=>dcObs(p,sc)+gmObsCount(p);
 const DC_CONF=sd=>sd<=4.5?'높음':sd<=7?'보통':'낮음';
 let _dcc=null; /* 저장하지 않는 계산 캐시 */
