@@ -18,6 +18,7 @@ globalThis.__amNoInterim=()=>{ const dir=path.join(__dirname,'..','src','ui','as
 /* [비서 v19] 시나리오용: FACE8(사진 빼고)·FACE19 번호표와 비서 배정 함수(secCands·secIdx) */
 globalThis.__secSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
   return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function face19Load('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
+globalThis.__pfCss=()=>fs.readFileSync(path.join(__dirname,'..','src','css','players','22_full_player_profile.css'),'utf8'); /* [제보 11-16 해외 복귀 기록] 선수 화면 시즌 통계 줄 숨김 점검 */
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
 const ok=(c,msg)=>{ if(!c)throw new Error(msg); };
@@ -5484,6 +5485,13 @@ T('[제보 dddddd] 코치 교체: 정규시즌 뒤 계약은 우리·AI 모두 �
   const mk=G.cmarket.map(x=>x.id); for(const t of G.teams){ if(t.id===u)continue; t.cash=100000; t.market=1.2; for(const x of Object.values(G.coach[t.id]))if(x){ x.sk=30; x.dv=30; } } for(const x of G.cmarket)x.sal=60;
   const hired=[]; for(let i=0;i<60&&!hired.length;i++){ cmAiMonthly(); for(const t of G.teams)if(t.id!==u)for(const k of CKEYS){ const x=G.coach[t.id][k]; if(x&&mk.includes(x.id))hired.push(x); } }
   ok(hired.length,'준비 실패: AI 구단 시장 영입이 없음'); ok(hired.every(x=>x.jy===G.year+1&&staffPending(x)),'AI 구단은 같은 때 영입한 코치를 바로 합류시킴(우리만 다음 시즌 합류) '+hired.map(x=>x.jy)); });
+T('[제보 11-16 해외 복귀 기록] 돌아온 선수의 해외 시즌은 모두 연도 순서로 남고, 기록 정리에서 가장 나중에 지우며, 복귀 까닭이 협상·이력에 보이고, 선수 화면 시즌 통계가 최근 세 시즌만 남기고 줄을 숨기지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&!q.foreign&&q.age<=30); ok(p,'준비 실패'); const id=p.id;
+  ovsLeave(p,'MLB',MLBT.find(c=>c.startsWith('보스턴'))||MLBT[0],5,800,'포스팅'); const a=G.abroad.find(x=>x.id===id); ok(a,'해외 기록 없음'); a.y1=G.year-5; for(let y=G.year-5;y<G.year;y++)a.lines.push({y,lvl:'MLB',g:30,outs:540,er:60,so:150,bb:40,h:160,hr:18,w:10,l:8});
+  const q=JSON.parse(a.pj); q.age=34; a.pj=JSON.stringify(q); abroadYear(); const r=G.players[id]; ok(r&&a.back,'복귀 처리 실패'); ok(a.why&&a.why.includes('계약 만료'),'복귀 까닭이 없다: '+a.why); ok(!r.retAsk||(r.retAsk.why===a.why),'우선협상 요구에 까닭이 없다');
+  if(r.retAsk&&r.retFrom===G.user){ ovsBackSign(r); ok((r.story||[]).some(s=>s.t.includes(a.why)),'복귀 이력에 까닭이 없다'); }
+  const rows=ovsStatRows(r); ok(rows.length===a.lines.length&&rows.every((x,i)=>i===0||x.y>rows[i-1].y),'해외 시즌이 빠지거나 순서가 틀렸다 '+rows.map(x=>x.y).join(','));
+  r.team=G.user; for(let i=0;i<130;i++)G.abroad.push({id:-9000-i,name:'x',back:true,lines:[],y:G.year-9,from:0}); ovsTrim(); ok(G.abroad.some(x=>x.id===id),'국내에서 뛰는 복귀 선수의 해외 기록이 정리로 지워졌다');
+  const css=__pfCss(); ok(!css.includes('pf-season-table tbody tr:nth-child(n+5){display:none}'),'선수 화면 시즌 통계가 아직 최근 세 시즌만 남기고 줄을 숨긴다'); });
 T('[제보 11-16 시설 완공] 전문화 공사는 완공일이 지나면 우리·다른 구단 모두 끝나고, 깨진 완공일·불러오기 때 지난 공사도 완공되며, 해를 넘기는 완공일은 연도까지 보인다',()=>{ fresh(); facInit(); G.fac.it.indoor=3; delete G.fac.bld.indoor; const b=facStartBuild(G.user,'indoor',{src:'cash'}); ok(b.lv===4&&b.done-G.day>365,'전문화 공사 기간 준비 실패');
   ok(dmdA(b.done).includes(dobj(b.done).y+'년'),'해를 넘기는 완공일에 연도가 없다'); ok(!dmdA(G.day).includes('년'),'올해 날짜에 연도가 붙었다');
   b.pm=G.day-10; b.done=G.day+2; const tgt=b.done+1; simTo(()=>G.day>=tgt); ok(!G.fac.bld.indoor&&G.fac.it.indoor===4,'완공일이 지났는데 공사가 남았다');
