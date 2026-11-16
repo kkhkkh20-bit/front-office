@@ -26,3 +26,16 @@
 @media(min-width:1100px){.fm-ptabs .detail-navigation .detail-acts:has(.mmenu){overflow:visible}}
 /* 선수 화면 머리(휴대폰): 연봉 아래 계약 한 줄은 남긴다(다른 작은 글씨는 숨김 그대로) */
 @media(max-width:900px){.pf-screen .pf-contract-head small.pf-ct{display:block;flex-basis:100%;text-align:center;font-size:var(--ui-micro,11px);color:var(--muted);white-space:nowrap}}
+
+/* ---------- 진행 버튼 하나 + ▾ (UI 2단계 2-7, src/ui/shell/01_layout.js goSet·advMenu) ----------
+   [진행하기 · 다음 멈춤 | ▾] 한 덩어리. ▾는 같은 초록 버튼의 오른쪽 칸이고 누르면 진행 방법 메뉴(PC 펼침, 휴대폰 바텀시트) */
+.goset .continue{border-radius:4px 0 0 4px}
+.goset .continue:only-child{border-radius:4px}
+.goset .advmenu{display:flex;align-self:stretch}
+:is(#app) .goset .advmenu>.advdrop{display:inline-flex;align-items:center;justify-content:center;min-width:32px;padding:0 6px;margin:0;border:0;border-left:1px solid #00000040;border-radius:0 4px 4px 0;background:var(--go);color:#fff;cursor:pointer}
+:is(#app) .goset .advmenu>.advdrop:hover,:is(#app) .goset .advmenu.open>.advdrop{background:var(--go-hi);border-color:#00000040}
+:is(#app) .goset .advmenu>.advdrop .mmenu-ico{opacity:.9}
+.goset .advmenu>.mmenu-p{min-width:248px}
+.mmenu-t{display:grid;gap:2px;min-width:0}.mmenu-t b{font-weight:600}
+.mmenu-t small{color:var(--muted);font-size:var(--ui-caption,12px);line-height:16px;font-weight:400}
+@media(max-width:700px){ #app .shell .top .goset .advmenu>.advdrop{min-width:40px;min-height:44px;padding:0 4px} }

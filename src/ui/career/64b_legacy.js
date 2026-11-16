@@ -49,4 +49,4 @@ Object.assign(A,{ lgT(v){ UI.lgT=+v; render(); }, legPres(v){ const r=legPresAns
 try{ if(!MERGE.club.chron.includes('legacy'))MERGE.club.chron.push('legacy'); ALIAS.club.legacy='chron'; MLBL['club:legacy']='단장 레거시'; CHK.gm=CHK.gm||'단장'; }catch(e){}
 /* 단장 프로필 카드: 레거시 요약과 바로 가기 */
 function lgMeCard(){ let P=[]; try{ P=legPeople(); }catch(e){ return ''; } const i=P.findIndex(p=>p.u&&p.k===legMeK()); const H=(G.gmLeg&&G.gmLeg.hon)||[];
-  return `<section class="card"><div class="row between"><div><h2 class="sec">단장 레거시</h2><p class="small muted keep">단장 명예의 전당 ${i>=0?`${i+1}위 / ${P.length}명`:'순위 없음'}${H.length?` · 구단 공로자 ${H.length}곳`:''}. 역대 단장, 왕조 비교, 연대기 한 장</p></div><button class="btn small primary" data-a="go" data-v="club:legacy">보기</button></div></section>`; }
+  return `<section class="card"><div class="row between"><div><h2 class="sec">단장 레거시</h2><p class="small muted keep">단장 명예의 전당 ${i>=0?`${i+1}위 / ${P.length}명`:'순위 없음'}${H.length?` · 구단 공로자 ${H.length}곳`:''}. 역대 단장, 왕조 비교, 연대기 한 장</p></div><button class="btn small" data-a="go" data-v="club:legacy">보기</button></div></section>`; }
