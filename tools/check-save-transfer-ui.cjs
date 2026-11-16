@@ -20,7 +20,7 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
    const res=await handle(new Request(r.url(),{method:r.method(),headers:h,body}),env); calls.push(r.method()+' '+new URL(r.url()).pathname+' '+res.status); await route.fulfill({status:res.status,headers:Object.fromEntries(res.headers),body:Buffer.from(await res.arrayBuffer())}); });
   await pg.goto(server.url); await pg.waitForTimeout(500);
   await pg.click('[data-a="tsGo"][data-v="mode"]'); await pg.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pg.waitForSelector('.tmk',{timeout:120000}); await pg.click('.tmk [data-a="start"].btn'); await pg.fill('#gp-name','점검'); await pg.click('[data-a="gpStart"]'); await pg.waitForTimeout(1500);
-  const before=await pg.evaluate(()=>{ saveNow(); G.tut={done:true,step:99}; closeSheets(); A.go('club:set'); return {slot:curSlot(),user:G.user,day:G.day,year:G.year,n:Object.keys(G.players).length,used:SLOT_IDS.filter(n=>slotUsed(n,meta())).length}; });
+  const before=await pg.evaluate(()=>{ saveNow(); G.tut={done:true,step:99}; closeSheets(); UI.it=Object.assign(UI.it||{},{setg:'save'}); /* 휴대폰 설정은 4탭(저장) */ A.go('club:set'); return {slot:curSlot(),user:G.user,day:G.day,year:G.year,n:Object.keys(G.players).length,used:SLOT_IDS.filter(n=>slotUsed(n,meta())).length}; });
   await pg.waitForSelector('[data-a="xfUp"]'); await pg.click('[data-a="xfUp"]'); await pg.waitForSelector('.xf-code');
   const shown=(await pg.locator('.xf-code').innerText()).trim(); assert.match(shown,/^[A-HJKMNP-Z2-9]{4}-[A-HJKMNP-Z2-9]{4}$/,'XXXX-XXXX 표시'); const xfText=await pg.locator('.xf').innerText();
   assert.match(xfText,/7일 뒤 자동 삭제 · 한 번 불러오면 바로 삭제/); assert.match(xfText,/게임 서버에 잠시 보관/);
@@ -44,7 +44,7 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
   assert.ok(![...env.SAVE_KV.m.keys()].some(k=>k.startsWith('x:')),'한 번 받으면 서버에서 삭제');
   console.log('처음 화면 불러오기 → 슬롯',after.slot,'에 옮겨 오기 통과');
   /* 5) 게임 중 받기: 빈 슬롯이 있으면 지금 슬롯을 덮지 않고 빈 슬롯으로. 지우기도 확인 */
-  await pg.evaluate(()=>{ closeSheets(); A.go('club:set'); }); await pg.click('[data-a="xfUp"]'); await pg.waitForSelector('.xf-code'); const c2=(await pg.locator('.xf-code').innerText()).trim();
+  await pg.evaluate(()=>{ closeSheets(); UI.it=Object.assign(UI.it||{},{setg:'save'}); A.go('club:set'); }); await pg.click('[data-a="xfUp"]'); await pg.waitForSelector('.xf-code'); const c2=(await pg.locator('.xf-code').innerText()).trim();
   await pg.click('[data-a="xfDel"]'); await pg.waitForFunction(()=>/지웠습니다/.test(document.querySelector('.xf').innerText)); assert.ok(![...env.SAVE_KV.m.keys()].some(k=>k.startsWith('x:')),'미리 지우기');
   await pg.click('[data-a="xfUp"]'); await pg.waitForSelector('.xf-code'); const c3=(await pg.locator('.xf-code').innerText()).trim(); assert.notEqual(c3,c2);
   const s0=await pg.evaluate(()=>curSlot()); await pg.fill('#xfIn',c3); await pg.click('[data-a="xfGet"]'); await pg.waitForFunction(s=>curSlot()!==s,s0,{timeout:30000});
