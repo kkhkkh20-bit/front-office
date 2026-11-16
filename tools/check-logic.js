@@ -5396,6 +5396,54 @@ T('[제보 dddddd] 코치 교체: 정규시즌 뒤 계약은 우리·AI 모두 �
   const mk=G.cmarket.map(x=>x.id); for(const t of G.teams){ if(t.id===u)continue; t.cash=100000; t.market=1.2; for(const x of Object.values(G.coach[t.id]))if(x){ x.sk=30; x.dv=30; } } for(const x of G.cmarket)x.sal=60;
   const hired=[]; for(let i=0;i<60&&!hired.length;i++){ cmAiMonthly(); for(const t of G.teams)if(t.id!==u)for(const k of CKEYS){ const x=G.coach[t.id][k]; if(x&&mk.includes(x.id))hired.push(x); } }
   ok(hired.length,'준비 실패: AI 구단 시장 영입이 없음'); ok(hired.every(x=>x.jy===G.year+1&&staffPending(x)),'AI 구단은 같은 때 영입한 코치를 바로 합류시킴(우리만 다음 시즌 합류) '+hired.map(x=>x.jy)); });
+T('[단장 대전] 선수 풀: 같은 시즌 id면 같은 풀(기본 난수·커리어 G와 무관), 다른 id면 다른 풀, 크기·포지션·선발형·연봉 한도',()=>{ const s='L2026W47'; delete LADDER_POOL_C[s]; const a=JSON.stringify(ladderPool(s)); delete LADDER_POOL_C[s];
+  for(let i=0;i<5;i++)Math.random(); G={junk:1}; const b=JSON.stringify(ladderPool(s)); G=null; ok(a===b,'같은 시즌 id인데 풀이 다름'); const P=ladderPool(s);
+  ok(JSON.stringify(ladderPool('L2026W48').players.slice(0,5).map(p=>[p.name,p.r]))!==JSON.stringify(P.players.slice(0,5).map(p=>[p.name,p.r])),'다른 시즌 id인데 같은 선수');
+  ok(P.players.length>=26*10&&P.mgrs.length>=10,'풀이 작음 '+P.players.length); const pos=k=>P.players.filter(p=>!p.isP&&p.pos===k).length; for(const k of ['C','1B','2B','3B','SS','LF','CF','RF'])ok(pos(k)>=20,k+' '+pos(k));
+  ok(P.players.filter(p=>p.role==='SP').length>=60&&P.players.every(p=>p.isP===(p.role!=null)),'선발형 표시'); ok(new Set(P.players.map(p=>p.id)).size===P.players.length&&P.players.every(p=>p.id>LADDER_ID0),'id 중복·범위');
+  ok(P.players.every(p=>p.sal>=MIN_SAL&&p.sal<=2500&&p.name&&p.age>=19&&p.age<=37&&p.r),'선수 값'); ok(P.cap>5000&&P.cap<20000,'연봉 한도 '+P.cap);
+  const top26=[...P.players].sort((x,y)=>y.sal-x.sal).slice(0,26); ok(sum(top26.map(p=>p.sal))>P.cap,'가장 비싼 26명도 한도 안이라 한도가 의미 없음');
+  { const id=ladderSeasonId(Date.UTC(2026,10,16,3)); ok(id.length===8&&id.startsWith('L2026W')&&+id.slice(6)>=1&&+id.slice(6)<=53,'시즌 id 형식 '+id); } ok(ladderSeasonId(Date.UTC(2026,10,15,16))===ladderSeasonId(Date.UTC(2026,10,22,14))&&ladderSeasonId(Date.UTC(2026,10,15,14))!==ladderSeasonId(Date.UTC(2026,10,15,16)),'한국 시간 월요일 0시에 주가 바뀌어야 함'); });
+T('[단장 대전] 구단 검증: 자동 편성은 통과하고, 한도 초과·인원·투수 수·포지션 최소·포수 자리·선발형·풀 밖 id·다른 시즌·중복은 거절한다',()=>{ const s='L2026W47', P=ladderPool(s), V=FrontOfficeCore.ladderValidate; const A=ladderAuto(s,{name:'시험 구단'});
+  const v=V(A,P); ok(v.ok,'자동 편성이 검증에 걸림 '+JSON.stringify(v.errors)); ok(v.pay<=P.cap&&v.left===P.cap-v.pay,'연봉 합');
+  const bad=(f,k)=>{ const x=JSON.parse(JSON.stringify(A)); f(x); const r=V(x,P); ok(!r.ok&&r.errors.some(e=>e.k===k),'거절해야 함('+k+'): '+JSON.stringify(r.errors).slice(0,200)); };
+  const Pm=new Map(P.players.map(p=>[p.id,p]));
+  bad(x=>{ const rich=[...P.players].filter(p=>!x.roster.includes(p.id)).sort((a,b)=>b.sal-a.sal); x.roster=x.roster.map(id=>{ const p=Pm.get(id); if(p.isP&&!x.rot.includes(id)&&x.cl!==id&&!x.su.includes(id)){ const q=rich.find(q=>q.isP&&!x.roster.includes(q.id)); rich.splice(rich.indexOf(q),1); return q.id; } if(!p.isP&&!x.lineup.some(l=>l[0]===id)){ const q=rich.find(q=>!q.isP&&q.pos===p.pos); if(q){ rich.splice(rich.indexOf(q),1); return q.id; } } return id; }); },'cap');
+  bad(x=>{ x.roster.pop(); },'roster'); bad(x=>{ x.roster.push(x.roster[0]); },'dup'); bad(x=>{ x.roster[x.roster.length-1]=123; },'id'); bad(x=>{ x.season='L2026W40'; },'season'); bad(x=>{ x.mgr='없음'; },'mgr'); bad(x=>{ x.name=''; },'name'); bad(x=>{ delete x.v; },'ver');
+  bad(x=>{ const cs=x.roster.filter(id=>Pm.get(id).pos==='C'&&!x.lineup.some(l=>l[0]===id)); const qs=P.players.filter(p=>!p.isP&&p.pos==='1B'&&!x.roster.includes(p.id)); cs.forEach((id,i)=>{ x.roster[x.roster.indexOf(id)]=qs[i].id; }); },'pos');
+  bad(x=>{ const L=x.lineup; const ci=L.findIndex(l=>l[1]==='C'), oi=L.findIndex(l=>l[1]!=='C'&&l[1]!=='DH'&&Pm.get(l[0]).pos!=='C'); const t=L[ci][1]; L[ci][1]=L[oi][1]; L[oi][1]=t; },'lineup');
+  bad(x=>{ x.lineup.pop(); },'lineup'); bad(x=>{ const rp=x.roster.find(id=>Pm.get(id).role==='RP'&&x.cl!==id&&!x.su.includes(id)); x.rot[0]=rp; },'rot'); bad(x=>{ x.cl=x.rot[0]; },'pen'); bad(x=>{ x.cl=null; },'pen');
+  bad(x=>{ const ps=x.roster.filter(id=>Pm.get(id).isP&&!x.rot.includes(id)&&x.cl!==id&&!x.su.includes(id)); const bs=P.players.filter(p=>!p.isP&&!x.roster.includes(p.id)).sort((a,b)=>a.sal-b.sal); ps.forEach((id,i)=>{ x.roster[x.roster.indexOf(id)]=bs[i].id; }); },'pitch');
+  ok(FrontOfficeCore.ladderSnapHash(A)===FrontOfficeCore.ladderSnapHash(JSON.parse(JSON.stringify(A)))&&FrontOfficeCore.ladderSnapHash(A)!==FrontOfficeCore.ladderSnapHash(Object.assign({},A,{name:'다른 이름'})),'스냅샷 해시');
+  ok(JSON.stringify(FrontOfficeCore.ladderSnapPack(A)).length<1500,'스냅샷이 작아야 함'); });
+T('[단장 대전] 시리즈: 같은 스냅샷·시드면 같은 결과, 시드가 다르면 다른 결과, 커리어 G와 본 난수 흐름을 건드리지 않는다',()=>{ const s='L2026W47', A=ladderAuto(s,{name:'가'}), B=ladderAuto(s,{name:'나',bias:2,mgr:'LM3'});
+  G=null; const r1=ladderSeries(A,B,{seed:'x',games:12}); ok(r1.ok,'시리즈 실패 '+JSON.stringify(r1.errors)); ok(r1.a.w+r1.a.l+r1.a.t===12&&r1.a.w===r1.b.l&&r1.a.runs===r1.b.allowed,'승패·득실 합');
+  ok(r1.scores.length===12&&r1.scores.filter(x=>x[2]==='A').length===6,'홈·원정 번갈아'); ok(r1.a.runs/12>1.5&&r1.a.runs/12<9,'득점 이상 '+r1.a.runs); ok(r1.a.bat.length&&r1.a.pit.length&&r1.b.pit.every(p=>p.id<LADDER_ID0+LADDER_B_OFF),'기록 요약');
+  fresh(); const g0=JSON.stringify(G), st0=__rngState(); const r2=ladderSeries(A,B,{seed:'x',games:12}); ok(JSON.stringify(G)===g0&&__rngState()===st0,'시리즈가 커리어 G나 기본 난수를 바꿈'); ok(JSON.stringify(r2)===JSON.stringify(r1),'같은 입력인데 결과가 다름(커리어 G가 있을 때)');
+  const r3=ladderSeries(A,B,{seed:'y',games:12}); ok(JSON.stringify(r3.scores)!==JSON.stringify(r1.scores),'시드가 달라도 같은 경기 결과');
+  const r4=ladderSeries(B,A,{seed:'x',games:12}); ok(r4.a.name==='나'&&r4.ok,'A·B 바꿔도 실행'); const bad=Object.assign({},A,{roster:A.roster.slice(1)}); const r5=ladderSeries(bad,B,{seed:'x'}); ok(!r5.ok&&r5.side==='A','검증에 걸린 구단으로 시리즈를 돌림'); });
+T('[단장 대전] 커리어 난수: 시드형에서는 저장·불러오기(새 Math.random) 뒤에도 같은 미래, 옛 저장은 시드를 만들고, FA 시장 분위기는 화면을 언제 열든 같다',()=>{ fresh(); const m0=rngMode(); rngSetMode('seeded'); try{
+  ok(G.rng&&Number.isFinite(G.rng.seed)&&Number.isFinite(G.rng.s),'새 게임에 난수 시드가 없음'); ok(rngNew().seed!==rngNew().seed,'새 시드가 매번 같음'); ok(G.amBootMs==null,'걸린 시간(amBootMs)이 저장에 남음');
+  G.day=G.cal.open-1; for(const t of G.teams)setEntry(t.id); const st0=__rngState(); R(); ok(__rngState()===st0,'시드형인데 기본 난수(Math.random)를 씀');
+  const snap=JSON.stringify(G); const run=()=>{ simTo(()=>G.day>=G.cal.open+4); return JSON.stringify([G.rng,G.sea.rec,Object.values(G.players).filter(p=>p.team===G.user).map(p=>[p.id,p.fat,p.injOut])]); };
+  G=JSON.parse(snap); migrateDraft(); const a=run(); G=JSON.parse(snap); migrateDraft(); for(let i=0;i<7;i++)Math.random(); const b=run(); ok(a===b,'같은 저장에서 같은 결정인데 다른 결과');
+  G=JSON.parse(snap); migrateDraft(); G.rng.seed=(G.rng.seed^1)>>>0; const c=run(); ok(JSON.stringify(JSON.parse(c)[1])!==JSON.stringify(JSON.parse(a)[1]),'세계 시드가 다른데 경기 결과(승패)가 같음');
+  G=JSON.parse(snap); const y=G.year; const k1=faMktOf(y); G=JSON.parse(snap); R(); R(); faAsk(playersOf(G.user)[0]); const k2=faMktOf(y); ok(k1===k2,'시장 분위기가 처음 연 시점에 따라 다름 '+k1+'/'+k2);
+  G=JSON.parse(snap); const s1=G.rng.s; faMktOf(G.year+1); faAsk(playersOf(G.user)[1]); ok(G.rng.s===s1,'연봉 화면(faAsk)이 본 난수를 씀');
+  G=JSON.parse(snap); delete G.rng; migrateDraft(); ok(G.rng&&Number.isFinite(G.rng.seed),'옛 저장(rng 없음)에 시드를 만들지 않음'); R();
+  G=JSON.parse(snap); const g1=rngWith('k',()=>[R(),R()]), s2=G.rng.s, g2=rngWith('k',()=>[R(),R()]); ok(JSON.stringify(g1)===JSON.stringify(g2)&&G.rng.s===s2,'따로 흐름이 본 흐름을 씀');
+  } finally{ rngSetMode(m0); } });
+T('[단장 대전] 리그 팩: 같은 팩이면 같은 순위·점수·해시(커리어 G와 무관), 일정은 하루 한 경기·홈 원정 균형, 고친 팩·구단은 거절한다',()=>{ const s='L2026W47', C=FrontOfficeCore, P=ladderPool(s);
+  const pk=ladderPackDemo(s,4,{seed:'t',meet:2}); ok(C.ladderPackValidate(pk,P).ok,'시험 팩 검증 실패 '+JSON.stringify(C.ladderPackValidate(pk,P).errors));
+  ok(pk.sched.length===12,'4구단 2번 순환은 12경기 '+pk.sched.length); const cnt={}, home={}; for(const [d,h,a] of pk.sched){ for(const t of [h,a]){ const k=d+':'+t; ok(!cnt[k],'하루 두 경기'); cnt[k]=1; } home[h]=(home[h]||0)+1; } ok(Object.values(home).every(x=>x===3),'홈 경기 수가 고르지 않음 '+JSON.stringify(home));
+  ok(C.ladderSchedule(5,1).length===10&&C.ladderSchedule(10,2).length===90,'홀수·10구단 일정');
+  G=null; const r1=ladderPackRun(pk); ok(r1.ok,'팩 실행 실패 '+JSON.stringify(r1.errors)); fresh(); const g0=JSON.stringify(G); const r2=ladderPackRun(JSON.parse(JSON.stringify(pk))); ok(JSON.stringify(G)===g0,'팩 실행이 커리어 G를 바꿈');
+  ok(r1.hash===r2.hash&&JSON.stringify(r1)===JSON.stringify(r2),'같은 팩인데 결과가 다름'); ok(r1.standings.length===4&&sum(r1.standings.map(x=>x.w))===sum(r1.standings.map(x=>x.l))&&r1.games.length===12,'순위표 합');
+  ok(r1.standings[0].gb===0&&r1.standings.every((x,i,L)=>!i||x.pct<=L[i-1].pct),'순위 정렬'); ok(r1.leaders.hr.length&&r1.leaders.so.length,'기록 1위');
+  const pk2=JSON.parse(JSON.stringify(pk)); pk2.seed='u'; ok(ladderPackRun(pk2).hash!==r1.hash,'시드가 달라도 같은 해시');
+  const pk3=JSON.parse(JSON.stringify(pk)); const L=pk3.clubs[0].lineup; [L[0],L[1]]=[L[1],L[0]]; const r3=ladderPackRun(pk3); ok(r3.ok&&r3.hash!==r1.hash,'구단 하나의 타순만 바꿔도 해시가 달라야 함(팩 안 구단은 잠가야 하는 이유)');
+  const bad=JSON.parse(JSON.stringify(pk)); bad.sched[0]=[0,0,0]; ok(!C.ladderPackValidate(bad,P).ok&&!ladderPackRun(bad).ok,'고친 일정을 받아들임');
+  const bad2=JSON.parse(JSON.stringify(pk)); bad2.clubs[1].roster.pop(); ok(!ladderPackRun(bad2).ok,'규칙에 어긋난 구단이 든 팩을 돌림'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
