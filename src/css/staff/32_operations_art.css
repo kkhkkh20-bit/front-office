@@ -55,3 +55,4 @@
  main:has(>.ovs-page)>.seg.itabs,main:has(>.ovs-page)>nav.subtabs{display:flex;flex-wrap:nowrap;flex:none;overflow-x:auto;scrollbar-width:thin}
  main:has(>.ovs-page)>.seg.itabs button,main:has(>.ovs-page)>nav.subtabs button{flex:none;min-height:36px;white-space:nowrap}
 }
+.ovs-bulk-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;max-height:260px;overflow:auto;overscroll-behavior:contain;margin-bottom:6px}.ovs-bulk-row{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;column-gap:6px;padding:5px 7px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);cursor:pointer;min-width:0}.ovs-bulk-row.on{border-color:var(--acc)}.ovs-bulk-row>input{width:16px;height:16px;margin:0;grid-row:span 2;accent-color:var(--acc)}.ovs-bulk-row b,.ovs-bulk-row small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ovs-bulk-row small{color:var(--muted)}
