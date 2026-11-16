@@ -25,22 +25,21 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];
   return `<div class="gut"><div class="wrap" style="max-width:640px"><button class="lnk tsback" data-a="tsGo" data-v="team">← 구단 다시 고르기</button>
-    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(d.city)} ${esc(d.nick)} · `:''}단장 소개</h2><section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
+    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(tfull(d))} · `:''}단장 소개</h2><section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
 /* 사이드바 '단장 프로필' */
 /* 야인이어도 돌아보는 경력: 시즌별 재임 구단·순위·성적, 퇴임 시점 마지막 시즌 결산 */
 function meCareerSeasons(C){ const S=(C&&C.seas||[]).slice().reverse(); if(!S.length)return ''; return csec('시즌별 경력',`<div class="tw"><table><thead><tr><th>시즌</th><th>구단</th><th>순위</th><th>성적</th><th></th></tr></thead><tbody>${S.map(x=>`<tr><td>${x.y}</td><td>${badge(x.tid,14)} ${esc(tshort(x.tid))}</td><td>${x.rank!=null?`${x.rank}위`:'-'}${x.part?` <span class="muted">(시즌 중 ${esc(x.how||'이직')})</span>`:''}</td><td>${x.w}승 ${x.l}패${x.t?` ${x.t}무`:''}</td><td>${x.ch===1?'<span class="pill good">우승</span>':x.ch===2?'<span class="pill">준우승</span>':''}</td></tr>`).join('')}</tbody></table></div>`); }
 function meLastFin(C){ const st=(C&&C.stints||[]).find(x=>x.fin); if(!st)return ''; const F=st.fin; return csec(`${F.y} ${tshort(st.tid)} 결산(물러나기 전 마지막 시즌)`,`<p class="small muted">${F.rank?`${F.rank}위`:''}${F.w!=null?` · ${F.w}승 ${F.l}패${F.t?` ${F.t}무`:''}`:''} · ${esc(st.how)}</p>${finTable(F.f)}`); }
 function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }catch(e){} const nick=meNick(); const age=meAge();
   const head=UI.gpEdit||!P?`<section class="card"><h2 class="sec">${P?'단장 정보 고치기':'단장 정보를 정해 주세요'}</h2>${gpForm('gpSave',P?'저장':'정하기')}${P?'<button class="btn block" data-a="gpEdit" style="margin-top:6px">취소</button>':''}</section>`
-    :`<section class="card mehead">${avImg(meAv(),true)}<div class="mehead-t"><div class="eyebrow">${G.unemp?'야인':`${esc(tname(G.user))} 단장`}${C&&C.y0&&!G.unemp?` · ${C.y0}년부터`:''}</div><h2 class="sec">${esc(P.name)} <span class="small muted">${age}세 · ${esc(GM_BG[P.bg]||'')}</span></h2>
-      <div class="chips"><span class="pill">단장 명성 ${G.rep??50} · ${esc(repLabel(G.rep??50))}</span>${nick?`<span class="pill acc">별명: ${esc(nick)}</span>`:''}${GMV[P.voice]?`<span class="pill">말투 · ${esc(GMV[P.voice].l)}</span>`:''}${!G.unemp&&G.user!=null?`<span class="pill">구단주 신뢰 ${team(G.user).trust}</span>`:''}</div></div><button class="btn small" data-a="gpEdit">고치기</button></section>`;
+    :`<section class="me-pc"><h2 class="sec">단장 정보</h2>${meProfileView()}</section>`; void nick; void age; /* 다른 인물과 같은 틀: 큰 사진(사진 넣기·고치기)·실적 차트·세부 정보(53_person_card) */
   const card=G.unemp?gmProfileView():gmCardView();
   const stints=G.unemp&&C&&C.stints&&C.stints.length?csec('지난 경력',C.stints.map(x=>`<div class="row between small"><span>${badge(x.tid,16)} ${esc(tshort(x.tid))} · ${x.y0}~${x.y1}</span><span class="muted">${esc(x.how)}</span></div>`).join(''))+meCareerSeasons(C)+meLastFin(C):'';
   const left=C&&C.tid!=null?Math.max(0,C.y1-G.year):0; const mid=period()==='season'||period()==='post'; const pen=(left>0?2:0)+(mid?3:0);
   const quit=G.unemp||G.gameOver||!C||C.tid==null?'':csec('사임',`<p class="small">스스로 물러나면 야인이 됩니다. 시간은 계속 흐르고, 다른 구단이 단장을 바꿀 때 명성을 보고 제의가 옵니다.</p>
     <ul class="small muted"><li>남은 계약 ${left}년 치 연봉은 받지 않습니다. 경질과 다른 점입니다.</li><li>${pen?`단장 명성이 ${pen>=4?'크게 ':''}떨어집니다${mid?'. 시즌 도중 사임이라 타격이 더 큽니다':''}`:'단장 명성은 그대로입니다'}.</li><li>구단은 새 단장이 맡습니다. 진행 중인 협상·약속은 넘어가지 않습니다.</li></ul>
     ${UI.rsAsk?`<div class="note bad">${esc(tname(G.user))} 단장직에서 물러납니다. 되돌릴 수 없습니다.</div><div class="row"><button class="btn danger" data-a="resignGo">사임합니다</button><button class="btn" data-a="resignAsk">취소</button></div>`:'<button class="btn" data-a="resignAsk">단장직 사임</button>'}`);
-  const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small primary" data-a="go" data-v="club:build">보기</button></div></section>`;
+  const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small" data-a="go" data-v="club:build">보기</button></div></section>`;
   return head+tb+personalLifeView()+card+stints+lgMeCard()+gmSuccView()+quit; }
 /* 단장 세대 교체와 단장 계보(100년 플레이) */
 /* 전임 단장 상세: 시즌별 성적과 거친 구단(계보에 남긴 기록). 예전 저장의 계보는 요약만 있다 */
@@ -94,13 +93,13 @@ const IMG_OUT=384;
 function imgDown(im,sx,sy,sw,sh,out){ let cw=sw, ch=sh, src=im, ox=sx, oy=sy; while(cw/2>=out*1.2&&ch/2>=out*1.2){ const t=document.createElement('canvas'); t.width=Math.round(cw/2); t.height=Math.round(ch/2); const g=t.getContext('2d'); g.imageSmoothingQuality='high'; g.drawImage(src,ox,oy,cw,ch,0,0,t.width,t.height); src=t; ox=0; oy=0; cw=t.width; ch=t.height; } return {src,x:ox,y:oy,w:cw,h:ch}; }
 function imgEnc(c){ let u=''; try{ u=c.toDataURL('image/webp',.9); }catch(e){} return /^data:image\/webp/.test(u)?u:c.toDataURL('image/jpeg',.9); }
 /* 단장 사진을 갤러리에서(사용자 요청 11-05): 가운데를 정사각형으로 잘라 256px JPEG로 줄여 저장에 넣는다(약 20KB). 서버로 보내지 않는다 */
-Object.assign(A,{ gpImgDel(){ const g=gpSync(); delete g.img; render(); } });
-document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||!el.matches('[data-gpimg]')||!el.files||!el.files[0])return; const f=el.files[0]; if(!/^image\//.test(f.type)&&!/\.(jpe?g|jfif|png|webp|gif|bmp|avif|heic|heif)$/i.test(f.name||'')){ toast('사진 파일만 넣을 수 있습니다.'); return; } /* PC에서 종류를 비워 넘기는 파일도 확장자로 받는다(카페 11-14) */
+Object.assign(A,{ gpImgDel(){ const g=gpSync(); delete g.img; render(); }, meImgDel(){ if(G&&G.gmP){ delete G.gmP.img; save(); render(); } } });
+document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||!el.matches('[data-gpimg],[data-meimg]')||!el.files||!el.files[0])return; const f=el.files[0], me=el.hasAttribute('data-meimg'); /* data-meimg: 단장 프로필 큰 카드에서 바로 바꾸기(같은 384px 경로) */ try{ if(me)el.value=''; }catch(err){} if(!/^image\//.test(f.type)&&!/\.(jpe?g|jfif|png|webp|gif|bmp|avif|heic|heif)$/i.test(f.name||'')){ toast('사진 파일만 넣을 수 있습니다.'); return; } /* PC에서 종류를 비워 넘기는 파일도 확장자로 받는다(카페 11-14) */
   const url=URL.createObjectURL(f), im=new Image(); im.onload=()=>{ try{ const s=Math.min(im.naturalWidth,im.naturalHeight), c=document.createElement('canvas'); c.width=c.height=IMG_OUT; const x=c.getContext('2d'); x.imageSmoothingQuality='high'; { const d=imgDown(im,(im.naturalWidth-s)/2,Math.max(0,(im.naturalHeight-s)*.3),s,s,IMG_OUT); x.drawImage(d.src,d.x,d.y,d.w,d.h,0,0,IMG_OUT,IMG_OUT); } /* 세로 사진은 얼굴이 있는 위쪽을 조금 더 */
-      const g=gpSync(); g.img=imgEnc(c); render(); }catch(err){ toast('사진을 읽지 못했습니다.'); } URL.revokeObjectURL(url); }; im.onerror=()=>{ URL.revokeObjectURL(url); toast(/\.(heic|heif)$/i.test(f.name||'')?'이 브라우저는 HEIC 사진을 읽지 못합니다. JPG나 PNG로 바꿔 넣어 주세요.':'사진을 읽지 못했습니다. JPG나 PNG로 다시 넣어 주세요.'); }; im.src=url; });
+      const u=imgEnc(c); if(me){ if(G&&G.gmP){ G.gmP.img=u; save(); render(); toast('사진을 바꿨습니다.'); } } else { const g=gpSync(); g.img=u; render(); } }catch(err){ toast('사진을 읽지 못했습니다.'); } URL.revokeObjectURL(url); }; im.onerror=()=>{ URL.revokeObjectURL(url); toast(/\.(heic|heif)$/i.test(f.name||'')?'이 브라우저는 HEIC 사진을 읽지 못합니다. JPG나 PNG로 바꿔 넣어 주세요.':'사진을 읽지 못했습니다. JPG나 PNG로 다시 넣어 주세요.'); }; im.src=url; });
 
 /* 모든 선수·인물 사진을 갤러리 사진으로(사용자 요청 11-06). 이 기기의 저장에만 넣는다(256px JPEG 약 15KB) */
-function cimgBtns(k){ if(!k||!G)return ''; return `<span class="cimg-b"><label class="btn small" title="갤러리 사진으로 바꾸기">사진<input type="file" accept="image/*" data-cimg="${esc(k)}" hidden></label>${G.cimg&&G.cimg[k]?`<button class="btn small" data-a="cimgDel" data-v="${esc(k)}">원래대로</button>`:''}</span>`; }
+function cimgBtns(k){ if(!k||!G)return ''; return `<span class="cimg-b"><label class="btn small" title="갤러리 사진으로 바꾸기">사진<input type="file" accept="image/*" data-cimg="${esc(k)}" hidden></label>${G.cimg&&G.cimg[k]?`<button class="btn small" data-a="cimgDel" data-v="${esc(k)}">원래대로</button>`:''}</span>${typeof secPickHtml==='function'?secPickHtml(k):''}`; } /* 비서는 템플릿 사진(v19 20명·v8 8명)도 고른다(77_assets_ui.js secPickHtml) */
 Object.assign(A,{ cimgDel(v){ if(G&&G.cimg){ delete G.cimg[v]; save(); render(); try{ renderSheet(); }catch(e){} } } });
 /* 파일 선택 대리(카페 11-14 PC 사진 무반응): 파일 창이 열린 동안 화면이 다시 그려지면 원래 입력칸이 문서에서 빠져 change가 document까지 오지 않는다.
    앱 화면 밖(body 끝)에 복제한 입력칸으로 파일을 받아 같은 처리로 넘긴다 */

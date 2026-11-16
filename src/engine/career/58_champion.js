@@ -67,7 +67,7 @@ EVH.champGift={ pick(e,i){ const t=team(G.user); const y=G.year;
 /* 우승 퍼레이드(우승 사흘 뒤): 연고 도시 카퍼레이드. 팬 여론·인기가 한 번 더 오른다 */
 function champParade(){ champEventsInit(); for(const r of Object.values(G.champEvents||{}))champParadeRun(r.parade); }
 function champParadeRun(P){ if(!P||P.done||G.day<P.d)return; const tid=P.tid;chron('champ',`${P.y} 우승 퍼레이드 개최`,null,tid);
-  if(tid!==G.user||G.unemp){ P.done=true; const t=team(tid); t.pop=clamp(t.pop+.02,.7,1.5); wire('구단',`${t.city} ${t.nick}, 도심 우승 퍼레이드`,{tid}); return; } /* 우승 뒤 단장이 떠났으면 우승 구단이 퍼레이드를 하고, 새 구단에는 아무 일도 없다 */
+  if(tid!==G.user||G.unemp){ P.done=true; const t=team(tid); t.pop=clamp(t.pop+.02,.7,1.5); wire('구단',`${tfull(t)}, 도심 우승 퍼레이드`,{tid}); return; } /* 우승 뒤 단장이 떠났으면 우승 구단이 퍼레이드를 하고, 새 구단에는 아무 일도 없다 */
   P.done=true; const t=team(G.user); prInit(); const n=Math.round(4+t.market*7+(G.pr.fan-50)/8); P.n=n;
   news('구단',`${t.city} 도심 우승 퍼레이드…팬 ${n}만 명 운집`,`${tname(G.user)} 선수단이 오픈카를 타고 ${t.city} 도심을 돌았습니다. 거리를 메운 팬들이 선수 이름을 연호했고, 단장도 손을 흔들며 화답했습니다.`,3,{fanW:3});
   mail('홍보팀',`우승 퍼레이드를 마쳤습니다`,`${t.city} 도심 퍼레이드에 팬 약 ${n}만 명이 모였습니다. 우승 기념 유니폼과 굿즈 주문이 밀려들고 있습니다.

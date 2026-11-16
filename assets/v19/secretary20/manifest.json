@@ -1,0 +1,1256 @@
+{
+  "schema_version": "v19-secretary20-1",
+  "count": 20,
+  "identity_count": 20,
+  "accepted_identity_count": 20,
+  "role_counts": {
+    "sec": {
+      "count": 20,
+      "female": 16,
+      "male": 4
+    }
+  },
+  "path_base": "assets/v19/secretary20/",
+  "image_mode": "RGB",
+  "alpha": false,
+  "grid": {
+    "rows": 10,
+    "columns": 10,
+    "occupied": 20,
+    "empty_cells": 80,
+    "padding": 8,
+    "pitch": {
+      "128": 144,
+      "256": 272
+    }
+  },
+  "sheets": {
+    "128": {
+      "path": "sheets/128.webp",
+      "width": 1440,
+      "height": 1440,
+      "mode": "RGB",
+      "cell_size": 128,
+      "pitch": 144,
+      "padding": 8,
+      "count": 20,
+      "empty_cells": 80,
+      "encoding": "lossless WebP",
+      "bytes": 419354,
+      "sha256": "cf570e3cdca4a2ea93137174dd3b4b1430449f6ff876a57da57f3c052788afa8"
+    },
+    "256": {
+      "path": "sheets/256.webp",
+      "width": 2720,
+      "height": 2720,
+      "mode": "RGB",
+      "cell_size": 256,
+      "pitch": 272,
+      "padding": 8,
+      "count": 20,
+      "empty_cells": 80,
+      "encoding": "lossless WebP",
+      "bytes": 1458780,
+      "sha256": "4f9cd9f2577c646d84c804a9bae29f9893e1f102b84e814c672b72b15fccab21"
+    }
+  },
+  "runtime_files": [
+    "sheets/128.webp",
+    "sheets/256.webp"
+  ],
+  "runtime_sheet_bytes": 1878134,
+  "identities": [
+    {
+      "id": "v19_sec_01",
+      "identity_id": "v19_sec_01",
+      "r": "sec",
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 0,
+      "rect": {
+        "128": [
+          8,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          8,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            8,
+            8,
+            128,
+            128
+          ],
+          "index": 0
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            8,
+            8,
+            256,
+            256
+          ],
+          "index": 0
+        }
+      },
+      "appearance_brief": "narrow rounded oval face, clear softly downturned medium eyes, gentle long arched brows, short low-bridge straight nose, plump round lips and faint freckles across the nose, dark chin-length bob tucked behind one ear, cheerful soft smile",
+      "source": {
+        "path": "sources/v19_sec_01.png",
+        "sha256": "a7c46dfb7f3dbef96d57c7d2dded35e67e0adcb1c212fc9a28914480952048a9",
+        "candidate": "q06",
+        "native_sha256": "825ed976a233718199323d27b1b893647a1c58ad452632f3402c67a1ed45ae11"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_02",
+      "identity_id": "v19_sec_02",
+      "r": "sec",
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 1,
+      "rect": {
+        "128": [
+          152,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          280,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            152,
+            8,
+            128,
+            128
+          ],
+          "index": 1
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            280,
+            8,
+            256,
+            256
+          ],
+          "index": 1
+        }
+      },
+      "appearance_brief": "a graceful angular oval face, medium-sized widely spaced slightly downturned eyes, arched brows, medium low straight nose, slim lips and subtle beauty mole under one eye, wavy long side-part chestnut hair",
+      "source": {
+        "path": "sources/v19_sec_02.png",
+        "sha256": "bf773f0995ab84ad50da651feabc86ce702241fcac5e3af1de2374dd0233c705",
+        "candidate": "q11",
+        "native_sha256": "6a05c1052e88ae81c2baaf12de72244fb8ad78be3b2d03d285d1e60535acbfae"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_03",
+      "identity_id": "v19_sec_03",
+      "r": "sec",
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": true
+      },
+      "glasses": true,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 2,
+      "rect": {
+        "128": [
+          296,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          552,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            296,
+            8,
+            128,
+            128
+          ],
+          "index": 2
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            552,
+            8,
+            256,
+            256
+          ],
+          "index": 2
+        }
+      },
+      "appearance_brief": "soft high-cheekboned oval face, close-set rounded medium eyes, low horizontal thick brows, a short wide nose tip, delicate rosebud smile, dark-brown shoulder-length loose curls with side fringe",
+      "source": {
+        "path": "sources/v19_sec_03.png",
+        "sha256": "34b98f87371f904ac3a953298ed6014634d1f71c55648fda9ad487c96702efc8",
+        "candidate": "q16",
+        "native_sha256": "308d6eac5a9cbfa98aa86ac2e04da37c33b1d77808797b932ccb84f150b71245"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_04",
+      "identity_id": "v19_sec_04",
+      "r": "sec",
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 3,
+      "rect": {
+        "128": [
+          440,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          824,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            440,
+            8,
+            128,
+            128
+          ],
+          "index": 3
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            824,
+            8,
+            256,
+            256
+          ],
+          "index": 3
+        }
+      },
+      "appearance_brief": "24, a petite heart-shaped face, softly full rounded cheeks, notably wide-set slightly upturned eyes with subtle double lids, low soft nose bridge and small rounded nose, small cupid-bow mouth, long softly waved black hair, charming fresh gentle smile",
+      "source": {
+        "path": "sources/v19_sec_04.png",
+        "sha256": "1def5021e7f7441d8daac1c50832c62ec6d9ee290f494e0a98a640ca2837b00b",
+        "candidate": "s01",
+        "native_sha256": "74b42a5ade7e770460b335df301b6baefef3c3ba96385f1a431ab00a0707b696"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_05",
+      "identity_id": "v19_sec_05",
+      "r": "sec",
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 4,
+      "rect": {
+        "128": [
+          584,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          1096,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            584,
+            8,
+            128,
+            128
+          ],
+          "index": 4
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            1096,
+            8,
+            256,
+            256
+          ],
+          "index": 4
+        }
+      },
+      "appearance_brief": "24, an elongated softly square oval face, narrow smiling monolid eyes, naturally thick level brows, a gently broad short nose, large warm smile with delicate cheek dimples, long dark brown hair with light front layers",
+      "source": {
+        "path": "sources/v19_sec_05.png",
+        "sha256": "ffa1acf530f8a70a328bfff40d66d28e2cd57b6e4223fe8ddd79e151d152db24",
+        "candidate": "s09",
+        "native_sha256": "95c05b23d4608d859c2fc422ded37f0c66e0d11db5de9bc1cd6166c99724b203"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_06",
+      "identity_id": "v19_sec_06",
+      "r": "sec",
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 5,
+      "rect": {
+        "128": [
+          728,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          1368,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            728,
+            8,
+            128,
+            128
+          ],
+          "index": 5
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            1368,
+            8,
+            256,
+            256
+          ],
+          "index": 5
+        }
+      },
+      "appearance_brief": "24, a delicate round heart-shaped face, long narrow deep-set eyes, fine soft straight brows, high bridge slightly upturned nose, plump broad lips, mid-length black hair softly tied half-up with fine wisps",
+      "source": {
+        "path": "sources/v19_sec_06.png",
+        "sha256": "c8a8f4a559e8fbfcb5f723fe8880356598cb1db6ed1a87681a883c861aa2d633",
+        "candidate": "s12",
+        "native_sha256": "27528961e5cfc6d0a4974e4cfefa0bd309cfea4344e452e2338edac69b34f698"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_07",
+      "identity_id": "v19_sec_07",
+      "r": "sec",
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 6,
+      "rect": {
+        "128": [
+          872,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          1640,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            872,
+            8,
+            128,
+            128
+          ],
+          "index": 6
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            1640,
+            8,
+            256,
+            256
+          ],
+          "index": 6
+        }
+      },
+      "appearance_brief": "a delicate round heart-shaped face, long narrow deep-set eyes, fine soft straight brows, high bridge slightly upturned nose, plump broad lips, mid-length black hair softly tied half-up with fine wisps",
+      "source": {
+        "path": "sources/v19_sec_07.png",
+        "sha256": "2adf3dead1ec9b8f68eb255fcf30aeb361ea7e41343162199744496b1a0834de",
+        "candidate": "q12",
+        "native_sha256": "e24e457c67fb7c079c75a4ef72ebede3402095fe34c6947f4af79ca1cd4f1ead"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_08",
+      "identity_id": "v19_sec_08",
+      "r": "sec",
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 7,
+      "rect": {
+        "128": [
+          1016,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          1912,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            1016,
+            8,
+            128,
+            128
+          ],
+          "index": 7
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            1912,
+            8,
+            256,
+            256
+          ],
+          "index": 7
+        }
+      },
+      "appearance_brief": "a petite heart-shaped face, softly full rounded cheeks, notably wide-set slightly upturned eyes with subtle double lids, low soft nose bridge and small rounded nose, small cupid-bow mouth, long softly waved black hair, charming fresh gentle smile",
+      "source": {
+        "path": "sources/v19_sec_08.png",
+        "sha256": "9ca601e748667b96c8018c6fb60707cd58c776a233c488497b83d15df04528fa",
+        "candidate": "q17",
+        "native_sha256": "0ea2b0c78767f925df19726fc0b20705b47a564f347db5e415a7797f9cf3a9c4"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_09",
+      "identity_id": "v19_sec_09",
+      "r": "sec",
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 8,
+      "rect": {
+        "128": [
+          1160,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          2184,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            1160,
+            8,
+            128,
+            128
+          ],
+          "index": 8
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            2184,
+            8,
+            256,
+            256
+          ],
+          "index": 8
+        }
+      },
+      "appearance_brief": "25, an elegant long oval face, naturally narrow deep-set eyes and fine arched brows, a long graceful straight nose with high bridge, full bow-shaped lips, sleek mid-back dark-brown hair with side part, serene luminous expression",
+      "source": {
+        "path": "sources/v19_sec_09.png",
+        "sha256": "938bb9165111d3aeae9c29fe9b7f4cba67b6f2556a17faa50df1188df79d0db6",
+        "candidate": "s02",
+        "native_sha256": "b8ae92aa2863138e5a29733c61c65d3b321a94be15e5bef02ac683add9ef52af"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_10",
+      "identity_id": "v19_sec_10",
+      "r": "sec",
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 9,
+      "rect": {
+        "128": [
+          1304,
+          8,
+          128,
+          128
+        ],
+        "256": [
+          2456,
+          8,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            1304,
+            8,
+            128,
+            128
+          ],
+          "index": 9
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            2456,
+            8,
+            256,
+            256
+          ],
+          "index": 9
+        }
+      },
+      "appearance_brief": "25, compact rounded cheeks and softly angular jaw, open deep-set eyes and thick curved brows, elegantly long narrow nose, small pursed rose lips, short feminine pixie with swept longer top, playful calm smile",
+      "source": {
+        "path": "sources/v19_sec_10.png",
+        "sha256": "38449a81bce32f5dcb6c34e5169313a9011d6c9d40dcff072bcd71b784be96e8",
+        "candidate": "s08",
+        "native_sha256": "a5a157d274b2408dff4963ae68d238343de78e2a0c6bff994ff91c5c4f0e2eb6"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_11",
+      "identity_id": "v19_sec_11",
+      "r": "sec",
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 10,
+      "rect": {
+        "128": [
+          8,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          8,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            8,
+            152,
+            128,
+            128
+          ],
+          "index": 10
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            8,
+            280,
+            256,
+            256
+          ],
+          "index": 10
+        }
+      },
+      "appearance_brief": "25, slender long oval face and soft rounded jawline, almond monolid eyes with soft outer corners, long level brows, delicate pointed but naturally sized nose, wide curved smiling lips, long shiny straight black hair",
+      "source": {
+        "path": "sources/v19_sec_11.png",
+        "sha256": "12f8f60cc62e5f5163f4d686d83a9513e15b964efbf7440900747b8b506064df",
+        "candidate": "s14",
+        "native_sha256": "48aa313628678632697ccf0ee154a796a7f07d99b0427dec258cd0052daa878b"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_12",
+      "identity_id": "v19_sec_12",
+      "r": "sec",
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": true
+      },
+      "glasses": true,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 11,
+      "rect": {
+        "128": [
+          152,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          280,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            152,
+            152,
+            128,
+            128
+          ],
+          "index": 11
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            280,
+            280,
+            256,
+            256
+          ],
+          "index": 11
+        }
+      },
+      "appearance_brief": "short softly square face with a softly broad chin, large natural round-almond eyes and short horizontal brows, short broad nose tip, thin smiling lips and dimpled cheeks, airy chin-length brown bob with wispy fringe, bright energetic smile",
+      "source": {
+        "path": "sources/v19_sec_12.png",
+        "sha256": "7df33610a4fb47df8fe8da471055c33e0160b2ce73881977fd8255ef1a91ad7a",
+        "candidate": "q03",
+        "native_sha256": "0312e3cbf2d1d7ddb32f3db825e255c0d3a0666e00b3ad90312631278cca4134"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_13",
+      "identity_id": "v19_sec_13",
+      "r": "sec",
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 12,
+      "rect": {
+        "128": [
+          296,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          552,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            296,
+            152,
+            128,
+            128
+          ],
+          "index": 12
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            552,
+            280,
+            256,
+            256
+          ],
+          "index": 12
+        }
+      },
+      "appearance_brief": "medium oval face with fuller jaw and subtle cheekbones, bright naturally rounded almond eyes, short boldly arched brows, softly broad flat-bridge nose, thin upper and full lower lip, polished side-part bob",
+      "source": {
+        "path": "sources/v19_sec_13.png",
+        "sha256": "be6bede317f2e5193dff1a63c396042b37057c1dd5256c9f8ab38f66e36fb89d",
+        "candidate": "q13",
+        "native_sha256": "d46dde9cdc2cb1de783e74e4dbce57d170e4b30e8c0f656fedeefea3f9a6ce13"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_14",
+      "identity_id": "v19_sec_14",
+      "r": "sec",
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 13,
+      "rect": {
+        "128": [
+          440,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          824,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            440,
+            152,
+            128,
+            128
+          ],
+          "index": 13
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            824,
+            280,
+            256,
+            256
+          ],
+          "index": 13
+        }
+      },
+      "appearance_brief": "an elegant long oval face, naturally narrow deep-set eyes and fine arched brows, a long graceful straight nose with high bridge, full bow-shaped lips, sleek mid-back dark-brown hair with side part, serene luminous expression",
+      "source": {
+        "path": "sources/v19_sec_14.png",
+        "sha256": "7b5f4709145dfd4404f22c5c0dff9889328381275745ab692df99165ee5d0dcf",
+        "candidate": "q18",
+        "native_sha256": "b12d91b693ee756147ffc4c0b0782c2e9f3990198faafab5d4535aec51c77754"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_15",
+      "identity_id": "v19_sec_15",
+      "r": "sec",
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 14,
+      "rect": {
+        "128": [
+          584,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          1096,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            584,
+            152,
+            128,
+            128
+          ],
+          "index": 14
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            1096,
+            280,
+            256,
+            256
+          ],
+          "index": 14
+        }
+      },
+      "appearance_brief": "short softly square face with a softly broad chin, large natural round-almond eyes and short horizontal brows, short broad nose tip, thin smiling lips and dimpled cheeks, airy chin-length brown bob with wispy fringe, bright energetic smile",
+      "source": {
+        "path": "sources/v19_sec_15.png",
+        "sha256": "0bf1e0180250687b6621976fe7cdb2e31da1deb4f6a3a4295c6f7ea7859a2f71",
+        "candidate": "q19",
+        "native_sha256": "33e74683819520e28ae9188b047e0058851829e025f903677ad0010e806c8d29"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_16",
+      "identity_id": "v19_sec_16",
+      "r": "sec",
+      "age": 28,
+      "f": 1,
+      "sex": "female",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 15,
+      "rect": {
+        "128": [
+          728,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          1368,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            728,
+            152,
+            128,
+            128
+          ],
+          "index": 15
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            1368,
+            280,
+            256,
+            256
+          ],
+          "index": 15
+        }
+      },
+      "appearance_brief": "gently diamond-shaped face, distinct high but soft cheekbones, slightly hooded long eyes and fine dark brows, subtly aquiline narrow nose, broad full smiling lips, polished black low bun with side-swept strands, elegant lively warm gaze",
+      "source": {
+        "path": "sources/v19_sec_16.png",
+        "sha256": "fe655066d5d0441bb86b7cd2246823390448019f4303be679d4d582ff15662f7",
+        "candidate": "q20",
+        "native_sha256": "15b7d3eda18d41b5f52c395eeb8545c783c7b5a0ed50b1e1371fc0ceab598464"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_17",
+      "identity_id": "v19_sec_17",
+      "r": "sec",
+      "age": 26,
+      "f": 0,
+      "sex": "male",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 16,
+      "rect": {
+        "128": [
+          872,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          1640,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            872,
+            152,
+            128,
+            128
+          ],
+          "index": 16
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            1640,
+            280,
+            256,
+            256
+          ],
+          "index": 16
+        }
+      },
+      "appearance_brief": "26, lean oblong oval face, wide-set open almond eyes, bold long straight brows, low broad nose tip, full pursed lips, black textured short crop, narrow natural shoulders",
+      "source": {
+        "path": "sources/v19_sec_17.png",
+        "sha256": "42d111efde644051255fc7505f8cb61f0186cd39d082f254712053bae2c4427c",
+        "candidate": "n06",
+        "native_sha256": "7031111b3b1a949ac9e746a0a4f4c954e10175e483ad5ce02c934c3cc72c02e6"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_18",
+      "identity_id": "v19_sec_18",
+      "r": "sec",
+      "age": 26,
+      "f": 0,
+      "sex": "male",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 17,
+      "rect": {
+        "128": [
+          1016,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          1912,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            1016,
+            152,
+            128,
+            128
+          ],
+          "index": 17
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            1912,
+            280,
+            256,
+            256
+          ],
+          "index": 17
+        }
+      },
+      "appearance_brief": "26, long narrow oval face, close-set deep almond monolid eyes, softly arched brows, high graceful straight nose, thin broad smiling lips, black hair brushed to one side, slender shoulders",
+      "source": {
+        "path": "sources/v19_sec_18.png",
+        "sha256": "2c34da390e2d0d2d3b42ae22a5ae8e8b28b56f2b9f26ce6aa97412b8ab9f9d06",
+        "candidate": "p01",
+        "native_sha256": "9d6f1016f43450f78e19cec2a045f429cfd0d73be6e19f9d17261e0618fb6467"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_19",
+      "identity_id": "v19_sec_19",
+      "r": "sec",
+      "age": 27,
+      "f": 0,
+      "sex": "male",
+      "tags": {
+        "glasses": false
+      },
+      "glasses": false,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 18,
+      "rect": {
+        "128": [
+          1160,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          2184,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            1160,
+            152,
+            128,
+            128
+          ],
+          "index": 18
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            2184,
+            280,
+            256,
+            256
+          ],
+          "index": 18
+        }
+      },
+      "appearance_brief": "28, soft oval face with round cheek apples, close-set narrow monolid eyes, long softly arched brows, short upturned nose, full small smiling lips, straight layered brown hair swept sideways, broad shoulders",
+      "source": {
+        "path": "sources/v19_sec_19.png",
+        "sha256": "6e72f16ccac6949f766583a0d745a20e9a48e82b91e6f6b7381262259b9ac939",
+        "candidate": "p08",
+        "native_sha256": "6d7a22ecd12a9bd472e083ceebdf54e58de76077d30a24137f73a69d49b263f0"
+      },
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v19_sec_20",
+      "identity_id": "v19_sec_20",
+      "r": "sec",
+      "age": 30,
+      "f": 0,
+      "sex": "male",
+      "tags": {
+        "glasses": true
+      },
+      "glasses": true,
+      "fictional": true,
+      "sheet": "secretary20",
+      "index": 19,
+      "rect": {
+        "128": [
+          1304,
+          152,
+          128,
+          128
+        ],
+        "256": [
+          2456,
+          280,
+          256,
+          256
+        ]
+      },
+      "sheets": {
+        "128": {
+          "path": "sheets/128.webp",
+          "rect": [
+            1304,
+            152,
+            128,
+            128
+          ],
+          "index": 19
+        },
+        "256": {
+          "path": "sheets/256.webp",
+          "rect": [
+            2456,
+            280,
+            256,
+            256
+          ],
+          "index": 19
+        }
+      },
+      "appearance_brief": "30, diamond-shaped face with high cheekbones, narrow downturned eyes, fine long brows, gently hooked medium nose, thin small lips, neat dark crew cut, slender shoulders",
+      "source": {
+        "path": "sources/v19_sec_20.png",
+        "sha256": "780238c84eaa7ac931a76dfe2b8d4a530e6fb6438a73eb9c8ffdecd6981fb7ca",
+        "candidate": "n03",
+        "native_sha256": "8b230e47846359d454f6beb7c63141f323ecb2813fb32257a8618a19877e8833"
+      },
+      "natural_continuous_upper_body": true
+    }
+  ],
+  "asset_validation_passed": true,
+  "production_complete": true,
+  "review_status": "pending_game_review",
+  "game_connected": false,
+  "validation": "validation.json",
+  "integration_notes": [
+    "Paths are relative to path_base.",
+    "r=sec, f=1 female; identities.sheets[size] supplies path and rect.",
+    "128 pitch144 and256 pitch272 with8px black padding.",
+    "All20 secretary identities are new. Keep v8 eight secretary options available.",
+    "Game code unchanged; separate Claude integration."
+  ]
+}

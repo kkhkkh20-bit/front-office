@@ -27,7 +27,7 @@ function truckWeekly(){ if(G.unemp||G.user==null)return; const o=dobj(G.day); if
   const K=truckRisk(); let sev=K.s>=5?3:K.s>=3?2:K.s>=2?1:0; if(expYr(G.user))sev=Math.max(0,sev-1); /* 창단 유예 중인 신생 구단 팬은 성적에 너그럽다 */
   if(!sev)return; /* 사소한 이유로는 트럭이 오지 않는다(사용자 11-06) */
   if(R()<(sev===3?.45:sev===2?.2:.06))truckFire(sev,null,K); }
-function truckFire(sev,kind,K){ const S=truckState(); S.n++; S.last=G.day; const t=team(G.user), m=G.mgr[G.user], tn=`${t.city} ${t.nick}`;
+function truckFire(sev,kind,K){ const S=truckState(); S.n++; S.last=G.day; const t=team(G.user), m=G.mgr[G.user], tn=`${tfull(t)}`;
   const mn=m&&!m.interim?m.name:'감독대행', gn=meName()||'', on='구단주'; let who=kind;
   if(!who){ const newMgr=m&&m.hD!=null&&G.day-m.hD<120; /* 새 감독은 아직 탓하지 않는다 */ who=sev===3?'both':newMgr?'gm':(K.st>=5?'mgr':R()<.5?'gm':'mgr'); }
   const pool=TRUCK_LINE[who]; const pk=pool[Math.floor(R()*pool.length)]; 
@@ -38,7 +38,7 @@ function truckFire(sev,kind,K){ const S=truckState(); S.n++; S.last=G.day; const
   S.log.unshift({d:G.day,sev,who,line,where}); if(S.log.length>12)S.log.length=12;
   if(sev===1){ news('구단',`${tshort(G.user)} 팬, ${where}에 트럭 시위`,body+' 구단은 "특별한 입장은 없다"는 반응입니다.',0,{fanW:.3,img:{k:'truck',line,where,tid:G.user,sev}});
     note('홍보팀',`${where}에 팬 트럭이 하루 서 있었습니다. 문구는 "${line}". 규모가 작아 구단은 따로 대응하지 않기로 했습니다.`); return; }
-  news('구단',sev===3?`성난 ${t.nick} 팬, ${where}까지 트럭 시위…"${line}"`:`${tshort(G.user)} 팬 트럭 시위…"${line}"`,body,sev===3?-3:-2,{fanW:1,img:{k:'truck',line,where,tid:G.user,sev}});
+  news('구단',sev===3?`성난 ${tnick(t)} 팬, ${where}까지 트럭 시위…"${line}"`:`${tshort(G.user)} 팬 트럭 시위…"${line}"`,body,sev===3?-3:-2,{fanW:1,img:{k:'truck',line,where,tid:G.user,sev}});
   if(sev===3&&!t.indie){ const t0=team(G.user); t0.trust=clamp((t0.trust??50)-3,0,100);
     mail('구단주실','본사 앞 트럭 시위에 대해',`${on}: 본사 앞에 ${days}일째 우리 팬들 트럭이 서 있습니다. 전광판에 "${line}"라고 떠 있더군요. 그룹 안에서도 말이 많습니다.\n남은 시즌을 어떻게 수습할지 단장이 직접 정리해서 움직여 주세요. 결과로 보여 주길 바랍니다.`,{imp:true,kind:'구단주'}); }
   const F=sev===3?{fan:[3,5,-4],own:[0,0,t.indie?-1:-5],cost:400}:{fan:[2,4,-2],own:[0,0,-1],cost:250}; /* 독립구단은 모기업 본사가 없어 구단주실이 나서지 않는다(검수 11-08) */

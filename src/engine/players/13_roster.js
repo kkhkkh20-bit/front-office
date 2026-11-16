@@ -33,8 +33,8 @@ function assignScout(id,role,key){ const s=G.scouts.find(x=>x.id===id); if(!s)re
 function scoutLoad(){ const c={}; for(const s of G.scouts)c[(s.role||'am')+':'+s.region]=(c[(s.role||'am')+':'+s.region]||0)+1; return c; }
 /* 스카우트 후보 12명. 매달 일부가 다른 구단으로 가고 새 후보가 들어온다 */
 const SC_MKT=12; function scSkillRoll(){ return clamp(Math.round(N(2.45,1.0)),1,5); }
-function scoutMkt(){ const mk=G.year*100+dobj(G.day).m; if(!G.scoutMarket)G.scoutMarket=[]; if(G.scoutMarketM!==mk){ G.scoutMarket=G.scoutMarket.filter(s=>s.ob||s.acc||(s.bid&&s.bid.exp>=G.day)||R()<.6); /* 재제안 기한이 남은 후보는 월초 교체에서 빼지 않는다 */ while(G.scoutMarket.length<SC_MKT)G.scoutMarket.push(mkScout(scSkillRoll())); G.scoutMarketM=mk; } return G.scoutMarket; }
-function refreshScoutMarket(){ const keep=(G.scoutMarket||[]).filter(s=>s.acc||(s.bid&&s.bid.exp>=G.day)); /* 재제안 기한이 남은 후보는 새해 교체에도 남긴다(검수 11-07) */ G.scoutMarket=keep.concat(Array.from({length:Math.max(0,SC_MKT-keep.length)},()=>mkScout(scSkillRoll()))); G.scoutMarketM=G.year*100+dobj(G.day).m; try{ if(G.ob)G.scoutMarket=obCands('scout').slice(0,2).map(obScout).concat(G.scoutMarket); }catch(e){} }
+function scoutMkt(){ const mk=G.year*100+dobj(G.day).m; if(!G.scoutMarket)G.scoutMarket=[]; if(G.scoutMarketM!==mk){ G.scoutMarket=G.scoutMarket.filter(s=>s.ob||s.acc||(s.bid&&s.bid.exp>=G.day)||loyWait(s)||R()<.6); /* 재제안 기한이 남은 후보는 월초 교체에서 빼지 않는다 */ while(G.scoutMarket.length<SC_MKT)G.scoutMarket.push(mkScout(scSkillRoll())); G.scoutMarketM=mk; } return G.scoutMarket; }
+function refreshScoutMarket(){ const keep=(G.scoutMarket||[]).filter(s=>s.acc||(s.bid&&s.bid.exp>=G.day)||loyWait(s)); /* 단장을 따라 나와 기다리는 사람(89b_staff_loyalty) */ /* 재제안 기한이 남은 후보는 새해 교체에도 남긴다(검수 11-07) */ G.scoutMarket=keep.concat(Array.from({length:Math.max(0,SC_MKT-keep.length)},()=>mkScout(scSkillRoll()))); G.scoutMarketM=G.year*100+dobj(G.day).m; try{ if(G.ob)G.scoutMarket=obCands('scout').slice(0,2).map(obScout).concat(G.scoutMarket); }catch(e){} }
 function offerMailDone(oid){ for(const m of G.mail) if(m.oid===oid)m.read=true; }
 /* 거래로 소속이 바뀐 선수가 걸린 받은 제안은 성사될 수 없으니 메일과 함께 닫는다 */
 function offerDropMoved(ids){ G.offers=(G.offers||[]).filter(x=>{ if(![...x.give,...x.get].some(id=>ids.includes(id)))return true; offerMailDone(x.id); return false; }); }
@@ -64,7 +64,7 @@ function allInPick1(sy,rk,L){
   const C=G.teams.filter(t=>ok0(t)&&(((t.owner==='win'||(t.owner==='pr'&&gmTrait(t.id)==='gambler'))&&(t.cash||0)>5000&&rk(t.id)<=4)||((ds(t)>=.5||(L&&rk(t.id)<=5))&&(t.cash||0)>-1000)));
   if(!C.length||R()>=.22+(L?.25:0)+.2*Math.max(0,...C.map(ds)))return false;
   const t=C[Math.floor(R()*C.length)]; t.allIn=sy; t.allInY=sy; const dp=ds(t)>=.5; if(L||dp)try{ domLog('allin'); }catch(e){}
-  news('구단',`${tshort(t.id)}, ${L&&!dp?`${tshort(L.tid)} 독주 막겠다… `:dp?'벼랑 끝 승부수… ':''}경쟁균형세 감수하고 우승 올인`,`${t.city} ${t.nick} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다.${dp?' 성적이 나지 않으면 단장 자리도 장담할 수 없다는 이야기가 함께 나옵니다.':''} 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); return true; }
+  news('구단',`${tshort(t.id)}, ${L&&!dp?`${tshort(L.tid)} 독주 막겠다… `:dp?'벼랑 끝 승부수… ':''}경쟁균형세 감수하고 우승 올인`,`${tfull(t)} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다.${dp?' 성적이 나지 않으면 단장 자리도 장담할 수 없다는 이야기가 함께 나옵니다.':''} 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); return true; }
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
 /* 초과액으로 낼 제재금 예상: 지금까지 연속 초과 횟수에 이번을 더한 단계(재계약 화면에서 넘길지 고르게, 유저 피드백 11-07) */
 function capTaxEst(over,tid=G.user){ const n=((team(tid)||{}).capOver||0)+1; return {n,tax:Math.round(Math.max(0,over)*capRate(n)),pen:n>=3}; }
@@ -132,7 +132,7 @@ function aiFloorFix(tid){ if(tid===ME()||G.year<2027||fNewBonus(tid,G.year))retu
   for(const p of ps){ const s0=s0m.get(p.id); if(p.sal>s0){ p.ysGap=(p.ysGap||[]).filter(g=>g.y>=G.year-1); p.ysGap.push({y:G.year,d0:-1e9,d1:G.day,s0:p.sal,s:s0,t:tid}); } } /* 올린 연봉은 오늘부터: 그 전 기간은 원래 연봉(지급 보정 ysAdj, 검수 11-09x) */
   for(const p of ps){ const y0=p.yrs||0, multi=!p.faC&&(p.svc||0)>=faSvc(p)-1; if(multi){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); p.cyrs=p.yrs; } /* FA까지 1년 넘게 남은 보류 선수는 다년계약으로 묶지 않고 연봉만 올린다(카페 11-11: 21세 선수가 하한 맞추기로 2년 다년계약) */
     if(p.sal!==s0.get(p.id)||multi)story(p,`연봉 하한 맞추기 계약 조정: 연봉 ${money(s0.get(p.id))} → ${money(p.sal)}, 계약 ${multi?`${y0||1}년 → ${p.yrs}년(다년계약 전환)`:`${p.yrs}년 유지`}`,'move'); } /* 구단이 하한을 맞추려 올린 계약도 선수 이력(이적·계약)에 남긴다 */
-  wire('구단',`${t.city} ${t.nick}, 연봉 하한 맞추려 주축 선수들과 다년계약`,{tid}); }
+  wire('구단',`${tfull(t)}, 연봉 하한 맞추려 주축 선수들과 다년계약`,{tid}); }
 /* 빚이 깊은 AI 구단(현금 -40억 아래): 모기업이 허리띠를 졸라맨다. 고액 베테랑을 여유 있는 구단에 넘겨 상위 40명 연봉을 상한의 80%까지 낮춘다(방출 위약금은 빚을 늘리므로 트레이드만) */
 /* 긴축 계획 구단(빚이 그만큼 깊지 않아도)은 상한의 88%까지 덜어낸다. 빚이 깊은 구단은 그 자리에서 긴축으로 돌아선다 */
 function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME())continue; const deep=t.cash<-4000; if(!deep&&planOf(t)!=='tight')continue; if(deep)try{ aiPlanSet(t,'tight','빚 누적'); }catch(e){ t.mode='rebuild'; } n+=aiCapFix(t.id,deep?.8:.88,true,deep?3:2); } return n; }

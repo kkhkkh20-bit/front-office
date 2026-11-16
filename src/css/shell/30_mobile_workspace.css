@@ -102,3 +102,13 @@
  #app .shell .subhead .helpbtn{position:relative}#app .shell .subhead .helpbtn::after{content:"";position:absolute;inset:-7px -6px} /* 떠 있는 '?'는 모양을 그대로 두고 눌리는 영역만 40px로(탭 줄을 덮지 않게) */
  #sheet .menu-subs{gap:6px}#sheet .menu-subs button{min-height:44px;padding:8px 12px}#sheet .menu-h{min-height:44px}
 }
+
+/* 안드로이드 화면 아래 잘림(카페 11-16 낙하산·마스터쉐프: 3버튼 내비·주소창이 있는 갤럭시에서 감독·코치진·스카우트 화면 맨 아래가 하단 탭 밑에 깔려 끝까지 내려도 안 보임).
+   작업 화면 틀 높이를 100vh(옛 브라우저) → 100dvh → 실제로 보이는 높이(--app-h, 51_table_pager.js wsViewport) 순으로 잡고, 아래 여백은 실제 하단 탭 높이(--bnav-real, 안전 영역 포함)만큼 둔다.
+   보이는 영역이 창보다 짧으면(--vv-gap) 하단 탭도 그만큼 올린다. 머리 접기(ws-slid)는 틀 안에서만 움직이므로 그대로다 */
+@media(max-width:1099px){
+ #app .shell:is(:has(.ws-frame),:has(.home-workspace),:has(.inbox-workspace)){height:calc(100vh / var(--z,1));height:calc(100dvh / var(--z,1));height:calc(var(--app-h,100dvh) / var(--z,1));padding-bottom:var(--bnav-real,calc(58px + env(safe-area-inset-bottom,0px)))}
+ #app .shell:is(:has(.ws-frame),:has(.home-workspace),:has(.inbox-workspace)) .bnav{bottom:var(--vv-gap,0px)}
+ /* 고정 머리(제목·필터·안내)가 칸보다 길어지면 칸 안 목록·페이지 넘김 줄이 잘려 숨던 것: 잘라 버리지 않고 칸째 스크롤한다 */
+ #app main.ws-frame>.ws-own,#app main.ws-frame .ws-panels>.ws-panel{overflow:hidden auto}
+}

@@ -369,7 +369,7 @@ function newYear(){
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){} try{ relsYear(); }catch(e){} /* 인물 관계도 같은 비율로 되돌림(84b_person_rels) */
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
-  if(G.mgr[G.user]&&G.mgr[G.user].yrs<=0&&!G.mgr[G.user].interim){ const m=G.mgr[G.user]; staffHistory('mgr',m,'계약 만료',G.user); G.mgr[G.user]=null; try{ mreqCloseOld(); }catch(e){} mail('운영팀','감독 계약 종료',`${m.name} 감독과의 계약이 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.`,{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
+  if(G.mgr[G.user]&&G.mgr[G.user].yrs<=0&&!G.mgr[G.user].interim){ const m=G.mgr[G.user]; let gone=[]; try{ if(G.coach)gone=clanLeave(m,G.user,(m.age||0)>=STAFF_RET_AGE?'retire':'expire'); }catch(e){} if(gone.length)addLog(`${m.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); try{ exMgrAdd(m,G.user); }catch(e){} staffHistory('mgr',m,'계약 만료',G.user); G.mgr[G.user]=null; try{ mreqCloseOld(); }catch(e){} mail('운영팀','감독 계약 종료',`${m.name} 감독과의 계약이 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.`,{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.mgr[G.user]&&G.mgr[G.user].interim){ G.mgr[G.user]=null; mail('운영팀','감독대행 체제 종료','감독대행 체제가 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.',{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.tut&&!G.tut.done)G.tut.done=true; /* 비서 업무 안내는 창단 첫해에만 */
   try{ warFreeze(G.year); }catch(e){} /* 능력치가 바뀌기 전에 올해 WAR을 고정 */
@@ -450,9 +450,9 @@ function offerBlockMsg(o,strict){ /* strict: 제안을 만들 때는 evalTrade�
   if(cash<0&&(t0.cash||0)<-cash)return '상대 구단의 트레이드 현금 여유가 부족합니다.';
   {const why=pkCheck(o.from,o.get,o.give,pk);if(why)return why;}
   const ev=evalTrade(o.from,o.get,o.give,cash,pk);
-  if(ev.theirN>ROSTER_MAX||ev.theirN<ROSTER_MIN)return `${t0.city} ${t0.nick} 로스터 사정이 바뀌어 성사되지 않았습니다(정식 ${ev.theirN}명).`;
-  if(ev.capT&&ev.capT.hard)return `${t0.city} ${t0.nick} 단장: 그사이 연봉 사정이 바뀌어 구단주가 허락하는 한도를 넘게 됐습니다. 이 제안을 지킬 수 없습니다.`; /* 소프트캡(13_roster aiCapTake): 한도 안이면 세금만큼 값으로 따진다(아래 evalTrade) */
-  { const tol=strict?0:Math.max(1.5,ev.outV)*.15; if(!ev.ok&&((ev.dom&&ev.dom.refuse)||ev.gain<ev.need-tol))return `${t0.city} ${t0.nick} 단장: 다시 따져 보니 이 조건으로는 어렵겠습니다.`; } /* 공략 방지: AI 제안도 직접 협상과 같은 값(evalTrade)으로 판정 */
+  if(ev.theirN>ROSTER_MAX||ev.theirN<ROSTER_MIN)return `${tfull(t0)} 로스터 사정이 바뀌어 성사되지 않았습니다(정식 ${ev.theirN}명).`;
+  if(ev.capT&&ev.capT.hard)return `${tfull(t0)} 단장: 그사이 연봉 사정이 바뀌어 구단주가 허락하는 한도를 넘게 됐습니다. 이 제안을 지킬 수 없습니다.`; /* 소프트캡(13_roster aiCapTake): 한도 안이면 세금만큼 값으로 따진다(아래 evalTrade) */
+  { const tol=strict?0:Math.max(1.5,ev.outV)*.15; if(!ev.ok&&((ev.dom&&ev.dom.refuse)||ev.gain<ev.need-tol))return `${tfull(t0)} 단장: 다시 따져 보니 이 조건으로는 어렵겠습니다.`; } /* 공략 방지: AI 제안도 직접 협상과 같은 값(evalTrade)으로 판정 */
   return null;
 }
 function answerOffer(id,yes){
