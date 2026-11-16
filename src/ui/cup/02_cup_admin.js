@@ -9,7 +9,7 @@ const ADM={key:'',chk:'',cup:null,ents:null,drop:[],run:null,runSt:'',busy:false
 function admKeyGet(){ try{ return localStorage.getItem(ADM_KEY)||''; }catch(e){ return ''; } }
 function admKeySet(k){ try{ if(k)localStorage.setItem(ADM_KEY,k); else localStorage.removeItem(ADM_KEY); }catch(e){} }
 const admApi=(p,o)=>{ o=o||{}; const h=Object.assign({Authorization:'Bearer '+ADM.key},o.body!=null?{'Content-Type':'application/json'}:{},o.headers||{});
-  return fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o,{headers:h})).then(async r=>{ let j={}; try{ j=await r.json(); }catch(e){} return {r,j}; }); };
+  return fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o,{headers:h})).then(async r=>{ const j=await cupJson(r); return {r,j}; }); };
 function admSay(m,bad){ ADM.msg=m; ADM.bad=!!bad; try{ render(); }catch(e){} }
 /* 키 확인: 맞으면 관리자 메뉴가 보인다. 틀리면 지운다 */
 function admCheck(){ if(ADM.chk||!xfAvail())return; ADM.key=ADM.key||admKeyGet(); if(!ADM.key){ ADM.chk='none'; return; } ADM.chk='checking';
@@ -20,7 +20,12 @@ function cupAdminLink(){ if(!xfAvail())return ''; admCheck();
   if(!ADM.ask)return `<p class="adm-link"><button class="lnk small muted" data-a="admAsk">관리자</button></p>`;
   return `<p class="adm-link row"><input id="admKey" type="password" placeholder="관리자 키" autocomplete="off" style="max-width:16em"><button class="btn small" data-a="admKeyOk">확인</button>${ADM.chk==='bad'?'<span class="small muted">키가 맞지 않습니다.</span>':''}</p>`; }
 const ADM_DAYS=[[1,'1일차 · 참가팀·전력표'],[2,'2일차 · 리그 1~3라운드'],[3,'3일차 · 리그 4~6라운드'],[4,'4일차 · 리그 7~9라운드·최종 순위'],[5,'5일차 · 와일드카드·준PO'],[6,'6일차 · PO'],[7,'7일차 · 한국시리즈·최종 결과']];
+const admLd=(p,o)=>{ o=o||{}; return fetch('/api/ladder/admin'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o,{headers:Object.assign({Authorization:'Bearer '+ADM.key},o.body!=null?{'Content-Type':'application/json'}:{})})).then(async r=>{ const j=await cupJson(r); return {r,j}; }); };
 Object.assign(A,{
+  /* 6) 유저 래더 관리: 등록 덱 검색, 부적절한 팀명 숨김(상대 목록에서 빠짐)·삭제 */
+  async admLdFind(){ const el=document.getElementById('admLdQ'); const q=el?el.value.trim():''; ADM.ldq=q; const {r,j}=await admLd('/list?q='+encodeURIComponent(q)).catch(()=>({r:{ok:false},j:{}})); if(!r.ok)return admSay(j.message||'래더 덱을 받지 못했습니다.',true); ADM.ld=j.decks||[]; admSay(`래더 덱 ${j.n}개를 찾았습니다.`); },
+  async admLdHide(v,el){ const hide=el&&el.dataset.u!=='1'; const {r,j}=await admLd('/hide',{method:'PUT',body:JSON.stringify({wid:v,hide})}).catch(()=>({r:{ok:false},j:{}})); if(!r.ok)return admSay(j.message||'바꾸지 못했습니다.',true); const x=(ADM.ld||[]).find(d=>d.wid===v); if(x)x.hide=hide?1:0; admSay(hide?'숨겼습니다. 다른 유저의 상대 목록에 나오지 않습니다.':'다시 보이게 했습니다.'); },
+  async admLdDel(v){ if(!confirm('이 래더 덱을 지웁니다.'))return; const {r,j}=await admLd('/deck/'+v,{method:'DELETE'}).catch(()=>({r:{ok:false},j:{}})); if(!r.ok)return admSay(j.message||'지우지 못했습니다.',true); ADM.ld=(ADM.ld||[]).filter(d=>d.wid!==v); admSay('지웠습니다.'); },
   admAsk(){ ADM.ask=true; render(); setTimeout(()=>{ const el=document.getElementById('admKey'); if(el)el.focus(); },30); },
   admKeyOk(){ const el=document.getElementById('admKey'), k=(el?el.value:'').trim(); if(!k)return; ADM.key=k; admKeySet(k); ADM.chk=''; admCheck(); },
   admOut(){ admKeySet(''); Object.assign(ADM,{key:'',chk:'none',ask:false,ents:null,run:null,runSt:''}); render(); },
@@ -65,7 +70,7 @@ Object.assign(A,{
   /* 5) 명예의 전당 등록 */
   async admHof(){ const R=ADM.run; if(!R||R.day<7)return admSay('7일차(한국시리즈)까지 공개한 뒤 등록합니다.',true); const q=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
     const gm=FrontOfficeCore.cupName(q('admGm')), rgm=FrontOfficeCore.cupName(q('admRgm')); if(gm&&FrontOfficeCore.cupBadName(gm)||rgm&&FrontOfficeCore.cupBadName(rgm))return admSay('쓸 수 없는 말이 들어 있습니다.',true);
-    ADM.busy=true; let H={v:1,cups:[]}; try{ const t=await fetch('/api/cup/results',{cache:'no-store'}); if(t.ok){ const j=await t.json(); if(j&&Array.isArray(j.cups))H=j; } }catch(e){}
+    ADM.busy=true; let H={v:1,cups:[]}; try{ const t=await fetch('/api/cup/results',{cache:'no-store'}); if(t.ok){ const j=await cupJson(t); if(j&&Array.isArray(j.cups))H=j; } }catch(e){}
     const c=admHallOf(R,gm,rgm); H.cups=H.cups.filter(x=>x.id!==c.id).concat([c]);
     const {r,j}=await admApi('/admin/results',{method:'PUT',body:JSON.stringify(H)}).catch(()=>({r:{ok:false},j:{}})); ADM.busy=false;
     if(!r.ok)return admSay(j.message||'등록하지 못했습니다.',true); R.hof={gm,rgm}; await admApi('/admin/run',{method:'PUT',body:JSON.stringify(R)}).catch(()=>{}); HOF.st=''; HOF.data=null; admSay('명예의 전당에 올렸습니다. 처음 화면·설정 › 정보에서 보입니다.'); },
@@ -169,5 +174,7 @@ function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"
   const s5=R&&R.champ?`<section class="card"><h2 class="sec">5. 명예의 전당 등록</h2><p class="small">우승 <b>${esc(admLab(R,R.champ))}</b> · 준우승 ${esc(admLab(R,R.runner))}</p>
     ${inp('admGm','우승 단장 이름(비우면 팀명)',R.hof&&R.hof.gm||'','',null)}${inp('admRgm','준우승 단장 이름(비우면 팀명)',R.hof&&R.hof.rgm||'','',null)}
     <div class="btns"><button class="btn primary" data-a="admHof"${ADM.busy||pubd<7?' disabled':''}>${R.hof?'다시 등록(수정)':'명예의 전당에 등록'}</button>${pubd<7?'<span class="small muted">7일차까지 공개한 뒤 등록합니다.</span>':''}</div></section>`:'';
+  const s6=`<section class="card"><h2 class="sec">6. 유저 래더 관리</h2><div class="row"><input id="admLdQ" value="${esc(ADM.ldq||'')}" placeholder="팀명 검색(비우면 최근 등록 순)" autocomplete="off" style="flex:1;min-width:0"><button class="btn small" data-a="admLdFind">찾기</button></div>
+    ${ADM.ld?`<div class="adm-ents">${ADM.ld.map(d=>`<div class="adm-day"><span><b>${esc(d.name)}</b> ${esc(d.year||'')} <span class="small muted">${FrontOfficeCore.ulTierName(d.tier)} · OVR ${esc(C.cupOvrTxt(d.ovr))}</span>${d.hide?' <span class="pill">숨김</span>':''}</span><span class="btns"><button class="btn small" data-a="admLdHide" data-v="${esc(d.wid)}" data-u="${d.hide?1:0}">${d.hide?'보이기':'숨기기'}</button><button class="btn small" data-a="admLdDel" data-v="${esc(d.wid)}">삭제</button></span></div>`).join('')||'<p class="small muted">없습니다.</p>'}</div>`:''}</section>`;
   const msg=ADM.msg?`<div class="note${ADM.bad?' bad':''}">${esc(ADM.msg)}</div>`:'';
-  return `<div class="setx ws-own cupx admx"><div class="setc">${msg}${s1}${s3}</div><div class="setc">${s2}</div><div class="setc">${s4}${s5}</div></div>`; }
+  return `<div class="setx ws-own cupx admx"><div class="setc">${msg}${s1}${s3}</div><div class="setc">${s2}</div><div class="setc">${s4}${s5}${s6}</div></div>`; }
