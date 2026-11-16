@@ -1,0 +1,72 @@
+{
+  "policy": "all numeric gates mandatory; preserve identities; hold failures",
+  "reference_identities": 486,
+  "other_references_per_person": 485,
+  "results": [
+    {
+      "identity_id": "v7_staff01_coach_035__daejeon_redfox__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6609487533569336,
+          "other_max": 0.3729354739189148,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7600535750389099,
+          "other_max": 0.37894555926322937,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7644331455230713,
+          "other_max": 0.3871714472770691,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__daejeon_redfox__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.688747763633728,
+          "other_max": 0.37713536620140076,
+          "other_id": "v6d60_059",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7867523431777954,
+          "other_max": 0.3941059410572052,
+          "other_id": "v7_staff01_coach_008",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7710556983947754,
+          "other_max": 0.39573776721954346,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    }
+  ],
+  "passed_ids": [
+    "v7_staff01_coach_035__daejeon_redfox__c0",
+    "v7_staff01_coach_035__daejeon_redfox__c1"
+  ],
+  "held_ids": []
+}

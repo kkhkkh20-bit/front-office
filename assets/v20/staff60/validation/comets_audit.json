@@ -1,0 +1,83 @@
+{
+  "policy": "all numeric gates mandatory; preserve identities; hold failures",
+  "reference_identities": 486,
+  "other_references_per_person": 485,
+  "results": [
+    {
+      "identity_id": "v7_staff01_coach_035__seoul_comets",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7786595821380615,
+          "other_max": 0.35900723934173584,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8757689595222473,
+          "other_max": 0.38548094034194946,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8727236986160278,
+          "other_max": 0.3709765076637268,
+          "other_id": "v7_staff01_coach_017",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__seoul_comets",
+      "sizes": {
+        "128": {
+          "same_v7": 0.8259685039520264,
+          "other_max": 0.38148218393325806,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8540629744529724,
+          "other_max": 0.4144803285598755,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4144803285598755
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8577462434768677,
+          "other_max": 0.4111328721046448,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4111328721046448
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    }
+  ],
+  "passed_ids": [
+    "v7_staff01_coach_035__seoul_comets"
+  ],
+  "held_ids": [
+    "v7_staff01_coach_055__seoul_comets"
+  ]
+}

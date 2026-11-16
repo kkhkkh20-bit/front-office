@@ -1,0 +1,142 @@
+[
+  {
+    "key": "seoul_comets",
+    "name": "서울 코메츠",
+    "cap_color": "#A50034",
+    "home_kit": {
+      "kit_overlay": "seoul_comets_kit_overlay",
+      "chest": "seoul_comets_chest",
+      "cap": "seoul_comets_cap",
+      "cap_color": "#A50034",
+      "catalog_front": "seoul_comets_home_front",
+      "catalog_back": "seoul_comets_home_back"
+    },
+    "design_spec": "Classic comet pinstripe / wine and ivory sleeves"
+  },
+  {
+    "key": "seoul_hounds",
+    "name": "서울 하운즈",
+    "cap_color": "#131230",
+    "home_kit": {
+      "kit_overlay": "seoul_hounds_kit_overlay",
+      "chest": "seoul_hounds_chest",
+      "cap": "seoul_hounds_cap",
+      "cap_color": "#131230",
+      "catalog_front": "seoul_hounds_home_front",
+      "catalog_back": "seoul_hounds_home_back"
+    },
+    "design_spec": "Heritage raglan / small chest emblem"
+  },
+  {
+    "key": "incheon_seagulls",
+    "name": "인천 시걸스",
+    "cap_color": "#CE0E2D",
+    "home_kit": {
+      "kit_overlay": "incheon_seagulls_kit_overlay",
+      "chest": "incheon_seagulls_chest",
+      "cap": "incheon_seagulls_cap",
+      "cap_color": "#CE0E2D",
+      "catalog_front": "incheon_seagulls_home_front",
+      "catalog_back": "incheon_seagulls_home_back"
+    },
+    "design_spec": "Nautical chest band / shoulder color block"
+  },
+  {
+    "key": "suwon_sparks",
+    "name": "수원 스파크스",
+    "cap_color": "#141414",
+    "home_kit": {
+      "kit_overlay": "suwon_sparks_kit_overlay",
+      "chest": "suwon_sparks_chest",
+      "cap": "suwon_sparks_cap",
+      "cap_color": "#141414",
+      "catalog_front": "suwon_sparks_home_front",
+      "catalog_back": "suwon_sparks_home_back"
+    },
+    "design_spec": "Angular tech yoke / asymmetrical red panels"
+  },
+  {
+    "key": "goyang_storm",
+    "name": "고양 스톰",
+    "cap_color": "#570514",
+    "home_kit": {
+      "kit_overlay": "goyang_storm_kit_overlay",
+      "chest": "goyang_storm_chest",
+      "cap": "goyang_storm_cap",
+      "cap_color": "#570514",
+      "catalog_front": "goyang_storm_home_front",
+      "catalog_back": "goyang_storm_home_back"
+    },
+    "design_spec": "Refined burgundy script / tonal swirl jacquard"
+  },
+  {
+    "key": "daejeon_redfox",
+    "name": "대전 레드폭스",
+    "cap_color": "#F37321",
+    "home_kit": {
+      "kit_overlay": "daejeon_redfox_kit_overlay",
+      "chest": "daejeon_redfox_chest",
+      "cap": "daejeon_redfox_cap",
+      "cap_color": "#F37321",
+      "catalog_front": "daejeon_redfox_home_front",
+      "catalog_back": "daejeon_redfox_home_back"
+    },
+    "design_spec": "Orange / charcoal athletic sleeves"
+  },
+  {
+    "key": "gwangju_blazes",
+    "name": "광주 블레이즈",
+    "cap_color": "#EA0029",
+    "home_kit": {
+      "kit_overlay": "gwangju_blazes_kit_overlay",
+      "chest": "gwangju_blazes_chest",
+      "cap": "gwangju_blazes_cap",
+      "cap_color": "#EA0029",
+      "catalog_front": "gwangju_blazes_home_front",
+      "catalog_back": "gwangju_blazes_home_back"
+    },
+    "design_spec": "Red raglan / gold piping and flame-cut lettering"
+  },
+  {
+    "key": "daegu_thunders",
+    "name": "대구 썬더스",
+    "cap_color": "#074CA1",
+    "home_kit": {
+      "kit_overlay": "daegu_thunders_kit_overlay",
+      "chest": "daegu_thunders_chest",
+      "cap": "daegu_thunders_cap",
+      "cap_color": "#074CA1",
+      "catalog_front": "daegu_thunders_home_front",
+      "catalog_back": "daegu_thunders_home_back"
+    },
+    "design_spec": "Royal blue pinstripe / lightning script"
+  },
+  {
+    "key": "busan_waves",
+    "name": "부산 웨이브스",
+    "cap_color": "#041E42",
+    "home_kit": {
+      "kit_overlay": "busan_waves_kit_overlay",
+      "chest": "busan_waves_chest",
+      "cap": "busan_waves_cap",
+      "cap_color": "#041E42",
+      "catalog_front": "busan_waves_home_front",
+      "catalog_back": "busan_waves_home_back"
+    },
+    "design_spec": "Navy / cream marine bands and wave underline"
+  },
+  {
+    "key": "changwon_anchors",
+    "name": "창원 앵커스",
+    "cap_color": "#1D467B",
+    "home_kit": {
+      "kit_overlay": "changwon_anchors_kit_overlay",
+      "chest": "changwon_anchors_chest",
+      "cap": "changwon_anchors_cap",
+      "cap_color": "#1D467B",
+      "catalog_front": "changwon_anchors_home_front",
+      "catalog_back": "changwon_anchors_home_back"
+    },
+    "design_spec": "Small anchor chest / slim asymmetric gold detail"
+  }
+]

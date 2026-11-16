@@ -1,0 +1,2044 @@
+[
+  {
+    "identity_id": "v7_staff01_coach_001",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_002",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_003",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_004",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_005",
+    "suite": "master",
+    "native_path": "sources/native/master_04.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "master",
+    "native_path": "sources/native/master_05.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_007",
+    "suite": "master",
+    "native_path": "sources/native/master_06.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_008",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_009",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_010",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_011",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_012",
+    "suite": "master",
+    "native_path": "sources/native/master_04.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_013",
+    "suite": "master",
+    "native_path": "sources/native/master_05.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_014",
+    "suite": "master",
+    "native_path": "sources/native/master_06.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_015",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_016",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_017",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_018",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_019",
+    "suite": "master",
+    "native_path": "sources/native/master_04.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_020",
+    "suite": "master",
+    "native_path": "sources/native/master_05.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_021",
+    "suite": "master",
+    "native_path": "sources/native/master_06.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_022",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_023",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_024",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_025",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_026",
+    "suite": "master",
+    "native_path": "sources/native/master_04.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_027",
+    "suite": "master",
+    "native_path": "sources/native/master_05.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_028",
+    "suite": "master",
+    "native_path": "sources/native/master_06.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_029",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_030",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_031",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_032",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_033",
+    "suite": "master",
+    "native_path": "sources/native/master_04.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_034",
+    "suite": "master",
+    "native_path": "sources/native/master_05.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "master",
+    "native_path": "sources/native/master_06.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_036",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_037",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_038",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_039",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_040",
+    "suite": "master",
+    "native_path": "sources/native/master_04.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_041",
+    "suite": "master",
+    "native_path": "sources/native/master_05.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_042",
+    "suite": "master",
+    "native_path": "sources/native/master_06.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_043",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_044",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_045",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_046",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_047",
+    "suite": "master",
+    "native_path": "sources/native/master_04.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_048",
+    "suite": "master",
+    "native_path": "sources/native/master_05.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_049",
+    "suite": "master",
+    "native_path": "sources/native/master_06.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_050",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_051",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_052",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_053",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_054",
+    "suite": "master",
+    "native_path": "sources/native/master_04.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "master",
+    "native_path": "sources/native/master_05.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_056",
+    "suite": "master",
+    "native_path": "sources/native/master_06.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_057",
+    "suite": "master",
+    "native_path": "sources/native/master_00.webp",
+    "crop": [
+      836,
+      836,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "master",
+    "native_path": "sources/native/master_01.webp",
+    "crop": [
+      836,
+      836,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "master",
+    "native_path": "sources/native/master_02.webp",
+    "crop": [
+      836,
+      836,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_060",
+    "suite": "master",
+    "native_path": "sources/native/master_03.webp",
+    "crop": [
+      836,
+      836,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_001",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_008",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_015",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_022",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_029",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_036",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_043",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_050",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_057",
+    "suite": "pose",
+    "native_path": "sources/native/pose_00.webp",
+    "crop": [
+      836,
+      836,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_002",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_009",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_016",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_023",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_030",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_037",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_044",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_051",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_058",
+    "suite": "pose",
+    "native_path": "sources/native/pose_01.webp",
+    "crop": [
+      836,
+      836,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_003",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_010",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_017",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_024",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_031",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_038",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_045",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_052",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "pose",
+    "native_path": "sources/native/pose_02.webp",
+    "crop": [
+      836,
+      836,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_004",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_011",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_018",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_025",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_032",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_039",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_046",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_053",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_060",
+    "suite": "pose",
+    "native_path": "sources/native/pose_03.webp",
+    "crop": [
+      836,
+      836,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_005",
+    "suite": "pose",
+    "native_path": "sources/native/pose_04.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_012",
+    "suite": "pose",
+    "native_path": "sources/native/pose_04.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_019",
+    "suite": "pose",
+    "native_path": "sources/native/pose_04.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_026",
+    "suite": "pose",
+    "native_path": "sources/native/pose_04.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_033",
+    "suite": "pose",
+    "native_path": "sources/native/pose_04.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_040",
+    "suite": "pose",
+    "native_path": "sources/native/pose_04.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_047",
+    "suite": "pose",
+    "native_path": "sources/native/pose_04.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_054",
+    "suite": "pose",
+    "native_path": "sources/native/pose_04.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "pose",
+    "native_path": "sources/native/pose_05.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_013",
+    "suite": "pose",
+    "native_path": "sources/native/pose_05.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_020",
+    "suite": "pose",
+    "native_path": "sources/native/pose_05.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_027",
+    "suite": "pose",
+    "native_path": "sources/native/pose_05.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_034",
+    "suite": "pose",
+    "native_path": "sources/native/pose_05.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_041",
+    "suite": "pose",
+    "native_path": "sources/native/pose_05.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_048",
+    "suite": "pose",
+    "native_path": "sources/native/pose_05.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "pose",
+    "native_path": "sources/native/pose_05.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_007",
+    "suite": "pose",
+    "native_path": "sources/native/pose_06.webp",
+    "crop": [
+      0,
+      0,
+      418,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_014",
+    "suite": "pose",
+    "native_path": "sources/native/pose_06.webp",
+    "crop": [
+      418,
+      0,
+      836,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_021",
+    "suite": "pose",
+    "native_path": "sources/native/pose_06.webp",
+    "crop": [
+      836,
+      0,
+      1254,
+      418
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_028",
+    "suite": "pose",
+    "native_path": "sources/native/pose_06.webp",
+    "crop": [
+      0,
+      418,
+      418,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "pose",
+    "native_path": "sources/native/pose_06.webp",
+    "crop": [
+      418,
+      418,
+      836,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_042",
+    "suite": "pose",
+    "native_path": "sources/native/pose_06.webp",
+    "crop": [
+      836,
+      418,
+      1254,
+      836
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_049",
+    "suite": "pose",
+    "native_path": "sources/native/pose_06.webp",
+    "crop": [
+      0,
+      836,
+      418,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_056",
+    "suite": "pose",
+    "native_path": "sources/native/pose_06.webp",
+    "crop": [
+      418,
+      836,
+      836,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_001",
+    "suite": "pilot0",
+    "native_path": "sources/native/pilot_00.webp",
+    "crop": [
+      0,
+      0,
+      627,
+      627
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_022",
+    "suite": "pilot0",
+    "native_path": "sources/native/pilot_00.webp",
+    "crop": [
+      627,
+      0,
+      1254,
+      627
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_043",
+    "suite": "pilot0",
+    "native_path": "sources/native/pilot_00.webp",
+    "crop": [
+      0,
+      627,
+      627,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "pilot0",
+    "native_path": "sources/native/pilot_00.webp",
+    "crop": [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_001",
+    "suite": "pilot1",
+    "native_path": "sources/native/pilot_01.webp",
+    "crop": [
+      0,
+      0,
+      627,
+      627
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_022",
+    "suite": "pilot1",
+    "native_path": "sources/native/pilot_01.webp",
+    "crop": [
+      627,
+      0,
+      1254,
+      627
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_043",
+    "suite": "pilot1",
+    "native_path": "sources/native/pilot_01.webp",
+    "crop": [
+      0,
+      627,
+      627,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_059",
+    "suite": "pilot1",
+    "native_path": "sources/native/pilot_01.webp",
+    "crop": [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "retry0",
+    "native_path": "sources/native/retry_00.webp",
+    "crop": [
+      0,
+      0,
+      627,
+      627
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "retry0",
+    "native_path": "sources/native/retry_00.webp",
+    "crop": [
+      627,
+      0,
+      1254,
+      627
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_057",
+    "suite": "retry0",
+    "native_path": "sources/native/retry_00.webp",
+    "crop": [
+      0,
+      627,
+      627,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "retry0",
+    "native_path": "sources/native/retry_00.webp",
+    "crop": [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "retry1",
+    "native_path": "sources/native/retry_01.webp",
+    "crop": [
+      0,
+      0,
+      627,
+      627
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "retry1",
+    "native_path": "sources/native/retry_01.webp",
+    "crop": [
+      627,
+      0,
+      1254,
+      627
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_057",
+    "suite": "retry1",
+    "native_path": "sources/native/retry_01.webp",
+    "crop": [
+      0,
+      627,
+      627,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_006",
+    "suite": "retry1",
+    "native_path": "sources/native/retry_01.webp",
+    "crop": [
+      627,
+      627,
+      1254,
+      1254
+    ]
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_00.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "seoul_hounds",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_00.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "seoul_hounds",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_00.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "seoul_hounds",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_00.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "seoul_hounds",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_01.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "incheon_seagulls",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_01.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "incheon_seagulls",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_01.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "incheon_seagulls",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_01.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "incheon_seagulls",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_02.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "suwon_sparks",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_02.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "suwon_sparks",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_02.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "suwon_sparks",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_02.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "suwon_sparks",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_03.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "goyang_storm",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_03.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "goyang_storm",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_03.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "goyang_storm",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_03.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "goyang_storm",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_04.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "daejeon_redfox",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_04.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "daejeon_redfox",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_04.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "daejeon_redfox",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_04.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "daejeon_redfox",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_05.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "gwangju_blazes",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_05.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "gwangju_blazes",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_05.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "gwangju_blazes",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_05.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "gwangju_blazes",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_06.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "daegu_thunders",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_06.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "daegu_thunders",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_06.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "daegu_thunders",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_06.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "daegu_thunders",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_07.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "busan_waves",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_07.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "busan_waves",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_07.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "busan_waves",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_07.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "busan_waves",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_08.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "changwon_anchors",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_08.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "changwon_anchors",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_08.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "changwon_anchors",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_08.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "changwon_anchors",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_09.webp",
+    "crop": [
+      2,
+      2,
+      625,
+      625
+    ],
+    "team": "seoul_comets",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_09.webp",
+    "crop": [
+      629,
+      2,
+      1252,
+      625
+    ],
+    "team": "seoul_comets",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_055",
+    "suite": "variant",
+    "native_path": "sources/native/team_09.webp",
+    "crop": [
+      2,
+      629,
+      625,
+      1252
+    ],
+    "team": "seoul_comets",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "variant",
+    "native_path": "sources/native/team_09.webp",
+    "crop": [
+      629,
+      629,
+      1252,
+      1252
+    ],
+    "team": "seoul_comets",
+    "candidate": 1
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "redfox",
+    "native_path": "sources/native/redfox_00.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "daejeon_redfox",
+    "candidate": 0
+  },
+  {
+    "identity_id": "v7_staff01_coach_035",
+    "suite": "redfox",
+    "native_path": "sources/native/redfox_01.webp",
+    "crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "team": "daejeon_redfox",
+    "candidate": 1
+  }
+]

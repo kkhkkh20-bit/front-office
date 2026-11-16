@@ -1,0 +1,66 @@
+[
+  {
+    "size": 128,
+    "id": "v7_staff01_coach_001",
+    "same_v7": 0.7247191667556763,
+    "other_max": 0.46353843808174133,
+    "other_id": "v7_staff01_coach_026",
+    "others_above_040": 3
+  },
+  {
+    "size": 128,
+    "id": "v7_staff01_coach_022",
+    "same_v7": 0.7007843852043152,
+    "other_max": 0.48470860719680786,
+    "other_id": "v7_staff01_coach_042",
+    "others_above_040": 11
+  },
+  {
+    "size": 128,
+    "id": "v7_staff01_coach_043",
+    "same_v7": 0.6498377323150635,
+    "other_max": 0.3982975482940674,
+    "other_id": "v7_staff01_coach_001",
+    "others_above_040": 0
+  },
+  {
+    "size": 128,
+    "id": "v7_staff01_coach_059",
+    "same_v7": 0.6912897825241089,
+    "other_max": 0.4587472081184387,
+    "other_id": "v7_staff01_coach_054",
+    "others_above_040": 1
+  },
+  {
+    "size": 256,
+    "id": "v7_staff01_coach_001",
+    "same_v7": 0.7225382328033447,
+    "other_max": 0.47041502594947815,
+    "other_id": "v7_staff01_coach_026",
+    "others_above_040": 4
+  },
+  {
+    "size": 256,
+    "id": "v7_staff01_coach_022",
+    "same_v7": 0.77296382188797,
+    "other_max": 0.54337477684021,
+    "other_id": "v7_staff01_coach_038",
+    "others_above_040": 19
+  },
+  {
+    "size": 256,
+    "id": "v7_staff01_coach_043",
+    "same_v7": 0.7329528331756592,
+    "other_max": 0.42132771015167236,
+    "other_id": "v7_staff01_coach_013",
+    "others_above_040": 2
+  },
+  {
+    "size": 256,
+    "id": "v7_staff01_coach_059",
+    "same_v7": 0.7465532422065735,
+    "other_max": 0.4602202773094177,
+    "other_id": "v7_staff01_coach_054",
+    "others_above_040": 4
+  }
+]

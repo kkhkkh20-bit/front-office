@@ -1,0 +1,1663 @@
+{
+  "policy": "all numeric gates mandatory; preserve identities; hold failures",
+  "reference_identities": 486,
+  "other_references_per_person": 485,
+  "results": [
+    {
+      "identity_id": "v7_staff01_coach_055__seoul_hounds__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7587058544158936,
+          "other_max": 0.392747700214386,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8011899590492249,
+          "other_max": 0.3884536623954773,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8038609623908997,
+          "other_max": 0.4043774902820587,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4020560681819916
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4043774902820587
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__seoul_hounds__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7059063911437988,
+          "other_max": 0.3433280885219574,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7807161808013916,
+          "other_max": 0.39397287368774414,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7885516285896301,
+          "other_max": 0.38704732060432434,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__seoul_hounds__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7684179544448853,
+          "other_max": 0.4076477885246277,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4076477885246277
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8057594299316406,
+          "other_max": 0.3903929591178894,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8049644231796265,
+          "other_max": 0.41437584161758423,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.41437584161758423
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__seoul_hounds__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6899100542068481,
+          "other_max": 0.3568921983242035,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7826597690582275,
+          "other_max": 0.3835229277610779,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7810132503509521,
+          "other_max": 0.4001588821411133,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_005",
+              "cosine": 0.4001588821411133
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__incheon_seagulls__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7569745182991028,
+          "other_max": 0.4187029302120209,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4053799510002136
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4187029302120209
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8108308911323547,
+          "other_max": 0.4363689422607422,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.41385790705680847
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4363689422607422
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.801106870174408,
+          "other_max": 0.42205727100372314,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42205727100372314
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__incheon_seagulls__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7260962128639221,
+          "other_max": 0.3896021842956543,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8020027875900269,
+          "other_max": 0.3958814740180969,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.822551965713501,
+          "other_max": 0.40588492155075073,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_016",
+              "cosine": 0.40588492155075073
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__incheon_seagulls__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7696239948272705,
+          "other_max": 0.4002573490142822,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4002573490142822
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7973021268844604,
+          "other_max": 0.41825687885284424,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.41825687885284424
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.812489926815033,
+          "other_max": 0.41062235832214355,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.41062235832214355
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__incheon_seagulls__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6682500243186951,
+          "other_max": 0.3922967314720154,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7857707738876343,
+          "other_max": 0.38978204131126404,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8035138845443726,
+          "other_max": 0.37564510107040405,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__suwon_sparks__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.816848635673523,
+          "other_max": 0.40771445631980896,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.40771445631980896
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.819695770740509,
+          "other_max": 0.42887941002845764,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4288223087787628
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42887941002845764
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.82809978723526,
+          "other_max": 0.42325353622436523,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4186498820781708
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42325353622436523
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__suwon_sparks__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7104383111000061,
+          "other_max": 0.3446725606918335,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8234140872955322,
+          "other_max": 0.39739280939102173,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8132832050323486,
+          "other_max": 0.40816181898117065,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_016",
+              "cosine": 0.40816181898117065
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__suwon_sparks__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.8100682497024536,
+          "other_max": 0.4025863707065582,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4025863707065582
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8233139514923096,
+          "other_max": 0.40494751930236816,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.40494751930236816
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8350481986999512,
+          "other_max": 0.4078618288040161,
+          "other_id": "v7_staff01_coach_058",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4039627015590668
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.40127816796302795
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.4078618288040161
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__suwon_sparks__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6979310512542725,
+          "other_max": 0.3481588363647461,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8132092356681824,
+          "other_max": 0.397169291973114,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.797264814376831,
+          "other_max": 0.3786091208457947,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__goyang_storm__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7591037750244141,
+          "other_max": 0.37998729944229126,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7831262946128845,
+          "other_max": 0.42894208431243896,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.40568190813064575
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42894208431243896
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7915540337562561,
+          "other_max": 0.4083918631076813,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4083918631076813
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__goyang_storm__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7347514033317566,
+          "other_max": 0.3331346809864044,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8177124261856079,
+          "other_max": 0.4047461748123169,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_005",
+              "cosine": 0.4047461748123169
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8301712274551392,
+          "other_max": 0.416797399520874,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_016",
+              "cosine": 0.416797399520874
+            },
+            {
+              "identity_id": "v7_staff01_coach_052",
+              "cosine": 0.4019126892089844
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__goyang_storm__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7746070623397827,
+          "other_max": 0.40144410729408264,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.40144410729408264
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7925825119018555,
+          "other_max": 0.4130469560623169,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4130469560623169
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8049865961074829,
+          "other_max": 0.42513513565063477,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42513513565063477
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__goyang_storm__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.722108781337738,
+          "other_max": 0.35679614543914795,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8124595880508423,
+          "other_max": 0.39081332087516785,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8176977634429932,
+          "other_max": 0.3735174536705017,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__daejeon_redfox__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.8084866404533386,
+          "other_max": 0.3849548399448395,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8303828835487366,
+          "other_max": 0.40881654620170593,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.40881654620170593
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8219091296195984,
+          "other_max": 0.4081282913684845,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4081282913684845
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__daejeon_redfox__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7711253762245178,
+          "other_max": 0.36669498682022095,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8292069435119629,
+          "other_max": 0.43166083097457886,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_016",
+              "cosine": 0.4108806848526001
+            },
+            {
+              "identity_id": "v7_staff01_coach_028",
+              "cosine": 0.43166083097457886
+            },
+            {
+              "identity_id": "v7_staff01_coach_049",
+              "cosine": 0.41428619623184204
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8294260501861572,
+          "other_max": 0.39146357774734497,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__daejeon_redfox__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7835022807121277,
+          "other_max": 0.4312354028224945,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.40567436814308167
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4312354028224945
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8226321935653687,
+          "other_max": 0.41959148645401,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.41959148645401
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8134952783584595,
+          "other_max": 0.4211367964744568,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4211367964744568
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__daejeon_redfox__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7353934049606323,
+          "other_max": 0.3579661548137665,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8308982849121094,
+          "other_max": 0.43606582283973694,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_028",
+              "cosine": 0.43606582283973694
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8352179527282715,
+          "other_max": 0.42494481801986694,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_016",
+              "cosine": 0.4191761314868927
+            },
+            {
+              "identity_id": "v7_staff01_coach_028",
+              "cosine": 0.42494481801986694
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__gwangju_blazes__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7772723436355591,
+          "other_max": 0.4285644292831421,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4285644292831421
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7995223999023438,
+          "other_max": 0.4143683612346649,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4058224856853485
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4143683612346649
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.791036069393158,
+          "other_max": 0.43105360865592957,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4031190574169159
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.43105360865592957
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__gwangju_blazes__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7000112533569336,
+          "other_max": 0.35439664125442505,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7917438745498657,
+          "other_max": 0.3827607035636902,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8047031164169312,
+          "other_max": 0.35875916481018066,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__gwangju_blazes__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7928152680397034,
+          "other_max": 0.4190666079521179,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4190666079521179
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.811074435710907,
+          "other_max": 0.43141448497772217,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.43141448497772217
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4046406149864197
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8156712651252747,
+          "other_max": 0.4067266583442688,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4067266583442688
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4007575511932373
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__gwangju_blazes__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6762981414794922,
+          "other_max": 0.3544761538505554,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7962217330932617,
+          "other_max": 0.37321794033050537,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8037952184677124,
+          "other_max": 0.3684806227684021,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__daegu_thunders__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7283825278282166,
+          "other_max": 0.40902256965637207,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.40902256965637207
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8005538582801819,
+          "other_max": 0.3905177116394043,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7905699014663696,
+          "other_max": 0.3954482674598694,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__daegu_thunders__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.736696183681488,
+          "other_max": 0.3406776487827301,
+          "other_id": "v7_staff01_coach_030",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8051548004150391,
+          "other_max": 0.39626410603523254,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7940706014633179,
+          "other_max": 0.39649736881256104,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__daegu_thunders__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7614137530326843,
+          "other_max": 0.3834041953086853,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8087786436080933,
+          "other_max": 0.4115002453327179,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4115002453327179
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8207756280899048,
+          "other_max": 0.40632063150405884,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.40632063150405884
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__daegu_thunders__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6915228962898254,
+          "other_max": 0.3404654264450073,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7988840341567993,
+          "other_max": 0.37271273136138916,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8118443489074707,
+          "other_max": 0.38853543996810913,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__busan_waves__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7712996006011963,
+          "other_max": 0.3983919322490692,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8033784627914429,
+          "other_max": 0.42196187376976013,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.41448360681533813
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42196187376976013
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7945947051048279,
+          "other_max": 0.41852104663848877,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.41852104663848877
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__busan_waves__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7270488739013672,
+          "other_max": 0.35032814741134644,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8042613863945007,
+          "other_max": 0.38484326004981995,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7940383553504944,
+          "other_max": 0.4011801481246948,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_016",
+              "cosine": 0.4011801481246948
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__busan_waves__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7741267085075378,
+          "other_max": 0.40673747658729553,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.40673747658729553
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8183761239051819,
+          "other_max": 0.4038407504558563,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4038407504558563
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8104259371757507,
+          "other_max": 0.4050564169883728,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4050564169883728
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__busan_waves__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.685753345489502,
+          "other_max": 0.33042681217193604,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8044203519821167,
+          "other_max": 0.3962858319282532,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7961208820343018,
+          "other_max": 0.39296987652778625,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__changwon_anchors__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7512550354003906,
+          "other_max": 0.411064088344574,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.411064088344574
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7960819602012634,
+          "other_max": 0.4289873242378235,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4289873242378235
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42148253321647644
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7962665557861328,
+          "other_max": 0.42344099283218384,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.407038152217865
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42344099283218384
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.4025021195411682
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__changwon_anchors__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6965893507003784,
+          "other_max": 0.36293238401412964,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7874571084976196,
+          "other_max": 0.3928188383579254,
+          "other_id": "v7_staff01_coach_052",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7802851796150208,
+          "other_max": 0.4051287770271301,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_016",
+              "cosine": 0.4051287770271301
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__changwon_anchors__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7675002813339233,
+          "other_max": 0.40288564562797546,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.40288564562797546
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8151892423629761,
+          "other_max": 0.41808897256851196,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.41808897256851196
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4005703330039978
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.810301661491394,
+          "other_max": 0.403117835521698,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.403117835521698
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__changwon_anchors__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6973356008529663,
+          "other_max": 0.33019378781318665,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7913005352020264,
+          "other_max": 0.39770156145095825,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7887426614761353,
+          "other_max": 0.3865162134170532,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__seoul_comets__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6976563930511475,
+          "other_max": 0.4217352867126465,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4217352867126465
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7615127563476562,
+          "other_max": 0.4423251748085022,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_033",
+              "cosine": 0.41204288601875305
+            },
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4144391417503357
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4423251748085022
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.433217853307724
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.774101972579956,
+          "other_max": 0.43901050090789795,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_033",
+              "cosine": 0.40272074937820435
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.43901050090789795
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.4238891303539276
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__seoul_comets__c0",
+      "sizes": {
+        "128": {
+          "same_v7": 0.693705677986145,
+          "other_max": 0.3595312535762787,
+          "other_id": "v7_staff01_coach_041",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8027505874633789,
+          "other_max": 0.38896265625953674,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8027117252349854,
+          "other_max": 0.3947150707244873,
+          "other_id": "v7_staff01_coach_008",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__seoul_comets__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6809921264648438,
+          "other_max": 0.37040644884109497,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7499644756317139,
+          "other_max": 0.4180333912372589,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4180333912372589
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7549561858177185,
+          "other_max": 0.4314904808998108,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4314904808998108
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.40268367528915405
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__seoul_comets__c1",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6980404853820801,
+          "other_max": 0.3700728714466095,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8100506663322449,
+          "other_max": 0.3836019039154053,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8042076826095581,
+          "other_max": 0.3935863971710205,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    }
+  ],
+  "passed_ids": [
+    "v7_staff01_coach_035__seoul_hounds__c0",
+    "v7_staff01_coach_035__incheon_seagulls__c1",
+    "v7_staff01_coach_035__suwon_sparks__c1",
+    "v7_staff01_coach_035__goyang_storm__c1",
+    "v7_staff01_coach_035__gwangju_blazes__c0",
+    "v7_staff01_coach_035__gwangju_blazes__c1",
+    "v7_staff01_coach_035__daegu_thunders__c0",
+    "v7_staff01_coach_035__daegu_thunders__c1",
+    "v7_staff01_coach_035__busan_waves__c1",
+    "v7_staff01_coach_035__changwon_anchors__c1",
+    "v7_staff01_coach_035__seoul_comets__c0",
+    "v7_staff01_coach_035__seoul_comets__c1"
+  ],
+  "held_ids": [
+    "v7_staff01_coach_055__seoul_hounds__c0",
+    "v7_staff01_coach_055__seoul_hounds__c1",
+    "v7_staff01_coach_035__seoul_hounds__c1",
+    "v7_staff01_coach_055__incheon_seagulls__c0",
+    "v7_staff01_coach_035__incheon_seagulls__c0",
+    "v7_staff01_coach_055__incheon_seagulls__c1",
+    "v7_staff01_coach_055__suwon_sparks__c0",
+    "v7_staff01_coach_035__suwon_sparks__c0",
+    "v7_staff01_coach_055__suwon_sparks__c1",
+    "v7_staff01_coach_055__goyang_storm__c0",
+    "v7_staff01_coach_035__goyang_storm__c0",
+    "v7_staff01_coach_055__goyang_storm__c1",
+    "v7_staff01_coach_055__daejeon_redfox__c0",
+    "v7_staff01_coach_035__daejeon_redfox__c0",
+    "v7_staff01_coach_055__daejeon_redfox__c1",
+    "v7_staff01_coach_035__daejeon_redfox__c1",
+    "v7_staff01_coach_055__gwangju_blazes__c0",
+    "v7_staff01_coach_055__gwangju_blazes__c1",
+    "v7_staff01_coach_055__daegu_thunders__c0",
+    "v7_staff01_coach_055__daegu_thunders__c1",
+    "v7_staff01_coach_055__busan_waves__c0",
+    "v7_staff01_coach_035__busan_waves__c0",
+    "v7_staff01_coach_055__busan_waves__c1",
+    "v7_staff01_coach_055__changwon_anchors__c0",
+    "v7_staff01_coach_035__changwon_anchors__c0",
+    "v7_staff01_coach_055__changwon_anchors__c1",
+    "v7_staff01_coach_055__seoul_comets__c0",
+    "v7_staff01_coach_055__seoul_comets__c1"
+  ]
+}

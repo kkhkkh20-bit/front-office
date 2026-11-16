@@ -1,0 +1,432 @@
+[
+  {
+    "group": 0,
+    "path": "/workspace/generated_images/exec-565c5060-db44-4fcd-9456-8e644a545773.png",
+    "kind": "master",
+    "archived_path": "sources/native/master_00.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "a2589d608ef86b6dd6e8cbae9f788115805e5424a2df6e5b6681266b2d300c56",
+    "rgb_sha256": "1ad8e64f13bce1e7fb3d3123e87684e7882ddc61e5d5209178efed35006dc597",
+    "archive_sha256": "f88ad28040d352e86d61970fe998e752bfb72f8b7412fc3a50eedd27ced8b766",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 1,
+    "path": "/workspace/generated_images/exec-c2868d3d-33e2-4df3-bc49-039a60a3a13b.png",
+    "kind": "master",
+    "archived_path": "sources/native/master_01.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "3d216142d6b4f6383604225106adb38841c414a9951496cf2d4a930b4b92cada",
+    "rgb_sha256": "5b9c988d33863f41a7bd9de5fb9d4cf8716d06ef536a28f42e1e2b7c3cde950a",
+    "archive_sha256": "242bb8c057c4fc388cc9346c4d9ea8ea29be9a13d1283af0ddabc9e94fd526a3",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 2,
+    "path": "/workspace/generated_images/exec-cd55c746-e7dc-48ee-ad0d-61e6ed8ba7b4.png",
+    "kind": "master",
+    "archived_path": "sources/native/master_02.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "ec924bf774fa5b269694310cc62866c50fc01c8403c0549b3ced6ff5ca4032fd",
+    "rgb_sha256": "c5be64cbd6373b2020ed16c8323131baa435ad3793df60cd0fd206ca6cdb8cf2",
+    "archive_sha256": "18cbc318b5337b99ba63dfd60a3e416cb76f781505cdca1f87ed6bc52d61a5df",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 3,
+    "path": "/workspace/generated_images/exec-0eed0a1e-09e3-44d8-92da-5bea4be99fde.png",
+    "kind": "master",
+    "archived_path": "sources/native/master_03.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "9553cb367fc2620df8ef148450f1c709a70675a4367e3490d39f2ab20cbf0ebf",
+    "rgb_sha256": "aaaae4b580ae8b5f021c15bd3a3d74d0694a09058a4cbdfe89ccc6ff6e62f22c",
+    "archive_sha256": "71c0153a752e68bc6eba3f14362dfd95a13610d5265932254f0438617a2eb7f3",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 4,
+    "path": "/workspace/generated_images/exec-3c107a83-5df2-4269-a8fc-d23a316627c5.png",
+    "kind": "master",
+    "archived_path": "sources/native/master_04.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "b571c18dc3675777505057df5ad362036549ed72b3db81bb99396e3cef8055ca",
+    "rgb_sha256": "63ceace9dbf222ac0a5b748b13cb4e4ff4f9d70c1cbfee9591cd2525c2215590",
+    "archive_sha256": "de299a4fc75324d8e39feecd956972fcb00dbcf73bb36cf2b301319ae2c200f7",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 5,
+    "path": "/workspace/generated_images/exec-adcc8183-33d0-4d0a-a5e0-97206544755d.png",
+    "kind": "master",
+    "archived_path": "sources/native/master_05.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "e1fd873120a8fa90d314bba564716205e6fb51c75981f9f348417666b096836c",
+    "rgb_sha256": "36a47436f3a85f5ffb1f6877374af5a301c0523f5c114b4762da81994ceca3ce",
+    "archive_sha256": "726137f42e01359611c87faefb7ec10f3754e80efbf121f7f25deeae15fd354f",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 6,
+    "path": "/workspace/generated_images/exec-5a673533-84dc-486a-90f8-a036ae22a873.png",
+    "kind": "master",
+    "archived_path": "sources/native/master_06.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "d2aa31e186d57def9d07dc8202960e679fadfbbb6ee87c3e9ebbb6058d096d64",
+    "rgb_sha256": "3c4f7987015bca9f39055ac9b598c48e61e655ed2d7736abade1987db557343d",
+    "archive_sha256": "21aea5630a4ce374e6cff87870989b0815849245c18bb929f5a62c44240154ca",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 0,
+    "path": "/workspace/generated_images/exec-2aaff2de-914e-4596-bba2-dbd659198e16.png",
+    "kind": "pose",
+    "archived_path": "sources/native/pose_00.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "ce5db0f832cb3503d497379e1c7d85fcccd223b7f2eb7088a347af2675abffd3",
+    "rgb_sha256": "8b86deda179de96726a25a4b4395d026f41515d050cdb94aa9d7e880faf17682",
+    "archive_sha256": "86890e9e60c09855c8a6b74d86e8ac8b6cc5d7df8a6aabd1c21f090564552ce9",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 1,
+    "path": "/workspace/generated_images/exec-f9d379be-823d-4e48-94a4-848d89bf453a.png",
+    "kind": "pose",
+    "archived_path": "sources/native/pose_01.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "991903d4710eaed86fde5561555c6e4c22e34aff83667209399e492f73315eb3",
+    "rgb_sha256": "115c569675a250d3f276f61287f4af115805454be9af42ae4f7dda2dfdde4ed5",
+    "archive_sha256": "c15a8501ed1eb5811bc57f70260ede33149dc83439fecfa3ac8715c42ab96e7d",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 2,
+    "path": "/workspace/generated_images/exec-1eb7a88d-cbf2-4252-8b96-55f283f7e127.png",
+    "kind": "pose",
+    "archived_path": "sources/native/pose_02.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "76ca8fa43a95429744ed7906bb0c60b095d72daa60563011eda6682003cda129",
+    "rgb_sha256": "44f4df1c3ab2844dd3378b4874792e5fe23140c7aa192f6802293fb98c35ce16",
+    "archive_sha256": "290f08fa5ed9b97675d57889bb26db98f3e184011029f9695160b382bd98030d",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 3,
+    "path": "/workspace/generated_images/exec-94936ad9-ea98-4784-9849-5f3791fc18a3.png",
+    "kind": "pose",
+    "archived_path": "sources/native/pose_03.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "0db5bda79407b26fdf2f5d1b0c761f5022f03787bed669f2c254ea67a0ad23f3",
+    "rgb_sha256": "5764f2837af043e727ebbccc951e8913f2d7c043a7ccfc8360c02adb1da91763",
+    "archive_sha256": "2b1718ca863338e6c80b709259e1155a2dcb7b597b331b1ca08f904065a4bcbb",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 4,
+    "path": "/workspace/generated_images/exec-20ad968c-227c-47a7-86a7-7a63c97147be.png",
+    "kind": "pose",
+    "archived_path": "sources/native/pose_04.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "1e78c4dd2cb6a23ebce403b23495bd1ab793991401b5ca36e3d5d92adca5adc4",
+    "rgb_sha256": "c504ac0888f7e343bda4d41d78a8806deebd9591bf6af3b1f9e9f7d5024481c9",
+    "archive_sha256": "a3bbe3ab64f76db836c40da838d6e126835da4e731bc4f3e6deb5a491346cd6c",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 5,
+    "path": "/workspace/generated_images/exec-412da5b8-b297-46f5-a530-9c14a04f7b5b.png",
+    "kind": "pose",
+    "archived_path": "sources/native/pose_05.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "cea9e54938bd54d8b7eec0a6ae3ba2ffc99f9efe23ec98b242cfa2cb1ddc6580",
+    "rgb_sha256": "83e786f3927258fc5516306a7d38b7d7c21188e9ef93484bd2907d05dec7bdfe",
+    "archive_sha256": "487265a5377abe6900d5023d74601c2c3df5b87e0cfb4453d8e9e0ce38c48e11",
+    "lossless_rgb_verified": true
+  },
+  {
+    "group": 6,
+    "path": "/workspace/generated_images/exec-8259f409-8624-4712-911b-a39105b261fe.png",
+    "kind": "pose",
+    "archived_path": "sources/native/pose_06.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "d7574980f52f1bdce0b6e15c3243b333fb38c75ac88f71683866bf38f51f7667",
+    "rgb_sha256": "97cced2844d363b532cbf131dd9226d29e454b6cb8558eb55141f963338641c9",
+    "archive_sha256": "08173467fc2f3fb8e615c0770b99502842bb9b8ec3e30b78ed3000c66e792409",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "pilot",
+    "group": 0,
+    "path": "/workspace/generated_images/exec-6e9079ae-4217-4986-b7b7-16d25e6ce8a8.png",
+    "archived_path": "sources/native/pilot_00.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "cae39618fb244e8de21740a5dfdb0664dfa078c6b34aafcfa8a0275af8d3b7b1",
+    "rgb_sha256": "0e5a6d78ca9b10c763ac71393dbaaeb4df431243d3b3baebe308ea8b83b66a81",
+    "archive_sha256": "e3958137434f414ba12f9eb85163f6a94a61736e35d81cab561220af5e405f2c",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "pilot",
+    "group": 1,
+    "path": "/workspace/generated_images/exec-ff275556-7def-4a2f-bdb6-41ee6cce5d8f.png",
+    "archived_path": "sources/native/pilot_01.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "c52f63f852098e8fa1bd9ec7cf810ba10039beed3e331b44c722ee9fd9e9f382",
+    "rgb_sha256": "3f02d1c6f42fee7c9be19a7aeea5bc349a8b52fddadab887251d134cc9a0ddff",
+    "archive_sha256": "dd6d2d80d374c2be76734cc6a4ea8bfd0d6e95010f6b01ecc37ff7419c10fab4",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "retry",
+    "group": 0,
+    "path": "/workspace/generated_images/exec-9f0df82f-6082-4cf8-9703-98fdb0b39da8.png",
+    "archived_path": "sources/native/retry_00.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "ac2aca81c98da0a2659c25bb6fa3a02cc06ef0a400e0e3c57a423561fe5f4120",
+    "rgb_sha256": "805a94e5e0883f28a8777577389eb5dc2a980a575e7dbc734b2bc343f8117aa2",
+    "archive_sha256": "cdd7e44254d11d8d005c73bfb8e33b202038bf616e162fcca05f8c6cf8381034",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "retry",
+    "group": 1,
+    "path": "/workspace/generated_images/exec-46292734-2c0f-427e-a2dd-07567cc66065.png",
+    "archived_path": "sources/native/retry_01.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "83e948b9c4a3e07967feec2f7eaa8e1a28b43fef6c1ee473bc44e3be97dcef17",
+    "rgb_sha256": "4176934d194a25183e6acd3a22e8ff055f6b2d1ab293909e1f11b0e1eb4f715c",
+    "archive_sha256": "58feb6c8b24ece4117043db2b5d274730f791e65aeccd7167fe6771dbc8326fd",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 0,
+    "path": "/workspace/generated_images/exec-e8f01dab-c845-4aca-97e1-13bca4c4e676.png",
+    "team": "seoul_hounds",
+    "archived_path": "sources/native/team_00.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "de877e6b3a196cb92a681bb3cf71dd01a3550617d58f8d6d8fe95e35e081d334",
+    "rgb_sha256": "d44ac349cfc3e2aee08128e10f64e6d436e6bbad7134ee02e94e75dc67ca3801",
+    "archive_sha256": "4e6096ddb7bdd7816031ec2a7a14340d7a468731a698f139f0e7c8e2d67c6abd",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 1,
+    "path": "/workspace/generated_images/exec-aa7326ed-b803-453b-b063-b7a019431ff6.png",
+    "team": "incheon_seagulls",
+    "archived_path": "sources/native/team_01.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "a83560c0d0b44a3aa1cf70f202f8cf00f4041d9e2aa3c0cbb544867c7e9e4340",
+    "rgb_sha256": "84b4047020c0213d8922f827120eea95f90c48f5df0cc12b9c56a53856f3b307",
+    "archive_sha256": "d76c5d00cf4c8a12e6c048cd630d51e98ba4815a2e3a21f3a36b47cfc764416b",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 2,
+    "path": "/workspace/generated_images/exec-447d9907-d98a-4244-9ad4-b3bea92c8adf.png",
+    "team": "suwon_sparks",
+    "archived_path": "sources/native/team_02.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "48f6b7b4e11a9b773badea0683e25a137ab6c6ccc5756606ef866916afc428e7",
+    "rgb_sha256": "e03b8fa94f12b46fcfb52df9c5ca2773863d51f6d36a7923c50f68bebbcb4896",
+    "archive_sha256": "7a79200b0b0b1358b37bae2330171c30608cec2c6f051bff1bee6320c403d1c5",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 3,
+    "path": "/workspace/generated_images/exec-4db1e105-f238-4954-9a0f-9d1b2324679a.png",
+    "team": "goyang_storm",
+    "archived_path": "sources/native/team_03.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "082befa3901226ef4c8d09857c1e985a25c68a4c8d4271fda750b0e815639868",
+    "rgb_sha256": "d19a6d640ecafdd067202bf4ac9c2f8bcd2746bd6b649bff18767bc82fa57e84",
+    "archive_sha256": "97c5e8ee063c0bd9289095cdc3b98743cd5f2a6e738f4d8c71ed6120414f86cd",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 4,
+    "path": "/workspace/generated_images/exec-0faa4b03-69e9-4494-9048-fc2c27e9e744.png",
+    "team": "daejeon_redfox",
+    "archived_path": "sources/native/team_04.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "f048c1c5ef94eed8863027e963fbc18b190ccb971ca1b456132ab11811e2c32d",
+    "rgb_sha256": "d1609bed6b56acac2ac7868046350b24b63233f567b88aac14418dbbaa4132ea",
+    "archive_sha256": "83c288c2d2f2cae7eba2ec5b8317ea40fb3763f72885b766ea2317a15c4e9da9",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 5,
+    "path": "/workspace/generated_images/exec-a7ee58fe-94cd-42ea-b235-e5fc364f6ee9.png",
+    "team": "gwangju_blazes",
+    "archived_path": "sources/native/team_05.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "d5f49a12c12ffc2754b492c1284274adaf1a8166a9162b44013e9a0eb021a228",
+    "rgb_sha256": "5ff274febff621b36cb86f3a51289f647a8e2b316e989c799649f6911f6e5752",
+    "archive_sha256": "82c06165730bef6e1d1116075691c15d8465a0e4c9fa09c29f98794b7e4c6249",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 6,
+    "path": "/workspace/generated_images/exec-597081d0-621b-4815-8a14-c441f2572b36.png",
+    "team": "daegu_thunders",
+    "archived_path": "sources/native/team_06.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "b3fc1aecc82e804c9364aa0bb41ad59997399b31cae676c1a01a921a1c157b6b",
+    "rgb_sha256": "ccb375479c66fa569fb72aa584f1dd3b4ec11bc6cee0971c320c63ab5cd94f81",
+    "archive_sha256": "a2720c824f768489ab3d2ae07089b517f79241ddbd399cd8703d5a00078916de",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 7,
+    "path": "/workspace/generated_images/exec-dd0a1da0-d663-4c6e-87ad-ab5a87de5f27.png",
+    "team": "busan_waves",
+    "archived_path": "sources/native/team_07.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "bef49e86b68fe17d8977a65da3848383863d562d6ad119d238019ce647fea3e5",
+    "rgb_sha256": "0a91695a8bda358434bf1a26040839d7ab74ca244ab1d6c4bc33ff21baaf0fc2",
+    "archive_sha256": "c390780fce70a2a618e166be1b2cfcddb581fd0ccc99fee38cea25f155a54996",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 8,
+    "path": "/workspace/generated_images/exec-0a16625a-1ff4-4c02-bc47-d31f60d541f6.png",
+    "team": "changwon_anchors",
+    "archived_path": "sources/native/team_08.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "71e9c79bb6d41820b46fcb1326e57e26b00b544cab26e209e4c092bcb867c4c1",
+    "rgb_sha256": "e94443828967fe481389a900638b8816cb895b79b2243381acaf8437dabca180",
+    "archive_sha256": "da3fd26576fd6bba5eaa1478e93e1b0eaf5084516f460ae215ab4c403b3ef7f3",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "team",
+    "group": 9,
+    "path": "/workspace/generated_images/exec-be69fcc3-8cd8-4d68-83b4-d85623fd2878.png",
+    "team": "seoul_comets",
+    "archived_path": "sources/native/team_09.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "e617ee3caeb7f1a521adf104cbb8e04dadbfe27a4d2ab3735c7367a5a05d1e17",
+    "rgb_sha256": "825f04056af1f1c89cd72cfedb80c56c6dccd5fbbf5e9b9938456fcf8073f8a6",
+    "archive_sha256": "8c513315b27af64341d05e08cbc664b35f90ee13459b63cdc994e125afb20f56",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "redfox",
+    "group": 0,
+    "path": "/workspace/generated_images/exec-afb5d219-ccd9-4086-94ea-62fb45da9af7.png",
+    "archived_path": "sources/native/redfox_00.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "2a9f15f47c61423bab878f9045a808c056a4e6e2f1c2d6dc2fb4b24064bd6bc2",
+    "rgb_sha256": "9b43cf72bc427d8b2b86be2a79488db7447b5f1c4e7c7b1c2f0797d7ca6691cb",
+    "archive_sha256": "66ebe39d099262273f77f8a89242ec9ff7b7dca9dbdb0390879e3f86e365ff7e",
+    "lossless_rgb_verified": true
+  },
+  {
+    "kind": "redfox",
+    "group": 1,
+    "path": "/workspace/generated_images/exec-c0de4532-92a1-4bee-8869-66282bc5b457.png",
+    "archived_path": "sources/native/redfox_01.webp",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_file_sha256": "126a6d5c8b69abb7ded58750809601fcd955ad57da19f70c1024e12dcf75b69a",
+    "rgb_sha256": "d6b8bc627be0e244f69a84bc8751e2c448263dde18411edc98cc79c63f95f4d4",
+    "archive_sha256": "759983f8359ac83a544e5440eae01245ef4daff93bbb398d2322b4a5a3600160",
+    "lossless_rgb_verified": true
+  }
+]

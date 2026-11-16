@@ -1,0 +1,320 @@
+{
+  "policy": "all numeric gates mandatory; preserve identities; hold failures",
+  "reference_identities": 486,
+  "other_references_per_person": 485,
+  "results": [
+    {
+      "identity_id": "v7_staff01_coach_035__seoul_comets",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6977149844169617,
+          "other_max": 0.37027859687805176,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8093046545982361,
+          "other_max": 0.3727880120277405,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.797308623790741,
+          "other_max": 0.39349979162216187,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__seoul_hounds",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7059063911437988,
+          "other_max": 0.3433280885219574,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7804076075553894,
+          "other_max": 0.39396631717681885,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7959613800048828,
+          "other_max": 0.3991636037826538,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__incheon_seagulls",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6678817272186279,
+          "other_max": 0.39215970039367676,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7865418791770935,
+          "other_max": 0.38452577590942383,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8052799105644226,
+          "other_max": 0.3758530020713806,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__suwon_sparks",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6976271867752075,
+          "other_max": 0.359489768743515,
+          "other_id": "v7_staff01_coach_011",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8142080307006836,
+          "other_max": 0.3957335352897644,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.802937388420105,
+          "other_max": 0.36698228120803833,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__goyang_storm",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7214089035987854,
+          "other_max": 0.3566219210624695,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8097718358039856,
+          "other_max": 0.3953809142112732,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8268090486526489,
+          "other_max": 0.38391560316085815,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__daejeon_redfox",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6609487533569336,
+          "other_max": 0.3729354739189148,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7600535750389099,
+          "other_max": 0.37894555926322937,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7644331455230713,
+          "other_max": 0.3871714472770691,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__gwangju_blazes",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6744001507759094,
+          "other_max": 0.35311949253082275,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7903048992156982,
+          "other_max": 0.39466243982315063,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.804435133934021,
+          "other_max": 0.376828670501709,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__daegu_thunders",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7418736219406128,
+          "other_max": 0.33650273084640503,
+          "other_id": "v7_staff01_coach_030",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7925158739089966,
+          "other_max": 0.38670361042022705,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8067668676376343,
+          "other_max": 0.3845422863960266,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__busan_waves",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6856815218925476,
+          "other_max": 0.32964032888412476,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8047007322311401,
+          "other_max": 0.39629942178726196,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7943657636642456,
+          "other_max": 0.3935079574584961,
+          "other_id": "v7_staff01_coach_016",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__changwon_anchors",
+      "sizes": {
+        "128": {
+          "same_v7": 0.6971136331558228,
+          "other_max": 0.33073103427886963,
+          "other_id": "v7_staff01_coach_049",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7938889861106873,
+          "other_max": 0.3989354968070984,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7838289737701416,
+          "other_max": 0.38474971055984497,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    }
+  ],
+  "passed_ids": [
+    "v7_staff01_coach_035__seoul_comets",
+    "v7_staff01_coach_035__seoul_hounds",
+    "v7_staff01_coach_035__incheon_seagulls",
+    "v7_staff01_coach_035__suwon_sparks",
+    "v7_staff01_coach_035__goyang_storm",
+    "v7_staff01_coach_035__daejeon_redfox",
+    "v7_staff01_coach_035__gwangju_blazes",
+    "v7_staff01_coach_035__daegu_thunders",
+    "v7_staff01_coach_035__busan_waves",
+    "v7_staff01_coach_035__changwon_anchors"
+  ],
+  "held_ids": []
+}

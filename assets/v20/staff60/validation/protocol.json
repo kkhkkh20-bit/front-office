@@ -1,0 +1,38 @@
+{
+  "recognizer": "buffalo_l/w600k_r50.onnx",
+  "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+  "detector": "buffalo_l/det_10g.onnx",
+  "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+  "detector_size": [
+    640,
+    640
+  ],
+  "detector_threshold": 0.55,
+  "required_faces_per_photo": 1,
+  "alignment": "5 landmarks; cv2.estimateAffinePartial2D LMEDS; warpAffine112 INTER_LINEAR black border",
+  "landmarks_template": [
+    [
+      38.2946,
+      51.6963
+    ],
+    [
+      73.5318,
+      51.5014
+    ],
+    [
+      56.0252,
+      71.7366
+    ],
+    [
+      41.5493,
+      92.3655
+    ],
+    [
+      70.7299,
+      92.2041
+    ]
+  ],
+  "feature_normalization": "L2 only",
+  "comparison": "raw dot product of L2 normalized ArcFace vectors; no whitening, scaling or threshold adjustments",
+  "delivered_pixel_measurements": "final_pixel_measurements.json"
+}

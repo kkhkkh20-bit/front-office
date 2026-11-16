@@ -1,0 +1,5 @@
+/sources/v7/
+/work/*
+!/work/measure3.py
+!/work/SESSION_STATE.json
+/validation/__pycache__/

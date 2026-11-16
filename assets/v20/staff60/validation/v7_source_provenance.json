@@ -1,0 +1,1142 @@
+[
+  {
+    "id": "v7_staff01_coach_001",
+    "age": 44,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "receding dark hair",
+      "body_type": "slim slight upper body"
+    },
+    "source_archive_png_sha256": "67187c4a257fb4017d4a10148c67acb8b900bd76be8baac4eefb5b9194a7c2e9",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_001.png",
+    "rgb_sha256": "6dd9032d5117f44456d509db2bfae35199d23c8c4a06b4ec8f5aed2fe376ae27",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_002",
+    "age": 45,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "very short silver-gray crop",
+      "body_type": "tall lean build with sloped shoulders"
+    },
+    "source_archive_png_sha256": "0550cfdf3f68ce432110db671e016d9d2631af84b2432179199175c8ddee98d5",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_002.png",
+    "rgb_sha256": "05cd614a8b4afdb2b95518a3a7dfd207dde260fe9a7f3acd8b16b8ae24f419cc",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_003",
+    "age": 49,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "short neat black hair with a few gray temples",
+      "body_type": "broad stocky shoulders and a thick neck"
+    },
+    "source_archive_png_sha256": "ac89b3d39ded962536c02898d54ac256d8b7b49a40716fb0870a0c41b19e6eeb",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_003.png",
+    "rgb_sha256": "29136be733abab69e4ef9674ac2311529791af11b7656651f099ddf5466cd79a",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_004",
+    "age": 43,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short black crew cut",
+      "body_type": "sturdy athletic middle-aged build"
+    },
+    "source_archive_png_sha256": "df7daf5e2ff09706e84355d34a76b60b9e66b90f06d24a37381b93fb34b8c886",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_004.png",
+    "rgb_sha256": "aaf812fc389f7662e165b5ba132c5a3c6247131b7532cc563d4abcc8db1486ec",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_005",
+    "age": 41,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "short neat black hair with a few gray temples",
+      "body_type": "slim slight upper body"
+    },
+    "source_archive_png_sha256": "860fa46a9af7b05d11a0305a86f311e92b75d9347003e50199eb395ab67a2c79",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_005.png",
+    "rgb_sha256": "0b4d6aeed93523f89814f75b3e8876b4d5d1d7689e0cccd422c68223ecc2b4ab",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_006",
+    "age": 43,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short dark-brown hair",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "99364006b622dcb1270de148cb9a5e2dfa57a54efac73ebbdf6a660c1709f7ac",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_006.png",
+    "rgb_sha256": "f8d664fbdd37bd85c01753bf8b9f00a6275cb1a92511b5d69008364039ac5ae0",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_007",
+    "age": 43,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short dark-brown hair",
+      "body_type": "sturdy athletic middle-aged build"
+    },
+    "source_archive_png_sha256": "84bb542336c156ebe5f8c51abf64142017e7a8678e1aa008740345cd472b6ffa",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_007.png",
+    "rgb_sha256": "b03972c157cc16dcc66ba91082ec30691fb1688f37fcbde4a2c37b0e3f7722b9",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_008",
+    "age": 40,
+    "tags": {
+      "glasses": true,
+      "beard": true,
+      "gray_hair": false,
+      "hair": "short dark-brown hair",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "c5c1f0f417df3edd3e5ee1be78b0b179a143528c0a47376537e7befe32459241",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_008.png",
+    "rgb_sha256": "c74b153f8550357f2652b58f4f1615e4144f2184211f2eb0e85025362e2ec6e3",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_009",
+    "age": 46,
+    "tags": {
+      "glasses": true,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "very short silver-gray crop",
+      "body_type": "sturdy athletic middle-aged build"
+    },
+    "source_archive_png_sha256": "ab51b16137b073da56bb556e492cec81fec11708116caafe764171972a6351ed",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_009.png",
+    "rgb_sha256": "e8c5e2798566f34aceadb029a92d18b7412308294461d5b0604727f353e6bab9",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_010",
+    "age": 49,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "slim slight upper body"
+    },
+    "source_archive_png_sha256": "375e5cd5e2422fe672a93800cc74248cb99f7c98d06c5f002b8b08295732d6b8",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_010.png",
+    "rgb_sha256": "129643851f6d55d21c1de9fb92ba744a0470bd6729e1b45e604e94091e8ce7cb",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_011",
+    "age": 45,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short dark-brown hair",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "03ef4583ec6b85eb39a939e42025177c2e98247bcb8cacda6739942dcba98c78",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_011.png",
+    "rgb_sha256": "829f7a7c36cdb709d0b51ad9f0090271449226ae7f2947e50713302f005acb84",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_012",
+    "age": 43,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short black crew cut",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "0593dc1a4c596eb8270f67ea007ea3baadaa081e695a5dce89c1a14effde6a5c",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_012.png",
+    "rgb_sha256": "76054c681bc11ba85e56cb81c8cf59e405d1da5b65593d549010b0f473cfb8a2",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_013",
+    "age": 44,
+    "tags": {
+      "glasses": true,
+      "beard": true,
+      "gray_hair": false,
+      "hair": "receding dark hair",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "a1d2e05db09bfaa99d46f27da7184bad06d3fb8c8f6b38ec3510067ff1656de8",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_013.png",
+    "rgb_sha256": "79795007740805d54ccf4845b9341f2556ad4c941e3306d1708fea203ae18d26",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_014",
+    "age": 41,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "short neat black hair with a few gray temples",
+      "body_type": "sturdy athletic middle-aged build"
+    },
+    "source_archive_png_sha256": "e512d5ffbc2debbe81f8b70bb919fba2a90781b3dd57256f2bb9cb6b29fdcdab",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_014.png",
+    "rgb_sha256": "d2cea8eaa0811a459562b04d97a396833c46a84918bd82c8ff9bf3e100346f81",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_015",
+    "age": 43,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "receding dark hair",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "bf26854a30dfc3c576304abc5071fc3459f458ffedff8044ee8331ab977ce2e6",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_015.png",
+    "rgb_sha256": "abc05303beacae268a4ad0206b1fbde7a46b442f7d94a3d97849cc12cff6db71",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_016",
+    "age": 41,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short black crew cut",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "a87fe04ff9c97681e6188595d602b392b6bd8a925376e5ee67dcf9ab1f483d1d",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_016.png",
+    "rgb_sha256": "2ef17bae63905945f40bae6954e5a6d3d917851e3321d56f63fd1949a473a613",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_017",
+    "age": 48,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "receding dark hair",
+      "body_type": "tall lean build with sloped shoulders"
+    },
+    "source_archive_png_sha256": "6dfeae4db8e829c1a423e56ec36daf0c458fd5dd0b3c561a9d6d424efd5e4159",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_017.png",
+    "rgb_sha256": "a1ce9c514cdaca767d2a186bcab62cb83658f6d9462e8e73fc35906f3b522970",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_018",
+    "age": 44,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "receding dark hair",
+      "body_type": "broad stocky shoulders and a thick neck"
+    },
+    "source_archive_png_sha256": "724dc6947495eb7d95fb0996c4a288e0f24d0d701a4dee9beac0441a82af94ba",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_018.png",
+    "rgb_sha256": "1750448a975ed828975115a02c35a8e27a29fe5418e7faf61ef8b6859c8874fe",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_019",
+    "age": 48,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short dark-brown hair",
+      "body_type": "broad stocky shoulders and a thick neck"
+    },
+    "source_archive_png_sha256": "ed1072a9aeb0ffae750bcc398ac1474a86dfb6ab0461a15ab4afdf4b6b0a4469",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_019.png",
+    "rgb_sha256": "86ba82905c916ae9172c5aba2cfe7e5a268e807a72bcdfbe0fc0a09846e6b9c6",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_020",
+    "age": 43,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "short neat black hair with a few gray temples",
+      "body_type": "sturdy athletic middle-aged build"
+    },
+    "source_archive_png_sha256": "397722bf79983cd663b3c7dd15c1f19dd65ed2208147e3ab8daf5be1d84f5f1a",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_020.png",
+    "rgb_sha256": "b52162ab65cb4fac52c141a9249ddf1bcb90509ccb903253bb60849fc38ff7f5",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_021",
+    "age": 54,
+    "tags": {
+      "glasses": false,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "thin salt-and-pepper hair",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "9a176d3fe195a55867befc34eba5f34db5dcbf9487d56bf1e45392ca6beaeea8",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_021.png",
+    "rgb_sha256": "dd3d6bd6610a4567cd6d460549a22fe61d0cc2f745784c79d6773154e6f404c4",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_022",
+    "age": 50,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "receding dark hair",
+      "body_type": "compact average upper body"
+    },
+    "source_archive_png_sha256": "7c3825cc4a08a50232f6375c636d958579134c476ed47c71f4fd8628e02e4048",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_022.png",
+    "rgb_sha256": "ca6d073c339a42832482e8639729df27f69fcc4b9d5ea174ecacecb7c086ce51",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_023",
+    "age": 50,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "receding dark hair",
+      "body_type": "heavyset with a rounded chest and pot belly, thick neck"
+    },
+    "source_archive_png_sha256": "9dee612e3f2da8fe5123342ec6dd9b7337587abbddcf6abad602189e4da01776",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_023.png",
+    "rgb_sha256": "c9ae146a2f43a9e47c1530bb50981371f46cce4ccd97778f55dc9727ff015feb",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_024",
+    "age": 57,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "broad stocky shoulders and a thick neck"
+    },
+    "source_archive_png_sha256": "ec32ccc5d71435b66120dee89c010f0ea68853271939633315b38a5346afa9ab",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_024.png",
+    "rgb_sha256": "fb66d53751c45936a2135eebfd2b00220f86be2da4dbb7f7bbb98e798674b240",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_025",
+    "age": 55,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short black crew cut",
+      "body_type": "soft fuller build with a round upper abdomen"
+    },
+    "source_archive_png_sha256": "e389c5f68e102d8b6e1e3e27d6231a6bd5a4416f8f4e25c77e50d45be26dd1f9",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_025.png",
+    "rgb_sha256": "91ea27b88ccce58517913703aaea44892df6276fecc842af3ad6ddccb2708202",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_026",
+    "age": 54,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "short neat black hair with a few gray temples",
+      "body_type": "slim slight upper body"
+    },
+    "source_archive_png_sha256": "28474bae010b076ed0e8ddfa1f96ebeac0081614cf30f731e29ac89b9eb494f9",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_026.png",
+    "rgb_sha256": "c4104fbb961931a4df2e2817a72b61966115cd77f351516f9f4c396677f7367d",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_027",
+    "age": 50,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "short neat black hair with a few gray temples",
+      "body_type": "tall lean build with sloped shoulders"
+    },
+    "source_archive_png_sha256": "e4e75a8ae0271255db50ab506d70a4f0050c359c1045b6c759b2bc4b5260af9e",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_027.png",
+    "rgb_sha256": "bcb27a350ba45ab6e0f0030ce10adf859fa4cc7d800e738bb5bb637ccf11e9e8",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_028",
+    "age": 53,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "very short silver-gray crop",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "338b1e76667835a107d278c89500aab5be838444e476d01d25ccc267e80c7636",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_028.png",
+    "rgb_sha256": "daa1251fda9ee22b55e886ab1b7d38d4ef5aab8eacb22bd515156ad26f2d4e21",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_029",
+    "age": 56,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short dark-brown hair",
+      "body_type": "compact average upper body"
+    },
+    "source_archive_png_sha256": "344a9ab9fbe227cc5a34bdf71cb063102095cddc609bca1bf65a69990f451110",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_029.png",
+    "rgb_sha256": "850d9d1f7eba8563fdd9d2298f07bd7923d7ab30d1acb61591297322838d4e5b",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_030",
+    "age": 59,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "receding silver temples and short gray hair",
+      "body_type": "compact average upper body"
+    },
+    "source_archive_png_sha256": "113fae8edf93d11cc87dd02e890cee50c20531bca04875fcefc742dd78985564",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_030.png",
+    "rgb_sha256": "32351c7352d1bed4e2212ddedee1fc7f5254b800d434e05dac37b289f111ab9e",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_031",
+    "age": 56,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "receding dark hair",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "35a56c8bc2bd9ea796adf5324428336d0440721fe0dd758c25c93d12c1b170db",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_031.png",
+    "rgb_sha256": "405ce48fa271f6f6b8ee6854965b07ccd4e5a279e80f9bc2dc7531b4f7fa5c78",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_032",
+    "age": 59,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "heavyset with a rounded chest and pot belly, thick neck"
+    },
+    "source_archive_png_sha256": "1a40a918d64de45a84489c1a1692393d87598a1d9590a30a47aab7eae9a2225c",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_032.png",
+    "rgb_sha256": "b6951422d591ca61be75ebf7c312b88588ca5c0ac3f848dcdf7224f569c96661",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_033",
+    "age": 58,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "fd4c61cc0c08495faf63968aca44f851627a90d9cbc082beecd4c2201ca5676f",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_033.png",
+    "rgb_sha256": "4f6a78efc494d6de3ce71928ddc502f029a355b9c8136abf234de6e43a100bf5",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_034",
+    "age": 50,
+    "tags": {
+      "glasses": true,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "thin salt-and-pepper hair",
+      "body_type": "compact average upper body"
+    },
+    "source_archive_png_sha256": "40302f12ce5d40c1934f137f394fe52bfdbba6836e4b99da68a4e19195e5e1eb",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_034.png",
+    "rgb_sha256": "14038939d32c9990c0bc34333f50a2c7c3e2b65e80fc4d2bad81f05127b12786",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_035",
+    "age": 50,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short black crew cut",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "d21b7749bc5432b936304af24e9ecfc85cdb4377d1ac409b7664efd16a99abbf",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_035.png",
+    "rgb_sha256": "c89a675081656a1e72b9528d680bbedcf7d6942ae62c017c482557a6850dea41",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_036",
+    "age": 53,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "thin salt-and-pepper hair",
+      "body_type": "slim slight upper body"
+    },
+    "source_archive_png_sha256": "0a8b7227ef66e0fcf2f5be928a8242a0b9231ab6362e69576fe1b8a300d51616",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_036.png",
+    "rgb_sha256": "e9760bb97d07985ef1f9223183873262d86c9772320c1eb717f9a6fa3dd36f40",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_037",
+    "age": 51,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "heavyset with a rounded chest and pot belly, thick neck"
+    },
+    "source_archive_png_sha256": "401b5aff4e660d48d384a57be9916d4d8ab0f31736b1116b934c919a81ff3533",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_037.png",
+    "rgb_sha256": "5184652e4a3031976008a279da39e401f15d82c04d64debe81fe7564628c4f39",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_038",
+    "age": 52,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short dark-brown hair",
+      "body_type": "slim slight upper body"
+    },
+    "source_archive_png_sha256": "848120717b117294f8325ad15862de9059b80ebee12ed4b23c8e06f75494f9fc",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_038.png",
+    "rgb_sha256": "df9c2ef2e85f4201b287446374dcbd86ad4ab3538229f6b92d385ee66c8e72b9",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_039",
+    "age": 57,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "thin salt-and-pepper hair",
+      "body_type": "soft fuller build with a round upper abdomen"
+    },
+    "source_archive_png_sha256": "859bed19bf87825f7dc49c4f2ecbe0264cd53b3e6e933cd4012344efca974e91",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_039.png",
+    "rgb_sha256": "bafbb573f47b657a9210d82bc286e6d608e02ea2980cddfb8b5f9a0416046ecb",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_040",
+    "age": 57,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "soft fuller build with a round upper abdomen"
+    },
+    "source_archive_png_sha256": "a01a4a21fc39c69379b921ace3fe11a5f826c280d7fed9de020208575a352131",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_040.png",
+    "rgb_sha256": "278f6335beae17f92d1b8a5364adfce3b23ce6dd9c1291771da4175cc4473ee2",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_041",
+    "age": 55,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "short neat black hair with a few gray temples",
+      "body_type": "slim slight upper body"
+    },
+    "source_archive_png_sha256": "add85792070a67ca8d8c2d864f2470a143af7fecf87d2d65f5234276afcceb49",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_041.png",
+    "rgb_sha256": "314b3c99b6d1279c1a37ad870d3bbfce649f82645964c38a915d82aa72bfad6c",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_042",
+    "age": 54,
+    "tags": {
+      "glasses": false,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "afb5d69844d9d2e095e15a337dee95d4a589e27d32c639de6d12b2f9b4831289",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_042.png",
+    "rgb_sha256": "9965a7e88e827c949cb0157e3ea22403fa5d8e2b2c51ecb34d57a0a324aaad6e",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_043",
+    "age": 56,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": false,
+      "hair": "short black crew cut",
+      "body_type": "compact average upper body"
+    },
+    "source_archive_png_sha256": "86010a6ea04c7735ce61771716ddd8565b85a0612740dd1f84c39d75dcf56a92",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_043.png",
+    "rgb_sha256": "acb3e36c19be0a6b08ae1f82d684725d96f79b9494bac347d37be74302ea6d13",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_044",
+    "age": 54,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "short neat black hair with a few gray temples",
+      "body_type": "compact average upper body"
+    },
+    "source_archive_png_sha256": "2977e1a26944cfef5d4ab88bde353093fd6d492822ae9c57cdcea6c3f397fd64",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_044.png",
+    "rgb_sha256": "e88b7decfcb5a863c858843a2e725b63af37722281a383fbad863c64383a1a9d",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_045",
+    "age": 59,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "fb92aff442672efbb7507db29d80fe67eadaea0331efabb2468d45ee2abe191c",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_045.png",
+    "rgb_sha256": "19c110a22ac57ebb2ec35d7f408c7fc51afc4ff92a46d6c66d0406967bfa5b1b",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_046",
+    "age": 58,
+    "tags": {
+      "glasses": false,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "very short silver-gray crop",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "4878cb96cddc7291a5ae25b273987263cefa8c59284dadd6c1d0f0956c2cb45c",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_046.png",
+    "rgb_sha256": "ebb9747987b9d5ac3458131a366a51d909e6c2996230334c451c86a12097913b",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_047",
+    "age": 56,
+    "tags": {
+      "glasses": true,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "soft fuller build with a round upper abdomen"
+    },
+    "source_archive_png_sha256": "1c690722d2b482fff72de91792f0b13d3de3f93e2c238fb97b0aa848e99fed77",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_047.png",
+    "rgb_sha256": "a0e01a49d4603e94cfc3a07e98fadaed76779226296e471c16c0756f3c21e71c",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_048",
+    "age": 52,
+    "tags": {
+      "glasses": true,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "sturdy athletic middle-aged build"
+    },
+    "source_archive_png_sha256": "a39c7bbc24501accab0b9345867301b28bf52a2b87bec4d1bc8a580ae3981030",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_048.png",
+    "rgb_sha256": "91f619680efddbfb7c8a0ebb26666f307b61fea52ea1d9a8748d3a2ce2716d90",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_049",
+    "age": 67,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "receding silver temples and short gray hair",
+      "body_type": "slim slight upper body"
+    },
+    "source_archive_png_sha256": "8556594bdb5a45d2da1e6b330e546540b8f0e2cfd08dc9e251d2967b2407f6f2",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_049.png",
+    "rgb_sha256": "c874c323dc3e1cfc95e0a9dbbe8a98065b629935d9702ea6212cf51c80974431",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_050",
+    "age": 65,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "receding silver temples and short gray hair",
+      "body_type": "tall lean build with sloped shoulders"
+    },
+    "source_archive_png_sha256": "c4d96f18741039c4f42413c422f3be1fda9d63e93d3258365107d8e4ae67ed81",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_050.png",
+    "rgb_sha256": "1b22c0ee0131de28408c5e226a560a73c7e1f4ffc79e3c284cea7d02a997ed71",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_051",
+    "age": 67,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "receding silver temples and short gray hair",
+      "body_type": "compact average upper body"
+    },
+    "source_archive_png_sha256": "9508a71cecf3a5b4cbaa79d94f516e89cbd9d17f5e1e3ba42819b6b79cf8a236",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_051.png",
+    "rgb_sha256": "ecc5a60e600123a935a8e100a32b89fa25993d65bbebfa2e4d1a0d550b06a656",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_052",
+    "age": 68,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "very short silver-gray crop",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "64af24ff2b2e1e542049d511b0887be5b7e36f67cff9e4fea195b8af8fd0fa66",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_052.png",
+    "rgb_sha256": "79e1e81271951a47684ef93d1a59df3bb8b2b401ec573a29ddfca2618087b101",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_053",
+    "age": 61,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "receding silver temples and short gray hair",
+      "body_type": "tall lean build with sloped shoulders"
+    },
+    "source_archive_png_sha256": "166a36bad96e3ad11c103efb4659616524989679f3db367324733567ca1ceb82",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_053.png",
+    "rgb_sha256": "c49eea61aeb6f289e275c71cb25fd2e78adbe774688905ae4927e0e7226ae586",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_054",
+    "age": 68,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "d496b6c719dcf8e287d0488dcb6627acd31b608a2f4e562e7a6911ce19e636c0",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_054.png",
+    "rgb_sha256": "a076a7b130e3d4fafcd0208bc221de77bc1fe8f1fac2489ae231cf25cd03f10f",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_055",
+    "age": 65,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "very short silver-gray crop",
+      "body_type": "heavyset with a rounded chest and pot belly, thick neck"
+    },
+    "source_archive_png_sha256": "b11878e7d3685c4a11bb9ec57eb9dea9c8d0547834c9a97ab9e2e7dc2b77dbc0",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_055.png",
+    "rgb_sha256": "138f6f2469af3a1f4bef73dcfa18ff9907c9ca5458c06bdb72dfcdb19802bc41",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_056",
+    "age": 64,
+    "tags": {
+      "glasses": false,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "very short silver-gray crop",
+      "body_type": "soft fuller build with a round upper abdomen"
+    },
+    "source_archive_png_sha256": "28175d31de6f5e819840f0c003e766ae8f4d3c283d3121fd124f133ed1c7aa6e",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_056.png",
+    "rgb_sha256": "3632122ecaed74a3fa207001a49d92d96b3dfc60a904d1f3b40b108869de837f",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_057",
+    "age": 62,
+    "tags": {
+      "glasses": true,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "thin salt-and-pepper hair",
+      "body_type": "average build with relaxed shoulders"
+    },
+    "source_archive_png_sha256": "7dc6404f6854c94dc6751e05914a8c8aa4d4358e7c74222f4611e4ba27e090ae",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_057.png",
+    "rgb_sha256": "821a23d29cd7cba49e314e240e86be461f05633072a9f743bd97b5b1f6c583cc",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_058",
+    "age": 60,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "receding silver temples and short gray hair",
+      "body_type": "compact average upper body"
+    },
+    "source_archive_png_sha256": "9f44d2ab349d3c32b3d8437d5a9096f7faf7d462b6050e121b0e42d685b5402a",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_058.png",
+    "rgb_sha256": "1135c1d28442e105a18f8c0066639d54d800aaab0159904c5734fba815dfe5f6",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_059",
+    "age": 68,
+    "tags": {
+      "glasses": false,
+      "beard": false,
+      "gray_hair": true,
+      "hair": "balding crown with gray side hair",
+      "body_type": "lean with narrow shoulders and a slender neck"
+    },
+    "source_archive_png_sha256": "11b21521f4de77fbc667e6f4294936d4a2d01300234ba10030969bbb4d700997",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_059.png",
+    "rgb_sha256": "1a5bb28ce8c272cedaf9ee4812b642b5421c22d0e11d406112328709a318488e",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  },
+  {
+    "id": "v7_staff01_coach_060",
+    "age": 66,
+    "tags": {
+      "glasses": true,
+      "beard": true,
+      "gray_hair": true,
+      "hair": "thin salt-and-pepper hair",
+      "body_type": "tall lean build with sloped shoulders"
+    },
+    "source_archive_png_sha256": "ebf39959b089bb091993944be57d4fe5fedc5f4b805f0af3e534b085461a8f50",
+    "original_mode": "RGBA",
+    "rgb_path": "/workspace/front-office-v20/assets/v20/staff60/sources/v7/v7_staff01_coach_060.png",
+    "rgb_sha256": "ef87a486d3990a471fbc9c74ed7ae8abc4dcef509b70bbc994cdb14604f30b50",
+    "native_dimensions": [
+      512,
+      512
+    ]
+  }
+]

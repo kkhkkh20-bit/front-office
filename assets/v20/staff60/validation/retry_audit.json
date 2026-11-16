@@ -1,0 +1,432 @@
+{
+  "policy": "all numeric gates mandatory; preserve identities; hold failures",
+  "reference_identities": 486,
+  "other_references_per_person": 485,
+  "results": [
+    {
+      "identity_id": "v7_staff01_coach_055__gentle",
+      "sizes": {
+        "128": {
+          "same_v7": 0.8146222829818726,
+          "other_max": 0.45331358909606934,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.45331358909606934
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.4041745364665985
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8601384162902832,
+          "other_max": 0.48589617013931274,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4425102174282074
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.48589617013931274
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.43839025497436523
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8523514270782471,
+          "other_max": 0.4912828803062439,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.43874257802963257
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4912828803062439
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.4470236599445343
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__gentle",
+      "sizes": {
+        "128": {
+          "same_v7": 0.8028987646102905,
+          "other_max": 0.383784681558609,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8816134929656982,
+          "other_max": 0.38029009103775024,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8655472993850708,
+          "other_max": 0.376437246799469,
+          "other_id": "v7_staff01_coach_005",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 256
+        }
+      },
+      "passed": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_057__gentle",
+      "sizes": {
+        "128": {
+          "same_v7": 0.8023930788040161,
+          "other_max": 0.3739522099494934,
+          "other_id": "v7_staff01_coach_058",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8457608222961426,
+          "other_max": 0.41535666584968567,
+          "other_id": "v7_staff01_coach_058",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_041",
+              "cosine": 0.40522706508636475
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.41535666584968567
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8411057591438293,
+          "other_max": 0.4247666299343109,
+          "other_id": "v7_staff01_coach_058",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.4247666299343109
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_006__gentle",
+      "sizes": {
+        "128": {
+          "same_v7": 0.8422752618789673,
+          "other_max": 0.40418028831481934,
+          "other_id": "v7_staff01_coach_058",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.40418028831481934
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8818590641021729,
+          "other_max": 0.4838550388813019,
+          "other_id": "v7_staff01_coach_021",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_012",
+              "cosine": 0.4443957805633545
+            },
+            {
+              "identity_id": "v7_staff01_coach_020",
+              "cosine": 0.4383593499660492
+            },
+            {
+              "identity_id": "v7_staff01_coach_021",
+              "cosine": 0.4838550388813019
+            },
+            {
+              "identity_id": "v7_staff01_coach_032",
+              "cosine": 0.42076438665390015
+            },
+            {
+              "identity_id": "v7_staff01_coach_033",
+              "cosine": 0.4258445203304291
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.43844035267829895
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8808592557907104,
+          "other_max": 0.49190783500671387,
+          "other_id": "v7_staff01_coach_021",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_012",
+              "cosine": 0.43561071157455444
+            },
+            {
+              "identity_id": "v7_staff01_coach_020",
+              "cosine": 0.42573267221450806
+            },
+            {
+              "identity_id": "v7_staff01_coach_021",
+              "cosine": 0.49190783500671387
+            },
+            {
+              "identity_id": "v7_staff01_coach_032",
+              "cosine": 0.4165787696838379
+            },
+            {
+              "identity_id": "v7_staff01_coach_033",
+              "cosine": 0.4207751750946045
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.4384809732437134
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_055__angle",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7747476696968079,
+          "other_max": 0.44220876693725586,
+          "other_id": "v7_staff01_coach_040",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.44220876693725586
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.42666295170783997
+            }
+          ],
+          "passed": false,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8487240076065063,
+          "other_max": 0.4339669346809387,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4197409152984619
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4339669346809387
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8598910570144653,
+          "other_max": 0.4339364767074585,
+          "other_id": "v7_staff01_coach_053",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_040",
+              "cosine": 0.4164572060108185
+            },
+            {
+              "identity_id": "v7_staff01_coach_053",
+              "cosine": 0.4339364767074585
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_035__angle",
+      "sizes": {
+        "128": {
+          "same_v7": 0.794575572013855,
+          "other_max": 0.36766868829727173,
+          "other_id": "v7_staff01_coach_043",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8217912912368774,
+          "other_max": 0.4086504578590393,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_028",
+              "cosine": 0.4086504578590393
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8061323165893555,
+          "other_max": 0.4329649806022644,
+          "other_id": "v7_staff01_coach_028",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_028",
+              "cosine": 0.4329649806022644
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_057__angle",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7685997486114502,
+          "other_max": 0.3850401043891907,
+          "other_id": "v7_staff01_coach_041",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.7615127563476562,
+          "other_max": 0.42307770252227783,
+          "other_id": "v7_staff01_coach_041",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_041",
+              "cosine": 0.42307770252227783
+            },
+            {
+              "identity_id": "v7_staff01_coach_054",
+              "cosine": 0.41006651520729065
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.7497292757034302,
+          "other_max": 0.41605132818222046,
+          "other_id": "v7_staff01_coach_054",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_041",
+              "cosine": 0.40928345918655396
+            },
+            {
+              "identity_id": "v7_staff01_coach_054",
+              "cosine": 0.41605132818222046
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    },
+    {
+      "identity_id": "v7_staff01_coach_006__angle",
+      "sizes": {
+        "128": {
+          "same_v7": 0.7973318099975586,
+          "other_max": 0.39049220085144043,
+          "other_id": "v7_staff01_coach_058",
+          "conflicts": [],
+          "passed": true,
+          "reference_size": 128
+        },
+        "256": {
+          "same_v7": 0.8089742660522461,
+          "other_max": 0.40158993005752563,
+          "other_id": "v7_staff01_coach_058",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.40158993005752563
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        },
+        "384": {
+          "same_v7": 0.8192654848098755,
+          "other_max": 0.4087704122066498,
+          "other_id": "v7_staff01_coach_048",
+          "conflicts": [
+            {
+              "identity_id": "v7_staff01_coach_048",
+              "cosine": 0.4087704122066498
+            },
+            {
+              "identity_id": "v7_staff01_coach_058",
+              "cosine": 0.4026128649711609
+            }
+          ],
+          "passed": false,
+          "reference_size": 256
+        }
+      },
+      "passed": false
+    }
+  ],
+  "passed_ids": [
+    "v7_staff01_coach_035__gentle"
+  ],
+  "held_ids": [
+    "v7_staff01_coach_055__gentle",
+    "v7_staff01_coach_057__gentle",
+    "v7_staff01_coach_006__gentle",
+    "v7_staff01_coach_055__angle",
+    "v7_staff01_coach_035__angle",
+    "v7_staff01_coach_057__angle",
+    "v7_staff01_coach_006__angle"
+  ]
+}

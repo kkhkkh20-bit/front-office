@@ -1,0 +1,37 @@
+{
+  "status": "partial_review",
+  "branch": "assets/v20-review",
+  "base_main": "8c9d5664204653a41a324159c67c71631a395f92",
+  "requested_photos": 600,
+  "requested_sheets": 30,
+  "source_people": 60,
+  "completed_photos": 10,
+  "pilots": [
+    {
+      "native": "/workspace/generated_images/exec-6e9079ae-4217-4986-b7b7-16d25e6ce8a8.png",
+      "scores": "validation/pilot_scores.json"
+    },
+    {
+      "native": "/workspace/generated_images/exec-ff275556-7def-4a2f-bdb6-41ee6cce5d8f.png",
+      "scores": "validation/pilot2_scores.json"
+    }
+  ],
+  "constraints": [
+    "keep exact age, glasses, beard, face identity",
+    "native generation only, no 128 upscale",
+    "all 600 same-v7>=0.60",
+    "all 2700 cross-team same-person pairs >=0.60 per size",
+    "all 485 other reference identities <0.40 unless explicit user policy changes",
+    "no main merge or game-code change"
+  ],
+  "policy": "All numeric gates mandatory; hold people requiring facial identity changes; user explicitly selected on 2026-11-16 Asia/Seoul.",
+  "ready_ids": [
+    "v7_staff01_coach_035"
+  ],
+  "held_count": 59,
+  "published_photos": 10,
+  "published_sheets": 30,
+  "full_request_complete": false,
+  "final_validation": "validation.json",
+  "independent_final_pixel_recheck_passed": true
+}

@@ -1,0 +1,1574 @@
+{
+  "schema_version": 1,
+  "status": "partial_review_only",
+  "request_fulfilled": false,
+  "published_subset_passed": true,
+  "requested_identities": 60,
+  "ready_identities": 1,
+  "held_identities": 59,
+  "requested_photos": 600,
+  "published_photos": 10,
+  "teams": [
+    "seoul_comets",
+    "seoul_hounds",
+    "incheon_seagulls",
+    "suwon_sparks",
+    "goyang_storm",
+    "daejeon_redfox",
+    "gwangju_blazes",
+    "daegu_thunders",
+    "busan_waves",
+    "changwon_anchors"
+  ],
+  "source_manifest": "assets/v7/staff01/manifest.json",
+  "layout": {
+    "columns": 10,
+    "rows": 10,
+    "source_slots": 60,
+    "unused_slots": [
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ],
+    "held_slots": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59
+    ],
+    "specs": {
+      "128": {
+        "pitch": 144,
+        "quality": 85,
+        "offset": 8,
+        "mode": "RGB"
+      },
+      "256": {
+        "pitch": 272,
+        "quality": 88,
+        "offset": 8,
+        "mode": "RGB"
+      },
+      "384": {
+        "pitch": 400,
+        "quality": 89,
+        "offset": 8,
+        "mode": "RGB"
+      }
+    }
+  },
+  "identities": [
+    {
+      "identity_id": "v7_staff01_coach_001",
+      "v7_identity_id": "v7_staff01_coach_001",
+      "slot": 0,
+      "age": 44,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "receding dark hair",
+        "body_type": "slim slight upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_002",
+      "v7_identity_id": "v7_staff01_coach_002",
+      "slot": 1,
+      "age": 45,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "very short silver-gray crop",
+        "body_type": "tall lean build with sloped shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_003",
+      "v7_identity_id": "v7_staff01_coach_003",
+      "slot": 2,
+      "age": 49,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "short neat black hair with a few gray temples",
+        "body_type": "broad stocky shoulders and a thick neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_004",
+      "v7_identity_id": "v7_staff01_coach_004",
+      "slot": 3,
+      "age": 43,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short black crew cut",
+        "body_type": "sturdy athletic middle-aged build"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_005",
+      "v7_identity_id": "v7_staff01_coach_005",
+      "slot": 4,
+      "age": 41,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "short neat black hair with a few gray temples",
+        "body_type": "slim slight upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_006",
+      "v7_identity_id": "v7_staff01_coach_006",
+      "slot": 5,
+      "age": 43,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short dark-brown hair",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_007",
+      "v7_identity_id": "v7_staff01_coach_007",
+      "slot": 6,
+      "age": 43,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short dark-brown hair",
+        "body_type": "sturdy athletic middle-aged build"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_008",
+      "v7_identity_id": "v7_staff01_coach_008",
+      "slot": 7,
+      "age": 40,
+      "tags": {
+        "glasses": true,
+        "beard": true,
+        "gray_hair": false,
+        "hair": "short dark-brown hair",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_009",
+      "v7_identity_id": "v7_staff01_coach_009",
+      "slot": 8,
+      "age": 46,
+      "tags": {
+        "glasses": true,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "very short silver-gray crop",
+        "body_type": "sturdy athletic middle-aged build"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_010",
+      "v7_identity_id": "v7_staff01_coach_010",
+      "slot": 9,
+      "age": 49,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "slim slight upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_011",
+      "v7_identity_id": "v7_staff01_coach_011",
+      "slot": 10,
+      "age": 45,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short dark-brown hair",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_012",
+      "v7_identity_id": "v7_staff01_coach_012",
+      "slot": 11,
+      "age": 43,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short black crew cut",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_013",
+      "v7_identity_id": "v7_staff01_coach_013",
+      "slot": 12,
+      "age": 44,
+      "tags": {
+        "glasses": true,
+        "beard": true,
+        "gray_hair": false,
+        "hair": "receding dark hair",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_014",
+      "v7_identity_id": "v7_staff01_coach_014",
+      "slot": 13,
+      "age": 41,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "short neat black hair with a few gray temples",
+        "body_type": "sturdy athletic middle-aged build"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_015",
+      "v7_identity_id": "v7_staff01_coach_015",
+      "slot": 14,
+      "age": 43,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "receding dark hair",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_016",
+      "v7_identity_id": "v7_staff01_coach_016",
+      "slot": 15,
+      "age": 41,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short black crew cut",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_017",
+      "v7_identity_id": "v7_staff01_coach_017",
+      "slot": 16,
+      "age": 48,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "receding dark hair",
+        "body_type": "tall lean build with sloped shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_018",
+      "v7_identity_id": "v7_staff01_coach_018",
+      "slot": 17,
+      "age": 44,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "receding dark hair",
+        "body_type": "broad stocky shoulders and a thick neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_019",
+      "v7_identity_id": "v7_staff01_coach_019",
+      "slot": 18,
+      "age": 48,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short dark-brown hair",
+        "body_type": "broad stocky shoulders and a thick neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_020",
+      "v7_identity_id": "v7_staff01_coach_020",
+      "slot": 19,
+      "age": 43,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "short neat black hair with a few gray temples",
+        "body_type": "sturdy athletic middle-aged build"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_021",
+      "v7_identity_id": "v7_staff01_coach_021",
+      "slot": 20,
+      "age": 54,
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "thin salt-and-pepper hair",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_022",
+      "v7_identity_id": "v7_staff01_coach_022",
+      "slot": 21,
+      "age": 50,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "receding dark hair",
+        "body_type": "compact average upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_023",
+      "v7_identity_id": "v7_staff01_coach_023",
+      "slot": 22,
+      "age": 50,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "receding dark hair",
+        "body_type": "heavyset with a rounded chest and pot belly, thick neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_024",
+      "v7_identity_id": "v7_staff01_coach_024",
+      "slot": 23,
+      "age": 57,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "broad stocky shoulders and a thick neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_025",
+      "v7_identity_id": "v7_staff01_coach_025",
+      "slot": 24,
+      "age": 55,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short black crew cut",
+        "body_type": "soft fuller build with a round upper abdomen"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_026",
+      "v7_identity_id": "v7_staff01_coach_026",
+      "slot": 25,
+      "age": 54,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "short neat black hair with a few gray temples",
+        "body_type": "slim slight upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_027",
+      "v7_identity_id": "v7_staff01_coach_027",
+      "slot": 26,
+      "age": 50,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "short neat black hair with a few gray temples",
+        "body_type": "tall lean build with sloped shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_028",
+      "v7_identity_id": "v7_staff01_coach_028",
+      "slot": 27,
+      "age": 53,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "very short silver-gray crop",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_029",
+      "v7_identity_id": "v7_staff01_coach_029",
+      "slot": 28,
+      "age": 56,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short dark-brown hair",
+        "body_type": "compact average upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_030",
+      "v7_identity_id": "v7_staff01_coach_030",
+      "slot": 29,
+      "age": 59,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "receding silver temples and short gray hair",
+        "body_type": "compact average upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_031",
+      "v7_identity_id": "v7_staff01_coach_031",
+      "slot": 30,
+      "age": 56,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "receding dark hair",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_032",
+      "v7_identity_id": "v7_staff01_coach_032",
+      "slot": 31,
+      "age": 59,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "heavyset with a rounded chest and pot belly, thick neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_033",
+      "v7_identity_id": "v7_staff01_coach_033",
+      "slot": 32,
+      "age": 58,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_034",
+      "v7_identity_id": "v7_staff01_coach_034",
+      "slot": 33,
+      "age": 50,
+      "tags": {
+        "glasses": true,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "thin salt-and-pepper hair",
+        "body_type": "compact average upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "v7_identity_id": "v7_staff01_coach_035",
+      "slot": 34,
+      "age": 50,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short black crew cut",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "ready",
+      "variants": {
+        "seoul_comets": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/seoul_comets.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/seoul_comets.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/seoul_comets.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_09.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "86c93cca3dbfbe642a3d89f084e70832ac2cf1e5a12c3f2ac8837d643594ca39",
+            "edge_guard": 2
+          }
+        },
+        "seoul_hounds": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/seoul_hounds.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/seoul_hounds.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/seoul_hounds.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_00.webp",
+            "crop": [
+              629,
+              2,
+              1252,
+              625
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "af24c671f07490a87851f274cb74fc0e6657f22d8a43bed5397ec47a8fed4b06",
+            "edge_guard": 2
+          }
+        },
+        "incheon_seagulls": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/incheon_seagulls.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/incheon_seagulls.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/incheon_seagulls.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_01.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "7a80df1239298ef776048769afe0cd6334aa85f6633a631919ac9300947c7705",
+            "edge_guard": 2
+          }
+        },
+        "suwon_sparks": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/suwon_sparks.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/suwon_sparks.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/suwon_sparks.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_02.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "c51f9b69e6d8acbe0335fcc4903192838f1d0a1303e123c2b4974843189aa1ba",
+            "edge_guard": 2
+          }
+        },
+        "goyang_storm": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/goyang_storm.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/goyang_storm.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/goyang_storm.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_03.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "250eb3414a6cda4d71fb9444b49630b07d18c77d678003049c3842025df0e29e",
+            "edge_guard": 2
+          }
+        },
+        "daejeon_redfox": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/daejeon_redfox.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/daejeon_redfox.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/daejeon_redfox.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/redfox_00.webp",
+            "crop": [
+              0,
+              0,
+              1254,
+              1254
+            ],
+            "native_crop_size": [
+              1254,
+              1254
+            ],
+            "native_crop_rgb_sha256": "9b43cf72bc427d8b2b86be2a79488db7447b5f1c4e7c7b1c2f0797d7ca6691cb",
+            "edge_guard": 0
+          }
+        },
+        "gwangju_blazes": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/gwangju_blazes.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/gwangju_blazes.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/gwangju_blazes.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_05.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "66109adc1c53bd29bccc98d01104e698eacc7ad6319632b553c430e9eb68e686",
+            "edge_guard": 2
+          }
+        },
+        "daegu_thunders": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/daegu_thunders.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/daegu_thunders.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/daegu_thunders.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_06.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "8da14fa71aae35dfe03f9a89db33847f84167c992c0bb96ab461afa0cfadae8f",
+            "edge_guard": 2
+          }
+        },
+        "busan_waves": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/busan_waves.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/busan_waves.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/busan_waves.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_07.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "95381c9973ba4d6bb8a677f378c4f54bd6cb052b2937a351765dc965d2d7cf91",
+            "edge_guard": 2
+          }
+        },
+        "changwon_anchors": {
+          "sheets": {
+            "128": {
+              "path": "assets/v20/staff60/sheets/128/changwon_anchors.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "assets/v20/staff60/sheets/256/changwon_anchors.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            },
+            "384": {
+              "path": "assets/v20/staff60/sheets/384/changwon_anchors.webp",
+              "rect": [
+                1608,
+                1208,
+                384,
+                384
+              ]
+            }
+          },
+          "source": {
+            "path": "assets/v20/staff60/sources/native/team_08.webp",
+            "crop": [
+              629,
+              629,
+              1252,
+              1252
+            ],
+            "native_crop_size": [
+              623,
+              623
+            ],
+            "native_crop_rgb_sha256": "a6a3b869b93832d39642392f55d532fb2a999747aa0ebaefa5102df2f62dbace",
+            "edge_guard": 2
+          }
+        }
+      }
+    },
+    {
+      "identity_id": "v7_staff01_coach_036",
+      "v7_identity_id": "v7_staff01_coach_036",
+      "slot": 35,
+      "age": 53,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "thin salt-and-pepper hair",
+        "body_type": "slim slight upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_037",
+      "v7_identity_id": "v7_staff01_coach_037",
+      "slot": 36,
+      "age": 51,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "heavyset with a rounded chest and pot belly, thick neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_038",
+      "v7_identity_id": "v7_staff01_coach_038",
+      "slot": 37,
+      "age": 52,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short dark-brown hair",
+        "body_type": "slim slight upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_039",
+      "v7_identity_id": "v7_staff01_coach_039",
+      "slot": 38,
+      "age": 57,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "thin salt-and-pepper hair",
+        "body_type": "soft fuller build with a round upper abdomen"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_040",
+      "v7_identity_id": "v7_staff01_coach_040",
+      "slot": 39,
+      "age": 57,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "soft fuller build with a round upper abdomen"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_041",
+      "v7_identity_id": "v7_staff01_coach_041",
+      "slot": 40,
+      "age": 55,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "short neat black hair with a few gray temples",
+        "body_type": "slim slight upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_042",
+      "v7_identity_id": "v7_staff01_coach_042",
+      "slot": 41,
+      "age": 54,
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_043",
+      "v7_identity_id": "v7_staff01_coach_043",
+      "slot": 42,
+      "age": 56,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": false,
+        "hair": "short black crew cut",
+        "body_type": "compact average upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_044",
+      "v7_identity_id": "v7_staff01_coach_044",
+      "slot": 43,
+      "age": 54,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "short neat black hair with a few gray temples",
+        "body_type": "compact average upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_045",
+      "v7_identity_id": "v7_staff01_coach_045",
+      "slot": 44,
+      "age": 59,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_046",
+      "v7_identity_id": "v7_staff01_coach_046",
+      "slot": 45,
+      "age": 58,
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "very short silver-gray crop",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_047",
+      "v7_identity_id": "v7_staff01_coach_047",
+      "slot": 46,
+      "age": 56,
+      "tags": {
+        "glasses": true,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "soft fuller build with a round upper abdomen"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_048",
+      "v7_identity_id": "v7_staff01_coach_048",
+      "slot": 47,
+      "age": 52,
+      "tags": {
+        "glasses": true,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "sturdy athletic middle-aged build"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_049",
+      "v7_identity_id": "v7_staff01_coach_049",
+      "slot": 48,
+      "age": 67,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "receding silver temples and short gray hair",
+        "body_type": "slim slight upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_050",
+      "v7_identity_id": "v7_staff01_coach_050",
+      "slot": 49,
+      "age": 65,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "receding silver temples and short gray hair",
+        "body_type": "tall lean build with sloped shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_051",
+      "v7_identity_id": "v7_staff01_coach_051",
+      "slot": 50,
+      "age": 67,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "receding silver temples and short gray hair",
+        "body_type": "compact average upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_052",
+      "v7_identity_id": "v7_staff01_coach_052",
+      "slot": 51,
+      "age": 68,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "very short silver-gray crop",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_053",
+      "v7_identity_id": "v7_staff01_coach_053",
+      "slot": 52,
+      "age": 61,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "receding silver temples and short gray hair",
+        "body_type": "tall lean build with sloped shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_054",
+      "v7_identity_id": "v7_staff01_coach_054",
+      "slot": 53,
+      "age": 68,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_055",
+      "v7_identity_id": "v7_staff01_coach_055",
+      "slot": 54,
+      "age": 65,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "very short silver-gray crop",
+        "body_type": "heavyset with a rounded chest and pot belly, thick neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_056",
+      "v7_identity_id": "v7_staff01_coach_056",
+      "slot": 55,
+      "age": 64,
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "very short silver-gray crop",
+        "body_type": "soft fuller build with a round upper abdomen"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_057",
+      "v7_identity_id": "v7_staff01_coach_057",
+      "slot": 56,
+      "age": 62,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "thin salt-and-pepper hair",
+        "body_type": "average build with relaxed shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_058",
+      "v7_identity_id": "v7_staff01_coach_058",
+      "slot": 57,
+      "age": 60,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "receding silver temples and short gray hair",
+        "body_type": "compact average upper body"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_059",
+      "v7_identity_id": "v7_staff01_coach_059",
+      "slot": 58,
+      "age": 68,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "gray_hair": true,
+        "hair": "balding crown with gray side hair",
+        "body_type": "lean with narrow shoulders and a slender neck"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    },
+    {
+      "identity_id": "v7_staff01_coach_060",
+      "v7_identity_id": "v7_staff01_coach_060",
+      "slot": 59,
+      "age": 66,
+      "tags": {
+        "glasses": true,
+        "beard": true,
+        "gray_hair": true,
+        "hair": "thin salt-and-pepper hair",
+        "body_type": "tall lean build with sloped shoulders"
+      },
+      "status": "held",
+      "variants": {},
+      "hold_reason": "Existing identity preserved; available candidates failed strict other-person <0.40 or all-ten-team gates. No facial identity changes authorized."
+    }
+  ]
+}
