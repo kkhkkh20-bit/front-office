@@ -90,7 +90,7 @@ function workspaceFit(host){
     if(regions.length===1){
       const region=regions[0],tail=children.slice(children.indexOf(region)+1);
       // Identity blocks, illustrations and explanatory text belong to the content, even before their images load.
-      const leading=children.slice(0,children.indexOf(region)).filter(el=>!el.matches('h1,h2,h3,header,.row,.seg,.chips,.roster-caption,.roster-filters,.roster-tools,.trade-search-main,.trade-pool-options,label:has(input,select),input,select'));
+      const leading=children.slice(0,children.indexOf(region)).filter(el=>!el.matches('h1,h2,h3,header,.row,.seg,.chips,.fbar,.roster-caption,.roster-filters,.roster-tools,.trade-search-main,.trade-pool-options,label:has(input,select),input,select'));
       if(matchMedia('(max-width:699px), (max-height:599px)').matches&&region.matches('.tw,.fdt-w'))tail.filter(el=>el.matches('p.small')).forEach(el=>region.append(el));
       const extra=tail.filter(el=>!el.matches('.pgr,.row,.btn,p.small'));
       if(extra.length||leading.length){
@@ -100,7 +100,7 @@ function workspaceFit(host){
     }
     else{
       scroller=document.createElement('div');
-      const first=regions[0]||children.find(el=>!el.matches('h1,h2,h3,header,.row:first-child,.seg,.chips,.roster-caption,.roster-filters,.roster-tools'));
+      const first=regions[0]||children.find(el=>!el.matches('h1,h2,h3,header,.row:first-child,.seg,.chips,.fbar,.roster-caption,.roster-filters,.roster-tools'));
       if(first){panel.insertBefore(scroller,first);let el=first;while(el){const next=el.nextSibling;scroller.append(el);el=next;}}
       else panel.append(scroller);
     }
@@ -182,10 +182,11 @@ function workspaceObserve(){if(typeof ResizeObserver==='undefined')return;
 }
 
 function workspaceReveal(selector){
-  const panel=document.querySelector(selector)?.closest('.ws-panel');if(!panel||!panel.hidden)return;
-  const deck=panel.parentElement,bar=deck.parentElement.querySelector(':scope > .ws-pages,:scope > .ws-navigation > .ws-pages');if(!bar)return;
-  const columns=+deck.style.getPropertyValue('--ws-columns')||1;
-  bar.querySelector(`[data-ws-page="${Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click();
+  const panel=document.querySelector(selector)?.closest('.ws-panel');
+  if(panel&&panel.hidden){ const deck=panel.parentElement,bar=deck.parentElement.querySelector(':scope > .ws-pages,:scope > .ws-navigation > .ws-pages');
+    const columns=+deck.style.getPropertyValue('--ws-columns')||1;
+    bar?.querySelector(`[data-ws-page="${Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click(); }
+  const fb=document.querySelector(selector)?.closest('.fbar-p[hidden]')?.closest('[data-fbar]'); if(fb)A.fbarTog(fb.dataset.fbar); /* 필터 바 칸 안의 조건이면 칸을 연다 */
 }
 
 function workspaceDetail(){
