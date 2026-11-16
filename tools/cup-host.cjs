@@ -53,6 +53,10 @@ function save(S) { W(stPath(), JSON.stringify(S, null, 1)); }
 const entryFile = h => path.join(DIR, 'entries', h + '.json');
 const entryOf = (h) => J(entryFile(h));
 const lab = m => m ? `${m.name} ${m.year}` : '미정';
+/* 조사: 마지막 글자 받침(숫자는 읽는 소리)으로 이/가, 을/를 */
+function jo(w, pair) { const c = String(w).trim().slice(-1); let bat;
+  if (/[0-9]/.test(c)) bat = '013678'.includes(c); else { const k = c.charCodeAt(0) - 0xAC00; bat = k >= 0 && k <= 11171 ? k % 28 !== 0 : false; }
+  const [a, b] = pair.split('/'); return w + (bat ? a : b); }
 const ovrTxt = o => o ? `${o.t}|${o.p} ${o.b}` : '-';
 
 function parseBest(s) { const o = { default: 1 }; for (const part of String(s || '').split(',')) { const [a, b] = part.split(':'); if (b == null) o.default = +a || 1; else o[+a] = +b || 1; } return o; }
@@ -119,7 +123,7 @@ function postOf(S, info, res, g, gi, note) {
   out.push('■ 선발 매치업', `${LA} ${g.sp.A ? `${g.sp.A.name}(${g.sp.A.o})` : '-'} vs ${LB} ${g.sp.B ? `${g.sp.B.name}(${g.sp.B.o})` : '-'}`, '');
   out.push('■ 하이라이트');
   if (g.hl.length) for (const h of g.hl) out.push(`[${h.inn}회${h.half}] ${h.team} ${h.runs}득점: ${h.plays.join(', ')} · ${h.score}`); else out.push('양 팀 모두 점수를 내지 못했습니다.');
-  out.push('', '■ 경기 결과', `${wL}가 ${lL}를 ${ws}:${ls}로 이겼습니다.${g.walk ? ` ${g.inn}회 끝내기 승리입니다.` : g.inn > 9 ? ` ${g.inn}회 연장 승부였습니다.` : ''}`);
+  out.push('', '■ 경기 결과', `${jo(wL, '이/가')} ${jo(lL, '을/를')} ${ws}:${ls}${'036'.includes(String(ls).slice(-1)) ? '으로' : '로'} 이겼습니다.${g.walk ? ` ${g.inn}회 끝내기 승리입니다.` : g.inn > 9 ? ` ${g.inn}회 연장 승부였습니다.` : ''}`);
   if (g.wh) out.push(`결승타는 ${g.wh.name}(${side(g.wh.k)})의 ${g.wh.txt}입니다.`);
   out.push(`승리투수 ${g.dec.w} / 세이브 ${g.dec.sv || '없음'} / 패전투수 ${g.dec.l}`, '', '■ 줄 점수', g.line, '');
   out.push('■ 선수 기록', '타자·투수 기록은 첨부한 EventLog_bat.txt, EventLog_pit.txt에 있습니다.');
@@ -135,9 +139,9 @@ function nextNote(S, info, res, done) {
   if (!done) return `시리즈는 ${LA} ${res.wa}승, ${LB} ${res.wb}승입니다. 다음 경기가 이어집니다.`;
   const W = res.win === 'A' ? LA : LB, wins = `${Math.max(res.wa, res.wb)}승 ${Math.min(res.wa, res.wb)}패`;
   const Core = C(), B2 = S.bracket; const champ = Core.cupChampion(B2);
-  if (champ) return `${W}가 ${res.best > 1 ? wins + '로 ' : ''}${S.cfg.title} 우승을 차지했습니다.`;
+  if (champ) return `${jo(W, '이/가')} ${res.best > 1 ? wins + '로 ' : ''}${S.cfg.title} 우승을 차지했습니다.`;
   const nx = Core.cupNext(B2);
-  return `${W}가 ${res.best > 1 ? wins + '로 ' : ''}다음 라운드에 올랐습니다.${nx ? ` 다음 경기는 ${lab(S.entries[nx.a])} vs ${lab(S.entries[nx.b])}입니다.` : ''}`;
+  return `${jo(W, '이/가')} ${res.best > 1 ? wins + '로 ' : ''}다음 라운드에 올랐습니다.${nx ? ` 다음 경기는 ${lab(S.entries[nx.a])} vs ${lab(S.entries[nx.b])}입니다.` : ''}`;
 }
 function runOne(S) {
   const Core = C(); const B = S.bracket; if (!B) { console.error('먼저 seed를 실행하세요.'); process.exit(1); }
@@ -187,12 +191,16 @@ function cmdResults() {
   W(path.join(DIR, 'out', 'results.json'), JSON.stringify(out, null, 1));
   /* 서버 공개 결과(유저의 전당): 지난 회차를 이어 붙인 목록 */
   const hall = path.join(DIR, 'out', 'hall.json'); let H = { v: 1, cups: [] }; if (process.env.CUP_HALL && fs.existsSync(process.env.CUP_HALL)) H = J(process.env.CUP_HALL);
-  H.cups = H.cups.filter(c => c.id !== out.id).concat([{ id: out.id, title: out.title, date: out.date, n: out.n, champ: out.champ, runner: out.runner, semis: out.semis, missions: out.missions.map(m => ({ k: m.k, msg: m.msg })), titles: out.titles }]); W(hall, JSON.stringify(H));
+  H.cups = H.cups.filter(c => c.id !== out.id).concat([{ id: out.id, title: out.title, date: out.date, n: out.n, champ: out.champ, runner: out.runner, semis: out.semis, eight: out.eight, missions: out.missions.map(m => ({ k: m.k, msg: m.msg })), titles: out.titles }]); W(hall, JSON.stringify(H));
+  /* 파워랭킹: 회차(목록 순서)별 도달 라운드 점수, 덱 = 팀명 */
+  const hist = []; H.cups.forEach((c, i) => { const add = (x, best) => x && hist.push({ no: i + 1, deck: x.name, best }); add(c.champ, 1); add(c.runner, 2); (c.semis || []).forEach(x => add(x, 4)); (c.eight || []).forEach(x => add(x, 8)); });
+  const power = Core.cupPower(hist, H.cups.length);
   const L = [`[${S.cfg.title} 결과]`, ''];
   if (champ) L.push(`우승 ${lab(S.entries[champ])} (${S.entries[champ].seed}번 시드, OVR ${ovrTxt(S.entries[champ].ovr)})`, `준우승 ${lab(S.entries[runner])}`, `4강 ${lost(4).map(h => lab(S.entries[h])).join(', ')}`, '');
   else L.push('아직 대회가 끝나지 않았습니다.', '');
   L.push('■ 미션상'); if (missions.length) for (const m of missions) L.push(`- ${m.msg} → ${m.team}`); else L.push('- 해당 없음');
   L.push('', `■ 개인 타이틀 (타율·출루율 ${q.pa}타석, 평균자책점·WHIP·K/9 ${Math.floor(q.outs / 3)}이닝 이상)`); for (const t of titles) L.push(`- ${t.k}: ${t.name}(${t.team}) ${t.v}`);
+  L.push('', '■ 파워랭킹(상위 10)'); power.slice(0, 10).forEach((x, i) => L.push(`${i + 1}. ${x.deck} ${x.pts}점`));
   W(path.join(DIR, 'out', 'results.txt'), L.join('\n') + '\n'); console.log(L.join('\n'));
 }
 async function cmdPublish() {
