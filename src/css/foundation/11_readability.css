@@ -447,6 +447,7 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .sch-pl.done{opacity:.6}
 .gpl{margin:10px 0;padding:10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:8px}
 .gpl-r{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.gpl-r>.small{min-width:120px;opacity:.8}
+.gpl-bulk{flex-direction:column;align-items:stretch;gap:4px;margin-top:10px}.gpl-bulk>.small{min-width:0}.gpl-bk{gap:6px;align-items:center}.gpl-bk>b{min-width:76px}
 /* 인물 카드 공통 */
 .pcard{display:grid;gap:10px;margin:10px 0;padding:10px;border:1px solid var(--line,#333);border-radius:10px;background:color-mix(in srgb,var(--card,#181b20) 60%,transparent)}
 .pc-sec{display:grid;gap:4px}

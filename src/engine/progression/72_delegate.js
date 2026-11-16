@@ -8,12 +8,30 @@ const AUTO_AREAS=[
   ['mgr','감독 요청','감독이 올리는 영입·기용·드래프트 방향 요청에 비서가 기본안으로 답합니다. 직접 답하면 감독과의 관계를 더 잘 챙길 수 있습니다.'],
   ['scout','스카우트 배치','스카우트팀장이 시기에 맞게 배치합니다.'],
   ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다. 모두 거절하거나, 우리 평가로 공정에 가까운 제안(손해 1 이내)만 올립니다. 주간 요약에 남깁니다.'],
-  ['raid','스태프 빼가기 대응','별 4개 이상(★★★★, 5개 만점) 스카우트·분석원은 상대 제시액에 맞춰 붙잡고, 그 아래는 보내 줍니다. 상대 제시액이 지금 연봉의 1.5배를 넘으면 붙잡기 전에 단장 승인을 받습니다.']];
-function autoOn(k){ if(!G)return false; if(k==='scout')return !!G.scoutAuto; if(k==='ev')return !!(G.deleg&&Object.keys(EV_NAME).every(e=>G.deleg[e])); return !!(G.auto&&G.auto[k]); }
-function autoSet(k,v){ G.auto=G.auto||{}; const prev=G.auto[k]; G.auto[k]=k==='tro'&&v==='good'?'good':!!v; if(k==='tro'&&G.auto.tro&&prev!==G.auto.tro)for(const o of [...(G.offers||[])])try{ autoTradeOffer(o); }catch(e){} /* 새 필터는 이미 받은 제안에도 적용한다. */
+  ['raid','스태프 빼가기 대응','별 4개 이상(★★★★, 5개 만점) 스카우트·분석원은 상대 제시액에 맞춰 붙잡고, 그 아래는 보내 줍니다. 상대 제시액이 지금 연봉의 1.5배를 넘으면 붙잡기 전에 단장 승인을 받습니다.'],
+  ['schg','고교 야구부 후원','고른 권역에서 올해 후원하지 않은 학교를 매주 월요일 후원합니다. 학교마다 한 해 한 번, 곳당 1,000만 원으로 직접 할 때와 같습니다. 권역은 스카우트 > 지역 정보망에서 고릅니다.'],
+  ['sisv','자매구단 교류 방문단','고른 나라에서 다시 보낼 수 있는 구단에 매주 월요일 방문단을 보냅니다. 구단마다 60일에 한 번, 곳당 2,000만 원으로 직접 할 때와 같습니다. 나라는 스카우트 > 해외 네트워크에서 고릅니다.'],
+  ['stalk','직원 희망 보직 면담','면담할 수 있는 우리 코치·스카우트·데이터팀 직원과 매주 월요일 업무·희망 보직 면담을 합니다. 한 사람에 14일에 한 번이고, 관계가 오르는 폭도 직접 할 때와 같습니다.']];
+/* 국사왕 제안 자동화: 따로 켜야만 돈다(모두 맡기기에 넣지 않는다). 비용·횟수 제한·효과는 손으로 할 때와 같은 함수를 쓴다 */
+const AUTO_OPTIN=new Set(['schg','sisv','stalk']);
+const AUTO_SCOPE={schg:()=>[...new Set(Object.values(schList()).map(S=>S.area))],sisv:()=>Object.keys(OCN)};
+function autoScope(k){ const v=G&&G.auto&&G.auto[k]; return Array.isArray(v)?v.filter(x=>AUTO_SCOPE[k]().includes(x)):[]; }
+function autoScopeToggle(k,x){ if(!AUTO_SCOPE[k]||!AUTO_SCOPE[k]().includes(x))return ''; const L=autoScope(k), on=!L.includes(x); G.auto=G.auto||{}; G.auto[k]=on?L.concat([x]):L.filter(y=>y!==x); const nm=k==='schg'?`${x} 고교 후원`:`${OCN[x]} 교류 방문단`;
+  if(!on)return `${nm} 자동 처리를 껐습니다.`; const r=autoRoutine([k],[x]); return `${nm}을(를) 매주 월요일 자동으로 합니다.${r?' 오늘 '+r+'.':' 오늘은 처리할 곳이 없습니다.'}`; }
+/* 매주 월요일(또는 켠 날 바로): 직접 할 때와 같은 일괄 함수로 처리하고 받은편지함 한 통·자동 처리 기록에 남긴다 */
+function autoRoutine(keys,only){ if(G.unemp)return ''; const L=[], D=[];
+  if(keys.includes('schg')&&autoOn('schg'))for(const a of only||autoScope('schg')){ const n=schGiftTargets(a).length; if(!n)continue; schGiftMany(a); L.push(`${a} 고교 ${n}곳 후원 ${money(10*n)}`); }
+  if(keys.includes('sisv')&&autoOn('sisv'))for(const c of only||autoScope('sisv')){ const T=sisVisitTargets(c); if(!T.length)continue; sisVisitMany(c); L.push(`${OCN[c]} 구단 ${T.length}곳 방문단 ${money(SIS_VIS*T.length)}`); D.push(...T.map(x=>x.n)); }
+  if(keys.includes('stalk')&&autoOn('stalk')){ const T=[...Object.values(G.coach?.[G.user]||{}),...(G.coachX||[])].filter(Boolean).map(s=>({kind:'coach',id:s.id})).concat((G.scouts||[]).filter(Boolean).map(s=>({kind:'scout',id:s.id})),(G.analysts||[]).filter(Boolean).map(s=>({kind:'analyst',id:s.id}))).filter(t=>t.id!=null&&!staffTalkCheck(t.kind,t.id,'listen'));
+    if(T.length){ const r=staffTalkBulk(T,'listen'); if(r.success.length){ L.push(`직원 ${r.success.length}명 희망 보직 면담`); D.push(...r.success.map(x=>x.name)); } } }
+  if(!L.length)return ''; const t=L.join(' · '); autoLogAdd('정기 업무(운영팀)',t);
+  mail('운영팀',`자동 처리: ${L.length===1?L[0]:L.length+'건'}`,`맡기신 정기 업무를 처리했습니다.\n${L.join('\n')}${D.length?`\n\n대상: ${D.join(', ')}`:''}\n\n비용과 횟수 제한은 직접 할 때와 같습니다. 설정 > 권한에서 끌 수 있습니다.`,{kind:'운영',acts:[{l:'권한 설정',a:'go',v:'cfg:auth'}]});
+  return t; }
+function autoOn(k){ if(!G)return false; if(k==='scout')return !!G.scoutAuto; if(AUTO_SCOPE[k])return autoScope(k).length>0; if(k==='ev')return !!(G.deleg&&Object.keys(EV_NAME).every(e=>G.deleg[e])); return !!(G.auto&&G.auto[k]); }
+function autoSet(k,v){ G.auto=G.auto||{}; if(AUTO_SCOPE[k]){ G.auto[k]=v===true?AUTO_SCOPE[k]():Array.isArray(v)?v:[]; return; } const prev=G.auto[k]; G.auto[k]=k==='tro'&&v==='good'?'good':!!v; if(k==='tro'&&G.auto.tro&&prev!==G.auto.tro)for(const o of [...(G.offers||[])])try{ autoTradeOffer(o); }catch(e){} /* 새 필터는 이미 받은 제안에도 적용한다. */
   if(k==='ev'){ G.deleg=G.deleg||{}; for(const e in EV_NAME)G.deleg[e]=!!v; }
   if(k==='scout'){ G.scoutAuto=!!v; G._scErr=null; if(v)try{ scoutPlanApply(true); }catch(e){ G._scErr=String(e&&e.message||e); } } }
-function autoAll(v){ for(const [k] of AUTO_AREAS)autoSet(k,v); G.autoMode=v?'easy':'self'; }
+function autoAll(v){ for(const [k] of AUTO_AREAS)if(!AUTO_OPTIN.has(k)||!v)autoSet(k,v); G.autoMode=v?'easy':'self'; }
 function autoLogAdd(t,c,r){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t,c,r:r||'',k:'auto'}); if(G.autoLog.length>20)G.autoLog.length=20; }
 
 /* 국내 연봉: 12월 5일 1차 제시(중간값), 12월 19일 남은 선수에게 다시 제시, 1월 5일 확정 */
@@ -40,10 +58,10 @@ function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sa
   if(pend.length&&!autoOn('fre')){ C.autoWait={d:G.day,f:1,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 미결정으로 확정 대기 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`}; return; }
   const r=confirmContracts(); if(r){ C.autoWait={d:G.day,why:String(r)}; return; } delete C.autoWait; C.autoDone={d:G.day,n:C.ended.filter(id=>{ const p=G.players[id]; return p&&p.team===G.user&&!p.hold; }).length,h:C.ended.filter(id=>G.players[id]&&G.players[id].hold).length,f:C.foreignEnd.filter(id=>!C.foreignDrop.includes(id)).length}; /* 결별한 선수는 빼고 센다(검수 11-07) */ autoLogAdd('연봉 계약 확정(운영팀)','국내·외국인 계약을 확정했습니다.'); }
 /* 위임 업무 처리 상태(처리 예정·완료·대기와 이유). 지금은 연봉 계약 */
-function delegStatus(k){ if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
+function delegStatus(k){ if(AUTO_OPTIN.has(k)&&autoOn(k)){ const L=(G.autoLog||[]).find(x=>x.t==='정기 업무(운영팀)'); return (AUTO_SCOPE[k]?`처리 범위: ${autoScope(k).map(x=>k==='sisv'?OCN[x]:x).join(', ')}`:'처리 범위: 면담할 수 있는 모든 직원')+(L?` · 최근 처리 ${dmd(L.d)}`:' · 다음 월요일에 처리합니다'); } if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
   if(C.done)return C.autoDone?`처리 완료: ${dmd(C.autoDone.d)} 국내 ${C.autoDone.n}명·외국인 ${C.autoDone.f}명 계약 확정${C.autoDone.h?` · 미계약 ${C.autoDone.h}명`:''}`:'처리 완료: 올해 연봉 계약 확정';
   if(C.autoWait){ if(C.autoWait.f){ const pend=fRePending(); if(!pend.length||autoOn('fre'))return `처리 예정: 외국인 결정이 끝나 ${G.day<dnum(C.y+1,1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; return `대기: 외국인 ${pend.length}명(${pend.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}) 재계약 미결정 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`; } return `대기: ${C.autoWait.why}`; } /* 지난 사유가 아니라 지금 남은 사유 */ return `처리 예정: ${G.day<dnum(C.y+1,1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; } /* 12월에는 KD(1,5)가 지난 1월이라 '다음 날'로 나왔다(검수 11-06) */
-function autoDaily(day){ if(!G.auto||G.unemp)return;
+function autoDaily(day){ if(!G.auto||G.unemp)return; if(dobj(day).w===1&&G.autoWk!==day){ G.autoWk=day; try{ autoRoutine(['schg','sisv','stalk']); }catch(e){} }
   if(autoOn('fre')&&G.contract&&!G.contract.done&&!G.contract.freAuto&&G.contract.freTry!==day&&(day>=KD(12,3)||dobj(day).m<=2))try{ autoFre(); }catch(e){} /* 12월 3일이 지난 뒤 맡겨도 다음 날 처리한다(검수 11-06) */
   { const C=G.contract; if(autoOn('sal')&&C&&!C.done){ const y=C.y; /* 1차 12월 5일, 2차 12월 19일. 늦게 맡겨 1차가 늦었으면 1차 7일 뒤(확정 하루 전까지)에 2차(검수 11-07) */
     if(!C.salR1&&day>=dnum(y,12,5))try{ autoSalRound(true); }catch(e){}
@@ -61,12 +79,13 @@ function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[]
 
 /* ===== 비서에게 넘기기: 알림마다 '비서에게 넘기기' 버튼. 누르면 그 업무를 앞으로 비서·팀장이 맡고, 지금 걸린 일도 바로 처리한다.
    설정 · 권한 탭에서 언제든 다시 가져올 수 있다 ===== */
-const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀'};
+const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀',schg:'운영팀',sisv:'운영팀',stalk:'운영팀'};
 function autoNow(k){ const C=G.contract; const out=[];
   if(k==='sal'&&C&&!C.done&&!C.salR1&&G.day>=dnum(C.y,12,5)){ autoSalRound(true); out.push('연봉 협상 1차 제시를 마쳤습니다'); } /* 1차는 한 번만(예약 처리와 겹치지 않게). 12월 5일 전에 맡기면 그날 제시 */ /* 맡기기를 반복해도 강제 제시는 주 1회 */
   if(k==='fre'&&C&&!C.done){ const d0=C.foreignDrop.length; if(C.freTry!==G.day)autoFre(); /* 하루 한 번만 제시(가져왔다 다시 넘겨도 같은 날 재시도를 다 쓰지 않게, 검수 11-07) */ const cut=C.foreignDrop.slice(d0).map(id=>G.players[id]).filter(Boolean); out.push(`외국인 재계약을 처리했습니다${cut.length?`(결별: ${cut.map(p=>p.name).join(', ')})`:''}`); }
   if(k==='tro'){ for(const o of [...(G.offers||[])])autoTradeOffer(o); out.push('받은 트레이드 제안을 정리했습니다'); }
   if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }
+  if(AUTO_OPTIN.has(k)){ const r=autoRoutine([k]); out.push(r?'오늘 '+r:'오늘은 처리할 대상이 없습니다'); }
   if(k==='scout'){ out.push(G._scErr?`스카우트 배치는 맡았지만 지금 배치 조정에 실패했습니다(${G._scErr.slice(0,40)}). 다음 달 다시 시도합니다`:'스카우트 배치를 맡았습니다'); } /* 실제 결과대로 안내(검수 11-07) */
   if(k==='ev'||k==='mgr'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))){ e.deleg=true; evPick(e.id,e.def,true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }
   if(C&&!C.done&&autoOn('sal')&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
