@@ -5104,6 +5104,83 @@ T('[구단주 다시 설득] 사퇴 카드는 한 시즌 한 번·두 시즌 쉬
   const o=dobj(G.day); const g={y:sponSeason(),mk:o.y*100+o.m,d:G.day,amt:1000,pur:null,ok:false,by:'gm',st:'no'}; grantAdd(g); ownPushOffer({k:'fund',amt:1000},'구단주 반려: 운영비 증액','본문',g); const e=G.evs.find(x=>x.k==='opush'&&!x.done); ok(!e.data.args.includes('resign')&&G.mail.find(m=>m.id===e.mid).body.includes('이번 시즌에는 더 쓸 수 없습니다'),'반려 소식에 사퇴 카드 제한이 말로 보이지 않음');
   G.year=y+1; ok(opResignWhy(u).includes((y+2)+'시즌'),'쉬는 기간 안내가 없음: '+opResignWhy(u)); G.year=y+2; ok(!opResignWhy(u),'두 시즌 뒤에도 쓸 수 없음'); ok(opOdds(u,ctx,a)<pF-.08,'통했던 사퇴 카드가 약해지지 않음'); G.year=y;
   const ai=G.teams.find(x=>x.id!==u&&!x.indie); opRun(ai.id,ctx,a,[.99,.99]); ok(opResignWhy(ai.id).includes('이번 시즌')&&!opArgs(ai.id).some(x=>x.k==='resign'),'AI는 사퇴 카드 제한이 다름'); });
+/* ===== 관중석 증설(사용자 11-15: 경기장 증축) ===== */
+const xpPrep=(tid,occ,so)=>{ const S=stadOf(tid), t=team(tid); stadXpReset(S); S.proj=null; delete S.dome; S.built=G.year-15; S.cap=18000; t.trust=60; t.cash=60000; t.cityRel=60; S.xd={y:G.year,occ,so,n:72}; G.sea.att={}; G.ps=null; G.day=KD(11,5); if(tid!==G.user){ t.plan=null; t.mode='mid'; if(t.owner==='profit')t.owner='win'; } /* AI 판단의 구단주·계획 조건은 따로 본다 */ return S; };
+T('[구장 증설·증축] 관중 명분이 없으면 시가 검토하지 않고 이유를 말한다(점유율·매진, 구단주 신뢰)',()=>{ fresh(); const u=G.user, S=xpPrep(u,.7,3);
+  const e=stadXpTalk(u,'of'); ok(e.includes('70%')&&e.includes('85%'),'명분 부족 이유가 없음: '+e); ok(!S.xq,'명분 없이 협의가 시작됨');
+  S.xd={y:G.year,occ:.8,so:30,n:72}; ok(!stadXpWhy(u,'of'),'매진이 잦으면(30% 이상) 점유율 85% 미만이어도 명분: '+stadXpWhy(u,'of'));
+  team(u).trust=30; ok(stadXpWhy(u,'of').includes('구단주 신뢰'),'구단주 신뢰가 낮은데 허락함'); team(u).trust=60;
+  S.xd=null; ok(stadXpWhy(u,'of').includes('관중 기록'),'기록이 없는데 막지 않음'); });
+T('[구장 증설·증축] 시 협의 45일 → 합의 → 착공(구단 60%·시 40%) → 인허가 뒤 공사 중 좌석을 막고, 완공하면 수용 인원·유지비가 늘고 소식이 난다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.95,40), t=team(u);
+  const cap0=stadCap(u), up0=stadYr(S).up; ok(stadXpTalk(u,'of')==='','협의가 시작되지 않음'); ok(S.xq.stage==='talk'&&S.xq.res===G.day+45,'협의 기간이 45일이 아님');
+  ok(stadXpTalk(u,'up').includes('이미'),'협의 중에 또 제안됨'); S.xq.p=1; G.day=S.xq.res; stadXpDaily(); ok(S.xq.stage==='ok','합의되지 않음'); ok((G.mail||[]).some(m=>JSON.stringify(m).includes('합의했습니다')),'합의 알림이 없음');
+  const C=stadXpCost('of'); ok(C.club+C.city===C.c&&Math.abs(C.club/C.c-.6)<.01,'구단·시 분담이 6:4가 아님'); const cash0=t.cash, etc0=G.spend.etc||0; ok(stadXpStart(u)==='','착공 실패');
+  ok(Math.round((cash0-t.cash)+((G.spend.etc||0)-etc0))===C.club,'구단 부담분만큼 돈이 나가지 않음'); ok(S.xq.stage==='build'&&S.xq.pm>G.day&&S.xq.done===S.xq.pm+STADX_K.of.days,'인허가·공사 기간이 없음');
+  ok(stadCap(u,S.xq.pm-1)===cap0&&stadCap(u,S.xq.pm)===cap0-STADX_K.of.close,'공사 중 좌석을 막지 않음'); ok(stadCap(u,S.xq.done)===cap0+1500,'완공 날짜 전망에 늘린 좌석이 없음');
+  G.day=S.xq.done; stadXpDaily(); ok(!S.xq&&S.xp===1500&&S.xpN===1,'완공 처리가 안 됨'); ok(stadCap(u)===cap0+1500,'수용 인원이 늘지 않음: '+stadCap(u)); ok(stadYr(S).up===up0+STADX_K.of.up,'유지비가 붙지 않음');
+  ok((G.news||[]).some(n=>n.t.includes('1,500석 늘었다')),'완공 기사가 없음'); ok(stadDemCap(u)===cap0,'수요 기준 좌석이 늘어남(늘린 좌석이 수요를 만듦)'); });
+T('[구장 증설·증축] 한도: 구장 규모(일반 2만5천·돔 1만9천), 구장당 두 번, 개장 3년, 신구장 개장 때 새로 센다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.97,50);
+  S.cap=24000; ok(stadXpWhy(u,'of').includes('25,000석'),'2만5천 석 한도를 넘김'); S.cap=23000; ok(!stadXpWhy(u,'of')&&stadXpWhy(u,'up').includes('25,000석'),'규모별 한도가 틀림');
+  S.cap=17000; S.dome=true; ok(stadXpWhy(u,'up').includes('돔')&&!stadXpWhy(u,'of'),'돔 한도가 틀림'); S.cap=18000; delete S.dome;
+  S.xpN=2; ok(stadXpWhy(u,'of').includes('2번'),'두 번 넘게 증설 가능'); S.xpN=0; S.built=G.year-1; ok(stadXpWhy(u,'of').includes('3년'),'새 구장도 증설 가능'); S.built=G.year-15;
+  S.proj={stage:'talk',res:G.day+100}; ok(stadXpWhy(u,'of').includes('신구장'),'신구장 사업 중에 증설 가능'); S.proj=null;
+  S.xp=3000; S.xpN=2; S.xpUp=190; stadXpReset(S); ok(!S.xp&&!S.xpN&&!S.xpUp&&!S.xq,'신구장 개장 때 증설 기록이 남음'); });
+T('[관중] 증설 좌석은 원래 구장이 넘칠 때만 찬다: 수요가 낮으면 관중 그대로, 수요가 넘치면 늘고, 증설이 없으면 예전 식과 같다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.95,40), t=team(u), c=G.cal; const L=homeGames(u,c.open,c.end).slice(0,40); ok(L.length>=30,'준비 실패: 홈경기');
+  const tot=()=>L.reduce((s,[d,a])=>s+attOf(u,a,d,null),0); const p0=t.pop;
+  t.pop=.7; S.price=3; S.xp=0; const lo0=tot(); S.xp=3000; const lo1=tot(); ok(lo1<=lo0*1.03,'수요가 낮은데 좌석만 늘려도 관중이 늘어남: '+lo0+'→'+lo1);
+  t.pop=1.45; S.price=1; S.xp=0; const hi0=tot(); S.xp=3000; const hi1=tot(); ok(hi1>hi0*1.05,'수요가 넘치는데 관중이 늘지 않음: '+hi0+'→'+hi1); ok(hi1-hi0<3000*L.length,'늘린 좌석보다 관중이 더 늘어남');
+  S.xp=0; t.pop=p0; const d=L[0][0]; ok(stadDemCap(u)===stadCap(u,d),'증설이 없는데 수요 기준 좌석이 다름'); });
+T('[구장 증설·증축] AI 구단도 같은 조건으로 추진한다: 매진이 잦고 돈이 있으면 협의·착공, 빈자리가 많으면 하지 않는다',()=>{ fresh(); const ai=G.teams.find(x=>x.id!==G.user&&!x.indie), lo=G.teams.find(x=>x.id!==G.user&&x.id!==ai.id&&!x.indie); const S=xpPrep(ai.id,.97,45), S2=xpPrep(lo.id,.7,2);
+  for(let i=0;i<40&&!S.xq;i++){ globalThis.__seed(500+i); stadAI(); } for(let i=0;i<40;i++)stadXpAI(lo); ok(S.xq&&S.xq.stage==='talk','매진이 잦은 AI 구단이 증설을 추진하지 않음'); ok(!S2.xq,'빈자리 많은 AI 구단이 증설을 추진함'); ok(S.xq.esc===stadXpCost(S.xq.k).club&&stadXpHold(ai.id)===0,'AI가 제안 때 부담분을 떼어 두지 않음');
+  const cash0=ai.cash+S.xq.esc; ai.cash=-500; const cashB=ai.cash; /* 겨울에 다른 데 돈을 써 현금이 바닥나도 */ G.day=S.xq.res; S.xq.p=1; stadXpDaily(); stadXpDaily(); ok(S.xq.stage==='build','AI가 겨울에 돈을 써도 떼어 둔 몫으로 착공하지 못함'); ok(ai.cash===cashB&&S.xq.esc===0,'AI도 구단 부담분을 같은 금액으로 내지 않음');
+  { const t4=G.teams.find(x=>x.id!==G.user&&x.id!==ai.id&&x.id!==lo.id&&!x.indie), S4=xpPrep(t4.id,.97,45); for(let i=0;i<40&&!S4.xq;i++){ globalThis.__seed(900+i); stadXpAI(t4); } ok(S4.xq&&S4.xq.esc>0,'준비 실패: AI 제안'); const c4=t4.cash, e4=S4.xq.esc; S4.xq.p=0; G.day=S4.xq.res; stadXpDaily(); ok(!S4.xq&&t4.cash===c4+e4,'결렬 뒤 떼어 둔 부담분을 돌려받지 못함'); G.day=KD(11,5); }
+  G.day=S.xq.done; const k=S.xq.k; stadXpDaily(); ok(S.xp===STADX_K[k].seats&&(G.wire||[]).some(w=>w.t.includes('증설 완공')),'AI 증설 완공·리그 소식이 없음');
+  const t3=G.teams.find(x=>x.id!==G.user&&x.id!==ai.id&&x.id!==lo.id&&!x.indie), S3=xpPrep(t3.id,.97,45); t3.cash=100; for(let i=0;i<40;i++)stadXpAI(t3); ok(!S3.xq,'돈 없는 AI 구단이 증설을 추진함'); });
+T('[구장 증설·증축] AI 판단은 관중·재정·구단주 목표를 본다: 긴축 계획은 미루고, 흥행 구단주는 87%에도, 성적 구단주는 90% 아래면 안 하고, 수익 구단주는 회수가 안 되면 하지 않는다. 비용·인허가는 사람과 같다',()=>{ fresh();
+  const A=G.teams.filter(x=>x.id!==G.user&&!x.indie); const run=(t,n)=>{ for(let i=0;i<n&&!t.stad.xq;i++){ globalThis.__seed(1300+i); stadXpAI(t); } return !!t.stad.xq; };
+  { const t=A[0], S=xpPrep(t.id,.97,45); t.plan={k:'tight',y:G.year,d:G.day}; ok(!run(t,40),'긴축 계획 AI 구단이 증설을 추진함'); }
+  { const t=A[1], S=xpPrep(t.id,.88,10); t.owner='pr'; ok(run(t,40),'흥행 구단주 AI가 88% 점유율에서 증설을 추진하지 않음'); }
+  { const t=A[2], S=xpPrep(t.id,.88,10); t.owner='win'; ok(!run(t,40),'성적 구단주 AI가 88% 점유율에서 증설을 추진함'); }
+  { const t=A[3], S=xpPrep(t.id,.97,45); t.owner='profit'; const ok0=['of','up'].some(k=>{ const g=stadXpGain(t.id,k); return g.net>0&&g.pay<=8; }); ok(run(t,40)===ok0,'수익 구단주 AI가 회수 전망과 다르게 판단함'); }
+  { const t=A[4], S=xpPrep(t.id,.97,45); t.owner='pr'; ok(run(t,40),'준비 실패: AI 제안'); const k=S.xq.k; ok(S.xq.esc===stadXpCost(k).club,'AI 부담분이 사람과 다름'); S.xq.p=1; G.day=S.xq.res; stadXpDaily(); stadXpDaily(); ok(S.xq.stage==='build'&&S.xq.pm-S.xq.st===facPermitDays(t.id)&&S.xq.done-S.xq.pm===STADX_K[k].days,'AI 인허가·공사 기간이 사람과 다름'); } });
+T('[구장 증설·증축] 저장·불러오기: 진행 중 증설과 완공 좌석이 남고, 증설 필드가 없는 예전 저장도 수용 인원·관중이 그대로다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.95,40); const old=stadCap(u), up=stadYr(S).up; delete S.xp; delete S.xpN; delete S.xpUp; delete S.xq; delete S.xd;
+  G=JSON.parse(JSON.stringify(G)); ok(stadCap(u)===old&&stadYr(stadOf(u)).up===up,'예전 저장 수용 인원·유지비가 바뀜');
+  const S1=stadOf(u); S1.xp=1500; S1.xpN=1; S1.xpUp=60; S1.xq={k:'up',stage:'build',pm:G.day+10,done:G.day+300,c:9000}; G=JSON.parse(JSON.stringify(G)); const S2=stadOf(u);
+  ok(S2.xp===1500&&S2.xq.stage==='build'&&stadCap(u,G.day+20)===old+1500-2000&&stadCap(u,G.day+300)===old+4500,'불러온 뒤 증설 상태가 다름'); });
+/* ===== 초대형 신구장(사용자 11-15: 2차 구장 2.5만 석 너무 적다) ===== */
+const megaPrep=(tid,occ,yrs)=>{ const S=stadOf(tid), t=team(tid); S.proj={stage:'plan',start:G.day}; delete S.mega; delete S.mx; t.market=1.25; t.trust=60; t.cash=60000; t.cityRel=60; S.xd=null; S.xdh=[]; for(let i=yrs;i>=1;i--)S.xdh.push({y:G.year-i,occ,so:10,n:72}); return S; };
+T('[구장 초대형] 큰 시장·최근 3시즌 연속 관중석 90% 이상이 아니면 고를 수 없고 이유를 말한다',()=>{ fresh(); const u=G.user, S=megaPrep(u,.95,3), t=team(u);
+  ok(!newStadMegaWhy(u),'조건을 채웠는데 막힘: '+newStadMegaWhy(u));
+  t.market=1.0; ok(newStadMegaWhy(u).includes('연고 시장'),'시장이 작은데 허용: '+newStadMegaWhy(u)); ok(newStadPick('mega')&&S.proj.stage==='plan'&&!S.proj.mr,'시장이 작은데 초대형 요청이 됨'); t.market=1.25;
+  S.xdh[1].occ=.86; ok(newStadMegaWhy(u).includes('3시즌 연속')&&newStadMegaWhy(u).includes('86%'),'한 시즌 점유율이 낮은데 허용: '+newStadMegaWhy(u)); S.xdh[1].so=40; ok(!newStadMegaWhy(u),'매진이 절반 넘으면 그 시즌은 명분'); S.xdh[1].so=10;
+  megaPrep(u,.95,2); ok(newStadMegaWhy(u).includes('3시즌'),'두 시즌 기록으로 허용');
+  const S2=megaPrep(u,.95,3); S2.xdh[0].y-=2; ok(newStadMegaWhy(u),'연속하지 않은 시즌으로 허용');
+  const S3=megaPrep(u,.95,3); S3.xdh=S3.xdh.map(x=>({...x,y:x.y-3})); ok(newStadMegaWhy(u),'오래된 기록으로 허용');
+  megaPrep(u,.95,3); ok(NEWSTAD.some(o=>o.k==='mega'&&o.cap===30000)&&NEWSTAD[0].k==='mid','초대형 규모 정의가 없음'); });
+T('[구장 초대형] 시가 한 번 더 검토한다(더 어렵다): 승인되면 착공·개장 때 3만 석, 거절되면 다른 규모를 고른다',()=>{ fresh(); const u=G.user, S=megaPrep(u,.95,3);
+  ok(newStadMegaOdds(u)<clamp(.35+(team(u).trust-50)/100+(team(u).market-1)*.6+(G.rep-50)/200,.15,.85),'초대형 검토가 신구장 협상보다 쉽다');
+  ok(newStadPick('mega')===''&&S.proj.stage==='plan'&&S.proj.mr===G.day+NEWSTAD_MEGA.rv,'초대형 검토가 시작되지 않음'); ok(newStadPick('big').includes('검토'),'검토 중에 다른 규모로 착공');
+  S.proj.mp=0; G.day=S.proj.mr; newStadTeam(u); ok(S.proj.stage==='plan'&&S.proj.noMega&&newStadMegaWhy(u).includes('거절'),'거절 뒤 처리가 다름'); ok(newStadPick('mega'),'거절된 초대형을 다시 요청'); ok(newStadPick('big')===''&&S.proj.k==='big','거절 뒤 대형 착공 실패');
+  const S2=megaPrep(u,.95,3); newStadPick('mega'); S2.proj.mp=1; G.day=S2.proj.mr; newStadTeam(u); ok(S2.proj.stage==='build'&&S2.proj.k==='mega'&&S2.proj.cost===NEWSTAD.find(o=>o.k==='mega').cost,'승인 뒤 착공하지 않음');
+  const up0=stadYr(S2).up; G.day=S2.proj.done; newStadTeam(u); ok(!S2.proj&&S2.mega&&stadCap(u)===30000,'개장 뒤 3만 석이 아님: '+stadCap(u)); ok(stadYr(S2).up>=up0+NEWSTAD_MEGA.up-1,'초대형 유지비가 없음');
+  ok(stadDemCap(u)===30000-NEWSTAD_MEGA.mx,'초대형의 수요 기준 좌석이 다름: '+stadDemCap(u)); });
+T('[구장 초대형] 관중석 증설 상한 3만 석은 초대형으로 지은 구장만, 다른 규모로 다시 지으면 초대형 효과가 끝난다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.97,50);
+  S.cap=28000; ok(stadXpWhy(u,'of').includes('25,000석'),'일반 구장이 2만5천 석을 넘김'); S.mega=true; S.mx=NEWSTAD_MEGA.mx; ok(!stadXpWhy(u,'of')&&stadXpWhy(u,'up').includes('30,000석'),'초대형 상한이 3만 석이 아님: '+stadXpWhy(u,'up'));
+  S.proj={stage:'build',k:'big',cap:25000,cost:16000,paid:16000,done:G.day}; newStadTeam(u); ok(!S.mega&&!S.mx&&stadXpMax(u)===25000,'대형으로 다시 지었는데 초대형 효과가 남음'); });
+T('[구장 초대형] AI 구단도 같은 조건으로 고른다: 조건을 채우고 돈이 있으면 초대형, 아니면 관중·현금에 따라 대형·실속형',()=>{ fresh(); const ai=G.teams.find(x=>x.id!==G.user&&!x.indie); const S=megaPrep(ai.id,.96,3);
+  ok(newStadAIPick(ai.id)==='mega','조건을 채운 AI가 초대형을 고르지 않음'); newStadTeam(ai.id); ok(S.proj.stage==='plan'&&S.proj.mr,'AI가 초대형 검토를 요청하지 않음');
+  S.proj.mp=1; G.day=S.proj.mr; newStadTeam(ai.id); ok(S.proj.stage==='build'&&S.proj.k==='mega'&&S.proj.cap===30000,'AI 초대형 승인 뒤 착공 안 함');
+  const S2=megaPrep(ai.id,.96,3); newStadTeam(ai.id); S2.proj.mp=0; G.day=S2.proj.mr; newStadTeam(ai.id); ok(S2.proj.stage==='build'&&S2.proj.k==='big','거절된 AI가 대형으로 가지 않음: '+S2.proj.k);
+  megaPrep(ai.id,.96,3); ai.market=1.0; ok(newStadAIPick(ai.id)==='big','시장이 작은데 AI가 초대형 또는 대형이 아님: '+newStadAIPick(ai.id));
+  megaPrep(ai.id,.96,2); ok(newStadAIPick(ai.id)!=='mega','기록이 두 시즌뿐인데 AI가 초대형');
+  megaPrep(ai.id,.96,3); ai.cash=100; ok(newStadAIPick(ai.id)==='mid','돈 없는 AI가 큰 구장을 고름: '+newStadAIPick(ai.id));
+  megaPrep(ai.id,.7,3); ok(newStadAIPick(ai.id)==='mid','빈자리 많은 AI가 큰 구장을 고름'); });
+T('[구장 초대형] 시즌 관중 기록이 해마다 쌓이고(최근 5시즌), 저장·불러오기 뒤에도 초대형 구장·검토 상태가 남는다. 기록이 없는 예전 저장은 아직 조건 미달',()=>{ fresh(); const u=G.user, S=stadOf(u), c=G.cal;
+  S.xd=null; S.xdh=[]; G.sea.att={[u]:{n:72,sum:72*20000,cap:72*21000,so:30}}; G.day=c.end+1; stadXpRec(); ok(S.xdh.length===1&&S.xdh[0].y===G.year,'기록이 쌓이지 않음'); stadXpRec(); ok(S.xdh.length===1,'같은 해가 두 번 쌓임');
+  S.xdh=[1,2,3,4,5].map(i=>({y:G.year-6+i-1,occ:.9,so:0,n:72})); S.xd=S.xdh[4]; stadXpRec(); ok(S.xdh.length===5&&S.xdh[4].y===G.year,'5시즌을 넘겨 쌓이거나 새 기록이 없음');
+  delete S.xdh; S.xd={y:G.year-1,occ:.97,so:50,n:72}; team(u).market=1.25; S.proj={stage:'plan'}; ok(stadOccHist(S).length===1&&newStadMegaWhy(u).includes('3시즌'),'예전 저장에서 바로 초대형 허용');
+  const S1=megaPrep(u,.95,3); newStadPick('mega'); G=JSON.parse(JSON.stringify(G)); ok(stadOf(u).proj.mr&&stadOf(u).xdh.length===3,'불러온 뒤 검토 상태·기록이 사라짐');
+  const S2=stadOf(u); S2.proj.mp=1; G.day=S2.proj.mr; newStadTeam(u); G.day=S2.proj.done; newStadTeam(u); G=JSON.parse(JSON.stringify(G)); ok(stadOf(u).mega&&stadCap(u)===30000&&stadXpMax(u)===30000,'불러온 뒤 초대형 구장이 아님'); });
 T('[얼굴 v18] FACE6 360명(v18 160~359)·새 신인은 어린 얼굴·기존 저장 배정 유지·아시아쿼터 후보·흰 배경 제외',()=>{ const F=eval(globalThis.__faceSrc()), X=F.FACE6.ids; ok(X.length===360&&F.FACE6.v18&&F.FACE6.v18.o===160,'FACE6가 360명이 아님: '+X.length);
   ok(X.slice(160).filter(x=>x.x).length===0,'v18b: 배정 제외 얼굴이 남음(흰 배경 4명은 회색 배경으로 다시 납품됨)');
   const asia=F.face6Pool({foreign:'아시아'}); ok(asia.length>0&&asia.some(i=>i>=160)&&asia.every(i=>/Japanese|Taiwanese|Filipino|Australian/.test(X[i].e)),'아시아쿼터 후보가 비었거나 v18이 없음');
