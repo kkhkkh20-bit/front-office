@@ -85,6 +85,7 @@ step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
 step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1
 step "선수 카드·모바일 읽기·검색 공간·파일 불러오기"; node tools/check-experience.cjs || fail=1
 step "백업 가져오기·슬롯 전환·itch 이전"; node tools/check-save-import.cjs || fail=1
+step "기기 옮기기(코드로 저장 옮기기) 화면 왕복"; node tools/check-save-transfer-ui.cjs || fail=1
 step "개인 활동 상대·검색·빠른 설정 변경"; node tools/check-career-review.cjs || fail=1
 step "인물 이전·다음·연속 면담"; node tools/check-people-navigation.cjs || fail=1
 step "사진·소식함·코치 표시·시즌 행사·영구결번"; node tools/check-community-ui.cjs || fail=1

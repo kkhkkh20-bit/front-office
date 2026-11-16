@@ -1,0 +1,73 @@
+# 기기 옮기기 (저장 임시 보관)
+
+PC와 휴대폰 사이에서 저장을 8자리 코드로 옮기는 기능입니다. 저장을 게임 서버(Cloudflare Workers KV)에 최대 7일 보관하고, 한 번 불러오면 바로 지웁니다.
+
+- 화면: 게임 안 **설정 → 저장**의 "내보내기 · 불러오기" 아래 **기기 옮기기** 카드(코드 만들기·옮겨 오기), 처음 화면 **불러오기**의 같은 카드(옮겨 오기만).
+- 클라이언트: `src/ui/shell/01c_transfer.js`. 서버: `worker/index.js`. 설정: `wrangler.jsonc`.
+- 점검: `node --test tools/test/save-transfer.test.cjs`(Worker 단위), `node tools/check-save-transfer-ui.cjs`(화면 왕복).
+
+## 운영자 설정 (한 번만)
+
+KV를 만들기 전에도 배포해도 됩니다. 그동안 API는 `503 {"error":"not_configured"}`를 돌려주고 화면에는 "지금은 기기 옮기기를 쓸 수 없습니다" 한 줄만 나옵니다. 다른 기능은 그대로입니다.
+
+1. Cloudflare 대시보드 → **Storage & Databases → KV → Create namespace**. 이름은 예를 들어 `fronttime-save-transfer`.
+2. 만든 namespace의 **ID**(32자리 16진수)를 복사합니다.
+3. `wrangler.jsonc`에서 아래 줄의 주석(`//`)을 풀고 `<KV_NAMESPACE_ID>`를 그 ID로 바꿉니다.
+
+   ```jsonc
+   "kv_namespaces": [{ "binding": "SAVE_KV", "id": "<KV_NAMESPACE_ID>" }],
+   ```
+
+   주의: ID 없이 주석만 풀면 wrangler가 배포 때 KV namespace를 자동으로 새로 만듭니다(automatic provisioning). 반드시 1번에서 만든 ID를 넣으세요. 가짜 ID를 넣으면 배포가 실패합니다.
+4. main에 푸시하면 Git 연동 배포가 Worker와 KV 바인딩을 함께 올립니다. 대시보드의 Worker(`fronttime`) → Settings → Bindings에 `SAVE_KV`가 보이면 끝입니다.
+5. 확인: 사이트에서 `/api/transfer`를 열면 `{"ok":true,...}`가 나와야 합니다. 설정 전에는 `{"error":"not_configured",...}`입니다.
+
+선택: Worker 환경 변수 `RL_SALT`에 아무 긴 문자열을 넣으면 횟수 제한용 IP 해시에 그 값을 섞습니다. 없으면 고정 문자열을 씁니다.
+
+PR 미리보기 빌드도 같은 `wrangler.jsonc`를 쓰므로, KV를 켠 뒤에는 미리보기에서도 같은 namespace를 씁니다. 보관 기간이 짧고 코드가 무작위라 섞여도 문제는 없습니다.
+
+## 무료 플랜 한도와 예상 사용량
+
+Workers KV 무료 플랜(2026-10 기준, 날마다 00:00 UTC 초기화):
+
+| 항목 | 무료 한도 | 기기 옮기기 1회에 쓰는 양 |
+| --- | --- | --- |
+| 쓰기(다른 키) | **하루 1,000회** | 올리기 1번 = 저장 1 + 횟수 기록 1 = **쓰기 2회** |
+| 읽기 | 하루 100,000회 | 올리기 = 횟수 기록 1 + 코드 겹침 확인 1, 받기 = 1 |
+| 삭제 | 하루 1,000회 | 받기 1번(자동 삭제) 또는 "코드 지우기" 1번 = 1회 |
+| 저장 용량 | 1 GB | 저장 1개 보통 수백 KB~수 MB, 최대 8MB, 7일 뒤 자동 삭제 |
+| 값 크기 | 25 MiB | 8MB에서 끊습니다 |
+
+- 쓰기 한도로 보면 **하루 약 500번 올리기**까지 무료입니다. 횟수 제한 기록도 쓰기이므로 같은 사람이 여러 번 올리면 그만큼 씁니다.
+- 용량: 1MB 저장이 하루 500개씩 7일 쌓이면 약 3.5GB로 1GB를 넘습니다. 실제로는 대부분 몇 분 안에 받아 지워지므로 남는 양은 훨씬 적지만, 사용이 늘면 유료 플랜(월 $5, 쓰기 100만·저장 1GB 포함)을 고려하세요.
+- 한도를 넘으면 그날은 KV 쓰기가 실패하고 API가 `500 server`를 돌려줍니다. 화면은 "잠시 뒤 다시 시도해 주세요"로 안내하고, 게임과 로컬 저장에는 영향이 없습니다.
+
+## API
+
+모든 응답은 JSON, `Cache-Control: no-store`, CORS 헤더 없음(같은 출처만). 오류는 `{"error":"<코드>","message":"<한국어 안내>"}`.
+
+| 요청 | 성공 | 실패 |
+| --- | --- | --- |
+| `GET /api/transfer` | `200 {"ok":true,"ttl":604800,"maxBytes":8388608}` (기능 확인) | `503 not_configured` |
+| `POST /api/transfer` 본문: 저장 코드(text/plain) | `201 {"code":"ABCD2345","expiresAt":<ms>}` | `400 bad_format`, `413 too_large`, `429 rate_limited`(+`Retry-After`), `403 cross_origin`, `503 not_configured` |
+| `GET /api/transfer/:code` | `200 {"data":"<저장 코드>","createdAt":<ms>}` 후 즉시 삭제 | `404 not_found`, `400 bad_code` |
+| `DELETE /api/transfer/:code` | `200 {"ok":true}` | `400 bad_code` |
+
+- 본문은 게임의 "코드 만들기"와 같은 `LZString.compressToBase64(저장 JSON)`입니다. 서버는 base64 문자·길이(4의 배수, 64자 이상, 8MB 이하)와 저장 앞부분(`{"ver":` → `N4IgbgpgTiBcAs`)을 확인합니다. 압축을 풀어 검사하는 것(`saveCheck`)은 받는 쪽의 기존 불러오기(`importText`)가 합니다.
+- 코드: `ABCDEFGHJKMNPQRSTUVWXYZ23456789`(0·O·1·I·L 없음, 31자) 8자리, `crypto.getRandomValues`로 치우침 없이 뽑습니다. 약 8.5×10¹¹가지(≈39.6비트). 화면에는 `XXXX-XXXX`로 보이고, 하이픈·띄어쓰기·소문자는 받는 쪽에서 정리합니다.
+- 틀린 코드: 화면이 2, 4, 8 … 최대 60초씩 다시 시도를 기다리게 합니다. 서버는 틀린 조회를 세지 않습니다(세려면 조회마다 KV 쓰기가 필요해 무료 쓰기 한도를 공격으로 쉽게 소진할 수 있음). 코드 공간이 커서 하루 10만 번 조회 한도 안에서 맞힐 확률은 약 10⁻⁷입니다.
+- 횟수 제한: IP마다 한 시간에 올리기 10번. 키 `rl:<SHA-256(salt|IP) 앞 24자>:<시간 번호>`, 값은 횟수, 61분 뒤 자동 삭제. KV는 원자적이지 않아 대략적인 제한입니다.
+- 한 번만: KV는 전 세계 복제가 최종 일관성이라, 지운 직후 몇십 초 동안 다른 지역에서 한 번 더 읽힐 수 있습니다. 코드를 아는 사람만 가능하므로 위험은 작습니다.
+
+## 보관하는 것
+
+- 저장 본문과 올린 시각(KV metadata `t`)만 보관합니다. 7일(`expirationTtl` 604800) 뒤 자동 삭제, 받으면 즉시 삭제.
+- IP 원문은 저장하지 않습니다. 횟수 제한 키에 IP 해시만 1시간 남습니다. Worker 코드는 로그를 남기지 않습니다(`console.log` 없음). 대시보드에서 Workers Logs(observability)를 켜면 Cloudflare가 요청 기록(IP 포함)을 따로 남기므로 이 Worker에서는 꺼 두세요.
+- 저장에는 플레이어가 입력한 단장 이름·메모가 들어 있습니다. 화면에 "저장은 게임 서버에 잠시 보관됩니다"를 적어 둡니다. 개인정보 처리방침(`docs/privacy.md`)에도 한 줄 넣었습니다.
+
+## 설정 전·오프라인 동작
+
+- KV 없음: 위와 같이 503 → 카드에 "지금은 기기 옮기기를 쓸 수 없습니다. 파일로 내보내기를 써 주세요." 한 줄. 버튼·입력칸 없음.
+- `/api/transfer`가 없는 곳(Worker 없이 정적 파일만, itch.io 등): 404 → 위와 같은 한 줄.
+- 내려받은 `index.html`(file://): 요청을 보내지 않고 카드 자체를 그리지 않습니다.
+- 받은 뒤 슬롯에 넣지 못하면(빈 슬롯 없음·저장 실패) 받은 저장은 화면에 남아 있고, "빈 슬롯에 불러오기", "지금 슬롯에 덮어쓰기"(게임 중, 두 번 눌러 확인), "파일로 받아 두기"를 고를 수 있습니다. 서버에서는 이미 지워졌으므로 새로고침 전에 고르세요.

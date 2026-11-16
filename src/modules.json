@@ -229,6 +229,7 @@
       "src/ui/players/39_player_sheet.js",
       "src/ui/players/39b_morale.js",
       "src/ui/actions/40_actions.js",
+      "src/ui/shell/01c_transfer.js",
       "src/ui/career/83_personal_life.js",
       "src/ui/career/84_personal_network.js",
       "src/ui/career/85_bulk_relations.js",
