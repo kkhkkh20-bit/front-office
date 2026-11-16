@@ -904,7 +904,7 @@ T('[병역 조언] 시즌 초에는 몇 경기 안 된 출전 기록 대신 보�
   for(const q of domestic(G.user).filter(q=>milFree(q)&&q.age>=23&&q.age<=26).sort((x,y)=>ovr(x)-ovr(y))){ q.e1=true; G._dc=null; const r=milAdvice(q); if(r.k==='go'){ a=r; p=q; break; } }
   ok(a,'상무 추천 대상 없음'); ok(!/올해 1군 \\d+경기/.test(a.why),'적은 표본으로 판단: '+a.why); ok(/보직|주전|기용 순서/.test(a.why),'보직 근거 없음: '+a.why); });
 T('[드래프트 아마 기록] 카페 11-15: 상위권 고교 투수는 대부분 ERA 3 미만·높은 탈삼진, 상위권 타자는 대부분 타율 .350 초과, 하위권은 그보다 못하다(실제 아마 경기 결과)',()=>{ __seed(1115); /* 시드 고정: 앞선 시나리오의 난수 소비에 결과가 흔들리지 않게(11-15) */ const P=[],B=[];
-  for(let c=0;c<3;c++){ DEMO.on=false; newGame(6); amSimYear(G.year,true); const L=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.am&&!p.college&&!p.ovsRet&&p.amSim); const top=(A)=>A.sort((a,b)=>b.pot-a.pot); const lp=top(L.filter(p=>p.isP&&p.am.outs>=60)), lb=top(L.filter(p=>!p.isP&&p.am.pa>=100)); P.push({t:lp.slice(0,6),b:lp.slice(-8)}); B.push({t:lb.slice(0,6),b:lb.slice(-8)}); }
+  for(let c=0;c<3;c++){ DEMO.on=false; newGame(6); amSimYear(G.year,true); const L=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.am&&!p.college&&!p.ovsRet&&p.amSim).map(p=>({id:p.id,pot:p.pot,isP:p.isP,am:(p.amY||[]).find(r=>r.gr===3)||{outs:0,pa:0}})); /* 졸업 학년(지명 해) 기록으로 본다: 11-17부터 저학년은 상급생보다 경기력이 낮아(학년 차) 통산이 졸업 학년 실력보다 낮게 나온다 */ const top=(A)=>A.sort((a,b)=>b.pot-a.pot); const lp=top(L.filter(p=>p.isP&&p.am.outs>=45)), lb=top(L.filter(p=>!p.isP&&p.am.pa>=40)); P.push({t:lp.slice(0,6),b:lp.slice(-8)}); B.push({t:lb.slice(0,6),b:lb.slice(-8)}); }
   const tp=P.flatMap(x=>x.t), bp=P.flatMap(x=>x.b), tb=B.flatMap(x=>x.t), bb=B.flatMap(x=>x.b); const era=p=>pRate(p.am).era, k9=p=>pRate(p.am).k9, av=p=>bRate(p.am).avg, m=(L,f)=>L.reduce((a,p)=>a+f(p),0)/L.length;
   ok(tp.filter(p=>era(p)<3).length>=tp.length*.7,'상위 투수 ERA 3 미만 비율 낮음: '+tp.map(p=>era(p).toFixed(2)).join(','));
   ok(tp.filter(p=>era(p)>5).length<=Math.max(2,tp.length*.08),'상위 투수 ERA 5 초과가 흔함: '+tp.map(p=>era(p).toFixed(2)).join(','));
@@ -934,7 +934,7 @@ T('[아마 리그] 고교·대학 기록은 실제 경기 사건의 합이다(�
       ok(P.reduce((a,b)=>a+b.er,0)<=sc&&B.reduce((a,b)=>a+b.rbi,0)<=sc,'자책·타점이 득점보다 많음'); const inn=g.line[k].filter(x=>typeof x==='number').length; ok(P.reduce((a,b)=>a+b.outs,0)===3*inn||k==='h'&&g.hs>g.as,'투수 아웃 '+P.reduce((a,b)=>a+b.outs,0)+' / '+inn+'이닝'); } }
   const sumB=new Map(); for(const g of TR)for(const b of g.box){ if(b.kind!=='e'&&b.kind!=='p')continue; const s=sumB.get(b.id)||{g:0,pa:0,h:0,hr:0,outs:0,er:0,so:0}; s.g++; for(const k of ['pa','h','hr','outs','er','so'])s[k]+=b[k]||0; sumB.set(b.id,s); }
   let n=0; for(const [id,s] of sumB){ const e=G.amU.L[id]; const row=e?amRowObj(e,e.y.find(x=>x[0]===y)):(G.players[id].amY||[]).find(r=>r.y===y); ok(row,'기록 행 없음 '+id); for(const k of ['g','pa','h','hr','outs','er','so'])ok((row[k]||0)===s[k],'시즌 기록이 경기 합과 다름 '+id+' '+k+' '+row[k]+'/'+s[k]); n++; }
-  ok(n>400,'기록이 쌓인 선수가 적음 '+n); const p=G.draftClass.map(id=>G.players[id]).find(q=>q&&q.amSim&&(q.amY||[]).some(r=>r.y===y)); ok(p&&(p.am.pa||0)+(p.am.outs||0)===p.amY.reduce((a,r)=>a+(r.pa||0)+(r.outs||0),0),'통산이 학년별 합과 다름'); /* 투수는 am.pa가 없다(병합 뒤 세계가 바뀌어 처음 고른 후보가 투수가 되자 NaN으로 실패) */ });
+  ok(n>300,'기록이 쌓인 선수가 적음 '+n); /* 11-17부터 1학년은 주로 벤치라 경기에 안 나온 1학년 후보가 있다 */ const p=G.draftClass.map(id=>G.players[id]).find(q=>q&&q.amSim&&(q.amY||[]).some(r=>r.y===y)); ok(p&&(p.am.pa||0)+(p.am.outs||0)===p.amY.reduce((a,r)=>a+(r.pa||0)+(r.outs||0),0),'통산이 학년별 합과 다름'); /* 투수는 am.pa가 없다(병합 뒤 세계가 바뀌어 처음 고른 후보가 투수가 되자 NaN으로 실패) */ });
 T('[아마 리그] 고교 투수는 하루 105개(타자 승부까지)·쉬는 날·사흘 연속 금지 규정을 지키고, 에이스가 매 경기 던지지 않는다',()=>{ DEMO.on=false; newGame(6); AM_TRACE=[]; amSimYear(G.year,true); const TR=AM_TRACE; AM_TRACE=null; const seq=new Map();
   for(const g of TR)for(const b of g.box){ if(!b.isP||b.kind==='x')continue; ok(b.np<=AM_LIM+8,'투구 수 초과 '+b.np); (seq.get(b.id)||seq.set(b.id,[]).get(b.id)).push([g.d,b.np]); }
   const tgs={}, gs={}; for(const g of TR){ tgs[g.h]=(tgs[g.h]||0)+1; tgs[g.a]=(tgs[g.a]||0)+1; for(const b of g.box)if(b.isP&&b.gs&&b.kind!=='x')gs[b.id]=[(gs[b.id]||[0])[0]+1,b.sch]; }
@@ -954,14 +954,43 @@ T('[아마 리그] 실제 경기 기록이 지명 평가에 우리·AI 구단 �
   const r=p.amY.find(x=>x.y===y); r.h+=12; r.hr+=4; amTotFix(p); amZSet(C); const a1=aiDraftScore(t,p,need), u1=draftVal(rp,p); ok(a1>a0&&Math.abs((a1-a0)-(u1-u0))<1e-9,'기록 변화가 AI·우리 평가에 다르게 들어감 '+(a1-a0)+'/'+(u1-u0));
   const cls=G.draftClass.slice(); pressRank(cls); ok(C.every(q=>q.press>0),'언론 순위 없음'); });
 T('[아마 리그] 저학년은 졸업 학년에 같은 선수(번호·기록)로 드래프트 후보가 된다',()=>{ DEMO.on=false; newGame(6); const nx=Object.values(G.amU.L).filter(e=>e.gy===G.year+1); ok(nx.length>=DRAFT_POOL*.9,'다음 해 졸업 학년 '+nx.length); const e=nx.find(x=>!x.c&&x.y.length); const id=e.id, rows=JSON.stringify(e.y);
-  { const H=G.draftClass.map(i=>G.players[i]).filter(p=>p&&!p.college&&p.amSim); ok(H.filter(p=>p.amY.length>=2&&p.amY[0].gr===1).length>=H.length*.8,'올해 고교 후보에 고1 기록이 없음 '+H.filter(p=>p.amY.length>=2&&p.amY[0].gr===1).length+'/'+H.length); }
+  { const H=G.draftClass.map(i=>G.players[i]).filter(p=>p&&!p.college&&p.amSim); ok(H.filter(p=>p.amY.length>=2&&p.amY[0].gr===1).length>=H.length*.45 /* 11-17부터 1학년은 주로 벤치라 고1 때 한 경기도 안 나온 후보가 많다(측정 약 40%) */,'올해 고교 후보에 고1 기록이 없음 '+H.filter(p=>p.amY.length>=2&&p.amY[0].gr===1).length+'/'+H.length); }
   G.year++; for(const i of G.draftClass){ const p=G.players[i]; if(p&&p.prospect)dropP(i); } makeDraftClass(); const p=G.players[id]; ok(p&&p.prospect&&G.draftClass.includes(id),'졸업 학년이 후보가 되지 않음'); ok(p.school===e.s&&p.name===e.n,'학교·이름이 바뀜');
-  ok(JSON.stringify(p.amY.map(r=>[r.y,r.gr,r.pa||r.outs]))===JSON.stringify(JSON.parse(rows).map(r=>[r[0],r[1],r[3]||r[4]])),'학년별 기록이 이어지지 않음'); ok(!G.amU.L[id],'저학년 명단에 남음'); ok(Object.values(G.amU.L).some(x=>x.gy===G.year+2&&amGrade(x,G.year)===1),'새 1학년이 입학하지 않음'); });
+  ok(JSON.stringify(p.amY.map(r=>[r.y,r.gr,r.pa||r.outs]))===JSON.stringify(JSON.parse(rows).map(r=>{ const o=amRowObj(e,r); return [o.y,o.gr,o.pa||o.outs]; })) /* 투수 줄은 [g,gs,outs…]라 번호로 꺼내면 선발 수를 이닝으로 잘못 읽는다 */,'학년별 기록이 이어지지 않음'); ok(!G.amU.L[id],'저학년 명단에 남음'); ok(Object.values(G.amU.L).some(x=>x.gy===G.year+2&&amGrade(x,G.year)===1),'새 1학년이 입학하지 않음'); });
 T('[아마 리그] 저장·불러오기를 해도 시즌이 같은 결과로 이어진다',()=>{ DEMO.on=false; newGame(6); const y=G.year, g0=JSON.stringify(G); const run=reload=>{ G=JSON.parse(g0); for(let d=dnum(y,3,1);d<=dnum(y,6,30);d++){ amDaily(d); if(reload&&d===dnum(y,4,28))G=JSON.parse(JSON.stringify(G)); } return JSON.stringify([G.amL.rec,G.amL.tour.t0&&G.amL.tour.t0.ch,G.amL.tour.t2&&G.amL.tour.t2.ch]); };
   const a=run(false), b=run(true); ok(a===b,'불러온 뒤 결과가 달라짐'); ok(G.amL.tour.t0.ch&&G.amL.tour.t1.ch,'전국대회가 끝나지 않음'); });
 T('[아마 리그] 예전 저장: 저학년 파이프라인을 만들고 올해 후보의 옛 기록은 그대로 둔다',()=>{ DEMO.on=false; newGame(6); delete G.amU; delete G.amH; delete G.amL; const p=G.draftClass.map(id=>G.players[id]).find(q=>q&&q.amSim); delete p.amSim; const keep=JSON.stringify(p.amY);
   amLeagueMigrate(); ok(G.amU&&G.amU.yr===G.year&&Object.keys(G.amU.L).length>=DRAFT_POOL*1.8,'저학년이 만들어지지 않음'); ok(!Object.values(G.amU.L).some(e=>e.gy<=G.year),'올해 졸업 학년이 또 만들어짐');
   ok(JSON.stringify(p.amY.map(r=>Object.assign({},r,{syn:undefined})))===JSON.stringify(JSON.parse(keep).map(r=>Object.assign({},r,{syn:undefined}))),'옛 기록이 바뀜'); ok(p.amY.every(r=>r.syn),'합성 기록 표시 없음'); const n=Object.keys(G.amU.L).length; amLeagueMigrate(); ok(Object.keys(G.amU.L).length===n,'두 번 만들어짐'); });
+T('[고교 리그] 주말리그 전·후반기: 황금사자기는 전반기, 청룡기는 후반기 권역 상위 학교가 학교 수 비례로 나간다',()=>{ DEMO.on=false; newGame(6); const y=G.year, S=amNewSeason(y,false); _amRos=null; const TT=AM_TOURS(), t1=TT[1], t3=TT[3]; const s1=amTourSpan(y,t1), s3=amTourSpan(y,t3);
+  const ent=T0=>new Set(T0.rd.length?T0.rd[0].flatMap(r=>[r[0],r[1]]).filter(Boolean):T0.cur.filter(Boolean)); let q1=null, q2=null;
+  for(let d=dnum(y,3,1);d<=s3[0];d++){ if(d===s1[0]){ ok(!S.rec2||!Object.keys(S.rec2).length,'황금사자기 전에 후반기 경기가 열림'); q1=amQual(S,1,32); } if(d===s3[0])q2=amQual(S,2,32); amPlayDay(S,d); }
+  ok(q1.length===32&&q2.length===32,'출전 학교 수 '+q1.length+'/'+q2.length); ok(S.tour.t1.n0===32&&S.tour.t3.n0===32,'대회 참가 수');
+  const e1=ent(S.tour.t1), e3=ent(S.tour.t3); ok(e1.size===32&&q1.every(n=>e1.has(n)),'황금사자기 출전이 전반기 상위가 아님');
+  ok(e3.size===32&&q2.every(n=>e3.has(n)),'청룡기 출전이 후반기 상위가 아님');
+  const G0=amGroups(), tot=G0.reduce((a,x)=>a+x[1].length,0); for(const [g,L] of G0){ const n=q2.filter(x=>L.includes(x)).length; ok(Math.abs(n-32*L.length/tot)<1,'권역 배분 '+g+' '+n); }
+  const R2=S.rec2||{}; ok(Object.keys(R2).length===G0.length&&Object.values(R2).every(o=>Object.values(o).some(r=>r[0]+r[1]+r[2]>0)),'후반기 기록이 따로 쌓이지 않음'); });
+T('[고교 리그] 학년이 높을수록 평균 기록이 좋고, 1학년 타석은 적으며, 나무 배트라 홈런이 드물고 상위 3학년도 터무니없지 않다',()=>{ const A={}; let hr=0,pa=0,ex=0,nt=0; for(let w=0;w<3;w++){ DEMO.on=false; newGame(6); AM_TRACE=[]; amSimYear(G.year,true); const TR=AM_TRACE; AM_TRACE=null; const col=new Set(AREA.flatMap(a=>a.un)), per=new Map();
+    for(const g of TR)for(const b of g.box){ if(b.kind==='x'||col.has(b.sch))continue; const a=A[b.gr]||(A[b.gr]={ab:0,h:0,pa:0,outs:0,er:0,ob:0,tb:0}); if(b.isP){ a.outs+=b.outs; a.er+=b.er; } else { a.ab+=b.ab; a.h+=b.h; a.pa+=b.pa; a.ob+=b.h+b.bb+b.hbp; a.tb+=b.h+b.d+2*b.tr+3*b.hr; hr+=b.hr; pa+=b.pa; } if(b.kind!=='f'&&b.gr===3&&b.isP){ const o=per.get(b.id)||{outs:0,er:0}; o.outs+=b.outs; o.er+=b.er; per.set(b.id,o); } }
+    const top=[...per.values()].filter(o=>o.outs>=120).map(o=>o.er*27/o.outs).sort((a,b)=>a-b).slice(0,10); nt+=top.length; ex+=top.filter(v=>v<1).length; }
+  const avg=g=>A[g].h/A[g].ab, ops=g=>A[g].ob/A[g].pa+A[g].tb/A[g].ab, era=g=>A[g].er*27/A[g].outs, tp=A[1].pa+A[2].pa+A[3].pa;
+  ok(ops(1)<ops(2)&&ops(2)<ops(3)&&avg(1)<avg(3)&&avg(2)<avg(3),'학년별 OPS·타율 순서 '+[1,2,3].map(g=>fmt3(ops(g))+'/'+fmt3(avg(g))));
+  ok(era(1)>era(2)&&era(2)>era(3),'학년별 ERA 순서 '+[1,2,3].map(g=>era(g).toFixed(2)));
+  ok(A[1].pa/tp<.22&&A[3].pa/tp>.4, /* 기용은 실제 능력(잘하는 1학년은 주전), 1학년은 대개 능력이 낮아 덜 나온다 */'1학년 타석 비중 '+(A[1].pa/tp).toFixed(2)+' 3학년 '+(A[3].pa/tp).toFixed(2));
+  ok(hr/pa<.018,'타석당 홈런 '+(hr/pa*100).toFixed(2)+'%'); ok(ex<=nt*.2,'상위 3학년 투수 ERA 0점대가 흔함 '+ex+'/'+nt); });
+T('[고교 리그] 투구 수: 하루 105개를 넘겨 새 타자를 상대하지 않고, 쉬는 날을 지키며, 에이스 혼자 팀 이닝 대부분을 던지지 않는다',()=>{ DEMO.on=false; newGame(6); AM_TRACE=[]; amSimYear(G.year,true); const TR=AM_TRACE; AM_TRACE=null; const by={}, last=new Map();
+  for(const g of TR.slice().sort((a,b)=>a.d-b.d))for(const b of g.box){ if(!b.isP||b.kind==='x')continue; ok(b.np<=AM_LIM+9,'하루 투구 수 '+b.np); const L=last.get(b.id); if(L){ let rest=0; for(const [n,k] of AM_REST)if(L[1]>=n){ rest=k; break; } ok(g.d-L[0]-1>=rest,L[1]+'구 뒤 '+(g.d-L[0]-1)+'일 만에 등판'); } last.set(b.id,[g.d,b.np]); const o=by[b.sch]||(by[b.sch]={}); o[b.id]=(o[b.id]||0)+b.outs; }
+  for(const s in by){ const v=Object.values(by[s]), t=v.reduce((a,x)=>a+x,0); ok(Math.max(...v)<=t*.7,s+' 에이스 이닝 비중 '+(Math.max(...v)/t).toFixed(2)); } });
+T('[고교 리그] 잘하는 1학년은 주전으로 뛴다: 기용은 학년이 아니라 실제 능력, 학교 안 상위 능력 1학년이 하위 3학년보다 많이 나온다',()=>{ DEMO.on=false; newGame(6); const y=G.year; AM_TRACE=[]; amSimYear(y,true); const TR=AM_TRACE; AM_TRACE=null; const n=new Map();
+  for(const g of TR)for(const b of g.box){ const o=n.get(b.id)||{pa:0,outs:0,g:0}; o.pa+=b.pa||0; o.outs+=b.outs||0; o.g++; n.set(b.id,o); }
+  _amRos=null; const R0=amRosters(y); const hs=new Set(AREA.flatMap(a=>a.hs)); let cb=0,okb=0,cp=0,okp=0; const top1=[];
+  for(const sch in R0){ if(!hs.has(sch))continue; const T0=R0[sch]; const B=T0.B.filter(u=>!u.out), P=T0.P.filter(u=>!u.out);
+    const b1=B.filter(u=>u.gr===1).sort((a,b)=>b.bv-a.bv)[0], b3=B.filter(u=>u.gr===3).sort((a,b)=>a.bv-b.bv)[0]; if(b1&&b3&&b1.bv>b3.bv+5){ cb++; if(((n.get(b1.id)||{}).pa||0)>((n.get(b3.id)||{}).pa||0))okb++; }
+    const p1=P.filter(u=>u.gr===1).sort((a,b)=>b.sv-a.sv)[0], p3=P.filter(u=>u.gr===3).sort((a,b)=>a.sv-b.sv)[0]; if(p1&&p3&&p1.sv>p3.sv+5){ cp++; if(((n.get(p1.id)||{}).outs||0)>((n.get(p3.id)||{}).outs||0))okp++; }
+    for(const u of B.concat(P))if(u.gr===1&&u.kind==='e')top1.push({u,sch}); }
+  ok(cb>=10&&okb>=cb*.8,'상위 능력 1학년 타자가 하위 3학년보다 덜 나옴 '+okb+'/'+cb); ok(cp>=5&&okp>=cp*.7,'상위 능력 1학년 투수가 하위 3학년보다 덜 던짐 '+okp+'/'+cp);
+  const tg={}; for(const g of TR){ tg[g.h]=(tg[g.h]||0)+1; tg[g.a]=(tg[g.a]||0)+1; } top1.sort((a,b)=>(b.u.isP?b.u.sv:b.u.bv)-(a.u.isP?a.u.sv:a.u.bv)); const T1=top1.slice(0,Math.ceil(top1.length*.1));
+  const sh=T1.reduce((a,x)=>a+((n.get(x.u.id)||{}).g||0)/(tg[x.sch]||1),0)/T1.length; ok(sh>=.5,'능력 상위 10% 1학년 유망주 출전 비율 '+sh.toFixed(2)); });
 T('[고교 리그] 1·2학년 관심 선수는 학년이 올라도 이어지고, 졸업 학년에 드래프트 관심 목록에 한 번만 들어간다(관찰 횟수도 이어진다)',()=>{ DEMO.on=false; newGame(6); const U=Object.values(G.amU.L);
   const e2=U.find(x=>!x.c&&x.gy===G.year+1), e1=U.find(x=>!x.c&&x.gy===G.year+2), d2=U.find(x=>!x.c&&x.gy===G.year+1&&x!==e2); ok(e1&&e2&&d2,'준비 실패: 저학년 없음');
   for(const e of [e1,e2,d2])amFollow(e.id,true); e2.amObs={[G.user]:4}; G.shortlist=(G.shortlist||[]).concat([d2.id]); ok(!G.players[e2.id],'저학년이 이미 선수 명단에 있음');
@@ -978,11 +1007,11 @@ T('[고교 리그] 저학년 평가는 등급·범위만 주고, 졸업까지 �
   const T0=amTier({v:50,sd:9}); ok(['t','lo','hi','w'].every(k=>typeof T0[k]==='string'&&!/\\d/.test(T0[k])),'평가에 숫자가 섞임 '+JSON.stringify(T0)); ok(T0.lo!==T0.hi,'넓은 오차인데 범위가 한 등급');
   const L=amSuggest(G.year-1,null,5,ai), L2=amSuggest(G.year-1,null,5,ai); ok(L.length===5&&JSON.stringify(L.map(x=>x.id))===JSON.stringify(L2.map(x=>x.id)),'AI 추천이 같은 입력에 다름'); });
 T('[고교 리그] 3학년 부진: 잠재력은 그대로인데 졸업 학년 기록이 나쁘면 AI 지명 순위가 밀리고, 스카우트 귀띔은 충분히 본 구단만 받는다',()=>{ DEMO.on=false; newGame(6); const y=G.year;
-  const C=G.draftClass.map(id=>G.players[id]).filter(q=>q&&q.prospect&&!q.ovsRet); const B=C.filter(q=>!q.isP&&!q.college&&q.amSim&&(q.amY||[]).some(r=>r.gr===2&&r.pa>=40)).sort((a,b)=>ovr(b)-ovr(a)); const p=B[Math.floor(B.length/4)]; ok(p&&B.length>=8,'준비 실패: 2학년 기록이 있는 고교 타자 없음'); /* 상위권(경쟁자가 많은 자리) */
+  const C=G.draftClass.map(id=>G.players[id]).filter(q=>q&&q.prospect&&!q.ovsRet); const B=C.filter(q=>!q.isP&&!q.college&&q.amSim&&(q.amY||[]).some(r=>r.gr===2&&r.pa>=40&&bRate(r).ops>=.6)).sort((a,b)=>ovr(b)-ovr(a)); const p=B[Math.floor(B.length/4)]; ok(p&&B.length>=8,'준비 실패: 2학년 기록이 있는 고교 타자 없음'); /* 상위권(경쟁자가 많은 자리) */
   const r2=p.amY.find(r=>r.gr===2); p.amY=p.amY.filter(r=>r.y!==y); const sr=Object.assign({},r2,{y,gr:3}); p.amY.push(sr); amTotFix(p); amZSet(C); ok(!amSlump(p),'같은 기록인데 부진으로 봄');
   const t=G.teams.find(x=>x.id!==G.user).id, need=draftNeed(t); const rank=()=>C.map(q=>({id:q.id,s:aiDraftScore(t,q,need)})).sort((a,b)=>b.s-a.s).findIndex(x=>x.id===p.id)+1; const pot0=p.pot, a0=rank(), z0=p.amZ;
-  Object.assign(sr,{h:Math.round(sr.ab*.18),d:0,tr:0,hr:0,bb:Math.round(sr.bb*.4)}); amTotFix(p); amZSet(C); const a1=rank();
-  ok(amSlump(p),'졸업 학년 기록이 크게 떨어졌는데 부진 표시가 없음'); ok(p.pot===pot0,'잠재력이 바뀜'); ok(p.amZ<z0-.45&&a1>a0,'AI 지명 순위가 밀리지 않음(드래프트 보정 뒤 같은 세계에서 z가 정확히 0.50 내려가 경계에 걸림 → 0.45) '+a0+'→'+a1+' z '+z0+'→'+p.amZ);
+  Object.assign(sr,{h:Math.round(sr.ab*.15),d:0,tr:0,hr:0,bb:0,hbp:0}); amTotFix(p); amZSet(C); const a1=rank();
+  ok(amSlump(p),'졸업 학년 기록이 크게 떨어졌는데 부진 표시가 없음'); ok(p.pot===pot0,'잠재력이 바뀜'); ok(p.amZ<z0-.2&&a1>a0,'AI 지명 순위가 밀리지 않음 '+a0+'→'+a1+' z '+z0+'→'+p.amZ);
   ok(a1>=a0+3,'부진으로 AI 지명 순위가 3계단 이상 밀리지 않음 '+a0+'→'+a1); /* 잠재력 순위와 직접 비교하던 것은 드래프트 보정(실현률 분포 변경) 뒤 세계마다 흔들려, 같은 선수의 부진 전후 순위로 본다 */
   { const u=G.user; G.user=t; const v=draftVal(scoutReport(p),p); G.user=u; ok(typeof v==='number','평가 실패'); } /* AI·우리 모두 같은 공개 기록 보정(amDraftAdj) */
   p.amObs={[G.user]:2}; ok(amSlHint(p)===null,'조금 본 구단에도 귀띔이 나옴'); p.amObs={[G.user]:8}; const h=amSlHint(p); ok(h&&h.includes('기록보다'),'충분히 본 구단에 귀띔이 없음 z '+p.amZ); p.amSl='inj'; ok(amSlHint(p)==='부상 여파로 보입니다','부상 원인 귀띔 없음');
@@ -1935,6 +1964,7 @@ T('[감독 요청] 정리 요청: 부상에서 막 돌아왔거나 막 데려온
   const a0=p.acq; p.acq={tid:G.user,k:'트레이드',d:G.day-5,n:(G.acqSeq||0)}; ok(run()===0,'닷새 전 데려온 선수 정리 요청'); p.acq=a0; p.injOut=8; ok(run()===0,'다친 선수 정리 요청'); p.injOut=0; p.listed=true; ok(run()===0,'이미 매물로 내놓은 선수 정리 요청'); p.listed=false; });
 T('[감독 요청] 외국인 교체 요청: 짧은 부상이면 기다리고, 같은 쿼터 새 외국인을 막 데려왔거나 시장에 나은 대안이 없으면 조르지 않으며, 장기 부상이면 부상 사유로 바꿔 달라고 한다(사용자 11-16)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+30); const f=foreignOf(G.user).find(q=>q.foreign==='용병'&&!q.isP)||foreignOf(G.user).find(q=>q.foreign==='용병'); ok(f,'준비 실패: 외국인 없음');
   f.hist.push(f.isP?{y:G.year,lvl:'1군',t:G.user,g:20,gs:20,outs:300,er:220,h:150,bb:60,so:40,hr:20}:{y:G.year,lvl:'1군',t:G.user,g:90,pa:400,ab:380,h:60,d:5,tr:0,hr:3,bb:15,hbp:0,sf:2,so:120,r:10,rbi:12,sb:0,cs:0});
+  for(const o of foreignOf(G.user))if(o!==f){ o.injOut=0; o.hist.push(o.isP?{y:G.year,lvl:'1군',t:G.user,g:20,gs:20,outs:400,er:30,h:90,bb:20,so:120,hr:5}:{y:G.year,lvl:'1군',t:G.user,g:90,pa:400,ab:350,h:120,d:25,tr:2,hr:20,bb:45,hbp:3,sf:2,so:60,r:60,rbi:70,sb:3,cs:1}); } /* 다른 외국인은 건강하고 잘하고 있게: 시뮬 세계에 따라 다른 외국인(장기 부상·부진)이 먼저 교체 대상이 되지 않게(해외 활성화 1-2로 시장 흐름이 바뀌어 드러남) */
   const q=newForeign('용병',{market:true,isP:f.isP}); G.fmarket=(G.fmarket||[]).concat([q.id]); const fe=fAiEst; fAiEst=(t,x)=>x===q?99:fe(t,x); const sr=slotRanks; const fake=()=>{ const o=sr(G.user); for(const k in o)o[k]={...o[k],rank:1}; return o; };
   const run=()=>{ let n=0; slotRanks=fake; try{ for(let i=0;i<60&&!n;i++){ G.mreq=[]; G.mgrReqD=-999; G.mgrFitD=G.day; G.evs=(G.evs||[]).filter(e=>e.k!=='mreq'); mreqWeek(); n=mreqs().filter(r=>r.k==='frep'&&r.data.pid===f.id).length; } }finally{ slotRanks=sr; } return n; };
   try{ ok(run()>=1,'점검 설정 확인: 부진한 외국인 교체 요청이 나와야 함'); f.injOut=10; ok(run()===0,'열흘 부상인데 교체 요청'); f.injOut=60; ok(run()>=1,'60일 부상인데 교체 요청이 없음'); const e=(G.evs||[]).filter(x=>x.k==='mreq').pop(); ok(e&&String(e.sit).includes('부상으로'),'장기 부상 요청 문구에 부상 사유가 없음: '+(e&&e.sit)); f.injOut=0;
@@ -2839,6 +2869,23 @@ T('[피드백 11-08b] 기사 댓글: 부상·FA·트레이드·감독 경질·�
   ok(nb('선수','악재, 홍길동 장기 이탈',-2)==='injury','부상 '+nb('선수','악재, 홍길동 장기 이탈',-2)); ok(nb('FA','코메츠, FA 홍길동 영입',2)==='faSign','FA'); ok(nb('트레이드','대형 트레이드',-1)==='tradeE','트레이드'); /* 기사 문구만으로는 손익을 판단하지 않는다(a83db60): 중립 반응 */ ok(nb('구단','감독 전격 경질',-1)==='mgrFire','경질');
   ok(nb('드래프트','신인 지명 결과',0)==='drSum','드래프트'); ok(nb('구단','팬, 구장 앞에 트럭 시위',-1)==='truck','트럭'); ok(nb('선수','홍길동 시즌 첫 안타',0)==='newsNeu','평범한 기사');
   const C=fComments('부상','injury','neg',{p:'홍길동'},6,G.user,0); ok(C.length>=6&&C.some(c=>c.t.includes('홍길동')),'부상 댓글에 선수 이름 없음'); });
+T('[기사 댓글] 경기 기사 댓글은 선수·상대·점수·숫자를 짚고, 기사마다 다르며, 답글은 부모 댓글에 답하고, 같은 기사는 같은 댓글',()=>{ fresh(); const me=G.user, T0=tnick(me), O=G.teams.filter(t=>t.id!==me).map(t=>t.id), P=playersOf(me).filter(p=>!p.isP).map(p=>p.name), Q=playersOf(me).filter(p=>p.isP).map(p=>p.name);
+  const arts=[]; for(let i=0;i<20;i++){ const o=O[i%O.length], p=P[i%P.length], q=Q[i%Q.length], a=2+i%9, b=i%5; const k=i%4;
+    arts.push(k===0?{id:900+i,d:100+i,k:'선수',v:2,t:p+' "감독님이 믿어 주셔서 부담 없이 쳤습니다."',b:(1+i%4)+'안타 '+(1+i%3)+'홈런 '+(2+i%5)+'타점 활약 뒤 '+p+': "감독님이 믿어 주셔서 부담 없이 쳤습니다."',fanCtx:{v:1,bank:'newsNeu',tid:me,teamNick:T0,teamCity:'',playerName:p}}
+      :k===1?{id:900+i,d:100+i,k:'경기',v:2,t:tshort(me)+', '+[5,8,12,6,9][i>>2]+'연승 질주',b:tname(me)+'이(가) '+[5,8,12,6,9][i>>2]+'연승을 달렸습니다.',tid:me}
+      :k===2?{id:900+i,d:100+i,k:'경기',v:0,t:'달빛대전… '+tname(me)+' '+a+':'+b+' '+tname(o),b:'이번 경기 '+tname(me)+' '+a+':'+b+' '+tname(o)+'. 두 구단은 지금까지 '+(i+1)+'번 맞붙었습니다.',tid:me}
+      :{id:900+i,d:100+i,k:'경기',v:0,t:'감독 "준비한 대로 했습니다."',b:tname(o)+'전 '+(i%2?'패배':'승리')+'('+(i%2?b+':'+a:a+':'+b)+') 뒤 김대훈 감독: "준비한 대로 했습니다. '+q+' 선수가 '+(5+i%3)+'이닝을 '+(i%4)+'실점으로 막아 준 게 결정적이었습니다."',tid:me}); }
+  for(const n of arts){ const c=newsContext(n); n.fanCtx=n.fanCtx||{...c,source:newsContextStamp(n)}; n.fanCtx.source=newsContextStamp(n); }
+  let top=0, fact=0, re=0, reRel=0; const all=[];
+  for(const n of arts){ const C=newsComments(n), F=newsFacts(n,newsContext(n)); ok(JSON.stringify(C)===JSON.stringify(newsComments(JSON.parse(JSON.stringify(n)))),'같은 기사인데 댓글이 바뀜: '+n.t);
+    const vals=Object.entries(F).filter(e=>e[0]!=='T'&&e[1]!=null&&e[1]!=='').map(e=>String(e[1]));
+    const facty=t=>[F.p,F.O,F.S,F.rv,F.q,F.M].some(v=>v&&t.includes(v))||'0123456789'.split('').some(d=>t.includes(d));
+    let parent=null; for(const c of C){ all.push(c.t); if(!c.re){ parent=c; top++; if(facty(c.t))fact++; continue; } re++; ok(parent&&['agree','disagree','joke'].includes(c.rk),'답글 종류 없음: '+c.t);
+      const shared=vals.some(v=>v.length>0&&c.t.includes(v)&&parent.t.includes(v)); if(shared)reRel++; } }
+  ok(fact>=top*.6,'사실을 짚은 댓글이 적음 '+fact+'/'+top); const distinct=new Set(all).size; const cnt={}; for(const t of all)cnt[t]=(cnt[t]||0)+1; ok(distinct>=all.length*.8,'기사마다 댓글이 비슷함 '+distinct+'/'+all.length+' '+Object.entries(cnt).filter(e=>e[1]>2).map(e=>e[0]+'×'+e[1]).join(' / '));
+  ok(re>=10,'답글이 적음 '+re); ok(reRel>=re*.5,'부모와 같은 사실을 짚은 답글이 적음 '+reRel+'/'+re);
+  const bland=['기사 내용 확인했습니다','추가 소식 기다려 보겠습니다','이 사안은 좀 더 지켜보자','관련 설명이 더 나오면 좋겠다','기사에 나온 경기 잘 읽었습니다','승리 이후 준비도 잘하길']; ok(!all.some(t=>bland.includes(t)),'밋밋한 옛 문구가 남음');
+  const tops=arts.map(n=>newsComments(n).filter(c=>!c.re)[0]); ok(tops.filter(c=>c.best).length>=10,'베스트 댓글이 적음'); });
 T('[피드백 11-08b] 창단 드래프트 규정타석·규정이닝: 지난 시즌 1군 446타석·144이닝 기준으로 가른다',()=>{ fresh(); const ly=((G.fd&&G.fd.y)||G.year)-1; const A=Object.values(G.players).filter(p=>p.hist&&p.hist.some(h=>h.y===ly));
   const bq=A.filter(p=>!p.isP&&fdQual(p,ly)), bn=A.filter(p=>!p.isP&&!fdQual(p,ly)), pq=A.filter(p=>p.isP&&fdQual(p,ly)), pn=A.filter(p=>p.isP&&!fdQual(p,ly));
   ok(bq.length>0&&bn.length>0&&pq.length>0&&pn.length>0,'규정 충족 분포 이상 '+[bq.length,bn.length,pq.length,pn.length].join('/'));
@@ -5138,6 +5185,39 @@ T('[해외 리그] 예전 저장(v1, MLB·NPB만): 다음 날 트리플A·CPBL·
   const a=G.abroad[0], b=G.abroad[1]; ok(a.ci>=0&&a.ci<6&&a.club===ovlNm('CPBL',a.ci),'구단을 받지 않음 '+a.club); ok(JSON.stringify(a.lines)===JSON.stringify(old),'지난 줄이 바뀜'); ok(b.ci===-1&&b.club==='멕시코리그','은퇴한 기록을 바꿈');
   ok(ovsClubNm(a.lines[0])===''&&ovsStatRows({id:a.id})[0].pre==='CPBL','옛 줄(구단 없음) '+JSON.stringify(ovsStatRows({id:a.id})[0]&&ovsStatRows({id:a.id})[0].pre));
   G.year++; ovlNewYear(); ovlSeasonEnd(); abroadYear(); if(a.lines.length===2)ok(a.lines[1].c===a.ci&&a.lines[1].lvl==='CPBL','새 시즌 줄에 구단이 없음'); else ok(a.end!=null,'기록이 이어지지 않음'); });
+T('[해외 활성화 1-1] KBO를 떠난 외국인 기록은 한도에서 막히지 않고 오래된 기록부터 지우며, 일부는 같은 사람으로 KBO 경력 후보가 되어 KBO·해외 기록을 함께 보인다',()=>{ fresh(); const AI=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); G.day=KD(12,1); G.abroad=[];
+  for(let i=0;i<30;i++)G.abroad.push({id:-100-i,name:'채움'+i,isP:false,pos:'1루수',foreign:'용병',from:AI[1],lg:'MLB',ci:0,how:'KBO 퇴단',y:G.year-1,y1:G.year,lines:[],back:false,fr:{id:-100-i,isP:false,age:30,r:{con:50,pow:50,eye:50,spd:50,def:50}}});
+  const x=newForeign('용병',{market:true,isP:false}); x.team=AI[0]; x.sal=x.ask; x.cyrs=1; x.age=29; x.adapt=71; const h=lineFor(x,G.year,x.team,'1군'); Object.assign(h,{g:130,pa:540,ab:470,h:145,d:30,hr:28,bb:55,so:100}); const nat=x.nat, th=x.th;
+  releaseForeign(x.id); const a=G.abroad.find(r=>r.id===x.id); ok(a&&a.foreign&&a.fr,'한도(30명)가 차서 새 외국인 기록을 막음'); ok(G.abroad.filter(r=>r.foreign||r.cand).length<=OVS_FMAX,'한도를 넘김 '+G.abroad.length); ok(!G.abroad.some(r=>r.id===-129)&&G.abroad.some(r=>r.id===-100),'가장 오래된(명단 끝) 기록을 지우지 않음');
+  ok(!G.players[x.id]&&G.arch&&G.arch[x.id],'준비 실패: 보관 기록'); ok(a.fr.nat===nat&&a.fr.adapt===71&&a.fr.th===th,'능력 사본에 국적·적응·투타가 없음');
+  a.y1=G.year; a.lines=[{y:G.year,lvl:'트리플A',c:3,pa:480,ab:420,h:120,d:25,tr:2,hr:20,bb:50,so:100,hbp:4,sf:3}];
+  ok(ovsRetChance(a)>0,'트리플A에서 뛴 29세 KBO 출신의 재등장 확률이 0');
+  ok(ovsRetChance(Object.assign({},a,{lines:[{y:G.year,lvl:'MLB',pa:520}]}))===0,'빅리그 주전도 돌아옴'); ok(ovsRetChance(Object.assign({},a,{fr:Object.assign({},a.fr,{age:36})}))===0,'36세도 돌아옴'); ok(ovsRetChance(Object.assign({},a,{y1:G.year-4}))===0,'떠난 지 5년 넘은 선수도 돌아옴');
+  const p=ovsRevive(a); ok(p&&G.players[x.id]===p&&p.id===x.id&&p.team==null&&p.foreign==='용병'&&G.fmarket.includes(p.id),'같은 사람으로 시장에 나오지 않음'); ok(p.nat===nat&&p.adapt===71&&p.th===th,'국적·적응·투타가 바뀜');
+  ok(p.hist.some(q=>q.lvl==='1군'&&q.pa===540&&q.t===AI[0]),'KBO 1군 기록이 없음'); ok(p.prevLvl==='트리플A'&&p.prev.pa===480&&p.prev.g>0&&ovlCandAaa(p)===3,'지난 해외 기록이 후보 기록이 아님 '+p.prevLvl);
+  ok(/^KBO 1시즌 · OPS /.test(fKboTxt(p)),'KBO 기록 요약 '+fKboTxt(p)); ok(a.back&&!a.fr&&ovsStatRows(p).length===1,'해외 기록 줄이 선수 기록 표에 없음'); ok(ovsRetChance(a)===0,'되살린 선수를 또 되살림');
+  const I=fInfo(AI[2],p), Iu=fInfo(G.user,p); ok(I.kbo&&Iu.kbo,'KBO 경력 정보가 한쪽만'); ok(fCandSd(p,I)<fCandSd(p,Object.assign({},I,{kbo:false})),'KBO에서 본 선수인데 오차가 같음'); ok(Number.isFinite(fAiEst(AI[2],p))&&fRecEst(p),'AI가 해외 기록을 읽지 못함');
+  G.ovsRetY=null; ovsRetWinter(); const n=G.fmarket.length; ok(ovsRetWinter().length===0&&G.fmarket.length===n,'한 겨울에 두 번 굴림');
+  G.day=KD(2,10); p.age=29; dropP(p.id); const b=G.abroad.find(r=>r.id===x.id); ok(b&&b.foreign&&!b.back&&b.end==null&&b.lines.length===1&&b.how==='KBO 재퇴단'&&G.abroad.filter(r=>r.id===x.id).length===1,'다시 떠난 뒤 해외 기록이 이어지지 않음'); ok(ovsRetChance(b)===0,'계약하지 못하고 떠난 선수가 바로 다음 겨울에 또 나옴'); });
+T('[해외 활성화 1-2] 시즌 중 MLB 콜업·NPB 계약은 관찰하지 않은 후보에게도 같은 확률로 일어나고, AI는 관찰 후보라고 점수를 더 주거나 서두르지 않는다',()=>{ fresh(); G.day=G.cal.open+10; ok(period()==='season','준비 실패: 시즌');
+  const L=[]; for(let i=0;i<80;i++){ const q=newForeign('용병',{market:true}); q.age=31; G.fmarket.push(q.id); L.push(q); } const W=L.slice(0,40), U=L.slice(40); G.fwatch=W.map(q=>({id:q.id,since:G.day,k:0})); G.abroad=[];
+  for(let i=0;i<20;i++)fwatchWeek(); const gw=W.filter(q=>!G.players[q.id]).length, gu=U.filter(q=>!G.players[q.id]).length;
+  ok(gu>=3,'관찰하지 않은 후보가 거의 빠지지 않음 '+gu); ok(Math.abs(gw-gu)<=11,'관찰 여부에 따라 빠지는 수가 크게 다름 '+gw+'/'+gu); ok(G.abroad.every(a=>a.cand&&W.some(q=>q.id===a.id)),'관찰하지 않은 후보까지 해외 기록에 남김');
+  const q=U.find(x=>G.players[x.id]); const tid=otherT(); G.fwatch=[]; const s0=fScoreBy(tid,q); G.fwatch=[{id:q.id,since:G.day,k:0}]; ok(fScoreBy(tid,q)===s0,'관찰 후보에 AI 점수를 더 줌'); });
+T('[해외 활성화 1-3] 미국행 최대어: 제안은 최대어 5명 중 3명까지이고, AI 1순위 구단도 우리와 같은 두 선택지·같은 비용·같은 확률로 자기 1순위 선수만 설득한다',()=>{ fresh(); simTo(()=>G.day>=KD(7,9)); makeDraftClass(); const C=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect); const ai=otherT(); const dpo=draftPickOrder;
+  try{ draftPickOrder=()=>[{tid:ai,rd:1}]; G.day=KD(7,10); hsUsDaily(); const off=C.filter(p=>p.usOff||p.usKeepT!=null); ok(off.length<=US_HS.max,'제안 '+off.length+'명'); ok(!(G.evs||[]).some(e=>e.k==='usHs'&&!e.done),'AI가 1순위인데 우리에게 설득 결정이 옴');
+    const p=C[0]; p.usOff={club:'뉴욕',bonus:200,y:G.year}; for(const i of [0,1])ok(usHsCh(ai,p,i)===usHsCh(G.user,p,i),'설득 확률이 다름'); ok(usHsCost(p,0)===260&&usHsCost(p,1)===0,'설득 비용');
+    team(ai).cash=99999; let won=false, c0=0; for(let k=0;k<40&&!won;k++){ p.usOff={club:'뉴욕',bonus:200,y:G.year}; delete p.usStay; c0=team(ai).cash; won=usHsTry(ai,p,0); } ok(won&&team(ai).cash===c0-260&&p.usKeepT===ai&&p.usStay,'AI 최고 대우 설득이 비용을 내지 않음');
+    const need=draftNeed(ai), S=C.slice().sort((a,b)=>aiDraftScore(ai,b,need)-aiDraftScore(ai,a,need)), top=S[0], sec=S[1]; for(const x of [top,sec]){ delete x.usStay; delete x.usKeepT; x.usOff={club:'LA',bonus:150,y:G.year}; }
+    const m0=mlbOf(sec); usHsAi(ai,sec,C); ok(!sec.usStay&&sec.usOff&&mlbOf(sec)===m0,'자기 1순위가 아닌 선수까지 설득'); const m1=mlbOf(top); usHsAi(ai,top,C); ok(top.usStay||mlbOf(top)>m1,'자기 1순위 선수를 설득하지 않음');
+  }finally{ draftPickOrder=dpo; } });
+T('[해외 활성화 1-4] 해외파 계약 마지막 해: 새해에 복귀 여부를 미리 정해 줄·카드에 표시하고 우리 출신이면 편지를 보내며, 시즌을 마치면 그 값대로 한다(AI 원소속도 같은 값)',()=>{ fresh(); const L=domestic(G.user).filter(q=>!q.isP&&!q.foreign&&!q.prospect).slice(0,2); const o=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); ok(L.length===2&&o,'준비 실패');
+  G.day=KD(11,1); for(const p of [...L,o]){ setOvr(p,67); p.injOut=0; delete p.mil; p.age=28; ovsLeave(p,'MLB',MLBT[0],1,500,'포스팅',0); } const [a,b]=L.map(p=>G.abroad.find(x=>x.id===p.id)), c=G.abroad.find(x=>x.id===o.id);
+  G.year++; G.day=KD(1,1); let tries=0; while(!(a.bn&&a.bn.v)&&tries++<40){ delete a.bn; G.mail=[]; ovsPregen(); } ok(a.bn&&a.bn.y===G.year&&a.bn.v,'마지막 해 복귀 여부를 미리 정하지 않음');
+  ok(G.mail.some(m=>m.subj===a.name+', 내년 복귀 가능 · 우선협상권 우리'),'우리 출신 복귀 예고 편지가 없음'); ok(ovsBackTag(a)==='내년 복귀 가능 · 우선협상권 우리','표시 '+ovsBackTag(a));
+  const n=G.mail.length; const k0=JSON.stringify(a.bn); ovsPregen(); ok(JSON.stringify(a.bn)===k0&&G.mail.length===n,'새해 미리 정하기를 다시 굴림');
+  b.bn={y:G.year,v:0}; c.bn={y:G.year,v:1}; ok(ovsBackTag(b)===''&&ovsBackTag(c)==='내년 복귀 가능 · 우선협상권 '+tshort(c.from),'남을 선수 표시·AI 원소속 표시');
+  G.day=KD(11,1); ovlSeasonEnd(); abroadYear(); ok(a.back&&c.back,'미리 정한 복귀가 지켜지지 않음'); ok(!b.back,'남기로 정한 선수가 돌아옴'); ok(!a.bn&&!b.bn&&!c.bn,'정한 값이 남음'); });
 T('[해외 리그] 해외 소식은 한 시즌 6건까지, 중요한 소식(시상·우리 구단 출신)부터 낸다',()=>{ fresh(); G.wire=[]; const N=[]; for(let i=0;i<10;i++)N.push({pr:i,t:'소식 '+i,a:{id:-i-1,from:null}}); ovsWires(N); ok(G.wire.length===6,'소식 수 '+G.wire.length); ok(G.wire.some(w=>w.t==='소식 9')&&!G.wire.some(w=>w.t==='소식 0'),'중요도 순서가 아님'); });
 T('[해외 리그] 주목 선수: 기록을 쌓는 선수(KBO 출신·외국인 시장·관찰 명단)만 오르고, OPS·ERA 순서와 최소 타석·이닝을 지키며, 시즌 초반에는 지난 시즌 기록이다',()=>{ fresh();
   const p=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); ok(p,'준비 실패'); setOvr(p,70); p.injOut=0; delete p.mil; const aid=p.id; ovsLeave(p,'MLB',MLBT[0],2,500,'포스팅',0); const a=G.abroad.find(x=>x.id===aid); a.y1=Math.min(a.y1,G.year); ovsPregen(); ok(a.cur,'준비 실패: 올해 기록');

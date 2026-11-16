@@ -50,7 +50,7 @@ function ovlAlumView(){ const FT=inTabs('ovla',[['all','전체'],['mine','우리
     const tm=tr?`<span class="small muted">팀 ${tr.w}승 ${tr.l}패 · ${esc(tr.dn)} ${tr.rk}위${tr.ch?' · 우승':tr.pn?' · 결승 진출':tr.po?' · 가을야구':''}</span>`:'';
     const club=hc&&h.lvl==='트리플A'?`<b>${esc(ovsClubNm(h))}</b> (트리플A · ${esc(a.club||a.lg)} 산하)`:`<b>${esc(a.club||a.lg)}</b>${a.club&&a.club!==a.lg?` (${esc(a.lg)})`:''}`;
     return `<div class="abr" data-a="person" data-v="abr:${a.id}" role="button" tabindex="0">${a.from!=null?badge(a.from,26):''}<div><b>${esc(a.name)} <span class="small muted">${esc(a.pos)}${a.foreign?' · 외국인':''}${a.cand?' · 관찰했던 후보':''}</span></b>
-      <span class="small">${club}</span>${ln}${tm}</div></div>`; };
+      <span class="small">${club}</span>${ln}${tm}${ovsBackTag(a)?`<span class="small"><b>${esc(ovsBackTag(a))}</b></span>`:''}</div></div>`; };
   return csec(`KBO 출신 해외파 ${A.length}명${hiI('해외로 간 국내 선수, KBO를 떠나 해외에서 뛰는 외국인, 우리가 관찰하다 놓친 후보의 해외 성적입니다. MLB 구단 소속이라도 실력이 모자라면 산하 트리플A에서 뜁니다. 시즌 중에는 지금까지의 기록이고, 시즌을 마치면 확정됩니다. 해외 기록은 외국인 영입·복귀 협상에서 우리와 다른 구단이 똑같이 참고합니다.')}`,
     ft+(L.length?`<div class="abl">${L.map(row).join('')}</div>`:emptyState('지금 해외에서 뛰는 KBO 출신 선수가 없습니다.')));
 }
