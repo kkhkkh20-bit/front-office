@@ -4,6 +4,8 @@
    node tools/measure-ladder.cjs series [시드=7] [경기 수=400]  두 구단 맞대결 반복: 경기당 시간·승률
    CHAOS=k node tools/measure-ladder.cjs season 7 1            결정은 같고 10일째에 난수 k개만 더 쓴 세계: 한 번의 다른 클릭이 시즌 결과를 얼마나 흔드는가
    node tools/measure-ladder.cjs probe [시드=7]                 화면이 부르는 조회 함수가 엔진 난수를 쓰는가(쓰면 '보기만 해도 결과가 바뀜')
+   node tools/measure-ladder.cjs reload [시드=7] [개막 뒤 일수=20]  저장(JSON)·불러오기를 새 엔진 인스턴스(다른 Math.random)에서 한 뒤 20일 더: 이어서 한 것과 해시가 같은가(브라우저 새로고침)
+ RNG=seeded|legacy(기본 seeded): 엔진 난수 방식(00_base). legacy는 예전처럼 Math.random 한 흐름(시드형 엔진 이전과 같음)
  결정성 확인: season을 같은 시드로 두 번 돌려 해시를 비교한다. */
 const fs=require('fs'), path=require('path'), crypto=require('crypto');
 const ENGINE=process.env.ENGINE||path.join(__dirname,'..','dist','engine.js');
@@ -11,11 +13,12 @@ if(!fs.existsSync(ENGINE)){ console.error('엔진 파일이 없습니다: '+ENGI
 const [mode='season', a1, a2]=process.argv.slice(2); const SEED=+a1||7;
 let CALLS=0; globalThis.__calls=()=>CALLS;
 { let a=SEED; Math.random=()=>{ CALLS++; a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+globalThis.FO_RNG_MODE=process.env.RNG||'seeded';
 const LZ=new Function(fs.readFileSync(path.join(__dirname,'..','vendor','lz-string.min.js'),'utf8')+';return LZString;')();
 console.error=()=>{};
 const H=s=>crypto.createHash('sha256').update(s).digest('hex').slice(0,16);
 const out={mode,seed:SEED,node:process.version};
-const run=new Function('out','H','LZ','mode','A2',fs.readFileSync(ENGINE,'utf8')+`
+const run=new Function('out','H','LZ','mode','A2','SNAP',fs.readFileSync(ENGINE,'utf8')+`
 const t0=Date.now();
 DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let g0=0; while(G.fd&&!G.fd.done&&g0++<500)fdAdvance(true); G.tut={done:true,step:99}; hireMgr(G.mmarket[0].id,3); G.medSet=true;
 for(const id of [...(G.fmarket||[])]){ const p=G.players[id]; try{ if(p&&!foreignCheck(G.user,p))signForeign(G.user,id); }catch(e){} }
@@ -57,8 +60,16 @@ if(mode==='probe'){
   const F={teamRating:()=>teamRating(me),depth:()=>depth(me),makeLineup:()=>makeLineup(me),standingsNow:()=>standingsNow(),
     faAsk:()=>mine.slice(0,20).forEach(p=>faAsk(p)),faDemand:()=>mine.slice(0,20).forEach(p=>faDemand(p)),scoutReport:()=>theirs.slice(0,20).forEach(p=>scoutReport(p)),
     evalTrade:()=>evalTrade(op,[mine[3].id],[theirs[3].id],0)};
-  out.probe={}; for(const k in F){ const c0=__calls(), j0=JSON.stringify(G).length; let e=''; try{ F[k](); }catch(x){ e=String(x.message).slice(0,60); } out.probe[k]={rngCalls:__calls()-c0,stateChanged:JSON.stringify(G).length!==j0,err:e}; }
+  out.probe={}; for(const k in F){ const c0=__calls(), s0=G.rng?G.rng.s:null, j0=JSON.stringify(G).length; let e=''; try{ F[k](); }catch(x){ e=String(x.message).slice(0,60); } out.probe[k]={rngCalls:__calls()-c0,engineRngMoved:G.rng?G.rng.s!==s0:null,stateChanged:JSON.stringify(G).length!==j0,err:e}; }
+  out.rngMode=typeof rngMode==='function'?rngMode():'(없음)';
 }
+const strip=()=>{ const k=JSON.parse(JSON.stringify(G)); delete k.amBootMs; return H(JSON.stringify(k)); };
+if(mode==='reload'){ while(period()!=='season')step(); for(let i=0;i<(+A2||20);i++)step();
+  G=JSON.parse(JSON.stringify(G)); try{ migrateDraft(); }catch(e){} const j=JSON.stringify(G); out.reload={year:G.year,day:G.day,rngMode:typeof rngMode==='function'?rngMode():'(없음)',saveKB:Math.round(j.length/1024)};
+  for(let i=0;i<20;i++)step(); out.reload.continued=strip(); out.__snap=j; }
+if(mode==='reload2'){ G=JSON.parse(SNAP); try{ migrateDraft(); }catch(e){} for(let i=0;i<20;i++)step(); out.reload.reloaded=strip(); }
 `);
 run(out,H,LZ,mode,a2);
+if(mode==='reload'){ const snap=out.__snap; delete out.__snap; { let a=SEED*7919+13; Math.random=()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  run(out,H,LZ,'reload2',a2,snap); out.reload.same=out.reload.continued===out.reload.reloaded; }
 console.log(JSON.stringify(out,null,1));
