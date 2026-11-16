@@ -15,7 +15,7 @@ function cupTitleSync(){ if(!G||!G.wid||!CUP.res||!Array.isArray(CUP.res.cups))r
   if(T.length)G.cupTt=T; }
 const cupDate=ms=>{ try{ const d=new Date(ms); return `${d.getMonth()+1}월 ${d.getDate()}일`; }catch(e){ return ''; } };
 /* 얼굴 사진을 64px로 줄여 엔트리에 붙인다(카드 이미지용). 아직 못 불러온 사진은 빼고 보낸다(주최 도구가 같은 얼굴 묶음에서 다시 고른다) */
-async function cupFaces(e){ const tid=e.club.tid; for(const s of e.P){ const p=G.players[s.id]; if(!p)continue; let u=null; try{ u=face6Src(p.team===tid?p:Object.assign({},p,{team:tid})); }catch(x){} if(!u||u===F6WAIT||!/^data:/.test(u))continue;
+async function cupFaces(e){ const tid=e.club.tid; for(const s of e.P){ const p=G.players[s.id]; if(!p)continue; let u=null; for(let k=0;k<24;k++){ try{ u=face6Src(p.team===tid?p:Object.assign({},p,{team:tid})); }catch(x){ u=null; } if(u!==F6WAIT)break; await new Promise(r=>setTimeout(r,250)); } /* 얼굴 시트를 아직 못 불러왔으면 잠깐 기다린다 */ if(!u||u===F6WAIT||!/^data:/.test(u))continue;
     try{ const im=new Image(); await new Promise((ok,no)=>{ im.onload=ok; im.onerror=no; im.src=u; }); const c=document.createElement('canvas'); c.width=c.height=64; c.getContext('2d').drawImage(im,0,0,64,64); s.f=c.toDataURL('image/webp',.72); if(!/^data:image\/webp/.test(s.f))s.f=c.toDataURL('image/jpeg',.7); }catch(x){} }
   try{ const t=team(tid); e.club.pal=tpal(t).slice(0,4); const B=typeof BADGE_IMG!=='undefined'?BADGE_IMG[tid]:null; if(B&&B.k)e.club.badge=B.k; }catch(x){}
   return e; }
@@ -62,7 +62,7 @@ function cupView(){ if(!G)return ''; cupProbe(); const C=FrontOfficeCore, t=team
     <p class="small muted">신청하면 그 순간의 타순·선발·불펜·부상 상태가 그대로 들어갑니다(투수 피로만 0). 다시 신청하면 덮어쓰고, 하루에 한 번 할 수 있습니다.</p>`;
   const apply=`<section class="card"><h2 class="sec">프런트컵 참가</h2>${title?`<p class="cup-tts">${title}</p>`:''}${st}${form}${CUP.msg?`<div class="note${CUP.bad?' bad':''}">${esc(CUP.msg)}</div>`:''}</section>`;
   const AL=cupAlbum().slice().reverse();
-  const alb=`<section class="card"><h2 class="sec">출전 로스터 앨범 <small class="muted">${AL.length}/${CUP_ALB_MAX}</small></h2><p class="small muted">시즌이 끝날 때마다 1군 로스터를 자동으로 남깁니다. 지난 로스터로도 신청할 수 있습니다.</p>
+  const alb=`<section class="card"><h2 class="sec">출전 로스터 앨범</h2><p class="small muted">시즌이 끝날 때마다 1군 로스터를 자동으로 남깁니다(${AL.length}/${CUP_ALB_MAX}개). 지난 로스터로도 신청할 수 있습니다.</p>
     <div class="btns"><button class="btn" data-a="cupAlbSave"${G.unemp?' disabled':''}>지금 로스터 저장</button></div>
     <div class="cup-alb">${AL.map(x=>{ const e=x.e, r=e.res; return `<div class="cup-a"><div><b>${x.y} ${esc(e.club.nick||e.name)}</b><span class="small muted">${x.k==='auto'?'시즌 종료':'직접 저장'}${r?` · ${r.rank}위${r.champ?' · 우승':''} · ${r.w}승 ${r.l}패`:''} · OVR ${C.cupOvrTxt(e.ovr)}</span></div>
       <div class="btns">${on&&cfg?`<button class="btn small" data-a="cupApplyAlb" data-v="${x.id}"${CUP.busy?' disabled':''}>이 로스터로 신청</button>`:''}<button class="btn small" data-a="cupFileAlb" data-v="${x.id}">파일</button><button class="btn small" data-a="cupAlbDel" data-v="${x.id}">삭제</button></div></div>`; }).join('')||'<p class="small muted">아직 저장한 로스터가 없습니다.</p>'}</div></section>`;

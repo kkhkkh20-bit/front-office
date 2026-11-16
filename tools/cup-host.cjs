@@ -235,10 +235,10 @@ async function cmdFaces() {
   for (const x of L) {
     const e = entryOf(x.h); const want = e.P.filter(p => !p.f).map(p => ({ id: p.id, team: e.club && e.club.tid != null ? e.club.tid : 0, age: p.age, foreign: p.foreign || null, name: p.name }));
     const got = await pg.evaluate(async (want) => {
-      const G0 = G; G = { f6: {}, f6r: {}, f6v: FACE6.v === '6c' ? 3 : 2, players: {}, games: [], teams: [] }; for (const w of want) G.players[w.id] = w; const out = {};
-      try { for (let k = 0; k < 40; k++) { let wait = 0; for (const w of want) { if (out[w.id]) continue; let u = null; try { u = face6Src(Object.assign({}, w, { foreign: null })); } catch (x) {} if (!u || u === F6WAIT) { wait++; continue; }
+      const P0 = face6Pool; face6Pool = p => P0(p).filter(i => i < 100); /* 내장 시트(100명)만: 추가 얼굴(v13)은 사이트 파일이 있어야 열린다 */ const G0 = G; G = { f6: {}, f6r: {}, f6v: FACE6.v === '6c' ? 3 : 2, players: {}, games: [], teams: [] }; for (const w of want) G.players[w.id] = w; const out = {};
+      try { for (let k = 0; k < 40; k++) { let wait = 0; for (const w of want) { if (out[w.id]) continue; let u = null; try { u = face6Src(w); } catch (x) {} if (!u || u === F6WAIT) { wait++; continue; }
             const im = new Image(); await new Promise(r => { im.onload = r; im.onerror = r; im.src = u; }); const c = document.createElement('canvas'); c.width = c.height = 64; c.getContext('2d').drawImage(im, 0, 0, 64, 64); out[w.id] = c.toDataURL('image/webp', .72); }
-          if (!wait) break; await new Promise(r => setTimeout(r, 250)); } } finally { G = G0; }
+          if (!wait) break; await new Promise(r => setTimeout(r, 250)); } } finally { G = G0; face6Pool = P0; }
       return out; }, want);
     let n = 0; for (const p of e.P) if (!p.f && got[p.id]) { p.f = got[p.id]; n++; }
     W(entryFile(x.h), JSON.stringify(e)); x.faces = e.P.filter(p => p.f).length; console.log(`  ${lab(x)}: 사진 ${n}장 채움`);
