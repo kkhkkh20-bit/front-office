@@ -86,9 +86,9 @@ function personXExt(k){ const P=String(k).split(':'), kind=P[0];
   if(kind==='chm'){ const o=cheerOf(P[1]); if(!o)return null; const {S,m}=o; const img=(G.cimg&&G.cimg['P:cheerm:'+m.id])||(typeof face8Src==='function'&&cheerPh(S,m)!=null?face8Src(cheerPh(S,m)):null);
     const fol=m.fol>=10000?(m.fol/10000).toFixed(1)+'만':String(m.fol);
     return {k,name:m.name,role:`${tname(G.user)} 치어리더`,av:{img,name:m.name},rel:null,lab:'',sub:`${m.age}세 · ${m.yrs?m.yrs+'년차':'신인'} · 팔로워 ${fol}`,
-      info:`<p class="small">${m.inj?`부상 ${m.inj}일 · `:''}${m.sl?`슬럼프 ${m.sl}일 · `:''}무대 ${m.app||0}회 · 피로 ${Math.round(m.fat||0)} · 월 수수료 ${money(cheerFee(m,S.ag))}</p>`,acts:[btn('응원단','go','club:fans',1)]}; }
+      info:`<p class="small">${m.inj?`부상 ${m.inj}일 · `:''}${m.sl?`슬럼프 ${m.sl}일 · `:''}무대 ${m.app||0}회 · 피로 ${Math.round(m.fat||0)} · 월 수수료 ${money(cheerFee(m,S.ag))}</p>`,acts:[btn('응원단','go','club:crew',1)]}; }
   if(kind==='crew'){ const c=crewOf()[P[1]]; if(!c)return null; const ph=typeof crewPh==='function'?crewPh(c):null; const img=(G.cimg&&G.cimg['P:cheer:'+c.id])||(ph!=null&&typeof face8Src==='function'?face8Src(ph):null);
-    return {k,name:c.name,role:`${tname(G.user)} ${CREW_JOB[c.job].l}`,av:{img,name:c.name},rel:null,lab:'',sub:`${c.age}세 · 월 ${money(c.sal)}`,acts:[btn('팬 운영','go','club:fans',1)]}; }
+    return {k,name:c.name,role:`${tname(G.user)} ${CREW_JOB[c.job].l}`,av:{img,name:c.name},rel:null,lab:'',sub:`${c.age}세 · 월 ${money(c.sal)}`,acts:[btn('팬 운영','go','club:ops',1)]}; }
   if(kind==='spn'){ const S=G.spon, c=S&&S.c&&S.c[P[1]]; if(!c||!c.co)return null; const H=(S.hist||[]).filter(h=>h.co===c.co);
     return {k,name:c.co,role:`${SPON_SLOT[P[1]].l} 스폰서 · ${c.ind}`,av:{img:hsCrest(c.co),name:c.co},rel:null,lab:'',sub:`${c.y0}~${c.until} · 연 ${money(c.amt)}`,
       info:`<p class="small">${c.ps?`가을야구 진출 보너스 ${money(c.ps)} · `:''}${c.champ?`우승 보너스 ${money(c.champ)} · `:''}${c.img?'언론 논조가 30 아래면 다음 해 20% 감액 조항':'이미지 조항 없음'}</p>${H.length?`<p class="small muted">지난 계약 ${H.length}건: ${H.map(h=>`${h.y0}~${h.until} ${SPON_SLOT[h.slot].l}`).join(', ')}</p>`:''}`,

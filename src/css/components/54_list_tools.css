@@ -105,3 +105,24 @@
 @media(min-width:1100px){.res2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 24px;align-items:start}}
 /* 구단 일지: 넓은 PC에서 두 단으로(UI 3단계 3-9) */
 @media(min-width:1600px){.club-log:has(>p:nth-child(20)){display:block;column-count:2;column-gap:32px}.club-log>p{break-inside:avoid;margin:0 0 4px}}
+/* 탭 줄 줄이기·긴 화면(UI 3단계 3-9) */
+.ws-stack{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ws-stack>.card{margin:0}
+.dview-menu{margin:0 0 8px}
+.dview-menu>summary{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:4px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);cursor:pointer;list-style:none}
+.dview-menu>summary::-webkit-details-marker{display:none}
+.dview-menu[open]>summary{border-color:var(--acc)}
+.dview-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.dview-list button{min-height:36px;padding:4px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:inherit;font:inherit;font-size:13px;cursor:pointer}
+.dview-list button.on{border-color:var(--acc);color:var(--acc);font-weight:700}
+.tpool-pick{flex-wrap:wrap}
+.scm-tbl .scm-grp th{text-align:left;font-size:12px;color:var(--muted);background:var(--panel2);cursor:default}
+.sis-acts{margin-bottom:6px}
+.jump-bar{display:none}
+@media(max-width:699px){
+  .jump-bar{display:flex;flex:none;gap:6px;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:4;margin:0 0 8px;padding:6px 0;background:var(--bg)}
+  .jump-bar::-webkit-scrollbar{display:none}
+  .jump-bar button{flex:0 0 auto;min-height:36px;padding:4px 12px;border:1px solid var(--line);border-radius:18px;background:var(--panel);color:inherit;font:inherit;font-size:13px;white-space:nowrap}
+  .card .jump-bar{background:var(--panel)}
+  .trn-bar{position:sticky;top:0;z-index:3;background:var(--panel);padding:6px 0}
+}
