@@ -2,10 +2,35 @@
 function wOf(h,p){ return warPub(h,p); }
 const SAVE='danjang-v4';
 const UI={open:{},mail:null,mf:'all',talkMsg:null,tab:'home',sheet:null,posSheet:null,game:null,seg:'bat',lseg:'stand',lf:{team:'all',kind:'bat',sort:'war'},trade:{tid:null,give:[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'},leagueTeam:null,confirmNew:false,offer:null,ext:null,fmsg:'',confirmRel:null};
+/* ===== 저장소 층(SaveStore): 저장 본문·목록(META)·구형 세이브가 브라우저 저장소에 닿는 곳은 모두 여기를 지난다(docs/design/save-storage-adapter.md) =====
+   기본 구현(web)은 예전과 똑같이 localStorage(동기)와 IndexedDB 'danjang-saves'/'slots'(비동기 보조 저장소)를 그대로 쓴다. 키·값·예외도 그대로라, 호출하는 쪽의 try/catch·되읽기 확인이 예전처럼 동작한다.
+   - get/set/remove/keys/usage: 동기. set·remove는 저장소 예외(공간 부족 등)를 그대로 던진다. get은 없으면 null.
+   - big.ok/put/read/drop: 슬롯 본문 보조 저장소. ok는 동기, 나머지는 Promise.
+   나중에 Steam(Electron)·Android(Capacitor) 빌드가 파일 저장으로 바꿀 때는 부팅(99_boot) 전에 SaveStore.use(구현)을 부른다. 지금은 아무 데서도 부르지 않는다 */
+const SaveStore=(()=>{
+  let DB=null;
+  const idb=()=>{ if(DB)return DB; DB=new Promise((res,rej)=>{ try{ const r=indexedDB.open('danjang-saves',1); r.onupgradeneeded=()=>{ try{ r.result.createObjectStore('slots'); }catch(e){} }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); r.onblocked=()=>rej(new Error('blocked')); }catch(e){ rej(e); } }); DB.catch(()=>{ DB=null; }); return DB; };
+  const tx=(mode,fn)=>idb().then(db=>new Promise((res,rej)=>{ let out; const t=db.transaction('slots',mode); const rq=fn(t.objectStore('slots')); if(rq)rq.onsuccess=()=>{ out=rq.result; }; t.oncomplete=()=>res(out); t.onerror=()=>rej(t.error); t.onabort=()=>rej(t.error||new Error('abort')); }));
+  const web={ name:'web',
+    get:k=>localStorage.getItem(k),
+    set:(k,v)=>{ localStorage.setItem(k,v); },
+    remove:k=>{ localStorage.removeItem(k); },
+    keys:()=>{ const out=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k!=null)out.push(k); } return out; },
+    usage:()=>{ let b=0; for(const k of web.keys()){ const v=localStorage.getItem(k); b+=(k.length+(v?v.length:0))*2; } return b; }, /* 대략의 바이트(UTF-16) */
+    big:{ ok:()=>{ try{ return typeof indexedDB==='object'&&!!indexedDB&&typeof indexedDB.open==='function'; }catch(e){ return false; } },
+      put:(n,d)=>tx('readwrite',st=>st.put(d,n)), read:n=>tx('readonly',st=>st.get(n)), drop:n=>tx('readwrite',st=>st.delete(n)) } };
+  let impl=web;
+  const NEED=['get','set','remove','keys','usage'], NEED_BIG=['ok','put','read','drop'];
+  return { get:k=>impl.get(k), set:(k,v)=>impl.set(k,v), remove:k=>impl.remove(k), keys:()=>impl.keys(), usage:()=>impl.usage(),
+    big:{ ok:()=>impl.big.ok(), put:(n,d)=>impl.big.put(n,d), read:n=>impl.big.read(n), drop:n=>impl.big.drop(n) },
+    web, current:()=>impl.name||'',
+    /* 다른 저장 구현으로 바꾼다(앞 구현을 돌려준다). 부팅 전에 한 번만 부르는 용도: 이미 읽은 메모리 사본(SB)은 옮기지 않는다 */
+    use(next){ if(!next||NEED.some(f=>typeof next[f]!=='function')||!next.big||NEED_BIG.some(f=>typeof next.big[f]!=='function'))throw new Error('SaveStore.use: get/set/remove/keys/usage와 big.ok/put/read/drop이 모두 있어야 합니다'); const prev=impl; impl=next; return prev; } };
+})();
 /* 저장: 슬롯 10개, lz-string 압축. 브라우저 저장 공간(보통 5MB 안팎)을 넘으면 저장 오류를 띄우고 파일 내보내기를 권한다 */
 const SLOTS=10, META='danjang-meta'; const SLOT_IDS=Array.from({length:SLOTS},(_,i)=>i+1);
-function meta(){ try{ const m=JSON.parse(localStorage.getItem(META)||'null'); if(m&&typeof m==='object'&&!Array.isArray(m)){ if(!m.slots||typeof m.slots!=='object'||Array.isArray(m.slots))m.slots={}; if(!SLOT_IDS.includes(m.active))m.active=1; return m; } }catch(e){} return {active:1,slots:{}}; } /* 구조가 빠진 목록({"active":1} 등)도 고쳐 읽는다(검수 11-09 #15: 부팅 멈춤) */
-function setMeta(m){ try{ const s=JSON.stringify(m); localStorage.setItem(META,s); return localStorage.getItem(META)===s; }catch(e){ return false; } } /* 성공 여부: 활성 슬롯 변경이 실패하면 전환하지 않는다(검수 11-06) */
+function meta(){ try{ const m=JSON.parse(SaveStore.get(META)||'null'); if(m&&typeof m==='object'&&!Array.isArray(m)){ if(!m.slots||typeof m.slots!=='object'||Array.isArray(m.slots))m.slots={}; if(!SLOT_IDS.includes(m.active))m.active=1; return m; } }catch(e){} return {active:1,slots:{}}; } /* 구조가 빠진 목록({"active":1} 등)도 고쳐 읽는다(검수 11-09 #15: 부팅 멈춤) */
+function setMeta(m){ try{ const s=JSON.stringify(m); SaveStore.set(META,s); return SaveStore.get(META)===s; }catch(e){ return false; } } /* 성공 여부: 활성 슬롯 변경이 실패하면 전환하지 않는다(검수 11-06) */
 const slotKey=n=>`${SAVE}-s${n}`;
 /* ===== 슬롯 본문 보조 저장소: IndexedDB(사용자 11-12, 커뮤니티 "빈 슬롯인데 저장 공간 부족") =====
    브라우저 localStorage는 모든 슬롯을 합쳐 5~10MB 안팎이라, 오래 한 세이브 여러 개를 두면 저장이 막혔다.
@@ -14,7 +39,7 @@ const slotKey=n=>`${SAVE}-s${n}`;
      이어서 지금 진행 중이 아닌 다른 슬롯 본문도 IndexedDB로 옮겨 localStorage 공간을 비운다(복사를 확인한 뒤에만 지운다).
    - 이 탭에서 쓴 본문은 메모리(SB)에 두고 읽는다. 부팅 때 idb 표시 슬롯이 있으면 IndexedDB에서 먼저 읽어 온 뒤 이어하기를 연다.
    - localStorage 쓰기가 다시 성공하면 그 슬롯은 localStorage로 돌아오고 IndexedDB 사본과 표시를 지운다. */
-const SB=new Map(), SB_SEQ={}, SB_PEND=new Set(); let SB_DB=null; /* SB_PEND: 이 탭이 IndexedDB에 쓰는 중인 슬롯(표시가 붙기 전) */
+const SB=new Map(), SB_SEQ={}, SB_PEND=new Set(); /* SB_PEND: 이 탭이 IndexedDB에 쓰는 중인 슬롯(표시가 붙기 전) */
 /* 다른 사이트(itch 껍데기 등) 안에 끼워 열린 화면인가(카페 11-13 쌉싸코: 휴대폰에서 저장해도 다시 켜면 이어하기가 없음).
    아이폰·아이패드(모든 브라우저가 WebKit)는 다른 사이트 안에서 쓴 저장을 그 사이트별로 따로 두고, 첫 화면으로 직접 방문한 기록이 없으면 7일 안에 지운다.
    그래서 끼워 연 화면에서는 저장이 사라질 수 있다고 알리고, 이 주소를 새 창으로 바로 열게 한다 */
@@ -23,12 +48,10 @@ function isIOSLike(){ try{ const u=navigator.userAgent||''; return /iP(hone|ad|o
 function saveEmbedBanner(){ if(!saveEmbedded())return ''; let url=''; try{ url=location.href.split('#')[0]; }catch(e){} return `<div class="note warn" role="alert" style="margin:0 0 12px">다른 사이트 안에서 열린 화면입니다. ${isIOSLike()?'아이폰·아이패드에서는':'일부 휴대폰 브라우저에서는'} 이 상태의 저장이 브라우저 정책으로 사라질 수 있습니다. 아래 버튼으로 게임 주소를 직접 열어 플레이하고, 중요한 진행은 설정의 '파일로 내보내기'로 백업하세요.<div class="row" style="margin-top:8px"><a class="btn small primary" href="${esc(url)}" target="_blank" rel="noopener">새 창에서 열기(저장 안전)</a></div></div>`; }
 /* 저장이 지워지지 않게 브라우저에 영구 보관을 요청한다(지원하는 브라우저만, 결과는 기록만) */
 let SAVE_PERSIST=null; function savePersistAsk(){ try{ if(navigator.storage&&navigator.storage.persist&&!saveEmbedded())navigator.storage.persist().then(v=>{ SAVE_PERSIST=!!v; }).catch(()=>{}); }catch(e){} }
-function sbOk(){ try{ return typeof indexedDB==='object'&&!!indexedDB&&typeof indexedDB.open==='function'; }catch(e){ return false; } }
-function sbIdb(){ if(SB_DB)return SB_DB; SB_DB=new Promise((res,rej)=>{ try{ const r=indexedDB.open('danjang-saves',1); r.onupgradeneeded=()=>{ try{ r.result.createObjectStore('slots'); }catch(e){} }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); r.onblocked=()=>rej(new Error('blocked')); }catch(e){ rej(e); } }); SB_DB.catch(()=>{ SB_DB=null; }); return SB_DB; }
-function sbTx(mode,fn){ return sbIdb().then(db=>new Promise((res,rej)=>{ let out; const tx=db.transaction('slots',mode); const rq=fn(tx.objectStore('slots')); if(rq)rq.onsuccess=()=>{ out=rq.result; }; tx.oncomplete=()=>res(out); tx.onerror=()=>rej(tx.error); tx.onabort=()=>rej(tx.error||new Error('abort')); })); }
-const sbPut=(n,d)=>sbTx('readwrite',st=>st.put(d,n)), sbRead=n=>sbTx('readonly',st=>st.get(n)), sbDrop=n=>sbTx('readwrite',st=>st.delete(n));
+function sbOk(){ try{ return !!SaveStore.big.ok(); }catch(e){ return false; } }
+const sbPut=(n,d)=>SaveStore.big.put(n,d), sbRead=n=>SaveStore.big.read(n), sbDrop=n=>SaveStore.big.drop(n);
 const sbFlag=(m,n)=>!!(m&&m.slots&&m.slots[n]&&m.slots[n].idb);
-function sbLsGet(n){ try{ return localStorage.getItem(slotKey(n)); }catch(e){ return null; } }
+function sbLsGet(n){ try{ return SaveStore.get(slotKey(n)); }catch(e){ return null; } }
 /* 본문 읽기: 이 탭이 IndexedDB에서 읽었거나 쓴 본문(SB)이 먼저, 없으면 localStorage */
 function sbGet(n){ if(SB.has(n)){ if(SB_PEND.has(n)||sbFlag(meta(),n))return SB.get(n); const ls=sbLsGet(n); if(ls!=null){ SB.delete(n); return ls; } return SB.get(n); } return sbLsGet(n); } /* idb 표시가 없고 localStorage에 본문이 있으면 다른 탭이 더 새로 쓴 것: 메모리 사본은 버린다(UI 리뷰 11-13: 옛 본문을 열어 덮어씀) */
 /* 다른 탭이 목록을 바꾸면 표시가 없는 슬롯의 메모리 사본을 버린다 */
@@ -36,17 +59,17 @@ try{ window.addEventListener('storage',e=>{ try{ if(e.key!==META&&!(e.key||'').s
 /* 목록의 idb 표시를 고친다(판번호가 그대로일 때만) */
 function sbMark(n,on,rev){ try{ const m=meta(); const it=m.slots[n]; if(!it||(rev!=null&&it.rev!==rev))return false; if(!!it.idb===!!on)return true; if(on)it.idb=true; else delete it.idb; return setMeta(m); }catch(e){ return false; } }
 /* 본문 쓰기: localStorage 우선, 공간이 없으면 IndexedDB. true면 이 탭에서는 바로 읽을 수 있다 */
-function sbSet(n,data){ let ls=false; try{ localStorage.setItem(slotKey(n),data); ls=localStorage.getItem(slotKey(n))===data; }catch(e){}
+function sbSet(n,data){ let ls=false; try{ SaveStore.set(slotKey(n),data); ls=SaveStore.get(slotKey(n))===data; }catch(e){}
   if(ls){ SB_PEND.delete(n); try{ const m=meta(); if(m.slots[n]&&m.slots[n].fail){ delete m.slots[n].fail; setMeta(m); } }catch(e){} if(SB.has(n)){ SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; } if(sbFlag(meta(),n)){ sbMark(n,false); if(sbOk())sbDrop(n).catch(()=>{}); } return true; }
   if(!sbOk())return false;
   SB.set(n,data); SB_PEND.add(n); const seq=SB_SEQ[n]=(SB_SEQ[n]||0)+1, rev=revOf(meta(),n);
-  sbPut(n,data).then(()=>{ if(SB_SEQ[n]!==seq)return; SB_PEND.delete(n); if(sbMark(n,true,rev)){ try{ localStorage.removeItem(slotKey(n)); }catch(e){} } sbOffload(n); }).catch(()=>{ if(SB_SEQ[n]!==seq)return; SB_PEND.delete(n); SB.delete(n); try{ const m=meta(); if(m.slots[n]){ m.slots[n].fail=G?G.day:1; setMeta(m); } }catch(e){} /* 실패한 저장은 목록에 표시하고 메모리 사본도 버린다: 새로고침 뒤 옛 본문이 조용히 열리지 않게 */ SAVE_ERR='브라우저 저장 공간이 가득 차고 보조 저장소(IndexedDB)에도 쓰지 못했습니다. 파일로 내보내기로 백업하세요.'; try{ toast(SAVE_ERR); }catch(e){} });
+  sbPut(n,data).then(()=>{ if(SB_SEQ[n]!==seq)return; SB_PEND.delete(n); if(sbMark(n,true,rev)){ try{ SaveStore.remove(slotKey(n)); }catch(e){} } sbOffload(n); }).catch(()=>{ if(SB_SEQ[n]!==seq)return; SB_PEND.delete(n); SB.delete(n); try{ const m=meta(); if(m.slots[n]){ m.slots[n].fail=G?G.day:1; setMeta(m); } }catch(e){} /* 실패한 저장은 목록에 표시하고 메모리 사본도 버린다: 새로고침 뒤 옛 본문이 조용히 열리지 않게 */ SAVE_ERR='브라우저 저장 공간이 가득 차고 보조 저장소(IndexedDB)에도 쓰지 못했습니다. 파일로 내보내기로 백업하세요.'; try{ toast(SAVE_ERR); }catch(e){} });
   return true; }
 /* 진행 중이 아닌 슬롯 본문을 IndexedDB로 옮겨 localStorage 공간을 비운다(사본 확인 뒤 삭제) */
 let _sbOff=false; async function sbOffload(keep){ if(_sbOff||!sbOk())return; _sbOff=true; try{ for(const k of SLOT_IDS){ if(k===keep||k===CUR_SLOT)continue; const body=sbLsGet(k); if(body==null)continue; const m=meta(); if(!m.slots[k])continue; const rev=m.slots[k].rev;
-      await sbPut(k,body); if(await sbRead(k)!==body)continue; if(sbLsGet(k)!==body||revOf(meta(),k)!==rev)continue; SB.set(k,body); if(sbMark(k,true,rev)){ try{ localStorage.removeItem(slotKey(k)); }catch(e){} } else SB.delete(k); } }catch(e){} finally{ _sbOff=false; } }
+      await sbPut(k,body); if(await sbRead(k)!==body)continue; if(sbLsGet(k)!==body||revOf(meta(),k)!==rev)continue; SB.set(k,body); if(sbMark(k,true,rev)){ try{ SaveStore.remove(slotKey(k)); }catch(e){} } else SB.delete(k); } }catch(e){} finally{ _sbOff=false; } }
 /* 슬롯 본문 지우기(localStorage·메모리·IndexedDB 모두) */
-function sbRemove(n){ try{ localStorage.removeItem(slotKey(n)); }catch(e){} SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; if(sbOk())sbDrop(n).catch(()=>{}); return sbLsGet(n)==null; }
+function sbRemove(n){ try{ SaveStore.remove(slotKey(n)); }catch(e){} SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; if(sbOk())sbDrop(n).catch(()=>{}); return sbLsGet(n)==null; }
 /* idb 표시가 있는 슬롯 본문을 IndexedDB에서 다시 읽는다(부팅·다른 탭이 쓴 뒤 열기 전) */
 async function sbRefresh(ns){ if(!sbOk())return; const m=meta(); for(const n of (ns||SLOT_IDS)){ if(!sbFlag(m,n))continue; try{ const b=await sbRead(n); if(typeof b==='string')SB.set(n,b); }catch(e){} } }
 function sbNeedBoot(){ const m=meta(); return sbOk()&&SLOT_IDS.some(n=>sbFlag(m,n)); }
@@ -141,8 +164,8 @@ function slotRecover(n,g,body,m0){ if(m0.slots[n])return m0; try{ const m=meta()
   return m;
  }catch(e){ return m0; } }
 function load(){ const m=meta();
-  try{ const old=localStorage.getItem(SAVE); if(old&&!SLOT_IDS.some(n=>m.slots[n]&&slotHas(n))){ const g=unpack(old); if(g){ /* 목록에 본문 없는 항목만 남아 있어도 구형 세이브를 옮긴다(검수 11-09zr #11) */ /* 목록만 비고 슬롯 본문이 남아 있으면 그 본문을 목록에 다시 올리고, 구형 세이브는 빈 슬롯으로 옮긴다(검수 11-07: 슬롯 1을 덮어씀) */ let act=null; for(const n of SLOT_IDS){ if(!slotHas(n))continue; const h=unpack(sbGet(n)); if(h){ if(!m.slots[n])m.slots[n]=slotInfoOf(h); if(act==null)act=n; } }
-    const to=SLOT_IDS.find(n=>!slotHas(n)); if(act!=null&&!slotHas(m.active))m.active=act; try{ if(to==null)throw 0; localStorage.setItem(slotKey(to),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(sbGet(to))){ m.slots[to]=slotInfoOf(g); if(act==null)m.active=to; if(setMeta(m))localStorage.removeItem(SAVE); } }catch(e){ if(act!=null)setMeta(m); }
+  try{ const old=SaveStore.get(SAVE); if(old&&!SLOT_IDS.some(n=>m.slots[n]&&slotHas(n))){ const g=unpack(old); if(g){ /* 목록에 본문 없는 항목만 남아 있어도 구형 세이브를 옮긴다(검수 11-09zr #11) */ /* 목록만 비고 슬롯 본문이 남아 있으면 그 본문을 목록에 다시 올리고, 구형 세이브는 빈 슬롯으로 옮긴다(검수 11-07: 슬롯 1을 덮어씀) */ let act=null; for(const n of SLOT_IDS){ if(!slotHas(n))continue; const h=unpack(sbGet(n)); if(h){ if(!m.slots[n])m.slots[n]=slotInfoOf(h); if(act==null)act=n; } }
+    const to=SLOT_IDS.find(n=>!slotHas(n)); if(act!=null&&!slotHas(m.active))m.active=act; try{ if(to==null)throw 0; SaveStore.set(slotKey(to),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(sbGet(to))){ m.slots[to]=slotInfoOf(g); if(act==null)m.active=to; if(setMeta(m))SaveStore.remove(SAVE); } }catch(e){ if(act!=null)setMeta(m); }
     if(act==null){ CUR_SLOT=m.slots[m.active]?m.active:(to||1); slotRevSync(CUR_SLOT,m); return g; } } } }catch(e){} /* 새 슬롯을 읽을 수 있을 때만 원본을 지우고, 못 옮겨도 읽은 원본으로 이어서 시작한다(검수 11-06) */
   /* 활성 슬롯 본문이 없거나 손상됐으면 본문이 남은 다른 슬롯을 연다. 못 연 슬롯은 이유를 처음 화면에 보인다(검수 11-09 #9·#11·#12·#14) */
   CUR_SLOT=null; for(let n;(n=contSlot(m))!=null;){ let g=null,body=null; try{ body=sbGet(n); g=unpack(body); }catch(e){} if(g){ const fixed=slotRecover(n,g,body,m); CUR_SLOT=n; slotRevSync(n,fixed); return g; } slotBad(n,'저장 본문을 읽을 수 없습니다'); UI.slotMsg=`슬롯 ${n}을(를) 불러오지 못했습니다. 저장 본문이 손상됐습니다. 내보내기 백업이 있으면 그걸로 가져오세요.`; } return null; }
