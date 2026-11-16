@@ -155,8 +155,8 @@ function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,fut:0,tot:0}; const c
 function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;
   if(p.foreign){ releaseForeign(id); return; }
-  const c=relCost(p), cost=c.tot; payOut(G.user,cost,'rel');
-  addLog(`${p.name}을(를) 방출했습니다.${cost?` 정산금 ${money(cost)}${c.next?`(다음 시즌 확정 계약 ${money(c.next)} 포함)`:''}.`:''} ${wvNeed(p)?`${WV_DAYS}일 동안 웨이버 공시되고, 다른 구단이 데려가면 남은 계약을 이어받아 정산금은 돌려받습니다.`:'다른 구단과 계약할 때까지 무적 선수로 남습니다.'}`);
+  const c=relCost(p), cost=c.tot, cd=capDeadAmt(p,G.user); payOut(G.user,cost,'rel'); /* 상한에 남는 금액은 방출 전 계약으로 미리 잰다 */
+  addLog(`${p.name}을(를) 방출했습니다.${cost?` 정산금 ${money(cost)}${c.next?`(다음 시즌 확정 계약 ${money(c.next)} 포함)`:''}.`:''}${cd?` ${cd.y}시즌 경쟁균형세 상한 합계에는 연봉 ${money(cd.a)}이 그대로 남습니다.`:''} ${wvNeed(p)?`${WV_DAYS}일 동안 웨이버 공시되고, 다른 구단이 데려가면 남은 계약을 이어받아 정산금은 돌려받습니다.`:'다른 구단과 계약할 때까지 무적 선수로 남습니다.'}`);
   /* 연봉 협상 명단(ended)은 toFree의 mvLog가 합의액을 연봉으로 확정한 뒤 정리한다(검수 11-09g: 먼저 빼서 합의 연봉을 잃고 옛 연봉으로 승계) */
   for(const k in G.lineup) if(G.lineup[k]===id)delete G.lineup[k];
   toFree(p,`${tname(G.user)}에서 방출`,cost); /* 웨이버 공시 뒤 아무도 데려가지 않으면 무적 선수로 남는다 */

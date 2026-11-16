@@ -223,12 +223,18 @@ const capAmt=(p,tid,a,fid=franId(tid))=>p.id===fid?a*.5:a; /* 합계 한 번당 
 /* 개막 전·결산 뒤 겨울 방출도 상한에 남는다(공략 방지): 겨울에는 다음 시즌(sponSeason) 몫으로. 다음 시즌 이후 몫은 G.capDeadF({pid,t,a,y,k}) */
 function capDeadA(tid,y){ y=y??G.year; const D=G.capDead, L=D&&D.y===y?D.L.filter(x=>x.t===tid).map(x=>x.a):[]; for(const x of G.capDeadF||[])if(x.t===tid&&x.y===y)L.push(x.a); return L; }
 function capDeadF(x){ const F=G.capDeadF=(G.capDeadF||[]).filter(e=>e.y>=G.year); F.push(x); }
-function capDeadAdd(p,tid){ if(!p||p.foreign||tid==null||!G.cal)return; if(isRookie(p)||milServing(p))return; /* 신인·복무 선수는 원래 산정에서 빠진다 */
+/* 지금 방출하면 상한 산정에 남는 금액과 그 시즌(방출 확인 화면 안내에도 같은 값): {a,y,inS} 또는 null */
+function capDeadAmt(p,tid){ if(!p||p.foreign||tid==null||!G.cal)return null; if(isRookie(p)||milServing(p))return null; /* 신인·복무 선수는 원래 산정에서 빠진다 */
   const inS=G.day>=G.cal.open&&!(G.last&&G.last.y>=G.year);
-  if(inS){ const a=capAmt(p,tid,p.sal+(p.capB&&p.ctT===tid&&p.capB.until>=G.year?p.capB.a:0)); if(!(a>0))return; if(!G.capDead||G.capDead.y!==G.year)G.capDead={y:G.year,L:[]}; G.capDead.L.push({pid:p.id,t:tid,a:Math.round(a)}); return; }
+  if(inS){ const a=Math.round(capAmt(p,tid,p.sal+(p.capB&&p.ctT===tid&&p.capB.until>=G.year?p.capB.a:0))); return a>0?{a,y:G.year,inS}:null; }
   /* 겨울·개막 전: 그 시즌에 줘야 할 보장 연봉(정산금이 있는 계약)과 계약금 반영액만 */
   const y=sponSeason(), c=relCost(p); const sal=y>G.year?(c.next>0&&p.extNext?p.extNext.annual:c.fut>0?salNext(p):0):(c.cur>0?p.sal:0); const b=p.capB&&p.ctT===tid&&p.capB.until>=y?p.capB.a:0;
-  const a=Math.round(capAmt(p,tid,sal+b)); if(a>0)capDeadF({pid:p.id,t:tid,a,y}); }
+  const a=Math.round(capAmt(p,tid,sal+b)); return a>0?{a,y,inS}:null; }
+function capDeadAdd(p,tid){ const x=capDeadAmt(p,tid); if(!x)return;
+  if(x.inS){ if(!G.capDead||G.capDead.y!==G.year)G.capDead={y:G.year,L:[]}; G.capDead.L.push({pid:p.id,t:tid,a:x.a}); return; }
+  capDeadF({pid:p.id,t:tid,a:x.a,y:x.y}); }
+/* 트레이드 상한 상자에서 쓰는 시즌(capPayAs와 같게)의 방출 선수 잔여 연봉 합계(계약금 반영액 'b'는 빼고) */
+function capDeadRel(tid){ const y0=sponSeason(), y=y0>G.year||preSeason(y0)?y0:G.year; const D=G.capDead; let n=0; if(D&&D.y===y)for(const x of D.L)if(x.t===tid)n+=x.a; for(const x of G.capDeadF||[])if(x.t===tid&&x.y===y&&x.k!=='b')n+=x.a; return Math.round(n); }
 /* 트레이드로 옮기는 FA의 계약금 반영액은 낸 구단에 남는다(계약금 세탁 방지, 공략 방지): 그 시즌부터 반영 끝 시즌까지 */
 function capDeadBonus(p){ if(!p||p.team==null||p.foreign||!(p.capB&&p.ctT===p.team&&p.capB.a>0))return; const y0=G.cal&&G.day>=G.cal.open&&!(G.last&&G.last.y>=G.year)?G.year:sponSeason(); for(let y=y0;y<=p.capB.until;y++)capDeadF({pid:p.id,t:p.team,a:p.capB.a,y,k:'b'}); }
 function capDeadDrop(pid){ const D=G.capDead; if(D&&D.L)D.L=D.L.filter(x=>x.pid!==pid); if(G.capDeadF)G.capDeadF=G.capDeadF.filter(x=>x.pid!==pid||x.k==='b'); }
