@@ -11,10 +11,15 @@ function draftHist(ys){ const y=UI.dhy&&ys.includes(UI.dhy)?UI.dhy:ys[0]; const 
     <dl class="tsum"><div><dt>우리 지명</dt><dd class="num">${mine.length}명</dd></div><div><dt>우리 WAR 합</dt><dd class="num">${mw.toFixed(1)}</dd></div><div><dt>리그 순위</dt><dd class="num">${rk?rk+'위 · '+grade:'-'}</dd></div></dl>
     <div class="eyebrow">우리 지명자</div>${mine.length?tbl(mine):'<p class="small muted">기록이 없습니다.</p>'}
     <div class="eyebrow">이 해 최고 선수 10명</div>${tbl(best)}`); }
-function draftPage(){ const ys=draftYears(); const fdT=!!(G.fd&&G.fd.done&&G.fd.picks&&G.fd.picks.some(x=>x.tid===G.user&&x.pid));
-  const tabs=[['now',G.draft&&!G.draft.done?'드래프트 진행':'올해 드래프트']]; if(ys.length)tabs.push(['hist','지난 드래프트 성적표']); if(fdT)tabs.push(['fd','창단 지명 평가']);
-  const it=tabs.length>1?inTabs('dr',tabs):null;
-  return (it?it.bar:'')+(it&&it.cur==='hist'?draftHist(ys):it&&it.cur==='fd'?fdEvalView():draftBoard()); }
+/* 드래프트 보드 한 화면(UI 3단계 3-9): 올해/지난 성적표/창단 평가 탭과 후보·요약·현황·관심 탭, 목록/상세 전환을 '보기 ▾' 하나로 묶는다 */
+function draftViews(){ const ys=draftYears(), fdT=!!(G.fd&&G.fd.done&&G.fd.picks&&G.fd.picks.some(x=>x.tid===G.user&&x.pid)), nS=(G.shortlist||[]).filter(id=>G.players[id]&&G.players[id].prospect).length;
+  const L=[['board','후보 목록'],['card','후보 상세'],['mine',`관심 목록 ${nS}`],['res','지명 현황'],['sum','스카우트 요약']]; if(ys.length)L.push(['hist','지난 드래프트 성적표']); if(fdT)L.push(['fd','창단 지명 평가']); return L; }
+function draftViewCur(){ const L=draftViews(), f=UI.df||{}; let v=UI.drv==='hist'||UI.drv==='fd'?UI.drv:(f.seg||'board'); if(v==='board'&&UI.dview==='card')v='card'; return L.find(x=>x[0]===v)||L[0]; }
+function draftViewMenu(){ const L=draftViews(), c=draftViewCur(); const op=!!(UI.open&&UI.open.dviewMenu);
+  return `<details class="ws-tab-select dview-menu" data-k="dviewMenu"${op?' open':''}><summary><span class="small muted">보기</span> <b>${esc(c[1])}</b> <span aria-hidden="true">▾</span></summary><div class="dview-list" role="menu">${L.map(([k,l])=>`<button type="button" role="menuitemradio" aria-checked="${k===c[0]}" data-a="dpick" data-v="${k}" class="${k===c[0]?'on':''}">${esc(l)}</button>`).join('')}</div></details>`; }
+function draftPage(){ const ys=draftYears(); const v=draftViewCur()[0];
+  if(v==='hist'||v==='fd'){ const body=v==='hist'?draftHist(ys):fdEvalView(); return `${draftViewMenu()}${body}`; }
+  return draftBoard(); }
 /* ---------- 구단 훈련장 전경: 시설 단계와 선수 위치를 한 장에 ---------- */
 function campData(){ facInit(); const per=period(); const inSea=per==='season'||per==='post'; const camp=G.camp&&!G.camp.done;
   const ps=playersOf(G.user).filter(p=>!p.ys||true); const devIds=new Set((G.devProg||[]).map(x=>x.pid)); const devOf=id=>(G.devProg||[]).find(x=>x.pid===id);

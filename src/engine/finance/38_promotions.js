@@ -95,7 +95,7 @@ function promoGame(day,h,a,st){ if(!st)return; try{ visDrawRec(day,h,a); }catch(
   P.cost+=cost; P.inc+=inc; P.xatt+=xa; P.xtk+=tk;
   const pr=prOf(h); const fan=Math.round(e.fan*10)/10; if(pr&&fan)pr.fan=clamp(pr.fan+fan,0,100);
   const L={d:day,a,k:B.k,att,cap:st.cap,so:!!st.so,xa,tk,inc,cost,net:tk+inc-cost,fan,why:e.why.slice(0,2),...(e.sp?{sp:e.sp.p.name}:{})}; P.log.push(L); if(P.log.length>PROMO_MAX*2)P.log.shift();
-  if(h===G.user&&!G.unemp&&!G._away){ mail('마케팅팀',`[프로모션] ${E.l} 결과`,promoReport(L),{kind:'구단',acts:[{l:'프로모션 보기',a:'go',v:'club:fans'}]}); } }
+  if(h===G.user&&!G.unemp&&!G._away){ mail('마케팅팀',`[프로모션] ${E.l} 결과`,promoReport(L),{kind:'구단',acts:[{l:'프로모션 보기',a:'go',v:'club:ops'}]}); } }
 function promoReport(L){ const E=PROMO_EV[L.k]; const n=x=>x.toLocaleString('ko-KR');
   return `${dmd(L.d)} ${tshort(L.a)}전 ${E.l}${L.sp?`(${L.sp})`:''}\n관중 ${n(L.att)}명${L.so?'(매진)':''} · 행사 효과 약 +${n(L.xa)}명\n표값 +${money(L.tk)}${L.inc?` · 행사 매출 +${money(L.inc)}`:''} · 비용 ${money(L.cost)} → ${L.net>=0?'+':''}${money(L.net)}${L.fan?` · 팬 여론 +${L.fan}`:''}${L.why.length?`\n${L.why.join('. ')}.`:''}`; }
 /* 원정 스타 효과 기록: 원정 팀 스타 덕에 늘어난 기대 관중(양수일 때만). 홈 구단 화면엔 '어느 팀 스타가 관중을 불렀나', 원정 팀엔 '우리 스타가 원정 관중을 불렀나' */

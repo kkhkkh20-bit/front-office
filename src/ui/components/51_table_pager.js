@@ -2,6 +2,10 @@
    세로는 표·목록 패널 안에서 스크롤하고, 첫 열(이름)은 늘 보인다.
    열 폭을 재서 화면에 들어가는 만큼씩 묶고 '◀ 1/3 ▶'로 넘긴다. 넓은 화면도 표가 넘칠 때만 같은 방식 */
 const TWP_W=600;
+/* 휴대폰(한 칸): 여러 카드를 한 칸에 세로로 이어 붙인다. 칸마다 묶음 버튼 줄이 생기지 않게(UI 3단계 3-9). PC는 칸 그대로 */
+function wsStack(h){ return typeof innerWidth!=='undefined'&&innerWidth<700?`<div class="ws-stack">${h}</div>`:h; }
+/* 긴 화면 바로 가기(UI 3단계 3-9): 휴대폰에서 칸 맨 위에 붙어 있는 한 줄. 누르면 그 구역으로 내려간다. PC에서는 숨긴다(CSS) */
+function jumpBar(L){ L=L.filter(Boolean); return L.length>1?`<nav class="jump-bar" aria-label="바로 가기">${L.map(([id,l])=>`<button type="button" data-a="jumpTo" data-v="${id}">${l}</button>`).join('')}</nav>`:''; }
 function workspaceCompact(){return matchMedia('(max-width:699px), (max-height:599px), (max-width:1099px) and (pointer:coarse)').matches;}
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
   document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg,.pf-season-table'))return; /* 선수 상황판 시즌 통계는 열을 넘기지 않고 옆으로 스크롤 */ const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
