@@ -251,6 +251,7 @@
       "src/ui/components/51_table_pager.js",
       "src/ui/components/52_more_menu.js",
       "src/ui/components/53_person_card.js",
+      "src/ui/components/54_list_tools.js",
       "src/ui/career/52_champion.js",
       "src/ui/career/53_meeting.js",
       "src/ui/contracts/53_money_input.js",
@@ -334,7 +335,8 @@
       "src/css/staff/32_operations_art.css",
       "src/css/shell/40_mobile_playtest2.css",
       "src/css/players/41_morale.css",
-      "src/css/components/52_more_menu.css"
+      "src/css/components/52_more_menu.css",
+      "src/css/components/54_list_tools.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

@@ -18,7 +18,7 @@ for(const [width,height,touch] of [[1366,768,false],[390,664,true]]){
  await p.evaluate(()=>{UI.it=Object.assign(UI.it||{},{mkv:'find'});UI.findTeam='all';A.go('trade:market');});
  let pool=await ids(); assert.ok(!pool.includes(fx.fa)&&!pool.includes(fx.ntc),'트레이드 불가 선수는 기본으로 숨김');assert.ok(pool.includes(fx.blk)&&pool.includes(fx.urg));
  assert.ok(await p.locator('[data-a="opt"][data-k="findBlk"]').count()>=2,'매물만 조건 버튼');
- await p.evaluate(()=>document.querySelectorAll('details.ws-filter-controls').forEach(d=>d.open=true));await p.locator('[data-a="opt"][data-k="findBlk"][data-v="blk"]').first().click();pool=await ids();
+ await p.evaluate(()=>{document.querySelectorAll('details.ws-filter-controls').forEach(d=>d.open=true);workspaceReveal('[data-a="opt"][data-k="findBlk"][data-v="blk"]');});/* 조건은 필터 바 칸 안(UI 2단계 2-4) */await p.locator('[data-a="opt"][data-k="findBlk"][data-v="blk"]').first().click();await p.keyboard.press('Escape');pool=await ids();
  assert.ok(pool.length>=2&&await p.evaluate(()=>UI._findPool.every(q=>q.aiListed)),'매물만: 매물 선수만');assert.ok(pool.includes(fx.blk)&&pool.includes(fx.urg));
  await p.evaluate(t=>{UI.findTeam=String(t);render();},fx.tid);
  const tags=await p.locator('.trtag').allInnerTexts();assert.ok(tags.includes('매물')&&tags.includes('급매'),'매물·급매 꼬리표 '+tags.join(','));

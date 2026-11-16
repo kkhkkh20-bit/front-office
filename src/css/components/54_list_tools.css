@@ -1,0 +1,68 @@
+/* 목록 공통(UI 2단계 2-3·2-4): 줄 누르기와 필터 바. 목록 안에만 적용(.btn 기본 모양은 건드리지 않는다) */
+[data-rowtap]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:is(#app,#sheet) [data-rowtap]:hover{background:color-mix(in srgb,var(--acc) 9%,transparent)}
+:is(#app,#sheet) tr[data-rowtap]:hover>td{background:color-mix(in srgb,var(--acc) 9%,transparent)}
+:is(#app,#sheet) [data-rowtap]:focus-visible{outline:2px solid var(--acc);outline-offset:-2px;background:color-mix(in srgb,var(--acc) 12%,transparent)}
+:is(#app,#sheet) [data-rowtap]:active{background:color-mix(in srgb,var(--acc) 16%,transparent)}
+/* 줄 끝 › 표시: 누르면 상세가 열린다는 신호 */
+.rt-go{flex:none;margin-left:auto;color:var(--muted);font-size:18px;line-height:1;padding-left:4px}
+@media(max-width:700px){
+  :is(#app,#sheet) div[data-rowtap]{min-height:44px;box-sizing:border-box}
+  :is(#app,#sheet) tr[data-rowtap]>td{height:44px}
+}
+
+/* 필터 바: 검색 + 필터 버튼 + 적용 중인 조건 칩. 휴대폰은 한 줄 */
+.fbar{position:relative;min-width:0;margin:4px 0 8px}
+.fbar-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+:is(#app,#sheet) .fbar .fbar-q{flex:1 1 160px;min-width:0;max-width:280px;min-height:32px;box-sizing:border-box}
+:is(#app,#sheet) .fbar .fbar-b{flex:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.fbar .fbar-b.on,.fbar .fbar-b[aria-expanded="true"]{border-color:var(--acc)}
+.fbar-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--acc);color:#fff;font-size:11px;font-weight:700;box-sizing:border-box}
+.fbar-chips{display:flex;gap:6px;flex-wrap:wrap;min-width:0}
+:is(#app,#sheet) .fbar-chip{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:2px 8px 2px 10px;border:1px solid var(--acc);border-radius:14px;background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--ink);font:500 var(--ui-caption,12px)/1.2 var(--f-ui);cursor:pointer;white-space:nowrap;max-width:100%}
+.fbar-chip i{font-style:normal;color:var(--muted);font-size:11px}
+.fbar-chip:hover i,.fbar-chip:focus-visible i{color:var(--ink)}
+.fbar-chip:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.fbar-side{display:inline-flex;align-items:center;gap:6px;margin-left:auto}
+/* 펼친 칸: PC는 필터 버튼 아래(화면 기준으로 띄워 칸 넘침에 잘리지 않게), 휴대폰은 바텀시트 */
+.fbar-p{position:fixed;z-index:70;width:min(420px,calc(100vw - 16px));max-height:min(70vh,560px);overflow:auto;overscroll-behavior:contain;padding:8px 12px 12px;box-sizing:border-box;background:var(--panel);border:1px solid var(--line2);border-radius:8px;box-shadow:0 10px 28px #000a;text-align:left}
+.fbar-p[hidden]{display:none}
+.fbar-ph{display:flex;align-items:center;gap:8px;position:sticky;top:-8px;z-index:1;margin:-8px -12px 6px;padding:8px 12px;background:var(--panel);border-bottom:1px solid var(--line)}
+.fbar-ph>b{flex:1;font-size:var(--ui-body,13px)}
+:is(#app,#sheet) .fbar-clr{border:0;background:none;color:var(--acc-hi,var(--acc));font:500 var(--ui-caption,12px) var(--f-ui);cursor:pointer;padding:6px 4px}
+.fbar-body{display:grid;gap:10px}
+.fbar-g{display:grid;gap:4px;min-width:0}
+.fbar-gl{font-size:var(--ui-caption,12px);color:var(--muted)}
+.fbar-g .chips,.fbar-g .seg{flex-wrap:wrap;margin:0;overflow:visible}
+.fbar-g select{max-width:100%}
+.fbar-body .rcp-bar,.fbar-body .rcp{margin:0}
+#app main.ws-up .ws-panel>.fbar:has(>.fbar-p:not([hidden])){display:block!important}
+@media(max-width:700px){
+  .fbar{margin:2px 0 6px}
+  .fbar-row{flex-wrap:nowrap}
+  :is(#app,#sheet) .fbar .fbar-q{max-width:none;flex:1 1 0;min-height:44px}
+  :is(#app,#sheet) .fbar .fbar-b{min-height:44px!important;min-width:64px;justify-content:center}
+  /* 칩은 같은 줄에서 옆으로 밀어 본다(줄이 늘지 않게) */
+  .fbar-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;flex:0 1 auto;max-width:45%}
+  .fbar-chips::-webkit-scrollbar{display:none}
+  :is(#app,#sheet) .fbar-chip{min-height:44px;border-radius:22px}
+  .fbar-p{inset:auto 0 var(--app-footer-h,0px) 0;width:auto;max-height:75vh;border-radius:14px 14px 0 0;border-width:1px 0 0;box-shadow:0 0 0 100vmax #0009,0 -8px 24px #000a;padding-bottom:16px}
+  .fbar-g .chips button,.fbar-g .seg button{min-height:44px}
+  :is(#app,#sheet) .fbar-x{min-height:44px!important}
+  .fbar-g select{min-height:44px;width:100%}
+}
+/* 선수 명단: 열 설정·열 묶음은 필터 칸 안(넘침 자르기 없이) */
+#app .fbar-p .roster-filter-body{max-height:none;overflow:visible;padding:0}
+#app .fbar-p .roster-filter-body:empty{display:none}
+#app .roster-tools>.fbar{flex:none;min-width:0;margin:0 0 2px}
+@media(min-width:700px){#app .roster-tools .fbar :is(.fbar-q,.fbar-b){min-height:30px;height:30px;padding-block:2px}}
+@media(max-width:699px) and (min-height:600px){#app .roster-tools>.fbar{flex:1 1 0;margin:0}}
+/* 무적 선수: 검색 칸(폼)과 필터 칸의 선택 상자 */
+.free-workspace>.fbar{flex:none;margin:0}
+:is(#app,#sheet) .fbar .free-search{display:flex;flex:1 1 160px;min-width:0;max-width:280px}
+:is(#app,#sheet) .fbar .free-search input{flex:1;width:100%;max-width:none;min-width:0}
+.fbar .free-opt{display:block}.fbar .free-opt select{width:100%}
+@media(max-width:700px){:is(#app,#sheet) .fbar .free-search{max-width:none;flex:1 1 0}}
+.fbar-side .seg{flex-wrap:nowrap;margin:0}.fbar-side .seg button{white-space:nowrap}
+@media(max-width:700px){.fbar-side .seg button{padding-inline:8px}}
+@media(max-width:700px){#app .fbar .fbar-row .fbar-b.btn.small,#sheet .fbar .fbar-row .fbar-b.btn.small{min-height:44px!important;height:44px}#app .fbar .fbar-row .fbar-q,#sheet .fbar .fbar-row .fbar-q{min-height:44px!important;height:44px}}
