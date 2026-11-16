@@ -23,7 +23,7 @@ function cPitchPanel(g,k,seq,shown){
   if(q){const terminal=shown===seq.length,n=terminal?{b:q.b,s:q.s}:cCountAfter(q);cCount(n.b,n.s);if(c3DActive())Match3D.scoreboard({b:n.b,s:n.s,pitch:Number.isFinite(q.v)?{t:q.t,v:q.v}:null,playText:q.res});}
   else cCount(0,0);
   const count=document.getElementById('cs-pitcher-count');if(count&&x&&typeof x[1]==='number'){const total=cPitchTotalBefore(g,k,x[2]);count.textContent=total==null?'투구 수 미기록':(total+shown)+'구';}
-  const bugCount=document.getElementById('md-bug-pc');if(bugCount&&x&&typeof x[1]==='number'){const total=cPitchTotalBefore(g,k,x[2]);bugCount.textContent=total==null?'':(total+shown)+'구';}
+  const bugCount=document.getElementById('md-bug-pc');if(bugCount&&x&&typeof x[1]==='number'){const total=cPitchTotalBefore(g,k,x[2]);bugCount.textContent=total==null?'':(total+shown)+'구';const bar=document.querySelector('.mb-stam i');if(bar&&total!=null){const top=x[0]%2===0,left=cStam(g,x[2],total+shown,g.box[top?'h':'a'].pit?.[0]?.id===x[2]);if(left!=null){bar.style.width=Math.round(left*100)+'%';bar.style.background=left>.5?'#5fcf8a':left>.25?'#e7c55a':'#e9675d';}}} /* 공마다 체력 막대도 줄인다 */
 }
 function cShowPitch(g,k,seq,index){if(!UI.cast)return;UI.cast.pitch={k,shown:index+1};cPitchPanel(g,k,seq,index+1);}
 function cPitchReset(g,k){const state=UI.cast?.pitch,seq=cPitchSeq(g,k);cPitchPanel(g,k,seq,state?.k===k?Math.min(seq.length,state.shown):0);}

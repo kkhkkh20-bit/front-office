@@ -182,3 +182,7 @@
  .match-dashboard .md-pitch-dock>.md-count-panel{grid-column:2;grid-row:2}
  .match-dashboard .md-pitch-dock .md-pitch-dot{width:12px;height:12px;font-size:7.5px}.match-dashboard .md-pitch-dock .md-pitch-dot.latest{width:15px;height:15px}
 }
+
+/* 대결 카드 보강: 시즌 성적·핵심 능력치·투수 체력 막대 */.md-duel-more{display:grid;gap:2px;margin-top:2px;min-width:0}.md-duel-more small{font-size:11px;color:#c9d7df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.md-duel-rt{display:flex;gap:6px;flex-wrap:wrap}.md-duel-rt em{font-style:normal;font-size:10.5px;color:#9fb4c1}.md-duel-rt em b{color:var(--c);font-weight:800}.md-stam{display:block;height:4px;width:96px;border-radius:2px;background:#ffffff1f;overflow:hidden}.md-stam i{display:block;height:100%}
+@media(max-width:600px){.md-duel-rt{display:none}.md-duel-more small{font-size:10px}}
+.mb-stam{display:block;height:3px;background:#ffffff1a;overflow:hidden}.mb-stam i{display:block;height:100%;transition:width .4s}
