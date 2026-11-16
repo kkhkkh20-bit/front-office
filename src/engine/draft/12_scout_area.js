@@ -63,7 +63,7 @@ const areaVisits=tid=>(G.areaVisitT||{})[tid]||{}; /* 구단별 관전 횟수(�
 /* 단장 고교 대회 관전(53_gm_schedule gmScoutTrip): 후보가 가장 많은 권역을 다녀온 것으로 센다 */
 function areaVisitAdd(L){ const c={}; for(const p of L||[]){ const k=areaOf(p); if(k)c[k]=(c[k]||0)+1; } const k=Object.keys(c).sort((a,b)=>c[b]-c[a])[0]; if(k){ G.areaVisitT=G.areaVisitT||{}; const V=G.areaVisitT[G.user]=G.areaVisitT[G.user]||{}; V[k]=(V[k]||0)+1; } try{ const seen=new Set(); for(const p of L||[]){ const S=schOf(p); if(S&&!seen.has(S.n)){ seen.add(S.n); schAdd(S,3); } } }catch(e){} /* 대회장에서 감독들과 인사(친분 +3) */ return k; }
 /* '아마 성적' 정렬(31_draft_board) 점수 */
-function amRaw(p){ const h=p.am; if(!h)return null; if(p.isP){ const r=pRate(h); return 10-r.era+(h.so/Math.max(1,h.outs/3))*.8; } return bRate(h).ops*10; }
+function amRaw(p){ const h=amAmW(p); if(!h)return null; if(p.isP){ const r=pRate(h); return 10-r.era+(h.so/Math.max(1,h.outs/3))*.8; } return bRate(h).ops*10; }
 /* 투수와 타자는 점수 척도가 달라 올해 후보 안에서 각각 표준점수로 맞춘다(검수 11-09e #28) */
 let _amZ=null;
 function amScore(p){ const x=amRaw(p); if(x==null)return -99; const rows=(G.draftClass||[]).map(id=>G.players[id]).filter(Boolean).map(q=>({id:q.id,isP:!!q.isP,v:amRaw(q)})),k=rows.map(q=>q.id+':'+q.isP+':'+q.v).join('|');
