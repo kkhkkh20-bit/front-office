@@ -143,8 +143,7 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .champ-scene figure .av{width:84px;height:84px;border-radius:50%;border:3px solid #ffd24d;object-fit:cover;background:#111}.champ-scene figcaption{font-size:12px;display:grid}.champ-scene figcaption i{font-style:normal;color:#ffd24d;font-size:11px}
 @keyframes csFall{to{transform:translateY(110vh) rotate(540deg)}}@keyframes csGlow{50%{filter:drop-shadow(0 12px 60px rgba(255,210,77,.85))}}@keyframes csIn{from{opacity:0}}
 @media (prefers-reduced-motion: reduce){.champ-scene .cs-conf,.champ-scene .cs-trophy{animation:none}.champ-scene .cs-conf{display:none}}
-/* 휴대폰: 상단 '하루 진행' 버튼을 빼서 구단 이름·날짜 자리를 확보(사용자 11-08). 하루씩은 달력·진행하기 안 단계로 */
-@media (max-width:699px){ button.step[data-a="adv"][data-v="day"]{display:none!important} }
+/* 휴대폰 상단 '하루 진행'은 진행하기 ▾ 메뉴로 옮겼다(UI 2단계 2-7) */
 @media (max-width:699px){.fm-age{display:none}} /* 휴대폰은 이름이 잘리지 않게 단장 나이는 프로필에서 */
 /* 설정 한 페이지(사용자 11-08) */
 .setx{display:grid;gap:10px;align-content:start}.setx .setc{display:grid;gap:10px;align-content:start;min-width:0}.setx .setc>.card{margin:0}
@@ -224,4 +223,3 @@ a.cafe-go:hover,a.cafe-go:focus-visible{background:color-mix(in srgb,#03c75a 28%
 .cfm.advm .advm-l{display:grid;gap:6px;margin:10px 0 4px}
 .cfm.advm .advm-b{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;white-space:nowrap}
 .cfm.advm .advm-b .small{flex:none}
-.goset .step.advmore{white-space:nowrap}

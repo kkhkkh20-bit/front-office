@@ -59,6 +59,7 @@ const GUARD={
   setPrev(v){ const n=PREV[+v], o=PREV[G.med.prev]; if(!n||+v===G.med.prev)return null; return {subj:`부상 방지 프로그램: ${n.l}`,kind:'의무',lines:[`연 비용 ${money(o.c)} → ${money(n.c)}`,n.m<1?`부상 위험 ${effWord(1-n.m,.25,.15)} 감소`:'부상 위험 그대로'],warn:'바꾼 비용은 올해 예산에 바로 반영됩니다.'}; },
   setHosp(v){ const n=HOSP[v], o=HOSP[G.med.hosp]; if(!n||v===G.med.hosp)return null; return {subj:`제휴 병원: ${n.name}`,kind:'의무',lines:[`연 비용 ${money(o?o.c:0)} → ${money(n.c)}`,n.d],warn:'바꾼 비용은 올해 예산에 바로 반영됩니다.'}; },
   fireScout(v){ const s=(G.scouts||[]).find(x=>x.id===v); if(!s)return null; return {subj:`스카우트 ${s.name} 계약 해지`,kind:'스카우트',lines:[`${s.region} 담당 · 능력 ${s.skill}`],warn:'해지하면 그 지역 정보가 줄어듭니다.'}; },
+  crewFire(v){ const c=crewOf()[v]; if(!c)return null; return {subj:`${CREW_JOB[v].l} ${c.name} 계약 해지`,kind:'팬 운영',lines:[`남은 기간 정산금 ${money(crewSettle(c))}`],warn:'해지하면 되돌릴 수 없습니다.'}; }, /* 위험 동작은 늘 확인(UI 2단계 2-5) */
   anaFire(v){ const a=anaList().find(x=>x.id===v); if(!a)return null; return {subj:`분석원 ${a.name} 계약 해지`,kind:'전력분석',lines:[`${AROLE[a.role].l} · 능력 ${a.skill}`],warn:'해지하면 되돌릴 수 없습니다.'}; },
   relBatch(){ const L=relPick(UI.trimSel||[]); if(!L.length)return null; const cost=L.reduce((s,p)=>s+relCost(p).tot,0), n=rosterN(G.user);
     return {subj:`선수 ${L.length}명 방출`,kind:'선수',lines:[...L.slice(0,12).map(p=>pnm(p.id)+(relCost(p).tot?` · 정산 ${money(relCost(p).tot)}`:'')),L.length>12?`외 ${L.length-12}명`:'',`방출 정산금 합계 ${money(cost)}${cost?'(FA·다년 계약의 남은 보장액 50%)':''}`,`정식 로스터 ${n}명 → ${n-L.length}명`],warn:'방출하면 되돌릴 수 없습니다. 웨이버 공시 기간에 다른 구단이 데려가면 남은 계약을 이어받습니다.'}; },
@@ -126,6 +127,8 @@ function advMoreRender(){ let el=document.getElementById('cfm'); if(!el){ el=doc
   el.innerHTML=`<div class="cfm-w" data-a="advMoreX"><div class="cfm advm" role="dialog" aria-modal="true" aria-label="길게 진행" data-stop="1"><div class="cfm-h"><span>진행</span><span>${dsh(G.day)}</span></div><h3>어디까지 진행할까요?</h3><p class="small muted">중요한 소식이나 결정, 예약한 관전 경기가 생기면 그 전에 멈춥니다.</p><div class="advm-l">${row('advPick','week','1주일',`${dmd(G.day+7)}까지`)}${row('advPick','mon','한 달',`${dmd(m1)}까지`)}${K.slice(0,4).map(([n,t])=>row('advPick','key:'+n,`${t} 전날까지`,`${dmd(n-1)} · ${n-G.day-1}일`)).join('')}</div><div class="cfm-b"><button class="btn" data-a="advMoreX">취소</button></div></div></div>`; }
 A.advMore=function(){ if(UI.advRun||!G||G.unemp)return; UI.cfm=null; UI.advMore=true; advMoreRender(); };
 A.advMoreX=function(v,el,e){ if(e&&e.target&&e.target.closest&&e.target.closest('[data-stop]')&&!(el&&el.matches&&el.matches('button')))return; UI.advMore=false; advMoreRender(); };
+/* 진행 ▾ > 멈춤 조건: 설정 화면의 '진행 멈춤' 칸으로 바로 간다 */
+A.stopCfg=function(){ closeSheets(); A.go('cfg:set'); const c=document.getElementById('stopCard'); if(c)try{ c.scrollIntoView({block:'start'}); }catch(e){} };
 A.advPick=function(v){ UI.advMore=false; advMoreRender(); v=String(v); if(v==='week')return A.adv('week'); if(v==='mon')return A.advTo(G.day+30); if(v.startsWith('key:'))return A.advTo(+v.slice(4)-1); };
 for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v,el); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
 A.advSpace=function(v){ setTimeout(()=>{ A.adv(v); },0); }; /* 진행 확인 뒤 실제 진행은 버튼과 같은 경로(외국인 자리 결재 등)를 거친다 */
