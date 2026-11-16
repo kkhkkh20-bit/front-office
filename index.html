@@ -722,6 +722,9 @@ body .ltile .l1>span>i{display:flex;align-items:center;gap:4px;white-space:nowra
 .ovl-c{white-space:normal;word-break:keep-all}.ovl-af{display:inline-block;margin-left:5px;font-size:11px;color:var(--muted)}.ovl-al{display:block;font-size:12px}.ovl-al .lnk{padding:0;margin-right:6px}
 .ovl-ch td{vertical-align:top;white-space:normal;word-break:keep-all}.ovl-chl{padding:1px 0}.ovl-ch td,.ovl-ch th{text-align:left}.ovl-ch td:first-child{width:52px;white-space:nowrap}
 @media(max-width:420px){.ovl-t th:not(:first-child),.ovl-t td:not(.ovl-c){width:36px;font-size:12px}.ovl-c .pill{font-size:10px;padding:0 4px}}
+/* 해외 리그 주목 선수: 타자·투수 표는 업무 화면 칸(ws-panel) 안에서 스크롤 */
+.ovt-h{margin:6px 0}.ovt-e{font-size:13px;padding:8px 0}.ovt-t{width:100%}.ovt-t th,.ovt-t td{text-align:right;white-space:nowrap}.ovt-t th:nth-child(-n+3),.ovt-t td:nth-child(-n+3){text-align:left}
+.ovt-t td.ovt-n{white-space:normal;min-width:150px}.ovt-n .pm-n .av{width:30px;height:30px;flex:none}.ovt-n .pm-n span{display:grid;line-height:1.3}.ovt-n .pm-n i{font-style:normal;font-size:12px;color:var(--muted)}.ovt-t tbody tr{cursor:pointer}
 /* 중계 */
 .pbp{display:grid;gap:8px}
 .pbp-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pbp-sc{font-size:20px;font-weight:700}
@@ -19082,6 +19085,19 @@ const ovsLvlL=l=>l==='NPB'?'NPB 1군':l||'';
 /* 그 시즌 그 구단에서 뛴(뛰는) KBO 출신: 줄의 수준(트리플A면 산하 구단)으로 리그 표를 고른다 */
 function ovlAlumMap(lg,y){ const M={}; for(const a of G.abroad||[]){ const ls=(a.lines||[]).filter(l=>l.y===y); if(a.cur&&a.cur.y===y&&!a.back&&a.end==null)ls.push(a.cur); const seen=new Set();
     for(const l of ls)for(const q of ovsParts(l)){ if(q.c==null||q.c<0||ovlKey(q.lvl)!==lg||seen.has(q.c))continue; seen.add(q.c); (M[q.c]=M[q.c]||[]).push(a); } } return M; }
+/* 해외 리그 주목 선수: 게임이 기록을 쌓는 선수(KBO 출신 해외파·외국인 시장 후보·관찰 명단)만 리그별 TOP 10. 공개 기록뿐(후보 능력·추정은 쓰지 않는다).
+   시즌 진행 20% 전에는 지난 시즌 기록. 최소 타석·이닝은 진행 비율만큼 */
+const ovlTopKey=l=>l==='MLB'?'MLB':l==='트리플A'?'AAA':l==='NPB'||l==='NPB 1군'?'NPB':'etc';
+function ovlTopPool(){ const fr=ovlFrac(G.year), last=fr<.2, y=last?G.year-1:G.year, f=last?1:fr, R=[], seen=new Set(), W=new Set((G.fwatch||[]).map(w=>w.id));
+  for(const a of G.abroad||[]){ if(a.back||a.end!=null||seen.has(String(a.id)))continue; let l=(a.lines||[]).find(z=>z.y===y); if(!l&&!last&&a.cur&&a.cur.y===y)l=ovsPart(a.cur,fr); if(!l)continue; seen.add(String(a.id));
+    for(const q0 of ovsParts(l)){ const {o,x,...q}=q0; /* o: 만들 때 능력(숨은 값)은 빼고 기록만 */ R.push({id:a.id,abr:1,name:a.name,isP:!!a.isP,pos:a.pos,tag:a.cand?'관찰했던 후보':'KBO 출신',lvl:q.lvl,club:ovsClubNm(q)||(ovlTopKey(q.lvl)==='etc'?ovsLvlL(q.lvl):a.club||a.lg),h:q}); } }
+  for(const id of new Set([...(G.fmarket||[]),...W])){ const p=G.players[id]; if(!p||p.team!=null||!p.foreign||seen.has(String(p.id)))continue; const h=last?p.prev:p.now&&p.now.y===G.year?p.now:null; const lvl=h&&(h.lvl||p.prevLvl); if(!lvl)continue; seen.add(String(p.id));
+    R.push({id:p.id,abr:0,name:p.name,isP:!!p.isP,pos:posLabel(p),tag:W.has(p.id)?'관찰 중':'외국인 후보',lvl,club:ovlCandLvl(p,lvl),h}); }
+  return {y,last,minPA:Math.max(20,Math.round(200*f)),minOuts:Math.max(24,Math.round(150*f)),R}; }
+function ovlTop(k,pool){ const P=pool||ovlTopPool(), L=P.R.filter(r=>ovlTopKey(r.lvl)===k);
+  const bat=L.filter(r=>!r.isP&&(r.h.pa||0)>=P.minPA).map(r=>Object.assign({},r,{s:bRate(r.h)})).sort((a,b)=>b.s.ops-a.s.ops||b.h.pa-a.h.pa).slice(0,10);
+  const pit=L.filter(r=>r.isP&&(r.h.outs||0)>=P.minOuts).map(r=>Object.assign({},r,{s:pRate(r.h)})).sort((a,b)=>a.s.era-b.s.era||b.h.outs-a.h.outs).slice(0,10);
+  return {y:P.y,last:P.last,minPA:P.minPA,minOuts:P.minOuts,n:L.length,bat,pit}; }
 /* 선수 기록 표에 넣을 해외 시즌 줄(복귀 선수·다시 온 선수) */
 function ovsStatRows(p){ const out=[]; for(const a of G.abroad||[]){ if(String(a.id)!==String(p.id))continue; for(const l of a.lines||[])for(const q of ovsParts(l)){ const cn=ovsClubNm(q), {x,...r}=q; out.push(Object.assign({r:0,rbi:0,sb:0,cs:0,g:0},r,{y:l.y,pre:`${ovsLvlL(q.lvl)}${cn?' '+cn.split(' ')[0]:''}`})); } } return out; }
 /* ===== 해외 진출: 외국인 역수출 · 국내 선수 포스팅/해외 FA · 해외파 추적 ===== */
@@ -32623,12 +32639,25 @@ function pwrView(){ const P=G.pwr; if(!P||P.y!==G.year){ let R0=[]; try{ R0=proj
    경기를 돌리지 않는 가벼운 리그(35a_ovs_league). 화면은 읽기만 한다(만들기는 날짜 진행 때) */
 const ovsAwPills=(L,lg)=>(L&&L.aw||[]).map(k=>`<span class="pill warn">${esc(ovsAwNm(k,lg))}</span>`).join(' ');
 function ovlView(){ if(!G.ovl||OVL_LGS.some(l=>!G.ovl[l]))return csec('해외 리그','<p class="small muted">다음 날짜 진행 때 해외 리그 기록이 시작됩니다.</p>');
-  const t=inTabs('ovlv',[['alum','KBO 출신'],['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['etc','기타 리그'],['champ','역대 우승'],['moves','진출 기록']],'alum');
+  const t=inTabs('ovlv',[['alum','KBO 출신'],['top','주목 선수'],['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['etc','기타 리그'],['champ','역대 우승'],['moves','진출 기록']],'alum');
   if(t.cur==='MLB'||t.cur==='AAA'||t.cur==='NPB')return t.bar+ovlStandView(t.cur);
   if(t.cur==='etc'){ const e=inTabs('ovle',[['CPBL','CPBL(대만)'],['LMB','멕시코리그']],'CPBL'); return t.bar+e.bar+ovlStandView(e.cur)+ovlChampMini(e.cur); }
+  if(t.cur==='top')return t.bar+ovlTopView();
   if(t.cur==='champ')return t.bar+ovlChampView();
   if(t.cur==='moves')return t.bar+abroadView();
   return t.bar+ovlAlumView(); }
+/* 주목 선수: 게임이 기록을 쌓는 선수(KBO 출신 해외파·외국인 후보·관찰 명단)의 리그별 TOP 10. 공개 기록만 보인다(ovlTop) */
+function ovlTopView(){ const P=ovlTopPool(), K=[['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['etc','기타']], BB={}; for(const [k] of K)BB[k]=ovlTop(k,P);
+  const lt=inTabs('ovlt',K.map(([k,l])=>[k,`${l} ${BB[k].bat.length+BB[k].pit.length}`]),K.map(([k])=>k).sort((a,b)=>(BB[b].bat.length+BB[b].pit.length)-(BB[a].bat.length+BB[a].pit.length))[0]), B=BB[lt.cur];
+  const who=r=>{ if(!r.abr){ const p=G.players[r.id]; return {av:p,age:p.age}; } const a=(G.abroad||[]).find(z=>String(z.id)===String(r.id))||{}; let pj=null; try{ pj=a.pj?JSON.parse(a.pj):null; }catch(e){}
+    const av=G.players[a.id]||pj||{id:a.id,name:a.name,age:a.age,isP:a.isP,foreign:a.foreign}; return {av,age:a.foreign?a.age+(G.year-a.y):av.age}; };
+  const tg=r=>`<span class="pill${r.tag==='KBO 출신'?' acc':r.tag==='관찰 중'?' good':''}">${esc(r.tag)}</span>`;
+  const row=(r,i,cells)=>{ const w=who(r); return `<tr${rowTap(r.abr?'person':'player',r.abr?'abr:'+r.id:r.id,r.name)}><td>${i+1}</td><td class="ovt-n"><span class="pm-n">${avImg(Object.assign({},w.av,{name:r.name}))}<span><b>${esc(r.name)}</b><i>${w.age??'-'}세 · ${esc(r.pos)} · ${esc(r.club)}</i></span></span></td><td>${tg(r)}</td>${cells.map((c,k)=>`<td${k===0?' class="key"':''}>${c}</td>`).join('')}</tr>`; };
+  const tb=(ttl,head,L,cell,none)=>csec(ttl,L.length?`<div class="tw ovt-w"><table class="tbl ovt-t"><thead><tr><th>#</th><th>선수</th><th>구분</th>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${L.map((r,i)=>row(r,i,cell(r))).join('')}</tbody></table></div>`:`<div class="muted ovt-e">${none}</div>`);
+  const bat=tb(`타자 TOP 10 <span class="small muted">${B.minPA}타석 이상</span>`,['OPS','타율','홈런','타석'],B.bat,r=>[fmt3(r.s.ops),fmt3(r.s.avg),r.h.hr||0,r.h.pa],'기준 타석을 채운 타자가 없습니다.');
+  const pit=tb(`투수 TOP 10 <span class="small muted">${ipStr(B.minOuts)}이닝 이상</span>`,['ERA','이닝','삼진','WHIP'],B.pit,r=>[r.s.era.toFixed(2),ipStr(r.h.outs),r.h.so||0,r.s.whip.toFixed(2)],'기준 이닝을 채운 투수가 없습니다.');
+  const note=`<div class="note ovt-h">${B.last?`시즌 초반이라 ${B.y} 시즌 기록입니다.`:`${B.y} 시즌 진행 중 기록입니다.`} KBO 출신 해외파·외국인 후보·관찰 명단 선수만 집계합니다.${hiI('게임이 기록을 쌓는 선수만 순위에 오릅니다. 외국인 후보 기록은 시장 화면과 같은 공개 기록이고, 다른 구단도 똑같이 봅니다.')}</div>`;
+  return lt.bar+note+bat+pit; }
 function ovlYears(lg){ const L=G.ovl[lg]; const S=new Set([...(L.cur?[L.cur.y]:[]),...(L.h||[]).map(h=>h.y)]); return [...S].sort((a,b)=>b-a); }
 const OVL_HELP={MLB:'30개 구단, 팀당 162경기. 지구 1위 3팀과 승률 상위 3팀이 리그마다 가을야구에 나갑니다(와일드카드 3전 2승 → 디비전 5전 3승 → 챔피언십 7전 4승 → 월드시리즈). 구단 전력은 해마다 조금씩 바뀝니다.',
   AAA:'30개 구단, 팀당 150경기. 인터내셔널리그(IL) 20개·퍼시픽코스트리그(PCL) 10개 구단이고, 구단마다 MLB 구단 하나의 산하입니다. 리그마다 두 지구 1위가 3전 2승으로 리그 우승을 가리고, 두 리그 우승팀이 단판 트리플A 챔피언십을 치릅니다.',
@@ -41301,6 +41330,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-ovsnotable',d:'11월 17일',t:'해외 리그 주목 선수',items:[
+    '리그 › 해외 리그에 주목 선수 탭을 넣었습니다. MLB·트리플A·NPB·기타 리그마다 KBO 출신 해외파·외국인 후보·관찰 명단 선수의 타자 OPS, 투수 ERA TOP 10을 보여 줍니다.']},
   {id:'2026-11-17-photo',d:'11월 17일',t:'사진 자르기 · 사진 옆 연필 버튼',items:[
     '갤러리에서 고른 사진을 바로 넣지 않고 자르기 화면을 거칩니다. 끌어서 옮기고, 두 손가락·마우스 휠·막대로 크기를 바꿉니다. 둥근 자리와 네모 자리 미리보기를 보고 적용합니다.',
     '사진 바꾸기 버튼을 얼굴 사진 모서리의 연필 버튼으로 옮겼습니다. 소식함 비서 사진도 사진 옆에서 바꾸고, 템플릿 사진·갤러리 사진·원래대로를 한 창에서 고릅니다.',

@@ -184,5 +184,18 @@ const ovsLvlL=l=>l==='NPB'?'NPB 1군':l||'';
 /* 그 시즌 그 구단에서 뛴(뛰는) KBO 출신: 줄의 수준(트리플A면 산하 구단)으로 리그 표를 고른다 */
 function ovlAlumMap(lg,y){ const M={}; for(const a of G.abroad||[]){ const ls=(a.lines||[]).filter(l=>l.y===y); if(a.cur&&a.cur.y===y&&!a.back&&a.end==null)ls.push(a.cur); const seen=new Set();
     for(const l of ls)for(const q of ovsParts(l)){ if(q.c==null||q.c<0||ovlKey(q.lvl)!==lg||seen.has(q.c))continue; seen.add(q.c); (M[q.c]=M[q.c]||[]).push(a); } } return M; }
+/* 해외 리그 주목 선수: 게임이 기록을 쌓는 선수(KBO 출신 해외파·외국인 시장 후보·관찰 명단)만 리그별 TOP 10. 공개 기록뿐(후보 능력·추정은 쓰지 않는다).
+   시즌 진행 20% 전에는 지난 시즌 기록. 최소 타석·이닝은 진행 비율만큼 */
+const ovlTopKey=l=>l==='MLB'?'MLB':l==='트리플A'?'AAA':l==='NPB'||l==='NPB 1군'?'NPB':'etc';
+function ovlTopPool(){ const fr=ovlFrac(G.year), last=fr<.2, y=last?G.year-1:G.year, f=last?1:fr, R=[], seen=new Set(), W=new Set((G.fwatch||[]).map(w=>w.id));
+  for(const a of G.abroad||[]){ if(a.back||a.end!=null||seen.has(String(a.id)))continue; let l=(a.lines||[]).find(z=>z.y===y); if(!l&&!last&&a.cur&&a.cur.y===y)l=ovsPart(a.cur,fr); if(!l)continue; seen.add(String(a.id));
+    for(const q0 of ovsParts(l)){ const {o,x,...q}=q0; /* o: 만들 때 능력(숨은 값)은 빼고 기록만 */ R.push({id:a.id,abr:1,name:a.name,isP:!!a.isP,pos:a.pos,tag:a.cand?'관찰했던 후보':'KBO 출신',lvl:q.lvl,club:ovsClubNm(q)||(ovlTopKey(q.lvl)==='etc'?ovsLvlL(q.lvl):a.club||a.lg),h:q}); } }
+  for(const id of new Set([...(G.fmarket||[]),...W])){ const p=G.players[id]; if(!p||p.team!=null||!p.foreign||seen.has(String(p.id)))continue; const h=last?p.prev:p.now&&p.now.y===G.year?p.now:null; const lvl=h&&(h.lvl||p.prevLvl); if(!lvl)continue; seen.add(String(p.id));
+    R.push({id:p.id,abr:0,name:p.name,isP:!!p.isP,pos:posLabel(p),tag:W.has(p.id)?'관찰 중':'외국인 후보',lvl,club:ovlCandLvl(p,lvl),h}); }
+  return {y,last,minPA:Math.max(20,Math.round(200*f)),minOuts:Math.max(24,Math.round(150*f)),R}; }
+function ovlTop(k,pool){ const P=pool||ovlTopPool(), L=P.R.filter(r=>ovlTopKey(r.lvl)===k);
+  const bat=L.filter(r=>!r.isP&&(r.h.pa||0)>=P.minPA).map(r=>Object.assign({},r,{s:bRate(r.h)})).sort((a,b)=>b.s.ops-a.s.ops||b.h.pa-a.h.pa).slice(0,10);
+  const pit=L.filter(r=>r.isP&&(r.h.outs||0)>=P.minOuts).map(r=>Object.assign({},r,{s:pRate(r.h)})).sort((a,b)=>a.s.era-b.s.era||b.h.outs-a.h.outs).slice(0,10);
+  return {y:P.y,last:P.last,minPA:P.minPA,minOuts:P.minOuts,n:L.length,bat,pit}; }
 /* 선수 기록 표에 넣을 해외 시즌 줄(복귀 선수·다시 온 선수) */
 function ovsStatRows(p){ const out=[]; for(const a of G.abroad||[]){ if(String(a.id)!==String(p.id))continue; for(const l of a.lines||[])for(const q of ovsParts(l)){ const cn=ovsClubNm(q), {x,...r}=q; out.push(Object.assign({r:0,rbi:0,sb:0,cs:0,g:0},r,{y:l.y,pre:`${ovsLvlL(q.lvl)}${cn?' '+cn.split(' ')[0]:''}`})); } } return out; }
