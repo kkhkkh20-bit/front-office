@@ -172,7 +172,8 @@ function ovsTrackCand(p,lg){ if(!p||(G.abroad||[]).some(a=>a.id===p.id))return; 
 const OVS_FMAX=30; /* 외국인·관찰 후보 해외파 기록 한도(10시즌 저장 크기 측정: 이 한도로 약 20KB) */
 function ovsTrim(){ const A=G.abroad||[]; const fo=a=>a.foreign||a.cand;
   while(A.filter(fo).length>OVS_FMAX){ let i=-1; for(const f of [a=>fo(a)&&a.end!=null,fo]){ for(let j=A.length-1;j>=0;j--)if(f(A[j])){ i=j; break; } if(i>=0)break; } A.splice(i,1); } /* 외국인 기록은 끝난(은퇴) 것부터, 오래된 것부터 */
-  while(A.length>120){ let i=-1; for(const f of [a=>a.back||a.end!=null,fo]){ for(let j=A.length-1;j>=0;j--)if(f(A[j])){ i=j; break; } if(i>=0)break; } A.splice(i>=0?i:A.length-1,1); } }
+  const live=a=>a.back&&!a.foreign&&!a.cand&&G.players&&G.players[a.id]&&G.players[a.id].team!=null; /* 돌아와 국내에서 뛰는 선수의 해외 기록은 선수 화면 시즌 통계에 쓰므로 가장 나중에 지운다(제보 11-16) */
+  while(A.length>120){ let i=-1; for(const f of [a=>(a.back||a.end!=null)&&!live(a),fo,a=>a.back||a.end!=null]){ for(let j=A.length-1;j>=0;j--)if(f(A[j])){ i=j; break; } if(i>=0)break; } A.splice(i>=0?i:A.length-1,1); } }
 /* 해외파 한 명의 해외 기록 요약(UI·복귀 협상 공통): 빅리그 시즌 수·최근 가치 */
 function ovsSum(a){ const L=(a&&a.lines)||[]; const big=L.filter(l=>ovsParts(l).some(q=>ovsBig(q.lvl)&&((q.pa||0)>=200||(q.outs||0)>=(q.rp?120:240)))); const last=L[L.length-1]; return {n:L.length,big:big.length,v:last?ovsVal(last,a.isP):0,aw:L.flatMap(l=>l.aw||[])}; }
 /* 해외 기록 한 줄 글(엔진 소식용. 화면의 lineTxt와 같은 모양) */

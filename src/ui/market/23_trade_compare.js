@@ -36,7 +36,7 @@ function draftCenter(all,mine){
 /* 선수 카드: 스태프 의견과 빠른 행동 */
 function staffCardP(p){ const L=staffNotes(p); if(!L.length)return '';
   return `<div class="stn">${L.map(x=>`<div><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}</div>`; }
-/* 선수 화면 위 행동(UI 2단계 2-2): 상황별 대표 동작 1개만 보이고 나머지는 ⋯ 메뉴로.
+/* 선수 화면 위 행동(UI 2단계 2-2): 상황별 대표 동작 1개(파란 버튼)와 나머지 동작. 기본은 모두 버튼으로 보이고, 설정에서 '간단히'를 고르면 나머지는 ⋯ 메뉴로.
    우리 선수: 계약이 곧 끝나면 연장 협상, 6주 이상 다친 외국인은 대체 외국인 고르기, 그 밖에는 면담. 다른 구단 선수: 트레이드 협상 */
 function extSoon(p){ if(!canExtend(p))return false; if(p.extCounter&&p.extCounter.until>=G.day)return true; return p.faC?(p.yrs||0)<=1:faLeft(p)<=1; }
 function quickActs(p){
@@ -56,8 +56,8 @@ function quickActs(p){
     if(tradeOpen()){ main={a:'toTrade',v:p.id,l:'트레이드 협상'}; M.push({a:'findT',v:p.id,l:'얻을 조건 보기'}); }
     const on=(G.pwatch||[]).includes(p.id); M.push({a:'pwatch',v:p.id,l:on?'관심 해제':'관심 선수',on});
   }
-  const html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기'});
-  return html?`<div class="qacts">${html}</div>`:''; }
+  const all=actModeAll(), html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기',all}); /* 설정 › 선수 화면 버튼: 모두 보이기(기본)·간단히 */
+  return html?`<div class="qacts${all?' qacts-all':''}">${html}</div>`:''; }
 
 /* ---------- 아마추어 기록: 학년별 ---------- */
 function amYearTable(p){ const Y=p.amY; if(!Y||!Y.length)return `<p class="small">${esc(amLine(p))}</p>`;
