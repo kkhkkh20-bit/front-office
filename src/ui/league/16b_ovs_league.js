@@ -14,7 +14,7 @@ const OVL_HELP={MLB:'30개 구단, 팀당 162경기. 지구 1위 3팀과 승률 
   NPB:'12개 구단, 팀당 143경기. 리그마다 3위까지 클라이맥스 시리즈(1위는 1승을 안고 시작)를 거쳐 재팬시리즈에서 맞붙습니다. 구단 전력은 해마다 조금씩 바뀝니다.',
   CPBL:'6개 구단, 팀당 120경기. 2·3위가 5전 3승으로 겨루고, 이긴 팀이 1위와 타이완시리즈(7전 4승)를 치릅니다.',
   LMB:'20개 구단(북부·남부 10개씩), 팀당 90경기. 지구마다 4위까지 7전 4승으로 지구 우승을 가리고, 두 지구 우승팀이 세리에 델 레이에서 맞붙습니다.'};
-function ovlStandView(lg){ const ys=ovlYears(lg), nm=OVL_LBL[lg]; if(!ys.length)return csec(nm,'<p class="small muted">기록이 없습니다.</p>');
+function ovlStandView(lg){ const ys=ovlYears(lg), nm=OVL_LBL[lg]; if(!ys.length)return csec(nm,emptyState('기록이 없습니다.'));
   const yt=inTabs('ovly'+lg,ys.slice(0,5).map(y=>[String(y),String(y)]),String(ys[0])); const y=+yt.cur; const T=ovlTable(lg,y); if(!T)return yt.bar;
   const S=T.S, AL=ovlAlumMap(lg,y), pct=r=>r.w+r.l?fmt3(r.w/(r.w+r.l)):'-', g=OVL_G[lg];
   const head=T.live?(T.gp?`정규시즌 진행 중 · 팀당 ${T.gp}경기(${g}경기 중)`:`${y} 시즌 개막 전 · 3월 말 개막`)+(T.gp>=g?' · 포스트시즌은 시즌을 마치면 발표':''):`${OVL_PS[lg]} <b>${esc(ovlNm(lg,S.ch))}</b> ${esc(S.sr||'')} · 준우승 ${esc(ovlNm(lg,S.ru))}`;
@@ -39,13 +39,13 @@ function ovlAlumView(){ const FT=inTabs('ovla',[['all','전체'],['mine','우리
     return `<div class="abr" data-a="person" data-v="abr:${a.id}" role="button" tabindex="0">${a.from!=null?badge(a.from,26):''}<div><b>${esc(a.name)} <span class="small muted">${esc(a.pos)}${a.foreign?' · 외국인':''}${a.cand?' · 관찰했던 후보':''}</span></b>
       <span class="small">${club}</span>${ln}${tm}</div></div>`; };
   return csec(`KBO 출신 해외파 ${A.length}명${hiI('해외로 간 국내 선수, KBO를 떠나 해외에서 뛰는 외국인, 우리가 관찰하다 놓친 후보의 해외 성적입니다. MLB 구단 소속이라도 실력이 모자라면 산하 트리플A에서 뜁니다. 시즌 중에는 지금까지의 기록이고, 시즌을 마치면 확정됩니다. 해외 기록은 외국인 영입·복귀 협상에서 우리와 다른 구단이 똑같이 참고합니다.')}`,
-    ft+(L.length?`<div class="abl">${L.map(row).join('')}</div>`:'<p class="small muted">지금 해외에서 뛰는 KBO 출신 선수가 없습니다.</p>'));
+    ft+(L.length?`<div class="abl">${L.map(row).join('')}</div>`:emptyState('지금 해외에서 뛰는 KBO 출신 선수가 없습니다.')));
 }
 function ovlChampView(){ const K=['MLB','AAA','NPB'], H=K.map(lg=>G.ovl[lg].h||[]); const ys=[...new Set(H.flat().map(h=>h.y))].sort((a,b)=>b-a);
   const c=(lg,X)=>X?`<b>${esc(ovlNm(lg,X.ch))}</b><span class="small muted"> ${esc(X.sr||'')} · ${esc(ovlNm(lg,X.ru))}</span>`:'-';
   const cnt=lg=>{ const C={}; for(const h of G.ovl[lg].h||[])C[h.ch]=(C[h.ch]||0)+1; return Object.entries(C).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([i,n])=>`${esc(ovlNm(lg,+i))} ${n}회`).join(' · '); };
   return csec(`역대 우승${hiI(`최근 ${OVL_KEEP}시즌까지 남깁니다. CPBL·멕시코리그는 기타 리그에 있습니다.`)}`,ys.length?`<div class="tbl-wrap"><table class="tbl ovl-ch"><thead><tr><th>시즌</th><th>우승 · 결승 점수 · 준우승</th></tr></thead><tbody>${ys.map(y=>`<tr><td>${y}</td><td>${K.map((lg,k)=>`<div class="ovl-chl"><span class="small muted">${esc(OVL_PS[lg])}</span> ${c(lg,H[k].find(h=>h.y===y))}</div>`).join('')}</td></tr>`).join('')}</tbody></table></div>
-    <p class="small muted">최다 우승 · ${K.map(lg=>`${OVL_LBL[lg]} ${cnt(lg)||'-'}`).join(' · ')}</p>`:'<p class="small muted">아직 끝난 시즌이 없습니다.</p>'); }
+    <p class="small muted">최다 우승 · ${K.map(lg=>`${OVL_LBL[lg]} ${cnt(lg)||'-'}`).join(' · ')}</p>`:emptyState('아직 끝난 시즌이 없습니다.')); }
 /* 기타 리그 역대 우승(짧게) */
 function ovlChampMini(lg){ const H=G.ovl[lg].h||[]; if(!H.length)return '';
   return csec(`${esc(OVL_PS[lg])} 역대 우승`,`<div class="tbl-wrap"><table class="tbl ovl-ch"><thead><tr><th>시즌</th><th>우승</th><th>준우승</th></tr></thead><tbody>${H.map(h=>`<tr><td>${h.y}</td><td><b>${esc(ovlNm(lg,h.ch))}</b> <span class="small muted">${esc(h.sr||'')}</span></td><td>${esc(ovlNm(lg,h.ru))}</td></tr>`).join('')}</tbody></table></div>`); }

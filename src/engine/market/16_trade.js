@@ -17,8 +17,16 @@ function statLuck(p){ const k=G.year+':'+G.day; if(_lkC.k!==k)_lkC={k,m:new Map(
 function seenDelta(t,p){ if(!t||!p||t.id===G.user||t.id===ME())return 0; const L=statLuck(p); if(!L)return 0; const tr=gmTrait(t.id);
   const ab=gmAbOf(t.id); const ew=ab?1.4-ab.eye/100*.8:1; /* 선수 보는 눈이 좋을수록 성적 운에 덜 속는다 */
   const w=(p.team===t.id?.2:.3)*(tr==='data'?.5:1)*L.rel*ew; return clamp((tr==='data'?L.dF:L.d)*w,-4,4); } /* 공략 방지: 사람은 운을 걸러 보는데 AI만 크게 속지 않게(예전 .35/.6·±8) */
+/* AI 단장이 보는 잠재력(사용자 11-16: AI도 유저와 같은 정보로 판단). 자기 선수는 매일 보니 실제 잠재력 그대로(우리도 우리 선수는 안다),
+   남의 선수는 자기 스카우트 눈으로 본 추정: 구단 스카우트 오차(scoutSd, 드래프트·외국인 평가와 같은 값)만큼 어긋나고, 숨은 재능(hidT)은 지명 때처럼 대부분 놓친다.
+   예전 tval(projO)은 남의 유망주 실제 잠재력을 그대로 읽었다. 구단·선수마다 고정된 값이라 난수 흐름을 건드리지 않는다 */
+function potSeenD(t,p){ if(!t||!p||t.id===G.user||t.id===ME()||p.team===t.id)return 0; const sd=Math.max(2.5,(t.scoutSd||6)*.7);
+  const hid=p.hidT&&!p.hidR&&u01('aih'+t.id,p.id)>=.2?-p.hidT:0; /* 1군 기록으로 드러난 숨은 재능(hidR)은 모두가 안다: 우리 스카우트 평가(hidPen)도 그때부터 빼지 않는다 */ return clamp(hn('q'+t.id,p.id)*sd+hid,-12,8); }
+/* 데려올 때 쓰는 값: 스카우트가 좋게 본 몫은 믿지 않고(파는 구단이 자기 선수를 더 잘 안다: 사람 단장도 남이 내놓는 유망주의 장밋빛 보고는 깎아 듣는다), 나쁘게 본 몫은 그대로 믿는다.
+   그래서 AI는 남의 유망주를 실제보다 좋게 보고 주전을 내주는 일은 없고(공략 방지), 숨은 재능이나 저평가된 유망주는 놓칠 수 있다 */
+function potSeenIn(t,p){ return Math.min(0,potSeenD(t,p)); }
 function aiVal(t,p){
-  const ps=pvShift(p); /* 같은 능력이면 유격·포수·2루가 귀하다 */ const o=ovr(p)+ps+hn('o'+t.id,p.id)*3+seenDelta(t,p), pt=p.pot+ps+hn('q'+t.id,p.id)*5;
+  const ps=pvShift(p); /* 같은 능력이면 유격·포수·2루가 귀하다 */ const o=ovr(p)+ps+hn('o'+t.id,p.id)*3+seenDelta(t,p), pt=p.pot+ps+potSeenIn(t,p); /* 예전: 자기 선수까지 모두 ±5 오차 */
   let eff=p.age<=25?o+Math.max(0,pt-o)*(t.mode==='rebuild'?.75:.5):p.age>=32?o-(p.age-31)*1.3:o;
   let v=Math.pow(Math.max(0,eff-36),1.7)/10;
   v-=(p.sal/100)*(t.owner==='profit'?.45:.3)*(p.faC?Math.max(1,p.yrs)*.6:.6);
@@ -35,8 +43,8 @@ function seasonWorth(o){ return Math.pow(Math.max(0,o-40),1.6)/6; }
 /* i시즌 뒤 예상 능력. 성장·노화는 1월 1일에 한 번에 적용되므로(develop), 개막 전·시즌 중의 '올해(i=0)'는 지금 능력 그대로다.
    예전에는 올해 값에도 노화(30세 넘은 나이 × 1.3)와 성장을 미리 반영해, 33세 주전은 올해 값이 4점 깎이고 21세 유망주는 부풀려졌다.
    그 결과 AI 구단이 주전 베테랑을 어린 백업과 바꿔 줘서 첫 시즌부터 손쉽게 전력을 끌어올릴 수 있었다. 시즌이 끝난 뒤(포스트시즌·비시즌)에는 다음 해 성장·노화가 한 번 남아 있다 */
-function projO(p,i){ const o=ovr(p)+pvShift(p)+(i===0?condOf(p)*.3:0); const per=period(); const k=i+(per==='off'||per==='post'?1:0); if(k<=0)return o;
-  if(p.age+k<=26){ const g=Math.max(0,p.pot-ovr(p)); return o+g*Math.min(1,k/Math.max(1.5,26-p.age+1.5)); } /* 성장 곡선(04_growth)과 같게: 정점(26세)까지 남은 해에 고르게 큰다 */
+function projO(p,i,dp){ const o=ovr(p)+pvShift(p)+(i===0?condOf(p)*.3:0); const per=period(); const k=i+(per==='off'||per==='post'?1:0); if(k<=0)return o;
+  if(p.age+k<=26){ const g=Math.max(0,p.pot+(dp||0)-ovr(p)); /* dp: 보는 구단의 잠재력 추정 오차(potSeenD) */ return o+g*Math.min(1,k/Math.max(1.5,26-p.age+1.5)); } /* 성장 곡선(04_growth)과 같게: 정점(26세)까지 남은 해에 고르게 큰다 */
   const old=Math.max(0,Math.min(k,p.age+k-30)); /* 앞으로 31세 이상으로 보낼 해 수 */ return o-old*1.3; }
 function ctrlYears(p){ if(p.foreign)return 1; if(p.faC||p.ext)return Math.max(1,p.yrs||1); /* 비FA 다년계약(ext)도 계약 연수로(커뮤니티 11-13: 다년계약한 선수가 코치진 보고에 FA로 나옴) */ if(p.extNext)return 1+p.extNext.years; return clamp(faLeft(p),1,6); } /* 보유 가능 기간: 선수 계약 설명(ctText)과 같은 FA 시점 */
 let _tcC={k:null,m:{}};
@@ -60,8 +68,8 @@ function roleFactor(t,p,dir){ const L=leagueSlots()[t.id]; const k=pSlot(p); con
 /* 구단 상위 6명(국내, 육성 제외): 성능을 위해 AI 작업 하나(slotsHold) 동안은 구단마다 한 번만 고른다. 그 사이 트레이드·이동(mvN)이 있으면 다시(26_trade_ai leagueSlots와 같은 기준) */
 function tvCore6(tid){ const pick6=()=>new Set(domestic(tid).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id)); const H=typeof _slHold!=='undefined'?_slHold:null; if(!H)return pick6();
   const k0=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.mvN||0); if(!H.c6||H.c6.k0!==k0||H.c6.g!==G)H.c6={k0,g:G,m:{}}; return H.c6.m[tid]||(H.c6.m[tid]=pick6()); }
-function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p); let v=0; const sd=seenDelta(t,p); const cur=ovr(p)+sd; /* sd: AI 단장 눈에 보이는 능력(성적의 운 반영) */
-  for(let i=0;i<c.H;i++){ let o=projO(p,i)+sd; if(o>cur){ const rb=t.mode==='rebuild'; o=cur+(o-cur)*(i===0?(rb?.85:.8):i<=1?(rb?.7:.62):(rb?.6:.5)); } /* 먼 미래 성장일수록 더 불확실하다 */ const d=Math.pow(.85,i); const w=seasonWorth(o)*(i===0?c.now:1)*d; /* KBO 구단은 먼 미래보다 지금을 더 친다 */
+function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p); let v=0; const sd=seenDelta(t,p), dp=dir==='in'?potSeenIn(t,p):potSeenD(t,p); /* 사 오는 쪽은 좋게 본 몫을 크게 깎는다: 파는 구단이 자기 선수를 더 잘 안다(사람 단장도 남이 내놓는 유망주는 의심한다). 공략 방지 */ const cur=ovr(p)+sd; /* sd: AI 단장 눈에 보이는 능력(성적의 운 반영), dp: 남의 선수 잠재력은 스카우트 추정 */
+  for(let i=0;i<c.H;i++){ let o=projO(p,i,dp)+sd; if(o>cur){ const rb=t.mode==='rebuild'; o=cur+(o-cur)*(i===0?(rb?.85:.8):i<=1?(rb?.7:.62):(rb?.6:.5)); } /* 먼 미래 성장일수록 더 불확실하다 */ const d=Math.pow(.85,i); const w=seasonWorth(o)*(i===0?c.now:1)*d; /* KBO 구단은 먼 미래보다 지금을 더 친다 */
     if(i>=ny){ v+=w*.55; continue; }
     const sal=p.faC||p.foreign?p.sal/100:Math.min(seasonWorth(o),p.sal/100*Math.pow(1.3,i)); v+=w-sal*c.money*d; }
   if(v>0)v*=roleFactor(t,p,dir);

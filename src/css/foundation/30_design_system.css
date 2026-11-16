@@ -248,6 +248,9 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  .flr:not(.fur){grid-template-columns:minmax(0,1fr) auto;row-gap:2px;padding-bottom:6px;border-bottom:1px solid var(--line)}
  .flr:not(.fur)>.small{grid-column:1/-1;grid-row:2;padding-left:4px}
  .flr:not(.fur)>.tc-i,.flr:not(.fur)>.flx{grid-column:2;grid-row:1}
+ /* 별점(.ptier)은 계약 줄 옆에 붙인다: 따로 한 줄을 차지하면 줄이 길어지고 다음 줄과 겹쳐 보였다(UI 3단계 3-1) */
+ .flr:not(.fur):has(>.ptier)>.small{grid-column:1;padding-right:36px}
+ .flr:not(.fur)>.ptier{grid-column:1/-1;grid-row:2;justify-self:end}
 }
 
 /* 낮은 가로 화면: 버튼 줄들을 위아래로 쌓지 않고 한 줄에 나란히(목록 높이 확보) */
@@ -282,8 +285,9 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
    상단 초록 '진행하기'(.goset)는 이 체계 밖의 진행 전용 버튼 하나다(52_more_menu.css 끝). */
 :is(#app,#sheet,#cfm) .btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
 :is(#app,#sheet,#cfm) .btn.primary:hover:not([disabled]){background:var(--acc-hi,var(--acc));border-color:var(--acc-hi,var(--acc))}
-:is(#app,#sheet,#cfm) .btn.on:not(.primary),:is(#app,#sheet) .tc-i.on{background:color-mix(in srgb,var(--acc) 16%,var(--panel2));border-color:var(--acc);color:var(--ink);font-weight:600}
-:is(#app,#sheet) .talk .btn.on{background:var(--team);border-color:var(--team-hi);color:#fff} /* 면담 답 고른 표시는 구단색 그대로 */
+/* 고른 상태는 .on 하나로(UI 3단계 3-3): 칩·선택 줄·모드 버튼도 테두리와 옅은 바탕만. 채운 색은 강조 버튼(.btn.primary)에만 쓴다 */
+:is(#app,#sheet,#cfm) .btn.on:not(.primary),:is(#app,#sheet) .tc-i.on,:is(#app,#sheet,#cfm) .chips button.on,:is(#app,#sheet) .trade-modes button.on,:is(#app,#sheet) .fc-b.on{background:color-mix(in srgb,var(--acc) 16%,var(--panel2));border-color:var(--acc);color:var(--ink);font-weight:600}
+:is(#app,#sheet) .talk .btn.on:not([data-a=sisC]){background:var(--team);border-color:var(--team-hi);color:#fff} /* 면담 답 고른 표시는 구단색 그대로. 자매구단 나라 고르기는 일반 선택 상태(3-3) */
 :is(#app,#sheet) .tc-i.go{background:none;border-color:var(--acc);color:color-mix(in srgb,var(--acc) 55%,#fff);font-weight:600}
 :is(#app,#sheet) .tc-i.go:hover:not([disabled]){background:color-mix(in srgb,var(--acc) 14%,transparent)}
 :is(#app,#sheet,#cfm) .btn.text{background:none;border-color:transparent;color:color-mix(in srgb,var(--acc) 55%,#fff);padding-inline:4px}

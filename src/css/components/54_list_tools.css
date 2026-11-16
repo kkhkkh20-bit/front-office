@@ -7,7 +7,9 @@
 /* 줄 끝 › 표시: 누르면 상세가 열린다는 신호 */
 .rt-go{flex:none;margin-left:auto;color:var(--muted);font-size:18px;line-height:1;padding-left:4px}
 @media(max-width:700px){
-  :is(#app,#sheet) div[data-rowtap]{min-height:44px;box-sizing:border-box}
+  /* 최소 높이만 44px. 줄 높이는 내용으로 정한다: 높이가 정해진 grid·flex 목록 안에서 44px로 눌려 다음 줄과 겹치던 문제(UI 3단계 3-1, 비시즌 FA 목록) */
+  :is(#app,#sheet) div[data-rowtap]{min-height:44px;box-sizing:border-box;flex-shrink:0}
+  :is(#app,#sheet) :has(>div[data-rowtap]){grid-auto-rows:max-content}
   :is(#app,#sheet) tr[data-rowtap]>td{height:44px}
 }
 
@@ -17,10 +19,10 @@
 :is(#app,#sheet) .fbar .fbar-q{flex:1 1 160px;min-width:0;max-width:280px;min-height:32px;box-sizing:border-box}
 :is(#app,#sheet) .fbar .fbar-b{flex:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .fbar .fbar-b.on,.fbar .fbar-b[aria-expanded="true"]{border-color:var(--acc)}
-.fbar-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--acc);color:#fff;font-size:11px;font-weight:700;box-sizing:border-box}
+.fbar-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--acc);color:#fff;font-size:var(--ui-caption);font-weight:700;box-sizing:border-box}
 .fbar-chips{display:flex;gap:6px;flex-wrap:wrap;min-width:0}
 :is(#app,#sheet) .fbar-chip{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:2px 8px 2px 10px;border:1px solid var(--acc);border-radius:14px;background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--ink);font:500 var(--ui-caption,12px)/1.2 var(--f-ui);cursor:pointer;white-space:nowrap;max-width:100%}
-.fbar-chip i{font-style:normal;color:var(--muted);font-size:11px}
+.fbar-chip i{font-style:normal;color:var(--muted);font-size:var(--ui-caption)}
 .fbar-chip:hover i,.fbar-chip:focus-visible i{color:var(--ink)}
 .fbar-chip:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 .fbar-side{display:inline-flex;align-items:center;gap:6px;margin-left:auto}
@@ -66,3 +68,25 @@
 .fbar-side .seg{flex-wrap:nowrap;margin:0}.fbar-side .seg button{white-space:nowrap}
 @media(max-width:700px){.fbar-side .seg button{padding-inline:8px}}
 @media(max-width:700px){#app .fbar .fbar-row .fbar-b.btn.small,#sheet .fbar .fbar-row .fbar-b.btn.small{min-height:44px!important;height:44px}#app .fbar .fbar-row .fbar-q,#sheet .fbar .fbar-row .fbar-q{min-height:44px!important;height:44px}}
+
+/* PC 목록 쪽 나눔(UI 3단계 3-0, 57_fit_pages.js): 상자 안 스크롤 대신 들어가는 줄만, 아래 '‹ 1/4 ›' */
+.fp-on{overflow-y:hidden!important} /* 가로는 원래대로(넓은 표는 옆으로) */
+.fp-off{display:none!important}
+.fp-bar{position:sticky;bottom:0;grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;padding:3px 4px 0;background:inherit;font-size:var(--ui-caption);color:var(--muted)}
+.fp-bar .tc-i{min-width:32px;min-height:26px;padding:0 8px;margin:0!important;flex:none}
+
+/* 첫 시즌 안내 띠(UI 3단계 3-7, 55_guide_bar.js): 화면 맨 위 한 줄. 덮개가 아니고 진행을 막지 않는다 */
+.guide-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:36px;margin:0 0 8px;padding:4px 6px 4px 12px;border:1px solid color-mix(in srgb,var(--acc) 45%,var(--line));border-left:3px solid var(--acc);border-radius:4px;background:color-mix(in srgb,var(--acc) 10%,var(--panel));font-size:var(--ui-body);flex:none}
+.guide-bar>b{color:var(--acc-hi,var(--acc));font-size:var(--ui-caption);white-space:nowrap}
+.guide-bar>span{flex:1 1 200px;min-width:0}
+.guide-bar>.btn.text{min-height:28px;white-space:nowrap}
+.guide-x{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;color:var(--muted);font-size:18px;border-radius:4px}.guide-x:hover{background:var(--panel2)}
+.hw-start .hw-ck li.hw-ck-done b{font-weight:500;color:var(--muted);text-decoration:none}
+
+/* 빈 상태·불러오는 중(UI 3단계 3-8, 56_states.js) */
+.empty-state{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:6px 0;padding:12px 14px;border:1px dashed var(--line2,var(--line));border-radius:4px;color:var(--muted)}
+.empty-state>p{margin:0;flex:1 1 220px;font-size:var(--ui-body)}
+.loading-state{display:flex;align-items:center;gap:5px;padding:10px 0;color:var(--muted);font-size:var(--ui-body)}
+.loading-state>i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:ldot 1s infinite ease-in-out}.loading-state>i:nth-child(2){animation-delay:.15s}.loading-state>i:nth-child(3){animation-delay:.3s}.loading-state>span{margin-left:6px}
+@keyframes ldot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.loading-state>i{animation:none;opacity:.6}}

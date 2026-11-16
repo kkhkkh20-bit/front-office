@@ -4,10 +4,10 @@
 .meet-tools{display:flex;align-items:center;gap:10px;flex:none}.meet-tools>.btn{white-space:nowrap}
 @media(max-width:600px) and (min-height:501px){.meet-heading:has(.ps-nav){flex-wrap:wrap}.meet-heading:has(.ps-nav) .meet-tools{width:100%;justify-content:space-between}.meet-tools .ps-nav{margin-left:0}}
 @media(max-height:500px){.meet-tools{gap:6px}.meet-tools .people-position>span{display:none}.meet-tools .ps-nav>.btn{padding-inline:7px;min-width:48px}.meet-tools>.btn{padding-inline:7px}}
-.meet-heading .mt-h>.av{width:48px;height:48px}.meet-heading .mt-h>div{min-width:0}.meet-heading h2{font-size:17px}.meet-heading .small{font-size:11px}.meet-heading .eyebrow{font-size:var(--ui-micro)}.meet-heading>.btn{white-space:nowrap}
+.meet-heading .mt-h>.av{width:48px;height:48px}.meet-heading .mt-h>div{min-width:0}.meet-heading h2{font-size:17px}.meet-heading .small{font-size:var(--ui-caption)}.meet-heading .eyebrow{font-size:var(--ui-micro)}.meet-heading>.btn{white-space:nowrap}
 .meet-workspace{display:grid;grid-template-columns:minmax(0,1fr) 280px;flex:1;min-height:0;min-width:0}
 .meet-conversation{display:flex;flex-direction:column;min-height:0;min-width:0}
-.meet-log-label{display:flex;justify-content:space-between;gap:8px;flex:none;padding:10px 16px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--line)}
+.meet-log-label{display:flex;justify-content:space-between;gap:8px;flex:none;padding:10px 16px;font-size:var(--ui-caption);color:var(--muted);border-bottom:1px solid var(--line)}
 .meet-page .mt-log{padding:16px;gap:16px;scrollbar-width:thin}.meet-page .mt-l{max-width:94%}.meet-page .mt-l>div{min-width:0}.meet-page .mt-l small{display:block;font-size:var(--ui-micro);color:var(--muted);margin:0 4px 5px}.meet-page .mt-l p{white-space:pre-line;overflow-wrap:anywhere;line-height:1.75;border-radius:6px}.meet-page .mt-l.me p{background:color-mix(in srgb,var(--team-hi) 15%,var(--panel));border-color:var(--team-hi)}
 .meet-page .mt-opts{display:flex;flex-direction:column;flex-wrap:nowrap;gap:6px;min-height:0;max-height:none;border-top:0;border-left:1px solid var(--line2);padding:12px;background:var(--bg);scrollbar-width:thin}
 .meet-page .mt-opts>.eyebrow{flex:none;margin:0 0 5px}.meet-page .mt-o{flex:none;min-width:0;border-radius:4px;padding:10px 11px}.meet-page .mt-o b{font-size:12px;line-height:1.5;font-weight:500}.meet-page .mt-o i{font-size:var(--ui-micro);line-height:1.5;margin-top:3px}.meet-page .mt-o.selected{border-color:var(--team-hi);background:var(--panel2)}
