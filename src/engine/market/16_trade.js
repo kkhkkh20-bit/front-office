@@ -181,7 +181,9 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=
   /* 올해 전력: 리빌딩이 아닌 구단은 주전을 내줄 때 올해 당장 그만큼 뛸 선수를 받아야 한다(연봉이 부담스러워도 순위 싸움을 포기하지 않는다).
      없으면 고액 주전을 어린 백업 하나와 바꿔 줘서, 첫 시즌부터 연봉만 떠안으면 손쉽게 전력을 끌어올릴 수 있었다. 매물로 내놓은 선수는 예외 */
   { const reb=t.mode==='rebuild'; const k=planOf(t)==='win'?.9:teamCtx(t).contend?.8:reb?.6:.7; /* 우승 도전 구단은 주전(에이스)을 지명권·유망주와 바꾸지 않는다 */ const S=startersOf(t.id); const st=get.map(P).filter(q=>q&&!q.aiListed&&S.has(q.id)&&(!reb||q.age<=28)); /* 리빌딩 구단은 서른 넘은 주전은 정리하지만 젊은 주전은 지킨다 */
-    if(st.length){ const nowOut=Math.max(...st.map(q=>seasonWorth(projO(q,0)+seenDelta(t,q)))); const nowIn=Math.max(0,...give.map(id=>P(id)?seasonWorth(projO(P(id),0)+seenDelta(t,P(id))):0)); if(nowIn<nowOut*k)need+=(nowOut*k-nowIn)*1.3; } }
+    if(st.length){ const nowOut=Math.max(...st.map(q=>seasonWorth(projO(q,0)+seenDelta(t,q)))); const nowIn=Math.max(0,...give.map(id=>P(id)?seasonWorth(projO(P(id),0)+seenDelta(t,P(id))):0)); if(nowIn<nowOut*k)need+=(nowOut*k-nowIn)*1.3;
+      /* 리빌딩이 아닌 구단은 주전을 포지션 가치까지 넣어 8점 넘게 처지는 선수와 바꾸지 않는다(밸런스 조정 뒤 32세 주전 3루수 58을 20세 투수 54 하나와 바꿔 줬다, 11-16). 사용자 단장도 순위 싸움 중에는 하지 않는 거래 */
+      if(!reb){ const sv=x=>ovr(x)+pvShift(x)+seenDelta(t,x); const bo=Math.max(...st.map(sv)), bi=Math.max(-99,...give.map(P).filter(Boolean).map(sv)); if(bi<bo-8)need+=Math.max(3,outV)*.6; } } }
   /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
   if(!get.some(id=>P(id)&&P(id).aiListed))need=Math.max(need,Math.max(0,outV)*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%는 더 받아야 한다(예전 -10%까지 손해 감수) */
