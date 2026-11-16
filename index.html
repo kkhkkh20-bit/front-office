@@ -45731,7 +45731,9 @@ function ladScreen0(L,pool){ const s=L.snap, R=pool.rules, V=FrontOfficeCore.lad
    우리 세계 id가 우승·준우승이면 칭호를 저장에 붙인다(전력에 영향 없음, AI 구단은 칭호 없음).
    참가: '대회 참가 신청'(서버) 또는 '참가 파일 저장'(파일을 주최자에게 보내면 주최 도구 add로 넣는다). 대회는 회차마다 한 번 여는 행사다 */
 const CUP={pub:null,pubSt:'',st:'',probing:false,cfg:null,my:null,busy:false,msg:'',bad:false,res:null,resSt:'',view:null,name:''};
-const cupApi=(p,o)=>fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ let j={}; try{ j=await r.json(); }catch(e){} return {r,j}; });
+/* 응답 본문(JSON이 아니면 빈 객체: 내려받은 게임·점검 서버처럼 /api가 없는 곳) */
+async function cupJson(r){ try{ const t=await r.text(); return t?JSON.parse(t):{}; }catch(e){ return {}; } }
+const cupApi=(p,o)=>fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ const j=await cupJson(r); return {r,j}; });
 function cupSay(m,bad){ CUP.msg=m; CUP.bad=!!bad; render(); }
 function cupProbe(){ if(CUP.st||CUP.probing||!xfAvail())return; CUP.probing=true;
   cupApi('').then(({r,j})=>{ CUP.cfg=r.ok&&j.cup?j.cup:null; CUP.st=r.ok?'ok':r.status===404?'none':'off'; if(CUP.cfg&&G&&G.wid)return cupApi('/entry/'+G.wid).then(({j})=>{ CUP.my=j&&j.entered?j:null; }); },()=>{ CUP.st='off'; })
@@ -45826,7 +45828,7 @@ function cupHofSave(j){ try{ localStorage.setItem(CUP_HOF_KEY,JSON.stringify(Obj
 function cupHofLoad(){ if(HOF.st)return; const c=cupHofCache(); if(c){ HOF.data=c; HOF.at=c.at||0; }
   if(!xfAvail()){ HOF.st=c?'cache':'none'; return; }
   HOF.st='loading';
-  fetch('/api/cup/results',{cache:'no-store',credentials:'same-origin'}).then(r=>r.ok?r.json():r.status===404?{v:1,cups:[],none:1}:Promise.reject(r.status))
+  fetch('/api/cup/results',{cache:'no-store',credentials:'same-origin'}).then(r=>r.ok?cupJson(r).then(j=>j&&Array.isArray(j.cups)?j:Promise.reject(0)):r.status===404?{v:1,cups:[],none:1}:Promise.reject(r.status))
     .then(j=>{ if(j&&Array.isArray(j.cups)&&!j.none){ HOF.data=j; HOF.at=Date.now(); HOF.st='live'; cupHofSave(j); CUP.res=j; } else HOF.st=c?'cache':'live'; },()=>{ HOF.st=c?'cache':'off'; })
     .finally(()=>{ try{ cupTitleSync(); }catch(e){} try{ render(); }catch(e){} }); }
 /* ===== 덱 보기(명예의 전당 우승 덱·유저 래더 공용): 엔트리 하나를 타순·선발·불펜·감독·OVR(총|투|타)·얼굴로 =====
@@ -45892,7 +45894,7 @@ const ADM={key:'',chk:'',cup:null,ents:null,drop:[],run:null,runSt:'',busy:false
 function admKeyGet(){ try{ return localStorage.getItem(ADM_KEY)||''; }catch(e){ return ''; } }
 function admKeySet(k){ try{ if(k)localStorage.setItem(ADM_KEY,k); else localStorage.removeItem(ADM_KEY); }catch(e){} }
 const admApi=(p,o)=>{ o=o||{}; const h=Object.assign({Authorization:'Bearer '+ADM.key},o.body!=null?{'Content-Type':'application/json'}:{},o.headers||{});
-  return fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o,{headers:h})).then(async r=>{ let j={}; try{ j=await r.json(); }catch(e){} return {r,j}; }); };
+  return fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o,{headers:h})).then(async r=>{ const j=await cupJson(r); return {r,j}; }); };
 function admSay(m,bad){ ADM.msg=m; ADM.bad=!!bad; try{ render(); }catch(e){} }
 /* 키 확인: 맞으면 관리자 메뉴가 보인다. 틀리면 지운다 */
 function admCheck(){ if(ADM.chk||!xfAvail())return; ADM.key=ADM.key||admKeyGet(); if(!ADM.key){ ADM.chk='none'; return; } ADM.chk='checking';
@@ -45948,7 +45950,7 @@ Object.assign(A,{
   /* 5) 명예의 전당 등록 */
   async admHof(){ const R=ADM.run; if(!R||R.day<7)return admSay('7일차(한국시리즈)까지 공개한 뒤 등록합니다.',true); const q=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
     const gm=FrontOfficeCore.cupName(q('admGm')), rgm=FrontOfficeCore.cupName(q('admRgm')); if(gm&&FrontOfficeCore.cupBadName(gm)||rgm&&FrontOfficeCore.cupBadName(rgm))return admSay('쓸 수 없는 말이 들어 있습니다.',true);
-    ADM.busy=true; let H={v:1,cups:[]}; try{ const t=await fetch('/api/cup/results',{cache:'no-store'}); if(t.ok){ const j=await t.json(); if(j&&Array.isArray(j.cups))H=j; } }catch(e){}
+    ADM.busy=true; let H={v:1,cups:[]}; try{ const t=await fetch('/api/cup/results',{cache:'no-store'}); if(t.ok){ const j=await cupJson(t); if(j&&Array.isArray(j.cups))H=j; } }catch(e){}
     const c=admHallOf(R,gm,rgm); H.cups=H.cups.filter(x=>x.id!==c.id).concat([c]);
     const {r,j}=await admApi('/admin/results',{method:'PUT',body:JSON.stringify(H)}).catch(()=>({r:{ok:false},j:{}})); ADM.busy=false;
     if(!r.ok)return admSay(j.message||'등록하지 못했습니다.',true); R.hof={gm,rgm}; await admApi('/admin/run',{method:'PUT',body:JSON.stringify(R)}).catch(()=>{}); HOF.st=''; HOF.data=null; admSay('명예의 전당에 올렸습니다. 처음 화면·설정 › 정보에서 보입니다.'); },

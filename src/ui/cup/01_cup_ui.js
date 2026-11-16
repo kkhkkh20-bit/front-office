@@ -5,7 +5,9 @@
    우리 세계 id가 우승·준우승이면 칭호를 저장에 붙인다(전력에 영향 없음, AI 구단은 칭호 없음).
    참가: '대회 참가 신청'(서버) 또는 '참가 파일 저장'(파일을 주최자에게 보내면 주최 도구 add로 넣는다). 대회는 회차마다 한 번 여는 행사다 */
 const CUP={pub:null,pubSt:'',st:'',probing:false,cfg:null,my:null,busy:false,msg:'',bad:false,res:null,resSt:'',view:null,name:''};
-const cupApi=(p,o)=>fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ let j={}; try{ j=await r.json(); }catch(e){} return {r,j}; });
+/* 응답 본문(JSON이 아니면 빈 객체: 내려받은 게임·점검 서버처럼 /api가 없는 곳) */
+async function cupJson(r){ try{ const t=await r.text(); return t?JSON.parse(t):{}; }catch(e){ return {}; } }
+const cupApi=(p,o)=>fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ const j=await cupJson(r); return {r,j}; });
 function cupSay(m,bad){ CUP.msg=m; CUP.bad=!!bad; render(); }
 function cupProbe(){ if(CUP.st||CUP.probing||!xfAvail())return; CUP.probing=true;
   cupApi('').then(({r,j})=>{ CUP.cfg=r.ok&&j.cup?j.cup:null; CUP.st=r.ok?'ok':r.status===404?'none':'off'; if(CUP.cfg&&G&&G.wid)return cupApi('/entry/'+G.wid).then(({j})=>{ CUP.my=j&&j.entered?j:null; }); },()=>{ CUP.st='off'; })
@@ -100,7 +102,7 @@ function cupHofSave(j){ try{ localStorage.setItem(CUP_HOF_KEY,JSON.stringify(Obj
 function cupHofLoad(){ if(HOF.st)return; const c=cupHofCache(); if(c){ HOF.data=c; HOF.at=c.at||0; }
   if(!xfAvail()){ HOF.st=c?'cache':'none'; return; }
   HOF.st='loading';
-  fetch('/api/cup/results',{cache:'no-store',credentials:'same-origin'}).then(r=>r.ok?r.json():r.status===404?{v:1,cups:[],none:1}:Promise.reject(r.status))
+  fetch('/api/cup/results',{cache:'no-store',credentials:'same-origin'}).then(r=>r.ok?cupJson(r).then(j=>j&&Array.isArray(j.cups)?j:Promise.reject(0)):r.status===404?{v:1,cups:[],none:1}:Promise.reject(r.status))
     .then(j=>{ if(j&&Array.isArray(j.cups)&&!j.none){ HOF.data=j; HOF.at=Date.now(); HOF.st='live'; cupHofSave(j); CUP.res=j; } else HOF.st=c?'cache':'live'; },()=>{ HOF.st=c?'cache':'off'; })
     .finally(()=>{ try{ cupTitleSync(); }catch(e){} try{ render(); }catch(e){} }); }
 /* ===== 덱 보기(명예의 전당 우승 덱·유저 래더 공용): 엔트리 하나를 타순·선발·불펜·감독·OVR(총|투|타)·얼굴로 =====
