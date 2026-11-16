@@ -17097,7 +17097,7 @@ function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.don
   if(!auto&&EVH[e.k]&&EVH[e.k].can){ const why=EVH[e.k].can(e,i); if(why)return why; } /* 지금 고를 수 없는 선택은 결정으로 남기지 않고 이유를 알린다(검수 11-06) */
   e.done=true; e.pick=i; if(auto)e.auto=true;
   let r=''; try{ r=(EVH[e.k]&&EVH[e.k].pick(e,i))||''; }catch(err){ r=''; } if(Number.isInteger(e.pick)&&e.pick!==i&&e.opts[e.pick])i=e.pick; /* 처리 중 실제로 바뀐 선택(정원이 차 복귀 불가 등)으로 기록(검수 11-07) */
-  e.res=r; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.read=true; m.imp=false; m.body+=`\n\n[결정] ${e.opts[i].l}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${r?`\n${r}`:''}`; }
+  e.res=r; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; try{ if(EVH[e.k]&&EVH[e.k].acts)m.acts=EVH[e.k].acts(e,i)||[]; }catch(err){} /* 결정 뒤에도 남는 버튼(창단 단장 수락 취소) */ m.read=true; m.imp=false; m.body+=`\n\n[결정] ${e.opts[i].l}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${r?`\n${r}`:''}`; }
   if(auto&&!G.unemp){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t:e.title,c:e.opts[i].l,r:r||'',k:e.k,why:e.deleg?'deleg':'exp'}); if(G.autoLog.length>20)G.autoLog.length=20; } /* 자동 처리 결과는 따로 메일을 보내지 않고 주간 요약에 한 줄로 모은다 */
   G.stops=(G.stops||[]).filter(x=>x.id!==e.mid);
   G.evlog.unshift({d:G.day,y:G.year,t:e.title,c:e.opts[i].l,r,k:e.k,id:e.id,auto:!!auto}); if(G.evlog.length>80)G.evlog.length=80;
@@ -28085,8 +28085,15 @@ function expVote(){ const E=expInit(); const cashOk=avg(G.teams.map(t=>t.cash||0
   E.stage='approved'; E.ay=G.year; news('리그',`${tfull(E)}, ${G.teams.length+1}번째 구단 창단 승인`,`찬성 ${yes} · 반대 ${G.teams.length-yes}. 11월 20일 특별지명을 거쳐 ${G.year+1}시즌 1군에 들어옵니다.`,2,{});
   expGmOffer(); }
 function expGmOffer(){ const E=expInit(); if(G.gameOver||!(G.unemp||(G.rep??50)>=60))return; E.gmAsk=G.year;
-  evNew('expGm',`신생 구단 ${tfull(E)}의 창단 단장 제안`,`${E.parent}: "새 구단의 첫 단장을 맡아 주십시오. 특별지명부터 코칭스태프 구성까지 처음부터 함께 만들고 싶습니다."`,[{l:'창단 단장 수락',fx:`11월 20일 특별지명 때 ${tfull(E)} 단장으로 옮깁니다. 지금 구단은 그때 떠납니다.`},{l:'정중히 거절',fx:'지금 자리에 남습니다.'}],{def:1,exp:30,data:{},from:E.parent}); }
-EVH.expGm={ pick(e,i){ const E=expInit(); if(i===0){ E.userGm=true; return `${tfull(E)} 창단 단장으로 가기로 했습니다. 11월 20일 특별지명 때 부임합니다.`; } E.userGm=false; return '제안을 거절했습니다.'; } };
+  evNew('expGm',`신생 구단 ${tfull(E)}의 창단 단장 제안`,`${E.parent}: "새 구단의 첫 단장을 맡아 주십시오. 특별지명부터 코칭스태프 구성까지 처음부터 함께 만들고 싶습니다."`,[{l:'창단 단장 수락',fx:`11월 20일 특별지명 때 ${tfull(E)} 단장으로 옮깁니다. 지금 구단은 그때 떠납니다. 그 전에는 수락을 취소할 수 있고, 11월 20일 부임 뒤에는 되돌릴 수 없습니다.`},{l:'정중히 거절',fx:'지금 자리에 남습니다.'}],{def:1,exp:30,data:{},from:E.parent}); }
+EVH.expGm={ pick(e,i){ const E=expInit(); if(i===0){ E.userGm=true; return `${tfull(E)} 창단 단장으로 가기로 했습니다. 11월 20일 특별지명 때 부임합니다.`; } E.userGm=false; return '제안을 거절했습니다.'; },
+  acts(e,i){ return i===0&&expGmCanCancel()?[{l:'창단 단장 수락 취소',a:'expGmCancel',v:e.id}]:[]; } }; /* 수락 뒤 소식함 결과에 취소 버튼(카페 11-17: 잘못 눌러 수락) */
+/* 창단 단장 수락 취소(카페 11-17): 11월 20일 특별지명(부임) 전까지만. 거절했을 때와 같이 신생 구단은 AI 단장이 맡고(gmOf), 모기업과의 관계만 조금 상한다(소식·명성 -1). 지금 구단주에게는 불이익이 없다 */
+function expGmCanCancel(){ const E=G.exp; return !!(E&&E.userGm&&E.stage==='approved'&&!G.gameOver); }
+function expGmCancel(){ if(!expGmCanCancel())return '11월 20일 부임 뒤에는 되돌릴 수 없습니다.'; const E=G.exp; E.userGm=false; E.gmBack=G.year; G.rep=clamp((G.rep??50)-1,0,100);
+  news('리그',`${tfull(E)}, 창단 단장 다시 찾는다`,`창단 단장으로 내정됐던 ${G.unemp?'야인 단장':tshort(G.user)+' 단장'}이(가) 수락을 거둬들였습니다. ${E.parent}은(는) "아쉽지만 존중한다"며 다른 후보를 찾습니다.`,1,{});
+  mail(E.parent,'창단 단장 수락 취소 확인',`${tfull(E)} 창단 단장 수락을 취소했습니다. ${G.unemp?'야인으로 남아 다른 제의를 기다립니다.':`${tname(G.user)} 단장으로 그대로 남고, 지금 계약도 그대로입니다.`}\n\n${E.parent}: "아쉽지만 결정을 존중합니다. 창단 단장은 다른 분께 맡기겠습니다."`,{kind:'경력'});
+  return `${tfull(E)} 창단 단장 수락을 취소했습니다. ${G.unemp?'야인으로 남습니다.':`${tshort(G.user)}에 그대로 남습니다.`}`; }
 /* 새 구단 만들기 */
 function expAddTeam(){ const E=expInit(), id=G.teams.length; const t={id,city:E.city,nick:E.nick,code:E.city.slice(0,2),hue:Math.round(u01('expHue',id)*360),market:E.market||.88,region:E.region||'충청',cash:4000,pop:.9,trust:60,rel:50,owner:'pr',mode:'rebuild',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:2,born:G.year+1};
   G.teams.push(t); const S=stadOf(id); S.name=`${E.city} 야구장`; S.cap=17000; S.built=G.year-ri(5,25); S.dim={lf:98,cf:121,rf:98,wl:3,wc:3,wr:3};
@@ -33088,7 +33095,7 @@ function fdOwnCard(gk,f){ if(gk==='P'||f==='all'||f==='OF'||f==='DH')return ''; 
 /* 지명된 선수: 우리 스카우트 추정 → 실제 현재 능력(지명되면 공개) */
 function fdTrue(x){ const p=x&&G.players[x.pid]; if(!p)return x&&x.o!=null?fdEstChip(x.o):''; const e=x.o!=null?x.o:fdEstOf(p); return `<span class="fdtrue">${e!=null?`<span class="fdt-l">추정</span>${fdEstChip(e)}<span class="fdt-l">→ 실제</span>`:''}${fdChip(p)}</span>`; }
 /* 당시 소식의 업무 상태. 읽음과 완료는 별개이며, 기록을 여는 링크는 계속 쓸 수 있다. */
-const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt']);
+const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt','expGmCancel']);
 const mailStamp=m=>m.day0??m.day;
 const mailEnd=(text,expired=false)=>({label:expired?'기한 종료':'처리 완료',text,expired});
 /* 이전 구단 업무: 같은 구단으로 돌아오면 다시 열리므로 종료 상태로 저장하지 않는다(검수 11-09za) */
@@ -33097,7 +33104,7 @@ const mailOldYear=m=>dobj(mailStamp(m)).y!==G.year;
 function mailActionStatus(m,a){
   if(a.done)return mailEnd(a.done==='skip'?'다른 안을 선택해 처리했습니다.':a.res||'이미 처리했습니다.');
   const id=String(a.v??'').split(':')[0],p=G.players[+id],d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{};
-  if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
+  if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo','expGmCancel'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
   if(a.a==='watchPlan'){const d=+a.v,P=gmPlanAt(d),nx=nextGames(1)[0];if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d)return mailEnd('열리지 않거나 이미 지난 경기입니다.',true);return null;} /* 시리즈가 끝나 열리지 않는 경기의 직관 버튼(검수 11-08) */
   if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리했거나 끝난 결정입니다.');if(e.done)return mailEnd(e.auto?(e.deleg?'맡긴 대로 담당 부서가 처리했습니다.':'답변 기한이 지나 기본안으로 처리했습니다.'):'이미 결정을 마쳤습니다.');if(evExpired(e))return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
   if(a.a==='ivOpen'||a.a==='ivSkip'){const v=G.iv;if(!v||String(v.id)!==String(a.v))return mailEnd('이 인터뷰 요청은 끝났습니다.',true);if(v.done)return mailEnd(v.ans?.length?'이미 인터뷰를 마쳤습니다.':'이미 인터뷰를 거절했습니다.');return G.day>v.exp?mailEnd('인터뷰 응답 기한이 지났습니다.',true):null;}
@@ -33132,6 +33139,7 @@ function mailActionStatus(m,a){
   }
   if(a.a==='retNo'){const r=String(a.v)[0]==='p'?(G.legends||[]).find(r=>'p'+r.pid===String(a.v)):(G.legends||[])[+a.v];return !r||r.retNo||!r.canRetNo||(r.tid!=null&&r.tid!==G.user)?mailEnd('이미 영구결번을 지정했거나 지정 대상이 아닙니다.'):null;}
   if(a.a==='cwOpen'){const S=G.cwS,id=c.cw??a.v,same=!!S&&(id!=null?String(S.id)===String(id):S.day===d);if(same&&S.done)return mailEnd('구단주와 함께 본 경기 이야기를 마쳤습니다.'); /* 마친 건의를 '기한 종료'로 표시하던 문제(플레이테스트 4 #23) */return !same||G.day>S.until?mailEnd('이 경기 관전 뒤 건의 기간은 끝났습니다.',true):null;}
+  if(a.a==='expGmCancel')return expGmCanCancel()?null:mailEnd(G.exp&&!G.exp.userGm&&G.exp.gmBack!=null?'창단 단장 수락을 취소했습니다.':'11월 20일 부임 뒤에는 되돌릴 수 없습니다.');
   if(a.a==='fdBegin')return !G.fdWait?mailEnd('이미 창단 드래프트를 시작했습니다.'):null;
   return null;
 }
@@ -37602,6 +37610,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   recGo(v){ const [seg,k]=v.split(':'); UI.lrec=seg; UI.ls=UI.ls||{}; UI.ls[seg]={k,dir:['era','whip','bb9'].includes(k)?1:-1}; A.go('league:rec'); },
   pmgmt(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
   mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(!a)return; if(a.a==='meetOpen'&&a.v==='mgr'&&m.ref!=null&&/약속은 어디 갔습니까/.test(m.subj))a.v=`mgr|use:${m.ref}`; /* 예전 저장의 약속 위반 메일도 그 선수 건의로(카페 11-09) */const status=mailButtonStatus(m,a);if(status){toast(status.text);render();return;} UI.actRes=null; UI.actFail=null; if(a.a==='meetOpen'&&m.subj.includes('감독이 단장실에 들렀습니다'))meetOpen('mgr',null,{visit:true}); else if(a&&A[a.a])A[a.a](a.v); else render(); if(UI.actFail&&UI.actRes)try{ toast(UI.actRes); }catch(e){} if(a&&(MAIL_ONCE.test(a.a)||a.a==='pactKeep')&&!UI.actFail){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(a.a==='pactKeep')m.closed=mailEnd('유망주 기회 합의를 유지하기로 했습니다.'); if(/^(posReq|fcampSet)/.test(a.a)){ const g=a.a.startsWith('posReq')?/^posReq/:/^fcampSet$/; m.acts.forEach(x=>{ if(g.test(x.a))x.done=x.done||x!==a&&'skip'; }); } save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
+  expGmCancel(){ const r=expGmCancel(); save(); toast(r); render(); }, /* 창단 단장 수락 취소(11월 20일 부임 전까지) */
   evPick(v){ const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); const r=evPick(id,+i); save(); if(e&&!e.done){ if(r)toast(r); render(); return; } /* 고를 수 없는 선택이면 이유만 알린다(검수 11-09z) */ sfx('confirm',.6); if(e&&e.res)toast(e.res.split('\n')[0].slice(0,140)); /* 결정 결과를 바로 알린다(본문도 전부 펼침) */ if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.player(e.data.pid); UI.ptab='mgmt'; renderSheet(); render(); return; } if(e&&e.k==='fx'&&+i===0){ const fp=G.players[e.data&&e.data.pid]; UI.ff=Object.assign({t:'yb',r:'all',s:'cur'},UI.ff||{}); UI.ff.t=fp&&fp.foreign==='아시아'?'asia':'yb'; UI.ff.r='all'; A.go('transfer:foreign'); return; } /* 그 선수 종류의 후보 탭으로(플레이 테스트 11-13: 일반 외국인인데 아시아쿼터 탭이 열림) */ if(e&&e.k==='ret'&&/코치 우선 협상/.test((e.opts[+i]||{}).l||'')){ A.go('staff:coach'); return; } /* 은퇴 선수를 코치 후보로: 바로 코치진 계약 화면으로 */ render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
@@ -38198,10 +38207,13 @@ const GUARD={
     return {subj:`보호선수 ${ids.length}명 명단 제출`,kind:'FA',lines:[`${tshort(c.from)}이(가) 명단 밖에서 1명을 데려가거나 보상금을 받습니다.`,`명단 밖 주요 선수: ${out.map(q=>`${q.name}(${posLabel(q)}, ${dvo(q)})`).join(', ')||'없음'}`],warn:'제출하면 바꿀 수 없습니다.'}; },
   jobYes(v){ const tid=+v; const t=team(tid); const o=G.last&&G.last.order?G.last.order.findIndex(x=>x.tid===tid)+1:0; return {subj:`${tfull(t)} 단장 취임`,kind:'경력',lines:[`지난 시즌 ${o||'-'}위 · ${needText(tid)}`,...jobBrief(tid),'선수단·감독·코치진·재정은 이 구단 것을 그대로 이어받습니다.'],warn:'취임하면 되돌릴 수 없습니다.'}; },
   /* 단장 재계약: 거절(구단을 떠남)과, 신뢰가 낮을 때 인상 요구(제안을 거둘 수 있음)는 결재로 한 번 더 묻는다. 버튼이 밀려 잘못 누르는 일이 있었다 */
-  evPick(v){ const [id,i0]=String(v).split(':'); const i=+i0; const e=(G.evs||[]).find(x=>String(x.id)===id); if(!e||e.done||e.k!=='gmRenew')return null; const tr=team(G.user)?team(G.user).trust:50;
+  evPick(v){ const [id,i0]=String(v).split(':'); const i=+i0; const e=(G.evs||[]).find(x=>String(x.id)===id); if(!e||e.done)return null;
+    if(e.k==='expGm'&&i===0){ const E=G.exp||{}; return {subj:'창단 단장 수락',kind:'경력',lines:[G.unemp?`11월 20일 ${tfull(E)} 단장으로 부임합니다.`:`11월 20일 ${tname(G.user)}을(를) 떠나 ${tfull(E)} 단장으로 부임합니다.`,G.unemp?'':'지금 구단과의 단장 계약은 그날 끝납니다.','그 전에는 단장 정보나 소식함에서 수락을 취소할 수 있습니다.'].filter(Boolean),warn:'11월 20일 부임 뒤에는 되돌릴 수 없습니다.',ok:'수락합니다'}; } /* 카페 11-17: 창단 수락인 줄 모르고 눌렀다 */
+    if(e.k!=='gmRenew')return null; const tr=team(G.user)?team(G.user).trust:50;
     if(i===2)return {subj:'단장 재계약 거절',kind:'경력',lines:[`${tname(G.user)}과(와)의 계약이 이번 시즌으로 끝납니다.`,'구단을 떠나 야인이 되고, 명성에 따라 다른 구단 제의를 기다립니다.'],warn:'거절하면 되돌릴 수 없습니다.'};
     if(i===1&&tr<55)return {subj:'단장 연봉 인상 요구',kind:'경력',lines:[`구단주 신뢰 ${tr}: 신뢰가 낮으면 구단주가 제안을 거두고 계약이 끝날 수 있습니다.`],warn:'제안이 거둬지면 구단을 떠나게 됩니다.'};
     return null; },
+  expGmCancel(){ const E=G.exp; if(!expGmCanCancel())return null; return {subj:'창단 단장 수락 취소',kind:'경력',lines:[`${tfull(E)} 창단 단장은 ${E.parent}이(가) 다른 사람에게 맡깁니다.`,G.unemp?'야인으로 남습니다.':`${tname(G.user)} 단장으로 그대로 남고, 지금 계약도 그대로입니다.`,`${E.parent}과(와)의 관계가 조금 상합니다(명성 -1).`],warn:'취소하면 이번 창단 단장 제안은 다시 받을 수 없습니다.',ok:'수락 취소'}; },
   retireGM(){ return G.unemp?{subj:'단장 경력 마치기',kind:'경력',lines:[`단장 명성 ${G.rep} · 야인 ${Math.floor((G.day-(G.unemp.since??G.day))/30)}개월`],warn:'경력을 마치면 이 게임은 끝납니다. 새 게임은 시작 화면에서 할 수 있습니다.'}:null; },
   nsPick(v){ const o=NEWSTAD.find(x=>x.k===v); if(!o)return null; if(o.mega)return {subj:`시에 초대형 신구장(${o.cap.toLocaleString('ko-KR')}석) 요청`,kind:'구장',lines:[`시가 ${NEWSTAD_MEGA.rv}일 동안 검토합니다. 승인되면 바로 착공하고, 거절되면 다른 규모를 고릅니다.`,`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자). 유지비 연 ${money(NEWSTAD_MEGA.up)}.`],warn:'승인되면 착공을 되돌릴 수 없습니다.'}; return {subj:`신구장 ${o.l}(${o.cap.toLocaleString('ko-KR')}석) 착공`,kind:'구장',lines:[`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자).`,'공사 3년 · 개장 후 시설 4단계 이상 · 개장 초 관중 크게 증가'],warn:'착공하면 되돌릴 수 없습니다.'}; },
   relNow(v){ const p=G.players[+v]; if(!p)return null; const rc=relCost(p), cost=rc.tot; return {subj:`${p.name} 방출`,kind:'선수',lines:[pnm(p.id),...(p.foreign&&period()==='season'?[G.day>foreignDL()?`대체 외국인 등록 마감(${dsh(foreignDL())})이 지나 올해는 대체 선수를 데려올 수 없습니다.`:fReplLeft(G.user,p.foreign)<=0?`이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 써서 대체 선수를 데려올 수 없습니다.`:`대체 외국인을 데려올 수 있습니다(남은 교체 ${fReplLeft(G.user,p.foreign)}회, ${dsh(foreignDL())}까지).`]:[]),...(p.foreign?[period()==='season'?`남은 연봉 약 ${money(Math.round(p.sal*(()=>{ try{ return tradeYrFrac(); }catch(e){ return 1; } })()))}(올해 연봉 ${money(p.sal)} 중 남은 기간 몫)은 이미 지출로 잡혀 있어 돌려받지 못합니다.`:`정규시즌이 끝나 올해 연봉은 정산을 마쳤습니다. 다음 시즌 계약은 시작 전이라 추가 비용 없이 외국인 예산에서 빠집니다(${money(p.sal)}).`] /* 시즌 뒤 방출: 안내와 예산 계산을 맞춤(플레이 테스트 11-13) */:cost?[`현재 계약 정산금 ${money(rc.cur)}(이번 시즌 남은 연봉 전액${rc.fut?' · 남은 보장 연수 대부분':''})`,...(rc.next?[`다음 시즌 확정 계약 정산금 ${money(rc.next)}(${p.extNext.years}년 보장액 대부분)`]:[]),`방출해도 상한 산정에는 그 몫이 남습니다`,`총 방출 비용 ${money(cost)}`]:['정산금 없음'])],warn:'방출하면 되돌릴 수 없습니다.'}; },
@@ -41164,8 +41176,9 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
   const quit=G.unemp||G.gameOver||!C||C.tid==null?'':csec('사임',`<p class="small">스스로 물러나면 야인이 됩니다. 시간은 계속 흐르고, 다른 구단이 단장을 바꿀 때 명성을 보고 제의가 옵니다.</p>
     <ul class="small muted"><li>남은 계약 ${left}년 치 연봉은 받지 않습니다. 경질과 다른 점입니다.</li><li>${pen?`단장 명성이 ${pen>=4?'크게 ':''}떨어집니다${mid?'. 시즌 도중 사임이라 타격이 더 큽니다':''}`:'단장 명성은 그대로입니다'}.</li><li>구단은 새 단장이 맡습니다. 진행 중인 협상·약속은 넘어가지 않습니다.</li></ul>
     ${UI.rsAsk?`<div class="note bad">${esc(tname(G.user))} 단장직에서 물러납니다. 되돌릴 수 없습니다.</div><div class="row"><button class="btn danger" data-a="resignGo">사임합니다</button><button class="btn" data-a="resignAsk">취소</button></div>`:'<button class="btn" data-a="resignAsk">단장직 사임</button>'}`);
+  const expC=expGmCanCancel()?csec('창단 단장 내정',`<p class="small">${esc(tfull(G.exp))} 창단 단장으로 가기로 했습니다. 11월 20일 특별지명 때 부임${G.unemp?'합니다':`하고, ${esc(tname(G.user))}을(를) 떠납니다`}.</p><p class="small muted">11월 20일 부임 뒤에는 되돌릴 수 없습니다.</p><button class="btn" data-a="expGmCancel">창단 단장 수락 취소</button>`):''; /* 카페 11-17: 잘못 누른 수락을 부임 전에 되돌린다 */
   const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small" data-a="go" data-v="club:build">보기</button></div></section>`;
-  return head+tb+personalLifeView()+card+stints+lgMeCard()+gmSuccView()+quit; }
+  return head+expC+tb+personalLifeView()+card+stints+lgMeCard()+gmSuccView()+quit; }
 /* 단장 세대 교체와 단장 계보(100년 플레이) */
 /* 전임 단장 상세: 시즌별 성적과 거친 구단(계보에 남긴 기록). 예전 저장의 계보는 요약만 있다 */
 function gmLineDetail(x){ const S=(x.seasL||[]).filter(r=>!r.part).slice().sort((a,b)=>a.y-b.y), T=(x.stintL||[]);
@@ -41497,6 +41510,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-expgm',d:'11월 17일',t:'창단 단장 수락 취소',items:[
+    '신생 구단 창단 단장 제안은 수락 전에 한 번 더 확인하고, 11월 20일 부임 전까지는 소식함이나 단장 정보에서 수락을 취소할 수 있습니다.']},
   {id:'2026-11-17-ui3',d:'11월 17일',t:'한 화면에 맞춘 PC 화면 · 첫 시즌 할 일',items:[
     'PC에서 화면 전체가 아래로 내려가지 않게 정리했습니다. 긴 목록은 칸 안에서 스크롤합니다.',
     '선수 상세가 한 화면에 들어옵니다. 감독·코치·직원 카드와 다른 구단 정보는 개요·관계·연수·경력 같은 탭으로 나뉩니다.',
