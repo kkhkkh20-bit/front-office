@@ -84,3 +84,8 @@ function homeWorkspace(){
 if(typeof document!=='undefined'&&!window._hwSwipe){ window._hwSwipe=1; let x0=null,y0=null;
   document.addEventListener('touchstart',e=>{ const t=e.target&&e.target.closest&&e.target.closest('.home-workspace .home-grid,.home-workspace .hw-work'); if(!t||e.target.closest('.hw-stand,.hw-wk')){ x0=null; return; } x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
   document.addEventListener('touchend',e=>{ if(x0==null)return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; x0=null; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){ try{ A.homePage(dx<0?1:-1); }catch(err){} } },{passive:true}); }
+
+/* 홈 리그 순위 칸(PC)이 줄을 다 담지 못하면 아래 순위부터 줄인다(우리 구단 줄은 남긴다). 전체는 칸 머리의 '전체'(UI 3단계 3-4: 앞 N줄 + 전체 보기) */
+function homeStandFit(){ if(typeof document==='undefined')return; const s=document.querySelector('#app .home-workspace .hw-stand'); if(!s)return; const rows=[...s.querySelectorAll('tbody tr')]; rows.forEach(r=>r.classList.remove('hw-cut')); if(innerWidth<1100)return;
+  const over=()=>{ const v=rows.filter(r=>!r.classList.contains('hw-cut')); const last=v[v.length-1]; return last&&last.getBoundingClientRect().bottom>s.getBoundingClientRect().bottom+1; };
+  for(let i=rows.length-1;i>=1&&over();i--){ const r=rows[i]; if(r.classList.contains('own')||r.classList.contains('me'))continue; r.classList.add('hw-cut'); } }

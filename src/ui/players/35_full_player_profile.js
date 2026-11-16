@@ -95,13 +95,13 @@ function attrCmpBar(p,m,dl){ const opts=[['1m','최근 1개월'],['sea','올해'
   return `<div class="pf-cmp"><div class="row" style="gap:4px;flex-wrap:wrap"><span class="small muted">능력 변화</span>${opts.map(([k,l])=>`<button class="chipn${m===k?' on':''}" data-a="attrCmp" data-v="${k}">${l}</button>`).join('')}${dl?`<span class="small muted">${dmd(dl.from)} 대비 · 핵심 합계 <b class="${sum>0?'good':sum<0?'bad':''}">${sum>0?'+':''}${sum}</b></span>`:m!=='off'?'<span class="small muted">비교할 기록이 아직 없습니다</span>':''}</div>
     ${L.length>=2?`<div class="pf-trend">${keys.map(k=>`<span><i>${TOOLK[k]}</i>${spark(k)}<b>${dv(p.r[k])}</b></span>`).join('')}</div>`:''}</div>`; }
 
-/* 선수 상황판 PC 맞춤(UI 3단계 3-0): 화면에 들어가지 않는 상자를 낮은 순서부터 접는다. 접힌 내용은 위 탭에 그대로 있다.
+/* 선수 상황판 PC 맞춤(UI 3단계 3-0): 화면 전체가 넘치면 낮은 순서부터 상자를 접는다. 접힌 내용은 위 탭에 그대로 있다. 상자 안은 스크롤해도 된다.
    그래도 넘치면(아주 낮은 창) 상자를 자르지 않고 화면 전체를 한 번에 내린다(.pf-scroll). */
 const PF_FIT_ORDER=['.pf-career','.pf-pos-mini','.pf-pitch-head','.pf-attributes .pf-trend','.pf-report .pf-rp-why','.pf-report .pf-rp-mop','.pf-fm-info:not(.pf-career)','.pf-season-table'];
 function pfFit(){ if(typeof document==='undefined')return; const o=document.querySelector('#sheet .pf-overview'),sh=o&&o.closest('.sheet'); if(!o||!sh)return;
   o.querySelectorAll('.pf-off').forEach(e=>e.classList.remove('pf-off')); sh.classList.remove('pf-scroll'); if(innerWidth<1100)return;
   const boxes=()=>[...o.querySelectorAll(':scope>*>*,:scope .pf-main-top>*')].filter(e=>e.getClientRects().length&&!e.matches('.pf-main-top'));
-  const over=()=>o.scrollHeight>o.clientHeight+2||boxes().some(e=>e.scrollHeight>e.clientHeight+2);
+  const over=()=>o.scrollHeight>o.clientHeight+2; /* 상자 안 스크롤은 괜찮다. 화면 전체가 넘칠 때만 접는다(구단주 11-17) */
   for(const q of PF_FIT_ORDER){ if(!over())return; o.querySelectorAll(q).forEach(e=>{ if(e.getClientRects().length)e.classList.add('pf-off'); }); }
   if(over())sh.classList.add('pf-scroll'); }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ pfFit(); }catch(e){} },120); }); }

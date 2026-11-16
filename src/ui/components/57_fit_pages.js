@@ -2,11 +2,16 @@
    PC(1100px 이상)에서 상자 안 목록·표가 칸보다 길어 스크롤바가 생기면, 칸에 들어가는 줄만 보이고 '‹ 1/4 ›'로 넘긴다.
    페이지와 상자가 같이 스크롤되는 이중 스크롤을 없앤다. 휴대폰은 화면 전체가 한 번에 내려가므로 그대로 둔다.
    표는 tbody 줄, 그 밖의 목록은 칸의 직계 자식(같은 모양 줄 4개 이상)을 나눈다. 이미 쪽 나눔이 있는 목록(.pgr 옆)과 경기 중계는 건드리지 않는다. */
+/* 꺼 둠(구단주 11-17: 상자 안 스크롤은 괜찮고 화면 전체가 내려가는 것만 싫다). 긴 목록은 남은 높이를 채운 칸 안에서 스크롤한다. 쪽 넘김이 더 나은 화면이 생기면 켠다 */
+const FP_ON=false;
 const FP_SKIP='.mt-opts,.ngt,.negw,.iv,.cw-opts,.cast,.cs-bg,.match-dashboard,.fdl-main,.free-list,.pf-overview,.mmenu,.cfm,.ws-tab-row,.chips,.seg,.subtabs,.fbar-p,.talk,.meet';
 function fpRows(c){
   const tb=c.matches('table')?c:c.querySelector(':scope>table,:scope>.tw>table,:scope>div>table');
   if(tb&&tb.tBodies[0]&&c.contains(tb)){ const rows=[...tb.tBodies[0].rows].filter(r=>r.getClientRects().length); return {rows,table:tb}; }
   const kids=[...c.children].filter(e=>e.getClientRects().length&&!e.matches('h2,h3,h4,.fp-bar,.pgr,.twpg,summary,p.small,p.note,.note'));
+  /* 카드 머리말 아래 목록 하나만 넘치는 경우(훈련 카드의 선수 줄 등): 머리말은 그대로 두고 그 목록 줄만 나눈다 */
+  { const lim0=c.clientHeight-34, tall=kids.filter(k=>k.children.length>=2&&k.scrollHeight>c.clientHeight-(k.getBoundingClientRect().top-c.getBoundingClientRect().top)-34); const last=kids[kids.length-1];
+    if(kids.length<4&&tall.length===1&&tall[0]===last){ const rows=[...last.children].filter(e=>e.getClientRects().length); if(rows.length>=2&&!rows.some(e=>e.getBoundingClientRect().height>lim0))return {rows,table:null}; } }
   /* 묶음(예: 소식함의 날짜·종류 묶음)이 칸보다 크면 그 안의 줄을 펼쳐 나눈다 */
   const lim=c.clientHeight-34, rows=kids.flatMap(k=>k.getBoundingClientRect().height>lim&&k.children.length>=2?[...k.children].filter(e=>e.getClientRects().length):[k]);
   if(rows.length<4)return null;
@@ -16,7 +21,7 @@ function fpRows(c){
 function fitPages(){
   if(typeof document==='undefined')return;
   document.querySelectorAll('.fp-bar').forEach(b=>b.remove()); document.querySelectorAll('.fp-off').forEach(r=>r.classList.remove('fp-off')); document.querySelectorAll('.fp-on').forEach(c=>c.classList.remove('fp-on'));
-  if(innerWidth<1100||(typeof workspaceCompact==='function'&&workspaceCompact()))return;
+  if(!FP_ON||innerWidth<1100||(typeof workspaceCompact==='function'&&workspaceCompact()))return;
   UI.fpPg=UI.fpPg||{}; let ix=0; const scope=(UI.sheet!=null||UI.person||UI.teamSh!=null)?'s':(UI.tab+':'+(UI.sub||''));
   const roots=[...document.querySelectorAll('#app main.content,#sheet .sheet')];
   for(const root of roots){
@@ -24,7 +29,7 @@ function fitPages(){
     /* 안쪽부터: 바깥 칸이 안쪽 칸을 줄로 삼지 않게 */
     for(const c of cands.reverse()){
       if(c.querySelector('.fp-on'))continue;
-      const R=fpRows(c); if(!R||R.rows.length<4)continue;
+      const R=fpRows(c); if(!R||R.rows.length<2)continue;
       const key=scope+':'+(ix++)+':'+R.rows.length;
       const firstTop=R.rows[0].getBoundingClientRect().top, avail=c.clientHeight-(firstTop-c.getBoundingClientRect().top+c.scrollTop)-34;
       if(avail<40)continue;

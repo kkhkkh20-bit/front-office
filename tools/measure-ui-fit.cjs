@@ -31,7 +31,11 @@ const MET=()=>{
   const sc=[];for(const e of root.querySelectorAll('*')){const s=getComputedStyle(e);if(!/(auto|scroll)/.test(s.overflowY))continue;if(e.scrollHeight<=e.clientHeight+4||e.clientHeight<30||!vis(e))continue;sc.push(e);}
   // 주 스크롤: 가장 큰 스크롤 칸이 화면의 60% 이상이면 페이지로 본다
   const big=[...sc].sort((a,b)=>b.clientHeight*b.clientWidth-a.clientHeight*a.clientWidth)[0];
-  const mainSc=big&&big.clientHeight>=H*.55&&big.clientWidth>=W*.5?big:null;
+  /* 화면 전체 스크롤(구단주 11-17): 문서, 본문(#app main.content), 상세 창(#sheet .sheet)이 내려가는 것만 센다. 상자 안 스크롤은 괜찮다 */
+  const pageEls=[document.querySelector('#app main.content'),sheetOn?document.querySelector('#sheet .sheet'):null].filter(Boolean);
+  /* 본문 전체를 감싼 칸(본문 넓이·높이의 85% 이상)이 스크롤하면 그것도 화면 전체 스크롤로 본다 */
+  for(const base of [...pageEls]){const R=base.getBoundingClientRect();for(const e of sc){const r=e.getBoundingClientRect();if(base.contains(e)&&r.width>=R.width*.85&&r.height>=Math.min(R.height,H-R.top)*.85)pageEls.push(e);}}
+  const mainSc=pageEls.filter(e=>e.scrollHeight>e.clientHeight+4).sort((a,b)=>(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||null;
   const pageOver=Math.max(docOver,mainSc?mainSc.scrollHeight-mainSc.clientHeight:0);
   const inner=sc.filter(e=>e!==mainSc);
   const cls=e=>e.tagName.toLowerCase()+(typeof e.className==='string'&&e.className?'.'+e.className.trim().split(/\s+/).slice(0,2).join('.'):'');

@@ -202,7 +202,7 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 /* 올해 예산(PC) 한 화면 배치(UI 3단계 3-0): 상자 안 스크롤바 없이 위 세 칸·가운데 추이 두 개·아래 규정, 오른쪽 예산 칸 */
 @media(min-width:1100px){
  .fin-d{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 300px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"sum sum bud" "cash room bud" "rule rule bud";overflow:hidden}
- .fin-d>.card{overflow:hidden}
+ .fin-d>.card{overflow:auto;scrollbar-width:thin}
  .fin-d>.fmd-sum{grid-area:sum;padding:8px 12px}
  .fin-d>.fmd-sum>h2{display:none}
  .fin-d .fmd-room .fmd-chg{width:220px;overflow:hidden}

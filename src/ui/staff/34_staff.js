@@ -126,7 +126,7 @@ function staffMarketView(){ const k=UI.smkK||'mgr'; const src=UI.smkSrc||'free';
   UI._smk=true; UI._smkFb=!!fb; let h=''; try{ h=k==='mgr'?mgrBody():k==='coach'?coachView():k==='sc'?scoutBody():dataPage(); }finally{ UI._smk=false; UI._smkFb=false; }
   if((k==='sc'||k==='an')&&src==='free')h=`<div class="cmk-split">${stMineAside(k)}<div class="cmk-list">${h}</div></div>`; /* 여러 명인 스카우트·분석원도 지금 우리 인원을 옆에 두고 비교(사용자 11-08) */
   if(k==='coach'||k==='sc')h=smkPulse(k)+h;
-  const out=csec('스태프 시장',chips+h,`<span class="small muted">${esc(stPrestigeLine())}</span>`); return fmOn()?`<div class="ws-own sfw">${out}</div>`:out; } /* PC: 자동 칸 나누기가 버튼 줄을 카드 아래로 보내던 문제. 버튼 위, 카드는 칸 안 스크롤 */
+  const out=csec('스태프 시장',chips+h,`<span class="small muted">${esc(stPrestigeLine())}</span>`); return fmOn()?`<div class="ws-own sfw anl-fit smkt-fit">${out}</div>`:out; } /* PC: 자동 칸 나누기가 버튼 줄을 카드 아래로 보내던 문제. 버튼 위, 카드는 칸 안 스크롤 */
 /* 감독 후보의 사단 */
 function clanBox(x){ const L=x.clan||[]; if(!L.length)return '<p class="small muted">사단 없음 · 코치진은 그대로 유지됩니다.</p>';
   return `<div class="clan"><div class="eyebrow">${esc(x.name)} 사단 ${L.length}명</div><span class="clan-c hd"><b></b><span></span><em>합류 후 지도</em><i></i><em>합류 후 육성</em></span>${L.map(c=>`<span class="clan-c"><b>${CROLE[c.role].l}</b><span>${esc(c.name)}</span>${rchip(c.sk+6)}<i>/</i>${rchip(c.dv+6)}</span>`).join('')}<p class="small muted">연봉 합계 ${money(sum(L.map(c=>c.sal)))} · 함께 오면 지도·육성에 감독 사단 보정이 붙습니다. 같은 자리 기존 코치는 내보내고 남은 연봉의 절반을 줍니다.</p></div>`; }

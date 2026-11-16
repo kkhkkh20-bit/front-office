@@ -321,7 +321,7 @@ button.st-n:hover b{text-decoration:underline}
 @media(min-width:1100px){#sheet .sheet.ps-pc{padding-bottom:6px!important}#sheet .sheet.ps-pc .ps-tabs{margin:0 0 4px}#sheet .sheet.ps-pc>.ps-rel{margin-block:6px 4px!important}}
 @media(min-width:1100px){#sheet .sheet.ps-pc{row-gap:6px}#sheet .sheet.ps-pc>.ps-rel{margin-block:0!important}#sheet .sheet.ps-pc .ps-tabs{margin:0}#sheet .sheet.ps-pc>.btns{margin-top:0}}
 /* 분석원 관리(PC): 화면 높이 안에서 카드 목록만 쪽으로 넘긴다(UI 3단계 3-0, 57_fit_pages.js) */
-@media(min-width:1100px){#app main .ws-own.anl-fit{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}#app main .ws-own.anl-fit>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0}#app main .ws-own.anl-fit>section.card>*{flex:none}#app main .ws-own.anl-fit>section.card>.tgrid{flex:1 1 auto;min-height:0;overflow:auto;align-content:start}}
+@media(min-width:1100px){#app main .ws-own.anl-fit{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}#app main .ws-own.anl-fit>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0}#app main .ws-own.anl-fit>section.card>*{flex:none}#app main .ws-own.anl-fit>section.card>.tgrid{flex:1 1 auto;min-height:0;overflow:auto;align-content:start}#app main .ws-own.smkt-fit>section.card>.tgrid~*{flex:none}}
 .anl-fit.v-mk section.card>.eyebrow,.anl-fit.v-mk section.card>.eyebrow~*{display:none!important}
 .anl-fit.v-oth section.card>:is(.chips,.tgrid:not(.staff-other-cards),.eyebrow),.anl-fit.v-oth section.card>.chips~p.hint:not(.eyebrow~p){display:none!important}
 .anl-fit.v-oth section.card>p.hint:first-of-type{display:none}

@@ -280,7 +280,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .sheet.pf-screen:has(.pf-overview).pf-scroll{overflow-y:auto!important}
   #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 1 auto;min-height:0}
   #sheet .pf-overview{height:auto;min-height:0;padding:0 0 52px!important;grid-template-columns:250px minmax(0,1.5fr) minmax(0,1fr) 270px 250px;grid-template-rows:auto minmax(0,1fr) auto!important;gap:10px;align-content:stretch}
-  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{overflow:hidden!important}
+  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{overflow:auto!important;scrollbar-width:thin}
   #sheet .pf-overview :is(.pf-teampos,.pf-recent,.pf-track,.pf-procon,.pf-story,.pf-more),#sheet .pf-overview .pf-off{display:none!important}
   #sheet .pf-overview .pf-fmcard,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-fmcard{grid-area:1/1/4/2}
   #sheet .pf-overview .pf-attributes{grid-area:1/2/3/3}

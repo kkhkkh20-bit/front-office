@@ -56,3 +56,6 @@
 .sf-r>b{white-space:nowrap}
 .fvx-cmp .sf-r{grid-template-columns:78px minmax(0,1fr) minmax(46px,max-content) 30px}
 .fvx-kv>div.w{grid-column:1/-1}
+/* 시설 타일(PC): 이름은 자르지 않고, 단계 숫자와 겹치는 별 줄은 타일에서 뺀다(오른쪽 상세에 별이 있다). 둘째 줄이 반만 보이던 문제(UI 3단계 3-4) */
+@media(min-width:1100px){.fvx-t .fvx-n{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2;word-break:keep-all}.fvx-t>.fvx-st{display:none}.fvx-t .fvx-g{white-space:normal;overflow:visible}}
+.fvx-li span{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}

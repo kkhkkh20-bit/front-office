@@ -284,3 +284,12 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 /* 비FA 다년계약(좁은 옆 칸): 열 네 개가 꺾이던 표를 이름 줄 + 잠재력·계약 줄 두 줄로(UI 3단계 3-2) */
 .tf-ext-sub{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;margin:3px 0 0 0;font-size:var(--ui-caption);color:var(--muted)}
 .tf-ext td:last-child{width:1%;white-space:nowrap}
+/* 협상실(PC): 화면 전체가 내려가지 않게 조건 줄은 칸 안에서 스크롤하고, 요약은 오른쪽, 제안 버튼 줄은 아래에 둔다(UI 3단계 3-4, 구단주 11-17) */
+@media(min-width:1100px){
+ #sheet .sheet.ngt{display:grid!important;grid-template-columns:minmax(0,1fr) 340px;grid-auto-rows:auto;grid-auto-flow:row dense;align-content:stretch;height:var(--detail-height,100dvh);max-height:var(--detail-height,100dvh);overflow:hidden!important;column-gap:14px}
+ #sheet .sheet.ngt>*{grid-column:1/-1}
+ #sheet .sheet.ngt>.ng-rows{grid-column:1;grid-row:span 1;min-height:0;overflow:auto;scrollbar-width:thin}
+ #sheet .sheet.ngt>.ng-sum{grid-column:2;min-height:0;overflow:auto;scrollbar-width:thin;margin:0;display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-content:start;gap:6px}
+ #sheet .sheet.ngt:has(>.ng-rows){grid-template-rows:repeat(var(--ng-pre,5),auto) minmax(0,1fr)}
+ #sheet .sheet.ngt:not(:has(>.ng-sum))>.ng-rows{grid-column:1/-1}
+}

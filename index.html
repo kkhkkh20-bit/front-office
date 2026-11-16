@@ -1233,7 +1233,7 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 /* 올해 예산(PC) 한 화면 배치(UI 3단계 3-0): 상자 안 스크롤바 없이 위 세 칸·가운데 추이 두 개·아래 규정, 오른쪽 예산 칸 */
 @media(min-width:1100px){
  .fin-d{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 300px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"sum sum bud" "cash room bud" "rule rule bud";overflow:hidden}
- .fin-d>.card{overflow:hidden}
+ .fin-d>.card{overflow:auto;scrollbar-width:thin}
  .fin-d>.fmd-sum{grid-area:sum;padding:8px 12px}
  .fin-d>.fmd-sum>h2{display:none}
  .fin-d .fmd-room .fmd-chg{width:220px;overflow:hidden}
@@ -1554,6 +1554,15 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 /* 비FA 다년계약(좁은 옆 칸): 열 네 개가 꺾이던 표를 이름 줄 + 잠재력·계약 줄 두 줄로(UI 3단계 3-2) */
 .tf-ext-sub{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;margin:3px 0 0 0;font-size:var(--ui-caption);color:var(--muted)}
 .tf-ext td:last-child{width:1%;white-space:nowrap}
+/* 협상실(PC): 화면 전체가 내려가지 않게 조건 줄은 칸 안에서 스크롤하고, 요약은 오른쪽, 제안 버튼 줄은 아래에 둔다(UI 3단계 3-4, 구단주 11-17) */
+@media(min-width:1100px){
+ #sheet .sheet.ngt{display:grid!important;grid-template-columns:minmax(0,1fr) 340px;grid-auto-rows:auto;grid-auto-flow:row dense;align-content:stretch;height:var(--detail-height,100dvh);max-height:var(--detail-height,100dvh);overflow:hidden!important;column-gap:14px}
+ #sheet .sheet.ngt>*{grid-column:1/-1}
+ #sheet .sheet.ngt>.ng-rows{grid-column:1;grid-row:span 1;min-height:0;overflow:auto;scrollbar-width:thin}
+ #sheet .sheet.ngt>.ng-sum{grid-column:2;min-height:0;overflow:auto;scrollbar-width:thin;margin:0;display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-content:start;gap:6px}
+ #sheet .sheet.ngt:has(>.ng-rows){grid-template-rows:repeat(var(--ng-pre,5),auto) minmax(0,1fr)}
+ #sheet .sheet.ngt:not(:has(>.ng-sum))>.ng-rows{grid-column:1/-1}
+}
 /* 읽기·누르기 개선: 작은 글씨 11px, 버튼 높이 30px 이상 */
 .tc-rt span,.tc-tools span,.tc-tools i,.teamc-top i,.fsq em,.sbr .small,.pc-l,.cnd,table.rt i.f,.trend,.rd,.tp-r i,.tp-g i,.posfit i,table.tcmp td i,.cmp-k i,.sl span,.growth span,.prchart span{font-size:var(--ui-caption)}
 button.pill,.pill[data-a]{min-height:30px;display:inline-flex;align-items:center;padding-top:0;padding-bottom:0}
@@ -3239,6 +3248,9 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .sf-r>b{white-space:nowrap}
 .fvx-cmp .sf-r{grid-template-columns:78px minmax(0,1fr) minmax(46px,max-content) 30px}
 .fvx-kv>div.w{grid-column:1/-1}
+/* 시설 타일(PC): 이름은 자르지 않고, 단계 숫자와 겹치는 별 줄은 타일에서 뺀다(오른쪽 상세에 별이 있다). 둘째 줄이 반만 보이던 문제(UI 3단계 3-4) */
+@media(min-width:1100px){.fvx-t .fvx-n{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2;word-break:keep-all}.fvx-t>.fvx-st{display:none}.fvx-t .fvx-g{white-space:normal;overflow:visible}}
+.fvx-li span{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 /* ---------- 훈련장 지도: 정보 패널(모바일은 지도 아래, 넓은 화면은 옆)·선택 강조·범례 ---------- */
 .cpwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:8px 0}
 .cpwrap .campst{margin:0}
@@ -3989,7 +4001,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .sheet.pf-screen:has(.pf-overview).pf-scroll{overflow-y:auto!important}
   #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 1 auto;min-height:0}
   #sheet .pf-overview{height:auto;min-height:0;padding:0 0 52px!important;grid-template-columns:250px minmax(0,1.5fr) minmax(0,1fr) 270px 250px;grid-template-rows:auto minmax(0,1fr) auto!important;gap:10px;align-content:stretch}
-  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{overflow:hidden!important}
+  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{overflow:auto!important;scrollbar-width:thin}
   #sheet .pf-overview :is(.pf-teampos,.pf-recent,.pf-track,.pf-procon,.pf-story,.pf-more),#sheet .pf-overview .pf-off{display:none!important}
   #sheet .pf-overview .pf-fmcard,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-fmcard{grid-area:1/1/4/2}
   #sheet .pf-overview .pf-attributes{grid-area:1/2/3/3}
@@ -5131,6 +5143,10 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 @media(min-width:701px) and (max-width:1099px){.hw-lt .hw-lr{grid-template-columns:auto minmax(0,1fr) 14px auto;gap:4px}.hw-lt .hw-lr-f{display:none}.hw-lt .hw-lr>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 /* 사람 이름은 말줄임하지 않는다(UI 3단계 3-2): 좁으면 두 줄로 */
 .hw-lr>b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all;line-height:1.2}
+/* 선발 명단 이름은 자르지 않는다(UI 3단계 3-2·3-4) */
+.ibd-plist .lnk{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all;text-align:left}
+.fx-li-v .neg{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+.hw-stand tr.hw-cut{display:none}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -5482,7 +5498,7 @@ button.st-n:hover b{text-decoration:underline}
 @media(min-width:1100px){#sheet .sheet.ps-pc{padding-bottom:6px!important}#sheet .sheet.ps-pc .ps-tabs{margin:0 0 4px}#sheet .sheet.ps-pc>.ps-rel{margin-block:6px 4px!important}}
 @media(min-width:1100px){#sheet .sheet.ps-pc{row-gap:6px}#sheet .sheet.ps-pc>.ps-rel{margin-block:0!important}#sheet .sheet.ps-pc .ps-tabs{margin:0}#sheet .sheet.ps-pc>.btns{margin-top:0}}
 /* 분석원 관리(PC): 화면 높이 안에서 카드 목록만 쪽으로 넘긴다(UI 3단계 3-0, 57_fit_pages.js) */
-@media(min-width:1100px){#app main .ws-own.anl-fit{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}#app main .ws-own.anl-fit>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0}#app main .ws-own.anl-fit>section.card>*{flex:none}#app main .ws-own.anl-fit>section.card>.tgrid{flex:1 1 auto;min-height:0;overflow:auto;align-content:start}}
+@media(min-width:1100px){#app main .ws-own.anl-fit{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}#app main .ws-own.anl-fit>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0}#app main .ws-own.anl-fit>section.card>*{flex:none}#app main .ws-own.anl-fit>section.card>.tgrid{flex:1 1 auto;min-height:0;overflow:auto;align-content:start}#app main .ws-own.smkt-fit>section.card>.tgrid~*{flex:none}}
 .anl-fit.v-mk section.card>.eyebrow,.anl-fit.v-mk section.card>.eyebrow~*{display:none!important}
 .anl-fit.v-oth section.card>:is(.chips,.tgrid:not(.staff-other-cards),.eyebrow),.anl-fit.v-oth section.card>.chips~p.hint:not(.eyebrow~p){display:none!important}
 .anl-fit.v-oth section.card>p.hint:first-of-type{display:none}
@@ -29376,7 +29392,7 @@ function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenE
 if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
-function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{ fitPages(); }catch(e){}try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
+function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{ fitPages(); }catch(e){}try{ homeStandFit(); }catch(e){}try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
@@ -30322,6 +30338,11 @@ function homeWorkspace(){
 if(typeof document!=='undefined'&&!window._hwSwipe){ window._hwSwipe=1; let x0=null,y0=null;
   document.addEventListener('touchstart',e=>{ const t=e.target&&e.target.closest&&e.target.closest('.home-workspace .home-grid,.home-workspace .hw-work'); if(!t||e.target.closest('.hw-stand,.hw-wk')){ x0=null; return; } x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
   document.addEventListener('touchend',e=>{ if(x0==null)return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; x0=null; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){ try{ A.homePage(dx<0?1:-1); }catch(err){} } },{passive:true}); }
+
+/* 홈 리그 순위 칸(PC)이 줄을 다 담지 못하면 아래 순위부터 줄인다(우리 구단 줄은 남긴다). 전체는 칸 머리의 '전체'(UI 3단계 3-4: 앞 N줄 + 전체 보기) */
+function homeStandFit(){ if(typeof document==='undefined')return; const s=document.querySelector('#app .home-workspace .hw-stand'); if(!s)return; const rows=[...s.querySelectorAll('tbody tr')]; rows.forEach(r=>r.classList.remove('hw-cut')); if(innerWidth<1100)return;
+  const over=()=>{ const v=rows.filter(r=>!r.classList.contains('hw-cut')); const last=v[v.length-1]; return last&&last.getBoundingClientRect().bottom>s.getBoundingClientRect().bottom+1; };
+  for(let i=rows.length-1;i>=1&&over();i--){ const r=rows[i]; if(r.classList.contains('own')||r.classList.contains('me'))continue; r.classList.add('hw-cut'); } }
 /* ---------- FA 센터 ---------- */
 function agAv(ag,expr){ return avImg({persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:expr||null,name:ag.name}); }
 function agentAv(p,expr){ return agAv(agentOf(p),expr); }
@@ -34715,7 +34736,7 @@ function staffMarketView(){ const k=UI.smkK||'mgr'; const src=UI.smkSrc||'free';
   UI._smk=true; UI._smkFb=!!fb; let h=''; try{ h=k==='mgr'?mgrBody():k==='coach'?coachView():k==='sc'?scoutBody():dataPage(); }finally{ UI._smk=false; UI._smkFb=false; }
   if((k==='sc'||k==='an')&&src==='free')h=`<div class="cmk-split">${stMineAside(k)}<div class="cmk-list">${h}</div></div>`; /* 여러 명인 스카우트·분석원도 지금 우리 인원을 옆에 두고 비교(사용자 11-08) */
   if(k==='coach'||k==='sc')h=smkPulse(k)+h;
-  const out=csec('스태프 시장',chips+h,`<span class="small muted">${esc(stPrestigeLine())}</span>`); return fmOn()?`<div class="ws-own sfw">${out}</div>`:out; } /* PC: 자동 칸 나누기가 버튼 줄을 카드 아래로 보내던 문제. 버튼 위, 카드는 칸 안 스크롤 */
+  const out=csec('스태프 시장',chips+h,`<span class="small muted">${esc(stPrestigeLine())}</span>`); return fmOn()?`<div class="ws-own sfw anl-fit smkt-fit">${out}</div>`:out; } /* PC: 자동 칸 나누기가 버튼 줄을 카드 아래로 보내던 문제. 버튼 위, 카드는 칸 안 스크롤 */
 /* 감독 후보의 사단 */
 function clanBox(x){ const L=x.clan||[]; if(!L.length)return '<p class="small muted">사단 없음 · 코치진은 그대로 유지됩니다.</p>';
   return `<div class="clan"><div class="eyebrow">${esc(x.name)} 사단 ${L.length}명</div><span class="clan-c hd"><b></b><span></span><em>합류 후 지도</em><i></i><em>합류 후 육성</em></span>${L.map(c=>`<span class="clan-c"><b>${CROLE[c.role].l}</b><span>${esc(c.name)}</span>${rchip(c.sk+6)}<i>/</i>${rchip(c.dv+6)}</span>`).join('')}<p class="small muted">연봉 합계 ${money(sum(L.map(c=>c.sal)))} · 함께 오면 지도·육성에 감독 사단 보정이 붙습니다. 같은 자리 기존 코치는 내보내고 남은 연봉의 절반을 줍니다.</p></div>`; }
@@ -35866,13 +35887,13 @@ function attrCmpBar(p,m,dl){ const opts=[['1m','최근 1개월'],['sea','올해'
   return `<div class="pf-cmp"><div class="row" style="gap:4px;flex-wrap:wrap"><span class="small muted">능력 변화</span>${opts.map(([k,l])=>`<button class="chipn${m===k?' on':''}" data-a="attrCmp" data-v="${k}">${l}</button>`).join('')}${dl?`<span class="small muted">${dmd(dl.from)} 대비 · 핵심 합계 <b class="${sum>0?'good':sum<0?'bad':''}">${sum>0?'+':''}${sum}</b></span>`:m!=='off'?'<span class="small muted">비교할 기록이 아직 없습니다</span>':''}</div>
     ${L.length>=2?`<div class="pf-trend">${keys.map(k=>`<span><i>${TOOLK[k]}</i>${spark(k)}<b>${dv(p.r[k])}</b></span>`).join('')}</div>`:''}</div>`; }
 
-/* 선수 상황판 PC 맞춤(UI 3단계 3-0): 화면에 들어가지 않는 상자를 낮은 순서부터 접는다. 접힌 내용은 위 탭에 그대로 있다.
+/* 선수 상황판 PC 맞춤(UI 3단계 3-0): 화면 전체가 넘치면 낮은 순서부터 상자를 접는다. 접힌 내용은 위 탭에 그대로 있다. 상자 안은 스크롤해도 된다.
    그래도 넘치면(아주 낮은 창) 상자를 자르지 않고 화면 전체를 한 번에 내린다(.pf-scroll). */
 const PF_FIT_ORDER=['.pf-career','.pf-pos-mini','.pf-pitch-head','.pf-attributes .pf-trend','.pf-report .pf-rp-why','.pf-report .pf-rp-mop','.pf-fm-info:not(.pf-career)','.pf-season-table'];
 function pfFit(){ if(typeof document==='undefined')return; const o=document.querySelector('#sheet .pf-overview'),sh=o&&o.closest('.sheet'); if(!o||!sh)return;
   o.querySelectorAll('.pf-off').forEach(e=>e.classList.remove('pf-off')); sh.classList.remove('pf-scroll'); if(innerWidth<1100)return;
   const boxes=()=>[...o.querySelectorAll(':scope>*>*,:scope .pf-main-top>*')].filter(e=>e.getClientRects().length&&!e.matches('.pf-main-top'));
-  const over=()=>o.scrollHeight>o.clientHeight+2||boxes().some(e=>e.scrollHeight>e.clientHeight+2);
+  const over=()=>o.scrollHeight>o.clientHeight+2; /* 상자 안 스크롤은 괜찮다. 화면 전체가 넘칠 때만 접는다(구단주 11-17) */
   for(const q of PF_FIT_ORDER){ if(!over())return; o.querySelectorAll(q).forEach(e=>{ if(e.getClientRects().length)e.classList.add('pf-off'); }); }
   if(over())sh.classList.add('pf-scroll'); }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ pfFit(); }catch(e){} },120); }); }
@@ -36085,7 +36106,7 @@ function spoilMask0(g,p,keepDetail=false){ /* 경기 직전 사본이 있으면 
   const details=keepDetail?null:Object.fromEntries(['spl','spr','splP','sprP'].map(k=>[k,p[k]]));if(details)for(const k in details)p[k]=undefined; /* 옛 저장에 경기 전 분포가 없으면 최종 경기 분포를 노출하지 않는다. */
   const y=dobj(g.day).y, i=p.hist.map((h,j)=>[h,j]).filter(([h])=>h.y===y&&h.lvl==='1군'&&!h.y2).map(x=>x[1]).pop(); const H0=p.hist, GL0=p.gl; if(i!=null){ const h=Object.assign({},H0[i]); for(const k in q)if(k!=='id'&&typeof q[k]==='number'&&typeof h[k]==='number')h[k]=Math.max(0,h[k]-q[k]); if(typeof h.g==='number')h.g=Math.max(0,h.g-1); if(p.isP&&typeof h.w==='number'&&q.d==='승')h.w--; if(p.isP&&typeof h.l==='number'&&q.d==='패')h.l--; if(p.isP){ if(h.sv&&q.d==='세')h.sv--; if(h.hld&&q.d==='홀')h.hld--; if(h.gs&&['h','a'].some(sd=>g.box[sd]&&g.box[sd].pit&&g.box[sd].pit[0]&&g.box[sd].pit[0].id===p.id))h.gs--; } p.hist=H0.slice(); p.hist[i]=h; }
   if(GL0&&GL0.g&&GL0.y===y){ const has=x=>['h','a'].some(sd=>x.box&&x.box[sd]&&(x.box[sd][p.isP?'pit':'bat']||[]).some(z=>z.id===p.id)), pre=(G.games||[]).filter(x=>x!==g&&x.day===g.day&&(x.gid||0)<(g.gid||0)&&has(x)).length; let n=-1; p.gl={y,g:GL0.g.filter(r=>r[0]!==g.day||++n!==pre)}; } /* 같은 날 두 경기: 숨길 경기의 로그 한 줄만 뺀다(검수 11-09zzc #16) */ return ()=>{ p.hist=H0; p.gl=GL0;if(details)for(const k in details)p[k]=details[k]; }; }
-function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ twPager(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ const ng=el&&el.querySelector('.sheet.ngt'); if(ng){ const k=[...ng.children].filter(c=>getComputedStyle(c).display!=='none'); ng.style.setProperty('--ng-pre',Math.max(1,k.findIndex(c=>c.classList.contains('ng-rows')))); } }catch(e){} /* 협상실 PC: 조건 줄 칸이 남은 높이를 채우게(UI 3단계 3-4) */ try{ twPager(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -38465,11 +38486,16 @@ document.addEventListener('click',e=>{ const b=e.target&&e.target.closest&&e.tar
    PC(1100px 이상)에서 상자 안 목록·표가 칸보다 길어 스크롤바가 생기면, 칸에 들어가는 줄만 보이고 '‹ 1/4 ›'로 넘긴다.
    페이지와 상자가 같이 스크롤되는 이중 스크롤을 없앤다. 휴대폰은 화면 전체가 한 번에 내려가므로 그대로 둔다.
    표는 tbody 줄, 그 밖의 목록은 칸의 직계 자식(같은 모양 줄 4개 이상)을 나눈다. 이미 쪽 나눔이 있는 목록(.pgr 옆)과 경기 중계는 건드리지 않는다. */
+/* 꺼 둠(구단주 11-17: 상자 안 스크롤은 괜찮고 화면 전체가 내려가는 것만 싫다). 긴 목록은 남은 높이를 채운 칸 안에서 스크롤한다. 쪽 넘김이 더 나은 화면이 생기면 켠다 */
+const FP_ON=false;
 const FP_SKIP='.mt-opts,.ngt,.negw,.iv,.cw-opts,.cast,.cs-bg,.match-dashboard,.fdl-main,.free-list,.pf-overview,.mmenu,.cfm,.ws-tab-row,.chips,.seg,.subtabs,.fbar-p,.talk,.meet';
 function fpRows(c){
   const tb=c.matches('table')?c:c.querySelector(':scope>table,:scope>.tw>table,:scope>div>table');
   if(tb&&tb.tBodies[0]&&c.contains(tb)){ const rows=[...tb.tBodies[0].rows].filter(r=>r.getClientRects().length); return {rows,table:tb}; }
   const kids=[...c.children].filter(e=>e.getClientRects().length&&!e.matches('h2,h3,h4,.fp-bar,.pgr,.twpg,summary,p.small,p.note,.note'));
+  /* 카드 머리말 아래 목록 하나만 넘치는 경우(훈련 카드의 선수 줄 등): 머리말은 그대로 두고 그 목록 줄만 나눈다 */
+  { const lim0=c.clientHeight-34, tall=kids.filter(k=>k.children.length>=2&&k.scrollHeight>c.clientHeight-(k.getBoundingClientRect().top-c.getBoundingClientRect().top)-34); const last=kids[kids.length-1];
+    if(kids.length<4&&tall.length===1&&tall[0]===last){ const rows=[...last.children].filter(e=>e.getClientRects().length); if(rows.length>=2&&!rows.some(e=>e.getBoundingClientRect().height>lim0))return {rows,table:null}; } }
   /* 묶음(예: 소식함의 날짜·종류 묶음)이 칸보다 크면 그 안의 줄을 펼쳐 나눈다 */
   const lim=c.clientHeight-34, rows=kids.flatMap(k=>k.getBoundingClientRect().height>lim&&k.children.length>=2?[...k.children].filter(e=>e.getClientRects().length):[k]);
   if(rows.length<4)return null;
@@ -38479,7 +38505,7 @@ function fpRows(c){
 function fitPages(){
   if(typeof document==='undefined')return;
   document.querySelectorAll('.fp-bar').forEach(b=>b.remove()); document.querySelectorAll('.fp-off').forEach(r=>r.classList.remove('fp-off')); document.querySelectorAll('.fp-on').forEach(c=>c.classList.remove('fp-on'));
-  if(innerWidth<1100||(typeof workspaceCompact==='function'&&workspaceCompact()))return;
+  if(!FP_ON||innerWidth<1100||(typeof workspaceCompact==='function'&&workspaceCompact()))return;
   UI.fpPg=UI.fpPg||{}; let ix=0; const scope=(UI.sheet!=null||UI.person||UI.teamSh!=null)?'s':(UI.tab+':'+(UI.sub||''));
   const roots=[...document.querySelectorAll('#app main.content,#sheet .sheet')];
   for(const root of roots){
@@ -38487,7 +38513,7 @@ function fitPages(){
     /* 안쪽부터: 바깥 칸이 안쪽 칸을 줄로 삼지 않게 */
     for(const c of cands.reverse()){
       if(c.querySelector('.fp-on'))continue;
-      const R=fpRows(c); if(!R||R.rows.length<4)continue;
+      const R=fpRows(c); if(!R||R.rows.length<2)continue;
       const key=scope+':'+(ix++)+':'+R.rows.length;
       const firstTop=R.rows[0].getBoundingClientRect().top, avail=c.clientHeight-(firstTop-c.getBoundingClientRect().top+c.scrollTop)-34;
       if(avail<40)continue;
