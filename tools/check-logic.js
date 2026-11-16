@@ -4562,6 +4562,15 @@ T('[훈련 11-17] 해외 연수 일괄 보내기: 입대 예정·상무 지원 �
   const s0=G.spend.dev||0, r=ovsBulk(k,on); ok(r.n===on.length&&!r.fail.length,'일괄 신청 실패 '+r.msg); const bulk=(G.spend.dev||0)-s0; ok(Math.abs(bulk-on.length*o.c)<1e-6&&Math.abs(r.cost-bulk)<1e-6,'일괄 비용 '+bulk);
   for(const id of on)setOvs(id,''); ok(Math.abs((G.spend.dev||0)-s0)<1e-6,'취소 환급이 맞지 않음'); const s1=G.spend.dev||0; for(const id of on)setOvs(id,k); ok(Math.abs(((G.spend.dev||0)-s1)-bulk)<1e-6,'한 명씩 보낸 합과 다름');
   for(const id of on)setOvs(id,''); G.auto=G.auto||{}; autoSet('ovsb',[k]); G.ovsAutoY={}; autoRoutine(['ovsb']); ok((G.ovs||[]).filter(x=>x.prog===k).length===on.length,'업무 권한 자동 신청이 기본 선택과 다름'); autoRoutine(['ovsb']); ok((G.ovs||[]).filter(x=>x.prog===k).length===on.length,'한 해 두 번 채움'); });
+T('[재계약 11-17] 스태프 계약 만료 알림은 코치·보조 코치·감독마다 한 번씩 오고, 재계약 제안은 기존 연장과 같은 조건이다',()=>{ fresh(); const C=G.coach[G.user]; for(const r of CKEYS)if(C[r]){ C[r].yrs=3; delete C[r].expN; }
+  const role=CKEYS.find(r=>C[r]), c=C[role]; Object.assign(c,{yrs:1,age:50}); delete c.cs; delete c.jy; delete c.extY; const x=mkCoach('pc'); Object.assign(x,{yrs:1,age:50,sal:50}); delete x.cs; delete x.jy; G.coachX=[x];
+  const m=G.mgr[G.user]; Object.assign(m,{yrs:1,age:55,rel:60}); delete m.cs; delete m.jy; delete m.extY; delete m.expN;
+  const cnt=()=>(G.mail||[]).filter(z=>String(z.subj).includes('올해로 계약이 끝나는 코치·감독')).length; G.day=KD(8,1); G.cmMonth=null; G.cExpY=null; coachMarketMonth(); ok(cnt()===1,'8월 만료 알림 '+cnt()+'통');
+  const ml=(G.mail||[]).find(z=>String(z.subj).includes('올해로 계약이 끝나는 코치·감독')); for(const s of [c,x,m])ok(ml.body.includes(s.name),'알림에 빠짐: '+s.name);
+  const keys=['c:'+role+':'+c.id,'x:'+x.id,'m:'+m.id]; for(const k of keys)ok(ml.acts.some(a=>a.a==='stRenew'&&a.v===k),'재계약 제안 버튼 없음 '+k); ok(ml.acts.some(a=>a.a==='stRenewAll'),'모두 재계약 버튼 없음');
+  G.day=KD(9,1); staffExpNote(); ok(cnt()===1,'같은 사람에게 두 번 알림');
+  const want=coachExtTerms(role,1).sal, mw=mgrExtTerms(1).sal; ok(staffRenewOffer(keys[0]).ok&&c.yrs===2&&c.sal===want,'코치 재계약 조건이 연장과 다름');
+  const r=staffRenewAll(keys); ok(r.n===2&&x.yrs===2&&x.sal===round5(50*1.03)&&m.yrs===2&&m.sal===mw,'모두 재계약 '+r.msg); ok(staffRenewWhy(keys[1]).includes('이미'),'재계약한 뒤에도 다시 제안 가능'); });
 T('[단장 돈·시설] 장학재단을 오래 운영하면 연고 출신 FA가 우리 구단을 조금 더 반긴다(상한 있음)',()=>{ fresh(); const S=personalState(); S.cash=1000; personalFound(); const F=S.found; ok(F,'재단 없음');
   const p=Object.values(G.players).find(q=>q.team!=null&&q.team!==G.user&&!q.foreign&&homeTie(q,G.user)); ok(p,'준비 실패: 연고 출신 선수 없음'); const a0=faAppeal(p,G.user).f; F.y=G.year-3; const a1=faAppeal(p,G.user).f; F.y=G.year-40; const a2=faAppeal(p,G.user).f;
   ok(a1>a0,'재단 인연 없음 '+a0+' '+a1); ok(a2-a0<=FOUND_FA.max+1e-9,'상한 없음 '+(a2-a0)); ok(faAppeal(p,G.user).parts.some(x=>/장학재단/.test(x[0])),'항목 이름 없음'); });
