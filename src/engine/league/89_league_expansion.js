@@ -28,16 +28,16 @@ function expPropose(){ const E=expInit(); const C=(typeof ciCityPool==='function
 function expVote(){ const E=expInit(); const cashOk=avg(G.teams.map(t=>t.cash||0))>-500; const yes=G.teams.filter(t=>R()<(cashOk?.72:.45)+(t.market<1?.05:-.05)).length, need=Math.ceil(G.teams.length*2/3);
   E.votes={yes,no:G.teams.length-yes,need};
   if(yes<need){ E.stage='idle'; E.cool=G.year+3; E.hist.push({y:G.year,city:E.city,ok:false}); news('리그',`${E.city} 신생 구단 창단안 부결`,`찬성 ${yes} · 반대 ${G.teams.length-yes}(필요 ${need}). ${E.cool}년 이후 다시 논의할 수 있습니다.`,1,{}); return; }
-  E.stage='approved'; E.ay=G.year; news('리그',`${E.city} ${E.nick}, ${G.teams.length+1}번째 구단 창단 승인`,`찬성 ${yes} · 반대 ${G.teams.length-yes}. 11월 20일 특별지명을 거쳐 ${G.year+1}시즌 1군에 들어옵니다.`,2,{});
+  E.stage='approved'; E.ay=G.year; news('리그',`${tfull(E)}, ${G.teams.length+1}번째 구단 창단 승인`,`찬성 ${yes} · 반대 ${G.teams.length-yes}. 11월 20일 특별지명을 거쳐 ${G.year+1}시즌 1군에 들어옵니다.`,2,{});
   expGmOffer(); }
 function expGmOffer(){ const E=expInit(); if(G.gameOver||!(G.unemp||(G.rep??50)>=60))return; E.gmAsk=G.year;
-  evNew('expGm',`신생 구단 ${E.city} ${E.nick}의 창단 단장 제안`,`${E.parent}: "새 구단의 첫 단장을 맡아 주십시오. 특별지명부터 코칭스태프 구성까지 처음부터 함께 만들고 싶습니다."`,[{l:'창단 단장 수락',fx:`11월 20일 특별지명 때 ${E.city} ${E.nick} 단장으로 옮깁니다. 지금 구단은 그때 떠납니다.`},{l:'정중히 거절',fx:'지금 자리에 남습니다.'}],{def:1,exp:30,data:{},from:E.parent}); }
-EVH.expGm={ pick(e,i){ const E=expInit(); if(i===0){ E.userGm=true; return `${E.city} ${E.nick} 창단 단장으로 가기로 했습니다. 11월 20일 특별지명 때 부임합니다.`; } E.userGm=false; return '제안을 거절했습니다.'; } };
+  evNew('expGm',`신생 구단 ${tfull(E)}의 창단 단장 제안`,`${E.parent}: "새 구단의 첫 단장을 맡아 주십시오. 특별지명부터 코칭스태프 구성까지 처음부터 함께 만들고 싶습니다."`,[{l:'창단 단장 수락',fx:`11월 20일 특별지명 때 ${tfull(E)} 단장으로 옮깁니다. 지금 구단은 그때 떠납니다.`},{l:'정중히 거절',fx:'지금 자리에 남습니다.'}],{def:1,exp:30,data:{},from:E.parent}); }
+EVH.expGm={ pick(e,i){ const E=expInit(); if(i===0){ E.userGm=true; return `${tfull(E)} 창단 단장으로 가기로 했습니다. 11월 20일 특별지명 때 부임합니다.`; } E.userGm=false; return '제안을 거절했습니다.'; } };
 /* 새 구단 만들기 */
 function expAddTeam(){ const E=expInit(), id=G.teams.length; const t={id,city:E.city,nick:E.nick,code:E.city.slice(0,2),hue:Math.round(u01('expHue',id)*360),market:E.market||.88,region:E.region||'충청',cash:4000,pop:.9,trust:60,rel:50,owner:'pr',mode:'rebuild',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:2,born:G.year+1};
   G.teams.push(t); const S=stadOf(id); S.name=`${E.city} 야구장`; S.cap=17000; S.built=G.year-ri(5,25); S.dim={lf:98,cf:121,rf:98,wl:3,wc:3,wr:3};
   G.mgr[id]=mkMgr(); G.mgr[id].yrs=3; try{ coachInit(); }catch(e){} if(G.sea&&G.sea.rec&&!G.sea.rec[id])G.sea.rec[id]={w:0,l:0,t:0}; try{ ownershipInit(); }catch(e){} try{ if(G.lgStaff&&!G.lgStaff[id]){ G.lgStaff[id]=stMakeTeam(t); stSync(id); } }catch(e){} /* 스카우트·분석원 */
-  try{ chron('found',`${E.city} ${E.nick} 창단 · ${G.year+1}시즌 1군 진입`,null,id,{source:'found:'+id}); }catch(e){} return id; }
+  try{ chron('found',`${tfull(E)} 창단 · ${G.year+1}시즌 1군 진입`,null,id,{source:'found:'+id}); }catch(e){} return id; }
 /* 특별지명 */
 function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid); const L=[]; let pay=0;
   for(const o of G.teams){ if(o.id===tid)continue; const pool=domestic(o.id).filter(p=>!p.prospect&&!(p.joinY>G.year)&&!(p.mil&&p.mil.until>G.day));

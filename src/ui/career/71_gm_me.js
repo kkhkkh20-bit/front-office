@@ -25,7 +25,7 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];
   return `<div class="gut"><div class="wrap" style="max-width:640px"><button class="lnk tsback" data-a="tsGo" data-v="team">← 구단 다시 고르기</button>
-    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(d.city)} ${esc(d.nick)} · `:''}단장 소개</h2><section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
+    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(tfull(d))} · `:''}단장 소개</h2><section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
 /* 사이드바 '단장 프로필' */
 /* 야인이어도 돌아보는 경력: 시즌별 재임 구단·순위·성적, 퇴임 시점 마지막 시즌 결산 */
 function meCareerSeasons(C){ const S=(C&&C.seas||[]).slice().reverse(); if(!S.length)return ''; return csec('시즌별 경력',`<div class="tw"><table><thead><tr><th>시즌</th><th>구단</th><th>순위</th><th>성적</th><th></th></tr></thead><tbody>${S.map(x=>`<tr><td>${x.y}</td><td>${badge(x.tid,14)} ${esc(tshort(x.tid))}</td><td>${x.rank!=null?`${x.rank}위`:'-'}${x.part?` <span class="muted">(시즌 중 ${esc(x.how||'이직')})</span>`:''}</td><td>${x.w}승 ${x.l}패${x.t?` ${x.t}무`:''}</td><td>${x.ch===1?'<span class="pill good">우승</span>':x.ch===2?'<span class="pill">준우승</span>':''}</td></tr>`).join('')}</tbody></table></div>`); }

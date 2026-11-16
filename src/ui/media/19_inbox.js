@@ -80,9 +80,9 @@ function ibPinned(list){ let S=UI._ibStk; if(!S||S.day!==G.day||UI._ibFirst)S=UI
 function ibFolds(){ return G.ibFold=G.ibFold||{}; }
 /* 가을야구 사다리(사용자 11-08: 포스트시즌이 메인 이벤트라 소식함에서도 계속 보인다). 라운드마다 두 팀·시리즈 전적·차전별 결과(1차전 7:3)·다음 경기 */
 function ibPsLadder(){ if(!G.ps||G.ps.done||typeof bkData!=='function')return ''; try{ const D=bkData(psYearOf(G.ps)); const nm={wc:'WC',spo:'준PO',po:'PO',ks:'KS'};
-  const t=x=>x!=null?`${badge(x,16)}<b class="${x===G.user?'me':''}">${esc(team(x).nick)}</b>`:'<b class="muted">미정</b>';
+  const t=x=>x!=null?`${badge(x,16)}<b class="${x===G.user?'me':''}">${esc(tnick(x))}</b>`:'<b class="muted">미정</b>';
   const cols=BK_R.map(r=>{ const S=bkSeries(D,r), L=bkGames(D,r)||[], cur=D.cur&&D.cur.round===r[0], st=S.win!=null?'종료':cur?'진행 중':'대기';
-    const gs=L.map(g=>g.p?`<span class="ipl-g${g.w===G.user?' w':[g.h,g.a].includes(G.user)&&g.w!=null?' l':''}"><i>${g.i+1}차전</i>${g.w!=null?`${esc(team(g.w).nick)} ${Math.max(g.p.hs,g.p.as)}:${Math.min(g.p.hs,g.p.as)}`:`무 ${g.p.hs}:${g.p.as}`}</span>`:g.st==='now'?`<span class="ipl-g nx"><i>${g.i+1}차전</i>${dobj(g.d).m}/${dobj(g.d).d} ${esc(team(g.h).nick)} 홈</span>`:'').join('');
+    const gs=L.map(g=>g.p?`<span class="ipl-g${g.w===G.user?' w':[g.h,g.a].includes(G.user)&&g.w!=null?' l':''}"><i>${g.i+1}차전</i>${g.w!=null?`${esc(tnick(g.w))} ${Math.max(g.p.hs,g.p.as)}:${Math.min(g.p.hs,g.p.as)}`:`무 ${g.p.hs}:${g.p.as}`}</span>`:g.st==='now'?`<span class="ipl-g nx"><i>${g.i+1}차전</i>${dobj(g.d).m}/${dobj(g.d).d} ${esc(tnick(g.h))} 홈</span>`:'').join('');
     return `<div class="ipl-c${cur?' on':''}${[S.hi,S.lo].includes(G.user)?' my':''}"><div class="ipl-h"><b>${nm[r[0]]}</b><i>${st}</i></div><div class="ipl-t">${t(S.lo)}<em>${S.wl??0}</em></div><div class="ipl-t">${t(S.hi)}<em>${S.wh??0}</em></div>${gs?`<div class="ipl-gs">${gs}</div>`:''}</div>`; }).join('<span class="ipl-ar">›</span>');
   const c=G.ps.cur; const head=c&&c.round==='tb'?'순위 결정전 진행 중':c?`${ROUNDK[c.round]} ${c.gi+1}차전 예정`:'';
   return `<section class="ipl"><header><span class="eyebrow">${psYearOf(G.ps)} 가을야구</span><b>${esc(head)}</b><button class="lnk" data-a="psOpen">대진표 ›</button></header><div class="ipl-r">${cols}</div></section>`; }catch(e){ return ''; } }

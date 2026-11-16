@@ -4,7 +4,7 @@
  - 주간 여론: 시즌 중 매주 월요일, 비시즌에는 2주마다 팬 여론 변화, 인기 글, 우리 구단 기사와 댓글을 정리한다.
  게시판 글과 댓글은 화면 쪽(12_fanboard.js)에서 경기·기사·소식으로 만들어진다. 노드 시뮬레이션에는 없으므로 없으면 건너뛴다. */
 function fpState(){ prInit(); if(!G.fpul)G.fpul={last:-99,wk:-99,seen:{},fan:Math.round(G.pr.fan),press:Math.round(G.pr.press)}; return G.fpul; }
-function fpCm(c){ return `${c.best?'[베스트] ':''}${c.tid!=null&&c.tid!==G.user?`(${team(c.tid).nick} 팬) `:''}${c.nick}: ${c.t} (추천 ${c.like})`; }
+function fpCm(c){ return `${c.best?'[베스트] ':''}${c.tid!=null&&c.tid!==G.user?`(${tnick(c.tid)} 팬) `:''}${c.nick}: ${c.t} (추천 ${c.like})`; }
 function fpMood(cms){ const n=cms.length||1; const pos=cms.filter(c=>c.cat==='pos').length/n, neg=cms.filter(c=>c.cat==='neg').length/n; return pos>=.55?'호의적':neg>=.55?'싸늘함':pos>neg+.15?'대체로 좋음':neg>pos+.15?'불만이 많음':'엇갈림'; }
 function fpDelta(S){ const f=Math.round(G.pr.fan), p=Math.round(G.pr.press); const df=f-S.fan, dp=p-S.press; return {f,p,t:`팬 여론 ${f}${df?` (${df>0?'+':''}${df})`:''} · 언론 논조 ${p}${dp?` (${dp>0?'+':''}${dp})`:''}`}; }
 function fanPulseDaily(){ if(G.unemp||typeof fanThreads!=='function')return; const S=fpState(); const o=dobj(G.day); const per=period();

@@ -88,7 +88,7 @@ function aiFacPlan(t,S,summer,o){ o=o||{}; const nb=Object.keys(S.bld).length; i
 function facNeglect(t){ const mine=t.id===G.user; const it=mine?(G.fac&&G.fac.it):(t.fi&&t.fi.it); if(!it)return; const bld=mine?(G.fac.bld||{}):(t.fi.bld||{});
   const k=FACK.filter(k=>(it[k]||0)>=2&&!bld[k]).sort((a,b)=>it[b]-it[a])[0]; if(!k)return; it[k]--; 
   if(mine){ try{ facRecalc(); }catch(e){} mail('운영팀',`${FACI[k].l} 시설이 낡았습니다`,`구단 빚이 커 유지·보수를 미뤘습니다. ${FACI[k].l}이(가) ${FACI[k].lv[it[k]]} 수준으로 내려갔습니다. 다시 공사하면 회복됩니다.`,{kind:'시설'}); }
-  else { t.fi.lv=facCalcLv(it); t.fac=t.fi.lv; wire('구단',`${t.city} ${t.nick}, 재정난에 ${FACI[k].l} 관리 소홀`,{tid:t.id}); } }
+  else { t.fi.lv=facCalcLv(it); t.fac=t.fi.lv; wire('구단',`${tfull(t)}, 재정난에 ${FACI[k].l} 관리 소홀`,{tid:t.id}); } }
 
 /* ===== 시설 연식(커뮤니티 건의 11-11: 한 번 올린 시설이 영원히 유지되면 구단 사이 격차가 굳는다) =====
    항목마다 마지막으로 짓거나 고친 해를 기억한다. 10년이 넘으면 해마다 30% 확률로 한 단계 낡는다(2단계 아래로는 내려가지 않음).
