@@ -9,6 +9,10 @@ const results=[]; const T=(name,fn)=>results.push({name,fn});
 /* [얼굴 v18] 시나리오용: 화면 쪽 얼굴 번호표(FACE6, 사진 data URI는 빼고)와 배정 함수(face6Pool·face6Idx)를 엔진 안에서 direct eval로 읽는다. 엄격 모드라 끝 식으로 꺼낸다 */
 globalThis.__faceSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=fs.readFileSync(path.join(__dirname,'..','src','ui','assets','77_assets_ui.js'),'utf8');
   return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n;({FACE6,face6Pool,face6Idx})'; };
+/* [얼굴 아마추어] 시나리오용: FACE6 번호표와 배정 함수(face6Idx·amIdx). pre: 앞에 붙일 코드(시험용 FACE21 번호표) */
+globalThis.__amSrc=pre=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
+  return (pre||'')+'\n'+R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n'+ui.slice(ui.indexOf('function amFaceOn('),ui.indexOf('function amLoad('))+'\n;({FACE6,face6Idx,amIdx,amVar})'; };
+globalThis.__amNoInterim=()=>{ const dir=path.join(__dirname,'..','src','ui','assets'); return !fs.readdirSync(dir).some(f=>/amateur/.test(f))&&!fs.existsSync(path.join(__dirname,'..','assets','v6','batch01c','production100','amateur_interim'))&&!/FACEAM/.test(fs.readFileSync(path.join(dir,'77_assets_ui.js'),'utf8')); };
 /* [비서 v19] 시나리오용: FACE8(사진 빼고)·FACE19 번호표와 비서 배정 함수(secCands·secIdx) */
 globalThis.__secSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
   return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function face19Load('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
@@ -5264,6 +5268,15 @@ T('[얼굴 v18] FACE6 360명(v18 160~359)·새 신인은 어린 얼굴·기존 �
   const b6=JSON.stringify(G.f6), b6r=JSON.stringify(G.f6r), v=G.f6v; X.push(...tail); G=JSON.parse(JSON.stringify(G));
   for(const p of all())F.face6Idx(p); ok(G.f6v===v&&JSON.stringify(G.f6)===b6&&JSON.stringify(G.f6r)===b6r,'불러온 저장의 얼굴 배정이 바뀜');
   const q=all().filter(p=>!p.foreign&&p.age<=21).sort((a,b)=>a.age-b.age)[0]; delete G.f6r[q.team+':'+G.f6[q.id]]; delete G.f6[q.id]; const ni=F.face6Idx(q); ok(ni>=160&&X[ni].a<=24,'새로 배정하는 어린 선수가 v18 어린 얼굴을 못 받음 '+ni); ok(!dup(),'새 배정 뒤 한 구단에 같은 얼굴이 둘'); });
+T('[얼굴 아마추어] v21 납품 전에는 고교·대학 선수에게 임시 사진을 주지 않고(예전과 같음), FACE21 번호표만 더하면 고정 배정·지명 뒤 같은 신원으로 이어진다',()=>{
+  ok(globalThis.__amNoInterim(),'임시 아마추어 사진(번호표·시트)이 남아 있음');
+  fresh(); if(!(G.draftClass||[]).length)makeDraftClass(); const am=G.draftClass.map(id=>G.players[id]).filter(p=>p&&!p.foreign); ok(am.length>=20,'드래프트 대상 부족 '+am.length);
+  const F0=eval(globalThis.__amSrc()); ok(am.every(p=>F0.amIdx(p)===null)&&!G.fam,'FACE21 없이 아마추어 사진이 배정됨');
+  const F=eval(globalThis.__amSrc('const FACE21={base:"assets/v21/amateur200/sheets/",pitch:{"128":144,"256":272,"384":400},ids:Array.from({length:200},(x,i)=>({a:17+i%6,g:i%10?0:1}))};'));
+  const first=am.map(p=>F.amIdx(p)); ok(first.every(a=>a&&a.k==='21'),'FACE21이 있는데 배정되지 않음'); ok(new Set(first.map(a=>a.c)).size>=am.length*.9,'덜 쓰인 얼굴부터 고르지 않음');
+  ok(am.every((p,i)=>F.amIdx(p).c===first[i].c),'다시 부르면 얼굴이 바뀜'); ok(am.every(p=>['hs_home','univ'].includes(F.amVar(p))),'아마추어 유니폼 변형');
+  ok(F.amIdx(Object.values(G.players).find(p=>p.team!=null&&!p.foreign&&!(G.fam||{})[p.id]))===null,'프로 선수에게 아마추어 사진');
+  const p=am[0], c=F.amIdx(p).c; p.prospect=false; p.team=G.user; ok(F.amIdx(p).c===c,'지명 뒤 다른 신원'); ok(F.amVar(p)===F.FACE6.v18.teams[String(G.user)],'지명 뒤 구단 유니폼 변형이 아님'); });
 T('[얼굴 v18b] 회색 배경으로 다시 납품된 4명(324·328·329·333)이 국내 선수 배정 후보로 돌아오고 새 게임에서 배정될 수 있다·384 시트 칸 간격',()=>{ const F=eval(globalThis.__faceSrc()), X=F.FACE6.ids, four=[324,328,329,333], pool=F.face6Pool({age:24});
   ok(four.every(i=>!X[i].x&&!X[i].f&&pool.includes(i)),'4명이 국내 후보에 없음: '+four.filter(i=>!pool.includes(i)));
   ok(F.FACE6.v18.pitch&&F.FACE6.v18.pitch['384']===400&&F.FACE6.v18.h&&['A384','B384','B128','B256'].every(k=>/^[0-9a-f]{8}$/.test(F.FACE6.v18.h[k])),'384 칸 간격·시트 해시(캐시 갱신용)가 없음');
