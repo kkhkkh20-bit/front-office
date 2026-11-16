@@ -12072,12 +12072,18 @@ const capAmt=(p,tid,a,fid=franId(tid))=>p.id===fid?a*.5:a; /* 합계 한 번당 
 /* 개막 전·결산 뒤 겨울 방출도 상한에 남는다(공략 방지): 겨울에는 다음 시즌(sponSeason) 몫으로. 다음 시즌 이후 몫은 G.capDeadF({pid,t,a,y,k}) */
 function capDeadA(tid,y){ y=y??G.year; const D=G.capDead, L=D&&D.y===y?D.L.filter(x=>x.t===tid).map(x=>x.a):[]; for(const x of G.capDeadF||[])if(x.t===tid&&x.y===y)L.push(x.a); return L; }
 function capDeadF(x){ const F=G.capDeadF=(G.capDeadF||[]).filter(e=>e.y>=G.year); F.push(x); }
-function capDeadAdd(p,tid){ if(!p||p.foreign||tid==null||!G.cal)return; if(isRookie(p)||milServing(p))return; /* 신인·복무 선수는 원래 산정에서 빠진다 */
+/* 지금 방출하면 상한 산정에 남는 금액과 그 시즌(방출 확인 화면 안내에도 같은 값): {a,y,inS} 또는 null */
+function capDeadAmt(p,tid){ if(!p||p.foreign||tid==null||!G.cal)return null; if(isRookie(p)||milServing(p))return null; /* 신인·복무 선수는 원래 산정에서 빠진다 */
   const inS=G.day>=G.cal.open&&!(G.last&&G.last.y>=G.year);
-  if(inS){ const a=capAmt(p,tid,p.sal+(p.capB&&p.ctT===tid&&p.capB.until>=G.year?p.capB.a:0)); if(!(a>0))return; if(!G.capDead||G.capDead.y!==G.year)G.capDead={y:G.year,L:[]}; G.capDead.L.push({pid:p.id,t:tid,a:Math.round(a)}); return; }
+  if(inS){ const a=Math.round(capAmt(p,tid,p.sal+(p.capB&&p.ctT===tid&&p.capB.until>=G.year?p.capB.a:0))); return a>0?{a,y:G.year,inS}:null; }
   /* 겨울·개막 전: 그 시즌에 줘야 할 보장 연봉(정산금이 있는 계약)과 계약금 반영액만 */
   const y=sponSeason(), c=relCost(p); const sal=y>G.year?(c.next>0&&p.extNext?p.extNext.annual:c.fut>0?salNext(p):0):(c.cur>0?p.sal:0); const b=p.capB&&p.ctT===tid&&p.capB.until>=y?p.capB.a:0;
-  const a=Math.round(capAmt(p,tid,sal+b)); if(a>0)capDeadF({pid:p.id,t:tid,a,y}); }
+  const a=Math.round(capAmt(p,tid,sal+b)); return a>0?{a,y,inS}:null; }
+function capDeadAdd(p,tid){ const x=capDeadAmt(p,tid); if(!x)return;
+  if(x.inS){ if(!G.capDead||G.capDead.y!==G.year)G.capDead={y:G.year,L:[]}; G.capDead.L.push({pid:p.id,t:tid,a:x.a}); return; }
+  capDeadF({pid:p.id,t:tid,a:x.a,y:x.y}); }
+/* 트레이드 상한 상자에서 쓰는 시즌(capPayAs와 같게)의 방출 선수 잔여 연봉 합계(계약금 반영액 'b'는 빼고) */
+function capDeadRel(tid){ const y0=sponSeason(), y=y0>G.year||preSeason(y0)?y0:G.year; const D=G.capDead; let n=0; if(D&&D.y===y)for(const x of D.L)if(x.t===tid)n+=x.a; for(const x of G.capDeadF||[])if(x.t===tid&&x.y===y&&x.k!=='b')n+=x.a; return Math.round(n); }
 /* 트레이드로 옮기는 FA의 계약금 반영액은 낸 구단에 남는다(계약금 세탁 방지, 공략 방지): 그 시즌부터 반영 끝 시즌까지 */
 function capDeadBonus(p){ if(!p||p.team==null||p.foreign||!(p.capB&&p.ctT===p.team&&p.capB.a>0))return; const y0=G.cal&&G.day>=G.cal.open&&!(G.last&&G.last.y>=G.year)?G.year:sponSeason(); for(let y=y0;y<=p.capB.until;y++)capDeadF({pid:p.id,t:p.team,a:p.capB.a,y,k:'b'}); }
 function capDeadDrop(pid){ const D=G.capDead; if(D&&D.L)D.L=D.L.filter(x=>x.pid!==pid); if(G.capDeadF)G.capDeadF=G.capDeadF.filter(x=>x.pid!==pid||x.k==='b'); }
@@ -15666,8 +15672,8 @@ function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,fut:0,tot:0}; const c
 function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;
   if(p.foreign){ releaseForeign(id); return; }
-  const c=relCost(p), cost=c.tot; payOut(G.user,cost,'rel');
-  addLog(`${p.name}을(를) 방출했습니다.${cost?` 정산금 ${money(cost)}${c.next?`(다음 시즌 확정 계약 ${money(c.next)} 포함)`:''}.`:''} ${wvNeed(p)?`${WV_DAYS}일 동안 웨이버 공시되고, 다른 구단이 데려가면 남은 계약을 이어받아 정산금은 돌려받습니다.`:'다른 구단과 계약할 때까지 무적 선수로 남습니다.'}`);
+  const c=relCost(p), cost=c.tot, cd=capDeadAmt(p,G.user); payOut(G.user,cost,'rel'); /* 상한에 남는 금액은 방출 전 계약으로 미리 잰다 */
+  addLog(`${p.name}을(를) 방출했습니다.${cost?` 정산금 ${money(cost)}${c.next?`(다음 시즌 확정 계약 ${money(c.next)} 포함)`:''}.`:''}${cd?` ${cd.y}시즌 경쟁균형세 상한 합계에는 연봉 ${money(cd.a)}이 그대로 남습니다.`:''} ${wvNeed(p)?`${WV_DAYS}일 동안 웨이버 공시되고, 다른 구단이 데려가면 남은 계약을 이어받아 정산금은 돌려받습니다.`:'다른 구단과 계약할 때까지 무적 선수로 남습니다.'}`);
   /* 연봉 협상 명단(ended)은 toFree의 mvLog가 합의액을 연봉으로 확정한 뒤 정리한다(검수 11-09g: 먼저 빼서 합의 연봉을 잃고 옛 연봉으로 승계) */
   for(const k in G.lineup) if(G.lineup[k]===id)delete G.lineup[k];
   toFree(p,`${tname(G.user)}에서 방출`,cost); /* 웨이버 공시 뒤 아무도 데려가지 않으면 무적 선수로 남는다 */
@@ -36814,6 +36820,7 @@ function tradeView(){
       <div><div class="eyebrow">받음 · ${gt.length}명</div>${gt.map(p=>tmini(p,'get',tr.tid)).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="get">상대 선수에서 고르기</button>'}</div>
     </div>
     <dl class="tsum"><div><dt>연봉 변화</dt><dd class="num" style="color:${dPay>0?'var(--warn)':dPay<0?'var(--good)':'inherit'}">${dPay>=0?'+':''}${money(dPay)}</dd></div><div><dt>트레이드 후 캡 ${hiI(capRuleTxt())}</dt><dd class="num" style="color:${capAfter>cap?'var(--bad)':'inherit'}">${money(capAfter)} / ${money(cap)}</dd></div><div><dt>상대 캡</dt><dd class="num" style="color:${thT&&thT.hard?'var(--bad)':thAfter>cap?'var(--warn)':'inherit'}">${money(thAfter)} / ${money(cap)}</dd></div><div><dt>선수 영입 자금</dt><dd class="num">${money(Math.max(0,spendable(G.user)))}</dd></div><div><dt>로스터</dt><dd class="num">우리 ${myN} · 상대 ${thN}</dd></div></dl>
+    ${(()=>{ const d=capDeadRel(G.user); return d>0?`<p class="small muted tcap-dead">트레이드 후 캡에는 방출 선수 잔여 연봉 ${money(d)}이 포함됩니다. 시즌 중 방출한 선수의 그해 연봉은 그 시즌 상한 합계에 남고(웨이버로 다른 구단이 데려가면 빠짐), 다음 시즌 합계에서는 빠집니다.</p>`:''; })()}
     ${(gv.length||gt.length)&&(capAfter>cap&&capAfter>my0||thT)?`<p class="small muted tcap-n">${capAfter>cap&&capAfter>my0?`우리: 상한 ${esc(capStateTxt(capAfter))}. `:''}${thT?(thT.hard?`상대: 구단주 허용 한도(${money(thT.lim)})를 넘어 받을 수 없습니다.`:`상대: 상한을 넘겨 세금 약 ${money(thT.tax)}를 내야 해 그만큼 값을 더 요구합니다.`):''}</p>`:''}
     ${mood?`<div class="tmood"><div class="row between"><span class="small muted">상대 단장 반응 예상</span><b style="color:${mood.c}">${mood.l}</b></div><p class="small" style="margin:2px 0">${mood.s}</p><div class="tbarm"><span style="width:${mood.w}%;background:${mood.c}"></span><i></i></div><p class="small muted">관계 ${relLabel(t.rel)} 기준 예측입니다. ${mood.sd>3.5?'관계가 낮아 오차가 큽니다.':'비교적 정확합니다.'}</p>${gt.some(p=>tradeUrgent(tr.tid,p))?`<p class="small muted">급매 선수는 싸게 데려올 수 있습니다. ${hiI('급매 선수는 일반 매물보다 낮게 평가하고, 거절 이력이나 거래 횟수에 따른 웃돈도 붙이지 않습니다. 함께 받는 일반 선수·지명권·현금은 따로 평가합니다. 받는 선수가 모두 급매이면 같은 구단과 연간 2건, 30일 간격 제한이 풀립니다. 월별 협상 횟수는 남아 있어야 합니다. 맞대결 기간에는 두 번 더 협상할 수 있고, 유효한 역제안은 예외입니다. 선수 옆 금액은 연봉이며 이적료가 아닙니다.')}</p>`:''}</div>`:''}
     ${tr.tid!=null&&tr.tid!==G.user?(tr.give||[]).map(id=>G.players[id]).filter(p=>p&&hasNtc(p)).map(p=>ntcFor(p,tr.tid)?`<div class="note warn"><b>${esc(p.name)}</b>: 트레이드 거부권(${p.ntc}년까지) — ${esc(tshort(tr.tid))}행 동의가 필요합니다. <button class="btn small" data-a="ntcAsk" data-v="${p.id}:${tr.tid}:0">선수에게 동의 구하기</button> <button class="btn small" data-a="ntcAsk" data-v="${p.id}:${tr.tid}:1" title="연봉의 30%를 거부권 포기 대가로 주고 묻습니다. 동의할 때만 냅니다">포기 대가 ${money(round5(Math.max(MIN_SAL,p.sal*NTC_BONUS_F)))} 걸고 묻기</button></div>`:`<div class="note good"><b>${esc(p.name)}</b>: ${esc(tshort(tr.tid))}행 동의(${dmd(p.ntcOk.until)}까지)</div>`).join(''):''}
@@ -37847,7 +37854,7 @@ function renderSheet0(){
     if(p.team===G.user&&!p.foreign&&(p.svc||0)>=7&&G.rolled===G.year&&!ovsBeen(p)&&!(G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void))parts.push(`<section class="card"><div class="eyebrow">해외 진출 · 포스팅</div><p class="small">서비스 ${p.svc}년 · 메이저리그 의지 ${mlbOf(p)}. 신청하면 결과 발표일에 MLB·NPB 구단 제안이 오고, 계약하면 포스팅 비용을 받고 선수는 떠납니다.</p><button class="btn small" data-a="postGM" data-v="${p.id}">포스팅 신청</button></section>`); /* 단장이 먼저 보내기(카페 문의 11-07) */
     if(canExtend(p))parts.push('<div id="s-ext"></div>'+`<section class="card"><div class="eyebrow">비FA 다년계약 · ${ctText(p)}</div>${p.extCounter&&p.extCounter.until>=G.day?`<p class="small">역제안이 와 있습니다(${dsh(p.extCounter.until)}까지): ${esc(p.extCounter.terms?termsTxt(p.extCounter.terms,true):`${p.extCounter.years}년 연 ${money(p.extCounter.annual)}`)}</p>`:extNextDay(p)?`<p class="small bad">지난 제안(${dsh((p.extLast||{}).d??G.day)})은 거절됐습니다. 다음 제안은 ${dsh(extNextDay(p))}부터 할 수 있습니다.</p>`:''}${ngtDoor('ext',p)}<p class="small muted">시즌 중 합의는 다음 시즌부터, 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p></section>`);
     else if(UI.ext&&UI.ext.id===p.id&&UI.ext.msg)parts.push(`<div class="note ${UI.ext.ok?'good':''}">${esc(UI.ext.msg)}</div>`);
-    parts.push(`<div class="row" style="margin-top:14px;justify-content:flex-end">${UI.confirmRel===p.id?`<button class="btn danger" data-a="release" data-v="${p.id}">정말 방출${relCost(p).tot?` (정산 ${money(relCost(p).tot)})`:''}</button><button class="btn" data-a="relCancel">취소</button>`:`<button class="btn danger" data-a="relAsk" data-v="${p.id}">방출</button>`}</div>`);
+    parts.push(`<div class="row" style="margin-top:14px;justify-content:flex-end;flex-wrap:wrap">${UI.confirmRel===p.id?`<button class="btn danger" data-a="release" data-v="${p.id}">정말 방출${relCost(p).tot?` (정산 ${money(relCost(p).tot)})`:''}</button><button class="btn" data-a="relCancel">취소</button>${(x=>x?`<p class="small warn rel-cap" style="flex-basis:100%;text-align:right">방출해도 ${x.y}시즌 연봉 ${money(x.a)}은(는) ${x.y}시즌 경쟁균형세 상한 합계(상위 40명)에 그대로 남습니다. 웨이버로 다른 구단이 데려가면 빠집니다. 트레이드 상한 여유는 늘지 않습니다.</p>`:'')(capDeadAmt(p,G.user))}`:`<button class="btn danger" data-a="relAsk" data-v="${p.id}">방출</button>`}</div>`);
     actions=parts.join('');
   }
   const status=p.injOut>0?`<span class="pill bad">${esc(injNow(p))} · 복귀까지 약 ${p.injOut>=300?Math.round(p.injOut/30)+'개월':p.injOut+'일'} (${injRetTxt(p)})</span>`:'';
@@ -42132,6 +42139,8 @@ const PATCH=[
   {id:'2026-11-17-draftcal',d:'11월 17일',t:'신인 성장 · 첫 1군 기회',items:[
     '상위 지명 신인도 실패할 수 있습니다. 1라운드 앞 순번이 첫해부터 주전이 되는 일은 드물어지고, 하위 라운드 신인도 9월 확대 엔트리에서 첫 1군 기회를 얻습니다.',
     'AI 구단도 5월부터 잘하는 육성선수를 정식 선수로 올립니다.']},
+  {id:'2026-11-17-hotfix2',d:'11월 17일',t:'방출 선수 연봉과 샐러리캡 안내',items:[
+    '시즌 중 방출한 선수의 그해 연봉은 그 시즌 경쟁균형세 상한 합계에 그대로 남습니다(웨이버로 다른 구단이 데려가면 빠짐). 방출 확인 버튼 옆과 방출 기록에 남는 금액을, 트레이드 상한 상자에 방출 선수 잔여 연봉 포함액을 적습니다.']},
   {id:'2026-11-17-community',d:'11월 17일',t:'인맥 관리 · 해외 연수 일괄 신청 · 스태프 재계약 알림',items:[
     '친밀도는 마지막으로 만난 뒤 오래될수록 천천히 식습니다. 스프링캠프·출장 기간은 세지 않고, 꾸준히 만나 온 사람은 프리시즌을 지나도 그대로입니다.',
     '육성 › 해외연수에서 여러 명을 한 번에 신청할 수 있습니다. 입대 예정·상무 지원 선수는 빠지고, 합계 비용을 확인한 뒤 한 번에 보냅니다.',
