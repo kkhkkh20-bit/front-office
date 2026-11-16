@@ -1,6 +1,8 @@
 /* ===== 스토브리그 ===== */
 /* 은퇴 기준(결산 뒤 비시즌): 국내 선수. 화면의 '은퇴 유력'과 9월 1일 은퇴 예상 소식이 같은 기준을 쓴다(커뮤니티 건의 11-11) */
-function retireLikely(p){ if(!p||p.foreign||p.team==null||(p.retDelay===G.year&&p.age<=41))return false; const o=ovr(p); return p.age>=40||(p.age>=35&&o<45)||(p.age>=32&&o<35&&!p.faC); }
+const RET_AGE=40, RET_VET_AGE=35, RET_VET_O=44, RET_MID_AGE=32, RET_MID_O=34; /* 한 기준(점검 11-17: 표시는 45·35 미만, 실제 은퇴는 44·34 미만으로 어긋나 있었다) */
+function retireRule(p,o){ o=o??ovr(p); return p.age>=RET_AGE||(p.age>=RET_VET_AGE&&o<RET_VET_O)||(p.age>=RET_MID_AGE&&o<RET_MID_O&&!p.faC); }
+function retireLikely(p){ if(!p||p.foreign||p.team==null||(p.retDelay===G.year&&p.age<=41))return false; return retireRule(p); }
 /* 선수단 표시 태그(커뮤니티 건의 11-11): 원클럽맨·FA 예정·은퇴 유력·포스팅 후보 */
 function lifeTags(p){ const T=[]; if(!p||p.foreign)return T; try{ const R=(p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2); const ys=new Set(R.map(h=>h.y)); if(p.team!=null&&ys.size>=10&&R.every(h=>h.t===p.team))T.push({l:'원클럽맨',c:'good',d:`한 구단에서만 1군 ${ys.size}시즌`}); }catch(e){}
   try{ if(p.team!=null&&!p.prospect&&faLeft(p)<=1&&!(p.faC&&p.yrs>1))T.push({l:'FA 예정',c:'warn',d:'이번 시즌이 끝나면 FA 자격'}); }catch(e){}
@@ -23,7 +25,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
     if(p.foreign&&p.team!=null&&(p.age>=40||(p.age>=37&&ovr(p)<52))){ retired.push({name:p.name,team:p.team,age:p.age}); try{ story(p,`${p.age}세로 은퇴`,'move'); }catch(e){} try{ retireRecord(p); }catch(e){} /* 국내 선수와 같이 은퇴 기록·명예의 전당 심사(검수 11-09zp) */ for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; p.team=null; p.fleft=true; p.retY=G.year; continue; }
     if(p.team==null||p.foreign||p.joinY>G.year)continue;
     const o=ovr(p);
-    if((p.age>=40||(p.age>=35&&o<44)||(p.age>=32&&o<34&&!p.faC))&&!(p.retDelay===G.year&&p.age<=41)){ /* 은퇴 면담으로 한 해 더 뛰기로 한 선수는 올해 은퇴하지 않는다(41세까지) */ try{ legendRetire(p); }catch(e){} retired.push({name:p.name,team:p.team,age:p.age}); const rec=retireRecord(p); try{ obs.push(obFromPlayer(p,rec)); }catch(e){} for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; dropP(p.id); }
+    if(retireRule(p,o)&&!(p.retDelay===G.year&&p.age<=41)){ /* 은퇴 면담으로 한 해 더 뛰기로 한 선수는 올해 은퇴하지 않는다(41세까지) */ try{ legendRetire(p); }catch(e){} retired.push({name:p.name,team:p.team,age:p.age}); const rec=retireRecord(p); try{ obs.push(obFromPlayer(p,rec)); }catch(e){} for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; dropP(p.id); }
   }
   const all=Object.values(G.players).filter(p=>p.team!=null&&!(p.joinY>G.year));
   /* FA 등록일수(실제는 시즌 145일 이상 1군 등록): 게임에서는 1군에서 시즌 대부분을 보낸 해를 인정(야수 85경기·260타석, 투수 40경기·90이닝·선발 16경기 중 하나). 팀당 한 해 16명 안팎이 채운다 */
