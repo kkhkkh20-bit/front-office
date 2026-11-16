@@ -15258,8 +15258,8 @@ function growLevelF(){ const y=G.year; const u=lvUp(); if(G.lvF&&G.lvF.y===y&&G.
    국내 정상급(표시 80 이상) 수가 기준(ELITE_N0)보다 많아진 만큼 정상급 근처(76+) 선수의 성장을 줄이고, 90 근처(86+)는 더 줄인다. 모든 구단에 같다.
    11-15: 국내 선수만 센다(외국인은 해마다 새로 들어오는 바깥 전력이라, 외국인이 상위권을 채울수록 국내 76+ 성장이 30~70% 깎였다. 사용자: 외국인이 리그 꼭대기를 차지하는 건 KBO답다).
    기준은 처음 수(국내 4명 안팎)가 아니라 목표인 구단당 1명(10명): 국내 정상급이 구단마다 한두 명 있게(플레이어 제보 11-15) */
-const ELITE_N0=10;
-function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y&&G.elN.d===2)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&!p.foreign&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; const b=ELITE_N0; G.elN={y,n,d:2,f:+clamp(1-(n-b)/b*.7,.3,1.05).toFixed(3)}; return G.elN; }
+const ELITE_N0=7, ELITE_SLOPE=1.0; /* 11-17 정상급 수 보정(구단주: 리그 한 해 7~8명): 기준 10→7, 기울기 0.7→1.0. 기준 10은 길게 보면 10명 넘게 쌓였다(드래프트 보정 문서 12년째 10.5명). 8세계 12년째 7.5→6.6명, 늘어나는 속도가 느려져 7명 근처에서 멈추게. 모든 구단에 같다(docs/design/draft-elite-tune-2026-11-17.md) */
+function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y&&G.elN.d===2)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&!p.foreign&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; const b=ELITE_N0; G.elN={y,n,d:2,f:+clamp(1-(n-b)/b*ELITE_SLOPE,.3,1.05).toFixed(3)}; return G.elN; }
 function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
 const DRAFT_READY=.15, DRAFT_SUPER=.2;
 function makeDraftClass(){
