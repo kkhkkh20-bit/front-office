@@ -10,7 +10,8 @@ function statLvlBar(p){ if(!p||!p.hist||!p.hist.some(h=>h.lvl==='퓨처스'))ret
 function statTable0(p){
   const lv=statLvl(p), fut=h=>h.lvl==='퓨처스';
   const rows=[...p.hist].filter(h=>lv==='all'||(lv==='2')===fut(h)).sort((a,b)=>b.y-a.y||(a.lvl<b.lvl?-1:1));
-  const pre=lv==='2'?[]:p.prev?[...(p.now&&p.now.y===G.year&&p.team==null?[Object.assign({},p.now,{y:G.year,pre:'올해 '+ovlCandLvl(p,p.now.lvl||p.prevLvl||'',1)})]:[]),Object.assign({y:G.year-1,pre:ovlCandLvl(p,p.prev.lvl,1)},p.prev),...(p.prev2?[Object.assign({y:G.year-2,pre:ovlCandLvl(p,p.prev2.lvl,1)},p.prev2)]:[])]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
+  const nowR=p.now&&p.now.y===G.year&&p.team==null?[Object.assign({},p.now,{y:G.year,pre:'올해 '+ovlCandLvl(p,p.now.lvl||p.prevLvl||'',1)})]:[];
+  const pre=lv==='2'?[]:p.fkbo?nowR:p.prev?[...nowR,Object.assign({y:G.year-1,pre:ovlCandLvl(p,p.prev.lvl,1)},p.prev),...(p.prev2?[Object.assign({y:G.year-2,pre:ovlCandLvl(p,p.prev2.lvl,1)},p.prev2)]:[])]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
   if(lv!=='2'){ try{ pre.push(...ovsStatRows(p)); }catch(e){} } /* 해외에서 뛴 시즌(복귀 선수·KBO를 떠났다 돌아온 선수) */
   /* 합계는 고른 범위대로 다시 센다(국사왕 11-15 #7): 1군만 → 1군 합계, 2군만 → 2군 합계, 2군 포함 → 둘 다 */
   const one=p.hist.filter(h=>!fut(h)), two=p.hist.filter(fut);
