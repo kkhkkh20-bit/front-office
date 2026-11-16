@@ -50,8 +50,9 @@ function coachProfileView(c,o){ /* o.more: 성격·관계 말 줄, o.avTeam: 사
     keys:[['기본 지도',rchip(c.sk),''],['기본 육성',rchip(c.dv),'']],sum:{t:`연 ${money(c.sal||0)}${c.ce?` · ${c.ce}년까지`:''}`,d:c.ax?'선수 육성을 돕는 보조 코치입니다.':(CROLE[c.role]?.d||'')}});
   const radar=''; /* 코치는 능력 차트 없이 사진 카드 + 세부 능력 표만(사용자 11-16) */
   const tags=`${S.map(k=>`<span class="pill good">${CAB[k]} 강점</span>`).join('')}${W.map(k=>`<span class="pill warn">${CAB[k]} 약함</span>`).join('')}`;
-  const cols=[[{h:'맡은 자리 능력',rows:D.map(k=>[CAB[k],a[k],'n'])},{h:'공통 능력',rows:['yng','com','ana'].filter(k=>!D.includes(k)).map(k=>[CAB[k],a[k],'n'])}],[{h:'그 밖의 지도',rows:rest.map(k=>[CAB[k],a[k],'n'])},...(o.more&&o.more.length?[{h:'성격·관계',rows:o.more.map(([l,w,d])=>[l,w,'w',d])}]:[])]];
-  return personGrid(hero,radar,personAttrs('세부 능력 · 100점 척도',cols.map((c,i)=>i===cols.length-1?[...c,{h:'계산 기준',html:'<p class="pc-note">기본 지도·육성은 세부 능력을 종합한 값입니다. 현재 근무 값에는 감독 사단·궁합이 반영됩니다.</p>'}]:c),tags?`<div class="pc-tags">${tags}</div>`:''));
+  /* 두 열 높이를 맞춘다: 성격·관계는 짧은 왼쪽 열 아래로(한 화면에 맞추기, UI 3단계 3-0) */
+  const cols=[[{h:'맡은 자리 능력',rows:D.map(k=>[CAB[k],a[k],'n'])},{h:'공통 능력',rows:['yng','com','ana'].filter(k=>!D.includes(k)).map(k=>[CAB[k],a[k],'n'])},...(o.more&&o.more.length?[{h:'성격·관계',rows:o.more.map(([l,w,d])=>[l,w,'w',d])}]:[])],[{h:'그 밖의 지도',rows:rest.map(k=>[CAB[k],a[k],'n'])},{h:'계산 기준',html:'<p class="pc-note">기본 지도·육성은 세부 능력을 종합한 값입니다. 현재 근무 값에는 감독 사단·궁합이 반영됩니다.</p>'}]];
+  return personGrid(hero,radar,personAttrs('세부 능력 · 100점 척도',cols,tags?`<div class="pc-tags">${tags}</div>`:''));
 }
 
 /* 인물 창(personSheet)에서 쓰는 큰 카드. 없으면 null(옛 카드 그대로). rest: 카드 아래에 이어 붙일 면담·관계 상자 */

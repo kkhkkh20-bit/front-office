@@ -198,3 +198,21 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 .own-fb>.ownership-card{flex:none;padding:10px;border:1px solid var(--line2);background:var(--panel2)}.club-profile-grid>.ownership-card{margin:0}
 @media(max-width:699px){.ownership-card>header h3{font-size:13px}.ownership-facts{gap:8px 10px}.ownership-facts dd{font-size:12px}.ownership-history-list{max-height:220px}}
 .ownership-parties{color:var(--muted)}.ownership-goal-note{flex:none;font-size:12px;line-height:1.6;padding:8px 10px;margin:6px 0;border-left:3px solid var(--warn);background:var(--panel2);overflow-wrap:anywhere}
+
+/* 올해 예산(PC) 한 화면 배치(UI 3단계 3-0): 상자 안 스크롤바 없이 위 세 칸·가운데 추이 두 개·아래 규정, 오른쪽 예산 칸 */
+@media(min-width:1100px){
+ .fin-d{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 300px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"sum sum bud" "cash room bud" "rule rule bud";overflow:hidden}
+ .fin-d>.card{overflow:hidden}
+ .fin-d>.fmd-sum{grid-area:sum;padding:8px 12px}
+ .fin-d>.fmd-sum>h2{display:none}
+ .fin-d .fmd-room .fmd-chg{width:220px;overflow:hidden}
+ .fin-d .fmd-room .fmd-chg .fmd-li2:nth-of-type(n+5){display:none}
+ .fin-d .fmd-top{flex-wrap:wrap;gap:4px 16px}.fin-d .fmd-top>div:first-child{flex:1 0 100%}.fin-d .fmd-st{min-width:90px}
+ .fin-d .fmd-bud{justify-content:flex-start}
+ .fin-d .fmd-bud .fmd-s{padding:6px 0}
+ .fin-d .fmd-acts{grid-template-columns:1fr 1fr;gap:4px}
+ .fin-d .fmd-rl{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px}
+ .fin-d .fmd-rl>div{padding:5px 10px}.fin-d .fmd-rl p{font-size:var(--ui-caption)}
+ .fin-d .fmc{min-height:80px}
+}
+@media(min-width:1100px) and (max-width:1599px){.fin-d .fmd-room .fmd-chg{display:none} /* 좁은 폭: 바뀐 항목은 수입·지출 탭에서 */}
