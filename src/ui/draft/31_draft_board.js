@@ -107,7 +107,7 @@ function draftBoard(){
     </section>`;
   }
   { const T30=all.slice(0,30), z=T30.filter(x=>!obsCount(x.p)).length, lw=T30.filter(x=>x.rp.ofp==null||(x.rp.sd||9)>=8).length; if(z||lw)head+=`<p class="note warn small dunseen" role="status">우리 상위 30명 중 관찰 0회 ${z}명 · 신뢰도 낮음 ${lw}명 <button class="btn small" data-a="dset" data-v="unseen:${f.unseen?'':'1'}">${f.unseen?'모두 보기':'이 선수들만'}</button></p>`; }
-  const seg=`<div class="seg"><button data-a="dset" data-v="seg:board" class="${f.seg==='board'?'on':''}">후보 목록</button><button data-a="dset" data-v="seg:sum" class="${f.seg==='sum'?'on':''}">스카우트 요약</button><button data-a="dset" data-v="seg:res" class="${f.seg==='res'?'on':''}">지명 현황</button><button data-a="dset" data-v="seg:mine" class="${f.seg==='mine'?'on':''}">관심 목록 (${(G.shortlist||[]).filter(id=>G.players[id]&&G.players[id].prospect).length})</button></div>`;
+  const seg=draftViewMenu(); /* 후보·상세·관심·지명 현황·요약 보기 전환(33_scouting_train.js, UI 3단계 3-9) */
   const frame=content=>fmOn()?draftFM(head,seg,content,all,mine,live):`<div class="draft-page"><aside class="draft-context">${head}</aside><div class="draft-candidate-body">${seg}${content}</div></div>`;
   if(f.seg==='res')return frame(draftResults());
   if(f.seg==='sum')return frame(draftCenter(all,mine));
@@ -125,7 +125,7 @@ function draftBoard(){
   const lab=(k,opts)=>(opts.find(o=>o[0]===f[k])||[,''])[1];
   const filtM=fmOn()?filt:`<details class="card dfilt dfilt-d" data-k="draftFilters" ${UI.open?.draftFilters?'open':''}><summary class="small">필터 · ${[lab('pos',Object.entries(DPOS)),f.typ==='all'?'':lab('typ',[['hs','고졸'],['col','대졸']]),f.reg==='all'?'':f.reg,lab('sort',[['rk','스카우트 순위'],['press','언론 순위'],['stat','아마 성적']])].filter(Boolean).join(' · ')} · ${list.length}/${pool.length}명</summary>${filt.replace(/^<section class="card dfilt">|<\/section>$/g,'')}</details>`;
   const dvw=UI.dview||'list'; const pk2='dr'+f.seg+f.pos+f.typ+f.reg+f.sort+dvw; const PG=pager(pk2,list,dvw==='list'?15:(wide()?6:4));
-  const vt=`<div class="row between"><div class="seg sm"><button data-a="dview" data-v="list" class="${dvw==='list'?'on':''}">목록</button><button data-a="dview" data-v="card" class="${dvw==='card'?'on':''}">상세</button></div>${wide()?`<span class="small muted">이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}</span>`:hiI(`목록 칸: 이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}`)}</div>`;
+  const vt=`<div class="row between"><span></span>${wide()?`<span class="small muted">이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}</span>`:hiI(`목록 칸: 이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}`)}</div>`;
   const empty=f.seg==='mine'&&!(G.shortlist||[]).some(id=>G.players[id]&&G.players[id].prospect)?'<p class="small muted">관심 선수가 없습니다. 후보 목록에서 ☆를 눌러 담으세요.</p>':'<p class="small muted">조건에 맞는 선수가 없습니다.</p>';
   return frame((f.seg==='mine'?myBoard(all,mine)+vt:`<div class="dtools">${filtM}${vt}</div>`)+(dvw==='list'?`<section class="card candidate-list draft-candidates" data-pg="${pk2}">${draftCandidateTable(PG.items,mine)}${PG.bar}</section>`:`<div class="tgrid dgrid" data-pg="${pk2}">${PG.items.map(x=>dcard(x.p,x.rp,x.rk,mine)).join('')||empty}</div>${PG.bar}`));
 }

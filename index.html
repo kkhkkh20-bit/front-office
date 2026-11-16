@@ -6795,6 +6795,27 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 @media(min-width:1100px){.res2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 24px;align-items:start}}
 /* 구단 일지: 넓은 PC에서 두 단으로(UI 3단계 3-9) */
 @media(min-width:1600px){.club-log:has(>p:nth-child(20)){display:block;column-count:2;column-gap:32px}.club-log>p{break-inside:avoid;margin:0 0 4px}}
+/* 탭 줄 줄이기·긴 화면(UI 3단계 3-9) */
+.ws-stack{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ws-stack>.card{margin:0}
+.dview-menu{margin:0 0 8px}
+.dview-menu>summary{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:4px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);cursor:pointer;list-style:none}
+.dview-menu>summary::-webkit-details-marker{display:none}
+.dview-menu[open]>summary{border-color:var(--acc)}
+.dview-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.dview-list button{min-height:36px;padding:4px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:inherit;font:inherit;font-size:13px;cursor:pointer}
+.dview-list button.on{border-color:var(--acc);color:var(--acc);font-weight:700}
+.tpool-pick{flex-wrap:wrap}
+.scm-tbl .scm-grp th{text-align:left;font-size:12px;color:var(--muted);background:var(--panel2);cursor:default}
+.sis-acts{margin-bottom:6px}
+.jump-bar{display:none}
+@media(max-width:699px){
+  .jump-bar{display:flex;flex:none;gap:6px;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:4;margin:0 0 8px;padding:6px 0;background:var(--bg)}
+  .jump-bar::-webkit-scrollbar{display:none}
+  .jump-bar button{flex:0 0 auto;min-height:36px;padding:4px 12px;border:1px solid var(--line);border-radius:18px;background:var(--panel);color:inherit;font:inherit;font-size:13px;white-space:nowrap}
+  .card .jump-bar{background:var(--panel)}
+  .trn-bar{position:sticky;top:0;z-index:3;background:var(--panel);padding:6px 0}
+}
 /* 사진 고치기·자르기(71b_photo_edit.js). 연필 버튼은 얼굴 사진 오른쪽 아래 모서리에 붙는다 */
 .ph-w{position:relative;display:inline-block;flex:none;line-height:0;align-self:start}
 .ph-pen{position:absolute;right:-6px;bottom:-6px;z-index:3;width:26px;height:26px;min-height:0;padding:0;border-radius:50%;display:grid;place-items:center;background:var(--panel2,#1d2833);color:var(--ink);border:1px solid var(--line2,var(--line));box-shadow:0 1px 4px rgba(0,0,0,.45);cursor:pointer;line-height:0}
@@ -23977,7 +23998,7 @@ function crewMonthly(){ const C=crewOf(), t=team(G.user); const L=Object.values(
   try{ crewSongAsk(); }catch(e){}
   if(dobj(G.day).m!==1)return; const y=sponSeason();
   for(const j of Object.keys(C)){ const c=C[j]; c.age++; const end=c.y1<y; const poach=!end&&c.star>=15&&c.loy<=8&&R()<.25;
-    if(end){ if(R()<.35+c.loy*.03){ const n=ri(1,2); c.y1=y+n-1; c.sal=Math.round(c.sal*1.06); mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 재계약`,`${c.name}이(가) ${n}년 더 남기로 했습니다. 월급은 ${money(c.sal)}입니다.`,{kind:'구단'}); } else { delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 계약 만료`,`${c.name}이(가) 재계약하지 않고 떠났습니다. 팬 마케팅에서 새 ${CREW_JOB[j].l}을(를) 영입할 수 있습니다.`,{kind:'구단',imp:true,acts:[{l:'팬 마케팅',a:'go',v:'club:fans'}]}); } }
+    if(end){ if(R()<.35+c.loy*.03){ const n=ri(1,2); c.y1=y+n-1; c.sal=Math.round(c.sal*1.06); mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 재계약`,`${c.name}이(가) ${n}년 더 남기로 했습니다. 월급은 ${money(c.sal)}입니다.`,{kind:'구단'}); } else { delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 계약 만료`,`${c.name}이(가) 재계약하지 않고 떠났습니다. 팬 마케팅에서 새 ${CREW_JOB[j].l}을(를) 영입할 수 있습니다.`,{kind:'구단',imp:true,acts:[{l:'팬 마케팅',a:'go',v:'club:ops'}]}); } }
     else if(poach){ const buy=crewSettle(c); G.spend.fanIn=(G.spend.fanIn||0)+buy; /* 영입 구단이 내는 위약금(해지 정산금과 같은 기준, 검수 11-09j) */ delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name}, 다른 구단으로`,`스타성이 높은 ${c.name}에게 다른 구단이 더 좋은 조건을 냈고, 구단 애착이 약해 옮겼습니다. 위약금 ${money(buy)}은 그 구단이 냈고 구단 이벤트 수입으로 잡힙니다.`,{kind:'구단',imp:true}); } } }
 
 /* 선수 응원가(사용자 11-08): 응원단장이 있으면 시즌 중 매달 한 번쯤 응원가가 없는 주축 선수의 응원가를 만들자고 한다.
@@ -24063,7 +24084,7 @@ function cheerYear(S){ const L=[];
     if(R()<(m.age>=27?(m.age-26)*.15:0)+(m.yrs>=8?.2:0)){ S.L=S.L.filter(x=>x!==m); L.push(`${m.name}(${m.age}세, ${m.yrs}년 차) 은퇴`); continue; }
     if(m.pop>=15&&R()<.35-(m.dil-10)*.02){ S.L=S.L.filter(x=>x!==m); L.push(`${m.name} 다른 구단 대행사로 이적(인기 ${m.pop})`); if(m.pop>=17)news('구단',`인기 치어리더 ${m.name}, 다른 구단 응원단으로`,`${tshort(G.user)} 응원단의 간판 ${m.name}이(가) 다른 구단 대행사와 계약했습니다. 팬들의 아쉬움이 큽니다.`,-1); } }
   const f=cheerFill(S); if(f.add.length)L.push(`신인·새 단원 합류: ${f.add.join(', ')}`);
-  mail('마케팅팀',`${CHEER_AG[S.ag].l} 응원단 재계약`,`대행사와 ${G.year} 시즌 응원단 계약을 이어 갑니다. 단원 ${S.L.length}명, 월 수수료 ${money(cheerPay())}.\n${L.length?L.join('\n'):'떠난 단원은 없습니다.'}\n대행사를 바꾸려면 개막 전에 응원단 화면에서 고르세요(단원이 모두 바뀝니다).`,{kind:'구단',acts:[{l:'팬 마케팅',a:'go',v:'club:fans'}]}); }
+  mail('마케팅팀',`${CHEER_AG[S.ag].l} 응원단 재계약`,`대행사와 ${G.year} 시즌 응원단 계약을 이어 갑니다. 단원 ${S.L.length}명, 월 수수료 ${money(cheerPay())}.\n${L.length?L.join('\n'):'떠난 단원은 없습니다.'}\n대행사를 바꾸려면 개막 전에 응원단 화면에서 고르세요(단원이 모두 바뀝니다).`,{kind:'구단',acts:[{l:'응원단',a:'go',v:'club:crew'}]}); }
 function cheerAg(k){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; if(!CHEER_AG[k])return '없는 대행사입니다.';
   if(!fanOps().cs){ const S=cheerSq(k); fanLog(`응원단 대행사 계약: ${CHEER_AG[k].l}`); return `${CHEER_AG[k].l}과(와) 응원단 계약을 맺었습니다. 단원 ${S.L.length}명, 월 수수료 ${money(cheerPay())}.`; } /* 응원단은 계약할 때 생긴다(화면을 보기만 해서는 안 생김, 검수 11-09j) */ const S=cheerSq(); if(S.ag===k)return `이미 ${CHEER_AG[k].l}과(와) 계약 중입니다.`;
   if(period()==='season'||period()==='post')return '시즌 중에는 대행사를 바꿀 수 없습니다. 시즌이 끝난 뒤 바꾸세요.';
@@ -31375,7 +31396,7 @@ function promoGame(day,h,a,st){ if(!st)return; try{ visDrawRec(day,h,a); }catch(
   P.cost+=cost; P.inc+=inc; P.xatt+=xa; P.xtk+=tk;
   const pr=prOf(h); const fan=Math.round(e.fan*10)/10; if(pr&&fan)pr.fan=clamp(pr.fan+fan,0,100);
   const L={d:day,a,k:B.k,att,cap:st.cap,so:!!st.so,xa,tk,inc,cost,net:tk+inc-cost,fan,why:e.why.slice(0,2),...(e.sp?{sp:e.sp.p.name}:{})}; P.log.push(L); if(P.log.length>PROMO_MAX*2)P.log.shift();
-  if(h===G.user&&!G.unemp&&!G._away){ mail('마케팅팀',`[프로모션] ${E.l} 결과`,promoReport(L),{kind:'구단',acts:[{l:'프로모션 보기',a:'go',v:'club:fans'}]}); } }
+  if(h===G.user&&!G.unemp&&!G._away){ mail('마케팅팀',`[프로모션] ${E.l} 결과`,promoReport(L),{kind:'구단',acts:[{l:'프로모션 보기',a:'go',v:'club:ops'}]}); } }
 function promoReport(L){ const E=PROMO_EV[L.k]; const n=x=>x.toLocaleString('ko-KR');
   return `${dmd(L.d)} ${tshort(L.a)}전 ${E.l}${L.sp?`(${L.sp})`:''}\n관중 ${n(L.att)}명${L.so?'(매진)':''} · 행사 효과 약 +${n(L.xa)}명\n표값 +${money(L.tk)}${L.inc?` · 행사 매출 +${money(L.inc)}`:''} · 비용 ${money(L.cost)} → ${L.net>=0?'+':''}${money(L.net)}${L.fan?` · 팬 여론 +${L.fan}`:''}${L.why.length?`\n${L.why.join('. ')}.`:''}`; }
 /* 원정 스타 효과 기록: 원정 팀 스타 덕에 늘어난 기대 관중(양수일 때만). 홈 구단 화면엔 '어느 팀 스타가 관중을 불렀나', 원정 팀엔 '우리 스타가 원정 관중을 불렀나' */
@@ -33568,12 +33589,12 @@ function scoutBody(){
     return `<div class="sasg" aria-label="담당 업무">${G3.map(([l,os])=>`<div><i>${l}</i>${optRow('sAssign',cur,os,s.id,'wsx')}</div>`).join('')}</div>`; };
   const it={cur:UI._smk?(UI.smkSrc==='oth'?'oth':'mkt'):'team',bar:''}; /* 채용 후보·다른 구단은 스태프 시장으로 */
   const TEAM=`<p class="small muted">스카우트 한 명은 한 가지 업무만 맡습니다. 투수 감별·타자 감별 특기가 있으면 그 유형 선수를 볼 때 능력이 한 단계 높습니다. 아마추어는 그 지역 고교·대학 선수(드래프트), 프로는 그 지역 연고 구단 선수, 해외는 그 나라 외국인 시장을 봅니다. 해외 담당을 보내면 그 나라 정보 수준이 한 단계 올라갑니다. 업무를 바꾸면 30일 동안 적응 기간이라 능력이 1 낮게 적용됩니다. 최대 ${scoutMax()}명.</p>
-    ${matrix}${scoutChiefBox()}${tripBox()}
-    <div class="tgrid">${G.scouts.map(s=>scoutCard(s,`${opt(s)}${G.day-(s.since??-999)<30?`<span class="pill warn">적응 중 · ${dmd(s.since+30)}까지</span>`:''}<span class="small muted">${staffLoyWord(stAttr(s).loy)}</span><button class="tc-i" data-a="person" data-v="sc:${s.id}">인물 카드</button><button class="tc-i danger" data-a="fireScout" data-v="${s.id}">계약 해지</button>`)).join('')||'<p class="small muted">스카우트가 없습니다.</p>'}</div>`;
+    ${matrix}<div id="sct-chief">${scoutChiefBox()}</div>${tripBox()}
+    <div class="tgrid">${G.scouts.map(s=>scoutCard(s,`${opt(s)}${G.day-(s.since??-999)<30?`<span class="pill warn">적응 중 · ${dmd(s.since+30)}까지</span>`:''}<span class="small muted">${staffLoyWord(stAttr(s).loy)}</span><button class="tc-i" data-a="person" data-v="sc:${s.id}">인물 카드</button><button class="tc-i danger" data-a="fireScout" data-v="${s.id}">계약 해지</button>`).replace('<div class="tcard"',`<div class="tcard" id="sct-${s.id}"`)).join('')||'<p class="small muted">스카우트가 없습니다.</p>'}</div>`;
   const MK=`<div class="eyebrow">고용 ${G.scouts.length}/${scoutMax()}명 · ${stPrestigeLine()}</div>
     ${(()=>{ const f=UI.scF||'all'; return `<div class="row between"><span class="small muted">채용 후보 ${scoutMkt().length}명 · 매달 일부가 바뀝니다</span>${UI._smkFb?'':`<div class="chips">${[['all','전체'],['P','투수 감별'],['B','타자 감별'],['hi','능력 4 이상']].map(([k,l])=>`<button data-a="scF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div>`}</div>`; })()}
     <div class="tgrid">${(()=>{ const sq=String(UI.smkQ||'').trim(), SL=scoutMkt().filter(s=>{ const f=UI.scF||'all'; return (!sq||s.name.includes(sq))&&(f==='all'||(f==='hi'?s.skill>=4:s.spec===f)); }).sort((a,b)=>b.skill-a.skill||a.sal-b.sal); const PG=pager('scm'+(UI.scF||''),SL,cardPageSize()); UI._scPg=PG.bar; return PG.items; })().map(s=>scoutCard(s,stMktInfo(s)+(stBidLive(s)?stBidBtns('sc',s,'tc-i'):`<button class="tc-i" data-a="hireScout" data-v="${s.id}:0" >제안 · 연 ${money(s.sal||0)}</button><button class="tc-i" data-a="hireScout" data-v="${s.id}:0.2" >20% 더 · ${money(round5(s.sal*1.2))}</button>`))).join('')}</div>${UI._scPg||''}`;
-  return it.cur==='mkt'?MK:it.cur==='oth'?stOtherView('sc'):TEAM+smkLink('sc','스카우트 채용');
+  return it.cur==='mkt'?MK:it.cur==='oth'?stOtherView('sc'):jumpBar([['sct-top','배치 현황'],['sct-chief','팀장 제안'],...G.scouts.map(x=>[`sct-${x.id}`,esc(x.name)]),['sct-hire','채용']])+`<div id="sct-top"></div>`+TEAM+`<div id="sct-hire">${smkLink('sc','스카우트 채용')}</div>`; /* 휴대폰 긴 화면: 바로 가기 한 줄(UI 3단계 3-9) */
 }
 
 /* 감독 카드 정리: 성향(어느 쪽이냐)은 양 끝 이름이 있는 한 줄 눈금, 능력(높을수록 좋음)은 점수 막대, 성격은 한 줄 */
@@ -33600,12 +33621,12 @@ const SUBS={
   club:[['info','구단 정보'],['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['share','팀 카드'],['cup','프런트컵'],['uld','유저 래더']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
 const MERGE={trade:{block:['block']},staff:{train:['tc','camp','sc','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
-  league:{hist:['hist','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','crew','news','media'],chron:['build','chron','result','ob','log']}};
+  league:{hist:['hist','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','ops','crew','news','media'],chron:['build','chron','result','ob','log']}};
 const ALIAS={}; for(const t in MERGE){ ALIAS[t]={}; for(const v in MERGE[t])for(const k of MERGE[t][v])ALIAS[t][k]=v; } ALIAS.trade.offers='block';
 /* 합친 탭에서 부가 화면은 접어 둔다(제목만 보이고 누르면 펼침) */
 const MFOLD={'trade:find':'선수 찾기','trade:report':'트레이드 성적표','league:teams':'구단 둘러보기','league:feat':'대기록 연표','league:dist':'리그 분포','league:tdata':'구단 지표','league:park':'구장 효과','league:abroad':'해외파','club:rel':'관계도','club:ob':'OB·레전드','club:log':'구단 일지','club:result':'지난 시즌 결산','staff:mil':'병역','staff:coach':'코치진'};
 /* 합쳐진 메뉴는 세로로 쌓지 않고 안쪽 탭으로 나눈다: 한 화면에 한 주제 */
-const MLBL={'staff:tc':'코치 배정','staff:camp':'훈련장','staff:sc':'스프링캠프','staff:lead':'리더십','club:media':'여론·기자','club:fans':'팬 게시판','club:crew':'응원단장·치어리더','club:build':'내가 꾸린 팀','club:news':'우리 구단 기사','club:mkt':'마케팅','trade:market':'추천·영입 요청','trade:gms':'단장들','staff:mgr':'감독','staff:dev':'육성','staff:med':'부상 관리','league:stand':'순위','league:rec':'기록','league:hist':'역사','club:owner':'구단주·목표','club:fin':'재정','club:chron':'연대기'};
+const MLBL={'staff:tc':'코치 배정','staff:camp':'훈련장','staff:sc':'스프링캠프','staff:lead':'리더십','club:media':'여론·기자','club:fans':'팬 게시판','club:ops':'마케팅·이벤트','club:crew':'응원단장·치어리더','club:build':'내가 꾸린 팀','club:news':'우리 구단 기사','club:mkt':'마케팅','trade:market':'추천·영입 요청','trade:gms':'단장들','staff:mgr':'감독','staff:dev':'육성','staff:med':'부상 관리','league:stand':'순위','league:rec':'기록','league:hist':'역사','club:owner':'구단주·목표','club:fin':'재정','club:chron':'연대기'};
 function mergedBody(tab,s,H){ const ks=((MERGE[tab]&&MERGE[tab][s])||[s]).filter(k=>H[k]); if(!ks.length)return H[SUBS[tab][0][0]]?H[SUBS[tab][0][0]]():'';
   const why=ks.map(k=>{ try{ return alertWhy(tab,k); }catch(e){ return ''; } }).join('');
   if(ks.length===1)return why+H[ks[0]]();
@@ -38232,7 +38253,7 @@ function draftBoard(){
     </section>`;
   }
   { const T30=all.slice(0,30), z=T30.filter(x=>!obsCount(x.p)).length, lw=T30.filter(x=>x.rp.ofp==null||(x.rp.sd||9)>=8).length; if(z||lw)head+=`<p class="note warn small dunseen" role="status">우리 상위 30명 중 관찰 0회 ${z}명 · 신뢰도 낮음 ${lw}명 <button class="btn small" data-a="dset" data-v="unseen:${f.unseen?'':'1'}">${f.unseen?'모두 보기':'이 선수들만'}</button></p>`; }
-  const seg=`<div class="seg"><button data-a="dset" data-v="seg:board" class="${f.seg==='board'?'on':''}">후보 목록</button><button data-a="dset" data-v="seg:sum" class="${f.seg==='sum'?'on':''}">스카우트 요약</button><button data-a="dset" data-v="seg:res" class="${f.seg==='res'?'on':''}">지명 현황</button><button data-a="dset" data-v="seg:mine" class="${f.seg==='mine'?'on':''}">관심 목록 (${(G.shortlist||[]).filter(id=>G.players[id]&&G.players[id].prospect).length})</button></div>`;
+  const seg=draftViewMenu(); /* 후보·상세·관심·지명 현황·요약 보기 전환(33_scouting_train.js, UI 3단계 3-9) */
   const frame=content=>fmOn()?draftFM(head,seg,content,all,mine,live):`<div class="draft-page"><aside class="draft-context">${head}</aside><div class="draft-candidate-body">${seg}${content}</div></div>`;
   if(f.seg==='res')return frame(draftResults());
   if(f.seg==='sum')return frame(draftCenter(all,mine));
@@ -38250,7 +38271,7 @@ function draftBoard(){
   const lab=(k,opts)=>(opts.find(o=>o[0]===f[k])||[,''])[1];
   const filtM=fmOn()?filt:`<details class="card dfilt dfilt-d" data-k="draftFilters" ${UI.open?.draftFilters?'open':''}><summary class="small">필터 · ${[lab('pos',Object.entries(DPOS)),f.typ==='all'?'':lab('typ',[['hs','고졸'],['col','대졸']]),f.reg==='all'?'':f.reg,lab('sort',[['rk','스카우트 순위'],['press','언론 순위'],['stat','아마 성적']])].filter(Boolean).join(' · ')} · ${list.length}/${pool.length}명</summary>${filt.replace(/^<section class="card dfilt">|<\/section>$/g,'')}</details>`;
   const dvw=UI.dview||'list'; const pk2='dr'+f.seg+f.pos+f.typ+f.reg+f.sort+dvw; const PG=pager(pk2,list,dvw==='list'?15:(wide()?6:4));
-  const vt=`<div class="row between"><div class="seg sm"><button data-a="dview" data-v="list" class="${dvw==='list'?'on':''}">목록</button><button data-a="dview" data-v="card" class="${dvw==='card'?'on':''}">상세</button></div>${wide()?`<span class="small muted">이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}</span>`:hiI(`목록 칸: 이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}`)}</div>`;
+  const vt=`<div class="row between"><span></span>${wide()?`<span class="small muted">이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}</span>`:hiI(`목록 칸: 이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}`)}</div>`;
   const empty=f.seg==='mine'&&!(G.shortlist||[]).some(id=>G.players[id]&&G.players[id].prospect)?'<p class="small muted">관심 선수가 없습니다. 후보 목록에서 ☆를 눌러 담으세요.</p>':'<p class="small muted">조건에 맞는 선수가 없습니다.</p>';
   return frame((f.seg==='mine'?myBoard(all,mine)+vt:`<div class="dtools">${filtM}${vt}</div>`)+(dvw==='list'?`<section class="card candidate-list draft-candidates" data-pg="${pk2}">${draftCandidateTable(PG.items,mine)}${PG.bar}</section>`:`<div class="tgrid dgrid" data-pg="${pk2}">${PG.items.map(x=>dcard(x.p,x.rp,x.rk,mine)).join('')||empty}</div>${PG.bar}`));
 }
@@ -38415,10 +38436,15 @@ function draftHist(ys){ const y=UI.dhy&&ys.includes(UI.dhy)?UI.dhy:ys[0]; const 
     <dl class="tsum"><div><dt>우리 지명</dt><dd class="num">${mine.length}명</dd></div><div><dt>우리 WAR 합</dt><dd class="num">${mw.toFixed(1)}</dd></div><div><dt>리그 순위</dt><dd class="num">${rk?rk+'위 · '+grade:'-'}</dd></div></dl>
     <div class="eyebrow">우리 지명자</div>${mine.length?tbl(mine):'<p class="small muted">기록이 없습니다.</p>'}
     <div class="eyebrow">이 해 최고 선수 10명</div>${tbl(best)}`); }
-function draftPage(){ const ys=draftYears(); const fdT=!!(G.fd&&G.fd.done&&G.fd.picks&&G.fd.picks.some(x=>x.tid===G.user&&x.pid));
-  const tabs=[['now',G.draft&&!G.draft.done?'드래프트 진행':'올해 드래프트']]; if(ys.length)tabs.push(['hist','지난 드래프트 성적표']); if(fdT)tabs.push(['fd','창단 지명 평가']);
-  const it=tabs.length>1?inTabs('dr',tabs):null;
-  return (it?it.bar:'')+(it&&it.cur==='hist'?draftHist(ys):it&&it.cur==='fd'?fdEvalView():draftBoard()); }
+/* 드래프트 보드 한 화면(UI 3단계 3-9): 올해/지난 성적표/창단 평가 탭과 후보·요약·현황·관심 탭, 목록/상세 전환을 '보기 ▾' 하나로 묶는다 */
+function draftViews(){ const ys=draftYears(), fdT=!!(G.fd&&G.fd.done&&G.fd.picks&&G.fd.picks.some(x=>x.tid===G.user&&x.pid)), nS=(G.shortlist||[]).filter(id=>G.players[id]&&G.players[id].prospect).length;
+  const L=[['board','후보 목록'],['card','후보 상세'],['mine',`관심 목록 ${nS}`],['res','지명 현황'],['sum','스카우트 요약']]; if(ys.length)L.push(['hist','지난 드래프트 성적표']); if(fdT)L.push(['fd','창단 지명 평가']); return L; }
+function draftViewCur(){ const L=draftViews(), f=UI.df||{}; let v=UI.drv==='hist'||UI.drv==='fd'?UI.drv:(f.seg||'board'); if(v==='board'&&UI.dview==='card')v='card'; return L.find(x=>x[0]===v)||L[0]; }
+function draftViewMenu(){ const L=draftViews(), c=draftViewCur(); const op=!!(UI.open&&UI.open.dviewMenu);
+  return `<details class="ws-tab-select dview-menu" data-k="dviewMenu"${op?' open':''}><summary><span class="small muted">보기</span> <b>${esc(c[1])}</b> <span aria-hidden="true">▾</span></summary><div class="dview-list" role="menu">${L.map(([k,l])=>`<button type="button" role="menuitemradio" aria-checked="${k===c[0]}" data-a="dpick" data-v="${k}" class="${k===c[0]?'on':''}">${esc(l)}</button>`).join('')}</div></details>`; }
+function draftPage(){ const ys=draftYears(); const v=draftViewCur()[0];
+  if(v==='hist'||v==='fd'){ const body=v==='hist'?draftHist(ys):fdEvalView(); return `${draftViewMenu()}${body}`; }
+  return draftBoard(); }
 /* ---------- 구단 훈련장 전경: 시설 단계와 선수 위치를 한 장에 ---------- */
 function campData(){ facInit(); const per=period(); const inSea=per==='season'||per==='post'; const camp=G.camp&&!G.camp.done;
   const ps=playersOf(G.user).filter(p=>!p.ys||true); const devIds=new Set((G.devProg||[]).map(x=>x.pid)); const devOf=id=>(G.devProg||[]).find(x=>x.pid===id);
@@ -38814,10 +38840,10 @@ function trainCoachView(){ const C=coachesOf(G.user), ps=playersOf(G.user).filte
       <div class="tc-f"><span>코치 부담</span><b class="${['good','warn','bad'][lv]}">● ${['적음','보통','많음'][lv]}</b><span class="muted">${g==='F'?`2군 ${L.length}명`:`${L.length}명 집중`}</span></div>
       ${L.length?`<table class="tc-t"><tbody>${[...L].sort((a,b)=>g==='F'?ovr(b)-ovr(a):0).slice(0,12).map(p=>{ const v=g==='F'?ovr(p):g==='C'?defAt(p,'C'):p.r[k]; return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td class="muted">${esc(posLabel(p))} · ${p.age}세</td><td>${g==='F'?'종합 ':g==='C'?'포수 수비 ':''}<b style="color:${rcol(v)}">${dv(v)}</b></td></tr>`; }).join('')}</tbody></table>`:''}</section>`; };
   const nC=CKEYS.filter(k=>C[k]).length;
-  return `<div class="tc ws-own"><section class="tc-top"><div><span class="small muted">코치진</span><h2>코치 ${nC}/${CKEYS.length}명</h2></div><div class="sf-dots">${CKEYS.map(k=>`<i style="background:${C[k]?rcol(coachShowV(C[k],G.user,'sk')):'transparent'}" class="${C[k]?'':'emp'}" title="${CROLE[k].l}${C[k]?' '+esc(C[k].name):' 빈자리'}"></i>`).join('')}</div>
+  return `<div class="tc ws-own">${jumpBar(TC_GROUPS.map(([t],i)=>[`tcg-${i}`,t]))}<section class="tc-top"><div><span class="small muted">코치진</span><h2>코치 ${nC}/${CKEYS.length}명</h2></div><div class="sf-dots">${CKEYS.map(k=>`<i style="background:${C[k]?rcol(coachShowV(C[k],G.user,'sk')):'transparent'}" class="${C[k]?'':'emp'}" title="${CROLE[k].l}${C[k]?' '+esc(C[k].name):' 빈자리'}"></i>`).join('')}</div>
     <p class="small muted">선수마다 집중 항목 하나를 정하면 그 항목 담당 코치가 지도합니다. 코치 한 명이 맡는 선수가 많을수록 효과가 나뉩니다. 집중 항목은 선수 정보의 훈련 탭이나 '육성' 탭에서 바꿉니다.</p>
     <div class="tc-btns"><button class="btn small" data-a="go" data-v="staff:coach">스태프 개요</button><button class="btn small" data-a="itab" data-v="mg_staff_train:dev">선수별 훈련 방향</button></div></section>
-    <div class="tc-groups">${TC_GROUPS.map(([t,L])=>`<div class="tc-g"><h3>${t}</h3>${L.map(card).join('')}</div>`).join('')}</div></div>`; }
+    <div class="tc-groups">${TC_GROUPS.map(([t,L],i)=>`<div class="tc-g" id="tcg-${i}"><h3>${t}</h3>${L.map(card).join('')}</div>`).join('')}</div></div>`; }
 /* ---------- 구단·재정 ---------- */
 
 /* ---------- 구장 ---------- */
@@ -38944,7 +38970,7 @@ function clubFm(){ const tid=G.user, t=team(tid), F=fxFact, H=G.history||[];
   const sch=fxBox('fxc-sch',fxHead('경기 일정 및 결과'),`<div class="fx-gs"><h4>다음</h4>${nextGames(5).map(x=>gt(x.op,(x.ps?esc(x.ps):x.home?'홈':'원정')+' '+dsh(x.d),'')).join('')||'<p class="fx-none">남은 경기 없음</p>'}<h4>최근</h4>${G.games.slice(0,5).map((g,i)=>{ const h=g.home===tid, op=h?g.away:g.home; return gt(op,h?'홈':'원정',`${g.res} ${h?g.hs:g.as}-${h?g.as:g.hs}`,g.res==='승'?'w':g.res==='패'?'l':'',` data-a="openGame" data-v="${i}"`); }).join('')||'<p class="fx-none">아직 없음</p>'}</div>`);
   return `<div class="fmx fmx-club nolink ws-own">${info}${fac}${fin}${form}${stad}${ppl}${pers}${hof}${uni}${sch}</div>`; }
 function clubBody(s){
-  const H0={auth:authView,rel:relView,ob:obView,owner:()=>fmOn()?ownerDash():fmCols(ownerView()+prestigeCard()+starPanel()+ownerAskView()),media:mediaView,fans:()=>fanOpsCard()+promoCard()+fanBoard(),crew:()=>G.unemp?'':csec('응원단장 · 치어리더 팀장',crewView())+csec('치어리더 단원',cheerView()),build:teamBuildView,news:ourNewsView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,ach:achView,legacy:legacyView,
+  const H0={auth:authView,rel:relView,ob:obView,owner:()=>fmOn()?ownerDash():fmCols(ownerView()+prestigeCard()+starPanel()+ownerAskView()),media:()=>wsStack(mediaView()),fans:fanBoard,ops:()=>wsStack(fanOpsCard()+promoCard()),crew:()=>G.unemp?'':wsStack(csec('응원단장 · 치어리더 팀장',crewView())+csec('치어리더 단원',cheerView())), /* 팬·언론(UI 3단계 3-9): 팬 게시판과 마케팅을 안쪽 탭 한 줄로 나누고, 휴대폰은 한 탭 안 카드를 세로로 이어 붙여 묶음 버튼 줄을 없앤다 */build:teamBuildView,news:ourNewsView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,ach:achView,legacy:legacyView,
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     share:()=>teamShareView(),
     cup:()=>cupView(), /* 유저 대회(src/ui/cup) */
@@ -39048,8 +39074,8 @@ function tradeView(){
   pool.sort(sf); const INT=side==='give'&&interestKnown(tr.tid)?aiInterest(tr.tid):[]; if(INT.length)pool.sort((a,b)=>(INT.includes(b.p.id)?1:0)-(INT.includes(a.p.id)?1:0));
   const sel=tr[side]; const PGt=pager('tpool'+side+seg+sort+tr.tid+fk,pool,innerWidth<700?tradeListSize():wide()?16:8);
   const poolCard=`<section class="card">
-    <div class="tpool-head"><div class="seg" id="tpick"><button data-a="tside" data-v="get" class="${side==='get'?'on':''}">상대 선수 (${esc(tfull(t))})</button><button data-a="tside" data-v="give" class="${side==='give'?'on':''}">우리 선수</button></div>
-    <div class="trade-pool-options"><div class="seg" role="group" aria-label="협상 선수 구분">${[['bat','야수'],['pit','투수']].map(([v,l])=>`<button data-a="tseg" data-v="${v}" class="${seg===v?'on':''}">${l}</button>`).join('')}</div><div class="seg" role="group" aria-label="협상 선수 정렬">${[['cur','능력순'],['fut','잠재력순'],['sal','연봉순'],['age','나이순']].map(([v,l])=>`<button data-a="tsort" data-v="${v}" class="${sort===v?'on':''}">${l}</button>`).join('')}</div>${side==='get'?tradeFindBar():''}</div></div>
+    <div class="tpool-head"><div class="seg tpool-pick" id="tpick" role="group" aria-label="협상 선수 고르기">${[['get','bat','상대 야수'],['get','pit','상대 투수'],['give','bat','우리 야수'],['give','pit','우리 투수']].map(([a,b,l])=>`<button data-a="tpool" data-v="${a}:${b}" class="${side===a&&seg===b?'on':''}" aria-pressed="${side===a&&seg===b}">${l}</button>`).join('')}</div>
+    <div class="trade-pool-options"><div class="seg" role="group" aria-label="협상 선수 정렬">${[['cur','능력순'],['fut','잠재력순'],['sal','연봉순'],['age','나이순']].map(([v,l])=>`<button data-a="tsort" data-v="${v}" class="${sort===v?'on':''}">${l}</button>`).join('')}</div>${side==='get'?tradeFindBar():''}</div></div>
     <p class="small muted">"${side==='get'?'받기':'보내기'}"를 누르면 위 협상안에 올라갑니다. 이름을 누르면 선수 정보가 열립니다. 현재 능력은 정확한 값이고, 잠재력은 우리 선수와 프로 담당 스카우트가 있는 지역 구단만 보입니다. 외국인 선수와 올해 입단 신인은 제외됩니다.${nHid?` 트레이드 불가 ${nHid}명 숨김.`:''}</p>
     <div class="trws" data-pg="tpool${side}${seg}${sort}${tr.tid}${fk}"><div class="trw-h"><span>선수</span><span>현재 · 잠재력</span><span></span></div>${PGt.items.map(({p})=>trow(p,side,sel.includes(p.id),INT.includes(p.id)?interestWhy(tr.tid,p):'',tr.tid)).join('')||`<p class="small muted">${side==='get'&&UI.findBlk==='blk'?'이 구단 매물이 없습니다.':'대상 선수가 없습니다.'}</p>`}</div>${PGt.bar}
   </section>`;
@@ -40644,6 +40670,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     UI.slotMsg=`슬롯 ${n}에 지금 상황(${dstr(G.day)})을 덮어 저장했습니다. 계속 진행하는 곳은 슬롯 ${curSlot()}입니다.`; render(); },
   slotAll(){ UI.slotAll=!UI.slotAll; render(); },
   dview(v){ UI.dview=v; render(); },
+  dpick(v){ UI.open=UI.open||{}; UI.open.dviewMenu=false; if(v==='hist'||v==='fd'){ UI.drv=v; render(); return; } UI.drv=null; UI.df=UI.df||{pos:'all',typ:'all',reg:'all',sort:'rk',seg:'board',more:20}; UI.df.seg=v==='card'?'board':v; if(v==='card'||v==='board')UI.dview=v==='card'?'card':'list'; render(); }, /* 드래프트 '보기 ▾'(33_scouting_train draftViewMenu) */
+  jumpTo(v){ const e=document.getElementById(v); if(e)e.scrollIntoView({block:'start',behavior:'smooth'}); }, /* 긴 화면 바로 가기(jumpBar) */
   tpOpen(v,el){ const c=el&&el.closest('.tmk'); if(c){ c.classList.toggle('open');const open=c.classList.contains('open');(UI.teamOpen=UI.teamOpen||{})[v]=open;el.textContent=open?'접기':'자세히';el.setAttribute('aria-expanded',String(open)); } },
   mfcShow(v){ const el=document.getElementById('m-'+v); if(el&&!el.classList.contains('open')){ el.classList.add('open'); const b=el.querySelector('.mfc-more'); if(b)b.textContent='접기'; } },
   mfcOpen(v){ const el=document.getElementById('m-'+v); if(el){ el.classList.toggle('open'); const b=el.querySelector('.mfc-more'); if(b)b.textContent=el.classList.contains('open')?'접기':'전체 보기'; } },
@@ -40673,6 +40701,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     UI.trade={tid:+v,give:o.give||[],get:[],cash:cs,pk:P.give.length?{give:P.give,get:[],y:P.y}:null,msg:lost&&o.tid!=null?'상대 구단을 바꿔 받기로 한 현금·지명권은 뺐습니다. 보낼 선수·현금·지명권은 그대로입니다.':'',seg:o.seg||'bat',side:'get',sort:o.sort||'cur'};render();},
   tseg(v){UI.trade.seg=v;render();},
   tside(v){UI.trade.side=v;render();},
+  tpool(v){const [a,b]=String(v).split(':');UI.trade.side=a;UI.trade.seg=b;render();}, /* 상대/우리 × 야수/투수를 한 줄로(UI 3단계 3-9) */
   tsideGo(v){ UI.trade.side=v;if(innerWidth<700)UI.trade.stage='pick'; render(); requestAnimationFrame(()=>{ const e=document.getElementById('tpick'); if(e)e.scrollIntoView({behavior:'smooth',block:'start'}); }); },
   tsort(v){UI.trade.sort=v;render();},
   tpick(v){const [side,id]=v.split(':');const arr=UI.trade[side];const i=arr.indexOf(+id);i>=0?arr.splice(i,1):arr.push(+id);UI.trade.msg='';UI.trade.want=null;render();},
@@ -41100,7 +41129,7 @@ document.addEventListener('click',e=>{
   /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
      예) 인터뷰 답을 누르고 손가락을 한 번 더 대면 다음 질문의 같은 자리 답이 나가던 문제(커뮤니티 제보 2026-10-31). 같은 버튼(＋/− 등)의 빠른 연타는 그대로 */
   { const now=performance.now(), L=UI._clk, sig=a+'|'+(el.dataset.v||'')+'|'+(el.textContent||'').trim().slice(0,40);
-    const navigation=['advStop','tab','sub','go','retiredGo','trophyGo','itab','ovsPick','ovsList','ovsFlt','ovsBulkOpen','ovsBulkClose','ovsBulkTog','ovsCenter','protOpt','cpPos','peopleStep','relGo','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tsideGo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive','networkOpen','networkPerson','networkRecruit','networkFilter','networkSearch','networkReset','networkPage','coachStudyOpen','coachStudyProgram','coachStudyFocus','relBulkMode','relBulkToggle','relBulkAll','relBulkClear','relBulkTopic','freePage','freeSort','freeReset','fbarTog','fbarReset','fbqClear','freeOpt'].includes(a);
+    const navigation=['advStop','tab','sub','go','retiredGo','trophyGo','itab','ovsPick','ovsList','ovsFlt','ovsBulkOpen','ovsBulkClose','ovsBulkTog','ovsCenter','protOpt','cpPos','peopleStep','relGo','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tpool','tsideGo','dpick','jumpTo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive','networkOpen','networkPerson','networkRecruit','networkFilter','networkSearch','networkReset','networkPage','coachStudyOpen','coachStudyProgram','coachStudyFocus','relBulkMode','relBulkToggle','relBulkAll','relBulkClear','relBulkTopic','freePage','freeSort','freeReset','fbarTog','fbarReset','fbqClear','freeOpt'].includes(a);
     if(!navigation&&L&&now-L.t<400&&Math.hypot((e.clientX||0)-L.x,(e.clientY||0)-L.y)<30&&L.r!==UI._rN&&L.sig!==sig){ e.preventDefault(); return; }
     UI._clk={t:now,x:e.clientX||0,y:e.clientY||0,r:UI._rN,sig}; }
   if(A[a]){ e.preventDefault(); UI._tapAnchor=tapAnchor(el); try{ A[a](el.dataset.v,el,e); }finally{ UI._tapAnchor=null; } } /* 다시 그린 뒤 누른 버튼 위치 유지(52_reading_state) */
@@ -41930,9 +41959,9 @@ function personXExt(k){ const P=String(k).split(':'), kind=P[0];
   if(kind==='chm'){ const o=cheerOf(P[1]); if(!o)return null; const {S,m}=o; const img=(G.cimg&&G.cimg['P:cheerm:'+m.id])||(typeof face8Src==='function'&&cheerPh(S,m)!=null?face8Src(cheerPh(S,m)):null);
     const fol=m.fol>=10000?(m.fol/10000).toFixed(1)+'만':String(m.fol);
     return {k,name:m.name,role:`${tname(G.user)} 치어리더`,av:{img,name:m.name},rel:null,lab:'',sub:`${m.age}세 · ${m.yrs?m.yrs+'년차':'신인'} · 팔로워 ${fol}`,
-      info:`<p class="small">${m.inj?`부상 ${m.inj}일 · `:''}${m.sl?`슬럼프 ${m.sl}일 · `:''}무대 ${m.app||0}회 · 피로 ${Math.round(m.fat||0)} · 월 수수료 ${money(cheerFee(m,S.ag))}</p>`,acts:[btn('응원단','go','club:fans',1)]}; }
+      info:`<p class="small">${m.inj?`부상 ${m.inj}일 · `:''}${m.sl?`슬럼프 ${m.sl}일 · `:''}무대 ${m.app||0}회 · 피로 ${Math.round(m.fat||0)} · 월 수수료 ${money(cheerFee(m,S.ag))}</p>`,acts:[btn('응원단','go','club:crew',1)]}; }
   if(kind==='crew'){ const c=crewOf()[P[1]]; if(!c)return null; const ph=typeof crewPh==='function'?crewPh(c):null; const img=(G.cimg&&G.cimg['P:cheer:'+c.id])||(ph!=null&&typeof face8Src==='function'?face8Src(ph):null);
-    return {k,name:c.name,role:`${tname(G.user)} ${CREW_JOB[c.job].l}`,av:{img,name:c.name},rel:null,lab:'',sub:`${c.age}세 · 월 ${money(c.sal)}`,acts:[btn('팬 운영','go','club:fans',1)]}; }
+    return {k,name:c.name,role:`${tname(G.user)} ${CREW_JOB[c.job].l}`,av:{img,name:c.name},rel:null,lab:'',sub:`${c.age}세 · 월 ${money(c.sal)}`,acts:[btn('팬 운영','go','club:ops',1)]}; }
   if(kind==='spn'){ const S=G.spon, c=S&&S.c&&S.c[P[1]]; if(!c||!c.co)return null; const H=(S.hist||[]).filter(h=>h.co===c.co);
     return {k,name:c.co,role:`${SPON_SLOT[P[1]].l} 스폰서 · ${c.ind}`,av:{img:hsCrest(c.co),name:c.co},rel:null,lab:'',sub:`${c.y0}~${c.until} · 연 ${money(c.amt)}`,
       info:`<p class="small">${c.ps?`가을야구 진출 보너스 ${money(c.ps)} · `:''}${c.champ?`우승 보너스 ${money(c.champ)} · `:''}${c.img?'언론 논조가 30 아래면 다음 해 20% 감액 조항':'이미지 조항 없음'}</p>${H.length?`<p class="small muted">지난 계약 ${H.length}건: ${H.map(h=>`${h.y0}~${h.until} ${SPON_SLOT[h.slot].l}`).join(', ')}</p>`:''}`,
@@ -42012,6 +42041,10 @@ function offerAdvBox(o){ const A=o.adv||{}; const row=(k,l,who)=>A[k]?`<div clas
    세로는 표·목록 패널 안에서 스크롤하고, 첫 열(이름)은 늘 보인다.
    열 폭을 재서 화면에 들어가는 만큼씩 묶고 '◀ 1/3 ▶'로 넘긴다. 넓은 화면도 표가 넘칠 때만 같은 방식 */
 const TWP_W=600;
+/* 휴대폰(한 칸): 여러 카드를 한 칸에 세로로 이어 붙인다. 칸마다 묶음 버튼 줄이 생기지 않게(UI 3단계 3-9). PC는 칸 그대로 */
+function wsStack(h){ return typeof innerWidth!=='undefined'&&innerWidth<700?`<div class="ws-stack">${h}</div>`:h; }
+/* 긴 화면 바로 가기(UI 3단계 3-9): 휴대폰에서 칸 맨 위에 붙어 있는 한 줄. 누르면 그 구역으로 내려간다. PC에서는 숨긴다(CSS) */
+function jumpBar(L){ L=L.filter(Boolean); return L.length>1?`<nav class="jump-bar" aria-label="바로 가기">${L.map(([id,l])=>`<button type="button" data-a="jumpTo" data-v="${id}">${l}</button>`).join('')}</nav>`:''; }
 function workspaceCompact(){return matchMedia('(max-width:699px), (max-height:599px), (max-width:1099px) and (pointer:coarse)').matches;}
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
   document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg,.pf-season-table'))return; /* 선수 상황판 시즌 통계는 열을 넘기지 않고 옆으로 스크롤 */ const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
@@ -43809,14 +43842,17 @@ function sisDetail(c){ const me=G.user, rel=sisRel(me,c.id), pt=sisPtn(c.id), mi
       <div class="talk">${CKEYS.filter(k=>C[k]).map(k=>`<button class="btn small" data-a="sisCt" data-v="${c.id}:${k}">${esc(CROLE[k].l)} ${esc(C[k].name)} · 연수 보기</button>`).join('')}</div>`);
     out.push(`<div class="eyebrow">선수 정보 교환</div><p class="small muted">관계가 어느 정도 쌓이면 ${c.c==='jp'?'일본 리그':'마이너리그'}에서 눈여겨본 외국인 후보를 가끔 알려 줍니다. 오래 지켜본 구단의 정보라 평가 오차가 작습니다. ${rel>=50?'지금 정보를 받고 있습니다.':'지금은 관계가 낮아 정보가 오지 않습니다.'}</p>`); }
   return out.join(''); }
-function sisPage(){ if(G.unemp)return '<section class="card"><p class="small muted">구단을 맡고 있지 않습니다.</p></section>'; sisInit(); const cn=UI.sisC==='us'?'us':'jp'; const L=OCL.filter(c=>c.c===cn); const sel=L.find(c=>c.id===UI.sisSel)?UI.sisSel:(sisMine(G.user,cn)||L[0].id); const C=OCL_BY[sel];
-  const nv=sisVisitTargets(cn).length; const tabs=`<div class="talk">${['jp','us'].map(k=>`<button class="btn small ${cn===k?'on':''}" data-a="sisC" data-v="${k}">${OCN[k]}${sisMine(G.user,k)?' · 결연 1':''}</button>`).join('')}${nv?`<button class="btn small" data-a="sisVisMany" data-v="${cn}">${OCN[cn]} ${nv}곳 모두 방문단 · ${money(SIS_VIS*nv)}</button>`:''}${autoScopeBtn('sisv',cn,`${OCN[cn]} 방문단`)}</div>`;
+function sisPage(){ if(G.unemp)return '<section class="card"><p class="small muted">구단을 맡고 있지 않습니다.</p></section>'; sisInit();
+  /* 자매구단 깊이 줄이기(UI 3단계 3-9): 일본/미국 고르기 단계를 없앴다. 한 표에 두 나라를 묶고, 지도는 고른 구단의 나라를 보인다 */
+  const pick=UI.sisSel&&OCL_BY[UI.sisSel]?UI.sisSel:(UI.sisC&&sisMine(G.user,UI.sisC))||(UI.sisC?(OCL.find(c=>c.c===UI.sisC)||{}).id:null)||sisMine(G.user,'jp')||sisMine(G.user,'us')||OCL[0].id; const C=OCL_BY[pick], sel=C.id, cn=C.c;
+  const nv=sisVisitTargets(cn).length; const acts=`<div class="talk sis-acts">${nv?`<button class="btn small" data-a="sisVisMany" data-v="${cn}">${OCN[cn]} ${nv}곳 모두 방문단 · ${money(SIS_VIS*nv)}</button>`:`<span class="small muted">${OCN[cn]} 방문단 보낼 곳 없음</span>`}${autoScopeBtn('sisv',cn,`${OCN[cn]} 방문단`)}<button class="lnk sis-other" data-a="sisC" data-v="${cn==='jp'?'us':'jp'}">${OCN[cn==='jp'?'us':'jp']} 지도 ›</button></div>`;
   const map=`<div class="scm-map">${sisMapSVG(cn,sel)}<p class="small muted scm-key">${[[75,'매우 가까움'],[55,'가까움'],[35,'보통'],[20,'서먹함']].map(([v,l])=>`<i style="background:${netCol(v)}"></i>${l}`).join(' ')} · 금색 고리 = 우리 자매구단 · 가운데 점 = 다른 구단과 결연${cn==='jp'?' · 마름모 = 캠프지':''}</p></div>`;
-  const list=`<table class="tbl scm-tbl"><thead><tr><th>구단</th><th>관계</th><th>결연</th></tr></thead><tbody>${L.map(c=>{ const r=sisRel(G.user,c.id), p=sisPtn(c.id); return `<tr class="${c.id===sel?'on':''}" data-a="sisSel" data-v="${c.id}"><td>${esc(c.n)} <span class="small muted">${SIS_SITE[c.s[1]][0]}</span></td><td><b style="color:${netCol(r)}">${sisRelWord(r)}</b></td><td>${p===G.user?'<span class="pill good">우리</span>':p!=null?esc(tshort(p)):'<span class="muted">-</span>'}</td></tr>`; }).join('')}</tbody></table>`;
+  const row=c=>{ const r=sisRel(G.user,c.id), p=sisPtn(c.id); return `<tr class="${c.id===sel?'on':''}" data-a="sisSel" data-v="${c.id}"><td>${esc(c.n)} <span class="small muted">${SIS_SITE[c.s[1]][0]}</span></td><td><b style="color:${netCol(r)}">${sisRelWord(r)}</b></td><td>${p===G.user?'<span class="pill good">우리</span>':p!=null?esc(tshort(p)):'<span class="muted">-</span>'}</td></tr>`; };
+  const list=`<table class="tbl scm-tbl"><thead><tr><th>구단</th><th>관계</th><th>결연</th></tr></thead>${['jp','us'].map(k=>{ const L=OCL.filter(c=>c.c===k); return `<tbody><tr class="scm-grp"><th colspan="3">${OCN[k]} ${L.length}곳${sisMine(G.user,k)?' · 결연 1':''}</th></tr>${L.map(row).join('')}</tbody>`; }).join('')}</table>`;
   const all=Object.entries(sisInit().p).map(([id,x])=>`${tshort(x.tid)}-${OCL_BY[id].n}`);
-  return `<div class="scm ws-own"><section class="card scm-l">${tabs}${map}${list}<p class="small muted">국내 구단 자매결연 현황: ${all.length?esc(all.join(', ')):'없음'}</p></section><section class="card scm-r">${UI.sisMsg?`<div class="note bad">${esc(UI.sisMsg)}</div>`:''}<div class="scm-det">${sisDetail(C)}</div></section></div>`; }
+  return `<div class="scm ws-own"><section class="card scm-l">${acts}${map}${list}<p class="small muted">국내 구단 자매결연 현황: ${all.length?esc(all.join(', ')):'없음'}</p></section><section class="card scm-r">${UI.sisMsg?`<div class="note bad">${esc(UI.sisMsg)}</div>`:''}<div class="scm-det">${sisDetail(C)}</div></section></div>`; }
 Object.assign(A,{
-  sisC(v){ UI.sisC=v; UI.sisSel=null; UI.sisMsg=null; render(); },
+  sisC(v){ UI.sisC=v; UI.sisSel=sisMine(G.user,v)||(OCL.find(c=>c.c===v)||{}).id||null; UI.sisMsg=null; render(); }, /* 예전 나라 고르기(다른 화면 바로가기용으로 남김) */
   sisSel(v){ UI.sisSel=v; UI.sisC=(OCL_BY[v]||{}).c||UI.sisC; UI.sisMsg=null; UI.it=Object.assign(UI.it||{},{scoutpg:'ovs'}); render(); },
   sisProp(v){ const r=sisPropose(v); UI.sisMsg=r||null; if(!r)toast(`${OCL_BY[v].n}와(과) 자매결연`); save(); render(); },
   sisVis(v){ UI.sisMsg=sisVisit(v)||null; save(); render(); },
@@ -44475,6 +44511,13 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-ui39',d:'11월 17일',t:'탭 줄 줄이기 · 선수단 명단 표',items:[
+    '신인 드래프트: 후보 목록·후보 상세·관심 목록·지명 현황·스카우트 요약·지난 성적표·창단 지명 평가를 \'보기 ▾\' 하나로 고릅니다. 탭 줄이 셋에서 하나로 줄어 후보 목록이 더 위에서 시작합니다.',
+    '스카우트 › 해외 네트워크: 일본·미국을 한 표에 모았습니다. 구단을 누르면 그 나라 지도와 정보가 나옵니다.',
+    '트레이드 협상: 상대·우리 선수와 야수·투수를 버튼 한 줄(상대 야수·상대 투수·우리 야수·우리 투수)로 고릅니다.',
+    '구단 › 팬·언론: 팬 게시판과 마케팅·이벤트를 안쪽 탭으로 나눴습니다. 휴대폰에서는 탭 아래 묶음 버튼 줄 없이 한 칸에서 내려 봅니다.',
+    '휴대폰 긴 화면: 코치 배정과 스카우트 팀 맨 위에 바로 가기 줄이 있습니다. 육성의 \'감독에게 제안하기\' 줄은 목록을 내려도 위에 붙어 있습니다.',
+    '선수단 명단 표: \'1개월 변화\' 열을 뺐습니다. 열마다 머리글과 칸 정렬을 맞췄습니다.']},
   {id:'2026-11-17-scout2',d:'11월 17일',t:'스카우트 대회 출장',items:[
     '아마추어 스카우트를 주말리그 조·전국대회·대학 U-리그로 출장 보냅니다. 출장한 대회 경기에 나온 선수만 관찰이 쌓이고, 출장이 없는 주에는 학교를 찾아 1~3학년을 봅니다.',
     '스카우트팀장이 매주 월요일 4주 출장 안을 냅니다. 팀장 맡기기는 처음부터 켜져 있고, 끄면 출장 안 메일에서 [그대로]·[바꾸기]를 고릅니다. 스카우트 화면 출장 일정에서 [다음 대회 ▾]로 직접 보낼 수 있습니다.',
