@@ -3425,7 +3425,7 @@ T('[검수 11-09ze] 2차 드래프트 결과: 회차별로 보관하고, 복귀 
   sdBackDo(p,{y:y0,rd:1,from:G.user,to:A,fee:400,need:50,reg:49},true); ok(sdRounds()[y0].seq[0].ob==='back','지난 회차 결과에 복귀 결정이 안 남음');
   const r=domestic(B).find(x=>!x.foreign&&!x.ys); const o={y:G.year-1,rd:1,from:G.user,to:B,fee:400,need:50,reg:0}; r.sd2=o; r.regD={y:G.year,n:51,il:0}; r.tLog=[{y:G.year,d:G.cal.open+20,f:B,t:C}]; r.team=C; ok(sdRegN(r,o)===51,'옛 등록 기록이 다른 두 구단 사이 이적으로 '+sdRegN(r,o)+'일');
   regAdd(r.regD,C); ok(r.regD.n0===51&&sdRegN(r,o)===52,'구단별 기록을 시작하자 옛 등록일이 빠짐: '+sdRegN(r,o)); r.tLog.push({y:G.year,d:G.cal.open+30,f:C,t:G.user}); ok(sdRegN(r,o)===1,'원소속 구단을 거친 해의 옛 기록을 지명 구단 몫으로 인정'); });
-T('[피드백 11-09f] 외국인 시장: 겨울 매주 새 후보 3~5명(상한 48·평범한 분포), 좋은 후보만 소식',()=>{ fresh(); ok(foreignOpen()&&period()!=='season','준비 실패: 겨울 영입 기간 아님 '+dmd(G.day));
+T('[피드백 11-09f] 외국인 시장: 겨울 매주 새 후보 3~5명(상한 48·평범한 분포), 좋은 후보만 소식',()=>{ fresh(); globalThis.__seed(1109); /* 분포 점검: 앞 시나리오의 난수 소비(예: 해외 리그 수)와 상관없이 같은 난수로(11-15: 해외 리그를 늘리자 경계값 24/48에 걸림, 다른 난수에서는 10~21/48) */ ok(foreignOpen()&&period()!=='season','준비 실패: 겨울 영입 기간 아님 '+dmd(G.day));
   const ag=()=>G.fmarket.filter(id=>G.players[id]&&G.players[id].team==null&&G.players[id].fsrc!=='scout');
   G.fmarket=G.fmarket.filter(id=>!ag().includes(id)); const m0=G.mail.length; const n=fNewWeek(); const L=ag().map(id=>G.players[id]); ok(n>=3&&n<=5&&L.length===n,'새 후보 수 '+n+'/'+L.length);
   const hot=L.filter(fNewsOk); const ms=G.mail.slice(0,G.mail.length-m0).filter(m=>m.subj.startsWith('새 외국인 후보')); ok(hot.length?ms.length===1&&hot.every(q=>ms[0].body.includes(q.name)):ms.length===0,'소식 기준 어긋남: 좋은 후보 '+hot.length+' 소식 '+ms.length);
@@ -4807,6 +4807,83 @@ T('[트라이아웃 육성 한도] 12월에 계약해 내년에 합류하는 육
   q.age=27; const n0=ysN(ai); aiYsPrune(ai); ok(q.team===ai&&q.ys,'계약한 겨울에 바로 내보냄'); ok(ysN(ai)<=Math.min(n0,YS_MAX),'AI 정리 뒤 한도 초과 '+ysN(ai)); });
 T('[트라이아웃 저장] 트라이아웃 기록이 없는 옛 저장은 지난 날짜의 트라이아웃을 만들지 않고, 명단 공개 기간에 불러오면 그때 공개한다',()=>{ fresh(); const y=G.year; delete G.tryout; delete G.tryLog; G=JSON.parse(JSON.stringify(G)); G.day=tryDayD(y)+3; tryDaily(G.day); ok(!G.tryout,'지난 트라이아웃을 만듦');
   G.day=tryAnnD(y)+2; tryDaily(G.day); ok(G.tryout&&G.tryout.ann===G.day&&G.tryout.ids.length>0,'공개 기간에 불러온 저장에서 명단이 없음'); G=JSON.parse(JSON.stringify(G)); ok(tryCur()&&tryEst(G.players[G.tryout.ids[0]],G.user).cw,'저장 후 화면 자료 오류'); });
+T('[해외 리그] 순위 승수 합계가 경기 수와 맞고, 우승·준우승은 가을야구 팀이며, 지난 시즌은 10개까지만 남는다(MLB·트리플A·NPB·CPBL·멕시코리그)',()=>{ fresh(); ok(G.ovl&&OVL_LGS.every(l=>G.ovl[l]),'새 게임에 해외 리그가 없음 '+Object.keys(G.ovl||{}));
+  for(let k=0;k<14;k++){ G.year++; ovlNewYear(); ok(G.ovl.MLB.cur&&G.ovl.MLB.cur.y===G.year,'새해에 올 시즌 승수가 없음'); ovlSeasonEnd(); ok(!G.ovl.MLB.cur,'끝난 시즌이 진행 중으로 남음'); }
+  const PO={MLB:12,AAA:4,NPB:6,CPBL:3,LMB:8};
+  for(const lg of OVL_LGS){ const L=G.ovl[lg], g=OVL_G[lg], n=OVL_C[lg].length; ok(OVL_D[lg].every((d,k)=>OVL_C[lg].some(c=>c[2]===k)),lg+' 빈 지구'); ok(L.h.length===OVL_KEEP,lg+' 보관 시즌 수 '+L.h.length); ok(L.h[0].y===G.year&&L.h[L.h.length-1].y===G.year-OVL_KEEP+1,lg+' 보관 순서 '+L.h.map(h=>h.y).join(','));
+    for(const H of L.h){ ok(H.w.length===n,'구단 수'); ok(H.w.reduce((a,b)=>a+b,0)===g*n/2,lg+' 승 합계 '+H.w.reduce((a,b)=>a+b,0)); ok(H.w.every(w=>w>=0&&w<=g),'승수 범위'); ok(H.po.length===PO[lg]&&new Set(H.po).size===PO[lg]&&H.po.includes(H.ch)&&H.po.includes(H.ru)&&H.ch!==H.ru&&H.pn.includes(H.ch)&&H.pn.includes(H.ru),lg+' 우승·준우승이 가을야구 팀이 아님 '+JSON.stringify(H)); ok(/^\\d-\\d$/.test(H.sr)&&+H.sr[0]===OVL_FN[lg]&&+H.sr[2]<OVL_FN[lg],lg+' 시리즈 점수 '+H.sr); }
+    const T=ovlTable(lg,G.year); ok(T&&!T.live&&T.div.every(d=>d.L.every(r=>r.w+r.l===g)),lg+' 끝난 시즌 경기 수');
+    const sd=Math.sqrt(L.h.flatMap(h=>h.w.map(w=>(w/g-.5)**2)).reduce((a,b)=>a+b,0)/(L.h.length*n)); ok(sd>.03&&sd<.11,lg+' 승률 편차 '+sd.toFixed(3)); }
+  G.year++; ovlNewYear(); G.day=KD(6,20); const T=ovlTable('MLB',G.year); ok(T.live&&T.gp>40&&T.gp<120&&T.div.every(d=>d.L.every(r=>r.w+r.l===T.gp)),'진행 중 순위표 경기 수 '+T.gp);
+  const sz=JSON.stringify(G.ovl).length, sa=JSON.stringify(G.ovl.AAA).length+JSON.stringify(G.ovl.CPBL).length+JSON.stringify(G.ovl.LMB).length; console.log('    해외 리그 저장 크기(10시즌) 전체 '+sz+'B · 트리플A·CPBL·멕시코리그 '+sa+'B');
+  ok(sz<14000&&sa<8000,'해외 리그 저장 크기 '+sz+' / '+sa);
+  const all=new Set(OVL_LGS.flatMap(l=>OVL_C[l].map(c=>c[1]))), kbo=G.teams.map(t=>t.nick); ok(!kbo.some(k=>all.has(k)),'KBO 별칭과 겹치는 해외 구단'); ok(OVL_LGS.every(l=>new Set(OVL_C[l].map(c=>c[0]+' '+c[1])).size===OVL_C[l].length),'같은 리그에 같은 이름');
+  ok(OVL_C.AAA.length===OVL_C.MLB.length&&OVL_C.AAA.filter(c=>c[2]<2).length===20,'트리플A 산하·IL 20개 구단'); });
+T('[해외 리그] 해외파: 새해에 미리 만든 올해 기록이 시즌 마감 때 그대로 확정되고, 구단·수준이 붙으며, 돌아와도 해외 기록이 남는다',()=>{ fresh(); const p=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); ok(p,'준비 실패'); setOvr(p,67); p.injOut=0; delete p.mil;
+  G.day=KD(11,1); const id=p.id; ovsLeave(p,'MLB',MLBT[0],2,500,'포스팅',0); const a=G.abroad.find(x=>x.id===id); ok(a&&a.ci===0&&a.club===MLBT[0],'구단 번호 '+(a&&a.ci));
+  G.year++; G.day=KD(1,1); ovlNewYear(); ok(a.cur&&a.cur.y===G.year,'새해에 올해 기록을 미리 만들지 않음'); const pre=JSON.parse(JSON.stringify(a.cur));
+  G.day=KD(6,15); const fr=ovlFrac(G.year); ok(fr>.3&&fr<.7,'진행 비율 '+fr); const part=ovsPart(a.cur,fr); ok(part.live&&part.pa>0&&part.pa<a.cur.pa,'진행 중 기록 '+part.pa+'/'+a.cur.pa);
+  G.day=KD(11,1); ovlSeasonEnd(); abroadYear(); ok(a.lines.length===1&&a.lines[0].y===G.year,'시즌 기록 '+a.lines.map(l=>l.y).join(',')); const L0=a.lines[0]; ok(L0.lvl==='MLB'&&L0.c===0,'빅리그·구단 '+L0.lvl+' '+L0.c); ok(L0.pa===pre.pa&&L0.h===pre.h,'미리 만든 기록과 확정 기록이 다름'); ok(!a.cur&&L0.o==null&&!L0.live,'임시 값이 남음');
+  ok(G.wire.some(w=>w.ref===id&&w.t.includes(p.name)),'첫 시즌·시상 소식이 없음');
+  G.year++; ovlNewYear(); const s=JSON.parse(a.pj); setOvr(s,40); a.pj=JSON.stringify(s); ovlSeasonEnd(); abroadYear(); ok(a.lines.length===2&&a.lines[1].lvl==='트리플A','능력이 떨어진 뒤 기록(미리 만든 기록을 다시 만듦) '+a.lines.map(l=>l.lvl).join(','));
+  ok(a.lines[1].c===0&&ovsClubNm(a.lines[1])===ovlNm('AAA',0),'트리플A 줄에 산하 구단 이름이 없음 '+JSON.stringify(a.lines[1]));
+  ok(ovsAlumOn('AAA',0,G.year).includes(a)&&ovlAlumMap('AAA',G.year)[0].includes(a)&&!ovsAlumOn('MLB',0,G.year).includes(a),'트리플A 순위표에 KBO 출신이 없음');
+  ok(a.back,'계약이 끝나고 능력이 떨어졌는데 남음'); ok(a.lines.length===2&&a.lines[0].c===0,'돌아온 뒤 해외 기록이 사라짐'); });
+T('[해외 리그] 경계선 MLB 선수는 한 시즌을 MLB·산하 트리플A로 나누고, 진행 중 기록·선수 기록 표도 두 줄로 보인다',()=>{ fresh(); const p=domestic(otherT()).find(q=>!q.isP&&!q.foreign&&!q.prospect); ok(p,'준비 실패'); p.injOut=0; setOvr(p,62); G.ovl.MLB.s[3]=0;
+  let L=null; for(let i=0;i<20&&!(L&&L.x);i++)L=ovsLine(p,'MLB',{ci:3}); ok(L&&L.x,'경계선인데 시즌이 나뉘지 않음'); ok([L.lvl,L.x.lvl].sort().join()==='MLB,트리플A'&&L.c===3&&L.x.c===3,'수준·구단 '+L.lvl+'/'+L.x.lvl);
+  ok(L.pa+L.x.pa>=250&&L.pa>=L.x.pa,'타석 나눔 '+L.pa+'+'+L.x.pa); const pt=ovsPart(L,.5); ok(pt.x&&pt.x.pa===Math.round(L.x.pa*.5)&&pt.live,'진행 중 나눈 기록');
+  setOvr(p,75); ok(!ovsLine(p,'MLB',{ci:3}).x,'주전급인데 나뉨'); setOvr(p,40); const m=ovsLine(p,'MLB',{ci:3}); ok(!m.x&&m.lvl==='트리플A','마이너 선수 '+m.lvl);
+  delete L.o; const a={id:p.id,isP:false,lg:'MLB',ci:3,lines:[L]}; G.abroad=[a]; const R2=ovsStatRows(p); ok(R2.length===2&&R2.every(r=>r.y===G.year&&!r.x)&&R2.some(r=>r.pre.startsWith('트리플A '+OVL_C.AAA[3][0])),'선수 기록 표 '+JSON.stringify(R2.map(r=>r.pre)));
+  ok(ovsParts(L).map(ovsClubNm).sort().join()===[ovlNm('MLB',3),ovlNm('AAA',3)].sort().join(),'두 구단 이름'); });
+T('[해외 리그] KBO를 떠난 외국인 행선지는 MLB·NPB·CPBL·ABL·멕시코리그이고, 리그 표가 있는 곳은 구단 이름이 줄에 붙는다',()=>{ fresh(); const AI=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); for(let i=0;Object.values(G.players).filter(x=>x.foreign&&x.team!=null&&x.team!==G.user).length<12&&i<20;i++){ const x=newForeign(i%4?'용병':'아시아',{market:true}); x.team=AI[i%AI.length]; x.sal=x.ask; x.cyrs=1; } /* 새 세계는 외국인 계약 전일 수 있다: 모자라면 AI 구단 소속으로 채운다 */
+  const L=Object.values(G.players).filter(x=>x.foreign&&x.team!=null&&x.team!==G.user).slice(0,12); ok(L.length>=6,'준비 실패 '+L.length);
+  G.day=KD(12,1); const seen={}; for(const x of L){ x.age=29; const h=lineFor(x,G.year,x.team,'1군'); if(x.isP)h.outs=450; else h.pa=500; releaseForeign(x.id); const a=G.abroad.find(r=>r.id===x.id); if(!a)continue; seen[a.lg]=1;
+    ok(['MLB','NPB','CPBL','ABL','멕시코리그'].includes(a.lg),'행선지 '+a.lg); if(OVL_C[ovlKey(a.lg)])ok(a.ci>=0&&a.club===ovlNm(a.lg,a.ci),a.lg+' 구단 '+a.club); }
+  G.year++; ovlNewYear(); ovlSeasonEnd(); abroadYear(); const T=G.abroad.filter(a=>a.foreign&&a.lines&&a.lines.length&&OVL_C[ovlKey(a.lg)]); ok(T.length,'기록 없음 '+JSON.stringify(seen));
+  ok(T.every(a=>ovsParts(a.lines[0]).every(q=>q.c===a.ci&&ovsClubNm(q))),'줄에 구단이 없음');
+  const fake={id:-31,name:'테스트',isP:false,lg:'CPBL',ci:2,lines:[{y:G.year,lvl:'CPBL',c:2,pa:400}]}; G.abroad.push(fake); ok(ovsAlumOn('CPBL',2,G.year).includes(fake)&&ovsClubNm(fake.lines[0])===ovlNm('CPBL',2)&&ovlAlumMap('CPBL',G.year)[2].includes(fake),'CPBL 구단 이름'); });
+T('[해외 리그] 외국인 후보의 트리플A 기록에 구단 이름이 붙고(저장하지 않는 고정 번호), MLB 콜업으로 빠지면 그 모구단으로 간다. AI 평가는 이름과 무관하다',()=>{ fresh(); let q=null; for(let i=0;i<40&&!q;i++){ const x=newForeign('용병',{market:true}); if(x.prevLvl==='트리플A')q=x; else delete G.players[x.id]; } ok(q,'준비 실패');
+  const i=ovlCandAaa(q); ok(i>=0&&i<30&&ovlCandAaa(q)===i,'고정 번호'); ok(ovlCandLvl(q)==='트리플A '+ovlNm('AAA',i)&&fScout(q).why.some(w=>w.includes(ovlNm('AAA',i))),'기록 글에 구단 이름 없음'); ok(!('aaa' in q)&&!JSON.stringify(q).includes(ovlNm('AAA',i)),'후보에 구단을 저장함');
+  const e0=fAiEst(otherT(),q); ok(fAiEst(otherT(),q)===e0,'');
+  G.abroad=[]; ovsTrackCand(q,'MLB'); const a=G.abroad[0]; ok(a&&a.ci===i&&a.club===ovlNm('MLB',i),'콜업 모구단 '+(a&&a.ci)+' / '+i); });
+T('[해외 리그] KBO를 떠난 외국인은 행선지에서 기록이 이어지고 나이를 먹으며, 은퇴하면 기록을 멈추고 능력 사본을 지운다. 은퇴로 떠난 외국인은 남기지 않는다',()=>{ fresh(); const L=Object.values(G.players).filter(x=>x.foreign&&x.team!=null&&x.team!==G.user); ok(L.length>=2,'준비 실패: AI 외국인 '+L.length); const [f,g]=L; const t=f.team;
+  for(const x of [f,g]){ x.age=29; const h=lineFor(x,G.year,x.team,'1군'); if(x.isP)h.outs=450; else h.pa=500; }
+  G.day=KD(12,1); releaseForeign(f.id); const a=G.abroad.find(x=>x.id===f.id); ok(a&&a.foreign&&a.fr&&a.how==='KBO 퇴단'&&a.from===t&&a.y1===G.year+1,'KBO를 떠난 외국인이 해외파 명단에 없음 '+JSON.stringify(a&&{h:a.how,f:a.from,y1:a.y1}));
+  ok(['MLB','NPB','CPBL','ABL','멕시코리그'].includes(a.lg),'행선지 '+a.lg); retireOut(g,'은퇴'); ok(!G.abroad.some(x=>x.id===g.id),'은퇴한 외국인이 해외파로');
+  const age0=a.fr.age; abroadDev(); ok(a.fr.age===age0+1,'해외에서 나이를 먹지 않음'); G.year++; ovlNewYear(); ok(a.cur&&a.cur.y===G.year,'외국인 해외파 올해 기록을 미리 만들지 않음'); ovlSeasonEnd(); abroadYear(); ok(a.lines.length===1&&a.lines[0].y===G.year&&((a.lines[0].pa||0)+(a.lines[0].outs||0))>0,'외국인 해외파 시즌 기록');
+  if(a.fr){ a.fr.age=38; G.year++; ovlNewYear(); ovlSeasonEnd(); abroadYear(); ok(a.end===G.year&&!a.fr&&a.lines.length===2,'38세 은퇴 처리 '+a.end); } else ok(a.end===G.year&&a.lines.length===1,'은퇴했는데 기록 상태가 이상함'); /* 젊어도 드물게 첫 시즌 뒤 은퇴한다 */ const nL=a.lines.length; G.year++; ovlNewYear(); ovlSeasonEnd(); abroadYear(); ok(a.lines.length===nL,'은퇴 뒤에도 기록이 생김'); });
+T('[해외 리그] 외국인 영입: AI 구단도 지난 리그 기록(두 시즌·올해 기록)을 우리 화면과 같은 식으로 보고, 올해 기록은 관찰하지 않은 후보에게도 쌓인다',()=>{ fresh(); const tid=otherT(); let q=null; for(let i=0;i<30&&!q;i++){ const x=newForeign('용병',{market:true}); if(x.prev2&&!x.isP)q=x; else delete G.players[x.id]; } ok(q,'준비 실패: 두 시즌 기록 후보');
+  const a0=fAiEst(tid,q), u0=fScout(q).rec; q.prev.h+=45; q.prev.hr+=12; const a1=fAiEst(tid,q), u1=fScout(q).rec; ok(a1>a0+.3,'AI가 기록을 보지 않음 '+a0+'→'+a1); ok(u1>u0,'우리 화면 기록 수준이 그대로');
+  ok(Math.abs(fScoreBy(tid,q)-(a1-q.ask/600))<1e-9,'AI 영입 점수가 같은 추정을 쓰지 않음');
+  const r1=fRecEst(q), p2=q.prev2; delete q.prev2; const r0=fRecEst(q); q.prev2=p2; ok(r1.sd<r0.sd&&r1.k===2,'두 시즌 기록인데 범위가 같음');
+  G.fmarket=(G.fmarket||[]).concat(q.id); G.fwatch=[]; G.day=G.cal.open+10; ok(period()==='season','준비 실패: 시즌'); delete q.now; fwatchWeek(); ok(q.now&&q.now.y===G.year&&q.now.pa>0,'관찰하지 않은 후보에게 올해 기록이 없음'); const r2=fRecEst(q); ok(r2.k===3,'올해 기록을 평가에 넣지 않음'); });
+T('[해외 리그] 외국인 후보 추정: AI 구단도 우리 화면과 같은 함수·같은 크기의 오차로 보고, 정보 수준이 같으면 우리보다 정확하지 않다',()=>{ fresh(); G.fwatch=[]; const L=[]; for(let i=0;i<240;i++)L.push(newForeign(i%5?'용병':'아시아',{market:true}));
+  const tids=G.teams.filter(t=>t.id!==G.user).map(t=>t.id).slice(0,3); ok(tids.length===3,'준비 실패');
+  for(const p of L){ const u=fCandEst(G.user,p), f=fScout(p); ok(f.raw===u.m,'우리 화면 예상이 공용 함수와 다름 '+f.raw+' / '+u.m); for(const t of tids)ok(fAiEst(t,p)===fCandEst(t,p).m,'AI 평가가 공용 함수를 쓰지 않음'); }
+  const avg=a=>a.reduce((s,v)=>s+v,0)/a.length, tid=tids[0], ai=L.map(p=>fCandEst(tid,p)), lv0=ai[0].lv; ok(ai.every(e=>e.lv===lv0)&&lv0<=2,'AI 망 단계 '+lv0);
+  /* 우리 정보 수준을 AI와 똑같이(같은 망 단계, 파견·관찰·발굴·자매구단 없음) 맞추면 오차 크기와 범위가 같아야 한다 */
+  G.scouts=(G.scouts||[]).filter(s=>s.role!=='intl'); for(const r of Object.keys(IREG))G.intl[r]=lv0; const P=L.filter(p=>p.fsrc!=='scout'&&!p.fsis); ok(P.length>=200,'준비 실패: 후보 '+P.length);
+  const us=P.map(p=>fCandEst(G.user,p)), aj=P.map(p=>fCandEst(tid,p));
+  ok(P.every((p,i)=>Math.abs(us[i].sd-aj[i].sd)<1e-12&&Math.abs(us[i].ms-aj[i].ms)<1e-12),'같은 정보 수준인데 오차 크기·범위가 다름');
+  ok(P.some((p,i)=>us[i].m!==aj[i].m),'구단마다 자기 스카우트 오차가 없음(모두 같은 숫자)');
+  const err=E=>avg(P.map((p,i)=>Math.abs(E[i].m-ovr(p)))), eu=err(us), ea=err(aj);
+  ok(ea>eu*.85,'AI가 같은 정보로 우리보다 정확함: AI '+ea.toFixed(2)+' / 우리 '+eu.toFixed(2)); ok(ea>2.5,'AI 추정이 너무 정확함 '+ea.toFixed(2)); });
+T('[해외 리그] 해외 복귀 요구액은 해외 성적을 반영하고(1~1.3배) 원소속이 우리든 AI든 같은 계산이다',()=>{ fresh(); const a={isP:false,lines:[]}; ok(ovsAskMul(a)===1,'기록 없음 '+ovsAskMul(a));
+  a.lines=[{y:G.year-1,lvl:'MLB',pa:600,ab:530,h:170,d:35,tr:3,hr:30,bb:60,hbp:5,so:100},{y:G.year,lvl:'MLB',pa:620,ab:550,h:180,d:38,tr:2,hr:32,bb:62,hbp:4,so:98,aw:['AS']}]; const m=ovsAskMul(a); ok(m>1.1&&m<=1.3,'좋은 빅리그 성적 배율 '+m);
+  a.lines=[{y:G.year,lvl:'트리플A',pa:400,ab:360,h:80,d:10,tr:0,hr:5,bb:30,hbp:2,so:110}]; ok(ovsAskMul(a)===1,'마이너 부진인데 요구액이 오름'); });
+T('[해외 리그] 예전 저장: 불러오기만으로 해외 리그를 만들지 않고 다음 날짜 진행 때 만들며, 옛 도시 이름 구단·능력 사본 없는 외국인 기록도 그대로 읽고, 저장·불러오기 뒤 순위표가 같다',()=>{ fresh(); delete G.ovl; G=JSON.parse(JSON.stringify(G)); migrateDraft(); ok(!G.ovl,'불러오기만으로 해외 리그를 만듦'); ovsDaily(); ok(G.ovl&&G.ovl.MLB.h.length===1&&G.ovl.MLB.cur.y===G.year&&G.ovl.NPB.h.length===1,'다음 날 해외 리그를 만들지 않음');
+  ok(ovlIdx('MLB','뉴욕')===0&&ovlIdx('NPB','도쿄')===0&&ovlIdx('MLB','LA')===25&&ovlIdx('MLB','테스트')===-1,'옛 도시 이름 구단');
+  G.abroad=[{id:-77,name:'옛 외국인',isP:true,pos:'투수',foreign:'용병',from:otherT(),lg:'MLB',club:'뉴욕',how:'외국인',yrs:1,amt:200,y:G.year-1,lines:[],back:false}]; abroadYear(); abroadDev(); ok(G.abroad[0].lines.length===0&&!G.abroad[0].end,'능력 사본 없는 옛 외국인 기록');
+  const t0=JSON.stringify(ovlTable('NPB',G.year-1)); G=JSON.parse(JSON.stringify(G)); ok(JSON.stringify(ovlTable('NPB',G.year-1))===t0,'저장·불러오기 뒤 순위표가 다름'); });
+T('[해외 리그] 예전 저장(v1, MLB·NPB만): 다음 날 트리플A·CPBL·멕시코리그가 생기고, 구단 없던 CPBL·멕시코리그 해외파는 지난 줄을 그대로 두고 앞으로 뛸 구단을 받는다',()=>{ fresh(); const O=G.ovl; G.ovl={v:1,MLB:O.MLB,NPB:O.NPB}; const mlb=JSON.stringify(O.MLB);
+  const old=[{y:G.year-1,lvl:'CPBL',pa:420,ab:380,h:110,d:20,tr:1,hr:12,bb:30,hbp:2,so:70}];
+  G.abroad=[{id:-81,name:'옛 대만행',isP:false,pos:'1루수',foreign:'용병',from:otherT(),lg:'CPBL',club:'CPBL',ci:-1,how:'KBO 퇴단',yrs:0,amt:0,y:G.year-2,y1:G.year-1,age:31,lines:JSON.parse(JSON.stringify(old)),back:false,fr:{id:-81,isP:false,age:31,r:{con:55,pow:55,eye:55,spd:50,def:50},pos:'1B'}},
+    {id:-82,name:'옛 멕시코행',isP:true,pos:'투수',foreign:'용병',from:otherT(),lg:'멕시코리그',club:'멕시코리그',ci:-1,how:'KBO 퇴단',yrs:0,amt:0,y:G.year-2,y1:G.year-1,age:33,lines:[],back:false,end:G.year-1}];
+  G=JSON.parse(JSON.stringify(G)); migrateDraft(); ok(!G.ovl.AAA,'불러오기만으로 만듦'); ovsDaily(); ok(OVL_LGS.every(l=>G.ovl[l]&&G.ovl[l].h.length===1)&&G.ovl.v===2,'다음 날 새 리그가 없음'); ok(JSON.stringify(G.ovl.MLB)===mlb,'MLB 기록이 바뀜');
+  const a=G.abroad[0], b=G.abroad[1]; ok(a.ci>=0&&a.ci<6&&a.club===ovlNm('CPBL',a.ci),'구단을 받지 않음 '+a.club); ok(JSON.stringify(a.lines)===JSON.stringify(old),'지난 줄이 바뀜'); ok(b.ci===-1&&b.club==='멕시코리그','은퇴한 기록을 바꿈');
+  ok(ovsClubNm(a.lines[0])===''&&ovsStatRows({id:a.id})[0].pre==='CPBL','옛 줄(구단 없음) '+JSON.stringify(ovsStatRows({id:a.id})[0]&&ovsStatRows({id:a.id})[0].pre));
+  G.year++; ovlNewYear(); ovlSeasonEnd(); abroadYear(); if(a.lines.length===2)ok(a.lines[1].c===a.ci&&a.lines[1].lvl==='CPBL','새 시즌 줄에 구단이 없음'); else ok(a.end!=null,'기록이 이어지지 않음'); });
+T('[해외 리그] 해외 소식은 한 시즌 6건까지, 중요한 소식(시상·우리 구단 출신)부터 낸다',()=>{ fresh(); G.wire=[]; const N=[]; for(let i=0;i<10;i++)N.push({pr:i,t:'소식 '+i,a:{id:-i-1,from:null}}); ovsWires(N); ok(G.wire.length===6,'소식 수 '+G.wire.length); ok(G.wire.some(w=>w.t==='소식 9')&&!G.wire.some(w=>w.t==='소식 0'),'중요도 순서가 아님'); });
 T('[팀 분위기·사기] 좋은 고참 리더는 분위기를 올리고, 분위기를 흐리는 주축·잦은 선수 이동·출전 불만은 내린다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10); const tid=G.user, L=playersOf(tid);
   for(const p of L){ initPers(p); p.pers.pro=10; p.pers.temp=10; p.pers.loy=10; p.mor=60; delete p.grv; p.mvD=G.day-400; delete p.boy; }
   const T0=chemCalc(tid).T; const ld=teamLeaders(tid); ok(ld.length>=2,'준비 실패: 리더 없음'); for(const p of ld){ p.pers.pro=18; p.pers.loy=17; p.mor=75; }
@@ -5027,6 +5104,83 @@ T('[구단주 다시 설득] 사퇴 카드는 한 시즌 한 번·두 시즌 쉬
   const o=dobj(G.day); const g={y:sponSeason(),mk:o.y*100+o.m,d:G.day,amt:1000,pur:null,ok:false,by:'gm',st:'no'}; grantAdd(g); ownPushOffer({k:'fund',amt:1000},'구단주 반려: 운영비 증액','본문',g); const e=G.evs.find(x=>x.k==='opush'&&!x.done); ok(!e.data.args.includes('resign')&&G.mail.find(m=>m.id===e.mid).body.includes('이번 시즌에는 더 쓸 수 없습니다'),'반려 소식에 사퇴 카드 제한이 말로 보이지 않음');
   G.year=y+1; ok(opResignWhy(u).includes((y+2)+'시즌'),'쉬는 기간 안내가 없음: '+opResignWhy(u)); G.year=y+2; ok(!opResignWhy(u),'두 시즌 뒤에도 쓸 수 없음'); ok(opOdds(u,ctx,a)<pF-.08,'통했던 사퇴 카드가 약해지지 않음'); G.year=y;
   const ai=G.teams.find(x=>x.id!==u&&!x.indie); opRun(ai.id,ctx,a,[.99,.99]); ok(opResignWhy(ai.id).includes('이번 시즌')&&!opArgs(ai.id).some(x=>x.k==='resign'),'AI는 사퇴 카드 제한이 다름'); });
+/* ===== 관중석 증설(사용자 11-15: 경기장 증축) ===== */
+const xpPrep=(tid,occ,so)=>{ const S=stadOf(tid), t=team(tid); stadXpReset(S); S.proj=null; delete S.dome; S.built=G.year-15; S.cap=18000; t.trust=60; t.cash=60000; t.cityRel=60; S.xd={y:G.year,occ,so,n:72}; G.sea.att={}; G.ps=null; G.day=KD(11,5); if(tid!==G.user){ t.plan=null; t.mode='mid'; if(t.owner==='profit')t.owner='win'; } /* AI 판단의 구단주·계획 조건은 따로 본다 */ return S; };
+T('[구장 증설·증축] 관중 명분이 없으면 시가 검토하지 않고 이유를 말한다(점유율·매진, 구단주 신뢰)',()=>{ fresh(); const u=G.user, S=xpPrep(u,.7,3);
+  const e=stadXpTalk(u,'of'); ok(e.includes('70%')&&e.includes('85%'),'명분 부족 이유가 없음: '+e); ok(!S.xq,'명분 없이 협의가 시작됨');
+  S.xd={y:G.year,occ:.8,so:30,n:72}; ok(!stadXpWhy(u,'of'),'매진이 잦으면(30% 이상) 점유율 85% 미만이어도 명분: '+stadXpWhy(u,'of'));
+  team(u).trust=30; ok(stadXpWhy(u,'of').includes('구단주 신뢰'),'구단주 신뢰가 낮은데 허락함'); team(u).trust=60;
+  S.xd=null; ok(stadXpWhy(u,'of').includes('관중 기록'),'기록이 없는데 막지 않음'); });
+T('[구장 증설·증축] 시 협의 45일 → 합의 → 착공(구단 60%·시 40%) → 인허가 뒤 공사 중 좌석을 막고, 완공하면 수용 인원·유지비가 늘고 소식이 난다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.95,40), t=team(u);
+  const cap0=stadCap(u), up0=stadYr(S).up; ok(stadXpTalk(u,'of')==='','협의가 시작되지 않음'); ok(S.xq.stage==='talk'&&S.xq.res===G.day+45,'협의 기간이 45일이 아님');
+  ok(stadXpTalk(u,'up').includes('이미'),'협의 중에 또 제안됨'); S.xq.p=1; G.day=S.xq.res; stadXpDaily(); ok(S.xq.stage==='ok','합의되지 않음'); ok((G.mail||[]).some(m=>JSON.stringify(m).includes('합의했습니다')),'합의 알림이 없음');
+  const C=stadXpCost('of'); ok(C.club+C.city===C.c&&Math.abs(C.club/C.c-.6)<.01,'구단·시 분담이 6:4가 아님'); const cash0=t.cash, etc0=G.spend.etc||0; ok(stadXpStart(u)==='','착공 실패');
+  ok(Math.round((cash0-t.cash)+((G.spend.etc||0)-etc0))===C.club,'구단 부담분만큼 돈이 나가지 않음'); ok(S.xq.stage==='build'&&S.xq.pm>G.day&&S.xq.done===S.xq.pm+STADX_K.of.days,'인허가·공사 기간이 없음');
+  ok(stadCap(u,S.xq.pm-1)===cap0&&stadCap(u,S.xq.pm)===cap0-STADX_K.of.close,'공사 중 좌석을 막지 않음'); ok(stadCap(u,S.xq.done)===cap0+1500,'완공 날짜 전망에 늘린 좌석이 없음');
+  G.day=S.xq.done; stadXpDaily(); ok(!S.xq&&S.xp===1500&&S.xpN===1,'완공 처리가 안 됨'); ok(stadCap(u)===cap0+1500,'수용 인원이 늘지 않음: '+stadCap(u)); ok(stadYr(S).up===up0+STADX_K.of.up,'유지비가 붙지 않음');
+  ok((G.news||[]).some(n=>n.t.includes('1,500석 늘었다')),'완공 기사가 없음'); ok(stadDemCap(u)===cap0,'수요 기준 좌석이 늘어남(늘린 좌석이 수요를 만듦)'); });
+T('[구장 증설·증축] 한도: 구장 규모(일반 2만5천·돔 1만9천), 구장당 두 번, 개장 3년, 신구장 개장 때 새로 센다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.97,50);
+  S.cap=24000; ok(stadXpWhy(u,'of').includes('25,000석'),'2만5천 석 한도를 넘김'); S.cap=23000; ok(!stadXpWhy(u,'of')&&stadXpWhy(u,'up').includes('25,000석'),'규모별 한도가 틀림');
+  S.cap=17000; S.dome=true; ok(stadXpWhy(u,'up').includes('돔')&&!stadXpWhy(u,'of'),'돔 한도가 틀림'); S.cap=18000; delete S.dome;
+  S.xpN=2; ok(stadXpWhy(u,'of').includes('2번'),'두 번 넘게 증설 가능'); S.xpN=0; S.built=G.year-1; ok(stadXpWhy(u,'of').includes('3년'),'새 구장도 증설 가능'); S.built=G.year-15;
+  S.proj={stage:'talk',res:G.day+100}; ok(stadXpWhy(u,'of').includes('신구장'),'신구장 사업 중에 증설 가능'); S.proj=null;
+  S.xp=3000; S.xpN=2; S.xpUp=190; stadXpReset(S); ok(!S.xp&&!S.xpN&&!S.xpUp&&!S.xq,'신구장 개장 때 증설 기록이 남음'); });
+T('[관중] 증설 좌석은 원래 구장이 넘칠 때만 찬다: 수요가 낮으면 관중 그대로, 수요가 넘치면 늘고, 증설이 없으면 예전 식과 같다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.95,40), t=team(u), c=G.cal; const L=homeGames(u,c.open,c.end).slice(0,40); ok(L.length>=30,'준비 실패: 홈경기');
+  const tot=()=>L.reduce((s,[d,a])=>s+attOf(u,a,d,null),0); const p0=t.pop;
+  t.pop=.7; S.price=3; S.xp=0; const lo0=tot(); S.xp=3000; const lo1=tot(); ok(lo1<=lo0*1.03,'수요가 낮은데 좌석만 늘려도 관중이 늘어남: '+lo0+'→'+lo1);
+  t.pop=1.45; S.price=1; S.xp=0; const hi0=tot(); S.xp=3000; const hi1=tot(); ok(hi1>hi0*1.05,'수요가 넘치는데 관중이 늘지 않음: '+hi0+'→'+hi1); ok(hi1-hi0<3000*L.length,'늘린 좌석보다 관중이 더 늘어남');
+  S.xp=0; t.pop=p0; const d=L[0][0]; ok(stadDemCap(u)===stadCap(u,d),'증설이 없는데 수요 기준 좌석이 다름'); });
+T('[구장 증설·증축] AI 구단도 같은 조건으로 추진한다: 매진이 잦고 돈이 있으면 협의·착공, 빈자리가 많으면 하지 않는다',()=>{ fresh(); const ai=G.teams.find(x=>x.id!==G.user&&!x.indie), lo=G.teams.find(x=>x.id!==G.user&&x.id!==ai.id&&!x.indie); const S=xpPrep(ai.id,.97,45), S2=xpPrep(lo.id,.7,2);
+  for(let i=0;i<40&&!S.xq;i++){ globalThis.__seed(500+i); stadAI(); } for(let i=0;i<40;i++)stadXpAI(lo); ok(S.xq&&S.xq.stage==='talk','매진이 잦은 AI 구단이 증설을 추진하지 않음'); ok(!S2.xq,'빈자리 많은 AI 구단이 증설을 추진함'); ok(S.xq.esc===stadXpCost(S.xq.k).club&&stadXpHold(ai.id)===0,'AI가 제안 때 부담분을 떼어 두지 않음');
+  const cash0=ai.cash+S.xq.esc; ai.cash=-500; const cashB=ai.cash; /* 겨울에 다른 데 돈을 써 현금이 바닥나도 */ G.day=S.xq.res; S.xq.p=1; stadXpDaily(); stadXpDaily(); ok(S.xq.stage==='build','AI가 겨울에 돈을 써도 떼어 둔 몫으로 착공하지 못함'); ok(ai.cash===cashB&&S.xq.esc===0,'AI도 구단 부담분을 같은 금액으로 내지 않음');
+  { const t4=G.teams.find(x=>x.id!==G.user&&x.id!==ai.id&&x.id!==lo.id&&!x.indie), S4=xpPrep(t4.id,.97,45); for(let i=0;i<40&&!S4.xq;i++){ globalThis.__seed(900+i); stadXpAI(t4); } ok(S4.xq&&S4.xq.esc>0,'준비 실패: AI 제안'); const c4=t4.cash, e4=S4.xq.esc; S4.xq.p=0; G.day=S4.xq.res; stadXpDaily(); ok(!S4.xq&&t4.cash===c4+e4,'결렬 뒤 떼어 둔 부담분을 돌려받지 못함'); G.day=KD(11,5); }
+  G.day=S.xq.done; const k=S.xq.k; stadXpDaily(); ok(S.xp===STADX_K[k].seats&&(G.wire||[]).some(w=>w.t.includes('증설 완공')),'AI 증설 완공·리그 소식이 없음');
+  const t3=G.teams.find(x=>x.id!==G.user&&x.id!==ai.id&&x.id!==lo.id&&!x.indie), S3=xpPrep(t3.id,.97,45); t3.cash=100; for(let i=0;i<40;i++)stadXpAI(t3); ok(!S3.xq,'돈 없는 AI 구단이 증설을 추진함'); });
+T('[구장 증설·증축] AI 판단은 관중·재정·구단주 목표를 본다: 긴축 계획은 미루고, 흥행 구단주는 87%에도, 성적 구단주는 90% 아래면 안 하고, 수익 구단주는 회수가 안 되면 하지 않는다. 비용·인허가는 사람과 같다',()=>{ fresh();
+  const A=G.teams.filter(x=>x.id!==G.user&&!x.indie); const run=(t,n)=>{ for(let i=0;i<n&&!t.stad.xq;i++){ globalThis.__seed(1300+i); stadXpAI(t); } return !!t.stad.xq; };
+  { const t=A[0], S=xpPrep(t.id,.97,45); t.plan={k:'tight',y:G.year,d:G.day}; ok(!run(t,40),'긴축 계획 AI 구단이 증설을 추진함'); }
+  { const t=A[1], S=xpPrep(t.id,.88,10); t.owner='pr'; ok(run(t,40),'흥행 구단주 AI가 88% 점유율에서 증설을 추진하지 않음'); }
+  { const t=A[2], S=xpPrep(t.id,.88,10); t.owner='win'; ok(!run(t,40),'성적 구단주 AI가 88% 점유율에서 증설을 추진함'); }
+  { const t=A[3], S=xpPrep(t.id,.97,45); t.owner='profit'; const ok0=['of','up'].some(k=>{ const g=stadXpGain(t.id,k); return g.net>0&&g.pay<=8; }); ok(run(t,40)===ok0,'수익 구단주 AI가 회수 전망과 다르게 판단함'); }
+  { const t=A[4], S=xpPrep(t.id,.97,45); t.owner='pr'; ok(run(t,40),'준비 실패: AI 제안'); const k=S.xq.k; ok(S.xq.esc===stadXpCost(k).club,'AI 부담분이 사람과 다름'); S.xq.p=1; G.day=S.xq.res; stadXpDaily(); stadXpDaily(); ok(S.xq.stage==='build'&&S.xq.pm-S.xq.st===facPermitDays(t.id)&&S.xq.done-S.xq.pm===STADX_K[k].days,'AI 인허가·공사 기간이 사람과 다름'); } });
+T('[구장 증설·증축] 저장·불러오기: 진행 중 증설과 완공 좌석이 남고, 증설 필드가 없는 예전 저장도 수용 인원·관중이 그대로다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.95,40); const old=stadCap(u), up=stadYr(S).up; delete S.xp; delete S.xpN; delete S.xpUp; delete S.xq; delete S.xd;
+  G=JSON.parse(JSON.stringify(G)); ok(stadCap(u)===old&&stadYr(stadOf(u)).up===up,'예전 저장 수용 인원·유지비가 바뀜');
+  const S1=stadOf(u); S1.xp=1500; S1.xpN=1; S1.xpUp=60; S1.xq={k:'up',stage:'build',pm:G.day+10,done:G.day+300,c:9000}; G=JSON.parse(JSON.stringify(G)); const S2=stadOf(u);
+  ok(S2.xp===1500&&S2.xq.stage==='build'&&stadCap(u,G.day+20)===old+1500-2000&&stadCap(u,G.day+300)===old+4500,'불러온 뒤 증설 상태가 다름'); });
+/* ===== 초대형 신구장(사용자 11-15: 2차 구장 2.5만 석 너무 적다) ===== */
+const megaPrep=(tid,occ,yrs)=>{ const S=stadOf(tid), t=team(tid); S.proj={stage:'plan',start:G.day}; delete S.mega; delete S.mx; t.market=1.25; t.trust=60; t.cash=60000; t.cityRel=60; S.xd=null; S.xdh=[]; for(let i=yrs;i>=1;i--)S.xdh.push({y:G.year-i,occ,so:10,n:72}); return S; };
+T('[구장 초대형] 큰 시장·최근 3시즌 연속 관중석 90% 이상이 아니면 고를 수 없고 이유를 말한다',()=>{ fresh(); const u=G.user, S=megaPrep(u,.95,3), t=team(u);
+  ok(!newStadMegaWhy(u),'조건을 채웠는데 막힘: '+newStadMegaWhy(u));
+  t.market=1.0; ok(newStadMegaWhy(u).includes('연고 시장'),'시장이 작은데 허용: '+newStadMegaWhy(u)); ok(newStadPick('mega')&&S.proj.stage==='plan'&&!S.proj.mr,'시장이 작은데 초대형 요청이 됨'); t.market=1.25;
+  S.xdh[1].occ=.86; ok(newStadMegaWhy(u).includes('3시즌 연속')&&newStadMegaWhy(u).includes('86%'),'한 시즌 점유율이 낮은데 허용: '+newStadMegaWhy(u)); S.xdh[1].so=40; ok(!newStadMegaWhy(u),'매진이 절반 넘으면 그 시즌은 명분'); S.xdh[1].so=10;
+  megaPrep(u,.95,2); ok(newStadMegaWhy(u).includes('3시즌'),'두 시즌 기록으로 허용');
+  const S2=megaPrep(u,.95,3); S2.xdh[0].y-=2; ok(newStadMegaWhy(u),'연속하지 않은 시즌으로 허용');
+  const S3=megaPrep(u,.95,3); S3.xdh=S3.xdh.map(x=>({...x,y:x.y-3})); ok(newStadMegaWhy(u),'오래된 기록으로 허용');
+  megaPrep(u,.95,3); ok(NEWSTAD.some(o=>o.k==='mega'&&o.cap===30000)&&NEWSTAD[0].k==='mid','초대형 규모 정의가 없음'); });
+T('[구장 초대형] 시가 한 번 더 검토한다(더 어렵다): 승인되면 착공·개장 때 3만 석, 거절되면 다른 규모를 고른다',()=>{ fresh(); const u=G.user, S=megaPrep(u,.95,3);
+  ok(newStadMegaOdds(u)<clamp(.35+(team(u).trust-50)/100+(team(u).market-1)*.6+(G.rep-50)/200,.15,.85),'초대형 검토가 신구장 협상보다 쉽다');
+  ok(newStadPick('mega')===''&&S.proj.stage==='plan'&&S.proj.mr===G.day+NEWSTAD_MEGA.rv,'초대형 검토가 시작되지 않음'); ok(newStadPick('big').includes('검토'),'검토 중에 다른 규모로 착공');
+  S.proj.mp=0; G.day=S.proj.mr; newStadTeam(u); ok(S.proj.stage==='plan'&&S.proj.noMega&&newStadMegaWhy(u).includes('거절'),'거절 뒤 처리가 다름'); ok(newStadPick('mega'),'거절된 초대형을 다시 요청'); ok(newStadPick('big')===''&&S.proj.k==='big','거절 뒤 대형 착공 실패');
+  const S2=megaPrep(u,.95,3); newStadPick('mega'); S2.proj.mp=1; G.day=S2.proj.mr; newStadTeam(u); ok(S2.proj.stage==='build'&&S2.proj.k==='mega'&&S2.proj.cost===NEWSTAD.find(o=>o.k==='mega').cost,'승인 뒤 착공하지 않음');
+  const up0=stadYr(S2).up; G.day=S2.proj.done; newStadTeam(u); ok(!S2.proj&&S2.mega&&stadCap(u)===30000,'개장 뒤 3만 석이 아님: '+stadCap(u)); ok(stadYr(S2).up>=up0+NEWSTAD_MEGA.up-1,'초대형 유지비가 없음');
+  ok(stadDemCap(u)===30000-NEWSTAD_MEGA.mx,'초대형의 수요 기준 좌석이 다름: '+stadDemCap(u)); });
+T('[구장 초대형] 관중석 증설 상한 3만 석은 초대형으로 지은 구장만, 다른 규모로 다시 지으면 초대형 효과가 끝난다',()=>{ fresh(); const u=G.user, S=xpPrep(u,.97,50);
+  S.cap=28000; ok(stadXpWhy(u,'of').includes('25,000석'),'일반 구장이 2만5천 석을 넘김'); S.mega=true; S.mx=NEWSTAD_MEGA.mx; ok(!stadXpWhy(u,'of')&&stadXpWhy(u,'up').includes('30,000석'),'초대형 상한이 3만 석이 아님: '+stadXpWhy(u,'up'));
+  S.proj={stage:'build',k:'big',cap:25000,cost:16000,paid:16000,done:G.day}; newStadTeam(u); ok(!S.mega&&!S.mx&&stadXpMax(u)===25000,'대형으로 다시 지었는데 초대형 효과가 남음'); });
+T('[구장 초대형] AI 구단도 같은 조건으로 고른다: 조건을 채우고 돈이 있으면 초대형, 아니면 관중·현금에 따라 대형·실속형',()=>{ fresh(); const ai=G.teams.find(x=>x.id!==G.user&&!x.indie); const S=megaPrep(ai.id,.96,3);
+  ok(newStadAIPick(ai.id)==='mega','조건을 채운 AI가 초대형을 고르지 않음'); newStadTeam(ai.id); ok(S.proj.stage==='plan'&&S.proj.mr,'AI가 초대형 검토를 요청하지 않음');
+  S.proj.mp=1; G.day=S.proj.mr; newStadTeam(ai.id); ok(S.proj.stage==='build'&&S.proj.k==='mega'&&S.proj.cap===30000,'AI 초대형 승인 뒤 착공 안 함');
+  const S2=megaPrep(ai.id,.96,3); newStadTeam(ai.id); S2.proj.mp=0; G.day=S2.proj.mr; newStadTeam(ai.id); ok(S2.proj.stage==='build'&&S2.proj.k==='big','거절된 AI가 대형으로 가지 않음: '+S2.proj.k);
+  megaPrep(ai.id,.96,3); ai.market=1.0; ok(newStadAIPick(ai.id)==='big','시장이 작은데 AI가 초대형 또는 대형이 아님: '+newStadAIPick(ai.id));
+  megaPrep(ai.id,.96,2); ok(newStadAIPick(ai.id)!=='mega','기록이 두 시즌뿐인데 AI가 초대형');
+  megaPrep(ai.id,.96,3); ai.cash=100; ok(newStadAIPick(ai.id)==='mid','돈 없는 AI가 큰 구장을 고름: '+newStadAIPick(ai.id));
+  megaPrep(ai.id,.7,3); ok(newStadAIPick(ai.id)==='mid','빈자리 많은 AI가 큰 구장을 고름'); });
+T('[구장 초대형] 시즌 관중 기록이 해마다 쌓이고(최근 5시즌), 저장·불러오기 뒤에도 초대형 구장·검토 상태가 남는다. 기록이 없는 예전 저장은 아직 조건 미달',()=>{ fresh(); const u=G.user, S=stadOf(u), c=G.cal;
+  S.xd=null; S.xdh=[]; G.sea.att={[u]:{n:72,sum:72*20000,cap:72*21000,so:30}}; G.day=c.end+1; stadXpRec(); ok(S.xdh.length===1&&S.xdh[0].y===G.year,'기록이 쌓이지 않음'); stadXpRec(); ok(S.xdh.length===1,'같은 해가 두 번 쌓임');
+  S.xdh=[1,2,3,4,5].map(i=>({y:G.year-6+i-1,occ:.9,so:0,n:72})); S.xd=S.xdh[4]; stadXpRec(); ok(S.xdh.length===5&&S.xdh[4].y===G.year,'5시즌을 넘겨 쌓이거나 새 기록이 없음');
+  delete S.xdh; S.xd={y:G.year-1,occ:.97,so:50,n:72}; team(u).market=1.25; S.proj={stage:'plan'}; ok(stadOccHist(S).length===1&&newStadMegaWhy(u).includes('3시즌'),'예전 저장에서 바로 초대형 허용');
+  const S1=megaPrep(u,.95,3); newStadPick('mega'); G=JSON.parse(JSON.stringify(G)); ok(stadOf(u).proj.mr&&stadOf(u).xdh.length===3,'불러온 뒤 검토 상태·기록이 사라짐');
+  const S2=stadOf(u); S2.proj.mp=1; G.day=S2.proj.mr; newStadTeam(u); G.day=S2.proj.done; newStadTeam(u); G=JSON.parse(JSON.stringify(G)); ok(stadOf(u).mega&&stadCap(u)===30000&&stadXpMax(u)===30000,'불러온 뒤 초대형 구장이 아님'); });
 T('[얼굴 v18] FACE6 360명(v18 160~359)·새 신인은 어린 얼굴·기존 저장 배정 유지·아시아쿼터 후보·흰 배경 제외',()=>{ const F=eval(globalThis.__faceSrc()), X=F.FACE6.ids; ok(X.length===360&&F.FACE6.v18&&F.FACE6.v18.o===160,'FACE6가 360명이 아님: '+X.length);
   ok(X.slice(160).filter(x=>x.x).length===0,'v18b: 배정 제외 얼굴이 남음(흰 배경 4명은 회색 배경으로 다시 납품됨)');
   const asia=F.face6Pool({foreign:'아시아'}); ok(asia.length>0&&asia.some(i=>i>=160)&&asia.every(i=>/Japanese|Taiwanese|Filipino|Australian/.test(X[i].e)),'아시아쿼터 후보가 비었거나 v18이 없음');

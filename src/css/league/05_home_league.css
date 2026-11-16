@@ -235,3 +235,9 @@ button.ggf-m{cursor:pointer}button.ggf-m:hover{filter:brightness(1.12)}button.gg
 .ggf-m em,.asf-p em{display:inline-flex;align-items:center;gap:3px}.ggf-m em .badge,.asf-p em .badge,.ggf-m em img,.asf-p em img{width:16px;height:16px;flex:none} /* 수상자·올스타 구단 마크 */
 body .ltile .l1>span>i{display:flex;align-items:center;gap:4px;white-space:nowrap;word-break:keep-all} /* 사진을 키운 뒤에도 구단 별칭은 한 줄(별칭만 써서 짧다) */
 @media (max-width:620px){ .ltile .l1{display:grid;grid-template-columns:52px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center} .ltile .l1>.av{grid-row:1 / span 2} .ltile .l1>em{grid-column:2;justify-self:start;line-height:1.1} } /* 휴대폰: 사진을 키운 대신 기록 숫자는 이름 아래(겹치지 않게) */
+/* 해외 리그(16b_ovs_league): 지구별로 접는 순위표, 휴대폰 390px에서 가로 스크롤 없이 */
+.ovl-d{border:1px solid var(--line);border-radius:4px;background:var(--panel2);margin:6px 0}.ovl-d>summary{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:8px 10px;cursor:pointer}
+.ovl-d .tbl-wrap{margin:0 6px 6px}.ovl-t{width:100%;table-layout:fixed}.ovl-t th:first-child,.ovl-t td.ovl-c{width:auto;text-align:left}.ovl-t th:not(:first-child),.ovl-t td:not(.ovl-c){width:44px;text-align:right}
+.ovl-c{white-space:normal;word-break:keep-all}.ovl-af{display:inline-block;margin-left:5px;font-size:11px;color:var(--muted)}.ovl-al{display:block;font-size:12px}.ovl-al .lnk{padding:0;margin-right:6px}
+.ovl-ch td{vertical-align:top;white-space:normal;word-break:keep-all}.ovl-chl{padding:1px 0}.ovl-ch td,.ovl-ch th{text-align:left}.ovl-ch td:first-child{width:52px;white-space:nowrap}
+@media(max-width:420px){.ovl-t th:not(:first-child),.ovl-t td:not(.ovl-c){width:36px;font-size:12px}.ovl-c .pill{font-size:10px;padding:0 4px}}
