@@ -89,6 +89,7 @@ function ovlCandLvl(p,lvl,short){ lvl=lvl||(p&&p.prevLvl)||''; const i=lvl==='�
 
 /* ===== KBO와 이어진 선수의 해외 시즌 ===== */
 const OVS_THR={MLB:62,NPB:57}; /* 이 능력(국내 기준)이면 그 리그 1군(빅리그)에서 자리를 잡는다 */
+const ovsGt=a=>!!a&&!a.foreign&&!a.cand&&a.from!=null&&a.lg==='MLB'&&(a.amt||0)>=300; /* 보장 연 300만 달러 이상 MLB 계약(포스팅·해외 FA): 구단이 투자한 만큼 기회를 줘 빅리그 문턱이 2 낮다(해외 활성화 2-1: 김혜성·김하성은 첫해부터 주로 빅리그) */
 const OVS_MINOR={MLB:'트리플A',NPB:'NPB 2군'};
 /* 리그 수준 보정 [타자, 투수]. 마이너·대만·호주·멕시코는 외국인 후보 이전 리그 기록과 같은 표(LG_ADJ).
    빅리그는 KBO 출신 실제 성적에 맞춰 따로(같은 국내 능력 기준: MLB 62 타자 OPS 약 .73·투수 ERA 약 4.2, 66이면 .78·3.8 / NPB는 투고타저라 57 타자 .73·투수 4.3).
@@ -102,7 +103,7 @@ const ovsBig=l=>l==='MLB'||l==='NPB';
 function ovsSlim(p){ const o={id:p.id,isP:!!p.isP,age:p.age,r:Object.assign({},p.r)}; if(p.role)o.role=p.role; if(p.velo)o.velo=p.velo; if(p.addP&&p.addP.length)o.addP=p.addP; if(!p.isP&&p.pos)o.pos=p.pos;
   for(const k of ['nat','orig','adapt','sx','th','bt','inj','mlbG'])if(p[k]!=null)o[k]=p[k]; /* KBO 경력 후보로 다시 나올 때 같은 사람으로(해외 활성화 1-1) */ return o; }
 /* 한 시즌 기록. lg: 계약한 리그(MLB·NPB·CPBL·ABL·멕시코리그). 능력이 기준에 못 미치면 MLB는 산하 트리플A, NPB는 2군에서 뛴다(경계선이면 한 시즌을 MLB·트리플A로 나눈다). 약한 구단은 기회를 조금 더 준다 */
-function ovsLine(p,lg,o){ o=o||{}; const av=clamp(o.av??1,0,1), thr=OVS_THR[lg], hasC=!!OVL_C[ovlKey(lg)]&&o.ci!=null&&o.ci>=0; const ob=ovr(p); let m=thr==null?4:ob-thr; if(thr!=null&&hasC){ const s=ovlStr(lg,o.ci); m+=s<-.03?1:s>.04?-.7:0; }
+function ovsLine(p,lg,o){ o=o||{}; const av=clamp(o.av??1,0,1), thr=OVS_THR[lg]!=null?OVS_THR[lg]-(o.gt?2:0):null, hasC=!!OVL_C[ovlKey(lg)]&&o.ci!=null&&o.ci>=0; const ob=ovr(p); let m=thr==null?4:ob-thr; if(thr!=null&&hasC){ const s=ovlStr(lg,o.ci); m+=s<-.03?1:s>.04?-.7:0; }
   const sp=p.isP&&isSPr(p);
   const nFor=big=>p.isP?(sp?(big?(m>=4?ri(470,590):ri(210,430)):ri(300,450)):(big?(m>=4?ri(170,215):ri(90,170)):ri(120,190))):(big?(m>=4?ri(500,650):ri(170,420)):ri(300,520));
   const mk=(lvl,n)=>{ const A=ovsAdj(lvl); const L=p.isP?simPit(p,n,A[1]):simBat(p,n,A[0]); L.y=o.y??G.year; L.lvl=lvl; if(hasC)L.c=o.ci; /* 트리플A 줄의 c는 산하 트리플A 구단 번호(= 모구단 번호) */
@@ -135,7 +136,7 @@ function ovsAv(a,p){ const inj=a.d!=null&&!(a.lines||[]).length?Math.max(0,(p.in
 /* 새해: 올 시즌을 해외에서 보낼 선수의 기록을 미리 만든다(시즌 중 화면에서 진행 비율만큼 보여 주고, 시즌을 마치면 그대로 확정). 그사이 능력이 바뀌면 확정 때 다시 만든다 */
 function ovsPregen(){ for(const a of G.abroad||[]){ if(a.back||a.end!=null)continue; const y1=a.y1??a.y+1; if(G.year<y1||(a.lines||[]).some(l=>l.y===G.year))continue;
     if(a.foreign){ if(!a.fr)continue; a.cur=ovsLine(a.fr,a.lg,{ci:a.ci,av:a.half&&G.year===y1?.6:1}); continue; }
-    let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue; if(a.ci==null)a.ci=ovlIdx(a.lg,a.club); a.cur=ovsLine(p,a.lg,{ci:a.ci,av:ovsAv(a,p)});
+    let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue; if(a.ci==null)a.ci=ovlIdx(a.lg,a.club); a.cur=ovsLine(p,a.lg,{ci:a.ci,av:ovsAv(a,p),gt:ovsGt(a)});
     if(G.year-y1+1>=a.yrs&&!(a.bn&&a.bn.y===G.year)){ a.bn={y:G.year,v:ovsBackRoll(a,p,a.cur.lvl===a.lg)?1:0}; /* 계약 마지막 해: 복귀 여부를 새해에 미리 정해 두고 시즌을 마치면 그대로 쓴다(해외 활성화 1-4). 계약 연수는 공개라 우리와 AI 원소속 구단이 같은 값을 본다 */
       if(a.bn.v&&a.from===G.user&&!G.unemp)mail('스카우트팀',`${a.name}, 내년 복귀 가능 · 우선협상권 우리`,`${a.name}(${a.pos})의 ${a.lg} 계약이 올 시즌으로 끝납니다. 시즌을 마치면 국내 복귀를 추진할 것으로 보입니다. 원소속 구단인 우리가 먼저 협상합니다. 로스터와 샐러리캡 여유를 미리 챙겨 두세요.`,{kind:'선수',acts:[{l:`${a.name} 보기`,a:'person',v:'abr:'+a.id}]}); } } }
 /* 해외파 줄·카드에 붙이는 복귀 예고(계약 마지막 해에 돌아올 것으로 정해진 선수) */
@@ -205,7 +206,8 @@ function ovsRetWinter(){ const o=dobj(G.day), wk=o.m>=10?G.year:G.year-1; if(G.o
 /* 해외파 명단 120명 한도: 넘치면 끝난 기록(복귀·은퇴)·외국인 기록부터, 오래된 것부터 지운다(아직 해외에 있는 국내 선수가 사라지지 않게) */
 const OVS_FMAX=30; /* 외국인·관찰 후보 해외파 기록 한도(10시즌 저장 크기 측정: 이 한도로 약 20KB) */
 function ovsTrim(){ const A=G.abroad||[]; const fo=a=>a.foreign||a.cand;
-  while(A.filter(fo).length>OVS_FMAX){ let i=-1; for(const f of [a=>fo(a)&&a.end!=null,a=>fo(a)&&a.back&&!G.players[a.id],fo]){ for(let j=A.length-1;j>=0;j--)if(f(A[j])){ i=j; break; } if(i>=0)break; } A.splice(i,1); } /* 외국인 기록은 끝난(은퇴) 것부터, 오래된 것부터 */
+  const low=a=>{ const l=(a.lines||[]).slice(-1)[0]; return !l||!['MLB','트리플A','NPB'].includes(l.lvl); }; /* 해외 활성화 2-5: 빅리그·트리플A·NPB에서 뛰는 선수를 남긴다(KBO 경력 후보로 다시 나오고, 주목 선수에 오르는 쪽) */
+  while(A.filter(fo).length>OVS_FMAX){ let i=-1; for(const f of [a=>fo(a)&&a.end!=null,a=>fo(a)&&a.back&&!G.players[a.id],a=>fo(a)&&low(a),fo]){ for(let j=A.length-1;j>=0;j--)if(f(A[j])){ i=j; break; } if(i>=0)break; } A.splice(i,1); } /* 외국인 기록은 끝난(은퇴) 것부터, 낮은 리그·오래된 것부터 */
   const live=a=>a.back&&!a.foreign&&!a.cand&&G.players&&G.players[a.id]&&G.players[a.id].team!=null; /* 돌아와 국내에서 뛰는 선수의 해외 기록은 선수 화면 시즌 통계에 쓰므로 가장 나중에 지운다(제보 11-16) */
   while(A.length>120){ let i=-1; for(const f of [a=>(a.back||a.end!=null)&&!live(a),fo,a=>a.back||a.end!=null]){ for(let j=A.length-1;j>=0;j--)if(f(A[j])){ i=j; break; } if(i>=0)break; } A.splice(i>=0?i:A.length-1,1); } }
 /* 해외파 한 명의 해외 기록 요약(UI·복귀 협상 공통): 빅리그 시즌 수·최근 가치 */
