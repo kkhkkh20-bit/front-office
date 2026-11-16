@@ -1,0 +1,17 @@
+/* ===== 스카우트 › 출장 일정 (스카우트 2단계) =====
+   위 한 줄: 앞으로 4주 대회 달력. 아래: 아마추어 스카우트마다 4주 출장(이번 주는 실제 출장, 다음 주부터 팀장 안).
+   이번 주 칸의 [다음 대회 ▾]를 누르면 그 주 고를 수 있는 대회가 칩으로 펼쳐진다 */
+function tripCalLine(w0){ const y=dobj(w0).y, L=[]; for(const t of AM_TOURS().concat([AM_COLT])){ const [a,b]=amTourSpan(y,t); if(b<w0||a>w0+27)continue; L.push(`${dmd(a)}~${dmd(b)} ${t.n}`); }
+  const S=G.amL&&G.amL.y===y?G.amL:null, lg=(S&&S.lgD?S.lgD:amLeagueDays(y,false)).filter(d=>d>=w0&&d<=w0+27).length; if(lg)L.unshift(`주말리그 ${lg}일`);
+  const m=dobj(w0).m; if(m===12||m<=2)L.unshift('동계 전지훈련(제주·남해)'); return L.length?L.join(' · '):'대회가 없는 기간입니다. 학교 방문으로 저학년을 봅니다'; }
+function tripBox(){ if(G.unemp)return ''; const sc=clubAmScouts(G.user); if(!sc.length)return '<p class="small muted">아마추어 스카우트가 없어 출장을 보낼 수 없습니다.</p>';
+  const W=tripPlan4(G.user), w0=W[0].w0, sel=UI.tripSel;
+  const cellT=(s,i)=>{ const k=i===0?tripOf(s):W[i].P[s.id]; return `<td class="${i===0?'now':''}">${esc(tripName(k))}${i===0&&s.trip&&s.trip.man?' <i class="small muted">직접</i>':''}${i===0?` <button class="tc-i" data-a="tripSel" data-v="${s.id}">${sel===String(s.id)?'닫기':'다음 대회 ▾'}</button>`:''}</td>`; };
+  const pick=s=>sel!==String(s.id)?'':`<tr class="trip-pick"><td colspan="5"><div class="chips">${tripOptions(w0,s.region).map(o=>`<button data-a="tripSet" data-v="${s.id}|${esc(o.k)}" class="${tripOf(s)===o.k?'on':''}">${esc(o.n)}${o.days?` · ${o.days}일`:''}</button>`).join('')}</div></td></tr>`;
+  const head=`<tr><th>스카우트</th>${W.map((w,i)=>`<th>${i?dmd(w.w0)+' 주':'이번 주'}</th>`).join('')}</tr>`;
+  const rows=sc.map(s=>`<tr><td><button class="lnk" data-a="person" data-v="sc:${s.id}">${esc(s.name)}</button><small class="block muted">${esc(s.region)} ${'★'.repeat(effSkill(s))}</small></td>${W.map((w,i)=>cellT(s,i)).join('')}</tr>${pick(s)}`).join('');
+  return `<div class="trip"><div class="row between wrapr"><b>출장 일정</b><span class="row"><button class="btn small${tripAutoOn()?' primary':''}" data-a="tripAuto">${tripAutoOn()?'팀장 맡기기 켬':'팀장 맡기기 끔'}</button>${!tripAutoOn()&&G.tripPend?'<button class="btn small" data-a="tripPlanGo">팀장 안대로</button>':''}</span></div>
+    <p class="small trip-cal">${esc(tripCalLine(w0))}</p><div class="tw"><table class="sqt trip-t"><thead>${head}</thead><tbody>${rows}</tbody></table></div>
+    <p class="small muted">출장한 대회 경기에 나온 선수만 관찰이 쌓입니다. 출장이 없는 주에는 학교를 찾아 1~3학년을 봅니다. ${tripAutoOn()?'팀장이 매주 월요일 출장을 정합니다.':'매주 월요일 팀장 출장 안이 메일로 옵니다.'}</p></div>`; }
+Object.assign(A,{ tripSel(v){ UI.tripSel=UI.tripSel===String(v)?null:String(v); render(); }, tripSet(v){ const [id,k]=String(v).split('|'); toast(tripSet(id,k)); UI.tripSel=null; save(); render(); },
+  tripAuto(){ G.tripAuto=!tripAutoOn(); if(tripAutoOn())tripApply(G.user,tripPlanWeek(G.user,tripWk0(G.day)),tripWk0(G.day)); save(); render(); }, tripPlanGo(){ toast(tripPlanGo()); save(); render(); } });

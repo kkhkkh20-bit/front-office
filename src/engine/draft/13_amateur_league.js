@@ -226,7 +226,7 @@ function amRecord(S,g,d,meta){ const y=S.y, live=S.live;
   if(meta.g){ const upd=(a,b)=>{ if(g.hs>g.as){ a[0]++; b[1]++; } else if(g.as>g.hs){ b[0]++; a[1]++; } else { a[2]++; b[2]++; } a[3]+=g.hs; a[4]+=g.as; b[3]+=g.as; b[4]+=g.hs; }; const G0=S.rec[meta.g]; if(G0&&G0[g.h]&&G0[g.a]){ upd(G0[g.h],G0[g.a]);
       if(meta.h2){ const R2=(S.rec2||(S.rec2={}))[meta.g]||(S.rec2[meta.g]={}); upd(R2[g.h]||(R2[g.h]=[0,0,0,0,0]),R2[g.a]||(R2[g.a]=[0,0,0,0,0])); } } } /* 후반기 성적은 따로(전반기 = 시즌 합 - 후반기) */
   if(live){ const tag=meta.g?0:meta.t; for(const [n,o,rs,ra] of [[g.h,g.a,g.hs,g.as],[g.a,g.h,g.as,g.hs]]){ const L=S.res[n]||(S.res[n]=[]); L.push([d,o,rs,ra,tag,g.inn]); if(L.length>12)L.shift(); }
-    for(const b of g.M.values()){ const u=b.u; if(u.kind!=='p'&&u.kind!=='e')continue; _amToday.L.push({id:u.id,kind:u.kind,sch:u.sch,b:amBoxTxt(b,u.isP)}); }
+    for(const b of g.M.values()){ const u=b.u; if(u.kind!=='p'&&u.kind!=='e')continue; _amToday.L.push({id:u.id,kind:u.kind,sch:u.sch,b:amBoxTxt(b,u.isP),ev:meta.g?(meta.lvl==='col'?'ul:':'wl:')+meta.g:meta.t,gk:g.h+'-'+g.a}); } /* ev·gk: 출장 대회·경기(67_scout_trip) */
     try{ amGameNews(S,g,d,meta); }catch(e){} }
   try{ amPubRec(S,g,d,meta); }catch(e){ console.error(e); } /* 공개 측정 구속·대회별 기록·소식(66_am_public) */
   if(AM_TRACE)AM_TRACE.push({y,d,h:g.h,a:g.a,hs:g.hs,as:g.as,inn:g.inn,line:g.line,box:[...g.M.values()].map(b=>Object.assign({id:b.u.id,kind:b.u.kind,isP:b.u.isP,sch:b.u.sch,gr:b.u.gr},b,{u:undefined}))}); }
@@ -240,8 +240,9 @@ function amSimYear(y,quiet){ const S=amNewSeason(y,false); const a=dnum(y,3,1), 
 /* 매일(07_daily): 3~8월 경기, 9월 1일 시즌 정리, 월요일마다 아마 성적 표준점수 갱신 */
 function amDaily(day){ if(!amOn()||!G.amU)return; const o=dobj(day); if(_amToday.d!==day)_amToday={d:day,L:[]};
   if(o.m>=3&&o.m<=8){ const S=amLive(); try{ amPlayDay(S,day); }catch(e){ console.error(e); } if(o.w===1||o.d===1)try{ amZSet((G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&(p.prospect||p.amV))); }catch(e){} if(o.d===1&&o.m>=4)try{ pressRank(G.draftClass||[]); }catch(e){}
-    try{ amWatchDaily(day); }catch(e){} if(o.d===1)try{ amMonthNews(o); }catch(e){} }
+    try{ tripWatchDaily(day); }catch(e){ console.error(e); } /* 경기장 관찰은 출장한 대회에서만(스카우트 2단계, 예전 amWatchDaily) */ if(o.d===1)try{ amMonthNews(o); }catch(e){} }
   if(o.d===1)try{ amAiFollow(o); }catch(e){} /* 1·4·7월(1월은 시즌 밖) */
+  try{ tripDaily(day); }catch(e){ console.error(e); } /* 출장 안(월)·현장 보고(일), 67_scout_trip */
   try{ rchkDaily(); }catch(e){ console.error(e); } /* 빅보드 재확인 답(64_scout_obs) */
   if(o.w===3)try{ obsVisitWeek(day); }catch(e){ console.error(e); } /* 스카우트 학교 방문: 1년 내내 매주(겨울에는 동계훈련) */
   if(o.m===9&&o.d===1&&G.amL&&G.amL.y===o.y&&!G.amL.done)try{ amSeasonEnd(G.amL); }catch(e){ console.error(e); }

@@ -32,14 +32,14 @@ function obsBySchool(){ const by={}; for(const e of Object.values(amPipe().L))(b
 const obsSpon=(n,tid)=>{ const S=(G.schools||{})[n]; return !!S&&schGave(S,tid); };
 function clubAmScouts(tid){ return ((tid===G.user?G.scouts:G.lgStaff&&G.lgStaff[tid]&&G.lgStaff[tid].sc)||[]).filter(s=>(s.role||'am')==='am'&&s.region); }
 function obsVisitWeek(day){ if(!amOn()||!G.amU||!G.teams)return 0; const by=obsBySchool(); const win=(m=>m===12||m<=2)(dobj(day).m); let n=0; G.obsVis=G.obsVis||{};
-  for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const scs=clubAmScouts(tid); if(!scs.length)continue;
+  for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const scs=clubAmScouts(tid).filter(s=>{ const k=tripOf(s); return k==='sch'||k==='camp'; }); if(!scs.length)continue; /* 대회 출장 중인 스카우트는 학교 방문을 쉰다(스카우트 2단계) */
     const F=obsFollowSet(tid), P=obsPriL(tid), V=G.obsVis[tid]=G.obsVis[tid]||{}, used=new Set();
-    const mo=dobj(day).m, nV=mo>=3&&mo<=8?2:1; /* 시즌(3~8월)에는 한 주에 두 곳 */
-    for(let v=0;v<nV;v++)for(const s of scs){ const L=obsSchoolsOf(s.region).filter(x=>!used.has(x)); if(!L.length)continue;
+    const mo=dobj(day).m, nV=mo>=3&&mo<=8?2:1; /* 시즌(3~8월)에는 한 주에 두 곳, 겨울 전지훈련 출장도 두 곳 */
+    for(let v=0;v<2;v++)for(const s of scs){ if(v>=nV&&tripOf(s)!=='camp')continue; const L=obsSchoolsOf(s.region).filter(x=>!used.has(x)); if(!L.length)continue;
       const sc=x=>{ let v=0; for(const y of by[x]||[])v+=F.has(y.id)?OBS_W[P[y.id]??1]*1.2:.04; if(F.has('s:'+x))v+=1; if(obsSpon(x,tid))v+=.8; if(V[x]!=null&&day-V[x]<OBS_GAP)v-=50; return v+u01('scv'+day+':'+tid+':'+s.id,x)*1.5; };
       const best=L.map(x=>[x,sc(x)]).sort((a,b)=>b[1]-a[1])[0][0]; used.add(best); V[best]=day; n++;
       const k=obsSpon(best,tid)?1.25:1; /* 후원 학교는 훈련장 문이 더 열려 있다 */
-      for(const y of by[best]||[]){ const f=F.has(y.id); obsAdd(y,tid,(1+(f?OBS_VB[P[y.id]??1]:0))*k); if(tid===G.user&&(f||y.prospect))obsLogAdd(y,s,best,win,day); }
+      for(const y of by[best]||[]){ const f=F.has(y.id); obsAdd(y,tid,(1+(f?OBS_VB[P[y.id]??1]:0))*k); obsByAdd(y,tid,s.id); if(tid===G.user&&(f||y.prospect))obsLogAdd(y,s,best,win,day); }
       const S=(G.schools||{})[best]; if(S)schAdd(S,.5+(effSkill(s)||1)*.15,tid); } }
   try{ _dcc=null; }catch(e){} return n; }
 /* ---------- 방문 보고 한 줄(우리 구단) ---------- */
@@ -96,5 +96,5 @@ function dplanCheck(){ const P=dplanOf(), SL=(G.shortlist||[]).map(id=>G.players
 function dplanBonus(p){ const d=G.draft; if(!d||d.done)return 0; const P=dplanOf(), g=dplanG(p), r=P[g]; if(!r)return 0; const rd=d.picks[d.cur]&&d.picks[d.cur].rd; if(!rd||rd>r)return 0;
   return d.picks.some(k=>k.tid===G.user&&k.pid>0&&G.players[k.pid]&&dplanG(G.players[k.pid])===g)?0:4; }
 /* 경기장에서 본 관심 선수(우리 구단): 그날 박스 한 줄을 보고에 남긴다 */
-function obsLogGame(x,t,reg,day){ const sc=clubAmScouts(G.user).find(s=>s.region===reg); const Lg=G.obsLog=G.obsLog||{}; const L=Lg[x.id]=Lg[x.id]||[]; const prev=L.length?L[L.length-1][3]:null;
-  L.push([day,sc?sc.name:'스카우트팀',`경기 관전 · ${t.b}`,prev]); if(L.length>6)L.splice(0,L.length-6); }
+function obsLogGame(x,t,reg,day,who,ev){ const sc=who?null:clubAmScouts(G.user).find(s=>s.region===reg); const Lg=G.obsLog=G.obsLog||{}; const L=Lg[x.id]=Lg[x.id]||[]; const prev=L.length?L[L.length-1][3]:null;
+  L.push([day,who||(sc?sc.name:'스카우트팀'),`${ev?ev+' ':''}경기 관전 · ${t.b}`,prev]); if(L.length>6)L.splice(0,L.length-6); }

@@ -215,7 +215,7 @@ function draftNeed(tid){ const k=['C','IF','OF','SP','RP'], share={C:.08,IF:.27,
 function draftVis(p){ return p.ready?.5:p.press<=10?.6:p.press<=30?.8:1; }
 /* AI 구단의 후보 잠재력 추정(스카우트 1단계): 우리 스카우트 보고서와 같은 재료. 구단 스카우트 오차 × 권역 정보망·학교 친분·관찰 횟수(obsF)·이름난 정도,
    그리고 그 지역 담당 스카우트의 좋아하는 툴 버릇(clubLean, 우리와 같은 식). 지명 평가(aiDraftScore)와 저학년 관심 명단(amEstP)이 같이 쓴다 */
-function aiDraftSd(tid,p){ return ((team(tid)||{}).scoutSd||6)*netSdM(p,tid)*draftVis(p)*obsF(obsCount(p,tid)); }
+function aiDraftSd(tid,p){ return ((team(tid)||{}).scoutSd||6)*netSdM(p,tid)*draftVis(p)*obsF(obsCount(p,tid))*obsTwoM(p,tid); }
 function aiDraftEst(tid,p){ const sd=aiDraftSd(tid,p); const gap=Math.max(0,p.pot-ovr(p))*(p.age<=26?1:0); const sc=clubScoutFor(tid,p);
   const lean=clubLean(sc,p,k=>k&&p.r[k]!=null?p.r[k]+gap+hn('t'+k+'ai'+tid+G.year,p.id)*sd*.8:0);
   return {v:p.pot-(p.hidT&&u01('aih'+tid,p.id)>=.2?p.hidT:0)+ /* 숨은 재능은 AI 구단도 대부분 놓친다 */hn('ai'+tid+G.year,p.id)*sd+lean,sd}; }
