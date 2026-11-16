@@ -6506,6 +6506,13 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .guide-x{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;color:var(--muted);font-size:18px;border-radius:4px}.guide-x:hover{background:var(--panel2)}
 .hw-start .hw-ck li.hw-ck-done b{font-weight:500;color:var(--muted);text-decoration:none}
 
+/* 빈 상태·불러오는 중(UI 3단계 3-8, 56_states.js) */
+.empty-state{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:6px 0;padding:12px 14px;border:1px dashed var(--line2,var(--line));border-radius:4px;color:var(--muted)}
+.empty-state>p{margin:0;flex:1 1 220px;font-size:var(--ui-body)}
+.loading-state{display:flex;align-items:center;gap:5px;padding:10px 0;color:var(--muted);font-size:var(--ui-body)}
+.loading-state>i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:ldot 1s infinite ease-in-out}.loading-state>i:nth-child(2){animation-delay:.15s}.loading-state>i:nth-child(3){animation-delay:.3s}.loading-state>span{margin-left:6px}
+@keyframes ldot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.loading-state>i{animation:none;opacity:.6}}
 </style>
 </head>
 <body>
@@ -34120,9 +34127,9 @@ function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
   const aiRowsA=ai.map(p=>{ const days=G.day-(p.aiLd||G.day); const s2=sw[p.id]||[];
     return `<div class="bk-r bk-lg">${avImg(p)}<button class="bk-m" data-a="player" data-v="${p.id}"><b>${esc(p.name)}${p.aiUrg?' <em class="bk-urg">급매</em>':''}</b><i>${posLabel(p)} · ${p.age}세 · ${esc(tContract(p))}</i><span class="bk-t">${badge(p.team,14)} ${esc(tshort(p.team))} · ${BLKWHY[p.aiWhy]||'매물'} · ${days}일째</span></button><span class="bk-o">${rchip(Math.round(scoutReport(p).cur))}<em>${money(p.sal)}</em></span><button class="btn small bk-go" data-a="toTrade" data-v="${p.id}">제안하기</button>${s2.length?`<div class="bk-act"><span class="small good">우리 매물 ${esc(s2.map(m=>m.name).join(', '))}와(과) 맞교환 가능</span><button class="btn small" data-a="blkSwap" data-v="${p.id}:${s2[0].id}">${esc(s2[0].name)}과(와) 맞교환</button></div>`:''}</div>`; });
   const PGb=pager('blk'+f,aiRowsA,fmOn()?16:8);
-  const secOff=`<section class="card bk-sec">${fmOn()?`<div class="row between"><h2 class="sec">받은 제안 ${OS.length}건</h2></div>`:''}${offs||'<p class="small muted">받은 제안이 없습니다.</p>'}</section>`;
+  const secOff=`<section class="card bk-sec">${fmOn()?`<div class="row between"><h2 class="sec">받은 제안 ${OS.length}건</h2></div>`:''}${offs||emptyState('받은 제안이 없습니다. 선수를 매물로 내놓으면 제안이 들어옵니다.')}</section>`;
   const secMine=`<section class="card bk-sec"><div class="row between"><h2 class="sec">우리 매물 ${mine.length}명<button type="button" class="hi-i" data-tip="급매로 표시하면 제안이 더 자주 오지만, 상대도 우리가 급한 걸 알고 조금 덜 줍니다.">i</button></h2></div>
-    ${mineRows||'<p class="small muted">내놓은 선수가 없습니다.</p>'}</section>`;
+    ${mineRows||emptyState('내놓은 선수가 없습니다.',['선수단에서 고르기','tab','roster'])}</section>`;
   const secLg=`<section class="card bk-sec"><div class="row between bk-head"><h2 class="sec"><span class="bk-long">다른 구단 </span>매물 ${ai.length}명<button type="button" class="hi-i" data-tip="매물로 나온 선수는 그 구단이 정리하고 싶은 선수라 시세보다 싸게 거래됩니다. 급매는 더 쌉니다. 매물 등록은 최대 6주 동안 유지됩니다.">i</button></h2><div class="chips">${[['all','전체'],['urg','급매'],['p','투수'],['b','야수']].map(([k,l])=>`<button data-a="blkF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div></div>
     ${PGb.items.join('')||'<p class="small muted">조건에 맞는 매물이 없습니다.</p>'}${PGb.bar}</section>`;
   const top=!open?'<div class="note">지금은 트레이드 기간이 아닙니다. 매물 정리는 미리 해 둘 수 있습니다.</div>':deadlineBanner();
@@ -37515,7 +37522,7 @@ function sponView(){ sponInit(); const S=G.spon, t=team(G.user); const y=sponSea
     <div class="chips">${parts||'<span class="small muted">평균 수준</span>'}</div>
     <p class="small muted">가을야구 보너스와 우승 보너스는 둘 다 받습니다(우승하면 두 보너스 합). 빈자리는 기업 제안을 기다리거나, 마케팅팀에 영업을 지시해 먼저 찾아갈 수 있습니다(영업비 3천만 원 · 1~2주 뒤 결과 · 같은 자리는 30일에 한 번 · 성공률은 가치 지수와 단장 평판에 따라 다름). 가치 지수 100이 리그 평균입니다. 시장 규모·구단 인기·지난 시즌 성적·팬 여론·언론 논조·스타 선수가 제안 금액을 정합니다. 경쟁 제안이 많고 가치가 높을수록 조건 상향 요청이 잘 통합니다.</p>
     <div class="spt-w"><table class="spt"><thead><tr><th>자리</th><th>스폰서</th><th>연 금액</th><th>기간</th><th>보너스</th></tr></thead><tbody>${slots.map(row).join('')}</tbody></table></div>`)
-   +'<div class="spo-side">'+csec(`받은 제안 ${offers.length}건`,offers.length?Object.keys(SPON_SLOT).filter(k=>best[k]).map(k=>`<div class="spo-g" data-slot="${k}"><h3 class="spo-gh">${esc(SPON_SLOT[k].l)} <span class="muted">${best[k].n}건</span></h3><div class="spo-l">${offers.filter(o=>o.slot===k).sort((a,b)=>b.amt-a.amt).map(card).join('')}</div></div>`).join('')+'<p class="small muted">자리별로 묶었습니다. 같은 자리 제안 가운데 가장 높은 연 금액·보너스는 파란색으로 표시합니다.</p>':'<p class="small muted">지금 받은 제안이 없습니다.</p>')
+   +'<div class="spo-side">'+csec(`받은 제안 ${offers.length}건`,offers.length?Object.keys(SPON_SLOT).filter(k=>best[k]).map(k=>`<div class="spo-g" data-slot="${k}"><h3 class="spo-gh">${esc(SPON_SLOT[k].l)} <span class="muted">${best[k].n}건</span></h3><div class="spo-l">${offers.filter(o=>o.slot===k).sort((a,b)=>b.amt-a.amt).map(card).join('')}</div></div>`).join('')+'<p class="small muted">자리별로 묶었습니다. 같은 자리 제안 가운데 가장 높은 연 금액·보너스는 파란색으로 표시합니다.</p>':emptyState('지금 받은 제안이 없습니다. 성적과 팬 여론이 오르면 제안이 늘어납니다.'))
    +(S.hist.length?csec('지난 계약',`<div class="log">${S.hist.slice().reverse().slice(0,12).map(h=>`<p><span class="ticker">${h.y0}~${h.until}</span> ${esc(h.co)} · ${SPON_SLOT[h.slot].l} · 연 ${money(h.amt)}${!h.cut&&h.paidY!=null&&h.paidY!==h.amt?` · 마지막 해 수령 ${money(h.paidY)}`:''}${h.cut?` · <b>${dsh(h.cut.d)} 해지</b>(${esc(h.cut.why||'')}) · 해지 전 몫 ${money(Math.round(h.amt*(h.cutF||0)))}`:''}</p>`).join('')}</div>`):'')+'</div>'; }
 /* 팬 마케팅 · 구단 이벤트 화면(구단 > 팬·언론 맨 위) */
 function fanOpsCard(){ if(G.unemp)return ''; const F=fanOps(); const t=team(G.user);
@@ -37672,7 +37679,7 @@ function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
   const pri=PR.length>=2?`<div class="eyebrow" style="margin-top:8px">우리 신청 순위</div><p class="small muted">같은 날 정해지는 선수 중 정원이 모자라면 위 순위부터 받습니다. 기본은 신청한 순서입니다.</p>${PR.map((id,i)=>`<div class="market-player-row"><span class="small">${i+1}. ${esc(G.players[id].name)} <span class="muted">${dsh(G.players[id].wv.end)} 결정</span></span><span class="btns market-player-actions"><button class="btn small" data-a="wvPri" data-v="${id}:-1" ${i?'':'disabled'}>위로</button><button class="btn small" data-a="wvPri" data-v="${id}:1" ${i<PR.length-1?'':'disabled'}>아래로</button></span></div>`).join('')}`:'';
   if(!L.length&&!log)return `<p class="small muted"><b>웨이버 공시</b> 지금 공시 중인 선수가 없습니다.${hiI(rule)}</p>`; /* 비어 있으면 칸 대신 한 줄 */
   return csec('웨이버 공시',`<p class="small muted">방출 선수는 ${WV_DAYS}일 동안 공시되고, 신청 구단 중 지금 성적이 낮은 구단이 계약을 이어받습니다. ${hiI(rule)}</p>
-    ${L.length?L.map(row).join(''):'<p class="small muted">지금 공시 중인 선수가 없습니다.</p>'}${pri}${log?`<div class="eyebrow" style="margin-top:8px">최근 결과</div>${log}`:''}`); }
+    ${L.length?L.map(row).join(''):emptyState('지금 공시 중인 선수가 없습니다. 공시되면 소식함으로 알려 드립니다.')}${pri}${log?`<div class="eyebrow" style="margin-top:8px">최근 결과</div>${log}`:''}`); }
 function sdBox(){ const S=G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'?G.sd2:null; /* 진행 중인 회차만. 끝난 회차는 대기 화면에서 해마다 따로 본다(검수 11-09ze) */
   const rule=hiI(`2차 드래프트는 홀수 해 11월에 열립니다. 구단마다 보호선수 최대 ${SD_PROT}명을 내고, 다른 구단이 지난 시즌 성적 역순으로 명단 밖 선수를 ${SD_RD}라운드까지(하위 3개 구단은 5라운드) 지명합니다. 한 구단에서 최대 ${SD_LOSS}명. 양도금 1라운드 4억·2라운드 3억·3라운드 2억·4라운드 이하 1억. 1·2라운드 지명자는 두 시즌 안에 1군 ${SD_REG[0]}일·${SD_REG[1]}일을 채우지 못하면 원소속 구단으로 돌아갑니다. 외국인·입단 1~3년 차·육성선수·군 보류·이번 겨울 FA 계약 선수는 대상이 아닙니다.`);
   const ob=(S,s)=>{ if(s.rd>SD_REG.length)return ''; const need=SD_REG[s.rd-1]; if(s.ob)return ` · 의무 등록${s.obN!=null?` 1군 ${s.obN}/${need}일`:''} ${{ok:'충족',back:'미달 · 원소속 복귀',free:'미달 · 자유계약',wait:'미달 · 원소속 복귀 결정 대기',rel:'방출로 의무 종료',home:'원소속 구단 복귀로 의무 종료',moved:'결정 전 재이적으로 복귀 결정 종료'}[s.ob]||''}`; const q=G.players[s.pid], o=q&&q.sd2; if(!o||o.y!==S.y)return ''; const n=Math.min(o.need,o.reg+(G.year>o.y&&o.ly!==G.year&&q.team!=null?sdRegN(q,o):0)); return ` · 의무 등록 1군 ${n}/${o.need}일(${o.y+2}시즌까지)`; }; /* 지명 선수별 의무 진행(검수 11-09f) */
@@ -38533,6 +38540,11 @@ Object.assign(A,{
   guideClose(){ UI.guide=null; render(); },
   guideOff(v){ G.cfg=G.cfg||{}; G.cfg.guideOff=v==='1'; if(G.cfg.guideOff)UI.guide=null; save(); render(); },
 });
+/* ---------- 빈 상태·불러오는 중 공통 부품(UI 3단계 3-8) ----------
+   emptyState(문구, 동작): 문구 한 줄 + 다음에 할 일 보조 버튼 0~1개. 동작은 [글자, data-a, data-v].
+   loadingState(문구): 불러오는 동안 한 줄(움직이는 점). 새 빈 문구는 '<p class="small muted">…없습니다'로 직접 쓰지 말고 이 부품을 쓴다(check-ui-patterns). */
+function emptyState(text,act){ return `<div class="empty-state" role="status"><p>${text}</p>${act?`<button type="button" class="btn small" data-a="${act[1]}"${act[2]!=null?` data-v="${esc(String(act[2]))}"`:''}>${esc(act[0])}</button>`:''}</div>`; }
+function loadingState(text){ return `<div class="loading-state" role="status" aria-live="polite"><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><span>${esc(text||'불러오는 중입니다')}</span></div>`; }
 /* ---------- PC 목록 쪽 나눔(UI 3단계 3-0, 구단주 11-16 "드래그 없게, 넘치면 탭처럼") ----------
    PC(1100px 이상)에서 상자 안 목록·표가 칸보다 길어 스크롤바가 생기면, 칸에 들어가는 줄만 보이고 '‹ 1/4 ›'로 넘긴다.
    페이지와 상자가 같이 스크롤되는 이중 스크롤을 없앤다. 휴대폰은 화면 전체가 한 번에 내려가므로 그대로 둔다.

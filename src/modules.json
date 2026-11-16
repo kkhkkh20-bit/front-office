@@ -255,6 +255,7 @@
       "src/ui/components/53_person_card.js",
       "src/ui/components/54_list_tools.js",
       "src/ui/components/55_guide_bar.js",
+      "src/ui/components/56_states.js",
       "src/ui/components/57_fit_pages.js",
       "src/ui/career/52_champion.js",
       "src/ui/career/53_meeting.js",
