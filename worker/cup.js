@@ -5,7 +5,7 @@
  *   DELETE /api/cup/entry/WID          신청 취소
  *   GET    /api/cup/entries            참가팀 명단(JSON, 시드 순 OVR). 세계 id는 내보내지 않는다
  *   GET    /api/cup/entries.html       같은 명단의 단순 HTML 페이지
- *   GET    /api/cup/results            공개 결과(유저의 전당) JSON
+ *   GET    /api/cup/results            공개 결과(프런트컵 명예의 전당) JSON: 회차마다 우승·준우승 로스터, 순위, 개인 타이틀. 누구나(게임 처음 화면에서도) 읽는다
  *   GET    /api/cup/game/ID            대회 경기 다시 보기 묶음(두 엔트리 + 경기 키)
  *   주최자(Authorization: Bearer CUP_ADMIN 비밀값):
  *   PUT /api/cup/admin/config · GET /api/cup/admin/entries · PUT /api/cup/admin/results · PUT /api/cup/admin/game/ID
@@ -32,7 +32,7 @@ function json(status, body) { return new Response(JSON.stringify(body), { status
 const err = (status, error, extra) => json(status, Object.assign({ error, message: MSG[error] || '' }, extra || {}));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 async function cfgOf(kv) { const t = await kv.get('cup:cfg'); if (!t) return null; try { return Object.assign({}, CUP_DEFAULT, JSON.parse(t)); } catch (e) { return null; } }
-const pub = c => ({ id: c.id, title: c.title, deadline: c.deadline, size: c.size, best: c.best, minSeasons: c.minSeasons, payCap: c.payCap, open: c.open !== false, note: c.note || '' });
+const pub = c => ({ id: c.id, title: c.title, format: c.format || 'knockout', teams: c.teams, deadline: c.deadline, size: c.size, best: c.best, minSeasons: c.minSeasons, payCap: c.payCap, open: c.open !== false, note: c.note || '' });
 function admin(req, env) { const a = req.headers.get('Authorization') || ''; return !!env.CUP_ADMIN && a === 'Bearer ' + env.CUP_ADMIN; }
 async function listEntries(kv, id, full) {
   const out = []; let cursor;

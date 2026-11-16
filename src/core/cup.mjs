@@ -1,6 +1,8 @@
 /* 유저 대회(프런트컵) 공용 규칙: 참가 엔트리 형식·해시·검증, 금칙어, 시드·대진표, 미션상·개인 타이틀·파워랭킹.
    게임 상태(G)·화면을 참조하지 않는다. 게임(신청 버튼)·Worker(/api/cup)·주최 도구(tools/cup-host.cjs)가 같은 코드를 쓴다.
-   엔트리는 그 순간의 1군 명단(능력·나이·포지션·투타·타순·선발·불펜·감독)을 담는다. 경기는 엔진 cupMatch(엔트리 A, B, 시드)가 본게임 simGame으로 치른다 */
+   엔트리는 그 순간의 1군 명단(능력·나이·포지션·투타·타순·선발·불펜·감독)을 담는다. 경기는 엔진 cupMatch(엔트리 A, B, 시드)가 본게임 simGame으로 치른다.
+   대회는 회차마다 따로 여는 단발 행사다(정기 일정 없음). 회차마다 대회 id(cup1, cup2…)를 새로 정한다 */
+import { ladderSchedule } from './ladder.mjs';
 export const CUP_V = 1;
 export const CUP_RULES = Object.freeze({
   nameMax: 12,           /* 팀명 12자 */
@@ -10,9 +12,11 @@ export const CUP_RULES = Object.freeze({
   ratingMax: 85,         /* 능력치 상한(게임 안 잠재력 상한 80 + 컨디션 여유). 넘으면 이상치 */
   ageMin: 16, ageMax: 48,
 });
-/* 기본 대회 설정(첫 대회: 32강 단판 → 8강부터 7전4선승, 플레이인 없음). 128강·플레이인·블록은 설정으로 */
+/* 기본 대회 설정(첫 대회, 형식 A): 10팀 리그(맞대결 3연전 × 9 = 팀당 27경기) → KBO식 가을야구(와일드카드·준PO·PO·KS).
+   참가가 10팀보다 적으면 리그 평균 AI 구단으로 채운다(AI는 타이틀·칭호 없음).
+   format 'knockout'이면 예전 토너먼트(size강, best 라운드별 경기 수, 플레이인·추첨·블록) */
 export const CUP_DEFAULT = Object.freeze({
-  id: 'cup1', title: '제1회 프런트컵', size: 32, format: 'knockout',
+  id: 'cup1', title: '제1회 프런트컵', format: 'league', teams: 10, meet: 3, size: 32,
   best: Object.freeze({ default: 1, 8: 7, 4: 7, 2: 7 }), /* 라운드(남은 팀 수)별 경기 수: 1=단판, 3=3판2선승, 7=7전4선승 */
   playIn: null,          /* {direct: N, groupSize: k}: 상위 N 직행, 나머지는 조별 단판 → 본선 남은 자리 */
   shuffleTop: 0,         /* 8이면 Top-8 시드 자리를 추첨으로 섞는다 */
@@ -189,6 +193,7 @@ export function cupMissions(series) {
 /* 개인 타이틀. bat: [{key, team, name, pa, ab, h, bb, hbp, hr, rbi, sb}], pit: [{key, team, name, outs, h, bb, er, w, sv, so}] */
 export function cupTitles(bat, pit, q) {
   q = Object.assign({ pa: 65, outs: 63 }, q || {});
+  if (q.no && q.no.length) { const skip = new Set(q.no), ok = x => !skip.has(String(x.key).split(':')[0]); bat = bat.filter(ok); pit = pit.filter(ok); } /* AI 구단 선수는 타이틀 없음 */
   const top = (L, f, okf, low) => { const C = L.filter(okf || (() => true)).map(x => [f(x), x]).filter(x => isFinite(x[0])); if (!C.length) return null; C.sort((a, b) => low ? a[0] - b[0] : b[0] - a[0]); return { v: C[0][0], x: C[0][1] }; };
   const avg = x => x.ab ? x.h / x.ab : 0, obp = x => { const d = x.ab + x.bb + (x.hbp || 0) + (x.sf || 0); return d ? (x.h + x.bb + (x.hbp || 0)) / d : 0; };
   const era = x => x.outs ? x.er * 27 / x.outs : 99, whip = x => x.outs ? (x.h + x.bb) * 3 / x.outs : 99, k9 = x => x.outs ? x.so * 27 / x.outs : 0;
@@ -212,3 +217,97 @@ export function cupPower(hist, nowNo) {
   for (const h of hist) { const p = Math.max(0, (CUP_PTS[h.best] || 0) - 2 * Math.max(0, nowNo - h.no)); if (!p) continue; (by[h.deck] = by[h.deck] || []).push(p); }
   return Object.entries(by).map(([deck, L]) => ({ deck, pts: L.sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0) })).sort((a, b) => b.pts - a.pts || a.deck.localeCompare(b.deck));
 }
+
+
+/* ===== 리그 형식(형식 A): 일정·순위·가을야구 ===== */
+/* 일정: 단장 대전 원형 순환(ladderSchedule)으로 라운드마다 짝을 정하고, 짝마다 meet경기 연전(홈·원정 번갈아: 홈, 원정, 홈).
+   반환 [{id:'L라운드-번호', r(1부터), a, b(참가 번호, a가 1차전 홈), day0(그 연전 첫날, 0부터), home:[1,0,1]}] */
+export function cupLeagueSched(n, meet) {
+  meet = Math.max(1, Math.min(5, (meet ?? 3) | 0)); const base = ladderSchedule(n, 1), k = {}, na = Array(n).fill(0);
+  /* 1차전 홈(연전에서 홈 2경기)을 고르게: 지금까지 1차전 홈이 적은 쪽이 홈 → 팀마다 홈 경기 수 차이 1 이내(10팀 3연전: 13~14) */
+  return base.map(([d, h, a]) => { if (na[h] > na[a]) [h, a] = [a, h]; na[h]++; k[d] = (k[d] || 0) + 1; return { id: `L${d + 1}-${k[d]}`, r: d + 1, a: h, b: a, day0: d * meet, home: Array.from({ length: meet }, (_, i) => i % 2 ? 0 : 1) }; });
+}
+/* 리그 라운드 → 게시 묶음(1~3: 리그를 셋으로 나눈 구간) */
+export const cupLeaguePart = (r, R) => Math.min(3, Math.max(1, Math.ceil(r * 3 / Math.max(1, R))));
+const pctOf = x => x.w + x.l ? x.w / (x.w + x.l) : 0;
+/* 순위: 승률(승 ÷ (승+패), 무승부 제외) → 동률 팀끼리 맞대결 승률 → 득실차 → 엔트리 키(결정적).
+   games: [{a, b, sa, sb}] (a·b = 엔트리 키). 반환 [{key, rank, g, w, l, t, rs, ra, diff, pct, gb, tb('맞대결'|'득실차'|null)}] */
+export function cupStandings(keys, games) {
+  const R = new Map(keys.map(k => [k, { key: k, g: 0, w: 0, l: 0, t: 0, rs: 0, ra: 0 }]));
+  for (const g of games) { const A = R.get(g.a), B = R.get(g.b); if (!A || !B) continue; A.g++; B.g++; A.rs += g.sa; A.ra += g.sb; B.rs += g.sb; B.ra += g.sa;
+    if (g.sa > g.sb) { A.w++; B.l++; } else if (g.sb > g.sa) { B.w++; A.l++; } else { A.t++; B.t++; } }
+  const L = [...R.values()]; for (const x of L) { x.diff = x.rs - x.ra; x.pct = pctOf(x); x.tb = null; }
+  const same = (x, y) => Math.abs(x.pct - y.pct) < 1e-12;
+  L.sort((x, y) => same(x, y) ? 0 : y.pct - x.pct);
+  /* 승률 동률 묶음마다 맞대결 → 득실차 → 키 */
+  const out = [];
+  for (let i = 0; i < L.length;) {
+    let j = i + 1; while (j < L.length && same(L[i], L[j])) j++;
+    const grp = L.slice(i, j);
+    if (grp.length > 1) {
+      const ks = new Set(grp.map(x => x.key)), h = new Map(grp.map(x => [x.key, { w: 0, l: 0 }]));
+      for (const g of games) { if (!ks.has(g.a) || !ks.has(g.b)) continue; if (g.sa > g.sb) { h.get(g.a).w++; h.get(g.b).l++; } else if (g.sb > g.sa) { h.get(g.b).w++; h.get(g.a).l++; } }
+      for (const x of grp) x.h2h = pctOf(h.get(x.key));
+      grp.sort((x, y) => (y.h2h - x.h2h) || (y.diff - x.diff) || String(x.key).localeCompare(String(y.key)));
+      grp.forEach((x, gi) => { const nb = grp[gi + 1] || grp[gi - 1]; x.tb = nb.h2h !== x.h2h ? '맞대결' : nb.diff !== x.diff ? '득실차' : '추첨'; });
+    }
+    out.push(...grp); i = j;
+  }
+  const top = out[0];
+  out.forEach((x, i) => { x.rank = i + 1; x.gb = top ? ((top.w - x.w) + (x.l - top.l)) / 2 : 0; delete x.h2h; });
+  return out;
+}
+/* 가을야구(KBO식). hi·lo: 정규 순위(숫자) 또는 앞 시리즈 승자('WC' 등). home: 차전별 hi 홈 여부 */
+export const CUP_POST = Object.freeze([
+  Object.freeze({ id: 'WC', name: '와일드카드 결정전', short: '와일드카드', hi: 4, lo: 5, best: 2, wc: true, home: [1, 1] }),
+  Object.freeze({ id: 'SPO', name: '준플레이오프', short: '준PO', hi: 3, lo: 'WC', best: 5, home: [1, 1, 0, 0, 1] }),
+  Object.freeze({ id: 'PO', name: '플레이오프', short: 'PO', hi: 2, lo: 'SPO', best: 5, home: [1, 1, 0, 0, 1] }),
+  Object.freeze({ id: 'KS', name: '한국시리즈', short: 'KS', hi: 1, lo: 'PO', best: 7, home: [1, 1, 0, 0, 1, 1, 1] }),
+]);
+/* 시리즈 진행 상태. spec: {best, wc}. games: [{sa, sb}] (A = 상위 팀).
+   와일드카드: 4위(A)는 1승을 안고 시작한다. A가 한 번 이기거나 비기면 A, B는 두 번 이겨야 올라간다(최대 2경기).
+   그 밖: 먼저 (best/2+1)승. 무승부는 승수에 넣지 않는다 */
+export function cupSeriesState(spec, games) {
+  let wa = 0, wb = 0, t = 0; for (const g of games || []) { if (g.sa > g.sb) wa++; else if (g.sb > g.sa) wb++; else t++; }
+  if (spec.wc) { const aOk = wa > 0 || t > 0, bOk = wb >= 2; const done = aOk || bOk || (games || []).length >= 2; return { wa, wb, t, lead: [1, 0], done, win: done ? (bOk ? 'B' : 'A') : null }; }
+  const need = Math.floor((spec.best || 1) / 2) + 1, done = wa >= need || wb >= need;
+  return { wa, wb, t, lead: [0, 0], done, win: done ? (wa >= need ? 'A' : 'B') : null, need };
+}
+/* 리그 + 가을야구 전체 진행. keys: 시드 순 엔트리 키(10개). play(a, b, o) → {games:[{sa, sb, walk, inn, …}], …}: 주최 도구는 엔진 cupMatch를, 시험은 가짜 경기를 넘긴다.
+   o: {cup, round, match, best, all(정해진 경기 수를 모두), tie(무승부 허용), wc, home:[1/0…](차전별 A 홈), ri:[A, B](그 팀이 앞서 치른 경기 수: 선발 순번을 이어 간다)}
+   반환 {sched, series:[{id, kind('L'|'WC'|'SPO'|'PO'|'KS'), r, day0, a, b, o, games, win, res}], stand, top, champ, runner} */
+export function cupLeagueRun(keys, cfg, play) {
+  cfg = Object.assign({}, CUP_DEFAULT, cfg || {}); const n = keys.length, meet = cfg.meet || 3, sched = cupLeagueSched(n, meet), cnt = keys.map(() => 0), series = [], flat = [];
+  const slim = g => ({ sa: g.sa, sb: g.sb, walk: !!g.walk, inn: g.inn || 9, lc: g.lc || 0 });
+  for (const s of sched) {
+    const a = keys[s.a], b = keys[s.b], o = { cup: cfg.id, round: 'L' + s.r, match: s.id, best: meet, all: 1, tie: 1, home: s.home, ri: [cnt[s.a], cnt[s.b]] };
+    const res = play(a, b, o), G = (res.games || []).map(slim); cnt[s.a] += G.length; cnt[s.b] += G.length;
+    for (const g of G) flat.push({ a, b, sa: g.sa, sb: g.sb });
+    const wa = G.filter(g => g.sa > g.sb).length, wb = G.filter(g => g.sb > g.sa).length;
+    series.push({ id: s.id, kind: 'L', r: s.r, day0: s.day0, a, b, o, games: G, win: wa > wb ? a : wb > wa ? b : null, res });
+  }
+  const stand = cupStandings(keys, flat), top = stand.slice(0, 5).map(x => x.key), W = {};
+  let champ = null, runner = null;
+  if (top.length >= 5) for (const P of CUP_POST) {
+    const a = top[P.hi - 1], b = typeof P.lo === 'number' ? top[P.lo - 1] : W[P.lo];
+    const o = { cup: cfg.id, round: P.id, match: P.id, best: P.best, home: P.home, ...(P.wc ? { wc: 1, tie: 1 } : {}) };
+    const res = play(a, b, o), G = (res.games || []).map(slim), st = cupSeriesState(P, G);
+    W[P.id] = st.win === 'A' ? a : b; series.push({ id: P.id, kind: P.id, a, b, o, games: G, win: W[P.id], st, res });
+    if (P.id === 'KS') { champ = W.KS; runner = champ === a ? b : a; }
+  }
+  return { sched, series, stand, top, champ, runner };
+}
+/* 규정 타석·이닝(KBO: 팀 경기 수 × 3.1타석, × 1이닝) */
+export const cupQual = g => ({ pa: Math.round(g * 3.1), outs: g * 3 });
+/* 주간 MVP: 타자·투수를 한 점수로(AI 구단 선수 제외: no = 뺄 엔트리 해시 목록). bat·pit은 cupTitles와 같은 모양 */
+export function cupMvp(bat, pit, no) {
+  const skip = new Set(no || []), ok = x => !skip.has(String(x.key).split(':')[0]);
+  let best = null;
+  for (const b of bat.filter(ok)) { const tb = b.h + (b.d || 0) + 2 * (b.tr || 0) + 3 * b.hr, v = tb + .8 * b.bb + .7 * b.rbi + .5 * (b.r || 0) + .5 * (b.sb || 0) - .3 * (b.ab - b.h);
+    if (!best || v > best.v) best = { v, key: b.key, team: b.team, name: b.name, isP: false, txt: `${b.ab}타수 ${b.h}안타${b.hr ? ` ${b.hr}홈런` : ''} ${b.rbi}타점${b.sb ? ` ${b.sb}도루` : ''} · 타율 ${(b.ab ? b.h / b.ab : 0).toFixed(3).replace(/^0/, '')}` }; }
+  for (const p of pit.filter(ok)) { const v = p.outs / 3 * 1.2 + p.so * .4 - p.er * 2 - (p.h + p.bb) * .4 + (p.w || 0) * 2 + (p.sv || 0) * 1.5;
+    if (!best || v > best.v) best = { v, key: p.key, team: p.team, name: p.name, isP: true, txt: `${Math.floor(p.outs / 3)}${p.outs % 3 ? '.' + p.outs % 3 : ''}이닝 ${p.so}탈삼진 평균자책점 ${(p.outs ? p.er * 27 / p.outs : 0).toFixed(2)}${p.w ? ` ${p.w}승` : ''}${p.sv ? ` ${p.sv}세이브` : ''}` }; }
+  return best;
+}
+/* 명경기 점수: 끝내기·연장·역전 횟수·점수 차·득점 */
+export const cupDrama = g => (g.walk ? 6 : 0) + (g.inn > 9 ? 3 + (g.inn - 10) : 0) + 2 * (g.lc || 0) + (Math.abs(g.sa - g.sb) <= 1 ? 3 : Math.abs(g.sa - g.sb) === 2 ? 1 : 0) + .1 * (g.sa + g.sb);

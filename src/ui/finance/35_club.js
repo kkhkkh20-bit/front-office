@@ -140,9 +140,9 @@ function clubBody(s){
       const more=`<section class="card"><details class="mfold"><summary>패치 노트</summary>${patchCard()}</details>${creditsLine()}</section>`;
       if(!fmOn()){ /* 휴대폰·좁은 창: 한 줄로 쌓으면 5화면이 넘어 서로 따로 쓰는 묶음을 4탭으로(UI 3단계 3-9). PC는 세 줄 그대로 */
         const it=inTabs('setg',[['run','진행'],['view','표시'],['save','저장'],['info','정보']],'run');
-        const body={run:advSetCard()+stopCard()+psc+ivf+dif,view:actModeCard()+scl+teamNameCard()+ret,save:slotsCard(false)+exportCard()+teleCard(),info:fb+more}[it.cur];
+        const body={run:advSetCard()+stopCard()+psc+ivf+dif,view:actModeCard()+scl+teamNameCard()+ret,save:slotsCard(false)+exportCard()+teleCard(),info:fb+cupHofCard()+more}[it.cur];
         return `<div class="setx set-tabs ws-own">${it.bar}<div class="setc">${body}</div></div>`; }
-      return `<div class="setx ws-own"><div class="setc"><h3 class="set-g">진행</h3>${advSetCard()}${stopCard()}${psc}</div><div class="setc"><h3 class="set-g">저장</h3>${slotsCard(false)}${exportCard()}${teleCard()}</div><div class="setc"><h3 class="set-g">구단·기록</h3>${actModeCard()}${scl}${ivf}${dif}${teamNameCard()}${ret}${more}</div>${fb}</div>`; }}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
+      return `<div class="setx ws-own"><div class="setc"><h3 class="set-g">진행</h3>${advSetCard()}${stopCard()}${psc}</div><div class="setc"><h3 class="set-g">저장</h3>${slotsCard(false)}${exportCard()}${teleCard()}</div><div class="setc"><h3 class="set-g">구단·기록</h3>${actModeCard()}${scl}${ivf}${dif}${teamNameCard()}${ret}${cupHofCard()}${more}</div>${fb}</div>`; }}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
   const h=mergedBody('club',s,H0);
   return h;
 }
