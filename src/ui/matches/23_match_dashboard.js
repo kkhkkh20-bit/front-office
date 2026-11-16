@@ -70,12 +70,20 @@ function mdRoster(g,s,side){
   const T=s.teams[side],roster=[...T.lineup];if(T.pitcher)roster.push({id:T.pitcher,pos:'P'});
   return roster.map((x,i)=>{const p=mdPlayer(g,x.id),r=s.players[x.id]||{ab:0,h:0,outs:0,so:0},pitch=x.pos==='P',active=x.id===s.batter||pitch&&side!==s.attack;return `<button class="md-roster-player${active?' current':''}" data-a="castPlayer" data-v="${x.id}"><span class="md-roster-pos">${pitch?'현재 투수':i+1+'번 · '+x.pos}</span>${G.players[x.id]?avImg(p):'<span class="av ini">?</span>'}<b>${esc(p.name)}</b><small>${pitch?ipStr(r.outs)+'이닝 · '+r.so+'K':r.ab+'타수 '+r.h+'안타'}</small></button>`;}).join('');
 }
+/* 3D 화면 좌우 상시 카드(사용자 11-16, OOTP·FM 참고): 왼쪽 현재 타자, 오른쪽 현재 투수. 사진·이름·타순/포지션·시즌 성적·오늘 기록·능력치, 투수는 체력 막대 */
+function mdFaces(g,s,shown=s){ if(s.finished||!s.batter)return ''; const pid=s.teams[s.attack==='a'?'h':'a'].pitcher;
+  const card=(id,pitch)=>{ if(!id)return ''; const p=mdPlayer(g,id), r=shown.players[id]||{ab:0,h:0,outs:0,so:0}, slot=s.teams[s.attack].lineup.findIndex(x=>x.id===id)+1, row=s.teams[s.attack].lineup.find(x=>x.id===id), total=pitch?cPitchTotalBefore(g,shown.k,id):null, no=G.players[id]&&typeof jno==='function'?jno(G.players[id]):null;
+    const sub=pitch?`${p.th==='좌'?'좌완':'우완'} · ${DELIVERY_LABEL[pitchDelivery(p)]||''}`:`${slot?slot+'번 · ':''}${row?POSK[row.pos]||row.pos:''} · ${p.bt==='좌'?'좌타':p.bt==='양'?'양타':'우타'}`;
+    const today=pitch?`오늘 ${ipStr(r.outs)}이닝 · ${r.so}K${total!=null?' · '+total+'구':''}`:`오늘 ${r.ab}타수 ${r.h}안타`;
+    const vs=pitch?(G.players[s.batter]?.bt==='좌'?'좌':'우'):(G.players[pid]?.th==='좌'?'좌':'우');
+    return `<button class="cs-face ${pitch?'r':'l'}" data-a="castPlayer" data-v="${id}"><span class="cs-face-ph">${G.players[id]?avImg(p):''}</span><span class="cs-face-tx"><i>${pitch?'투수':'타자'}${no!=null?' · #'+no:''}</i><b>${esc(p.name)}</b><em>${esc(sub)}</em><small>${esc(today)}</small>${mdDuelMore(g,id,pitch,vs,total,pitch&&(g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id)}</span></button>`; };
+  return card(s.batter,false)+card(pid,true); }
 function castDashboardUpdate(g,k){
   if(!document.querySelector('.match-dashboard'))return;
   const s=castSnapshot(g,k),c=UI.cast;
   for(const side of ['a','h']){const T=s.teams[side];mdSet('md-role-'+side,s.finished?'종료':side===s.attack?'공격':'수비');mdSet('md-field-'+side,mdMiniField(g,side,s));mdSet('md-lineup-'+side,mdLineup(g,side,s));mdSet('md-pitcher-'+side,`${s.legacy?'이전 기록 · 위치 일부 참고 · ':''}마운드 <b>${T.pitcher?esc(mdPlayer(g,T.pitcher).name):'기록 없음'}</b>${mdBullpen(g,side,s)}`);}
   mdSet('md-ticker',mdTicker(g,s));  mdSet('md-stats',mdStats(g,s));mdSet('md-events',mdEvents(g,s));mdSet('md-hits',mdHitBars(g,s));mdSet('md-flow',mdFlowChart(g,s,false));mdSet('md-prob',mdFlowChart(g,s,true));mdSet('md-linescore',mdScoreLine(g,s));
-  mdSet('cs-vs',mdDuel(g,s,c?.completed===k?castSnapshot(g,k+1):s));
+  mdSet('cs-vs',mdDuel(g,s,c?.completed===k?castSnapshot(g,k+1):s));mdSet('cs-faces',mdFaces(g,s,c?.completed===k?castSnapshot(g,k+1):s));
   const team=c?.team||((g.away===G.user)?'a':'h'),roster=document.getElementById('md-roster');if(roster)roster.dataset.team=team;mdSet('md-roster',mdRoster(g,s,team));
   document.querySelectorAll('[data-a="castTeam"]').forEach(b=>b.classList.toggle('on',b.dataset.v===team));
   const last=s.k?pbpCall(g,s.k-1):null;mdSet('md-comment',last?`<span>캐스터</span><b>${esc(last.c)}</b>`:'<span>경기 중계</span><b>플레이볼을 기다립니다.</b>');
@@ -99,7 +107,7 @@ function mdDuel(g,s,shown=s){
   return [[s.batter,'현재 타자',false],[pid,'현재 투수',true]].filter(x=>x[0]).map(([id,label,pitch])=>{const p=mdPlayer(g,id),r=shown.players[id]||{ab:0,h:0,outs:0,so:0},slot=s.teams[s.attack].lineup.findIndex(x=>x.id===id)+1,total=pitch?cPitchTotalBefore(g,shown.k,id):null;return `<button class="md-duel-player" data-a="castPlayer" data-v="${id}">${G.players[id]?avImg(p):''}<span><i>${label} · ${pitch?(p.th==='좌'?'좌완':'우완')+' · '+DELIVERY_LABEL[pitchDelivery(p)]:(slot?slot+'번 · ':'')+(p.bt==='좌'?'좌타':p.bt==='양'?'양타':'우타')}</i><b>${esc(p.name)}</b><small>${pitch?ipStr(r.outs)+'이닝 · '+r.so+'K · <em id="cs-pitcher-count">'+(total==null?'투구 수 미기록':total+'구')+'</em>':'오늘 '+r.ab+'타수 '+r.h+'안타'}</small>${mdDuelMore(g,id,pitch,pitch?G.players[s.batter]?.bt==='좌'?'좌':'우':G.players[pid]?.th==='좌'?'좌':'우',total,pitch&&((g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id))}</span>${!pitch?'<span class="ab-res" id="cs-abr"></span>':''}</button>`;}).join('')+(()=>{ try{ const b=G.players[s.batter], p=G.players[pid]; if(!b||!p)return ''; const st=s.state||{}; const t=cStory(g,s.k,b,p,!!(st.bases&&(st.bases[1]||st.bases[2]))); return t?`<div class="ab-story md-story">${t}</div>`:''; }catch(e){ return ''; } })();
 }
 
-function mdDuelResult(g,k){if(UI.cast)UI.cast.completed=k;const before=castSnapshot(g,k),after=castSnapshot(g,k+1);mdSet('cs-vs',mdDuel(g,before,after));}
+function mdDuelResult(g,k){if(UI.cast)UI.cast.completed=k;const before=castSnapshot(g,k),after=castSnapshot(g,k+1);mdSet('cs-vs',mdDuel(g,before,after));mdSet('cs-faces',mdFaces(g,before,after));}
 
 /* 타구장 소식(경기 화면 연출 11-11): 같은 날 다른 구장 점수를 우리 경기 진행 이닝까지만 보여 준다. 우리 경기가 끝나면 최종 점수 */
 function mdTicker(g,s){ const O=g.others||[]; if(!O.length)return ''; const fin=s.finished, n=fin?99:Math.floor(((s.state&&s.state.half)||0)/2);
