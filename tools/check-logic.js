@@ -5492,6 +5492,13 @@ T('[제보 11-16 해외 복귀 기록] 돌아온 선수의 해외 시즌은 모�
   const rows=ovsStatRows(r); ok(rows.length===a.lines.length&&rows.every((x,i)=>i===0||x.y>rows[i-1].y),'해외 시즌이 빠지거나 순서가 틀렸다 '+rows.map(x=>x.y).join(','));
   r.team=G.user; for(let i=0;i<130;i++)G.abroad.push({id:-9000-i,name:'x',back:true,lines:[],y:G.year-9,from:0}); ovsTrim(); ok(G.abroad.some(x=>x.id===id),'국내에서 뛰는 복귀 선수의 해외 기록이 정리로 지워졌다');
   const css=__pfCss(); ok(!css.includes('pf-season-table tbody tr:nth-child(n+5){display:none}'),'선수 화면 시즌 통계가 아직 최근 세 시즌만 남기고 줄을 숨긴다'); });
+T('[제보 11-16 전역 연장 계약] 상무 복무 중에도 합의한 다년계약이 결산 때 시작되고, 메달 특례 전역이 옛 연봉으로 되돌리지 않으며, 예전 저장의 건너뛴 연장은 불러오기 때 되살린다(AI 구단 같게)',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign&&q.age<=26&&!q.ys); ok(p,'준비 실패');
+  Object.assign(p,{faC:true,ext:true,yrs:1,cyrs:6,sal:800}); p.extNext={annual:2500,years:6,terms:{years:6,annual:2500,bonus:6730}}; story(p,'비FA 다년계약 6년 · 계약금 67.3억 · 연봉 25억','move'); p.mil={unit:'상무',from:G.day-30,until:G.day+400};
+  offseason(); ok(p.team===G.user&&!p.extNext&&p.sal===2500&&p.yrs===6&&p.cyrs===6,'복무 중 결산에서 연장 계약이 시작되지 않았다 '+JSON.stringify({t:p.team,s:p.sal,y:p.yrs,x:!!p.extNext}));
+  const m={unit:'상무',from:p.mil.from,until:p.mil.until,neg:{st:'open',v:800,ask:900}}; p.mil={exempt:true,unit:'상무',pf:m.from,pu:G.day}; milNegBack(p,m); ok(p.sal===2500&&p.yrs===6,'특례 전역이 옛 연봉으로 되돌렸다 '+p.sal);
+  const t=G.teams.find(x=>x.id!==G.user), q=domestic(t.id).find(x=>!x.foreign&&!x.ys); ok(q,'준비 실패 AI'); Object.assign(q,{faC:true,ext:true,yrs:1,cyrs:6,sal:800}); q.extNext={annual:2000,years:5}; (q.story=q.story||[]).push({y:G.year-1,d:dnum(G.year-1,5,1),t:'비FA 다년계약 5년 연 20억','k':'move'});
+  const w=domestic(t.id).find(x=>!x.foreign&&!x.ys&&x!==q); Object.assign(w,{faC:false,ext:false,sal:900}); w.extNext={annual:1500,years:4}; (w.story=w.story||[]).push({y:G.year,d:dnum(G.year,11,5),t:'비FA 다년계약 4년 연 15억','k':'move'}); const r0=G.rolled; G.rolled=G.year-1;
+  extStaleFix(); G.rolled=r0; ok(q.sal===2000&&q.yrs===5&&!q.extNext,'건너뛴 AI 구단 선수 연장이 되살아나지 않았다'); ok(w.extNext&&w.sal===900,'아직 시작 전인 연장을 앞당겼다'); });
 T('[제보 11-16 시설 완공] 전문화 공사는 완공일이 지나면 우리·다른 구단 모두 끝나고, 깨진 완공일·불러오기 때 지난 공사도 완공되며, 해를 넘기는 완공일은 연도까지 보인다',()=>{ fresh(); facInit(); G.fac.it.indoor=3; delete G.fac.bld.indoor; const b=facStartBuild(G.user,'indoor',{src:'cash'}); ok(b.lv===4&&b.done-G.day>365,'전문화 공사 기간 준비 실패');
   ok(dmdA(b.done).includes(dobj(b.done).y+'년'),'해를 넘기는 완공일에 연도가 없다'); ok(!dmdA(G.day).includes('년'),'올해 날짜에 연도가 붙었다');
   b.pm=G.day-10; b.done=G.day+2; const tgt=b.done+1; simTo(()=>G.day>=tgt); ok(!G.fac.bld.indoor&&G.fac.it.indoor===4,'완공일이 지났는데 공사가 남았다');
