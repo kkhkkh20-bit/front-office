@@ -128,7 +128,7 @@ function clubBody(s){
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     share:()=>teamShareView(),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
-    log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
+    log:()=>csec('구단 일지',`<div class="log club-log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
     set:()=>{ /* 설정 한 페이지(사용자 11-08): 칸을 묶음으로 넘기지 않고 세 줄로. 패치 노트·크레딧은 접어 둔다 */
       const fb=`<section class="card set-cafe"><div class="set-cafe-t"><span class="eyebrow">공식 카페</span><h2>프런트야구 네이버 카페</h2><p>질문·건의·버그 제보는 카페에 남겨 주세요. 올라온 의견은 업데이트에 바로 반영합니다. 버그는 '제보용 정보 복사'로 게임 정보(버전·날짜·화면·기기)를 붙여 넣으면 빨리 고칠 수 있습니다.</p></div><div class="set-cafe-b"><a class="btn text" href="${FEEDBACK_URL}" target="_blank" rel="noopener">카페 가기 ›</a><button class="btn small" data-a="fbInfo">제보용 정보 복사</button>${UI.fbOk?`<span class="set-cafe-ok" role="status">게임 정보를 복사했습니다.</span>${cafeLink('카페에 붙여 넣기 ›')}`:''}</div><div class="set-ver"><span>버전 ${GAME_VER} · 진행은 자동 저장</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`;
       const dif=`<section class="card"><h2 class="sec">난이도</h2><p class="small">${HARD()?'<b>하드</b> · 트레이드 요구 많음, FA 선호 낮음, 스폰서·광고 수입 줄어듦, '+gl('흑자 조정')+' 커짐, 구단주 신뢰 하락 빠름, 지원 승인 어려움':G.cfg&&G.cfg.hardOffY?`보통 · ${G.cfg.hardOffY}년에 하드에서 낮춤`:'보통'}</p>${HARD()?'<button class="btn small" data-a="hardOff">보통으로 낮추기 · 되돌릴 수 없음</button>':''}</section>`;
@@ -137,6 +137,10 @@ function clubBody(s){
       const scl=`<section class="card"><h2 class="sec">능력치 표기</h2><div class="chips">${[['100','100점 척도'],['2080','20-80 스카우트 척도']].map(([v,l])=>`<button data-a="ratScale" data-v="${v}" class="${((G.cfg&&G.cfg.scale)||'100')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">20-80은 메이저리그 스카우트가 쓰는 척도입니다. 50이 평균, 60 좋음, 70 최상급, 80 리그 최고 수준이며 10점이 표준편차 하나입니다. 표시만 바뀌고 실제 능력과 계산은 같습니다(100점 척도 63 = 20-80 51, 73 = 58, 84 = 65).</p></section>`;
       const ret=`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴하면 영구결번을 지정할 수 있습니다. 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 최상위급이어야 닿습니다.</p></section>`;
       const more=`<section class="card"><details class="mfold"><summary>패치 노트</summary>${patchCard()}</details>${creditsLine()}</section>`;
+      if(!fmOn()){ /* 휴대폰·좁은 창: 한 줄로 쌓으면 5화면이 넘어 서로 따로 쓰는 묶음을 4탭으로(UI 3단계 3-9). PC는 세 줄 그대로 */
+        const it=inTabs('setg',[['run','진행'],['view','표시'],['save','저장'],['info','정보']],'run');
+        const body={run:advSetCard()+stopCard()+psc+ivf+dif,view:scl+teamNameCard()+ret,save:slotsCard(false)+exportCard()+teleCard(),info:fb+more}[it.cur];
+        return `<div class="setx set-tabs ws-own">${it.bar}<div class="setc">${body}</div></div>`; }
       return `<div class="setx ws-own"><div class="setc"><h3 class="set-g">진행</h3>${advSetCard()}${stopCard()}${psc}</div><div class="setc"><h3 class="set-g">저장</h3>${slotsCard(false)}${exportCard()}${teleCard()}</div><div class="setc"><h3 class="set-g">구단·기록</h3>${scl}${ivf}${dif}${teamNameCard()}${ret}${more}</div>${fb}</div>`; }}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
   const h=mergedBody('club',s,H0);
   return h;
@@ -256,7 +260,7 @@ function resultBody0(){
   const L=G.last; const me=L.tid??G.user; /* 결산 뒤 이직해도 성적·월별·신뢰·결산표 모두 결산한 구단 기준(검수 11-09h) */ const ps=L.ps; const f=L.fins[me]; const uo=L.order.find(o=>o.tid===me);
   const rank=L.order.findIndex(o=>o.tid===me)+1; const tr=L.trust;
   const psRow=(label,s)=>s?`<div class="item" style="cursor:default"><span class="nm">${label}</span><span class="sub">${tname(s[0])} ${s[2]}-${s[3]} ${tname(s[1])}</span></div>`:'';
-  return `<p>${me!==G.user?`${esc(tname(me))} · `:''}<b>${recStr(uo)} · ${rank}위</b> · ${ps.champ===me?'한국시리즈 우승':rank<=5?'가을야구 진출':'가을야구 탈락'}</p>
+  return `<div class="res2"><div class="res2-a"><p>${me!==G.user?`${esc(tname(me))} · `:''}<b>${recStr(uo)} · ${rank}위</b> · ${ps.champ===me?'한국시리즈 우승':rank<=5?'가을야구 진출':'가을야구 탈락'}</p>
     <div class="months">${(L.months||[]).map(x=>`<div><span>${x.m}</span><b>${x.w}-${x.l}${x.t?`-${x.t}`:''}</b></div>`).join('')}${(()=>{ const M=L.months||[]; if(!M.length)return ''; const w=sum(M.map(x=>x.w)), l=sum(M.map(x=>x.l)), t=sum(M.map(x=>x.t||0)); return `<div class="tot"><span>합계</span><b>${w}-${l}${t?`-${t}`:''}</b></div>`; })()}</div>
     <p class="small">구단주 신뢰 ${tr.before} → <b>${tr.after}</b> <span class="pill ${tr.delta>=0?'good':'bad'}">${tr.delta>=0?'+':''}${tr.delta}</span></p>
     ${L.notes.map(n=>`<div class="note bad">${esc(n)}</div>`).join('')}
@@ -264,8 +268,8 @@ function resultBody0(){
     ${L.goals&&L.goals.length?`<div class="eyebrow">구단주 목표 평가</div><div class="list">${L.goals.map(g=>`<div class="item" style="cursor:default"><span class="nm">${esc(g)}</span></div>`).join('')}</div>`:''}${L.pr?`<p class="small">시즌 말 팬 여론 ${L.pr.fan} · 언론 논조 ${L.pr.press}</p>`:''}
     <div class="eyebrow">포스트시즌</div><div class="list">${psRow('와일드카드',ps.wc)}${psRow('준플레이오프',ps.spo)}${psRow('플레이오프',ps.po)}${psRow('한국시리즈',ps.ks)}</div>
     <p class="small muted">포스트시즌 입장 수입 ${money(L.gate)} 중 운영비를 뺀 ${money(L.pool)}을 배당. 정규시즌 1위 20%, 나머지는 우승 50%, 준우승 24%, 플레이오프 14%, 준플레이오프 9%, 와일드카드 3%.</p>
-    <div class="eyebrow">결산</div>${finTable(f)}
-    <div class="eyebrow">시즌 리더</div><div class="list">${L.leaders.map(l=>{const p=G.players[l.id]; return `<button class="item" data-a="player" data-v="${l.id}" ${p||(G.arch&&G.arch[l.id])?'':'disabled'}><span class="nm">${l.k} · ${esc(l.nm||(p?p.name:'은퇴 선수'))}</span><span class="sub">${l.t!=null&&G.teams[l.t]?tname(l.t):p&&p.team!=null?tname(p.team):''}</span><span class="rt num">${l.v}</span></button>`}).join('')}</div>`;
+    </div><div class="res2-b"><div class="eyebrow">결산</div>${finTable(f)}
+    </div><div class="res2-c"><div class="eyebrow">시즌 리더</div><div class="list">${L.leaders.map(l=>{const p=G.players[l.id]; return `<button class="item" data-a="player" data-v="${l.id}" ${p||(G.arch&&G.arch[l.id])?'':'disabled'}><span class="nm">${l.k} · ${esc(l.nm||(p?p.name:'은퇴 선수'))}</span><span class="sub">${l.t!=null&&G.teams[l.t]?tname(l.t):p&&p.team!=null?tname(p.team):''}</span><span class="rt num">${l.v}</span></button>`}).join('')}</div></div></div>`;
 }
 function finTable(f){
   return `<dl class="kv">${f.inc.map(x=>`<dt>${x[0]}</dt><dd>+${money(x[1])}</dd>`).join('')}${f.exp.map(x=>`<dt>${x[0]}</dt><dd>-${money(x[1])}</dd>`).join('')}

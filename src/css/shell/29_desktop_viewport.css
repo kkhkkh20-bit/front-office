@@ -191,7 +191,7 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
  .fmsh:has(.fmx-fit) main.content>:not(.fmx){flex:none}
  .fmsh:has(.fmx-fit) .fx-b{flex:1 1 0}
 }
-@media(min-width:1100px) and (min-height:900px){
+@media(min-width:1100px) and (min-height:640px){ /* 구단 정보: 낮은 PC 창(1366×768)도 화면에 맞추고 상자 안에서 스크롤(UI 3단계 3-9, 구단주 11-17) */
  .fmsh:has(.fmx-club) .fmmain{display:flex;flex-direction:column;overflow:hidden}
  .fmsh:has(.fmx-club) .fmmain>.blk{flex:none}
  .fmsh:has(.fmx-club) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
@@ -260,3 +260,6 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 }
 /* 리그 역사: 시즌 요약 표는 내용 높이만, 아래에 지난 시즌 순위 */
 .fmx-fit .fxh-sm .fx-scr{flex:0 1 auto!important}.fxh-sm>h4,.fxh-sm h4{margin:12px 0 4px}
+
+/* 구단 정보 상자 안 내용은 상자 안에서 스크롤 */
+@media(min-width:1100px){.fmsh:has(.fmx-club) .fmx-club .fx-b{overflow:auto;scrollbar-width:thin;min-height:0}}

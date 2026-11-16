@@ -68,7 +68,7 @@ function faUpcomingCard(U){ const all=Object.values(G.players).filter(q=>q.team!
   const st=faUpSt, dl=faUpDl;
   const nA=R.filter(x=>x.g==='A').length, nB=R.filter(x=>x.g==='B').length; const b=budget(); const lim=UI.fuAll?R.length:15;
   return `<section class="card"><div class="row between"><h2 class="sec">올 시즌 뒤 FA 예정자 · 다른 구단<button type="button" class="hi-i" data-tip="FA 계약이 끝나는 선수, 자격을 채운 선수, 올해 1군 등록일수를 채우면 자격을 얻는 선수입니다. 실제로 시장에 나올지는 선수가 정합니다(가치가 애매하면 신청하지 않고 남습니다). 외부 FA는 한 겨울에 2~3명까지 데려올 수 있고, A·B등급은 원 소속 구단에 보상(선수 또는 연봉의 200~300%)을 줘야 합니다. 지금 예산 여유 ${money(Math.round(b.roomGoal))}.">i</button></h2><span class="small muted">${L.length}명 · 예상 A등급 ${nA} · B등급 ${nB}</span></div>
-    <div class="chips">${[['all','전체'],['sure','신청 유력'],['P','투수'],['H','야수']].map(([k,l])=>`<button class="${f===k?'on':''}" data-a="fuF" data-v="${k}">${l}</button>`).join('')}</div>
+    ${filterBar({id:'fu',cls:'fu-fbar',groups:[{l:'보기',a:'fuF',cur:f,def:'all',opts:[['all','전체'],['sure','신청 유력'],['P','투수'],['H','야수']]}]})}
     ${R.length?`<div class="fl">${R.slice(0,lim).map(x=>{ const [d,c]=dl(x); return `<div class="flr fur">${pMini(x.p)}<span class="small">${badge(x.p.team,14)} ${esc(tshort(x.p.team))} · <b>예상 ${x.g}등급</b> · <span class="muted">${st(x)}</span> · <span class="${c}">${d}</span></span></div>`; }).join('')}</div>`:'<p class="small muted">조건에 맞는 선수가 없습니다.</p>'}
     ${R.length>15?`<button class="btn small" data-a="fuAll">${UI.fuAll?'15명만 보기':`전체 ${R.length}명 보기`}</button>`:''}</section>`; }
 

@@ -108,7 +108,7 @@ function workspaceFit(host){
     scroller.addEventListener('scroll',()=>{if(!panel.hidden)positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true});
     if(workspaceCompact()&&!panel.matches('.roster-list')){
       const before=[...panel.children].slice(0,[...panel.children].indexOf(scroller));
-      const controls=before.filter(el=>!el.matches('h1,h2,h3,header,.row:first-child,.itabs,.ws-tab-row,nav')&&el.matches('.chips,.seg,.row:has(input,select,button),label:has(input,select),input,select,.rcp,.trade-search-main,.trade-pool-options'));
+      const controls=before.filter(el=>!el.matches('h1,h2,h3,header,.row:first-child,.itabs,.ws-tab-row,nav,.staff-market-modes')&&el.matches('.chips,.seg,.row:has(input,select,button),label:has(input,select),input,select,.rcp,.trade-search-main,.trade-pool-options'));
       if(controls.length){const disclosure=document.createElement('details'),summary=document.createElement('summary'),options=document.createElement('div');disclosure.className='ws-filter-controls';disclosure.dataset.k='workspace-filter:'+key+':'+index;disclosure.open=!!UI.open[disclosure.dataset.k];summary.textContent='검색·필터 설정';options.className='ws-filter-options';controls[0].before(disclosure);controls.forEach(el=>options.append(el));disclosure.append(summary,options);}
     }
   });

@@ -128,7 +128,7 @@ function advMoreRender(){ let el=document.getElementById('cfm'); if(!el){ el=doc
 A.advMore=function(){ if(UI.advRun||!G||G.unemp)return; UI.cfm=null; UI.advMore=true; advMoreRender(); };
 A.advMoreX=function(v,el,e){ if(e&&e.target&&e.target.closest&&e.target.closest('[data-stop]')&&!(el&&el.matches&&el.matches('button')))return; UI.advMore=false; advMoreRender(); };
 /* 진행 ▾ > 멈춤 조건: 설정 화면의 '진행 멈춤' 칸으로 바로 간다 */
-A.stopCfg=function(){ closeSheets(); A.go('cfg:set'); const c=document.getElementById('stopCard'); if(c)try{ c.scrollIntoView({block:'start'}); }catch(e){} };
+A.stopCfg=function(){ closeSheets(); UI.it=Object.assign(UI.it||{},{setg:'run'}); /* 휴대폰 설정 4탭: 진행 멈춤은 '진행' 탭 */ A.go('cfg:set'); const c=document.getElementById('stopCard'); if(c)try{ c.scrollIntoView({block:'start'}); }catch(e){} };
 A.advPick=function(v){ UI.advMore=false; advMoreRender(); v=String(v); if(v==='week')return A.adv('week'); if(v==='mon')return A.advTo(G.day+30); if(v.startsWith('key:'))return A.advTo(+v.slice(4)-1); };
 for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v,el); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
 A.advSpace=function(v){ setTimeout(()=>{ A.adv(v); },0); }; /* 진행 확인 뒤 실제 진행은 버튼과 같은 경로(외국인 자리 결재 등)를 거친다 */
