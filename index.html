@@ -16920,7 +16920,7 @@ function recordRetirement(p,c){const ids=new Set([p.team,p.faFrom,p.relT,...Obje
 function fdMine(p){ if(!G.fd||!G.startY)return null; let war=0; const ys=new Set(); for(const h of p.hist){ if(h.lvl!=='1군'||h.t!==G.user||h.y<G.startY)continue; war+=warOf(h,p); ys.add(h.y); } return ys.size?{war:+war.toFixed(1),ys:ys.size}:null; }
 function retireRecord(p){ const c=careerOf(p);legendRetire(p);recordRetirement(p,c); const aw=p.aw||[]; const awP=awPendFor(p);
   const rec={name:p.name,isP:p.isP,pos:p.isP?posLabel(p):POSK[p.pos],y:G.year,age:p.age,seasons:c.seasons.size,teams:[...c.teams],war:+c.war.toFixed(1),pa:c.pa,h:c.h,hr:c.hr,rbi:c.rbi,sb:c.sb,ip:Math.round(c.outs/3),w:c.w,sv:c.sv,so:c.so,id:p.id,awP,aw:aw.slice(-12),mvp:aw.filter(a=>a.includes('MVP')).length,gg:aw.filter(a=>a.includes('골든')).length,no:jno(p),
-    mine:fdMine(p)||(G.fd?null:c.byTeam[G.user]?{war:+c.byTeam[G.user].war.toFixed(1),ys:c.byTeam[G.user].ys.size}:null)};
+    mine:fdMine(p)||(G.fd?null:c.byTeam[G.user]?{war:+c.byTeam[G.user].war.toFixed(1),ys:c.byTeam[G.user].ys.size}:null)}; { const nu=noAt(p,G.user); if(nu!=null&&rec.mine)rec.noU=nu; } /* 나중에 영구결번으로 지정할 때 쓸 우리 구단 등번호 */
   { const miss=Math.max(0,(p.svc||0)-rec.seasons); if(miss){ const add=miss*clamp((p.pot-45)/5,0,4.5); rec.warA=rec.war; /* 실제 기록(통산 순위용) */ rec.seasons+=miss; rec.war=+(rec.war+add).toFixed(1); rec.est=true;
       if(p.team===G.user&&c.teams.size<=1&&!G.fd){ rec.mine=rec.mine||{war:0,ys:0}; rec.mine.war=+(rec.mine.war+add).toFixed(1); rec.mine.ys+=miss; } } } /* 게임 시작 전 경력은 연차와 잠재력으로 추정 */
   if(rec.war>=8||rec.aw.length||awP.length){ rec.pid=rec.pid??p.id; (G.legends=G.legends||[]).push(rec); if(G.legends.length>300){ const i=G.legends.findIndex(x=>!x.hof&&!x.retNo&&!x.canRetNo&&!(x.mine&&x.mine.ys)); if(i>=0)G.legends.splice(i,1); } } /* 넘치면 명예의 전당·결번·우리 구단 기록이 아닌 오래된 것부터 지운다 */
@@ -16983,7 +16983,11 @@ function setPlayerNos(M){ const tid=G.user; if(G.unemp||tid==null)return {err:'�
   if(errs.length)return {err:errs.join('\n')}; if(!n)return {err:'바뀐 번호가 없습니다.'};
   for(const p of L){ const v=fin.get(p.id); if(v!==jno(p)){ p.no=v; p.noT=tid; } } return {n}; }
 /* 영구결번 후보: 지금 맡은 구단 후보만(이직하면 옛 구단 후보는 그 구단 것, 검수 11-09zp) */
-function retNoCands(){ return (G.legends||[]).map((r,i)=>({r,i})).filter(x=>x.r.canRetNo&&!x.r.retNo&&(x.r.tid==null||x.r.tid===G.user)); }
+/* 이미 은퇴한 선수도 지금 기준으로 다시 본다(전영준 11-17 '영구결번 나중에 지정'): 은퇴 때 남긴 우리 구단 기록(mine: 시즌·WAR)이 지금 영구결번 기준을 채우면 후보가 된다.
+   기준을 낮추면 예전에 못 미쳤던 선수도 후보로 올라온다. 이미 후보이거나 지정된 선수, 다른 구단 후보는 그대로 */
+function retNoRecheck(){ const rule=retNoRule(); for(const r of G.legends||[]){ if(r.canRetNo||r.retNo||!r.mine||!(r.mine.ys>0)||(r.tid!=null&&r.tid!==G.user))continue; if(G.fd&&G.startY&&!(r.mine.ys>0))continue;
+    if(r.mine.ys>=rule.seasons&&r.mine.war>=rule.war){ r.canRetNo=true; r.tid=G.user; r.retNoBasis={war:r.mine.war,ys:r.mine.ys}; r.retNoRule={...rule}; r.late=true; if(r.noU!=null)r.no=r.noU; } } }
+function retNoCands(){ try{ retNoRecheck(); }catch(e){} return (G.legends||[]).map((r,i)=>({r,i})).filter(x=>x.r.canRetNo&&!x.r.retNo&&(x.r.tid==null||x.r.tid===G.user)); }
 function retireNumber(i){ const L=G.legends||[]; const r=typeof i==='string'&&i[0]==='p'?L.find(x=>'p'+x.pid===i):L[+i]; /* 위치 대신 선수 id로 찾는다(목록이 잘려 위치가 밀려도 맞는 선수) */ if(!r||!r.canRetNo||r.retNo||(r.tid!=null&&r.tid!==G.user)||G.unemp)return '대상이 아닙니다.'; { const d=(G.retNos||[]).find(x=>x.no===r.no); if(d)return `${r.no}번은 이미 ${d.name}의 영구결번입니다. 같은 번호는 한 번만 지정할 수 있습니다.`; } /* 검수 11-08 */ r.retNo=true; (G.retNos=G.retNos||[]).push({name:r.name,no:r.no,y:G.year,pid:r.pid,...(()=>{const o=(G.ob||[]).find(o=>o.fid===r.pid);return o?{ob:o.id}:{};})()}); { const o=(G.ob||[]).find(o=>o.fid===r.pid); if(o){ o.retNo=true; o.no=r.no; } } /* OB 카드도 같은 결번(검수 11-09zp) */ const mv=[]; for(const q of Object.values(G.players))if(q.team===G.user&&q.id!==r.pid&&q.no===r.no){ q.noT=null; jno(q); mv.push(`${q.name} ${q.no}번`); } /* 그 번호를 쓰던 현역은 새 번호로 */ chron('retNo',`${r.name} ${r.no}번 영구결번 지정`,r.pid??null,G.user,{source:'retNo:'+G.year+':'+r.no});news('선수',`${tshort(G.user)}, ${r.name}의 ${r.no}번 영구결번`,`구단 역사에 길이 남을 이름이 됐습니다.`,3,{fanW:3}); return `${r.no}번을 영구결번으로 지정했습니다.${mv.length?` 그 번호를 쓰던 선수는 바꿨습니다: ${mv.join(', ')}.`:''}`; }
 
 /* 100년 저장 크기(사용자 11-05 "100년은 즐기기 좋게"): 3년 지난 시상은 후보 명단을 상위권만 남긴다.
@@ -42387,6 +42391,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-retno',d:'11월 17일',t:'영구결번 나중에 지정',items:[
+    '이미 은퇴한 우리 구단 선수도 지금 영구결번 기준을 채우면 구단 › OB·레전드의 영구결번 후보에 올라 지정할 수 있습니다. 기준을 낮추면 예전 선수도 올라옵니다.']},
   {id:'2026-11-17-comments',d:'11월 17일',t:'기사 댓글이 더 야구 커뮤니티답게',items:[
     '기사 댓글이 기사 속 선수·점수·상대·연승 숫자를 짚고, 기록 분석·옛 팬·상대 팀 팬·걱정 많은 팬 등 말투가 다양해집니다. 재치 있는 댓글이 베스트에 오르고, 논쟁거리에는 비추도 몰립니다.',
     '답글이 부모 댓글의 내용에 맞장구치거나 숫자로 반박합니다.']},
