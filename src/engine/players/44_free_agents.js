@@ -30,7 +30,7 @@ function freeAsk(p){ const rm=p.retMin&&p.retMin.until>=G.day?p.retMin.sal:0; /*
 function freeOpen(){ return period()!=='post'&&!preSettle(); } /* 국내 무적 선수는 정규시즌 종료일까지. 외국인 마감일과 PS 신규 등록 제한은 별개다. */
 function signFree(id,tid){ tid=tid??G.user; const p=G.players[id]; if(!isFree(p))return '계약할 수 없는 선수입니다.'; if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return `방출한 구단은 1년 동안 ${p.name}과(와) 다시 계약할 수 없습니다.`; /* 방출 후 헐값 재계약 반복 방지 */ if(p.wv)return `${p.name}은(는) ${dmd(p.wv.end-1)}까지 웨이버 공시 중입니다. 영입·계약 → 웨이버·2차에서 양수를 신청하세요.`; if(!freeOpen())return '포스트시즌과 결산 전에는 국내 무적 선수를 새로 등록할 수 없습니다. 결산 후 다시 계약할 수 있습니다.';
   if(rosterN(tid)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`;
-  const sal=freeAsk(p); let cc=null; if(tid===G.user&&!G.unemp){ const s=sponSeason(); cc=capOwnerCheck(capPayWith(G.user,p.id,sal,s).tot,capPayWith(G.user,null,null,s).tot,s,'free'+p.id); if(cc&&!cc.ok)return cc.msg; } /* 상한 결재(13_roster capOwnerCheck) */ p.team=tid; p.sal=sal; p.yrs=1; p.joinY=undefined; const yrs=G.year-p.freeSince; delete p.freeSince; delete p.freeDay; p.mor=clamp((p.mor??55)+8,0,100); mvLog('무적 영입',p,null,tid,`연 ${money(sal)}`,sal);
+  const sal=freeAsk(p); let cc=null; if(tid===G.user&&!G.unemp){ const s=sponSeason(); cc=capOwnerCheck(capPayWith(G.user,p.id,sal,s).tot,capPayWith(G.user,null,null,s).tot,s,'free'+p.id); if(cc&&!cc.ok)return cc.msg; } /* 상한 결재(13_roster capOwnerCheck) */ p.team=tid; p.sal=sal; p.yrs=1; p.joinY=undefined; delete p.tryK; const yrs=G.year-p.freeSince; delete p.freeSince; delete p.freeDay; p.mor=clamp((p.mor??55)+8,0,100); mvLog('무적 영입',p,null,tid,`연 ${money(sal)}`,sal);
   story(p,`${tname(tid)}와(과) 계약 (무적 선수, 연 ${money(sal)})`,'move');
   milLate(p,tid); /* 무적으로 해를 넘겨 새해 입대 검사를 피한 선수(검수 11-08) */
   if(cc)capOwnerOk(cc,`무적 선수 ${p.name} 영입`);
@@ -46,7 +46,7 @@ function freeYear(){ let n=0; for(const p of freeList()){ if(G.year-p.freeSince>
    못 데려가면 다른 무적 선수처럼 2년 뒤 은퇴하므로 시장이 끝없이 늘지 않는다 */
 const FREE_MIN=50, FREE_NEW=5;
 function freeIndie(){ const k=Math.max(FREE_NEW,FREE_MIN-freeList().length);
-  for(let i=0;i<k;i++){ const age=ri(22,30), b=clamp(N(38,5),28,52); const p=newPlayer({age,base:b,pot:b+ri(0,age<=25?10:4)}); p.freeSince=G.year; story(p,R()<.6?'독립리그에서 뛰며 프로 입단을 준비':'구단 입단 테스트 응시','move'); } }
+  for(let i=0;i<k;i++){ const age=ri(22,30), b=clamp(N(38,5),28,52); const p=newPlayer({age,base:b,pot:b+ri(0,age<=25?10:4)}); p.freeSince=G.year; p.tryK='indie'; /* 연말 공개 트라이아웃에도 나온다(94_tryout) */ story(p,R()<.6?'독립리그에서 뛰며 프로 입단을 준비':'구단 입단 테스트 응시','move'); } }
 /* 매달 1일: 부상자가 많거나 자리가 빈 AI 구단은 쓸 만한 무적 선수를 데려간다 */
 function freeAiMonthly(){ if(!freeOpen())return; const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); if(!L.length)return;
   for(const t of G.teams){ if(t.id===ME())continue; const n=rosterN(t.id); if(n>=ROSTER_MAX-1)continue; const hurt=playersOf(t.id).filter(p=>p.injOut>14).length;

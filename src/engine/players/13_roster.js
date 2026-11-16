@@ -15,8 +15,9 @@ function trimRoster(tid,max){
 }
 /* AI 구단 겨울 정리: 육성선수는 25세가 넘거나 한도를 넘으면 내보낸다(실제 구단도 해마다 10명 안팎을 정리한다).
    정식 선수는 newYear에서 우리와 같은 정원(68명)까지 줄이고, 시즌 중 군 제대로 늘어나는 몫만 남겨 둔다 */
-function aiYsPrune(tid){ if(tid===ME())return 0; const ys=playersOf(tid).filter(p=>p.ys&&!p.foreign).sort((a,b)=>keepScore(b)-keepScore(a)); let n=0;
-  ys.forEach((p,i)=>{ if(p.age>=26||i>=AI_YS_MAX||p.pot<=ovr(p)+2){ if(p.age<=33&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출(육성선수 정리)`); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); n++; } }); return n; }
+function aiYsPrune(tid){ if(tid===ME())return 0; const ys=ysList(tid).filter(p=>!p.foreign).sort((a,b)=>keepScore(b)-keepScore(a)); let n=0; /* 한도는 ysN과 같은 명단으로 센다(내년 합류 포함, 군보류 제외) */
+  const fresh=p=>p.tryS&&p.tryS.tid===tid&&p.tryS.y>=G.year-1; /* 지난겨울 트라이아웃·미지명으로 데려온 선수는 한 시즌은 본다(계약하자마자 새해에 내보내지 않게) */
+  ys.forEach((p,i)=>{ if(i>=AI_YS_MAX||!fresh(p)&&(p.age>=26||p.pot<=ovr(p)+2)){ if(p.age<=33&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출(육성선수 정리)`); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); n++; } }); return n; }
 /* 스카우트 특기: 투수 감별·타자 감별은 그 유형 선수를 볼 때 능력이 한 단계 높다. 경력은 성격 묘사용 */
 const SC_SPEC={P:'투수 감별',B:'타자 감별'};
 const SC_CAR=['전 프로 투수','전 프로 포수','전 프로 내야수','전 프로 외야수','고교 감독 출신','대학 코치 출신','전력분석원 출신','야구 기자 출신','해외 리그 코치 출신','독립리그 감독 출신'];
