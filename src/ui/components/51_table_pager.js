@@ -165,7 +165,17 @@ if(typeof addEventListener!=='undefined'){
 
 // Refit after a filter opens or browser chrome changes height, without replacing the reading DOM.
 let _workspaceObserver=null;
-function workspaceRefit(){document.querySelectorAll('.ws-panel:not([hidden])').forEach(panel=>panel._workspaceFit?.());workspaceObserve();}
+function workspaceRefit(){wsViewport();document.querySelectorAll('.ws-panel:not([hidden])').forEach(panel=>panel._workspaceFit?.());workspaceObserve();}
+/* 휴대폰 작업 화면 높이는 실제로 보이는 높이(--app-h)와 실제 하단 탭 높이(--bnav-real)로 잡는다(30_mobile_workspace.css).
+   안드로이드 3버튼 내비·주소창·삼성 인터넷 아래 도구 막대에서는 100vh·100dvh가 보이는 영역보다 커져 목록 끝과 페이지 넘김 버튼이
+   하단 탭 밑에 깔려 끝까지 내려도 안 보였다(카페 11-16 낙하산·마스터쉐프). 글자 입력 중(키보드)·확대 중에는 바꾸지 않는다 */
+function wsViewport(){ if(typeof document==='undefined')return; const r=document.documentElement,v=window.visualViewport,ae=document.activeElement;
+  if(ae&&ae.matches&&ae.matches('input:not([type=button],[type=checkbox],[type=radio],[type=range]),textarea,select,[contenteditable=true]'))return;
+  const zoomed=v&&Math.abs((v.scale||1)-1)>.01, h=Math.round(v&&!zoomed?Math.min(innerHeight,v.offsetTop+v.height):innerHeight), gap=Math.max(0,innerHeight-h);
+  const set=(k,val)=>{ if(r.style.getPropertyValue(k)!==val)r.style.setProperty(k,val); };
+  set('--app-h',h+'px'); set('--vv-gap',gap+'px');
+  const nav=document.querySelector('#app .bnav'), bh=nav&&nav.offsetHeight; if(bh)set('--bnav-real',bh+'px'); }
+if(typeof addEventListener!=='undefined'){ const sync=()=>requestAnimationFrame(wsViewport); addEventListener('resize',sync); addEventListener('orientationchange',sync); addEventListener('focusout',()=>setTimeout(sync,350)); window.visualViewport?.addEventListener('resize',sync); }
 function workspaceObserve(){if(typeof ResizeObserver==='undefined')return;
  if(!_workspaceObserver)_workspaceObserver=new ResizeObserver(entries=>{requestAnimationFrame(()=>entries.forEach(({target})=>{if(!target.isConnected)return;const panel=target.parentElement;if(!panel.matches('.ws-panel')||panel.hidden)return;panel._workspaceFit?.();const next=panel.querySelector(':scope > .ws-scroll');if(next!==target){_workspaceObserver.unobserve(target);if(next)_workspaceObserver.observe(next);}}));});
  _workspaceObserver.disconnect();document.querySelectorAll('.ws-panel > .ws-scroll').forEach(scroll=>_workspaceObserver.observe(scroll));

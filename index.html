@@ -2336,7 +2336,7 @@ body.help .hi-i{display:none}
   .ng-acts .btn{flex:1 1 140px}.ng-acts .btn.primary{margin-left:0}
 }
 .ng-why{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--panel);display:grid;gap:4px}.ng-why p{margin:0}
-.mchat .mc-a p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mchat.mchat-c .mc-a p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden} /* 세 줄 자르기는 홈 요약 카드만: 감독실에서는 감독의 답을 끝까지 읽는다(카페 11-16: 파란 줄 아래 답이 잘려 안 보임) */
 .devd>summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:baseline}.devd>summary::-webkit-details-marker{display:none}.devd[open]>summary{margin-bottom:8px}
 .ng-log>summary{cursor:pointer;padding:2px 0}.ng-log[open]{display:grid;gap:4px}
 @media (max-width:640px){ .ng-acts{gap:6px;padding:8px 0 2px}.ng-acts .btn{flex:1 1 45%;min-height:38px;padding:6px 8px;font-size:13px}.ng-acts .ng-close{display:none} }
@@ -5248,6 +5248,7 @@ button.st-n:hover b{text-decoration:underline}
   .st-r{grid-template-areas:"n n n act" "sk dv sal sal" "abs abs abs abs";grid-template-columns:auto auto minmax(0,1fr) auto}
   .st-v:nth-of-type(1){grid-area:sk}.st-v:nth-of-type(2){grid-area:dv}.st-sal{grid-area:sal;display:flex;gap:6px;align-items:center;justify-content:flex-end}
   .st-v>i{display:inline}
+  .st-r>.st-sal{grid-area:sal;flex-wrap:wrap;row-gap:0;min-width:0;text-align:right} /* 위 grid-area:auto(.st-r>.st-sal)가 이겨 연봉·계약이 너비 0칸에 놓여 지도·육성 위로 겹쳐 그려지던 것(카페 11-16 '지도 56,500만 2027 시즌까지'). 길면 계약을 아랫줄로 */
   .st-n .av,.st-n img{width:30px;height:30px}
   .st-act .btn{min-height:34px;padding:4px 11px}
   .st-emp{grid-template-areas:"n act" "abs abs";grid-template-columns:minmax(0,1fr) auto}
@@ -6015,6 +6016,16 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .shell .top .goset>button,#app .shell .top .goset .continue{min-height:44px}
  #app .shell .subhead .helpbtn{position:relative}#app .shell .subhead .helpbtn::after{content:"";position:absolute;inset:-7px -6px} /* 떠 있는 '?'는 모양을 그대로 두고 눌리는 영역만 40px로(탭 줄을 덮지 않게) */
  #sheet .menu-subs{gap:6px}#sheet .menu-subs button{min-height:44px;padding:8px 12px}#sheet .menu-h{min-height:44px}
+}
+
+/* 안드로이드 화면 아래 잘림(카페 11-16 낙하산·마스터쉐프: 3버튼 내비·주소창이 있는 갤럭시에서 감독·코치진·스카우트 화면 맨 아래가 하단 탭 밑에 깔려 끝까지 내려도 안 보임).
+   작업 화면 틀 높이를 100vh(옛 브라우저) → 100dvh → 실제로 보이는 높이(--app-h, 51_table_pager.js wsViewport) 순으로 잡고, 아래 여백은 실제 하단 탭 높이(--bnav-real, 안전 영역 포함)만큼 둔다.
+   보이는 영역이 창보다 짧으면(--vv-gap) 하단 탭도 그만큼 올린다. 머리 접기(ws-slid)는 틀 안에서만 움직이므로 그대로다 */
+@media(max-width:1099px){
+ #app .shell:is(:has(.ws-frame),:has(.home-workspace),:has(.inbox-workspace)){height:calc(100vh / var(--z,1));height:calc(100dvh / var(--z,1));height:calc(var(--app-h,100dvh) / var(--z,1));padding-bottom:var(--bnav-real,calc(58px + env(safe-area-inset-bottom,0px)))}
+ #app .shell:is(:has(.ws-frame),:has(.home-workspace),:has(.inbox-workspace)) .bnav{bottom:var(--vv-gap,0px)}
+ /* 고정 머리(제목·필터·안내)가 칸보다 길어지면 칸 안 목록·페이지 넘김 줄이 잘려 숨던 것: 잘라 버리지 않고 칸째 스크롤한다 */
+ #app main.ws-frame>.ws-own,#app main.ws-frame .ws-panels>.ws-panel{overflow:hidden auto}
 }
 /* 개인 생활·인맥: 요약 타일, 활동 카드(비용·상태·효과 칩), 선수·단장 고르기 칩 */
 .pl-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 8px}
@@ -29562,7 +29573,7 @@ function policyCard(m){
 function mgrChatCard(compact){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)return ''; const C=(G.mgrChat||[]).filter(c=>!compact||G.day-c.d<=14).slice(0,1); /* 지난 대화는 감독실에서: 화면에는 가장 최근 답 하나만 */
   const T=[['now','지금 팀 상황은?'],['foreign','어떤 외국인을 원하나?'],['need','가장 급한 자리는?'],['young','눈여겨보는 젊은 선수는?']];
   const tt=G.ttDay!=null&&G.day-G.ttDay<14;
-  return `<section class="card mchat"><div class="row between"><h2 class="sec">${compact?'감독실':'감독과 대화'}</h2><span class="small muted">${esc(m.name)} 감독 · ${esc(mgrType(m).n)} · 말투 ${MV[mgrVoice(m)].l} · 관계 ${relLabel(m.rel)}</span></div>${compact?'':`<p class="small muted keep">${esc(m.career||'')} · ${MV[mgrVoice(m)].d}</p>`}
+  return `<section class="card mchat${compact?' mchat-c':''}"><div class="row between"><h2 class="sec">${compact?'감독실':'감독과 대화'}</h2><span class="small muted">${esc(m.name)} 감독 · ${esc(mgrType(m).n)} · 말투 ${MV[mgrVoice(m)].l} · 관계 ${relLabel(m.rel)}</span></div>${compact?'':`<p class="small muted keep">${esc(m.career||'')} · ${MV[mgrVoice(m)].d}</p>`}
     ${meetDoor('mgr')}
     ${C.length?`<div class="mc-l">${C.map(c=>`<div class="mc-a"><i>${dsh(c.d)} · ${esc((T.find(x=>x[0]===c.t)||['',''])[1])}</i><p>${esc(c.a)}</p></div>`).join('')}</div>`:''}
     
@@ -37796,7 +37807,17 @@ if(typeof addEventListener!=='undefined'){
 
 // Refit after a filter opens or browser chrome changes height, without replacing the reading DOM.
 let _workspaceObserver=null;
-function workspaceRefit(){document.querySelectorAll('.ws-panel:not([hidden])').forEach(panel=>panel._workspaceFit?.());workspaceObserve();}
+function workspaceRefit(){wsViewport();document.querySelectorAll('.ws-panel:not([hidden])').forEach(panel=>panel._workspaceFit?.());workspaceObserve();}
+/* 휴대폰 작업 화면 높이는 실제로 보이는 높이(--app-h)와 실제 하단 탭 높이(--bnav-real)로 잡는다(30_mobile_workspace.css).
+   안드로이드 3버튼 내비·주소창·삼성 인터넷 아래 도구 막대에서는 100vh·100dvh가 보이는 영역보다 커져 목록 끝과 페이지 넘김 버튼이
+   하단 탭 밑에 깔려 끝까지 내려도 안 보였다(카페 11-16 낙하산·마스터쉐프). 글자 입력 중(키보드)·확대 중에는 바꾸지 않는다 */
+function wsViewport(){ if(typeof document==='undefined')return; const r=document.documentElement,v=window.visualViewport,ae=document.activeElement;
+  if(ae&&ae.matches&&ae.matches('input:not([type=button],[type=checkbox],[type=radio],[type=range]),textarea,select,[contenteditable=true]'))return;
+  const zoomed=v&&Math.abs((v.scale||1)-1)>.01, h=Math.round(v&&!zoomed?Math.min(innerHeight,v.offsetTop+v.height):innerHeight), gap=Math.max(0,innerHeight-h);
+  const set=(k,val)=>{ if(r.style.getPropertyValue(k)!==val)r.style.setProperty(k,val); };
+  set('--app-h',h+'px'); set('--vv-gap',gap+'px');
+  const nav=document.querySelector('#app .bnav'), bh=nav&&nav.offsetHeight; if(bh)set('--bnav-real',bh+'px'); }
+if(typeof addEventListener!=='undefined'){ const sync=()=>requestAnimationFrame(wsViewport); addEventListener('resize',sync); addEventListener('orientationchange',sync); addEventListener('focusout',()=>setTimeout(sync,350)); window.visualViewport?.addEventListener('resize',sync); }
 function workspaceObserve(){if(typeof ResizeObserver==='undefined')return;
  if(!_workspaceObserver)_workspaceObserver=new ResizeObserver(entries=>{requestAnimationFrame(()=>entries.forEach(({target})=>{if(!target.isConnected)return;const panel=target.parentElement;if(!panel.matches('.ws-panel')||panel.hidden)return;panel._workspaceFit?.();const next=panel.querySelector(':scope > .ws-scroll');if(next!==target){_workspaceObserver.unobserve(target);if(next)_workspaceObserver.observe(next);}}));});
  _workspaceObserver.disconnect();document.querySelectorAll('.ws-panel > .ws-scroll').forEach(scroll=>_workspaceObserver.observe(scroll));
