@@ -79,7 +79,7 @@ function mdFaces(g,s,shown=s){ if(s.finished||!s.batter)return ''; const pid=s.t
     const sub=pitch?`${p.th==='좌'?'좌완':'우완'} · ${DELIVERY_LABEL[pitchDelivery(p)]||''}`:`${slot?slot+'번 · ':''}${row?POSK[row.pos]||row.pos:''} · ${p.bt==='좌'?'좌타':p.bt==='양'?'양타':'우타'}`;
     const today=pitch?`오늘 ${ipStr(r.outs)}이닝 · ${r.so}K${total!=null?' · '+total+'구':''}`:`오늘 ${r.ab}타수 ${r.h}안타`, w=typeof wpaUpTo==='function'?wpaUpTo(g,shown.k)[id]:null;
     const vs=pitch?(G.players[s.batter]?.bt==='좌'?'좌':'우'):(G.players[pid]?.th==='좌'?'좌':'우');
-    return `<button class="cs-face ${pitch?'r':'l'}" data-a="castPlayer" data-v="${id}"><span class="cs-face-ph">${G.players[id]?avImg(p):''}</span><span class="cs-face-tx"><i>${pitch?'투수':'타자'}${no!=null?' · #'+no:''}</i><b>${esc(p.name)}</b><em>${esc(sub)}</em><small>${esc(today)} ${mdWpa(w)}</small>${mdDuelMore(g,id,pitch,vs,total,pitch&&(g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id)}</span></button>`; };
+    return `<button class="cs-face ${pitch?'r':'l'}" data-a="castPlayer" data-v="${id}"><span class="cs-face-ph">${G.players[id]?avImg(p):''}</span><span class="cs-face-tx"><i>${pitch?'투수':'타자'}${no!=null?' · #'+no:''}</i><b>${esc(p.name)}</b><em>${esc(sub)}</em><small>${esc(today)} ${mdWpa(w)}</small>${pitch?cAlertChips(cPitchAlerts(g,shown.k,id,s.state&&s.state.half,(g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id)):''}${mdDuelMore(g,id,pitch,vs,total,pitch&&(g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id)}</span></button>`; };
   return card(s.batter,false)+card(pid,true); }
 /* 감독 운영(사용자 11-16): 경기 기록에 남는 감독 결정(투수 교체·도루 시도·희생번트)과 그 결과를 승리 확률 기여로. 지금 장면까지만.
    투수 교체는 바뀐 투수가 그 뒤로 막은 기여, 도루·번트는 그 장면의 기여. 대타·고의사구는 기록에 없어 다루지 않는다 */
@@ -107,6 +107,18 @@ function castDashboardUpdate(g,k){
 }
 /* 투수 체력(사용자 11-16, OOTP 체력 막대 참고): 스카우트 평가 스태미나로 정한 한도 대비 남은 비율. 선발·구원 한도는 엔진과 같은 식(PW.l0·ls, 구원 18+0.3×스태미나)에 조금 여유를 둔다 */
 function cStam(g,pid,pc,starter){ if(pc==null)return null; const p=G.players[pid]; if(!p)return null; let sta=45; try{ const grp=(detailOf(p,scoutReport(p)).groups||[]).find(x=>x[0]==='투구'), it=grp&&grp[1].find(r=>/^스태미나/.test(r[0])); if(it&&typeof it[1]==='number')sta=it[1]; }catch(e){} const cap=starter?PW.l0+sta*PW.ls+12:18+sta*.3+8; return clamp(1-pc/cap,0,1); }
+/* 투수 상태 경고(사용자 11-16, 교체 판단을 숫자로): 지금 장면 전까지의 기록만 본다. 빨강=위험, 노랑=주의. 최대 3개 */
+function cPitchAlerts(g,k,pid,half,starter){ if(!pid||!g.pbp)return []; let bf=0,pc=0,ir=0,iob=0,ipc=0,ibf=0,pcOk=true;
+  for(let i=0;i<Math.min(k,g.pbp.length);i++){ const x=g.pbp[i]; if(typeof x[1]!=='number'||x[2]!==pid)continue; bf++; const seq=storedPitchSequence(x), n=seq?seq.length:0; if(!seq)pcOk=false; pc+=n;
+    if(x[0]===half){ ibf++; ipc+=n; ir+=x[6]||0; if(['1B','2B','3B','HR','BB','HBP'].includes(x[3]))iob++; } }
+  const A=[], stam=pcOk?cStam(g,pid,pc,starter):null;
+  if(stam!=null&&stam<=.15)A.push(['r',`체력 ${Math.round(stam*100)}%`]); else if(stam!=null&&stam<=.3)A.push(['y',`체력 ${Math.round(stam*100)}%`]);
+  if(ir>=3)A.push(['r',`이번 이닝 ${ir}실점`]); else if(ir===2)A.push(['y','이번 이닝 2실점']);
+  if(iob>=3&&ir<3)A.push([iob>=4?'r':'y',`이번 이닝 ${iob}명 출루`]);
+  if(pcOk&&ipc>=25)A.push([ipc>=35?'r':'y',`이번 이닝 ${ipc}구`]);
+  if(starter&&bf>=18)A.push(['y',`타순 ${bf>=27?'네':'세'} 바퀴째`]);
+  return A.slice(0,3); }
+function cAlertChips(A){ return A.length?`<span class="cs-alerts">${A.map(([l,t])=>`<i class="${l}">${esc(t)}</i>`).join('')}</span>`:''; }
 function cStamBar(left,cls){ if(left==null)return ''; const pct=Math.round(left*100); return `<span class="${cls||'md-stam'}" title="체력 ${pct}%"><i style="width:${pct}%;background:${left>.5?'#5fcf8a':left>.25?'#e7c55a':'#e9675d'}"></i></span>`; }
 /* 대결 카드 보강(사용자 11-16, OOTP 타자·투수 카드 참고): 시즌 성적 한 줄, 핵심 능력치 셋(상대 투수·타자 손에 맞춘 상대 능력치 포함), 투수는 투구 수로 줄어드는 체력 막대. 능력치는 선수 상세 화면과 같은 스카우트 평가 값 */
 function mdDuelMore(g,id,pitch,vs,pc,starter){ try{ const p=G.players[id]; if(!p)return ''; const grp=detailOf(p,scoutReport(p)).groups||[], val=(gn,re)=>{ const gp=grp.find(x=>x[0]===gn); const it=gp&&gp[1].find(r=>re.test(r[0])); return it&&typeof it[1]==='number'?(typeof dv==='function'?dv(Math.round(it[1])):Math.round(it[1])):null; };
@@ -119,7 +131,7 @@ function mdDuelMore(g,id,pitch,vs,pc,starter){ try{ const p=G.players[id]; if(!p
 function mdDuel(g,s,shown=s){
   if(s.finished)return `<div class="md-final"><b>${g.hs===g.as?'무승부':esc(tshort(g.hs>g.as?g.home:g.away))+' 승리'} · ${g.as}:${g.hs}</b><button class="btn small" data-a="castBox">박스스코어</button></div>`;
   const pid=s.teams[s.attack==='a'?'h':'a'].pitcher;
-  return [[s.batter,'현재 타자',false],[pid,'현재 투수',true]].filter(x=>x[0]).map(([id,label,pitch])=>{const p=mdPlayer(g,id),r=shown.players[id]||{ab:0,h:0,outs:0,so:0},slot=s.teams[s.attack].lineup.findIndex(x=>x.id===id)+1,total=pitch?cPitchTotalBefore(g,shown.k,id):null;return `<button class="md-duel-player" data-a="castPlayer" data-v="${id}">${G.players[id]?avImg(p):''}<span><i>${label} · ${pitch?(p.th==='좌'?'좌완':'우완')+' · '+DELIVERY_LABEL[pitchDelivery(p)]:(slot?slot+'번 · ':'')+(p.bt==='좌'?'좌타':p.bt==='양'?'양타':'우타')}</i><b>${esc(p.name)}</b><small>${pitch?ipStr(r.outs)+'이닝 · '+r.so+'K · <em id="cs-pitcher-count">'+(total==null?'투구 수 미기록':total+'구')+'</em>':'오늘 '+r.ab+'타수 '+r.h+'안타'}</small>${mdDuelMore(g,id,pitch,pitch?G.players[s.batter]?.bt==='좌'?'좌':'우':G.players[pid]?.th==='좌'?'좌':'우',total,pitch&&((g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id))}</span>${!pitch?'<span class="ab-res" id="cs-abr"></span>':''}</button>`;}).join('')+(()=>{ try{ const b=G.players[s.batter], p=G.players[pid]; if(!b||!p)return ''; const st=s.state||{}; const t=cStory(g,s.k,b,p,!!(st.bases&&(st.bases[1]||st.bases[2]))); return t?`<div class="ab-story md-story">${t}</div>`:''; }catch(e){ return ''; } })();
+  return [[s.batter,'현재 타자',false],[pid,'현재 투수',true]].filter(x=>x[0]).map(([id,label,pitch])=>{const p=mdPlayer(g,id),r=shown.players[id]||{ab:0,h:0,outs:0,so:0},slot=s.teams[s.attack].lineup.findIndex(x=>x.id===id)+1,total=pitch?cPitchTotalBefore(g,shown.k,id):null;return `<button class="md-duel-player" data-a="castPlayer" data-v="${id}">${G.players[id]?avImg(p):''}<span><i>${label} · ${pitch?(p.th==='좌'?'좌완':'우완')+' · '+DELIVERY_LABEL[pitchDelivery(p)]:(slot?slot+'번 · ':'')+(p.bt==='좌'?'좌타':p.bt==='양'?'양타':'우타')}</i><b>${esc(p.name)}</b><small>${pitch?ipStr(r.outs)+'이닝 · '+r.so+'K · <em id="cs-pitcher-count">'+(total==null?'투구 수 미기록':total+'구')+'</em>':'오늘 '+r.ab+'타수 '+r.h+'안타'}</small>${pitch?cAlertChips(cPitchAlerts(g,shown.k,id,s.state&&s.state.half,(g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id)):''}${mdDuelMore(g,id,pitch,pitch?G.players[s.batter]?.bt==='좌'?'좌':'우':G.players[pid]?.th==='좌'?'좌':'우',total,pitch&&((g.box&&g.box[s.attack==='a'?'h':'a']?.pit?.[0]?.id)===id))}</span>${!pitch?'<span class="ab-res" id="cs-abr"></span>':''}</button>`;}).join('')+(()=>{ try{ const b=G.players[s.batter], p=G.players[pid]; if(!b||!p)return ''; const st=s.state||{}; const t=cStory(g,s.k,b,p,!!(st.bases&&(st.bases[1]||st.bases[2]))); return t?`<div class="ab-story md-story">${t}</div>`:''; }catch(e){ return ''; } })();
 }
 
 function mdDuelResult(g,k){if(UI.cast)UI.cast.completed=k;const before=castSnapshot(g,k),after=castSnapshot(g,k+1);mdSet('cs-vs',mdDuel(g,before,after));mdSet('cs-faces',mdFaces(g,before,after));}
