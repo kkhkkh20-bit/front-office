@@ -141,9 +141,9 @@ function repProfileView(r){ const O=(typeof OUTLET_DEF!=='undefined'&&OUTLET_DEF
   return personGrid(hero,'',personAttrs('세부 정보',cols)); }
 
 /* 에이전트: 협상력·시장 정보는 회사 규모에서 나온 말 */
-function agtProfileView(ag){ const st=AG_STYLE[ag.style]||AG_STYLE.rel, cl=faLive()?agClients(ag):[], r=agRel(ag), dl=(ag.deals&&ag.deals[G.user])||0;
-  const hero=personHero({av:{persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:relEx(r),name:ag.name},eyebrow:ag.firm,name:ag.name,sub:esc(AG_SIZE[ag.size]||''),
-    keys:[['우리와 계약',`${dl}건`,''],['FA 고객',`${cl.length}명`,'이번 겨울']],sum:{t:st.l,d:st.d}});
-  const cols=[[{h:'에이전트',rows:[['소속',ag.firm,'w'],['규모',AG_SIZE[ag.size]||'-','w'],['협상력',ag.size==='big'?'강함':ag.size==='mid'?'보통':'약함','w'],['시장 정보',ag.size==='big'?'넓음':'보통','w']]}],[{h:'관계',rows:[['친분',agRelLab(r),'w'],...(cl.length?[['FA 고객',cl.map(p=>p.name).join(', '),'w']]:[])]}]];
+function agtProfileView(ag){ const st=AG_STYLE[ag.style]||AG_STYLE.rel, cl=faLive()?agClients(ag):[], r=agRel(ag), dl=(ag.deals&&ag.deals[G.user])||0, all=agClientsAll(ag), F0=agFirm(ag);
+  const hero=personHero({av:{persona:'agent',pid:'agt'+ag.id+ag.name,age:agAge(ag),female:!!ag.female,expr:relEx(r),name:ag.name},eyebrow:ag.firm,name:ag.name,sub:esc(`${AG_SIZE[ag.size]||''} · 경력 ${ag.exp||1}년${ag.act===false?' · 은퇴':''}`),
+    keys:[['고객',`${all.length}/${AG_MAX_CL}명`,''],['우리 선수',`${all.filter(p=>p.team===G.user).length}/${AG_MAX_CLUB}명`,''],['우리와 계약',`${dl}건`,''],['FA 고객',`${cl.length}명`,'이번 겨울']],sum:{t:st.l,d:st.d}});
+  const cols=[[{h:'에이전트',rows:[['소속',ag.firm,'w'],['규모',AG_SIZE[ag.size]||'-','w'],['회사 평판',String(agRepOf(ag)),'w'],['전문 분야',F0&&F0.spec?AG_SPEC[F0.spec]:'두루','w'],['수수료',`${agFee(ag)}%`,'w'],['협상력',ag.size==='big'?'강함':ag.size==='mid'?'보통':'약함','w'],['시장 정보',ag.size==='big'?'넓음':'보통','w']]}],[{h:'관계',rows:[['친분',agRelLab(r),'w'],...(all.length?[['고객',all.slice(0,8).map(p=>p.name).join(', ')+(all.length>8?' 등':''),'w']]:[]),...(cl.length?[['FA 고객',cl.map(p=>p.name).join(', '),'w']]:[])]}]];
   return personGrid(hero,'',personAttrs('세부 정보',cols)); }
 

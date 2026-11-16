@@ -150,7 +150,7 @@ function fdMoney(){ const F=G.fd; if(!F)return null; const key=G.day+':'+G.user;
 function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동 배분: 구단 국내 선수 52명까지 지그재그 */
   let r=0, guard=0; while(F.pool.length&&guard++<80){ const seq=r%2?[...F.order].reverse():F.order; let any=false; for(const tid of seq){ if(domestic(tid).length>=52)continue; const id=fdBest(tid,true); if(id==null)break; const p=G.players[id]; p.team=tid; p.fdPool=false; acqStamp(p,'fd',tid,{auto:true}); chron('draft',`창단 추가 지명 ${p.name}(${posLabel(p)}, ${p.age}세) · 연봉 ${money(p.sal)}`,p.id,tid,{source:'fd:'+G.year+':extra:'+p.id}); F.pool=F.pool.filter(x=>x!==id); any=true; } if(!any)break; r++; }
   for(const id of F.pool){ const p=G.players[id]; if(p)retireOut(p,'창단 드래프트에서 지명받지 못해 은퇴'); } /* 일반 은퇴 절차: 기존 1군 기록을 보관(G.arch)에 남긴다(검수 11-09zd) */
-  F.pool=[]; F.done=true; for(const p of Object.values(G.players)){ delete p.fdPool; delete p.fdFrom; } try{ tbTakeSnap(); }catch(e){}
+  F.pool=[]; F.done=true; for(const p of Object.values(G.players)){ delete p.fdPool; delete p.fdFrom; } try{ if(G.agV===2)agCapFix(); }catch(e){} /* 창단 드래프트로 소속이 바뀌면 에이전트 구단당 3명 정리 */ try{ tbTakeSnap(); }catch(e){}
   for(const t of G.teams){ if(rosterN(t.id)>ROSTER_MAX)trimRoster(t.id,ROSTER_MAX); } try{ aiCapAll(); }catch(e){} try{ fdStrengthen(); }catch(e){} try{ fdAiPayFill(); }catch(e){} try{ foundDefaults(); }catch(err){}
   /* 외국인은 먼저 계약하지 않는다: 1월 시장에서 값을 불러 경쟁한다(foRivals·aiForeignDaily) */
   planSup(); G.tsug=null; try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
