@@ -5352,6 +5352,8 @@ button.st-n:hover b{text-decoration:underline}
 @container (min-width:480px) and (max-width:960px){.me-pc .pcx{grid-template-columns:220px minmax(0,1fr)}.me-pc .pcx .pc-attrs{grid-column:1/-1}}
 @container (max-width:479px){.me-pc .pcx{grid-template-columns:minmax(0,1fr)}.me-pc .pcx .pc-attrs{grid-column:auto}.me-pc .pcx .pf-attribute-grid.pc-grid2{grid-template-columns:minmax(0,1fr)}.me-pc .pcx .pf-fmcard.ph .pf-fm-face>.av{width:min(100%,220px)}}
 @media(max-width:700px){.pcx .pf-attribute-column:last-child{grid-template-columns:minmax(0,1fr);gap:0}} /* 선수 상세의 마지막 열 두 칸 규칙이 인물 카드 세부 표를 반쪽으로 줄이던 것 */
+
+.pcx .pc-note{margin:2px 0 0;font-size:12px;line-height:1.5;color:var(--muted)} /* 코치 카드 계산 기준(차트 대신 표 안에, 사용자 11-16) */
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
@@ -37864,7 +37866,8 @@ function personHero(o){
     ${o.keys&&o.keys.length?`<div class="pf-fm-key pc-keys">${o.keys.map(([l,v,s])=>`<div><span>${esc(l)}</span><b class="pc-kv">${v}</b>${s?`<small>${s}</small>`:''}</div>`).join('')}</div>`:''}
     ${o.sum?`<div class="pf-fm-role pc-sum"><b>${esc(o.sum.t)}</b>${o.sum.d?`<span>${esc(o.sum.d)}</span>`:''}</div>`:''}</section>`; }
 /* 능력 차트: 축 [이름, 내부 값, 내부 값, 보일 말(없으면 화면 숫자)] */
-function personRadar(ax,cap,title){
+function personRadar(ax,cap,title){ return ''; /* 능력 차트는 선수만(사용자 11-16). 인물 카드는 사진 카드 + 세부 표 */ }
+function personRadarOld(ax,cap,title){
   return `<section class="card pf-radar pc-radar"><h3>${esc(title||'능력 차트')}</h3>${radarSVG(ax,false,true)}<p class="small keep pf-rd-key"><i class="k1"></i>현재 <i class="k3"></i>중간 기준</p>${cap?`<p class="small muted keep pc-cap">${cap}</p>`:''}</section>`; }
 /* 세부 능력 표: cols = [[{h, rows:[[이름, 값, 'n'(숫자)|'w'(말), 설명]], html}]] */
 function personAttrs(title,cols,foot){
@@ -37901,10 +37904,10 @@ function coachProfileView(c,o){ /* o.more: 성격·관계 말 줄, o.avTeam: 사
   const role=(c.ax?'보조 ':'')+(CROLE[c.role]?.l||'코치'), S=cStrong(c), W=cWeak(c);
   const hero=personHero({av:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:o.avTeam!==undefined?o.avTeam:o.tid??G.user},tid:o.tid,eyebrow:o.eyebrow||role,name:c.name,sub:`${c.age}세${c.car?' · '+esc(c.car):''}`,pills:(typeof coachTag==='function'?coachTag(c):'')+(c.ob?obTag(c.ob):''),
     keys:[['기본 지도',rchip(c.sk),''],['기본 육성',rchip(c.dv),'']],sum:{t:`연 ${money(c.sal||0)}${c.ce?` · ${c.ce}년까지`:''}`,d:c.ax?'선수 육성을 돕는 보조 코치입니다.':(CROLE[c.role]?.d||'')}});
-  const radar=personRadar(order.map(k=>[CAB_S(k),a[k],a[k]]),'기본 지도·육성은 세부 능력을 종합한 값입니다. 현재 근무 값에는 감독 사단·궁합이 반영됩니다.');
+  const radar=''; /* 코치는 능력 차트 없이 사진 카드 + 세부 능력 표만(사용자 11-16) */
   const tags=`${S.map(k=>`<span class="pill good">${CAB[k]} 강점</span>`).join('')}${W.map(k=>`<span class="pill warn">${CAB[k]} 약함</span>`).join('')}`;
   const cols=[[{h:'맡은 자리 능력',rows:D.map(k=>[CAB[k],a[k],'n'])},{h:'공통 능력',rows:['yng','com','ana'].filter(k=>!D.includes(k)).map(k=>[CAB[k],a[k],'n'])}],[{h:'그 밖의 지도',rows:rest.map(k=>[CAB[k],a[k],'n'])},...(o.more&&o.more.length?[{h:'성격·관계',rows:o.more.map(([l,w,d])=>[l,w,'w',d])}]:[])]];
-  return personGrid(hero,radar,personAttrs('세부 능력 · 100점 척도',cols,tags?`<div class="pc-tags">${tags}</div>`:''));
+  return personGrid(hero,radar,personAttrs('세부 능력 · 100점 척도',cols.map((c,i)=>i===cols.length-1?[...c,{h:'계산 기준',html:'<p class="pc-note">기본 지도·육성은 세부 능력을 종합한 값입니다. 현재 근무 값에는 감독 사단·궁합이 반영됩니다.</p>'}]:c),tags?`<div class="pc-tags">${tags}</div>`:''));
 }
 
 /* 인물 창(personSheet)에서 쓰는 큰 카드. 없으면 null(옛 카드 그대로). rest: 카드 아래에 이어 붙일 면담·관계 상자 */

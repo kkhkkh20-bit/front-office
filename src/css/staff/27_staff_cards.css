@@ -289,3 +289,5 @@ button.st-n:hover b{text-decoration:underline}
 @container (min-width:480px) and (max-width:960px){.me-pc .pcx{grid-template-columns:220px minmax(0,1fr)}.me-pc .pcx .pc-attrs{grid-column:1/-1}}
 @container (max-width:479px){.me-pc .pcx{grid-template-columns:minmax(0,1fr)}.me-pc .pcx .pc-attrs{grid-column:auto}.me-pc .pcx .pf-attribute-grid.pc-grid2{grid-template-columns:minmax(0,1fr)}.me-pc .pcx .pf-fmcard.ph .pf-fm-face>.av{width:min(100%,220px)}}
 @media(max-width:700px){.pcx .pf-attribute-column:last-child{grid-template-columns:minmax(0,1fr);gap:0}} /* 선수 상세의 마지막 열 두 칸 규칙이 인물 카드 세부 표를 반쪽으로 줄이던 것 */
+
+.pcx .pc-note{margin:2px 0 0;font-size:12px;line-height:1.5;color:var(--muted)} /* 코치 카드 계산 기준(차트 대신 표 안에, 사용자 11-16) */
