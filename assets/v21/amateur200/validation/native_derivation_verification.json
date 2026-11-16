@@ -1,0 +1,16 @@
+{
+  "scope": "Candidate individual WebPs, not final runtime atlases",
+  "checked_exports": 690,
+  "native_original_png_count": 23,
+  "minimum_native_crop_edge": 392,
+  "maximum_native_crop_edge": 393,
+  "all_direct_native_crop_derivations_byte_identical": true,
+  "upsampled_from_128": false,
+  "geometric_transform": "whole-photo square crop, isotropic LANCZOS reduction only",
+  "webp_version": "1.6.0",
+  "qualities": {
+    "128": 85,
+    "256": 88,
+    "384": 89
+  }
+}

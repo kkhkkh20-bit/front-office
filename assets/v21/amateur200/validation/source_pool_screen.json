@@ -1,0 +1,2119 @@
+{
+  "source_candidate_count": 380,
+  "assistant_screened": 380,
+  "rejected_count": 96,
+  "note": "Seed screening, not human age approval and not final production validation. Original seed images remain in the protected generation workspace.",
+  "reviews": {
+    "pool_0001_0": {
+      "status": "rejected",
+      "reason": "visibly older than requested student range; pronounced stubble/aged eyes",
+      "glasses_observed": false
+    },
+    "pool_0003_2": {
+      "status": "rejected",
+      "reason": "source generated blond hair and light eyes contrary to requested short dark-haired Korean student design",
+      "glasses_observed": false
+    },
+    "pool_0003_3": {
+      "status": "rejected",
+      "reason": "overly stylized round bright eyes and facial lighting",
+      "glasses_observed": false
+    },
+    "pool_0005_0": {
+      "status": "rejected",
+      "reason": "exaggerated skeletal neck/cheeks; outside natural student portrait brief",
+      "glasses_observed": false
+    },
+    "pool_0008_1": {
+      "status": "rejected",
+      "reason": "opaque reflective eyeglasses and overly mature face",
+      "glasses_observed": true
+    },
+    "pool_0009_0": {
+      "status": "rejected",
+      "reason": "off-brief light eyes/red hair facial design",
+      "glasses_observed": false
+    },
+    "pool_0009_1": {
+      "status": "rejected",
+      "reason": "off-brief facial design; source uniform/cap label defects",
+      "glasses_observed": false
+    },
+    "pool_0009_3": {
+      "status": "rejected",
+      "reason": "off-brief light-eyed facial design",
+      "glasses_observed": false
+    },
+    "pool_0019_0": {
+      "status": "rejected",
+      "reason": "off-brief light-eyed red-haired facial design",
+      "glasses_observed": false
+    },
+    "pool_0000_0": {
+      "status": "rejected",
+      "reason": "visibly mature bearded face outside student brief",
+      "glasses_observed": false
+    },
+    "pool_0000_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0000_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0000_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": true
+    },
+    "pool_0001_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0001_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0001_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0002_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0002_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0002_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0002_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": true
+    },
+    "pool_0003_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0003_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0004_0": {
+      "status": "rejected",
+      "reason": "eyes closed",
+      "glasses_observed": false
+    },
+    "pool_0004_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0004_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0004_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0005_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0005_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0005_3": {
+      "status": "rejected",
+      "reason": "appears younger than requested range",
+      "glasses_observed": false
+    },
+    "pool_0006_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0006_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0006_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0006_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0007_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0007_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0007_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0007_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": true
+    },
+    "pool_0008_0": {
+      "status": "rejected",
+      "reason": "mature stubbled appearance",
+      "glasses_observed": false
+    },
+    "pool_0008_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": true
+    },
+    "pool_0008_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0009_2": {
+      "status": "rejected",
+      "reason": "off-brief light-eyed red-haired design",
+      "glasses_observed": false
+    },
+    "pool_0010_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0010_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0010_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0010_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0011_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0011_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0011_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0011_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0012_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0012_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0012_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0012_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0013_0": {
+      "status": "rejected",
+      "reason": "prominent adult goatee and mature face",
+      "glasses_observed": true
+    },
+    "pool_0013_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0013_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0013_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0014_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0014_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0014_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0014_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0015_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0015_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0015_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0015_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0016_0": {
+      "status": "rejected",
+      "reason": "off-brief reddish hair/light-eyed facial design",
+      "glasses_observed": false
+    },
+    "pool_0016_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": true
+    },
+    "pool_0016_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0016_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0017_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false,
+      "suggested_age": 21
+    },
+    "pool_0017_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0017_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0017_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0018_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0018_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0018_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0018_3": {
+      "status": "rejected",
+      "reason": "off-brief light-eyed reddish hair design",
+      "glasses_observed": false
+    },
+    "pool_0019_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0019_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0019_3": {
+      "status": "rejected",
+      "reason": "appears too young/off-brief light-eyed design",
+      "glasses_observed": false
+    },
+    "pool_0020_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0020_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0020_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0020_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0021_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0021_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0021_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0021_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0022_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": true
+    },
+    "pool_0022_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0022_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0022_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0023_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0023_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": true
+    },
+    "pool_0023_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0023_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0024_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0024_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0024_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": true
+    },
+    "pool_0024_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0025_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": true
+    },
+    "pool_0025_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0025_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0025_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0026_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0026_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0026_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0026_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0027_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0027_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0027_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0027_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0028_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0028_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0028_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0028_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0029_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0029_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0029_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0029_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0030_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0030_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0030_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0030_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0031_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0031_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0031_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0031_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0032_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0032_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0032_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0032_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0033_0": {
+      "status": "rejected",
+      "reason": "mature prominent moustache",
+      "glasses_observed": false
+    },
+    "pool_0033_1": {
+      "status": "rejected",
+      "reason": "mature prominent moustache",
+      "glasses_observed": false
+    },
+    "pool_0033_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0033_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0034_0": {
+      "status": "rejected",
+      "reason": "overly stylized skeletal neck and pinched face",
+      "glasses_observed": false
+    },
+    "pool_0034_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0034_2": {
+      "status": "rejected",
+      "reason": "visibly mature stubble/facial lines",
+      "glasses_observed": false
+    },
+    "pool_0034_3": {
+      "status": "rejected",
+      "reason": "visibly mature stubble/facial lines",
+      "glasses_observed": false
+    },
+    "pool_0035_0": {
+      "status": "rejected",
+      "reason": "off-brief light-eyed red-haired design",
+      "glasses_observed": false
+    },
+    "pool_0035_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0035_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0035_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0036_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0036_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0036_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0036_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0037_0": {
+      "status": "rejected",
+      "reason": "eyes closed",
+      "glasses_observed": false
+    },
+    "pool_0037_1": {
+      "status": "rejected",
+      "reason": "visibly mature face",
+      "glasses_observed": true
+    },
+    "pool_0037_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false,
+      "suggested_age": 21
+    },
+    "pool_0037_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0038_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0038_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0038_2": {
+      "status": "rejected",
+      "reason": "bad opaque reflective glasses",
+      "glasses_observed": true
+    },
+    "pool_0038_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0039_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0039_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0039_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0039_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": true
+    },
+    "pool_0040_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0040_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0040_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0040_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested 17-22 student range",
+      "glasses_observed": false
+    },
+    "pool_0041_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0041_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0041_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0041_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0042_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0042_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0042_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0042_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0043_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": false
+    },
+    "pool_0043_1": {
+      "status": "rejected",
+      "reason": "mature sagging face and stubble",
+      "glasses_observed": true
+    },
+    "pool_0043_2": {
+      "status": "rejected",
+      "reason": "appears younger than requested student range",
+      "glasses_observed": true
+    },
+    "pool_0043_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant visual screening only; final uniform, all-pair numerical gates and human age review remain pending",
+      "glasses_observed": true
+    },
+    "pool_0044_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0044_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0044_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0044_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0045_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0045_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0045_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0045_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0046_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0046_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0046_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0046_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0047_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0047_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0047_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0047_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0048_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0048_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending",
+      "suggested_age": 18
+    },
+    "pool_0048_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0048_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0049_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0049_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0049_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0049_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0050_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0050_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0050_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0050_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0051_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0051_1": {
+      "status": "rejected",
+      "reason": "visibly mature face outside requested student range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0051_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0051_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0052_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending",
+      "suggested_age": 21
+    },
+    "pool_0052_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0052_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0052_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0053_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0053_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0053_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0053_3": {
+      "status": "rejected",
+      "reason": "opaque reflective eyeglasses",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0054_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0054_1": {
+      "status": "rejected",
+      "reason": "opaque reflective eyeglasses and mature facial design",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0054_2": {
+      "status": "rejected",
+      "reason": "opaque reflective eyeglasses and mature facial design",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0054_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0055_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0055_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0055_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0055_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0056_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0056_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0056_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0056_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0057_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0057_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0057_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0057_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0058_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0058_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0058_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0058_3": {
+      "status": "rejected",
+      "reason": "visibly mature beard/facial lines",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0059_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0059_1": {
+      "status": "rejected",
+      "reason": "exaggerated skeletal neck and elongated features",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0059_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0059_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending",
+      "suggested_age": 18
+    },
+    "pool_0060_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0060_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0060_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0060_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0061_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0061_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0061_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0061_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0062_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0062_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0062_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0062_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0063_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0063_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0063_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0063_3": {
+      "status": "rejected",
+      "reason": "opaque reflective eyeglasses",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0064_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0064_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0064_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0064_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0065_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0065_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0065_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0065_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0066_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0066_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0066_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0066_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0067_0": {
+      "status": "rejected",
+      "reason": "eyes closed",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0067_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0067_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0067_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0068_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0068_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0068_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0068_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0069_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0069_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0069_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0069_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0070_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0070_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0070_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0070_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0071_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0071_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0071_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0071_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0072_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0072_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0072_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0072_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0073_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0073_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0073_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0073_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0074_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0074_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0074_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0074_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0075_0": {
+      "status": "rejected",
+      "reason": "overly stylized large bright eyes",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0075_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0075_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0075_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0076_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending",
+      "suggested_age": 21
+    },
+    "pool_0076_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0076_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0076_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0077_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0077_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0077_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0077_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0078_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0078_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0078_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0078_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0079_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0079_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0079_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0079_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0080_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0080_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0080_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0080_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0081_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0081_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0081_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0081_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0082_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0082_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0082_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0082_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0083_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0083_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0083_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0083_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0084_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0084_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0084_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0084_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0085_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0085_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0085_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0085_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0086_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0086_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0086_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0086_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0087_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0087_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0087_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0087_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0088_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0088_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0088_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0088_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0089_0": {
+      "status": "rejected",
+      "reason": "visibly mature facial design",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0089_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0089_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0089_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0090_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending",
+      "suggested_age": 21
+    },
+    "pool_0090_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0090_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0090_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0091_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0091_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0091_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0091_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0092_0": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0092_1": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0092_2": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0092_3": {
+      "status": "rejected",
+      "reason": "clearly childlike face younger than requested range",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0093_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0093_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0093_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0093_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0094_0": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": true,
+      "human_age_review": "pending"
+    },
+    "pool_0094_1": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0094_2": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    },
+    "pool_0094_3": {
+      "status": "assistant_seed_screen_pass",
+      "reason": "assistant seed visual screening; full uniform/identity tests and actual human age review pending",
+      "glasses_observed": false,
+      "human_age_review": "pending"
+    }
+  }
+}

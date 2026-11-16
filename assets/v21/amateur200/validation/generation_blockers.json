@@ -1,0 +1,20 @@
+{
+  "date_utc": "2026-11-16",
+  "adobe": {
+    "status": "daily_rate_limit",
+    "message": "Rate limit exceeded. Your quota resets at midnight GMT."
+  },
+  "higgsfield": {
+    "status": "insufficient_existing_credits",
+    "submitted_additional_batch_jobs": 0,
+    "account_billing_details": "not included in public review assets"
+  },
+  "purchases_or_trial_started": false,
+  "basic_generator_trials": [
+    "3x3 new-face group",
+    "four independent singles",
+    "four new faces with photo-style reference",
+    "nine uncapped casual portraits"
+  ],
+  "basic_generator_finding": "High old-gallery and within-group similarities. Two uncapped candidates passed old-gallery comparisons but do not provide 200 mutually distinct identities. No numerical threshold was relaxed."
+}
