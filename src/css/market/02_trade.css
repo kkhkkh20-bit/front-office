@@ -39,3 +39,10 @@
 .tcard.on .tc-mark{background:var(--team-hi);color:#fff}
 .tcard .tc-top{padding-top:4px}
 
+/* 매물·급매·트레이드 불가 표시(국사왕 11-15): 이름 줄 아래 작은 꼬리표, 누르면 이유 말풍선 */
+.trtag{font-size:11px;padding:0 5px;margin-left:4px;cursor:help;line-height:16px;vertical-align:1px}
+.trw .mr-p i .trtag:first-child,.tm-tags .trtag:first-child{margin-left:0}
+.tm-id .tm-tags{display:flex;flex-wrap:wrap;gap:3px}
+.fnd-t td .trtag{margin-left:6px}
+.trade-blk-o{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;min-width:0}
+.st-lvl{margin:0 0 6px}

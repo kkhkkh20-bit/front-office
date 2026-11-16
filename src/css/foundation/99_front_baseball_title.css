@@ -37,3 +37,5 @@
 /* 타구 분포도 */
 .spr{margin:4px 0 12px}.spr-g{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px;align-items:center}@media (max-width:640px){.spr-g{grid-template-columns:1fr}}.spr-f{width:100%;max-width:340px;display:block;margin:4px auto}.spr-z td,.spr-z th{font-size:12px}.spr-w{fill:var(--acc);stroke:var(--panel);stroke-width:2}.spr-f text{fill:var(--ink);font-size:11px;font-weight:700}.spr-f text.s{font-size:9px;font-weight:400;fill:var(--muted)}.spr-l{fill:none;stroke:var(--muted);stroke-width:1}
 .spr-mix{display:flex;flex-wrap:wrap;gap:2px;margin:4px 0}.spr-t{font-size:11px;padding:3px 6px;border-radius:3px;background:var(--line);white-space:nowrap;overflow:hidden;min-width:max-content} /* 비율이 작은 칸도 이름·비율이 잘리지 않게(휴대폰 '팝플라이 11%'가 '팝플라이'만 보이던 문제) */.spr-t b{font-weight:600}
+
+.fb-footer a.fb-cafe{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:4px 12px 4px 6px;border-radius:999px;border:1px solid #03c75a66;color:#e9f9ef;font-weight:600;text-decoration:none}.fb-footer a.fb-cafe:hover,.fb-footer a.fb-cafe:focus-visible{background:#03c75a26}.fb-footer a.fb-cafe .cafe-mk{flex:none}

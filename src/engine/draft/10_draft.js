@@ -65,12 +65,21 @@ function lgMeanDom(){ const L=Object.values(G.players).filter(p=>!p.foreign&&!p.
 /* 리그 수준 기준: 국내 선수 상위 300명(구단당 30명 안팎) 평균. 전체 평균은 신인이 늘면 내려가 버려(인원 구성 효과) 상승을 못 잡았다(커뮤니티 피드백 11-11) */
 function lgTopDom(){ const V=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).map(ovr).sort((a,b)=>b-a).slice(0,300); return V.length>=100?V.reduce((a,v)=>a+v,0)/V.length:null; }
 function lgTopBase(m){ if(G.lgBaseT==null&&m!=null)G.lgBaseT=+m.toFixed(2); return G.lgBaseT; }
-function draftLevelAdj(){ const m=lgMeanDom(); if(m==null)return 0; if(G.lgBase==null){ G.lgBase=+m.toFixed(2); } const t=lgTopDom(), b=lgTopBase(t); const dT=t!=null&&b!=null?t-b:0; return clamp(Math.max((m-G.lgBase)*1.6,dT*2.4),-3,8); } /* 1.6→2.4: 10시즌에 평균 표시 능력 57.3→58.9, 80 이상 4→11명(커뮤니티 피드백 11-11) */
-/* 성장 안정 장치: 국내 상위 300명 평균이 시작 때보다 오른 만큼 그해 겨울 성장(플러스 쪽)을 줄인다. 원래 능력 1점에 15%, 최대 40%. 내려가면 최대 5% 더 큰다 */
-function growLevelF(){ const y=G.year; if(G.lvF&&G.lvF.y===y)return G.lvF.f; const t=lgTopDom(), b=lgTopBase(t); const f=t==null||b==null?1:clamp(1-(t-b)*.15,.6,1.05); G.lvF={y,f:+f.toFixed(3)}; return G.lvF.f; }
+/* 리그 수준 목표(11-15 밸런스: 실제 KBO 생산력에 맞춘 척도). 시작 세계는 베테랑 위주라 상위 300명 평균을 그대로 묶어 두면
+   주전 평균이 표시 65~68에 머물러, 2~3 WAR 주전이 66~67·5 WAR 타자가 78~79로 나왔다(KBO: 주전 70대 초중반, 리그 상위 10명 80 중후반).
+   기준을 시작 값보다 LV_UP(원래 능력)만큼 위로 잡아 몇 해에 걸쳐 국내 선수층이 그만큼 자라게 한다. 외국인 생성 폭은 그대로다 */
+const LV_UP=3;
+const lvUp=()=>G.startY!=null?LV_UP:0; /* 세계를 만드는 동안(창단 드래프트 전 사전 시즌·성장)에는 예전 기준 그대로: 시작 세계 분포는 바꾸지 않는다 */
+const lvBase=()=>{ const b=lgTopBase(lgTopDom()); return b==null?null:b+lvUp(); };
+function draftLevelAdj(){ const m=lgMeanDom(); if(m==null)return 0; if(G.lgBase==null){ G.lgBase=+m.toFixed(2); } const t=lgTopDom(), b=lvBase(); const dT=t!=null&&b!=null?t-b:0; return clamp(Math.max((m-G.lgBase-lvUp()*.6)*1.6,dT*2.4),-4,8); } /* 1.6→2.4: 10시즌에 평균 표시 능력 57.3→58.9, 80 이상 4→11명(커뮤니티 피드백 11-11) */ /* 전체 평균 기준도 목표만큼(상위 300명보다 덜 오르므로 0.6배) 올린다 */
+/* 성장 안정 장치: 국내 상위 300명 평균이 목표(시작+LV_UP)보다 오른 만큼 그해 겨울 성장(플러스 쪽)을 줄인다. 원래 능력 1점에 15%, 최대 40%. 목표보다 낮으면 최대 15% 더 큰다(예전 5%로는 목표까지 10년 넘게 걸렸다) */
+function growLevelF(){ const y=G.year; const u=lvUp(); if(G.lvF&&G.lvF.y===y&&G.lvF.u===u)return G.lvF.f; const t=lgTopDom(), b=lvBase(); const f=t==null||b==null?1:clamp(1-(t-b)*.15,.6,1.15); G.lvF={y,u,f:+f.toFixed(3)}; return G.lvF.f; }
 /* 특급 꼬리 억제(사용자 11-13: S급은 몇 년에 한 번): 상위 300명 평균을 맞춰도 정상급(표시 80+)이 해마다 늘었다(16시즌 8→26명).
-   표시 80 이상 선수 수가 처음보다 많아진 만큼 정상급 근처(76+) 선수의 성장을 줄이고, 90 근처(86+)는 더 줄인다. 모든 구단에 같다 */
-function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; if(G.elBase==null)G.elBase=Math.min(n,12); const b=Math.max(6,G.elBase); G.elN={y,n,f:+clamp(1-(n-b)/b*.7,.3,1.05).toFixed(3)}; return G.elN; }
+   국내 정상급(표시 80 이상) 수가 기준(ELITE_N0)보다 많아진 만큼 정상급 근처(76+) 선수의 성장을 줄이고, 90 근처(86+)는 더 줄인다. 모든 구단에 같다.
+   11-15: 국내 선수만 센다(외국인은 해마다 새로 들어오는 바깥 전력이라, 외국인이 상위권을 채울수록 국내 76+ 성장이 30~70% 깎였다. 사용자: 외국인이 리그 꼭대기를 차지하는 건 KBO답다).
+   기준은 처음 수(국내 4명 안팎)가 아니라 목표인 구단당 1명(10명): 국내 정상급이 구단마다 한두 명 있게(플레이어 제보 11-15) */
+const ELITE_N0=10;
+function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y&&G.elN.d===2)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&!p.foreign&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; const b=ELITE_N0; G.elN={y,n,d:2,f:+clamp(1-(n-b)/b*.7,.3,1.05).toFixed(3)}; return G.elN; }
 function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
@@ -100,7 +109,7 @@ function makeDraftClass(){
   for(const id of cls){ const p=G.players[id]; if(p&&p.amSim){ amSyncR(p); if(p.isP&&p.amVelo==null)p.amVelo=veloOf(p)-(p.college?ri(1,3):ri(3,6)); else if(!p.isP&&p.amRun==null)p.amRun=(+runOf(p)+.04).toFixed(2); } } /* 졸업 학년 후보: 구속·주력 표시 */
   /* 해외파 신인: 해외에서 돌아와 2년 유예를 마친 선수(KBO 규약 107조)는 이해 신인 드래프트에 나온다. 트라이아웃 기록 대신 해외 마지막 시즌 수준으로 아마 기록을 만든다 */
   for(const p of Object.values(G.players)){ if(p.ovsRet&&p.prospect&&p.team==null&&!p.retired){ if(!cls.includes(p.id))cls.push(p.id); continue; } /* 불러오기 보정으로 명단을 다시 만들 때 이미 참가한 복귀자(검수 11-09ze) */
-    if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
+    if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; if(milFree(p)&&!p.foreign){ p.mil={done:true,wait:G.year}; story(p,'유예 기간 2년 동안 병역 이행(군필로 드래프트 참가)','mil'); } /* 실제 해외 유턴파는 2년 유예 기간에 병역을 마치고 나온다(카페 11-15: 지명 뒤 현역 입대로 능력 하락) */ p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
     try{ wire('드래프트',`해외파 ${p.name}(${p.age}세), ${G.year} 신인 드래프트 참가`,{ref:p.id}); }catch(e){} }
   amClass(cls); /* 해외 복귀자는 출국 전 아마 기록이 없을 때만 새로 만든다(검수 11-09ze) */
   pressRank(cls);

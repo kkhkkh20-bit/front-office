@@ -162,7 +162,7 @@ function mdBugPlace(){ try{ const el=document.getElementById('md-bug'),pn=el&&el
 function mdBug(g,st){const el=document.getElementById('md-bug');if(!el)return; mdBugPlace();const k=UI.cast?UI.cast.k:0,x=g.pbp[k]||g.pbp[g.pbp.length-1]||[],top=st.half%2===0;
  const bid=typeof x[1]==='number'?x[1]:null,pid=typeof x[2]==='number'?x[2]:null,side=top?'a':'h',bl=bid!=null&&g.box[side].bat.find(b=>b.id===bid);
  const bs=bid!=null&&typeof prepSeason==='function'?prepSeason(g,bid,bl):null,pc0=pid!=null&&typeof cPitchTotalBefore==='function'?cPitchTotalBefore(g,k,pid):null,pc=pc0==null?null:pc0+(UI.cast?.pitch?.k===k?UI.cast.pitch.shown||0:0); /* 타석 중 던진 공까지 센다(PC는 아래 타자·투수 줄이 숨겨져 이 숫자만 보인다) */
- const row=(tid,sc,at)=>`<div class="mb-t${at?' at':''}"><i style="background:${cTeamCol(tid)}"></i><span>${esc(team(tid).nick)}</span><b>${sc}</b></div>`;
+ const row=(tid,sc,at)=>`<div class="mb-t${at?' at':''}"><i style="background:${cTeamCol(tid)}"></i><span>${esc(tnick(tid))}</span><b>${sc}</b></div>`;
  el.innerHTML=`<div class="mb-who">${bid!=null?`<span>${bl&&bl.o!=null?bl.o+1+'. ':''}${esc(mdPlayer(g,bid).name)}</span><em>${bs?'시즌 '+bs.avg:''}</em>`:'<span>&nbsp;</span>'}</div><div class="mb-who"><span>${pid!=null?'P '+esc(mdPlayer(g,pid).name):'&nbsp;'}</span><em id="md-bug-pc">${pc!=null?pc+'구':''}</em></div><div class="mb-main"><div class="mb-teams">${row(g.away,st.sa,top)}${row(g.home,st.sh,!top)}</div><div class="mb-inn"><b>${Math.floor(st.half/2)+1}</b><i>${top?'▲':'▼'}</i></div><div class="mb-dia">${[1,0,2].map(i=>`<i class="b${i}${st.bases[i]?' on':''}"></i>`).join('')}</div></div>`;}
 
 const CAP_DEF=/삼진|아웃|병살|호수비|잡아|잡습니다|잡았|처리|막아|막았|무실점|돌려세|견제사|도루 저지|태그/, CAP_ATK=/홈런|안타|득점|적시|볼넷|몸에 맞|실책|세이프|진루|역전|동점/;

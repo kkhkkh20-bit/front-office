@@ -157,3 +157,7 @@ function sisDaily(day){ const o=dobj(day); sisInit();
   if(o.m===10&&o.d===11)for(const F of sisFlAll())sisFlDepart(F);
   if(o.m===11&&o.d===15)for(const F of sisFlAll())sisFlRun(F);
   sisCoachBack(); coachStudyAi(day); }
+
+/* 교류 방문단 한꺼번에(카페 11-15): 다시 보낼 수 있는 구단만, 규칙은 sisVisit과 같다 */
+function sisVisitTargets(cn){ const S=sisInit(); return OCL.filter(c=>c.c===cn&&!(S.vis[G.user+':'+c.id]!=null&&G.day-S.vis[G.user+':'+c.id]<60)); }
+function sisVisitMany(cn){ if(G.unemp)return '지금은 할 수 없습니다.'; const L=sisVisitTargets(cn); if(!L.length)return '지금 방문단을 보낼 수 있는 구단이 없습니다.'; for(const c of L)sisVisit(c.id); return `${OCN[cn]} 구단 ${L.length}곳에 교류 방문단을 보냈습니다(${money(SIS_VIS*L.length)}, 관계 개선).`; }

@@ -4,14 +4,14 @@
    - 옛 이름은 G.tnames에 남아, 그해 기록·연혁은 그때 이름으로 보인다(tshort(id,y)). 구단 기록·선수·계약·엠블럼은 그대로 이어진다 */
 const CI_NICK=['레인저스','썬더스','팰컨스','마린스','블루윙스','파이어볼츠','스타즈','와이번즈','타이탄즈','유니콘스','레드윙스','플라잉독스','스콜피언스','라이온하츠','드래곤즈'];
 const CI_CITY=[{city:'청주',region:'충청',market:.88},{city:'전주',region:'호남',market:.86},{city:'포항',region:'영남',market:.84},{city:'천안',region:'충청',market:.9},{city:'김해',region:'영남',market:.87},{city:'원주',region:'강원',market:.82},{city:'제주',region:'제주',market:.8},{city:'춘천',region:'강원',market:.8}];
-function ciHist(tid){ G.tnames=G.tnames||{}; const t=team(tid); if(!G.tnames[tid])G.tnames[tid]=[{y0:-Infinity,y1:null,city:t.city,nick:t.nick}]; return G.tnames[tid]; }
+function ciHist(tid){ G.tnames=G.tnames||{}; const t=team(tid); if(!G.tnames[tid])G.tnames[tid]=[Object.assign({y0:-Infinity,y1:null,city:t.city,nick:t.nick},t.disp?{disp:t.disp}:{},t.abbr?{abbr:t.abbr}:{})]; return G.tnames[tid]; }
 function ciNickPool(){ const used=new Set(G.teams.map(t=>t.nick)); for(const k in (G.tnames||{}))for(const e of G.tnames[k])used.add(e.nick); return CI_NICK.filter(n=>!used.has(n)); }
 function ciCityPool(){ const used=new Set(G.teams.map(t=>t.city)); return CI_CITY.filter(c=>!used.has(c.city)); }
 /* 이름·연고 바꾸기: 이 시즌까지는 옛 이름(시즌 중 바뀌면 다음 시즌부터 새 이름 기록) */
 function clubRebrand(tid,o,why){ const t=team(tid); if(!t)return false; const L=ciHist(tid), cur=L[L.length-1]; const nick=o.nick||t.nick, city=o.city||t.city; if(nick===t.nick&&city===t.city)return false;
   const old=tshort(tid), y=sponSeason(); cur.y1=y-1; L.push({y0:y,y1:null,city,nick,why:why||''}); /* 결산 뒤면 다음 시즌부터 새 이름 */
   if(o.city&&o.city!==t.city){ const S=stadOf(tid), C=CI_CITY.find(c=>c.city===o.city); (S.names=S.names||[]).push({n:stadName(tid),until:G.day}); S.name=`${o.city} 야구장`; if(C){ t.market=C.market; t.region=C.region; } S.cap=Math.min(S.cap||STAD_CAP[tid]||20000,17000); }
-  t.city=city; t.nick=nick; const nw=tshort(tid);
+  t.city=city; t.nick=nick; delete t.disp; delete t.abbr; const nw=tshort(tid); /* 새 이름이 생기면 플레이어가 붙인 표시 이름·약칭은 옛 이름 이력(G.tnames)에만 남는다 */
   try{ chron('rebrand',`${old} → ${nw}${o.city?' · 연고 이전':''}${why?' · '+why:''}`,null,tid,{source:'rebrand:'+tid+':'+y}); }catch(e){}
   try{ wire('구단',`${old}, ${y}시즌부터 ${nw}(으)로${o.city?' 연고를 옮겨':' 이름을 바꿔'} 새 출발`,{tid}); }catch(e){} return true; }
 /* 인수 완료 뒤 호출: AI 구단은 확률로, 우리 구단은 단장에게 묻는다 */

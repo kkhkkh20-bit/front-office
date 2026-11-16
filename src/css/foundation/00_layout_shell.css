@@ -77,3 +77,6 @@ main.content{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-b
 
 /* 스태프 카드의 .st-x(점선 상자) 스타일이 하루 진행 버튼 글자에 묻어 나오던 문제(플레이테스트 4 E) */
 .goset .step .st-x{padding:0;border:0;background:none}
+/* 휴대폰·태블릿: 소식함은 하단 탭 하나로(상단 아이콘과 겹치던 것, UI 검수 2026-11-15 1-5). 하단 탭에 확인할 소식 수를 숫자로 */
+.bnav .bcnt{position:absolute;top:2px;left:54%;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:var(--bad);color:#fff;font:700 var(--ui-caption)/18px var(--f-num);text-align:center}
+@media (max-width:979px){ body:not(.fm) .shell .top .tbar>.mailbtn[data-a="inbox"]{display:none} }
