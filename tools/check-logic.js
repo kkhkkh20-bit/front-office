@@ -2868,6 +2868,23 @@ T('[피드백 11-08b] 기사 댓글: 부상·FA·트레이드·감독 경질·�
   ok(nb('선수','악재, 홍길동 장기 이탈',-2)==='injury','부상 '+nb('선수','악재, 홍길동 장기 이탈',-2)); ok(nb('FA','코메츠, FA 홍길동 영입',2)==='faSign','FA'); ok(nb('트레이드','대형 트레이드',-1)==='tradeE','트레이드'); /* 기사 문구만으로는 손익을 판단하지 않는다(a83db60): 중립 반응 */ ok(nb('구단','감독 전격 경질',-1)==='mgrFire','경질');
   ok(nb('드래프트','신인 지명 결과',0)==='drSum','드래프트'); ok(nb('구단','팬, 구장 앞에 트럭 시위',-1)==='truck','트럭'); ok(nb('선수','홍길동 시즌 첫 안타',0)==='newsNeu','평범한 기사');
   const C=fComments('부상','injury','neg',{p:'홍길동'},6,G.user,0); ok(C.length>=6&&C.some(c=>c.t.includes('홍길동')),'부상 댓글에 선수 이름 없음'); });
+T('[기사 댓글] 경기 기사 댓글은 선수·상대·점수·숫자를 짚고, 기사마다 다르며, 답글은 부모 댓글에 답하고, 같은 기사는 같은 댓글',()=>{ fresh(); const me=G.user, T0=tnick(me), O=G.teams.filter(t=>t.id!==me).map(t=>t.id), P=playersOf(me).filter(p=>!p.isP).map(p=>p.name), Q=playersOf(me).filter(p=>p.isP).map(p=>p.name);
+  const arts=[]; for(let i=0;i<20;i++){ const o=O[i%O.length], p=P[i%P.length], q=Q[i%Q.length], a=2+i%9, b=i%5; const k=i%4;
+    arts.push(k===0?{id:900+i,d:100+i,k:'선수',v:2,t:p+' "감독님이 믿어 주셔서 부담 없이 쳤습니다."',b:(1+i%4)+'안타 '+(1+i%3)+'홈런 '+(2+i%5)+'타점 활약 뒤 '+p+': "감독님이 믿어 주셔서 부담 없이 쳤습니다."',fanCtx:{v:1,bank:'newsNeu',tid:me,teamNick:T0,teamCity:'',playerName:p}}
+      :k===1?{id:900+i,d:100+i,k:'경기',v:2,t:tshort(me)+', '+[5,8,12,6,9][i>>2]+'연승 질주',b:tname(me)+'이(가) '+[5,8,12,6,9][i>>2]+'연승을 달렸습니다.',tid:me}
+      :k===2?{id:900+i,d:100+i,k:'경기',v:0,t:'달빛대전… '+tname(me)+' '+a+':'+b+' '+tname(o),b:'이번 경기 '+tname(me)+' '+a+':'+b+' '+tname(o)+'. 두 구단은 지금까지 '+(i+1)+'번 맞붙었습니다.',tid:me}
+      :{id:900+i,d:100+i,k:'경기',v:0,t:'감독 "준비한 대로 했습니다."',b:tname(o)+'전 '+(i%2?'패배':'승리')+'('+(i%2?b+':'+a:a+':'+b)+') 뒤 김대훈 감독: "준비한 대로 했습니다. '+q+' 선수가 '+(5+i%3)+'이닝을 '+(i%4)+'실점으로 막아 준 게 결정적이었습니다."',tid:me}); }
+  for(const n of arts){ const c=newsContext(n); n.fanCtx=n.fanCtx||{...c,source:newsContextStamp(n)}; n.fanCtx.source=newsContextStamp(n); }
+  let top=0, fact=0, re=0, reRel=0; const all=[];
+  for(const n of arts){ const C=newsComments(n), F=newsFacts(n,newsContext(n)); ok(JSON.stringify(C)===JSON.stringify(newsComments(JSON.parse(JSON.stringify(n)))),'같은 기사인데 댓글이 바뀜: '+n.t);
+    const vals=Object.entries(F).filter(e=>e[0]!=='T'&&e[1]!=null&&e[1]!=='').map(e=>String(e[1]));
+    const facty=t=>[F.p,F.O,F.S,F.rv,F.q,F.M].some(v=>v&&t.includes(v))||'0123456789'.split('').some(d=>t.includes(d));
+    let parent=null; for(const c of C){ all.push(c.t); if(!c.re){ parent=c; top++; if(facty(c.t))fact++; continue; } re++; ok(parent&&['agree','disagree','joke'].includes(c.rk),'답글 종류 없음: '+c.t);
+      const shared=vals.some(v=>v.length>0&&c.t.includes(v)&&parent.t.includes(v)); if(shared)reRel++; } }
+  ok(fact>=top*.6,'사실을 짚은 댓글이 적음 '+fact+'/'+top); const distinct=new Set(all).size; const cnt={}; for(const t of all)cnt[t]=(cnt[t]||0)+1; ok(distinct>=all.length*.8,'기사마다 댓글이 비슷함 '+distinct+'/'+all.length+' '+Object.entries(cnt).filter(e=>e[1]>2).map(e=>e[0]+'×'+e[1]).join(' / '));
+  ok(re>=10,'답글이 적음 '+re); ok(reRel>=re*.5,'부모와 같은 사실을 짚은 답글이 적음 '+reRel+'/'+re);
+  const bland=['기사 내용 확인했습니다','추가 소식 기다려 보겠습니다','이 사안은 좀 더 지켜보자','관련 설명이 더 나오면 좋겠다','기사에 나온 경기 잘 읽었습니다','승리 이후 준비도 잘하길']; ok(!all.some(t=>bland.includes(t)),'밋밋한 옛 문구가 남음');
+  const tops=arts.map(n=>newsComments(n).filter(c=>!c.re)[0]); ok(tops.filter(c=>c.best).length>=10,'베스트 댓글이 적음'); });
 T('[피드백 11-08b] 창단 드래프트 규정타석·규정이닝: 지난 시즌 1군 446타석·144이닝 기준으로 가른다',()=>{ fresh(); const ly=((G.fd&&G.fd.y)||G.year)-1; const A=Object.values(G.players).filter(p=>p.hist&&p.hist.some(h=>h.y===ly));
   const bq=A.filter(p=>!p.isP&&fdQual(p,ly)), bn=A.filter(p=>!p.isP&&!fdQual(p,ly)), pq=A.filter(p=>p.isP&&fdQual(p,ly)), pn=A.filter(p=>p.isP&&!fdQual(p,ly));
   ok(bq.length>0&&bn.length>0&&pq.length>0&&pn.length>0,'규정 충족 분포 이상 '+[bq.length,bn.length,pq.length,pn.length].join('/'));
