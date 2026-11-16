@@ -68,7 +68,7 @@ function cmCtrOf(c){ const X=G.poachCtr&&c&&G.poachCtr[c.id]; return X&&X.exp>=G
 function coachDedupe(){ if(!G.coach)return 0; const seen=new Map(); let n=0; const ids=[G.user,...G.teams.map(t=>t.id).filter(x=>x!==G.user)];
   for(const tid of ids){ const C=G.coach[tid]; if(!C)continue; for(const k of CKEYS){ const c=C[k]; if(!c||!c.ob)continue; if(!seen.has(c.ob)){ seen.set(c.ob,c); continue; } if(seen.get(c.ob)===c)continue; if(tid===G.user&&!G.unemp)continue;
     const r=mkCoach(k); staffCt(r,ri(1,2)); C[k]=r; n++; } } return n; }
-function cmDaily(){ try{ coachDedupe(); }catch(e){} try{ mgrReqDaily(); }catch(e){} try{ ownReqDaily(); }catch(e){} try{ schDaily(); }catch(e){} if(!G.coach)return; const o=dobj(G.day);
+function cmDaily(){ try{ coachDedupe(); }catch(e){} try{ pcDaily(); }catch(e){} /* 플레잉코치(99c_playing_coach) */ try{ mgrReqDaily(); }catch(e){} try{ ownReqDaily(); }catch(e){} try{ schDaily(); }catch(e){} if(!G.coach)return; const o=dobj(G.day);
   if(o.d===1)try{ cmAiMonthly(); }catch(e){}
   if(CM_RAID_M.includes(o.m)&&o.d===20&&poachOff())try{ cmRaid(); }catch(e){} /* 비시즌 매달(공략 방지: 11·12월 두 번만 피하면 끝나던 것) */
   for(const r of (G.cmRaid||[]).filter(r=>r.exp<G.day)){ const c=cmMine(r); if(!c){ G.cmRaid=G.cmRaid.filter(x=>x!==r); continue; } const mine=cmOurs(r); /* 단장이 떠나도 제안은 그 구단에서 기한에 본인이 정한다(검수 11-09zv #14) */
