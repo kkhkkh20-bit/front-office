@@ -23,8 +23,8 @@ function relPeople(){
   const out=[
     {k:'fan',name:'팬',role:`${tfull(t)} 팬덤`,av:{persona:'staff',pid:'fan'+G.user,team:G.user,age:24,female:true,expr:relEx(fan),name:'팬'},rel:fan,rl:'여론',lab:fanLabel(fan),sub:`구단 인기 ${Math.round(t.pop*100)}`},
     {k:'press',name:'언론',role:'야구 담당 기자단',av:{persona:'agent',pid:'press'+G.user,team:G.user,age:38,expr:relEx(pr),name:'언론'},rel:pr,rl:'논조',lab:pressLabel(pr),sub:`최근 기사 ${(G.news||[]).filter(n=>n.d>=G.day-14).length}건`}];
-  for(const ag of agInit()){ const cl=faLive()?agClients(ag):[]; const dl=(ag.deals&&ag.deals[G.user])||0; if(!cl.length&&!dl&&agRel(ag)===50)continue; const r=agRel(ag);
-    out.push({k:'agt:'+ag.id,name:ag.name,role:`${ag.firm} · ${AG_SIZE[ag.size]}${cl.length?` · FA 고객 ${cl.length}명`:''}`,av:{persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:relEx(r),name:ag.name},rel:r,rl:'친분',lab:agRelLab(r),sub:(AG_STYLE[ag.style]||AG_STYLE.rel).l+' 에이전트'}); }
+  for(const ag of agActive()){ const cl=faLive()?agClients(ag):[]; const dl=(ag.deals&&ag.deals[G.user])||0; if(!cl.length&&!dl&&agRel(ag)===50)continue; const r=agRel(ag);
+    out.push({k:'agt:'+ag.id,name:ag.name,role:`${ag.firm} · ${AG_SIZE[ag.size]}${cl.length?` · FA 고객 ${cl.length}명`:''}`,av:{persona:'agent',pid:'agt'+ag.id+ag.name,age:agAge(ag),female:!!ag.female,expr:relEx(r),name:ag.name},rel:r,rl:'친분',lab:agRelLab(r),sub:(AG_STYLE[ag.style]||AG_STYLE.rel).l+' 에이전트'}); }
   const reps=pressInit().map(r=>({k:'rep:'+r.id,name:r.name,role:`${r.outlet} 기자`,av:{persona:'agent',pid:r.id+r.name,age:r.age,female:r.female,expr:relEx(r.rel),name:r.name},rel:Math.round(r.rel),rl:'관계',lab:relLabel(r.rel),sub:`${PR_STYLE[r.style].l} · ${r.field}`}));
   return [['구단 수뇌부',top],['코치·스카우트·데이터팀',field],['선수단',pl],['다른 구단 단장',gms],['바깥',out],['기자단',reps]];
 }

@@ -78,7 +78,7 @@ function rankOf(tid){ const P=G.ps; if(P&&P.order){ const i=P.order.findIndex(x=
 /* 시즌 제한(현재 꺼 둠): 켜면 첫 시즌을 마치고 스토브리그 직전에서 멈춘다 */
 const GAME_VER='0.9'; const DEMO={on:false,seasons:1}; /* 무료 정식 공개: 시즌 제한 없음 */
 function demoOver(){ return DEMO.on&&G.year>=(G.startY||2026)+DEMO.seasons-1&&!G.unemp; }
-function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
+function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7===0&&G.agV===2)try{ agCapFix(); }catch(e){ console.error(e); } /* 에이전트 정원(15명·구단당 3명): 트레이드·FA 이적 뒤 넘친 고객을 한 주에 한 번 정리(난수 안 씀) */
   if(G.demoEnd)return;
   G.day++; const day=G.day, o=dobj(day);
   try{ ownerTrustWatch(); }catch(e){}
