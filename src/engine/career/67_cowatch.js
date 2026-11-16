@@ -33,7 +33,8 @@ function cwRapAdd(who,d){ const x=cwRapP(who); x.rap=clamp(Math.round((x.rap+d)*
 function cwRapMod(){ try{ if(G.user==null||G.unemp||team(G.user).indie)return 0; return clamp(((cwRapP('own').rap-30)*.7+(cwRapP('ceo').rap-30)*.3)/450,-.04,.1); }catch(e){ return 0; } }
 function cwRapLbl(r){ return r>=70?'각별함':r>=50?'가까움':r>=30?'보통':'서먹함'; }
 /* 오래 함께 보지 않으면 주마다 0.5씩 내려간다(마지막 동석 뒤 60일부터). 처음 값 30 아래로는 내려가지 않는다(사양·무관심에 따른 불이익 없음) */
-function cwRapWeek(){ for(const w of ['own','ceo']){ const x=cwRapP(w); if(G.day-(x.rapD??G.day)>=60&&x.rap>30)x.rap=Math.max(30,x.rap-.5); } }
+/* 함께 볼 경기가 없는 비시즌·시즌 준비에는 시계를 멈춘다(커뮤니티 11-17: 겨울을 지나면 친밀도가 한꺼번에 떨어졌다). 시즌 중 60일 넘게 못 보면 주마다 조금씩 */
+function cwRapWeek(){ const on=period()==='season'; for(const w of ['own','ceo']){ const x=cwRapP(w); if(x.rapD==null)x.rapD=G.day; if(!on){ x.rapD=Math.min(G.day,x.rapD+7); continue; } if(G.day-x.rapD>=60&&x.rap>30)x.rap=Math.max(30,x.rap-.5); } }
 
 /* ---------- 기록 도우미 ---------- */
 function cwRecentB(p,n){ const o={g:0,pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,sf:0,hbp:0}; for(const g of (G.games||[])){ if(o.g>=n)break; if(!g.box||dobj(g.day).y!==G.year)continue; const s=g.box[g.home===G.user?'h':'a']; const b=s&&s.bat.find(x=>x.id===p.id); if(!b||!(b.ab+b.bb+(b.hbp||0)+(b.sf||0)))continue; o.g++; for(const k of ['ab','h','d','tr','hr','bb','so','sf','hbp'])o[k]+=b[k]||0; o.pa+=b.ab+b.bb+(b.hbp||0)+(b.sf||0); }

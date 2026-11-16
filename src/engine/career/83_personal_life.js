@@ -64,8 +64,16 @@ function plHeatMonth(S){ const h=S.heat||0; if(h<=0)return; if(!G.unemp&&h>=6&&R
    news('언론',`${meCall()} 사적 모임 잦다는 뒷말`,`기자·다른 구단 관계자와의 잦은 사적 자리를 두고 "구단 일을 개인 인맥으로 푼다"는 말이 나옵니다. 구단주실도 자제를 당부했습니다.`,-1,{fanW:1});
    personalLog(S,'사적 모임이 잦다는 뒷말에 구단주가 자제를 당부했습니다.',0); S.heat=Math.round(h*.4*10)/10; return; }
   S.heat=Math.round(h*.8*10)/10; }
-/* 친분은 만나지 않으면 천천히 식는다: 60일 넘게 만나지 않은 사람은 매달 기본(30) 쪽으로 6%씩 */
-function plBondDecay(S){ for(const k in S.contacts){ const C=S.contacts[k]; if(!C||typeof C.bond!=='number')continue; const last=(C.history&&C.history[0]&&C.history[0].day)??-1e9; if(G.day-last>60)C.bond=Math.round((C.bond+(30-C.bond)*.06)*10)/10; } }
+/* 친분은 만나지 않으면 천천히 식는다(커뮤니티 11-17: 프리시즌을 다녀오면 전부 한꺼번에 떨어졌다).
+   마지막 교류(개인 활동·면담·선수 대화) 뒤 날수에서 공식 일정(스프링캠프·출장)을 뺀다. 60일까지는 그대로, 그 뒤 석 달에 걸쳐 매달 기본(30) 쪽으로 최대 6%까지.
+   한 사람이 별칭 키(gm:구단·gm-person:ID)로 두 번 있어도 한 번만 식는다 */
+const PL_GRACE=60, PL_RAMP=90, PL_DECAY=.06;
+function plDutyDays(a,b,mine=true){ if(!(b>a))return 0; let n=0; for(let y=dobj(a).y;y<=dobj(b).y;y++){ const s=Math.max(a,dnum(y,1,25)), e=Math.min(b,dnum(y,3,5)); if(e>s)n+=e-s; }
+  const T=mine&&G.personal&&G.personal.trip; if(T&&T.to!=null){ const s=Math.max(a,T.to-14), e=Math.min(b,T.to,G.day); if(e>s)n+=e-s; } return n; }
+function plIdle(last,mine=true){ if(!Number.isFinite(last)||G.day-last>3650)return 1e9; return Math.max(0,G.day-last-plDutyDays(last,G.day,mine)); } /* mine=false: AI끼리는 우리 단장 출장을 빼지 않는다 */
+function plContactLast(C){ let d=-1e9; for(const L of [C.history,C.networkTalk])for(const x of Array.isArray(L)?L:[])if(x&&Number.isFinite(x.day)){ d=Math.max(d,x.day); break; } if(Number.isFinite(C.seen))d=Math.max(d,C.seen); return d; }
+function plDecayRate(idle){ return idle<=PL_GRACE?0:PL_DECAY*Math.min(1,(idle-PL_GRACE)/PL_RAMP); }
+function plBondDecay(S){ const done=new Set(); for(const k in S.contacts){ const C=S.contacts[k]; if(!C||typeof C.bond!=='number'||done.has(C))continue; done.add(C); const r=plDecayRate(plIdle(plContactLast(C))); if(r>0)C.bond=Math.round((C.bond+(30-C.bond)*r)*10)/10; } }
 function playerTalkContext(p){return JSON.stringify([squadRole(p),p.injOut||0,p.promise?.until,p.promise?playPromKept(p):null,p.sal,p.yrs,p.listed,Math.floor((p.mor??60)/20),talkEvent(p)?.t]);}
 function personalTalkReply(p,kind,line){const C=contactRecord('pl:'+p.id),last=C.talk[kind],key=playerTalkContext(p);if(last&&last.key===key&&last.day===G.day)return `앞서 말씀드린 상황은 그대로입니다. ${last.line}`;
  /* 첫마디·약속·보직 덧말은 매번 같은 문장이 붙어 반복이 심했다(사용자 11-14): 첫마디는 말투별로 가끔만, 본문이 이미 말한 약속·보직은 다시 붙이지 않는다 */

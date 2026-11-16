@@ -5,7 +5,7 @@
  - 우리 단장과 다른 구단 현 단장 사이 값은 예전부터 쓰던 t.rel(0~100)이 원본이다: v=(t.rel-50)*2로 읽고 그래프에는 사유와 마지막 값만 남긴다.
    우리 구단 감독(m.rel)·코치·스카우트(단장 관계)도 같은 식으로 읽는다
  관계가 생기는 길(우리와 AI가 같다): 식사·안부 연락(쿨다운·자주 만나면 효과 감소는 우리 식사와 같음), 트레이드(성사 +, 시즌 뒤 손해 본 쪽 -),
- 선임·재계약(+)·경질·교체(-), 같은 구단에서 함께 일함(+), 감독 아래 출전 기회(+/-), 멘토 지정(+). 해마다 0 쪽으로 돌아간다(gmRelYear와 같은 비율).
+ 선임·재계약(+)·경질·교체(-), 같은 구단에서 함께 일함(+), 감독 아래 출전 기회(+/-), 멘토 지정(+). 해마다 0 쪽으로 돌아간다(gmRelYear와 같은 식: 최근에 만났을수록 덜).
  효과는 작게: AI끼리 트레이드 요구치(tradeNeed)가 친분을 따르고 아주 사이가 나쁘면 거래하지 않는다. 감독·코치를 뽑을 때 좋아하는 사람을 조금 더, 싫어하는 사람은 피한다.
  무작위는 relU(날짜·구단으로 고정)만 쓴다: 경기 난수 흐름을 건드리지 않는다 */
 const REL_CAP=1600, REL_LIKE=12;
@@ -96,7 +96,7 @@ function relMentorYear(){ for(const t of G.teams){ const M=t.id===G.user?G.mento
 function relPrune(){ const R0=relsG(); for(const k in R0){ const e=R0[k]; if(!e||!Number.isFinite(e.v)){ delete R0[k]; continue; } if(Math.abs(e.v)<5&&G.day-(e.d||0)>730)delete R0[k]; }
   const K=Object.keys(R0); if(K.length>REL_CAP){ K.sort((a,b)=>Math.abs(R0[a].v)-Math.abs(R0[b].v)||(R0[a].d||0)-(R0[b].d||0)); for(const k of K.slice(0,K.length-REL_CAP))delete R0[k]; } }
 function relsYear(){ if(!G.teams)return; const y=G.year; const R0=relsG();
-  for(const k in R0){ const e=R0[k]; e.v=Math.round(e.v*.75*10)/10; } /* gmRelYear와 같은 비율로 0 쪽으로 */
+  for(const k in R0){ const e=R0[k]; e.v=Math.round(e.v*relYearK(plIdle(e.d,/(^|\|)me(\||$)/.test(k)))*10)/10; } /* gmRelYear와 같은 식(마지막으로 바뀐 날부터 지난 날수)으로 0 쪽으로 */
   try{ relWorkYear(); }catch(e){} relSyncMe(); relPrune(); }
 /* 시즌 결산 직후(감독이 바뀌기 전): 출전 기회·멘토·트레이드 평가 */
 function relsSeason(y){ if(!G.teams||G.relSea===y)return; G.relSea=y; try{ relPlayYear(y); }catch(e){} try{ relMentorYear(); }catch(e){} try{ relTradeYear(y); }catch(e){} }

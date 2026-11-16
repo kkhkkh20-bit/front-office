@@ -4542,6 +4542,18 @@ T('[단장 돈·시설] 다른 단장과 식사: 같은 단장은 45일 간격, 
 T('[단장 돈·시설] 친분은 만나지 않으면 식고, 재테크는 시장 흐름을 함께 타며 손실도 난다',()=>{ fresh(); const S=personalState(); const C=contactRecord('pl:test'); C.bond=90; C.history=[{day:G.day-200,kind:'meal',text:''}]; plBondDecay(S); ok(C.bond<90&&C.bond>30,'친분이 식지 않음 '+C.bond);
   S.inv={dep:100,fund:100,stock:100}; let neg=0; for(let i=0;i<120;i++){ G.plMkt=null; const s0=S.inv.stock; invMonth(S); if(S.inv.stock<s0)neg++; }
   ok(neg>20,'주식이 거의 안 떨어짐 '+neg); ok(Math.abs(S.inv.dep-100*Math.pow(1.0025,120))<.5,'예금 '+S.inv.dep); const yr=Math.pow(S.inv.fund/100,1/10)-1; ok(yr>-.08&&yr<.15,'펀드 연수익이 시장과 동떨어짐 '+yr); });
+T('[인맥 11-17] 친밀도: 관리하던 사람은 프리시즌(스프링캠프)을 지나도 한꺼번에 식지 않고, 오래 못 본 사람만 서서히 식는다(단장 친분·AI 관계도 같은 식)',()=>{ fresh(); const S=personalState(), y=G.year;
+  const C=contactRecord('pl:test-keep'); C.bond=70; C.history=[{day:dnum(y,1,20),kind:'meal',text:''}];
+  const D=contactRecord('pl:test-gone'); D.bond=70; D.history=[{day:dnum(y-1,8,1),kind:'meal',text:''}];
+  const trace=[]; for(const [m,d] of [[2,1],[3,1],[4,1]]){ G.day=dnum(y,m,d); plBondDecay(S); trace.push(C.bond); } console.log('  관리한 사람 2/1·3/1·4/1: '+trace.join(' → ')+' · 반년 넘게 못 본 사람 '+D.bond);
+  ok(trace.every(v=>v===70),'1월 20일에 만난 사람이 캠프를 지나며 식음 '+trace.join(','));
+  ok(D.bond<70&&D.bond>=70-40*.06*3-.01,'오래 못 본 사람이 안 식거나 너무 빨리 식음 '+D.bond);
+  const st=contactRecord('staff:test-talk'); st.bond=60; st.history=[]; st.networkTalk=[{day:G.day-20,kind:'staff',text:'면담'}]; plBondDecay(S); ok(st.bond===60,'면담을 이어 온 직원 친밀도가 식음 '+st.bond);
+  const A={bond:60,history:[],talk:{}}; S.contacts['gm:test']=A; S.contacts['gm-person:test']=A; G.day+=400; plBondDecay(S); ok(Math.abs(A.bond-(60-30*.06))<.11,'별칭 두 키로 두 번 식음 '+A.bond);
+  ok(relYearK(plIdle(G.day-30))>=.94&&relYearK(plIdle(G.day-400))===.75,'최근 교류 여부로 새해 되돌림이 달라지지 않음');
+  const t=G.teams.find(x=>x.id!==G.user); G.gmc=G.gmc||{}; G.gmc[t.id]={call:G.day-20}; t.rel=60; const u=G.teams.find(x=>x.id!==G.user&&x.id!==t.id); delete G.gmc[u.id]; u.rel=60; gmRelYear(); ok(t.rel>=59&&u.rel<=58,'연락한 단장과 안 한 단장의 새해 되돌림이 같음 '+t.rel+'/'+u.rel);
+  G.rels={'a|b':{v:40,why:[],d:G.day-10},'c|d':{v:40,why:[],d:G.day-500}}; relsYear(); ok(G.rels['a|b'].v>G.rels['c|d'].v,'AI 관계도 최근에 만났으면 덜 되돌아가야 함');
+  if(!team(G.user).indie){ const o=cwRapP('own'); o.rap=50; o.rapD=G.day-50; const p0=period(); G.day=dnum(G.year,1,5); for(let i=0;i<12;i++){ cwRapWeek(); G.day+=7; } ok(o.rap===50,'함께 볼 경기가 없는 겨울에 구단주 친밀도가 식음 '+o.rap+' '+p0); } });
 T('[단장 돈·시설] 장학재단을 오래 운영하면 연고 출신 FA가 우리 구단을 조금 더 반긴다(상한 있음)',()=>{ fresh(); const S=personalState(); S.cash=1000; personalFound(); const F=S.found; ok(F,'재단 없음');
   const p=Object.values(G.players).find(q=>q.team!=null&&q.team!==G.user&&!q.foreign&&homeTie(q,G.user)); ok(p,'준비 실패: 연고 출신 선수 없음'); const a0=faAppeal(p,G.user).f; F.y=G.year-3; const a1=faAppeal(p,G.user).f; F.y=G.year-40; const a2=faAppeal(p,G.user).f;
   ok(a1>a0,'재단 인연 없음 '+a0+' '+a1); ok(a2-a0<=FOUND_FA.max+1e-9,'상한 없음 '+(a2-a0)); ok(faAppeal(p,G.user).parts.some(x=>/장학재단/.test(x[0])),'항목 이름 없음'); });
