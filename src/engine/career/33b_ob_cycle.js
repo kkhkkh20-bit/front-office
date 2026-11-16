@@ -9,7 +9,7 @@ function obMinorOk(p){ return !p.foreign&&(p.age||0)<=37&&R()<OB_MINOR_P; }
 /* obFromPlayer 끝에서: 소속이 비어 있으면(무적 선수 은퇴) 마지막 구단으로 채우고, 짧은 경력 OB는 길을 다시 정한다 */
 function obCycle(ob,p){ if(!ob)return ob;
   if(ob.team==null){ const h=(p.hist||[]).filter(x=>x.t!=null); const t=p.relT??p.faFrom??(h.length?h[h.length-1].t:null); if(t==null||!team(t)){ G.ob=G.ob.filter(o=>o!==ob); return null; } ob.team=t; ob.mine=t===G.user; } /* 무적 선수로 은퇴하면 소속이 비어 '- 출신'이 되던 문제 */
-  if(!(ob.seasons<5&&ob.war<5&&!(ob.mine&&ob.ys>=3)))return ob;
+  if(ob.pc||!(ob.seasons<5&&ob.war<5&&!(ob.mine&&ob.ys>=3)))return ob; /* 플레잉코치는 길을 다시 정하지 않는다 */
   ob.minor=true; const yrs=new Set((p.hist||[]).filter(x=>x.t===ob.team).map(x=>x.y)).size; /* 2군만 뛰었어도 몸담은 해 */
   ob.tys=ob.tys||{}; if(!ob.tys[ob.team]||!ob.tys[ob.team].ys)ob.tys[ob.team]={ys:Math.max(1,yrs),war:(ob.tys[ob.team]||{}).war||0};
   ob.ys=Math.max(ob.ys,ob.tys[ob.team].ys); ob.mine=ob.team===G.user; if(ob.mine)ob.bond=10;

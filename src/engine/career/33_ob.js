@@ -13,25 +13,31 @@ function obInit(){ if(G.ob)return; G.ob=[]; G.obFace=G.obFace||{}; G.obSeq=G.obS
   // 우리 구단 첫 레전드에게는 영구결번이 있을 수도 있다
   const mineOB=G.ob.filter(o=>o.team===G.user).sort((a,b)=>b.war-a.war)[0];
   if(mineOB&&mineOB.war>=retWarT()&&mineOB.ys>=10&&!(G.retNos||[]).length){ mineOB.no=1+Math.floor(u01('jno',mineOB.fid)*99); (G.retNos=G.retNos||[]).push({name:mineOB.name,no:mineOB.no,y:mineOB.retY,ob:mineOB.id}); mineOB.retNo=true; } }
-function obMake(o){ G.obSeq=(G.obSeq||0)+1; const pers=o.pers||{pro:ri(4,20),amb:ri(4,20),loy:ri(4,20),temp:ri(4,20)};
-  const fame=Math.round(clamp((o.hof?86:o.war>=24||o.awards>=2?72:30)+o.war*.6+N(0,4),25,95));
-  const w=[['coach',4+(o.cat?3:0)+pers.pro/5],['scout',2+(pers.pro<10?1:0)],['front',1.5+pers.amb/8],['media',2+(fame>=70?2:0)]]; let x=R()*sum(w.map(a=>a[1])), path='coach'; for(const [k,v] of w){ x-=v; if(x<=0){ path=k; break; } }
-  const aim=pers.amb>=13?(path==='coach'||path==='media'?'mgr':'gm'):null;
-  const ob={id:'ob'+G.obSeq,fid:o.fid,name:o.name,isP:o.isP,pos:o.pos,team:o.team,ys:o.ys||0,mine:o.team===G.user,war:o.war||0,seasons:o.seasons||0,awards:o.awards||0,hof:!!o.hof,
-    retY:o.retY,age:o.age,pers,fame,path,aim,sk:Math.round(clamp(44+Math.min(10,o.war*.3)+(o.cat?4:0)+pers.pro*.35+N(0,4),32,72)),dv:Math.round(clamp(44+pers.pro*.5+pers.loy*.15+N(0,5),32,72)),
-    sc:clamp(Math.round(1.5+pers.pro/8+R()),1,5),readyY:o.retY+(path==='media'?ri(2,5):path==='coach'?(R()<.5?0:1):0),cy:0,sy:0,fy:0,my:0,bond:o.team===G.user?10:0,log:[],pr:o.pr||null};
-  G.ob.push(ob); return ob; }
-function obFromPlayer(p,rec){ if(!G.ob)obInit(); const c=careerOf(p); let war=rec?rec.war:+c.war.toFixed(1); let seasons=rec?rec.seasons:c.seasons.size; const by=c.byTeam[p.team]; let ys=by?by.ys.size:0;
+/* 지도자 능력(지도력 sk·육성력 dv): 선수 경력(WAR·포수 출신)과 성격(프로의식·충성심)으로. 은퇴 OB와 플레잉코치(99c_playing_coach)가 같은 식을 쓴다.
+   nz(표준편차, 항목): 잡음. 없으면 난수(N) — 순서는 지도력 다음 육성력 */
+function obSkDv(war,cat,P,nz){ war=Number.isFinite(+war)?+war:0; nz=nz||((sd)=>N(0,sd)); const sk=Math.round(clamp(44+Math.min(10,war*.3)+(cat?4:0)+P.pro*.35+nz(4,'sk'),32,72)); const dv=Math.round(clamp(44+P.pro*.5+P.loy*.15+nz(5,'dv'),32,72)); return {sk,dv}; }
+/* 은퇴(또는 지금) 소속 구단에서 뛴 해·통산 WAR·시즌: 창단 게임은 창단 이후만, 기록 전 경력은 연차·잠재력으로 추정. 플레잉코치 자격(우리 구단 3시즌)도 같은 셈 */
+function obCareer(p,rec){ const c=careerOf(p); let war=rec?rec.war:+c.war.toFixed(1); let seasons=rec?rec.seasons:c.seasons.size; const by=c.byTeam[p.team]; let ys=by?by.ys.size:0;
   const fm=p.team===G.user&&G.fd?fdMine(p):undefined; if(fm!==undefined)ys=fm?fm.ys:0; /* 창단 게임: 창단 이후만 우리 구단 경력 */
   if(rec&&rec.mine&&p.team===G.user)ys=Math.max(ys,rec.mine.ys);
   const miss=Math.max(0,(p.svc||0)-seasons); if(miss){ seasons+=miss; war=+(war+miss*clamp((p.pot-45)/5,0,4.5)).toFixed(1); if(c.teams.size<=1&&fm===undefined)ys+=miss; } /* 기록이 남기 전(게임 시작 전) 경력은 연차와 잠재력으로 추정 */
-  if(seasons<5&&war<5&&!(p.team===G.user&&ys>=3)&&!obMinorOk(p))return null; /* 짧은 경력도 일부는 야구계에 남는다(33b_ob_cycle) */ initPers(p);
-  const ob=obMake({fid:p.id,name:p.name,isP:p.isP,pos:posLabel(p),team:p.team,ys,war,seasons,age:p.age,retY:G.year,awards:(p.aw||[]).length,hof:rec&&rec.hof,cat:!p.isP&&p.pos==='C',pers:{...p.pers},pr:{...p.r}});
+  return {c,war,seasons,ys,fm}; }
+function obMake(o){ G.obSeq=(G.obSeq||0)+1; const pers=o.pers||{pro:ri(4,20),amb:ri(4,20),loy:ri(4,20),temp:ri(4,20)};
+  const fame=Math.round(clamp((o.hof?86:o.war>=24||o.awards>=2?72:30)+o.war*.6+N(0,4),25,95));
+  const w=[['coach',4+(o.cat?3:0)+pers.pro/5],['scout',2+(pers.pro<10?1:0)],['front',1.5+pers.amb/8],['media',2+(fame>=70?2:0)]]; let x=R()*sum(w.map(a=>a[1])), path='coach'; for(const [k,v] of w){ x-=v; if(x<=0){ path=k; break; } } if(o.path)path=o.path; /* 플레잉코치는 지도자 길로 정해져 있다 */
+  const aim=pers.amb>=13?(path==='coach'||path==='media'?'mgr':'gm'):null;
+  const ob={id:'ob'+G.obSeq,fid:o.fid,name:o.name,isP:o.isP,pos:o.pos,team:o.team,ys:o.ys||0,mine:o.team===G.user,war:o.war||0,seasons:o.seasons||0,awards:o.awards||0,hof:!!o.hof,
+    retY:o.retY,age:o.age,pers,fame,path,aim,...obSkDv(o.war||0,o.cat,pers),
+    sc:clamp(Math.round(1.5+pers.pro/8+R()),1,5),readyY:o.retY+(path==='media'?ri(2,5):path==='coach'?(R()<.5?0:1):0),cy:0,sy:0,fy:0,my:0,bond:o.team===G.user?10:0,log:[],pr:o.pr||null};
+  G.ob.push(ob); return ob; }
+function obFromPlayer(p,rec){ if(!G.ob)obInit(); const pc=typeof pcLive==='function'?pcLive(p):null; /* 플레잉코치: 길을 다시 정하지 않고 그 구단 코치로(99c_playing_coach) */ const O=obCareer(p,rec), c=O.c, fm=O.fm; let war=O.war, seasons=O.seasons, ys=O.ys;
+  if(!pc&&seasons<5&&war<5&&!(p.team===G.user&&ys>=3)&&!obMinorOk(p))return null; /* 짧은 경력도 일부는 야구계에 남는다(33b_ob_cycle) */ initPers(p);
+  const ob=obMake({fid:p.id,name:p.name,isP:p.isP,pos:posLabel(p),team:p.team,ys,war,seasons,age:p.age,retY:G.year,awards:(p.aw||[]).length,hof:rec&&rec.hof,cat:!p.isP&&p.pos==='C',pers:{...p.pers},pr:{...p.r},path:pc?'coach':null}); if(pc)ob.pc=1;
   /* 은퇴 심사 때 먼저 지정된 AI 구단 결번을 새 OB 인물에 연결한다. */
   for(const r of (rec&&rec.retNos)||[]){ const row=retNosOf(r.tid).find(n=>n.pid===p.id&&n.no===r.no); if(row)row.ob=ob.id; ob.retNo=true; (ob.retNos=ob.retNos||[]).push({...r}); }
   ob.mineWar=fm!==undefined?(fm?fm.war:0):rec&&rec.mine?rec.mine.war:p.team===G.user?+(war*(ys/Math.max(1,seasons))).toFixed(1):c.byTeam[G.user]?+c.byTeam[G.user].war.toFixed(1):0; ob.school=p.school||null; ob.area=p.area||null; /* 모교로 돌아가 고교 감독이 되기도 한다(11-08c) */ ob.no=rec&&rec.canRetNo?rec.no:jno(p); if(rec&&rec.canRetNo)ob.canRetNo='p'+p.id;
   ob.hb=(p.th||'')+(p.bt||''); try{ bodyOf(p); ob.ht=p.ht; }catch(e){} /* 아들에게 물려줄 투타·키(2대 선수, 11-09r) */
-  ob.tys={}; for(const t in c.byTeam)ob.tys[t]={ys:c.byTeam[t].ys.size,war:+c.byTeam[t].war.toFixed(1)}; if(ob.mine||ob.mineWar)ob.tys[G.user]={ys:ob.mine?ys:(ob.tys[G.user]||{}).ys||0,war:ob.mineWar}; /* 실제로 뛴 구단별 경력: 이직해도 '우리 구단 출신'이 맞게(검수 11-09zp) */ const result=obCycle(ob,p);if(result)personNetworkTrace('ob',result,'은퇴',p.team);return result; }
+  ob.tys={}; for(const t in c.byTeam)ob.tys[t]={ys:c.byTeam[t].ys.size,war:+c.byTeam[t].war.toFixed(1)}; if(ob.mine||ob.mineWar)ob.tys[G.user]={ys:ob.mine?ys:(ob.tys[G.user]||{}).ys||0,war:ob.mineWar}; /* 실제로 뛴 구단별 경력: 이직해도 '우리 구단 출신'이 맞게(검수 11-09zp) */ const result=obCycle(ob,p);if(result)personNetworkTrace('ob',result,'은퇴',p.team);if(result&&pc)try{ pcRetire(result,p,pc); }catch(e){} return result; }
 /* 지금 맡은 구단 출신인가·그 구단 경력: 뛴 구단 기록(tys)으로. 옛 저장은 은퇴 때 소속 */
 function obMine(o){ return o.tys?!!(o.tys[G.user]&&o.tys[G.user].ys):o.team===G.user; }
 function obMineC(o){ return o.tys?(o.tys[G.user]||{ys:0,war:0}):o.team===G.user?{ys:o.ys,war:o.mineWar||0}:{ys:0,war:0}; }
@@ -88,7 +94,7 @@ function obAiGMTake(ob,g,tid){ ob.alt=null; obTaken(ob.id,g); ob.log.push({y:G.y
   if(obMine(ob)){ team(tid).rel=clamp(66+Math.round(ob.bond/2),0,100); mail('홍보팀',`우리 구단 출신 ${ob.name}, ${tshort(tid)} 단장으로`,`${ob.name}이(가) ${tshort(tid)} 단장에 올랐습니다. 우리 구단 출신이라 처음부터 사이가 가깝습니다.`,{kind:'OB'}); } return g; }
 /* 우리 선수 은퇴: 은퇴식·영구결번·구단에 남기기 */
 function obRetireEvents(list){ const L=list.filter(o=>o&&o.mine&&(o.ys>=3)).sort((a,b)=>b.mineWar-a.mineWar).slice(0,3);
-  for(const ob of L){ const leg=ob.mineWar>=12||ob.ys>=8; const rn=ob.canRetNo!=null; const stay=ob.path==='media'?null:ob.path==='coach'?'코치 우선 협상 후보로 등록':ob.path==='scout'?'스카우트로 채용':'프런트 직원으로 채용';
+  for(const ob of L){ const leg=ob.mineWar>=12||ob.ys>=8; const rn=ob.canRetNo!=null; const stay=ob.path==='media'||obWhere(ob).k==='coach'?null:ob.path==='coach'?'코치 우선 협상 후보로 등록':ob.path==='scout'?'스카우트로 채용':'프런트 직원으로 채용';
     const opts=[{l:rn?'레전드 은퇴식과 영구결번 (1억)':leg?'레전드 은퇴식 (5천만)':'은퇴식 열어 주기 (2천만)',fx:rn?`${ob.no}번 영구결번. 팬 여론이 크게 오르고, 훗날 구단으로 돌아올 가능성이 커집니다.`:'팬 여론이 오르고, 훗날 구단으로 돌아올 가능성이 커집니다.'}];
     if(stay)opts.push({l:`은퇴식 + ${stay}`,fx:`은퇴식을 열어 주고(비용 같음) 구단에 남깁니다.${ob.path==='scout'?' 스카우트 자리가 꽉 차 있으면 한 자리를 비워 둘 때까지 후보 맨 앞에 둡니다.':''}`}); /* 둘 다(커뮤니티 요청 11-07) */
     if(stay)opts.push({l:stay,fx:ob.path==='coach'?'코치 후보에 우선 협상 대상으로 올라옵니다(연봉 20% 할인).':ob.path==='scout'?'빈자리가 있으면 바로 스카우트로 합류합니다.':'우리 프런트에서 일하며 경력을 쌓습니다. 언젠가 다른 구단 단장이 될 수도 있습니다.'});

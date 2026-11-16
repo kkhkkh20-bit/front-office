@@ -154,6 +154,7 @@
       "src/engine/staff/99_ai_parity.js",
       "src/engine/finance/38_promotions.js",
       "src/engine/staff/99b_ai_people.js",
+      "src/engine/staff/99c_playing_coach.js",
       "src/engine/staff/94_owner_push.js",
       "src/engine/league/93_rain.js",
       "src/engine/players/94_tryout.js"
@@ -256,6 +257,7 @@
       "src/ui/staff/47_staff_league.js",
       "src/ui/staff/48_staff_profiles.js",
       "src/ui/staff/48b_coach_study.js",
+      "src/ui/staff/48c_playing_coach.js",
       "src/ui/media/48_interview.js",
       "src/ui/career/49_person_cards.js",
       "src/ui/market/50_offer_consult.js",

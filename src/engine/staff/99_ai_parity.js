@@ -42,7 +42,7 @@ function aiOpsPlan(t,ex,W){ const out={cash:0,fanY:0}; const pl=planOf(t)||'next
 /* 운영 비용 연간 단가(우리 구단과 같은 값): 부상 방지·병원·보조 코치 연봉·응원단. 다음 시즌부터인 코치 계약은 빼고(coachSal now와 같은 기준) */
 function aiOpsCost(t){ const M=medOf(t.id), L=[['부상 방지 프로그램',PREV[M.prev].c],['병원 제휴',HOSP[M.hosp].c]];
   { const af=acadFee(t.id); if(af>0)L.push(['특수 아카데미 제휴비',af]); } /* 우리와 같은 연 제휴비 */
-  L.push(['보조 코치 연봉',Math.round(sum(axOf(t.id).filter(c=>c&&!(c.cs!=null&&c.cs>G.year)).map(c=>c.sal||0)))]);
+  L.push(['보조 코치 연봉',Math.round(sum(axOf(t.id).filter(c=>c&&!(c.cs!=null&&c.cs>G.year)).map(c=>c.sal||0))+pcSalOf(t.id))]); /* 플레잉코치 수당 포함 */
   const F=t.fanOps; if(F&&!(G.fanYrT&&G.fanYrT[t.id]))L.push(['팬 마케팅·구단 이벤트',(FAN_OPS.cheer.m[F.cheer||0]||0)*12]);
   return L; }
 /* 매일(dailyCost): 사람 단장이 날마다 1/365씩 내는 것처럼, AI가 맡은 날만 쌓는다(t.opsA, 결산 연도 fy별).
@@ -96,7 +96,7 @@ function aiMentorPick(){ if(period()!=='season')return; for(const t of G.teams){
     t.cash-=50; p.mor=clamp((p.mor??60)+8,0,100); const M={id:p.id,y:G.year}; if(t.id===G.user)G.mentor=M; else { const K=G.clubT=G.clubT||{}, fy=sponSeason(); if(!K[t.id]||K[t.id].fy!==fy)K[t.id]={fy,ai:1}; /* fy가 있어야 그 구단으로 부임한 단장이 멘토를 이어받는다(검수 11-14). ai: 사람 단장이 남긴 기록이 아님(구단주 신뢰 등은 이어받지 않는다) */ K[t.id].mentor=M; } } }
 
 /* --- 보조 코치: 매달 1일 코치 시장(cmAiMonthly 끝). 시설이 줄어 정원을 넘으면 정리(잔여 연봉 절반) --- */
-function aiAsstMonthly(tid,off){ const t=team(tid); if(!t||tid===ME())return; const O=orgOf(tid); const X=O.coachX=O.coachX||[]; const n=axSlots(tid);
+function aiAsstMonthly(tid,off){ const t=team(tid); if(!t||tid===ME())return; const O=orgOf(tid); const X=O.coachX=O.coachX||[]; pcTrim(tid); const n=axSlots(tid)-pcN(tid); /* 플레잉코치가 쓰는 자리는 뺀다(99c_playing_coach) */
   if(X.length>n){ for(const c of X.splice(n)){ staffHistory('coach',c,'보조 코치 계약 종료',tid,'시설 축소로 인한 정원 조정'); coachPaySev(tid,c); delete c.ax; c.yrs=0; (G.cmarket=G.cmarket||[]).push(c); } return; }
   if(X.length>=n||R()>(off?.5:.15))return; if(planOf(t)==='tight'||(t.cash||0)<0)return;
   const c=(G.cmarket||[]).filter(c=>c&&AX_ROLES.includes(c.role)&&!(typeof schMarketWhy==='function'&&schMarketWhy(c))&&c.res!==G.user&&c.age<66&&!(c.from===tid&&c.fromY===G.year)&&!(c.bid&&c.bid.exp>=G.day)&&(c.dv||0)>=55&&cmCanPay(t,c,null)).sort((a,b)=>(b.dv||0)-(a.dv||0))[0];
