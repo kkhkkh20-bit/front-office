@@ -35,7 +35,7 @@ function stateAudit(){ const out=[]; const bad=(k,t)=>out.push(`[${k}] ${t}`); c
 /* 이동 정리(공통): 우리 구단 소속이 아닌 선수에게서 우리 구단이 붙인 표시·약속을 걷는다. 이동 경로(트레이드·방출·해외·이직·AI 영입)마다 따로 지우지 않아도
    하루 처리 첫머리와 주요 이동 직후에 한 번 돌면 같은 결과가 된다 */
 function leaveSweep(){ if(!G||!G.players)return; const U=G.user;
-  for(const p of Object.values(G.players)){ if(p.team===U)continue; if(p.promise)delete p.promise; if(p.listed)delete p.listed; }
+  for(const p of Object.values(G.players)){ if(p.team===U)continue; if(p.promise&&(p.promise.tid??U)!==p.team)delete p.promise; if(p.listed)delete p.listed; } /* 그 구단이 한 약속(tid)은 남긴다 */
   for(const k of Object.keys(G.lineup||{})){ const p=G.players[G.lineup[k]]; if(!p||p.team!==U)delete G.lineup[k]; }
   const C=G.contract; if(C&&!C.done&&C.neg)for(const id of Object.keys(C.neg)){ const p=G.players[id]; if(!p||p.team!==U)delete C.neg[id]; } }
 /* 2) 시즌 구분: 겨울(다음 시즌 계약 기간)에 계산한 '다음 시즌' 금액이, 달력 연도만 바뀌었을 때 같은 시즌 금액과 같아야 한다 */

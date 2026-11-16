@@ -8,7 +8,7 @@
       참가: 방출 선수(34세 이하 무적 선수 중 신청자) · 독립리그 선수(해마다 새로 TRY_INDIE명 안팎) · 미지명 신인 · 해외 복귀 선수.
       해외 복귀 선수는 2년 유예(KBO 규약) 중이라 테스트만 보고 계약은 못 한다(유예가 끝나는 해 신인 드래프트로 나온다).
       테스트 날 모든 구단 스카우트가 지켜본다. 단장이 직접 가면(달력 단장 일정 '트라이아웃 참관') 평가 오차가 크게 준다. 다른 구단 단장도 같은 확률로 직접 온다.
-      계약: 육성선수(육성 한도 YS_MAX, 연봉 최저) 또는 정식 선수(정원 ROSTER_MAX, 최저연봉 · 방출 선수는 무적 시장 요구액 freeAsk).
+      계약: 육성선수(육성 한도 YS_MAX, ysN과 같은 셈: 내년 합류 포함 · 군보류 제외, 연봉 최저) 또는 정식 선수(정원 ROSTER_MAX, 최저연봉 · 방출 선수는 무적 시장 요구액 freeAsk).
    3) 독립리그 선수 능력: 대부분 2군 수준(28~46), 7%는 늦게 피는 유형(잠재력 +8~14, 스카우트 눈에 잘 안 보인다).
       포수·유격수는 드물고(야수 중 5%·4%) 대개 약하다: 포지션 희소성(01_rules TOPK)을 풀지 않는다.
    AI 구단: 조직의 포지션별 인원으로 본 필요, 빈 자리(정원·육성 한도), 자기 스카우트 오차로 본 추정치로 고른다(구단당 한 해 최대 TRY_AI_MAX명).
@@ -64,7 +64,6 @@ const TRY_NEED={P:38,C:6,SS:4,IF:12,OF:12};
 const tryBk=p=>p.isP?'P':p.pos==='C'?'C':p.pos==='SS'?'SS':['LF','CF','RF'].includes(p.pos)?'OF':'IF';
 function tryNeed(tid){ const n={P:0,C:0,SS:0,IF:0,OF:0}; for(const p of Object.values(G.players))if(p.team===tid&&!p.foreign)n[tryBk(p)]++; const o={}; for(const k in TRY_NEED)o[k]=Math.max(0,TRY_NEED[k]-n[k]); return o; }
 const tryNextY=()=>dobj(G.day).m>=9; /* 9월 뒤 계약은 다음 시즌부터(신인과 같게) */
-function tryYsN(tid){ return Object.values(G.players).filter(p=>p.team===tid&&p.ys&&!milServing(p)).length; } /* 내년 합류 육성선수까지 센다 */
 function tryRegN(tid){ return rosterN(tid)+Object.values(G.players).filter(p=>p.team===tid&&!p.ys&&p.joinY>G.year).length; }
 /* 계약 가능 여부(사람·AI 같은 규칙). ys: 육성선수 계약 */
 function tryWhy(p,tid,ys){ const T=tryCur(); if(!T||!p||!T.ids.includes(p.id))return '트라이아웃 대상이 아닙니다.'; if(p.team!=null)return '이미 다른 구단과 계약했습니다.';
@@ -73,7 +72,7 @@ function tryWhy(p,tid,ys){ const T=tryCur(); if(!T||!p||!T.ids.includes(p.id))re
   if(G.day>T.close)return '계약 기간이 끝났습니다.';
   if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return '방출한 구단은 1년 동안 다시 계약할 수 없습니다.';
   if(p.wv)return '웨이버 공시 중입니다.';
-  if(ys){ if(tryYsN(tid)>=YS_MAX)return `육성선수가 ${YS_MAX}명으로 꽉 찼습니다.`; if(k==='vet'&&freeAsk(p)>100)return '요구 연봉이 1억 원을 넘어 육성선수로는 계약할 수 없습니다.'; }
+  if(ys){ if(ysN(tid)>=YS_MAX)return `육성선수가 ${YS_MAX}명으로 꽉 찼습니다.`; if(k==='vet'&&freeAsk(p)>100)return '요구 연봉이 1억 원을 넘어 육성선수로는 계약할 수 없습니다.'; }
   else if(tryRegN(tid)>=ROSTER_MAX)return `정식 선수 자리가 없습니다(${ROSTER_MAX}명).`;
   if(tid===G.user&&G.unemp)return '구단을 맡고 있지 않습니다.'; return ''; }
 function trySal(p,ys){ return tryKindOf(p)==='vet'?(ys?Math.max(MIN_SAL,Math.min(100,freeAsk(p))):freeAsk(p)):MIN_SAL; }
@@ -89,14 +88,14 @@ function trySign(id,tid,ys){ tid=tid??G.user; const p=G.players[id]; const why=t
 /* AI 구단 하루 판단(테스트 다음 날부터 6일, 미지명은 드래프트 이틀 뒤부터 5일): 필요한 자리 + 자기 추정 + 정원/육성 여유 */
 function tryAiDay(udOnly){ const T=tryCur(); if(!T)return 0; const C=T.ids.map(id=>G.players[id]).filter(p=>p&&p.team==null&&tryKindOf(p)!=='ovs'&&(!udOnly||tryKindOf(p)==='ud')); if(!C.length)return 0; let n=0;
   for(const t of G.teams){ if(t.id===ME()||G.tryLog&&G.tryLog.filter(x=>x.y===T.y&&x.tid===t.id).length>=TRY_AI_MAX)continue; if(relU('tryai'+G.day,t.id)>=.45)continue;
-    const need=tryNeed(t.id); let ysRoom=YS_MAX-tryYsN(t.id); const regRoom=ROSTER_MAX-3-tryRegN(t.id);
+    const need=tryNeed(t.id); let ysRoom=YS_MAX-ysN(t.id); const regRoom=ROSTER_MAX-3-tryRegN(t.id);
     const own=domestic(t.id).filter(p=>!p.ys).map(ovr).sort((a,b)=>b-a), bar=own[Math.min(own.length-1,40)]||38;
     let best=null, bv=-1e9; for(const p of C){ if(p.team!=null)continue; const e=tryEst(p,t.id); const v=tryVal(e,p)+(need[tryBk(p)]||0)*1.2; if(v>bv){ bv=v; best={p,e,v}; } }
     if(!best)continue; const {p,e}=best, k=tryKindOf(p), young=p.age<=26;
     const reg=k!=='ud'&&regRoom>0&&e.cur>=bar-1, ysWant=!reg&&young&&e.pot>=40&&(k!=='vet'||freeAsk(p)<=100);
     /* 육성 자리가 꽉 찼으면 가장 기대가 낮은 육성선수(22세 이상)보다 확실히 나을 때만 그 선수를 내보내고 데려간다. 사람 단장도 방출 뒤 같은 계약을 할 수 있다 */
-    if(ysWant&&ysRoom<=0){ const w=Object.values(G.players).filter(q=>q.team===t.id&&q.ys&&!milServing(q)&&q.age>=22&&!(q.tryS&&q.tryS.y===T.y)).map(q=>({q,v:ovr(q)*.55+q.pot*.45-Math.max(0,q.age-27)*1.2})).sort((a,b)=>a.v-b.v)[0];
-      if(w&&best.v-(need[tryBk(p)]||0)*1.2>w.v+4){ const q=w.q; if(q.age<=33&&ovr(q)>=30)toFree(q,`${tname(t.id)}에서 방출(육성선수 정리)`); else retireOut(q,`${tname(t.id)}에서 방출된 뒤 은퇴`); ysRoom=YS_MAX-tryYsN(t.id); } }
+    if(ysWant&&ysRoom<=0){ const w=ysList(t.id).filter(q=>q.age>=22&&!(q.tryS&&q.tryS.y===T.y)).map(q=>({q,v:ovr(q)*.55+q.pot*.45-Math.max(0,q.age-27)*1.2})).sort((a,b)=>a.v-b.v)[0];
+      if(w&&best.v-(need[tryBk(p)]||0)*1.2>w.v+4){ const q=w.q; if(q.age<=33&&ovr(q)>=30)toFree(q,`${tname(t.id)}에서 방출(육성선수 정리)`); else retireOut(q,`${tname(t.id)}에서 방출된 뒤 은퇴`); ysRoom=YS_MAX-ysN(t.id); } }
     const ys=ysWant&&ysRoom>0;
     if(!reg&&!ys)continue; if(!trySign(p.id,t.id,ys))n++; }
   return n; }

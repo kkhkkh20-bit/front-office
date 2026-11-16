@@ -6,7 +6,7 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
     if(o&&!preSeasonY()&&(live||G.startY!==G.year||(G.history.length&&G.history[G.history.length-1].y>=G.year))){ const gb=i>0?gbOf(order[0],o):0, g5=order[4]?gbOf(order[4],o):0; T.push(tile(live?'순위':'지난 시즌',`${i+1}위`,`${o.w}승 ${o.l}패${o.t?` ${o.t}무`:''}${live?(i===0?(tieOf(o,order[1])?' · 동률 선두':' · 선두'):` · 1위와 ${gb.toFixed(1)}`)+(i>=5?` · 5위와 ${g5.toFixed(1)}`:''):''}`,'league:stand',i<5?'good':i>=8?'bad':'')); }
     else { const pr=projNow().findIndex(x=>x.tid===G.user); T.push(tile('전력 예상',pr>=0?`예상 ${pr+1}위`:'-','현재 전력 기준','league:stand')); } }
   { let nx=null; try{ const L=nextGames(1); if(L&&L[0])nx=L[0]; }catch(e){}
-    if(nx&&(per==='season'||per==='post'||per==='pre')){ const op=nx.op, home=nx.home; if(!wide())T.push(tile("다음 경기",`${home?"vs":"@"} ${esc(team(op).nick)}`,`${dsh(nx.d)} ${WD[dobj(nx.d).w]} · ${home?'홈':'원정'}`,'cal')); }
+    if(nx&&(per==='season'||per==='post'||per==='pre')){ const op=nx.op, home=nx.home; if(!wide())T.push(tile("다음 경기",`${home?"vs":"@"} ${esc(tnick(op))}`,`${dsh(nx.d)} ${WD[dobj(nx.d).w]} · ${home?'홈':'원정'}`,'cal')); }
     else { let ev=null; try{ ev=calUpcomingList(1)[0]||null; }catch(e){} T.push(tile('다음 일정',ev?dsh(ev.d):'-',ev?esc(ev.t):'예정된 일정 없음','cal')); } }
   { const ps=playersOf(G.user).filter(p=>p.e1||!entryOn()); const mor=ps.length?sum(ps.map(p=>p.mor??60))/ps.length:60; const fat=ps.length?sum(ps.map(p=>p.fat||0))/ps.length:0;
     T.push(tile('팀 분위기',Math.round(mor),`${mor>=65?'좋음':mor>=50?'보통':mor>=38?'가라앉음':'나쁨'} · 평균 피로 ${Math.round(fat)}`,'roster',mor>=65?'good':mor<45?'bad':'',mor,mor<42?'분위기 나쁨':'')); }
@@ -27,7 +27,7 @@ function starsH(v){ if(v==null||isNaN(v))return ''; const n=clamp(Math.round((v-
 /* 홈 순위 띠: 10개 구단 순위를 한 줄(좁으면 두 줄)로. 점선 앞 5개 팀이 가을야구 */
 function stBand(){ const {order,live}=standOrder(); if(!live||!order||!order.length)return ''; const top=order[0]; const me=order.findIndex(o=>o.tid===G.user);
   const c5=order[4]; const my=order[me]; const gap=me>=5&&c5?`5위와 ${gbOf(c5,my).toFixed(1)}경기`:me>=0&&order[5]?`6위와 ${(-gbOf(order[5],my)).toFixed(1)}경기 앞`:'';
-  const cells=order.map((o,i)=>`<button class="stb-c${o.tid===G.user?' me':''}${i===4?' cut':''}" data-a="lteamGo" data-v="${o.tid}"><span class="stb-r">${i+1}</span>${badge(o.tid,20)}<b>${esc(team(o.tid).nick)}</b><span class="stb-wl num">${o.w}-${o.l}${o.t?`-${o.t}`:''}</span><span class="stb-gb num">${i?gbStr(gbOf(top,o)):'선두'}</span></button>`).join('');
+  const cells=order.map((o,i)=>`<button class="stb-c${o.tid===G.user?' me':''}${i===4?' cut':''}" data-a="lteamGo" data-v="${o.tid}"><span class="stb-r">${i+1}</span>${badge(o.tid,20)}<b>${esc(tnick(o.tid))}</b><span class="stb-wl num">${o.w}-${o.l}${o.t?`-${o.t}`:''}</span><span class="stb-gb num">${i?gbStr(gbOf(top,o)):'선두'}</span></button>`).join('');
   return `<section class="card stb"><div class="stb-h"><h2 class="sec">현재 순위</h2><span class="small muted">${me>=0?`우리 ${me+1}위${gap?' · '+gap:''}`:''}</span><button class="btn small" data-a="go" data-v="league:stand">순위표</button></div><div class="stb-g">${cells}</div></section>`; }
 
 /* 팬 여론 추이(월말 기록 + 지금): 홈 타일 안의 작은 선 */

@@ -11,7 +11,7 @@ function milView(){
     ${UI.milMsg&&UI.milMsgD===G.day?`<div class="note">${esc(UI.milMsg)}</div>`:""}`)
    +(serving.length||pending.length?csec('복무 중 · 입대 예정',`<div class="tgrid">${serving.concat(pending).map(p=>pcard(p,{sub:`${p.age}세`,tags:`<span class="pill ${p.mil.unit==='상무'?'good':'warn'}">${p.mil.unit}</span>`,stat:esc(milText(p)),foot:rosterFoot(p)+(p.mil.byGM&&p.mil.from>G.day?`<button class="tc-i" data-a="enlistCancel" data-v="${p.id}">입대 취소</button>`:'')})).join('')}</div>`):'')
    +csec('미필 선수',free.length?`<div class="tgrid">${(UI.milAll?free:free.slice(0,8)).map(card).join('')}</div>${free.length>8?`<button class="btn block" data-a="milAll" style="margin-top:8px">${UI.milAll?'접기':`나머지 ${free.length-8}명 더 보기 (나이 어린 순)`}</button>`:''}`:'<p class="small muted">미필 선수가 없습니다.</p>')
-   +csec('국가대표',`<p class="small muted">아시안게임 금메달·올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다.</p><button class="btn small" data-a="go" data-v="league:nt">국가대표 보기</button>`);
+   +csec('국가대표',`<p class="small muted">${G.agExOff?`올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다(아시안게임 금메달 특례는 ${G.agExOff}년 병역법 개정으로 폐지).`:'아시안게임 금메달·올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다.'}</p><button class="btn small" data-a="go" data-v="league:nt">국가대표 보기</button>`);
 }
 /* 소유권은 구단별 순수 API에서만 읽는다. 현재 인물로 과거 사건을 다시 쓰지 않는다. */
 function ownershipDate(e){ return e.d!=null?`${dobj(e.d).y}년 ${dmd(e.d)}`:e.y!=null?`${e.y}년 · 일자 기록 없음`:'일자 기록 없음'; }

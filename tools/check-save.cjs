@@ -1,6 +1,6 @@
 /* 저장 슬롯 점검(검수 11-07): 새 게임이 기존 슬롯을 덮지 않음, 다른 탭 저장 충돌, 빈 슬롯 새 게임 취소, 구형 세이브 이전 */
 const {chromium}=require('playwright');
-(async()=>{ const b=await chromium.launch(); const ctx=await b.newContext({viewport:{width:390,height:844}}); const pg=await ctx.newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
+(async()=>{ const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{}); const ctx=await b.newContext({viewport:{width:390,height:844}}); const pg=await ctx.newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
  await pg.goto('file://'+require('path').resolve(__dirname,'../index.html')); await pg.waitForTimeout(800);
  const start=async()=>{ await pg.click('[data-a="tsGo"][data-v="mode"]'); await pg.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pg.waitForSelector('.tmk',{timeout:120000}); await pg.click('.tmk [data-a="start"].btn'); await pg.fill('#gp-name','점검'); await pg.click('[data-a="gpStart"]'); await pg.waitForTimeout(1500); };
  await start();

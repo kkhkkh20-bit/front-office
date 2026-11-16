@@ -185,6 +185,7 @@ button.st-n:hover b{text-decoration:underline}
   .st-r{grid-template-areas:"n n n act" "sk dv sal sal" "abs abs abs abs";grid-template-columns:auto auto minmax(0,1fr) auto}
   .st-v:nth-of-type(1){grid-area:sk}.st-v:nth-of-type(2){grid-area:dv}.st-sal{grid-area:sal;display:flex;gap:6px;align-items:center;justify-content:flex-end}
   .st-v>i{display:inline}
+  .st-r>.st-sal{grid-area:sal;flex-wrap:wrap;row-gap:0;min-width:0;text-align:right} /* 위 grid-area:auto(.st-r>.st-sal)가 이겨 연봉·계약이 너비 0칸에 놓여 지도·육성 위로 겹쳐 그려지던 것(카페 11-16 '지도 56,500만 2027 시즌까지'). 길면 계약을 아랫줄로 */
   .st-n .av,.st-n img{width:30px;height:30px}
   .st-act .btn{min-height:34px;padding:4px 11px}
   .st-emp{grid-template-areas:"n act" "abs abs";grid-template-columns:minmax(0,1fr) auto}
@@ -238,3 +239,56 @@ button.st-n:hover b{text-decoration:underline}
   .cmk-split .st-h{grid-template-areas:"n sk dv sal abs act"}.cmk-split .st-h>span:nth-child(5){display:none}
   .cmk-split .st-emp{grid-template-areas:"n abs abs abs abs act"}
 }
+/* 인물 카드 공통 틀(src/ui/components/53_person_card.js): 선수 상황판의 큰 사진 카드·능력 차트·세부 능력 표를 그대로 쓴다 */
+.pcx{display:grid;grid-template-columns:240px minmax(0,1fr) minmax(0,1.3fr);gap:12px;align-items:start;margin:8px 0 12px}
+.pcx>.card{margin:0;min-width:0;padding:12px;border-radius:5px}
+.pcx .pf-fmcard{display:grid!important;padding:0!important}
+.pcx .pf-fmcard.ph .pf-fm-face{background:linear-gradient(160deg,var(--pt,var(--team-dk,#1a2430)),#0d1217 85%)}
+.pcx .pf-fmcard.ph .pf-fm-face>.av{width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;object-position:50% 0;margin:0 auto}
+.pc-hero .pf-fm-name{padding:2px 12px 0}
+.pc-hero .pc-eb{font-size:12px;font-weight:700;color:var(--pt2,var(--team-hi,#4fa3ff))}
+.pc-hero .pf-fm-name b{font-size:20px;line-height:1.25}
+.pc-hero .pf-fm-name>span:not(.pc-eb){line-height:1.4}
+.pc-pills{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;margin-top:4px}.pc-pills:empty{display:none}
+.pcx .pc-keys b.pc-kv{font:700 20px/1.2 var(--f-num)}.pc-kv .rc{font-size:18px}
+.pc-hero .pc-sum{padding:0 12px 12px;gap:3px}.pc-hero .pc-sum b{font-size:14px}.pc-hero .pc-sum span{font-size:12px;line-height:1.45}
+.pcx .pc-radar h3,.pcx .pc-attrs h3{margin:0 0 8px;font-size:14px}
+.pcx .pc-radar .radar{display:block;width:100%;max-width:340px;max-height:none;height:auto;margin:16px auto 0;overflow:visible}
+.pc-cap{text-align:center;margin:6px 0 0}
+.pcx .pf-attribute-grid.pc-grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pcx .pf-attribute-row.text{grid-template-columns:minmax(0,1fr) auto;font-size:13px;gap:8px}
+.pcx .pf-attribute-row.text .pf-score{text-align:right;font-size:13px;font-weight:600}
+.pcx .pf-attribute-group .msty{margin-top:8px;gap:10px}.pc-note{margin:8px 0 0}
+.pc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.pcx-below{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start;margin-bottom:10px}
+.pcx-below>.card,.pcx-below>section{margin:0;min-width:0}
+.pcx-below h3{margin:0 0 8px;font-size:14px}
+.manager-overview.pcx-below{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} /* 감독 후보 상세: 추구하는 야구 | 계약 검토 */
+.mgfm.mgfm2{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+@media(max-width:1099px){
+  .pcx{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pcx .pc-attrs{grid-column:1/-1}
+  .pcx-below{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pcx-below>:last-child:nth-child(odd){grid-column:1/-1}
+}
+@media(max-width:700px){
+  .pcx,.pcx-below,.manager-overview.pcx-below{grid-template-columns:minmax(0,1fr)}.pcx-below>*{grid-column:auto!important}
+  .pcx .pf-fmcard.ph .pf-fm-face>.av{width:min(100%,220px)}
+  .pcx .pf-attribute-grid.pc-grid2{grid-template-columns:minmax(0,1fr);gap:0}
+}
+/* 인물 카드 틀 2단계: 스카우트·분석원·단장·구단주·사장·기자·에이전트. 차트가 없는 사람은 사진 카드 | 세부 표 두 칸 */
+.pcx.pcx2{grid-template-columns:240px minmax(0,1fr)}
+.pc-star{color:#e6b93b;letter-spacing:1px;white-space:nowrap}.pc-star i{font-style:normal;opacity:.25}
+.pcx .pc-keys b.pc-kv .pc-star{font-size:18px}
+.pc-hero .cimg-b{flex-wrap:wrap}.pc-hero .cimg-b .btn{min-height:36px;padding:4px 10px;font-size:12px}
+.pc-hero .cimg-b label.btn{display:inline-flex;align-items:center}
+/* 스태프 시장 후보 상세(목록 칸 안): 칸이 좁아 사진 | 차트, 세부 능력은 아래 한 줄 */
+.st-x .pcx{grid-template-columns:200px minmax(0,1fr)}.st-x .pcx .pc-attrs{grid-column:1/-1}
+.pc-cand.pcx-below{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pc-cand .csl-hire .btn{min-height:44px}
+@media(max-width:1099px){.pcx.pcx2 .pc-attrs{grid-column:auto}}
+@media(max-width:700px){.pcx.pcx2,.st-x .pcx,.pc-cand.pcx-below{grid-template-columns:minmax(0,1fr)}.st-x .pcx .pc-attrs{grid-column:auto}}
+/* 단장 프로필(작업 공간 PC에서는 반 칸): 칸 너비에 맞춰 사진 | 차트, 세부 정보는 아래 */
+.me-pc{container-type:inline-size;min-width:0}.me-pc>h2.sec{margin:0 0 4px}
+@container (min-width:480px) and (max-width:960px){.me-pc .pcx{grid-template-columns:220px minmax(0,1fr)}.me-pc .pcx .pc-attrs{grid-column:1/-1}}
+@container (max-width:479px){.me-pc .pcx{grid-template-columns:minmax(0,1fr)}.me-pc .pcx .pc-attrs{grid-column:auto}.me-pc .pcx .pf-attribute-grid.pc-grid2{grid-template-columns:minmax(0,1fr)}.me-pc .pcx .pf-fmcard.ph .pf-fm-face>.av{width:min(100%,220px)}}
+@media(max-width:700px){.pcx .pf-attribute-column:last-child{grid-template-columns:minmax(0,1fr);gap:0}} /* 선수 상세의 마지막 열 두 칸 규칙이 인물 카드 세부 표를 반쪽으로 줄이던 것 */
+
+.pcx .pc-note{margin:2px 0 0;font-size:12px;line-height:1.5;color:var(--muted)} /* 코치 카드 계산 기준(차트 대신 표 안에, 사용자 11-16) */

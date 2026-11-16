@@ -1,7 +1,7 @@
 /* ---------- 신인 드래프트 보드 ---------- */
 const DPOS={all:'전체',P:'투수',C:'포수',IF:'내야',OF:'외야'};
 function dposOf(p){ return p.isP?'P':p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':'OF'; }
-function dval(rp){ return draftVal(rp); }
+function dval(rp,p){ return draftVal(rp,p); }
 function draftPool(){ const live=G.draft&&!G.draft.done; return ((live?G.draft.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect); }
 /* 담당 스카우트 주장 표시: 정답 배지가 아니라 스카우트 의견. 틀릴 수 있다 */
 function dclaimTag(p){ const c=draftClaim(p); if(!c)return ''; return `<b class="${c.k==='up'?'good':'warn'}" title="${esc(draftClaimTxt(c))}">${c.k==='up'?'강력 추천':'신중론'}(확신도 ${c.conf})</b> · `; }
@@ -11,10 +11,10 @@ function dpotChip(rp){ if(rp.ofp==null)return '<span class="small muted">?</span
 function sonTag(p){ const o=fatherOf(p); return o?`<button class="lnk" data-a="person" data-v="ob:${o.id}">${esc(o.name)}</button>의 아들`:''; }
 function drow(p,rp,rk,mine){ const star=(G.shortlist||[]).includes(p.id);
   const tag=dclaimTag(p); const fit=draftFit(p,draftPolK())?' · <b class="acc">감독 추천</b>':'';
-  return `<div class="drw${star?' star':''}"><span class="drw-k num">${rk}</span><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.college?'대졸':'고졸'}</small></b><i>${tag}${fatherOf(p)?`${esc(fatherOf(p).name)}의 아들 · `:''}${esc(p.school||'')} · ${p.region} · 언론 #${p.press||'-'}${fit}${rp.eta?` · 1군까지 약 ${rp.eta}년`:''}${p.amInj?' · <b class="bad">부상 이력</b>':''}</i></span></button><span class="trw-r">${rchip(rp.cur)}${dpotChip(rp)}</span><button class="tc-i drw-s${star?' on':''}" data-a="star" data-v="${p.id}" aria-pressed="${star}" aria-label="관심">${star?'★':'☆'}</button>${mine?`<button class="tc-i go drw-p" data-a="pick" data-v="${p.id}">지명</button>`:''}</div>`; }
+  return `<div class="drw${star?' star':''}"${rowProxy()}><span class="drw-k num">${rk}</span><button class="mr-p" data-rowgo data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.college?'대졸':'고졸'}</small></b><i>${tag}${fatherOf(p)?`${esc(fatherOf(p).name)}의 아들 · `:''}${esc(p.school||'')} · ${p.region} · 언론 #${p.press||'-'}${fit}${rp.eta?` · 1군까지 약 ${rp.eta}년`:''}${p.amInj?' · <b class="bad">부상 이력</b>':''}</i></span></button><span class="trw-r">${rchip(rp.cur)}${dpotChip(rp)}</span>${mine?`${star?'<span class="drw-s on" title="관심 선수" aria-label="관심 선수">★</span>':''}<button class="tc-i go drw-p" data-a="pick" data-v="${p.id}">지명</button>`:`<button class="tc-i drw-s${star?' on':''}" data-a="star" data-v="${p.id}" aria-pressed="${star}" aria-label="관심">${star?'★':'☆'}</button>`}</div>`; } /* 줄을 누르면 선수 화면(관심·지명 모두 있음). 줄 안 버튼은 하나: 우리 차례면 지명, 아니면 관심 */
 function draftCandidateTable(list,mine){
   if(!list.length)return '<p class="small muted">조건에 맞는 후보가 없습니다.</p>';
-  return `<div class="tw"><table class="sqt candidate-table"><thead><tr>${['선수','스카우트','언론','구분','학교','투타','아마 기록','잠재력 추정','위험도','행동'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>${list.map(({p,rp,rk})=>{const star=(G.shortlist||[]).includes(p.id);return `<tr><td><button class="candidate-name" data-a="player" data-v="${p.id}">${avImg(p)}<span>${esc(p.name)}<small>${posLabel(p)} · ${p.age}세${fatherOf(p)?` · ${esc(fatherOf(p).name)}의 아들`:''}</small></span></button></td><td>${rk}</td><td>${p.press||'-'}</td><td>${p.college?'대졸':'고졸'}</td><td>${esc(p.school||'-')}</td><td>${hand(p)}</td><td class="candidate-note">${esc(amShort(p))||'기록 없음'}</td><td>${dpotChip(rp)}</td><td><span class="${rp.risk==='높음'?'bad':''}">${esc(rp.risk||'미확인')}</span>${p.amInj?' · 부상 이력':''}</td><td><button class="tc-i${star?' on':''}" data-a="star" data-v="${p.id}">${star?'관심 중':'관심'}</button>${mine?`<button class="tc-i go" data-a="pick" data-v="${p.id}">지명</button>`:''}</td></tr>`;}).join('')}</tbody></table></div>`;
+  return `<div class="tw"><table class="sqt candidate-table"><thead><tr>${['선수','스카우트','언론','구분','학교','투타','아마 기록','잠재력 추정','위험도','행동'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>${list.map(({p,rp,rk})=>{const star=(G.shortlist||[]).includes(p.id);return `<tr${rowProxy()}><td><button class="candidate-name" data-rowgo data-a="player" data-v="${p.id}">${avImg(p)}<span>${esc(p.name)}<small>${posLabel(p)} · ${p.age}세${fatherOf(p)?` · ${esc(fatherOf(p).name)}의 아들`:''}</small></span></button></td><td>${rk}</td><td>${p.press||'-'}</td><td>${p.college?'대졸':'고졸'}</td><td>${esc(p.school||'-')}</td><td>${hand(p)}</td><td class="candidate-note">${esc(amShort(p))||'기록 없음'}</td><td>${dpotChip(rp)}</td><td><span class="${rp.risk==='높음'?'bad':''}">${esc(rp.risk||'미확인')}</span>${p.amInj?' · 부상 이력':''}</td><td>${mine?`${star?'<span class="pill acc">관심</span> ':''}<button class="tc-i go" data-a="pick" data-v="${p.id}">지명</button>`:`<button class="tc-i${star?' on':''}" data-a="star" data-v="${p.id}">${star?'관심 중':'관심'}</button>`}</td></tr>`;}).join('')}</tbody></table></div>`;
 }
 function dcard(p,rp,rk,mine){
   const star=(G.shortlist||[]).includes(p.id);
@@ -56,7 +56,7 @@ function draftBoard(){
   const live=G.draft&&!G.draft.done; const d=G.draft; const pk=live?d.picks[d.cur]:null; const mine=!!(pk&&pk.tid===G.user);
   const pool=draftPool();
   if(!pool.length&&!live)return `<p class="small muted keep"><b>신인 드래프트</b> 올해 드래프트는 끝났습니다. 다음 해 참가 선수 명단은 새해에 나옵니다.</p>`+(d&&d.done?draftResults():''); /* 안내는 패널 밖 한 줄, 칸은 지명 결과에 */
-  const all=pool.map(p=>({p,rp:scoutReport(p)})).sort((a,b)=>dval(b.rp)-dval(a.rp)); all.forEach((x,i)=>x.rk=i+1);
+  const all=pool.map(p=>({p,rp:scoutReport(p)})).sort((a,b)=>dval(b.rp,b.p)-dval(a.rp,a.p)); all.forEach((x,i)=>x.rk=i+1);
   const f=UI.df||(UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'board',more:20});
   const noScout=REG.filter(r=>!scoutOf('am',r)); /* 아마추어 담당 기준(프로 담당만 있으면 신인 잠재력은 ?, 검수 11-07) */
   const gmN=r=>pool.filter(p=>p.region===r&&p.gmSeen===G.year).length; /* 단장이 직접 본 후보는 담당이 없어도 잠재력을 본다(검수 11-09ze) */

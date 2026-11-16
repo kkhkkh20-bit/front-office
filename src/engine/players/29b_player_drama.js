@@ -67,7 +67,7 @@ function pdStatement(p){ const k=grvTop(p)||'pt', me=p.team===G.user, tn=tshort(
   news('선수',title,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) ${via}을(를) 통해 불만을 드러냈습니다. ${pdSay(p,k)} 구단 대응이 주목됩니다.`,me?-2:0,{ref:p.id,tid:p.team});
   if(!me){ pdAiReact(p,1); return; }
   const m=G.mgr[G.user], side=pdMgrSide(m); const mL=!m||m.interim?'':side<0?`\n\n${m.name} 감독은 "선수가 할 말이 있으면 안에서 하라"며 언짢아합니다.`:side>0?`\n\n${m.name} 감독은 "선수 마음도 이해한다"며 선수 쪽에 서는 분위기입니다.`:'';
-  const O=[['talk','따로 불러 면담한다','성격·관계에 따라 풀릴 수도, 같은 말만 되풀이할 수도 있습니다.'],['rebut','구단 입장을 공개적으로 밝힌다','언론에는 단호해 보이지만 선수는 체면을 구기고, 이 일을 기억합니다.'],['disc','벌금 등 내부 징계','기강은 서지만 선수 불만이 커지고, 구단주 성향에 따라 반응이 다릅니다.'],['list','트레이드 명단에 올린다','선수는 누그러지지만 다른 구단이 약점으로 봅니다.'],['ignore','대응하지 않는다','시간이 해결할 수도, 더 큰 요구로 이어질 수도 있습니다.']];
+  const O=[['talk','따로 불러 면담한다','성격·관계에 따라 풀릴 수도, 같은 말만 되풀이할 수도 있습니다.'],['rebut','구단 입장을 공개적으로 밝힌다','언론에는 단호해 보이지만 선수는 체면을 구기고, 이 일을 기억합니다.'],['disc','벌금 등 내부 징계','기강은 서지만 선수 불만이 커지고, 구단주 성향에 따라 반응이 다릅니다.'],['list','트레이드 명단에 올린다','선수는 누그러지지만 다른 구단이 약점으로 봅니다.'],['ignore','대응하지 않는다','시간이 해결할 수도, 더 큰 요구로 이어질 수도 있습니다.']].filter(o=>!(p.foreign&&(o[0]==='list'||o[0]==='give'))); /* 외국인 선수는 트레이드 대상이 아니라 명단 선택지를 빼다(사용자 제보 11-15) */
   evNew('pmed',`${p.name}의 공개 불만`,`${title}.\n\n${pdSay(p,k)}\n\n${p.name}(${posLabel(p)}, ${p.age}세, ${squadRole(p)||'선수'}) · ${evLine(p)}${mL}`,O.map(o=>({l:o[1],fx:o[2]})),{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,ks:O.map(o=>o[0]),k,side},def:O.length-1,exp:4}); }
 /* 단장 선택과 감독 편: 감독과 같은 편이면 관계 +, 반대면 - */
 function pdMgrAgree(e,stance){ const m=G.mgr[G.user]; if(!m||m.interim||!e.data.side)return ''; const ok=e.data.side===stance; m.rel=clamp(m.rel+(ok?2:-2),0,100); return ok?` 감독 관계 조금 개선(같은 편)`:` 감독 관계 조금 악화(감독은 다른 생각)`; }
@@ -85,7 +85,7 @@ EVH.pmed={ pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '�
 /* 2단계: 공식 트레이드 요구 */
 function pdDemand(p){ const me=p.team===G.user, k=grvTop(p)||'pt'; news('선수',`${tshort(p.team)} ${p.name}, 공식 트레이드 요구`,`${p.name}이(가) 구단에 트레이드를 공식 요청했습니다. ${pdSay(p,k)}`,me?-3:0,{ref:p.id,tid:p.team});
   if(!me){ pdAiReact(p,2); return; } pdIvAsk(p);
-  const O=[['list','요구를 받아들여 트레이드를 추진한다','선수는 일단 돌아서지만 다른 구단은 급매로 봅니다.'],['promise','한 달 안에 출전을 보장하겠다고 약속한다','감독을 설득해야 합니다. 약속이 깨지면 시위로 번집니다.'],['talk','직접 만나 남으라고 설득한다','충성심·관계·주장의 영향에 따라 성패가 갈립니다.'],['disc','벌금·출장 정지로 다스린다','기강은 서지만 다혈질 선수는 더 크게 반발할 수 있습니다.'],['wait','못 들은 척 기다린다','열흘 뒤에도 불만이 크면 훈련에 나오지 않을 수 있습니다.']];
+  const O=[['list','요구를 받아들여 트레이드를 추진한다','선수는 일단 돌아서지만 다른 구단은 급매로 봅니다.'],['promise','한 달 안에 출전을 보장하겠다고 약속한다','감독을 설득해야 합니다. 약속이 깨지면 시위로 번집니다.'],['talk','직접 만나 남으라고 설득한다','충성심·관계·주장의 영향에 따라 성패가 갈립니다.'],['disc','벌금·출장 정지로 다스린다','기강은 서지만 다혈질 선수는 더 크게 반발할 수 있습니다.'],['wait','못 들은 척 기다린다','열흘 뒤에도 불만이 크면 훈련에 나오지 않을 수 있습니다.']].filter(o=>!(p.foreign&&(o[0]==='list'||o[0]==='give'))); /* 외국인 선수는 트레이드 대상이 아니라 명단 선택지를 빼다(사용자 제보 11-15) */
   evNew('pdem',`${p.name}의 트레이드 요구`,`${p.name}(${posLabel(p)}, ${p.age}세, ${squadRole(p)||'선수'})이(가) 에이전트를 통해 트레이드를 공식 요구했습니다.\n\n${pdSay(p,k)}\n\n쌓인 불만: ${pdGrvTxt(p)} · ${evLine(p)}`,O.map(o=>({l:o[1],fx:o[2]})),{ref:p.id,face:p.id,from:p.name,data:{pid:p.id,ks:O.map(o=>o[0])},def:O.length-1,exp:5}); }
 function pdGrvTxt(p){ const g=p.grv||{}; return Object.keys(g).filter(k=>g[k]>=2).sort((a,b)=>g[b]-g[a]).map(k=>GRV_L[k]).join(', ')||'여러 가지'; }
 EVH.pdem={ pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; const k=e.data.ks[i]; const D=p.pd||(p.pd={st:2,d:G.day}); initPers(p); const m=G.mgr[G.user];
@@ -100,7 +100,7 @@ function pdBoycott(p){ if(!p||p.team==null||p.boy>G.day)return; const c=pdCnt(p.
   const me=p.team===G.user&&!G.unemp; news('선수',`${tshort(p.team)} ${p.name}, 훈련 불참… 트레이드 요구 시위`,`${p.name}이(가) 트레이드를 요구하며 훈련에 나오지 않고 있습니다. 구단과 선수의 갈등이 극으로 치닫고 있습니다.`,me?-4:0,{ref:p.id,tid:p.team});
   if(!me){ pdAiReact(p,3); return; }
   try{ G.pr.fan=clamp(G.pr.fan-1,0,100); }catch(e){} pdIvAsk(p);
-  const O=[['give','요구를 들어준다(트레이드 명단, 즉시 복귀)','선수는 돌아오지만 구단이 끌려갔다는 말이 나옵니다.'],['promise','출전을 약속하고 복귀시킨다','약속이 또 깨지면 더 크게 터집니다.'],['hard','중징계(벌금, 시위 기간 무급)','기강은 서지만 선수와의 관계는 회복하기 어렵습니다.'],['wait','버틴다','시위가 끝날 때까지 선수단 분위기가 흔들립니다.']];
+  const O=[['give','요구를 들어준다(트레이드 명단, 즉시 복귀)','선수는 돌아오지만 구단이 끌려갔다는 말이 나옵니다.'],['promise','출전을 약속하고 복귀시킨다','약속이 또 깨지면 더 크게 터집니다.'],['hard','중징계(벌금, 시위 기간 무급)','기강은 서지만 선수와의 관계는 회복하기 어렵습니다.'],['wait','버틴다','시위가 끝날 때까지 선수단 분위기가 흔들립니다.']].filter(o=>!(p.foreign&&(o[0]==='list'||o[0]==='give'))); /* 외국인 선수는 트레이드 대상이 아니라 명단 선택지를 빼다(사용자 제보 11-15) */
   evNew('pboy',`${p.name} 훈련 불참`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) 트레이드를 요구하며 ${n}일째까지 훈련에 나오지 않겠다고 통보했습니다. 시위 기간에는 1군에 등록할 수 없고 훈련 효과도 없습니다.\n\n쌓인 불만: ${pdGrvTxt(p)}`,O.map(o=>({l:o[1],fx:o[2]})),{ref:p.id,face:p.id,from:'운영팀',data:{pid:p.id,ks:O.map(o=>o[0])},def:O.length-1,exp:4}); }
 EV_KEY.add('pdem'); EV_KEY.add('pboy');
 EVH.pboy={ pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; const k=e.data.ks[i]; initPers(p); const star=ovr(p)>=55;

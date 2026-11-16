@@ -161,7 +161,7 @@ function playoffOdds(){
 
 /* ===== 기록으로 보는 메모(능력치가 아니라 눈에 보이는 성적 기준) ===== */
 const babipOf=h=>{ const d=(h.ab||0)-(h.so||0)-(h.hr||0)+(h.sf||0); return d>0?(h.h-h.hr)/d:null; }; /* (H-HR)/(AB-K-HR+SF), 검수 11-09l */
-function amNotes(p){ const Y=p.amY; if(!Y||!Y.length)return []; const L=[];
+function amNotes(p){ const Y=p.amY; if(!Y||!Y.length)return []; const L=[]; { const iy=Y.find(x=>x.inj); if(iy)L.push(`${p.college?'대':'고'}${iy.gr} 시즌은 부상으로 덜 뛰었고 기록도 처졌습니다. 통산 기록에 그 해가 섞여 있습니다.`); } /* 부상 시즌(10_draft amHistory, 카페 11-15) */
   if(!p.isP){ const bk=Y.filter(x=>x.pa>=30).map(x=>x.so?x.bb/x.so:x.bb); const t=p.am; const tbk=t.so?t.bb/t.so:t.bb; const avg=t.ab?t.h/t.ab:0;
     if(bk.length>=2&&bk.every(v=>v>=.8))L.push(`학년마다 볼넷이 삼진만큼 많았습니다(볼삼비 ${tbk.toFixed(2)}). 선구안은 프로에 와서도 잘 변하지 않는 기록입니다.`);
     else if(bk.length>=2&&bk.every(v=>v<=.35)){ const rt=t.bb?t.so/t.bb:null; L.push(`학년마다 삼진이 볼넷보다 훨씬 많습니다(삼진 ${t.so} · 볼넷 ${t.bb}${rt?`, 약 ${rt.toFixed(1)}배`:''}). 프로 투수를 상대로 고전할 수 있습니다.`); }

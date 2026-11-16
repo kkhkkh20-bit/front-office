@@ -16,7 +16,7 @@ const ROSTER_MAX=68, ROSTER_MIN=45; // KBO 소속선수 한도: 2025년까지 65
 /* 1군 엔트리(KBO 2026: 29명, 9월 1일부터 5명 확대(아시안게임 해는 후반기 30명 + 8월 25일부터 4명), 말소 후 10일 뒤 재등록)와 육성선수 */
 const ENTRY_BASE=29, ENTRY_EXP=5, YS_MAX=15;
 const rosterN=(tid,d)=>ownedOf(tid,d).filter(p=>!p.ys&&!(p.frehab&&p.frehab!=='hold')).length; /* 부상 대체 외국인을 둔 재활 선수 명단 원선수는 빼고 센다(대체 선수가 자리를 쓴다, 검수 11-09t) */ /* 국가대표 차출 선수도 구단 선수 수에 들어간다(군 복무는 빠짐) */
-const ysN=tid=>Object.values(G.players).filter(p=>p.team===tid&&p.ys&&!(p.joinY>G.year)&&!milServing(p)).length; /* KBO처럼 군 복무 중(군보류)은 빼고, 대표팀 차출 중은 센다(사용자 11-09) */
+const ysList=tid=>Object.values(G.players).filter(p=>p.team===tid&&p.ys&&!milServing(p)), ysN=tid=>ysList(tid).length; /* KBO처럼 군 복무 중(군보류)은 빼고, 대표팀 차출 중은 센다(사용자 11-09). 내년 합류(9월 뒤 트라이아웃·미지명 육성 계약)도 센다: 육성 한도는 이 한 곳에서만 세고 사람·AI·전환·트라이아웃 모두 이 값을 쓴다(합류하는 날 한도를 넘지 않게) */
 const FA_SVC=8; // 고졸 8시즌, 대졸 7시즌 (2022시즌 종료 후 적용)
 const faSvc=p=>p&&p.college?7:FA_SVC;
 const DRAFT_ROUNDS=11, DRAFT_POOL=140;
@@ -122,8 +122,14 @@ const posLabel=p=>p.isP?(p.team==null||p.fdPool||p.prospect||!p.role?'투수':(p
 function staGate(tid,p){ if(rpPlanOf(tid,p)==='sp')return 0; const d=FrontOfficeCore.dv(p.r.sta); return d>=60?0:d>=50?-6:-40; }
 function roleBias(tid,p){ const thr=rpThr(tid); return clamp((p.r.sta-thr)*.9,-14,8)+(p.rAdj||0)+rpBias(tid,p)+staGate(tid,p); } /* 체력 기준은 감독 성향(불펜 의존·스몰볼), 보직 계획(신인 계투 시작·단장 요청)은 77_pitch_role.js */
 const team=id=>G.teams[id];
+/* 구단 표시 이름(마인2 11-16: 실제 구단명처럼 '삼성 라이온즈'로 쓰고 싶은데 앞에 연고지가 붙음): t.disp(플레이어가 붙인 전체 이름, 14자)이 있으면 '연고지 별칭' 대신 그것.
+   약칭은 t.abbr(6자) → 없으면 표시 이름의 마지막 낱말 → 없으면 별칭. 연고지(t.city)는 지역·시장·연고 규칙에 그대로 쓴다. x: 구단 번호 또는 구단(이력 항목·TEAM_DEF도 됨) */
+function tfull(x){ const t=x!=null&&typeof x==='object'?x:(x==null?null:G.teams[x]); if(!t)return ''; return t.disp||(t.city+' '+t.nick); }
+function tnick(x){ const t=x!=null&&typeof x==='object'?x:(x==null?null:G.teams[x]); if(!t)return ''; return t.abbr||(t.disp?String(t.disp).trim().split(/\s+/).pop():t.nick); }
+/* 좁은 화면에서 앞을 숨기는 자리용: [앞, 약칭]. 전체 이름이 약칭으로 끝나지 않으면 앞은 비우고 전체 이름 */
+function tsplit(x){ const f=tfull(x), n=tnick(x); return f===n?['',f]:f.endsWith(' '+n)?[f.slice(0,-n.length-1),n]:['',f]; }
 const tname=id=>id==null?'무소속':tshort(id);
-const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return x.city+' '+x.nick; } return team(id).city+' '+team(id).nick; }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
+const tshort=(id,y)=>{ if(id==null)return '-'; if(y!=null&&typeof G!=='undefined'&&G&&G.tnames&&G.tnames[id]){ const L=G.tnames[id]; let x=null; for(const e of L)if(e.y0<=y)x=e; if(x&&x.y1!=null&&x.y1>=y)return tfull(x); } return tfull(team(id)); }; /* y: 그해 이름(구단 이름 변경·연고 이전 이력, 87_club_identity) */
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
 let PROJ_LENS=0; /* 시즌 예상 전력을 볼 때만 1: 개막 전후에 돌아올 선수는 빠진 것으로 보지 않는다(사용자 11-14: 시범경기 중 대표팀 차출로 1위 전력이 7위 목표) */
 const projOpen=()=>{ const o=G.cal&&G.cal.open; if(o==null)return G.day; return o<G.day&&period()==='off'?FrontOfficeCore.onOrAfter(G.year+1,3,25,6):o; }; /* 예상 대상 시즌 개막일: 스토브리그에는 다음 해 개막(buildCalendar와 같은 날, 검수 11-14: 11월에 넉 달 재활 선수가 다음 시즌 예상에서 빠짐) */
@@ -160,7 +166,7 @@ function newPlayer(o){
     foreign:o.foreign||null,nat:o.nat||null,th,bt,velo:N(0,1.3)};
   setOvr(p,o.base);
   p.pot=clamp(Math.max(ovr(p),o.pot??ovr(p)),20,80); p.dt=rollDT();
-  initPers(p);
+  initPers(p,true); /* 성격은 만들 때 정한다(읽기 경로에서 난수를 쓰지 않게) */
   if(p.isP)p.delivery=o.delivery||pitchDelivery(p);
   G.players[p.id]=p; return p;
 }

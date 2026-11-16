@@ -70,7 +70,7 @@ function aiFacPlan(t,S,summer,o){ o=o||{}; const nb=Object.keys(S.bld).length; i
   /* 먼저 하고 싶은 공사를 고르고, 돈은 그다음에 본다: 모기업 요청 → 명명권·지자체 → 적립금, 안 되면 작은 공사로 바꾸거나 접는다 */
   let r=facU(key,'pick')*sum(C.map(x=>x.w)), x=C[C.length-1]; for(const y of C){ r-=y.w; if(r<=0){ x=y; break; } }
   const go=(x)=>{ const I=facRouteInfo(t.id,x.k), cashOk=cash-x.c>=reserve;
-    if(I.cap.ok){ t.capexD=G.day; /* 사람 단장처럼 먼저 모기업에 요청해 본다(같은 승인 식·간격) */ if(facU(key,'cap'+x.k)<I.cap.p){ t.capexY=sponSeason(); t.capN=(t.capN||0)+1; return 'cap'; } t.trust=clamp((t.trust??55)-1,0,100); }
+    if(I.cap.ok){ t.capexD=G.day; /* 사람 단장처럼 먼저 모기업에 요청해 본다(같은 승인 식·간격) */ if(facU(key,'cap'+x.k)<I.cap.p){ t.capexY=sponSeason(); t.capN=(t.capN||0)+1; return 'cap'; } t.trust=clamp((t.trust??55)-1,0,100); if(typeof aiPushTry==='function'&&aiPushTry(t,{k:'cap',amt:x.c})){ t.capexY=sponSeason(); t.capN=(t.capN||0)+1; return 'cap'; } } /* 반려되면 다시 설득(94_owner_push) */
     if(o.capOnly)return null;
     for(const rt of ['spon','city'])if(I[rt].ok&&cash-x.c*(1-(rt==='spon'?FAC_SPON.share:FAC_CITY.share))>=reserve&&(x.c>=2000||!cashOk)){ (t.facAsk=t.facAsk||{})[rt]=G.day; if(facU(key,rt+x.k)<I[rt].p)return rt; }
     return cashOk?'cash':null; };
@@ -88,7 +88,7 @@ function aiFacPlan(t,S,summer,o){ o=o||{}; const nb=Object.keys(S.bld).length; i
 function facNeglect(t){ const mine=t.id===G.user; const it=mine?(G.fac&&G.fac.it):(t.fi&&t.fi.it); if(!it)return; const bld=mine?(G.fac.bld||{}):(t.fi.bld||{});
   const k=FACK.filter(k=>(it[k]||0)>=2&&!bld[k]).sort((a,b)=>it[b]-it[a])[0]; if(!k)return; it[k]--; 
   if(mine){ try{ facRecalc(); }catch(e){} mail('운영팀',`${FACI[k].l} 시설이 낡았습니다`,`구단 빚이 커 유지·보수를 미뤘습니다. ${FACI[k].l}이(가) ${FACI[k].lv[it[k]]} 수준으로 내려갔습니다. 다시 공사하면 회복됩니다.`,{kind:'시설'}); }
-  else { t.fi.lv=facCalcLv(it); t.fac=t.fi.lv; wire('구단',`${t.city} ${t.nick}, 재정난에 ${FACI[k].l} 관리 소홀`,{tid:t.id}); } }
+  else { t.fi.lv=facCalcLv(it); t.fac=t.fi.lv; wire('구단',`${tfull(t)}, 재정난에 ${FACI[k].l} 관리 소홀`,{tid:t.id}); } }
 
 /* ===== 시설 연식(커뮤니티 건의 11-11: 한 번 올린 시설이 영원히 유지되면 구단 사이 격차가 굳는다) =====
    항목마다 마지막으로 짓거나 고친 해를 기억한다. 10년이 넘으면 해마다 30% 확률로 한 단계 낡는다(2단계 아래로는 내려가지 않음).
