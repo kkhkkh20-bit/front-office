@@ -254,7 +254,7 @@ body.help .hi-i{display:none}
   .ng-acts .btn{flex:1 1 140px}.ng-acts .btn.primary{margin-left:0}
 }
 .ng-why{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--panel);display:grid;gap:4px}.ng-why p{margin:0}
-.mchat .mc-a p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mchat.mchat-c .mc-a p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden} /* 세 줄 자르기는 홈 요약 카드만: 감독실에서는 감독의 답을 끝까지 읽는다(카페 11-16: 파란 줄 아래 답이 잘려 안 보임) */
 .devd>summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:baseline}.devd>summary::-webkit-details-marker{display:none}.devd[open]>summary{margin-bottom:8px}
 .ng-log>summary{cursor:pointer;padding:2px 0}.ng-log[open]{display:grid;gap:4px}
 @media (max-width:640px){ .ng-acts{gap:6px;padding:8px 0 2px}.ng-acts .btn{flex:1 1 45%;min-height:38px;padding:6px 8px;font-size:13px}.ng-acts .ng-close{display:none} }

@@ -185,6 +185,7 @@ button.st-n:hover b{text-decoration:underline}
   .st-r{grid-template-areas:"n n n act" "sk dv sal sal" "abs abs abs abs";grid-template-columns:auto auto minmax(0,1fr) auto}
   .st-v:nth-of-type(1){grid-area:sk}.st-v:nth-of-type(2){grid-area:dv}.st-sal{grid-area:sal;display:flex;gap:6px;align-items:center;justify-content:flex-end}
   .st-v>i{display:inline}
+  .st-r>.st-sal{grid-area:sal;flex-wrap:wrap;row-gap:0;min-width:0;text-align:right} /* 위 grid-area:auto(.st-r>.st-sal)가 이겨 연봉·계약이 너비 0칸에 놓여 지도·육성 위로 겹쳐 그려지던 것(카페 11-16 '지도 56,500만 2027 시즌까지'). 길면 계약을 아랫줄로 */
   .st-n .av,.st-n img{width:30px;height:30px}
   .st-act .btn{min-height:34px;padding:4px 11px}
   .st-emp{grid-template-areas:"n act" "abs abs";grid-template-columns:minmax(0,1fr) auto}
