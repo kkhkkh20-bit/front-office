@@ -55,7 +55,6 @@ function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team==null||t
   const fv=FACE6.v==='6c'?3:2; if(G.f6v!==fv){ G.f6={}; G.f6r={}; G.f6v=fv; } /* 얼굴 세트가 바뀌면(v6b→v6c) 배정을 새로 */
   const M=G.f6, Rv=G.f6r, t=p.team, key=i=>t+':'+i; const cur=M[p.id]; if(cur!=null&&Rv[key(cur)]===p.id)return cur;
   const free=i=>{ const o=Rv[key(i)]; if(o==null||o===p.id)return true; const q=G.players[o]; return !q||q.team!==t; };
-  if(cur==null){ const a=G.fam&&G.fam[p.id]; if(a&&a.k==='am'&&typeof FACEAM!=='undefined'&&FACEAM.ids[a.c]){ const i=FACEAM.ids[a.c].i; M[p.id]=i; if(free(i))Rv[key(i)]=p.id; return i; } } /* 아마추어 때 본 얼굴(v6c 신원)을 지명 뒤 구단 유니폼으로 그대로 */
   if(cur!=null&&face6Pool(p).includes(cur)){ if(free(cur))Rv[key(cur)]=p.id; return cur; } /* 이적해도 같은 얼굴(유니폼만 바뀜). 새 구단에 같은 얼굴이 있어도 바꾸지 않는다(사용자 11-14: 트레이드되면 얼굴이 바뀜) */
   const C=face6Pool(p).filter(free); if(!C.length)return null;
   /* 리그 전체에서 덜 쓰인 얼굴부터(사용자 11-08: 외국인 얼굴이 늘 같다) — 같은 구단 안 중복은 위 free가 막는다 */
@@ -70,7 +69,7 @@ function face6Cut(im,cs,i,x,y,w,o,pad,big){ const c=document.createElement('canv
     const m=document.createElement('canvas'); m.width=o; m.height=Math.round(o*.05)+1; const mg=m.getContext('2d'); mg.fillStyle=gr; mg.fillRect(0,0,o,m.height); mg.globalCompositeOperation='destination-in'; const f2=mg.createLinearGradient(0,0,0,m.height); f2.addColorStop(0,'rgba(0,0,0,1)'); f2.addColorStop(1,'rgba(0,0,0,0)'); mg.fillStyle=f2; mg.fillRect(0,0,o,m.height); g.drawImage(m,0,pd); void fd; }
   else g.drawImage(im,sx+x,sy+y,w,w,0,0,o,o);
   return big?c.toDataURL('image/webp',.92):c.toDataURL('image/jpeg',.9); }
-function face6Src(o){ if(o&&o.foreign&&o.id!=null&&(o.team==null||(G&&G.f17&&G.f17[o.id]!=null)))return face17Src(o); if(o&&o.id!=null&&!o.foreign&&!o.persona&&G&&!G.f6off){ const a=G.fam&&G.fam[o.id]; if(o.team==null&&(amOn(o)||a))return amSrc(o); if(o.team!=null&&a&&a.k==='21'&&typeof FACE21!=='undefined'){ const u=amSrc(o); if(u)return u; } } /* 고교·대학 선수: 아마추어 사진(아래 amIdx), v21이면 지명 뒤에도 같은 신원의 구단 유니폼 */ /* 후보 때 본 얼굴(훈련복 사진)은 계약한 뒤에도 그대로(사용자 제보 11-15: 영입하자 다른 사람 얼굴) */ /* 소속 없는 외국인은 v17 무지 훈련복 사진 */ const i=face6Idx(o); if(i==null)return null; const tid=o.team; if(i>=100)return face6Src2(tid,i); let aw=''; try{ const c=UI.cast, g=c&&G.games[c.g]; if(g&&g.away===tid&&g.home!==tid&&FACE6.away)aw='a'; }catch(e){} /* 원정 경기 중계 중에는 원정 유니폼 */ const k=aw+tid+':'+i; if(F6C.has(k))return F6C.get(k);
+function face6Src(o){ if(o&&o.foreign&&o.id!=null&&(o.team==null||(G&&G.f17&&G.f17[o.id]!=null)))return face17Src(o); if(typeof FACE21!=='undefined'&&o&&o.id!=null&&!o.foreign&&!o.persona&&(amOn(o)||G&&G.fam&&G.fam[o.id])){ const u=amSrc(o); if(u)return u; } /* 고교·대학 선수: v21 아마추어 사진(아래 amIdx, FACE21이 있을 때만), 지명 뒤에도 같은 신원의 구단 유니폼 */ /* 후보 때 본 얼굴(훈련복 사진)은 계약한 뒤에도 그대로(사용자 제보 11-15: 영입하자 다른 사람 얼굴) */ /* 소속 없는 외국인은 v17 무지 훈련복 사진 */ const i=face6Idx(o); if(i==null)return null; const tid=o.team; if(i>=100)return face6Src2(tid,i); let aw=''; try{ const c=UI.cast, g=c&&G.games[c.g]; if(g&&g.away===tid&&g.home!==tid&&FACE6.away)aw='a'; }catch(e){} /* 원정 경기 중계 중에는 원정 유니폼 */ const k=aw+tid+':'+i; if(F6C.has(k))return F6C.get(k);
   { const bg=!aw&&FACE6.v==='6c'&&FACE6.big&&FACE6.big[String(tid)]?face6Load(tid,true):null; if(bg&&bg.ok){ try{ const u=face6Cut(bg,256,i,52,50,152,256,0); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){} } } /* 256px 시트가 있으면(사이트) 작은 자리도 선명하게(사용자 11-06: 크게 보이는 자리 화질) */
   const im=face6Load(tid,aw); if(!im)return null; if(!im.ok)return im.bad?null:F6WAIT; /* 사진을 푸는 동안 그림 얼굴이 잠깐 보였다가 바뀌지 않게 빈 칸(사용자 11-06) */ try{ const u=FACE6.v==='6c'?face6Cut(im,128,i,26,25,76,128,0):face6Cut(im,128,i,26,0,76,128,.1); if(!(FACE6.big&&FACE6.big[String(tid)]&&!aw))F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대. 턱이 잘리지 않게 모자 위쪽을 조금 자른다(사용자 11-08) */
 /* v13 추가 얼굴(100번부터): 원정 유니폼·256px 시트가 없어 128px 홈 시트에서만 자른다 */
@@ -82,29 +81,27 @@ function face17Idx(p){ if(typeof FACE17==='undefined'||typeof FACE6==='undefined
   const ad=i=>Math.round(Math.abs(FACE17.ids[i].a-(p.age||28))/4); C.sort((a,b)=>(U[a]||0)-(U[b]||0)||ad(a)-ad(b)||hn('f17'+a,p.id)-hn('f17'+b,p.id)); return M[p.id]=C[0]; }
 function face17Load(){ if(F6IMG.f17)return F6IMG.f17; const im=new Image(); F6IMG.f17=im; f6Retry(im); im.f6=true; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=FACE17.s256; return im; }
 function face17Src(p){ const i=face17Idx(p); if(i==null)return null; const k='17:'+i; if(F6C.has(k))return F6C.get(k); const im=face17Load(); if(!im.ok)return im.bad?null:F6WAIT; try{ const u=face6Cut(im,256,i,52,50,152,256,0); F6C.set(k,u); F6B.set(u,{f17:i}); return u; }catch(e){ return null; } }
-/* ===== 고교·대학 선수(드래프트 대상) 사진 (사용자 11-16: "고교선수는 얼굴 이미지 예전버전") =====
- - 선수 사진 시트는 모두 프로 구단 유니폼이라 소속 없는 국내 아마추어는 그림 얼굴이었다
- - FACE21(v21 아마추어 전용 얼굴, docs/asset-requests/2026-11-17-codex-v21-amateur-faces.md)이 있으면 그것을, 없으면 임시 FACEAM
-   (00l_amateur_faces_data.js: v6c 신원 검수 원본 중 국내·25세 이하 31명, 회색 무지 티셔츠, 모자·글자 없음)
- - 배정 G.fam[선수]={k:'21'|'am',c:칸}: 같은 아마추어는 늘 같은 얼굴. 지금 드래프트 대상끼리 덜 쓰인 얼굴부터, 나이 가까운 얼굴
- - 지명되면 'am'은 face6Idx가 같은 v6c 신원(FACE6 번호)을 구단 유니폼으로, '21'은 같은 신원의 구단 유니폼 시트(FACE21 팀 변형)로 잇는다 */
+/* ===== 고교·대학 선수(드래프트 대상) 사진 연결부: v21 납품을 기다린다(사용자 결정 11-17) =====
+ - 선수 사진 시트는 모두 프로 구단 유니폼이라 소속 없는 국내 아마추어는 예전 그림 얼굴로 보인다. 임시 사진은 쓰지 않는다
+ - FACE21 번호표 모듈(v21 아마추어 200명, docs/asset-requests/2026-11-17-codex-v21-amateur-faces.md: base·pitch·h·ids[{a,g}])을 더하면 아래가 켜진다. 그 전에는 아무것도 하지 않는다
+ - 배정 G.fam[선수]={k:'21',c:칸}: 같은 아마추어는 늘 같은 얼굴. 지금 드래프트 대상끼리 덜 쓰인 얼굴부터, 나이 가까운 얼굴. 고교 hs_home·대학 univ
+ - 지명되면 같은 신원의 구단 홈 유니폼 시트(FACE21 팀 변형, 구단 열쇠는 FACE21.teams 또는 v18과 같은 표)로 잇는다 */
 function amOn(p){ return !!p&&!!p.prospect&&!p.foreign&&p.team==null&&p.id!=null&&!p.persona; }
-function amSet(){ return typeof FACE21!=='undefined'&&FACE21.ids&&FACE21.ids.length?'21':typeof FACEAM!=='undefined'?'am':null; }
-function amIdx(p){ if(!G||G.f6off||!p||p.id==null)return null; const set=amSet(); if(!set)return null; const D=set==='21'?FACE21:FACEAM, M=G.fam||(G.fam={}), cur=M[p.id];
-  if(cur&&(cur.k===set||cur.k==='am'&&p.team!=null)&&(cur.k==='21'?FACE21:FACEAM).ids[cur.c])return cur; if(!amOn(p))return cur&&cur.k==='am'&&typeof FACEAM!=='undefined'&&FACEAM.ids[cur.c]?cur:null; /* 지명된 선수는 받은 얼굴 그대로 */
-  const U={}; for(const id of Object.keys(M)){ const q=G.players[id]; if(!q){ delete M[id]; continue; } if(q.prospect&&M[id].k===set)U[M[id].c]=(U[M[id].c]||0)+1; } /* 사라진 선수 배정은 지운다 */
-  const ad=c=>Math.round(Math.abs(D.ids[c].a-(p.age||19))/3); const C=D.ids.map((x,i)=>i).sort((a,b)=>(U[a]||0)-(U[b]||0)||ad(a)-ad(b)||hn('fam'+a,p.id)-hn('fam'+b,p.id));
-  return M[p.id]={k:set,c:C[0]}; }
-/* 시트 한 장: 'am' 임시(128·256 두 장), '21' v21(A·B × 128·256·384 × 변형: 고교 hs_home, 대학 univ, 구단 열쇠) */
-function amVar(p){ if(p.team==null)return p.college?'univ':'hs_home'; const T=typeof FACE21!=='undefined'&&FACE21.teams||FACE6.v18&&FACE6.v18.teams||{}; return T[String(p.team)]||null; }
-function amLoad(a,vk,cs){ const v21=a.k==='21', D=v21?FACE21:FACEAM; if(!D.pitch||!D.pitch[cs])return null; const sh=v21?(a.c<100?'A':'B'):'', k='am'+a.k+sh+cs+(v21?vk:''); if(F6IMG[k])return F6IMG[k];
+function amIdx(p){ if(typeof FACE21==='undefined'||!FACE21.ids||!FACE21.ids.length||!G||G.f6off||!p||p.id==null)return null; const M=G.fam||(G.fam={}), cur=M[p.id];
+  if(cur&&cur.k==='21'&&FACE21.ids[cur.c])return cur; if(!amOn(p))return null; /* 지명된 선수는 받은 얼굴 그대로, 아마추어 때 배정이 없으면 새로 주지 않는다 */
+  const U={}; for(const id of Object.keys(M)){ const q=G.players[id]; if(!q){ delete M[id]; continue; } if(q.prospect&&M[id].k==='21')U[M[id].c]=(U[M[id].c]||0)+1; } /* 사라진 선수 배정은 지운다 */
+  const ad=c=>Math.round(Math.abs(FACE21.ids[c].a-(p.age||19))/3); const C=FACE21.ids.map((x,i)=>i).sort((a,b)=>(U[a]||0)-(U[b]||0)||ad(a)-ad(b)||hn('fam'+a,p.id)-hn('fam'+b,p.id));
+  return M[p.id]={k:'21',c:C[0]}; }
+/* 시트 한 장: A·B × 128·256·384 × 변형(고교 hs_home, 대학 univ, 구단 열쇠) */
+function amVar(p){ if(p.team==null)return p.college?'univ':'hs_home'; const T=FACE21.teams||FACE6.v18&&FACE6.v18.teams||{}; return T[String(p.team)]||null; }
+function amLoad(a,vk,cs){ if(!FACE21.pitch||!FACE21.pitch[cs])return null; const sh=a.c<100?'A':'B', k='am21'+sh+cs+vk; if(F6IMG[k])return F6IMG[k];
   const im=new Image(); F6IMG[k]=im; f6Retry(im); im.onload=()=>{ im.ok=true; if(cs>128)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); };
-  im.f6=true; im.pitch=D.pitch[cs]; im.off=8; const h=D.h&&D.h[v21?sh+cs+'/'+vk:cs]; im.src=v21?D.base+sh+'/'+cs+'/'+vk+'.webp'+(h?'?v='+h:''):D.base+cs+'.webp'+(h?'?v='+h:''); return im; }
-/* 작은 자리: 이마~턱. 256px 시트에서 자른다(임시 시트는 사진이 칸을 꽉 채운 얼굴 중심 사진) */
-function amSrc(p){ const a=amIdx(p); if(!a)return null; const vk=a.k==='21'?amVar(p):'', c=a.k==='21'?a.c%100:a.c; if(a.k==='21'&&!vk)return null; const k='AM'+a.k+vk+':'+a.c; if(F6C.has(k))return F6C.get(k);
-  const im=amLoad(a,vk,256); if(!im)return null; if(!im.ok)return im.bad?null:F6WAIT; try{ const u=a.k==='21'?face6Cut(im,256,c,38,18,180,128,0):face6Cut(im,256,c,36,8,184,128,0); F6C.set(k,u); F6B.set(u,{am:{...a,vk}}); return u; }catch(e){ return null; } }
-/* 큰 자리: 머리~가슴(v21은 384px 시트가 있으면 먼저) */
-function amBust(x){ const k='AMB'+x.k+x.vk+':'+x.c, c=x.k==='21'?x.c%100:x.c; if(F6C.has(k))return F6C.get(k); try{ if(x.k==='21'){ const hd=amLoad(x,x.vk,384); if(hd&&hd.ok){ const u=face6Cut(hd,384,c,6,0,372,576,0,true); F6C.set(k,u); return u; } }
+  im.f6=true; im.pitch=FACE21.pitch[cs]; im.off=8; const h=FACE21.h&&FACE21.h[sh+cs+'/'+vk]; im.src=FACE21.base+sh+'/'+cs+'/'+vk+'.webp'+(h?'?v='+h:''); return im; }
+/* 작은 자리: 이마~턱(v18과 같은 구도를 요청했다) */
+function amSrc(p){ const a=amIdx(p); if(!a)return null; const vk=amVar(p); if(!vk)return null; const k='AM'+vk+':'+a.c; if(F6C.has(k))return F6C.get(k);
+  const im=amLoad(a,vk,256); if(!im)return null; if(!im.ok)return im.bad?null:F6WAIT; try{ const u=face6Cut(im,256,a.c%100,38,18,180,128,0); F6C.set(k,u); F6B.set(u,{am:{...a,vk}}); return u; }catch(e){ return null; } }
+/* 큰 자리: 머리~가슴(384px 시트가 있으면 먼저) */
+function amBust(x){ const k='AMB'+x.vk+':'+x.c, c=x.c%100; if(F6C.has(k))return F6C.get(k); try{ const hd=amLoad(x,x.vk,384); if(hd&&hd.ok){ const u=face6Cut(hd,384,c,6,0,372,576,0,true); F6C.set(k,u); return u; }
   const im=amLoad(x,x.vk,256); if(!im||!im.ok)return null; const u=face6Cut(im,256,c,4,0,248,464,0,true); F6C.set(k,u); return u; }catch(e){ return null; } }
 function face6Src2(tid,i){ if(i>=160)return face18Src(tid,i); const k='2'+tid+':'+i; if(F6C.has(k))return F6C.get(k); const bg=face6Load(tid,'2b'); if(bg&&bg.ok){ try{ const u=face6Cut(bg,256,i-100,52,50,152,256,0); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){} } /* 카페 11-09 "선수 사진 저해상도": v13 60명은 128px만 있어 흐렸다 */
   const im=face6Load(tid,'2'); if(!im)return null; if(!im.ok)return im.bad?null:F6WAIT; try{ const u=face6Cut(im,128,i-100,26,25,76,128,0); if(!bg||bg.bad)F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } }
