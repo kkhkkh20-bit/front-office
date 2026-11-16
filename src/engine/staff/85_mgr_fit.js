@@ -30,7 +30,10 @@ function roleTags(p,k){ const R=MROLE[k]; if(!R||!p)return ''; const g=v=>v>=57?
 function mgrFitB(tid,p){ if(tid==null||!p)return 0; const m=mgrOf(tid); const L=mgrRolesOf(m); for(const k of L)if(roleOk(p,k))return 1.2; return 0; }
 /* 주전 중 그 역할을 하는 선수(타자: 라인업, 필승조: 불펜 앞 5명, 선발: 로테이션 5명) */
 function roleHave(tid,k){ const R=MROLE[k]; let d=null; try{ d=depth(tid); }catch(e){ return []; } const L=R.bat?d.start:k==='penS'?d.pen.slice(0,5):d.sp; return L.filter(p=>roleOk(p,k)); }
-function roleGap(tid,k){ const c=G._rg&&G._rg.d===G.day?G._rg:(G._rg={d:G.day,v:{}}); const key=tid+':'+k; if(c.v[key]==null)c.v[key]=Math.max(0,MROLE[k].tgt-roleHave(tid,k).length); return c.v[key]; }
+function roleGap(tid,k){ const c=G._rg&&G._rg.d===G.day?G._rg:(G._rg={d:G.day,v:{}}); const key=tid+':'+k; if(c.v[key]==null)c.v[key]=Math.max(0,MROLE[k].tgt-roleHave(tid,k).length-roleBack(tid,k)); return c.v[key]; }
+/* 곧 돌아올 그 역할 선수(부상·대표팀·연수·전역 임박, 사용자 11-16): 지금 주전 중 가장 약한 선수만큼은 되면 있는 것으로 센다. 우리·AI 구단 같은 기준 */
+function roleBack(tid,k){ const R=MROLE[k]; let d=null; try{ d=depth(tid); }catch(e){ return 0; } const L=R.bat?d.start:k==='penS'?d.pen.slice(0,5):d.sp; const need=R.bat?9:5; const floor=L.length>=need?Math.min(...L.map(ovr)):0;
+  let n=0; for(const p of Object.values(G.players))if(p.team===tid&&!p.ys&&!p.prospect&&roleOk(p,k)&&ovr(p)>=floor&&mgrSoonBack(p))n++; return n; }
 /* 지금 가장 모자란 역할: 같은 감독이라도 선수단에 따라 달라진다(뛰는 야구 감독이어도 빠른 선수가 충분하면 출루형을 찾는다) */
 function mgrNeedRole(tid){ const L=mgrRolesOf(mgrOf(tid)); let best=null; for(const k of L){ const g=roleGap(tid,k); if(g>0&&(!best||g>best.gap))best={k,gap:g,have:MROLE[k].tgt-g}; } return best; }
 /* 영입 가치 배수: 감독 야구에 맞으면 1.05, 그 역할이 모자라면 1.15(들여올 때) */
@@ -39,7 +42,7 @@ function mgrFitWhy(tid,p){ const m=G.mgr[tid]; if(!m||m.interim)return ''; const
 /* 역할 후보: 다른 구단 선수와 FA. 1군에서 쓸 만한 선수만(우리 주전 평균보다 크게 낮지 않게) */
 function roleCands(tid,k,n){ const R=MROLE[k]; let d=null; try{ d=depth(tid); }catch(e){} const base=R.bat?(d&&d.start.length?d.start.reduce((a,p)=>a+ovr(p),0)/d.start.length:50):(d&&d.sp.length?d.sp.reduce((a,p)=>a+ovr(p),0)/d.sp.length:50);
   const fa=new Set(G.fa&&G.fa.open&&!G.fa.closed?(G.fa.pool||[]):[]);
-  return Object.values(G.players).filter(p=>((p.team!=null&&p.team!==tid)||fa.has(p.id))&&!p.foreign&&!p.ys&&!p.prospect&&!(p.joinY>G.year)&&healthy(p)&&roleOk(p,k)&&ovr(p)>=base-6&&!(p.team!=null&&tid===G.user&&mgrUnreal(p)))
+  return Object.values(G.players).filter(p=>((p.team!=null&&p.team!==tid)||fa.has(p.id))&&!p.foreign&&!p.ys&&!p.prospect&&!(p.joinY>G.year)&&healthy(p)&&!mgrLeaving(p,60)&&roleOk(p,k)&&ovr(p)>=base-6&&!(p.team!=null&&tid===G.user&&mgrUnreal(p)))
     .sort((a,b)=>(R.f(b)+ovr(b)*.6)-(R.f(a)+ovr(a)*.6)).slice(0,n||3); }
 function roleInside(tid,k){ let d=null; try{ d=depth(tid); }catch(e){ return null; } const R=MROLE[k]; const cur=new Set((R.bat?d.start:k==='penS'?d.pen.slice(0,5):d.sp).map(p=>p.id)); return playersOf(tid).filter(p=>!cur.has(p.id)&&!p.prospect&&roleOk(p,k)).sort((a,b)=>ovr(b)-ovr(a))[0]||null; }
 /* 감독 화면: 원하는 역할별 주전 현황 + 그 야구가 먹히는지 보여 주는 기록 */
