@@ -340,3 +340,30 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
  .match-dashboard .cs-nameplate b,.match-dashboard .cs-nameplate span,.match-dashboard .cs-stage[data-renderer="ready"]>.cs-board-view,.match-dashboard .cs-cam-view{font-size:10px}
  .match-dashboard .cs-cap .cs-voice>b{font-size:var(--ui-caption)}
 }
+
+/* 좌우 상시 타자·투수 카드(OOTP·FM 참고): 3D 화면에서만. 왼쪽 아래 타자, 오른쪽은 상황판 위 투수. '선수 카드 접기'로 숨긴다 */
+.cs-faces{display:none}
+.cs-stage.has-3d>.cs-faces{display:block;position:absolute;inset:0;pointer-events:none;z-index:4}
+.match-dashboard[data-faces="closed"] .cs-stage.has-3d>.cs-faces{display:none}
+.cs-face{position:absolute;display:grid;grid-template-columns:56px minmax(0,1fr);gap:8px;align-items:start;width:252px;padding:7px 9px;border:1px solid #ffffff1c;border-radius:6px;background:#0b17208c;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);color:#e9f0f4;text-align:left;pointer-events:auto;cursor:pointer;box-shadow:0 3px 10px #0004;text-shadow:0 1px 2px #000a} /* 투명도(사용자 11-16): 뒤 경기장이 비쳐 보이게 */
+.cs-face.l{left:10px;bottom:64px;border-left:3px solid #cc6674}.cs-face.r{right:10px;bottom:190px;border-left:3px solid #6ab5d4}
+.cs-face-ph .av{width:56px;height:56px;border-radius:5px;object-fit:cover}.cs-face-tx{display:grid;gap:1px;min-width:0}.cs-face-tx>i{font-style:normal;font-size:10.5px;color:#9fb6c3}.cs-face-tx>b{font-size:16px;line-height:1.2}.cs-face-tx>em{font-style:normal;font-size:11px;color:#b9ccd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-face-tx>small{font-size:11px;color:#f0d890}
+.cs-face .md-duel-more small{font-size:10.5px}.cs-face .md-stam{width:100%}
+.cs-faces-view{display:none;position:absolute;right:12px;top:84px;z-index:9;padding:6px 10px;background:#102431dd;border:1px solid #91aab777;border-radius:4px;color:#e1edf1;font-size:11px;cursor:pointer}
+@media(min-width:1001px){.match-dashboard[data-view="field"] .cs-stage[data-renderer="ready"]>.cs-faces-view{display:block}}.match-dashboard.md-ended .cs-stage>.cs-faces-view{visibility:hidden}
+@media(max-width:1000px){.cs-stage.has-3d>.cs-faces,.cs-faces-view{display:none}}
+/* 하단 선수단(FM 참고): 3D 경기 화면에서도 출전 선수 9명 + 현재 투수. '선수단'으로 접고 펼친다(접으면 한 줄) */
+@media(min-width:1001px){
+  :is(.detail-page-open,body) .cast.match-dashboard[data-view="field"]:has(.has-3d){grid-template-rows:44px minmax(0,1fr) 80px 28px}
+  :is(.detail-page-open,body) .cast.match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d){grid-template-rows:44px minmax(0,1fr) 26px 28px}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-dugout{display:flex;padding:3px 6px;overflow:hidden}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player{padding:1px 4px}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player .av{width:28px;height:28px}
+  .match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d) :is(.md-roster,.md-roster-label>div){display:none}
+  .match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d) .md-dugout{align-items:center;padding:0 6px}
+  .match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d) .md-roster-label{align-content:center;flex-basis:auto}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-dugout{background:#17212bb8}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player{background:#ffffff0a}
+}
+.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label{flex:0 0 92px;display:grid;align-content:center;gap:3px}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label>b{display:none}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label>div{display:flex;flex-direction:column;gap:2px}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-label button:not(.md-dugout-toggle){padding:1px 4px;font-size:10px}
+.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player{gap:0}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player b{font-size:11px;line-height:1.2}.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-player small,.match-dashboard[data-view="field"]:has(.has-3d) .md-roster-pos{font-size:9.5px;line-height:1.15}
+.md-dugout-toggle{border:0;background:none;color:#cfe0ea;font-weight:700;font-size:11px;padding:0 4px 0 0;cursor:pointer;white-space:nowrap}
