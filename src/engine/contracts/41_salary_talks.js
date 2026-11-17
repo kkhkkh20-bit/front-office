@@ -28,7 +28,7 @@ function salOffer(id,amt,force){ const C=G.contract; const p=G.players[id]; cons
   if(salAccepts(p,n,amt)){ n.st='ok'; capOwnerOk(cc,`${p.name} 연봉 계약`); /* 요구액을 그대로 주면 친분과 상관없이 합의(검수 11-06) */ p.newSal=amt; if(amt>n.ask)p.salCompCap={y:sponSeason(),a:Math.max(n.ask,n.off)}; else delete p.salCompCap; /* 요구액을 넘겨 올려 준 몫은 FA 보상금 기준에 넣지 않는다(공략 방지: 예비 FA 연봉을 부풀려 다른 구단을 쫓던 것) */ if(amt>=n.ask)p.mor=clamp((p.mor??60)+2,0,100); if(preFA(p)&&amt>=preFAPremium(p,n.off)*.98){ p.prem=G.year; p.mor=clamp((p.mor??60)+3,0,100); } if(ag&&amt>=n.ask)agRelAdd(ag,1,`${p.name} 연봉 합의`); return `${ag?agWho(p):p.name}: ${money(amt)}에 합의했습니다.`; }
   /* 거절하면 요구를 조금 낮춘다. 구단 산정안 아래로는 내려가지 않고, 산정안보다 낮게 부를수록 내리는 폭이 줄고 선수가 불쾌해한다(검수 11-09s: 최저 연봉 반복 제시로 요구액이 무너짐) */
   const low=amt<n.off; if(low){ n.lows=(n.lows||0)+1; p.mor=clamp((p.mor??60)-2*n.lows,0,100); if(ag&&n.lows>=2){ agRelAdd(ag,-1,`${p.name} 연봉 헐값 제시`); agMemSet(ag,G.user,'low',p.id); } }
-  const prev=n.ask; salAskDown(n,amt); return `${agWho(p)}: ${money(amt)}으로는 어렵습니다.${low&&n.lows>=2?' 계속 이런 금액이면 선수가 불쾌해합니다.':''} ${n.ask<prev?`${money(n.ask)}이면 사인하겠습니다.`:`${money(n.ask)}을 원합니다.`}`; }
+  const prev=n.ask; salAskDown(n,amt); return `${agWho(p)}: ${money(amt)}으로는 어렵습니다.${amt<salCutFloor(p)?` 감액 한도(${money(salCutFloor(p))}) 아래 금액입니다.`:''}${low&&n.lows>=2?' 계속 이런 금액이면 선수가 불쾌해합니다.':''} ${n.ask<prev?`${money(n.ask)}이면 사인하겠습니다.`:`${money(n.ask)}을 원합니다.`}`; }
 /* 거절한 뒤 요구를 낮춘다: 제시액과의 차이의 25%(헐값을 거듭할수록 덜). 산정안 아래로는 내려가지 않는다. 사용자·AI 같은 식 */
 function salAskDown(n,amt){ n.ask=Math.min(n.ask,round5(Math.max(amt,n.off,n.ask-(n.ask-amt)*.25/(1+(n.lows||0))))); return n.ask; }
 /* AI 구단 연봉 협상(계약 2단계 AI 동등성): 우리와 같은 요구(salAsk)·합의 판정(salAccepts)·요구 낮추기(salAskDown)·미계약 기준(HOLD_GAP).
@@ -44,7 +44,7 @@ function aiSalNeg(p){ const off=Math.max(MIN_SAL,p.newSal); const t=team(p.team)
   if(n.ask>v*HOLD_GAP)return {st:'hold',sal:v,ask:n.ask};
   if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); return {st:'last',sal:v,ask:n.ask}; }
 /* 합의 판정(협상 화면 미리보기와 실제 제시가 같은 기준): 요구액 이상이면 무조건, 아니면 충성심·에이전트 친분만큼 깎아도 받는다 */
-function salAccepts(p,n,amt){ if(!n)return false; if(amt>=n.ask)return true; initPers(p); const ag=hasAgent(p)?agentOf(p):null; const tol=.01+(p.pers.loy-4)*.002+(ag?(agRel(ag,p.team??G.user)-50)/2000:0); return amt>=n.ask*(1-Math.max(0,tol)); }
+function salAccepts(p,n,amt){ if(!n)return false; if(amt<salCutFloor(p))return false; /* 감액 한도 아래는 받지 않는다(다년계약과 같은 함수) */ if(amt>=n.ask)return true; initPers(p); const ag=hasAgent(p)?agentOf(p):null; const tol=.01+(p.pers.loy-4)*.002+(ag?(agRel(ag,p.team??G.user)-50)/2000:0); return amt>=n.ask*(1-Math.max(0,tol)); }
 /* 산정안 일괄 제시: 아직 한 번도 제시하지 않은 선수에게 구단 산정안을 낸다 */
 function salOfferAll(){ salTalkInit(); const C=G.contract; let ok=0, no=0; for(const id of Object.keys(C.neg)){ const n=C.neg[id]; if(n.st!=='open'||n.cur!=null)continue; const r=salOffer(+id,n.off,true); if(C.neg[id].st==='ok')ok++; else no++; void r; }
   return `산정안을 제시했습니다. ${ok}명 합의${no?`, ${no}명은 더 원합니다`:''}.`; }
@@ -64,11 +64,11 @@ function salArbDecide(){ const C=G.contract; if(!C||!C.neg)return; const out=[];
   if(out.length)mail('운영팀','연봉조정위원회 결정',`${out.join('\n')}\n\n조정에서 진 선수는 서운함이 남아 기분이 크게 떨어집니다.`,{kind:'연봉',acts:[{l:'연봉 협상 보기',a:'go',v:'transfer:contract'}]}); }
 /* 일괄 확정 미리보기: 실제 확정(confirmContracts→salTalkClose)과 같은 규칙. 합의·제시액으로 정해지는 선수(fix)와 연봉조정 중이라 확정 순간 결과가 갈리는 선수(arb: 구단안/선수안)를 나눈다 */
 function confirmPreview(){ const C=G.contract; if(!C)return null; const own=id=>{ const p=G.players[id]; return p&&p.team===G.user; }; const fix=[], arb=[], hold=[];
-  for(const id of (C.ended||[]).filter(own)){ const p=G.players[id]; const n=C.neg&&C.neg[id]; if(n&&n.st==='arb'&&n.arb){ arb.push({p,from:p.sal,club:n.arb.club,player:n.arb.player}); continue; } const to=n&&n.st==='open'?(n.cur??n.off):p.newSal; if(to==null)continue; if(n&&n.st==='open'&&n.ask>to*HOLD_GAP){ hold.push({p,from:p.sal,to:Math.max(MIN_SAL,to),ask:n.ask}); continue; } /* 확정 때 사인을 거부할 선수(salTalkClose와 같은 기준) */ fix.push({p,from:p.sal,to:Math.max(MIN_SAL,to)}); }
+  for(const id of (C.ended||[]).filter(own)){ const p=G.players[id]; const n=C.neg&&C.neg[id]; if(n&&n.st==='arb'&&n.arb){ arb.push({p,from:p.sal,club:n.arb.club,player:n.arb.player}); continue; } const to=n&&n.st==='open'?Math.max(n.cur??n.off,salCutFloor(p)):p.newSal; if(to==null)continue; if(n&&n.st==='open'&&n.ask>to*HOLD_GAP){ hold.push({p,from:p.sal,to:Math.max(MIN_SAL,to),ask:n.ask}); continue; } /* 확정 때 사인을 거부할 선수(salTalkClose와 같은 기준) */ fix.push({p,from:p.sal,to:Math.max(MIN_SAL,to)}); }
   const dFix=sum(fix.map(x=>x.to-x.from)); return {fix,arb,hold,dFix,dArbLo:sum(arb.map(x=>x.club-x.from)),dArbHi:sum(arb.map(x=>x.player-x.from))}; }
 /* 마감(확정): 남은 선수는 구단의 마지막 제시액에 사인한다. 조정 중이면 바로 결정한다 */
 function salTalkClose(quiet){ const C=G.contract; if(!C||!C.neg)return; if(Object.values(C.neg).some(n=>n.st==='arb'))salArbDecide();
-  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='open')continue; const v=n.cur??n.off;
+  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='open')continue; const v=Math.max(n.cur??n.off,salCutFloor(p)); /* 마감 확정도 감액 한도 아래로는 사인하지 않는다(제보 11-17) */
     if(n.ask>v*HOLD_GAP&&(C.tid??G.user)===G.user){ holdStart(p,v,n.ask,quiet); n.st='hold'; continue; } /* 요구와 차이가 크면 사인하지 않고 미계약으로 버틴다(KBO: 미계약 선수는 참가활동 불가) */
     p.newSal=v; n.st='ok'; if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); } }
 /* 연봉 미계약(홀드아웃): 구단 제시액과 선수 요구액 차이가 15% 넘게 남은 채 마감되면 사인하지 않는다. 미계약 선수는 훈련·경기 등 참가활동을 못 한다(healthy). 협상은 개막 전까지 이어진다 */
