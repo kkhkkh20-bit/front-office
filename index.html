@@ -5246,7 +5246,7 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 @media(max-width:600px){
  .match-dashboard:not([data-more]) .cs-top>.cs-mode,.match-dashboard:not([data-more]) .cs-top>#cs-snd{display:none}
  .match-dashboard .cs-top>.md-control{white-space:nowrap}
- .match-dashboard .cs-stage .md-bug{display:none!important}
+ /* 경기장 안 점수판에서 위 점수 막대와 겹치는 점수·이닝만 뺀다. 주자 다이아몬드·투구 수는 28_cast_portrait.css(사용자 ddddddd 11-17) */
  .match-dashboard .cs-bn{place-items:end center}.match-dashboard .cs-bn>div{margin-bottom:22%}
  .match-dashboard .cs-nameplate b,.match-dashboard .cs-nameplate span,.match-dashboard .cs-stage[data-renderer="ready"]>.cs-board-view,.match-dashboard .cs-cam-view{font-size:10px}
  .match-dashboard .cs-cap .cs-voice>b{font-size:var(--ui-caption)}
@@ -5442,6 +5442,43 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
  html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-play-grid{display:block!important;min-height:0;height:100%}
  html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-charts{display:grid!important;height:100%;grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;gap:4px}
  html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-comment{min-height:0}
+}
+/* ===== 휴대폰 세로 중계 상황판(사용자 'ddddddd' 11-17: "주자상황이랑 공 갯수 같은게 예전처럼 안나옵니다") =====
+   600px 이하에서는 경기장 안 점수판(.md-bug)을 통째로 숨겨(위 점수 막대와 겹친다는 이유) 주자 다이아몬드와 투수 이름·투구 수까지 사라지고
+   B/S/O 작은 상자만 남았다. 아래 타자·투수 줄은 두 칸에 한 줄씩 욱여넣어 오늘 기록·투구 수가 말줄임으로 잘렸다.
+   세로 화면: 점수·이닝(위 막대에 있음)만 빼고 [투수·투구 수] / [주자 다이아몬드 | B·S·O]를 경기장 왼쪽 위에 두고,
+   타자·투수 줄은 한 사람에 한 줄(넘치면 다음 줄로)로 잘리지 않게 한다. 가로 화면(27_cast_landscape.css)은 바꾸지 않는다 */
+@media(max-width:600px) and (orientation:portrait){
+ #cs-stage>.md-count-panel{max-width:min(170px,calc(100% - 110px))}
+ #cs-stage>.md-count-panel .md-bug{display:grid!important;min-width:0}
+ #cs-stage>.md-count-panel .md-bug>.mb-who:first-child,#cs-stage>.md-count-panel .mb-stam,#cs-stage>.md-count-panel :is(.mb-teams,.mb-inn){display:none}
+ #cs-stage>.md-count-panel .mb-who{display:flex;justify-content:space-between;gap:5px;padding:1px 5px;font-size:10.5px;line-height:1.4}
+ #cs-stage>.md-count-panel .mb-who>span{min-width:0}
+ #cs-stage>.md-count-panel .mb-who em{flex:none;font-size:11px}
+ #cs-stage>.md-count-panel #md-bug-pc{color:#ffd27a;font-weight:800}
+ #cs-stage>.md-count-panel .mb-main{grid-template-columns:34px;justify-content:center;min-height:34px}
+ #cs-stage>.md-count-panel .mb-dia{border-left:0}
+ #cs-stage>.md-count-panel .mb-dia i{width:9px;height:9px}
+ #cs-stage>.md-count-panel .mb-dia .b1{left:12px;top:5px}#cs-stage>.md-count-panel .mb-dia .b0{left:21px;top:14px}#cs-stage>.md-count-panel .mb-dia .b2{left:3px;top:14px}
+ #cs-stage>.md-count-panel .cs-bso>div{height:12px;line-height:12px}
+ #cs-stage>.md-count-panel .cs-bso i{width:7px;height:7px}
+ /* '득점권 찬스' 띠는 상황판 아래로(겹쳐 가려지던 자리) */
+ .match-dashboard .cs-stage>.cs-sit{top:58px;left:4px}
+ /* 기본 중계 안내(3D 대체)는 상황판을 덮지 않게 오른쪽 위 관중석 자리에 작게(아래쪽은 타자·포수 자리). 다시 시도 버튼은 오른쪽 아래 구석에 */
+ .match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:4px;bottom:auto;left:auto;right:4px;max-width:calc(100% - 140px);min-height:0;padding:3px 8px;font-size:10px;line-height:1.35;opacity:.9;box-sizing:border-box}
+ .match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status,.match-dashboard .cs-3d[data-state="fallback"][data-reload] .cs-3d-status{padding-right:8px}
+ .match-dashboard .cs-3d[data-state="fallback"] .cs-3d-acts{position:absolute;top:auto;bottom:4px;right:4px;gap:4px}
+ .match-dashboard .cs-3d-acts>button{padding:3px 8px;font-size:10px;line-height:1.4}
+ /* 아래 타자·투수 줄: 한 사람에 한 줄. 이름·오늘 기록(투구 수)·시즌 기록을 낱말 묶음으로 두고 넘치면 다음 줄로 */
+ .match-dashboard[data-view="field"] .md-duel{grid-template-columns:minmax(0,1fr);gap:2px;padding:3px 6px}
+ .match-dashboard[data-view="field"] .md-duel-player>span{flex-wrap:wrap;column-gap:6px;row-gap:0;white-space:normal;overflow:visible}
+ .match-dashboard[data-view="field"] .md-duel-player :is(b,small){white-space:nowrap;overflow:visible;text-overflow:clip}
+ .match-dashboard[data-view="field"] .md-duel-player>span>small{color:#f0d893}
+ .match-dashboard[data-view="field"] .md-duel-player #cs-pitcher-count{font-weight:800;color:#ffd27a}
+ .match-dashboard[data-view="field"] .md-duel :is(.cs-mu,.cs-mix,.md-duel-rt,.md-stam){display:none}
+ .match-dashboard[data-view="field"] .md-duel-more{display:flex;margin:0;min-width:0}
+ .match-dashboard[data-view="field"] .md-duel-more>small{font-size:10.5px;color:#a6bcc9}
+ .match-dashboard[data-view="field"] .md-duel>.md-story{padding-top:2px;font-size:11px}
 }
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 
@@ -47143,6 +47180,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-casthud',d:'11월 17일',t:'휴대폰 세로 중계: 주자·볼카운트·투구 수 상황판',items:[
+    '휴대폰을 세로로 들고 중계를 보면 경기장 왼쪽 위 상황판에 주자 다이아몬드(누가 어느 루에 있는지), B·S·O 볼카운트, 현재 투수 이름과 투구 수가 함께 나옵니다. 점수와 이닝은 위 점수 막대에 그대로 있습니다.',
+    '경기장 아래 타자·투수 줄은 한 사람에 한 줄씩 놓아 이름, 오늘 기록(투수는 이닝·삼진·투구 수), 시즌 기록을 끝까지 보여 줍니다. 화면이 좁으면 말줄임 대신 다음 줄로 넘깁니다.',
+    '3D 대신 기본 중계로 볼 때 나오는 안내는 오른쪽 위에 작게, 3D 다시 시도 버튼은 오른쪽 아래 구석에 두어 상황판과 타석을 가리지 않습니다. 득점권 찬스 표시는 상황판 바로 아래에 나옵니다.']},
   {id:'2026-11-17-uifb',d:'11월 17일',t:'화면 배치 정리: 래더 아이콘 · 캘린더 오른쪽 칸 · 선수 성격과 포스트시즌 기록',items:[
     '래더는 왼쪽 메뉴 대신 위 오른쪽 아이콘 줄(설정 옆)의 사다리 아이콘으로 엽니다. 휴대폰은 아래 \'메뉴\'에서 엽니다.',
     'F10은 캘린더를 엽니다. 단축키 목록(F1)에도 바꿔 적었습니다.',
