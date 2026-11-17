@@ -135,7 +135,7 @@ function agRelAdd(ag,d,why,tid,solo){ if(!ag||!d||ag.self)return; tid=tid??G.use
   if(tid===G.user&&!solo){ (ag.log=ag.log||[]).push({y:G.year,d:G.day,v:Math.round(v),t:why||''}); if(ag.log.length>30)ag.log.shift(); }
   if(!solo&&Math.abs(d)>=1)for(const m of agMates(ag))agRelAdd(m,d*.2,'',tid,true); } /* 같은 회사 동료에게 20%가 번진다(회사 평판). 동료 몫은 기록하지 않는다 */ /* 기록(30건)은 우리 구단 것만 남긴다(저장 크기) */
 /* 제안 수준에 따른 친분 변화: 사용자와 AI 구단이 같은 표를 쓴다. r = 제안 ÷ 요구 기준 */
-function agOfferRel(ag,r,tid,name){ if(!ag)return; if(r>=1&&r<1.15)agRelAdd(ag,1,`${name} 성의 있는 제안`,tid); else if(r<.75)agRelAdd(ag,-4,`${name} 무리한 제안`,tid); else if(r<.9)agRelAdd(ag,-1,`${name} 낮은 제안`,tid); }
+function agOfferRel(ag,r,tid,name,pid){ if(!ag)return; if(r>=1&&r<1.15)agRelAdd(ag,1,`${name} 성의 있는 제안`,tid); else if(r<.75){ agRelAdd(ag,-4,`${name} 무리한 제안`,tid); agMemSet(ag,tid,'low',pid); } else if(r<.9)agRelAdd(ag,-1,`${name} 낮은 제안`,tid); }
 /* 협상 라운드(트레이드 역제안 왕복과 같은 방식, 16_trade TRADE_ROUNDS): 우리 제안 → 에이전트 답(수락·거절·역제안) 한 번이 1라운드.
    성향별 한도: 강경형 TRADE_ROUNDS-1, 경매형·실속형 TRADE_ROUNDS, 관계형 TRADE_ROUNDS+1. 첫 제안 뒤 CT_ROUND_DAYS(트레이드 역제안 유효 7일과 같음)가 지나도록 못 끝내면 접는다.
    접으면 CT_COOL_DAYS 동안 새 제안을 받지 않고 분위기가 떨어진다. 이미 걸어 둔 제안은 그대로 남는다. AI 구단의 입찰·인상도 같은 규칙(agShopTick) */
@@ -159,7 +159,7 @@ const AG_OPTV={hard:.8,auction:.9,fast:1,rel:1};
 function agOptV(ag){ return ag?AG_OPTV[ag.style]??1:1; }
 function agRelLab(r){ return r>=75?'각별함':r>=60?'친함':r>=40?'보통':r>=25?'서먹함':'불편함'; }
 /* 친분이 요구 기준에 주는 영향: 친하면 덜 부르고, 불편하면 더 부른다. 관계형은 두 배, 대형은 1.5배 */
-function agWantMul(ag,tid){ if(!ag||ag.self)return AG_STYLE.self.want; const r=agRel(ag,tid); const k=(ag.style==='rel'?2:1)*(ag.size==='big'?1.5:1); return (AG_STYLE[ag.style]||AG_STYLE.rel).want*(1-(r-50)/50*.035*k)*(1+(agRepOf(ag)-60)/1500); } /* 평판 높은 회사는 조금 더 부른다(평판 84면 +1.6%) */
+function agWantMul(ag,tid){ if(!ag||ag.self)return AG_STYLE.self.want; const r=agRel(ag,tid); const k=(ag.style==='rel'?2:1)*(ag.size==='big'?1.5:1); return (AG_STYLE[ag.style]||AG_STYLE.rel).want*(1-(r-50)/50*.035*k)*(1+(agRepOf(ag)-60)/1500)*agMemWant(ag,tid); } /* 지난 협상 기억(계약 2단계): 좋게 끝났으면 덜, 나쁘게 끝났으면 더 부른다(최대 ±2%) */ /* 평판 높은 회사는 조금 더 부른다(평판 84면 +1.6%) */
 /* 시장 확인 라운드 수: 대어일수록 많다(타구단 제시를 받아 보고 다시 묻는 과정) */
 function agTier(p){ const o=ovr(p), a=(p.ask0||(p.ask&&p.ask.annual)||0); return o>=60||a>=1200?'star':o>=55||a>=600?'big':'normal'; }
 function agShopN(p){ const t=agTier(p); if(t==='normal')return 0; const ag=agentOf(p); if(!ag)return 0; /* 본인 협상은 시장 확인 라운드 없이 바로 결정 */ return Math.max(1,(t==='star'?3:2)+(AG_STYLE[ag.style]||{}).shop); }
@@ -170,6 +170,17 @@ function agDealAdd(p,tid,amt){ const ag=agentOf(p); if(!ag)return; ag.deals=ag.d
   (ag.hist=ag.hist||[]).push({y:G.year,d:G.day,pid:p.id,n:p.name,tid,a:amt||null}); if(ag.hist.length>12)ag.hist.shift(); /* 최근 계약(화면: 에이전트 명단) */
   if(G.agRep&&ag.ag!=null)G.agRep[ag.ag]=Math.min(95,Math.round(((G.agRep[ag.ag]??50)+(amt>=1000?1.2:amt>=400?.6:.2))*10)/10); } /* 큰 계약일수록 회사 평판이 오른다 */
 /* 해마다 FA 공시 때 친분은 조금씩 보통으로 돌아온다 */
+/* 에이전트 기억(계약 2단계): 구단마다 마지막 협상 결과 하나만 남긴다. ag.mem[구단]=[해, 결과, 선수 번호].
+   결과: ok 합의 · kept 약속 이행 · fold 협상 접음 · low 무리한 제안 · close 결렬 · broke 약속 위반. 다음 협상의 첫 분위기(FA)·요구 기준·첫마디에 쓰인다.
+   사용자·AI 구단 같은 규칙. 2년 지나면 효과 절반, 3년 지나면 잊는다. [분위기 가감, 요구 배수 가감] */
+const AG_MEM={ok:[4,-.005],kept:[8,-.012],fold:[-4,.005],low:[-6,.01],close:[-10,.015],broke:[-12,.02]};
+function agMemSet(ag,tid,c,pid){ if(!ag||ag.self||tid==null||!AG_MEM[c])return; (ag.mem=ag.mem||{})[tid]=[G.year,c,pid??-1]; }
+function agMemOf(ag,tid){ const x=ag&&!ag.self&&ag.mem&&ag.mem[tid??G.user]; if(!x||!AG_MEM[x[1]])return null; const age=G.year-x[0]; if(age>=3)return null; return {y:x[0],c:x[1],pid:x[2],f:age>=2?.5:1}; }
+function agMemMood(ag,tid){ const m=agMemOf(ag,tid); return m?Math.round(AG_MEM[m.c][0]*m.f):0; }
+function agMemWant(ag,tid){ const m=agMemOf(ag,tid); return m?1+AG_MEM[m.c][1]*m.f:1; }
+const AG_MEM_T={ok:n=>`지난번 ${n} 건은 잘 마무리했습니다. 이번에도 좋게 이야기했으면 합니다.`,kept:n=>`지난번 ${n} 건에서 약속을 지켜 주셨습니다. 이번에는 편하게 이야기하겠습니다.`,fold:n=>`지난번 ${n} 건은 결론 없이 끝났습니다. 이번에는 빨리 정리했으면 합니다.`,
+  low:n=>`지난번 ${n} 건 제안은 솔직히 서운했습니다. 이번에는 다르길 바랍니다.`,close:n=>`지난번 ${n} 건이 결렬된 뒤 처음 뵙습니다. 조심스럽게 시작하겠습니다.`,broke:n=>`지난번 ${n} 건 약속이 지켜지지 않았습니다. 이번에는 말보다 조건을 보겠습니다.`};
+function agMemTxt(ag,tid){ const m=agMemOf(ag,tid); if(!m)return ''; const q=G.players[m.pid]; return AG_MEM_T[m.c](q?q.name:'다른 고객'); }
 function agYear(){ for(const a of agInit()){ const R0=agRels(a); for(const k of Object.keys(R0)){ const v=Math.round(50+(R0[k]-50)*.85); if(v===50)delete R0[k]; else R0[k]=v; } } } /* 모든 구단 친분이 같은 속도로 보통으로 돌아온다 */
 /* 우선 제안: 친하거나 거래를 많이 한 에이전트는 협상 시작 전에 고객 한 명을 먼저 보여 준다. 경매형은 하지 않는다 */
 function agPitch(){ const F=G.fa; if(!F||G.unemp)return; F.pitch={};
@@ -222,10 +233,10 @@ function agMatchOffer(id){ const p=G.players[id]; { const n0=G.fa&&G.fa.neg&&G.f
 function hasAgent(p){ return !!agentOf(p); }
 function agWho(p){ const ag=agentOf(p); if(!ag)return `${p.name} 본인`; return `${ag.name} 에이전트(${ag.firm})`; }
 /* 연봉 협상은 순탄하다: 스타일·친분 효과를 40%만 반영 */
-function agSalMul(p){ return hasAgent(p)?1+(agWantMul(agentOf(p))-1)*.4:1; }
+function agSalMul(p,tid){ return hasAgent(p)?1+(agWantMul(agentOf(p),tid)-1)*.4:1; }
 /* 다년계약은 까다롭다: 스타일·친분을 그대로 반영하고, FA가 1년 남은 대어는 경매형·대형 에이전트가 시장을 보자고 버틴다 */
 function agExtMul(p,tid){ if(!hasAgent(p))return 1; const ag=agentOf(p); let m=agWantMul(ag,tid); const near=(p.svc||0)>=faSvc(p)-1&&!p.faC; if(near&&ovr(p)>=54)m*=ag.style==='auction'?1.08:ag.size==='big'?1.05:1.02; return m; }
-function agExtTestMarket(p){ if(!hasAgent(p))return false; const ag=agentOf(p); return (p.svc||0)>=faSvc(p)-1&&!p.faC&&ovr(p)>=56&&(ag.style==='auction'||ag.size==='big')&&agRel(ag)<65; }
+function agExtTestMarket(p,tid){ if(!hasAgent(p))return false; const ag=agentOf(p); return (p.svc||0)>=faSvc(p)-1&&!p.faC&&ovr(p)>=56&&(ag.style==='auction'||ag.size==='big')&&agRel(ag,tid)<65; } /* tid: 협상하는 구단(AI 다년계약도 같은 판정, 계약 2단계) */
 /* 에이전트 말투(계약 1단계): 성향 × 상황별 짧은 합니다체. 같은 협상·같은 라운드면 늘 같은 문장(저장하지 않고 다시 만들어도 같다) */
 const AG_SAY={
   ok:{self:['좋은 조건입니다. 저도 마음이 기웁니다.','생각보다 잘 챙겨 주셨습니다. 곧 답을 드리겠습니다.'],auction:['좋은 조건입니다. 시장 반응과 함께 선수에게 전하겠습니다.','이 정도면 경쟁력이 있습니다. 비교해 보고 답을 드리겠습니다.'],hard:['요구를 맞춰 주셨습니다. 선수에게 그대로 전하겠습니다.','이 선이면 이야기가 됩니다.'],fast:['좋습니다. 선수도 반길 조건입니다.','깔끔한 조건입니다. 빨리 정리하겠습니다.'],rel:['신경 써 주셔서 감사합니다. 선수에게 잘 전하겠습니다.','단장님다운 제안입니다. 좋게 보고 있습니다.']},

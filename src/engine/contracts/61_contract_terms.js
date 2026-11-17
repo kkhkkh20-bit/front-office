@@ -10,15 +10,16 @@ function optV(t,d){ const c=OPT_CRIT[t.optC]; return (c?c[4]:CT_OPT)*(d&&d.ov!=n
 function termsEq(t,d){ const y=Math.max(1,t.years||1); return (t.annual||0)+(t.bonus||0)*CT_BON/y+(t.opt||0)*optV(t,d); }
 function termsMul(t,d){ let m=1; if(t.role!=null&&d&&d.role!=null){ const g=t.role-d.role; m*=g>0?1-.07*g:1-.02*g; }
   if(d&&d.ntc&&!t.ntc)m*=.95; else if(t.ntc&&!(d&&d.ntc))m*=1.01;
+  m*=1+pmVal(t,d); /* 구두 약속(약속 탭, 계약 2단계): 선수가 쳐 주는 만큼 조건 가치가 오른다 */
   if(t.cOpt)m*=1-.035*t.cOpt; if(t.pOut)m*=1+.012*Math.max(1,(t.years||1)-t.pOut)+.02; /* 구단 연장 옵션은 선수에게 불리(해마다 3.5%), 선수 옵트아웃은 유리(일찍 나갈 수 있을수록) — 사용자 커뮤니티 제안 2026-11-02 */
   return m; }
 function termsVal(t,d){ return termsEq(t,d)*termsMul(t,d); }
 /* 요구 묶음: 환산 연봉 요구액(base)을 계약금·연봉으로 나눈다. 대형 FA일수록 계약금 비중이 크다(KBO 관행) */
 function termsDemand(p,kind,base){ const y=Math.max(1,base.years||1); const o=ovr(p);
-  const bs=kind==='fa'?(p.faGrade==='A'?.42:p.faGrade==='B'?.32:.15)*(p.age>=34?.6:p.age>=32?.8:1):kind==='ext'?(o>=58?.3:.18):0;
-  const bonus=kind==='sal'?0:round5(base.annual*y*bs); const annual=Math.max(MIN_SAL,Math.ceil((base.annual-bonus*CT_BON/y)/5)*5);
+  const bs=kind==='fa'?(p.faGrade==='A'?.42:p.faGrade==='B'?.32:.15)*(p.age>=34?.6:p.age>=32?.8:1):0; /* 비FA 다년계약·연봉 협상은 계약금 없음(KBO 규약 제81조, 실제화 11-17) */
+  const bonus=bs>0?round5(base.annual*y*bs):0; const annual=Math.max(MIN_SAL,Math.ceil((base.annual-bonus*CT_BON/y)/5)*5);
   const role=kind==='fa'?(o>=58?0:o>=50?1:2):null; const ntc=kind!=='sal'&&o>=64&&p.age>=29&&hasAgent(p)&&(agentOf(p).size==='big'||agentOf(p).style==='hard');
-  const ag=hasAgent(p)?agentOf(p):null; return {years:y,bonus,annual,opt:0,role,ntc,ov:agOptV(ag)}; }
+  const ag=hasAgent(p)?agentOf(p):null; return {years:y,bonus,annual,opt:0,role,ntc,ov:agOptV(ag),...(kind!=='sal'?{pv:pmVals(p,kind)}:{})}; }
 /* FA 실제 요구(환산 연봉): 에이전트 성향·경쟁 구단 수·원소속 할인을 반영한 금액. 이만큼이면 '요구 충족'(다른 구단과의 비교는 별도) */
 function faWantA(p){ const ag=agNeg(p); const ai=Object.keys((G.fa&&G.fa.ai&&G.fa.ai[p.id])||{}).length; return Math.ceil(p.ask.annual*agWantMul(ag)*(1+.03*ai)*(p.faFrom===G.user?.95:1)*.97/5)*5; }
 /* 묶음을 '같은 가치'로 맞추며 연봉만 조정한다(역제안을 우리 묶음 모양 그대로 돌려줄 때) */
@@ -34,8 +35,8 @@ function termsFit(t,d,val,years,lock,pref){ const L=new Set(lock||[]); const y=L
   if(f==='annual')T.annual=Math.max(MIN_SAL,Math.ceil(((T.annual||0)+need)/5)*5); else T.bonus=Math.ceil(((T.bonus||0)+need*y/CT_BON)/5)*5;
   while(gap()>0){ if(f==='annual')T.annual+=5; else T.bonus+=5; } return T; }
 /* 두 묶음이 같은 조건인지(역제안을 그대로 다시 낸 경우) */
-function termsSame(a,b){ if(!a||!b)return false; for(const k of ['years','bonus','annual','opt','cOpt','pOut'])if((a[k]||0)!==(b[k]||0))return false; return (a.optC||'')===(b.optC||'')&&(a.role??null)===(b.role??null)&&!!a.ntc===!!b.ntc; }
-function termsTxt(t,short){ const L=[`${t.years}년${t.cOpt?`+구단 옵션 ${t.cOpt}년`:''}`]; if(t.bonus)L.push(`계약금 ${money(t.bonus)}`); L.push(`연봉 ${money(t.annual)}`); if(t.opt)L.push(`옵션 연 ${money(t.opt)}`); if(t.pOut)L.push(`${t.pOut}년 뒤 선수 옵트아웃`);
+function termsSame(a,b){ if(!a||!b)return false; for(const k of ['years','bonus','annual','opt','cOpt','pOut'])if((a[k]||0)!==(b[k]||0))return false; return (a.optC||'')===(b.optC||'')&&(a.role??null)===(b.role??null)&&!!a.ntc===!!b.ntc&&pmKey(a)===pmKey(b); }
+function termsTxt(t,short){ const L=[`${t.years}년${t.cOpt?`+구단 옵션 ${t.cOpt}년`:''}`]; if(t.bonus)L.push(`계약금 ${money(t.bonus)}`); L.push(`연봉 ${money(t.annual)}`); if(t.opt)L.push(`옵션 연 ${money(t.opt)}`); if(t.pOut)L.push(`${t.pOut}년 뒤 선수 옵트아웃`); { const pt=pmTxt(t); if(pt)L.push(`약속: ${pt}`); }
   if(!short){ const tot=(t.bonus||0)+t.annual*t.years; L.push(`보장 총액 ${money(tot)}${t.opt?` (옵션 포함 최대 ${money(tot+t.opt*t.years)})`:''}`); } return L.join(' · '); }
 /* 계약 반영: 계약금은 바로 지급(올해 지출), 상한 계산에는 연평균으로 들어간다. 옵션은 시즌 뒤 달성하면 지급 */
 /* 조건은 계약한 구단에서만 유효하다(p.ctT): 방출·트레이드·보상선수로 옮기면 상한 반영·옵션·거부권·약속이 모두 끝난다 */
@@ -53,7 +54,7 @@ function optPaid(tid,a){ const L=G.sea.optPd=G.sea.optPd||{}; L[tid]=(L[tid]||0)
 /* 최근 트레이드로 옮긴 선수(30일): 같은 선수를 곧바로 다시 트레이드하지 않는다(플레이테스트 4 #19·#25) */
 function recentTr(p,d){ return !!p&&p.trD!=null&&G.day-p.trD<(d||30); }
 function tradeTerms(p){ if(p)p.trD=G.day; try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ optPaid(p.team,p.opt.a); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} try{ capDeadBonus(p); }catch(e){} termsClear(p); } /* 계약금 반영액은 낸 구단 상한에 남긴다 */
-function termsClear(p){ delete p.capB; delete p.opt; delete p.ntc; delete p.roleProm; delete p.ctT; delete p.cOpt; delete p.pOut; delete p.ctB; delete p.cOptAdd; }
+function termsClear(p){ delete p.cprom; delete p.capB; delete p.opt; delete p.ntc; delete p.roleProm; delete p.ctT; delete p.cOpt; delete p.pOut; delete p.ctB; delete p.cOptAdd; }
 /* 옵트아웃을 넣을 수 있는 해: 그 시즌을 마쳤을 때 FA 자격(등록 연수)이 생기는 해부터. 비FA 다년계약에서 자격 전 옵트아웃은 FA로 나갈 수 없어 막는다.
    st: 계약 첫 시즌(지금 시즌이면 0, 다음 시즌 시작이면 1을 더한다) */
 function pOutMin(p,st){ const add=st!=null&&st>G.year?1:0; return Math.max(1,faSvc(p)-(p.svc||0)-add); } /* 계약 몇 시즌을 마치면 FA 자격(등록 연차)이 되는가: 남은 연차에서 계약 시작 전에 채울 올 시즌을 뺀다(검수 11-06: 하나 더 세어 첫해 옵트아웃이 막혔다) */
@@ -75,7 +76,53 @@ function termsApply(p,t,from,sy,noPay){ termsClear(p); if(!t)return; const y=Mat
   if(t.cOpt>0)p.cOpt={y:t.cOpt,a:t.annual,at:end}; /* 구단 연장 옵션: 보장 마지막 시즌(at) 뒤 구단이 같은 연봉으로 y년 연장할지 정한다 */
   if(t.pOut>0&&t.pOut<y&&t.pOut>=pOutMin(p,sy))p.pOut={y:sy+t.pOut-1}; /* FA 자격이 생기는 해부터만 효력 */
   if(t.bonus>0)p.ctB={b:t.bonus,sy}; /* 계약 총액 기록용 계약금(상한 반영 기간이 끝나도 총액에서 빠지지 않게) */ /* 선수 옵트아웃: y시즌을 마친 뒤 남은 계약을 버리고 FA로 나갈 수 있다 */
-  if(t.role===0)p.roleProm={k:0,t:p.isP?(isSPr(p)?'SP':'RP'):'B',until:sy+Math.min(y,2)-1,l:roleSet(p)[0],from:from||'fa'}; else delete p.roleProm; }
+  if(t.role===0)p.roleProm={k:0,t:p.isP?(isSPr(p)?'SP':'RP'):'B',until:sy+Math.min(y,2)-1,l:roleSet(p)[0],from:from||'fa'}; else delete p.roleProm;
+  pmApply(p,t,sy,y); }
+/* ---------- 약속 탭(계약 2단계): 계약서 밖 구두 약속. t.pm={pt 출전량 단계(0 없음·1 보통·2 많이), ptc 기준(pa 타석·g 경기·outs 이닝), n 기준 수, sg 보강 자리('' 없음·SP·RP·C·IF·OF), po 포스팅 허락(0 없음·n년 뒤), d 합의한 날}.
+   역할 약속은 예전처럼 t.role(FA는 요구 대비 배수, 비FA 다년계약은 '보장'만 고른다). 선수는 성향만큼 약속을 쳐 준다(약속 하나에 0~5%, 합계 8% 이하).
+   확인은 시즌 결산 때(cpromSeason): 지키면 기분 +3·에이전트 친분 +1·기억 '약속 이행', 어기면 기분 -8(보강 -6)·불만(약속)·에이전트 친분 -3·기억 '약속 위반'.
+   어긴 뒤 기분이 바닥(30 미만)이고 야망이 있으면 트레이드를 요청한다. 부상으로 빠진 기간만큼 출전 기준을 낮추고, 절반 넘게 빠졌으면 따지지 않는다. 트레이드·방출로 옮기면 약속도 끝난다(termsClear).
+   포스팅 약속은 예전 포스팅 약속(p.postPromise)으로 넣어 포스팅 요청 때 지키거나 어긴다 */
+const PM_PT={B:{pa:[350,480],g:[100,125]},SP:{outs:[300,450],g:[20,26]},RP:{g:[40,55],outs:[120,180]}};
+const PM_PTL={pa:'타석',g:'경기',outs:'이닝'};
+const PM_SG={SP:'선발 투수',RP:'불펜 투수',C:'포수',IF:'내야수',OF:'외야수'};
+const PM_SG_MIN=52; /* 보강으로 치는 영입: 그 자리 1군급(능력 52 이상) */
+function pmKind(p){ return p.isP?(isSPr(p)?'SP':'RP'):'B'; }
+function pmPtC(p,c){ const K=PM_PT[pmKind(p)]; return K[c]?c:Object.keys(K)[0]; }
+function pmPtN(p,c,lv){ const L=PM_PT[pmKind(p)][pmPtC(p,c)]; return lv>0?L[Math.min(lv,2)-1]:0; }
+function pmPtTxt(c,n){ return c==='outs'?`${Math.round(n/3)}이닝`:`${n}${PM_PTL[c]||''}`; }
+function pmGrp(q){ if(q.isP)return isSPr(q)?'SP':'RP'; const ps=q.pos; return ps==='C'?'C':['1B','2B','3B','SS'].includes(ps)?'IF':['LF','CF','RF'].includes(ps)?'OF':'DH'; }
+function pmKey(t){ const P=t&&t.pm||{}; return `${P.pt||0}|${P.pt?P.ptc||'':''}|${P.sg||''}|${P.po||0}`; }
+/* 선수가 약속을 얼마나 쳐 주나(요구 대비 비율). 출전량은 주전이 아니거나 야망 큰 선수가, 보강은 야망 큰 선수가, 포스팅은 해외 진출 의지가 큰 선수가 크게 본다. 난수를 쓰지 않는다 */
+function pmVals(p,kind){ initPers(p); const a=p.pers.amb; let reg=false; try{ reg=isRegular(p); }catch(e){}
+  const k=(reg?.6:1.2)*(a>=13?1.25:1); let po=0; if(kind==='ext'&&p.mlb!=null){ try{ const w=p.mlb+postPull(p); po=w>=52?.05:w>=44?.02:.004; }catch(e){} }
+  const r3=v=>Math.round(v*1000)/1000; return {pt:[r3(.015*k),r3(.03*k)],sg:r3(clamp(.01+(a-10)*.002,.004,.025)),po,rl:kind==='ext'?.02:0}; }
+function pmVal(t,d){ const P=t&&t.pm, V=d&&d.pv; if(!V)return 0; let v=0; if(P){ if(P.pt>0)v+=V.pt[Math.min(P.pt,2)-1]||0; if(P.sg&&PM_SG[P.sg])v+=V.sg; if(P.po>0)v+=V.po*(P.po<=2?1:P.po===3?.75:.5); } if(t.role===0&&d.role==null)v+=V.rl||0; return Math.min(.08,v); }
+function pmCount(t){ const P=t&&t.pm||{}; return (P.pt>0?1:0)+(P.sg?1:0)+(P.po>0?1:0)+(t&&t.role===0?1:0); }
+function pmTxt(t){ const P=t&&t.pm; if(!P)return ''; const L=[]; if(P.pt>0)L.push(P.n?`출전 ${pmPtTxt(P.ptc,P.n)}`:'출전량'); if(P.sg&&PM_SG[P.sg])L.push(`${PM_SG[P.sg]} 보강`); if(P.po>0)L.push(`${P.po}년 뒤 포스팅 허락`); return L.join(', '); }
+function pmApply(p,t,sy,y){ const P=t&&t.pm; if(!P)return; const L=[];
+  if(P.pt>0){ const c=pmPtC(p,P.ptc); L.push({k:'pt',c,n:pmPtN(p,c,P.pt),y0:sy,y1:sy+Math.min(y,2)-1}); }
+  if(P.sg&&PM_SG[P.sg])L.push({k:'sg',g:P.sg,y0:sy,y1:sy,d:P.d??G.day});
+  if(L.length){ let ag=null; try{ ag=agentOf(p); }catch(e){} p.cprom={tid:p.team,ag:ag?ag.id:null,L}; }
+  if(P.po>0){ p.postPromise=sy+P.po-1; p.postPromiseT=p.team; } }
+/* 출전 기준 확인: 부상으로 빠진 날만큼 기준을 낮추고, 절반 넘게 빠졌거나 군 복무 중이면 따지지 않는다(null) */
+function cpromPt(p,x,y){ if(milServing(p))return null; const C=G.cal||{}; const open=y===G.year&&C.open?C.open:dnum(y,3,25), end=y===G.year&&C.end?C.end:dnum(y,10,1); let out=0;
+  for(const h of p.injHist||[]){ if(h.d==null||h.ovs)continue; const a=Math.max(open,h.d), b=Math.min(end,h.d+(h.days||0)); if(b>a)out+=b-a; }
+  const sc=1-out/Math.max(1,end-open); if(sc<.5)return null; const h=seasonTotal(p,y,'1군')||{}; return (h[x.c]||0)>=x.n*sc; }
+function cpromSg(p,C,x){ return Object.values(G.players).some(q=>q.team===C.tid&&q.id!==p.id&&q.mvD!=null&&q.mvD>=x.d&&ovr(q)>=PM_SG_MIN&&(pmGrp(q)===x.g||(pmGrp(q)==='DH'&&(x.g==='IF'||x.g==='OF')))); }
+function cpromLab(p,x){ return x.k==='pt'?`출전 ${pmPtTxt(x.c,x.n)}`:`${PM_SG[x.g]} 보강`; }
+function cpromSeason(y){ for(const p of Object.values(G.players)){ const C=p.cprom; if(!C)continue; if(p.team!==C.tid||!ctOn(p)){ delete p.cprom; continue; }
+    const res=[]; for(const x of C.L){ if(x.y0>y||x.y1<y)continue; const r=x.k==='pt'?cpromPt(p,x,y):cpromSg(p,C,x); if(r!=null)res.push([x,r]); }
+    C.L=C.L.filter(x=>x.y1>y); if(!C.L.length)delete p.cprom; if(!res.length)continue;
+    const ag=C.ag!=null?agById(C.ag):null; const me=C.tid===G.user&&!G.unemp; const bad=res.filter(r=>!r[1]), good=res.filter(r=>r[1]);
+    for(const [x] of good){ p.mor=clamp((p.mor??60)+3,0,100); if(ag)agRelAdd(ag,1,`${p.name} 약속 이행`,C.tid); }
+    for(const [x] of bad){ p.mor=clamp((p.mor??60)-(x.k==='pt'?8:6),0,100); try{ grvAdd(p,'prom',5); }catch(e){} if(ag)agRelAdd(ag,-3,`${p.name} 약속 불이행`,C.tid); }
+    if(ag)agMemSet(ag,C.tid,bad.length?'broke':'kept',p.id); /* 하나라도 어기면 '약속 위반'으로 기억한다 */
+    initPers(p); const req=bad.length&&(p.mor??60)<30&&p.pers.amb>=11&&!p.listed;
+    if(me){ const who=ag?`${ag.name} 에이전트`:p.name; const L=res.map(([x,r])=>`${r?'지킴':'어김'} · ${cpromLab(p,x)}`).join('\n');
+      if(req){ p.treq={day:G.day}; mail(p.name,'트레이드 요청',`계약 때 한 약속이 지켜지지 않았습니다.\n${L}\n\n이대로라면 다른 팀에서 뛰고 싶습니다. 트레이드를 요청드립니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'트레이드 명단에 올리기',a:'listP',v:p.id},{l:'남아 달라고 설득',a:'keepP',v:p.id},{l:'선수 보기',a:'player',v:p.id}]}); }
+      else mail(who,`${p.name} 계약 약속 ${bad.length?'불이행':'이행'}`,`${y}시즌 약속을 확인했습니다.\n${L}\n\n${bad.length?`약속을 어겨 선수 기분이 떨어졌고${ag?', 에이전트와의 관계도 나빠졌습니다. 이 에이전트는 다음 협상에서 이 일을 기억합니다':''}.`:`약속을 지켜 선수 기분이 올랐습니다${ag?'. 에이전트도 다음 협상에서 이 일을 기억합니다':''}.`}`,{kind:'면담',imp:!!bad.length,ref:p.id,acts:[{l:'선수 보기',a:'player',v:p.id}]}); }
+    else if(req&&p.team!=null){ try{ wire('구단 사정',`${tshort(p.team)} ${p.name}, 계약 약속 불이행에 불만 · 트레이드 요청`,{tid:p.team,ref:p.id}); }catch(e){} } } }
 function capBOf(p){ return ctOn(p)&&p.capB&&p.capB.until>=G.year?p.capB.a:0; }
 /* 예산 전망용 옵션 예상액: 시즌 중엔 지금 페이스로, 개막 전·비시즌엔 주전이면 달성한다고 본다 */
 function optProj(tid,y){ let s=y===G.year&&G.sea&&G.sea.optPd?G.sea.optPd[tid]||0:0; /* 시즌 중 이미 준 옵션 */ for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; { const xo=y>G.year&&p.extNext&&p.extNext.terms&&p.extNext.terms.opt; if(xo){ if(isRegular(p))s+=xo; continue; } } /* 합의한 다음 시즌 계약의 옵션(검수 11-09zzb) */ if(!ctOn(p)||!p.opt||p.opt.until<y||p.opt.paidY===y)continue; /* 전 구단이 이미 준 옵션은 다시 잡지 않는다(검수 11-09zzb) */ if(milServing(p)){ /* 며칠 뒤 돌아오는 대표팀 차출은 페이스대로 본다(검수 11-09zzb) */ if(y===G.year&&optEarned(p))s+=p.opt.a; continue; } const h=y===G.year?seasonTotal(p,G.year,'1군'):null; const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0;

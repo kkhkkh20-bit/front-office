@@ -15,14 +15,15 @@ function ovsWorldStart(){ if(!G||G.ovsW)return; G.ovsW=1; const n0=G.nextId;
 /* ----- 3-1 시작 해외파 ----- */
 /* k: 종류 · lg: 계약 리그 · age·o: 나이·국내 능력 범위 · ago: 떠난 지(해외 시즌 수) · rem·amt: 남은 계약 연수(올해 포함)·연봉(만 달러) · p: 나올 확률 */
 const OVS_SEED=[{k:'star',lg:'MLB',age:[29,31],o:[66,69],ago:[2,3],rem:[3,4],amt:[1100,1700],how:'포스팅'},
-  {k:'mlb',lg:'MLB',age:[26,28],o:[61,64],ago:[1,2],rem:[2,3],amt:[450,900],how:'포스팅'},
-  {k:'vet',lg:'MLB',age:[31,33],o:[60,62],ago:[1,2],rem:[1,2],amt:[300,550],how:'해외 FA',p:.5},
+  {k:'mlb',lg:'MLB',age:[26,28],o:[61,64],ago:[1,2],rem:[3,4],amt:[450,900],how:'포스팅'},
+  {k:'mlb2',lg:'MLB',age:[24,26],o:[59,61],ago:[1,1],rem:[3,4],amt:[350,500],how:'포스팅',p:.5}, /* 11-17: 갓 건너간 젊은 포스팅 선수(김혜성·송성문 사례), 반쯤 */
+  {k:'vet',lg:'MLB',age:[31,33],o:[60,62],ago:[1,2],rem:[2,3],amt:[300,550],how:'해외 FA',p:.7}, /* 11-17: 남은 계약 1~2년·50% → 2~3년·70%, mlb 2~3년 → 3~4년(실제 2026 빅리그 국내 선수 4명: 이정후·김혜성·김하성·송성문. 시작 해외파가 1~2년 만에 모두 끝나 MLB 국내 선수가 2명으로 떨어졌다) */
   {k:'npb',lg:'NPB',age:[28,31],o:[57,60],ago:[1,2],rem:[1,2],amt:[150,320],how:'해외 FA'},
   {k:'aaa',lg:'MLB',age:[24,27],o:[55,58],ago:[1,1],rem:[1,2],amt:[100,200],how:'포스팅',p:.75}];
 function ovsSeedKr(){ G.abroad=G.abroad||[]; const T=G.teams.map(t=>t.id); const used=new Set();
   for(const S of OVS_SEED){ if(S.p!=null&&R()>=S.p)continue; let from=pick(T); for(let i=0;i<6&&used.has(from);i++)from=pick(T); used.add(from);
     const age=ri(S.age[0],S.age[1]), o=rnd(S.o[0],S.o[1]), ago=ri(S.ago[0],S.ago[1]), y=G.year-1-ago, y1=y+1, yrs=ago+ri(S.rem[0],S.rem[1]), amt=round5(rnd(S.amt[0],S.amt[1]));
-    const isP=S.k==='star'?R()<.4:R()<.5; const p=ovsDetach(newPlayer({age:age-ago,isP,base:o,team:from,svc:0})); setOvr(p,o-(age-ago<28?ago*.7:0)); p.pot=Math.max(p.pot,o);
+    const isP=S.k==='star'?R()<.4:R()<.5; const p=ovsDetach(newPlayer({age:age-ago,isP,base:o,team:from,svc:0})); setOvr(p,o-(age-ago<28?ago*.7:0)); p.pot=Math.max(p.pot,o+(age<28?ri(2,5):0)); /* 11-17: 20대 중반 해외파는 아직 클 여지가 있다(잠재력=지금 능력이면 해마다 줄기만 했다) */
     if(isP)p.role=S.k==='star'||R()<.6?'SP':'RP';
     /* KBO 시절: 떠나기 전 세 시즌 1군 기록(능력은 지금보다 조금 낮게) */
     const svc=S.how==='해외 FA'?ri(9,11):ri(7,8); p.svc=svc; p.sal=round5(marketSal(ovr(p))*(S.how==='해외 FA'?1.2:.8)); p.mlb=ri(55,80); p.ovsY=y; p.joinY=y-svc+1;

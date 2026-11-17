@@ -154,7 +154,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   try{ if(cwOn()&&G.cal)cwOrdDaily(); }catch(e){}
   if(day===KD(10,1)&&!G.unemp){ try{ const t=team(G.user); if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0, T=Math.round(RES_CAP*ecoIdx(sponSeason()))+ear; if(t.cash>T)mail('재무팀','결산 때 유보금 회수 예정',`보유 현금 ${money(t.cash)}이(가) 유보금 상한 ${money(T)}을(를) 넘습니다. 시즌 결산 때 모기업이 넘은 돈의 60%를 회수합니다. 결산 전에 시설·선수 투자에 쓰면 회수되지 않습니다.`,{kind:'재정',imp:true}); } }catch(e){} } /* 회수 전에 미리 알린다(플레이 테스트 11-13) */ /* 구단주 지시 판정은 그날 경기를 치른 뒤: 기한 당일 경기 결과·관중·타석까지 넣는다(검수 11-09zzd) */
   try{ cheerDaily(); }catch(e){} /* 응원단 휴식은 그날 경기(무대)를 다 치른 뒤(검수 11-09zza) */
-  if(G.ps&&G.ps.done&&G.ps.finDay===day){ settlement(); try{ relsSeason(G.last&&G.last.y||G.year); }catch(e){} try{ stadSeasonNote(); }catch(e){} try{ draftRetro(); }catch(e){} }
+  if(G.ps&&G.ps.done&&G.ps.finDay===day){ settlement(); try{ relsSeason(G.last&&G.last.y||G.year); }catch(e){} try{ cpromSeason(G.last&&G.last.y||G.year); }catch(e){} /* 계약 약속 확인(계약 2단계) */ try{ stadSeasonNote(); }catch(e){} try{ draftRetro(); }catch(e){} }
   /* 스토브리그는 결산이 끝난 뒤에만 연다(포스트시즌이 길어져 결산이 11월로 밀려도 순서가 뒤집히지 않게) */
   if(day>=KD(11,1)&&dobj(day).m>=11&&G.rolled!==G.year&&G.last&&G.last.y===G.year){ offseason(); offseasonMgr(); try{ stadAI(); }catch(e){} }
   if(day>=KD(11,2)&&G.rolled===G.year&&G.fa&&!G.fa.open&&!G.fa.closed&&G.faAnnY!==G.year){ G.faAnnY=G.year; faAnnounce(); } /* 결산(스토브리그 시작)이 11월 2일보다 늦어도 공시한다 */

@@ -5,6 +5,8 @@
    돌린 결과 전체(경기 기록 포함)는 서버의 관리자 전용 자리(cupRun)에 둔다: 다른 기기에서 이어서 공개할 수 있고, 공개 전에는 누구도 못 본다.
    tools/cup-host.cjs는 예비 길로 남는다 */
 const ADM_KEY='fo-cup-admin';
+/* 고른 참가 파일은 따로 들고 있는다: 대회를 연 직후 신청 목록 자동 받기 등으로 화면을 다시 그리면 파일 칸이 비어 [올리기]에 '파일을 골라 주세요'가 나왔다(11-17 점검) */
+try{ document.addEventListener('change',e=>{ const t=e.target; if(t&&t.id==='admFiles')ADM.pick=t.files&&t.files.length?[...t.files]:null; },true); }catch(e){}
 const ADM={key:'',chk:'',cup:null,ents:null,drop:[],run:null,runSt:'',busy:false,prog:'',msg:'',bad:false,ask:false,f:null,hof:null};
 function admKeyGet(){ try{ return localStorage.getItem(ADM_KEY)||''; }catch(e){ return ''; } }
 function admKeySet(k){ try{ if(k)localStorage.setItem(ADM_KEY,k); else localStorage.removeItem(ADM_KEY); }catch(e){} }
@@ -47,7 +49,7 @@ Object.assign(A,{
     if(!r.ok)return v==='auto'?render():admSay(j.message||'신청 목록을 받지 못했습니다.',true); ADM.ents=j.entries||[]; ADM.drop=j.drop||[]; if(v==='auto')render(); else admSay(`신청 ${ADM.ents.length}팀을 받았습니다.`); },
   async admDrop(v,el){ const undo=el&&el.dataset.u==='1'; const {r,j}=await admApi('/admin/drop',{method:'PUT',body:JSON.stringify({h:v,undo})}).catch(()=>({r:{ok:false},j:{}}));
     if(!r.ok)return admSay(j.message||'바꾸지 못했습니다.',true); ADM.drop=j.drop||[]; admSay(undo?'다시 넣었습니다.':'이 팀을 뺐습니다.'); },
-  async admFile(){ const el=document.getElementById('admFiles'); const F=el&&el.files?[...el.files]:[]; if(!F.length)return admSay('참가 파일(.json)을 골라 주세요.',true); let ok=0; const bad=[];
+  async admFile(){ const el=document.getElementById('admFiles'); const F=el&&el.files&&el.files.length?[...el.files]:(ADM.pick||[]); ADM.pick=null; if(!F.length)return admSay('참가 파일(.json)을 골라 주세요.',true); let ok=0; const bad=[];
     for(const f of F){ try{ const t=await f.text(); const {r,j}=await admApi('/admin/entry',{method:'POST',body:t}); if(r.ok)ok++; else bad.push(`${f.name}: ${(j.errors&&j.errors[0])||j.message||r.status}`); }catch(x){ bad.push(f.name+': 읽지 못함'); } }
     await A.admEnts(); admSay(`참가 파일 ${ok}개를 올렸습니다.${bad.length?' 실패: '+bad.join(' / '):''}`,!!bad.length); },
   /* 3) 대회 돌리기 */
@@ -196,7 +198,7 @@ function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"
     <div class="adm-ents">${(()=>{ const L=C.cupSeed(E.map(e=>Object.assign(e,{ovr:e.ovr||cupOvr(e)}))).filter(e=>!ADM.q||String(e.name).includes(ADM.q)); return ADM.sort==='at'?L.sort((a,b)=>(b.at||0)-(a.at||0)):L; })().map(e=>{ const x=admEntOk(e,cfg,drop), dr=drop.includes(e.h), fl=x.v.flags.concat(x.v.elig).map(f=>f.msg);
       return `<details class="adm-e${dr?' adm-drop':''}${fl.length||!x.v.ok?' adm-flag':''}"><summary><b>${esc(e.name)} ${esc(e.year)}</b> <span class="num">${esc(C.cupOvrTxt(e.ovr))}</span> <span class="small muted">${e.at?cupDate(e.at):''}${e.file?' · 파일':''}</span>${dr?' <span class="pill">제외</span>':''}${!x.v.ok?' <span class="pill">오류</span>':''}${fl.length?` <span class="pill">이상치 ${fl.length}</span>`:''}</summary>
         ${fl.length?`<p class="small adm-warn">${fl.map(esc).join('<br>')}</p>`:''}${cupDeckHtml(e)}<div class="btns"><button class="btn small" data-a="admDrop" data-v="${esc(e.h)}" data-u="${dr?1:0}">${dr?'다시 넣기':'제외'}</button></div></details>`; }).join('')||'<p class="small muted">아직 신청이 없습니다.</p>'}</div>`:''}
-    <p class="small muted">파일로 받은 참가 덱 올리기</p><div class="row"><input id="admFiles" type="file" accept=".json,application/json" multiple style="min-width:0;flex:1"><button class="btn small" data-a="admFile"${ADM.busy||!c.id?' disabled':''}>올리기</button></div></section>`;
+    <p class="small muted">파일로 받은 참가 덱 올리기</p><div class="row"><input id="admFiles" type="file" accept=".json,application/json" multiple style="min-width:0;flex:1">${ADM.pick&&ADM.pick.length?`<span class="small muted">${ADM.pick.length}개 골라 둠</span>`:''}<button class="btn small" data-a="admFile"${ADM.busy||!c.id?' disabled':''}>올리기</button></div></section>`;
   const pubd=R?R.day:0;
   const s3=`<section class="card"><h2 class="sec">3. 대회 돌리기</h2><p class="small muted">접수를 닫은 뒤 시드(OVR 순)를 정하고 리그 27경기와 가을야구를 이 브라우저에서 돌립니다. 경기는 돌릴 때마다 달라지고, 돌린 결과가 공식 결과입니다. 공개를 시작하기 전에는 다시 돌릴 수 있습니다.</p>
     <div class="btns"><button class="btn primary" data-a="admRun"${ADM.busy||!c.id||pubd>0?' disabled':''}>${R?'다시 돌리기':'시드 확정 + 돌리기'}</button></div>${ADM.prog?`<p class="small">${esc(ADM.prog)}</p>`:''}

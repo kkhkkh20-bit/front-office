@@ -14,8 +14,8 @@ function ngtOpen(k,id){ const p=G.players[id]; if(!p)return; let T;
   if(k==='fa'){ const o=G.fa&&G.fa.offers[id]; T=o&&o.terms?{...o.terms}:termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); }
   else if(k==='ext'){ const ec=p.extCounter&&p.extCounter.until>=G.day&&p.extCounter.terms?p.extCounter:null; /* 기한이 지난 역제안은 기본값으로 쓰지 않는다(검수 11-09s) */ const y=ec?ec.years:p.age<=29?4:p.age<=32?3:2; T=ec?{...ec.terms}:{...termsDemand(p,'ext',{annual:ngtExtDem(p,y),years:y}),role:null}; T.annual=round5(Math.max(MIN_SAL,T.annual*.94)); }
   else { const n=salNeg(id); T={years:1,annual:n?(n.cur??n.off):p.sal,bonus:0,opt:0,role:null,ntc:false}; }
-  T=ngtClean(T); if(k!=='sal'&&!T.optC)T.optC=optCrit(p);
-  UI.ngt={k,id,T,msg:null,ed:false,lk:[]}; renderSheet(); }
+  T=ngtClean(T); if(k!=='sal'&&!T.optC)T.optC=optCrit(p); if(k!=='sal')T.pm={...(T.pm||{})};
+  UI.ngt={k,id,T,msg:null,ed:false,lk:[],tab:'terms'}; renderSheet(); }
 /* 기간을 바꿨을 때: 금액을 직접 고치지 않았으면 새 기간 기준으로 다시 잡고(요구대로 채웠으면 새 요구로), 고쳤으면 그대로 두고 알린다 */
 function ngtYears(N,y){ const p=G.players[N.id]; const T=N.T; T.years=y; if(N.k!=='ext')return;
   if(N.ed==='dem'){ const D=ngtDemand(N); Object.assign(T,{bonus:D.bonus,annual:D.annual,opt:D.opt}); N.kept=false; return; }
@@ -37,23 +37,34 @@ function ngtRows(N,D){ const p=G.players[N.id]; const T=N.T; const R=[];
   const mrow=(f,l,sub)=>{ const v=T[f]||0, d=D[f]||0; const ok=v>=d; const st=ngtStep(Math.max(v,d,100));
     return row(f,l,sub,{h:`<button class="ngb" data-a="ngtSet" data-v="${f}:${-st}" aria-label="${l} 내리기">−</button>${contractMoneyInput('ngt',f,l,v)}<button class="ngb" data-a="ngtSet" data-v="${f}:${st}" aria-label="${l} 올리기">+</button>`},
       d?`<span class="pill ${ok?'good':'warn'}">요구 ${money(d)}</span>`:f==='opt'?'<span class="small muted">요구 없음</span>':'',d?ok:null); };
-  if(N.k==='fa'){ const L=roleSet(p); R.push(row('role','역할 약속',T.role===0?'지키지 못하면 매달 선수 기분 하락':'약속 없음',{seg:1,h:L.map((l,i)=>`<button data-a="ngtSet" data-v="role:=${i}" class="${T.role===i?'on':''}">${l}</button>`).join('')},`<span class="pill ${T.role<=D.role?'good':'warn'}">요구 ${L[D.role]}</span>`,T.role<=D.role)); }
-  if(N.k!=='sal'){ const ys=N.k==='fa'?[1,2,3,4,5,6]:[2,3,4,5,6]; const ok=N.k==='fa'?T.years>=D.years:T.years>=extMinY(p);
+  if(N.k!=='sal'){ const ys=N.k==='fa'?[1,2,3,4,5,6]:p.age>=33?[1,2,3,4,5]:[2,3,4,5,6]; /* 베테랑 다년은 1+1·2+1(구단 연장 옵션)이 흔하다 */ const ok=N.k==='fa'?T.years>=D.years:T.years>=extMinY(p);
     R.push(row('years','계약 기간',N.k==='fa'?'FA 기간은 길수록 선수가 좋아합니다':'기간에 따라 요구액이 바뀝니다',{seg:1,h:ys.map(y=>`<button data-a="ngtSet" data-v="years:=${y}" class="${T.years===y?'on':''}">${y}년</button>`).join('')},N.k==='fa'?`<span class="pill ${ok?'good':'warn'}">요구 ${D.years}년</span>`:extMinY(p)?`<span class="pill ${ok?'good':'warn'}">최소 ${extMinY(p)}년</span>`:'',ok));
-    R.push(mrow('bonus','계약금','계약할 때 한 번에 지급 · 상한에는 연평균으로 반영')); }
+    if(N.k==='fa')R.push(mrow('bonus','계약금','계약할 때 한 번에 지급 · 상한에는 연평균으로 반영')); else R.push(`<div class="ngr ok"><div class="ngl"><b>계약금</b><i>비FA 다년계약은 계약금이 없습니다(규약상 신인·FA만). 연봉과 옵션으로 정합니다.</i></div></div>`); }
   R.push(mrow('annual','연봉',N.k==='sal'?`지금 ${money(p.sal)} · 구단 산정안 ${money((salNeg(N.id)||{}).off||p.sal)}`:'매 시즌 지급'));
   if(N.k!=='sal'){ const c=T.optC||optCrit(p), K=optKinds(p), oc=OPT_CRIT[c];
-    R.push(`<div class="ngr ok${(N.lk||[]).includes('opt')?' lk':''}">${ngtLkBtn(N,'opt','옵션')}<div class="ngl"><b>옵션 (연간 최대)</b><i>${esc(oc[2])} 달성 때만 지급 · 보통 연봉의 10~20% · 선수는 보장액의 ${Math.round(optV({optC:c},D)*100)}% 가치로 봅니다</i></div><div class="ngc"><button class="ngb" data-a="ngtSet" data-v="opt:${-ngtStep(Math.max(T.opt||0,100))}" aria-label="옵션 내리기">−</button>${contractMoneyInput('ngt','opt','옵션',T.opt||0)}<button class="ngb" data-a="ngtSet" data-v="opt:${ngtStep(Math.max(T.opt||0,100))}" aria-label="옵션 올리기">+</button></div><div class="ngd"><span class="small muted">요구 없음</span></div><div class="ng-chips" role="group" aria-label="옵션 종류">${K.map(k=>`<button class="chip${k===c?' on':''}" data-a="ngtSet" data-v="optC:=${k}"><em>${OPT_GRP[OPT_CRIT[k][3]]}</em> ${esc(OPT_CRIT[k][2])}</button>`).join('')}</div></div>`);
+    R.push(`<div class="ngr ok${(N.lk||[]).includes('opt')?' lk':''}">${ngtLkBtn(N,'opt','옵션')}<div class="ngl"><b>옵션 (연간 최대)</b><i>${esc(oc[2])} 달성 때만 지급 · ${N.k==='ext'?'비FA 다년은 보통 총액의 10~30%':'보통 연봉의 10~20%'} · 선수는 보장액의 ${Math.round(optV({optC:c},D)*100)}% 가치로 봅니다</i></div><div class="ngc"><button class="ngb" data-a="ngtSet" data-v="opt:${-ngtStep(Math.max(T.opt||0,100))}" aria-label="옵션 내리기">−</button>${contractMoneyInput('ngt','opt','옵션',T.opt||0)}<button class="ngb" data-a="ngtSet" data-v="opt:${ngtStep(Math.max(T.opt||0,100))}" aria-label="옵션 올리기">+</button></div><div class="ngd"><span class="small muted">요구 없음</span></div><div class="ng-chips" role="group" aria-label="옵션 종류">${K.map(k=>`<button class="chip${k===c?' on':''}" data-a="ngtSet" data-v="optC:=${k}"><em>${OPT_GRP[OPT_CRIT[k][3]]}</em> ${esc(OPT_CRIT[k][2])}</button>`).join('')}</div></div>`);
     { const ys=T.years||1; R.push(row('cOpt','구단 연장 옵션','보장 기간 뒤 구단이 같은 연봉으로 더 쓸지 고릅니다 · 선수는 싫어해 연 3.5%씩 더 요구',{seg:1,h:[0,1,2].map(n=>`<button data-a="ngtSet" data-v="cOpt:=${n}" class="${(T.cOpt||0)===n?'on':''}">${n?'+'+n+'년':'없음'}</button>`).join('')},'<span class="small muted">요구 없음</span>',true));
       const pm=N.k==='fa'?1:pOutMin(p,ngtSeasons(N)[0]); const po=[0,...Array.from({length:Math.min(3,ys-1)},(_,i)=>i+1).filter(n=>n>=pm)];
       if(ys>=2&&po.length===1&&N.k==='ext')R.push(`<div class="ngr ok"><div class="ngl"><b>선수 옵트아웃</b><i>FA 자격(등록 ${faSvc(p)}시즌) 전에는 옵트아웃해도 FA로 나갈 수 없어 넣을 수 없습니다. ${pm}년 이상 계약부터 가능합니다.</i></div></div>`);
       if(ys>=2&&po.length>1)R.push(row('pOut','선수 옵트아웃',`정한 시즌 뒤 선수가 FA로 나갈 수 있습니다 · 선수에게 유리해 요구액이 줄어듭니다${N.k==='ext'?' · FA 자격이 생기는 해부터':''}`,{seg:1,h:po.map(n=>`<button data-a="ngtSet" data-v="pOut:=${n}" class="${(T.pOut||0)===n?'on':''}">${n?n+'년 뒤':'없음'}</button>`).join('')},'<span class="small muted">요구 없음</span>',true)); }
     if(D.ntc||T.ntc||ovr(p)>=60)R.push(row('ntc','트레이드 거부권','있으면 계약 기간 동안 이 선수를 트레이드할 수 없습니다',{seg:1,h:`<button data-a="ngtSet" data-v="ntc:=0" class="${!T.ntc?'on':''}">없음</button><button data-a="ngtSet" data-v="ntc:=1" class="${T.ntc?'on':''}">부여</button>`},D.ntc?`<span class="pill ${T.ntc?'good':'warn'}">요구</span>`:'<span class="small muted">요구 없음</span>',!D.ntc||T.ntc)); }
   return R.join(''); }
+/* 약속 탭(계약 2단계): 역할 · 출전량 · 다음 시즌 보강 · 포스팅 허락(비FA 다년만). 계약서 밖 구두 약속이라 잠금이 없고, 시즌 결산 때 확인한다(61 cpromSeason) */
+function ngtPromRows(N,D){ const p=G.players[N.id]; const T=N.T, P=T.pm||{}, V=D.pv||{}; const R=[]; const pc=v=>`<span class="pill ${v>0?'good':''}">가치 +${(Math.round(v*1000)/10).toFixed(1).replace(/\.0$/,'')}%</span>`;
+  const row=(l,sub,seg,dem,ok,extra)=>`<div class="ngr ${ok==null?'':ok?'ok':'lo'}"><div class="ngl"><b>${l}</b>${sub?`<i>${sub}</i>`:''}</div><div class="ngc seg">${seg}</div><div class="ngd">${dem}</div>${extra||''}</div>`;
+  const btn=(f,v,l,on)=>`<button data-a="ngtSet" data-v="${f}:=${v}" class="${on?'on':''}">${l}</button>`;
+  if(N.k==='fa'){ const L=roleSet(p); R.push(row('역할',T.role===0?'지키지 못하면 매달 선수 기분 하락':'요구보다 낮추면 크게 깎습니다',L.map((l,i)=>btn('role',i,l,T.role===i)).join(''),`<span class="pill ${T.role<=D.role?'good':'warn'}">요구 ${L[D.role]}</span>`,T.role<=D.role)); }
+  else R.push(row('역할',T.role===0?'지키지 못하면 매달 선수 기분 하락':'계약 기간 첫 2시즌 확인',btn('role',-1,'약속 없음',T.role!==0)+btn('role',0,roleSet(p)[0],T.role===0),pc(T.role===0?V.rl||0:0),null));
+  { const K=PM_PT[pmKind(p)], c=pmPtC(p,P.ptc); const lv=[0,1,2].map(i=>btn('pm.pt',i,i?pmPtTxt(c,K[c][i-1]):'없음',(P.pt||0)===i)).join('');
+    R.push(row('출전량',`시즌 끝에 1군 기록으로 확인 · 부상으로 빠진 만큼 기준을 낮춥니다`,lv,pc(P.pt>0?(V.pt||[])[P.pt-1]||0:0),null,`<div class="ng-chips" role="group" aria-label="출전 기준">${Object.keys(K).map(k=>`<button class="chip${k===c?' on':''}" data-a="ngtSet" data-v="pm.ptc:=${k}">${PM_PTL[k]} 기준</button>`).join('')}</div>`)); }
+  R.push(row('다음 시즌 보강',`그 자리에 1군급(능력 ${PM_SG_MIN}+) 선수를 데려와야 합니다 · 다음 시즌 끝에 확인`,btn('pm.sg','','없음',!P.sg)+Object.keys(PM_SG).map(k=>btn('pm.sg',k,PM_SG[k].replace(' 투수',''),P.sg===k)).join(''),pc(P.sg?V.sg||0:0),null));
+  if(N.k==='ext'){ let ok=false; try{ ok=!postDone(p); }catch(e){} const ns=[2,3,4].filter(n=>n<=(T.years||1)&&(p.svc||0)+n>=7&&p.age+n<=33); /* 포스팅은 7시즌 이상·대략 32세까지(35_abroad postingSeason) */
+    if(ok&&ns.length)R.push(row('포스팅 허락','그해 겨울 선수가 원하면 해외 진출을 허락합니다',btn('pm.po',0,'없음',!(P.po>0))+ns.map(n=>btn('pm.po',n,`${n}년 뒤`,P.po===n)).join(''),pc(P.po>0?(V.po||0)*(P.po<=2?1:P.po===3?.75:.5):0),null)); }
+  const v=pmVal(T,D); return `${R.join('')}<p class="small muted ng-pmn">약속은 계약서에 없는 구두 약속입니다. 약속 가치 합계 +${(Math.round(v*1000)/10)}%(최대 8%). 어기면 선수 기분과 에이전트 친분이 떨어지고, 에이전트는 다음 협상에서 이를 기억합니다.</p>`; }
 /* 요구 대비 지금 조건(정확한 숫자 대신 말로). 제안하기 전에는 판정하지 않고 '제안서' 상태만 알려 준다 */
 function ngtGap(N,D){ const p=G.players[N.id]; let r;
   if(N.k==='fa'){ r=offScore({annual:termsVal(N.T,D),years:N.T.years})/(faWantFor(p,G.user)*.97); }
-  else if(N.k==='ext'){ if(N.T.years<extMinY(p))return ['bad',`에이전트가 최소 ${extMinY(p)}년 계약을 요구합니다`]; r=termsVal(N.T,D)/termsVal(D,D); } else { return salAccepts(p,salNeg(N.id),Math.max(MIN_SAL,Math.round(N.T.annual)))?['good','요구액 수준입니다']:['warn',`요구까지 ${money(D.annual-N.T.annual)} 남았습니다`]; }
+  else if(N.k==='ext'){ if(N.T.years<extMinY(p))return ['bad',`에이전트가 최소 ${extMinY(p)}년 계약을 요구합니다`]; { const fl=extFloor(p); if(fl&&(N.T.annual||0)<fl)return ['bad',fl>=p.sal?`다년계약은 연봉이 지금(${money(p.sal)}) 이상이어야 합니다`:`감액 한도(연 ${money(fl)}) 아래입니다`]; } r=termsVal(N.T,D)/termsVal(D,D); } else { return salAccepts(p,salNeg(N.id),Math.max(MIN_SAL,Math.round(N.T.annual)))?['good','요구액 수준입니다']:['warn',`요구까지 ${money(D.annual-N.T.annual)} 남았습니다`]; }
   return r>=1?['good','요구 수준입니다']:r>=.9?['warn','요구에 조금 못 미칩니다']:r>=.75?['bad','요구와 차이가 큽니다']:['bad','요구와 차이가 매우 큽니다']; }
 /* 라운드 상태(FA: G.fa.neg · 비FA: p.extNg) */
 function ngtRound(N){ const p=G.players[N.id]; if(N.k==='sal')return null; const S=N.k==='fa'?(G.fa&&G.fa.neg&&G.fa.neg[p.id])||{}:p.extNg||{}; const ag=hasAgent(p)||N.k==='fa'?agentOf(p):null; const RM=N.k==='fa'?agRoundsMax(p):ctRoundsMax(ag);
@@ -90,10 +101,10 @@ function ngtCtrCard(N,C){ const p=G.players[N.id]; const T=N.T, X=C.terms; const
 function ngtMsgs(N,D,ag){ const p=G.players[N.id]; let L=[];
   if(N.k==='fa'){ const n=G.fa&&G.fa.neg&&G.fa.neg[p.id]; L=n?n.log.slice():[]; } else if(N.k==='ext')L=(p.extNg&&p.extNg.log||[]).slice(); else L=((salNeg(N.id)||{}).log||[]).slice();
   const open=N.k==='sal'?`구단 산정안은 ${money((salNeg(p.id)||{}).off||p.sal)}입니다. ${ag?'저희는':'저는'} ${money(D.annual)}은 받아야 한다고 봅니다.`:`${ag?'의뢰인이 원하는 조건입니다.':'제가 원하는 조건입니다.'} ${termsTxt(D,true)}${D.role===0?` · ${roleSet(p)[0]}`:''}${D.ntc?' · 트레이드 거부권':''}.${N.k==='ext'&&agExtTestMarket(p)?' 시장 평가를 받아 보고 싶은 몫까지 넣었습니다.':''}`;
-  const who=ag?esc(ag.name):esc(p.name);
+  const who=ag?esc(ag.name):esc(p.name); const mem=ag?agMemTxt(ag,G.user):''; /* 지난 협상 기억(계약 2단계) */
   const line=x=>x.w==='구단'?`<div class="ngm me"><i>우리 제안${x.acc?' · 역제안 수락':''}${x.lk&&x.lk.length?` · 잠금 ${x.lk.length}`:''} <s>${dsh(x.d)}</s></i>${esc(x.tm?termsTxt(x.tm,true):x.t?x.t:x.a!=null?`${x.y?x.y+'년 ':''}연 ${money(x.a)}`:'')}</div>`:`<div class="ngm ag${x.k==='fold'?' bad':''}"><i>${who} <s>${dsh(x.d)}</s></i>${esc(x.t)}</div>`;
   const tail=N.msg?`<div class="ngm sys"><i>운영팀</i>${esc(N.msg)}</div>`:'';
-  return `<div class="ngm ag"><i>${who}</i>${esc(open)}</div>${L.map(line).join('')}${tail}`; }
+  return `${mem?`<div class="ngm ag"><i>${who} · 지난 협상</i>${esc(mem)}</div>`:''}<div class="ngm ag"><i>${who}</i>${esc(open)}</div>${L.map(line).join('')}${tail}`; }
 /* 왼쪽 선수 보고서 */
 function ngtReport(N,D){ const p=G.players[N.id]; const T=N.T; const b=budget(); let rp=null; try{ rp=scoutReport(p); }catch(e){}
   const v=Math.round(termsEq(D,D)); const lo=round5(v*.9), hi=round5(v*1.1);
@@ -139,7 +150,8 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       <section class="ng-mid">
         ${N.k==='ext'?(()=>{ const x=extParts(p,T.years); const m=Math.round((x.mkt-1)*100); return `<div class="ng-why"><span class="eyebrow">요구액 근거 · 전력분석팀</span><p class="small">${x.ytf?`FA까지 ${x.ytf}시즌`:'지금 FA 자격'} · FA 시장 분위기 <b>${faMktLabel(x.mkt)}</b>(${m>=0?'+':''}${m}%) · 예상 FA 시장가 연 <b>${money(x.expFA)}</b></p><p class="small muted keep">${x.why.map(esc).join(' · ')}${x.yadj!==1?` · ${T.years}년 계약 기간 ${x.yadj>1?'+':''}${Math.round((x.yadj-1)*100)}%`:''}</p></div>`; })():''}
         ${ngtMil(N)}${p.postPromise&&p.team===G.user?`<div class="ng-mil small"><b>포스팅 약속</b> ${p.postPromise}년 포스팅 허락을 약속했습니다. 이 계약을 맺어도 약속은 남습니다.</div>`:''}
-        <div class="ng-rows">${ngtRows(N,D)}</div>
+        ${N.k!=='sal'?`<div class="seg ng-tabs" role="tablist" aria-label="협상 탭"><button role="tab" aria-selected="${N.tab!=='prom'}" class="${N.tab!=='prom'?'on':''}" data-a="ngtTab" data-v="terms">조건</button><button role="tab" aria-selected="${N.tab==='prom'}" class="${N.tab==='prom'?'on':''}" data-a="ngtTab" data-v="prom">약속${pmCount(T)?` ${pmCount(T)}`:''}</button></div>`:''}
+        <div class="ng-rows">${N.k!=='sal'&&N.tab==='prom'?ngtPromRows(N,D):ngtRows(N,D)}</div>
         ${N.k==='ext'&&N.kept?`<div class="note warn small">기간을 바꿨지만 직접 정한 금액은 그대로 두었습니다. ${T.years}년 기준 요구는 ${esc(termsTxt(D,true))}입니다.</div>`:''}
         <div class="ng-tot ng-gap ${gc}"><span><i>제안서</i><b class="num">${N.k==='sal'?money(T.annual):`${T.years}년 총 ${money(tot)}`}</b></span><span><i>요구 대비</i><b>${gt}</b></span>${allLk?'<span class="small warn">금액을 모두 잠갔습니다. 모자라면 에이전트가 풀 잠금을 알려 줍니다.</span>':''}${N.k==='fa'?`<span class="small muted">${esc(agCtxTxt(p,nAI,dl)||'아직 다른 구단 제안은 없습니다.')}</span>`:''}</div>
       </section>
@@ -152,7 +164,9 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       <button class="btn" data-a="ngtCounter"${C&&!closed?'':' disabled'}>역제안 수락</button>
       <button class="btn primary" data-a="ngtSubmit"${closed||cool||salLock?' disabled':''}>${cool?`제안 ${dsh(cool)}부터`:R&&R.last?'제안(마지막 라운드)':'제안'}</button></div></div></div>`; }
 function ngtSet(v){ const N=UI.ngt; if(!N)return; const [f,x]=v.split(':'); const T=N.T;
-  if(x[0]==='='){ const raw=x.slice(1); if(f==='optC'){ if(OPT_CRIT[raw])T.optC=raw; return; } const val=+raw; if(f==='ntc')T.ntc=!!val; else if(f==='years'){ ngtYears(N,val); if(N.k==='ext')N.msg=null; } else T[f]=val; }
+  if(x[0]==='='&&f.startsWith('pm.')){ const k=f.slice(3), raw=x.slice(1), p=G.players[N.id]; const P=T.pm={...(T.pm||{})}; if(k==='ptc')P.ptc=pmPtC(p,raw); else if(k==='sg')P.sg=PM_SG[raw]?raw:''; else if(k==='pt'||k==='po')P[k]=clamp(Math.round(+raw)||0,0,k==='pt'?2:4);
+    P.ptc=pmPtC(p,P.ptc); P.n=P.pt>0?pmPtN(p,P.ptc,P.pt):0; if(!P.sg)delete P.sg; return; } /* 약속 탭 */
+  if(x[0]==='='){ const raw=x.slice(1); if(f==='optC'){ if(OPT_CRIT[raw])T.optC=raw; return; } const val=+raw; if(f==='role'&&val<0){ T.role=null; return; } if(f==='ntc')T.ntc=!!val; else if(f==='years'){ ngtYears(N,val); if(N.k==='ext')N.msg=null; } else T[f]=val; }
   else { T[f]=Math.max(f==='annual'?MIN_SAL:0,Math.round((T[f]||0)+(+x))||0); N.ed=true; N.kept=false; }
   if(T.pOut&&(T.pOut>=(T.years||1)||(N.k==='ext'&&T.pOut<pOutMin(G.players[N.id],ngtSeasons(N)[0]))))T.pOut=0; /* 옵트아웃은 계약 기간 안쪽, 비FA는 FA 자격이 생기는 해부터 */
   if(f==='bonus'||f==='opt')T[f]=Math.max(0,Math.round(T[f]||0)); }

@@ -54,7 +54,7 @@ const ovsBeen=p=>p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.
 const postDone=p=>!!((p.faC&&!p.ext)||p.faN||p.lastFA!=null||p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.id));
 function postingSeason(){ G.posting=G.posting||[]; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.joinY>G.year||milServing(p))continue; /* 군 복무 중에는 해외에 나갈 수 없다(검수 11-06) */ if(p.postPromise&&p.postPromiseT!=null&&p.postPromiseT!==p.team){ delete p.postPromise; delete p.postPromiseT; } /* 약속은 약속한 구단만 지킨다(이적하면 끝). 자격 검사보다 먼저 지운다(검수 11-06) */ if(postDone(p))continue; /* KBO 포스팅은 FA 자격 전 보류 선수만: FA 계약을 한 적 있거나 해외에 다녀온 선수는 대상 아님(비FA 다년계약 ext는 FA 이력이 아님) */ if(p.faC&&p.yrs>1&&p.postPromise!==G.year)continue; /* 포스팅을 약속한 해에는 다년계약을 맺었어도 약속을 확인한다(조용히 넘어가지 않게) */ if(p.postPromise!==G.year&&(p.svc<7||p.age>32||ovr(p)<POST_T.o))continue; mlbOf(p);
     const want=postWant(p)||(p.postPromise===G.year); if(!want)continue; if(G.posting.some(x=>x.pid===p.id&&x.y===G.year&&!x.void))continue;
-    if(p.team!==G.user||G.unemp){ const k=aiPostDecide(p); if(k==='allow')postStart(p); else if(k==='promise'){ p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); } /* 우리 '1년 뒤 약속'과 같은 효과 */ continue; }
+    if(p.team!==G.user||G.unemp){ const k=aiPostDecide(p); if(k==='allow'){ if(p.postPromise===G.year)postPromMem(p,true); postStart(p); } else if(k==='promise'){ p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); } /* 우리 '1년 뒤 약속'과 같은 효과 */ continue; }
     const promised=p.postPromise===G.year; const asked=(p.postAsk||0);
     evNew('post',`${p.name} 포스팅 요청`,`${p.name}(${posLabel(p)}, ${p.age}세, 서비스 ${p.svc}년)이(가) 메이저리그 도전을 위해 포스팅을 요청했습니다.${promised?' 지난해 "1년 뒤 보내 주겠다"고 약속했습니다.':asked?` 작년에도 요청했다가 거절당했습니다(${asked}회).`:''} 언론은 연일 해외 진출 가능성을 다루고 있습니다. ${postEstTxt(postEst(p))}`,
       [{l:'포스팅 허락',fx:`${dmd(postDay())}에 결과가 나옵니다.`+' 계약이 성사되면 포스팅 비용(계약 보장액의 약 20%)을 받고 선수는 떠납니다. 무산되면 남습니다.'},
@@ -62,14 +62,16 @@ function postingSeason(){ G.posting=G.posting||[]; for(const p of Object.values(
        {l:'거절',fx:`기분이 크게 떨어집니다${asked?' (두 번째 거절이라 더 크게)':''}. 팬 여론은 갈리고 언론은 비판적입니다.`}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id,promised,day:postDay()} /* 안내한 발표일 그대로(검수 11-07) */,def:promised||aiPostDecide(p)==='allow'?0:1,exp:12}); } } /* 답하지 않으면 AI 구단과 같은 기준으로 처리(해외 활성화 2-1: 예전 기본안은 거절) */
 EVH.post={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; if(p.team!==G.user||G.unemp)return `${p.name}은(는) 이제 우리 선수가 아닙니다.`; prInit(); if((G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void))return `${p.name}은(는) 이미 포스팅을 신청했습니다. 이 요청은 정리합니다.`; /* 같은 시즌 이중 신청·신청 뒤 거절 페널티 방지(검수 11-08) */
     if(i===0&&milServing(p))return `${p.name}은(는) 군 복무 중이라 포스팅할 수 없습니다.`;
-    if(i===0){ const x=postStart(p,e.data.day); return `${p.name} 포스팅을 신청했습니다. ${dmd(x.day)}에 결과가 나옵니다.`; }
-    if(i===1){ if(e.data.promised){ p.mor=clamp((p.mor??60)-25,0,100); G.pr.fan=clamp(G.pr.fan-3,0,100); G.pr.press=clamp(G.pr.press-4,0,100); news('언론',`${tshort(G.user)}, ${p.name}과의 약속 또 미뤄`,'약속을 어겼다는 비판이 나옵니다.',-3,{ref:p.id}); p.postPromise=G.year+1; p.postPromiseT=p.team; return '약속을 또 미뤘습니다(내년으로 다시 약속). 기분 크게 하락, 팬 여론 악화, 언론 악화.'; } /* 약속 연도도 갱신(검수 11-08) */
+    if(i===0){ if(e.data.promised)postPromMem(p,true); const x=postStart(p,e.data.day); return `${p.name} 포스팅을 신청했습니다. ${dmd(x.day)}에 결과가 나옵니다.`; }
+    if(i===1){ if(e.data.promised){ postPromMem(p,false); p.mor=clamp((p.mor??60)-25,0,100); G.pr.fan=clamp(G.pr.fan-3,0,100); G.pr.press=clamp(G.pr.press-4,0,100); news('언론',`${tshort(G.user)}, ${p.name}과의 약속 또 미뤄`,'약속을 어겼다는 비판이 나옵니다.',-3,{ref:p.id}); p.postPromise=G.year+1; p.postPromiseT=p.team; return '약속을 또 미뤘습니다(내년으로 다시 약속). 기분 크게 하락, 팬 여론 악화, 언론 악화.'; } /* 약속 연도도 갱신(검수 11-08) */
       p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); return `${p.name}에게 내년 포스팅을 약속했습니다. 기분 상승.`; }
-    p.postAsk=(p.postAsk||0)+1; const d=e.data.promised?28:p.postAsk>=2?20:14; p.mor=clamp((p.mor??60)-d,0,100); G.pr.press=clamp(G.pr.press-(e.data.promised?5:2),0,100); G.pr.fan=clamp(G.pr.fan-(e.data.promised?3:0),0,100);
+    if(e.data.promised)postPromMem(p,false); p.postAsk=(p.postAsk||0)+1; const d=e.data.promised?28:p.postAsk>=2?20:14; p.mor=clamp((p.mor??60)-d,0,100); G.pr.press=clamp(G.pr.press-(e.data.promised?5:2),0,100); G.pr.fan=clamp(G.pr.fan-(e.data.promised?3:0),0,100);
     news('언론',`${tshort(G.user)}, ${p.name} 포스팅 불허`,e.data.promised?'약속을 뒤집었다는 비판이 거셉니다.':'구단은 전력 유지를 택했습니다.',e.data.promised?-3:-1,{ref:p.id}); return `포스팅을 거절했습니다. 기분 하락.`; } };
 /* AI 구단의 포스팅 판단(사용자 11-16: AI도 유저처럼. 예전: 리빌딩 75%·그 밖 50% 무작위 허락, 거절해도 아무 대가 없음).
    사람 단장처럼 본다: 약속한 해에는 지킨다. 계약으로 묶어 둘 해가 1년 이하면(곧 FA로 공짜로 잃는다) 포스팅 비용을 받고 보낸다.
    2년 넘게 남은 주전을 우승·내년 도전 구단이 원하면 '1년 뒤'를 약속하고 남긴다(우리 선택지와 같은 효과). 그 밖에는 허락한다 */
+/* 포스팅 약속을 지켰나(계약 2단계 에이전트 기억): 담당 에이전트가 그 구단과의 일로 기억한다. 어기면 친분 -3과 불만(약속) */
+function postPromMem(p,kept){ try{ const ag=agentOf(p); if(!kept)grvAdd(p,'prom',5); if(!ag||p.team==null)return; agRelAdd(ag,kept?1:-3,`${p.name} 포스팅 약속 ${kept?'이행':'불이행'}`,p.team); agMemSet(ag,p.team,kept?'kept':'broke',p.id); }catch(e){} }
 function aiPostDecide(p){ if(p.postPromise===G.year)return 'allow'; const t=team(p.team); if(!t)return 'allow'; const pl=planOf(t)||'next';
   let ny=1; try{ ny=ctrlYears(p); }catch(e){} if(ny<=1||pl==='build'||pl==='tight')return 'allow';
   let reg=false; try{ reg=isRegular(p); }catch(e){} if(reg&&(pl==='win'||pl==='next'||pl==='star')){ if(ny<=2){ const E=postEst(p); if(E.fee[0]+E.fee[1]>=2*POST_T.feeSell)return 'allow'; } return 'promise'; } return 'allow'; } /* 2년 뒤면 FA로 잃을 주전은 포스팅 비용 예상(2-3)이 크면 우승 도전 구단도 보낸다: 우리 화면과 같은 예상치 */
@@ -78,7 +80,7 @@ function postStart(p,day){ G.posting=G.posting||[]; const x={pid:p.id,y:G.year,t
 /* 포스팅 기준(해외 활성화 2-1). 실제: KBO 포스팅은 해마다 0~2명(2020 김하성·나성범, 2023 이정후·고우석, 2024 김혜성, 2025 송성문), 해외 FA까지 합쳐 성사는 해마다 1명 안팎.
    예전 문턱(국내 능력 60)은 창단 직후 국내 선수 580명 중 5명이라 4시즌에 포스팅이 1번이었다. 56은 상위 약 18명(김혜성·고우석급 포함). MLB 응찰 확률·연봉은 2020~2025 계약에 맞춘 추정(불확실) */
 const POST_T={o:56,feeSell:300}; /* feeSell: 포스팅 비용 예상(만 달러)이 이만큼이면 우승 도전 구단도 보낸다 */
-const postPm=o=>o>=66?.9:o>=62?.7:o>=59?.45:o>=57?.25:.1; /* MLB 구단이 계약을 내밀 확률 */
+const postPm=o=>o>=66?.9:o>=62?.8:o>=59?.55:o>=57?.25:.1; /* MLB 구단이 계약을 내밀 확률. 11-17: 62~65 70→80%, 59~61 45→55%(김혜성·송성문급 포스팅이 빅리그 계약을 받는 실제 흐름. MLB 국내 선수 3~5명) */
 const postAmt0=o=>350+(o-58)*140; /* MLB 보장 연봉 중심(만 달러): 58 약 350(김혜성 3년 1250), 62 약 900(김하성 4년 2800), 67 약 1600(이정후 6년 1억1300) */
 const postYrs=o=>o>=66?[4,6]:o>=62?[2,4]:[1,3];
 /* 선수가 포스팅을 원하는가: 메이저리그 의지에 MLB가 원할 만한 실력이 더해진다(잘할수록 덜 망설인다). 우리와 AI 구단 선수가 같은 기준 */
@@ -118,13 +120,13 @@ function ovsDaily(){ try{ ovsBackSweep(); }catch(e){} if(!G.ovl||OVL_LGS.some(l=
 function ovsAgeT(age){ return age<=27?{y:6,f:1,m:1,n:1}:age<=29?{y:5,f:.95,m:1,n:1}:age<=31?{y:3,f:.85,m:.9,n:1}:age<=33?{y:2,f:.65,m:.6,n:.9}:age<=36?{y:1,f:.45,m:.3,n:.5}:{y:1,f:.4,m:0,n:0}; }
 /* 해외 FA: 9시즌을 채운 FA 선수는 해외로 갈 수 있다 */
 function ovsFA(pool){ for(const id of [...pool]){ const p=G.players[id]; if(!p||p.foreign||p.svc<9||p.age>33||milServing(p))continue; const o=ovr(p); if(o<POST_T.o+1)continue; mlbOf(p);
-    if(R()<clamp(p.mlb+postPull(p),0,100)/100*(o>=64?.8:.45)){ /* 의지는 포스팅(postWant)과 같은 식: 잘할수록 해외 구단이 부르니 덜 망설인다 */ const lg=o>=POST_T.o+5&&R()<.7?'MLB':'NPB'; const A=ovsAgeT(p.age); const yrs=Math.min(A.y,ri(1,3)); const amt=Math.round(lg==='MLB'?clamp(postAmt0(o)*.85*A.f,100,2000):clamp((o-53)*40,80,500)); ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'해외 FA'); const i=pool.indexOf(id); if(i>=0)pool.splice(i,1); } } }
+    if(R()<clamp(p.mlb+postPull(p),0,100)/100*(o>=64?.8:.45)){ /* 의지는 포스팅(postWant)과 같은 식: 잘할수록 해외 구단이 부르니 덜 망설인다 */ const lg=o>=POST_T.o+4&&R()<.8?'MLB':'NPB'; /* 11-17: 능력 61·70% → 60·80%(해외 FA 빅리그 행이 드물어 MLB 국내 선수가 2명으로 자주 줄었다) */ const A=ovsAgeT(p.age); const yrs=Math.min(A.y,ri(1,3)); const amt=Math.round(lg==='MLB'?clamp(postAmt0(o)*.85*A.f,100,2000):clamp((o-53)*40,80,500)); ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'해외 FA'); const i=pool.indexOf(id); if(i>=0)pool.splice(i,1); } } }
 /* 해외파의 한 해: 그 리그 수준으로 기록을 만들고, 계약이 끝나면 일부는 돌아온다 */
 function abroadYear(){ const NW=[]; for(const a of G.abroad||[]){ if(a.back)continue; if(a.foreign||a.cand){ try{ ovsForeignYear(a,NW); }catch(e){} continue; } const y1=a.y1??a.y+1; if(G.year<y1)continue; /* 아직 해외 시즌을 보내지 않았다(이번 겨울에 떠남) */ if((a.lines||[]).some(l=>l.y===G.year)){ delete a.cur; continue; } /* 같은 시즌 기록 두 번 만들지 않기 */ let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue;
     if(a.ci==null)a.ci=ovlIdx(a.lg,a.club); const av=ovsAv(a,p); /* 재활 중인 기간만큼 못 뛴다 */ const line=ovsFinish(a,ovsTake(a,p,{ci:a.ci,av,gt:ovsGt(a)}),p,NW); /* 리그 수준은 외국인 후보 이전 리그 기록과 같은 표(LG_ADJ), 기준 능력에 못 미치면 트리플A·NPB 2군 */ const ok=line.lvl===a.lg; a.lines.push(line);
     if(p.injOut>0){ p.injOut=Math.max(0,p.injOut-365); if(!p.injOut)delete p.injK; } delete p.reInj;
     { const t0=p.team; p.team=null; injRecover(p,p.isP?line.outs:line.pa); /* 해외 실전으로 후유증 회복. 아직 해외 소속이라 옛 국내 구단에 알리지 않는다(검수 11-06) */ p.team=t0; } /* 성장·나이는 새해에 국내 선수와 함께(abroadDev) */ a.pj=ovsPj(p); const yrsIn=G.year-y1+1;
-    const am=a.from==null, early=yrsIn<a.yrs&&!ok&&yrsIn>=(am?2:1)&&R()<(am?.15:.35); /* 자리를 못 잡은 선수는 계약 중에도 방출돼 일찍 돌아온다(커뮤니티 제안 11-11). 아마추어 직행 선수는 마이너에서 크는 게 계약이라 2년째부터, 드물게(해외 활성화 2-1: 실제로 심준석·장현석 등은 몇 해 마이너에 남는다) */
+    const am=a.from==null, early=yrsIn<a.yrs&&!ok&&yrsIn>=(am?2:1)&&R()<(am?(ovr(p)<45&&p.age>=21?.35:.15):.35); /* 자리를 못 잡은 선수는 계약 중에도 방출돼 일찍 돌아온다(커뮤니티 제안 11-11). 아마추어 직행 선수는 마이너에서 크는 게 계약이라 2년째부터, 드물게(해외 활성화 2-1: 실제로 심준석·장현석 등은 몇 해 마이너에 남는다). 21세가 넘도록 능력 45에 못 미치면 35%(11-17: 고교 직행 선수가 6년 내내 남아 해외 국내 선수가 15명까지 늘었다) */
     const due=yrsIn>=a.yrs&&(a.bn&&a.bn.y===G.year?!!a.bn.v||!ok:ovsBackRoll(a,p,ok)); delete a.bn; /* 계약 마지막 해: 새해에 미리 정한 값(해외 활성화 1-4). 남기로 했어도 시즌 중 자리를 잃으면(능력 하락) 돌아온다 */
     if(!early){ let mv=null; try{ mv=ovsMoveKr(a,p,ok,yrsIn,due,NW); }catch(e){} if(mv&&mv!=='re')continue; } /* 해외 활성화 3-2: NPB→MLB 이적, 국내 대신 NPB, 남는 선수는 같은 리그 재계약 */
     if(early||due){ if(early)a.early=1; a.why=ovsBackWhy(a,p,early,ok); a.back=true; a.backY=G.year; a.age=p.age; a.pj=null; /* 돌아온 선수는 새해에 국내 선수와 같이 나이를 먹는다 */ if(a.from==null)p.svc=(p.svc||0)+(a.lines||[]).filter(l=>l.y>=y1&&((l.pa||0)+(l.outs||0))>0).length; else a.nsv=1; /* 아마추어 직행만 해외에서 실제로 뛴 시즌을 연차로(검수 11-07). 국내 구단을 거쳐 나간 선수의 FA 연차는 KBO 1군 등록일수라 해외 시즌은 들지 않고 출국 전 연차가 이어진다(카페 11-17: 포스팅 7년차가 MLB 1년 뒤 8년차로 돌아와 바로 FA). nsv: 불러오기 수리(ovsPostFix) 표시 */ G.players[p.id]=p; if(p.mil&&!p.mil.done&&p.mil.until&&p.mil.until<=G.day)p.mil={done:true,unit:p.mil.unit,pf:p.mil.from,pu:p.mil.until}; /* 해외에 있는 동안 지난 전역일: 복귀 때 전역 처리(검수 11-06) */ p.joinY=undefined; p.mor=70; delete p.ovsOffer;
@@ -135,7 +137,7 @@ function abroadYear(){ const NW=[]; for(const a of G.abroad||[]){ if(a.back)cont
       if(a.from===G.user&&!G.unemp)ovsBackAsk(p); else ovsBackAI(p); } }
   try{ ovpYear(); }catch(e){} /* 해외 활성화 3-3: 상주 외국인 후보군도 한 시즌 */ try{ ovsWires(NW); }catch(e){} }
 /* 계약을 마친 해외파가 돌아오는가: 자리를 못 잡았거나 33세 이상이면 돌아오고, 잘할수록 더 남는다(최대 90%) */
-function ovsBackRoll(a,p,ok){ const thr=(a.lg==='MLB'?62:57)-(ovsGt(a)?2:0), stayP=clamp(.55+(ovr(p)-thr)*.025,.55,.9); return !ok||p.age>=36||p.age>=33&&!(ovr(p)>=thr+2&&R()<.5)||R()>=stayP; } /* 해외 활성화 3-2: 33세 넘어도 빅리그 주전급(문턱 +2)은 절반쯤 남는다(류현진 36세·추신수 38세까지). 예전: 33세면 모두 복귀 */
+function ovsBackRoll(a,p,ok){ const thr=(a.lg==='MLB'?62:57)-(ovsGt(a)?2:0), stayP=clamp(.75+(ovr(p)-thr)*.04,.75,.95); return !ok||p.age>=36||p.age>=33&&!(ovr(p)>=thr+2&&R()<.8)||R()>=stayP; } /* 해외 활성화 3-2: 33세 넘어도 빅리그 주전급(문턱 +2)은 80% 남는다(류현진 36세·추신수 38세까지). 예전: 33세면 모두 복귀. 11-17: 절반→80%, 잔류 55~90%→75~95%(자리 잡은 빅리거는 대개 남는다: 김하성·류현진. MLB 국내 선수 3~5명 유지) */
 /* 새해: 해외파도 국내 선수와 같은 날 성장·나이(카페 11-09c: 전에는 가을 해외 시즌 뒤에 먹어 떠난 해 겨울 한 살을 건너뛰고, 31세에 나가 2년 뒤 31세로 돌아왔다).
    해외 리그 환경으로 성장(옛 국내 구단의 시설·감독·코치를 쓰지 않는다) */
 function abroadDev(){ try{ ovpAge(); }catch(e){} for(const a of G.abroad||[]){ if(!a.back&&a.end==null&&a.fr&&(a.foreign||a.cand)){ ovsAgeFr(a.fr); continue; } /* KBO를 떠난 외국인: 나이 곡선만 */ if(a.back||a.foreign||!a.pj)continue; let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue;
@@ -237,7 +239,7 @@ function ovsPostRumor(){ for(const x of G.posting||[]){ if(x.done||x.rum||x.void
     wire('해외',`${p.name} 포스팅 · ${t}`,{tid:x.tid,ref:p.id});
     if(x.tid===G.user&&!G.unemp)news('선수',`${p.name} 포스팅 협상 막바지 · ${n?`${n}개 구단 관심`:'관심 구단 없어'}`,n?`미국 현지 기자들이 ${cl.join('·')} 등을 유력 행선지로 꼽고 있습니다. ${dmd(x.day)}에 결과가 나옵니다. ${n>=4?'몸값이 예상보다 오를 수 있다는 전망입니다.':''}`:`아직 적극적인 구단이 보이지 않습니다. 일본 구단 제안이나 잔류 가능성도 거론됩니다. 결과는 ${dmd(x.day)}.`,n?1:0,{ref:p.id}); } }
 /* 미국 직행 빈도(해외 활성화 1-3): 실제 고교·대학 아마추어 미국 직행은 해마다 1~3명 안팎(2023 심준석, 2024 장현석 등). 잠재력 문턱을 넘는 최대어 5명 중 60%로 제안(3명까지), 설득 없이 30%는 남는다 */
-const US_HS={top:5,p:.6,max:3,stay:.3,hs:58,co:60,coO:48}; /* hs·co: 미국 구단이 보는 잠재력 문턱(고교·대학), coO: 대학 선수 지금 능력 문턱 */
+const US_HS={top:5,p:.6,max:2,stay:.3,hs:58,co:60,coO:48}; /* hs·co: 미국 구단이 보는 잠재력 문턱(고교·대학), coO: 대학 선수 지금 능력 문턱. max 3→2(11-17: 해마다 2~3명이 미국으로 가 해외 국내 선수가 15명까지 늘었다. 실제 고교·대학 직행은 한 해 1~2명) */
 /* 설득: 1순위 구단이 우리든 AI든 같은 두 선택지·같은 비용(계약금 1.3배, 성공했을 때만)·같은 확률 */
 function usHsCh(tid,p,i){ const mv=mlbOf(p); return i===0?clamp(.92-(mv-50)/120,.55,.95):clamp(.55-(mv-50)/90+(p.gmVis&&p.gmVis.t===tid&&p.gmVis.y===G.year?.08:0),.15,.75); } /* 고교 방문을 기억하는 선수는 직접 설득이 조금 낫다 */
 const usHsCost=(p,i)=>i===0?Math.round(p.usOff.bonus*1.3):0;
