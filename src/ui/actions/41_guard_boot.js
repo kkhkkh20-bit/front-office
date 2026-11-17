@@ -170,7 +170,8 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
 function selApply(el,e){ const a=el.dataset.a;
   if(a&&a.startsWith('lad')&&(el.tagName==='SELECT'||el.tagName==='INPUT')&&A[a]){A[a](el.value,el,e);return;}
   if(a&&/^ul[A-Z]/.test(a)&&el.tagName==='SELECT'&&A[a]){A[a](el.value,el,e);return;} /* 유저 래더 덱 고치기(src/ui/uladder) */
-  if(a==='admSort'&&el.tagName==='SELECT'&&A[a]){A[a](el.value,el,e);return;} /* 프런트컵 관리자 접수 목록 정렬·검색 */ /* 단장 대전 구단 만들기(src/ui/ladder) */
+  if(a==='admSort'&&el.tagName==='SELECT'&&A[a]){A[a](el.value,el,e);return;}
+  if(a==='troF'&&el.tagName==='SELECT'&&A[a]){A[a](el.value,el,e);return;} /* 받은 트레이드 제안 세부 필터(권한 탭) */ /* 프런트컵 관리자 접수 목록 정렬·검색 */ /* 단장 대전 구단 만들기(src/ui/ladder) */
   if(a==='playerTab'){A.ptab(el.value);return;}
   if(a==='psY'){UI.psY=+el.value;UI.psSel=null;render();return;}
   if(a==='personalTarget'||a==='personalGmTarget'){UI[a]=+el.value;render();return;}

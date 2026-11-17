@@ -7,7 +7,7 @@ const AUTO_AREAS=[
   ['ev','일상 결정','기강·면담·콜업 여론·팬 행사 같은 일상 결정을 비서가 기본안으로 처리합니다(감독 갈등·징계 같은 핵심 결정은 계속 직접).'],
   ['mgr','감독 요청','감독이 올리는 영입·기용·드래프트 방향 요청에 비서가 기본안으로 답합니다. 직접 답하면 감독과의 관계를 더 잘 챙길 수 있습니다.'],
   ['scout','스카우트 배치','스카우트팀장이 시기에 맞게 배치하고, 매주 월요일 출장(주말리그·전국대회·학교 방문)도 정해 보냅니다. 출장 안 메일은 오지 않고 일요일 현장 보고만 옵니다.'], /* 출장도 함께(사용자 11-17) */
-  ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다. 모두 거절하거나, 우리 평가로 공정에 가까운 제안(손해 1 이내)만 올립니다. 주간 요약에 남깁니다.'],
+  ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다. 모두 거절하거나, 고른 기준(우리 평가 손익·필요한 자리·지킬 선수·늘어나는 연봉·기조, 기본은 손해 1 이내)에 맞는 제안만 올립니다. 주간 요약에 남깁니다.'],
   ['raid','스태프 빼가기 대응','별 4개 이상(★★★★, 5개 만점) 스카우트·분석원은 상대 제시액에 맞춰 붙잡고, 그 아래는 보내 줍니다. 상대 제시액이 지금 연봉의 1.5배를 넘으면 붙잡기 전에 단장 승인을 받습니다.'],
   ['schg','고교 야구부 후원','고른 권역에서 올해 후원하지 않은 학교를 매주 월요일 후원합니다. 학교마다 한 해 한 번, 곳당 1,000만 원으로 직접 할 때와 같습니다. 권역은 스카우트 > 지역 정보망에서 고릅니다.'],
   ['sisv','자매구단 교류 방문단','고른 나라에서 다시 보낼 수 있는 구단에 매주 월요일 방문단을 보냅니다. 구단마다 60일에 한 번, 곳당 2,000만 원으로 직접 할 때와 같습니다. 나라는 스카우트 > 해외 네트워크에서 고릅니다.'],
@@ -75,8 +75,29 @@ function autoDaily(day){ if(!G.auto||G.unemp)return; if(dobj(day).w===1&&G.autoW
 /* 현금은 트레이드 값 계산과 같은 식(cashVal·cashCost, 16_trade): 받는 현금(cash<0)은 체감 가치, 주는 현금은 그만큼 손해(점검 11-17: 예전 /250로 따로 셈) */
 const troCash=(U,c)=>c<0?cashVal(U,-c):-cashCost(U,-c);
 function troDiff(off){ const U=team(G.user); const P=id=>G.players[id]; const pk=pkNorm(off.pk); return stackIn(off.give.map(P).filter(Boolean).map(p=>tval(U,p,'in')))-sum(off.get.map(P).filter(Boolean).map(p=>tval(U,p,'out')))+troCash(U,off.cash||0)+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); }
-function autoTradeOffer(off){ if(!autoOn('tro'))return false;
-  if(G.auto.tro==='good'){ let df=-99; try{ df=troDiff(off); }catch(e){} if(df>=-1){ off.asst=`부단장 1차 검토: 우리 평가로 ${df>=0?'공정 이상':'공정에 가까운(손해 1 이내)'} 제안이라 직접 보시도록 올립니다.`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장이 올림','유망한 제안'); return false; } } G.offers=(G.offers||[]).filter(x=>x.id!==off.id); try{ offerMailDone(off.id); }catch(e){} /* 부단장이 거절한 제안의 메일은 미결로 남기지 않는다(PR #4 검수) */ const d=`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 주고 ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 원한 제안`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',d); if(!off.blk)mail('부단장',`${tshort(off.from)} 트레이드 제안: 부단장이 거절`,`${tname(off.from)}이(가) ${d}을 보냈고, 맡기신 대로 부단장이 정중히 거절했습니다. 직접 검토하려면 설정 · 권한에서 '받은 트레이드 제안'을 가져오세요.`,{kind:'트레이드'}); /* 매물 제안은 매일 올 수 있어 메일 없이 위임 기록만 */ return true; }
+/* 받은 트레이드 제안 세부 필터(구단주 요청 '트레이드 제안 받기 필터 세분화'): '유망한 제안만 보고'일 때 부단장이 올릴 제안을 더 좁힌다.
+   bal 우리 평가 손익 하한(기본 손해 1 이내) · pos 약한 자리(리그 6위 아래)를 메우는 선수가 있어야 · core 핵심(국내 종합 상위 6명) 내주지 않기 · pros 유망주(24세 이하, 잠재력이 지금보다 8 이상) 내주지 않기
+   sal 늘어나는 연봉 상한(백만 원 단위, null 제한 없음) · dir 기조(win 당장 전력이 줄지 않게, reb 더 나이 든 선수를 받지 않게).
+   우리 구단에 오는 AI 제안에만 쓴다. AI끼리 트레이드와 AI가 제안을 만드는 판단에는 쓰지 않는다 */
+const TRO_F0={bal:-1,pos:false,core:false,pros:false,sal:null,dir:''};
+const TRO_FOPT={bal:[-3,-1,0,2],pos:[false,true],core:[false,true],pros:[false,true],sal:[null,0,300,1000],dir:['','win','reb']};
+function troF(){ const f=(G.auto&&G.auto.troF)||{}; const o={...TRO_F0}; for(const k in TRO_F0)if(k in f&&TRO_FOPT[k].includes(f[k]))o[k]=f[k]; return o; }
+function troFSet(k,v){ if(!TRO_FOPT[k]||!TRO_FOPT[k].includes(v))return ''; G.auto=G.auto||{}; G.auto.troF={...troF(),[k]:v}; if(G.auto.tro==='good')for(const o of [...(G.offers||[])])try{ autoTradeOffer(o); }catch(e){} /* 바꾼 필터는 이미 받은 제안에도 적용한다(모드 바꾸기와 같게) */ return troFText(); }
+function troFText(f){ f=f||troF(); const L=[f.bal<0?`손해 ${-f.bal} 이내`:f.bal===0?'공정 이상':`이득 ${f.bal} 이상`]; if(f.pos)L.push('필요한 자리만'); if(f.core&&f.pros)L.push('핵심·유망주 제외'); else if(f.core)L.push('핵심 제외'); else if(f.pros)L.push('유망주 제외');
+  if(f.sal!=null)L.push(f.sal===0?'연봉 늘지 않게':`연봉 증가 ${money(f.sal)}까지`); if(f.dir)L.push(f.dir==='win'?'윈나우':'리빌딩'); return L.join(' · '); }
+function troProspect(p){ return !!p&&!p.foreign&&p.age<=24&&(p.pot||0)-ovr(p)>=8; }
+/* 필터에 걸리는 까닭(통과하면 ''). 우리 선수는 실제 값, 상대 선수는 제안 화면과 같은 공개 능력(ovr)으로 본다 */
+function troCheck(off,f){ f=f||troF(); const P=id=>G.players[id]; const IN=(off.give||[]).map(P).filter(Boolean), OUT=(off.get||[]).map(P).filter(Boolean);
+  let df=-99; try{ df=troDiff(off); }catch(e){} if(df<f.bal)return `우리 평가 ${df>=0?'+':''}${df.toFixed(1)}(기준 ${f.bal>0?'+':''}${f.bal} 이상)`;
+  if(f.core){ const C=tvCore6(G.user); const x=OUT.find(p=>C.has(p.id)); if(x)return `핵심 선수 ${x.name} 포함`; }
+  if(f.pros){ const x=OUT.find(troProspect); if(x)return `유망주 ${x.name} 포함`; }
+  if(f.sal!=null){ const add=sum(IN.map(p=>p.sal||0))-sum(OUT.map(p=>p.sal||0)); if(add>f.sal)return `연봉 ${money(add)} 증가`; }
+  if(f.pos){ let rk={}; try{ rk=slotRanks(G.user); }catch(e){} if(!IN.some(p=>{ const r=rk[pSlot(p)]; return r&&r.rank>=6; }))return '약한 자리를 메우는 선수가 없음'; }
+  if(f.dir==='win'){ const b=L=>L.length?Math.max(...L.map(ovr)):0; if(b(IN)<b(OUT)-1)return '당장 전력이 줄어듦'; }
+  if(f.dir==='reb'){ const a=L=>L.length?sum(L.map(p=>p.age))/L.length:0; if(IN.length&&OUT.length&&a(IN)>a(OUT))return '더 나이 든 선수를 받음'; if(IN.some(p=>p.age>=31)&&!OUT.some(p=>p.age>=31))return '31세 이상 선수를 받음'; }
+  return ''; }
+function autoTradeOffer(off){ if(!autoOn('tro'))return false; let why='';
+  if(G.auto.tro==='good'){ const f=troF(); why=troCheck(off,f); if(!why){ let df=0; try{ df=troDiff(off); }catch(e){} off.asst=`부단장 1차 검토: 우리 평가로 ${df>=0?'공정 이상':`공정에 가까운(손해 ${Math.max(1,-f.bal)} 이내)`} 제안이라 직접 보시도록 올립니다.${troFText(f)!==troFText(TRO_F0)?` (필터: ${troFText(f)})`:''}`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장이 올림','유망한 제안'); return false; } } G.offers=(G.offers||[]).filter(x=>x.id!==off.id); try{ offerMailDone(off.id); }catch(e){} /* 부단장이 거절한 제안의 메일은 미결로 남기지 않는다(PR #4 검수) */ const d=`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 주고 ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 원한 제안`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',why?`${d} · ${why}`:d); if(!off.blk)mail('부단장',`${tshort(off.from)} 트레이드 제안: 부단장이 거절`,`${tname(off.from)}이(가) ${d}을 보냈고, 맡기신 대로 부단장이 정중히 거절했습니다.${why?` 걸린 기준: ${why}.`:''} 직접 검토하려면 설정 · 권한에서 '받은 트레이드 제안'을 가져오세요.`,{kind:'트레이드'}); /* 매물 제안은 매일 올 수 있어 메일 없이 위임 기록만 */ return true; }
 /* 스태프 빼가기: 맡겼으면 바로 정한다 */
 function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[])]){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(!s)continue;
     if(s.skill>=4&&r.sal>s.sal*1.5){ if(!r.ask){ r.ask=true; autoLogAdd(`${s.name} 영입 제안 대응`,'단장 승인 요청',`상대 제시 연 ${money(r.sal)}(지금 ${money(s.sal)}의 ${Math.round(r.sal/s.sal*100)}%)`); mail('운영팀',`${s.name} 붙잡기: 단장 승인이 필요합니다`,`${tshort(r.tid)}이(가) 연 ${money(r.sal)}을(를) 제시했습니다. 지금 연봉 ${money(s.sal)}의 1.5배를 넘어 운영팀이 바로 맞추지 않았습니다. ${dmd(r.exp)}까지 정해 주세요.`,{kind:'스태프',imp:true,acts:[{l:`맞춰서 붙잡기(연 ${money(r.sal)})`,a:'stKeep',v:s.id+':1'},{l:'조금 올려 설득(+10%)',a:'stKeep',v:s.id+':0'},{l:'보내 주기',a:'stLet',v:s.id}]}); } /* 승인 요청에도 바로 답할 버튼과 기한(검수 11-09za) */ continue; } /* 비용 한도를 넘는 인상은 단장 승인 */
