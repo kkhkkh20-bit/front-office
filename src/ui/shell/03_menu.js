@@ -4,8 +4,9 @@ const ICO2={dumbbell:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><p
  clip:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
  club:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 20 7H4z"/></svg>',
  cog:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>', /* 톱니바퀴(Lucide settings, ISC). 예전 해 모양은 화면 밝기로 읽혔다(사용자 11-06) */
- menu:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>'};
-const NAV=[['inbox','소식함','mail'],['home','홈','home'],['roster','선수단','users'],['trade','트레이드','swap'],['transfer','영입·계약','brief'],['staff','스태프·육성','clip'],['league','리그','trophy'],['club','구단·재정','club']];
+ menu:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>',
+ ladder:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 20 5v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/><path d="m8.5 12 3.5-3.5 3.5 3.5M8.5 16l3.5-3.5 3.5 3.5"/></svg>'}; /* 래더 방패(사용자 11-17) */
+const NAV=[['inbox','소식함','mail'],['home','홈','home'],['roster','선수단','users'],['trade','트레이드','swap'],['transfer','영입·계약','brief'],['staff','스태프·육성','clip'],['league','리그','trophy'],['uld','래더','ladder'],['club','구단·재정','club']]; /* 래더를 주 메뉴로(사용자 11-17 "하나의 메인화면 탭으로 뺄수도 있으니까") */
 const BNAV=['inbox','home','roster','trade','transfer','league']; /* 하단 탭에 리그(순위·기록·통계) 추가(사용자 2026-11-01 20:48) */
 const SUBS={
   trade:[['market','선수 찾기'],['table','협상하기'],['block','제안·매물']],
@@ -14,7 +15,8 @@ const SUBS={
   staff:[['mgr','감독'],['coach','코치진'],['train','훈련·육성'],['scouts','스카우트'],['data','전력분석'],['anl','분석원 관리'],['smkt','스태프 시장'],['med','부상 관리']],
   cfg:[['set','게임 설정'],['auth','업무 권한'],['save','저장·기기'],['info','정보']], /* 설정 정리(사용자 11-17): 저장·기기와 정보(카페·패치 노트·관리자)를 따로 */
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['stat','통계'],['wire','리그 소식'],['assoc','협회'],['nt','국가대표'],['ovs','해외 리그'],['hist','역사']],
-  club:[['info','구단 정보'],['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['share','팀 카드'],['cup','프런트컵'],['uld','유저 래더']]};
+  club:[['info','구단 정보'],['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['share','팀 카드'],['cup','프런트컵']],
+  uld:[['lobby','로비'],['league','리그'],['deck','덱'],['data','기록·데이터'],['rank','순위']]}; /* 래더 v2 하위 탭(src/ui/uladder/02_uladder_pages.js) */
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
 const MERGE={trade:{block:['block']},staff:{train:['tc','camp','sc','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
   league:{hist:['hist','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','ops','crew','news','media'],chron:['build','chron','result','ob','log']}};

@@ -2,7 +2,7 @@
    규칙·승강·상대 고르기는 공용 모듈(src/core/uladder.mjs). 덱은 프런트컵 엔트리 형식, 경기는 cupMatch(3연전, 무승부 허용, 선발 순번 이어 가기) 그대로.
    난수는 평범한 난수(같은 덱이라도 리그마다 결과가 다르다). 커리어 G는 G.uld(단계·기록·지금 리그)만 쓴다: 리그 경기는 커리어 세계를 건드리지 않는다.
    리그 중간(연전 사이)에 내 덱을 고치면 다음 연전부터 그 덱으로 나간다. 상대 덱은 리그를 시작할 때 받은 사본으로 고정한다 */
-function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:1,tier:0,hist:[],deck:null,league:null,last:null,dn:0}); return U; }
+function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],deck:null,league:null,last:null,dn:0,ps:{},opp:{}}); if((U.v|0)<2)FrontOfficeCore.ulMigrate(U); return U; } /* v2: 예전 저장은 처음 열 때 옮긴다(선수·상대 기록 칸, 사용자 11-17) */
 const UL_ME='me';
 /* 덱 등록(이 저장의 내 덱). src: 'now'(지금 1군) | 'alb:번호'(앨범 시즌). 가져온 남의 덱(ro)은 등록할 수 없다 */
 function ulSetDeck(e,src){ const C=FrontOfficeCore; if(!e||e.ro)return '가져온 덱은 내 덱으로 등록할 수 없습니다.'; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x);
@@ -76,8 +76,20 @@ function ulFinish(){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L||L.n
   const myMvp=C.cupMvp(Object.values(L.bat).filter(x=>x.key.startsWith(UL_ME+':')),Object.values(L.pit).filter(x=>x.key.startsWith(UL_ME+':')),[]);
   const pts=C.ulPts(L.tier,me.rank,L.teams.length), se=C.ulSeason(Date.now());
   if(U.seas&&U.seas.id!==se.id){ (U.seasons=U.seasons||[]).push(U.seas); if(U.seasons.length>26)U.seasons.shift(); }
-  U.seas=C.ulSeasonAdd(U.seas,se.id,se.label,{tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move});
+  U.seas=C.ulSeasonAdd2(U.seas,se.id,se.label,{tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,w:me.w,l:me.l,t:me.t,rs:me.rs,ra:me.ra});
   const res={id:L.id,tier:L.tier,to:mv.tier,move:mv.move,rank:me.rank,w:me.w,l:me.l,t:me.t,d:L.deck,name:L.teams[0].name,at:G.day,y:G.year,mvp,myMvp,pts,season:se.id,rec:ulRecords(L),keys:L.keys||[],
     stand:st.map(x=>({rank:x.rank,name:L.teams[x.key].name,kind:L.teams[x.key].kind,w:x.w,l:x.l,t:x.t,pct:x.pct,gb:x.gb,diff:x.diff,ovr:L.teams[x.key].e.ovr})),edits:L.edits.length,src:L.src};
-  U.hist.push({tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,d:L.deck,name:res.name,at:G.day,y:G.year,s:se.id}); if(U.hist.length>200)U.hist.splice(0,U.hist.length-200);
+  res.teams=L.teams.map(t=>({name:t.name,kind:t.kind,nick:t.nick||'',ovr:t.e.ovr})); res.ser=L.series.map(x=>[x.r,x.a,x.b,x.g]); res.rs=me.rs; res.ra=me.ra; /* 끝난 리그 일정·결과(사용자 11-17) */
+  ulAccum(U,L,st,se); U.hist.push({tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,d:L.deck,name:res.name,at:G.day,y:G.year,s:se.id,w:me.w,l:me.l,t:me.t,rd:me.diff,pts}); if(U.hist.length>200)U.hist.splice(0,U.hist.length-200);
   U.tier=mv.tier; U.best=Math.max(U.best|0,mv.tier,L.tier); U.last=res; U.league=null; return res; }
+
+/* 래더 v2 누적(사용자 11-17 "디테일한 데이터 뽑아보게해"): 우리 선수 리그 기록(시즌·단계 칸) + 상대 덱별 전적·성향. 한도는 공용 규칙(UL_PS_MAX·UL_OPP_MAX) */
+function ulAccum(U,L,st,se){ const C=FrontOfficeCore; U.ps=U.ps||{}; U.opp=U.opp||{}; const pre=UL_ME+':', idOf=k=>String(k).slice(pre.length);
+  const B=Object.values(L.bat).filter(x=>String(x.key).startsWith(pre)), Pt=Object.values(L.pit).filter(x=>String(x.key).startsWith(pre));
+  const info=new Map(L.teams[0].e.P.map(p=>[String(p.id),{id:p.id,name:p.name,pos:p.pos,isP:p.isP,age:p.age,foreign:p.foreign?1:0}])); for(const x of [...B,...Pt])if(!info.has(idOf(x.key)))info.set(idOf(x.key),{id:idOf(x.key),name:x.name});
+  C.ulPsAdd(U.ps,{sid:se.id,tier:L.tier,lid:L.id,P:[...info.values()],bat:B.map(x=>Object.assign({},x,{id:idOf(x.key)})),pit:Pt.map(x=>Object.assign({},x,{id:idOf(x.key)}))});
+  const rd=new Map(); for(const s of L.series){ if(s.a!==0&&s.b!==0)continue; const oi=s.a===0?s.b:s.a, o=rd.get(oi)||{w:0,l:0,t:0,rs:0,ra:0}; for(const g of s.g){ const a=s.a===0?g[0]:g[1], b=s.a===0?g[1]:g[0]; o.rs+=a; o.ra+=b; if(a>b)o.w++; else if(a<b)o.l++; else o.t++; } rd.set(oi,o); }
+  const now=Date.now(), mp=ulProfile(L.teams[0].e);
+  L.teams.forEach((t,i)=>{ if(!i)return; const k=t.pid?'p:'+t.pid:t.kind+':'+t.name, r=rd.get(i)||{w:0,l:0,t:0,rs:0,ra:0}, o=U.opp[k]||(U.opp[k]={k,name:t.name,kind:t.kind,n:0,w:0,l:0,t:0,rs:0,ra:0});
+    Object.assign(o,{name:t.name,nick:t.nick||o.nick||'',pid:t.pid||null,kind:t.kind,ovr:t.e.ovr,tier:L.tier,at:now,rank:(st.find(x=>x.key===i)||{}).rank,prof:ulProfile(t.e),mine:mp,m:C.ulDeckMeta(t.e)}); o.n++; for(const f of ['w','l','t','rs','ra'])o[f]+=r[f]; });
+  const ks=Object.keys(U.opp); if(ks.length>C.UL_OPP_MAX)ks.sort((a,b)=>(U.opp[a].at||0)-(U.opp[b].at||0)).slice(0,ks.length-C.UL_OPP_MAX).forEach(k=>delete U.opp[k]); }

@@ -5878,6 +5878,35 @@ T('[유저 레더] 서버 v1 상대(사용자 11-17): {e, pid, nick}로 받은 �
   const r=ulMakeLeague({fetched:v1.concat(kv,[{e:G.uld.deck.e,pid:'p'+'9'.repeat(16),nick:'나'}])}); ok(r.ok&&r.league.src.user===3&&r.league.src.ai===6,'받은 덱 3(내 덱이 다시 오면 뺌) '+JSON.stringify(r.league.src));
   const T=r.league.teams.filter(t=>t.kind==='user'); ok(T.filter(t=>t.pid).map(t=>t.pid+t.nick).join()==='p'+'1'.repeat(16)+'감독1,p'+'2'.repeat(16)+'감독2'&&T.filter(t=>!t.pid).length===1,'pid·닉네임 '+JSON.stringify(T.map(t=>[t.pid,t.nick])));
 });
+T('[유저 레더] 래더 v2 누적(사용자 11-17): 리그가 끝나면 우리 선수 기록(시즌·단계 칸)·상대 덱 전적·시즌 승패·득실이 쌓이고, 두 리그면 두 배로 더해지며, 한도(선수 120·칸 24·상대 60)를 넘지 않고 커리어 G·본게임 난수는 그대로다',()=>{ fresh(); const C=FrontOfficeCore;
+  ulSetDeck(cupEntryNow({name:'와이'}),'now'); ok(G.uld.v===2&&G.uld.ps&&G.uld.opp,'새 저장은 v2 '+JSON.stringify([G.uld.v,!!G.uld.ps]));
+  const strip=()=>{ const x=JSON.parse(JSON.stringify(G)); delete x.uld; return JSON.stringify(x); }, g0=strip();
+  const run=()=>{ const L=ulMakeLeague({}).league; while(L.next<L.sched.length)ulRunRound(L); const me=k=>Object.values(L[k]).filter(x=>String(x.key).startsWith('me:')); const sb=me('bat').reduce((a,x)=>a+x.pa,0), sp=me('pit').reduce((a,x)=>a+x.outs,0); const res=ulFinish(); return {L,res,sb,sp}; };
+  const a=run(), se=C.ulSeason(Date.now()).id; const B=C.ulPsRows(G.uld.ps,'b',{}), P=C.ulPsRows(G.uld.ps,'p',{});
+  ok(B.length>=9&&B.reduce((s,x)=>s+x.pa,0)===a.sb,'타자 타석 합 '+[B.length,B.reduce((s,x)=>s+x.pa,0),a.sb]); ok(P.length>=5&&P.reduce((s,x)=>s+x.outs,0)===a.sp&&a.sp>=27*24,'투수 아웃 합 '+[P.reduce((s,x)=>s+x.outs,0),a.sp]);
+  ok(B.every(x=>x.ops>=0&&x.ops<3&&x.obp<=1&&x.splits.length===1&&x.splits[0].sid===se),'타율·OPS·시즌 칸'); ok(P.every(x=>x.ip&&(x.era==null||x.era>=0))&&P.some(x=>x.pos==='SP')&&P.some(x=>x.pos==='RP'),'투수 역할 '+P.map(x=>x.pos));
+  ok(C.ulPsRows(G.uld.ps,'b',{tier:1}).length===0&&C.ulPsRows(G.uld.ps,'b',{tier:0,season:se}).length===B.length&&C.ulPsRows(G.uld.ps,'b',{season:'S0'}).length===0,'단계·시즌 거르기');
+  const pos=B[0].pos; ok(C.ulPsRows(G.uld.ps,'b',{pos}).every(x=>x.pos===pos),'포지션 거르기');
+  const O=Object.values(G.uld.opp); ok(O.length===9&&O.every(o=>o.n===1&&o.w+o.l+o.t===3&&o.prof&&o.m&&o.m.v===1),'상대 9팀 '+O.map(o=>o.n+':'+(o.w+o.l+o.t)));
+  const SS=G.uld.seas, h=G.uld.hist[0]; ok(SS.w+SS.l+SS.t===27&&SS.w===a.res.w&&SS.rs===a.res.rs&&SS.ra===a.res.ra&&SS.rk===a.res.rank,'시즌 승패·득실 '+JSON.stringify(SS)); ok(h.w===a.res.w&&h.l===a.res.l&&h.rd===a.res.rs-a.res.ra&&h.pts===a.res.pts,'기록 줄 '+JSON.stringify(h));
+  ok(a.res.ser.length===45&&a.res.teams.length===10,'끝난 리그 일정');
+  const b=run(), B2=C.ulPsRows(G.uld.ps,'b',{}); ok(B2.reduce((s,x)=>s+x.pa,0)===a.sb+b.sb,'두 리그 타석 합'); ok(Object.values(G.uld.opp).some(o=>o.n===2)&&G.uld.seas.n===2,'같은 상대(AI 이름) 두 번·시즌 2리그');
+  ok(strip()===g0&&G.rng===undefined,'래더 v2가 커리어 G를 바꿈'); ok(JSON.stringify(G.uld).length<260000,'G.uld 크기 '+JSON.stringify(G.uld).length);
+  /* 한도: 선수 130명·한 선수 30칸 */
+  const ps={}; for(let i=0;i<130;i++)C.ulPsAdd(ps,{sid:'S'+i,tier:0,lid:i,P:[{id:i,name:'선수'+i,pos:'C'},{id:999,name:'오래'}],bat:[{id:i,g:1,pa:4,ab:4,h:1},{id:999,g:1,pa:4,ab:3,h:2,bb:1}]});
+  ok(Object.keys(ps).length===C.UL_PS_MAX&&!ps[0]&&ps[129]&&ps[999],'선수 한도(오래 안 나온 선수부터) '+Object.keys(ps).length); ok(Object.keys(ps[999].s).length===C.UL_SPLIT_MAX&&ps[999].s['S129|0']&&!ps[999].s['S0|0'],'칸 한도(오래된 시즌부터)');
+  const r=C.ulBatRates({ab:10,h:3,d:1,tr:0,hr:1,bb:2,hbp:0,sf:0}); ok(r.avg===.3&&r.obp===.417&&r.slg===.7&&r.ops===1.117,'타율·출루·장타 '+JSON.stringify(r)); const q=C.ulPitRates({outs:28,er:3,h:5,bb:2,so:10}); ok(q.ip==='9.1'&&q.era===2.89&&q.whip===.75&&q.k9===9.64,'이닝·ERA '+JSON.stringify(q));
+  ok(C.ulCsv([{a:'x,"y"',b:1}],[['a','가'],[o=>o.b+1,'나']])==='가,나'+String.fromCharCode(13,10)+'"x,'+'""y""'+'",2','CSV 따옴표');
+  const M=C.ulMissions(G.uld.seas,G.uld.hist,se,G.uld.tier); ok(M.length===5&&M[0].cur===2&&M.every(m=>typeof m.done==='boolean'),'미션 '+JSON.stringify(M)); });
+T('[유저 레더] 래더 v2 저장 옮기기(사용자 11-17): 예전 저장(G.uld v1)은 처음 열 때 선수·상대 기록 칸이 생기고 마지막 리그 승패가 기록 줄에 채워지며, 여러 번 해도 같고, 그 뒤 리그가 그대로 쌓인다. 덱 구성 요약·집계는 같은 덱에 같은 값',()=>{ fresh(); const C=FrontOfficeCore;
+  const old={v:1,tier:2,best:3,dn:1,lid:4,deck:null,league:null,hist:[{tier:3,rank:9,to:2,move:'down',d:1,name:'와이',at:1,y:2026,s:'S20'},{tier:2,rank:3,to:2,move:'stay',d:1,name:'와이',at:2,y:2026,s:'S21'}],
+    last:{id:4,tier:2,to:2,move:'stay',rank:3,w:15,l:11,t:1,pts:270,stand:[{rank:3,name:'와이',kind:'me',w:15,l:11,t:1,diff:12}],rec:null,keys:[],src:{user:0,cup:0,ai:9}},seas:{id:'S21',label:'x',n:1,best:2,top:270,sum:270,win:0,up:0},seasons:[{id:'S20',label:'y',n:1,best:3,top:320,sum:320,win:0,up:0}]};
+  G.uld=JSON.parse(JSON.stringify(old)); const U=uld(); ok(U.v===2&&U.ps&&!Object.keys(U.ps).length&&U.opp,'v2 칸'); ok(U.hist[1].w===15&&U.hist[1].l===11&&U.hist[1].t===1&&U.hist[1].rd===12&&U.hist[1].pts===270&&U.hist[0].w==null,'마지막 리그 승패 '+JSON.stringify(U.hist[1]));
+  ok(U.tier===2&&U.best===3&&U.seasons.length===1&&U.seas.top===270&&U.last.rank===3,'예전 값은 그대로'); const once=JSON.stringify(U); C.ulMigrate(U); uld(); ok(JSON.stringify(G.uld)===once,'두 번 옮겨도 같음');
+  ok(C.ulMigrate(null)===null&&C.ulMigrate({v:2,x:1}).x===1,'빈 값·v2는 그대로');
+  ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({}).league; ok(L.tier===2,'옮긴 단계로 리그'); while(L.next<L.sched.length)ulRunRound(L); ulFinish(); ok(Object.keys(G.uld.ps).length>=14&&Object.keys(G.uld.opp).length===9,'옮긴 뒤 리그 기록이 쌓임');
+  const e=G.uld.deck.e, m=C.ulDeckMeta(e), m2=C.ulDeckMeta(JSON.parse(JSON.stringify(e))); ok(m&&JSON.stringify(m)===JSON.stringify(m2)&&C.UL_POS.filter(k=>m.pos[k]).length===9&&m.n===e.P.length&&m.age.reduce((a,b)=>a+b,0)===e.P.length&&m.a in C.UL_ARCH,'덱 구성 요약 '+JSON.stringify(m));
+  const A=C.ulMetaAgg([m,m2,null]); ok(A.n===2&&A.t.avg===m.t&&A.pos.SS.h.reduce((a,b)=>a+b,0)===2&&A.arch[m.a]===2&&A.age.reduce((a,b)=>a+b,0)===2*e.P.length,'집계 '+JSON.stringify(A.t)); ok(C.ulMetaAgg([]).n===0,'빈 집계'); });
 T('[제보 11-16 해외 복귀 기록] 돌아온 선수의 해외 시즌은 모두 연도 순서로 남고, 기록 정리에서 가장 나중에 지우며, 복귀 까닭이 협상·이력에 보이고, 선수 화면 시즌 통계가 최근 세 시즌만 남기고 줄을 숨기지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&!q.foreign&&q.age<=30); ok(p,'준비 실패'); const id=p.id;
   ovsLeave(p,'MLB',MLBT.find(c=>c.startsWith('보스턴'))||MLBT[0],5,800,'포스팅'); const a=G.abroad.find(x=>x.id===id); ok(a,'해외 기록 없음'); a.y1=G.year-5; for(let y=G.year-5;y<G.year;y++)a.lines.push({y,lvl:'MLB',g:30,outs:540,er:60,so:150,bb:40,h:160,hr:18,w:10,l:8});
   const q=JSON.parse(a.pj); q.age=34; a.pj=JSON.stringify(q); abroadYear(); const r=G.players[id]; ok(r&&a.back,'복귀 처리 실패'); ok(a.why&&a.why.includes('계약 만료'),'복귀 까닭이 없다: '+a.why); ok(!r.retAsk||(r.retAsk.why===a.why),'우선협상 요구에 까닭이 없다');

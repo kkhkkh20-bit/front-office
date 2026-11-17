@@ -73,7 +73,8 @@ export function netCreate(o) {
   N.rename = async nickname => { const r = await N.call('POST', '/player', { nickname, platform }); if (r.ok) st.set(NET_PLAYER, JSON.stringify(r.data.player)); return r; };
   N.putDeck = (e, tier, wid) => N.call('PUT', '/ladder/deck', { e, tier, wid });
   N.opponents = q => N.call('GET', '/ladder/opponents?' + new URLSearchParams(Object.assign({ n: 9 }, q || {})));
-  N.leaderboard = (tier, season) => N.call('GET', `/ladder/leaderboard?tier=${tier | 0}${season ? '&season=' + (season | 0) : ''}`, null, { auth: false });
+  N.leaderboard = (tier, season) => N.call('GET', `/ladder/leaderboard?tier=${tier === 'all' ? 'all' : tier | 0}${season ? '&season=' + (season | 0) : ''}`, null, { auth: false });
+  N.meta = tier => N.call('GET', `/ladder/meta?tier=${tier === 'all' || tier == null ? 'all' : tier | 0}`, null, { auth: false }); /* 덱 구성 집계(래더 v2, 10분 캐시) */
   N.feed = () => N.call('GET', '/ladder/feed', null, { auth: false });
   N.me = () => N.call('GET', '/ladder/me');
   N.rivals = () => N.call('GET', '/ladder/rivals');

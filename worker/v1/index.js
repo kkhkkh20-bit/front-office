@@ -7,13 +7,13 @@
      POST   /api/v1/player/link  {provider, ticket|code}   POST /api/v1/player/login {provider, ticket|code, platform} → 새 기기 토큰
      PUT    /api/v1/ladder/deck  {e, tier?, wid?}  GET /api/v1/ladder/opponents?tier=&ovr=&n=9
      POST   /api/v1/ladder/result {key, rank, teams, w, l, d, opps:[{pid,w,l,d}]}
-     GET    /api/v1/ladder/leaderboard?tier=&season=   GET /api/v1/ladder/feed   GET /api/v1/ladder/me   GET /api/v1/ladder/rivals   GET /api/v1/ladder/h2h/PID
-     관리자: GET admin/stats · GET admin/players?q= · PUT admin/hide {pid, hide} · DELETE admin/player/PID · DELETE admin/deck/PID · POST admin/season/roll · POST admin/migrate */
+     GET    /api/v1/ladder/leaderboard?tier=|all&season=   GET /api/v1/ladder/feed   GET /api/v1/ladder/meta?tier=|all (덱 구성 집계, 10분 캐시)   GET /api/v1/ladder/me   GET /api/v1/ladder/rivals   GET /api/v1/ladder/h2h/PID
+     관리자: GET admin/stats · GET admin/export?kind=decks|results (CSV용 줄) · GET admin/players?q= · PUT admin/hide {pid, hide} · DELETE admin/player/PID · DELETE admin/deck/PID · POST admin/season/roll · POST admin/migrate */
 import { json, err, readJson, cors, originOk } from './http.js';
 import { authPlayer, isAdmin, issueDevice, newPid, nickOk, platformOf, profile, PLATFORMS } from './auth.js';
 import { limited, ipKey } from './ratelimit.js';
 import { currentSeason, rollSeason } from './season.js';
-import { putDeck, opponents, postResult, leaderboard, feed, meView, rivals, h2hWith } from './ladder.js';
+import { putDeck, opponents, postResult, leaderboard, feed, meView, rivals, h2hWith, meta } from './ladder.js';
 import { handleAdmin, deletePlayer, migrate } from './admin.js';
 import { PROVIDERS, linkReady, verify } from './link.js';
 import { countDB, statStmts, takeUsage } from './usage.js';
@@ -48,9 +48,9 @@ async function route(req, env, url, now) {
     if (!(await ensureSchema(db))) return err(503, 'schema_missing');
     if (rest === 'health' && req.method === 'GET') { const s = await currentSeason(db, now); return json(200, { ok: true, schema: SCHEMA_VERSION, season: { id: s.id, starts: s.starts, ends: s.ends }, platforms: PLATFORMS }); }
     /* 공개 읽기 */
-    if (req.method === 'GET' && (rest === 'ladder/leaderboard' || rest === 'ladder/feed')) {
+    if (req.method === 'GET' && (rest === 'ladder/leaderboard' || rest === 'ladder/feed' || rest === 'ladder/meta')) {
       if (await limited(env, 'read', await ipKey(req, env), now)) return err(429, 'rate_limited');
-      return rest === 'ladder/feed' ? await feed(url, db, now) : await leaderboard(url, db, now);
+      return rest === 'ladder/feed' ? await feed(url, db, now) : rest === 'ladder/meta' ? await meta(url, db, now) : await leaderboard(url, db, now);
     }
     if (rest === 'player' && req.method === 'POST') return await postPlayer(req, env, db, now);
     if (rest === 'player/login' && req.method === 'POST') return await login(req, env, db, now);
