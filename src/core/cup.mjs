@@ -26,7 +26,7 @@ export const CUP_DEFAULT = Object.freeze({
   shuffleTop: 0,         /* 8이면 Top-8 시드 자리를 추첨으로 섞는다 */
   blocks: 0,             /* 대진표를 블록(A·B…)으로 나눠 보여 준다(0이면 없음) */
   minSeasons: 0, payCap: 0, deadline: '', /* 접수 마감(한국시간 'YYYY-MM-DD HH:mm') */
-  payCapX: 0,            /* 연봉 상한(리그 평균 배수, 사용자 11-17 "대회마다 연봉에 제약… 공평하게"): 0이면 없음. 1.25면 덱 연봉 합 ≤ 그 세계 리그 평균 × 1.25(cupPay) */
+  payCapX: 0,            /* 연봉 상한(사용자 11-17 "대회마다 연봉에 제약… 공평하게"): 0이면 없음. x면 덱 연봉 합 ≤ 143.97억(CUP_CAP_WON) × x, 경계 포함 */
 });
 const NUM = x => (typeof x === 'number' && isFinite(x) ? x : 0);
 /* 해시(16진 8자리): FNV-1a + 섞기. 엔트리·경기 키 */
@@ -135,7 +135,7 @@ export function cupValidate(e, cfg) {
   if (cfg.payCap && NUM(e.pay) > cfg.payCap) elig.push({ k: 'pay', msg: `1군 연봉 합이 상한(${cfg.payCap})을 넘습니다(${Math.round(NUM(e.pay))}).` });
   if (cfg.payCapX > 0 && !e.ai) { const c = cupPayCheck(e, cfg.payCapX); /* AI 구단은 연봉이 없는 가상 구단이라 빼고 본다 */
     if (!c.known) elig.push({ k: 'payx', msg: '연봉 기준이 없는 엔트리입니다. 게임을 새로 고친 뒤 다시 신청해 주세요.' });
-    else if (!c.ok) elig.push({ k: 'payx', msg: `1군 연봉 ${cupWon(c.pay)}이 상한 ${cupWon(c.cap)}을 ${cupWon(-c.room)} 넘습니다.` }); }
+    else if (!c.ok) elig.push({ k: 'payx', msg: `덱 연봉 ${cupWon(c.pay)}이 상한 ${cupWon(c.cap)}(143.97억 × ${c.x})을 ${cupWon(-c.room)} 넘습니다.` }); }
   if (e.h && e.h !== cupEntryHash(e)) flag('hash', '엔트리 해시가 맞지 않습니다(손으로 고친 파일일 수 있습니다).');
   const errors = err.filter((x, i) => err.findIndex(y => y.msg === x.msg) === i);
   return { ok: !errors.length, errors, flags, elig };

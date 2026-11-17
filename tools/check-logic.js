@@ -5971,6 +5971,12 @@ T('[유저 레더] 통산 칸(외부 검수 11-17): 기록 줄은 최근 200리�
   ok(C.ulBadges(cut,car).find(b=>b.k==='legend').on&&!C.ulBadges(cut).find(b=>b.k==='legend').on,'레전드 배지 유지');
   G.uld={v:2,tier:1,best:2,hist:H.slice(0,10),deck:null,league:null,last:null,dn:0,ps:{},opp:{}}; const U=uld(); ok(U.car&&U.car.n===10&&U.car.best>=2,'예전 저장 통산 만들기 '+JSON.stringify(U.car&&[U.car.n,U.car.best])); const c1=JSON.stringify(U.car); uld(); ok(JSON.stringify(G.uld.car)===c1,'두 번 열어도 같음');
   ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({}).league; while(L.next<L.sched.length)ulRunRound(L); ulFinish(); ok(G.uld.car.n===11&&G.uld.hist.length===11,'리그 하나 더하면 하나만 '+G.uld.car.n); });
+T('[유저 레더] 앨범 보관 고정(외부 검수 11-17 #14·#15): 가득 차면 고정하지 않은 칸만 지우고(우승 아닌 자동 → 자동 → 직접 저장, 오래된 것부터), 모두 고정이면 담지 않으며, 지운 칸은 같은 자리로 되돌릴 수 있다',()=>{ fresh(); G.cupAlb=[]; G.cupAlbN=0;
+  for(let i=0;i<CUP_ALB_MAX;i++){ const x=cupAlbumAdd('hand',null); x.y=2000+i; } ok(cupAlbum().length===CUP_ALB_MAX,'가득');
+  const first=cupAlbum()[0]; cupAlbumPin(first.id); ok(cupAlbumNext()===1,'고정한 첫 칸은 건너뜀');
+  const y=cupAlbumAdd('hand',null); ok(y&&cupAlbum().some(a=>a.id===first.id)&&cupAlbum().length===CUP_ALB_MAX,'고정한 칸은 남음');
+  for(const a of cupAlbum())a.pin=1; ok(cupAlbumNext()===null&&cupAlbumAdd('hand',null)===null&&cupAlbum().length===CUP_ALB_MAX,'모두 고정이면 담지 않음');
+  const r=cupAlbumDel(cupAlbum()[3].id); ok(r&&r.i===3&&cupAlbum().length===CUP_ALB_MAX-1,'지우기'); cupAlbum().splice(r.i,0,r.x); ok(cupAlbum()[3].id===r.x.id,'되돌리기 자리'); });
 T('[유저 레더] 래더 v3(사용자 11-17 "레더랑 대회 쪽 … 시스템 제대로 더 개선해야하고"): 매일·주간 목표는 한국시간 날·주마다 정해지고 기록(ts)만으로 세며, 다 채우면 날·주마다 도장 한 번, 도장으로 테두리·칭호(꾸미기)만 생긴다. 붙어 보기·대회 선수 빼기는 커리어 G·본게임 난수를 건드리지 않는다',()=>{ fresh(); const C=FrontOfficeCore;
   const t0=Date.UTC(2026,10,15,15), day=C.ulDayId(t0), H=k=>Array.from({length:k},(_,i)=>({tier:1,rank:i%2?2:3,w:16,l:11,rd:12,move:i%2?'up':'stay',ts:t0+i*6e4}));
   ok(C.ulDayId(t0)===C.ulDayId(t0+86399e3)&&C.ulDayId(t0+864e5)===day+1,'날 경계(한국시간 0시)'); ok(C.ulWeekId(t0)===C.ulWeekId(t0+6*864e5)&&C.ulWeekId(t0+7*864e5)===C.ulWeekId(t0)+1,'주 경계(월요일 0시)');

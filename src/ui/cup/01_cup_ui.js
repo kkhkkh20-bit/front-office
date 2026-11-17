@@ -7,8 +7,14 @@
 const CUP={pub:null,pubSt:'',st:'',probing:false,cfg:null,my:null,busy:false,msg:'',bad:false,res:null,resSt:'',view:null,name:''};
 /* 응답 본문(JSON이 아니면 빈 객체: 내려받은 게임·점검 서버처럼 /api가 없는 곳) */
 async function cupJson(r){ try{ const t=await r.text(); return t?JSON.parse(t):{}; }catch(e){ return {}; } }
-const cupApi=(p,o)=>fetch('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ const j=await cupJson(r); return {r,j}; });
+/* 시간 제한(외부 검수 11-17): 12초 안에 답이 없으면 끊는다(연결 실패로 처리, 단추는 다시 풀린다) */
+function cupFetchT(u,o,ms){ const ac=typeof AbortController!=='undefined'?new AbortController():null, t=ac?setTimeout(()=>ac.abort(),ms||12e3):null; return fetch(u,Object.assign({},o,ac?{signal:ac.signal}:{})).finally(()=>{ if(t)clearTimeout(t); }); }
+const cupApi=(p,o)=>cupFetchT('/api/cup'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ const j=await cupJson(r); return {r,j}; });
 function cupSay(m,bad){ CUP.msg=m; CUP.bad=!!bad; render(); }
+/* 서버는 받았는데 응답을 잃은 경우(외부 검수 11-17 #27): 내 신청 상태를 다시 읽어, 방금 낸 덱이 들어가 있으면 성공으로 보여 준다 */
+async function cupRecover(g0,e,recent){ try{ const {r,j}=await cupApi('/entry/'+cupWid()); if(G!==g0||!r.ok||!j||!j.entered)return false; if(recent&&!(e&&j.name===e.name&&String(j.year)===String(e.year)&&Date.now()-(+j.at||0)<120e3&&!(CUP.my&&CUP.my.at===j.at)))return false; /* 이미 받은 성공(같은 at)이면 진짜 하루 1회 */ CUP.my=Object.assign({entered:true},j);
+  const same=!!e&&j.name===e.name&&String(j.year)===String(e.year); if(same)try{ G.cupMine={cup:CUP.cfg.id,at:Date.now(),e:FrontOfficeCore.ulSlim(e)}; save(); }catch(x){}
+  cupSay(same?`신청이 들어가 있습니다. ${j.name} ${j.year} · OVR ${FrontOfficeCore.cupOvrTxt(j.ovr)}`:`이미 오늘 신청한 덱이 있습니다(${j.name} ${j.year}). 내일 다시 바꿀 수 있습니다.`,!same); return true; }catch(x){ return false; } }
 function cupProbe(){ if(CUP.st||CUP.probing||!xfAvail())return; CUP.probing=true;
   cupApi('').then(({r,j})=>{ CUP.cfg=r.ok&&j.cup?j.cup:null; CUP.st=r.ok?'ok':r.status===404?'none':'off'; if(CUP.cfg&&G&&G.wid)return cupApi('/entry/'+G.wid).then(({j})=>{ CUP.my=j&&j.entered?j:null; }); },()=>{ CUP.st='off'; })
     .then(()=>cupApi('/results').then(({r,j})=>{ CUP.res=r.ok?j:null; if(r.ok&&j&&Array.isArray(j.cups)){ HOF.data=j; HOF.at=Date.now(); HOF.st='live'; cupHofSave(j); } cupTitleSync(); },()=>{}))
@@ -17,7 +23,7 @@ function cupProbe(){ if(CUP.st||CUP.probing||!xfAvail())return; CUP.probing=true
 function cupTitleSync(){ if(!CUP.res&&HOF.data)CUP.res=HOF.data; if(!G||!G.wid||!CUP.res||!Array.isArray(CUP.res.cups))return; const me=FrontOfficeCore.cupHashStr('wid:'+G.wid); const T=G.cupTt||[];
   for(const c of CUP.res.cups)for(const [k,lab] of [['champ','우승'],['runner','준우승']]){ const x=c[k]; if(x&&x.wh===me&&!T.some(t=>t.cup===c.id&&t.k===k))T.push({cup:c.id,k,t:`${c.title} ${lab} 단장`,y:G.year}); }
   if(T.length&&JSON.stringify(G.cupTt||[])!==JSON.stringify(T)){ G.cupTt=T; try{ save(); }catch(e){} } }
-const cupDate=ms=>{ try{ const d=new Date(ms); return `${d.getMonth()+1}월 ${d.getDate()}일`; }catch(e){ return ''; } };
+const cupDate=ms=>{ try{ const d=new Date(+ms+9*36e5); return `${d.getUTCMonth()+1}월 ${d.getUTCDate()}일`; }catch(e){ return ''; } }; /* 대회 날짜는 늘 한국시간(외부 검수 11-17) */
 /* 얼굴 사진을 64px로 줄여 엔트리에 붙인다(카드 이미지용). 아직 못 불러온 사진은 빼고 보낸다(주최 도구가 같은 얼굴 묶음에서 다시 고른다) */
 async function cupFaces(e){ const tid=e.club.tid; for(const s of e.P){ const p=G.players[s.id]; if(!p)continue; let u=null; for(let k=0;k<24;k++){ try{ u=face6Src(p.team===tid?p:Object.assign({},p,{team:tid})); }catch(x){ u=null; } if(u!==F6WAIT)break; await new Promise(r=>setTimeout(r,250)); } /* 얼굴 시트를 아직 못 불러왔으면 잠깐 기다린다 */ if(!u||u===F6WAIT||!/^data:/.test(u))continue;
     try{ const im=new Image(); await new Promise((ok,no)=>{ im.onload=ok; im.onerror=no; im.src=u; }); const c=document.createElement('canvas'); c.width=c.height=64; c.getContext('2d').drawImage(im,0,0,64,64); s.f=c.toDataURL('image/webp',.72); if(!/^data:image\/webp/.test(s.f))s.f=c.toDataURL('image/jpeg',.7); }catch(x){} }
@@ -32,8 +38,9 @@ async function cupSend(e){ const C=FrontOfficeCore; if(CUP.busy)return; if(C.cup
     cupSay('신청서를 보내는 중입니다.');
     const {r,j}=await cupApi('/entry',{method:'POST',body:JSON.stringify(e),headers:{'Content-Type':'application/json'}}); if(G!==g0)return;
     if(r.status===201){ CUP.my=Object.assign({entered:true},j); try{ G.cupMine={cup:cfg.id,at:Date.now(),e:C.ulSlim(e)}; save(); }catch(x){} CUP.ents=null; CUP.entsSt=''; CUP.drop=null; return cupSay(`신청했습니다. ${j.name} ${j.year} · OVR ${C.cupOvrTxt(j.ovr)}`); }
+    if(r.status===429&&await cupRecover(g0,e,true))return; /* 방금(2분 안) 들어간 같은 덱이면 응답을 잃은 것 */
     cupSay((j.errors&&j.errors[0])||j.message||'신청하지 못했습니다. 잠시 뒤 다시 시도해 주세요.',true); }
-  catch(x){ if(G===g0)cupSay('서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.',true); }
+  catch(x){ if(G===g0&&!(await cupRecover(g0,e)))cupSay('서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.',true); }
   finally{ if(G===g0){ CUP.busy=false; try{ render(); }catch(x){} } } }
 /* 참가 파일 저장(서버 신청의 예비 길): 같은 엔트리를 파일로. 주최자는 node tools/cup-host.cjs add DIR 파일 로 넣는다 */
 function cupFile(e,name){ try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(e)],{type:'application/json'})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); toast('참가 파일을 저장했습니다. 주최자에게 보내 주세요.'); }catch(x){ toast('파일을 만들지 못했습니다.'); } }
@@ -49,18 +56,24 @@ Object.assign(A,{
   cupFileNow(){ if(!G||G.unemp)return; const e=cupNowEntry(cupNameIn()).e; if(!e)return; if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
   cupFileAlb(v){ const x=cupAlbum().find(a=>a.id===+v); if(!x)return; const e=JSON.parse(JSON.stringify(x.e)); e.name=cupNameIn(); if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); e.ovr=cupOvr(e); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
   cupWithdraw(){ if(CUP.busy||!G||!G.wid)return; CUP.busy=true; cupApi('/entry/'+G.wid,{method:'DELETE'}).then(({r,j})=>{ CUP.busy=false; if(r.ok){ CUP.my=null; cupSay('신청을 취소했습니다.'); } else cupSay(j.message||'취소하지 못했습니다.',true); },()=>{ CUP.busy=false; cupSay('서버에 연결하지 못했습니다.',true); }); },
-  cupAlbSave(){ if(!G||G.unemp)return; const x=cupAlbumAdd('hand',null); if(x)save(); toast(x?`${G.year} 로스터를 앨범에 담았습니다.`:'앨범에 담지 못했습니다.'); render(); }, /* 저장을 건다(외부 검수 11-17 P1). 저장 실패는 저장 쪽이 따로 알린다 */
-  cupAlbDel(v){ if(cupAlbumDel(v)){ save(); toast('앨범에서 지웠습니다.'); render(); } },
+  cupAlbSave(){ if(!G||G.unemp)return; const full=cupAlbum().length>=CUP_ALB_MAX, nx=full?cupAlbumNext():null, gone=nx!=null?cupAlbum()[nx]:null;
+    if(full&&!gone)return toast('앨범이 모두 보관 고정이라 더 담을 수 없습니다. 고정을 풀거나 지워 주세요.');
+    if(gone&&!confirm(`앨범이 가득 찼습니다(${CUP_ALB_MAX}개). 담으면 ${gone.y} ${gone.k==='auto'?'시즌 종료':'직접 저장'} 로스터가 지워집니다. 담을까요?`))return;
+    const x=cupAlbumAdd('hand',null); if(x)save(); toast(x?`${G.year} 로스터를 앨범에 담았습니다.`:'앨범에 담지 못했습니다.'); render(); }, /* 저장을 건다(외부 검수 11-17 P1). 저장 실패는 저장 쪽이 따로 알린다 */
+  cupAlbDel(v){ const r=cupAlbumDel(v); if(r){ CUP.albUndo=Object.assign(r,{at:Date.now()}); save(); render(); } }, /* 지운 뒤 '되돌리기'(외부 검수 11-17) */
+  cupAlbUndo(){ const u=CUP.albUndo; if(!u)return; const A=cupAlbum(); if(!A.some(a=>a.id===u.x.id))A.splice(Math.min(u.i,A.length),0,u.x); CUP.albUndo=null; save(); toast('앨범에 되돌렸습니다.'); render(); },
+  cupAlbPin(v){ if(cupAlbumPin(v)){ save(); render(); } },
   /* 대회 경기 보기: 주최자가 돌려 올린 기록을 그대로 받아 보여 준다(다시 돌리지 않는다). 시리즈 요약을 먼저 받고, 차전 기록(중계·박스·줄 점수)은 고를 때 그 차전만 받는다 */
   async cupWatch(){ const el=document.getElementById('cupGame'), id=(el?el.value:'').trim(); if(!id)return;
-    if(!/^[A-Za-z0-9_-]{1,60}$/.test(id))return cupSay('경기 번호를 확인해 주세요.',true);
-    try{ const {r,j}=await cupApi('/game/'+id); if(!r.ok)return cupSay(j.message||'경기를 찾지 못했습니다.',true);
+    if(!/^[A-Za-z0-9_-]{1,60}$/.test(id))return cupSay('경기 번호를 확인해 주세요.',true); const rq=CUP.wq=(CUP.wq|0)+1; /* 늦게 온 앞 요청이 나중 화면을 덮지 않게(외부 검수 11-17) */
+    try{ const {r,j}=await cupApi('/game/'+id); if(rq!==CUP.wq)return; if(!r.ok)return cupSay(j.message||'경기를 찾지 못했습니다.',true);
       if(!j||!Array.isArray(j.g)||!j.g.length)return cupSay('이 경기 기록은 지금 게임에서 볼 수 없는 형식입니다.',true);
       CUP.view={id,idx:j,gi:0,tab:'log',recs:{}}; CUP.msg=''; cupRec(0); }
-    catch(x){ cupSay('서버에 연결하지 못했습니다.',true); } },
+    catch(x){ if(rq===CUP.wq)cupSay('서버에 연결하지 못했습니다.',true); } },
   cupVG(v){ if(CUP.view){ CUP.view.gi=+v; cupRec(+v); } }, cupVT(v){ if(CUP.view){ CUP.view.tab=v; render(); } },
   cupWatchId(v){ const el=document.getElementById('cupGame'); if(el)el.value=v; return A.cupWatch(); },
-  cupVClose(){ CUP.view=null; render(); },
+  cupRetry(){ Object.assign(CUP,{st:'',probing:false,pubSt:'',entsSt:''}); HOF.st=''; render(); },
+  cupVClose(){ CUP.view=null; CUP.wq=(CUP.wq|0)+1; render(); }, /* 닫은 뒤 늦은 응답으로 다시 열리지 않게 */
 });
 /* 차전 기록 한 개 받기(한 번 받으면 화면을 닫을 때까지 둔다) */
 function cupRec(i){ const V=CUP.view; if(!V)return render(); if(V.recs[i]){ render(); return; } V.recs[i]='loading'; render();
@@ -79,7 +92,7 @@ function cupPubHtml(P,pv){ if(!P||!P.day)return '';
 /* 신청할 덱: 지금 1군에서 CUP.drop 선수를 뺀 것(래더와 같은 ulCapDrop: 빠진 타순은 벤치, 선발은 불펜이 채움). {e, err} */
 function cupNowEntry(name){ let e=null; try{ if(G&&!G.unemp)e=cupEntryNow({name:name||CUP.name||team(G.user).nick}); }catch(x){ console.error(x); } if(!e)return {e:null,err:''};
   const D=CUP.drop||[]; if(!D.length)return {e,err:''}; const r=FrontOfficeCore.ulCapDrop(e,D); if(r.err)return {e:null,err:r.err}; r.e.ovr=cupOvr(r.e); return {e:r.e,err:''}; }
-const cupDl=d=>{ const m=/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2}))?/.exec(String(d||'')); return m?Date.UTC(+m[1],m[2]-1,+m[3],(m[4]|0)-9,m[5]|0):0; }; /* 마감(한국시간 글) → ms */
+const cupDl=d=>FrontOfficeCore.cupKstMs(d)||0; /* 마감(한국시간 글) → ms. 없는 날짜는 0(마감 없음으로 보지 않게 화면은 '접수 중'만) */
 /* 지금 대회 단계: 0 없음 · 1 접수 중 · 2 마감(주최자 준비) · 3 진행(연재 공개 중) · 4 결과 공개 */
 function cupStage(){ const c=CUP.cfg, P=CUP.pub&&c&&CUP.pub.id===c.id?CUP.pub:null; if(!c)return 0; if(P&&P.day>=7)return 4; if(P&&P.day)return 3; const dl=cupDl(c.deadline); return c.open!==false&&(!dl||Date.now()<dl)?1:2; }
 function cupEntsLoad(){ if(CUP.entsSt||!xfAvail()||cupStage()!==1)return; CUP.entsSt='loading'; cupApi('/entries').then(({r,j})=>{ CUP.ents=r.ok&&j&&Array.isArray(j.entries)?j:null; },()=>{}).finally(()=>{ CUP.entsSt='ok'; try{ render(); }catch(e){} }); }
@@ -105,8 +118,8 @@ function cupCapHtml(e,cfg){ const C=FrontOfficeCore; if(!e||!cfg||!cfg.payCapX)r
 function cupView(){ if(!G)return ''; cupProbe(); cupPubLoad(); cupEntsLoad(); const C=FrontOfficeCore, t=team(G.user), on=xfAvail(), cfg=CUP.cfg;
   let now=null, nowErr=''; { const R=cupNowEntry(); now=R.e; nowErr=R.err; }
   const title=(G.cupTt||[]).map(x=>`<span class="cup-tt">${esc(x.t)}</span>`).join('');
-  const st=!on?'<p class="small muted">서버 신청은 웹 사이트에서 할 수 있습니다. 내려받은 게임에서는 \'참가 파일 저장\'으로 받은 파일을 주최자에게 보내 주세요.</p>':!CUP.st?'<p class="small muted">대회 정보를 불러오는 중입니다.</p>':CUP.st==='off'?'<p class="small muted">지금은 대회 서버에 연결할 수 없습니다.</p>':!cfg?'<p class="small muted">지금 열린 대회가 없습니다.</p>':
-    `<p class="cup-h"><b>${esc(cfg.title)}</b>${cfg.deadline?` · 접수 마감 ${esc(cfg.deadline)}`:''}</p>${cfg.format==='league'?`<p class="small muted">이번 한 번 여는 대회입니다. ${cfg.teams||10}팀 리그(팀당 ${((cfg.teams||10)-1)*3}경기) 뒤 와일드카드·준플레이오프·플레이오프·한국시리즈로 우승을 가립니다. 모자란 자리는 리그 평균 AI 구단이 채웁니다.</p>`:''}${cfg.minSeasons||cfg.payCap||cfg.payCapX?`<p class="small muted">참가 자격: ${[cfg.minSeasons?`${cfg.minSeasons}시즌 이상 치른 저장`:'',cfg.payCap?`1군 연봉 합 ${money(cfg.payCap)} 이하`:'',cfg.payCapX?`덱 연봉 합 ${money(Math.floor(C.CUP_CAP_WON*cfg.payCapX))} 이하(첫 시즌 샐러리캡${+cfg.payCapX!==1?` × ${cfg.payCapX}`:''})`:''].filter(Boolean).join(' · ')}</p>`:''}
+  const st=!on?'<p class="small muted">서버 신청은 웹 사이트에서 할 수 있습니다. 내려받은 게임에서는 \'참가 파일 저장\'으로 받은 파일을 주최자에게 보내 주세요.</p>':!CUP.st?'<p class="small muted">대회 정보를 불러오는 중입니다.</p>':CUP.st==='off'?'<p class="small">지금은 대회 서버에 연결할 수 없습니다. <button class="lnk small" data-a="cupRetry">다시 연결</button></p>':!cfg?'<p class="small muted">지금 열린 대회가 없습니다.</p>':
+    `<p class="cup-h"><b>${esc(cfg.title)}</b>${cfg.deadline?` · 접수 마감 ${esc(cfg.deadline)}(한국시간)`:''}</p>${cfg.format==='league'?`<p class="small muted">이번 한 번 여는 대회입니다. ${cfg.teams||10}팀 리그(팀당 ${((cfg.teams||10)-1)*3}경기) 뒤 와일드카드·준플레이오프·플레이오프·한국시리즈로 우승을 가립니다. 모자란 자리는 리그 평균 AI 구단이 채웁니다.</p>`:''}${cfg.minSeasons||cfg.payCap||cfg.payCapX?`<p class="small muted">참가 자격: ${[cfg.minSeasons?`${cfg.minSeasons}시즌 이상 치른 저장`:'',cfg.payCap?`1군 연봉 합 ${money(cfg.payCap)} 이하`:'',cfg.payCapX?`덱 연봉 합 ${money(Math.floor(C.CUP_CAP_WON*cfg.payCapX))} 이하(첫 시즌 샐러리캡${+cfg.payCapX!==1?` × ${cfg.payCapX}`:''})`:''].filter(Boolean).join(' · ')}</p>`:''}
     ${cupStatusHtml()}${cupMineHtml()}`;
   const form=G.unemp?'<p class="small muted">구단을 맡고 있을 때 신청할 수 있습니다.</p>':`<label class="cup-in"><span>팀명(12자)</span><input id="cupName" maxlength="12" value="${esc(CUP.name||t.nick)}" autocomplete="off"></label>
     ${now?`<p class="small">${(CUP.drop||[]).length?'신청할 덱':'지금 1군'} ${now.P.length}명 · OVR <b class="num">${C.cupOvrTxt(now.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:nowErr?`<div class="note bad">${esc(nowErr)}</div>`:''}${cupCapHtml(now,cfg)}
@@ -116,8 +129,10 @@ function cupView(){ if(!G)return ''; cupProbe(); cupPubLoad(); cupEntsLoad(); co
   const AL=cupAlbum().slice().reverse();
   const alb=`<section class="card"><h2 class="sec">출전 로스터 앨범</h2><p class="small muted">시즌이 끝날 때마다 1군 로스터를 자동으로 남깁니다(${AL.length}/${CUP_ALB_MAX}개). 지난 로스터로도 신청할 수 있습니다.</p>
     <div class="btns"><button class="btn" data-a="cupAlbSave"${G.unemp?' disabled':''}>지금 로스터 저장</button></div>
-    <div class="cup-alb">${AL.map(x=>{ const e=x.e, r=e.res; return `<div class="cup-a"><div><b>${x.y} ${esc(e.club.nick||e.name)}</b><span class="small muted">${x.k==='auto'?'시즌 종료':'직접 저장'}${r?` · ${r.rank}위${r.champ?' · 우승':''} · ${r.w}승 ${r.l}패`:''} · OVR ${C.cupOvrTxt(e.ovr)}</span></div>
-      <div class="btns">${on&&cfg&&cupStage()===1?`<button class="btn small" data-a="cupApplyAlb" data-v="${x.id}"${CUP.busy?' disabled':''}>이 로스터로 신청</button>`:''}<button class="btn small" data-a="cupFileAlb" data-v="${x.id}">참가 파일</button><button class="btn small" data-a="cupAlbDel" data-v="${x.id}">삭제</button></div></div>`; }).join('')||'<p class="small muted">아직 저장한 로스터가 없습니다.</p>'}</div></section>`;
+    ${(()=>{ const U=CUP.albUndo; return U&&Date.now()-U.at<60e3?`<div class="note">${U.x.y} 로스터를 지웠습니다. <button class="lnk small" data-a="cupAlbUndo">되돌리기</button></div>`:''; })()}
+    ${(()=>{ const n=cupAlbumNext(), g=n!=null?cupAlbum()[n]:null; return AL.length>=CUP_ALB_MAX-2?`<p class="small cup-warn">${g?`가득 차면 <b>${g.y} ${g.k==='auto'?'시즌 종료':'직접 저장'}</b> 로스터부터 지웁니다. 남기려면 '보관 고정'을 누르세요.`:'모두 보관 고정이라 가득 차면 더 담지 않습니다.'}</p>`:''; })()}
+    <div class="cup-alb">${AL.map(x=>{ const e=x.e, r=e.res; return `<div class="cup-a${x.pin?' cup-pin':''}"><div><b>${x.pin?'[고정] ':''}${x.y} ${esc(e.club.nick||e.name)}</b><span class="small muted">${x.k==='auto'?'시즌 종료':'직접 저장'}${r?` · ${r.rank}위${r.champ?' · 우승':''} · ${r.w}승 ${r.l}패`:''} · OVR ${C.cupOvrTxt(e.ovr)}</span></div>
+      <div class="btns">${on&&cfg&&cupStage()===1?`<button class="btn small" data-a="cupApplyAlb" data-v="${x.id}"${CUP.busy?' disabled':''}>이 로스터로 신청</button>`:''}<button class="btn small" data-a="cupFileAlb" data-v="${x.id}">참가 파일</button><button class="btn small" data-a="cupAlbPin" data-v="${x.id}" aria-pressed="${!!x.pin}">${x.pin?'고정 풀기':'보관 고정'}</button><button class="btn small" data-a="cupAlbDel" data-v="${x.id}">삭제</button></div></div>`; }).join('')||'<p class="small muted">아직 저장한 로스터가 없습니다.</p>'}</div></section>`;
   const DK=ulDecks(); const got=DK.length?`<section class="card"><h2 class="sec">가져온 덱</h2><p class="small muted">명예의 전당에서 가져온 우승 덱입니다. 유저 래더에서 도전 덱으로 만납니다. 내 덱으로는 등록할 수 없습니다.</p>
     ${DK.map(x=>`<details class="hof-d"><summary class="small"><b>${esc(x.name)} ${esc(x.year)}</b> · ${esc(x.src)} · OVR ${esc(C.cupOvrTxt(x.ovr))}</summary>${cupDeckHtml(x.e)}<div class="btns"><button class="btn small" data-a="cupDeckDrop" data-v="${esc(x.h)}">지우기</button></div></details>`).join('')}</section>`:'';
   const V=CUP.view; let vw='';

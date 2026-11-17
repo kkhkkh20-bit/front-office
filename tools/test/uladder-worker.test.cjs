@@ -103,3 +103,11 @@ test('깨진 JSON 본문(외부 검수 11-17): 래더·대회·관리자·v1 끝
  for(const s of ['2026-02-30 10:00','2026-13-01 10:00','2026-11-30 25:00','2026-11-30 21:60','2025-02-29 12:00','2026-00-10 10:00'])assert.equal(cupKstMs(s),null,s);
  assert.equal(cupKstMs('2028-02-29 12:00'),Date.UTC(2028,1,29,3),'윤년 2월 29일'); assert.equal(cupKstMs('2026-12-31 23:59'),Date.UTC(2026,11,31,14,59));
  r=await raw('PUT','/api/cup/admin/config',JSON.stringify({id:'cup1',title:'컵',deadline:'2026-02-30 21:00'}),{Authorization:'Bearer s3cret'}); assert.equal(r.status,400,'없는 마감 날짜'); });
+test('연봉 상한 경계(외부 검수 11-17 #28): 정확히 143.97억은 들어가고(이하 포함) 1(백만원)만 넘어도 막힌다. 화면·서버가 같은 함수(cupPayCheck), 대회 배수도 같은 규칙, OVR 빠진 엔트리도 시드 정렬이 멈추지 않는다', async()=>{
+ const {cupPayCheck,CUP_CAP_WON,cupSeed,cupValidate}=await import(path.join(root,'src/core/cup.mjs')); const {ulCap,ulCapGate}=await import(path.join(root,'src/core/uladder.mjs'));
+ const at=pay=>{ const e=deck(); const n=e.P.length; e.P.forEach((p,i)=>{ p.sal=Math.floor(pay/n)+(i<pay%n?1:0); }); return e; };
+ assert.equal(CUP_CAP_WON,14397); assert.equal(cupPayCheck(at(14397),1).ok,true,'딱 상한'); assert.equal(cupPayCheck(at(14398),1).ok,false,'1 넘음'); assert.equal(ulCap(at(14397),3).ok,true); assert.equal(ulCapGate(at(14398),4,Date.now()).ok,false);
+ assert.equal(cupPayCheck(at(Math.floor(14397*1.25)),1.25).ok,true); assert.equal(cupPayCheck(at(Math.floor(14397*1.25)+1),1.25).ok,false);
+ assert.equal(cupValidate(at(14398),{payCapX:1}).elig[0].k,'payx'); assert.match(cupValidate(at(14398),{payCapX:1}).elig[0].msg,/143\.97억 × 1/);
+ const {env,H}=await setup(); let r=await H('PUT','/api/ladder/deck',{wid:wid(31),tier:0,e:at(14397)}); assert.equal(r.status,200,'서버도 딱 상한은 받음'); r=await H('PUT','/api/ladder/deck',{wid:wid(32),tier:0,e:at(14398)}); assert.equal(r.status,400,'서버도 1 넘으면 거절');
+ const L=cupSeed([{h:'a',ovr:{t:60,p:60,b:60}},{h:'b'},{h:'c',ovr:{t:70,p:70,b:70}}]); assert.deepEqual(L.map(x=>x.h),['c','a','b']); });

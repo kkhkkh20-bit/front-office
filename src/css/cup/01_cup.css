@@ -40,3 +40,4 @@
 .admx .adm-cur{border-color:var(--accent,#3b7dd8);box-shadow:0 0 0 1px var(--accent,#3b7dd8)}.adm-pill{background:var(--accent,#3b7dd8);color:#fff;margin-left:6px;font-size:11px}
 @media(max-width:640px){.cupx .ul-cr{grid-template-columns:minmax(0,1fr) auto auto}.cupx .ul-cr>span.small{display:none}.adm-steps.adm-steps7{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .admx h2.sec small{margin-left:6px;font-weight:600;color:var(--muted)}
+.cupx .cup-warn{color:var(--warn,#e3b44c)}.cupx .cup-pin{border-color:var(--warn,#e3b44c)}

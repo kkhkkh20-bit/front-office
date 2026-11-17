@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* 프런트컵(유저 대회) 주최 도구. 대회 상태는 폴더 하나(DIR/cup.json)에 두고 한 경기씩 이어서 돌린다. 안내: docs/design/cup-kit-host-guide.md
  사용(dist/engine.js 필요: bash build.sh --engine-out dist/engine.js):
-   node tools/cup-host.cjs init DIR [--id cup1] [--title "제1회 프런트컵"] [--format league|knockout] [--teams 10] [--min-seasons 2] [--pay-cap 0] [--pay-cap-x 1.25(연봉 상한: 리그 평균 배수, 사용자 11-17)] [--deadline "2026-11-30 21:00"]
+   node tools/cup-host.cjs init DIR [--id cup1] [--title "제1회 프런트컵"] [--format league|knockout] [--teams 10] [--min-seasons 2] [--pay-cap 0] [--pay-cap-x 1(연봉 상한: 143.97억 × 배수, 사용자 11-17)] [--deadline "2026-11-30 21:00"]
         (knockout 형식만: [--size 32] [--best "1,8:7,4:7,2:7"] [--playin 16:4] [--shuffle 8] [--blocks 4])
    node tools/cup-host.cjs pull DIR --url https://사이트                    서버 신청 목록 받기(환경 변수 CUP_ADMIN 필요)
    node tools/cup-host.cjs add DIR 파일…                                   참가 파일(게임의 '참가 파일 저장')이나 서버 목록 JSON 넣기
