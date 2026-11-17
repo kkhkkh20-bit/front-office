@@ -29,6 +29,7 @@ const B64 = /^[A-Za-z0-9+/]+={0,3}$/;
 const KEY = c => 'x:' + c;
 
 const MSG = {
+  bad_json: '요청 본문(JSON)을 읽지 못했습니다.', /* 깨진 본문은 서버 오류(500)가 아니라 400(외부 검수 11-17) */
   not_configured: '기기 옮기기가 아직 준비되지 않았습니다. 파일로 내보내기를 써 주세요.',
   too_large: '저장이 너무 커서 올리지 못했습니다(8MB 이하). 파일로 내보내기를 써 주세요.',
   bad_format: '게임 저장 코드가 아니어서 받지 않았습니다.',
@@ -97,17 +98,17 @@ export async function handle(req, env, now = Date.now()) {
     try { return json(200, Object.assign(await ladderUsage(env, url, now), { build: (env.CF_VERSION_METADATA && env.CF_VERSION_METADATA.id) || env.BUILD || WORKER_BUILD })); } catch (e) { return err(500, 'server'); }
   }
   /* 서버 v1(D1): env.DB가 없으면 503 not_configured. 있으면 KV 쓰기 횟수도 세어 관리자 '래더 현황'에 보인다(worker/v1/usage.js) */
-  if (/^\/api\/v1(\/|$)/.test(url.pathname)) { try { return await handleV1(req, env, url, now); } catch (e) { return err(500, 'server'); } }
+  if (/^\/api\/v1(\/|$)/.test(url.pathname)) { try { return await handleV1(req, env, url, now); } catch (e) { return e instanceof SyntaxError ? err(400, 'bad_json') : err(500, 'server'); } }
   if (env.DB && env.SAVE_KV) { const kv = countKV(env.SAVE_KV), raw = env; env = new Proxy(raw, { get: (t, k) => k === 'SAVE_KV' ? kv : t[k] }); }
   if (/^\/api\/cup(\/|$)/.test(url.pathname)) {
     if (!env.SAVE_KV) return err(503, 'not_configured');
     if (req.method !== 'GET' && !sameOrigin(req, url) && !(req.headers.get('Authorization') || '').startsWith('Bearer ')) return err(403, 'cross_origin');
-    try { return await handleCup(req, env, url, now, rateLimited); } catch (e) { return err(500, 'server'); }
+    try { return await handleCup(req, env, url, now, rateLimited); } catch (e) { return e instanceof SyntaxError ? err(400, 'bad_json') : err(500, 'server'); }
   }
   if (/^\/api\/ladder(\/|$)/.test(url.pathname)) {
     if (!env.SAVE_KV) return err(503, 'not_configured');
     if (req.method !== 'GET' && !sameOrigin(req, url) && !(req.headers.get('Authorization') || '').startsWith('Bearer ')) return err(403, 'cross_origin');
-    try { return await handleLadder(req, env, url, now); } catch (e) { return err(500, 'server'); }
+    try { return await handleLadder(req, env, url, now); } catch (e) { return e instanceof SyntaxError ? err(400, 'bad_json') : err(500, 'server'); }
   }
   const m = url.pathname.match(/^\/api\/transfer(?:\/([^/]*))?\/?$/);
   if (!m) return json(404, { error: 'not_found', message: '' });

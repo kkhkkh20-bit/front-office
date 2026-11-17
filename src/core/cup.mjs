@@ -4,6 +4,7 @@
    대회는 회차마다 따로 여는 단발 행사다(정기 일정 없음). 회차마다 대회 id(cup1, cup2…)를 새로 정한다 */
 import { ladderSchedule } from './ladder.mjs';
 export const CUP_V = 1;
+export const CUP_LNPOS = Object.freeze(['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH']);
 export const CUP_RULES = Object.freeze({
   nameMax: 12,           /* 팀명 12자 */
   minPl: 20, maxPl: 32,  /* 1군 인원 */
@@ -15,6 +16,9 @@ export const CUP_RULES = Object.freeze({
 /* 기본 대회 설정(첫 대회, 형식 A): 10팀 리그(맞대결 3연전 × 9 = 팀당 27경기) → KBO식 가을야구(와일드카드·준PO·PO·KS).
    참가가 10팀보다 적으면 리그 평균 AI 구단으로 채운다(AI는 타이틀·칭호 없음).
    format 'knockout'이면 예전 토너먼트(size강, best 라운드별 경기 수, 플레이인·추첨·블록) */
+/* 리그 대회 팀 수: KBO식 가을야구가 4·5위 와일드카드부터라 5팀 이상(외부 검수 11-17 P2: 4팀이면 우승 없이 저장되던 것). 화면·Worker가 같은 값을 쓴다 */
+export const CUP_TEAMS_MIN = 5, CUP_TEAMS_MAX = 10;
+export const cupTeamsOk = c => !c || (c.format || 'league') !== 'league' || c.teams == null || (Number.isInteger(+c.teams) && +c.teams >= CUP_TEAMS_MIN && +c.teams <= CUP_TEAMS_MAX);
 export const CUP_DEFAULT = Object.freeze({
   id: 'cup1', title: '제1회 프런트컵', format: 'league', teams: 10, meet: 3, size: 32,
   best: Object.freeze({ default: 1, 8: 7, 4: 7, 2: 7 }), /* 라운드(남은 팀 수)별 경기 수: 1=단판, 3=3판2선승, 7=7전4선승 */
@@ -22,7 +26,7 @@ export const CUP_DEFAULT = Object.freeze({
   shuffleTop: 0,         /* 8이면 Top-8 시드 자리를 추첨으로 섞는다 */
   blocks: 0,             /* 대진표를 블록(A·B…)으로 나눠 보여 준다(0이면 없음) */
   minSeasons: 0, payCap: 0, deadline: '', /* 접수 마감(한국시간 'YYYY-MM-DD HH:mm') */
-  payCapX: 0,            /* 연봉 상한(리그 평균 배수, 사용자 11-17 "대회마다 연봉에 제약… 공평하게"): 0이면 없음. 1.25면 덱 연봉 합 ≤ 그 세계 리그 평균 × 1.25(cupPay) */
+  payCapX: 0,            /* 연봉 상한(사용자 11-17 "대회마다 연봉에 제약… 공평하게"): 0이면 없음. x면 덱 연봉 합 ≤ 143.97억(CUP_CAP_WON) × x, 경계 포함 */
 });
 const NUM = x => (typeof x === 'number' && isFinite(x) ? x : 0);
 /* 해시(16진 8자리): FNV-1a + 섞기. 엔트리·경기 키 */
@@ -54,9 +58,12 @@ export function cupBadName(s) {
   return BAD.some(w => t.includes(w));
 }
 /* 한국시간 마감 'YYYY-MM-DD HH:mm' → ms(UTC) */
+/* 한국시간 'YYYY-MM-DD HH:MM' → ms. 없는 날짜·시각(2026-02-30, 13월, 25:00, 윤년 아닌 2월 29일)은 null(외부 검수 11-17: 조용히 다른 날로 바꾸던 것) */
 export function cupKstMs(s) {
   const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})$/); if (!m) return null;
-  return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) - 9 * 3600e3;
+  const [y, mo, d, h, mi] = m.slice(1).map(Number), dim = [31, (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (mo < 1 || mo > 12 || d < 1 || d > dim[mo - 1] || h > 23 || mi > 59) return null;
+  return Date.UTC(y, mo - 1, d, h, mi) - 9 * 3600e3;
 }
 export const cupKstDay = ms => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);
 
@@ -91,6 +98,12 @@ export function cupValidate(e, cfg) {
   const R = CUP_RULES, err = [], flags = [], add = (k, msg) => err.push({ k, msg }), flag = (k, msg) => flags.push({ k, msg });
   cfg = Object.assign({}, CUP_DEFAULT, cfg || {});
   if (!e || e.kind !== 'cup-entry' || e.v !== CUP_V) { add('ver', '대회 엔트리 형식이 아닙니다.'); return { ok: false, errors: err, flags, elig: [] }; }
+  /* 형식 먼저(외부 검수 11-17: bn이 객체면 '.some is not a function'으로 멈추던 것). 배열·객체 자리가 틀리면 형식 오류로 돌려준다 */
+  { const bad = []; for (const k of ['P', 'ln', 'rot', 'pen', 'bn']) if (e[k] != null && !Array.isArray(e[k])) bad.push(k); if (!Array.isArray(e.P)) bad.push('P');
+    if (e.bp != null && (typeof e.bp !== 'object' || Array.isArray(e.bp))) bad.push('bp');
+    if (Array.isArray(e.ln) && e.ln.some(x => !Array.isArray(x) || x.length < 2)) bad.push('ln');
+    if (Array.isArray(e.P) && e.P.some(p => !p || typeof p !== 'object' || Array.isArray(p) || (p.r != null && (typeof p.r !== 'object' || Array.isArray(p.r))))) bad.push('P');
+    if (bad.length) { add('format', `엔트리 형식이 맞지 않습니다(${[...new Set(bad)].join(', ')}).`); return { ok: false, errors: err, flags, elig: [] }; } }
   const name = cupName(e.name);
   if (!name) add('name', '팀명을 적어 주세요.');
   else if (name !== e.name) add('name', `팀명은 ${R.nameMax}자 이하, 기호 없이 적어 주세요.`);
@@ -102,9 +115,11 @@ export function cupValidate(e, cfg) {
   if (pit.length < R.minP) add('pitch', `투수가 ${R.minP}명 이상 있어야 합니다(지금 ${pit.length}명).`);
   const ln = Array.isArray(e.ln) ? e.ln : [], seen = new Set(), pos = new Set();
   if (ln.length !== 9) add('lineup', '타순 9명이 필요합니다.');
-  for (const x of ln) { const p = ids.get(x && x[0]); if (!p || p.isP) { add('lineup', '타순에 1군 야수가 아닌 선수가 있습니다.'); continue; } if (seen.has(p.id)) add('lineup', '타순에 같은 선수가 두 번 있습니다.'); if (pos.has(x[1])) add('lineup', '타순에 같은 수비 자리가 두 번 있습니다.'); if (x[1] === 'C' && p.pos !== 'C') flag('lineup', `${p.name}: 포수가 아닌데 포수 자리에 있습니다(게임의 비상 배치).`); seen.add(p.id); pos.add(x[1]); }
+  for (const x of ln) { if (!CUP_LNPOS.includes(x[1])) { add('lineup', `타순 수비 자리 '${String(x[1]).slice(0, 4)}'는 쓸 수 없습니다.`); continue; } const p = ids.get(x && x[0]); if (!p || p.isP) { add('lineup', '타순에 1군 야수가 아닌 선수가 있습니다.'); continue; } if (seen.has(p.id)) add('lineup', '타순에 같은 선수가 두 번 있습니다.'); if (pos.has(x[1])) add('lineup', '타순에 같은 수비 자리가 두 번 있습니다.'); if (x[1] === 'C' && p.pos !== 'C') flag('lineup', `${p.name}: 포수가 아닌데 포수 자리에 있습니다(게임의 비상 배치).`); seen.add(p.id); pos.add(x[1]); }
   const rot = Array.isArray(e.rot) ? e.rot : [];
   if (!rot.length || rot.length > R.rot || rot.some(id => !(ids.get(id) || {}).isP)) add('rot', `선발은 1군 투수 1~${R.rot}명이어야 합니다.`);
+  if (new Set(rot).size !== rot.length || new Set(e.pen || []).size !== (e.pen || []).length) add('rot', '선발·불펜에 같은 투수가 두 번 있습니다.'); /* 외부 검수 11-17 */
+  if (P.some(p => p && (!p.r || typeof p.r !== 'object' || !Object.keys(p.r).length))) add('rating', '능력치가 없는 선수가 있습니다.');
   if ((e.pen || []).some(id => !(ids.get(id) || {}).isP || rot.includes(id))) add('pen', '불펜에 선발이거나 투수가 아닌 선수가 있습니다.');
   if ((e.bn || []).some(id => { const p = ids.get(id); return !p || p.isP || seen.has(id); })) add('bench', '벤치에 타순 선수나 투수가 있습니다.');
   for (const p of P) {
@@ -120,7 +135,7 @@ export function cupValidate(e, cfg) {
   if (cfg.payCap && NUM(e.pay) > cfg.payCap) elig.push({ k: 'pay', msg: `1군 연봉 합이 상한(${cfg.payCap})을 넘습니다(${Math.round(NUM(e.pay))}).` });
   if (cfg.payCapX > 0 && !e.ai) { const c = cupPayCheck(e, cfg.payCapX); /* AI 구단은 연봉이 없는 가상 구단이라 빼고 본다 */
     if (!c.known) elig.push({ k: 'payx', msg: '연봉 기준이 없는 엔트리입니다. 게임을 새로 고친 뒤 다시 신청해 주세요.' });
-    else if (!c.ok) elig.push({ k: 'payx', msg: `1군 연봉 ${cupWon(c.pay)}이 상한 ${cupWon(c.cap)}을 ${cupWon(-c.room)} 넘습니다.` }); }
+    else if (!c.ok) elig.push({ k: 'payx', msg: `덱 연봉 ${cupWon(c.pay)}이 상한 ${cupWon(c.cap)}(143.97억 × ${c.x})을 ${cupWon(-c.room)} 넘습니다.` }); }
   if (e.h && e.h !== cupEntryHash(e)) flag('hash', '엔트리 해시가 맞지 않습니다(손으로 고친 파일일 수 있습니다).');
   const errors = err.filter((x, i) => err.findIndex(y => y.msg === x.msg) === i);
   return { ok: !errors.length, errors, flags, elig };
@@ -131,8 +146,8 @@ export const cupLabel = e => `${e.name} ${e.year}`;
 
 /* ===== 시드·대진표 ===== */
 /* 시드: 팀 OVR(총 → 투수 → 타자) 높은 순, 같으면 엔트리 해시 */
-export function cupSeed(list) {
-  return [...list].sort((a, b) => (b.ovr.t - a.ovr.t) || (b.ovr.p - a.ovr.p) || (b.ovr.b - a.ovr.b) || String(a.h).localeCompare(String(b.h)));
+export function cupSeed(list) { const O = x => (x && x.ovr && typeof x.ovr === 'object' ? x.ovr : { t: 0, p: 0, b: 0 }); /* OVR이 빠진 엔트리도 멈추지 않게(맨 뒤) */
+  return [...list].sort((a, b) => (O(b).t - O(a).t) || (O(b).p - O(a).p) || (O(b).b - O(a).b) || String(a.h).localeCompare(String(b.h)));
 }
 /* 표준 대진 순서(1번 시드와 2번 시드가 결승에서 만나게): size=8 → [1,8,4,5,2,7,3,6] */
 export function cupSlots(size) {

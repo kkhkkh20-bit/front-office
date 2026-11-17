@@ -41,9 +41,13 @@ function cupOvr(e){ const P=new Map(e.P.map(p=>[p.id,p])), ok=p=>p&&!(p.injOut>0
 function cupAlbum(){ return G.cupAlb||(G.cupAlb=[]); }
 function cupAlbumAdd(kind,res){ const e=cupEntryNow({res}); if(!e)return null; const A=cupAlbum(); const x={id:(G.cupAlbN=(G.cupAlbN||0)+1),y:G.year,d:G.day,k:kind,e};
   if(kind==='auto'){ const i=A.findIndex(a=>a.k==='auto'&&a.y===G.year); if(i>=0)A.splice(i,1); }
-  A.push(x); while(A.length>CUP_ALB_MAX){ let i=A.findIndex(a=>a.k==='auto'&&!(a.e.res&&a.e.res.champ)); if(i<0)i=0; A.splice(i,1); } return x; }
+  if(A.length>=CUP_ALB_MAX&&cupAlbumNext()==null)return null; /* 모두 '보관 고정'이면 지우지 않고 담지 않는다 */
+  A.push(x); while(A.length>CUP_ALB_MAX){ const i=cupAlbumNext(); if(i==null)break; A.splice(i,1); } return x; }
+/* 가득 찼을 때 다음에 지울 칸(외부 검수 11-17: 직접 저장한 것도 말없이 지우던 것): 고정(pin) 빼고, 우승 아닌 자동 저장 → 자동 저장 → 직접 저장 순, 오래된 것부터. 없으면 null */
+function cupAlbumNext(){ const A=cupAlbum(), ok=a=>!a.pin; for(const f of [a=>a.k==='auto'&&!(a.e.res&&a.e.res.champ),a=>a.k==='auto',()=>true]){ const i=A.findIndex(a=>ok(a)&&f(a)); if(i>=0)return i; } return null; }
+function cupAlbumPin(id){ const a=cupAlbum().find(x=>x.id===+id); if(!a)return false; a.pin=a.pin?0:1; return true; }
 function cupAlbumAuto(y,rank,champ,uo){ try{ if(G.unemp||G.user==null)return; cupAlbumAdd('auto',{rank,champ:champ?1:0,w:uo&&uo.w||0,l:uo&&uo.l||0,t:uo&&uo.t||0}); }catch(e){ console.error(e); } }
-function cupAlbumDel(id){ const A=cupAlbum(), i=A.findIndex(a=>a.id===+id); if(i<0)return false; A.splice(i,1); return true; }
+function cupAlbumDel(id){ const A=cupAlbum(), i=A.findIndex(a=>a.id===+id); if(i<0)return null; return {x:A.splice(i,1)[0],i}; } /* 되돌리기용으로 지운 칸·자리를 돌려준다 */
 
 /* ===== 경기 ===== */
 /* 엔트리를 세계의 tid 자리에. 선수 id = 원래 id + 100만 × k(엔트리 해시로 정한 1~256): 대회 내내 같은 선수는 같은 id(타구 방향 버릇 등 id로 정해지는 값이 경기마다 같게) */

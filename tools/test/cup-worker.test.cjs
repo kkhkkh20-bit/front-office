@@ -65,7 +65,7 @@ test('관리자 끝점: 틀린 키·키 없음은 401, 맞는 키로 확인·제
  let d=await (await H('PUT','/api/cup/admin/drop',JSON.stringify({h:uj.h}),AK)).json(); assert.deepEqual(d.drop,[uj.h]);
  const L=await (await H('GET','/api/cup/admin/entries',null,AK)).json(); assert.deepEqual(L.drop,[uj.h]); assert.equal(L.entries.length,1);
  d=await (await H('PUT','/api/cup/admin/drop',JSON.stringify({h:uj.h,undo:true}),AK)).json(); assert.deepEqual(d.drop,[]);
- assert.equal((await H('GET','/api/cup/admin/run',null,AK)).status,404); assert.equal((await H('PUT','/api/cup/admin/run',JSON.stringify({v:1,day:0,secret:'KS 결과'}),AK)).status,200);
+ assert.equal((await H('GET','/api/cup/admin/run',null,AK)).status,404); assert.equal((await H('PUT','/api/cup/admin/run',JSON.stringify({v:1,day:0,secret:'KS 결과'}),AK)).status,400,'우승·준우승 없는 결과는 거절(외부 검수 11-17 P2)'); assert.equal((await H('PUT','/api/cup/admin/run',JSON.stringify({v:1,day:0,secret:'KS 결과',champ:'aaaa0001',runner:'aaaa0002'}),AK)).status,200);
  assert.equal((await (await H('GET','/api/cup/admin/run',null,AK)).json()).secret,'KS 결과'); assert.equal((await H('GET','/api/cup/run')).status,404,'결과 전체는 공개 길이 없다');
  assert.equal((await H('GET','/api/cup/pub')).status,404); assert.equal((await H('PUT','/api/cup/admin/pub',JSON.stringify({v:1,day:2}),AK)).status,200); assert.equal((await (await H('GET','/api/cup/pub')).json()).day,2);
 });
@@ -89,3 +89,7 @@ test('대회 연봉 상한(사용자 11-17 "대회마다 연봉에 제약… 공
  r=await H('POST','/api/cup/entry',JSON.stringify(entry())); assert.equal(r.status,403,'선수 연봉이 없는 예전 엔트리'); assert.ok(/연봉 기준/.test((await r.json()).errors[0]));
  assert.equal((await H('POST','/api/cup/entry',JSON.stringify(sal({})))).status,201,'72억은 받는다');
 });
+test('대회 팀 수(외부 검수 11-17 P2): 리그 형식은 5~10팀만 설정할 수 있다(4팀이면 가을야구가 없어 우승이 정해지지 않음)',async()=>{
+ const clock={now:Date.UTC(2026,10,20)}; const {H}=await setup(clock), AK={Authorization:'Bearer s3cret',Origin:''};
+ for(const [n,st] of [[4,400],[3,400],[11,400],[5,200],[10,200]]){ const r=await H('PUT','/api/cup/admin/config',JSON.stringify(Object.assign({},cfg,{format:'league',teams:n})),AK); assert.equal(r.status,st,n+'팀'); if(st===400)assert.match((await r.json()).message||'',/5~10팀/); }
+ assert.equal((await H('PUT','/api/cup/admin/config',JSON.stringify(Object.assign({},cfg,{format:'knockout',teams:4})),AK)).status,200,'토너먼트 형식은 그대로'); });

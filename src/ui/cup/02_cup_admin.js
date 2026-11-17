@@ -37,7 +37,7 @@ Object.assign(A,{
   admOpen(){ if(ADM.chk==='ok')admUsage(); if(G&&!UI.title)return A.go('club:cupadm'); UI.sstep='cupadmin'; render(); },
   /* 1) 대회 만들기·열기·닫기 */
   async admCfg(v){ if(v==='close'&&ADM.cup&&ADM.cup.open!==false&&!confirm('접수를 닫습니다. 닫은 뒤에는 게임에서 신청할 수 없습니다(다시 열 수는 있습니다).'))return; const q=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-    const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(4,Math.min(10,+q('admTeams')||10)), minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0, payCapX=Math.max(0,Math.round((+q('admPayX')||0)*100)/100); /* 연봉 상한 배수(사용자 11-17 "대회마다 연봉에 제약… 공평하게") */
+    const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(FrontOfficeCore.CUP_TEAMS_MIN,Math.min(10,+q('admTeams')||10)) /* 가을야구(와일드카드 4·5위)가 돌려면 5팀 이상(외부 검수 11-17 P2) */, minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0, payCapX=Math.max(0,Math.round((+q('admPayX')||0)*100)/100); /* 연봉 상한 배수(사용자 11-17 "대회마다 연봉에 제약… 공평하게") */
     if(!/^[A-Za-z0-9_-]{1,32}$/.test(id))return admSay('대회 id는 영문·숫자로 적어 주세요(예: cup1).',true);
     if(deadline&&FrontOfficeCore.cupKstMs(deadline)==null)return admSay('마감은 2026-12-05 21:00 형식(한국시간)으로 적어 주세요.',true);
     const prev=ADM.cup&&ADM.cup.id===id?ADM.cup:{}; const open=v==='open'?true:v==='close'?false:prev.open!==false&&v!=='new'?prev.open:false;
@@ -57,6 +57,7 @@ Object.assign(A,{
   async admRun(){ if(ADM.busy)return; if(ADM.run&&ADM.run.day>0)return admSay('이미 공개를 시작한 대회는 다시 돌리지 않습니다.',true); if(ADM.run&&!confirm('지금 돌려 둔 결과를 버리고 처음부터 다시 돌립니다. 경기 결과가 달라집니다.'))return;
     if(!ADM.ents)await A.admEnts(); const cfg=Object.assign({},FrontOfficeCore.CUP_DEFAULT,ADM.cup||{}); ADM.busy=true; admSay('시드를 정하고 경기를 돌리는 중입니다.');
     try{ ADM.run=await admRunAll(cfg,ADM.ents||[],ADM.drop||[],t=>{ ADM.prog=t; render(); }); ADM.prog='';
+      if(!ADM.run.champ||!ADM.run.runner||!ADM.run.ents[ADM.run.champ]){ const bad=ADM.run; ADM.run=null; ADM.busy=false; return admSay(`우승·준우승을 정하지 못했습니다(${bad.seeds.length}팀). 팀 수를 ${FrontOfficeCore.CUP_TEAMS_MIN}팀 이상으로 해 주세요. 저장하지 않았습니다.`,true); } /* 결과가 모자라면 저장하지 않는다(외부 검수 11-17 P2) */
       const {r,j}=await admApi('/admin/run',{method:'PUT',body:JSON.stringify(ADM.run)}); ADM.busy=false; ADM.runSt='ok';
       if(!r.ok)return admSay('경기는 돌렸지만 서버에 저장하지 못했습니다: '+(j.message||r.status),true);
       admSay(`다 돌렸습니다. 우승 ${ADM.run.ents[ADM.run.champ].name}. 아직 아무것도 공개하지 않았습니다.`); }
@@ -74,6 +75,8 @@ Object.assign(A,{
     try{ const p=await admApi('/admin/pub',{method:'PUT',body:JSON.stringify(admPubOf(R))}); if(!p.r.ok)throw new Error(p.j.message||p.r.status); await admApi('/admin/run',{method:'PUT',body:JSON.stringify(R)}); ADM.busy=false; CUP.pub=null; CUP.pubSt=''; ADM.prev=null; admSay(`${d}일차 공개를 취소했습니다.`); }
     catch(x){ R.day=d; ADM.busy=false; admSay('공개를 취소하지 못했습니다: '+(x&&x.message||x),true); } },
   admPrev(v){ ADM.prev=ADM.prev===+v?null:+v; render(); },
+  admS1(v,el,e){ if(e&&e.preventDefault)e.preventDefault(); ADM.s1o=!ADM.s1o; render(); }, /* 접힌 설정 칸: 다시 그려도 열린 채로 */
+  admJump(v){ const el=document.getElementById('adm-'+v); if(!el)return; if(v==='s1'&&!ADM.s1o){ ADM.s1o=true; render(); } const el2=document.getElementById('adm-'+v)||el; try{ el2.scrollIntoView({block:'start',behavior:'smooth'}); }catch(e){} }, /* 단계 막대를 누르면 그 칸으로(래더 v3) */
   admSeedOk(){ ADM.seedOk=true; admSay('시드를 확정했습니다. 이제 돌리면 됩니다.'); },
   admSort(v){ ADM.sort=v; render(); }, admQ(){ const el=document.getElementById('admQ'); ADM.q=el?el.value.trim():''; render(); },
   admCopy(v){ const R=ADM.run, t=R&&R.posts[v]; if(!t)return; const done=()=>toast(`${v==='final'?'최종':v+'일차'} 글을 복사했습니다.`);
@@ -163,13 +166,15 @@ function admDraw(R,k){ const c=document.createElement('canvas'), W=1080; const r
 /* 연결 상태 한 줄: 서버·키·대회 */
 function admStatusLine(){ const c=ADM.cup; const st=ADM.chk==='ok'?['ok','서버 연결 OK · 관리자 키 맞음']:ADM.chk==='bad'?['bad','관리자 키가 틀립니다']:ADM.chk==='off'?['bad','서버에 연결할 수 없습니다']:ADM.chk==='checking'?['wait','키를 확인하는 중']:['wait','관리자 키 없음'];
   return `<p class="adm-stat adm-${st[0]}"><i></i><span>${st[1]}${ADM.chk==='ok'?` · ${c&&c.id?`대회 <b>${esc(c.title)}</b>(${esc(c.id)}) ${c.open!==false?'접수 중':'접수 닫힘'}`:'열린 대회 없음'}${admUseTxt()}`:''}</span></p>`; }
-/* 지금 할 일 단계: 1 대회 만들기 → 2 접수 중 → 3 마감·시드 → 4 돌리기 → 5 1~7일차 공개 → 6 명예의 전당 → 7 끝 */
+/* 지금 할 일 단계: 1 대회 만들기 → 2 접수 중 → 3 마감·시드 → 4 돌리기 → 5 1~7일차 공개 → 6 명예의 전당 → 7 끝.
+   막대(래더 v3)는 일곱 칸: 설정·접수·마감·시드·진행·일차별 공개·명예의 전당 → ADM_STEP_OF로 옮기고, 지금 단계 칸(adm-cur)을 밝힌다 */
+const ADM_STEP_OF={1:1,2:2,3:4,4:5,5:6,6:7,7:8}, ADM_SEC_OF={1:'s1',2:'s2',3:'s2',4:'s3',5:'s4',6:'s5',7:''};
 function admStage(){ const c=ADM.cup||{}, R=ADM.run; if(!c.id)return 1; if(c.open!==false&&!R)return 2; if(!R)return ADM.seedOk?4:3; if(R.day<7)return 5; if(!R.hof)return 6; return 7; }
 /* 시드 미리보기: 참가 가능한 팀을 OVR 순으로 정원까지, 모자라면 AI */
 function admSeedList(cfg){ const C=FrontOfficeCore, E=(ADM.ents||[]).map(e=>Object.assign(e,{h:e.h||C.cupEntryHash(e),ovr:e.ovr||cupOvr(e)})).filter(e=>admEntOk(e,cfg,ADM.drop||[]).ok); return C.cupSeed(E).slice(0,cfg.teams||10); }
 function admStepCard(cfg){ const k=admStage(), R=ADM.run, n=(ADM.ents||[]).length, d=R?R.day:0, b=ADM.busy?' disabled':'';
-  const steps=[[1,'대회 만들기'],[2,`접수 중${ADM.ents?`(${n}팀)`:''}`],[3,'마감·시드'],[4,'돌리기'],[5,`공개 ${d}/7일`],[6,'명예의 전당']];
-  const bar=`<ol class="adm-steps">${steps.map(([i,t])=>`<li class="${i<k?'done':i===k?'now':''}"><b>${i<k?'✓':i}</b><span>${esc(t)}</span></li>`).join('')}</ol>`;
+  const K=ADM_STEP_OF[k], steps=[[1,'설정','s1'],[2,`접수${ADM.ents?`(${n}팀)`:''}`,'s2'],[3,'마감','s2'],[4,'시드','s2'],[5,'진행','s3'],[6,`일차별 공개 ${d}/7`,'s4'],[7,'명예의 전당','s5']];
+  const bar=`<ol class="adm-steps adm-steps7">${steps.map(([i,t,sec])=>`<li class="${i<K?'done':i===K?'now':''}"><button class="lnk" data-a="admJump" data-v="${sec}" title="${esc(t)} 칸으로"><b>${i<K?'✓':i}</b><span>${esc(t)}</span></button></li>`).join('')}</ol>`;
   let what='', btn='', extra='';
   if(k===1){ what='아래 1번 칸에 대회 이름과 마감 시각을 적고 대회를 엽니다.'; btn=`<button class="btn primary adm-go" data-a="admCfg" data-v="open"${b}>대회 만들고 접수 열기</button>`; }
   else if(k===2){ what=`게임에서 신청을 받는 중입니다(지금 ${ADM.ents?n+'팀':'…'}). 마감 시각이 지나면 접수를 닫습니다.`; btn=`<button class="btn primary adm-go" data-a="admCfg" data-v="close"${b}>접수 마감하기</button>`; extra=`<button class="btn small" data-a="admEnts"${b}>신청 목록 새로 받기</button>`; }
@@ -180,19 +185,20 @@ function admStepCard(cfg){ const k=admStage(), R=ADM.run, n=(ADM.ents||[]).lengt
   else if(k===5){ const t=(ADM_DAYS.find(x=>x[0]===d+1)||[])[1]||''; what=`다음 공개: ${esc(t)}. 미리보기로 게임에 보일 모습을 확인한 뒤 공개합니다.`; btn=`<button class="btn primary adm-go" data-a="admPub" data-v="${d+1}"${b}>${d+1}일차 공개</button>`; extra=`<button class="btn small" data-a="admPrev" data-v="${d+1}">미리보기</button>${d?`<button class="btn small" data-a="admUnpub"${b}>${d}일차 공개 취소</button>`:''}`; }
   else if(k===6){ what='우승·준우승이 정해졌습니다. 5번 칸에 우승 단장 이름(비우면 팀명)을 확인하고 등록합니다.'; btn=`<button class="btn primary adm-go" data-a="admHof"${b}>명예의 전당에 등록</button>`; }
   else { what='대회를 모두 마쳤습니다. 다음 대회는 1번 칸에서 대회 id를 바꿔(예: cup2) 엽니다.'; }
-  return `<section class="card adm-now"><h2 class="sec">지금 할 일</h2>${admStatusLine()}${bar}<p class="adm-what">${what}</p>${btn?`<div class="btns">${btn}${extra}</div>`:extra?`<div class="btns">${extra}</div>`:''}${ADM.prog?`<p class="small">${esc(ADM.prog)}</p>`:''}</section>`; }
+  return `<section class="card adm-now"><h2 class="sec">지금 할 일 <small>${k<7?`${ADM_STEP_OF[k]}/7단계`:'끝'}</small></h2>${admStatusLine()}${bar}<p class="adm-what">${what}</p>${btn?`<div class="btns">${btn}${extra}</div>`:extra?`<div class="btns">${extra}</div>`:''}${ADM.prog?`<p class="small">${esc(ADM.prog)}</p>`:''}</section>`; }
 function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"><p class="small muted">관리자 페이지는 웹 사이트에서만 쓸 수 있습니다.</p></section>';
   if(ADM.chk!=='ok')return `<section class="card"><h2 class="sec">프런트컵 관리자</h2>${ADM.chk==='checking'?'<p class="small muted">관리자 키를 확인하는 중입니다.</p>':'<p class="small muted">설정 › 정보 맨 아래 \'관리자\'에서 관리자 키를 넣어 주세요.</p>'}</section>`;
   const tabs=`<nav class="adm-tabs" role="tablist"><button class="btn small${ADM.tab!=='ld'?' on':''}" role="tab" aria-selected="${ADM.tab!=='ld'}" data-a="admTab" data-v="cup">프런트컵</button><button class="btn small${ADM.tab==='ld'?' on':''}" role="tab" aria-selected="${ADM.tab==='ld'}" data-a="admTab" data-v="ld">래더 현황</button></nav>`;
   if(ADM.tab==='ld')return `<div class="setx ws-own cupx admx ldax">${tabs}${ladderAdminView()}</div>`; /* 래더 현황: 03_ladder_admin.js */
   if(ADM.cup&&!ADM.runSt)A.admRunLoad(); if(ADM.cup&&ADM.cup.id&&ADM.ents==null&&!ADM.entsAuto&&!ADM.busy){ ADM.entsAuto=1; setTimeout(()=>A.admEnts('auto'),0); } const C=FrontOfficeCore, c=ADM.cup||{}, cfg=Object.assign({},C.CUP_DEFAULT,c), R=ADM.run;
   const inp=(id,lab,v,ph,w)=>`<label class="adm-in"><span>${lab}</span><input id="${id}" value="${esc(v??'')}" placeholder="${esc(ph||'')}" autocomplete="off"${w?` style="max-width:${w}"`:''}></label>`;
-  const s1=`<section class="card"><h2 class="sec">1. 대회 만들기·열기</h2>${c.id?`<p class="small">지금: <b>${esc(c.title)}</b> (${esc(c.id)}) · ${c.open!==false?'<b>접수 중</b>':'접수 닫힘'}${c.deadline?` · 마감 ${esc(c.deadline)}`:''}</p>`:'<p class="small muted">아직 만든 대회가 없습니다.</p>'}
-    ${inp('admId','대회 id',c.id||'cup1','cup1','8em')}${inp('admTitle','대회 이름',c.title||'제1회 프런트컵')}${inp('admDl','접수 마감(한국시간)',c.deadline||'','2026-12-05 21:00','12em')}
-    ${inp('admTeams','팀 수(리그 + KBO식 가을야구)',cfg.teams||10,'10','5em')}${inp('admMinS','자격: 최소 시즌',c.minSeasons||'','0','5em')}${inp('admPay','자격: 1군 연봉 합 상한(금액, 백만원)',c.payCap||'','0','8em')}${inp('admPayX','자격: 연봉 상한(첫 시즌 샐러리캡 143.97억의 배수, 1 = 143.97억 권장)',c.payCapX||'','0','6em')}<p class="small muted">연봉 상한 배수: 덱 연봉 합 ÷ 그 저장의 리그 평균(다른 구단마다 연봉 상위 26명 합의 평균). 세계·시대가 달라도 공평합니다. 래더 1부 이상은 1.25배, 비우면 없음.</p>
-    <div class="btns"><button class="btn" data-a="admCfg" data-v="save"${ADM.busy?' disabled':''}>저장</button><button class="btn primary" data-a="admCfg" data-v="open"${ADM.busy?' disabled':''}>접수 열기</button><button class="btn" data-a="admCfg" data-v="close"${ADM.busy?' disabled':''}>접수 닫기</button></div></section>`;
+  const stg=admStage(), cur=x=>ADM_SEC_OF[stg]===x?' adm-cur':'', now=x=>ADM_SEC_OF[stg]===x?' <span class="pill adm-pill">지금 단계</span>':'';
+  const s1=`<section class="card${cur('s1')}" id="adm-s1"><h2 class="sec">1. 대회 만들기·열기${now('s1')}</h2>${c.id?`<p class="small">지금: <b>${esc(c.title)}</b> (${esc(c.id)}) · ${c.open!==false?'<b>접수 중</b>':'접수 닫힘'}${c.deadline?` · 마감 ${esc(c.deadline)}`:''}</p>`:'<p class="small muted">아직 만든 대회가 없습니다.</p>'}
+    ${stg>1&&stg<7?`<p><button class="lnk small adm-s1t" data-a="admS1" data-v="1">${ADM.s1o?'설정 접기 ▴':'설정 보기·고치기 ▾'}</button></p>`:''}<div class="adm-s1b"${stg>1&&stg<7&&!ADM.s1o?' hidden':''}>${inp('admId','대회 id',c.id||'cup1','cup1','8em')}${inp('admTitle','대회 이름',c.title||'제1회 프런트컵')}${inp('admDl','접수 마감(한국시간)',c.deadline||'','2026-12-05 21:00','12em')}
+    ${inp('admTeams',`팀 수(${FrontOfficeCore.CUP_TEAMS_MIN}~10, 리그 + KBO식 가을야구)`,cfg.teams||10,'10','5em')}${inp('admMinS','자격: 최소 시즌',c.minSeasons||'','0','5em')}${inp('admPay','자격: 1군 연봉 합 상한(금액, 백만원)',c.payCap||'','0','8em')}${inp('admPayX','자격: 연봉 상한(첫 시즌 샐러리캡 143.97억의 배수, 1 = 143.97억 권장)',c.payCapX||'','0','6em')}<p class="small muted">연봉 상한: 덱 선수 연봉 합이 143.97억 × 배수 이하. 래더와 같게 하려면 1(143.97억), 비우면 없음. 넘는 유저는 신청 화면에서 '추천대로 빼기'로 맞춥니다.</p>
+    <div class="btns"><button class="btn" data-a="admCfg" data-v="save"${ADM.busy?' disabled':''}>저장</button><button class="btn primary" data-a="admCfg" data-v="open"${ADM.busy?' disabled':''}>접수 열기</button><button class="btn" data-a="admCfg" data-v="close"${ADM.busy?' disabled':''}>접수 닫기</button></div></div></section>`; /* 접어도 입력 칸은 남긴다(마감 단추가 같은 칸 값을 읽음) */
   const E=ADM.ents, drop=ADM.drop||[];
-  const s2=`<section class="card"><h2 class="sec">2. 접수 현황</h2><div class="btns"><button class="btn small" data-a="admEnts"${ADM.busy||!c.id?' disabled':''}>신청 목록 받기</button></div>
+  const s2=`<section class="card${cur('s2')}" id="adm-s2"><h2 class="sec">2. 접수 현황${now('s2')}</h2><div class="btns"><button class="btn small" data-a="admEnts"${ADM.busy||!c.id?' disabled':''}>신청 목록 받기</button></div>
     ${E?`<p class="small">${E.length}팀 신청 · 참가 가능 ${E.filter(e=>admEntOk(e,cfg,drop).ok).length}팀${E.length>cfg.teams?` · 정원 ${cfg.teams}팀을 넘으면 OVR 순으로 나갑니다`:''}</p>
     <div class="row adm-tools"><input id="admQ" value="${esc(ADM.q||'')}" placeholder="팀명 검색" autocomplete="off" style="flex:1;min-width:0"><button class="btn small" data-a="admQ">찾기</button><select data-a="admSort"><option value="ovr"${ADM.sort!=='at'?' selected':''}>전력 순</option><option value="at"${ADM.sort==='at'?' selected':''}>신청 시각 순</option></select></div>
     <div class="adm-ents">${(()=>{ const L=C.cupSeed(E.map(e=>Object.assign(e,{ovr:e.ovr||cupOvr(e)}))).filter(e=>!ADM.q||String(e.name).includes(ADM.q)); return ADM.sort==='at'?L.sort((a,b)=>(b.at||0)-(a.at||0)):L; })().map(e=>{ const x=admEntOk(e,cfg,drop), dr=drop.includes(e.h), fl=x.v.flags.concat(x.v.elig).map(f=>f.msg);
@@ -200,16 +206,16 @@ function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"
         ${fl.length?`<p class="small adm-warn">${fl.map(esc).join('<br>')}</p>`:''}${cupDeckHtml(e)}<div class="btns"><button class="btn small" data-a="admDrop" data-v="${esc(e.h)}" data-u="${dr?1:0}">${dr?'다시 넣기':'제외'}</button></div></details>`; }).join('')||'<p class="small muted">아직 신청이 없습니다.</p>'}</div>`:''}
     <p class="small muted">파일로 받은 참가 덱 올리기</p><div class="row"><input id="admFiles" type="file" accept=".json,application/json" multiple style="min-width:0;flex:1">${ADM.pick&&ADM.pick.length?`<span class="small muted">${ADM.pick.length}개 골라 둠</span>`:''}<button class="btn small" data-a="admFile"${ADM.busy||!c.id?' disabled':''}>올리기</button></div></section>`;
   const pubd=R?R.day:0;
-  const s3=`<section class="card"><h2 class="sec">3. 대회 돌리기</h2><p class="small muted">접수를 닫은 뒤 시드(OVR 순)를 정하고 리그 27경기와 가을야구를 이 브라우저에서 돌립니다. 경기는 돌릴 때마다 달라지고, 돌린 결과가 공식 결과입니다. 공개를 시작하기 전에는 다시 돌릴 수 있습니다.</p>
+  const s3=`<section class="card${cur('s3')}" id="adm-s3"><h2 class="sec">3. 대회 돌리기${now('s3')}</h2><p class="small muted">접수를 닫은 뒤 시드(OVR 순)를 정하고 리그 27경기와 가을야구를 이 브라우저에서 돌립니다. 경기는 돌릴 때마다 달라지고, 돌린 결과가 공식 결과입니다. 공개를 시작하기 전에는 다시 돌릴 수 있습니다.</p>
     <div class="btns"><button class="btn primary" data-a="admRun"${ADM.busy||!c.id||pubd>0?' disabled':''}>${R?'다시 돌리기':'시드 확정 + 돌리기'}</button></div>${ADM.prog?`<p class="small">${esc(ADM.prog)}</p>`:''}
     ${R?`<p class="small">돌린 시각 ${cupDate(R.at)} · 우승 <b>${esc(admLab(R,R.champ))}</b> · 준우승 ${esc(admLab(R,R.runner))}</p><details class="hof-d"><summary class="small">최종 순위</summary><pre class="cup-pre">${esc(admStandTxt(R,R.stand))}</pre></details>`:ADM.runSt==='loading'?'<p class="small muted">저장된 결과를 확인하는 중입니다.</p>':''}</section>`;
-  const s4=R?`<section class="card"><h2 class="sec">4. 결과 공개(연재)</h2><p class="small muted">하루치씩 공개하면 게임의 프런트컵 화면에 그날까지의 결과·순위·경기 기록이 보입니다. '미리보기'로 게임에 보일 모습을 먼저 봅니다.</p>
+  const s4=R?`<section class="card${cur('s4')}" id="adm-s4"><h2 class="sec">4. 결과 공개(연재)${now('s4')}</h2><p class="small muted">하루치씩 공개하면 게임의 프런트컵 화면에 그날까지의 결과·순위·경기 기록이 보입니다. '미리보기'로 게임에 보일 모습을 먼저 봅니다.</p>
     <div class="adm-days">${ADM_DAYS.map(([d,t])=>`<div class="adm-day${d<=pubd?' on':''}"><span>${t}</span><span class="btns">${d<=pubd?'<span class="small muted">공개함</span>':`<button class="btn small${d===pubd+1?' primary':''}" data-a="admPub" data-v="${d}"${ADM.busy||d!==pubd+1?' disabled':''}>공개</button>`}<button class="btn small" data-a="admPrev" data-v="${d}">미리보기</button><button class="btn small" data-a="admCopy" data-v="${d}">글 복사</button></span></div>`).join('')}</div>
     ${pubd?`<div class="btns"><button class="btn small" data-a="admUnpub"${ADM.busy?' disabled':''}>${pubd}일차 공개 취소</button></div>`:''}
     ${ADM.prev?`<div class="adm-prev"><p class="small"><b>${ADM.prev}일차까지 공개하면 게임에 이렇게 보입니다</b> <button class="lnk small" data-a="admPrev" data-v="${ADM.prev}">닫기</button></p>${cupPubHtml(admPubOf(Object.assign({},R,{day:ADM.prev})),true)}</div>`:''}
     <div class="btns"><span class="small muted">그림 저장</span><button class="btn small" data-a="admPng" data-v="stand">순위표</button><button class="btn small" data-a="admPng" data-v="ps">가을야구</button><button class="btn small" data-a="admPng" data-v="card">우승 로스터</button></div>
     ${ADM.text?`<textarea class="adm-text" readonly>${esc(ADM.text)}</textarea>`:''}</section>`:'';
-  const s5=R&&R.champ?`<section class="card"><h2 class="sec">5. 명예의 전당 등록</h2><p class="small">우승 <b>${esc(admLab(R,R.champ))}</b> · 준우승 ${esc(admLab(R,R.runner))}</p>
+  const s5=R&&R.champ?`<section class="card${cur('s5')}" id="adm-s5"><h2 class="sec">5. 명예의 전당 등록${now('s5')}</h2><p class="small">우승 <b>${esc(admLab(R,R.champ))}</b> · 준우승 ${esc(admLab(R,R.runner))}</p>
     ${inp('admGm','우승 단장 이름(비우면 팀명)',R.hof&&R.hof.gm||'','',null)}${inp('admRgm','준우승 단장 이름(비우면 팀명)',R.hof&&R.hof.rgm||'','',null)}
     <div class="btns"><button class="btn primary" data-a="admHof"${ADM.busy||pubd<7?' disabled':''}>${R.hof?'다시 등록(수정)':'명예의 전당에 등록'}</button>${pubd<7?'<span class="small muted">7일차까지 공개한 뒤 등록합니다.</span>':''}</div></section>`:'';
   const s6=`<section class="card"><h2 class="sec">6. 유저 래더 관리</h2><div class="row"><input id="admLdQ" value="${esc(ADM.ldq||'')}" placeholder="팀명 검색(비우면 최근 등록 순)" autocomplete="off" style="flex:1;min-width:0"><button class="btn small" data-a="admLdFind">찾기</button></div>

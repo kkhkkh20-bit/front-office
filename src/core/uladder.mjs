@@ -15,8 +15,8 @@ export const ulAiTarget = (tier, avg, count) => { const b = UL_TIER_OVR[Math.max
 /* 한 리그 AI 9팀의 OVR 벌림(평균 0): 모두 같은 전력이면 순위표가 밋밋하다 */
 export const UL_AI_SPREAD = Object.freeze([2, -2, 1, -1, 1, -1, 0, 0, 0]);
 /* ===== 연봉 상한(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게") =====
-   덱 연봉 합 ≤ 단계 배수 × 그 세계 리그 평균(cupPay: 우리 구단을 뺀 구단마다 연봉 상위 26명 합의 평균). 세계·시대가 달라도 같은 잣대.
-   루키 2배 · 마이너 1.5배 · 1부부터 모두 1.25배. 창단 드래프트 뒤 새 게임 1군 120구단(세계 12개, 11-17 측정): 평균 0.97배, 90% 1.36배, 최대 1.79배
+   덱 연봉 합 ≤ 143.97억(첫 시즌 샐러리캡, CUP_CAP_WON) × 단계 배수(지금 모두 1), 경계 포함. 예전 '리그 평균 배수' 규칙은 11-17에 고정 금액으로 바뀜.
+   (예전 측정: 창단 드래프트 뒤 새 게임 1군 120구단, 리그 평균 대비 평균 0.97배, 90% 1.36배, 최대 1.79배)
    → 루키는 어느 구단이든 바로 시작(2배 넘는 구단 0), 마이너는 97.5%가 그대로, 1부(1.25배)는 76%가 그대로이고 나머지는 1~2명을 빼면 들어간다.
    윗단계는 모두 같은 예산 안에서 덱 짜는 실력 싸움(공평하게). 단계마다 다르면 승격 때 상한이 줄어 덱을 다시 맞춰야 한다(로비·덱 화면이 알려 준다).
    AI 구단은 연봉이 없는 가상 구단이라 상한을 보지 않는다(단계 난이도 기준일 뿐, 시즌 포인트·칭호를 받지 않는다).
@@ -46,13 +46,15 @@ export function ulCapDrop(e, ids) {
 }
 /* 상한에 맞추려면 뺄 선수(추천): 넘는 돈을 한 명으로 메울 수 있으면 그중 OVR이 가장 낮은 선수, 아니면 연봉 대비 OVR이 가장 낮은(연봉 ÷ (OVR − 35)이 큰) 선수부터.
    빼도 덱 규칙(20명·투수 9명·타순)이 지켜지는 선수만 고른다. 6명까지. {ids, ok(빼면 들어가는지)} */
-export function ulCapSuggest(e, tier) {
-  let c = ulCap(e, tier); if (!c.known || c.ok) return { ids: [], ok: c.ok }; const ids = [];
+export const ulCapSuggest = (e, tier) => ulCapSuggestX(e, ulCapX(tier));
+/* 같은 추천을 배수 x(대회 설정 payCapX)로: 대회 신청에도 '선수 빼기'(래더 v3, 사용자 11-17) */
+export function ulCapSuggestX(e, x) { const cap = d => cupPayCheck(d, x);
+  let c = cap(e); if (!c.known || c.ok) return { ids: [], ok: c.ok }; const ids = [];
   for (let k = 0; k < 6 && !c.ok; k++) {
     const can = e.P.filter(p => !ids.includes(p.id) && !ulCapDrop(e, ids.concat(p.id)).err), over = -c.room; if (!can.length) break;
     const one = can.filter(p => (+p.sal || 0) >= over).sort((a, b) => ulPOvr(a) - ulPOvr(b) || a.sal - b.sal)[0];
     const p = one || can.slice().sort((a, b) => (b.sal || 0) / Math.max(1, ulPOvr(b) - 35) - (a.sal || 0) / Math.max(1, ulPOvr(a) - 35))[0];
-    ids.push(p.id); c = ulCap(ulCapDrop(e, ids).e, tier); }
+    ids.push(p.id); c = cap(ulCapDrop(e, ids).e); }
   return { ids, ok: c.ok };
 }
 export const ulTierName = t => UL_TIERS[Math.max(0, Math.min(UL_TIERS.length - 1, t | 0))];
@@ -76,13 +78,20 @@ export function ulSlim(e) {
 }
 /* 기록 요약: hist [{tier(그 리그 단계), rank, to(다음 단계), move, d(등록한 덱 번호: 리그 중 고쳐도 같은 덱), name, at}]
    → 단계별 리그 수·우승·승격·강등, 최고 단계, 마지막 덱이 그 단계에서 연달아 치른 리그 수(stay) */
-export function ulSummary(hist, cur) {
+export function ulSummary(hist, cur, car) {
   hist = hist || []; const by = UL_TIERS.map(() => ({ n: 0, win: 0, up: 0, down: 0 })); let best = cur | 0;
   for (const x of hist) { const b = by[x.tier | 0]; if (!b) continue; b.n++; if (x.rank === 1) b.win++; if (x.move === 'up') b.up++; if (x.move === 'down') b.down++; best = Math.max(best, x.tier | 0, x.to | 0); }
   const last = hist[hist.length - 1]; let n = 0;
   if (last) for (let i = hist.length - 1; i >= 0 && hist[i].d === last.d && hist[i].tier === last.tier; i--) n++;
-  return { leagues: hist.length, best, by, stay: last ? { tier: last.tier, n, name: last.name } : null };
+  const stay = last ? { tier: last.tier, n, name: last.name } : null;
+  if (car && car.n >= hist.length) return { leagues: car.n, best: Math.max(best, car.best | 0), by: car.by.map(x => Object.assign({}, x)), stay, w: car.w, l: car.l, t: car.t, rd: car.rd }; /* 통산은 따로 센 값(기록 줄은 최근 200리그만) */
+  return { leagues: hist.length, best, by, stay, w: hist.reduce((a, x) => a + (x.w | 0), 0), l: hist.reduce((a, x) => a + (x.l | 0), 0), t: hist.reduce((a, x) => a + (x.t | 0), 0), rd: hist.reduce((a, x) => a + (x.rd | 0), 0) };
 }
+/* 통산 칸(외부 검수 11-17: 기록 줄이 200리그로 잘리면 통산·최고 단계·배지가 줄어들던 것). 리그마다 한 줄씩 더하고, 예전 저장은 처음 한 번 남은 기록 줄로 만든다 */
+export function ulCareerAdd(car, x) { const c = car || { v: 1, n: 0, by: UL_TIERS.map(() => ({ n: 0, win: 0, up: 0, down: 0 })), best: 0, w: 0, l: 0, t: 0, rd: 0, bg: [] };
+  const b = c.by[x.tier | 0]; if (b) { b.n++; if (x.rank === 1) b.win++; if (x.move === 'up') b.up++; if (x.move === 'down') b.down++; }
+  c.n++; c.best = Math.max(c.best | 0, x.tier | 0, x.to | 0); for (const f of ['w', 'l', 't', 'rd']) c[f] = (c[f] | 0) + (x[f] | 0); return c; }
+export function ulCareerInit(hist, best) { let c = null; for (const x of hist || []) c = ulCareerAdd(c, x); c = c || ulCareerAdd(null, { tier: -1 }); if (!(hist || []).length) c.n = 0; c.best = Math.max(c.best | 0, best | 0); c.bg = ulBadges(hist).filter(x => x.on).map(x => x.k); return c; }
 /* 리그 점수: 단계 × 100 + (10 − 순위) × 10. 루키 1위 90 · 마이너 10위 100 · 레전드 1위 490. 십의 자리 = 아래에 둔 팀 수라 단계를 넘어 한 줄로 비교된다 */
 export const ulPts = (tier, rank, n) => Math.max(0, Math.min(UL_TIERS.length - 1, tier | 0)) * 100 + Math.max(0, (n || UL_TEAMS) - (rank | 0)) * 10;
 /* 래더 시즌: 한국 시간 월요일 0시에 시작하는 2주. 기준 2026-01-12(월): 11.16(월)에 시즌이 바뀐다. 단계는 시즌이 바뀌어도 그대로, 시즌 기록(최고 단계·점수)만 새로 센다 */
@@ -104,7 +113,7 @@ export const UL_BADGES = Object.freeze([
   ['legend', '레전드', '레전드 단계에 올랐습니다.'],
   ['king', '레전드 우승', '레전드 리그를 1위로 마쳤습니다.'],
 ]);
-export function ulBadges(hist) { hist = hist || []; const got = new Set(); let run = 0, keep = 0;
+export function ulBadges(hist, car) { hist = hist || []; const got = new Set((car && car.bg) || []); let run = 0, keep = 0; /* 통산 칸에 받아 둔 배지는 기록 줄이 잘려도 남는다 */
   hist.forEach((x, i) => { const pv = hist[i - 1];
     if (x.move === 'up') { got.add('up1'); run++; if (run >= 3) got.add('up3'); if (pv && pv.move === 'down') got.add('back'); } else run = 0;
     if (x.rank === 1) { got.add('win'); if ((x.tier | 0) === UL_TIERS.length - 1) got.add('king'); }
@@ -123,7 +132,8 @@ const sidN = s => +String(s || '').slice(1) || 0;
 export function ulPsAdd(ps, x) {
   const info = new Map((x.P || []).map(p => [String(p.id), p])), key = `${x.sid}|${x.tier | 0}`;
   const slot = (id, isP) => { id = String(id); const p = info.get(id) || {}; const o = ps[id] || (ps[id] = { n: p.name || '', pos: p.pos || '', P: isP ? 1 : 0, s: {} });
-    if (p.name) o.n = p.name; if (p.pos) o.pos = p.pos; if (p.age != null) o.age = p.age; if (p.foreign) o.fr = 1; if (isP) o.P = 1; o.at = x.lid | 0; return o.s[key] || (o.s[key] = {}); };
+    if (p.name) o.n = p.name; if (p.pos) o.pos = p.pos; if (p.age != null) o.age = p.age; if (p.foreign) o.fr = 1; if (isP) o.P = 1; o.at = x.lid | 0;
+    const sp = o.s[key] || (o.s[key] = {}); if (p.name && sp.nm == null) { sp.nm = p.name; sp.ps = p.pos || ''; if (p.age != null) sp.ag = p.age; } return sp; }; /* 그 시즌·단계 칸에 그때 이름·포지션·나이(외부 검수 11-17 #48: 지난 시즌 줄이 지금 값으로 바뀌던 것) */
   for (const b of x.bat || []) { const s = slot(b.id, 0); s.b = addArr(s.b || UL_BF.map(() => 0), arrOf(b, UL_BF)); }
   for (const p of x.pit || []) { const s = slot(p.id, 1); s.p = addArr(s.p || UL_PF.map(() => 0), arrOf(p, UL_PF)); }
   /* 한도: 시즌 칸은 오래된 시즌부터, 선수는 가장 오래 안 나온 선수부터 뺀다 */
@@ -139,11 +149,14 @@ export function ulPitRates(t) { const o = t.outs || 0; return { ip: `${Math.floo
 export function ulPsRows(ps, kind, f) {
   f = f || {}; const k = kind === 'p' ? 'p' : 'b', F = k === 'p' ? UL_PF : UL_BF, rate = k === 'p' ? ulPitRates : ulBatRates, out = [];
   for (const id in ps || {}) { const o = ps[id], tot = F.map(() => 0), by = {};
-    for (const sk in o.s) { const [sid, t] = sk.split('|'); if (f.season && sid !== f.season) continue; if (f.tier != null && f.tier >= 0 && +t !== +f.tier) continue; const a = o.s[sk][k]; if (!a) continue; addArr(tot, a); addArr(by[sid] || (by[sid] = F.map(() => 0)), a); }
+    const snap = {}, byT = {};
+    for (const sk in o.s) { const [sid, t] = sk.split('|'); if (f.season && sid !== f.season) continue; if (f.tier != null && f.tier >= 0 && +t !== +f.tier) continue; const a = o.s[sk][k]; if (!a) continue; addArr(tot, a); addArr(by[sid] || (by[sid] = F.map(() => 0)), a); byT[sk] = a;
+      if (o.s[sk].nm && !snap[sid]) snap[sid] = { name: o.s[sk].nm, pos: o.s[sk].ps, age: o.s[sk].ag }; }
     if (!tot[0]) continue; const t = objOf(tot, F), pos = k === 'p' ? (t.gs * 2 >= t.g ? 'SP' : 'RP') : o.pos;
     if (f.pos && f.pos !== pos) continue;
     out.push(Object.assign({ id, name: o.n, pos, age: o.age, fr: o.fr ? 1 : 0, at: o.at || 0 }, t, rate(t),
-      { splits: Object.keys(by).sort((a, b) => sidN(b) - sidN(a)).map(sid => { const x = objOf(by[sid], F); return Object.assign({ sid }, x, rate(x)); }) })); }
+      { splits: Object.keys(by).sort((a, b) => sidN(b) - sidN(a)).map(sid => { const x = objOf(by[sid], F); return Object.assign({ sid }, snap[sid] || {}, x, rate(x)); }),
+        tsplits: Object.keys(byT).sort((a, b) => sidN(b.split('|')[0]) - sidN(a.split('|')[0]) || +a.split('|')[1] - +b.split('|')[1]).map(sk => { const [sid, t] = sk.split('|'), x = objOf(byT[sk], F); return Object.assign({ sid, tier: +t }, snap[sid] || {}, x, rate(x)); }) })); } /* 시즌·단계별 나눔(CSV 단계 열, #51) */
   return out;
 }
 /* 팀 시즌 칸(ulSeasonAdd 확장): 승·패·무·득점·실점·강등·순위 합. 예전 칸에 없는 값은 0으로 본다 */
@@ -156,7 +169,7 @@ export function ulMissions(seas, hist, sid, tier) {
     { k: 'play', n: '리그 3번 치르기', cur: Math.min(3, S.n | 0), goal: 3 },
     { k: 'top3', n: '3위 안에 들기', cur: Math.min(1, H.filter(x => x.rank <= 3).length), goal: 1 },
     { k: 'plus', n: '승률 5할 넘긴 리그 2번', cur: Math.min(2, H.filter(x => (x.w || 0) > (x.l || 0)).length), goal: 2 },
-    tier >= top ? { k: 'up', n: '레전드 리그 우승', cur: Math.min(1, S.win | 0), goal: 1 } : { k: 'up', n: `${ulTierName(goal)} 승격`, cur: (S.best | 0) >= goal ? 1 : 0, goal: 1 },
+    tier >= top ? { k: 'up', n: '레전드 리그 우승', cur: Math.min(1, H.filter(x => (x.tier | 0) === top && x.rank === 1).length), goal: 1 } /* 레전드에서 1위 한 리그만(외부 검수 11-17 #41) */ : { k: 'up', n: `${ulTierName(goal)} 승격`, cur: (S.best | 0) >= goal ? 1 : 0, goal: 1 },
     { k: 'pts', n: `리그 점수 ${pts}점`, cur: Math.min(pts, S.top | 0), goal: pts },
   ].map(m => Object.assign(m, { done: m.cur >= m.goal }));
 }
@@ -195,7 +208,8 @@ export function ulMetaAgg(list) {
     fr: pl ? Math.round(list.reduce((s, x) => s + (x.fr || 0), 0) / pl * 1000) / 1000 : 0, frDeck: Math.round(mean(list.map(x => x.fr || 0)) * 10) / 10, age, aa: Math.round(mean(list.map(x => x.aa || 0)) * 10) / 10, arch, pf };
 }
 /* CSV 한 덩어리(엑셀에서 한글이 깨지지 않게 화면이 앞에 BOM을 붙인다). cols: [[키 또는 함수, 제목], …] */
-export function ulCsv(rows, cols) { const q = v => { const s = v == null ? '' : String(v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+/* 칸 앞이 = + - @ 탭·CR이면 엑셀이 식으로 읽는다(외부 검수 11-17 #42): 숫자가 아닌 글이면 ' 를 붙인다(음수 득실 같은 숫자는 그대로) */
+export function ulCsv(rows, cols) { const q = v => { let s = v == null ? '' : String(v); if (typeof v !== 'number' && /^[=+\-@\t\r]/.test(s) && !/^[+-]?\d+(\.\d+)?$/.test(s)) s = "'" + s; return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
   return [cols.map(c => q(c[1])).join(','), ...(rows || []).map(r => cols.map(c => q(typeof c[0] === 'function' ? c[0](r) : r[c[0]])).join(','))].join('\r\n'); }
 /* 예전 저장(G.uld v1) → v2: 선수 기록(ps)·상대 기록(opp) 칸을 만들고, 마지막 리그 결과의 승패를 기록 줄에 채운다. 여러 번 해도 같다(난수 없음) */
 export function ulMigrate(U) {
@@ -204,4 +218,41 @@ export function ulMigrate(U) {
   const L = U.last, h = U.hist[U.hist.length - 1];
   if (L && h && h.w == null && h.rank === L.rank && h.tier === L.tier) { const me = (L.stand || []).find(x => x.kind === 'me'); Object.assign(h, { w: L.w | 0, l: L.l | 0, t: L.t | 0, pts: L.pts != null ? L.pts : ulPts(L.tier, L.rank) }); if (me && me.diff != null) h.rd = me.diff; }
   U.v = 2; return U;
+}
+/* ===== 래더 v3(사용자 11-17 "레더랑 대회 쪽 유아이랑 시스템 제대로 더 개선해야하고", "컴프매처럼 좀 재미있게") =====
+   매일·주간 목표: 한국시간 날·주(월요일 0시 시작)마다 정해지는 목표 3개씩. 진척은 리그 기록(hist의 ts)만으로 센다(따로 저장하지 않음).
+   목표를 다 채우면 도장 하나(G.uld.gl: 날·주마다 한 번). 보상은 꾸미기뿐: 단계 문장 테두리(동·은·금)와 칭호. 재화·능력치 보상은 없다(구단주 조건) */
+export const UL_DAY = 864e5, UL_KST = 9 * 36e5;
+export const ulDayId = ms => Math.floor(((ms == null ? Date.now() : ms) + UL_KST) / UL_DAY);
+export const ulWeekId = ms => Math.floor(((ms == null ? Date.now() : ms) + UL_KST - 4 * UL_DAY) / (7 * UL_DAY)); /* 1970-01-05(월) 0시가 0주 */
+const cnt = f => H => H.filter(f).length;
+const UL_DPOOL = [
+  ['plus', '5할 넘긴 리그 1번', cnt(x => (x.w | 0) > (x.l | 0)), 1], ['top5', '5위 안에 들기', cnt(x => x.rank <= 5), 1], ['rd10', '득실 +10 넘긴 리그 1번', cnt(x => (x.rd | 0) >= 10), 1],
+  ['play2', '리그 2번 끝내기', H => H.length, 2], ['top3', '3위 안에 들기', cnt(x => x.rank <= 3), 1], ['safe', '강등 없이 리그 2번', cnt(x => x.move !== 'down'), 2], ['w15', '한 리그 15승', cnt(x => (x.w | 0) >= 15), 1],
+];
+/* 오늘 목표: 첫째는 늘 '리그 1번 끝내기', 나머지 둘은 날 번호로 고른다(누구나 같은 날 같은 목표) */
+export function ulDailyGoals(hist, now) {
+  const d = ulDayId(now), H = (hist || []).filter(x => x && x.ts && ulDayId(x.ts) === d), n = UL_DPOOL.length, a = d % n, b = (a + 1 + (Math.floor(d / n) % (n - 1))) % n;
+  return [['play1', '리그 1번 끝내기', X => X.length, 1], UL_DPOOL[a], UL_DPOOL[b === a ? (a + 1) % n : b]].map(([k, t, f, goal]) => { const cur = Math.min(goal, f(H)); return { k, n: t, cur, goal, done: cur >= goal }; });
+}
+/* 이번 주 목표: 리그 5번 · 3위 안 3번 · 승격 1번(레전드면 레전드 3위 안) */
+export function ulWeeklyGoals(hist, now, tier) {
+  const w = ulWeekId(now), H = (hist || []).filter(x => x && x.ts && ulWeekId(x.ts) === w), top = UL_TIERS.length - 1;
+  return [['play5', '리그 5번 끝내기', H.length, 5], ['top3x3', '3위 안 3번', cnt(x => x.rank <= 3)(H), 3],
+    (tier | 0) >= top ? ['up', '레전드 3위 안', cnt(x => (x.tier | 0) === top && x.rank <= 3)(H), 1] : ['up', '승격 1번', cnt(x => x.move === 'up')(H), 1]]
+    .map(([k, t, c, goal]) => ({ k, n: t, cur: Math.min(goal, c), goal, done: c >= goal }));
+}
+/* 리그가 끝날 때 한 번: 오늘·이번 주 목표를 다 채웠으면 도장(날·주마다 한 번). {gl(새 칸), day, week} */
+export function ulGoalsTick(gl, hist, now, tier) {
+  const g = Object.assign({ ds: 0, ws: 0, dd: -1, wd: -1 }, gl || {}), d = ulDayId(now), w = ulWeekId(now); let day = false, week = false;
+  if (g.dd !== d && ulDailyGoals(hist, now).every(x => x.done)) { g.ds++; g.dd = d; day = true; }
+  if (g.wd !== w && ulWeeklyGoals(hist, now, tier).every(x => x.done)) { g.ws++; g.wd = w; week = true; }
+  return { gl: g, day, week };
+}
+/* 꾸미기: 도장 점수(매일 1 · 주간 3)로 문장 테두리, 도장 수로 칭호 */
+export const UL_FRAMES = Object.freeze([[0, ''], [3, '동 테두리'], [10, '은 테두리'], [25, '금 테두리']]);
+export const UL_GTITLES = Object.freeze([['d1', '첫 도장', g => g.ds >= 1], ['w1', '주간 완주', g => g.ws >= 1], ['d7', '개근 단장', g => g.ds >= 7], ['w4', '한 달 완주', g => g.ws >= 4], ['d30', '래더 장인', g => g.ds >= 30]]);
+export function ulCosmetic(gl) {
+  const g = Object.assign({ ds: 0, ws: 0 }, gl || {}), sc = g.ds + g.ws * 3; let f = 0; UL_FRAMES.forEach(([m], i) => { if (sc >= m) f = i; });
+  const nx = UL_FRAMES[f + 1]; return { score: sc, frame: f, frameName: UL_FRAMES[f][1], next: nx ? { need: nx[0] - sc, name: nx[1] } : null, titles: UL_GTITLES.map(([k, n, t]) => ({ k, n, on: !!t(g) })) };
 }
