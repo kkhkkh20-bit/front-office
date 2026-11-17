@@ -30,10 +30,11 @@ const R=await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false
    // commentary
    const c=pbpCall(g,k).c||'';cnt.call++;const kw=KW[x[3]];if(kw&&!kw.test(c))bad.push({gi,k,t:'call kw '+x[3],got:c.slice(0,60)});
    if(!kw&&/삼진|볼넷|병살|홈런/.test(c)&&['1B','2B','3B','OUT'].includes(x[3])&&!/홈런 타자|홈런왕|병살타 이후/.test(c))bad.push({gi,k,t:'call wrong '+x[3],got:c.slice(0,70)});
+   if(['2B','3B'].includes(x[3])||(x[3]==='1B'&&!/내야 안타/.test(c))){ const hs=hitShape(g,k,x[3]); cnt.shape=(cnt.shape||0)+1; if(!hs||!c.includes(hs.c))bad.push({gi,k,t:'call shape '+x[3],got:c.slice(0,70),want:hs&&hs.c}); } /* 해설의 타구 묘사가 화면 타구(hitShape)와 같은지 */
    const other=others.find(n=>c.includes(n));if(other)bad.push({gi,k,t:'call other-team name',got:other,c:c.slice(0,60)});
    // align consistency
    const al=cAlign(g,b,b.half%2===0?g.away:g.home)._k;cnt.align+=al?1:0;
    if(al==='in'&&!(b.bases[2]&&b.outs<2))bad.push({gi,k,t:'align in'});if(al==='dp'&&!(b.bases[0]&&b.outs<2))bad.push({gi,k,t:'align dp'});if(al==='hold'&&!(b.bases[0]&&!b.bases[1]))bad.push({gi,k,t:'align hold'});if(al==='bunt'&&!(b.outs===0&&(b.bases[0]||b.bases[1])&&!b.bases[2]))bad.push({gi,k,t:'align bunt'});
   }}
  return {cnt,bad:bad.slice(0,40),nbad:bad.length,types:bad.reduce((m,x)=>(m[x.t]=(m[x.t]||0)+1,m),{})};});
-await browser.close();await server.close();if(R.nbad||errs.length){console.error(JSON.stringify({bad:R.bad.slice(0,20),types:R.types,errs:errs.slice(0,3)},null,1));console.error('중계 정보 검증 실패');process.exit(1);}console.log(`중계 정보 검증: ${R.cnt.pa}타석 · 좌우 카드·점수판·결과 해설·수비 위치 해설 통과`);})().catch(e=>{console.error(e);process.exit(1);});
+await browser.close();await server.close();if(R.nbad||errs.length){console.error(JSON.stringify({bad:R.bad.slice(0,20),types:R.types,errs:errs.slice(0,3)},null,1));console.error('중계 정보 검증 실패');process.exit(1);}console.log(`중계 정보 검증: ${R.cnt.pa}타석(안타 묘사 ${R.cnt.shape||0}건) · 좌우 카드·점수판·결과 해설·수비 위치 해설 통과`);})().catch(e=>{console.error(e);process.exit(1);});
