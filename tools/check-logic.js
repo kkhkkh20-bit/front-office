@@ -4935,6 +4935,39 @@ T('[드래프트 보정] 지명 순번별 겨울 성장 결과(경기 없이 7�
   } finally { G.amOff=am; } });
 T('[독주 견제] 소식: 독주 구단이 생기면 다른 구단들이 견제에 나선다는 기사가 나온다',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X); const riv=topRival(X); aiPlanSet(riv,'win','',true); _domC.k=null; G.domNewsK=null; domNews();
   ok((G.news||[]).some(n=>n.t.includes('독주에 다른 구단들 견제')),'견제 기사 없음'); });
+/* [피드백 11-18 트레이드] "트레이드가 너무 어려워졌다": 비주전끼리 거래의 웃돈 감면, 급매 매물 늘리기, 거절 때 값 계산 요약. 현금 효과·공략 방지는 그대로 */
+const benchPair=(tid,gap)=>{ const S=startersOf(tid), C=tvCore6(tid); const their=domestic(tid).filter(p=>!p.foreign&&!p.ys&&!S.has(p.id)&&!C.has(p.id)&&!p.aiListed&&!hasNtc(p)&&!faLock(p)&&ovr(p)>=40&&ovr(p)<=47).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!their)return null;
+  const SU=startersOf(G.user); const mine=domestic(G.user).filter(p=>!p.foreign&&!p.ys&&!SU.has(p.id)&&!hasNtc(p)&&!faLock(p)&&p.isP===their.isP&&p.age<=30).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!mine)return null;
+  let g=0; while(ovr(mine)<ovr(their)+gap&&g++<40)for(const k in mine.r)if(typeof mine.r[k]==='number')mine.r[k]++; return {their,mine}; };
+T('[피드백 11-18 트레이드] 독주 구단이라도 비주전끼리 값이 확실히 나은 맞교환은 받아 준다: 독주 견제·반복 거래 웃돈은 1/4, 최소 마진 1.5%',()=>{ fresh(); mkDyn(G.user); let n=0, ac=0;
+  for(const t of G.teams){ if(t.id===G.user)continue; const pr=benchPair(t.id,5); if(!pr)continue; G.trades=[{y:G.year,d:G.day,with:-9,give:[],get:[],me:G.user},{y:G.year,d:G.day,with:-8,give:[],get:[],me:G.user},{y:G.year,d:G.day,with:-7,give:[],get:[],me:G.user}];
+    ok(trBenchOnly(t.id,[pr.their.id])&&!trBenchOnly(t.id,[[...startersOf(t.id)][0]]),'비주전 판정이 틀림'); const e=evalTrade(t.id,[pr.mine.id],[pr.their.id]); ok(e.parts&&e.parts.bench,'비주전 거래로 안 봄 '+t.id);
+    const full=domTradeTax(t,G.user,false).k; ok(Math.abs(e.parts.dom-full*DOM_BENCH)<1e-9&&full>0,'독주 견제 감면이 1/4가 아님 '+e.parts.dom+' / '+full); ok(Math.abs(e.parts.rep-(.12*2)*TR_BENCH.rep)<1e-9,'반복 거래 웃돈 감면이 틀림 '+e.parts.rep);
+    ok(e.need>=Math.max(e.outV*TR_BENCH.margin,TR_BENCH.min)-1e-9,'최소 마진이 없음'); if(e.gain>=3+e.outV*.6){ n++; if(e.ok)ac++; } }
+  G.trades=[]; ok(n>=3,'준비 실패: 값이 확실히 나은 비주전 맞교환 후보가 적음 '+n); ok(ac===n,'값이 확실히 나은 비주전 맞교환을 거절 '+ac+'/'+n); });
+T('[피드백 11-18 트레이드] 주전·상위 6명을 받아 가거나 지명권을 받아 가면 감면이 없다(독주 견제·반복 거래·3% 마진 그대로)',()=>{ fresh(); mkDyn(G.user); const t=G.teams.find(x=>x.id!==G.user&&domTradeTax(x,G.user,false).k>0);
+  const st=[...startersOf(t.id)].map(id=>G.players[id]).find(p=>p&&!p.foreign&&!hasNtc(p)&&!faLock(p)); const give=domestic(G.user).filter(p=>!p.foreign&&!hasNtc(p)).slice(0,2).map(p=>p.id);
+  G.trades=[{y:G.year,d:G.day,with:-9,give:[],get:[],me:G.user},{y:G.year,d:G.day,with:-8,give:[],get:[],me:G.user}]; const e=evalTrade(t.id,give,[st.id]); G.trades=[];
+  ok(!e.parts.bench,'주전을 받아 가는데 비주전 거래로 봄'); ok(e.parts.rep>=.12-1e-9,'주전 거래 반복 웃돈이 줄어듦 '+e.parts.rep); ok(!e.dom||e.dom.refuse||Math.abs(e.parts.dom-domTradeTax(t,G.user,true).k)<1e-9,'주전 거래 독주 견제가 줄어듦');
+  const pr=benchPair(t.id,0); const k=(pkHeld(t.id)||[])[0]; if(pr&&k){ const e2=evalTrade(t.id,[pr.mine.id],[pr.their.id],0,{get:[k]}); ok(!e2.parts.bench,'지명권을 받아 가는 거래를 비주전 거래로 봄'); } });
+T('[피드백 11-18 트레이드] 공략 방지 유지: 현금 가치·한도는 그대로이고, 비주전 맞교환도 상대가 값을 얻어야 하며 같은 구단과 곧바로 되풀이할 수 없다',()=>{ fresh();
+  ok(CASH_FULL===500&&CASH_MID===1500&&CASH_SHARE===.22,'현금 가치·한도가 바뀜'); const t=G.teams.find(x=>x.id!==G.user); const pr=benchPair(t.id,0); ok(pr,'준비 실패: 비주전 없음');
+  for(const p of domestic(G.user).filter(q=>!q.foreign&&!startersOf(G.user).has(q.id)).slice(0,12)){ const e=evalTrade(t.id,[p.id],[pr.their.id]); if(e.parts.bench&&e.ok)ok(e.gain>=Math.max(e.outV*TR_BENCH.margin,TR_BENCH.min)-1e-9,'상대가 손해 보는 비주전 맞교환을 받아 줌 '+e.gain); }
+  G.trades=[{y:G.year,d:G.day,with:t.id,give:[],get:[],gi:[],go:[],me:G.user}]; ok(tradeCool(t.id,[pr.their.id]),'같은 구단과 곧바로 다시 거래됨(30일 간격)'); G.trades=[]; });
+T('[피드백 11-18 트레이드] 급매로 내놓은 스타도 값의 70%를 넘게 깎아 주지 않는다: 1군 밖 선수 하나로 급매 스타를 데려올 수 없다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const star=domestic(t.id).filter(p=>!p.foreign&&!hasNtc(p)&&!faLock(p)).sort((a,b)=>ovr(b)-ovr(a))[0];
+  star.aiListed=true; star.aiUrg=true; star.aiWhy='cut'; star.aiLd=G.day; const junk=domestic(G.user).filter(p=>!p.foreign&&!hasNtc(p)).sort((a,b)=>ovr(a)-ovr(b))[0]; const e=evalTrade(t.id,[junk.id],[star.id],3000); ok(!e.ok,'급매 스타를 1군 밖 선수+현금으로 데려옴 '+e.gain.toFixed(2)+' need '+e.need.toFixed(2)); });
+T('[피드백 11-18 트레이드] 급매 매물이 더 자주 나온다: 주마다 자리가 없는 백업을 급매로(주전·상위 6명·젊은 유망주 제외)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const seen=new Set();
+  for(let w=0;w<8;w++){ G.day+=7; aiBlockWeekly(); for(const p of Object.values(G.players))if(p.team!=null&&p.team!==G.user&&p.aiListed&&p.aiWhy==='cut'&&p.aiLd===G.day&&!seen.has(p.id)){ /* 이번 주에 내놓은 선수만: 예전에 내놓은 백업은 그사이 주전이 됐을 수 있다 */ seen.add(p.id);
+      ok(p.aiUrg,'백업 정리 매물이 급매가 아님 '+p.name); ok(!startersOf(p.team).has(p.id)&&!tvCore6(p.team).has(p.id),'주전·상위 6명을 급매로 내놓음 '+p.name); ok(!(p.age<=25&&p.pot-ovr(p)>=6),'젊은 유망주를 급매로 내놓음 '+p.name); } }
+  ok(seen.size>=4,'8주 동안 백업 급매가 너무 적음 '+seen.size); ok(BLKWHY.cut==='백업 정리','매물 이유 표시 없음'); });
+T('[피드백 11-18 트레이드] 거절하면 필요한 값·제시한 값과 붙은 웃돈(독주 견제·반복 거래)을 짧게 알려 준다',()=>{ fresh(); mkDyn(G.user); const t=G.teams.find(x=>x.id!==G.user&&domTradeTax(x,G.user,false).k>0); const pr=benchPair(t.id,0); ok(pr,'준비 실패');
+  const junk=domestic(G.user).filter(p=>!p.foreign&&!hasNtc(p)&&!faLock(p)&&!startersOf(G.user).has(p.id)&&p.id!==pr.mine.id).sort((a,b)=>ovr(a)-ovr(b))[0];
+  G.trades=[{y:G.year,d:G.day,with:-9,give:[],get:[],me:G.user},{y:G.year,d:G.day,with:-8,give:[],get:[],me:G.user}]; const e=evalTrade(t.id,[junk.id],[pr.their.id]);
+  const note=tradeGapNote(e); ok(note.includes('필요한 값 '+Math.max(0,e.outV+e.need).toFixed(1))&&note.includes('제시하신 값 '+e.inV.toFixed(1)),'값 요약이 틀림: '+note); ok(note.includes('독주 견제 +')&&note.includes('반복 거래 +')&&note.includes('비주전 거래라 웃돈 감면'),'웃돈 내역이 없음: '+note);
+  ok(tradeGapNote({inV:1,outV:2,need:3,parts:{sub:true}}).includes('주전 대체 요구'),'주전 대체 요구 표시 없음');
+  if(!e.ok){ const r=proposeTrade(t.id,[junk.id],[pr.their.id]); ok(!r.ok&&r.msg.includes('필요한 값'),'거절 메시지에 값 요약이 없음: '+r.msg); } G.trades=[]; });
+T('[피드백 11-18 트레이드] AI끼리도 같은 견제 감면: 비주전만 내주면 독주 견제 웃돈이 1/4이다',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X); const riv=topRival(X);
+  const a=domTradeTax(riv,X,false,true), b=domTradeTax(riv,X,false,false), c=domTradeTax(riv,X,true,true); ok(b.k>0&&Math.abs(a.k-b.k*DOM_BENCH)<1e-9,'비주전 감면이 1/4가 아님'); ok(c.k===b.k,'주전 거래에 감면이 붙음'); });
 
 T('[인물 관계] AI 단장끼리 한 시즌 동안 식사·연락으로 관계를 쌓고, 가까울수록 같은 만남의 효과가 준다(우리 식사와 같은 식)',()=>{ fresh(); G.rels={}; const L=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim); const K=new Set(L.map(t=>relKeyOf(t.gm,'gm')));
   const r0=globalThis.__rngState(); for(let i=0;i<12;i++){ G.day+=30; relNetMonth(); } ok(globalThis.__rngState()===r0,'AI 단장 교류가 경기 난수를 썼다');
