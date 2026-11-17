@@ -148,7 +148,7 @@ function growthCard(p){
     ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${lg.tid===G.user&&lg.manager?` · ${esc(lg.manager.name)} 감독 · ${mgrYouthWord(lg.manager.youth)}`:''}</p>`:''}${why.length?`<p class="small muted">반영 요인: ${why.map(esc).join(' · ')} ${hiI('잠재력 평가는 성장을 보장하지 않습니다. 시즌 폼이나 컨디션은 기본 기량 변화와 다릅니다.')}</p>`:''}</section>`;
 }
 /* 이름·등번호·얼굴 고치기 상자(pEditBox)는 72_cosmetic.js. 능력·잠재력·나이 에디터는 없앴다(구단주 결정 11-17) */
-function face6Thumb(tid,i){ if(i>=100)return face6Src2(tid,i); const k=tid+':'+i; if(F6C.has(k))return F6C.get(k); const im=face6Load(tid,''); if(!im)return null; if(!im.ok)return im.bad?null:F6WAIT; try{ const u=FACE6.v==='6c'?face6Cut(im,128,i,26,25,76,128,0):face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } }
+function face6Thumb(tid,i){ return faceCut({s:'p',t:tid,c:i}); } /* 같은 얼굴 주소·자르기(77_assets_ui.js faceCut) */
 function archSheet(a){ const tw=a.rows.reduce((s,r)=>s+(r.war||0),0); const f3=v=>fmt3(v);
   const row=r=>a.isP?`<tr><td>${r.y}</td><td>${badge(r.t,14)} ${esc(tshort(r.t))}</td><td>${r.g||'-'}</td><td>${ipStr(r.outs||0)}</td><td>${r.outs?archLine(r).era.toFixed(2):'-'}</td><td>${r.w||0}-${r.l||0}${r.sv?` ${r.sv}세`:''}</td><td>${r.so||0}</td><td>${(r.war||0).toFixed(1)}</td></tr>`
     :(()=>{ const ab=r.ab||0, L=archLine(r); /* 현역과 같은 계산 */ return `<tr><td>${r.y}</td><td>${badge(r.t,14)} ${esc(tshort(r.t))}</td><td>${r.pa||0}</td><td>${ab?f3(L.avg):'-'}</td><td>${r.hr||0}</td><td>${ab?f3(L.ops):'-'}</td><td>${r.sb||0}</td><td>${(r.war||0).toFixed(1)}</td></tr>`; })();

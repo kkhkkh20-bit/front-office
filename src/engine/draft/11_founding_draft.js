@@ -261,7 +261,12 @@ function draftRestPre(){ const P=G.drestPre; return P&&P.y===G.year&&P.tid===G.u
 /* 일괄 처리는 설정한 구단에만: 이직하면 새 구단 지명에 쓰지 않는다(검수 11-09d) */
 function draftRestOf(){ const d=G.draft; return d&&!d.done&&d.rest&&d.rest.tid===G.user&&!G.unemp?d.rest:null; }
 function draftCondSummary(min){ const d=G.draft, ids=d&&!d.done?d.cls:G.draftClass||[]; let total=0,fit=0,unknown=0;for(const id of ids){const p=G.players[id];if(!p?.prospect)continue;total++;const T=potTierP(scoutReport(p),p);if(!T)unknown++;else if(T.n>=min)fit++;}return {total,fit,unknown,full:rosterProj(G.user)>=ROSTER_MAX}; }
+/* 우리 보드 맡기기(사용자 11-17 드래프트 전 전략): 남은 후보 중 우리 보드(관심 목록 순서) 맨 위. AI 구단도 자기 평가 순서로 고르니 같은 방식이다 */
+function draftBoardTop(){ const d=G.draft; if(!d||d.done)return null; const av=new Set(d.cls.filter(id=>G.players[id]&&G.players[id].prospect)); return (G.shortlist||[]).find(id=>av.has(id))??null; }
 function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null;
+  if(R0.mode==='board'){ const id=rosterProj(G.user)<ROSTER_MAX?draftBoardTop():null; if(id){ pk.rule=true; pk.board=true; doPick(id); return {pk,pid:id,me:true}; }
+    if(rosterProj(G.user)>=ROSTER_MAX){ pk.passReason=`정식 로스터 한도 ${ROSTER_MAX}명`; passCurrent(); return {pk,pass:true}; }
+    R0.mode='cond'; R0.min=R0.min||3; R0.after=1; d.ruleMsg='우리 보드 후보가 모두 지명되어, 이후는 스카우트 추천 ★2(1군 백업) 이상으로 이어 갑니다.'; } /* 보드가 비면 스카우트 추천 기준으로 이어 간다 */
   const S=R0.mode==='cond'?draftCondSummary(R0.min):null;
   /* 아마추어 스카우트가 한 명도 없으면 잠재력을 알 길이 없다: 멈추지 않고 스카우트·언론 순위로 지명한다(플레이 테스트 11-13: 자동 지명이 아무 반응이 없었다) */
   if(S&&!S.full&&!S.fit&&S.unknown&&!(G.scouts||[]).some(s=>(s.role||'am')==='am')&&rosterProj(G.user)<ROSTER_MAX){ const id=userAutoPick(null); if(id){ d.ruleMsg='아마추어 스카우트가 없어 후보 잠재력을 알 수 없습니다. 스카우트·언론 순위로 지명했습니다.'; pk.rule=true; doPick(id); return {pk,pid:id,me:true}; } }

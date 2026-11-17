@@ -13,11 +13,11 @@ globalThis.__faceSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','
 globalThis.__fcSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8'), ui=R('77_assets_ui.js'); return R('00j2_face_centers_data.js')+'\n'+ui.slice(ui.indexOf('function fcAt('),ui.indexOf('function face6Cut('))+'\n;({FACECTR,fcAt,fcWin})'; };
 /* [얼굴 아마추어] 시나리오용: FACE6 번호표와 배정 함수(face6Idx·amIdx). pre: 앞에 붙일 코드(시험용 FACE21 번호표) */
 globalThis.__amSrc=pre=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
-  return (pre||'')+'\n'+R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n'+ui.slice(ui.indexOf('function amFaceOn('),ui.indexOf('function amLoad('))+'\n;({FACE6,face6Idx,amIdx,amVar})'; };
+  return (pre||'')+'\n'+R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n'+ui.slice(ui.indexOf('function amFaceOn('),ui.indexOf('function face8Role('))+'\n;({FACE6,face6Idx,amIdx,amVar})'; };
 globalThis.__amNoInterim=()=>{ const dir=path.join(__dirname,'..','src','ui','assets'); return !fs.readdirSync(dir).some(f=>/amateur/.test(f))&&!fs.existsSync(path.join(__dirname,'..','assets','v6','batch01c','production100','amateur_interim'))&&!/FACEAM/.test(fs.readFileSync(path.join(dir,'77_assets_ui.js'),'utf8')); };
 /* [비서 v19] 시나리오용: FACE8(사진 빼고)·FACE19 번호표와 비서 배정 함수(secCands·secIdx) */
 globalThis.__secSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
-  return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function face19Load('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
+  return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function secPickHtml('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
 globalThis.__pfCss=()=>fs.readFileSync(path.join(__dirname,'..','src','css','players','22_full_player_profile.css'),'utf8'); /* [제보 11-16 해외 복귀 기록] 선수 화면 시즌 통계 줄 숨김 점검 */
 /* [스카우트 표시] 시나리오용: 소식함 첨부·선수 정보 화면 소스(같은 표시 함수를 쓰는지) */
 globalThis.__uiSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'); return {inbox:R('media/19_inbox.js'),prof:R('players/35_full_player_profile.js')}; };
@@ -1086,13 +1086,35 @@ T('[고교 리그] 3학년 부진: 잠재력은 그대로인데 졸업 학년 �
   p.amObs={[G.user]:2}; ok(amSlHint(p)===null,'조금 본 구단에도 귀띔이 나옴'); p.amObs={[G.user]:8}; const h=amSlHint(p); ok(h&&h.includes('기록보다'),'충분히 본 구단에 귀띔이 없음 z '+p.amZ); p.amSl='inj'; ok(amSlHint(p)==='부상 여파로 보입니다','부상 원인 귀띔 없음');
   ok(amSlHint(p,t)===null,'보지 않은 AI 구단에 귀띔이 나옴');
   const keep=JSON.stringify(p.r); const e0=amUnit(Object.assign({},p,{amSl:null}),'p',p.school,'hs',y).E.con, e1=amUnit(p,'p',p.school,'hs',y).E.con; ok(Math.abs(e0-e1-AM_SL_D)<1e-9&&JSON.stringify(p.r)===keep,'부진이 그해 아마 경기에만 들어가지 않음'); });
-T('[고교 리그] 학교 선수단: 일반 부원도 이름·학년이 있고, 입학 연도마다 같은 선수로 학년이 오르며 올해 기록 줄이 남는다(선수로 저장하지 않음)',()=>{ DEMO.on=false; newGame(6); const sch=AREA[0].hs[0], y=G.year;
-  const A=amFill(sch,y,'hs',55), B=amFill(sch,y+1,'hs',55); for(const g of [1,2,3])ok(A.filter(f=>f.gr===g).length===AM_FN.hs[0]+AM_FN.hs[1],'학년별 일반 부원 수 '+g);
-  for(const f of A.filter(x=>x.gr<3)){ const g=B.find(x=>x.ey===f.ey&&x.i===f.i&&x.isP===f.isP); ok(g&&g.gr===f.gr+1&&g.n===f.n&&g.pos===f.pos,'다음 해에 같은 부원이 한 학년 올라가지 않음'); const k=f.isP?'stf':'con'; ok(Math.abs(g.r[k]-f.r[k]-AMC.hs.fg)<1e-9,'학년이 오르며 능력이 같은 만큼 오르지 않음'); }
+T('[고교 리그] 학교 선수단: 일반 부원도 이름·학년이 있고, 입학 연도마다 같은 선수로 학년이 오르며(사람마다 성장 빠르기) 올해 기록 줄이 남는다(이름표·능력은 시드, 저장하지 않음)',()=>{ DEMO.on=false; newGame(6); const sch=AREA[0].hs[0], y=G.year, full=AM_FN.hs[0]+AM_FN.hs[1];
+  const A=amFill(sch,y,'hs',55), B=amFill(sch,y+1,'hs',55), A3=amFill(sch,y,'hs',55,true); for(const g of [1,2])ok(A.filter(f=>f.gr===g).length===full,'학년별 일반 부원 수 '+g); ok(A3.filter(f=>f.gr===3).length===full&&A.filter(f=>f.gr===3).length===full-((amFS().cv[sch+'#'+(y-2)]||[]).length),'졸업반: 프로 지원한 부원만 명단에서 빠짐');
+  const dv=[]; for(const f of A.filter(x=>x.gr<3)){ const g=B.find(x=>x.ey===f.ey&&x.i===f.i&&x.isP===f.isP); ok(g&&g.gr===f.gr+1&&g.n===f.n&&g.pos===f.pos,'다음 해에 같은 부원이 한 학년 올라가지 않음'); const k=f.isP?'stf':'con'; const ex=amFGrow(f.P0,f.gr+1,AMC.hs.fg)-amFGrow(f.P0,f.gr,AMC.hs.fg); ok(Math.abs(g.r[k]-f.r[k]-ex)<1e-9,'학년이 오르며 그 사람 성장만큼 오르지 않음'); dv.push(ex); } ok(new Set(dv.map(v=>v.toFixed(3))).size>3,'모든 부원이 같은 만큼 자람');
   ok(!B.some(x=>x.ey===y-2),'졸업한 부원이 남음'); ok(A.every(f=>f.n&&f.n.length>=2&&f.ht>150),'이름·체격 없음');
   for(let d=dnum(y,3,1);d<=dnum(y,5,10);d++)amDaily(d); const fr=G.amL.fr&&G.amL.fr[sch]; ok(fr,'일반 부원 기록이 없음');
   const rows=A.map(f=>amFillRow(G.amL,sch,f.ey,f.isP,f.i)).filter(Boolean); ok(rows.some(r=>r.pa>0)&&rows.some(r=>r.outs>0),'일반 부원 타석·이닝 기록 없음');
   const j=JSON.stringify(Object.assign({},G,{amL:Object.assign({},G.amL,{rest:null})})); ok(!A.some(f=>j.includes(f.id)),'일반 부원 이름표가 저장됨'); });
+T('[고교 부원] 졸업반 부원 중 프로 지원자가 드래프트 후보가 된다: 참가가 지명 수보다 훨씬 많고, 본 게임 난수·선수 번호를 쓰지 않으며, 부원 기록·관찰이 이어진다',()=>{ DEMO.on=false; newGame(6);
+  const C=G.draftClass.map(id=>G.players[id]).filter(Boolean), D=C.filter(p=>p.amDep); ok(C.length>=DRAFT_ROUNDS*10*2,'참가 '+C.length+'명(지명 '+DRAFT_ROUNDS*10+')'); ok(D.length>=40,'부원 출신 후보 '+D.length);
+  ok(D.every(p=>p.id>=AM_DEP_ID0&&p.prospect&&p.school&&p.amY),'부원 출신 후보 번호·학교'); ok(D.filter(p=>p.amY.length>=2).length>=D.length*.6,'부원 출신 후보 학년별 기록 '+D.filter(p=>p.amY.length>=2).length+'/'+D.length); ok(D.some(p=>(p.amY||[]).some(r=>r.pa>0||r.outs>0)),'부원 출신 후보 기록이 비었음');
+  const top=Math.max(...C.filter(p=>!p.amDep).map(p=>p.pot)); ok(Math.max(...D.map(p=>p.pot))<top,'부원 출신 최대어가 추적 최대어보다 큼'); ok(D.filter(p=>p.pot>=50).length<=8,'부원 출신 대어가 너무 많음 '+D.filter(p=>p.pot>=50).length);
+  const sch=D[0].school; const ey=G.year-(D[0].college?3:2); ok((amFS().cv[sch+'#'+ey]||[]).length>=1&&!amFill(sch,G.year,D[0].college?'col':'hs',amLvOf(sch)).some(f=>f.id===D[0].amDep),'지원한 부원이 학교 명단에도 남음');
+  const r0=__rngState(), n0=G.nextId; delete amFS().dsY; for(const k in amFS().cv)delete amFS().cv[k]; const L=amDepSeniors(G.year); ok(L.length>0,'다시 만들기 실패'); ok(__rngState()===r0,'부원 지원자 만들기가 본 게임 난수를 썼다'); ok(G.nextId===n0,'선수 번호(G.nextId)를 썼다');
+  const again=amDepSeniors(G.year); ok(L.every(p=>again.includes(p))&&__rngState()===r0,'같은 해 다시 부르면 이미 나온 지원자 그대로');
+  const e=Object.values(amPipe().L)[0]; const f2=amFill(AREA[0].hs[0],G.year,'hs',55).filter(x=>x.gr===2), E=f2.map(x=>amDepE(x.id)).find(q=>q&&q.y.length>=1); ok(E&&E.dep&&E.gy===G.year+1&&E.pot>0&&f2.every(x=>amDepE(x.id).gy===G.year+1),'2학년 부원 한 사람(기록·졸업 연도·잠재력) '+JSON.stringify(E&&{gy:E.gy,y:E.y.length})); void e; });
+T('[고교 부원] 부원도 기록 1위·추천에 들고, 학교 방문 관찰은 모든 구단 같은 규칙으로 쌓인다',()=>{ DEMO.on=false; newGame(6); const y=G.year; for(let d=dnum(y,3,1);d<=dnum(y,6,15);d++)amDaily(d);
+  const L=amLeaders(y,'hs',false,'ops',30); ok(L.some(x=>x.kind==='f'),'OPS 상위 30에 부원 없음'); const all=amYearRows(y,'hs'); ok(all.filter(x=>x.kind==='f').length>all.filter(x=>x.kind!=='f').length,'기록 줄에 부원이 적음');
+  const V=amFS().sv; ok(V[G.user]&&Object.keys(V[G.user]).length>0,'우리 학교 방문 수 없음'); const ai=G.teams.find(t=>t.id!==G.user&&clubAmScouts(t.id).length); ok(ai&&V[ai.id]&&Object.keys(V[ai.id]).length>0,'AI 구단 학교 방문 수 없음');
+  const sch=Object.keys(V[G.user])[0]; const f=amFill(sch,y,amFLvl(sch),amLvOf(sch))[0]; ok(amFObs(sch,f.ey,f.id,G.user)>0,'방문한 학교 부원 관찰 0'); const E=amDepE(f.id); ok(obsCount(E)===Math.round(amFObs(sch,f.ey,f.id,G.user)),'부원 관찰 수가 화면마다 다름'); });
+T('[드래프트 전략] 우리 보드 맡기기: 남은 후보 중 보드 맨 위를 지명하고, 보드가 비면 스카우트 추천 기준으로 이어 간다. 모의 지명 우리 차례는 보드 1순위',()=>{ fresh(); G.day=G.cal.draft; const C=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect); const low=C.slice().sort((a,b)=>(b.press||999)-(a.press||999)).slice(0,2);
+  G.shortlist=low.map(p=>p.id); const M=mockDraft(12); const me=M.find(x=>x.mine); ok(!me||me.id===low[0].id,'모의 지명 우리 차례가 보드 1순위가 아님');
+  draftRestSet('board',3); startDraft(); const d=G.draft; ok(d.rest&&d.rest.mode==='board','미리 정한 보드 맡기기가 드래프트로 이어지지 않음'); let got=[], g=0; while(!d.done&&g++<400){ const pk=d.picks[d.cur]; if(pk.tid===G.user){ const r=draftRestPick(); if(!r)break; if(r.pid)got.push(r.pid); if(got.length>=3)break; } else { const id=aiDraftPick(pk.tid); if(id==null||id===-1)passCurrent(); else doPick(id); } }
+  const avail=low.filter(p=>got.includes(p.id)); ok(got.length>=2,'지명 수 '+got.length); ok(got[0]===low[0].id||!d.cls.includes(low[0].id)||G.players[low[0].id].team!=null,'보드 1순위를 먼저 고르지 않음'); ok(got.length<3||d.rest.mode==='cond','보드가 빈 뒤 스카우트 추천으로 이어 가지 않음'); void avail; });
+T('[U-18] 청소년 대표: 공개 기록으로 20명(투수 10·포수 2·내야 5·외야 3, 한 학교 3명까지)을 뽑고, 대회는 본 게임 난수를 쓰지 않으며 모든 구단 관찰이 1씩 는다',()=>{ DEMO.on=false; newGame(6); const y=G.year; for(let d=dnum(y,3,1);d<=dnum(y,7,31);d++)amDaily(d);
+  amDaily(dnum(y,8,1)); const U=G.u18; ok(U&&U.y===y&&U.L.length===20,'명단 '+(U&&U.L.length)); const n=g=>U.L.filter(x=>x.g===g).length; ok(n('P')===10&&n('C')===2&&n('IF')===5&&n('OF')===3,'포지션 수');
+  const by={}; for(const x of U.L)by[x.sch]=(by[x.sch]||0)+1; ok(Math.max(...Object.values(by))<=3,'한 학교 3명 넘음'); ok((G.wire||[]).some(w=>w.t.includes('U-18 청소년 대표')),'발표 소식 없음');
+  const x=U.L.find(q=>q.kind!=='f')||U.L[0]; const ob=t=>x.kind==='f'?amFObs(amFId(x.id).sch,amFId(x.id).ey,x.id,t):obsCount(u18Src(x),t); const before=G.teams.map(t=>ob(t.id));
+  const r0=__rngState(); const R=u18Play(y); ok(__rngState()===r0,'대회가 본 게임 난수를 썼다'); ok(R&&R.rank>=1&&R.rank<=6&&R.games.length>=5,'결과'); ok(G.teams.every((t,i)=>ob(t.id)>=before[i]+1-(t.id===G.user&&x.kind==='p'?0:0)),'모든 구단 관찰이 늘지 않음');
+  ok((G.wire||[]).some(w=>w.t.includes(U.ev)),'결과 소식 없음'); ok(u18Play(y)===null,'대회를 두 번 치름'); });
 T('[아마 리그] 고교 감독 성향: 육성형은 겨울에 더 키우고, 데이터형 타자는 볼넷이 많다(어느 구단이든 같다)',()=>{ DEMO.on=false; newGame(6); const SL=Object.values(schList()); const A=SL[0], B=SL[1]; A.coach.sty='육성형'; B.coach.sty='엄격형'; const keep=G.amU.L; G.amU.L={};
   const mk=(s,i)=>({id:900000+i,n:'가',s:s.n,a:s.area,c:0,gy:G.year+2,P:0,pos:'LF',t:'우',b:'우',v:0,pot:45,r:{con:20,pow:20,eye:20,spd:20,def:20},gp:[2,2],ty:'',ht:180,wt:75,inj:.1,y:[]}); for(let i=0;i<300;i++){ const e=mk(i%2?A:B,i); G.amU.L[e.id]=e; } amGrowAll(); const m=s=>{ const L=Object.values(G.amU.L).filter(e=>e.s===s.n); return L.reduce((a,e)=>a+e.r.con,0)/L.length; };
   ok(m(A)>m(B)+.25,'육성형 성장이 크지 않음 '+m(A).toFixed(2)+'/'+m(B).toFixed(2)); G.amU.L=keep;
@@ -4927,6 +4949,14 @@ T('[인물 관계] 다른 구단 단장이 먼저 식사를 청한다: 응하면
   ok((relsG()[relPK('me',relGmKey(t.id))].why||[]).some(w=>w[0]==='meal'),'관계 사유에 식사 없음');
   const e2=gmInvite(t.id,'call',false); const r1=t.rel; evPick(e2.id,1); ok(t.rel===r1-1,'거절해도 그대로 '+r1+'→'+t.rel); ok(relLikes(relGmKey(t.id)).like.some(x=>x.k==='me')||t.rel<56,'카드 연결');
   G.gmInvD=null; G.gmc={}; for(const x of G.evs)x.done=true; let n=0; for(let i=0;i<24;i++){ G.day+=30; const v=gmInvMonth(); if(v){ n++; ok(gmInvOpen(),'초대가 열리지 않음'); ok(gmInvMonth()===null,'열린 초대가 있는데 또 초대'); evPick(v.id,1,true); } } ok(n>=1&&n<=12,'두 시즌 초대 횟수 '+n); });
+T('[위임·식사 11-17] 일상 결정을 맡기면 다른 단장의 식사 초대도 비서가 정중히 거절해 진행을 멈추지 않고, 식사·모임 초대를 따로 응하기·직접으로 정할 수 있다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user&&x.gm&&!x.gm.interim); G.gmc={}; t.rel=50; G.stops=[]; G.stopCfg={};
+  const e0=gmInvite(t.id,'meal',false); ok(!e0.done&&G.stops.some(m=>m.id===e0.mid),'맡기지 않으면 직접 정하는 초대(멈춤)여야 함'); ok(stopCat(G.mail.find(m=>m.id===e0.mid))==='gm','진행 멈춤 분류가 다른 구단 단장 초대가 아님'); ok(mailDelegOpts(G.mail.find(m=>m.id===e0.mid)).some(o=>o.a==='handOff'&&o.v==='inv'),'소식의 위임하기 버튼 없음'); evPick(e0.id,1); G.stops=[];
+  autoSet('ev',true); autoSet('mgr',true); ok(autoOn('inv'),'일상 결정을 맡겼는데 초대는 직접'); const r0=t.rel, sp=G.spend.etc||0, rng=globalThis.__rngState?globalThis.__rngState():null; const e=gmInvite(t.id,'meal',false);
+  ok(e.done&&e.pick===1&&e.deleg,'맡겼는데 초대가 열린 채 남음'); ok(!G.stops.some(m=>m.id===e.mid),'맡긴 초대가 진행을 멈춤'); ok(!(G.evs||[]).some(x=>!x.done&&x.k==='gmInv'&&evStops(x)),'멈추는 초대가 남음'); ok(t.rel===r0-1&&(G.spend.etc||0)===sp,'기본안(정중히 거절)과 다름'); if(rng!=null)ok(globalThis.__rngState()===rng,'정중히 거절 위임이 난수를 씀');
+  G.gmInvD=null; G.auto.inv='yes'; ok(autoOn('inv'),'응하기 설정이 꺼짐'); const r1=t.rel; const e2=gmInvite(t.id,'meal',false); ok(e2.done&&e2.pick===0&&G.gmc[t.id].meal===G.day&&t.rel>=r1,'응하기로 맡겼는데 식사하지 않음');
+  autoSet('inv',false); ok(!autoOn('inv')&&autoOn('ev'),'식사·모임 초대만 직접으로 되돌리기 실패'); G.gmc={}; const e3=gmInvite(t.id,'call',false); ok(!e3.done,'직접으로 되돌렸는데 비서가 처리'); ok(handOff('inv')&&e3.done&&e3.pick===1,'넘기기로 걸린 초대를 처리하지 않음');
+  G.auto={}; G.deleg={}; for(const k of Object.keys(EV_NAME))if(!EV_LATE.has(k))G.deleg[k]=true; ok(autoOn('ev')&&autoOn('inv')&&evDelegOn('song')&&evDelegOn('memo'),'예전 저장(일상 결정 전부 맡김)에서 새 종류가 직접으로 돌아감');
+  G.deleg.song=false; ok(!evDelegOn('song')&&!autoOn('ev'),'응원가만 가져오기 실패'); G.stopCfg={gm:false}; G.auto.inv=false; G.stops=[]; const e4=gmInvite(t.id,'call',false); ok(!e4.done&&!G.stops.some(m=>m.id===e4.mid)&&!evStops(e4),'진행 멈춤에서 끈 초대가 멈춤'); });
 
 
 /* AI 동등(사용자 11-13: AI도 사람 단장과 같은 수단·같은 식·같은 비용) */
@@ -5678,7 +5708,7 @@ T('[얼굴 아마추어] v21 납품 전에는 고교·대학 선수에게 임시
   fresh(); if(!(G.draftClass||[]).length)makeDraftClass(); const am=G.draftClass.map(id=>G.players[id]).filter(p=>p&&!p.foreign); ok(am.length>=20,'드래프트 대상 부족 '+am.length);
   const F0=eval(globalThis.__amSrc()); ok(am.every(p=>F0.amIdx(p)===null)&&!G.fam,'FACE21 없이 아마추어 사진이 배정됨');
   const F=eval(globalThis.__amSrc('const FACE21={base:"assets/v21/amateur200/sheets/",pitch:{"128":144,"256":272,"384":400},ids:Array.from({length:200},(x,i)=>({a:17+i%6,g:i%10?0:1}))};'));
-  const first=am.map(p=>F.amIdx(p)); ok(first.every(a=>a&&a.k==='21'),'FACE21이 있는데 배정되지 않음'); ok(new Set(first.map(a=>a.c)).size>=am.length*.9,'덜 쓰인 얼굴부터 고르지 않음');
+  const first=am.map(p=>F.amIdx(p)); ok(first.every(a=>a&&a.k==='21'),'FACE21이 있는데 배정되지 않음'); ok(new Set(first.map(a=>a.c)).size>=Math.min(am.length,200)*.9,'덜 쓰인 얼굴부터 고르지 않음'); /* 부원 지원자로 참가가 200명(시험 번호표)을 넘을 수 있다(사용자 11-17) */
   ok(am.every((p,i)=>F.amIdx(p).c===first[i].c),'다시 부르면 얼굴이 바뀜'); ok(am.every(p=>['hs_home','univ'].includes(F.amVar(p))),'아마추어 유니폼 변형');
   ok(F.amIdx(Object.values(G.players).find(p=>p.team!=null&&!p.foreign&&!(G.fam||{})[p.id]))===null,'프로 선수에게 아마추어 사진');
   const p=am[0], c=F.amIdx(p).c; p.prospect=false; p.team=G.user; ok(F.amIdx(p).c===c,'지명 뒤 다른 신원'); ok(F.amVar(p)===F.FACE6.v18.teams[String(G.user)],'지명 뒤 구단 유니폼 변형이 아님'); });

@@ -21,6 +21,9 @@ const setup=()=>{ DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let n=
       await page.fill('#pe-nm','바뀐이름'); await page.click('#sheet [data-a="pEditSave"]'); assert.equal(await page.evaluate(id=>G.players[id].name,pid),'바뀐이름');
       await page.fill('#pe-nm','x').catch(()=>{});
       await page.evaluate(id=>{ A.pEditOpen(id); },pid); await page.fill('#pe-nm','시발놈'); await page.click('#sheet [data-a="pEditSave"]'); assert.match(await page.locator('#sheet .pe-box .bad').innerText(),/쓸 수 없는 말/); assert.equal(await page.evaluate(id=>G.players[id].name,pid),'바뀐이름');
+      /* 1-2) 소속 없는 외국인: 훈련복 템플릿 그림(faceCut f17)이 실제로 보인다 */
+      const fid17=await page.evaluate(()=>{ const q=Object.values(G.players).find(x=>x.foreign&&x.team==null); if(!q)return null; closeSheets(); UI.sheet=q.id; UI.ptab='sum'; renderSheet(); A.pEditOpen(q.id); return q.id; });
+      if(fid17!=null){ await page.waitForFunction(()=>{ renderSheet(); return document.querySelectorAll('#sheet .pe-box .pe-face img').length>=6; },null,{timeout:20000,polling:1000}); await page.screenshot({path:path.join(OUT,`${w}-foreign-faces.png`)}); }
       /* 2) 설정 › 게임 설정 › 표시 카드 → 일괄 창 */
       await page.evaluate(()=>{ closeSheets(); UI.pEdit=null; UI.it=Object.assign(UI.it||{},{setg:'view'}); A.go('cfg:set'); });
       await page.waitForSelector('[data-a="cosmOpen"]'); await page.click('[data-a="cosmOpen"]'); await page.waitForSelector('#sheet .cosm-sheet'); await page.waitForTimeout(1200); await page.evaluate(()=>renderSheet());

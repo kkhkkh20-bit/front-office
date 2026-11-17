@@ -7,13 +7,19 @@ function evOpen(){ evInit(); return G.evs.filter(e=>!e.done); }
 const EV_KEY=new Set(['scandal','reinf','clash','agent','fx','dline','fovs','post','mreq','mpick','inj']);
 const EV_GM=new Set(['gmRenew','cmt','asEl']); /* 단장 계약·협회 표결: 비서에게 넘길 수 없고 진행 멈춤 설정과 상관없이 멈춘다(검수 11-09zb) */
 const EV_NAME={lead:'기강 문제',pt:'출전 기회 면담',call:'콜업 여론',press:'연패 기자회견',vet:'베테랑 제안',fan:'팬 행사',slump:'부진 선수 면담',ret:'은퇴 행사'};
+/* 나중에 일상 결정에 넣은 종류(사용자 'ddddddd' 11-17: 일상 결정을 맡겼는데 응원가·기념 유니폼 제안이 시뮬을 멈춤).
+   예전 저장에서 일상 결정을 모두 맡긴 단장은 따로 정하지 않아도 함께 맡긴 것으로 본다. 직접 가져오면 false로 남긴다 */
+const EV_LATE=new Set(['memo','song']); EV_NAME.memo='기념 유니폼 제작 제안'; EV_NAME.song='응원가 제작 제안';
+function evDelegOn(k){ if(!G||EV_KEY.has(k)||!EV_NAME[k])return false; const D=G.deleg; const v=D&&D[k]; if(v!=null)return !!v; return !!D&&EV_LATE.has(k)&&Object.keys(EV_NAME).every(x=>EV_LATE.has(x)||D[x]); }
 function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   const e={id:'e'+(G.evSeq=(G.evSeq||0)+1),k,day:G.day,exp:G.day+(o.exp||5),title,sit,opts:opts.map(x=>({l:x.l,fx:x.fx})),def:o.def??opts.length-1,data:o.data||{},ref:o.ref??null,from:o.from||'운영팀',done:false};
   { const pid=e.data&&e.data.pid!=null?e.data.pid:null; const q=pid!=null?G.players[pid]:null; if(q&&q.team===G.user)e.pt=G.user; } /* 우리 선수에 대한 결정: 결정할 때도 그 선수가 우리 소속인지 다시 본다(evPick) */
   G.evs.push(e); for(let i=0;G.evs.length>40&&i<G.evs.length;)if(G.evs[i].done)G.evs.splice(i,1); else i++; /* 한도는 끝난 결정부터 지운다. 미결 결정은 남긴다(검수 11-09za) */ { const rid=e.ref!=null?e.ref:(e.data&&e.data.pid); if(rid!=null){ G.evRecent=G.evRecent||{}; G.evRecent[k+':'+rid]=G.day; G.evRecent['p:'+rid]=G.day; } }
   const lines=opts.map((x,i)=>`${i+1}. ${x.l}: ${x.fx}`).join('\n');
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',cat:o.cat,ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
-  e.mid=m.id; if(EV_GM.has(k))m.cat='must'; if((!EV_KEY.has(k)&&G.deleg&&G.deleg[k])||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); } return e; }
+  e.mid=m.id; if(EV_GM.has(k))m.cat='must'; if(evDelegOn(k)||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); }
+  else if(k==='gmInv'&&typeof autoOn==='function'&&autoOn('inv')){ e.deleg=true; evPick(e.id,G.auto&&G.auto.inv==='yes'?0:e.def,true); } /* 다른 단장의 식사·통화 초대: 업무 권한 '식사·모임 초대'(일상 결정을 맡겼으면 함께). 기본은 정중히 거절(난수 없음) */
+  return e; }
 /* 답변 기한이 지난 미결 결정: 소식함·홈 결정 카드·직접 선택이 같은 판정을 쓴다(다음 날 처리 때 기본안으로, 검수 11-09zzc #26) */
 function evExpired(e){ return !!e&&!e.done&&e.exp!=null&&G.day>e.exp; }
 function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(!auto&&evExpired(e))return '결정 답변 기한이 지났습니다. 다음 날 기본안으로 처리됩니다.';

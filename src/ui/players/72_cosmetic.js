@@ -3,7 +3,7 @@
  - 여러 명: 설정 › 게임 설정 › 표시 '이름·얼굴 일괄 수정' 창. 구단·드래프트 대상·소속 없음·은퇴 선수 묶음, 표 안에서 이름 고치기, 얼굴 고르기, CSV/텍스트 내보내기·가져오기(미리보기 뒤 적용)
  - 얼굴 번호: 그 선수가 지금 쓰는 사진 묶음의 번호. 구단 소속 = FACE6 칸(국내·외국인·아시아쿼터 묶음은 face6Pool이 가른다, 구단 유니폼), 소속 없는 외국인 = FACE17 훈련복 칸,
    드래프트 대상(아마추어) = FACE21 칸(그 사진 묶음이 들어왔을 때만). 소속 없는 국내 선수·은퇴 선수는 템플릿 사진이 없다(직접 넣은 사진은 가능, 은퇴 선수는 이름만)
- - 배정은 얼굴 코드(77_assets_ui.js)의 저장 칸을 그대로 쓴다: G.f6(선수→칸)·G.f6r('구단:칸'→선수) · G.f17 · G.fam. 같은 구단에서 그 얼굴을 쓰던 선수는 다음 그리기에서 다른 얼굴을 받는다
+ - 배정은 얼굴 코드(77_assets_ui.js)의 저장 칸을 그대로 쓴다: G.f6(선수→칸)·G.f6r('구단:칸'→선수) · G.f17 · G.fam. 같은 구단에서 그 얼굴을 쓰던 선수는 다음 그리기에서 face6Idx가 다른 얼굴을 준다(20시즌 쉬는 얼굴 G.f6cd 규칙 그대로). 작은 그림은 faceCut(얼굴 주소)
  - 직접 넣은 사진(G.cimg 'p:id')은 이 기기 저장에만 있다. 대회 엔트리는 템플릿 얼굴(face6Src)만, 래더 덱은 사진 없이 올라가므로 서버로 가지 않는다
  - 능력·잠재력·나이·계약을 고치는 길은 없다 */
 const COSM_PG=40, COSM_FACE_N=36;
@@ -23,14 +23,13 @@ function cosmFaceErr(p,n){ const F=cosmFace(p); if(!F)return '이 선수는 고�
 /* 얼굴 번호 정하기(검사는 cosmFaceErr) */
 function cosmSetFace(p,n){ const F=cosmFace(p); if(!F||cosmFaceErr(p,n))return false; n=+n;
   if(F.k==='6'){ G.f6=G.f6||{}; G.f6r=G.f6r||{}; const t=p.team, k=t+':'+n, prev=G.f6r[k]; if(prev!=null&&prev!==p.id)delete G.f6[prev]; /* 같은 구단에서 이 얼굴을 쓰던 선수는 다른 얼굴을 받는다 */
-    const cur=G.f6[p.id]; if(cur!=null&&G.f6r[t+':'+cur]===p.id)delete G.f6r[t+':'+cur]; G.f6[p.id]=n; G.f6r[k]=p.id; if(G.fam)delete G.fam[p.id]; if(G.f17)delete G.f17[p.id]; }
+    const cur=G.f6[p.id]; if(cur!=null&&G.f6r[t+':'+cur]===p.id)delete G.f6r[t+':'+cur]; G.f6[p.id]=n; G.f6r[k]=p.id; if(G.f6cd)delete G.f6cd[k]; /* 사용자가 고르면 쉬는 중인 얼굴도 쓴다(배정과 같이 그 칸의 쉬는 기록을 지움). 밀려난 선수는 face6Idx가 쉬는 기간 규칙대로 새 얼굴을 고른다 */ if(G.fam)delete G.fam[p.id]; if(G.f17)delete G.f17[p.id]; }
   else if(F.k==='17')(G.f17=G.f17||{})[p.id]=n;
   else (G.fam=G.fam||{})[p.id]={k:'21',c:n};
   return true; }
 const COSM_F={cur:cosmFaceCur,err:cosmFaceErr,set:cosmSetFace};
 /* 템플릿 사진 작은 그림(번호로). 못 그리면 null(번호만 보인다) */
-function cosmThumb(F,n){ try{ if(F.k==='6')return typeof face6Thumb==='function'?face6Thumb(F.tid,n):null;
-  if(F.k==='17'){ const k='17:'+n; if(F6C.has(k))return F6C.get(k); const im=face17Load(); if(!im.ok)return im.bad?null:F6WAIT; const u=face6Cut(im,256,n,52,50,152,256,0); F6C.set(k,u); return u; } }catch(e){} return null; }
+function cosmThumb(F,n,p){ if(typeof faceCut!=='function')return null; try{ if(F.k==='6')return faceCut({s:'p',t:F.tid,c:n}); if(F.k==='17')return faceCut({s:'f17',c:n}); const vk=p&&typeof amVar==='function'?amVar(p):null; return vk?faceCut({s:'am',t:vk,c:n}):null; }catch(e){ return null; } } /* 얼굴 주소 → 77_assets_ui.js faceCut(같은 자르기·캐시) */
 function cosmOwn(p){ return !!(G.cimg&&G.cimg['p:'+p.id]); }
 /* 얼굴 고르기 칸(선수 화면 고치기 상자·사진 바꾸기 창·일괄 창 공용) */
 function cosmFacePick(p,o){ o=o||{}; const F=cosmFace(p), own=cosmOwn(p), k='p:'+p.id;
@@ -38,7 +37,7 @@ function cosmFacePick(p,o){ o=o||{}; const F=cosmFace(p), own=cosmOwn(p), k='p:'
   if(!F)return `<div class="cosm-face"><p class="small muted">${p.team==null&&!p.prospect&&!p.foreign?'소속 구단이 없는 국내 선수는 템플릿 사진이 없습니다.':'이 선수가 고를 수 있는 템플릿 사진이 아직 없습니다.'}${own?' 지금은 직접 넣은 사진을 씁니다.':''}</p>${up}</div>`;
   const ids=cosmIds(F), cur=cosmFaceCur(p), age=p.age||25, more=(UI.cosmMore||{})[p.id]||COSM_FACE_N;
   const L=F.L.slice().sort((a,b)=>(a===cur?-1:b===cur?1:0)||Math.abs((ids[a].a||age)-age)-Math.abs((ids[b].a||age)-age)||a-b), show=L.slice(0,more);
-  const tiles=show.map(i=>{ const src=cosmThumb(F,i); return `<button type="button" class="pe-face${i===cur?' on':''}" data-a="cosmFace" data-v="${p.id}:${i}" title="얼굴 ${i}번 · 사진 나이 ${ids[i].a??'-'}세" aria-label="얼굴 ${i}번"${i===cur?' aria-pressed="true"':''}>${src&&src!==F6WAIT?`<img src="${src}" alt="" loading="lazy">`:`<span class="av ini">${i}</span>`}<i>${i}</i></button>`; }).join('');
+  const tiles=show.map(i=>{ const src=cosmThumb(F,i,p); return `<button type="button" class="pe-face${i===cur?' on':''}" data-a="cosmFace" data-v="${p.id}:${i}" title="얼굴 ${i}번 · 사진 나이 ${ids[i].a??'-'}세" aria-label="얼굴 ${i}번"${i===cur?' aria-pressed="true"':''}>${src&&src!==F6WAIT?`<img src="${src}" alt="" loading="lazy">`:`<span class="av ini">${i}</span>`}<i>${i}</i></button>`; }).join('');
   return `<div class="cosm-face"><p class="small"><b>얼굴 템플릿</b> <span class="muted">${L.length}장 · 나이 가까운 순 · 지금 ${cur!=null?cur+'번':'아마추어·이전 사진'}${own?' · <b>직접 넣은 사진 사용 중</b>(템플릿을 고르면 지웁니다)':''}</span></p><div class="pe-faces">${tiles}</div>${L.length>show.length?`<button type="button" class="btn small" data-a="cosmMore" data-v="${p.id}">사진 더 보기 (${L.length-show.length}장 남음)</button>`:''}${up}${F.k==='6'?'<p class="small muted">같은 구단에서 그 얼굴을 쓰던 선수는 다른 얼굴로 바뀝니다.</p>':''}</div>`; }
 /* 선수 화면의 고치기 상자: 이름·등번호·얼굴(능력·나이·계약은 바꾸지 않음) */
 function pEditBox(p){ const e=UI.pEditErr, arch=!G.players[p.id];

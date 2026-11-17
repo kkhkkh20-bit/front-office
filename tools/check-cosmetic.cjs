@@ -7,7 +7,7 @@ const engine=build({root:ROOT,write:false}).engine;
 const ui77=A('assets/77_assets_ui.js'), ui72=A('players/72_cosmetic.js'), cut=(s,a,b)=>{ const i=s.indexOf(a), j=s.indexOf(b); assert.ok(i>=0&&j>i,'소스 조각 없음: '+a); return s.slice(i,j); };
 /* 화면 쪽 얼굴 번호표·배정 함수와 72_cosmetic.js의 얼굴 규칙 부분만(그림 그리기·DOM 빼고) */
 const faceSrc=[A('assets/00d_faces_data.js'),A('assets/00h_more_faces2_data.js'),A('assets/00j_faces_v18_data.js'),A('assets/00i_foreign17_data.js'),
-  cut(ui77,'function face6Pool(','function face6Cut('),cut(ui77,'const F17N=','function face17Load('),cut(ui77,'function amFaceOn(','function amLoad('),
+  cut(ui77,'function face6Pool(','function face6Cut('),cut(ui77,'const F17N=','/* ===== 고교·대학 선수'),cut(ui77,'function amFaceOn(','function amVar('),
   cut(ui72,'const COSM_PG=','function cosmThumb(')].join('\n');
 const pyA=fs.readFileSync(path.join(ROOT,'src','ui','cup','01_cup_ui.js'),'utf8'), ulA=fs.readFileSync(path.join(ROOT,'src','core','uladder.mjs'),'utf8');
 const oe=console.error; console.error=()=>{};
@@ -54,10 +54,14 @@ const dom=playersOf(G.user).filter(x=>!x.foreign), a=dom[0], b=dom[1]; const fb=
 assert.equal(cosmFaceErr(a,fb),''); assert.ok(cosmFaceErr(a,99999)); assert.ok(cosmFaceErr(a,-1)); const fgn=FACE6.ids.findIndex(x=>x.f&&!x.x); assert.ok(cosmFaceErr(a,fgn),'국내 선수에게 외국인 얼굴');
 assert.ok(cosmSetFace(a,fb)); assert.equal(face6Idx(a),fb,'고른 얼굴'); const nb=face6Idx(b); assert.notEqual(nb,fb,'같은 구단 중복');
 const used=playersOf(G.user).map(face6Idx).filter(x=>x!=null); assert.equal(new Set(used).size,used.length,'구단 안 얼굴 중복');
+/* 쉬는 얼굴(G.f6cd, 20시즌): 사용자는 쉬는 얼굴도 고를 수 있고, 밀려난 선수는 쉬는 얼굴을 받지 않는다 */
+{ const c=dom[2], d=dom[3], fd=cosmFaceCur(d), cool=cosmFace(c).L.filter(i=>i!==fd&&!playersOf(G.user).some(q=>face6Idx(q)===i)).slice(0,40); G.f6cd=G.f6cd||{}; for(const i of cool)G.f6cd[G.user+':'+i]=G.year-1;
+  assert.equal(cosmFaceErr(c,cool[0]),''); assert.ok(cosmSetFace(c,cool[0])); assert.equal(face6Idx(c),cool[0],'쉬는 얼굴 고르기'); assert.equal(G.f6cd[G.user+':'+cool[0]],undefined,'고른 칸의 쉬는 기록이 남음');
+  assert.ok(cosmSetFace(c,fd)); const nd=face6Idx(d); assert.notEqual(nd,fd); assert.ok(!cool.includes(nd),'밀려난 선수가 쉬는 얼굴을 받음: '+nd); for(const i of cool)delete G.f6cd[G.user+':'+i]; }
 const fa=Object.values(G.players).find(x=>x.foreign&&x.team==null);
 if(fa){ const F=cosmFace(fa); assert.equal(F.k,'17'); assert.ok(F.L.every(i=>FACE17.ids[i].q===(fa.foreign==='아시아'?1:0))); const n=F.L.find(i=>i!==cosmFaceCur(fa)); assert.ok(cosmSetFace(fa,n)); assert.equal(face17Idx(fa),n); }
 const dfa=Object.values(G.players).find(x=>!x.foreign&&x.team==null&&!x.prospect); if(dfa){ assert.equal(cosmFace(dfa),null); assert.ok(cosmFaceErr(dfa,1)); }
-log('얼굴 번호: 구단 선수 '+nChecked+'명 모두 자기 묶음 안 번호만, 고르면 그 번호·같은 구단 중복 없음, 소속 없는 외국인은 훈련복 묶음, 범위 밖 번호는 거절');
+log('얼굴 번호: 구단 선수 '+nChecked+'명 모두 자기 묶음 안 번호만, 고르면 그 번호·같은 구단 중복 없음, 쉬는 얼굴(20시즌)은 고를 수 있지만 밀려난 선수에게는 주지 않음, 소속 없는 외국인은 훈련복 묶음, 범위 밖 번호는 거절');
 
 /* 5) 가져오기: 미리보기(바뀜·그대로·문제 줄) → 적용 */
 const T0=playersOf(others[1]).filter(x=>!x.foreign).slice(0,6), csv=cosmCsv(T0.slice(0,3).map(q=>({id:q.id,team:tshort(q.team),name:q.name,face:cosmFaceCur(q)??''})));

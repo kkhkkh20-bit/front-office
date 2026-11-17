@@ -146,6 +146,7 @@ function cfmBundle(s0){ const nw=(G.mail||[]).filter(m=>+String(m.id).slice(1)>s
   const acts=[]; for(const m of mv)for(const x of (m.acts||[]))if(!acts.some(y=>y.l===x.l))acts.push(x);
   const L=mv.map(m=>`- ${m.from}: ${m.body.split('\n')[0]}`).concat(keep.map(m=>`- ${m.from}: ${/인터뷰/.test(m.subj)?'인터뷰 답변이 필요합니다':m.subj} (소식함에 따로 있음)`));
   return {txt:'\n\n'+L.join('\n'),acts:acts.slice(0,3),n:mv.length+keep.length}; }
+window.addEventListener('popstate',()=>{ try{ if(UI.cast&&(UI.cast.view||'field')!=='field')A.castView('field',true); }catch(e){} }); /* 중계 기록·선수단 화면에서 휴대폰 뒤로 가기: 경기 화면으로(사용자 11-17) */
 document.addEventListener('keydown',e=>{if(!UI.advRun)return;e.stopImmediatePropagation();if(e.key==='Escape'||e.key===' '){e.preventDefault();if(!e.repeat)A.advStop();}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveNow();}},true);
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
@@ -223,7 +224,7 @@ document.addEventListener('keydown',e=>{
   if(UI.matchPreview&&e.key===' '){ if(!(e.target.closest&&e.target.closest('#sheet .match-entry button')))e.preventDefault(); return; } /* 경기 선택창: 스페이스바로 진행하지 않는다. 창 안 버튼에 초점이 있을 때만 그 버튼(검수 11-09z) */
   if(UI.fmKeys&&e.key==='Escape'){ UI.fmKeys=false; render(); return; }
   try{ if(fmHotkey(e))return; }catch(x){} /* PC 단축키(FM식) */
-  if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ if(UI.cfm)return; A.castExit(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
+  if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ if(UI.cfm)return; const md=document.querySelector('.match-dashboard'); if(md&&md.hasAttribute('data-more')){ A.castMore('0'); return; } if((UI.cast.view||'field')!=='field'){ A.castView('field'); return; } A.castExit(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
   if(e.key==='Escape'&&UI.negWin&&!UI.ngt&&!UI.meet){ UI.negWin=null; renderSheet(); render(); return; }
   if(e.key==='Escape'&&UI.meet){e.preventDefault();A.detailBack();return;}
   if(e.key==='Escape'&&UI.ngt){ UI.ngt=null; UI.meet=null; renderSheet(); render(); return; }
