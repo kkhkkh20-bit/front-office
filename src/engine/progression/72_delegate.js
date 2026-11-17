@@ -97,6 +97,21 @@ function autoNow(k){ const C=G.contract; const out=[];
   return out.filter(Boolean).join('. '); }
 function handOff(k){ autoSet(k,true); const r=autoNow(k); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) ${AUTO_WHO[k]||'비서'}에게 넘겼습니다.${r?' '+r+'.':''} 설정 · 권한에서 다시 가져올 수 있습니다.`; }
 function takeBack(k){ autoSet(k,false); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) 다시 직접 합니다.`; }
+/* 소식함에서 바로 위임(사용자 11-17: '수신함에서 즉석해서 위임하기 버튼', 어려운 사람은 비서를 통해 쉽게).
+   소식 하나가 속한 업무 권한을 찾는다: m.auto(연봉·외국인 재계약·트레이드 제안·스태프 빼가기·스카우트 배치) + 결정 종류(감독 요청 → mgr, 일상 결정 → 그 종류만 G.deleg[k]).
+   단장 계약·협회 표결(EV_GM)·드래프트·FA·외국인 영입은 넣지 않는다. 핵심 결정(EV_KEY)은 이번 건만 넘길 수 있다 */
+const autoFirst=k=>{ const a=AUTO_AREAS.find(x=>x[0]===k); return a?a[2].replace('{55}',typeof dv==='function'?dv(55):'55').split(/(?<=[.다])\s/)[0]:''; };
+function mailDelegOpts(m){ if(!m||G.unemp)return []; const L=[]; const acts=m.acts||[];
+  for(const k of (m.auto||[])){ if(!AUTO_AREAS.some(x=>x[0]===k)||autoOn(k)||acts.some(a=>a.a==='handOff'&&a.v===k))continue; if(k==='tro'&&m.oid&&!(G.offers||[]).some(o=>o.id===m.oid))continue; const a=AUTO_AREAS.find(x=>x[0]===k); L.push({a:'handOff',v:k,l:`위임하기 · ${a[1]}`,d:`${AUTO_WHO[k]||'비서'}: ${autoFirst(k)}`}); }
+  if(m.kind==='결정'){ const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(e&&!EV_GM.has(e.k)&&e.opts&&e.opts[e.def]){ const df=`"${e.opts[e.def].l}"`;
+      if(e.k==='mreq'||e.k==='mpick'){ if(!autoOn('mgr'))L.push({a:'handOff',v:'mgr',l:'위임하기 · 감독 요청',d:`비서: 이번 건은 ${df}(으)로 답하고, 앞으로 감독 요청도 기본안으로 답합니다`}); }
+      else if(EV_NAME[e.k]&&!EV_KEY.has(e.k)){ if(!(G.deleg&&G.deleg[e.k]))L.push({a:'evDeleg',v:e.id,l:`위임하기 · ${EV_NAME[e.k]}`,d:`비서: 이번 건은 ${df}(으)로 정하고, 앞으로 ${EV_NAME[e.k]}도 기본안으로 처리합니다`}); }
+      L.push({a:'evHand',v:e.id,l:'이번 건만 비서에게',d:`비서: 이번 건만 ${df}(으)로 정합니다`}); } }
+  return L; }
+/* 결정 종류 하나를 앞으로 맡기고 이번 건도 기본안으로(권한 화면 '종류별로 넘긴 일상 결정'과 같은 G.deleg) */
+function evDeleg(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k)||EV_KEY.has(e.k)||!EV_NAME[e.k])return handOffEv(id); G.deleg=G.deleg||{}; G.deleg[e.k]=true; const r=handOffEv(id); return `${r} 앞으로 ${EV_NAME[e.k]}은(는) 비서가 기본안으로 처리합니다. 설정 · 권한에서 다시 가져올 수 있습니다.`; }
+/* 확인할 소식을 한 번에: 넘길 수 있는 결정은 이번 건만 비서가 기본안으로(단장 전용 제외). 권한 설정은 바꾸지 않는다 */
+function evHandAll(mails){ let n=0; for(const m of mails||[]){ if(m.kind!=='결정')continue; const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(!e||EV_GM.has(e.k))continue; handOffEv(e.id); if(e.done&&!e.void)n++; } return n; }
 /* 결정 한 건만 넘기기(핵심 결정 포함): 비서가 기본안으로 처리 */
 function handOffEv(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k))return '단장 계약과 협회 표결은 단장이 직접 정합니다.'; e.deleg=true; const r=evPick(e.id,e.def,true); if(e.void||!e.done)return r||'처리하지 못했습니다.'; /* 효력을 잃은 결정은 처리했다고 하지 않는다(검수 11-07) */ return `비서가 "${e.opts[e.pick??e.def].l}"(으)로 처리했습니다.${r?' '+r:''}`; /* 처리 중 바뀐 실제 선택으로(검수 11-09z) */ }
 /* 스카우트: 맡기지 않았으면 팀장이 달마다 배치 제안을 보낸다(적용은 단장이) */

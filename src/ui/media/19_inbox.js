@@ -53,8 +53,8 @@ function mailCard(m,nav){
     ${status?`<div class="note ibm-status" role="status"><b>${esc(status.label)}</b><span>${esc(status.text)}${mailEvPick(m)} 아래는 받았던 당시 내용입니다.</span></div>`:warnLive(m)?`<div class="note warn ibm-warn">기한 임박: ${esc(warnTxt(m))}</div>`:''}
     ${L.length?`<div class="mailbody">${(L.length>4&&!mFull&&!mOpenAct?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4&&!mFull&&!mOpenAct?`<details class="mfold" data-k="mf:${m.id}" ${UI.open['mf:'+m.id]?'open':''}><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
     ${fth?`<div class="ibm-fth"><div class="small muted">댓글 ${fth.cm.length}개${(()=>{ try{ return ` · 분위기: ${fpMood(fth.cm)}`; }catch(e){ return ''; } })()}</div><div class="fcms">${fth.cm.map(cmtRow).join('')}</div></div>`:''}
-    ${m.rv?rvActsH(m):''}${handOffBtns(m)}
-    ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${acts.length?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}</div>`:''}
+    ${m.rv?rvActsH(m):''}
+    ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${(()=>{ const H=handOffActs(m); return acts.length||H.b?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}${H.b}</div>${H.d}`:''; })()}
     ${o&&!status?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* 상단 숫자와 계속 버튼은 동일한 현재 미처리 업무만 센다. 단순 안내·보고는 제외한다. */
 const mailNeeds=m=>ibMust(m);
@@ -108,7 +108,7 @@ function inboxView(){
   const nav=sel?`<div class="ibm-nav"><button class="btn small" data-a="mailJump" data-v="${ids[si-1]||''}" ${si>0?'':'disabled'} aria-label="이전 소식">◀</button><span>${si+1}/${ids.length}</span><button class="btn small" data-a="mailJump" data-v="${ids[si+1]||''}" ${si<ids.length-1?'':'disabled'} aria-label="다음 소식">▶</button></div>`:'';
   const groups=[]; for(const m of shown){ const g=groups[groups.length-1]; if(g&&g.d===m.day)g.L.push(m); else groups.push({d:m.day,L:[m]}); }
   const pu=pin.filter(m=>!m.read).length, pn=pin.filter(ibMust).length;
-  const pinH=pin.length?`<div class="ibx-g ibx-new"><div class="ibx-day ibx-pinh">안 읽은 소식<span class="ibx-dn">${pu?`<b class="${pn?'warn':''}">${pu}건</b>${pn?` · 확인할 소식 ${pn}`:''}`:'모두 읽음'}</span></div>${pin.map(m=>mailRow(m,m.id===sel).replace('<button ',`<button ${tkAt(m.day)} `)).join('')}</div>`:'';
+  const pinH=pin.length?`<div class="ibx-g ibx-new"><div class="ibx-day ibx-pinh">안 읽은 소식<span class="ibx-dn">${pu?`<b class="${pn?'warn':''}">${pu}건</b>${pn?` · 확인할 소식 ${pn}`:''}`:'모두 읽음'}${pin.some(m=>ibMust(m)&&m.kind==='결정'&&(G.evs||[]).some(e=>e.mid===m.id&&!e.done&&!EV_GM.has(e.k)))&&!G.unemp?' <button class="lnk small ibx-handall" data-a="evHandAll" title="넘길 수 있는 결정을 이번 건만 비서가 기본안으로 처리합니다">결정 모두 비서에게</button>':''}</span></div>${pin.map(m=>mailRow(m,m.id===sel).replace('<button ',`<button ${tkAt(m.day)} `)).join('')}</div>`:'';
   const rows=pinH+groups.map(g=>{ const fold=!!F[g.d]&&!(sel&&g.L.some(m=>m.id===sel)); const u=g.L.filter(m=>!m.read).length, nd=g.L.filter(ibMust).length;
     return `<div class="ibx-g${fold?' fold':''}"${sel&&g.L.some(m=>m.id===sel)?'':tkAt(g.d)}><button class="ibx-day" data-a="ibFold" data-v="${g.d}" aria-expanded="${!fold}"><span class="ibx-car">${fold?'▸':'▾'}</span>${ibDay(g.d)}<span class="ibx-dn">${g.L.length}건${u?` · <b class="${nd?'warn':''}">안 읽음 ${u}</b>`:''}</span></button>${fold?'':g.L.map(m=>mailRow(m,m.id===sel)).join('')}</div>`; }).join('')+more;
   if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=order[ids.indexOf(UI.ibOpen)];
