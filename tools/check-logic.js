@@ -4128,6 +4128,12 @@ T('[피드백 11-09k] 후보 선수 트레이드 요청: 출전 적은 백업만
   EVH.treq.make(b); const e=evOpen().find(x=>x.k==='treq'); ok(e&&e.data.pid===b.id&&b.treq&&!b.treq.done,'사건 없음'); ok(G.treqLog.n===2&&G.treqLog.last===G.day,'제한 기록 안 됨'); ok(/단장실을 찾아왔습니다/.test(e.sit)&&/트레이드를 생각해/.test(e.sit),'시즌 문구 '+e.sit); ok(!e.data.ks.includes('farm'),'28세에게 2군 선택지'); ok(e.opts[e.def].l.includes('기다려'),'기본안이 거절이 아님');
   b.treq.done=true; ok(!treqCands().includes(b),'같은 선수가 곧바로 또 요청'); G.day+=121; G.sea.rec[G.user].w=60; G.sea.rec[G.user].l=60; ok(treqCands().includes(b)===treqLowPT(b,G.year,120),'넉 달 뒤에도 다시 못 함');
   G.day=G.cal.end+20; ok(period()==='off','스토브리그 준비 실패'); delete b.treq; EVH.treq.make(b); const e2=G.evs[G.evs.length-1]; ok(/쉬는 기간/.test(e2.sit)&&/지난 시즌/.test(e2.sit),'시즌 밖 문구 '+e2.sit); });
+T('[카페 11-17 신인 트레이드 요청] 지난 시즌 가을에 지명돼 1월에 입단한 신인은 지난 시즌 출전으로 트레이드를 요청하지 않는다',()=>{ fresh(); G.day=G.cal.end+20; ok(period()==='off','준비 실패: 스토브리그');
+  const y=G.year; const b=depth(G.user).bench.filter(p=>!p.foreign&&!p.ys).sort((x,z)=>ovr(x)-ovr(z))[0]; ok(b,'준비 실패'); for(const p of playersOf(G.user)){ initPers(p); p.pers.amb=5; }
+  Object.assign(b,{age:23,mor:50,injOut:0,mil:null,tLog:[],listed:false}); delete b.treq; Object.assign(b.pers,{amb:16,loy:10,temp:10}); b.hist=(b.hist||[]).filter(h=>h.y!==y); b.hist.push({y,lvl:'퓨처스',g:22,pa:90,ab:78,h:30,d:7,tr:1,hr:5,bb:10,hbp:1,sf:1});
+  const base=treqCands().includes(b); b.draft={y,r:1,n:3}; b.joinY=y+1; ok(!treqCands().includes(b),'그해 가을 지명·다음 해 입단 신인이 후보');
+  G.day=dnum(y+1,1,2); ok(!treqCands().includes(b),'1월 입단 직후 신인이 지난 시즌 출전으로 후보');
+  b.draft={y:y-1,r:1,n:3}; b.joinY=y; G.day=G.cal.end+20; ok(treqCands().includes(b)===base,'지난해 지명 선수는 예전처럼 판정되어야 함'); });
 T('[사용자 11-12] 선수 인격체: 불만은 기억되고, 열기가 차면 언론 플레이 → 트레이드 요구 → 묵살하면 훈련 불참', ()=>{ fresh(); G.day=G.cal.open+40; const d=depth(G.user); const p=d.start.find(q=>!q.foreign); ok(p,'준비 실패'); initPers(p); Object.assign(p.pers,{amb:17,temp:16,loy:5,pro:6}); p.grv=null;
   grvAdd(p,'pt',8); grvAdd(p,'prom',6); ok(grvHeat(p)>=14,'성격이 불만을 키우지 않음 '+grvHeat(p)); const h0=grvHeat(p); grvCut(p,.88); ok(grvHeat(p)<h0,'불만이 잊히지 않음');
   G.evs=[]; pdStatement(p); const e1=G.evs.find(e=>e.k==='pmed'&&!e.done); ok(e1,'언론 플레이 결정이 생기지 않음'); ok((G.news||[]).some(n=>n.t.includes(p.name)),'기사가 없음');
