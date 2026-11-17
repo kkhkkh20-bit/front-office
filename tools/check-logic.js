@@ -3370,7 +3370,7 @@ T('[검수 11-09j] 팬 운영·응원단·구장·스타 마케팅: A→B→A �
 T('[검수 11-09i] 스폰서: 해지 뒤 대체 계약은 같은 자리 지급 기간이 겹치지 않고, 복귀해도 언론 논조 유지·만료 제안 정리, 이력은 연 계약금, 준비표는 결산액, 진출 보너스 전망, 카드·해지 메일의 시즌',()=>{ fresh();
   const ind=G.teams.find(t=>t.indie); if(G.user!==ind.id)switchTeam(ind.id); simTo(()=>period()==='season'&&G.day>=G.cal.open+60); sponInit(); const S=G.spon, y=G.year; ok(S.c.main&&S.c.main.y0<=y&&S.c.main.until>=y,'준비 실패: 메인 스폰서');
   const x=sponCancel('main','시험'); const f=x.cutF; ok(f>0&&f<1,'해지 비율 '+f); S.off.push(Object.assign(sponMake('kit'),{exp:G.day+1})); G.pr.press=18; const old=G.user; switchTeam(G.teams.find(t=>!t.indie&&t.id!==old).id);
-  simTo(()=>G.last&&G.last.y===y); const L=G.last.fins[old].inc; const mv=(L.find(r=>r[0]==='메인 스폰서')||[0,0])[1]; const rf=mv/(10500*ecoIdx(y)); ok(f+rf<=1.01,'같은 자리 지급 기간이 겹침: 해지 전 '+f+' + 대체 '+rf.toFixed(3)); ok(Math.abs(rf-(1-f))<.01,'대체 후원이 해지 뒤 기간이 아님: '+rf.toFixed(3)+' 기대 '+(1-f).toFixed(3));
+  simTo(()=>G.last&&G.last.y===y); const L=G.last.fins[old].inc; const mv=(L.find(r=>r[0]==='메인 스폰서')||[0,0])[1]; const rf=mv/(INDIE_MAIN_B*ecoIdx(y)); /* AI 독립구단 메인 기본 후원은 독립구단 기준액(검수 11-17 #280) */ ok(f+rf<=1.01,'같은 자리 지급 기간이 겹침: 해지 전 '+f+' + 대체 '+rf.toFixed(3)); ok(Math.abs(rf-(1-f))<.01,'대체 후원이 해지 뒤 기간이 아님: '+rf.toFixed(3)+' 기대 '+(1-f).toFixed(3));
   switchTeam(old); ok(G.pr.press===18,'복귀하자 언론 논조 '+G.pr.press); ok(G.spon.off.every(o=>o.exp>=G.day),'떠난 사이 만료된 제안이 남음'); ok(G.spon.paid&&G.spon.paid.y===y&&G.spon.paid.v>=Math.round(x.amt*f),'준비표용 지난 시즌 결산액 '+JSON.stringify(G.spon.paid));
   ok(String(sponDaily).indexOf('x.exp>=G.day')<String(sponDaily).indexOf('sponPitchDaily()'),'영업 결과 전에 만료 제안을 정리하지 않음'); ok(/slot===o\.slot&&x\.exp>=G\.day/.test(String(sponCounter)),'협상 경쟁에 만료 제안 포함');
   fresh(); sponInit(); G.day=G.cal.open+60; const o2=sponMake('kit'); o2.yrs=1; sponSign(o2,true); const f2=G.spon.c.kit.first; sponSettle(G.year,{}); const h=G.spon.hist.find(q=>q.id===o2.id); ok(h&&h.amt===o2.amt&&Math.abs(h.paidY-Math.round(o2.amt*f2))<=1,'이력 연 금액 '+(h&&h.amt)+' 기대 '+o2.amt);
@@ -7187,6 +7187,56 @@ T('[드래프트 확률 성능] 카페 11-17 렉: 빠른 난수(doRand)는 seede
   const O=JSON.parse(A); ok(O.picks.length>0&&Object.values(O.P).every(v=>v.av>=0&&v.av<=1),'확률 범위 이상'); });
 T('[코치 채용 성능] 카페 11-17 렉: 빈자리 후보 고르기(cvacPick)는 값을 한 번씩만 계산해도 예전 정렬(비교마다 계산)과 같은 후보를 고른다',()=>{ fresh(); const o=otherT(); for(const k of CKEYS){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,o,k,false)); if(!L.length)continue; const old=[...L].sort((a,b)=>cvacVal(b,o)-cvacVal(a,o)||(a.sal||0)-(b.sal||0))[0]; const n0=(G.cmarket||[]).length; const c=cvacPick(o,k,false); ok(c===old&&(G.cmarket||[]).length===n0,k+' 다른 후보: '+(c&&c.name)+' / '+old.name); } });
 
+/* ===== 외부 검수 11-17 스폰서(#277~#287): 예산·마케팅 소식·결산이 sponPay 하나로 같은 금액 ===== */
+const SP17=(o)=>{ fresh(); o=o||{}; if(o.hard){ G.cfg=G.cfg||{}; G.cfg.hard=true; } sponInit(); const T=G.teams.map(t=>t.id), me=G.user, oth=T.filter(t=>t!==me); G.spon.c={x:{co:'가상사',ind:'금융',amt:1000,ps:o.ps??480,champ:0,y0:G.year,until:G.year+1,first:1}}; G.spon.cutL=[]; G.spon.off=[]; G.sea.y=G.year; return {T,me,oth}; };
+const SP17ps=(seeds,rest,champ)=>{ const ord=[...seeds,...rest]; for(const id of ord)G.sea.rec[id]=G.sea.rec[id]||{w:70,l:70,t:4}; G.ps={seeds:ord.slice(0,5),order:ord.map(t=>({tid:t})),res:{wc:[ord[3],ord[4]],spo:[ord[2],ord[3]],po:[ord[1],ord[2]],ks:[champ,ord.find(t=>t!==champ)]},champ,runner:ord.find(t=>t!==champ),round:'ks',done:true}; };
+const SP17row=(L,k)=>(L.find(r=>r[0]===k)||[0,0])[1];
+T('[검수 11-17 #277] 하드 모드 스폰서: 예산·결산 메일·실제 결산이 모두 감액 뒤 같은 금액(기본 9억+가을야구 보너스 4.32억=13.32억)',()=>{ const {me,oth}=SP17({hard:true}); G.day=G.cal.end+25; SP17ps([me,...oth.slice(0,4)],oth.slice(4),oth[0]);
+  const r0=__rngState(); const est=sponPay(me,G.year,{S:G.spon,est:true}); ok(__rngState()===r0,'지급 계산이 난수를 썼다');
+  const b=budget().inc; ok(SP17row(b,'스폰서 계약')===900&&SP17row(b,'스폰서 성과 보너스')===432,'예산 '+JSON.stringify(b.filter(x=>x[0].includes('스폰서'))));
+  ok(est.base===900&&est.bonus===432,'전망 '+est.base+'+'+est.bonus);
+  settlement(); const F=G.last.fins[me].inc; ok(SP17row(F,'스폰서 계약')===900&&SP17row(F,'스폰서 성과 보너스')===432,'결산 '+JSON.stringify(F.filter(x=>x[0].includes('스폰서'))));
+  const m=G.mail.find(x=>(x.subj||'').includes('스폰서 결산')); ok(m&&m.subj.includes(money(1332))&&!m.subj.includes(money(1480)),'결산 메일 '+(m&&m.subj)); });
+T('[검수 11-17 #278] 하드 모드 광고·상품: 예산도 결산처럼 10% 감액한 금액',()=>{ const {me,oth}=SP17({hard:true}); G.day=G.cal.end+25; SP17ps([me,...oth.slice(0,4)],oth.slice(4),oth[0]);
+  const b=SP17row(budget().inc,'광고·상품'); G.cfg.hard=false; const n=SP17row(budget().inc,'광고·상품'); G.cfg.hard=true; ok(Math.abs(b-n*.9)<=1,'예산 하드 '+b+' 보통 '+n);
+  settlement(); const s=SP17row(G.last.fins[me].inc,'광고·상품'); ok(s===b,'예산 '+b+' 결산 '+s); });
+T('[검수 11-17 #279] 하드 모드 감액은 단장이 지금 맡은 구단만: 떠난 구단에 남은 같은 10억 계약은 AI 구단 계약으로 10억, 새 구단 계약은 9억(결산까지)',()=>{ const {me}=SP17({hard:true}); const y=G.year; ok(sponPay(me,y,{est:true}).base===900,'맡은 구단 '+sponPay(me,y,{est:true}).base);
+  const nt=G.teams.find(t=>t.id!==me&&!t.indie).id; switchTeam(nt); ok(G.sponT&&G.sponT[me]&&G.sponT[me].c.x,'준비 실패: 떠난 구단 계약서');
+  ok(sponPay(me,y,{est:true}).base===1000,'떠난 구단 계약이 감액됨 '+sponPay(me,y,{est:true}).base); sponInit(); G.spon.c={kit:{co:'나상사',ind:'스포츠용품',amt:1000,ps:0,champ:0,y0:y,until:y,first:1}}; G.spon.cutL=[]; ok(sponIncome(y)===900,'새 구단 감액 없음 '+sponIncome(y));
+  const oth=G.teams.map(t=>t.id).filter(t=>t!==me&&t!==nt); G.day=G.cal.end+25; SP17ps([...oth.slice(0,5)],[me,nt,...oth.slice(5)],oth[0]); settlement();
+  ok(SP17row(G.last.fins[me].inc,'스폰서 계약')===1000,'떠난 구단 결산 '+JSON.stringify(G.last.fins[me].inc.filter(x=>x[0].includes('스폰서')))); ok(SP17row(G.last.fins[nt].inc,'스폰서 계약')===900,'새 구단 결산 '+JSON.stringify(G.last.fins[nt].inc.filter(x=>x[0].includes('스폰서')))); });
+T('[검수 11-17 #280] 계약 없는 AI 독립구단 메인 스폰서 기본 후원은 독립구단 기준액(68억×경제 지수), 결산도 같은 값',()=>{ const {me,oth}=SP17(); const ind=G.teams.find(t=>t.indie&&t.id!==me); ok(ind,'준비 실패: AI 독립구단'); const y=G.year; const r=sponPay(ind.id,y,{S:null,est:true});
+  ok(r.main===Math.round(INDIE_MAIN_B*ecoIdx(y))&&INDIE_MAIN_B===SPON_SLOT.main.b,'메인 기본 후원 '+r.main); G.day=G.cal.end+25; const o2=oth.filter(t=>t!==ind.id); SP17ps([me,...o2.slice(0,4)],[ind.id,...o2.slice(4)],me); settlement();
+  ok(SP17row(G.last.fins[ind.id].inc,'메인 스폰서')===r.main,'결산 메인 '+SP17row(G.last.fins[ind.id].inc,'메인 스폰서')+' 기대 '+r.main); });
+T('[검수 11-17 #281] 가을야구 구단: 보너스 없는 헬멧 계약 하나만 남아도 나머지 AI 기본 후원 자리마다 진출 보너스(결산)',()=>{ const {me,oth}=SP17(); const y=G.year, tid=oth[0]; G.sponT={[tid]:{c:{helmet:{co:'다상사',ind:'보험',amt:650,ps:0,champ:0,y0:y,until:y+1,first:1}},off:[],hist:[],cutL:[]}};
+  G.day=G.cal.end+25; SP17ps([tid,...oth.slice(1,5)],[me,...oth.slice(5)],oth[1]); const r=sponPay(tid,y,{ps:{champ:oth[1]},settle:true}); ok(r.ai>0&&r.aiBonus===Math.round(r.ai*.18),'AI 기본 후원 보너스 '+r.aiBonus+' / '+r.ai);
+  settlement(); ok(SP17row(G.last.fins[tid].inc,'스폰서 성과 보너스')===r.aiBonus,'결산 보너스 '+JSON.stringify(G.last.fins[tid].inc.filter(x=>x[0].includes('스폰서')))); });
+T('[검수 11-17 #282] 가을야구 보너스 전망: 5위 결정전이 남았으면 결정전 두 팀(사용자·AI)은 넣지 않고, 결과가 나오면 넣는다',()=>{ const {me,oth}=SP17({ps:180}); const y=G.year; const ord=[...oth.slice(0,4),me,...oth.slice(4)];
+  G.ps={seeds:ord.slice(0,5),order:ord.map(t=>({tid:t,w:0,l:0})),res:{},round:'tb',done:false,tbPos:4,tbq:[],cur:{round:'tb',hi:me,lo:ord[5],days:[G.day+1],gi:0}};
+  ok(SP17row(budget().inc,'스폰서 성과 보너스')===0,'결정전 전 잠정 5위 예산에 보너스'); ok(sponPay(ord[5],y,{S:null,est:true}).aiBonus===0,'결정전 상대 AI에 보너스'); ok(sponPay(ord[3],y,{S:null,est:true}).aiBonus>0,'확정 4위 AI 보너스 없음');
+  G.ps.cur={round:'tb',hi:ord[0],lo:ord[1],days:[G.day+1],gi:0}; G.ps.tbPos=0; G.ps.tbq=[[4,me,ord[5]]]; ok(sponBonusEst(y,null)===0,'대기 중인 5위 결정전'); ok(sponPay(ord[0],y,{S:null,est:true}).aiBonus>0,'1위 결정전 두 팀은 진출 확정');
+  G.ps.round='wc'; G.ps.tbq=[]; G.ps.cur={round:'wc',hi:ord[3],lo:me,days:[G.day+1],gi:0}; ok(SP17row(budget().inc,'스폰서 성과 보너스')===180,'결정전 뒤 진출 확정인데 보너스 없음'); });
+T('[검수 11-17 #283] 가을야구 진출 확정 뒤 스폰서가 해지해도 이미 얻은 진출 보너스는 결산에 들어온다(기본 10억과 함께)',()=>{ const {me,oth}=SP17({ps:180}); const y=G.year; G.day=G.cal.end+3; const ord=[me,...oth];
+  G.ps={seeds:ord.slice(0,5),order:ord.map(t=>({tid:t,w:0,l:0})),res:{},round:'wc',done:false,cur:{round:'wc',hi:ord[3],lo:ord[4],days:[G.day+1],gi:0}};
+  const x=sponCancel('x','시험'); ok(x&&x.cut.psE===180,'해지 기록에 확정 보너스 없음 '+JSON.stringify(x&&x.cut)); ok(SP17row(budget().inc,'스폰서 성과 보너스')===180,'예산 보너스');
+  const r=sponSettle(y,{champ:oth[0]}); ok(r.base===1000&&r.bonus===180,'결산 '+r.base+'+'+r.bonus);
+  fresh(); sponInit(); G.spon.c={x:{co:'가상사',ind:'금융',amt:1000,ps:180,champ:0,y0:G.year,until:G.year,first:1}}; G.spon.cutL=[]; G.day=G.cal.open+30; const x2=sponCancel('x','시험'); ok(!x2.cut.psE,'진출 확정 전 해지인데 보너스'); });
+T('[검수 11-17 #284] 시작 전 해지된 2027~2028 계약은 원래 기간과 시작 전 해지로 이력에 남고, 옛 저장의 거꾸로 된 기간은 불러올 때 고친다',()=>{ fresh(); sponInit(); const y=G.year; G.day=G.cal.open+30; G.spon.c={x:{co:'라상사',ind:'금융',amt:1000,ps:0,champ:0,y0:y+1,until:y+2,first:1}}; G.spon.cutL=[]; G.spon.hist=[];
+  const x=sponCancel('x','시험'); ok(x.ns===1&&x.y0===y+1&&x.until===y+2,'이력 기간 '+x.y0+'~'+x.until); ok(G.spon.hist.includes(x)&&!(G.spon.cutL||[]).length,'시작 전 해지가 해지 정산 목록에'); ok(x.cut.lost===2000,'사라진 금액 '+x.cut.lost); ok(sponIncome(y)===0&&sponIncome(y+1)===0,'시작 전 해지에 지급');
+  G.spon.hist=[{slot:'kit',co:'옛상사',amt:1000,y0:y+1,until:y,cutF:0,cut:{d:G.day,why:'옛',lost:2000}}]; G.spon.cutL=[{slot:'fence',co:'옛둘',amt:500,y0:y+1,until:y,cutF:0,cut:{d:G.day,why:'옛',lost:500}}];
+  ok(sponMigrate()===2,'수리 건수'); const h=G.spon.hist; ok(h.length===2&&h.every(c=>c.ns===1&&c.until>=c.y0)&&h[0].until===y+2&&h[1].until===y+1,'수리 결과 '+JSON.stringify(h.map(c=>[c.y0,c.until]))); ok(!G.spon.cutL.length,'해지 정산 목록에 남음');
+  const s1=JSON.stringify(G.spon); ok(sponMigrate()===0&&JSON.stringify(G.spon)===s1,'두 번째 수리에서 바뀜'); });
+T('[검수 11-17 #285] 스폰서 영업: 유효한 제안 3건이 이미 있는 자리는 영업비를 받지 않고 이유를 알려 막는다',()=>{ fresh(); sponInit(); const S=G.spon; const k=Object.keys(SPON_SLOT).find(x=>!SPON_SLOT[x].indie); delete S.c[k]; S.off=[]; S.pitch=[]; for(let i=0;i<3;i++)S.off.push(Object.assign(sponMake(k),{co:'제안'+i,exp:G.day+10}));
+  const e0=G.spend.etc||0; const m=sponPitch(k); ok(m.includes('3건')&&(G.spend.etc||0)===e0&&!S.pitch.length,'막지 않음: '+m+' 지출 '+(G.spend.etc||0));
+  S.off[0].exp=G.day-1; const m2=sponPitch(k); ok((G.spend.etc||0)===e0+30&&S.pitch.length===1,'만료 제안이 남은 칸을 막음: '+m2); });
+T('[검수 11-17 #286] 스폰서 영업 중 같은 자리 제안을 수락하면 영업 종료 메일과 남은 일정 비율만큼 영업비 환급',()=>{ fresh(); sponInit(); const S=G.spon; const k=Object.keys(SPON_SLOT).find(x=>!SPON_SLOT[x].indie); delete S.c[k]; S.off=[]; S.pitch=[];
+  const e0=G.spend.etc||0; sponPitch(k); const x=S.pitch[0]; x.due=G.day+10; G.day+=4; const o=Object.assign(sponMake(k),{exp:G.day+10}); S.off.push(o); const n0=G.mail.length; sponAccept(o.id);
+  ok(x.done&&x.end&&x.end.back===18,'영업 종료·환급 '+JSON.stringify(x.end)); ok((G.spend.etc||0)===e0+30-18,'영업비 환급 '+(G.spend.etc||0)); const m=G.mail.slice(0,G.mail.length).find(z=>(z.subj||'').includes('영업 종료')); ok(m&&m.body.includes('환급')&&m.body.includes(o.co),'영업 종료 메일 '+(m&&m.body)); ok(G.mail.length>n0,'메일 없음');
+  const r0=__rngState(); G.day=x.due; sponPitchDaily(); ok(__rngState()===r0,'끝난 영업이 다시 결과를 뽑음'); });
+T('[검수 11-17 #287] 떠난 구단에 남은 스폰서 영업은 지시한 날 단장 평판으로 판정(지금 평판이 아니라), 옛 저장은 중립 평판',()=>{ fresh(); sponInit(); const old=G.user, S=G.spon; const k=Object.keys(SPON_SLOT).find(x=>!SPON_SLOT[x].indie); delete S.c[k]; S.off=[]; S.pitch=[]; G.rep=20; sponPitch(k); ok(S.pitch[0].rep===20,'지시한 날 평판 없음');
+  switchTeam(G.teams.find(t=>t.id!==old&&!t.indie).id); G.rep=100; const P=G.sponT[old].pitch[0]; P.due=G.day; const seen=[]; const f0=sponPitchP; sponPitchP=(t,r)=>{ seen.push(r); return f0(t,r); }; try{ sponPitchOld(); } finally{ sponPitchP=f0; }
+  ok(seen.length===1&&seen[0]===20,'판정 평판 '+JSON.stringify(seen)); ok(sponPitchP(old,20)<sponPitchP(old,100),'평판이 확률에 반영 안 됨');
+  G.sponT[old].pitch.push({slot:'helmet',day:G.day,due:G.day+5,done:false}); sponMigrate(); ok(G.sponT[old].pitch[1].rep===50,'옛 저장 영업 평판 '+G.sponT[old].pitch[1].rep); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
