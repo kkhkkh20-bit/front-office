@@ -83,7 +83,7 @@ function personXExt(k){ const P=String(k).split(':'), kind=P[0];
   if(kind==='oc'){ const tid=+P[1], role=P[2]; const c=G.coach&&coachesOf(tid)[role]; if(!c)return null;
     return {k,name:c.name,role:`${tname(tid)} ${CROLE[role]?.l||'코치'}`,av:{persona:'coach',pid:c.id,team:tid,age:c.age,name:c.name},rel:null,lab:'',sub:`${c.age}세${c.ob?' · OB':''}`,
       acts:[btn('구단 정보','lteamGo',tid,1),...(c.ob&&obOf(c.ob)?[btn('선수 시절','person','ob:'+c.ob)]:[])]}; }
-  if(kind==='chm'){ const o=cheerOf(P[1]); if(!o)return null; const {S,m}=o; const img=(G.cimg&&G.cimg['P:cheerm:'+m.id])||(typeof face8Src==='function'&&cheerPh(S,m)!=null?face8Src(cheerPh(S,m)):null);
+  if(kind==='chm'){ const o=cheerOf(P[1]); if(!o)return null; const {S,m}=o; const img=(G.cimg&&G.cimg[cheerKey(m)])||(typeof face8Src==='function'&&cheerPh(S,m)!=null?face8Src(cheerPh(S,m)):null);
     const fol=m.fol>=10000?(m.fol/10000).toFixed(1)+'만':String(m.fol);
     return {k,name:m.name,role:`${tname(G.user)} 치어리더`,av:{img,name:m.name},rel:null,lab:'',sub:`${m.age}세 · ${m.yrs?m.yrs+'년차':'신인'} · 팔로워 ${fol}`,
       info:`<p class="small">${m.inj?`부상 ${m.inj}일 · `:''}${m.sl?`슬럼프 ${m.sl}일 · `:''}무대 ${m.app||0}회 · 피로 ${Math.round(m.fat||0)} · 월 수수료 ${money(cheerFee(m,S.ag))}</p>`,acts:[btn('응원단','go','club:crew',1)]}; }

@@ -38,10 +38,12 @@ function cheerPower(S){ const U=cheerStage(S); if(!U.length)return 0; const need
 function cheerAtt(day){ if(G.unemp||!G.fanOps||!G.fanOps.cs)return 0; const S=G.fanOps.cs, L=S.last, pw=day!=null&&L&&L.d===day&&L.pw!=null?L.pw:cheerPower(S); return clamp((pw-10)*.004,-.02,.03); } /* 공연한 날은 실제로 무대에 선 조의 힘(피로가 오른 뒤 다시 고르지 않게, 검수 11-09j) */ /* 무대 힘 17이면 홈 관중 +3% */
 /* 매일: 홈경기 날 무대·피로·화제, 그 밖의 날 회복 */
 /* 매일(그날 경기를 다 치른 뒤): 부상·슬럼프가 풀리고, 오늘 무대에 서지 않은 단원은 쉰다. 떠난 구단 응원단도 그 구단이 운영한다(검수 11-09zza) */
-function cheerDaily(){ if(!G._away)for(const k of Object.keys(G.fanYrT||{}))if(+k!==G.user||G.unemp)fanAway(+k,cheerDaily);
+function cheerDaily(){ if(!G._away){ try{ fanBkDaily(); }catch(e){} for(const k of Object.keys(G.fanYrT||{}))if(+k!==G.user||G.unemp){ fanAway(+k,fanBkDaily,true); fanAway(+k,cheerDaily); } } /* 잡아 둔 행사 우천 순연·환불(검수 11-17 #292): 떠난 구단은 그 구단 장부로 */
   if(G.unemp||!G.fanOps||!G.fanOps.cs)return; const S=G.fanOps.cs; /* 대행사와 계약한 응원단만(유튜브만 켜도 만들어지지 않게, 검수 11-09j) */ const hg=!!(S.last&&S.last.d===G.day);
   for(const m of S.L){ if(m.inj>0){ m.inj--; m.fat=Math.max(0,m.fat-12); } else if(m.sl>0)m.sl--; if(m.inj||m.pd===G.day)continue; m.fat=Math.max(0,Math.round(m.fat-(hg?6:10)-m.sta*.3)); } }
-const cheerNews=(t,b,tone)=>G._away?wire('구단',t,{tid:G.user}):news('구단',t,b,tone,{fanW:1}); /* 떠난 구단 대리 처리 중엔 리그 소식으로(검수 11-09zza) */
+const cheerNews=(t,b,tone)=>fanNews(t,b,tone,1); /* 떠난 구단 대리 처리 중엔 리그 소식으로(검수 11-09zza), 기사 효과는 그 구단 여론에 똑같이(검수 11-17 #298) */
+/* 단원 사진 키는 구단별: 단원 번호는 구단 응원단마다 1부터라 다른 구단 단원과 겹친다(검수 11-17 #302) */
+const cheerKey=(m,tid)=>'P:cheerm:'+(tid??G.user)+':'+m.id;
 /* 실제로 열린 홈경기 한 경기마다: 무대·피로·화제. 더블헤더·미룬 경기·포스트시즌도 경기마다, 순연돼 열리지 않은 경기는 없다(검수 11-09zza) */
 function cheerGame(day,h){ if(h!==G.user||G.unemp){ if(!G._away&&(G.fanYrT||{})[h])fanAway(h,()=>cheerGame(day,h)); return; } if(!G.fanOps||!G.fanOps.cs)return; const S=G.fanOps.cs;
   const U=cheerStage(S), on=new Set(U.map(m=>m.id)), pw=cheerPower(S); let viral=null;
