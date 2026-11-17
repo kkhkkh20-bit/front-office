@@ -614,7 +614,7 @@ const QUICK=process.env.QUICK==='1';
     const parent=await ev(()=>{const it=JSON.stringify(UI.it||{}),out=[];for(const [route,tab] of [['staff:med','staff:med'],['staff:mgr','staff:coach'],['transfer:foreign','transfer'],['trade:market','trade'],['league:stat','league'],['club:rel','club:owner']]){A.go(route);const on=document.querySelectorAll('.fmside button.on');out.push(on.length===1&&on[0].dataset.v===tab);}A.fmPlan();out.push(document.querySelector('.fmside button.on')?.dataset.v==='roster');A.calOpen();out.push(document.querySelector('.fmside button.on')?.dataset.v==='cal');UI.it=JSON.parse(it);return out.every(Boolean);});
     if(!parent)add('PC 메뉴','하위 화면·선수단 계획·달력에서 상위 메뉴 표시가 사라짐');
     const seq=[]; for(const k of ['F3','F5','F10','Shift+O','Backspace']){ await pg.keyboard.press(k); await pg.waitForTimeout(60); seq.push(await ev(()=>UI.tab+(SUBS[UI.tab]?':'+curSub(UI.tab):''))); }
-    if(seq.join(',')!=='roster,trade:market,league:score,club:fin,league:score')add('단축키','F3·F5·F10·Shift+O·Backspace 이동 '+seq.join(','));
+    if(seq.join(',')!=='roster,trade:market,cal,club:fin,cal')add('단축키','F3·F5·F10·Shift+O·Backspace 이동 '+seq.join(','));
     await pg.keyboard.press('F1'); await pg.waitForTimeout(80); const kk=await ev(()=>!!document.querySelector('.fmkeys')); await pg.keyboard.press('Escape'); if(!kk)add('단축키','F1 단축키 목록이 안 열림');
     await ev(k=>{ UI.tab=k.tab; UI.sub=JSON.parse(k.sub); UI.lseg=k.ls; render(); },keep); }
   /* 외국인 종류별 횟수: 시장·선수 상세·협상·방출 확인이 같은 제한을 보여야 한다 */

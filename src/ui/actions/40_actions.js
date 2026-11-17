@@ -480,7 +480,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ownAsk(v){ const [k,x]=v.split(':'); let r; if(k==='gen')r=ownerAsk(+x,null); else if(k==='fa'){ const p=G.players[+x]; r=ownerAsk(p.ask.annual,{k:'fa',pid:+x}); } else { const p=G.players[+x]; r=ownerAsk(round5(Math.max(500,p.sal*.6)),{k:'frep',pid:+x}); } UI.ownMsg=r; note('구단주',r); save(); render(); },
   featF(v){ UI.ftf=v; render(); },
   abf(v){ UI.abf=v; render(); },
-  fwatch(v){ UI.fmsg2=null; const r=fwatchToggle(+v); UI.fwMsg=r; save(); render(); },
+  fwatch(v){ UI.fmsg2=null; const r=fwatchToggle(+v); UI.fwMsg=r; save(); render(); if(r&&typeof toast==='function')toast(r); }, /* 후보 줄 '관찰' 단추(카페 11-17)도 결과를 바로 알린다 */
   featY(v){ UI.fy=v==='all'?'all':+v; render(); },
   retWar(v){ G.cfg=G.cfg||{}; G.cfg.retWar=+v; save(); render(); },
   goalTalk(v){ const r=goalTalk(v); if(r)toast(r); save(); render(); },

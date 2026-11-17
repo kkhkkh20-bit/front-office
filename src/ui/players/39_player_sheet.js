@@ -5,6 +5,11 @@ function psTable(p){ const Y=p.psY; if(!Y)return ''; const ys=Object.keys(Y).map
   const row=(l,o,t)=>p.isP?`<tr><td>${l}</td><td>${t}</td><td>${o.g}</td><td>${ipStr(o.outs||0)}</td><td>${o.w||0}-${o.l||0}${o.sv?`-${o.sv}`:''}</td><td class="key">${o.outs?((o.er||0)*27/o.outs).toFixed(2):'-'}</td><td>${o.so||0}</td></tr>`:`<tr><td>${l}</td><td>${t}</td><td>${o.g}</td><td>${o.pa||0}</td><td>${o.ab?((o.h||0)/o.ab).toFixed(3).replace(/^0/,''):'-'}</td><td>${o.hr||0}</td><td>${o.rbi||0}</td><td class="key">${(()=>{ const ob=((o.h||0)+(o.bb||0)+(o.hbp||0))/Math.max(1,(o.ab||0)+(o.bb||0)+(o.hbp||0)), sl=o.ab?((o.h||0)+(o.d||0)+2*(o.tr||0)+3*(o.hr||0))/o.ab:0; return (ob+sl).toFixed(3).replace(/^0/,''); })()}</td></tr>`;
   return `<div class="eyebrow" style="margin-top:10px">포스트시즌</div><table><thead><tr><th>시즌</th><th>구단</th><th>경기</th>${p.isP?'<th>이닝</th><th>승-패-세</th><th class="key">ERA</th><th>탈삼진</th>':'<th>타석</th><th>타율</th><th>홈런</th><th>타점</th><th class="key">OPS</th>'}</tr></thead><tbody>${ys.length>1?row('통산',tot,''):''}${ys.map(y=>row(y,Y[y],Y[y].t!=null&&G.teams[Y[y].t]?esc(tshort(Y[y].t)):'')).join('')}</tbody></table>`; }
 /* 통산 기록 범위(국사왕 11-15 #7): 1군만 · 2군 포함 · 2군만. 기본 1군만, 고른 값은 이번 접속 동안 UI에 남긴다. 2군 기록이 없는 선수는 고를 것이 없어 그대로 */
+/* 시즌 통계 묶음(카페 11-17): 기록 표 먼저, 1군만·2군 포함·2군만 단추는 표 아래. 정규시즌·포스트시즌은 따로 보는 탭(OOTP처럼). 포스트시즌은 p.psY(정규시즌 hist와 따로 쌓임) */
+function seasonStatsBlock(p,head){ const ps=UI.cSea==='ps', n=p.psY?Object.keys(p.psY).length:0;
+  const tabs=p.prospect?'':`<div class="st-sea" role="group" aria-label="시즌 구분">${optRow('cSea',ps?'ps':'reg',[['reg','정규시즌'],['ps',`포스트시즌${n?` ${n}`:''}`]])}</div>`;
+  const body=ps&&!p.prospect?(n?psTable(p).replace(/^<div class="eyebrow"[^>]*>포스트시즌<\/div>/,''):'<p class="small muted keep">포스트시즌 기록이 없습니다. 포스트시즌 기록은 2026-11-12 업데이트 이후 치른 가을야구부터 따로 쌓입니다.</p>'):statTable0(p);
+  return `<div class="st-head">${head||''}${tabs}</div><div class="tw">${body}</div>${ps?'':statLvlBar(p)}`; }
 function statLvl(p){ const v=UI.cLvl||'1'; return p&&p.hist&&p.hist.some(h=>h.lvl==='퓨처스')?v:'all'; }
 function statLvlBar(p){ if(!p||!p.hist||!p.hist.some(h=>h.lvl==='퓨처스'))return ''; return `<div class="st-lvl" role="group" aria-label="기록 범위">${optRow('cLvl',UI.cLvl||'1',[['1','1군만'],['all','2군 포함'],['2','2군만']])}</div>`; }
 /* 아마 통산 줄의 연도(국사왕 11-17): 지명된 선수는 지명 연도(그해 9월 지명 → 다음 해 데뷔), 아직 아마추어면 올해. 예전에는 늘 올해로 찍혀 연도순 정렬 뒤 프로 선수의 올해 기록 사이에 끼었다 */
@@ -300,7 +305,7 @@ function renderSheet0(){
    ${T==='dev'?devTab(p)+personalAdviceBox(p,'training'):''}
    ${T==='analysis'?playerAnalysisTab(p):''}
    ${T==='rec'?`
-   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div>${statLvlBar(p)}<div class="tw">${statTable(p)}</div></div>
+   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div>${seasonStatsBlock(p,'<span class="eyebrow">기록</span><span class="small muted">F는 2군</span>')}</div>
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
