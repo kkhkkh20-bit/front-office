@@ -87,7 +87,7 @@ function workspaceFit(host){
   const key=(host?'detail:'+UI.sheet+':'+UI.ptab:fmKey())+':'+innerTabs;
   const positions=UI.workspaceScroll=UI.workspaceScroll||{};
   const scrollSelectors='.tw,.fdt-w,.tgrid,.cgrid,.cgr,.fl,.feed,.dealg,.sched,.stop-l,.tn-l,.slots,.bud-t,.cpwrap,.ltiles,.covm';
-  const label=el=>{const h=el.querySelector('h2,h3,.sec,.eyebrow,summary');if(!h)return '보고';const c=h.cloneNode(true);c.querySelectorAll('.hi-i,button,.tc-i').forEach(x=>x.remove());return c.textContent.replace(/\s+/g,' ').trim()||'보고';};
+  const label=el=>{if(el.dataset&&el.dataset.wsl)return el.dataset.wsl; /* 칸이 직접 짧은 이름을 주면 그것으로(전력 구성 묶음 탭, 11-17) */const h=el.querySelector('h2,h3,.sec,.eyebrow,summary');if(!h)return '보고';const c=h.cloneNode(true);c.querySelectorAll('.hi-i,button,.tc-i').forEach(x=>x.remove());return c.textContent.replace(/\s+/g,' ').trim()||'보고';};
   panels.forEach((panel,index)=>{
     deck.append(panel);panel.classList.add('ws-panel');
     if(innerHeight<500){const heading=panel.querySelector(':scope > .row:first-child:has(h2,h3)'),pager=panel.querySelector(':scope > .pgr');if(heading&&pager){heading.append(pager);heading.classList.add('ws-panel-heading');pager.classList.add('ws-inline-pager');}}
