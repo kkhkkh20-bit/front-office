@@ -27,7 +27,7 @@ function cupEntryNow(o){ o=o||{}; const tid=o.tid??G.user, t=team(tid); if(!t)re
   const m=G.mgr[tid]||{}, mgr={}; for(const k of CUP_MK)if(m[k]!=null)mgr[k]=m[k];
   const hist=(G.history||[]).filter(h=>h.user); const last=o.res||null;
   const e={v:FrontOfficeCore.CUP_V,kind:'cup-entry',cup:String(o.cup||''),wid:o.wid||G.wid||'',name:FrontOfficeCore.cupName(o.name||t.nick),
-    club:{tid,city:t.city||'',nick:t.nick||'',code:t.code||'',hue:t.hue??0,pal:(()=>{ try{ return tpal(t).slice(0,4); }catch(x){ return null; } })()},year:G.year,seasons:hist.length,pay:Math.round(P.reduce((a,p)=>a+(p.sal||0),0)),payRef:cupPayRef(tid),
+    club:{tid,city:t.city||'',nick:t.nick||'',code:t.code||'',hue:t.hue??0,pal:(()=>{ try{ return tpal(t).slice(0,4); }catch(x){ return null; } })()},year:G.year,seasons:hist.length,pay:Math.round(P.reduce((a,p)=>a+(p.sal||0),0)),payRef:cupPayRef(tid),capRef:(()=>{ try{ return capOf(G.year); }catch(x){ return 0; } })(), /* 사용자 11-17: 기준은 그 해 샐러리캡 */
     mgr,P,ln,bn,rot,pen,bp,...(last?{res:last}:{}),ts:o.ts||0};
   e.h=FrontOfficeCore.cupEntryHash(e); e.ovr=cupOvr(e); return e; }
 /* 팀 OVR(표시 척도): 총 = 본게임 teamRating과 같은 식(공격 .4 · 투수 .45 · 수비 .15), 투수 = 선발 .65 + 불펜 .35, 타자 = 공격·수비만 */

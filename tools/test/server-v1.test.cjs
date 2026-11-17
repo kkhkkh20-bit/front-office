@@ -223,18 +223,18 @@ dbTest('래더 v2: 전체 순위(높은 단계 먼저)와 관리자 내보내기
   const d = await J('GET', '/api/v1/admin/export?kind=decks', null, AK); assert.equal(d.rows.length, 2); assert.ok(d.rows[0].meta && d.rows[0].meta.v === 1, '덱 요약');
   const r = await J('GET', '/api/v1/admin/export?kind=results', null, AK); assert.equal(r.rows.length, 2); assert.ok(r.rows.every(x => x.nickname && x.lkey));
 });
-dbTest('연봉 상한(사용자 11-17 "공평하게"): 덱 연봉 ÷ 그 세계 리그 평균이 단계 배수(루키 2, 마이너 1.5, 1부~ 1.25)를 넘으면 400 over_cap, 연봉 기록 없으면 no_pay, 승격으로 넘게 된 덱·유예 끝난 예전 덱은 상대로 안 나온다', async () => {
+dbTest('연봉 상한(사용자 11-17 "공평하게"): 덱 연봉 합이 고정 상한 143.97억(모든 단계 같음)을 넘으면 400 over_cap, 연봉 기록 없으면 no_pay, 승격으로 넘게 된 덱·유예 끝난 예전 덱은 상대로 안 나온다', async () => {
   const { J, mk, env, clock } = await setup(); const C = await import(path.join(root, 'src/core/uladder.mjs'));
   const a = await mk('상한일', '10.1.0.1'), b = await mk('상한이', '10.1.0.2'), c = await mk('상한삼', '10.1.0.3'), d = await mk('상한사', '10.1.0.4');
-  let j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ payRef: 3000 }), tier: 0 }, a.A); /* 7200 ÷ 3000 = 2.4배 > 루키 2배 */
-  assert.equal(j._s, 400); assert.equal(j.error, 'over_cap'); assert.ok(/루키 상한/.test(j.errors[0]) && j.cap.x === 2 && j.cap.pay === 7200, JSON.stringify(j));
+  const pricey = o => { const e = deck(o); for (const p of e.P) p.sal = 700; return e; }; /* 700 × 24 = 168억 > 143.97억 */
+  let j = await J('PUT', '/api/v1/ladder/deck', { e: pricey(), tier: 0 }, a.A);
+  assert.equal(j._s, 400); assert.equal(j.error, 'over_cap'); assert.ok(/루키 상한/.test(j.errors[0]) && j.cap.cap === 14397 && j.cap.pay === 16800, JSON.stringify(j));
   const nosal = deck(); delete nosal.P[3].sal; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: nosal, tier: 0 }, a.A)).error, 'no_pay', '선수 연봉이 빠짐');
-  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ payRef: 0 }), tier: 0 }, a.A)).error, 'no_pay', '리그 평균이 없음');
-  const fake = deck({ pay: 100, payRef: 9000 }); fake.P[0].sal = 9000; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'over_cap', '합(pay)을 줄여 적어도 서버는 선수마다 연봉으로 다시 센다');
+  const fake = deck({ pay: 100 }); fake.P[0].sal = 9000; /* 9000 + 23 × 300 = 159억 */ assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'over_cap', '합(pay)을 줄여 적어도 서버는 선수마다 연봉으로 다시 센다');
   assert.equal(env.DB._sqlite.prepare('SELECT COUNT(*) AS n FROM decks').get().n, 0, '거절한 덱은 쓰지 않는다');
-  j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '꽉참', payRef: 5000 }), tier: 1 }, a.A); assert.equal(j._s, 200, '1.44배는 마이너 안'); assert.equal(j.tier, 1);
-  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '넘침', payRef: 5000 }), tier: 2 }, b.A)).error, 'over_cap', '1.44배는 1부 1.25배를 넘음');
-  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '알뜰', payRef: 6000, ovr: { t: 62, p: 60, b: 60 } }), tier: 2 }, b.A))._s, 200, '1.2배는 1부 안');
+  j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '꽉참' }), tier: 1 }, a.A); assert.equal(j._s, 200, '72억은 상한 안'); assert.equal(j.tier, 1);
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: pricey({ name: '넘침' }), tier: 2 }, b.A)).error, 'over_cap', '168억은 상한을 넘음');
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '알뜰', ovr: { t: 62, p: 60, b: 60 } }), tier: 2 }, b.A))._s, 200, '상한 안');
   assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '예전', ovr: { t: 61, p: 60, b: 60 } }), tier: 2 }, c.A))._s, 200);
   assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '나', ovr: { t: 61, p: 60, b: 60 } }), tier: 2 }, d.A))._s, 200);
   /* 예전 덱(연봉 기록 없음)처럼 본문을 바꿔 둔다 */
@@ -242,8 +242,8 @@ dbTest('연봉 상한(사용자 11-17 "공평하게"): 덱 연봉 ÷ 그 세계 
   sq.prepare('UPDATE decks SET body = ? WHERE player_id = ?').run(JSON.stringify(old), c.id);
   const res = await J('POST', '/api/v1/ladder/result', { key: 'cap-up-1', rank: 1, teams: 10, w: 20, l: 7, d: 0 }, a.A); assert.equal(res.tier, 2, '마이너 1위 → 1부 승격');
   let o = await J('GET', '/api/v1/ladder/opponents?n=9', null, d.A); const names = o.decks.map(x => x.name);
-  assert.ok(names.includes('알뜰') && names.includes('예전'), '상한 안 덱·유예 중 예전 덱은 나옴 ' + names); assert.ok(!names.includes('꽉참'), '승격 뒤 1부 상한을 넘는 덱이 나옴');
+  assert.ok(names.includes('알뜰') && names.includes('예전'), '상한 안 덱·유예 중 예전 덱은 나옴 ' + names); assert.ok(names.includes('꽉참'), '승격해도 상한은 같은 금액이라 그대로 나옴 ' + names);
   clock.now = C.UL_CAP_FROM + 1000; o = await J('GET', '/api/v1/ladder/opponents?tier=2&n=9', null, d.A); /* 이 시각에 서버 시즌도 바뀐다(단계 -1): 1부를 직접 본다 */
-  assert.deepEqual(o.decks.map(x => x.name), ['알뜰'], '유예가 끝나면 예전 덱도 빠짐');
+  { const nm = o.decks.map(x => x.name); assert.ok(nm.includes('알뜰') && !nm.includes('예전') && !nm.includes('넘침'), '유예가 끝나면 예전 덱도 빠짐 ' + nm); }
   for (const x of o.decks) assert.ok(C.ulCap(x.e, 2).ok, '내보낸 덱은 모두 상한 안');
 });

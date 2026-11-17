@@ -21,7 +21,7 @@ export const UL_AI_SPREAD = Object.freeze([2, -2, 1, -1, 1, -1, 0, 0, 0]);
    윗단계는 모두 같은 예산 안에서 덱 짜는 실력 싸움(공평하게). 단계마다 다르면 승격 때 상한이 줄어 덱을 다시 맞춰야 한다(로비·덱 화면이 알려 준다).
    AI 구단은 연봉이 없는 가상 구단이라 상한을 보지 않는다(단계 난이도 기준일 뿐, 시즌 포인트·칭호를 받지 않는다).
    예전 덱(연봉 기록 없음)은 다음 시즌(UL_CAP_FROM: 11.30 0시 한국시간, S23)이 시작될 때까지 그대로 쓴다. 그 뒤에는 다시 등록해야 리그를 시작하고 상대로 나온다 */
-export const UL_CAP = Object.freeze([2, 1.5, 1.25, 1.25, 1.25]);
+export const UL_CAP = Object.freeze([1, 1, 1, 1, 1]); /* 모든 단계 같은 금액 = 첫 시즌 샐러리캡 143.97억(CUP_CAP_WON, 사용자 11-17 "초기 샐캡기준으로 잡자 모든것을 · 비율 두지 말고") */
 export const ulCapX = t => UL_CAP[Math.max(0, Math.min(UL_CAP.length - 1, t | 0))];
 export const ulCap = (e, tier) => Object.assign(cupPayCheck(e, ulCapX(tier)), { tier: tier | 0 });
 /* 이 덱으로 이 단계 리그에 나갈 수 있나: 상한 안 → ok. 연봉 기록이 없는 예전 덱 → 유예 기간(UL_CAP_FROM 전)만 ok(grace). AI 덱은 언제나 ok */
@@ -29,7 +29,7 @@ export function ulCapGate(e, tier, now) {
   if (e && e.ai) return { ok: true, ai: true };
   const c = ulCap(e, tier), name = ulTierName(tier);
   if (!c.known) { const g = (now == null ? Date.now() : now) < UL_CAP_FROM; return Object.assign(c, { ok: g, grace: g, msg: g ? `연봉 기록이 없는 예전 덱입니다. ${ulSeason(UL_CAP_FROM).label.split('~')[0]} 시즌부터는 다시 등록해야 리그를 시작할 수 있습니다.` : '연봉 기록이 없는 예전 덱입니다. 덱을 다시 등록해 주세요.' }); }
-  return Object.assign(c, { msg: c.ok ? '' : `덱 연봉 ${cupWon(c.pay)}이 ${name} 상한 ${cupWon(c.cap)}(리그 평균의 ${c.x}배)을 ${cupWon(-c.room)} 넘습니다.` });
+  return Object.assign(c, { msg: c.ok ? '' : `덱 연봉 ${cupWon(c.pay)}이 ${name} 상한 ${cupWon(c.cap)}을 ${cupWon(-c.room)} 넘습니다.` });
 }
 /* 덱에서 선수 빼기(상한 맞추기): 타순에서 빠지면 그 자리에 벤치 야수(같은 포지션 먼저, 그다음 OVR 높은 순), 선발에서 빠지면 불펜 투수(OVR 높은 순)가 들어간다.
    {e(새 엔트리), err}. 검증(20명·투수 9명·타순 9명)에 걸리면 err */

@@ -81,10 +81,10 @@ test('횟수 제한: 세계 id당 하루 등록 수, 다음 날 풀림, IP당 �
  const {handle}=await W; assert.equal((await (await handle(req('GET','/api/health'),{},clock.now)).json()).kv,false);
 });
 test('연봉 상한(사용자 11-17 "공평하게"): KV 덱 등록도 같은 규칙(넘으면 over_cap, 연봉 없으면 no_pay), 상대 고르기는 넘는 덱·유예 끝난 예전 덱을 뺀다',async()=>{ const {env,H,clock}=await setup(); const C=await import(path.join(root,'src/core/uladder.mjs'));
- let r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:deck({payRef:5000})}); assert.equal(r.status,400); let j=await r.json(); assert.equal(j.error,'over_cap'); assert.ok(/챔피언스 상한/.test(j.errors[0]),j.errors[0]);
+ const pricey=o=>{ const e=deck(o); for(const p of e.P)p.sal=700; return e; }; /* 168억 > 143.97억 */ let r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:pricey()}); assert.equal(r.status,400); let j=await r.json(); assert.equal(j.error,'over_cap'); assert.ok(/챔피언스 상한/.test(j.errors[0]),j.errors[0]);
  const nosal=deck(); for(const p of nosal.P)delete p.sal; r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:0,e:nosal}); assert.equal((await r.json()).error,'no_pay');
  assert.ok(![...env.SAVE_KV.m.keys()].some(k=>k.startsWith('ulD:')),'거절한 덱은 쓰지 않는다');
- assert.equal((await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:deck({name:'알뜰',payRef:6000})})).status,200);
+ assert.equal((await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:deck({name:'알뜰'})})).status,200);
  assert.equal((await H('PUT','/api/ladder/deck',{wid:wid(2),tier:3,e:deck({name:'예전',ovr:{t:61,p:60,b:60}})})).status,200);
  const k='ulD:'+wid(2), was=env.SAVE_KV.m.get(k), old=JSON.parse(was.v); for(const p of old.P)delete p.sal; delete old.payRef; env.SAVE_KV.m.set(k,{v:JSON.stringify(old),meta:was.meta}); /* 상한 전에 올린 예전 덱 */
  let o=await (await H('GET',`/api/ladder/opp?wid=${wid(9)}&tier=3&ovr=60&n=9`)).json(); assert.deepEqual(o.decks.map(x=>x.name).sort(),['알뜰','예전'],'유예 중에는 예전 덱도');

@@ -5934,25 +5934,24 @@ T('[유저 레더] 연봉 상한(사용자 11-17 "레더나 대회마다 연봉�
   ok(me.P.every(p=>p.sal===Math.round(G.players[p.id].sal||0)),'선수 연봉'); ok(me.pay===me.P.reduce((a,p)=>a+p.sal,0),'연봉 합');
   const t26=tid=>playersOf(tid).map(p=>p.sal||0).sort((a,b)=>b-a).slice(0,26).reduce((a,b)=>a+b,0), oth=G.teams.filter(t=>t.id!==G.user&&!t.indie);
   ok(Math.abs(me.payRef-oth.reduce((a,t)=>a+t26(t.id),0)/oth.length)<=1,'리그 평균 = 다른 구단 연봉 상위 26명 합의 평균 '+me.payRef);
-  const c0=C.cupPay(me); for(const p of Object.values(G.players))p.sal=(p.sal||0)*3; const c3=C.cupPay(cupEntryNow({name:'와이'})); for(const p of Object.values(G.players))p.sal=p.sal/3;
-  ok(Math.abs(c3.pay-3*c0.pay)<=30&&Math.abs(c3.r-c0.r)<=0.005,'물가 3배 세계에서도 같은 배수 '+c0.r+' '+c3.r);
-  const old=JSON.parse(JSON.stringify(me)); for(const p of old.P)delete p.sal; ok(C.cupPay(old).pay===me.pay&&C.cupPay(old).r===c0.r,'예전 엔트리는 e.pay'); delete old.payRef; ok(C.cupPay(old).r===null&&!C.ulCap(old,2).known,'리그 평균 없으면 모름');
-  const big=Object.assign(JSON.parse(JSON.stringify(me)),{payRef:Math.round(me.pay/1.4)});
-  ok(C.ulCap(big,1).ok&&!C.ulCap(big,2).ok&&C.ulCap(big,2).room<0&&C.ulCapX(0)===2&&C.ulCapX(1)===1.5&&C.ulCapX(2)===1.25&&C.ulCapX(4)===1.25,'1.4배: 마이너 안, 1부 밖');
-  G.uld=null; uld().tier=2; const m=ulSetDeck(big,'now'); ok(m.includes('1부 상한')&&!G.uld.deck,'넘는 덱이 등록됨 '+m);
-  const sg=C.ulCapSuggest(big,2); ok(sg.ok&&sg.ids.length>=1&&sg.ids.length<=6,'추천 '+JSON.stringify(sg)); const dr=C.ulCapDrop(big,sg.ids);
-  ok(!dr.err&&C.ulCap(dr.e,2).ok&&dr.e.P.length===big.P.length-sg.ids.length&&dr.e.ln.length===9&&C.cupValidate(dr.e,{}).ok,'추천대로 빼면 상한 안 '+dr.err);
+  const c0=C.ulCap(me,0); ok(c0.cap===14397&&C.ulCap(me,4).cap===14397&&c0.known&&c0.pay===me.P.reduce((a,p)=>a+p.sal,0),'모든 단계 고정 143.97억 '+c0.cap);
+  const old=JSON.parse(JSON.stringify(me)); for(const p of old.P)delete p.sal; ok(!C.ulCap(old,2).known,'선수 연봉이 없는 예전 엔트리는 모름');
+  const big=JSON.parse(JSON.stringify(me)); { const k=15500/Math.max(1,me.P.reduce((a,p)=>a+p.sal,0)); for(const p of big.P)p.sal=Math.round(p.sal*k); } /* 155억: 상한 143.97억을 넘음 */
+  ok(!C.ulCap(big,1).ok&&C.ulCap(big,1).room<0&&!C.ulCap(big,4).ok&&C.ulCap(big,1).cap===C.ulCap(big,4).cap,'155억: 모든 단계에서 넘음(같은 금액)');
+  G.uld=null; uld().tier=1; const m=ulSetDeck(big,'now'); ok(m.includes('마이너 상한')&&!G.uld.deck,'넘는 덱이 등록됨 '+m);
+  const sg=C.ulCapSuggest(big,1); ok(sg.ok&&sg.ids.length>=1&&sg.ids.length<=6,'추천 '+JSON.stringify(sg)); const dr=C.ulCapDrop(big,sg.ids);
+  ok(!dr.err&&C.ulCap(dr.e,1).ok&&dr.e.P.length===big.P.length-sg.ids.length&&dr.e.ln.length===9&&C.cupValidate(dr.e,{}).ok,'추천대로 빼면 상한 안 '+dr.err);
   ok(dr.e.ln.every(([id])=>dr.e.P.some(p=>p.id===id))&&dr.e.rot.every(id=>dr.e.P.some(p=>p.id===id&&p.isP)),'빠진 자리는 벤치·불펜으로 채움');
   const keep=C.ulCapDrop(big,big.P.filter(p=>p.isP).map(p=>p.id)); ok(keep.err,'투수를 다 빼면 덱 규칙에 걸림');
   dr.e.ovr=cupOvr(dr.e); ok(ulSetDeck(dr.e,'now')==='','줄인 덱 등록'); ok(ulMakeLeague({fetched:[]}).ok,'상한 안 덱으로 리그'); G.uld.league=null;
-  /* 승격으로 상한이 빡빡해짐: 마이너에서 1.4배로 등록 → 1부 */
-  G.uld.tier=1; ok(ulSetDeck(big,'now')==='','마이너 1.4배 등록'); G.uld.tier=2; const r1=ulMakeLeague({fetched:[]}); ok(!r1.ok&&r1.cap&&r1.msg.includes('1부 상한'),'승격 뒤 넘는 덱으로 리그 '+r1.msg);
+  /* 이미 등록한 덱이 넘으면(예: 저장 파일을 고친 덱) 리그를 열지 않는다 */
+  G.uld.deck={id:8,src:'now',e:big}; const r1=ulMakeLeague({fetched:[]}); ok(!r1.ok&&r1.cap&&r1.msg.includes('마이너 상한'),'넘는 덱으로 리그 '+r1.msg); G.uld.deck=null;
   /* 예전 덱(연봉 기록 없음): 유예(11.30 시즌 전)까지만 */
-  const unst=JSON.parse(JSON.stringify(me)); for(const p of unst.P)delete p.sal; delete unst.payRef; unst.h=C.cupEntryHash(unst); G.uld.deck={id:9,src:'now',e:unst};
+  const unst=JSON.parse(JSON.stringify(me)); for(const p of unst.P)delete p.sal; delete unst.payRef; delete unst.capRef; unst.h=C.cupEntryHash(unst); G.uld.deck={id:9,src:'now',e:unst};
   ok(ulMakeLeague({fetched:[],now:C.UL_CAP_FROM-1000}).ok,'유예 중 예전 덱'); G.uld.league=null; const r2=ulMakeLeague({fetched:[],now:C.UL_CAP_FROM+1000}); ok(!r2.ok&&r2.msg.includes('다시 등록'),'유예 끝 '+r2.msg);
   ok(ulSetDeck(unst,'now').includes('연봉 기록'),'연봉 기록 없는 로스터는 새로 등록 못 함');
   /* 상대: 상한을 넘는 유저 덱은 빼고 AI로 채운다(AI는 상한 밖) */
-  G.uld.deck=null; ok(ulSetDeck(me,'now')==='','다시 등록'); const ok1=Object.assign(cupEntryNow({tid:(G.user+1)%G.teams.length,name:'알뜰'}),{}); ok1.payRef=ok1.pay; const no1=cupEntryNow({tid:(G.user+2)%G.teams.length,name:'넘침'}); no1.payRef=Math.round(no1.pay/1.6);
+  G.uld.deck=null; ok(ulSetDeck(me,'now')==='','다시 등록'); const ok1=Object.assign(cupEntryNow({tid:(G.user+1)%G.teams.length,name:'알뜰'}),{}); const no1=cupEntryNow({tid:(G.user+2)%G.teams.length,name:'넘침'}); { const k=16000/Math.max(1,no1.P.reduce((a,p)=>a+p.sal,0)); for(const p of no1.P)p.sal=Math.round(p.sal*k); } { const k=Math.min(1,12000/Math.max(1,ok1.P.reduce((a,p)=>a+p.sal,0))); for(const p of ok1.P)p.sal=Math.round(p.sal*k); }
   const r3=ulMakeLeague({fetched:[ok1,no1]}); ok(r3.ok&&r3.league.src.user===1&&r3.league.teams.some(t=>t.name==='알뜰')&&!r3.league.teams.some(t=>t.name==='넘침'),'넘는 상대 덱 '+JSON.stringify(r3.league.src));
   ok(r3.league.teams.filter(t=>t.kind==='ai').every(t=>t.e.ai===1&&C.ulCapGate(t.e,2).ok&&C.ulCapGate(t.e,2).ai),'AI는 상한 밖'); });
 T('[유저 레더] AI 덱 단계 OVR(사용자 11-17 "레더 ai 도 챔피언스 이런곳은 고 오버롤로"): 루키 62·마이너 66·1부 70·챔피언스 75·레전드 79, 리그 안 ±2 벌림, 투타 고르게(타자 ≈ 총−1), 9자리·선발 5·능력치 85 이하, 서버 평균은 기준~기준+3',()=>{ fresh(); const C=FrontOfficeCore;
