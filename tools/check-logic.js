@@ -6246,6 +6246,36 @@ T('[플레잉코치] AI 구단도 같은 자격·수락 식으로 맡기고, 한
   const cost=aiOpsCost(t).find(r=>r[0]==='보조 코치 연봉'); ok(cost[1]>=x.r.sal,'AI 운영비에 수당이 없음');
   const mate=playersOf(t.id).find(q=>q.isP===x.r.isP&&q!==x.p&&!q.prospect); const reg0=pcRegular; pcRegular=()=>false; try{ ok(Math.abs(pcAxBoost(mate)-clamp((x.r.dv-50)/800,0,.025)*.5)<1e-9,'AI 효과 식이 다름'); } finally{ pcRegular=reg0; }
   const p=x.p; retireOut(p,'시험 은퇴'); const ob=G.ob.find(o=>o.fid===p.id); const w=obWhere(ob); ok(w.k==='coach'&&w.tid===t.id,'AI 플레잉코치가 은퇴 뒤 그 구단 코치가 되지 않음 '+JSON.stringify(w)); });
+T('[검수 11-17 #268] 코치 은퇴: 72세가 되면 계약이 남은 보조 코치도 정식 코치처럼 은퇴한다',()=>{ fresh(); facInit(); for(const k of FACK)G.fac.it[k]=1; G.fac.it.lab=4; G.pcoach={}; ok(axSlots()>=1,'준비 실패: 보조 코치 자리 없음'); const C=G.coach[G.user], reg=C.pc;
+  reg.age=71; reg.yrs=3; reg.cs=G.year-1; reg.ce=G.year+1; delete reg.ob; delete reg.jy; const ax=mkCoach('fp'); ax.age=71; staffCt(ax,3,G.year-1); delete ax.jy; ax.ax=true; G.coachX=[ax];
+  G.mail=[]; coachYear(); asstYear(); ok(C.pc!==reg,'정식 코치가 72세에 은퇴하지 않음(준비 확인)'); ok(!G.coachX.includes(ax),'72세 보조 코치가 계약 2년을 남기고 계속 일함'); ok(!(G.cmarket||[]).includes(ax),'은퇴한 보조 코치가 코치 시장에 남음');
+  ok((G.mail||[]).some(m=>m.subj==='보조 코치 은퇴'&&m.body.includes(ax.name)),'보조 코치 은퇴 소식 없음'); ok(staffRetNow({age:72,yrs:2})&&!staffRetNow({age:71,yrs:2})&&staffRetNow({age:70,yrs:0}),'은퇴 규칙이 정식 코치와 다름');
+  const ax2=mkCoach('bc'); ax2.age=70; staffCt(ax2,3,G.year-1); delete ax2.jy; ax2.ax=true; G.coachX=[ax2]; asstYear(); ok(G.coachX.includes(ax2),'71세·계약 남은 보조 코치가 은퇴함');
+  const t=G.teams.find(x=>x.id!==G.user), o=orgOf(t.id), ax3=mkCoach('pc'); ax3.age=71; staffCt(ax3,3,G.year-1); ax3.ax=true; o.coachX=[ax3]; asstYear(); ok(!o.coachX.includes(ax3)&&!(G.cmarket||[]).includes(ax3),'AI 구단 72세 보조 코치가 은퇴하지 않음'); });
+T('[검수 11-17 #269] 코치 훈련: 다음 시즌 합류 코치는 일반 성장과 세부 훈련 모두 빈자리 값(45)으로 본다',()=>{ fresh(); const C=G.coach[G.user], c=C.pc; for(const k in c.ab)c.ab[k]=80; coachSync(c); c.jy=G.year+1; c.cs=G.year+1;
+  ok(!coachActiveNow(c),'합류 전 코치가 일하는 중으로 나옴'); ok(effC(c,G.user,'dv')===45,'일반 성장이 빈자리 값이 아님'); ok(trnCoachV(c,G.user,'stf')===45,'세부 훈련이 개인 능력으로 계산됨: '+trnCoachV(c,G.user,'stf'));
+  const p=domestic(G.user).find(q=>q.isP&&!q.prospect); p.age=23; const v0=coachToolV(p,'stf'); C.pc=null; const vv=coachToolV(p,'stf'); C.pc=c; ok(Math.abs(v0-vv)<1e-9,'세부 훈련 계산이 빈자리와 다름: '+v0+' / '+vv);
+  c.jy=G.year; c.cs=G.year; ok(trnCoachV(c,G.user,'stf')>45&&coachToolV(p,'stf')>=vv,'합류한 코치가 빈자리로 계산됨'); c.sisAway=G.day+14; ok(!coachActiveNow(c)&&trnCoachV(c,G.user,'stf')===45,'교육 중 코치가 일함'); });
+T('[검수 11-17 #270] 코치 교육: 교육 중이거나 합류 전인 2군 투수코치는 승격할 수 없고 1군 투수코치가 그대로 일한다',()=>{ fresh(); const C=G.coach[G.user], fp=C.fp, pc=C.pc; ok(fp&&pc,'준비 실패'); delete fp.prY; fp.sisAway=G.day+14;
+  const r=promoteCoach('fp'); ok(typeof r==='string'&&r.includes('교육'),'교육 중 코치 승격이 막히지 않음: '+JSON.stringify(r)); ok(C.pc===pc&&C.fp===fp&&pc.role==='pc'&&fp.role==='fp','막혔는데 보직이 바뀜'); ok(promoteTerms('fp').why.includes('교육'),'승격 조건에 이유가 없음');
+  delete fp.sisAway; fp.jy=G.year+1; ok(String(promoteCoach('fp')).includes('합류'),'합류 전 코치 승격이 막히지 않음'); delete fp.jy; delete fp.cs;
+  const r2=promoteCoach('fp'); ok(r2&&r2.msg&&C.pc===fp&&C.fp===pc,'일하는 코치 승격이 안 됨: '+JSON.stringify(r2)); });
+T('[검수 11-17 #271] 코치 내부 승격: 합류 전·교육 중인 수석코치·2군 감독은 AI 감독 후보에서 빠진다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user), C=coachesOf(t.id); for(const r of ['hc','fm']){ const c=C[r]; ok(c,'준비 실패'); c.sk=70; c.dv=70; c.age=50; delete c.interim; delete c.jy; delete c.cs; delete c.sisAway; }
+  const has=r=>ipMgrCands(t).some(m=>m._ipFrom===C[r]); ok(has('hc')&&has('fm'),'준비 실패: 일하는 코치가 후보 아님'); C.hc.jy=G.year+1; C.fm.sisAway=G.day+14; ok(!has('hc'),'다음 시즌 합류 수석코치가 감독 후보'); ok(!has('fm'),'교육 중인 2군 감독이 감독 후보'); });
+T('[검수 11-17 #272] 코치 계약 만료: 64세가 되어 시장에서 빠진 코치는 빈자리 안내에서 후보에 남았다고 하지 않고, 남은 코치만 이름으로 알린다',()=>{ fresh(); const C=G.coach[G.user]; for(const k of CKEYS){ const c=C[k]; c.yrs=3; c.cs=G.year-1; c.age=Math.min(c.age||50,50); delete c.ob; delete c.jy; }
+  const old=C.pc, yng=C.bc; old.age=63; old.yrs=1; yng.age=45; yng.yrs=1; G.mail=[]; coachYear(); const m=(G.mail||[]).find(x=>x.subj==='코치 자리가 비어 있습니다'); ok(m,'빈자리 안내 없음');
+  ok(!(G.cmarket||[]).includes(old)&&(G.cmarket||[]).includes(yng),'준비 확인: 64세는 빠지고 46세는 남아야 함'); ok(m.body.includes(yng.name)&&m.body.includes('남아 있어'),'남은 코치 이름 없음: '+m.body);
+  ok(m.body.includes(old.name)&&m.body.includes('남지 않았'),'빠진 코치 안내 없음: '+m.body); ok(!m.body.split('남아 있어')[0].includes(old.name),'빠진 코치를 후보에 남았다고 함: '+m.body); });
+T('[검수 11-17 #273·#274] 플레잉코치: 다음 시즌 계약은 그 시즌부터 수당이 나가고 성장 보탬이 시작된다',()=>{ const p=pcPrep(true); ok(pcOffer(p.id).ok,'준비 실패'); const r=pcLive(p); r.dv=70; r.y=G.year+1; const mate=domestic(G.user).find(x=>x.isP&&x!==p&&!x.prospect);
+  const reg0=pcRegular; pcRegular=()=>false; try{ ok(axBoost(mate)===1,'계약 시즌 전에 팀 동료 성장 보탬: '+axBoost(mate)); ok(coachSal(G.user,true)===coachSal(G.user)-r.sal,'계약 시즌 전에 오늘 수당이 코치진 비용에 들어감');
+    G.spend.coach=0; dailyCost(); ok(Math.abs(G.spend.coach-coachSal(G.user,true)/365)<1e-9,'일일 코치 비용에 다음 시즌 수당'); ok(pcIdleTxt(p,r).includes(String(G.year+1)),'시작 시즌 표시 없음');
+    r.y=G.year; ok(axBoost(mate)>1,'계약 시즌에 보탬 없음'); ok(coachSal(G.user,true)===coachSal(G.user),'계약 시즌에 수당이 안 나감'); } finally{ pcRegular=reg0; } });
+T('[검수 11-17 #275] 플레잉코치: 군 복무 중인 선수는 맡을 수 없고, 맡은 뒤 입대하면 수당·성장 보탬이 멈춘다',()=>{ const p=pcPrep(true); const svc={unit:'현역',from:G.day-1,until:G.day+500}; p.mil={...svc}; ok(milServing(p),'준비 실패: 복무 중 아님');
+  ok(pcWhy(p).includes('군 복무'),'복무 중 선수에게 제안이 통과: '+pcWhy(p)); ok(!pcOffer(p.id).ok&&!pcLive(p),'복무 중 선수가 맡음'); p.mil={done:true}; ok(pcOffer(p.id).ok,'준비 실패 2'); const r=pcLive(p); r.dv=70; r.y=G.year; const mate=domestic(G.user).find(x=>x.isP&&x!==p&&!x.prospect);
+  const reg0=pcRegular; pcRegular=()=>false; try{ ok(axBoost(mate)>1,'준비 확인: 보탬 없음'); p.mil={...svc}; ok(axBoost(mate)===1,'복무 중에도 성장 보탬'); ok(pcSalOf(G.user,true)===0,'복무 중에도 수당'); ok(pcIdleTxt(p,r).includes('군 복무'),'복무 중 표시 없음'); } finally{ pcRegular=reg0; } });
+T('[검수 11-17 #276] 플레잉코치: 투수로 바꾼 야수 플레잉코치는 지금 포지션(투수) 쪽 선수를 맡는다',()=>{ const p=pcPrep(false); ok(pcOffer(p.id).ok,'준비 실패'); const r=pcLive(p); r.dv=70; r.y=G.year; ok(!r.isP,'준비 실패: 야수 아님');
+  const pit=domestic(G.user).find(x=>x.isP&&!x.prospect), bat=domestic(G.user).find(x=>!x.isP&&x!==p&&!x.prospect); const reg0=pcRegular; pcRegular=()=>false;
+  try{ ok(axBoost(bat)>1&&axBoost(pit)===1,'준비 확인'); p.isP=true; ok(axBoost(pit)>1,'투수로 바꿨는데 투수를 맡지 않음'); ok(axBoost(bat)===1,'투수로 바꿨는데 야수를 계속 맡음'); ok(pcLive(p).isP===true,'플레잉코치 기록이 지금 포지션을 따르지 않음'); } finally{ pcRegular=reg0; } });
 /* ===== 계약 1단계(2026-11-17): 구단별 친분 · 조건 잠금 · 역제안 · 라운드 한도 · 옵션 종류 · 외국인 ===== */
 const CT1_FA=(b,ask,y,style)=>{ const ts=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); if(!G.fa||!G.fa.pool)G.fa={pool:[],offers:{},ai:{},open:true,openDay:G.day-20,closed:false,results:[],cap:3,outN:{},y0:G.year};
   const p=newPlayer({age:28,isP:false,base:b,pot:b+2,team:ts[0]}); p.team=null; p.faFrom=ts[0]; p.faGrade='B'; p.faPrevSal=100; p.sal=100; p.ask={annual:ask,years:y}; p.ask0=ask; G.fa.pool.push(p.id); G.fa.ai[p.id]={};
