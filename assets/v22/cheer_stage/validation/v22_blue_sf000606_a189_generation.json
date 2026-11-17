@@ -1,0 +1,29 @@
+{
+  "id": "v22_blue_sf000606",
+  "index": 36,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "blue",
+  "hair": "half",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000606_identity_guide.jpg",
+  "source_guide_id": "sf3_000606",
+  "source_guide_dataset": "SFHQ part3, raw public synthetic parquet reference",
+  "source_guide_row_idx": 606,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "fda3abab206b30d9a3d40ce32aa9fdb8999c5c260a81c0357bc85fa0e012dfc0",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "source_guide_parquet": "default/train/0000.parquet",
+  "costume_reference": "/dev/shm/v22_work/kits/blue.png",
+  "generation_attempt": 189,
+  "status": "PENDING_VALIDATION",
+  "purpose": "new native stage portrait from public synthetic identity reference",
+  "composition_reference": "/dev/shm/v22_work/v22_blue_sf000606_reference.png",
+  "prompt": "A clearly FULLY GROWN ADULT Korean woman AGE25 with mature adult cheek/jaw/lowerface anatomy, not a child or teen. Translate fictional character reference into her adult25 professional stage appearance. Natural SMALL brown irises and normal adult Asian eye proportions, real natural skin, no CG beautyfilter. ONE authentic real photographic KBO cheerleader portrait of the EXACT SAME distinct fictional ADULT KOREAN woman from ref1, age25. Preserve her own individual face/cheek/jaw/eyes/nose/lips/natural asymmetry. No common beautytemplate or reshaping face. Warm friendly gentle CLOSED-LIP smile. Full professional KBO STAGE STYLING: groomed defined brows, tasteful crisp eyeliner and natural full lashes, flattering lip tint, light even foundation maintaining subtle fine natural skin texture; polished groomed hair. Do not add acne/freckles/wrinkles/exaggeratedpores; no waxyairbrush or photographic beautyfilter. Natural DARK BROWN irises, normal human eyeproportions, no colored/circle contacts, both eyesvisible. REMOVE glasses entirely if present, keep her own eyes. professionally styled half-up black/darkbrown hair, complete full natural hairstyle/crown; fringe not covering pupils. No hats/glasses/hairaccessories. Ref1 is a whole-photo camera placement guide with missing GRAY canvas: fill gray with her OWN fullhead/hair/shoulders/ownscene; keep face SIZE/POSITION, no zoom/cropping gray. ONE coherent new professional photograph, harmonized native detail/lighting, no face pasted on commonbody. Wear EXACT ref2 garment: BLUE short-sleeve fullyzipped highstandcollar top, WHITEsidepanels and thin SILVERshoulderpiping, samecut/collar/trim, coveredchest, no logos/text/numbers. NIGHT baseballcheer-platform background, blurredunrecognizablecrowds/floodlightbokeh, same85mm softfront-abovekey/rearstage rim. Head/upperchest, shoulderslower. Hands outside. Fullcrown6-10%topmargin, eyes38-42%down, faceheight36-42%ofcanvas. Plausible naturally appealing actual Korean ADULT mid/late twenties, no childlook/doll/CGface/oversizedeyes/tinyVchin/cleavage/croptops/bodyemphasis. ONE full square native1254x1254orhigher photo, zero grids/borders/text/gray areas.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-c5b4923c-049f-40b0-801f-188f38b72f19.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}

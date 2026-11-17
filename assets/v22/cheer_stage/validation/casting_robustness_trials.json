@@ -10,9 +10,15 @@
     {
       "preselection_pair_limit": 0.395,
       "official_final_threshold": 0.4,
-      "count": 47,
+      "count": 48,
+      "optimal": true
+    },
+    {
+      "preselection_pair_limit": 0.39,
+      "official_final_threshold": 0.4,
+      "count": 48,
       "optimal": true
     }
   ],
-  "selected_limit": 0.4
+  "selected_limit": 0.39
 }

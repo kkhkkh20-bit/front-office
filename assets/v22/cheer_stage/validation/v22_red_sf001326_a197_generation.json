@@ -1,0 +1,31 @@
+{
+  "id": "v22_red_sf001326",
+  "index": 1326,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "red",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row001326_identity_guide.jpg",
+  "source_guide_id": "sf3_001326",
+  "source_guide_dataset": "SFHQ part3, raw public synthetic parquet reference",
+  "source_guide_row_idx": 1326,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "32acdc715ea2068b2bf8218e2c95909d4ec8c6bb3441e2e8802a8752b490e944",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "source_guide_parquet": "default/train/0000.parquet",
+  "costume_reference": "/dev/shm/v22_work/kits/red.png",
+  "generation_attempt": 197,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photo canvas outpaint and tidy flyaway hair only",
+  "composition_reference": "/dev/shm/v22_work/v22_red_sf001326_a195_wideborder_reference.png",
+  "prompt": "SINGLE high-fidelity photographic edit. Keep EXACT same existing fictional adult KOREAN stage cheerleader age25 in central photo: preserve her distinct individual real face, normal eyes/darkbrown irises, cheeks/nose/lips, EXACT happy tooth-showing smile, same makeup, hair character and outfit collar/trim/colors. Only fill surrounding GRAY border with coherent continuation of her NIGHT baseball grandstand scene and naturally continue cropped crown/shoulders. Tidy stray flyaway hairs with natural grooming; keep normal full hairstyle without tall isolated wisps, do NOT change skull/face. Existing central whole photograph must stay SAME relative scale/placement as supplied, do NOT zoom or discard margins. Natural fine skin, authentic real Korean adult25 stage professional, no CG beautytemplate/face shaping/oversizedeyes/plasticskin/artificialaging. Both hands outside frame. No borders/graycanvas/text/logos/glasses/hats/cleavage, one coherent whole professional85mm photograph, new native square1254x1254orhigher.",
+  "source_parent_candidate": "v22_red_sf001326_a195",
+  "source_photo_reference": "/workspace/generated_images/exec-063e0580-6b2c-40a3-9dcd-aa0f619927a9.png",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-9d2925b8-3218-4a28-bf8f-211e9dc12ee9.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}

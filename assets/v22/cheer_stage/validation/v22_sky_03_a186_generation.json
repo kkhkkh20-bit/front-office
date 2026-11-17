@@ -1,0 +1,39 @@
+{
+  "id": "v22_sky_03",
+  "row_idx": 89,
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000089_identity_guide.jpg",
+  "dataset": "juhi-neeved/sfhq-part3-labeled",
+  "source_split": "train",
+  "synthetic": true,
+  "original_dataset": "SelfishGene/SFHQ part3",
+  "original_license": "CC0 Public Domain, verified Kaggle dataset metadata",
+  "purpose": "whole photograph natural stage hairstyle grooming only",
+  "index": 0,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "sky",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "front",
+  "source_guide_id": "sf3_000089",
+  "costume_reference": "/dev/shm/v22_work/kits/sky.png",
+  "generation_attempt": 186,
+  "status": "PENDING_VALIDATION",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "source_guide_sha256": "237cde1bb71af6634645709102e2032b6ec74547af15cd343896b8315180e7f9",
+  "generated_native_size": [
+    1254,
+    1254
+  ],
+  "generated_original_sha256": "66d86055d1c44d322f31f4ea5bc872e6981fff8f952788c9e2b6e7e009f88b55",
+  "source_parent_candidate": "v22_sky_03_a134",
+  "source_photo_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/exports/v22_sky_03_a134_master512.png",
+  "operation": "independent four-portrait whole-photo stage edit/outpaint",
+  "composition_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/exports/v22_sky_03_a134_master512.png",
+  "prompt": "SMALL whole-photograph HAIRSTYLE grooming edit. Keep EXACT same fictional ADULT Korean cheerleader age25, identical real face/normal brown eyes/nose/lips/teeth/smile, SAME skin/makeup/pose/sky-blue uniform/lighting/night stadium/camera/framing. ONLY give her hair at the CROWN a little more natural dense stage styling volume, about12px higher on the512reference (about30px on1254canvas), a subtle2% of the image height. Preserve skull/forehead/face anatomy and same wavy hairstyle and skyblue matching hairclip; no tall wispy hairs. Do not enlarge head or eyes, do not change face, no crop/zoom. A coherent real85mm professional adult stage photograph, newly native1254squareorhigher.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-960604dd-eb2e-47fc-b417-ab71fb7374d9.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}

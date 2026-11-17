@@ -64,5 +64,33 @@
     "actual_atlas_raw_max": 0.400288462638855,
     "resolution": "512",
     "source": "validation/atlas_preflight002_failed.json"
+  },
+  {
+    "a": "v22_orange_01_a64",
+    "b": "v22_purple_03_a65",
+    "actual_atlas_raw_max": 0.4031147062778473,
+    "resolution": "128",
+    "source": "validation/atlas_preflight003_failed.json"
+  },
+  {
+    "a": "v22_orange_01_a64",
+    "b": "v22_purple_03_a65",
+    "actual_atlas_raw_max": 0.4081108570098877,
+    "resolution": "256",
+    "source": "validation/atlas_preflight003_failed.json"
+  },
+  {
+    "a": "v22_blue_04_a106",
+    "b": "v22_purple_06_a105",
+    "actual_atlas_raw_max": 0.4008711576461792,
+    "resolution": "512",
+    "source": "validation/atlas_preflight003_failed.json"
+  },
+  {
+    "a": "v22_orange_01_a64",
+    "b": "v22_purple_03_a65",
+    "actual_atlas_raw_max": 0.41013315320014954,
+    "resolution": "512",
+    "source": "validation/atlas_preflight003_failed.json"
   }
 ]

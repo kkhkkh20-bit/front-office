@@ -1,0 +1,32 @@
+{
+  "id": "v22_red_recast_sf000151",
+  "index": 19,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "red",
+  "hair": "half",
+  "smile": "big",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000151_identity_guide.jpg",
+  "source_guide_id": "sf3_000151",
+  "source_guide_dataset": "SFHQ part3, public synthetic reference",
+  "source_guide_row_idx": 151,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "b53b9002cbc7a70c6492c495f6039d88b573c7785bb58bf68b6068d7aa110bf2",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "costume_reference": "/dev/shm/v22_work/kits/red.png",
+  "generation_attempt": 193,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photographic wardrobe recast, unused distinct identity retained",
+  "composition_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/exports/v22_green_sf000151_a163_master512.png",
+  "source_parent_candidate": "v22_green_sf000151_a163",
+  "source_photo_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/exports/v22_green_sf000151_a163_master512.png",
+  "operation": "single whole-photograph stage wardrobe edit",
+  "identity_guide_sha256": "b53b9002cbc7a70c6492c495f6039d88b573c7785bb58bf68b6068d7aa110bf2",
+  "prompt": "Create a single photorealistic new high resolution square photograph, native 1254x1254 or larger. Whole photographic wardrobe edit of FIRST reference, preserving this exact fictional Korean adult woman's identity, facial anatomy, normal dark brown eyes and irises, realistic skin pores, age 25, original camera framing, pose, head position, night baseball stadium and lighting. Beautiful but believable professional Korean baseball cheerleader, no beauty filter, no doll face, no enlarged eyes, no waxy skin. Replace outfit completely with the exact RED kit in SECOND reference: fully covered white high crew neck, red short sleeves, broad white chest chevron, thin silver side piping. Same kit construction as reference, no marks, text, logos or numbers. Chest and abdomen fully covered. Keep her warm bright tooth-showing smile and anatomically natural V-sign hand next to face, not covering face. Gently groom the half-up hair crown to have a little more natural volume, crown about 6-8 pixels higher relative to the original 512-pixel reference (about 15-20 pixels in 1254 output), without changing skull or face or eye position. No wispy stray spike above crown. Preserve original scale of head in full square, 85mm photograph, eye level around 40% of full image height, hair crown around 8% from top, whole face height around 39%. Front upper key light and subtle rear stage rim. Background is night stadium, audience unidentifiable and blurred. No hats or glasses. Do not produce a contact sheet or costume-only image.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-c9737f01-f227-4ab8-95f2-1f24abe21c37.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}
