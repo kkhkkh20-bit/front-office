@@ -55,20 +55,21 @@ function workspaceFit(host){
   if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
   if(!host&&(main.dataset.tab!==UI.tab||main.classList.contains('inbox-workspace')))return; /* 탭을 바꾼 직후(closeSheets→renderSheet)에는 아직 이전 탭 화면이다. 그 화면을 새 탭 기준으로 감싸면 소식함이 '보고·보고' 두 칸으로 나뉘고 목록 칸이 숨었다(제보 11-15) */
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
-  if(main.querySelector(':scope > .ws-own,:scope > .fmd'))return; /* 직접 높이를 나누는 화면은 패널 재포장을 생략한다. */
-  const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
+  const own=!!main.querySelector(':scope > .ws-own,:scope > .fmd'); /* 직접 높이를 나누는 화면은 패널 재포장을 생략한다(탭 줄 접기는 한다: 11-17 가로 휴대폰 568×320에서 리그 역사 트로피·영구결번·올스타 칸이 탭 세 줄에 밀려 26px만 남았다) */
+  const root=own?main:main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭을 한 줄 버튼 줄로 접는다. 넘치면 옆으로 밀고(선택 상자처럼 아래 창을 가리지 않음) 지금 화면 버튼을 가운데로.
   const filters=root.querySelector('.roster-filter-body'); // 열 묶음·열 설정도 접힌 필터 안으로(PC·휴대폰 같은 구조)
   if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
   if(workspaceCompact()){
-    root.querySelectorAll('.seg.itabs,nav.subtabs,.trade-modes').forEach(tabs=>{
+    root.querySelectorAll(own?':scope > :is(.seg.itabs,nav.subtabs,.trade-modes)':'.seg.itabs,nav.subtabs,.trade-modes').forEach(tabs=>{ /* 직접 나누는 화면은 맨 위 탭 줄만 */
       if([...tabs.querySelectorAll('button[data-a]')].some(b=>['itab','go','sub','tab','lseg'].includes(b.dataset.a)))tabs.classList.add('ws-tab-row');
     });
     const rows=[...root.querySelectorAll(':scope > .ws-tab-row')];
     if(rows.length){const nav=document.createElement('nav');nav.className='ws-navigation';nav.setAttribute('aria-label','업무 화면 선택');rows[0].before(nav);rows.forEach(row=>nav.append(row));}
     root.querySelector(':scope > .roster-navigation')?.classList.add('ws-navigation');
   }
+  if(own)return;
   const fixed='.fahero,.dlb,.vsb,.seg,.subtabs,.ws-tab-select,.ws-navigation,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr,.trade-modes,.trade-back,.trade-partner,.trade-steps,.trade-basket,.trade-extra,button[data-a=tradePick]';
   const panels=[];
   for(const node of [...root.children]){

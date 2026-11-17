@@ -19,6 +19,6 @@ function playerAnalysisTab(p){
   const signed=v=>(v>0?'+':'')+v.toFixed(1);
   return `${head}<div class="an-grid"><section class="card"><h3>${y} 시즌 백분위</h3>${rows.map(([k,l,v,dir,fmt,n])=>analysisBar(l,v,percentile(k,v,dir),fmt,n)).join('')}<p class="small muted">백분위는 같은 시즌 1군 50타석 이상 15명부터 표시합니다. 100에 가까울수록 좋은 값이며 삼진률은 낮을수록 상위입니다. 표본이 부족하면 백분위는 비웁니다.</p></section>
   <section class="card"><h3>${y} 시즌 가치 · 런 밸류</h3>${analysisBar('타격 런 밸류',a.runs.bat,percentile('bat',a.runs.bat,1),signed,'시즌 wOBA의 리그 평균 대비 득점')}${analysisBar('주루 런 밸류',a.runs.run,percentile('br',a.runs.run,1),signed,'도루 × 0.2 − 도루 실패 × 0.4 · 추정')}${analysisBar('수비 런 밸류',null,null,signed,'실측 수비 기회 미집계')}<p class="small muted">단위는 득점입니다. 주루는 도루·실패만 반영하며, 수비와 포지션 보정·대체선수 가치는 포함하지 않습니다.</p></section>
-  <section class="card"><h3>타구 유형 · 실제 경기 기록</h3>${a.s?sprayCard(p,a.s):'<p class="small muted keep">해당 시즌에 집계된 타구가 없습니다.</p>'}<p class="small muted">투구 코스는 경기에서 기록하지 않아 핫·콜드 존을 표시하지 않습니다.</p></section>
+  <section class="card"><h3>타구 유형 · 실제 경기 기록</h3>${a.s?sprayCard(p,a.s):'<p class="small muted keep">해당 시즌에 집계된 타구가 없습니다.</p>'}<p class="small muted keep">투구 코스는 경기에서 기록하지 않아 핫·콜드 존을 표시하지 않습니다.</p></section>
   <section class="card"><h3>타구 분포도 · 안타</h3>${analysisDots(p,a)}</section></div>`;
 }

@@ -89,7 +89,7 @@ function ovlCandLvl(p,lvl,short){ lvl=lvl||(p&&p.prevLvl)||''; const i=lvl==='�
 
 /* ===== KBO와 이어진 선수의 해외 시즌 ===== */
 const OVS_THR={MLB:62,NPB:57}; /* 이 능력(국내 기준)이면 그 리그 1군(빅리그)에서 자리를 잡는다 */
-const ovsGt=a=>!!a&&!a.foreign&&!a.cand&&a.from!=null&&a.lg==='MLB'&&(a.amt||0)>=300; /* 보장 연 300만 달러 이상 MLB 계약(포스팅·해외 FA): 구단이 투자한 만큼 기회를 줘 빅리그 문턱이 2 낮다(해외 활성화 2-1: 김혜성·김하성은 첫해부터 주로 빅리그) */
+const ovsGt=a=>!!a&&!a.foreign&&!a.cand&&a.from!=null&&a.lg==='MLB'&&(a.amt||0)>=300?((a.amt||0)>=450?3:2):0; /* 보장 연 300만 달러 이상 MLB 계약(포스팅·해외 FA): 구단이 투자한 만큼 기회를 줘 빅리그 문턱이 2 낮다(해외 활성화 2-1: 김혜성·김하성은 첫해부터 주로 빅리그). 연 450만 달러 이상은 3 낮다(11-17: 보장 계약 포스팅 선수가 트리플A에 오래 묶여 MLB 국내 선수가 1~2명으로 떨어졌다. 고우석급 연 200만 달러대는 그대로 마이너) */
 const OVS_MINOR={MLB:'트리플A',NPB:'NPB 2군'};
 /* 리그 수준 보정 [타자, 투수]. 마이너·대만·호주·멕시코는 외국인 후보 이전 리그 기록과 같은 표(LG_ADJ).
    빅리그는 KBO 출신 실제 성적에 맞춰 따로(같은 국내 능력 기준: MLB 62 타자 OPS 약 .73·투수 ERA 약 4.2, 66이면 .78·3.8 / NPB는 투고타저라 57 타자 .73·투수 4.3).
@@ -103,7 +103,7 @@ const ovsBig=l=>l==='MLB'||l==='NPB';
 function ovsSlim(p){ const o={id:p.id,isP:!!p.isP,age:p.age,r:Object.assign({},p.r)}; if(p.role)o.role=p.role; if(p.velo)o.velo=p.velo; if(p.addP&&p.addP.length)o.addP=p.addP; if(!p.isP&&p.pos)o.pos=p.pos;
   for(const k of ['nat','orig','adapt','sx','th','bt','inj','mlbG'])if(p[k]!=null)o[k]=p[k]; /* KBO 경력 후보로 다시 나올 때 같은 사람으로(해외 활성화 1-1) */ return o; }
 /* 한 시즌 기록. lg: 계약한 리그(MLB·NPB·CPBL·ABL·멕시코리그). 능력이 기준에 못 미치면 MLB는 산하 트리플A, NPB는 2군에서 뛴다(경계선이면 한 시즌을 MLB·트리플A로 나눈다). 약한 구단은 기회를 조금 더 준다 */
-function ovsLine(p,lg,o){ o=o||{}; const av=clamp(o.av??1,0,1), thr=OVS_THR[lg]!=null?OVS_THR[lg]-(o.gt?2:0):null, hasC=!!OVL_C[ovlKey(lg)]&&o.ci!=null&&o.ci>=0; const ob=ovr(p); let m=thr==null?4:ob-thr; if(thr!=null&&hasC){ const s=ovlStr(lg,o.ci); m+=s<-.03?1:s>.04?-.7:0; }
+function ovsLine(p,lg,o){ o=o||{}; const av=clamp(o.av??1,0,1), thr=OVS_THR[lg]!=null?OVS_THR[lg]-(o.gt===true?2:(+o.gt||0)):null, hasC=!!OVL_C[ovlKey(lg)]&&o.ci!=null&&o.ci>=0; const ob=ovr(p); let m=thr==null?4:ob-thr; if(thr!=null&&hasC){ const s=ovlStr(lg,o.ci); m+=s<-.03?1:s>.04?-.7:0; }
   const sp=p.isP&&isSPr(p);
   const nFor=big=>p.isP?(sp?(big?(m>=4?ri(470,590):ri(210,430)):ri(300,450)):(big?(m>=4?ri(170,215):ri(90,170)):ri(120,190))):(big?(m>=4?ri(500,650):ri(170,420)):ri(300,520));
   const mk=(lvl,n)=>{ const A=ovsAdj(lvl); const L=p.isP?simPit(p,n,A[1]):simBat(p,n,A[0]); L.y=o.y??G.year; L.lvl=lvl; if(hasC)L.c=o.ci; /* 트리플A 줄의 c는 산하 트리플A 구단 번호(= 모구단 번호) */

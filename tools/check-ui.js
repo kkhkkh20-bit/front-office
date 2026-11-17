@@ -336,10 +336,10 @@ const QUICK=process.env.QUICK==='1';
   { where='다년계약 비교'; const r=await ev(()=>{ const p=domestic(G.user).find(q=>canExtend(q)); if(!p)return null; const h=extForm(p); return {cmp:/계약하지 않으면/.test(h)&&/보장 총액/.test(h)}; });
     if(r&&!r.cmp)add('다년계약','다년계약 제안에 계약 안 할 때와의 비교가 없음'); }
   /* 신인 드래프트 추천: 우리 순번을 기준으로 나눠 보여 준다 */
-  { where='드래프트 추천 순번'; const r=await ev(()=>{ if(typeof draftCenter!=='function'||typeof mockDraft!=='function')return null; const mk=mockDraft(12); if(!mk.some(m=>m.mine))return null; const all=(G.draftClass||[]).map(id=>G.players[id]).filter(Boolean).map(p=>({p,rp:scoutReport(p)})); if(!all.length)return null; const h=draftCenter(all,false); return {grp:/우리 순번에 남을 가능성/.test(h)}; });
+  { where='드래프트 추천 순번'; const r=await ev(()=>{ if(typeof draftCenter!=='function'||typeof mockDraft!=='function')return null; const mk=mockDraft(12); if(!mk.some(m=>m.mine))return null; const all=(G.draftClass||[]).map(id=>G.players[id]).filter(Boolean).map(p=>({p,rp:scoutReport(p)})); if(!all.length)return null; const h=draftCenter(all,false); return {grp:/까지 남을 확률/.test(h)&&/우리 차례에도 남을 듯|반반|앞에서 데려갈 듯/.test(h)}; }); /* 스카우트 1단계(11-16): 순번 기준 묶음이 '우리 차례까지 남을 확률' 구간으로 바뀜 */
     if(r&&!r.grp)add('드래프트 추천','추천이 우리 지명 순번을 고려하지 않음'); }
   /* 추천 트레이드의 다른 자리 공백·예산 이름(외부 리뷰 B) */
-  { where='트레이드 공백·예산'; const r=await ev(()=>{ const d=depth(G.user); const sp=d.sp[4]||d.sp[0]; const o=G.teams.find(t=>t.id!==G.user); const q=domestic(o.id).find(x=>!x.isP); const h=typeof dealSide==='function'?dealSide([sp.id],[q.id]):''; UI.tab='home'; render(); const tx=(document.querySelector('#app')||{}).textContent||''; return {gap:/선발 대체 필요/.test(h),bud:/상한 잔여|연봉 여유/.test(tx)}; });
+  { where='트레이드 공백·예산'; const r=await ev(()=>{ const d=depth(G.user); const sp=d.sp[4]||d.sp[0]; const o=G.teams.find(t=>t.id!==G.user); const q=domestic(o.id).find(x=>!x.isP); const h=typeof dealSide==='function'?dealSide([sp.id],[q.id]):''; UI.tab='home'; render(); const tx=(document.querySelector('#app')||{}).textContent||''; return {gap:/선발 대체 필요/.test(h),bud:/상한 잔여|연봉 여유|연봉 상한까지/.test(tx)}; });
     if(r){ if(!r.gap)add('추천 트레이드','선발을 내주는 거래에 선발 공백 안내가 없음'); if(!r.bud)add('예산','홈 예산 여유 타일에 연봉 상한 잔여·현금이 없음'); } }
   /* 선수단 계획 합계·캡 여유, 코치 후보 성격(외부 리뷰 B) */
   { where='계획·코치'; const r=await ev(()=>{ const tx=plannerCard().replace(/<[^>]+>/g,' '); UI.tab='staff'; UI.sub=Object.assign({},UI.sub||{},{staff:'coach'}); UI.it=Object.assign({},UI.it||{},{mg_staff_coach:'coach'}); render(); const tc=(document.querySelector('#app')||{}).textContent||''; UI.tab='home'; render(); return {plan:/캡 여유/.test(tx),coach:/후보$|후보 ·|강한 후보|메우는 후보/.test(tc)}; });
@@ -357,7 +357,7 @@ const QUICK=process.env.QUICK==='1';
   { where='리더십 이력'; const r=await ev(()=>{ team(G.user).cap=null; electCaptain(G.user,'점검'); const h=leadCard(); return {hist:/리더십 변화/.test(h),cl:/기강 \d+→\d+/.test(h)}; });
     if(r&&(!r.hist||!r.cl))add('리더십','리더십 화면에 주장 교체 이력·기강 변화가 없음: '+JSON.stringify(r)); }
   /* 감독·코치 중도 재계약, 코치 승격 버튼 */
-  { where='감독·코치 계약'; const r=await ev(()=>{ const C=G.coach[G.user]; if(!C.pc){ C.pc=mkCoach('pc'); C.pc.yrs=2; } const h=coachSlot('pc'); const mb=mgrBody(); return {pro:/수석코치로 승격/.test(h),ext:/연장/.test(h),mext:/연장/.test(mb)}; });
+  { where='감독·코치 계약'; const r=await ev(()=>{ const C=G.coach[G.user]; if(!C.pc){ C.pc=mkCoach('pc'); C.pc.yrs=2; } const h=coachSlot('pc'); const mb=mgrBody(); return {pro:/수석코치(\(으\))?로 승격/.test(h),ext:/연장/.test(h),mext:/연장/.test(mb)}; });
     if(!r||!r.pro||!r.ext||!r.mext)add('감독·코치 계약','코치 승격·연장 또는 감독 연장 버튼이 없음: '+JSON.stringify(r)); }
   /* 야인이어도 단장 탭(경력·재임 기간 결산)은 볼 수 있다 */
   { where='야인 경력'; const r=await ev(()=>{ const u0=G.unemp, t0=UI.tab, c0=G.myC; G.unemp={y:G.year,msg:'점검',since:G.day,from:G.user}; G.myC=Object.assign({},c0||{},{tid:null,stints:[{tid:G.user,y0:G.year-1,y1:G.year,how:'경질'}],seas:[{y:G.year-1,tid:G.user,rank:4,w:75,l:64,ch:0}]}); UI.tab='me'; let h=''; try{ h=tabBody(); }finally{ G.unemp=u0; UI.tab=t0; G.myC=c0; } return {blk:/야인입니다/.test(h),car:/시즌별 경력/.test(h)}; });
@@ -517,9 +517,9 @@ const QUICK=process.env.QUICK==='1';
       const d0=badge(2,40); UI.lgEdit=2; const c=teamNameCard(); out.ed=/data-a="lgEmb"/.test(c)&&/type="color"/.test(c)&&/type="file"/.test(c)&&/data-a="lgReset"/.test(c);
       A.lgEmb('2:왕관'); const b1=badge(2,40); out.emb=b1!==d0&&G.teams[2].logo.emb==='왕관';
       A.lgEmb('2:글자'); setTeamLogo(2,{code:'XYZ'}); out.code=/>XYZ</.test(badge(2,24));
-      setTeamLogo(2,{img:'data:image/png;base64,iVBORw0KGgo='}); out.img=/<image[^>]+href="data:image\/png/.test(badge(2,24))&&/clip-path/.test(badge(2,24));
+      setTeamLogo(2,{img:'data:image/png;base64,iVBORw0KGgo='}); out.img=/<img[^>]+class="badge bimg bup"[^>]+src="data:image\/png/.test(badge(2,24)); /* 마인2 11-16: 올린 이미지는 방패로 자르지 않고 그대로(contain) */
       A.lgReset('2'); out.reset=badge(2,40)===d0; UI.lgEdit=null; const k=JSON.parse(keep); if(k)G.teams[2].logo=k; else delete G.teams[2].logo; render(); return out; });
-    if(r){ if(r.none)add('구단 로고','로고 바꾸기 기능이 없음'); else { if(!r.ed)add('구단 로고','로고 편집(상징·색·이미지·기본으로)이 없음'); if(!r.emb)add('구단 로고','상징을 바꿔도 배지가 그대로'); if(!r.code)add('구단 로고','글자 로고가 배지에 안 나옴'); if(!r.img)add('구단 로고','이미지 로고가 방패 모양으로 안 나옴'); if(!r.reset)add('구단 로고','기본으로 되돌려도 원래 배지가 아님'); } } }
+    if(r){ if(r.none)add('구단 로고','로고 바꾸기 기능이 없음'); else { if(!r.ed)add('구단 로고','로고 편집(상징·색·이미지·기본으로)이 없음'); if(!r.emb)add('구단 로고','상징을 바꿔도 배지가 그대로'); if(!r.code)add('구단 로고','글자 로고가 배지에 안 나옴'); if(!r.img)add('구단 로고','올린 이미지 로고가 배지에 안 나옴'); if(!r.reset)add('구단 로고','기본으로 되돌려도 원래 배지가 아님'); } } }
   /* 구단 배지(assets/badges/v2): 10개 구단 이름으로 매핑, 게임 전(구단 선택)에도, 작은 표시는 64px·큰 표시는 128px, 별칭을 바꿔도 같은 배지, 직접 바꾼 로고가 우선, 깨진 이미지 없음 */
   { where='구단 배지'; const r=await ev(()=>{ if(typeof BADGE_IMG==='undefined')return {none:true}; const out={};
       out.map=TEAM_DEF.every((d,i)=>BADGE_IMG[i]&&BADGE_IMG[i].n===d.city+' '+d.nick); out.all=G.teams.every(t=>/<img class="badge bimg[^"]*"[^>]*src="data:image\/png/.test(badge(t.id,24)));
@@ -537,18 +537,18 @@ const QUICK=process.env.QUICK==='1';
       out.link=/data-v="cfg:set"/.test(authView()); G.stopCfg=keep; render(); return out; });
     if(r){ if(r.none)add('진행 멈춤','진행 멈춤 설정이 없음'); else { if(!r.tg)add('진행 멈춤','분류별 켜고 끄기·필수 잠금이 없음'); if(!r.off||!r.on)add('진행 멈춤','스폰서 멈춤을 끄고 켜도 반영되지 않음'); if(!r.link)add('진행 멈춤','위임 화면에서 진행 멈춤 설정으로 가는 길이 없음'); } } }
   /* 에셋 v2.1·v3·v4·v5: 유니폼·모자(v5 실사 WebP)는 구단명으로 매핑해 구단 소개·국가대표에, 수상은 종류별 v4 실사 트로피(WebP)(상패 부문·대기록 숫자는 글자로 겹침), 포스트시즌·한국시리즈 마크와 트로피는 엔진 상태(G.ps)의 실제 진출팀·전적으로, 구장 배경은 구장 화면에. 이미지가 깨지지 않는다 */
-  { where='에셋 v2.1·v3'; const r=await ev(()=>{ if(typeof ASSET==='undefined')return {none:true}; const out={}; const S3=ASSET.v4&&ASSET.v4.img||{}, TRO=S3.championship_trophy||ASSET.comp.trophy;
+  { where='에셋 v2.1·v3'; const r=await ev(()=>{ if(typeof ASSET==='undefined')return {none:true}; const out={}; const S3=ASSET.v4&&ASSET.v4.img||{}, TRO=(typeof TRO16!=='undefined'&&TRO16.series)||S3.championship_trophy||ASSET.comp.trophy; /* v16 우승 트로피가 있으면 그것(trophyImg) */
       out.map=TEAM_DEF.every((d,i)=>ASSET.uni[i]&&ASSET.uni[i].n===d.city+' '+d.nick&&/^data:image\/(png|svg|webp)/.test(ASSET.uni[i].h)&&/^data:image\/(png|svg|webp)/.test(ASSET.uni[i].c));
       const A=l=>awV3(l)[0]; out.aw=A('MVP')==='mvp_trophy'&&A('신인왕')==='rookie_trophy'&&A('골든글러브(투수)')==='golden_glove'&&A('삼성 우승 반지')==='championship_ring'&&A('올스타(드림)')==='all_star_dream_badge'&&A('올스타(나눔)')==='all_star_nanum_badge'&&A('WBC 우승')==='national_gold_medal'&&A('WBC 준우승')==='national_silver_medal'&&A('아시안게임 동메달')==='national_bronze_medal'&&A('WBC 조별 탈락')==null&&awV3('세이브왕').join()==='pitching_title_blank,세이브왕'&&awV3('홈런왕').join()==='batting_title_blank,홈런왕'&&awArt('홈런왕',256).indexOf('>홈런왕</b>')>0&&awArt('홈런왕',34).indexOf('<b')<0; /* 상패 부문 글자는 읽을 수 있는 크기에서만 겹친다 */
       out.v4=Object.keys(S3).length>=28&&Object.values(S3).every(u=>/^data:image\/(png|webp)/.test(u)); out.feat=featIcon({k:'cyc',txt:'사이클링 히트'}).indexOf(S3.cycling_hit)>0&&featIcon({k:'mile',txt:'통산 2000안타'}).indexOf('>2000</b>')>0&&featIcon({k:'s3030',txt:'30-30 (31홈런 33도루)'}).indexOf('>30-30</b>')>0&&featIcon({k:'h5',txt:'한 경기 5안타'}).indexOf('<img')<0;
-      out.chron=chronView().indexOf(ASSET.uni[G.user].h)>=0; out.nt=typeof ntView!=='function'||ntView().indexOf(ASSET.nat.b128)>=0; out.stad=/class="bg-hero stad-hero"/.test(stadView('now'));
+      out.chron=clubProfileOverview(G.user).indexOf(ASSET.uni[G.user].h)>=0; /* 11-10 구단 기록 개편: 유니폼은 연대기 대신 구단 소개 개요에 */ out.nt=typeof ntView!=='function'||ntView().indexOf(ASSET.nat.b128)>=0; out.stad=/class="bg-hero stad-hero"/.test(stadView('now'));
       const keep=G.ps; const ord=G.teams.map(t=>t.id).sort((a,b)=>a-b); const sd=[ord[3],ord[7],ord[1],ord[9],ord[0]]; const d0=G.day;
       G.ps={seeds:sd,order:[],res:{wc:[sd[3],sd[4],1,0],spo:[sd[2],sd[3],3,1],po:[sd[1],sd[2],3,2],ks:[sd[0],sd[1],4,3]},resD:{ks:d0},round:'ks',done:true}; const h=psBody();
       const pos=sd.map(t=>h.indexOf('<b>'+esc(tshort(t))+'</b>')); out.seeds=pos.every((x,i)=>x>0&&(i===0||x>pos[i-1])); out.champ=h.indexOf(TRO)>=0&&h.indexOf(esc(tname(sd[0]))+' 우승')>=0&&/4승 3패/.test(h)&&h.indexOf(ASSET.comp.ks)>=0&&h.indexOf(ASSET.comp.ps)>=0;
       G.ps={seeds:sd,order:[],res:{},round:'wc',done:false}; const h2=psBody(); out.noChamp=h2.indexOf(TRO)<0; G.ps=keep;
       document.body.insertAdjacentHTML('beforeend','<div id="astest">'+h+chronView()+trophyRoom()+featIcon({k:'mile',txt:'통산 100홈런'})+awArt('타점왕',64)+'</div>'); return out; });
     await pg.waitForTimeout(300); const im=await ev(()=>{ const I=[...document.querySelectorAll('#astest img')]; const b=I.filter(x=>x.complete&&!x.naturalWidth).length; document.getElementById('astest').remove(); return {n:I.length,b}; });
-    if(r){ if(r.none)add('에셋','에셋 데이터가 없음'); else { if(!r.map)add('에셋','유니폼·모자가 구단명과 맞지 않음'); if(!r.v4)add('에셋','v4 실사 트로피·대기록(PNG/WebP 28종)이 없음'); if(!r.aw)add('에셋','수상 종류별 v4 트로피·상패 부문 글자가 맞지 않음'); if(!r.feat)add('에셋','대기록 배지(전용 그림·통산/시즌 틀 숫자)가 맞지 않음'); if(!r.chron)add('에셋','구단 연대기에 우리 유니폼·모자가 없음'); if(!r.nt)add('에셋','국가대표 화면에 국가대표 배지가 없음'); if(!r.stad)add('에셋','구장 화면에 분위기 배경이 없음');
+    if(r){ if(r.none)add('에셋','에셋 데이터가 없음'); else { if(!r.map)add('에셋','유니폼·모자가 구단명과 맞지 않음'); if(!r.v4)add('에셋','v4 실사 트로피·대기록(PNG/WebP 28종)이 없음'); if(!r.aw)add('에셋','수상 종류별 v4 트로피·상패 부문 글자가 맞지 않음'); if(!r.feat)add('에셋','대기록 배지(전용 그림·통산/시즌 틀 숫자)가 맞지 않음'); if(!r.chron)add('에셋','구단 소개에 우리 유니폼·모자가 없음'); if(!r.nt)add('에셋','국가대표 화면에 국가대표 배지가 없음'); if(!r.stad)add('에셋','구장 화면에 분위기 배경이 없음');
       if(!r.seeds)add('에셋','포스트시즌 진출팀이 엔진 시드 순서대로 나오지 않음'); if(!r.champ)add('에셋','한국시리즈 우승(트로피·실제 우승팀·전적·대회 마크)이 엔진 결과대로 나오지 않음'); if(!r.noChamp)add('에셋','한국시리즈가 끝나기 전에 우승 트로피가 나옴'); }
       if(im&&(im.b||!im.n))add('에셋','이미지가 깨짐('+im.n+'개 중 '+im.b+'개)'); } }
   /* 휴대폰 터치 밀림(커뮤니티 제보 2026-10-31: 인터뷰 3번을 누르면 2번이 나가거나 위로 잘못 찍힘): 더블탭 확대 막기, 창이 열리면 뒤 화면 스크롤 잠금,
@@ -562,8 +562,8 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(r.ta!=='manipulation')add('터치','더블탭 확대가 막혀 있지 않음(touch-action '+r.ta+')'); if(!r.none){ if(!r.lock)add('터치','창이 열려도 뒤 화면 스크롤이 잠기지 않음'); if(!r.guard)add('터치','답한 직후 같은 자리의 새 선택지가 바로 눌려 답이 하나 더 나감('+r.i1+'→'+r.i2+')'); if(!r.vis)add('터치','답한 뒤 새 질문이 창 밖(맨 위로 튐)'); }
       if(r2&&!r2.ok)add('터치','잠깐 뒤 정상 터치가 먹히지 않음'); if(r2&&r2.lock)add('터치','창을 닫아도 스크롤 잠금이 남음'); } }
   /* 트레이드 비교판: 예상 주전(한 선수 한 자리)과 야수 주전 변화, 활용 가능 자원(겹침 허용)을 나눠 보여 준다(리뷰 2026-11-01 22:35 1번) */
-  { where='트레이드 예상 주전'; const r=await ev(()=>{ const S=posStarters(rosterList(G.user)); const p=S.who.SS||S.who['2B']; if(!p)return null; const tid=G.teams.find(t=>t.id!==G.user).id; const h=tradeInsight(tid,[p.id],[]); return {head:/예상 주전 \(한 선수는 한 자리/.test(h),swap:h.indexOf('야수 예상 주전')>=0&&h.indexOf(esc(p.name)+'(')>=0,depth:/활용 가능 자원/.test(h)}; });
-    if(r){ if(!r.head)add('트레이드 비교','예상 주전 기준(한 선수 한 자리) 표시가 없음'); if(!r.swap)add('트레이드 비교','야수 주전 변화(누가 빠지고 누가 들어가는지)가 없음'); if(!r.depth)add('트레이드 비교','포지션별 활용 가능 자원이 없음'); } }
+  { where='트레이드 예상 주전'; const r=await ev(()=>{ const S=posStarters(rosterList(G.user)); const p=S.who.SS||S.who['2B']; if(!p)return null; const tid=G.teams.find(t=>t.id!==G.user).id; const h=tradeInsight(tid,[p.id],[]); return {head:/트레이드 후 예상 주전/.test(h), /* 11-13 괄호 정리: 제목 괄호 설명을 뺌 */swap:h.indexOf('야수 예상 주전')>=0&&h.indexOf(esc(p.name)+'(')>=0,depth:/가용 자원|활용 가능 자원/.test(h)}; });
+    if(r){ if(!r.head)add('트레이드 비교','트레이드 후 예상 주전 표시가 없음'); if(!r.swap)add('트레이드 비교','야수 주전 변화(누가 빠지고 누가 들어가는지)가 없음'); if(!r.depth)add('트레이드 비교','포지션별 활용 가능 자원이 없음'); } }
   /* 소식함: 끝난 인터뷰·결정은 참여한 일이라 파란 강조(안 읽음 점·선택 강조)를 두지 않는다. 고른 줄 표시는 무채색(사용자 2026-11-01 22:58) */
   { where='소식함 끝난 일 강조'; const r=await ev(()=>{ const m=mail('홍보팀','[인터뷰 요청] 점검일보: 시즌 결산','본문',{kind:'언론',acts:[{l:'인터뷰하기',a:'ivOpen',v:'999999'}]}); m.read=false; const keepIv=G.iv; G.iv={id:999999,done:true,ans:[{}],day:G.day-1,exp:G.day+3,qs:[],i:1};
       UI.tab='inbox'; UI.mf='all'; UI.ibSel=m.id; render(); const row=document.querySelector('.ibr[data-mid="'+m.id+'"]'); const out={}; out.row=!!row; if(row){ out.unread=row.classList.contains('unread'); out.need=row.classList.contains('need'); const c=getComputedStyle(row); const rgb=(c.backgroundColor.match(/\d+/g)||[0,0,0]).map(Number); const bl=(c.borderLeftColor.match(/\d+/g)||[0,0,0]).map(Number); const sat=x=>Math.max(...x.slice(0,3))-Math.min(...x.slice(0,3)); out.cur=row.classList.contains('cur'); out.satBg=sat(rgb); out.satBl=sat(bl); }
@@ -603,7 +603,7 @@ const QUICK=process.env.QUICK==='1';
   /* 확인창 = 실제 실행 계산(리뷰 2026-11-02 00:55): 연봉조정 선수는 구단안/선수안, 감독 교체 정산금은 약속 위반 절반 반영 */
   { where='확인창 계산'; const r=await ev(()=>{ const out={}; const keepC=G.contract; const ps=playersOf(G.user).filter(p=>!p.foreign&&!p.faC).slice(0,2); const [a,b]=ps; const ka=a.newSal, kb=b.newSal; a.newSal=a.sal+50; b.newSal=b.sal;
       G.contract={y:G.year,tid:G.user,ended:ps.map(p=>p.id),foreignEnd:[],foreignDrop:[],released:[],done:false,neg:{[b.id]:{st:'arb',arb:{club:200,player:1000},ask:1000,off:200}}};
-      const cf=GUARD.confirmContracts(); out.arb=!!cf&&cf.lines.some(l=>/구단안/.test(l)&&/선수안/.test(l))&&cf.lines.some(l=>/연봉조정 중/.test(l)); G.contract=keepC; a.newSal=ka; b.newSal=kb; if(ka==null)delete a.newSal; if(kb==null)delete b.newSal;
+      const dd=G.day; G.day=dnum(G.year+1,1,21); /* 1월 20일 전 조정 중이면 결재 문서 대신 막힘 안내(검수 11-09s) */ const cf=GUARD.confirmContracts(); G.day=dd; out.arb=!!cf&&cf.lines.some(l=>/구단안/.test(l)&&/선수안/.test(l))&&cf.lines.some(l=>/연봉조정 중/.test(l)); G.contract=keepC; a.newSal=ka; b.newSal=kb; if(ka==null)delete a.newSal; if(kb==null)delete b.newSal;
       const cur=G.mgr[G.user]; if(cur&&!cur.interim&&(G.mmarket||[]).length){ const k={plv:cur.plv,yrs:cur.yrs}; cur.plv=[{y:G.year},{y:G.year}]; cur.yrs=Math.max(2,cur.yrs||0); const c2=GUARD.hireMgr?GUARD.hireMgr(G.mmarket[0].id+":2:0"):null; const txt=c2?c2.lines.join(' '):''; out.sev=!c2||txt.includes(money(mgrSevPay(cur).pay)); cur.plv=k.plv; cur.yrs=k.yrs; } else out.sev=true;
       return out; });
     if(r){ if(!r.arb)add('확인창','연봉조정 중 선수를 구단안/선수안으로 나눠 보여 주지 않음'); if(!r.sev)add('확인창','감독 교체 정산금이 실제 경질 계산과 다름'); } }
