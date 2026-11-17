@@ -5963,6 +5963,14 @@ T('[유저 레더] AI 덱 단계 OVR(사용자 11-17 "레더 ai 도 챔피언스
     ok(L.every(e=>C.cupValidate(e,{}).ok&&!C.cupValidate(e,{}).flags.length&&new Set(e.ln.map(x=>x[1])).size===9&&e.ln.some(x=>x[1]==='C')&&e.rot.length===5&&e.P.every(p=>Object.entries(p.r).every(([k,v])=>k==='vit'||v<=85))),C.ulTierName(t)+' 덱 모양');
     ok(av>prev,'단계가 오를수록 세다'); prev=av; }
   });
+T('[유저 레더] 통산 칸(외부 검수 11-17): 기록 줄은 최근 200리그만 남아도 통산 리그 수·단계별 우승·최고 단계·승패·배지는 줄지 않고, 예전 저장은 처음 열 때 남은 기록으로 한 번만 만든다(두 번 세지 않음)',()=>{ fresh(); const C=FrontOfficeCore;
+  const row=i=>({tier:i<3?4:i%3,rank:i%10+1,to:i%3,move:i<3?'stay':i%10<2?'up':i%10>7?'down':'stay',d:1,name:'와이',w:15,l:12,t:0,rd:5,s:1});
+  let car=null; const H=[]; for(let i=0;i<205;i++){ const x=row(i); H.push(x); car=C.ulCareerAdd(car,x); car.bg=C.ulBadges(H,car).filter(b=>b.on).map(b=>b.k); }
+  const cut=H.slice(-200), S=C.ulSummary(cut,0,car), S0=C.ulSummary(cut,0);
+  ok(S.leagues===205&&S0.leagues===200,'통산 리그 수 '+S.leagues); ok(S.best===4&&S0.best<4,'최고 단계(잘린 줄에만 있던 레전드) '+S.best+'/'+S0.best); ok(S.w===205*15&&S.by[4].n===3,'통산 승·단계별');
+  ok(C.ulBadges(cut,car).find(b=>b.k==='legend').on&&!C.ulBadges(cut).find(b=>b.k==='legend').on,'레전드 배지 유지');
+  G.uld={v:2,tier:1,best:2,hist:H.slice(0,10),deck:null,league:null,last:null,dn:0,ps:{},opp:{}}; const U=uld(); ok(U.car&&U.car.n===10&&U.car.best>=2,'예전 저장 통산 만들기 '+JSON.stringify(U.car&&[U.car.n,U.car.best])); const c1=JSON.stringify(U.car); uld(); ok(JSON.stringify(G.uld.car)===c1,'두 번 열어도 같음');
+  ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({}).league; while(L.next<L.sched.length)ulRunRound(L); ulFinish(); ok(G.uld.car.n===11&&G.uld.hist.length===11,'리그 하나 더하면 하나만 '+G.uld.car.n); });
 T('[유저 레더] 래더 v3(사용자 11-17 "레더랑 대회 쪽 … 시스템 제대로 더 개선해야하고"): 매일·주간 목표는 한국시간 날·주마다 정해지고 기록(ts)만으로 세며, 다 채우면 날·주마다 도장 한 번, 도장으로 테두리·칭호(꾸미기)만 생긴다. 붙어 보기·대회 선수 빼기는 커리어 G·본게임 난수를 건드리지 않는다',()=>{ fresh(); const C=FrontOfficeCore;
   const t0=Date.UTC(2026,10,15,15), day=C.ulDayId(t0), H=k=>Array.from({length:k},(_,i)=>({tier:1,rank:i%2?2:3,w:16,l:11,rd:12,move:i%2?'up':'stay',ts:t0+i*6e4}));
   ok(C.ulDayId(t0)===C.ulDayId(t0+86399e3)&&C.ulDayId(t0+864e5)===day+1,'날 경계(한국시간 0시)'); ok(C.ulWeekId(t0)===C.ulWeekId(t0+6*864e5)&&C.ulWeekId(t0+7*864e5)===C.ulWeekId(t0)+1,'주 경계(월요일 0시)');

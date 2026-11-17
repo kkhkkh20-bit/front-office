@@ -167,6 +167,44 @@ dbTest('클라이언트 연결부(src/core/net.mjs): 플레이어 만들기·토
   assert.equal(await off.probe(), 'off');
 });
 
+
+/* 외부 검수 11-17 P1(결과 줄): 보내는 사이 들어온 결과 지키기 · 401은 줄에 두고 다시 로그인 · 429는 Retry-After까지 기다림 · 늘 오래된 결과부터 · 플레이어 만들기 실패해도 줄에 남음 · 같은 key는 서버가 한 번만 센다 */
+dbTest('결과 줄(src/core/net.mjs): 한 줄로 차례대로, 지금 줄을 읽고 고쳐 쓰기, 401·429·연결 실패는 남기고 확정·영구 거절만 뺀다', async () => {
+  const { netCreate, netResultKind } = await import(path.join(root, 'src/core/net.mjs'));
+  const { handle } = await W; const { env, clock } = await setup();
+  const mem = new Map(), storage = { getItem: k => mem.has(k) ? mem.get(k) : null, setItem: (k, v) => mem.set(k, String(v)), removeItem: k => mem.delete(k) };
+  let mode = '', gate = null, seen = [], t = 0; const sent = () => seen.filter(x => x.p === '/api/v1/ladder/result').map(x => x.key);
+  const fetch = async (u, o) => { const b = o.body ? JSON.parse(o.body) : null; seen.push({ p: u.split('?')[0], key: b && b.key });
+    if (gate && u.endsWith('/ladder/result')) { const g = gate; gate = null; await g; }
+    if (mode === 'down' && u.endsWith('/ladder/result')) throw new TypeError('offline');
+    if (mode === '429' && u.endsWith('/ladder/result')) return new Response('{"error":"rate"}', { status: 429, headers: { 'Retry-After': '20' } });
+    if (mode === '401' && u.endsWith('/ladder/result')) { mode = ''; return new Response('{"error":"auth"}', { status: 401 }); }
+    clock.now += 1000; return handle(new Request(ORIGIN + u, Object.assign({}, o, { signal: undefined })), env, clock.now); };
+  const N = netCreate({ fetch, storage, platform: 'web', sleep: async () => {}, now: () => t });
+  assert.equal((await N.ensurePlayer('줄왕')).status, 201); await N.putDeck(deck(), 0);
+  /* 1) 보내는 중에 새 결과 B가 들어와도 지워지지 않는다(예전: [A,B] → []) */
+  let open; gate = new Promise(r => { open = r; }); const pa = N.result({ key: 'qq-A', rank: 1, teams: 10, w: 15, l: 12, d: 0 }); await new Promise(r => setTimeout(r, 5));
+  N.enqueue({ key: 'qq-B', rank: 1, teams: 10, w: 15, l: 12, d: 0 }); assert.deepEqual(N.queue().map(x => x.key), ['qq-A', 'qq-B']); open(); const ra = await pa; assert.ok(ra.ok, 'A 받음 ' + JSON.stringify(ra));
+  await N.flush(); assert.deepEqual(N.queue(), [], 'B도 보냄'); assert.deepEqual(sent(), ['qq-A', 'qq-B'], '차례대로');
+  assert.equal((await N.me()).data.entry.tier, 2, '루키 1위 → 마이너 1위 → 1부(A 다음 B 순서)');
+  /* 2) 순서: 밀린 A가 있으면 새 B는 그 뒤 */
+  seen = []; mode = 'down'; const r1 = await N.result({ key: 'qq-C', rank: 10, teams: 10, w: 15, l: 12, d: 0 }); assert.equal(r1.queued, true); mode = '';
+  const r2 = await N.result({ key: 'qq-D', rank: 1, teams: 10, w: 15, l: 12, d: 0 }); assert.ok(r2.ok, 'D 응답이 D의 것 ' + JSON.stringify(r2) + JSON.stringify(N.queue())); assert.deepEqual(sent().filter(k => k !== 'qq-C' || true), ['qq-C', 'qq-C', 'qq-D'], '밀린 C 먼저(첫 시도는 끊김)'); assert.equal(r2.data.tier, 2, '1부 10위 강등(마이너) → 마이너 1위 승격(1부)');
+  /* 3) 401: 줄에 남고 authNeeded, 다시 로그인하면 보냄(예전: 성공으로 세고 버림) */
+  mode = '401'; const r3 = await N.result({ key: 'qq-E', rank: 5, teams: 10, w: 15, l: 12, d: 0 }); assert.equal(r3.queued, true); assert.equal(N.authNeeded, true); assert.deepEqual(N.queue().map(x => x.key), ['qq-E']);
+  N.authNeeded = false; await N.flush(); assert.deepEqual(N.queue(), [], '다시 보내면 들어감');
+  /* 4) 429: 줄에 남기고 Retry-After(20초)까지 보내지 않음 */
+  mode = '429'; seen = []; const r4 = await N.result({ key: 'qq-F', rank: 5, teams: 10, w: 15, l: 12, d: 0 }); assert.equal(r4.queued, true); assert.equal(N.waitUntil, t + 20000); mode = '';
+  await N.flush(); assert.deepEqual(sent(), ['qq-F'], '기다리는 동안 다시 보내지 않음'); t += 21000; await N.flush(); assert.deepEqual(N.queue(), [], '시간이 지나면 보냄');
+  /* 5) 토큰이 없으면(플레이어 만들기 실패) 줄에만 남고, 나중에 로그인하면 보냄 */
+  N.forget(); N.enqueue({ key: 'qq-G', rank: 3, teams: 10, w: 15, l: 12, d: 0 }); const f5 = await N.flush(); assert.equal(f5.stop, 'auth'); assert.deepEqual(N.queue().map(x => x.key), ['qq-G'], '토큰만 버려도 줄은 남음');
+  assert.equal((await N.ensurePlayer('새토큰')).status, 201); N.authNeeded = false; await N.flush(); assert.deepEqual(N.queue(), []);
+  /* 6) 같은 key 두 번: 줄에도 한 번, 서버도 한 번만 센다 */
+  N.enqueue({ key: 'qq-H', rank: 4, teams: 10, w: 15, l: 12, d: 0 }); N.enqueue({ key: 'qq-H', rank: 4, teams: 10, w: 15, l: 12, d: 0 }); assert.equal(N.queue().length, 1); await N.flush();
+  const again = await N.call('POST', '/ladder/result', { key: 'qq-H', rank: 4, teams: 10, w: 15, l: 12, d: 0 }); assert.ok(again.ok && again.data.dup, '서버 dup ' + JSON.stringify(again.data)); assert.equal((await N.me()).data.entry.leagues, 2, '새 플레이어 리그 2(G·H)');
+  /* 나누기 */
+  assert.deepEqual([{ ok: true }, { status: 400 }, { status: 409 }, { status: 401 }, { status: 429 }, { status: 503 }, { offline: true }, { status: 0 }].map(netResultKind), ['ok', 'drop', 'drop', 'auth', 'wait', 'retry', 'retry', 'retry']);
+});
 /* 사용자 11-17 "화면도 새 서버로 바로 전환해": 예전 KV 래더 유저 옮기기 */
 dbTest('KV에서 옮겨 오기: 첫 덱 시작 단계는 같은 세계 id의 KV 단계까지만, KV 기록이 없으면 루키, 두 번째부터는 보낸 단계 무시', async () => {
   const kv = new Map(); const { J, mk } = await setup({ kv }); const W1 = 'w' + '1'.repeat(16), W2 = 'w' + '2'.repeat(16), W3 = 'w' + '3'.repeat(16);

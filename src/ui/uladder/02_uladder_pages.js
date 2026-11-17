@@ -21,7 +21,7 @@ const ulMsgHtml=()=>(UL.msg?`<div class="note${UL.bad?' bad':''}">${esc(UL.msg)}
 /* 이 기기 리그 기록에서 보는 이번 시즌 칸 */
 function ulSeasonNow(U){ const se=FrontOfficeCore.ulSeason(Date.now()); return {se,SS:U.seas&&U.seas.id===se.id?U.seas:null}; }
 /* ---- 로비 ---- */
-function ulLobby(U){ const C=FrontOfficeCore, L=U.league, t=U.tier|0, {se,SS}=ulSeasonNow(U), S=C.ulSummary(U.hist,U.tier), M=ulV1On()&&UL.sv.me, E=M&&M.entry; if(ulV1On()&&ulNet().signedIn())ulSvMe();
+function ulLobby(U){ const C=FrontOfficeCore, L=U.league, t=U.tier|0, {se,SS}=ulSeasonNow(U), S=C.ulSummary(U.hist,U.tier,U.car), M=ulV1On()&&UL.sv.me, E=M&&M.entry; if(ulV1On()&&ulNet().signedIn())ulSvMe();
   const st=L?ulStand(L):null, me=st&&st.find(x=>x.key===0), prog=L?Math.round(L.next/L.sched.length*100):0;
   const snap=[E?['시즌 포인트',E.points]:['시즌 리그',SS?SS.n:0],E?['단계 순위',E.rank?E.rank+'위':'-']:['시즌 최고 점수',SS?SS.top:0],['우승',E?E.wins:SS?SS.win:0],['치른 리그',S.leagues]];
   const cg=U.deck&&!L?C.ulCapGate(U.deck.e,t,Date.now()):null; /* 연봉 상한(사용자 11-17): 승격으로 상한을 넘거나 유예가 끝난 예전 덱이면 '덱'으로 */
@@ -161,7 +161,7 @@ function ulTeamData(U){ const C=FrontOfficeCore, L=[...(U.seasons||[]),...(U.sea
   const H=U.hist.slice(-30), W=640, Hh=170, bh=Hh/5, x=i=>12+i*(W-24)/Math.max(1,H.length-1), y=h=>(4-(h.tier|0))*bh+((h.rank||5)-1)/9*bh;
   const chart=H.length?`<svg class="ul-chart" viewBox="0 0 ${W} ${Hh+16}" role="img" aria-label="최근 리그 단계·순위 흐름">${C.UL_TIERS.map((n,i)=>`<rect x="0" y="${(4-i)*bh}" width="${W}" height="${bh}" fill="${UL_TC[i][1]}" opacity="${i%2?.16:.24}"/><text x="3" y="${(4-i)*bh+11}" class="ul-ct">${n}</text>`).join('')}
     <polyline fill="none" stroke="var(--fg,#e8eef3)" stroke-width="1.6" stroke-opacity=".7" points="${H.map((h,i)=>`${x(i).toFixed(1)},${y(h).toFixed(1)}`).join(' ')}"/>${H.map((h,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(h).toFixed(1)}" r="${h.rank===1?4.5:3.2}" fill="${h.move==='up'?'#4ad06a':h.move==='down'?'#ff6b6b':'#cfd8dc'}"><title>${esc(C.ulTierName(h.tier))} ${h.rank}위${h.w!=null?` ${h.w}승 ${h.l}패`:''}</title></circle>`).join('')}<text x="${W-4}" y="${Hh+12}" text-anchor="end" class="ul-ct">최근 ${H.length}리그 →</text></svg><p class="small muted">띠 = 단계, 띠 안 위치 = 순위(위가 1위). 초록 승격 · 빨강 강등.</p>`:'<p class="small muted">리그를 마치면 흐름이 그려집니다.</p>';
-  const S=C.ulSummary(U.hist,U.tier), tot=U.hist.reduce((a,h)=>{ a.w+=h.w||0; a.l+=h.l||0; a.t+=h.t||0; a.rd+=h.rd||0; return a; },{w:0,l:0,t:0,rd:0});
+  const S=C.ulSummary(U.hist,U.tier,U.car), tot={w:S.w|0,l:S.l|0,t:S.t|0,rd:S.rd|0}; /* 통산은 통산 칸에서(기록 줄은 최근 200리그) */
   const sum=`<section class="card"><h2 class="sec">통산</h2><div class="ul-sc"><div><span>리그</span><b class="num">${S.leagues}</b></div><div><span>우승</span><b class="num">${S.by.reduce((a,b)=>a+b.win,0)}</b></div><div><span>승-패</span><b class="num">${tot.w}-${tot.l}</b></div><div><span>최고</span><b>${C.ulTierName(S.best)}</b></div></div>
     <table class="ul-st"><tr><th>단계</th><th>리그</th><th>우승</th><th>승격</th><th>강등</th></tr>${C.UL_TIERS.map((n,i)=>i).reverse().map(i=>`<tr class="${i===(U.tier|0)?'me':''}"><td>${ulEmblem(i,16)} ${C.UL_TIERS[i]}</td><td class="num">${S.by[i].n}</td><td class="num">${S.by[i].win}</td><td class="num">${S.by[i].up}</td><td class="num">${S.by[i].down}</td></tr>`).join('')}</table>${ulBadgeHtml(U)}</section>`;
   return [`<section class="card ul-wide"><h2 class="sec">팀 래더 기록 · 시즌별</h2>${tb}<p class="dk-t">리그 흐름</p>${chart}</section>`,sum+ulCsvCard()]; }

@@ -2,7 +2,7 @@
    규칙·승강·상대 고르기는 공용 모듈(src/core/uladder.mjs). 덱은 프런트컵 엔트리 형식, 경기는 cupMatch(3연전, 무승부 허용, 선발 순번 이어 가기) 그대로.
    난수는 평범한 난수(같은 덱이라도 리그마다 결과가 다르다). 커리어 G는 G.uld(단계·기록·지금 리그)만 쓴다: 리그 경기는 커리어 세계를 건드리지 않는다.
    리그 중간(연전 사이)에 내 덱을 고치면 다음 연전부터 그 덱으로 나간다. 상대 덱은 리그를 시작할 때 받은 사본으로 고정한다 */
-function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],deck:null,league:null,last:null,dn:0,ps:{},opp:{}}); if((U.v|0)<2)FrontOfficeCore.ulMigrate(U); return U; } /* v2: 예전 저장은 처음 열 때 옮긴다(선수·상대 기록 칸, 사용자 11-17) */
+function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],deck:null,league:null,last:null,dn:0,ps:{},opp:{}}); if((U.v|0)<2)FrontOfficeCore.ulMigrate(U); if(!U.car)U.car=FrontOfficeCore.ulCareerInit(U.hist,U.best); return U; } /* 통산 칸(외부 검수 11-17): 없으면 남은 기록 줄로 한 번 만든다 */ /* v2: 예전 저장은 처음 열 때 옮긴다(선수·상대 기록 칸, 사용자 11-17) */
 const UL_ME='me';
 /* 덱 등록(이 저장의 내 덱). src: 'now'(지금 1군) | 'alb:번호'(앨범 시즌). 가져온 남의 덱(ro)은 등록할 수 없다 */
 function ulSetDeck(e,src){ const C=FrontOfficeCore; if(!e||e.ro)return '가져온 덱은 내 덱으로 등록할 수 없습니다.'; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x);
@@ -87,7 +87,8 @@ function ulFinish(){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L||L.n
     stand:st.map(x=>({rank:x.rank,name:L.teams[x.key].name,kind:L.teams[x.key].kind,w:x.w,l:x.l,t:x.t,pct:x.pct,gb:x.gb,diff:x.diff,ovr:L.teams[x.key].e.ovr})),edits:L.edits.length,src:L.src};
   res.teams=L.teams.map(t=>({name:t.name,kind:t.kind,nick:t.nick||'',ovr:t.e.ovr})); res.ser=L.series.map(x=>[x.r,x.a,x.b,x.g]); res.rs=me.rs; res.ra=me.ra; /* 끝난 리그 일정·결과(사용자 11-17) */
   const now=Date.now();
-  ulAccum(U,L,st,se); U.hist.push({tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,d:L.deck,name:res.name,at:G.day,y:G.year,s:se.id,w:me.w,l:me.l,t:me.t,rd:me.diff,pts,ts:now}); if(U.hist.length>200)U.hist.splice(0,U.hist.length-200);
+  const bg0=C.ulBadges(U.hist,U.car).filter(x=>x.on).map(x=>x.k), hrow={tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,d:L.deck,name:res.name,at:G.day,y:G.year,s:se.id,w:me.w,l:me.l,t:me.t,rd:me.diff,pts,ts:now};
+  ulAccum(U,L,st,se); U.hist.push(hrow); U.car=C.ulCareerAdd(U.car||C.ulCareerInit(U.hist.slice(0,-1),U.best),hrow); U.car.bg=C.ulBadges(U.hist,U.car).filter(x=>x.on).map(x=>x.k); res.nbg=U.car.bg.filter(k=>!bg0.includes(k)); if(U.hist.length>200)U.hist.splice(0,U.hist.length-200);
   /* 래더 v3(사용자 11-17 "컴프매처럼 좀 재미있게"): 매일·주간 목표 도장, 꾸미기(테두리·칭호)가 새로 생겼는지 결과에 적어 둔다 */
   const c0=C.ulCosmetic(U.gl), tk=C.ulGoalsTick(U.gl,U.hist,now,L.tier); U.gl=tk.gl; const c1=C.ulCosmetic(U.gl);
   res.gl={day:tk.day,week:tk.week,frame:c1.frame>c0.frame?c1.frameName:'',titles:c1.titles.filter((x,i)=>x.on&&!c0.titles[i].on).map(x=>x.n),ms0,ms1:C.ulMissions(U.seas,U.hist,se.id,L.tier).filter(m=>m.done).length};

@@ -78,13 +78,20 @@ export function ulSlim(e) {
 }
 /* 기록 요약: hist [{tier(그 리그 단계), rank, to(다음 단계), move, d(등록한 덱 번호: 리그 중 고쳐도 같은 덱), name, at}]
    → 단계별 리그 수·우승·승격·강등, 최고 단계, 마지막 덱이 그 단계에서 연달아 치른 리그 수(stay) */
-export function ulSummary(hist, cur) {
+export function ulSummary(hist, cur, car) {
   hist = hist || []; const by = UL_TIERS.map(() => ({ n: 0, win: 0, up: 0, down: 0 })); let best = cur | 0;
   for (const x of hist) { const b = by[x.tier | 0]; if (!b) continue; b.n++; if (x.rank === 1) b.win++; if (x.move === 'up') b.up++; if (x.move === 'down') b.down++; best = Math.max(best, x.tier | 0, x.to | 0); }
   const last = hist[hist.length - 1]; let n = 0;
   if (last) for (let i = hist.length - 1; i >= 0 && hist[i].d === last.d && hist[i].tier === last.tier; i--) n++;
-  return { leagues: hist.length, best, by, stay: last ? { tier: last.tier, n, name: last.name } : null };
+  const stay = last ? { tier: last.tier, n, name: last.name } : null;
+  if (car && car.n >= hist.length) return { leagues: car.n, best: Math.max(best, car.best | 0), by: car.by.map(x => Object.assign({}, x)), stay, w: car.w, l: car.l, t: car.t, rd: car.rd }; /* 통산은 따로 센 값(기록 줄은 최근 200리그만) */
+  return { leagues: hist.length, best, by, stay, w: hist.reduce((a, x) => a + (x.w | 0), 0), l: hist.reduce((a, x) => a + (x.l | 0), 0), t: hist.reduce((a, x) => a + (x.t | 0), 0), rd: hist.reduce((a, x) => a + (x.rd | 0), 0) };
 }
+/* 통산 칸(외부 검수 11-17: 기록 줄이 200리그로 잘리면 통산·최고 단계·배지가 줄어들던 것). 리그마다 한 줄씩 더하고, 예전 저장은 처음 한 번 남은 기록 줄로 만든다 */
+export function ulCareerAdd(car, x) { const c = car || { v: 1, n: 0, by: UL_TIERS.map(() => ({ n: 0, win: 0, up: 0, down: 0 })), best: 0, w: 0, l: 0, t: 0, rd: 0, bg: [] };
+  const b = c.by[x.tier | 0]; if (b) { b.n++; if (x.rank === 1) b.win++; if (x.move === 'up') b.up++; if (x.move === 'down') b.down++; }
+  c.n++; c.best = Math.max(c.best | 0, x.tier | 0, x.to | 0); for (const f of ['w', 'l', 't', 'rd']) c[f] = (c[f] | 0) + (x[f] | 0); return c; }
+export function ulCareerInit(hist, best) { let c = null; for (const x of hist || []) c = ulCareerAdd(c, x); c = c || ulCareerAdd(null, { tier: -1 }); if (!(hist || []).length) c.n = 0; c.best = Math.max(c.best | 0, best | 0); c.bg = ulBadges(hist).filter(x => x.on).map(x => x.k); return c; }
 /* 리그 점수: 단계 × 100 + (10 − 순위) × 10. 루키 1위 90 · 마이너 10위 100 · 레전드 1위 490. 십의 자리 = 아래에 둔 팀 수라 단계를 넘어 한 줄로 비교된다 */
 export const ulPts = (tier, rank, n) => Math.max(0, Math.min(UL_TIERS.length - 1, tier | 0)) * 100 + Math.max(0, (n || UL_TEAMS) - (rank | 0)) * 10;
 /* 래더 시즌: 한국 시간 월요일 0시에 시작하는 2주. 기준 2026-01-12(월): 11.16(월)에 시즌이 바뀐다. 단계는 시즌이 바뀌어도 그대로, 시즌 기록(최고 단계·점수)만 새로 센다 */
@@ -106,7 +113,7 @@ export const UL_BADGES = Object.freeze([
   ['legend', '레전드', '레전드 단계에 올랐습니다.'],
   ['king', '레전드 우승', '레전드 리그를 1위로 마쳤습니다.'],
 ]);
-export function ulBadges(hist) { hist = hist || []; const got = new Set(); let run = 0, keep = 0;
+export function ulBadges(hist, car) { hist = hist || []; const got = new Set((car && car.bg) || []); let run = 0, keep = 0; /* 통산 칸에 받아 둔 배지는 기록 줄이 잘려도 남는다 */
   hist.forEach((x, i) => { const pv = hist[i - 1];
     if (x.move === 'up') { got.add('up1'); run++; if (run >= 3) got.add('up3'); if (pv && pv.move === 'down') got.add('back'); } else run = 0;
     if (x.rank === 1) { got.add('win'); if ((x.tier | 0) === UL_TIERS.length - 1) got.add('king'); }
