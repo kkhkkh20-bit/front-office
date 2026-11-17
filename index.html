@@ -6944,6 +6944,21 @@ header.ibm-h>.ph-w>.av{width:76px;height:76px;border-radius:10px}
 .admx .adm-flag{border-color:var(--bad,#c33);box-shadow:inset 3px 0 var(--bad,#c33)}.admx .adm-tools{margin:6px 0;gap:6px}.admx .adm-prev{margin-top:8px;padding:8px;border:1px dashed var(--line);border-radius:8px}
 @media (max-width:640px){.admx .adm-steps{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:8px}.admx .adm-go{width:100%}.admx .adm-seed{columns:1}}
 .admx .adm-day .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}.admx .adm-day .btns .btn{width:auto;min-width:0;padding:4px 10px;flex:none}
+/* 관리자 페이지 탭(프런트컵 · 래더 현황)과 래더 현황(src/ui/cup/03_ladder_admin.js) */
+.admx>.adm-tabs{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}.admx>.adm-tabs .btn{width:auto;flex:none}.admx>.adm-tabs .btn.on{background:var(--accent,#3b7dd8);border-color:var(--accent,#3b7dd8);color:#fff}
+@media(min-width:1100px){.ldax{grid-template-rows:auto minmax(0,1fr)}.ldax>.setc{min-height:0;overflow-y:auto;scrollbar-width:thin}}
+.ldax .lda-t{width:100%;border-collapse:collapse;font-size:13px}.ldax .lda-t th,.ldax .lda-t td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:right}.ldax .lda-t th:first-child{text-align:left;font-weight:600}.ldax .lda-t thead th{color:var(--muted);font-weight:500}
+.ldax .lda-bars{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:2px;height:84px;align-items:end;margin:2px 0 8px}
+.ldax .lda-bars>span{display:grid;grid-template-rows:minmax(0,1fr) auto;height:100%;align-items:end;min-width:0}
+.ldax .lda-bars i{display:block;min-height:1px;background:var(--accent,#3b7dd8);border-radius:2px 2px 0 0}.ldax .lda-alt i{background:#2f9a4a}.ldax .lda-hours i{background:#d08a1e}
+.ldax .lda-bars em{font-style:normal;font-size:9px;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden}.ldax .lda-trend>span:nth-child(odd) em{visibility:hidden}.ldax .lda-hours>span:not(:nth-child(3n+1)) em{visibility:hidden}
+.ldax .lda-tiers{display:grid;gap:6px;margin:4px 0}.ldax .lda-tiers>div{display:grid;grid-template-columns:5.5em minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px}
+.ldax .lda-hb{position:relative;height:12px;border-radius:6px;background:color-mix(in srgb,var(--line) 60%,transparent);overflow:hidden}.ldax .lda-hb i{position:absolute;left:0;top:0;bottom:0;background:var(--accent,#3b7dd8);border-radius:6px}.ldax .lda-hb i.d{background:color-mix(in srgb,var(--accent,#3b7dd8) 30%,transparent);z-index:0}.ldax .lda-hb i:first-child{z-index:1}
+.ldax .lda-plat{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line);margin:4px 0}.ldax .lda-web{background:var(--accent,#3b7dd8)}.ldax .lda-android{background:#2f9a4a}.ldax .lda-steam{background:#5b5fc7}
+.ldax .lda-m{display:grid;grid-template-columns:5.5em minmax(0,1fr) auto;gap:2px 8px;align-items:center;font-size:13px;margin:6px 0}.ldax .lda-m b{text-align:right;font-weight:500}.ldax .lda-mb{grid-column:1/3;height:8px;border-radius:4px;background:color-mix(in srgb,var(--line) 60%,transparent);overflow:hidden}.ldax .lda-mb i{display:block;height:100%;background:#2f9a4a}.ldax .lda-m.warm .lda-mb i{background:#d08a1e}.ldax .lda-m.hot .lda-mb i{background:var(--bad,#c33)}
+.ldax .lda-list{margin:4px 0;padding-left:1.4em;display:grid;gap:3px;font-size:13px}.ldax ul.lda-list{list-style:none;padding-left:0}.ldax .lda-kv{border:1px dashed color-mix(in srgb,var(--accent,#3b7dd8) 50%,transparent)}
+.ldax .lda-head .row{gap:8px;align-items:center}
+.ldax .adm-day .btns{flex-wrap:nowrap}.ldax .adm-day>span:first-child{min-width:0}
 /* 유저 래더(구단 › 유저 래더): 설정 화면과 같은 세 줄 배치(.setx), PC는 칸 안에서만 스크롤 */
 .ulx .ul-head{margin:0 0 6px}.ul-tier{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:800;font-size:13px;background:var(--panel2,rgba(127,127,127,.12))}
 .ul-t1{background:color-mix(in srgb,#4a9d5b 25%,transparent)}.ul-t2{background:color-mix(in srgb,#3b7dd8 25%,transparent)}.ul-t3{background:color-mix(in srgb,#8a4fd0 28%,transparent)}.ul-t4{background:#d4a017;color:#1b1400}
@@ -11862,6 +11877,12 @@ var FrontOfficeCore = (() => {
     LADDER_PACK_V: () => LADDER_PACK_V,
     LADDER_RULES: () => LADDER_RULES,
     LADDER_V: () => LADDER_V,
+    NET_FLAG: () => NET_FLAG,
+    NET_PLAYER: () => NET_PLAYER,
+    NET_QMAX: () => NET_QMAX,
+    NET_QUEUE: () => NET_QUEUE,
+    NET_TOKEN: () => NET_TOKEN,
+    NET_V: () => NET_V,
     UL_DOWN: () => UL_DOWN,
     UL_TEAMS: () => UL_TEAMS,
     UL_TIERS: () => UL_TIERS,
@@ -11923,6 +11944,9 @@ var FrontOfficeCore = (() => {
     ladderSnapHash: () => ladderSnapHash,
     ladderSnapPack: () => ladderSnapPack,
     ladderValidate: () => ladderValidate,
+    netCreate: () => netCreate,
+    netEnabled: () => netEnabled,
+    netPlatform: () => netPlatform,
     onOrAfter: () => onOrAfter,
     pitchCountAfter: () => pitchCountAfter,
     pitchInZone: () => pitchInZone,
@@ -12472,7 +12496,7 @@ var FrontOfficeCore = (() => {
         const r = Math.floor(i / G), c = i % G;
         groups[r % 2 ? G - 1 - c : c].push(k);
       });
-      playIn = groups.map((g, gi) => ({ id: "P" + (gi + 1), teams: g, bracket: g.length > 1 ? cupBracket(g, { size: pow2(g.length), best: { default: 1 }, playIn: null, shuffleTop: 0 }) : null }));
+      playIn = groups.map((g2, gi) => ({ id: "P" + (gi + 1), teams: g2, bracket: g2.length > 1 ? cupBracket(g2, { size: pow2(g2.length), best: { default: 1 }, playIn: null, shuffleTop: 0 }) : null }));
       main = seeds.slice(0, D).concat(playIn.map((p) => "Q:" + p.id));
     } else if (seeds.length > size) main = seeds.slice(0, size);
     size = Math.max(size, pow2(main.length));
@@ -12557,11 +12581,11 @@ var FrontOfficeCore = (() => {
     for (const s of series) {
       const G = s.games || [];
       if (!G.length) continue;
-      if (G.length >= 4 && G.every((g) => Math.abs(g.sa - g.sb) <= 3)) out.push({ k: "close", id: s.id, who: s.win, msg: `${s.label}: 모든 경기 3점 차 이내 시리즈` });
+      if (G.length >= 4 && G.every((g2) => Math.abs(g2.sa - g2.sb) <= 3)) out.push({ k: "close", id: s.id, who: s.win, msg: `${s.label}: 모든 경기 3점 차 이내 시리즈` });
       let wa = 0, wb = 0, down3 = null;
-      for (const g of G) {
-        if (g.sa > g.sb) wa++;
-        else if (g.sb > g.sa) wb++;
+      for (const g2 of G) {
+        if (g2.sa > g2.sb) wa++;
+        else if (g2.sb > g2.sa) wb++;
         if (wa === 0 && wb === 3) down3 = "A";
         if (wb === 0 && wa === 3) down3 = "B";
       }
@@ -12636,19 +12660,19 @@ var FrontOfficeCore = (() => {
   var pctOf = (x) => x.w + x.l ? x.w / (x.w + x.l) : 0;
   function cupStandings(keys, games) {
     const R = new Map(keys.map((k) => [k, { key: k, g: 0, w: 0, l: 0, t: 0, rs: 0, ra: 0 }]));
-    for (const g of games) {
-      const A = R.get(g.a), B = R.get(g.b);
+    for (const g2 of games) {
+      const A = R.get(g2.a), B = R.get(g2.b);
       if (!A || !B) continue;
       A.g++;
       B.g++;
-      A.rs += g.sa;
-      A.ra += g.sb;
-      B.rs += g.sb;
-      B.ra += g.sa;
-      if (g.sa > g.sb) {
+      A.rs += g2.sa;
+      A.ra += g2.sb;
+      B.rs += g2.sb;
+      B.ra += g2.sa;
+      if (g2.sa > g2.sb) {
         A.w++;
         B.l++;
-      } else if (g.sb > g.sa) {
+      } else if (g2.sb > g2.sa) {
         B.w++;
         A.l++;
       } else {
@@ -12671,14 +12695,14 @@ var FrontOfficeCore = (() => {
       const grp = L.slice(i, j);
       if (grp.length > 1) {
         const ks = new Set(grp.map((x) => x.key)), h = new Map(grp.map((x) => [x.key, { w: 0, l: 0 }]));
-        for (const g of games) {
-          if (!ks.has(g.a) || !ks.has(g.b)) continue;
-          if (g.sa > g.sb) {
-            h.get(g.a).w++;
-            h.get(g.b).l++;
-          } else if (g.sb > g.sa) {
-            h.get(g.b).w++;
-            h.get(g.a).l++;
+        for (const g2 of games) {
+          if (!ks.has(g2.a) || !ks.has(g2.b)) continue;
+          if (g2.sa > g2.sb) {
+            h.get(g2.a).w++;
+            h.get(g2.b).l++;
+          } else if (g2.sb > g2.sa) {
+            h.get(g2.b).w++;
+            h.get(g2.a).l++;
           }
         }
         for (const x of grp) x.h2h = pctOf(h.get(x.key));
@@ -12707,9 +12731,9 @@ var FrontOfficeCore = (() => {
   ]);
   function cupSeriesState(spec, games) {
     let wa = 0, wb = 0, t = 0;
-    for (const g of games || []) {
-      if (g.sa > g.sb) wa++;
-      else if (g.sb > g.sa) wb++;
+    for (const g2 of games || []) {
+      if (g2.sa > g2.sb) wa++;
+      else if (g2.sb > g2.sa) wb++;
       else t++;
     }
     if (spec.wc) {
@@ -12723,14 +12747,14 @@ var FrontOfficeCore = (() => {
   function cupLeagueRun(keys, cfg, play) {
     cfg = Object.assign({}, CUP_DEFAULT, cfg || {});
     const n = keys.length, meet = cfg.meet || 3, sched = cupLeagueSched(n, meet), cnt = keys.map(() => 0), series = [], flat = [];
-    const slim = (g) => ({ sa: g.sa, sb: g.sb, walk: !!g.walk, inn: g.inn || 9, lc: g.lc || 0 });
+    const slim = (g2) => ({ sa: g2.sa, sb: g2.sb, walk: !!g2.walk, inn: g2.inn || 9, lc: g2.lc || 0 });
     for (const s of sched) {
       const a = keys[s.a], b = keys[s.b], o = { cup: cfg.id, round: "L" + s.r, match: s.id, best: meet, all: 1, tie: 1, home: s.home, ri: [cnt[s.a], cnt[s.b]] };
       const res = play(a, b, o), G = (res.games || []).map(slim);
       cnt[s.a] += G.length;
       cnt[s.b] += G.length;
-      for (const g of G) flat.push({ a, b, sa: g.sa, sb: g.sb });
-      const wa = G.filter((g) => g.sa > g.sb).length, wb = G.filter((g) => g.sb > g.sa).length;
+      for (const g2 of G) flat.push({ a, b, sa: g2.sa, sb: g2.sb });
+      const wa = G.filter((g2) => g2.sa > g2.sb).length, wb = G.filter((g2) => g2.sb > g2.sa).length;
       series.push({ id: s.id, kind: "L", r: s.r, day0: s.day0, a, b, o, games: G, win: wa > wb ? a : wb > wa ? b : null, res });
     }
     const stand = cupStandings(keys, flat), top = stand.slice(0, 5).map((x) => x.key), W = {};
@@ -12748,7 +12772,7 @@ var FrontOfficeCore = (() => {
     }
     return { sched, series, stand, top, champ, runner };
   }
-  var cupQual = (g) => ({ pa: Math.round(g * 3.1), outs: g * 3 });
+  var cupQual = (g2) => ({ pa: Math.round(g2 * 3.1), outs: g2 * 3 });
   function cupMvp(bat, pit, no) {
     const skip = new Set(no || []), ok = (x) => !skip.has(String(x.key).split(":")[0]);
     let best = null;
@@ -12762,7 +12786,7 @@ var FrontOfficeCore = (() => {
     }
     return best;
   }
-  var cupDrama = (g) => (g.walk ? 6 : 0) + (g.inn > 9 ? 3 + (g.inn - 10) : 0) + 2 * (g.lc || 0) + (Math.abs(g.sa - g.sb) <= 1 ? 3 : Math.abs(g.sa - g.sb) === 2 ? 1 : 0) + 0.1 * (g.sa + g.sb);
+  var cupDrama = (g2) => (g2.walk ? 6 : 0) + (g2.inn > 9 ? 3 + (g2.inn - 10) : 0) + 2 * (g2.lc || 0) + (Math.abs(g2.sa - g2.sb) <= 1 ? 3 : Math.abs(g2.sa - g2.sb) === 2 ? 1 : 0) + 0.1 * (g2.sa + g2.sb);
 
   // src/core/uladder.mjs
   var UL_V = 1;
@@ -12812,6 +12836,176 @@ var FrontOfficeCore = (() => {
     let n = 0;
     if (last) for (let i = hist.length - 1; i >= 0 && hist[i].d === last.d && hist[i].tier === last.tier; i--) n++;
     return { leagues: hist.length, best, by, stay: last ? { tier: last.tier, n, name: last.name } : null };
+  }
+
+  // src/core/net.mjs
+  var NET_V = 1;
+  var NET_FLAG = "fo-net-v1";
+  var NET_TOKEN = "fo-net-v1-token";
+  var NET_PLAYER = "fo-net-v1-player";
+  var NET_QUEUE = "fo-net-v1-queue";
+  var NET_QMAX = 20;
+  var g = () => typeof globalThis !== "undefined" ? globalThis : {};
+  function store(s) {
+    s = s || (() => {
+      try {
+        return g().localStorage || null;
+      } catch (e) {
+        return null;
+      }
+    })();
+    return { get: (k) => {
+      try {
+        return s ? s.getItem(k) : null;
+      } catch (e) {
+        return null;
+      }
+    }, set: (k, v) => {
+      try {
+        if (s) v == null ? s.removeItem(k) : s.setItem(k, v);
+      } catch (e) {
+      }
+    } };
+  }
+  function netEnabled(storage, search) {
+    const st = store(storage);
+    if (st.get(NET_FLAG) === "1") return true;
+    try {
+      search = search ?? (g().location ? g().location.search : "");
+      return /(?:^|[?&])net=v1(?:&|$)/.test(String(search || ""));
+    } catch (e) {
+      return false;
+    }
+  }
+  function netPlatform(w) {
+    w = w || g();
+    try {
+      const f = String(w.FT_PLATFORM || "").toLowerCase();
+      if (["web", "android", "steam"].includes(f)) return f;
+      if (w.Capacitor && typeof w.Capacitor.getPlatform === "function" && w.Capacitor.getPlatform() === "android") return "android";
+      if (w.__TAURI__ || w.steamworks || w.process && w.process.versions && w.process.versions.electron) return "steam";
+      const ua = String(w.navigator && w.navigator.userAgent || "");
+      if (/Electron\//.test(ua)) return "steam";
+      if (w.document && /^android-app:/.test(String(w.document.referrer || ""))) return "android";
+    } catch (e) {
+    }
+    return "web";
+  }
+  var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  function netCreate(o) {
+    o = o || {};
+    const st = store(o.storage), fetchFn = o.fetch || ((...a) => g().fetch(...a)), base = String(o.base ?? "").replace(/\/+$/, ""), platform = o.platform || netPlatform(), client = `${platform}/${o.version || NET_V}`;
+    const retries = o.retries ?? 2, wait = o.sleep || sleep, timeout = o.timeout || 8e3;
+    const N = { status: "unknown", platform, base, last: null };
+    const token = () => st.get(NET_TOKEN);
+    N.player = () => {
+      try {
+        return JSON.parse(st.get(NET_PLAYER) || "null");
+      } catch (e) {
+        return null;
+      }
+    };
+    N.signedIn = () => !!token();
+    N.forget = () => {
+      st.set(NET_TOKEN, null);
+      st.set(NET_PLAYER, null);
+      st.set(NET_QUEUE, null);
+    };
+    N.call = async (method, path, body, c) => {
+      c = c || {};
+      const h = { "X-FT-Client": client };
+      if (body != null) h["Content-Type"] = "application/json";
+      if (c.auth !== false && token()) h.Authorization = "Bearer " + token();
+      const tries = c.retries ?? retries;
+      for (let i = 0; ; i++) {
+        let r = null, data = null;
+        try {
+          const ac = typeof AbortController !== "undefined" ? new AbortController() : null, t = ac ? setTimeout(() => ac.abort(), timeout) : null;
+          try {
+            r = await fetchFn(base + "/api/v1" + path, { method, headers: h, body: body == null ? void 0 : JSON.stringify(body), cache: "no-store", credentials: base ? "omit" : "same-origin", signal: ac ? ac.signal : void 0 });
+          } finally {
+            if (t) clearTimeout(t);
+          }
+          try {
+            data = await r.json();
+          } catch (e) {
+            data = null;
+          }
+        } catch (e) {
+          r = null;
+        }
+        if (r && r.status === 503 && data && data.error === "not_configured") {
+          N.status = "off";
+          return N.last = { ok: false, status: 503, data, off: true };
+        }
+        if (r && r.status < 500) {
+          if (r.ok) N.status = "ok";
+          return N.last = { ok: r.ok, status: r.status, data };
+        }
+        if (i >= tries) {
+          if (!r) N.status = "offline";
+          return N.last = { ok: false, status: r ? r.status : 0, data, offline: !r };
+        }
+        await wait(400 * Math.pow(3, i));
+      }
+    };
+    N.probe = async () => {
+      const r = await N.call("GET", "/health", null, { auth: false, retries: 0 });
+      if (r.ok) N.season = r.data.season;
+      return N.status;
+    };
+    N.ensurePlayer = async (nickname, extra) => {
+      if (token()) return { ok: true, data: { player: N.player() } };
+      const r = await N.call("POST", "/player", Object.assign({ nickname, platform }, extra || {}), { auth: false, retries: 1 });
+      if (r.ok && r.data && r.data.token) {
+        st.set(NET_TOKEN, r.data.token);
+        st.set(NET_PLAYER, JSON.stringify(r.data.player));
+      }
+      return r;
+    };
+    N.rename = async (nickname) => {
+      const r = await N.call("POST", "/player", { nickname, platform });
+      if (r.ok) st.set(NET_PLAYER, JSON.stringify(r.data.player));
+      return r;
+    };
+    N.putDeck = (e, tier, wid) => N.call("PUT", "/ladder/deck", { e, tier, wid });
+    N.opponents = (q) => N.call("GET", "/ladder/opponents?" + new URLSearchParams(Object.assign({ n: 9 }, q || {})));
+    N.leaderboard = (tier, season) => N.call("GET", `/ladder/leaderboard?tier=${tier | 0}${season ? "&season=" + (season | 0) : ""}`, null, { auth: false });
+    N.feed = () => N.call("GET", "/ladder/feed", null, { auth: false });
+    N.me = () => N.call("GET", "/ladder/me");
+    N.rivals = () => N.call("GET", "/ladder/rivals");
+    N.h2h = (pid) => N.call("GET", "/ladder/h2h/" + encodeURIComponent(pid));
+    N.queue = () => {
+      try {
+        return JSON.parse(st.get(NET_QUEUE) || "[]");
+      } catch (e) {
+        return [];
+      }
+    };
+    N.result = async (sum2) => {
+      const r = await N.call("POST", "/ladder/result", sum2);
+      if (!r.ok && (r.offline || r.status >= 500) && !r.off) {
+        const q = N.queue().filter((x) => x.key !== sum2.key);
+        q.push(sum2);
+        st.set(NET_QUEUE, JSON.stringify(q.slice(-NET_QMAX)));
+        r.queued = true;
+      } else if (r.ok) await N.flush();
+      return r;
+    };
+    N.flush = async () => {
+      const q = N.queue();
+      if (!q.length) return 0;
+      let sent = 0;
+      const left = [];
+      for (const s of q) {
+        const r = await N.call("POST", "/ladder/result", s, { retries: 0 });
+        if (r.ok || r.status >= 400 && r.status < 500 && r.status !== 429) sent++;
+        else left.push(s);
+      }
+      st.set(NET_QUEUE, left.length ? JSON.stringify(left) : null);
+      return sent;
+    };
+    return N;
   }
   return __toCommonJS(index_exports);
 })();
@@ -47252,6 +47446,8 @@ function admStepCard(cfg){ const k=admStage(), R=ADM.run, n=(ADM.ents||[]).lengt
   return `<section class="card adm-now"><h2 class="sec">지금 할 일</h2>${admStatusLine()}${bar}<p class="adm-what">${what}</p>${btn?`<div class="btns">${btn}${extra}</div>`:extra?`<div class="btns">${extra}</div>`:''}${ADM.prog?`<p class="small">${esc(ADM.prog)}</p>`:''}</section>`; }
 function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"><p class="small muted">관리자 페이지는 웹 사이트에서만 쓸 수 있습니다.</p></section>';
   if(ADM.chk!=='ok')return `<section class="card"><h2 class="sec">프런트컵 관리자</h2>${ADM.chk==='checking'?'<p class="small muted">관리자 키를 확인하는 중입니다.</p>':'<p class="small muted">설정 › 정보 맨 아래 \'관리자\'에서 관리자 키를 넣어 주세요.</p>'}</section>`;
+  const tabs=`<nav class="adm-tabs" role="tablist"><button class="btn small${ADM.tab!=='ld'?' on':''}" role="tab" aria-selected="${ADM.tab!=='ld'}" data-a="admTab" data-v="cup">프런트컵</button><button class="btn small${ADM.tab==='ld'?' on':''}" role="tab" aria-selected="${ADM.tab==='ld'}" data-a="admTab" data-v="ld">래더 현황</button></nav>`;
+  if(ADM.tab==='ld')return `<div class="setx ws-own cupx admx ldax">${tabs}${ladderAdminView()}</div>`; /* 래더 현황: 03_ladder_admin.js */
   if(ADM.cup&&!ADM.runSt)A.admRunLoad(); if(ADM.cup&&ADM.cup.id&&ADM.ents==null&&!ADM.entsAuto&&!ADM.busy){ ADM.entsAuto=1; setTimeout(()=>A.admEnts('auto'),0); } const C=FrontOfficeCore, c=ADM.cup||{}, cfg=Object.assign({},C.CUP_DEFAULT,c), R=ADM.run;
   const inp=(id,lab,v,ph,w)=>`<label class="adm-in"><span>${lab}</span><input id="${id}" value="${esc(v??'')}" placeholder="${esc(ph||'')}" autocomplete="off"${w?` style="max-width:${w}"`:''}></label>`;
   const s1=`<section class="card"><h2 class="sec">1. 대회 만들기·열기</h2>${c.id?`<p class="small">지금: <b>${esc(c.title)}</b> (${esc(c.id)}) · ${c.open!==false?'<b>접수 중</b>':'접수 닫힘'}${c.deadline?` · 마감 ${esc(c.deadline)}`:''}</p>`:'<p class="small muted">아직 만든 대회가 없습니다.</p>'}
@@ -47282,7 +47478,71 @@ function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"
   const s6=`<section class="card"><h2 class="sec">6. 유저 래더 관리</h2><div class="row"><input id="admLdQ" value="${esc(ADM.ldq||'')}" placeholder="팀명 검색(비우면 최근 등록 순)" autocomplete="off" style="flex:1;min-width:0"><button class="btn small" data-a="admLdFind">찾기</button></div>
     ${ADM.ld?`<div class="adm-ents">${ADM.ld.map(d=>`<div class="adm-day"><span><b>${esc(d.name)}</b> ${esc(d.year||'')} <span class="small muted">${FrontOfficeCore.ulTierName(d.tier)} · OVR ${esc(C.cupOvrTxt(d.ovr))}</span>${d.hide?' <span class="pill">숨김</span>':''}</span><span class="btns"><button class="btn small" data-a="admLdHide" data-v="${esc(d.wid)}" data-u="${d.hide?1:0}">${d.hide?'보이기':'숨기기'}</button><button class="btn small" data-a="admLdDel" data-v="${esc(d.wid)}">삭제</button></span></div>`).join('')||'<p class="small muted">없습니다.</p>'}</div>`:''}</section>`;
   const msg=ADM.msg?`<div class="note${ADM.bad?' bad':''}">${esc(ADM.msg)}</div>`:'';
-  return `<div class="setx ws-own cupx admx"><div class="setc">${admStepCard(cfg)}${msg}${s1}${s3}</div><div class="setc">${s2}</div><div class="setc">${s4}${s5}${s6}</div></div>`; }
+  return `<div class="setx ws-own cupx admx">${tabs}<div class="setc">${admStepCard(cfg)}${msg}${s1}${s3}</div><div class="setc">${s2}</div><div class="setc">${s4}${s5}${s6}</div></div>`; }
+/* ===== 관리자 페이지 › 래더 현황: 유저 래더 참여도·서버 사용량 관찰 =====
+   서버 v1(D1)이 켜져 있으면 GET /api/v1/admin/stats(관리자 키) 하나로: 오늘/7일/30일 활성·신규 덱·완료 리그·승격·강등, 단계별 분포, 14일 추이, 시간대별 리그 완료,
+   플랫폼 비율(web/android/steam), 상위 플레이어·최근 승격·최근 등록 덱(숨김/삭제), 오늘 D1 읽기/쓰기·KV 쓰기 추정과 무료 한도 대비 %.
+   D1이 아직 없으면(503 not_configured·schema_missing) 지금의 KV 래더(/api/ladder/tiers·admin/list)로 등록 덱 수·단계별만 보여 주고 'D1을 연결하면 더 자세히' 안내.
+   탭 전환은 02_cup_admin.js의 cupAdminView가 ADM.tab으로 한다. 키(ADM.key)는 같은 관리자 키(CUP_ADMIN) */
+const LDA={st:'',d:null,kv:null,msg:'',bad:false,at:0};
+const ldaApi=(p,o)=>{ o=o||{}; return fetch(p,Object.assign({cache:'no-store',credentials:'same-origin'},o,{headers:Object.assign({Authorization:'Bearer '+ADM.key},o.body!=null?{'Content-Type':'application/json'}:{})})).then(async r=>({r,j:await cupJson(r)})); };
+async function ldaLoad(){ LDA.st='loading'; try{ render(); }catch(e){}
+  try{ const {r,j}=await ldaApi('/api/v1/admin/stats');
+    if(r.ok){ Object.assign(LDA,{st:'d1',d:j,kv:null,at:Date.now(),msg:''}); }
+    else if(r.status===503||r.status===404){ const t=await ldaApi('/api/ladder/tiers').catch(()=>null), l=await ldaApi('/api/ladder/admin/list').catch(()=>null);
+      Object.assign(LDA,{st:'kv',d:null,why:j.error||'not_configured',kv:{counts:t&&t.r.ok?t.j.counts||[]:null,n:l&&l.r.ok?l.j.n:null,decks:l&&l.r.ok?(l.j.decks||[]).slice(0,20):[]},at:Date.now()}); }
+    else Object.assign(LDA,{st:'err',msg:j.message||('서버 응답 '+r.status),bad:true});
+  }catch(e){ Object.assign(LDA,{st:'err',msg:'서버에 연결할 수 없습니다.',bad:true}); }
+  try{ render(); }catch(e){} }
+const ldaDay=ms=>{ const d=new Date(ms+9*3600e3); return `${d.getUTCMonth()+1}월 ${d.getUTCDate()}일`; }; /* 한국시간 날짜 */
+const ldaN=n=>(+n||0).toLocaleString('ko-KR');
+const ldaAgo=ms=>{ if(!ms)return ''; const m=Math.round((Date.now()-ms)/60000); return m<1?'방금':m<60?m+'분 전':m<1440?Math.round(m/60)+'시간 전':Math.round(m/1440)+'일 전'; };
+/* 작은 막대: 값 목록 → 세로 막대 칸(가장 큰 값이 꽉 참). 제목(title)에 값 */
+function ldaBars(vals,labs,cls){ const mx=Math.max(1,...vals); return `<div class="lda-bars ${cls||''}">${vals.map((v,i)=>`<span title="${esc(labs[i])} · ${ldaN(v)}"><i style="height:${Math.round(v/mx*100)}%"></i><em>${esc(labs[i])}</em></span>`).join('')}</div>`; }
+function ldaMeter(lab,v,max,pct){ const p=Math.min(100,pct??(v/max*100)); return `<div class="lda-m${p>=80?' hot':p>=50?' warm':''}"><span>${lab}</span><b class="num">${ldaN(v)} / ${ldaN(max)}</b><span class="lda-mb"><i style="width:${Math.max(p>0?1:0,p)}%"></i></span><span class="num small">${(Math.round(p*10)/10)}%</span></div>`; }
+const LDA_KEYS=[['active','활성 플레이어'],['decks_new','새 덱'],['leagues','완료한 리그'],['promos','승격'],['demos','강등']];
+function ldaD1(){ const d=LDA.d, C=FrontOfficeCore, W=d.windows, s=d.season||{};
+  const sum=`<section class="card"><h2 class="sec">참여도</h2><p class="small muted">시즌 ${s.id||'-'} · ${s.ends?ldaDay(s.starts)+' ~ '+ldaDay(s.ends-1):''} · 전체 플레이어 ${ldaN(d.totals.players)} · 등록 덱 ${ldaN(d.totals.decks)}${d.totals.hidden?` · 숨김 ${d.totals.hidden}`:''}</p>
+    <table class="lda-t"><thead><tr><th></th><th>오늘</th><th>7일</th><th>30일</th></tr></thead><tbody>${LDA_KEYS.map(([k,lab])=>`<tr><th>${lab}</th>${['today','d7','d30'].map(w=>`<td class="num">${ldaN(W[w][k])}</td>`).join('')}</tr>`).join('')}</tbody></table>
+    <p class="small muted">활성 = 그날(기간 안에) 한 번이라도 접속한 플레이어. 7일·30일 활성은 겹치지 않게 센 수입니다.</p></section>`;
+  const P=d.platforms||{}, pt=Math.max(1,(P.web||0)+(P.android||0)+(P.steam||0));
+  const plat=`<section class="card"><h2 class="sec">플랫폼(최근 7일 접속)</h2><div class="lda-plat">${[['web','웹'],['android','안드로이드'],['steam','스팀']].map(([k,l])=>`<span class="lda-p lda-${k}" style="flex:${Math.max(.0001,(P[k]||0)/pt)}" title="${l} ${P[k]||0}"></span>`).join('')}</div>
+    <p class="small">${[['web','웹'],['android','안드로이드'],['steam','스팀']].map(([k,l])=>`${l} <b class="num">${Math.round((P[k]||0)/pt*100)}%</b>`).join(' · ')}</p><p class="small muted">플레이어별 하루 첫 접속을 7일 동안 더한 비율입니다.${!(P.android||P.steam)?' 앱(플레이스토어·스팀)이 나오면 여기에 나뉘어 보입니다.':''}</p></section>`;
+  const U=d.usage||{}, F=U.free||{};
+  const use=`<section class="card"><h2 class="sec">서버 사용량(오늘 추정)</h2>${ldaMeter('D1 읽기',U.d1_r,F.d1_r,U.pct&&U.pct.d1_r)}${ldaMeter('D1 쓰기',U.d1_w,F.d1_w,U.pct&&U.pct.d1_w)}${ldaMeter('KV 쓰기',U.kv_w,F.kv_w,U.pct&&U.pct.kv_w)}
+    <p class="small muted">무료 한도(하루) 대비입니다. ${esc(U.note||'')} 유료(월 $5)는 D1 쓰기 월 5천만 줄·KV 쓰기 월 100만 번까지 포함.</p></section>`;
+  const T=d.trend||[], H=d.hours||{d7:[]};
+  const trend=`<section class="card"><h2 class="sec">최근 14일</h2><p class="small muted">완료한 리그</p>${ldaBars(T.map(x=>x.leagues),T.map(x=>x.day.slice(5).replace('-','/')),'lda-trend')}
+    <p class="small muted">활성 플레이어</p>${ldaBars(T.map(x=>x.active),T.map(x=>x.day.slice(5).replace('-','/')),'lda-trend lda-alt')}
+    <p class="small muted">시간대별 리그 완료(7일 합, 한국시간)</p>${ldaBars(H.d7||[],(H.d7||[]).map((_,h)=>String(h)),'lda-hours')}</section>`;
+  const tmx=Math.max(1,...d.tiers.map(t=>Math.max(t.players,t.decks)));
+  const tiers=`<section class="card"><h2 class="sec">단계별 분포</h2><div class="lda-tiers">${d.tiers.slice().reverse().map(t=>`<div><span>${esc(t.name)}</span><span class="lda-hb"><i style="width:${t.players/tmx*100}%"></i><i class="d" style="width:${t.decks/tmx*100}%"></i></span><span class="num small">${t.players}명 · 덱 ${t.decks} · 리그 ${ldaN(t.leagues)}</span></div>`).join('')}</div>
+    <p class="small muted">막대: 이번 시즌 참여한 플레이어(진한 색) · 그 단계 등록 덱(옅은 색)</p></section>`;
+  const top=`<section class="card"><h2 class="sec">상위 플레이어(이번 시즌)</h2>${(d.top||[]).length?`<ol class="lda-list">${d.top.map(x=>`<li><b>${esc(x.nickname)}</b>${x.hidden?' <span class="pill">숨김</span>':''} <span class="small muted">${C.ulTierName(x.tier)} · ${ldaN(x.points)}점 · 리그 ${x.leagues} · 우승 ${x.wins}</span></li>`).join('')}</ol>`:'<p class="small muted">아직 리그를 마친 플레이어가 없습니다.</p>'}</section>`;
+  const KIND={promo:'승격',demote:'강등',crown:'레전드 우승',season_top:'시즌 상위'};
+  const feed=`<section class="card"><h2 class="sec">최근 소식</h2>${(d.feed||[]).length?`<ul class="lda-list">${d.feed.map(x=>`<li><b>${esc(x.nickname)}</b> <span class="small">${KIND[x.kind]||esc(x.kind)} ${x.tier_from!=null&&x.kind!=='season_top'?`${C.ulTierName(x.tier_from)} → ${C.ulTierName(x.tier_to)}`:C.ulTierName(x.tier_to)}</span> <span class="small muted">${ldaAgo(x.at)}</span></li>`).join('')}</ul>`:'<p class="small muted">아직 없습니다.</p>'}</section>`;
+  const decks=`<section class="card"><h2 class="sec">최근 등록 덱</h2><div class="adm-ents">${(d.decks||[]).map(x=>`<div class="adm-day"><span><b>${esc(x.name)}</b> ${esc(x.year||'')} <span class="small muted">${esc(x.nickname)} · ${C.ulTierName(x.tier)} · OVR ${x.ovr||'-'} · ${esc(x.platform||'web')} · ${ldaAgo(x.at)}</span>${x.hidden?' <span class="pill">숨김</span>':''}</span><span class="btns"><button class="btn small" data-a="ldaHide" data-v="${esc(x.pid)}" data-u="${x.hidden?1:0}">${x.hidden?'보이기':'숨기기'}</button><button class="btn small" data-a="ldaDel" data-v="${esc(x.pid)}">삭제</button></span></div>`).join('')||'<p class="small muted">아직 없습니다.</p>'}</div></section>`;
+  return [sum+plat+use,trend+tiers,top+feed+decks]; }
+function ldaKV(){ const k=LDA.kv||{}, C=FrontOfficeCore, cn=k.counts||[], mx=Math.max(1,...cn);
+  const info=`<section class="card lda-kv"><h2 class="sec">지금은 기본 정보만 보입니다</h2><p class="small">서버 데이터베이스(D1)가 아직 연결되지 않아 지금의 래더 저장소(KV) 기준으로 <b>등록 덱 수와 단계별 분포</b>만 보여 줍니다.</p>
+    <p class="small">D1을 연결하면 활성 플레이어·완료한 리그·승격/강등·일별 추이·시간대·플랫폼·서버 사용량까지 자세히 볼 수 있습니다. 설정 순서: <b>docs/server-setup.md</b> (D1 만들기 → 워커에 바인딩 DB → 콘솔에 SQL 붙여 넣기).</p>
+    <p class="small muted">${LDA.why==='schema_missing'?'D1은 연결됐지만 표가 아직 없습니다(SQL 실행 전).':'D1 바인딩 없음'}</p></section>`;
+  const tiers=`<section class="card"><h2 class="sec">등록 덱 ${k.n!=null?ldaN(k.n)+'개':''}</h2>${cn.length?`<div class="lda-tiers">${cn.map((n,t)=>[n,t]).reverse().map(([n,t])=>`<div><span>${esc(C.ulTierName(t))}</span><span class="lda-hb"><i style="width:${n/mx*100}%"></i></span><span class="num small">덱 ${n}</span></div>`).join('')}</div>`:'<p class="small muted">단계별 수를 받지 못했습니다.</p>'}</section>`;
+  const recent=`<section class="card"><h2 class="sec">최근 등록 덱</h2><div class="adm-ents">${(k.decks||[]).map(x=>`<div class="adm-day"><span><b>${esc(x.name||'')}</b> ${esc(x.year||'')} <span class="small muted">${C.ulTierName(x.tier)} · OVR ${esc(C.cupOvrTxt(x.ovr))} · ${ldaAgo(x.at)}</span>${x.hidden||x.hide?' <span class="pill">숨김</span>':''}</span></div>`).join('')||'<p class="small muted">없습니다.</p>'}</div><p class="small muted">숨기기·삭제는 '프런트컵' 탭의 6. 유저 래더 관리에서 합니다.</p></section>`;
+  return [info,tiers,recent]; }
+function ladderAdminView(){
+  if(!LDA.st)setTimeout(ldaLoad,0);
+  const head=`<section class="card lda-head"><div class="row"><h2 class="sec" style="margin:0;flex:1">래더 현황</h2><span class="small muted">${LDA.at?ldaAgo(LDA.at)+' 받음':''}${LDA.st==='d1'?' · 서버 v1(D1)':LDA.st==='kv'?' · KV 기본 정보':''}</span><button class="btn small" data-a="ldaLoad"${LDA.st==='loading'?' disabled':''}>새로고침</button></div>${LDA.msg?`<div class="note${LDA.bad?' bad':''}">${esc(LDA.msg)}</div>`:''}</section>`;
+  const cols=LDA.st==='d1'&&LDA.d?ldaD1():LDA.st==='kv'?ldaKV():[LDA.st==='err'?'':'<section class="card"><p class="small muted">불러오는 중입니다.</p></section>','',''];
+  return `<div class="setc">${head}${cols[0]}</div><div class="setc">${cols[1]}</div><div class="setc">${cols[2]}</div>`; }
+Object.assign(A,{
+  ldaLoad(){ ldaLoad(); },
+  async ldaHide(v,el){ const hide=el&&el.dataset.u!=='1'; const {r,j}=await ldaApi('/api/v1/admin/hide',{method:'PUT',body:JSON.stringify({pid:v,hide})}).catch(()=>({r:{ok:false},j:{}}));
+    if(!r.ok){ LDA.msg=j.message||'바꾸지 못했습니다.'; LDA.bad=true; return render(); } for(const x of (LDA.d&&LDA.d.decks)||[])if(x.pid===v)x.hidden=hide?1:0; LDA.msg=hide?'숨겼습니다. 순위표·소식·상대 목록에서 빠집니다.':'다시 보이게 했습니다.'; LDA.bad=false; render(); },
+  async ldaDel(v){ if(!confirm('이 플레이어의 래더 덱을 지웁니다(기록은 남습니다).'))return; const {r,j}=await ldaApi('/api/v1/admin/deck/'+encodeURIComponent(v),{method:'DELETE'}).catch(()=>({r:{ok:false},j:{}}));
+    if(!r.ok){ LDA.msg=j.message||'지우지 못했습니다.'; LDA.bad=true; return render(); } if(LDA.d)LDA.d.decks=(LDA.d.decks||[]).filter(x=>x.pid!==v); LDA.msg='덱을 지웠습니다.'; LDA.bad=false; render(); },
+  admTab(v){ ADM.tab=v==='ld'?'ld':'cup'; if(ADM.tab==='ld'&&LDA.st!=='loading')LDA.st=''; render(); },
+});
 /* ===== 유저 래더 화면: 구단 › 유저 래더 =====
    내 덱(지금 1군 또는 앨범 시즌을 등록·갱신, 서버에 올림) · 리그(순위·다음 연전·덱 고치기·연전 돌리기/끝까지) · 결과(승강·MVP) · 단계표(기록).
    리그를 시작할 때 서버에서 같은 단계 덱을 한 번 받는다(/api/ladder/opp). 모자라면 가져온 우승 덱, 그다음 단계 기준 AI 덱으로 채운다(엔진 src/engine/uladder).

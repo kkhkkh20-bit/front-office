@@ -8,6 +8,8 @@
  * 유저 대회(/api/cup/*)는 worker/cup.js, 유저 래더(/api/ladder/*)는 worker/uladder.js. 같은 KV를 쓰고, 관리자 호출에는 비밀값 CUP_ADMIN이 필요하다. */
 import { handleCup } from './cup.js';
 import { handleLadder } from './uladder.js';
+import { handleV1, scheduledV1 } from './v1/index.js';
+import { countKV } from './v1/usage.js';
 
 export const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // 0·O·1·I·L 없음, 31자 → 8자리 약 39.6비트
 export const CODE_LEN = 8;
@@ -82,6 +84,9 @@ async function rateLimited(req, env, now) {
 export async function handle(req, env, now = Date.now()) {
   const url = new URL(req.url);
   if (!url.pathname.startsWith('/api/')) return env.ASSETS ? env.ASSETS.fetch(req) : new Response('Not found', { status: 404 });
+  /* 서버 v1(D1): env.DB가 없으면 503 not_configured. 있으면 KV 쓰기 횟수도 세어 관리자 '래더 현황'에 보인다(worker/v1/usage.js) */
+  if (/^\/api\/v1(\/|$)/.test(url.pathname)) { try { return await handleV1(req, env, url, now); } catch (e) { return err(500, 'server'); } }
+  if (env.DB && env.SAVE_KV) { const kv = countKV(env.SAVE_KV), raw = env; env = new Proxy(raw, { get: (t, k) => k === 'SAVE_KV' ? kv : t[k] }); }
   if (/^\/api\/cup(\/|$)/.test(url.pathname)) {
     if (!env.SAVE_KV) return err(503, 'not_configured');
     if (req.method !== 'GET' && !sameOrigin(req, url) && !(req.headers.get('Authorization') || '').startsWith('Bearer ')) return err(403, 'cross_origin');
@@ -130,4 +135,8 @@ export async function handle(req, env, now = Date.now()) {
   }
 }
 
-export default { fetch: (req, env) => handle(req, env) };
+export default {
+  fetch: (req, env) => handle(req, env),
+  /* Cron Trigger를 켰을 때만 불린다(wrangler.jsonc 주석). 없으면 요청 때 시즌을 바꾼다 */
+  scheduled: (ev, env, ctx) => ctx.waitUntil(scheduledV1(env, Date.now()).catch(() => {})),
+};
