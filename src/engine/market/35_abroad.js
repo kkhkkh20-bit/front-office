@@ -54,7 +54,7 @@ const ovsBeen=p=>p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.
 const postDone=p=>!!((p.faC&&!p.ext)||p.faN||p.lastFA!=null||p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.id));
 function postingSeason(){ G.posting=G.posting||[]; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.joinY>G.year||milServing(p))continue; /* 군 복무 중에는 해외에 나갈 수 없다(검수 11-06) */ if(p.postPromise&&p.postPromiseT!=null&&p.postPromiseT!==p.team){ delete p.postPromise; delete p.postPromiseT; } /* 약속은 약속한 구단만 지킨다(이적하면 끝). 자격 검사보다 먼저 지운다(검수 11-06) */ if(postDone(p))continue; /* KBO 포스팅은 FA 자격 전 보류 선수만: FA 계약을 한 적 있거나 해외에 다녀온 선수는 대상 아님(비FA 다년계약 ext는 FA 이력이 아님) */ if(p.faC&&p.yrs>1&&p.postPromise!==G.year)continue; /* 포스팅을 약속한 해에는 다년계약을 맺었어도 약속을 확인한다(조용히 넘어가지 않게) */ if(p.postPromise!==G.year&&(p.svc<7||p.age>32||ovr(p)<POST_T.o))continue; mlbOf(p);
     const want=postWant(p)||(p.postPromise===G.year); if(!want)continue; if(G.posting.some(x=>x.pid===p.id&&x.y===G.year&&!x.void))continue;
-    if(p.team!==G.user||G.unemp){ const k=aiPostDecide(p); if(k==='allow')postStart(p); else if(k==='promise'){ p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); } /* 우리 '1년 뒤 약속'과 같은 효과 */ continue; }
+    if(p.team!==G.user||G.unemp){ const k=aiPostDecide(p); if(k==='allow'){ if(p.postPromise===G.year)postPromMem(p,true); postStart(p); } else if(k==='promise'){ p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); } /* 우리 '1년 뒤 약속'과 같은 효과 */ continue; }
     const promised=p.postPromise===G.year; const asked=(p.postAsk||0);
     evNew('post',`${p.name} 포스팅 요청`,`${p.name}(${posLabel(p)}, ${p.age}세, 서비스 ${p.svc}년)이(가) 메이저리그 도전을 위해 포스팅을 요청했습니다.${promised?' 지난해 "1년 뒤 보내 주겠다"고 약속했습니다.':asked?` 작년에도 요청했다가 거절당했습니다(${asked}회).`:''} 언론은 연일 해외 진출 가능성을 다루고 있습니다. ${postEstTxt(postEst(p))}`,
       [{l:'포스팅 허락',fx:`${dmd(postDay())}에 결과가 나옵니다.`+' 계약이 성사되면 포스팅 비용(계약 보장액의 약 20%)을 받고 선수는 떠납니다. 무산되면 남습니다.'},
@@ -62,14 +62,16 @@ function postingSeason(){ G.posting=G.posting||[]; for(const p of Object.values(
        {l:'거절',fx:`기분이 크게 떨어집니다${asked?' (두 번째 거절이라 더 크게)':''}. 팬 여론은 갈리고 언론은 비판적입니다.`}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id,promised,day:postDay()} /* 안내한 발표일 그대로(검수 11-07) */,def:promised||aiPostDecide(p)==='allow'?0:1,exp:12}); } } /* 답하지 않으면 AI 구단과 같은 기준으로 처리(해외 활성화 2-1: 예전 기본안은 거절) */
 EVH.post={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; if(p.team!==G.user||G.unemp)return `${p.name}은(는) 이제 우리 선수가 아닙니다.`; prInit(); if((G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void))return `${p.name}은(는) 이미 포스팅을 신청했습니다. 이 요청은 정리합니다.`; /* 같은 시즌 이중 신청·신청 뒤 거절 페널티 방지(검수 11-08) */
     if(i===0&&milServing(p))return `${p.name}은(는) 군 복무 중이라 포스팅할 수 없습니다.`;
-    if(i===0){ const x=postStart(p,e.data.day); return `${p.name} 포스팅을 신청했습니다. ${dmd(x.day)}에 결과가 나옵니다.`; }
-    if(i===1){ if(e.data.promised){ p.mor=clamp((p.mor??60)-25,0,100); G.pr.fan=clamp(G.pr.fan-3,0,100); G.pr.press=clamp(G.pr.press-4,0,100); news('언론',`${tshort(G.user)}, ${p.name}과의 약속 또 미뤄`,'약속을 어겼다는 비판이 나옵니다.',-3,{ref:p.id}); p.postPromise=G.year+1; p.postPromiseT=p.team; return '약속을 또 미뤘습니다(내년으로 다시 약속). 기분 크게 하락, 팬 여론 악화, 언론 악화.'; } /* 약속 연도도 갱신(검수 11-08) */
+    if(i===0){ if(e.data.promised)postPromMem(p,true); const x=postStart(p,e.data.day); return `${p.name} 포스팅을 신청했습니다. ${dmd(x.day)}에 결과가 나옵니다.`; }
+    if(i===1){ if(e.data.promised){ postPromMem(p,false); p.mor=clamp((p.mor??60)-25,0,100); G.pr.fan=clamp(G.pr.fan-3,0,100); G.pr.press=clamp(G.pr.press-4,0,100); news('언론',`${tshort(G.user)}, ${p.name}과의 약속 또 미뤄`,'약속을 어겼다는 비판이 나옵니다.',-3,{ref:p.id}); p.postPromise=G.year+1; p.postPromiseT=p.team; return '약속을 또 미뤘습니다(내년으로 다시 약속). 기분 크게 하락, 팬 여론 악화, 언론 악화.'; } /* 약속 연도도 갱신(검수 11-08) */
       p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); return `${p.name}에게 내년 포스팅을 약속했습니다. 기분 상승.`; }
-    p.postAsk=(p.postAsk||0)+1; const d=e.data.promised?28:p.postAsk>=2?20:14; p.mor=clamp((p.mor??60)-d,0,100); G.pr.press=clamp(G.pr.press-(e.data.promised?5:2),0,100); G.pr.fan=clamp(G.pr.fan-(e.data.promised?3:0),0,100);
+    if(e.data.promised)postPromMem(p,false); p.postAsk=(p.postAsk||0)+1; const d=e.data.promised?28:p.postAsk>=2?20:14; p.mor=clamp((p.mor??60)-d,0,100); G.pr.press=clamp(G.pr.press-(e.data.promised?5:2),0,100); G.pr.fan=clamp(G.pr.fan-(e.data.promised?3:0),0,100);
     news('언론',`${tshort(G.user)}, ${p.name} 포스팅 불허`,e.data.promised?'약속을 뒤집었다는 비판이 거셉니다.':'구단은 전력 유지를 택했습니다.',e.data.promised?-3:-1,{ref:p.id}); return `포스팅을 거절했습니다. 기분 하락.`; } };
 /* AI 구단의 포스팅 판단(사용자 11-16: AI도 유저처럼. 예전: 리빌딩 75%·그 밖 50% 무작위 허락, 거절해도 아무 대가 없음).
    사람 단장처럼 본다: 약속한 해에는 지킨다. 계약으로 묶어 둘 해가 1년 이하면(곧 FA로 공짜로 잃는다) 포스팅 비용을 받고 보낸다.
    2년 넘게 남은 주전을 우승·내년 도전 구단이 원하면 '1년 뒤'를 약속하고 남긴다(우리 선택지와 같은 효과). 그 밖에는 허락한다 */
+/* 포스팅 약속을 지켰나(계약 2단계 에이전트 기억): 담당 에이전트가 그 구단과의 일로 기억한다. 어기면 친분 -3과 불만(약속) */
+function postPromMem(p,kept){ try{ const ag=agentOf(p); if(!kept)grvAdd(p,'prom',5); if(!ag||p.team==null)return; agRelAdd(ag,kept?1:-3,`${p.name} 포스팅 약속 ${kept?'이행':'불이행'}`,p.team); agMemSet(ag,p.team,kept?'kept':'broke',p.id); }catch(e){} }
 function aiPostDecide(p){ if(p.postPromise===G.year)return 'allow'; const t=team(p.team); if(!t)return 'allow'; const pl=planOf(t)||'next';
   let ny=1; try{ ny=ctrlYears(p); }catch(e){} if(ny<=1||pl==='build'||pl==='tight')return 'allow';
   let reg=false; try{ reg=isRegular(p); }catch(e){} if(reg&&(pl==='win'||pl==='next'||pl==='star')){ if(ny<=2){ const E=postEst(p); if(E.fee[0]+E.fee[1]>=2*POST_T.feeSell)return 'allow'; } return 'promise'; } return 'allow'; } /* 2년 뒤면 FA로 잃을 주전은 포스팅 비용 예상(2-3)이 크면 우승 도전 구단도 보낸다: 우리 화면과 같은 예상치 */
