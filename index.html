@@ -287,6 +287,13 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:2px -12px;width:auto}
 .fnd-t td .trtag{margin-left:6px}
 .trade-blk-o{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;min-width:0}
 .st-lvl{margin:0 0 6px}
+
+/* 협상 선수 정렬(제보 11-17): 상대·우리 선수 모두 같은 한 줄. 폰에서는 옆으로 밀어 본다 */
+.tpool-head .trade-pool-options{grid-template-columns:minmax(0,1fr)}
+.tpool-sort{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tpool-sort::-webkit-scrollbar{display:none}
+.tpool-sort button{flex:0 0 auto;white-space:nowrap;word-break:keep-all;padding:6px 10px}
+.tpool-sl{flex:0 0 auto;align-self:center;padding:0 6px 0 4px;font-size:var(--ui-caption,12px);color:var(--muted);white-space:nowrap}
 /* FM식 하위 탭과 메뉴 */
 .subtabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--line);margin:2px 0 4px;scrollbar-width:none}
 .subtabs::-webkit-scrollbar{display:none}
@@ -22949,12 +22956,14 @@ function stDaily(){ try{ stBidExpire(); }catch(e){} try{ stBidMailsDone(null); }
   for(const r of (G.stRaid||[]).filter(r=>r.exp<G.day)){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(s&&stScore(s,G.user,s.sal,true)>=stScore(s,r.tid,r.sal,false)){ G.stRaid=G.stRaid.filter(x=>x!==r); note('스태프',`${s.name}은(는) 고민 끝에 남기로 했습니다.`); } else note('스태프',stLeave(r)); } }
 /* 새해: 경험이 쌓여 성장(젊을수록), 노장은 감각이 떨어지고 은퇴, 충성도 상승, 연봉은 실력에 맞춰 재계약 */
 function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...anaList().map(a=>['an',a,G.user])]; for(const tid in G.lgStaff){ for(const s of G.lgStaff[tid].sc)all.push(['sc',s,+tid]); for(const a of G.lgStaff[tid].an)all.push(['an',a,+tid]); }
-  const grew=[], gone=[];
-  for(const [k,s,tid] of all){ stAttr(s); s.age++; s.loy=clamp(s.loy+12,0,100); const up=(s.age<=40?.2:s.age<=50?.1:.03)*(s.skill>=4?.5:1); if(s.skill<5&&R()<up){ s.skill++; if(tid===ME())grew.push(s.name); } /* 4·5단계로 올라가기는 더 어렵다 */
-    if(s.skill>1&&R()<(s.age>=58?.25:s.age>=52?.1:.03))s.skill--; /* 감이 떨어지거나 현장과 멀어진다 */ s.sal=Math.max(s.sal,(k==='sc'?SCOUT_SAL:ANA_SAL)[s.skill]);
-    if(s.age>=66||(s.age>=60&&R()<.15)){ staffHistory(k==='sc'?'scout':'analyst',s,'은퇴',tid,`${s.age}세`); if(tid===ME()){ /* 무직이면 전 구단 명단은 lgStaff에 있다(검수 11-09zv #5) */ if(k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s); gone.push(s.name); } else { const L=G.lgStaff[tid]; if(k==='sc')L.sc=L.sc.filter(x=>x!==s); else L.an=L.an.filter(x=>x!==s); } } }
+  const grew=[], gone=[], out=new Set(); let fell=[];
+  for(const [k,s,tid] of all){ stAttr(s); s.age++; s.loy=clamp(s.loy+12,0,100); const sk0=s.skill; const up=(s.age<=40?.2:s.age<=50?.1:.03)*(s.skill>=4?.5:1); if(s.skill<5&&R()<up)s.skill++; /* 4·5단계로 올라가기는 더 어렵다 */
+    if(s.skill>1&&R()<(s.age>=58?.25:s.age>=52?.1:.03))s.skill--; /* 감이 떨어지거나 현장과 멀어진다 */
+    if(tid===ME()){ if(s.skill>sk0)grew.push(s.name); else if(s.skill<sk0)fell.push([s,`${s.name}(${k==='sc'?'스카우트':'전력분석원'} · ${s.age}세 · 별 ${s.skill}개)`]); } /* 떨어진 사람도 메일에 알린다(제보 11-17) */ s.sal=Math.max(s.sal,(k==='sc'?SCOUT_SAL:ANA_SAL)[s.skill]);
+    if(s.age>=66||(s.age>=60&&R()<.15)){ out.add(s); staffHistory(k==='sc'?'scout':'analyst',s,'은퇴',tid,`${s.age}세`); if(tid===ME()){ /* 무직이면 전 구단 명단은 lgStaff에 있다(검수 11-09zv #5) */ if(k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s); gone.push(s.name); } else { const L=G.lgStaff[tid]; if(k==='sc')L.sc=L.sc.filter(x=>x!==s); else L.an=L.an.filter(x=>x!==s); } } }
   for(const tid in G.lgStaff)stSync(+tid);
-  if(grew.length||gone.length)mail('운영팀','스태프 연간 변동',`${grew.length?`경험이 쌓여 실력이 오른 스태프: ${grew.join(', ')}`:''}${gone.length?`\n은퇴한 스태프: ${gone.join(', ')}`:''}\n\n오래 함께한 스태프일수록 충성도가 올라 다른 구단 제안에 잘 흔들리지 않습니다.`,{kind:'스태프'}); }
+  fell=fell.filter(([s])=>!out.has(s)).map(x=>x[1]); /* 같은 해 은퇴한 사람은 은퇴 줄에만 */
+  if(grew.length||gone.length||fell.length)mail('운영팀','스태프 연간 변동',`${[grew.length?`경험이 쌓여 실력이 오른 스태프: ${grew.join(', ')}`:'',fell.length?`나이·감각 저하로 실력이 내려간 스태프: ${fell.join(', ')}`:'',gone.length?`은퇴한 스태프: ${gone.join(', ')}`:''].filter(Boolean).join('\n')}${fell.length?'\n스태프는 나이가 들수록 실력이 떨어질 수 있습니다(52세부터 더 자주, 58세부터 크게).':''}\n\n오래 함께한 스태프일수록 충성도가 올라 다른 구단 제안에 잘 흔들리지 않습니다.`,{kind:'스태프'}); }
 
 /* AI 구단 스태프 운영(매달 1일): 우리와 같은 시장(스카우트·분석원 영입 후보)에서 뽑는다. 좋은 후보를 먼저 데려가면 우리 몫이 줄어든다.
    목표 인원·수준은 구단 재정(보유 현금)·시장 규모·전략으로 정한다. 빈자리는 아무 달에나 채우고, 사람 바꾸기(약한 사람 내보내고 더 나은 사람)는 11~2월에.
@@ -39136,6 +39145,10 @@ function trow(p,side,on,hot,tid){ const rp=scoutReport(p); const tag=(hot?`<em c
   return `<div class="trw${on?' on':''}"><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.age}세</small></b><i>${money(p.sal)} · ${tContract(p)}${flags}</i>${tag?`<i>${tag}</i>`:''}</span></button><span class="trw-r">${rchip(rp.cur)}${potChip(rp,p)}</span><button class="tc-i trw-b${on?' on':''}" data-a="tpick" data-v="${side}:${p.id}">${on?'빼기':(side==='give'?'보내기':'받기')}</button></div>`; }
 function tmini(p,side,tid){ const rp=scoutReport(p);
   return `<div class="tmini">${avImg(p)}<div class="tm-id"><b>${esc(p.name)}</b><span>${posLabel(p)} · ${p.age}세 · ${money(p.sal)}</span>${tradeTags(p,tid)?`<span class="tm-tags">${tradeTags(p,tid)}</span>`:''}</div><span class="tm-r">${rchip(rp.cur)}${potChip(rp,p)}</span><button class="x" data-a="tpick" data-v="${side}:${p.id}" aria-label="${esc(p.name)} 빼기">×</button></div>`; }
+/* 협상 선수 목록 정렬: 상대·우리 선수 모두 같은 목록·같은 정렬(제보 11-17). 정렬은 쪽마다 따로 기억한다 */
+const TPOOL_SORTS=[['cur','현재 능력'],['fut','잠재력'],['sal','연봉 높은'],['salLo','연봉 낮은'],['age','어린'],['ageHi','나이 많은'],['pos','포지션']];
+function tsortOf(side){ const m=UI.tsortBy||{}, v=m[side||'get']; return TPOOL_SORTS.some(x=>x[0]===v)?v:'cur'; }
+function tposIx(p){ const i=PSLOTS.indexOf(p.pos); return i<0?99:i; }
 function tradeView(){
   const tr=UI.trade; if(tr){ const sy=sponSeason(); if(tr.yr!=null&&tr.yr!==sy){ tr.give=[]; tr.get=[]; tr.cash=0; } tr.yr=sy; } /* 시즌이 바뀌면 만들다 만 트레이드안을 비운다(플레이 테스트 11-13: 1년 전 안이 그대로 남음) */
   if(!tradeOpen())return `<section class="card"><h2 class="sec">트레이드 기간이 아닙니다</h2><p class="small muted">7월 31일 트레이드 마감 이후에는 포스트시즌이 끝날 때까지 트레이드할 수 없습니다.</p></section>`;
@@ -39183,15 +39196,15 @@ function tradeView(){
     ${pkRow(tr)}
     ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get,tr.cash||0)+pkSig(tr.pk); const isC=!!(nt.ctr&&nt.ctr[sg]!=null&&G.day-nt.ctr[sg]<=7); const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row tprop-bar"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}${(()=>{ const cd=tradeCool(tr.tid,tr.get); if(cd)return `<p class="small" style="color:#ffb547">${cd.cap?`${esc(tshort(tr.tid))}와(과)는 올해 이미 ${cd.n}번 거래했습니다(같은 구단과는 한 시즌 ${cd.max}번까지, 맞대결 기간에는 한 번 더). 급매 매물은 이 제한 없이 데려올 수 있습니다.`:`${esc(tshort(tr.tid))}와(과)는 ${dsh(cd.d)}에 거래했습니다. ${dsh(cd.until)}부터 다시 거래할 수 있습니다. 맞대결 기간이나 급매 매물은 바로 됩니다.`}</p>`; const oc=(gv.length||gt.length)?tradeOwnerCheck(tr.give,tr.get,tr.cash||0):null; const cc=(gv.length||gt.length)?tradeCapCheck(tr.give,tr.get):null; return (oc?`<p class="small" style="color:${oc.ok?'#ffb547':'#ff6b6b'}">연봉 ${money(oc.dSal)} 증가 · 예산 초과 ${money(oc.over)} (구단주 허용 ${money(oc.lim)}) — ${oc.ok?'성사되면 구단주가 승인하지만 신뢰 조금 하락':'구단주가 승인하지 않습니다'}</p>`:'')+(cc?`<p class="small" style="color:${cc.ok?'#ffb547':'#ff6b6b'}">샐러리캡: ${esc(capOwnerTxt(cc))}</p>`:''); })()}`; })()}
   </section>`;
-  const side=tr.side||'get', seg=tr.seg||'bat', sort=tr.sort||'cur';
+  const side=tr.side||'get', seg=tr.seg||'bat', sort=tsortOf(side);
   const pool0=(side==='get'?domestic(tr.tid):domestic(G.user)).filter(p=>ok(p)&&(seg==='bat'?!p.isP:p.isP)&&(side!=='get'||tradeFindOk(p,'',true)));
   let pool=pool0.filter(p=>side!=='get'||tradeFindOk(p,'')||tr.get.includes(p.id)).map(p=>({p,rp:scoutReport(p)})); const nHid=pool0.length-pool.length, fk=side==='get'?(UI.findBlk==='blk'?'b':'')+(UI.findNT==='show'?'s':''):''; /* 상대 선수: 매물만·트레이드 불가 숨김(기본). 우리 선수는 숨기지 않고 표시만 */
-  const sf={cur:(a,b)=>(b.rp.cur??-1)-(a.rp.cur??-1)||(b.rp.ofp??0)-(a.rp.ofp??0),fut:(a,b)=>(b.rp.ofp??0)-(a.rp.ofp??0)||(b.rp.cur??-1)-(a.rp.cur??-1),sal:(a,b)=>b.p.sal-a.p.sal,age:(a,b)=>a.p.age-b.p.age}[sort];
+  const sf={cur:(a,b)=>(b.rp.cur??-1)-(a.rp.cur??-1)||(b.rp.ofp??0)-(a.rp.ofp??0),fut:(a,b)=>(b.rp.ofp??0)-(a.rp.ofp??0)||(b.rp.cur??-1)-(a.rp.cur??-1),sal:(a,b)=>b.p.sal-a.p.sal,salLo:(a,b)=>a.p.sal-b.p.sal,age:(a,b)=>a.p.age-b.p.age,ageHi:(a,b)=>b.p.age-a.p.age,pos:(a,b)=>tposIx(a.p)-tposIx(b.p)||(b.rp.cur??-1)-(a.rp.cur??-1)}[sort]||((a,b)=>(b.rp.cur??-1)-(a.rp.cur??-1));
   pool.sort(sf); const INT=side==='give'&&interestKnown(tr.tid)?aiInterest(tr.tid):[]; if(INT.length)pool.sort((a,b)=>(INT.includes(b.p.id)?1:0)-(INT.includes(a.p.id)?1:0));
   const sel=tr[side]; const PGt=pager('tpool'+side+seg+sort+tr.tid+fk,pool,innerWidth<700?tradeListSize():wide()?16:8);
   const poolCard=`<section class="card">
     <div class="tpool-head"><div class="seg tpool-pick" id="tpick" role="group" aria-label="협상 선수 고르기">${[['get','bat','상대 야수'],['get','pit','상대 투수'],['give','bat','우리 야수'],['give','pit','우리 투수']].map(([a,b,l])=>`<button data-a="tpool" data-v="${a}:${b}" class="${side===a&&seg===b?'on':''}" aria-pressed="${side===a&&seg===b}">${l}</button>`).join('')}</div>
-    <div class="trade-pool-options"><div class="seg" role="group" aria-label="협상 선수 정렬">${[['cur','능력순'],['fut','잠재력순'],['sal','연봉순'],['age','나이순']].map(([v,l])=>`<button data-a="tsort" data-v="${v}" class="${sort===v?'on':''}">${l}</button>`).join('')}</div>${side==='get'?tradeFindBar():''}</div></div>
+    <div class="trade-pool-options"><div class="seg tpool-sort" role="group" aria-label="${side==='get'?'상대':'우리'} 선수 정렬"><span class="tpool-sl">정렬</span>${TPOOL_SORTS.map(([v,l])=>`<button data-a="tsort" data-v="${v}" class="${sort===v?'on':''}" aria-pressed="${sort===v}">${l}</button>`).join('')}</div>${side==='get'?tradeFindBar():''}</div></div>
     <p class="small muted">"${side==='get'?'받기':'보내기'}"를 누르면 위 협상안에 올라갑니다. 이름을 누르면 선수 정보가 열립니다. 현재 능력은 정확한 값이고, 잠재력은 우리 선수와 프로 담당 스카우트가 있는 지역 구단만 보입니다. 외국인 선수와 올해 입단 신인은 제외됩니다.${nHid?` 트레이드 불가 ${nHid}명 숨김.`:''}</p>
     <div class="trws" data-pg="tpool${side}${seg}${sort}${tr.tid}${fk}"><div class="trw-h"><span>선수</span><span>현재 · 잠재력</span><span></span></div>${PGt.items.map(({p})=>trow(p,side,sel.includes(p.id),INT.includes(p.id)?interestWhy(tr.tid,p):'',tr.tid)).join('')||`<p class="small muted">${side==='get'&&UI.findBlk==='blk'?'이 구단 매물이 없습니다.':'대상 선수가 없습니다.'}</p>`}</div>${PGt.bar}
   </section>`;
@@ -40819,7 +40832,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tside(v){UI.trade.side=v;render();},
   tpool(v){const [a,b]=String(v).split(':');UI.trade.side=a;UI.trade.seg=b;render();}, /* 상대/우리 × 야수/투수를 한 줄로(UI 3단계 3-9) */
   tsideGo(v){ UI.trade.side=v;if(innerWidth<700)UI.trade.stage='pick'; render(); requestAnimationFrame(()=>{ const e=document.getElementById('tpick'); if(e)e.scrollIntoView({behavior:'smooth',block:'start'}); }); },
-  tsort(v){UI.trade.sort=v;render();},
+  tsort(v){UI.tsortBy=Object.assign({},UI.tsortBy,{[UI.trade.side||'get']:v});UI.trade.sort=v;render();}, /* 상대·우리 선수 정렬을 따로 기억(제보 11-17) */
   tpick(v){const [side,id]=v.split(':');const arr=UI.trade[side];const i=arr.indexOf(+id);i>=0?arr.splice(i,1):arr.push(+id);UI.trade.msg='';UI.trade.want=null;render();},
   pkT(v){ const tr=UI.trade; const i=v.indexOf(':'), side=v.slice(0,i), k=v.slice(i+1); tr.pk=pkNorm(tr.pk); const L=tr.pk[side]; const j=L.indexOf(k); if(j>=0)L.splice(j,1); else L.push(k); render(); },
   treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.pk=null;UI.trade.cash=0;UI.trade.counters=null; /* 현금·지난 역제안도 비운다(검수 11-08c) */UI.trade.msg='';UI.trade.want=null;render();},
@@ -41936,7 +41949,7 @@ function staffBioBox(s,kind,tid,full,noOffice){ /* noOffice: 인물 카드 틀�
   const cool=own&&P.talk?.tid===G.user&&G.day-P.talk.day<14,msg=UI.staffMsgs?.[s.id];
   const styles=[P.mental.pro>=70?'성실한 준비':P.mental.pro<40?'준비 기복':'꾸준한 준비',P.mental.pat>=70?'끈기 있는 업무':P.mental.pat<40?'빠른 성과 선호':'균형 있는 업무'];
   const talkRow=own?`<div class="row staff-talk"><button class="btn small" data-a="staffTalk" data-v="${kind}:${s.id}:listen" ${cool?'disabled':''}>업무·희망 보직 면담</button><button class="btn small" data-a="staffTalk" data-v="${kind}:${s.id}:coord" ${cool||!m?'disabled':''}>감독과 업무 조율</button><button class="tc-i" data-a="go" data-v="club:rel">관계도</button></div>${cool?`<p class="small muted">다음 면담 ${dmd(P.talk.day+14)}</p>`:''}`:''; /* 전체 화면(이전·다음으로 넘기기)에서는 면담 버튼을 맨 위에 둬 사람마다 위치가 바뀌지 않게(커뮤니티 11-12) */
-  return `<div class="staff-bio" data-staff-id="${s.id}" data-staff-kind="${kind}">${full&&own?`<div class="staff-talk-top">${talkRow}${msg?`<p class="note small">${esc(msg)}</p>`:''}</div>`:''}${noOffice?"":staffOfficeBox(s,kind)}<div class="staff-preference"><b>희망 보직</b><span>${esc(staffRoleLabel(kind,P.pref))}</span></div><p class="staff-traits small muted">${styles.join(' · ')}</p>
+  return `<div class="staff-bio" data-staff-id="${s.id}" data-staff-kind="${kind}">${full&&own?`<div class="staff-talk-top">${talkRow}${msg?`<p class="note small">${esc(msg)}</p>`:''}</div>`:''}${noOffice?"":staffOfficeBox(s,kind)}<div class="staff-preference"><b>희망 보직</b><span>${esc(staffRoleLabel(kind,P.pref))}</span></div><p class="staff-traits small muted">${styles.join(' · ')}</p>${kind!=='coach'&&s.age>=52?`<p class="small muted keep staff-age-note">${s.age}세 · 나이가 들수록 실력이 떨어질 수 있습니다(52세 이상).</p>`:''}
     <details class="staff-more" data-k="${key}" ${full||UI.open[key]?'open':''}><summary>멘탈·관계${own?'·면담':''}</summary><div class="staff-mental">${Object.entries(STAFF_MENTAL).map(([k,l])=>`<span><i>${l}</i>${staffScore(P.mental[k])}</span>`).join('')}${kind!=='coach'&&s.amb!=null?`<span><i>야망</i>${staffScore(s.amb)}</span>`:''}${loyalty?`<span><i>구단 애착</i><b class="trait-w">${staffLoyWord(loyalty.loyalty)}</b></span>`:s.loy!=null?`<span><i>구단 애착</i><b class="trait-w">${staffLoyWord(s.loy)}</b></span>`:''}</div>${loyalty&&loyalty.bonus>0?`<p class="small muted coach-study-loyalty">${esc(tshort(tid??G.user))} 연수 지원 덕에 남으려는 마음이 커졌습니다. 잔류를 보장하지는 않습니다.</p>`:''}
     ${own?`<div class="staff-network" role="img" aria-label="${esc(s.name)}의 단장·감독 관계"><span>단장</span><i style="color:${relCol(gm)}" title="${relLabel(gm)}">●</i><b>${esc(s.name)}</b><i style="color:${relCol(m?mgr:null)}"${m?` title="${relLabel(mgr)}"`:''}>${m?'●':'—'}</i><span>${m?esc(m.name)+' 감독':'감독 미선임'}</span></div><p class="small staff-rel-words">단장과 ${relLabel(gm)}${m?` · 감독과 ${relLabel(mgr)}`:''}</p><p class="small muted keep">관계·성향 반영 ${hiI('관계는 면담과 함께 일한 시간으로 쌓입니다. 프로의식·적응력과 협업 관계는 실제 업무에 조금 반영됩니다.'+(kind==='coach'?' 인내심은 어린 선수 지도에 반영됩니다.':' 분야 능력은 평가·분석 정확도에 반영됩니다.'))}</p>${full?'':talkRow}`:'<p class="small muted">영입 후 단장·감독과 관계를 쌓습니다. 희망과 다른 보직에서는 적응력이 업무 손실을 줄입니다.</p>'}
     ${msg&&!full?`<p class="note small">${esc(msg)}</p>`:''}</details>${own&&kind==='coach'&&full?coachStudyPanel(s):''}</div>`;
@@ -44627,6 +44640,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-hf1117',d:'11월 17일',t:'트레이드 정렬 · 스태프 노쇠 알림',items:[
+    '트레이드 협상: 상대 선수도 우리 선수와 같은 정렬(현재 능력·잠재력·연봉·나이·포지션)로 볼 수 있습니다. 정렬은 상대·우리 쪽마다 따로 기억합니다.',
+    '스태프 연간 변동 메일에 나이가 들어 실력(별)이 내려간 스카우트·전력분석원도 이름·나이·새 별 수와 함께 나옵니다. 52세 이상 스태프 카드에는 실력이 떨어질 수 있다는 안내가 보입니다.']},
   {id:'2026-11-17-ui39',d:'11월 17일',t:'탭 줄 줄이기 · 선수단 명단 표',items:[
     '신인 드래프트: 후보 목록·후보 상세·관심 목록·지명 현황·스카우트 요약·지난 성적표·창단 지명 평가를 \'보기 ▾\' 하나로 고릅니다. 탭 줄이 셋에서 하나로 줄어 후보 목록이 더 위에서 시작합니다.',
     '스카우트 › 해외 네트워크: 일본·미국을 한 표에 모았습니다. 구단을 누르면 그 나라 지도와 정보가 나옵니다.',

@@ -46,3 +46,10 @@
 .fnd-t td .trtag{margin-left:6px}
 .trade-blk-o{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;min-width:0}
 .st-lvl{margin:0 0 6px}
+
+/* 협상 선수 정렬(제보 11-17): 상대·우리 선수 모두 같은 한 줄. 폰에서는 옆으로 밀어 본다 */
+.tpool-head .trade-pool-options{grid-template-columns:minmax(0,1fr)}
+.tpool-sort{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tpool-sort::-webkit-scrollbar{display:none}
+.tpool-sort button{flex:0 0 auto;white-space:nowrap;word-break:keep-all;padding:6px 10px}
+.tpool-sl{flex:0 0 auto;align-self:center;padding:0 6px 0 4px;font-size:var(--ui-caption,12px);color:var(--muted);white-space:nowrap}
