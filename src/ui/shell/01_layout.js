@@ -88,7 +88,7 @@ function tabBody(){
   if(!TITLE[UI.tab])UI.tab='home';
   if(G.unemp&&UI.tab==='cfg')return unempCfg(); /* 야인이어도 저장·불러오기·내보내기는 쓸 수 있어야 한다 */
   if(G.unemp&&!['home','inbox','league','me'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요. 내 경력과 재임 구단의 마지막 결산은 단장 탭에서 볼 수 있습니다.</p><div class="row"><button class="btn small" data-a="tab" data-v="me">내 경력·재임 결산</button><button class="btn small" data-a="tab" data-v="cfg">게임 설정</button></div><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
-  const view={cal:calView,home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,cfg:cfgView,me:meView,league:leagueView,club:clubView}[UI.tab];
+  const view={cal:calView,home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,cfg:cfgView,me:meView,league:leagueView,club:clubView,uld:ulView}[UI.tab]; /* uld: 래더(사용자 11-17) */
   try{ return view(); }catch(e){ return tabFail(e,view); }
 }
 /* 화면 하나가 그리다 오류가 나면 render 전체가 멈춰 이전 화면(소식함 등)이 그대로 남고, 누른 버튼은 아무 반응이 없는 것처럼 보였다(제보 11-15).

@@ -323,6 +323,7 @@
       "src/ui/cup/02_cup_admin.js",
       "src/ui/cup/03_ladder_admin.js",
       "src/ui/uladder/01_uladder_ui.js",
+      "src/ui/uladder/02_uladder_pages.js",
       "src/ui/runtime/99_boot.js"
     ],
     "styles": [
@@ -377,7 +378,8 @@
       "src/css/ladder/01_ladder.css",
       "src/css/cup/01_cup.css",
       "src/css/cup/02_ladder_admin.css",
-      "src/css/uladder/01_uladder.css"
+      "src/css/uladder/01_uladder.css",
+      "src/css/uladder/02_uladder_v2.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
