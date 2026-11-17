@@ -80,6 +80,7 @@ const GAME_VER='0.9'; const DEMO={on:false,seasons:1}; /* 무료 정식 공개: 
 function demoOver(){ return DEMO.on&&G.year>=(G.startY||2026)+DEMO.seasons-1&&!G.unemp; }
 function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7===0&&G.agV===2)try{ agCapFix(); }catch(e){ console.error(e); } /* 에이전트 정원(15명·구단당 3명): 트레이드·FA 이적 뒤 넘친 고객을 한 주에 한 번 정리(난수 안 씀) */
   if(G.demoEnd)return;
+  try{ plogDaily(); }catch(e){} /* 날짜를 넘기기 전에: 오늘 단장이 바꾼 감독·코치 자리를 오늘 날짜로 인물 이력에 적는다(검수 11-17 #201) */
   G.day++; const day=G.day, o=dobj(day);
   try{ ownerTrustWatch(); }catch(e){}
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }

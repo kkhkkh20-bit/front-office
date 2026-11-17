@@ -121,7 +121,21 @@ function clubWar(p,tid,y0){ const ys=[...new Set(p.hist.filter(h=>h.lvl==='1군'
 function tradeSnap(ids){ const o={byTeam:{}}; for(const id of ids){ const p=G.players[id]; if(!p)continue; o[id]=warSoFar(p,G.year); const T=o.byTeam[id]={}; for(const h of p.hist)if(h.y===G.year&&h.lvl==='1군'&&!h.y2&&h.t!=null){ const r=seasonTotalT(p,G.year,'1군',h.t); T[h.t]=r?warOf(r,p):0; } } return o; }
 /* 트레이드 이후 WAR: 은퇴 등으로 목록에서 빠진 선수는 보관 기록(G.arch)으로 계속 센다(은퇴했다고 지난 거래 평가가 바뀌지 않게) */
 /* tid가 있으면 그 구단 소속으로 낸 기록만(거래 뒤 제3 구단으로 옮겨 낸 성적은 그 거래 몫이 아니다, 검수 11-09w) */
-function warSince(id,y,snap,tid){ const p=G.players[id]; if(!p){ const a=G.arch&&G.arch[id]; if(!a)return 0; let w=0; for(const r of a.rows)if(r.y>=y&&r.y<=G.year&&(tid==null||r.t===tid))w+=r.war||0; return w-(tid==null?(snap&&snap[id]||0):(snap&&snap.byTeam&&snap.byTeam[id]&&snap.byTeam[id][tid]||0)); } if(tid!=null){ let w=0; for(let yy=y;yy<=G.year;yy++){ const h=seasonTotalT(p,yy,'1군',tid); if(h)w+=warOf(h,p); } return w-(snap&&snap.byTeam&&snap.byTeam[id]&&snap.byTeam[id][tid]||0); } let w=0; for(let yy=y;yy<=G.year;yy++)w+=warSoFar(p,yy); return w-(snap&&snap[id]||0); }
+function warSince(id,y,snap,tid,end){ const yE=end!=null?Math.min(G.year,end):G.year; const p=G.players[id]; if(!p){ const a=G.arch&&G.arch[id]; if(!a)return 0; let w=0; for(const r of a.rows)if(r.y>=y&&r.y<=yE&&(tid==null||r.t===tid))w+=r.war||0; return w-(tid==null?(snap&&snap[id]||0):(snap&&snap.byTeam&&snap.byTeam[id]&&snap.byTeam[id][tid]||0)); } if(tid!=null){ let w=0; for(let yy=y;yy<=yE;yy++){ const h=seasonTotalT(p,yy,'1군',tid); if(h)w+=warOf(h,p); } return w-(snap&&snap.byTeam&&snap.byTeam[id]&&snap.byTeam[id][tid]||0); } let w=0; for(let yy=y;yy<=yE;yy++)w+=warSoFar(p,yy); return w-(snap&&snap[id]||0); }
+/* 트레이드 성과는 그 거래로 시작한 소속 기간만 센다(외부 검수 11-17 #197): 거래 뒤 선수가 처음 그 구단을 떠나면(트레이드·방출·FA로 다른 구단·해외) 그해까지만.
+   다른 구단을 거쳐 FA 등으로 돌아와 낸 성적은 그 거래 몫이 아니다. tr.end[선수ID]=마지막으로 셀 시즌(1~2월에 떠나면 지난 시즌) */
+function trClub(tr,id){ return (tr.gi||[]).includes(id)?(tr.me??G.user):(tr.go||[]).includes(id)?tr.with:null; }
+const trLeft=(f,t,club)=>f!==t&&(f===club||t!==club); /* 그 구단에서 나가거나, 이미 그 구단 밖에서 다른 곳으로 옮겼다 */
+function trEndY(tr,y,d){ let e=y; if(d!=null){ const o=dobj(d); if(o.y===y&&o.m<=2)e=y-1; } return Math.max(tr.y,e); }
+function trStintMove(p,from,to){ if(!p||from===to)return; for(const tr of G.trades||[]){ if(!tr.gi||(tr.end&&tr.end[p.id]!=null))continue; const c=trClub(tr,p.id); if(c==null||!trLeft(from??null,to??null,c))continue; if(tr.y>G.year||(tr.y===G.year&&tr.d!=null&&tr.d>G.day))continue; (tr.end=tr.end||{})[p.id]=trEndY(tr,G.year,G.day); } }
+/* 예전 저장 수리: 인물 이력부(G.plog)·이동 기록(G.moves)에서 거래 뒤 첫 이탈을 찾고, 없으면 시즌 기록 줄의 소속으로 찾는다. 찾은 것만 적어 두 번 불러도 같다(난수 없음) */
+function trStintFix(){ let n=0; for(const tr of G.trades||[]){ if(!tr.gi)continue; for(const id of [...tr.gi,...(tr.go||[])]){ if(tr.end&&tr.end[id]!=null)continue; const c=trClub(tr,id); if(c==null)continue;
+    const aft=e=>e.y>tr.y||(e.y===tr.y&&tr.d!=null&&e.d!=null&&e.d>=tr.d);
+    const M=[...((G.plog&&G.plog.p&&G.plog.p['pl:'+id])||[]).filter(e=>e.k==='move').map(e=>({y:e.y,d:e.d,f:e.f??null,t:e.t??null})),...(G.moves||[]).filter(m=>m.pid===id).map(m=>({y:m.y,d:m.d,f:m.from??null,t:m.to??null}))].filter(aft).sort((a,b)=>a.y-b.y||(a.d??0)-(b.d??0));
+    const mv=M.find(e=>trLeft(e.f,e.t,c)); let e=mv?trEndY(tr,mv.y,mv.d):null;
+    if(e==null){ const p=G.players[id], a=G.arch&&G.arch[id]; const rows=p?(p.hist||[]).filter(h=>!h.y2&&h.t!=null):a?(a.rows||[]).filter(r=>r.t!=null):[]; const Y=[...new Set(rows.map(h=>h.y).filter(y=>y>=tr.y))].sort((a,b)=>a-b);
+      for(const y of Y){ const R=rows.filter(h=>h.y===y); if(y===tr.y){ const i=R.findIndex(h=>h.t===c); if(i>=0&&R.slice(i+1).some(h=>h.t!==c)){ e=y; break; } continue; } if(R.some(h=>h.t!==c)){ e=R[0].t===c?y:Math.max(tr.y,y-1); break; } } }
+    if(e!=null){ (tr.end=tr.end||{})[id]=e; n++; } } } return n; }
 /* 지명권 원구단은 당시 명시된 메타만 쓴다. 옛 저장에 원구단이 없으면 추정 연결하지 않는다. */
 function pkDrafted(y,k){ const [rd,o]=k.split(':').map(Number),match=d=>d&&d.y===y&&d.rd===rd&&(d.from??d.tid)===o;
   const p=Object.values(G.players).find(q=>match(q.draft)); if(p)return p.id;
@@ -129,7 +143,7 @@ function pkDrafted(y,k){ const [rd,o]=k.split(':').map(Number),match=d=>d&&d.y==
   const picks=G.draft&&G.draft.y===y?G.draft.picks||[]:[], pick=picks.find(q=>q.rd===rd&&(q.from??q.tid)===o&&q.pid>0); if(pick)return pick.pid;
   const row=((G.dlog||{})[y]||[]).find(q=>q.rd===rd&&q.from!=null&&q.from===o); return row?row.id:null; }
 function tradeReport(tr){ if(!tr.gi)return null; const me=tr.me??G.user; const K=tr.pkk||{}; const dp=L=>(L||[]).map(k=>pkDrafted(K.y,k)).filter(id=>id!=null);
-  const got=sum([...tr.gi,...dp(K.get)].map(id=>warSince(id,tr.y,tr.snap,me))), gave=sum([...tr.go,...dp(K.give)].map(id=>warSince(id,tr.y,tr.snap,tr.with))); return {got,gave,net:got-gave}; } /* 받은·준 지명권으로 뽑은 신인도 성과에(검수 11-09w) */
+  const E=id=>tr.end&&tr.end[id]!=null?tr.end[id]:null; const got=sum([...tr.gi,...dp(K.get)].map(id=>warSince(id,tr.y,tr.snap,me,E(id)))), gave=sum([...tr.go,...dp(K.give)].map(id=>warSince(id,tr.y,tr.snap,tr.with,E(id)))); return {got,gave,net:got-gave}; } /* 받은·준 지명권으로 뽑은 신인도 성과에(검수 11-09w) */
 function tradeGrade(tid,give,get,cash,pk){ const U=team(G.user); pk=pkNorm(pk); const d=stackIn(get.map(id=>tval(U,G.players[id],'in')))-sum(give.map(id=>tval(U,G.players[id],'out')))-(cash||0)/250+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); /* 지명권도 등급에(검수 11-06) */ /* cash: 우리가 낸 현금(+) 받은 현금(-). 10억이면 4점 */ return d>=8?'A':d>=3?'B':d>=-3?'C':d>=-8?'D':'F'; }
 /* 다른 구단끼리 트레이드 */
 /* AI가 얹을 현금: 받는 쪽(B) 눈에 모자란 값(gap)을 메울 만큼, 한 거래 20억·쓸 수 있는 현금 안에서(cashFor·cashVal과 같은 식) */
