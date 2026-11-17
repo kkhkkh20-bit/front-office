@@ -144,7 +144,7 @@ function clubBody(s){
       if(g==='info'){ /* 정보: 카페·버전 | 패치 노트 | 대회 기록·크레딧·플레이 기록·관리자. 관리자 들어가는 길은 '설정 › 정보 › 관리자' 그대로(docs) */
         const pn=fmOn()?patchCard():`<section class="card"><details class="mfold"><summary>패치 노트</summary>${patchCard()}</details></section>`;
         return wrap(col('공식 카페',fb)+col('패치 노트',pn)+col('기록·개인정보',cupHofCard()+`<section class="card">${creditsLine()}</section>`+teleCard()+cupAdminLink()),'setp-info'); }
-      const run=advSetCard()+stopCard()+guideCfgCard(), rule=psc+ivf+dif+ret, view=actModeCard()+scl+teamNameCard();
+      const run=advSetCard()+stopCard()+guideCfgCard(), rule=psc+ivf+dif+ret, view=actModeCard()+scl+teamNameCard()+cosmCard(); /* 이름·얼굴 일괄 수정(72_cosmetic.js, 구단주 11-17) */
       if(!fmOn()){ /* 휴대폰·좁은 창: 게임 설정 안은 안쪽 탭 세 개(진행·경기·규칙·표시). 저장·정보는 위 하위 탭으로 옮겼다(사용자 11-17) */
         const it=inTabs('setg',[['run','진행'],['rule','경기·규칙'],['view','표시']],'run');
         return wrap(`<div class="setc">${{run,rule,view}[it.cur]}</div>`,'set-tabs',it.bar); }

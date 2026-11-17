@@ -6739,6 +6739,51 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .mrl li>em{flex:none;font-style:normal;font-size:var(--ui-caption);color:var(--muted);white-space:nowrap}
 .mrl li>em.good{color:var(--good)} .mrl li>em.bad{color:var(--bad)} .mrl li>em.warn{color:var(--warn)}
 .chem-card .mrl{margin-top:6px}
+/* 이름·얼굴 바꾸기(72_cosmetic.js): 선수 화면 고치기 상자의 얼굴 칸 · 일괄 수정 창 */
+.cosm-face{flex-basis:100%;margin-top:4px}
+.cosm-face>p{margin:0 0 4px}
+.cosm-face .pe-faces{grid-template-columns:repeat(auto-fill,minmax(54px,1fr));max-height:212px}
+.pe-face{position:relative}
+.pe-face i{position:absolute;right:2px;bottom:2px;padding:0 3px;border-radius:3px;background:rgba(0,0,0,.62);color:#fff;font-size:10px;font-style:normal;line-height:14px;pointer-events:none}
+.pe-face .av.ini{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:12px}
+.cosm-up{gap:6px;margin-top:6px}
+.cosm-box>.row{gap:6px}
+/* 일괄 창: 창 안에서만 스크롤(PC 페이지 스크롤 없음) */
+.sheet.cosm-sheet{display:flex;flex-direction:column;gap:8px;max-width:980px;max-height:min(92vh,var(--detail-height,92vh));overflow:hidden}
+.cosm-sheet>p{margin:0}
+.cosm-bar{gap:8px 12px;flex-wrap:wrap;align-items:flex-end}
+.cosm-bar label{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--muted)}
+.cosm-bar select,.cosm-bar input{min-height:32px;padding:4px 8px;border:1px solid var(--line,#2a3540);border-radius:6px;background:var(--bg,#0f151b);color:var(--ink,#e2e8ed);font-size:14px}
+.cosm-q input{width:10em}
+.cosm-sp{flex:1}
+.cosm-tw{flex:1 1 auto;min-height:120px;overflow:auto}
+.cosm-t{width:100%}
+.cosm-t td{vertical-align:middle;padding-top:3px;padding-bottom:3px}
+.cosm-t tr.ch td{background:rgba(59,130,246,.10)}
+.cosm-t tr.on td{background:rgba(59,130,246,.18)}
+.cosm-av{width:44px}
+.cosm-avb{padding:0;border:0;background:none;cursor:pointer;display:block;border-radius:50%}
+.cosm-avb:focus-visible{outline:2px solid var(--acc,#3b82f6)}
+.cosm-t .av,.cosm-av .av{width:36px;height:36px}
+.cosm-nm{width:9.5em;max-width:100%;padding:5px 7px;border:1px solid var(--line,#2a3540);border-radius:6px;background:var(--bg,#0f151b);color:var(--ink,#e2e8ed);font-size:14px}
+.cosm-was{display:block}
+.cosm-foot{gap:8px;align-items:center;flex-wrap:wrap}
+.cosm-pick,.cosm-io{flex:0 0 auto;max-height:46vh;overflow:auto;padding:8px 10px;border:1px solid var(--line,#2a3540);border-radius:8px;background:var(--card2,rgba(255,255,255,.03))}
+.cosm-io>.row{gap:6px;flex-wrap:wrap;align-items:center}
+.cosm-io>p{margin:6px 0}
+.cosm-txt{width:100%;box-sizing:border-box;min-height:84px;padding:6px 8px;border:1px solid var(--line,#2a3540);border-radius:6px;background:var(--bg,#0f151b);color:var(--ink,#e2e8ed);font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+.cosm-pv{margin-top:8px}
+.cosm-pv .tw{max-height:180px;overflow:auto}
+.cosm-pv>.row{gap:6px;justify-content:flex-end;margin-top:6px}
+.cosm-bad ul{margin:4px 0;padding-left:18px;max-height:120px;overflow:auto}
+@media(max-width:600px){
+  .sheet.cosm-sheet{max-height:none;overflow:visible}
+  .cosm-tw{overflow-x:auto}
+  .cosm-t th:nth-child(5),.cosm-t td:nth-child(5){display:none}
+  .cosm-nm{width:7.5em}
+  .cosm-q input{width:8em}
+  .cosm-pick,.cosm-io{max-height:none}
+}
 /* ⋯ 더보기 메뉴(src/ui/components/52_more_menu.js): PC는 버튼 아래 펼침, 휴대폰(700px 이하)은 바텀시트. 누르는 곳은 44px */
 .mmenu{position:relative;display:inline-flex;flex:0 0 auto}
 :is(#app,#sheet,body) .mmenu-b{display:inline-flex;align-items:center;justify-content:center;min-width:var(--ui-control,32px);padding-inline:8px}.mmenu-ico{display:block;fill:currentColor}
@@ -18812,16 +18857,7 @@ function retNosOf(tid){ return tid===G.user?(G.retNos||[]):((G.orgT||{})[tid]||{
 function noAt(p,tid){ return p.noT===tid&&p.no!=null?p.no:p.noBy&&p.noBy[tid]!=null?p.noBy[tid]:null; }
 function jno(p){ if(!p)return null; if(p.no!=null&&(p.noT===p.team||p.team==null))return p.no;
   const used=teamNos(p.team,p); let n=p.no!=null&&!used.has(p.no)?p.no:1+Math.floor(u01('jno',p.id)*99); let g=0; while(used.has(n)&&g++<100)n=(n+1)%100; /* 0번까지 돌아본다(KBO 0~99, 검수 11-09zz) */ if(p.team!=null){ if(p.noT!=null&&p.no!=null)(p.noBy=p.noBy||{})[p.noT]=p.no; p.no=n; p.noT=p.team; } return n; }
-/* 이름·등번호 고치기(유저 편집). 등번호 0~99, 같은 구단 선수와 겹치면 안 되고 우리 구단 영구결번은 쓸 수 없다 */
-function setPlayerName(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const nm=String(v??'').replace(/[<>&"'`]/g,'').replace(/\s+/g,' ').trim(); if(!nm)return '이름을 입력하세요.'; if(nm.length>12)return '이름은 12자까지 쓸 수 있습니다.'; if(nm===p.name)return ''; const old=p.name; p.name=nm; (p.renamed=p.renamed||[]).push({y:G.year,from:old}); if(p.renamed.length>5)p.renamed.shift(); return ''; }
-/* 에디터: 능력·잠재력·나이 고치기(커뮤니티 건의 11-11). 고치면 이 저장은 '에디터 사용'으로 남고 도전과제가 더 열리지 않는다 */
-const ED_RK={P:['stf','ctl','sta'],B:['con','pow','eye','def','spd']};
-function setPlayerRatings(id,o){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; o=o||{}; const ch=[];
-  for(const k of ED_RK[p.isP?'P':'B']){ const v=o.r&&o.r[k]; if(v==null||v==='')continue; const n=+v; if(!Number.isFinite(n))return '능력치는 숫자로 입력하세요.'; const raw=Math.round(clamp(n,20,80)*10)/10; if(Math.abs(raw-p.r[k])>=.05){ p.r[k]=raw; ch.push(k); } }
-  if(o.pot!=null&&o.pot!==''){ const n=+o.pot; if(!Number.isFinite(n))return '잠재력은 숫자로 입력하세요.'; const raw=Math.round(clamp(n,20,80)*10)/10; if(Math.abs(raw-p.pot)>=.05){ p.pot=raw; ch.push('pot'); } }
-  if(o.age!=null&&o.age!==''){ const n=Math.round(+o.age); if(!Number.isFinite(n)||n<16||n>45)return '나이는 16~45세로 입력하세요.'; if(n!==p.age){ p.age=n; ch.push('age'); } }
-  if(!ch.length)return ''; if(p.pot<ovr(p))p.pot=Math.round(ovr(p)*10)/10; /* 잠재력은 지금 능력 아래로 두지 않는다 */ roundR(p);
-  G.edited=G.edited||{d:G.day,n:0}; G.edited.n++; (p.edited=p.edited||[]).push({y:G.year,k:ch}); if(p.edited.length>5)p.edited.shift(); return ''; }
+/* 등번호 고치기(유저 편집). 0~99, 같은 구단 선수와 겹치면 안 되고 그 구단 영구결번은 쓸 수 없다. 이름은 22c_cosmetic.js(setPlayerName). 능력·잠재력·나이 에디터는 없앴다(구단주 결정 11-17) */
 function playerNoPermit(p,r){ const a=p.retNoPermit; return !!(a&&a.tid===p.team&&a.no===r.no&&a.ob===p.father&&sonRetOwn(r,fatherOf(p))); }
 function setPlayerNo(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const s=String(v??'').trim(); if(!/^\d{1,2}$/.test(s))return '등번호는 0~99 숫자로 입력하세요.'; const n=+s; if(p.team==null)return '소속 구단이 있는 선수만 등번호를 정할 수 있습니다.'; if(retNosOf(p.team).some(r=>r.no===n&&!playerNoPermit(p,r)))return `${n}번은 ${p.team===G.user?'우리 구단':tshort(p.team)} 영구결번입니다.`;
   const o=Object.values(G.players).find(q=>q!==p&&q.team===p.team&&jno(q)===n); if(o)return `${n}번은 ${o.name} 선수가 쓰고 있습니다.`; jno(p); /* 옛 구단 번호를 noBy에 남긴 뒤 바꾼다 */ p.no=n; p.noT=p.team; return ''; }
@@ -18877,6 +18913,75 @@ function hofWatch(){ const out=[]; for(const p of Object.values(G.players)){ if(
     const met=war>=38||mvp>=2||gg>=6||(war>=30&&mvp>=1); const near=!met&&(war>=30||mvp===1&&war>=20||gg>=5);
     if(met||near)out.push({p,war:Math.round(war*10)/10,mvp,gg,met,age:p.age,seasons:c.seasons.size}); }
   return out.sort((a,b)=>(b.met-a.met)||b.war-a.war); }
+/* ===== 이름·얼굴 꾸미기(구단주 결정 11-17: "선수편집기는 당연히 없어야하고 이름 얼굴등은 가능해야해. 나중에 대량으로 수정도 가능한 기능") =====
+ - 바꿀 수 있는 것: 이름·얼굴 사진(이미 있는 템플릿 사진 번호 또는 직접 넣은 사진)·등번호. 능력·잠재력·나이·계약은 어떤 길로도 바꾸지 않는다(에디터 없음)
+ - 대상: 세계의 모든 선수(다른 구단·외국인 후보·드래프트 대상·은퇴해 기록만 남은 선수 G.arch). 은퇴 선수는 이름만
+ - 이름을 바꾸면 선수 객체와 함께, id로 이 선수를 가리키는 기록 조각(보관 기록·OB·영구결번·진기록 최고 기록 등 {id|pid|fid, name|nm})도 새 이름으로 바꾼다.
+   이미 쓰인 기사·소식 문장은 그대로 둔다(그때의 이름). 화면 대부분은 p.name을 바로 읽어서 앞으로 나오는 기록·기사는 새 이름
+ - 얼굴 번호의 뜻(어느 사진 묶음인지)은 화면 쪽(src/ui/players/72_cosmetic.js)이 안다. 여기는 이름과 가져오기·미리보기 틀만 둔다
+ - 난수(R·Math.random)는 쓰지 않는다. 래더·대회 덱은 p.name을 그대로 담으므로 바꾼 이름이 실린다(능력은 그대로라 공정성 영향 없음) */
+const COSM_NAME_MAX=12;
+function cosmNameClean(v){ return String(v??'').replace(/[\u0000-\u001f\u007f<>&"'`\\,;]/g,'').replace(/\s+/g,' ').trim(); }
+function cosmBadWord(nm){ try{ return typeof FrontOfficeCore!=='undefined'&&FrontOfficeCore.cupBadName?!!FrontOfficeCore.cupBadName(nm):false; }catch(e){ return false; } }
+/* 이름 검사: 빈 이름·12자 초과·글자/숫자/공백/가운뎃점/마침표/하이픈 밖의 기호·금칙어(대회 팀명과 같은 표) */
+function cosmNameErr(v){ const nm=cosmNameClean(v); if(!nm)return '이름을 입력하세요.'; if([...nm].length>COSM_NAME_MAX)return `이름은 ${COSM_NAME_MAX}자까지 쓸 수 있습니다.`;
+  if(!/^[\p{L}\p{M}\p{N} .·\-]+$/u.test(nm))return '이름에는 글자·숫자·띄어쓰기·가운뎃점(·)·하이픈만 쓸 수 있습니다.'; if(!/\p{L}/u.test(nm))return '이름에 글자가 하나는 있어야 합니다.';
+  if(cosmBadWord(nm))return '이름에 쓸 수 없는 말이 들어 있습니다.'; return ''; }
+/* 이름을 바꿀 대상: 현역(G.players) 또는 리그를 떠나 기록만 남은 선수(G.arch) */
+function cosmTarget(id){ if(id==null||id==='')return null; const p=G.players&&G.players[id]; if(p)return {o:p,arch:false}; const a=G.arch&&G.arch[id]; return a?{o:a,arch:true}:null; }
+/* 기록 조각 이름 바꾸기: M = Map(문자열 id → {from,to}). {id|pid|fid}가 그 선수이고 이름이 옛 이름일 때만 바꾼다(같은 번호의 다른 사람은 이름이 달라 건드리지 않는다).
+   은퇴 뒤 OB(G.ob, fid)로 남았으면 그 OB를 가리키는 지도자·학교 감독 기록({ob}·id 'c'+OB·'h'+OB)도 같이 */
+function cosmSync(M){ if(!M||!M.size)return 0; let n=0;
+  for(const o of G.ob||[]){ const m=o&&o.fid!=null&&M.get(String(o.fid)); if(m)for(const k of [o.id,'c'+o.id,'h'+o.id])if(!M.has(k))M.set(k,m); }
+  const seen=new Set(), ID=['id','pid','fid','ob'];
+  const fix=o=>{ for(const k of ID){ const v=o[k]; if(v==null||typeof v==='object')continue; const m=M.get(String(v)); if(!m)continue; if(o.name===m.from){ o.name=m.to; n++; } if(o.nm===m.from){ o.nm=m.to; n++; } } };
+  const walk=(o,d)=>{ if(!o||typeof o!=='object'||d>14||seen.has(o))return; seen.add(o); if(Array.isArray(o)){ for(const x of o)if(x&&typeof x==='object')walk(x,d+1); return; } fix(o); for(const k in o){ const x=o[k]; if(x&&typeof x==='object')walk(x,d+1); } };
+  for(const k in G){ if(k==='players'||k==='cimg'||k==='cimgO')continue; walk(G[k],0); }
+  return n; }
+/* 여러 명 이름 한꺼번에(한 번만 훑는다). L: [{id,name}] → {n, errs:[문장]} */
+function cosmRenameMany(L){ const M=new Map(), errs=[]; let n=0;
+  for(const x of L||[]){ const t=cosmTarget(x.id); if(!t){ errs.push(`${x.id}: 선수를 찾을 수 없습니다.`); continue; } const e=cosmNameErr(x.name); if(e){ errs.push(`${t.o.name}: ${e}`); continue; }
+    const nm=cosmNameClean(x.name), o=t.o, old=o.name; if(nm===old)continue; o.name=nm; (o.renamed=o.renamed||[]).push({y:G.year,from:old}); if(o.renamed.length>5)o.renamed.shift(); n++;
+    const k=String(o.id), m=M.get(k); M.set(k,{from:m?m.from:old,to:nm}); }
+  if(M.size){ const M2=new Map(); for(const [k,v] of M)M2.set(k,v); cosmSync(M2); }
+  return {n,errs}; }
+/* 이름 고치기(선수 화면·일괄 화면 공용). 성공하면 '' */
+function setPlayerName(id,v){ const t=cosmTarget(id); if(!t)return '선수를 찾을 수 없습니다.'; const e=cosmNameErr(v); if(e)return e; const r=cosmRenameMany([{id:t.o.id,name:v}]); return r.errs[0]||''; }
+
+/* ----- 내보내기·가져오기(CSV/탭 텍스트): id, 구단, 현재 이름, 새 이름, 얼굴 번호 ----- */
+const COSM_HEAD=['id','구단','현재 이름','새 이름','얼굴 번호'];
+function cosmCell(s){ s=String(s??''); return /[",\n\r\t]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+/* rows: [{id, team(표시), name, face(번호 또는 '')}] → CSV 문자열(첫 줄 머리말). 새 이름 칸은 지금 이름으로 채워 둔다(고칠 칸만 바꾸면 된다) */
+function cosmCsv(rows){ return [COSM_HEAD.join(','),...rows.map(r=>[r.id,r.team,r.name,r.name,r.face??''].map(cosmCell).join(','))].join('\n'); }
+/* 한 줄 나누기: 쉼표 또는 탭(스프레드시트 복사), 큰따옴표 묶음 */
+function cosmSplit(line){ const sep=(line.split('\t').length>line.split(',').length)?'\t':','; const out=[]; let cur='', q=false;
+  for(let i=0;i<line.length;i++){ const c=line[i];
+    if(q){ if(c!=='"')cur+=c; else if(line[i+1]==='"'){ cur+='"'; i++; } else q=false; }
+    else if(c==='"'&&cur.trim()===''){ q=true; cur=''; } else if(c===sep){ out.push(cur); cur=''; } else cur+=c; }
+  out.push(cur); return out.map(s=>s.trim()); }
+/* 텍스트 → 줄 목록 [{line(1부터), id, name, face}]. 머리말 줄은 건너뛴다. 칸이 2개면 id,새 이름 · 3개면 id,새 이름,얼굴 번호 · 4개 이상이면 머리말 순서(id,구단,현재 이름,새 이름,얼굴 번호) */
+function cosmParse(text){ const L=String(text??'').replace(/^﻿/,'').split(/\r?\n/), out=[];
+  L.forEach((raw,i)=>{ if(!raw.trim()||/^\s*#/.test(raw))return; const c=cosmSplit(raw); if(i===0&&!/^\d+$/.test(c[0]||''))return; /* 머리말 */
+    const r=c.length<=2?{id:c[0],name:c[1]??''}:c.length===3?{id:c[0],name:c[1],face:c[2]}:{id:c[0],name:c[3]??'',face:c[4]??'',cur:c[2]};
+    out.push(Object.assign({line:i+1},r)); });
+  return out; }
+/* 미리보기: rows(cosmParse) → {chg:[{id,line,arch,from,to,faceFrom,faceTo}], bad:[{line,why}], same(바뀐 것 없는 줄 수)}.
+   F(선택): 얼굴 검사 {cur(p)→번호|null, err(p,번호)→''|문장}. 없으면 얼굴 칸이 채워진 줄은 '얼굴을 확인할 수 없음' */
+function cosmPreview(rows,F){ const chg=[], bad=[], seen=new Set(); let same=0;
+  for(const r of rows||[]){ const sid=String(r.id??'').trim(); if(!/^\d+$/.test(sid)){ bad.push({line:r.line,why:`id '${sid}'가 숫자가 아닙니다.`}); continue; }
+    if(seen.has(sid)){ bad.push({line:r.line,why:`id ${sid}가 앞 줄에도 있습니다.`}); continue; } seen.add(sid);
+    const t=cosmTarget(+sid); if(!t){ bad.push({line:r.line,why:`id ${sid} 선수를 찾을 수 없습니다.`}); continue; } const o=t.o;
+    const nm=String(r.name??'').trim()===''?o.name:cosmNameClean(r.name); let why=nm===o.name?'':cosmNameErr(r.name);
+    const fs=String(r.face??'').trim(); let fTo=null, fFrom=null;
+    if(!why&&fs!==''){ if(t.arch)why='은퇴 선수는 얼굴을 바꿀 수 없습니다(이름만 바꿀 수 있음).'; else if(!/^\d+$/.test(fs))why=`얼굴 번호 '${fs}'가 숫자가 아닙니다.`; else if(!F)why='이 화면에서는 얼굴 번호를 확인할 수 없습니다.'; else { fFrom=F.cur(o); const n=+fs; if(n!==fFrom){ const fe=F.err(o,n); if(fe)why=fe; else fTo=n; } } }
+    if(why){ bad.push({line:r.line,why:`${o.name}(${sid}): ${why}`}); continue; }
+    if(nm===o.name&&fTo==null){ same++; continue; }
+    chg.push({id:+sid,line:r.line,arch:t.arch,from:o.name,to:nm,faceFrom:fFrom,faceTo:fTo}); }
+  return {chg,bad,same}; }
+/* 미리보기 적용: 이름은 한 번에, 얼굴은 F.set(p,번호)로(화면 쪽). → {names, faces, errs} */
+function cosmApply(pv,F){ const r=cosmRenameMany((pv&&pv.chg||[]).filter(x=>x.to!==x.from).map(x=>({id:x.id,name:x.to}))); let faces=0; const errs=r.errs.slice();
+  for(const x of pv&&pv.chg||[])if(x.faceTo!=null){ const p=G.players[x.id]; if(!p||!F){ errs.push(`${x.to}: 얼굴을 바꾸지 못했습니다.`); continue; } const e=F.err(p,x.faceTo); if(e){ errs.push(`${p.name}: ${e}`); continue; } F.set(p,x.faceTo); faces++; }
+  return {names:r.n,faces,errs}; }
 /* ===== 예고 선발 · 순위 기록 · 트레이드 비교 · 모의 지명 · 스태프 의견 ===== */
 /* 앞으로의 경기: 엔진이 치를 순서 그대로(미룬 경기·같은 날 두 경기·지금 포스트시즌 시리즈의 남은 차전). 다음 경기 목록·예고 선발이 같은 목록을 읽어 상대가 어긋나지 않게(검수 11-09zo) */
 function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; for(let d=from;d<=c.end&&L.length<n;d++){ const D=dayGames(d), nm=D.length-((c.sched[d]||[]).length); D.forEach((m,i)=>{ if(m.includes(tid))L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0],...(i<nm?{mk:true}:{})}); }); } /* mk: 미룬 보충 경기(dayGames 앞쪽) */
@@ -38180,7 +38285,7 @@ function quickActs(p){
     if(tradeOpen()){ main={a:'toTrade',v:p.id,l:'트레이드 협상'}; M.push({a:'findT',v:p.id,l:'얻을 조건 보기'}); }
     const on=(G.pwatch||[]).includes(p.id); M.push({a:'pwatch',v:p.id,l:on?'관심 해제':'관심 선수',on});
   }
-  const all=actModeAll(), html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기',all}); /* 설정 › 선수 화면 버튼: 모두 보이기(기본)·간단히 */
+  const all=actModeAll(); if(!all)M.push({a:'pEditOpen',v:p.id,l:'이름·얼굴 바꾸기'}); /* 간단히 모드 ⋯ 메뉴(모두 보이기는 이름 옆 '고치기') */ const html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기',all}); /* 설정 › 선수 화면 버튼: 모두 보이기(기본)·간단히 */
   return html?`<div class="qacts${all?' qacts-all':''}">${html}</div>`:''; }
 
 /* ---------- 아마추어 기록: 학년별 ---------- */
@@ -40089,7 +40194,7 @@ function clubBody(s){
       if(g==='info'){ /* 정보: 카페·버전 | 패치 노트 | 대회 기록·크레딧·플레이 기록·관리자. 관리자 들어가는 길은 '설정 › 정보 › 관리자' 그대로(docs) */
         const pn=fmOn()?patchCard():`<section class="card"><details class="mfold"><summary>패치 노트</summary>${patchCard()}</details></section>`;
         return wrap(col('공식 카페',fb)+col('패치 노트',pn)+col('기록·개인정보',cupHofCard()+`<section class="card">${creditsLine()}</section>`+teleCard()+cupAdminLink()),'setp-info'); }
-      const run=advSetCard()+stopCard()+guideCfgCard(), rule=psc+ivf+dif+ret, view=actModeCard()+scl+teamNameCard();
+      const run=advSetCard()+stopCard()+guideCfgCard(), rule=psc+ivf+dif+ret, view=actModeCard()+scl+teamNameCard()+cosmCard(); /* 이름·얼굴 일괄 수정(72_cosmetic.js, 구단주 11-17) */
       if(!fmOn()){ /* 휴대폰·좁은 창: 게임 설정 안은 안쪽 탭 세 개(진행·경기·규칙·표시). 저장·정보는 위 하위 탭으로 옮겼다(사용자 11-17) */
         const it=inTabs('setg',[['run','진행'],['rule','경기·규칙'],['view','표시']],'run');
         return wrap(`<div class="setc">${{run,rule,view}[it.cur]}</div>`,'set-tabs',it.bar); }
@@ -40841,7 +40946,7 @@ function playerFullscreenHeader(p,rp,where,isFA){
   const fc=p.foreign&&p.team==null?fScout(p,rp):null; /* 외국인 후보: 종합은 추정 범위, 연봉은 요구액 */
   const cur=fc&&fc.mid!=null?`${fc.lo}~${fc.hi}`:rp.cur==null?'미확인':dv(rp.cur), pot=rp.ofp==null?'미확인':potTierP(rp,p).s;
   const door=isFA?negDoor('fa',p):p.foreign&&p.team==null&&(G.fmarket||[]).includes(p.id)?negDoor('fm',p):p.team===G.user&&p.foreign&&G.contract&&!G.contract.done&&G.contract.foreignEnd.includes(p.id)&&!G.contract.foreignDrop.includes(p.id)?negDoor('fre',p):'';
-  return `<header class="sheet-head pf-masthead"><div class="pf-name">${phWrap(avImg(p,true),cimgKey(p))}<div><div class="eyebrow">${esc(where)}${p.foreign&&p.team!=null?' · '+(p.foreign==='아시아'?'아시아쿼터':'외국인')+(p.nat?' · '+esc(p.nat):''):''}${isFA?' · FA':''}</div><h2 class="sec">${p.team!=null?`<span class="pno">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></h2><p class="pinfo keep">${posLabel(p)}${!p.isP&&subsOf(p).length?' · '+subsOf(p).map(k=>POSK[k]||k).join('·')+' 가능':''} · ${p.age}세 · ${hand(p)} · ${esc(milText(p))}${pcBadge(p)}</p>${UI.pEdit===p.id?pEditBox(p):''}</div></div><div class="pf-contract-head"><span>${fc?'종합 추정':'현재 종합'} <b style="color:${fc&&fc.raw!=null?rcol(fc.raw):rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b>${currentAbilityStars(fc&&fc.raw!=null?{...rp,cur:fc.raw,exact:false}:rp)}<small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></span><span>잠재력 <b title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></span>${fc?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b><small>외국인 1년</small></span>`:`<span>연봉 <b>${money(p.sal||0)}</b><small class="pf-ct">${esc(ctText(p))}</small></span>`}</div><div class="pf-window-actions"><button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div></header><div class="pf-toolbar">${quickActs(p)}${door}</div>`;
+  return `<header class="sheet-head pf-masthead"><div class="pf-name">${phWrap(avImg(p,true),cimgKey(p))}<div><div class="eyebrow">${esc(where)}${p.foreign&&p.team!=null?' · '+(p.foreign==='아시아'?'아시아쿼터':'외국인')+(p.nat?' · '+esc(p.nat):''):''}${isFA?' · FA':''}</div><h2 class="sec">${p.team!=null?`<span class="pno">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·얼굴·등번호 바꾸기">고치기</button></h2><p class="pinfo keep">${posLabel(p)}${!p.isP&&subsOf(p).length?' · '+subsOf(p).map(k=>POSK[k]||k).join('·')+' 가능':''} · ${p.age}세 · ${hand(p)} · ${esc(milText(p))}${pcBadge(p)}</p>${UI.pEdit===p.id?pEditBox(p):''}</div></div><div class="pf-contract-head"><span>${fc?'종합 추정':'현재 종합'} <b style="color:${fc&&fc.raw!=null?rcol(fc.raw):rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b>${currentAbilityStars(fc&&fc.raw!=null?{...rp,cur:fc.raw,exact:false}:rp)}<small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></span><span>잠재력 <b title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></span>${fc?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b><small>외국인 1년</small></span>`:`<span>연봉 <b>${money(p.sal||0)}</b><small class="pf-ct">${esc(ctText(p))}</small></span>`}</div><div class="pf-window-actions"><button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div></header><div class="pf-toolbar">${quickActs(p)}${door}</div>`;
 }
 function playerProfileOverview(p,rp,h,tiles,injBox){
   const own=p.team===G.user&&!G.unemp, state=playerState(p), keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit'];
@@ -40864,7 +40969,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   /* FM 상황판처럼: 왼쪽 위 인물 상자(얼굴·등번호·포지션·종합·잠재력·연봉·올해 성적 3개), 오른쪽에 장점·약점 */
   const pot=rp.ofp==null?'미확인':potTierP(rp,p).s, cur=fsx&&fsx.mid!=null?`${fsx.mid}<small class="pf-rg-s">${fsx.lo}~${fsx.hi}</small>`:rp.cur==null?'?':rg(rp.cur);
   const ph=!!(p.img||(G.cimg&&G.cimg[cimgKey(p)]))||typeof face6Idx==='function'&&(face6Idx(p)!=null||face17Idx(p)!=null||amIdx(p)!=null)&&!!face6Src(p); /* 사용자 사진도 같은 사진 틀을 쓴다. */
-  const fmCard=`<section class="card pf-fmcard${ph?' ph':''}"><div class="pf-fm-face">${avImg(p,true)}${p.team!=null?`<span class="pf-fm-no">${jno(p)}</span>`:''}${p.team!=null?`<span class="pf-fm-team">${badge(p.team,22)}</span>`:''}${cimgBtns(cimgKey(p))}</div><div class="pf-fm-name"><b>${esc(p.name)} <button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}${p.father?` · ${sonTag(p)}`:''}</span></div><div class="pf-fm-key"><div><span>${fsx?'현재 능력 추정':'현재 능력'}</span><b class="pf-fm-pot">${currentAbilityStars(fsx&&fsx.raw!=null?{...rp,cur:fsx.raw,exact:false}:rp)}</b><b class="pf-current-score" style="color:${fsx&&fsx.raw!=null?rcol(fsx.raw):rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b><small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></div><div><span>잠재력</span><b class="pf-fm-pot" title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></div></div><div class="pf-fm-stats">${(tiles||[]).slice(0,3).map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')||'<div><span>올해 성적</span><b>-</b></div>'}</div><div class="pf-fm-role"><b>${esc(rp.arch||posLabel(p))}</b>${rp.role?`<span>${p.foreign?'올해 역할':'장래 예상'} ${esc(rp.role)}</span>`:''}<span>${!p.foreign?(p.college?'대졸':'고졸')+' · ':''}${esc(milText(p))}${p.draft?` · ${p.draft.y} ${p.draft.tid!=null&&team(p.draft.tid)?esc(tshort(p.draft.tid))+' ':''}${p.draft.rd}라운드 ${p.draft.no}순위 지명`:''}</span></div><div class="pf-fm-pay">${fsx?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b></span><small>외국인 1년 계약</small>`:`<span>연봉 <b>${money(p.sal||0)}</b></span><small>${esc(ctText(p))}</small>`}<button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}</div></section>`;
+  const fmCard=`<section class="card pf-fmcard${ph?' ph':''}"><div class="pf-fm-face">${avImg(p,true)}${p.team!=null?`<span class="pf-fm-no">${jno(p)}</span>`:''}${p.team!=null?`<span class="pf-fm-team">${badge(p.team,22)}</span>`:''}${cimgBtns(cimgKey(p))}</div><div class="pf-fm-name"><b>${esc(p.name)} <button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·얼굴·등번호 바꾸기">고치기</button></b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}${p.father?` · ${sonTag(p)}`:''}</span></div><div class="pf-fm-key"><div><span>${fsx?'현재 능력 추정':'현재 능력'}</span><b class="pf-fm-pot">${currentAbilityStars(fsx&&fsx.raw!=null?{...rp,cur:fsx.raw,exact:false}:rp)}</b><b class="pf-current-score" style="color:${fsx&&fsx.raw!=null?rcol(fsx.raw):rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b><small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></div><div><span>잠재력</span><b class="pf-fm-pot" title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></div></div><div class="pf-fm-stats">${(tiles||[]).slice(0,3).map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')||'<div><span>올해 성적</span><b>-</b></div>'}</div><div class="pf-fm-role"><b>${esc(rp.arch||posLabel(p))}</b>${rp.role?`<span>${p.foreign?'올해 역할':'장래 예상'} ${esc(rp.role)}</span>`:''}<span>${!p.foreign?(p.college?'대졸':'고졸')+' · ':''}${esc(milText(p))}${p.draft?` · ${p.draft.y} ${p.draft.tid!=null&&team(p.draft.tid)?esc(tshort(p.draft.tid))+' ':''}${p.draft.rd}라운드 ${p.draft.no}순위 지명`:''}</span></div><div class="pf-fm-pay">${fsx?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b></span><small>외국인 1년 계약</small>`:`<span>연봉 <b>${money(p.sal||0)}</b></span><small>${esc(ctText(p))}</small>`}<button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}</div></section>`;
   const good=tools.filter(t=>t.cur>=60).sort((a,b)=>b.cur-a.cur).slice(0,3), weak=tools.filter(t=>t.cur<45).sort((a,b)=>a.cur-b.cur).slice(0,3);
   const proCon=tools.length?`<section class="card pf-procon"><div class="pf-pro"><h3>장점</h3>${good.length?good.map(t=>`<p>${TOOLK[t.k]} <b style="color:${rcol(t.cur)}">${dv(t.cur)}</b></p>`).join(''):'<p class="muted">눈에 띄는 장점 없음</p>'}</div><div class="pf-con"><h3>약점</h3>${weak.length?weak.map(t=>`<p>${TOOLK[t.k]} <b style="color:${rcol(t.cur)}">${dv(t.cur)}</b></p>`).join(''):'<p class="muted">눈에 띄는 약점 없음</p>'}</div></section>`:'';
   /* FM처럼 남는 칸을 정보로: 계약·신분(왼쪽), 경력(오른쪽). PC에서만 보인다 */
@@ -41092,21 +41197,12 @@ function growthCard(p){
     <div class="growth">${pts.map(x=>`<div><i style="height:${Math.max(6,(x.v-20)*1.6)}px;background:${rcol(x.v)}"></i><b>${dv(x.v)}</b><span>${String(x.y).slice(2)}</span></div>`).join('')}</div>
     ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${lg.tid===G.user&&lg.manager?` · ${esc(lg.manager.name)} 감독 · ${mgrYouthWord(lg.manager.youth)}`:''}</p>`:''}${why.length?`<p class="small muted">반영 요인: ${why.map(esc).join(' · ')} ${hiI('잠재력 평가는 성장을 보장하지 않습니다. 시즌 폼이나 컨디션은 기본 기량 변화와 다릅니다.')}</p>`:''}</section>`;
 }
-/* 이름·등번호 고치기 */
-function pEditBox(p){ const e=UI.pEditErr; return `<div class="pe-box"><label>이름<input id="pe-nm" maxlength="12" value="${esc(p.name)}" autocomplete="off"></label>${p.team!=null?`<label>등번호<input id="pe-no" inputmode="numeric" maxlength="2" value="${jno(p)}" autocomplete="off"></label>`:''}<div class="row"><button class="btn small" data-a="pEditSave" data-v="${p.id}">저장</button><button class="btn small" data-a="pEditOpen" data-v="">취소</button></div>${e?`<p class="small bad">${esc(e)}</p>`:''}${p.renamed&&p.renamed.length?`<p class="small muted">이전 이름: ${p.renamed.map(r=>esc(r.from)).join(', ')}</p>`:''}<p class="small muted">기사·이야기에 이미 적힌 이름은 그대로 남습니다.</p>${EDITOR_ON?pEditFace(p)+pEditAbil(p):''}</div>`; }
-/* 선수 에디터(사진 고르기·능력 고치기)는 따로 판매할 기능이라 지금은 꺼 둔다(사용자 11-11). 켜려면 true */
-const EDITOR_ON=false;
-/* 에디터(커뮤니티 건의 11-11): 템플릿 사진 고르기 · 능력/잠재력/나이 고치기 */
-function pEditFace(p){ if(p.team==null||typeof face6Pool!=='function'||typeof FACE6==='undefined'||!FACE6.sheet[String(p.team)]||G.f6off)return ''; let cur=null; try{ cur=face6Idx(p); }catch(e){}
-  const L=face6Pool(p).slice().sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||a-b);
-  return `<details class="pe-sec"><summary>템플릿 사진 고르기 <span class="muted">(${L.length}장 · 나이 가까운 순)</span></summary><div class="pe-faces">${L.map(i=>{ const src=face6Thumb(p.team,i); return `<button class="pe-face${i===cur?' on':''}" data-a="pFace" data-v="${p.id}:${i}" title="사진 나이 ${FACE6.ids[i].a}세">${src&&src!==F6WAIT?`<img src="${src}" alt="">`:'<span class="av ini">?</span>'}</button>`; }).join('')}</div><p class="small muted">같은 구단에서 그 사진을 쓰던 선수는 다른 사진으로 바뀝니다. 갤러리 사진은 선수 화면의 '사진' 버튼으로 넣습니다.</p></details>`; }
-function pEditAbil(p){ const K=ED_RK[p.isP?'P':'B']; const inp=(id,v,lab)=>`<label>${esc(lab)}<input id="${id}" inputmode="numeric" maxlength="3" value="${v}" autocomplete="off"></label>`;
-  return `<details class="pe-sec"><summary>능력·잠재력·나이 고치기 <span class="muted">(에디터)</span></summary><div class="pe-ab">${K.map(k=>inp('pe-r-'+k,dv(p.r[k]),TRN_L[k]||k)).join('')}${inp('pe-pot',dv(p.pot),'잠재력')}${inp('pe-age',p.age,'나이')}</div><p class="small warn">능력은 화면 점수(30~100)로 입력합니다. 능력·잠재력·나이를 고치면 이 저장은 '에디터 사용'으로 표시되고, 이후 도전과제는 열리지 않습니다.${G.edited?` 현재 에디터 사용 ${G.edited.n}회.`:''}</p></details>`; }
+/* 이름·등번호·얼굴 고치기 상자(pEditBox)는 72_cosmetic.js. 능력·잠재력·나이 에디터는 없앴다(구단주 결정 11-17) */
 function face6Thumb(tid,i){ if(i>=100)return face6Src2(tid,i); const k=tid+':'+i; if(F6C.has(k))return F6C.get(k); const im=face6Load(tid,''); if(!im)return null; if(!im.ok)return im.bad?null:F6WAIT; try{ const u=FACE6.v==='6c'?face6Cut(im,128,i,26,25,76,128,0):face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } }
 function archSheet(a){ const tw=a.rows.reduce((s,r)=>s+(r.war||0),0); const f3=v=>fmt3(v);
   const row=r=>a.isP?`<tr><td>${r.y}</td><td>${badge(r.t,14)} ${esc(tshort(r.t))}</td><td>${r.g||'-'}</td><td>${ipStr(r.outs||0)}</td><td>${r.outs?archLine(r).era.toFixed(2):'-'}</td><td>${r.w||0}-${r.l||0}${r.sv?` ${r.sv}세`:''}</td><td>${r.so||0}</td><td>${(r.war||0).toFixed(1)}</td></tr>`
     :(()=>{ const ab=r.ab||0, L=archLine(r); /* 현역과 같은 계산 */ return `<tr><td>${r.y}</td><td>${badge(r.t,14)} ${esc(tshort(r.t))}</td><td>${r.pa||0}</td><td>${ab?f3(L.avg):'-'}</td><td>${r.hr||0}</td><td>${ab?f3(L.ops):'-'}</td><td>${r.sb||0}</td><td>${(r.war||0).toFixed(1)}</td></tr>`; })();
-  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="${esc(a.name)} 기록"><div class="sheet-head"><div><span class="eyebrow">리그를 떠난 선수${a.foreign?` · ${a.foreign==='아시아'?'아시아쿼터':'외국인'}`:''}</span><h2 class="sec">${esc(a.name)} <span class="small muted">${esc(a.isP?a.pos:(POSK[a.pos]||a.pos||''))} · ${a.y}년 ${a.age}세</span></h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="${esc(a.name)} 기록"><div class="sheet-head"><div><span class="eyebrow">리그를 떠난 선수${a.foreign?` · ${a.foreign==='아시아'?'아시아쿼터':'외국인'}`:''}</span><h2 class="sec">${esc(a.name)}<button class="pe-b" data-a="pEditOpen" data-v="${a.id}" title="이름 바꾸기">고치기</button> <span class="small muted">${esc(a.isP?a.pos:(POSK[a.pos]||a.pos||''))} · ${a.y}년 ${a.age}세</span></h2>${UI.pEdit===a.id?pEditBox(a):''}</div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${a.why?`<p class="small">${esc(a.why)}</p>`:''}<p class="small muted">1군 통산 WAR ${tw.toFixed(1)} · 마지막 소속 ${a.t!=null?esc(tshort(a.t)):'-'}. 리그를 떠나 지금 능력은 볼 수 없고, 남긴 기록만 보관합니다.</p>${a.aw&&a.aw.length?`<p class="small">수상: ${a.aw.map(esc).join(' · ')}</p>`:''}${a.feats&&a.feats.length?`<p class="small">진기록: ${a.feats.map(f=>`${f.y} ${esc(f.txt)}${f.vs?` (${esc(f.vs)})`:''}`).join(' · ')}</p>`:''}
     <div class="tw"><table class="mst"><thead><tr>${a.isP?'<th>시즌</th><th>구단</th><th>경기</th><th>이닝</th><th>ERA</th><th>승-패</th><th>탈삼진</th><th>WAR</th>':'<th>시즌</th><th>구단</th><th>타석</th><th>타율</th><th>홈런</th><th>OPS</th><th>도루</th><th>WAR</th>'}</tr></thead><tbody>${a.rows.slice().sort((x,y)=>x.y-y.y).map(row).join('')}</tbody></table></div></div></div>`; }
 /* 상단바와 메뉴를 남긴 채 상세 본문에 사용할 실제 영역을 계산한다. */
@@ -41175,6 +41271,7 @@ function renderSheet0(){
   if(UI.menu){ el.innerHTML=menuSheet(); return; }
   if(UI.teamSh!=null&&UI.sheet==null){ el.innerHTML=teamSheet(UI.teamSh); return; }
   if(UI.noEdit){ el.innerHTML=noEditSheet(); return; } /* 등번호 한 번에 바꾸기 */
+  if(UI.cosm){ el.innerHTML=cosmSheet(); return; } /* 이름·얼굴 일괄 수정(72_cosmetic.js) */
   if(UI.myRos&&UI.sheet==null){ G.tutFlags=G.tutFlags||{}; G.tutFlags.roster=true; el.innerHTML=myRosterSheet(); return; }
   if(UI.person&&UI.sheet==null){ el.innerHTML=personSheet(UI.person); return; }
   if(UI.game!=null){ el.innerHTML=gameSheet(UI.game); return; }
@@ -41222,7 +41319,7 @@ function renderSheet0(){
   el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut psh pf-screen${T==='sum'||T==='abil'?' psh2':''}" style="${pst}" role="dialog" aria-modal="true" aria-label="${esc(p.name)} 선수 정보" data-stop="1">
    ${fullProfile?'<div class="pf-topnav">':''}
    ${fullProfile?playerFullscreenHeader(p,rp,where,isFA):`   <div class="sheet-head"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${avImg(p,true)}<div><div class="eyebrow">${where}${isFA?' · FA':''}${p.foreign&&p.team!=null?` · ${p.foreign==='아시아'?'아시아쿼터':'외국인'} · ${p.nat}`:''}</div>
-    <h2 class="sec" style="font-size:24px">${p.team!=null?`<span class="pno" title="등번호">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></h2>${UI.pEdit===p.id?pEditBox(p):''}${p.aw&&p.aw.length?`<div class="row" style="gap:4px;margin:2px 0">${p.aw.slice(-6).map(a=>`<span class="awp">${awArt(a,18)}${esc(a)}</span>`).join('')}</div>`:''}
+    <h2 class="sec" style="font-size:24px">${p.team!=null?`<span class="pno" title="등번호">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·얼굴·등번호 바꾸기">고치기</button></h2>${UI.pEdit===p.id?pEditBox(p):''}${p.aw&&p.aw.length?`<div class="row" style="gap:4px;margin:2px 0">${p.aw.slice(-6).map(a=>`<span class="awp">${awArt(a,18)}${esc(a)}</span>`).join('')}</div>`:''}
     <p class="pinfo keep"><b class="pinfo-pos">${posLabel(p)}</b>${!p.isP&&typeof subsOf==='function'&&subsOf(p).length?`<span class="pinfo-sub">(${subsOf(p).map(k=>POSK[k]||k).join('·')} 가능)</span>`:''} · <b>${p.age}세</b> · ${hand(p)}${p.foreign?'':` · ${p.college?'대졸':'고졸'} · ${esc(milText(p))}`}${p.draft?` · ${p.draft.y} ${p.draft.tid!=null&&team(p.draft.tid)?esc(tshort(p.draft.tid))+' ':''}${p.draft.rd}라운드 ${p.draft.no}순위 지명`:''}${p.dev?' · 육성선수 출신':''}${p.father?` · ${sonTag(p)}`:''}${pcBadge(p)}</p></div></div><button class="tc-i pcmp-b${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}" title="같은 시즌·같은 군 기준으로 2~3명을 나란히 비교">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':`비교에 담기${(UI.pcmp||[]).length?` (${(UI.pcmp||[]).length}/3)`:''}`}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i go" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
    ${keyBar(p,rp,isFA,isFM)}${posValLine(p,rp)}${playerReadout(p,rp)}
    <div class="row">${p.fdPool||fdHideNow(p)?'':`<span class="pill acc">${esc(rp.arch)}</span>`}${rp.role&&!p.fdPool&&!fdHideNow(p)?`<span class="pill">${p.foreign?'올해 예상':'장래'} ${esc(rp.role)}</span>`:''}${status}</div>
@@ -41648,13 +41745,11 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   fmBack(){ fmBack(); }, fmFwd(){ fmFwd(); }, fmKeysX(){ UI.fmKeys=false; render(); }, fmKeysOpen(){ UI.fmKeys=true; render(); }, fmPlan(){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; UI.it.rdepth='glance'; closeSheets(); render(); },
   retNo(v){ note('기록',retireNumber(v)); save(); render(); },
   pEditOpen(v){ UI.pEdit=v===''||v==null?null:+v; UI.pEditErr=''; renderSheet(); },
-  pFace(v){ if(!EDITOR_ON)return; const [id,i]=String(v).split(':').map(Number), p=G.players[id]; if(!p||p.team==null||!face6Pool(p).includes(i))return; G.f6=G.f6||{}; G.f6r=G.f6r||{}; const k=p.team+':'+i, prev=G.f6r[k]; if(prev!=null&&prev!==id)delete G.f6[prev]; if(G.f6[id]!=null)delete G.f6r[p.team+':'+G.f6[id]]; G.f6[id]=i; G.f6r[k]=id; save(); render(); try{ renderSheet(); }catch(e){} },
   noEditOpen(){ UI.noEdit=true; UI.noDraft={}; UI.noErr=''; render(); },
   noEditClose(){ UI.noEdit=false; UI.noDraft=null; UI.noErr=''; render(); },
   noEditSave(){ const M={}; document.querySelectorAll('.ne-in').forEach(el=>{ M[el.dataset.pid]=el.value; }); UI.noDraft=M; const r=setPlayerNos(M); if(r.err){ UI.noErr=r.err; render(); return; } UI.noEdit=false; UI.noDraft=null; UI.noErr=''; note('선수',`등번호 ${r.n}명을 바꿨습니다.`); save(); render(); },
-  pEditSave(v){ const id=+v, p=G.players[id]; if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); let e=nm?setPlayerName(id,nm.value):''; if(!e&&no&&String(no.value).trim()!==String(jno(p)))e=setPlayerNo(id,no.value);
-    if(!e&&EDITOR_ON&&$('#pe-age')){ const rv=k=>{ const el=$('#pe-r-'+k); if(!el)return null; const t=String(el.value).trim(); return t===''||+t===dv(p.r[k])?null:dvInv(t); }; const r={}; for(const k of ED_RK[p.isP?'P':'B']){ const x=rv(k); if(x!=null)r[k]=x; } const pt=String($('#pe-pot').value).trim(); e=setPlayerRatings(id,{r,pot:pt===''||+pt===dv(p.pot)?null:dvInv(pt),age:$('#pe-age').value}); }
-    if(e){ UI.pEditErr=e; renderSheet(); return; } UI.pEdit=null; UI.pEditErr=''; note('선수',`${p.name} · ${p.team!=null?jno(p)+'번':''} 저장했습니다.`); save(); render(); },
+  pEditSave(v){ const id=+v, p=G.players[id]||(G.arch&&G.arch[id]); if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); let e=nm?setPlayerName(id,nm.value):''; if(!e&&no&&G.players[id]&&String(no.value).trim()!==String(jno(p)))e=setPlayerNo(id,no.value); /* 이름·등번호만(능력 에디터 없음, 구단주 결정 11-17). 얼굴은 고르는 즉시 저장(cosmFace) */
+    if(e){ UI.pEditErr=e; renderSheet(); return; } UI.pEdit=null; UI.pEditErr=''; note('선수',`${p.name}${G.players[id]&&p.team!=null?' · '+jno(p)+'번':''} 저장했습니다.`); save(); render(); },
   noTrade(v){ const p=G.players[+v]; if(!p||p.team!==G.user)return; p.noTrade=!p.noTrade; if(p.noTrade&&p.listed){ try{ blockRemove(p.id); }catch(e){ p.listed=false; } } toast(p.noTrade?`${p.name}을(를) 트레이드 불가로 지정했습니다. 다른 구단이 묻지 않습니다.`:`${p.name} 트레이드 불가를 풀었습니다.`); save(); render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} },
   blkOn(v){ const q=G.players[+v]; if(q&&hasNtc(q)){ toast(`${q.name}은(는) 트레이드 거부권이 있어 매물로 올릴 수 없습니다(${q.ntc}년까지).`); return; } blockAdd(+v,'any'); UI.sheet=null; save(); A.go('trade:block'); },
   blkOff(v){ blockRemove(+v); save(); render(); },
@@ -45397,7 +45492,7 @@ function phEl(){ let d=document.getElementById('phdlg'); if(!d){ d=document.crea
 function phClose(){ const d=document.getElementById('phdlg'); if(d)d.remove(); clearTimeout(PH.t); PH.k=null; PH.mode=null; PH.c=null; const b=PH.back; PH.back=null; try{ if(b&&b.isConnected)b.focus({preventScroll:true}); }catch(e){} }
 /* 지금 화면에 보이는 그 사람 사진(연필 버튼 옆 사진) */
 function phCurSrc(k){ const b=[...document.querySelectorAll('#app .ph-pen,#sheet .ph-pen')].find(x=>x.dataset.v===k), im=b&&b.parentElement&&b.parentElement.querySelector('img'); return (G.cimg&&G.cimg[k])||(im&&im.getAttribute('src'))||''; }
-function phMenuHtml(k){ const cur=phCurSrc(k), own=!!(G.cimg&&G.cimg[k]), orig=!!(G.cimgO&&G.cimgO[k]&&own), tpl=typeof secPickHtml==='function'?secPickHtml(k).replace('<details class="pe-sec sec-pick">','<details class="pe-sec sec-pick" open>'):'';
+function phMenuHtml(k){ const cur=phCurSrc(k), own=!!(G.cimg&&G.cimg[k]), orig=!!(G.cimgO&&G.cimgO[k]&&own), tpl=(typeof secPickHtml==='function'?secPickHtml(k).replace('<details class="pe-sec sec-pick">','<details class="pe-sec sec-pick" open>'):'')||(typeof cosmPhTpl==='function'?cosmPhTpl(k):''); /* 선수(p:id): 템플릿 얼굴 고르기(72_cosmetic.js) */
   return `<div class="ph-box" role="dialog" aria-modal="true" aria-label="사진 바꾸기"><div class="ph-head"><b>사진 바꾸기</b><button type="button" class="x" data-a="phClose" aria-label="닫기">×</button></div>
     <div class="ph-cur">${cur?`<img class="av big" src="${cur}" alt="">`:'<span class="av big ini">?</span>'}<p class="small muted">${own?'갤러리에서 넣은 사진입니다.':'기본 사진입니다.'} 고른 사진은 이 기기 저장에만 넣습니다.</p></div>
     <div class="ph-acts"><label class="btn primary">갤러리에서 고르기<input type="file" accept="image/*" data-cimg="${esc(k)}" hidden></label>${orig?`<button type="button" class="btn" data-a="phRecrop" data-v="${esc(k)}">자르기 다시</button>`:''}${own?`<button type="button" class="btn" data-a="cimgDel" data-v="${esc(k)}">원래대로</button>`:''}</div>
@@ -45464,6 +45559,116 @@ function phApply(){ const c=PH.c; if(!c)return; try{ const O=IMG_OUT, out=docume
 document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||!el.matches('[data-cimg],[data-meimg],[data-gpimg]')||!el.files||!el.files[0]||!G&&!el.hasAttribute('data-gpimg'))return; const f=el.files[0];
   const to=el.hasAttribute('data-cimg')?{k:el.dataset.cimg}:el.hasAttribute('data-meimg')?{me:1}:{gp:1}; try{ el.value=''; }catch(err){} /* 같은 파일을 다시 골라도 바뀌게 */
   if(phBadType(f)){ toast('사진 파일만 넣을 수 있습니다.'); return; } phCrop(f,to); });
+/* ===== 이름·얼굴 바꾸기 화면(구단주 결정 11-17: 선수 에디터는 없고, 이름·얼굴은 바꿀 수 있게 + 대량 수정) =====
+ - 선수 한 명: 선수 화면 '고치기'(이름 옆)·⋯ 메뉴 '이름·얼굴 바꾸기'·사진 연필(사진 바꾸기 창)에서 이름·등번호·얼굴 템플릿 사진·직접 넣은 사진
+ - 여러 명: 설정 › 게임 설정 › 표시 '이름·얼굴 일괄 수정' 창. 구단·드래프트 대상·소속 없음·은퇴 선수 묶음, 표 안에서 이름 고치기, 얼굴 고르기, CSV/텍스트 내보내기·가져오기(미리보기 뒤 적용)
+ - 얼굴 번호: 그 선수가 지금 쓰는 사진 묶음의 번호. 구단 소속 = FACE6 칸(국내·외국인·아시아쿼터 묶음은 face6Pool이 가른다, 구단 유니폼), 소속 없는 외국인 = FACE17 훈련복 칸,
+   드래프트 대상(아마추어) = FACE21 칸(그 사진 묶음이 들어왔을 때만). 소속 없는 국내 선수·은퇴 선수는 템플릿 사진이 없다(직접 넣은 사진은 가능, 은퇴 선수는 이름만)
+ - 배정은 얼굴 코드(77_assets_ui.js)의 저장 칸을 그대로 쓴다: G.f6(선수→칸)·G.f6r('구단:칸'→선수) · G.f17 · G.fam. 같은 구단에서 그 얼굴을 쓰던 선수는 다음 그리기에서 다른 얼굴을 받는다
+ - 직접 넣은 사진(G.cimg 'p:id')은 이 기기 저장에만 있다. 대회 엔트리는 템플릿 얼굴(face6Src)만, 래더 덱은 사진 없이 올라가므로 서버로 가지 않는다
+ - 능력·잠재력·나이·계약을 고치는 길은 없다 */
+const COSM_PG=40, COSM_FACE_N=36;
+/* 그 선수가 고를 수 있는 템플릿 사진 묶음: {k:'6'|'17'|'21', tid, L:[번호]} 또는 null */
+function cosmFace(p){ if(!p||p.persona||p.id==null||!G||G.f6off||!G.players[p.id]||typeof FACE6==='undefined'||typeof face6Pool!=='function')return null;
+  if(p.team!=null){ if(!FACE6.sheet||!FACE6.sheet[String(p.team)])return null; const res=new Set(); for(const k in G.f6s||{}){ const [t,i]=k.split(':'); if(G.f6s[k]&&t===String(p.team))res.add(+i); } /* 선수 출신 지도자가 쓰는 얼굴은 뺀다 */
+    return {k:'6',tid:p.team,L:face6Pool(p).filter(i=>!res.has(i))}; }
+  if(p.foreign){ if(typeof FACE17==='undefined'||!FACE17.ids)return null; const q=p.foreign==='아시아'?1:0; return {k:'17',L:FACE17.ids.map((x,i)=>i).filter(i=>FACE17.ids[i].q===q)}; }
+  if(typeof FACE21!=='undefined'&&FACE21.ids&&FACE21.ids.length&&typeof amFaceOn==='function'&&amFaceOn(p))return {k:'21',L:FACE21.ids.map((x,i)=>i)};
+  return null; }
+const cosmIds=F=>F.k==='6'?FACE6.ids:F.k==='17'?FACE17.ids:FACE21.ids;
+/* 지금 쓰는 얼굴 번호(그 묶음 기준). 아마추어 시절 사진·소속 없을 때 사진을 이어 쓰는 중이면 null */
+function cosmFaceCur(p){ const F=cosmFace(p); if(!F)return null; try{
+  if(F.k==='6'){ if(typeof FACE21!=='undefined'&&G.fam&&G.fam[p.id])return null; if(p.foreign&&G.f17&&G.f17[p.id]!=null)return null; return face6Idx(p); }
+  if(F.k==='17')return face17Idx(p); const a=amIdx(p); return a?a.c:null; }catch(e){ return null; } }
+function cosmFaceErr(p,n){ const F=cosmFace(p); if(!F)return '이 선수는 고를 수 있는 템플릿 사진이 없습니다(직접 사진은 넣을 수 있음).'; n=+n; if(!Number.isInteger(n)||!F.L.includes(n))return `얼굴 번호 ${n}은(는) 이 선수에게 쓸 수 없습니다(이 선수 묶음 ${F.L.length}장: ${F.L[0]}~${F.L[F.L.length-1]} 중).`; return ''; }
+/* 얼굴 번호 정하기(검사는 cosmFaceErr) */
+function cosmSetFace(p,n){ const F=cosmFace(p); if(!F||cosmFaceErr(p,n))return false; n=+n;
+  if(F.k==='6'){ G.f6=G.f6||{}; G.f6r=G.f6r||{}; const t=p.team, k=t+':'+n, prev=G.f6r[k]; if(prev!=null&&prev!==p.id)delete G.f6[prev]; /* 같은 구단에서 이 얼굴을 쓰던 선수는 다른 얼굴을 받는다 */
+    const cur=G.f6[p.id]; if(cur!=null&&G.f6r[t+':'+cur]===p.id)delete G.f6r[t+':'+cur]; G.f6[p.id]=n; G.f6r[k]=p.id; if(G.fam)delete G.fam[p.id]; if(G.f17)delete G.f17[p.id]; }
+  else if(F.k==='17')(G.f17=G.f17||{})[p.id]=n;
+  else (G.fam=G.fam||{})[p.id]={k:'21',c:n};
+  return true; }
+const COSM_F={cur:cosmFaceCur,err:cosmFaceErr,set:cosmSetFace};
+/* 템플릿 사진 작은 그림(번호로). 못 그리면 null(번호만 보인다) */
+function cosmThumb(F,n){ try{ if(F.k==='6')return typeof face6Thumb==='function'?face6Thumb(F.tid,n):null;
+  if(F.k==='17'){ const k='17:'+n; if(F6C.has(k))return F6C.get(k); const im=face17Load(); if(!im.ok)return im.bad?null:F6WAIT; const u=face6Cut(im,256,n,52,50,152,256,0); F6C.set(k,u); return u; } }catch(e){} return null; }
+function cosmOwn(p){ return !!(G.cimg&&G.cimg['p:'+p.id]); }
+/* 얼굴 고르기 칸(선수 화면 고치기 상자·사진 바꾸기 창·일괄 창 공용) */
+function cosmFacePick(p,o){ o=o||{}; const F=cosmFace(p), own=cosmOwn(p), k='p:'+p.id;
+  const up=o.noUp?'':`<div class="row cosm-up"><button type="button" class="btn small" data-a="phMenu" data-v="${k}">직접 사진 넣기</button>${own?`<button type="button" class="btn small" data-a="cimgDel" data-v="${k}">직접 넣은 사진 지우기</button>`:''}</div>`;
+  if(!F)return `<div class="cosm-face"><p class="small muted">${p.team==null&&!p.prospect&&!p.foreign?'소속 구단이 없는 국내 선수는 템플릿 사진이 없습니다.':'이 선수가 고를 수 있는 템플릿 사진이 아직 없습니다.'}${own?' 지금은 직접 넣은 사진을 씁니다.':''}</p>${up}</div>`;
+  const ids=cosmIds(F), cur=cosmFaceCur(p), age=p.age||25, more=(UI.cosmMore||{})[p.id]||COSM_FACE_N;
+  const L=F.L.slice().sort((a,b)=>(a===cur?-1:b===cur?1:0)||Math.abs((ids[a].a||age)-age)-Math.abs((ids[b].a||age)-age)||a-b), show=L.slice(0,more);
+  const tiles=show.map(i=>{ const src=cosmThumb(F,i); return `<button type="button" class="pe-face${i===cur?' on':''}" data-a="cosmFace" data-v="${p.id}:${i}" title="얼굴 ${i}번 · 사진 나이 ${ids[i].a??'-'}세" aria-label="얼굴 ${i}번"${i===cur?' aria-pressed="true"':''}>${src&&src!==F6WAIT?`<img src="${src}" alt="" loading="lazy">`:`<span class="av ini">${i}</span>`}<i>${i}</i></button>`; }).join('');
+  return `<div class="cosm-face"><p class="small"><b>얼굴 템플릿</b> <span class="muted">${L.length}장 · 나이 가까운 순 · 지금 ${cur!=null?cur+'번':'아마추어·이전 사진'}${own?' · <b>직접 넣은 사진 사용 중</b>(템플릿을 고르면 지웁니다)':''}</span></p><div class="pe-faces">${tiles}</div>${L.length>show.length?`<button type="button" class="btn small" data-a="cosmMore" data-v="${p.id}">사진 더 보기 (${L.length-show.length}장 남음)</button>`:''}${up}${F.k==='6'?'<p class="small muted">같은 구단에서 그 얼굴을 쓰던 선수는 다른 얼굴로 바뀝니다.</p>':''}</div>`; }
+/* 선수 화면의 고치기 상자: 이름·등번호·얼굴(능력·나이·계약은 바꾸지 않음) */
+function pEditBox(p){ const e=UI.pEditErr, arch=!G.players[p.id];
+  return `<div class="pe-box cosm-box"><label>이름<input id="pe-nm" maxlength="${COSM_NAME_MAX}" value="${esc(p.name)}" autocomplete="off"></label>${!arch&&p.team!=null?`<label>등번호<input id="pe-no" inputmode="numeric" maxlength="2" value="${jno(p)}" autocomplete="off"></label>`:''}<div class="row"><button class="btn small primary" data-a="pEditSave" data-v="${p.id}">저장</button><button class="btn small" data-a="pEditOpen" data-v="">닫기</button></div>${e?`<p class="small bad">${esc(e)}</p>`:''}
+    ${arch?'':cosmFacePick(p)}${p.renamed&&p.renamed.length?`<p class="small muted">이전 이름: ${p.renamed.map(r=>esc(r.from)).join(', ')}</p>`:''}<p class="small muted">이름은 ${COSM_NAME_MAX}자까지. 기록·명단은 새 이름으로 보이고, 이미 나온 기사·소식 문장은 그대로 남습니다. 능력·나이·계약은 바꿀 수 없습니다. 여러 명은 설정 › 게임 설정 › 표시 › 이름·얼굴 일괄 수정에서 바꿉니다.</p></div>`; }
+/* 사진 바꾸기 창(연필)에 넣는 템플릿 칸: 선수 키(p:id)일 때만 */
+function cosmPhTpl(k){ const m=/^p:(\d+)$/.exec(String(k||'')); const p=m&&G&&G.players[+m[1]]; if(!p)return ''; const F=cosmFace(p); if(!F)return ''; return `<details class="pe-sec" open><summary>템플릿 사진 고르기</summary>${cosmFacePick(p,{noUp:true})}</details>`; }
+
+/* ----- 일괄 창 ----- */
+function cosmScopes(){ return [...G.teams.filter(t=>!t.indie).map(t=>['t:'+t.id,tshort(t.id)]),['pro','드래프트 대상'],['fa','소속 없음'],['arch','은퇴'],['all','전체']]; }
+function cosmTeamTxt(p,arch){ return arch?'은퇴':p.prospect?'드래프트 대상':p.team!=null?tshort(p.team):p.foreign?'외국인 후보':'소속 없음'; }
+function cosmList(sc,q){ const P=Object.values(G.players).filter(p=>!p.persona); let L;
+  if(sc==='arch')L=Object.values(G.arch||{}).filter(a=>a&&a.id!=null&&!G.players[a.id]);
+  else if(sc==='pro')L=P.filter(p=>p.prospect); else if(sc==='fa')L=P.filter(p=>p.team==null&&!p.prospect); else if(sc==='all')L=P;
+  else { const tid=+String(sc).slice(2); L=P.filter(p=>p.team===tid); }
+  const grp=p=>p.isP?0:p.pos==='C'?1:['1B','2B','3B','SS'].includes(p.pos)?2:3;
+  L.sort((a,b)=>sc==='all'||sc==='arch'?String(a.name).localeCompare(String(b.name),'ko'):grp(a)-grp(b)||String(a.name).localeCompare(String(b.name),'ko'));
+  const s=String(q||'').trim(); return s?L.filter(p=>String(p.name).includes(s)||String(p.id)===s):L; }
+function cosmRowsCsv(L){ return cosmCsv(L.map(p=>{ const arch=!G.players[p.id]; return {id:p.id,team:cosmTeamTxt(p,arch),name:p.name,face:arch?'':cosmFaceCur(p)??''}; })); }
+function cosmSt(){ return UI.cosm=UI.cosm||{sc:'t:'+(G.user??(G.teams[0]||{}).id),q:'',pg:0,d:{}}; }
+function cosmSheet(){ const S=cosmSt(), L=cosmList(S.sc,S.q), np=Math.max(1,Math.ceil(L.length/COSM_PG)); S.pg=Math.min(S.pg,np-1); const pageL=L.slice(S.pg*COSM_PG,(S.pg+1)*COSM_PG);
+  const nCh=Object.keys(S.d).filter(id=>{ const t=cosmTarget(+id); return t&&cosmNameClean(S.d[id])!==t.o.name; }).length;
+  const fp=S.face!=null&&G.players[S.face]?G.players[S.face]:null;
+  const sel=`<label class="cosm-sel">묶음 <select data-cosm="sc">${cosmScopes().map(([v,l])=>`<option value="${v}"${S.sc===v?' selected':''}>${esc(l)}</option>`).join('')}</select></label><label class="cosm-q">찾기 <input data-cosm="q" value="${esc(S.q)}" placeholder="이름 또는 id" autocomplete="off"></label><span class="small muted">${L.length}명</span>`;
+  const row=p=>{ const arch=!G.players[p.id], v=S.d[p.id]!=null?S.d[p.id]:p.name, ch=cosmNameClean(v)!==p.name, F=arch?null:cosmFace(p), fc=arch?null:cosmFaceCur(p);
+    const av=arch?'<span class="av ini">-</span>':avImg(p);
+    return `<tr class="${ch?'ch':''}${fp&&fp.id===p.id?' on':''}"><td class="cosm-av">${arch?av:`<button type="button" class="cosm-avb" data-a="cosmPick" data-v="${p.id}" title="얼굴 고르기">${av}</button>`}</td><td><input class="cosm-nm" data-id="${p.id}" maxlength="${COSM_NAME_MAX}" value="${esc(v)}" aria-label="${esc(p.name)} 새 이름" autocomplete="off">${ch?`<span class="small muted cosm-was">지금 ${esc(p.name)}</span>`:''}</td><td class="small">${esc(cosmTeamTxt(p,arch))}${!arch&&p.team!=null?` · ${jno(p)}번`:''}<br><span class="muted">${esc(arch?(p.isP?'투수':POSK[p.pos]||p.pos||''):posLabel(p))}${p.age?` · ${p.age}세`:''}</span></td><td class="num small">${arch?'-':cosmOwn(p)?'직접 사진':fc!=null?fc+'번':F?'-':'없음'}</td><td class="num small muted">${p.id}</td></tr>`; };
+  const pick=fp?`<div class="cosm-pick"><div class="row between"><b>${esc(fp.name)} 얼굴 고르기</b><button type="button" class="btn small" data-a="cosmPick" data-v="">닫기</button></div>${cosmFacePick(fp)}</div>`:'';
+  const io=S.io?cosmIoHtml(S,L):'';
+  return `<div class="scrim" data-a="cosmClose"><div class="sheet gut cosm-sheet" data-stop="1" role="dialog" aria-label="이름·얼굴 일괄 수정"><div class="sheet-head"><div><div class="eyebrow">설정 · 표시</div><h2 class="sec">이름·얼굴 일괄 수정</h2></div><button class="x" data-a="cosmClose" aria-label="닫기">×</button></div>
+    <p class="small muted">이름과 얼굴 사진만 바꿉니다. 능력·나이·계약은 그대로이고, 래더·대회 덱에도 바꾼 이름이 실립니다. 직접 넣은 사진은 이 기기 저장에만 남고 서버로 보내지 않습니다.</p>
+    <div class="row cosm-bar">${sel}<span class="cosm-sp"></span><button type="button" class="btn small${S.io?' primary':''}" data-a="cosmIo">내보내기·가져오기</button></div>
+    ${S.msg?`<p class="small ${S.msgBad?'bad':'good'}" role="status" style="white-space:pre-line">${esc(S.msg)}</p>`:''}${io}${pick}
+    <div class="tw cosm-tw"><table class="sqt cosm-t"><thead><tr><th>얼굴</th><th>이름</th><th>소속</th><th class="num">얼굴 번호</th><th class="num">id</th></tr></thead><tbody>${pageL.map(row).join('')||'<tr><td colspan="5" class="small muted">선수가 없습니다.</td></tr>'}</tbody></table></div>
+    <div class="row cosm-foot">${np>1?`<button type="button" class="btn small" data-a="cosmPg" data-v="${S.pg-1}"${S.pg<=0?' disabled':''}>이전</button><span class="small">${S.pg+1} / ${np}</span><button type="button" class="btn small" data-a="cosmPg" data-v="${S.pg+1}"${S.pg>=np-1?' disabled':''}>다음</button>`:''}<span class="cosm-sp"></span><button type="button" class="btn small" data-a="cosmClose">닫기</button><button type="button" class="btn small primary" data-a="cosmSave"${nCh?'':' disabled'}>바꾼 이름 ${nCh}명 저장</button></div></div></div>`; }
+function cosmIoHtml(S,L){ const pv=S.pv;
+  const pvH=pv?`<div class="cosm-pv"><p class="small"><b>미리보기</b> · 바뀜 ${pv.chg.length}명 · 그대로 ${pv.same}줄 · 문제 ${pv.bad.length}줄</p>${pv.chg.length?`<div class="tw"><table class="sqt cosm-pvt"><thead><tr><th>줄</th><th>id</th><th>이름</th><th>얼굴</th></tr></thead><tbody>${pv.chg.slice(0,200).map(x=>`<tr><td class="num">${x.line}</td><td class="num">${x.id}</td><td>${x.to!==x.from?`${esc(x.from)} → <b>${esc(x.to)}</b>`:esc(x.from)}</td><td class="num">${x.faceTo!=null?`${x.faceFrom??'-'} → <b>${x.faceTo}</b>`:'-'}</td></tr>`).join('')}</tbody></table></div>${pv.chg.length>200?`<p class="small muted">… 외 ${pv.chg.length-200}명</p>`:''}`:''}${pv.bad.length?`<details class="cosm-bad" open><summary class="small bad">적용하지 않는 줄 ${pv.bad.length}개</summary><ul class="small">${pv.bad.slice(0,100).map(b=>`<li>${b.line}줄: ${esc(b.why)}</li>`).join('')}</ul></details>`:''}<div class="row"><button type="button" class="btn small" data-a="cosmPvX">취소</button><button type="button" class="btn small primary" data-a="cosmApply"${pv.chg.length?'':' disabled'}>${pv.chg.length}명 적용</button></div></div>`:'';
+  return `<div class="cosm-io"><div class="row"><b class="small">내보내기</b><button type="button" class="btn small" data-a="cosmExp" data-v="scope">지금 묶음 CSV 받기 (${L.length}명)</button><button type="button" class="btn small" data-a="cosmExp" data-v="all">전체 선수 CSV 받기</button><button type="button" class="btn small" data-a="cosmExp" data-v="text">지금 묶음을 아래 칸에</button></div>
+    <p class="small muted">형식: id, 구단, 현재 이름, 새 이름, 얼굴 번호 (쉼표 또는 탭). '새 이름'과 '얼굴 번호'만 읽습니다. 비운 칸은 그대로 둡니다. 두 칸(id, 새 이름)이나 세 칸(id, 새 이름, 얼굴 번호)만 적어도 됩니다.</p>
+    <textarea class="cosm-txt" data-cosm="txt" rows="5" placeholder="id,구단,현재 이름,새 이름,얼굴 번호">${esc(S.txt||'')}</textarea>
+    <div class="row"><label class="btn small">파일 불러오기<input type="file" accept=".csv,.txt,.tsv,text/*" data-cosmfile="1" hidden></label><button type="button" class="btn small primary" data-a="cosmPv">미리보기</button></div>${pvH}</div>`; }
+function cosmCard(){ if(!G||!G.players)return ''; return `<section class="card"><h2 class="sec">이름·얼굴 일괄 수정</h2><p class="small muted">모든 구단·드래프트 대상·은퇴 선수 이름과 얼굴 사진을 한꺼번에 바꿉니다. CSV로 내보내 고친 뒤 다시 가져올 수 있습니다(미리보기 뒤 적용). 능력·나이·계약은 바꾸지 않습니다.</p><button class="btn small" data-a="cosmOpen">일괄 수정 열기</button></section>`; }
+function cosmDl(name,text){ try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+text],{type:'text/csv;charset=utf-8'})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); return true; }catch(e){ return false; } }
+function cosmDraftGrab(){ const S=UI.cosm; if(!S)return; document.querySelectorAll('#sheet .cosm-nm').forEach(el=>{ const id=el.dataset.id, t=cosmTarget(+id); if(!t)return; if(el.value===t.o.name)delete S.d[id]; else S.d[id]=el.value; }); const tx=document.querySelector('#sheet .cosm-txt'); if(tx)S.txt=tx.value; }
+function cosmRedraw(){ try{ renderSheet(); }catch(e){} }
+Object.assign(A,{
+  cosmOpen(v){ UI.cosm=null; const S=cosmSt(); if(v)S.sc=String(v); S.msg=''; closeSheets(); UI.cosm=S; renderSheet(); },
+  cosmClose(v,el,e){ if(e&&el&&el.classList&&el.classList.contains('scrim')&&e.target&&e.target.closest&&e.target.closest('[data-stop]'))return; /* 창 안(입력칸·글자)을 누른 것은 닫지 않는다 */ UI.cosm=null; renderSheet(); render(); },
+  cosmPg(v){ cosmDraftGrab(); UI.cosm.pg=Math.max(0,+v||0); cosmRedraw(); },
+  cosmPick(v){ cosmDraftGrab(); UI.cosm.face=v===''||v==null?null:+v; cosmRedraw(); },
+  cosmIo(){ cosmDraftGrab(); const S=UI.cosm; S.io=!S.io; S.pv=null; cosmRedraw(); },
+  cosmMore(v){ UI.cosmMore=UI.cosmMore||{}; UI.cosmMore[v]=((UI.cosmMore[v])||COSM_FACE_N)+COSM_FACE_N*2; if(UI.cosm)cosmDraftGrab(); if(document.getElementById('phdlg')&&typeof phRefresh==='function')phRefresh(); cosmRedraw(); },
+  cosmFace(v){ const [id,n]=String(v).split(':').map(Number), p=G.players[id]; if(!p)return; const e=cosmFaceErr(p,n); if(e){ toast(e); return; } if(UI.cosm)cosmDraftGrab();
+    if(G.cimg&&G.cimg['p:'+id]){ delete G.cimg['p:'+id]; if(G.cimgO)delete G.cimgO['p:'+id]; } cosmSetFace(p,n); save(); render(); cosmRedraw(); if(typeof phRefresh==='function')phRefresh(); },
+  cosmSave(){ cosmDraftGrab(); const S=UI.cosm, L=Object.entries(S.d).map(([id,name])=>({id:+id,name})); const r=cosmRenameMany(L); S.msgBad=!!r.errs.length; S.msg=(r.n?`이름 ${r.n}명을 바꿨습니다.`:'바뀐 이름이 없습니다.')+(r.errs.length?'\n저장하지 못한 이름:\n'+r.errs.join('\n'):'');
+    for(const x of L){ const t=cosmTarget(x.id); if(t&&cosmNameClean(x.name)===t.o.name)delete S.d[x.id]; } if(r.n){ note('선수',`선수 이름 ${r.n}명을 바꿨습니다.`); save(); render(); } cosmRedraw(); },
+  cosmExp(v){ cosmDraftGrab(); const S=UI.cosm, L=v==='all'?[...cosmList('all',''),...cosmList('arch','')]:cosmList(S.sc,S.q), csv=cosmRowsCsv(L);
+    if(v==='text'){ S.txt=csv; S.pv=null; cosmRedraw(); return; } const ok=cosmDl(`프런트야구_선수이름_${v==='all'?'전체':S.sc.replace(':','')}_${G.year}.csv`,csv); if(!ok){ S.txt=csv; } S.msg=ok?`${L.length}명 CSV를 내려받았습니다.`:'파일을 만들지 못해 아래 칸에 넣었습니다. 복사해 쓰세요.'; S.msgBad=!ok; cosmRedraw(); },
+  cosmPv(){ cosmDraftGrab(); const S=UI.cosm, rows=cosmParse(S.txt||''); S.pv=rows.length?cosmPreview(rows,COSM_F):{chg:[],bad:[{line:0,why:'읽을 줄이 없습니다. id,새 이름 형식으로 적어 주세요.'}],same:0}; cosmRedraw(); },
+  cosmPvX(){ cosmDraftGrab(); UI.cosm.pv=null; cosmRedraw(); },
+  cosmApply(){ cosmDraftGrab(); const S=UI.cosm; if(!S.pv)return; const pv=cosmPreview(cosmParse(S.txt||''),COSM_F); /* 미리보기 뒤 화면에서 바꾼 것까지 다시 확인 */ const r=cosmApply(pv,COSM_F);
+    S.pv=null; S.msgBad=!!r.errs.length; S.msg=`가져오기: 이름 ${r.names}명 · 얼굴 ${r.faces}명을 바꿨습니다.`+(pv.bad.length?` 적용하지 않은 줄 ${pv.bad.length}개.`:'')+(r.errs.length?'\n'+r.errs.join('\n'):''); if(r.names||r.faces){ note('선수',`이름·얼굴 가져오기: 이름 ${r.names}명 · 얼굴 ${r.faces}명`); save(); render(); } cosmRedraw(); } });
+if(typeof document!=='undefined'){
+  document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.dataset||!UI.cosm)return;
+    if(el.dataset.cosm==='sc'){ cosmDraftGrab(); UI.cosm.sc=el.value; UI.cosm.pg=0; UI.cosm.face=null; cosmRedraw(); }
+    else if(el.dataset.cosm==='q'){ cosmDraftGrab(); UI.cosm.q=el.value.trim(); UI.cosm.pg=0; cosmRedraw(); }
+    else if(el.dataset.cosmfile){ const f=el.files&&el.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ if(!UI.cosm)return; UI.cosm.txt=String(r.result||''); A.cosmPv(); const tx=document.querySelector('#sheet .cosm-txt'); if(tx)tx.value=UI.cosm.txt; }; r.onerror=()=>{ UI.cosm.msg='파일을 읽지 못했습니다.'; UI.cosm.msgBad=true; cosmRedraw(); }; r.readAsText(f); } });
+  document.addEventListener('input',e=>{ const el=e.target; if(!UI.cosm||!el||!el.classList)return; if(el.classList.contains('cosm-nm')){ const t=cosmTarget(+el.dataset.id); if(t){ if(el.value===t.o.name)delete UI.cosm.d[el.dataset.id]; else UI.cosm.d[el.dataset.id]=el.value; } const tr=el.closest('tr'); if(tr&&t)tr.classList.toggle('ch',cosmNameClean(el.value)!==t.o.name); const b=document.querySelector('#sheet [data-a="cosmSave"]'); if(b){ const n=Object.keys(UI.cosm.d).filter(id=>{ const q=cosmTarget(+id); return q&&cosmNameClean(UI.cosm.d[id])!==q.o.name; }).length; b.disabled=!n; b.textContent=`바꾼 이름 ${n}명 저장`; } } else if(el.classList.contains('cosm-txt'))UI.cosm.txt=el.value; });
+}
 /* ---------- 플레이 기록(익명, 테스트용) ----------
  테스트 배포 때 '단장을 만들고 어디까지, 몇 년 차까지 하는지'와 어느 기능을 쓰는지, 어디서 막히는지를 보기 위한 기록.
  - TELE.ga(GA4 측정 ID)가 들어 있어 웹 배포판은 기본으로 켜진다(사용자 결정 11-09). TELE.ph(PostHog)는 비어 있어 꺼져 있다. 둘 다 비면 아무것도 보내지 않는다.

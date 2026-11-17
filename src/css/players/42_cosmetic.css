@@ -1,0 +1,45 @@
+/* 이름·얼굴 바꾸기(72_cosmetic.js): 선수 화면 고치기 상자의 얼굴 칸 · 일괄 수정 창 */
+.cosm-face{flex-basis:100%;margin-top:4px}
+.cosm-face>p{margin:0 0 4px}
+.cosm-face .pe-faces{grid-template-columns:repeat(auto-fill,minmax(54px,1fr));max-height:212px}
+.pe-face{position:relative}
+.pe-face i{position:absolute;right:2px;bottom:2px;padding:0 3px;border-radius:3px;background:rgba(0,0,0,.62);color:#fff;font-size:10px;font-style:normal;line-height:14px;pointer-events:none}
+.pe-face .av.ini{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:12px}
+.cosm-up{gap:6px;margin-top:6px}
+.cosm-box>.row{gap:6px}
+/* 일괄 창: 창 안에서만 스크롤(PC 페이지 스크롤 없음) */
+.sheet.cosm-sheet{display:flex;flex-direction:column;gap:8px;max-width:980px;max-height:min(92vh,var(--detail-height,92vh));overflow:hidden}
+.cosm-sheet>p{margin:0}
+.cosm-bar{gap:8px 12px;flex-wrap:wrap;align-items:flex-end}
+.cosm-bar label{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--muted)}
+.cosm-bar select,.cosm-bar input{min-height:32px;padding:4px 8px;border:1px solid var(--line,#2a3540);border-radius:6px;background:var(--bg,#0f151b);color:var(--ink,#e2e8ed);font-size:14px}
+.cosm-q input{width:10em}
+.cosm-sp{flex:1}
+.cosm-tw{flex:1 1 auto;min-height:120px;overflow:auto}
+.cosm-t{width:100%}
+.cosm-t td{vertical-align:middle;padding-top:3px;padding-bottom:3px}
+.cosm-t tr.ch td{background:rgba(59,130,246,.10)}
+.cosm-t tr.on td{background:rgba(59,130,246,.18)}
+.cosm-av{width:44px}
+.cosm-avb{padding:0;border:0;background:none;cursor:pointer;display:block;border-radius:50%}
+.cosm-avb:focus-visible{outline:2px solid var(--acc,#3b82f6)}
+.cosm-t .av,.cosm-av .av{width:36px;height:36px}
+.cosm-nm{width:9.5em;max-width:100%;padding:5px 7px;border:1px solid var(--line,#2a3540);border-radius:6px;background:var(--bg,#0f151b);color:var(--ink,#e2e8ed);font-size:14px}
+.cosm-was{display:block}
+.cosm-foot{gap:8px;align-items:center;flex-wrap:wrap}
+.cosm-pick,.cosm-io{flex:0 0 auto;max-height:46vh;overflow:auto;padding:8px 10px;border:1px solid var(--line,#2a3540);border-radius:8px;background:var(--card2,rgba(255,255,255,.03))}
+.cosm-io>.row{gap:6px;flex-wrap:wrap;align-items:center}
+.cosm-io>p{margin:6px 0}
+.cosm-txt{width:100%;box-sizing:border-box;min-height:84px;padding:6px 8px;border:1px solid var(--line,#2a3540);border-radius:6px;background:var(--bg,#0f151b);color:var(--ink,#e2e8ed);font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+.cosm-pv{margin-top:8px}
+.cosm-pv .tw{max-height:180px;overflow:auto}
+.cosm-pv>.row{gap:6px;justify-content:flex-end;margin-top:6px}
+.cosm-bad ul{margin:4px 0;padding-left:18px;max-height:120px;overflow:auto}
+@media(max-width:600px){
+  .sheet.cosm-sheet{max-height:none;overflow:visible}
+  .cosm-tw{overflow-x:auto}
+  .cosm-t th:nth-child(5),.cosm-t td:nth-child(5){display:none}
+  .cosm-nm{width:7.5em}
+  .cosm-q input{width:8em}
+  .cosm-pick,.cosm-io{max-height:none}
+}

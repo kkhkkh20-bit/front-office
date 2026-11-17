@@ -60,7 +60,7 @@ function quickActs(p){
     if(tradeOpen()){ main={a:'toTrade',v:p.id,l:'트레이드 협상'}; M.push({a:'findT',v:p.id,l:'얻을 조건 보기'}); }
     const on=(G.pwatch||[]).includes(p.id); M.push({a:'pwatch',v:p.id,l:on?'관심 해제':'관심 선수',on});
   }
-  const all=actModeAll(), html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기',all}); /* 설정 › 선수 화면 버튼: 모두 보이기(기본)·간단히 */
+  const all=actModeAll(); if(!all)M.push({a:'pEditOpen',v:p.id,l:'이름·얼굴 바꾸기'}); /* 간단히 모드 ⋯ 메뉴(모두 보이기는 이름 옆 '고치기') */ const html=actionBar(main,M.filter(x=>x&&x!==main),{label:'더보기',all}); /* 설정 › 선수 화면 버튼: 모두 보이기(기본)·간단히 */
   return html?`<div class="qacts${all?' qacts-all':''}">${html}</div>`:''; }
 
 /* ---------- 아마추어 기록: 학년별 ---------- */
