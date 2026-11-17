@@ -78,6 +78,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ngtCtrNo(){ ngtCtrNo(); save(); renderSheet(); },
   ngtCtrEdit(){ ngtCtrEdit(); renderSheet(); },
   ngtChat(){ const N=UI.ngt; if(!N)return; N.chatOpen=!N.chatOpen; renderSheet(); },
+  ngtTab(v){ const N=UI.ngt; if(!N)return; N.tab=v==='prom'?'prom':'terms'; renderSheet(); }, /* 협상 조건 · 약속 탭(계약 2단계) */
   ngtWithdraw(){ const N=UI.ngt; if(!N)return; delete G.fa.offers[N.id]; N.msg='제안을 거둬들였습니다.'; save(); render(); renderSheet(); },
   ngtClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.ngt=null; renderSheet(); render(); },
   meetClose(){ const M=UI.meet,y=M?.returnY||0;meetKeep();UI.meet=null;if(M){UI.sheet=M.bs;UI.person=M.bp;}render();if(M?.returnDetail&&document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(y);else scrollTo(0,y); },

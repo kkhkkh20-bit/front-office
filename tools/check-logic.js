@@ -4020,7 +4020,7 @@ T('[검수 11-09zl] 경쟁 제시액: 감당 못 하는 구단은 빠지고 남�
   const b1=newForeign('용병',{isP:false,team:t2.id}), b2=newForeign('용병',{isP:false,team:t2.id}); for(const b of [b1,b2]){ b.rsy=0; delete b.opt; } b1.sal=Math.round((F_TOTAL_CAP-q.ask-5)/2); b2.sal=F_TOTAL_CAP-q.ask-5-b1.sal;
   ok(foRivalTeams(q).includes(t2.id)&&foRivalTeams(q).includes(t1.id),'준비 실패: 두 구단이 관심 없음'); const R=foRivals(q); ok(!R.some(r=>r.tid===t2.id),'감당 못 하는 구단이 경쟁자로 남음'); ok(R.some(r=>r.tid===t1.id),'준비 실패');
   for(const r of R){ const want=Math.min(foCap(q),Math.round(q.ask*(1+.07*Math.max(0,R.length-1))*(1+.03*hn('fr'+r.tid,q.id)))); ok(r.g+r.i===want,tshort(r.tid)+' 제시 '+(r.g+r.i)+' ≠ '+want+'(탈락 구단이 값을 올림)'); } });
-T('[검수 11-09zl] 보류권: 계약 불가 후보는 AI 상위 칸을 차지하지 않고, 우리만 계약할 수 있는 후보는 관심·몸값이 오르지 않는다',()=>{ fresh(); G.fwatch=[]; const [t,h]=G.teams.filter(x=>x.id!==G.user); for(const p of foreignOf(t.id))dropP(p.id); t.cash=5000;
+T('[검수 11-09zl] 보류권: 계약 불가 후보는 AI 상위 칸을 차지하지 않고, 우리만 계약할 수 있는 후보는 관심·몸값이 오르지 않는다',()=>{ fresh(); G.fwatch=[]; G.fmarket=[]; /* 시험 후보끼리만 비교: 상주 외국인 후보군(해외 활성화 3단계)이 생긴 뒤 기록 없는 시험 후보는 종합 추정이 낮아 실제 후보에 밀렸다(규칙 문제 아님) */ const [t,h]=G.teams.filter(x=>x.id!==G.user); for(const p of foreignOf(t.id))dropP(p.id); t.cash=5000;
   const mk=v=>{ const p=newForeign('용병',{isP:true,market:true}); for(const k in p.r)p.r[k]=v; roundR(p); p.ask=60*USD; G.fmarket.push(p.id); return p; }; const X=[mk(80),mk(80),mk(80)]; for(const x of X)foResAdd(x,h.id); const q=mk(78);
   const pk=aiForeignPick(t.id); ok(pk&&!X.includes(pk),'보류권 후보를 영입 대상으로 고름'); ok(foRivalTeams(q).includes(t.id),'계약 불가 후보가 상위 칸을 차지해 경쟁이 숨음');
   const m=mk(78); foResAdd(m,G.user); fwatchToggle(m.id); ok(fInterest(m)===0,'우리 보류권 선수에게 다른 구단 관심 '+fInterest(m)); const a0=m.ask; fBidWeek(); ok(m.ask===a0,'경쟁 제안이 없는데 몸값이 오름 '+a0+' → '+m.ask); });
@@ -6024,6 +6024,60 @@ T('[에이전트 확장] 옛 저장(에이전시 8곳)을 결정적으로 옮기
   ok(agActive().length>=25,'새 담당자가 생기지 않음'); const was=new Map(JSON.parse(snapP)); const kept=D.filter(p=>p.agId!=null&&was.get(p.id)!=null); ok(kept.length>20,'준비 실패: 남은 고객이 적음 '+kept.length);
   const same=kept.filter(p=>A[p.agId].ag===was.get(p.id)).length; ok(same/kept.length>=.9,'예전 에이전시를 잇지 않음 '+same+'/'+kept.length);
   const u=agUsage(); ok(u.r>=.2&&u.r<=.4,'옮긴 뒤 이용률 '+(u.r*100).toFixed(1)+'%'); const C=agCount(); for(const v of C.n.values())ok(v<=AG_MAX_CL,'옮긴 뒤 15명 초과'); for(const v of C.club.values())ok(v<=AG_MAX_CLUB,'옮긴 뒤 구단당 3명 초과'); });
+/* ===== 계약 2단계: 약속 탭 · AI 연봉/다년 협상 · 에이전트 기억 ===== */
+T('[계약 2단계] 약속(FA·연장): 선수 가치에 들어가 요구 충족을 앞당기고, 같은 조건 판정·계약 기록에 남는다',()=>{ fresh(); const p=CT1_FA(52,400,2,'rel'); const D=termsDemand(p,'fa',{annual:faWantA(p),years:2}); ok(D.pv&&D.pv.pt[1]>0&&D.pv.po===0,'FA 요구에 약속 가치가 없거나 포스팅 가치가 있음: '+JSON.stringify(D.pv));
+  const T=CT1_T(p,.985); const Tp={...T,pm:{pt:2,ptc:'pa',n:480,sg:'SP'}}; ok(termsVal(Tp,D)>termsVal(T,D)*1.015,'약속이 조건 가치를 올리지 않음'); ok(!termsSame(T,Tp),'약속이 다른데 같은 조건으로 봄'); ok(pmVal({...T,pm:{pt:2,sg:'SP',po:2}},D)<=.08,'약속 가치 상한 8% 초과');
+  ok(termsTxt(Tp,true).includes('출전 480타석')&&termsTxt(Tp,true).includes('선발 투수 보강'),'계약 문구에 약속이 없음: '+termsTxt(Tp,true));
+  const r0=faNegotiate(p.id,{terms:T}); ok(r0.st!=='wait','준비 실패: 약속 없이도 요구 충족 '+r0.st);
+  const q=CT1_FA(52,400,2,'rel'); const Tq={...CT1_T(q,.985),pm:{pt:2,ptc:'pa',n:480,sg:'SP'}}; const r1=faNegotiate(q.id,{terms:Tq}); ok(r1.st==='wait','약속을 더했는데 요구 충족이 아님: '+r1.st+' '+r1.msg); ok(G.fa.offers[q.id].terms.pm.sg==='SP','걸어 둔 제안에 약속이 남지 않음');
+  faSign(q,[{tid:G.user,...G.fa.offers[q.id]}]); ok(q.team===G.user,'준비 실패: 계약 안 됨'); ok(q.cprom&&q.cprom.L.length===2&&q.cprom.L.find(x=>x.k==='pt').n===480,'계약한 선수에게 약속이 남지 않음: '+JSON.stringify(q.cprom));
+  const e=domestic(G.user).find(x=>canExtend(x)&&!x.lastFA&&(x.svc||0)>=4); ok(e,'준비 실패: 연장 대상 없음'); const E=termsDemand(e,'ext',{annual:500,years:4}); ok(E.pv&&E.pv.rl===.02,'연장 요구에 역할 약속 가치가 없음');
+  ok(termsVal({...E,role:0},E)>termsVal(E,E),'연장 역할 약속이 가치를 올리지 않음');
+  termsApply(e,{...E,role:0,pm:{po:3}},'ext',G.year); ok(e.postPromise===G.year+2&&e.postPromiseT===G.user&&e.roleProm,'연장 포스팅·역할 약속이 반영되지 않음: '+e.postPromise);
+  tradeTerms(q); ok(!q.cprom,'트레이드하면 약속이 끝나야 함'); });
+T('[계약 2단계] 약속 확인(시즌 결산): 지키면 기분·친분·기억이 오르고, 어기면 떨어지며 기분이 바닥이면 트레이드를 요청한다',()=>{ fresh(); const A=agInit(); const ag=A.find(a=>a.size==='mid'&&a.act!==false); ag.rels={}; ag.mem={};
+  const mk=(pos,mor)=>{ const p=newPlayer({isP:false,pos,base:56,pot:58,age:28,team:G.user}); p.agId=ag.id; p.mor=mor; initPers(p); p.pers.amb=15; return p; };
+  const a=mk('2B',60), b=mk('SS',25), c=mk('3B',60); const d0=G.day;
+  termsApply(a,{years:2,annual:300,bonus:0,opt:0,role:null,pm:{pt:2,ptc:'pa',n:480,sg:'IF',d:d0}},'fa',G.year);
+  termsApply(b,{years:2,annual:300,bonus:0,opt:0,role:null,pm:{pt:1,ptc:'g',n:100,sg:'OF',d:d0+9999}},'fa',G.year);
+  termsApply(c,{years:2,annual:300,bonus:0,opt:0,role:null,pm:{pt:2,ptc:'pa',n:480}},'fa',G.year); c.injHist=[{y:G.year,d:G.cal.open+1,days:150,t:G.user}];
+  ok(a.cprom&&b.cprom&&c.cprom,'준비 실패: 약속 없음');
+  const nw=newPlayer({isP:false,pos:'3B',base:60,pot:60,age:27,team:G.user}); nw.mvD=d0+1; /* 약속 뒤 데려온 내야수 */
+  const st=seasonTotal; seasonTotal=(q,y,l)=>l==='1군'&&(q===a||q===b||q===c)?{pa:q===a?500:120,g:q===a?130:40}:st(q,y,l);
+  try{ cpromSeason(G.year); }finally{ seasonTotal=st; }
+  ok(a.mor===66,'지킨 약속 2개인데 기분 +6이 아님: '+a.mor); ok(b.mor===11,'어긴 약속 2개인데 기분 -14가 아님: '+b.mor); ok(c.mor===60,'시즌 절반 넘게 다친 선수 출전 약속을 따짐: '+c.mor);
+  ok(b.grv&&b.grv.prom>0,'어긴 약속이 불만으로 남지 않음'); ok(b.treq&&G.mail.some(m=>m.subj==='트레이드 요청'&&m.ref===b.id),'기분이 바닥인데 트레이드 요청이 없음');
+  ok(ag.mem[G.user]&&ag.mem[G.user][1]==='broke','마지막 결과(어김)를 기억하지 않음: '+JSON.stringify(ag.mem)); ok(agRel(ag)<50,'어긴 약속인데 친분이 오름: '+agRel(ag));
+  ok(!a.cprom||a.cprom.L.every(x=>x.y1>G.year),'끝난 약속이 남음'); ok(a.cprom&&a.cprom.L.length===1&&a.cprom.L[0].k==='pt','두 시즌짜리 출전 약속이 다음 해로 이어지지 않음');
+  const ai=G.teams.find(t=>t.id!==G.user).id; const z=newPlayer({isP:false,pos:'LF',base:56,pot:58,age:28,team:ai}); z.agId=ag.id; z.mor=60; termsApply(z,{years:1,annual:300,bonus:0,opt:0,role:null,pm:{pt:1,ptc:'pa',n:350}},'fa',G.year);
+  const s2=seasonTotal; seasonTotal=(q,y,l)=>l==='1군'&&q===z?{pa:400}:s2(q,y,l); try{ cpromSeason(G.year); }finally{ seasonTotal=s2; } ok(ag.mem[ai]&&ag.mem[ai][1]==='kept'&&agRel(ag,ai)>50,'AI 구단 약속도 같은 규칙으로 기억·친분이 바뀌어야 함'); });
+T('[계약 2단계] 에이전트 기억: 지난 협상 결과가 첫 분위기·요구·첫마디를 바꾸고, 구단마다 따로이며 3년 뒤 잊는다(FA·연봉·연장 공통)',()=>{ fresh(); const ai=G.teams.find(t=>t.id!==G.user).id;
+  const p=CT1_FA(55,500,2,'rel'); const ag=agentOf(p); ag.rels={}; ag.mem={}; const w0=faWantFor(p,G.user), wa=faWantFor(p,ai);
+  delete G.fa.neg[p.id]; const m0=negOf(p.id).mood; agMemSet(ag,G.user,'broke',p.id); delete G.fa.neg[p.id]; const m1=negOf(p.id).mood; agMemSet(ag,G.user,'kept',p.id); delete G.fa.neg[p.id]; const m2=negOf(p.id).mood;
+  ok(m1<m0&&m2>m0,'기억이 첫 분위기를 바꾸지 않음: '+m0+'/'+m1+'/'+m2); ok(faWantFor(p,G.user)<w0&&faWantFor(p,ai)===wa,'기억이 우리 요구만 바꿔야 함');
+  agMemSet(ag,G.user,'broke',p.id); ok(faWantFor(p,G.user)>w0,'약속 위반 기억에 요구가 오르지 않음'); ok(agMemTxt(ag,G.user).includes(p.name)&&agMemTxt(ag,G.user).includes('약속'),'첫마디가 지난 일을 말하지 않음: '+agMemTxt(ag,G.user)); ok(agMemTxt(ag,ai)==='','다른 구단과의 일을 말함');
+  ok(JSON.stringify(ag.mem[G.user]).length<24,'기억 저장이 크다: '+JSON.stringify(ag.mem[G.user]));
+  const y0=G.year; G.year+=2; const half=agMemWant(ag,G.user); G.year+=1; const gone=agMemOf(ag,G.user); G.year=y0; ok(half>1&&half<1.02&&gone===null,'2년 뒤 절반·3년 뒤 잊기가 아님: '+half+' '+gone);
+  const q=CT1_FA(55,500,2,'rel'); const qa=agentOf(q); qa.mem={}; faNegotiate(q.id,{annual:150,years:2}); ok(qa.mem[G.user]&&qa.mem[G.user][1]==='low','무리한 제안을 기억하지 않음: '+JSON.stringify(qa.mem));
+  faSign(q,[{tid:ai,annual:600,years:2}]); ok(qa.mem[ai]&&qa.mem[ai][1]==='ok'&&qa.mem[G.user][1]==='low','AI 구단 계약도 같은 규칙으로 기억해야 함');
+  const s=domestic(G.user).find(x=>!x.foreign&&!x.faC&&!x.prospect&&!x.ys); s.agId=ag.id; agInit(); ag.rels={}; ag.mem={}; s.team=G.user; const a0=salAsk(s,300); agMemSet(ag,G.user,'close',s.id); ok(salAsk(s,300)>=a0,'연봉 요구에 기억이 반영되지 않음'); });
+T('[계약 2단계] AI 연봉 협상: 사용자와 같은 요구·판정·요구 낮추기로 정하고, 산정안 이상 요구 이하, 차이가 크면 미계약',()=>{ fresh(); const ai=G.teams.find(t=>t.id!==G.user); G.contract={y:G.year,tid:G.user,ended:[],foreignEnd:[],foreignDrop:[],released:[],done:false};
+  const L=domestic(ai.id).filter(p=>!p.faC&&!p.ext&&!p.ys&&!p.prospect).slice(0,12); ok(L.length>=8,'준비 실패');
+  for(const p of L){ p.newSal=Math.max(MIN_SAL,round5(p.sal*1.1)); const off=p.newSal; const ask=salAsk(p,off); const r=aiSalNeg(p); ok(r.sal>=off&&r.sal<=Math.max(off,ask),'산정안~요구 범위 밖: '+off+'/'+ask+' → '+r.sal);
+    const n={off,ask,cur:null,st:'open',wk:-1}; let ok2=false; for(let i=0;i<AI_SAL_WK&&!ok2;i++){ const v=Math.min(n.ask,round5(off+(round5(off*(1+aiSalRoom(p,ai)))-off)*i/(AI_SAL_WK-1))); if(salAccepts(p,n,v))ok2=true; else salAskDown(n,v); }
+    ok((r.st==='ok')===ok2,'사용자 판정(salAccepts·salAskDown)으로 되풀이한 결과와 다름: '+r.st); }
+  const p=L[0]; p.newSal=200; const s0=salAsk; salAsk=()=>400; let r; try{ r=aiSalNeg(p); }finally{ salAsk=s0; } ok(r.st==='hold'&&r.ask>r.sal*HOLD_GAP,'차이가 큰데 미계약이 아님: '+JSON.stringify(r));
+  const q=L[1]; q.newSal=300; const s1=salAsk; salAsk=()=>310; try{ r=aiSalNeg(q); }finally{ salAsk=s1; } ok(r.st==='ok'&&r.sal<=310,'요구가 산정안과 가까운데 합의하지 않음: '+JSON.stringify(r)); });
+T('[계약 2단계] AI 비FA 다년계약(연장): 사용자와 같은 판정(extJudge)·라운드로 협상하고, 시장 평가를 원하는 대어는 한도가 모자라면 묶지 않는다',()=>{ fresh(); const U=domestic(G.user).filter(x=>canExtend(x)&&hasAgent(x)&&!agExtTestMarket(x)).sort((a,b)=>b.sal-a.sal);
+  ok(U.length,'준비 실패: 에이전트 있는 연장 대상 없음'); const p=U[0]; const y=Math.max(3,extMinY(p)); const d=extDemandAll(p,y); let n=0;
+  for(const k of [.7,.93,1.0]){ delete p.extNg; delete p.extCounter; delete p.extLast; const a=round5(d*k); const J=extJudge(p,a,y,G.user,false); const r=offerExtension(p.id,a,y); n++;
+    const map={counter:'counter',no:'no',ok:'ok',market:'market',min:'no'}; ok(r.st===map[J.st]||(J.st==='ok'&&r.ok),'사용자 판정과 공통 판정이 다름 k='+k+': '+r.st+'/'+J.st); if(r.ok)break; }
+  const t=G.teams.find(x=>x.id!==G.user); const C=domestic(t.id).filter(x=>!x.foreign&&!x.ys&&!x.faC&&!x.ext&&!x.extNext&&x.age<=33); ok(C.length,'준비 실패');
+  let tried=0; for(const q of C.slice(0,10)){ const yy=Math.max(3,extMinY(q)); const r=aiExtNeg(q,t,yy,99999); if(!r)continue; tried++; const dd=extDemandAll(q,yy,t.id); ok(r.ctr?r.a>=dd&&hasAgent(q):extJudge(q,r.a,yy,t.id,false).st==='ok','AI가 공통 판정을 통과하지 않은 금액으로 계약: '+r.a+'/'+dd);
+    ok(r.a<=round5(extDemand(q,yy)*(hasAgent(q)?agExtMul(q,t.id):1)*1.05*1.03)+5,'AI가 낼 수 있는 한도를 넘김'); }
+  ok(tried>0,'준비 실패: AI 연장 합의 없음');
+  const m=C.find(x=>hasAgent(x)); ok(m,'준비 실패: 에이전트 있는 AI 선수 없음'); const ag=agentOf(m); ag.mem={}; ag.rels={}; m.svc=faSvc(m)-1; m.r&&Object.keys(m.r).forEach(k=>m.r[k]=Math.max(m.r[k],70)); ag.style='auction'; const yy=Math.max(3,extMinY(m));
+  ok(agExtTestMarket(m,t.id),'준비 실패: 시장 평가 대상 아님'); const room=Math.max(0,round5(extDemandAll(m,yy,t.id)*.9)-m.sal); const r=aiExtNeg(m,t,yy,room); ok(r===null,'한도가 모자란데 시장 평가 대어를 묶음'); ok(ag.mem[t.id]&&ag.mem[t.id][1]==='fold','접은 협상을 기억하지 않음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

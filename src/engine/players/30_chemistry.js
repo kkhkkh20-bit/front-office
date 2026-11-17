@@ -85,7 +85,7 @@ ivAnswer=morTrack(ivAnswer,'iv');
 injure=morTrack(injure,'inj',a=>[a[0]]);
 salOffer=morTrack(salOffer,'sal'); salArbDecide=morTrack(salArbDecide,'sal'); arbLeftDecide=morTrack(arbLeftDecide,'sal'); salTalkClose=morTrack(salTalkClose,'sal'); holdMid=morTrack(holdMid,'sal');
 holdDaily=morTrack(holdDaily,'hold'); hireMgr=morTrack(hireMgr,'mgr'); fireMgr=morTrack(fireMgr,'mgr'); ntAnnounce=morTrack(ntAnnounce,'nt'); ntRefuse=morTrack(ntRefuse,'nt'); ntResult=morTrack(ntResult,'nt');
-champCelebrate=morTrack(champCelebrate,'champ'); posReqAnswer=morTrack(posReqAnswer,'pos'); rolePromCheck=morTrack(rolePromCheck,'role'); mgrUseAsk=morTrack(mgrUseAsk,'use'); mgrPosAsk=morTrack(mgrPosAsk,'use');
+champCelebrate=morTrack(champCelebrate,'champ'); posReqAnswer=morTrack(posReqAnswer,'pos'); rolePromCheck=morTrack(rolePromCheck,'role'); cpromSeason=morTrack(cpromSeason,'cprom'); mgrUseAsk=morTrack(mgrUseAsk,'use'); mgrPosAsk=morTrack(mgrPosAsk,'use');
 mpickPlan=morTrack(mpickPlan,'mpick'); aiMpickPlan=morTrack(aiMpickPlan,'mpick'); aiMentorPick=morTrack(aiMentorPick,'mentor'); churnCheck=morTrack(churnCheck,'churn'); proposeTrade=morTrack(proposeTrade,'rumor');
 climateWeek=morTrack(climateWeek,'clim'); pdWeek=morTrack(pdWeek,'pdw'); fDramaUser=morTrack(fDramaUser,'fdr'); fDramaAI=morTrack(fDramaAI,'fdr'); seasonTitles=morTrack(seasonTitles,'title'); aiPreFA=morTrack(aiPreFA,'ext');
 postingSeason=morTrack(postingSeason,'abroad'); mlbHype=morTrack(mlbHype,'abroad'); facWeek=morTrack(facWeek,'dorm'); mreqCloseOld=morTrack(mreqCloseOld,'mreq');
@@ -97,7 +97,7 @@ const MOR_EV={'talk:praise':['칭찬 면담이 힘이 됐습니다','칭찬이 �
   prom:['약속한 출전 기회를 받았습니다','출전 약속이 지켜지지 않았습니다'],list:['트레이드 요청을 들어줬습니다','트레이드 명단에 올랐습니다'],keep:['남아 달라는 설득에 마음을 돌렸습니다','남으라는 설득이 마음에 안 듭니다'],
   iv:['단장의 인터뷰 발언이 고마웠습니다','단장의 인터뷰 발언에 서운했습니다'],inj:['부상에서 돌아와 안도했습니다','부상으로 빠져 속상합니다'],sal:['연봉 협상 결과에 만족합니다','연봉 협상에 실망했습니다'],hold:['연봉 계약이 정리됐습니다','연봉 미계약이 길어져 답답합니다'],
   mgr:['새 감독 부임을 반깁니다','감독 교체로 마음이 어수선합니다'],nt:['국가대표 일로 기분이 좋습니다','국가대표 일로 실망했습니다'],champ:['우승의 기쁨이 남아 있습니다','우승 뒤 대우가 아쉽습니다'],pos:['포지션 요청을 들어줬습니다','포지션 요청이 거절됐습니다'],
-  role:['계약 때 약속한 역할을 받았습니다','계약 때 약속한 역할을 받지 못했습니다'],use:['감독에게 기용을 건의해 줬습니다','기용 건의가 받아들여지지 않았습니다'],mpick:['감독이 밀어 주는 선수가 됐습니다','경쟁자가 감독의 신임을 받습니다'],mentor:['후배 멘토를 맡아 보람을 느낍니다','멘토 일이 부담스럽습니다'],
+  role:['계약 때 약속한 역할을 받았습니다','계약 때 약속한 역할을 받지 못했습니다'],cprom:['계약 때 한 약속을 지켜 줬습니다','계약 때 한 약속이 지켜지지 않았습니다'],use:['감독에게 기용을 건의해 줬습니다','기용 건의가 받아들여지지 않았습니다'],mpick:['감독이 밀어 주는 선수가 됐습니다','경쟁자가 감독의 신임을 받습니다'],mentor:['후배 멘토를 맡아 보람을 느낍니다','멘토 일이 부담스럽습니다'],
   churn:['선수단 이동이 정리됐습니다','잇단 트레이드로 어수선합니다'],rumor:['트레이드 소문이 가라앉았습니다','트레이드 소문에 흔들립니다'],clim:['선수단 기강이 알맞습니다','선수단 기강이 너무 엄격합니다'],pdw:['구단이 불만을 달래 줬습니다','동료의 불만이 번지고 있습니다'],
   fdr:['구단이 사정을 챙겨 줬습니다','한국 생활과 팀 적응이 힘듭니다'],title:['개인 타이틀을 받았습니다','개인 타이틀을 놓쳤습니다'],ext:['다년계약으로 마음이 놓입니다','계약 문제로 마음이 쓰입니다'],abroad:['해외 진출 기대가 커졌습니다','해외 진출이 막혀 실망했습니다'],
   dorm:['숙소 생활이 편합니다','숙소 생활이 불편합니다'],mreq:['감독 요청이 정리됐습니다','감독 요청 건으로 마음이 쓰입니다'],ev:['구단 결정이 마음에 듭니다','구단 결정에 서운합니다']};
