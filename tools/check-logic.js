@@ -5700,7 +5700,7 @@ T('[얼굴 아마추어] v21 납품 전에는 고교·대학 선수에게 임시
   fresh(); if(!(G.draftClass||[]).length)makeDraftClass(); const am=G.draftClass.map(id=>G.players[id]).filter(p=>p&&!p.foreign); ok(am.length>=20,'드래프트 대상 부족 '+am.length);
   const F0=eval(globalThis.__amSrc()); ok(am.every(p=>F0.amIdx(p)===null)&&!G.fam,'FACE21 없이 아마추어 사진이 배정됨');
   const F=eval(globalThis.__amSrc('const FACE21={base:"assets/v21/amateur200/sheets/",pitch:{"128":144,"256":272,"384":400},ids:Array.from({length:200},(x,i)=>({a:17+i%6,g:i%10?0:1}))};'));
-  const first=am.map(p=>F.amIdx(p)); ok(first.every(a=>a&&a.k==='21'),'FACE21이 있는데 배정되지 않음'); ok(new Set(first.map(a=>a.c)).size>=am.length*.9,'덜 쓰인 얼굴부터 고르지 않음');
+  const first=am.map(p=>F.amIdx(p)); ok(first.every(a=>a&&a.k==='21'),'FACE21이 있는데 배정되지 않음'); ok(new Set(first.map(a=>a.c)).size>=Math.min(am.length,200)*.9,'덜 쓰인 얼굴부터 고르지 않음'); /* 부원 지원자로 참가가 200명(시험 번호표)을 넘을 수 있다(사용자 11-17) */
   ok(am.every((p,i)=>F.amIdx(p).c===first[i].c),'다시 부르면 얼굴이 바뀜'); ok(am.every(p=>['hs_home','univ'].includes(F.amVar(p))),'아마추어 유니폼 변형');
   ok(F.amIdx(Object.values(G.players).find(p=>p.team!=null&&!p.foreign&&!(G.fam||{})[p.id]))===null,'프로 선수에게 아마추어 사진');
   const p=am[0], c=F.amIdx(p).c; p.prospect=false; p.team=G.user; ok(F.amIdx(p).c===c,'지명 뒤 다른 신원'); ok(F.amVar(p)===F.FACE6.v18.teams[String(G.user)],'지명 뒤 구단 유니폼 변형이 아님'); });
