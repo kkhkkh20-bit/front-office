@@ -69,3 +69,14 @@ test('관리자 끝점: 틀린 키·키 없음은 401, 맞는 키로 확인·제
  assert.equal((await (await H('GET','/api/cup/admin/run',null,AK)).json()).secret,'KS 결과'); assert.equal((await H('GET','/api/cup/run')).status,404,'결과 전체는 공개 길이 없다');
  assert.equal((await H('GET','/api/cup/pub')).status,404); assert.equal((await H('PUT','/api/cup/admin/pub',JSON.stringify({v:1,day:2}),AK)).status,200); assert.equal((await (await H('GET','/api/cup/pub')).json()).day,2);
 });
+test('공개 GET 캐시: 결과·연재·명단은 두 번째부터 KV를 읽지 않고, 주최자·신청 쓰기 뒤에는 바로 새 값',async()=>{
+ const clock={now:Date.UTC(2026,10,20,3)}; const {env,H}=await setup(clock); const AK={Authorization:'Bearer s3cret',Origin:''}; const kv=env.SAVE_KV;
+ let reads=0, lists=0; const g=kv.get.bind(kv), l=kv.list.bind(kv); kv.get=async k=>{ reads++; return g(k); }; kv.list=async o=>{ lists++; return l(o); };
+ await H('PUT','/api/cup/admin/results',JSON.stringify({v:1,cups:[1]}),AK); await H('GET','/api/cup/results'); reads=0;
+ const r2=await H('GET','/api/cup/results'); assert.equal(reads,0,'두 번째 결과 읽기'); assert.equal(r2.headers.get('X-FO-Cache'),'hit'); assert.equal(r2.headers.get('Cache-Control'),'public, max-age=300');
+ await H('PUT','/api/cup/admin/results',JSON.stringify({v:1,cups:[1,2]}),AK); assert.deepEqual((await (await H('GET','/api/cup/results')).json()).cups,[1,2],'쓰기 뒤 새 값');
+ await H('PUT','/api/cup/admin/pub',JSON.stringify({v:1,day:1}),AK); await H('GET','/api/cup/pub'); await H('PUT','/api/cup/admin/pub',JSON.stringify({v:1,day:2}),AK); const p=await H('GET','/api/cup/pub'); assert.equal((await p.json()).day,2); assert.equal(p.headers.get('Cache-Control'),'no-store');
+ await H('GET','/api/cup/entries'); lists=0; assert.equal((await (await H('GET','/api/cup/entries')).json()).n,0); assert.equal(lists,0,'명단 캐시');
+ assert.equal((await H('POST','/api/cup/entry',JSON.stringify(entry()))).status,201); assert.equal((await (await H('GET','/api/cup/entries')).json()).n,1,'신청 뒤 명단');
+ await H('GET','/api/cup'); reads=0; await H('GET','/api/cup'); assert.equal(reads,0,'대회 설정 캐시');
+});
