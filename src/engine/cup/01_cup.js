@@ -4,7 +4,7 @@
    난수는 본게임과 같은 평범한 난수다: 같은 엔트리라도 돌릴 때마다 결과가 다르다(구단주 11-17: 공은 둥글다. 주최자가 돌린 그 결과가 정답). 홈 어드밴티지는 끈다 */
 const CUP_ALB_MAX=20;
 /* 경기 엔진이 읽는 선수 값만(기록·이력·계약은 뺀다). 사기는 60으로, 시즌 컨디션(sf)·누적 피로(wear)는 넣지 않는다: 그날 운이 대회 전력을 흔들지 않게 */
-const CUP_PK=['id','name','age','isP','pos','th','bt','r','pot','inj','injOut','role','velo','pers','delivery','pexp','vers','foreign','nat','addP','chem']; /* 경기 중 읽는 값(프록시로 확인, 11-17) + 표시용(잠재력·투구 폼·국적) */
+const CUP_PK=['id','name','age','isP','pos','th','bt','r','pot','inj','injOut','role','velo','pers','delivery','pexp','vers','foreign','nat','addP','chem','dt']; /* 경기 중 읽는 값(프록시로 확인, 11-17) + 표시용(잠재력·투구 폼·국적). dt(성장 유형): 세부 수비의 나이 몫(dsubAge)이 읽는다 — 없으면 defAt가 본게임과 달라 팀 OVR·대회 경기 수비가 어긋남(11-17) */
 const CUP_MK=['id','name','small','pen','youth','disc','tac','ego','rest','arm','dfn','eye','sty','voice'];
 const r1=x=>typeof x==='number'?Math.round(x*10)/10:x;
 /* 세계 id: 저장마다 하나(새 게임이면 새로). 대회 신청 때 처음 만든다(엔진 난수를 쓰지 않는다) */
