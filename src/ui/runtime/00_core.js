@@ -46,6 +46,19 @@ const SB=new Map(), SB_SEQ={}, SB_PEND=new Set(); /* SB_PEND: 이 탭이 Indexed
 function saveEmbedded(){ try{ return window.top!==window.self; }catch(e){ return true; } }
 function isIOSLike(){ try{ const u=navigator.userAgent||''; return /iP(hone|ad|od)/.test(u)||(/Macintosh/.test(u)&&(navigator.maxTouchPoints||0)>1); }catch(e){ return false; } }
 function saveEmbedBanner(){ if(!saveEmbedded())return ''; let url=''; try{ url=location.href.split('#')[0]; }catch(e){} return `<div class="note warn" role="alert" style="margin:0 0 12px">다른 사이트 안에서 열린 화면입니다. ${isIOSLike()?'아이폰·아이패드에서는':'일부 휴대폰 브라우저에서는'} 이 상태의 저장이 브라우저 정책으로 사라질 수 있습니다. 아래 버튼으로 게임 주소를 직접 열어 플레이하고, 중요한 진행은 설정의 '파일로 내보내기'로 백업하세요.<div class="row" style="margin-top:8px"><a class="btn small primary" href="${esc(url)}" target="_blank" rel="noopener">새 창에서 열기(저장 안전)</a></div></div>`; }
+/* 앱 안 브라우저(카카오톡·네이버·인스타그램 등) 안내(GA 개선안 P1-2, 11-17): 저장이 그 앱의 브라우저에만 남고 앱이 정리하면 사라질 수 있어 Chrome·Safari로 열기를 권한다. 닫을 수 있고 플레이는 막지 않는다 */
+const INAPP=[['kakaotalk',/KAKAOTALK/i],['naver',/NAVER\(inapp/i],['instagram',/Instagram/i],['facebook',/FBAN|FBAV|FB_IAB/],['line',/\bLine\//],['everytime',/everytime/i],['band',/\bBAND\//],['daum',/DaumApps/i]];
+function inappKind(u){ try{ u=u==null?navigator.userAgent||'':u; for(const [k,r] of INAPP)if(r.test(u))return k; if(/Android/.test(u)&&/; wv\)/.test(u))return 'webview'; }catch(e){} return ''; }
+function inappOs(){ try{ const u=navigator.userAgent||''; return isIOSLike()?'ios':/Android/.test(u)?'android':'other'; }catch(e){ return 'other'; } }
+function inappIntent(){ try{ return `intent://${location.host}${location.pathname}#Intent;scheme=https;package=com.android.chrome;end`; }catch(e){ return ''; } }
+function inappOff(){ try{ return sessionStorage.getItem('fo_inapp_x')==='1'; }catch(e){ return false; } }
+function inappBanner(){ const k=inappKind(); if(!k||UI.inappX||inappOff())return ''; let web=false; try{ web=/^https?:$/.test(location.protocol); }catch(e){} if(!web)return ''; const os=inappOs();
+  if(!UI.inappShown){ UI.inappShown=1; setTimeout(()=>{ try{ teleEv('inapp_notice_shown',{app:k,os}); }catch(e){} },0); }
+  const how=os==='android'?`<a class="btn small primary" href="${esc(inappIntent())}" data-a="inappGo" data-v="chrome">Chrome으로 열기</a>`
+    :`${os==='ios'?`<p class="small" style="margin:6px 0 0;flex-basis:100%">화면의 ··· 또는 공유 메뉴에서 'Safari로 열기'(기본 브라우저로 열기)를 눌러 주세요.</p>`:''}<button class="btn small${os==='ios'?'':' primary'}" data-a="inappGo" data-v="copy">주소 복사</button>`;
+  return `<div class="note warn inapp" role="note" style="margin:0 0 12px">앱 안의 브라우저로 열었습니다. 이 상태의 저장은 이 앱 브라우저에만 남고, 앱이 정리하면 사라질 수 있습니다. Chrome이나 Safari에서 열어 플레이하시길 권합니다.<div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap;align-items:center">${how}<button class="btn small" data-a="inappGo" data-v="close">닫기</button></div></div>`; }
+function inappCopy0(t){ try{ const x=document.createElement('textarea'); x.value=t; x.setAttribute('readonly',''); x.style.cssText='position:fixed;left:-9999px'; document.body.appendChild(x); x.select(); const ok=document.execCommand('copy'); x.remove(); return !!ok; }catch(e){ return false; } }
+function inappCopy(t){ try{ if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t).then(()=>true,()=>inappCopy0(t)); }catch(e){} return Promise.resolve(inappCopy0(t)); }
 /* 저장이 지워지지 않게 브라우저에 영구 보관을 요청한다(지원하는 브라우저만, 결과는 기록만) */
 let SAVE_PERSIST=null; function savePersistAsk(){ try{ if(navigator.storage&&navigator.storage.persist&&!saveEmbedded())navigator.storage.persist().then(v=>{ SAVE_PERSIST=!!v; }).catch(()=>{}); }catch(e){} }
 function sbOk(){ try{ return !!SaveStore.big.ok(); }catch(e){ return false; } }
