@@ -133,7 +133,9 @@ export function ulPsAdd(ps, x) {
   const info = new Map((x.P || []).map(p => [String(p.id), p])), key = `${x.sid}|${x.tier | 0}`;
   const slot = (id, isP) => { id = String(id); const p = info.get(id) || {}; const o = ps[id] || (ps[id] = { n: p.name || '', pos: p.pos || '', P: isP ? 1 : 0, s: {} });
     if (p.name) o.n = p.name; if (p.pos) o.pos = p.pos; if (p.age != null) o.age = p.age; if (p.foreign) o.fr = 1; if (isP) o.P = 1; o.at = x.lid | 0;
-    const sp = o.s[key] || (o.s[key] = {}); if (p.name && sp.nm == null) { sp.nm = p.name; sp.ps = p.pos || ''; if (p.age != null) sp.ag = p.age; } return sp; }; /* 그 시즌·단계 칸에 그때 이름·포지션·나이(외부 검수 11-17 #48: 지난 시즌 줄이 지금 값으로 바뀌던 것) */
+    const sp = o.s[key] || (o.s[key] = {}); if (p.name && sp.nm == null) { sp.nm = p.name; sp.ps = p.pos || ''; if (p.age != null) sp.ag = p.age; }
+    else if (sp.nm != null) { if (!sp.ps && p.pos) sp.ps = p.pos; if (sp.ag == null && p.age != null) sp.ag = p.age; } /* 예전에 빈 포지션으로 남은 칸은 기록 때 값으로 채운다(검수 11-17 #182) */
+    sp.l = x.lid | 0; return sp; }; /* sp.l: 이 칸에 마지막으로 더한 리그 번호(가장 최근 칸 고르기, #180) */ /* 그 시즌·단계 칸에 그때 이름·포지션·나이(외부 검수 11-17 #48: 지난 시즌 줄이 지금 값으로 바뀌던 것) */
   for (const b of x.bat || []) { const s = slot(b.id, 0); s.b = addArr(s.b || UL_BF.map(() => 0), arrOf(b, UL_BF)); }
   for (const p of x.pit || []) { const s = slot(p.id, 1); s.p = addArr(s.p || UL_PF.map(() => 0), arrOf(p, UL_PF)); }
   /* 한도: 시즌 칸은 오래된 시즌부터, 선수는 가장 오래 안 나온 선수부터 뺀다 */
@@ -148,15 +150,20 @@ export function ulPitRates(t) { const o = t.outs || 0; return { ip: `${Math.floo
 /* 표 줄: kind 'b'(타자)·'p'(투수), f: {season:'S12'|'', tier:-1|0~4, pos:''|'C'|…|'SP'|'RP'}. 줄마다 시즌별 나눔(splits)도 붙인다 */
 export function ulPsRows(ps, kind, f) {
   f = f || {}; const k = kind === 'p' ? 'p' : 'b', F = k === 'p' ? UL_PF : UL_BF, rate = k === 'p' ? ulPitRates : ulBatRates, out = [];
-  for (const id in ps || {}) { const o = ps[id], tot = F.map(() => 0), by = {};
-    const snap = {}, byT = {};
-    for (const sk in o.s) { const [sid, t] = sk.split('|'); if (f.season && sid !== f.season) continue; if (f.tier != null && f.tier >= 0 && +t !== +f.tier) continue; const a = o.s[sk][k]; if (!a) continue; addArr(tot, a); addArr(by[sid] || (by[sid] = F.map(() => 0)), a); byT[sk] = a;
-      if (o.s[sk].nm && !snap[sid]) snap[sid] = { name: o.s[sk].nm, pos: o.s[sk].ps, age: o.s[sk].ag }; }
-    if (!tot[0]) continue; const t = objOf(tot, F), pos = k === 'p' ? (t.gs * 2 >= t.g ? 'SP' : 'RP') : o.pos;
-    if (f.pos && f.pos !== pos) continue;
-    out.push(Object.assign({ id, name: o.n, pos, age: o.age, fr: o.fr ? 1 : 0, at: o.at || 0 }, t, rate(t),
-      { splits: Object.keys(by).sort((a, b) => sidN(b) - sidN(a)).map(sid => { const x = objOf(by[sid], F); return Object.assign({ sid }, snap[sid] || {}, x, rate(x)); }),
-        tsplits: Object.keys(byT).sort((a, b) => sidN(b.split('|')[0]) - sidN(a.split('|')[0]) || +a.split('|')[1] - +b.split('|')[1]).map(sk => { const [sid, t] = sk.split('|'), x = objOf(byT[sk], F); return Object.assign({ sid, tier: +t }, snap[sid] || {}, x, rate(x)); }) })); } /* 시즌·단계별 나눔(CSV 단계 열, #51) */
+  /* 검수 11-17 #180·#181·#182: 포지션·나이는 그 시즌·단계 칸에 남긴 그때 값으로 본다(지금 값 X). 타자 포지션 거르기도 칸마다(그 시즌 포수였던 기록만 포수로).
+     칸에 포지션이 비어 있으면(예전 저장: 리그 중 덱에서 뺀 선수) 선수 칸 값으로 메운다(읽을 때만, 저장은 그대로) */
+  const isNewer = (a, b) => { if (!b) return true; for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] > b[i]; return false; }; /* [리그 번호, 시즌, 단계] 큰 쪽이 최근 */
+  for (const id in ps || {}) { const o = ps[id], tot = F.map(() => 0), by = {}, byT = {}, snapS = {}, snapT = {}; let last = null;
+    for (const sk in o.s) { const [sid, t] = sk.split('|'); if (f.season && sid !== f.season) continue; if (f.tier != null && f.tier >= 0 && +t !== +f.tier) continue; const c = o.s[sk], a = c[k]; if (!a) continue;
+      const sn = { name: c.nm || o.n || '', pos: c.ps || o.pos || '', age: c.ag != null ? c.ag : o.age };
+      if (k === 'b' && f.pos && sn.pos !== f.pos) continue;
+      addArr(tot, a); addArr(by[sid] || (by[sid] = F.map(() => 0)), a); byT[sk] = a; snapT[sk] = sn;
+      const rk = [c.l | 0, sidN(sid), +t]; if (!snapS[sid] || isNewer(rk, snapS[sid].rk)) snapS[sid] = { sn, rk }; if (!last || isNewer(rk, last.rk)) last = { sn, rk }; }
+    if (!tot[0]) continue; const t = objOf(tot, F), cur = last ? last.sn : { pos: o.pos, age: o.age }, pos = k === 'p' ? (t.gs * 2 >= t.g ? 'SP' : 'RP') : cur.pos;
+    if (k === 'p' && f.pos && f.pos !== pos) continue;
+    out.push(Object.assign({ id, name: o.n, pos, age: cur.age, fr: o.fr ? 1 : 0, at: o.at || 0 }, t, rate(t),
+      { splits: Object.keys(by).sort((a, b) => sidN(b) - sidN(a)).map(sid => { const x = objOf(by[sid], F); return Object.assign({ sid }, snapS[sid].sn, x, rate(x)); }),
+        tsplits: Object.keys(byT).sort((a, b) => sidN(b.split('|')[0]) - sidN(a.split('|')[0]) || +a.split('|')[1] - +b.split('|')[1]).map(sk => { const [sid, t] = sk.split('|'), x = objOf(byT[sk], F); return Object.assign({ sid, tier: +t }, snapT[sk], x, rate(x)); }) })); } /* 시즌·단계별 나눔(CSV 단계 열, #51): 칸마다 그 칸의 포지션·나이(#181) */
   return out;
 }
 /* 팀 시즌 칸(ulSeasonAdd 확장): 승·패·무·득점·실점·강등·순위 합. 예전 칸에 없는 값은 0으로 본다 */
@@ -236,8 +243,11 @@ export function ulDailyGoals(hist, now) {
   return [['play1', '리그 1번 끝내기', X => X.length, 1], UL_DPOOL[a], UL_DPOOL[b === a ? (a + 1) % n : b]].map(([k, t, f, goal]) => { const cur = Math.min(goal, f(H)); return { k, n: t, cur, goal, done: cur >= goal }; });
 }
 /* 이번 주 목표: 리그 5번 · 3위 안 3번 · 승격 1번(레전드면 레전드 3위 안) */
+/* 검수 11-17 #184: 목표는 그 주 처음 단계로 고정한다 — 이번 주 첫 리그 기록의 단계(= 주가 시작될 때 단계). 이번 주 기록이 없으면 지금 단계.
+   (주중에 레전드로 올라가면 마지막 목표가 '레전드 3위 안'으로 바뀌어 받은 도장이 다시 미완료로 보이던 것. 저장 칸 없이 기록 줄로 정해 예전 저장도 그대로 맞다) */
 export function ulWeeklyGoals(hist, now, tier) {
   const w = ulWeekId(now), H = (hist || []).filter(x => x && x.ts && ulWeekId(x.ts) === w), top = UL_TIERS.length - 1;
+  if (H.length && H[0].tier != null) tier = H[0].tier;
   return [['play5', '리그 5번 끝내기', H.length, 5], ['top3x3', '3위 안 3번', cnt(x => x.rank <= 3)(H), 3],
     (tier | 0) >= top ? ['up', '레전드 3위 안', cnt(x => (x.tier | 0) === top && x.rank <= 3)(H), 1] : ['up', '승격 1번', cnt(x => x.move === 'up')(H), 1]]
     .map(([k, t, c, goal]) => ({ k, n: t, cur: Math.min(goal, c), goal, done: c >= goal }));

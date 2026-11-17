@@ -17,6 +17,9 @@ try{for(const [W,H] of [[1920,1080],[1440,900],[1366,768],[390,844]]){const pc=W
     return {tabs:[...document.querySelectorAll('#app .ws-pages .ws-page')].map(b=>b.textContent),order:panels.map(lab),cols:+document.querySelector('#app .ws-panels').style.getPropertyValue('--ws-columns'),
       farmIds:panels.filter(e=>['2군 야수','2군 투수','육성선수'].includes(lab(e))).flatMap(e=>[...e.querySelectorAll('[data-a="player"]')].map(b=>+b.dataset.v))};});
   assert.deepEqual(R.order,['포지션 배치도','1군 야수·투수진','부상·재활','2군 야수','2군 투수','육성선수'],'전력 구성 칸 순서 '+JSON.stringify(R.order));
+  /* [검수 11-17 #179] 1군에 등록된 채 다친 선수(1군 야수 부상 5일)도 '부상·재활' 칸에 나온다 */
+  const inj=await p.evaluate(()=>{const q=playersOf(G.user).find(x=>!x.isP&&!(x.injOut>0));const o=q.injOut,e=q.e1;q.injOut=5;q.e1=true;const h=futSquadView(G.user).injC;q.injOut=o;q.e1=e;return {h,name:q.name};});
+  assert.ok(inj.h.includes(inj.name+'(')&&/부상·재활 \d+명/.test(inj.h),'[검수 11-17 #179] 1군 등록 부상 선수가 부상·재활 칸에 없음');
   for(const id of farm.ids)assert.ok(R.farmIds.includes(id),`2군 선수 ${id}가 2군 묶음에 있음`);assert.ok(R.farmIds.includes(farm.ys),'육성선수도 2군 묶음에');
   if(W>=1600)assert.deepEqual(R.tabs,['포지션 배치도 · 1군 야수·투수진 · 부상·재활','2군 야수 · 2군 투수 · 육성선수'],'PC 묶음 탭 이름 '+JSON.stringify(R.tabs));
   await fit('전력 구성 1');await shot('1-depth');
