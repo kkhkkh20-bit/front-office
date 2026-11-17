@@ -6713,7 +6713,7 @@ T('[검수 11-17 #192] 웨이버: 사람이 양수를 신청하고 이직하면 
 T('[검수 11-17 #193] 웨이버: A 방출 → B 자유계약 → B 웨이버 → C 양수면 B 몫만 빠지고 A 상한에 남은 방출 연봉은 그대로다',()=>{ fresh(); simTo(()=>period()==='season'&&tradeOpen()&&G.day>=G.cal.open+5); const [A,B,C]=G.teams.map(t=>t.id).filter(t=>t!==G.user);
   const p=domestic(A).filter(q=>!q.foreign&&!q.ys&&!isRookie(q)&&!milServing(q)&&franNow(A)!==q.id).pop(); p.sal=850; const ow=wvWants;
   try{ wvWants=()=>false; toFree(p,'점검'); const a0=sum(capDeadA(A)); ok(a0===850,'준비 실패: A 방출 몫 '+a0); G.day=p.wv.end; wvDaily(); ok(p.team==null&&!p.wv,'준비 실패: 자유계약이 안 됨');
-    p.team=B; p.sal=300; p.yrs=1; p.ctT=B; toFree(p,'점검'); ok(p.wv&&sum(capDeadA(B))===300,'준비 실패: B 방출 몫 '+sum(capDeadA(B))); p.wv.ok=true; p.wv.cl=[C]; G.day=p.wv.end; wvDaily(); ok(p.team===C,'준비 실패: C가 데려가지 않음 '+p.team);
+    p.team=B; p.sal=300; p.yrs=1; p.ctT=B; toFree(p,'점검'); ok(p.wv&&sum(capDeadA(B))===300,'준비 실패: B 방출 몫 '+sum(capDeadA(B))); const C2=G.teams.map(t=>t.id).filter(t=>t!==G.user&&t!==A&&t!==B&&wvCapAi(t,p)).concat([C])[0]; /* 상한 여유가 있는 구단(#192 AI 상한 검사가 꽉 찬 구단은 정당하게 막는다) */ p.wv.ok=true; p.wv.cl=[C2]; G.day=p.wv.end; wvDaily(); ok(p.team===C2,'준비 실패: C가 데려가지 않음 '+p.team);
     ok(sum(capDeadA(B))===0,'B 몫이 남음'); ok(sum(capDeadA(A))===850,'A에 남은 방출 연봉이 지워짐: '+sum(capDeadA(A))); } finally{ wvWants=ow; } });
 /* 검수 11-17 #187~#196 공통: 7시즌 1군 기록(프랜차이즈 대상)과 겨울(결산 뒤 12월) 상태 */
 const fr7=(p,tid,n,lvl)=>{ p.hist=(p.hist||[]).filter(h=>h.t!==tid); for(let i=0;i<(n??7);i++)p.hist.push(Object.assign({},p.isP?ZP:ZB,{y:G.year-7+i,t:tid,lvl:lvl||'1군'})); delete p.regD; };
