@@ -223,11 +223,11 @@ dbTest('래더 v2: 전체 순위(높은 단계 먼저)와 관리자 내보내기
   const d = await J('GET', '/api/v1/admin/export?kind=decks', null, AK); assert.equal(d.rows.length, 2); assert.ok(d.rows[0].meta && d.rows[0].meta.v === 1, '덱 요약');
   const r = await J('GET', '/api/v1/admin/export?kind=results', null, AK); assert.equal(r.rows.length, 2); assert.ok(r.rows.every(x => x.nickname && x.lkey));
 });
-dbTest('연봉 상한(사용자 11-17 "공평하게"): 덱 연봉 ÷ 그 세계 리그 평균이 단계 배수(루키·마이너 1.5, 1부~ 1.25)를 넘으면 400 over_cap, 연봉 기록 없으면 no_pay, 승격으로 넘게 된 덱·유예 끝난 예전 덱은 상대로 안 나온다', async () => {
+dbTest('연봉 상한(사용자 11-17 "공평하게"): 덱 연봉 ÷ 그 세계 리그 평균이 단계 배수(루키 2, 마이너 1.5, 1부~ 1.25)를 넘으면 400 over_cap, 연봉 기록 없으면 no_pay, 승격으로 넘게 된 덱·유예 끝난 예전 덱은 상대로 안 나온다', async () => {
   const { J, mk, env, clock } = await setup(); const C = await import(path.join(root, 'src/core/uladder.mjs'));
   const a = await mk('상한일', '10.1.0.1'), b = await mk('상한이', '10.1.0.2'), c = await mk('상한삼', '10.1.0.3'), d = await mk('상한사', '10.1.0.4');
-  let j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ payRef: 4000 }), tier: 0 }, a.A); /* 7200 ÷ 4000 = 1.8배 > 루키 1.5배 */
-  assert.equal(j._s, 400); assert.equal(j.error, 'over_cap'); assert.ok(/루키 상한/.test(j.errors[0]) && j.cap.x === 1.5 && j.cap.pay === 7200, JSON.stringify(j));
+  let j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ payRef: 3000 }), tier: 0 }, a.A); /* 7200 ÷ 3000 = 2.4배 > 루키 2배 */
+  assert.equal(j._s, 400); assert.equal(j.error, 'over_cap'); assert.ok(/루키 상한/.test(j.errors[0]) && j.cap.x === 2 && j.cap.pay === 7200, JSON.stringify(j));
   const nosal = deck(); delete nosal.P[3].sal; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: nosal, tier: 0 }, a.A)).error, 'no_pay', '선수 연봉이 빠짐');
   assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ payRef: 0 }), tier: 0 }, a.A)).error, 'no_pay', '리그 평균이 없음');
   const fake = deck({ pay: 100, payRef: 9000 }); fake.P[0].sal = 9000; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'over_cap', '합(pay)을 줄여 적어도 서버는 선수마다 연봉으로 다시 센다');

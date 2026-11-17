@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* 프런트컵(유저 대회) 주최 도구. 대회 상태는 폴더 하나(DIR/cup.json)에 두고 한 경기씩 이어서 돌린다. 안내: docs/design/cup-kit-host-guide.md
  사용(dist/engine.js 필요: bash build.sh --engine-out dist/engine.js):
-   node tools/cup-host.cjs init DIR [--id cup1] [--title "제1회 프런트컵"] [--format league|knockout] [--teams 10] [--min-seasons 2] [--pay-cap 0] [--deadline "2026-11-30 21:00"]
+   node tools/cup-host.cjs init DIR [--id cup1] [--title "제1회 프런트컵"] [--format league|knockout] [--teams 10] [--min-seasons 2] [--pay-cap 0] [--pay-cap-x 1.25(연봉 상한: 리그 평균 배수, 사용자 11-17)] [--deadline "2026-11-30 21:00"]
         (knockout 형식만: [--size 32] [--best "1,8:7,4:7,2:7"] [--playin 16:4] [--shuffle 8] [--blocks 4])
    node tools/cup-host.cjs pull DIR --url https://사이트                    서버 신청 목록 받기(환경 변수 CUP_ADMIN 필요)
    node tools/cup-host.cjs add DIR 파일…                                   참가 파일(게임의 '참가 파일 저장')이나 서버 목록 JSON 넣기
@@ -24,7 +24,7 @@ const ROOT = path.join(__dirname, '..');
 const ENGINE = process.env.ENGINE || path.join(ROOT, 'dist', 'engine.js');
 const args = process.argv.slice(2), cmd = args[0], DIR = args[1];
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 && args[i + 1] != null ? args[i + 1] : d; }, flag = k => args.includes(k);
-const VALS = new Set(['--format', '--teams', '--id', '--title', '--size', '--best', '--playin', '--shuffle', '--blocks', '--min-seasons', '--pay-cap', '--deadline', '--url', '--count', '--only', '--n', '--seeds', '--seasons']);
+const VALS = new Set(['--format', '--teams', '--id', '--title', '--size', '--best', '--playin', '--shuffle', '--blocks', '--min-seasons', '--pay-cap', '--pay-cap-x', '--deadline', '--url', '--count', '--only', '--n', '--seeds', '--seasons']);
 const files = args.slice(2).filter((a, i, L) => !a.startsWith('--') && !VALS.has(L[i - 1]));
 const quiet = { log() {}, warn() {}, error() {}, info() {} };
 let E = null;
@@ -66,7 +66,7 @@ function cmdInit() {
   if (fs.existsSync(stPath())) { console.error('이미 대회 폴더가 있습니다: ' + stPath()); process.exit(1); }
   const D = { ...C().CUP_DEFAULT };
   const cfg = Object.assign({}, D, { format: opt('--format', D.format), teams: +opt('--teams', D.teams), best: opt('--best') ? parseBest(opt('--best')) : D.best, id: opt('--id', D.id), title: opt('--title', D.title), size: +opt('--size', D.size),
-    shuffleTop: +opt('--shuffle', 0), blocks: +opt('--blocks', 0), minSeasons: +opt('--min-seasons', 0), payCap: +opt('--pay-cap', 0), deadline: opt('--deadline', '') });
+    shuffleTop: +opt('--shuffle', 0), blocks: +opt('--blocks', 0), minSeasons: +opt('--min-seasons', 0), payCap: +opt('--pay-cap', 0), payCapX: +opt('--pay-cap-x', 0), deadline: opt('--deadline', '') });
   if (opt('--playin')) { const [d, g] = opt('--playin').split(':'); cfg.playIn = { direct: +d, groupSize: +g || 4 }; }
   save({ v: 1, cfg, entries: {}, seeds: null, bracket: null, series: {}, stats: { bat: {}, pit: {} }, created: new Date().toISOString() });
   if (!/^[A-Za-z0-9_]{1,20}$/.test(cfg.id)) { console.error('대회 id는 영문·숫자 20자 이내로 정해 주세요(예: cup1).'); process.exit(2); }

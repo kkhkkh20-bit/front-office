@@ -31,3 +31,9 @@
 @media(min-width:1100px){.ulx.ul-wide2{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}.ulx .ul-c2 .ul-tw{max-height:calc(100vh - 300px)}}
 @media(max-width:640px){.ulx .ul-hero-t h2{font-size:18px}.ulx .ul-hero-in .ul-emb{width:72px;height:77px}.ulx .ul-lr{grid-template-columns:26px 4.8em minmax(0,1fr) auto;padding:4px 6px}.ulx .ul-flt{gap:6px}.ulx .ul-fl select{min-width:0}}
 .ulx h2.sec small{margin-left:6px;font-weight:600;color:var(--muted)}.ulx .ul-dt td,.ulx .ul-dt td:nth-child(2){white-space:nowrap}
+/* 연봉 상한(사용자 11-17 "공평하게"): 덱 등록 칸 */
+.ulx .ul-cap{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px}.ulx .ul-cap.ul-cap-over{border-color:var(--bad,#d9534f);background:color-mix(in srgb,var(--bad,#d9534f) 7%,transparent)}.ulx .ul-cap .dk-t b{margin-left:4px}
+.ulx .ul-cap-n b{font-size:15px}.ulx .ul-cap-bar{margin:2px 0 6px}.ulx .ul-cap-over .ul-cap-bar>i{background:var(--bad,#d9534f)}
+.ulx .ul-crs{display:grid;gap:3px;margin:4px 0}.ulx .ul-cr{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:8px;align-items:center;padding:3px 0;border-bottom:1px solid var(--line);font-size:13px}.ulx .ul-cr b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ulx .ul-cap-n b{white-space:nowrap}
+@media(max-width:640px){.ulx .ul-cr{grid-template-columns:minmax(0,1fr) auto auto}.ulx .ul-cr>span.small{display:none}.ulx .ul-cap-n b{font-size:13px}.ulx .ul-cap-n{gap:3px}.ulx .ul-cap-n>div{padding:5px 2px}}

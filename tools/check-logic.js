@@ -5871,9 +5871,9 @@ T('[유저 레더] 리그 만들기: 받은 덱이 모자라면 가져온 우승
   ok(!JSON.stringify(G.uld.deck.e).includes('"wid"')&&G.uld.deck.e.h===C.cupEntryHash(G.uld.deck.e),'등록 덱 정리·해시');
   let r=ulMakeLeague({fetched:[]}); ok(r.ok&&r.league.teams.length===10&&r.league.src.ai===9,'서버 덱 없음 → AI 9 '+JSON.stringify(r.league.src));
   ok(r.league.teams.filter(t=>t.kind==='ai').every(t=>Math.abs(t.e.ovr.t-C.UL_TIER_OVR[0])<=2&&C.cupValidate(t.e,{}).ok&&t.e.ai===1),'AI 덱 기준 OVR '+r.league.teams.map(t=>t.e.ovr.t)); ok(new Set(r.league.teams.map(t=>t.e.h)).size===10,'같은 덱이 두 번');
-  const other=[1,2,3].map(k=>cupEntryNow({tid:(G.user+k)%G.teams.length,name:'유저'+k})), cups=[4,5,6].map(k=>cupEntryNow({tid:(G.user+k)%G.teams.length,name:'우승'+k}));
+  const other=[1,2,3].map(k=>cupEntryNow({tid:(G.user+k)%G.teams.length,name:'유저'+k})).map(e=>Object.assign(e,{payRef:e.pay})), cups=[4,5,6].map(k=>cupEntryNow({tid:(G.user+k)%G.teams.length,name:'우승'+k}));
   G.uld.tier=3; r=ulMakeLeague({fetched:other.concat([me]),cup:cups,avg:70,count:5}); ok(r.league.src.user===3&&r.league.src.cup===2&&r.league.src.ai===4,'받은 덱 3·우승 덱 2·AI 4 '+JSON.stringify(r.league.src)+'(내 덱이 다시 오면 빼야 함)');
-  ok(r.league.teams.filter(t=>t.kind==='ai').every(t=>Math.abs(t.e.ovr.t-70)<=2),'서버 평균으로 AI '+r.league.teams.filter(t=>t.kind==='ai').map(t=>t.e.ovr.t)); ok(r.league.tier===3&&r.league.sched.length===45,'일정'); });
+  ok(r.league.teams.filter(t=>t.kind==='ai').every(t=>Math.abs(t.e.ovr.t-C.ulAiTarget(3,70,5))<=2)&&C.ulAiTarget(3,70,5)===75,'서버 평균이 단계 기준보다 낮으면 기준(챔피언스 75)으로 AI '+r.league.teams.filter(t=>t.kind==='ai').map(t=>t.e.ovr.t)); ok(r.league.tier===3&&r.league.sched.length===45,'일정'); });
 T('[유저 레더] 리그 진행: 연전 사이에 고친 덱은 다음 연전부터 나가고, 27경기 뒤 순위·승강·MVP·기록이 남으며, 커리어 G(본게임 난수·세계)는 G.uld 말고 그대로다',()=>{ fresh(); const C=FrontOfficeCore;
   ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({}).league; const strip=()=>{ const x=JSON.parse(JSON.stringify(G)); delete x.uld; return JSON.stringify(x); }; const g0=strip();
   const r1=ulRunRound(L); ok(r1.length===5&&L.next===5&&r1.every(s=>s.g.length===3),'1라운드 연전 5개'); const mine1=r1.find(s=>s.a===0||s.b===0), h0=G.uld.deck.e.h; ok((mine1.a===0?mine1.ha:mine1.hb)===h0,'1라운드는 등록 덱');
@@ -5929,6 +5929,41 @@ T('[유저 레더] 래더 v2 저장 옮기기(사용자 11-17): 예전 저장(G.
   ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({}).league; ok(L.tier===2,'옮긴 단계로 리그'); while(L.next<L.sched.length)ulRunRound(L); ulFinish(); ok(Object.keys(G.uld.ps).length>=14&&Object.keys(G.uld.opp).length===9,'옮긴 뒤 리그 기록이 쌓임');
   const e=G.uld.deck.e, m=C.ulDeckMeta(e), m2=C.ulDeckMeta(JSON.parse(JSON.stringify(e))); ok(m&&JSON.stringify(m)===JSON.stringify(m2)&&C.UL_POS.filter(k=>m.pos[k]).length===9&&m.n===e.P.length&&m.age.reduce((a,b)=>a+b,0)===e.P.length&&m.a in C.UL_ARCH,'덱 구성 요약 '+JSON.stringify(m));
   const A=C.ulMetaAgg([m,m2,null]); ok(A.n===2&&A.t.avg===m.t&&A.pos.SS.h.reduce((a,b)=>a+b,0)===2&&A.arch[m.a]===2&&A.age.reduce((a,b)=>a+b,0)===2*e.P.length,'집계 '+JSON.stringify(A.t)); ok(C.ulMetaAgg([]).n===0,'빈 집계'); });
+T('[유저 레더] 연봉 상한(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 엔트리에 선수 연봉·리그 평균을 적고, 배수는 세계 물가가 3배여도 같으며, 넘는 덱은 등록이 막히고 추천대로 빼면 들어가며, 승격·유예 끝은 리그 시작을 막는다(본게임 난수 그대로)',()=>{ fresh(); const C=FrontOfficeCore;
+  const r0=__rngState(); const me=cupEntryNow({name:'와이'}); ok(__rngState()===r0,'엔트리·리그 평균이 난수를 씀');
+  ok(me.P.every(p=>p.sal===Math.round(G.players[p.id].sal||0)),'선수 연봉'); ok(me.pay===me.P.reduce((a,p)=>a+p.sal,0),'연봉 합');
+  const t26=tid=>playersOf(tid).map(p=>p.sal||0).sort((a,b)=>b-a).slice(0,26).reduce((a,b)=>a+b,0), oth=G.teams.filter(t=>t.id!==G.user&&!t.indie);
+  ok(Math.abs(me.payRef-oth.reduce((a,t)=>a+t26(t.id),0)/oth.length)<=1,'리그 평균 = 다른 구단 연봉 상위 26명 합의 평균 '+me.payRef);
+  const c0=C.cupPay(me); for(const p of Object.values(G.players))p.sal=(p.sal||0)*3; const c3=C.cupPay(cupEntryNow({name:'와이'})); for(const p of Object.values(G.players))p.sal=p.sal/3;
+  ok(Math.abs(c3.pay-3*c0.pay)<=30&&Math.abs(c3.r-c0.r)<=0.005,'물가 3배 세계에서도 같은 배수 '+c0.r+' '+c3.r);
+  const old=JSON.parse(JSON.stringify(me)); for(const p of old.P)delete p.sal; ok(C.cupPay(old).pay===me.pay&&C.cupPay(old).r===c0.r,'예전 엔트리는 e.pay'); delete old.payRef; ok(C.cupPay(old).r===null&&!C.ulCap(old,2).known,'리그 평균 없으면 모름');
+  const big=Object.assign(JSON.parse(JSON.stringify(me)),{payRef:Math.round(me.pay/1.4)});
+  ok(C.ulCap(big,1).ok&&!C.ulCap(big,2).ok&&C.ulCap(big,2).room<0&&C.ulCapX(0)===2&&C.ulCapX(1)===1.5&&C.ulCapX(2)===1.25&&C.ulCapX(4)===1.25,'1.4배: 마이너 안, 1부 밖');
+  G.uld=null; uld().tier=2; const m=ulSetDeck(big,'now'); ok(m.includes('1부 상한')&&!G.uld.deck,'넘는 덱이 등록됨 '+m);
+  const sg=C.ulCapSuggest(big,2); ok(sg.ok&&sg.ids.length>=1&&sg.ids.length<=6,'추천 '+JSON.stringify(sg)); const dr=C.ulCapDrop(big,sg.ids);
+  ok(!dr.err&&C.ulCap(dr.e,2).ok&&dr.e.P.length===big.P.length-sg.ids.length&&dr.e.ln.length===9&&C.cupValidate(dr.e,{}).ok,'추천대로 빼면 상한 안 '+dr.err);
+  ok(dr.e.ln.every(([id])=>dr.e.P.some(p=>p.id===id))&&dr.e.rot.every(id=>dr.e.P.some(p=>p.id===id&&p.isP)),'빠진 자리는 벤치·불펜으로 채움');
+  const keep=C.ulCapDrop(big,big.P.filter(p=>p.isP).map(p=>p.id)); ok(keep.err,'투수를 다 빼면 덱 규칙에 걸림');
+  dr.e.ovr=cupOvr(dr.e); ok(ulSetDeck(dr.e,'now')==='','줄인 덱 등록'); ok(ulMakeLeague({fetched:[]}).ok,'상한 안 덱으로 리그'); G.uld.league=null;
+  /* 승격으로 상한이 빡빡해짐: 마이너에서 1.4배로 등록 → 1부 */
+  G.uld.tier=1; ok(ulSetDeck(big,'now')==='','마이너 1.4배 등록'); G.uld.tier=2; const r1=ulMakeLeague({fetched:[]}); ok(!r1.ok&&r1.cap&&r1.msg.includes('1부 상한'),'승격 뒤 넘는 덱으로 리그 '+r1.msg);
+  /* 예전 덱(연봉 기록 없음): 유예(11.30 시즌 전)까지만 */
+  const unst=JSON.parse(JSON.stringify(me)); for(const p of unst.P)delete p.sal; delete unst.payRef; unst.h=C.cupEntryHash(unst); G.uld.deck={id:9,src:'now',e:unst};
+  ok(ulMakeLeague({fetched:[],now:C.UL_CAP_FROM-1000}).ok,'유예 중 예전 덱'); G.uld.league=null; const r2=ulMakeLeague({fetched:[],now:C.UL_CAP_FROM+1000}); ok(!r2.ok&&r2.msg.includes('다시 등록'),'유예 끝 '+r2.msg);
+  ok(ulSetDeck(unst,'now').includes('연봉 기록'),'연봉 기록 없는 로스터는 새로 등록 못 함');
+  /* 상대: 상한을 넘는 유저 덱은 빼고 AI로 채운다(AI는 상한 밖) */
+  G.uld.deck=null; ok(ulSetDeck(me,'now')==='','다시 등록'); const ok1=Object.assign(cupEntryNow({tid:(G.user+1)%G.teams.length,name:'알뜰'}),{}); ok1.payRef=ok1.pay; const no1=cupEntryNow({tid:(G.user+2)%G.teams.length,name:'넘침'}); no1.payRef=Math.round(no1.pay/1.6);
+  const r3=ulMakeLeague({fetched:[ok1,no1]}); ok(r3.ok&&r3.league.src.user===1&&r3.league.teams.some(t=>t.name==='알뜰')&&!r3.league.teams.some(t=>t.name==='넘침'),'넘는 상대 덱 '+JSON.stringify(r3.league.src));
+  ok(r3.league.teams.filter(t=>t.kind==='ai').every(t=>t.e.ai===1&&C.ulCapGate(t.e,2).ok&&C.ulCapGate(t.e,2).ai),'AI는 상한 밖'); });
+T('[유저 레더] AI 덱 단계 OVR(사용자 11-17 "레더 ai 도 챔피언스 이런곳은 고 오버롤로"): 루키 62·마이너 66·1부 70·챔피언스 75·레전드 79, 리그 안 ±2 벌림, 투타 고르게(타자 ≈ 총−1), 9자리·선발 5·능력치 85 이하, 서버 평균은 기준~기준+3',()=>{ fresh(); const C=FrontOfficeCore;
+  ok(JSON.stringify(C.UL_TIER_OVR)==='[62,66,70,75,79]','기준 '+C.UL_TIER_OVR); ok(C.ulAiTarget(4,90,5)===82&&C.ulAiTarget(0,74.3,6)===65&&C.ulAiTarget(2,0,0)===70&&C.ulAiTarget(3,80,2)===75&&C.ulAiTarget(1,60,9)===66,'서버 평균 반영');
+  let prev=0;
+  for(let t=0;t<5;t++){ const goal=C.UL_TIER_OVR[t], L=ulAiDecks(9,goal), T=L.map(e=>e.ovr.t), av=T.reduce((a,b)=>a+b,0)/T.length;
+    ok(Math.abs(av-goal)<=1&&T.every(x=>Math.abs(x-goal)<=3)&&Math.max(...T)-Math.min(...T)>=2,C.ulTierName(t)+' AI OVR '+T);
+    ok(L.every(e=>Math.abs(e.ovr.b-(goal-1))<=4&&e.ovr.p-e.ovr.b<=9&&e.ovr.p>=e.ovr.b-4),C.ulTierName(t)+' 투타 '+L.map(e=>e.ovr.p+'/'+e.ovr.b));
+    ok(L.every(e=>C.cupValidate(e,{}).ok&&!C.cupValidate(e,{}).flags.length&&new Set(e.ln.map(x=>x[1])).size===9&&e.ln.some(x=>x[1]==='C')&&e.rot.length===5&&e.P.every(p=>Object.entries(p.r).every(([k,v])=>k==='vit'||v<=85))),C.ulTierName(t)+' 덱 모양');
+    ok(av>prev,'단계가 오를수록 세다'); prev=av; }
+  });
 T('[제보 11-16 해외 복귀 기록] 돌아온 선수의 해외 시즌은 모두 연도 순서로 남고, 기록 정리에서 가장 나중에 지우며, 복귀 까닭이 협상·이력에 보이고, 선수 화면 시즌 통계가 최근 세 시즌만 남기고 줄을 숨기지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&!q.foreign&&q.age<=30); ok(p,'준비 실패'); const id=p.id;
   ovsLeave(p,'MLB',MLBT.find(c=>c.startsWith('보스턴'))||MLBT[0],5,800,'포스팅'); const a=G.abroad.find(x=>x.id===id); ok(a,'해외 기록 없음'); a.y1=G.year-5; for(let y=G.year-5;y<G.year;y++)a.lines.push({y,lvl:'MLB',g:30,outs:540,er:60,so:150,bb:40,h:160,hr:18,w:10,l:8});
   const q=JSON.parse(a.pj); q.age=34; a.pj=JSON.stringify(q); abroadYear(); const r=G.players[id]; ok(r&&a.back,'복귀 처리 실패'); ok(a.why&&a.why.includes('계약 만료'),'복귀 까닭이 없다: '+a.why); ok(!r.retAsk||(r.retAsk.why===a.why),'우선협상 요구에 까닭이 없다');

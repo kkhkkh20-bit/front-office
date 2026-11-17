@@ -35,11 +35,11 @@ Object.assign(A,{
   admOpen(){ if(ADM.chk==='ok')admUsage(); if(G&&!UI.title)return A.go('club:cupadm'); UI.sstep='cupadmin'; render(); },
   /* 1) 대회 만들기·열기·닫기 */
   async admCfg(v){ if(v==='close'&&ADM.cup&&ADM.cup.open!==false&&!confirm('접수를 닫습니다. 닫은 뒤에는 게임에서 신청할 수 없습니다(다시 열 수는 있습니다).'))return; const q=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-    const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(4,Math.min(10,+q('admTeams')||10)), minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0;
+    const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(4,Math.min(10,+q('admTeams')||10)), minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0, payCapX=Math.max(0,Math.round((+q('admPayX')||0)*100)/100); /* 연봉 상한 배수(사용자 11-17 "대회마다 연봉에 제약… 공평하게") */
     if(!/^[A-Za-z0-9_-]{1,32}$/.test(id))return admSay('대회 id는 영문·숫자로 적어 주세요(예: cup1).',true);
     if(deadline&&FrontOfficeCore.cupKstMs(deadline)==null)return admSay('마감은 2026-12-05 21:00 형식(한국시간)으로 적어 주세요.',true);
     const prev=ADM.cup&&ADM.cup.id===id?ADM.cup:{}; const open=v==='open'?true:v==='close'?false:prev.open!==false&&v!=='new'?prev.open:false;
-    const c=Object.assign({},FrontOfficeCore.CUP_DEFAULT,{id,title,deadline,format:'league',teams,meet:3,minSeasons,payCap,open});
+    const c=Object.assign({},FrontOfficeCore.CUP_DEFAULT,{id,title,deadline,format:'league',teams,meet:3,minSeasons,payCap,payCapX,open});
     ADM.busy=true; const {r,j}=await admApi('/admin/config',{method:'PUT',body:JSON.stringify(c)}).catch(()=>({r:{ok:false},j:{}})); ADM.busy=false;
     if(!r.ok)return admSay(j.message||'저장하지 못했습니다.',true); ADM.cup=Object.assign({},c); CUP.st=''; ADM.ents=null; ADM.entsAuto=0; ADM.seedOk=false; ADM.run=null; ADM.runSt=''; admSay(open?'접수를 열었습니다. 게임의 프런트컵 화면에 신청 버튼이 보입니다.':'저장했습니다. 접수는 닫혀 있습니다.'); },
   /* 2) 접수 현황 */
@@ -187,7 +187,7 @@ function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"
   const inp=(id,lab,v,ph,w)=>`<label class="adm-in"><span>${lab}</span><input id="${id}" value="${esc(v??'')}" placeholder="${esc(ph||'')}" autocomplete="off"${w?` style="max-width:${w}"`:''}></label>`;
   const s1=`<section class="card"><h2 class="sec">1. 대회 만들기·열기</h2>${c.id?`<p class="small">지금: <b>${esc(c.title)}</b> (${esc(c.id)}) · ${c.open!==false?'<b>접수 중</b>':'접수 닫힘'}${c.deadline?` · 마감 ${esc(c.deadline)}`:''}</p>`:'<p class="small muted">아직 만든 대회가 없습니다.</p>'}
     ${inp('admId','대회 id',c.id||'cup1','cup1','8em')}${inp('admTitle','대회 이름',c.title||'제1회 프런트컵')}${inp('admDl','접수 마감(한국시간)',c.deadline||'','2026-12-05 21:00','12em')}
-    ${inp('admTeams','팀 수(리그 + KBO식 가을야구)',cfg.teams||10,'10','5em')}${inp('admMinS','자격: 최소 시즌',c.minSeasons||'','0','5em')}${inp('admPay','자격: 1군 연봉 합 상한',c.payCap||'','0','8em')}
+    ${inp('admTeams','팀 수(리그 + KBO식 가을야구)',cfg.teams||10,'10','5em')}${inp('admMinS','자격: 최소 시즌',c.minSeasons||'','0','5em')}${inp('admPay','자격: 1군 연봉 합 상한(금액, 백만원)',c.payCap||'','0','8em')}${inp('admPayX','자격: 연봉 상한(리그 평균 배수, 예 1.25)',c.payCapX||'','0','6em')}<p class="small muted">연봉 상한 배수: 덱 연봉 합 ÷ 그 저장의 리그 평균(다른 구단마다 연봉 상위 26명 합의 평균). 세계·시대가 달라도 공평합니다. 래더 1부 이상은 1.25배, 비우면 없음.</p>
     <div class="btns"><button class="btn" data-a="admCfg" data-v="save"${ADM.busy?' disabled':''}>저장</button><button class="btn primary" data-a="admCfg" data-v="open"${ADM.busy?' disabled':''}>접수 열기</button><button class="btn" data-a="admCfg" data-v="close"${ADM.busy?' disabled':''}>접수 닫기</button></div></section>`;
   const E=ADM.ents, drop=ADM.drop||[];
   const s2=`<section class="card"><h2 class="sec">2. 접수 현황</h2><div class="btns"><button class="btn small" data-a="admEnts"${ADM.busy||!c.id?' disabled':''}>신청 목록 받기</button></div>
