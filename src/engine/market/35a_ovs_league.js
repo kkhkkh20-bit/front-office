@@ -138,9 +138,9 @@ function ovsPregen(){ for(const a of G.abroad||[]){ if(a.back||a.end!=null)conti
     if(a.foreign){ if(!a.fr)continue; a.cur=ovsLine(a.fr,a.lg,{ci:a.ci,av:a.half&&G.year===y1?.6:1}); continue; }
     let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue; if(a.ci==null)a.ci=ovlIdx(a.lg,a.club); a.cur=ovsLine(p,a.lg,{ci:a.ci,av:ovsAv(a,p),gt:ovsGt(a)});
     if(G.year-y1+1>=a.yrs&&!(a.bn&&a.bn.y===G.year)){ a.bn={y:G.year,v:ovsBackRoll(a,p,a.cur.lvl===a.lg)?1:0}; /* 계약 마지막 해: 복귀 여부를 새해에 미리 정해 두고 시즌을 마치면 그대로 쓴다(해외 활성화 1-4). 계약 연수는 공개라 우리와 AI 원소속 구단이 같은 값을 본다 */
-      if(a.bn.v&&a.from===G.user&&!G.unemp)mail('스카우트팀',`${a.name}, 내년 복귀 가능 · 우선협상권 우리`,`${a.name}(${a.pos})의 ${a.lg} 계약이 올 시즌으로 끝납니다. 시즌을 마치면 국내 복귀를 추진할 것으로 보입니다. 원소속 구단인 우리가 먼저 협상합니다. 로스터와 샐러리캡 여유를 미리 챙겨 두세요.`,{kind:'선수',acts:[{l:`${a.name} 보기`,a:'person',v:'abr:'+a.id}]}); } } }
+      if(a.bn.v&&a.from===G.user&&!G.unemp)mail('스카우트팀',`${a.name}, 내년 복귀 가능 · ${a.how==='포스팅'?'보류권':'우선협상권'} 우리`,`${a.name}(${a.pos})의 ${a.lg} 계약이 올 시즌으로 끝납니다. 시즌을 마치면 국내 복귀를 추진할 것으로 보입니다. ${a.how==='포스팅'?'포스팅으로 나간 선수라 FA가 아니고, 국내로 오면 보류권을 가진 우리하고만 계약할 수 있습니다(카페 11-17).':'원소속 구단인 우리가 먼저 협상합니다.'} 로스터와 샐러리캡 여유를 미리 챙겨 두세요.`,{kind:'선수',acts:[{l:`${a.name} 보기`,a:'person',v:'abr:'+a.id}]}); } } }
 /* 해외파 줄·카드에 붙이는 복귀 예고(계약 마지막 해에 돌아올 것으로 정해진 선수) */
-const ovsBackTag=a=>a&&!a.back&&a.end==null&&a.from!=null&&!a.foreign&&a.bn&&a.bn.y===G.year&&a.bn.v?`내년 복귀 가능 · 우선협상권 ${a.from===G.user?'우리':tshort(a.from)}`:'';
+const ovsBackTag=a=>a&&!a.back&&a.end==null&&a.from!=null&&!a.foreign&&a.bn&&a.bn.y===G.year&&a.bn.v?`내년 복귀 가능 · ${a.how==='포스팅'?'보류권':'우선협상권'} ${a.from===G.user?'우리':tshort(a.from)}`:'';
 /* 미리 만든 기록을 쓸 수 있으면 쓰고(능력이 같을 때), 아니면 새로 만든다 */
 function ovsTake(a,p,o){ const c=a.cur; delete a.cur; const L=c&&c.y===G.year&&Math.abs((c.o??-99)-ovr(p))<.6?c:ovsLine(p,a.lg,o); delete L.o; L.y=G.year; if(L.c==null&&a.ci!=null&&a.ci>=0&&OVL_C[ovlKey(L.lvl)])L.c=a.ci; /* 예전 저장에서 미리 만든 기록(구단 없음) */ return L; }
 /* 그 구단·그 시즌의 KBO 출신 선수 */
