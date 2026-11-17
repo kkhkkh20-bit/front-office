@@ -5223,6 +5223,32 @@ T('[카페 11-17 드래프트 계약 선수] 어느 구단과든 계약한 선�
   const n0=G.draftClass.length; migrateDraftPool(); ok(G.draftClass.length===n0,'다시 불러오면 명단이 또 바뀜');
   c.team=op; startDraft(); ok(!G.draft.cls.includes(c.id),'지명 시작 때 계약한 선수가 명단에 남음'); ok(!c.prospect,'계약 선수 신인 표시가 남음');
   const d=G.draft, e=G.players[d.cls.find(id=>G.players[id]&&G.players[id].prospect)]; e.team=op; ok(!aiDraftPick(d.picks[d.cur].tid)||aiDraftPick(d.picks[d.cur].tid)!==e.id,'AI가 계약한 선수를 고름'); ok(doPick(e.id)===false&&e.team===op,'계약한 선수가 지명됨'); e.team=null; });
+T('[카페 11-17 트라이아웃 선수 화면] 트라이아웃 등으로 계약했는데 신인 후보 표시가 남은 선수(명단 밖 포함, 21세 군필 해외 복귀자)는 불러오기·매일 진행에서 난수 없이 프로 선수로 고쳐진다(사람·AI 공통)',()=>{ fresh(); const op=G.teams.find(t=>t.id!==G.user).id;
+  const mk=tid=>{ const p=newPlayer({age:21,base:44,pot:52}); setProspectArea(p); p.prospect=true; p.ovsRet=true; p.mil={done:true,wait:G.year}; p.team=tid; p.sal=MIN_SAL; p.yrs=1; p.tryS={y:G.year-1,k:'vet',ys:false,tid,d:G.day}; return p; };
+  const a=mk(G.user), b=mk(op), c=newPlayer({age:24,base:40,pot:45}); c.team=op; c.fdPool=true; c.ovsWait=G.year+1; /* 옛 저장: 명단(G.draftClass)에는 없는데 계약 선수에 아마추어 표시가 남음 */
+  makeDraftClass(); G.draftClass=G.draftClass.filter(id=>id!==a.id&&id!==b.id); const pr=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null); ok(pr.length>5,'준비 실패: 후보 부족'); ok(!G.draftClass.includes(a.id)&&a.prospect,'준비 실패: 명단 밖 계약 후보');
+  const r0=__rngState(); migrateDraftPool(); ok(__rngState()===r0,'불러오기 수리가 난수를 씀');
+  for(const p of [a,b]){ ok(!p.prospect&&p.team!=null&&p.sal===MIN_SAL&&p.mil.done,'계약 선수의 신인 후보 표시가 남거나 계약·병역이 바뀜: '+p.name); ok(!G.draftClass.includes(p.id),'계약 선수가 드래프트 명단에 들어감'); }
+  ok(!c.fdPool&&!c.ovsWait&&c.team===op,'계약 선수의 창단 드래프트 후보·해외 유예 표시가 남음'); ok(pr.every(p=>p.prospect&&G.draftClass.includes(p.id)),'계약 안 한 후보까지 표시가 꺼짐');
+  const S=JSON.stringify(G.draftClass); migrateDraftPool(); ok(JSON.stringify(G.draftClass)===S&&!a.prospect,'두 번 불러오면 결과가 바뀜');
+  G.draftClass=[]; a.prospect=true; b.prospect=true; migrateDraftPool(); ok(!G.draftClass.includes(a.id)&&!G.draftClass.includes(b.id)&&!a.prospect&&!b.prospect,'명단이 빈 저장에서 계약 선수가 후보로 되돌아옴');
+  a.prospect=true; b.prospect=true; const r1=__rngState(); ok(proStaleFix()===2&&__rngState()===r1,'매일 정리가 두 선수를 고치지 않거나 난수를 씀'); ok(proStaleFix()===0,'정리를 다시 하면 또 바뀜');
+  a.prospect=true; b.prospect=true; advance('day'); ok(!a.prospect&&!b.prospect,'하루 진행 뒤에도 신인 후보 표시가 남음'); });
+T('[카페 11-17 트라이아웃 선수 화면] 트라이아웃 계약은 사람·AI 모두 계약 즉시 신인 후보·유예 표시 없이 프로 선수가 되고, 드래프트 참가 선수는 계약되지 않는다',()=>{ fresh(); const y=G.year; G.day=tryAnnD(y); tryDaily(G.day); G.day=tryDayD(y); tryDaily(G.day); const T0=tryCur(); ok(T0&&T0.ran,'준비 실패: 테스트 안 함');
+  const C=T0.ids.map(id=>G.players[id]).filter(p=>p&&p.team==null&&tryKindOf(p)!=='ovs'&&tryKindOf(p)!=='ud'&&p.age<=26); ok(C.length>=3,'준비 실패: 후보 부족'); const op=G.teams.find(t=>t.id!==G.user).id;
+  const a=C[0], b=C[1]; for(const [p,tid] of [[a,G.user],[b,op]]){ const w=trySign(p.id,tid,false); ok(w==='','계약 실패: '+w); ok(p.team===tid&&!p.prospect&&!p.ovsWait&&!p.fdPool,'계약 뒤 아마추어·유예 표시가 남음'); }
+  const ov=C[2]; ov.prospect=true; ok(trySign(ov.id,G.user,false).includes('드래프트')&&ov.team==null,'드래프트 참가 선수가 사람 단장과 계약됨'); ok(tryWhy(ov,op,false).includes('드래프트'),'AI 구단은 드래프트 참가 선수와 계약 가능'); });
+T('[카페 11-17 상무 지원 안내] 접수 첫날을 놓쳐도 접수 기간 안에 한 번 오고, 같은 기수는 다시 오지 않으며, 대상이 없어도 알리고, 옛 저장은 중복되지 않는다(난수 없음)',()=>{ fresh(); const subj='상무 지원 기간입니다 (6월 입대)'; const N=()=>G.mail.filter(m=>m.subj.startsWith('상무 지원 기간입니다')).length;
+  ok(domPayOf(G.user).some(p=>milFree(p)&&p.age<=27),'준비 실패: 미필 선수 없음'); const S0=JSON.stringify(G);
+  G.day=KD(3,1); milDaily(); ok(N()===1&&G.mail[0].subj===subj&&G.mail[0].imp,'3월 1일 안내가 없음'); G.day++; milDaily(); G.day=KD(4,10); milDaily(); ok(N()===1,'같은 기수 안내가 또 옴');
+  G.day=KD(4,20); milDaily(); ok(N()===1,'접수 기간 밖에 안내가 옴'); G.day=KD(9,1); milDaily(); ok(N()===2&&G.mail[0].subj.includes('12월 입대'),'9월 1일 안내가 없음');
+  G=JSON.parse(S0); G.day=KD(3,6); const r0=__rngState(); const m=sangmuNotice(); ok(__rngState()===r0,'안내가 난수를 씀'); ok(m&&N()===1&&m.subj===subj&&m.body.includes('3월 1일부터')&&m.body.includes('4월 14일'),'3월 1일을 건너뛴 뒤 접수 기간 안에 안내가 오지 않음'); ok(!sangmuNotice(),'다시 부르면 또 옴');
+  G=JSON.parse(S0); G.day=KD(3,1); G.unemp={}; ok(!sangmuNotice()&&N()===0,'야인일 때 안내가 옴'); G.unemp=null; G.day=KD(3,12); milDaily(); ok(N()===1,'접수 기간 중 취임한 뒤 안내가 오지 않음');
+  G=JSON.parse(S0); G.day=KD(3,1); milDaily(); delete G.smMail; G.day=KD(3,9); milDaily(); ok(N()===1,'옛 저장(표시 없음)에서 같은 기수 안내가 또 옴');
+  G=JSON.parse(S0); for(const p of Object.values(G.players))if(p.team===G.user&&!p.foreign)p.mil={done:true}; G.day=KD(3,1); milDaily(); ok(N()===1&&G.mail[0].subj.includes('지원할 선수 없음')&&!G.mail[0].imp,'대상 선수가 없을 때 아무 안내가 없음');
+  G=JSON.parse(S0); const ma=milAdvice; milAdvice=()=>{ throw new Error('x'); }; try{ G.day=KD(3,1); milDaily(); } finally{ milAdvice=ma; } ok(N()===1&&G.mail[0].body.includes('우리 구단 미필 선수'),'추천 문구 오류로 안내가 빠짐'); });
+T('[카페 11-17 상무 지원 안내] AI 구단 지원은 예전처럼 접수 첫날 한 번이고, 사람 구단도 같은 접수 기간에 지원한다',()=>{ fresh(); for(const p of Object.values(G.players))if(p.mil&&p.mil.app)p.mil=null; G.day=KD(3,1); milDaily(); const n1=Object.values(G.players).filter(p=>p.mil&&p.mil.app==='jun'&&p.team!==G.user).length; ok(n1>0,'AI 구단 지원자가 없음');
+  G.day=KD(3,2); milDaily(); ok(Object.values(G.players).filter(p=>p.mil&&p.mil.app==='jun'&&p.team!==G.user).length===n1,'접수 둘째 날 AI 지원이 또 일어남'); const u=domPayOf(G.user).find(p=>milFree(p)&&p.age<=26&&!(p.mil&&p.mil.app)); ok(u&&sangmuCanApply(u)&&sangmuApply(u.id)==='','사람 구단은 같은 기간에 지원할 수 없음'); });
 T('[트라이아웃 육성] 독립리그 후보의 포수·유격수는 드물고 약하며(희소성 유지) 늦게 피는 선수가 가끔 섞인다',()=>{ fresh(); const L=[]; for(let i=0;i<1500;i++)L.push(tryIndieMake(G.year)); const H=L.filter(p=>!p.isP), C=H.filter(p=>p.pos==='C'), S=H.filter(p=>p.pos==='SS'), O=H.filter(p=>p.pos!=='C'&&p.pos!=='SS');
   ok(C.length/H.length<=.08&&C.length>0,'포수 비율 '+(C.length/H.length).toFixed(3)); ok(S.length/H.length<=.07&&S.length>0,'유격수 비율 '+(S.length/H.length).toFixed(3)); const av=a=>a.reduce((s,p)=>s+ovr(p),0)/a.length; ok(av(C)<av(O)&&av(S)<av(O),'포수·유격수가 약하지 않음');
   ok(Math.max(...C.map(ovr),...S.map(ovr))<=46,'1군 주전급 포수·유격수가 나옴'); const late=L.filter(p=>p.dt==='late'&&p.pot-ovr(p)>=8).length/L.length; ok(late>=.03&&late<=.12,'늦게 피는 유형 비율 '+late.toFixed(3)); ok(L.every(p=>ovr(p)<=48),'독립리그 선수가 너무 강함'); for(const p of L)delete G.players[p.id]; });
