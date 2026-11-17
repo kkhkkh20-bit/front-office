@@ -1,0 +1,55 @@
+[
+  {
+    "preset": "pillow_default_m6",
+    "quality": 85,
+    "changed_existing_tiles": 27,
+    "tested_existing_tiles": 27,
+    "mean_absolute_rgb_change": 1.0527886284722223,
+    "max_tile_mean_absolute_change": 1.29864501953125,
+    "before_bytes": 85338,
+    "after_bytes": 85970,
+    "flags": null
+  },
+  {
+    "preset": "fixed_m6",
+    "quality": 85,
+    "changed_existing_tiles": 19,
+    "tested_existing_tiles": 27,
+    "mean_absolute_rgb_change": 0.3879356855227623,
+    "max_tile_mean_absolute_change": 0.99603271484375,
+    "before_bytes": 102094,
+    "after_bytes": 101862,
+    "flags": [
+      "-m",
+      "6",
+      "-segments",
+      "1",
+      "-sns",
+      "0",
+      "-f",
+      "0",
+      "-sharp_yuv"
+    ]
+  },
+  {
+    "preset": "fixed_m0",
+    "quality": 85,
+    "changed_existing_tiles": 4,
+    "tested_existing_tiles": 27,
+    "mean_absolute_rgb_change": 0.018218617380401234,
+    "max_tile_mean_absolute_change": 0.2825724283854167,
+    "before_bytes": 168024,
+    "after_bytes": 167824,
+    "flags": [
+      "-m",
+      "0",
+      "-segments",
+      "1",
+      "-sns",
+      "0",
+      "-f",
+      "0",
+      "-sharp_yuv"
+    ]
+  }
+]

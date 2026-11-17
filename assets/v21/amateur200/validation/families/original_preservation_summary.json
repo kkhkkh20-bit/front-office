@@ -1,0 +1,10 @@
+{
+  "checked_at_kst": "2026-11-17T14:34:09.309557+09:00",
+  "legacy_protected_original_paths_checked": 708,
+  "missing_originals": 0,
+  "changed_originals": 0,
+  "total_preserved_generator_files": 1051,
+  "total_preserved_generator_bytes": 2168287211,
+  "originals_deleted_by_cache_cleanup": 0,
+  "note": "Generator originals remain in the original workspace directory; public summary omits unrelated source filenames."
+}

@@ -1,0 +1,9 @@
+{
+  "source": "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.6.0-linux-x86-64.tar.gz",
+  "archive_sha256": "1c5ffab71efecefa0e3c23516c3a3a1dccb45cc310ae1095c6f14ae268e38067",
+  "binary": "/workspace/v21_codec_tools/libwebp-1.6.0-linux-x86-64/bin/cwebp",
+  "binary_sha256": "5ac7ece6bdda1587f3c169ce74ab2734994f9d14e07fc5358208443c1b29edec",
+  "version": "1.6.0",
+  "libsharpyuv_version": "0.4.2",
+  "linkage": "static"
+}

@@ -2590,5 +2590,5 @@
       }
     }
   ],
-  "note": "Additional masters are candidates, not 13-variant deliveries. Five visible age/kit holds are recorded. No runtime assignment."
+  "note": "Single-photo candidate sources can be alternate photographs of the same seed identity and can overlap the family review pool. Never add these counts as unique people; deduplicate by seed_id. Human age approval remains pending."
 }

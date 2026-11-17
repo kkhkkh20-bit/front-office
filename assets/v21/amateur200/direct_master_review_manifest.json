@@ -1,0 +1,2814 @@
+{
+  "status": "SINGLE_PHOTO_REVIEW_ONLY",
+  "production_complete": false,
+  "candidate_count": 55,
+  "human_age_review": "pending",
+  "candidates": [
+    {
+      "candidate_id": "direct_pool_0214_3",
+      "seed_id": "pool_0214_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0214.png",
+        "original_filename": "v21_firefly_pool_0214.png",
+        "sha256": "f6a116b2f37440f9f4c5fd4f6fa388dd00229b181251a14850cd2af323ab5627",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0214_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0214_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0214_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0068_2",
+      "seed_id": "pool_0068_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "hold_native_home_visual_or_age",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "grid-edge fragment; full-family master uses a smaller intact whole-photo crop"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0068.png",
+        "original_filename": "v21_firefly_pool_0068.png",
+        "sha256": "961660c5bd05853e854da8dea373aac58db1f4840039f69a988231f305b9dabe",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0068_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0068_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0068_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0273_1",
+      "seed_id": "pool_0273_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0273.png",
+        "original_filename": "v21_firefly_pool_0273.png",
+        "sha256": "d4b391dd15c693e035876c4f576ec8ee4b79128ed054c6e323f4b2bc71b2684f",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0273_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0273_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0273_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0276_2",
+      "seed_id": "pool_0276_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "hold_native_home_visual_or_age",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "white cap piping; full-family master uses cap-only imagegen revision"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0276.png",
+        "original_filename": "v21_firefly_pool_0276.png",
+        "sha256": "4eede1aeb1995f6c63ffc977a63df5b268dbf3103e5e97b5961f16a95328a3d9",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0276_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0276_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0276_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0219_0",
+      "seed_id": "pool_0219_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0219.png",
+        "original_filename": "v21_firefly_pool_0219.png",
+        "sha256": "f5d0b125660416c3053d836cf517cd608caf03548b258188246287311ff8a565",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0219_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0219_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0219_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0240_0",
+      "seed_id": "pool_0240_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0240.png",
+        "original_filename": "v21_firefly_pool_0240.png",
+        "sha256": "7d95428dbf706e2165540650a7465b39eb3c8658812ce324665870b44ece3888",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0240_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0240_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0240_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0072_3",
+      "seed_id": "pool_0072_3",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0072.png",
+        "original_filename": "v21_firefly_pool_0072.png",
+        "sha256": "a4260fea24919e43397e2a88d5e7dafdd005886a99b0cfe557014b0d01c634a1",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0072_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0072_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0072_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0052_0",
+      "seed_id": "pool_0052_0",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0052.png",
+        "original_filename": "v21_firefly_pool_0052.png",
+        "sha256": "b0a5a2e45532435f209756cd508c4064ff26f9272f3f301d219fcee20d0585fb",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0052_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0052_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0052_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0013_1",
+      "seed_id": "pool_0013_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0013.png",
+        "original_filename": "v21_firefly_pool_0013.png",
+        "sha256": "3a9e8af3bfd2a52b935aaaa0571706c524f82ce9dac66c9f48461f3888057709",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0013_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0013_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0013_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0229_3",
+      "seed_id": "pool_0229_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0229.png",
+        "original_filename": "v21_firefly_pool_0229.png",
+        "sha256": "04de9935e34d219a7eed771e75e87dbac5d5f091ed4af06186661f3e30d6274d",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0229_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0229_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0229_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0267_3",
+      "seed_id": "pool_0267_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0267.png",
+        "original_filename": "v21_firefly_pool_0267.png",
+        "sha256": "4974f8711e4ab4b71ab209fbad563cb2c333508e24247a7e28ea650d1099d2dd",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0267_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0267_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0267_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0016_3",
+      "seed_id": "pool_0016_3",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0016.png",
+        "original_filename": "v21_firefly_pool_0016.png",
+        "sha256": "9f13466a251200006a35e79a4af669aa964aee10f9790eea3f67625a43ae2529",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0016_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0016_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0016_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0250_3",
+      "seed_id": "pool_0250_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0250.png",
+        "original_filename": "v21_firefly_pool_0250.png",
+        "sha256": "23cf2c295f010f75b31bd042c8aba87eca10d8575ba531a43805b74215eb587f",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0250_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0250_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0250_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0073_0",
+      "seed_id": "pool_0073_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0073.png",
+        "original_filename": "v21_firefly_pool_0073.png",
+        "sha256": "62df1fd3db6d46539b4527724247ddd82f189b5db56bd086d5d1262662d0ceb4",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0073_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0073_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0073_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0228_1",
+      "seed_id": "pool_0228_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0228.png",
+        "original_filename": "v21_firefly_pool_0228.png",
+        "sha256": "6d8365c61bc8c1a49f2edbd872ce1140abfedd94f82a9a14c59045a6a4c5af93",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0228_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0228_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0228_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0257_2",
+      "seed_id": "pool_0257_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0257.png",
+        "original_filename": "v21_firefly_pool_0257.png",
+        "sha256": "260b14ef2545c826b0f77eb0fd997cc66964040e886487dd15b473eae877125d",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0257_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0257_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0257_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0282_3",
+      "seed_id": "pool_0282_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0282.png",
+        "original_filename": "v21_firefly_pool_0282.png",
+        "sha256": "a58c35347b84485e5dc1af5effeb6134b8149e453a9b644c488c0fbbfebe0e12",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0282_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0282_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0282_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0079_0",
+      "seed_id": "pool_0079_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": true
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0079.png",
+        "original_filename": "v21_firefly_pool_0079.png",
+        "sha256": "52cfe1671bc9551ed20602a5a954bcdb4ef5f03d85db90e6ef267df370f28f94",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0079_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0079_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0079_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0069_2",
+      "seed_id": "pool_0069_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": true
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0069.png",
+        "original_filename": "v21_firefly_pool_0069.png",
+        "sha256": "769289b9642313d84885c7db3bb5514c7d3e587de36254561f402a035611e727",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0069_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0069_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0069_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0084_1",
+      "seed_id": "pool_0084_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0084.png",
+        "original_filename": "v21_firefly_pool_0084.png",
+        "sha256": "bc2207eba86fffd1323ee0670cda91805bcfeb76160072b7d661d21c9e802edc",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0084_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0084_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0084_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0014_1",
+      "seed_id": "pool_0014_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0014.png",
+        "original_filename": "v21_firefly_pool_0014.png",
+        "sha256": "fe19a38e8c72c24dfe310bcce81578ca44b90395cd54eeac75691d6837ad5292",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0014_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0014_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0014_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0085_0",
+      "seed_id": "pool_0085_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0085.png",
+        "original_filename": "v21_firefly_pool_0085.png",
+        "sha256": "8cc2c39f227773383b2d479a70cad84636b570d679bef467508e2db63847000a",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0085_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0085_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0085_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0278_3",
+      "seed_id": "pool_0278_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": true
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0278.png",
+        "original_filename": "v21_firefly_pool_0278.png",
+        "sha256": "310e1eac78d0d096550cb85921ed262f73db3d9c55bb9ee9802b840d007a782f",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0278_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0278_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0278_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0238_2",
+      "seed_id": "pool_0238_2",
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0238.png",
+        "original_filename": "v21_firefly_pool_0238.png",
+        "sha256": "fc7fd11954d0ccfbb908954a7fea8b666e1cefe2dcfba82780be2b57c988ab54",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0238_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0238_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0238_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0019_2",
+      "seed_id": "pool_0019_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0019.png",
+        "original_filename": "v21_firefly_pool_0019.png",
+        "sha256": "f8259c981c0f8e6475d6f963de712c821f3e4a3ab616936e873a26d05f0f8f09",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0019_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0019_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0019_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0014_3",
+      "seed_id": "pool_0014_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0014.png",
+        "original_filename": "v21_firefly_pool_0014.png",
+        "sha256": "fe19a38e8c72c24dfe310bcce81578ca44b90395cd54eeac75691d6837ad5292",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0014_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0014_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0014_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0020_0",
+      "seed_id": "pool_0020_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0020.png",
+        "original_filename": "v21_firefly_pool_0020.png",
+        "sha256": "97f36580e42d5bb7adab4e7be462d2844266e0e2f768d2a44f05cb5acb2b8bb2",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0020_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0020_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0020_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0286_0",
+      "seed_id": "pool_0286_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0286.png",
+        "original_filename": "v21_firefly_pool_0286.png",
+        "sha256": "17a337d0a76b38b356cf90e30337351bc7a38d82dc0500f87fa50847d8df0eac",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0286_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0286_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0286_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0249_1",
+      "seed_id": "pool_0249_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0249.png",
+        "original_filename": "v21_firefly_pool_0249.png",
+        "sha256": "94d589c1a95ecb8113e3cabe21d1b11b446ebb94edc6f94b22828ef86ba70d83",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0249_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0249_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0249_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0001_1",
+      "seed_id": "pool_0001_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0001.png",
+        "original_filename": "v21_firefly_pool_0001.png",
+        "sha256": "0b2cfa409134c81741d3cb34220a4c14012a0e351350752d222a8973141258d2",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0001_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0001_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0001_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0245_3",
+      "seed_id": "pool_0245_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0245.png",
+        "original_filename": "v21_firefly_pool_0245.png",
+        "sha256": "134926d22da46b4fede91d06620b032793dc805b526dcbed4432acfde99f1cda",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0245_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0245_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0245_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0272_0",
+      "seed_id": "pool_0272_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0272.png",
+        "original_filename": "v21_firefly_pool_0272.png",
+        "sha256": "cc00ffe9d654efab033c699e271e898592a0a905272edf305332dee9fcf6f48f",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0272_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0272_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0272_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0094_3",
+      "seed_id": "pool_0094_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0094.png",
+        "original_filename": "v21_firefly_pool_0094.png",
+        "sha256": "d4067d4de5a5c2b47534e26e5edaf2050999229164ade7e711a410f423525576",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0094_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0094_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0094_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0058_1",
+      "seed_id": "pool_0058_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0058.png",
+        "original_filename": "v21_firefly_pool_0058.png",
+        "sha256": "4354984a9ff6a5d9502460d671efcc98502dff35f7855ce7440846ddd7396a3d",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0058_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0058_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0058_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0236_2",
+      "seed_id": "pool_0236_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0236.png",
+        "original_filename": "v21_firefly_pool_0236.png",
+        "sha256": "e76ec3735d1caa87eb30192496241a885f861c2573e64c9d666d60cab26bf78d",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0236_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0236_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0236_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0276_0",
+      "seed_id": "pool_0276_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "hold_native_home_visual_or_age",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "white cap piping; requires cap-only correction"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0276.png",
+        "original_filename": "v21_firefly_pool_0276.png",
+        "sha256": "4eede1aeb1995f6c63ffc977a63df5b268dbf3103e5e97b5961f16a95328a3d9",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0276_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0276_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0276_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0057_2",
+      "seed_id": "pool_0057_2",
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": true
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0057.png",
+        "original_filename": "v21_firefly_pool_0057.png",
+        "sha256": "6b3c74a9b8004b54c9274dbf0603aa8ec52ddf00eb4df13407c44473e5cb6c27",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0057_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0057_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0057_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0210_2",
+      "seed_id": "pool_0210_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": true
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0210.png",
+        "original_filename": "v21_firefly_pool_0210.png",
+        "sha256": "2ae92962c29f6ede5869403b387906f192a9ca86a91d9bb58e351670fd08357a",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0210_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0210_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0210_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0072_0",
+      "seed_id": "pool_0072_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0072.png",
+        "original_filename": "v21_firefly_pool_0072.png",
+        "sha256": "a4260fea24919e43397e2a88d5e7dafdd005886a99b0cfe557014b0d01c634a1",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0072_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0072_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0072_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0063_1",
+      "seed_id": "pool_0063_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0063.png",
+        "original_filename": "v21_firefly_pool_0063.png",
+        "sha256": "bd239e3ba20c5d703d367a97ef619aa1cd93e5f047d56b085a85af3ad6bc27d6",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0063_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0063_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0063_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0263_1",
+      "seed_id": "pool_0263_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0263.png",
+        "original_filename": "v21_firefly_pool_0263.png",
+        "sha256": "0fb3a2a53f927b119bb7d8400e523f08ccf854359956d3c802ee181668c8a490",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0263_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0263_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0263_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0259_1",
+      "seed_id": "pool_0259_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0259.png",
+        "original_filename": "v21_firefly_pool_0259.png",
+        "sha256": "d3b9d8ebd41a5f619bce6339471d03c803e3d76a8047feec4b14251f19e37879",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0259_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0259_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0259_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0091_3",
+      "seed_id": "pool_0091_3",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0091.png",
+        "original_filename": "v21_firefly_pool_0091.png",
+        "sha256": "cd0e9b54760a45b1ac1faaec8c68fb10506f16a5153353a8ee4694130ff47776",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0091_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0091_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0091_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0248_1",
+      "seed_id": "pool_0248_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0248.png",
+        "original_filename": "v21_firefly_pool_0248.png",
+        "sha256": "92447a1bb2d1f685bd12983e5c20772d15e99f1522b8a0b423ed4d480125ca5c",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0248_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0248_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0248_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0268_0",
+      "seed_id": "pool_0268_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0268.png",
+        "original_filename": "v21_firefly_pool_0268.png",
+        "sha256": "1d2c6bb8ce77e3ed4515c5bcf83784b7397395ae31be97d0e41b98dbd390df10",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0268_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0268_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0268_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0028_1",
+      "seed_id": "pool_0028_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0028.png",
+        "original_filename": "v21_firefly_pool_0028.png",
+        "sha256": "266bb60b3a6da0671ed243fb756f18901940717a3b3c81b6a483ffc952479c5f",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0028_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0028_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0028_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0023_0",
+      "seed_id": "pool_0023_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0023.png",
+        "original_filename": "v21_firefly_pool_0023.png",
+        "sha256": "84071ad225eb392caf2c21a648af449704612d1f81435b5ecb6247f6f5e93005",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0023_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0023_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0023_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0266_0",
+      "seed_id": "pool_0266_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0266.png",
+        "original_filename": "v21_firefly_pool_0266.png",
+        "sha256": "de5112c055e812058a4ef98cdd1e8393a078210e44773f1489fd4c007b7212f7",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0266_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0266_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0266_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0091_0",
+      "seed_id": "pool_0091_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": true
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0091.png",
+        "original_filename": "v21_firefly_pool_0091.png",
+        "sha256": "cd0e9b54760a45b1ac1faaec8c68fb10506f16a5153353a8ee4694130ff47776",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0091_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0091_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0091_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0053_1",
+      "seed_id": "pool_0053_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0053.png",
+        "original_filename": "v21_firefly_pool_0053.png",
+        "sha256": "2c71766f563ac8581f98c7443868ded4ad61b0a6d894a9c149428ffb7c213d5b",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0053_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0053_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0053_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0260_2",
+      "seed_id": "pool_0260_2",
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0260.png",
+        "original_filename": "v21_firefly_pool_0260.png",
+        "sha256": "1fce4fa2ed03576b4156f807a91c11f71ab50bd3886286d68da97a7a0ac58410",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          514,
+          510,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0260_2.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0260_2.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0260_2.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0246_0",
+      "seed_id": "pool_0246_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": true
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0246.png",
+        "original_filename": "v21_firefly_pool_0246.png",
+        "sha256": "087e2a3921b652089ff55e167c2f270bbdae1a1e01f9e721f24d8946c37e3c8a",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          2,
+          2,
+          510,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0246_0.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0246_0.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0246_0.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0284_1",
+      "seed_id": "pool_0284_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0284.png",
+        "original_filename": "v21_firefly_pool_0284.png",
+        "sha256": "acfdf8b2dc8e62cac97d027303a460efd7edac427e17ded065a0273df4e989cf",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0284_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0284_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0284_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0290_3",
+      "seed_id": "pool_0290_3",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0290.png",
+        "original_filename": "v21_firefly_pool_0290.png",
+        "sha256": "81b823d3f96b23498b73e96c5625df7f1bfd2c485faf17547572b3a1069af26e",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          514,
+          1022,
+          1022
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0290_3.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0290_3.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0290_3.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    },
+    {
+      "candidate_id": "direct_pool_0093_1",
+      "seed_id": "pool_0093_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "assistant_visual_review": {
+        "status": "assistant_native_home_screen_pass",
+        "human_age_review": "pending",
+        "checks": [
+          "native whole photo >=384",
+          "plain navy cap fully visible and facing forward",
+          "white jersey with navy trim",
+          "neutral gray background",
+          "no grid fragments or labels",
+          "near-adult appearance and readable eyes"
+        ],
+        "note": "source photograph used directly; no semantic edits"
+      },
+      "human_age_review": "pending",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0093.png",
+        "original_filename": "v21_firefly_pool_0093.png",
+        "sha256": "a29bee4d2411f1799eefddb0c2766d42022a30e7999dba14c9e4f8cd110aecbf",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "crop_xyxy": [
+          514,
+          2,
+          1022,
+          510
+        ],
+        "minimum_native_crop_edge": 508
+      },
+      "photos": {
+        "128": {
+          "path": "review/direct_masters/128/direct_pool_0093_1.webp"
+        },
+        "256": {
+          "path": "review/direct_masters/256/direct_pool_0093_1.webp"
+        },
+        "384": {
+          "path": "review/direct_masters/384/direct_pool_0093_1.webp"
+        }
+      },
+      "measurement_reuse": "byte-identical to the individually measured source WebPs; frozen raw features reused without changes"
+    }
+  ],
+  "note": "Single-photo candidate sources can be alternate photographs of the same seed identity and can overlap the family review pool. Never add these counts as unique people; deduplicate by seed_id. Human age approval remains pending."
+}

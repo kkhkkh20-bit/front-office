@@ -36,5 +36,35 @@
   "comparison": "raw dot product of L2 normalized ArcFace vectors; no whitening, scaling or threshold adjustments",
   "delivered_pixel_measurements": "candidate_measurements.json",
   "measurement_scope": "Individual hs_home candidate exports, not final 78 runtime atlases.",
-  "reference_resolution_384": "Existing canonical gallery has128/256 only; compare candidate384 against canonical256, stated explicitly in validation.json."
+  "reference_resolution_384": "Existing canonical gallery has128/256 only; compare candidate384 against canonical256, stated explicitly in validation.json.",
+  "additional_family_measurements": {
+    "individual_reviews": "families/production_photo_measurements.json",
+    "decoded_partial_atlas_pixels": "families/atlas_photo_measurements.json",
+    "scope": "all existing variant pairs per person, all different-person variant-photo combinations, and486 canonical reference identities; final200 sheets and human age approval still pending"
+  },
+  "atlas_encoding": {
+    "128": {
+      "format": "lossy RGB WebP",
+      "quality": 85,
+      "libwebp_version": "1.6.0",
+      "method": 0,
+      "segments": 1,
+      "sns_strength": 0,
+      "filter_strength": 0,
+      "sharp_yuv": true
+    },
+    "256": {
+      "format": "RGB WebP",
+      "quality": 88,
+      "libwebp_version": "1.6.0",
+      "method": 6
+    },
+    "384": {
+      "format": "RGB WebP",
+      "quality": 89,
+      "libwebp_version": "1.6.0",
+      "method": 6
+    }
+  },
+  "feature_cache_policy": "Reuse measured vectors only when the exact decoded RGB pixel SHA256 is identical. A selective-versus-fresh inference fixture matched exactly at all3 sizes. No score or vector transforms."
 }

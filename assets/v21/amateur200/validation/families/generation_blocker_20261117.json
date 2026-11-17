@@ -1,0 +1,7 @@
+{
+  "service": "Adobe Firefly new fictional face sources",
+  "status": "rate_limited",
+  "tool_message": "Rate limit exceeded. Your quota resets at midnight GMT.",
+  "reset_kst": "2026-11-18 09:00 Asia/Seoul",
+  "scope": "new source generation only; existing sources can still be refined and measured"
+}

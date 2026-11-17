@@ -1,0 +1,16 @@
+{
+  "status": "ASSISTANT_VISUAL_NOTES_HUMAN_REVIEW_PENDING",
+  "scope": "26 numerically passing partial-atlas identities; numeric pass is not visual approval",
+  "direction": "Late-high-school near-adult appearance; natural proportions, subtle smile, low snug cap. User feedback is direction, not bulk approval.",
+  "holds": [
+    {
+      "id": "c004_p07",
+      "reason": "HS-home preview has a thin neighboring-photo strip at top edge. Repair using a whole-photo crop and rerun affected exports and packed-atlas checks before release."
+    },
+    {
+      "id": "c005_p05",
+      "reason": "Potentially younger appearance than late-high-school direction. Hold for age review; no numeric age inference or automatic approval."
+    }
+  ],
+  "all_identities_human_age_review": "pending"
+}
