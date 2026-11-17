@@ -440,8 +440,8 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .prr-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
 .prr{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.02);color:inherit;font:inherit;text-align:left;cursor:pointer}
 .prr:hover{border-color:var(--acc,#e2434b)}.prr .av{width:30px;height:30px;flex:none}
-.prr-t{display:flex;flex-direction:column;min-width:0;flex:1}.prr-t i{font-style:normal;font-size:var(--ui-caption);color:var(--mut,#8b97a3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prr-r{font-weight:700}.prr-r.good{color:#3fd07f}.prr-r.bad{color:#ff6b6b}
+.prr-t{display:flex;flex-direction:column;min-width:0;flex:1}.prr-t i{font-style:normal;font-size:var(--ui-caption);color:var(--mut,#8b97a3);white-space:normal;overflow-wrap:anywhere;line-height:1.35} /* 카페 11-17 리아네트: 성향·분야·영향력(별)이 '…'로 잘리지 않게 줄바꿈 */
+.prr-r{font-weight:700;flex:none;white-space:nowrap}.prr-r.good{color:#3fd07f}.prr-r.bad{color:#ff6b6b}
 .ppl{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
 
 /* 단장 프로필 */
