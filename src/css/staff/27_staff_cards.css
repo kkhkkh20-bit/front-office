@@ -96,7 +96,7 @@
   .dh .sf-t td.good,.dh-d.good{color:var(--good)}.dh .sf-t td.bad,.dh-d.bad{color:var(--bad)}
   .dh{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(290px,.62fr)}
   .dh-l,.dh-m,.dh-r{display:grid;gap:10px;min-height:0}
-  .dh-l{grid-template-rows:auto minmax(0,1fr)}.dh-m{grid-template-rows:repeat(3,minmax(0,1fr))}.dh-r{grid-template-rows:minmax(0,1.25fr) auto minmax(0,1fr)}
+  .dh-l{grid-template-rows:minmax(0,auto) minmax(260px,1fr)} /* 분석원이 많아도(9명) 아래 주요 발견·승패 마진 추이가 보이게: 분석원 목록은 칸 안에서 스크롤(카페 11-17) */.dh-m{grid-template-rows:repeat(3,minmax(0,1fr))}.dh-r{grid-template-rows:minmax(0,1.25fr) auto minmax(0,1fr)}
   .dh-tbl .sf-tw{flex:none}.dh-t td{padding:4px 6px}.dh-t .lnk{display:inline-flex;align-items:center;gap:6px}
   .dh-d{font-style:normal;font-size:var(--ui-caption);color:var(--muted);margin-left:2px}
   .dh-form{display:inline-flex;gap:2px}.dh-form i{width:7px;height:13px;border-radius:2px;background:var(--muted)}.dh-form i.w{background:var(--good)}.dh-form i.l{background:var(--bad)}

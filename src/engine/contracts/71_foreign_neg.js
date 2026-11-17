@@ -33,9 +33,9 @@ function foVal(g,i){ return g+i*FO_INC_W; }
 /* 목록의 협상 버튼: 요구액이 아니라 가장 낮은 제안(최소 보장)으로도 막히는지 본다. 낮춰 부르면 풀리는 총액 한도로는 협상 자체를 막지 않는다(검수 11-09b) */
 function foListErr(q){ const a0=q.ask; q.ask=MIN_SAL; const e=foreignCheck(G.user,q); q.ask=a0; return e; }
 /* 경쟁 구단 제안(가장 강한 순) */
-/* 경쟁 구단 제시액: 관심 구단이 많을수록 값이 오른다(실제 KBO: S급 신규 외국인은 대부분 상한 100만 달러 근처). 우리가 관찰 중이면 한 곳 더 붙은 것으로 본다 */
-function foRivals(q){ const cap=foCap(q); let T=foRivalTeams(q), R=[];
-  for(let g=0;g<10;g++){ const n=T.length+(fwatchOn(q.id)?1:0); const up=1+.07*Math.max(0,n-1);
+/* 경쟁 구단 제시액: 관심 구단이 많을수록 값이 오른다(실제 KBO: S급 신규 외국인은 대부분 상한 100만 달러 근처). 3주 넘게 지켜본 구단(우리·AI 같은 규칙, 사용자 11-17 관찰 소문)도 관심 구단으로 센다. 예전: 우리가 관찰만 하면 한 곳 더 */
+function foRivals(q){ const cap=foCap(q); let T=foRivalTeams(q), R=[]; const Wt=fWatchers(q);
+  for(let g=0;g<10;g++){ const n=new Set([...T,...Wt]).size; const up=1+.07*Math.max(0,n-1);
     R=T.map(tid=>{ const tot=Math.min(cap,Math.round(q.ask*up*(1+.03*hn('fr'+tid,q.id)))); { const a0=q.ask; q.ask=tot; const e=foreignCheck(tid,q,foUp(tid,q)); q.ask=a0; if(e)return null; } /* 제시 총액으로 계약할 수 없는 구단은 경쟁자가 아니다(검수 11-09b) */ const g=Math.round(tot*.85/USD)*USD, i=Math.max(0,tot-g); const A=foAppeal(q,tid); return {tid,g,i,f:A.f,parts:A.parts,v:foVal(g,i)*A.f}; }).filter(Boolean);
     if(R.length===T.length)break; T=R.map(r=>r.tid); } /* 감당 못 해 빠진 구단은 다른 구단 제시액도 올리지 않는다: 남은 구단 수로 다시 계산(검수 11-09zl) */
   return R.sort((a,b)=>b.v-a.v); }
