@@ -4,6 +4,7 @@
   proD·proF: 고수의 지명만·외국인만(어디서 이득이 나는지 나눠 본다)
   auto : 스카우트 추천대로 맡기는 사용자(창단 지명 fdBest, 외국인 자동)
   pro  : 고수(실제 능력을 거의 정확히 읽고, 연봉 상한 100%까지 강한 선수를 뽑고, 외국인도 시장 최상위를 고른다). 고수의 상한선
+ 시작 전력은 드래프트 직후(AI 외국인 영입 전), 개막 전력은 개막일 기준.
  사용: [NS=시즌 수] node tools/check-balance.cjs [리그 수=4] [방식=auto,pro]   (dist/engine.js 필요: bash build.sh)
  기준(2026-11-05): 고수도 우승이 보장되면 안 된다. 고수 평균 승률 .600 이하, 1위 비율 절반 이하를 목표로 본다 */
 const fs=require('fs'), path=require('path');
@@ -39,14 +40,15 @@ function season(mode){ REAL=mode==='proR'||mode==='eq'; EQ=mode==='eq'; if(EQ)mo
     const Rt=G.teams.map(t=>({t:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r);
     return {fN:foreignOf(G.user).length,fO:avg(foreignOf(G.user).map(ovr)),pay:capPay(G.user)/capOf(G.year),rR:Rt.findIndex(x=>x.t===G.user)+1,dom:avg(domestic(G.user).map(ovr).sort((a,b)=>b-a).slice(0,20)),aiDom:avg(G.teams.filter(t=>t.id!==G.user).map(t=>avg(domestic(t.id).map(ovr).sort((a,b)=>b-a).slice(0,20)))),w:S[i].w,l:S[i].l,rank:i+1,rd:(RS[G.user]||0)-(RA[G.user]||0),rdTop:Math.max(...G.teams.filter(t=>t.id!==G.user).map(t=>(RS[t.id]||0)-(RA[t.id]||0)))}; };
   const later=[]; let first;
-  try{ let n=0; while(n++<900&&!G.ps)step(); first=res();
+  let oRank=null; /* 개막일 전력 순위: '시작 전력'은 드래프트 직후라 AI 구단이 외국인을 아직 못 채운 때다(2월 1일에 채움). 개막일 순위가 실제 출발점 */
+  try{ let n=0; while(n++<900&&!G.ps){ step(); if(oRank==null&&period()==='season'){ const O=G.teams.map(t=>({t:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r); oRank=O.findIndex(x=>x.t===G.user)+1; } } first=res(); first.oRank=oRank;
     /* 여러 시즌(NS): 정규시즌이 끝날 때마다(새 포스트시즌이 열릴 때) 기록. 이후 시즌은 자동 운영(고수 봇은 첫 겨울만 직접 고른다) */
     for(let k=1;k<NS;k++){ const prev=G.ps; for(const t in RS)RS[t]=0; for(const t in RA)RA[t]=0; let m=0; while(m++<1400&&!(G.ps&&G.ps!==prev))step(); if(!(G.ps&&G.ps!==prev)){ log('  (다음 시즌 진행 멈춤: '+G.year+' '+dmd(G.day)+' '+period()+' '+String((typeof blocker==='function'&&blocker())||'').slice(0,80)+')'); break; } later.push(res()); } } finally { applyGame=ag; }
   return Object.assign(pre,first,{later}); }
 const RES={}; for(const m of MODES)RES[m]=[];
-for(let L=0;L<NL;L++)for(const m of MODES){ setSeed(1000+L*77); const r=season(m); RES[m].push(r); log('리그 '+(L+1)+' '+m+': '+r.w+'승 '+r.l+'패 '+r.rank+'위 득실 '+(r.rd>0?'+':'')+r.rd+' (AI 최고 '+r.rdTop+') · 시작 전력 '+r.rRank+'위(평균 대비 '+r.gap.toFixed(1)+') · 연봉 '+Math.round(r.pay*100)+'% · 외국인 우리 '+r.myF.toFixed(1)+' / AI '+r.aiF.toFixed(1)+' · AI 연봉 '+Math.round(r.aiPay*100)+'%'); }
+for(let L=0;L<NL;L++)for(const m of MODES){ setSeed(1000+L*77); const r=season(m); RES[m].push(r); log('리그 '+(L+1)+' '+m+': '+r.w+'승 '+r.l+'패 '+r.rank+'위 득실 '+(r.rd>0?'+':'')+r.rd+' (AI 최고 '+r.rdTop+') · 시작 전력 '+r.rRank+'위(평균 대비 '+r.gap.toFixed(1)+') · 개막 전력 '+r.oRank+'위 · 연봉 '+Math.round(r.pay*100)+'% · 외국인 우리 '+r.myF.toFixed(1)+' / AI '+r.aiF.toFixed(1)+' · AI 연봉 '+Math.round(r.aiPay*100)+'%'); }
 if(FL.length)log('고수가 상한까지 불렀는데 놓친 외국인 후보: 시즌당 평균 '+avg(FL).toFixed(1)+'명');
 for(const m of MODES){ const L=RES[m]; for(let k=0;k<NS-1;k++){ const X=L.map(x=>x.later[k]).filter(Boolean); if(X.length)log('   '+m+' '+(k+2)+'년차: 전력 '+avg(X.map(x=>x.rR)).toFixed(1)+'위 · 국내 상위20 '+avg(X.map(x=>x.dom)).toFixed(1)+'(AI '+avg(X.map(x=>x.aiDom)).toFixed(1)+') · 외국인 '+avg(X.map(x=>x.fN)).toFixed(1)+'명 '+avg(X.map(x=>x.fO)).toFixed(1)+' · 연봉 '+Math.round(avg(X.map(x=>x.pay))*100)+'% · 승률 '+avg(X.map(x=>x.w/(x.w+x.l))).toFixed(3)+' · 평균 '+avg(X.map(x=>x.rank)).toFixed(1)+'위 · 1위 '+X.filter(x=>x.rank===1).length+'/'+X.length+' · 득실 평균 '+Math.round(avg(X.map(x=>x.rd)))); } }
-for(const m of MODES){ const L=RES[m]; log('== '+m+': 승률 '+avg(L.map(x=>x.w/(x.w+x.l))).toFixed(3)+' · 평균 '+avg(L.map(x=>x.rank)).toFixed(1)+'위 · 1위 '+L.filter(x=>x.rank===1).length+'/'+L.length+' · 득실 평균 '+Math.round(avg(L.map(x=>x.rd)))+' · 시작 전력 평균 '+avg(L.map(x=>x.rRank)).toFixed(1)+'위'); }
+for(const m of MODES){ const L=RES[m]; log('== '+m+': 승률 '+avg(L.map(x=>x.w/(x.w+x.l))).toFixed(3)+' · 평균 '+avg(L.map(x=>x.rank)).toFixed(1)+'위 · 1위 '+L.filter(x=>x.rank===1).length+'/'+L.length+' · 득실 평균 '+Math.round(avg(L.map(x=>x.rd)))+' · 시작 전력 평균 '+avg(L.map(x=>x.rRank)).toFixed(1)+'위 · 개막 전력 평균 '+avg(L.map(x=>x.oRank)).toFixed(1)+'위'); }
 `);
 try{ run(setSeed,NL,MODES,NS,(...a)=>console.log(...a)); }catch(e){ console.error=oe; console.log('실행 실패: '+(e.stack||e).toString().slice(0,600)); process.exit(1); }
