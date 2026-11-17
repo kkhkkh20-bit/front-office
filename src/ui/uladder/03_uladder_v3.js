@@ -19,7 +19,7 @@ function ulGoalsHtml(U){ const C=FrontOfficeCore, now=Date.now(), D=C.ulDailyGoa
       <p class="small muted">${c.next?`${esc(c.next.name)}까지 ${c.next.need}점`:'모든 테두리를 모았습니다'} · 보상은 꾸미기뿐입니다(문장 테두리·칭호).</p></div></div>
     <div class="ul-bgs">${c.titles.map(x=>`<span class="ul-bg${x.on?' on':''}">${esc(x.n)}</span>`).join('')}</div></section>`; }
 /* 시즌 결산: 시즌이 바뀐 뒤 처음 들어오면 지난 시즌 카드 한 번('확인'을 누르면 접는다) */
-function ulSeasonEndHtml(U){ const C=FrontOfficeCore, se=C.ulSeason(Date.now()), S=U.seas&&U.seas.id!==se.id?U.seas:null; if(!S||U.seenS===S.id)return '';
+function ulSeasonEndHtml(U){ const C=FrontOfficeCore, se=C.ulSeason(Date.now()), S=U.seas&&U.seas.id!==se.id?U.seas:null; if(!S||String(U.seenS)===String(S.id))return '';
   const tt=[S.win?'리그 우승':'',S.up?`승격 ${S.up}번`:'',`최고 ${C.ulTierName(S.best)}`].filter(Boolean), M=ulV1On()&&UL.sv.me, T=((M&&M.titles)||[]).filter(t=>t.s===S.id);
   return `<section class="card ul-send"><h2 class="sec">지난 시즌 결산 <small>${esc(S.label)}</small></h2><div class="ul-send-in">${ulEmblem(S.best|0,56)}<div><p class="ul-send-t"><b>${esc(C.ulTierName(S.best))}</b>까지 올랐습니다</p><p class="small">${esc(tt.join(' · '))}</p></div></div>
     <div class="ul-sc"><div><span>리그</span><b class="num">${S.n}</b></div><div><span>최고 점수</span><b class="num">${S.top}</b></div><div><span>승-패</span><b class="num">${S.w||0}-${S.l||0}</b></div><div><span>평균 순위</span><b class="num">${S.n&&S.rk?(S.rk/S.n).toFixed(1):'-'}</b></div></div>
@@ -63,7 +63,7 @@ function ulExHtml(where){ const X=UL.ex; if(!X||X.where!==where)return ''; const
     ${ulKeysHtml(r.keys,'ex').replace('명경기 · 이 경기 보기','경기 보기').replace(/ <span class="muted">\d+R<\/span>/g,'')}<div class="btns"><button class="btn small primary" data-a="ulEx" data-k="${esc(X.k)}" data-v="${esc(X.v)}"${UL.busy?' disabled':''}>다시 붙기</button><button class="btn small" data-a="ulExClose">닫기</button></div></section></div>`; }
 function ulExTarget(k,v){ if(k==='hof'){ const c=(HOF.data&&HOF.data.cups||[]).find(x=>x.id===v); return c&&c.champ&&c.champ.deck?Object.assign({},c.champ.deck,{name:c.champ.deck.name||c.champ.name}):null; } const d=ulDecks().find(x=>x.h===v); return d?d.e:null; }
 Object.assign(A,{
-  ulSeenS(v){ const U=uld(); if(U){ U.seenS=+v; ulSave(); render(); } },
+  ulSeenS(v){ const U=uld(); if(U&&v!=null&&v!==''){ U.seenS=String(v); ulSave(); render(); } }, /* 시즌 id는 'S22' 같은 글자: 숫자로 바꾸면 NaN이 되어 '확인'이 먹지 않았다(외부 검수 11-17) */
   ulRun3(){ return ulSim(3); },
   async ulEx(v,el){ if(UL.busy)return; const k=(el&&el.dataset.k)||'dk', me=ulMyDeckForEx(), op=ulExTarget(k,v); if(!me)return toast('구단을 맡고 있을 때 붙어 볼 수 있습니다.'); if(!op)return toast('이 덱을 찾지 못했습니다.');
     UL.busy=true; toast('친선 3경기를 돌리는 중입니다.'); await new Promise(r=>setTimeout(r,30)); let r; try{ r=ulExhibit(me,op); }catch(e){ console.error(e); r={ok:false,msg:'경기를 돌리지 못했습니다.'}; } UL.busy=false;
