@@ -19,7 +19,7 @@ const DSUB_ARCH={C:{rng:-4,arm:4,fld:4/3},SS:{rng:1.5,arm:1,fld:-3},'2B':{rng:1,
 /* 자리별 세부 능력 중요도(포지션 적합): 경기에서 그 자리 타구·실책·송구가 차지하는 몫에 맞춘 무게 */
 const DSUB_PW={SS:{rng:.45,arm:.3,fld:.25},'2B':{rng:.45,arm:.15,fld:.4},'3B':{rng:.3,arm:.35,fld:.35},'1B':{rng:.25,arm:.1,fld:.65},CF:{rng:.6,arm:.25,fld:.15},LF:{rng:.5,arm:.2,fld:.3},RF:{rng:.4,arm:.4,fld:.2},C:{rng:.1,arm:.55,fld:.35}};
 /* 리그 주전의 나이 몫 평균(새 리그 측정): 경기의 '그 자리 보통 수준'에 더해 리그 평균 기록을 그대로 둔다 */
-const DSUB_CAL={rng:-1.1,arm:.73,fld:.75}; /* 11-17 측정: 새 리그 4개 주전(실책 무게 가중, 평균 27.6세) */
+const DSUB_CAL={rng:-1.1,arm:.73,fld:.45}; /* 11-17 측정: 새 리그 4개 주전(실책 무게 가중, 평균 27.6세). 포구는 12개 리그×2시즌 실책 비교(+2.4%)로 .75→.45 */
 const DSUB_SD=4;
 const _dsbM=new WeakMap(); /* 리그 밖 선수 사본(대회·래더 덱 등)은 저장 객체를 바꾸지 않고 여기에만 둔다 */
 function dsubBase(p){ if(!p||p.isP)return null; if(p.dsb&&p.dsb.rng!=null)return p.dsb; { const m=_dsbM.get(p); if(m)return m; }

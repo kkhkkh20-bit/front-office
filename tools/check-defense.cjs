@@ -30,7 +30,7 @@ const _sg=simGame; simGame=function(day,h,aa,ps,options){ const g=_sg.apply(this
   for(const r of g.pbp||[]){ if(r[3]==='DP')A.dp++; if(Array.isArray(r[14]))for(const m of r[14])if(m&&m.result==='out'&&m.from<m.to&&r[3]!=='SAC'&&r[3]!=='OUT')A.xbo++; }
 }catch(x){} return g; };
 /* 세부 능력이 결과를 가르는지: 수비 범위 상·하위(그 자리 평균 대비) 야수가 맡은 인플레이 타구, 포수 송구 상·하위의 도루 */
-const _br=bipResolve; bipResolve=function(b,p,babip,qb,qp,fs){ const o=_br.apply(this,arguments); try{ if(LBIP&&LBIP.fid!=null&&LBIP.pos!=='P'){ const f=G.players[LBIP.fid]; const v=sub(f,'rng'); const k=v>=2?'hi':v<=-2?'lo':null; if(k){ RB[k][0]++; if(o!=='OUT')RB[k][1]++; } } }catch(x){} return o; };
+const _br=bipResolve; bipResolve=function(b,p,babip,qb,qp,fs){ const o=_br.apply(this,arguments); try{ if(LBIP&&LBIP.fid!=null&&LBIP.pos!=='P'){ const f=G.players[LBIP.fid]; const v=typeof dsubRel==='function'?dsubRel(f,LBIP.pos,'rng'):0; const k=v>=2?'hi':v<=-2?'lo':null; if(k){ RB[k][0]++; if(o!=='OUT')RB[k][1]++; } } }catch(x){} return o; };
 const step=()=>{ G.live=null; G.res=null; G.stops=[];
   if(G.draft&&!G.draft.done)try{ advanceDraft(false); }catch(e){}
   if(G.offers&&G.offers.length)try{ answerOffer(G.offers[0].id,false); }catch(e){}
@@ -54,5 +54,5 @@ function defMetrics(A){ const bip=A.ab-A.so-A.hr+A.sf; return {AVG:A.h/A.ab, BAB
 const f=v=>v<1?v.toFixed(4):v.toFixed(3);
 for(const x of per){ const m=M(x); console.log(`시드 ${x.seed} · 경기 ${x.g/1}(팀 경기 ${x.g*2}) · `+Object.entries(m).map(([k,v])=>k+' '+f(v)).join(' · ')+` · ${x.sec.toFixed(0)}초`); }
 const all=M(tot); console.log('합계 · '+Object.entries(all).map(([k,v])=>k+' '+f(v)).join(' · '));
-if(RB.hi[0]+RB.lo[0])console.log(`수비 범위 상위(+2 이상) 야수가 맡은 타구 안타율 ${(RB.hi[1]/Math.max(1,RB.hi[0])).toFixed(4)} (${RB.hi[0]}) · 하위(-2 이하) ${(RB.lo[1]/Math.max(1,RB.lo[0])).toFixed(4)} (${RB.lo[0]})`);
+if(RB.hi[0]+RB.lo[0])console.log(`수비 범위가 그 자리 보통보다 2 이상 높은 야수가 맡은 타구 안타율 ${(RB.hi[1]/Math.max(1,RB.hi[0])).toFixed(4)} (${RB.hi[0]}) · 2 이상 낮은 야수 ${(RB.lo[1]/Math.max(1,RB.lo[0])).toFixed(4)} (${RB.lo[0]})`);
 if(process.env.JSON)fs.writeFileSync(process.env.JSON,JSON.stringify({seeds:SEEDS,ns:NS,ds:DS,all,per},null,1));
