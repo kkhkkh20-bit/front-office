@@ -233,7 +233,7 @@ body.help .hi-i{display:none}
 .ng-h{display:flex;gap:12px;align-items:center}.ng-h>.av{width:56px;height:56px}.ng-h h2{margin:0}
 .ng-ag{display:grid;grid-template-columns:48px minmax(0,1fr);gap:12px;align-items:start;background:var(--panel2,#1a232c);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:6px;padding:12px}
 .ng-ag>.av{width:48px;height:48px}.ng-say{display:grid;gap:6px;min-width:0}.ng-say p{margin:0;font-size:14.5px;line-height:1.6}
-.ng-log{display:grid;gap:4px}.ngm{font-size:12.5px;line-height:1.5;padding:5px 10px;border-radius:6px;background:#ffffff06;color:var(--muted)}.ngm i{font-style:normal;font-weight:600;color:var(--ink);margin-right:8px}.ngm.me{background:#3d8bfd14}
+.ng-log{display:grid;gap:4px}.ngm{font-size:var(--ui-body);line-height:1.5;padding:5px 10px;border-radius:6px;background:#ffffff06;color:var(--muted)}.ngm i{font-style:normal;font-weight:600;color:var(--ink);margin-right:8px}.ngm.me{background:#3d8bfd14}
 .ng-rows{display:grid;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .ngr{display:grid;grid-template-columns:minmax(150px,1fr) auto minmax(110px,auto);gap:6px 14px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);border-left:3px solid transparent;background:var(--panel)}
 .ngr:last-child{border-bottom:0}.ngr.ok{border-left-color:var(--good);background:#6fe39a0a}.ngr.lo{border-left-color:var(--warn)}

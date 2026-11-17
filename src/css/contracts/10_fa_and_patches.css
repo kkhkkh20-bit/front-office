@@ -301,10 +301,10 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .ng-agc{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center}.ng-agc>.av{width:44px;height:44px}.ng-agc>div{display:grid;gap:2px;min-width:0}.ng-fee{line-height:1.45}
 .ng-rdw{display:grid;gap:4px}.ng-rd{display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--muted)}.ng-rd .warn{color:var(--warn)}.ng-rd .bad{color:var(--bad)}
 .ng-msgs{display:grid;gap:6px;align-content:start;overflow:auto;min-height:0;scrollbar-width:thin}
-.ngm{font-size:13px;line-height:1.5;padding:6px 10px;border-radius:8px;background:#ffffff08;color:var(--ink)}.ngm i{display:block;font-style:normal;font-weight:600;font-size:11.5px;color:var(--muted)}.ngm s{text-decoration:none;font-weight:400;margin-left:4px}
+.ngm{font-size:var(--ui-body);line-height:1.5;padding:6px 10px;border-radius:8px;background:#ffffff08;color:var(--ink)}.ngm i{display:block;font-style:normal;font-weight:600;font-size:var(--ui-caption);color:var(--muted)}.ngm s{text-decoration:none;font-weight:400;margin-left:4px}
 .ngm.me{background:#4c8de31a;margin-left:18px}.ngm.ag{margin-right:18px}.ngm.bad{border-left:3px solid var(--bad)}.ngm.sys{background:transparent;border:1px dashed var(--line)}
 .ng-more{display:none;background:none;border:0;color:var(--accent,var(--good));cursor:pointer;justify-self:start;padding:0}
-.ng-ctr ul.ng-diff{margin:2px 0;padding-left:16px;font-size:12.5px;line-height:1.55}.ng-diff em{font-style:normal;color:var(--warn);font-weight:600}
+.ng-ctr ul.ng-diff{margin:2px 0;padding-left:16px;font-size:var(--ui-caption);line-height:1.55}.ng-diff em{font-style:normal;color:var(--warn);font-weight:600}
 .ngt3 .ng-acts{justify-content:flex-end}.ngt3 .ng-acts .note{margin:0 auto 0 0}.ngt3 .ng-acts .btn.primary{margin-left:0}
 @media(min-width:1100px){
  #sheet .sheet.ngt3{display:flex!important;flex-direction:column;height:var(--detail-height,100dvh);max-height:var(--detail-height,100dvh);overflow:hidden!important;gap:10px}
@@ -326,5 +326,5 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 /* 웨이버·2차 드래프트 명단 줄에도 사진(UI 3단계 3-6): 다른 명단 줄과 같은 크기 */
 .market-player-info>img.av:first-child{width:40px;height:40px;border-radius:6px;object-fit:cover;float:left;margin:0 10px 0 0}
 /* 에이전트 명단(영입·계약 > 에이전트) */
-.ag-h4{margin:10px 0 4px;font-size:12.5px;color:var(--team-hi,#4fa3ff)}.ag-h4 em{font-style:normal;color:var(--muted);font-weight:500;margin-left:4px}
+.ag-h4{margin:10px 0 4px;font-size:var(--ui-caption);color:var(--team-hi,#4fa3ff)}.ag-h4 em{font-style:normal;color:var(--muted);font-weight:500;margin-left:4px}
 .ag-hd{margin-bottom:6px}.tf-ag .pm-n{display:inline-flex;gap:6px;align-items:center}

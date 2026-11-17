@@ -33,3 +33,6 @@ header.ibm-h>.ph-w>.av{width:76px;height:76px;border-radius:10px}
 .phc-prev canvas{border:1px solid var(--line)}.phc-r{width:56px;height:56px;border-radius:50%}.phc-s{width:72px;height:72px;border-radius:4px}
 .phc-acts{display:flex;justify-content:flex-end;gap:8px}.phc-acts .btn{min-width:84px;min-height:40px}
 @media (max-width:599px){.ph-scrim{align-items:end;padding:8px}.ph-box{width:100%;max-height:calc(100dvh - 16px);border-radius:12px 12px 8px 8px}.phc-acts .btn{flex:1}}
+/* 낮은 가로 화면(568×320): 창 높이가 모자라면 격자 줄이 줄어 자르기 칸(정사각형)이 아래 [적용] 버튼을 덮었다(11-17). 줄은 내용 높이 그대로 두고 창 안에서 스크롤, 자르기 칸은 화면 높이에 맞춰 줄인다 */
+.ph-box{grid-auto-rows:max-content}
+@media (max-height:599px){.phc-stage{width:min(320px,100%,calc(100dvh - 80px))}}

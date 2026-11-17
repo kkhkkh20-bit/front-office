@@ -36,7 +36,7 @@ function obsDetail(x){ if(!x)return `<section class="card obs-det"><p class="sma
     L.push(`<p class="small"><b>파악도</b> ${x.know}%${x.dk?` · 이번 주 +${x.dk}%`:''}${x.eta?` · 파악 완료까지 약 ${x.eta}주`:x.know>=100?' · 파악 완료':''}</p>`);
     const un=f?fUnknown(x.x,f):[]; if(un.length)L.push(`<p class="small"><b>아직 모르는 것</b> ${esc(un.join(' · '))}</p>`); }
   else if(x.k==='ov'){ const a=x.a; L.push(`<p class="small">${esc(a.how||'')} · ${a.y}년 출국 · ${esc(x.ret)}</p><p class="small muted">${a.from===G.user?'계약이 끝나 돌아오면 우리 구단이 먼저 협상합니다.':'국내로 돌아오면 원소속 구단이 먼저 협상합니다.'}</p>`); }
-  else { const rp=scoutReport(x.x); L.push(`<p class="small"><b>스카우트</b> ${esc(rp.who||'')}</p><p class="small">${esc((rp.notes||[]).slice(0,2).join(' '))}</p><p class="small">평가 ${esc(x.ev)} · 신뢰도 ${esc(x.conf)}</p>`); }
+  else { const rp=scoutReport(x.x); L.push(`<p class="small"><b>스카우트</b> ${esc(rp.who||'')}</p><p class="small">${esc((rp.notes||[]).slice(0,2).join(' '))}</p><p class="small">평가 ${esc(x.ev)} · 신뢰도 ${esc(x.conf)}</p><p class="small obs-pot"><b>잠재력</b> ${potChip(rp,x.x)}</p>`); } /* 관찰 명단 합치기(11-16)에서 빠졌던 KBO 관심 선수 잠재력(스카우트 추정, 다른 목록과 같은 potChip)을 되살림 */
   return `<section class="card obs-det">${head}${L.join('')}</section>`; }
 function obsWatchPage(){ if(G.unemp)return '<section class="card"><p class="small muted">구단을 맡고 있지 않습니다.</p></section>';
   const all=obsRowsAll(), f=UI.obsF||'all'; const L=all.filter(x=>f==='all'||x.k===f).sort((a,b)=>(b.pri-a.pri)||((b.obs??-1)-(a.obs??-1))||a.n.localeCompare(b.n));

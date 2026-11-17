@@ -18,7 +18,7 @@ for(const [width,height,touch] of [[1366,768,false],[390,664,true]]){
  await p.evaluate(()=>{UI.it=Object.assign(UI.it||{},{mkv:'find'});UI.findTeam='all';A.go('trade:market');});
  let pool=await ids(); assert.ok(!pool.includes(fx.fa)&&!pool.includes(fx.ntc),'트레이드 불가 선수는 기본으로 숨김');assert.ok(pool.includes(fx.blk)&&pool.includes(fx.urg));
  assert.ok(await p.locator('[data-a="opt"][data-k="findBlk"]').count()>=2,'매물만 조건 버튼');
- await p.evaluate(()=>{document.querySelectorAll('details.ws-filter-controls').forEach(d=>d.open=true);workspaceReveal('[data-a="opt"][data-k="findBlk"][data-v="blk"]');});/* 조건은 필터 바 칸 안(UI 2단계 2-4) */await p.locator('[data-a="opt"][data-k="findBlk"][data-v="blk"]').first().click();await p.keyboard.press('Escape');pool=await ids();
+ const fbk=(width>700?'.fbar-inl ':'.fbar-p ')+'[data-a="opt"][data-k="findBlk"][data-v="blk"]'; /* 11-16: 넓은 화면은 펼친 조건 줄(.fbar-inl), 휴대폰은 필터 칸(.fbar-p)에 같은 버튼 */await p.evaluate(sel=>{document.querySelectorAll('details.ws-filter-controls').forEach(d=>d.open=true);workspaceReveal(sel);},fbk);/* 조건은 필터 바 칸 안(UI 2단계 2-4) */await p.locator(fbk).first().click();await p.keyboard.press('Escape');pool=await ids();
  assert.ok(pool.length>=2&&await p.evaluate(()=>UI._findPool.every(q=>q.aiListed)),'매물만: 매물 선수만');assert.ok(pool.includes(fx.blk)&&pool.includes(fx.urg));
  await p.evaluate(t=>{UI.findTeam=String(t);render();},fx.tid);
  const tags=await p.locator('.trtag').allInnerTexts();assert.ok(tags.includes('매물')&&tags.includes('급매'),'매물·급매 꼬리표 '+tags.join(','));
@@ -45,7 +45,7 @@ for(const [width,height,touch] of [[1366,768,false],[390,664,true]]){
  /* 3. 관심 선수 명단: 잠재력 열(스카우트 추정만) */
  const pw=await p.evaluate(f=>{G.pwatch=[f.blk,f.urg,f.fa];const h=pwatchTable(false);return {head:h.includes('<th>잠재력</th>'),same:G.pwatch.every(id=>{const q=G.players[id];return h.includes('<td class="pw-pot">'+potChip(scoutReport(q),q)+'</td>');}),chip:(h.match(/class="ptier/g)||[]).length};},fx);
  assert.ok(pw.head&&pw.chip===3,'잠재력 열 '+JSON.stringify(pw));assert.ok(pw.same,'다른 목록과 같은 스카우트 추정 잠재력(scoutReport) 사용');
- await p.evaluate(()=>{UI.it=Object.assign(UI.it||{},{scoutpg:'watch'});A.go('staff:scouts');});await p.waitForTimeout(100);assert.ok(await p.locator('.scn-watch th',{hasText:'잠재력'}).count()===1,'관심 선수 화면 잠재력 열');
+ /* 스카우트 1단계(11-16): 관심 선수 화면은 '관찰 명단'으로 합쳐졌다. KBO 관심 선수를 고르면 리포트 칸에 같은 스카우트 추정 잠재력이 나온다 */await p.evaluate(f=>{UI.it=Object.assign(UI.it||{},{scoutpg:'watch'});UI.obsF='kbo';UI.obsSel=f.blk;A.go('staff:scouts');},fx);await p.waitForTimeout(100);assert.ok(await p.evaluate(f=>{const e=document.querySelector('.obs-det .obs-pot');const q=G.players[f.blk];return !!e&&e.innerHTML.includes(potChip(scoutReport(q),q));},fx),'관찰 명단 리포트 잠재력');
  await shot('watch');
  /* 4. 통산 기록: 1군만(기본) · 2군 포함 · 2군만 */
  const cid=await p.evaluate(()=>{const q=domestic(G.user).find(q=>!q.isP&&!q.ys);const Y=G.year;const B=(y,lvl,pa,h,hr)=>Object.assign({},ZB,{y,lvl,t:G.user,g:30,pa,ab:pa-5,h,hr,bb:5,so:20,d:5,tr:0,r:10,rbi:12,sb:1});q.hist=[B(Y-1,'1군',300,80,10),B(Y-2,'1군',200,50,5),B(Y-1,'퓨처스',100,30,4),B(Y-2,'퓨처스',150,40,6)];q.prev=null;q.am=null;UI.cLvl=undefined;A.player(q.id);return q.id;});
