@@ -164,7 +164,7 @@ function newPlayer(o){
     inj:injRoll(),injOut:0,team:o.team??null,sal:MIN_SAL,yrs:0,faC:false,ext:false,svc:o.svc||0,lastFA:null,
     hist:[],injHist:[],draft:null,region:o.region||pick(REG),college:!!o.college,dev:!!o.dev,
     foreign:o.foreign||null,nat:o.nat||null,th,bt,velo:N(0,1.3)};
-  setOvr(p,o.base);
+  setOvr(p,o.base); if(!isP)dsubBase(p); /* 세부 수비 모양(난수 없음, 03b_def_sub) */
   p.pot=clamp(Math.max(ovr(p),o.pot??ovr(p)),20,80); p.dt=rollDT();
   initPers(p,true); /* 성격은 만들 때 정한다(읽기 경로에서 난수를 쓰지 않게) */
   if(p.isP)p.delivery=o.delivery||pitchDelivery(p);
