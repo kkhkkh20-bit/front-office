@@ -38,7 +38,7 @@ function fmBack(){ if(UI.meet){A.detailBack();return;}if(document.documentElemen
 function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)return; UI.navI++; fmGoKey(H[UI.navI]); }
 /* 카드가 세로로 길게 쌓이는 화면은 PC에서 두 칸으로(FM 대시보드처럼). 표가 넓은 화면에는 쓰지 않는다 */
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
-const FM_SUBROW={roster:()=>rosterSubRow()};
+const FM_SUBROW={roster:()=>rosterSubRow(),inbox:()=>inboxSubRow()};
 function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;if(UI.cast)return '<span class="fm-ttl">경기 중계</span>'; /* 중계 중에는 홈 하위 탭(눌러도 중계가 그대로)을 숨긴다 */ const tab=UI.tab; if(tab==='club'&&UI.clubInspect!=null)return '<span class="fm-ttl">'+esc(tname(UI.clubInspect))+' · 공개 구단 기록</span>'; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
   if(SUBS[tab])return back+subTabsRaw(tab);
   { const f=FM_SUBROW[tab], h=f&&f(); if(h)return back+h; } /* 화면이 자기 하위 탭(UI.it)을 이 줄에 건다(사용자 11-17: 선수단 탭이 본문 아래에 묻혔다) */
