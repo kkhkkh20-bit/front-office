@@ -34884,6 +34884,19 @@ const SB=new Map(), SB_SEQ={}, SB_PEND=new Set(); /* SB_PEND: 이 탭이 Indexed
 function saveEmbedded(){ try{ return window.top!==window.self; }catch(e){ return true; } }
 function isIOSLike(){ try{ const u=navigator.userAgent||''; return /iP(hone|ad|od)/.test(u)||(/Macintosh/.test(u)&&(navigator.maxTouchPoints||0)>1); }catch(e){ return false; } }
 function saveEmbedBanner(){ if(!saveEmbedded())return ''; let url=''; try{ url=location.href.split('#')[0]; }catch(e){} return `<div class="note warn" role="alert" style="margin:0 0 12px">다른 사이트 안에서 열린 화면입니다. ${isIOSLike()?'아이폰·아이패드에서는':'일부 휴대폰 브라우저에서는'} 이 상태의 저장이 브라우저 정책으로 사라질 수 있습니다. 아래 버튼으로 게임 주소를 직접 열어 플레이하고, 중요한 진행은 설정의 '파일로 내보내기'로 백업하세요.<div class="row" style="margin-top:8px"><a class="btn small primary" href="${esc(url)}" target="_blank" rel="noopener">새 창에서 열기(저장 안전)</a></div></div>`; }
+/* 앱 안 브라우저(카카오톡·네이버·인스타그램 등) 안내(GA 개선안 P1-2, 11-17): 저장이 그 앱의 브라우저에만 남고 앱이 정리하면 사라질 수 있어 Chrome·Safari로 열기를 권한다. 닫을 수 있고 플레이는 막지 않는다 */
+const INAPP=[['kakaotalk',/KAKAOTALK/i],['naver',/NAVER\(inapp/i],['instagram',/Instagram/i],['facebook',/FBAN|FBAV|FB_IAB/],['line',/\bLine\//],['everytime',/everytime/i],['band',/\bBAND\//],['daum',/DaumApps/i]];
+function inappKind(u){ try{ u=u==null?navigator.userAgent||'':u; for(const [k,r] of INAPP)if(r.test(u))return k; if(/Android/.test(u)&&/; wv\)/.test(u))return 'webview'; }catch(e){} return ''; }
+function inappOs(){ try{ const u=navigator.userAgent||''; return isIOSLike()?'ios':/Android/.test(u)?'android':'other'; }catch(e){ return 'other'; } }
+function inappIntent(){ try{ return `intent://${location.host}${location.pathname}#Intent;scheme=https;package=com.android.chrome;end`; }catch(e){ return ''; } }
+function inappOff(){ try{ return sessionStorage.getItem('fo_inapp_x')==='1'; }catch(e){ return false; } }
+function inappBanner(){ const k=inappKind(); if(!k||UI.inappX||inappOff())return ''; let web=false; try{ web=/^https?:$/.test(location.protocol); }catch(e){} if(!web)return ''; const os=inappOs();
+  if(!UI.inappShown){ UI.inappShown=1; setTimeout(()=>{ try{ teleEv('inapp_notice_shown',{app:k,os}); }catch(e){} },0); }
+  const how=os==='android'?`<a class="btn small primary" href="${esc(inappIntent())}" data-a="inappGo" data-v="chrome">Chrome으로 열기</a>`
+    :`${os==='ios'?`<p class="small" style="margin:6px 0 0;flex-basis:100%">화면의 ··· 또는 공유 메뉴에서 'Safari로 열기'(기본 브라우저로 열기)를 눌러 주세요.</p>`:''}<button class="btn small${os==='ios'?'':' primary'}" data-a="inappGo" data-v="copy">주소 복사</button>`;
+  return `<div class="note warn inapp" role="note" style="margin:0 0 12px">앱 안의 브라우저로 열었습니다. 이 상태의 저장은 이 앱 브라우저에만 남고, 앱이 정리하면 사라질 수 있습니다. Chrome이나 Safari에서 열어 플레이하시길 권합니다.<div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap;align-items:center">${how}<button class="btn small" data-a="inappGo" data-v="close">닫기</button></div></div>`; }
+function inappCopy0(t){ try{ const x=document.createElement('textarea'); x.value=t; x.setAttribute('readonly',''); x.style.cssText='position:fixed;left:-9999px'; document.body.appendChild(x); x.select(); const ok=document.execCommand('copy'); x.remove(); return !!ok; }catch(e){ return false; } }
+function inappCopy(t){ try{ if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t).then(()=>true,()=>inappCopy0(t)); }catch(e){} return Promise.resolve(inappCopy0(t)); }
 /* 저장이 지워지지 않게 브라우저에 영구 보관을 요청한다(지원하는 브라우저만, 결과는 기록만) */
 let SAVE_PERSIST=null; function savePersistAsk(){ try{ if(navigator.storage&&navigator.storage.persist&&!saveEmbedded())navigator.storage.persist().then(v=>{ SAVE_PERSIST=!!v; }).catch(()=>{}); }catch(e){} }
 function sbOk(){ try{ return !!SaveStore.big.ok(); }catch(e){ return false; } }
@@ -35443,7 +35456,7 @@ function creditsLine(noNote){ /* noNote: 바로 위에 비제휴 고지가 이�
   <p>그 밖의 그림과 게임 코드는 이 게임을 위해 만들었습니다. 선수·스태프·팬 얼굴, 유니폼, 관중석 등 인물 그림은 이미지 생성 도구로 만든 가상 인물입니다.</p>
   ${TELE.ga||TELE.ph?`<p><b>개인정보</b> · ${telePrivacyTxt()}</p>`:''}
   <button class="lnk" data-a="licShow">${UI.licOpen?'라이선스 전문 닫기':'라이선스 전문 보기'}</button>${UI.licOpen?licBody():''}</div></details>`; }
-function startScreen(){ const h=startScreen0(); return (UI.sstep||'main')==='main'?saveEmbedBanner()+h:h; }
+function startScreen(){ const h=startScreen0(); return (UI.sstep||'main')==='main'?saveEmbedBanner()+inappBanner()+h:h; }
 function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G&&!SAVE_CONFL&&slotHas(curSlot())&&revOf(m,curSlot())===SLOT_REV, cs=live?null:G&&slotHas(curSlot())?curSlot():contSlot(m); /* 다른 탭이 그사이 저장하거나 지운 슬롯은 저장소 기준으로 표시(검수 11-09zr #6) */ /* 이어하기가 실제로 여는 것과 같은 대상을 표시한다(검수 11-09 #8): 이 탭 게임, 충돌 뒤엔 이 탭 슬롯의 최신 저장, 없으면 본문이 남은 슬롯 */
   const act=live?{tid:G.user,date:dstr(G.day)}:cs!=null?(m.slots[cs]||{name:`슬롯 ${cs}`}):null; const canCont=!!act;
   const foot=`<p class="small muted" style="margin-top:14px">${NOT_AFFIL} 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
@@ -46850,7 +46863,7 @@ Object.assign(A,{
   gpBg(v){ const g=gpSync(); g.bg=v; render(); },
   gpVoice(v){ const g=gpSync(); g.voice=g.voice===v?null:v; render(); },
   gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; const P={...g}; if(!UI.newSlot&&!SLOT_IDS.some(n=>!meta().slots[n])){ UI.gpMsg=`저장 슬롯 ${SLOTS}개가 모두 찼습니다. 처음 화면 → 불러오기에서 슬롯 하나를 '덮어쓰고 새 게임'으로 쓰거나 지운 뒤 다시 시작하세요. 정한 단장 정보는 남겨 둡니다.`; render(); return; } /* 슬롯이 없으면 얼굴·이름을 지우지 않고 알린다(전에는 조용히 멈추고 얼굴만 새로 뽑혔다) */
-    UI.gp=null; const ok=A.startGo(UI.pickT); if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age}); }catch(e){} } },
+    UI.gp=null; const opt={mode:UI.smode==='take'?'take':'fd',diff:UI.diff==='hard'?'hard':'norm',easy:!!UI.easy,guide:!UI.guideNo}; /* startGo가 smode를 지우므로 먼저 읽는다(GA 개선안 P0-2, 11-17) */ const ok=A.startGo(UI.pickT); if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age,...opt}); }catch(e){} } },
   gpEdit(){ UI.gpEdit=!UI.gpEdit; if(UI.gpEdit)UI.gp=G.gmP?{...G.gmP,age:meAge()||G.gmP.age}:gpDefault(); UI.gpMsg=''; render(); },
   gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?G.gmP.age:g.age; /* 취임한 단장은 나이를 못 고친다: 고치면 정년을 피할 수 있었다(검수 11-09zc) */ const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,voice:GMV[g.voice]?g.voice:null,female:g.female,face:g.face,mod:g.mod||null,img:g.img||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
   gmSuccAsk(){ UI.gsucc=!UI.gsucc; UI.gp=UI.gsucc?gpDefault():null; UI.gpMsg=''; render(); },
@@ -47108,19 +47121,24 @@ if(typeof document!=='undefined'){
           mgr_request · mgr_hire · mgr_fire · interview_done · interview_skip · press_play · scoop · overseas_program · mail_action · advance
  3) 화면: screen(어느 화면에서 어느 화면으로, 머문 초)
  4) 세션: session_start · session_end(플레이 시간, 읽은 소식 수, 진행 횟수, 마지막 화면과 게임 날짜)
- 5) 오류: js_error(메시지, 위치, 화면, 게임 날짜) */
+ 5) 오류: js_error(메시지, 위치, 화면, 게임 날짜)
+ 6) 불러오기(사이트판, 11-17): 첫 페이지 head에서 GA를 먼저 켜고(tools/lib/site-runtime.cjs) boot_ok(걸린 초)·boot_fail(못 받은 파일·오류 앞 120자)
+ 7) 앱 안 브라우저 안내: inapp_notice_shown · inapp_notice_click(앱 종류, 누른 버튼)
+ 모든 기록에 ver(게임 버전-배포 커밋 또는 빌드 번호)가 붙는다 */
 var TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'G-78C5MN0LHM',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
 var TELE_GA=TELE.ga; /* 예전 이름 호환 */
 function teleOn(){ if(!TELE.ph&&!TELE.ga)return false; try{ if(navigator.webdriver||/^(127\.|localhost$|0\.0\.0\.0$|\[::1\]$)/.test(location.hostname)||location.protocol==='file:')return false; }catch(e){} const m=meta(); return m.tele!==false; } /* 자동 점검·로컬 실행은 보내지 않는다(GA에 127.0.0.1 사용자 510명이 섞여 있었음, 11-08) */
 function teleUid(){ try{ let u=localStorage.getItem('dsj_uid'); if(!u){ u='u'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem('dsj_uid',u); } return u; }catch(e){ return 'anon'; } }
 var TS={q:[],ready:false,fail:false,t0:Date.now(),reads:0,adv:0,space:0,acts:0,err:0,scr:null,scrT:Date.now()};
-function teleBase(){ const b={ver:typeof GAME_VER!=='undefined'?GAME_VER:'',tab:UI&&UI.tab||'',sub:UI&&UI.tab&&UI.sub?UI.sub[UI.tab]||'':''};
+/* 배포 판별용 버전: 게임 버전-커밋(없으면 빌드 번호 앞 8자). 단독 파일은 게임 버전만(빌드 정보가 없다) */
+function teleVer(){ if(TS.ver!=null)return TS.ver; let v=typeof GAME_VER!=='undefined'?GAME_VER:''; try{ const q=n=>(document.querySelector('meta[name="fronttime-'+n+'"]')||{}).content||''; const c=q('commit'), b=q('build'); if(c||b)v+='-'+(c?c.slice(0,7):b.slice(0,8)); }catch(e){} return TS.ver=v; }
+function teleBase(){ const b={ver:teleVer(),tab:UI&&UI.tab||'',sub:UI&&UI.tab&&UI.sub?UI.sub[UI.tab]||'':''};
   try{ if(G){ b.game_year=G.year; b.game_date=dobj(G.day).m+'/'+dobj(G.day).d; b.period=period(); b.gm_year=(G.year-((G.gmP&&G.gmP.y0)||G.startY||G.year))+1; b.team=G.user; b.unemp=!!G.unemp; b.gm_bg=G.gmP?G.gmP.bg:''; } }catch(e){} return b; }
 function teleLoad(){ if(window._teleL||!teleOn())return; window._teleL=1;
   if(TELE.ph){ try{ const s=document.createElement('script'); s.async=true; s.crossOrigin='anonymous'; s.src=TELE.lib;
       s.onload=()=>{ try{ window.posthog.init(TELE.ph,{api_host:TELE.phHost,person_profiles:'always',autocapture:false,capture_pageview:false,capture_pageleave:false,persistence:'localStorage',disable_session_recording:!TELE.replay,session_recording:{maskAllInputs:true},loaded:ph=>{ try{ ph.identify(teleUid()); }catch(e){} TS.ready=true; teleFlush(); }}); }catch(e){ TS.fail=true; teleFlush(); } };
       s.onerror=()=>{ TS.fail=true; teleFlush(); }; document.head.appendChild(s); setTimeout(()=>{ if(!TS.ready){ TS.fail=true; teleFlush(); } },8000); }catch(e){ TS.fail=true; } }
-  if(TELE.ga){ try{ window.dataLayer=window.dataLayer||[]; window.gtag=function(){ dataLayer.push(arguments); }; gtag('js',new Date()); gtag('config',TELE.ga,{user_id:teleUid(),send_page_view:true,page_title:'프런트타임',cookie_flags:'SameSite=None;Secure'}); /* 처음 한 번 페이지뷰를 보내야 유입 경로(첫 사용자 소스)와 페이지 보고서가 채워진다 */ const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(TELE.ga); document.head.appendChild(s); }catch(e){} } }
+  if(TELE.ga&&!window._gaBoot){ /* 사이트판은 첫 페이지 head에서 이미 켰다(설정·페이지뷰 한 번만) */ try{ window.dataLayer=window.dataLayer||[]; window.gtag=function(){ dataLayer.push(arguments); }; gtag('js',new Date()); gtag('config',TELE.ga,{user_id:teleUid(),send_page_view:true,page_title:'프런트타임',cookie_flags:'SameSite=None;Secure'}); /* 처음 한 번 페이지뷰를 보내야 유입 경로(첫 사용자 소스)와 페이지 보고서가 채워진다 */ const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(TELE.ga); document.head.appendChild(s); }catch(e){} } }
 /* PostHog 스크립트를 못 불러오면 직접 묶어 보낸다 */
 function telePost(evs,beacon){ if(!TELE.ph||!evs.length)return; const body=JSON.stringify({api_key:TELE.ph,batch:evs.map(e=>({event:e.n,timestamp:e.ts,properties:Object.assign({distinct_id:teleUid(),$lib:'dsj-lite'},e.p)}))});
   try{ if(beacon&&navigator.sendBeacon){ navigator.sendBeacon(TELE.phHost+'/batch/',new Blob([body],{type:'application/json'})); return; } fetch(TELE.phHost+'/batch/',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true}).catch(()=>{}); }catch(e){} }
@@ -47139,12 +47157,17 @@ function teleHooks(){ if(window._teleH)return; window._teleH=1; const ev=teleEv,
   teleWrap('faSign',(a,r,pre)=>{ const R=G.fa&&G.fa.results||[]; if(R.length>pre.fa&&R[0].to===G.user&&R[0].from!==G.user)ev('fa_signed',{annual:R[0].annual,years:R[0].years,grade:R[0].grade||''}); });
   teleWrap('signForeign',(a)=>{ if(a[0]===G.user&&!UI.title&&G.gmP)ev('foreign_sign',{}); });
   /* 단장이 직접 누른 것만(엔진이 스스로 부르는 경우는 빼려고 화면 동작을 감싼다) */
-  teleActWrap('trnSet',(a)=>ev('train_set',{focus:String(a[0]).split(':')[1]}));
-  teleActWrap('trnApply',()=>ev('train_set',{bulk:true}));
-  teleActWrap('proleSet',(a)=>ev('role_set',{role:String(a[0]).split(':')[1]}));
-  teleActWrap('posConv',(a)=>ev('pos_conv',{pos:String(a[0]).split(':')[1]||'stop'}));
-  teleActWrap('reqUp',()=>ev('mgr_request',{up:true}));
-  teleActWrap('reqDown',()=>ev('mgr_request',{up:false}));
+  /* 실제로 바뀐 때만 보낸다(11-17): 같은 버튼을 다시 누르거나 막힌 요청(군 복무·합류 전 등)은 빼려고 누르기 전후 상태를 비교한다 */
+  const js=x=>{ try{ return JSON.stringify(x===undefined?null:x); }catch(e){ return ''; } }, pid=a=>+String(a[0]).split(':')[0];
+  teleActWrap('trnSet',Object.assign((a,r,pre)=>{ if(pre!=null&&pre!==js(G.trn&&G.trn[pid(a)]))ev('train_set',{focus:String(a[0]).split(':')[1]}); },{pre:a=>js(G.trn&&G.trn[pid(a)])}));
+  teleActWrap('trnApply',Object.assign((a,r,pre)=>{ if(!pre)return; const n=pre.ids.filter(id=>pre.v[id]!==js(G.trn&&G.trn[id])).length; if(n)ev('train_set',{bulk:true,n}); },{pre:()=>{ const ids=Object.keys(UI.trnPend||{}), v={}; for(const id of ids)v[id]=js(G.trn&&G.trn[id]); return {ids,v}; }}));
+  teleActWrap('proleSet',Object.assign((a,r,pre)=>{ if(pre!=null&&pre!==js(G.prole&&G.prole[pid(a)]))ev('role_set',{role:String(a[0]).split(':')[1]}); },{pre:a=>js(G.prole&&G.prole[pid(a)])}));
+  teleActWrap('posConv',Object.assign((a,r,pre)=>{ const p=G.players[pid(a)]; if(pre!=null&&p&&pre!==js(p.pconv))ev('pos_conv',{pos:String(a[0]).split(':')[1]||'stop'}); },{pre:a=>{ const p=G.players[pid(a)]; return p?js(p.pconv):null; }}));
+  /* 엔트리 건의: 감독에게 실제로 전달된 때만(받아들임·거절 모두). 시즌 밖·대상 아님 같은 안내는 빼고, ok=받아들여 엔트리가 바뀌었는지 */
+  const reqPre=a=>{ const p=G.players[+a[0]], m=G.mgr&&G.mgr[G.user]; return p?{e1:!!p.e1,rel:m?m.rel:null,mail:(G.mail||[]).length}:null; };
+  const reqPost=up=>(a,r,pre)=>{ const p=G.players[+a[0]], m=G.mgr&&G.mgr[G.user]; if(!pre||!p)return; const ok=!!p.e1!==pre.e1; if(ok||(m&&m.rel!==pre.rel)||(G.mail||[]).length!==pre.mail)ev('mgr_request',{up,ok}); };
+  teleActWrap('reqUp',Object.assign(reqPost(true),{pre:reqPre}));
+  teleActWrap('reqDown',Object.assign(reqPost(false),{pre:reqPre}));
   teleWrap('hireMgr',(a)=>{ if(me())ev('mgr_hire',{years:a[1],pledges:(a[3]||[]).length}); });
   teleWrap('fireMgr',()=>ev('mgr_fire',{}));
   teleWrap('ivAnswer',(a,r,pre)=>{ if(pre.iv&&G.iv&&G.iv.done)ev('interview_done',{topic:G.iv.k}); });
@@ -47155,12 +47178,13 @@ function teleHooks(){ if(window._teleH)return; window._teleH=1; const ev=teleEv,
   teleWrap('fdFinish',()=>{ const F=G.fd; ev('draft_done',{manual:F?F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length:0}); });
   teleWrap('openingDay',()=>ev('season_open',{}));
   teleActWrap('fdPick',Object.assign((a,r,pre)=>{ if(pre!=null&&G.fd&&G.fd.cur>pre)ev('draft_pick',{rd:G.fd.picks[G.fd.cur-1].rd}); },{pre:()=>G.fd?G.fd.cur:null}));
-  teleActWrap('fdBegin',()=>ev('draft_begin',{}));
-  teleActWrap('mailAct',(a)=>{ TS.acts++; const [id,i]=String(a[0]).split(':'); const m=G.mail.find(x=>x.id===id); const ac=m&&m.acts&&m.acts[+i]; ev('mail_action',{act:ac?ac.a:'',kind:m?m.kind:''}); });
+  teleActWrap('fdBegin',Object.assign((a,r,pre)=>{ if(pre&&G&&!G.fdWait&&G.fd)ev('draft_begin',{}); },{pre:()=>!!(G&&G.fdWait)})); /* 실제로 드래프트를 연 때만(예전에는 지난 메일·버튼을 누를 때마다 보내 하루 30번까지 쌓였다, GA 11-17) */
+  teleActWrap('mailAct',Object.assign((a,r,pre)=>{ if(!pre)return; TS.acts++; ev('mail_action',pre); },{pre:a=>{ const [id,i]=String(a[0]).split(':'); const m=G&&G.mail.find(x=>x.id===id); const ac=m&&m.acts&&m.acts[+i]; if(!ac)return null; let end=null; try{ end=typeof mailButtonStatus==='function'?mailButtonStatus(m,ac):null; }catch(e){} return end?null:{act:ac.a,kind:m.kind||''}; }})); /* 없는 버튼·이미 끝난 일(mailButtonStatus)은 빼고 */
   teleActWrap('mailJump',()=>{ TS.reads++; });
   teleActWrap('adv',Object.assign((a,r,pre)=>{ if(!pre)return; const d=G.day-pre.d; if(d>0){ TS.adv++; ev('advance',{mode:a[0],days:d,stopped:!!(G.stops&&G.stops.length)}); } },{pre:()=>G?{d:G.day}:null}));
-  teleActWrap('tsGo',(a)=>{ if(a[0]==='team')ev('team_list',{}); });
-  teleActWrap('start',(a)=>ev('team_pick',{pick:+a[0]}));
+  teleActWrap('smode',Object.assign((a,r,pre)=>{ if(UI.sstep==='team'&&pre!=='team')ev('team_list',{mode:UI.smode==='take'?'take':'fd'}); },{pre:()=>UI.sstep})); /* 구단 목록은 시작 방식(smode)을 고를 때 열린다(tsGo('team')로 오는 길은 없음, 11-17) */
+  teleActWrap('tsGo',Object.assign((a,r,pre)=>{ if(a[0]==='team'&&pre!=='team')ev('team_list',{mode:UI.smode==='take'?'take':'fd'}); },{pre:()=>UI.sstep}));
+  teleActWrap('start',Object.assign((a,r,pre)=>{ if(UI.sstep==='prof'&&UI.pickT===+a[0]&&pre!==UI.sstep+':'+UI.pickT)ev('team_pick',{pick:+a[0],mode:UI.smode==='take'?'take':'fd'}); },{pre:()=>UI.sstep+':'+UI.pickT})); /* 창단 지명 순서를 안 고르면 막힌다(fdNeed): 그때는 빼고 */
   /* 화면 이동: 렌더할 때 화면이 바뀌었으면 이전 화면에 머문 시간과 함께 */
   const R0=window.render; if(typeof R0==='function'&&!R0._tw){ const w=function(...a){ const r=R0.apply(this,a); try{ const k=UI.title?'title':(UI.tab||'')+(UI.sub&&UI.sub[UI.tab]?':'+UI.sub[UI.tab]:''); if(k!==TS.scr){ const now=Date.now(); if(TS.scr)ev('screen',{from:TS.scr,to:k,dwell_s:Math.round((now-TS.scrT)/1000)}); TS.scr=k; TS.scrT=now; } }catch(e){} return r; }; w._tw=1; window.render=w; }
   /* 오류 */
@@ -47171,12 +47195,18 @@ function teleHooks(){ if(window._teleH)return; window._teleH=1; const ev=teleEv,
   window.addEventListener('pagehide',end); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')end(); else if(TS.ended){ TS.ended=false; TS.t0=Date.now(); TS.reads=TS.adv=TS.acts=0; } });
   teleSession(); ev('title_view',{returning:!!(G||(typeof anySave==='function'&&anySave()))}); }
 function teleSession(){ if(TS.sess)return; TS.sess=1; teleEv('session_start',{}); }
+/* 불러오기 성공(99_boot.js bootLoad가 첫 화면을 그린 뒤 한 번). load_s: 페이지를 연 뒤 첫 화면까지 걸린 초. retried: 그 전에 불러오기 실패 화면이 떴는지 */
+function teleBootOk(){ if(TS.bootOk)return; TS.bootOk=1; let s=0; try{ s=Math.round(performance.now()/100)/10; }catch(e){} teleEv('boot_ok',{load_s:s,retried:!!window._bootFailSent,idb:typeof sbNeedBoot==='function'?!!sbNeedBoot():false}); }
 /* 개인정보 처리 안내(설정 카드·크레딧 공용). 보내는 항목이 바뀌면 이 문구와 docs/privacy.md를 같이 고친다 */
 function telePrivacyTxt(){ const by=[TELE.ga&&'Google Analytics(Google)',TELE.ph&&'PostHog'].filter(Boolean).join('와 ');
-  return `웹판은 게임을 다듬기 위해 ${by}로 플레이 기록을 보냅니다: 기기마다 무작위로 만든 번호, 화면 이동과 머문 시간, 기능 사용(트레이드·FA 금액 같은 게임 수치 포함), 게임 날짜·연차·구단, 오류 메시지. ${TELE.ga?'Google은 접속 IP·쿠키·브라우저 정보를 함께 처리합니다. ':''}이름·얼굴·저장 내용은 보내지 않습니다.${TELE.ph&&TELE.replay?' 화면 녹화에서는 입력칸을 가립니다.':''} 내려받은 파일이나 내 컴퓨터에서 실행하면 보내지 않습니다. 설정의 '플레이 기록' 카드에서 언제든 끌 수 있습니다.`; }
+  return `웹판은 게임을 다듬기 위해 ${by}로 플레이 기록을 보냅니다: 기기마다 무작위로 만든 번호, 화면 이동과 머문 시간, 기능 사용(트레이드·FA 금액 같은 게임 수치 포함), 게임 날짜·연차·구단·새 게임 설정, 불러오기에 걸린 시간과 실패한 파일, 오류 메시지. ${TELE.ga?'Google은 접속 IP·쿠키·브라우저 정보를 함께 처리합니다. ':''}이름·얼굴·저장 내용은 보내지 않습니다.${TELE.ph&&TELE.replay?' 화면 녹화에서는 입력칸을 가립니다.':''} 내려받은 파일이나 내 컴퓨터에서 실행하면 보내지 않습니다. 설정의 '플레이 기록' 카드에서 언제든 끌 수 있습니다.`; }
 function teleCard(){ if(!TELE.ph&&!TELE.ga)return ''; const on=teleOn();
   return `<section class="card"><div class="row between"><h2 class="sec">플레이 기록</h2><button class="btn small" data-a="teleTog">${on?'끄기':'켜기'}</button></div><p class="small muted">${telePrivacyTxt()} 지금: <b>${on?'켜짐':'꺼짐'}</b></p></section>`; }
-Object.assign(A,{ licShow(){ UI.licOpen=!UI.licOpen; render(); }, teleTog(){ const m=meta(); m.tele=!teleOn(); setMeta(m); try{ if(!m.tele&&window.posthog&&window.posthog.opt_out_capturing)window.posthog.opt_out_capturing(); }catch(e){} render(); } });
+Object.assign(A,{ inappGo(v){ const k=inappKind(); try{ teleEv('inapp_notice_click',{app:k,act:v,os:inappOs()}); }catch(e){}
+    if(v==='close'){ UI.inappX=true; try{ sessionStorage.setItem('fo_inapp_x','1'); }catch(e){} render(); return; }
+    if(v==='chrome'){ const u=inappIntent(); if(u)setTimeout(()=>{ location.href=u; },60); return; } /* 기록이 나간 뒤 이동(intent 링크는 Chrome을 연다) */
+    if(v==='copy'){ let u=''; try{ u=location.href.split('#')[0]; }catch(e){} inappCopy(u).then(ok=>toast(ok?'게임 주소를 복사했습니다. Safari나 Chrome 주소창에 붙여 넣어 열어 주세요.':`복사하지 못했습니다. 주소를 직접 입력해 주세요: ${u}`)); } },
+  licShow(){ UI.licOpen=!UI.licOpen; render(); }, teleTog(){ const m=meta(); m.tele=!teleOn(); setMeta(m); try{ if(!m.tele&&window.posthog&&window.posthog.opt_out_capturing)window.posthog.opt_out_capturing(); }catch(e){} render(); } });
 /* 부팅 뒤 걸어 둔다(다른 파일의 함수가 모두 정의된 다음) */
 setTimeout(()=>{ try{ if(TELE.ph||TELE.ga)teleHooks(); }catch(e){} },0);
 /* ---------- 구단 > 연대기 > 내가 꾸린 팀 ---------- */
@@ -47283,6 +47313,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-tele',d:'11월 17일',t:'앱 안 브라우저 안내',items:[
+    '카카오톡·네이버·인스타그램 같은 앱 안에서 게임을 열면 처음 화면에 안내가 나옵니다. 그 상태의 저장은 그 앱의 브라우저에만 남고 앱이 정리하면 사라질 수 있어, Chrome이나 Safari에서 여시길 권합니다. 안드로이드는 Chrome으로 열기 단추, 아이폰은 Safari로 여는 방법과 주소 복사 단추가 있습니다. 닫기를 누르면 감춰지고 플레이는 그대로 할 수 있습니다.']},
   {id:'2026-11-17-uifb2',d:'11월 17일',t:'전력 구성 묶음 탭 · 선수 능력 탭 배치',items:[
     'PC 선수단 › 전력 구성의 첫 탭은 포지션 배치도 · 1군 야수·투수진 · 부상·재활, 둘째 탭은 2군 야수 · 2군 투수 · 육성선수입니다. 2군 유망주를 한 탭에서 모두 봅니다. 콜업을 바라는 선수는 부상·재활 칸 아래에 보입니다.',
     '선수 화면 능력 탭에서 1군만·2군 포함·2군만 단추를 시즌 통계 제목 줄(정규시즌·포스트시즌 왼쪽)로 옮겼습니다. 아래 줄을 더 높여 시즌 통계 표가 더 많은 시즌을 한 번에 보입니다.',
@@ -50794,7 +50826,7 @@ Object.assign(A,{
  그래서 저장 불러오기와 첫 화면 그리기는 항상 이 파일(가장 뒤)에서 한다. */
 function bootLoad(){ { let bad=''; for(let i=0;i<=SLOTS&&(G=load());i++){ try{ migrateDraft(); svMark(); if(bad)UI.slotMsg=`${bad} 대신 슬롯 ${curSlot()}을(를) 열었습니다.`; break; }catch(e){ const n=curSlot(); slotBad(n,'복원 오류'); bad=UI.slotMsg=`슬롯 ${n}의 데이터를 복원하다 오류가 나 열지 않았습니다(${String(e&&e.message||e).slice(0,60)}). 내보내기 백업이 있으면 그걸로 가져오세요.`; G=null; CUR_SLOT=null; } } } UI.title=true; UI.sstep='main'; /* 복원에 실패한 세이브는 이어하기 대상으로 남기지 않고, 정상인 다음 슬롯을 연다(검수 11-09 #16, 11-09zr #10) */
 
-render(); /* 공간이 빠듯하면(본문 합계 약 3MB 이상) 진행 중이 아닌 슬롯을 IndexedDB로 미리 옮긴다 */ try{ if(sbOk()&&SLOT_IDS.reduce((a,k)=>a+((sbLsGet(k)||'').length),0)>1.5e6)setTimeout(()=>sbOffload(CUR_SLOT),3000); }catch(e){} }
+render(); try{ teleBootOk(); }catch(e){} /* 불러오기 성공 기록(72_telemetry.js) */ /* 공간이 빠듯하면(본문 합계 약 3MB 이상) 진행 중이 아닌 슬롯을 IndexedDB로 미리 옮긴다 */ try{ if(sbOk()&&SLOT_IDS.reduce((a,k)=>a+((sbLsGet(k)||'').length),0)>1.5e6)setTimeout(()=>sbOffload(CUR_SLOT),3000); }catch(e){} }
 let DL=null; try{ if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{ DL=d; if(G&&UI.tab==='club')render(); }).catch(()=>{}); }catch(e){}
 /* IndexedDB에 둔 슬롯이 있으면 먼저 읽어 온 뒤 연다. 없으면 예전처럼 바로 연다(사용자 11-12) */
 if(sbNeedBoot()){ let done=false; const go=()=>{ if(done)return; done=true; bootLoad(); }; sbRefresh().catch(()=>{}).then(go); setTimeout(()=>{ if(!done){ go(); try{ toast('보조 저장소(IndexedDB)가 응답하지 않아 일부 슬롯을 읽지 못했을 수 있습니다. 새로고침해 보세요.'); }catch(e){} } },2500); } else bootLoad(); /* 일부 Safari에서 indexedDB.open이 응답하지 않으면 첫 화면이 영영 안 뜨던 문제(UI 리뷰 11-13) */

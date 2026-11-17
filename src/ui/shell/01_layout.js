@@ -219,7 +219,7 @@ function creditsLine(noNote){ /* noNote: 바로 위에 비제휴 고지가 이�
   <p>그 밖의 그림과 게임 코드는 이 게임을 위해 만들었습니다. 선수·스태프·팬 얼굴, 유니폼, 관중석 등 인물 그림은 이미지 생성 도구로 만든 가상 인물입니다.</p>
   ${TELE.ga||TELE.ph?`<p><b>개인정보</b> · ${telePrivacyTxt()}</p>`:''}
   <button class="lnk" data-a="licShow">${UI.licOpen?'라이선스 전문 닫기':'라이선스 전문 보기'}</button>${UI.licOpen?licBody():''}</div></details>`; }
-function startScreen(){ const h=startScreen0(); return (UI.sstep||'main')==='main'?saveEmbedBanner()+h:h; }
+function startScreen(){ const h=startScreen0(); return (UI.sstep||'main')==='main'?saveEmbedBanner()+inappBanner()+h:h; }
 function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G&&!SAVE_CONFL&&slotHas(curSlot())&&revOf(m,curSlot())===SLOT_REV, cs=live?null:G&&slotHas(curSlot())?curSlot():contSlot(m); /* 다른 탭이 그사이 저장하거나 지운 슬롯은 저장소 기준으로 표시(검수 11-09zr #6) */ /* 이어하기가 실제로 여는 것과 같은 대상을 표시한다(검수 11-09 #8): 이 탭 게임, 충돌 뒤엔 이 탭 슬롯의 최신 저장, 없으면 본문이 남은 슬롯 */
   const act=live?{tid:G.user,date:dstr(G.day)}:cs!=null?(m.slots[cs]||{name:`슬롯 ${cs}`}):null; const canCont=!!act;
   const foot=`<p class="small muted" style="margin-top:14px">${NOT_AFFIL} 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
