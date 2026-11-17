@@ -3,7 +3,7 @@ let _dbO=null; /* 그리는 동안 쓰는 예상 확률(65_draft_odds), 저장 �
 const DPOS={all:'전체',P:'투수',C:'포수',IF:'내야',OF:'외야'};
 function dposOf(p){ return p.isP?'P':p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':'OF'; }
 function dval(rp,p){ return draftVal(rp,p); }
-function draftPool(){ const live=G.draft&&!G.draft.done; return ((live?G.draft.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect); }
+function draftPool(){ const live=G.draft&&!G.draft.done; return ((live?G.draft.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null); }
 /* 담당 스카우트 주장 표시: 정답 배지가 아니라 스카우트 의견. 틀릴 수 있다 */
 function dclaimTag(p){ const c=draftClaim(p); if(!c)return ''; return `<b class="${c.k==='up'?'good':'warn'}" title="${esc(draftClaimTxt(c))}">${c.k==='up'?'강력 추천':'신중론'}(확신도 ${c.conf})</b> · `; }
 /* 잠재력은 한 숫자 대신 스카우트 추정 범위로 */
@@ -50,12 +50,12 @@ function dmemoOf(id){ G.dmemo=G.dmemo||{}; return G.dmemo[id]||(G.dmemo[id]={t:'
 function myBoard(all,mine){ const L=(G.shortlist||[]).map(id=>all.find(x=>x.p.id===id)).filter(Boolean); if(!L.length)return '';
   const row=(x,i)=>{ const p=x.p, rp=x.rp, m=dmemoOf(p.id); const rw=riskWhy(p,rp); const tr=dtierOf(m.rd||0); const o=_dbO&&_dbO.P[p.id];
     const chk=k=>{ const q=rchkOf(p.id,k), a=p.rchkA&&p.rchkA[k]; return `<button data-a="dchk" data-v="${p.id}:${k}" class="${q?'on':a?'done':''}" title="${esc(a?`${dmd(a.d)} ${a.who}: ${a.t}`:q?`${q.who} 스카우트가 보는 중 · 답 ${dmd(q.due)} 무렵`:'누르면 담당 스카우트가 다시 보고 1~2주 뒤 답합니다')}">${k}${q?` 확인 중 D-${Math.max(0,q.due-G.day)}`:a?' ✓':' 재확인'}</button>`; };
-    const ans=DCHK.map(k=>p.rchkA&&p.rchkA[k]?`<p class="small dbr-a"><b>${k}</b> ${esc(p.rchkA[k].t)}</p>`:'').join('');
+    const ans=DCHK.filter(k=>rchkApplies(p,k)).map(k=>p.rchkA&&p.rchkA[k]?`<p class="small dbr-a"><b>${k}</b> ${esc(p.rchkA[k].t)}</p>`:'').join('');
     return `<div class="dbr"><span class="num dbr-k">${i+1}</span><div class="dbr-mv"><button class="tc-i" data-a="dmove" data-v="${p.id}:-1" aria-label="위로" ${i?'':'disabled'}>▲</button><button class="tc-i" data-a="dmove" data-v="${p.id}:1" aria-label="아래로" ${i<L.length-1?'':'disabled'}>▼</button></div>
       <div class="dbr-b"><button class="lnk" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b></button> <span class="small muted">${posLabel(p)} · 스카우트 #${x.rk} · ${rp.ofp!=null?potTier(potVal(rp),rp.cur).s:'잠재력 ?'} · 관찰 ${obsCount(p)}회${rw.length?` · ${esc(rw.join(' · '))}`:''}</span> ${doChip(o)}${amSlTag(p)}
       <div class="small">${amTrendHtml(p,!!p.isP,!!p.college)}${p.isP&&amVm(p)?` · ${esc(amVmTxt(p))}`:''}</div>
       <div class="row wrapr" style="gap:6px"><span class="chips drd" role="group" aria-label="구간">${[[0,'미정'],...DTIER].map(([r,l])=>`<button data-a="drdB" data-v="${p.id}:${r}" class="${tr===r?'on':''}">${l}</button>`).join('')}</span><input type="text" data-a="dmemo" data-v="${p.id}" value="${esc(m.t)}" maxlength="40" placeholder="관심 이유·메모" aria-label="메모" style="min-width:120px;flex:1"></div>
-      <div class="chips">${DCHK.map(chk).join('')}</div>${ans}</div>
+      <div class="chips">${DCHK.filter(k=>rchkApplies(p,k)).map(chk).join('')}</div>${ans}</div>
       ${mine?`<button class="tc-i go" data-a="pick" data-v="${p.id}">지명</button>`:''}</div>`; };
   const P=dplanOf(), ck=dplanCheck();
   const plan=`<div class="dplan"><div class="row wrapr"><b class="small">라운드 목표</b>${DPLAN_G.map(([g,l])=>`<span class="chips" role="group" aria-label="${l} 목표"><i class="small">${l}</i>${[[0,'-'],[1,'1R'],[3,'3R까지'],[5,'5R까지']].map(([r,t])=>`<button data-a="dplan" data-v="${g}:${r}" class="${(P[g]||0)===r?'on':''}">${t}</button>`).join('')}</span>`).join('')}</div>
@@ -82,9 +82,9 @@ function draftBoard(){
     const rest=draftRestOf(); /* 이 구단에서 설정한 일괄 처리만 */
     const myLeft=d.picks.slice(d.cur).filter(x=>x.tid===G.user).length;
     const recent=d.picks.slice(Math.max(0,d.cur-8),d.cur).reverse();
-    const firstStar=(G.shortlist||[]).map(id=>G.players[id]).find(p=>p&&p.prospect);
+    const firstStar=(G.shortlist||[]).map(id=>G.players[id]).find(p=>p&&p.prospect&&p.team==null);
     const proj=rosterProj(G.user); const cut=trimCands(1)[0]; const crp=cut?scoutReport(cut):null;
-    const capLine=`<div class="cap-line"><span>정식 로스터 ${rosterN(G.user)}명 + 이번 지명 ${draftedBy(G.user)}명${milBackBy(G.user)?` + 개막 전 전역 ${milBackBy(G.user)}명`:''} = <b style="color:${proj>=ROSTER_MAX?'var(--bad)':proj>=ROSTER_MAX-3?'var(--warn)':'var(--good)'}">${proj}</b> / ${ROSTER_MAX}</span>${proj>=ROSTER_MAX&&cut?`<span class="small">더 뽑으면 개막 전 방출이 필요합니다. 1순위 정리 후보: <button class="lnk" data-a="player" data-v="${cut.id}">${esc(cut.name)}</button> (${posLabel(cut)} · ${cut.age}세 · 현재 ${dv(crp.cur)} / ${crp.ofp!=null?potTier(potVal(crp),crp.cur).s:'잠재력 ?'})</span>`:''}</div>`;
+    const capLine=`<div class="cap-line"><span>현재 정식 ${rosterN(G.user)}명 · 다음 개막 예상 <b style="color:${proj>=ROSTER_MAX?'var(--bad)':proj>=ROSTER_MAX-3?'var(--warn)':'var(--good)'}">${proj}</b> / ${ROSTER_MAX}</span>${proj>=ROSTER_MAX&&cut?`<span class="small">더 뽑으면 개막 전 방출이 필요합니다. 1순위 정리 후보: <button class="lnk" data-a="player" data-v="${cut.id}">${esc(cut.name)}</button> (${posLabel(cut)} · ${cut.age}세 · 현재 ${dv(crp.cur)} / ${crp.ofp!=null?potTier(potVal(crp),crp.cur).s:'잠재력 ?'})</span>`:''}</div>`;
     const restBox=rest||!myLeft?'':drestBox(null,`남은 우리 지명 ${myLeft}번`);
     const feed=`${dliveBox('am')}${recent.length&&!(dlSame('am')&&UI.dl.feed&&UI.dl.feed.length)?`<div class="dlog">${recent.map(x=>{const q=G.players[x.pid]; return `<span>${badge(x.tid,18)}<i>${x.rd}-${x.no}</i>${x.pass?'<em>건너뜀</em>':q?`<b>${esc(q.name)}</b> <em>${posLabel(q)}</em>`:''}</span>`}).join('')}</div>`:''}`;
     /* 휴대폰·태블릿: 순위·우리 차례·추천 지명은 상단 바(draftTop)로 옮기고, 여기에는 일괄 처리 중 안내와 다른 구단 지명 소식만. 나머지는 상단 바 드래프트 정보를 누르면 펼친다 */
@@ -104,7 +104,7 @@ function draftBoard(){
     const left=Math.max(0,G.cal.draft-G.day);
     const dn=draftNo(G.user);
     head=`<section class="card hero dhead"><div class="row between"><span class="eyebrow">${G.year} 신인 드래프트 · ${dmd(G.cal.draft)}</span><span class="pill">D-${left}</span></div>
-      <p class="dpre-no">${dn?`우리 첫 지명은 <b>${draftFirstTxt(dn)}</b>${dn.first&&(dn.first.rd!==1||dn.first.no!==dn.r1)?` (원래 1라운드 ${dn.r1}순위 · 지명권 거래 반영)`:dn.r2!==dn.r1?`, 2라운드부터 ${dn.r2}순위`:''}`:`참가 ${pool.length}명`} ${hiI(`참가 선수 ${pool.length}명 중 ${DRAFT_ROUNDS}라운드 순번 ${DRAFT_ROUNDS*10}개만큼 지명합니다. 구단은 어느 라운드든 지명을 건너뛸(패스) 수 있어 실제 지명 인원은 더 적을 수 있습니다. 지명 순서는 지난 시즌 성적의 역순입니다.`)}</p>
+      <p class="dpre-no">${dn?`우리 첫 지명은 <b>${draftFirstTxt(dn)}</b>${dn.first&&(dn.first.rd!==1||dn.first.no!==dn.r1)?` (원래 1라운드 ${dn.r1}순위 · 지명권 거래 반영)`:dn.r2!==dn.r1?`, 2라운드부터 ${dn.r2}순위`:''}`:`참가 ${pool.length}명`} ${hiI(`참가 선수 ${pool.length}명 중 ${DRAFT_ROUNDS}라운드 순번 ${(draftPlan()||[]).length}개만큼 지명합니다. 구단은 어느 라운드든 지명을 건너뛸(패스) 수 있어 실제 지명 인원은 더 적을 수 있습니다. 지명 순서는 지난 시즌 성적의 역순입니다.`)}</p>
       ${dn?(fmOn()?drestBox(draftRestPre(),'드래프트 전에 미리 정해 두기'):`<details class="dpre-rest" data-k="draftRest" ${UI.open?.draftRest?'open':''}><summary class="small">자동 지명 기준 · 미리 정해 두기</summary>${drestBox(draftRestPre(),'드래프트 전에 미리 정해 두기')}</details>`):''}
       <details class="frule"><summary class="small">로스터·순위 안내</summary><p class="small">지금 정식 로스터는 ${rosterN(G.user)}/${ROSTER_MAX}명입니다. 지명한 신인은 내년 1월에 합류하므로, 그만큼 기존 선수를 방출해야 합니다. 지명은 어느 라운드든 건너뛸 수 있고, 다른 구단도 로스터가 차면 건너뜁니다.</p>
       <p class="small muted">언론 순위는 성적과 체격만 본 평가이고, 우리 순위는 담당 스카우트·단장 관찰을 더한 평가입니다. 스카우트도 틀립니다. ${hiI("우리 순위에는 관찰 전 임시 현재능력 추정도 들어갑니다. 관찰 0회 후보의 잠재력은 첫 관찰 전까지 ?로 표시합니다. 관찰이 쌓일수록 정확해지지만, 스카우트마다 좋아하는 유형이 있어 그 버릇은 남습니다. '강력 추천'은 스카우트가 언론보다 훨씬 높게 보는 후보입니다.")}${noScout.length?` <b>${noScout.join(', ')}</b> 지역은 담당 스카우트가 없어 잠재력이 ?로 나옵니다${noScout.some(gmN)?`(단장이 직접 본 후보 ${noScout.map(gmN).reduce((a,b)=>a+b,0)}명은 평가됨)`:''}.`:''} 관심 표시한 선수는 지명 때 바로 고를 수 있습니다.</p>

@@ -120,8 +120,9 @@ const TRADE_COOL=30;
 const TRADE_MAX_SAME=2;
 /* 예외: 급매 매물만 받는 거래는 제한 없음(그쪽이 빨리 정리하고 싶다). 맞대결 기간(경기장에서 단장끼리 만난다)에는 30일 간격 없이 시즌 한 번 더(3번까지) */
 /* 거래로 한도(한 시즌 2번)나 30일 간격에 걸린 구단의 받은 제안은 수락할 수 없으니 닫는다(카페 11-09: 수락해도 계속 불발) */
-function offerDropCool(){ G.offers=(G.offers||[]).filter(x=>{ if(!tradeCool(x.from,x.give))return true; offerMailDone(x.id); return false; }); }
-function tradeCool(tid,get){ if(get&&get.length&&get.every(id=>{ const q=G.players[id]; return q&&q.aiListed&&q.aiUrg; }))return null;
+function offerDropCool(){ G.offers=(G.offers||[]).filter(x=>{ if(!tradeCool(x.from,x.give,x.cash||0,x.pk))return true; offerMailDone(x.id); return false; }); }
+function tradeRecentMsg(ids){ const L=ids.map(id=>G.players[id]).filter(p=>recentTr(p)); return L.length?`${L.map(p=>p.name).join(', ')}: 최근 트레이드 뒤 ${TRADE_COOL}일이 지나야 다시 거래할 수 있습니다.`:''; }
+function tradeCool(tid,get,cash=0,pk){ if(get?.length&&get.every(id=>tradeUrgent(tid,G.players[id]))&&cash>=0&&!pkNorm(pk).get.length)return null;
   const h2h=seriesOpp()===tid; const cap=TRADE_MAX_SAME+(h2h?1:0);
   const Y=(G.trades||[]).filter(x=>x.with===tid&&x.y===G.year&&(x.me==null||x.me===G.user)); if(Y.length>=cap){ const d=Math.max(...Y.map(x=>x.d??G.day)); return {d,until:dnum(G.year+1,1,1),cap:true,n:Y.length,max:cap}; }
   if(h2h)return null; const L=(G.trades||[]).filter(x=>x.with===tid&&(x.me==null||x.me===G.user)&&x.d!=null&&G.day-x.d<TRADE_COOL&&G.day>=x.d); /* 30일 간격은 해를 넘겨도 잇는다(12월 말 거래, 검수 11-09w) */ if(!L.length)return null; const d=Math.max(...L.map(x=>x.d)); return {d,until:d+TRADE_COOL}; }
@@ -148,8 +149,10 @@ function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100);
 /* 정식 인원은 선수 신분(육성·복무·입단 예정 제외)으로 센다(rosterN과 같은 기준) */
 function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)&&!(q.joinY>G.year); }
 /* 우리 쪽 정원: 상대 쪽 초과는 막지만 우리 쪽은 넘어도 성사되고, 넘은 만큼 정리해야 진행된다. 확인창·받은 제안에 미리 보여 준다 */
-function tradeRosterTxt(give,get){ const n=rosterN(G.user)-give.filter(tradeCntN).length+get.filter(tradeCntN).length, over=n-ROSTER_MAX;
-  return `트레이드 후 정식 ${n}/${ROSTER_MAX}명${over>0?` · ${over}명 정리 필요(${period()==='season'||period()==='post'?'정리해야 진행할 수 있습니다':'개막 전까지'})`:''}`; }
+function tradeRosterTxt(give,get){ const n=rosterN(G.user)-give.filter(tradeCntN).length+get.filter(tradeCntN).length;
+  const d=rosterOpenDay(),y=dobj(d).y, counts=id=>{const p=G.players[id];return p&&!p.ys&&!(p.joinY>y)&&!milOn(p,d)&&!(p.frehab&&p.frehab!=='hold');};
+  const projected=rosterProj(G.user)-give.filter(counts).length+get.filter(counts).length, over=projected-ROSTER_MAX;
+  return `트레이드 후 정식 ${n}/${ROSTER_MAX}명 · 다음 개막 예상 ${projected}/${ROSTER_MAX}명${over>0?` · 개막 전까지 ${over}명 정리 필요`:''}`; }
 /* 거래 한쪽에 오간 선수·지명권·현금(지명권만 준 거래가 '보냄 -'으로 보이지 않게, 검수 11-09w) */
 function trSide(t,k){ const c=k==='get'?-(t.cash||0):(t.cash||0); return [...t[k],...((t.pk&&t.pk[k])||[]).map(x=>'지명권 '+x),...(c>0?['현금 '+money(c)]:[])].join(', ')||'-'; }
 /* 우리 구단 독주 정도: 시즌 중(20경기 이후) 1위일 때 2위와 승차(5경기당 1, 최대 2), 시즌 밖에는 지난 시즌 우승이면 1. 아니면 0 */
@@ -161,7 +164,7 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
   _evOut=new Set(get.map(id=>P(id)).filter(q=>{ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(q)]; return sl&&sl.ps.some(x=>x.id===q.id); }).map(pSlot));
-  let inV, outV, premiumV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)*pkHoard(ME(),k,pk.give)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=null; }
+  let inV, outV, premiumV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)*pkHoard(ME(),k,pk.give,pk.get)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=null; }
   const cashV=Math.min(cashVal(t,cash),CASH_SHARE*Math.max(1.5,outV)); inV+=cashV; /* 현금은 내주는 값의 22%까지만 메운다 */
   const theirN=rosterN(tid)+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
   const ov=Math.max(0,outV); let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?Math.min(1.5,ov*.3):0)-(hit.length?Math.min(.6,.2+ov*.1):0); /* 양보 폭은 선수 값에 비례(커뮤니티 피드백 11-11: 값 0.6짜리 급매 유망주를 1.5 고정 양보로 거의 공짜에 넘겼다) */ /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-Math.min(.9,ov*.3):-Math.min(.3,ov*.12)); /* 급매는 손해를 조금 보더라도 넘긴다(받을 값의 30%까지) */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
@@ -202,20 +205,21 @@ function aiCapMsg(t,c){ return `${tfull(t)} 단장: ${c.tight?'모기업이 지�
 /* 상대 단장이 얹어 달라고 부를 수 있는 우리 선수(역제안 공통, 커뮤니티 점검 11-17): proposeTrade가 막는 선수(소속·외국인·육성·부상·거부권·FA 잠금·입단 전)는 빼고,
    상대가 거의 값을 치지 않는 선수(TRADE_ADD_MIN 이하)도 뺀다. 예전에는 값 0짜리 선수를 얹으라고 해 따라 해도 한 번도 성사되지 않았다 */
 const TRADE_ADD_MIN=.5;
-function tradeAddable(tid,give,p){ return !!p&&p.team===G.user&&!p.foreign&&!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!give.includes(p.id)&&!ntcOfFor([p.id],tid)&&!faLock(p); }
+function tradeAddable(tid,give,p){ return !!p&&p.team===G.user&&!p.foreign&&!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!give.includes(p.id)&&!ntcOfFor([p.id],tid)&&!faLock(p)&&!recentTr(p); }
 /* 상대가 낸 역제안을 그대로 수락하면 proposeTrade의 모든 검사(FA 잠금·소속·거부권·외국인·현금·지명권·간격·구단주·연봉 상한·로스터)를 통과하고 받아들여지는지 */
 function tradeCtrOk(tid,c){ const give=c.give||[], get=c.get||[], cash=Math.round(c.cash||0), pk=pkNorm(c.pk), P=id=>G.players[id], t=team(tid);
-  if(!give.length&&!get.length)return false; if(faLockMsg([...give,...get]))return false;
+  if(!give.length&&!get.length)return false; if(tradeRecentMsg([...give,...get]))return false; if(faLockMsg([...give,...get]))return false;
   if(give.some(id=>!P(id)||P(id).team!==G.user)||get.some(id=>!P(id)||P(id).team!==tid))return false; if([...give,...get].some(id=>P(id).foreign))return false;
   if(ntcOfFor(give,tid)||ntcOf(get))return false;
   if(Math.abs(cash)>3000||(cash<0&&(!give.length||(t.cash||0)<-cash))||(cash>0&&(!get.length||spendable(G.user)<cash)))return false;
-  if(pkCheck(tid,give,get,pk)||tradeCool(tid,get))return false;
+  if(pkCheck(tid,give,get,pk)||tradeCool(tid,get,cash,pk))return false;
   const e=evalTrade(tid,give,get,cash,pk); if(!(e.ok&&e.theirN<=ROSTER_MAX&&e.theirN>=ROSTER_MIN))return false; /* 값 판정을 먼저(구단주 검사는 예산을 다시 계산해 무겁다) */
   const oc=tradeOwnerCheck(give,get,cash); if(oc&&!oc.ok)return false; const cc=tradeCapCheck(give,get); return !(cc&&!cc.ok); }
 /* 한 번 협상에서 역제안을 주고받는 횟수: 이만큼 오가면 상대 단장이 협상을 접는다(강경파는 2번) */
 const TRADE_ROUNDS=3;
 function proposeTrade(tid,give,get,cash,pk){
   const t=team(tid); cash=Math.round(cash||0); pk=pkNorm(pk); /* cash>0 우리가 얹음, cash<0 상대에게 현금을 받음(사용자 피드백 11-05) */
+  { const msg=tradeRecentMsg([...give,...get]); if(msg)return {ok:false,msg}; }
   if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'};
   if(!give.length&&!get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'};
   { const m=faLockMsg([...give,...get]); if(m)return {ok:false,msg:m}; }
@@ -230,7 +234,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드할 수 없습니다.'};
   { const pe=pkCheck(tid,give,get,pk); if(pe)return {ok:false,msg:pe}; }
   const gmn=`${tfull(t)} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);
-  { const cd=tradeCool(tid,get); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)}) 뒤 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
+  { const cd=tradeCool(tid,get,cash,pk); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)}) 뒤 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
   const oc0=tradeOwnerCheck(give,get,cash); if(oc0&&!oc0.ok)return {ok:false,owner:true,msg:oc0.msg};
   const cc0=tradeCapCheck(give,get); if(cc0&&!cc0.ok)return {ok:false,owner:true,msg:cc0.msg};
   const isCtr=!!(nt.ctr&&nt.ctr[sig]!=null&&G.day-nt.ctr[sig]<=7); /* 상대가 직접 낸 역제안·보완안은 일주일 동안 횟수·중복 제한 없이 받는다 */

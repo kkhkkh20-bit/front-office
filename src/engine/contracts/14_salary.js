@@ -134,7 +134,7 @@ function extCutFit(ft,fl,years,lk){ if(!ft||!fl)return ft; const gap=fl-extCutEq
   if(!L.includes('annual'))return {...ft,annual:Math.ceil((ft.annual+gap)/5)*5}; if(!L.includes('bonus'))return {...ft,bonus:Math.ceil(((ft.bonus||0)+gap*years/CT_BON)/5)*5}; return null; }
 function extMinY(p){ const ag=hasAgent(p)?agentOf(p):null; return ag&&(ag.style==='hard'||ag.size==='big')?(p.age<=29?4:p.age<=32?3:2)-1:0; }
 const extNextDay=p=>p&&p.extNg&&p.extNg.fold!=null&&p.extNg.fold>G.day?p.extNg.fold:null; /* 에이전트가 협상을 접었으면 다시 제안할 수 있는 날(계약 1단계: 한 주 한 번 대신 라운드 한도) */
-const extNgOf=p=>p.extNg||(p.extNg={});
+const extNgOf=p=>{ if(p.extNg&&p.extNg.tid!=null&&p.extNg.tid!==p.team){delete p.extNg;delete p.extCounter;} const S=p.extNg||(p.extNg={}); S.tid=p.team;return S; };
 /* 다년계약의 상한 결재(13_roster capOwnerCheck): 계약이 시작하는 시즌 기준, 계약금은 연평균 */
 function extCapCheck(p,pay,bonus,years){ const now=(G.rolled===G.year&&G.day>=KD(11,1))||period()==='pre'; const s=now?ctSeason():G.year+1; const a=pay+Math.round((bonus||0)/Math.max(1,years||1)); return capOwnerCheck(capPayWith(G.user,p.id,a,s).tot,capPayWith(G.user,null,null,s).tot,s,'ext'+p.id); }
 function offerExtension0(id,annual,years,acc,T,lock){
@@ -191,7 +191,7 @@ function releaseMany(ids){ const L=relPick(ids), cost=L.reduce((s,p)=>s+relCost(
    결산 뒤 겨울에는 올해 연봉을 다 줬고, 해마다 협상하는 연봉은 아직 계약 전이라 보장이 아니다. 우리·AI 같은 식 */
 const REL_FUT=.8;
 const relSettled=()=>!!(G.last&&G.last.y>=G.year); /* 올해 결산을 마쳤다(올해 연봉은 다 줬다) */
-function relCurFrac(p){ if(relSettled())return 0; const per=period(); if(per==='season')return tradeYrFrac(); if(per==='pre')return trimUnsigned(p)||p.hold?0:1; return 0; }
+function relCurFrac(p){ if(relSettled())return 0; const per=period(); if(per==='pre'&&(trimUnsigned(p)||p.hold))return 0; if(per==='season'||per==='pre'){ const [a,b]=payWin(G.year), start=per==='season'?Math.max(a,G.day):a, m=milPeriod(p); const away=m?Math.max(0,Math.min(b,m.until)-Math.max(start,m.from)):0; return clamp((b-start-away)/(b-a),0,1); } return 0; }
 function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,fut:0,tot:0}; const c0=Math.round((p.sal||0)*relCurFrac(p)); const left=(p.yrs||1)-(relSettled()&&G.rolled===G.year?0:1); /* 계약 넘김(rolled) 뒤 겨울에는 남은 연수가 모두 다음 시즌부터 */ const fut=p.faC?Math.round(p.sal*Math.max(0,left)*REL_FUT):0, next=p.extNext?Math.round(p.extNext.annual*p.extNext.years*REL_FUT):0; const cur=c0+fut; return {cur,next,fut,tot:cur+next}; }
 function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;

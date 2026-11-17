@@ -1,0 +1,8 @@
+const assert=require('node:assert/strict'),path=require('node:path'),{chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
+(async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;try{
+browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const page=await browser.newPage();await page.goto(server.url);
+const r=await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);G.tut={done:true,step:99};UI.title=false;G.day=KD(1,24);const from=G.teams.find(t=>t.id!==G.user).id,p=newPlayer({age:28,isP:false,base:55,pot:65,team:from});p.team=null;p.faFrom=from;p.faGrade='C';p.faPrevSal=100;p.ask={annual:800,years:4};p.ask0=800;
+G.fa={y0:G.year-1,pool:[p.id],offers:{[p.id]:{annual:1055,years:4,terms:{annual:300,bonus:1000,opt:500,years:4}}},ai:{[p.id]:{}},open:true,openDay:dnum(G.year-1,11,6),closed:false,results:[],cap:3,outN:{}};
+UI.faPos='all';UI.faQ='';UI.faSel=null;const html=faFM(),big=faBig(p);return {actual:html.includes('연봉 '+money(300))&&html.includes('계약금 '+money(1000))&&html.includes('옵션 연 '+money(500))&&!html.includes('연 '+money(1055)),big:big.includes('연봉 '+money(300))&&!big.includes('연 '+money(1055)),deadline:html.includes('마감까지 0일')};});
+assert.ok(r.actual&&r.big,'#381 실제 연봉·계약금·옵션 표시 '+JSON.stringify(r));console.log('통과 #381 FA 실제 계약 조건 표시');assert.ok(r.deadline,'#370 마감 당일 잔여 날짜 표시');console.log('통과 #370 마감 당일 0일 표시');
+}finally{await browser?.close();await server.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -15,7 +15,7 @@ function ngtOpen(k,id){ const p=G.players[id]; if(!p)return; let T;
   else if(k==='ext'){ const ec=p.extCounter&&p.extCounter.until>=G.day&&p.extCounter.terms?p.extCounter:null; /* 기한이 지난 역제안은 기본값으로 쓰지 않는다(검수 11-09s) */ const y=ec?ec.years:p.age<=29?4:p.age<=32?3:2; T=ec?{...ec.terms}:{...termsDemand(p,'ext',{annual:ngtExtDem(p,y),years:y}),role:null}; T.annual=round5(Math.max(MIN_SAL,T.annual*.94)); }
   else { const n=salNeg(id); T={years:1,annual:n?(n.cur??n.off):p.sal,bonus:0,opt:0,role:null,ntc:false}; }
   T=ngtClean(T); if(k!=='sal'&&!T.optC)T.optC=optCrit(p); if(k!=='sal')T.pm={...(T.pm||{})};
-  UI.ngt={k,id,T,msg:null,ed:false,lk:[],tab:'terms'}; renderSheet(); }
+  UI.ngt={k,id,T,msg:null,ed:false,lk:k==='fa'&&G.fa&&G.fa.offers[id]?(G.fa.offers[id].lock||[]).slice():[],tab:'terms'}; renderSheet(); }
 /* 기간을 바꿨을 때: 금액을 직접 고치지 않았으면 새 기간 기준으로 다시 잡고(요구대로 채웠으면 새 요구로), 고쳤으면 그대로 두고 알린다 */
 function ngtYears(N,y){ const p=G.players[N.id]; const T=N.T; T.years=y; if(N.k!=='ext')return;
   if(N.ed==='dem'){ const D=ngtDemand(N); Object.assign(T,{bonus:D.bonus,annual:D.annual,opt:D.opt}); N.kept=false; return; }
@@ -183,8 +183,8 @@ function ngtLock(f){ const N=UI.ngt; if(!N)return; const L=N.lk=N.lk||[]; const 
 function ngtSubmit(){ if(!contractMoneyValid())return; const N=UI.ngt; const p=G.players[N.id]; const T=ngtClean(N.T); const lk=(N.lk||[]).slice(); N.ctrNo=false;
   if(N.k==='fa'){ if(faOutBlocked(G.user,p)){ N.msg=`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조).`; return; }
     { const cc=ngtCapC(N); if(cc&&!cc.ok){ N.msg=cc.msg; N.res={st:'owner'}; return; } } /* 협상이 열리기 전에 미리 넣는 조건도 결재부터 */
-    if(G.day<G.fa.openDay){ const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); G.fa.offers[p.id]={annual:Math.round(termsVal(T,D)),years:T.years,terms:T}; N.msg='11월 6일 협상이 열리면 에이전트가 답합니다. 조건은 미리 넣어 두었습니다.'; return; }
-    const n0=negOf(p.id).log.length; const r=faNegotiate(p.id,{annual:T.annual,years:T.years,terms:T,lock:lk}); UI.faMsg={id:p.id,t:r.msg}; if(r.owner){ N.msg=r.msg; N.res={st:'owner'}; return; } N.msg=negOf(p.id).log.length>n0?null:r.msg.replace(/^[^:]+: /,''); N.res=r.st?{st:r.st,shop:r.shop,next:r.st==='fold'||r.st==='cool'||r.st==='grace'?negOf(p.id).fold:null}:null; return; }
+    if(G.day<G.fa.openDay){ const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); G.fa.offers[p.id]={annual:Math.round(termsVal(T,D)),years:T.years,terms:T,lock:lk}; N.msg=dmd(G.fa.openDay)+' 협상이 열리면 에이전트가 답합니다. 조건은 미리 넣어 두었습니다.'; return; }
+    const n0=negOf(p.id).log.length; const r=faNegotiate(p.id,{annual:T.annual,years:T.years,terms:T,lock:lk}); UI.faMsg={id:p.id,t:r.msg}; if(p.team===G.user){ UI.ngt=null; UI.stamp={title:'FA 계약',msg:r.msg}; return; } if(r.owner){ N.msg=r.msg; N.res={st:'owner'}; return; } N.msg=negOf(p.id).log.length>n0?null:r.msg.replace(/^[^:]+: /,''); N.res=r.st?{st:r.st,shop:r.shop,next:r.st==='fold'||r.st==='cool'||r.st==='grace'?negOf(p.id).fold:null}:null; return; }
   if(N.k==='ext'){ const r=offerExtension(p.id,T.annual,T.years,false,T,lk); N.msg=r.st==='owner'||r.st==='na'?r.msg:null; N.res=r.st?{st:r.st,next:r.next??(p.extLast||{}).next}:null; if(r.ok){ UI.stamp={title:'다년계약 합의',msg:`${p.name} · ${termsTxt(T,true)} · ${r.now?'바로 적용':'다음 시즌부터 적용'}`}; UI.ngt=null; } return; }
   const cc0=ngtCapC(N); const n=salNeg(N.id); const r=salOffer(p.id,T.annual); if(cc0&&!cc0.ok&&r===cc0.msg){ N.msg=r; N.res={st:'owner'}; return; } UI.ctMsg=r; const sn=salNeg(p.id)||{};
   if(n&&!/이번 주에는/.test(r)){ const L=n.log=n.log||[]; L.push({d:G.day,w:'구단',a:Math.round(T.annual)},{d:G.day,w:'에이전트',t:r.replace(/^[^:]+: /,'')}); if(L.length>8)L.splice(0,L.length-8); } else N.msg=r.replace(/^[^:]+: /,''); /* 연봉 협상 대화 기록(그 겨울 협상이 끝나면 함께 지워진다) */

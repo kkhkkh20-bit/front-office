@@ -13,7 +13,7 @@ function offerSum(o){ const P=id=>G.players[id]; const inP=o.give.map(P).filter(
 function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
   const mine=domestic(G.user).filter(p=>p.listed); const f=UI.blkF||'all';
   const ai=Object.values(G.players).filter(p=>p.aiListed&&p.team!=null&&p.team!==G.user).filter(p=>f==='all'||(f==='urg'&&p.aiUrg)||(f==='p'&&p.isP)||(f==='b'&&!p.isP)).sort((a,b)=>(b.aiUrg?1:0)-(a.aiUrg?1:0)||ovr(b)-ovr(a));
-  const sw={}; if(open)for(const q of ai)for(const m of mine){ try{ const e=evalTrade(q.team,[m.id],[q.id]); if(e.ok){ (sw[q.id]=sw[q.id]||[]).push(m); } }catch(err){} }
+  const sw={}; if(open)for(const q of ai)for(const m of mine){ try{ const e=evalTrade(q.team,[m.id],[q.id]); if(e.ok&&tradeCtrOk(q.team,{give:[m.id],get:[q.id]})){ (sw[q.id]=sw[q.id]||[]).push(m); } }catch(err){} }
   const pRow=(p,right,extra)=>`<div class="bk-r">${avImg(p)}<button class="bk-m" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b><i>${posLabel(p)} · ${p.age}세 · ${esc(tContract(p))}</i>${extra||''}</button><span class="bk-o">${rchip(Math.round(scoutReport(p).cur))}<em>${money(p.sal)}</em></span>${right||''}</div>`;
   /* 받은 제안 한 건: 구단·기한 / 받기·보내기 두 줄, 오른쪽에 수락·거절. 휴대폰은 누르면 거래 뒤 요약까지(PC는 펼침) */
   const nm=ids=>ids.map(id=>G.players[id]?`${esc(G.players[id].name)} ${rchip(Math.round(scoutReport(G.players[id]).cur))}`:'').join(' · ');

@@ -27,9 +27,10 @@ function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상�
    순위를 셀 때 기존 FA 계약 선수는 빼고, 2025년 1월 이사회 개정으로 비FA 다년계약 선수도 뺀다(계약 마지막 해에는 포함).
    보상: A 직전 연봉 200%+보호 20인 외 1명 또는 300%, B 100%+보호 25인 외 1명 또는 200%, C 150%(선수 없음) */
 function avgSal3(p){ const H=(p.salH||[]).slice(-3); return H.length?avg(H.map(x=>x.s)):p.sal; }
-function faGradeOf(p,all,snap){ if(p.age>=35)return 'C'; const n=p.faN||(p.lastFA!=null?1:0); if(n>=2)return 'C'; if(n===1)return p.faPrevGrade==='C'?'C':'B';
+function faPriorN(p){ return Math.max(Number.isFinite(p.faN)?p.faN:0,p.lastFA!=null?1:0); }
+function faGradeOf(p,all,snap){ if(p.age>=35)return 'C'; const n=faPriorN(p); if(n>=2)return 'C'; if(n===1)return p.faPrevGrade==='C'?'C':'B';
   const gs=q=>avgSal3(q); const S=q=>(snap&&snap.get(q.id))||q; /* snap: 스토브리그 시작 때 상태(먼저 선언한 동료도 원래 구단에 있는 것으로 센다) */
-  const D=all.filter(q=>{ const z=S(q); return !q.foreign&&(q.id===p.id||!(z.faC&&!z.ext)&&!(z.ext&&z.faC&&(z.yrs||0)>1)); }); const v=gs(p); const myT=S(p).team; const lg=D.filter(q=>gs(q)>v).length+1; const tm=D.filter(q=>S(q).team===myT&&gs(q)>v).length+1; p.faRank={lg,tm};
+  const D=all.filter(q=>{ const z=S(q); return !q.foreign&&(q.id===p.id||!(z.faC&&!z.ext)&&!(z.ext&&z.faC&&(z.gradeYrs??z.yrs??0)>1)); }); const v=gs(p); const myT=S(p).team; const lg=D.filter(q=>gs(q)>v).length+1; const tm=D.filter(q=>S(q).team===myT&&gs(q)>v).length+1; p.faRank={lg,tm};
   if(tm<=3&&lg<=30)return 'A'; if(tm<=10&&lg<=60)return 'B'; return 'C'; }
 /* KBO 보상: A등급 보호 20명, B등급 25명(보상선수 1명 + 연봉 200%/100%, 선수 없이 300%/200%), C등급 150% */
 const COMP={A:{prot:20,kbo:20,withP:2,cash:3},B:{prot:25,kbo:25,withP:1,cash:2},C:{prot:0,kbo:0,withP:0,cash:1.5}};
@@ -56,7 +57,7 @@ function compStart(p,from,to,rec){ const g=COMP[p.faGrade]; const prev=p.faPrevS
     if(to===U||from===U){ (G.comp=G.comp||[]).unshift({id:'cp'+(G.compSeq=(G.compSeq||0)+1),pid:p.id,name:p.name,grade:'C',from,to,prev,day:G.day,stage:'done',done:G.day,prot:[],cash,rec:rec.id}); compTrim(); } /* C등급도 FA 보상 기록에 남긴다(검수 11-09r) */
     return; }
   const c={id:'cp'+(G.compSeq=(G.compSeq||0)+1),pid:p.id,name:p.name,grade:p.faGrade,from,to,prev,day:G.day,stage:'protect',exp:G.day+3,prot:null,rec:rec.id}; c._rec=rec; /* AI끼리는 계약 결과가 목록에 들어가기 전에 바로 보상을 정하므로 그 객체에 직접 적는다(검수 11-06). 저장 전에 지운다 */ /* 계약 결과는 객체를 들고 있지 않고 식별자로 다시 찾는다(저장·불러오기 뒤 복사본이 갈라지지 않게) */
-  (G.comp=G.comp||[]).unshift(c); compTrim(); /* 먼저 목록에 넣는다: 아래에서 오류가 나도 compDaily가 마무리한다 */
+  (G.comp=G.comp||[]).unshift(c); if(to===U||from===U)compTrim(); /* AI끼리 잠깐 생성한 건은 사용자 보존 기록을 밀어내지 않는다. 먼저 목록에 넣는다: 아래에서 오류가 나도 compDaily가 마무리한다 */
   if(to===U||from===U)delete c._rec;
   if(to!==U){ c.prot=aiProtect(to,g.prot); c.away0=awayOf(to).map(q=>q.id); c.pool0=compPool(to).map(q=>q.id); c.stage='pick'; c.exp=G.day+3; /* 단계를 먼저 바꾸고 알린다 */
     if(from!==U){ compAiPick(c); if(c.stage==='done')G.comp=G.comp.filter(x=>x!==c); /* AI끼리 끝난 보상은 기록에 남기지 않는다(우리 기록 30건을 밀어내지 않게) */ return; }
@@ -64,22 +65,37 @@ function compStart(p,from,to,rec){ const g=COMP[p.faGrade]; const prev=p.faPrevS
   mail('운영팀',`보호선수 명단 제출: ${p.name} 영입 보상`,`${p.name}(${p.faGrade}등급) 영입으로 ${tname(from)}에 보상해야 합니다. 보호선수 ${g.prot}명을 정해 ${dmd(c.exp)}까지 제출하세요. 외국인, 이번 드래프트 지명 신인(입단 예정), 군 복무 중인 선수, 이번 겨울(해가 바뀌어도 같은 스토브리그) FA 계약 선수는 저절로 보호됩니다. ${tname(from)}은(는) 명단 밖에서 1명을 데려가거나 돈으로 받습니다.`,{imp:true,kind:'FA',acts:[{l:'보호명단 정하기',a:'go',v:'trade:fa'}]}); stop('FA',`${p.name} 영입 보상: 보호선수 ${g.prot}명을 정하세요.`); }
 /* 지명 후보: 명단 제출 때 상대 소속이었고 보호되지 않은 선수(제출 뒤 영입한 선수는 대상이 아니다: 검수 11-06) */
 function compCands(c){ return compPool(c.to).filter(q=>!c.prot.includes(q.id)&&!(c.away0||[]).includes(q.id)&&(!c.pool0||c.pool0.includes(q.id))); }
-function compAiPick(c){ const g=COMP[c.grade]; const ft=team(c.from); const cand=compCands(c).sort((a,b)=>aiVal(ft,b)-aiVal(ft,a)); const best=cand[0];
+function compAiPick(c){ const g=COMP[c.grade]; const ft=team(c.from); const cand=compCands(c).filter(q=>compPickCheck(c,q.id).ok).sort((a,b)=>aiVal(ft,b)-aiVal(ft,a)); const best=cand[0];
   const cashDiff=compPrev(c)*(g.cash-g.withP)/100; return compResolve(c,best&&aiVal(ft,best)>=Math.max(.8,cashDiff*.15)?best.id:null); }
+/* 실제 승계와 같은 합계로 지명 전에 정원·구단주 결재를 검사한다. 거절은 지급·기록을 바꾸지 않는다. */
+function compPickCheck(c,pid){ if(!c||c.stage!=='pick'||!COMP[c.grade]||!Array.isArray(c.prot))return {ok:false,msg:'처리할 보상 건이 없습니다.'};
+  if(!pid)return {ok:true}; if(!compCands(c).some(q=>q.id===pid))return {ok:false,msg:'지명할 수 없는 선수입니다(보호선수이거나 소속이 바뀜).'};
+  if(Math.max(rosterN(c.from),rosterProj(c.from))>=ROSTER_MAX)return {ok:false,msg:`현재 또는 다음 개막 확정 선수가 ${ROSTER_MAX}명으로 꽉 차 보상선수를 받을 수 없습니다. 먼저 한 명을 정리하거나 보상금을 고르세요.`};
+  const pay=capPayAs(c.from,[pid],[]), before=capInfo(c.from).pay;
+  const cap=c.from===ME()?capOwnerCheck(pay,before,sponSeason(),'comp'+c.id+':'+pid):aiCapTake(c.from,pay,before);
+  const ok=!cap||(c.from===ME()?cap.ok:!cap.hard); return {ok,cap,pay,before,msg:ok?'':cap.msg||'보상선수를 지명하면 구단주가 허용하는 샐러리캡 한도를 넘습니다.'}; }
 function compResolve(c,pid){
   if(!c||c.stage!=='pick'||!COMP[c.grade]||!Array.isArray(c.prot))return null;
   if(pid&&!compCands(c).some(q=>q.id===pid))return null; /* 지급·단계 변경 전에 현재 자격을 다시 검사(명단 낼 때 대표팀이라 자동 보호였던 선수는 계속 보호) */
-  const U=ME(); if(pid&&rosterN(c.from)>=ROSTER_MAX){ if(c.from===U)return null; pid=null; } /* 정원이 차면 선수 대신 보상금 */
+  const U=ME(); let check=compPickCheck(c,pid); if(!check.ok){ if(c.from===U)return null; pid=null; check=compPickCheck(c,null); } /* AI는 영입 불가면 현금 보상 */
   const g=COMP[c.grade]; const mult=pid?g.withP:g.cash; const cash=Math.round(compPrev(c)*mult); payOut(c.to,cash,'comp'); payIn(c.from,cash); c.cash=cash; c.stage='done'; c.done=G.day;
   const R0=(G.fa&&G.fa.results||[]).find(r=>r.id===(c.rec??c.pid)&&r.to===c.to)||c._rec; delete c._rec; if(R0)R0.compCash=cash;
-  if(pid){ const q=G.players[pid]; termsClear(q); q.team=c.from; q.listed=false; /* 남은 계약(연봉·기간)은 새 구단이 그대로 이어받는다. 상한 반영·옵션·거부권·약속처럼 계약한 구단에만 걸린 조건만 끝난다 */ for(const k in G.lineup)if(G.lineup[k]===q.id)delete G.lineup[k]; story(q,`FA ${c.name} 보상선수로 ${tname(c.from)} 이적`,'move'); mvLog('보상선수',q,c.to,c.from,`FA ${c.name} 보상`); try{ acqStamp(q,'보상선수',c.from); }catch(e){} c.player=q.name; c.cpid=q.id; if(R0)R0.compPlayer=q.name;
+  if(pid){ const q=G.players[pid]; tradeTerms(q); q.team=c.from; q.listed=false; /* 남은 계약(연봉·기간)은 새 구단이 그대로 이어받는다. 상한 반영·옵션·거부권·약속처럼 계약한 구단에만 걸린 조건만 끝난다 */ for(const k in G.lineup)if(G.lineup[k]===q.id)delete G.lineup[k]; story(q,`FA ${c.name} 보상선수로 ${tname(c.from)} 이적`,'move'); mvLog('보상선수',q,c.to,c.from,`FA ${c.name} 보상`); c.player=q.name; c.cpid=q.id; if(R0)R0.compPlayer=q.name;
     wire('FA',`${tname(c.from)}, ${c.name} 보상선수로 ${tname(c.to)} ${q.name}(${posLabel(q)}) 지명`,{tid:c.from,ref:q.id}); }
   else wire('FA',`${tname(c.from)}, ${c.name} 보상으로 선수 대신 현금 ${money(cash)}`,{tid:c.from});
+  if(pid&&c.from===U&&check.cap)capOwnerOk(check.cap,'보상선수 지명');
   if(c.from===U)note('FA',pid?`보상선수로 ${G.players[pid].name}을(를) 지명했습니다. 보상금 ${money(cash)}.`:`선수 대신 보상금 ${money(cash)}을(를) 받았습니다.`,pid);
   if(c.to===U)note('FA',pid?`${tname(c.from)}이(가) 보상선수로 ${G.players[pid].name}을(를) 데려갔습니다. 보상금 ${money(cash)}.`:`${tname(c.from)}이(가) 선수 대신 보상금 ${money(cash)}을(를) 받았습니다.`,pid);
   return c; }
-function compSubmit(id,prot){ if(G.unemp)return '지금은 맡은 구단이 없습니다.'; /* 야인은 전 구단 보호명단을 낼 수 없다 */ const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='protect'||c.to!==ME())return '처리할 명단이 없습니다.'; G.protLast={y:stoveY(),ids:[...(prot||[])]}; const g=COMP[c.grade]; const pool=compPool(G.user).map(q=>q.id); const P=[...new Set(prot)].filter(x=>pool.includes(x)).slice(0,g.prot); /* 같은 선수를 여러 번 넣어도 한 칸 */
+/* 재사용 보호명단은 구단 소유. 옛 단일 명단은 남아 있는 선수 소속으로 한 번 귀속시킨다. */
+function compProtLast(tid){ const by=G.protByTeam||{}, old=G.protLast; if(by[tid])return by[tid]; if(!old)return {y:stoveY(),ids:[]};
+  let owner=old.tid; if(owner==null){ const ts=[...new Set((old.ids||[]).map(id=>G.players[id]?.team).filter(t=>t!=null))]; if(ts.length===1)owner=ts[0]; }
+  if(owner!=null){ const by=G.protByTeam=G.protByTeam||{}; if(!by[owner])by[owner]={...old,tid:owner,ids:[...(old.ids||[])]}; }
+  return (G.protByTeam||{})[tid]||{y:stoveY(),ids:[]}; }
+function compSubmit(id,prot){ if(G.unemp)return '지금은 맡은 구단이 없습니다.'; /* 야인은 전 구단 보호명단을 낼 수 없다 */ const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='protect'||c.to!==ME())return '처리할 명단이 없습니다.'; const g=COMP[c.grade]; const pool=compPool(G.user).map(q=>q.id); const P=[...new Set(prot||[])].filter(x=>pool.includes(x)).slice(0,g.prot); /* 같은 선수를 여러 번 넣어도 한 칸 */
   if(!P.length&&pool.length)return `보호선수를 한 명 이상 고르세요(최대 ${g.prot}명). 내지 않으면 ${dmd(c.exp)} 다음 날 운영팀 추천 순으로 냅니다.`; /* 빈 명단은 제출로 보지 않는다(검수 11-06) */
+  compProtLast(c.to); /* 구버전 단일 명단도 덮어쓰기 전에 원구단에 보관 */
+  const last={y:stoveY(),tid:c.to,ids:[...P]}; (G.protByTeam=G.protByTeam||{})[c.to]=last; G.protLast=last;
   c.prot=P; c.away0=awayOf(G.user).map(q=>q.id); c.pool0=pool; c.stage='pick'; compAiPick(c); return c.player?`${tname(c.from)}이(가) ${c.player}을(를) 지명했습니다.`:`${tname(c.from)}이(가) 선수 대신 보상금을 택했습니다.`; }
 /* AI가 맡은 쪽 단계 처리: old는 막 떠난 구단(그 구단은 G.user와 상관없이 AI로 본다). 보호명단 → 지명 순서, 오류가 나면 보상금으로 끝낸다 */
 function compAiSide(tid,old){ return tid===old||tid!==ME(); }

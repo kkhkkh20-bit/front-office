@@ -20,7 +20,7 @@ function obsPriL(tid){ G.amPr=G.amPr||{}; return G.amPr[tid]=G.amPr[tid]||{}; }
 /* 관심 집합: 아마추어 관심 명단 + (우리 구단) 드래프트 보드 */
 function obsFollowSet(tid){ const S=new Set(amFollowL(tid)); if(tid===G.user)for(const id of G.shortlist||[]){ const p=G.players[id]; if(p&&p.prospect)S.add(id); } return S; }
 function obsPri(id,tid){ tid=tid??G.user; const P=obsPriL(tid); if(P[id]!=null&&obsFollowSet(tid).has(id))return P[id]; return obsFollowSet(tid).has(id)?1:-1; }
-function obsScN(tid){ return ((tid===G.user?G.scouts:G.lgStaff&&G.lgStaff[tid]&&G.lgStaff[tid].sc)||[]).length; }
+function obsScN(tid){ return ((tid===G.user&&!G.unemp?G.scouts:G.lgStaff&&G.lgStaff[tid]&&G.lgStaff[tid].sc)||[]).length; }
 function obsCap(tid){ return obsScN(tid??G.user)*OBS_CAP_K; }
 function obsFocusN(tid){ tid=tid??G.user; const P=obsPriL(tid), F=obsFollowSet(tid); return Object.keys(P).filter(k=>P[k]===2&&F.has(isNaN(+k)?k:+k)).length; }
 function obsSetPri(id,v,tid){ tid=tid??G.user; v=clamp(+v,0,2); if(v===2&&obsPri(id,tid)!==2&&obsFocusN(tid)>=obsCap(tid))return `집중 관찰은 ${obsCap(tid)}명까지입니다(스카우트 ${obsScN(tid)}명 × ${OBS_CAP_K}). 다른 선수를 보통으로 내리세요.`;
@@ -30,7 +30,7 @@ function obsSchoolsOf(reg){ return AREA.filter(a=>a.reg===reg).flatMap(a=>a.hs.c
 function obsBySchool(){ const by={}; for(const e of Object.values(amPipe().L))(by[e.s]=by[e.s]||[]).push(e);
   for(const id of G.draftClass||[]){ const p=G.players[id]; if(p&&p.prospect&&p.team==null&&p.school&&!p.ovsRet)(by[p.school]=by[p.school]||[]).push(p); } return by; }
 const obsSpon=(n,tid)=>{ const S=(G.schools||{})[n]; return !!S&&schGave(S,tid); };
-function clubAmScouts(tid){ return ((tid===G.user?G.scouts:G.lgStaff&&G.lgStaff[tid]&&G.lgStaff[tid].sc)||[]).filter(s=>(s.role||'am')==='am'&&s.region); }
+function clubAmScouts(tid){ return ((tid===G.user&&!G.unemp?G.scouts:G.lgStaff&&G.lgStaff[tid]&&G.lgStaff[tid].sc)||[]).filter(s=>(s.role||'am')==='am'&&s.region); }
 function obsVisitWeek(day){ if(!amOn()||!G.amU||!G.teams)return 0; const by=obsBySchool(); const win=(m=>m===12||m<=2)(dobj(day).m); let n=0; G.obsVis=G.obsVis||{};
   for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const scs=clubAmScouts(tid).filter(s=>{ const k=tripOf(s); return k==='sch'||k==='camp'; }); if(!scs.length)continue; /* 대회 출장 중인 스카우트는 학교 방문을 쉰다(스카우트 2단계) */
     const F=obsFollowSet(tid), P=obsPriL(tid), V=G.obsVis[tid]=G.obsVis[tid]||{}, used=new Set();
@@ -73,17 +73,30 @@ function clubLean(sc,p,fut){ if(!sc||!p||!p.prospect)return 0; const pk=scoutPet
 const DCHK_TOOL={타격:['con','pow'],제구:['ctl'],구위:['stf'],수비:['def'],주루:['spd']};
 const rchkQ=()=>G.rchk=G.rchk||[];
 const rchkCap=()=>clubAmScouts(G.user).length;
-const rchkOf=(id,k)=>rchkQ().find(x=>x.id===id&&x.k===k)||null;
-function rchkAsk(id,k){ const p=G.players[id]; if(!p||!p.prospect)return '드래프트 후보만 다시 볼 수 있습니다.'; const Q=rchkQ(); const i=Q.findIndex(x=>x.id===id&&x.k===k); if(i>=0){ Q.splice(i,1); return '재확인 요청을 거뒀습니다.'; }
-  const sc=bestScout(p.region,p); if(!sc)return `${p.region} 담당 아마추어 스카우트가 없어 다시 볼 사람이 없습니다.`; if(Q.length>=rchkCap())return `재확인은 한 번에 ${rchkCap()}건까지입니다(아마추어 스카우트 수). 답을 받은 뒤 다시 요청하세요.`;
-  const due=G.day+7+Math.floor(u01('rck'+G.day+k,id)*8); Q.push({id,k,d0:G.day,due,who:sc.name}); return `${sc.name} 스카우트가 ${pidName(p)}의 ${k}을(를) 다시 봅니다. 약 ${due-G.day}일 뒤 답이 옵니다.`; }
-function rchkAns(p,k){ if(k==='건강'){ const v=p.inj+hn('rkh',p.id)*.03; return (v>.24?'잔부상이 잦은 체질로 봅니다.':v>.18?'평범한 체질입니다. 큰 걱정은 없습니다.':'몸이 튼튼합니다.')+(p.amInj?` ${p.amInj} 이력은 확인했습니다.`:''); }
+/* 옛 요청도 구단·담당자에 한 번 귀속한다. 난수 없이 반복해도 같다. */
+function rchkInit(){ for(const x of G.rchk||[]){ if(x.tid==null)x.tid=(G.unemp&&G.unemp.from)??G.user;
+    if(x.sid==null){ const sc=clubAmScouts(x.tid).find(s=>s.name===x.who); if(sc)x.sid=sc.id; } }
+  for(const p of Object.values(G.players))for(const a of Object.values(p.rchkA||{}))if(a.tid==null)a.tid=G.user; }
+const rchkOf=(id,k)=>rchkQ().find(x=>x.id===id&&x.k===k&&(x.tid??G.user)===G.user)||null;
+const rchkApplies=(p,k)=>!!p&&(k==='건강'||k==='성격'||(p.isP?['제구','구위']:['타격','수비','주루']).includes(k));
+function rchkAsk(id,k){ const p=G.players[id]; if(G.unemp||!p||!p.prospect||p.team!=null)return '드래프트 후보만 다시 볼 수 있습니다.';
+  if(!rchkApplies(p,k))return '이 후보에게 해당하지 않는 재확인 항목입니다.';
+  rchkInit(); const Q=rchkQ(), i=Q.findIndex(x=>x.id===id&&x.k===k&&x.tid===G.user); if(i>=0){ Q.splice(i,1); return '재확인 요청을 거뒀습니다.'; }
+  const sc=bestScout(p.region,p); if(!sc)return `${p.region} 담당 아마추어 스카우트가 없어 다시 볼 사람이 없습니다.`;
+  if(Q.filter(x=>x.tid===G.user).length>=rchkCap())return `재확인은 한 번에 ${rchkCap()}건까지입니다(아마추어 스카우트 수). 답을 받은 뒤 다시 요청하세요.`;
+  const due=G.day+7+Math.floor(u01('rck'+G.day+k,id)*8); Q.push({id,k,tid:G.user,sid:sc.id,d0:G.day,due,who:sc.name});
+  return `${sc.name} 스카우트가 ${pidName(p)}의 ${k}을(를) 다시 봅니다. 약 ${due-G.day}일 뒤 답이 옵니다.`; }
+function rchkAns(p,k,tid=G.user){ if(k==='건강'){ const v=p.inj+hn('rkh',p.id)*.03; return (v>.24?'잔부상이 잦은 체질로 봅니다.':v>.18?'평범한 체질입니다. 큰 걱정은 없습니다.':'몸이 튼튼합니다.')+(p.amInj?` ${p.amInj} 이력은 확인했습니다.`:''); }
   if(k==='성격')return `면담 인상: ${gmMakeup(p)}`;
-  const ks=DCHK_TOOL[k]||[]; const rp=scoutReport(p); return ks.map(t=>{ const x=(rp.tools||[]).find(q=>q.k===t); return x?`${TOOLK[t]} 지금 ${FD_G(x.cur)}등급 · 장래 ${FD_G(x.fut)}등급`:''; }).filter(Boolean).join(' · ')||'이 후보에게는 해당하지 않는 항목입니다.'; }
+  const ks=DCHK_TOOL[k]||[]; const rp=tid===G.user&&!G.unemp?scoutReport(p):{tools:ks.map(k=>{ const e=aiDraftEst(tid,p),cur=clamp((p.r[k]||35)+hn(k+tid,p.id)*e.sd,20,80); return {k,cur,fut:clamp(cur+Math.max(0,e.v-ovr(p)),20,80)}; })}; return ks.map(t=>{ const x=(rp.tools||[]).find(q=>q.k===t); return x?`${TOOLK[t]} 지금 ${FD_G(x.cur)}등급 · 장래 ${FD_G(x.fut)}등급`:''; }).filter(Boolean).join(' · ')||'이 후보에게는 해당하지 않는 항목입니다.'; }
 function rchkDaily(){ const o=dobj(G.day);
   if((o.m===7||o.m===8)&&(o.d===1||o.d===15))for(const t of G.teams||[]){ const tid=t.id; if(tid===G.user)continue; const n=clubAmScouts(tid).length, P=obsPriL(tid); const L=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&P[p.id]===2&&!(p.rchkT&&p.rchkT[tid]===G.year+'.'+o.m+'.'+o.d)).slice(0,n); for(const p of L){ obsAdd(p,tid,2); (p.rchkT=p.rchkT||{})[tid]=G.year+'.'+o.m+'.'+o.d; } }
-  const Q=G.rchk; if(!Q||!Q.length||G.unemp)return; const done=[];
-  for(const x of [...Q]){ if(G.day<x.due)continue; Q.splice(Q.indexOf(x),1); const p=G.players[x.id]; if(!p||!p.prospect)continue; obsAdd(p,G.user,2); const t=rchkAns(p,x.k); (p.rchkA=p.rchkA||{})[x.k]={d:G.day,t,who:x.who}; done.push({p,x,t}); }
+  rchkInit(); const Q=G.rchk; if(!Q||!Q.length)return; const done=[];
+  for(const x of [...Q]){ if(G.day<x.due)continue; Q.splice(Q.indexOf(x),1); const p=G.players[x.id], sc=clubAmScouts(x.tid).find(s=>s.id===x.sid&&s.region===p?.region);
+    if(!p||!p.prospect||p.team!=null||!sc||!rchkApplies(p,x.k))continue;
+    obsAdd(p,x.tid,2); const t=rchkAns(p,x.k,x.tid), ans={d:G.day,t,who:sc.name,tid:x.tid};
+    if(x.tid===G.user&&!G.unemp){ (p.rchkA=p.rchkA||{})[x.k]=ans; done.push({p,x,t}); }
+    else { const C=(G.dClub=G.dClub||{})[x.tid]; if(C){ C.rchkA=C.rchkA||{}; (C.rchkA[p.id]=C.rchkA[p.id]||{})[x.k]=ans; } } }
   if(done.length){ try{ _dcc=null; }catch(e){} mail('스카우트팀',done.length>1?`재확인 답 ${done.length}건`:`재확인 답: ${pidName(done[0].p)} ${done[0].x.k}`,done.map(z=>`${z.x.who} 스카우트 · ${pidName(z.p)}(${posLabel(z.p)}, ${z.p.school||''}) ${z.x.k}\n${z.t}`).join('\n\n')+'\n\n다시 본 만큼 평가 오차가 줄었습니다.',{kind:'스카우트',ref:done[0].p.id,acts:[{l:'드래프트 보드',a:'go',v:'transfer:draft'}]}); } }
 /* ---------- 빅보드 구간·라운드 목표 ---------- */
 const DTIER=[[1,'1R 목표'],[2,'2~3R'],[4,'중위'],[8,'보험']];
@@ -94,8 +107,11 @@ function dplanOf(){ const P=G.dplan; return P&&P.y===G.year?P:(G.dplan={y:G.year
 /* 목표 점검: 그 자리 후보가 보드에서 목표 라운드 안 구간에 하나라도 있나 */
 function dplanCheck(){ const P=dplanOf(), SL=(G.shortlist||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect); return DPLAN_G.filter(([g])=>P[g]).map(([g,l])=>{ const L=SL.filter(p=>dplanG(p)===g&&(G.dmemo&&G.dmemo[p.id]&&G.dmemo[p.id].rd||99)<=P[g]); return {g,l,r:P[g],ok:L.length>0,n:L.length}; }); }
 /* 자동 지명 가산: 목표 라운드 안이고 이번 드래프트에서 아직 그 자리를 못 뽑았으면 +4 */
-function dplanBonus(p){ const d=G.draft; if(!d||d.done)return 0; const P=dplanOf(), g=dplanG(p), r=P[g]; if(!r)return 0; const rd=d.picks[d.cur]&&d.picks[d.cur].rd; if(!rd||rd>r)return 0;
-  return d.picks.some(k=>k.tid===G.user&&k.pid>0&&G.players[k.pid]&&dplanG(G.players[k.pid])===g)?0:4; }
+function dplanBonus(p,rd,picked){ const d=G.draft; if(rd==null){ if(!d||d.done)return 0; rd=d.picks[d.cur]?.rd; }
+  const P=dplanOf(), g=dplanG(p), r=P[g]; if(!r||!rd||rd>r)return 0;
+  const L=picked??(d&&!d.done?d.picks.filter(k=>k.tid===G.user&&k.pid>0).map(k=>G.players[k.pid]).filter(Boolean):[]);
+  return L.some(q=>dplanG(q)===g)?0:4; }
+function draftUserScore(p,rd,picked,rp){ const pol=draftPolK(); return draftVal(rp||scoutReport(p),p)+(pol&&draftFit(p,pol)?4:0)+dplanBonus(p,rd,picked); }
 /* 경기장에서 본 관심 선수(우리 구단): 그날 박스 한 줄을 보고에 남긴다 */
 function obsLogGame(x,t,reg,day,who,ev){ const sc=who?null:clubAmScouts(G.user).find(s=>s.region===reg); const Lg=G.obsLog=G.obsLog||{}; const L=Lg[x.id]=Lg[x.id]||[]; const prev=L.length?L[L.length-1][3]:null;
   L.push([day,who||(sc?sc.name:'스카우트팀'),`${ev?ev+' ':''}경기 관전 · ${t.b}`,prev]); if(L.length>6)L.splice(0,L.length-6); }

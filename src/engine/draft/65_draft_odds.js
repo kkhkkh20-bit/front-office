@@ -11,7 +11,7 @@ function doOwn(tid,p){ if(tid===G.user){ const rp=scoutReport(p); return {v:rp.o
 /* 언론 순위를 잠재력 척도로(1위 60 안팎, 10위 48, 30위 43, 100위 37) */
 const doPress=p=>p.press?60-5*Math.log(p.press):36;
 /* 소문: 한 주에 한 번 새로 돈다. 구단마다 1~2개. 맞을 확률 q = 그 구단 연고 권역 정보망과 그 지역 프로 담당 스카우트 */
-function draftRumors(tid){ tid=tid??G.user; const wk=Math.floor(G.day/7); const live=G.draft&&!G.draft.done; const pool=((live?G.draft.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&!p.ovsRet);
+function draftRumors(tid){ tid=tid??G.user; const wk=Math.floor(G.day/7); const live=G.draft&&!G.draft.done; const pool=((live?G.draft.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null);
   if(pool.length<10)return []; const top=[...pool].sort((a,b)=>(a.press||999)-(b.press||999)).slice(0,30); const out=[];
   for(const t of G.teams){ const c=t.id; if(c===tid)continue; const rr=seededRand('rum:'+G.year+':'+wk+':'+tid+':'+c);
     const pro=tid===G.user?!!coverOf(c).sc:true; const q=clamp(.3+areaNet(tid,teamArea(c))/200+(pro?.15:0),.3,.85);
@@ -22,23 +22,35 @@ const doRelL=q=>q>=.65?'믿을 만한 소문':q>=.5?'반쯤 믿을 소문':'흘�
 let _doc=null; /* 저장하지 않는 계산 캐시 */
 /* 앞으로 남은 지명 순번(우리 차례 두 번째까지) */
 function doPicks(tid){ const d=G.draft, live=d&&!d.done; const L=live?d.picks.slice(d.cur):(draftPlan()||[]); const out=[]; let mine=0; for(const k of L){ out.push(k); if(k.tid===tid&&++mine>=2)break; } return out; }
-function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; const pool=((live?d.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&!p.ovsRet);
-  const picks=doPicks(tid); const key=JSON.stringify([tid,G.year,G.day,live?d.cur:-1,pool.length,(G.shortlist||[]).join(','),(G.scouts||[]).map(s=>s.id+s.region+s.skill).join(','),pool.reduce((a,p)=>a+obsCount(p,tid),0)]);
+function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; const pool=((live?d.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null);
+  const picks=doPicks(tid), rest=tid===G.user?(live?draftRestOf():draftRestPre()):null;
+  const reports=new Map(pool.map(p=>[p.id,scoutReport(p)]));
+  const picked0=live?d.picks.filter(k=>k.tid===tid&&k.pid>0).map(k=>G.players[k.pid]).filter(Boolean):[];
+  const key=JSON.stringify([tid,G.year,G.day,live?d.cur:-1,picks,rest,dplanOf(),draftPolK(),G.shortlist||[],pool.map(p=>[p.id,reports.get(p.id),obsCount(p,tid),p.press,amDraftAdj(p)]),G.teams.map(t=>[t.id,t.mode,draftNeed(t.id)]),rosterProj(tid)]);
   if(_doc&&_doc.g===G&&_doc.k===key)return _doc.r;
   const own=new Map(pool.map(p=>[p.id,doOwn(tid,p)])); const rum=draftRumors(tid); const RB={}; for(const r of rum)RB[r.tid+':'+r.id]=DO_RUM_B*r.q;
   const base=pool.map(p=>{ const o=own.get(p.id), w1=1/(o.sd*o.sd), w2=1/(DO_PUB_SD*DO_PUB_SD); const m=(o.v*w1+doPress(p)*w2)/(w1+w2); return {p,m,s:Math.sqrt(1/(w1+w2)),cur:o.cur??40,adj:amDraftAdj(p),g:dGrp(p)}; });
   const clubs=[...new Set(picks.map(k=>k.tid))]; const need={}, cw={}; for(const c of clubs){ need[c]=draftNeed(c); const t=team(c); cw[c]=t.mode==='contend'?.5:.25; } /* 자리 필요는 각 구단 로스터(공개)로, 성향은 운영 방향(공개)으로 */
-  const board=(G.shortlist||[]).filter(id=>pool.some(p=>p.id===id)); const ourV=new Map(pool.map(p=>{ const rp=scoutReport(p); return [p.id,draftVal(rp,p)]; }));
+  const board=(G.shortlist||[]).filter(id=>pool.some(p=>p.id===id));
   const rr=seededRand('dodds:'+G.year+':'+G.day+':'+tid+':'+(live?d.cur:-1)); const gn=()=>{ let u=0; while(!u)u=rr(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*rr()); };
   const P={}; for(const p of pool)P[p.id]={av:0,av2:0,by:{},r1:0};
-  const myIdx=picks.map((k,i)=>k.tid===tid?i:-1).filter(i=>i>=0); const slot=picks.map(()=>({}));
-  for(let n=0;n<DO_N;n++){ const T=new Map(base.map(b=>[b.p.id,b.m+gn()*b.s])); const left=new Set(pool.map(p=>p.id));
+  const myIdx=picks.map((k,i)=>k.tid===tid&&rest?.mode!=='pass'?i:-1).filter(i=>i>=0); const slot=picks.map(()=>({}));
+  for(let n=0;n<DO_N;n++){ const T=new Map(base.map(b=>[b.p.id,b.m+gn()*b.s])); const left=new Set(pool.map(p=>p.id)), picked=[...picked0]; let proj=rosterProj(tid);
     for(let i=0;i<picks.length;i++){ const k=picks[i]; if(i===myIdx[0])for(const id of left)P[id].av++; if(i===myIdx[1])for(const id of left)P[id].av2++;
       let best=null,bs=-1e9;
-      if(k.tid===tid){ best=board.find(id=>left.has(id))??[...left].sort((a,b)=>ourV.get(b)-ourV.get(a))[0]; }
+      if(k.tid===tid){ if(rest?.mode==='pass'||rest&&proj>=ROSTER_MAX)continue;
+        if(!rest||rest.mode==='board')best=board.find(id=>left.has(id))??null;
+        if(best==null){ const cond=rest&&(rest.mode==='cond'||rest.mode==='board'); let unknown=false;
+          for(const b of base){ const p=b.p; if(!left.has(p.id))continue; const rp=reports.get(p.id);
+            if(cond){ const tier=potTierP(rp,p); if(!tier){ unknown=true; continue; } if(tier.n<(rest.min||3))continue; }
+            const v=draftUserScore(p,k.rd,picked,rp); if(v>bs){bs=v;best=p.id;} }
+          if(best==null&&cond){ if(unknown&&clubAmScouts(tid).length)break;
+            if(!unknown)continue;
+            for(const b of base){ if(!left.has(b.p.id))continue; const v=draftUserScore(b.p,k.rd,picked,reports.get(b.p.id)); if(v>bs){bs=v;best=b.p.id;} } } }
+        if(best!=null){ picked.push(G.players[best]); proj++; } }
       else for(const b of base){ if(!left.has(b.p.id))continue; const v=T.get(b.p.id)+gn()*DO_CLUB_SD+(b.cur-35)*cw[k.tid]+(need[k.tid][b.g]||0)+b.adj+(RB[k.tid+':'+b.p.id]||0); if(v>bs){ bs=v; best=b.p.id; } }
       if(best==null)break; left.delete(best); if(k.tid!==tid){ const o=P[best].by; o[k.tid]=(o[k.tid]||0)+1; if(k.rd===1)P[best].r1++; } slot[i][best]=(slot[i][best]||0)+1; } }
-  for(const id in P){ const o=P[id]; o.av/=DO_N; o.av2/=DO_N; o.r1/=DO_N; const b=Object.entries(o.by).sort((a,b)=>b[1]-a[1])[0]; o.top=b?{tid:+b[0],s:b[1]/DO_N}:null; delete o.by; }
+  for(const id in P){ const o=P[id]; o.av=myIdx.length?o.av/DO_N:null; o.av2=myIdx.length>1?o.av2/DO_N:null; o.noPick=!myIdx.length?(rest?.mode==='pass'?'pass':'none'):null; o.r1/=DO_N; const b=Object.entries(o.by).sort((a,b)=>b[1]-a[1])[0]; o.top=b?{tid:+b[0],s:b[1]/DO_N}:null; delete o.by; }
   const r={at:G.day,tid,live,pick:myIdx.length?picks[myIdx[0]]:null,pick2:myIdx.length>1?picks[myIdx[1]]:null,picks,slot:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1])[0]).map(x=>x?{id:+x[0],s:x[1]/DO_N}:null),slotL:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>({id:+x[0],s:x[1]/DO_N}))),P,rum};
   _doc={g:G,k:key,r}; return r; }
 /* '1라운드에 남을 확률 40%' 같은 말 */

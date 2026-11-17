@@ -15,8 +15,10 @@ function salAsk(p,off){ const b=salBasis(p); initPers(p); const amb=p.pers.amb;
   /* 예비 FA는 시장을 알고 있어 조금 더 부른다 */
   const pf=preFA(p)&&b.war>=1?.05:0;
   const lim=!p.faC&&!p.ext&&(p.svc||0)<faSvc(p)?Math.max(off,preCap(p)):Infinity; return round5(Math.min(lim,Math.max(off,off*(1+clamp(want+pf,0,.45))*agSalMul(p,p.team??G.user)))); } /* 에이전트 친분·기억은 그 선수 구단 기준(AI 연봉 협상도 같은 요구, 계약 2단계) */
-function salTalkInit(){ const C=G.contract; if(!C||C.neg)return; if(C.y==null)C.y=dobj(G.day).m<=2?G.year-1:G.year; C.neg={};
-  for(const id of C.ended){ const p=G.players[id]; if(!p||p.newSal==null)continue; const off=p.newSal; const n=C.neg[id]={off,ask:salAsk(p,off),cur:null,st:'open',wk:-1}; const m=p.mil; if(m&&m.until&&!m.done&&!m.exempt&&m.until>G.day){ n.milPrev={st:'open',ns:off,has:true}; n.st='ok'; n.mil=true; p.newSal=p.sal; } } } /* 복무 중·입대 예정 선수는 협상 개설 전에 예약했어도 입대 처리(enlist)와 같게 지금 연봉으로 잠근다. 예약 취소·특례면 milNegBack이 되돌린다(검수 11-09g) */
+function salMilLocked(p){ const m=p&&p.mil, C=G.contract; const y=(C&&C.y!=null?C.y:dobj(G.day).m<=2?G.year-1:G.year)+1; return !!(m&&m.until&&!m.done&&!m.exempt&&m.until>Math.max(G.day,payWin(y)[0])); }
+function salMilFix(){ const C=G.contract; if(!C||!C.neg)return; for(const [id,n] of Object.entries(C.neg)){ const p=G.players[id]; if(p&&n.mil&&!salMilLocked(p))milNegBack(p,p.mil); } }
+function salTalkInit(){ const C=G.contract; if(!C)return; if(C.neg){ salMilFix(); return; } if(C.y==null)C.y=dobj(G.day).m<=2?G.year-1:G.year; C.neg={};
+  for(const id of C.ended){ const p=G.players[id]; if(!p||p.newSal==null)continue; const off=p.newSal; const n=C.neg[id]={off,ask:salAsk(p,off),cur:null,st:'open',wk:-1}; const m=p.mil; if(salMilLocked(p)){ n.milPrev={st:'open',ns:off,has:true}; n.st='ok'; n.mil=true; p.newSal=p.sal; } } } /* 복무 중·입대 예정 선수는 협상 개설 전에 예약했어도 입대 처리(enlist)와 같게 지금 연봉으로 잠근다. 예약 취소·특례면 milNegBack이 되돌린다(검수 11-09g) */
 function salNeg(id){ const C=G.contract; if(!C)return null; salTalkInit(); return C.neg&&C.neg[id]||null; }
 /* 단장이 금액을 제시한다. 한 선수에게는 한 주에 한 번. 요구액에 가까우면 받아들이고, 아니면 요구액을 조금 낮춰 답한다 */
 /* 연봉 협상의 상한 결재: 구단 산정안까지는 보류 선수에게 줘야 하는 돈이라 결재가 없고, 산정안보다 더 주는 몫만 본다(13_roster capOwnerCheck) */
@@ -37,7 +39,7 @@ function salAskDown(n,amt){ n.ask=Math.min(n.ask,round5(Math.max(amt,n.off,n.ask
    연봉조정 신청은 AI 구단에 두지 않는다(미계약으로 대신 정리) */
 const AI_SAL_WK=4;
 function aiSalRoom(p,t){ if(!t||t.cash<-3000)return 0; let k=t.mode==='contend'?.06:t.mode==='rebuild'?.02:.04; let core=false; try{ core=isRegular(p)&&ovr(p)>=53; }catch(e){} if(core)k+=.03; if(t.cash<-1000)k/=2; return k; }
-function aiSalNeg(p){ const off=Math.max(MIN_SAL,p.newSal); const t=team(p.team); const n={off,ask:salAsk(p,off),cur:null,st:'open',wk:-1}; const hi=round5(off*(1+aiSalRoom(p,t)));
+function aiSalNeg(p){ if(salMilLocked(p))return {st:'mil',sal:p.sal,ask:p.sal}; const off=Math.max(MIN_SAL,p.newSal); const t=team(p.team); const n={off,ask:salAsk(p,off),cur:null,st:'open',wk:-1}; const hi=round5(off*(1+aiSalRoom(p,t)));
   let v=off; for(let i=0;i<AI_SAL_WK;i++){ v=Math.min(n.ask,round5(off+(hi-off)*i/Math.max(1,AI_SAL_WK-1))); n.cur=v;
     if(salAccepts(p,n,v)){ if(v>=n.ask){ p.mor=clamp((p.mor??60)+2,0,100); try{ if(hasAgent(p))agRelAdd(agentOf(p),1,`${p.name} 연봉 합의`,p.team); }catch(e){} } return {st:'ok',sal:v,ask:n.ask}; }
     salAskDown(n,v); }
@@ -56,7 +58,7 @@ function salArbFile(){ const C=G.contract; if(!C||C.done||!C.neg)return; const L
 /* 조정위원회: 직전 성적이 좋고 요구가 크지 않을수록 선수가 이길 가능성이 조금 오른다(그래도 대부분 구단이 이긴다) */
 function arbWin(b,a){ return R()<clamp(.06+(b.war>=3?.07:0)+(a.player<=a.club*1.12+.5?.05:0) /* 정확히 12%가 부동소수 오차로 빠지지 않게 */,.04,.22); }
 /* 단장이 떠난 구단의 조정 신청(arbP): 인계 때 앞당기지 않고 1월 20일에 같은 기준으로 판정한다(검수 11-09zzb) */
-function arbLeftDecide(){ for(const p of Object.values(G.players)){ const a=p.arbP; if(!a)continue; delete p.arbP; if(p.team==null)continue; const win=arbWin(salBasis(p),a); p.sal=Math.max(MIN_SAL,win?a.player:a.club); p.mor=clamp((p.mor??60)+(win?3:-8),0,100); story(p,`연봉조정 ${win?'승리':'패배'} (${money(p.sal)})`,'move'); } }
+function arbLeftDecide(){ for(const p of Object.values(G.players)){ const a=p.arbP; if(!a)continue; delete p.arbP; if(p.team==null||(a.tid!=null&&a.tid!==p.team))continue; const win=arbWin(salBasis(p),a); p.sal=Math.max(MIN_SAL,win?a.player:a.club); p.mor=clamp((p.mor??60)+(win?3:-8),0,100); story(p,`연봉조정 ${win?'승리':'패배'} (${money(p.sal)})`,'move'); } }
 function salArbDecide(){ const C=G.contract; if(!C||!C.neg)return; const out=[];
   for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='arb')continue; const b=salBasis(p);
     const win=arbWin(b,n.arb); const v=win?n.arb.player:n.arb.club;
@@ -76,15 +78,15 @@ const HOLD_GAP=1.15;
 function holdStart(p,off,ask,quiet){ p.hold={off:Math.max(MIN_SAL,off),ask,d:G.day}; delete p.newSal; if(quiet)return;
   mail('운영팀',`${p.name} 연봉 미계약`,`${p.name}(${posLabel(p)})이(가) 구단 제시액 ${money(p.hold.off)}에 사인하지 않았습니다. 요구액은 ${money(ask)}입니다.\n미계약 선수는 계약할 때까지 훈련과 경기에 참가할 수 없고, 시간이 갈수록 기분이 떨어집니다. 개막 직전까지 계약하지 못하면 중간 금액으로 계약합니다.`,{imp:true,kind:'연봉',acts:[{l:`요구액 ${money(ask)}으로 계약`,a:'holdPay',v:p.id},{l:`중간 금액 ${money(holdMidAmt(p))} 제시`,a:'holdMid',v:p.id}]}); }
 function holdMidAmt(p){ return round5((p.hold.off+p.hold.ask)/2); }
-function holdSign(p,sal,why){ if(!p||!p.hold)return '미계약 선수가 아닙니다.'; p.sal=Math.max(MIN_SAL,sal); delete p.hold; addLog(`${p.name} 연봉 ${money(p.sal)}에 계약(${why})`); return `${p.name}과(와) 연봉 ${money(p.sal)}에 계약했습니다.`; }
+function holdSign(p,sal,why){ if(!p||!p.hold)return '미계약 선수가 아닙니다.'; if(milServing(p))return '군 복무 중에는 연봉 미계약 협상을 진행하지 않습니다.'; p.sal=Math.max(MIN_SAL,sal); delete p.hold; addLog(`${p.name} 연봉 ${money(p.sal)}에 계약(${why})`); return `${p.name}과(와) 연봉 ${money(p.sal)}에 계약했습니다.`; }
 function holdPay(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; return holdSign(p,p.hold.ask,'요구액 수용'); }
-function holdMid(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; if(p.hold.midNo!=null&&G.day<p.hold.midNo)return `${dmd(p.hold.midNo)}부터 다시 제시할 수 있습니다.`;
+function holdMid(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; if(milServing(p))return '군 복무 중에는 연봉 미계약 협상을 진행하지 않습니다.'; if(p.hold.midNo!=null&&G.day<p.hold.midNo)return `${dmd(p.hold.midNo)}부터 다시 제시할 수 있습니다.`;
   const wk=Math.floor((G.day-p.hold.d)/7); if(R()<.45+wk*.1)return holdSign(p,holdMidAmt(p),'중간 금액 합의'); p.hold.midNo=G.day+3; p.mor=clamp((p.mor??60)-2,0,100); return `${p.name}이(가) 중간 금액을 거절했습니다. ${dmd(p.hold.midNo)}부터 다시 제시할 수 있습니다.`; }
 /* AI 구단의 미계약 선수(AI 판단 점검 #7): 사용자처럼 쓸 선수(팀 내 국내 종합 9위 안)에게는 중간 금액을 제시한다. 성공 확률(45%+주당 10%)과 거절 뒤 3일 대기는 holdMid와 같다.
    예전에는 AI가 아무것도 하지 않고 선수가 날마다 낮은 확률로 굽히기만 기다렸다. 이 판정은 따로 씨앗을 둔 난수로 굴려 경기 난수 흐름을 바꾸지 않는다 */
-function aiHoldMid(p,day){ const h=p.hold; if(!h||(h.midNo!=null&&day<h.midNo))return false; const o=ovr(p), rk=domestic(p.team).filter(q=>!q.ys&&ovr(q)>o).length+1; if(rk>9)return false;
+function aiHoldMid(p,day){ const h=p.hold; if(!h||milServing(p)||(h.midNo!=null&&day<h.midNo))return false; const o=ovr(p), rk=domestic(p.team).filter(q=>!q.ys&&ovr(q)>o).length+1; if(rk>9)return false;
   const wk=Math.floor((day-h.d)/7); if(withRng(p.id*7919+day*104729+17,()=>R())<.45+wk*.1){ p.sal=Math.max(MIN_SAL,holdMidAmt(p)); delete p.hold; return true; } h.midNo=day+3; p.mor=clamp((p.mor??60)-2,0,100); return false; }
-function holdDaily(day){ for(const p of Object.values(G.players)){ if(!p.hold)continue; if(p.team!==G.user){ if(p.team!=null&&day<G.cal.open-2&&aiHoldMid(p,day)){ R(); continue; } /* 난수 순서는 예전과 같게 */ if(day>=G.cal.open-2||R()<.015+.01*Math.floor((day-p.hold.d)/7)){ p.sal=Math.max(MIN_SAL,day>=G.cal.open-2?holdMidAmt(p):p.hold.off); delete p.hold; } continue; } /* 이직 등으로 남의 선수가 되면 그 구단도 같은 일정으로 정리(우리와 같은 기준, 검수 11-09s·11-09zzb) */
+function holdDaily(day){ for(const p of Object.values(G.players)){ if(!p.hold||milOn(p,day))continue; if(p.team!==G.user){ if(p.team!=null&&day<G.cal.open-2&&aiHoldMid(p,day)){ R(); continue; } /* 난수 순서는 예전과 같게 */ if(day>=G.cal.open-2||R()<.015+.01*Math.floor((day-p.hold.d)/7)){ p.sal=Math.max(MIN_SAL,day>=G.cal.open-2?holdMidAmt(p):p.hold.off); delete p.hold; } continue; } /* 이직 등으로 남의 선수가 되면 그 구단도 같은 일정으로 정리(우리와 같은 기준, 검수 11-09s·11-09zzb) */
     if((day-p.hold.d)%7===6)p.mor=clamp((p.mor??60)-3,0,100);
     if(day>=G.cal.open-2){ const r=holdSign(p,holdMidAmt(p),'개막 전 합의'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 개막을 앞두고 중간 금액으로 합의했습니다.`,{kind:'연봉'}); continue; } /* 개막 이틀 전: 개막 엔트리(개막 전날)를 정하기 전에 계약 */ /* shortcut: 개막 뒤까지 버티는 경우·임의해지는 다루지 않음, 실제 사례가 생기면 확장 */
     if(R()<.015+.01*Math.floor((day-p.hold.d)/7)){ const r=holdSign(p,p.hold.off,'구단 제시액 수용'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 선수가 구단 제시액을 받아들였습니다.`,{kind:'연봉'}); } } }
