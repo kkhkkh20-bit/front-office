@@ -6155,6 +6155,34 @@ T('[계약 1단계] 화면에 보인 역제안은 그대로 다시 내면 받아
   ok(done>=1,'다년계약 시험 대상 없음');
   simTo(()=>G.contract&&G.contract.ended&&G.contract.ended.length>0); const ids=Object.keys(salNeg(G.contract.ended[0])?G.contract.neg:{}); let sd=0;
   for(const id of ids.slice(0,6)){ const sn=G.contract.neg[id]; if(!sn||sn.st!=='open')continue; const low=Math.max(MIN_SAL,round5(sn.ask*.8)); if(low>=sn.ask)continue; salOffer(+id,low,true); if(sn.st!=='open')continue; const ask=sn.ask; salOffer(+id,ask,true); ok(sn.st==='ok','연봉 협상 답(요구액)을 그대로 냈는데 합의 안 됨'); sd++; } ok(sd>=1,'연봉 협상 시험 대상 없음'); });
+T('[FA 원소속 유예 11-17] 원소속 구단은 겨울마다 선수당 한 번 결렬 대신 14일 냉각 · 75% 이상 제안은 남고 · 두 번째는 원래 결렬',()=>{ fresh(); const p=CT1_FA(56,700,3,'rel'); p.faFrom=G.user; const n=negOf(p.id); n.mood=30; const F=G.fa;
+  ok(faGraceOk(p,G.user)&&!faGraceOk(p,G.teams.find(t=>t.id!==G.user).id),'원소속 판정이 구단 번호로 되지 않음');
+  const r=faNegotiate(p.id,{terms:CT1_T(p,.5)}); ok(r.st==='grace','원소속인데 결렬됨: '+r.st+' '+r.msg); ok(!n.closed&&n.fold===G.day+CT_COOL_DAYS&&n.mood===30&&!n.counter,'유예가 14일 냉각·분위기 30이 아님: '+JSON.stringify({c:n.closed,f:n.fold,d:G.day,m:n.mood}));
+  ok(r.msg.includes('원소속 구단이라 한 번 더 기회'),'유예 문구 없음: '+r.msg); ok(!F.offers[p.id],'75% 미만 제안이 남음'); ok(faScore(p,{tid:G.user,annual:700,years:3})>0,'유예 중인데 선수 비교에서 우리를 뺌');
+  ok(faNegotiate(p.id,{terms:CT1_T(p,1.1)}).st==='cool','냉각 중에 제안을 받음'); ok(!faGraceOk(p,G.user),'유예를 쓴 뒤에도 또 쓸 수 있음');
+  G.day=n.fold; const r2=faNegotiate(p.id,{terms:CT1_T(p,.5)}); ok(r2.st==='closed'&&n.closed&&!F.offers[p.id],'같은 겨울 두 번째 결렬이 원래 규칙이 아님: '+r2.st+' '+r2.msg);
+  ok(faNegotiate(p.id,{terms:CT1_T(p,1.1)}).st==='closed','두 번째 결렬 뒤 바로 다시 받음'); ok(faReopenDay(p.id)>=F.openDay+45,'두 번째 결렬의 재개일이 45일 규칙이 아님');
+  /* 75% 이상 제안이 결렬을 부르면 그 제안을 남긴다 */
+  const q=CT1_FA(56,700,3,'rel'); q.faFrom=G.user; const m=negOf(q.id); m.mood=30; const r3=faNegotiate(q.id,{terms:CT1_T(q,.8)}); ok(r3.st==='grace'&&G.fa.offers[q.id]&&r3.msg.includes('그대로 두겠습니다'),'75% 이상 제안이 사라짐: '+r3.st+' '+r3.msg);
+  /* 먼저 걸어 둔 75% 이상 제안이 있으면 낮게 부른 제안 대신 그 제안으로 되돌린다 */
+  const s=CT1_FA(56,700,3,'rel'); s.faFrom=G.user; const ns=negOf(s.id); const good=CT1_T(s,.95); faNegotiate(s.id,{terms:good}); const keep=JSON.stringify(G.fa.offers[s.id]); ns.mood=26; const r4=faNegotiate(s.id,{terms:CT1_T(s,.5)}); ok(r4.st==='grace'&&JSON.stringify(G.fa.offers[s.id])===keep,'앞서 걸어 둔 제안으로 되돌리지 않음: '+r4.st+' '+JSON.stringify(G.fa.offers[s.id]));
+  /* 새 겨울(G.fa 새로 만듦)에는 다시 한 번 */
+  const f0=G.fa.grace; G.fa.grace=undefined; ok(faGraceOk(p,G.user),'새 겨울에 유예가 없음'); G.fa.grace=f0; });
+T('[FA 원소속 유예 11-17] 원소속이 아닌 구단은 그대로 결렬 · AI 원소속 구단도 같은 판정(구단 번호) · 난수를 쓰지 않는다',()=>{ fresh(); const p=CT1_FA(56,700,3,'rel'); const n=negOf(p.id); n.mood=30; const ag=agentOf(p); const k0=agRel(ag); const mor0=p.mor??60;
+  ok(p.faFrom!==G.user,'준비 실패'); const r=faNegotiate(p.id,{terms:CT1_T(p,.5)}); ok(r.st==='closed'&&n.closed&&!G.fa.offers[p.id],'원소속이 아닌데 유예됨: '+r.st); ok((p.mor??60)===clamp(mor0-10,0,100),'결렬 기분 하락이 바뀜'); ok(agRel(ag)<k0,'결렬 친분 하락이 없음'); ok(!faGraceOk(p,G.user)&&!(G.fa.grace&&G.fa.grace[p.id]!=null),'원소속이 아닌데 유예 기록');
+  /* AI 원소속 구단: 같은 함수가 구단 번호로 판정한다. AI 입찰·인상은 분위기 결렬 없이 접기만 한다(ctGate·ctFold) */
+  const q=CT1_FA(56,700,3,'rel'); const own=q.faFrom; ok(own!==G.user&&faGraceOk(q,own),'AI 원소속 구단 판정이 다름'); faGraceUse(q,own); ok(!faGraceOk(q,own),'AI 원소속도 한 번만');
+  const A={annual:100,years:2,rounds:ctRoundsMax(agentOf(q)),d0:G.day}; ok(ctGate(A,ctRoundsMax(agentOf(q)))==='rounds','AI 입찰 한도'); ctFold(A); ok(A.fold===G.day+CT_COOL_DAYS&&!A.closed,'AI 원소속 입찰이 접음이 아닌 결렬');
+  const s=CT1_FA(56,700,3,'rel'); s.faFrom=G.user; negOf(s.id).mood=30; const r0=__rngState(); const rr=faNegotiate(s.id,{terms:CT1_T(s,.5)}); ok(rr.st==='grace'&&__rngState()===r0,'유예가 난수를 씀'); });
+T('[FA 제안 전 경고 11-17] 예상 반응(faPreview)이 엔진 결과와 같다 · 상태·난수를 바꾸지 않는다',()=>{ fresh(); let n=0;
+  for(const own of [false,true])for(const style of ['rel','hard'])for(const mood of [95,40,34,30,26])for(const k of [1.08,.95,.8,.6]){ const p=CT1_FA(56,700,3,style); if(own)p.faFrom=G.user; negOf(p.id).mood=mood; const T=CT1_T(p,k);
+    const s0=JSON.stringify([G.fa.neg[p.id],G.fa.offers[p.id]||null]), r0=__rngState(); const P=faPreview(p.id,{terms:T}); ok(__rngState()===r0&&JSON.stringify([G.fa.neg[p.id],G.fa.offers[p.id]||null])===s0,'미리보기가 상태·난수를 바꿈');
+    const R=faNegotiate(p.id,{terms:T}); const exp=P.brk?(own?'grace':'closed'):P.st==='ok'?'wait':P.st==='counter'?'counter':'no'; ok(R.st===exp,'예상 '+P.st+(P.brk?'(결렬)':'')+' / 실제 '+R.st+' · 분위기 '+mood+' k '+k+' '+style);
+    if(!P.brk)ok(negOf(p.id).mood===P.after,'예상 분위기 '+P.after+' / 실제 '+negOf(p.id).mood); ok(P.warn===(P.brk||k<.75),'확인창 조건이 다름'); n++; }
+  ok(n===80,'준비 실패');
+  const q=CT1_FA(56,700,3,'rel'); negOf(q.id).mood=30; const P=faPreview(q.id,{terms:CT1_T(q,.6)}); ok(faPreviewTxt(P)==='결렬 위험(분위기 −25, 지금 분위기 30 → 결렬)','경고 문구: '+faPreviewTxt(P));
+  ok(faPreviewTxt(faPreview(q.id,{terms:CT1_T(q,1.08)}))==='수락 가능','수락 문구'); negOf(q.id).mood=60; ok(faPreviewTxt(faPreview(q.id,{terms:CT1_T(q,.8)})).startsWith('분위기 하락(−10'),'하락 문구');
+  /* 숨은 다른 구단 제안은 미리보기에 넣지 않는다 */ const op=G.teams.find(t=>t.id!==G.user&&t.id!==q.faFrom).id; const a=JSON.stringify(faPreview(q.id,{terms:CT1_T(q,.95)})); G.fa.ai[q.id]={}; const b=faPreview(q.id,{terms:CT1_T(q,.95)}); G.fa.ai[q.id]={[op]:{annual:5000,years:5}}; const c=faPreview(q.id,{terms:CT1_T(q,.95)}); ok(c.st===b.st&&c.nAI===1,'숨은 다른 구단 제안 금액이 경고에 들어감'); });
 T('[계약 1단계] 라운드 한도를 넘기면 에이전트가 협상을 접고, 마지막 라운드에 경고한다',()=>{ fresh(); const p=CT1_FA(56,700,3,'hard'); ok(agRoundsMax(p)===TRADE_ROUNDS-1,'강경형 라운드 한도가 트레이드 강경파와 다름'); const RM=agRoundsMax(p);
   for(let i=1;i<RM;i++){ const r=faNegotiate(p.id,{terms:CT1_T(p,.8)}); ok(r.st==='no','준비 실패 '+r.st); if(i===RM-1)ok(/다음 제안이 마지막 라운드/.test(r.msg),'마지막 라운드 직전 경고 없음: '+r.msg); }
   const rL=faNegotiate(p.id,{terms:CT1_T(p,.95)}); ok(rL.st==='counter'&&/이번이 마지막 조건/.test(rL.msg),'마지막 라운드 역제안에 경고 없음: '+rL.st+' '+rL.msg);
