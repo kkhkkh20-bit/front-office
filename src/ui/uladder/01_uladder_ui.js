@@ -135,12 +135,18 @@ Object.assign(A,{
   ulBoardT(v){ UL.sv.bt=v==='all'||v==='prev'?v:+v|0; render(); },
   ulSvRe(){ ulSvStale(); render(); },
   /* 서버 기록 지우기(개인정보: docs/privacy.md, 사용자 11-17): v1 플레이어 전부 + 이 세계의 예전 KV 덱. 이 기기에서는 서버 래더를 끈다(자동으로 다시 만들지 않게) */
-  async ulSvDel(){ if(UL.busy)return; if(!confirm('서버에 있는 내 래더 기록(닉네임·덱·시즌 기록·맞대결)을 지웁니다. 되돌릴 수 없습니다. 이 기기의 리그 기록은 그대로 남습니다.'))return;
-    UL.busy=true; render(); const C=FrontOfficeCore; let ok=true;
-    try{ const r=await ulNet().deleteMe(); ok=r.ok||r.status===401; }catch(e){ ok=false; }
-    if(ok&&G&&G.wid)await ulApi('/deck/'+encodeURIComponent(G.wid),{method:'DELETE'}).catch(()=>{});
-    UL.busy=false; if(!ok)return ulSay('서버 기록을 지우지 못했습니다. 잠시 뒤 다시 해 주세요.',true);
-    C.netSetEnabled(false); Object.assign(UL,{v1:'no',me:null,srv:'',v1sync:''}); ulSvStale(); UL.sv.me=null; UL.sv.rv=null; ulSay('서버 기록을 지웠습니다. 이 기기에서는 서버 래더를 껐습니다. 리그는 이 기기에서 그대로 할 수 있습니다.'); },
+  /* 두 서버(새 래더 서버 v1 · 예전 덱 서버 KV)를 따로 확인한다. 하나라도 실패하면 어느 쪽인지 알리고, 남은 지우기를 저장(uld().svDel)해 '남은 것 다시 지우기'로 이어 한다(외부 검수 11-17: 예전 서버가 503이어도 '지웠습니다'라고 하던 문제) */
+  async ulSvDel(v){ if(UL.busy)return; const U=uld(), P0=U&&U.svDel, retry=v==='retry'&&P0;
+    if(!retry&&!confirm('서버에 있는 내 래더 기록(닉네임·덱·시즌 기록·맞대결)을 지웁니다. 되돌릴 수 없습니다. 이 기기의 리그 기록은 그대로 남습니다.'))return;
+    const P=retry?{v1:!!P0.v1,kv:P0.kv||null}:{v1:true,kv:G&&G.wid?G.wid:null}; if(U){ U.svDel=Object.assign({},P); ulSave(); } /* 시작 전에 남겨 둔다: 도중에 창을 닫아도 다음에 이어 지운다 */
+    UL.busy=true; render(); const C=FrontOfficeCore;
+    if(P.v1){ try{ const r=await ulNet().deleteMe(); if(r&&(r.ok||r.status===401))P.v1=false; }catch(e){} }
+    if(P.kv){ try{ const {r}=await ulApi('/deck/'+encodeURIComponent(P.kv),{method:'DELETE'}); if(r&&(r.ok||r.status===404))P.kv=null; }catch(e){} }
+    UL.busy=false; const U2=uld();
+    if(!P.v1){ C.netSetEnabled(false); Object.assign(UL,{v1:'no',me:null,srv:'',v1sync:''}); ulSvStale(); UL.sv.me=null; UL.sv.rv=null; }
+    if(!P.v1&&!P.kv){ if(U2){ delete U2.svDel; ulSave(); } return ulSay('서버 기록을 지웠습니다. 이 기기에서는 서버 래더를 껐습니다. 리그는 이 기기에서 그대로 할 수 있습니다.'); }
+    if(U2){ U2.svDel=P; ulSave(); }
+    ulSay(`서버 기록을 다 지우지 못했습니다. ${P.v1&&P.kv?'새 래더 서버와 예전 덱 서버 모두':P.v1?'새 래더 서버(닉네임·시즌 기록)':'예전 덱 서버(등록 덱)'}에 아직 남아 있습니다.${!P.v1?' 새 래더 서버 기록은 지웠습니다.':!P.kv&&G&&G.wid?' 예전 덱 서버 기록은 지웠습니다.':''} 잠시 뒤 '남은 서버 기록 다시 지우기'를 눌러 주세요.`,true); },
   ulReconnect(){ Object.assign(UL,{v1:'',v1at:0,srv:'',v1sync:'',tiersSt:'',meta:null,msg:''}); ulSvStale(); render(); }, /* 다시 연결(외부 검수 11-17 #12: 실패를 계속 들고 있지 않게) */
   ulKvRetry(){ const R=uld()&&uld().last; if(R)ulKvTier(R); },
   ulSvOn(){ FrontOfficeCore.netSetEnabled(true); Object.assign(UL,{v1:'',srv:'',v1sync:''}); ulSvStale(); ulSay('서버 래더를 다시 켰습니다. 덱이 있으면 서버에 올립니다.'); },
@@ -156,7 +162,9 @@ function ulH2hHtml(t){ if(!t||!t.pid||!ulV1On()||!ulNet().signedIn())return ''; 
 const ulDay=ms=>{ const d=new Date(ms+9*3600e3); return `${d.getUTCMonth()+1}.${d.getUTCDate()}`; };
 const ulAgo=ms=>{ const m=Math.round((Date.now()-ms)/60000); return m<1?'방금':m<60?m+'분 전':m<1440?Math.round(m/60)+'시간 전':Math.round(m/1440)+'일 전'; };
 /* 순위 탭(서버 v1, 사용자 11-17): 내 시즌 카드 · 단계별 순위표(20위) · 최근 소식. v1에 연결되지 않으면 안내 한 칸 */
-function ulRankHtml(U,msg){ const C=FrontOfficeCore, S=UL.sv;
+/* 서버 기록 지우기가 일부 실패해 남은 것(uld().svDel): 어느 서버인지 + 다시 지우기 */
+function ulSvDelPendHtml(U){ const P=U&&U.svDel; if(!P||(!P.v1&&!P.kv))return ''; return `<div class="note bad ul-svdel">서버 기록 지우기가 끝나지 않았습니다: ${[P.v1?'새 래더 서버(닉네임·시즌 기록)':'',P.kv?'예전 덱 서버(등록 덱)':''].filter(Boolean).join(' · ')}에 남아 있습니다. <button class="btn small" data-a="ulSvDel" data-v="retry"${UL.busy?' disabled':''}>남은 서버 기록 다시 지우기</button></div>`; }
+function ulRankHtml(U,msg){ const C=FrontOfficeCore, S=UL.sv; msg=ulSvDelPendHtml(U)+msg;
   if(!ulV1On()){ const off=xfAvail()&&!C.netEnabled(); return [`<section class="card"><h2 class="sec">순위</h2><p class="small muted">${!xfAvail()?'내려받은 게임에서는 서버 순위를 볼 수 없습니다.':off?'이 기기에서 새 래더 서버를 껐습니다. 리그는 그대로 할 수 있습니다.':UL.v1==='probing'?'래더 서버에 연결하는 중입니다.':'지금은 새 래더 서버에 연결할 수 없습니다. 리그는 이 기기에서 그대로 할 수 있습니다.'}</p>${off?'<div class="btns"><button class="btn" data-a="ulSvOn">서버 래더 다시 켜기</button></div>':xfAvail()&&UL.v1!=='probing'?'<div class="btns"><button class="btn" data-a="ulReconnect">다시 연결</button></div>':''}${msg}</section>`]; }
   const N=ulNet(); ulSvMe(); ulSvFeed(); const bt=S.bt!=null?S.bt:(U.tier|0); ulSvBoard(bt); const multi=bt==='all'||bt==='prev'; const M=S.me, E=M&&M.entry, mypid=(N.player()||{}).id;
   const rvL=(L,who)=>L&&L.length?`<p class="dk-t">${who}</p>${L.map(x=>`<p class="small">${esc(x.nickname)} <span class="muted">${x.n}경기</span> <b>${x.w}승 ${x.l}패${x.d?` ${x.d}무`:''}</b></p>`).join('')}`:'';

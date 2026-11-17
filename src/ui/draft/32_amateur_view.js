@@ -66,7 +66,7 @@ const AM_STY_TXT={육성형:'겨울마다 선수들이 조금 더 자랍니다.'
 function amWord(e){ const T=amTier(amEstU(e,G.user)); return T.lo===T.hi?`${T.t}(${T.w})`:`${T.t}(${T.lo}~${T.hi} · ${T.w})`; }
 function amPlayerView(id){ const e=amPipe().L[id]||(typeof id==='string'&&id[0]==='f'?amDepE(id):null); /* 부원도 한 사람(13b_am_depth, 사용자 11-17) */ const back=`<button class="btn small" data-a="amBack">← 아마추어 야구</button>`;
   if(!e){ const p=G.players[id]; if(p){ UI.amP=null; return back+`<p class="small"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> 선수 화면에서 볼 수 있습니다.</p>`; } return back+emptyState('선수 정보가 없습니다.'); }
-  const p={isP:!!e.P,college:!!e.c,amY:e.y.map(r=>amRowObj(e,r)).sort((a,b)=>a.y-b.y)}; const K=e.P?AM_PK:AM_BK; p.am={}; for(const k of K)p.am[k]=p.amY.reduce((a,r)=>a+(r[k]||0),0);
+  const p={isP:!!e.P,college:!!e.c,amY:e.y.map(r=>amRowObj(e,r)).sort((a,b)=>a.y-b.y)}; const K=e.P?AM_PK:AM_BK; p.am=p.amY.length?{}:null; if(p.am)for(const k of K)p.am[k]=p.amY.reduce((a,r)=>a+(r[k]||0),0); /* 기록이 없는 부원은 '기록 없음'(0 합계 줄을 만들지 않는다) */
   const fol=amFollowing(G.user,e.id);
   return `${back}${csec(esc(e.n),`<p class="small">${amLnkS(e.s)} ${amGrade(e,G.year)>(e.c?4:3)?'졸업':amGrade(e,G.year)+'학년'}${e.dep?' 부원':''} · ${e.P?'투수':POSK[e.pos]||e.pos} · ${esc(e.t)}투${esc(e.b)}타 · ${e.ht}cm ${e.wt}kg · ${e.gy} 드래프트 대상</p>
     <p class="small">스카우트 평가: ${amWord(e)}${u18Of(e)?' · <span class="pill acc">U-18 대표</span>':''}</p><p class="small">학년별: ${amTrendHtml(e,!!e.P,!!e.c,true)}</p><p class="small">${esc(amObsTxt(e))}${e.gy-G.year>0?` · 졸업까지 ${e.gy-G.year}년이 남아 범위가 넓습니다.`:''}</p>${e.ai&&e.ig<=G.year?`<p class="small muted">${esc(e.ai)}</p>`:''}
