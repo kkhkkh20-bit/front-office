@@ -1,0 +1,44 @@
+{
+  "id": "v22_blue_sf000015",
+  "index": 0,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "blue",
+  "hair": "bob",
+  "smile": "soft",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000015_identity_guide.jpg",
+  "source_guide_id": "sf3_000015",
+  "source_guide_dataset": "SFHQ part3, public synthetic reference",
+  "source_guide_row_idx": 15,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "8316660cc0f8b1993a9f52164543185be6934cf469061c576385df9f9adb96a2",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "costume_reference": "/dev/shm/v22_work/kits/blue.png",
+  "generation_attempt": 134,
+  "status": "PENDING_VALIDATION",
+  "purpose": "new native stage portrait from public synthetic identity reference",
+  "composition_reference": "/dev/shm/v22_work/v22_blue_sf000015_reference.png",
+  "prompt": "Finish these FOUR real photographic Korean adult cheerleader portraits in EXACT2x2 EQUAL SQUARE grid, native1254x1254orhigher. WHITE CROSS at exactCENTER defines quadrants: retain thinwhitecross, no rowboundary shift/mixing. Preserve EACH corresponding exact distinct face/bones/eyes/nose/lips/smile/handpose and own uniform. Same face SCALE and eye POSITION inside eachquadrant, NOzoom/reframing, fill GRAY missing canvas with corresponding own nightstadium background/shoulders/garment. Each independent coherent photograph, ownbody, no facepasting/averaging/commonbeautytemplate.\nProfessional KBO STAGE GROOMING on all4: groomed defined brows, tasteful crisp eyeliner and natural full lashes, flattering lip tint, light even foundation retaining subtle fine REALskintexture. Neat polished hair with fewer flyaways, youthful adult age25, no childlook/no changing facial proportions. Do NOT add skinmarks/acne/freckles/wrinkles/exaggeratedpores or waxyairbrush. Use SAME neutral soft front-above key/rearstage rim on all4, remove heavy orange lighting casts while retaining individual skin tones.\nTL SKY: same bigsmiling woman, keep bangs gently away from pupils so both eyesvisible; REMOVEtiny redhairbead or make it SKYBLUE. TR BLUE same bigsmilingwoman handsout. BL NAVY same softclosedlip smilingwoman handsout. BR BLUE same softclosedlip smilingwoman, preserve her ONEanatomicallycorrect Vhand besidecheek without coveringface. Exact existing corresponding garment cuts/colors/white-silvertrim, coveredchest. All NIGHT baseballgrandstand bokeh/unrecognizablecrowds. No new people/logos/text/numbers/hats/glasses/cleavage/croptops/bodyemphasis. Fillallgrayregions and keep full exact layout/headroom shown.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-3070cbd7-4990-4119-85ae-fae13e4fc1a9.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_blue_sf000015_a119",
+  "source_photo_reference": "/workspace/generated_images/exec-be26e355-eda4-4e68-b4d9-486d9b0a6717.png",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_blue_sf000015_a134.png",
+  "original_sheet": "/workspace/generated_images/exec-3070cbd7-4990-4119-85ae-fae13e4fc1a9.png",
+  "original_sheet_sha256": "851ba6de3a69374beb02d9d73f2ad019c328a608d7141669cbb67213c54423e7",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    631,
+    631,
+    1250,
+    1250
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}
