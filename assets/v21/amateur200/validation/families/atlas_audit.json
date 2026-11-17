@@ -1,0 +1,45 @@
+{
+  "photo_count": 104,
+  "family_count": 8,
+  "complete_13_variant_families": [
+    "c000_p00",
+    "c000_p01",
+    "c000_p02",
+    "c000_p03",
+    "c000_p05",
+    "c000_p07",
+    "c000_p08",
+    "c000_p09"
+  ],
+  "all_13_families_generated": true,
+  "raw_measurements": {
+    "128": {
+      "same_comparisons": 624,
+      "same_min": 0.6113455295562744,
+      "different_comparisons": 4732,
+      "different_max": 0.38579022884368896,
+      "old_comparisons": 50544,
+      "old_max": 0.3350159525871277
+    },
+    "256": {
+      "same_comparisons": 624,
+      "same_min": 0.7162958383560181,
+      "different_comparisons": 4732,
+      "different_max": 0.374356210231781,
+      "old_comparisons": 50544,
+      "old_max": 0.3233468532562256
+    },
+    "384": {
+      "same_comparisons": 624,
+      "same_min": 0.7408513426780701,
+      "different_comparisons": 4732,
+      "different_max": 0.39562052488327026,
+      "old_comparisons": 50544,
+      "old_max": 0.34609395265579224
+    }
+  },
+  "failures": [],
+  "failure_count": 0,
+  "status": "FINAL_ATLAS_AND_HUMAN_AGE_REVIEW_STILL_PENDING",
+  "measurement_scope": "actual decoded occupied rectangles of 39 partial review atlases; final full atlases must be measured again"
+}

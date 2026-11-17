@@ -1,0 +1,18 @@
+{
+  "selected": [
+    "c000_p00",
+    "c000_p01",
+    "c000_p02",
+    "c000_p03",
+    "c000_p05",
+    "c000_p07",
+    "c000_p08",
+    "c000_p09"
+  ],
+  "status": "provisional complete-family selection; atlas and human age gates still pending",
+  "held": [
+    "c000_p04",
+    "c000_p06"
+  ],
+  "hold_reason": "raw different-person cosine threshold exceeded; exact identities preserved, do not change face to force acceptance"
+}
