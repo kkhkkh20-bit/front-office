@@ -268,6 +268,13 @@ function aiForeignFill(tid){
     if(!foreignCheck(tid,p))signForeign(tid,p.id); else dropP(p.id); return; }
   if(!fs.some(x=>x.foreign==='아시아')&&fReplLeft(tid,'아시아')>0){ const p=newForeign('아시아'); if(signForeign(tid,p.id))dropP(p.id); }
 }
+/* 외국인 교체 결심(AI 판단 점검 #8): 사용자가 따질 것과 같다. 남은 교체 횟수, 가을야구 경쟁(시즌 초반이거나 7위 안), 남은 시즌, 후보와의 차이.
+   - 장기 부상(45일 넘게)은 바꾼다.
+   - 부진·태업: 바꾼다. 다만 8월부터 가을야구가 멀고(8위 아래) 교체 카드가 하나만 남았으면 아껴 둔다.
+   - 기록은 괜찮지만 시장에 확실히 나은 후보(추정 +10 이상)가 있으면: 경쟁 중이고 교체 카드가 둘 다 남았을 때만 바꾼다(하나는 부상 대비) */
+function aiFoSwap(tid,p,bad,up,q){ if(p.injOut>45)return true; const left=F_REPL_MAX-((G.sea.repl&&G.sea.repl[tid])||0); let rk=null; try{ const st=standingsNow(); rk=st.findIndex(x=>x.tid===tid)+1||null; }catch(e){}
+  const early=G.day<=G.cal.open+60, race=early||rk==null||rk<=7, late=G.day>=KD(8,1);
+  if(bad)return !(late&&!race&&left<=1); return !!(up&&q&&race&&left>=2&&fScoreBy(tid,q)>=ovr(p)+10); }
 function aiForeignReview(tid){
   try{ if(aiForeignTemp(tid))return; }catch(e){} /* 시즌 안에 돌아올 부상은 교체 횟수를 쓰지 않는 부상 대체로 */
   { const a=foreignOf(tid).find(x=>x.foreign==='아시아'&&x.injOut>45); /* 아시아쿼터 장기 부상도 별도 교체권으로 바꾼다(검수 11-09c: 일반 외국인만 검토) */
@@ -276,10 +283,12 @@ function aiForeignReview(tid){
   if((G.sea.repl[tid]||0)>=F_REPL_MAX)return;
   for(const p of foreignOf(tid).filter(x=>x.foreign==='용병')){
     const h=seasonTotal(p,G.year,'1군');
-    const bad=p.injOut>45||(p.fBad&&R()<.5)||(G.day>G.cal.open+40&&h&&!(p.injOut>0)&&(p.isP?(h.outs>=120&&pRate(h).era>4.9):(h.pa>=160&&bRate(h).ops<.730))); /* 짧게 다친 선수는 기록으로 바꾸지 않고 돌아온 뒤 다시 본다(우리 감독 요청과 같은 기준, 사용자 11-16) */
+    const ub=!(p.injOut>45)&&p.fBad?R():1; /* 예전 무작위(태업 50%) 자리: 난수 순서만 지킨다 */ const good0=!!h&&(p.isP?(h.outs>=90&&pRate(h).era<=4.0):(h.pa>=120&&bRate(h).ops>=.800));
+    const bad=p.injOut>45||(p.fBad&&!good0)||(G.day>G.cal.open+40&&h&&!(p.injOut>0)&&(p.isP?(h.outs>=120&&pRate(h).era>4.9):(h.pa>=160&&bRate(h).ops<.730))); /* 태업 소식(fBad)은 모두에게 공개: 잘하고 있지 않으면 바꾼다 */ /* 짧게 다친 선수는 기록으로 바꾸지 않고 돌아온 뒤 다시 본다(우리 감독 요청과 같은 기준, 사용자 11-16) */
     /* 기록이 아직 나쁘지 않아도 시장에 확실히 나은 후보가 있으면 바꾼다(교체 한도 안에서) */
     const q=G.day>G.cal.open+30?(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&x.foreign==='용병'&&x.isP===p.isP&&fKnows(tid,x)&&!foHeld(x)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a))[0]:null; const good=!!h&&(p.isP?(h.outs>=90&&pRate(h).era<=4.0):(h.pa>=120&&bRate(h).ops>=.800)); /* 올해 잘하고 있는 선수는 시장에 더 좋아 보이는 후보가 있어도 바꾸지 않는다(안정화 점검: 리그 홈런 1위 외국인 타자를 5월에 내보냈다) */ const up=!bad&&!good&&q&&fScoreBy(tid,q)>ovr(p)+6;
-    if((bad&&R()<.7)||(up&&R()<.1)){ const nm=p.name; const qOk=q&&!foreignCheck(tid,Object.assign({},q,{ask:Math.min(q.ask,fNewCap())}),p.id); if(!qOk&&!bad)continue; if(!qOk&&fReplLeft(tid)<=0)continue; if(!qOk&&fCap(tid,p.id)-sum(foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==p).map(fCommit))<300)continue; /* 내보낸 뒤 줄어든 총액 한도로 대체 선수를 구할 여지가 없으면 방출하지 않는다(검수 11-09zl) */ if(qOk&&foCutIn(tid,q,p.id))return; /* 우리 관찰 후보면 바로 데려가지 않고 끼어들 기한부터 */ /* 새 선수를 데려올 수 있는지 먼저 본다(검수 11-06: 보류권 후보 때문에 기존 선수만 잃음) */
+    { const u1=bad?R():1; if((!bad||u1>=.7)&&up)R(); } /* 예전 무작위(부진 70%·더 나은 후보 10%) 자리: 난수 순서만 지킨다 */
+    if(aiFoSwap(tid,p,bad,up,q)){ const nm=p.name; const qOk=q&&!foreignCheck(tid,Object.assign({},q,{ask:Math.min(q.ask,fNewCap())}),p.id); if(!qOk&&!bad)continue; if(!qOk&&fReplLeft(tid)<=0)continue; if(!qOk&&fCap(tid,p.id)-sum(foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==p).map(fCommit))<300)continue; /* 내보낸 뒤 줄어든 총액 한도로 대체 선수를 구할 여지가 없으면 방출하지 않는다(검수 11-09zl) */ if(qOk&&foCutIn(tid,q,p.id))return; /* 우리 관찰 후보면 바로 데려가지 않고 끼어들 기한부터 */ /* 새 선수를 데려올 수 있는지 먼저 본다(검수 11-06: 보류권 후보 때문에 기존 선수만 잃음) */
       const n0=foreignOf(tid).filter(x=>x.foreign==='용병').length; releaseForeign(p.id); if(!qOk||signForeign(tid,q.id))aiForeignFill(tid); const n1=foreignOf(tid).filter(x=>x.foreign==='용병').length; wire('외국인',n1>=n0?`${tname(tid)}이(가) 외국인 선수 ${nm}을(를) 교체했습니다.`:`${tname(tid)}이(가) 외국인 선수 ${nm}을(를) 방출했습니다.`,{tid}); return; }
   }
 }

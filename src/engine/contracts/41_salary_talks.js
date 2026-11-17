@@ -80,7 +80,11 @@ function holdSign(p,sal,why){ if(!p||!p.hold)return '미계약 선수가 아닙�
 function holdPay(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; return holdSign(p,p.hold.ask,'요구액 수용'); }
 function holdMid(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; if(p.hold.midNo!=null&&G.day<p.hold.midNo)return `${dmd(p.hold.midNo)}부터 다시 제시할 수 있습니다.`;
   const wk=Math.floor((G.day-p.hold.d)/7); if(R()<.45+wk*.1)return holdSign(p,holdMidAmt(p),'중간 금액 합의'); p.hold.midNo=G.day+3; p.mor=clamp((p.mor??60)-2,0,100); return `${p.name}이(가) 중간 금액을 거절했습니다. ${dmd(p.hold.midNo)}부터 다시 제시할 수 있습니다.`; }
-function holdDaily(day){ for(const p of Object.values(G.players)){ if(!p.hold)continue; if(p.team!==G.user){ if(day>=G.cal.open-2||R()<.015+.01*Math.floor((day-p.hold.d)/7)){ p.sal=Math.max(MIN_SAL,day>=G.cal.open-2?holdMidAmt(p):p.hold.off); delete p.hold; } continue; } /* 이직 등으로 남의 선수가 되면 그 구단도 같은 일정으로 정리(우리와 같은 기준, 검수 11-09s·11-09zzb) */
+/* AI 구단의 미계약 선수(AI 판단 점검 #7): 사용자처럼 쓸 선수(팀 내 국내 종합 9위 안)에게는 중간 금액을 제시한다. 성공 확률(45%+주당 10%)과 거절 뒤 3일 대기는 holdMid와 같다.
+   예전에는 AI가 아무것도 하지 않고 선수가 날마다 낮은 확률로 굽히기만 기다렸다. 이 판정은 따로 씨앗을 둔 난수로 굴려 경기 난수 흐름을 바꾸지 않는다 */
+function aiHoldMid(p,day){ const h=p.hold; if(!h||(h.midNo!=null&&day<h.midNo))return false; const o=ovr(p), rk=domestic(p.team).filter(q=>!q.ys&&ovr(q)>o).length+1; if(rk>9)return false;
+  const wk=Math.floor((day-h.d)/7); if(withRng(p.id*7919+day*104729+17,()=>R())<.45+wk*.1){ p.sal=Math.max(MIN_SAL,holdMidAmt(p)); delete p.hold; return true; } h.midNo=day+3; p.mor=clamp((p.mor??60)-2,0,100); return false; }
+function holdDaily(day){ for(const p of Object.values(G.players)){ if(!p.hold)continue; if(p.team!==G.user){ if(p.team!=null&&day<G.cal.open-2&&aiHoldMid(p,day)){ R(); continue; } /* 난수 순서는 예전과 같게 */ if(day>=G.cal.open-2||R()<.015+.01*Math.floor((day-p.hold.d)/7)){ p.sal=Math.max(MIN_SAL,day>=G.cal.open-2?holdMidAmt(p):p.hold.off); delete p.hold; } continue; } /* 이직 등으로 남의 선수가 되면 그 구단도 같은 일정으로 정리(우리와 같은 기준, 검수 11-09s·11-09zzb) */
     if((day-p.hold.d)%7===6)p.mor=clamp((p.mor??60)-3,0,100);
     if(day>=G.cal.open-2){ const r=holdSign(p,holdMidAmt(p),'개막 전 합의'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 개막을 앞두고 중간 금액으로 합의했습니다.`,{kind:'연봉'}); continue; } /* 개막 이틀 전: 개막 엔트리(개막 전날)를 정하기 전에 계약 */ /* shortcut: 개막 뒤까지 버티는 경우·임의해지는 다루지 않음, 실제 사례가 생기면 확장 */
     if(R()<.015+.01*Math.floor((day-p.hold.d)/7)){ const r=holdSign(p,p.hold.off,'구단 제시액 수용'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 선수가 구단 제시액을 받아들였습니다.`,{kind:'연봉'}); } } }
