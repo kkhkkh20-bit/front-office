@@ -62,7 +62,7 @@ const awCat=l=>(AWC.find(c=>c[2](l))||['etc'])[0];
 function ringYears(p){ return (G.history||[]).filter(h=>h.champ!=null&&(p.hist||[]).some(r=>r.y===h.y&&r.lvl==='1군'&&r.t===h.champ)).map(h=>({y:h.y,t:h.champ})); }
 function careerHub(p){
   const aw=(p.aw||[]).map(l=>({y:+String(l).slice(0,4),l:String(l).slice(5)})).filter(a=>a.y);
-  const rings=ringYears(p); for(const r of rings)aw.push({y:r.y,l:`${tshort(r.t)} 우승 반지`,t:r.t});
+  const rings=ringYears(p); for(const r of rings)aw.push({y:r.y,l:`${tshort(r.t,r.y)} 우승 반지`,t:r.t});
   const cnt={}; for(const a of aw){ const c=awCat(a.l); cnt[c]=(cnt[c]||0)+1; }
   const art=(a,sz)=>awArt(a.l,sz);
   const shelf=AWC.filter(c=>cnt[c[0]]).map(([k,l])=>{ const one=aw.find(a=>awCat(a.l)===k); return `<div class="ch-tro k-${k}">${art(one,34)}<b class="num">${cnt[k]}</b><span>${l}</span></div>`; }).join('');

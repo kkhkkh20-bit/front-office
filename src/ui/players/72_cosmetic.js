@@ -49,7 +49,8 @@ function pEditBox(p){ const e=UI.pEditErr, arch=!G.players[p.id]; pEditGrab(); c
 function cosmPhTpl(k){ const m=/^p:(\d+)$/.exec(String(k||'')); const p=m&&G&&G.players[+m[1]]; if(!p)return ''; const F=cosmFace(p); if(!F)return ''; return `<details class="pe-sec" open><summary>템플릿 사진 고르기</summary>${cosmFacePick(p,{noUp:true})}</details>`; }
 
 /* ----- 일괄 창 ----- */
-function cosmScopes(){ return [...G.teams.filter(t=>!t.indie).map(t=>['t:'+t.id,tshort(t.id)]),['pro','드래프트 대상'],['fa','소속 없음'],['arch','은퇴'],['all','전체']]; }
+/* 구단 묶음은 리그 모든 구단(독립구단 고양 스톰·확장·이름 바꾼 구단 포함). 예전에는 독립구단(indie)을 빼 고양 스톰 선수를 고를 수 없었다(검수 11-17 #211) */
+function cosmScopes(){ return [...G.teams.map(t=>['t:'+t.id,tshort(t.id)]),['pro','드래프트 대상'],['fa','소속 없음'],['arch','은퇴'],['all','전체']]; }
 function cosmTeamTxt(p,arch){ return arch?'은퇴':p.prospect?'드래프트 대상':p.team!=null?tshort(p.team):p.foreign?'외국인 후보':'소속 없음'; }
 function cosmList(sc,q){ const P=Object.values(G.players).filter(p=>!p.persona); let L;
   if(sc==='arch')L=Object.values(G.arch||{}).filter(a=>a&&a.id!=null&&!G.players[a.id]);

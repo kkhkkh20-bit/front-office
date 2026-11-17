@@ -387,11 +387,12 @@ function confirmContracts(force){ /* force: 1월 31일 마감·이직 정리(조
   C.done=true; addLog('연봉 계약을 마쳤습니다.');
 }
 /* 저장 용량: 3시즌 전 2군 기록은 구단별 한 줄로 합치고, 프로 3년차 이상의 아마추어 연도별 기록은 지운다(1군 기록·이야기는 그대로) */
-function compactPlayers(){ const y=G.year; let n=0;
+function compactPlayers(){ const y=G.year; let n=0; try{ futAggFix(); }catch(e){}
   for(const p of Object.values(G.players)){
     if(p.hist&&p.hist.length>3){ const old=p.hist.filter(h=>h.lvl==='퓨처스'&&!h.y2&&h.y<y-2); if(old.length>=2){ const by={};
-        for(const h of old){ const k=h.t; const m=by[k]=by[k]||Object.assign({},p.isP?ZP:ZB,{y:h.y,y2:h.y,t:h.t,lvl:'퓨처스'}); for(const f in (p.isP?ZP:ZB))m[f]=(m[f]||0)+(h[f]||0); m.y=Math.min(m.y,h.y); m.y2=Math.max(m.y2,h.y); }
-        const prevAgg=p.hist.filter(h=>h.lvl==='퓨처스'&&h.y2); for(const a of prevAgg){ const m=by[a.t]; if(m){ for(const f in (p.isP?ZP:ZB))m[f]+=(a[f]||0); m.y=Math.min(m.y,a.y); m.y2=Math.max(m.y2,a.y2); } }
+        for(const h of old){ const k=h.t; const m=by[k]=by[k]||Object.assign({},p.isP?ZP:ZB,{y:h.y,y2:h.y,t:h.t,lvl:'퓨처스'}); for(const f in (p.isP?ZP:ZB))m[f]=(m[f]||0)+(h[f]||0); m.y=Math.min(m.y,h.y); m.y2=Math.max(m.y2,h.y); m.agg=futAggAdd(m.agg||{},futAggRow(p,h)); }
+        const prevAgg=p.hist.filter(h=>h.lvl==='퓨처스'&&h.y2); for(const a of prevAgg){ const m=by[a.t]; if(m){ for(const f in (p.isP?ZP:ZB))m[f]+=(a[f]||0); m.y=Math.min(m.y,a.y); m.y2=Math.max(m.y2,a.y2); m.agg=futAggAdd(m.agg,futAggRow(p,a)); if(a.agg&&a.agg.est)m.agg.est=1; } }
+        /* 연도별 WAR·wRC+×타석을 그해 기준으로 더해 둔다(합친 줄을 한 해 기준으로 다시 재면 통산이 바뀌었다, 검수 11-17 #209·#210) */
         futLeagueCarry(p,old); /* 원본 연도 행을 없애기 전에 리그 평균의 분자·분모를 보존한다. */
         p.hist=p.hist.filter(h=>!(h.lvl==='퓨처스'&&(old.includes(h)||(h.y2&&by[h.t])))).concat(Object.values(by)); n++; } }
     if(!p.prospect&&(p.amR||p.amObs)){ delete p.amR; delete p.amObs; } /* 아마 경기용 능력·관찰 횟수는 지명 뒤 필요 없다 */ if(p.amY&&!p.prospect&&p.draft&&p.draft.y<y-2){ delete p.amY; n++; }

@@ -21,6 +21,9 @@ globalThis.__secSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','s
 globalThis.__pfCss=()=>fs.readFileSync(path.join(__dirname,'..','src','css','players','22_full_player_profile.css'),'utf8'); /* [제보 11-16 해외 복귀 기록] 선수 화면 시즌 통계 줄 숨김 점검 */
 /* [스카우트 표시] 시나리오용: 소식함 첨부·선수 정보 화면 소스(같은 표시 함수를 쓰는지) */
 globalThis.__uiSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'); return {inbox:R('media/19_inbox.js'),prof:R('players/35_full_player_profile.js')}; };
+/* [검수 11-17 기록 표] 시나리오용: 선수 기록 표(39_player_sheet: psTable·statTable0·amRowY·amCareerRow)와 일괄 수정 구단 묶음(72_cosmetic: cosmScopes) 소스. UI는 빈 객체, esc·wOf는 화면 정의 그대로 */
+globalThis.__sheetSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'), sh=R('players/39_player_sheet.js'), cs=R('players/72_cosmetic.js'), core=R('runtime/00_core.js'); const cut=(t,a,b)=>t.slice(t.indexOf(a),t.indexOf(b));
+  return 'const UI={};\n'+core.split('\n').find(l=>l.startsWith('const esc='))+'\nfunction wOf(h,p){ return warPub(h,p); }\n'+cut(sh,'function psTable(','/* 통산 기록 범위')+'\n'+cut(sh,'function statLvl(','function keyBar(')+'\n'+cut(cs,'function cosmScopes(','function cosmTeamTxt(')+'\n;({UI,psTable,statTable0,amRowY,amCareerRow,cosmScopes})'; };
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
 const ok=(c,msg)=>{ if(!c)throw new Error(msg); };
@@ -6540,6 +6543,43 @@ T('[카페 11-17 프로 선수 아마 기록] 예전 저장 수리: 지명 뒤 �
   const s1=JSON.stringify([A.amY,A.am,B.amY,B.am]); ok(amProLeakFix()===0&&JSON.stringify([A.amY,A.am,B.amY,B.am])===s1,'두 번째 수리에서 바뀜');
   A.amY.push(Object.assign({},A.amY[2],{y:y,g:80})); amTotFix(A); migrateDraft(); ok(A.amY.length===3&&A.am.g===57,'불러오기(migrateDraft)에서 수리하지 않음');
   ok(amRowObj&&typeof amPlayable==='function'&&!amPlayable(A,y)&&!amPlayable(Object.assign({},D||{prospect:true,team:null},{team:G.user}),y),'계약 선수가 아마 경기 대상'); });
+
+T('[검수 11-17 #207] 구단 이름이 바뀐 뒤에도 선수의 지난 정규시즌·포스트시즌·은퇴 선수 기록 표는 그 시즌 구단 이름으로 보인다',()=>{ fresh(); const F=eval(globalThis.__sheetSrc()); const X=G.teams.find(t=>t.id!==G.user).id, y=G.year-1;
+  const p=playersOf(X).find(q=>!q.isP); p.hist=[Object.assign({},ZB,{y,t:X,lvl:'1군',g:10,pa:40,ab:36,h:10})]; p.psY={[y]:{t:X,g:2,isP:false,pa:4,ab:3,h:1,sf:1}};
+  const old=tshort(X); ok(clubRebrand(X,{nick:'검수테스트즈'},'시험'),'준비 실패: 이름 변경'); const nw=tshort(X); ok(nw!==old&&tshort(X,y)===old,'준비 실패: 이름 이력 '+old+'/'+nw+'/'+tshort(X,y));
+  const reg=F.statTable0(p), ps=F.psTable(p); ok(reg.includes(old)&&!reg.includes(nw),'정규시즌 표가 지금 이름: '+reg.slice(0,300)); ok(ps.includes(old)&&!ps.includes(nw),'포스트시즌 표가 지금 이름');
+  p.hist.push(Object.assign({},ZB,{y:G.year,t:X,lvl:'1군',g:1,pa:4,ab:4,h:1})); const r2=F.statTable0(p); ok(r2.includes(nw)&&r2.includes(old),'올해 줄은 새 이름, 지난해 줄은 옛 이름이어야 함'); });
+T('[검수 11-17 #208] 포스트시즌 OPS는 희생플라이를 출루율 분모에 넣는다(4타석 3타수 1안타 1희생플라이 = .583), 집계도 희생플라이·번트를 쌓는다',()=>{ fresh(); const F=eval(globalThis.__sheetSrc()); const p=playersOf(G.user).find(q=>!q.isP), y=G.year-1;
+  p.psY={[y]:{t:G.user,g:1,isP:false,pa:4,ab:3,h:1,sf:1}}; const ps=F.psTable(p); ok(ps.includes('.583')&&!ps.includes('.667'),'OPS가 .583이 아님: '+ps.slice(-260));
+  ok(PS_BK.includes('sf')&&PS_BK.includes('hbp'),'포스트시즌 집계 항목에 희생플라이·사구 없음'); delete p.psY; const op=G.teams.find(t=>t.id!==G.user).id;
+  const g={S:{h:{tid:G.user,box:new Map([[p.id,{pa:4,ab:3,h:1,sf:1,bb:0,hbp:0}]]),pitchers:[]},a:{tid:op,box:new Map(),pitchers:[]}},dec:{}}; psRec('ks',g); const o=p.psY[G.year];
+  ok(o&&o.sf===1&&o.pa===4&&o.ab===3,'포스트시즌 합계에 희생플라이가 안 쌓임: '+JSON.stringify(o)); ok(Math.abs(obpOf(o)-.25)<1e-9,'출루율 '+obpOf(o)); ok(G.psSer[G.year].ks[p.id].sf===1,'시리즈 합계에 희생플라이 없음'); });
+{ const futSetup=()=>{ fresh(); const Y=G.year, T0=G.user, ys=[Y-6,Y-5,Y-4,Y-3]; const B=playersOf(T0).filter(q=>!q.isP), p=B[0], q=B[1], pp=playersOf(T0).find(x=>x.isP);
+    const bat=(y,pa,h,hr,bb)=>Object.assign({},ZB,{y,t:T0,lvl:'퓨처스',g:Math.round(pa/4),pa,ab:pa-bb,h,d:Math.round(h/5),hr,bb,r:Math.round(pa*.12),so:Math.round(pa/5)});
+    G.lg=G.lg||{}; ys.forEach((y,i)=>{ G.lg[y]=Object.assign({},G.lg[y]||{},{ops:[.62,.70,.78,.86][i],era:[3.2,4.0,4.8,5.6][i]}); });
+    p.hist=ys.map((y,i)=>bat(y,[120,200,60,180][i],[45,40,25,30][i],[6,1,4,2][i],[15,10,12,8][i])).concat([Object.assign({},ZB,{y:Y-1,t:T0,lvl:'1군',g:5,pa:20,ab:18,h:5})]);
+    q.hist=ys.slice(0,3).map((y,i)=>bat(y,[300,150,400][i],[60,50,90][i],[3,5,4][i],[20,30,25][i]));
+    pp.hist=ys.map((y,i)=>Object.assign({},ZP,{y,t:T0,lvl:'퓨처스',g:10,outs:[60,90,30,120][i],er:[8,20,2,30][i],h:20,bb:8,so:30,bf:100})).concat([Object.assign({},ZP,{y:Y-1,t:T0,lvl:'1군',g:2,outs:6,er:1})]);
+    return {p,q,pp,ys}; };
+  const fut=p=>p.hist.filter(h=>h.lvl==='퓨처스'), W=p=>sum(fut(p).map(h=>warOf(h,p)));
+  T('[검수 11-17 #209] 옛 2군 기록을 한 줄로 압축해도 통산 2군 WAR(타자·투수)은 그대로, 다음 해 다시 합쳐도 그대로',()=>{ const {p,pp}=futSetup(); const w0=W(p), v0=W(pp); ok(Math.abs(w0)>.05,'준비 실패: 타자 WAR '+w0);
+    const r0=__rngState(); compactPlayers(); ok(__rngState()===r0,'압축이 난수를 씀'); ok(fut(p).length===1&&fut(p)[0].y2,'준비 실패: 압축 안 됨 '+fut(p).length); ok(fut(pp).length===1,'투수 압축 안 됨');
+    ok(Math.abs(W(p)-w0)<1e-6,'타자 통산 2군 WAR이 압축으로 바뀜: '+w0.toFixed(3)+' → '+W(p).toFixed(3)); ok(Math.abs(W(pp)-v0)<1e-6,'투수 통산 2군 WAR이 압축으로 바뀜: '+v0.toFixed(3)+' → '+W(pp).toFixed(3));
+    const Y=G.year; p.hist.push(Object.assign({},ZB,{y:Y-2,t:G.user,lvl:'퓨처스',g:20,pa:80,ab:70,h:20,bb:10,hr:2}),Object.assign({},ZB,{y:Y-1,t:G.user,lvl:'퓨처스',g:30,pa:110,ab:95,h:33,bb:15,hr:5})); const w1=W(p); G.year=Y+2; try{ compactPlayers(); }finally{ G.year=Y; } ok(fut(p).length===1&&fut(p)[0].y2===Y-1,'다음 해 합치기 안 됨'); ok(Math.abs(W(p)-w1)<1e-6,'다시 합칠 때 WAR이 바뀜: '+w1.toFixed(3)+' → '+W(p).toFixed(3));
+    ok(addTo&&(()=>{ const t=Object.assign({},ZB); addTo(t,fut(p)[0]); return t.war==null&&t.agg==null; })(),'보존 값이 합계(addTo)에 섞임'); });
+  T('[검수 11-17 #210] 여러 해 2군 기록을 한 줄로 합쳐도 통산 2군 wRC+는 연도별 리그 기준 그대로(합친 줄 연도 wRC+는 -)',()=>{ const {p}=futSetup(); const F=eval(globalThis.__sheetSrc()); p.hist.push(Object.assign({},ZB,{y:G.year-1,t:G.user,lvl:'퓨처스',g:30,pa:110,ab:95,h:33,bb:15,hr:5})); const c0=wrcMulti(fut(p)); ok(c0!=null,'준비 실패: wRC+');
+    compactPlayers(); ok(fut(p).length===2,'준비 실패: 압축 안 됨'); const c1=wrcMulti(fut(p)); ok(Math.abs(c1-c0)<=1,'통산 2군 wRC+가 압축으로 바뀜: '+c0+' → '+c1);
+    F.UI.cLvl='2'; const html=F.statTable0(p); const rows=html.split('<tr>').slice(2); const tot=rows.find(r=>r.includes('2군 합계')), agg=rows.find(r=>r.includes(fut(p).find(h=>h.y2).y+'~')); ok(tot&&tot.includes('>'+c0+'<'),'2군 합계 wRC+가 '+c0+'이 아님: '+(tot||'').slice(0,200)); ok(agg&&agg.split('</td>')[3]==='<td class="key">-','합친 줄 연도 wRC+가 - 가 아님: '+(agg||'').slice(0,200)); });
+  T('[검수 11-17 #209·#210] 옛 저장의 2군 합산 줄은 불러올 때 한 번 고정한다(타자는 연도별 고정 WAR로 복원, 두 번 불러도 같음, 난수 없음)',()=>{ const {p}=futSetup(); const w0=W(p); compactPlayers(); const h=fut(p)[0]; delete h.agg; ok(Math.abs(W(p)-w0)>1e-3,'준비 실패: 옛 저장이면 값이 달라야 함');
+    const r0=__rngState(); ok(futAggFix()>=1,'수리 건수 0'); ok(__rngState()===r0,'수리가 난수를 씀'); ok(Math.abs(W(p)-w0)<1e-6,'연도별 고정 WAR로 복원하지 않음: '+w0+' / '+W(p)); ok(h.agg.wn===h.pa&&wrcMulti(fut(p))!=null,'wRC+ 추정 고정 안 됨');
+    const s1=JSON.stringify(h.agg); ok(futAggFix()===0&&JSON.stringify(h.agg)===s1,'두 번째 수리에서 바뀜'); delete h.agg; migrateDraft(); ok(h.agg&&JSON.stringify(h.agg)===s1,'불러오기(migrateDraft)에서 수리하지 않음'); }); }
+T('[검수 11-17 #211] 이름·얼굴 일괄 수정의 구단 묶음에 리그 모든 구단(독립구단 고양 스톰 포함)이 있다',()=>{ fresh(); const F=eval(globalThis.__sheetSrc()); const S=F.cosmScopes(), ids=S.filter(([v])=>v.startsWith('t:')).map(([v])=>+v.slice(2));
+  ok(G.teams.every(t=>ids.includes(t.id)),'빠진 구단: '+G.teams.filter(t=>!ids.includes(t.id)).map(t=>tshort(t.id)).join(',')); const gs=G.teams.find(t=>t.city==='고양'); ok(gs&&gs.indie&&S.some(([v,l])=>v==='t:'+gs.id&&l===tshort(gs.id)),'고양 스톰 묶음 없음'); });
+T('[검수 11-17 #212] 지명받지 못하고 소속·프로 기록이 없는 옛 선수의 아마 통산 줄은 마지막 아마 기록 해까지(올해까지 늘지 않음)',()=>{ fresh(); const F=eval(globalThis.__sheetSrc()); const Y=G.year;
+  const p=Object.values(G.players).find(x=>!x.isP&&x.team!=null); p.team=null; p.prospect=false; delete p.draft; p.hist=[]; const row=(y,gr)=>{ const r={y,gr}; for(const k of AM_BK)r[k]=0; Object.assign(r,{g:20,pa:70,ab:60,h:18}); return r; };
+  p.amY=[row(Y-4,2),row(Y-3,3)]; amTotFix(p); ok(F.amRowY(p)===Y-3,'끝 해 '+F.amRowY(p)); const r=F.amCareerRow(p); ok(r.y===Y-4&&r.y2===Y-3&&r.g===40,'통산 줄 '+JSON.stringify([r.y,r.y2,r.g]));
+  const html=F.statTable0(p); ok(html.includes(Y-4+'~'+String(Y-3).slice(2))&&!html.includes(Y-4+'~'+String(Y).slice(2)),'표의 기간이 올해까지: '+html.slice(0,400));
+  const q=(G.draftClass||[]).map(id=>G.players[id]).find(x=>x&&x.prospect); if(q)ok(F.amRowY(q)===Y,'아직 후보인 선수는 올해까지'); });
 
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
