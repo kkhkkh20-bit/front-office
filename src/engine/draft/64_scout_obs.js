@@ -36,9 +36,10 @@ function obsVisitWeek(day){ if(!amOn()||!G.amU||!G.teams)return 0; const by=obsB
     const F=obsFollowSet(tid), P=obsPriL(tid), V=G.obsVis[tid]=G.obsVis[tid]||{}, used=new Set();
     const mo=dobj(day).m, nV=mo>=3&&mo<=8?2:1; /* 시즌(3~8월)에는 한 주에 두 곳, 겨울 전지훈련 출장도 두 곳 */
     for(let v=0;v<2;v++)for(const s of scs){ if(v>=nV&&tripOf(s)!=='camp')continue; const L=obsSchoolsOf(s.region).filter(x=>!used.has(x)); if(!L.length)continue;
-      const sc=x=>{ let v=0; for(const y of by[x]||[])v+=F.has(y.id)?OBS_W[P[y.id]??1]*1.2:.04; if(F.has('s:'+x))v+=1; if(obsSpon(x,tid))v+=.8; if(V[x]!=null&&day-V[x]<OBS_GAP)v-=50; return v+u01('scv'+day+':'+tid+':'+s.id,x)*1.5; };
+      const sc=x=>{ let v=0; for(const y of by[x]||[])v+=F.has(y.id)?OBS_W[P[y.id]??1]*1.2:.04; for(const id of F)if(typeof id==='string'&&id.startsWith('f'+x+'#'))v+=OBS_W[P[id]??1]*1.2; /* 관심 부원(13b_am_depth) */ if(F.has('s:'+x))v+=1; if(obsSpon(x,tid))v+=.8; if(V[x]!=null&&day-V[x]<OBS_GAP)v-=50; return v+u01('scv'+day+':'+tid+':'+s.id,x)*1.5; };
       const best=L.map(x=>[x,sc(x)]).sort((a,b)=>b[1]-a[1])[0][0]; used.add(best); V[best]=day; n++;
       const k=obsSpon(best,tid)?1.25:1; /* 후원 학교는 훈련장 문이 더 열려 있다 */
+      amFVisit(tid,best,k); for(const id of F)if(typeof id==='string'&&id.startsWith('f'+best+'#')){ const O=amFS().ob[id]||(amFS().ob[id]={}); O[tid]=Math.round(((O[tid]||0)+OBS_VB[P[id]??1]*k)*100)/100; } /* 부원: 학교 방문 수로 관찰(모든 구단 같은 규칙) */
       for(const y of by[best]||[]){ const f=F.has(y.id); obsAdd(y,tid,(1+(f?OBS_VB[P[y.id]??1]:0))*k); obsByAdd(y,tid,s.id); if(tid===G.user&&(f||y.prospect))obsLogAdd(y,s,best,win,day); }
       const S=(G.schools||{})[best]; if(S)schAdd(S,.5+(effSkill(s)||1)*.15,tid); } }
   try{ _dcc=null; }catch(e){} return n; }

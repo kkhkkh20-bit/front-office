@@ -118,6 +118,7 @@ function makeDraftClass(){
   for(const p of Object.values(G.players)){ if(p.ovsRet&&p.prospect&&p.team==null&&!p.retired){ if(!cls.includes(p.id))cls.push(p.id); continue; } /* 불러오기 보정으로 명단을 다시 만들 때 이미 참가한 복귀자(검수 11-09ze) */
     if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; if(milFree(p)&&!p.foreign){ p.mil={done:true,wait:G.year}; story(p,'유예 기간 2년 동안 병역 이행(군필로 드래프트 참가)','mil'); } /* 실제 해외 유턴파는 2년 유예 기간에 병역을 마치고 나온다(카페 11-15: 지명 뒤 현역 입대로 능력 하락) */ p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
     try{ wire('드래프트',`해외파 ${p.name}(${p.age}세), ${G.year} 신인 드래프트 참가`,{ref:p.id}); }catch(e){} }
+  try{ for(const p of amDepSeniors(G.year))if(!cls.includes(p.id))cls.push(p.id); }catch(e){ console.error(e); } /* 프로 지원한 부원 졸업반(13b_am_depth, 사용자 11-17): 시드 난수만 쓴다 */
   amClass(cls); /* 해외 복귀자는 출국 전 아마 기록이 없을 때만 새로 만든다(검수 11-09ze) */
   pressRank(cls);
   G.draftClass=cls;

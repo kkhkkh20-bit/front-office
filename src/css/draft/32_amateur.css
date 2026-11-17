@@ -141,3 +141,15 @@
 :is(#app,#sheet) .am-lc .am-lt th{font-size:11px;height:20px}
 :is(#app,#sheet) .am-roster .am-lt :is(td,th){font-size:12px;height:26px;padding:3px 6px}
 .am-sch-l p.small{margin:3px 0}.am-roster h4,.am-sch-r h4{margin:8px 0 2px}
+/* 모의 지명(사용자 11-17 드래프트 전 전략) */
+.dmock{margin:0 0 8px;border:1px solid var(--line,#2a3440);border-radius:8px;padding:4px 8px}
+.dmock summary{cursor:pointer;padding:2px 0}
+.dmock-l{list-style:none;margin:4px 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2px 10px}
+.dmock-l li{display:flex;align-items:center;gap:6px;min-width:0;padding:2px 0;border-bottom:1px dashed var(--line,#2a3440)}
+.dmock-l li .num{width:34px;flex:none;opacity:.75}.dmock-l li i{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dmock-l li.me{background:color-mix(in srgb,var(--acc,#3b82f6) 14%,transparent);border-radius:4px}
+/* 관찰 범위(사용자 11-17) */
+.scm-cov{width:100%;margin-top:8px;font-size:12px}.scm-cov td,.scm-cov th{padding:2px 4px;text-align:right}.scm-cov td:first-child,.scm-cov th:first-child{text-align:left}
+.scm-cov .c0{color:var(--bad,#e66)}.scm-cov .c1{color:var(--warn,#d9a400)}.scm-cov .c2{color:var(--good,#3c9)}
+.am-u18 ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 8px;font-size:12px}
+.am-u18 .am-u18-r{font-size:12px;margin:4px 0}
