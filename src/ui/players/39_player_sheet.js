@@ -7,11 +7,13 @@ function psTable(p){ const Y=p.psY; if(!Y)return ''; const ys=Object.keys(Y).map
 /* 통산 기록 범위(국사왕 11-15 #7): 1군만 · 2군 포함 · 2군만. 기본 1군만, 고른 값은 이번 접속 동안 UI에 남긴다. 2군 기록이 없는 선수는 고를 것이 없어 그대로 */
 function statLvl(p){ const v=UI.cLvl||'1'; return p&&p.hist&&p.hist.some(h=>h.lvl==='퓨처스')?v:'all'; }
 function statLvlBar(p){ if(!p||!p.hist||!p.hist.some(h=>h.lvl==='퓨처스'))return ''; return `<div class="st-lvl" role="group" aria-label="기록 범위">${optRow('cLvl',UI.cLvl||'1',[['1','1군만'],['all','2군 포함'],['2','2군만']])}</div>`; }
+/* 아마 통산 줄의 연도(국사왕 11-17): 지명된 선수는 지명 연도(그해 9월 지명 → 다음 해 데뷔), 아직 아마추어면 올해. 예전에는 늘 올해로 찍혀 연도순 정렬 뒤 프로 선수의 올해 기록 사이에 끼었다 */
+function amRowY(p){ if(p.prospect||p.team==null&&!(p.hist||[]).length)return G.year; const d=p.draft&&+p.draft.y; if(d)return d; const Y=(p.amY||[]).map(r=>+r.y).filter(Boolean); if(Y.length)return Math.max(...Y); const h=(p.hist||[]).map(r=>+r.y).filter(Boolean); return h.length?Math.min(...h)-1:G.year; }
 function statTable0(p){
   const lv=statLvl(p), fut=h=>h.lvl==='퓨처스';
   const rows=[...p.hist].filter(h=>lv==='all'||(lv==='2')===fut(h)).sort((a,b)=>b.y-a.y||(a.lvl<b.lvl?-1:1));
   const nowR=p.now&&p.now.y===G.year&&p.team==null?[Object.assign({},p.now,{y:G.year,pre:'올해 '+ovlCandLvl(p,p.now.lvl||p.prevLvl||'',1)})]:[];
-  const pre=lv==='2'?[]:p.fkbo?nowR:p.prev?[...nowR,Object.assign({y:G.year-1,pre:ovlCandLvl(p,p.prev.lvl,1)},p.prev),...(p.prev2?[Object.assign({y:G.year-2,pre:ovlCandLvl(p,p.prev2.lvl,1)},p.prev2)]:[])]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
+  const pre=lv==='2'?[]:p.fkbo?nowR:p.prev?[...nowR,Object.assign({y:G.year-1,pre:ovlCandLvl(p,p.prev.lvl,1)},p.prev),...(p.prev2?[Object.assign({y:G.year-2,pre:ovlCandLvl(p,p.prev2.lvl,1)},p.prev2)]:[])]:p.am?[Object.assign({y:amRowY(p),pre:'아마'},p.am)]:[];
   if(lv!=='2'){ try{ pre.push(...ovsStatRows(p)); }catch(e){} } /* 해외에서 뛴 시즌(복귀 선수·KBO를 떠났다 돌아온 선수) */
   /* 합계는 고른 범위대로 다시 센다(국사왕 11-15 #7): 1군만 → 1군 합계, 2군만 → 2군 합계, 2군 포함 → 둘 다 */
   const one=p.hist.filter(h=>!fut(h)), two=p.hist.filter(fut);
