@@ -74,7 +74,7 @@ function clanLeaveNews(m,tid,L,why){ const w=CLAN_WHY[why]||'떠난', head=L.fin
   if(L.length>=2||head.role==='hc'||(m.fame||0)>=70)news('리그',`${tshort(tid)} ${title}`,body,0,{tid}); }
 /* 새 감독 사단을 AI 구단 코치진에 앉힌다(mgrNew·계약 만료 교체 공통). start가 없으면 예전처럼 계약 연수만(바로 일함) */
 function aiClanInstall(n,tid,start,why){ const C=G.coach&&G.coach[tid]; if(!C)return []; const got=[];
-  for(const c of n.clan||[]){ if(!CKEYS.includes(c.role))continue; const old=C[c.role]; if(old&&old!==c)staffHistory('coach',old,'계약 종료',tid,why||'신임 감독 사단 합류에 따른 교체');
+  for(const c of n.clan||[]){ if(!CKEYS.includes(c.role))continue; const old=C[c.role]; if(old&&old!==c)coachRelease(tid,old,why||'신임 감독 사단 합류에 따른 교체'); /* 밀려난 코치도 잔여 연봉 절반을 정산하고 시장으로(우리 hireClan과 같게, 검수 11-17 #259) */
     const fol=!!c.folM; G.cmarket=(G.cmarket||[]).filter(x=>x!==c); delete c.folM; delete c.res; c.clan=n.id; const y=Math.min(4,n.yrs||2);
     if(fol||start!=null)staffCt(c,y,start??undefined); else c.yrs=y; C[c.role]=c; staffHistory('coach',c,'영입',tid,`${n.name} 감독 사단 합류`); if(fol)got.push(c); }
   if(got.length)try{ news('리그',`${got.map(c=>c.name).join('·')} 코치, ${n.name} 감독 따라 ${tshort(tid)}행`,`${n.name} 감독이 ${tname(tid)} 지휘봉을 잡으면서, 전 팀에서 함께 물러났던 ${got.map(c=>`${c.name}(${CROLE[c.role].l})`).join(', ')} 코치도 합류했습니다.`,0,{tid}); }catch(e){}
