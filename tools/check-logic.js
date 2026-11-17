@@ -5364,6 +5364,30 @@ T('[해외 리그] 주목 선수: 기록을 쌓는 선수(KBO 출신·외국인 
   if(WL.has(fw)&&G.players[fw]&&G.players[fw].team==null&&G.players[fw].now)ok(pool.R.some(r=>r.id===fw&&r.tag==='관찰 중'),'관찰 명단 선수가 없음');
   console.log('    7월 주목 선수 대상 · '+Object.entries(cnt).map(([k,v])=>k+' '+v).join(' · '));
   G.day=KD(4,5); const e=ovlTopPool(); ok(e.last&&e.y===G.year-1&&e.minPA===200,'시즌 초반에 지난 시즌으로 바뀌지 않음'); ok(e.R.every(r=>r.pool?G.ovp.L.some(x=>x.i===r.id&&x.L.some(l=>l.y===e.y)):r.abr?AB.get(String(r.id)).lines.some(l=>l.y===e.y):G.players[r.id].prev===r.h),'지난 시즌 기록이 아님'); });
+T('[해외 활성화 11-17] AI 관찰 명단: 영입이 필요한 구단은 자기 상위 후보를 관찰하고 파악도가 우리와 같은 식으로 오르며, 3주 넘게 보면 다른 구단 관심(소문)이 붙고, 우리 관찰도 같은 규칙으로 AI에게 소문이 되어 요구액에 실린다. 난수는 쓰지 않는다',()=>{ fresh(); ok(foreignOpen(),'준비 실패: 시장');
+  const r0=__rngState(); G.fwAI={}; fwAiWeek(); ok(__rngState()===r0,'AI 관찰 명단이 본게임 난수를 씀');
+  const E=Object.entries(G.fwAI); ok(E.length>=1,'영입이 필요한 AI 구단이 관찰하지 않음'); ok(!G.fwAI[G.user],'우리 구단 몫 AI 명단이 생김'); ok(E.every(([t,L])=>L.length<=FW_AI.max&&L.every(w=>G.fmarket.includes(w.id))),'관찰 명단 한도·시장 후보');
+  const [t0,L0]=E[0], tid=+t0, q=G.players[L0[0].id]; ok(fTop3(tid,fNeed(tid)).some(x=>x.id===q.id),'AI가 실제로 고르는 후보가 아닌 선수를 관찰');
+  ok(fRumorN(q,G.user)===0,'관찰 첫 주에 소문이 남'); fwAiWeek(); const w=(G.fwAI[t0]||[]).find(x=>x.id===q.id); ok(w&&w.k===3+Math.min(2,Math.floor(fScoutLv(tid)||0))*3,'AI 파악도 증가가 우리 식과 다름 '+(w&&w.k)); ok(fInfo(tid,q).k===w.k,'AI 추정에 관찰 파악도가 안 쓰임');
+  for(const x of G.fwAI[t0])x.since=G.day-FW_AI.long; ok(fWatchers(q).includes(tid)&&fRumorN(q,G.user)>=1&&fRumorN(q,tid)===fRumorN(q,G.user)-1,'3주 관찰 소문');
+  const q2=G.fmarket.map(id=>G.players[id]).find(x=>x&&x.team==null&&!fWatchers(x).length&&!Object.values(G.fwAI).some(L=>L.some(z=>z.id===x.id))); ok(q2,'준비 실패: 아무도 안 보는 후보');
+  G.fwatch=[{id:q2.id,since:G.day,k:0}]; ok(!fWatchers(q2).length,'우리 관찰 첫날 소문'); G.fwatch[0].since=G.day-FW_AI.long; ok(fWatchers(q2).includes(G.user)&&fRumorN(q2,tid)===1&&fRumorN(q2,G.user)===0,'우리 관찰이 AI 쪽 소문이 안 됨');
+  const other=G.teams.find(t=>t.id!==G.user&&t.id!==tid).id; (G.fwAI[other]=G.fwAI[other]||[]).push({id:q2.id,since:G.day-30,k:0}); ok(fWatchers(q2).length===2,'두 구단 소문');
+  const B=fwAiWeek; fwAiWeek=()=>{}; try{ q2.ask=round5(foCap(q2)*.6); q2.ask0=q2.ask; const a0=q2.ask; fBidWeek(); ok(!G.players[q2.id]||q2.team!=null||q2.ask>a0,'두 구단이 3주 넘게 본 후보 요구액이 오르지 않음 '+a0+'→'+q2.ask); } finally{ fwAiWeek=B; }
+  G.unemp={y:G.year}; ok(!fWatchers(q2).includes(G.user),'단장이 아닐 때 우리 관찰이 소문'); delete G.unemp; });
+T('[해외 활성화 11-17] 포스팅 신청 빈도: 빅리그급 스타(국내 능력 62 이상)는 메이저리그 의지가 낮아도 포스팅을 원하고, 61 이하는 예전 기준이며, 우리와 AI 구단 선수가 같은 식이다',()=>{ fresh();
+  const u=domestic(G.user).find(q=>!q.foreign&&!q.prospect), a=domestic(otherT()).find(q=>!q.foreign&&!q.prospect);
+  for(const p of [u,a]){ p.mlb=8; setOvr(p,65); } ok(postWant(u)&&postWant(a),'능력 65 스타가 의지 8로 포스팅을 원하지 않음');
+  for(const p of [u,a]){ setOvr(p,61); } ok(!postWant(u)&&!postWant(a),'능력 61·의지 8인데 원함(예전 기준이 바뀜)'); u.mlb=a.mlb=32; ok(postWant(u)===postWant(a)&&postWant(u),'능력 61 문턱이 예전과 다름(의지 32면 원함)');
+  for(const p of [u,a]){ p.mlb=0; setOvr(p,63); } ok(!postWant(u)&&!postWant(a),'의지 0·능력 63인데 원함(스타 몫이 너무 큼)'); });
+T('[해외 활성화 11-17] 해외파 소식: 주별 기록을 다 더하면 시즌 기록이고, 콜업·올스타·홈런·무실점 소식이 쌓이며(40건 한도), 7월 올스타 발표를 시즌 뒤 시상이 따르고, 본게임 난수 순서는 그대로다',()=>{ fresh(); const K=(G.abroad||[]).filter(a=>!a.foreign&&!a.cand&&a.cur&&a.cur.y===G.year); ok(K.length>=2,'준비 실패: 시작 해외파 '+K.length);
+  for(const a of K){ const L=a.cur, c=ovfCum(a,L,OVF.nw-1e-9); for(const k of ['pa','hr','outs','er','so'])if(L[k]!=null)ok((c[k]||0)+(c.x&&c.x[k]||0)===L[k]+(L.x&&L.x[k]||0),a.name+' '+k+' 합이 시즌 기록과 다름'); let h0=-1; for(let t=0;t<=OVF.nw;t+=1){ const z=ovfCum(a,L,t), s=ovsParts(z).reduce((v,q)=>v+(q.pa||0)+(q.outs||0),0); ok(s>=h0,'누적 기록이 줄어듦'); h0=s; } ok(ovsCurPart(a,1)===L,'시즌 끝 기록이 확정 기록과 다름'); }
+  const r0=__rngState(); G.ovsFeed=[]; delete G.ovfD; for(let d=KD(3,20);d<=KD(10,5);d+=7){ G.day=d; ovsFeedWeek(); } ok(__rngState()===r0,'해외파 소식이 본게임 난수를 씀'); ok(G.ovsFeed.length>0&&G.ovsFeed.length<=OVF.keep,'소식 수 '+G.ovsFeed.length); ok(K.every(a=>Math.abs(a.asY)===G.year),'7월 올스타 발표가 안 됨');
+  ok(G.ovsFeed.every(x=>x.y===G.year&&K.some(a=>a.id===x.id)&&typeof x.t==='string'),'소식 형식'); for(let i=0;i<50;i++)ovfPush(K[0],'시험 '+i,1); ok(G.ovsFeed.length===OVF.keep,'저장 한도');
+  const a=K.find(z=>ovsBig(z.cur.lvl))||K[0]; let p=null; try{ p=JSON.parse(a.pj); }catch(e){} ok(p,'준비 실패: 보관본'); const L=Object.assign({},a.cur,{lvl:'MLB'}); delete L.x;
+  const run=v=>{ if(v==null)delete a.asY; else a.asY=v; __seed(12345); const A=ovsAwards(L,p,'MLB',false,a); return {A,s:__rngState()}; };
+  const x0=run(null), x1=run(G.year), x2=run(-G.year); ok(x0.s===x1.s&&x1.s===x2.s,'올스타 발표가 시즌 뒤 시상의 난수 쓰임을 바꿈'); ok(x1.A.includes('AS')&&!x2.A.includes('AS'),'시즌 뒤 시상이 7월 발표를 따르지 않음');
+  G.day=KD(6,1); const S=ovsSeasonSum(); ok(S.R.length>=K.length&&S.n.MLB+S.n.NPB+S.n.AAA+S.n.etc===S.R.length,'시즌 요약 인원'); });
 T('[팀 분위기·사기] 좋은 고참 리더는 분위기를 올리고, 분위기를 흐리는 주축·잦은 선수 이동·출전 불만은 내린다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10); const tid=G.user, L=playersOf(tid);
   for(const p of L){ initPers(p); p.pers.pro=10; p.pers.temp=10; p.pers.loy=10; p.mor=60; delete p.grv; p.mvD=G.day-400; delete p.boy; }
   const T0=chemCalc(tid).T; const ld=teamLeaders(tid); ok(ld.length>=2,'준비 실패: 리더 없음'); for(const p of ld){ p.pers.pro=18; p.pers.loy=17; p.mor=75; }
