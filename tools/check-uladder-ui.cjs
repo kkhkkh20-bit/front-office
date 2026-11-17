@@ -95,8 +95,8 @@ const { chromium } = require('playwright');
       assert.equal(lr.length, 1); assert.equal(lr[0].rank, res.last.rank); assert.equal(lr[0].tier, 1); assert.equal(lr[0].delta, S.delta);
       const hh = sql('SELECT opp_id, n FROM h2h WHERE player_id = ? ORDER BY opp_id', me); assert.deepEqual(hh.map(x => x.opp_id), V.slice().sort(), '맞대결은 pid 있는 상대만'); assert.ok(hh.every(x => x.n === 3), '상대마다 3경기 ' + JSON.stringify(hh));
       assert.equal(sql('SELECT tier FROM decks WHERE player_id = ?', me)[0].tier, res.tier); assert.match(res.t, /서버 시즌 포인트 \+\d+/); }
-    { const r = await p.evaluate(() => ({ t: document.querySelector('.ulx').innerText, keys: document.querySelectorAll('[data-a="ulKey"][data-k="res"]').length })); assert.match(r.t, /리그 점수 \d+/); assert.match(r.t, /리그 하이라이트[\s\S]*리그 1위 기록[\s\S]*상대별 전적/); assert.equal(r.keys, 3, '결과 명경기 3');
-      await p.click('[data-a="ulKey"][data-k="res"][data-v="0"]'); await p.waitForTimeout(450); await p.click('[data-a="ulKeyT"][data-v="line"]'); assert.match(await p.evaluate(() => document.querySelector('.ul-pre').innerText), /R\tH\tE/, '점수표');
+    { const r = await p.evaluate(() => ({ t: document.querySelector('.ulx').innerText, keys: document.querySelectorAll('[data-a="ulKey"][data-k="res"]').length })); assert.match(r.t, /리그 점수\s*\d+/); assert.match(r.t, /리그 하이라이트[\s\S]*리그 1위 기록[\s\S]*상대별 전적/); assert.equal(r.keys, 3, '결과 명경기 3');
+      await p.click('[data-a="ulKey"][data-k="res"][data-v="0"]'); await p.waitForTimeout(450); await p.click('[data-a="ulKeyT"][data-v="line"]'); assert.match(await p.evaluate(() => document.querySelector('.ul-gv .ul-bx').innerText), /R\tH\tE/, '점수표(표, 래더 v3)');
       const fit2 = await fitNow(); assert.ok(fit2.scroll === 0 && fit2.h <= fit2.v + 2, 'PC 결과 화면이 통째로 스크롤됨 ' + JSON.stringify(fit2)); }
     if (shot) await p.screenshot({ path: shot + '_result_1440.png' });
     if (shot) { await p2.evaluate(s => { G = JSON.parse(s); A.go('uld:league'); }, await p.evaluate(() => JSON.stringify(G))); await p2.waitForTimeout(800); await p2.screenshot({ path: shot + '_result_390.png' }); }

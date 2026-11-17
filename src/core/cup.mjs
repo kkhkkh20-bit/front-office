@@ -4,6 +4,7 @@
    대회는 회차마다 따로 여는 단발 행사다(정기 일정 없음). 회차마다 대회 id(cup1, cup2…)를 새로 정한다 */
 import { ladderSchedule } from './ladder.mjs';
 export const CUP_V = 1;
+export const CUP_LNPOS = Object.freeze(['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH']);
 export const CUP_RULES = Object.freeze({
   nameMax: 12,           /* 팀명 12자 */
   minPl: 20, maxPl: 32,  /* 1군 인원 */
@@ -57,9 +58,12 @@ export function cupBadName(s) {
   return BAD.some(w => t.includes(w));
 }
 /* 한국시간 마감 'YYYY-MM-DD HH:mm' → ms(UTC) */
+/* 한국시간 'YYYY-MM-DD HH:MM' → ms. 없는 날짜·시각(2026-02-30, 13월, 25:00, 윤년 아닌 2월 29일)은 null(외부 검수 11-17: 조용히 다른 날로 바꾸던 것) */
 export function cupKstMs(s) {
   const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})$/); if (!m) return null;
-  return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) - 9 * 3600e3;
+  const [y, mo, d, h, mi] = m.slice(1).map(Number), dim = [31, (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (mo < 1 || mo > 12 || d < 1 || d > dim[mo - 1] || h > 23 || mi > 59) return null;
+  return Date.UTC(y, mo - 1, d, h, mi) - 9 * 3600e3;
 }
 export const cupKstDay = ms => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);
 
@@ -94,6 +98,12 @@ export function cupValidate(e, cfg) {
   const R = CUP_RULES, err = [], flags = [], add = (k, msg) => err.push({ k, msg }), flag = (k, msg) => flags.push({ k, msg });
   cfg = Object.assign({}, CUP_DEFAULT, cfg || {});
   if (!e || e.kind !== 'cup-entry' || e.v !== CUP_V) { add('ver', '대회 엔트리 형식이 아닙니다.'); return { ok: false, errors: err, flags, elig: [] }; }
+  /* 형식 먼저(외부 검수 11-17: bn이 객체면 '.some is not a function'으로 멈추던 것). 배열·객체 자리가 틀리면 형식 오류로 돌려준다 */
+  { const bad = []; for (const k of ['P', 'ln', 'rot', 'pen', 'bn']) if (e[k] != null && !Array.isArray(e[k])) bad.push(k); if (!Array.isArray(e.P)) bad.push('P');
+    if (e.bp != null && (typeof e.bp !== 'object' || Array.isArray(e.bp))) bad.push('bp');
+    if (Array.isArray(e.ln) && e.ln.some(x => !Array.isArray(x) || x.length < 2)) bad.push('ln');
+    if (Array.isArray(e.P) && e.P.some(p => !p || typeof p !== 'object' || Array.isArray(p) || (p.r != null && (typeof p.r !== 'object' || Array.isArray(p.r))))) bad.push('P');
+    if (bad.length) { add('format', `엔트리 형식이 맞지 않습니다(${[...new Set(bad)].join(', ')}).`); return { ok: false, errors: err, flags, elig: [] }; } }
   const name = cupName(e.name);
   if (!name) add('name', '팀명을 적어 주세요.');
   else if (name !== e.name) add('name', `팀명은 ${R.nameMax}자 이하, 기호 없이 적어 주세요.`);
@@ -105,9 +115,11 @@ export function cupValidate(e, cfg) {
   if (pit.length < R.minP) add('pitch', `투수가 ${R.minP}명 이상 있어야 합니다(지금 ${pit.length}명).`);
   const ln = Array.isArray(e.ln) ? e.ln : [], seen = new Set(), pos = new Set();
   if (ln.length !== 9) add('lineup', '타순 9명이 필요합니다.');
-  for (const x of ln) { const p = ids.get(x && x[0]); if (!p || p.isP) { add('lineup', '타순에 1군 야수가 아닌 선수가 있습니다.'); continue; } if (seen.has(p.id)) add('lineup', '타순에 같은 선수가 두 번 있습니다.'); if (pos.has(x[1])) add('lineup', '타순에 같은 수비 자리가 두 번 있습니다.'); if (x[1] === 'C' && p.pos !== 'C') flag('lineup', `${p.name}: 포수가 아닌데 포수 자리에 있습니다(게임의 비상 배치).`); seen.add(p.id); pos.add(x[1]); }
+  for (const x of ln) { if (!CUP_LNPOS.includes(x[1])) { add('lineup', `타순 수비 자리 '${String(x[1]).slice(0, 4)}'는 쓸 수 없습니다.`); continue; } const p = ids.get(x && x[0]); if (!p || p.isP) { add('lineup', '타순에 1군 야수가 아닌 선수가 있습니다.'); continue; } if (seen.has(p.id)) add('lineup', '타순에 같은 선수가 두 번 있습니다.'); if (pos.has(x[1])) add('lineup', '타순에 같은 수비 자리가 두 번 있습니다.'); if (x[1] === 'C' && p.pos !== 'C') flag('lineup', `${p.name}: 포수가 아닌데 포수 자리에 있습니다(게임의 비상 배치).`); seen.add(p.id); pos.add(x[1]); }
   const rot = Array.isArray(e.rot) ? e.rot : [];
   if (!rot.length || rot.length > R.rot || rot.some(id => !(ids.get(id) || {}).isP)) add('rot', `선발은 1군 투수 1~${R.rot}명이어야 합니다.`);
+  if (new Set(rot).size !== rot.length || new Set(e.pen || []).size !== (e.pen || []).length) add('rot', '선발·불펜에 같은 투수가 두 번 있습니다.'); /* 외부 검수 11-17 */
+  if (P.some(p => p && (!p.r || typeof p.r !== 'object' || !Object.keys(p.r).length))) add('rating', '능력치가 없는 선수가 있습니다.');
   if ((e.pen || []).some(id => !(ids.get(id) || {}).isP || rot.includes(id))) add('pen', '불펜에 선발이거나 투수가 아닌 선수가 있습니다.');
   if ((e.bn || []).some(id => { const p = ids.get(id); return !p || p.isP || seen.has(id); })) add('bench', '벤치에 타순 선수나 투수가 있습니다.');
   for (const p of P) {
@@ -134,8 +146,8 @@ export const cupLabel = e => `${e.name} ${e.year}`;
 
 /* ===== 시드·대진표 ===== */
 /* 시드: 팀 OVR(총 → 투수 → 타자) 높은 순, 같으면 엔트리 해시 */
-export function cupSeed(list) {
-  return [...list].sort((a, b) => (b.ovr.t - a.ovr.t) || (b.ovr.p - a.ovr.p) || (b.ovr.b - a.ovr.b) || String(a.h).localeCompare(String(b.h)));
+export function cupSeed(list) { const O = x => (x && x.ovr && typeof x.ovr === 'object' ? x.ovr : { t: 0, p: 0, b: 0 }); /* OVR이 빠진 엔트리도 멈추지 않게(맨 뒤) */
+  return [...list].sort((a, b) => (O(b).t - O(a).t) || (O(b).p - O(a).p) || (O(b).b - O(a).b) || String(a.h).localeCompare(String(b.h)));
 }
 /* 표준 대진 순서(1번 시드와 2번 시드가 결승에서 만나게): size=8 → [1,8,4,5,2,7,3,6] */
 export function cupSlots(size) {

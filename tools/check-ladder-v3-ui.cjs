@@ -69,7 +69,7 @@ const boot = () => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); l
     await p.evaluate(() => { A.slotLoad(1); if (UI.confLoad === 1) A.slotLoad(1); }); assert.equal(await p.evaluate(() => (uld().lid | 0)), aLid, '칸 A 저장에도 리그가 생기지 않음'); assert.equal(await p.evaluate(() => !!uld().league), false);
     console.log('[P1 칸 바꾸기] 늦게 온 상대 응답이 칸 B의 리그·등록·화면을 바꾸지 않음 통과');
     /* ---- 3) 대회 신청 두 번 누르기 ---- */
-    let posts = 0; const cfg = { id: 'cupT', title: '점검컵', format: 'league', teams: 10, deadline: '2099-12-31 21:00', open: true, payCapX: 0 };
+    let posts = 0; const cfg = { id: 'cupT', title: '점검컵', format: 'league', teams: 10, deadline: new Date(Date.now() + 3 * 864e5 + 9 * 36e5).toISOString().slice(0, 16).replace('T', ' '), open: true, payCapX: 0 };
     await p.route('**/api/cup**', async r => { const u = new URL(r.request().url()), m = r.request().method(), J = (s, o) => r.fulfill({ status: s, contentType: 'application/json', body: JSON.stringify(o) });
       if (u.pathname === '/api/cup' && m === 'GET') return J(200, { cup: cfg }); if (/\/api\/cup\/entry\//.test(u.pathname) && m === 'GET') return J(200, { entered: false });
       if (u.pathname === '/api/cup/entry' && m === 'POST') { posts++; await new Promise(z => setTimeout(z, 300)); return posts === 1 ? J(201, { ok: true, name: '와이', year: 2026, ovr: { t: 65, p: 64, b: 66 }, at: Date.now() }) : J(429, { error: 'daily', message: '신청은 하루에 한 번만 할 수 있습니다.' }); }

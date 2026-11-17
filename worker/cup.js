@@ -27,6 +27,7 @@ const MSG = {
   bad_entry: '대회 엔트리가 아닙니다.',
   bad_name: '팀명에 쓸 수 없는 말이 들어 있습니다.',
   not_eligible: '참가 자격이 맞지 않습니다.',
+  bad_deadline: '마감은 실제 있는 날짜·시각(한국시간 YYYY-MM-DD HH:MM)이어야 합니다.',
   bad_teams: '팀 수는 5~10팀이어야 합니다(가을야구가 4·5위 와일드카드부터 열립니다).',
   no_champ: '우승·준우승이 없는 결과는 저장하지 않습니다.',
   not_found: '신청 기록이 없습니다.',
@@ -80,7 +81,7 @@ export async function handleCup(req, env, url, now, rateLimited) {
       if (req.method === 'PUT') { const t = await req.text(); if (t.length > CUP_RUN_MAX) return err(413, 'too_large'); const R = JSON.parse(t); if (!R || !R.champ || !R.runner) return err(400, 'no_champ'); await kv.put(k, t); return json(200, { ok: true }); } /* 우승·준우승 없는 결과는 받지 않는다(외부 검수 11-17 P2) */
       if (req.method === 'DELETE') { await kv.delete(k); return json(200, { ok: true }); } }
     if (sub === 'pub' && req.method === 'PUT') { const t = await req.text(); if (t.length > 4 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cup:pub', t); await bust(kv, url, ['/pub']); return json(200, { ok: true }); }
-    if (sub === 'config' && req.method === 'PUT') { const c = JSON.parse(await req.text()); if (!c || !GID.test(String(c.id || ''))) return err(400, 'bad_entry'); if (!cupTeamsOk(c)) return err(400, 'bad_teams'); await kv.put('cup:cfg', JSON.stringify(c)); await bust(kv, url, ['/__cfg', '/entries', '/entries.html']); return json(200, { ok: true }); }
+    if (sub === 'config' && req.method === 'PUT') { const c = JSON.parse(await req.text()); if (!c || !GID.test(String(c.id || ''))) return err(400, 'bad_entry'); if (!cupTeamsOk(c)) return err(400, 'bad_teams'); if (c.deadline && cupKstMs(c.deadline) == null) return err(400, 'bad_deadline'); await kv.put('cup:cfg', JSON.stringify(c)); await bust(kv, url, ['/__cfg', '/entries', '/entries.html']); return json(200, { ok: true }); }
     if (sub === 'entries' && req.method === 'GET') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); let drop = []; try { drop = JSON.parse(await kv.get('cupX:' + c.id) || '[]'); } catch (e) {} return json(200, { cup: c, entries: await listEntries(kv, c.id, true), drop }); }
     if (sub === 'results' && req.method === 'PUT') { const t = await req.text(); JSON.parse(t); await kv.put('cup:results', t); await bust(kv, url, ['/results']); return json(200, { ok: true }); }
     const g = sub.match(/^game\/(.+)$/); if (g && req.method === 'PUT' && GID.test(g[1])) { const t = await req.text(); if (t.length > 2 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cupG:' + g[1], t); await bust(kv, url, ['/game/' + g[1]]); return json(200, { ok: true }); }
