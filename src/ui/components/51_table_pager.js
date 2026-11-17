@@ -119,7 +119,10 @@ function workspaceFit(host){
     }
   });
   if(innerHeight<500){const panel=panels[0],scroll=panel?.querySelector(':scope > .ws-scroll'),notes=[...root.querySelectorAll(':scope > .note')];if(scroll&&notes.length){const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');scroll.before(body);scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');body.append(...notes,scroll);body.addEventListener('scroll',()=>{positions[key+':0']=[body.scrollTop,body.scrollLeft];},{passive:true});}}
-  const columns=Math.min(panels.length,innerWidth>=1600?3:innerWidth>=700?2:1) /* 넓은 PC는 세 칸까지 한 화면에 */,pages=Math.ceil(panels.length/columns);
+  const columns=Math.min(panels.length,innerWidth>=1600?3:innerWidth>=700?2:1) /* 넓은 PC는 세 칸까지 한 화면에 */;
+  /* 넓은 칸(data-wsw="2", 예: 선수 기록 탭 연도별 기록 표 — 국사왕 11-17): 칸 몇 개를 함께 쓴다. 쪽 나눔은 칸 너비를 더해 채운다 */
+  const pageOf=[];{ let pg=0,used=0; panels.forEach((panel,i)=>{ const w=Math.max(1,Math.min(columns,+(panel.dataset&&panel.dataset.wsw)||1)); if(used&&used+w>columns){ pg++; used=0; } pageOf[i]=pg; used+=w; panel._wsPage=pg; panel.style.gridColumn=w>1?`span ${w}`:''; }); }
+  const pages=(pageOf.length?pageOf[pageOf.length-1]:0)+1;
   deck.style.setProperty('--ws-columns',columns);
   UI.workspacePages=UI.workspacePages||{};
   let page=clamp(UI.workspacePages[key]||0,0,pages-1);
@@ -137,12 +140,12 @@ function workspaceFit(host){
     body.addEventListener('scroll',()=>{positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
   }
   panels.forEach((panel,index)=>panel._workspaceFit=()=>fitPanel(panel,index));
-  const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
+  const show=()=>{panels.forEach((panel,i)=>{panel.hidden=pageOf[i]!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
 
   if(pages>1){
     /* 표·보고 묶음도 버튼 줄로: 묶음마다 제목 버튼 하나(한 번 눌러 바로 이동) */
     const bar=document.createElement('nav');bar.className='ws-pages ws-tab-row';bar.setAttribute('aria-label','표·보고 묶음');
-    const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');b.onclick=()=>{page=i;sync();try{ fitPages(); }catch(e){}};return b;}); /* 새로 보인 칸의 목록도 쪽으로 나눈다(UI 3단계 3-0) */
+    const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.filter((_,k)=>pageOf[k]===i).map(label).join(' · ');b.onclick=()=>{page=i;sync();try{ fitPages(); }catch(e){}};return b;}); /* 새로 보인 칸의 목록도 쪽으로 나눈다(UI 3단계 3-0) */
     const sync=()=>{show();buttons.forEach((b,i)=>{b.classList.toggle('on',i===page);b.setAttribute('aria-current',i===page?'true':'false');});wsRowHint(bar);};
     bar.append(...buttons);const navigation=root.querySelector(':scope > .ws-navigation');
     if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else root.insertBefore(bar,deck);sync();
@@ -191,7 +194,7 @@ function workspaceReveal(selector){
   const panel=document.querySelector(selector)?.closest('.ws-panel');
   if(panel&&panel.hidden){ const deck=panel.parentElement,bar=deck.parentElement.querySelector(':scope > .ws-pages,:scope > .ws-navigation > .ws-pages');
     const columns=+deck.style.getPropertyValue('--ws-columns')||1;
-    bar?.querySelector(`[data-ws-page="${Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click(); }
+    bar?.querySelector(`[data-ws-page="${panel._wsPage??Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click(); }
   const fb=document.querySelector(selector)?.closest('.fbar-p[hidden]')?.closest('[data-fbar]'); if(fb)A.fbarTog(fb.dataset.fbar); /* 필터 바 칸 안의 조건이면 칸을 연다 */
   try{ fitPagesReveal(document.querySelector(selector)); }catch(e){} /* PC 목록 쪽 나눔의 다른 쪽에 있으면 그 쪽으로(UI 3단계 3-0) */
 }
