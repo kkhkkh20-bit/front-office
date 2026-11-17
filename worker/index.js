@@ -15,6 +15,7 @@ import { handleLadder, ladderUsage } from './uladder.js';
 export const WORKER_BUILD = 'kv2-2026-11-17';
 import { handleV1, scheduledV1 } from './v1/index.js';
 import { countKV } from './v1/usage.js';
+import { readText } from './v1/http.js';
 
 export const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // 0·O·1·I·L 없음, 31자 → 8자리 약 39.6비트
 export const CODE_LEN = 8;
@@ -123,8 +124,8 @@ export async function handle(req, env, now = Date.now()) {
       if (len > MAX_BYTES) return err(413, 'too_large');
       const rl = await rateLimited(req, env, now);
       if (rl && rl.limited) return err(429, 'rate_limited', { 'Retry-After': String(RL_WINDOW) });
-      const body = (await req.text()).trim();
-      if (body.length > MAX_BYTES) return err(413, 'too_large');
+      const rt = await readText(req, MAX_BYTES); if (rt.error) return err(413, 'too_large'); /* 바이트로, 길이 머리글이 없어도 읽는 중에 멈춘다(srv2 #43) */
+      const body = rt.text.trim();
       if (!looksLikeSave(body)) return err(400, 'bad_format');
       let code = '';
       for (let i = 0; i < 4 && !code; i++) { const c = newCode(); if (await kv.get(KEY(c)) == null) code = c; }

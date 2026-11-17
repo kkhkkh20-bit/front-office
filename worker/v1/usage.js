@@ -40,3 +40,5 @@ export function statStmts(db, now, inc) {
 }
 /* 모은 사용량을 꺼낸다(꺼내면 0으로) */
 export function takeUsage() { const x = { d1_r: U.r, d1_w: U.w, kv_w: U.kv }; U.r = 0; U.w = 0; U.kv = 0; return x; }
+/* 꺼냈는데 쓰지 못한 몫(batch를 되돌림)을 다시 넣는다 */
+export function addUsage(x) { if (!x) return; U.r += x.d1_r || 0; U.w += x.d1_w || 0; U.kv += x.kv_w || 0; }
