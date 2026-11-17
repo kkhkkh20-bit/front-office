@@ -44,7 +44,7 @@ function ulResultCard(U,R){ const C=FrontOfficeCore, S=C.ulSummary(U.hist,U.tier
   const pts=R.pts!=null?`<span class="ul-chip"><small>리그 점수</small><b class="num">${R.pts}</b></span>`:'', sp=R.srv&&!R.srv.queued?`<span class="ul-chip"><small>서버 시즌 포인트</small><b class="num">+${R.srv.delta}</b></span>`:'';
   const SS=U.seas&&U.seas.id===R.season?U.seas:null, best=SS&&R.pts!=null&&R.pts>=SS.top?'<span class="ul-chip hot"><small>시즌 최고</small><b>갱신</b></span>':'';
   const mm=R.myMvp, mp=mm&&U.deck?(U.deck.e.P||[]).find(p=>String(p.id)===String(mm.key).split(':')[1]):null, f=mp?cupFaceOf(mp,U.deck.e):null;
-  const mvp=mm?`<div class="ul-mvp">${f?`<img class="dk-f" src="${esc(f)}" alt="" loading="lazy">`:'<span class="dk-f dk-f0"></span>'}<div><p class="dk-t">우리 MVP</p><p><b>${esc(mm.name)}</b></p><p class="small muted">${esc(mm.txt)}</p></div></div>`:'';
+  const mvp=mm?`<div class="ul-mvp">${f?`<img class="dk-f" src="${esc(f)}" alt="" loading="lazy">`:'<span class="dk-f dk-f0"></span>'}<div><p class="dk-t">우리 MVP</p><p><b>${esc(mm.name)}</b></p><p class="small ul-dim">${esc(mm.txt)}</p></div></div>`:'';
   const ms=C.ulMissions(U.seas,U.hist,se.id,U.tier), md=ms.filter(m=>m.done).length, gl=R.gl||{}, gn=gl.ms1!=null&&gl.ms0!=null?gl.ms1-gl.ms0:0, D=C.ulDailyGoals(U.hist,Date.now()), dd=D.filter(x=>x.done).length;
   const prog=`<div class="ul-rvp"><div><span class="small">시즌 목표 <b>${md}/${ms.length}</b>${gn>0?` <b class="ul-up">+${gn}</b>`:''}</span><i class="ul-pbar"><i style="width:${md/ms.length*100}%"></i></i></div><div><span class="small">오늘의 목표 <b>${dd}/3</b>${gl.day?' <b class="ul-up">도장!</b>':''}${gl.week?' <b class="ul-up">주간 도장!</b>':''}</span><i class="ul-pbar"><i style="width:${dd/3*100}%"></i></i></div></div>`;
   const gift=[gl.frame?`<span class="ul-bg on">새 테두리 · ${esc(gl.frame)}</span>`:'',...(gl.titles||[]).map(n=>`<span class="ul-bg on">새 칭호 · ${esc(n)}</span>`)].join('');
@@ -53,17 +53,17 @@ function ulResultCard(U,R){ const C=FrontOfficeCore, S=C.ulSummary(U.hist,U.tier
     <div class="ul-chips2">${pts}${sp}${best}${R.srv&&R.srv.queued?'<span class="small muted">서버에 연결되지 않아 결과를 이 기기에 두었습니다. 다음 연결 때 보냅니다.</span>':''}</div>
     ${R.srv&&!R.srv.queued?`<p class="small ul-srv">서버 시즌 포인트 +${R.srv.delta}${R.srv.points?` (이번 시즌 ${R.srv.points})`:''} · 서버 단계 <b>${C.ulTierName(R.srv.tier)}</b> <button class="lnk small" data-a="ulGoPg" data-v="rank">순위 보기</button></p>`:''}
     ${mvp}${R.mvp?`<p class="small">시즌 MVP <b>${esc(R.mvp.name)}</b>(${esc(R.mvp.team)}) ${esc(R.mvp.txt)}</p>`:''}${prog}${ulNewBadges(U)}${gift?`<p class="ul-newb">${gift}</p>`:''}
-    <p class="small muted">내 최고 단계 <b>${C.ulTierName(S.best)}</b>${S.stay?` · 이 덱 ${C.ulTierName(S.stay.tier)} ${S.stay.n}리그째`:''} · 지금까지 ${S.leagues}리그${R.rs!=null?` · 득실 ${R.rs}-${R.ra}`:''} · 상대 유저 ${R.src.user} · 우승 덱 ${R.src.cup} · AI ${R.src.ai}${R.edits?` · 덱 고침 ${R.edits}번`:''}</p>${ulMsgHtml()}
+    <p class="small ul-dim">내 최고 단계 <b>${C.ulTierName(S.best)}</b>${S.stay?` · 이 덱 ${C.ulTierName(S.stay.tier)} ${S.stay.n}리그째`:''} · 지금까지 ${S.leagues}리그${R.rs!=null?` · 득실 ${R.rs}-${R.ra}`:''} · 상대 유저 ${R.src.user} · 우승 덱 ${R.src.cup} · AI ${R.src.ai}${R.edits?` · 덱 고침 ${R.edits}번`:''}</p>${ulMsgHtml()}
     <div class="btns ul-again"><button class="btn primary ul-big" data-a="ulStart"${UL.busy||!U.deck||L?' disabled':''}>다음 리그 · ${T} 리그 시작</button><button class="btn" data-a="ulGoPg" data-v="deck">덱 고치고 시작</button></div></section>`; }
 /* 붙어 보기(친선 3경기): 상태는 UL.ex = {res, k(어디서 눌렀나), v} */
 function ulMyDeckForEx(){ const U=uld(); if(U&&U.deck)return U.deck.e; try{ if(G&&!G.unemp)return cupEntryNow({name:team(G.user).nick}); }catch(e){} return null; }
 function ulExHtml(where){ const X=UL.ex; if(!X||X.where!==where)return ''; const r=X.res;
   return `<div class="ulx ul-exw"><section class="card ul-ex"><h2 class="sec">붙어 보기 <small>친선 3경기 · 기록에 남지 않음</small></h2><p class="ul-exh"><b>${esc(r.a)}</b> <span class="num">${FrontOfficeCore.cupOvrTxt(r.oa)}</span> <b class="num ul-exs">${r.wa}-${r.wb}${r.t?`-${r.t}`:''}</b> <b>${esc(r.b)}</b> <span class="num">${FrontOfficeCore.cupOvrTxt(r.ob)}</span></p>
     <p class="small ${r.wa>r.wb?'ul-up':r.wb>r.wa?'ul-dn':''}">${r.wa>r.wb?'우리 덱이 이겼습니다.':r.wb>r.wa?'우승 덱이 한 수 위였습니다.':'팽팽했습니다.'} 다시 붙으면 결과가 달라집니다(공은 둥그니까).</p>
-    ${ulKeysHtml(r.keys,'ex').replace('명경기 · 이 경기 보기','경기 보기')}<div class="btns"><button class="btn small primary" data-a="ulEx" data-k="${esc(X.k)}" data-v="${esc(X.v)}"${UL.busy?' disabled':''}>다시 붙기</button><button class="btn small" data-a="ulExClose">닫기</button></div></section></div>`; }
+    ${ulKeysHtml(r.keys,'ex').replace('명경기 · 이 경기 보기','경기 보기').replace(/ <span class="muted">\d+R<\/span>/g,'')}<div class="btns"><button class="btn small primary" data-a="ulEx" data-k="${esc(X.k)}" data-v="${esc(X.v)}"${UL.busy?' disabled':''}>다시 붙기</button><button class="btn small" data-a="ulExClose">닫기</button></div></section></div>`; }
 function ulExTarget(k,v){ if(k==='hof'){ const c=(HOF.data&&HOF.data.cups||[]).find(x=>x.id===v); return c&&c.champ&&c.champ.deck?Object.assign({},c.champ.deck,{name:c.champ.deck.name||c.champ.name}):null; } const d=ulDecks().find(x=>x.h===v); return d?d.e:null; }
 Object.assign(A,{
-  ulSeenS(v){ const U=uld(); if(U){ U.seenS=+v; render(); } },
+  ulSeenS(v){ const U=uld(); if(U){ U.seenS=+v; ulSave(); render(); } },
   ulRun3(){ return ulSim(3); },
   async ulEx(v,el){ if(UL.busy)return; const k=(el&&el.dataset.k)||'dk', me=ulMyDeckForEx(), op=ulExTarget(k,v); if(!me)return toast('구단을 맡고 있을 때 붙어 볼 수 있습니다.'); if(!op)return toast('이 덱을 찾지 못했습니다.');
     UL.busy=true; toast('친선 3경기를 돌리는 중입니다.'); await new Promise(r=>setTimeout(r,30)); let r; try{ r=ulExhibit(me,op); }catch(e){ console.error(e); r={ok:false,msg:'경기를 돌리지 못했습니다.'}; } UL.busy=false;

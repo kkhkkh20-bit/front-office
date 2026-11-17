@@ -10,6 +10,12 @@ const UL={view:null,feed:[],tiers:null,tiersSt:'',busy:false,msg:'',bad:false,sr
   v1:'',v1at:0,v1p:null,N:null,v1sync:'',sv:{me:null,meSt:'',board:{},bt:null,feed:null,feedSt:'',rv:null,h2h:{}}};
 const ulApi=(p,o)=>fetch('/api/ladder'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ const j=await cupJson(r); return {r,j}; });
 function ulSay(m,bad){ UL.msg=m; UL.bad=!!bad; try{ render(); }catch(e){} }
+/* 저장 칸(게임)이 바뀌면 비동기 응답을 버린다(외부 검수 11-17 P1: 칸 A의 상대 응답이 칸 B 리그로 들어가던 것). 요청을 시작할 때 표를 받고, 응답을 쓰기 전에 같은 게임인지 본다 */
+const ulTok=()=>({g:G,n:UL.gen|0}), ulSame=t=>!!t&&t.g===G&&t.n===(UL.gen|0);
+function ulGameSwitch(){ UL.gen=(UL.gen|0)+1; Object.assign(UL,{me:null,srv:'',busy:false,msg:'',bad:false,prog:'',edit:null,feed:[],view:null,opp:null,drop:null,src:'now',name:'',v1sync:'',ex:null,rv:null,reveal:null,meta:null,tiers:null,tiersSt:'',pick:false});
+  Object.assign(UL.sv,{me:null,meSt:'',board:{},feedSt:'',rv:null,h2h:{}}); if(typeof CUP!=='undefined')Object.assign(CUP,{st:'',my:null,drop:null,mineOpen:false,msg:'',bad:false,busy:false,ents:null,entsSt:'',view:null,name:''}); }
+/* 래더·앨범이 G를 바꾸면 저장을 건다(외부 검수 11-17 P1: 저장을 걸지 않아 새로 고침하면 사라지던 것). 실패는 저장 쪽이 알린다 */
+const ulSave=()=>{ try{ save(); }catch(e){} };
 /* ---- 서버 v1 연결(사용자 11-17) ---- */
 function ulNet(){ return UL.N||(UL.N=FrontOfficeCore.netCreate({})); }
 const ulV1On=()=>UL.v1==='ok';
@@ -23,41 +29,41 @@ async function ulV1Player(){ const N=ulNet(); if(N.signedIn())return true; let r
 /* 토큰이 서버에 없으면(관리자 삭제 등) 버리고 한 번 새로 만든다 */
 async function ulV1Call(f){ let r=await f(); if(r.status===401){ ulNet().forget(); if(await ulV1Player())r=await f(); } return r; }
 /* 처음 연결(세계마다 한 번): 줄 세운 결과 보내기 → 덱이 있으면 플레이어·덱 올리기(지금 단계 옮기기) → 서버 단계로 맞추기 */
-async function ulV1Sync(){ const U=uld(), N=ulNet(), C=FrontOfficeCore; if(!U)return; const wid=cupWid(); if(UL.v1sync===wid)return; UL.v1sync=wid;
+async function ulV1Sync(){ const U=uld(), N=ulNet(), C=FrontOfficeCore, tk=ulTok(); if(!U)return; const wid=cupWid(); if(UL.v1sync===wid)return; UL.v1sync=wid;
   try{ if(N.signedIn()&&N.queue().length)await N.flush();
     if(!U.deck){ if(N.signedIn())await ulSvMe(true); return; }
-    if(!(await ulV1Player())){ UL.v1sync=''; return; }
-    let m=await ulV1Call(()=>N.me()); if(!m.ok){ UL.v1sync=''; return; } let d=m.data, moved=false;
+    if(!(await ulV1Player())){ if(ulSame(tk))UL.v1sync=''; return; }
+    let m=await ulV1Call(()=>N.me()); if(!ulSame(tk))return; if(!m.ok){ UL.v1sync=''; return; } let d=m.data, moved=false;
     if(!d.deck||d.deck.h!==U.deck.e.h){ const r=await N.putDeck(U.deck.e,U.tier|0,wid); if(r.ok){ moved=!d.deck; const m2=await N.me(); if(m2.ok)d=m2.data; } }
-    UL.sv.me=d; UL.sv.meSt='ok'; UL.sv.meAt=Date.now(); UL.me=d.deck?{registered:true,name:d.deck.name,tier:d.entry.tier,v1:1}:null;
-    if(!U.league&&d.entry&&(d.entry.tier|0)!==(U.tier|0)){ const was=U.tier|0; U.tier=d.entry.tier|0; ulSay(`${moved?'새 래더 서버로 옮겼습니다. ':''}서버 단계 ${C.ulTierName(U.tier)}로 맞췄습니다(이 기기 ${C.ulTierName(was)}).`); }
+    if(!ulSame(tk))return; UL.sv.me=d; UL.sv.meSt='ok'; UL.sv.meAt=Date.now(); UL.me=d.deck?{registered:true,name:d.deck.name,tier:d.entry.tier,v1:1}:null;
+    if(!U.league&&d.entry&&(d.entry.tier|0)!==(U.tier|0)){ const was=U.tier|0; U.tier=d.entry.tier|0; ulSave(); ulSay(`${moved?'새 래더 서버로 옮겼습니다. ':''}서버 단계 ${C.ulTierName(U.tier)}로 맞췄습니다(이 기기 ${C.ulTierName(was)}).`); }
     else if(moved)ulSay(`새 래더 서버로 옮겼습니다. ${C.ulTierName(U.tier)} 단계 그대로입니다.`);
-  }catch(e){ UL.v1sync=''; } }
+  }catch(e){ if(ulSame(tk))UL.v1sync=''; } }
 /* 순위 탭 자료: 내 시즌·라이벌(로그인), 순위표·소식(공개). 화면을 그릴 때 한 번씩만 받는다 */
-async function ulSvMe(force){ const N=ulNet(), S=UL.sv; if(!N.signedIn()||S.meSt==='loading'||(!force&&S.meSt&&Date.now()-(S.meAt||0)<60e3))return; S.meSt='loading'; S.meAt=Date.now();
-  try{ const [m,rv]=await Promise.all([ulV1Call(()=>N.me()),N.rivals()]); S.me=m.ok?m.data:null; S.rv=rv.ok?rv.data:null; S.meSt=m.ok?'ok':'err'; }catch(e){ S.meSt='err'; } try{ render(); }catch(e){} }
+async function ulSvMe(force){ const N=ulNet(), S=UL.sv, tk=ulTok(); if(!N.signedIn()||S.meSt==='loading'||(!force&&S.meSt&&Date.now()-(S.meAt||0)<60e3))return; S.meSt='loading'; S.meAt=Date.now();
+  try{ const [m,rv]=await Promise.all([ulV1Call(()=>N.me()),N.rivals()]); if(!ulSame(tk))return; S.me=m.ok?m.data:null; S.rv=rv.ok?rv.data:null; S.meSt=m.ok?'ok':'err'; }catch(e){ S.meSt='err'; } try{ render(); }catch(e){} }
 function ulSvBoard(t){ const S=UL.sv; if(S.board[t])return; S.board[t]={st:'loading'}; const sid=(S.me&&S.me.season&&S.me.season.id)||(ulNet().season&&ulNet().season.id)||0; if(t==='prev'&&sid<=1){ S.board[t]={st:'ok',rows:[],none:1}; return; } (t==='prev'?ulNet().leaderboard('all',sid-1):ulNet().leaderboard(t)).then(r=>{ S.board[t]=r.ok?Object.assign({st:'ok'},r.data):{st:'err'}; },()=>{ S.board[t]={st:'err'}; }).finally(()=>{ try{ render(); }catch(e){} }); }
 function ulSvFeed(){ const S=UL.sv; if(S.feedSt)return; S.feedSt='loading'; ulNet().feed().then(r=>{ S.feed=r.ok?r.data.items||[]:null; S.feedSt=r.ok?'ok':'err'; },()=>{ S.feedSt='err'; }).finally(()=>{ try{ render(); }catch(e){} }); }
 function ulSvH2h(pid){ const S=UL.sv; if(!pid||S.h2h[pid]||!ulNet().signedIn())return; S.h2h[pid]={st:'loading'}; ulNet().h2h(pid).then(r=>{ S.h2h[pid]=r.ok?Object.assign({st:'ok'},r.data):{st:'err'}; },()=>{ S.h2h[pid]={st:'err'}; }).finally(()=>{ try{ render(); }catch(e){} }); }
 function ulSvStale(){ Object.assign(UL.sv,{meSt:'',board:{},feedSt:'',h2h:{}}); }
 /* 리그 결과 보내기: 상대 유저(pid 있는 팀)별 승패. 응답 단계를 내 단계로 쓴다. 끊기면 기기에 줄 세운다(연결부) */
-async function ulV1Result(L,res){ const N=ulNet(), U=uld(); try{ if(!(await ulV1Player()))return;
+async function ulV1Result(L,res){ const N=ulNet(), U=uld(), tk=ulTok(); try{ if(!(await ulV1Player()))return;
     const opps=((res.rec&&res.rec.h2h)||[]).map(x=>({pid:L.teams[x.i]&&L.teams[x.i].pid,w:x.w,l:x.l,d:x.t})).filter(x=>x.pid);
     const r=await ulV1Call(()=>N.result({key:L.nk||(cupWid()+'.'+L.id),rank:res.rank,teams:L.teams.length,w:res.w,l:res.l,d:res.t,opps}));
-    if(r.ok&&r.data){ const d=r.data; res.srv={tier:d.tier|0,delta:d.delta|0,points:d.points|0,move:d.move,dup:!!d.dup}; if(!U.league)U.tier=d.tier|0; ulSvStale(); }
-    else if(r.queued)res.srv={queued:1};
-  }catch(e){} try{ render(); }catch(e){} }
+    if(r.ok&&r.data){ const d=r.data; res.srv={tier:d.tier|0,delta:d.delta|0,points:d.points|0,move:d.move,dup:!!d.dup}; if(!ulSame(tk))return; if(!U.league)U.tier=d.tier|0; ulSvStale(); ulSave(); }
+    else if(r.queued){ res.srv={queued:1}; if(ulSame(tk))ulSave(); }
+  }catch(e){} if(ulSame(tk))try{ render(); }catch(e){} }
 /* 내 등록 상태(서버): v1이면 v1, 아니면 KV */
-function ulProbe(){ if(UL.srv||!xfAvail()||!G)return; UL.srv='loading';
-  ulV1().then(async ok=>{ if(ok){ UL.srv='ok'; await ulV1Sync(); return; } if(!G.wid){ UL.srv='ok'; UL.me=null; return; } const {r,j}=await ulApi('/me/'+G.wid); UL.srv=r.ok?'ok':'off'; UL.me=r.ok&&j.registered?j:null; })
-    .catch(()=>{ UL.srv='off'; }).finally(()=>{ try{ render(); }catch(e){} }); }
+function ulProbe(){ if(UL.srv||!xfAvail()||!G)return; UL.srv='loading'; const tk=ulTok();
+  ulV1().then(async ok=>{ if(!ulSame(tk))return; if(ok){ UL.srv='ok'; await ulV1Sync(); return; } if(!G.wid){ UL.srv='ok'; UL.me=null; return; } const {r,j}=await ulApi('/me/'+G.wid); if(!ulSame(tk))return; UL.srv=r.ok?'ok':'off'; UL.me=r.ok&&j.registered?j:null; })
+    .catch(()=>{ if(ulSame(tk))UL.srv='off'; }).finally(()=>{ if(ulSame(tk))try{ render(); }catch(e){} }); }
 /* 서버에 올리기(실패해도 이 기기 리그는 된다). v1이 되면 v1, 안 되면(꺼짐·연결 안 됨) KV */
-async function ulUpload(){ const U=uld(); if(!U||!U.deck||!xfAvail())return false;
-  if(await ulV1()){ try{ if(await ulV1Player()){ const r=await ulV1Call(()=>ulNet().putDeck(U.deck.e,U.tier|0,cupWid()));
-      if(r.ok){ const d=r.data; UL.me={registered:true,name:d.name,tier:d.tier|0,ovr:d.ovr,v1:1}; UL.srv='ok'; UL.v1sync=cupWid(); if(!U.league)U.tier=d.tier|0; UL.sv.meSt=''; return true; }
+async function ulUpload(){ const U=uld(), tk=ulTok(); if(!U||!U.deck||!xfAvail())return false;
+  if(await ulV1()){ try{ if(await ulV1Player()){ const r=await ulV1Call(()=>ulNet().putDeck(U.deck.e,U.tier|0,cupWid())); if(!ulSame(tk))return false;
+      if(r.ok){ const d=r.data; UL.me={registered:true,name:d.name,tier:d.tier|0,ovr:d.ovr,v1:1}; UL.srv='ok'; UL.v1sync=cupWid(); if(!U.league&&(U.tier|0)!==(d.tier|0)){ U.tier=d.tier|0; ulSave(); } UL.sv.meSt=''; return true; }
       if(r.status>=400&&r.status<500){ ulSay(`서버 등록은 하지 못했습니다(${(r.data&&((r.data.errors&&r.data.errors[0])||r.data.message||r.data.error))||r.status}). 이 기기 리그는 그대로 할 수 있습니다.`,true); return false; } } }catch(e){} }
-  try{ const {r,j}=await ulApi('/deck',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({wid:cupWid(),tier:U.tier|0,e:U.deck.e})});
-    if(r.ok){ UL.me=Object.assign({registered:true},j); UL.srv='ok'; return true; } ulSay(`서버 등록은 하지 못했습니다(${(j.errors&&j.errors[0])||j.message||r.status}). 이 기기 리그는 그대로 할 수 있습니다.`,true); }catch(e){ UL.srv='off'; } return false; }
+  try{ const {r,j}=await ulApi('/deck',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({wid:cupWid(),tier:U.tier|0,e:U.deck.e})}); if(!ulSame(tk))return false;
+    if(r.ok){ UL.me=Object.assign({registered:true},j); UL.srv='ok'; return true; } ulSay(`서버 등록은 하지 못했습니다(${(j.errors&&j.errors[0])||j.message||r.status}). 이 기기 리그는 그대로 할 수 있습니다.`,true); }catch(e){ if(ulSame(tk))UL.srv='off'; } return false; }
 function ulSrcEntry(src){ const name=FrontOfficeCore.cupName(UL.name||(uld()&&uld().deck&&uld().deck.e.name)||team(G.user).nick);
   if(src==='now'){ if(G.unemp)return null; return cupEntryNow({name}); }
   const x=cupAlbum().find(a=>'alb:'+a.id===src); if(!x)return null; const e=JSON.parse(JSON.stringify(x.e)); e.name=name; e.ovr=cupOvr(e); return e; }
@@ -67,15 +73,16 @@ function ulRegEntry(){ const e=ulSrcEntry(UL.src); if(!e)return {e:null,err:''};
 const ulDropIds=()=>UL.drop&&UL.drop.src===UL.src?UL.drop.ids:[];
 const ulSrcOpts=()=>[['now','지금 1군'],...cupAlbum().slice().reverse().map(a=>['alb:'+a.id,`${a.y} ${a.k==='auto'?'시즌 종료':'직접 저장'}${a.e.res&&a.e.res.rank?` ${a.e.res.rank}위`:''} · OVR ${FrontOfficeCore.cupOvrTxt(a.e.ovr)}`])];
 /* 리그 시작: 서버에서 같은 단계 덱 받기(한 번) → 가져온 우승 덱(이 기기·명예의 전당) → AI */
-async function ulStart(){ const U=uld(), C=FrontOfficeCore; if(!U||!U.deck||UL.busy)return; UL.busy=true; ulSay('같은 단계 덱을 받는 중입니다.');
+async function ulStart(){ const U=uld(), C=FrontOfficeCore, tk=ulTok(); if(!U||!U.deck||UL.busy)return; UL.busy=true; ulSay('같은 단계 덱을 받는 중입니다.');
   let fetched=[], avg=0, count=0, from='이 기기', net=false, kvn=0;
   if(await ulV1()){ try{ if(await ulV1Player()){ await ulV1Sync(); const r=await ulV1Call(()=>ulNet().opponents({n:9}));
-      if(r.ok&&r.data&&r.data.ok){ const d=r.data; fetched=(d.decks||[]).map(x=>({e:x.e,pid:x.pid,nick:x.nickname})); avg=d.avg; count=d.near; kvn=d.kv|0; from='서버'; net=true; if(!U.league&&d.tier!=null)U.tier=d.tier|0; } } }catch(e){} }
+      if(!ulSame(tk))return; if(r.ok&&r.data&&r.data.ok){ const d=r.data; fetched=(d.decks||[]).map(x=>({e:x.e,pid:x.pid,nick:x.nickname})); avg=d.avg; count=d.near; kvn=d.kv|0; from='서버'; net=true; if(!U.league&&d.tier!=null)U.tier=d.tier|0; } } }catch(e){} }
   if(!net&&xfAvail()){ try{ const me=U.deck.e; const {r,j}=await ulApi(`/opp?wid=${encodeURIComponent(cupWid())}&tier=${U.tier|0}&ovr=${me.ovr?me.ovr.t:0}&n=9`); if(r.ok&&j.ok){ fetched=(j.decks||[]).map(d=>d.e); avg=j.avg; count=j.count; from='서버'; } }catch(e){} }
+  if(!ulSame(tk)||uld()!==U)return; /* 그사이 다른 저장 칸을 열었으면 버린다 */
   const cup=[...ulDecks().map(x=>x.e),...((HOF.data&&HOF.data.cups)||[]).map(c=>c.champ&&c.champ.deck).filter(Boolean)];
-  UL.prog='AI 덱을 만드는 중입니다.'; render(); await new Promise(r=>setTimeout(r,20));
+  UL.prog='AI 덱을 만드는 중입니다.'; render(); await new Promise(r=>setTimeout(r,20)); if(!ulSame(tk)||uld()!==U)return;
   try{ const r=ulMakeLeague({fetched,cup,avg,count}); UL.busy=false; UL.prog=''; if(!r.ok)return ulSay(r.msg,true); const s=r.league.src;
-    if(net){ r.league.net=1; r.league.nk=`${cupWid()}.${r.league.id}.${Date.now().toString(36)}`; r.league.kvn=kvn; }
+    if(net){ r.league.net=1; r.league.nk=`${cupWid()}.${r.league.id}.${Date.now().toString(36)}`; r.league.kvn=kvn; } ulSave();
     UL.feed=[]; ulGo('league'); ulSay(`${C.ulTierName(r.league.tier)} 리그를 시작했습니다. 상대: ${s.user?`${from} 유저 덱 ${s.user}개`:'유저 덱 없음'}${s.cup?` · 우승 덱 ${s.cup}개`:''}${s.ai?` · 등록 덱이 모자라 AI 구단 ${s.ai}팀이 채웠습니다`:''}.`); }
   catch(e){ console.error(e); UL.busy=false; UL.prog=''; ulSay('리그를 만들지 못했습니다.',true); } }
 /* 연전 돌리기: 한 라운드 또는 끝까지(연전마다 화면을 돌려준다) */
@@ -84,12 +91,14 @@ function ulFeedLine(L,x){ const A=L.teams[x.a], B=L.teams[x.b], wa=x.g.filter(g=
   const hot=me?x.g.map(g=>g[3]?'끝내기':g[2]>9?`${g[2]}회 연장`:'').filter(Boolean)[0]:'';
   return {me,t:`${x.r}R ${A.name} ${wa}-${wb}${x.g.length-wa-wb?`(${x.g.length-wa-wb}무)`:''} ${B.name} · ${x.g.map(g=>g[0]+':'+g[1]).join(' ')}${hot?` · ${hot}!`:''}`}; }
 /* all: true(끝까지) · 숫자 n(n라운드, 래더 v3 '3라운드') · 없으면 한 라운드 */
-async function ulSim(all){ const U=uld(), L=U&&U.league; if(!L||UL.busy)return; UL.busy=true; UL.edit=null; if(UL.view&&UL.view.k==='lg')UL.view=null; const many=all===true||all>1, tick=()=>new Promise(r=>setTimeout(r,all===true?0:many?40:140));
-  try{ const r0=L.sched[L.next]&&L.sched[L.next].r, rEnd=all===true?99:r0+Math.max(1,all|0)-1; while(L.next<L.sched.length){ const r=L.sched[L.next].r; if(r>rEnd)break; const x=ulRunSeries(L); const f=ulFeedLine(L,x); if(f.me)UL.rv=x.id; if(!many||f.me){ UL.feed.unshift(f); UL.feed.length=Math.min(UL.feed.length,8); } UL.prog=`${r}/9라운드 · ${L.next}/${L.sched.length}연전`; render(); await tick(); }
-    UL.prog=''; UL.busy=false; if(L.next>=L.sched.length){ const res=ulFinish(); UL.reveal=res.id; setTimeout(()=>{ if(UL.reveal===res.id)UL.reveal=null; },2600); ulGo('league'); ulSay(`리그가 끝났습니다. ${res.rank}위 · ${res.move==='up'?`${FrontOfficeCore.ulTierName(res.to)} 승격`:res.move==='down'?`${FrontOfficeCore.ulTierName(res.to)} 강등`:`${FrontOfficeCore.ulTierName(res.to)} 잔류`}.`);
+async function ulSim(all){ const U=uld(), L=U&&U.league, tk=ulTok(); if(!L||UL.busy)return; UL.busy=true; UL.edit=null; if(UL.view&&UL.view.k==='lg')UL.view=null; const many=all===true||all>1, tick=()=>new Promise(r=>setTimeout(r,all===true?0:many?40:140));
+  try{ const r0=L.sched[L.next]&&L.sched[L.next].r, rEnd=all===true?99:r0+Math.max(1,all|0)-1; while(L.next<L.sched.length){ const r=L.sched[L.next].r; if(r>rEnd)break; const x=ulRunSeries(L); const f=ulFeedLine(L,x); if(f.me)UL.rv=x.id; if(!many||f.me){ UL.feed.unshift(f); UL.feed.length=Math.min(UL.feed.length,8); } UL.prog=`${r}/9라운드 · ${L.next}/${L.sched.length}연전`; render(); await tick(); if(!ulSame(tk)){ ulSave0(tk); return; } }
+    UL.prog=''; UL.busy=false; if(L.next>=L.sched.length){ const res=ulFinish(); ulSave(); UL.reveal=res.id; setTimeout(()=>{ if(UL.reveal===res.id)UL.reveal=null; },2600); ulGo('league'); ulSay(`리그가 끝났습니다. ${res.rank}위 · ${res.move==='up'?`${FrontOfficeCore.ulTierName(res.to)} 승격`:res.move==='down'?`${FrontOfficeCore.ulTierName(res.to)} 강등`:`${FrontOfficeCore.ulTierName(res.to)} 잔류`}.`);
       if(L.net||ulV1On())ulV1Result(L,res); else if(xfAvail()&&UL.me)ulApi('/tier',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({wid:cupWid(),tier:res.to})}).catch(()=>{}); }
-    else { const id=UL.rv; render(); setTimeout(()=>{ if(UL.rv===id)UL.rv=null; },1800); } }
-  catch(e){ console.error(e); UL.busy=false; UL.prog=''; ulSay('경기를 돌리지 못했습니다.',true); } }
+    else { ulSave(); const id=UL.rv; render(); setTimeout(()=>{ if(UL.rv===id)UL.rv=null; },1800); } }
+  catch(e){ console.error(e); if(!ulSame(tk))return; UL.busy=false; UL.prog=''; ulSave(); ulSay('경기를 돌리지 못했습니다.',true); } }
+/* 진행 중 칸을 바꾸면 그 리그는 거기서 멈춘다(바뀐 칸은 이미 저장 쪽이 마무리, 여기서는 아무것도 쓰지 않는다) */
+function ulSave0(){}
 Object.assign(A,{
   ulSrc(v){ UL.src=v; UL.drop=null; render(); },
   /* 연봉 상한 맞추기(사용자 11-17): 선수 빼기·되돌리기·추천대로 빼기 */
@@ -100,8 +109,8 @@ Object.assign(A,{
   ulPick(){ UL.pick=!UL.pick; render(); },
   async ulReg(){ if(UL.busy)return; const el=document.getElementById('ulName'); if(el)UL.name=el.value; const n=FrontOfficeCore.cupName(UL.name||team(G.user).nick); if(FrontOfficeCore.cupBadName(n))return ulSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true);
     const R=ulRegEntry(), e=R.e; if(!e)return ulSay(R.err||'이 덱을 만들 수 없습니다(구단을 맡고 있을 때 지금 1군을 등록합니다).',true); const m=ulSetDeck(e,UL.src); if(m)return ulSay(m,true); UL.drop=null;
-    const U=uld(); let tail=''; if(U.league){ ulEditDeck(U.deck.e); tail=' 진행 중인 리그에는 다음 연전부터 이 덱으로 나갑니다.'; }
-    UL.busy=true; render(); const up=await ulUpload(); UL.busy=false; if(up||!xfAvail())ulSay(`${U.deck.e.name} 덱을 등록했습니다(OVR ${FrontOfficeCore.cupOvrTxt(U.deck.e.ovr)}).${up?' 같은 단계 유저들이 이 덱을 상대로 만납니다.':''}${tail}`); },
+    const U=uld(), tk=ulTok(); let tail=''; if(U.league){ ulEditDeck(U.deck.e); tail=' 진행 중인 리그에는 다음 연전부터 이 덱으로 나갑니다.'; } ulSave();
+    UL.busy=true; render(); const up=await ulUpload(); if(!ulSame(tk))return; UL.busy=false; if(up||!xfAvail())ulSay(`${U.deck.e.name} 덱을 등록했습니다(OVR ${FrontOfficeCore.cupOvrTxt(U.deck.e.ovr)}).${up?' 같은 단계 유저들이 이 덱을 상대로 만납니다.':''}${tail}`); },
   ulStart(){ return ulStart(); }, ulNext(){ return ulSim(false); }, ulAll(){ return ulSim(true); },
   ulEditOpen(){ const L=uld()&&uld().league; if(!L)return; UL.edit=JSON.parse(JSON.stringify(L.teams[0].e)); render(); },
   ulEditClose(){ UL.edit=null; render(); },
@@ -110,7 +119,7 @@ Object.assign(A,{
   ulRot(v,el){ const E=UL.edit; if(!E)return; const i=+el.dataset.i, id=+v, j=E.rot.indexOf(id);
     if(j>=0){ [E.rot[i],E.rot[j]]=[E.rot[j],E.rot[i]]; } else { const old=E.rot[i]; E.rot[i]=id; E.pen=E.pen.filter(x=>x!==id); if(old!=null)E.pen.push(old); } render(); },
   ulBp(v,el){ const E=UL.edit; if(!E)return; const id=+el.dataset.i; E.bp=E.bp||{}; if(v==='auto')delete E.bp[id]; else { if(v==='cl')for(const k in E.bp)if(E.bp[k]==='cl')E.bp[k]='su'; E.bp[id]=v; } render(); },
-  ulEditSave(){ const E=UL.edit; if(!E)return; const m=ulEditDeck(E); if(m)return ulSay(m,true); UL.edit=null; ulSay('덱을 고쳤습니다. 다음 연전부터 이 덱으로 나갑니다.'); },
+  ulEditSave(){ const E=UL.edit; if(!E)return; const m=ulEditDeck(E); if(m)return ulSay(m,true); UL.edit=null; ulSave(); ulSay('덱을 고쳤습니다. 다음 연전부터 이 덱으로 나갑니다.'); },
   ulSwap(v){ const e=ulSrcEntry(v||UL.src); if(!e)return ulSay('이 덱을 만들 수 없습니다.',true); const L=uld().league; e.name=L.teams[0].name; UL.edit=JSON.parse(JSON.stringify(FrontOfficeCore.ulSlim(e))); ulSay(`${v==='now'?'지금 1군':'앨범 시즌'}을 불러왔습니다. '저장'을 누르면 다음 연전부터 나갑니다.`); },
   ulOpp(v){ UL.opp=UL.opp===+v?null:+v; render(); },
   ulKey(v,el){ const k=el&&el.dataset.k||'lg', i=+v; UL.view=UL.view&&UL.view.k===k&&UL.view.i===i?null:{k,i,tab:'log'}; render(); },
@@ -125,7 +134,7 @@ Object.assign(A,{
     UL.busy=false; if(!ok)return ulSay('서버 기록을 지우지 못했습니다. 잠시 뒤 다시 해 주세요.',true);
     C.netSetEnabled(false); Object.assign(UL,{v1:'no',me:null,srv:'',v1sync:''}); ulSvStale(); UL.sv.me=null; UL.sv.rv=null; ulSay('서버 기록을 지웠습니다. 이 기기에서는 서버 래더를 껐습니다. 리그는 이 기기에서 그대로 할 수 있습니다.'); },
   ulSvOn(){ FrontOfficeCore.netSetEnabled(true); Object.assign(UL,{v1:'',srv:'',v1sync:''}); ulSvStale(); ulSay('서버 래더를 다시 켰습니다. 덱이 있으면 서버에 올립니다.'); },
-  ulQuit(){ const U=uld(); if(!U||!U.league)return; if(!confirm('이 리그를 그만둡니다. 기록과 승강 없이 지워집니다.'))return; U.league=null; UL.edit=null; ulSay('리그를 그만두었습니다.'); },
+  ulQuit(){ const U=uld(); if(!U||!U.league)return; if(!confirm('이 리그를 그만둡니다. 기록과 승강 없이 지워집니다.'))return; U.league=null; UL.edit=null; ulSave(); ulSay('리그를 그만두었습니다.'); },
 });
 const UL_KIND={me:'내 덱',user:'유저',cup:'우승 덱',ai:'AI 구단'};
 const ulKind=t=>t.nick?esc(t.nick):UL_KIND[t.kind]; /* 서버 v1 상대는 닉네임 */

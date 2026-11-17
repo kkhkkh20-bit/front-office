@@ -28,3 +28,4 @@
 .ul-exw{display:block}.ulx .ul-ex{border-color:var(--accent,#3b7dd8)}.ulx .ul-exh{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;margin:2px 0}.ulx .ul-exs{font-size:24px;padding:0 6px}
 @media(max-width:640px){.ulx .ul-rvrank b{font-size:44px}.ulx .ul-rvp{grid-template-columns:1fr}.ulx .ul-g b{font-size:17px}.ulx .ul-again{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.ulx .ul-anim *{animation:none !important}}
+.ulx .ul-dim{color:var(--muted)}

@@ -67,6 +67,7 @@ function cmdInit() {
   const D = { ...C().CUP_DEFAULT };
   const cfg = Object.assign({}, D, { format: opt('--format', D.format), teams: +opt('--teams', D.teams), best: opt('--best') ? parseBest(opt('--best')) : D.best, id: opt('--id', D.id), title: opt('--title', D.title), size: +opt('--size', D.size),
     shuffleTop: +opt('--shuffle', 0), blocks: +opt('--blocks', 0), minSeasons: +opt('--min-seasons', 0), payCap: +opt('--pay-cap', 0), payCapX: +opt('--pay-cap-x', 0), deadline: opt('--deadline', '') });
+  if (!C().cupTeamsOk(cfg)) { console.error(`리그 대회 팀 수는 ${C().CUP_TEAMS_MIN}~${C().CUP_TEAMS_MAX}팀입니다(가을야구가 4·5위 와일드카드부터).`); process.exit(1); } /* 외부 검수 11-17 P2 */
   if (opt('--playin')) { const [d, g] = opt('--playin').split(':'); cfg.playIn = { direct: +d, groupSize: +g || 4 }; }
   save({ v: 1, cfg, entries: {}, seeds: null, bracket: null, series: {}, stats: { bat: {}, pit: {} }, created: new Date().toISOString() });
   if (!/^[A-Za-z0-9_]{1,20}$/.test(cfg.id)) { console.error('대회 id는 영문·숫자 20자 이내로 정해 주세요(예: cup1).'); process.exit(2); }

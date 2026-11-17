@@ -37,7 +37,7 @@ Object.assign(A,{
   admOpen(){ if(ADM.chk==='ok')admUsage(); if(G&&!UI.title)return A.go('club:cupadm'); UI.sstep='cupadmin'; render(); },
   /* 1) 대회 만들기·열기·닫기 */
   async admCfg(v){ if(v==='close'&&ADM.cup&&ADM.cup.open!==false&&!confirm('접수를 닫습니다. 닫은 뒤에는 게임에서 신청할 수 없습니다(다시 열 수는 있습니다).'))return; const q=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-    const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(4,Math.min(10,+q('admTeams')||10)), minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0, payCapX=Math.max(0,Math.round((+q('admPayX')||0)*100)/100); /* 연봉 상한 배수(사용자 11-17 "대회마다 연봉에 제약… 공평하게") */
+    const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(FrontOfficeCore.CUP_TEAMS_MIN,Math.min(10,+q('admTeams')||10)) /* 가을야구(와일드카드 4·5위)가 돌려면 5팀 이상(외부 검수 11-17 P2) */, minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0, payCapX=Math.max(0,Math.round((+q('admPayX')||0)*100)/100); /* 연봉 상한 배수(사용자 11-17 "대회마다 연봉에 제약… 공평하게") */
     if(!/^[A-Za-z0-9_-]{1,32}$/.test(id))return admSay('대회 id는 영문·숫자로 적어 주세요(예: cup1).',true);
     if(deadline&&FrontOfficeCore.cupKstMs(deadline)==null)return admSay('마감은 2026-12-05 21:00 형식(한국시간)으로 적어 주세요.',true);
     const prev=ADM.cup&&ADM.cup.id===id?ADM.cup:{}; const open=v==='open'?true:v==='close'?false:prev.open!==false&&v!=='new'?prev.open:false;
@@ -57,6 +57,7 @@ Object.assign(A,{
   async admRun(){ if(ADM.busy)return; if(ADM.run&&ADM.run.day>0)return admSay('이미 공개를 시작한 대회는 다시 돌리지 않습니다.',true); if(ADM.run&&!confirm('지금 돌려 둔 결과를 버리고 처음부터 다시 돌립니다. 경기 결과가 달라집니다.'))return;
     if(!ADM.ents)await A.admEnts(); const cfg=Object.assign({},FrontOfficeCore.CUP_DEFAULT,ADM.cup||{}); ADM.busy=true; admSay('시드를 정하고 경기를 돌리는 중입니다.');
     try{ ADM.run=await admRunAll(cfg,ADM.ents||[],ADM.drop||[],t=>{ ADM.prog=t; render(); }); ADM.prog='';
+      if(!ADM.run.champ||!ADM.run.runner||!ADM.run.ents[ADM.run.champ]){ const bad=ADM.run; ADM.run=null; ADM.busy=false; return admSay(`우승·준우승을 정하지 못했습니다(${bad.seeds.length}팀). 팀 수를 ${FrontOfficeCore.CUP_TEAMS_MIN}팀 이상으로 해 주세요. 저장하지 않았습니다.`,true); } /* 결과가 모자라면 저장하지 않는다(외부 검수 11-17 P2) */
       const {r,j}=await admApi('/admin/run',{method:'PUT',body:JSON.stringify(ADM.run)}); ADM.busy=false; ADM.runSt='ok';
       if(!r.ok)return admSay('경기는 돌렸지만 서버에 저장하지 못했습니다: '+(j.message||r.status),true);
       admSay(`다 돌렸습니다. 우승 ${ADM.run.ents[ADM.run.champ].name}. 아직 아무것도 공개하지 않았습니다.`); }
@@ -193,7 +194,7 @@ function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"
   const stg=admStage(), cur=x=>ADM_SEC_OF[stg]===x?' adm-cur':'', now=x=>ADM_SEC_OF[stg]===x?' <span class="pill adm-pill">지금 단계</span>':'';
   const s1=`<section class="card${cur('s1')}" id="adm-s1"><h2 class="sec">1. 대회 만들기·열기${now('s1')}</h2>${c.id?`<p class="small">지금: <b>${esc(c.title)}</b> (${esc(c.id)}) · ${c.open!==false?'<b>접수 중</b>':'접수 닫힘'}${c.deadline?` · 마감 ${esc(c.deadline)}`:''}</p>`:'<p class="small muted">아직 만든 대회가 없습니다.</p>'}
     ${stg>1?'<details class="hof-d"><summary class="small">설정 보기·고치기</summary>':''}${inp('admId','대회 id',c.id||'cup1','cup1','8em')}${inp('admTitle','대회 이름',c.title||'제1회 프런트컵')}${inp('admDl','접수 마감(한국시간)',c.deadline||'','2026-12-05 21:00','12em')}
-    ${inp('admTeams','팀 수(리그 + KBO식 가을야구)',cfg.teams||10,'10','5em')}${inp('admMinS','자격: 최소 시즌',c.minSeasons||'','0','5em')}${inp('admPay','자격: 1군 연봉 합 상한(금액, 백만원)',c.payCap||'','0','8em')}${inp('admPayX','자격: 연봉 상한(첫 시즌 샐러리캡 143.97억의 배수, 1 = 143.97억 권장)',c.payCapX||'','0','6em')}<p class="small muted">연봉 상한: 덱 선수 연봉 합이 143.97억 × 배수 이하. 래더와 같게 하려면 1(143.97억), 비우면 없음. 넘는 유저는 신청 화면에서 '추천대로 빼기'로 맞춥니다.</p>
+    ${inp('admTeams',`팀 수(${FrontOfficeCore.CUP_TEAMS_MIN}~10, 리그 + KBO식 가을야구)`,cfg.teams||10,'10','5em')}${inp('admMinS','자격: 최소 시즌',c.minSeasons||'','0','5em')}${inp('admPay','자격: 1군 연봉 합 상한(금액, 백만원)',c.payCap||'','0','8em')}${inp('admPayX','자격: 연봉 상한(첫 시즌 샐러리캡 143.97억의 배수, 1 = 143.97억 권장)',c.payCapX||'','0','6em')}<p class="small muted">연봉 상한: 덱 선수 연봉 합이 143.97억 × 배수 이하. 래더와 같게 하려면 1(143.97억), 비우면 없음. 넘는 유저는 신청 화면에서 '추천대로 빼기'로 맞춥니다.</p>
     <div class="btns"><button class="btn" data-a="admCfg" data-v="save"${ADM.busy?' disabled':''}>저장</button><button class="btn primary" data-a="admCfg" data-v="open"${ADM.busy?' disabled':''}>접수 열기</button><button class="btn" data-a="admCfg" data-v="close"${ADM.busy?' disabled':''}>접수 닫기</button></div>${stg>1?'</details>':''}</section>`;
   const E=ADM.ents, drop=ADM.drop||[];
   const s2=`<section class="card${cur('s2')}" id="adm-s2"><h2 class="sec">2. 접수 현황${now('s2')}</h2><div class="btns"><button class="btn small" data-a="admEnts"${ADM.busy||!c.id?' disabled':''}>신청 목록 받기</button></div>

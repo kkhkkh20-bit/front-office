@@ -15,6 +15,9 @@ export const CUP_RULES = Object.freeze({
 /* 기본 대회 설정(첫 대회, 형식 A): 10팀 리그(맞대결 3연전 × 9 = 팀당 27경기) → KBO식 가을야구(와일드카드·준PO·PO·KS).
    참가가 10팀보다 적으면 리그 평균 AI 구단으로 채운다(AI는 타이틀·칭호 없음).
    format 'knockout'이면 예전 토너먼트(size강, best 라운드별 경기 수, 플레이인·추첨·블록) */
+/* 리그 대회 팀 수: KBO식 가을야구가 4·5위 와일드카드부터라 5팀 이상(외부 검수 11-17 P2: 4팀이면 우승 없이 저장되던 것). 화면·Worker가 같은 값을 쓴다 */
+export const CUP_TEAMS_MIN = 5, CUP_TEAMS_MAX = 10;
+export const cupTeamsOk = c => !c || (c.format || 'league') !== 'league' || c.teams == null || (Number.isInteger(+c.teams) && +c.teams >= CUP_TEAMS_MIN && +c.teams <= CUP_TEAMS_MAX);
 export const CUP_DEFAULT = Object.freeze({
   id: 'cup1', title: '제1회 프런트컵', format: 'league', teams: 10, meet: 3, size: 32,
   best: Object.freeze({ default: 1, 8: 7, 4: 7, 2: 7 }), /* 라운드(남은 팀 수)별 경기 수: 1=단판, 3=3판2선승, 7=7전4선승 */

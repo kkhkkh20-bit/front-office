@@ -82,7 +82,7 @@ function ulLiveCard(U,L,st){ const C=FrontOfficeCore, s=L.sched[L.next], me=st.f
 function ulSideCard(L,st){ if(UL.edit)return ulEditHtml(); const myNext=L.sched.slice(L.next).find(x=>x.a===0||x.b===0), o=UL.opp!=null&&L.teams[UL.opp]?L.teams[UL.opp]:L.teams[myNext?(myNext.a===0?myNext.b:myNext.a):0];
   return `<section class="card"><h2 class="sec">${o.key===UL_ME?'내 덱':'상대 덱'}</h2>${ulH2hHtml(o)}${cupDeckHtml(o.e,{head:`<b>${esc(o.name)}</b> <span class="ul-k ul-k-${o.kind}">${ulKind(o)}</span>`})}</section>`; }
 /* 끝난 리그 결과(승강 배지·점수·MVP) + 최종 순위·일정 + 하이라이트 */
-function ulResultCols(U,R){ const a=ulResultCard(U,R); /* 결과 공개 카드: 03_uladder_v3.js(래더 v3, 사용자 11-17) */
+function ulResultCols(U,R){ const C=FrontOfficeCore, a=ulResultCard(U,R); /* 결과 공개 카드: 03_uladder_v3.js(래더 v3, 사용자 11-17) */
   const tabs=inTabs('ulr',[['st','최종 순위'],['sch','일정·결과']],'st');
   const b=`<section class="card">${tabs.bar}${tabs.cur==='st'?`<table class="ul-st"><tr><th>순위</th><th>팀</th><th>승</th><th>패</th><th>무</th><th>득실</th><th>OVR</th></tr>${R.stand.map(x=>`<tr class="${x.kind==='me'?'me':''}${x.rank<=2?' up':x.rank>=R.stand.length-1?' dn':''}"><td class="num">${x.rank}</td><td>${esc(x.name)} <span class="ul-k ul-k-${x.kind}">${UL_KIND[x.kind]}</span></td><td class="num">${x.w}</td><td class="num">${x.l}</td><td class="num">${x.t}</td><td class="num">${x.diff!=null?(x.diff>0?'+':'')+x.diff:'-'}</td><td class="num">${esc(C.cupOvrTxt(x.ovr))}</td></tr>`).join('')}</table>`
     :R.ser&&R.teams?ulSchedHtml(R.teams,R.ser,null,R.keys,'res'):'<p class="small muted">이 결과는 예전 버전에서 끝나 일정이 남아 있지 않습니다.</p>'}</section>`;
