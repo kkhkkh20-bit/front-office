@@ -14,6 +14,7 @@
  *   GET /api/cup/pub                    연재로 공개된 대회 진행(날짜별 결과·순위). 누구나
  * 보관: 엔트리 본문과 메타데이터(이름·연도·OVR·시각). IP는 기기 옮기기와 같이 해시로만 횟수를 센다.
  * 공개 GET(대회 설정·명단·결과·연재·경기 기록)은 worker/kvcache.js로 짧게(60~600초) 담아 둔다. 관리자·신청 쓰기 뒤에는 같은 인스턴스·데이터센터 캐시를 비운다. */
+import { readText } from './v1/http.js';
 import { CUP_DEFAULT, cupValidate, cupName, cupBadName, cupKstMs, cupKstDay, cupEntryHash, cupSeed, cupOvrTxt } from '../src/core/cup.mjs';
 import { cached, cacheGet, cachePut, cacheBust } from './kvcache.js';
 
@@ -117,7 +118,7 @@ export async function handleCup(req, env, url, now, rateLimited) {
   const dl = cupKstMs(c.deadline); if (dl != null && now > dl) return err(403, 'closed');
   const len = +req.headers.get('Content-Length'); if (len > CUP_MAX_BYTES) return err(413, 'too_large');
   const rl = rateLimited ? await rateLimited(req, env, now) : null; if (rl && rl.limited) return err(429, 'daily');
-  const t = await req.text(); if (t.length > CUP_MAX_BYTES) return err(413, 'too_large');
+  const rt = await readText(req, CUP_MAX_BYTES); if (rt.error) return err(413, 'too_large'); const t = rt.text; /* 바이트로 센다(srv2 #43) */
   let e; try { e = JSON.parse(t); } catch (x) { return err(400, 'bad_entry'); }
   if (!e || !WID.test(String(e.wid || ''))) return err(400, 'bad_wid');
   if (cupBadName(e.name)) return err(400, 'bad_name');

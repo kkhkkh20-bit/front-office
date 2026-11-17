@@ -95,6 +95,9 @@ dbTest('43 본문 한도는 바이트로(한글·Content-Length 없음)', async 
   const r = await readJson(new Request('http://x/', { method: 'POST', body: stream, duplex: 'half' }), 4096); assert.equal(r.error, 'too_large', '길이 머리글 없는 스트림');
   assert.deepEqual((await readJson(new Request('http://x/', { method: 'POST', body: JSON.stringify({ s: '가'.repeat(100) }) }), 4096)).body, { s: '가'.repeat(100) });
   const { J } = await setup(); assert.equal((await J('POST', '/api/v1/player', JSON.stringify({ nickname: '바이트', pad: '가'.repeat(1500) })))._s, 400);
+  /* 예전 KV 래더 덱(120KB): 글자 수로는 안이지만 바이트로는 넘는 본문 */
+  const kv = new Map(), K = await setup({ kv, noDb: true }); const pad = '가'.repeat(50 * 1024); /* 글자 약 51K, 바이트 약 150K */
+  assert.equal((await K.J('PUT', '/api/ladder/deck', JSON.stringify({ wid: 'w' + '1'.repeat(16), pad, e: deck() })))._s, 413);
 });
 /* 44 */
 test('44 닉네임 최소 길이는 글자(그래핌) 수로: 이모지 하나는 안 됨', async () => {
