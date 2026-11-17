@@ -5232,8 +5232,8 @@ T('[우천 더블헤더] 2경기는 주전 포수를 대개 쉬게 하고 관중
   RAIN_GI={day:G.day,h:G.user,a:op,i:2,dh:true}; ok(rainAttM(G.user,G.day)===.8,'2경기 관중 배율'); RAIN_GI={day:G.day,h:G.user,a:op,i:1,dh:true}; ok(rainAttM(G.user,G.day)===.9,'1경기 관중 배율'); RAIN_GI=null; ok(rainAttM(G.user,G.day)===1,'경기 밖 관중 배율');
   const d=G.day+1; G.cal.sched[d]=[[G.user,op],[G.user,op]]; G.day=d; playDay(d); const L=G.games.filter(g=>g.day===d); ok(L.length===2&&L.some(g=>g.dh===1)&&L.some(g=>g.dh===2),'더블헤더 박스스코어 꼬리표가 없음'); ok(rainTag(L[0]).includes('더블헤더'),'꼬리표 문구'); ok((G.wire||[]).some(w=>w.t.includes('더블헤더 1·2차전')),'더블헤더 소식이 없음'); });
 T('[우천 관중] 비로 취소된 홈경기는 관중·입장 수입이 없고 행사 훅만 불리며, 경기는 뒤 날짜로 옮겨진다',()=>{ fresh(); const c=G.cal; let d=null,m=null; for(let x=c.open+5;x<c.end&&!d;x++){ const L=(c.sched[x]||[]).filter(z=>!stadOf(z[0]).dome&&z.includes(G.user)); if(L.length){ d=x; m=L[0]; } } ok(d,'준비 실패');
-  for(const t of G.teams)setEntry(t.id); const h=m[0], a=m[1]; const A0=JSON.stringify(((G.sea.att||{})[h]||{}).n||0); const calls=[]; globalThis.promoRainout=(...x)=>calls.push(x); const r0=rainOut; rainOut=(hh,dd)=>dd===d&&hh===h;
-  try{ G.day=d; rainDay(d); playDay(d); } finally{ rainOut=r0; delete globalThis.promoRainout; }
+  for(const t of G.teams)setEntry(t.id); const h=m[0], a=m[1]; const A0=JSON.stringify(((G.sea.att||{})[h]||{}).n||0); const calls=[]; const pr0=promoRainout; promoRainout=(...x)=>calls.push(x); const r0=rainOut; rainOut=(hh,dd)=>dd===d&&hh===h;
+  try{ G.day=d; rainDay(d); playDay(d); } finally{ rainOut=r0; promoRainout=pr0; }
   ok(JSON.stringify(((G.sea.att||{})[h]||{}).n||0)===A0,'취소 경기에 관중이 잡힘'); ok(calls.length===1&&calls[0][0]===h&&calls[0][1]===d,'행사 훅이 불리지 않음'); const to=calls[0][2]; ok(to>d&&(c.sched[to]||[]).some(z=>z[0]===h&&z[1]===a),'재편성 경기가 없음');
   ok(!(c.sched[d]||[]).some(z=>z[0]===h&&z[1]===a),'취소 경기가 그날 남음'); ok(rainSum().tot===1,'우천 집계'); ok(G.mail.some(x=>x.body&&x.body.includes('비로 취소')&&x.body.includes('환불')),'우리 경기 취소 알림이 없음'); ok((G.wire||[]).some(w=>w.t.startsWith('우천 취소')),'리그 소식이 없음'); });
 T('[우천 저장] 우천 기록이 없는 옛 저장도 그대로 진행되고, 저장·불러오기 뒤 취소·재편성 기록이 남으며 같은 날을 두 번 처리하지 않는다',()=>{ fresh(); const c=G.cal; delete c.rain; delete c.mk; delete c.rE0; delete c.rChk; c.end0=c.end; G=JSON.parse(JSON.stringify(G));
@@ -6781,6 +6781,85 @@ T('[검수 11-17 #206] 연대기: 옛 이적 장부로 다시 만든 거래는 �
   G.day=dnum(y,11,20); G.last=Object.assign({},G.last||{},{y}); const nk=ciNickPool()[0]; ok(clubRebrand(tid,{nick:nk},'점검'),'이름 바꾸기 실패'); const n1=tshort(tid);
   const row=pid=>legacyClubChron(tid,[]).find(x=>x.k==='move'&&x.ref===pid); ok(row(-901)&&row(-901).t.includes(n0+' →')&&!row(-901).t.includes(n1),'7월 거래 이름: '+(row(-901)||{}).t); ok(row(-902)&&row(-902).t.includes('→ '+n1),'12월 거래 이름: '+(row(-902)||{}).t);
   const L=G.tnames[tid]; L[1].y0=y; L[0].y1=y-1; delete L[1].d0; const c=clubChron(tid).find(x=>x.k==='rebrand'); ok(c,'이름 변경 연대기 없음'); c.source='rebrand:'+tid+':'+y; ciMigrate(); ok(L[1].d0===c.d,'옛 저장 이름 이력 날짜를 채우지 못함'); ok(row(-901).t.includes(n0+' →'),'옛 저장(시즌 중 이름 변경)에서 7월 거래 이름: '+row(-901).t); });
+T('[검수 11-17 #165] 우천 프로모션: 비로 밀린 홈경기의 행사는 경기와 함께 새 날짜로 옮기고, 새 날짜에 열 수 없으면 취소·환불 알림을 보낸다(다른 구단도 같은 규칙, 옛 저장 수리)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const c=G.cal, U=G.user; stadOf(U).dome=false;
+  const H=homeGames(U,G.day+2,c.end).map(x=>x[0]).filter((x,i,L)=>L.indexOf(x)===i&&dobj(x).m<=6); ok(H.length>8,'준비 실패');
+  const d=H[0]; ok(promoBook(U,d,'kids').includes('잡았'),'예약 실패'); const P=promoOf(U); const used0=promoUsed(U), m0=G.mail.length;
+  const r0=rainOut; rainOut=(h,dd)=>dd===d&&h===U; try{ G.day=d; rainDay(d); } finally{ rainOut=r0; }
+  const row=(c.rain[d]||[]).find(r=>r.h===U); ok(row,'우천 취소 실패'); ok(!P.bk[d],'취소된 날에 행사가 남음'); ok(P.bk[row.to]&&P.bk[row.to].k==='kids','새 날짜로 행사가 옮겨지지 않음 '+JSON.stringify(P.bk));
+  ok(promoUsed(U)===used0,'행사 횟수가 바뀜'); ok(G.mail.slice(0,G.mail.length-m0).some(m=>m.subj.includes('어린이 행사')&&m.body.includes(dmd(row.to))),'이동 알림이 없음'); ok(promoAttM(U,promoHomeOpp(U,row.to),row.to)>1,'새 날짜에 행사 효과가 없음');
+  promoDaily(); ok(P.bk[row.to]&&!P.bk[d],'다음 날 정리에서 사라짐');
+  /* 새 날짜에 이미 다른 행사가 있으면 취소 + 환불 알림(비용 없음, 횟수에서 빠짐) */
+  const [d3,d4]=H.filter(x=>x>G.day+1&&x!==row.to).slice(0,2); promoBook(U,d3,'cap'); promoBook(U,d4,'jersey'); const u1=promoUsed(U), cost0=P.cost, m1=G.mail.length;
+  ok(promoRainout(U,d3,d4)===-1,'충돌인데 옮김'); ok(!P.bk[d3]&&P.bk[d4].k==='jersey','기존 행사가 바뀜'); ok(promoUsed(U)===u1-1,'취소한 행사가 횟수에 남음'); ok(P.cost===cost0,'취소한 행사에 비용');
+  ok(G.mail.slice(0,G.mail.length-m1).some(m=>m.subj.includes('취소')&&m.body.includes('환불')),'취소·환불 알림이 없음');
+  /* 다른 구단도 같은 규칙(알림만 없다) */ const A=G.teams.find(t=>t.id!==U&&!stadOf(t.id).dome).id; const HA=homeGames(A,G.day+2,c.end).map(x=>x[0]).filter((x,i,L)=>L.indexOf(x)===i); const QA=promoOf(A); QA.bk={}; QA.bk[HA[0]]={k:'cap'}; const mA=G.mail.length;
+  ok(promoRainout(A,HA[0],HA[1])===1&&QA.bk[HA[1]]&&QA.bk[HA[1]].k==='cap'&&!QA.bk[HA[0]],'다른 구단 행사가 옮겨지지 않음'); ok(G.mail.length===mA,'다른 구단 행사로 우리에게 알림');
+  /* 옛 저장: 비로 취소된 날에 예약이 그대로 남은 경우 불러오면 옮긴다(두 번 해도 같다) */ const d5=H.find(x=>x>G.day+1&&!P.bk[x]&&x!==row.to); promoBook(U,d5,'legend'); const B=P.bk[d5]; delete P.bk[d5];
+  const r1=rainOut; rainOut=(h,dd)=>dd===d5&&h===U; const gd=G.day; try{ G.day=d5; rainDay(d5); } finally{ rainOut=r1; } const row5=c.rain[d5].find(r=>r.h===U); P.bk[d5]=B; G.day=gd; if(P.bk[row5.to])delete P.bk[row5.to];
+  ok(promoMigrate()===1&&!P.bk[d5]&&P.bk[row5.to]&&P.bk[row5.to].k==='legend','옛 저장 수리 실패'); const snap=JSON.stringify(P.bk); ok(promoMigrate()===0&&JSON.stringify(P.bk)===snap,'두 번째 수리에서 바뀜'); });
+T('[검수 11-17 #166] 우천 캘린더: 순연 경기가 또 비로 취소되면 그날은 취소 한 가지로만 보이고, 다시 취소된 더블헤더 날에 더블헤더 표시가 남지 않는다(옛 저장 수리)',()=>{ fresh(); const c=G.cal, U=G.user; stadOf(U).dome=false; for(const t of G.teams)setEntry(t.id);
+  let d=null; for(let x=c.open+3;x<c.end&&!d;x++){ const o=dobj(x); if(o.m>6||!(o.w===5||o.w===6))continue; const g=(c.sched[x]||[]).find(z=>z[0]===U); if(g&&(c.sched[x+1]||[]).filter(z=>z[0]===U&&z[1]===g[1]).length===1)d=x; } ok(d,'준비 실패: 금·토 홈 시리즈');
+  const cnt=()=>Object.values(c.sched).flat().filter(z=>z[0]===U).length, n0=cnt(); const r0=rainOut; let wet=new Set([d]); rainOut=(h,dd)=>h===U&&wet.has(dd);
+  try{ G.day=d; rainDay(d); const r=c.rain[d].find(x=>x.h===U); ok(r&&r.dh&&r.to===d+1,'더블헤더로 잡히지 않음 '+JSON.stringify(r)); ok(rainCalEv(d+1).some(e=>e.t.includes('더블헤더')),'준비: 더블헤더 표시 없음');
+    wet.add(d+1); G.day=d+1; rainDay(d+1); } finally{ rainOut=r0; }
+  const E=rainCalEv(d+1).map(e=>e.t); ok(E.some(t=>t.startsWith('우천 취소')),'다시 취소된 날 취소 표시 없음 '+JSON.stringify(E)); ok(!E.some(t=>t.includes('더블헤더 1·2차전')||t.includes('우천 순연 경기')),'취소된 날에 순연·더블헤더 표시가 남음 '+JSON.stringify(E));
+  ok(cnt()===n0,'경기 수가 바뀜 '+cnt()+'/'+n0); const tos=c.rain[d+1].filter(x=>x.h===U).map(x=>x.to); ok(tos.length===2&&tos.every(t=>(c.mk[t]||[]).some(m=>m.h===U&&m.from===d+1)),'새 날짜 순연 표시 '+JSON.stringify(tos));
+  for(const t of tos){ const E2=rainCalEv(t).map(e=>e.t); ok(!E2.some(x=>x.startsWith('우천 취소')),'새 날짜에 취소 표시'); }
+  /* 옛 저장: 취소된 날에 남은 순연 표시를 불러오기에서 지운다(두 번 해도 같다) */ c.mk[d+1]=[{h:U,a:c.rain[d+1][0].a,from:d,dh:1,k:'series'}]; ok(rainMigrate()===1&&!c.mk[d+1],'옛 저장 수리 실패'); ok(rainMigrate()===0,'두 번째 수리에서 바뀜'); });
+T('[검수 11-17 #167] 우천 직관: 정규시즌 경기가 비로 밀리면 직관·관전 예약도 포스트시즌처럼 새 날짜로 옮기고 알리며, 새 날짜에 다른 일정이 있으면 직관만 취소한다',()=>{ fresh(); const c=G.cal, U=G.user; stadOf(U).dome=false;
+  let d=null; for(let x=c.open+10;x<c.end&&!d;x++){ const o=dobj(x); if(o.w>=1&&o.w<=4&&o.m<=6&&(c.sched[x]||[]).some(z=>z[0]===U))d=x; } ok(d,'준비 실패'); const op=c.sched[d].find(z=>z[0]===U)[1];
+  G.day=d-1; ok(gmPlanSet(d,'attend').includes('직관'),'직관 예약 실패'); G.watchPlanned={day:d}; const m0=G.mail.length;
+  const r0=rainOut; rainOut=(h,dd)=>dd===d&&h===U; try{ G.day=d; rainDay(d); } finally{ rainOut=r0; } const to=c.rain[d].find(r=>r.h===U).to;
+  ok(!G.gmPlan[d]&&G.gmPlan[to]&&G.gmPlan[to].k==='attend'&&G.gmPlan[to].op===op&&!G.gmPlan[to].done,'직관 예약이 따라가지 않음 '+JSON.stringify(G.gmPlan)); ok(gmPlanLive(to,G.gmPlan[to]),'옮긴 예약이 그 경기와 맞지 않음'); ok(G.watchPlanned&&G.watchPlanned.day===to,'관전 예약이 따라가지 않음');
+  ok(G.mail.some(m=>m.body.includes('직관 예약도')&&m.body.includes('비로 취소')),'알림이 없음');
+  /* 새 날짜에 다른 일정: 직관만 취소하고 기존 일정은 그대로 */ const P=G.gmPlan; P[d+50]={k:'attend',op,tid:U,done:false}; P[d+51]={k:'farm',done:false}; const msg=rainMovePlans(d+50,d+51,op); ok(P[d+51].k==='farm'&&!P[d+50]&&msg.includes('취소'),'충돌 처리 '+msg);
+  /* 다른 상대 경기 예약은 건드리지 않는다 */ P[d+60]={k:'attend',op:G.teams.find(t=>t.id!==U&&t.id!==op).id,tid:U,done:false}; rainMovePlans(d+60,d+61,op); ok(P[d+60]&&!P[d+61],'다른 경기 예약을 옮김'); });
+T('[검수 11-17 #168] 더블헤더 관중 전망: 시즌 관중 전망이 실제 경기와 같은 더블헤더 배율(1경기 -10%, 2경기 -20%)로 잰다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const c=G.cal, U=G.user;
+  const d=homeGames(U,G.day+2,c.end).map(x=>x[0]).find(x=>(c.sched[x]||[]).filter(z=>z[0]===U).length===1); ok(d,'준비 실패'); const a=c.sched[d].find(z=>z[0]===U)[1];
+  const P0=stadProj(U).att, one=attOf(U,a,d,null); c.sched[d].push([U,a]); const P1=stadProj(U).att;
+  const g=i=>{ const k=RAIN_GI; RAIN_GI={day:d,h:U,a,i,dh:true}; try{ return attOf(U,a,d,null); } finally{ RAIN_GI=k; } }; const want=g(1)+g(2)-one;
+  ok(Math.abs((P1-P0)-want)<=2,'전망이 실제 더블헤더 배율과 다름 '+(P1-P0)+' / '+want); ok(P1-P0<one,'더블헤더 두 번째 경기가 보통 경기만큼 잡힘'); ok(RAIN_GI==null||RAIN_GI.day!==d,'전망 뒤 경기 정보가 남음'); });
+T('[검수 11-17 #169] 구장 변경 행사: 개방형 구장에서 잡은 불꽃놀이는 돔으로 바뀌면 취소·환불 알림을 보내고 비용·효과가 없다(다른 구단도 같은 규칙)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const U=G.user, S=stadOf(U); S.dome=false;
+  const H=homeGames(U,G.day+2,G.cal.end).map(x=>x[0]).filter((x,i,L)=>L.indexOf(x)===i); ok(promoBook(U,H[0],'fire').includes('잡았'),'예약 실패'); const P=promoOf(U), u0=promoUsed(U), m0=G.mail.length;
+  S.dome=true; ok(promoBook(U,H[1],'fire').includes('돔'),'돔에서 새 예약이 열림'); const a=promoHomeOpp(U,H[0]); ok(promoAttM(U,a,H[0])===1,'돔에서 불꽃놀이 효과가 남음');
+  promoDaily(); ok(!P.bk[H[0]],'돔으로 바뀐 뒤 불꽃놀이 예약이 남음'); ok(promoUsed(U)===u0-1,'횟수가 그대로'); ok(G.mail.slice(0,G.mail.length-m0).some(m=>m.subj.includes('불꽃놀이 취소')&&m.body.includes('환불')),'취소·환불 알림이 없음');
+  /* 경기 날 바로 바뀐 경우도 비용을 잡지 않는다 */ P.bk[H[2]]={k:'fire'}; const cost0=P.cost, n0=P.log.length; promoGame(H[2],U,promoHomeOpp(U,H[2]),{att:10000,cap:20000,so:false}); ok(P.cost===cost0&&P.log.length===n0&&!P.bk[H[2]],'열 수 없는 행사에 비용이 잡힘');
+  const A=G.teams.find(t=>t.id!==U).id, SA=stadOf(A), dome0=SA.dome; const HA=homeGames(A,G.day+2,G.cal.end).map(x=>x[0]); const QA=promoOf(A); QA.bk={}; QA.bk[HA[0]]={k:'fire'}; SA.dome=true; const mA=G.mail.length; promoDaily(); ok(!QA.bk[HA[0]],'다른 구단 불꽃놀이가 돔에서 남음'); ok(!G.mail.slice(0,G.mail.length-mA).some(m=>m.subj.includes('불꽃놀이 취소')),'다른 구단 행사로 우리에게 알림'); SA.dome=dome0; });
+T('[검수 11-17 #175] 명명권 만료: 마지막 해 조건을 못 지켜 후원금을 못 받으면 "약속대로" 기사·인기 상승 없이 끝나고, 다 지키면 약속대로 끝난다',()=>{ fresh(); const t=team(G.user), Y=G.year; G.last=G.last||{}; G.last.y=Y; G.sea.att=G.sea.att||{};
+  const setRank=r=>{ const L=G.teams.map(x=>x.id).filter(x=>x!==G.user); L.splice(r-1,0,G.user); G.last.order=L.map(tid=>({tid})); };
+  t.facSpon={k:'lab',n:'시험기업',y0:Y-2,y1:Y,help:3000,paid:2000,miss:0}; setRank(9); G.sea.att[G.user]={n:1,sum:95,cap:100}; t.pop=1.1; const c0=t.cash, n0=(G.news||[]).length; facDealsYear(t);
+  ok(!t.facSpon,'만료되지 않음'); ok(t.pop===1.1,'조건을 못 지켰는데 인기 상승 '+t.pop); ok(t.cash===c0,'못 받을 후원금이 들어옴'); const N=(G.news||[]).slice(0,(G.news||[]).length-n0); ok(N.length&&!N.some(x=>x.b.includes('약속대로')),'조건을 못 지켰는데 약속대로 끝났다는 기사'); ok(N.some(x=>x.b.includes('받지 못')&&x.b.includes(money(1000))),'못 받은 후원금 설명이 없음 '+JSON.stringify(N.map(x=>x.b)));
+  G.day+=40; t.facSpon={k:'lab',n:'다른기업',y0:Y-2,y1:Y,help:3000,paid:2000,miss:0}; setRank(1); t.pop=1.1; const c1=t.cash, n1=(G.news||[]).length; facDealsYear(t);
+  ok(!t.facSpon&&t.cash===c1+1000,'마지막 해 몫이 들어오지 않음'); ok(Math.abs(t.pop-1.11)<1e-9,'약속을 지켰는데 인기 그대로'); ok((G.news||[]).slice(0,(G.news||[]).length-n1).some(x=>x.b.includes('약속대로')),'약속대로 끝났다는 기사가 없음'); });
+T('[검수 11-17 #176] 독립구단 재정 위기: 투자사 구단은 모기업 매각 문구 없이 투자사 지분 매각·추가 출자 경로로 안내하고, 옛 저장의 문구도 고친다',()=>{ fresh(); const t=G.teams.find(x=>x.indie&&x.id!==G.user)||G.teams.find(x=>x.id!==G.user); t.indie=true; const O=ownershipInit(), S=O.clubs[t.id]; O.since=G.year-25; S.parent.since=G.year-12; S.parent.health=40; S.debtYears=2; t.cash=-9000;
+  const bad=x=>/모기업이|모기업 지원 재|모기업 운영자금|구단 매각을 공식/.test(x);
+  ok(ownershipStart(t.id,'crisis',{outcome:'recovery',seed:'logic-indie'}),'위기 시작 실패'); ok(!bad(S.pending.detail)&&ownershipView(t.id).stage==='투자사 운영 재검토','첫 단계 문구 '+S.pending.detail);
+  let n=0, sawR=false; while(S.pending&&n++<8){ G.day=S.pending.nextD; ownershipDaily(); if(S.pending&&S.pending.stage==='restructure'){ sawR=true; ok(S.pending.detail.includes('투자사가 보유 지분 매각')&&ownershipView(t.id).stage==='투자사 지분 매각 추진','매각 추진 문구 '+S.pending.detail); } }
+  ok(sawR,'매각 추진 단계를 거치지 않음'); ok(!S.pending,'끝나지 않음'); ok(S.history.every(x=>!bad(x.title+' '+x.text)),'모기업 문구가 남음 '+JSON.stringify(S.history.map(x=>x.title+' '+x.text)));
+  ok(S.history.some(x=>x.title==='투자사 추가 출자 · 매각 추진 종료'),'추가 출자 종료 기록이 없음'); ok(O.capital.some(x=>x.tid===t.id&&x.source==='기존 투자사 추가 출자'),'출자 출처 '+JSON.stringify(O.capital));
+  /* 모기업 구단은 그대로 */ const b=G.teams.find(x=>!x.indie&&x.id!==G.user&&x.id!==t.id); ok(ownCrisisTxt('restructure',b).includes('모기업이 구단 매각을 공식')&&ownStageL('watch',b)==='모기업 지원 재검토','모기업 구단 문구가 바뀜');
+  /* 옛 저장 수리 */ S.pending={kind:'crisis',stage:'restructure',detail:OWN_TXT_CORP.restructure,nextD:G.day+10}; S.history.push({kind:'restructure',title:'구단 매각 추진',text:OWN_TXT_CORP.restructure}); chron('owner','구단 매각 추진 · '+OWN_TXT_CORP.restructure,null,t.id,{source:'logic-indie-old'});
+  ok(ownershipIndieFix()>=3,'수리 건수'); ok(S.pending.detail===OWN_TXT_INV.restructure&&!bad(S.history[S.history.length-1].text)&&S.history[S.history.length-1].title==='투자사 지분 매각 추진','옛 문구가 남음'); ok(!(G.clubHist[t.id]||[]).some(x=>x.k==='owner'&&bad(x.t)),'구단 연표 옛 문구');
+  const snap=JSON.stringify([S.pending,S.history]); ok(ownershipIndieFix()===0&&JSON.stringify([S.pending,S.history])===snap,'두 번째 수리에서 바뀜'); S.pending=null; });
+T('[검수 11-17 #303] 더블헤더 응원단 효과: 경기마다 따로 남아 1경기 효과가 2경기에 덮이지 않고, 경기마다 그 경기 힘으로 관중을 잰다',()=>{ fresh(); const F=fanOps(); delete F.cs; const S=cheerSq(); const U=G.user; const g0=homeGames(U,G.cal.open,G.cal.open+20)[0]; const d=g0[0], op=g0[1]; G.day=d;
+  for(const m of S.L){ m.fat=0; m.inj=0; m.sl=0; m.dance=17; m.svc=17; m.pop=17; m.sta=3; } const keep=RAIN_GI;
+  try{ RAIN_GI={day:d,h:U,a:op,i:1,dh:true}; cheerGame(d,U); const e1=cheerAtt(d); RAIN_GI={day:d,h:U,a:op,i:2,dh:true}; cheerGame(d,U); const e2=cheerAtt(d); RAIN_GI=null;
+    const g=S.last.g||{}; ok(g[op+':1']!=null&&g[op+':2']!=null,'경기마다 기록되지 않음 '+JSON.stringify(g)); ok(Math.abs(cheerAtt(d,op+':1')-e1)<1e-12&&Math.abs(cheerAtt(d,op+':2')-e2)<1e-12,'경기별 효과 조회가 다름');
+    ok(Math.abs(cheerAtt(d)-e1)<1e-12,'경기 밖 날짜 조회가 2경기 값으로 덮임');
+    RAIN_GI={day:d,h:U,a:op,i:1,dh:true}; ok(Math.abs(cheerAtt(d)-e1)<1e-12,'1경기 관중 계산이 2경기 효과를 씀'); } finally{ RAIN_GI=keep; }
+  G.day=d+1; cheerGame(d+1,U); ok(Object.keys(S.last.g).length===1,'다음 날에 지난 경기 기록이 남음'); });
+T('[검수 11-17 #304] 스타 데이: 경기 날 내세울 스타가 없으면 열지 않고 취소·환불 알림을 보내며 비용·효과가 없다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const U=G.user, P=promoOf(U); const H=homeGames(U,G.day+2,G.cal.end); const [d,a]=H[0];
+  G.day=d; _promoSC={k:G.year+':'+G.day,g:G,v:{[U]:null}}; ok(promoBook(U,H[3][0],'star').includes('스타'),'스타 없는데 새 예약이 열림');
+  P.bk[d]={k:'star',a}; ok(promoAttM(U,a,d)===1,'스타 없는 스타 데이에 관중 효과'); const cost0=P.cost, n0=P.log.length, m0=G.mail.length;
+  promoGame(d,U,a,{att:10000,cap:20000,so:false}); ok(P.cost===cost0&&P.log.length===n0&&!P.bk[d],'스타 없는 스타 데이에 비용이 잡힘'); ok(G.mail.length>m0&&G.mail.slice(0,G.mail.length-m0).some(m=>m.subj.includes('스타 데이 취소')&&m.body.includes('환불')),'취소·환불 알림이 없음');
+  /* 스타가 있으면 그대로 열린다 */ const p=playersOf(U)[0]; _promoSC={k:G.year+':'+G.day,g:G,v:{[U]:{p,s:40}}}; P.bk[d]={k:'star',a}; ok(promoAttM(U,a,d)>1,'스타가 있는데 효과가 없음'); promoGame(d,U,a,{att:10000,cap:20000,so:false}); ok(P.log.length===n0+1&&P.cost>cost0,'스타가 있는데 열리지 않음'); _promoSC={k:null}; });
+T('[검수 11-17 #305] 행사 예약은 날짜가 아니라 그 경기(상대)에 붙는다: 같은 날 먼저 치른 다른 상대의 미룬 경기에 붙지 않는다(옛 예약 수리)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const U=G.user, P=promoOf(U); const [d,a]=homeGames(U,G.day+2,G.cal.end)[0]; const y=G.teams.find(t=>t.id!==U&&t.id!==a).id;
+  ok(promoBook(U,d,'kids').includes('잡았'),'예약 실패'); ok(P.bk[d].a===a,'예약에 상대가 없음'); ok(promoAttM(U,y,d)===1,'다른 상대 경기에 행사 효과'); ok(promoAttM(U,a,d)>1,'예약한 경기에 효과가 없음');
+  const st={att:10000,cap:20000,so:false}, n0=P.log.length, c0=P.cost; promoGame(d,U,y,st); ok(P.bk[d]&&!P.bk[d].done&&P.log.length===n0&&P.cost===c0,'미룬 다른 상대 경기에 행사가 붙음'); promoGame(d,U,a,st); ok(P.log.length===n0+1&&P.log[P.log.length-1].a===a,'예약한 경기에 행사가 열리지 않음');
+  /* 옛 예약(상대 없음)은 불러오기에서 원래 일정의 경기에 묶는다 */ const [d2,a2]=homeGames(U,d+1,G.cal.end).find(x=>!P.bk[x[0]]); P.bk[d2]={k:'cap'}; promoMigrate(); ok(P.bk[d2].a===a2,'옛 예약에 상대가 묶이지 않음'); const s=JSON.stringify(P.bk); ok(promoMigrate()===0&&JSON.stringify(P.bk)===s,'두 번째 수리에서 바뀜'); });
+T('[검수 11-17 #306] 미룬 경기로 내일 생긴 홈경기도 관중 전망과 같은 일정으로 행사를 잡을 수 있다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const U=G.user, c=G.cal; let d=null; for(let x=G.day+2;x<c.end-5&&!d;x++)if(!(c.sched[x]||[]).some(z=>z[0]===U))d=x; ok(d,'준비 실패');
+  G.day=d-1; const y=G.teams.find(t=>t.id!==U).id; G.makeup=(G.makeup||[]).concat({y:G.year,h:U,a:y,d:d-2}); ok(homeGames(U,d,d).some(x=>x[1]===y),'준비: 관중 전망에 미룬 경기가 없음');
+  ok(promoHomeOpp(U,d)===y,'행사 일정이 미룬 경기를 못 봄'); const r=promoBook(U,d,'cap'); ok(r.includes('잡았'),'미룬 홈경기에 행사를 잡지 못함: '+r); ok(promoOf(U).bk[d].a===y,'예약 상대'); ok(promoAttM(U,y,d)>1,'미룬 경기에 행사 효과가 없음'); G.makeup=[]; });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

@@ -14,7 +14,8 @@
    - 더블헤더 2경기: 감독이 주전 포수를 거의 쉬게 하고, 지친 주전도 더 쉽게 뺀다(모든 구단 같은 규칙, 감독 휴식 성향 반영, 06_game gameSide).
      같은 날 두 경기라 사이에 피로 회복이 없고, 1경기에 던진 투수는 2경기에 나오지 않는다.
    - 관중: 더블헤더는 경기마다 따로 입장(1경기 -10%, 2경기 -20%). 취소 경기 입장권은 환불하고 수입이 없다. 행사·응원단 비용은 열린 경기에만 든다.
-     프로모션(행사)을 잡아 둔 경기가 취소되면 promoRainout(홈, 취소일, 새 날짜)를 부른다(행사 모듈이 있을 때만).
+     프로모션(행사)을 잡아 둔 경기가 취소되면 promoRainout(홈, 취소일, 새 날짜)로 행사도 새 날짜로 옮긴다. 새 날짜에 다른 행사가 있거나 열 수 없으면 취소·알림(38_promotions).
+     우리 경기의 직관·관전 예약도 경기를 따라 새 날짜로 옮긴다(포스트시즌과 같은 규칙, rainMovePlans).
    - 포스트시즌 경기도 비가 오면 하루 미룬다(돔 홈경기 제외, 같은 시리즈 최대 2번).
    난수: 날씨는 날짜·도시 해시(relU)로 정해 경기 난수를 쓰지 않는다. 같은 날 같은 도시(서울 두 구단)는 같은 날씨. */
 const RAIN_M={3:.025,4:.035,5:.045,6:.055,7:.13,8:.07,9:.045,10:.025};
@@ -54,6 +55,7 @@ function rainDay(day){ const c=G.cal; if(!c||!c.sched||G.noRain||period()!=='sea
   const keep=[], out=[]; for(const m of L)(rainOut(m[0],day)?out:keep).push(m); if(!out.length)return 0;
   rainE0(); if(keep.length)c.sched[day]=keep; else delete c.sched[day];
   const R=c.rain=c.rain||{}, MK=c.mk=c.mk||{}, rows=[];
+  { const outH=new Set(out.map(m=>m[0])); if(MK[day]){ MK[day]=MK[day].filter(x=>!outH.has(x.h)); if(!MK[day].length)delete MK[day]; } } /* 순연 경기가 또 비로 취소되면 그날 '순연 경기·더블헤더' 표시를 지운다: 한 날짜에는 취소 한 가지 상태만(검수 11-17 #166) */
   for(const [h,a] of out){ const pl=rainPlace(h,a,day); (c.sched[pl.d]=c.sched[pl.d]||[]).push([h,a]); if(pl.d>c.end){ if(c.end0==null)c.end0=c.end; c.end=pl.d; }
     (MK[pl.d]=MK[pl.d]||[]).push({h,a,from:day,dh:pl.dh,k:pl.k}); const r={h,a,to:pl.d,dh:pl.dh,k:pl.k}; (R[day]=R[day]||[]).push(r); rows.push(r);
     try{ if(typeof promoRainout==='function')promoRainout(h,day,pl.d); }catch(e){} }
@@ -64,12 +66,23 @@ function rainNews(day,rows){ const ours=rows.find(r=>r.h===G.user||r.a===G.user)
   if(!ours||G.unemp)return; const op=ours.h===G.user?ours.a:ours.h;
   const t=`오늘 ${tshort(op)}전이 비로 취소됐습니다. ${rainWhere(ours.to)}${ours.dh?' 더블헤더':''}로 다시 잡혔고, 입장권은 환불합니다.`;
   const watch=(G.watchPlanned&&G.watchPlanned.day===day)||(G.simPlanned&&G.simPlanned.day===day)||(()=>{ const q=gmPlanAt(day); return !!(q&&q.k==='attend'&&!q.done); })();
-  if(G.watchPlanned&&G.watchPlanned.day===day)G.watchPlanned=null; if(G.simPlanned&&G.simPlanned.day===day)G.simPlanned=null;
-  (watch?stop:note)('일정',t); }
+  const mv=rainMovePlans(day,ours.to,op);
+  (watch?stop:note)('일정',t+(mv?' '+mv:'')); }
+/* 우리 경기가 비로 밀리면 그 경기를 고른 직관·관전 예약도 새 날짜로 옮긴다(포스트시즌 psShiftDays와 같은 규칙). 새 날짜에 다른 일정이 있으면 직관만 취소하고 알린다(검수 11-17 #167) */
+function rainMovePlans(day,to,op){ const P=G.gmPlan||{}, q=P[day]; let msg='';
+  for(const k of ['watchPlanned','simPlanned'])if(G[k]&&G[k].day===day)G[k]={...G[k],day:to};
+  if(q&&q.k==='attend'&&!q.done&&(q.tid==null||q.tid===G.user)&&(q.op==null||q.op===op)){ delete P[day]; if(q.mid){ G.mail=(G.mail||[]).filter(m=>m.id!==q.mid); G.stops=(G.stops||[]).filter(m=>m.id!==q.mid); } delete q.mid; delete q.warned;
+    if(P[to]&&!P[to].done){ q.done=true; q.cancelled='우천 순연 일정 충돌'; msg=`${rainWhere(to)}에 이미 다른 일정이 있어 직관 예약은 취소했습니다. 기존 일정은 그대로이고, 직관은 다시 예약할 수 있습니다.`; }
+    else { P[to]={...q,op:q.op??op}; msg=`직관 예약도 ${rainWhere(to)}로 옮겼습니다.`; } }
+  return msg; }
 /* 그날 경기가 더블헤더(같은 대진 두 경기)인가, 몇 번째 경기인가: playDay 순서와 같은 목록 */
 function rainGameInfo(day,h,a,i){ const c=G.cal, n=rainPairN(h,a,day), mk=((c&&c.mk||{})[day]||[]).filter(x=>x.h===h&&x.a===a); return {dh:n>=2?i:0,mk:mk.length&&i>n-mk.length?mk[i-(n-mk.length)-1].from:null}; }
 /* 더블헤더 관중: 경기마다 따로 입장. 37_stadium attOf가 경기 중에만 곱한다(관중 전망·예산에는 안 곱한다) */
 function rainAttM(h,day){ const x=RAIN_GI; return x&&x.day===day&&x.h===h&&x.dh?(x.i===1?.9:.8):1; }
+/* 관중 전망(37_stadium stadProj): 실제 경기와 같은 더블헤더 배율을 넣어 잰다. seen은 같은 날 같은 대진 몇 번째인가(playDay와 같은 순서, 검수 11-17 #168) */
+function rainAttFc(h,a,d,seen){ const k=d+':'+h+':'+a, i=seen[k]=(seen[k]||0)+1; let dh=0; try{ dh=rainGameInfo(d,h,a,i).dh; }catch(e){} if(!dh)return attOf(h,a,d,null); const keep=RAIN_GI; RAIN_GI={day:d,h,a,i,dh:true}; try{ return attOf(h,a,d,null); } finally{ RAIN_GI=keep; } }
+/* 옛 저장 수리(불러오기, 여러 번 해도 같다): 다시 비로 취소된 순연 경기 표시를 지운다(#166) */
+function rainMigrate(){ const c=G&&G.cal; if(!c||!c.mk||!c.rain)return 0; let n=0; for(const d of Object.keys(c.mk)){ const R=c.rain[d]; if(!R||!R.length)continue; const L=c.mk[d].filter(x=>!R.some(r=>r.h===x.h)); n+=c.mk[d].length-L.length; if(L.length)c.mk[d]=L; else delete c.mk[d]; } return n; }
 /* 더블헤더 2경기 휴식(06_game gameSide): 그 구단이 오늘 이미 한 경기를 치렀는가 */
 function rainDh2(tid,day){ const x=RAIN_GI; return !!(x&&x.day===day&&x.dh&&x.i>=2&&(x.h===tid||x.a===tid)); }
 /* 경기 기록 꼬리표(박스스코어·결과 목록·캘린더). kind에 '차전'을 쓰면 포스트시즌으로 읽히므로 따로 둔다 */
