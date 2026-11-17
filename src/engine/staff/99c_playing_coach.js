@@ -17,7 +17,7 @@ function pcOf(tid){ const out=[]; for(const id in (G.pcoach||{})){ const r=G.pco
 function pcN(tid){ return pcOf(tid).length; }
 function pcSalOf(tid,now){ return sum(pcOf(tid).filter(x=>!now||pcWorking(x.p,x.r)).map(x=>x.r.sal||0)); } /* now: 오늘 실제로 나가는 수당(계약 시즌 전·군 복무 중 제외) */
 /* 남은 보조 코치 자리: 정원 - 보조 코치 - 플레잉코치 */
-function axRoom(tid){ return axSlots(tid)-axOf(tid).length-pcN(tid); }
+function axRoom(tid){ return Math.max(0,axSlots(tid)-axOf(tid).length-pcN(tid)); }
 /* 지도자 의향: 프로의식이 중심, 충성심이 조금. 같은 선수면 같은 값 */
 function pcWill(p){ initPers(p); const P=p.pers; return P.pro+(P.loy-10)*.25+hn('pcw',String(p.id))*1.5; }
 function pcAbility(p){ initPers(p); const O=obCareer(p,null); return obSkDv(O.war,!p.isP&&p.pos==='C',p.pers,(sd,k)=>hn('pc'+k,String(p.id))*sd); }

@@ -99,6 +99,6 @@ function aiMentorPick(){ if(period()!=='season')return; for(const t of G.teams){
 function aiAsstMonthly(tid,off){ const t=team(tid); if(!t||tid===ME())return; const O=orgOf(tid); const X=O.coachX=O.coachX||[]; pcTrim(tid); const n=axSlots(tid)-pcN(tid); /* 플레잉코치가 쓰는 자리는 뺀다(99c_playing_coach) */
   if(X.length>n){ for(const c of X.splice(n)){ staffHistory('coach',c,'보조 코치 계약 종료',tid,'시설 축소로 인한 정원 조정'); coachPaySev(tid,c); delete c.ax; c.yrs=0; (G.cmarket=G.cmarket||[]).push(c); } return; }
   if(X.length>=n||R()>(off?.5:.15))return; if(planOf(t)==='tight'||(t.cash||0)<0)return;
-  const c=(G.cmarket||[]).filter(c=>c&&AX_ROLES.includes(c.role)&&!(typeof schMarketWhy==='function'&&schMarketWhy(c))&&c.res!==G.user&&c.age<66&&!(c.from===tid&&c.fromY===G.year)&&!(c.bid&&c.bid.exp>=G.day)&&(c.dv||0)>=55&&cmCanPay(t,c,null)).sort((a,b)=>(b.dv||0)-(a.dv||0))[0];
-  if(!c)return; G.cmarket=G.cmarket.filter(x=>x!==c); staffCt(c,ri(1,3),ctStartS()); c.ax=true; /* 우리와 같은 합류 시즌 규칙 */ delete c.res; c.clan=null; X.push(c); stAttr(c); c.loy=20;
+  const c=(G.cmarket||[]).filter(c=>c&&AX_ROLES.includes(c.role)&&!(typeof schMarketWhy==='function'&&schMarketWhy(c))&&c.age<66&&!(c.from===tid&&c.fromY===G.year)&&!(c.bid&&c.bid.exp>=G.day)&&(c.dv||0)>=55&&coachCanHire(tid,c,{auto:true,cur:null})).sort((a,b)=>(b.dv||0)-(a.dv||0))[0];
+  if(!c)return; G.cmarket=G.cmarket.filter(x=>x!==c); staffCt(c,coachContractYears(c,ri(1,3)),ctStartS()); c.ax=true; /* 우리와 같은 합류 시즌 규칙 */ delete c.res; delete c.folM; delete c.gmFol; c.clan=null; X.push(c); stAttr(c); c.loy=20;
   if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ if(c.ob)obTaken(c.ob,c); }catch(e){} staffHistory('coach',c,'보조 코치 영입',tid,`${c.yrs}년 · 연 ${money(c.sal)}`); }
