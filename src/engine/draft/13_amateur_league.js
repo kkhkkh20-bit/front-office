@@ -285,7 +285,7 @@ function amRowObj(e,r){ const K=e.P?AM_PK:AM_BK, o={y:r[0],gr:r[1]}; K.forEach((
 function amTeamG(y,lvl){ const S=G.amL&&G.amL.y===y?G.amL:null; const T=S?S.tot[lvl]:((G.amH||[]).find(h=>h.y===y)||{})[lvl]; const n=lvl==='hs'?AREA.reduce((a,x)=>a+x.hs.length,0):AREA.reduce((a,x)=>a+x.un.length,0); return T&&T.g?T.g*2/n:20; }
 function amLeaders(y,lvl,isP,k,n,gr){ const L=amYearRows(y,lvl).filter(x=>x.isP===isP&&(gr==null||x.gr===gr)); const tg=amTeamG(y,lvl), qPA=Math.max(10,tg*2.5), qO=Math.max(9,tg*2.4);
   const val=x=>{ const h=x.row; if(isP){ if(k==='era')return h.outs>=qO?h.er*27/h.outs:null; if(k==='so')return h.so; if(k==='w')return h.w; return null; }
-    if(k==='avg')return h.pa>=qPA&&h.ab?h.h/h.ab:null; if(k==='ops')return h.pa>=qPA?bRate(h).ops:null; if(k==='hr')return h.hr; if(k==='sb')return h.sb; return null; };
+    if(k==='avg')return h.pa>=qPA&&h.ab?h.h/h.ab:null; if(k==='ops')return h.pa>=qPA?bRate(h).ops:null; if(k==='hr')return h.hr; if(k==='sb')return h.sb; if(k==='rbi')return h.rbi; return null; }; /* 타점(사용자 11-17 기록 1위 카드) */
   const asc=isP&&k==='era'; return L.map(x=>Object.assign({v:val(x)},x)).filter(x=>x.v!=null&&(asc||x.v>0)).sort((a,b)=>asc?a.v-b.v:b.v-a.v).slice(0,n||10); }
 /* ---------- 드래프트 후보로(졸업 학년 1월 1일) ---------- */
 function amMat(e){ const ageS=e.c?22:18; const p=newPlayer({age:ageS,base:clamp(amOvr(!!e.P,e.r),20,60),pot:e.pot,college:!!e.c,isP:!!e.P,pos:e.pos,name:e.n});
