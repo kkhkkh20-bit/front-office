@@ -4,14 +4,14 @@ const test = require('node:test'), assert = require('node:assert/strict'), path 
 const root = path.resolve(__dirname, '../..');
 const { makeD1, hasSqlite } = require('../lib/d1-shim.cjs');
 const W = import(path.join(root, 'worker/index.js')), V = import(path.join(root, 'worker/v1/index.js')), RL = import(path.join(root, 'worker/v1/ratelimit.js')),
-  SE = import(path.join(root, 'worker/v1/season.js')), SC = import(path.join(root, 'worker/v1/schema.js')), US = import(path.join(root, 'worker/v1/usage.js'));
+  SE = import(path.join(root, 'worker/v1/season.js')), SC = import(path.join(root, 'worker/v1/schema.js')), US = import(path.join(root, 'worker/v1/usage.js')), LD = import(path.join(root, 'worker/v1/ladder.js'));
 const ORIGIN = 'https://fronttime.example.workers.dev', DAY = 86400e3;
 function deck(o = {}) { const P = []; const POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'C', 'SS', 'LF', '1B'];
   POS.forEach((pos, i) => P.push({ id: i + 1, name: '타자' + i, age: 27, isP: false, pos, th: '우', bt: '우', r: { con: 50, pow: 50, eye: 50, spd: 50, def: 50, vit: 60 }, pot: 55 }));
   for (let i = 0; i < 12; i++) P.push({ id: 100 + i, name: '투수' + i, age: 28, isP: true, pos: 'P', th: '우', bt: '우', r: { stf: 50, ctl: 50, sta: i < 5 ? 60 : 40 }, pot: 55, role: i < 5 ? 'SP' : 'RP' });
   return Object.assign({ v: 1, kind: 'cup-entry', name: '와이', year: 2035, club: {}, mgr: {}, P, ln: [[1, 'C'], [2, '1B'], [3, '2B'], [4, '3B'], [5, 'SS'], [6, 'LF'], [7, 'CF'], [8, 'RF'], [10, 'DH']], bn: [9, 11, 12], rot: [100, 101, 102, 103, 104], pen: [105, 106, 107, 108, 109, 110, 111], bp: {}, ovr: { t: 60, p: 61, b: 59 } }, o); }
 async function setup(o = {}) {
-  const { handle } = await W; (await V)._v1Reset(); (await RL)._resetRL(); (await SE)._resetSeason(); (await US)._resetUsage();
+  const { handle } = await W; (await V)._v1Reset(); (await RL)._resetRL(); (await SE)._resetSeason(); (await US)._resetUsage(); (await LD)._metaReset();
   const DB = o.noDb ? undefined : makeD1(), env = { DB, CUP_ADMIN: 's3cret' };
   if (o.kv) { const m = o.kv; env.SAVE_KV = { async get(k) { return m.has(k) ? m.get(k).v : null; }, async getWithMetadata(k) { const e = m.get(k); return { value: e ? e.v : null, metadata: e ? e.meta : null }; },
     async put(k, v, x = {}) { m.set(k, { v: String(v), meta: x.metadata || null }); }, async delete(k) { m.delete(k); }, async list({ prefix }) { return { keys: [...m.keys()].filter(k => k.startsWith(prefix)).map(name => ({ name, metadata: m.get(name).meta })), list_complete: true }; } }; }
@@ -189,4 +189,37 @@ dbTest('상대 채우기: D1 덱이 모자라면 같은 단계 KV 덱으로(pid 
   const r = await J('POST', '/api/v1/ladder/result', { key: 'kvmix-1', rank: 3, teams: 10, opps: [{ pid: mv.id, w: 2, l: 1 }] }, me.A); assert.equal(r._s, 200);
   for (let i = 0; i < 9; i++) { const p = await mk('찐유저' + i, '10.8.1.' + i); await J('PUT', '/api/ladder/deck', { wid: w(100 + i), tier: 1, e: deck({ name: 'D1팀' + i, ovr: { t: 60 + i, p: 60, b: 60 } }) }); await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: 'D1팀' + i, ovr: { t: 60 + i, p: 60, b: 60 } }), tier: 1, wid: w(100 + i) }, p.A); }
   const o2 = await J('GET', '/api/v1/ladder/opponents?n=9', null, me.A); assert.equal(o2.kv, 0, 'D1이 충분하면 KV 안 씀'); assert.equal(o2.decks.length, 9); assert.ok(o2.decks.every(d => d.pid));
+});
+
+/* ===== 래더 v2(사용자 11-17): 덱 구성 집계(메타)·전체 순위·관리자 내보내기 ===== */
+test('래더 v2 스키마: migrations/0002_deck_meta.sql 문장이 worker/v1/ladder.js META_SQL과 같다', async () => {
+  const { META_SQL } = await LD; const sql = fs.readFileSync(path.join(root, 'migrations/0002_deck_meta.sql'), 'utf8').split('\n').filter(l => !/^\s*--/.test(l)).join('\n').trim().replace(/;$/, '');
+  assert.equal(sql, META_SQL);
+});
+dbTest('래더 v2 메타: 덱 등록 때 요약을 적고, 단계별·전체 집계(포지션 OVR·외국인·나이·성향·단계 평균)를 10분 캐시로 준다. 숨김·예전 덱(요약 없음)도 맞게', async () => {
+  const { env, J, AK, mk } = await setup(); const sq = env.DB._sqlite;
+  const P = []; for (let i = 0; i < 5; i++) P.push(await mk('메타' + i, '198.51.100.' + (i + 1)));
+  for (let i = 0; i < 5; i++) { const e = deck({ name: '메타팀' + i, ovr: { t: 58 + i, p: 60, b: 60 } }); if (i === 2) e.P[0].foreign = 1; if (i === 3) e.P.forEach(p => { if (!p.isP) p.r.pow = 80; });
+    assert.equal((await J('PUT', '/api/v1/ladder/deck', { e, tier: i < 3 ? 0 : 0 }, P[i].A))._s, 200); }
+  assert.equal(sq.prepare('SELECT COUNT(*) AS n FROM deck_meta').get().n, 5, '덱마다 요약 한 줄');
+  sq.prepare('DELETE FROM deck_meta WHERE player_id = ?').run(P[4].id); /* 예전 덱(요약 없음) → 요청 때 본문에서 채운다 */
+  const m = await J('GET', '/api/v1/ladder/meta?tier=0'); assert.equal(m._s, 200, JSON.stringify(m)); assert.equal(m.n, 5); assert.equal(m.agg.n, 5);
+  assert.equal(sq.prepare('SELECT COUNT(*) AS n FROM deck_meta').get().n, 5, '빠진 요약을 채움');
+  assert.equal(m.agg.t.avg, 60); assert.ok(m.agg.pos.C.avg > 0 && m.agg.pos.SS.h.reduce((a, b) => a + b, 0) === 5, '포지션 분포'); assert.equal(m.agg.frDeck, 0.2); assert.equal(m.agg.age.reduce((a, b) => a + b, 0), 5 * 24);
+  assert.equal(m.agg.arch.pow, 1, '거포형 1 ' + JSON.stringify(m.agg.arch)); assert.equal(m.tiers[0].n, 5); assert.equal(m.tiers[0].avg, 60);
+  const all = await J('GET', '/api/v1/ladder/meta'); assert.equal(all.tier, 'all'); assert.equal(all.n, 5);
+  assert.equal((await J('PUT', '/api/v1/admin/hide', { pid: P[0].id, hide: true }, AK))._s, 200);
+  const m2 = await J('GET', '/api/v1/ladder/meta?tier=1'); assert.equal(m2.n, 0); assert.equal(m2.agg.n, 0, '빈 단계');
+  /* 탈퇴하면 요약도 지운다 */
+  assert.equal((await J('DELETE', '/api/v1/player', null, P[1].A))._s, 200); assert.equal(sq.prepare('SELECT COUNT(*) AS n FROM deck_meta WHERE player_id = ?').get(P[1].id).n, 0);
+});
+dbTest('래더 v2: 전체 순위(높은 단계 먼저)와 관리자 내보내기(덱·리그 결과 줄)', async () => {
+  const { J, AK, mk } = await setup(); const a = await mk('전체일', '198.51.100.21'), b = await mk('전체이', '198.51.100.22');
+  for (const [p, t] of [[a, 0], [b, 0]]) assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck(), tier: t }, p.A))._s, 200);
+  assert.equal((await J('POST', '/api/v1/ladder/result', { key: 'v2-a1', rank: 1, teams: 10, w: 20, l: 7 }, a.A)).tier, 1);
+  assert.equal((await J('POST', '/api/v1/ladder/result', { key: 'v2-b1', rank: 5, teams: 10, w: 14, l: 13 }, b.A)).tier, 0);
+  const all = await J('GET', '/api/v1/ladder/leaderboard?tier=all'); assert.equal(all.tier, 'all'); assert.deepEqual(all.rows.map(x => x.nickname), ['전체일', '전체이']); assert.equal(all.rows[0].tier, 1);
+  assert.equal((await J('GET', '/api/v1/admin/export?kind=decks'))._s, 401);
+  const d = await J('GET', '/api/v1/admin/export?kind=decks', null, AK); assert.equal(d.rows.length, 2); assert.ok(d.rows[0].meta && d.rows[0].meta.v === 1, '덱 요약');
+  const r = await J('GET', '/api/v1/admin/export?kind=results', null, AK); assert.equal(r.rows.length, 2); assert.ok(r.rows.every(x => x.nickname && x.lkey));
 });

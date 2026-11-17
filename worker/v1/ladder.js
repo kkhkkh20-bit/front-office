@@ -1,7 +1,7 @@
 /* v1 래더: 덱 등록·상대 받기·리그 결과(포인트·단계·맞대결·소식)·순위표·소식·내 기록·라이벌.
    리그는 지금처럼 유저 기기에서 돈다. 서버는 결과 요약만 받는다(조작은 신경 쓰지 않는다: src/core/uladder.mjs 머리말). 단계 계산은 서버가 공용 규칙(ulTierAfter)으로 한다 */
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../../src/core/cup.mjs';
-import { UL_TIERS, UL_TEAMS, ulTierAfter, ulSlim } from '../../src/core/uladder.mjs';
+import { UL_TIERS, UL_TEAMS, ulTierAfter, ulSlim, ulDeckMeta, ulMetaAgg } from '../../src/core/uladder.mjs';
 import { json, err, pub, readJson, cached, kstHour } from './http.js';
 import { PID } from './auth.js';
 import { currentSeason, entryFor } from './season.js';
@@ -36,6 +36,7 @@ export async function putDeck(req, db, me, now, env) {
     ...(String(b.wid || '').match(/^w[0-9a-f]{16}$/) ? [db.prepare('UPDATE players SET wid = ? WHERE id = ?').bind(b.wid, me.id)] : []),
     ...statStmts(db, now, Object.assign(had ? { decks_upd: 1 } : { decks_new: 1 }, takeUsage())),
   ]);
+  await metaPut(db, me.id, e, now); /* 덱 구성 요약(래더 v2 메타, 사용자 11-17): 실패해도 덱 등록은 된다 */
   return json(200, { ok: true, season: s.id, name: e.name, ovr, tier: en.tier, bytes: body.length, h: e.h });
 }
 
@@ -109,6 +110,10 @@ export async function postResult(req, db, me, now) {
 export async function leaderboard(url, db, now) {
   const s = await currentSeason(db, now);
   const season = url.searchParams.has('season') ? int(url.searchParams.get('season'), 1, 1e6) : s.id; if (!season) return err(400, 'bad_json');
+  if (url.searchParams.get('tier') === 'all') return cached(url, `board/${season}/all`, 60, async () => { /* 전체 순위(래더 v2): 높은 단계 먼저, 같은 단계는 포인트 순 */
+    const r = await db.prepare('SELECT e.player_id AS pid, p.nickname, e.tier, e.points, e.leagues, e.wins, e.best_tier, d.name AS team, d.ovr FROM ladder_entries e JOIN players p ON p.id = e.player_id LEFT JOIN decks d ON d.player_id = e.player_id WHERE e.season = ? AND p.hidden = 0 AND e.leagues > 0 ORDER BY e.tier DESC, e.points DESC, e.updated ASC LIMIT ?').bind(season, BOARD_N).all();
+    return pub({ ok: true, season, tier: 'all', current: season === s.id, ends: season === s.id ? s.ends : null, rows: (r.results || []).map((x, i) => Object.assign({ rank: i + 1 }, x)) }, 60);
+  });
   const tier = clampTier(url.searchParams.get('tier'));
   return cached(url, `board/${season}/${tier}`, 60, async () => {
     const r = await db.prepare('SELECT e.player_id AS pid, p.nickname, e.points, e.leagues, e.wins, e.best_tier, d.name AS team, d.ovr FROM ladder_entries e JOIN players p ON p.id = e.player_id LEFT JOIN decks d ON d.player_id = e.player_id WHERE e.season = ? AND e.tier = ? AND p.hidden = 0 AND e.leagues > 0 ORDER BY e.points DESC, e.updated ASC LIMIT ?').bind(season, tier, BOARD_N).all();
@@ -151,4 +156,30 @@ export async function h2hWith(db, me, pid) {
   const p = await db.prepare('SELECT nickname, hidden FROM players WHERE id = ?').bind(pid).first();
   if (!p || p.hidden) return err(404, 'not_found');
   return json(200, { ok: true, pid, nickname: p.nickname, attack: a || { n: 0, w: 0, l: 0, d: 0 }, defense: b ? { n: b.n, w: b.l, l: b.w, d: b.d, at: b.at } : { n: 0, w: 0, l: 0, d: 0 } });
+}
+
+/* ===== 래더 v2 덱 구성(메타, 사용자 11-17 "래더 선수 구성"): 덱마다 작은 요약(deck_meta, 약 300바이트)을 덱 등록 때 적고,
+   GET /ladder/meta?tier=N|all 은 최근 45일 덱 요약을 최대 META_N개만 읽어 공용 집계(ulMetaAgg)로 묶는다. 10분 캐시(Cache API, 무료).
+   요약이 없는 예전 덱은 요청 한 번에 META_FILL개까지만 본문에서 만들어 채운다(읽는 줄·CPU를 작게: 무료 플랜 요청당 10ms) */
+export const META_N = 400, META_FILL = 20, META_SEC = 600;
+export const META_SQL = 'CREATE TABLE IF NOT EXISTS deck_meta (player_id TEXT PRIMARY KEY, sum TEXT NOT NULL, at INTEGER NOT NULL) WITHOUT ROWID';
+let metaOk = false; export function _metaReset() { metaOk = false; }
+/* 표가 없으면(0002 SQL을 아직 안 돌린 서버) 한 번 만든다. 같은 문장(IF NOT EXISTS)이라 여러 번 해도 안전 */
+export async function ensureMeta(db) { if (metaOk) return true; try { await db.prepare(META_SQL).run(); metaOk = true; } catch (e) { metaOk = false; } return metaOk; }
+export async function metaPut(db, pid, e, now) { try { if (!(await ensureMeta(db))) return; const m = ulDeckMeta(e); if (!m) return;
+  await db.prepare('INSERT INTO deck_meta (player_id, sum, at) VALUES (?, ?, ?) ON CONFLICT (player_id) DO UPDATE SET sum = excluded.sum, at = excluded.at').bind(pid, JSON.stringify(m), now).run(); } catch (x) {} }
+export async function meta(url, db, now) {
+  const q = url.searchParams.get('tier'), all = q == null || q === 'all', tier = all ? null : clampTier(q), since = now - STALE;
+  return cached(url, `meta/${all ? 'all' : tier}/${Math.floor(now / (META_SEC * 1000))}`, META_SEC, async () => {
+    await ensureMeta(db);
+    const r = await db.prepare(`SELECT d.player_id AS pid, d.tier, m.sum FROM decks d JOIN players p ON p.id = d.player_id LEFT JOIN deck_meta m ON m.player_id = d.player_id WHERE p.hidden = 0 AND d.at >= ?${all ? '' : ' AND d.tier = ?'} ORDER BY d.at DESC LIMIT ?`).bind(...(all ? [since, META_N] : [since, tier, META_N])).all();
+    const rows = r.results || [], list = [], miss = rows.filter(x => !x.sum).slice(0, META_FILL).map(x => x.pid);
+    if (miss.length) { const b = (await db.prepare(`SELECT player_id AS pid, body FROM decks WHERE player_id IN (${miss.map(() => '?').join(',')})`).bind(...miss).all()).results || [];
+      const put = []; for (const x of b) { try { const m = ulDeckMeta(JSON.parse(x.body)); if (!m) continue; const row = rows.find(y => y.pid === x.pid); if (row) row.sum = JSON.stringify(m); put.push(db.prepare('INSERT OR REPLACE INTO deck_meta (player_id, sum, at) VALUES (?, ?, ?)').bind(x.pid, row.sum, now)); } catch (e) {} }
+      if (put.length) { try { await db.batch(put); } catch (e) {} } }
+    for (const x of rows) { if (!x.sum) continue; try { list.push(Object.assign(JSON.parse(x.sum), { tier: x.tier })); } catch (e) {} }
+    const tr = (await db.prepare('SELECT d.tier, COUNT(*) AS n, AVG(d.ovr) AS avg FROM decks d JOIN players p ON p.id = d.player_id WHERE p.hidden = 0 AND d.at >= ? GROUP BY d.tier').bind(since).all()).results || [];
+    const tiers = UL_TIERS.map((name, t) => { const x = tr.find(y => y.tier === t); return { tier: t, name, n: x ? x.n : 0, avg: x && x.avg ? Math.round(x.avg * 10) / 10 : 0 }; });
+    return pub({ ok: true, tier: all ? 'all' : tier, at: now, n: list.length, of: rows.length, agg: ulMetaAgg(list), tiers }, META_SEC);
+  });
 }
