@@ -1,0 +1,30 @@
+/* 래더 v3(사용자 11-17 "레더랑 대회 쪽 유아이랑 시스템 제대로 더 개선해야하고"): 결과 공개·우리 연전·목표·꾸미기·점수표 표·붙어 보기. 움직임은 처음 그릴 때 한 번(ul-anim), 줄이기 설정이면 끈다 */
+.ulx .ul-fr{display:inline-grid;place-items:center;flex:none;border-radius:18px;padding:3px}.ulx .ul-fr1{box-shadow:0 0 0 2px #b07a45,0 0 12px rgba(176,122,69,.45)}.ulx .ul-fr2{box-shadow:0 0 0 2px #c9d3dc,0 0 14px rgba(201,211,220,.5)}.ulx .ul-fr3{box-shadow:0 0 0 2px #f3cf63,0 0 18px rgba(243,207,99,.6)}
+.ulx .ul-ttl{color:var(--warn,#e3b44c)}
+.ulx .ul-prev{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--panel2,#1a2330) 80%,transparent);position:relative;z-index:1}.ulx .ul-prev p{margin:2px 0}
+.ulx .ul-cos{display:flex;gap:10px;align-items:center;margin:8px 0 4px}.ulx .ul-cos p{margin:2px 0}
+.ulx .ul-send{border-color:var(--warn,#e3b44c)}.ulx .ul-send-in{display:flex;gap:12px;align-items:center}.ulx .ul-send-t{font-size:17px;margin:2px 0}
+/* 리그 시작 직후 10팀 · 우리 연전 카드 */
+.ulx .ul-ros{max-height:none}.ulx .ul-rr{display:grid;grid-template-columns:1.6em minmax(0,1fr) auto auto;gap:6px;align-items:center;margin:0;padding:2px 0;border-bottom:1px dashed var(--line)}.ulx .ul-rr .lnk{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ulx .ul-rr.me{font-weight:800;color:var(--accent,#3b7dd8)}
+.ulx .ul-ser{margin:6px 0;padding:8px;border-radius:10px;border:1px solid var(--line)}.ulx .ul-ser.win{border-color:#4a9d5b;background:color-mix(in srgb,#4a9d5b 9%,transparent)}.ulx .ul-ser.loss{border-color:#c84a4a;background:color-mix(in srgb,#c84a4a 8%,transparent)}
+.ulx .ul-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:4px 0}.ulx .ul-g{display:grid;justify-items:center;padding:6px 2px;border-radius:8px;background:var(--panel2,rgba(127,127,127,.1));border:1px solid var(--line)}
+.ulx .ul-g em{font-style:normal;font-size:11px;color:var(--muted)}.ulx .ul-g b{font-size:20px;line-height:1.15}.ulx .ul-g small{font-size:11px}.ulx .ul-g.w{border-color:#4a9d5b}.ulx .ul-g.w small{color:#4fc27c}.ulx .ul-g.l{border-color:#c84a4a}.ulx .ul-g.l small{color:#ef6b5e}
+.ulx .ul-serr{margin:2px 0 0;font-size:14px}
+.ulx .ul-anim .ul-g{animation:ulPop .45s ease-out both;animation-delay:var(--d,0s)}
+@keyframes ulPop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+/* 결과 공개 카드 */
+.ulx .ul-rv{position:relative;overflow:hidden}.ulx .ul-rv-up{background:linear-gradient(160deg,color-mix(in srgb,#4a9d5b 20%,var(--panel)) 0%,var(--panel) 55%)}.ulx .ul-rv-down{background:linear-gradient(160deg,color-mix(in srgb,#c84a4a 16%,var(--panel)) 0%,var(--panel) 55%)}
+.ulx .ul-rvtop{display:flex;gap:12px;align-items:center}.ulx .ul-rvrank{display:flex;align-items:baseline;gap:2px;flex:none}.ulx .ul-rvrank b{font-size:56px;line-height:1;font-weight:900}.ulx .ul-rvrank span{font-size:18px;font-weight:800}
+.ulx .ul-rvmid{min-width:0;flex:1}.ulx .ul-rv .ul-badge{margin:0;padding:6px 8px;font-size:16px;gap:6px}.ulx .ul-rvl{display:grid;line-height:1.2}.ulx .ul-rvl b{font-size:20px}.ulx .ul-rv .ul-res{font-size:14px;margin:4px 0 0}
+.ulx .ul-chips2{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;align-items:center}.ulx .ul-chip{display:inline-grid;padding:4px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2,rgba(127,127,127,.1));line-height:1.15}.ulx .ul-chip small{font-size:11px;color:var(--muted)}.ulx .ul-chip b{font-size:18px}.ulx .ul-chip.hot{border-color:#d4a017}.ulx .ul-chip.hot b{color:#f3cf63}
+.ulx .ul-mvp{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;margin:8px 0;padding:8px;border-radius:10px;border:1px solid #d4a017;background:color-mix(in srgb,#d4a017 10%,transparent)}.ulx .ul-mvp .dk-f{width:48px;height:48px;border-radius:8px;object-fit:cover}.ulx .ul-mvp p{margin:0}.ulx .ul-mvp .dk-t{margin:0;color:#f3cf63}
+.ulx .ul-rvp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0}.ulx .ul-rvp>div{display:grid;gap:3px}
+.ulx .ul-again{margin-top:8px}.ulx .ul-again .ul-big{flex:1}
+.ulx .ul-anim .ul-rvrank b{animation:ulPop .5s ease-out both}.ulx .ul-anim .ul-rvt{animation:ulRise .7s .35s ease-out both}.ulx .ul-anim.ul-rv-down .ul-rvt{animation-name:ulSink}.ulx .ul-anim .ul-chip{animation:ulIn .4s .6s ease-out both}.ulx .ul-anim .ul-mvp{animation:ulIn .4s .8s ease-out both}
+@keyframes ulRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}@keyframes ulSink{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+/* 점수표·타자·투수 표 */
+.ul-box{margin:0}.ul-bx{font:12px/1.4 var(--f-num,monospace)}.ul-bx td{padding:2px 5px !important}.ul-bx tr.ul-bxh td{font-weight:700;color:var(--muted);background:var(--panel2,rgba(127,127,127,.08))}
+/* 붙어 보기 */
+.ul-exw{display:block}.ulx .ul-ex{border-color:var(--accent,#3b7dd8)}.ulx .ul-exh{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;margin:2px 0}.ulx .ul-exs{font-size:24px;padding:0 6px}
+@media(max-width:640px){.ulx .ul-rvrank b{font-size:44px}.ulx .ul-rvp{grid-template-columns:1fr}.ulx .ul-g b{font-size:17px}.ulx .ul-again{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.ulx .ul-anim *{animation:none !important}}

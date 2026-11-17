@@ -46,13 +46,15 @@ export function ulCapDrop(e, ids) {
 }
 /* 상한에 맞추려면 뺄 선수(추천): 넘는 돈을 한 명으로 메울 수 있으면 그중 OVR이 가장 낮은 선수, 아니면 연봉 대비 OVR이 가장 낮은(연봉 ÷ (OVR − 35)이 큰) 선수부터.
    빼도 덱 규칙(20명·투수 9명·타순)이 지켜지는 선수만 고른다. 6명까지. {ids, ok(빼면 들어가는지)} */
-export function ulCapSuggest(e, tier) {
-  let c = ulCap(e, tier); if (!c.known || c.ok) return { ids: [], ok: c.ok }; const ids = [];
+export const ulCapSuggest = (e, tier) => ulCapSuggestX(e, ulCapX(tier));
+/* 같은 추천을 배수 x(대회 설정 payCapX)로: 대회 신청에도 '선수 빼기'(래더 v3, 사용자 11-17) */
+export function ulCapSuggestX(e, x) { const cap = d => cupPayCheck(d, x);
+  let c = cap(e); if (!c.known || c.ok) return { ids: [], ok: c.ok }; const ids = [];
   for (let k = 0; k < 6 && !c.ok; k++) {
     const can = e.P.filter(p => !ids.includes(p.id) && !ulCapDrop(e, ids.concat(p.id)).err), over = -c.room; if (!can.length) break;
     const one = can.filter(p => (+p.sal || 0) >= over).sort((a, b) => ulPOvr(a) - ulPOvr(b) || a.sal - b.sal)[0];
     const p = one || can.slice().sort((a, b) => (b.sal || 0) / Math.max(1, ulPOvr(b) - 35) - (a.sal || 0) / Math.max(1, ulPOvr(a) - 35))[0];
-    ids.push(p.id); c = ulCap(ulCapDrop(e, ids).e, tier); }
+    ids.push(p.id); c = cap(ulCapDrop(e, ids).e); }
   return { ids, ok: c.ok };
 }
 export const ulTierName = t => UL_TIERS[Math.max(0, Math.min(UL_TIERS.length - 1, t | 0))];
@@ -204,4 +206,41 @@ export function ulMigrate(U) {
   const L = U.last, h = U.hist[U.hist.length - 1];
   if (L && h && h.w == null && h.rank === L.rank && h.tier === L.tier) { const me = (L.stand || []).find(x => x.kind === 'me'); Object.assign(h, { w: L.w | 0, l: L.l | 0, t: L.t | 0, pts: L.pts != null ? L.pts : ulPts(L.tier, L.rank) }); if (me && me.diff != null) h.rd = me.diff; }
   U.v = 2; return U;
+}
+/* ===== 래더 v3(사용자 11-17 "레더랑 대회 쪽 유아이랑 시스템 제대로 더 개선해야하고", "컴프매처럼 좀 재미있게") =====
+   매일·주간 목표: 한국시간 날·주(월요일 0시 시작)마다 정해지는 목표 3개씩. 진척은 리그 기록(hist의 ts)만으로 센다(따로 저장하지 않음).
+   목표를 다 채우면 도장 하나(G.uld.gl: 날·주마다 한 번). 보상은 꾸미기뿐: 단계 문장 테두리(동·은·금)와 칭호. 재화·능력치 보상은 없다(구단주 조건) */
+export const UL_DAY = 864e5, UL_KST = 9 * 36e5;
+export const ulDayId = ms => Math.floor(((ms == null ? Date.now() : ms) + UL_KST) / UL_DAY);
+export const ulWeekId = ms => Math.floor(((ms == null ? Date.now() : ms) + UL_KST - 4 * UL_DAY) / (7 * UL_DAY)); /* 1970-01-05(월) 0시가 0주 */
+const cnt = f => H => H.filter(f).length;
+const UL_DPOOL = [
+  ['plus', '5할 넘긴 리그 1번', cnt(x => (x.w | 0) > (x.l | 0)), 1], ['top5', '5위 안에 들기', cnt(x => x.rank <= 5), 1], ['rd10', '득실 +10 넘긴 리그 1번', cnt(x => (x.rd | 0) >= 10), 1],
+  ['play2', '리그 2번 끝내기', H => H.length, 2], ['top3', '3위 안에 들기', cnt(x => x.rank <= 3), 1], ['safe', '강등 없이 리그 2번', cnt(x => x.move !== 'down'), 2], ['w15', '한 리그 15승', cnt(x => (x.w | 0) >= 15), 1],
+];
+/* 오늘 목표: 첫째는 늘 '리그 1번 끝내기', 나머지 둘은 날 번호로 고른다(누구나 같은 날 같은 목표) */
+export function ulDailyGoals(hist, now) {
+  const d = ulDayId(now), H = (hist || []).filter(x => x && x.ts && ulDayId(x.ts) === d), n = UL_DPOOL.length, a = d % n, b = (a + 1 + (Math.floor(d / n) % (n - 1))) % n;
+  return [['play1', '리그 1번 끝내기', X => X.length, 1], UL_DPOOL[a], UL_DPOOL[b === a ? (a + 1) % n : b]].map(([k, t, f, goal]) => { const cur = Math.min(goal, f(H)); return { k, n: t, cur, goal, done: cur >= goal }; });
+}
+/* 이번 주 목표: 리그 5번 · 3위 안 3번 · 승격 1번(레전드면 레전드 3위 안) */
+export function ulWeeklyGoals(hist, now, tier) {
+  const w = ulWeekId(now), H = (hist || []).filter(x => x && x.ts && ulWeekId(x.ts) === w), top = UL_TIERS.length - 1;
+  return [['play5', '리그 5번 끝내기', H.length, 5], ['top3x3', '3위 안 3번', cnt(x => x.rank <= 3)(H), 3],
+    (tier | 0) >= top ? ['up', '레전드 3위 안', cnt(x => (x.tier | 0) === top && x.rank <= 3)(H), 1] : ['up', '승격 1번', cnt(x => x.move === 'up')(H), 1]]
+    .map(([k, t, c, goal]) => ({ k, n: t, cur: Math.min(goal, c), goal, done: c >= goal }));
+}
+/* 리그가 끝날 때 한 번: 오늘·이번 주 목표를 다 채웠으면 도장(날·주마다 한 번). {gl(새 칸), day, week} */
+export function ulGoalsTick(gl, hist, now, tier) {
+  const g = Object.assign({ ds: 0, ws: 0, dd: -1, wd: -1 }, gl || {}), d = ulDayId(now), w = ulWeekId(now); let day = false, week = false;
+  if (g.dd !== d && ulDailyGoals(hist, now).every(x => x.done)) { g.ds++; g.dd = d; day = true; }
+  if (g.wd !== w && ulWeeklyGoals(hist, now, tier).every(x => x.done)) { g.ws++; g.wd = w; week = true; }
+  return { gl: g, day, week };
+}
+/* 꾸미기: 도장 점수(매일 1 · 주간 3)로 문장 테두리, 도장 수로 칭호 */
+export const UL_FRAMES = Object.freeze([[0, ''], [3, '동 테두리'], [10, '은 테두리'], [25, '금 테두리']]);
+export const UL_GTITLES = Object.freeze([['d1', '첫 도장', g => g.ds >= 1], ['w1', '주간 완주', g => g.ws >= 1], ['d7', '개근 단장', g => g.ds >= 7], ['w4', '한 달 완주', g => g.ws >= 4], ['d30', '래더 장인', g => g.ds >= 30]]);
+export function ulCosmetic(gl) {
+  const g = Object.assign({ ds: 0, ws: 0 }, gl || {}), sc = g.ds + g.ws * 3; let f = 0; UL_FRAMES.forEach(([m], i) => { if (sc >= m) f = i; });
+  const nx = UL_FRAMES[f + 1]; return { score: sc, frame: f, frameName: UL_FRAMES[f][1], next: nx ? { need: nx[0] - sc, name: nx[1] } : null, titles: UL_GTITLES.map(([k, n, t]) => ({ k, n, on: !!t(g) })) };
 }

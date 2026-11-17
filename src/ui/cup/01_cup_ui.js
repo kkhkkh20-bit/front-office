@@ -29,16 +29,21 @@ async function cupSend(e){ const C=FrontOfficeCore; if(C.cupBadName(e.name))retu
   const v=C.cupValidate(e,CUP.cfg); if(!v.ok)return cupSay(v.errors[0].msg,true); if(v.elig.length)return cupSay(v.elig[0].msg,true);
   CUP.busy=true; cupSay('신청서를 보내는 중입니다.');
   try{ const {r,j}=await cupApi('/entry',{method:'POST',body:JSON.stringify(e),headers:{'Content-Type':'application/json'}}); CUP.busy=false;
-    if(r.status===201){ CUP.my=Object.assign({entered:true},j); return cupSay(`신청했습니다. ${j.name} ${j.year} · OVR ${C.cupOvrTxt(j.ovr)}`); }
+    if(r.status===201){ CUP.my=Object.assign({entered:true},j); try{ G.cupMine={cup:CUP.cfg.id,at:Date.now(),e:C.ulSlim(e)}; }catch(x){} CUP.ents=null; CUP.drop=null; return cupSay(`신청했습니다. ${j.name} ${j.year} · OVR ${C.cupOvrTxt(j.ovr)}`); }
     cupSay((j.errors&&j.errors[0])||j.message||'신청하지 못했습니다. 잠시 뒤 다시 시도해 주세요.',true); }
   catch(x){ CUP.busy=false; cupSay('서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.',true); } }
 /* 참가 파일 저장(서버 신청의 예비 길): 같은 엔트리를 파일로. 주최자는 node tools/cup-host.cjs add DIR 파일 로 넣는다 */
 function cupFile(e,name){ try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(e)],{type:'application/json'})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); toast('참가 파일을 저장했습니다. 주최자에게 보내 주세요.'); }catch(x){ toast('파일을 만들지 못했습니다.'); } }
 const cupFileName=e=>`frontcup-${(CUP.cfg&&CUP.cfg.id)||'entry'}-${e.year}-${String(e.wid||'').slice(-6)}.json`; /* 영문·숫자만(한글 파일 이름은 일부 브라우저가 'download'로 바꾼다) */
 Object.assign(A,{
-  async cupApply(){ if(CUP.busy||!G||G.unemp||!CUP.cfg)return; const e=cupEntryNow({name:cupNameIn()}); if(!e)return; await cupSend(e); },
+  async cupApply(){ if(CUP.busy||!G||G.unemp||!CUP.cfg)return; const R=cupNowEntry(cupNameIn()); if(!R.e)return cupSay(R.err||'이 덱을 만들 수 없습니다.',true); await cupSend(R.e); },
+  /* 대회 연봉 상한 맞추기(래더 v3, 사용자 11-17): 선수 빼기·되돌리기·추천대로 빼기 */
+  cupCapDrop(v){ const id=+v, was=(CUP.drop||[]).slice(); CUP.drop=was.includes(id)?was.filter(x=>x!==id):was.concat(id); const R=cupNowEntry(); if(!R.e){ CUP.drop=was; return cupSay(R.err||'이 선수는 뺄 수 없습니다.',true); } CUP.msg=''; render(); },
+  cupCapAuto(){ const R=cupNowEntry(); if(!R.e||!CUP.cfg)return; const s=FrontOfficeCore.ulCapSuggestX(R.e,CUP.cfg.payCapX); if(!s.ids.length)return cupSay('뺄 선수를 찾지 못했습니다. 본게임에서 1군을 바꿔 주세요.',true); CUP.drop=(CUP.drop||[]).concat(s.ids); cupSay(s.ok?`${s.ids.length}명을 빼면 상한 안에 들어갑니다. 이대로 신청하면 됩니다.`:`${s.ids.length}명을 빼도 상한을 넘습니다. 본게임에서 1군을 바꿔 주세요.`,!s.ok); },
+  cupCapReset(){ CUP.drop=null; CUP.msg=''; render(); },
+  cupMineT(){ CUP.mineOpen=!CUP.mineOpen; render(); },
   async cupApplyAlb(v){ if(CUP.busy||!CUP.cfg)return; const x=cupAlbum().find(a=>a.id===+v); if(!x)return; const e=JSON.parse(JSON.stringify(x.e)); e.name=cupNameIn(); e.ovr=cupOvr(e); await cupSend(e); },
-  cupFileNow(){ if(!G||G.unemp)return; const e=cupEntryNow({name:cupNameIn()}); if(!e)return; if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
+  cupFileNow(){ if(!G||G.unemp)return; const e=cupNowEntry(cupNameIn()).e; if(!e)return; if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
   cupFileAlb(v){ const x=cupAlbum().find(a=>a.id===+v); if(!x)return; const e=JSON.parse(JSON.stringify(x.e)); e.name=cupNameIn(); if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); e.ovr=cupOvr(e); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
   cupWithdraw(){ if(CUP.busy||!G||!G.wid)return; CUP.busy=true; cupApi('/entry/'+G.wid,{method:'DELETE'}).then(({r,j})=>{ CUP.busy=false; if(r.ok){ CUP.my=null; cupSay('신청을 취소했습니다.'); } else cupSay(j.message||'취소하지 못했습니다.',true); },()=>{ CUP.busy=false; cupSay('서버에 연결하지 못했습니다.',true); }); },
   cupAlbSave(){ if(!G||G.unemp)return; const x=cupAlbumAdd('hand',null); toast(x?`${G.year} 로스터를 앨범에 저장했습니다.`:'저장하지 못했습니다.'); render(); },
@@ -67,15 +72,42 @@ function cupPubHtml(P,pv){ if(!P||!P.day)return '';
   return `<section class="card cup-pub"><h2 class="sec">${esc(P.title)} 진행</h2><p class="small">${esc(last.t)}까지 공개${P.champ?` · 우승 <b>${esc(P.champ)}</b>`:''}</p>${st}
     ${gl.length?`<p class="small muted">이날 경기(누르면 기록을 봅니다)</p><div class="chips">${gl.map(g=>`<button${pv?' disabled':` data-a="cupWatchId" data-v="${esc(g.id)}"`}>${esc(g.a)} ${g.g.map(x=>x.join(':')).join(' ')} ${esc(g.b)}</button>`).join('')}</div>`:''}
     ${P.days.slice().reverse().map(d=>`<details class="hof-d"><summary class="small">${esc(d.t)}</summary><pre class="cup-pre">${esc(d.post)}</pre></details>`).join('')}</section>`; }
-function cupView(){ if(!G)return ''; cupProbe(); const C=FrontOfficeCore, t=team(G.user), on=xfAvail(), cfg=CUP.cfg;
-  let now=null; try{ if(!G.unemp)now=cupEntryNow({name:CUP.name||t.nick}); }catch(e){ console.error(e); }
+/* ===== 래더 v3(사용자 11-17 "레더랑 대회 쪽 유아이랑 시스템 제대로 더 개선해야하고"): 대회 상태 단계 · 내 신청 카드 · 연봉 상한 선수 빼기 ===== */
+/* 신청할 덱: 지금 1군에서 CUP.drop 선수를 뺀 것(래더와 같은 ulCapDrop: 빠진 타순은 벤치, 선발은 불펜이 채움). {e, err} */
+function cupNowEntry(name){ let e=null; try{ if(G&&!G.unemp)e=cupEntryNow({name:name||CUP.name||team(G.user).nick}); }catch(x){ console.error(x); } if(!e)return {e:null,err:''};
+  const D=CUP.drop||[]; if(!D.length)return {e,err:''}; const r=FrontOfficeCore.ulCapDrop(e,D); if(r.err)return {e:null,err:r.err}; r.e.ovr=cupOvr(r.e); return {e:r.e,err:''}; }
+const cupDl=d=>{ const m=/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2}))?/.exec(String(d||'')); return m?Date.UTC(+m[1],m[2]-1,+m[3],(m[4]|0)-9,m[5]|0):0; }; /* 마감(한국시간 글) → ms */
+/* 지금 대회 단계: 0 없음 · 1 접수 중 · 2 마감(주최자 준비) · 3 진행(연재 공개 중) · 4 결과 공개 */
+function cupStage(){ const c=CUP.cfg, P=CUP.pub&&c&&CUP.pub.id===c.id?CUP.pub:null; if(!c)return 0; if(P&&P.day>=7)return 4; if(P&&P.day)return 3; const dl=cupDl(c.deadline); return c.open!==false&&(!dl||Date.now()<dl)?1:2; }
+function cupEntsLoad(){ if(CUP.entsSt||!xfAvail()||cupStage()!==1)return; CUP.entsSt='loading'; cupApi('/entries').then(({r,j})=>{ CUP.ents=r.ok&&j&&Array.isArray(j.entries)?j:null; },()=>{}).finally(()=>{ CUP.entsSt='ok'; try{ render(); }catch(e){} }); }
+function cupStatusHtml(){ const c=CUP.cfg; if(!c)return ''; const k=cupStage(), P=CUP.pub&&CUP.pub.id===c.id?CUP.pub:null, dl=cupDl(c.deadline), left=dl-Date.now();
+  const lt=left>0?(left>864e5?`D-${Math.floor(left/864e5)}`:`${Math.floor(left/36e5)}시간 ${Math.floor(left%36e5/6e4)}분`):'';
+  const S=[[1,'접수 중'],[2,'마감'],[3,'진행'],[4,'결과 공개']], E=CUP.ents;
+  const what=k===1?`접수 중입니다${lt?` · 마감까지 <b>${lt}</b>`:''}${E?` · 지금 <b>${E.n}팀</b> 신청(정원 ${c.teams||10}팀${E.n<(c.teams||10)?', 모자란 자리는 AI 구단':', 넘으면 OVR 순'})`:''}.`
+    :k===2?'접수를 마감했습니다. 주최자가 시드를 정하고 대회를 돌린 뒤 하루씩 공개합니다.':k===3?`진행 중입니다 · <b>${P.day}/7일차</b>까지 공개(${esc(P.days[P.days.length-1].t)}). 아래 '진행' 칸에서 그날 결과와 경기를 봅니다.`:`대회가 끝났습니다${P&&P.champ?` · 우승 <b>${esc(P.champ)}</b>`:''}. 명예의 전당에서 우승 덱을 보고 붙어 볼 수 있습니다.`;
+  return `<div class="cup-st"><ol class="cup-steps">${S.map(([i,t])=>`<li class="${i<k?'done':i===k?'now':''}"><b>${i<k?'✓':i}</b><span>${t}</span></li>`).join('')}</ol><p class="small">${what}</p></div>`; }
+/* 내 신청 카드: 서버가 아는 신청(이름·OVR·시각) + 이 저장에 남긴 덱 사본(펼쳐 보기) + 시드 예상 */
+function cupMineHtml(){ const C=FrontOfficeCore, M=CUP.my, c=CUP.cfg; if(!M)return '<p class="cup-my">아직 신청하지 않았습니다.</p>'; const mine=G.cupMine&&c&&G.cupMine.cup===c.id?G.cupMine.e:null, E=CUP.ents;
+  const seed=E&&E.entries?(E.entries.find(x=>x.name===M.name&&String(x.year)===String(M.year))||{}).seed:null;
+  return `<div class="cup-mine"><p><span class="pill">접수됨</span> <b>${esc(M.name)} ${esc(String(M.year))}</b> · OVR <b class="num">${C.cupOvrTxt(M.ovr)}</b></p><p class="small muted">${cupDate(M.at)} 신청${seed?` · 지금 시드 <b>${seed}번</b>${seed>(c.teams||10)?'(정원 밖)':''}`:''}${cupStage()>1?' · 마감되어 바꿀 수 없습니다':' · 마감 전까지 다시 신청하면 덮어씁니다'}</p>
+    ${mine?`<button class="lnk small" data-a="cupMineT">${CUP.mineOpen?'내 덱 접기':'낸 덱 보기(타순·선발·불펜)'}</button>${CUP.mineOpen?cupDeckHtml(mine):''}`:''}</div>`; }
+/* 연봉 상한 칸: 넘으면 추천·선수마다 빼기(래더 덱 화면과 같은 규칙) */
+function cupCapHtml(e,cfg){ const C=FrontOfficeCore; if(!e||!cfg||!cfg.payCapX)return ''; const c=C.cupPayCheck(e,cfg.payCapX), D=CUP.drop||[], base=(()=>{ try{ return cupEntryNow({name:CUP.name||team(G.user).nick}); }catch(x){ return null; } })(), byId=new Map(((base&&base.P)||[]).map(p=>[p.id,p]));
+  const pr=(p,on)=>p?`<div class="ul-cr"><b>${esc(p.name)}</b><span class="small muted">${p.isP?'투수':CUP_POSK[p.pos]||p.pos} · OVR ${cupPOvr(p)}</span><em class="num">${money(p.sal||0)}</em><button class="btn small" data-a="cupCapDrop" data-v="${p.id}">${on?'되돌리기':'빼기'}</button></div>`:'';
+  const sg=c.ok?{ids:[]}:C.ulCapSuggestX(e,cfg.payCapX), top=e.P.slice().sort((a,b)=>(b.sal||0)-(a.sal||0)).slice(0,8);
+  return `<div class="ul-cap${c.ok?'':' ul-cap-over'}"><p class="small cup-cap${c.ok?'':' bad'}">연봉 상한 <b>${money(c.cap)}</b> · 신청할 덱 <b>${money(c.pay)}</b> · ${c.ok?`여유 ${money(c.room)}`:`<b>${money(-c.room)} 초과</b>`}</p>
+    ${c.ok?'':`<p class="small">상한을 넘어 신청할 수 없습니다. ${sg.ids.length?(sg.ok?'이 선수를 빼면 들어갑니다:':'이 선수를 빼도 모자랍니다(본게임에서 1군을 바꿔 주세요):'):''}</p><div class="ul-crs">${sg.ids.map(id=>pr(byId.get(id),false)).join('')}</div>${sg.ids.length?'<div class="btns"><button class="btn small primary" data-a="cupCapAuto">추천대로 빼기</button></div>':''}`}
+    ${D.length?`<p class="small">뺀 선수 ${D.length}명 <button class="lnk small" data-a="cupCapReset">모두 되돌리기</button></p><div class="ul-crs">${D.map(id=>pr(byId.get(id),true)).join('')}</div>`:''}
+    <details class="hof-d"><summary class="small">연봉 상위 8명 · 직접 빼기</summary><div class="ul-crs">${top.map(p=>pr(p,false)).join('')}</div></details><p class="small muted">뺀 선수는 대회 덱에서만 빠집니다(본게임 1군은 그대로). 빠진 타순은 벤치 야수, 선발은 불펜 투수가 채웁니다.</p></div>`; }
+function cupView(){ if(!G)return ''; cupProbe(); cupPubLoad(); cupEntsLoad(); const C=FrontOfficeCore, t=team(G.user), on=xfAvail(), cfg=CUP.cfg;
+  let now=null, nowErr=''; { const R=cupNowEntry(); now=R.e; nowErr=R.err; }
   const title=(G.cupTt||[]).map(x=>`<span class="cup-tt">${esc(x.t)}</span>`).join('');
   const st=!on?'<p class="small muted">서버 신청은 웹 사이트에서 할 수 있습니다. 내려받은 게임에서는 \'참가 파일 저장\'으로 받은 파일을 주최자에게 보내 주세요.</p>':!CUP.st?'<p class="small muted">대회 정보를 불러오는 중입니다.</p>':CUP.st==='off'?'<p class="small muted">지금은 대회 서버에 연결할 수 없습니다.</p>':!cfg?'<p class="small muted">지금 열린 대회가 없습니다.</p>':
-    `<p class="cup-h"><b>${esc(cfg.title)}</b>${cfg.deadline?` · 접수 마감 ${esc(cfg.deadline)}`:''}</p>${cfg.format==='league'?`<p class="small muted">이번 한 번 여는 대회입니다. ${cfg.teams||10}팀 리그(팀당 ${((cfg.teams||10)-1)*3}경기) 뒤 와일드카드·준플레이오프·플레이오프·한국시리즈로 우승을 가립니다. 모자란 자리는 리그 평균 AI 구단이 채웁니다.</p>`:''}${cfg.minSeasons||cfg.payCap||cfg.payCapX?`<p class="small muted">참가 자격: ${[cfg.minSeasons?`${cfg.minSeasons}시즌 이상 치른 저장`:'',cfg.payCap?`1군 연봉 합 ${money(cfg.payCap)} 이하`:'',cfg.payCapX?`1군 연봉 합이 리그 평균의 ${cfg.payCapX}배 이하`:''].filter(Boolean).join(' · ')}</p>`:''}
-    <p class="cup-my">${CUP.my?`내 신청: <b>${esc(CUP.my.name)} ${CUP.my.year}</b> · OVR ${C.cupOvrTxt(CUP.my.ovr)} · ${cupDate(CUP.my.at)} 신청`:'아직 신청하지 않았습니다.'}</p>`;
+    `<p class="cup-h"><b>${esc(cfg.title)}</b>${cfg.deadline?` · 접수 마감 ${esc(cfg.deadline)}`:''}</p>${cfg.format==='league'?`<p class="small muted">이번 한 번 여는 대회입니다. ${cfg.teams||10}팀 리그(팀당 ${((cfg.teams||10)-1)*3}경기) 뒤 와일드카드·준플레이오프·플레이오프·한국시리즈로 우승을 가립니다. 모자란 자리는 리그 평균 AI 구단이 채웁니다.</p>`:''}${cfg.minSeasons||cfg.payCap||cfg.payCapX?`<p class="small muted">참가 자격: ${[cfg.minSeasons?`${cfg.minSeasons}시즌 이상 치른 저장`:'',cfg.payCap?`1군 연봉 합 ${money(cfg.payCap)} 이하`:'',cfg.payCapX?`덱 연봉 합 ${money(Math.floor(C.CUP_CAP_WON*cfg.payCapX))} 이하(첫 시즌 샐러리캡${+cfg.payCapX!==1?` × ${cfg.payCapX}`:''})`:''].filter(Boolean).join(' · ')}</p>`:''}
+    ${cupStatusHtml()}${cupMineHtml()}`;
   const form=G.unemp?'<p class="small muted">구단을 맡고 있을 때 신청할 수 있습니다.</p>':`<label class="cup-in"><span>팀명(12자)</span><input id="cupName" maxlength="12" value="${esc(CUP.name||t.nick)}" autocomplete="off"></label>
-    ${now?`<p class="small">지금 1군 ${now.P.length}명 · OVR <b class="num">${C.cupOvrTxt(now.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:''}${now&&cfg&&cfg.payCapX?(()=>{ const c=C.cupPayCheck(now,cfg.payCapX); /* 대회 연봉 상한(사용자 11-17) */ return `<p class="small cup-cap${c.ok?'':' bad'}">연봉 상한 <b>${money(c.cap)}</b> · 지금 1군 <b>${money(c.pay)}</b> · ${c.ok?`여유 ${money(c.room)}`:`<b>${money(-c.room)} 초과: 본게임에서 1군을 바꿔야 신청할 수 있습니다</b>`}</p>`; })():''}
-    <div class="btns">${on&&cfg?`<button class="btn primary" data-a="cupApply"${CUP.busy?' disabled':''}>대회 참가 신청</button>`:''}<button class="btn" data-a="cupFileNow">참가 파일 저장</button>${CUP.my?`<button class="btn" data-a="cupWithdraw"${CUP.busy?' disabled':''}>신청 취소</button>`:''}</div>
+    ${now?`<p class="small">${(CUP.drop||[]).length?'신청할 덱':'지금 1군'} ${now.P.length}명 · OVR <b class="num">${C.cupOvrTxt(now.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:nowErr?`<div class="note bad">${esc(nowErr)}</div>`:''}${cupCapHtml(now,cfg)}
+    <div class="btns">${on&&cfg&&cupStage()===1?`<button class="btn primary" data-a="cupApply"${CUP.busy||(now&&cfg.payCapX&&!C.cupPayCheck(now,cfg.payCapX).ok)?' disabled':''}>${CUP.my?'다시 신청(덮어쓰기)':'대회 참가 신청'}</button>`:''}<button class="btn" data-a="cupFileNow">참가 파일 저장</button>${CUP.my&&cupStage()===1?`<button class="btn" data-a="cupWithdraw"${CUP.busy?' disabled':''}>신청 취소</button>`:''}</div>
     <p class="small muted">신청하면 그 순간의 타순·선발·불펜·부상 상태가 그대로 들어갑니다(투수 피로만 0). 다시 신청하면 덮어쓰고, 하루에 한 번 할 수 있습니다. 신청이 안 되면 '참가 파일 저장'으로 받은 파일을 주최자에게 보내 주세요.</p>`;
   const apply=`<section class="card"><h2 class="sec">프런트컵 참가</h2>${title?`<p class="cup-tts">${title}</p>`:''}${st}${form}${CUP.msg?`<div class="note${CUP.bad?' bad':''}">${esc(CUP.msg)}</div>`:''}</section>`;
   const AL=cupAlbum().slice().reverse();
@@ -86,7 +118,7 @@ function cupView(){ if(!G)return ''; cupProbe(); const C=FrontOfficeCore, t=team
   const DK=ulDecks(); const got=DK.length?`<section class="card"><h2 class="sec">가져온 덱</h2><p class="small muted">명예의 전당에서 가져온 우승 덱입니다. 유저 래더에서 도전 덱으로 만납니다. 내 덱으로는 등록할 수 없습니다.</p>
     ${DK.map(x=>`<details class="hof-d"><summary class="small"><b>${esc(x.name)} ${esc(x.year)}</b> · ${esc(x.src)} · OVR ${esc(C.cupOvrTxt(x.ovr))}</summary>${cupDeckHtml(x.e)}<div class="btns"><button class="btn small" data-a="cupDeckDrop" data-v="${esc(x.h)}">지우기</button></div></details>`).join('')}</section>`:'';
   const V=CUP.view; let vw='';
-  if(V){ const X=V.idx, g=X.g[V.gi]||[], rec=V.recs[V.gi]; const body=rec==='loading'||!rec?'<p class="small muted">기록을 받는 중입니다.</p>':rec==='bad'?'<p class="small muted">이 차전 기록을 받지 못했습니다. 잠시 뒤 다시 골라 주세요.</p>':`<pre class="cup-pre">${esc(rec[V.tab]||'')}</pre>`;
+  if(V){ const X=V.idx, g=X.g[V.gi]||[], rec=V.recs[V.gi]; const body=rec==='loading'||!rec?'<p class="small muted">기록을 받는 중입니다.</p>':rec==='bad'?'<p class="small muted">이 차전 기록을 받지 못했습니다. 잠시 뒤 다시 골라 주세요.</p>':V.tab==='log'?`<pre class="cup-pre">${esc(rec.log||'')}</pre>`:ulTabTbl(rec[V.tab]);
     vw=`<div class="cup-v"><p class="small">${X.title?`<span class="muted">${esc(X.title)}</span> `:''}<b>${esc(X.a)}</b> vs <b>${esc(X.b)}</b></p>
     <div class="chips">${X.g.map((x,i)=>`<button data-a="cupVG" data-v="${i}" class="${i===V.gi?'on':''}">${X.g.length>1?(i+1)+'차전 ':''}${x[0]}:${x[1]}${x[3]?' 끝내기':x[2]>9?` ${x[2]}회`:''}</button>`).join('')}</div>
     <div class="chips">${[['log','중계'],['bat','타자'],['pit','투수'],['line','점수']].map(([k,l])=>`<button data-a="cupVT" data-v="${k}" class="${V.tab===k?'on':''}">${l}</button>`).join('')}<button data-a="cupVClose">닫기</button></div>
@@ -94,7 +126,7 @@ function cupView(){ if(!G)return ''; cupProbe(); const C=FrontOfficeCore, t=team
   const watch=`<section class="card"><h2 class="sec">대회 경기 보기</h2><p class="small muted">주최자가 알린 경기 번호를 넣으면 그 경기의 문자 중계·박스 스코어·줄 점수를 보여 줍니다.</p>
     <div class="row"><input id="cupGame" placeholder="경기 번호(예: cup1-KS)" autocomplete="off" style="flex:1;min-width:0"><button class="btn" data-a="cupWatch">보기</button></div>${vw}</section>`;
   const hall=`<section class="card"><h2 class="sec">프런트컵 명예의 전당</h2>${cupHofBody()}</section>`;
-  return `<div class="setx ws-own cupx"><div class="setc">${apply}${hall}</div><div class="setc">${alb}${got}</div><div class="setc">${cupPubCard()}${watch}</div></div>`; }
+  return `<div class="setx ws-own cupx"><div class="setc">${apply}${hall}</div><div class="setc">${alb}${got}</div><div class="setc">${ulExHtml('cup')}${cupPubCard()}${watch}</div></div>`; }
 
 /* ===== 프런트컵 명예의 전당: 처음 화면(tsGo cuphof)·설정 › 정보·구단 › 프런트컵. 게임을 열지 않아도(G 없이) 그린다 ===== */
 const CUP_HOF_KEY='fo-cup-hof';
@@ -144,7 +176,7 @@ Object.assign(A,{
 function cupHofTeam(lab,x,c){ if(!x)return ''; const C=FrontOfficeCore, win=lab==='우승';
   const got=win&&x.deck&&ulDecks().some(d=>d.h===(x.deck.h||C.cupEntryHash(x.deck)));
   const deck=win&&x.deck&&Array.isArray(x.deck.P)?`<details class="hof-d"><summary class="small">우승 덱 보기(타순·선발·불펜)</summary>${cupDeckHtml(x.deck)}
-      <div class="btns">${got?'<span class="small muted">가져온 덱에 있습니다.</span>':`<button class="btn small" data-a="cupDeckGet" data-v="${esc(c.id)}">이 덱 가져오기</button>`}</div></details>`:
+      <div class="btns">${typeof G!=='undefined'&&G&&!UI.title?`<button class="btn small primary" data-a="ulEx" data-k="hof" data-v="${esc(c.id)}">이 덱과 붙어 보기</button>`:''}${got?'<span class="small muted">가져온 덱에 있습니다.</span>':`<button class="btn small" data-a="cupDeckGet" data-v="${esc(c.id)}">이 덱 가져오기</button>`}</div></details>`:
     Array.isArray(x.roster)&&x.roster.length?`<details class="hof-d"><summary class="small">로스터</summary><div class="hof-ros small">${x.roster.map(r=>`<span>${esc(r.pos)} ${esc(r.n)} <b class="num">${esc(r.o)}</b></span>`).join('')}</div></details>`:'';
   return `<div class="hof-team${win?' hof-win':''}"><p>${win?'<span class="hof-badge">우승</span> <span class="hof-k">우승 단장</span>':`<span class="hof-k">${lab}${x.gm?' 단장':''}</span>`} ${x.gm?`<b>${esc(x.gm)}</b> <span class="small">${esc(x.name)}${x.ai?'':' '+esc(x.year)}</span>`:`<b>${esc(x.name)}${x.ai?'':' '+esc(x.year)}</b>`}${x.ai?' <span class="pill">AI</span>':''} <span class="small muted">OVR ${esc(C.cupOvrTxt(x.ovr))}</span></p>${deck}</div>`; }
 function cupHofCup(c){

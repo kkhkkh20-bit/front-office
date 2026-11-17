@@ -80,12 +80,17 @@ function ulFinish(){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L||L.n
   const no=L.teams.filter(t=>t.kind==='ai').map(t=>t.key), mvp=C.cupMvp(Object.values(L.bat),Object.values(L.pit),no);
   const myMvp=C.cupMvp(Object.values(L.bat).filter(x=>x.key.startsWith(UL_ME+':')),Object.values(L.pit).filter(x=>x.key.startsWith(UL_ME+':')),[]);
   const pts=C.ulPts(L.tier,me.rank,L.teams.length), se=C.ulSeason(Date.now());
+  const ms0=C.ulMissions(U.seas&&U.seas.id===se.id?U.seas:null,U.hist,se.id,L.tier).filter(m=>m.done).length; /* 래더 v3: 시즌 목표가 이번 리그로 몇 개 찼는지(결과 화면) */
   if(U.seas&&U.seas.id!==se.id){ (U.seasons=U.seasons||[]).push(U.seas); if(U.seasons.length>26)U.seasons.shift(); }
   U.seas=C.ulSeasonAdd2(U.seas,se.id,se.label,{tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,w:me.w,l:me.l,t:me.t,rs:me.rs,ra:me.ra});
   const res={id:L.id,tier:L.tier,to:mv.tier,move:mv.move,rank:me.rank,w:me.w,l:me.l,t:me.t,d:L.deck,name:L.teams[0].name,at:G.day,y:G.year,mvp,myMvp,pts,season:se.id,rec:ulRecords(L),keys:L.keys||[],
     stand:st.map(x=>({rank:x.rank,name:L.teams[x.key].name,kind:L.teams[x.key].kind,w:x.w,l:x.l,t:x.t,pct:x.pct,gb:x.gb,diff:x.diff,ovr:L.teams[x.key].e.ovr})),edits:L.edits.length,src:L.src};
   res.teams=L.teams.map(t=>({name:t.name,kind:t.kind,nick:t.nick||'',ovr:t.e.ovr})); res.ser=L.series.map(x=>[x.r,x.a,x.b,x.g]); res.rs=me.rs; res.ra=me.ra; /* 끝난 리그 일정·결과(사용자 11-17) */
-  ulAccum(U,L,st,se); U.hist.push({tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,d:L.deck,name:res.name,at:G.day,y:G.year,s:se.id,w:me.w,l:me.l,t:me.t,rd:me.diff,pts}); if(U.hist.length>200)U.hist.splice(0,U.hist.length-200);
+  const now=Date.now();
+  ulAccum(U,L,st,se); U.hist.push({tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,d:L.deck,name:res.name,at:G.day,y:G.year,s:se.id,w:me.w,l:me.l,t:me.t,rd:me.diff,pts,ts:now}); if(U.hist.length>200)U.hist.splice(0,U.hist.length-200);
+  /* 래더 v3(사용자 11-17 "컴프매처럼 좀 재미있게"): 매일·주간 목표 도장, 꾸미기(테두리·칭호)가 새로 생겼는지 결과에 적어 둔다 */
+  const c0=C.ulCosmetic(U.gl), tk=C.ulGoalsTick(U.gl,U.hist,now,L.tier); U.gl=tk.gl; const c1=C.ulCosmetic(U.gl);
+  res.gl={day:tk.day,week:tk.week,frame:c1.frame>c0.frame?c1.frameName:'',titles:c1.titles.filter((x,i)=>x.on&&!c0.titles[i].on).map(x=>x.n),ms0,ms1:C.ulMissions(U.seas,U.hist,se.id,L.tier).filter(m=>m.done).length};
   U.tier=mv.tier; U.best=Math.max(U.best|0,mv.tier,L.tier); U.last=res; U.league=null; return res; }
 
 /* 래더 v2 누적(사용자 11-17 "디테일한 데이터 뽑아보게해"): 우리 선수 리그 기록(시즌·단계 칸) + 상대 덱별 전적·성향. 한도는 공용 규칙(UL_PS_MAX·UL_OPP_MAX) */
@@ -98,3 +103,9 @@ function ulAccum(U,L,st,se){ const C=FrontOfficeCore; U.ps=U.ps||{}; U.opp=U.opp
   L.teams.forEach((t,i)=>{ if(!i)return; const k=t.pid?'p:'+t.pid:t.kind+':'+t.name, r=rd.get(i)||{w:0,l:0,t:0,rs:0,ra:0}, o=U.opp[k]||(U.opp[k]={k,name:t.name,kind:t.kind,n:0,w:0,l:0,t:0,rs:0,ra:0});
     Object.assign(o,{name:t.name,nick:t.nick||o.nick||'',pid:t.pid||null,kind:t.kind,ovr:t.e.ovr,tier:L.tier,at:now,rank:(st.find(x=>x.key===i)||{}).rank,prof:ulProfile(t.e),mine:mp,m:C.ulDeckMeta(t.e)}); o.n++; for(const f of ['w','l','t','rs','ra'])o[f]+=r[f]; });
   const ks=Object.keys(U.opp); if(ks.length>C.UL_OPP_MAX)ks.sort((a,b)=>(U.opp[a].at||0)-(U.opp[b].at||0)).slice(0,ks.length-C.UL_OPP_MAX).forEach(k=>delete U.opp[k]); }
+/* 붙어 보기(래더 v3, 사용자 11-17 "명예의 전당 … 우승 덱"): 내 덱과 고른 덱(대회 우승 덱·도전 덱)의 3경기 친선전. 단계·기록·시즌에 남지 않는다(화면에만).
+   경기는 리그와 같은 cupMatch(가벼운 세계를 잠깐 바꿔 끼움)라 커리어 G·본게임 난수를 건드리지 않는다 */
+function ulExhibit(me,op){ const C=FrontOfficeCore; if(!me||!op||!Array.isArray(me.P)||!Array.isArray(op.P))return {ok:false,msg:'덱이 없습니다.'};
+  const a=C.ulSlim(me), b=C.ulSlim(op); a.h=C.cupEntryHash(a); b.h=C.cupEntryHash(b); if(a.h===b.h)return {ok:false,msg:'같은 덱끼리는 붙을 수 없습니다.'};
+  const r=cupMatch(a,b,{cup:'ex',round:'EX',match:String(Date.now()%1e7),best:3,all:1,tie:1}); if(!r.ok)return {ok:false,msg:(r.errors&&r.errors[0]&&r.errors[0].msg)||'경기를 돌리지 못했습니다.'};
+  return {ok:true,a:a.name,b:b.name,oa:a.ovr||cupOvr(a),ob:b.ovr||cupOvr(b),wa:r.wa,wb:r.wb,t:r.t,keys:r.games.map((g,i)=>({r:i+1,i,opp:b.name,sa:g.sa,sb:g.sb,inn:g.inn||9,walk:g.walk?1:0,tag:`${i+1}차전 ${ulGameTag(g.sa,g.sb,g)}`,mvp:g.mvp?`${g.mvp.name} ${g.mvp.txt}`:'',log:g.log,bat:g.bat,pit:g.pit,line:g.line}))}; }
