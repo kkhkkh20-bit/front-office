@@ -6,28 +6,33 @@ function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],dec
 const UL_ME='me';
 /* 덱 등록(이 저장의 내 덱). src: 'now'(지금 1군) | 'alb:번호'(앨범 시즌). 가져온 남의 덱(ro)은 등록할 수 없다 */
 function ulSetDeck(e,src){ const C=FrontOfficeCore; if(!e||e.ro)return '가져온 덱은 내 덱으로 등록할 수 없습니다.'; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x);
-  const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const U=uld(); U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:String(src||'now'),at:G.day,y:G.year,e:x}; return ''; }
-/* 단계 기준 AI 덱: 리그 평균 AI 구단을 만들고 능력치를 고르게 올리거나 내려 기준 OVR(총)에 맞춘다 */
+  const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const U=uld(); const cg=C.ulCapGate(x,U.tier|0,Date.now()); if(!cg.ok||cg.grace)return cg.known?cg.msg+' 덱에서 선수를 빼 상한에 맞춰 주세요.':'연봉 기록이 없는 로스터입니다(게임을 새로 고친 뒤 다시 골라 주세요).'; /* 연봉 상한(사용자 11-17 "공평하게"): 새로 등록하는 덱은 유예 없이 지금 단계 상한 안이어야 한다 */ U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:String(src||'now'),at:G.day,y:G.year,e:x}; return ''; }
+/* 단계 기준 AI 덱: 리그 평균 AI 구단을 만들고 능력치를 올리거나 내려 기준 OVR(총)에 맞춘다.
+   타자·투수를 따로 맞춘다(사용자 11-17 "고 오버롤", 포지션 균형): 타자 OVR을 기준−1로 먼저 맞추고, 투수로 총 OVR을 맞춘다. 실제 등록 덱(투수 ≈ 총+1.5, 타자 ≈ 총−1)과 비슷한 모양.
+   예전처럼 모두 같이 올리면 레전드 AI가 투수만 98인 덱이 됐다(선발 98·타자 74). 능력치는 20~85 안 */
 let UL_AI_BASE=null;
-function ulScale(e,target){ const base=JSON.parse(JSON.stringify(e)); const at=d=>{ const x=JSON.parse(JSON.stringify(base)); for(const p of x.P)for(const k in p.r)if(k!=='vit')p.r[k]=Math.round(clamp(p.r[k]+d,20,85)*10)/10; x.ovr=cupOvr(x); return x; };
-  let lo=-25, hi=25, best=at(0); for(let i=0;i<14;i++){ const mid=(lo+hi)/2, x=at(mid); if(Math.abs(x.ovr.t-target)<Math.abs(best.ovr.t-target))best=x; if(x.ovr.t<target)lo=mid; else hi=mid; if(x.ovr.t===target){ best=x; break; } }
+function ulScale(e,target){ const base=JSON.parse(JSON.stringify(e)); const at=(db,dp)=>{ const x=JSON.parse(JSON.stringify(base)); for(const p of x.P){ const d=p.isP?dp:db; for(const k in p.r)if(k!=='vit')p.r[k]=Math.round(clamp(p.r[k]+d,20,85)*10)/10; } x.ovr=cupOvr(x); return x; };
+  const fit=(f,key,goal)=>{ let lo=-25, hi=25, bd=0, bv=null; for(let i=0;i<16;i++){ const mid=(lo+hi)/2, v=f(mid).ovr[key]; if(bv==null||Math.abs(v-goal)<Math.abs(bv-goal)){ bv=v; bd=mid; } if(v===goal){ bd=mid; break; } if(v<goal)lo=mid; else hi=mid; } return bd; };
+  const db=fit(d=>at(d,0),'b',target-1), dp=fit(d=>at(db,d),'t',target), best=at(db,dp);
   best.h=FrontOfficeCore.cupEntryHash(best); return best; }
 function ulAiDecks(n,target,tag){ if(n<=0)return []; if(!UL_AI_BASE||UL_AI_BASE.length<n)UL_AI_BASE=cupAiEntries(Math.max(9,n),'ul');
-  const nick=['하운즈','파이터스','스톰','로열스','마린스','레이븐스','타이탄스','팬서스','블레이즈','코메츠'];
-  return UL_AI_BASE.slice(0,n).map((e,i)=>{ const x=ulScale(e,target); x.name=FrontOfficeCore.cupName(`AI ${nick[i%nick.length]}`); x.ai=1; x.h=FrontOfficeCore.cupEntryHash(x); return x; }); }
+  const nick=['하운즈','파이터스','스톰','로열스','마린스','레이븐스','타이탄스','팬서스','블레이즈','코메츠'], SP=FrontOfficeCore.UL_AI_SPREAD;
+  return UL_AI_BASE.slice(0,n).map((e,i)=>{ const x=ulScale(e,target+(n>=3?SP[i%SP.length]:0)); /* 한 리그 AI끼리 ±2 벌림(사용자 11-17) */ x.name=FrontOfficeCore.cupName(`AI ${nick[i%nick.length]}`); x.ai=1; x.h=FrontOfficeCore.cupEntryHash(x); return x; }); }
 /* 리그 만들기: 서버에서 받은 덱(fetched) → 가져온 우승 덱(cup, 최대 2) → 모자라면 단계 기준 AI. 상대는 사본으로 잠근다.
    fetched는 엔트리 그대로 또는 서버 v1 모양 {e, pid, nick}(사용자 11-17: 상대 플레이어 id·닉네임을 리그 팀에 붙여 두고 리그가 끝나면 맞대결로 보낸다) */
 function ulMakeLeague(o){ o=o||{}; const C=FrontOfficeCore, U=uld(); if(!U||!U.deck)return {ok:false,msg:'먼저 내 덱을 등록해 주세요.'};
+  const now=o.now??Date.now(), cg=C.ulCapGate(U.deck.e,U.tier|0,now); if(!cg.ok)return {ok:false,msg:cg.msg+" '덱'에서 다시 등록해 주세요.",cap:1}; /* 연봉 상한(사용자 11-17): 승격으로 상한이 바뀌었거나 유예가 끝난 예전 덱 */
   const tier=U.tier|0, mine=U.deck.e, seen=new Set([mine.h]), T=[{key:UL_ME,kind:'me',name:mine.name,e:JSON.parse(JSON.stringify(mine))}];
-  const add=(e,kind,m)=>{ if(T.length>=C.UL_TEAMS||!e||!Array.isArray(e.P))return; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); if(seen.has(x.h)||!C.cupValidate(x,{}).ok)return; x.ovr=x.ovr||cupOvr(x); seen.add(x.h); const t={key:'t'+T.length,kind,name:x.name,e:x}; if(m&&m.pid){ t.pid=String(m.pid); t.nick=String(m.nick||''); } T.push(t); };
+  const add=(e,kind,m)=>{ if(T.length>=C.UL_TEAMS||!e||!Array.isArray(e.P))return; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); if(seen.has(x.h)||!C.cupValidate(x,{}).ok)return; if(kind==='user'&&!C.ulCapGate(x,tier,now).ok)return; /* 상한을 넘는 유저 덱은 상대로 쓰지 않는다(서버도 거른다) */ x.ovr=x.ovr||cupOvr(x); seen.add(x.h); const t={key:'t'+T.length,kind,name:x.name,e:x}; if(m&&m.pid){ t.pid=String(m.pid); t.nick=String(m.nick||''); } T.push(t); };
   for(const d of o.fetched||[]){ if(d&&d.e&&!Array.isArray(d.P))add(d.e,'user',d); else add(d,'user'); } let nc=0; for(const e of o.cup||[]){ if(nc>=2)break; const k=T.length; add(e,'cup'); if(T.length>k)nc++; }
-  const need=C.UL_TEAMS-T.length, avg=o.avg&&o.count>=3?Math.round(o.avg):C.UL_TIER_OVR[tier]; for(const e of ulAiDecks(need,avg))add(e,'ai');
+  const need=C.UL_TEAMS-T.length, avg=C.ulAiTarget(tier,o.avg,o.count); for(const e of ulAiDecks(need,avg))add(e,'ai');
   const sched=C.cupLeagueSched(T.length,3);
   U.league={v:1,id:(U.lid=(U.lid||0)+1),tier,deck:U.deck.id,at:G.day,y:G.year,teams:T,sched,next:0,series:[],cnt:T.map(()=>0),bat:{},pit:{},edits:[],src:{user:T.filter(t=>t.kind==='user').length,cup:T.filter(t=>t.kind==='cup').length,ai:T.filter(t=>t.kind==='ai').length},avg};
   return {ok:true,league:U.league}; }
 /* 리그 중 내 덱 고치기: 다음 연전부터 */
 function ulEditDeck(e){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L)return '진행 중인 리그가 없습니다.'; if(e&&e.ro)return '가져온 덱은 쓸 수 없습니다.';
   const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x); const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg;
+  if(C.cupPay(x).pay!==C.cupPay(L.teams[0].e).pay){ const cg=C.ulCapGate(x,L.tier,Date.now()); if(!cg.ok)return cg.msg; } /* 리그 중 통째로 바꾸면(연봉이 달라지면) 그 단계 상한을 다시 본다(사용자 11-17) */
   L.teams[0].e=x; L.teams[0].name=x.name; L.edits.push({at:L.next,h:x.h}); if(U.deck){ U.deck.e=JSON.parse(JSON.stringify(x)); } return ''; }
 /* 연전 하나 */
 function ulRunSeries(L){ const s=L.sched[L.next]; if(!s)return null; const A=L.teams[s.a], B=L.teams[s.b];
