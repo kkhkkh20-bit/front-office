@@ -47,7 +47,7 @@ const CL0=57, CLW=.14; /* 주전 포수 평균 리드(리그 평균 성적을 �
    11-15 수비 감사(세계 16개): 예전 무게 .28에서 포수 리드만으로 팀 실점 표준편차 12점(포수 수비 1점당 리드로 약 1.5점 + 도루 저지 0.5점, 유격수 수비 1점은 약 1.35점). ABS(자동 볼 판정)로 프레이밍이 없는 리그라 절반으로 */
 function chemOf(p,cid){ if(!p||cid==null||!p.chem)return 0; const n=p.chem[cid]||0; if(!n)return 0; return (Math.min(1,n/40)-.5)*1.2; } /* 배터리 호흡: 같이 몇 경기 안 맞췄으면 -0.6 쪽, 40경기 넘게 맞추면 +0.6(처음 만나는 짝은 0). 한 시즌 평균은 0 안팎 */
 let CLUTCH=0, SIMDAY=null; /* 지금 타석의 승부처 정도(0~1.1), 지금 시뮬 중인 경기 날짜 */
-function sideTraits(fs){ let c=null, of=[], inf=[]; for(const q of fs.order){ const k=fs.posOf[q.id]; if(k==='C')c=q; else if(k==='LF'||k==='CF'||k==='RF')of.push(defBase(q,k)+(k==='RF'?3:0)+(DEF_SPLIT?dsubRel(q,k,'arm'):trt(q,'arm'))); else if(k==='SS'||k==='2B')inf.push(dpV(q,k)); }
+function sideTraits(fs){ let c=null, of=[], inf=[]; for(const q of fs.order){ const k=fs.posOf[q.id]; if(k==='C')c=q; else if(k==='LF'||k==='CF'||k==='RF')of.push(defBase(q,k)+(k==='RF'?3:0)+(DEF_SPLIT?dsubRel(q,k,'arm')+DSUB_OFARM:trt(q,'arm'))); else if(k==='SS'||k==='2B')inf.push(dpV(q,k)); }
   fs.cArm=catArm(c); fs.cLead=catLead(c); fs.cId=c?c.id:null; fs.ofArm=of.length?sum(of)/of.length:OF0; fs.ifD=inf.length?sum(inf)/inf.length:IF0; }
 function stealTry(fs){ return clamp(1-((fs.cArm??CA0)-CA0)*.012,.6,1.4); }
 function stealAdj(r,fs){ return trt(r,'sb')*.004-((fs.cArm??CA0)-CA0)*.006-(holdOf(fs.cur)-50)*.003; }
