@@ -10,7 +10,7 @@ const R=await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false
  const bad=[],cnt={pa:0,faces:0,score:0,call:0,align:0};const nm=id=>mdPlayer(G.games[UI.cast.g],id).name;
  const KW={K:/삼진/,BB:/볼넷|밀어내기/,HR:/홈런/,DP:/병살/,HBP:/몸에 맞|사구/,SAC:/희생번트/};
  for(let gi=0;gi<G.games.length;gi++){UI.cast.g=gi;const g=G.games[gi];const ids=new Set();for(const sd of ['a','h']){g.box[sd].bat.forEach(q=>ids.add(q.id));g.box[sd].pit.forEach(q=>ids.add(q.id));}
-  const others=Object.values(G.players).filter(q=>!ids.has(q.id)&&q.name&&q.name.length>=3).map(q=>q.name);
+  const inGame=new Set([...ids].map(id=>G.players[id]?.name).filter(Boolean)), others=Object.values(G.players).filter(q=>!ids.has(q.id)&&q.name&&q.name.length>=3&&!inGame.has(q.name)).map(q=>q.name); /* 이 경기 선수와 동명이인은 빼고 본다(무작위 리그에서 거짓 실패) */
   for(let k=0;k<g.pbp.length;k++){const x=g.pbp[k];if(typeof x[1]!=='number')continue;cnt.pa++;castJump(k,false);
    const b=cBefore(g,k),pid=cPit(g,k);
    // faces
