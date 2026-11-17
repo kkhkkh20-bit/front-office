@@ -19,11 +19,11 @@ function amWhere(meta){ return meta.t?amSpName(meta.t):meta.lvl==='col'?'U-리�
 const amWho=(u,x)=>`${u.sch} ${u.gr}학년 ${u.isP?'투수':POSK[x.pos]||'야수'} ${x.n||x.name}`;
 /* amRecord 끝에서: 공개 측정 구속·대회별 기록·대회 최우수 선수 집계·홈런 소식 */
 function amPubRec(S,g,d,meta){ const y=S.y, fol=S.live?amFolU():new Set(), key=meta.g?(meta.lvl==='col'?'ul':(meta.h2?'w2':'w1')):meta.t;
-  for(const b of g.M.values()){ const u=b.u; if(u.kind!=='p'&&u.kind!=='e')continue; const x=u.src; if(!x)continue;
-    if(u.isP&&b.bf>=4){ const top=amVeloTop(x); if(top!=null){ const r=Math.round(top-Math.abs(hn('vg'+d,u.id))*2.4); const old=x.vm&&x.vm[0]===y?x.vm[1]:0; if(r>old){ x.vm=[y,r]; if(S.live)amVeloNews(S,u,x,r,old,meta); } } }
-    if(key&&(u.kind==='p'||fol.has(u.id)))amSplitAdd(x,y,key,b,u.isP);
+  for(const b of g.M.values()){ const u=b.u; if(u.kind!=='p'&&u.kind!=='e'&&u.kind!=='f')continue; const x=u.src; if(!x)continue; const dep=u.kind==='f'; /* 부원도 대회 최우수·홈런 선두 후보(사용자 11-17) */
+    if(u.isP&&b.bf>=4&&!dep){ const top=amVeloTop(x); if(top!=null){ const r=Math.round(top-Math.abs(hn('vg'+d,u.id))*2.4); const old=x.vm&&x.vm[0]===y?x.vm[1]:0; if(r>old){ x.vm=[y,r]; if(S.live)amVeloNews(S,u,x,r,old,meta); } } }
+    if(key&&!dep&&(u.kind==='p'||fol.has(u.id)))amSplitAdd(x,y,key,b,u.isP);
     if(meta.t&&S.live){ const T=(S.tp=S.tp||{})[meta.t]=(S.tp[meta.t]||{}); const s=u.isP?b.outs/3+b.so*.3-b.er+(b.w?2:0):b.h+b.hr*2+(b.d+b.tr)*.5+b.rbi*.6+b.bb*.3; const o=T[u.id]||(T[u.id]=[0,x.n||x.name,u.sch,u.gr,u.isP?1:0,u.kind==='p'?u.id:null]); o[0]=Math.round((o[0]+s)*10)/10; }
-    if(!u.isP&&b.hr>0&&S.live&&meta.lvl==='hs'){ const tot=u.kind==='e'?((x.y.find(r=>r[0]===y)||[])[2+AM_BK.indexOf('hr')]||0):((x.amY||[]).find(r=>r.y===y)||{}).hr||0;
+    if(!u.isP&&b.hr>0&&S.live&&meta.lvl==='hs'){ const tot=dep?((amFRow(u.sch,x.ey,false,x.i,y)||{}).hr||0):u.kind==='e'?((x.y.find(r=>r[0]===y)||[])[2+AM_BK.indexOf('hr')]||0):((x.amY||[]).find(r=>r.y===y)||{}).hr||0;
       if(tot>=4&&tot>(S.hrTop||3)){ S.hrTop=tot; if(amCap(S,'hr',3))wire('아마',`${amWho(u,x)}, 시즌 ${tot}호 홈런 · 올해 고교 최다`,{ref:u.kind==='p'?u.id:null}); } } } }
 /* 구속 소식: 1·2학년 145km, 졸업 학년 150km를 넘고, 그해 같은 학년 무리에서 가장 빠른 공일 때 */
 function amVeloNews(S,u,x,r,old,meta){ const sen=u.gr>=(meta.lvl==='col'?4:3); const thr=sen?AM_V_TOP:AM_V_LOW; if(r<thr||old>=r)return; const k='vt'+(sen?'s':'u')+meta.lvl; const best=(S.vTop=S.vTop||{})[k]||0; if(r<=best)return; S.vTop[k]=r;
