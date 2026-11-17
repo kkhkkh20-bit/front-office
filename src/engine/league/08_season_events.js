@@ -253,6 +253,20 @@ function tsArchive(y){ const T=G.teams.map(t=>({b:Object.assign({},ZB),p:Object.
    회사 상태는 게임 내부의 가상 지표다. 현금 부족을 곧바로 부도로 처리하지 않는다.
    판정은 결산 뒤 연 1회, 협상은 날짜를 두고 진행한다. 조회 함수는 상태/RNG를 바꾸지 않는다. */
 const OWN_STAGE={stable:'안정 운영',succession:'구단주 승계 준비',acquisition:'구단 인수 협상',watch:'모기업 지원 재검토',restructure:'구단 매각 추진',negotiation:'인수 후보 협상',league:'리그 임시 지원 · 매각 계속'};
+/* 독립구단(투자사 운영, 모기업 지원 0%)은 모기업이 없다: 재정 위기 단계 이름·설명을 투자사 기준으로(검수 11-17 #176) */
+const OWN_STAGE_INV={watch:'투자사 운영 재검토',restructure:'투자사 지분 매각 추진'};
+const OWN_TXT_INV={watch:'투자사가 투자 회수와 구단 운영 방안을 재검토합니다. 계약을 유지하며 보유 지분 매각 가능성을 검토합니다.',restructure:'투자사가 보유 지분 매각(구단 매각)을 공식 추진합니다. 인수 후보 접촉과 재무 실사를 시작하며 기존 계약은 유지합니다.'};
+const OWN_TXT_CORP={watch:'모기업이 사업 구조와 구단 지원을 재검토합니다. 계약을 유지하며 매각 가능성을 검토합니다.',restructure:'모기업이 구단 매각을 공식 추진합니다. 인수 후보 접촉과 재무 실사를 시작하며 기존 계약은 유지합니다.'};
+const ownInv=t=>!!(t&&t.indie);
+function ownStageL(key,t){ return (ownInv(t)&&OWN_STAGE_INV[key])||OWN_STAGE[key]; }
+function ownCrisisTxt(stage,t){ return (ownInv(t)?OWN_TXT_INV:OWN_TXT_CORP)[stage]; }
+/* 옛 저장 수리(불러오기, 여러 번 해도 같다): 독립구단에 남은 모기업 매각 문구를 투자사 문구로 */
+function ownershipIndieFix(){ const O=G.ownership; if(!O||!O.clubs)return 0; let n=0; const swap=(x,k,a,b)=>{ if(x&&typeof x[k]==='string'&&x[k].includes(a)){ x[k]=x[k].split(a).join(b); n++; } };
+  for(const t of G.teams||[]){ if(!ownInv(t))continue; const s=O.clubs[t.id]; if(!s)continue; const q=s.pending;
+    if(q&&q.kind==='crisis'&&OWN_TXT_INV[q.stage]&&q.detail===OWN_TXT_CORP[q.stage]){ q.detail=OWN_TXT_INV[q.stage]; n++; }
+    for(const x of s.history||[]){ for(const k of ['watch','restructure']){ swap(x,'text',OWN_TXT_CORP[k],OWN_TXT_INV[k]); if(x.kind===k||x.kind==='crisis'&&k==='watch')swap(x,'title',OWN_STAGE[k],OWN_STAGE_INV[k]); } swap(x,'title','모기업 지원 재개 · 매각 추진 종료','투자사 추가 출자 · 매각 추진 종료'); }
+    for(const x of [...((G.clubHist||{})[t.id]||[]),...(G.chron||[]).filter(e=>e.tid===t.id)]){ if(!x||x.k!=='owner')continue; for(const k of ['watch','restructure']){ swap(x,'t',OWN_TXT_CORP[k],OWN_TXT_INV[k]); swap(x,'t',OWN_STAGE[k]+' · ',OWN_STAGE_INV[k]+' · '); } swap(x,'t','모기업 지원 재개 · 매각 추진 종료','투자사 추가 출자 · 매각 추진 종료'); } }
+  return n; }
 function ownershipParent(t,g=0){
   const A=['푸른길','은하마루','솔여울','해솔빛','온새미','별누리','늘가람','다온결','노을샘','아침숲'];
   const B=['산업','유통','기술','물류','금융','식품','통신','생활','에너지','건설'];
@@ -266,7 +280,7 @@ function ownershipView(tid){
   const s=G.ownership&&G.ownership.clubs[tid],p=s?s.parent:ownershipParent(t),B=(G.boss&&G.boss[tid])||ownershipPreviewBoss(t),q=s&&s.pending;
   const fy=sponSeason(),future=s&&s.support.filter(x=>x.fy>fy).sort((a,b)=>a.fy-b.fy)[0];
   const history=s?s.history.map(x=>JSON.parse(JSON.stringify(x))):(G.rescues||[]).filter(x=>x.tid===tid).map((x,i)=>({id:'legacy-rescue:'+i,y:x.y,d:Number.isFinite(x.d)?x.d:null,kind:'legacy',title:x.k==='re'?'운영 법인 변경 기록':'구단 매각 기록',text:`${x.old||'전임'} → ${x.nw||'후임'} (과거 기록: 모기업·정확한 일자 정보 없음)`,from:x.old||'',to:x.nw||''}));
-  const key=q?q.stage:'stable';return {parent:p.name,parentId:p.id,parentMode:p.mode,owner:B.own.name,ownerId:B.own.id,stageKey:key,stage:OWN_STAGE[key],detail:q?q.detail:'유효 계약·구단 기록을 유지하며 운영합니다.',policy:(OWNER[t.owner]||{}).label||({win:'성적 우선',pr:'홍보 우선',profit:'재정 우선'}[t.owner]),supportPct:ownershipSupportPct(t,fy),nextSupportPct:future?future.pct:ownershipSupportPct(t,fy),effectiveYear:future?future.fy:fy,history};
+  const key=q?q.stage:'stable';return {parent:p.name,parentId:p.id,parentMode:p.mode,owner:B.own.name,ownerId:B.own.id,stageKey:key,stage:ownStageL(key,t),detail:q?q.detail:'유효 계약·구단 기록을 유지하며 운영합니다.',policy:(OWNER[t.owner]||{}).label||({win:'성적 우선',pr:'홍보 우선',profit:'재정 우선'}[t.owner]),supportPct:ownershipSupportPct(t,fy),nextSupportPct:future?future.pct:ownershipSupportPct(t,fy),effectiveYear:future?future.fy:fy,history};
 }
 function ownershipInit(){
   const O=G.ownership=G.ownership||{v:1,since:G.year,seq:0,clubs:{},capital:[]};
@@ -317,20 +331,20 @@ function ownershipStart(tid,kind,opts={}){
   const from=ownershipSnapshot(tid);
   const seed=opts.seed||('ownership:'+tid+':'+G.year+':'+G.day+':'+O.seq),v=seededRand(seed+':resolution')();
   const q={id:'episode:'+(++O.seq),kind,seed,stage:kind==='crisis'?'watch':kind,started:G.day,nextD:G.day+(kind==='succession'?14:kind==='acquisition'?35:21),fy:Math.max(G.year+1,sponSeason()),outcome:opts.outcome|| (v<.65?'sale':v<.9?'recovery':'league')};
-  q.detail=kind==='crisis'?'모기업이 사업 구조와 구단 지원을 재검토합니다. 계약을 유지하며 매각 가능성을 검토합니다.':kind==='acquisition'?'새 투자 주체와 실사·기존 계약 승계 조건을 협상합니다.':'경영진이 구단주 승계 절차를 진행합니다. 기존 계약과 시즌 목표는 유효합니다.';
+  q.detail=kind==='crisis'?ownCrisisTxt('watch',t):kind==='acquisition'?'새 투자 주체와 실사·기존 계약 승계 조건을 협상합니다.':'경영진이 구단주 승계 절차를 진행합니다. 기존 계약과 시즌 목표는 유효합니다.';
   s.pending=q;s.lastEventY=G.year;if(kind==='crisis'){O.lastCrisisY=G.year;O.lastMajorY=G.year;ownershipSetSupport(tid,65,ownershipFY(q));}else if(kind==='acquisition'){O.lastAcquisitionY=G.year;O.lastMajorY=G.year;}else O.lastSuccessionY=G.year;
-  ownershipRecord(tid,kind,OWN_STAGE[q.stage],q.detail,from,ownershipSnapshot(tid));return true;
+  ownershipRecord(tid,kind,ownStageL(q.stage,t),q.detail,from,ownershipSnapshot(tid));return true;
 }
 function ownershipDaily(){const O=G.ownership;if(!O)return;for(const t of G.teams){const s=O.clubs[t.id],q=s&&s.pending;if(!q||G.day<q.nextD)continue;
     if(q.kind!=='crisis'){ownershipReplace(t.id,q,q.kind==='acquisition');continue;}
     const from=ownershipSnapshot(t.id),fy=ownershipFY(q);
-    if(q.stage==='watch'){q.stage='restructure';q.detail='모기업이 구단 매각을 공식 추진합니다. 인수 후보 접촉과 재무 실사를 시작하며 기존 계약은 유지합니다.';q.nextD=G.day+28;ownershipSetSupport(t.id,50,fy);}
+    if(q.stage==='watch'){q.stage='restructure';q.detail=ownCrisisTxt('restructure',t);q.nextD=G.day+28;ownershipSetSupport(t.id,50,fy);}
     else if(q.stage==='restructure'){q.stage='negotiation';q.detail='인수 후보와 운영자금·고용·기존 계약 승계를 협상합니다. 구단 이름과 기록은 이어집니다.';q.nextD=G.day+35;}
     else if(q.stage==='league'){ownershipReplace(t.id,q,true);continue;}
     else if(q.outcome==='sale'){ownershipReplace(t.id,q,true);continue;}
-    else if(q.outcome==='recovery'){const capital=ownershipCapital(t.id,q.id+':recovery',Math.max(1000*ecoIdx(),-t.cash+1000*ecoIdx()),'기존 모기업 운영자금');s.parent.health=75;s.lastEventY=G.year;s.debtYears=0;t.debtY=0;ownershipSetSupport(t.id,100,fy);s.pending=null;ownershipRecord(t.id,'recovery','모기업 지원 재개 · 매각 추진 종료',`${s.parent.name}가 운영자금을 확보해 매각 추진을 거두었습니다. ${fy}시즌 기본 지원 한도 ${t.indie?'0%(투자사 운영)':'100%'}, 기존 계약·소유주는 유지합니다.`,from,ownershipSnapshot(t.id),capital);continue;}
+    else if(q.outcome==='recovery'){const inv=ownInv(t),capital=ownershipCapital(t.id,q.id+':recovery',Math.max(1000*ecoIdx(),-t.cash+1000*ecoIdx()),inv?'기존 투자사 추가 출자':'기존 모기업 운영자금');s.parent.health=75;s.lastEventY=G.year;s.debtYears=0;t.debtY=0;ownershipSetSupport(t.id,100,fy);s.pending=null;ownershipRecord(t.id,'recovery',inv?'투자사 추가 출자 · 매각 추진 종료':'모기업 지원 재개 · 매각 추진 종료',inv?`${s.parent.name}가 추가 출자로 운영자금을 확보해 지분 매각 추진을 거두었습니다. ${fy}시즌에도 투자사 운영(모기업 지원 없음)이고, 기존 계약·소유주는 유지합니다.`:`${s.parent.name}가 운영자금을 확보해 매각 추진을 거두었습니다. ${fy}시즌 기본 지원 한도 100%, 기존 계약·소유주는 유지합니다.`,from,ownershipSnapshot(t.id),capital);continue;}
     else {q.stage='league';q.detail='인수 협상이 길어져 리그가 임시 운영자금을 지원합니다. 구단을 해체하지 않고 새 인수자와 협상을 계속합니다.';q.nextD=G.day+120;ownershipSetSupport(t.id,60,fy);const capital=ownershipCapital(t.id,q.id+':bridge',Math.max(1200*ecoIdx(),-t.cash+1200*ecoIdx()),'리그 임시 운영 지원');ownershipRecord(t.id,'bridge',OWN_STAGE.league,q.detail,from,ownershipSnapshot(t.id),capital);continue;}
-    ownershipRecord(t.id,q.stage,OWN_STAGE[q.stage],q.detail,from,ownershipSnapshot(t.id));
+    ownershipRecord(t.id,q.stage,ownStageL(q.stage,t),q.detail,from,ownershipSnapshot(t.id));
   }}
 /* 회사 매각과 별개인 통상 사장 정년 교체. 구단주의 개인 관계·지원 방침은 그대로다. */
 function ownershipCeoRetire(tid){const s=G.ownership.clubs[tid],B=bossOf(tid);if(s.pending||B.ceo.age<70)return false;

@@ -35,7 +35,9 @@ function cheerStage(S){ const L=S.L.filter(m=>!m.inj&&(S.auto||m.on)); return L.
 function cheerPower(S){ const U=cheerStage(S); if(!U.length)return 0; const need=cheerNeed();
   const v=avg(U.map(m=>(m.dance*.4+m.svc*.3+m.pop*.3)*(1-Math.max(0,m.fat-60)/100)*(m.sl?.75:1))); const cap=(G.fanOps.crew||{}).cap;
   return (v+(cap?(cap.hype-10)*.1:0))*Math.min(1,U.length/need); }
-function cheerAtt(day){ if(G.unemp||!G.fanOps||!G.fanOps.cs)return 0; const S=G.fanOps.cs, L=S.last, pw=day!=null&&L&&L.d===day&&L.pw!=null?L.pw:cheerPower(S); return clamp((pw-10)*.004,-.02,.03); } /* 공연한 날은 실제로 무대에 선 조의 힘(피로가 오른 뒤 다시 고르지 않게, 검수 11-09j) */ /* 무대 힘 17이면 홈 관중 +3% */
+/* 경기 하나의 열쇠(더블헤더·같은 날 미룬 경기도 따로): 상대:그날 같은 대진 몇 번째(93_rain RAIN_GI, 검수 11-17 #303) */
+function cheerGid(day){ const x=typeof RAIN_GI!=='undefined'?RAIN_GI:null; return x&&x.day===day&&x.h===G.user?x.a+':'+x.i:'0:1'; }
+function cheerAtt(day,gid){ if(G.unemp||!G.fanOps||!G.fanOps.cs)return 0; const S=G.fanOps.cs, L=S.last; let pw=null; if(day!=null&&L&&L.d===day){ const g=L.g||{}; gid=gid??cheerGid(day); pw=g[gid]??(Object.values(g)[0]??L.pw); } if(pw==null)pw=cheerPower(S); return clamp((pw-10)*.004,-.02,.03); } /* 공연한 날은 실제로 무대에 선 조의 힘(피로가 오른 뒤 다시 고르지 않게, 검수 11-09j) */ /* 무대 힘 17이면 홈 관중 +3% */
 /* 매일: 홈경기 날 무대·피로·화제, 그 밖의 날 회복 */
 /* 매일(그날 경기를 다 치른 뒤): 부상·슬럼프가 풀리고, 오늘 무대에 서지 않은 단원은 쉰다. 떠난 구단 응원단도 그 구단이 운영한다(검수 11-09zza) */
 function cheerDaily(){ if(!G._away){ try{ fanBkDaily(); }catch(e){} for(const k of Object.keys(G.fanYrT||{}))if(+k!==G.user||G.unemp){ fanAway(+k,fanBkDaily,true); fanAway(+k,cheerDaily); } } /* 잡아 둔 행사 우천 순연·환불(검수 11-17 #292): 떠난 구단은 그 구단 장부로 */
@@ -56,7 +58,7 @@ function cheerGame(day,h){ if(h!==G.user||G.unemp){ if(!G._away&&(G.fanYrT||{})[
     else if(!viral&&!m.sl&&R()<.004*(1+(m.vis+m.dance+m.pop-30)/30))viral=m; }
   if(viral){ const m=viral; m.pop=Math.min(20,m.pop+ri(1,2)); m.fol=Math.round(m.fol*rnd(1.2,1.5)); G.pr.fan=clamp(G.pr.fan+1,0,100);
     cheerNews(`${tshort(G.user)} 치어리더 ${m.name}, 응원 영상 SNS 화제`,`${m.name}이(가) 홈경기에서 선보인 응원 동작 영상이 SNS에서 빠르게 퍼졌습니다. 팔로워가 ${Math.round(m.fol/1000)}천 명을 넘었습니다.`,1); fanLog(`치어리더 ${m.name} 응원 영상 화제`); }
-  S.last={d:day,n:U.length,need:cheerNeed(),pw}; }
+  const gid=cheerGid(day), g=S.last&&S.last.d===day&&S.last.g?S.last.g:{}; g[gid]=pw; S.last={d:day,n:U.length,need:cheerNeed(),pw,g}; } /* 그날 경기마다 따로 남긴다(더블헤더 1·2경기, #303) */
 /* 매달 1일: 대행사 수수료, 팬서비스 → 팬 여론, 인기 단원 → 상품 수입, 팔로워 기사. 1월에는 한 해 정리 */
 function cheerMonthly(){ if(G.unemp||!G.fanOps||!G.fanOps.cs)return; const S=G.fanOps.cs; prInit(); cheerFill(S);
   const pay=Math.max(cheerPay(),S.payPeak||0); S.payPeak=0; G.spend.fan=(G.spend.fan||0)+pay;
