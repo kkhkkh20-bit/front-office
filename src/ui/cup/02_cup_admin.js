@@ -13,7 +13,10 @@ const admApi=(p,o)=>{ o=o||{}; const h=Object.assign({Authorization:'Bearer '+AD
 function admSay(m,bad){ ADM.msg=m; ADM.bad=!!bad; try{ render(); }catch(e){} }
 /* 키 확인: 맞으면 관리자 메뉴가 보인다. 틀리면 지운다 */
 function admCheck(){ if(ADM.chk||!xfAvail())return; ADM.key=ADM.key||admKeyGet(); if(!ADM.key){ ADM.chk='none'; return; } ADM.chk='checking';
-  admApi('/admin/check').then(({r,j})=>{ if(r.ok){ ADM.chk='ok'; ADM.cup=j.cup||null; } else { ADM.chk=r.status===401?'bad':'off'; if(r.status===401){ admKeySet(''); ADM.key=''; } } },()=>{ ADM.chk='off'; }).finally(()=>{ try{ render(); }catch(e){} }); }
+  admApi('/admin/check').then(({r,j})=>{ if(r.ok){ ADM.chk='ok'; ADM.cup=j.cup||null; admUsage(); } else { ADM.chk=r.status===401?'bad':'off'; if(r.status===401){ admKeySet(''); ADM.key=''; } } },()=>{ ADM.chk='off'; }).finally(()=>{ try{ render(); }catch(e){} }); }
+/* 서버 사용량(래더 덱 수·오늘 래더 KV 쓰기 추정). 무료 한도 하루 쓰기 1,000회: docs/design/ladder-server-ops.md */
+function admUsage(){ fetch('/api/admin/usage',{cache:'no-store',credentials:'same-origin',headers:{Authorization:'Bearer '+ADM.key}}).then(async r=>{ const j=await cupJson(r); ADM.use=r.ok&&j&&j.ok?j:null; },()=>{ ADM.use=null; }).finally(()=>{ try{ render(); }catch(e){} }); }
+const admUseTxt=()=>{ const u=ADM.use; return u?` · 래더 덱 ${(u.decks|0).toLocaleString()}개 · 오늘 쓰기 약 ${(u.writes|0).toLocaleString()}회`:''; };
 /* 설정 › 정보 맨 아래 한 줄(일반 유저에게는 작은 글자 하나) */
 function cupAdminLink(){ if(!xfAvail())return ''; admCheck();
   if(ADM.chk==='ok')return `<p class="adm-link"><button class="btn small" data-a="admOpen">관리자 페이지</button> <button class="lnk small" data-a="admOut">관리자 키 지우기</button></p>`;
@@ -29,7 +32,7 @@ Object.assign(A,{
   admAsk(){ ADM.ask=true; render(); setTimeout(()=>{ const el=document.getElementById('admKey'); if(el)el.focus(); },30); },
   admKeyOk(){ const el=document.getElementById('admKey'), k=(el?el.value:'').trim(); if(!k)return; ADM.key=k; admKeySet(k); ADM.chk=''; admCheck(); },
   admOut(){ admKeySet(''); Object.assign(ADM,{key:'',chk:'none',ask:false,ents:null,run:null,runSt:''}); render(); },
-  admOpen(){ if(G&&!UI.title)return A.go('club:cupadm'); UI.sstep='cupadmin'; render(); },
+  admOpen(){ if(ADM.chk==='ok')admUsage(); if(G&&!UI.title)return A.go('club:cupadm'); UI.sstep='cupadmin'; render(); },
   /* 1) 대회 만들기·열기·닫기 */
   async admCfg(v){ if(v==='close'&&ADM.cup&&ADM.cup.open!==false&&!confirm('접수를 닫습니다. 닫은 뒤에는 게임에서 신청할 수 없습니다(다시 열 수는 있습니다).'))return; const q=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
     const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(4,Math.min(10,+q('admTeams')||10)), minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0;
@@ -157,7 +160,7 @@ function admDraw(R,k){ const c=document.createElement('canvas'), W=1080; const r
   return c; }
 /* 연결 상태 한 줄: 서버·키·대회 */
 function admStatusLine(){ const c=ADM.cup; const st=ADM.chk==='ok'?['ok','서버 연결 OK · 관리자 키 맞음']:ADM.chk==='bad'?['bad','관리자 키가 틀립니다']:ADM.chk==='off'?['bad','서버에 연결할 수 없습니다']:ADM.chk==='checking'?['wait','키를 확인하는 중']:['wait','관리자 키 없음'];
-  return `<p class="adm-stat adm-${st[0]}"><i></i><span>${st[1]}${ADM.chk==='ok'?` · ${c&&c.id?`대회 <b>${esc(c.title)}</b>(${esc(c.id)}) ${c.open!==false?'접수 중':'접수 닫힘'}`:'열린 대회 없음'}`:''}</span></p>`; }
+  return `<p class="adm-stat adm-${st[0]}"><i></i><span>${st[1]}${ADM.chk==='ok'?` · ${c&&c.id?`대회 <b>${esc(c.title)}</b>(${esc(c.id)}) ${c.open!==false?'접수 중':'접수 닫힘'}`:'열린 대회 없음'}${admUseTxt()}`:''}</span></p>`; }
 /* 지금 할 일 단계: 1 대회 만들기 → 2 접수 중 → 3 마감·시드 → 4 돌리기 → 5 1~7일차 공개 → 6 명예의 전당 → 7 끝 */
 function admStage(){ const c=ADM.cup||{}, R=ADM.run; if(!c.id)return 1; if(c.open!==false&&!R)return 2; if(!R)return ADM.seedOk?4:3; if(R.day<7)return 5; if(!R.hof)return 6; return 7; }
 /* 시드 미리보기: 참가 가능한 팀을 OVR 순으로 정원까지, 모자라면 AI */
