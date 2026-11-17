@@ -3,9 +3,9 @@
   "asset_validation_passed": false,
   "production_complete": false,
   "requested_total": 48,
-  "numeric_compatible_candidates": 23,
+  "numeric_compatible_candidates": 31,
   "runtime_ready": 0,
-  "generated_at_kst": "2026-11-18T02:01:12.358142+09:00",
+  "generated_at_kst": "2026-11-18T03:13:29.959271+09:00",
   "identity_check": {
     "threshold": 0.4,
     "strict_less_than": true,
@@ -16,49 +16,49 @@
       "v10_women": 40,
       "v19_secretary": 20
     },
-    "protocol": "SCRFD640/threshold.55, LMEDS5point112, w600k_r50, raw normalized cosine; all actual128/256/512 decoded individual WebPs; legacy highest native256 or128 for512 without enlargement",
+    "protocol": "SCRFD640/threshold.55, official InsightFace norm_crop112(all5-landmark SimilarityTransform), w600k_r50, raw normalized cosine; all actual128/256/512 decoded individual WebPs; legacy highest native256 or128 for512 without enlargement",
     "resolutions": {
       "128": {
-        "within_max": 0.3997451663017273,
+        "within_max": 0.3924899697303772,
         "within_nearest": [
-          "v22_purple_04_a88",
-          "v22_navy_03_a95"
+          "v22_green_04_a109",
+          "v22_green_04_a97"
         ],
-        "legacy_max": 0.3481866121292114,
+        "legacy_max": 0.3695397973060608,
         "legacy_nearest": [
-          "v22_navy_02_a62",
-          "v15_cheer_young_018"
+          "v22_orange_03_a86",
+          "v10_women01_staff_005"
         ],
-        "within_pair_count": 253,
-        "legacy_pair_count": 2668
+        "within_pair_count": 465,
+        "legacy_pair_count": 3596
       },
       "256": {
-        "within_max": 0.382339209318161,
+        "within_max": 0.399299681186676,
         "within_nearest": [
-          "v22_purple_04_a88",
-          "v22_navy_03_a95"
+          "v22_orange_01_a64",
+          "v22_red_02_a60"
         ],
-        "legacy_max": 0.38706254959106445,
+        "legacy_max": 0.38542699813842773,
         "legacy_nearest": [
-          "v22_black_06_a71",
-          "v15_cheer_young_016"
+          "v22_sky_03_a103",
+          "v10_women01_staff_005"
         ],
-        "within_pair_count": 253,
-        "legacy_pair_count": 2668
+        "within_pair_count": 465,
+        "legacy_pair_count": 3596
       },
       "512": {
-        "within_max": 0.3930729031562805,
+        "within_max": 0.39898446202278137,
         "within_nearest": [
-          "v22_blue_01_a61",
-          "v22_orange_01_a64"
+          "v22_green_04_a109",
+          "v22_navy_05_a114"
         ],
-        "legacy_max": 0.39498409628868103,
+        "legacy_max": 0.3803950846195221,
         "legacy_nearest": [
-          "v22_black_06_a71",
-          "v15_cheer_young_016"
+          "v22_sky_03_a103",
+          "v10_women01_staff_005"
         ],
-        "within_pair_count": 253,
-        "legacy_pair_count": 2668
+        "within_pair_count": 465,
+        "legacy_pair_count": 3596
       }
     }
   },

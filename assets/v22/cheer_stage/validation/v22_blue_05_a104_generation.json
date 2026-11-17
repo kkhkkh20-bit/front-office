@@ -1,0 +1,32 @@
+{
+  "id": "v22_blue_05",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "blue",
+  "hair": "bob",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_ee7461fb-8e18-4816-8240-350d47d1f8b6.webp",
+  "source_guide_id": "rv3_20",
+  "costume_reference": "/dev/shm/v22_work/kits/blue.png",
+  "generation_attempt": 104,
+  "prompt": "Create FOUR independent REAL photographic Korean baseball cheerleader portraits, exact2x2 equal square grid native1254x1254orhigher, ZERO gaps/borders/text. Preserve exact four distinct fictional ADULT KOREAN identities from corresponding ref1 quadrants, top-leftage26, othersage24. Keep their own adult facial anatomy/features and individual face shape, no common beautytemplate or faceaveraging. Attractive plausible real Korean women midtwenties, normal eyes/head/neck proportions, real healthy natural skin pores/asymmetry. Clean sourceguide blur/noise/colorcasts and bluegray/purple cheek artifacts; NOfacepaint/plasticdollskin/beautyfilters. Tasteful natural stage eyemakeup/lip.\nAllfour gentle warm FRIENDLY CLOSED-LIP SMILES. TL same woman normal longloosewaves, REMOVEhood entirely, nohat/headcovering, handsout. TR same ponytailwoman, one anatomicallycorrect Vhand besidecheek without coveringface. BL same longwavewoman handsout. BR same bobwoman handsout.\nAllfour EXACT SAME opaque BLUE short-sleeve fullyzipped highstandcollar stage top from ref2, white sidepanels/thin silver shoulderpiping/silverzip, covered chest, samepattern/collar/trim. NOlogos/text/numbers. All matching NIGHT baseballcheer-platform background, blurred unrecognizablegrandstands/floodlightbokeh, same85mm/front-abovekey/rearrim light.\nKeep exact per-quadrant face SCALE and eye POSITION from ref1: intentionally medium-distance MID-TORSO portraits with generous headroom. Fill gray missing scene with own real background/garment/shoulders without zoomingfaces. Full exact2x2 canvas, four own coherent bodies/photos, nofacebodypaste. No cleavage/crops/body emphasis/children/glasses/hats/hoods.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-5b672829-88a5-4422-a5a3-925aa7338d98.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_blue_05_a104.png",
+  "original_sheet": "/workspace/generated_images/exec-5b672829-88a5-4422-a5a3-925aa7338d98.png",
+  "original_sheet_sha256": "b86e2cc4c090c87e82bf242bde33f5b20c45bc8840ac72a640148e56848b1348",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    627,
+    627,
+    1254,
+    1254
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

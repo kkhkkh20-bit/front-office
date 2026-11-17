@@ -21,5 +21,7 @@
   "final_cast_age": 29,
   "recast_reason": "Mature adult appearance is suitable for the24\u201330 captain range; excluded from20\u201326 member casting and delivered only once. No facial retouch, warp, vector change or new photo.",
   "source_identity_guide": "/workspace/generated_images/exec-61ee6a58-1bb3-457d-aa27-e16826921f7f.png",
-  "status": "PENDING_VALIDATION"
+  "status": "PENDING_VALIDATION",
+  "exclude_from_casting": true,
+  "visual_hold_reason": "Visual age reads above requested captain range; use a new younger adult replacement"
 }

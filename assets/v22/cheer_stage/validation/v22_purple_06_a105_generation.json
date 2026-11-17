@@ -1,0 +1,36 @@
+{
+  "id": "v22_purple_06",
+  "index": 0,
+  "r": "ccap22",
+  "a": 29,
+  "f": 1,
+  "uc": "purple",
+  "hair": "bob",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_e6e9866b-2311-4e0f-85ec-2ceb4b96d193.webp",
+  "source_guide_id": "rv2_08",
+  "costume_reference": "/dev/shm/v22_work/kits/purple.png",
+  "generation_attempt": 105,
+  "status": "PENDING_VALIDATION",
+  "operation": "independent four-portrait whole-photo stage edit/outpaint",
+  "source_prompt_age": 26,
+  "recast_reason": "Retained same fictional person, visually suitable for late-twenties captain role; no facial age alteration",
+  "source_parent_candidate": "v22_purple_06_a101",
+  "prompt": "Complete this exact FOUR-PHOTO2x2 sheet by OUTPAINTING all gray missing canvas. Each quadrant is an independent photo of a DIFFERENT fictional adult Korean woman, keep exact own identity and face size/position, expression, hair, corresponding own garment and own handpose. Do NOT zoom/enlarge/move the people; keep medium camera distance and generous headroom. Extend corresponding NIGHT baseball stadium bokeh/own garment/shoulders coherently into gray, no gaps/borders/labels/text/gray remaining. Native full square1254x1254orhigher. DO NOT swap uniforms: TLpurple,TRorange,BLnavy,BRpurple.\nOnly necessary retouch exceptions: BOTTOM-RIGHT remove the unnatural bluegray patch on her cheek entirely, restore normal healthy skin color/texture consistent with rest of her face, nofacepaint. BOTTOM-LEFT ensure naturally dark-brown Korean irises and authentic photographic skin texture, no gray contact lenses/CGgloss; preserve her own exact facial bone structure/anatomy and facial features. All four plausible real Korean adult women mid/late twenties, normal eyes/proportions, real pores/asymmetry, tasteful natural stage eyemakeup/lip, no doll filters. TLgentlesoftsmile,nohands;TRbigsmile,Vhandbesidecheek;BLsoftsmile,nohands;BRbigsmile,nohands. No new people/hats/glasses/logos/letters/numbers/cleavage/crop/body emphasis. Keep original full2x2 composition precisely; gray is missing content to FILL, not border to crop.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-b8288233-34ee-4d6b-8181-2fe547066373.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_photo_reference": "/workspace/generated_images/exec-28a55531-c154-44aa-850b-85113836c6af.png",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_purple_06_a105.png",
+  "original_sheet": "/workspace/generated_images/exec-b8288233-34ee-4d6b-8181-2fe547066373.png",
+  "original_sheet_sha256": "49b1361f74ebc301acaff3a95827a0e75d1cfd667cea379b4f3da405b13263b7",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    0,
+    0,
+    627,
+    627
+  ]
+}

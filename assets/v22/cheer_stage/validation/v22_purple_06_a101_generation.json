@@ -1,0 +1,22 @@
+{
+  "id": "v22_purple_06",
+  "index": 0,
+  "r": "ccap22",
+  "a": 29,
+  "f": 1,
+  "uc": "purple",
+  "hair": "bob",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_e6e9866b-2311-4e0f-85ec-2ceb4b96d193.webp",
+  "source_guide_id": "rv2_08",
+  "costume_reference": "/dev/shm/v22_work/kits/purple.png",
+  "generation_attempt": 101,
+  "status": "PENDING_VALIDATION",
+  "operation": "independent four-portrait whole-photo stage edit/outpaint",
+  "source_prompt_age": 26,
+  "recast_reason": "Retained same fictional person, visually suitable for late-twenties captain role; no facial age alteration",
+  "source_parent_candidate": "v22_purple_02_a98",
+  "prompt": "Rephotograph this EXACT same fictional Korean adult woman, preserving her exact individual facial features/identity, bobhair, gentle friendly closedlip smile, healthy natural skin texture and identical purple/white cheer stage windbreaker with coveredwhitecrewneck. One coherent real professional photograph, square native1254x1254orhigher. Adjust only CAMERA FRAMING modestly closer: head-and-upper-chest portrait, full hairstyle with margin8%belowtop, eyes40%fromtop, face verticalheight39-40%ofcanvas, shoulders loweredge. Keep normal adult Korean facial anatomy, no common beautytemplate, no oversizedeyes/dollskin, no skinagefilter; naturally attractive plausible real Korean adult late twenties captain. Night baseballcheer-platform background same blurredunrecognizablecrowd/floodlightbokeh,85mm front-abovekey and rear rim. Preserve exact garment cut/white shoulderpanels/silverzip/fullopaque whitecrewneck. No hats/glasses/hoods/logos/text/numbers/body emphasis, no collage. Whole photograph camera framing change only, no facial warp or pastedface.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-28a55531-c154-44aa-850b-85113836c6af.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}

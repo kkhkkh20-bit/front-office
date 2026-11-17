@@ -1,0 +1,32 @@
+{
+  "id": "v22_blue_04",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "blue",
+  "hair": "wave",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_9c53c72f-ddb5-4837-b944-db11ca81d501.webp",
+  "source_guide_id": "rv3_23",
+  "costume_reference": "/dev/shm/v22_work/kits/blue.png",
+  "generation_attempt": 106,
+  "prompt": "Fill ONLY GRAY missing areas of these FOUR independent real Korean adult women's photos. The WHITE CROSS marks the exact CENTER boundaries: keep four EQUAL SQUARE quadrants, horizontal boundary at EXACTLY50%imageheight and vertical at50%width. Keep thinwhitecross separation if needed; we will crop outside it later. Never extend top photos into bottomquadrants. Each quadrant own independentphotograph. Keep all existing photo content exact unchanged face identities/face SIZE/POSITION/skin/expression/hair/blueuniform/own handpose. NO zoom/enlargement/cropping of gray. Intentionally medium distance generous headroom; KEEP it. Extend only corresponding nightstadium bokeh/own shoulders/bluegarment into gray. All4 plausible real adult Koreanwomen midtwenties, realskin pores normal features, no beautification/filter/dollskin/facepaint. Native full square1254x1254orhigher. Preserve full layout and exact CENTERcross grid. No labels/text/logos/new people/hats/glasses. Each of four images must remain entirely inside its corresponding equal quadrant, including any topgrayarea which belongs to that SAMEquadrant's nightbackground.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-e6a40fa3-e7dc-4fff-b837-559b4d78035e.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_blue_04_a106.png",
+  "original_sheet": "/workspace/generated_images/exec-e6a40fa3-e7dc-4fff-b837-559b4d78035e.png",
+  "original_sheet_sha256": "e0488dd71d60acbdb58f8eab6193fbfbf8152d9da774e8de070d12c1c5531c28",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    4,
+    631,
+    623,
+    1250
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}
