@@ -227,5 +227,6 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-dash>.ibs-wide{grid-column:1/-1}
 /* 소식함: 위임 버튼(결정 버튼 옆)과 한 줄 설명(사용자 11-17) */
 .ibm-deleg .btn{border-style:dashed}
-.ibm-deleg-d{margin:4px 0 0;line-height:1.45}
+.ibm-acts>.ibm-deleg-d{flex:1 0 100%;margin:0;line-height:1.45;text-align:right;color:var(--muted)}
+@media(max-width:1099px){ .ibm-acts>.ibm-deleg-d{text-align:left} }
 .ibx-handall{margin-left:6px;min-height:0!important;padding:0 2px!important}

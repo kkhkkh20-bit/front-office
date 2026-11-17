@@ -954,14 +954,17 @@ T('[스카우트 출장 위임] 권한의 스카우트 배치를 맡기면 출�
   for(const t of G.teams){ if(t.id===G.user)continue; const Q=tripPlanWeek(t.id,d2); for(const s of clubAmScouts(t.id))ok(tripOf(s)===Q[s.id],'AI 출장이 달라짐'); }
   takeBack('scout'); ok(!autoOn('scout')&&!tripAutoOn(),'가져오기 실패'); });
 T('[소식함 위임 11-17] 결정 소식마다 위임 버튼: 일상 결정은 그 종류를 앞으로 맡기고 이번 건을 기본안으로, 감독 요청은 mgr 권한, 연봉·트레이드 등은 m.auto 권한, 단장 전용은 버튼 없음',()=>{ fresh(); G.deleg={}; G.auto={};
-  const e=evNew('lead','기강 테스트','상황',[{l:'엄하게',fx:''},{l:'두고 본다',fx:''}],{def:1}); const m=G.mail.find(x=>x.id===e.mid); let L=mailDelegOpts(m); ok(L.some(o=>o.a==='evDeleg'&&o.v===e.id)&&L.some(o=>o.a==='evHand'),'일상 결정에 위임 버튼 없음 '+JSON.stringify(L.map(o=>o.a)));
+  const e=evNew('lead','기강 테스트','상황',[{l:'엄하게',fx:''},{l:'두고 본다',fx:''}],{def:1}); const m=G.mail.find(x=>x.id===e.mid); let L=mailDelegOpts(m); ok(L.some(o=>o.a==='evDeleg'&&o.v===e.id)&&!L.some(o=>o.a==='evHand'),'일상 결정에 위임 버튼 하나만 있어야 함 '+JSON.stringify(L.map(o=>o.a)));
   ok(L.every(o=>o.d&&o.d.length>4),'위임 설명 한 줄 없음'); const L0=(G.autoLog||[]).length; evDeleg(e.id); ok(e.done&&e.pick===1&&e.deleg,'이번 건이 기본안으로 처리되지 않음'); ok(G.deleg.lead,'같은 종류를 앞으로 맡기지 않음'); ok((G.autoLog||[]).length>L0&&G.autoLog[0].why==='deleg','위임 처리 기록 없음');
   const e2=evNew('lead','기강 테스트2','상황',[{l:'엄하게',fx:''},{l:'두고 본다',fx:''}],{def:1}); ok(e2.done&&e2.deleg,'맡긴 종류의 다음 결정이 자동 처리되지 않음'); ok(!mailDelegOpts(G.mail.find(x=>x.id===e2.mid)).length,'끝난 결정에 위임 버튼');
   const e3=evNew('mreq','감독 요청 테스트','상황',[{l:'예',fx:''},{l:'아니오',fx:''}],{def:1}); L=mailDelegOpts(G.mail.find(x=>x.id===e3.mid)); ok(L.some(o=>o.a==='handOff'&&o.v==='mgr'),'감독 요청에 mgr 위임 없음'); handOff('mgr'); ok(e3.done&&autoOn('mgr'),'감독 요청 위임이 이번 건을 처리하지 않음');
   const e4=evNew('gmRenew','단장 계약','상황',[{l:'예',fx:''},{l:'아니오',fx:''}],{def:1}); ok(!mailDelegOpts(G.mail.find(x=>x.id===e4.mid)).length,'단장 계약에 위임 버튼');
-  const e5=evNew('scandal','핵심 결정','상황',[{l:'예',fx:''},{l:'아니오',fx:''}],{def:1}); L=mailDelegOpts(G.mail.find(x=>x.id===e5.mid)); ok(L.length===1&&L[0].a==='evHand','핵심 결정은 이번 건만 넘겨야 함 '+JSON.stringify(L.map(o=>o.a)));
+  const e5=evNew('scandal','핵심 결정','상황',[{l:'예',fx:''},{l:'아니오',fx:''}],{def:1}); L=mailDelegOpts(G.mail.find(x=>x.id===e5.mid)); ok(L.length===1&&L[0].a==='evHand'&&L[0].l==='비서에게 맡기기','핵심 결정은 이번 건만 비서에게 '+JSON.stringify(L.map(o=>o.a)));
   ok(evHandAll(G.mail)>=1&&e5.done&&!e4.done,'결정 모두 비서에게: 단장 전용까지 처리하거나 아무것도 처리 안 함');
   mail('운영팀','연봉 협상 테스트','본문',{}); G.mail[0].auto=['sal','fre']; L=mailDelegOpts(G.mail[0]); ok(L.some(o=>o.v==='sal')&&L.some(o=>o.v==='fre'),'연봉·외국인 재계약 위임 버튼 없음'); G.auto.sal=true; ok(!mailDelegOpts(G.mail[0]).some(o=>o.v==='sal'),'이미 맡긴 업무에 버튼');
+  /* 스카우트 배치 제안 메일: 위임하기 → 권한 '스카우트 배치'를 팀장에게(출장도 함께), 같은 메일의 제안 버튼은 처리 완료로. 맡긴 뒤 단장 전용·없는 업무는 버튼 없음 */
+  G.scoutAuto=false; G.scSugSig=null; const mc=G.mail.length; try{ scoutSuggest(); }catch(err){} if(G.mail.length>mc){ const ms=G.mail[0]; L=mailDelegOpts(ms); ok(L.length===1&&L[0].a==='handOff'&&L[0].v==='scout'&&/스카우트팀장/.test(L[0].d),'배치 제안에 스카우트 배치 위임 버튼 없음 '+JSON.stringify(L)); handOff('scout'); ok(autoOn('scout')&&tripAutoOn(),'배치 위임이 켜지지 않음'); ok(!mailDelegOpts(ms).length,'맡긴 뒤에도 위임 버튼'); }
+  G.unemp=true; ok(!mailDelegOpts(G.mail[0]).length,'야인에게 위임 버튼'); G.unemp=false;
   });
 T('[스카우트 2단계] 옛 저장: 출장 기록이 없으면 처음 맞는 날 출장 안을 만든다',()=>{ fresh(); makeDraftClass(); amLive(); const d=tripWk0(dnum(G.year,4,15))+2; G.day=d; delete G.tripV; for(const s of clubAmScouts(G.user))delete s.trip; tripDaily(d); ok(G.tripV===1,'변환 표시'); ok(clubAmScouts(G.user).every(s=>s.trip&&s.trip.from<=d&&s.trip.to>=d),'출장 기록이 없음'); });
 T('[스카우트 2단계] 두 스카우트가 본 선수는 두 의견이 보이고 평가 오차가 0.9배다(AI 구단도 같은 배수)',()=>{ fresh(); makeDraftClass(); const p=G.players[G.draftClass[0]]; const sc=G.scouts.slice(0,2); delete p.obsBy; const a=prosSd(bestScout(p.region,p)||sc[0],p);

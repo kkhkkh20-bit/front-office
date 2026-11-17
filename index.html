@@ -3243,7 +3243,8 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-dash>.ibs-wide{grid-column:1/-1}
 /* 소식함: 위임 버튼(결정 버튼 옆)과 한 줄 설명(사용자 11-17) */
 .ibm-deleg .btn{border-style:dashed}
-.ibm-deleg-d{margin:4px 0 0;line-height:1.45}
+.ibm-acts>.ibm-deleg-d{flex:1 0 100%;margin:0;line-height:1.45;text-align:right;color:var(--muted)}
+@media(max-width:1099px){ .ibm-acts>.ibm-deleg-d{text-align:left} }
 .ibx-handall{margin-left:6px;min-height:0!important;padding:0 2px!important}
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%)}
@@ -26849,11 +26850,12 @@ function takeBack(k){ autoSet(k,false); const a=AUTO_AREAS.find(x=>x[0]===k); re
    단장 계약·협회 표결(EV_GM)·드래프트·FA·외국인 영입은 넣지 않는다. 핵심 결정(EV_KEY)은 이번 건만 넘길 수 있다 */
 const autoFirst=k=>{ const a=AUTO_AREAS.find(x=>x[0]===k); return a?a[2].replace('{55}',typeof dv==='function'?dv(55):'55').split(/(?<=[.다])\s/)[0]:''; };
 function mailDelegOpts(m){ if(!m||G.unemp)return []; const L=[]; const acts=m.acts||[];
-  for(const k of (m.auto||[])){ if(!AUTO_AREAS.some(x=>x[0]===k)||autoOn(k)||acts.some(a=>a.a==='handOff'&&a.v===k))continue; if(k==='tro'&&m.oid&&!(G.offers||[]).some(o=>o.id===m.oid))continue; const a=AUTO_AREAS.find(x=>x[0]===k); L.push({a:'handOff',v:k,l:`위임하기 · ${a[1]}`,d:`${AUTO_WHO[k]||'비서'}: ${autoFirst(k)}`}); }
+  for(const k of (m.auto||[])){ if(!AUTO_AREAS.some(x=>x[0]===k)||autoOn(k)||acts.some(a=>a.a==='handOff'&&a.v===k))continue; if(k==='tro'&&m.oid&&!(G.offers||[]).some(o=>o.id===m.oid))continue; const a=AUTO_AREAS.find(x=>x[0]===k); L.push({a:'handOff',v:k,l:`위임하기 · ${a[1]}`,d:(f=>f.startsWith(AUTO_WHO[k]||'비서')?`위임하면 ${f}`:`${AUTO_WHO[k]||'비서'}: ${f}`)(autoFirst(k))}); }
   if(m.kind==='결정'){ const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(e&&!EV_GM.has(e.k)&&e.opts&&e.opts[e.def]){ const df=`"${e.opts[e.def].l}"`;
+      /* 권한 줄에 있는 결정(감독 요청·일상 결정 종류)은 '위임하기' 하나, 권한 줄이 없는 핵심 결정은 '비서에게 맡기기'(이번 건만)(사용자 11-17) */
       if(e.k==='mreq'||e.k==='mpick'){ if(!autoOn('mgr'))L.push({a:'handOff',v:'mgr',l:'위임하기 · 감독 요청',d:`비서: 이번 건은 ${df}(으)로 답하고, 앞으로 감독 요청도 기본안으로 답합니다`}); }
       else if(EV_NAME[e.k]&&!EV_KEY.has(e.k)){ if(!(G.deleg&&G.deleg[e.k]))L.push({a:'evDeleg',v:e.id,l:`위임하기 · ${EV_NAME[e.k]}`,d:`비서: 이번 건은 ${df}(으)로 정하고, 앞으로 ${EV_NAME[e.k]}도 기본안으로 처리합니다`}); }
-      L.push({a:'evHand',v:e.id,l:'이번 건만 비서에게',d:`비서: 이번 건만 ${df}(으)로 정합니다`}); } }
+      if(!L.length)L.push({a:'evHand',v:e.id,l:'비서에게 맡기기',d:`비서: 이번 건만 추천안 ${df}(으)로 정합니다. 같은 종류는 앞으로도 직접 정합니다`}); } }
   return L; }
 /* 결정 종류 하나를 앞으로 맡기고 이번 건도 기본안으로(권한 화면 '종류별로 넘긴 일상 결정'과 같은 G.deleg) */
 function evDeleg(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k)||EV_KEY.has(e.k)||!EV_NAME[e.k])return handOffEv(id); G.deleg=G.deleg||{}; G.deleg[e.k]=true; const r=handOffEv(id); return `${r} 앞으로 ${EV_NAME[e.k]}은(는) 비서가 기본안으로 처리합니다. 설정 · 권한에서 다시 가져올 수 있습니다.`; }
@@ -36400,7 +36402,7 @@ function mailCard(m,nav){
     ${L.length?`<div class="mailbody">${(L.length>4&&!mFull&&!mOpenAct?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4&&!mFull&&!mOpenAct?`<details class="mfold" data-k="mf:${m.id}" ${UI.open['mf:'+m.id]?'open':''}><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
     ${fth?`<div class="ibm-fth"><div class="small muted">댓글 ${fth.cm.length}개${(()=>{ try{ return ` · 분위기: ${fpMood(fth.cm)}`; }catch(e){ return ''; } })()}</div><div class="fcms">${fth.cm.map(cmtRow).join('')}</div></div>`:''}
     ${m.rv?rvActsH(m):''}
-    ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${(()=>{ const H=handOffActs(m); return acts.length||H.b?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}${H.b}</div>${H.d}`:''; })()}
+    ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${(()=>{ const H=handOffActs(m); return acts.length||H.b?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}${H.b}${H.d}</div>`:''; })()}
     ${o&&!status?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* 상단 숫자와 계속 버튼은 동일한 현재 미처리 업무만 센다. 단순 안내·보고는 제외한다. */
 const mailNeeds=m=>ibMust(m);
@@ -44456,7 +44458,7 @@ function authView(){ const evK=Object.keys(EV_NAME); const dl=evK.filter(k=>G.de
         +(X.length?`<section class="card"><h2 class="sec">답하지 않아 기본안이 적용된 일</h2><p class="small muted">맡기지 않은 결정인데 응답 기한이 지나 기본안(굵게 쓴 선택)이 적용됐습니다. 같은 종류를 앞으로 맡길 수 있습니다.</p><div class="list">${X.slice(0,10).map(x=>`<div class="item"><span class="small"><b>${esc(x.t)}</b> · 기본안: <b>${esc(x.c)}</b>${x.r?` <span class="muted">${esc(String(x.r).slice(0,80))}</span>`:''}</span><span class="row" style="gap:4px"><span class="small muted">${dsh(x.d)}</span>${x.k&&EV_NAME[x.k]&&!(G.deleg&&G.deleg[x.k])?`<button class="btn small" data-a="evGive" data-v="${x.k}">이 종류 앞으로 맡기기</button>`:''}</span></div>`).join('')}</div></section>`:''); })()}`; }
 /* 사용자 11-17: 위임 버튼은 결정 버튼 옆(같은 줄)에, 위임하면 무엇을 하는지 한 줄로 */
 function handOffActs(m){ if(G.unemp||mailDone(m))return {b:'',d:''}; const L=mailDelegOpts(m); if(!L.length)return {b:'',d:''};
-  return {b:L.map(o=>`<span class="ibm-act ibm-deleg"><button class="btn" data-a="${o.a}" data-v="${esc(String(o.v))}" title="${esc(o.d)}">${esc(o.l)}</button></span>`).join(''), d:`<p class="small muted ibm-deleg-d">${L.map(o=>esc(o.d)).join('<br>')}</p>`}; }
+  return {b:L.map(o=>`<span class="ibm-act ibm-deleg"><button class="btn" data-a="${o.a}" data-v="${esc(String(o.v))}" title="${esc(o.d)}">${esc(o.l)}</button></span>`).join(''), d:`<p class="small muted keep ibm-deleg-d">${L.map(o=>esc(o.d)).join('<br>')}</p>`}; }
 Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v){ toast(takeBack(v)); save(); render(); },
   autoScope(v){ const i=String(v).indexOf(':'); toast(autoScopeToggle(String(v).slice(0,i),String(v).slice(i+1))||'고를 수 없는 범위입니다.'); save(); render(); }, /* 고교 후원 권역·교류 방문단 나라 자동 처리 켜고 끄기 */
   autoScopeGo(k){ if(k==='ovsb'){ UI.it=Object.assign(UI.it||{},{devv:'ovs'}); A.go('staff:dev'); return; } UI.it=Object.assign(UI.it||{},{scoutpg:k==='schg'?'map':'ovs'}); A.go('staff:scouts'); },
@@ -45090,11 +45092,13 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
-  {id:'2026-11-17-amui',d:'11월 17일',t:'아마추어 야구 화면 정리 · 출장 안 팀장에게 맡기기',items:[
+  {id:'2026-11-17-amui',d:'11월 17일',t:'아마추어 야구 화면 정리 · 소식함에서 바로 위임하기',items:[
     '스카우트 › 아마추어 야구의 기록 1위를 부문마다 작은 카드(위 5명)로 한 화면에 모아 보입니다. 타율·OPS·홈런·도루·평균자책점·탈삼진·승리·타점 8부문이고, 요약 탭에서 고교와 대학을 바꿔 봅니다.',
     '주말리그·U-리그 순위, 전국대회 대진, 학교 목록도 작은 카드로 나란히 놓아 넓은 표가 화면 끝까지 퍼지지 않습니다. 학교 페이지에서 학년별 선수단을 오른쪽에 함께 봅니다.',
     "매주 오는 '다음 주 출장 안' 메일에 [팀장에게 맡기기]를 넣었습니다. 누르면 설정 › 권한의 '스카우트 배치'를 스카우트팀장에게 맡기고, 그 주 출장 안을 바로 보냅니다. 다음 주부터는 메일 없이 팀장이 출장을 정합니다(일요일 현장 보고는 그대로).",
-    "스카우트 배치를 팀장에게 맡겨 두었으면 출장 안 결정 메일이 더 오지 않습니다. 배치를 맡겼는데도 출장 메일이 오던 문제를 고쳤습니다. 권한 화면에서 가져오면 다시 매주 출장 안을 받아 직접 정합니다."]},
+    "스카우트 배치를 팀장에게 맡겨 두었으면 출장 안 결정 메일이 오지 않습니다. 권한 화면에서 가져오면 다시 매주 출장 안을 받아 직접 정합니다.",
+    "소식함의 결정 소식에 [위임하기] 버튼이 결정 버튼 옆에 붙습니다. 연봉 협상·외국인 재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·스태프 빼가기처럼 설정 › 권한에 있는 업무면, 누르는 즉시 이번 건을 담당자의 기본안으로 처리하고 그 업무를 앞으로도 맡깁니다. 버튼 아래 한 줄로 담당자가 무엇을 하는지 보여 줍니다.",
+    "권한에 없는 핵심 결정(감독 갈등·징계 등)은 [비서에게 맡기기]로 이번 건만 추천안대로 처리합니다. 드래프트·트레이드 협상·FA·외국인 영입·단장 계약·협회 표결은 계속 단장이 직접 정합니다. 안 읽은 소식 머리의 [결정 모두 비서에게]로 걸린 결정을 한 번에 넘길 수도 있습니다."]},
   {id:'2026-11-17-ladv1',d:'11월 17일',t:'유저 래더: 새 서버·순위표·소식',items:[
     '유저 래더가 새 래더 서버를 씁니다. 이미 덱을 올려 둔 분은 래더 화면을 열면 덱과 지금 단계가 그대로 옮겨집니다. 서버에 연결되지 않을 때는 예전처럼 이 기기에서 리그를 할 수 있습니다.',
     '새 \'순위\' 탭: 이번 시즌 내 포인트·단계 순위·칭호·라이벌, 단계별 순위표(상위 20명), 승격·우승 소식을 봅니다. 리그 1위 30점부터 10위 1점까지, 할수록 쌓입니다.',
