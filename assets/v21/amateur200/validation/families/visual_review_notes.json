@@ -1,15 +1,35 @@
 {
-  "status": "ASSISTANT_VISUAL_NOTES_HUMAN_REVIEW_PENDING",
-  "scope": "26 numerically passing partial-atlas identities; numeric pass is not visual approval",
-  "direction": "Late-high-school near-adult appearance; natural proportions, subtle smile, low snug cap. User feedback is direction, not bulk approval.",
+  "status": "ASSISTANT_VISUAL_SCREEN_HUMAN_AGE_REVIEW_PENDING",
+  "scope": "Numerically passing partial-atlas subset is not human visual approval.",
+  "direction": "Near-adult late-high-school/early-university appearance, ordinary natural proportions and slight smile, cap low and snug.",
   "holds": [
     {
+      "id": "c005_p05",
+      "reason": "Potentially too juvenile for late-high-school direction; excluded from current numeric subset pending age review."
+    }
+  ],
+  "resolved": [
+    {
       "id": "c004_p07",
-      "reason": "HS-home preview has a thin neighboring-photo strip at top edge. Repair using a whole-photo crop and rerun affected exports and packed-atlas checks before release."
+      "change": "Whole original photograph crop below actual join removes neighboring-photo strip; remeasured."
     },
     {
-      "id": "c005_p05",
-      "reason": "Potentially younger appearance than late-high-school direction. Hold for age review; no numeric age inference or automatic approval."
+      "id": "c006_p04",
+      "change": "Whole original photograph crop below actual join removes neighboring-photo strip; remeasured."
+    },
+    {
+      "id": "c004_p08",
+      "change": "Identity-preserving whole-photo camera reframing adds full-cap headroom; remeasured."
+    },
+    {
+      "cohort": 7,
+      "photos": 8,
+      "change": "Native cells below384 regenerated as full higher-resolution photographs, no upscale."
+    },
+    {
+      "cohort": 8,
+      "photos": 6,
+      "change": "Native cells below384 regenerated as full higher-resolution photographs, no upscale."
     }
   ],
   "all_identities_human_age_review": "pending"

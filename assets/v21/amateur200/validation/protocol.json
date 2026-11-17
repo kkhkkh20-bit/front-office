@@ -54,10 +54,14 @@
       "sharp_yuv": true
     },
     "256": {
-      "format": "RGB WebP",
+      "format": "lossy RGB WebP",
       "quality": 88,
       "libwebp_version": "1.6.0",
-      "method": 6
+      "method": 0,
+      "segments": 1,
+      "sns_strength": 0,
+      "filter_strength": 0,
+      "sharp_yuv": true
     },
     "384": {
       "format": "RGB WebP",
@@ -66,5 +70,6 @@
       "method": 6
     }
   },
-  "feature_cache_policy": "Reuse measured vectors only when the exact decoded RGB pixel SHA256 is identical. A selective-versus-fresh inference fixture matched exactly at all3 sizes. No score or vector transforms."
+  "feature_cache_policy": "Reuse measured vectors only when the exact decoded RGB pixel SHA256 is identical. A selective-versus-fresh inference fixture matched exactly at all3 sizes. No score or vector transforms.",
+  "atlas_encoding_note": "128 and256 fixed method0 reduce unrelated tile changes at the required lossy q85/q88. 384 remains method6 q89. All actual decoded atlas pixels are measured; thresholds and model unchanged."
 }

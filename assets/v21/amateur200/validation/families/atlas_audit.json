@@ -1,16 +1,14 @@
 {
-  "photo_count": 338,
-  "family_count": 26,
+  "photo_count": 377,
+  "family_count": 29,
   "complete_13_variant_families": [
     "c000_p01",
     "c000_p03",
     "c000_p04",
     "c000_p08",
     "c001_p03",
-    "c001_p04",
     "c001_p05",
     "c001_p06",
-    "c001_p08",
     "c002_p00",
     "c002_p02",
     "c002_p04",
@@ -18,42 +16,47 @@
     "c002_p08",
     "c002_p09",
     "c003_p06",
-    "c004_p02",
+    "c004_p04",
     "c004_p05",
     "c004_p06",
     "c004_p07",
-    "c005_p05",
+    "c004_p08",
     "c005_p06",
+    "c005_p09",
     "c006_p01",
-    "c006_p05",
+    "c006_p04",
     "c006_p06",
-    "c006_p08"
+    "c006_p07",
+    "c006_p08",
+    "c007_p01",
+    "c007_p05",
+    "c007_p08"
   ],
   "all_13_families_generated": true,
   "raw_measurements": {
     "128": {
-      "same_comparisons": 2028,
-      "same_min": 0.6835340261459351,
-      "different_comparisons": 54925,
-      "different_max": 0.3987005352973938,
-      "old_comparisons": 164268,
-      "old_max": 0.3778001666069031
+      "same_comparisons": 2262,
+      "same_min": 0.6834105849266052,
+      "different_comparisons": 68614,
+      "different_max": 0.39697790145874023,
+      "old_comparisons": 183222,
+      "old_max": 0.37755438685417175
     },
     "256": {
-      "same_comparisons": 2028,
-      "same_min": 0.7231243848800659,
-      "different_comparisons": 54925,
-      "different_max": 0.3800807595252991,
-      "old_comparisons": 164268,
-      "old_max": 0.36112678050994873
+      "same_comparisons": 2262,
+      "same_min": 0.757325291633606,
+      "different_comparisons": 68614,
+      "different_max": 0.3820611238479614,
+      "old_comparisons": 183222,
+      "old_max": 0.3674747347831726
     },
     "384": {
-      "same_comparisons": 2028,
-      "same_min": 0.7713866829872131,
-      "different_comparisons": 54925,
-      "different_max": 0.376772940158844,
-      "old_comparisons": 164268,
-      "old_max": 0.3526829481124878
+      "same_comparisons": 2262,
+      "same_min": 0.7742743492126465,
+      "different_comparisons": 68614,
+      "different_max": 0.3800704777240753,
+      "old_comparisons": 183222,
+      "old_max": 0.3592391610145569
     }
   },
   "failures": [],
