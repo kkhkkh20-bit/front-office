@@ -8,7 +8,7 @@
 .am-ptable td,.am-ptable th{font-size:12px;padding:6px 8px;vertical-align:top}
 .am-ptable small.block{font-size:12px}
 .am-ptable :is(td,th){text-align:left}.am-ptable :is(td,th).num{text-align:right}
-.am-ptable td.am-rec{white-space:normal;min-width:150px;max-width:240px}
+.am-ptable td.am-rec{white-space:nowrap}.am-ptable td.am-rec small.block{color:var(--muted)} /* 학년별 흐름은 기록 아랫줄(사용자 11-17: 열 하나 줄여 평가가 잘리지 않게) */
 .am-roster{margin:0 0 6px}
 .am-roster td{font-size:12px;padding:4px 8px}
 @media(min-width:980px){
@@ -82,3 +82,62 @@
 .trip-pick .chips button{min-height:28px;font-size:12px;padding:2px 8px}
 .item.wa .av.ini.wire-assoc{white-space:nowrap;overflow:hidden;font-size:9px;letter-spacing:-.5px;line-height:1} /* 휴대폰 리그 소식: 협회 표시가 세로로 쪼개지지 않게 */
 .obs-m .candidate-name{border:0!important;box-shadow:none!important;padding-left:0}
+/* 아마추어 야구 하위 탭 정리(사용자 11-17): 넓은 표 대신 작은 카드 격자. 카드 안 표는 순위·이름·학교·값이 붙어 있고 줄이 낮다 */
+.am-grid,.am-lg{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:699px){ .am-grid{grid-template-columns:minmax(0,1fr)} } /* 휴대폰: 순위표·대회·학교 카드는 한 칸(학교 이름이 잘리지 않게), 기록 1위는 두 칸 */
+.am-lc{border:1px solid var(--line);border-radius:4px;background:var(--panel2,#0000);min-width:0;padding:5px 8px 6px}
+.am-lc-h{font:600 12px var(--f-ui);color:var(--muted);padding:0 0 3px;border-bottom:1px solid var(--line);margin:0 0 2px;gap:6px}
+.am-lc-h.row{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+.am-lc-h .small{font-weight:400;color:var(--ink)}
+.am-lt{width:100%;border-collapse:collapse;table-layout:auto}
+.am-lt td,.am-lt th{font-size:12px;padding:2px 4px;line-height:1.35;text-align:left;white-space:nowrap;border:0;background:none}
+.am-lt th{color:var(--muted);font-weight:500;font-size:11px}
+.am-lt tr+tr td{border-top:1px solid #ffffff0d}
+.am-lt :is(td,th).num{text-align:right;font-variant-numeric:tabular-nums;width:1%}
+.am-lt :is(td,th).r{color:var(--muted);width:1%;padding-left:0;text-align:right}
+.am-lt td.n{max-width:0;overflow:hidden;text-overflow:ellipsis;width:auto}
+.am-lt td.n .lnk{font-weight:600}
+.am-lt .am-sc,.am-lt .am-sc .lnk{color:var(--muted);font-size:11px;font-weight:400}
+.am-lt td:first-child:not(.r){padding-left:0}.am-lt td:last-child{padding-right:0}
+.am-lt.am-st td.num{min-width:22px}
+.am-none{margin:4px 0}
+.am-note{margin:8px 0 0}
+.am-seg{min-width:150px}.am-seg button{min-height:28px;padding:2px 10px;font-size:12px}
+.am-chl{display:flex;flex-wrap:wrap;gap:2px 12px;margin-top:4px}
+.am-hist{max-width:420px}
+.am-sum{display:flex;flex-direction:column;gap:12px}.am-sum>*{margin:0}.am-sum-l{display:flex;flex-direction:column;gap:12px}.am-sum-l>.card{margin:0}
+.am-col{display:flex;flex-direction:column;gap:12px}.am-col>.card{margin:0}
+.am-tc .am-rd{display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px;font-size:12px;padding:3px 0;border-top:1px solid #ffffff0d}
+.am-tc .am-rd:first-of-type{border-top:0}
+.am-tc .am-rd>b{color:var(--muted);font-weight:600}
+.am-tc .am-rd>span{display:flex;flex-wrap:wrap;gap:1px 12px}
+.am-gm{white-space:nowrap}.am-gm i{color:var(--muted);font-style:normal;font-size:11px}
+.am-schg{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:0 10px;padding-top:2px}
+.am-si{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;padding:2px 0;border-bottom:1px solid #ffffff0d;min-width:0}
+.am-si .lnk{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.am-si b{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}.am-si b.up{color:var(--good)}.am-si b.dn{color:var(--bad)}
+.am-roster .am-lt td.am-rl{white-space:normal}
+.am-pside p.small{margin:3px 0}
+.am-fb{min-height:24px!important;padding:0 8px!important;font-size:11px!important;margin-left:4px}
+.am-lg.am-g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:700px){
+  .am-lg{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .am-grid.am-g4{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .am-grid.am-g3{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+}
+@media(min-width:700px){ .am-sum-l{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start} }
+@media(min-width:1500px){ .am-sum{display:grid;grid-template-columns:minmax(280px,320px) minmax(0,1fr);align-items:start}.am-sum-l{display:flex} } /* 넓은 화면만 왼쪽 칸, 그 밑은 요약·비교를 위 한 줄에 두고 기록 카드를 넓게 */
+@media(min-width:980px){
+  :is(#app,#sheet) .am-pfilt .chips button,:is(#app,#sheet) .am-seg button{min-height:28px;padding:2px 9px;font-size:12px}
+  .am-pfilt{gap:4px 14px}
+  :is(#app,#sheet) .am-ptable :is(td,th){padding:4px 8px;height:auto}
+}
+@media(min-width:1500px){ .am-grid.am-g4{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media(min-width:621px){ .am-lt button.lnk,.am-si button.lnk,.am-lc-h button.lnk,.am-gm button.lnk{min-height:0;padding:0;line-height:1.35} } /* PC: 이름 버튼 최소 높이(30px) 때문에 줄이 높았다. 휴대폰은 누르기 쉬운 높이(36px) 유지 */
+@media(max-width:620px){ .am-lg .am-lt td.n{white-space:normal;max-width:none}.am-lg .am-lt td.n .am-sc{display:block;line-height:1.2}.am-lg .am-lt td.n>.lnk{min-height:24px!important}.am-lg .am-lt td{padding:3px 3px;vertical-align:middle}.am-lc{padding:4px 6px 5px} } /* 휴대폰 두 칸: 이름이 잘리지 않게 학교는 아랫줄 */
+/* 작은 카드 표: 디자인 시스템의 표 줄(32px·13px)보다 한 단계 촘촘하게(사용자 11-17) */
+:is(#app,#sheet) .am-lc .am-lt :is(td,th){font-size:12px;line-height:1.35;height:24px;padding:2px 4px;vertical-align:middle}
+:is(#app,#sheet) .am-lc .am-lt :is(td,th).r{padding-left:0}
+:is(#app,#sheet) .am-lc .am-lt th{font-size:11px;height:20px}
+:is(#app,#sheet) .am-roster .am-lt :is(td,th){font-size:12px;height:26px;padding:3px 6px}
+.am-sch-l p.small{margin:3px 0}.am-roster h4,.am-sch-r h4{margin:8px 0 2px}

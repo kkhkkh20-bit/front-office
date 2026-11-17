@@ -1,5 +1,5 @@
 /* 당시 소식의 업무 상태. 읽음과 완료는 별개이며, 기록을 여는 링크는 계속 쓸 수 있다. */
-const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt','expGmCancel','stRenew','stRenewAll']);
+const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','mdGoal','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','tripPlanGo','handOff','retNo','cwOpen','fdBegin','pmgmt','expGmCancel','stRenew','stRenewAll']);
 const mailStamp=m=>m.day0??m.day;
 const mailEnd=(text,expired=false)=>({label:expired?'기한 종료':'처리 완료',text,expired});
 /* 이전 구단 업무: 같은 구단으로 돌아오면 다시 열리므로 종료 상태로 저장하지 않는다(검수 11-09za) */
@@ -35,6 +35,8 @@ function mailActionStatus(m,a){
   if(a.a==='jobYes'||a.a==='jobNo'){const j=(G.jobs||[]).find(x=>x.tid===+a.v&&(c.job!=null?x.exp===c.job:x.exp>d&&x.exp<=d+20));return !j||j.done?mailEnd('이미 답했거나 끝난 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='goalTalk'){const g=G.goals;return !g||g.y!==G.year||!g.pre||g.talk?mailEnd(g&&g.talk?'올해 목표는 구단주와 상의를 마쳤습니다.':'목표 상의 기간이 끝났습니다.'):null;} /* 플레이 테스트 11-13: 수락한 뒤에도 버튼이 살아 있었다 */
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 끝났습니다.'):null;}
+  if(a.a==='handOff'&&typeof autoOn==='function'&&autoOn(a.v))return mailEnd(`${AUTO_WHO[a.v]||'비서'}에게 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`); /* 사용자 11-17 */
+  if(a.a==='tripPlanGo'){ if(tripAutoOn())return mailEnd('스카우트팀장에게 출장을 맡겼습니다. 따로 승인하지 않아도 됩니다.'); const T=G.tripPend; if(a.v&&(!T||String(T.w0)!==String(a.v)))return T&&T.w0>+a.v?mailEnd('새 출장 안이 왔습니다.',true):mailEnd('이 주 출장 안은 처리했거나 지났습니다.'); if(!a.v&&!T)return mailEnd('이미 처리한 출장 안입니다.'); return null; }
   if(a.a==='scoutPlanGo'){
     if(scoutWorkStatus().delegated)return mailEnd('스카우트팀장에게 배치를 맡겼습니다. 따로 승인하지 않아도 됩니다.');
     if(old)return mailEnd('새 배치 제안이 있습니다. 스카우트팀에서 확인하세요.',true); /* 같은 제안은 다시 보내지 않으므로 달이 바뀌어도 내용이 그대로면 그대로 적용할 수 있다(아래에서 지금 배치안과 대조) */

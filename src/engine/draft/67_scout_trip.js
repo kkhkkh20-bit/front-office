@@ -4,7 +4,8 @@
    - 관찰은 출장한 대회 경기에 나온 선수에게만 쌓인다. 한 스카우트가 하루 경기 세 개까지 본다(관심 선수가 많이 나오는 경기 먼저).
      관심 선수는 한 경기 1회(+집중 0.5·보통 0.25), 그 밖의 선수는 0.35회. 같은 선수를 우리 스카우트 둘이 보면 두 번째 의견이 생긴다(오차 0.9배).
    - 출장이 없는 주(학교 방문·전지훈련)에만 학교 방문(obsVisitWeek)을 한다.
-   - 매주 월요일 스카우트팀장이 앞으로 4주 출장 안을 낸다. 팀장 맡기기(기본 켬)면 그대로 보낸다. 끄면 출장 안 메일 한 통([그대로]·[바꾸기]).
+   - 매주 월요일 스카우트팀장이 앞으로 4주 출장 안을 낸다. 팀장 맡기기(기본 켬)면 그대로 보낸다(메일 없음). 끄면 출장 안 메일 한 통([그대로]·[팀장에게 맡기기]·[바꾸기]).
+     맡기기는 설정 › 권한의 '스카우트 출장'(autoOn('trip'))과 같은 값 G.tripAuto. 출장 안은 해시(u01)만 써서 맡기든 말든 R() 소비는 같다(사용자 11-17).
    - 다른 구단도 같은 함수로 같은 출장 안을 만들어 그대로 보낸다(같은 관찰 함수).
    - 우리 구단은 일요일마다 '현장 보고' 한 통(그 주에 본 경기·눈에 띈 선수 3명·집중 선수 소식, 출장이 있던 주만).
    - 옛 저장: 출장 기록이 없으면 처음 맞는 날 바로 출장 안을 만든다(그 주부터 적용) */
@@ -39,7 +40,7 @@ const tripOf=s=>s&&s.trip&&s.trip.to>=G.day&&s.trip.from<=G.day?s.trip.k:'sch';
 function tripWeekly(day,force){ const w0=tripWk0(day); for(const t of G.teams||[]){ const tid=t.id; if(tid===G.user&&G.unemp)continue; if(!clubAmScouts(tid).length)continue; const P=tripPlanWeek(tid,w0);
     if(tid!==G.user||tripAutoOn()){ tripApply(tid,P,w0); continue; }
     G.tripPend={w0,P}; const sc=clubAmScouts(tid); const now=sc.filter(s=>tripOf(s)!==P[s.id]);
-    if(!force&&now.length)mail('스카우트팀',`다음 주 출장 안: ${now.length}명 바꿈`,sc.map(s=>`${s.name}: ${tripName(tripOf(s))} → ${tripName(P[s.id])}`).join('\n')+'\n\n그대로 두면 지금 출장을 이어 갑니다.',{kind:'스카우트',acts:[{l:'그대로',a:'tripPlanGo',v:''},{l:'바꾸기',a:'go',v:'staff:scouts'}]}); } }
+    if(!force&&now.length)mail('스카우트팀',`다음 주 출장 안: ${now.length}명 바꿈`,sc.map(s=>`${s.name}: ${tripName(tripOf(s))} → ${tripName(P[s.id])}`).join('\n')+'\n\n그대로 두면 지금 출장을 이어 갑니다.',{kind:'스카우트',acts:[{l:'그대로',a:'tripPlanGo',v:String(w0)},{l:'팀장에게 맡기기',a:'handOff',v:'trip'},{l:'바꾸기',a:'go',v:'staff:scouts'}]}); } } /* 팀장에게 맡기기: 권한 화면의 '스카우트 출장'과 같은 설정(사용자 11-17) */
 function tripPlanGo(){ const T=G.tripPend; if(!T)return '출장 안이 없습니다.'; tripApply(G.user,T.P,T.w0); delete G.tripPend; return '팀장 출장 안대로 보냈습니다.'; }
 function tripSet(sid,k){ const s=(G.scouts||[]).find(x=>String(x.id)===String(sid)); if(!s)return '스카우트가 없습니다.'; const w0=tripWk0(G.day); s.trip={k,from:G.day,to:w0+6,man:true}; return `${s.name} 스카우트를 ${tripName(k)}(으)로 보냅니다. 이번 주 일요일까지입니다.`; }
 /* 경기 날: 출장 중인 스카우트가 그 대회 경기를 본다(모든 구단 같은 식) */
