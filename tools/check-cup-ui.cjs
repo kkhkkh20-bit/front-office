@@ -66,8 +66,12 @@ const { chromium } = require('playwright');
     await p.fill('#admKey', 'test-admin'); await p.click('[data-a="admKeyOk"]'); await p.waitForSelector('[data-a="admOpen"]', { timeout: 10000 }); await p.click('[data-a="admOpen"]');
     p.on('dialog', d => d.accept());
     await p.waitForSelector('#admId', { timeout: 10000 }); { const t = await p.evaluate(() => document.querySelector('.adm-now').innerText); assert.match(t, /서버 연결 OK · 관리자 키 맞음/); }
-    await p.fill('#admId', 'cup2'); await p.fill('#admTitle', '제2회 프런트컵'); await p.fill('#admDl', '2099-12-31 21:00'); await p.click('[data-a="admCfg"][data-v="open"]');
-    await p.waitForFunction(() => /접수를 열었습니다/.test(document.body.innerText), null, { timeout: 10000 }); const cfg2 = JSON.parse(m.get('cup:cfg').v); assert.equal(cfg2.id, 'cup2'); assert.equal(cfg2.open, true); assert.equal(cfg2.format, 'league');
+    await p.fill('#admId', 'cup2'); await p.fill('#admTitle', '제2회 프런트컵'); await p.fill('#admDl', '2099-12-31 21:00'); await p.fill('#admPayX', '2'); /* 연봉 상한 배수(사용자 11-17) */ await p.click('[data-a="admCfg"][data-v="open"]');
+    await p.waitForFunction(() => /접수를 열었습니다/.test(document.body.innerText), null, { timeout: 10000 }); const cfg2 = JSON.parse(m.get('cup:cfg').v); assert.equal(cfg2.id, 'cup2'); assert.equal(cfg2.open, true); assert.equal(cfg2.format, 'league'); assert.equal(cfg2.payCapX, 2, '연봉 상한 배수 저장');
+    assert.ok(fe.payRef > 0 && fe.P.every(q => typeof q.sal === 'number'), '참가 파일에 선수 연봉·리그 평균(사용자 11-17)');
+    { const t = await p.evaluate(async () => { CUP.st = ''; A.go('club:cup'); for (let i = 0; i < 50 && !(CUP.cfg && CUP.cfg.payCapX); i++) await new Promise(r => setTimeout(r, 100)); render(); const el = document.querySelector('.cup-cap'); return el ? el.innerText : document.body.innerText.slice(0, 300); });
+      assert.match(t, /연봉 상한 [\d.]+억\(리그 평균 [\d.]+억의 2배\) · 지금 1군 [\d.]+억\([\d.]+배\) · 여유/, '대회 신청 화면 연봉 상한 ' + t); }
+    await p.evaluate(() => A.go('club:cupadm')); await p.waitForSelector('#admId', { timeout: 10000 });
     const fp = path.join(require('node:os').tmpdir(), 'cup-entry-test.json'); fs.writeFileSync(fp, JSON.stringify(fe)); await p.setInputFiles('#admFiles', fp); await p.click('[data-a="admFile"]');
     await p.waitForFunction(() => /참가 파일 1개를 올렸습니다/.test(document.body.innerText) && document.querySelectorAll('.adm-e').length === 1, null, { timeout: 20000 }); console.log('관리자: 키 확인·대회 열기·참가 파일 올리기 통과');
     assert.match(await p.evaluate(() => document.querySelector('.adm-steps li.now').innerText), /접수 중\(1팀\)/, '지금 할 일: 접수 중');

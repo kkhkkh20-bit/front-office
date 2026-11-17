@@ -8,7 +8,7 @@ export const UL_TIERS = Object.freeze(['루키', '마이너', '1부', '챔피언
 export const UL_TEAMS = 10, UL_UP = 2, UL_DOWN = 2;
 /* 단계별 AI 덱 기준 OVR(총): 그 단계 등록 덱이 모자랄 때 채우는 AI 구단 전력(사용자 11-17 "레더 ai 도 챔피언스 이런곳은 고 오버롤로").
    예전 60·63·66·69·72는 실제 등록 덱(서버 11-17: 루키 평균 74.3, 레전드 77.5~82.5)보다 한참 약해 윗단계가 쉬웠다.
-   새 게임 1군 63~68(시드 6개)이 루키·마이너를 넘고, 1부부터는 덱을 다듬어야 하며, 챔피언스·레전드는 상한 안에서 잘 짠 덱(실제 78~79 덱이 1군 연봉 1~1.3배 수준)이라야 이긴다.
+   새 게임 1군 63~68(시드 6개)이 루키·마이너를 넘고, 1부부터는 덱을 다듬어야 하며, 챔피언스·레전드는 상한 안에서 잘 짠 덱(실제 서버의 78~79 덱 1군 연봉 합 104억~128억: 상한 안에서도 짤 수 있는 수준으로 추정)이라야 이긴다.
    서버가 그 단계 평균(등록 덱 3개 이상)을 주면 기준 ~ 기준+3 안에서 그 값을 쓴다(ulAiTarget) */
 export const UL_TIER_OVR = Object.freeze([62, 66, 70, 75, 79]);
 export const ulAiTarget = (tier, avg, count) => { const b = UL_TIER_OVR[Math.max(0, Math.min(UL_TIER_OVR.length - 1, tier | 0))]; return avg && count >= 3 ? Math.max(b, Math.min(b + 3, Math.round(avg))) : b; };
