@@ -47,7 +47,7 @@ return {A,RB};`);
   return run(NS,TEAM,DS);
 }
 const tot={}; const per=[]; const RB={hi:[0,0],lo:[0,0]};
-for(const s of SEEDS){ const T0=Date.now(); const r=one(s); per.push({seed:s,...r.A,sec:(Date.now()-T0)/1000}); for(const k in r.A)tot[k]=(tot[k]||0)+r.A[k]; for(const k of ['hi','lo'])for(const i of [0,1])RB[k][i]+=r.RB[k][i]; }
+for(const s of SEEDS){ const T0=Date.now(); const r=one(s); per.push({seed:s,...r.A,sec:(Date.now()-T0)/1000}); for(const k in r.A)tot[k]=(tot[k]||0)+r.A[k]; for(const k of ['hi','lo'])for(const i of [0,1])RB[k][i]+=r.RB[k][i]; if(process.env.JSON)fs.writeFileSync(process.env.JSON,JSON.stringify({seeds:SEEDS,ns:NS,ds:DS,per},null,1)); } /* 시드마다 저장: 오래 걸려도 중간 결과를 합칠 수 있게 */
 console.error=oe;
 const M=defMetrics;
 function defMetrics(A){ const bip=A.ab-A.so-A.hr+A.sf; return {AVG:A.h/A.ab, BABIP:(A.h-A.hr)/bip, 'E/G':A.e/A.g, 'ROE/G':A.roe/A.g, 'SBA/G':(A.sb+A.cs)/A.g, 'SB%':A.sb/Math.max(1,A.sb+A.cs), 'DP/G':A.dp/A.g, 'R/G':A.r/A.g, 'XBO/G':A.xbo/A.g, '2B/G':A.d2/A.g}; }
