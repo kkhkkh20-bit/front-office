@@ -4,7 +4,7 @@
 
 | 파일 | 원본 | 작성자 | 라이선스 | 처리 |
 | --- | --- | --- | --- | --- |
-| crack.mp3 | [Bat Hit 9 FF095](https://freesound.org/people/martinimeniscus/sounds/162886/) | martinimeniscus | CC0 | 타격 순간부터 0.6초 |
+| crack.mp3 | [Bat Hit 9 FF095](https://freesound.org/people/martinimeniscus/sounds/162886/) | martinimeniscus | CC0 | 타격 순간부터 0.24초. 나무 배트 '딱·퍽'처럼: 880Hz 부근 '통' 울림을 깎고(-11dB) 300Hz·3kHz를 올리고(+6dB), 낮은 대역으로 거른 짧은 잡음 '퍽'을 섞은 뒤 압축·리미터로 키웠다(평균 음량 원본보다 약 5dB, 커뮤니티 11-17) |
 | mitt1.mp3 | [Glove Catch 1 FF014](https://freesound.org/people/martinimeniscus/sounds/164499/) | martinimeniscus | CC0 | 포구 순간부터 0.35초 |
 | mitt2.mp3 | [Glove Catch 12 FF003](https://freesound.org/people/martinimeniscus/sounds/164536/) | martinimeniscus | CC0 | 포구 순간부터 0.35초 |
 | amb1.mp3 | [S14-02 Baseball walla from high in stands](https://freesound.org/people/craigsmith/sounds/675194/) | craigsmith | CC0 | 반복용(1.5초 교차) |
