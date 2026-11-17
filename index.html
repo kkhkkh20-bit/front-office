@@ -1620,6 +1620,15 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 /* 에이전트 명단(영입·계약 > 에이전트) */
 .ag-h4{margin:10px 0 4px;font-size:12.5px;color:var(--team-hi,#4fa3ff)}.ag-h4 em{font-style:normal;color:var(--muted);font-weight:500;margin-left:4px}
 .ag-hd{margin-bottom:6px}.tf-ag .pm-n{display:inline-flex;gap:6px;align-items:center}
+/* 협상 보고서: 연도별 지출 접는 줄(외부 검수 11-17) */
+.ng-cash{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:8px 10px}
+.ng-cash summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;cursor:pointer;list-style:none}
+.ng-cash summary i{font-style:normal;font-size:var(--ui-caption);color:var(--muted)}.ng-cash summary b{font-size:var(--ui-body)}
+.ng-cash ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.ng-cash li{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:2px 8px;align-items:baseline}
+.ng-cash li em{font-style:normal;font-size:var(--ui-caption);color:var(--muted);grid-column:1/-1}
+.ng-cash p{margin:6px 0 0}
+.ng-cash summary::-webkit-details-marker{display:none}.ng-cash summary::after{content:'▸';margin-left:auto;color:var(--muted)}.ng-cash[open] summary::after{content:'▾'}
 /* 읽기·누르기 개선: 작은 글씨 11px, 버튼 높이 30px 이상 */
 .tc-rt span,.tc-tools span,.tc-tools i,.teamc-top i,.fsq em,.sbr .small,.pc-l,.cnd,table.rt i.f,.trend,.rd,.tp-r i,.tp-g i,.posfit i,table.tcmp td i,.cmp-k i,.sl span,.growth span,.prchart span{font-size:var(--ui-caption)}
 button.pill,.pill[data-a]{min-height:30px;display:inline-flex;align-items:center;padding-top:0;padding-bottom:0}
@@ -32816,13 +32825,21 @@ function sbGet(n){ if(SB.has(n)){ if(SB_PEND.has(n)||sbFlag(meta(),n))return SB.
 try{ window.addEventListener('storage',e=>{ try{ if(e.key!==META&&!(e.key||'').startsWith(SAVE+'-s'))return; const m=meta(); for(const n of [...SB.keys()])if(!SB_PEND.has(n)&&!sbFlag(m,n))SB.delete(n); }catch(x){} }); }catch(e){}
 /* 목록의 idb 표시를 고친다(판번호가 그대로일 때만) */
 function sbMark(n,on,rev){ try{ const m=meta(); const it=m.slots[n]; if(!it||(rev!=null&&it.rev!==rev))return false; if(!!it.idb===!!on)return true; if(on)it.idb=true; else delete it.idb; return setMeta(m); }catch(e){ return false; } }
-/* 본문 쓰기: localStorage 우선, 공간이 없으면 IndexedDB. true면 이 탭에서는 바로 읽을 수 있다 */
+/* 본문 쓰기: localStorage 우선, 공간이 없으면 IndexedDB. true면 이 탭에서는 바로 읽을 수 있다.
+   IndexedDB로 쓰는 중(SB_PEND)에는 아직 확정이 아니다: sbSettle(n)이 확정(true)·실패(false)를 알려 준다(외부 검수 11-17 P1: 확정 전에 저장됨으로 기억해 다시 저장을 건너뜀).
+   위치 표시(idb)는 본문보다 먼저 붙인다: 표시를 못 붙이면 새로고침 뒤 새 본문을 찾을 수 없으니 저장 실패로 돌려준다(외부 검수 11-17 P2: 표시만 실패해도 성공 안내).
+   표시를 먼저 붙였다가 본문 쓰기가 실패하면 표시를 되돌려 localStorage에 남은 마지막 본문을 그대로 연다 */
+const SB_WAIT=new Map();
+async function sbSettle(n){ for(;;){ const w=SB_WAIT.get(n); if(!w)return true; const r=await w; if(r!==null||SB_WAIT.get(n)===w)return r===true; } } /* 마지막 쓰기의 결과. 더 새 쓰기에 밀린 쓰기(null)는 그 새 쓰기의 결과를 기다린다(localStorage로 확정되면 표가 지워져 true) */
 function sbSet(n,data){ let ls=false; try{ SaveStore.set(slotKey(n),data); ls=SaveStore.get(slotKey(n))===data; }catch(e){}
-  if(ls){ SB_PEND.delete(n); try{ const m=meta(); if(m.slots[n]&&m.slots[n].fail){ delete m.slots[n].fail; setMeta(m); } }catch(e){} if(SB.has(n)){ SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; } if(sbFlag(meta(),n)){ sbMark(n,false); if(sbOk())sbDrop(n).catch(()=>{}); } return true; }
+  if(ls){ SB_PEND.delete(n); SB_WAIT.delete(n); try{ const m=meta(); if(m.slots[n]&&m.slots[n].fail){ delete m.slots[n].fail; setMeta(m); } }catch(e){} if(SB.has(n)){ SB.delete(n); SB_SEQ[n]=(SB_SEQ[n]||0)+1; } if(sbFlag(meta(),n)){ sbMark(n,false); if(sbOk())sbDrop(n).catch(()=>{}); } return true; }
   if(!sbOk())return false;
-  SB.set(n,data); SB_PEND.add(n); const seq=SB_SEQ[n]=(SB_SEQ[n]||0)+1, rev=revOf(meta(),n);
-  sbPut(n,data).then(()=>{ if(SB_SEQ[n]!==seq)return; SB_PEND.delete(n); if(sbMark(n,true,rev)){ try{ SaveStore.remove(slotKey(n)); }catch(e){} } sbOffload(n); }).catch(()=>{ if(SB_SEQ[n]!==seq)return; SB_PEND.delete(n); SB.delete(n); try{ const m=meta(); if(m.slots[n]){ m.slots[n].fail=G?G.day:1; setMeta(m); } }catch(e){} /* 실패한 저장은 목록에 표시하고 메모리 사본도 버린다: 새로고침 뒤 옛 본문이 조용히 열리지 않게 */ SAVE_ERR='브라우저 저장 공간이 가득 차고 보조 저장소(IndexedDB)에도 쓰지 못했습니다. 파일로 내보내기로 백업하세요.'; try{ toast(SAVE_ERR); }catch(e){} });
+  const m0=meta(), rev=revOf(m0,n), had=sbFlag(m0,n);
+  if(!had&&!sbMark(n,true,rev)&&!sbMark(n,true,rev)){ SAVE_ERR_SB='저장 목록에 보조 저장소(IndexedDB) 위치를 기록하지 못해, 새로고침 뒤 이 저장을 찾을 수 없습니다.'; return false; } /* 한 번 더 시도하고도 안 되면 실패 */
+  SB.set(n,data); SB_PEND.add(n); const seq=SB_SEQ[n]=(SB_SEQ[n]||0)+1; let done; SB_WAIT.set(n,new Promise(r=>{ done=r; }));
+  sbPut(n,data).then(()=>{ if(SB_SEQ[n]!==seq)return done(null); SB_PEND.delete(n); if(sbMark(n,true,rev)){ try{ const m=meta(); if(m.slots[n]&&m.slots[n].fail&&revOf(m,n)===rev){ delete m.slots[n].fail; setMeta(m); } }catch(e){} try{ SaveStore.remove(slotKey(n)); }catch(e){} done(true); } else done(false); /* 그사이 다른 탭이 판번호를 바꿨다: 확정으로 보지 않는다 */ sbOffload(n); }).catch(()=>{ if(SB_SEQ[n]!==seq)return done(null); SB_PEND.delete(n); SB.delete(n); try{ const m=meta(); if(m.slots[n]){ m.slots[n].fail=G?G.day:1; if(!had&&revOf(m,n)===rev)delete m.slots[n].idb; setMeta(m); } }catch(e){} /* 실패한 저장은 목록에 표시하고 메모리 사본도 버린다: 새로고침 뒤 옛 본문이 조용히 열리지 않게. 이번에 붙인 위치 표시는 되돌린다 */ svDrop(n); SAVE_ERR='브라우저 저장 공간이 가득 차고 보조 저장소(IndexedDB)에도 쓰지 못했습니다. 파일로 내보내기로 백업하세요.'; try{ toast(SAVE_ERR); }catch(e){} done(false); });
   return true; }
+let SAVE_ERR_SB='';
 /* 진행 중이 아닌 슬롯 본문을 IndexedDB로 옮겨 localStorage 공간을 비운다(사본 확인 뒤 삭제) */
 let _sbOff=false; async function sbOffload(keep){ if(_sbOff||!sbOk())return; _sbOff=true; try{ for(const k of SLOT_IDS){ if(k===keep||k===CUR_SLOT)continue; const body=sbLsGet(k); if(body==null)continue; const m=meta(); if(!m.slots[k])continue; const rev=m.slots[k].rev;
       await sbPut(k,body); if(await sbRead(k)!==body)continue; if(sbLsGet(k)!==body||revOf(meta(),k)!==rev)continue; SB.set(k,body); if(sbMark(k,true,rev)){ try{ SaveStore.remove(slotKey(k)); }catch(e){} } else SB.delete(k); } }catch(e){} finally{ _sbOff=false; } }
@@ -32895,24 +32912,32 @@ function writeSlot(n,data,info,exp){ const own=n===curSlot()&&exp==null; if(own)
   const full=()=>{ let mb=''; try{ mb=` (지금 모든 슬롯 합계 약 ${(SLOT_IDS.reduce((x,k)=>x+slotSize(k),0)/1024).toFixed(1)}MB)`; }catch(e){} SAVE_ERR=`브라우저 저장 공간이 가득 차 저장하지 못했습니다${mb}. 저장 공간은 모든 슬롯이 함께 쓰므로, 빈 슬롯이 있어도 전체가 차면 저장되지 않습니다. 안 쓰는 슬롯을 지우거나 내보내기로 백업한 뒤 지우세요.`; return false; }; /* 커뮤니티 11-12: 빈 슬롯이 있는데 공간 부족이라 나와 헷갈림 */
   if(own&&SAVE_CONFL)return confl();
   try{ const m=meta(), old=m.slots[n], act0=m.active, b0=sbGet(n); if(old&&old.lock){ SAVE_ERR=`슬롯 ${n}은(는) 보관 슬롯이라 덮어쓰지 않습니다. 보관을 풀어야 쓸 수 있습니다.`; return false; } /* 보관 슬롯은 자동 저장·덮어쓰기가 절대 쓰지 않는다(플레이테스트 3) */ if(revOf(m,n)!==exp)return confl();
-    info=Object.assign({},info,{rev:revNext(exp)}); if(old&&old.idb&&SB.has(n))info.idb=true; /* 본문이 IndexedDB에 있으면 표시를 이어 간다(공간이 나면 sbSet이 지운다) */ if(old&&old.memo!=null&&info.memo==null&&!(own&&SLOT_NEW))info.memo=old.memo; /* 슬롯 메모는 같은 게임을 저장할 때만 남긴다(검수 11-09zr #17: 새 게임·가져온 백업에 이전 메모가 남음) */
+    info=Object.assign({},info,{rev:revNext(exp)}); if(old&&old.idb)info.idb=true; /* 본문이 IndexedDB에 있으면 표시를 이어 간다(공간이 나면 sbSet이 지운다). 메모리 사본이 없어도(앞 쓰기 실패) 표시는 남긴다: 마지막 정상 본문이 IndexedDB에 있다 */ if(old&&old.memo!=null&&info.memo==null&&!(own&&SLOT_NEW))info.memo=old.memo; /* 슬롯 메모는 같은 게임을 저장할 때만 남긴다(검수 11-09zr #17: 새 게임·가져온 백업에 이전 메모가 남음) */
     m.slots[n]=info; if(own)m.active=n; /* 이 탭이 저장에 성공한 슬롯을 이어하기 대상으로(검수 11-09 #9: 첫 저장 전에 활성으로 바꾸면 실패 때 이어하기가 사라짐) */
     if(!setMeta(m)){ SAVE_ERR='저장 목록을 기록하지 못했습니다. 저장 공간을 확인한 뒤 다시 저장하세요.'; return false; }
     /* 판번호를 확인한 뒤 차지하기 전에 다른 탭이 저장을 끝냈으면 본문이 바뀌어 있다: 그 본문을 덮지 않고 충돌로 본다. 목록은 그 본문 기준으로 고치고 새 판번호를 남겨 옛 판번호 탭도 막는다(검수 11-09zr #1: 두 탭 모두 성공) */
     if(sbGet(n)!==b0){ slotFix(n,info.rev); return confl(); }
     const undo=()=>{ try{ const m2=meta(); if(revOf(m2,n)===info.rev){ if(old)m2.slots[n]=old; else delete m2.slots[n]; if(own&&m2.active===n)m2.active=act0; setMeta(m2); } }catch(e){} try{ if(own&&revOf(meta(),n)===info.rev)SLOT_REV=info.rev; }catch(e){} }; /* 차지한 기록이 그대로일 때만 되돌린다. 되돌리기도 실패하면 남은 판번호(본문은 이 탭이 쓰던 그대로)를 이 탭 것으로 이어 받아 다음 저장이 충돌로 막히지 않게(검수 11-09zr #9) */
-    if(!sbSet(n,data)){ undo(); return full(); }
+    SAVE_ERR_SB=''; if(!sbSet(n,data)){ undo(); if(SAVE_ERR_SB){ SAVE_ERR=SAVE_ERR_SB; return false; } return full(); }
     const mine=revOf(meta(),n)===info.rev; if(!mine)return confl(); if(sbGet(n)!==data){ undo(); return full(); }
     if(own){ SLOT_REV=info.rev; SLOT_NEW=false; } SAVE_ERR=''; return true; }catch(e){ return full(); } }
 /* 목록 항목을 지금 본문 기준으로 고친다(판번호 r이 그대로일 때만). 본문이 없으면 항목을 뺀다 */
 function slotFix(n,r){ try{ const m=meta(); if(revOf(m,n)!==r)return; const h=unpack(sbGet(n)), memo=(m.slots[n]||{}).memo; if(h)m.slots[n]=Object.assign(slotInfoOf(h),{rev:r},memo!=null?{memo}:{},m.slots[n]&&m.slots[n].lock?{lock:true}:{}); else delete m.slots[n]; setMeta(m); }catch(e){} }
 /* 바뀐 것이 없으면 쓰지 않는다: 진행 없이 처음 화면으로 나간 탭이 판번호를 올려 다른 탭 저장을 막지 않게(검수 11-09 #7) */
-let _svJ=null, _svN=null, _svWarn=false; function svMark(){ _svJ=G?prepG():null; _svN=curSlot(); }
-function svSame(n,j){ return j===_svJ&&n===_svN&&slotHas(n); }
-function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; const j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } const ok=writeSlot(n,packJ(j),slotInfo()); if(ok){ _svJ=j; _svN=n; } _svFail=!ok; return ok; }
+/* 같은 상태 기억(_svJ)은 저장이 확정된 뒤에만 바꾼다. IndexedDB로 쓰는 중이면 _svP(확정 대기)로 두고, 실패하면 기억을 지워 같은 상태라도 다시 쓴다(외부 검수 11-17 P1) */
+let _svJ=null, _svN=null, _svP=null, _svWarn=false; function svMark(){ _svJ=G?prepG():null; _svN=curSlot(); _svP=null; }
+function svSame(n,j){ return (j===_svJ&&n===_svN&&slotHas(n))||(!!_svP&&_svP.n===n&&_svP.j===j&&SB_PEND.has(n)); } /* 같은 상태를 쓰는 중이면 겹쳐 쓰지 않는다(결과는 확정 대기가 알린다) */
+function svDone(n,j){ if(!SB_PEND.has(n)){ _svJ=j; _svN=n; _svP=null; return; } const p=_svP={n,j}; sbSettle(n).then(ok=>{ if(_svP!==p)return; _svP=null; if(ok){ _svJ=j; _svN=n; } else svDrop(n); }); }
+function svDrop(n){ if(_svN===n)_svJ=null; if(_svP&&_svP.n===n)_svP=null; if(n===curSlot())_svFail=true; } /* 확정 실패: 같은 상태라도 다시 쓰고, 탭을 숨길 때도 다시 시도한다 */
+function savePend(){ return !!G&&!SAVE_CONFL&&SB_PEND.has(curSlot()); }
+/* 처음 화면·슬롯 전환처럼 저장이 확정돼야 하는 곳: IndexedDB 쓰기가 끝나지 않았으면 기다렸다 fn을 다시 부른다(기다리면 true). 실패·무응답이면 넘어가지 않고 알린다 */
+function saveHold(fn,what){ if(!savePend())return false; if(UI._svHold)return true; UI._svHold=true; const n=curSlot(); let fin=false;
+  const end=ok=>{ if(fin)return; fin=true; UI._svHold=false; if(ok&&!SB_PEND.has(n)){ fn(); return; } if(!ok&&!SAVE_ERR)SAVE_ERR='보조 저장소(IndexedDB) 저장이 끝나지 않았습니다. 잠시 뒤 다시 시도하거나 파일로 내보내기로 백업하세요.'; const msg=`지금 게임(${G?dstr(G.day):''})의 저장이 확정되지 않아 ${what||'넘어가지'} 않았습니다. ${SAVE_ERR||''}`.trim(); UI.slotMsg=msg; try{ toast(msg); }catch(e){} try{ render(); }catch(e){} };
+  sbSettle(n).then(end,()=>end(false)); setTimeout(()=>end(false),8000); return true; }
+function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; const j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } const ok=writeSlot(n,packJ(j),slotInfo()); if(ok)svDone(n,j); _svFail=!ok; return ok; }
 async function saveStoreAsync(){ if(!G)return; const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(), j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } _svBusy=true; let data=null;
   try{ data=await packJAsync(j); }catch(e){ data=null; }
-  if(seq!==_svSeq||G!==g)return; _svBusy=false; let ok; if(data==null)ok=saveStore(); else if((ok=writeSlot(n,data,info))){ _svJ=j; _svN=n; }
+  if(seq!==_svSeq||G!==g)return; _svBusy=false; let ok; if(data==null)ok=saveStore(); else if((ok=writeSlot(n,data,info)))svDone(n,j);
   _svFail=!ok; if(ok)_svWarn=false; else if(!SAVE_CONFL&&!_svWarn){ _svWarn=true; try{ toast(`자동 저장에 실패했습니다. ${SAVE_ERR}`); }catch(e){} } } /* 자동 저장 실패를 바로 알린다(검수 11-09 #10). 실패가 이어지는 동안은 한 번만 */
 function slotRecover(n,g,body,m0){ if(m0.slots[n])return m0; try{ const m=meta(); if(m.slots[n]||sbGet(n)!==body)return m0;
   const r=revNext(0); m.slots[n]=Object.assign(slotInfoOf(g),{rev:r}); if(!slotHas(m.active))m.active=n;
@@ -40462,7 +40487,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   hardOff(){ if(G&&G.cfg&&G.cfg.hard){ G.cfg.hard=false; G.cfg.hardOffY=G.year; toast('난이도를 보통으로 낮췄습니다. 이 게임에서는 다시 하드로 올릴 수 없습니다.'); save(); render(); } },
   smode(v){ UI.smode=v; UI.sstep='team'; render(); window.scrollTo(0,0); },
   tsGo(v){ UI.sstep=v; if(v==='main'){ UI.newSlot=null; UI.slotMsg=''; } render(); window.scrollTo(0,0); },
-  toTitle(){ if(G&&!saveOK()){ toast(`지금 게임(${dstr(G.day)})을 저장하지 못해 처음 화면으로 가지 않았습니다. 그대로 닫으면 마지막 저장 이후 진행이 사라집니다. ${SAVE_ERR||''}`.trim()); return; } /* 검수 11-07 */ closeSheets(); UI.slotMsg=''; UI.title=true; UI.sstep='main'; render(); window.scrollTo(0,0); },
+  toTitle(){ if(G&&!saveOK()){ toast(`지금 게임(${dstr(G.day)})을 저장하지 못해 처음 화면으로 가지 않았습니다. 그대로 닫으면 마지막 저장 이후 진행이 사라집니다. ${SAVE_ERR||''}`.trim()); return; } if(saveHold(()=>A.toTitle(),'처음 화면으로 가지'))return; /* 보조 저장소에 쓰는 중이면 확정을 기다린다(외부 검수 11-17) */ /* 검수 11-07 */ closeSheets(); UI.slotMsg=''; UI.title=true; UI.sstep='main'; render(); window.scrollTo(0,0); },
   tsCont(){ if(G&&!SAVE_CONFL){ const n=curSlot(); if(slotHas(n)&&revOf(meta(),n)===SLOT_REV){ UI.title=false; render(); return; } /* 다른 탭이 그사이 저장하거나 지운 슬롯: 저장소를 다시 확인한다(검수 11-09zr #6) */ if(prepG()!==_svJ)saveNow(); else if(!slotHas(n)){ G=null; CUR_SLOT=null; const k=contSlot(); if(k==null){ UI.slotMsg=`슬롯 ${n}은(는) 다른 탭(창)에서 지워졌습니다.`; render(); return; } A.slotLoad(k); return; } else { A.slotLoad(n); return; } } const n=G?(slotHas(curSlot())?curSlot():contSlot()):contSlot(); if(n==null){ UI.slotMsg='이어 할 저장이 없습니다.'; render(); return; } A.slotLoad(n); }, /* 저장 충돌 뒤에는 탭에 남은 옛 상태 대신 저장소의 최신본을 다시 연다(검수 11-09 #5). 표시와 같은 대상을 연다(#8) */
   fdPick(v){ const pk0=G.fd&&G.fd.picks[G.fd.cur]; const id=+v; const n0=G.fd?G.fd.cur+1:0; const g0=fdGrade(G.players[id]); const r=fdPick(id); UI.sheet=null; renderSheet(); if(!r&&pk0){ dlFeedAdd('fd',pk0,id); UI.rev=revMake(id,pk0,n0); if(UI.rev&&g0)UI.rev.g0=g0.g; } UI.fdMsg=r; save(); render(); },
   fdBegin(){ if(!G.fdWait)return; G.fdWait=false; G.mail.forEach(m=>{ if(m.from==='구단주실'&&(m.acts||[]).some(a=>a.a==='fdBegin')){ m.read=true; } }); fdStart(); UI.mail=null; UI.tab='home'; save(); render(); window.scrollTo(0,0); },
@@ -40941,15 +40966,15 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   mkt(v,el){G.marketing=+el.value;save();render();}, mktStep(v){ if(period()!=='pre')return; G.marketing=clamp((G.marketing||2000)+(+v||0),500,6000); save(); render(); }, /* 1억 단위 조정(플레이 테스트 11-13: 트랙을 누르면 한 번에 12억씩 바뀌었다) */
   askNew(){UI.confirmNew=true;render();},
   cancelNew(){UI.confirmNew=false;render();},
-  newgame(){ if(G&&!saveOK()){ toast(`지금 게임(${dstr(G.day)})을 저장하지 못해 새 구단을 시작하지 않았습니다. ${SAVE_ERR||''}`.trim()); return; } if(!confDrop('new'))return; /* 저장 실패면 현재 게임을 닫지 않는다(검수 11-06) */ G=null; UI.confirmNew=false; UI.newSlot=null; UI.tab='home'; closeSheets(); render(); window.scrollTo(0,0); },
+  newgame(){ if(G&&!saveOK()){ toast(`지금 게임(${dstr(G.day)})을 저장하지 못해 새 구단을 시작하지 않았습니다. ${SAVE_ERR||''}`.trim()); return; } if(saveHold(()=>A.newgame(),'새 구단을 시작하지'))return; if(!confDrop('new'))return; /* 저장 실패면 현재 게임을 닫지 않는다(검수 11-06) */ G=null; UI.confirmNew=false; UI.newSlot=null; UI.tab='home'; closeSheets(); render(); window.scrollTo(0,0); },
   /* 보관(읽기 전용) 표시: 자동 저장과 덮어쓰기가 이 슬롯에 쓰지 않는다. 진행 중 슬롯은 보관할 수 없다(플레이테스트 3) */
   slotLock(v){ const n=+v, m=meta(), s=m.slots[n]; if(!s)return; if(G&&n===curSlot()){ UI.slotMsg=`슬롯 ${n}은(는) 지금 진행 중이라 보관할 수 없습니다. "빈 슬롯에 따로 저장"으로 사본을 만든 뒤 그 사본을 보관하세요.`; render(); return; } s.lock=!s.lock; if(!setMeta(m)){ UI.slotMsg='저장 공간이 가득 차 보관 표시를 바꾸지 못했습니다.'; render(); return; } UI.slotMsg=s.lock?`슬롯 ${n}을(를) 보관했습니다. 이 슬롯은 덮어쓰지 않으며, 불러오면 빈 슬롯에 사본을 만들어 이어 합니다.`:`슬롯 ${n}의 보관을 풀었습니다.`; render(); },
   /* 새 슬롯에 이어하기: 고른 슬롯의 본문을 빈 슬롯에 복사한 뒤 그 사본을 연다. 원본은 그대로 남는다(플레이테스트 3) */
-  slotLoadNew(v){ const n=+v; if(sbFlag(meta(),n)&&!UI._sbFresh){ UI._sbFresh=true; sbRefresh([n]).finally(()=>{ try{ A.slotLoadNew(v); }finally{ UI._sbFresh=false; } }); return; } if(G&&!saveOK()){ UI.slotMsg=`지금 게임(${dstr(G.day)})을 저장하지 못해 옮기지 않았습니다. ${SAVE_ERR||''}`.trim(); render(); return; } const m=meta(), body=sbGet(n), src=m.slots[n]; if(!body||!src){ UI.slotMsg=`슬롯 ${n}에 불러올 저장이 없습니다.`; render(); return; } const to=SLOT_IDS.find(k=>!slotUsed(k,m)); if(!to){ UI.slotMsg=`빈 슬롯이 없어 새 슬롯에 이어 할 수 없습니다. 슬롯 하나를 지운 뒤 다시 누르세요.`; render(); return; } const info=Object.assign({},src,{at:Date.now()}); delete info.lock; delete info.rev; delete info.idb; delete info.fail; if(!writeSlot(to,body,info,0)){ UI.slotMsg=`새 슬롯에 복사하지 못했습니다. ${SAVE_ERR||''}`.trim(); render(); return; } A.slotLoad(to); UI.slotMsg=`슬롯 ${n}의 저장을 슬롯 ${to}에 복사해 이어 합니다. 슬롯 ${n}은(는) 그대로 남습니다.`; render(); },
-  slotLoad(v){ if((meta().slots[+v]||{}).lock&&!(G&&+v===curSlot())){ A.slotLoadNew(v); return; } /* 보관 슬롯은 제자리에서 이어 하지 않는다 */ if(sbFlag(meta(),+v)&&!UI._sbFresh){ UI._sbFresh=true; sbRefresh([+v]).finally(()=>{ try{ A.slotLoad(v); }finally{ UI._sbFresh=false; } }); return; } /* IndexedDB에 있는 슬롯은 다른 탭이 쓴 최신 본문을 먼저 읽는다 */ if(G&&!saveOK()){ UI.slotMsg=`지금 게임(${dstr(G.day)})을 저장하지 못해 ${+v===curSlot()?'다시 열지':`슬롯 ${v}(으)로 옮기지`} 않았습니다. 그대로 열면 마지막 저장 이후 진행이 사라집니다. ${SAVE_ERR||''}`.trim(); render(); return; } /* 같은 슬롯을 다시 열 때도 저장이 먼저 성공해야(검수 11-06) */
+  slotLoadNew(v){ const n=+v; if(sbFlag(meta(),n)&&!UI._sbFresh){ UI._sbFresh=true; sbRefresh([n]).finally(()=>{ try{ A.slotLoadNew(v); }finally{ UI._sbFresh=false; } }); return; } if(G&&!saveOK()){ UI.slotMsg=`지금 게임(${dstr(G.day)})을 저장하지 못해 옮기지 않았습니다. ${SAVE_ERR||''}`.trim(); render(); return; } if(saveHold(()=>A.slotLoadNew(v),'옮기지'))return; const m=meta(), body=sbGet(n), src=m.slots[n]; if(!body||!src){ UI.slotMsg=`슬롯 ${n}에 불러올 저장이 없습니다.`; render(); return; } const to=SLOT_IDS.find(k=>!slotUsed(k,m)); if(!to){ UI.slotMsg=`빈 슬롯이 없어 새 슬롯에 이어 할 수 없습니다. 슬롯 하나를 지운 뒤 다시 누르세요.`; render(); return; } const info=Object.assign({},src,{at:Date.now()}); delete info.lock; delete info.rev; delete info.idb; delete info.fail; if(!writeSlot(to,body,info,0)){ UI.slotMsg=`새 슬롯에 복사하지 못했습니다. ${SAVE_ERR||''}`.trim(); render(); return; } A.slotLoad(to); UI.slotMsg=`슬롯 ${n}의 저장을 슬롯 ${to}에 복사해 이어 합니다. 슬롯 ${n}은(는) 그대로 남습니다.`; render(); },
+  slotLoad(v){ if((meta().slots[+v]||{}).lock&&!(G&&+v===curSlot())){ A.slotLoadNew(v); return; } /* 보관 슬롯은 제자리에서 이어 하지 않는다 */ if(sbFlag(meta(),+v)&&!UI._sbFresh){ UI._sbFresh=true; sbRefresh([+v]).finally(()=>{ try{ A.slotLoad(v); }finally{ UI._sbFresh=false; } }); return; } /* IndexedDB에 있는 슬롯은 다른 탭이 쓴 최신 본문을 먼저 읽는다 */ if(G&&!saveOK()){ UI.slotMsg=`지금 게임(${dstr(G.day)})을 저장하지 못해 ${+v===curSlot()?'다시 열지':`슬롯 ${v}(으)로 옮기지`} 않았습니다. 그대로 열면 마지막 저장 이후 진행이 사라집니다. ${SAVE_ERR||''}`.trim(); render(); return; } /* 같은 슬롯을 다시 열 때도 저장이 먼저 성공해야(검수 11-06) */ if(saveHold(()=>A.slotLoad(v),`슬롯 ${v}(으)로 옮기지`))return;
     if(G&&SAVE_CONFL&&UI.confLoad!==+v){ UI.confLoad=+v; UI.slotMsg=`이 탭의 진행(${dstr(G.day)})은 다른 탭과 겹쳐 저장되지 않았습니다. 열면 이 진행은 사라집니다. 남기려면 먼저 "빈 슬롯에 따로 저장"을 누르세요. 그래도 열려면 한 번 더 누르세요.`; render(); return; } UI.confLoad=null; /* 검수 11-09 #6: 충돌 상태에서 다른 슬롯을 열면 미저장 진행이 말없이 사라짐 */
     const m=meta(); /* 본문보다 먼저 읽은 판번호를 기억한다: 그사이 다른 탭이 저장하면 이 탭의 다음 저장이 충돌로 막힌다(검수 11-09 #4) */ const g=unpack(sbGet(+v)); if(!g){ slotBad(+v,'저장 본문을 읽을 수 없습니다'); UI.slotMsg=`슬롯 ${v}을(를) 불러오지 못했습니다. 저장 본문이 비었거나 손상됐습니다. 내보내기 백업이 있으면 그걸로 가져오세요.`; render(); return; } const g0=G; G=g; try{migrateDraft();}catch(e){ G=g0; try{ worldReset(); syncMinSal(); }catch(x){} slotBad(+v,'복원 오류'); UI.slotMsg=`슬롯 ${v}의 데이터를 복원하다 오류가 나 열지 않았습니다(${String(e&&e.message||e).slice(0,60)}). 내보내기 백업이 있으면 그걸로 가져오세요.`; render(); return; } if(!setActive(+v)){ G=g0; try{ worldReset(); syncMinSal(); }catch(e){} UI.slotMsg=`슬롯 ${v}(으)로 바꾸는 기록을 저장하지 못해 열지 않았습니다. 지금 게임은 그대로입니다.`; render(); return; } try{ G=g0; closeSheets(); }finally{ G=g; } CUR_SLOT=+v; slotRevSync(+v,m); delete SLOT_BAD[+v]; delete SLOT_BAD_AT[+v]; uiSaveSync(); svMark(); /* 복원과 활성 슬롯 변경이 모두 끝난 뒤에만 전환한다(검수 11-06: 변경이 실패하면 다음 저장이 옛 슬롯을 덮어썼다) */ UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; render(); window.scrollTo(0,0); },
-  slotNew(v){ if(G&&!saveOK()){ UI.slotMsg=`지금 게임을 저장하지 못해 새 게임을 시작하지 않았습니다. ${SAVE_ERR||''}`.trim(); render(); return; } if(!confDrop('new'+v))return; UI.newSlot=+v; UI.newSlotRev=(meta().slots[+v]||{}).rev||0; UI.newSlotUsed=slotUsed(+v,meta()); /* 고른 뒤 다른 탭이 이 슬롯에 저장하면 시작 때 알린다(검수 11-08) */ /* 활성 슬롯·저장 대상은 구단을 골라 시작할 때 바꾼다(검수 11-07: 고르기 전에 돌아오면 이어하기가 사라짐) */ G=null; UI.slotMsg=''; UI.title=true; UI.sstep='mode'; render(); window.scrollTo(0,0); },
+  slotNew(v){ if(G&&!saveOK()){ UI.slotMsg=`지금 게임을 저장하지 못해 새 게임을 시작하지 않았습니다. ${SAVE_ERR||''}`.trim(); render(); return; } if(saveHold(()=>A.slotNew(v),'새 게임을 시작하지'))return; if(!confDrop('new'+v))return; UI.newSlot=+v; UI.newSlotRev=(meta().slots[+v]||{}).rev||0; UI.newSlotUsed=slotUsed(+v,meta()); /* 고른 뒤 다른 탭이 이 슬롯에 저장하면 시작 때 알린다(검수 11-08) */ /* 활성 슬롯·저장 대상은 구단을 골라 시작할 때 바꾼다(검수 11-07: 고르기 전에 돌아오면 이어하기가 사라짐) */ G=null; UI.slotMsg=''; UI.title=true; UI.sstep='mode'; render(); window.scrollTo(0,0); },
   slotDel(v){ v=+v; if((meta().slots[v]||{}).lock){ UI.slotMsg=`슬롯 ${v}은(는) 보관 중입니다. 보관을 푼 뒤 지우세요.`; render(); return; } if(G&&v===curSlot()){ UI.slotMsg=`슬롯 ${v}은(는) 이 탭에서 진행 중이라 지울 수 없습니다.`; render(); return; } const body=()=>{ try{ return sbGet(v); }catch(e){ return undefined; } };
     if(!UI.delAsk||UI.delAsk.n!==v){ UI.delAsk={n:v,rev:revOf(meta(),v),body:body()}; UI.slotMsg=`슬롯 ${v}을(를) 지우려면 삭제를 한 번 더 누르세요.`; render(); return; }
     const ask=UI.delAsk; UI.delAsk=null; const busy=()=>{ UI.slotMsg=`슬롯 ${v}에 다른 탭(창)이 그사이 저장해 지우지 않았습니다. 목록을 확인하고 다시 누르세요.`; render(); };
@@ -43011,10 +43036,15 @@ function ngtReport(N,D){ const p=G.players[N.id]; const T=N.T; const b=budget();
     <div><i>시장 가치(운영팀 추정)</i><b class="num">연 ${money(lo)}~${money(hi)}</b><em>${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:'예상 FA 시장가 기준'}</em></div>
     <div><i>지금 연봉 · 계약</i><b class="num">${money(p.faPrevSal&&N.k==='fa'?p.faPrevSal:p.sal)}</b><em>${N.k==='fa'?`원소속 ${esc(tshort(p.faFrom))}`:esc(ctText(p))}</em></div>${stars}
     <div><i>적용 시즌 · 보장 총액</i><b class="num">${ngtSeasons(N).join('~')} · ${money(tot)}</b><em>${T.opt?`옵션 포함 최대 ${money(tot+T.opt*(T.years||1))}`:'옵션 없음'}</em></div>
+    ${ngtCashRow(T,s0,p.foreign?null:capAvg)}
     <div><i>${W.s}시즌 상한 합계(계약 후)</i><b class="num ${over>0?'bad':''}">${money(W.tot)}</b><em>상한 ${money(W.cap)}${over>0?` · ${money(over)} 초과`:` · 여유 ${money(-over)}`} · 상한 반영 연 ${money(capAvg)}</em></div>
     ${over>0?`<div><i>${cc?(cc.hard?'구단주 허용 한도 초과':'구단주 결재 필요'):'넘겨도 계약할 수 있습니다'}</i><b class="num ${cc&&cc.hard?'bad':'warn'}">${cc?(cc.hard?'승인 불가':`승인 가능성 ${capPLabel(cc.p)}`):`제재금 약 ${money(X.tax)}`}</b><em>시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(X.n)*100)}%를 냅니다(${X.n}회 연속). 트레이드 마감 전에 줄이면 내지 않습니다.</em></div>`:''}
     <div><i>예산 여유</i><b class="num">${money(b.roomGoal)}</b><em class="${T.bonus>b.roomGoal?'bad':''}">${T.bonus?`계약금 ${money(T.bonus)} 즉시 지급${T.bonus>b.roomGoal?' · 예산 여유를 넘습니다':''}`:'계약금 없음'}</em></div>
     ${N.k==='fa'&&faCompTxt(p)?`<div><i>영입 보상</i><em>${esc(faCompTxt(p))}</em></div>`:''}</div></aside>`; }
+/* 연도별 현금 지출(접는 줄): 계약금은 합의 때 바로(지금 결산 연도), 연봉은 계약 시즌마다, 옵션은 달성할 때만. 상한 반영액(연봉 + 계약금 ÷ 기간)은 따로 적는다(외부 검수 11-17: 3칸 협상 화면에서 빠짐) */
+function ngtCashRow(T,s0,capAvg){ if(!T||(T.years||1)<2&&!(T.bonus>0))return ''; let cy=[]; try{ cy=ctCashYears(T,s0); }catch(e){ return ''; } if(!cy.length)return '';
+  const row=x=>`<li><span class="num">${x.y}</span><b class="num">${money(x.v)}</b><em>${[x.bon?`계약금 ${money(x.bon)}`:'',x.sal?`연봉 ${money(x.sal)}`:'',T.opt>0&&x.sal?`옵션(달성 시) 최대 +${money(T.opt)}`:'',capAvg!=null&&x.y>=s0?`상한 반영 ${money(capAvg)}`:''].filter(Boolean).join(' · ')}</em></li>`;
+  return `<details class="ng-cash"><summary><i>연도별 지출</i><b class="num">${cy.map(x=>money(x.v)).join(' / ')}</b></summary><ul>${cy.map(row).join('')}</ul><p class="small muted">${T.bonus>0?`계약금은 합의 때 바로 지급(${sponSeason()} 결산) · `:''}연봉은 ${s0}시즌부터${T.opt>0?' · 옵션은 달성한 해에만 더 나갑니다':''}${capAvg!=null?' · 상한 반영액은 연봉에 계약금을 기간으로 나눠 더한 값':''}</p></details>`; }
 /* 오른쪽 에이전트 칸 */
 function ngtChat(N,D){ const p=G.players[N.id]; const ag=hasAgent(p)||N.k==='fa'?agentOf(p):null; const fn=N.k==='fa'&&G.fa&&G.fa.neg?G.fa.neg[p.id]:null; const R=ngtRound(N); const C=ngtCtr(N);
   const expr=fn?(fn.counter?'flat':fn.hot||fn.deal?'smile':fn.mood<40?'angry':null):null; const st=ag?(AG_STYLE[ag.style]||AG_STYLE.rel):null; const pf=ag?agPref(ag):null;
@@ -44655,6 +44685,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-savefix',d:'11월 17일',t:'저장 확정 확인 · 연도별 지출',items:[
+    '저장 공간이 가득 차 보조 저장소에 저장할 때도 실제로 기록된 뒤에만 저장됨으로 봅니다. 실패한 저장은 같은 상태라도 다시 저장하고, 처음 화면·슬롯 이동은 저장이 확정될 때까지 기다립니다. 다년계약 협상 화면에 연도별 지출 줄이 돌아와 계약금·연봉·옵션(달성 시)·상한 반영액을 나눠 보여 줍니다.']},
   {id:'2026-11-17-hf1117',d:'11월 17일',t:'트레이드 정렬 · 스태프 노쇠 알림',items:[
     '트레이드 협상: 상대 선수도 우리 선수와 같은 정렬(현재 능력·잠재력·연봉·나이·포지션)로 볼 수 있습니다. 정렬은 상대·우리 쪽마다 따로 기억합니다.',
     '스태프 연간 변동 메일에 나이가 들어 실력(별)이 내려간 스카우트·전력분석원도 이름·나이·새 별 수와 함께 나옵니다. 52세 이상 스태프 카드에는 실력이 떨어질 수 있다는 안내가 보입니다.']},
