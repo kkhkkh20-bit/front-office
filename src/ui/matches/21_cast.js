@@ -64,7 +64,7 @@ function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
     <div class="md-match-meta"><b id="md-status">경기 중계</b><span>${dstr(g.day)} · ${g.kind&&g.kind!=='노히트 도전'?esc(g.kind):'정규시즌'}</span></div>
     <div class="cs-mode">${[['hl','하이라이트'],['all','전체']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}" aria-pressed="${md===k}">${l}</button>`).join('')}</div><button class="md-control md-play" data-a="castPlay" id="cs-play">${c.play&&!c.pre?'일시정지':'재생'}</button><button class="md-control" data-a="castSpd" id="cs-spd" title="재생 속도">${c.spd||1}배속</button><button class="md-control" data-a="castSnd" id="cs-snd" aria-pressed="${sndPref()}">${sndPref()?'소리 켬':'소리 끔'}</button><button class="md-control md-back-field" data-a="castView" data-v="field" aria-label="기록 닫고 중계 화면으로">← 중계 화면</button><button class="md-control md-more-btn" data-a="castMore" aria-expanded="false">더보기</button><button class="md-control" data-a="castBox">박스스코어</button><button class="md-control" data-a="castExit">나가기</button><nav class="md-mobile-nav" aria-label="중계 화면">${[['field','경기'],['data','기록'],['teams','선수단']].map(([k,l])=>`<button data-a="castView" data-v="${k}" class="${(c.view||'field')===k?'on':''}">${l}</button>`).join('')}</nav></header>
   <div class="md-layout">${mdTeamPanel(g,'a')}<main class="md-center"><div class="md-top-grid"><section class="md-panel"><header><b>경기 기록</b><span>현재 시점</span></header><div id="md-stats"></div></section><section class="md-panel"><header><b>주요 장면</b><span>다시 보기</span></header><div id="md-events"></div></section><section class="md-panel"><header><b>안타 흐름</b><span>원정 / 홈</span></header><div id="md-hits"></div></section></div>
-    <div class="md-play-grid"><section class="md-field-panel md-panel"><header><b>${esc(tshort(g.away))} vs ${esc(tshort(g.home))}</b><span>구장 중계</span></header><div class="md-field-body"><div class="cs-stage" id="cs-stage" data-renderer="pending"><div class="cs-faces" id="cs-faces" aria-live="off"></div><div class="cs-mgr" id="cs-mgr" aria-live="off"></div><button class="cs-board-view" data-a="castBoard">전광판 보기</button><button class="cs-cam-view" data-a="castCam" id="cs-cam" title="타구 장면에서 카메라가 공을 따라 움직일지, 구장 전체를 고정해 보여 줄지 고릅니다" aria-pressed="${camPref()==='fixed'}">${camPref()==='fixed'?'화면 고정':'화면 움직임'}</button><button class="cs-faces-view" data-a="castFaces" aria-pressed="${castPref('faces')}">${castPref('faces')?'선수 카드 접기':'선수 카드 보기'}</button><button class="cs-lineup-view" data-a="castLineups" aria-pressed="${castLineupsOpen()}">${castLineupsOpen()?'라인업 접기':'라인업 보기'}</button><div id="cs-3d" class="cs-3d" data-state="pending"${c.pre?' data-pre="1"':''} aria-label="타자 뒤에서 보는 3D 경기장"><span class="cs-3d-status" role="status">선수들이 준비하고 있습니다 · 경기장 불러오는 중…</span>${matchPrepLineups(g)}<button class="cs-3d-retry" data-a="castRetry3d">3D 다시 시도</button></div>${fieldBg}<svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-shd" id="cs-shd"></div><div class="cs-ball" id="cs-ball"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-endcard" id="cs-endcard" hidden></div><div class="cs-bn" id="cs-bn"></div></div></div><div class="md-duel" id="cs-vs"></div></section>
+    <div class="md-play-grid"><section class="md-field-panel md-panel"><header><b>${esc(tshort(g.away))} vs ${esc(tshort(g.home))}</b><span>구장 중계</span></header><div class="md-field-body"><div class="cs-stage" id="cs-stage" data-renderer="pending"><div class="cs-faces" id="cs-faces" aria-live="off"></div><div class="cs-mgr" id="cs-mgr" aria-live="off"></div><button class="cs-board-view" data-a="castBoard">전광판 보기</button><button class="cs-cam-view" data-a="castCam" id="cs-cam" title="타구 장면에서 카메라가 공을 따라 움직일지, 구장 전체를 고정해 보여 줄지 고릅니다" aria-pressed="${camPref()==='fixed'}">${camPref()==='fixed'?'화면 고정':'화면 움직임'}</button><button class="cs-faces-view" data-a="castFaces" aria-pressed="${castPref('faces')}">${castPref('faces')?'선수 카드 접기':'선수 카드 보기'}</button><button class="cs-lineup-view" data-a="castLineups" aria-pressed="${castLineupsOpen()}">${castLineupsOpen()?'라인업 접기':'라인업 보기'}</button><div id="cs-3d" class="cs-3d" data-state="pending"${c.pre?' data-pre="1"':''} aria-label="타자 뒤에서 보는 3D 경기장"><span class="cs-3d-status" role="status">선수들이 준비하고 있습니다 · 경기장 불러오는 중…</span>${matchPrepLineups(g)}<span class="cs-3d-acts"><button class="cs-3d-retry" data-a="castRetry3d">3D 다시 시도</button><button class="cs-3d-reload" data-a="castReload3d" title="게임을 저장하고 페이지를 새로 엽니다">새로고침</button></span></div>${fieldBg}<svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-shd" id="cs-shd"></div><div class="cs-ball" id="cs-ball"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-endcard" id="cs-endcard" hidden></div><div class="cs-bn" id="cs-bn"></div></div></div><div class="md-duel" id="cs-vs"></div></section>
     ${mdPitchDock()}<div class="md-charts"><section class="md-panel"><header><b>득점 흐름</b><span>실제 누적 득점</span></header><div id="md-flow"></div></section><section class="md-panel"><header><b>홈 승리 확률</b><span>상황 기반 추정</span></header><div id="md-prob"></div><div class="cs-wpw"><div class="cs-wp"><span class="wa" style="background:${mdColor(g,'a')}"></span><i id="cs-wpa" style="background:${mdColor(g,'h')}"></i><span class="cs-wpt" id="cs-wpt"></span></div></div></section></div></div></main>${mdTeamPanel(g,'h')}</div>
   <div class="md-ticker" id="md-ticker" aria-label="타구장 소식"></div><div class="md-comment" id="md-comment" aria-live="polite"></div><div class="md-linescore" id="md-linescore"></div>
   <section class="md-dugout"><div class="md-roster-label"><button class="md-dugout-toggle" data-a="castDugout" aria-expanded="${castPref('dugout')}">${castPref('dugout')?'선수단 ▾':'선수단 ▴'}</button><b>출전 선수</b><div>${[['a',g.away],['h',g.home]].map(([k,tid])=>`<button data-a="castTeam" data-v="${k}">${esc(tshort(tid))}</button>`).join('')}</div></div><div class="md-roster" id="md-roster"></div></section>
@@ -102,7 +102,7 @@ function cDraw(k,ms){ cCamApply(); const boardButton=document.querySelector('.cs
 /* PC 3D 중계: 좌우 라인업 칸(각 약 200px)은 기본으로 접어 3D 화면을 넓힌다. 펼침 여부는 이 브라우저에만 기억 */
 /* 3D 중계 접고 펼치는 상자(사용자 11-16, FM 참고): 하단 선수단 줄, 좌우 타자·투수 카드. 처음에는 펼친 상태, 이 브라우저에 기억 */
 function castPref(k){ try{ return localStorage.getItem('fo-cast-'+k)!=='0'; }catch(e){ return true; } }
-function castLineupsOpen(){ try{ return localStorage.getItem('fo-cast-lineups')==='1'; }catch(e){ return false; } }
+function castLineupsOpen(){ try{ return localStorage.getItem('fo-cast-lineups')!=='0'; }catch(e){ return true; } } /* 기본은 좌우 라인업을 편 화면(사용자 11-17). 접으면 기억 */
 /* 경기 종료 카드: 예전에는 빈 구장 위에 '경기 종료' 큰 글씨·자막·빈 투구판·나가기 버튼이 따로 떠 있었다 */
 /* 경기 결과 화면(사용자 11-13): 경기 전 선발 라인업 소개와 같은 틀. 머리글 + 구단색 패널 두 개(원정·홈) + 아래 해설·버튼 */
 /* 경기 후 숫자(사용자 11-16, 평점 대신 승리 확률 기여): 기여 순위, 팀별 투수 운용, 감독 운영 합계 */
@@ -140,23 +140,54 @@ function cTrailClear(){ const sv=document.getElementById('cs-trail'); if(sv)sv.i
 async function cBanner(g,half){ const el=document.getElementById('cs-bn'); if(!el)return; const at=half%2?g.home:g.away;
   el.innerHTML=`<div>${badge(at,40)}<b>${cHalfTxt(half)}</b><span>${esc(tname(at))} 공격</span></div>`; el.className='cs-bn on'; sfx('bong',.55); try{ await cSleep(850); }finally{ el.className='cs-bn'; } /* 멈춤·넘기기로 대기가 끊겨도 이닝 배너가 화면에 남지 않게 */ await cSleep(150); }
 /* 볼 수 있는 장면 고르기 */
-/* 하이라이트 핵심 이닝(사용자 11-17: 타격 장면만 이어 붙이면 상황에 몰입하기 전에 지나간다).
-   점수가 난 반 이닝, 또는 경기 후반(7회 이후) 2점 차 이내에서 득점권 주자가 나간 반 이닝은 첫 주자가 나간 타석부터 그 반 이닝 끝까지 모든 공을 그대로 보여 준다.
-   주자 없이 나온 홈런처럼 혼자 끝나는 장면은 예전처럼 그 타석만 */
+/* 하이라이트 편성(사용자 11-17: 실제 야구 하이라이트처럼). 방송 하이라이트처럼 경기 전체에서 장면을 골라 순서대로 잇는다.
+   장면 고르기는 기록의 승리 확률 변화(wpaDeltas)로 한다: 많이 흔든 장면일수록 먼저.
+   - 이닝(full): 승부가 갈린 반 이닝은 첫 주자가 나간 타석부터 그 반 이닝 끝까지 모든 공(최대 3이닝). 접전(3점 차 이내)의 마지막 반 이닝도 첫 타자부터
+   - 한 장면(play): 홈런, 승리 확률을 크게 바꾼 타석, 홈 보살·뛰어오른 직선타 포구, 득점권 위기를 끝낸 아웃(최대 7개). 마지막 공 두 개만
+   - 장면마다 중계 하단 자막(이닝·아웃·주자·점수, 결과는 미리 말하지 않음)과 장면 번호. 끝나면 경기 결과 화면 */
 const CHL=new WeakMap();
-function cHlSegs(g){ let R=CHL.get(g); if(R&&R.n===g.pbp.length)return R; const L=g.pbp, inSeg=new Set(), start=new Map(), C=[], win=typeof castWinIdx==='function'?castWinIdx(g):-1;
-  let i=0; while(i<L.length){ const h=L[i][0]; let j=i; while(j<L.length&&L[j][0]===h)j++; /* [i,j): 한 반 이닝 */
-    let runs=0, risp=false, first=-1, closeLate=false;
-    for(let k=i;k<j;k++){ const x=L[k], b=cBefore(g,k); if(typeof x[1]==='number'&&x[6]>0)runs+=x[6]; if(b.bases[1]||b.bases[2])risp=true; if(first<0&&(b.bases[0]||b.bases[1]||b.bases[2]))first=k; if(h>=12&&Math.abs((b.sa||0)-(b.sh||0))<=2)closeLate=true; }
-    const key=runs>0&&first>=0||risp&&closeLate;
-    if(key){ const s=Math.max(i,first-1); /* 첫 주자를 내보낸 그 타석부터(first는 주자가 있는 상태로 시작하는 첫 줄) */
-      C.push({s,j,half:h,runs,sc:runs+(h>=12?1.5:0)+(win>=s&&win<j?3:0)+(closeLate?1:0)}); }
-    i=j; }
-  /* 너무 길어지지 않게 경기당 세 이닝까지: 결승점 이닝 > 득점 많은 이닝 > 후반 접전 순 */
-  C.sort((a,b)=>b.sc-a.sc||b.half-a.half).slice(0,3).forEach(q=>{ for(let k=q.s;k<q.j;k++)inSeg.add(k); start.set(q.s,{half:q.half,runs:q.runs,sa:cBefore(g,q.s).sa||0,sh:cBefore(g,q.s).sh||0}); });
-  R={n:L.length,inSeg,start}; CHL.set(g,R); return R; }
+function cHlBases(b){ const r=[1,2,3].filter((n,i)=>b[i]); return !r.length?'주자 없음':r.length===3?'만루':r.join('·')+'루'; }
+function cHlCtx(g,half,b){ const top=half%2===0, bat=top?(b.sa||0):(b.sh||0), fld=top?(b.sh||0):(b.sa||0), d=bat-fld; return d===0?(bat?`${bat}:${fld} 동점`:'0:0 균형'):d<0?`${-d}점 뒤진 상황`:`${d}점 앞선 상황`; }
+function cHlSegs(g){ let R=CHL.get(g); if(R&&R.n===g.pbp.length)return R; const L=g.pbp, D=new Map(), win=typeof castWinIdx==='function'?castWinIdx(g):-1;
+  try{ for(const [k,,,d] of wpaDeltas(g))D.set(k,(D.get(k)||0)+Math.abs(d)); }catch(e){}
+  const halves=[]; let i=0; while(i<L.length){ const h=L[i][0]; let j=i; while(j<L.length&&L[j][0]===h)j++; halves.push([i,j,h]); i=j; }
+  const C=[];
+  for(const [i,j,h] of halves){ let runs=0, risp=false, first=-1, sw=0, close=false;
+    for(let k=i;k<j;k++){ const x=L[k], b=cBefore(g,k); sw+=D.get(k)||0; if(typeof x[1]==='number'&&x[6]>0)runs+=x[6]; if(b.bases[1]||b.bases[2])risp=true; if(first<0&&(b.bases[0]||b.bases[1]||b.bases[2]))first=k; if(h>=12&&Math.abs((b.sa||0)-(b.sh||0))<=2)close=true; }
+    if(first>=0&&(runs>0||risp&&close))C.push({kind:'rally',s:Math.max(i,first-1),j,half:h,sc:sw*10+(win>=i&&win<j?3:0)}); }
+  const full=[]; const last=halves[halves.length-1];
+  if(last&&Math.abs(g.hs-g.as)<=3)full.push({kind:'last',s:last[0],j:last[1],half:last[2]}); /* 접전의 마지막 공격(마무리 투수의 이닝) */
+  for(const q of C.sort((a,b)=>b.sc-a.sc)){ if(full.length>=3)break; if(full.some(f=>f.half===q.half))continue; full.push(q); }
+  const inFull=k=>full.some(f=>k>=f.s&&k<f.j);
+  const P=[];
+  for(let k=0;k<L.length;k++){ const x=L[k]; if(typeof x[1]!=='number'||inFull(k))continue; const b=cBefore(g,k), d=D.get(k)||0; let why='', sc=d*10;
+    let call=''; try{ call=(pbpCall(g,k)||{}).c||''; }catch(e){}
+    const homeAssist=(()=>{ try{ return cRunnerMoves(g,k).some(m=>m.out&&m.to===4); }catch(e){ return false; } })();
+    const leap=x[3]==='OUT'&&/직선타/.test(call)&&(()=>{ try{ return pcH(g,k,'leap')<.3; }catch(e){ return false; } })();
+    if(homeAssist){ why='gem'; sc+=4; } else if(leap){ why='gem'; sc+=2.5; }
+    else if(x[3]==='HR'){ why='hr'; sc+=2+(x[6]||1)*.5; }
+    else if(x[4]>=3&&(b.bases[1]||b.bases[2])&&d>=.06){ why='escape'; sc+=1; }
+    else if(d>=.10){ why='big'; }
+    if(k===L.length-1){ why=why||'final'; sc+=6; }
+    if(why)P.push({kind:'play',why,s:k,j:k+1,half:x[0],sc}); }
+  let esc2=0; const plays=P.sort((a,b)=>b.sc-a.sc).filter(q=>q.why!=='escape'||esc2++<2).slice(0,7); /* 위기 탈출은 두 장면까지 */
+  const scenes=[...full,...plays].sort((a,b)=>a.s-b.s), keep=new Set(), fullK=new Set(), start=new Map();
+  scenes.forEach((q,n)=>{ for(let k=q.s;k<q.j;k++){ keep.add(k); if(q.kind!=='play'||q.why==='final')fullK.add(k); } const b=cBefore(g,q.s); start.set(q.s,Object.assign(q,{n:n+1,b})); });
+  R={n:L.length,inSeg:fullK,keep,start,scenes}; CHL.set(g,R); return R; }
 function cInSeg(g,k){ const c=UI.cast; return !!(c&&c.mode&&c.mode!=='all'&&cHlSegs(g).inSeg.has(k)); }
-function cKeep(g,k,mode){ if((g.incidents||[]).some(e=>e.k===k))return true;if(mode==='all'||pcRecords(g,k).length)return true; if(cHlSegs(g).inSeg.has(k))return true; const L=g.pbp; const x=L[k]; if(typeof x[1]!=='number')return false; const b=cBefore(g,k); const risp=!!(b.bases[1]||b.bases[2]);
+/* 장면 하단 자막: 방송 하이라이트의 장면 시작 그래픽. 결과는 말하지 않는다 */
+async function cHlCard(g,q,total){ const el=document.getElementById('cs-bn'); if(!el)return; const top=q.half%2===0, at=top?g.away:g.home, b=q.b, x=g.pbp[q.s];
+  const outs=b.outs?`${b.outs}사`:'무사', bat=typeof x[1]==='number'?pNmAny(x[1],g):'';
+  const head=q.kind==='last'?`${cHalfTxt(q.half)} · 마지막 공격`:cHalfTxt(q.half), line=q.kind==='play'?`${outs} ${cHlBases(b.bases)}${bat?` · 타석에 ${esc(bat)}`:''}`:q.kind==='last'?`${esc(tname(at))} · ${cHlCtx(g,q.half,b)}`:`${esc(tname(at))} 공격 · ${cHlCtx(g,q.half,b)}`;
+  el.innerHTML=`<div class="cs-hl" style="--tc:${cTeamCol(at)}"><i>${q.n}<small>/ ${total}</small></i>${badge(at,34)}<p><b>${head}</b><span>${line}</span></p><em><small>${esc(tshort(g.away))}</small>${b.sa||0} : ${b.sh||0}<small>${esc(tshort(g.home))}</small></em></div>`;
+  el.className='cs-bn on hl'; sfx('bong',.45); try{ await cSleep(q.kind==='play'?1500:2200); }finally{ el.className='cs-bn'; } await cSleep(150); }
+/* 장면 전환: 방송 하이라이트의 짧은 화면 전환(팀 색 사선이 지나간다). 화면만, 기록·시간에는 영향 없음 */
+function c3DWipe(){ const el=document.getElementById('cs-bn'), host=el&&el.parentElement; if(!host)return; host.classList.remove('cs-wipe'); void host.offsetWidth; host.classList.add('cs-wipe'); setTimeout(()=>host.classList.remove('cs-wipe'),700); }
+/* 오프닝: 경기 이름·구장·선발 */
+async function cHlOpen(g,total){ const el=document.getElementById('cs-bn'); if(!el)return; const sp=sd=>{ const q=(g.box[sd].pit||[])[0]; return q?esc(pNmAny(q.id,g)):''; };
+  el.innerHTML=`<div class="cs-hlo"><small>하이라이트 · 주요 장면 ${total}개</small><p>${badge(g.away,44)}<b>${esc(tshort(g.away))}</b><i>vs</i><b>${esc(tshort(g.home))}</b>${badge(g.home,44)}</p><span>${esc(stadName(g.home))} · ${dstr(g.day)}</span><span>선발 ${sp('a')} · ${sp('h')}</span></div>`;
+  el.className='cs-bn on vs'; sfx('bong',.55); try{ await cSleep(2600); }finally{ el.className='cs-bn'; } await cSleep(200); }
+function cKeep(g,k,mode){ if((g.incidents||[]).some(e=>e.k===k))return true;if(mode==='all'||pcRecords(g,k).length)return true; if(mode==='hl')return cHlSegs(g).keep.has(k); const L=g.pbp; const x=L[k]; if(typeof x[1]!=='number')return false; const b=cBefore(g,k); const risp=!!(b.bases[1]||b.bases[2]);
   if(mode==='risp')return risp; return x[6]>0||['HR','3B','2B','DP','HBP'].includes(x[3])||(x[3]==='K'&&risp)||k===L.length-1||(x[4]>=3&&b.half>=16&&Math.abs(x[7]-x[8])<=1); }
 /* 상황별 수비 위치(사용자 11-17: 실제 야구 수비처럼). 기록은 바꾸지 않는 화면 연출. 반환: 포지션→자리(기본은 CFP) */
 function cAlign(g,st,oT){ const A={}, b=st.bases||[0,0,0], outs=st.outs||0, half=st.half||0, top=half%2===0, defLead=top?(st.sh||0)-(st.sa||0):(st.sa||0)-(st.sh||0), late=half>=12, small=typeof mgrOf==='function'?(mgrOf(oT)||{}).small??50:50;
@@ -328,8 +359,8 @@ async function castLoop(){ const host=document.getElementById('cs-3d');if(CT.run
   try{ while(UI.cast&&UI.cast.play&&my===CT.tok){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; if(c.k>=L.length){ c.play=false; cDraw(c.k,300); sndStop('amb',1.8); sndStop('chant',.5); /* 경기 종료 효과음(사이렌·함성·오르간)은 뺐다(사용자 11-08) */ break; }
       const x=L[c.k]; const md=c.mode||'all'; if(md!=='all'&&!cKeep(g,c.k,md)){ c.k++; continue; }
       cDraw(c.k,md==='all'?300:0); await cSleep(md==='all'?260:200);
-      if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); if(md==='all')await cDefense(g,c.k,x[0]); }
-      if(md!=='all'){ const sg=cHlSegs(g).start.get(c.k); if(sg){ const top=sg.half%2===0, tm=top?g.away:g.home; cCap(`${Math.floor(sg.half/2)+1}회${top?'초':'말'} ${tshort(tm)} 공격 · ${tshort(g.away)} ${sg.sa} : ${sg.sh} ${tshort(g.home)} · 이 이닝은 처음부터 봅니다`); await cSleep(1600); } }
+      if(md!=='all'){ const P=cHlSegs(g), sg=P.start.get(c.k); if(!c.hlOpen){ c.hlOpen=1; if(c.k<=(P.scenes[0]?.s??0))await cHlOpen(g,P.scenes.length); } if(sg){ c.lastHalf=x[0]; c3DWipe(); await cHlCard(g,sg,P.scenes.length); } else if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); } }
+      else if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); await cDefense(g,c.k,x[0]); }
       await cAnim(c.k); c.k++; } }
   catch(e){if(e!=='stop')console.error('중계 재생 오류',e);} finally{ if(my===CT.tok)CT.run=false; } }
 function castMount(){ const c=UI.cast; if(!c)return; CT.tok++; CT.run=false; setTimeout(()=>castStart2D(c),12000); requestAnimationFrame(async()=>{if(UI.cast!==c)return; cDraw(c.k,0); const host=document.getElementById('cs-3d'); const ok=host&&typeof Match3D!=='undefined'&&await Match3D.mount(host,{day:[0,6].includes(dobj(G.games[c.g].day).w)}); if(UI.cast!==c||!host?.isConnected)return; cPrepDone(ok); cDraw(c.k,0); if(c.play&&!CT.run){castResumePitch();castLoop();} }); }

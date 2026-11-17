@@ -81,8 +81,7 @@ function aiClanInstall(n,tid,start,why){ const C=G.coach&&G.coach[tid]; if(!C)re
   return got; }
 /* AI 구단 코치 빈자리 채우기(동반 사임 뒤). roles를 주면 그 자리만 */
 const coachHeld=tid=>CKEYS.filter(k=>G.coach&&G.coach[tid]&&G.coach[tid][k]);
-function aiCoachFill(tid,why,roles){ if(tid===ME()||!G.coach||!G.coach[tid])return 0; const C=G.coach[tid]; let n=0;
-  for(const k of roles||CKEYS){ if(C[k])continue; let c=null; try{ c=obAiCoach(tid,k); }catch(e){} c=c||mkCoach(k); staffCt(c,c.yrs||ri(1,3)); C[k]=c; staffHistory('coach',c,'영입',tid,why||'코치진 공백 보강'); n++; } return n; }
+function aiCoachFill(tid,why,roles){ if(tid===ME()||!G.coach||!G.coach[tid])return 0; return coachVacFill(tid,why||'코치진 공백 보강',roles).length; } /* 시장에서 우리와 같은 규칙으로(89c_coach_vacancy, 구단주 승인 11-17). 전에는 시장을 거치지 않은 새 코치 */
 
 /* ----- 단장이 떠날 때: 단장을 좋아하는 직원 동반 사임 ----- */
 const loyRoles=L=>(L||[]).filter(x=>x.kind==='coach').map(x=>x.k);

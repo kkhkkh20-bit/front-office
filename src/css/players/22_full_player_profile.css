@@ -330,3 +330,13 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-cmp{margin:0 0 4px}
   #sheet .pf-overview .card{padding:9px}
 }
+/* 시즌 통계(카페 11-17): 표가 먼저, 1군만·2군 포함·2군만 단추는 표 아래. 칸이 낮으면 표만 안에서 스크롤해 단추가 늘 보이게 */
+@media(min-width:1100px){
+  #sheet .pf-overview .pf-season-table>.st-head,#sheet .pf-overview .pf-season-table>.st-lvl,#sheet .pf-overview .pf-season-table>.pf-more{flex:none}
+  #sheet .pf-overview .pf-season-table>.tw{flex:0 1 auto!important;min-height:60px;max-height:none!important;overflow:auto!important;scrollbar-width:thin}
+  #sheet .pf-overview .pf-season-table>.tw thead th{position:sticky;top:0;background:var(--panel);z-index:1}
+  #sheet .pf-rp-pers{border-top:1px solid var(--line);padding-top:8px;display:grid;gap:4px}
+  #sheet .pf-rp-pers h3{display:flex;align-items:center;gap:8px}
+  #sheet .pf-rp-pers .pf-fact{display:flex;justify-content:space-between;gap:8px;font-size:12.5px}
+  #sheet .pf-rp-pers .pf-fact span{color:var(--muted)}
+}

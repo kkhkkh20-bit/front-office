@@ -41,7 +41,7 @@ function ovlStandView(lg){ const ys=ovlYears(lg), nm=OVL_LBL[lg]; if(!ys.length)
 /* KBO 출신 해외파: 지금 해외에 있는 선수(국내 선수·KBO를 떠난 외국인·관찰하던 후보) */
 function ovlAlumView(){ const FT=inTabs('ovla',[['all','전체'],['mine','우리 구단 출신'],['kr','국내 선수'],['fo','외국인']],'all'), f=FT.cur, ft=FT.bar;
   const A=(G.abroad||[]).filter(a=>!a.back&&a.end==null&&(f==='all'||f==='mine'&&a.from===G.user||f==='kr'&&!a.foreign&&!a.cand||f==='fo'&&(a.foreign||a.cand)));
-  const fr=ovlFrac(G.year), cur=a=>a.cur&&a.cur.y===G.year&&fr>0?ovsPart(a.cur,fr):null;
+  const fr=ovlFrac(G.year), cur=a=>a.cur&&a.cur.y===G.year&&fr>0?ovsCurPart(a,fr):null;
   const rk=a=>(a.from===G.user?0:10)+(a.lg==='MLB'?0:a.lg==='NPB'?1:3)+(a.foreign||a.cand?4:0);
   const L=A.map(a=>({a,c:cur(a),l:(a.lines||[]).slice(-1)[0]})).sort((x,y)=>rk(x.a)-rk(y.a)||(y.l?ovsVal(y.l,y.a.isP):0)-(x.l?ovsVal(x.l,x.a.isP):0));
   const row=({a,c,l})=>{ const y1=a.y1??a.y+1, h=c||l, hc=h&&h.c!=null&&h.c>=0&&OVL_C[ovlKey(h.lvl)];
@@ -52,9 +52,24 @@ function ovlAlumView(){ const FT=inTabs('ovla',[['all','전체'],['mine','우리
     const club=hc&&h.lvl==='트리플A'?`<b>${esc(ovsClubNm(h))}</b> (트리플A · ${esc(a.club||a.lg)} 산하)`:`<b>${esc(a.club||a.lg)}</b>${a.club&&a.club!==a.lg?` (${esc(a.lg)})`:''}`;
     return `<div class="abr" data-a="person" data-v="abr:${a.id}" role="button" tabindex="0">${a.from!=null?badge(a.from,26):''}<div><b>${esc(a.name)} <span class="small muted">${esc(a.pos)}${a.foreign?' · 외국인':''}${a.cand?' · 관찰했던 후보':''}</span></b>
       <span class="small">${club}</span>${mvT}${ln}${tm}${ovsBackTag(a)?`<span class="small"><b>${esc(ovsBackTag(a))}</b></span>`:''}</div></div>`; };
-  return csec(`KBO 출신 해외파 ${A.length}명${hiI('해외로 간 국내 선수, KBO를 떠나 해외에서 뛰는 외국인, 우리가 관찰하다 놓친 후보의 해외 성적입니다. MLB 구단 소속이라도 실력이 모자라면 산하 트리플A에서 뜁니다. 시즌 중에는 지금까지의 기록이고, 시즌을 마치면 확정됩니다. 해외 기록은 외국인 영입·복귀 협상에서 우리와 다른 구단이 똑같이 참고합니다.')}`,
+  const list=csec(`KBO 출신 해외파 ${A.length}명${hiI('해외로 간 국내 선수, KBO를 떠나 해외에서 뛰는 외국인, 우리가 관찰하다 놓친 후보의 해외 성적입니다. MLB 구단 소속이라도 실력이 모자라면 산하 트리플A에서 뜁니다. 시즌 중에는 지금까지의 기록이고, 시즌을 마치면 확정됩니다. 해외 기록은 외국인 영입·복귀 협상에서 우리와 다른 구단이 똑같이 참고합니다.')}`,
     ft+(L.length?`<div class="abl">${L.map(row).join('')}</div>`:emptyState('지금 해외에서 뛰는 KBO 출신 선수가 없습니다.')));
-}
+  return list+`<div class="ovs-side">${ovsSumCard()}${ovsFeedCard()}</div>`; } /* 작업 화면 두 칸(PC는 나란히, 휴대폰은 칸 넘김): 해외파 목록 · 시즌 요약과 소식 */
+/* 해외파 시즌 요약(사용자 11-17): 국내 선수 해외파의 리그별 인원 · 부문 1위 · 소속 구단 순위. 이름을 누르면 인물 카드 */
+function ovsSumCard(){ const S=ovsSeasonSum(), nmB=a=>`<button class="lnk" data-a="person" data-v="abr:${a.id}">${esc(a.name)}</button>`;
+  const chip=(l,n)=>`<span class="ovs-chip${n?'':' muted'}"><b>${n}</b>${l}</span>`;
+  const ld=(l,r,v)=>r?`<div class="ovs-ld"><span class="small muted">${l}</span>${nmB(r.a)}<b>${v}</b></div>`:'';
+  const lds=[ld('홈런',S.hrL,S.hrL&&S.sb(S.hrL,'hr')+'개'),ld('OPS',S.opsL,S.opsL&&fmt3(bRate(S.opsL.l).ops)),ld('ERA',S.eraL,S.eraL&&pRate(S.eraL.l).era.toFixed(2)),ld('탈삼진',S.soL,S.soL&&S.sb(S.soL,'so')+'개')].join('');
+  const LV=[['MLB','MLB'],['NPB','NPB'],['트리플A','트리플A']], seen=new Set();
+  const rows=S.R.filter(r=>LV.some(([k])=>k===r.lv)).sort((x,z)=>LV.findIndex(([k])=>k===x.lv)-LV.findIndex(([k])=>k===z.lv)||(z.tr?z.tr.w-z.tr.l:-99)-(x.tr?x.tr.w-x.tr.l:-99)).map(r=>{ const k=r.lv+':'+(r.l.c??r.a.id); const on=S.R.filter(z=>z.lv===r.lv&&r.l.c!=null&&z.l.c===r.l.c); if(seen.has(k))return ''; seen.add(k); const tr=r.tr;
+    return `<tr><td>${esc(r.lv==='트리플A'?'AAA':r.lv)}</td><td class="ovs-cl">${esc(ovsClubNm(r.l)||r.a.club||r.lv)}<span>${(on.length?on:[r]).map(z=>nmB(z.a)).join(' ')}</span></td><td>${tr?`${tr.w}-${tr.l}`:'-'}</td><td class="ovs-rk">${tr?`${esc(tr.dn)} ${tr.rk}위${tr.ch?' · 우승':tr.pn?' · 결승':tr.po?' · 가을야구':''}`:'-'}</td></tr>`; }).join('');
+  const hd=S.live?(S.fr>0?`${S.y} 시즌 진행 중(${Math.round(S.fr*100)}%)`:`${S.y} 시즌`):`${S.y} 시즌 최종`;
+  return csec(`해외파 시즌 요약${hiI('해외에서 뛰는 국내 선수(포스팅·해외 FA·아마추어 직행)만 셉니다. 시즌 중에는 지금까지의 기록입니다. 이름을 누르면 인물 카드가 열립니다.')}`,
+    `<p class="small muted">${hd} · 국내 선수 ${S.R.length}명</p><div class="ovs-chips">${chip('MLB',S.n.MLB)}${chip('NPB',S.n.NPB)}${chip('트리플A',S.n.AAA)}${chip('기타',S.n.etc)}</div>`+(lds?`<div class="ovs-lds">${lds}</div>`:'')+(rows?`<div class="tbl-wrap"><table class="tbl ovs-st"><thead><tr><th>리그</th><th>구단 · 해외파</th><th>승-패</th><th>순위</th></tr></thead><tbody>${rows}</tbody></table></div>`:emptyState('올해 해외에서 뛰는 국내 선수가 없습니다.'))); }
+/* 해외파 소식(사용자 11-17): 매주 홈런·무실점·콜업·강등·부상·올스타·시상. 저장은 최근 40건 */
+function ovsFeedCard(){ const F=G.ovsFeed||[];
+  const it=x=>`<li data-a="person" data-v="abr:${x.id}" role="button" tabindex="0"${x.p>=7?' class="hot"':''}><span class="small muted">${x.y!==G.year?x.y+' ':''}${esc(dmd(x.d))}</span><span>${esc(x.t)}</span></li>`;
+  return csec(`해외파 소식${hiI('해외에서 뛰는 국내 선수의 한 주: 홈런·무실점·콜업·강등·부상·올스타·시상. 우리 구단 출신을 먼저 올립니다. 최근 40건까지 남습니다.')}`,F.length?`<ul class="ovs-feed">${F.map(it).join('')}</ul>`:emptyState('시즌이 시작되면 해외파 소식이 쌓입니다.')); }
 function ovlChampView(){ const K=['MLB','AAA','NPB','CPBL','LMB'], H=K.map(lg=>G.ovl[lg].h||[]); const ys=[...new Set(H.flat().map(h=>h.y))].sort((a,b)=>b-a);
   const c=(lg,X)=>X?`<b>${esc(ovlNm(lg,X.ch))}</b><span class="small muted"> ${esc(X.sr||'')} · ${esc(ovlNm(lg,X.ru))}</span>`:'-';
   const cnt=lg=>{ const C={}; for(const h of G.ovl[lg].h||[])C[h.ch]=(C[h.ch]||0)+1; return Object.entries(C).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([i,n])=>`${esc(ovlNm(lg,+i))} ${n}회`).join(' · '); };

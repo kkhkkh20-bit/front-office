@@ -97,7 +97,7 @@ button.sb-i{cursor:pointer}button.sb-i:hover{border-color:var(--line2)}
 .btns3{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px}
 /* PC 일정(27_calendar.js calFM): 위 한 주 띠, 아래 왼쪽 경기 목록 · 오른쪽 고른 날 상세 */
 @media(min-width:1100px){
-  .sch{display:grid;grid-template-columns:minmax(0,1fr) 380px;grid-template-rows:auto minmax(0,1fr);gap:10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
+  .sch{display:grid;grid-template-columns:minmax(0,1fr) min(760px,46%);grid-template-rows:auto minmax(0,1fr);gap:10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
   main.ws-frame>.sch{height:auto}
   .sch>.card{margin:0;min-height:0}
   .sch-wk{grid-column:1/3;display:flex;flex-direction:column;gap:8px}
@@ -244,3 +244,9 @@ body .ltile .l1>span>i{display:flex;align-items:center;gap:4px;white-space:nowra
 /* 해외 리그 주목 선수: 타자·투수 표는 업무 화면 칸(ws-panel) 안에서 스크롤 */
 .ovt-h{margin:6px 0}.ovt-e{font-size:13px;padding:8px 0}.ovt-t{width:100%}.ovt-t th,.ovt-t td{text-align:right;white-space:nowrap}.ovt-t th:nth-child(-n+3),.ovt-t td:nth-child(-n+3){text-align:left}
 .ovt-t td.ovt-n{white-space:normal;min-width:150px}.ovt-n .pm-n .av{width:30px;height:30px;flex:none}.ovt-n .pm-n span{display:grid;line-height:1.3}.ovt-n .pm-n i{font-style:normal;font-size:12px;color:var(--muted)}.ovt-t tbody tr{cursor:pointer}
+/* 해외파 시즌 요약·소식(사용자 11-17): PC는 오른쪽 열(안에서만 스크롤), 휴대폰은 위에서부터 */
+.ovs-side{display:grid;gap:10px;align-content:start;min-width:0}.ovs-side>.card{margin:0}
+.ovs-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.ovs-chip{display:inline-flex;align-items:baseline;gap:4px;border:1px solid var(--line);background:var(--panel2);border-radius:4px;padding:3px 8px;font-size:12px}.ovs-chip b{font-size:16px}
+.ovs-lds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px;margin:4px 0 8px}.ovs-ld{display:flex;align-items:baseline;gap:6px;min-width:0;font-size:13px}.ovs-ld .lnk{padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ovs-ld b{margin-left:auto}
+.ovs-st{width:100%}.ovs-st td,.ovs-st th{text-align:left;font-size:12px;vertical-align:top}.ovs-st td:first-child{width:38px;white-space:nowrap}.ovs-st td:nth-child(3){white-space:nowrap;width:52px}.ovs-cl{white-space:normal;word-break:keep-all}.ovs-cl span{display:block}.ovs-cl .lnk{padding:0;margin-right:6px;font-size:12px}.ovs-rk{white-space:normal;word-break:keep-all}
+.ovs-feed{list-style:none;margin:0;padding:0;display:grid;gap:4px}.ovs-feed li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;align-items:baseline;padding:5px 8px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);cursor:pointer;font-size:13px;word-break:keep-all}.ovs-feed li.hot{border-color:var(--warn,#e6b93b)}

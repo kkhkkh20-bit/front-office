@@ -14,13 +14,14 @@ const R=await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false
   for(let k=0;k<g.pbp.length;k++){const x=g.pbp[k];if(typeof x[1]!=='number')continue;cnt.pa++;castJump(k,false);
    const b=cBefore(g,k),pid=cPit(g,k);
    // faces
-   const L=document.querySelector('.cs-face.l b')?.textContent, Rr=document.querySelector('.cs-face.r b')?.textContent;
+   const L=document.querySelector('.cs-face.bat b')?.textContent, Rr=document.querySelector('.cs-face.pit b')?.textContent;
+   { const top=x[0]%2===0, bs=document.querySelector('.cs-face.bat')?.classList.contains(top?'l':'r'), ps=document.querySelector('.cs-face.pit')?.classList.contains(top?'r':'l'); if(!bs||!ps)bad.push({gi,k,t:'card side',want:top?'타자 왼쪽(원정)·투수 오른쪽':'타자 오른쪽(홈)·투수 왼쪽'}); } /* 카드 쪽 = 팀 패널 쪽 */
    if(L!==nm(x[1]))bad.push({gi,k,t:'batter card',got:L,want:nm(x[1])}); if(Rr!==nm(pid))bad.push({gi,k,t:'pitcher card',got:Rr,want:nm(pid)});
    // today line brute
    let ab=0,h=0;for(let i=0;i<k;i++){const y=g.pbp[i];if(typeof y[1]!=='number'||y[1]!==x[1])continue;if(!['BB','HBP','SAC'].includes(y[3])&&!y[13])ab++;if(['1B','2B','3B','HR'].includes(y[3]))h++;}
-   const sm=document.querySelector('.cs-face.l .cf-today')?.textContent||'';if(!sm.includes(`${ab}타수 ${h}안타`))bad.push({gi,k,t:'batter today',got:sm.slice(0,30),want:`${ab}타수 ${h}안타`});
+   const sm=document.querySelector('.cs-face.bat .cf-today')?.textContent||'';if(!sm.includes(`${ab}타수 ${h}안타`))bad.push({gi,k,t:'batter today',got:sm.slice(0,30),want:`${ab}타수 ${h}안타`});
    let so=0,pc=0,ok=true;for(let i=0;i<k;i++){const y=g.pbp[i];if(typeof y[1]!=='number'||y[2]!==pid)continue;if(y[3]==='K')so++;const q=storedPitchSequence(y);if(q)pc+=q.length;else ok=false;}
-   const ps=document.querySelector('.cs-face.r .cf-today')?.textContent||'';if(!ps.includes(`${so}삼진`)||ok&&!ps.includes(`${pc}구`))bad.push({gi,k,t:'pitcher today',got:ps.slice(0,40),want:`${so}삼진 ${pc}구`});
+   const ps=document.querySelector('.cs-face.pit .cf-today')?.textContent||'';if(!ps.includes(`${so}삼진`)||ok&&!ps.includes(`${pc}구`))bad.push({gi,k,t:'pitcher today',got:ps.slice(0,40),want:`${so}삼진 ${pc}구`});
    cnt.faces++;
    // score bug
    { const rows=[...document.querySelectorAll('.mb-teams > *')].map(e=>{const m=(e.textContent||'').match(/(\d+)\s*$/);return m?+m[1]:null;}); const dia=[...document.querySelectorAll('.mb-dia i')].map(e=>e.classList.contains('on')); const inn=+(document.querySelector('.mb-inn b')?.textContent||-1);

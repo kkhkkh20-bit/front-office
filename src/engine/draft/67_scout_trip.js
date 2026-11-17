@@ -39,9 +39,22 @@ const tripOf=s=>s&&s.trip&&s.trip.to>=G.day&&s.trip.from<=G.day?s.trip.k:'sch';
 /* 매주 월요일(모든 구단). 우리 구단은 팀장 맡기기면 그대로, 아니면 출장 안 메일 */
 function tripWeekly(day,force){ const w0=tripWk0(day); for(const t of G.teams||[]){ const tid=t.id; if(tid===G.user&&G.unemp)continue; if(!clubAmScouts(tid).length)continue; const P=tripPlanWeek(tid,w0);
     if(tid!==G.user||tripAutoOn()){ tripApply(tid,P,w0); continue; }
-    G.tripPend={w0,P}; const sc=clubAmScouts(tid); const now=sc.filter(s=>tripOf(s)!==P[s.id]);
-    if(!force&&now.length)mail('스카우트팀',`다음 주 출장 안: ${now.length}명 바꿈`,sc.map(s=>`${s.name}: ${tripName(tripOf(s))} → ${tripName(P[s.id])}`).join('\n')+'\n\n그대로 두면 지금 출장을 이어 갑니다.',{kind:'스카우트',acts:[{l:'그대로',a:'tripPlanGo',v:String(w0)},{l:'팀장에게 맡기기',a:'handOff',v:'scout'},{l:'바꾸기',a:'go',v:'staff:scouts'}]}); } } /* 팀장에게 맡기기: 권한 화면의 '스카우트 배치'(G.scoutAuto)를 켠다 — 배치와 출장을 함께 맡김(사용자 11-17) */
-function tripPlanGo(){ const T=G.tripPend; if(!T)return '출장 안이 없습니다.'; tripApply(G.user,T.P,T.w0); delete G.tripPend; return '팀장 출장 안대로 보냈습니다.'; }
+    G.tripSeq=(G.tripSeq||0)+1; G.tripPend={tid,w0,id:G.tripSeq,P}; const key=tripPendKey(G.tripPend); const sc=clubAmScouts(tid); const now=sc.filter(s=>tripOf(s)!==P[s.id]); /* 안마다 구단·주·번호를 붙여 메일 버튼이 그 안만 보내게 한다(리뷰② 11-17: 지난주 메일이 이번 주 다른 안을 보냈다) */
+    if(!force&&now.length)mail('스카우트팀',`다음 주 출장 안: ${now.length}명 바꿈`,sc.map(s=>`${s.name}: ${tripName(tripOf(s))} → ${tripName(P[s.id])}`).join('\n')+'\n\n그대로 두면 지금 출장을 이어 갑니다.',{kind:'스카우트',acts:[{l:'그대로',a:'tripPlanGo',v:key},{l:'팀장에게 맡기기',a:'handOff',v:'scout'},{l:'바꾸기',a:'go',v:'staff:scouts'}]}); } } /* 팀장에게 맡기기: 권한 화면의 '스카우트 배치'(G.scoutAuto)를 켠다 — 배치와 출장을 함께 맡김(사용자 11-17) */
+/* 걸린 출장 안의 식별값(구단:주 시작일:번호). 옛 저장의 안은 구단·번호가 없다 */
+const tripPendKey=T=>T?`${T.tid??''}:${T.w0}:${T.id??''}`:'';
+/* 이 출장 안(key)을 지금 보낼 수 없는 이유('' 이면 보낼 수 있음). key가 없으면 지금 걸린 안. 옛 메일(key=주 시작일)은 주만 맞춘다.
+   지난주 안·다른 번호의 안·이전 구단의 안은 보내지 않는다 */
+function tripGoWhy(key){ const T=G.tripPend; key=key==null?'':String(key); const [kt,kw,ki]=key.includes(':')?key.split(':'):['',key,''];
+  if(G.unemp)return '지금은 구단 업무를 볼 수 없습니다.';
+  if(kt!==''&&+kt!==G.user)return '이전 구단의 출장 안입니다.';
+  if(!T)return !key?'출장 안이 없습니다.':+kw<tripWk0(G.day)?'지난 출장 안입니다.':'이 출장 안은 이미 처리했습니다.';
+  if(T.tid!=null&&T.tid!==G.user)return key?'지난 출장 안입니다.':'출장 안이 없습니다.'; /* 이직 전 구단에서 받은 안이 남은 경우 */
+  if(key&&(String(T.w0)!==kw||(ki!==''&&String(T.id??'')!==ki)))return '지난 출장 안입니다. 새 출장 안을 확인하세요.';
+  return ''; }
+function tripPlanGo(key){ const why=tripGoWhy(key); if(why)return why; const T=G.tripPend; tripApply(G.user,T.P,T.w0); delete G.tripPend; return '팀장 출장 안대로 보냈습니다.'; }
+/* 지금 우리 구단에 걸린 출장 안(이전 구단 것은 없음으로 본다) */
+const tripPendNow=()=>G.tripPend&&(G.tripPend.tid==null||G.tripPend.tid===G.user)?G.tripPend:null;
 function tripSet(sid,k){ const s=(G.scouts||[]).find(x=>String(x.id)===String(sid)); if(!s)return '스카우트가 없습니다.'; const w0=tripWk0(G.day); s.trip={k,from:G.day,to:w0+6,man:true}; return `${s.name} 스카우트를 ${tripName(k)}(으)로 보냅니다. 이번 주 일요일까지입니다.`; }
 /* 경기 날: 출장 중인 스카우트가 그 대회 경기를 본다(모든 구단 같은 식) */
 function tripWatchDaily(d){ if(_amToday.d!==d||!_amToday.L.length)return; const games={}; for(const x of _amToday.L){ if(!x.ev)continue; (games[x.ev+'|'+x.gk]=games[x.ev+'|'+x.gk]||{ev:x.ev,L:[]}).L.push(x); }

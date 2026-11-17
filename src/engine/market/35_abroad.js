@@ -52,7 +52,7 @@ function mlbHype(){ if(period()!=='season'||G.day<G.cal.open+30)return; const ca
 /* 비시즌: 포스팅 요청 */
 const ovsBeen=p=>p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.id); /* 해외 이력: 구단 주도 포스팅도 막힌다(postGMWhy) */
 const postDone=p=>!!((p.faC&&!p.ext)||p.faN||p.lastFA!=null||p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.id));
-function postingSeason(){ G.posting=G.posting||[]; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.joinY>G.year||milServing(p))continue; /* 군 복무 중에는 해외에 나갈 수 없다(검수 11-06) */ if(p.postPromise&&p.postPromiseT!=null&&p.postPromiseT!==p.team){ delete p.postPromise; delete p.postPromiseT; } /* 약속은 약속한 구단만 지킨다(이적하면 끝). 자격 검사보다 먼저 지운다(검수 11-06) */ if(postDone(p))continue; /* KBO 포스팅은 FA 자격 전 보류 선수만: FA 계약을 한 적 있거나 해외에 다녀온 선수는 대상 아님(비FA 다년계약 ext는 FA 이력이 아님) */ if(p.faC&&p.yrs>1&&p.postPromise!==G.year)continue; /* 포스팅을 약속한 해에는 다년계약을 맺었어도 약속을 확인한다(조용히 넘어가지 않게) */ if(p.postPromise!==G.year&&(p.svc<7||p.age>32||ovr(p)<POST_T.o))continue; mlbOf(p);
+function postingSeason(){ G.posting=G.posting||[]; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.joinY>G.year||milServing(p))continue; /* 군 복무 중에는 해외에 나갈 수 없다(검수 11-06) */ if(p.postPromise&&p.postPromiseT!=null&&p.postPromiseT!==p.team){ delete p.postPromise; delete p.postPromiseT; } /* 약속은 약속한 구단만 지킨다(이적하면 끝). 자격 검사보다 먼저 지운다(검수 11-06) */ if(postDone(p))continue; /* KBO 포스팅은 FA 자격 전 보류 선수만: FA 계약을 한 적 있거나 해외에 다녀온 선수는 대상 아님(비FA 다년계약 ext는 FA 이력이 아님) */ if(p.faC&&p.yrs>1&&p.postPromise!==G.year&&!(p.ext&&postStar(p)>0))continue; /* 빅리그급 스타는 비FA 다년계약 중에도 요청한다(사용자 11-17: 송성문 2025년 8월 6년 계약 뒤 그해 겨울 포스팅). 허락은 구단 몫: 남은 계약이 길면 AI도 '1년 뒤 약속'을 고를 수 있다 */ /* 포스팅을 약속한 해에는 다년계약을 맺었어도 약속을 확인한다(조용히 넘어가지 않게) */ if(p.postPromise!==G.year&&(p.svc<7||p.age>32||ovr(p)<POST_T.o))continue; mlbOf(p);
     const want=postWant(p)||(p.postPromise===G.year); if(!want)continue; if(G.posting.some(x=>x.pid===p.id&&x.y===G.year&&!x.void))continue;
     if(p.team!==G.user||G.unemp){ const k=aiPostDecide(p); if(k==='allow'){ if(p.postPromise===G.year)postPromMem(p,true); postStart(p); } else if(k==='promise'){ p.postPromise=G.year+1; p.postPromiseT=p.team; p.mor=clamp((p.mor??60)+3,0,100); } /* 우리 '1년 뒤 약속'과 같은 효과 */ continue; }
     const promised=p.postPromise===G.year; const asked=(p.postAsk||0);
@@ -85,7 +85,10 @@ const postAmt0=o=>350+(o-58)*140; /* MLB 보장 연봉 중심(만 달러): 58 �
 const postYrs=o=>o>=66?[4,6]:o>=62?[2,4]:[1,3];
 /* 선수가 포스팅을 원하는가: 메이저리그 의지에 MLB가 원할 만한 실력이 더해진다(잘할수록 덜 망설인다). 우리와 AI 구단 선수가 같은 기준 */
 const postPull=p=>clamp((ovr(p)-POST_T.o)*4,0,32); /* 해외 구단이 부르는 만큼 커지는 마음(국내 능력 56부터, 64면 +32) */
-function postWant(p){ return mlbOf(p)+postPull(p)>=52; }
+/* 빅리그급 스타(국내 능력 60부터, 65면 최대)는 의지가 크지 않아도 도전을 원한다(사용자 11-17: MLB 국내 선수 3~5명. 실제로 이정후·김하성·김혜성·고우석·송성문은 자격이 되자 모두 포스팅을 요청했다). 59 이하는 예전과 같다. 우리와 AI 구단 선수가 같은 식.
+   측정(씨앗 5·7·11·23, 2026~2029): 62부터 주면 포스팅이 해마다 0.75건(실제 1~3건)이라 60부터로 내렸다 */
+const postStar=p=>clamp((ovr(p)-59)*5,0,30);
+function postWant(p){ return mlbOf(p)+postPull(p)+postStar(p)>=52; }
 /* 포스팅 예상(해외 활성화 2-3): 실제 결과 식(postPm·postAmt0·postYrs·ovsAgeT)의 기대 범위. 미국 스카우트가 보는 능력에 공개 오차(선수·해마다 고정)를 얹어 우리와 AI 구단이 같은 값을 본다.
    n: 관심 구단 수 범위, amt: 보장 연봉 범위(만 달러), yrs: 기간 범위, fee: 포스팅 비용 범위(만 달러), lv: 관심 정도 */
 function postEst(p){ const o=ovr(p)+hn('post'+G.year,p.id)*1.2, A=ovsAgeT(p.age), pM=postPm(o)*A.m, Y=postYrs(o).map(y=>Math.min(A.y,y));
@@ -177,9 +180,29 @@ function fwatchToggle(id){ G.fwatch=G.fwatch||[]; if(fwatchOn(id)){ const w=G.fw
 /* 파악 완료(100%)까지 남은 주: 이번 주 증가 속도로 */
 function fwatchEta(w){ const d=w&&w.dk>0?w.dk:null; if(!w||w.k>=100)return 0; return d?Math.ceil((100-w.k)/d):null; }
 function fwatchK(id){ const w=(G.fwatch||[]).find(x=>x.id===id); return w?w.k:0; }
-function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[];
+/* ===== AI 구단 관찰 명단과 관찰 소문(사용자 11-17: 해외 활성화 3-3) =====
+   AI 구단도 우리처럼 관찰 명단을 둔다: 영입이 필요한 자리(fNeed)의 상위 후보, 시즌 중에는 교체할 만한 후보를 4명까지. 같은 정보(공개 기록·자기 스카우트 추정)로 고르고,
+   매주 파악도가 우리와 같은 식(3 + 스카우트망 단계×3)으로 오른다. 난수를 쓰지 않는다(본게임 난수 순서 그대로).
+   소문: 어느 구단이든 3주 넘게 지켜본 후보는 '다른 구단 관심'이 붙는다. 우리 관찰도 AI 관찰도 같은 규칙으로 몸값(요구액 인상·경쟁 제시액)에 실린다.
+   예전: 우리 관찰만 경쟁 구단 하나로 쳤고(foRivals), 그보다 전에는 AI가 우리 관찰 후보에 +2점·계약 확률 1.8배를 줬다(한쪽만, 1-2에서 지움) */
+const FW_AI={max:4,long:21};
+function fwatchKT(tid,id){ if(tid==null||tid===ME())return fwatchK(id); const L=(G.fwAI||{})[tid], w=L&&L.find(x=>x.id===id); return w?w.k:0; }
+/* 3주 넘게 지켜본 구단(우리 포함). 우리 관찰은 단장일 때만 */
+function fWatchers(q){ const id=q&&q.id, out=[], d0=G.day-FW_AI.long; if(id==null)return out; if(!G.unemp){ const w=(G.fwatch||[]).find(x=>x.id===id); if(w&&w.since<=d0)out.push(G.user); }
+  for(const [t,L] of Object.entries(G.fwAI||{})){ const w=L.find(x=>x.id===id); if(w&&w.since<=d0&&+t!==ME())out.push(+t); } return out; }
+/* 보는 구단(viewer)을 뺀 소문 구단 수: 우리 화면은 viewer=우리, AI 판단은 viewer=그 구단 */
+function fRumorN(q,viewer){ const v=viewer??ME(); return fWatchers(q).filter(t=>t!==v).length; }
+function fwAiWeek(){ const W=G.fwAI=G.fwAI||{}, me=ME(); delete W[me]; const M=new Set(G.fmarket||[]), sea=period()==='season', open=foreignOpen()&&(!sea||G.day<=foreignDL());
+  for(const t of G.teams){ if(t.id===me)continue; const old=(W[t.id]||[]).filter(w=>M.has(w.id)&&G.players[w.id]&&G.players[w.id].team==null); let C=[];
+    if(open){ const nd=fNeed(t.id); if(nd)C=fTop3(t.id,nd); /* 영입 후보 상위 3명(계약할 수 있는 후보만): AI가 실제로 고르는 목록 그대로 */
+      else if(sea&&fReplLeft(t.id,'용병')>0){ const w=foreignOf(t.id).filter(x=>x.foreign==='용병').sort((a,b)=>ovr(a)-ovr(b))[0]; /* 시즌 중: 가장 약한 용병보다 나아 보이는 같은 유형 후보(aiForeignReview와 같은 비교) */
+        if(w)C=(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&x.foreign==='용병'&&x.isP===w.isP&&fKnows(t.id,x)&&!foHeld(x)&&fScoreBy(t.id,x)>ovr(w)+3).sort((a,b)=>fScoreBy(t.id,b)-fScoreBy(t.id,a)).slice(0,2); } }
+    const ids=[...new Set(C.map(x=>x.id))].slice(0,FW_AI.max), lv=Math.min(2,Math.floor(fScoutLv(t.id)||0));
+    const L=ids.map(id=>{ const w=old.find(x=>x.id===id); if(w){ w.k=clamp(w.k+3+lv*3,0,100); return w; } return {id,since:G.day,k:0}; }); /* 관심에서 빠진 후보는 명단에서도 빠진다 */
+    if(L.length)W[t.id]=L; else delete W[t.id]; } }
+function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[]; try{ fwAiWeek(); }catch(e){}
   for(const w of G.fwatch){ const p=G.players[w.id]; if(!p||p.team!=null){ if(p&&p.team!=null&&p.team!==G.user)out.push(`${p.name}은(는) ${tshort(p.team)}와(과) 계약했습니다`); w.gone=true; continue; }
-    const r=origOf(p); const isc=G.scouts.find(s=>s.role==='intl'&&s.region===r); const k0=w.k; w.k=clamp(w.k+3+intlLv(r)*3+(isc?isc.skill*2:0),0,100); w.dk=w.k-k0; /* 이번 주 파악도 증가(관찰 명단 표시, 스카우트 1단계) */
+    const r=origOf(p); const isc=G.scouts.find(s=>s.role==='intl'&&s.region===r); const k0=w.k; w.k=clamp(w.k+3+intlLv(r)*3+(isc?isc.skill*2:0),0,100); w.dk=w.k-k0; /* 이번 주 파악도 증가(관찰 명단 표시, 스카우트 1단계) */ if(!w.rum&&fRumorN(p,G.user)){ w.rum=1; out.push(`${p.name}: 다른 구단 스카우트도 3주 넘게 지켜본다는 소문입니다(몸값이 오를 수 있습니다)`); } /* 사용자 11-17: AI 관찰 소문 */
   }
   /* 시즌 중 MLB 콜업·NPB 계약으로 후보가 빠진다: 시장의 모든 후보가 같은 확률(해외 활성화 1-2: 예전에는 우리가 관찰하는 후보만 빠져 관찰할수록 후보를 잃었다). 해외 기록은 관찰 후보만 남긴다(저장 크기) */
   if(period()==='season')for(const id of [...(G.fmarket||[])]){ const p=G.players[id]; if(!p||p.team!=null||!p.foreign||foHeld(p))continue; /* 답을 기다려 주는 기한에는 해외로 빠지지 않는다(검수 11-09b) */

@@ -68,7 +68,10 @@
  html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .cs-bso i{width:8px;height:8px}
  /* 점수판을 가리던 2D 대체 안내·경기장 안 작은 상황판은 아래로 작게 */
  html.cast-page-open #sheet .cast.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:auto;bottom:4px;left:auto;right:4px;max-width:46%;min-height:0;padding:3px 8px;font-size:10px;line-height:1.35;opacity:.85}
- html.cast-page-open #sheet .cast.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-retry{display:none}
+ /* 다시 시도·새로고침은 안내 상자 바로 아래 오른쪽 구석에 작게 */
+ html.cast-page-open #sheet .cast.match-dashboard .cs-3d[data-state="fallback"]:not([data-bg]) .cs-3d-status{bottom:28px;padding-right:8px}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-acts{top:auto;bottom:4px;right:4px;gap:4px}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-3d-acts>button{padding:2px 7px;font-size:10px;line-height:1.4}
  html.cast-page-open #sheet .cast.match-dashboard .cs-stage>.cs-sit{display:none!important}
  html.cast-page-open #sheet .cast.match-dashboard .cs-stage[data-renderer="ready"]>:is(.cs-board-view,.cs-cam-view){min-height:30px;padding:4px 8px}
  html.cast-page-open #sheet .cast.match-dashboard .cs-stage[data-renderer="ready"]>.cs-cam-view{top:40px}

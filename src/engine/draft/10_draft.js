@@ -119,6 +119,7 @@ function makeDraftClass(){
     if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; if(milFree(p)&&!p.foreign){ p.mil={done:true,wait:G.year}; story(p,'유예 기간 2년 동안 병역 이행(군필로 드래프트 참가)','mil'); } /* 실제 해외 유턴파는 2년 유예 기간에 병역을 마치고 나온다(카페 11-15: 지명 뒤 현역 입대로 능력 하락) */ p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
     try{ wire('드래프트',`해외파 ${p.name}(${p.age}세), ${G.year} 신인 드래프트 참가`,{ref:p.id}); }catch(e){} }
   try{ for(const p of amDepSeniors(G.year))if(!cls.includes(p.id))cls.push(p.id); }catch(e){ console.error(e); } /* 프로 지원한 부원 졸업반(13b_am_depth, 사용자 11-17): 시드 난수만 쓴다 */
+  for(let i=cls.length-1;i>=0;i--){ const p=G.players[cls[i]]; if(!p||p.team!=null)cls.splice(i,1); } /* 어느 구단과든 계약한 선수는 드래프트 명단에 넣지 않는다(카페 11-17). 정상 세계에선 아무도 빠지지 않아 난수 순서 그대로 */
   amClass(cls); /* 해외 복귀자는 출국 전 아마 기록이 없을 때만 새로 만든다(검수 11-09ze) */
   pressRank(cls);
   G.draftClass=cls;
@@ -138,6 +139,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   if(!G.r68){ G.r68=true; for(const t of G.teams){ if(t.id===G.user)continue; const add=fillRoster(t.id,54); for(const p of add)delete p.dev; }
     const ua=fillRoster(G.user,ROSTER_MIN); if(ua.length)mail('운영팀','소속선수 한도 확대',`협회 규정의 소속선수 한도에 맞춰 정식 등록 한도가 ${ROSTER_MAX}명으로 늘었습니다. 최소 인원(${ROSTER_MIN}명)을 맞추려고 2군 선수 ${ua.length}명을 등록했습니다.`,{kind:'운영'}); }
   for(const p of Object.values(G.players))milInit(p);
+  try{ dsubMigrate(); }catch(e){ console.error(e); } /* 세부 수비 능력(03b_def_sub): 옛 저장 선수도 같은 값으로 */
   for(const s of G.scouts.concat(G.scoutMarket||[])){ if(!s.role){ s.role='am'; s.since=-999; } }
   prInit(); if(!G.goals&&period()==='season')setGoals();
   if((period()==='season'||period()==='post')&&G.entryY!==G.year){ G.entryY=G.year; for(const t of G.teams)setEntry(t.id); }
@@ -151,13 +153,34 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
   recoverDraftLogs();
 }
+/* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.
+   계약했는데 신인 후보(prospect) 표시가 남은 선수는 표시를 푼다(1월 1일 명단 정리 때 지워지지 않게). 난수를 쓰지 않는다. 사람·AI 구단 공통 */
+function draftClassPrune(){ if(!G)return 0; let n=0; const out=new Set();
+  const drafted=p=>!!(p.draft&&p.draft.y===G.year); /* 이번 드래프트에서 지명된 선수는 진행 중 명단에 남긴다(지명 결과 표시) */
+  const prune=L=>{ if(!Array.isArray(L))return; for(let i=L.length-1;i>=0;i--){ const p=G.players[L[i]]; if(!p||(p.team!=null&&!drafted(p))){ if(p)out.add(p.id); L.splice(i,1); n++; } } }; /* 제자리에서 지운다: G.draft.cls와 G.draftClass가 같은 배열일 수 있다 */
+  prune(G.draftClass); const d=G.draft; if(d&&!d.done&&d.cls!==G.draftClass)prune(d.cls);
+  for(const id of out){ const p=G.players[id]; if(p&&p.prospect){ p.prospect=false; if(G.dmemo)delete G.dmemo[id]; } }
+  n+=proStaleFix(); return n; }
+/* 계약한 선수의 아마추어 표시 정리(카페 11-17 "트라이아웃에서 영입했는데 선수 화면이 드래프트 대상으로 나와요"):
+   명단(G.draftClass)에 없더라도 어느 구단과든 계약한 선수에 남은 신인 후보(prospect)·창단 드래프트 후보(fdPool)·해외 복귀 유예(ovsWait) 표시를 지운다.
+   선수 화면은 prospect를 보고 '드래프트 대상'·아마추어 프로필로 그렸다. 지명된 선수는 doPick에서 이미 prospect가 꺼져 있어 건드리지 않는다.
+   계약 직후(trySign 등)·드래프트 시작·불러오기·매일 진행에서 부른다. 난수를 쓰지 않고, 두 번 불러도 같다. 사람·AI 구단 공통 */
+function proStaleFix(){ if(!G||!G.players)return 0; let n=0; const fdLive=!!(G.fd&&!G.fd.done);
+  for(const p of Object.values(G.players)){ if(!p||p.team==null)continue; let f=false;
+    if(p.prospect){ p.prospect=false; f=true; if(G.dmemo)delete G.dmemo[p.id]; }
+    if(p.fdPool&&!fdLive){ p.fdPool=false; f=true; }
+    if(p.ovsWait){ delete p.ovsWait; f=true; }
+    if(f)n++; }
+  return n; }
 /* 예전 후보는 인물·능력·관찰·메모를 그대로 두고 학교/권역 표시만 보완한다. */
 function migrateDraftPool(){
   const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&d.y===G.year);
   const valid=L=>[...new Set((Array.isArray(L)?L:[]).filter(id=>G.players[id]&&typeof G.players[id]==='object').map(id=>G.players[id].id??id))];
+  try{ proStaleFix(); }catch(e){ console.error(e); } /* 계약한 선수를 후보로 세지 않는다: 명단이 비었을 때 prospect로 명단을 다시 세우며 계약 선수가 되돌아왔다(카페 11-17) */
   const prospects=Object.values(G.players).filter(p=>p&&p.prospect).map(p=>p.id);
   const source=Array.isArray(G.draftClass)&&G.draftClass.length?G.draftClass:live&&Array.isArray(d.cls)?d.cls:prospects;
   G.draftClass=valid(source);
+  try{ draftClassPrune(); }catch(e){ console.error(e); } /* 옛 저장 수리: 트라이아웃 등으로 계약했는데 명단에 남은 선수(카페 11-17) */
   if(!G.draftClass.length&&!live&&!done){ if(prospects.length)G.draftClass=valid(prospects); else makeDraftClass(); }
   if(live)d.cls=valid(Array.isArray(d.cls)?d.cls:G.draftClass);
   for(const id of new Set([...G.draftClass,...(live?d.cls:[])])){ const p=G.players[id]; if(!p||!p.prospect)continue;
@@ -193,6 +216,7 @@ function startDraft(){ try{ draftOddsSnap(); }catch(e){} /* 예상 확률 보정
   const D=draftOrders(); const order=D.r2, o1=D.r1;
   if(D.pen.includes(G.user)){ const a=D.r2.indexOf(G.user)+1, b=D.r1.indexOf(G.user)+1; if(b!==a)note('드래프트',`경쟁균형세 3회 연속 초과로 1라운드 지명 순서가 ${a}순위에서 ${b}순위로 내려갔습니다.`); } /* 실제로 바뀐 만큼만(검수 11-07) */
   pkClean(); const picks=draftPlan(); void order; void o1; /* 트레이드로 넘겨받은 지명권은 원래 구단 순번에 쓴다 */
+  try{ draftClassPrune(); }catch(e){ console.error(e); } /* 지명 시작 전: 계약한 선수는 명단에서 뺀다(카페 11-17) */
   G.draft={cls:G.draftClass||[],picks,cur:0,done:false,y:G.year}; { const P=draftRestPre(); if(P)G.draft.rest={mode:P.mode,min:P.min,tid:P.tid}; delete G.drestPre; } /* 준비 화면에서 정해 둔 자동 지명 기준 */
   stop('드래프트',`${G.year} 신인 드래프트가 열립니다. 참가 ${G.draft.cls.length}명, ${DRAFT_ROUNDS}라운드 지명 순번은 ${picks.length}개입니다(어느 라운드든 지명을 건너뛸 수 있어 실제 지명 인원은 더 적을 수 있습니다). 순서는 지난 시즌 성적의 역순이고, ${(()=>{ const f=picks.find(k=>k.tid===G.user); return f?`우리 첫 지명은 ${f.rd}라운드 ${f.no}순위입니다.`:'우리 구단은 이번 드래프트 지명권이 없습니다.'; })()}`);
 }
