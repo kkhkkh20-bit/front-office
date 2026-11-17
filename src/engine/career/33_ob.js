@@ -143,7 +143,7 @@ function obHireBonus(obid,role){ if(!obid||!G.ob)return; const ob=G.ob.find(o=>o
 
 /* 한 사람은 한 자리에만(검수 11-06: 다른 구단 현직 코치를 감독으로 데려와도 코치 자리가 남고, AI가 데려간 OB 감독이 시장에 남아 두 구단 감독이 됐다).
  OB 지도자가 새 자리에 앉으면 다른 구단 코치 자리와 감독·코치 시장 후보에서 같은 사람을 지운다 */
-function obTaken(obid,keep){ try{ schLeave(keep); }catch(e){} if(!obid)return; for(const t of G.teams){ const C=G.coach&&G.coach[t.id]; if(C)for(const k of CKEYS){ const c=C[k]; if(c&&c.ob===obid&&c!==keep){ C[k]=t.id===G.user?null:mkCoach(k); if(C[k])staffCt(C[k],ri(1,2)); if(t.id===G.user)mail('운영팀',`${c.name} ${CROLE[k].l}, 감독으로 떠남`,`${c.name} 코치가 다른 자리의 감독을 맡게 돼 ${CROLE[k].l} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요.`,{kind:'감독'}); } }
+function obTaken(obid,keep){ try{ schLeave(keep); }catch(e){} if(!obid)return; for(const t of G.teams){ const C=G.coach&&G.coach[t.id]; if(C)for(const k of CKEYS){ const c=C[k]; if(c&&c.ob===obid&&c!==keep){ C[k]=null; if(t.id!==G.user)try{ coachVacFill(t.id,`${c.name} 코치 감독 선임에 따른 후임`,[k]); }catch(e){} /* AI 후임도 시장에서(89c_coach_vacancy) */ if(t.id===G.user)cvacMail(mail('운영팀',`${c.name} ${CROLE[k].l}, 감독으로 떠남`,`${c.name} 코치가 다른 자리의 감독을 맡게 돼 ${CROLE[k].l} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요.`,{kind:'감독'})); } }
     const m=G.mgr&&G.mgr[t.id]; if(m&&m.ob===obid&&m!==keep&&t.id!==G.user){ const n=mkMgr(); staffCt(n,ri(2,3)); G.mgr[t.id]=n; } }
   G.mmarket=(G.mmarket||[]).filter(x=>x.ob!==obid||x===keep); G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==obid||x===keep);
   /* 한 사람은 한 곳에만(검수 11-09e #15): 스카우트(우리·다른 구단)·보조 코치·고교 감독 자리도 비운다. 학교 감독을 바로 데려간 경우는 schLeave가 먼저 비우고 소식은 schDaily가 낸다 */

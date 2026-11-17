@@ -19278,10 +19278,12 @@ function clanCount(tid){ const m=G.mgr[tid]; if(!m)return 0; return Object.value
 /* 옛 저장: 새로 생긴 코치 자리(불펜·보조 타격·컨디셔닝·2군 수비주루·2군 배터리)를 채운다. undefined만 채우고, 사용자가 비워 둔 자리(null)는 그대로 둔다 */
 function coachFill(){ if(!G.coach)return 0; let n=0; for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue; for(const k of CKEYS){ if(C[k]!==undefined)continue; const c=mkCoach(k,t.id===G.user?{boost:-2}:{}); staffCt(c,ri(1,2),G.year); C[k]=c; n++; } }
   if(G.cmarket&&CKEYS.some(k=>!G.cmarket.some(c=>c.role===k)))for(const k of CKEYS)if(!G.cmarket.some(c=>c.role===k))for(let i=0;i<4;i++)G.cmarket.push(mkCandCoach(k)); return n; }
+const COACH_VAC0=.35, COACH_VAC0_AI=true; /* 새 게임: 코치 자리마다 35% 확률로 빈자리. 우리·AI 같음(구단주 승인 11-17) */
 function coachInit(){ G.coach=G.coach||{}; G.cmarket=G.cmarket||[];
   for(const t of G.teams){ if(G.coach[t.id])continue; const C={}; const m=G.mgr[t.id]; const clan=m&&t.id!==ME()?(m.clan||(m.clan=mkClan(m))):[];
     for(const k of CKEYS){ const cl=clan.find(c=>c.role===k); C[k]=cl||mkCoach(k); C[k].yrs=ri(1,3); }
-    if(t.id===G.user){ for(const k of CKEYS)if(R()<.35)C[k]=null; }
+    if(t.id===G.user){ for(const k of CKEYS)if(R()<COACH_VAC0)C[k]=null; }
+    else if(COACH_VAC0_AI)withRng(rngHash('cvac0',t.id,G.nextId),()=>{ for(const k of CKEYS)if(!clan.includes(C[k])&&R()<COACH_VAC0)C[k]=null; }); /* AI도 같은 확률로 빈자리(감독 사단 코치는 남는다). 따로 씨앗을 둔 난수라 시작 세계가 그대로. 빈자리는 매달 1일 시장에서 채운다 */
     G.coach[t.id]=C; }
   for(const k in G.mgr){ const m=G.mgr[k]; if(m&&!m.interim&&!m.clan)m.clan=mkClan(m); }
   (G.mmarket||[]).forEach(m=>{ if(!m.clan)m.clan=mkClan(m); });
@@ -19356,6 +19358,7 @@ function hireClan(m,years){ // 감독과 함께 사단 코치를 데려온다
   m.clan=clanNow(m); for(const c of (m.clan||[])){ G.cmarket=(G.cmarket||[]).filter(x=>x!==c); delete c.folM; delete c.res; c.clan=m.id; const old=C[c.role]; if(old){ const pay=coachSev(old); G.spend.coach=(G.spend.coach||0)+pay; staffHistory('coach',old,'계약 종료',G.user,'단장 결정에 따른 교체'); old.yrs=0; old.clan=null; G.cmarket.push(old); } staffCt(c,Math.min(4,years)); C[c.role]=c; staffHistory('coach',c,'영입',G.user,`${m.name} 감독 사단 합류 · ${years}년`); got.push(`${CROLE[c.role].l} ${c.name}`); }
   if(got.length)addLog(`${m.name} 감독 사단 합류: ${got.join(', ')}`); return got; }
 function coachYear(){ // 겨울: 계약 정리
+  const vacWhy=Object.fromEntries(G.teams.map(t=>[t.id,{}])); /* AI 빈자리 사유(새 시장에서 채울 때 기록) */
   G.cmarket=(G.cmarket||[]).filter(c=>(c.age||0)<STAFF_RET_AGE); /* 은퇴 나이 코치는 시장에서도 빠진다 */
   for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue;
     for(const k of CKEYS){ const c=C[k]; if(!c)continue;
@@ -19363,7 +19366,7 @@ function coachYear(){ // 겨울: 계약 정리
       if(c.cs!=null&&c.cs>G.year)continue;
       c.yrs--;
       const ret=(c.age||0)>=STAFF_RET_AGE&&(c.yrs<=0||(c.age||0)>=STAFF_RET_AGE+2); /* 70세부터 계약이 끝나면, 72세부터는 계약이 남아도 은퇴한다. 우리·AI 같음(dddddd 11-16: 해를 넘겨도 그대로) */
-      if(ret){ C[k]=null; staffHistory('coach',c,'은퇴',t.id,`${c.age}세`); if(t.id===ME()){ interimLeft(c); mail('운영팀',`${c.name} 코치 은퇴`,`${c.name} 코치(${c.age}세)가 지도자 생활을 마치고 은퇴했습니다. 빈 자리는 코치 시장에서 채워 주세요.`,{kind:'코치',acts:[{l:'코치 시장',a:'goWork',v:'코치진'}]}); } else { C[k]=obAiCoach(t.id,k)||mkCoach(k); staffCt(C[k],C[k].yrs||ri(1,3),G.year+1); staffHistory('coach',C[k],'영입',t.id,`${c.name} 코치 은퇴 · ${C[k].yrs}년`); } continue; }
+      if(ret){ C[k]=null; staffHistory('coach',c,'은퇴',t.id,`${c.age}세`); if(t.id===ME()){ interimLeft(c); cvacMail(mail('운영팀',`${c.name} 코치 은퇴`,`${c.name} 코치(${c.age}세)가 지도자 생활을 마치고 은퇴했습니다. 빈 자리는 코치 시장에서 채워 주세요.`,{kind:'코치',acts:[{l:'코치 시장',a:'goWork',v:'코치진'}]})); } else vacWhy[t.id][k]=`${c.name} 코치 은퇴`; continue; } /* AI 빈자리는 아래에서 새 시장으로 채운다(89c_coach_vacancy) */
       if(c.yrs>0)continue;
       if(t.id===ME()){ C[k]=null; c.from=G.user; c.fromY=G.year; G.cmarket.push(c); staffHistory('coach',c,'계약 만료',t.id); interimLeft(c); continue; }
       const v=x=>(x.sk||45)+(x.dv||45), b=(G.cmarket||[]).filter(x=>x.role===k&&x.age<66&&x.from!==t.id&&!x.ob&&x.fromY!==G.year&&x.res!==G.user).sort((a,b)=>v(b)-v(a))[0];
@@ -19372,11 +19375,13 @@ function coachYear(){ // 겨울: 계약 정리
         staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',b,'영입',t.id,`${c.name} 코치 계약 만료 · ${b.yrs}년`);
       } else if((c.age||0)<STAFF_RET_AGE&&R()<.55){ staffRenew(c,ri(1,2),G.year+1); staffHistory('coach',c,'재계약',t.id,`${c.yrs}년`);
       } else { if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); }
-        C[k]=obAiCoach(t.id,k)||mkCoach(k); staffCt(C[k],C[k].yrs||ri(1,3),G.year+1); staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',C[k],'영입',t.id,`${c.name} 코치 계약 만료 · ${C[k].yrs}년`); }
+        C[k]=null; staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); vacWhy[t.id][k]=`${c.name} 코치 계약 만료`; }
     }
   }
   const kept=(G.cmarket||[]).filter(c=>c.fromY===G.year||(loyWait(c)&&c.res!==G.user)); /* 감독·단장을 따라 나와 기다리는 코치도 남는다(89b_staff_loyalty) */ refreshCoachMarket(); { const ko=new Set(kept.map(c=>c.ob).filter(Boolean)); G.cmarket=G.cmarket.filter(c=>!(c.ob&&ko.has(c.ob))); }
-  G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64)); const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 후보 목록에 남아 있어 다시 데려올 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
+  G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64));
+  try{ coachVacRound(tid=>vacWhy[tid]||{},G.year+1); }catch(e){} /* 새 시장이 열린 뒤 AI 구단과 (맡겼으면) 우리 구단이 같은 규칙·무작위 순서로 빈자리를 채운다 */
+  const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)cvacMail(mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 후보 목록에 남아 있어 다시 데려올 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]})); }
 const COACH_GRADE={bat:{l:'타격',ks:['bc','ab','hc'],k:'sk'},pit:{l:'투수',ks:['pc','bp','cc'],k:'sk'},run:{l:'주루',ks:['rc','r1'],k:'sk'},def:{l:'수비',ks:['dc','cc'],k:'sk'},dev1:{l:'1군 육성',ks:['pc','bp','bc','ab','hc'],k:'dv'},dev2:{l:'2군 육성',ks:['fm','fp','fb','fd','fc','rs','rb'],k:'dv'}};
 function coachGrade(tid){ const C=coachesOf(tid); return Object.fromEntries(Object.entries(COACH_GRADE).map(([key,{ks,k}])=>{ const v=avg(ks.map(r=>effC(C[r],tid,k)));return [key,{v:Math.round(v),l:v>=66?'A':v>=59?'B':v>=52?'C':'D'}]; })); }
 
@@ -21274,7 +21279,7 @@ function obHireBonus(obid,role){ if(!obid||!G.ob)return; const ob=G.ob.find(o=>o
 
 /* 한 사람은 한 자리에만(검수 11-06: 다른 구단 현직 코치를 감독으로 데려와도 코치 자리가 남고, AI가 데려간 OB 감독이 시장에 남아 두 구단 감독이 됐다).
  OB 지도자가 새 자리에 앉으면 다른 구단 코치 자리와 감독·코치 시장 후보에서 같은 사람을 지운다 */
-function obTaken(obid,keep){ try{ schLeave(keep); }catch(e){} if(!obid)return; for(const t of G.teams){ const C=G.coach&&G.coach[t.id]; if(C)for(const k of CKEYS){ const c=C[k]; if(c&&c.ob===obid&&c!==keep){ C[k]=t.id===G.user?null:mkCoach(k); if(C[k])staffCt(C[k],ri(1,2)); if(t.id===G.user)mail('운영팀',`${c.name} ${CROLE[k].l}, 감독으로 떠남`,`${c.name} 코치가 다른 자리의 감독을 맡게 돼 ${CROLE[k].l} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요.`,{kind:'감독'}); } }
+function obTaken(obid,keep){ try{ schLeave(keep); }catch(e){} if(!obid)return; for(const t of G.teams){ const C=G.coach&&G.coach[t.id]; if(C)for(const k of CKEYS){ const c=C[k]; if(c&&c.ob===obid&&c!==keep){ C[k]=null; if(t.id!==G.user)try{ coachVacFill(t.id,`${c.name} 코치 감독 선임에 따른 후임`,[k]); }catch(e){} /* AI 후임도 시장에서(89c_coach_vacancy) */ if(t.id===G.user)cvacMail(mail('운영팀',`${c.name} ${CROLE[k].l}, 감독으로 떠남`,`${c.name} 코치가 다른 자리의 감독을 맡게 돼 ${CROLE[k].l} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요.`,{kind:'감독'})); } }
     const m=G.mgr&&G.mgr[t.id]; if(m&&m.ob===obid&&m!==keep&&t.id!==G.user){ const n=mkMgr(); staffCt(n,ri(2,3)); G.mgr[t.id]=n; } }
   G.mmarket=(G.mmarket||[]).filter(x=>x.ob!==obid||x===keep); G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==obid||x===keep);
   /* 한 사람은 한 곳에만(검수 11-09e #15): 스카우트(우리·다른 구단)·보조 코치·고교 감독 자리도 비운다. 학교 감독을 바로 데려간 경우는 schLeave가 먼저 비우고 소식은 schDaily가 낸다 */
@@ -27506,6 +27511,7 @@ const AUTO_AREAS=[
   ['inv','식사·모임 초대','다른 구단 단장이 청한 식사·통화에 비서가 답합니다. 기본은 정중히 거절(친분이 조금 식음)이고, 응하기로 바꾸면 식사 자리에 나갑니다(구단 운영비 1천만 원, 친분 상승). 일상 결정을 맡겼으면 따로 정하지 않아도 함께 맡습니다.'], /* 사용자 'ddddddd' 11-17: 일상 결정·감독 요청을 맡겼는데 단장 식사 초대가 시뮬을 멈춤 */
   ['scout','스카우트 배치','스카우트팀장이 시기에 맞게 배치하고, 매주 월요일 출장(주말리그·전국대회·학교 방문)도 정해 보냅니다. 출장 안 메일은 오지 않고 일요일 현장 보고만 옵니다.'], /* 출장도 함께(사용자 11-17) */
   ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다. 모두 거절하거나, 우리 평가로 공정에 가까운 제안(손해 1 이내)만 올립니다. 주간 요약에 남깁니다.'],
+  ['cvac','코치 빈자리 보강','운영팀이 빈 코치 자리를 코치 시장에서 채웁니다. AI 구단과 같은 기준으로, 그 자리 후보 가운데 연봉 여력 안에서 종합(지도+육성)이 가장 높은 코치와 1~3년 계약합니다. 맞는 후보가 없으면 새 후보를 데려옵니다. 지금 있는 코치를 바꾸거나 다른 구단 코치를 빼 오지는 않습니다.'], /* 구단주 승인 11-17(검수 §5): AI는 빈자리를 바로 채우는데 맡기기에는 코치 영입이 없었다 */
   ['raid','스태프 빼가기 대응','별 4개 이상(★★★★, 5개 만점) 스카우트·분석원은 상대 제시액에 맞춰 붙잡고, 그 아래는 보내 줍니다. 상대 제시액이 지금 연봉의 1.5배를 넘으면 붙잡기 전에 단장 승인을 받습니다.'],
   ['schg','고교 야구부 후원','고른 권역에서 올해 후원하지 않은 학교를 매주 월요일 후원합니다. 학교마다 한 해 한 번, 곳당 1,000만 원으로 직접 할 때와 같습니다. 권역은 스카우트 > 지역 정보망에서 고릅니다.'],
   ['sisv','자매구단 교류 방문단','고른 나라에서 다시 보낼 수 있는 구단에 매주 월요일 방문단을 보냅니다. 구단마다 60일에 한 번, 곳당 2,000만 원으로 직접 할 때와 같습니다. 나라는 스카우트 > 해외 네트워크에서 고릅니다.'],
@@ -27562,7 +27568,7 @@ function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sa
 function delegStatus(k){ if(AUTO_OPTIN.has(k)&&autoOn(k)){ const L=(G.autoLog||[]).find(x=>x.t==='정기 업무(운영팀)'); return (AUTO_SCOPE[k]?`처리 범위: ${autoScope(k).map(x=>k==='sisv'?OCN[x]:k==='ovsb'?OVS[x].l:x).join(', ')}`:'처리 범위: 면담할 수 있는 모든 직원')+(L?` · 최근 처리 ${dmd(L.d)}`:' · 다음 월요일에 처리합니다'); } if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
   if(C.done)return C.autoDone?`처리 완료: ${dmd(C.autoDone.d)} 국내 ${C.autoDone.n}명·외국인 ${C.autoDone.f}명 계약 확정${C.autoDone.h?` · 미계약 ${C.autoDone.h}명`:''}`:'처리 완료: 올해 연봉 계약 확정';
   if(C.autoWait){ if(C.autoWait.f){ const pend=fRePending(); if(!pend.length||autoOn('fre'))return `처리 예정: 외국인 결정이 끝나 ${G.day<dnum(C.y+1,1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; return `대기: 외국인 ${pend.length}명(${pend.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}) 재계약 미결정 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`; } return `대기: ${C.autoWait.why}`; } /* 지난 사유가 아니라 지금 남은 사유 */ return `처리 예정: ${G.day<dnum(C.y+1,1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; } /* 12월에는 KD(1,5)가 지난 1월이라 '다음 날'로 나왔다(검수 11-06) */
-function autoDaily(day){ if(!G.auto||G.unemp)return; if(dobj(day).w===1&&G.autoWk!==day){ G.autoWk=day; try{ autoRoutine(['schg','sisv','stalk','ovsb']); }catch(e){} }
+function autoDaily(day){ if(!G.auto||G.unemp)return; if(autoOn('cvac'))try{ coachVacUser('코치진 공백 보강(위임)'); }catch(e){} /* 빈자리가 생기면 다음 날까지(AI는 생기는 날 바로) */ if(dobj(day).w===1&&G.autoWk!==day){ G.autoWk=day; try{ autoRoutine(['schg','sisv','stalk','ovsb']); }catch(e){} }
   if(autoOn('fre')&&G.contract&&!G.contract.done&&!G.contract.freAuto&&G.contract.freTry!==day&&(day>=KD(12,3)||dobj(day).m<=2))try{ autoFre(); }catch(e){} /* 12월 3일이 지난 뒤 맡겨도 다음 날 처리한다(검수 11-06) */
   { const C=G.contract; if(autoOn('sal')&&C&&!C.done){ const y=C.y; /* 1차 12월 5일, 2차 12월 19일. 늦게 맡겨 1차가 늦었으면 1차 7일 뒤(확정 하루 전까지)에 2차(검수 11-07) */
     if(!C.salR1&&day>=dnum(y,12,5))try{ autoSalRound(true); }catch(e){}
@@ -27582,12 +27588,13 @@ function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[]
 
 /* ===== 비서에게 넘기기: 알림마다 '비서에게 넘기기' 버튼. 누르면 그 업무를 앞으로 비서·팀장이 맡고, 지금 걸린 일도 바로 처리한다.
    설정 · 권한 탭에서 언제든 다시 가져올 수 있다 ===== */
-const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',inv:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀',schg:'운영팀',sisv:'운영팀',stalk:'운영팀'};
+const AUTO_WHO={cvac:'운영팀',sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',inv:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀',schg:'운영팀',sisv:'운영팀',stalk:'운영팀'};
 function autoNow(k){ const C=G.contract; const out=[];
   if(k==='sal'&&C&&!C.done&&!C.salR1&&G.day>=dnum(C.y,12,5)){ autoSalRound(true); out.push('연봉 협상 1차 제시를 마쳤습니다'); } /* 1차는 한 번만(예약 처리와 겹치지 않게). 12월 5일 전에 맡기면 그날 제시 */ /* 맡기기를 반복해도 강제 제시는 주 1회 */
   if(k==='fre'&&C&&!C.done){ const d0=C.foreignDrop.length; if(C.freTry!==G.day)autoFre(); /* 하루 한 번만 제시(가져왔다 다시 넘겨도 같은 날 재시도를 다 쓰지 않게, 검수 11-07) */ const cut=C.foreignDrop.slice(d0).map(id=>G.players[id]).filter(Boolean); out.push(`외국인 재계약을 처리했습니다${cut.length?`(결별: ${cut.map(p=>p.name).join(', ')})`:''}`); }
   if(k==='tro'){ for(const o of [...(G.offers||[])])autoTradeOffer(o); out.push('받은 트레이드 제안을 정리했습니다'); }
   if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }
+  if(k==='cvac'){ const L=coachVacUser('코치진 공백 보강(위임)'); out.push(L.length?`빈 코치 자리 ${L.length}곳을 채웠습니다(${L.map(c=>`${CROLE[c.role].l} ${c.name}`).join(', ')})`:'지금은 빈 코치 자리가 없습니다'); }
   if(AUTO_OPTIN.has(k)){ const r=autoRoutine([k]); out.push(r?'오늘 '+r:'오늘은 처리할 대상이 없습니다'); }
   if(k==='scout'){ out.push(G._scErr?`스카우트 배치는 맡았지만 지금 배치 조정에 실패했습니다(${G._scErr.slice(0,40)}). 다음 달 다시 시도합니다`:'스카우트 배치와 출장을 맡았습니다. 이번 주 출장은 팀장 안대로 보냈고, 다음 주부터 출장 안 메일 없이 팀장이 정합니다'); } /* 실제 결과대로 안내(검수 11-07) */
   if(k==='ev'||k==='mgr'||k==='inv'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))||(e.k==='gmInv'&&autoOn('inv'))){ e.deleg=true; evPick(e.id,e.k==='gmInv'&&G.auto&&G.auto.inv==='yes'?0:e.def,true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }
@@ -29702,6 +29709,7 @@ function cmRivals(c){ if(!c||c.res===G.user||c.age>=66)return []; const out=[]; 
   return out.sort((a,b)=>b.v-a.v).slice(0,3); }
 /* 매달 1일: AI 구단 코치 영입. 비시즌에 활발하고, 리그 전체에서 한 달에 스타급(지도+육성 128 이상)은 두 명까지만 */
 function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m, off=m>=11||m<=2; const moved=[]; let top=0;
+  try{ coachVacRound('코치진 공백 보강'); }catch(e){} /* 빈자리부터: AI와 (맡겼으면) 우리 구단이 같은 규칙으로(89c_coach_vacancy) */
   const ids=G.teams.map(t=>t.id).filter(id=>id!==ME()).sort(()=>R()-.5); /* 사임했으면 전 구단도 후임 단장이 채용(검수 11-09zw #20) */
   for(const tid of ids){ const t=team(tid), C=G.coach[tid]; if(!C||R()>(off?.55:.12))continue;
     let best=null; for(const c of G.cmarket){ if((typeof schMarketWhy==='function'&&schMarketWhy(c))||c.res===G.user||c.age>=66||(c.from===tid&&c.fromY===G.year)||(c.bid&&c.bid.exp>=G.day))continue; const cur=C[c.role]; const gain=cmVal(c)-cmVal(cur);
@@ -29716,7 +29724,7 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
     const tg=pool.sort((a,b)=>cmVal(b[3])-cmVal(a[3]))[0]; if(!tg)continue; const [o,k,to,c]=tg; const sal=round5(c.sal*1.2);
     if(cmScore(c,tid,sal,to,false)<=cmScore(c,o,c.sal*1.05,k,true))continue;
     const cur=C[to]; if(!cmCanPay(t,{sal},cur))continue; /* 시장 영입과 같은 연봉 여력 검사: 형편이 어려운 구단은 비싼 코치를 빼 가지 못한다 */ if(cur&&staffPending(cur))continue; /* 그 자리에 막 계약해 합류를 기다리는 코치가 있으면(같은 달 시장 영입 포함) 바로 밀어내지 않는다 */ if(cur){ staffHistory('coach',cur,'계약 종료',tid,'후임 코치 영입'); coachPaySev(tid,cur); cur.yrs=0; cur.clan=null; cur.from=tid; cur.fromY=G.year; if(cur.age<64&&!cur.ob)G.cmarket.push(cur); }
-    G.coach[o][k]=obAiCoach(o,k,c.ob)||mkCoach(k); staffCt(G.coach[o][k],ri(1,3),G.year+1); c.role=to; coachSync(c); c.sal=sal; c.clan=null; c.from=o; c.loy=15; staffCt(c,2,G.year+1); C[to]=c; staffHistory('coach',{...c,role:k},'이적',o,`${tshort(tid)} ${CROLE[to].l}(으)로 승격 영입`); staffHistory('coach',c,'영입',tid,`${tshort(o)}에서 ${CROLE[to].l}(으)로 승격 · 연 ${money(sal)}`); staffHistory('coach',G.coach[o][k],'영입',o,`${c.name} 코치 이적에 따른 후임 선임`); poachAdd(tid);
+    G.coach[o][k]=null; c.role=to; coachSync(c); c.sal=sal; c.clan=null; c.from=o; c.loy=15; staffCt(c,2,G.year+1); C[to]=c; staffHistory('coach',{...c,role:k},'이적',o,`${tshort(tid)} ${CROLE[to].l}(으)로 승격 영입`); staffHistory('coach',c,'영입',tid,`${tshort(o)}에서 ${CROLE[to].l}(으)로 승격 · 연 ${money(sal)}`); try{ coachVacFill(o,`${c.name} 코치 이적에 따른 후임 선임`,[k],G.year+1); }catch(e){} /* 후임도 시장에서(89c_coach_vacancy) */ poachAdd(tid);
     const txt=`${tshort(tid)}, ${tshort(o)} ${CROLE[k].l} ${c.name}을(를) ${CROLE[to].l}(으)로 영입`; moved.push(txt); try{ wire('코치',txt,{tid}); }catch(e){} }
   try{ for(const tid of ids)aiAsstMonthly(tid,off); }catch(e){} /* 보조 코치 자리도 우리와 같은 정원(시설 4단계 이상)으로 채운다(99_ai_parity) */
   return moved; }
@@ -29849,8 +29857,7 @@ function aiClanInstall(n,tid,start,why){ const C=G.coach&&G.coach[tid]; if(!C)re
   return got; }
 /* AI 구단 코치 빈자리 채우기(동반 사임 뒤). roles를 주면 그 자리만 */
 const coachHeld=tid=>CKEYS.filter(k=>G.coach&&G.coach[tid]&&G.coach[tid][k]);
-function aiCoachFill(tid,why,roles){ if(tid===ME()||!G.coach||!G.coach[tid])return 0; const C=G.coach[tid]; let n=0;
-  for(const k of roles||CKEYS){ if(C[k])continue; let c=null; try{ c=obAiCoach(tid,k); }catch(e){} c=c||mkCoach(k); staffCt(c,c.yrs||ri(1,3)); C[k]=c; staffHistory('coach',c,'영입',tid,why||'코치진 공백 보강'); n++; } return n; }
+function aiCoachFill(tid,why,roles){ if(tid===ME()||!G.coach||!G.coach[tid])return 0; return coachVacFill(tid,why||'코치진 공백 보강',roles).length; } /* 시장에서 우리와 같은 규칙으로(89c_coach_vacancy, 구단주 승인 11-17). 전에는 시장을 거치지 않은 새 코치 */
 
 /* ----- 단장이 떠날 때: 단장을 좋아하는 직원 동반 사임 ----- */
 const loyRoles=L=>(L||[]).filter(x=>x.kind==='coach').map(x=>x.k);
@@ -29915,6 +29922,49 @@ EVH.loyFol={ can(e,i){ return i===0?loyFolWhy(e.data||{}):''; },
     const why=loyFolWhy(D); if(why){ e.pick=1; return why; }
     if(D.kind==='coach'){ const r=hireCoach(s.id,2); if(r){ e.pick=1; return r; } delete s.gmFol; return `${s.name} 코치가 ${CROLE[s.role].l}(으)로 합류합니다.`; }
     delete s.gmFol; stSignOwn(D.k,s,s.sal); return `${s.name}이(가) 연 ${money(s.sal)}에 합류합니다.`; } };
+/* ===== 코치 빈자리 보강: AI 구단과 맡긴 우리 구단이 같은 시장·같은 규칙으로 (구단주 승인 2026-11-17, 검수 11-17 §5) =====
+ 전에는 AI 빈자리를 시장을 거치지 않은 새 코치(obAiCoach·mkCoach)로 바로 채웠다. 이제는 둘 다 이 함수 하나를 쓴다.
+ - 후보: 코치 시장(G.cmarket)에서 그 자리 후보. 조건은 월간 AI 영입(cmAiMonthly)과 같다: 학교 재직 중·66세 이상·그 구단이 올해 내보낸 코치·다른 구단과 협상 중인 후보는 빼고,
+   다른 구단의 '우선 협상' 후보도 뺀다(우리 우선 협상 후보는 우리만 본다).
+ - 연봉: 시장 영입과 같은 연봉 여력 검사(cmCanPay). 연봉은 후보가 시장에 내건 그대로, 계약 1~3년, 합류 시즌 규칙도 같다(ctStartS 또는 겨울 정리의 다음 시즌).
+ - 고르기: 코치 시장 화면의 '종합순'과 같은 값(우리 팀에서 일할 때의 지도+육성, effC plan). 같으면 연봉이 낮은 쪽.
+ - 시장에 맞는 후보가 없으면 시장과 같은 생성(mkCandCoach)으로 새 후보를 데려온다. 시장보다 좋은 공짜 코치는 없다.
+ - 난수: 계약 연수·새 후보·구단 순서는 따로 씨앗을 둔 난수(withRng)라 본 난수 흐름을 쓰지 않는다. */
+const cvacVal=(c,tid)=>{ const x={...c,clan:null}; return effC(x,tid,'sk',1)+effC(x,tid,'dv',1); }; /* 코치 시장 '종합순'(34_staff coachMarket)과 같은 값 */
+function cvacOk(c,tid,k){ if(!c||c.role!==k)return false; if(typeof schMarketWhy==='function'&&schMarketWhy(c))return false;
+  if(c.age>=66||(c.from===tid&&c.fromY===G.year)||(c.bid&&c.bid.exp>=G.day))return false;
+  if(c.res!=null&&c.res!==tid)return false; /* 우선 협상 후보는 그 구단만 */
+  return cmCanPay(team(tid),c,null); }
+const cvacSeed=(...a)=>rngHash('cvac',G.year,G.day,G.nextId,...a);
+/* tid 구단의 k 자리에 데려올 코치(시장 후보, 없으면 새 후보를 시장에 올려서). 고르기만 하고 계약은 cvacHire */
+function cvacPick(tid,k){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,tid,k)).sort((a,b)=>cvacVal(b,tid)-cvacVal(a,tid)||(a.sal||0)-(b.sal||0));
+  if(L.length)return L[0];
+  let c=null; withRng(cvacSeed('new',tid,k),()=>{ for(let i=0;i<6&&!c;i++){ const x=mkCandCoach(k); if(x&&x.role===k&&cmCanPay(team(tid),x,null))c=x; } if(!c){ c=mkCoach(k,{boost:-ri(2,6)}); c.sal=round5(Math.min(c.sal,140)); } }); /* 형편 안 새 후보가 끝내 없으면 젊은 지도자 수준(시장의 낮은 쪽) */
+  (G.cmarket=G.cmarket||[]).push(c); return c; }
+function cvacYears(tid,c){ return withRng(cvacSeed('yrs',tid,c.id),()=>ri(1,3)); }
+/* 계약: 우리 구단은 단장이 누르는 영입과 같은 hireCoach, AI는 월간 시장 영입과 같은 처리 */
+function cvacHire(tid,c,why,start){ const yrs=cvacYears(tid,c), k=c.role;
+  if(tid===ME()){ const e=hireCoach(c.id,yrs); if(e)return null; if(start!=null&&start!==c.cs)staffCt(c,yrs,start); return c; }
+  const C=G.coach[tid]; G.cmarket=G.cmarket.filter(x=>x!==c); c.clan=null; delete c.res; delete c.folM; delete c.gmFol;
+  staffCt(c,yrs,start??ctStartS()); C[k]=c; staffHistory('coach',c,'영입',tid,`${why||'코치진 공백 보강'} · ${yrs}년 · 연 ${money(c.sal)}`); stAttr(c); c.loy=20;
+  if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ if(c.ob)obTaken(c.ob,c); }catch(e){}
+  if(c.star)try{ wire('코치',`${tshort(tid)}, ${CROLE[k].l}(으)로 ${c.name} 영입 (스타 코치)`,{tid}); }catch(e){} return c; }
+/* 한 구단의 빈자리 채우기. why: 문자열 또는 자리별 {k:문자열}. start: 합류 시즌(겨울 정리 때 다음 시즌). 채운 코치 목록 */
+function coachVacFill(tid,why,roles,start){ if(!G.coach||!G.coach[tid]||!team(tid))return []; if(tid===ME()&&G.unemp)return []; const C=G.coach[tid], got=[];
+  for(const k of roles||CKEYS){ if(C[k])continue; const w=why&&typeof why==='object'?why[k]:why; const c=cvacPick(tid,k); const h=c&&cvacHire(tid,c,w,start); if(h)got.push(h); }
+  return got; }
+/* 리그 한 바퀴: AI 구단과 (맡겼으면) 우리 구단을 따로 씨앗을 둔 무작위 순서로. 매달 1일·겨울 정리 뒤 */
+function coachVacRound(why,start){ if(!G.coach)return []; const ids=G.teams.map(t=>t.id).filter(id=>id!==ME()||autoOn('cvac'));
+  const ord=withRng(cvacSeed('ord'),()=>ids.map(id=>[id,R()]).sort((a,b)=>a[1]-b[1]).map(x=>x[0])); const out=[];
+  for(const tid of ord){ const w=typeof why==='function'?why(tid):why; const L=tid===ME()?coachVacUser(w,start):coachVacFill(tid,w,null,start); out.push(...L.map(c=>({tid,c}))); } return out; }
+/* 맡긴 우리 구단: 같은 함수로 채우고 '위임에 따라 처리한 일'·소식함에 남긴다 */
+function coachVacUser(why,start){ if(G.unemp||!G.coach||!G.coach[G.user])return []; const got=coachVacFill(G.user,why,null,start); if(!got.length)return got;
+  const t=got.map(c=>`${CROLE[c.role].l} ${c.name}(지도 ${dv(effC(c,G.user,'sk',1))} · 육성 ${dv(effC(c,G.user,'dv',1))} · ${c.yrs}년 · 연 ${money(c.sal)})`);
+  autoLogAdd('코치 빈자리 보강(운영팀)',`${got.length}명 영입`,t.join(', '));
+  mail('운영팀',`코치 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 빈 코치 자리를 코치 시장에서 채웠습니다.\n${t.join('\n')}\n\nAI 구단과 같은 기준입니다. 그 자리 후보 가운데 연봉 여력 안에서 종합(지도+육성)이 가장 높은 코치를 골랐고, 후보가 없으면 새 후보를 데려왔습니다. 설정 > 권한에서 다시 가져올 수 있습니다.`,{kind:'코치',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]});
+  return got; }
+/* 코치 빈자리 소식: 받은편지함 '위임하기' 버튼(mailDelegOpts)이 이 업무로 이어지게 */
+function cvacMail(m){ if(m&&typeof m==='object'&&m.id)m.auto=[...new Set([...(m.auto||[]),'cvac'])]; return m; }
 /* ===== 단장 레거시: 오래 한 단장에게 남는 것 (피드백 11-09p) =====
  실제 KBO에는 단장을 구단 레전드로 기리는 공식 제도가 뚜렷하지 않다. 그래서 과장하지 않고 '구단이 공로를 기리는' 정도로만 둔다.
  - G.gmRec: 리그 역대 단장 재임 요약. 사람·구단마다 한 줄 {k:사람, n:이름, t:구단, y0, y1, s:시즌, w, l, c:우승, u:내 계보}. 시즌 결산 때 그해 단장에게 한 시즌을 더한다.
@@ -34561,7 +34611,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
   if(st==='mode'){ ensureWorld();
     return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
     <h2 class="ts-h">${UI.newSlot?`슬롯 ${UI.newSlot} · `:''}어떻게 시작할까요</h2><div class="mbg">
-      <div class="card" style="margin:0 0 10px"><h3 class="sec">난이도</h3><div class="chips">${[['norm','보통'],['hard','하드']].map(([k,l])=>`<button data-a="sdiff" data-v="${k}" class="${(UI.diff||'norm')===k?'on':''}">${l}</button>`).join('')}</div><p class="small muted">${(UI.diff||'norm')==='hard'?'하드: 다른 구단 단장이 트레이드에서 더 많이 요구하고, FA는 우리 제안에 덜 끌립니다. 스폰서·광고 수입이 줄고 시즌 '+gl('흑자 조정')+'이 커집니다. 구단주 신뢰는 더 쉽게 떨어지고 지원 승인은 어려워집니다. 다른 구단은 그대로이고 우리 구단만 까다로워집니다. 게임 중에는 보통으로만 낮출 수 있습니다.':'보통: 기본 규칙입니다.'}</p></div><div class="card" style="margin:0 0 10px"><h3 class="sec">진행 방식</h3><div class="chips">${[['0','직접 하기'],['1','쉬운 진행']].map(([k,l])=>`<button data-a="seasy" data-v="${k}" class="${(UI.easy?'1':'0')===k?'on':''}">${l}</button>`).join('')}</div><div class="chips" style="margin-top:6px">${[['1','첫 시즌 안내 보기'],['0','안내 없이']].map(([k,l])=>`<button data-a="sguide" data-v="${k}" class="${(UI.guideNo?'0':'1')===k?'on':''}">${l}</button>`).join('')}</div><p class="small muted">${UI.easy?'쉬운 진행: 연봉 협상·외국인 재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안을 비서와 팀장이 맡습니다. 드래프트·FA·외국인 영입·트레이드 협상은 단장이 합니다. 게임 중 설정 › 권한에서 바꿀 수 있습니다.':'직접 하기: 모든 업무를 단장이 정합니다. 어려우면 게임 중 홈 카드나 소식함에서 비서에게 맡길 수 있습니다.'}${UI.guideNo?' 첫 시즌 안내(홈 할 일 카드·비서 안내 소식)는 끕니다.':''}</p></div>
+      <div class="card" style="margin:0 0 10px"><h3 class="sec">난이도</h3><div class="chips">${[['norm','보통'],['hard','하드']].map(([k,l])=>`<button data-a="sdiff" data-v="${k}" class="${(UI.diff||'norm')===k?'on':''}">${l}</button>`).join('')}</div><p class="small muted">${(UI.diff||'norm')==='hard'?'하드: 다른 구단 단장이 트레이드에서 더 많이 요구하고, FA는 우리 제안에 덜 끌립니다. 스폰서·광고 수입이 줄고 시즌 '+gl('흑자 조정')+'이 커집니다. 구단주 신뢰는 더 쉽게 떨어지고 지원 승인은 어려워집니다. 다른 구단은 그대로이고 우리 구단만 까다로워집니다. 게임 중에는 보통으로만 낮출 수 있습니다.':'보통: 기본 규칙입니다.'}</p></div><div class="card" style="margin:0 0 10px"><h3 class="sec">진행 방식</h3><div class="chips">${[['0','직접 하기'],['1','쉬운 진행']].map(([k,l])=>`<button data-a="seasy" data-v="${k}" class="${(UI.easy?'1':'0')===k?'on':''}">${l}</button>`).join('')}</div><div class="chips" style="margin-top:6px">${[['1','첫 시즌 안내 보기'],['0','안내 없이']].map(([k,l])=>`<button data-a="sguide" data-v="${k}" class="${(UI.guideNo?'0':'1')===k?'on':''}">${l}</button>`).join('')}</div><p class="small muted">${UI.easy?'쉬운 진행: 연봉 협상·외국인 재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강을 비서와 팀장이 맡습니다. 드래프트·FA·외국인 영입·트레이드 협상은 단장이 합니다. 게임 중 설정 › 권한에서 바꿀 수 있습니다.':'직접 하기: 모든 업무를 단장이 정합니다. 어려우면 게임 중 홈 카드나 소식함에서 비서에게 맡길 수 있습니다.'}${UI.guideNo?' 첫 시즌 안내(홈 할 일 카드·비서 안내 소식)는 끕니다.':''}</p></div>
       <button class="mbig" data-a="smode" data-v="take"><em>바로 시작 · 난이도 선택</em><b>단장 취임</b><span>10개 구단 중 하나의 단장으로 부임합니다. 지금 선수단과 계약, 재정을 그대로 이어받아 고쳐 나갑니다. 구단마다 전력이 달라 강팀은 쉽고 약팀은 어렵습니다. 드래프트 없이 바로 시즌 준비에 들어갑니다.</span></button>
       <button class="mbig mfd" data-a="smode" data-v="fd"><em>드래프트 게임</em><b>창단 드래프트</b><span>리그 국내 선수 전원을 한데 모아 10개 구단이 25라운드에 걸쳐 새로 뽑습니다. 단장은 주전급을 뽑는 앞 10라운드를 직접 지명하고, 나머지는 스카우트에게 맡기거나 더 뽑을 수 있습니다. 능력치는 숨겨져 있고 기록으로 고릅니다. 빈 포지션을 채워 가며 처음부터 내 팀을 만듭니다.</span></button>
     </div>${foot}</div></div>`; }
@@ -35259,7 +35309,7 @@ function homeStartPanel(){ if(!guideOn())return ''; const L=guideItems(); if(!L.
   /* 이번 시즌 할 일(UI 3단계 3-7, 사용자 11-17 첫 시즌 안내): 단계마다 할 일. 지금 할 일 하나만 '왜'와 '비서에게 맡기기'를 펼치고, 나머지는 한 줄, 끝낸 일은 한 줄로 접어 카드가 잘리지 않게 */
   const row=(x,i)=>`<li${i===0?' class="now"':''}><span class="hw-ck-m" aria-hidden="true"></span><b>${esc(x.t)}</b>${x.prog?`<small>${esc(x.prog)}</small>`:''}${x.go?`<button class="btn small" data-a="guideGo" data-v="${esc(x.k)}">하기</button>`:''}${i===0&&x.why?`<p class="hw-ck-why">${esc(x.why)}</p>`:''}${i===0&&x.deleg&&x.deleg.length?`<button class="btn small hw-ck-deleg" data-a="guideDeleg" data-v="${esc(x.k)}" title="${esc(x.deleg.map(k=>(AUTO_WHO[k]||'비서')+': '+((AUTO_AREAS.find(a=>a[0]===k)||[])[1]||k)).join(' · '))}">비서에게 맡기기</button>`:''}</li>`;
   const foot=ph==='pre'?`개막(${dmd(G.cal.open)}) 전까지 끝내면 됩니다.`:ph==='season'?'마감이 지나면 저절로 지워집니다.':ph==='post'?'포스트시즌이 끝나면 스토브리그 할 일이 나옵니다.':'첫 스토브리그가 끝나면 이 카드는 사라집니다.';
-  return `<section class="hw-panel hw-start"><header><h2>이번 시즌 할 일 <small class="muted">${GUIDE_PH[ph]||''} · ${n}/${L.length}</small></h2><span class="row" style="gap:4px">${guideEasy()?'':'<button class="tc-i hw-easy-b" data-a="easyMode" data-v="1" title="연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안을 비서와 팀장에게 맡깁니다. 드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다.">쉬운 진행</button>'}<button class="tc-i" data-a="guideOff" data-v="1" title="설정에서 다시 켤 수 있습니다">숨기기</button></span></header><ol class="hw-ck">${todo.map(row).join('')}${done.length?`<li class="ok hw-ck-done"><span class="hw-ck-m" aria-hidden="true">✓</span><b>${done.map(x=>esc(x.t)).join(' · ')}</b></li>`:''}</ol>${guideEasyLine()}<p class="small muted">${foot}</p></section>`; }
+  return `<section class="hw-panel hw-start"><header><h2>이번 시즌 할 일 <small class="muted">${GUIDE_PH[ph]||''} · ${n}/${L.length}</small></h2><span class="row" style="gap:4px">${guideEasy()?'':'<button class="tc-i hw-easy-b" data-a="easyMode" data-v="1" title="연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강을 비서와 팀장에게 맡깁니다. 드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다.">쉬운 진행</button>'}<button class="tc-i" data-a="guideOff" data-v="1" title="설정에서 다시 켤 수 있습니다">숨기기</button></span></header><ol class="hw-ck">${todo.map(row).join('')}${done.length?`<li class="ok hw-ck-done"><span class="hw-ck-m" aria-hidden="true">✓</span><b>${done.map(x=>esc(x.t)).join(' · ')}</b></li>`:''}</ol>${guideEasyLine()}<p class="small muted">${foot}</p></section>`; }
 function homeWorkspace(){
   // 메뉴·요약·페이지 버튼을 먼저 확보하고 카드 한 줄에 최소 220px을 배정한다.
   const device=innerWidth>=1100?'desktop':innerWidth>=700?'tablet':'mobile';
@@ -43939,7 +43989,7 @@ function guideItems(){ const ph=guidePhase(); let L=[];
 function guideRoute(){ try{ return UI.tab+':'+(typeof curSub==='function'?curSub(UI.tab)||'':''); }catch(e){ return UI.tab; } }
 /* 홈 카드 아랫줄: 쉬운 진행 켜기·끄기 */
 function guideEasyLine(){ if(typeof AUTO_AREAS==='undefined')return ''; const on=guideEasy();
-  return `<div class="hw-easy${on?' on':''}"><span>${on?'<b>쉬운 진행</b> 켜짐 · 반복 업무는 비서와 팀장이 맡습니다':'<b>어렵다면</b> 반복 업무(연봉·재계약·일상 결정·감독 요청·스카우트 배치)를 비서에게'}</span><button class="btn small${on?'':' primary'}" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다. 설정 › 권한에서 하나씩 바꿀 수도 있습니다.':'드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다. 설정 › 권한에서 언제든 다시 가져옵니다.'}">${on?'끄기':'쉬운 진행 켜기'}</button></div>`; }
+  return `<div class="hw-easy${on?' on':''}"><span>${on?'<b>쉬운 진행</b> 켜짐 · 반복 업무는 비서와 팀장이 맡습니다':'<b>어렵다면</b> 반복 업무(연봉·재계약·일상 결정·감독 요청·스카우트 배치·코치 빈자리)를 비서에게'}</span><button class="btn small${on?'':' primary'}" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다. 설정 › 권한에서 하나씩 바꿀 수도 있습니다.':'드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다. 설정 › 권한에서 언제든 다시 가져옵니다.'}">${on?'끄기':'쉬운 진행 켜기'}</button></div>`; }
 /* '하기'로 간 화면 맨 위 한 줄 띠 */
 function guideBar(){ const g=UI.guide; if(!g||!guideOn()||UI.sheet!=null||UI.person||UI.teamSh!=null)return ''; if(g.route!==guideRoute())return '';
   const L=guideItems(), x=L.find(i=>i.k===g.k); if(!x)return ''; const next=L.find(i=>!i.ok&&i.k!==x.k);
@@ -43958,7 +44008,7 @@ function guideCfgCard(){ const off=!!(G.cfg&&G.cfg.guideOff); return `<section c
 Object.assign(A,{
   guideGo(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.go)return; if(x.k==='review'){ G.tutFlags=G.tutFlags||{}; G.tutFlags.review=true; } UI.guide={k:x.k}; A[x.go[0]]?.(x.go[1]); UI.guide={k:x.k,route:guideRoute()}; render(); },
   guideDeleg(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.deleg||!x.deleg.length)return; const L=x.deleg.map(k=>handOff(k)); toast(L.length>1?`${x.t}: ${x.deleg.length}가지 업무를 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`:L[0]); save(); render(); },
-  easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'쉬운 진행을 켰습니다. 연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안은 비서와 팀장이 맡습니다. 설정 › 권한에서 하나씩 다시 가져올 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
+  easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'쉬운 진행을 켰습니다. 연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강은 비서와 팀장이 맡습니다. 설정 › 권한에서 하나씩 다시 가져올 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
   guideClose(){ UI.guide=null; render(); },
   guideOff(v){ G.cfg=G.cfg||{}; G.cfg.guideOff=v==='1'; if(G.cfg.guideOff)UI.guide=null; save(); render(); },
 });
@@ -46014,6 +46064,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-coach',d:'11월 17일',t:'코치 빈자리: AI 구단도 시장에서 · 코치 빈자리 보강 위임',items:[
+    'AI 구단도 빈 코치 자리를 코치 시장에서 채웁니다. 우리와 같은 후보 가운데 연봉 여력 안에서 고르고, 연봉·계약 기간·합류 시즌 규칙도 같습니다. 시장에 맞는 후보가 없을 때만 새 후보를 데려옵니다.',
+    '새 게임에서 AI 구단 코치 자리도 우리처럼 자리마다 35% 확률로 비어서 시작합니다(감독 사단 코치는 남습니다). AI 구단은 2월 1일부터 매달 1일에 시장에서 채웁니다. 그 전에 우리가 먼저 고를 수 있습니다.',
+    '설정 › 권한에 \'코치 빈자리 보강\'이 생깁니다. 맡기면 운영팀이 AI 구단과 같은 기준으로 빈 코치 자리를 채우고, \'위임에 따라 처리한 일\'에 남깁니다. 코치 빈자리 소식에도 위임하기 버튼이 붙습니다. 쉬운 진행에도 들어갑니다.']},
   {id:'2026-11-17-hs2',d:'11월 17일',t:'고교 모든 부원이 실제 선수 · 모의 지명 · U-18 청소년 대표',items:[
     '고교·대학 야구부의 모든 부원이 한 사람으로 삽니다. 학년마다 자라는 빠르기가 사람마다 다르고, 학년별 기록이 남으며, 스카우트가 학교를 찾으면 관찰이 쌓입니다. 학교 선수단에서 부원 이름을 누르면 기록과 우리 스카우트 평가를 봅니다.',
     '졸업반 부원 가운데 프로에 지원한 선수는 드래프트 후보가 됩니다. 참가 인원이 지명 수보다 훨씬 많아지고, 대부분은 지명되지 않습니다. 늦게 피는 선수나 숨은 재능은 어느 학교에서든 나옵니다. 다른 구단도 같은 명단·같은 규칙으로 봅니다.',

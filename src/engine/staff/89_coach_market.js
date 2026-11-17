@@ -16,6 +16,7 @@ function cmRivals(c){ if(!c||c.res===G.user||c.age>=66)return []; const out=[]; 
   return out.sort((a,b)=>b.v-a.v).slice(0,3); }
 /* 매달 1일: AI 구단 코치 영입. 비시즌에 활발하고, 리그 전체에서 한 달에 스타급(지도+육성 128 이상)은 두 명까지만 */
 function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m, off=m>=11||m<=2; const moved=[]; let top=0;
+  try{ coachVacRound('코치진 공백 보강'); }catch(e){} /* 빈자리부터: AI와 (맡겼으면) 우리 구단이 같은 규칙으로(89c_coach_vacancy) */
   const ids=G.teams.map(t=>t.id).filter(id=>id!==ME()).sort(()=>R()-.5); /* 사임했으면 전 구단도 후임 단장이 채용(검수 11-09zw #20) */
   for(const tid of ids){ const t=team(tid), C=G.coach[tid]; if(!C||R()>(off?.55:.12))continue;
     let best=null; for(const c of G.cmarket){ if((typeof schMarketWhy==='function'&&schMarketWhy(c))||c.res===G.user||c.age>=66||(c.from===tid&&c.fromY===G.year)||(c.bid&&c.bid.exp>=G.day))continue; const cur=C[c.role]; const gain=cmVal(c)-cmVal(cur);
@@ -30,7 +31,7 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
     const tg=pool.sort((a,b)=>cmVal(b[3])-cmVal(a[3]))[0]; if(!tg)continue; const [o,k,to,c]=tg; const sal=round5(c.sal*1.2);
     if(cmScore(c,tid,sal,to,false)<=cmScore(c,o,c.sal*1.05,k,true))continue;
     const cur=C[to]; if(!cmCanPay(t,{sal},cur))continue; /* 시장 영입과 같은 연봉 여력 검사: 형편이 어려운 구단은 비싼 코치를 빼 가지 못한다 */ if(cur&&staffPending(cur))continue; /* 그 자리에 막 계약해 합류를 기다리는 코치가 있으면(같은 달 시장 영입 포함) 바로 밀어내지 않는다 */ if(cur){ staffHistory('coach',cur,'계약 종료',tid,'후임 코치 영입'); coachPaySev(tid,cur); cur.yrs=0; cur.clan=null; cur.from=tid; cur.fromY=G.year; if(cur.age<64&&!cur.ob)G.cmarket.push(cur); }
-    G.coach[o][k]=obAiCoach(o,k,c.ob)||mkCoach(k); staffCt(G.coach[o][k],ri(1,3),G.year+1); c.role=to; coachSync(c); c.sal=sal; c.clan=null; c.from=o; c.loy=15; staffCt(c,2,G.year+1); C[to]=c; staffHistory('coach',{...c,role:k},'이적',o,`${tshort(tid)} ${CROLE[to].l}(으)로 승격 영입`); staffHistory('coach',c,'영입',tid,`${tshort(o)}에서 ${CROLE[to].l}(으)로 승격 · 연 ${money(sal)}`); staffHistory('coach',G.coach[o][k],'영입',o,`${c.name} 코치 이적에 따른 후임 선임`); poachAdd(tid);
+    G.coach[o][k]=null; c.role=to; coachSync(c); c.sal=sal; c.clan=null; c.from=o; c.loy=15; staffCt(c,2,G.year+1); C[to]=c; staffHistory('coach',{...c,role:k},'이적',o,`${tshort(tid)} ${CROLE[to].l}(으)로 승격 영입`); staffHistory('coach',c,'영입',tid,`${tshort(o)}에서 ${CROLE[to].l}(으)로 승격 · 연 ${money(sal)}`); try{ coachVacFill(o,`${c.name} 코치 이적에 따른 후임 선임`,[k],G.year+1); }catch(e){} /* 후임도 시장에서(89c_coach_vacancy) */ poachAdd(tid);
     const txt=`${tshort(tid)}, ${tshort(o)} ${CROLE[k].l} ${c.name}을(를) ${CROLE[to].l}(으)로 영입`; moved.push(txt); try{ wire('코치',txt,{tid}); }catch(e){} }
   try{ for(const tid of ids)aiAsstMonthly(tid,off); }catch(e){} /* 보조 코치 자리도 우리와 같은 정원(시설 4단계 이상)으로 채운다(99_ai_parity) */
   return moved; }

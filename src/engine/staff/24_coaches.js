@@ -38,10 +38,12 @@ function clanCount(tid){ const m=G.mgr[tid]; if(!m)return 0; return Object.value
 /* 옛 저장: 새로 생긴 코치 자리(불펜·보조 타격·컨디셔닝·2군 수비주루·2군 배터리)를 채운다. undefined만 채우고, 사용자가 비워 둔 자리(null)는 그대로 둔다 */
 function coachFill(){ if(!G.coach)return 0; let n=0; for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue; for(const k of CKEYS){ if(C[k]!==undefined)continue; const c=mkCoach(k,t.id===G.user?{boost:-2}:{}); staffCt(c,ri(1,2),G.year); C[k]=c; n++; } }
   if(G.cmarket&&CKEYS.some(k=>!G.cmarket.some(c=>c.role===k)))for(const k of CKEYS)if(!G.cmarket.some(c=>c.role===k))for(let i=0;i<4;i++)G.cmarket.push(mkCandCoach(k)); return n; }
+const COACH_VAC0=.35, COACH_VAC0_AI=true; /* 새 게임: 코치 자리마다 35% 확률로 빈자리. 우리·AI 같음(구단주 승인 11-17) */
 function coachInit(){ G.coach=G.coach||{}; G.cmarket=G.cmarket||[];
   for(const t of G.teams){ if(G.coach[t.id])continue; const C={}; const m=G.mgr[t.id]; const clan=m&&t.id!==ME()?(m.clan||(m.clan=mkClan(m))):[];
     for(const k of CKEYS){ const cl=clan.find(c=>c.role===k); C[k]=cl||mkCoach(k); C[k].yrs=ri(1,3); }
-    if(t.id===G.user){ for(const k of CKEYS)if(R()<.35)C[k]=null; }
+    if(t.id===G.user){ for(const k of CKEYS)if(R()<COACH_VAC0)C[k]=null; }
+    else if(COACH_VAC0_AI)withRng(rngHash('cvac0',t.id,G.nextId),()=>{ for(const k of CKEYS)if(!clan.includes(C[k])&&R()<COACH_VAC0)C[k]=null; }); /* AI도 같은 확률로 빈자리(감독 사단 코치는 남는다). 따로 씨앗을 둔 난수라 시작 세계가 그대로. 빈자리는 매달 1일 시장에서 채운다 */
     G.coach[t.id]=C; }
   for(const k in G.mgr){ const m=G.mgr[k]; if(m&&!m.interim&&!m.clan)m.clan=mkClan(m); }
   (G.mmarket||[]).forEach(m=>{ if(!m.clan)m.clan=mkClan(m); });
@@ -116,6 +118,7 @@ function hireClan(m,years){ // 감독과 함께 사단 코치를 데려온다
   m.clan=clanNow(m); for(const c of (m.clan||[])){ G.cmarket=(G.cmarket||[]).filter(x=>x!==c); delete c.folM; delete c.res; c.clan=m.id; const old=C[c.role]; if(old){ const pay=coachSev(old); G.spend.coach=(G.spend.coach||0)+pay; staffHistory('coach',old,'계약 종료',G.user,'단장 결정에 따른 교체'); old.yrs=0; old.clan=null; G.cmarket.push(old); } staffCt(c,Math.min(4,years)); C[c.role]=c; staffHistory('coach',c,'영입',G.user,`${m.name} 감독 사단 합류 · ${years}년`); got.push(`${CROLE[c.role].l} ${c.name}`); }
   if(got.length)addLog(`${m.name} 감독 사단 합류: ${got.join(', ')}`); return got; }
 function coachYear(){ // 겨울: 계약 정리
+  const vacWhy=Object.fromEntries(G.teams.map(t=>[t.id,{}])); /* AI 빈자리 사유(새 시장에서 채울 때 기록) */
   G.cmarket=(G.cmarket||[]).filter(c=>(c.age||0)<STAFF_RET_AGE); /* 은퇴 나이 코치는 시장에서도 빠진다 */
   for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue;
     for(const k of CKEYS){ const c=C[k]; if(!c)continue;
@@ -123,7 +126,7 @@ function coachYear(){ // 겨울: 계약 정리
       if(c.cs!=null&&c.cs>G.year)continue;
       c.yrs--;
       const ret=(c.age||0)>=STAFF_RET_AGE&&(c.yrs<=0||(c.age||0)>=STAFF_RET_AGE+2); /* 70세부터 계약이 끝나면, 72세부터는 계약이 남아도 은퇴한다. 우리·AI 같음(dddddd 11-16: 해를 넘겨도 그대로) */
-      if(ret){ C[k]=null; staffHistory('coach',c,'은퇴',t.id,`${c.age}세`); if(t.id===ME()){ interimLeft(c); mail('운영팀',`${c.name} 코치 은퇴`,`${c.name} 코치(${c.age}세)가 지도자 생활을 마치고 은퇴했습니다. 빈 자리는 코치 시장에서 채워 주세요.`,{kind:'코치',acts:[{l:'코치 시장',a:'goWork',v:'코치진'}]}); } else { C[k]=obAiCoach(t.id,k)||mkCoach(k); staffCt(C[k],C[k].yrs||ri(1,3),G.year+1); staffHistory('coach',C[k],'영입',t.id,`${c.name} 코치 은퇴 · ${C[k].yrs}년`); } continue; }
+      if(ret){ C[k]=null; staffHistory('coach',c,'은퇴',t.id,`${c.age}세`); if(t.id===ME()){ interimLeft(c); cvacMail(mail('운영팀',`${c.name} 코치 은퇴`,`${c.name} 코치(${c.age}세)가 지도자 생활을 마치고 은퇴했습니다. 빈 자리는 코치 시장에서 채워 주세요.`,{kind:'코치',acts:[{l:'코치 시장',a:'goWork',v:'코치진'}]})); } else vacWhy[t.id][k]=`${c.name} 코치 은퇴`; continue; } /* AI 빈자리는 아래에서 새 시장으로 채운다(89c_coach_vacancy) */
       if(c.yrs>0)continue;
       if(t.id===ME()){ C[k]=null; c.from=G.user; c.fromY=G.year; G.cmarket.push(c); staffHistory('coach',c,'계약 만료',t.id); interimLeft(c); continue; }
       const v=x=>(x.sk||45)+(x.dv||45), b=(G.cmarket||[]).filter(x=>x.role===k&&x.age<66&&x.from!==t.id&&!x.ob&&x.fromY!==G.year&&x.res!==G.user).sort((a,b)=>v(b)-v(a))[0];
@@ -132,11 +135,13 @@ function coachYear(){ // 겨울: 계약 정리
         staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',b,'영입',t.id,`${c.name} 코치 계약 만료 · ${b.yrs}년`);
       } else if((c.age||0)<STAFF_RET_AGE&&R()<.55){ staffRenew(c,ri(1,2),G.year+1); staffHistory('coach',c,'재계약',t.id,`${c.yrs}년`);
       } else { if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); }
-        C[k]=obAiCoach(t.id,k)||mkCoach(k); staffCt(C[k],C[k].yrs||ri(1,3),G.year+1); staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); staffHistory('coach',C[k],'영입',t.id,`${c.name} 코치 계약 만료 · ${C[k].yrs}년`); }
+        C[k]=null; staffHistory('coach',c,'계약 만료',t.id,'후임 코치 선임'); vacWhy[t.id][k]=`${c.name} 코치 계약 만료`; }
     }
   }
   const kept=(G.cmarket||[]).filter(c=>c.fromY===G.year||(loyWait(c)&&c.res!==G.user)); /* 감독·단장을 따라 나와 기다리는 코치도 남는다(89b_staff_loyalty) */ refreshCoachMarket(); { const ko=new Set(kept.map(c=>c.ob).filter(Boolean)); G.cmarket=G.cmarket.filter(c=>!(c.ob&&ko.has(c.ob))); }
-  G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64)); const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 후보 목록에 남아 있어 다시 데려올 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
+  G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64));
+  try{ coachVacRound(tid=>vacWhy[tid]||{},G.year+1); }catch(e){} /* 새 시장이 열린 뒤 AI 구단과 (맡겼으면) 우리 구단이 같은 규칙·무작위 순서로 빈자리를 채운다 */
+  const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)cvacMail(mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요. 계약이 끝난 우리 코치도 후보 목록에 남아 있어 다시 데려올 수 있습니다.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]})); }
 const COACH_GRADE={bat:{l:'타격',ks:['bc','ab','hc'],k:'sk'},pit:{l:'투수',ks:['pc','bp','cc'],k:'sk'},run:{l:'주루',ks:['rc','r1'],k:'sk'},def:{l:'수비',ks:['dc','cc'],k:'sk'},dev1:{l:'1군 육성',ks:['pc','bp','bc','ab','hc'],k:'dv'},dev2:{l:'2군 육성',ks:['fm','fp','fb','fd','fc','rs','rb'],k:'dv'}};
 function coachGrade(tid){ const C=coachesOf(tid); return Object.fromEntries(Object.entries(COACH_GRADE).map(([key,{ks,k}])=>{ const v=avg(ks.map(r=>effC(C[r],tid,k)));return [key,{v:Math.round(v),l:v>=66?'A':v>=59?'B':v>=52?'C':'D'}]; })); }
 
