@@ -318,7 +318,7 @@ function renderSheet0(){
    ${T==='dev'?devTab(p)+personalAdviceBox(p,'training'):''}
    ${T==='analysis'?playerAnalysisTab(p):''}
    ${T==='rec'?`
-   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div>${seasonStatsBlock(p,'<span class="eyebrow">기록</span><span class="small muted">F는 2군</span>')}</div>
+   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div class="pf-rec-season" data-wsw="2">${seasonStatsBlock(p,'<span class="eyebrow">기록</span><span class="small muted">F는 2군</span>')}</div>
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
