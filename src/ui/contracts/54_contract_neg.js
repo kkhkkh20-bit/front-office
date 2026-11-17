@@ -63,18 +63,25 @@ function ngtPromRows(N,D){ const p=G.players[N.id]; const T=N.T, P=T.pm||{}, V=D
   const v=pmVal(T,D); return `${R.join('')}<p class="small muted ng-pmn">약속은 계약서에 없는 구두 약속입니다. 약속 가치 합계 +${(Math.round(v*1000)/10)}%(최대 8%). 어기면 선수 기분과 에이전트 친분이 떨어지고, 에이전트는 다음 협상에서 이를 기억합니다.</p>`; }
 /* 요구 대비 지금 조건(정확한 숫자 대신 말로). 제안하기 전에는 판정하지 않고 '제안서' 상태만 알려 준다 */
 function ngtGap(N,D){ const p=G.players[N.id]; let r;
-  if(N.k==='fa'){ r=offScore({annual:termsVal(N.T,D),years:N.T.years})/(faWantFor(p,G.user)*.97); }
+  if(N.k==='fa'){ const P=ngtPrev(N); if(P&&P.r!=null)return [P.brk||P.st==='bad'||P.st==='far'?'bad':P.st==='counter'?'warn':'good',faPreviewTxt(P)]; r=offScore({annual:termsVal(N.T,D),years:N.T.years})/(faWantFor(p,G.user)*.97); } /* FA: 엔진과 같은 표로 예상 반응(수락 가능·역제안 예상·분위기 하락·결렬 위험) */
   else if(N.k==='ext'){ if(N.T.years<extMinY(p))return ['bad',`에이전트가 최소 ${extMinY(p)}년 계약을 요구합니다`]; { const fl=extFloor(p); if(fl&&(N.T.annual||0)<fl)return ['bad',fl>=p.sal?`다년계약은 연봉이 지금(${money(p.sal)}) 이상이어야 합니다`:`감액 한도(연 ${money(fl)}) 아래입니다`]; } r=termsVal(N.T,D)/termsVal(D,D); } else { return salAccepts(p,salNeg(N.id),Math.max(MIN_SAL,Math.round(N.T.annual)))?['good','요구액 수준입니다']:['warn',`요구까지 ${money(D.annual-N.T.annual)} 남았습니다`]; }
   return r>=1?['good','요구 수준입니다']:r>=.9?['warn','요구에 조금 못 미칩니다']:r>=.75?['bad','요구와 차이가 큽니다']:['bad','요구와 차이가 매우 큽니다']; }
+/* FA 제안 전 예상 반응(21_block_agents faPreview): 화면에 보이는 요구·분위기만으로 */
+function ngtPrev(N){ if(!N||N.k!=='fa')return null; try{ return faPreview(N.id,{annual:N.T.annual,years:N.T.years,terms:ngtClean(N.T)}); }catch(e){ return null; } }
+const ngtMoodLab=m=>m>=70?'좋음':m>=50?'보통':m>=35?'냉랭':m>=FA_CLOSE_MOOD?'결렬 직전':'결렬';
+/* 다시 제안할 수 있는 날과 그 규칙(접음 14일 · 결렬 45일+14일 · 원소속 유예 14일) */
+function ngtReopenTxt(N,R){ const p=G.players[N.id]; if(R.st==='closed'){ if(N.k!=='fa'||!G.fa||G.fa.closed)return '이 에이전트는 이번 겨울 더 이상 우리와 협상하지 않습니다.'; const n=G.fa.neg&&G.fa.neg[p.id]; return `${dmd(faReopenDay(p.id))}부터 다시 제안할 수 있습니다. 결렬 규칙: FA 시장 개장 45일 뒤(${dsh(G.fa.openDay+45)})이면서 마지막 협상 14일 뒤(${n&&n.lastD!=null?dsh(n.lastD+14):'-'}).`; }
+  if(R.next==null)return ''; const ng=N.k==='fa'&&G.fa&&G.fa.neg&&G.fa.neg[p.id]; if(R.st==='grace'||(ng&&ng.grace!=null&&ng.grace===R.next))return `${dmd(R.next)}부터 다시 제안할 수 있습니다. 원소속 구단 유예: 결렬 대신 ${CT_COOL_DAYS}일 협상 중단(이번 겨울 한 번). 다시 결렬되면 45일+14일 규칙이 적용됩니다.`;
+  return `${dmd(R.next)}부터 다시 제안할 수 있습니다(협상 접음: ${CT_COOL_DAYS}일 뒤 다시 열림).`; }
 /* 라운드 상태(FA: G.fa.neg · 비FA: p.extNg) */
 function ngtRound(N){ const p=G.players[N.id]; if(N.k==='sal')return null; const S=N.k==='fa'?(G.fa&&G.fa.neg&&G.fa.neg[p.id])||{}:p.extNg||{}; const ag=hasAgent(p)||N.k==='fa'?agentOf(p):null; const RM=N.k==='fa'?agRoundsMax(p):ctRoundsMax(ag);
   const cool=S.fold!=null&&S.fold>G.day?S.fold:null; return {S,RM,n:S.rounds||0,cool,last:!cool&&(S.rounds||0)===RM-1,end:S.d0!=null?S.d0+CT_ROUND_DAYS:null}; }
 /* 제안 결과 줄: 합의·역제안·거절·검토 중·결렬·접음과 다음에 할 수 있는 일 */
 function ngtResOf(N){ const p=G.players[N.id]; if(N.res){ if(N.k==='fa'&&N.res.st==='wait'&&!(G.fa&&G.fa.offers&&G.fa.offers[N.id]))return null; /* 철회한 제안은 '검토 중'이 아니다(검수 11-09r) */ return N.res; }
   if(N.k==='ext'&&p.extLast&&G.day-p.extLast.d<=6){ const c=p.extCounter&&p.extCounter.until>=G.day; const nx=extNextDay(p); if(p.extLast.st==='counter'&&c)return {st:'counter'}; if(nx)return {st:'fold',next:nx}; }
-  if(N.k==='fa'){ const n=G.fa&&G.fa.neg&&G.fa.neg[p.id]; if(n&&n.closed&&!faReopenOk(p.id))return {st:'closed'}; if(n&&n.fold!=null&&n.fold>G.day)return {st:'fold',next:n.fold}; }
+  if(N.k==='fa'){ const n=G.fa&&G.fa.neg&&G.fa.neg[p.id]; if(n&&n.closed&&!faReopenOk(p.id))return {st:'closed'}; if(n&&n.fold!=null&&n.fold>G.day)return {st:n.grace===n.fold?'grace':'fold',next:n.fold}; }
   return null; }
-function ngtResHtml(N){ const R=ngtResOf(N); if(!R)return ''; const nx=R.next!=null?`${dsh(R.next)}부터 다시 제안할 수 있습니다.`:'';
+function ngtResHtml(N){ const R=ngtResOf(N); if(!R)return ''; const nx=ngtReopenTxt(N,R);
   const M={ok:['good','합의',R.sub||'계약이 확정됐습니다.'],
     counter:['warn','역제안','에이전트가 조건을 바꿔 내놓았습니다. 오른쪽 카드에서 수락·거절하거나 고쳐서 다시 제안하세요. 카드 조건을 그대로 내도 받아들입니다.'],
     no:['bad','거절',N.k==='sal'?'선수가 요구액을 조금 낮춰 답했습니다. 그 금액이면 바로 합의됩니다.':'조건을 바꿔 다시 제안할 수 있습니다.'],
@@ -83,7 +90,8 @@ function ngtResHtml(N){ const R=ngtResOf(N); if(!R)return ''; const nx=R.next!=n
     cool:['bad','지금은 협상하지 않습니다',nx],
     locked:['bad','이번 주 협상은 끝났습니다',N.k==='sal'?'요구액 이상이면 지금도 바로 합의됩니다. 더 낮게 부르려면 다음 주에 다시 하세요.':nx],
     wait:['warn','검토 중 · 아직 계약 아님',R.shop?`선수가 시장 반응을 보고 ${dsh(R.shop)}쯤 답합니다. 결과는 소식으로 알려 드립니다.`:'다른 구단 조건과 비교해 결정합니다. 사인하면(또는 다른 구단으로 가면) 소식으로 알려 드립니다.'],
-    closed:['bad','협상 결렬','이 에이전트는 더 이상 우리와 협상하지 않습니다.'],
+    closed:['bad','협상 결렬',nx],
+    grace:['bad','결렬 직전 · 원소속 구단이라 한 번 더 기회',nx],
     owner:['bad','구단주 결재 거절','선수에게 내밀지 못했습니다(라운드·분위기는 그대로). 조건을 낮추거나 연봉이 많은 선수를 먼저 정리하세요.']};
   const m=M[R.st]; if(!m)return ''; return `<div class="ng-res ${m[0]}"><b>${m[1]}</b>${m[2]?`<span>${esc(m[2])}</span>`:''}</div>`; }
 /* 지금 걸린 역제안(FA neg.counter · 비FA extCounter · 연봉 협상은 선수가 낮춰 부른 요구액) */
@@ -134,7 +142,8 @@ function ngtCashRow(T,s0,capAvg){ if(!T||(T.years||1)<2&&!(T.bonus>0))return '';
 function ngtChat(N,D){ const p=G.players[N.id]; const ag=hasAgent(p)||N.k==='fa'?agentOf(p):null; const fn=N.k==='fa'&&G.fa&&G.fa.neg?G.fa.neg[p.id]:null; const R=ngtRound(N); const C=ngtCtr(N);
   const expr=fn?(fn.counter?'flat':fn.hot||fn.deal?'smile':fn.mood<40?'angry':null):null; const st=ag?(AG_STYLE[ag.style]||AG_STYLE.rel):null; const pf=ag?agPref(ag):null;
   const head=`<div class="ng-agc">${ag?agAv(ag,expr):avImg(p)}<div><b>${ag?esc(ag.name):esc(p.name)+' 본인'}</b><span class="small muted">${ag?`<button class="lnk" data-a="agSel" data-v="${ag.id}">${esc(ag.firm)}</button> · ${esc(st.l)} · 경력 ${ag.exp||1}년 · 친분 ${agRelLab(agRel(ag))}`:'에이전트 없이 직접 협상합니다 · 수수료 없음'}</span>${ag&&N.k!=='sal'?`<span class="small muted ng-fee">수수료는 선수가 냅니다(${agFee(ag)}%, 상한 ${AG_FEE_CAP}%). 그래서 ${AG_PREF_L[pf]}을(를) 먼저 챙깁니다.</span>`:!ag&&N.k!=='sal'?'<span class="small muted ng-fee">요구가 소박한 대신 원소속 구단 정을 크게 봅니다.</span>':''}</div></div>`;
-  const rd=R?`<div class="ng-rdw"><div class="ng-rd small"><span>라운드 ${Math.min(R.n,R.RM)}/${R.RM}</span>${R.cool?`<span class="bad">${dsh(R.cool)}까지 협상 중단</span>`:R.end!=null?`<span>${dsh(R.end)}까지</span>`:''}${R.last?'<span class="warn">다음 제안이 마지막입니다</span>':''}${fn?`<span>분위기 ${fn.mood}</span>`:''}</div>${fn?`<span class="gauge"><i style="width:${fn.mood}%;background:${fn.mood>=60?'var(--good)':fn.mood>=35?'var(--warn)':'var(--bad)'}"></i></span>`:''}</div>`:'<div class="ng-rd small"><span>한 주에 한 번 제시</span></div>';
+  const left=R?Math.max(0,R.RM-Math.min(R.n,R.RM)):0; const md=fn?fn.mood:N.k==='fa'?faMood0(p):null; const mc=md==null?'':md>=60?'good':md>=35?'warn':'bad';
+  const rd=R?`<div class="ng-rdw"><div class="ng-kpi"><div class="ng-kp ${R.cool?'bad':left<=1?'warn':''}"><i>남은 제안 횟수</i><b class="num">${R.cool?'중단':`${left}회`}</b><em>${R.cool?`${dsh(R.cool)}부터 다시`:`${R.RM}회 중 ${Math.min(R.n,R.RM)}회 사용${R.end!=null?` · ${dsh(R.end)}까지`:''}`}</em></div>${md!=null?`<div class="ng-kp ${mc}"><i>협상 분위기</i><b class="num">${md} · ${ngtMoodLab(md)}</b><em>${FA_CLOSE_MOOD} 아래로 내려가면 결렬</em><span class="gauge"><i style="width:${md}%;background:var(--${mc})"></i></span></div>`:''}</div>${R.last?'<div class="ng-rd small"><span class="warn">다음 제안이 마지막입니다</span></div>':''}</div>`:'<div class="ng-rd small"><span>한 주에 한 번 제시</span></div>';
   return `<aside class="ng-chat${N.chatOpen?' open':''}">${head}${rd}<div class="ng-msgs" aria-live="polite">${ngtMsgs(N,D,ag)}</div><button class="ng-more small" data-a="ngtChat">${N.chatOpen?'대화 접기':'대화 전체 보기'}</button>${C?ngtCtrCard(N,C):''}</aside>`; }
 function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; const D=ngtDemand(N); const T=N.T;
   const fn=N.k==='fa'&&G.fa&&G.fa.neg?G.fa.neg[p.id]:null; const [gc,gt]=ngtGap(N,D); const R=ngtRound(N); const C=ngtCtr(N);
@@ -158,7 +167,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       ${ngtChat(N,D)}
     </div>
     <div class="ng-acts">
-      ${closed?`<span class="note bad small">에이전트가 협상을 끝냈습니다.${N.k==='fa'&&!G.fa.closed?` ${dmd(faReopenDay(p.id))}부터 다시 제안할 수 있습니다.`:''}</span>`:''}
+      ${closed?`<span class="note bad small">에이전트가 협상을 끝냈습니다. ${esc(ngtReopenTxt(N,{st:'closed'}))}</span>`:''}
       <button class="btn" data-a="ngtDemand"${closed?' disabled':''}>요구대로 채우기</button>${N.k==='fa'&&G.fa.offers[p.id]?'<button class="btn danger" data-a="ngtWithdraw">제안 철회</button>':''}
       <button class="btn ng-close" data-a="ngtClose">협상 취소</button>
       <button class="btn" data-a="ngtCounter"${C&&!closed?'':' disabled'}>역제안 수락</button>
@@ -175,7 +184,7 @@ function ngtSubmit(){ if(!contractMoneyValid())return; const N=UI.ngt; const p=G
   if(N.k==='fa'){ if(faOutBlocked(G.user,p)){ N.msg=`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조).`; return; }
     { const cc=ngtCapC(N); if(cc&&!cc.ok){ N.msg=cc.msg; N.res={st:'owner'}; return; } } /* 협상이 열리기 전에 미리 넣는 조건도 결재부터 */
     if(G.day<G.fa.openDay){ const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); G.fa.offers[p.id]={annual:Math.round(termsVal(T,D)),years:T.years,terms:T}; N.msg='11월 6일 협상이 열리면 에이전트가 답합니다. 조건은 미리 넣어 두었습니다.'; return; }
-    const n0=negOf(p.id).log.length; const r=faNegotiate(p.id,{annual:T.annual,years:T.years,terms:T,lock:lk}); UI.faMsg={id:p.id,t:r.msg}; if(r.owner){ N.msg=r.msg; N.res={st:'owner'}; return; } N.msg=negOf(p.id).log.length>n0?null:r.msg.replace(/^[^:]+: /,''); N.res=r.st?{st:r.st,shop:r.shop,next:r.st==='fold'||r.st==='cool'?negOf(p.id).fold:null}:null; return; }
+    const n0=negOf(p.id).log.length; const r=faNegotiate(p.id,{annual:T.annual,years:T.years,terms:T,lock:lk}); UI.faMsg={id:p.id,t:r.msg}; if(r.owner){ N.msg=r.msg; N.res={st:'owner'}; return; } N.msg=negOf(p.id).log.length>n0?null:r.msg.replace(/^[^:]+: /,''); N.res=r.st?{st:r.st,shop:r.shop,next:r.st==='fold'||r.st==='cool'||r.st==='grace'?negOf(p.id).fold:null}:null; return; }
   if(N.k==='ext'){ const r=offerExtension(p.id,T.annual,T.years,false,T,lk); N.msg=r.st==='owner'||r.st==='na'?r.msg:null; N.res=r.st?{st:r.st,next:r.next??(p.extLast||{}).next}:null; if(r.ok){ UI.stamp={title:'다년계약 합의',msg:`${p.name} · ${termsTxt(T,true)} · ${r.now?'바로 적용':'다음 시즌부터 적용'}`}; UI.ngt=null; } return; }
   const cc0=ngtCapC(N); const n=salNeg(N.id); const r=salOffer(p.id,T.annual); if(cc0&&!cc0.ok&&r===cc0.msg){ N.msg=r; N.res={st:'owner'}; return; } UI.ctMsg=r; const sn=salNeg(p.id)||{};
   if(n&&!/이번 주에는/.test(r)){ const L=n.log=n.log||[]; L.push({d:G.day,w:'구단',a:Math.round(T.annual)},{d:G.day,w:'에이전트',t:r.replace(/^[^:]+: /,'')}); if(L.length>8)L.splice(0,L.length-8); } else N.msg=r.replace(/^[^:]+: /,''); /* 연봉 협상 대화 기록(그 겨울 협상이 끝나면 함께 지워진다) */

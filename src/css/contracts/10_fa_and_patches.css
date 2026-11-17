@@ -299,7 +299,10 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .ng-tot{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}.ng-tot>span{display:grid;gap:1px}.ng-tot i{font-style:normal;font-size:var(--ui-caption);color:var(--muted)}
 .ng-chat{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;gap:8px;min-height:0;border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--panel2,var(--panel))}
 .ng-agc{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center}.ng-agc>.av{width:44px;height:44px}.ng-agc>div{display:grid;gap:2px;min-width:0}.ng-fee{line-height:1.45}
-.ng-rdw{display:grid;gap:4px}.ng-rd{display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--muted)}.ng-rd .warn{color:var(--warn)}.ng-rd .bad{color:var(--bad)}
+.ng-rdw{display:grid;gap:4px}
+.ng-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:4px 0}.ng-kp{display:grid;gap:2px;padding:7px 9px;border:1px solid var(--line);border-left:3px solid var(--line);border-radius:6px;background:var(--panel);min-width:0}
+.ng-kp i{font-style:normal;font-size:var(--ui-caption);color:var(--muted)}.ng-kp b{font-size:18px;line-height:1.25}.ng-kp em{font-style:normal;font-size:var(--ui-caption);color:var(--muted);line-height:1.35}.ng-kp .gauge{margin-top:2px}
+.ng-kp.good{border-left-color:var(--good)}.ng-kp.good b{color:var(--good)}.ng-kp.warn{border-left-color:var(--warn)}.ng-kp.warn b{color:var(--warn)}.ng-kp.bad{border-left-color:var(--bad)}.ng-kp.bad b{color:var(--bad)}.ng-rd{display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--muted)}.ng-rd .warn{color:var(--warn)}.ng-rd .bad{color:var(--bad)}
 .ng-msgs{display:grid;gap:6px;align-content:start;overflow:auto;min-height:0;scrollbar-width:thin}
 .ngm{font-size:var(--ui-body);line-height:1.5;padding:6px 10px;border-radius:8px;background:#ffffff08;color:var(--ink)}.ngm i{display:block;font-style:normal;font-weight:600;font-size:var(--ui-caption);color:var(--muted)}.ngm s{text-decoration:none;font-weight:400;margin-left:4px}
 .ngm.me{background:#4c8de31a;margin-left:18px}.ngm.ag{margin-right:18px}.ngm.bad{border-left:3px solid var(--bad)}.ngm.sys{background:transparent;border:1px dashed var(--line)}
