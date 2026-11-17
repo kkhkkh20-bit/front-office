@@ -62,9 +62,9 @@ async function route(req, env, url, now) {
     if (rest === 'player/me' && req.method === 'GET') return json(200, { ok: true, player: profile(me) });
     if (rest === 'player' && req.method === 'DELETE') { await deletePlayer(db, me.id); return json(200, { ok: true, deleted: me.id }); }
     if (rest === 'player/link' && req.method === 'POST') return await link(req, env, db, me, now);
-    if (rest === 'ladder/deck' && req.method === 'PUT') return await putDeck(req, db, me, now);
+    if (rest === 'ladder/deck' && req.method === 'PUT') return await putDeck(req, db, me, now, env);
     if (rest === 'ladder/deck' && req.method === 'DELETE') { await db.prepare('DELETE FROM decks WHERE player_id = ?').bind(me.id).run(); return json(200, { ok: true }); }
-    if (rest === 'ladder/opponents' && req.method === 'GET') return await opponents(url, db, me, now);
+    if (rest === 'ladder/opponents' && req.method === 'GET') return await opponents(url, db, me, now, env);
     if (rest === 'ladder/result' && req.method === 'POST') return await postResult(req, db, me, now);
     if (rest === 'ladder/me' && req.method === 'GET') return await meView(db, me, now);
     if (rest === 'ladder/rivals' && req.method === 'GET') return await rivals(db, me);

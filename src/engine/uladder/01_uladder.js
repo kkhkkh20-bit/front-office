@@ -15,11 +15,12 @@ function ulScale(e,target){ const base=JSON.parse(JSON.stringify(e)); const at=d
 function ulAiDecks(n,target,tag){ if(n<=0)return []; if(!UL_AI_BASE||UL_AI_BASE.length<n)UL_AI_BASE=cupAiEntries(Math.max(9,n),'ul');
   const nick=['하운즈','파이터스','스톰','로열스','마린스','레이븐스','타이탄스','팬서스','블레이즈','코메츠'];
   return UL_AI_BASE.slice(0,n).map((e,i)=>{ const x=ulScale(e,target); x.name=FrontOfficeCore.cupName(`AI ${nick[i%nick.length]}`); x.ai=1; x.h=FrontOfficeCore.cupEntryHash(x); return x; }); }
-/* 리그 만들기: 서버에서 받은 덱(fetched) → 가져온 우승 덱(cup, 최대 2) → 모자라면 단계 기준 AI. 상대는 사본으로 잠근다 */
+/* 리그 만들기: 서버에서 받은 덱(fetched) → 가져온 우승 덱(cup, 최대 2) → 모자라면 단계 기준 AI. 상대는 사본으로 잠근다.
+   fetched는 엔트리 그대로 또는 서버 v1 모양 {e, pid, nick}(사용자 11-17: 상대 플레이어 id·닉네임을 리그 팀에 붙여 두고 리그가 끝나면 맞대결로 보낸다) */
 function ulMakeLeague(o){ o=o||{}; const C=FrontOfficeCore, U=uld(); if(!U||!U.deck)return {ok:false,msg:'먼저 내 덱을 등록해 주세요.'};
   const tier=U.tier|0, mine=U.deck.e, seen=new Set([mine.h]), T=[{key:UL_ME,kind:'me',name:mine.name,e:JSON.parse(JSON.stringify(mine))}];
-  const add=(e,kind)=>{ if(T.length>=C.UL_TEAMS||!e||!Array.isArray(e.P))return; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); if(seen.has(x.h)||!C.cupValidate(x,{}).ok)return; x.ovr=x.ovr||cupOvr(x); seen.add(x.h); T.push({key:'t'+T.length,kind,name:x.name,e:x}); };
-  for(const e of o.fetched||[])add(e,'user'); let nc=0; for(const e of o.cup||[]){ if(nc>=2)break; const k=T.length; add(e,'cup'); if(T.length>k)nc++; }
+  const add=(e,kind,m)=>{ if(T.length>=C.UL_TEAMS||!e||!Array.isArray(e.P))return; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); if(seen.has(x.h)||!C.cupValidate(x,{}).ok)return; x.ovr=x.ovr||cupOvr(x); seen.add(x.h); const t={key:'t'+T.length,kind,name:x.name,e:x}; if(m&&m.pid){ t.pid=String(m.pid); t.nick=String(m.nick||''); } T.push(t); };
+  for(const d of o.fetched||[]){ if(d&&d.e&&!Array.isArray(d.P))add(d.e,'user',d); else add(d,'user'); } let nc=0; for(const e of o.cup||[]){ if(nc>=2)break; const k=T.length; add(e,'cup'); if(T.length>k)nc++; }
   const need=C.UL_TEAMS-T.length, avg=o.avg&&o.count>=3?Math.round(o.avg):C.UL_TIER_OVR[tier]; for(const e of ulAiDecks(need,avg))add(e,'ai');
   const sched=C.cupLeagueSched(T.length,3);
   U.league={v:1,id:(U.lid=(U.lid||0)+1),tier,deck:U.deck.id,at:G.day,y:G.year,teams:T,sched,next:0,series:[],cnt:T.map(()=>0),bat:{},pit:{},edits:[],src:{user:T.filter(t=>t.kind==='user').length,cup:T.filter(t=>t.kind==='cup').length,ai:T.filter(t=>t.kind==='ai').length},avg};

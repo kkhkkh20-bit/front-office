@@ -13,7 +13,8 @@
  *       ulIdx(색인 한 키: {v, rb, T:[단계마다 [{wid,name,year,ovr,at}…] 최신순 UL_IDX_CAP개], wd, wn})
  *   색인은 상대 고르기·단계별 수에 쓰는 사본이다. 없거나 하루가 지나면 ulD: 목록에서 다시 만든다(목록 1회/1000덱).
  *   wd/wn은 오늘(UTC, KV 한도가 초기화되는 기준) 래더가 한 KV 쓰기 수의 추정치다.
- *   옛 단계 색인 키(ulT:단계:WID)는 더 쓰지 않는다. 남아 있어도 읽지 않는다. */
+ *   옛 단계 색인 키(ulT:단계:WID)는 더 쓰지 않는다. 남아 있어도 읽지 않는다.
+ * 서버 v1(worker/v1)이 쓰는 읽기 도우미(사용자 11-17): ladderKvPool(D1 덱이 모자랄 때 상대 채우기), ladderKvTier(옮겨 올 때 시작 단계 상한). 둘 다 KV에 쓰지 않는다. */
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../src/core/cup.mjs';
 import { UL_TIERS, ulPick, ulSlim } from '../src/core/uladder.mjs';
 import { cached, cacheGet, cachePut, cacheBust, memLimited, utcDay, shortHash } from './kvcache.js';
@@ -87,6 +88,27 @@ export async function ladderUsage(env, url, now) {
   const counts = o.T.map(L => L.length);
   return { ok: true, day: d, writes: o.wd === d ? o.wn : 0, counts, decks: counts.reduce((a, b) => a + b, 0), cap: UL_IDX_CAP, rebuiltAt: o.rb,
     scope: 'ladder', limits: { free: { reads: 100000, writes: 1000, deletes: 1000, lists: 1000 } } };
+}
+
+/* 서버 v1 상대 채우기(사용자 11-17 "화면도 새 서버로 바로 전환해"): D1에 같은 단계 덱이 모자라는 동안 예전 KV 덱을 읽기만 해서 빈자리를 채운다.
+   색인 읽기(캐시) + 고른 덱 본문 n개. 쓰기는 없다(색인이 하루 지나 다시 만들 때 1번 말고). since보다 오래된 등록·skip(나)·drop(이미 D1로 옮겨 온 세계 id)은 뺀다 */
+export async function ladderKvPool(env, url, now, tier, ovr, n, o = {}) {
+  const kv = env && env.SAVE_KV; if (!kv || n <= 0) return { count: 0, avg: 0, decks: [] };
+  tier = tierOf(tier); const no = new Set(o.skip || []);
+  const L = (await idxRead(kv, url, now, false)).T[tier].filter(x => !no.has(x.wid) && (x.at || 0) >= (o.since || 0));
+  const avg = L.length ? L.reduce((a, x) => a + ((x.ovr && x.ovr.t) || 0), 0) / L.length : 0;
+  let pick = ulPick(L, ovr, n * 2, []);
+  if (o.drop && pick.length) { const d = await o.drop(pick.map(x => x.wid)); pick = pick.filter(x => !d.has(x.wid)); }
+  const decks = [];
+  for (const m of pick.slice(0, n)) { const r = await kv.getWithMetadata('ulD:' + m.wid); const mt = r.metadata;
+    if (!r.value || (mt && (mt.hide || tierOf(mt.tier) !== tier))) continue;
+    try { decks.push({ wid: m.wid, name: m.name, year: m.year, ovr: m.ovr, at: m.at, e: JSON.parse(r.value) }); } catch (x) {} }
+  return { count: L.length, avg: Math.round(avg * 10) / 10, decks };
+}
+/* 서버 v1 첫 덱의 시작 단계 상한(사용자 11-17): 같은 세계 id로 KV에 올린 덱이 있으면 그 단계까지, 없으면 루키. KV가 없는 배포면 null(상한 없음) */
+export async function ladderKvTier(env, wid) {
+  const kv = env && env.SAVE_KV; if (!kv) return null; if (!WID.test(String(wid || ''))) return 0;
+  try { const m = (await kv.getWithMetadata('ulD:' + wid)).metadata; return m ? tierOf(m.tier) : 0; } catch (e) { return 0; }
 }
 
 export async function handleLadder(req, env, url, now) {

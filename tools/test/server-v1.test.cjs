@@ -13,6 +13,8 @@ function deck(o = {}) { const P = []; const POS = ['C', '1B', '2B', '3B', 'SS', 
 async function setup(o = {}) {
   const { handle } = await W; (await V)._v1Reset(); (await RL)._resetRL(); (await SE)._resetSeason(); (await US)._resetUsage();
   const DB = o.noDb ? undefined : makeD1(), env = { DB, CUP_ADMIN: 's3cret' };
+  if (o.kv) { const m = o.kv; env.SAVE_KV = { async get(k) { return m.has(k) ? m.get(k).v : null; }, async getWithMetadata(k) { const e = m.get(k); return { value: e ? e.v : null, metadata: e ? e.meta : null }; },
+    async put(k, v, x = {}) { m.set(k, { v: String(v), meta: x.metadata || null }); }, async delete(k) { m.delete(k); }, async list({ prefix }) { return { keys: [...m.keys()].filter(k => k.startsWith(prefix)).map(name => ({ name, metadata: m.get(name).meta })), list_complete: true }; } }; }
   const clock = { now: o.now || Date.UTC(2026, 10, 20, 3) };
   const H = async (m, p, b, h = {}) => { const r = await handle(new Request(ORIGIN + p, { method: m, body: b == null ? undefined : typeof b === 'string' ? b : JSON.stringify(b), headers: Object.assign({ Origin: ORIGIN, 'CF-Connecting-IP': '203.0.113.7' }, h) }), env, clock.now); clock.now += 1000; return r; };
   const J = async (...a) => { const r = await H(...a); return Object.assign({ _s: r.status }, await r.json()); };
@@ -155,8 +157,36 @@ dbTest('클라이언트 연결부(src/core/net.mjs): 플레이어 만들기·토
   down = false; const r2 = await N.result({ key: 'net-2', rank: 5, teams: 10 }); assert.ok(r2.ok); assert.equal(N.queue().length, 0, '줄 세운 결과를 보냄');
   const me = (await N.me()).data; assert.equal(me.entry.leagues, 2); assert.equal(me.entry.tier, 2);
   assert.equal((await N.leaderboard(2)).data.rows[0].nickname, '연결부');
-  assert.equal(netEnabled(storage, ''), false); assert.equal(netEnabled(storage, '?a=1&net=v1'), true); storage.setItem('fo-net-v1', '1'); assert.equal(netEnabled(storage, ''), true);
+  /* 사용자 11-17: 기본으로 켠다. 끄기 = fo-net-v1 '0' 또는 ?net=kv, ?net=v1은 '0'이어도 켠다 */
+  assert.equal(netEnabled(storage, ''), true, '기본 켜짐'); assert.equal(netEnabled(storage, '?a=1&net=kv'), false); assert.equal(netEnabled(storage, '?net=off'), false);
+  storage.setItem('fo-net-v1', '0'); assert.equal(netEnabled(storage, ''), false, '끄기 스위치'); assert.equal(netEnabled(storage, '?a=1&net=v1'), true); storage.setItem('fo-net-v1', '1'); assert.equal(netEnabled(storage, ''), true);
+  const { netSetEnabled } = await import(path.join(root, 'src/core/net.mjs')); netSetEnabled(false, storage); assert.equal(netEnabled(storage, ''), false); netSetEnabled(true, storage); assert.equal(netEnabled(storage, ''), true);
+  const pid = N.player().id; const del = await N.deleteMe(); assert.ok(del.ok); assert.equal(N.signedIn(), false, '지우면 토큰을 버림'); assert.equal(env.DB._sqlite.prepare('SELECT COUNT(*) AS n FROM players WHERE id = ?').get(pid).n, 0);
   assert.equal(netPlatform({ FT_PLATFORM: 'steam' }), 'steam'); assert.equal(netPlatform({ Capacitor: { getPlatform: () => 'android' } }), 'android'); assert.equal(netPlatform({ navigator: { userAgent: 'Mozilla Chrome' } }), 'web');
   const off = netCreate({ fetch: async (u, o) => handle(new Request(ORIGIN + u, o), {}, Date.now()), storage: { getItem: () => null, setItem() {}, removeItem() {} } });
   assert.equal(await off.probe(), 'off');
+});
+
+/* 사용자 11-17 "화면도 새 서버로 바로 전환해": 예전 KV 래더 유저 옮기기 */
+dbTest('KV에서 옮겨 오기: 첫 덱 시작 단계는 같은 세계 id의 KV 단계까지만, KV 기록이 없으면 루키, 두 번째부터는 보낸 단계 무시', async () => {
+  const kv = new Map(); const { J, mk } = await setup({ kv }); const W1 = 'w' + '1'.repeat(16), W2 = 'w' + '2'.repeat(16), W3 = 'w' + '3'.repeat(16);
+  for (const [w, t] of [[W1, 3], [W2, 1]]) assert.equal((await J('PUT', '/api/ladder/deck', { wid: w, tier: t, e: deck({ name: '옛' + t }) }))._s, 200);
+  const a = await mk('옮김왕', '10.7.0.1'), b = await mk('부풀림', '10.7.0.2'), c = await mk('새내기', '10.7.0.3');
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '에이' }), tier: 3, wid: W1 }, a.A)).tier, 3, 'KV 단계 그대로');
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '비' }), tier: 4, wid: W2 }, b.A)).tier, 1, 'KV보다 높게 보내면 KV 단계까지');
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '씨' }), tier: 2, wid: W3 }, c.A)).tier, 0, 'KV 기록 없음 → 루키');
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '씨2' }), tier: 4, wid: W3 }, c.A)).tier, 0, '두 번째 등록은 단계를 안 바꿈');
+});
+dbTest('상대 채우기: D1 덱이 모자라면 같은 단계 KV 덱으로(pid 없음, kv 수), 이미 옮겨 온 세계 id와 나는 빼고, D1이 충분하면 KV를 안 씀', async () => {
+  const kv = new Map(); const { J, mk } = await setup({ kv }); const w = i => 'w' + String(i).padStart(16, '0');
+  for (let i = 1; i <= 6; i++) await J('PUT', '/api/ladder/deck', { wid: w(i), tier: 1, e: deck({ name: 'KV팀' + i, ovr: { t: 60 + i, p: 60, b: 60 } }) });
+  await J('PUT', '/api/ladder/deck', { wid: w(9), tier: 2, e: deck({ name: '다른단계' }) });
+  const me = await mk('나야나', '10.8.0.1'); await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: 'KV팀1', ovr: { t: 61, p: 60, b: 60 } }), tier: 1, wid: w(1) }, me.A); // 내 KV 덱(w1)을 옮김
+  const mv = await mk('옮긴이', '10.8.0.2'); assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '새이름', ovr: { t: 62, p: 60, b: 60 } }), tier: 1, wid: w(2) }, mv.A)).tier, 1); // w2는 v1으로 옮겨 옴
+  const o = await J('GET', '/api/v1/ladder/opponents?n=9', null, me.A); assert.equal(o._s, 200, JSON.stringify(o)); assert.equal(o.tier, 1);
+  const names = o.decks.map(d => d.name).sort(); assert.deepEqual(names, ['KV팀3', 'KV팀4', 'KV팀5', 'KV팀6', '새이름'], '내 KV 덱·옮겨 온 KV 덱·다른 단계 빼기 ' + names);
+  assert.equal(o.kv, 4); assert.ok(o.decks.filter(d => d.kv).every(d => d.pid === null && d.e.P.length === 24)); assert.equal(o.decks.find(d => d.name === '새이름').pid, mv.id);
+  const r = await J('POST', '/api/v1/ladder/result', { key: 'kvmix-1', rank: 3, teams: 10, opps: [{ pid: mv.id, w: 2, l: 1 }] }, me.A); assert.equal(r._s, 200);
+  for (let i = 0; i < 9; i++) { const p = await mk('찐유저' + i, '10.8.1.' + i); await J('PUT', '/api/ladder/deck', { wid: w(100 + i), tier: 1, e: deck({ name: 'D1팀' + i, ovr: { t: 60 + i, p: 60, b: 60 } }) }); await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: 'D1팀' + i, ovr: { t: 60 + i, p: 60, b: 60 } }), tier: 1, wid: w(100 + i) }, p.A); }
+  const o2 = await J('GET', '/api/v1/ladder/opponents?n=9', null, me.A); assert.equal(o2.kv, 0, 'D1이 충분하면 KV 안 씀'); assert.equal(o2.decks.length, 9); assert.ok(o2.decks.every(d => d.pid));
 });
