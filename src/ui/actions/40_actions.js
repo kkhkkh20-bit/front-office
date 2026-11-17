@@ -435,7 +435,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tside(v){UI.trade.side=v;render();},
   tpool(v){const [a,b]=String(v).split(':');UI.trade.side=a;UI.trade.seg=b;render();}, /* 상대/우리 × 야수/투수를 한 줄로(UI 3단계 3-9) */
   tsideGo(v){ UI.trade.side=v;if(innerWidth<700)UI.trade.stage='pick'; render(); requestAnimationFrame(()=>{ const e=document.getElementById('tpick'); if(e)e.scrollIntoView({behavior:'smooth',block:'start'}); }); },
-  tsort(v){UI.trade.sort=v;render();},
+  tsort(v){UI.tsortBy=Object.assign({},UI.tsortBy,{[UI.trade.side||'get']:v});UI.trade.sort=v;render();}, /* 상대·우리 선수 정렬을 따로 기억(제보 11-17) */
   tpick(v){const [side,id]=v.split(':');const arr=UI.trade[side];const i=arr.indexOf(+id);i>=0?arr.splice(i,1):arr.push(+id);UI.trade.msg='';UI.trade.want=null;render();},
   pkT(v){ const tr=UI.trade; const i=v.indexOf(':'), side=v.slice(0,i), k=v.slice(i+1); tr.pk=pkNorm(tr.pk); const L=tr.pk[side]; const j=L.indexOf(k); if(j>=0)L.splice(j,1); else L.push(k); render(); },
   treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.pk=null;UI.trade.cash=0;UI.trade.counters=null; /* 현금·지난 역제안도 비운다(검수 11-08c) */UI.trade.msg='';UI.trade.want=null;render();},
