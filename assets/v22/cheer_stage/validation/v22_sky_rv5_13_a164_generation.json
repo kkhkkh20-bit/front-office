@@ -1,0 +1,28 @@
+{
+  "id": "v22_sky_rv5_13",
+  "index": 24,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "sky",
+  "hair": "pony",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_240fd915-3870-4112-a261-f41cbbeda1d3.webp",
+  "source_guide_id": "rv5_13",
+  "source_guide_sha256": "669fd8e3505786e0cc4e91f074678cfb608319c8e7116c6d4aba08b7c1cef38a",
+  "source_guide_native_size": [
+    384,
+    384
+  ],
+  "source_guide_dataset": "Locally generated RealisticVision fictional identity guide",
+  "costume_reference": "/dev/shm/v22_work/kits/sky.png",
+  "generation_attempt": 164,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photographic canvas outpaint",
+  "composition_reference": "/dev/shm/v22_work/v22_sky_rv5_13_a162_followup_reference.png",
+  "prompt": "SINGLE high fidelity WHOLE PHOTO outpaint: preserve EXACT central real photograph, SAME fictional adult KOREAN woman age25, exact individual face/eyes/nose/mouth/smile/teeth/natural skin/makeup and hairstyle, same uniform/pose/camera/lighting. Fill surrounding GRAY border into matching blurred NIGHT baseball stadium scene and naturally continue shoulders; preserve central photo's reference scale/position, no zoom or discard margins. Neat professional ponytail with fine natural hair, tame sparse flyaways, do not reshape face or use common beautytemplate. Real authentic whole professional85mm stage photograph, no logos/text/gray/borders/CGI, NEW native square1254orhigher.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-b47e69cf-96a6-4737-9974-83ec0de099b3.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_sky_rv5_13_a162",
+  "source_photo_reference": "/workspace/generated_images/exec-b2424c94-0dd9-47e7-a6d8-b45b76e6f915.png"
+}

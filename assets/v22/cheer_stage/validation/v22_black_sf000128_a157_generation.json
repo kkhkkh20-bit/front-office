@@ -1,0 +1,30 @@
+{
+  "id": "v22_black_sf000128",
+  "index": 17,
+  "r": "ccap22",
+  "a": 26,
+  "f": 1,
+  "uc": "black",
+  "hair": "wave",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000128_identity_guide.jpg",
+  "source_guide_id": "sf3_000128",
+  "source_guide_dataset": "SFHQ part3, public synthetic reference",
+  "source_guide_row_idx": 128,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "ff1786ab673fe26996c498d7fba024fc3f50518620d0aa5d317d656c556d17e0",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "costume_reference": "/dev/shm/v22_work/kits/black.png",
+  "generation_attempt": 157,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photo canvas outpaint and tidy flyaway hair only",
+  "composition_reference": "/dev/shm/v22_work/v22_black_sf000128_a147_wideborder_reference.png",
+  "prompt": "SINGLE high-fidelity photographic edit. Keep EXACT same existing fictional adult KOREAN stage cheerleader age26 in central photo: preserve her individual real face, normal eyes and darkbrown irises, own cheeks/nose/lips, EXACT smile/teeth and hand gesture, same makeup, hair character and outfit collar/trim/colors. Only fill surrounding GRAY border with a coherent continuation of her NIGHT baseball grandstand scene and naturally continue any cropped crown/shoulders. Tidy stray flyaway hairs with natural grooming; keep normal full hairstyle without tall isolated wisps, do NOT change skull/face. Existing central whole photograph must stay SAME relative scale/placement as supplied, do NOT zoom or discard margins. Natural fine skin, authentic real Korean adult twenties stage professional, no CG beautytemplate/face shaping/oversizedeyes/plasticskin/artificialaging. No borders/graycanvas/text/logos/glasses/hats/cleavage, one coherent whole professional85mm photograph, new native square1254x1254orhigher.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-1fd921a8-c79b-4368-987b-fede57437463.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_black_sf000128_a147",
+  "source_photo_reference": "/workspace/generated_images/exec-d981eb61-16ad-437d-98dd-bde159262ebd.png"
+}

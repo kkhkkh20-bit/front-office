@@ -1,0 +1,32 @@
+{
+  "id": "v22_black_sf000892",
+  "index": 32,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "black",
+  "hair": "half",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000892_identity_guide.jpg",
+  "source_guide_id": "sf3_000892",
+  "source_guide_dataset": "SFHQ part3, raw public synthetic parquet reference",
+  "source_guide_row_idx": 892,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "9e350e6774d53d8888cd90d784c58636f8e27e1d7664f282184a16dab95f59ac",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "source_guide_parquet": "default/train/0000.parquet",
+  "costume_reference": "/dev/shm/v22_work/kits/black.png",
+  "generation_attempt": 184,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photograph natural stage hairstyle grooming only",
+  "composition_reference": "/workspace/generated_images/exec-9e5d4c7a-55df-44d9-865e-d8a5b61fa5b0.png",
+  "prompt": "A SMALL natural stage HAIRSTYLE grooming edit to this whole real photograph. Preserve EXACT same fictional ADULT KOREAN woman age25, her distinct individual face/skull/forehead/eyes/nose/lips/skin/makeup, EXACT smile/teeth and hand pose, outfit/collar/trim, camera/framing/scene. Make ONLY the HAIR CROWN naturally a little fuller/higher, about25pixels higher on the1254canvas, by normal professionally styled hair volume. Use a dense coherent groomed crown, no tall thin wisps. Do not enlarge or reshape skull/forehead/face, do not move eyes or change anatomy. Keep same polished real adult twenties professional KBO cheerleader, realistic fine skin, no plastic CG/template. No crop or zoom, same NIGHT stadium lighting/85mm camera, new native1254squareorhigher photograph.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-a3421607-1a9b-41a7-b804-fc0fc65d31b0.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_black_sf000892_a181",
+  "source_photo_reference": "/workspace/generated_images/exec-9e5d4c7a-55df-44d9-865e-d8a5b61fa5b0.png",
+  "rise": 25
+}

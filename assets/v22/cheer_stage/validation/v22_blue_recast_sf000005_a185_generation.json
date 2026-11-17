@@ -1,0 +1,38 @@
+{
+  "id": "v22_blue_recast_sf000005",
+  "index": 0,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "blue",
+  "hair": "wave",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000005_identity_guide.jpg",
+  "source_guide_id": "sf3_000005",
+  "source_guide_dataset": "SFHQ part3, public synthetic reference",
+  "source_guide_row_idx": 5,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "aceea407c8b9a25f9f47609ac89c66cf84187bd36865ae0213bbf05d5857f78a",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "costume_reference": "/dev/shm/v22_work/kits/blue.png",
+  "generation_attempt": 185,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photograph wardrobe recast only, unused distinct identity retained",
+  "composition_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/exports/v22_navy_sf000005_a134_master512.png",
+  "technical_reference_only_crop_xyxy": [
+    -134,
+    -104,
+    391,
+    421
+  ],
+  "source_parent_candidate": "v22_navy_sf000005_a134",
+  "source_photo_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/exports/v22_navy_sf000005_a134_master512.png",
+  "operation": "single whole-photograph wardrobe edit",
+  "prompt": "ONE high-fidelity whole-photograph WARDROBE edit. Preserve EXACT same distinct fictional ADULT KOREAN woman age25 from photo1: identical individual real face/skull/normal small darkbrown eyes/nose/lips/cheeks/natural asymmetry, same gentle CLOSED-LIP smile, skin texture/makeup and wavy hair. Keep exact camera scale/face/eyes placement/full crown top margin, exact same pose with hands outside, lighting and blurred NIGHT baseball grandstand scene. Change ONLY her uniform to EXACT garment in ref2: royalBLUE short-sleeved fully zipped HIGH STAND COLLAR top, WHITE side panels and thin SILVER shoulder piping, same cut/collar/trim as ref2. Zip closed to the collar, opaque full chest/abdomen coverage, no white crewneck undershirt visible. No logos/text/numbers/hats/glasses/accessories/cleavage. Keep it an authentic professional Korean cheerleader85mm whole coherent real photograph, no face pasted onto another body, no CG/template/skin smoothing/face reshaping. Reproduce at NEW native1254squareorhigher with natural fine coherent photographic detail, DO NOT zoom or change composition.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-77e70c8b-031c-400d-a27d-c525e9ae1a09.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "identity_guide_sha256": "aceea407c8b9a25f9f47609ac89c66cf84187bd36865ae0213bbf05d5857f78a"
+}

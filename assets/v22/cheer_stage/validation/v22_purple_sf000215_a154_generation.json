@@ -1,0 +1,44 @@
+{
+  "id": "v22_purple_sf000215",
+  "index": 20,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "purple",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000215_identity_guide.jpg",
+  "source_guide_id": "sf3_000215",
+  "source_guide_dataset": "SFHQ part3, public synthetic reference",
+  "source_guide_row_idx": 215,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "6ffd30125868bffdd4ed3ff008356bc6ad4b6c5232aade67a60ab39aa5808e55",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "costume_reference": "/dev/shm/v22_work/kits/purple.png",
+  "generation_attempt": 154,
+  "status": "PENDING_VALIDATION",
+  "purpose": "new native stage portrait from public synthetic identity reference",
+  "composition_reference": "/dev/shm/v22_work/v22_purple_sf000215_reference.png",
+  "prompt": "Four independent authentic photographic portraits in EXACT 2x2 geometry of ref1. Keep thin WHITE separator CROSS at precise50% horizontal and50% vertical. Each quadrant is its own DIFFERENT fictional adult Korean KBO cheerleader. Preserve each exact corresponding identity, facial proportions and individual asymmetric features, hairstyle, smile, pose and fully covered uniform. High fidelity WHOLE photograph outpainting/reframing, extend gray canvas into natural hair/crown and blurred NIGHT baseball grandstand and floodlight bokeh. Do NOT zoom or move faces from reference: eyes at41% of each tile, facial length37% of tile, hair margin6-10%. Full professional polished stage brows, tasteful eye makeup and lip tint, finely natural real skin; beautiful real adult woman photograph, normal eyes/teeth, no CG doll or artificial aging/blemishes. Preserve each uniform's exact own collar/cut/colors/trim. Soft front-above keylight and rear stage rim,85mm head-upperchest, shoulderslower, no logos/text/numbers/glasses/hats/cleavage/crop/body emphasis. Output native1254square or larger.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-753fe7e6-2498-4abe-9876-718d11e6ef2b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_purple_sf000215_a151",
+  "source_photo_reference": "/workspace/generated_images/exec-15b62978-c426-4282-8205-08ee7fc231e7.png",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_purple_sf000215_a154.png",
+  "original_sheet": "/workspace/generated_images/exec-753fe7e6-2498-4abe-9876-718d11e6ef2b.png",
+  "original_sheet_sha256": "3ace6902356509bf55484f5e02112ea1cbb8247a60f484aef842e764f5b6eac7",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    631,
+    4,
+    1250,
+    623
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

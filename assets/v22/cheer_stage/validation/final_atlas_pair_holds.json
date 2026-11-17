@@ -1,0 +1,68 @@
+[
+  {
+    "a": "v22_orange_05_a102",
+    "b": "v22_sky_03_a103",
+    "actual_atlas_raw_max": 0.40348583459854126,
+    "resolution": "128",
+    "source": "validation/atlas_preflight001_failed.json",
+    "policy": "Conservative selection hold, no score changes. Different crops or variants still require actual final QC."
+  },
+  {
+    "a": "v22_navy_05_a114",
+    "b": "v22_green_04_a109",
+    "actual_atlas_raw_max": 0.43857717514038086,
+    "resolution": "256",
+    "source": "validation/atlas_preflight001_failed.json",
+    "policy": "Conservative selection hold, no score changes. Different crops or variants still require actual final QC."
+  },
+  {
+    "a": "v22_navy_05_a114",
+    "b": "v22_green_04_a109",
+    "actual_atlas_raw_max": 0.4044814705848694,
+    "resolution": "512",
+    "source": "validation/atlas_preflight001_failed.json",
+    "policy": "Conservative selection hold, no score changes. Different crops or variants still require actual final QC."
+  },
+  {
+    "a": "v22_red_02_a60",
+    "b": "v22_orange_01_a64",
+    "actual_atlas_raw_max": 0.406123548746109,
+    "resolution": "256",
+    "source": "validation/atlas_preflight002_failed.json"
+  },
+  {
+    "a": "v22_red_02_a60",
+    "b": "v22_sky_01_a61",
+    "actual_atlas_raw_max": 0.40153947472572327,
+    "resolution": "256",
+    "source": "validation/atlas_preflight002_failed.json"
+  },
+  {
+    "a": "v22_red_02_a82",
+    "b": "v22_blue_03_a106",
+    "actual_atlas_raw_max": 0.4215283989906311,
+    "resolution": "256",
+    "source": "validation/atlas_preflight002_failed.json"
+  },
+  {
+    "a": "v22_red_05_a96",
+    "b": "v22_purple_03_a88",
+    "actual_atlas_raw_max": 0.40433335304260254,
+    "resolution": "256",
+    "source": "validation/atlas_preflight002_failed.json"
+  },
+  {
+    "a": "v22_black_01_a65",
+    "b": "v22_purple_04_a88",
+    "actual_atlas_raw_max": 0.41279128193855286,
+    "resolution": "256",
+    "source": "validation/atlas_preflight002_failed.json"
+  },
+  {
+    "a": "v22_red_05_a96",
+    "b": "v22_green_03_a115",
+    "actual_atlas_raw_max": 0.400288462638855,
+    "resolution": "512",
+    "source": "validation/atlas_preflight002_failed.json"
+  }
+]
