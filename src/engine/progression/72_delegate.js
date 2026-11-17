@@ -93,9 +93,9 @@ function troCheck(off,f){ f=f||troF(); const P=id=>G.players[id]; const IN=(off.
   let df=-99; try{ df=troDiff(off); }catch(e){} if(df<f.bal)return `우리 평가 ${df>=0?'+':''}${df.toFixed(1)}(기준 ${f.bal>0?'+':''}${f.bal} 이상)`;
   if(f.core){ const C=tvCore6(G.user); const x=OUT.find(p=>C.has(p.id)); if(x)return `핵심 선수 ${x.name} 포함`; }
   if(f.pros){ const x=OUT.find(troProspect); if(x)return `유망주 ${x.name} 포함`; }
-  if(f.sal!=null){ const add=sum(IN.map(p=>p.sal||0))-sum(OUT.map(p=>p.sal||0)); if(add>f.sal)return `연봉 ${money(add)} 증가`; }
+  if(f.sal!=null){ const add=tradeSalChg(off.get||[],off.give||[]).d; if(add>f.sal)return `연봉 ${money(add)} 증가`; }
   if(f.pos){ let rk={}; try{ rk=slotRanks(G.user); }catch(e){} if(!IN.some(p=>{ const r=rk[pSlot(p)]; return r&&r.rank>=6; }))return '약한 자리를 메우는 선수가 없음'; }
-  if(f.dir==='win'){ const b=L=>L.length?Math.max(...L.map(ovr)):0; if(b(IN)<b(OUT)-1)return '당장 전력이 줄어듦'; }
+  if(f.dir==='win'){ const b=L=>L.length?Math.max(0,...L.filter(p=>healthy(p)&&!(p.joinY>G.year)&&!milServing(p)).map(ovr)):0; if(b(IN)<b(OUT)-1)return '당장 전력이 줄어듦'; }
   if(f.dir==='reb'){ const a=L=>L.length?sum(L.map(p=>p.age))/L.length:0; if(IN.length&&OUT.length&&a(IN)>a(OUT))return '더 나이 든 선수를 받음'; if(IN.some(p=>p.age>=31)&&!OUT.some(p=>p.age>=31))return '31세 이상 선수를 받음'; }
   return ''; }
 function autoTradeOffer(off){ if(!autoOn('tro'))return false; let why='';

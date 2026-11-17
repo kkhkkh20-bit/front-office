@@ -108,7 +108,7 @@ function devQWeights(){ const a=[0,1,2].map(()=>Math.max(.05,N(1,.6))); if(R()<.
   const S=a.reduce((x,y)=>x+y,0); return S>.3?a.map(x=>+(x/S).toFixed(3)):[.34,.33,.33]; }
 function devSplit(p,B){ if(!p||!B)return; const D={}; let any=false; for(const k in p.r){ if(B[k]==null)continue; const d=p.r[k]-B[k]; if(Math.abs(d)<.05)continue; const w0=d>0?.35:.5; p.r[k]=B[k]+d*w0; D[k]=+(d*(1-w0)).toFixed(3); any=true; }
   if(!any){ delete p.devQ; return; } p.devQ={y:G.year+1,D,w:devQWeights(),i:0}; }
-function devQApply(p,i){ const Q=p.devQ; if(!Q||Q.i!==i)return 0; const o=ovr(p); const w=Q.w[i]; for(const k in Q.D){ if(p.r[k]==null)continue; p.r[k]=clamp(p.r[k]+Q.D[k]*w,20,99); } Q.i=i+1; if(Q.i>=3)delete p.devQ; return ovr(p)-o; }
+function devQApply(p,i){ const Q=p.devQ; if(!Q||Q.i!==i)return 0; const o=ovr(p); const w=Q.w[i]; const active=milServing(p)&&p.mil.unit==='현역'; if(active)for(const k in Q.D)if(Q.D[k]>0)Q.D[k]=0; /* 현역으로 입대한 뒤에는 구단 환경에서 예약한 성장분이 남거나 전역 뒤 되살아나지 않는다. 하락분은 유지한다. */ for(const k in Q.D){ if(p.r[k]==null)continue; const d=Q.D[k]*w; p.r[k]=clamp(p.r[k]+(active?Math.min(0,d):d),20,99); } Q.i=i+1; if(Q.i>=3)delete p.devQ; return ovr(p)-o; }
 function devQDaily(){ const day=G.day; const i=DEVQ_D.findIndex(([m,d])=>KD(m,d)===day); if(i<0)return; const mine=[];
   for(const p of Object.values(G.players)){ if(!p.devQ)continue; if(p.devQ.y!==G.year){ if(p.devQ.y<G.year){ for(let j=p.devQ.i;j<3;j++)devQApply(p,j); } continue; } /* 지난 해 남은 몫(예전 저장·날짜 건너뜀)은 한꺼번에 */
     const dd=devQApply(p,i); if(p.team===G.user&&!G.unemp&&Math.abs(dd)>=.6)mine.push({p,dd}); }

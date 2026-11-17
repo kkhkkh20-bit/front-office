@@ -151,13 +151,13 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   /* 외국인 후보 채우기는 다음 날짜 진행(07_daily)에 맡긴다: 같은 저장을 두 번 열면 후보가 달라졌다(검수 11-09zr #13) */
   migrateDraftPool(); /* 학교 정보 하나가 없거나 풀이 작다는 이유로 저장한 후보를 다시 뽑지 않는다 */
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
-  recoverDraftLogs();
+  recoverDraftLogs(); draftClubInit(); rchkInit(); sdObFix(); ctMilClauseFix(); sdContractFix(); salMilFix(); migrateMoveContracts(); faClosedFix();
 }
 /* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.
    계약했는데 신인 후보(prospect) 표시가 남은 선수는 표시를 푼다(1월 1일 명단 정리 때 지워지지 않게). 난수를 쓰지 않는다. 사람·AI 구단 공통 */
 function draftClassPrune(){ if(!G)return 0; let n=0; const out=new Set();
   const drafted=p=>!!(p.draft&&p.draft.y===G.year); /* 이번 드래프트에서 지명된 선수는 진행 중 명단에 남긴다(지명 결과 표시) */
-  const prune=L=>{ if(!Array.isArray(L))return; for(let i=L.length-1;i>=0;i--){ const p=G.players[L[i]]; if(!p||(p.team!=null&&!drafted(p))){ if(p)out.add(p.id); L.splice(i,1); n++; } } }; /* 제자리에서 지운다: G.draft.cls와 G.draftClass가 같은 배열일 수 있다 */
+  const prune=L=>{ if(!Array.isArray(L))return; for(let i=L.length-1;i>=0;i--){ const p=G.players[L[i]]; if(!p||(!p.prospect&&!drafted(p))||(p.team!=null&&!drafted(p))){ if(p)out.add(p.id); L.splice(i,1); n++; } } }; /* 제자리에서 지운다: G.draft.cls와 G.draftClass가 같은 배열일 수 있다 */
   prune(G.draftClass); const d=G.draft; if(d&&!d.done&&d.cls!==G.draftClass)prune(d.cls);
   for(const id of out){ const p=G.players[id]; if(p&&p.prospect){ p.prospect=false; if(G.dmemo)delete G.dmemo[id]; } }
   n+=proStaleFix(); return n; }
@@ -193,8 +193,16 @@ function migrateDraftPool(){
 }
 /* 그해 신인 드래프트 지명 순서: 지난 시즌 순위의 역순(r2: 2라운드부터). 경쟁균형세 3회 연속 초과 구단은 1라운드(r1)에서 9단계 내려간다.
    드래프트 날 전에도 같은 순서를 미리 알려 줄 수 있게 따로 계산한다 */
-function draftOrders(){ const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid); for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
-  if(G.dr1&&G.dr1.y===G.year&&!G.unemp&&G.user!=null&&order.includes(G.user)){ const i=order.indexOf(G.user); order.splice(i,1); order.splice(clamp(G.dr1.slot-1,0,order.length),0,G.user); } /* 1년차 신인 드래프트 순번을 새 게임에서 골랐으면 첫 시즌만 그 자리(오른발고니 11-11) */
+/* 옛 저장의 지정 순번에는 최초 취임 구단을 붙여 이직·사임 전에 고정한다. */
+function draftClubInit(){ if(G.dr1&&G.dr1.tid==null){ const first=(G.chron||[]).find(x=>x.k==='join'&&x.gm&&x.tid!=null); G.dr1.tid=first?first.tid:(G.unemp&&G.unemp.from)??G.user; } }
+function draftClubLeave(old,rehire){ draftClubInit();
+  const T=G.dClub=G.dClub||{}; if(!rehire)T[old]={shortlist:G.shortlist||[],dmemo:G.dmemo||{},dplan:G.dplan||null,drestPre:G.drestPre||null,rchkA:Object.fromEntries(Object.values(G.players).filter(p=>p.rchkA).map(p=>[p.id,p.rchkA]))};
+  const n=!G.unemp&&(G.user!==old||rehire)?T[G.user]:null;
+  G.shortlist=n?n.shortlist:[]; G.dmemo=n?n.dmemo:{}; G.dplan=n?n.dplan:null; G.drestPre=n?n.drestPre:null;
+  for(const p of Object.values(G.players)){ delete p.rchkA; if(n&&n.rchkA&&n.rchkA[p.id])p.rchkA=n.rchkA[p.id]; }
+  if(n)delete T[G.user]; }
+function draftOrders(){ draftClubInit(); const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid); for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
+  if(G.dr1&&G.dr1.y===G.year&&order.includes(G.dr1.tid)){ const i=order.indexOf(G.dr1.tid); order.splice(i,1); order.splice(clamp(G.dr1.slot-1,0,order.length),0,G.dr1.tid); } /* 1년차 신인 드래프트 순번을 새 게임에서 골랐으면 첫 시즌만 그 자리(오른발고니 11-11) */
   const pen=G.teams.filter(t=>t.pickPen===G.year&&order.includes(t.id)).map(t=>t.id);
   return {r1:penOrder(order,pen),r2:order,pen,y:h.y}; }
 /* 1라운드 제재 반영 순서: 제재 구단은 원래 순번에서 9칸 아래 자리에 둔다. 여러 구단이 함께 받아도 서로 밀어 올리지 않게 자리를 먼저 잡고 나머지를 순서대로 채운다(검수 11-07). 지명권 예상 순번도 같은 식(검수 11-08d) */
@@ -225,16 +233,20 @@ function draftTidOf(p){ const st=(p.story||[]).find(x=>x.k==='draft'); if(!st)re
 /* 누락된 지명 장부만 현역/보관 기록의 명시적 지명 정보로 복원한다. 팀 소속·이름으로는 추정하지 않는다. */
 function draftRecoveredRows(y){ const L=[],seen=new Set(),add=(p,a)=>{ const d=p.draft||{}, year=d.y??(a?p.dy:null); if(year!==y||p.id==null||seen.has(String(p.id)))return;
     const tid=d.tid??(a?p.dt:draftTidOf(p)); if(tid==null||!team(tid))return;
-    seen.add(String(p.id)); L.push({id:p.id,nm:p.name,t:tid,rd:d.rd??'?',no:d.no??'?',pos:a?(p.isP?p.pos:POSK[p.pos]||p.pos):posLabel(p),pr:p.press||null}); };
+    seen.add(String(p.id)); L.push({id:p.id,nm:p.name,t:tid,rd:d.rd??'?',no:d.no??'?',...(d.from!=null?{from:d.from}:{}),...(d.nt?{nt:d.nt}:{}),pos:a?(p.isP?p.pos:POSK[p.pos]||p.pos):posLabel(p),pr:p.press||null}); };
   for(const p of Object.values(G.players))if(p)add(p,false);
   for(const p of Object.values(G.arch||{}))if(p&&!seen.has(String(p.id)))add(p,true);
   return L;
 }
 function recoverDraftLogs(){ const years=new Set(); for(const p of Object.values(G.players).concat(Object.values(G.arch||{}))){ if(!p)continue; const y=p.draft&&p.draft.y!=null?p.draft.y:p.dy; if(Number.isInteger(y)&&y<=G.year)years.add(y); }
-  for(const y of years)if(!Array.isArray(G.dlog&&G.dlog[y])){ const L=draftRecoveredRows(y); if(L.length)(G.dlog=G.dlog||{})[y]=L; }
+  for(const y of years){ const rows=draftRecoveredRows(y), L=((G.dlog=G.dlog||{})[y]=Array.isArray(G.dlog[y])?G.dlog[y]:[]), seen=new Map(L.map(x=>[String(x.id),x]));
+    for(const r of rows){ const old=seen.get(String(r.id)); if(old){ for(const k of ['from','nt'])if(old[k]==null&&r[k]!=null)old[k]=r[k]; } else { L.push(r); seen.set(String(r.id),r); } } }
 }
+function draftWidth(y){ const L=(G.dlog||{})[y]||[], d=G.draft&&G.draft.y===y?G.draft:null, h=(G.history||[]).find(h=>h.y===y-1&&h.order);
+  const saved=L.find(x=>x.nt>0); if(saved)return saved.nt;
+  return Math.max(1,...(d?d.picks.map(k=>k.no||0):[]),h?h.order.length:0,...L.map(x=>Number(x.no)||0),y===G.year?G.teams.length:10); }
 function draftClass(y){ const L=Array.isArray(G.dlog&&G.dlog[y])?G.dlog[y]:draftRecoveredRows(y), seen=new Set();
-  return L.filter(x=>x&&x.id!=null&&!seen.has(String(x.id))&&seen.add(String(x.id))).map(x=>{ const p=G.players[x.id]; const c=p?careerOf(p):null; const a=!p&&G.arch&&G.arch[x.id]; /* 은퇴해도 지명 성과는 보관 기록으로 */ return Object.assign({},x,{p,war:c?c.war:a?(a.rows||[]).reduce((s,r)=>s+(r.war||0),0):0,now:p?p.team:null,ovr:p?Math.round(ovr(p)):null,n:Number.isInteger(x.rd)&&Number.isInteger(x.no)?(x.rd-1)*10+x.no:null}); }); }
+  return L.filter(x=>x&&x.id!=null&&!seen.has(String(x.id))&&seen.add(String(x.id))).map(x=>{ const p=G.players[x.id]; const c=p?careerOf(p):null; const a=!p&&G.arch&&G.arch[x.id]; /* 은퇴해도 지명 성과는 보관 기록으로 */ return Object.assign({},x,{p,war:c?c.war:a?(a.rows||[]).reduce((s,r)=>s+(r.war||0),0):0,now:p?p.team:null,ovr:p?Math.round(ovr(p)):null,n:Number.isInteger(x.rd)&&Number.isInteger(x.no)?(x.rd-1)*(x.nt||draftWidth(y))+x.no:null}); }); }
 function draftGrades(y){ const L=draftClass(y); const by={}; for(const x of L){ const t=x.t??(x.p&&x.p.draft?null:null); if(t==null)continue; by[t]=(by[t]||0)+x.war; } const arr=Object.entries(by).map(([t,v])=>({t:+t,v})).sort((a,b)=>b.v-a.v); return arr; }
 /* 지명 3년·5년 뒤 돌아보기: 스틸픽과 실패한 상위 지명 */
 function draftRetro(){ const now=G.year; for(const back of [3,5]){ const y=now-back; const L=draftClass(y); if(L.length<20)continue; /* 은퇴 선수도 보관 기록으로 넣는다: 성적표(draftGrades)와 같은 합계(검수 11-06) */
