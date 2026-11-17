@@ -4927,6 +4927,14 @@ T('[인물 관계] 다른 구단 단장이 먼저 식사를 청한다: 응하면
   ok((relsG()[relPK('me',relGmKey(t.id))].why||[]).some(w=>w[0]==='meal'),'관계 사유에 식사 없음');
   const e2=gmInvite(t.id,'call',false); const r1=t.rel; evPick(e2.id,1); ok(t.rel===r1-1,'거절해도 그대로 '+r1+'→'+t.rel); ok(relLikes(relGmKey(t.id)).like.some(x=>x.k==='me')||t.rel<56,'카드 연결');
   G.gmInvD=null; G.gmc={}; for(const x of G.evs)x.done=true; let n=0; for(let i=0;i<24;i++){ G.day+=30; const v=gmInvMonth(); if(v){ n++; ok(gmInvOpen(),'초대가 열리지 않음'); ok(gmInvMonth()===null,'열린 초대가 있는데 또 초대'); evPick(v.id,1,true); } } ok(n>=1&&n<=12,'두 시즌 초대 횟수 '+n); });
+T('[위임·식사 11-17] 일상 결정을 맡기면 다른 단장의 식사 초대도 비서가 정중히 거절해 진행을 멈추지 않고, 식사·모임 초대를 따로 응하기·직접으로 정할 수 있다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user&&x.gm&&!x.gm.interim); G.gmc={}; t.rel=50; G.stops=[]; G.stopCfg={};
+  const e0=gmInvite(t.id,'meal',false); ok(!e0.done&&G.stops.some(m=>m.id===e0.mid),'맡기지 않으면 직접 정하는 초대(멈춤)여야 함'); ok(stopCat(G.mail.find(m=>m.id===e0.mid))==='gm','진행 멈춤 분류가 다른 구단 단장 초대가 아님'); ok(mailDelegOpts(G.mail.find(m=>m.id===e0.mid)).some(o=>o.a==='handOff'&&o.v==='inv'),'소식의 위임하기 버튼 없음'); evPick(e0.id,1); G.stops=[];
+  autoSet('ev',true); autoSet('mgr',true); ok(autoOn('inv'),'일상 결정을 맡겼는데 초대는 직접'); const r0=t.rel, sp=G.spend.etc||0, rng=globalThis.__rngState?globalThis.__rngState():null; const e=gmInvite(t.id,'meal',false);
+  ok(e.done&&e.pick===1&&e.deleg,'맡겼는데 초대가 열린 채 남음'); ok(!G.stops.some(m=>m.id===e.mid),'맡긴 초대가 진행을 멈춤'); ok(!(G.evs||[]).some(x=>!x.done&&x.k==='gmInv'&&evStops(x)),'멈추는 초대가 남음'); ok(t.rel===r0-1&&(G.spend.etc||0)===sp,'기본안(정중히 거절)과 다름'); if(rng!=null)ok(globalThis.__rngState()===rng,'정중히 거절 위임이 난수를 씀');
+  G.gmInvD=null; G.auto.inv='yes'; ok(autoOn('inv'),'응하기 설정이 꺼짐'); const r1=t.rel; const e2=gmInvite(t.id,'meal',false); ok(e2.done&&e2.pick===0&&G.gmc[t.id].meal===G.day&&t.rel>=r1,'응하기로 맡겼는데 식사하지 않음');
+  autoSet('inv',false); ok(!autoOn('inv')&&autoOn('ev'),'식사·모임 초대만 직접으로 되돌리기 실패'); G.gmc={}; const e3=gmInvite(t.id,'call',false); ok(!e3.done,'직접으로 되돌렸는데 비서가 처리'); ok(handOff('inv')&&e3.done&&e3.pick===1,'넘기기로 걸린 초대를 처리하지 않음');
+  G.auto={}; G.deleg={}; for(const k of Object.keys(EV_NAME))if(!EV_LATE.has(k))G.deleg[k]=true; ok(autoOn('ev')&&autoOn('inv')&&evDelegOn('song')&&evDelegOn('memo'),'예전 저장(일상 결정 전부 맡김)에서 새 종류가 직접으로 돌아감');
+  G.deleg.song=false; ok(!evDelegOn('song')&&!autoOn('ev'),'응원가만 가져오기 실패'); G.stopCfg={gm:false}; G.auto.inv=false; G.stops=[]; const e4=gmInvite(t.id,'call',false); ok(!e4.done&&!G.stops.some(m=>m.id===e4.mid)&&!evStops(e4),'진행 멈춤에서 끈 초대가 멈춤'); });
 
 
 /* AI 동등(사용자 11-13: AI도 사람 단장과 같은 수단·같은 식·같은 비용) */
