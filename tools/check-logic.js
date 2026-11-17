@@ -6228,6 +6228,13 @@ T('[다년 실제화] 비FA 다년 계약금 없음·연 연봉 하락 다년 �
   const v=domestic(G.user).find(x=>canExtend(x)&&!x.faC&&x!==p); ok(v,'준비 실패: 베테랑'); const a0=v.age; v.age=36; ok(extFloor(v)===salCutFloor(v,true)&&extFloor(v)<v.sal,'하락세 베테랑 예외가 감액 한도가 아님'); v.age=a0;
   const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).find(x=>!x.foreign&&!x.ys&&!x.faC&&!x.ext&&x.age<=30&&x.sal>=100); ok(q,'준비 실패: AI 선수');
   const J=extJudge(q,round5(q.sal*.9),4,t.id,false); ok(J.st==='cut','AI 판정에서 연봉 하락 다년을 막지 않음: '+J.st); const n=aiExtNeg(q,t,4,99999); ok(!n||n.a>=q.sal,'AI가 연봉 하락 다년계약을 맺음: '+(n&&n.a)); });
+T('[리뷰② 11-17] 약속: AI 구단 역할 약속 불이행은 그 AI 구단 에이전트 친분만 낮추고 우리 구단 친분·기록은 그대로다(같은 회사 동료도)',()=>{ fresh(); simTo(()=>period()==='season'); const u=G.user, ai=G.teams.find(t=>t.id!==u).id; const A=agInit(); const ag=A.find(a=>a.act!==false&&agMates(a).length>0)||A.find(a=>a.act!==false); ag.rels={}; ag.log=[]; const M=agMates(ag); for(const m of M){ m.rels={}; m.log=[]; }
+  const d=depth(ai); const p=domestic(ai).find(z=>!z.isP&&!z.prospect&&!z.ys&&healthy(z)&&!isAway(z)&&!(z.injOut>0)&&!d.start.some(x=>x&&x.id===z.id)); ok(p,'준비 실패: AI 벤치 선수'); p.injHist=[];
+  p.agId=ag.id; p.ctT=ai; p.faC=true; p.yrs=2; p.roleProm={k:0,t:'B',until:G.year,l:'주전 보장',from:'fa'}; ok(hasAgent(p)&&agentOf(p)===ag,'준비 실패: 에이전트');
+  rolePromCheck(6); ok(agRel(ag,u)===50,'AI 구단 약속 위반이 우리 친분을 바꿈: '+agRel(ag,u)); ok(agRel(ag,ai)<50,'AI 구단 친분이 그대로: '+agRel(ag,ai)); ok(!(ag.log||[]).some(x=>String(x.t).includes(p.name)),'우리 관계 기록에 AI 선수 위반이 남음');
+  for(const m of M){ ok(agRel(m,u)===50,'동료 에이전트 우리 친분이 번짐: '+m.name+' '+agRels(m)[u]); }
+  const q=domestic(u).find(z=>!z.isP&&!z.prospect&&!z.ys&&healthy(z)&&!isAway(z)&&!(z.injOut>0)&&!depth(u).start.some(x=>x&&x.id===z.id)); ok(q,'준비 실패: 우리 벤치 선수'); q.injHist=[]; q.agId=ag.id; q.ctT=u; q.faC=true; q.yrs=2; q.roleProm={k:0,t:'B',until:G.year,l:'주전 보장',from:'fa'};
+  const ra=agRels(ag)[ai]; rolePromCheck(7); ok(agRel(ag,u)<50,'우리 선수 약속 위반인데 우리 친분이 그대로'); ok(Math.abs(agRels(ag)[ai]-(ra-(ag.size==='big'?1.5:1)))<.01,'AI 위반이 다시 반영되지 않거나 우리 위반이 AI 친분을 바꿈: '+agRels(ag)[ai]+' / '+ra); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
