@@ -6580,6 +6580,7 @@ T('[카페 11-17 프로 선수 아마 기록] 예전 저장 수리: 지명 뒤 �
   A.amY.push(Object.assign({},A.amY[2],{y:y,g:80})); amTotFix(A); migrateDraft(); ok(A.amY.length===3&&A.am.g===57,'불러오기(migrateDraft)에서 수리하지 않음');
   ok(amRowObj&&typeof amPlayable==='function'&&!amPlayable(A,y)&&!amPlayable(Object.assign({},D||{prospect:true,team:null},{team:G.user}),y),'계약 선수가 아마 경기 대상'); });
 
+<<<<<<< HEAD
 /* [검수 11-17] 국제대회 경기·기록·투수 운용(84b_nt_tour). ntMk: 프리미어12(2027) 명단 발표 → (pre로 명단 손보기) → 소집일 대진 */
 const ntMk=pre=>{ fresh(); G.year=2027; const e=NT_EV.p12; G.day=KD(e.ann[0],e.ann[1]); ntAnnounce('p12'); const N=G.nt; if(pre)pre(N); G.day=KD(e.from[0],e.from[1]); ntTourInit(N); return {N,T:N.tour,e}; };
 const ntTmpClr=()=>{ for(const id of NT_TMP)delete G.players[id]; NT_TMP=[]; };
@@ -6659,6 +6660,52 @@ T('[검수 11-17 #240] 아시안게임 구단당 1명: 한 자리씩 바꿔서�
   x0.injOut=30; ntMedCheck(N,true);
   ok(!N.ids.includes(x0.id),'다친 포수 제외'); ok(TT.every(t=>cnt(t)>=1),'0명 구단 남음 '+TT.filter(t=>cnt(t)<1).map(tshort)); ok(TT.every(t=>cnt(t)<=3),'구단당 3명 넘음'); ok(N.ids.includes(xo.id),'그 구단 외야수 발탁');
   ok(new Set(N.ids).size===N.ids.length&&N.ids.every(id=>G.players[id]&&healthy(G.players[id])),'명단 중복·부상'); ok((N.wild||[]).length<=NT_WILD,'와일드카드 '+N.wild.length); });
+=======
+T('[검수 11-17 #177] 트라이아웃 계약 마감일(1월 20일) 당일에도 사람·AI가 계약할 수 있고, 그다음 날 닫힌다',()=>{ fresh(); const y=G.year; G.day=tryAnnD(y); tryDaily(G.day); G.day=tryDayD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&T0.ran,'준비 실패: 테스트 안 함');
+  const p=T0.ids.map(id=>G.players[id]).find(q=>q&&q.team==null&&tryKindOf(q)==='indie'); ok(p,'준비 실패: 독립리그 후보');
+  G.day=T0.close; tryDaily(G.day); ok(!T0.done&&tryCur()===T0,'마감일 당일에 닫힘'); while(ysN(G.user)>=YS_MAX)ysList(G.user)[0].ys=false; const w=tryWhy(p,G.user,true); ok(w==='','마감일 계약이 막힘: '+w); ok(trySign(p.id,G.user,true)===''&&p.team===G.user,'마감일 계약 실패');
+  G.day=T0.close+1; tryDaily(G.day); ok(T0.done&&!tryCur(),'다음 날에도 열려 있음'); });
+T('[검수 11-17 #178] 육성 15/15 AI 구단은 데려올 선수가 방출 1년 제한 등으로 막히면 먼저 육성선수를 내보내지 않는다(15명 유지), 막히지 않으면 내보내고 계약해 15명',()=>{
+  const setup=ban=>{ fresh(); const y=G.year; G.day=tryAnnD(y); tryDaily(G.day); G.day=tryDayD(y); tryDaily(G.day); const T0=G.tryout; const t=G.teams.find(x=>x.id!==G.user);
+    for(const q of ysList(t.id))if(!(q.age>=22))q.age=24; while(ysN(t.id)<YS_MAX){ const q=newPlayer({age:25,isP:false,pos:'1B',base:26,pot:28}); q.team=t.id; q.ys=true; q.yrs=1; }
+    const p=newPlayer({age:20,isP:false,pos:'SS',base:44,pot:72}); p.team=null; p.tryK='ud'; p.freeSince=y; if(ban){ p.relT=t.id; p.relD=G.day-30; } T0.ids=[p.id];
+    let d=T0.ran+1; while(relU('tryai'+d,t.id)>=.45&&d<T0.close)d++; G.day=d; const before=ysList(t.id).map(q=>q.id), why=tryWhy(p,t.id,true,true); tryAiDay(false); return {t,p,before,why}; };
+  let r=setup(true); ok(/1년/.test(r.why),'준비 실패: 방출 제한이 아님 '+r.why); ok(ysN(r.t.id)===YS_MAX&&r.before.every(id=>G.players[id]&&G.players[id].team===r.t.id),'막힌 계약 때문에 육성선수를 내보냄 '+ysN(r.t.id)); ok(r.p.team!==r.t.id,'제한 선수와 계약');
+  r=setup(false); ok(r.p.team===r.t.id&&r.p.ys&&ysN(r.t.id)===YS_MAX,'막히지 않으면 내보내고 계약 '+[r.p.team,ysN(r.t.id)]); });
+T('[검수 11-17 #180·#181] 래더 선수 기록: 시즌·단계 칸마다 그때 포지션·나이로 표·거르기·CSV 줄을 만든다(지난 시즌 포수, 이번 시즌 중견수; 같은 시즌 루키·마이너 포지션이 달라도 칸마다)',()=>{ const C=FrontOfficeCore; const ps={};
+  C.ulPsAdd(ps,{sid:'S22',tier:0,lid:1,P:[{id:7,name:'가',pos:'C',age:24}],bat:[{id:7,g:3,pa:12,ab:10,h:3}]});
+  C.ulPsAdd(ps,{sid:'S23',tier:0,lid:2,P:[{id:7,name:'가',pos:'CF',age:25}],bat:[{id:7,g:3,pa:12,ab:10,h:4}]});
+  C.ulPsAdd(ps,{sid:'S23',tier:1,lid:3,P:[{id:7,name:'가',pos:'LF',age:25}],bat:[{id:7,g:3,pa:12,ab:11,h:2}]});
+  const r22=C.ulPsRows(ps,'b',{season:'S22'}); ok(r22.length===1&&r22[0].pos==='C'&&r22[0].age===24,'S22 표 포지션·나이 '+JSON.stringify(r22.map(x=>[x.pos,x.age])));
+  ok(C.ulPsRows(ps,'b',{season:'S22',pos:'C'}).length===1,'S22 포수 거르기에 없음'); ok(C.ulPsRows(ps,'b',{season:'S22',pos:'CF'}).length===0,'S22 중견수 거르기에 나옴');
+  const all=C.ulPsRows(ps,'b',{}); ok(all[0].pos==='LF'&&all[0].pa===36,'전체 줄은 가장 최근 칸 포지션·전체 합 '+[all[0].pos,all[0].pa]);
+  const c=C.ulPsRows(ps,'b',{pos:'C'}); ok(c.length===1&&c[0].pa===12&&c[0].pos==='C','포수 거르기는 포수였던 칸만 '+JSON.stringify(c.map(x=>[x.pos,x.pa])));
+  const ts=all[0].tsplits; const g=(s,t)=>ts.find(x=>x.sid===s&&x.tier===t); ok(g('S23',0).pos==='CF'&&g('S23',1).pos==='LF'&&g('S22',0).pos==='C'&&g('S22',0).age===24,'단계별 줄 포지션 '+JSON.stringify(ts.map(x=>[x.sid,x.tier,x.pos,x.age])));
+  ok(C.ulPsRows(ps,'b',{season:'S23',tier:0})[0].pos==='CF'&&C.ulPsRows(ps,'b',{season:'S23',tier:1})[0].pos==='LF','시즌·단계 거르기 포지션');
+  /* 예전 저장: 칸 포지션이 비어 있으면 선수 칸 값으로 읽고, 다시 열어도 같다 */ const old={9:{n:'나',pos:'RF',P:0,s:{'S20|0':{nm:'나',ps:'',b:[1,4,4,1]}}}}; const a=JSON.stringify(C.ulPsRows(old,'b',{pos:'RF'})); ok(JSON.parse(a).length===1&&a===JSON.stringify(C.ulPsRows(old,'b',{pos:'RF'})),'예전 빈 포지션 '+a); });
+T('[검수 11-17 #182·#186] 래더 리그 중 덱에서 뺀 외야수도 그때 포지션으로 기록에 남고, 부상 3일 선수는 첫 연전(3경기) 뒤 다음 연전부터 나온다(덱을 고쳐도 부상이 되살아나지 않음)',()=>{ fresh(); const C=FrontOfficeCore;
+  const e0=cupEntryNow({name:'와이'}); const P=new Map(e0.P.map(p=>[p.id,p])); const inj=P.get(e0.ln.find(([id,pos])=>pos!=='DH'&&!['LF','CF','RF'].includes(P.get(id).pos))[0]); inj.injOut=3;
+  ok(ulSetDeck(e0,'now')==='','준비 실패: 덱 등록'); const L=ulMakeLeague({}).league; const U=G.uld;
+  const myS=()=>L.sched.findIndex((s,i)=>i>=L.next&&(s.a===0||s.b===0)); const s1=myS(); while(L.next<=s1)ulRunSeries(L); /* 첫 우리 연전까지 */
+  const ip=()=>L.teams[0].e.P.find(p=>p.id===inj.id); ok(ip().injOut===0,'첫 연전 뒤에도 부상 '+ip().injOut); ok(!L.bat['me:'+inj.id],'부상 중에 출전');
+  const of=L.teams[0].e.ln.map(([id])=>L.teams[0].e.P.find(p=>p.id===id)).find(p=>p&&['LF','CF','RF'].includes(p.pos)&&L.bat['me:'+p.id]); ok(of,'준비 실패: 뛴 외야수');
+  const dr=C.ulCapDrop(U.deck.e,[of.id]); ok(!dr.err,'준비 실패: 빼기 '+dr.err); ok(ulEditDeck(dr.e)==='','덱 고치기 실패'); ok(ip().injOut===0,'덱을 고치니 부상이 되살아남');
+  while(L.next<L.sched.length)ulRunSeries(L); ok(L.bat['me:'+inj.id]&&L.bat['me:'+inj.id].g>=1,'다음 연전부터도 못 나옴'); ulFinish();
+  const R=C.ulPsRows(U.ps,'b',{pos:of.pos}); ok(R.some(x=>String(x.id)===String(of.id)),'뺀 외야수가 포지션 거르기에 없음 '+of.pos); const o=U.ps[String(of.id)]; ok(Object.values(o.s).every(s=>s.ps===of.pos),'칸 포지션 '+JSON.stringify(o.s)); });
+T('[검수 11-17 #183] 래더 리그: 연봉 상한을 넘는 가져온 우승 덱은 상대로 넣지 않고 AI가 채운다(상한 안 우승 덱은 그대로)',()=>{ fresh(); const C=FrontOfficeCore; ulSetDeck(cupEntryNow({name:'와이'}),'now');
+  const op=G.teams.find(t=>t.id!==G.user).id, big=cupEntryNow({tid:op,name:'우승덱'}); const cap=C.ulCap(big,0).cap; for(const p of big.P)p.sal=Math.ceil(cap*2/big.P.length); ok(!C.ulCapGate(big,0,Date.now()).ok,'준비 실패: 상한 안');
+  let L=ulMakeLeague({cup:[big]}).league; ok(L.src.cup===0&&L.src.ai===9&&L.teams.every(t=>t.kind==='me'||C.ulCapGate(t.e,0,Date.now()).ok),'상한 넘는 우승 덱이 상대로 '+JSON.stringify(L.src)); G.uld.league=null;
+  const fine=cupEntryNow({tid:G.teams.find(t=>t.id!==G.user&&t.id!==op).id,name:'우승덱2'}); ok(C.ulCapGate(fine,0,Date.now()).ok,'준비 실패: 상한 안 덱');
+  L=ulMakeLeague({cup:[big,fine]}).league; ok(L.src.cup===1&&L.src.ai===8,'상한 안 우승 덱 '+JSON.stringify(L.src)); });
+T('[검수 11-17 #184] 래더 주간 목표는 그 주 첫 단계로 고정: 주중에 레전드로 올라가 도장을 받은 뒤에도 같은 주 목표는 다 찬 채로 보인다',()=>{ const C=FrontOfficeCore; const t0=Date.UTC(2026,10,16,3); /* 월요일 */
+  const H=[0,1,2,3].map(i=>({tier:3,rank:2,move:'stay',to:3,w:15,l:10,ts:t0+i*36e5})).concat([{tier:3,rank:1,move:'up',to:4,w:18,l:8,ts:t0+5*36e5}]);
+  const tk=C.ulGoalsTick(null,H,t0+6*36e5,3); ok(tk.week,'준비 실패: 주간 도장 '+JSON.stringify(C.ulWeeklyGoals(H,t0+6*36e5,3)));
+  const W=C.ulWeeklyGoals(H,t0+7*36e5,4); ok(W.every(x=>x.done)&&W[2].n==='승격 1번','레전드로 올라간 뒤 목표가 바뀜 '+JSON.stringify(W.map(x=>[x.n,x.done])));
+  const W2=C.ulWeeklyGoals(H,t0+8*864e5,4); ok(W2[2].n==='레전드 3위 안'&&!W2[2].done,'다음 주는 레전드 목표 '+JSON.stringify(W2[2])); });
+T('[검수 11-17 #185] 앨범: 보관 고정한 시즌 자동 저장은 같은 해 자동 저장이 또 와도 지우지 않고, 새 칸은 고정 없이 따로 담기며 그다음 자동 저장은 고정 안 한 칸만 바꾼다',()=>{ fresh(); G.cupAlb=[]; G.cupAlbN=0;
+  const a=cupAlbumAdd('auto',{rank:3}); cupAlbumPin(a.id); const b=cupAlbumAdd('auto',{rank:2}); ok(cupAlbum().some(x=>x.id===a.id&&x.pin)&&b&&!b.pin&&cupAlbum().length===2,'고정한 자동 저장이 지워짐 '+JSON.stringify(cupAlbum().map(x=>[x.id,x.pin])));
+  const c=cupAlbumAdd('auto',{rank:1}); ok(cupAlbum().length===2&&cupAlbum().some(x=>x.id===a.id)&&!cupAlbum().some(x=>x.id===b.id)&&cupAlbum().some(x=>x.id===c.id),'두 번째 자동 저장이 고정 안 한 칸만 바꾸지 않음'); });
+>>>>>>> origin/claude/rev-lad-1117
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

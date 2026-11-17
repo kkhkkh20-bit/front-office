@@ -40,7 +40,7 @@ function cupOvr(e){ const P=new Map(e.P.map(p=>[p.id,p])), ok=p=>p&&!(p.injOut>0
 /* ===== 출전 로스터 앨범: 시즌이 끝날 때마다 자동으로, 또는 '지금 로스터 저장'. 최대 20개(오래된 자동 저장부터 지운다, 우승 시즌은 남긴다) ===== */
 function cupAlbum(){ return G.cupAlb||(G.cupAlb=[]); }
 function cupAlbumAdd(kind,res){ const e=cupEntryNow({res}); if(!e)return null; const A=cupAlbum(); const x={id:(G.cupAlbN=(G.cupAlbN||0)+1),y:G.year,d:G.day,k:kind,e};
-  if(kind==='auto'){ const i=A.findIndex(a=>a.k==='auto'&&a.y===G.year); if(i>=0)A.splice(i,1); }
+  if(kind==='auto'){ const i=A.findIndex(a=>a.k==='auto'&&a.y===G.year&&!a.pin); if(i>=0)A.splice(i,1); } /* 같은 해 자동 저장은 고정 안 한 칸만 바꾼다: '보관 고정'한 칸은 그대로 두고 새 칸을 따로 담는다(검수 11-17 #185) */
   if(A.length>=CUP_ALB_MAX&&cupAlbumNext()==null)return null; /* 모두 '보관 고정'이면 지우지 않고 담지 않는다 */
   A.push(x); while(A.length>CUP_ALB_MAX){ const i=cupAlbumNext(); if(i==null)break; A.splice(i,1); } return x; }
 /* 가득 찼을 때 다음에 지울 칸(외부 검수 11-17: 직접 저장한 것도 말없이 지우던 것): 고정(pin) 빼고, 우승 아닌 자동 저장 → 자동 저장 → 직접 저장 순, 오래된 것부터. 없으면 null */
