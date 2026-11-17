@@ -14992,16 +14992,30 @@ const tradeDL=()=>KD(7,31), foreignDL=()=>KD(8,15);
 
 /* ===== 시즌 일정: 3연전·2연전, 월요일 휴식, 올스타 휴식기 ===== */
 /* 구단당 정규시즌 경기 수(구단 수에 따라) */
-function seasonG(){ const n=typeof G!=='undefined'&&G&&G.teams?G.teams.length:10; return n<=10?144:n===11?140:132; }
+function seasonG(){ const n=typeof G!=='undefined'&&G&&G.teams?seaTeams().length:10; return n<=10?144:n===11?140:132; }
+/* 이번 시즌 일정에 든 구단(검수 11-17 #161): 11월 특별지명으로 들어온 신생 구단은 다음 시즌(t.born)부터 순위·경기 수 기준에 넣는다 */
+function seaTeams(y){ y=y??(G.sea&&G.sea.y)??G.year; return G.teams.filter(t=>!(t.born>y)); }
+/* 일정에 든 구단 수: 새로 만든 일정은 nt로 적어 두고, 예전 일정은 경기에서 센다 */
+function calNT(c){ if(!c||!c.sched)return 0; if(c.nt!=null)return c.nt; const s=new Set(); for(const k in c.sched)for(const [a,b] of c.sched[k]){ s.add(a); s.add(b); } return s.size; }
+/* 다음 시즌 구단 수가 지금 일정과 다를 때(신생 구단 창단) 다음 시즌 홈경기 예상(검수 11-17 #160): 본 난수를 쓰지 않는 가상 일정으로 [날짜, 상대] 목록. 같으면 null */
+let _calNx=null;
+function calNextHome(tid,y){ const c=G.cal; if(!c||!c.sched||calNT(c)===G.teams.length)return null; const k=y+':'+G.teams.length;
+  if(!_calNx||_calNx.g!==G||_calNx.k!==k)_calNx={g:G,k,c:withRng(rngHash('calNext',y,G.teams.length),()=>buildCalendar(y))}; const L=[], S=_calNx.c.sched;
+  for(const d of Object.keys(S).map(Number).sort((a,b)=>a-b))for(const [h,a] of S[d])if(h===tid)L.push([d,a]); return L; }
+/* 같은 구장을 쓰는 구단 묶음(검수 11-17 #163: 서울 두 구단이 같은 날 홈경기). 구장 이름이 같으면 같은 구장 */
+function calStadGroups(){ const by={}; for(const t of G.teams){ const n=(t.stad&&t.stad.name)||(typeof STAD_NM!=='undefined'&&STAD_NM[t.id])||t.city+' 야구장'; (by[n]=by[n]||[]).push(t.id); } return Object.values(by).filter(g=>g.length>1); }
 function buildCalendar(y){
   const open=onOrAfter(y,3,25,6);
   const asg=onOrAfter(y,7,8,6);
   /* 시리즈 일정(KBO 방식, 사용자 11-11: 시리즈가 요일과 어긋나 2연전이 아무 때나 끼던 문제): 월요일 휴식, 3연전은 화~목·금~일, 2연전은 화·수/목·금/토·일.
      개막은 토·일 2연전, 2연전 주간은 주로 시즌 후반(올스타 뒤), 올스타 주간(화~일)은 쉰다. 시즌 중 임의 휴식일은 두지 않는다(우천 취소는 따로 재편성).
      구단 수에 따라(리그 확장): 10개 구단 상대별 16경기(144), 11개 구단 14경기(140, 라운드마다 한 구단 휴식), 12개 구단 12경기(132) */
-  const NT=typeof G!=='undefined'&&G&&G.teams&&G.teams.length?G.teams.length:10, LEN=NT<=10?[3,3,3,3,2,2]:NT===11?[3,3,2,2,2,2]:[3,3,3,3];
+  const NT=typeof G!=='undefined'&&G&&G.teams&&G.teams.length?G.teams.length:10, LEN=NT<=10?[3,3,3,3,2,2]:NT===11?[3,3,2,2,2,2]:[3,3,2,2,2]; /* 12구단도 2연전을 둔다: 3연전만이면 개막 토·일 2연전이 없어 개막일에 경기가 없었다(검수 11-17 #162) */
   const T=NT%2?NT+1:NT; let arr=[...Array(T).keys()]; const rounds=[];
   for(let r=0;r<T-1;r++){ const pr=[]; for(let i=0;i<T/2;i++){ const x=arr[i], z=arr[T-1-i]; if(x<NT&&z<NT)pr.push([x,z]); } rounds.push(pr); arr=[arr[0],arr[T-1],...arr.slice(1,T-1)]; } /* 홀수면 가짜 구단(NT)과 짝지어진 구단이 그 라운드에 쉰다 */
+  /* 같은 구장을 쓰는 두 구단은 같은 날 함께 홈경기를 하지 않는다(검수 11-17 #163): 라운드마다 두 구단 중 하나만 기본 홈이 되게 뒤집는다. 그날 쓰는 라운드는 모든 짝이 함께 뒤집히므로 어느 날도 겹치지 않는다 */
+  try{ const ids=typeof G!=='undefined'&&G&&G.teams?G.teams.map(t=>t.id):[]; for(const grp of (typeof G!=='undefined'&&G&&G.teams?calStadGroups():[])){ const [s1,s2]=grp.map(id=>ids.indexOf(id)); if(s1<0||s2<0)continue;
+    for(const pr of rounds){ const i1=pr.findIndex(p=>p.includes(s1)), i2=pr.findIndex(p=>p.includes(s2)); if(i1<0||i2<0||i1===i2)continue; if((pr[i1][0]===s1)===(pr[i2][0]===s2))pr[i2]=[pr[i2][1],pr[i2][0]]; } } }catch(e){}
   const n3=LEN.filter(x=>x===3).length*rounds.length, n2=LEN.filter(x=>x===2).length*rounds.length;
   /* 주 단위 틀: A=3연전 2개, B=2연전 3개. 개막 주말(토·일)은 2연전 하나 */
   const open2=n2>0?1:0; let s3=n3, s2=n2-open2; const nA=Math.floor(s3/2), nB=Math.floor(s2/3); const tail=[...(s3%2?[3]:[]),...Array(s2%3).fill(2)];
@@ -15017,11 +15031,11 @@ function buildCalendar(y){
   if(tail.length){ if(w<=asg&&asg<=w+5)w+=7; take(tail); }
   /* 라운드 배정: 같은 상대 시리즈가 연달아 오지 않게, 3연전·2연전 묶음별로 라운드를 나눠 쓴다. 홈·원정은 같은 라운드·길이가 나올 때마다 번갈아 */
   const pool={3:[],2:[]}; for(let r=0;r<rounds.length;r++)LEN.forEach(len=>pool[len].push(r)); shuffle(pool[3]); shuffle(pool[2]);
-  const cnt={}; const sched={}; let l1=-1,l2=-1;
-  for(const sl of slots){ const P=pool[sl.len]; let i=P.findIndex(r=>r!==l1&&r!==l2); if(i<0)i=P.findIndex(r=>r!==l1); if(i<0)i=0; const r=P.splice(i,1)[0]; const ck=r+':'+sl.len; const flip=(cnt[ck]=(cnt[ck]||0)+1)%2===0;
+  const cnt={}; const sched={}; let l1=-1,l2=-1; const oddL=LEN.some(len=>LEN.filter(x=>x===len).length%2);
+  for(const sl of slots){ const P=pool[sl.len]; let i=P.findIndex(r=>r!==l1&&r!==l2); if(i<0)i=P.findIndex(r=>r!==l1); if(i<0)i=0; const r=P.splice(i,1)[0]; const ck=r+':'+sl.len; const flip=oddL?LEN.filter(x=>x===sl.len).length%2===1:(cnt[ck]=(cnt[ck]||0)+1)%2===0; /* 라운드마다 같은 길이 시리즈가 홀수 개면(12구단 2연전 3개) 번갈아 두면 한쪽이 홈을 더 갖는다: 3연전 둘은 한 구단, 2연전 셋은 다른 구단이 모두 홈(6경기씩) */
     for(const d of sl.days)sched[d]=rounds[r].map(([a,b])=>flip?[b,a]:[a,b]); l2=l1; l1=r; }
   const days=Object.keys(sched).map(Number).sort((a,b)=>a-b);
-  return {y,open,asg,end:days[days.length-1],sched,draft:onOrAfter(y,9,14,3),camp:dnum(y,1,25),campEnd:dnum(y,3,5),exh:dnum(y,3,12)};
+  return {y,nt:NT,open,asg,end:days[days.length-1],sched,draft:onOrAfter(y,9,14,3),camp:dnum(y,1,25),campEnd:dnum(y,3,5),exh:dnum(y,3,12)};
 }
 function period(){
   const c=G.cal, d=G.day;
@@ -15666,7 +15680,7 @@ function rsOf(a){ const L=((G.sea&&G.sea.tl)||[])[a]||[]; let s=0; for(const x o
 const tieOf=(a,b)=>a&&b&&a.w*Math.max(1,b.w+b.l)===b.w*Math.max(1,a.w+a.l); /* KBO 순위는 승률(무승부 제외)이 같으면 공동: 결정전 판정과 같은 기준(검수 11-07) */
 function tieRank(order,tid){ const i=order.findIndex(o=>(o.tid??o)===tid); if(i<0)return 0; let j=i; while(j>0&&tieOf(order[j-1],order[i]))j--; return j+1; }
 function standingsNow(){ const r=G.sea.rec; const pct=x=>x.w/Math.max(1,x.w+x.l); const prev=(G.last&&G.last.order)||[]; const pr=t=>{ const i=prev.findIndex(x=>(x.tid??x)===t); return i<0?99:i; };
-  const L=G.teams.map(t=>({tid:t.id,w:r[t.id].w,l:r[t.id].l,t:r[t.id].t||0})).sort((a,b)=>pct(b)-pct(a)); const out=[];
+  const L=seaTeams().map(t=>({tid:t.id,w:r[t.id].w,l:r[t.id].l,t:r[t.id].t||0})).sort((a,b)=>pct(b)-pct(a)); const out=[]; /* 11월에 들어온 신생 구단은 다음 시즌부터(검수 11-17 #161) */
   /* 같은 승률 묶음은 묶음 안 상대 전적 합계로(3팀 이상 순환 우세에도 팀 배열 순서와 무관, 검수 11-07) → 득실 → 지난 순위 */
   for(let i=0;i<L.length;){ let j=i; while(j<L.length&&Math.abs(pct(L[j])-pct(L[i]))<1e-12)j++; const grp=L.slice(i,j); const ids=new Set(grp.map(x=>x.tid));
     const gp=x=>{ let w=0,l=0; for(const g of ((G.sea&&G.sea.tl)||[])[x.tid]||[])if(ids.has(g[4])&&g[4]!==x.tid){ if(g[0]>0)w++; else if(g[0]<0)l++; } return w+l?w/(w+l):.5; };
@@ -16732,7 +16746,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   prInit(); if(!G.goals&&period()==='season')setGoals();
   if((period()==='season'||period()==='post')&&G.entryY!==G.year){ G.entryY=G.year; for(const t of G.teams)setEntry(t.id); }
   if(!G.intl)G.intl={us:1,la:0,jp:0,tw:0,au:0}; if(!G.data)G.data={lv:1}; if(G.spend&&G.spend.intl==null)G.spend.intl=0; if(!G.fac)G.fac={lv:2,build:null}; try{ facInit(); }catch(e){} if(G.spend.fac==null)G.spend.fac=0;
-  for(const t of G.teams)if(t.fac==null)t.fac=ri(2,4); try{ aiFacAll(); }catch(e){} try{ facOverdueFix(); }catch(e){} try{ extStaleFix(); }catch(e){} try{ ovsPostFix(); }catch(e){} /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */
+  for(const t of G.teams)if(t.fac==null)t.fac=ri(2,4); try{ aiFacAll(); }catch(e){} try{ facOverdueFix(); }catch(e){} try{ extStaleFix(); }catch(e){} try{ ovsPostFix(); }catch(e){} try{ expMigrate(); }catch(e){ console.error(e); } /* 창단 단계·모기업·남은 제의(검수 11-17 #158·159·164) */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */
   for(const p of Object.values(G.players)){ if(!p.dt)p.dt=rollDT(); if(!p.isP&&p.r.vit==null)p.r.vit=Math.round(clamp(N(55-(p.inj-.14)*90,8),25,80)); if(p.fat==null)p.fat=0; }
   if(G.formY!==G.year&&G.day>=G.cal.camp)rollForm();
   for(const p of Object.values(G.players)) if(p.foreign){ if(!p.orig)p.orig=origOf(p); if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80)); }
@@ -23192,8 +23206,8 @@ function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal; if(!next&&c&&c.
   /* 시즌이 끝난 뒤 예산 전망(next): 지난 일정에 지금 가격·시설을 넣어 다음 시즌 기대 관중을 낸다 */
   if(next&&c&&c.sched){ const N=S.proj, y1=dobj(G.day).m>=10?G.year+1:G.year; const nw=N&&N.stage==='build'&&N.done<=dnum(y1,4,1); /* 다음 시즌 전에 문을 여는 신구장: 그 구장 기준으로 본다(검수 11-06) */
     const keep={cap:S.cap,dome:S.dome,mega:S.mega,mx:S.mx,lv:S.lv,built:S.built,proj:S.proj,xp:S.xp,xpUp:S.xpUp,xq:S.xq}; S.lv={...S.lv}; if(nw){ S.lv=Object.fromEntries(Object.entries(S.lv).map(([k,v])=>[k,Math.max(v,4)])); S.cap=N.cap+(stadPower(S.lv.prem)-2)*300; S.dome=N.k==='dome'; newStadMegaSet(S,N.k); S.built=y1; S.proj=null; S.xp=0; S.xpUp=0; S.xq=null; } /* 옛 구장 증설은 새 구장에 없다 */ /* 개장 연도 기준 구장 나이(검수 11-07) */ /* 개장 첫해와 같은 구장 나이(0년)·공사 중 감소 없음 */
-    const off=(c.open>G.day&&dobj(c.open).y===y1?c.open:onOrAfter(y1,3,25,6))-c.open; /* 지난 일정을 다음 시즌 개막일(buildCalendar와 같은 식)로 옮겨 공사 완공일과 맞춘다(검수 11-09y: 개막 뒤 완공도 개막 전처럼 셈) */ const lv0=S.lv;
-    try{ _stY=y1; _stOff=off; let att=0,n=0,fb=0,pm=0,ad=0,up=0; for(const [d,a] of homeGames(tid,c.open,c.end)){ S.lv=stadLvAt(S,d+off,lv0); const x=attOf(tid,a,d,null), v=stadYr(S); att+=x; fb+=x*.0003*(stadPower(S.lv.fnb)-2); pm+=v.prem; ad+=v.ad; up+=v.up; n++; } att=Math.round(att);
+    const alt=calNextHome(tid,y1); /* 신생 구단이 들어와 구단 수가 바뀌면 지난 일정 대신 다음 시즌 구단 수의 가상 일정으로(검수 11-17 #160: 신생 구단 홈 0경기) */ const off=alt?0:(c.open>G.day&&dobj(c.open).y===y1?c.open:onOrAfter(y1,3,25,6))-c.open; /* 지난 일정을 다음 시즌 개막일(buildCalendar와 같은 식)로 옮겨 공사 완공일과 맞춘다(검수 11-09y: 개막 뒤 완공도 개막 전처럼 셈) */ const lv0=S.lv;
+    try{ _stY=y1; _stOff=off; let att=0,n=0,fb=0,pm=0,ad=0,up=0; for(const [d,a] of alt||homeGames(tid,c.open,c.end)){ S.lv=stadLvAt(S,d+off,lv0); const x=attOf(tid,a,d,null), v=stadYr(S); att+=x; fb+=x*.0003*(stadPower(S.lv.fnb)-2); pm+=v.prem; ad+=v.ad; up+=v.up; n++; } att=Math.round(att);
     return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(att*TICKET*ecoIdx(y1)*PRICE[S.price].m), /* 다음 시즌 표값·구장 나이(검수 11-06) */fnb:Math.round(fb),prem:Math.round(n?pm/n:0),ad:Math.round(n?ad/n:0),up:Math.round(n?up/n:0)}; } finally{ _stY=null; _stOff=0; Object.assign(S,keep); } }
   const A=(G.sea&&G.sea.att&&G.sea.att[tid])||{n:0,sum:0}; let rest=0, rn=0;
   let done=A.sum, dn=A.n;
@@ -32325,6 +32339,7 @@ function expDaily(day){ const E=expInit(); const o=dobj(day);
   if(o.m===11&&o.d===20&&E.stage==='approved'&&E.ay===G.year)expDraft(); }
 function expPropose(){ const E=expInit(); const C=(typeof ciCityPool==='function'?ciCityPool():[]).filter(c=>!G.teams.some(t=>t.city===c.city)); if(!C.length)return; const c=pick(C);
   const used=new Set(G.teams.map(t=>t.nick)); const nick=pick(EXP_NICK.filter(n=>!used.has(n)))||'뉴스타즈'; const par=(typeof ownershipParent==='function'?ownershipParent({id:G.teams.length,indie:false},7).name:'새 기업');
+  for(const k of ['userGm','gmAsk','gmBack','votes','comp','ay'])delete E[k]; /* 지난 창단의 단장 수락·표결이 다음 창단으로 넘어가지 않게(검수 11-17 #158) */
   Object.assign(E,{stage:'talk',y0:G.year,city:c.city,region:c.region,market:c.market,nick,parent:par});
   news('리그',`${ASSOC.s}, ${G.teams.length+1}번째 구단 창단 추진`,`${par}이(가) ${c.city}를 연고로 하는 신생 구단 창단을 신청했습니다. 내년 6월 30일 구단 표결로 승인 여부를 정합니다.`,2,{});
   if(!G.unemp)mail(ASSOC.s,`${G.teams.length+1}번째 구단 창단 추진 안내`,`${c.city} 연고, ${par} 운영 예정. 승인되면 그해 11월 특별지명(구단마다 보호 20명 밖 1명, 보상금 10억)을 거쳐 다음 시즌 1군에 들어옵니다.`,{kind:'리그'}); }
@@ -32348,6 +32363,14 @@ function expAddTeam(){ const E=expInit(), id=G.teams.length; const t={id,city:E.
   G.teams.push(t); const S=stadOf(id); S.name=`${E.city} 야구장`; S.cap=17000; S.built=G.year-ri(5,25); S.dim={lf:98,cf:121,rf:98,wl:3,wc:3,wr:3};
   G.mgr[id]=mkMgr(); G.mgr[id].yrs=3; try{ coachInit(); }catch(e){} if(G.sea&&G.sea.rec&&!G.sea.rec[id])G.sea.rec[id]={w:0,l:0,t:0}; try{ ownershipInit(); }catch(e){} try{ if(G.lgStaff&&!G.lgStaff[id]){ G.lgStaff[id]=stMakeTeam(t); stSync(id); } }catch(e){} /* 스카우트·분석원 */
   try{ chron('found',`${tfull(E)} 창단 · ${G.year+1}시즌 1군 진입`,null,id,{source:'found:'+id}); }catch(e){} return id; }
+/* 모기업은 창단 추진 기사에 나온 이름 하나로(검수 11-17 #159: 기사는 E.parent, 운영 화면은 ownershipParent(g=0)라 이름이 달랐다) */
+function expParentSync(){ const E=G.exp, O=G.ownership; if(!E||!O||!O.clubs)return; for(const h of E.hist||[]){ if(!h.ok||h.tid==null)continue; const nm=h.parent||(h.tid===E.tid?E.parent:null), s=O.clubs[h.tid], t=G.teams[h.tid];
+    if(!nm||!s||!s.parent||!t||(s.generation||0)>0||s.parent.name===nm||s.parent.id!=='parent:'+h.tid+':0')continue; /* 인수로 바뀐 모기업은 그대로 */ s.parent={...s.parent,name:nm}; } }
+/* 예전 저장 수리(불러올 때, 여러 번 해도 같음): 창단을 마친 'done' → 'idle'(#158), 모기업 이름(#159), 창단 단장 부임 전에 온 다른 구단 제의(#164) */
+function expMigrate(){ const E=G&&G.exp; if(!E)return; if(E.stage==='done')E.stage='idle';
+  if(E.tid!=null&&E.parent)for(const h of E.hist||[])if(h.ok&&h.tid===E.tid&&!h.parent)h.parent=E.parent;
+  try{ expParentSync(); }catch(e){}
+  if(E.tid!=null&&E.last!=null&&G.user===E.tid&&!G.unemp&&G.gmSinceD===dnum(E.last,11,20))for(const o of [...(G.jobs||[])])if(!o.done&&o.tid!==E.tid&&o.exp<G.gmSinceD+12)try{ jobAnswer(o.tid,false,true); }catch(e){} } /* 제의 기한은 12일 이상: 부임일+12 전에 끝나는 제의는 부임 전에 온 것 */
 /* 특별지명 */
 function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid); const L=[]; let pay=0;
   for(const o of G.teams){ if(o.id===tid)continue; const pool=domestic(o.id).filter(p=>!p.prospect&&!(p.joinY>G.year)&&!(p.mil&&p.mil.until>G.day));
@@ -32357,9 +32380,10 @@ function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid
   /* 나머지: 독립리그·신인급으로 국내 선수 50명까지 */
   const bpos=['C','C','C','1B','2B','2B','3B','SS','SS','LF','CF','CF','RF']; let i=0; while(domestic(tid).length<50&&i<80){ const isP=domestic(tid).filter(p=>p.isP).length<26; const age=ri(20,31), b=clamp(N(41,5),28,56);
     const p=newPlayer({age,isP,pos:isP?undefined:bpos[i%bpos.length],base:b,pot:b+ri(0,age<=25?12:4),team:tid,svc:clamp(age-20,0,8)}); p.sal=round5(Math.max(MIN_SAL,marketSal(ovr(p))*.5)); i++; }
-  E.stage='done'; E.last=G.year; E.tid=tid; E.hist.push({y:G.year,city:E.city,ok:true,tid});
+  E.stage='idle'; E.last=G.year; E.tid=tid; E.hist.push({y:G.year,city:E.city,ok:true,tid,parent:E.parent}); try{ expParentSync(); }catch(e){} /* 창단을 마치면 다시 '검토' 단계로: 예전에는 'done'에 머물러 12구단 추진이 영영 시작되지 않았다(검수 11-17 #158). 6년 쉼은 E.last로 */
   news('리그',`${tshort(tid)} 특별지명 결과`,`구단마다 보호선수 20명 밖에서 1명씩 지명했습니다(보상금 구단당 10억, ${E.parent} 창단 출자금으로 지급).\n`+L.join('\n'),2,{tid});
   if(E.userGm&&!G.gameOver){ try{ const wasU=!!G.unemp, old=G.user; let loyL=[]; if(!wasU)try{ loyL=meLoyalLeave(old,'move'); }catch(e){} if(!wasU&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); } G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid); if(loyL.length)try{ aiCoachFill(old,'단장을 따라 떠난 코치 후임',loyRoles(loyL)); }catch(e){} try{ meLoyalOffer(tid); }catch(e){}
+      for(const o of [...(G.jobs||[])])if(!o.done&&o.tid!==tid)try{ jobAnswer(o.tid,false,true); }catch(e){} /* 다른 구단 단장 제의는 끝낸다(검수 11-17 #164: 보통 이직처럼. 남아 있으면 누르자마자 또 이직) */
       try{ myCStart(tid,{sal:Math.max(myCBase(tid),wasU?0:(G.myC&&G.myC.sal)||0),yrs:EXP_GRACE+1},'창단 단장'); }catch(e){} /* 단장 계약도 새 구단으로(창단 테스트 11-13: 옛 구단 계약이 남아 유예 중 계약 만료 판정) */ mail(E.parent,`${tshort(tid)} 창단 단장 부임`,`특별지명으로 ${L.length}명을 데려왔습니다. 외국인 선수와 코칭스태프를 채우고 첫 시즌을 준비해 주십시오.\n\n당장 성적을 바라지는 않습니다. ${G.year+1}~${G.year+EXP_GRACE}시즌(창단 ${EXP_GRACE}년차까지)은 순위보다 선수 육성과 팬 기반을 보겠습니다. 첫해 순위 목표는 두지 않고, 2년차 탈꼴찌, 3년차부터 조금씩 올려 가겠습니다.\n\n`+L.join('\n'),{kind:'구단',imp:true}); }catch(e){} }
   return tid; }
 
@@ -35933,7 +35957,7 @@ function splitOf(tid){ const L=tlOf(tid); const f=h=>{ const r=wlOf(L.filter(x=>
 function h2hOf(tid,opp){ return wlOf(tlOf(tid).filter(x=>x[4]===opp)); }
 const wlStr=r=>`${r.w}-${r.l}${r.t?'-'+r.t:''}`;
 const pctStr=(o,L)=>{ if(!(o.w+o.l))return '-'; const p=o.w/(o.w+o.l), t=fmt3(p); if(L&&L.some(x=>x!==o&&x.w+x.l&&fmt3(x.w/(x.w+x.l))===t&&Math.abs(x.w/(x.w+x.l)-p)>1e-9))return p.toFixed(4).replace(/^0/,''); return t; }; /* 셋째 자리까지 같은데 실제 승률이 다르면 넷째 자리까지(카페 11-14: 순위가 뒤바뀐 것처럼 보임) */
-function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:per!=='season'&&G.ps&&G.ps.order&&G.ps.order.length?G.ps.order:standingsNow()}; /* 정규시즌이 끝나면 순위 결정전 결과가 반영된 순서(시드와 같게, 검수 11-06) */ const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order.concat(G.teams.filter(t=>!lh.order.some(o=>o.tid===t.id)).map(t=>({tid:t.id,w:0,l:0,t:0}))):standingsNow()}; } /* 지난 시즌 뒤 들어온 신생 구단도 목록에(89_league_expansion) */
+function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:per!=='season'&&G.ps&&G.ps.order&&G.ps.order.length?G.ps.order:standingsNow()}; /* 정규시즌이 끝나면 순위 결정전 결과가 반영된 순서(시드와 같게, 검수 11-06) */ const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order.concat(G.teams.filter(t=>!(t.born>G.year)&&!lh.order.some(o=>o.tid===t.id)).map(t=>({tid:t.id,w:0,l:0,t:0}))):standingsNow()}; } /* 지난 시즌 뒤 들어온 신생 구단도 목록에(89_league_expansion). 단 11월 특별지명으로 들어와 아직 첫 시즌(t.born)이 오지 않은 구단은 끝난 시즌 순위에 넣지 않는다(검수 11-17 #161: 0승 0패 구단) */
 /* 결산이 끝난 뒤(다음 시즌)와 개막 전에는 지난 시즌 대신 새 시즌 0승 0패와 예상 순위를 보인다(사용자 11-09). 그 시즌 연도, 아니면 0 */
 function preSeasonY(){ const per=period(); if(per==='pre')return G.year; if(per==='off'&&!preSettle()&&G.last&&G.last.y>=G.year)return G.year+1; return 0; }
 /* 화면 순위: 승률이 같으면 공동이지만, 순위 결정전으로 갈린 두 팀은 결정전 결과 순서(검수 11-09l) */
@@ -36012,7 +36036,7 @@ function resultHome(){
   const runs=g.ev.filter(e=>e.run).slice(-3);
   const others=tlOf(g.home).length?otherScores(g.day,[g.home,g.away]):'';
   return `<section class="card hero rescard">
-    <div class="row between"><span class="eyebrow">${g.kind?esc(g.kind)+' · ':''}${dmd(g.day)} ${WD[dobj(g.day).w]}${reg?` · ${n}/144경기`:''}${g.att?` · 관중 ${g.att.toLocaleString('ko-KR')}${g.so?'(매진)':''}`:''}${g.min?` · 경기 시간 ${gtTxt(g.min)}`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span></div>
+    <div class="row between"><span class="eyebrow">${g.kind?esc(g.kind)+' · ':''}${dmd(g.day)} ${WD[dobj(g.day).w]}${reg?` · ${n}/${seasonG()}경기`:''}${g.att?` · 관중 ${g.att.toLocaleString('ko-KR')}${g.so?'(매진)':''}`:''}${g.min?` · 경기 시간 ${gtTxt(g.min)}`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span></div>
     <div class="scoreline">${badge(g.away,34)}<b class="tn2"><i>${esc(tsplit(g.away)[0])}</i>${esc(tsplit(g.away)[1])}</b><span class="num">${g.as}</span><i>:</i><span class="num">${g.hs}</span><b class="tn2"><i>${esc(tsplit(g.home)[0])}</i>${esc(tsplit(g.home)[1])}</b>${badge(g.home,34)}</div>
     ${lineScore(g,null)}
     ${(()=>{ const c=gameChar(g); return c?`<p class="small gchar ${c.k==='blown'||c.k==='rout'||c.k==='nobat'?'bad':c.k==='comeback'||c.k==='romp'?'good':''}"><b>${esc(c.t)}</b>${c.sub?` <span class="muted">${esc(c.sub)}</span>`:''}</p>`:''; })()}
@@ -37420,7 +37444,7 @@ function psBracket(){
     +[[0,BK_W*.25],[0,BK_W*.75],[1,BK_W/2],[2,BK_W/2],[3,BK_W/2]].map(([c,dx])=>`<path d="M${BK_X[c]+dx} ${BK_SY}V${bot(c)}"/>`).join(''); /* 일정 칸이 줄기를 덮는다 */
   return `<div class="bk ws-own"${v3('bracket')?` style="--bk-bg:url(${v3('bracket')})"`:''}>${head}<svg class="bk-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ln}</svg>${BK_R.map(x=>bkCard(D,x,sel)+bkSched(D,x)).join('')}${ch}${bkDet(D,sel)}${seeds}${D.tbHtml||''}${rule}</div>`; }
 /* 순위·가을야구 규칙(카페 11-14: 규칙을 한곳에서). standingsNow(07_daily)·psLadder와 같은 내용 */
-function standRules(n){ return `${n}개 구단이 팀당 144경기를 치릅니다. 승률은 무승부를 빼고 승÷(승+패)로 셉니다. 승률이 같으면 그 구단들끼리 상대 전적, 다음은 득실차, 다음은 지난 시즌 순위로 가립니다. 1~5위가 가을야구에 나갑니다. 와일드카드는 4위와 5위가 최대 2경기를 치르고 4위가 1승을 안고 시작합니다. 준플레이오프는 3위와, 플레이오프는 2위와 5전 3선승제, 한국시리즈는 1위와 7전 4선승제입니다.`; }
+function standRules(n){ return `${n}개 구단이 팀당 ${seasonG()}경기를 치릅니다. 승률은 무승부를 빼고 승÷(승+패)로 셉니다. 승률이 같으면 그 구단들끼리 상대 전적, 다음은 득실차, 다음은 지난 시즌 순위로 가립니다. 1~5위가 가을야구에 나갑니다. 와일드카드는 4위와 5위가 최대 2경기를 치르고 4위가 1승을 안고 시작합니다. 준플레이오프는 3위와, 플레이오프는 2위와 5전 3선승제, 한국시리즈는 1위와 7전 4선승제입니다.`; }
 function standFm(order,live,y){
   const me=G.user, n=order.length, top=order[0], rk=live?stRank(order,me):order.findIndex(o=>o.tid===me)+1, gs=G.unemp?null:goalStatus(), od=live?playoffOdds():null, om=new Map((od||[]).map(o=>[o.tid,o]));
   const R=playerRows(y), mine=playerRowsT(y,me), B=mine.filter(x=>!x.p.isP), P=mine.filter(x=>x.p.isP), rc=fxRankLine();
@@ -37500,7 +37524,7 @@ function scoreFm(){ const me=G.user, c=G.cal, U=(G.sea.ulog||[]).filter(x=>!/차
     if(r){ if(r.res==='승')w++; else if(r.res==='패')l++; else t++; }
     const sep=o.m!==mo?`<tr class="fx-mo"><td colspan="7">${G.year}년 ${o.m}월</td></tr>`:''; mo=o.m; const rk=rkOf(op);
     return sep+`<tr class="${i===ni?'now ':''}${r?'':'up'}${gi>=0?' click':''}"${gi>=0?` data-a="openGame" data-v="${gi}"`:''}><td>${o.m}/${o.d} <i>${WD[o.w]}</i></td><td>${r?'':d>G.day?`${d-G.day}일 뒤`:''}</td><td>${h?'홈':'원정'}</td><td>${badge(op,16)} ${esc(tnick(op))}${rk?` <i>${rk}위</i>`:''}</td><td>${r?`<span class="pill ${r.res==='승'?'good':r.res==='패'?'bad':''}">${r.res}</span>`:d<G.day?'<span class="muted">-</span>':''}</td><td>${r?`${h?r.hs:r.as} : ${h?r.as:r.hs}`:''}</td><td>${r?`${w}-${l}${t?'-'+t:''}`:''}</td></tr>`; }).join('');
-  const all=fxBox('fxs-all',fxHead(`${G.year} 정규시즌 일정`,`144경기 중 ${U.length}경기 치름 · 남은 ${Math.max(0,days.length-U.length)}경기`),
+  const all=fxBox('fxs-all',fxHead(`${G.year} 정규시즌 일정`,`${seasonG()}경기 중 ${U.length}경기 치름 · 남은 ${Math.max(0,days.length-U.length)}경기`),
     days.length?`<div class="fx-scr" data-snap><table class="fx-t fx-sch"><thead><tr><th>날짜</th><th>남은 날</th><th>장소</th><th>상대 · 지금 순위</th><th>결과</th><th>점수</th><th>누적</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="fx-none">일정이 아직 나오지 않았습니다.</p>',
     fxBtn('itab','sres:cal','월별 일정')+fxBtn('go','league:stand','순위'));
   /* 날짜별 리그 결과(왼쪽이 홈) */
@@ -39871,7 +39895,7 @@ function schedView(){
   const its=[...played.filter(x=>dobj(x.d).m===cm).map(x=>({d:x.d,m:[x.h,x.a],r:x})),...days.map(d=>({d,m:c.sched[d].find(x=>x.includes(G.user))}))].sort((a,b)=>a.d-b.d); /* 치른 경기는 경기 기록마다 한 줄: 더블헤더·휴식일 연기 경기도 빠지지 않게(검수 11-09k) */
   const rows=its.map(({d,m,r})=>{ const home=m[0]===G.user; const op=home?m[1]:m[0]; const gi=r?G.games.findIndex(g=>r.gid!=null?g.gid===r.gid:g.day===d&&g.home===r.h&&g.away===r.a):-1;
     const o=dobj(d); return `<div class="srow${d===G.day?' today':''}${r?'':' up'}" ${gi>=0?`data-a="openGame" data-v="${gi}" role="button" tabindex="0"`:''}><span class="sd">${o.m}/${o.d} <i>${WD[o.w]}</i></span><span class="so">${home?'vs':'@'} ${badge(op,20)} ${esc(tshort(op))}</span>${r?`<span class="sr"><span class="pill ${r.res==='승'?'good':r.res==='패'?'bad':''}">${r.res}</span> <b class="num">${home?r.hs:r.as}:${home?r.as:r.hs}</b></span>`:`<span class="sr muted">${d<G.day?'-':home?'홈':'원정'}</span>`}</div>`; }).join('');
-  return csec(`${G.year} 정규시즌 일정`,`<p class="small">정규시즌 144경기 중 <b>${played.length}</b>경기 · ${w}승 ${l}패${played.length-w-l?` ${played.length-w-l}무`:''} · 남은 경기 ${144-played.length}</p>
+  return csec(`${G.year} 정규시즌 일정`,`<p class="small">정규시즌 ${seasonG()}경기 중 <b>${played.length}</b>경기 · ${w}승 ${l}패${played.length-w-l?` ${played.length-w-l}무`:''} · 남은 경기 ${144-played.length}</p>
     <div class="chips">${ms.map(m=>`<button data-a="smon" data-v="${m}" class="${cm===m?'on':''}">${m}월</button>`).join('')}</div>
     <div class="sched">${rows||'<p class="small muted">이 달에는 경기가 없습니다.</p>'}</div>
     <p class="small muted">월요일은 휴식일입니다. 결과를 누르면 박스스코어를 봅니다(최근 25경기 보관). ${hiI('정규시즌 1~5위가 와일드카드·준플레이오프·플레이오프·한국시리즈로 이어지는 가을야구에 나갑니다.')}</p>`)
