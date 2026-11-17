@@ -6541,6 +6541,38 @@ T('[카페 11-17 프로 선수 아마 기록] 예전 저장 수리: 지명 뒤 �
   A.amY.push(Object.assign({},A.amY[2],{y:y,g:80})); amTotFix(A); migrateDraft(); ok(A.amY.length===3&&A.am.g===57,'불러오기(migrateDraft)에서 수리하지 않음');
   ok(amRowObj&&typeof amPlayable==='function'&&!amPlayable(A,y)&&!amPlayable(Object.assign({},D||{prospect:true,team:null},{team:G.user}),y),'계약 선수가 아마 경기 대상'); });
 
+T('[검수 11-17 #197] 트레이드 성과: 거래로 온 선수가 제3 구단으로 떠났다가 이듬해 FA로 돌아와 낸 성적은 그 거래 몫이 아니다(이동 기록·예전 저장 수리, 난수 없음·두 번 수리해도 같다)',()=>{ fresh(); const [t,th]=G.teams.filter(x=>x.id!==G.user).map(x=>x.id); const ps=domestic(t).filter(x=>!x.foreign), a=ps[3], b=ps[4], c=ps[5];
+  const W={}; const st=seasonTotalT, wo=warOf; seasonTotalT=(p,y,l,tid)=>W[p.id+':'+tid+':'+y]!=null?{w:W[p.id+':'+tid+':'+y]}:null; warOf=h=>h.w;
+  try{ const y=G.year; G.trades=[]; const tr={y,d:G.day,with:t,gi:[a.id],go:[],snap:{},me:G.user}; G.trades.push(tr);
+    mvLog('트레이드',a,t,G.user); ok(!(tr.end&&tr.end[a.id]!=null),'거래 자체를 이탈로 봄'); a.team=G.user; mvLog('트레이드',a,G.user,th); a.team=th; ok(tr.end&&tr.end[a.id]!=null,'제3 구단 이적이 소속 기간 끝으로 남지 않음'); const e0=tr.end[a.id];
+    mvLog('FA',a,th,G.user); a.team=G.user; ok(tr.end[a.id]===e0,'돌아온 FA 계약이 소속 기간 끝을 바꿈');
+    W[a.id+':'+G.user+':'+y]=0; W[a.id+':'+G.user+':'+(y+1)]=3.35; G.year=y+1; let got; try{ got=tradeReport(tr).got; const e=tr.end; delete tr.end; const raw=tradeReport(tr).got; tr.end=e; ok(Math.abs(raw-3.35)<1e-9,'대조군: 끝 표시 없이 '+raw); } finally { G.year=y; }
+    ok(Math.abs(got)<1e-9,'돌아온 뒤 성적이 원래 거래에 들어감: '+got);
+    /* 예전 저장: 인물 이력부의 이동 기록으로 */ const tr2={y:y-1,d:G.day-300,with:t,gi:[b.id],go:[],snap:{},me:G.user}; const L=plogInit(); L.p['pl:'+b.id]=[{y:y-1,d:G.day-310,k:'move',f:t,t:G.user},{y:y-1,d:G.day-200,k:'move',f:G.user,t:th},{y,d:G.day-10,k:'move',f:null,t:G.user}];
+    /* 예전 저장: 기록이 없으면 시즌 기록 줄의 소속으로 */ const tr3={y:y-2,with:t,gi:[],go:[c.id],snap:{},me:G.user}; delete L.p['pl:'+c.id]; G.moves=(G.moves||[]).filter(m=>m.pid!==c.id&&m.pid!==b.id); c.hist=[{y:y-2,lvl:'1군',t:G.user},{y:y-2,lvl:'1군',t:t},{y:y-1,lvl:'1군',t:th},{y,lvl:'1군',t:t}];
+    G.trades.push(tr2,tr3); const r0=__rngState(); const n=trStintFix(); ok(__rngState()===r0,'수리가 난수를 씀'); ok(n===2,'수리 건수 '+n); ok(tr2.end[b.id]===y-1,'이력부로 끝을 찾지 못함 '+JSON.stringify(tr2.end)); ok(tr3.end[c.id]===y-2,'시즌 기록으로 끝을 찾지 못함 '+JSON.stringify(tr3.end));
+    const s1=JSON.stringify(G.trades); ok(trStintFix()===0&&JSON.stringify(G.trades)===s1,'두 번째 수리에서 바뀜');
+    W[c.id+':'+t+':'+y]=2.5; W[c.id+':'+t+':'+(y-2)]=0.4; ok(Math.abs(tradeReport(tr3).gave-0.4)<1e-9,'내준 쪽도 돌아온 뒤 성적을 셈: '+tradeReport(tr3).gave);
+  } finally { seasonTotalT=st; warOf=wo; } });
+T('[검수 11-17 #198] 관심 선수가 은퇴하면 관심 선수 소식을 한 번 보낸다(국내 선수는 명단에서 빠져도, 외국인 은퇴도)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user).id; const p=domestic(t).find(x=>!x.foreign), q=Object.values(G.players).find(x=>x.foreign&&x.team!=null&&x.team!==G.user)||domestic(t).filter(x=>!x.foreign)[1]; ok(p&&q,'준비 실패');
+  const M=[]; const m0=mail; mail=(f,s,b)=>{ M.push(b); return {}; }; try{ G.pwatch=[p.id,q.id]; G.pwSt={}; pwatchDaily(); ok(!M.length,'처음 비교에서 소식');
+    const nm=p.name; retireOut(p,'은퇴'); ok(!G.players[p.id],'준비 실패: 명단에 남음'); pwatchDaily(); ok(M.length===1&&M[0].includes(nm)&&M[0].includes('은퇴'),'은퇴 소식 없음: '+JSON.stringify(M)); pwatchDaily(); ok(M.length===1,'은퇴 소식이 두 번');
+    retireRecord(q); q.team=null; q.retY=G.year; pwatchDaily(); ok(M.length===2&&M[1].includes(q.name)&&M[1].includes('은퇴'),'외국인 은퇴 소식 없음: '+JSON.stringify(M)); pwatchDaily(); ok(M.length===2,'외국인 은퇴 소식이 두 번');
+  } finally { mail=m0; } });
+T('[검수 11-17 #199] 관심 선수가 FA(무소속)에서 다른 구단과 계약하면 관심 선수 소식을 보낸다(우리 구단 계약은 빼고)',()=>{ fresh(); const [t,th]=G.teams.filter(x=>x.id!==G.user).map(x=>x.id); const ps=domestic(t).filter(x=>!x.foreign), p=ps[0], q=ps[1];
+  const M=[]; const m0=mail; mail=(f,s,b)=>{ M.push(b); return {}; }; try{ G.pwatch=[p.id,q.id]; G.pwSt={}; pwatchDaily(); p.team=null; q.team=null; pwatchDaily(); M.length=0;
+    p.team=th; q.team=G.user; pwatchDaily(); ok(M.length===1&&M[0].includes(p.name)&&M[0].includes(tshort(th))&&M[0].includes('계약'),'FA 계약 소식 없음: '+JSON.stringify(M)); ok(!M[0].includes(q.name),'우리 구단 계약까지 알림');
+  } finally { mail=m0; } });
+T('[검수 11-17 #200] 관심 선수 포스팅 소식은 유효한 신청만: 신청 뒤 구단이 바뀌어 무효가 된 신청은 「포스팅을 신청했습니다」로 알리지 않는다',()=>{ fresh(); const [t,th]=G.teams.filter(x=>x.id!==G.user).map(x=>x.id); const ps=domestic(t).filter(x=>!x.foreign), p=ps[0], q=ps[1];
+  const M=[]; const m0=mail; mail=(f,s,b)=>{ M.push(b); return {}; }; try{ G.pwatch=[p.id,q.id]; G.pwSt={}; pwatchDaily(); G.posting=[]; postStart(p); postStart(q); p.team=th; pwatchDaily();
+    const txt=M.join(' | '); ok(!txt.includes(p.name+': 해외 포스팅'),'무효가 된 신청을 알림: '+txt); ok(txt.includes(q.name+': 해외 포스팅'),'대조군: 유효한 신청 소식 없음'); ok(!pwPostOn(p)&&pwPostOn(q),'관심 선수 표의 포스팅 표시가 무효 신청을 셈');
+    G.posting.find(x=>x.pid===q.id).void=true; ok(!pwPostOn(q),'무효 처리된 신청을 셈');
+  } finally { mail=m0; } });
+T('[검수 11-17 #201] 인물 이력: 12월 31일에 감독을 선임하고 하루 넘겨도 부임은 그해 12월 31일로 남는다',()=>{ fresh(); plogDaily(); const y=G.year; G.day=dnum(y,12,31); refreshMgrMarket(); const c=(G.mmarket||[])[0]; ok(c,'준비 실패: 감독 후보 없음');
+  const r=hireMgr(c.id,2); ok(G.mgr[G.user]&&G.mgr[G.user].id===c.id,'준비 실패: 선임 안 됨 '+r); const k=plKeyMgr(G.mgr[G.user]);
+  G.day++; G.year++; plogDaily(); const S=(G.plog.p[k]||[]).filter(e=>e.k==='start'); ok(S.length===1&&S[0].y===y&&S[0].d===dnum(y,12,31),'부임 날짜가 틀림: '+JSON.stringify(S)); ok(personTimeline(k).some(x=>x.k==='start'&&x.y===y),'이력 줄이 이듬해로 보임');
+  /* 하루 진행으로: 12월 31일에 바뀐 자리(선임 함수를 거치지 않은 변화도)는 날짜를 넘기기 전에 그날로 적는다 */ fresh(); plogDaily(); G.day=dnum(G.year,12,30); const y2=G.year; refreshMgrMarket(); try{ processDay(); }catch(e){} ok(G.year===y2&&dobj(G.day).d===31,'준비 실패: '+dmd(G.day)); const m2=(G.mmarket||[])[0]; ok(m2,'준비 실패: 후보 없음'); G.mmarket=G.mmarket.filter(x=>x!==m2); G.mgr[G.user]=m2; const k2=plKeyMgr(m2);
+  try{ processDay(); }catch(e){} ok(G.year===y2+1,'준비 실패: 해가 넘어가지 않음'); const S2=(G.plog.p[k2]||[]).filter(e=>e.k==='start'); ok(S2.length===1&&S2[0].y===y2&&S2[0].d===dnum(y2,12,31),'하루 진행에서 부임이 이듬해로 남음: '+JSON.stringify(S2)); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
