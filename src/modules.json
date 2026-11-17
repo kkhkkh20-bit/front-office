@@ -8,6 +8,7 @@
       "src/engine/league/01_rules.js",
       "src/engine/league/02_records.js",
       "src/engine/players/03_depth.js",
+      "src/engine/players/03b_def_sub.js",
       "src/engine/players/04_growth.js",
       "src/engine/league/05_calendar.js",
       "src/engine/matches/06_game.js",

@@ -4,7 +4,8 @@ const SUBMAP={C:[['1B',.2]],'1B':[['LF',.35],['3B',.3],['RF',.25]],'2B':[['SS',.
 const _subC=new Map();
 /* 할 수 있는 다른 자리: 숙련도 50 이상(78_positions.js) */
 function subsOf(p){ if(p.isP)return []; const E=pexpOf(p); return Object.keys(E).filter(k=>k!==p.pos&&E[k]>=50).sort((a,b)=>E[b]-E[a]); }
-function defAt(p,pos){
+function defAt(p,pos){ return pos==='DH'?0:defBase(p,pos)+dsubFit(p,pos); } /* 포지션 적합: 그 자리에서 중요한 세부 수비 능력(03b_def_sub)까지 본 수비력 */
+function defBase(p,pos){
   if(pos==='DH')return 0; if(p.pos===pos)return p.r.def;
   const e=(pexpOf(p)[pos]||0)/100; return p.r.def-posRaw(p.pos,pos)*versF(p)*(1-e*.85);
 }

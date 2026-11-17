@@ -168,7 +168,7 @@ function newPlayer(o){
   p.pot=clamp(Math.max(ovr(p),o.pot??ovr(p)),20,80); p.dt=rollDT();
   initPers(p,true); /* 성격은 만들 때 정한다(읽기 경로에서 난수를 쓰지 않게) */
   if(p.isP)p.delivery=o.delivery||pitchDelivery(p);
-  G.players[p.id]=p; return p;
+  G.players[p.id]=p; if(!isP)dsubBase(p); /* 세부 수비 모양(난수 없음, 03b_def_sub) */ return p;
 }
 let PROJ_FX=0; /* 1이면 KBO 1군 실적이 없는 외국인을 빼고 본다(예상 전력의 외국인 불확실성, 03_depth projRating) */
 const fUnproven=p=>!!p&&!!p.foreign&&(()=>{ const L=(p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2); return sum(L.map(h=>h.pa||0))<100&&sum(L.map(h=>h.outs||0))<90; })(); /* KBO 1군 100타석·30이닝 미만 */

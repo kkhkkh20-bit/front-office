@@ -1973,7 +1973,7 @@ T('[구단주 목표] 시범경기 중 대표팀 차출·짧은 부상으로 빠
   top.slice(0,4).forEach(p=>{ p.ntAway=G.day+20; p.ntFrom=G.day; }); top[4].injOut=5; top[5].fLeave=G.day+3; ok(isAway(top[0])&&!healthy(top[4]),'준비 실패: 차출·부상 상태가 아님');
   const r1=projRating(tid); ok(Math.abs(r1-r0)<.01,'잠시 빠진 선수 때문에 예상 전력이 '+r0.toFixed(2)+' → '+r1.toFixed(2)); ok(isAway(top[0])&&!healthy(top[4]),'예상 계산 뒤에도 실제 경기 명단 판정은 그대로여야 함');
   top[4].injOut=200; ok(projRating(tid)<r1,'시즌 대부분을 빠지는 장기 부상은 예상에서 빠져야 함'); });
-T('[FA 주전 기회] 겨울에 다음 시즌 계약이 없는 외국인은 그 자리 주전으로 치지 않는다(사용자 11-14)',()=>{ fresh(); simTo(()=>G.fa&&G.fa.open&&!G.fa.closed); const f=Object.values(depth(G.user).ln).find(q=>q&&q.foreign); ok(f,'준비 실패: 주전 외국인 타자 없음'); f.fy=null; f.fMulti=0; f.fCtY=0; ok(sponSeason()!==G.year&&!fNextOwed(f),'준비 실패: 재계약 미정 상태가 아님');
+T('[FA 주전 기회] 겨울에 다음 시즌 계약이 없는 외국인은 그 자리 주전으로 치지 않는다(사용자 11-14)',()=>{ fresh(); simTo(()=>G.fa&&G.fa.open&&!G.fa.closed); if(!Object.values(depth(G.user).ln).some(q=>q&&q.foreign)){ const w=foreignOf(G.user).find(q=>!q.isP); if(w){ w.injOut=0; setOvr(w,70); G.mvN=(G.mvN||0)+1; } } /* 한 시즌 경기 결과에 따라 외국인 타자가 약한 대체 선수만 남을 수 있다(11-17 세부 수비로 경기 결과가 바뀌며 드러남): 그 선수를 주전급으로 올려 규칙만 본다 */ const f=Object.values(depth(G.user).ln).find(q=>q&&q.foreign); ok(f,'준비 실패: 주전 외국인 타자 없음'); f.fy=null; f.fMulti=0; f.fCtY=0; ok(sponSeason()!==G.year&&!fNextOwed(f),'준비 실패: 재계약 미정 상태가 아님');
   const d=depth(G.user); const pos=Object.keys(d.ln).find(k=>d.ln[k]&&d.ln[k].id===f.id); ok(pos,'준비 실패: 외국인이 주전이 아님'); G.mvN=(G.mvN||0)+1; const C=faCtx(); ok(C.slot[G.user][pos]!==ovr(f)||Object.values(depth(G.user).ln).filter(q=>q&&!q.foreign&&q.pos===f.pos&&ovr(q)===ovr(f)).length>0,'재계약 미정 외국인 '+f.name+'('+pos+')을 주전 기준으로 계산함');
   f.fCtY=sponSeason(); G.mvN++; ok(faCtx().slot[G.user][pos]===ovr(f),'재계약한 외국인은 주전 기준에 들어가야 함'); });
 T('[구단주 목표] 스토브리그 예상 전력은 다음 개막 기준: 겨울에 낫는 부상·내년 합류 신인·개막 전 전역은 넣고 개막 전 입대는 뺀다',()=>{ fresh(); G.day=G.cal.end+40; G.ps=null; ok(period()==='off','준비 실패: 스토브리그 아님'); ok(projBack()>100,'다음 개막까지 남은 날로 보지 않음: '+projBack());
@@ -6332,6 +6332,18 @@ T('[카페 11-17 수딧] 샐러리캡 프랜차이즈 예외(래리 버드 룰):
   B.team=ai; ok(franLockWhy(u)==='','지정 선수가 떠났는데 다시 지정할 수 없음'); ok(franId(u)===a.id,'지정 선수가 떠나면 자동으로 돌아가야 함'); B.team=u;
   ok(__rngState()===r0,'프랜차이즈 지정·상한 계산이 난수를 씀');
   G.franNews=null; const n0=G.mail.length, r1=__rngState(); franIntro(); ok(G.mail.length===n0+1&&G.mail[0].subj.includes('프랜차이즈'),'규정 변경 안내 메일 없음'); ok((G.news||[]).some(n=>n.t.includes('리그 규정 변경')&&n.t.includes('프랜차이즈')),'규정 변경 기사 없음'); franIntro(); ok(G.mail.length===n0+1,'안내가 두 번 옴'); ok(__rngState()===r1,'안내가 난수를 씀'); });
+T('[수비 세부 11-17] 세부 수비 능력(범위·송구·포구): 주 난수를 쓰지 않고 같은 값, 무게 평균이 종합 수비, 범위가 먼저 늙음, 화면·포지션 적합·경기가 같은 값',()=>{ fresh();
+  const B=domestic(G.user).filter(p=>!p.isP); ok(B.length>10,'준비 실패: 야수');
+  const s0=__rngState(); const snap=B.map(p=>JSON.stringify(p.dsb)); for(const p of B){ delete p.dsb; dsubBase(p); } dsubMigrate(); ok(__rngState()===s0,'세부 수비 계산이 주 난수를 씀');
+  ok(B.every((p,i)=>JSON.stringify(p.dsb)===snap[i]),'다시 계산한 세부 수비가 저장 값과 다름(옛 저장 이전이 불안정)');
+  for(const p of B){ const o=dsubOf(p); const m=DSUB_W.rng*o.rng+DSUB_W.arm*o.arm+DSUB_W.fld*o.fld; ok(Math.abs(m)<.08,p.name+' 세부 무게 평균이 종합 수비와 다름 '+m.toFixed(3)); }
+  const p=B[0], a0=p.age; p.age=25; const y=dsubOf(p); p.age=36; const o=dsubOf(p); p.age=a0; ok(o.rng<y.rng-4&&o.arm>y.arm&&o.fld>y.fld,'나이 들면 범위가 송구·포구보다 먼저 떨어져야 함 '+JSON.stringify({y,o}));
+  const C=B.filter(q=>q.pos==='C'), F=B.filter(q=>q.pos==='1B'); if(C.length&&F.length)ok(Math.max(...C.map(q=>dsubOf(q).arm))>Math.min(...F.map(q=>dsubOf(q).arm)),'포수 어깨 전형이 1루보다 약함');
+  const q=B.find(x=>x.pos==='SS')||B[0]; const sv=Object.assign({},q.dsb); q.dsb=Object.assign({},sv,{arm:sv.arm+6,rng:sv.rng-4.5}); const hiArm=defAt(q,'SS')-defAt(q,'1B'); q.dsb=Object.assign({},sv,{arm:sv.arm-6,rng:sv.rng+4.5}); const loArm=defAt(q,'SS')-defAt(q,'1B'); q.dsb=sv; ok(hiArm>loArm,'유격 적합이 어깨를 보지 않음');
+  ok(Math.abs(defAt(q,q.pos)-q.r.def-dsubFit(q,q.pos))<1e-9,'포지션 적합(AI)이 세부 수비 적합을 쓰지 않음');
+  const ds=dsubVals(q); ok(DSUB_K.every(k=>Math.abs(ds[k]-clamp(q.r.def+dsubOf(q)[k],20,80))<1e-9),'화면용 세부 수비가 종합 수비 + 세부 차이가 아님');
+  ok(Math.abs(rngV(q,q.pos)-(q.r.def+ds.rng-q.r.def-DSUB_ARCH[q.pos].rng-DSUB_CAL.rng))<1e-6||ds.rng===20||ds.rng===80,'경기 수비 범위가 세부 능력을 쓰지 않음');
+  const f0=DEF_SPLIT; DEF_SPLIT=0; const old=defAt(q,q.pos); DEF_SPLIT=f0; ok(old===q.r.def,'DEF_SPLIT=0이면 예전 포지션 수비로 돌아가야 함'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
