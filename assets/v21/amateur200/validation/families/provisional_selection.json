@@ -18,9 +18,6 @@
     "c004_p05",
     "c004_p06",
     "c004_p07",
-    "c004_p08",
-    "c005_p06",
-    "c005_p09",
     "c006_p01",
     "c006_p04",
     "c006_p06",
@@ -29,8 +26,12 @@
     "c007_p01",
     "c007_p05",
     "c007_p08",
-    "c008_p02",
-    "c008_p05"
+    "c008_p05",
+    "c010_p01",
+    "c010_p03",
+    "c011_p01",
+    "c011_p02",
+    "c011_p04"
   ],
   "eligible_full_families": [
     "c000_p00",
@@ -110,9 +111,35 @@
     "c007_p06",
     "c007_p07",
     "c007_p08",
-    "c007_p09"
+    "c007_p09",
+    "c008_p00",
+    "c008_p01",
+    "c008_p02",
+    "c008_p03",
+    "c008_p04",
+    "c008_p05",
+    "c008_p06",
+    "c008_p07",
+    "c008_p08",
+    "c008_p09",
+    "c009_p00",
+    "c009_p01",
+    "c009_p02",
+    "c009_p03",
+    "c009_p04",
+    "c009_p05",
+    "c009_p06",
+    "c009_p07",
+    "c009_p08",
+    "c009_p09",
+    "c010_p00",
+    "c010_p01",
+    "c010_p02",
+    "c010_p03",
+    "c011_p01",
+    "c011_p02",
+    "c011_p04"
   ],
-  "selection_buffer": 0.385,
   "delivery_thresholds_unchanged": {
     "same_min": 0.6,
     "different_max_exclusive": 0.4
@@ -151,6 +178,7 @@
     "c004_p01",
     "c004_p02",
     "c004_p03",
+    "c004_p08",
     "c004_p09",
     "c005_p00",
     "c005_p01",
@@ -158,8 +186,10 @@
     "c005_p03",
     "c005_p04",
     "c005_p05",
+    "c005_p06",
     "c005_p07",
     "c005_p08",
+    "c005_p09",
     "c006_p00",
     "c006_p02",
     "c006_p03",
@@ -171,10 +201,50 @@
     "c007_p04",
     "c007_p06",
     "c007_p07",
-    "c007_p09"
+    "c007_p09",
+    "c008_p00",
+    "c008_p01",
+    "c008_p02",
+    "c008_p03",
+    "c008_p04",
+    "c008_p06",
+    "c008_p07",
+    "c008_p08",
+    "c008_p09",
+    "c009_p00",
+    "c009_p01",
+    "c009_p02",
+    "c009_p03",
+    "c009_p04",
+    "c009_p05",
+    "c009_p06",
+    "c009_p07",
+    "c009_p08",
+    "c009_p09",
+    "c010_p00",
+    "c010_p02",
+    "c011_p00",
+    "c011_p03",
+    "c011_p05"
   ],
   "hold_reason": "identity-preserving full-family numeric incompatibility or safety buffer; no face changes to force acceptance",
-  "buffer_collision_edges": [
+  "visual_holds_excluded": [
+    "c005_p05"
+  ],
+  "historical_packed_conflict_pair_conservatively_excluded": [
+    "c002_p00",
+    "c002_p03"
+  ],
+  "actual_packed_additional_holds": [
+    "c008_p08",
+    "c010_p00",
+    "c010_p02"
+  ],
+  "selection_note": "Compatible subset only; not a proof of global maximum. Human age and final200/78-sheet delivery pending.",
+  "eligibility_screen_scope": "Individual-export same-person all13-pair gates and old gallery gates, all3 sizes; known age hold excluded. Pairwise new-person compatibility is established separately only for the actual packed subset. Human age review pending.",
+  "historical_initial_selection_buffer": 0.385,
+  "historical_initial_solver": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+  "historical_initial_buffer_edges": [
     [
       "c000_p00",
       "c001_p04",
@@ -1830,16 +1900,5 @@
       "c007_p07",
       0.3871214985847473
     ]
-  ],
-  "solver": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
-  "visual_holds_excluded": [
-    "c005_p05"
-  ],
-  "historical_packed_conflict_pair_conservatively_excluded": [
-    "c002_p00",
-    "c002_p03"
-  ],
-  "actual_packed_additional_holds": [
-    "c008_p08"
   ]
 }

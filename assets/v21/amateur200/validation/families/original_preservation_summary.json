@@ -1,11 +1,11 @@
 {
-  "checked_at_kst": "2026-11-17T18:04:49.258787+09:00",
+  "checked_at_kst": "2026-11-17T20:01:34.820481+09:00",
   "legacy_protected_original_paths_checked": 708,
-  "prior_snapshot_files_verified": 1083,
+  "prior_snapshot_files_verified": 1121,
   "missing_originals": 0,
   "changed_originals": 0,
-  "total_preserved_generator_files": 1102,
-  "total_preserved_generator_bytes": 2275412921,
+  "total_preserved_generator_files": 1134,
+  "total_preserved_generator_bytes": 2348325818,
   "originals_deleted_by_cache_cleanup": 0,
   "byte_identical_native_copy_storage_sharing": {
     "files": 126,

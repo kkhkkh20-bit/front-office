@@ -41,5 +41,98 @@
       "change": "HS-home whole native crop below original join removes neighboring photo strip."
     }
   ],
-  "all_identities_human_age_review": "pending"
+  "all_identities_human_age_review": "pending",
+  "numeric_only_holds": [
+    {
+      "id": "c010_p00",
+      "reason": "Actual128 atlas comparisons with c000_p03 exceeded0.40; original face retained and family held."
+    },
+    {
+      "id": "c010_p02",
+      "reason": "Actual128 atlas comparisons with c010_p03 exceeded0.40; original face retained and family held."
+    },
+    {
+      "id": "c005_p09",
+      "reason": "Different-person full-photo comparisons >=0.40 after native geometry repairs; source face retained, no threshold change. See geometry33 conflict snapshot."
+    },
+    {
+      "id": "c004_p08",
+      "reason": "Different-person full-photo comparisons >=0.40 after native geometry repairs; source face retained, no threshold change. See geometry33 conflict snapshot."
+    },
+    {
+      "id": "c008_p02",
+      "reason": "Different-person full-photo comparisons >=0.40 after native geometry repairs; source face retained, no threshold change. See geometry33 conflict snapshot."
+    },
+    {
+      "id": "c005_p06",
+      "reason": "Different-person full-photo comparisons >=0.40 after native geometry repairs; source face retained, no threshold change. See geometry33 conflict snapshot."
+    },
+    {
+      "id": "c011_p00",
+      "reason": "Old486 or selected different-person variant comparison >=0.40; preserve original face and hold family."
+    },
+    {
+      "id": "c011_p03",
+      "reason": "Old486 or selected different-person variant comparison >=0.40; preserve original face and hold family."
+    },
+    {
+      "id": "c011_p05",
+      "reason": "Old486 or selected different-person variant comparison >=0.40; preserve original face and hold family."
+    }
+  ],
+  "new_method": {
+    "cohort": 10,
+    "people": 4,
+    "photos": 52,
+    "description": "One person per multi-kit generator sheet; complete native square photos only, no face/body pasting. Canonical HS-home remains the frozen master; unused HS-home reference cells are not counted.",
+    "human_age_review": "pending"
+  },
+  "native_geometry_repair": {
+    "scope": "33-family selected review subset only; other held candidates not cleared",
+    "cause": "Equal-row initial slicing did not follow uneven generated image joins. Native borders detected and actual photos reviewed.",
+    "safe_whole_native_crop_repairs": 73,
+    "short_native_cells_regenerated_as_complete_photos": 56,
+    "new_generator_sources": 10,
+    "minimum_regenerated_crop_edge": 503,
+    "geometry_diagnostic_photos": 429,
+    "remaining_boundary_flags": 0,
+    "face_or_body_compositing": false,
+    "upscaling": false,
+    "human_age_review": "pending",
+    "numeric_recheck": "After four numerical holds, repaired29 subset and subsequent 32-family packed subset pass actual pixels at all three sizes with zero failures."
+  },
+  "new_cohort_011": {
+    "identities": 6,
+    "photos": 78,
+    "source_master_screen": "all six pass raw source screen against old486 and current33 individual photos at128/256/384",
+    "method": "One identity per nine-kit plus four-kit complete photograph grids; duplicate HS-home filler omitted; frozen HS-home master retained.",
+    "visual_review": "Assistant viewed all12 generated grids; human age review remains pending.",
+    "numeric_review": "All78 new photo exports measured. c011_p00/p03 held for different-person full-variant collisions; c011_p05 held for old486 collisions; c011_p01/p02/p04 included only after actual packed-pixel recheck."
+  },
+  "human_age_attention": [
+    {
+      "id": "c002_p09",
+      "reason": "May look younger than the near-adult direction; explicit human age review required before final inclusion."
+    },
+    {
+      "id": "c006_p08",
+      "reason": "May look younger than the near-adult direction; explicit human age review required before final inclusion."
+    },
+    {
+      "id": "c002_p02",
+      "reason": "May look older than17–22; explicit human age review required before final inclusion."
+    },
+    {
+      "id": "c001_p03",
+      "reason": "May look older than17–22; explicit human age review required before final inclusion."
+    }
+  ],
+  "selected_master_visual_screen": {
+    "people": 32,
+    "full_master_contact_boards_seen": 2,
+    "whole_cap_visible": true,
+    "neighboring_photo_strips_seen": 0,
+    "human_age_review": "pending",
+    "note": "Assistant visual screen does not certify human age approval. See explicit human_age_attention list."
+  }
 }

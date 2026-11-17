@@ -1,0 +1,183 @@
+{
+  "photo_count": 429,
+  "family_count": 33,
+  "complete_13_variant_families": [
+    "c000_p01",
+    "c000_p03",
+    "c000_p04",
+    "c000_p08",
+    "c001_p03",
+    "c001_p05",
+    "c001_p06",
+    "c002_p00",
+    "c002_p02",
+    "c002_p04",
+    "c002_p06",
+    "c002_p08",
+    "c002_p09",
+    "c003_p06",
+    "c004_p04",
+    "c004_p05",
+    "c004_p06",
+    "c004_p07",
+    "c004_p08",
+    "c005_p06",
+    "c005_p09",
+    "c006_p01",
+    "c006_p04",
+    "c006_p06",
+    "c006_p07",
+    "c006_p08",
+    "c007_p01",
+    "c007_p05",
+    "c007_p08",
+    "c008_p02",
+    "c008_p05",
+    "c010_p01",
+    "c010_p03"
+  ],
+  "all_13_families_generated": true,
+  "raw_measurements": {
+    "128": {
+      "same_comparisons": 2574,
+      "same_min": 0.6403845548629761,
+      "different_comparisons": 89232,
+      "different_max": 0.4102433919906616,
+      "old_comparisons": 208494,
+      "old_max": 0.37823066115379333
+    },
+    "256": {
+      "same_comparisons": 2574,
+      "same_min": 0.6199363470077515,
+      "different_comparisons": 89232,
+      "different_max": 0.4240188002586365,
+      "old_comparisons": 208494,
+      "old_max": 0.3804510235786438
+    },
+    "384": {
+      "same_comparisons": 2574,
+      "same_min": 0.6726906299591064,
+      "different_comparisons": 89232,
+      "different_max": 0.42940253019332886,
+      "old_comparisons": 208494,
+      "old_max": 0.37690305709838867
+    }
+  },
+  "failures": [
+    {
+      "kind": "different_person",
+      "a": "c006_p01__seoul_hounds",
+      "b": "c005_p09__suwon_sparks",
+      "cosine": 0.40160390734672546,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c006_p01__changwon_anchors",
+      "b": "c005_p09__suwon_sparks",
+      "cosine": 0.41022953391075134,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p03__daegu_thunders",
+      "b": "c008_p02__daegu_thunders",
+      "cosine": 0.40606236457824707,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__goyang_storm",
+      "b": "c010_p01__daegu_thunders",
+      "cosine": 0.4002613425254822,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p07__gwangju_blazes",
+      "b": "c005_p06__daegu_thunders",
+      "cosine": 0.4087933301925659,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p07__gwangju_blazes",
+      "b": "c005_p06__suwon_sparks",
+      "cosine": 0.4102433919906616,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__goyang_storm",
+      "b": "c005_p09__seoul_comets",
+      "cosine": 0.41527700424194336,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p07__gwangju_blazes",
+      "b": "c005_p06__busan_waves",
+      "cosine": 0.4013098180294037,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__incheon_seagulls",
+      "b": "c005_p09__seoul_comets",
+      "cosine": 0.4240188002586365,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__goyang_storm",
+      "b": "c005_p09__busan_waves",
+      "cosine": 0.40262335538864136,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__goyang_storm",
+      "b": "c005_p09__seoul_comets",
+      "cosine": 0.42842721939086914,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__goyang_storm",
+      "b": "c006_p08__daegu_thunders",
+      "cosine": 0.4015597105026245,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__gwangju_blazes",
+      "b": "c005_p09__seoul_comets",
+      "cosine": 0.4149101674556732,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__incheon_seagulls",
+      "b": "c005_p09__seoul_comets",
+      "cosine": 0.42940253019332886,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__incheon_seagulls",
+      "b": "c005_p09__suwon_sparks",
+      "cosine": 0.4065905809402466,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c004_p08__incheon_seagulls",
+      "b": "c006_p08__daegu_thunders",
+      "cosine": 0.4026179909706116,
+      "size": 384
+    }
+  ],
+  "failure_count": 16,
+  "status": "FINAL_ATLAS_AND_HUMAN_AGE_REVIEW_STILL_PENDING",
+  "measurement_scope": "actual decoded occupied rectangles of 39 partial review atlases; final full atlases must be measured again"
+}

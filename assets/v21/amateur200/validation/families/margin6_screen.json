@@ -1,0 +1,128 @@
+[
+  {
+    "id": "margin6_0",
+    "sizes": {
+      "128": {
+        "old_max": 0.3145597279071808,
+        "current33_individual_photo_max": 0.34848055243492126,
+        "new_master_pair_max": 0.2638285756111145
+      },
+      "256": {
+        "old_max": 0.33563297986984253,
+        "current33_individual_photo_max": 0.3516923785209656,
+        "new_master_pair_max": 0.2933393716812134
+      },
+      "384": {
+        "old_max": 0.33878248929977417,
+        "current33_individual_photo_max": 0.35144704580307007,
+        "new_master_pair_max": 0.31286412477493286
+      }
+    },
+    "screen_pass": true
+  },
+  {
+    "id": "margin6_1",
+    "sizes": {
+      "128": {
+        "old_max": 0.23360589146614075,
+        "current33_individual_photo_max": 0.32046809792518616,
+        "new_master_pair_max": 0.19455546140670776
+      },
+      "256": {
+        "old_max": 0.23105287551879883,
+        "current33_individual_photo_max": 0.31534504890441895,
+        "new_master_pair_max": 0.2295462191104889
+      },
+      "384": {
+        "old_max": 0.2577889561653137,
+        "current33_individual_photo_max": 0.31918543577194214,
+        "new_master_pair_max": 0.20253904163837433
+      }
+    },
+    "screen_pass": true
+  },
+  {
+    "id": "margin6_2",
+    "sizes": {
+      "128": {
+        "old_max": 0.25257810950279236,
+        "current33_individual_photo_max": 0.31190526485443115,
+        "new_master_pair_max": 0.2638285756111145
+      },
+      "256": {
+        "old_max": 0.2804950475692749,
+        "current33_individual_photo_max": 0.3373591899871826,
+        "new_master_pair_max": 0.2933393716812134
+      },
+      "384": {
+        "old_max": 0.3204289674758911,
+        "current33_individual_photo_max": 0.32238197326660156,
+        "new_master_pair_max": 0.31286412477493286
+      }
+    },
+    "screen_pass": true
+  },
+  {
+    "id": "margin6_3",
+    "sizes": {
+      "128": {
+        "old_max": 0.2270306646823883,
+        "current33_individual_photo_max": 0.33007240295410156,
+        "new_master_pair_max": 0.1939508020877838
+      },
+      "256": {
+        "old_max": 0.2758690416812897,
+        "current33_individual_photo_max": 0.34813687205314636,
+        "new_master_pair_max": 0.20518246293067932
+      },
+      "384": {
+        "old_max": 0.2862863540649414,
+        "current33_individual_photo_max": 0.3561626672744751,
+        "new_master_pair_max": 0.1959223747253418
+      }
+    },
+    "screen_pass": true
+  },
+  {
+    "id": "margin6_4",
+    "sizes": {
+      "128": {
+        "old_max": 0.31407153606414795,
+        "current33_individual_photo_max": 0.3249446749687195,
+        "new_master_pair_max": 0.2267656922340393
+      },
+      "256": {
+        "old_max": 0.29587066173553467,
+        "current33_individual_photo_max": 0.3343665599822998,
+        "new_master_pair_max": 0.2727857232093811
+      },
+      "384": {
+        "old_max": 0.30355527997016907,
+        "current33_individual_photo_max": 0.3361719846725464,
+        "new_master_pair_max": 0.2861199975013733
+      }
+    },
+    "screen_pass": true
+  },
+  {
+    "id": "margin6_5",
+    "sizes": {
+      "128": {
+        "old_max": 0.36993300914764404,
+        "current33_individual_photo_max": 0.28665098547935486,
+        "new_master_pair_max": 0.1939508020877838
+      },
+      "256": {
+        "old_max": 0.37959951162338257,
+        "current33_individual_photo_max": 0.36626285314559937,
+        "new_master_pair_max": 0.1677020788192749
+      },
+      "384": {
+        "old_max": 0.3960961103439331,
+        "current33_individual_photo_max": 0.35329562425613403,
+        "new_master_pair_max": 0.18280631303787231
+      }
+    },
+    "screen_pass": true
+  }
+]

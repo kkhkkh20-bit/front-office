@@ -1,0 +1,53 @@
+{
+  "verification": "saved-feature raw-cosine recomputation and exact current decoded-pixel SHA256 matching",
+  "fresh_model_inference": false,
+  "reports": [
+    {
+      "scope": "production",
+      "photos": 1430,
+      "failures": 19777,
+      "metrics": {
+        "128": {
+          "same_min": 0.6250274181365967,
+          "different_max": 0.5920850038528442,
+          "old_max": 0.4281333386898041
+        },
+        "256": {
+          "same_min": 0.6742410659790039,
+          "different_max": 0.5774033665657043,
+          "old_max": 0.42176008224487305
+        },
+        "384": {
+          "same_min": 0.6645596623420715,
+          "different_max": 0.5701998472213745,
+          "old_max": 0.4300638437271118
+        }
+      }
+    },
+    {
+      "scope": "atlas",
+      "photos": 416,
+      "failures": 0,
+      "metrics": {
+        "128": {
+          "same_min": 0.6410833597183228,
+          "different_max": 0.39159926772117615,
+          "old_max": 0.37582576274871826
+        },
+        "256": {
+          "same_min": 0.7250412702560425,
+          "different_max": 0.39148053526878357,
+          "old_max": 0.3803648352622986
+        },
+        "384": {
+          "same_min": 0.724386990070343,
+          "different_max": 0.3966065049171448,
+          "old_max": 0.37662655115127563
+        }
+      }
+    }
+  ],
+  "native_export_report": "native_export_verification.json",
+  "human_age_review": "pending",
+  "production_complete": false
+}
