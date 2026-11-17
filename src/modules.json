@@ -34,6 +34,7 @@
       "src/engine/players/20_military.js",
       "src/engine/market/21_block_agents.js",
       "src/engine/media/22_club_history.js",
+      "src/engine/players/22c_cosmetic.js",
       "src/engine/media/23_notes_odds.js",
       "src/engine/staff/24_coaches.js",
       "src/engine/media/25_gm_events.js",
@@ -312,6 +313,7 @@
       "src/ui/contracts/70_neg_window.js",
       "src/ui/career/71_gm_me.js",
       "src/ui/career/71b_photo_edit.js",
+      "src/ui/players/72_cosmetic.js",
       "src/ui/runtime/72_telemetry.js",
       "src/ui/players/73_team_build.js",
       "src/ui/matches/74_game_results.js",
@@ -326,6 +328,7 @@
       "src/ui/cup/03_ladder_admin.js",
       "src/ui/uladder/01_uladder_ui.js",
       "src/ui/uladder/02_uladder_pages.js",
+      "src/ui/uladder/03_uladder_v3.js",
       "src/ui/runtime/99_boot.js"
     ],
     "styles": [
@@ -375,6 +378,7 @@
       "src/css/staff/32_operations_art.css",
       "src/css/shell/40_mobile_playtest2.css",
       "src/css/players/41_morale.css",
+      "src/css/players/42_cosmetic.css",
       "src/css/components/52_more_menu.css",
       "src/css/components/54_list_tools.css",
       "src/css/career/86_photo_edit.css",
@@ -382,7 +386,8 @@
       "src/css/cup/01_cup.css",
       "src/css/cup/02_ladder_admin.css",
       "src/css/uladder/01_uladder.css",
-      "src/css/uladder/02_uladder_v2.css"
+      "src/css/uladder/02_uladder_v2.css",
+      "src/css/uladder/03_uladder_v3.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

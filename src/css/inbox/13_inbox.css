@@ -47,7 +47,8 @@
 .ibm-d{font-size:12px;color:var(--dim)}
 .ibm-nav{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);white-space:nowrap}
 .ibm-nav .btn{min-width:32px;padding:4px 8px}
-.ibm .mailbody{display:block;max-width:68ch;font-size:14.5px;line-height:1.75;color:#d6dee5}
+.ibm .mailbody{display:block;max-width:none;font-size:14.5px;line-height:1.75;color:#d6dee5}
+/* 사용자 11-17 "수신함을 제대로 풀로 못채우는것 같은데 글자가": 본문을 68자 폭으로 묶지 않고 읽기 칸 전체를 쓴다 */
 .ibm .mailbody p{margin:0 0 .7em}.ibm .mailbody p:last-child{margin:0}
 .ibm-acts{display:flex;gap:8px;flex-wrap:wrap}
 .ibm-acts .btn{width:auto;min-width:120px}

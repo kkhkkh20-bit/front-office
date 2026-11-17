@@ -12,7 +12,12 @@ export const newToken = () => 'ft1.' + hex(crypto.getRandomValues(new Uint8Array
 export async function sha256(s) { return hex(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))); }
 export const platformOf = s => PLATFORMS.includes(String(s || '').toLowerCase()) ? String(s).toLowerCase() : 'web';
 /* 닉네임: 팀명 규칙(프런트컵)과 같은 정리·금칙어, 2~12자 */
-export function nickOk(s) { const n = cupName(s); return n.length >= 2 && !cupBadName(n) ? n : ''; }
+/* srv2 #44: 길이는 눈에 보이는 글자(그래핌) 수로 센다. 최대는 cupName이 코드 포인트 12개로 자르므로 그래핌도 12개 이하.
+   보이지 않는 글자(폭 없는 공백·방향 표시·BOM·변형 선택자만 있는 것)는 먼저 지운다 → 이모지 하나·'가+폭 없는 공백'은 2자가 아니다 */
+const INVIS = /[\u200b-\u200f\u2028-\u202e\u2060-\u2064\u2066-\u206f\ufeff\u00ad]/g;
+const SEG = typeof Intl !== 'undefined' && Intl.Segmenter ? new Intl.Segmenter('ko', { granularity: 'grapheme' }) : null;
+export const glen = s => SEG ? [...SEG.segment(s)].length : [...s].length;
+export function nickOk(s) { const n = cupName(String(s == null ? '' : s).replace(INVIS, '')); return glen(n) >= 2 && !cupBadName(n) ? n : ''; }
 
 export function bearer(req) { const a = req.headers.get('Authorization') || ''; return a.startsWith('Bearer ') ? a.slice(7).trim() : ''; }
 export function isAdmin(req, env) { return !!env.CUP_ADMIN && bearer(req) === String(env.CUP_ADMIN); }

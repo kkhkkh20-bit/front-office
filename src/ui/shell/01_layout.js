@@ -126,7 +126,7 @@ function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
   return ''; }
 /* 세이브가 바뀌면(G 객체가 달라지면) 이전 게임에서 하던 화면 상태를 비운다(검수 11-09: 백업 코드·훈련 대기·드래프트 타이머·비교 목록이 다른 세이브에 남음) */
 /* 슬롯 전환·백업 가져오기·새로고침의 공통 지점(render·저장 직전 prepG가 부른다): 중계 위치·경기 전 사본·경기 요약·소식함 돌아가기·확인 절차·동석 자동 열기도 이전 게임 것을 버린다(검수 11-09zzc #1·#2·#21·#28·#29·#30) */
-let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; UI.peopleBrowse=null;UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0;
+let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; if(typeof ulGameSwitch==='function')ulGameSwitch(); /* 래더·대회 화면 상태도 게임마다(외부 검수 11-17 P1) */ UI.peopleBrowse=null;UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0;
   if(UI.cast||UI.castRet){ try{ CT.tok++; CT.run=false; }catch(e){} } UI.cast=null; UI.castRet=null; UI._castHold=0; UI.cwAfter=null; UI.cwAuto=null; UI.cw=null; UI.game=null; UI.sheet=null; UI.posSheet=null; UI.fromMail=null; UI._ibJumpSig=null; UI._spoilD=null; try{ SPOIL_SNAP=null; }catch(e){}
   UI.trade={tid:null,give:[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'}; UI.findM=null; UI.findT=null; UI._mkt=null; UI._tsug=null; UI._tsugK=null; UI._find=null; UI._rec=null; UI.gmRes=null; UI.deskMsg=null; UI.deskOk=null; /* 트레이드 작업안은 그 게임 것: 새 게임·다른 슬롯에서 옛 상대 구단(이제 우리 구단일 수 있음)·선수 번호가 남아 트레이드 화면이 그려지지 않았다(제보 11-15: 새로 시작 뒤 트레이드 버튼 무반응) */
   UI.wkres=G&&G.wkHold?Object.assign({},G.wkHold):null; /* 확인 전의 경기 요약 창은 그 세이브 것으로 다시 연다(검수 11-09zzc #20) */

@@ -14,7 +14,8 @@
  *   GET /api/cup/pub                    연재로 공개된 대회 진행(날짜별 결과·순위). 누구나
  * 보관: 엔트리 본문과 메타데이터(이름·연도·OVR·시각). IP는 기기 옮기기와 같이 해시로만 횟수를 센다.
  * 공개 GET(대회 설정·명단·결과·연재·경기 기록)은 worker/kvcache.js로 짧게(60~600초) 담아 둔다. 관리자·신청 쓰기 뒤에는 같은 인스턴스·데이터센터 캐시를 비운다. */
-import { CUP_DEFAULT, cupValidate, cupName, cupBadName, cupKstMs, cupKstDay, cupEntryHash, cupSeed, cupOvrTxt } from '../src/core/cup.mjs';
+import { readText } from './v1/http.js';
+import { CUP_DEFAULT, cupValidate, cupName, cupBadName, cupKstMs, cupKstDay, cupEntryHash, cupSeed, cupOvrTxt, cupTeamsOk } from '../src/core/cup.mjs';
 import { cached, cacheGet, cachePut, cacheBust } from './kvcache.js';
 
 export const CUP_MAX_BYTES = 400 * 1024;
@@ -27,6 +28,9 @@ const MSG = {
   bad_entry: '대회 엔트리가 아닙니다.',
   bad_name: '팀명에 쓸 수 없는 말이 들어 있습니다.',
   not_eligible: '참가 자격이 맞지 않습니다.',
+  bad_deadline: '마감은 실제 있는 날짜·시각(한국시간 YYYY-MM-DD HH:MM)이어야 합니다.',
+  bad_teams: '팀 수는 5~10팀이어야 합니다(가을야구가 4·5위 와일드카드부터 열립니다).',
+  no_champ: '우승·준우승이 없는 결과는 저장하지 않습니다.',
   not_found: '신청 기록이 없습니다.',
   bad_wid: '세계 id가 올바르지 않습니다.',
   auth: '주최자 인증이 필요합니다.',
@@ -75,10 +79,10 @@ export async function handleCup(req, env, url, now, rateLimited) {
       await kv.put(`cupE:${c.id}:${key}`, JSON.stringify(e), { metadata: meta }); await bust(kv, url, ['/entries', '/entries.html']); return json(201, Object.assign({ ok: true, elig: v.elig.map(x => x.msg) }, meta)); }
     if (sub === 'run') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); const k = 'cupRun:' + c.id;
       if (req.method === 'GET') { const t = await kv.get(k); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } }) : err(404, 'not_found'); }
-      if (req.method === 'PUT') { const t = await req.text(); if (t.length > CUP_RUN_MAX) return err(413, 'too_large'); JSON.parse(t); await kv.put(k, t); return json(200, { ok: true }); }
+      if (req.method === 'PUT') { const t = await req.text(); if (t.length > CUP_RUN_MAX) return err(413, 'too_large'); const R = JSON.parse(t); if (!R || !R.champ || !R.runner) return err(400, 'no_champ'); await kv.put(k, t); return json(200, { ok: true }); } /* 우승·준우승 없는 결과는 받지 않는다(외부 검수 11-17 P2) */
       if (req.method === 'DELETE') { await kv.delete(k); return json(200, { ok: true }); } }
     if (sub === 'pub' && req.method === 'PUT') { const t = await req.text(); if (t.length > 4 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cup:pub', t); await bust(kv, url, ['/pub']); return json(200, { ok: true }); }
-    if (sub === 'config' && req.method === 'PUT') { const c = JSON.parse(await req.text()); if (!c || !GID.test(String(c.id || ''))) return err(400, 'bad_entry'); await kv.put('cup:cfg', JSON.stringify(c)); await bust(kv, url, ['/__cfg', '/entries', '/entries.html']); return json(200, { ok: true }); }
+    if (sub === 'config' && req.method === 'PUT') { const c = JSON.parse(await req.text()); if (!c || !GID.test(String(c.id || ''))) return err(400, 'bad_entry'); if (!cupTeamsOk(c)) return err(400, 'bad_teams'); if (c.deadline && cupKstMs(c.deadline) == null) return err(400, 'bad_deadline'); await kv.put('cup:cfg', JSON.stringify(c)); await bust(kv, url, ['/__cfg', '/entries', '/entries.html']); return json(200, { ok: true }); }
     if (sub === 'entries' && req.method === 'GET') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); let drop = []; try { drop = JSON.parse(await kv.get('cupX:' + c.id) || '[]'); } catch (e) {} return json(200, { cup: c, entries: await listEntries(kv, c.id, true), drop }); }
     if (sub === 'results' && req.method === 'PUT') { const t = await req.text(); JSON.parse(t); await kv.put('cup:results', t); await bust(kv, url, ['/results']); return json(200, { ok: true }); }
     const g = sub.match(/^game\/(.+)$/); if (g && req.method === 'PUT' && GID.test(g[1])) { const t = await req.text(); if (t.length > 2 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cupG:' + g[1], t); await bust(kv, url, ['/game/' + g[1]]); return json(200, { ok: true }); }
@@ -117,7 +121,7 @@ export async function handleCup(req, env, url, now, rateLimited) {
   const dl = cupKstMs(c.deadline); if (dl != null && now > dl) return err(403, 'closed');
   const len = +req.headers.get('Content-Length'); if (len > CUP_MAX_BYTES) return err(413, 'too_large');
   const rl = rateLimited ? await rateLimited(req, env, now) : null; if (rl && rl.limited) return err(429, 'daily');
-  const t = await req.text(); if (t.length > CUP_MAX_BYTES) return err(413, 'too_large');
+  const rt = await readText(req, CUP_MAX_BYTES); if (rt.error) return err(413, 'too_large'); const t = rt.text; /* 바이트로 센다(srv2 #43) */
   let e; try { e = JSON.parse(t); } catch (x) { return err(400, 'bad_entry'); }
   if (!e || !WID.test(String(e.wid || ''))) return err(400, 'bad_wid');
   if (cupBadName(e.name)) return err(400, 'bad_name');

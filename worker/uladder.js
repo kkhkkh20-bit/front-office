@@ -15,6 +15,7 @@
  *   wd/wn은 오늘(UTC, KV 한도가 초기화되는 기준) 래더가 한 KV 쓰기 수의 추정치다.
  *   옛 단계 색인 키(ulT:단계:WID)는 더 쓰지 않는다. 남아 있어도 읽지 않는다.
  * 서버 v1(worker/v1)이 쓰는 읽기 도우미(사용자 11-17): ladderKvPool(D1 덱이 모자랄 때 상대 채우기), ladderKvTier(옮겨 올 때 시작 단계 상한). 둘 다 KV에 쓰지 않는다. */
+import { readText, byteLen } from './v1/http.js';
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../src/core/cup.mjs';
 import { UL_TIERS, ulPick, ulSlim, ulCap, ulCapGate } from '../src/core/uladder.mjs';
 import { cached, cacheGet, cachePut, cacheBust, memLimited, utcDay, shortHash } from './kvcache.js';
@@ -131,13 +132,13 @@ export async function handleLadder(req, env, url, now) {
   }
   if (rest === 'deck' && req.method === 'PUT') {
     const len = +req.headers.get('Content-Length'); if (len > UL_MAX_BYTES) return err(413, 'too_large');
-    const t = await req.text(); if (t.length > UL_MAX_BYTES) return err(413, 'too_large');
+    const rt = await readText(req, UL_MAX_BYTES); if (rt.error) return err(413, 'too_large'); const t = rt.text; /* 바이트로 센다(srv2 #43) */
     let b; try { b = JSON.parse(t); } catch (x) { return err(400, 'bad_deck'); }
     if (!b || !WID.test(String(b.wid || ''))) return err(400, 'bad_wid');
     if (!b.e || cupBadName(b.e.name)) return err(400, b.e ? 'bad_name' : 'bad_deck');
     const e = ulSlim(b.e); e.name = cupName(e.name); const v = cupValidate(e, {}); if (!v.ok) return err(400, 'bad_deck', { errors: v.errors.map(x => x.msg) });
     { const c = ulCap(e, tierOf(b.tier)); if (!c.known || !c.each) return err(400, 'no_pay', { errors: [MSG.no_pay] }); if (!c.ok) return err(400, 'over_cap', { errors: [ulCapGate(e, tierOf(b.tier), now).msg] }); } /* 연봉 상한(사용자 11-17): 화면과 같은 공용 규칙 */
-    e.h = cupEntryHash(e); const body = JSON.stringify(e); if (body.length > UL_DECK_MAX) return err(413, 'too_large');
+    e.h = cupEntryHash(e); const body = JSON.stringify(e); if (byteLen(body) > UL_DECK_MAX) return err(413, 'too_large');
     const bh = await shortHash(body), prev = (await kv.getWithMetadata('ulD:' + b.wid)).metadata || null, tier = tierOf(b.tier), day = utcDay(now);
     /* 그대로면 쓰지 않는다(색인에서 빠져 있을 때만 색인을 채운다) */
     if (prev && prev.bh === bh && tierOf(prev.tier) === tier) {

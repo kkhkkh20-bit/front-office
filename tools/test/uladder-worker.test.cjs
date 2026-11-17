@@ -90,3 +90,24 @@ test('연봉 상한(사용자 11-17 "공평하게"): KV 덱 등록도 같은 규
  let o=await (await H('GET',`/api/ladder/opp?wid=${wid(9)}&tier=3&ovr=60&n=9`)).json(); assert.deepEqual(o.decks.map(x=>x.name).sort(),['알뜰','예전'],'유예 중에는 예전 덱도');
  clock.now=C.UL_CAP_FROM+1000; o=await (await H('GET',`/api/ladder/opp?wid=${wid(9)}&tier=3&ovr=60&n=9`)).json(); assert.deepEqual(o.decks.map(x=>x.name),['알뜰'],'유예가 끝나면 예전 덱은 빠짐');
 });
+test('깨진 JSON 본문(외부 검수 11-17): 래더·대회·관리자·v1 끝점은 500이 아니라 400, 엔트리 안 칸 형식이 틀려도(bn이 객체 등) 멈추지 않고 형식 오류, 없는 날짜는 마감으로 못 씀', async()=>{ const {handle}=await W; fakeCaches(); const env={SAVE_KV:fakeKV(),CUP_ADMIN:'s3cret'}; const raw=(m,p,b,h)=>handle(req(m,p,b,Object.assign({'Content-Type':'application/json'},h||{})),env,Date.UTC(2026,10,20));
+ await raw('PUT','/api/cup/admin/config',JSON.stringify({id:'cup1',title:'컵',deadline:'2099-12-31 21:00'}),{Authorization:'Bearer s3cret'});
+ for(const [m,p,h] of [['PUT','/api/ladder/tier'],['PUT','/api/ladder/deck'],['POST','/api/cup/entry'],['PUT','/api/cup/admin/config',{Authorization:'Bearer s3cret'}],['PUT','/api/cup/admin/run',{Authorization:'Bearer s3cret'}]]){ /* v1은 자체 본문 읽기(http.js bad_json 400) */ const r=await raw(m,p,'{',h); assert.ok(r.status>=400&&r.status<500,`${m} ${p} → ${r.status}`); }
+ const bad=deck({bn:{a:1}}); let r=await raw('PUT','/api/ladder/deck',JSON.stringify({wid:wid(9),tier:0,e:bad})); assert.equal(r.status,400); assert.match(JSON.stringify(await r.json()),/형식/);
+ const {cupValidate,cupKstMs}=await import(path.join(root,'src/core/cup.mjs'));
+ for(const k of ['P','ln','rot','pen','bn','bp']){ const e=deck({[k]:k==='bp'?[1]:{x:1}}); const v=cupValidate(e,{}); assert.equal(v.ok,false,k); assert.equal(v.errors[0].k,'format',k); }
+ { const e=deck(); e.ln[0]=[1,'XX']; assert.ok(cupValidate(e,{}).errors.some(x=>/XX/.test(x.msg)),'수비 자리 XX'); }
+ { const e=deck(); e.rot=[100,100,101,102,103]; assert.ok(cupValidate(e,{}).errors.some(x=>/두 번/.test(x.msg)),'같은 선발 두 번'); }
+ { const e=deck(); delete e.P[0].r; assert.ok(cupValidate(e,{}).errors.some(x=>/능력치가 없는/.test(x.msg)),'능력치 없는 선수'); }
+ assert.ok(cupValidate(deck(),{}).ok,'정상 덱');
+ for(const s of ['2026-02-30 10:00','2026-13-01 10:00','2026-11-30 25:00','2026-11-30 21:60','2025-02-29 12:00','2026-00-10 10:00'])assert.equal(cupKstMs(s),null,s);
+ assert.equal(cupKstMs('2028-02-29 12:00'),Date.UTC(2028,1,29,3),'윤년 2월 29일'); assert.equal(cupKstMs('2026-12-31 23:59'),Date.UTC(2026,11,31,14,59));
+ r=await raw('PUT','/api/cup/admin/config',JSON.stringify({id:'cup1',title:'컵',deadline:'2026-02-30 21:00'}),{Authorization:'Bearer s3cret'}); assert.equal(r.status,400,'없는 마감 날짜'); });
+test('연봉 상한 경계(외부 검수 11-17 #28): 정확히 143.97억은 들어가고(이하 포함) 1(백만원)만 넘어도 막힌다. 화면·서버가 같은 함수(cupPayCheck), 대회 배수도 같은 규칙, OVR 빠진 엔트리도 시드 정렬이 멈추지 않는다', async()=>{
+ const {cupPayCheck,CUP_CAP_WON,cupSeed,cupValidate}=await import(path.join(root,'src/core/cup.mjs')); const {ulCap,ulCapGate}=await import(path.join(root,'src/core/uladder.mjs'));
+ const at=pay=>{ const e=deck(); const n=e.P.length; e.P.forEach((p,i)=>{ p.sal=Math.floor(pay/n)+(i<pay%n?1:0); }); return e; };
+ assert.equal(CUP_CAP_WON,14397); assert.equal(cupPayCheck(at(14397),1).ok,true,'딱 상한'); assert.equal(cupPayCheck(at(14398),1).ok,false,'1 넘음'); assert.equal(ulCap(at(14397),3).ok,true); assert.equal(ulCapGate(at(14398),4,Date.now()).ok,false);
+ assert.equal(cupPayCheck(at(Math.floor(14397*1.25)),1.25).ok,true); assert.equal(cupPayCheck(at(Math.floor(14397*1.25)+1),1.25).ok,false);
+ assert.equal(cupValidate(at(14398),{payCapX:1}).elig[0].k,'payx'); assert.match(cupValidate(at(14398),{payCapX:1}).elig[0].msg,/143\.97억 × 1/);
+ const {env,H}=await setup(); let r=await H('PUT','/api/ladder/deck',{wid:wid(31),tier:0,e:at(14397)}); assert.equal(r.status,200,'서버도 딱 상한은 받음'); r=await H('PUT','/api/ladder/deck',{wid:wid(32),tier:0,e:at(14398)}); assert.equal(r.status,400,'서버도 1 넘으면 거절');
+ const L=cupSeed([{h:'a',ovr:{t:60,p:60,b:60}},{h:'b'},{h:'c',ovr:{t:70,p:70,b:70}}]); assert.deepEqual(L.map(x=>x.h),['c','a','b']); });

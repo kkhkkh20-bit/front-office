@@ -60,14 +60,32 @@ function deck(o = {}) { const P = []; const POS = ['C', '1B', '2B', '3B', 'SS', 
     /* 숨기기 → 서버 반영 */
     const pid = await p.evaluate(() => LDA.d.decks[0].pid); await p.click(`[data-a="ldaHide"][data-v="${pid}"]`);
     await p.waitForFunction(() => /숨겼습니다/.test(document.body.innerText), null, { timeout: 10000 });
+    await p.waitForFunction(() => LDA.st === 'd1' && LDA.d.totals.hidden === 1 && LDA.meta && LDA.meta.agg && LDA.meta.agg.n === 23, null, { timeout: 10000 }); /* 숨긴 뒤 현황·메타를 다시 받는다(srv2 #56) */
     assert.equal(env.DB._sqlite.prepare('SELECT hidden FROM players WHERE id = ?').get(pid).hidden, 1); console.log('숨기기 통과');
     /* 래더 v2(사용자 11-17): 덱 구성(메타) 칸과 CSV 내보내기(등록 덱·리그 결과) */
     { const mt = await p.evaluate(() => ({ n: LDA.meta && LDA.meta.agg && LDA.meta.agg.n, t: document.querySelector('.ldax').innerText }));
-      assert.equal(mt.n, 24, '메타 집계 덱 수 ' + mt.n); assert.match(mt.t, /덱 구성\(메타\)[\s\S]*등록 덱 24개/); assert.match(mt.t, /균형형|거포형|교타형|기동력형|수비형|선발 왕국|불펜 야구/);
+      assert.equal(mt.n, 23, '메타 집계 덱 수(숨긴 1명 빼고 다시 받음) ' + mt.n); assert.match(mt.t, /덱 구성\(메타\)[\s\S]*등록 덱 23개/); assert.match(mt.t, /균형형|거포형|교타형|기동력형|수비형|선발 왕국|불펜 야구/);
       await p.click('[data-a="ldaCsv"][data-v="decks"]'); await p.waitForFunction(() => /줄을 CSV로 받았습니다/.test(document.body.innerText), null, { timeout: 10000 });
       const dc = await p.evaluate(() => LDA.csv.split('\r\n')); assert.equal(dc.length, 25, '덱 CSV 줄(머리글 + 24)'); assert.match(dc[0], /^닉네임,플레이어,플랫폼,숨김,덱,연도,단계,OVR/);
       await p.click('[data-a="ldaCsv"][data-v="results"]'); await p.waitForFunction(() => /^닉네임,플레이어,시즌/.test(LDA.csv || ''), null, { timeout: 10000 });
       assert.equal(await p.evaluate(() => LDA.csv.split('\r\n').length), k + 1, '결과 CSV 줄'); console.log('덱 구성(메타)·CSV 내보내기 통과'); }
+    /* srv2(11-17): CSV 페이지(전체 수·잘림·다음 페이지), 사용량 실제 %, 막대 값 표, 숨기기 뒤 다시 받기·캐시 안내 */
+    { await p.evaluate(() => { LDA.csvN = 10; }); await p.click('[data-a="ldaCsv"][data-v="decks"]');
+      await p.waitForFunction(() => /등록 덱 1쪽/.test((document.querySelector('[data-csv-info]') || {}).innerText || ''), null, { timeout: 10000 }); let info = await p.evaluate(() => document.querySelector('[data-csv-info]').innerText);
+      assert.match(info, /전체 24줄 중 1~10번째 10줄/); assert.match(info, /잘림/); await p.click('[data-a="ldaCsv"][data-v="decks"][data-u]');
+      await p.waitForFunction(() => /2쪽/.test(document.querySelector('[data-csv-info]').innerText), null, { timeout: 10000 });
+      info = await p.evaluate(() => document.querySelector('[data-csv-info]').innerText); assert.match(info, /11~20번째/);
+      await p.click('[data-a="ldaCsv"][data-v="decks"][data-u]'); await p.waitForFunction(() => /3쪽/.test(document.querySelector('[data-csv-info]').innerText), null, { timeout: 10000 });
+      info = await p.evaluate(() => ({ t: document.querySelector('[data-csv-info]').innerText, next: !!document.querySelector('[data-a="ldaCsv"][data-u]'), rows: LDA.csv.split('\r\n').length }));
+      assert.match(info.t, /21~24번째 4줄/); assert.match(info.t, /마지막 쪽/); assert.equal(info.next, false); assert.equal(info.rows, 5);
+      await p.evaluate(() => { LDA.csvN = 0; }); console.log('CSV 페이지 통과');
+      const mt = await p.evaluate(() => { LDA.d.usage.pct.d1_w = 150; LDA.d.usage.d1_w = 150000; render(); const m = [...document.querySelectorAll('.lda-m')].find(x => /D1 쓰기/.test(x.innerText)); return { t: m.innerText, w: m.querySelector('.lda-mb i').style.width }; });
+      assert.match(mt.t, /150%/); assert.equal(mt.w, '100%'); console.log('사용량 150% 통과');
+      const dt = await p.evaluate(() => [...document.querySelectorAll('.lda-dt')].map(d => d.querySelectorAll('tbody tr').length)); assert.deepEqual(dt, [14, 14, 24], '막대마다 값 표');
+      assert.ok(await p.evaluate(() => [...document.querySelectorAll('.lda-bars')].every(b => b.getAttribute('role') === 'img' && /\d/.test(b.getAttribute('aria-label')))));
+      const before = await p.evaluate(() => LDA.d.totals.hidden || 0), pid2 = await p.evaluate(() => LDA.d.decks.find(x => !x.hidden).pid);
+      await p.click(`[data-a="ldaHide"][data-v="${pid2}"]`); await p.waitForFunction(b => LDA.st === 'd1' && (LDA.d.totals.hidden || 0) === b + 1, before, { timeout: 10000 });
+      const ht = await p.evaluate(() => document.querySelector('.ldax').innerText); assert.match(ht, /숨겼습니다/); assert.match(ht, /최대 \d+초/); console.log('숨기기 뒤 다시 받기·캐시 안내 통과'); }
     const ph = await open(390, 844);
     await ph.waitForFunction(() => LDA.st === 'd1' && document.querySelector('.lda-t'), null, { timeout: 15000 });
     assert.ok(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '휴대폰 폭에서 가로 스크롤');
