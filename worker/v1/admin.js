@@ -1,12 +1,12 @@
 /* v1 관리자(Authorization: Bearer CUP_ADMIN): 래더 현황 집계·플레이어 찾기·숨김·삭제·시즌 끊기·표 만들기.
    집계는 하루 단위 daily_stats(쓸 때마다 몇 줄 더하기) + 가벼운 D1 쿼리. 관리자 화면: src/ui/cup/03_ladder_admin.js */
 import { UL_TIERS } from '../../src/core/uladder.mjs';
-import { json, err, readJson, kstDay } from './http.js';
+import { json, err, readJson, kstDay, qInt } from './http.js';
 import { PID, PLATFORMS } from './auth.js';
 import { currentSeason, rollSeason } from './season.js';
 import { statStmts, takeUsage } from './usage.js';
 import { SCHEMA_VERSION, schemaStatements } from './schema.js';
-import { ensureMeta, META_SQL } from './ladder.js';
+import { ensureMeta, META_SQL, RANK_ORDER, bumpCache, bumpStmt, GEN_SEC, _genReset } from './ladder.js';
 
 /* 무료 한도(2026-11 Cloudflare 문서 기준. 바뀔 수 있다) */
 export const FREE = Object.freeze({ d1_r: 5e6, d1_w: 1e5, kv_w: 1000, req: 1e5 });
@@ -34,15 +34,47 @@ export async function stats(db, now) {
   const hours = { today: [], d7: [] }; for (let h = 0; h < 24; h++) { const k = 'lh:' + String(h).padStart(2, '0'); hours.today.push(sum(k, 1)); hours.d7.push(sum(k, 7)); }
   const platforms = {}; for (const p of PLATFORMS) platforms[p] = sum('act:' + p, 7);
   const trend = days.slice(-14).map(d => ({ day: d, active: by[d].active || 0, leagues: by[d].leagues || 0, decks_new: by[d].decks_new || 0, promos: by[d].promos || 0 }));
-  const top = (await db.prepare('SELECT e.player_id AS pid, p.nickname, p.hidden, e.tier, e.points, e.leagues, e.wins FROM ladder_entries e JOIN players p ON p.id = e.player_id WHERE e.season = ? AND e.leagues > 0 ORDER BY e.tier DESC, e.points DESC LIMIT 10').bind(s.id).all()).results || [];
+  const top = (await db.prepare('SELECT e.player_id AS pid, p.nickname, p.hidden, e.tier, e.points, e.leagues, e.wins FROM ladder_entries e JOIN players p ON p.id = e.player_id WHERE e.season = ? AND e.leagues > 0 ORDER BY e.tier DESC, ' + RANK_ORDER + ' LIMIT 10').bind(s.id).all()).results || [];
   const feed = (await db.prepare("SELECT e.kind, e.player_id AS pid, e.nickname, e.tier_from, e.tier_to, e.at, p.hidden FROM events e LEFT JOIN players p ON p.id = e.player_id ORDER BY e.id DESC LIMIT 10").all()).results || [];
   const decks = (await db.prepare('SELECT d.player_id AS pid, p.nickname, p.hidden, p.platform, d.name, d.year, d.ovr, d.tier, d.created, d.at FROM decks d JOIN players p ON p.id = d.player_id ORDER BY d.at DESC LIMIT 20').all()).results || [];
   const totals = { players: await cnt('SELECT COUNT(*) AS n FROM players'), decks: await cnt('SELECT COUNT(*) AS n FROM decks'), hidden: await cnt('SELECT COUNT(*) AS n FROM players WHERE hidden = 1') };
   const today = by[days[days.length - 1]];
   const usage = { day: days[days.length - 1], d1_r: today.d1_r || 0, d1_w: today.d1_w || 0, kv_w: today.kv_w || 0, free: FREE, pct: { d1_r: pct(today.d1_r, FREE.d1_r), d1_w: pct(today.d1_w, FREE.d1_w), kv_w: pct(today.kv_w, FREE.kv_w) }, note: '이 서버 인스턴스가 센 추정치입니다. 정확한 값은 Cloudflare 대시보드 › D1 › 측정항목.' };
-  return json(200, { ok: true, source: 'd1', at: now, season: s, windows, tiers, hours, platforms, trend, top, feed, decks, totals, usage });
+  return json(200, { ok: true, source: 'd1', at: now, season: s, windows, tiers, hours, platforms, trend, top, feed, decks, totals, usage, cache: CACHE_NOTE });
 }
 const pct = (v, max) => Math.round((v || 0) / max * 1000) / 10;
+/* 숨김·삭제 뒤 공개 화면에 남는 시간(srv2 #62). 관리자 화면이 그대로 보여 준다 */
+export const CACHE_NOTE = Object.freeze({ gen_sec: GEN_SEC, text: `순위표·소식·덱 구성은 바로 새로 고칩니다. 다른 서버 인스턴스에는 최대 ${GEN_SEC}초 늦게 반영될 수 있습니다. 상대 목록·맞대결은 바로 빠집니다.` });
+/* CSV 내보내기 범위(srv2 #52): from·to = ms 또는 'YYYY-MM-DD'(한국시간 그날 하루, to는 그날 끝까지) */
+const dayMs = d => Date.parse(d + 'T00:00:00+09:00');
+function range(url) {
+  const f = url.searchParams.get('from'), t = url.searchParams.get('to'), D = /^\d{4}-\d{2}-\d{2}$/;
+  const from = f == null || f === '' ? null : D.test(f) ? dayMs(f) : qInt(f, null, 0, 9e15);
+  const to = t == null || t === '' ? null : D.test(t) ? dayMs(t) + 86400e3 - 1 : qInt(t, null, 0, 9e15);
+  return { from: Number.isFinite(from) ? from : null, to: Number.isFinite(to) ? to : null };
+}
+export const EXPORT_MAX = 2000;
+/* 덱(최근 갱신 순, 커서 'at.pid')·리그 결과(최근 순, 커서 id). n+1개를 읽어 다음 장이 있는지 본다. total은 같은 범위의 전체 수 */
+async function exportRows(url, db) {
+  const kind = url.searchParams.get('kind') === 'results' ? 'results' : 'decks', n = qInt(url.searchParams.get('n'), EXPORT_MAX, 1, EXPORT_MAX), cur = String(url.searchParams.get('cursor') || '');
+  const { from, to } = range(url), col = kind === 'decks' ? 'd.at' : 'r.at', W = [], A = [];
+  if (from != null) { W.push(col + ' >= ?'); A.push(from); } if (to != null) { W.push(col + ' <= ?'); A.push(to); }
+  const where = L => L.length ? ' WHERE ' + L.join(' AND ') : '';
+  const PW = W.slice(), PA = A.slice();
+  if (kind === 'decks') {
+    await ensureMeta(db);
+    const m = cur.match(/^(\d+)\.(p[0-9a-f]{16})$/); if (m) { PW.push('(d.at < ? OR (d.at = ? AND d.player_id < ?))'); PA.push(+m[1], +m[1], m[2]); }
+    const total = ((await db.prepare('SELECT COUNT(*) AS n FROM decks d' + where(W)).bind(...A).first()) || { n: 0 }).n;
+    const r = await db.prepare('SELECT d.player_id AS pid, p.nickname, p.platform, p.hidden, d.name, d.year, d.ovr, d.ovr_json, d.tier, d.bytes, d.created, d.at, m.sum FROM decks d JOIN players p ON p.id = d.player_id LEFT JOIN deck_meta m ON m.player_id = d.player_id' + where(PW) + ' ORDER BY d.at DESC, d.player_id DESC LIMIT ?').bind(...PA, n + 1).all();
+    const all = r.results || [], more = all.length > n, rows = all.slice(0, n), last = rows[rows.length - 1];
+    return { kind, total, returned: rows.length, truncated: more, next: more && last ? last.at + '.' + last.pid : null, rows: rows.map(x => { let mm = null, o = null; try { mm = x.sum ? JSON.parse(x.sum) : null; o = x.ovr_json ? JSON.parse(x.ovr_json) : null; } catch (e) {} delete x.sum; delete x.ovr_json; return Object.assign(x, { ovr_p: o ? o.p : null, ovr_b: o ? o.b : null, meta: mm }); }) };
+  }
+  const c = qInt(cur, null, 1, 9e15); if (c != null) { PW.push('r.id < ?'); PA.push(c); }
+  const total = ((await db.prepare('SELECT COUNT(*) AS n FROM league_results r' + where(W)).bind(...A).first()) || { n: 0 }).n;
+  const r = await db.prepare('SELECT r.id, r.player_id AS pid, p.nickname, r.season, r.lkey, r.tier, r.to_tier, r.rank, r.teams, r.w, r.l, r.d, r.delta, r.at FROM league_results r LEFT JOIN players p ON p.id = r.player_id' + where(PW) + ' ORDER BY r.id DESC LIMIT ?').bind(...PA, n + 1).all();
+  const all = r.results || [], more = all.length > n, rows = all.slice(0, n);
+  return { kind, total, returned: rows.length, truncated: more, next: more && rows.length ? String(rows[rows.length - 1].id) : null, rows };
+}
 
 export async function handleAdmin(rest, req, url, db, now) {
   if (rest === 'stats' && req.method === 'GET') return stats(db, now);
@@ -57,28 +89,32 @@ export async function handleAdmin(rest, req, url, db, now) {
     if (!PID.test(String(b.pid || ''))) return err(400, 'bad_json');
     const r = await db.prepare('UPDATE players SET hidden = ? WHERE id = ?').bind(b.hide ? 1 : 0, b.pid).run();
     if (!r.meta || !r.meta.changes) return err(404, 'not_found');
-    return json(200, { ok: true, pid: b.pid, hide: b.hide ? 1 : 0 });
+    await bumpCache(db); /* 공개 캐시 새로(srv2 #62) */
+    return json(200, { ok: true, pid: b.pid, hide: b.hide ? 1 : 0, cache: CACHE_NOTE });
   }
   const dm = rest.match(/^player\/(p[0-9a-f]{16})$/);
-  if (dm && req.method === 'DELETE') { await deletePlayer(db, dm[1]); return json(200, { ok: true }); }
+  if (dm && req.method === 'DELETE') { await deletePlayer(db, dm[1]); return json(200, { ok: true, cache: CACHE_NOTE }); }
   const dd = rest.match(/^deck\/(p[0-9a-f]{16})$/);
-  if (dd && req.method === 'DELETE') { await db.prepare('DELETE FROM decks WHERE player_id = ?').bind(dd[1]).run(); return json(200, { ok: true }); }
-  /* CSV 내보내기용 줄(래더 v2, 사용자 11-17): 덱(요약 포함) 최대 2000개 · 리그 결과 최근 2000개. 화면이 CSV로 바꾼다 */
-  if (rest === 'export' && req.method === 'GET') {
-    const kind = url.searchParams.get('kind') === 'results' ? 'results' : 'decks', n = Math.max(1, Math.min(2000, +url.searchParams.get('n') || 2000));
-    if (kind === 'decks') { await ensureMeta(db); const r = await db.prepare('SELECT d.player_id AS pid, p.nickname, p.platform, p.hidden, d.name, d.year, d.ovr, d.ovr_json, d.tier, d.bytes, d.created, d.at, m.sum FROM decks d JOIN players p ON p.id = d.player_id LEFT JOIN deck_meta m ON m.player_id = d.player_id ORDER BY d.at DESC LIMIT ?').bind(n).all();
-      return json(200, { ok: true, kind, rows: (r.results || []).map(x => { let m = null, o = null; try { m = x.sum ? JSON.parse(x.sum) : null; o = x.ovr_json ? JSON.parse(x.ovr_json) : null; } catch (e) {} delete x.sum; delete x.ovr_json; return Object.assign(x, { ovr_p: o ? o.p : null, ovr_b: o ? o.b : null, meta: m }); }) }); }
-    const r = await db.prepare('SELECT r.player_id AS pid, p.nickname, r.season, r.lkey, r.tier, r.to_tier, r.rank, r.teams, r.w, r.l, r.d, r.delta, r.at FROM league_results r LEFT JOIN players p ON p.id = r.player_id ORDER BY r.id DESC LIMIT ?').bind(n).all();
-    return json(200, { ok: true, kind, rows: r.results || [] });
-  }
+  if (dd && req.method === 'DELETE') { await deleteDeck(db, dd[1]); return json(200, { ok: true, cache: CACHE_NOTE }); }
+  /* CSV 내보내기용 줄(래더 v2, 사용자 11-17; srv2 #52 페이지): ?kind=decks|results&n=(최대 2000)&cursor=&from=&to= → {rows, total, returned, truncated, next}. 화면이 CSV로 바꾼다 */
+  if (rest === 'export' && req.method === 'GET') return json(200, Object.assign({ ok: true }, await exportRows(url, db)));
   if (rest === 'season/roll' && req.method === 'POST') { const s = await currentSeason(db, now); const n = await rollSeason(db, s, now, true); return json(200, { ok: true, closed: s.id, season: n }); }
   return err(404, 'not_found');
 }
-/* 플레이어와 그 기록 전부 지우기(본인 요청 DELETE /player, 관리자 삭제). 다른 사람 h2h에 남은 상대 기록도 지운다 */
+/* 플레이어와 그 기록 전부 지우기(본인 요청 DELETE /player, 관리자 삭제). 다른 사람 h2h에 남은 상대 기록도 지운다.
+   한 batch(트랜잭션)라 동시에 온 결과·덱 등록과 섞여도 반쯤 지워진 상태가 없다(그쪽 쓰기는 플레이어가 있을 때만 들어간다: srv2 #61). 공개 캐시 세대도 올린다 */
 export async function deletePlayer(db, pid) {
-  if (await ensureMeta(db)) await db.prepare('DELETE FROM deck_meta WHERE player_id = ?').bind(pid).run();
-  await db.batch(['devices', 'identities', 'decks', 'ladder_entries', 'league_results', 'events'].map(t => db.prepare(`DELETE FROM ${t} WHERE player_id = ?`).bind(pid))
-    .concat([db.prepare('DELETE FROM h2h WHERE player_id = ? OR opp_id = ?').bind(pid, pid), db.prepare('DELETE FROM players WHERE id = ?').bind(pid)]));
+  const meta = await ensureMeta(db);
+  await db.batch((meta ? [db.prepare('DELETE FROM deck_meta WHERE player_id = ?').bind(pid)] : [])
+    .concat(['devices', 'identities', 'decks', 'ladder_entries', 'league_results', 'events'].map(t => db.prepare(`DELETE FROM ${t} WHERE player_id = ?`).bind(pid)))
+    .concat([db.prepare('DELETE FROM h2h WHERE player_id = ? OR opp_id = ?').bind(pid, pid), db.prepare('DELETE FROM players WHERE id = ?').bind(pid), bumpStmt(db)]));
+  _genReset();
+}
+/* 덱만 지우기(관리자·본인): 덱 요약도 같이 */
+export async function deleteDeck(db, pid) {
+  const meta = await ensureMeta(db);
+  await db.batch([db.prepare('DELETE FROM decks WHERE player_id = ?').bind(pid), ...(meta ? [db.prepare('DELETE FROM deck_meta WHERE player_id = ?').bind(pid)] : []), bumpStmt(db)]);
+  _genReset();
 }
 /* 표 만들기: 같은 SQL을 문장별로(여러 번 해도 안전) */
 export async function migrate(db) {
