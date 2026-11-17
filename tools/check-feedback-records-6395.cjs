@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 let engine=require('./build.cjs').build({root,write:false}).engine;
 if(process.env.RECORDS_BEFORE)for(const file of ['players/34_feats.js','staff/77_pitch_role.js','media/22_club_history.js']){const current=fs.readFileSync(path.join(root,'src/engine',file),'utf8').trim(),old=fs.readFileSync('/tmp/records-6395-before-'+path.basename(file),'utf8').trim();assert.ok(engine.includes(current));engine=engine.replace(current,old);}
 let seed=13;const rng=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
-new Function('assert','rng','before',engine.replace('createRandom(Math.random)','createRandom(rng)')+`
+new Function('assert','rng','before',engine.replace('createRandom(Math.random)','createRandom(rng)').replace('const FO_RNG0=Math.random;','const FO_RNG0=rng;') /* 본 난수원은 FO_RNG0(11-16 해외 활성화 3단계부터) */+`
 {
 DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);const base=JSON.stringify(G),reset=()=>{G=JSON.parse(base);worldReset();G.day=G.cal.open+20;},us=G.user,other=G.teams.find(t=>t.id!==us).id;let fails=0,total=0;
 const T=(name,fn)=>{total++;try{reset();fn();console.log('PASS '+name);}catch(e){fails++;console.log('FAIL '+name+' · '+e.message.slice(0,220));if(!before)throw e;}};

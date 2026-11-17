@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),path=require('node:path'),root=path.resolve(__dirname,'..');
 const engine=require('./build.cjs').build({root,write:false}).engine;let seed=99,calls=0;const random=()=>{calls++;seed=seed*16807%2147483647;return(seed-1)/2147483646;};
-new Function('assert','random','rngCount',engine.replace('createRandom(Math.random)','createRandom(random)')+`
+new Function('assert','random','rngCount',engine.replace('createRandom(Math.random)','createRandom(random)').replace('const FO_RNG0=Math.random;','const FO_RNG0=random;') /* 본 난수원은 FO_RNG0(11-16 해외 활성화 3단계부터) */+`
 DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let guard=0;while(G.fd&&!G.fd.done&&guard++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);const base=JSON.stringify(G),us=G.user;let n=0;
 const T=(name,fn)=>{G=JSON.parse(base);worldReset();fn();n++;console.log('PASS '+name);};
 const friend=(bond=83)=>{const p=playersOf(us).find(p=>!p.isP);p.age=44;p.svc=15;contactRecord('pl:'+p.id).bond=bond;retireOut(p,'인맥 검수 은퇴');const o=G.ob.find(o=>o.fid===p.id);assert.ok(o);o.path='coach';o.readyY=G.year;o.cy=8;o.sk=70;o.age=48;return {pid:p.id,o};};
