@@ -96,7 +96,7 @@ const { chromium } = require('playwright');
       const hh = sql('SELECT opp_id, n FROM h2h WHERE player_id = ? ORDER BY opp_id', me); assert.deepEqual(hh.map(x => x.opp_id), V.slice().sort(), '맞대결은 pid 있는 상대만'); assert.ok(hh.every(x => x.n === 3), '상대마다 3경기 ' + JSON.stringify(hh));
       assert.equal(sql('SELECT tier FROM decks WHERE player_id = ?', me)[0].tier, res.tier); assert.match(res.t, /서버 시즌 포인트 \+\d+/); }
     { const r = await p.evaluate(() => ({ t: document.querySelector('.ulx').innerText, keys: document.querySelectorAll('[data-a="ulKey"][data-k="res"]').length })); assert.match(r.t, /리그 점수 \d+/); assert.match(r.t, /리그 하이라이트[\s\S]*리그 1위 기록[\s\S]*상대별 전적/); assert.equal(r.keys, 3, '결과 명경기 3');
-      await p.click('[data-a="ulKey"][data-k="res"][data-v="0"]'); await p.click('[data-a="ulKeyT"][data-v="line"]'); assert.match(await p.evaluate(() => document.querySelector('.ul-pre').innerText), /R\tH\tE/, '점수표');
+      await p.click('[data-a="ulKey"][data-k="res"][data-v="0"]'); await p.waitForTimeout(450); await p.click('[data-a="ulKeyT"][data-v="line"]'); assert.match(await p.evaluate(() => document.querySelector('.ul-pre').innerText), /R\tH\tE/, '점수표');
       const fit2 = await fitNow(); assert.ok(fit2.scroll === 0 && fit2.h <= fit2.v + 2, 'PC 결과 화면이 통째로 스크롤됨 ' + JSON.stringify(fit2)); }
     if (shot) await p.screenshot({ path: shot + '_result_1440.png' });
     if (shot) { await p2.evaluate(s => { G = JSON.parse(s); A.go('uld:league'); }, await p.evaluate(() => JSON.stringify(G))); await p2.waitForTimeout(800); await p2.screenshot({ path: shot + '_result_390.png' }); }
@@ -130,7 +130,7 @@ const { chromium } = require('playwright');
       const csv = await p.evaluate(() => ulCsvFile('bat')[1]); assert.match(csv, /^시즌,선수,포지션,G,PA/); assert.ok(csv.split('\r\n').length >= 10, 'CSV 줄');
       const fit = await fitNow(); assert.ok(fit.scroll === 0, 'PC 데이터 통째 스크롤 ' + JSON.stringify(fit)); if (shot) await p.screenshot({ path: shot + '_data_1440.png' }); }
     await p.click('[data-a="itab"][data-v="uldata:team"]'); assert.ok(await p.evaluate(() => !!document.querySelector('svg.ul-chart circle') && /팀 래더 기록 · 시즌별[\s\S]*통산/.test(document.querySelector('.ulx').innerText)), '팀 기록·흐름 그림');
-    await p.click('[data-a="itab"][data-v="uldata:meta"]'); await p.waitForFunction(() => UL.meta && Object.values(UL.meta).some(x => x.st === 'ok') && /래더 서버 등록 덱 \d+개/.test(document.querySelector('.ulx').innerText), null, { timeout: 15000 });
+    await p.click('[data-a="itab"][data-v="uldata:meta"]'); await p.waitForFunction(() => UL.meta && Object.values(UL.meta).some(x => x.st === 'ok' && x.src === 'srv' && x.agg.n >= 1) && document.querySelector('.ul-mt'), null, { timeout: 15000 });
     { const t = await p.evaluate(() => document.querySelector('.ulx').innerText); assert.match(t, /래더 선수 구성[\s\S]*유격수[\s\S]*덱 OVR/); assert.match(t, /외국인 비율[\s\S]*나이 분포[\s\S]*많이 쓰는 덱 성향[\s\S]*우리 덱 vs 평균/); }
     assert.equal(sql('SELECT COUNT(*) AS n FROM deck_meta')[0].n, 3, '서버 덱 구성 요약(D1 덱 3)'); if (shot) await p.screenshot({ path: shot + '_meta_1440.png' });
     await p.click('[data-a="itab"][data-v="uldata:opp"]'); assert.equal(await p.evaluate(() => document.querySelectorAll('.ul-dt tbody tr').length), 9, '상대 9팀'); await p.click('.ul-dt tbody tr[data-v^="p:"]');
@@ -153,5 +153,5 @@ const { chromium } = require('playwright');
     assert.deepEqual(await p.evaluate(() => [localStorage.getItem('fo-net-v1'), localStorage.getItem('fo-net-v1-token'), FrontOfficeCore.netEnabled()]), ['0', null, false]);
     assert.match(await p.evaluate(() => document.querySelector('.ulx').innerText), /서버 래더 다시 켜기/); console.log('서버 기록 지우기 통과');
     assert.deepEqual(errs, []);
-  } catch (e) { try { const ps = b.contexts().flatMap(c => c.pages()); console.error('화면: ' + await ps[0].evaluate(() => [...document.querySelectorAll('.note')].map(x => x.innerText).join(' / ') + ' | ' + (UL.msg || ''))); } catch (x) {} throw e; } finally { await b?.close(); server.close(); }
+  } catch (e) { try { const ps = b.contexts().flatMap(c => c.pages()); console.error('화면: ' + await ps[0].evaluate(() => [...document.querySelectorAll('.note')].map(x => x.innerText).join(' / ') + ' | ' + (UL.msg || '') + ' | meta ' + JSON.stringify(UL.meta || null).slice(0, 300) + ' | ' + JSON.stringify(UI.it) + ' | ' + (document.querySelector('.ulx') || {}).innerText.slice(0, 300))); } catch (x) {} throw e; } finally { await b?.close(); server.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });
