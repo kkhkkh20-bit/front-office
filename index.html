@@ -3925,7 +3925,7 @@ a.cafe-go:hover,a.cafe-go:focus-visible{background:color-mix(in srgb,#03c75a 28%
  .setx.setp>.setc{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}}
 /* 업무 권한(사용자 11-17): 권한 목록 넓게·처리 기록 좁게, 버튼 칸은 폭 고정·한 줄 */
 .authx{display:grid;gap:10px;align-content:start}.authc{display:grid;gap:10px;align-content:start;min-width:0}.authc>.card{margin:0}
-.trof{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.trof select{font-size:12px;padding:2px 4px;min-height:28px;max-width:100%;flex:0 1 auto}
+.authi.authi-f{flex-wrap:wrap}.authi.authi-f>div{flex:1 1 0}.trof{flex:1 0 100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:4px}.trof select{font-size:12px;padding:2px 4px;min-height:28px;width:100%;min-width:0}
 .authi>.auth-b{flex:0 0 auto;min-width:7.5em;justify-content:flex-end;flex-wrap:nowrap}.authi .btn{white-space:nowrap;min-width:6em;justify-content:center}
 .authlog .item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start}.authlog .auth-d{white-space:nowrap}.authlog .item>.row{flex-wrap:wrap;justify-content:flex-end}
 main.ws-frame>.authx.ws-own{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
@@ -45061,7 +45061,7 @@ Object.assign(GUARD,{ sisEnd(v){ const c=OCL_BY[v]; if(!c||sisPtn(v)!==G.user)re
 /* 정기 업무 자동 처리 켜고 끄기(국사왕 제안): 손으로 하는 일괄 버튼 옆에 둔다. 켜면 매주 월요일 같은 일괄 처리를 반복하고 받은편지함에 남긴다 */
 function autoScopeBtn(k,x,l){ if(G.unemp)return ''; const on=autoScope(k).includes(x); return `<button class="btn small${on?' primary':''}" data-a="autoScope" data-v="${k}:${esc(x)}" aria-pressed="${on}" title="켜면 매주 월요일 직접 할 때와 같은 비용·횟수 제한으로 처리하고 받은편지함에 남깁니다.">${esc(l)} 매주 자동${on?' 켜짐':''}</button>`; }
 function authView(){ const evK=Object.keys(EV_NAME); const dl=evK.filter(k=>G.deleg&&G.deleg[k]);
-  const row=([k,l,d0])=>{ const on=autoOn(k); const d=d0.replace('{55}',dv(55)); return `<div class="item authi"><div><b>${l}</b> <span class="pill ${on?'acc':''}">${on?`${AUTO_WHO[k]||'비서'} 담당${k==='tro'?(G.auto.tro==='good'?' · 유망한 제안만 보고':' · 모두 거절'):''}`:'단장 직접'}</span><span class="small muted" style="display:block">${d}</span>${k==='tro'&&on&&G.auto.tro==='good'?troFView():''}${(()=>{ const st=on?delegStatus(k):''; return st?`<span class="small ${/^대기/.test(st)?'warn':/^처리 완료/.test(st)?'good':''}" style="display:block">${esc(st)}</span>`:''; })()}</div><span class="row auth-b" style="gap:4px">${k==='tro'&&on?`<button class="btn small" data-a="troMode">${G.auto.tro==='good'?'모두 거절로':'유망한 제안만 보고로'}</button>`:''}${AUTO_SCOPE[k]&&!on?`<button class="btn small" data-a="autoScopeGo" data-v="${k}">${k==='schg'?'권역 고르기':k==='ovsb'?'프로그램 고르기':'나라 고르기'}</button>`:`<button class="btn small" data-a="${on?'takeBack':'handOff'}" data-v="${k}">${on?(AUTO_OPTIN.has(k)?'끄기':'가져오기'):(AUTO_OPTIN.has(k)?'켜기':'넘기기')}</button>`}</span></div>`; };
+  const row=([k,l,d0])=>{ const on=autoOn(k); const d=d0.replace('{55}',dv(55)); const tf=k==='tro'&&on&&G.auto.tro==='good'; return `<div class="item authi${tf?' authi-f':''}"><div><b>${l}</b> <span class="pill ${on?'acc':''}">${on?`${AUTO_WHO[k]||'비서'} 담당${k==='tro'?(G.auto.tro==='good'?' · 유망한 제안만 보고':' · 모두 거절'):''}`:'단장 직접'}</span><span class="small muted" style="display:block">${d}</span>${(()=>{ const st=on?delegStatus(k):''; return st?`<span class="small ${/^대기/.test(st)?'warn':/^처리 완료/.test(st)?'good':''}" style="display:block">${esc(st)}</span>`:''; })()}</div><span class="row auth-b" style="gap:4px">${k==='tro'&&on?`<button class="btn small" data-a="troMode">${G.auto.tro==='good'?'모두 거절로':'유망한 제안만 보고로'}</button>`:''}${AUTO_SCOPE[k]&&!on?`<button class="btn small" data-a="autoScopeGo" data-v="${k}">${k==='schg'?'권역 고르기':k==='ovsb'?'프로그램 고르기':'나라 고르기'}</button>`:`<button class="btn small" data-a="${on?'takeBack':'handOff'}" data-v="${k}">${on?(AUTO_OPTIN.has(k)?'끄기':'가져오기'):(AUTO_OPTIN.has(k)?'켜기':'넘기기')}</button>`}</span>${tf?troFView():''}</div>`; };
   /* 업무 권한(사용자 11-17): 왼쪽 권한 목록(넓게)·오른쪽 처리 기록(좁게) 두 칸, PC는 칸 안에서만 스크롤. 버튼 칸 폭을 고정해 글자가 세로로 꺾이지 않게 */
   return `<div class="authx ws-own"><div class="authc"><section class="card"><div class="row between"><h2 class="sec">권한: 비서와 단장</h2><span class="small muted">${AUTO_AREAS.filter(([k])=>autoOn(k)).length}/${AUTO_AREAS.length} 넘김</span></div><p class="small muted">진행을 어떤 소식에서 멈출지는 위임과 따로 정합니다(설정 > 진행 멈춤). <button class="lnk" data-a="go" data-v="cfg:set">진행 멈춤 설정</button></p>
     <p class="small">모든 알림은 그대로 옵니다. 알림마다 있는 '비서에게 넘기기'를 누르면 그 업무를 비서·팀장이 맡고, 여기서 언제든 다시 가져올 수 있습니다. 맡긴 일은 아래 기준대로 처리합니다. 직접 하면 기준 밖 예외까지 따져 정할 수 있습니다. 드래프트·트레이드 협상·FA·외국인 영입·단장 계약·협회 표결은 항상 단장이 합니다.</p>
@@ -45715,6 +45715,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-parity2',d:'11월 17일',t:'받은 트레이드 제안 거르기 세분화 · AI 구단도 사정을 보고 정합니다',items:[
+    '설정 › 업무 권한에서 받은 트레이드 제안을 부단장에게 맡기고 \'유망한 제안만 보고\'를 고르면, 올릴 제안의 기준을 더 고를 수 있습니다. 우리 평가 손익(손해 3 이내·손해 1 이내·공정 이상·이득 2 이상), 필요한 자리만, 지킬 선수(핵심·유망주 제외), 늘어나는 연봉 한도, 기조(윈나우·리빌딩)입니다.',
+    '기준에 걸린 제안은 부단장이 거절하고, 어떤 기준에 걸렸는지 위임 기록과 메일에 남깁니다. 기준을 바꾸면 이미 받아 둔 제안에도 바로 적용합니다. AI 구단끼리의 트레이드에는 영향이 없습니다.',
+    'AI 구단이 비FA 다년계약·예비 FA 웃돈·연봉 미계약 선수 정리·외국인 교체·시즌 중 무적 선수 영입·감독 교체·코치 영입을 무작위가 아니라 우리 단장이 보는 것과 같은 사정으로 정합니다. 핵심 선수인지, FA 예상 몸값보다 싼지, 남은 교체 횟수와 순위 경쟁, 그 자리가 실제로 비었는지, 계획 대비 성적과 남은 계약을 봅니다.',
+    'AI 구단도 연봉 미계약 주전에게 우리와 같은 조건(성공 확률·거절 뒤 3일 대기)으로 중간 금액을 제시합니다.']},
   {id:'2026-11-17-ladcap',d:'11월 17일',t:'래더·대회 연봉 상한 · 윗단계 AI가 강해집니다',items:[
     '래더 덱에 연봉 상한이 생깁니다. 덱 선수 연봉 합이 143.97억(첫 시즌 샐러리캡)을 넘으면 등록할 수 없습니다. 모든 단계가 같은 금액입니다.',
     '\'덱\' 화면에서 상한·덱 연봉·여유(또는 초과)를 보여 줍니다. 넘으면 등록할 수 없고, 넘는 만큼을 가장 적은 OVR 손해로 메울 선수를 추천합니다. \'추천대로 빼기\'나 선수마다 \'빼기\'로 덱에서 뺀 뒤 등록하면 됩니다. 서버도 같은 규칙으로 다시 확인합니다.',

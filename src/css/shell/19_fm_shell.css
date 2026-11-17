@@ -233,7 +233,7 @@ a.cafe-go:hover,a.cafe-go:focus-visible{background:color-mix(in srgb,#03c75a 28%
  .setx.setp>.setc{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}}
 /* 업무 권한(사용자 11-17): 권한 목록 넓게·처리 기록 좁게, 버튼 칸은 폭 고정·한 줄 */
 .authx{display:grid;gap:10px;align-content:start}.authc{display:grid;gap:10px;align-content:start;min-width:0}.authc>.card{margin:0}
-.trof{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.trof select{font-size:12px;padding:2px 4px;min-height:28px;max-width:100%;flex:0 1 auto}
+.authi.authi-f{flex-wrap:wrap}.authi.authi-f>div{flex:1 1 0}.trof{flex:1 0 100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:4px}.trof select{font-size:12px;padding:2px 4px;min-height:28px;width:100%;min-width:0}
 .authi>.auth-b{flex:0 0 auto;min-width:7.5em;justify-content:flex-end;flex-wrap:nowrap}.authi .btn{white-space:nowrap;min-width:6em;justify-content:center}
 .authlog .item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start}.authlog .auth-d{white-space:nowrap}.authlog .item>.row{flex-wrap:wrap;justify-content:flex-end}
 main.ws-frame>.authx.ws-own{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
