@@ -103,7 +103,7 @@ function fUnknown(p,f){ const L=[]; if(f.n<3)L.push('실전 감각(현지 경기
    예전 AI는 실제 능력(ovr)에 작은 오차를 얹어 봐서 우리 화면(조사 전 흐림·실전 감각 착시)보다 훨씬 정확했다(해외 리그 검수: AI도 우리보다 많이 알면 안 된다) */
 function fInfo(tid,p){ const r=origOf(p); if(tid==null||tid===G.user){ const isc0=(G.scouts||[]).filter(s=>s.role==='intl'&&s.region===r).sort((a,b)=>effSkill(b)-effSkill(a))[0];
     return {r,lv:intlLv(r),k:fwatchK(p.id),mine:fMineFind(p),sis:!!p.fsis,isc0,isc:(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r),tag:'',kbo:!!p.fkbo}; }
-  return {r,lv:Math.min(2,Math.floor(fScoutLv(tid)||0)),k:0,mine:!!(p.fsrc==='scout'&&(p.fknow||[])[0]===tid),sis:false,isc0:null,isc:null,tag:'t'+tid,kbo:!!p.fkbo}; }
+  return {r,lv:Math.min(2,Math.floor(fScoutLv(tid)||0)),k:fwatchKT(tid,p.id), /* AI 관찰 명단 파악도(사용자 11-17: 3-3, 우리와 같은 식) */mine:!!(p.fsrc==='scout'&&(p.fknow||[])[0]===tid),sis:false,isc0:null,isc:null,tag:'t'+tid,kbo:!!p.fkbo}; }
 /* KBO 경력 후보(해외 활성화 1-1): 모든 구단이 KBO에서 직접 본 선수라 툴 오차·실전 감각 착시·조사 전 흐림이 작다. 우리와 AI가 같은 배율 */
 const F_KBO_K={sd:.65,bias:.4,fog:.4};
 /* 툴 평가 오차와 실전 감각(sx)을 못 보는 정도 */
@@ -258,7 +258,7 @@ function fNewWeek(){ G.fmarket=G.fmarket||[]; const ag=G.fmarket.filter(id=>{ co
   { const O=fOptWeek(); if(O.length&&!G.unemp)mail('스카우트팀',`트리플A 옵트아웃 후보: ${O.map(q=>q.name).join(', ')}`,`마이너 계약의 옵트아웃 날짜가 지나 빅리그에 오르지 못한 선수가 한국행을 알아봅니다. 올해 트리플A 기록이 붙어 있습니다. 다른 구단도 같은 후보를 봅니다.\n${O.map(q=>`${q.name}(${posLabel(q)}, ${q.age}세 · 옵트아웃 ${dmd(q.fopt)} · 요구 ${Math.round(Math.min(q.ask,fNewCap())/USD)}만 달러)`).join('\n')}`,{kind:'외국인',acts:[...O.slice(0,2).map(q=>({l:`${q.name} 보기`,a:'player',v:q.id})),{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); }
   if(hot.length&&!G.unemp)mail('스카우트팀',`새 외국인 후보: ${hot.map(q=>q.name).join(', ')}`,`이번 주 한국행에 관심을 보인 선수가 시장에 나왔습니다.\n${hot.map(q=>`${q.name}(${posLabel(q)}, ${q.nat||''}, ${q.age}세 · ${q.prevLvl} · 요구 ${Math.round(q.ask/USD)}만 달러)`).join('\n')}`,{kind:'외국인',acts:[...hot.slice(0,2).map(q=>({l:`${q.name} 보기`,a:'player',v:q.id})),{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
   return n; }
-function fBidWeek(){ try{ scoutFindWeek(); }catch(err){} if(!foreignOpen())return; fNewWeek(); for(const id of (G.fmarket||[])){ const q=G.players[id]; if(!q||q.team!=null)continue; const n=fInterest(q); q.fint=n; if(q.ask0==null)q.ask0=q.ask; if(q.ask>foCap(q))q.ask=foCap(q); /* 요구액도 지금 제안 상한 안에서: 우리는 막히고 AI는 상한액으로 잘려 계약하던 차이(검수 11-08) */ if(n>=2&&q.ask<q.ask0*1.3)q.ask=round5(Math.min(q.ask*1.04,foCap(q))); /* 시즌 중 줄어든 신규 상한까지만(검수 11-08) */ } }
+function fBidWeek(){ try{ scoutFindWeek(); }catch(err){} if(!foreignOpen())return; fNewWeek(); for(const id of (G.fmarket||[])){ const q=G.players[id]; if(!q||q.team!=null)continue; const n=fInterest(q); q.fint=n; if(q.ask0==null)q.ask0=q.ask; if(q.ask>foCap(q))q.ask=foCap(q); /* 요구액도 지금 제안 상한 안에서: 우리는 막히고 AI는 상한액으로 잘려 계약하던 차이(검수 11-08) */ const nn=new Set([...foRivalTeams(q),...fWatchers(q)]).size; /* 관찰 소문(사용자 11-17): 3주 넘게 지켜본 구단도 관심으로 친다. 우리 관찰·AI 관찰 같은 규칙 */ if(nn>=2&&q.ask<q.ask0*1.3)q.ask=round5(Math.min(q.ask*1.04,foCap(q))); /* 시즌 중 줄어든 신규 상한까지만(검수 11-08) */ } }
 function aiForeignFill(tid){
   { const q=aiForeignPick(tid); if(q){ aiForeignSign(tid,q); return; } }
   const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병');
