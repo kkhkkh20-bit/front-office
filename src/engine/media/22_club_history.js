@@ -250,8 +250,10 @@ function jno(p){ if(!p)return null; if(p.no!=null&&(p.noT===p.team||p.team==null
   const used=teamNos(p.team,p); let n=p.no!=null&&!used.has(p.no)?p.no:1+Math.floor(u01('jno',p.id)*99); let g=0; while(used.has(n)&&g++<100)n=(n+1)%100; /* 0번까지 돌아본다(KBO 0~99, 검수 11-09zz) */ if(p.team!=null){ if(p.noT!=null&&p.no!=null)(p.noBy=p.noBy||{})[p.noT]=p.no; p.no=n; p.noT=p.team; } return n; }
 /* 등번호 고치기(유저 편집). 0~99, 같은 구단 선수와 겹치면 안 되고 그 구단 영구결번은 쓸 수 없다. 이름은 22c_cosmetic.js(setPlayerName). 능력·잠재력·나이 에디터는 없앴다(구단주 결정 11-17) */
 function playerNoPermit(p,r){ const a=p.retNoPermit; return !!(a&&a.tid===p.team&&a.no===r.no&&a.ob===p.father&&sonRetOwn(r,fatherOf(p))); }
-function setPlayerNo(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const s=String(v??'').trim(); if(!/^\d{1,2}$/.test(s))return '등번호는 0~99 숫자로 입력하세요.'; const n=+s; if(p.team==null)return '소속 구단이 있는 선수만 등번호를 정할 수 있습니다.'; if(retNosOf(p.team).some(r=>r.no===n&&!playerNoPermit(p,r)))return `${n}번은 ${p.team===G.user?'우리 구단':tshort(p.team)} 영구결번입니다.`;
-  const o=Object.values(G.players).find(q=>q!==p&&q.team===p.team&&jno(q)===n); if(o)return `${n}번은 ${o.name} 선수가 쓰고 있습니다.`; jno(p); /* 옛 구단 번호를 noBy에 남긴 뒤 바꾼다 */ p.no=n; p.noT=p.team; return ''; }
+/* 등번호 검사만(바꾸지 않는다). 쓸 수 있으면 '' — 여러 칸을 한꺼번에 저장할 때 먼저 검사(외부 검수 11-17) */
+function playerNoErr(id,v){ const p=G.players[id]; if(!p)return '선수를 찾을 수 없습니다.'; const s=String(v??'').trim(); if(!/^\d{1,2}$/.test(s))return '등번호는 0~99 숫자로 입력하세요.'; const n=+s; if(p.team==null)return '소속 구단이 있는 선수만 등번호를 정할 수 있습니다.'; if(retNosOf(p.team).some(r=>r.no===n&&!playerNoPermit(p,r)))return `${n}번은 ${p.team===G.user?'우리 구단':tshort(p.team)} 영구결번입니다.`;
+  const o=Object.values(G.players).find(q=>q!==p&&q.team===p.team&&jno(q)===n); if(o)return `${n}번은 ${o.name} 선수가 쓰고 있습니다.`; return ''; }
+function setPlayerNo(id,v){ const e=playerNoErr(id,v); if(e)return e; const p=G.players[id], n=+String(v??'').trim(); jno(p); /* 옛 구단 번호를 noBy에 남긴 뒤 바꾼다 */ p.no=n; p.noT=p.team; return ''; }
 /* 등번호 한 번에 바꾸기(커뮤니티 피드백 11-11): 바꿀 번호를 모두 받아, 바꾼 뒤 모습 전체로 겹침·영구결번을 확인하고 한꺼번에 적용한다(서로 맞바꾸기 가능) */
 function setPlayerNos(M){ const tid=G.user; if(G.unemp||tid==null)return {err:'맡은 구단이 없습니다.'}; const L=playersOf(tid); const fin=new Map(L.map(p=>[p.id,jno(p)])); const errs=[]; let n=0;
   for(const k in M){ const p=G.players[k]; if(!p||p.team!==tid)continue; const s=String(M[k]??'').trim(); if(s==='')continue; if(!/^\d{1,2}$/.test(s)){ errs.push(`${p.name}: 0~99 숫자로 입력하세요.`); continue; } const v=+s; if(v===jno(p))continue;

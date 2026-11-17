@@ -268,12 +268,16 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   hy(v){UI.hy=+v;render();},
   fmBack(){ fmBack(); }, fmFwd(){ fmFwd(); }, fmKeysX(){ UI.fmKeys=false; render(); }, fmKeysOpen(){ UI.fmKeys=true; render(); }, fmPlan(){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; UI.it.rdepth='glance'; closeSheets(); render(); },
   retNo(v){ note('기록',retireNumber(v)); save(); render(); },
-  pEditOpen(v){ UI.pEdit=v===''||v==null?null:+v; UI.pEditErr=''; renderSheet(); },
+  pEditOpen(v){ UI.pEdit=v===''||v==null?null:+v; UI.pEditErr=''; UI.pEditD=null; renderSheet(); },
   noEditOpen(){ UI.noEdit=true; UI.noDraft={}; UI.noErr=''; render(); },
   noEditClose(){ UI.noEdit=false; UI.noDraft=null; UI.noErr=''; render(); },
   noEditSave(){ const M={}; document.querySelectorAll('.ne-in').forEach(el=>{ M[el.dataset.pid]=el.value; }); UI.noDraft=M; const r=setPlayerNos(M); if(r.err){ UI.noErr=r.err; render(); return; } UI.noEdit=false; UI.noDraft=null; UI.noErr=''; note('선수',`등번호 ${r.n}명을 바꿨습니다.`); save(); render(); },
-  pEditSave(v){ const id=+v, p=G.players[id]||(G.arch&&G.arch[id]); if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); let e=nm?setPlayerName(id,nm.value):''; if(!e&&no&&G.players[id]&&String(no.value).trim()!==String(jno(p)))e=setPlayerNo(id,no.value); /* 이름·등번호만(능력 에디터 없음, 구단주 결정 11-17). 얼굴은 고르는 즉시 저장(cosmFace) */
-    if(e){ UI.pEditErr=e; renderSheet(); return; } UI.pEdit=null; UI.pEditErr=''; note('선수',`${p.name}${G.players[id]&&p.team!=null?' · '+jno(p)+'번':''} 저장했습니다.`); save(); render(); },
+  pEditSave(v){ const id=+v, p=G.players[id]||(G.arch&&G.arch[id]); if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); /* 이름·등번호만(능력 에디터 없음, 구단주 결정 11-17). 얼굴은 고르는 즉시 저장(cosmFace) */
+    /* 모두 먼저 검사하고, 통과하면 한꺼번에 바꾼다: 등번호가 틀렸는데 이름만 바뀌던 문제(외부 검수 11-17) */
+    const noCh=!!(no&&G.players[id]&&String(no.value).trim()!==String(jno(p))), nmCh=!!(nm&&cosmNameClean(nm.value)!==p.name);
+    let e=(nmCh?cosmNameErr(nm.value):'')||(noCh?playerNoErr(id,no.value):'');
+    if(!e&&noCh)e=setPlayerNo(id,no.value); if(!e&&nmCh)e=setPlayerName(id,nm.value);
+    if(e){ pEditGrab(); UI.pEditErr=e; renderSheet(); return; } UI.pEdit=null; UI.pEditErr=''; UI.pEditD=null; note('선수',`${p.name}${G.players[id]&&p.team!=null?' · '+jno(p)+'번':''} 저장했습니다.`); save(); render(); },
   noTrade(v){ const p=G.players[+v]; if(!p||p.team!==G.user)return; p.noTrade=!p.noTrade; if(p.noTrade&&p.listed){ try{ blockRemove(p.id); }catch(e){ p.listed=false; } } toast(p.noTrade?`${p.name}을(를) 트레이드 불가로 지정했습니다. 다른 구단이 묻지 않습니다.`:`${p.name} 트레이드 불가를 풀었습니다.`); save(); render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} },
   blkOn(v){ const q=G.players[+v]; if(q&&hasNtc(q)){ toast(`${q.name}은(는) 트레이드 거부권이 있어 매물로 올릴 수 없습니다(${q.ntc}년까지).`); return; } blockAdd(+v,'any'); UI.sheet=null; save(); A.go('trade:block'); },
   blkOff(v){ blockRemove(+v); save(); render(); },

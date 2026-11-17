@@ -2,7 +2,7 @@
    규칙·승강·상대 고르기는 공용 모듈(src/core/uladder.mjs). 덱은 프런트컵 엔트리 형식, 경기는 cupMatch(3연전, 무승부 허용, 선발 순번 이어 가기) 그대로.
    난수는 평범한 난수(같은 덱이라도 리그마다 결과가 다르다). 커리어 G는 G.uld(단계·기록·지금 리그)만 쓴다: 리그 경기는 커리어 세계를 건드리지 않는다.
    리그 중간(연전 사이)에 내 덱을 고치면 다음 연전부터 그 덱으로 나간다. 상대 덱은 리그를 시작할 때 받은 사본으로 고정한다 */
-function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],deck:null,league:null,last:null,dn:0,ps:{},opp:{}}); if((U.v|0)<2)FrontOfficeCore.ulMigrate(U); if(!U.car)U.car=FrontOfficeCore.ulCareerInit(U.hist,U.best); return U; } /* 통산 칸(외부 검수 11-17): 없으면 남은 기록 줄로 한 번 만든다 */ /* v2: 예전 저장은 처음 열 때 옮긴다(선수·상대 기록 칸, 사용자 11-17) */
+function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],deck:null,league:null,last:null,dn:0,ps:{},opp:{}}); if((U.v|0)<2)FrontOfficeCore.ulMigrate(U); if(!U.car)U.car=FrontOfficeCore.ulCareerInit(U.hist,U.best); if(typeof U.seenS==='number'){ if(Number.isFinite(U.seenS))U.seenS='S'+U.seenS; else delete U.seenS; } /* 예전 저장: 숫자로 남긴 시즌 확인 표시(NaN은 버린다 → 결산 카드가 한 번 더 보임, 외부 검수 11-17) */ return U; } /* 통산 칸(외부 검수 11-17): 없으면 남은 기록 줄로 한 번 만든다 */ /* v2: 예전 저장은 처음 열 때 옮긴다(선수·상대 기록 칸, 사용자 11-17) */
 const UL_ME='me';
 /* 덱 등록(이 저장의 내 덱). src: 'now'(지금 1군) | 'alb:번호'(앨범 시즌). 가져온 남의 덱(ro)은 등록할 수 없다 */
 function ulSetDeck(e,src){ const C=FrontOfficeCore; if(!e||e.ro)return '가져온 덱은 내 덱으로 등록할 수 없습니다.'; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x);
