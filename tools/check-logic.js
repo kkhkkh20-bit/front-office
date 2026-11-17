@@ -5891,6 +5891,12 @@ T('[유저 레더] 재미 1단계: 리그 점수(단계×100+아래 팀 수×10)
   const res=ulFinish(); ok(res.pts===C.ulPts(0,res.rank)&&G.uld.seas&&G.uld.seas.n===1&&G.uld.seas.top===res.pts&&G.uld.hist[0].s===G.uld.seas.id,'점수·시즌 '+JSON.stringify(G.uld.seas));
   ok(res.keys.length===3&&res.rec.h2h.length===9&&res.rec.h2h.reduce((s,x)=>s+x.w+x.l+x.t,0)===27&&res.rec.lead.some(x=>x.k==='홈런'),'기록 카드 '+JSON.stringify(res.rec.lead));
   ok(JSON.stringify(G.uld).length<200000,'G.uld 크기 '+JSON.stringify(G.uld).length); });
+T('[유저 레더] 서버 v1 상대(사용자 11-17): {e, pid, nick}로 받은 덱은 리그 팀에 플레이어 id·닉네임이 붙고, 엔트리만 받은 덱(예전 KV)은 id 없이 섞인다',()=>{ fresh();
+  ulSetDeck(cupEntryNow({name:'와이'}),'now');
+  const v1=[1,2].map(k=>({e:cupEntryNow({tid:(G.user+k)%G.teams.length,name:'브이'+k}),pid:'p'+String(k).repeat(16),nick:'감독'+k})), kv=[3].map(k=>cupEntryNow({tid:(G.user+k)%G.teams.length,name:'케이'+k}));
+  const r=ulMakeLeague({fetched:v1.concat(kv,[{e:G.uld.deck.e,pid:'p'+'9'.repeat(16),nick:'나'}])}); ok(r.ok&&r.league.src.user===3&&r.league.src.ai===6,'받은 덱 3(내 덱이 다시 오면 뺌) '+JSON.stringify(r.league.src));
+  const T=r.league.teams.filter(t=>t.kind==='user'); ok(T.filter(t=>t.pid).map(t=>t.pid+t.nick).join()==='p'+'1'.repeat(16)+'감독1,p'+'2'.repeat(16)+'감독2'&&T.filter(t=>!t.pid).length===1,'pid·닉네임 '+JSON.stringify(T.map(t=>[t.pid,t.nick])));
+});
 T('[제보 11-16 해외 복귀 기록] 돌아온 선수의 해외 시즌은 모두 연도 순서로 남고, 기록 정리에서 가장 나중에 지우며, 복귀 까닭이 협상·이력에 보이고, 선수 화면 시즌 통계가 최근 세 시즌만 남기고 줄을 숨기지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&!q.foreign&&q.age<=30); ok(p,'준비 실패'); const id=p.id;
   ovsLeave(p,'MLB',MLBT.find(c=>c.startsWith('보스턴'))||MLBT[0],5,800,'포스팅'); const a=G.abroad.find(x=>x.id===id); ok(a,'해외 기록 없음'); a.y1=G.year-5; for(let y=G.year-5;y<G.year;y++)a.lines.push({y,lvl:'MLB',g:30,outs:540,er:60,so:150,bb:40,h:160,hr:18,w:10,l:8});
   const q=JSON.parse(a.pj); q.age=34; a.pj=JSON.stringify(q); abroadYear(); const r=G.players[id]; ok(r&&a.back,'복귀 처리 실패'); ok(a.why&&a.why.includes('계약 만료'),'복귀 까닭이 없다: '+a.why); ok(!r.retAsk||(r.retAsk.why===a.why),'우선협상 요구에 까닭이 없다');

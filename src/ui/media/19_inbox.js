@@ -119,7 +119,7 @@ function inboxView(){
 }
 /* PC(FM식): 목록 칸 위에 보낸 사람 큰 얼굴, 소식 본문 아래에 첨부 자료 상자들(관련 선수·능력·기록·같은 사람의 소식) */
 function ibPid(m){ return typeof m.face==='number'&&G.players[m.face]?m.face:m.ref!=null&&G.players[m.ref]?m.ref:null; }
-function ibFrom(m){ return `<div class="ibs-from"><div class="ibs-face">${senderAv(m)}${cimgBtns(senderPhotoKey(m))}</div><b>${esc(m.from)}</b><span>${IB_CATN[ibCat(m)]||'소식'} · ${dmd(m.day)} ${WD[dobj(m.day).w]}요일</span></div>`; }
+function ibFrom(m){ return `<div class="ibs-from"><div class="ibs-face">${senderAv(m,true)}${cimgBtns(senderPhotoKey(m))}</div><b>${esc(m.from)}</b><span>${IB_CATN[ibCat(m)]||'소식'} · ${dmd(m.day)} ${WD[dobj(m.day).w]}요일</span></div>`; }
 /* 소식 안에 들어가는 자료(FM처럼 본문 아래 같은 문서 안에): 내용 종류에 따라 다른 구성 */
 function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`, S=[];
   const sec=(t,body,cls='')=>`<section class="ibd-sec ${cls}"><h3>${t}</h3>${body}</section>`;
