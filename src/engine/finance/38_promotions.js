@@ -29,7 +29,7 @@ function promoHomeOpp(tid,d){ const c=G.cal; if(!c||!c.sched||d<c.open||d>c.end)
 function promoUsed(tid){ const P=promoOf(tid); return P?P.log.length+Object.values(P.bk).filter(b=>!b.done).length:0; }
 let _promoSC={k:null};
 function promoStar(tid){ const k=G.year+':'+G.day; if(_promoSC.k!==k||_promoSC.g!==G)_promoSC={k,g:G,v:{}}; if(tid in _promoSC.v)return _promoSC.v[tid]; const x=teamStar(tid).L[0]; return _promoSC.v[tid]=x&&x.s>=15?x:null; } /* 하루 한 번만 잰다(추천 예약이 수천 번 묻는다) */
-function promoCheerLv(tid){ if(tid===G.user&&!G.unemp)return (G.fanOps&&G.fanOps.cheer)||0; const F=team(tid).fanOps; return (F&&F.cheer)||0; }
+function promoCheerLv(tid){ return fanCheerLv(tid); } /* 구단 팬 운영 상태 하나로: 떠난 구단도 남긴 응원단 단계(56_fan_ops, 검수 11-17 #297) */
 /* 이 행사를 그날 열 수 있는지: ''면 가능, 아니면 이유 */
 function promoWhyNot(tid,d,k){ const E=PROMO_EV[k]; if(!E)return '없는 행사입니다.'; if(k==='fire'&&stadOf(tid).dome)return '돔구장에서는 불꽃놀이를 할 수 없습니다.';
   if(k==='retire'&&!retNosOf(tid).length)return '영구결번 선수가 없습니다.'; if(k==='star'&&!promoStar(tid))return '내세울 스타 선수가 없습니다(이름값 15 이상).'; return ''; }

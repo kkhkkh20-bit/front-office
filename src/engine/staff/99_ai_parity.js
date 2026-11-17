@@ -28,7 +28,7 @@ function aiMedPlan(t,ex,W){ const pl=planOf(t)||'next', cash=t.cash||0; let m={p
 /* --- 응원단·서포터즈(가벼운 판): 계획의 팬 몫 안에서. 우리가 운영하던 구단은 남긴 운영 그대로(fanAway) --- */
 function aiFanPlan(t,left,W,pay){ if(G.fanYrT&&G.fanYrT[t.id])return 0; const F=t.fanOps=t.fanOps||{cheer:0}; const bud=Math.max(0,left*((W&&W.fan)||0)); let lv=0;
   for(let i=FAN_OPS.cheer.m.length-1;i>=1;i--)if(FAN_OPS.cheer.m[i]*12<=bud*.6){ lv=i; break; }
-  F.cheer=lv; const y=FAN_OPS.cheer.m[lv]*12, sy=sponSeason(); if(F.sup!==sy&&bud-y>=FAN_EV.sup.c*2){ pay(FAN_EV.sup.c); F.sup=sy; } return y; }
+  F.cheer=lv; const y=FAN_OPS.cheer.m[lv]*12, sy=sponSeason(); if(F.sup!==sy&&!fanSupShut()&&bud-y>=FAN_EV.sup.c*2){ pay(FAN_EV.sup.c); F.sup=sy; } return y; }
 function aiFanAttM(day,tid){ const t=G.teams&&G.teams[tid], F=t&&t.fanOps; if(!F)return 1; const nx=typeof _stY!=='undefined'&&_stY!=null; return (1+(FAN_OPS.cheer.att[F.cheer||0]||0))*(F.sup===(nx?_stY:G.year)?1.03:1); }
 
 /* --- 겨울(11월 20일) 운영 결정: aiSpend가 남는 돈(ex)을 나누기 전에 부른다. 돌려주는 값: 바로 쓴 현금, 응원단 연 운영비 --- */
