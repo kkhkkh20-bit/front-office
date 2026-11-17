@@ -28,7 +28,9 @@
     "c006_p08",
     "c007_p01",
     "c007_p05",
-    "c007_p08"
+    "c007_p08",
+    "c008_p02",
+    "c008_p05"
   ],
   "eligible_full_families": [
     "c000_p00",
@@ -115,7 +117,7 @@
     "same_min": 0.6,
     "different_max_exclusive": 0.4
   },
-  "status": "29 family proposal; actual packed-pixel and human age checks pending",
+  "status": "PACKED_NUMERIC_SUBSET_PASS_HUMAN_AGE_PENDING",
   "hs_count": 16,
   "glasses_count": 4,
   "held": [
@@ -1836,5 +1838,8 @@
   "historical_packed_conflict_pair_conservatively_excluded": [
     "c002_p00",
     "c002_p03"
+  ],
+  "actual_packed_additional_holds": [
+    "c008_p08"
   ]
 }

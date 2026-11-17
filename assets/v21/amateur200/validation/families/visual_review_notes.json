@@ -30,6 +30,15 @@
       "cohort": 8,
       "photos": 6,
       "change": "Native cells below384 regenerated as full higher-resolution photographs, no upscale."
+    },
+    {
+      "cohort": 9,
+      "photos": 8,
+      "change": "Native cells below384 regenerated as complete 410px source crops; no upscale."
+    },
+    {
+      "id": "c009_p04",
+      "change": "HS-home whole native crop below original join removes neighboring photo strip."
     }
   ],
   "all_identities_human_age_review": "pending"

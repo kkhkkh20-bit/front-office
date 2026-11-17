@@ -1,10 +1,17 @@
 {
-  "checked_at_kst": "2026-11-17T17:02:02.299270+09:00",
+  "checked_at_kst": "2026-11-17T18:04:49.258787+09:00",
   "legacy_protected_original_paths_checked": 708,
-  "prior_snapshot_files_verified": 1051,
+  "prior_snapshot_files_verified": 1083,
   "missing_originals": 0,
   "changed_originals": 0,
-  "total_preserved_generator_files": 1083,
-  "total_preserved_generator_bytes": 2235916280,
-  "originals_deleted_by_cache_cleanup": 0
+  "total_preserved_generator_files": 1102,
+  "total_preserved_generator_bytes": 2275412921,
+  "originals_deleted_by_cache_cleanup": 0,
+  "byte_identical_native_copy_storage_sharing": {
+    "files": 126,
+    "bytes_released": 222323019,
+    "original_paths_retained": true,
+    "original_bytes_unchanged": true,
+    "note": "Treat all native sources as immutable. All edits create fresh generator output paths; Git exports store complete file contents."
+  }
 }

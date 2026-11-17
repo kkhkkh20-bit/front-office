@@ -1,7 +1,7 @@
 {
   "status": "PARTIAL_REHEARSAL_ONLY",
-  "occupied_slots": 29,
-  "empty_slots": 71,
+  "occupied_slots": 31,
+  "empty_slots": 69,
   "production_complete": false,
   "encoder128": {
     "format": "lossy RGB WebP",
@@ -436,6 +436,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__hs_home",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_hs_home_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__hs_home",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_hs_home_128.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__hs_home",
       "size": 256,
       "atlas": "review/partial_atlases/A_hs_home_256.webp",
@@ -842,6 +870,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__hs_home",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_hs_home_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__hs_home",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_hs_home_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__hs_home",
       "size": 384,
       "atlas": "review/partial_atlases/A_hs_home_384.webp",
@@ -1248,6 +1304,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__hs_home",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_hs_home_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__hs_home",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_hs_home_384.webp",
+      "rect": [
+        8,
+        1208,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__hs_away",
       "size": 128,
       "atlas": "review/partial_atlases/A_hs_away_128.webp",
@@ -1646,6 +1730,34 @@
       "rect": [
         1160,
         296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__hs_away",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_hs_away_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__hs_away",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_hs_away_128.webp",
+      "rect": [
+        8,
+        440,
         128,
         128
       ],
@@ -2060,6 +2172,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__hs_away",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_hs_away_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__hs_away",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_hs_away_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__hs_away",
       "size": 384,
       "atlas": "review/partial_atlases/A_hs_away_384.webp",
@@ -2458,6 +2598,34 @@
       "rect": [
         3208,
         808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__hs_away",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_hs_away_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__hs_away",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_hs_away_384.webp",
+      "rect": [
+        8,
+        1208,
         384,
         384
       ],
@@ -2872,6 +3040,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__univ",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_univ_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__univ",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_univ_128.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__univ",
       "size": 256,
       "atlas": "review/partial_atlases/A_univ_256.webp",
@@ -3278,6 +3474,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__univ",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_univ_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__univ",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_univ_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__univ",
       "size": 384,
       "atlas": "review/partial_atlases/A_univ_384.webp",
@@ -3684,6 +3908,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__univ",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_univ_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__univ",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_univ_384.webp",
+      "rect": [
+        8,
+        1208,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__seoul_comets",
       "size": 128,
       "atlas": "review/partial_atlases/A_seoul_comets_128.webp",
@@ -4082,6 +4334,34 @@
       "rect": [
         1160,
         296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__seoul_comets",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_seoul_comets_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__seoul_comets",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_seoul_comets_128.webp",
+      "rect": [
+        8,
+        440,
         128,
         128
       ],
@@ -4496,6 +4776,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__seoul_comets",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_seoul_comets_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__seoul_comets",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_seoul_comets_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__seoul_comets",
       "size": 384,
       "atlas": "review/partial_atlases/A_seoul_comets_384.webp",
@@ -4894,6 +5202,34 @@
       "rect": [
         3208,
         808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__seoul_comets",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_seoul_comets_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__seoul_comets",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_seoul_comets_384.webp",
+      "rect": [
+        8,
+        1208,
         384,
         384
       ],
@@ -5308,6 +5644,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__seoul_hounds",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_seoul_hounds_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__seoul_hounds",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_seoul_hounds_128.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__seoul_hounds",
       "size": 256,
       "atlas": "review/partial_atlases/A_seoul_hounds_256.webp",
@@ -5714,6 +6078,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__seoul_hounds",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_seoul_hounds_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__seoul_hounds",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_seoul_hounds_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__seoul_hounds",
       "size": 384,
       "atlas": "review/partial_atlases/A_seoul_hounds_384.webp",
@@ -6120,6 +6512,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__seoul_hounds",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_seoul_hounds_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__seoul_hounds",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_seoul_hounds_384.webp",
+      "rect": [
+        8,
+        1208,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__incheon_seagulls",
       "size": 128,
       "atlas": "review/partial_atlases/A_incheon_seagulls_128.webp",
@@ -6518,6 +6938,34 @@
       "rect": [
         1160,
         296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__incheon_seagulls",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_incheon_seagulls_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__incheon_seagulls",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_incheon_seagulls_128.webp",
+      "rect": [
+        8,
+        440,
         128,
         128
       ],
@@ -6932,6 +7380,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__incheon_seagulls",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_incheon_seagulls_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__incheon_seagulls",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_incheon_seagulls_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__incheon_seagulls",
       "size": 384,
       "atlas": "review/partial_atlases/A_incheon_seagulls_384.webp",
@@ -7330,6 +7806,34 @@
       "rect": [
         3208,
         808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__incheon_seagulls",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_incheon_seagulls_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__incheon_seagulls",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_incheon_seagulls_384.webp",
+      "rect": [
+        8,
+        1208,
         384,
         384
       ],
@@ -7744,6 +8248,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__suwon_sparks",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_suwon_sparks_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__suwon_sparks",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_suwon_sparks_128.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__suwon_sparks",
       "size": 256,
       "atlas": "review/partial_atlases/A_suwon_sparks_256.webp",
@@ -8150,6 +8682,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__suwon_sparks",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_suwon_sparks_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__suwon_sparks",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_suwon_sparks_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__suwon_sparks",
       "size": 384,
       "atlas": "review/partial_atlases/A_suwon_sparks_384.webp",
@@ -8556,6 +9116,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__suwon_sparks",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_suwon_sparks_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__suwon_sparks",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_suwon_sparks_384.webp",
+      "rect": [
+        8,
+        1208,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__goyang_storm",
       "size": 128,
       "atlas": "review/partial_atlases/A_goyang_storm_128.webp",
@@ -8954,6 +9542,34 @@
       "rect": [
         1160,
         296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__goyang_storm",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_goyang_storm_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__goyang_storm",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_goyang_storm_128.webp",
+      "rect": [
+        8,
+        440,
         128,
         128
       ],
@@ -9368,6 +9984,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__goyang_storm",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_goyang_storm_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__goyang_storm",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_goyang_storm_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__goyang_storm",
       "size": 384,
       "atlas": "review/partial_atlases/A_goyang_storm_384.webp",
@@ -9766,6 +10410,34 @@
       "rect": [
         3208,
         808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__goyang_storm",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_goyang_storm_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__goyang_storm",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_goyang_storm_384.webp",
+      "rect": [
+        8,
+        1208,
         384,
         384
       ],
@@ -10180,6 +10852,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__daejeon_redfox",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_daejeon_redfox_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__daejeon_redfox",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_daejeon_redfox_128.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__daejeon_redfox",
       "size": 256,
       "atlas": "review/partial_atlases/A_daejeon_redfox_256.webp",
@@ -10586,6 +11286,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__daejeon_redfox",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_daejeon_redfox_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__daejeon_redfox",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_daejeon_redfox_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__daejeon_redfox",
       "size": 384,
       "atlas": "review/partial_atlases/A_daejeon_redfox_384.webp",
@@ -10992,6 +11720,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__daejeon_redfox",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_daejeon_redfox_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__daejeon_redfox",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_daejeon_redfox_384.webp",
+      "rect": [
+        8,
+        1208,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__gwangju_blazes",
       "size": 128,
       "atlas": "review/partial_atlases/A_gwangju_blazes_128.webp",
@@ -11390,6 +12146,34 @@
       "rect": [
         1160,
         296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__gwangju_blazes",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_gwangju_blazes_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__gwangju_blazes",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_gwangju_blazes_128.webp",
+      "rect": [
+        8,
+        440,
         128,
         128
       ],
@@ -11804,6 +12588,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__gwangju_blazes",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_gwangju_blazes_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__gwangju_blazes",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_gwangju_blazes_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__gwangju_blazes",
       "size": 384,
       "atlas": "review/partial_atlases/A_gwangju_blazes_384.webp",
@@ -12202,6 +13014,34 @@
       "rect": [
         3208,
         808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__gwangju_blazes",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_gwangju_blazes_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__gwangju_blazes",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_gwangju_blazes_384.webp",
+      "rect": [
+        8,
+        1208,
         384,
         384
       ],
@@ -12616,6 +13456,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__daegu_thunders",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_daegu_thunders_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__daegu_thunders",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_daegu_thunders_128.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__daegu_thunders",
       "size": 256,
       "atlas": "review/partial_atlases/A_daegu_thunders_256.webp",
@@ -13022,6 +13890,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__daegu_thunders",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_daegu_thunders_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__daegu_thunders",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_daegu_thunders_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__daegu_thunders",
       "size": 384,
       "atlas": "review/partial_atlases/A_daegu_thunders_384.webp",
@@ -13428,6 +14324,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__daegu_thunders",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_daegu_thunders_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__daegu_thunders",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_daegu_thunders_384.webp",
+      "rect": [
+        8,
+        1208,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__busan_waves",
       "size": 128,
       "atlas": "review/partial_atlases/A_busan_waves_128.webp",
@@ -13826,6 +14750,34 @@
       "rect": [
         1160,
         296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__busan_waves",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_busan_waves_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__busan_waves",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_busan_waves_128.webp",
+      "rect": [
+        8,
+        440,
         128,
         128
       ],
@@ -14240,6 +15192,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__busan_waves",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_busan_waves_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__busan_waves",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_busan_waves_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__busan_waves",
       "size": 384,
       "atlas": "review/partial_atlases/A_busan_waves_384.webp",
@@ -14638,6 +15618,34 @@
       "rect": [
         3208,
         808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__busan_waves",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_busan_waves_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__busan_waves",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_busan_waves_384.webp",
+      "rect": [
+        8,
+        1208,
         384,
         384
       ],
@@ -15052,6 +16060,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__changwon_anchors",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_changwon_anchors_128.webp",
+      "rect": [
+        1304,
+        296,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__changwon_anchors",
+      "size": 128,
+      "atlas": "review/partial_atlases/A_changwon_anchors_128.webp",
+      "rect": [
+        8,
+        440,
+        128,
+        128
+      ],
+      "quality": 85,
+      "pitch": 144,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__changwon_anchors",
       "size": 256,
       "atlas": "review/partial_atlases/A_changwon_anchors_256.webp",
@@ -15458,6 +16494,34 @@
       "inset": 8
     },
     {
+      "photo_id": "c008_p02__changwon_anchors",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_changwon_anchors_256.webp",
+      "rect": [
+        2456,
+        552,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__changwon_anchors",
+      "size": 256,
+      "atlas": "review/partial_atlases/A_changwon_anchors_256.webp",
+      "rect": [
+        8,
+        824,
+        256,
+        256
+      ],
+      "quality": 88,
+      "pitch": 272,
+      "inset": 8
+    },
+    {
       "photo_id": "c000_p01__changwon_anchors",
       "size": 384,
       "atlas": "review/partial_atlases/A_changwon_anchors_384.webp",
@@ -15856,6 +16920,34 @@
       "rect": [
         3208,
         808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p02__changwon_anchors",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_changwon_anchors_384.webp",
+      "rect": [
+        3608,
+        808,
+        384,
+        384
+      ],
+      "quality": 89,
+      "pitch": 400,
+      "inset": 8
+    },
+    {
+      "photo_id": "c008_p05__changwon_anchors",
+      "size": 384,
+      "atlas": "review/partial_atlases/A_changwon_anchors_384.webp",
+      "rect": [
+        8,
+        1208,
         384,
         384
       ],
