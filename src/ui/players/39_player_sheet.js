@@ -6,10 +6,12 @@ function psTable(p){ const Y=p.psY; if(!Y)return ''; const ys=Object.keys(Y).map
   return `<div class="eyebrow" style="margin-top:10px">포스트시즌</div><table><thead><tr><th>시즌</th><th>구단</th><th>경기</th>${p.isP?'<th>이닝</th><th>승-패-세</th><th class="key">ERA</th><th>탈삼진</th>':'<th>타석</th><th>타율</th><th>홈런</th><th>타점</th><th class="key">OPS</th>'}</tr></thead><tbody>${ys.length>1?row('통산',tot,''):''}${ys.map(y=>row(y,Y[y],Y[y].t!=null&&G.teams[Y[y].t]?esc(tshort(Y[y].t)):'')).join('')}</tbody></table>`; }
 /* 통산 기록 범위(국사왕 11-15 #7): 1군만 · 2군 포함 · 2군만. 기본 1군만, 고른 값은 이번 접속 동안 UI에 남긴다. 2군 기록이 없는 선수는 고를 것이 없어 그대로 */
 /* 시즌 통계 묶음(카페 11-17): 기록 표 먼저, 1군만·2군 포함·2군만 단추는 표 아래. 정규시즌·포스트시즌은 따로 보는 탭(OOTP처럼). 포스트시즌은 p.psY(정규시즌 hist와 따로 쌓임) */
-function seasonStatsBlock(p,head){ const ps=UI.cSea==='ps', n=p.psY?Object.keys(p.psY).length:0;
+/* lvHead: 능력 탭(카페 국사왕 11-17)은 1군만·2군 포함·2군만 단추를 제목 줄(정규시즌·포스트시즌 왼쪽)에 둬 표 높이를 더 쓴다 */
+function seasonStatsBlock(p,head,lvHead){ const ps=UI.cSea==='ps', n=p.psY?Object.keys(p.psY).length:0;
   const tabs=p.prospect?'':`<div class="st-sea" role="group" aria-label="시즌 구분">${optRow('cSea',ps?'ps':'reg',[['reg','정규시즌'],['ps',`포스트시즌${n?` ${n}`:''}`]])}</div>`;
   const body=ps&&!p.prospect?(n?psTable(p).replace(/^<div class="eyebrow"[^>]*>포스트시즌<\/div>/,''):'<p class="small muted keep">포스트시즌 기록이 없습니다. 포스트시즌 기록은 2026-11-12 업데이트 이후 치른 가을야구부터 따로 쌓입니다.</p>'):statTable0(p);
-  return `<div class="st-head">${head||''}${tabs}</div><div class="tw">${body}</div>${ps?'':statLvlBar(p)}`; }
+  const lv=ps?'':statLvlBar(p);
+  return `<div class="st-head">${head||''}${lvHead?lv:''}${tabs}</div><div class="tw">${body}</div>${lvHead?'':lv}`; }
 function statLvl(p){ const v=UI.cLvl||'1'; return p&&p.hist&&p.hist.some(h=>h.lvl==='퓨처스')?v:'all'; }
 function statLvlBar(p){ if(!p||!p.hist||!p.hist.some(h=>h.lvl==='퓨처스'))return ''; return `<div class="st-lvl" role="group" aria-label="기록 범위">${optRow('cLvl',UI.cLvl||'1',[['1','1군만'],['all','2군 포함'],['2','2군만']])}</div>`; }
 /* 아마 통산 줄의 연도(국사왕 11-17): 지명된 선수는 지명 연도(그해 9월 지명 → 다음 해 데뷔), 아직 아마추어면 올해. 예전에는 늘 올해로 찍혀 연도순 정렬 뒤 프로 선수의 올해 기록 사이에 끼었다 */
