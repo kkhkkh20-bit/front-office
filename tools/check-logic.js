@@ -6781,6 +6781,44 @@ T('[검수 11-17 #206] 연대기: 옛 이적 장부로 다시 만든 거래는 �
   G.day=dnum(y,11,20); G.last=Object.assign({},G.last||{},{y}); const nk=ciNickPool()[0]; ok(clubRebrand(tid,{nick:nk},'점검'),'이름 바꾸기 실패'); const n1=tshort(tid);
   const row=pid=>legacyClubChron(tid,[]).find(x=>x.k==='move'&&x.ref===pid); ok(row(-901)&&row(-901).t.includes(n0+' →')&&!row(-901).t.includes(n1),'7월 거래 이름: '+(row(-901)||{}).t); ok(row(-902)&&row(-902).t.includes('→ '+n1),'12월 거래 이름: '+(row(-902)||{}).t);
   const L=G.tnames[tid]; L[1].y0=y; L[0].y1=y-1; delete L[1].d0; const c=clubChron(tid).find(x=>x.k==='rebrand'); ok(c,'이름 변경 연대기 없음'); c.source='rebrand:'+tid+':'+y; ciMigrate(); ok(L[1].d0===c.d,'옛 저장 이름 이력 날짜를 채우지 못함'); ok(row(-901).t.includes(n0+' →'),'옛 저장(시즌 중 이름 변경)에서 7월 거래 이름: '+row(-901).t); });
+/* 외부 검수 11-17 코치 영입 공통 규칙(89d_coach_rules): 영입 가능 검사 하나(coachHireWhy)와 정산 하나(coachRelease·coachCompPay)를 모든 길이 쓴다 */
+const CMK=(k,o)=>{ const c=mkCoach(k); c.ob=null; c.res=null; c.age=50; c.from=null; c.fromY=null; c.clan=null; return Object.assign(c,o||{}); };
+const OTH=()=>G.teams.map(t=>t.id).filter(id=>id!==G.user);
+T('[검수 11-17 #255] 다른 구단 우선 협상 후보는 코치 빼가기·직접 영입으로도 데려올 수 없다(자동 보강에서 빠지는 것과 같게)',()=>{ fresh(); const A=OTH()[0]; G.coach[G.user].pc=null; const c=CMK('pc',{res:A}); G.cmarket.push(c);
+  const w=hireCoach(c.id,2); ok(w&&w.includes('우선 협상'),'다른 구단 우선 협상 후보를 직접 영입: '+w); ok(G.coach[G.user].pc!==c&&G.cmarket.includes(c),'자리에 앉음');
+  c.res=G.user; ok(!hireCoach(c.id,2)&&G.coach[G.user].pc===c,'우리 우선 협상 후보는 영입돼야 함'); });
+T('[검수 11-17 #256] 단장이 떠난 구단의 우선 협상 코치를 다른 AI 구단이 월초 영입으로 데려가지 않는다(그 구단 권리 유지)',()=>{ fresh(); const old=G.user; const c=CMK('pc',{res:old,sk:95,dv:95,sal:60}); G.cmarket=[c]; switchTeam(OTH()[0]); G.day=KD(12,1);
+  for(const t of G.teams){ const x=G.coach[t.id].pc; if(x){ x.sk=35; x.dv=35; x.yrs=0; } } ok(coachHireWhy(OTH().find(id=>id!==old),c,{auto:true}).includes('우선 협상'),'공통 검사가 막지 않음');
+  for(let i=0;i<30;i++){ cmAiMonthly(); if(!G.cmarket.includes(c))break; } const at=G.teams.find(t=>G.coach[t.id].pc===c); ok(!at||at.id===old,'우선 협상권 없는 '+(at&&tshort(at.id))+'이(가) 데려감'); });
+T('[검수 11-17 #257] 겨울 계약 정리에서도 AI는 시장과 같은 연봉 여력 검사를 해 감당 못 할 9억 코치를 데려오지 않는다',()=>{ fresh(); const A=OTH()[0]; G.day=KD(11,15);
+  for(const t of G.teams)for(const k of CKEYS){ const x=G.coach[t.id][k]; if(x){ x.yrs=5; x.cs=G.year-1; } } const cur=CMK('pc',{sk:40,dv:40,sal:100}); staffCt(cur,1,G.year); G.coach[A].pc=cur;
+  const b=CMK('pc',{sk:95,dv:95,sal:900,fromY:G.year-1}); G.cmarket=[b]; ok(!cmCanPay(team(A),b,null),'준비 실패: 감당 가능한 연봉'); coachYear(); ok(G.coach[A].pc!==b,'연봉 여력을 넘는 코치를 겨울 정리에서 영입'); });
+T('[검수 11-17 #258] 월초 AI 영입은 다음 시즌 합류 계약 코치를 합류 전에 밀어내고 정산하지 않는다',()=>{ fresh(); const A=OTH()[0]; G.day=KD(12,1); const j=CMK('pc',{sk:40,dv:40,sal:100}); staffCt(j,3,G.year+1); G.coach[A].pc=j; ok(coachSev(j)>0,'준비 실패');
+  for(let i=0;i<30;i++){ const c=CMK('pc',{sk:95,dv:95,sal:60}); G.cmarket=[c]; cmAiMonthly(); if(G.coach[A].pc!==j)break; } ok(G.coach[A].pc===j,'합류 전 코치를 밀어냄'); ok(j.yrs===3,'합류 전 코치 계약이 끝남'); });
+T('[검수 11-17 #259] AI 신임 감독 사단이 기존 코치를 밀어내면 잔여 연봉 절반을 구단 지출로 정산하고 시장에 내놓는다',()=>{ fresh(); const A=OTH()[0]; const old=CMK('pc',{sal:100}); staffCt(old,3,G.year); G.coach[A].pc=old; const pay=coachSev(old); ok(pay>0,'준비 실패'); const cash=team(A).cash;
+  const n={id:'M-T259',name:'검수감독',yrs:2,clan:[CMK('pc')]}; aiClanInstall(n,A); ok(G.coach[A].pc===n.clan[0],'준비 실패: 사단 합류'); ok(Math.abs(team(A).cash-(cash-pay))<1,'정산 '+(cash-team(A).cash)+' / '+pay); ok(G.cmarket.includes(old)&&old.yrs===0,'밀려난 코치가 시장에 없음'); });
+T('[검수 11-17 #260] 재계약 뒤 1년 보호 중인 다른 구단 코치에게는 우리도 영입을 제의할 수 없다(AI 빼가기와 같게)',()=>{ fresh(); const A=OTH()[0]; G.day=KD(12,1); ok(poachOff(),'준비 실패: 비시즌 아님'); G.poachN={}; const c=CMK('pc',{sk:40,dv:40}); staffCt(c,2,G.year); c.raidSafe=G.day+365; G.coach[A].pc=c;
+  const w=poachCoach(A,'pc','pc'); ok(w.includes('보호'),'보호 기간 코치에게 제의됨: '+w); ok(G.coach[A].pc===c,'코치가 옮김'); ok(coachHireWhy(OTH()[1],c,{from:A,to:'pc'}).includes('보호'),'AI 쪽 공통 검사도 막아야 함'); });
+T('[검수 11-17 #261] 이번 겨울 이미 코치 2명을 빼 간 AI 구단의 열린 제안은 수락 때도 한도를 지켜 없던 일이 된다',()=>{ fresh(); const A=OTH()[0]; G.day=KD(12,1); G.poachN={}; const c=CMK('pc'); staffCt(c,2,G.year); G.coach[G.user].pc=c; G.coach[A].pc=null;
+  G.cmRaid=[{id:c.id,role:'pc',tid:A,to:'pc',sal:c.sal*3,exp:G.day+7,from:G.user,occ:null}]; poachAdd(A); poachAdd(A); const s=cmLet(c.id); ok(G.coach[G.user].pc===c,'한도를 넘어 데려감: '+s); ok(poachN(A)===2,'한도 '+poachN(A)); ok(!G.cmRaid.length,'제안이 남음'); });
+T('[검수 11-17 #262] 코치 빼가기 보상금은 누가 데려가든 같다: AI가 우리 코치를 데려가도 우리가 보상금을 받는다',()=>{ fresh(); const A=OTH()[0]; G.day=KD(12,1); G.poachN={}; const c=CMK('pc',{sal:100}); staffCt(c,3,G.year); G.coach[G.user].pc=c; G.coach[A].pc=null;
+  const comp=coachPoachComp(c); ok(comp>0,'준비 실패: 보상금 0'); const B=OTH()[1]; G.coach[B].pc=c; ok(poachTerms(B,'pc','pc').comp===comp,'우리가 빼 올 때 보상금이 다름'); G.coach[B].pc=null;
+  const in0=G.spend.compIn||0, cash=team(A).cash; G.cmRaid=[{id:c.id,role:'pc',tid:A,to:'pc',sal:c.sal*2,exp:G.day+7,from:G.user,occ:null}]; cmLet(c.id); ok(G.coach[A].pc===c,'준비 실패: 이적');
+  ok((G.spend.compIn||0)-in0===comp,'우리가 받은 보상금 '+((G.spend.compIn||0)-in0)+' / '+comp); ok(Math.abs(cash-team(A).cash-comp)<1,'데려간 구단 지출 '+(cash-team(A).cash)); });
+T('[검수 11-17 #263] 열린 제안 사이 그 구단이 그 자리에 다음 시즌 코치를 앉히면 제안은 없던 일이 되고 합류 코치를 해지하지 않는다',()=>{ fresh(); const A=OTH()[0]; G.day=KD(12,1); G.poachN={}; const c=CMK('pc'); staffCt(c,2,G.year); G.coach[G.user].pc=c; const x=CMK('pc'); staffCt(x,1,G.year); G.coach[A].pc=x;
+  G.cmRaid=[]; for(let i=0;i<40&&!G.cmRaid.length;i++){ c.sk=99; c.dv=99; c.amb=99; c.loy=0; cmRaid(); G.cmRaid=G.cmRaid.filter(r=>r.id===c.id); } if(G.cmRaid.length){ const r=G.cmRaid[0]; ok(r.occ===coachSeatId(r.tid,r.to),'제안에 자리 정보가 없음'); }
+  const mk=occ=>{ const j=CMK('pc'); staffCt(j,3,G.year+1); G.coach[A].pc=j; const r={id:c.id,role:'pc',tid:A,to:'pc',sal:c.sal*3,exp:G.day+7,from:G.user}; if(occ!==undefined)r.occ=occ; G.cmRaid=[r]; return j; };
+  for(const occ of [x.id,undefined]){ const j=mk(occ), cash=team(A).cash; const s=cmLet(c.id); ok(G.coach[G.user].pc===c,'낡은 제안으로 이적: '+s); ok(G.coach[A].pc===j&&j.yrs===3,'합류 코치 해지'); ok(team(A).cash===cash,'정산금 지출'); ok(!G.cmRaid.length,'제안이 남음'); } });
+T('[검수 11-17 #264] 감독대행인 수석코치가 빼가기로 떠나면 그 구단(단장이 떠난 AI 구단 포함) 대행을 다시 정하고, 옛 저장도 불러올 때 한 번 고친다',()=>{ fresh(); const [A,B]=OTH(); const h=CMK('hc'); staffCt(h,2,G.year); G.coach[A].hc=h; G.mgr[A]=mkInterim(A); ok(G.mgr[A].cid===h.id,'준비 실패');
+  G.day=KD(12,1); G.poachN={}; G.cmRaid=[{id:h.id,role:'hc',tid:B,to:'hc',sal:h.sal*3,exp:G.day+7,from:A,occ:coachSeatId(B,'hc')}]; cmLeave(G.cmRaid[0]); ok(G.coach[B].hc===h,'준비 실패: 이적'); ok(G.mgr[A].interim&&G.mgr[A].cid!==h.id,'떠난 코치가 대행으로 남음');
+  G.mgr[A]=Object.assign(mkInterim(A),{cid:h.id,name:h.name+'(감독대행)'}); coachRulesMigrate(); const m1=G.mgr[A]; ok(m1.cid!==h.id,'옛 저장 대행을 고치지 않음'); coachRulesMigrate(); ok(G.mgr[A]===m1,'두 번째 수리에서 바뀜'); });
+T('[검수 11-17 #265] 우리가 코치를 빼 오면 원 소속 구단 후임은 코치 시장에서 같은 빈자리 규칙으로 고른다',()=>{ fresh(); const A=OTH()[0]; G.day=KD(12,1); ok(poachOff(),'준비 실패'); const c=CMK('pc',{sk:40,dv:40}); staffCt(c,1,G.year); G.coach[A].pc=c; const m=CMK('pc',{sk:92,dv:92,sal:60}); G.cmarket.push(m);
+  let s=''; for(let i=0;i<30&&G.coach[A].pc===c;i++){ G.poachCd={}; G.poachCtr={}; G.poachN={}; s=poachCoach(A,'pc','pc'); } ok(G.coach[G.user].pc===c,'준비 실패: 빼 오기 안 됨 '+s); ok(G.coach[A].pc===m,'후임이 시장 후보가 아님: '+(G.coach[A].pc&&G.coach[A].pc.name)); });
+T('[검수 11-17 #266] 다음 시즌 합류 계약인 우리 코치에게는 다른 구단 영입 제안이 오지 않고, 이미 열린 제안도 수락되지 않는다',()=>{ fresh(); const C=G.coach[G.user]; const c=CMK('pc',{sk:99,dv:99,amb:99,loy:0}); staffCt(c,3,G.year+1); C.pc=c; G.day=KD(12,1);
+  let n=0; for(let i=0;i<40;i++){ G.cmRaid=[]; n+=cmRaid().filter(r=>r.id===c.id).length; } ok(n===0,'합류 전 코치에게 제안 '+n+'건'); const A=OTH()[0]; G.coach[A].pc=null; G.cmRaid=[{id:c.id,role:'pc',tid:A,to:'pc',sal:c.sal*3,exp:G.day+7,from:G.user,occ:null}]; cmLet(c.id); ok(C.pc===c,'합류 전 코치가 떠남'); });
+T('[검수 11-17 #267] 은퇴 나이 코치는 직접 영입으로도 계약하지 않고, 64세 이상은 1년 계약만',()=>{ fresh(); G.coach[G.user].pc=null; const c=CMK('pc',{age:71}); G.cmarket.push(c); const w=hireCoach(c.id,3); ok(w&&w.includes('은퇴'),'71세 3년 계약: '+w); ok(G.coach[G.user].pc!==c,'자리에 앉음');
+  const d=CMK('pc',{age:65}); G.cmarket.push(d); ok(hireCoach(d.id,3),'65세 3년 계약됨'); ok(!hireCoach(d.id,1)&&G.coach[G.user].pc===d,'65세 1년 계약 실패'); });
+
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
