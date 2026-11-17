@@ -140,7 +140,23 @@ function cTrailClear(){ const sv=document.getElementById('cs-trail'); if(sv)sv.i
 async function cBanner(g,half){ const el=document.getElementById('cs-bn'); if(!el)return; const at=half%2?g.home:g.away;
   el.innerHTML=`<div>${badge(at,40)}<b>${cHalfTxt(half)}</b><span>${esc(tname(at))} 공격</span></div>`; el.className='cs-bn on'; sfx('bong',.55); try{ await cSleep(850); }finally{ el.className='cs-bn'; } /* 멈춤·넘기기로 대기가 끊겨도 이닝 배너가 화면에 남지 않게 */ await cSleep(150); }
 /* 볼 수 있는 장면 고르기 */
-function cKeep(g,k,mode){ if((g.incidents||[]).some(e=>e.k===k))return true;if(mode==='all'||pcRecords(g,k).length)return true; const L=g.pbp; const x=L[k]; if(typeof x[1]!=='number')return false; const b=cBefore(g,k); const risp=!!(b.bases[1]||b.bases[2]);
+/* 하이라이트 핵심 이닝(사용자 11-17: 타격 장면만 이어 붙이면 상황에 몰입하기 전에 지나간다).
+   점수가 난 반 이닝, 또는 경기 후반(7회 이후) 2점 차 이내에서 득점권 주자가 나간 반 이닝은 첫 주자가 나간 타석부터 그 반 이닝 끝까지 모든 공을 그대로 보여 준다.
+   주자 없이 나온 홈런처럼 혼자 끝나는 장면은 예전처럼 그 타석만 */
+const CHL=new WeakMap();
+function cHlSegs(g){ let R=CHL.get(g); if(R&&R.n===g.pbp.length)return R; const L=g.pbp, inSeg=new Set(), start=new Map(), C=[], win=typeof castWinIdx==='function'?castWinIdx(g):-1;
+  let i=0; while(i<L.length){ const h=L[i][0]; let j=i; while(j<L.length&&L[j][0]===h)j++; /* [i,j): 한 반 이닝 */
+    let runs=0, risp=false, first=-1, closeLate=false;
+    for(let k=i;k<j;k++){ const x=L[k], b=cBefore(g,k); if(typeof x[1]==='number'&&x[6]>0)runs+=x[6]; if(b.bases[1]||b.bases[2])risp=true; if(first<0&&(b.bases[0]||b.bases[1]||b.bases[2]))first=k; if(h>=12&&Math.abs((b.sa||0)-(b.sh||0))<=2)closeLate=true; }
+    const key=runs>0&&first>=0||risp&&closeLate;
+    if(key){ const s=Math.max(i,first-1); /* 첫 주자를 내보낸 그 타석부터(first는 주자가 있는 상태로 시작하는 첫 줄) */
+      C.push({s,j,half:h,runs,sc:runs+(h>=12?1.5:0)+(win>=s&&win<j?3:0)+(closeLate?1:0)}); }
+    i=j; }
+  /* 너무 길어지지 않게 경기당 세 이닝까지: 결승점 이닝 > 득점 많은 이닝 > 후반 접전 순 */
+  C.sort((a,b)=>b.sc-a.sc||b.half-a.half).slice(0,3).forEach(q=>{ for(let k=q.s;k<q.j;k++)inSeg.add(k); start.set(q.s,{half:q.half,runs:q.runs,sa:cBefore(g,q.s).sa||0,sh:cBefore(g,q.s).sh||0}); });
+  R={n:L.length,inSeg,start}; CHL.set(g,R); return R; }
+function cInSeg(g,k){ const c=UI.cast; return !!(c&&c.mode&&c.mode!=='all'&&cHlSegs(g).inSeg.has(k)); }
+function cKeep(g,k,mode){ if((g.incidents||[]).some(e=>e.k===k))return true;if(mode==='all'||pcRecords(g,k).length)return true; if(cHlSegs(g).inSeg.has(k))return true; const L=g.pbp; const x=L[k]; if(typeof x[1]!=='number')return false; const b=cBefore(g,k); const risp=!!(b.bases[1]||b.bases[2]);
   if(mode==='risp')return risp; return x[6]>0||['HR','3B','2B','DP','HBP'].includes(x[3])||(x[3]==='K'&&risp)||k===L.length-1||(x[4]>=3&&b.half>=16&&Math.abs(x[7]-x[8])<=1); }
 /* 상황별 수비 위치(사용자 11-17: 실제 야구 수비처럼). 기록은 바꾸지 않는 화면 연출. 반환: 포지션→자리(기본은 CFP) */
 function cAlign(g,st,oT){ const A={}, b=st.bases||[0,0,0], outs=st.outs||0, half=st.half||0, top=half%2===0, defLead=top?(st.sh||0)-(st.sa||0):(st.sa||0)-(st.sh||0), late=half>=12, small=typeof mgrOf==='function'?(mgrOf(oT)||{}).small??50:50;
@@ -229,7 +245,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   if(typeof x[1]!=='number')return;const intro=pcAtBatIntro(g,k);cCap(intro.c,'',intro.a);
   const o=x[3], rnd=mulberry((g.day*977+k*131+(g.home*7+g.away))|0); const bid=x[1]; const bat=card('o'+bid);
   const homeBat=x[0]%2===1; if(homeBat&&(b.bases[1]||b.bases[2]))sndLoop('chant','chant',.45,.5);
-  if(c.mode&&c.mode!=='all')await cSleep(250);
+  if(c.mode&&c.mode!=='all'&&!cInSeg(g,k))await cSleep(250);
   /* 타구 방향은 먼저 정한다(타석 장면과 필드 장면이 같은 타구를 보여주도록) */
   const scene3d0=c3DActive(); let spot=null, arc=false, flight=650, kind='', opos=null; c.gb=false; c.errPos=null; c.infHit=false;
   if(o==='HR'){ const th=-38+rnd()*76; spot=cPolar(th,96); arc=true; flight=1100; kind='홈런'; }
@@ -253,8 +269,8 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
     kind=typ==='fly'?(x[6]>0?'희생플라이':'뜬공 아웃'):typ==='gb'&&x[6]>0&&o!=='DP'?(x[12]>0?'땅볼 타점':'땅볼 득점'):typ==='ld'?'직선타 아웃':typ==='err'?'실책':x[16]?'번트 실패 · 포스아웃':(o==='DP'?'병살타':'땅볼 아웃'); }
   if(spot)spot=cFair(spot); /* 인플레이 타구는 늘 페어 지역에 떨어진다 */
   const cam=false,scene3d=c3DActive();
-  if(c3DActive()&&!(c.mode&&c.mode!=='all')&&!(c.pitch?.k===k&&c.pitch.shown)){ const al=cAlign(g,b,b.half%2===0?g.away:g.home)._k; if(al&&pcH(g,k,'alsay')<.55){ cSpeak(g,k,'align',{kind:al}); await cSleep(1100); } } /* 수비 위치가 바뀐 이유를 해설이 짚는다(사용자 11-17). 매 타석 같은 말이 반복되지 않게 절반 정도만 */
-  { const seq=cPitchSeq(g,k); const fast=c.mode&&c.mode!=='all'; const show=fast&&!(g.incidents||[]).some(e=>e.k===k)?Math.min(2,seq.length):seq.length;
+  if(c3DActive()&&(!(c.mode&&c.mode!=='all')||cInSeg(g,k))&&!(c.pitch?.k===k&&c.pitch.shown)){ const al=cAlign(g,b,b.half%2===0?g.away:g.home)._k; if(al&&pcH(g,k,'alsay')<.55){ cSpeak(g,k,'align',{kind:al}); await cSleep(1100); } } /* 수비 위치가 바뀐 이유를 해설이 짚는다(사용자 11-17). 매 타석 같은 말이 반복되지 않게 절반 정도만 */
+  { const seq=cPitchSeq(g,k); const fast=c.mode&&c.mode!=='all'&&!cInSeg(g,k); const show=fast&&!(g.incidents||[]).some(e=>e.k===k)?Math.min(2,seq.length):seq.length;
     const throwOne=async(q,i,last)=>{const delivery=pitchDelivery(G.players[x[2]]),pc=st.querySelector('.cc.pit'),sw=last?(o!=='BB'&&o!=='HBP'&&!/루킹/.test(q.res)):/헛스윙|파울/.test(q.res),stretch=true /* 주자가 없어도 모든 투구를 세트 포지션에서(사용자 11-12) */,wind=scene3d?(Math.round(Match3D.pitchReleaseMs(delivery,stretch))):(fast?150:220),travel=scene3d?Math.round(18.44/(Math.max(80,q.v)/3.6)*1000):(fast?240:300),lead=scene3d&&sw?Math.min(wind,Math.max(0,Match3D.swingContactMs()*.8-travel)):0; /* 스윙은 빠르게(접촉까지 약 0.75초), 동작 프레임은 클립을 촘촘히 다시 뽑아 부드럽게(사용자 피드백 11-07) */
       const bunt=last&&(o==='SAC'||!!x[16]); /* 희생번트·번트 실패 타석의 마지막 공: 풀스윙 대신 번트 */const fakeBunt=scene3d&&!bunt&&!sw&&/^(볼|스트라이크)$/.test(q.res)&&b.outs===0&&(b.bases[0]||b.bases[1])&&!b.bases[2]&&pcH(g,k,'fb'+i)<cTacRate(g,k,.3); /* 페이크 번트: 번트 자세만 잡았다가 뺀다 */const hitRun=scene3d&&last&&!fast&&/타격/.test(q.res)&&o!=='DP'&&b.bases[0]&&!b.bases[1]&&!b.bases[2]&&b.outs<2&&(x[5]||[])[0]!==b.bases[0]&&pcH(g,k,'hr')<cTacRate(g,k,.22); /* 기록상 1루 주자가 1루를 떠난 타석만(뜬공으로 1루에 남으면 중간에 서 있게 된다) */ /* 히트 앤드 런: 투구와 함께 1루 주자가 먼저 뛴다 */if(scene3d)Match3D.windup(wind/cSpd(),delivery,stretch);if(scene3d&&bunt)Match3D.swing((wind+travel)/cSpd(),'bunt');if(fakeBunt){Match3D.swing((wind+travel)/cSpd(),'bunt');cSpeak(g,k,'fakebunt');}if(hitRun){const rc=st.querySelector(`.cc[data-k="o${b.bases[0]}"]`);if(rc)setTimeout(()=>{if(UI.cast&&g.pbp[k]===x){cPlace(rc,[CBS[0][0]+(CBS[1][0]-CBS[0][0])*.3,CBS[0][1]+(CBS[1][1]-CBS[0][1])*.3],wind+travel);cSpeak(g,k,'hitrun');}},wind*.3/cSpd());}if(pc){pc.classList.remove('th');void pc.offsetWidth;pc.classList.add('th');}
       await cSleep(wind-lead);if(scene3d&&sw&&!bunt)Match3D.swing((lead+travel)/cSpd());if(sw&&!bunt)setTimeout(()=>sfx('swing',.6,.95+Math.random()*.1),Math.max(0,(lead+travel)/cSpd()-160));if(lead)await cSleep(lead);sfx('pitch',.45,.9+Math.random()*.2);CT.pitch=Object.assign({},q,{th:(G.players[cPit(g,k)]||{}).th});if(scene3d){const catcher=c3DFielder(g,k,'C');if(catcher)Match3D.receive('d'+catcher.id,q.y<.18?'pitch_high':q.y>.82?'pitch_low':'pitch',travel/cSpd(),CFP.P); /* 높은 공·낮은 공 포구 자세 */}await cBall(CFP.P,[50+(q.x-.5)*4,88+(q.y-.5)*2],travel,false);cBallHide();if(scene3d&&!/타격|파울|번트|몸에 맞는 공/.test(q.res)){const catcher=c3DFielder(g,k,'C');if(catcher)Match3D.caught('d'+catcher.id,'투구 포구');}
@@ -313,6 +329,7 @@ async function castLoop(){ const host=document.getElementById('cs-3d');if(CT.run
       const x=L[c.k]; const md=c.mode||'all'; if(md!=='all'&&!cKeep(g,c.k,md)){ c.k++; continue; }
       cDraw(c.k,md==='all'?300:0); await cSleep(md==='all'?260:200);
       if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); if(md==='all')await cDefense(g,c.k,x[0]); }
+      if(md!=='all'){ const sg=cHlSegs(g).start.get(c.k); if(sg){ const top=sg.half%2===0, tm=top?g.away:g.home; cCap(`${Math.floor(sg.half/2)+1}회${top?'초':'말'} ${tshort(tm)} 공격 · ${tshort(g.away)} ${sg.sa} : ${sg.sh} ${tshort(g.home)} · 이 이닝은 처음부터 봅니다`); await cSleep(1600); } }
       await cAnim(c.k); c.k++; } }
   catch(e){if(e!=='stop')console.error('중계 재생 오류',e);} finally{ if(my===CT.tok)CT.run=false; } }
 function castMount(){ const c=UI.cast; if(!c)return; CT.tok++; CT.run=false; setTimeout(()=>castStart2D(c),12000); requestAnimationFrame(async()=>{if(UI.cast!==c)return; cDraw(c.k,0); const host=document.getElementById('cs-3d'); const ok=host&&typeof Match3D!=='undefined'&&await Match3D.mount(host,{day:[0,6].includes(dobj(G.games[c.g].day).w)}); if(UI.cast!==c||!host?.isConnected)return; cPrepDone(ok); cDraw(c.k,0); if(c.play&&!CT.run){castResumePitch();castLoop();} }); }
