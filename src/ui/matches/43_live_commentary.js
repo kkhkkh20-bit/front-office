@@ -82,11 +82,19 @@ function pcPitchCall(g,k,q,index){if(/타격|번트/.test(q.res))return null;con
  else if(/삼진/.test(q.res))c=`${q.t}, ${q.res}! 이 승부는 투수의 것입니다!`;
  else c=/헛스윙/.test(q.res)?`${q.t}, 헛스윙!${q.s===1?' 두 스트라이크!':''}`:`${q.t}, 스트라이크!${q.s===1?' 이제 두 스트라이크입니다!':''}`;
  return {c,a:''};}
+/* 감독 성향 한마디(사용자 11-17: 감독이 무슨 작전을 내리는 것 같다고). 공격 팀 감독의 작전 성향(small)이 뚜렷할 때만 */
+function pcTac(g,k,kind){ try{ const x=g.pbp[k], oT=x[0]%2===0?g.away:g.home, m=(typeof mgrOf==='function'?mgrOf(oT):null)||{}, sm=m.small??50, nm=G.mgr&&G.mgr[oT]&&G.mgr[oT].name?G.mgr[oT].name+' 감독':'상대 감독'; if(sm>=65)return kind==='bunt'?` ${nm}은 작은 야구를 즐깁니다. 번트 작전이 자주 나오는 팀이죠.`:` ${nm}은 뛰는 야구를 좋아합니다.`; if(sm<=35&&kind==='run')return ` 평소 작전을 잘 걸지 않는 ${nm}인데, 이번엔 승부를 거는군요.`; return ''; }catch(e){ return ''; } }
 function pcLiveCall(g,k,phase,ctx={}){const name=pcName(g,g.pbp[k][1]),pick=(key,lines)=>pcVoice(g,k,'live:'+key,lines,true),fielder=ctx.fielder||'수비수';switch(phase){
  case 'flight':return {c:ctx.arc?pick('air',[`${name}, 높이 띄웠어요! ${fielder}, 따라갑니다!`,`뻗어 가는 타구! ${fielder}, 끝까지 봅니다!`,`공이 올라갑니다! ${fielder}의 글러브를 보세요!`]):ctx.ground?`${name}, 땅볼! ${fielder}, 달려 나옵니다!`:`낮게 뻗었어요! ${fielder}, 타구를 쫓습니다!`,a:''};
  case 'homer':return {c:ctx.landing||pick('homer-impact',[`갔습니다! ${name}, 담장 밖으로!`,`넘어갔어요! ${name}, 홈런입니다!`,`아, 이게 뭔가요! ${name}의 홈런!`]),a:''};
  case 'throw':return {c:ctx.relay?`${fielder}, ${ctx.receiver}에게 중계합니다!`:`${fielder}, ${ctx.receiver}에게 송구합니다!`,a:''};
- case 'steal':return {c:`뜁니다! ${ctx.runner}, ${ctx.base}를 노립니다!`,a:''};
+ case 'steal':return {c:`뜁니다! ${ctx.runner}, ${ctx.base}를 노립니다!${pcTac(g,k,'run')}`,a:''};
+case 'align':return {c:({in:pick('al-in',['3루 주자를 홈에서 막으려고 내야가 전진 수비를 합니다.','내야 전진 수비! 한 점도 안 주겠다는 수비 벤치의 선택입니다.']),bunt:pick('al-bunt',['번트를 대비해 1루수와 3루수가 앞으로 나옵니다.','1·3루수가 잔디 앞까지 들어왔습니다. 번트 경계입니다.'])+pcTac(g,k,'bunt'),dp:pick('al-dp',['병살을 노리고 유격수와 2루수가 2루 쪽으로 좁혀 섭니다.','키스톤 콤비가 간격을 좁혔습니다. 땅볼 하나면 병살입니다.']),hold:pick('al-hold',['1루수가 베이스에 붙어 주자를 묶어 둡니다.','1루수가 주자 옆에 붙었습니다. 리드를 짧게 만들려는 수비입니다.']),deep:pick('al-deep',['외야가 뒤로 물러났습니다. 장타만은 막겠다는 수비입니다.','앞서 있는 팀, 외야를 깊게 세웠습니다. 단타는 내줘도 장타는 안 된다는 뜻입니다.'])})[ctx.kind]||'',a:''};
+case 'pickoff':return {c:pick('po',[`견제구! 발 빠른 ${ctx.runner}, 도루를 경계합니다.`,`투수가 1루로 돌아섭니다. ${ctx.runner}의 리드가 신경 쓰이는 모양입니다.`,`견제! ${ctx.runner}, 몸을 날려 귀루합니다.`])+pcTac(g,k,'run'),a:''};
+case 'fakebunt':return {c:pick('fb',['번트 자세를 보였다가 뺍니다. 내야를 흔들어 보려는 벤치의 작전으로 보입니다.','타자가 번트 자세! 아, 빼는군요. 수비 반응을 떠보는 것 같습니다.'])+pcTac(g,k,'bunt'),a:''};
+case 'hitrun':return {c:pick('hnr',['1루 주자가 투구와 함께 스타트! 벤치에서 히트 앤드 런 사인이 나온 것 같습니다.','주자 스타트! 히트 앤드 런 작전입니다. 타자는 무조건 맞혀야 합니다.'])+pcTac(g,k,'run'),a:''};
+case 'assist':return {c:ctx.home?pick('as-h',[`총알 같은 홈 송구! ${ctx.fielder}, 홈에서 잡아냅니다!`,`강견 ${ctx.fielder}! 노바운드에 가까운 송구로 홈에서 아웃!`,`${ctx.fielder}의 레이저 송구! 홈 보살입니다!`]):pick('as-b',[`${ctx.fielder}, 정확한 송구로 주자를 잡아냅니다! 보살!`,`욕심낸 주자를 ${ctx.fielder}가 응징합니다!`]),a:''};
+case 'leap':return {c:pick('leap',[`잡았습니다! ${ctx.fielder}, 몸을 날려 걷어냅니다!`,`엄청난 점프! ${ctx.fielder}의 호수비!`,`빠지는 줄 알았어요! ${ctx.fielder}, 한 발 더 뛰어올라 잡아냅니다!`]),a:''};
  case 'bench-start':return {c:'잠깐, 벤치가 움직입니다! 분위기가 뜨거워져요!',a:''};
  case 'bench-talk':return {c:'말려야 합니다! 동료들이 사이를 막아섭니다!',a:''};
  case 'bench-back':return {c:'됐어요! 각자의 자리로, 다시 야구로 승부합니다!',a:''};
