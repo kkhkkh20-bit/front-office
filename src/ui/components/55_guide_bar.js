@@ -35,7 +35,7 @@ function guideItems(){ const ph=guidePhase(); let L=[];
 function guideRoute(){ try{ return UI.tab+':'+(typeof curSub==='function'?curSub(UI.tab)||'':''); }catch(e){ return UI.tab; } }
 /* 홈 카드 아랫줄: 쉬운 진행 켜기·끄기 */
 function guideEasyLine(){ if(typeof AUTO_AREAS==='undefined')return ''; const on=guideEasy();
-  return `<div class="hw-easy${on?' on':''}"><span>${on?'<b>쉬운 진행</b> 켜짐 · 반복 업무는 비서와 팀장이 맡습니다':'<b>어렵다면</b> 반복 업무(연봉·재계약·일상 결정·감독 요청·스카우트 배치)를 비서에게'}</span><button class="btn small${on?'':' primary'}" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다. 설정 › 권한에서 하나씩 바꿀 수도 있습니다.':'드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다. 설정 › 권한에서 언제든 다시 가져옵니다.'}">${on?'끄기':'쉬운 진행 켜기'}</button></div>`; }
+  return `<div class="hw-easy${on?' on':''}"><span>${on?'<b>쉬운 진행</b> 켜짐 · 반복 업무는 비서와 팀장이 맡습니다':'<b>어렵다면</b> 반복 업무(연봉·재계약·일상 결정·감독 요청·스카우트 배치·코치 빈자리)를 비서에게'}</span><button class="btn small${on?'':' primary'}" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다. 설정 › 권한에서 하나씩 바꿀 수도 있습니다.':'드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다. 설정 › 권한에서 언제든 다시 가져옵니다.'}">${on?'끄기':'쉬운 진행 켜기'}</button></div>`; }
 /* '하기'로 간 화면 맨 위 한 줄 띠 */
 function guideBar(){ const g=UI.guide; if(!g||!guideOn()||UI.sheet!=null||UI.person||UI.teamSh!=null)return ''; if(g.route!==guideRoute())return '';
   const L=guideItems(), x=L.find(i=>i.k===g.k); if(!x)return ''; const next=L.find(i=>!i.ok&&i.k!==x.k);
@@ -54,7 +54,7 @@ function guideCfgCard(){ const off=!!(G.cfg&&G.cfg.guideOff); return `<section c
 Object.assign(A,{
   guideGo(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.go)return; if(x.k==='review'){ G.tutFlags=G.tutFlags||{}; G.tutFlags.review=true; } UI.guide={k:x.k}; A[x.go[0]]?.(x.go[1]); UI.guide={k:x.k,route:guideRoute()}; render(); },
   guideDeleg(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.deleg||!x.deleg.length)return; const L=x.deleg.map(k=>handOff(k)); toast(L.length>1?`${x.t}: ${x.deleg.length}가지 업무를 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`:L[0]); save(); render(); },
-  easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'쉬운 진행을 켰습니다. 연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안은 비서와 팀장이 맡습니다. 설정 › 권한에서 하나씩 다시 가져올 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
+  easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'쉬운 진행을 켰습니다. 연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강은 비서와 팀장이 맡습니다. 설정 › 권한에서 하나씩 다시 가져올 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
   guideClose(){ UI.guide=null; render(); },
   guideOff(v){ G.cfg=G.cfg||{}; G.cfg.guideOff=v==='1'; if(G.cfg.guideOff)UI.guide=null; save(); render(); },
 });
