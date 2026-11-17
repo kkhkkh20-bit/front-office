@@ -3016,6 +3016,7 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 
 /* 한 구역의 ⓘ를 하나로 합친 뒤(mergeHints) 말풍선이 길어질 수 있어 화면 안에서 스크롤 */
 #tipb{max-height:min(60vh,440px);overflow:auto}
+.cfm[tabindex="-1"]:focus{outline:none}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -37316,7 +37317,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const more=UI.fdMore||60; const shown=L.slice(0,more);
   const hd=z=>`<th><button data-a="fdS" data-v="${z.k}" class="${so2===z.k?'on':''}"${z.tip?` title="${esc(z.tip)}"`:''}>${z.h}${so2===z.k?(dir?'▲':'▼'):''}</button></th>`; /* 열 설명은 제목 옆 i 대신 목록 위 i 한 곳에 모은다(휴대폰에서 칸을 아끼려고) */
   const trow=x=>{ const p=x.p; const lv=x.s&&x.s.lvl===2; const t=x.t; const me=t&&t.tid===G.user; const r=RK[p.id]||0;
-    const lead=t?`<span class="fdtk">${badge(t.tid,18)}</span>`:`<button class="fds${sl.has(p.id)?' on':''}" data-a="star" data-v="${p.id}" aria-label="관심">${sl.has(p.id)?'★':'☆'}</button>`;
+    const lead=t?`<span class="fdtk">${badge(t.tid,18)}</span>`:`<button class="fds${sl.has(p.id)?' on':''}" data-a="star" data-v="${p.id}" aria-label="관심" aria-pressed="${sl.has(p.id)}">${sl.has(p.id)?'★':'☆'}</button>`;
     const tail=t?`<span class="fdtk2"><i>${me?'우리':esc(tshort(t.tid))} ${t.rd}-${t.no}</i>${fdChip(p)}</span>`:mine?`<button class="fdgo" data-a="fdPick" data-v="${p.id}">지명</button>`:'';
     return `<tr class="${lv?'f2':''}${!t&&sl.has(p.id)?' st':''}${t?(me?' gone me':' gone'):''}"><th><div class="fdn">${lead}<button class="fdnm" data-a="player" data-v="${p.id}"><b>${esc(p.name)}${!t&&r>=.1?`<em class="rkp ${r>=.6?'r3':r>=.3?'r2':'r1'}" title="다음 우리 차례 전에 다른 구단이 지명할 확률">${Math.round(r*100)}%</em>`:''}</b><i>${p.age}세·${p.isP?(isSPr(p)?'선발':'불펜'):SLK[p.pos]||posLabel(p)}·<span class="${!t&&MM&&p.sal>MM.room-MM.W?'lo':''}">${money(p.sal)}</span>${lv?'·2군':''}${isAway(p)?'·군':''}</i></button>${tail}</div></th>${COL.map(z=>z.td(x)).join('')}</tr>`; };
   const mob=fdCompact(); /* 휴대폰: 조작 줄을 한 줄로 모아 선수 목록을 넓게 */
@@ -41886,7 +41887,7 @@ function renderSheet0(){
   const d=G.draft; const canPick=p.prospect&&d&&!d.done&&d.picks[d.cur].tid===G.user;
   let actions='';
   if(canPick)actions=`<button class="btn primary block" data-a="pick" data-v="${p.id}">${d.picks[d.cur].rd}라운드 ${d.picks[d.cur].no}순위로 지명 · 계약금 약 ${money(bonusOf(d.picks[d.cur].rd,d.picks[d.cur].no,p))}</button>`;
-  if(p.fdPool&&G.fd&&!G.fd.done){ const fk=G.fd.picks[G.fd.cur]; actions=`<div class="row" style="gap:6px">${G.fd.open===false?`<button class="btn primary" style="flex:1" data-a="fdOpen">드래프트 시작하기 · 시작해야 지명할 수 있습니다</button>`:fk&&fk.tid===G.user&&fdManDone()?`<button class="btn" style="flex:1" disabled>${G.fd.man}라운드 직접 지명을 마쳤습니다 · 상황판에서 선택</button>`:fk&&fk.tid===G.user?`<button class="btn primary" style="flex:1" data-a="fdPick" data-v="${p.id}">${fk.rd}라운드 ${fk.no}번째로 지명</button>`:fk?`<button class="btn" style="flex:1" disabled>지금은 ${esc(tshort(fk.tid))} 차례입니다</button>`:''}<button class="btn" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button></div>`; }
+  if(p.fdPool&&G.fd&&!G.fd.done){ const fk=G.fd.picks[G.fd.cur]; actions=`<div class="row" style="gap:6px">${G.fd.open===false?`<button class="btn primary" style="flex:1" data-a="fdOpen">드래프트 시작하기 · 시작해야 지명할 수 있습니다</button>`:fk&&fk.tid===G.user&&fdManDone()?`<button class="btn" style="flex:1" disabled>${G.fd.man}라운드 직접 지명을 마쳤습니다 · 상황판에서 선택</button>`:fk&&fk.tid===G.user?`<button class="btn primary" style="flex:1" data-a="fdPick" data-v="${p.id}">${fk.rd}라운드 ${fk.no}번째로 지명</button>`:fk?`<button class="btn" style="flex:1" disabled>지금은 ${esc(tshort(fk.tid))} 차례입니다</button>`:''}<button class="btn" data-a="star" data-v="${p.id}" aria-pressed="${(G.shortlist||[]).includes(p.id)}" title="${(G.shortlist||[]).includes(p.id)?'누르면 관심을 해제합니다':'관심 선수로 표시'}">${(G.shortlist||[]).includes(p.id)?'★ 관심':'☆ 관심'}</button></div>`; }
   if(isFA)actions=''; /* 협상은 위쪽 '협상 창 열기'에서 */
   if(isFM){ const err=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; const mid=per==='season'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0;
     actions=''; }
@@ -42867,8 +42868,8 @@ function annRender(){ let el=document.getElementById('ann'); if(!el){ el=documen
     blk=playersOf(G.user).filter(q=>q.id!==p.id&&!q.foreign&&q.age<=24&&q.isP===!!p.isP&&(q.isP?(kk==='SP'?isSPr(q):!isSPr(q)):pSlot(q)===kk)&&(potVal(scoutReport(q))||0)>=53).slice(0,2); }catch(e){}
   const risk=[medInj(p)>=.2?'메디컬: 부상이 잦은 편':'',p.foreign&&p.adapt!=null&&p.adapt<45?'한국 적응 변수':'',p.age>=33?`${p.age}세, 하락 시작 나이`:''].filter(Boolean);
   const h=curLine(p); const stat=h?yrTag(h)+' '+(p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:''):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'')):'';
-  el.innerHTML=`<div class="cfm-w"><div class="cfm ann" role="dialog" aria-modal="true"><div class="cfm-h"><span>영입 발표</span><span>${dsh(G.day)}</span></div>
-    <div class="row" style="flex-wrap:nowrap;gap:12px">${avImg(p,true)}<div><h3 style="margin:0">${esc(p.name)}</h3><p class="small muted" style="margin:2px 0">${posLabel(p)} · ${p.age}세 · ${hand(p)}${st?` · ${esc(st.t)}`:''}</p>${(()=>{ const cv=curView(p); return (cv.est?'<span class="small muted">예상</span> ':'')+rchip(cv.v); })()}${stat?` <span class="small">${stat}</span>`:''}</div></div>
+  el.innerHTML=`<div class="cfm-w"><div class="cfm ann" role="dialog" aria-modal="true" aria-labelledby="ann-t" tabindex="-1"><div class="cfm-h"><span>영입 발표</span><span>${dsh(G.day)}</span></div>
+    <div class="row" style="flex-wrap:nowrap;gap:12px">${avImg(p,true)}<div><h3 id="ann-t" style="margin:0">${esc(p.name)}</h3><p class="small muted" style="margin:2px 0">${posLabel(p)} · ${p.age}세 · ${hand(p)}${st?` · ${esc(st.t)}`:''}</p>${(()=>{ const cv=curView(p); return (cv.est?'<span class="small muted">예상</span> ':'')+rchip(cv.v); })()}${stat?` <span class="small">${stat}</span>`:''}</div></div>
     <ul class="rec-w"><li><b>예상 역할</b> 감독은 ${esc(role)}(으)로 볼 것 같습니다.</li><li><b>보강 이유</b> ${esc(why)}</li><li><b>비용</b> 연봉 ${money(p.sal)} · ${ctText(p)}</li>${risk.length?`<li class="warn"><b>위험</b> ${risk.join(' · ')}</li>`:''}${blk.length?`<li><b>미래 경로</b> 같은 자리 유망주 ${blk.map(q=>`${esc(q.name)}(${posLabel(q)}, ${q.age}세)`).join(', ')}의 기회가 줄 수 있습니다.</li>`:''}</ul>
     <div class="cfm-b"><button class="btn" data-a="annPlayer" data-v="${p.id}">선수 보기</button><button class="btn primary" data-a="annClose">확인${UI.annQ.length>1?` (${UI.annQ.length-1}명 더)`:''}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
@@ -42901,17 +42902,21 @@ function advAskDoc(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P
   const sig=P.map(x=>x.id).join('|');
   return {subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행'+kbdHint('Space'),no:'취소'+kbdHint('Esc'),noMail:true,onOk:()=>{ if(P.length)UI._pendAck=sig; }}; }
 function advAsk(v){ UI.cfm={k:'advSpace',v,doc:advAskDoc(v)}; cfmRender(); } /* 확인은 진행을 눌렀을 때만(취소하면 다음 진행 때 다시 묻는다, 검수 11-08) */
+/* 결재 창 초점: 열 때 창 안으로 옮기고(Tab은 창 안에서만 돈다), 닫으면 창을 연 버튼으로 돌려준다(검수 11-17 #6) */
+function cfmFocusIn(el){ const was=!!el.querySelector('[role="dialog"]'); return ()=>{ const ae=document.activeElement; if(!was&&ae&&ae!==document.body&&!el.contains(ae))UI._cfmRet={el:ae,a:ae.dataset&&ae.dataset.a,v:ae.dataset&&ae.dataset.v}; const d=el.querySelector('[role="dialog"]'); if(d&&!d.contains(document.activeElement))try{ d.focus({preventScroll:true}); }catch(e){} }; }
+function cfmFocusBack(){ const r=UI._cfmRet; UI._cfmRet=null; if(!r)return; setTimeout(()=>{ if(UI.cfm||UI.advMore||document.querySelector('#cfm [role="dialog"]'))return; const ae=document.activeElement; if(ae&&ae!==document.body&&ae.isConnected)return; /* 다음 화면이 이미 초점을 잡았으면 그대로 */
+  let t=r.el&&r.el.isConnected?r.el:null; if(!t&&r.a){ try{ t=document.querySelector(`[data-a="${CSS.escape(r.a)}"]${r.v!=null?`[data-v="${CSS.escape(r.v)}"]`:''}`); }catch(e){} } if(t&&!t.disabled&&t.getClientRects().length)try{ t.focus({preventScroll:true}); }catch(e){} },0); }
 function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); }
-  const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;
-  el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3>${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
-  try{ josaFix(el); }catch(e){} }
+  const c=UI.cfm; if(!c){ const was=!!el.querySelector('[role="dialog"]'); el.innerHTML=''; if(was)cfmFocusBack(); return; } const d=c.doc; const fin=cfmFocusIn(el);
+  el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true" aria-labelledby="cfm-t" tabindex="-1"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3 id="cfm-t">${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
+  try{ josaFix(el); }catch(e){} fin(); }
 /* 길게 진행(플레이테스트 3: 시즌 한 번에 시리즈 단위 70번 클릭): 1주일 · 한 달 · 다음 주요 일정 전날까지. 중요한 소식·결정이 생기면 그 전에 멈춘다 */
 function advKeyList(){ const c=G.cal||{}, d=G.day, y=G.year, L=[]; const add=(n,t)=>{ if(Number.isFinite(n)&&n-1>d&&!L.some(x=>x[0]===n))L.push([n,t]); };
   try{ add(tradeDL(),'트레이드 마감'); }catch(e){} add(c.end,'정규시즌 종료'); add(c.draft,'신인 드래프트'); add(G.fa&&!G.fa.closed&&Number.isFinite(G.fa.openDay)?G.fa.openDay:KD(11,6),'FA 시장 개장'); add(c.camp>d+1?c.camp:dnum(y+1,1,25),'스프링캠프'); add(c.open,'개막');
   return L.sort((a,b)=>a[0]-b[0]); }
-function advMoreRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); } if(!UI.advMore){ el.innerHTML=''; return; }
+function advMoreRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); } if(!UI.advMore){ const was=!!el.querySelector('[role="dialog"]'); el.innerHTML=''; if(was)cfmFocusBack(); return; } const fin=cfmFocusIn(el);
   const K=advKeyList(), m1=G.day+30; const row=(a,v,t,s)=>`<button class="btn block advm-b" data-a="${a}" data-v="${v}"><b>${esc(t)}</b><span class="small muted">${esc(s)}</span></button>`;
-  el.innerHTML=`<div class="cfm-w" data-a="advMoreX"><div class="cfm advm" role="dialog" aria-modal="true" aria-label="길게 진행" data-stop="1"><div class="cfm-h"><span>진행</span><span>${dsh(G.day)}</span></div><h3>어디까지 진행할까요?</h3><p class="small muted">중요한 소식이나 결정, 예약한 관전 경기가 생기면 그 전에 멈춥니다.</p><div class="advm-l">${row('advPick','week','1주일',`${dmd(G.day+7)}까지`)}${row('advPick','mon','한 달',`${dmd(m1)}까지`)}${K.slice(0,4).map(([n,t])=>row('advPick','key:'+n,`${t} 전날까지`,`${dmd(n-1)} · ${n-G.day-1}일`)).join('')}</div><div class="cfm-b"><button class="btn" data-a="advMoreX">취소</button></div></div></div>`; }
+  el.innerHTML=`<div class="cfm-w" data-a="advMoreX"><div class="cfm advm" role="dialog" aria-modal="true" aria-labelledby="advm-t" tabindex="-1" data-stop="1"><div class="cfm-h"><span>진행</span><span>${dsh(G.day)}</span></div><h3 id="advm-t">어디까지 진행할까요?</h3><p class="small muted">중요한 소식이나 결정, 예약한 관전 경기가 생기면 그 전에 멈춥니다.</p><div class="advm-l">${row('advPick','week','1주일',`${dmd(G.day+7)}까지`)}${row('advPick','mon','한 달',`${dmd(m1)}까지`)}${K.slice(0,4).map(([n,t])=>row('advPick','key:'+n,`${t} 전날까지`,`${dmd(n-1)} · ${n-G.day-1}일`)).join('')}</div><div class="cfm-b"><button class="btn" data-a="advMoreX">취소</button></div></div></div>`; fin(); }
 A.advMore=function(){ if(UI.advRun||!G||G.unemp)return; UI.cfm=null; UI.advMore=true; advMoreRender(); };
 A.advMoreX=function(v,el,e){ if(e&&e.target&&e.target.closest&&e.target.closest('[data-stop]')&&!(el&&el.matches&&el.matches('button')))return; UI.advMore=false; advMoreRender(); };
 /* 진행 ▾ > 멈춤 조건: 설정 화면의 '진행 멈춤' 칸으로 바로 간다 */
@@ -42997,6 +43002,10 @@ document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if
 window.__readingWidth=innerWidth;
 window.addEventListener('resize',()=>{const zoomed=appZoom();const widthChanged=zoomed||Math.abs(innerWidth-window.__readingWidth)>1;window.__readingWidth=innerWidth;const touch=matchMedia('(pointer:coarse)').matches;window.__readingRedraw=window.__readingRedraw||widthChanged||!touch;clearTimeout(window.__rz);window.__rz=setTimeout(()=>{const redraw=window.__readingRedraw;window.__readingRedraw=false;if(!G)return;if(redraw||(!UI.title&&UI.tab==='home'&&!UI.homeFocus&&UI.sheet==null&&!document.querySelector('details[open]')))render();else{appFrameSync();workspaceRefit();if(UI.tab==='inbox')ibFit();if(UI.meet)meetWire();dayTickPosition(document.getElementById('dtick'));}},150);});
 document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.matches('details')){if(d.dataset.readingKey)(UI.readingOpen=UI.readingOpen||{})[d.dataset.readingKey]=d.open;if(d.dataset.k)UI.open[d.dataset.k]=d.open; if(d.open&&d.dataset.lazy==='1'){ const y=window.scrollY; render(); window.scrollTo(0,y); }else workspaceRefit(); } },true);
+/* 결재·길게 진행·영입 발표 창이 떠 있으면 Tab/Shift+Tab은 그 창의 버튼 사이에서만 돈다(검수 11-17 #6) */
+document.addEventListener('keydown',e=>{ if(e.key!=='Tab'||e.altKey||e.ctrlKey||e.metaKey)return; const D=[...document.querySelectorAll('#cfm [role="dialog"][aria-modal="true"],#ann [role="dialog"][aria-modal="true"]')].filter(d=>d.getClientRects().length); const d=D[D.length-1]; if(!d)return;
+  const F=[...d.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')].filter(x=>x.getClientRects().length); e.preventDefault(); if(!F.length){ try{ d.focus(); }catch(x){} return; }
+  const i=F.indexOf(document.activeElement); const n=i<0?(e.shiftKey?F.length-1:0):(i+(e.shiftKey?-1:1)+F.length)%F.length; F[n].focus(); },true);
 document.addEventListener('keydown',e=>{
   /* 결재가 떠 있으면 뒤의 협상·면담·중계·소식함으로 키를 전달하지 않는다. */
   if(UI.cfm){
@@ -43912,9 +43921,10 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const lab=i=>{ const a=hn0(H[pages[i][0]]), b=hn0(H[pages[i][pages[i].length-1]]); return a===b||!b?a:`${a} ~ ${b}`; };
     const bar=document.createElement('div'); bar.className='twpg';
     bar.innerHTML=`<button type="button" ${pg>0?'':'disabled'} aria-label="앞 열">◀</button><span><b>${pg+1}/${pages.length}</b> ${esc(lab(pg))}</span><button type="button" ${pg<pages.length-1?'':'disabled'} aria-label="다음 열">▶</button>`;
-    const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.twPg[key]=pg+d; twPager(); };
+    const [bp,bn]=bar.querySelectorAll('button'); tw._twpg=bar; const go=d=>{ const had=bar.contains(document.activeElement); UI.twPg[key]=pg+d; twPager(); if(had)twPagerFocus(tw,d); }; /* 버튼을 다시 만들어도 키보드 초점은 같은 쪽 버튼에(검수 11-17 #7) */
     bp.onclick=()=>go(-1); bn.onclick=()=>go(1); const rtools=matchMedia('(max-width:699px) and (min-height:600px)').matches?tw.closest('.roster-list')?.querySelector('.roster-tools'):null; /* 30_mobile_workspace.css의 세로 휴대폰 조건과 같게 */ if(tw.matches('.fdl-main .fdt-w')&&fdCompact())tw.before(bar); else if(rtools)rtools.append(bar); /* 선수 명단: 필터 줄 옆 */ else tw.insertBefore(bar,tb); /* 휴대폰 드래프트: 표 스크롤 밖에 두어 늘 보이게 */ tw._twGo=d=>{ if(pg+d>=0&&pg+d<pages.length)go(d); }; });
   document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); try{ tabRowHints(); }catch(e){} }
+function twPagerFocus(tw,d){ const bar=tw._twpg; if(!bar||!bar.isConnected)return; const B=[...bar.querySelectorAll('button')]; const t=B[d<0?0:1]; const f=t&&!t.disabled?t:B.find(b=>!b.disabled); if(f)try{ f.focus({preventScroll:true}); }catch(e){} }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
 
 /* 가로로 넘치는 탭·버튼 줄 전부(플레이 테스트 11-13: 휴대폰에서 넘침 표시가 없고, 연 탭이 화면 밖에 있어 '협상'을 눌러도 반응이 없는 것처럼 보였다):
@@ -44596,22 +44606,42 @@ function contractMoneyRead(text,min,max=Number.MAX_SAFE_INTEGER/16){
   if(value<min)return {error:`최소 ${money(min)}부터 입력하세요.`};
   return {value};
 }
+/* 제출 직전: 화면의 모든 금액 칸을 함께 읽어 검증하고 그대로 계약안에 쓴다.
+   한 칸이 상한 때문에 거절된 뒤 다른 칸을 낮춰 둘 다 유효해져도, 거절됐던 칸의 옛 값이 제안에 남지 않게(검수 11-17 P1) */
 function contractMoneyValid(){
-  const fields=[...document.querySelectorAll('[data-money]')];
-  for(const el of fields)contractMoneyEdit(el,false,false);
-  const invalid=fields.find(el=>!el.checkValidity());
-  if(invalid){invalid.focus();invalid.reportValidity();return false;}return true;
+  const scopes=[...new Set([...document.querySelectorAll('[data-money]')].map(el=>el.dataset.money.split(':')[0]))];let ok=true;
+  for(const scope of scopes)if(!contractMoneyGroup(scope,null,false,true))ok=false;
+  if(ok)return true;const invalid=[...document.querySelectorAll('[data-money]')].find(el=>!el.checkValidity());
+  if(invalid){invalid.focus();invalid.reportValidity();}return false;
+}
+function contractMoneyDraft(scope){
+  if(scope==='ngt')return UI.ngt?.T?{draft:UI.ngt.T,fields:['annual','bonus','opt']}:null;
+  const draft=UI.fo,p=draft&&G.players[draft.id];if(!p)return null;
+  const top=draft.re&&Number.isFinite(p.newSal)?Math.round(p.newSal*2):foCap(p); /* 재계약 기준액이 없으면 NaN 상한으로 검증이 통째로 빠졌다 */
+  return {draft,fields:['g','i'],top};
+}
+/* 한 범위(ngt·fo)의 금액 칸을 모두 같이 읽는다. 외국인은 보장+인센티브 합계가 상한 안이어야 해서,
+   상대 칸은 저장된 값이 아니라 지금 화면에 적힌 값으로 비교하고, 모든 칸이 유효할 때만 함께 반영한다 */
+function contractMoneyGroup(scope,focus,preview=true,commit=true){
+  const ctx=contractMoneyDraft(scope);if(!ctx)return true;const {draft,fields,top}=ctx;
+  const els={};for(const f of fields){const el=document.querySelector(`[data-money="${scope}:${f}"]`);if(el)els[f]=el;}
+  const raw={};for(const f in els){const r=contractMoneyRead(els[f].value,0);raw[f]=r.error?draft[f]||0:r.value;}
+  const res={};
+  for(const f in els){let min=0,max,over;
+    if(scope==='ngt'){if(f==='annual')min=MIN_SAL;}
+    else {min=f==='g'?MIN_SAL:0;const other=f==='g'?'i':'g';max=top-(raw[other]??draft[other]??0);over=`보장과 인센티브를 합쳐 ${usdT(top)}(${money(top)})까지입니다.`;}
+    const r=contractMoneyRead(els[f].value,min,max);if(r.error&&over&&r.error==='입력할 수 있는 금액을 넘었습니다.'&&Number.isFinite(max))r.error=over;res[f]=r;
+    els[f].setCustomValidity(r.error||'');els[f].setAttribute('aria-invalid',String(!!r.error));const error=document.getElementById(els[f].id+'-error');if(error)error.textContent=r.error||'';}
+  const okAll=Object.values(res).every(r=>!r.error);
+  if(!commit)return focus?!res[focus]?.error:okAll;
+  /* 연봉·계약금·옵션은 서로 묶인 상한이 없어 유효한 칸만 반영, 외국인 보장·인센티브는 둘 다 유효할 때만 */
+  let changed=false;for(const f in res){if(res[f].error||(scope==='fo'&&!okAll))continue;if(draft[f]!==res[f].value){draft[f]=res[f].value;changed=true;}}
+  if(changed){if(scope==='ngt'){UI.ngt.ed=true;UI.ngt.kept=false;}else draft.msg='';}
+  if(preview&&changed)contractMoneyPreview(scope);
+  return focus?!res[focus]?.error:okAll;
 }
 function contractMoneyEdit(el,preview=true,commit=true){
-  const [scope,field]=el.dataset.money.split(':');let draft,min=0,max;
-  if(scope==='ngt'){draft=UI.ngt?.T;if(!['annual','bonus','opt'].includes(field))return;if(field==='annual')min=MIN_SAL;}
-  else {draft=UI.fo;if(!['g','i'].includes(field)||!draft)return;const p=G.players[draft.id];if(!p)return;min=field==='g'?MIN_SAL:0;const top=draft.re&&Number.isFinite(p.newSal)?Math.round(p.newSal*2):foCap(p);max=top-(draft[field==='g'?'i':'g']||0);} /* 재계약 기준액이 없으면 NaN 상한으로 검증이 통째로 빠졌다 */
-  if(!draft)return;const result=contractMoneyRead(el.value,min,max);
-  el.setCustomValidity(result.error||'');el.setAttribute('aria-invalid',String(!!result.error));const error=document.getElementById(el.id+'-error');if(error)error.textContent=result.error||'';
-  if(result.error)return false;
-  if(!commit)return true;draft[field]=result.value;
-  if(scope==='ngt'){UI.ngt.ed=true;UI.ngt.kept=false;}else draft.msg='';
-  if(preview)contractMoneyPreview(scope);return true;
+  const [scope,field]=el.dataset.money.split(':');if(!contractMoneyDraft(scope))return false;return contractMoneyGroup(scope,field,preview,commit);
 }
 /* Replace calculated sections only: typing and Tab must keep their native focus. */
 function contractMoneyPreview(scope){
@@ -45714,7 +45744,7 @@ function amPlyPage(y){ const f=UI.amF=Object.assign({gr:'h1',pg:'all',ar:'all',s
   const N=L.length, show=L.slice(0,150);
   const chips=(k,opts)=>`<div class="chips">${opts.map(([v,l])=>`<button data-a="amF" data-v="${k}:${v}" class="${f[k]===v?'on':''}">${l}</button>`).join('')}</div>`;
   const senior=f.gr==='h3'||f.gr==='c4';
-  const row=x=>{ const T=amTier(est(x)); return `<tr><td><button class="am-star${x.fol?' on':''}" data-a="amFollow" data-v="${x.id}" title="관심 선수" aria-label="관심 선수">${x.fol?'★':'☆'}</button> ${amLnkP(x)}<small class="block">${esc(amPosT(x))} · ${esc(x.t||'')}투${esc(x.b||'')}타 · ${x.ht||'-'}cm ${x.wt||'-'}kg</small></td><td>${amLnkS(x.sch)}<small class="block">${esc(x.a||'')}</small></td><td class="am-rec">${amRecLine(x.isP,x.h)}${x.kind==='p'?amSlTag(x.p):''}<small class="block">${amTrendHtml(x.kind==='e'?x.e:x.p,x.isP,f.gr[0]==='c')}</small>${x.kind==='p'&&amSlHint(x.p)?`<small class="block">스카우트: ${esc(amSlHint(x.p))}</small>`:''}</td><td><span class="pill">${esc(T.t)}</span><small class="block">${T.lo===T.hi?esc(T.w):`${esc(T.lo)}~${esc(T.hi)} · ${esc(T.w)}`}${x.obs?` · 관찰 ${x.obs}회`:''}</small></td></tr>`; };
+  const row=x=>{ const T=amTier(est(x)); return `<tr><td><button class="am-star${x.fol?' on':''}" data-a="amFollow" data-v="${x.id}" title="관심 선수" aria-label="관심 선수" aria-pressed="${!!x.fol}">${x.fol?'★':'☆'}</button> ${amLnkP(x)}<small class="block">${esc(amPosT(x))} · ${esc(x.t||'')}투${esc(x.b||'')}타 · ${x.ht||'-'}cm ${x.wt||'-'}kg</small></td><td>${amLnkS(x.sch)}<small class="block">${esc(x.a||'')}</small></td><td class="am-rec">${amRecLine(x.isP,x.h)}${x.kind==='p'?amSlTag(x.p):''}<small class="block">${amTrendHtml(x.kind==='e'?x.e:x.p,x.isP,f.gr[0]==='c')}</small>${x.kind==='p'&&amSlHint(x.p)?`<small class="block">스카우트: ${esc(amSlHint(x.p))}</small>`:''}</td><td><span class="pill">${esc(T.t)}</span><small class="block">${T.lo===T.hi?esc(T.w):`${esc(T.lo)}~${esc(T.hi)} · ${esc(T.w)}`}${x.obs?` · 관찰 ${x.obs}회`:''}</small></td></tr>`; };
   const list=`<section class="card am-plist candidate-list"><div class="row between wrapr"><h2 class="sec">선수 목록 · ${esc((AM_GRS.find(g=>g[0]===f.gr)||[,''])[1])}</h2><span class="small muted">${N}명${N>show.length?` · 위 ${show.length}명 표시`:''} · ${yy} 기록</span></div>
     <div class="am-pfilt">${chips('gr',AM_GRS)}${chips('pg',AM_PGS)}${chips('srt',[['rec','기록순'],['est','스카우트 평가순'],['fol','관심순'],['sl','3학년 부진']])}${chips('ar',[['all','전 권역'],...AREA.map(a=>[a.k,a.k])])}</div>
     <div class="tw am-pscroll"><table class="sqt candidate-table am-ptable"><thead><tr><th>선수</th><th>학교</th><th>${yy} 기록 · 학년별</th><th>스카우트 평가</th></tr></thead><tbody>${show.map(row).join('')||`<tr><td colspan="4" class="small muted">${f.srt==='sl'?'3학년 부진 선수가 없습니다. 졸업 학년 기록이 2학년보다 뚜렷이 나쁜 선수(두 해 모두 40타석·15이닝 이상)만 나옵니다.':'조건에 맞는 선수가 없습니다.'}</td></tr>`}</tbody></table></div>
@@ -46589,6 +46619,12 @@ const PATCH=[
     '설정 › 업무 권한에 [식사·모임 초대]가 생깁니다. 다른 구단 단장이 청한 식사·통화에 비서가 답하고(기본은 정중히 거절, 응하기로 바꿀 수 있음) 진행을 멈추지 않습니다. 일상 결정을 맡겼다면 따로 정하지 않아도 함께 맡습니다. 초대 소식에도 위임하기 버튼이 붙습니다.',
     '진행 멈춤 설정에 [다른 구단 단장 초대]가 따로 생겨, 꺼 두면 초대가 와도 진행을 멈추지 않습니다(정하지 않으면 기한 뒤 정중히 거절).',
     '응원가 제작 제안과 기념 유니폼 제작 제안도 일상 결정에 들어갑니다. 일상 결정을 맡겼다면 비서가 기본안(다음에·만들지 않음)으로 처리하고 진행을 멈추지 않습니다.']},
+  {id:'2026-11-17-ui3r',d:'11월 17일',t:'계약 금액 입력 · 결재 창 키보드 사용',items:[
+    '외국인 계약에서 보장 연봉과 인센티브를 차례로 고칠 때, 합계 상한에 걸려 거절됐던 칸도 다른 칸을 낮추면 다시 맞는 금액으로 인정합니다. 제안할 때는 화면에 적힌 금액을 모두 함께 확인해, 결재 창과 실제 제안이 언제나 같은 금액입니다. FA·비FA 다년·연봉 협상 화면도 같은 방식입니다.',
+    '결재 창이 뜨면 키보드 초점이 창 안으로 옮겨 가고, Tab을 눌러도 창 밖으로 나가지 않습니다. 창을 닫으면 창을 연 버튼으로 초점이 돌아옵니다. 화면 읽기 프로그램은 창 제목을 함께 읽습니다.',
+    '휴대폰 선수 명단 표에서 \'다음 열\'·\'앞 열\'을 Enter로 넘겨도 초점이 같은 버튼에 남아 계속 넘길 수 있습니다.',
+    '창단 드래프트의 관심(☆) 버튼은 화면 읽기 프로그램에 눌림 상태를 알려 줍니다.',
+    '설정의 \'제보용 정보 복사\'에 버전과 함께 배포 빌드 번호와 커밋을 넣습니다. 제보하실 때 어느 배포에서 생긴 일인지 바로 확인할 수 있습니다.']},
   {id:'2026-11-17-ladcap',d:'11월 17일',t:'래더·대회 연봉 상한 · 윗단계 AI가 강해집니다',items:[
     '래더 덱에 연봉 상한이 생깁니다. 덱 선수 연봉 합이 143.97억(첫 시즌 샐러리캡)을 넘으면 등록할 수 없습니다. 모든 단계가 같은 금액입니다.',
     '\'덱\' 화면에서 상한·덱 연봉·여유(또는 초과)를 보여 줍니다. 넘으면 등록할 수 없고, 넘는 만큼을 가장 적은 OVR 손해로 메울 선수를 추천합니다. \'추천대로 빼기\'나 선수마다 \'빼기\'로 덱에서 뺀 뒤 등록하면 됩니다. 서버도 같은 규칙으로 다시 확인합니다.',
@@ -48723,7 +48759,9 @@ function face7Src(o){ { const u=obPhotoSrc(o); if(u)return u; } if(face8Role(o)=
   return faceCut(x.k==='8'?{s:'f8',c:x.c}:x.k==='c'?{s:'f7c',t:x.team,c:x.c}:{s:'f7v',c:x.c}); }
 Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });
 /* 카페 버그 제보용 게임 정보(이름·저장 내용은 넣지 않는다) */
-function fbInfoText(){ let d=''; try{ if(G)d=`${G.year}년 ${dmd(G.day)} · ${period()} · ${tname(G.user)}`; }catch(e){} return `[게임 정보] 버전 ${GAME_VER} · ${d||'게임 시작 전'} · 화면 ${UI.tab||''}${UI.tab&&UI.sub&&UI.sub[UI.tab]?'/'+UI.sub[UI.tab]:''} · ${innerWidth<=1000?'휴대폰':'PC'} ${innerWidth}x${innerHeight} · ${(navigator.userAgent.match(/(Edg|Chrome|Firefox|Safari)\/[\d.]+/)||[''])[0]}${/iPhone|iPad/.test(navigator.userAgent)?' · iOS':/Android/.test(navigator.userAgent)?' · Android':''}${(()=>{ const f=globalThis.__fo3d; return f||globalThis.__fo3dGpu?` · 3D ${f?`${f.t||'-'} ${f.p!=null?Math.round(f.p*100)+'%':''} (${f.at}초)`:'-'} · GPU ${globalThis.__fo3dGpu||'-'}`:''; })()}`; }
+/* 버전 숫자(0.9)만으로는 어느 배포인지 몰랐다: 사이트 빌드가 문서에 넣는 빌드 ID·커밋을 같이 싣는다(검수 11-17 #19) */
+function fbBuildText(){ let b='',c=''; try{ b=document.querySelector('meta[name="fronttime-build"]')?.content||''; c=document.querySelector('meta[name="fronttime-commit"]')?.content||''; }catch(e){} return b?`빌드 ${b}${c?` · 커밋 ${c.slice(0,7)}`:''}`:'빌드 정보 없음(단독 파일)'; }
+function fbInfoText(){ let d=''; try{ if(G)d=`${G.year}년 ${dmd(G.day)} · ${period()} · ${tname(G.user)}`; }catch(e){} return `[게임 정보] 버전 ${GAME_VER} · ${fbBuildText()} · ${d||'게임 시작 전'} · 화면 ${UI.tab||''}${UI.tab&&UI.sub&&UI.sub[UI.tab]?'/'+UI.sub[UI.tab]:''} · ${innerWidth<=1000?'휴대폰':'PC'} ${innerWidth}x${innerHeight} · ${(navigator.userAgent.match(/(Edg|Chrome|Firefox|Safari)\/[\d.]+/)||[''])[0]}${/iPhone|iPad/.test(navigator.userAgent)?' · iOS':/Android/.test(navigator.userAgent)?' · Android':''}${(()=>{ const f=globalThis.__fo3d; return f||globalThis.__fo3dGpu?` · 3D ${f?`${f.t||'-'} ${f.p!=null?Math.round(f.p*100)+'%':''} (${f.at}초)`:'-'} · GPU ${globalThis.__fo3dGpu||'-'}`:''; })()}`; }
 Object.assign(A,{ fbInfo(){ const t=fbInfoText(); const ok=()=>{ try{ toast('게임 정보를 복사했습니다. 카페 글에 붙여 넣어 주세요.'); }catch(e){} UI.fbOk=1; try{ render(); }catch(e){} }; /* 복사 뒤 설정 카드에 '카페에 붙여 넣기' 버튼을 띄운다 */ try{ navigator.clipboard.writeText(t).then(ok,()=>{ prompt('아래 내용을 복사해 카페 글에 붙여 넣어 주세요.',t); }); }catch(e){ prompt('아래 내용을 복사해 카페 글에 붙여 넣어 주세요.',t); } } });
 /* 마우스로 끌 때 글자가 선택되거나 사진이 끌려 나오지 않게(사용자 11-05, 전체화면 포함). 입력칸은 그대로 */
 try{ document.addEventListener('dragstart',e=>{ const t=e.target; if(t&&(t.tagName==='IMG'||t.tagName==='A'||(t.closest&&t.closest('img,a'))))e.preventDefault(); },true); }catch(e){}
