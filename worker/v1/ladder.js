@@ -6,6 +6,7 @@ import { json, err, pub, readJson, cached, kstHour } from './http.js';
 import { PID } from './auth.js';
 import { currentSeason, entryFor } from './season.js';
 import { statStmts, takeUsage } from './usage.js';
+import { ladderKvPool, ladderKvTier } from '../uladder.js';
 
 export const DECK_MAX = 40 * 1024, OPP_MAX = 9, BOARD_N = 20, FEED_N = 30, STALE = 45 * 86400e3;
 /* 리그 순위 → 포인트(10팀 기준). 팀 수가 다르면 같은 비율 자리 값. 모두 0 이상: 많이 할수록 오르는 시즌 점수 */
@@ -15,7 +16,9 @@ const TOP = UL_TIERS.length - 1;
 const clampTier = t => Math.max(0, Math.min(TOP, (+t) | 0));
 const int = (x, lo, hi) => { const n = Math.floor(+x); return Number.isFinite(n) && n >= lo && n <= hi ? n : null; };
 
-export async function putDeck(req, db, me, now) {
+/* 첫 덱(이 플레이어의 첫 시즌 칸)만 보낸 단계(tier)로 시작한다: 예전 KV 래더에서 옮겨 오는 유저(사용자 11-17).
+   그 단계는 같은 세계 id(wid)로 KV에 올린 덱의 단계까지만 받는다(없으면 루키). 조작 방지는 이 정도로 충분하다(구단주: 래더는 덱 전력을 재는 곳) */
+export async function putDeck(req, db, me, now, env) {
   const { body: b, error } = await readJson(req); if (error) return err(error === 'too_large' ? 413 : 400, error);
   if (!b.e || typeof b.e !== 'object') return err(400, 'bad_deck');
   if (cupBadName(b.e.name)) return err(400, 'bad_name');
@@ -23,7 +26,8 @@ export async function putDeck(req, db, me, now) {
   e.h = cupEntryHash(e); const body = JSON.stringify(e); if (body.length > DECK_MAX) return err(413, 'too_large');
   const s = await currentSeason(db, now);
   const anyEntry = await db.prepare('SELECT 1 AS x FROM ladder_entries WHERE player_id = ? LIMIT 1').bind(me.id).first();
-  const en = await entryFor(db, s.id, me.id, now, anyEntry ? 0 : clampTier(b.tier));
+  let first = 0; if (!anyEntry) { first = clampTier(b.tier); const cap = await ladderKvTier(env, String(b.wid || me.wid || '')); if (cap != null) first = Math.min(first, cap); }
+  const en = await entryFor(db, s.id, me.id, now, first);
   const had = await db.prepare('SELECT 1 AS x FROM decks WHERE player_id = ?').bind(me.id).first();
   const ovr = e.ovr && typeof e.ovr === 'object' ? e.ovr : null;
   await db.batch([
@@ -35,8 +39,10 @@ export async function putDeck(req, db, me, now) {
   return json(200, { ok: true, season: s.id, name: e.name, ovr, tier: en.tier, bytes: body.length, h: e.h });
 }
 
-/* 상대: 같은 단계, 내 OVR 위·아래로 가까운 덱(색인 (tier, ovr) 범위 읽기 두 번: 읽는 줄 수 ≈ 2n). 숨긴 플레이어·나·45일 넘게 안 고친 덱은 뺀다 */
-export async function opponents(url, db, me, now) {
+/* 상대: 같은 단계, 내 OVR 위·아래로 가까운 덱(색인 (tier, ovr) 범위 읽기 두 번: 읽는 줄 수 ≈ 2n). 숨긴 플레이어·나·45일 넘게 안 고친 덱은 뺀다.
+   D1 덱이 n개보다 모자라면 예전 KV 래더 덱(같은 단계)으로 채운다(사용자 11-17: 옮겨 가는 첫날에도 상대가 비지 않게). KV 덱은 pid가 없다(맞대결 기록 없음, kv:1).
+   이미 v1로 옮겨 온 유저의 KV 덱(players.wid가 같은 것)과 내 세계 id는 뺀다. D1 덱이 충분해지면 KV는 읽지 않는다 */
+export async function opponents(url, db, me, now, env) {
   const s = await currentSeason(db, now);
   const mine = await db.prepare('SELECT ovr, tier FROM decks WHERE player_id = ?').bind(me.id).first();
   const en = await entryFor(db, s.id, me.id, now, mine ? mine.tier : 0, false);
@@ -50,7 +56,17 @@ export async function opponents(url, db, me, now) {
   const avg = all.length ? Math.round(all.reduce((a, x) => a + x.ovr, 0) / all.length * 10) / 10 : 0;
   const decks = [];
   for (const x of pick) { try { decks.push({ pid: x.player_id, nickname: x.nickname, name: x.name, year: x.year, ovr: x.ovr_json ? JSON.parse(x.ovr_json) : { t: x.ovr }, at: x.at, e: JSON.parse(x.body) }); } catch (e) {} }
-  return json(200, { ok: true, season: s.id, tier, avg, near: all.length, decks });
+  let kv = 0, near = all.length, av = avg;
+  if (decks.length < n && env && env.SAVE_KV) {
+    const hs = new Set(decks.map(d => d.e && d.e.h));
+    const drop = async wids => new Set(((await db.prepare(`SELECT wid FROM players WHERE wid IN (${wids.map(() => '?').join(',')})`).bind(...wids).all()).results || []).map(x => x.wid));
+    try {
+      const P = await ladderKvPool(env, url, now, tier, ovr, n - decks.length, { skip: [me.wid].filter(Boolean), since, drop });
+      for (const d of P.decks) { if (hs.has(d.e && d.e.h)) continue; hs.add(d.e && d.e.h); decks.push({ pid: null, nickname: null, kv: 1, name: d.name, year: d.year, ovr: d.ovr, at: d.at, e: d.e }); kv++; }
+      if (P.count) { av = Math.round((avg * all.length + P.avg * P.count) / (all.length + P.count) * 10) / 10; near += P.count; }
+    } catch (e) {}
+  }
+  return json(200, { ok: true, season: s.id, tier, avg: av, near, kv, decks });
 }
 
 /* 리그 결과 요약. 본문 {key(리그 id, 같은 key는 한 번만), rank, teams, w, l, d, opps:[{pid, w, l, d}]} */

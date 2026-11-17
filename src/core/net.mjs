@@ -1,6 +1,6 @@
 /* 서버 v1(/api/v1) 연결부: 웹·안드로이드(TWA/Capacitor)·스팀(Electron/Tauri 포장)이 같은 코드를 쓴다. 게임 상태(G)·화면을 참조하지 않는다.
-   아직 어떤 화면도 쓰지 않는다(숨은 스위치): localStorage 'fo-net-v1' = '1' 이거나 주소에 ?net=v1 일 때만 netEnabled()가 참.
-   래더 화면이 v1로 옮겨 갈 때: docs/design/server-v1-2026-11-17.md '화면 연결 순서'.
+   유저 래더 화면이 기본으로 쓴다(사용자 11-17 "화면도 새 서버로 바로 전환해"). 끄기(시험·문제 생겼을 때): localStorage 'fo-net-v1' = '0' 또는 주소 ?net=kv.
+   주소 ?net=v1 은 '0'이어도 켠다. 화면 연결 순서: docs/design/server-v1-2026-11-17.md 12절.
    - base: 웹은 ''(같은 출처). 앱 포장은 배포 주소(예 'https://fronttime.example.workers.dev')를 넣는다(서버 V1_ORIGINS에 앱 출처도 넣어야 한다).
    - 재시도: 연결 실패·5xx(503 not_configured 제외)는 2번까지 다시(0.4초, 1.2초). 429는 다시 하지 않는다.
    - 오프라인: 리그 결과는 못 보내면 기기에 줄 세워 두었다가(최대 20개) 다음 연결 때 보낸다. 같은 key는 서버가 한 번만 센다.
@@ -13,9 +13,13 @@ function store(s) {
   return { get: k => { try { return s ? s.getItem(k) : null; } catch (e) { return null; } }, set: (k, v) => { try { if (s) v == null ? s.removeItem(k) : s.setItem(k, v); } catch (e) {} } };
 }
 export function netEnabled(storage, search) {
-  const st = store(storage); if (st.get(NET_FLAG) === '1') return true;
-  try { search = search ?? (g().location ? g().location.search : ''); return /(?:^|[?&])net=v1(?:&|$)/.test(String(search || '')); } catch (e) { return false; }
+  try { search = String((search ?? (g().location ? g().location.search : '')) || ''); } catch (e) { search = ''; }
+  const q = (search.match(/(?:^|[?&])net=([^&]*)/) || [])[1];
+  if (q === 'v1') return true; if (q === 'kv' || q === 'off' || q === '0') return false;
+  return store(storage).get(NET_FLAG) !== '0';
 }
+/* 이 기기에서 서버 v1 끄기/다시 켜기(서버 기록 지우기 뒤 자동으로 다시 만들지 않게) */
+export function netSetEnabled(on, storage) { store(storage).set(NET_FLAG, on ? null : '0'); }
 /* 플랫폼: 앱 포장이 window.FT_PLATFORM을 정하면 그것, 아니면 흔적으로 추정 */
 export function netPlatform(w) {
   w = w || g();
@@ -74,6 +78,8 @@ export function netCreate(o) {
   N.me = () => N.call('GET', '/ladder/me');
   N.rivals = () => N.call('GET', '/ladder/rivals');
   N.h2h = pid => N.call('GET', '/ladder/h2h/' + encodeURIComponent(pid));
+  /* 서버 기록 지우기(DELETE /player): 플레이어·덱·시즌·결과·맞대결·소식 전부. 지우면 이 기기 토큰도 버린다 */
+  N.deleteMe = async () => { if (!token()) return { ok: true, status: 200, data: { ok: true, none: true } }; const r = await N.call('DELETE', '/player', null, { retries: 1 }); if (r.ok || r.status === 401) N.forget(); return r; };
   N.queue = () => { try { return JSON.parse(st.get(NET_QUEUE) || '[]'); } catch (e) { return []; } };
   /* 리그 결과: {key, rank, teams, w, l, d, opps}. 연결이 안 되면 줄에 넣는다 */
   N.result = async sum => {
