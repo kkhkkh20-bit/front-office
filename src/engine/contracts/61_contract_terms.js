@@ -54,7 +54,13 @@ function optPaid(tid,a){ const L=G.sea.optPd=G.sea.optPd||{}; L[tid]=(L[tid]||0)
 /* 최근 트레이드로 옮긴 선수(30일): 같은 선수를 곧바로 다시 트레이드하지 않는다(플레이테스트 4 #19·#25) */
 function recentTr(p,d){ return !!p&&p.trD!=null&&G.day-p.trD<(d||30); }
 function tradeTerms(p){ if(p)p.trD=G.day; try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ optPaid(p.team,p.opt.a); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} try{ capDeadBonus(p); }catch(e){} termsClear(p); } /* 계약금 반영액은 낸 구단 상한에 남긴다 */
-function termsClear(p){ delete p.cprom; delete p.capB; delete p.opt; delete p.ntc; delete p.roleProm; delete p.ctT; delete p.cOpt; delete p.pOut; delete p.ctB; delete p.cOptAdd; }
+/* 끝나지 않은 수상 옵션 장부(리뷰② 11-17): 정규시즌 뒤 시상식 전에 계약이 바뀌거나(재계약·다년 시작·트레이드·방출) FA가 되면 p.opt가 지워져
+   12월 골든글러브 옵션이 사라졌다. 지우기 전에 {pid,y 시즌,tid 계약 구단,a 금액,paid}를 G.optLed에 남기고 시상식에서 그 시즌 수상이면 원래 구단이 한 번만 낸다. 사용자·AI 같은 규칙 */
+function optLedKeep(p){ try{ const o=p&&p.opt, y=G.year; if(!o||(o.c)!=='gg'||!(o.a>0)||o.from>y||o.until<y||o.paidY===y||p.ctT==null)return; if(!(G.cal&&G.day>=G.cal.end))return; /* 그 시즌을 마친 뒤만 */
+  const A=G.awards&&G.awards[y]; if(A&&A.cd&&A.cd.gg!=null)return; /* 이미 시상식을 열었다 */ const L=G.optLed=G.optLed||[]; if(L.some(x=>x.pid===p.id&&x.y===y))return; L.push({pid:p.id,y,tid:p.ctT,a:o.a,paid:false}); }catch(e){} }
+function optLedPay(pid,y,name){ const L=G.optLed; if(!L)return false; let n=false; for(const x of L){ if(x.pid!==pid||x.y!==y||x.paid)continue; const t=team(x.tid); if(!t)continue; x.paid=true; n=true; t.optDue=(t.optDue||0)+x.a; const p=G.players[pid]; if(p)story(p,`계약 옵션 달성: 골든글러브 (${money(x.a)}, ${tshort(x.tid)} 계약)`,'move'); if(x.tid===G.user&&!G.unemp)note('운영팀',`${name||(p&&p.name)||'선수'} 골든글러브 옵션 ${money(x.a)}을(를) 다음 결산에 지급합니다(지난 계약 옵션).`); } return n; }
+function optLedDone(y){ if(G.optLed)G.optLed=G.optLed.filter(x=>x.y>y||(x.paid&&x.y>=y-1)); if(G.optLed&&!G.optLed.length)delete G.optLed; } /* 시상식이 끝난 시즌의 못 받은 몫은 지우고, 지급 기록은 한 해만 남긴다 */
+function termsClear(p){ optLedKeep(p); delete p.cprom; delete p.capB; delete p.opt; delete p.ntc; delete p.roleProm; delete p.ctT; delete p.cOpt; delete p.pOut; delete p.ctB; delete p.cOptAdd; }
 /* 옵트아웃을 넣을 수 있는 해: 그 시즌을 마쳤을 때 FA 자격(등록 연수)이 생기는 해부터. 비FA 다년계약에서 자격 전 옵트아웃은 FA로 나갈 수 없어 막는다.
    st: 계약 첫 시즌(지금 시즌이면 0, 다음 시즌 시작이면 1을 더한다) */
 function pOutMin(p,st){ const add=st!=null&&st>G.year?1:0; return Math.max(1,faSvc(p)-(p.svc||0)-add); } /* 계약 몇 시즌을 마치면 FA 자격(등록 연차)이 되는가: 남은 연차에서 계약 시작 전에 채울 올 시즌을 뺀다(검수 11-06: 하나 더 세어 첫해 옵트아웃이 막혔다) */
@@ -146,7 +152,7 @@ function optEarned(p){ if(!ctOn(p)||!p.opt||p.opt.until<G.year||p.opt.from>G.yea
   if(c==='gg')return false; /* 골든글러브는 결산 뒤(12월) 시상식에서 optAward가 지급한다 */ if(c==='as')return (p.aw||[]).some(l=>l.startsWith(G.year+' 올스타'));
   const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return optMet(c,h,p,1); }
 /* 골든글러브 옵션: 시상식에서 받으면 계약한 구단의 다음 결산 지출(t.optDue)로 잡는다. AI 구단도 같다 */
-function optAward(p,y){ try{ if(!p||!p.opt||(p.opt.c)!=='gg'||p.opt.from>y||p.opt.until<y||p.opt.paidY===y)return; const tid=p.ctT; const t=tid!=null&&team(tid); if(!t)return; t.optDue=(t.optDue||0)+p.opt.a; p.opt.paidY=y; story(p,`계약 옵션 달성: 골든글러브 (${money(p.opt.a)})`,'move'); if(tid===G.user)note('운영팀',`${p.name} 골든글러브 옵션 ${money(p.opt.a)}을(를) 다음 결산에 지급합니다.`); }catch(e){} }
+function optAward(p,y){ try{ if(!p||!p.opt||(G.optLed||[]).some(x=>x.pid===p.id&&x.y===y)||(p.opt.c)!=='gg'||p.opt.from>y||p.opt.until<y||p.opt.paidY===y)return; const tid=p.ctT; const t=tid!=null&&team(tid); if(!t)return; t.optDue=(t.optDue||0)+p.opt.a; p.opt.paidY=y; story(p,`계약 옵션 달성: 골든글러브 (${money(p.opt.a)})`,'move'); if(tid===G.user)note('운영팀',`${p.name} 골든글러브 옵션 ${money(p.opt.a)}을(를) 다음 결산에 지급합니다.`); }catch(e){} }
 function optSettle(tid){ let tot=0; const L=[]; for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; /* 시즌 중 입대·대표팀으로 빠진 선수도 이미 달성한 옵션은 받는다 */ if(!ctOn(p)||!p.opt||p.opt.until<G.year||p.opt.paidY===G.year)continue; /* 방출 때 이미 준 옵션은 다시 주지 않는다 */ if(optEarned(p)){ tot+=p.opt.a; p.opt.paidY=G.year; /* 결산에서 준 옵션은 방출·트레이드 때 다시 주지 않는다(검수 11-08) */ L.push(`${p.name} ${money(p.opt.a)}`); story(p,`계약 옵션 달성 (${money(p.opt.a)})`,'move'); } }
   if(L.length&&tid===G.user)note('운영팀',`계약 옵션 지급: ${L.join(', ')}`); return tot; }
 /* 역할 약속 점검(6~9월 매달 1일): 주전 보장을 약속했는데 주전이 아니면 서운해한다 */
