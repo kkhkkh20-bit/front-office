@@ -45,7 +45,7 @@
 .tm-id .tm-tags{display:flex;flex-wrap:wrap;gap:3px}
 .fnd-t td .trtag{margin-left:6px}
 .trade-blk-o{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;min-width:0}
-.st-lvl{margin:0 0 6px}
+.st-lvl{margin:6px 0 0}.st-head{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;margin-bottom:6px}.st-head>h3{margin:0}.st-sea{margin-left:auto}
 
 /* 협상 선수 정렬(제보 11-17): 상대·우리 선수 모두 같은 한 줄. 폰에서는 옆으로 밀어 본다 */
 .tpool-head .trade-pool-options{grid-template-columns:minmax(0,1fr)}
