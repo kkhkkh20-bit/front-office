@@ -129,7 +129,7 @@ let SAVE_ERR='';
    save()는 0.7초 안에 들어온 요청을 한 번으로 묶고, 슬롯 바꾸기·내보내기·처음 화면 같은 곳은 saveNow()로 바로 저장한다.
    탭을 닫거나 숨기면(pagehide·visibilitychange) 남은 저장을 바로 끝낸다 */
 let _svT=null;
-function save(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(!G)return; if(_svT)clearTimeout(_svT); _svT=setTimeout(()=>{ _svT=null; saveStoreAsync(); },700); }
+function save(){ if(G){ G.stops=G.stops||[]; tutTick(); try{ guideMailTick(); }catch(e){} } if(!G)return; if(_svT)clearTimeout(_svT); _svT=setTimeout(()=>{ _svT=null; saveStoreAsync(); },700); }
 function saveNow(){ if(G&&!_saveGStage){ G.stops=G.stops||[]; tutTick(); } if(_svT){ clearTimeout(_svT); _svT=null; } return saveStore(); } /* 저장 성공 여부를 돌려준다 */
 function saveFlush(){ const h0=G&&JSON.stringify(G.castHold||null); try{ castHoldSync(); }catch(e){} if(_svT||_svBusy||_svFail||(G&&JSON.stringify(G.castHold||null)!==h0)){ /* 자동 재생으로 지나간 중계 장면도 탭을 숨길 때 저장(검수 11-09zzc #4·#5) */ if(_svT)clearTimeout(_svT); _svT=null; saveStore(); } } /* 몰아 저장이 압축 중이어도 탭을 닫을 땐 바로 저장한다. 실패한 저장은 다음 마감 때 다시 시도한다(검수 11-09zr #8) */
 try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')saveFlush(); }); window.addEventListener('beforeunload',saveFlush); }catch(e){}
