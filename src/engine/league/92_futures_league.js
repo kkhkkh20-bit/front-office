@@ -74,7 +74,7 @@ function applyFarm(d,g){ const y=G.year;
         if(!(p.injOut>0)&&R()<p.inj*(sp?.075*(x.pc||0)/95:.026*(x.pc||0)/17)*injMult(p)*loadMult(p,cd,d)/LOAD_NORM)injure(p,d,{sp,pc:x.pc||0,farm:1}); }
       else { const h=lineFor(p,y,t,'퓨처스'); addTo(h,Object.assign({g:1},x)); const pos=s.posOf[id]||null; futUse(p,pos,1,{mil,days:[d]}); { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
         const inLn=s.order.some(q=>q.id===id); if(inLn)p.fat=clamp((p.fat||0)+((pos==='C'?12:pos==='DH'?4:8)-(p.r.vit||52)*.04),0,100);
-        if(p.injFx)injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); if(R()<p.inj*.026*injMult(p)*(inLn?1:.3))injure(p,d,{farm:1}); } } } }
+        if(p.injFx)injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); if(R()<p.inj*.026*injMult(p)*(inLn?1:.3))injure(p,d,{farm:1,hbp:x.hbp||0}); } } } }
 function flRecord(F,d,h,a,g){ const hs=g.score.h, as=g.score.a; const R0=F.rec; const add=(t,w,l,tt,rs,ra)=>{ const r=R0[t]||(R0[t]={w:0,l:0,d:0,rs:0,ra:0}); r.w+=w; r.l+=l; r.d+=tt; r.rs+=rs; r.ra+=ra; };
   if(hs>as){ add(h,1,0,0,hs,as); add(a,0,1,0,as,hs); } else if(as>hs){ add(a,1,0,0,as,hs); add(h,0,1,0,hs,as); } else { add(h,0,0,1,hs,as); add(a,0,0,1,as,hs); }
   const nm=id=>(G.players[id]||{}).name||''; const x={d,h,a,hs,as,inn:g.inn,w:g.dec.w??null,l:g.dec.l??null,sv:g.dec.sv??null,hr:[]};

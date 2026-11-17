@@ -134,7 +134,8 @@ const isRookie=p=>p.draft&&p.draft.y===G.year-1;
 let PROJ_LENS=0; /* 시즌 예상 전력을 볼 때만 1: 개막 전후에 돌아올 선수는 빠진 것으로 보지 않는다(사용자 11-14: 시범경기 중 대표팀 차출로 1위 전력이 7위 목표) */
 const projOpen=()=>{ const o=G.cal&&G.cal.open; if(o==null)return G.day; return o<G.day&&period()==='off'?FrontOfficeCore.onOrAfter(G.year+1,3,25,6):o; }; /* 예상 대상 시즌 개막일: 스토브리그에는 다음 해 개막(buildCalendar와 같은 날, 검수 11-14: 11월에 넉 달 재활 선수가 다음 시즌 예상에서 빠짐) */
 const projBack=()=>Math.max(0,projOpen()-G.day)+14; /* 개막까지 남은 날 + 2주 */
-const healthy=p=>PROJ_LENS?!(p.injOut>projBack())&&!(p.susp>G.day+projBack())&&!p.frehab:!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day); /* 예상 전력: 짧은 부상·출장정지·귀국 휴가·연봉 미계약은 개막 무렵 돌아오는 것으로 본다 */ /* fLeave: 외국인 선수 귀국 휴가·결장 요청(73_foreign_drama) */ /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
+const healthyAt=(p,day=G.day)=>!(p.injOut>Math.max(0,day-G.day))&&!(p.susp>day)&&!p.frehab&&!p.hold&&!(p.fLeave>day)&&!(p.boy>day);
+const healthy=p=>PROJ_LENS?!(p.injOut>projBack())&&!(p.susp>G.day+projBack())&&!p.frehab:healthyAt(p); /* 예상 전력: 짧은 부상·출장정지·귀국 휴가·연봉 미계약은 개막 무렵 돌아오는 것으로 본다. 실제 경기와 내일 사전검사는 훈련 불참까지 같은 자격을 쓴다(검수 11-18 #450). */
 
 function genRatings(isP,base,pos){
   const g=()=>clamp(N(base,7),20,80);

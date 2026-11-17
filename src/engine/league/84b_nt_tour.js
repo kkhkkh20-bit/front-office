@@ -155,7 +155,7 @@ function ntPlayGame(T,g,N,d){ g.hc=ntRef(T,g.h); g.ac=ntRef(T,g.a); if(!g.hc||!g
           if(isP&&p.isP){ const q=T.ps[key]||(T.ps[key]={}); q.la=d; q.lpc=x.pc||0; if(id===s.sp.id)q.ls=d; }
           /* 한국 실제 선수: 피로·투구 부하·작은 부상 위험이 소속 팀으로 돌아간다 */
           if(!p.ntTmp&&p.team!=null){ if(isP&&p.isP){ const sp=id===s.sp.id; try{ pitchApp(p,d,x.pc||0,sp); }catch(e){} p.fat=clamp((p.fat||0)+pitFatGain(p,x.pc||0,sp),0,100); if(!(p.injOut>0)&&R()<(p.inj||.03)*(sp?.06*(x.pc||0)/95:.02*(x.pc||0)/17)*injMult(p))try{ injure(p,d,{nt:1}); }catch(e){} }
-            else { const pos=s.posOf[id]; p.fat=clamp((p.fat||0)+((pos==='C'?12:pos==='DH'?4:8)-(p.r.vit||52)*.04),0,100); if(!(p.injOut>0)&&R()<(p.inj||.03)*.02*injMult(p))try{ injure(p,d,{nt:1}); }catch(e){} } } } }
+            else { const pos=s.posOf[id]; p.fat=clamp((p.fat||0)+((pos==='C'?12:pos==='DH'?4:8)-(p.r.vit||52)*.04),0,100); if(!(p.injOut>0)&&R()<(p.inj||.03)*.02*injMult(p))try{ injure(p,d,{nt:1,hbp:x.hbp||0}); }catch(e){} } } } }
       if(g.hc==='KR'||g.ac==='KR'||g.st!=='G'){ g.box={h:ntBoxOf(r.S.h,r.dec),a:ntBoxOf(r.S.a,r.dec),lh:r.line.h,la:r.line.a}; g.ev=(r.ev||[]).filter(x=>x&&x.t).slice(0,14).map(x=>x.t); }
       const key=id=>{ const p=G.players[id]; return p?ntKey(p):null; }; g.wp=r.dec.w!=null?key(r.dec.w):null; g.lp=r.dec.l!=null?key(r.dec.l):null; } }
   finally{ for(const id of NT_TMP)delete G.players[id]; NT_TMP=[]; }

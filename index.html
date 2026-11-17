@@ -14323,7 +14323,8 @@ const isRookie=p=>p.draft&&p.draft.y===G.year-1;
 let PROJ_LENS=0; /* 시즌 예상 전력을 볼 때만 1: 개막 전후에 돌아올 선수는 빠진 것으로 보지 않는다(사용자 11-14: 시범경기 중 대표팀 차출로 1위 전력이 7위 목표) */
 const projOpen=()=>{ const o=G.cal&&G.cal.open; if(o==null)return G.day; return o<G.day&&period()==='off'?FrontOfficeCore.onOrAfter(G.year+1,3,25,6):o; }; /* 예상 대상 시즌 개막일: 스토브리그에는 다음 해 개막(buildCalendar와 같은 날, 검수 11-14: 11월에 넉 달 재활 선수가 다음 시즌 예상에서 빠짐) */
 const projBack=()=>Math.max(0,projOpen()-G.day)+14; /* 개막까지 남은 날 + 2주 */
-const healthy=p=>PROJ_LENS?!(p.injOut>projBack())&&!(p.susp>G.day+projBack())&&!p.frehab:!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day); /* 예상 전력: 짧은 부상·출장정지·귀국 휴가·연봉 미계약은 개막 무렵 돌아오는 것으로 본다 */ /* fLeave: 외국인 선수 귀국 휴가·결장 요청(73_foreign_drama) */ /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
+const healthyAt=(p,day=G.day)=>!(p.injOut>Math.max(0,day-G.day))&&!(p.susp>day)&&!p.frehab&&!p.hold&&!(p.fLeave>day)&&!(p.boy>day);
+const healthy=p=>PROJ_LENS?!(p.injOut>projBack())&&!(p.susp>G.day+projBack())&&!p.frehab:healthyAt(p); /* 예상 전력: 짧은 부상·출장정지·귀국 휴가·연봉 미계약은 개막 무렵 돌아오는 것으로 본다. 실제 경기와 내일 사전검사는 훈련 불참까지 같은 자격을 쓴다(검수 11-18 #450). */
 
 function genRatings(isP,base,pos){
   const g=()=>clamp(N(base,7),20,80);
@@ -14676,7 +14677,8 @@ function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(
 function actOf(tid){ const ps=playersOf(tid).filter(p=>psOk(p)); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); } /* 포스트시즌 자격 없는 선수는 라인업·마운드에 오르지 않는다(검수 11-07) */
 /* 포스트시즌 출전 자격: 등록 마감(8월 15일) 뒤 데려온 선수는 그해 포스트시즌에 뛸 수 없다 */
 const psOk=p=>!(period()==='post'&&p.acq&&p.acq.tid===p.team&&p.acq.y===G.year&&p.acq.k!=='fd'&&p.acq.k!=='draft'&&p.acq.d>foreignDL());
-const canUp=p=>psOk(p)&&!(p.boy>G.day)&&!p.e1&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&(p.downDay==null||G.day-p.downDay>=10);
+const entryEligible=(p,day=G.day)=>psOk(p)&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&healthyAt(p,day)&&!(p.joinY>G.year)&&(p.e1||p.downDay==null||day-p.downDay>=10);
+const canUp=p=>!p.e1&&!isAway(p)&&entryEligible(p);
 /* 성적 보기(11-12, AI도 유저처럼 1·2군을 성적으로 돌린다): 감독은 능력치만이 아니라 올해 기록도 본다.
    11-12 첫 판(2군 호성적 +2.5·1군 부진 -2 고정)은 작은 표본에 크게 흔들려 껐다. 안정화(11-14): 표본만큼만 믿는 보조 기준으로 다시 켠다.
    기록이 리그 평균에서 벗어난 정도 × 표본 비중(타석/(타석+150), 아웃/(아웃+120))이라 60타석 호성적은 1점 안팎, 시즌 내내 압도해도 +1.5까지.
@@ -14733,22 +14735,26 @@ function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLim
       if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소(주전·필승조 밖, 최근 1주 넘게 쓰임 적음) · ${inn.name} 콜업(2군에서 더 나은 선수${futLn(inn)})`); } } }
   /* 포수는 1군에 2명 이상: 주전이 지치면 쉬게 할 백업이 있어야 한다(카페 피드백 11-08: 백업 포수를 2군으로 내려 지친 주전이 계속 나옴) */
   for(let g=0;g<3&&(ent=PS.filter(p=>p.e1)).filter(p=>isC(p)&&healthy(p)).length<2;g++){ /* 다친 포수는 세지 않는다(검수 11-09t) */ const c=PS.filter(p=>canUp(p)&&isC(p)).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
-    if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>!p.isP&&!isC(p)&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!core.has(p.id)&&!isC(p)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; moves.push(`${out.name} 말소(백업 포수 자리)`); }
+    if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>isC(p)&&!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!p.isP&&!isC(p)&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!core.has(p.id)&&!isC(p)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; moves.push(`${out.name} 말소(백업 포수 자리)`); }
     c.e1=true; c.upDay=G.day; moves.push(`${c.name} 콜업(1군 포수 2명 유지${futLn(c)})`); }
   /* AI 구단은 건강한 1군 야수 9명 유지: 단기 부상 야수가 자리를 차지해 8명 타순으로 치르지 않게 2군에서 올린다(검수 11-09zn) */
   if(tid!==G.user)for(let g=0;g<9&&(ent=PS.filter(p=>p.e1)).filter(p=>!p.isP&&healthy(p)).length<9;g++){ const c=PS.filter(p=>canUp(p)&&!p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
     if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>!p.isP&&!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>p.isP&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; }
     c.e1=true; c.upDay=G.day; }
+  /* 사전검사가 센 콜업 가능 투수를 실제 엔트리에도 채운다. 가득 찬 엔트리의 단기 부상·야수 여분 때문에 7명으로 치르지 않게 한다(검수 11-18 #450~451). */
+  for(let g=0;g<8&&(ent=PS.filter(p=>p.e1)).filter(p=>p.isP&&healthy(p)).length<8;g++){ const c=PS.filter(p=>canUp(p)&&p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
+    if(ent.length>=lim){ const d=depth(tid), core=new Set(d.start.map(p=>p.id)); const out=ent.filter(p=>!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!p.isP&&!core.has(p.id)&&!cProt(p,c,ent)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; moves.push(`${out.name} 말소(건강한 투수 자리)`); }
+    c.e1=true; c.upDay=G.day; moves.push(`${c.name} 콜업(건강한 투수 8명 채우기${futLn(c)})`); }
   if(tid===G.user&&moves.length&&!quiet)note('엔트리',`감독이 1군 엔트리를 조정했습니다: ${moves.join(', ')}.`); }
 /* 돌아온 주축을 다시 1군에(사용자 피드백 11-05: 대표팀에서 돌아온 핵심 3명이 한국시리즈 1차전까지 2군에 남음).
  후보마다 같은 투수·야수 중 기용 순위가 가장 낮은 1군 선수보다 확실히 나으면 바꾼다. 자리가 비면 그냥 올린다 */
 function entryUpgrade(tid,cands,why){ if(!entryOn())return []; const lean=teamLean(tid), v=p=>entryVal(tid,p,lean), lim=entryLimit(), moves=[];
   for(const c of cands.filter(p=>p&&p.team===tid&&canUp(p)) /* 10일 재등록 규칙·입단 예정·차출 중도 같은 기준(검수 11-07) */ /* 2군 선발 수업 투수는 올리지 않는다(바로 말소됨) */.sort((a,b)=>v(b)-v(a))){ const ent=playersOf(tid).filter(p=>p.e1);
     if(ent.length<lim){ c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록`); continue; }
-    const out=ent.filter(p=>p.isP===c.isP&&!cands.includes(p)&&!cProt(p,c,ent)).sort((a,b)=>v(a)-v(b))[0]; if(out&&v(c)>v(out)+1){ out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록 · ${out.name} 말소`); } }
+    const out=ent.filter(p=>p.isP===c.isP&&!cands.includes(p)&&!cProt(p,c,ent)).sort((a,b)=>(isC(c)?Number(isC(b)&&!healthy(b))-Number(isC(a)&&!healthy(a)):0)||v(a)-v(b))[0]; if(out&&(!healthy(out)||v(c)>v(out)+1)){ out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록 · ${out.name} 말소`); } }
   if(tid===G.user&&moves.length)note('엔트리',`감독이 1군 엔트리를 조정했습니다${why?`(${why})`:''}: ${moves.join(', ')}.`); return moves; }
 /* 1군에 올릴 수 없는 사유(canUp이 거짓일 때). 엔트리 관리 화면이 버튼 옆에 같은 문구를 보여 준다(카페 피드백 11-09v) */
-function upWhy(p){ return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':p.susp>G.day?`출장 정지 중입니다(${dmd(p.susp)}부터 출장 가능).`:p.hold?'연봉 미계약 상태입니다. 계약을 먼저 마쳐야 합니다.':!healthy(p)?'부상 중입니다.':p.e1?'이미 1군에 있습니다.':!psOk(p)?'8월 15일 이후 영입한 선수는 포스트시즌 엔트리에 넣을 수 없습니다.':isAway(p)?'대표팀 차출·군 복무 중입니다.':p.joinY>G.year?'다음 시즌 입단 선수입니다.':p.downDay!=null?`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`:'지금은 등록할 수 없습니다.'; }
+function upWhy(p){ return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':p.susp>G.day?`출장 정지 중입니다(${dmd(p.susp)}부터 출장 가능).`:p.hold?'연봉 미계약 상태입니다. 계약을 먼저 마쳐야 합니다.':p.boy>G.day?`훈련 불참 중입니다(${dmd(p.boy)}부터 복귀 가능).`:p.fLeave>G.day?`귀국 휴가·결장 요청 중입니다(${dmd(p.fLeave)}부터 복귀 가능).`:p.injOut>0?'부상 중입니다.':p.frehab?'부상 대체 외국인을 둔 재활 명단에 있습니다.':p.e1?'이미 1군에 있습니다.':!psOk(p)?'8월 15일 이후 영입한 선수는 포스트시즌 엔트리에 넣을 수 없습니다.':isAway(p)?'대표팀 차출·군 복무 중입니다.':p.joinY>G.year?'다음 시즌 입단 선수입니다.':p.downDay!=null&&G.day-p.downDay<10?`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`:'지금은 등록할 수 없습니다.'; }
 function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p.team!==G.user)return '대상이 아닙니다.'; if(!entryOn())return '시즌 중에만 엔트리를 바꿀 수 있습니다.'; if(!m)return '감독이 없습니다.';
   if(up&&!canUp(p))return upWhy(p);
   if(!up&&!p.e1)return '이미 1군에 없습니다.';
@@ -14757,7 +14763,7 @@ function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p
   { const br=mplBreakListen(`${p.name} ${up?'콜업':'말소'}`); if(br){ m.rel=clamp(m.rel,0,100); return br; } }
   mgrFix(m); const a=clamp(.78-(m.ego-50)/70+(m.rel-60)/120+(mplOn('listen')?.3:0),.15,mplOn('listen')?.98:.95); /* 영입 면담에서 '단장 건의 존중'을 약속받았으면 거의 받아들인다 */ const ok=hn('req'+G.day,id)>-1.2&&R()<a;
   if(!ok){ m.rel=clamp(m.rel-2,0,100); mail('감독실',`${p.name} ${up?'콜업':'말소'} 요청 거절`,`${m.name} 감독: ${up?`${p.name}은(는) 아직 1군에 올릴 때가 아니라고 봅니다.`:`${p.name}은(는) 지금 팀에 필요한 선수입니다.`} 엔트리는 제가 판단하겠습니다.`,{kind:'감독'}); return `${m.name} 감독이 요청을 받아들이지 않았습니다.`; }
-  if(up){ const ent=playersOf(G.user).filter(x=>x.e1); if(ent.length>=entryLimit()){ const d=depth(G.user); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); const lean=teamLean(G.user); const out=ent.filter(x=>x.isP===p.isP&&!core.has(x.id)&&!cProt(x,p,ent)).sort((a,b)=>entryVal(G.user,a,lean)-entryVal(G.user,b,lean))[0]||ent.filter(x=>!core.has(x.id)&&!cProt(x,p,ent))[0]; if(out){ out.e1=false; out.downDay=G.day; } }
+  if(up){ const ent=playersOf(G.user).filter(x=>x.e1); if(ent.length>=entryLimit()){ const d=depth(G.user); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); const lean=teamLean(G.user); const out=ent.filter(x=>isC(p)&&isC(x)&&!healthy(x))[0]||ent.filter(x=>x.isP===p.isP&&!core.has(x.id)&&!cProt(x,p,ent)).sort((a,b)=>entryVal(G.user,a,lean)-entryVal(G.user,b,lean))[0]||ent.filter(x=>!core.has(x.id)&&!cProt(x,p,ent))[0]; if(out){ out.e1=false; out.downDay=G.day; } }
     p.e1=true; p.upDay=G.day; addLog(`${p.name}이(가) 단장 요청으로 1군에 등록되었습니다.`); return `${m.name} 감독이 받아들였습니다. ${p.name} 1군 등록.`; }
   p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); addLog(`${p.name}이(가) 단장 요청으로 1군에서 말소되었습니다.`); return `${m.name} 감독이 받아들였습니다. ${p.name} 말소(${dmd(G.day+10)}부터 재등록 가능).`; }
 /* 육성선수 전환: 연봉 1억 이하·FA·다년계약(다음 시즌 계약 포함) 아님. 깎인 연봉은 전환일부터만(그 전 기간은 원래 연봉, payYear의 ysAdj) */
@@ -15073,7 +15079,7 @@ function pickStarter(tid,d,day,ps,o){
   if(!sp.length){ const el=playersOf(tid).filter(p=>p.isP&&psOk(p)&&!(p.susp>day)&&!isAway(p)&&(!entryOn()||p.e1||canUp(p))), td=p=>p.lastApp!==day; const c=d.pen.find(fresh)||el.find(p=>healthy(p)&&fresh(p))||d.pen.find(td)||el.find(p=>healthy(p)&&td(p))||null; /* 오늘 던진 투수는 비상 선발로도 쓰지 않는다(검수 11-09zh) */
     if(c&&entryOn()&&!c.e1){ const ent=playersOf(tid).filter(p=>p.e1); if(ent.length>=entryLimit()){ const lean=teamLean(tid), out=ent.filter(p=>!d.start.includes(p)&&!cProt(p,c,ent)).sort((a,b)=>(healthy(a)-healthy(b))||(entryVal(tid,a,lean)-entryVal(tid,b,lean)))[0]; if(!out)return null; out.e1=false; out.downDay=G.day; } } /* 1군 정원이 차 있으면 다친 선수부터 한 명 말소하고 올린다(검수 11-09zh) */ /* 재활 선수 명단·연봉 미계약 투수는 마지막 수단으로도 쓰지 않는다. 아무도 없으면 null: 경기를 미루는 기존 처리(playDay)로(검수 11-09t) */ if(c&&entryOn()&&!c.e1){ c.e1=true; c.upDay=G.day; } return c; } /* 마지막 후보도 출장정지·재등록 제한·2군 선발 수업은 빼고, 2군에서 올리면 등록한다(검수 11-08) */ /* 건강한 투수가 없으면 기존 경기 연기 경로로 보낸다. 부상자를 강제로 선발 등판시키지 않는다. */
   for(let k=0;k<sp.length;k++){ const i=((t.rot||0)+k)%sp.length; const p=sp[i]; if((p.lastStart==null||day-p.lastStart>=5)&&fresh(p)){ if(o)o.rot=(i+1)%sp.length; return p; } } /* 순번은 경기를 저장할 때(applyGame) 넘긴다: 실패·재시도로 두 칸 넘지 않게(검수 11-09zh) */
-  const pool=[...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0)); return pool.find(fresh)||d.pen.find(fresh)||pool.find(p=>p.lastApp!==day)||d.pen.find(p=>p.lastApp!==day)||sp[0]; /* 쉬어 온 투수(불펜 포함)를 전날 등판한 투수보다 먼저(검수 11-08) */
+  const pool=[...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0)); return pool.find(fresh)||d.pen.find(fresh)||pool.find(p=>p.lastApp!==day)||d.pen.find(p=>p.lastApp!==day)||null; /* 당일 등판은 모든 선발 경로의 하드 제외 조건이다. */
 }
 /* 타순(카페 11-14: 외국인 거포·최고 타자가 1번에 몰림. 감독마다 달라야 한다). 실제로 쓰이는 짜임새를 감독 성향으로 고른다(같은 감독은 늘 같은 짜임새).
    - 클래식(KBO 전통): 1번 출루·발, 2번 맞히기·번트, 3번 최고 타자, 4번 최고 거포, 5번 다음 거포, 6~9번은 잘 치는 순
@@ -15172,7 +15178,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   function bringIn(fs,inn,lead,half,nr){
     { const ace=psAceRelief(fs,inn,lead,day,psx); if(ace){ fs.exit[fs.cur.id]=lead; fs.cur=ace; fs.curIsSP=false; fs.used.add(ace.id); (fs.multi=fs.multi||{})[ace.id]=1; fs.box.set(ace.id,pz()); fs.entry[ace.id]=lead; (fs.entryR=fs.entryR||{})[ace.id]=nr||0; fs.pitchers.push(ace.id); if(ev.length<400)ev.push({h:half,t:`총력전: 선발 ${ace.name} 불펜 등판`}); if(pbp.length<1000)pbp.push([half,'PC',ace.id]); return; } }
     let av=fs.pen.filter(p=>!fs.used.has(p.id)&&relAvail(p,day,ps));
-    if(!av.length&&armDirOn(fs.tid))av=[...new Map([...fs.pen,...(fs.spAll||[]),...actOf(fs.tid).filter(p=>p.isP)].map(p=>[p.id,p])).values()].filter(p=>p!==fs.cur&&!fs.used.has(p.id)&&healthy(p)&&psOk(p)); /* 첫 구원 이후에도 건강한 다른 선발·등록 투수 자원을 확인한다. */
+    if(!av.length&&armDirOn(fs.tid))av=[...new Map([...fs.pen,...(fs.spAll||[]),...actOf(fs.tid).filter(p=>p.isP)].map(p=>[p.id,p])).values()].filter(p=>p!==fs.cur&&!fs.used.has(p.id)&&p.lastApp!==day&&healthy(p)&&psOk(p)); /* 비상 교체도 이미 오늘 등판한 투수는 제외한다. 자원이 없으면 아래의 명시된 비상 계속 투구로 전환한다. */
     else if(!av.length&&fs.curIsSP){ const x0=fs.box.get(fs.cur.id); if(x0&&x0.pc>=lim(fs)+25)av=fs.pen.filter(p=>!fs.used.has(p.id)&&healthy(p)&&p.lastApp!==day); }
     if(!av.length){ if(armDirOn(fs.tid)&&!(fs.armEmergency||[]).some(x=>x.id===fs.cur.id)){ const x=fs.box.get(fs.cur.id), e={id:fs.cur.id,half,startPc:x.pc,reason:'noHealthyReplacement'}; (fs.armEmergency=fs.armEmergency||[]).push(e); if(ev.length<400)ev.push({h:half,t:`비상 계속 투구: ${fs.cur.name} · 교체 가능한 건강한 등록 투수가 없어 95구 관리 목표의 예외로 경기를 이어갑니다.`}); } return; }
 
@@ -15294,14 +15300,14 @@ function applyGame(day,hid,aid,g,ps){
       if(p.isP){ const cid=s.cId; if(cid!=null&&cid!==p.id){ const C=p.chem=p.chem||{}; C[cid]=(C[cid]||0)+1; const ks=Object.keys(C); if(ks.length>6){ ks.sort((a,b2)=>C[a]-C[b2]); delete C[ks[0]]; } } /* 배터리 호흡 기록 */ const cd=pitchApp(p,day,x.pc,id===s.sp?.id); const lm=loadMult(p,cd,day);
         p.fat=clamp((p.fat||0)+pitFatGain(p,x.pc,id===s.sp?.id)*bm,0,100); /* 체력이 좋으면 같은 투구 수에도 덜 지친다 */ if(!ps)p.wear=(p.wear||0)+x.pc/15; if(!ps){ (p.l10=p.l10||[]).push([x.outs,x.er,x.h,x.bb,x.so]); if(p.l10.length>10)p.l10.shift(); }
         if(!ps){ const h=lineFor(p,y,s.tid,'1군'); const o={g:1,gs:id===s.sp?.id?1:0,outs:x.outs,h:x.h,hr:x.hr,bb:x.bb,hbp:x.hbp||0,so:x.so,er:x.er,w:g.dec.w===id?1:0,l:g.dec.l===id?1:0,sv:g.dec.sv===id?1:0,hld:(g.dec.hld||[]).includes(id)?1:0,bf:x.bf||0,roe:x.roe||0,e:x.e||0}; addTo(h,o); /* 실책 출루도 시즌 기록에(수비 타구 처리율, 검수 11-08) */ glAdd(p,day,x); }
-        /* 부상 빈도: KBO 구단당 시즌 부상 이탈 7~10건 수준. 부상 병동(체질 .3 이상)은 해마다 한두 번 빠진다 */ const risk=p.inj*(id===s.sp?.id?.075*(x.pc||0)/95:.026*(x.pc||0)/17)*injMult(p)*staI(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/50)*(id===s.sp?.id?1+Math.max(0,(x.pc||0)-100)/60:1)*lm/LOAD_NORM; if(R()<risk)injure(p,day,{sp:id===s.sp?.id,pc:x.pc||0,load:lm}); if(p.injFx&&!(p.injOut>0)){ p.injPlay=day; injRecover(p,x.outs||0); } /* 포스트시즌도 실전량이다 */
+        /* 부상 빈도: KBO 구단당 시즌 부상 이탈 7~10건 수준. 부상 병동(체질 .3 이상)은 해마다 한두 번 빠진다 */ const risk=p.inj*(id===s.sp?.id?.075*(x.pc||0)/95:.026*(x.pc||0)/17)*injMult(p)*staI(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/50)*(id===s.sp?.id?1+Math.max(0,(x.pc||0)-100)/60:1)*lm/LOAD_NORM, hit=R()<risk; if(injGameRisk(p,day)||hit)injure(p,day,{sp:id===s.sp?.id,pc:x.pc||0,load:lm}); if(p.injFx&&!(p.injOut>0)){ p.injPlay=day; injRecover(p,x.outs||0); } /* 포스트시즌도 실전량이다. 결장 요청 강행 위험은 실제 등판 때만 적용하고 기존 난수 호출은 보존한다. */
       } else {
         if(!ps){ const h=lineFor(p,y,s.tid,'1군'); addTo(h,Object.assign({g:1},x)); { const ps0=s.posOf[id]||p.pos; h.pp=h.pp||{}; h.pp[ps0]=(h.pp[ps0]||0)+(x.pa||0); h.pos=ppTop(h.pp)||ps0; } /* 포지션별 타석을 쌓고 대표 포지션은 가장 많이 뛴 자리 */ glAdd(p,day,x); }
         /* 선발 출장: 수비 강화로 빠진 선수는 선발로 치고, 교체로 들어온 선수는 선발이 아니다 */
         const sIn=s.subIn&&s.subIn[id]!=null, sOut=s.outI&&s.outI[id]!=null;
         if(!ps){ const i=sIn?-1:sOut?s.outI[id]:s.order.findIndex(q=>q.id===id); if(i>=0){ const u=(p.use&&p.use.y===y)?p.use:(p.use={y,g:0,pos:{},slot:{}}); u.g++; const ps_=s.posOf[id]||'DH'; u.pos[ps_]=(u.pos[ps_]||0)+1; u.slot[i+1]=(u.slot[i+1]||0)+1; } }
         if(sOut||s.order.some(q=>q.id===id)){ p.fat=clamp((p.fat||0)+((s.posOf[id]==='C'?15:s.posOf[id]==='DH'?6:10)-(p.r.vit||52)*.04)*bm*(sIn?.3:sOut?.85:1),0,100); if(!ps&&!sIn)p.wear=(p.wear||0)+1; if(!ps&&(!sIn||(x.pa||0)>0)){ (p.l10=p.l10||[]).push([x.ab,x.h,x.hr,x.bb,x.rbi,x.d+x.tr*2+x.hr*3,x.sf||0,x.hbp||0]); if(p.l10.length>10)p.l10.shift(); } } /* 교체 출전도 타석에 섰으면 최근 경기에 넣는다 */
-        if(R()<p.inj*.026*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/60)*(sIn?.3:sOut?.85:1))injure(p,day);
+        const injured=R()<p.inj*.026*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/60)*(sIn?.3:sOut?.85:1); if(injGameRisk(p,day)||injured)injure(p,day,{hbp:x.hbp||0});
         else if(p.injFx){ p.injPlay=day; injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); } /* 사구·희생타도 실전 타석(검수 11-06) */
       }
     }
@@ -15314,21 +15320,20 @@ function applyGame(day,hid,aid,g,ps){
     tl[hid].push([sg,g.score.h,g.score.a,1,aid,day,hh,ha]); tl[aid].push([-sg,g.score.a,g.score.h,0,hid,day,ha,hh]); }
 }
 function injure(p,day,ctx){ ctx=ctx||{}; day=day??G.day;
-  const reg=p.team===G.user&&period()==='season'&&!(p.injOut>0)&&isRegular(p); /* 주전 여부는 부상으로 라인업에서 빠지기 전에 본다(검수 11-09t) */
+  const reg=p.team===G.user&&(period()==='season'||period()==='post')&&!(p.injOut>0)&&isRegular(p); /* 경고와 결정 모두 진단 전에 본 주전 여부를 쓴다. */
   const k=injPick(p,ctx); const I=INJ[k]; let days=ri(I.d[0],I.d[1]); days=Math.max(3,Math.round(days*(I.d[0]>=240?Math.sqrt(recMult(p)):recMult(p))));
-  { const h0=(p.injHist||[]).slice(-1)[0]; if(h0&&h0.bk==null&&p.injOut>0)h0.bk=day; } /* 재활 중 새 부상: 앞 부상의 결장은 여기서 끊는다 */
-  p.injOut=Math.max(1,days-(G.day-day)); p.injK=k; delete p.injB; p.injC=milServing(p)?null:p.team; /* 재활 기간을 정한 구단(hospOwn) */ (p.injHist=p.injHist||[]).push({y:G.year,days,d:day,k,t:p.team}); /* 퓨처스 이틀 전 등판 부상: 다친 날로 기록하고 재활도 그날부터(검수 11-09t) */ /* t: 다친 때 소속(구단별 부상 건수, 검수 11-08) */ if(days>=40)p.inj=Math.min(.45,p.inj+.02); /* 큰 부상은 재발 위험을 남긴다 */
+  const episode=injStart(p,{days,day,k,hosp:p.team!=null&&!milServing(p)?medOf(p.team).hosp:'none',extra:{farm:!!ctx.farm}}); if(days>=40)p.inj=Math.min(.45,p.inj+.02); /* 퓨처스 소급 진단도 실제 다친 날을 쓴다. */
   if(I.ucl)p.ucl=1; if(I.tj)delete p.ucl; delete p.reInj;
-  const fx=injApply(p,k,days);
-  const ret=injRetTxt(p), seasonOut=period()==='season'&&G.day+days>(G.cal.end||KD(10,5));
+  const fx=injApply(p,k,days);fx.injId=episode.id;
+  const ret=injRetTxt(p), seasonOut=period()==='season'&&G.day+p.injOut>(G.cal.end||KD(10,5));
   if(days>=30)story(p,`${I.n}(으)로 약 ${days>=300?Math.round(days/30)+'개월':days+'일'} 이탈`,'inj');
   if(p.team===G.user&&days>=30&&period()==='season'&&(ovr(p)>=55||p.sal>=800))news('선수',`${tshort(G.user)} 악재, ${p.name} ${I.surg?'수술':'장기 이탈'}`,`${p.name}이(가) ${I.n}(으)로 ${days>=300?Math.round(days/30)+'개월':'약 '+days+'일'} 빠집니다.${seasonOut?' 사실상 시즌 아웃입니다.':''}`,-1,{ref:p.id});
   else if(p.team!==G.user&&I.surg&&days>=200&&ovr(p)>=55)wire('부상',`${tshort(p.team)} ${p.name}, ${I.n}`,{tid:p.team,ref:p.id});
   if(p.team!=null)p.mor=clamp((p.mor??60)-4,0,100); /* 부상 기분 하락은 모든 구단 같은 값(전에는 우리 선수만) */
-  if(p.team===G.user){ const H=HOSP[G.med.hosp]; const len=days>=300?`약 ${Math.round(days/30)}개월`:`${H.dx?'':'약 '}${days}일`;
+  if(p.team===G.user){ const H=HOSP[milServing(p)?'none':G.med.hosp]; const len=days>=300?`약 ${Math.round(days/30)}개월`:`${H.dx?'':'약 '}${days}일`;
     const fxT=I.tj?' 복귀까지 보통 12~16개월이 걸리고, 복귀 첫해에는 제구가 흔들리는 경우가 많습니다. 구속은 떨어지는 선수가 더 많지만 젊으면 오히려 오르기도 합니다.':I.perm&&I.d[0]>=90?' 수술 뒤 예전 몸 상태를 완전히 되찾지 못할 수도 있습니다.':I.re?' 복귀 직후 재발이 잦은 부위입니다.':'';
     const msg=`${p.name}(${posLabel(p)})이(가) ${I.n}(으)로 ${len} 이탈합니다. 예상 복귀 ${ret}.${seasonOut?' 올 시즌은 사실상 끝났습니다.':''}${fxT}${H.c?` ${H.name}에서 치료합니다.`:''}${H.dx?` 정밀 검진 결과 재발 위험은 ${p.inj>.24?'높은':p.inj>.15?'보통':'낮은'} 편입니다.`:''}`;
-    !ctx.farm&&((days>=10&&(()=>{ try{ return isRegular(p); }catch(e){ return true; } })())||days>=30)?stop('부상',msg,p.id):note('부상',(ctx.farm?'[퓨처스] ':'')+msg,p.id); }
+    const m=!ctx.farm&&((days>=10&&reg)||days>=30)?stop('부상',msg,p.id):note('부상',(ctx.farm?'[퓨처스] ':'')+msg,p.id); if(m)m.injId=episode.id; }
   if(!I.surg)try{ evInjury(p,days,reg); }catch(e){}
   if(p.team===G.user&&days>=30&&!ctx.farm&&ovr(p)>=58)try{ ivRequest('injury',{pid:p.id,days}); }catch(e){}
 }
@@ -15424,9 +15429,9 @@ function blocker(){
   if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done&&((G.ps.seeds||[]).includes(G.user)||(G.ps.cur&&G.ps.cur.round==='tb'&&(G.ps.cur.hi===G.user||G.ps.cur.lo===G.user))||(G.ps.tbq||[]).some(q=>q[1]===G.user||q[2]===G.user))&&!Object.values(G.ps.res||{}).some(r=>r&&r[1]===G.user))){ const n=rosterN(G.user); /* 포스트시즌은 아직 남은 경기가 있는 팀만(탈락한 팀 정원 때문에 한국시리즈가 막히지 않게, 검수 11-07) */ /* 포스트시즌도 같은 등록 규정 */
     if(n>ROSTER_MAX){ const L=milReturns(7); return `로스터가 ${n}명입니다. ${ROSTER_MAX}명 이하로 줄여야 진행할 수 있습니다.${L.length?` 7일 안에 군 복귀 ${L.length}명(${milRetTxt(L)})이 더 있어, 복귀까지 고려하면 ${n+L.length-ROSTER_MAX}자리를 비워야 다시 막히지 않습니다.`:''}`; }
     if(ourGameOn(G.day+1)){ const L1=milReturns(1), n1=rosterN(G.user,G.day+1); if(L1.length&&n1>ROSTER_MAX)return `내일 ${milRetTxt(L1)}이(가) 전역해 로스터가 ${n1}명이 됩니다. 경기 전에 ${ROSTER_MAX}명 이하로 맞춰야 진행할 수 있습니다.`; } /* 같은 날 입대자도 실제 병역 처리 기준(milOn)으로 빼고 센다(검수 11-09zk) */ /* 전역일 경기도 등록 규정 안에서(검수 11-08) */
-    if(!ourGameOn(G.day+1))return ''; /* 내일 우리 경기가 없으면 날짜는 넘긴다: 그동안 부상 회복·대표팀 복귀·말소 10일이 지나 부족이 풀린다(검수 11-06) */ const d1=G.day+1, NT=G.nt&&G.nt.y===G.year&&NT_EV[G.nt.k]&&KD(...NT_EV[G.nt.k].from)===d1?ntCallIds(G.nt,d1):null /* 소집일 검사(의료 제외·대체 발탁·구단당 최대 3명)를 그대로 적용한 예측(검수 11-09u) */, lv=p=>(p.mil&&p.mil.from===d1)||!!(NT&&NT.has(p.id)); /* 내일 입대·대표 소집으로 빠지는 선수(검수 11-08) */ const d0=depth(G.user), d={start:d0.start.filter(p=>!lv(p)),sp:d0.sp.filter(p=>!lv(p)),pen:d0.pen.filter(p=>!lv(p))}, rt=p=>(p.ntAway===d1&&p.ntFrom<=G.day)||(milServing(p)&&p.mil.until===d1); /* 내일 대표팀·군에서 돌아오는 선수(검수 11-07) */ const tmr=p=>!p.ys&&!(p.joinY>G.year)&&(rt(p)?!(p.injOut>1):!isAway(p)&&p.injOut===1)&&!(p.susp>G.day+1)&&!p.frehab&&!p.hold&&psOk(p)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10); /* 내일 복귀해 내일 등록할 수 있는 선수(말소 10일 규정 포함, 검수 11-07) */ const back=Object.values(G.players).filter(p=>p.team===G.user&&!lv(p)&&tmr(p));
-    const can=Object.values(G.players).filter(p=>p.team===G.user&&!lv(p)&&!p.ys&&!(p.isP&&rpPlanOf(G.user,p)==='sp2')&&!(p.joinY>G.year)&&!p.frehab&&!p.hold&&psOk(p)&&(rt(p)?!(p.injOut>1):!isAway(p)&&!(p.injOut>1))&&!(p.susp>G.day+1)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10)); /* 내일 뛸 수 있는 선수 전체: 감독이 2군에서 올릴 선수, 내일 말소 10일·출장정지가 풀리는 선수까지(검수 11-08: 콜업 가능한 선수가 있어도 진행이 막힘) */
-    if(Math.max(d.start.length+back.filter(p=>!p.isP).length,can.filter(p=>!p.isP).length)<9)return '건강한 야수가 9명이 안 됩니다.'; if(Math.max(d.sp.length+d.pen.length+back.filter(p=>p.isP).length,can.filter(p=>p.isP).length)<8)return '건강한 투수가 부족합니다.'; } /* 내일 복귀하는 1군 투수는 내일 경기 인원에 넣는다(검수 11-07: 복귀일까지 갈 수 없었다) */
+    if(!ourGameOn(G.day+1))return ''; /* 내일 우리 경기가 없으면 날짜는 넘긴다. */ const d1=G.day+1, NT=G.nt&&G.nt.y===G.year&&NT_EV[G.nt.k]&&KD(...NT_EV[G.nt.k].from)===d1?ntCallIds(G.nt,d1):null, lv=p=>(p.mil&&p.mil.from===d1)||!!(NT&&NT.has(p.id)), rt=p=>(p.ntAway===d1&&p.ntFrom<=G.day)||(milServing(p)&&p.mil.until===d1);
+    const can=Object.values(G.players).filter(p=>p.team===G.user&&!lv(p)&&(rt(p)||!isAway(p))&&entryEligible(p,d1)); /* 실제 콜업과 같은 자격으로 내일 부상·대표 복귀까지 한 번씩만 센다(검수 11-18 #450~451). */
+    if(can.filter(p=>!p.isP).length<9)return '건강한 야수가 9명이 안 됩니다.'; if(can.filter(p=>p.isP).length<8)return '건강한 투수가 부족합니다.'; }
   return '';
 }
 /* 그날 엔진(playDay)이 치를 정규시즌 경기 쌍을 같은 순서로: 미룬 경기 먼저, 정규 편성 다음. 미룬 경기는 다음 진행일(내일)에 열린다. 캘린더·다음 경기·예고 선발·직관·관중 전망이 같은 목록을 읽는다(검수 11-09zo) */
@@ -15477,6 +15482,7 @@ function* advanceSteps(mode,options={}){
 }
 /* 주간 요약용: 우리 선수 시즌 누적 기록 스냅숏 */
 const DIGK=['pa','ab','h','bb','hr','rbi','d','tr','sb','outs','er','so','w','l','sv','hld','g','gs','sf','hbp'];
+function injReturnVelText(p){ const h=injEpisode(p), F=p.injFx||[], f=F.find(x=>h&&x.injId===h.id)||[...F].reverse().find(x=>x.k===p.injK); if(!f)return ''; let txt=''; if(Number.isFinite(f.preVel)){ f.returnVel=veloOf(p); f.v=f.returnVel-f.preVel; txt=` 복귀 후 측정한 직구 구속은 ${f.returnVel}km/h로 수술·부상 전 ${f.preVel}km/h${f.v>0?'보다 '+f.v+'km/h 빨라졌습니다':f.v<0?'보다 '+(-f.v)+'km/h 느려졌습니다':'와 같습니다'}.`; if(f.need&&f.got<f.need&&Number.isFinite(f.finalVel))txt+=` 실전 회복을 마친 뒤 예상 구속은 ${f.finalVel}km/h입니다.`; } return txt+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); }
 function digSnap(){ const o={}; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); o[p.id]=h?DIGK.map(k=>h[k]||0):DIGK.map(()=>0); } return o; }
 /* 오늘 치른 우리 경기가 이 상대와의 시리즈 마지막인가: 다음 우리 경기 상대가 다르거나(휴식일 넘어도) 시즌이 끝나면 */
 function seriesEnd(d){ const S=G.cal&&G.cal.sched; if(!S)return true; const op=x=>x?(x[0]===G.user?x[1]:x[0]):null; let cur=null; for(let k=d;k>=d-1&&cur==null;k--)cur=op((S[k]||[]).find(x=>x.includes(G.user))); if(cur==null)return true;
@@ -15524,7 +15530,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   milDaily();
   recoverAll(1);
   if(o.w===0)for(const p of Object.values(G.players)){ if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)*.65+N(0,(p.foreign?.75:.55)*volF(p)),-2.5,2.5); /* 기복이 큰 선수는 슬럼프·상승세 폭도 크다 */ }
-  for(const p of Object.values(G.players)) if(p.injOut>0){ p.injOut--; if(p.injOut===0){ { const h=(p.injHist||[]).slice(-1)[0]; if(h&&h.bk==null)h.bk=G.day; } if(p.rushRet){ p.rush=G.day+30; delete p.rushRet; } /* 조기 복귀 위험 기간: 실제 복귀일부터 한 달(검수 11-09t) */ /* 실제 복귀일(조기 복귀 포함, 검수 11-08) */ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0],d:G.day}; if(p.team===G.user){ const fx=injFxNow(p); const hd=((p.injHist||[]).slice(-1)[0]||{}).days||0; /* 진행을 멈추는 복귀 소식은 1군 주전의 10일 이상 부상, 또는 45일 이상 장기 부상만(플레이 리뷰 11-12: 물집·2군 선수 복귀로 시즌당 16번 멈춤) */((hd>=10&&p.e1&&(()=>{ try{ return isRegular(p); }catch(e){ return false; } })())||hd>=45?(k,t,r)=>mail(FROM[k],headline(t),t,{ref:r,kind:k,acts:kindActs(k,r),imp:true}):note)('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${(()=>{ const f=(p.injFx||[]).slice(-1)[0]; if(!f||f.k!==p.injK)return ''; return (f.v?` 복귀 후 측정한 직구 구속은 수술 전보다 ${f.v>0?f.v+'km/h 빨라졌습니다':(-f.v)+'km/h 느려졌습니다'}.`:'')+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); })()}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
+  for(const p of Object.values(G.players)) if(p.injOut>0){ if(injRecoveryTick(p)){ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0],d:G.day}; if(p.team===G.user){ const fx=injFxNow(p); const hd=(injEpisode(p)||{}).days||0; /* 진행을 멈추는 복귀 소식은 1군 주전의 10일 이상 부상, 또는 45일 이상 장기 부상만(플레이 리뷰 11-12: 물집·2군 선수 복귀로 시즌당 16번 멈춤) */((hd>=10&&p.e1&&(()=>{ try{ return isRegular(p); }catch(e){ return false; } })())||hd>=45?(k,t,r)=>mail(FROM[k],headline(t),t,{ref:r,kind:k,acts:kindActs(k,r),imp:true}):note)('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${injReturnVelText(p)}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
   try{ fTmpDaily(); }catch(e){} /* 재활이 끝난 날 바로 외국인 복귀 결정(검수 11-09t: 하루 늦게 떴다) */
   try{ injDaily(); loadDaily(); if(o.w===1&&G.day>G.cal.open)loadWeekly(); }catch(e){}
   const c=G.cal;
@@ -15591,7 +15597,7 @@ function specialKind(day,hid,aid){
   return null;
 }
 /* 중계로 볼 우리 경기 직전 선수 기록(저장하지 않는 메모리 사본): 중계 중 선수 화면에서 그 경기 결과(투구 수·세이브·좌우·타구 분포)가 먼저 보이지 않게(검수 11-08) */
-let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','splP','sprP','fat','l10','hist','injOut','injK','injB','injC','injHist','inj','ucl','reInj']; /* 당일 부상도 경기 전 상태로(검수 11-09zzc #13) */
+let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','armw','loadWarnDay','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','splP','sprP','fat','l10','hist','r','velo','pot','injOut','injK','injB','injC','injHist','injId','injTick','injFx','inj','ucl','reInj','rush','rushRet','rushId','fPlayInj']; /* 부상·실전 회복으로 바뀐 구속·능력과 누적 팔 부하도 경기 직전 값으로 표시한다(검수 11-18 #463). 같은 목록을 중계 저장에도 쓴다. */
 const spoilLite=k=>!['gl','hist','l10'].includes(k); /* 좌우·타구 분포는 박스에서 역산할 수 없어 경기 전 사본을 함께 저장한다. 시즌·경기 로그는 박스로 빼 준다. */
 function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of (entryOn()?actOf(t):playersOf(t))){ /* 성능: 경기에 나올 수 있는 1군만 사본을 뜬다(2군 선수는 그 경기로 바뀌지 않고, 사본이 없으면 화면은 박스 기준으로 가린다) */ const o={}; for(const k of SPOIL_K)o[k]=p[k]===undefined?undefined:JSON.parse(JSON.stringify(p[k])); P[p.id]=o; } SPOIL_SNAP={day,y:G.year,P}; }
 /* 경기 반영(applyGame) 도중 오류가 나면 그 경기에 나온 선수 상태(투구 부하·기록·피로)를 경기 전으로 되돌린다: 다시 치를 때 부하가 두 번 쌓이지 않게(검수 11-09zn) */
@@ -16150,7 +16156,7 @@ function regAdd(R,tid){ if(!R.tm){ if(R.n)R.n0=R.n; R.tm={}; } R.n++; R.tm[tid]=
 function regDaily(){ const c=G.cal; if(!c||G.day<c.open||G.day>c.end)return; if(G.day===c.open)G.regTrk=G.year; if(G.regTrk!==G.year||!entryOn())return; G.sea.cut=G.sea.cut||{};
   for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year)continue; const R=p.regD&&p.regD.y===G.year?p.regD:(p.regD={y:G.year,n:0,il:0});
     const nt=p.ntAway>G.day&&p.ntFrom<=G.day; if(milServing(p))continue; /* 복무 중이면 1군 표시가 남아 있어도 등록일 없음(검수 11-07) */ if(p.e1){ regAdd(R,p.team); p.e1L=G.day; p.e1T=p.team; continue; } if(p.ys)continue; /* 육성선수(정식 등록 전)·입대한 선수는 대표 차출·재활 인정 없음 */ if(nt){ regAdd(R,p.team); continue; }
-    if(p.injOut>0){ const lh=(p.injHist||[]).slice(-1)[0]; if(lh&&p.e1L!=null&&p.e1L>=lh.d-1&&(p.e1T??p.team)===p.team&&R.il<30){ /* 부상자 등록 인정은 그 구단에서 1군이었다가 다친 경우만(검수 11-07) */ regAdd(R,p.team); R.il++; } continue; }
+    if(p.injOut>0){ const active=injEpisode(p), credited=(p.injHist||[]).some(h=>!h.farm&&(h.t??p.team)===p.team&&(h.bk==null||h.bk>G.day)&&(h.ret!=null?h.ret>G.day:h===active||h.d+(h.days||0)>G.day)&&p.e1L!=null&&p.e1L>=h.d-1&&(p.e1T??p.team)===p.team); if(credited&&R.il<30){ /* 실제 1군 부상의 열린 재활 기간만 인정한다. 더 짧은 2군 겹진단이 기존 인정을 지우거나 연장하지 않는다(검수 11-18 #453). */ regAdd(R,p.team); R.il++; } continue; }
     if(!p.foreign&&p.sal>=300&&!milServing(p)&&!p.ys&&(!p.isP||G.day>=c.open+8)){ G.sea.cut[p.team]=(G.sea.cut[p.team]||0)+p.sal/600; R.cut=(R.cut||0)+1; } } }
 /* 그 구단 소속으로 쌓은 등록일수(2차 드래프트 의무 등록) */
 function regNT(p,tid){ const R=p.regD&&p.regD.y===G.year?p.regD:null; return R?(R.tm?(R.tm[tid]||0):(p.team===tid&&!(p.tLog||[]).some(x=>x.y===G.year&&G.cal&&x.d>=G.cal.open&&x.d<=G.cal.end)?R.n:0)):0; } /* 구단별 기록이 없는 옛 저장: 그 정규시즌 중 이적이 없을 때만 전부 그 구단 몫(검수 11-07) */
@@ -20368,13 +20374,13 @@ const EVH={
     pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0)return '외국인 시장에서 교체 후보를 확인하세요.'; const h=seasonTotal(p,G.year,'1군'); evFollow(30,'fx',{pid:p.id,ev:e.id}); return '한 달 뒤 다시 보고합니다.'; },
     follow(d){ const p=evP(d.pid); if(!p||p.team!==G.user)return; const h=seasonTotal(p,G.year,'1군'); const t=`${p.name} 한 달 뒤: ${h?statLine(h,p):'기록 없음'}.`; evResult(d.ev,t); note('경기',t,p.id); } },
   /* 부상 조기 복귀 (부상 순간에 발생) */
-  inj:{ pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0&&p.injOut>0){ const before=p.injOut; p.injOut=Math.max(2,Math.round(p.injOut*.6)); p.rush=G.day+p.injOut+30; p.rushRet=1; /* 위험 기간은 실제 복귀일부터 다시 잡는다(07_daily, 검수 11-09t) */ evFollow(p.injOut+30,'inj',{pid:p.id,n:p.injHist.length,ev:e.id}); return `복귀 예정 ${before}일 → ${p.injOut}일. 복귀 후 한 달은 부상 위험 3배.`; } return '예정대로 재활합니다.'; },
-    follow(d){ const p=evP(d.pid); if(!p)return; if(p.team===G.user&&p.injHist.length===d.n&&(p.rushRet||p.rush>G.day)){ evFollow(p.rushRet?p.injOut+30:p.rush-G.day,'inj',d); return; } /* 병원 변경 등으로 복귀가 늦어지면 실제 위험 기간이 끝날 때 보고(검수 11-09zy) */ const t=p.injHist.length>d.n||p.injOut>0?`${p.name} 조기 복귀 뒤 다시 다쳤습니다.`:p.team!==G.user?`${p.name}은(는) 조기 복귀 뒤 팀을 떠났습니다.`:`${p.name} 조기 복귀 뒤 한 달 동안 탈 없이 지냈습니다.`; /* 검수 11-07 */ evResult(d.ev,t); note('복귀',t,p.id); } }
+  inj:{ pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(!injMatches(p,{...e.data,day:e.day}))return '이 결정 이후 새 진단이 있어 이전 복귀 계획은 적용하지 않았습니다.'; if(i===0&&p.injOut>0){ const before=p.injOut; injSetRemaining(p,Math.max(2,Math.round(p.injOut*.6))); p.rush=G.day+p.injOut+30; p.rushRet=1;p.rushId=injToken(p);delete p.injB;injSync(p);evFollow(p.injOut+30,'inj',{pid:p.id,n:p.injHist.length,injId:injToken(p),ev:e.id}); return `복귀 예정 ${before}일 → ${p.injOut}일. 예상 복귀 ${injRetTxt(p)}. 복귀 후 한 달은 부상 위험 3배.`; } return '예정대로 재활합니다.'; },
+    follow(d,tid){ const p=evP(d.pid); if(!p){evResult(d.ev,'조기 복귀 뒤 선수가 리그를 떠났습니다.');return;} if(injMatches(p,d)&&(p.rushRet||p.rush>G.day)){ (G.evf=G.evf||[]).push({day:G.day+(p.rushRet?p.injOut+30:p.rush-G.day),k:'inj',data:d,tid:tid??G.user}); return; } const t=!injMatches(p,d)||p.injOut>0?`${p.name} 조기 복귀 뒤 다시 다쳤습니다.`:p.team!==(tid??G.user)?`${p.name}은(는) 조기 복귀 뒤 팀을 떠났습니다.`:`${p.name} 조기 복귀 뒤 한 달 동안 탈 없이 지냈습니다.`;evResult(d.ev,t);if(!G.unemp&&tid===G.user)note('복귀',t,p.id); } }
 };
-function evInjury(p,days,reg){ if(p.team!==G.user||period()!=='season'||days<12||days>70||evOpen().some(e=>e.k==='inj'))return; if(!(reg??isRegular(p)))return; /* reg: 다치기 전 주전 여부(검수 11-09t) */
+function evInjury(p,days,reg){ if(p.team!==G.user||period()!=='season'||days<12||days>70||evOpen().some(e=>e.k==='inj'&&e.data.pid===p.id&&injMatches(p,{...e.data,day:e.day})))return; if(!(reg??isRegular(p)))return; /* 각 주전·진단마다 한 결정 */
   evNew('inj',`${p.name} 복귀 시점`,`${p.name}이(가) 부상으로 약 ${days}일 빠집니다. 의무팀은 무리하면 일찍 돌아올 수 있다고 합니다.`,
     [{l:'조기 복귀',fx:'빨리 돌아오지만, 복귀 후 한 달 동안 부상 위험이 3배입니다.'},
-     {l:'정상 재활',fx:'예정대로 복귀합니다.'}],{ref:p.id,face:p.id,from:'팀 닥터 · 의무팀',data:{pid:p.id},def:1,exp:2}); }
+     {l:'정상 재활',fx:'예정대로 복귀합니다.'}],{ref:p.id,face:p.id,from:'팀 닥터 · 의무팀',data:{pid:p.id,injId:injToken(p),n:(p.injHist||[]).length},def:1,exp:2}); injSync(p); }
 
 /* ===== 전력 슬롯 비교와 추천 트레이드 ===== */
 const PSLOTS=['C','1B','2B','3B','SS','LF','CF','RF','DH','SP','RP'];
@@ -20771,7 +20777,7 @@ function leaveTeamState(old,rehire){
   for(const m of (G.mail||[]))if(m.acts)m.acts=m.acts.filter(a=>a.a!=='renewMgr'); /* 소속을 떠나면 옛 재계약 요청의 실행 권한도 끝난다 */
   if(G.fa){ G.fa.offers={}; G.fa.neg={}; G.fa.warned={}; } /* 옛 구단 이름으로 낸 FA 제안·협상 */
   if(G.faFund&&!G.faFund.done)G.faFund.tid=G.faFund.tid??old; else G.faFund=null; /* 우승 FA 특별자금 상환 의무는 구단에 남는다(검수 11-09zn) */ for(const g of (G.grants||[]))if(g.st==='open'){ g.st='void'; g.vd=1; } /* vd: 이직으로 멈춘 건. 같은 시즌 복귀하면 다시 연다(검수 11-09zzd) */ for(const r of (G.mreq||[]))if(r.st==='open'||r.st==='ask'){ r.st='void'; }
-  G.ownOrder=null; G.watchPlanned=null; G.simPlanned=null; G.matchAwait=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=(G.evf||[]).filter(f=>f.k==='scandal'&&f.data&&f.data.c>=2); /* 후원사 복귀는 구단 몫이라 남긴다(검수 11-09za) */ G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
+  G.ownOrder=null; G.watchPlanned=null; G.simPlanned=null; G.matchAwait=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=(G.evf||[]).filter(f=>f.k==='inj'||f.k==='scandal'&&f.data&&f.data.c>=2); /* 부상 경과는 원 결정 기록에 남기고, 후원사 복귀는 구단 몫으로 남긴다. */ G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
   if(!rehire){ const T=G.trnT=G.trnT||{}; T[old]={pol:G.trnPol||'bal',I:G.trnI||{},y:G.year}; } /* 육성 방침·선수별 강도 건의는 그 구단 것: 같은 해 돌아오면 이어받는다(PR #4 검수) */
   G.trn={}; G.trnI={}; G.trnPol='bal'; G.trnIS={}; /* 훈련 지시는 그 구단 선수에게 내린 것 */
   { const T=G.trnT, B=T&&!G.unemp&&G.user!==old?T[G.user]:null; if(B&&B.y===G.year){ G.trnPol=B.pol; G.trnI=Object.fromEntries(Object.entries(B.I).filter(([id])=>G.players[id]&&G.players[id].team===G.user)); } if(B)delete T[G.user]; }
@@ -21639,7 +21645,7 @@ function ovsRiskWord(F){const r=F?F.inj+F.form:0;return r>=.16?'높음':r>=.09?'
 function ovsUp(x,g){ const t=Math.min(100,dvRaw(x)+g); let lo=x,hi=80; if(dvRaw(hi)<=t)return hi; for(let i=0;i<30;i++){ const m=(lo+hi)/2; if(dvRaw(m)<t)lo=m; else hi=m; } return clamp(Math.floor(lo*10)/10,20,80); }
 function ovsRoll(p,o,coachDv){const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
   const ks=o[p.isP?'P':'B']; const k=ks[Math.floor(R()*ks.length)]; const sc=Math.min(1,room/6+.4); const v0=p.isP?veloOf(p):null; const x=R(); let r;
-  if(x<inj){ p.injOut=ri(14,60); delete p.injK; (p.injHist=p.injHist||[]).push({y:G.year,days:p.injOut,d:G.day,k:null,ovs:1}); /* 메디컬 부상 이력에도 남긴다(검수 11-07) */ r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${p.injOut}일 재활이 필요합니다.`}; }
+  if(x<inj){ const raw=ri(14,60),h=p.team!=null&&!milServing(p)?medOf(p.team).hosp:'none',days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{ovs:1}});r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${days}일 재활이 필요합니다.${p.injOut>days?' 기존 부상 재활은 예정대로 이어갑니다.':''}`}; }
   else if(x<inj+form){ p.r[k]=clamp(p.r[k]-rnd(1,3),20,80); r={t:'form',k,txt:`${jEulReul(OVS_TOOLN[k])} 손보다 폼이 흐트러졌습니다. 다시 잡는 데 시간이 걸립니다.`}; }
   else if(x<inj+form+big){ p.r[k]=ovsUp(p.r[k],R()<.1?rnd(5.5,7):Math.max(2,rnd(2,5)*sc)); if(!p.ovsPot){ p.pot=Math.min(80,p.pot+rnd(.5,2)); p.ovsPot=G.year; } /* 연수로 잠재력이 오르는 건 선수마다 한 번(공략 방지: 해마다 보내 잠재력을 쌓던 것) */ const v1=p.isP?veloOf(p):null; r={t:'big',k,txt:k==='stf'&&v1>v0?`직구 평균 ${v0}km/h에서 ${v1}km/h로 올라 돌아왔습니다.`:`${jIGa(OVS_TOOLN[k])} 확실히 달라져 돌아왔습니다.`}; }
   else if(x<inj+form+big+good){ for(const kk of ks)p.r[kk]=ovsUp(p.r[kk],Math.max(1,rnd(1,3)*sc)*1.4/ks.length); r={t:'good',k,txt:`${ks.map(z=>OVS_TOOLN[z]).join('·')}에서 성장이 확인됐습니다.`}; }
@@ -21715,11 +21721,12 @@ function injStam(p){ const s=(p.isP?p.r&&p.r.sta:p.r&&p.r.vit)??50; return clamp
    그래서 A→B→A로 돌아오면 원래 남은 기간으로 돌아온다(반올림·14일 문턱 때문에 단축이 남던 문제). 기준 이후 다른 일로 남은 기간이 바뀌었으면 지금 값에서 기준을 새로 잡는다 */
 const hospF=(k,p)=>{ const f=1-HOSP[k].rec; const I=INJ[p.injK]; return I&&I.d[0]>=240?Math.sqrt(f):f; };
 /* 지금 남은 재활에 우리 병원 할인이 들어 있는가: 마지막으로 재활 기간을 정한 구단(병원 변경 c, 부상 당시 injC, 옛 저장은 부상 기록 t)이 지금 구단일 때만(검수 11-09zy: 이적 전 병원 몫까지 되돌림) */
-function hospOwn(p){ const b=p.injB, h=(p.injHist||[]).slice(-1)[0]; const c=b&&b.c!==undefined?b.c:p.injC!==undefined?p.injC:h&&h.t!==undefined?h.t:G.user; return c===G.user; }
-function hospBase(p,o){ if(!hospOwn(p))return p.injOut; const b=p.injB; if(b&&b.h===o&&p.injOut===b.o-(G.day-b.d))return Math.max(0,b.n-(G.day-b.d)/hospF(o,p)); return p.injOut/hospF(o,p); }
+function hospOwn(p){ const b=p.injB, h=injEpisode(p); const c=b&&b.c!==undefined?b.c:p.injC!==undefined?p.injC:h&&h.t!==undefined?h.t:G.user; return c===G.user; }
+function hospBase(p,o){ if(!hospOwn(p))return p.injOut; const b=p.injB,h=injEpisode(p); if(b&&b.h===o&&p.injOut===b.o-(G.day-b.d))return Math.max(0,b.n-(G.day-b.d)/hospF(o,p));return p.injOut/hospF(h&&h.hosp!=null?h.hosp:h&&(h.ovs||h.train||(!h.k&&!p.injK))?'none':o,p); }
+function hospAcquire(p,tid){ if(!(p.injOut>0)||tid==null||milServing(p))return;const k=medOf(tid).hosp;if(!HOSP[k]||p.injOut<14)return;if(!injHospital(p,k,'none',true,tid)){const n0=p.injOut,n=Math.max(1,Math.round(n0*hospF(k,p)));p.injOut=n;p.injC=tid;p.injB={n:n0,h:k,o:n,d:G.day,c:tid,id:injEpisode(p)?.id};}injSync(p); }
 function setHospital(k){ if(!HOSP[k])return ''; const o=G.med.hosp||'none'; if(o===k){ G.medSet=true; return ''; } const L=[];
-  for(const p of ownedOf(G.user)){ if(!(p.injOut>0))continue; const kept=hospOwn(p)&&p.injB&&p.injB.h===o&&p.injOut===p.injB.o-(G.day-p.injB.d); if(!kept&&p.injOut<14){ delete p.injB; continue; } /* 짧은 부상은 그대로(병원을 거쳐 바뀐 기간은 기준에서 되돌린다) */
-    const n0=hospBase(p,o); const n=Math.max(1,Math.round(n0*hospF(k,p))); p.injB={n:n0,h:k,o:n,d:G.day,c:G.user}; if(n!==p.injOut){ L.push(`${p.name} ${p.injOut}일 → ${n}일`); p.injOut=n; for(const e of evOpen())if(e.k==='inj'&&e.data.pid===p.id)e.sit=e.sit.replace(/부상으로 약 \d+일/,`부상으로 약 ${n}일`); /* 조기 복귀 결정 문구도 바뀐 재활 기간으로(검수 11-09zy) */ } }
+  for(const p of ownedOf(G.user)){ if(!(p.injOut>0)||milServing(p))continue; const kept=hospOwn(p)&&p.injB&&p.injB.changed!==false&&(p.injB.changed||p.injB.id==null)&&p.injB.h===o&&p.injOut===p.injB.o-(G.day-p.injB.d); if(!kept&&p.injOut<14){ continue; }
+    const before=p.injOut;if(!injHospital(p,k,o,false)){const n0=hospBase(p,o),n=Math.max(1,Math.round(n0*hospF(k,p)));p.injB={n:n0,h:k,o:n,d:G.day,c:G.user,id:injEpisode(p)?.id};p.injOut=n;}if(before!==p.injOut){L.push(`${p.name} ${before}일 → ${p.injOut}일`);injSync(p);} }
   G.med.hosp=k; G.medSet=true; addLog(`제휴 병원을 ${HOSP[k].name}(으)로 바꿨습니다.${L.length?` 재활 중인 선수 남은 기간: ${L.join(', ')}.`:''}`); return L; }
 function recMult(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 병원·재활 시설을 쓰지 않는다(검수 11-09zy) */ return tm==null?1:(1-HOSP[medOf(tm).hosp].rec)*(1-facImpact(facLvK(tm,'rehab'))*.07); } /* 모든 구단 같은 식: 제휴 병원 × 재활 시설 */
 function facWeek(){ for(const t of G.teams){ const dl=facImpact(facLvK(t.id,'dorm')); if(!dl)continue; for(const p of domestic(t.id))if(p.age<=23&&(p.mor??60)<75)p.mor=clamp((p.mor??60)+dl*.3,0,75); } } /* 숙소 효과: 모든 구단 같은 식(사용자 11-13) */
@@ -21735,7 +21742,7 @@ function dailyCost(){ try{ smCheck(); }catch(e){} const m=G.mgr[G.user]; if(m&&!
    우리 구단 연수생이 있으면 베테랑 한 명이 함께 가서 후배를 챙긴다(연수생 기분 +3, 베테랑 리더십 경험) */
 function vetSelfTrain(young){ const out=[]; const V=domestic(G.user).filter(p=>p.age>=28&&p.age<=35&&p.sal>=300&&!(p.injOut>0)&&!milServing(p)&&!p.hold&&!(G.ovs||[]).some(x=>x.pid===p.id));
   for(const p of V){ initPers(p); if(R()>=.15+p.pers.pro/100)continue; /* 프로 의식이 높을수록 스스로 간다 */ const ks=p.isP?['stf','ctl','sta']:['con','pow','eye']; const k=pick(ks);
-    if(R()<.04){ p.injOut=ri(7,21); delete p.injK; (p.injHist=p.injHist||[]).push({y:G.year,days:p.injOut,d:G.day,t:p.team}); /* 개인 훈련 부상도 이력에(검수 11-09t) */ out.push(`${p.name}: 개인 훈련 중 가벼운 부상(약 ${p.injOut}일)`); continue; }
+    if(R()<.04){ const raw=ri(7,21),h=medOf(p.team).hosp,days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{train:1}});out.push(`${p.name}: 개인 훈련 중 가벼운 부상(약 ${p.injOut}일)`); continue; }
     const d=Math.round(rnd(.3,1.2)*10)/10; p.r[k]=clamp(p.r[k]+d,20,80); out.push(`${p.name}: 미국·일본에서 자비로 개인 훈련. ${OVS_TOOLN[k]} 감각을 끌어올렸습니다`); }
   const lead=V.filter(p=>out.some(t=>t.startsWith(p.name+': 미국')))[0];
   if(lead&&young.length){ for(const y of young)y.mor=clamp((y.mor??60)+3,0,100); lead.mor=clamp((lead.mor??60)+2,0,100); out.push(`${lead.name}이(가) 연수생 ${young.map(y=>y.name).join(', ')}와(과) 함께 훈련하며 후배들을 챙겼습니다. 연수생 기분 상승.`); }
@@ -24248,11 +24255,41 @@ const INJ={
 };
 const INJ_STAT={stf:'구위',ctl:'제구',sta:'스태미나',con:'컨택',pow:'파워',eye:'선구안',spd:'주력',def:'수비',vit:'체력'};
 const injName=k=>INJ[k]?INJ[k].n:'부상';
+/* 부상 결정은 선수뿐 아니라 진단 기록에 묶는다. 옛 저장의 ID도 난수 없이 한 번만 복원한다. */
+function injRecords(p){ const H=p.injHist=p.injHist||[]; H.forEach((h,i)=>{ if(!h.id)h.id='inj:'+p.id+':'+(h.d??h.y)+':'+i; }); return H; }
+function injEpisode(p){ const H=injRecords(p),last=H[H.length-1],active=H.find(h=>h.id===p.injId);if(active&&last!==active&&last.ret==null&&last.bk==null&&p.injOut>0){p.injId=last.id;delete p.injB;return last;}return active||last||null; }
+function injSetRemaining(p,n){ const h=injEpisode(p);if(h)h.ret=G.day+n;let best=h;for(const q of injRecords(p))if(q.bk==null&&q.ret>G.day&&(!best||q.ret>best.ret))best=q;if(best){p.injOut=Math.max(0,best.ret-G.day);p.injId=best.id;if(best.k)p.injK=best.k;else delete p.injK;}else p.injOut=n; }
+function injToken(p){ const H=injRecords(p); return H.length?H[H.length-1].id:null; }
+function injGameRisk(p,day){ const o=p.fPlayInj;if(!o)return false;delete p.fPlayInj;return day<=o.until&&o.injId===injToken(p)&&!(p.injOut>0); }
+function injMatches(p,d){ const H=injRecords(p); return d.injId!=null?injToken(p)===d.injId:(d.n!=null?H.length===d.n:!H.some(h=>h.d!=null&&h.d>d.day)&&H.filter(h=>h.d===d.day).length<=1); }
+function injStart(p,o){ const day=o.day??G.day, days=Math.max(1,o.days), H=injRecords(p), old=injEpisode(p), left=p.injOut||0, n=Math.max(0,days-(G.day-day));
+  if(old&&left>0)old.ret=G.day+left;
+  const h={y:dobj(day).y,days,d:day,k:o.k??null,t:o.t??p.team,...(o.extra||{}),hosp:o.hosp??'none',ret:day+days}; h.id='inj:'+p.id+':'+day+':'+H.length;
+  h.hospB={n:n/hospF(h.hosp,{injK:h.k}),h:h.hosp,o:n,d:G.day,c:milServing(p)?null:p.team,id:h.id,changed:false};
+  /* 겹친 작은 부상은 확정된 긴 재활을 줄이지 않는다. 기록은 남겨 결장일 합집합에 포함한다. */
+  if(n>=left||!left){ p.injOut=n; if(o.k)p.injK=o.k;else delete p.injK;p.injId=h.id;p.injB=h.hospB;p.injC=milServing(p)?null:p.team; }
+  H.push(h); delete p.rush;delete p.rushRet;delete p.rushId;delete p.reInj;p.injTick=G.day; return h;
+}
+/* 하루 처리는 중복 호출해도 같은 부상을 두 번 회복시키지 않는다. */
+function injRecoveryTick(p){ if(!(p.injOut>0)||p.injTick===G.day)return false;p.injTick=G.day;const active=injEpisode(p);if(active)active.ret=G.day+p.injOut-1;p.injOut--;if(p.injOut!==0)return false;
+  for(const h of injRecords(p))if(h.bk==null&&h.ret!=null)h.bk=Math.min(G.day,h.ret);const h=injEpisode(p);if(h&&h.bk==null)h.bk=G.day;if(p.rushRet&&(!p.rushId||p.rushId===injToken(p))){p.rush=G.day+30;delete p.rushRet;}else if(p.rushRet){delete p.rushRet;delete p.rush;}return true;
+}
+function injSync(p){ const token=injToken(p), active=injEpisode(p), ret=injRetTxt(p);for(const e of (G.evs||[])){ if(e.k!=='inj'||e.data.pid!==p.id||!injMatches(p,e.data))continue;const prev=e.sit;e.sit=e.sit.replace(/부상으로 약 \d+일/,`부상으로 약 ${p.injOut}일`).replace(/ 예상 복귀 [^.]+\./,'')+` 예상 복귀 ${ret}.`;const m=(G.mail||[]).find(m=>m.id===e.mid);if(m)m.body=m.body.replace(prev,e.sit); }
+  const open=new Set(injRecords(p).filter(h=>h.ret>G.day&&h.bk==null).map(h=>h.id));for(const m of (G.mail||[]))if(m.injId===token||active&&m.injId===active.id||open.has(m.injId))m.body=m.body.replace(/예상 복귀 [^.]+\./,`예상 복귀 ${ret}.`);
+}
+/* 열린 겹부상도 각 진단의 병원 기준으로 바꾼 뒤 가장 늦은 복귀일을 지킨다. */
+function injHospital(p,k,o,acquire,tid=p.team){ const active=injEpisode(p), records=injRecords(p);if(active){active.ret=G.day+p.injOut;if(p.injB&&(!p.injB.id||p.injB.id===active.id))active.hospB=p.injB;}const open=records.filter(h=>h.ret>G.day&&h.bk==null);let best=null;
+  for(const h of open){const q={injK:h.k??(h===active?p.injK:null)},left=h.ret-G.day,b=h.hospB,own=(b?b.c:p.injC!==undefined?p.injC:h.t??G.user)===p.team;let base=left;if(left<14&&!(b&&(b.changed||b.id==null)&&b.h===o)){if(!best||h.ret>best.ret)best=h;continue;}
+    if(!acquire&&own){if(b&&b.h===o&&left===b.o-(G.day-b.d))base=Math.max(0,b.n-(G.day-b.d)/hospF(o,q));else base=left/hospF(h.hosp??(h.ovs||h.train||(!h.k&&!p.injK)?'none':o),q);}
+    const n=Math.max(1,Math.round(base*hospF(k,q)));h.ret=G.day+n;h.hosp=k;h.hospB={n:base,h:k,o:n,d:G.day,c:tid,id:h.id,changed:1};if(!best||h.ret>best.ret)best=h;
+  }
+  if(best){p.injOut=best.ret-G.day;p.injId=best.id;if(best.k)p.injK=best.k;else delete p.injK;p.injB=best.hospB;p.injC=tid;}return !!best;
+}
 /* 어떤 부상인지 고른다. 선발은 팔, 타자는 하체·손 부상이 많고, 포수는 무릎·머리, 많이 던진 날은 팔 부상 비중이 커진다 */
 function injPick(p,ctx){ ctx=ctx||{}; const col=!p.isP?2:ctx.sp?0:1;
   const re=p.reInj&&p.reInj.left>0?p.reInj:null;
-  if(re&&R()<.6){ const b=INJ[re.k]; return b&&b.up&&R()<.5?b.up:re.k; } /* 같은 부위 재발, 절반은 한 단계 더 심하게 */
-  const L=[]; for(const k in INJ){ const I=INJ[k]; let w=I.w[col]; if(!w)continue;
+  if(re&&R()<.6){ const b=INJ[re.k], k=b&&b.up&&R()<.5?b.up:re.k; if(k!=='contus'||ctx.hbp!==0)return k; } /* 같은 부위 재발, 절반은 한 단계 더 심하게. 사구 없는 날의 타박상은 재발 후보에서도 제외한다. */
+  const L=[]; for(const k in INJ){ const I=INJ[k]; let w=I.w[col]; if(!w||k==='contus'&&ctx.hbp===0)continue; /* 사구가 없는 경기에서는 사구 타박상도 없다(검수 11-18 #443). */
     if(p.pos==='C'&&(k==='knee'||k==='concus'))w*=2.2;
     if(p.isP&&(I.part==='팔꿈치'||I.part==='어깨')&&ctx.pc>100)w*=1+(ctx.pc-100)/40;
     if(p.isP&&(I.part==='팔꿈치'||I.part==='어깨')&&ctx.load>1)w*=ctx.load*(I.d[0]>=56?1.4:1); /* 혹사당한 팔은 큰 부상으로 이어진다 */
@@ -24262,7 +24299,7 @@ function injPick(p,ctx){ ctx=ctx||{}; const col=!p.isP?2:ctx.sp?0:1;
   let s=sum(L.map(x=>x[1])), r=R()*s; for(const [k,w] of L){ r-=w; if(r<=0)return k; } return L[0][0]; }
 /* 능력 손실을 실제로 적용하고, 되찾을 수 있는 몫을 기록한다 */
 function injApply(p,k,days){ const I=INJ[k]; const hosp=p.team!=null&&!milServing(p)?( /* 상무 복무 중에는 원소속 병원 몫 없음(검수 11-09zy) */{a:.6,b:.8,c:.9}[medOf(p.team).hosp]||1):1; /* 모든 구단: 그 구단 제휴 병원 */
-  const fx={k,n:I.n,y:G.year,L:{},P:{},need:I.need||0,got:0,v:0};
+  const fx={k,n:I.n,y:G.year,L:{},P:{},need:I.need||0,got:0,v:0,...(p.isP?{preVel:veloOf(p)}:{})};
   const hit=(s,a,permF)=>{ if(p.r[s]==null||a<=0)return; const b=p.r[s]; p.r[s]=clamp(b-a,20,80); const real=b-p.r[s]; const pm=real*permF; fx.L[s]=(fx.L[s]||0)+real-pm; fx.P[s]=(fx.P[s]||0)+pm; };
   if(I.tj){ /* 토미존: 구속은 새 기준선이 되고, 제구·구위는 복귀 첫해에 실전을 던지며 되찾는다 */
     const young=p.age<=28, gain=R()<(young?.46:.3); const dv=gain?rnd(.4,2):-rnd(.4,2.8); /* km/h */
@@ -24271,8 +24308,9 @@ function injApply(p,k,days){ const I=INJ[k]; const hosp=p.team!=null&&!milServin
     const fail=.08+Math.max(0,p.age-30)*.03; if(R()<fail*hosp){ hit('stf',rnd(4,8),1); hit('ctl',rnd(1,3),1); fx.fail=true; }
   } else if(I.fx){ const long=days>=365; let pf=(I.perm||0)+(long?rnd(.15,.35):0); pf=clamp(pf*hosp,0,1);
     for(const s in I.fx){ if(p.isP!==(s==='stf'||s==='ctl'||s==='sta'))continue; hit(s,rnd(I.fx[s][0],I.fx[s][1]),pf); }
-    if(p.isP&&I.fx.stf&&(I.part==='어깨')&&pf>0){ fx.v=-Math.round(sum(Object.values(fx.P))*VELO_K*10)/10; } }
+  }
   roundR(p);
+  if(p.isP){ fx.returnVel=veloOf(p); fx.v=fx.returnVel-fx.preVel; fx.finalVel=veloOf({...p,r:{...p.r,stf:Math.round(clamp(p.r.stf+(fx.L.stf||0),20,80)*10)/10}}); } /* 구속은 제구 손실을 섞지 않고 프로필과 같은 실제 식으로 잰다. 복귀 첫 측정과 실전 회복 뒤 예상치를 구분한다(검수 11-18 #444~445). */
   for(const s in fx.P)if(fx.P[s]>0)p.pot=Math.max(ovr(p),p.pot-fx.P[s]*.5);
   const has=Object.values(fx.L).some(x=>x>.05), perm=Object.values(fx.P).some(x=>x>.05);
   if(has||perm||fx.v||fx.fail){ /* 되찾을 수 없는 손실만 있어도 기록(검수 11-07) */ (p.injFx=p.injFx||[]).push(fx); if(!has)fx.need=0; }
@@ -24286,11 +24324,11 @@ function injRecover(p,u){ if(!p.injFx||!p.injFx.length||!(u>0))return; for(const
   roundR(p); p.injFx=p.injFx.filter(fx=>!(fx.done&&fx.done<G.year-1)); }
 function injFxNow(p){ return (p.injFx||[]).filter(fx=>fx.need&&fx.got<fx.need); }
 /* 화면용 후유증 설명 */
-function injFxText(p){ const out=[]; const fx0=p.injOut>0&&p.injFx&&p.injFx.length?p.injFx[p.injFx.length-1]:null;
+function injFxText(p){ const out=[], h=injEpisode(p), F=p.injFx||[]; const fx0=p.injOut>0?(F.find(fx=>h&&fx.injId===h.id)||[...F].reverse().find(fx=>fx.k===p.injK)):null;
   for(const fx of (p.injFx||[])){ const a=[];
     if(fx===fx0&&p.injK&&fx.k===p.injK){ const I=INJ[fx.k]; out.push({n:fx.n,y:fx.y,t:`재활 중입니다. 복귀 뒤에는 ${Object.keys(fx.L).filter(s=>fx.L[s]>.3).map(s=>INJ_STAT[s]).join('·')||'몸 상태'}이(가) 떨어진 채 시작해 실전을 뛰며 되찾습니다.${I.tj?' 구속이 어떻게 변할지는 복귀해 봐야 압니다.':''}${I.perm||I.d[0]>=240?' 일부는 돌아오지 않을 수 있습니다.':''}`,open:true}); continue; }
     const open=fx.need&&fx.got<fx.need; if(open){ const ls=Object.entries(fx.L).filter(x=>x[1]>.3).map(x=>`${INJ_STAT[x[0]]||x[0]} -${Math.round(dv(50)-dv(50-x[1]))||1}`); if(ls.length)a.push(`${ls.join(', ')} 회복 중 ${Math.round(fx.got/fx.need*100)}%`); }
-    if(fx.v)a.push(`구속 ${fx.v>0?'+':''}${fx.v}km/h`);
+    if(Number.isFinite(fx.preVel)){ const v=fx.returnVel??fx.preVel+fx.v; a.push(`수술·부상 전 ${fx.preVel} → 복귀 시 ${v}km/h${open&&Number.isFinite(fx.finalVel)?` · 실전 회복 후 예상 ${fx.finalVel}km/h`:''}`); }
     const pm=Object.entries(fx.P).filter(x=>x[1]>.3).map(x=>`${INJ_STAT[x[0]]||x[0]} -${Math.round(dv(50)-dv(50-x[1]))||1}`); if(pm.length)a.push(`영구 손실 ${pm.join(', ')}`);
     if(fx.fail)a.push('예전 구위를 되찾지 못함');
     if(a.length&&(open||fx.y>=G.year-1))out.push({n:fx.n,y:fx.y,t:a.join(' · '),open}); }
@@ -24301,15 +24339,15 @@ function injRetTxt(p){ const d=injRet(p); if(d==null)return ''; const o=dobj(d);
 function injNow(p){ return p.injOut>0?(p.injK?injName(p.injK):'부상'):''; }
 /* 매일: 재발 위험 기간 감소, 시즌 중 1군에 없는 회복 중 선수는 2군 실전으로 조금씩 되찾는다 */
 function injDaily(){ const inSea=period()==='season';
-  for(const p of Object.values(G.players)){ if(p.reInj&&p.injOut<=0&&p.reInj.d!==G.day){ p.reInj.left--; /* 복귀한 날은 빼지 않는다 */ if(p.reInj.left<=0)delete p.reInj; }
+  for(const p of Object.values(G.players)){ if(p.reInj&&p.injOut<=0&&p.reInj.d!==G.day&&p.reInj.tick!==G.day){ p.reInj.tick=G.day;p.reInj.left--; /* 복귀한 날과 같은 날 중복 호출은 빼지 않는다 */ if(p.reInj.left<=0)delete p.reInj; }
   } void inSea; } /* 퓨처스 실전 회복은 futBat·futPit에서 실제 타석·아웃카운트로 처리한다 */
 /* ===== 투수 부하와 감독의 투수 운용 =====
    감독의 '투수 혹사' 성향에 성적 압박(성적 우선 기조, 시즌 막판 순위 싸움, 가을야구)을 더해 실제로 얼마나 밀어붙이는지 정한다.
    많이 밀어붙이는 감독은 불펜 3연투·4연투, 멀티이닝, 선발을 일찍 내리고 필승조를 계속 붙이는 운용을 한다.
    투수마다 최근 등판 기록(연투)과 누적 팔 부하를 쌓고, 둘 다 부상 위험과 팔꿈치·어깨 부상 비중을 키운다 */
 function mgrPush(tid){ if(tid==null)return 50; const m=mgrOf(tid); if(!m||m.interim)return 50;
-  const c=G._push&&G._push.d===G.day?G._push:(G._push={d:G.day,v:{}}); if(c.v[tid]!=null)return c.v[tid];
-  let v=mgrArmEff(m); try{ v+=-teamLean(tid)*10; }catch(e){}
+  const c=G._push&&G._push.d===G.day?G._push:(G._push={d:G.day,v:{}}), arm=mgrArmEff(m), key=String(m.id??m.name)+':'+arm; c.k=c.k||{}; if(c.v[tid]!=null&&c.k[tid]===key)return c.v[tid]; c.k[tid]=key;
+  let v=arm; try{ v+=-teamLean(tid)*10; }catch(e){}
   if(period()==='season'&&G.day>=KD(8,15)){ try{ const S=standingsNow(); const pct=x=>x.w/Math.max(1,x.w+x.l); const i=S.findIndex(x=>x.tid===tid); const cut=S[4]; if(i>=0&&cut){ const gb=((cut.w-S[i].w)+(S[i].l-cut.l))/2; if(Math.abs(gb)<=3||i<=1)v+=8; void pct; } }catch(e){} }
   if(G.ps&&period()==='post')v+=15;
   return c.v[tid]=clamp(Math.round(v),15,100); }
@@ -24319,18 +24357,20 @@ function consecDays(p,day){ const L=p.ld||[]; let n=0, d=day-1; for(let i=L.leng
 function pc7(p,day){ return sum((p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).map(x=>x[1])); }
 /* 누적 팔 부하 한도: 선발은 5일 로테이션 100구, 불펜은 이틀에 한 번 20구를 꾸준히 던질 때 한도에 닿는다 */
 /* 선발 한도는 지금 역할이 선발이거나 최근 선발처럼 길게(60구 이상) 던진 투수(대체 선발·불펜 데이)에게 적용한다 */
-function armCap(p){ const s=p.r.sta||50; const SP=1150+(s-50)*18, RP=540+(s-50)*9; if(isSPr(p))return SP; let w=0; for(const x of (p.ld||[]))if(x[1]>=60)w=Math.max(w,clamp(1-(G.day-x[0])/60,0,1)); return RP+(SP-RP)*w; } /* 계투: 최근 긴 등판(60구 이상)일수록 선발 한도에 가깝고, 60일에 걸쳐 계투 한도로 줄어든다(오래된 기록 하나로 한도가 두 배가 되지 않게) */ /* 체력이 좋을수록 시즌 누적 부하를 더 견딘다 */
+function armCap(p){ const s=p.r.sta||50; const SP=1150+(s-50)*18, RP=540+(s-50)*9; if(isSPr(p))return SP; let w=0; for(const x of (p.ld||[]))if(loadApps(x,p.lsD||[]).some(a=>a[0]>=60))w=Math.max(w,clamp(1-(G.day-x[0])/60,0,1)); return RP+(SP-RP)*w; } /* 계투: 최근 긴 한 등판(60구 이상) 노출을 60일에 걸쳐 줄인다. 하루 합계는 긴 한 등판이 아니다. */
 function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 기록: applyGame에서 투수마다 호출 */
 /* 등판 하나를 1군·퓨처스 공통으로 남긴다: 부하 기록(날짜순) + 마지막 등판일·선발일·투구 수. 선발 선택·불펜 가용 판단이 어느 리그 등판이든 같은 이력을 본다 */
 function pitchApp(p,day,pc,isStart){ const cd=loadLog(p,day,pc,isStart); if(p.lastApp==null||day>=p.lastApp){ if(day!==p.lastApp)p.prevApp=p.lastApp; p.lastPc=day===p.lastApp?(p.lastPc||0)+pc:pc; p.lastApp=day; } /* 같은 날 두 번 던지면 합친다: 다음 날 불펜 가용 판정이 그날 전체 투구 수를 보게(검수 11-09) */ else if(p.prevApp==null||day>p.prevApp)p.prevApp=day; if(isStart&&(p.lastStart==null||day>p.lastStart))p.lastStart=day; return cd; }
 /* 최근 실제 등판들의 부하기여만 비교한다. 이미 쌓인 시즌 부하·일일 회복은 되돌리지 않는다. */
-function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d,pc]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=row[3]||[[pc,starts.includes(d)?1:0]];for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;if(L.some(r=>r[0]<d&&d-r[0]<=3&&!starts.includes(r[0])&&r[1]>=20))v+=n*.3;}else{if(n>=35)v+=(n-35)*1.5;if(starts.some(s=>s<d&&d-s<=2))v+=n*1.0;}total+=v;}}return total;} /* 보직 왔다갔다(사용자 11-11: 오가게 하면 혹사): 구원 20구 이상 던진 뒤 3일 안에 선발이면 +30%, 선발 뒤 2일 안에 구원으로 쓰면 그 등판 부하 두 배 */
+/* ld[1]은 하루 합계, ld[3]은 [등판 투구 수, 선발 여부] 목록. 옛 DH 저장은 세부를 복원할 수 없어 균등 분할해 합계만으로 긴 등판 혜택을 주지 않는다. 조회 시 저장값을 바꾸지 않는다. */
+function loadApps(row,starts){ if(row[3]&&row[3].length)return row[3]; const n=Math.max(1,row[2]||1); return Array.from({length:n},(_,i)=>[(row[1]||0)/n,i===0&&starts.includes(row[0])?1:0]); }
+function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=loadApps(row,starts);for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;if(L.some(r=>r[0]<d&&d-r[0]<=3&&loadApps(r,starts).some(a=>!a[1]&&a[0]>=20)))v+=n*.3;}else{if(n>=35)v+=(n-35)*1.5;if(starts.some(s=>s<d&&d-s<=2))v+=n*1.0;}total+=v;}}return total;} /* 보직 전환 가산도 날짜 합계가 아닌 실제 구원 한 등판 20구를 기준으로 한다. */
 function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day),L=p.ld=p.ld||[],SD=(p.lsD||[]).slice(),before=loadSpan(L,SD);const same=L.find(x=>x[0]===day);
-  if(same){const apps=same[3]||(same[3]=[[same[1],SD.includes(day)?1:0]]);apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
+  if(same){const apps=same[3]||(same[3]=loadApps(same,SD));apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
   if(isStart){if(!SD.includes(day))SD.push(day);SD.sort((a,b)=>a-b);if(p.lsS==null||day>p.lsS)p.lsS=day;}
-  p.armw=Math.max(0,(p.armw||0)+loadSpan(L,SD)-before);while(L.length>10)L.shift();if(isStart)p.lsD=SD.slice(-6);
-  if(cd>=3&&p.team===G.user&&p.e1&&period()==='season'){ /* 4일 연속부터(플레이 리뷰 11-12: 3일 연투 알림이 시즌 14통) */ /* 2군(퓨처스) 연투는 2군 감독 몫: 1군 투수만 알린다(제보 11-12) */ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
+  p.armw=Math.max(0,(p.armw||0)+loadSpan(L,SD)-before);const latest=L[L.length-1][0];while(L.length>10&&L[0][0]<latest-60)L.shift();if(isStart)p.lsD=SD.slice(-6);
+  if(cd>=3&&p.team===G.user&&p.e1&&period()==='season'&&p.loadWarnDay!==day){ /* 같은 날 DH도 4연투 경고는 한 번만 보낸다. */ p.loadWarnDay=day; const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
   return cd; }
 /* 부상 위험 배수: 연투(급성)와 누적 부하(만성) */
 function loadMult(p,cd,day){ const sp=isSPr(p); const w7=pc7(p,day);
@@ -24345,7 +24385,7 @@ function loadText(p){ if(!p.isP)return ''; const day=G.day+1; const cd=consecDay
 /* 매주 월요일: 우리 팀 부하 보고 */
 function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a));
   /* 같은 투수가 같은 단계(높음·위험)로 계속 남아 있으면 매주 되풀이하지 않는다: 새로 한도를 넘었거나 '위험'으로 올라간 투수가 있을 때만 */
-  const lv=p=>armRatio(p)>=1.3?2:1; const prev=G.loadSig||{}; const cur={}; for(const p of hi)cur[p.id]=lv(p); G.loadSig=cur; if(!hi.length)return;
+  const lv=p=>armRatio(p)>=1.3?2:1; const prev=G.loadSig1||{}; const cur={}; for(const p of hi)if(p.e1)cur[p.id]=lv(p); G.loadSig1=cur; if(!hi.length)return;
   /* 1군과 2군(퓨처스)을 나눈다: 2군 투수 운용은 1군 감독 지시와 무관하고, 2군 투수만 바뀐 주에는 보고하지 않는다(제보 11-12: 2군 혹사 보고가 계속 올라옴) */
   const one=hi.filter(p=>p.e1), two=hi.filter(p=>!p.e1); if(!one.some(p=>(prev[p.id]||0)<cur[p.id]))return;
   const m=G.mgr[G.user], fm=(coachesOf(G.user)||{}).fm; const line=p=>`${p.name}(${posLabel(p)}): ${loadText(p)}`;
@@ -24356,7 +24396,7 @@ function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user)
 const MED_SD={none:.07,c:.05,b:.035,a:0};
 function medInj(p){ const v=p.inj*injStam(p); /* 체력까지 반영한 실제 부상 위험(사용자 11-08) */ if(p.team===G.user)return v; const sd=MED_SD[G.med&&G.med.hosp]??.07; return sd?clamp(v+hn('med'+G.year,p.id)*sd,.02,Math.max(.45,v)):v; } /* 정확한 검진(오차 0)은 우리 선수와 같은 값(검수 11-09zy: 상한 .45로 잘림) */
 function durGrade(v){ return v<.08?['강철 몸','good']:v<.12?['튼튼함','good']:v<.18?['보통','']:v<.26?['잔부상 주의','warn']:['부상 병동','bad']; }
-function injDays2(p){ const H=p.injHist||[], last=H[H.length-1], s0=dnum(G.year-1,1,1); return sum(H.map(h=>{ if(h.d==null)return h.y>=G.year-1?h.days:0; const e=h.bk??(h===last&&p.injOut>0?G.day:h.d+h.days); return Math.max(0,Math.min(e,G.day)-Math.max(h.d,s0)); })); } /* 작년 1월 1일부터 빠진 날: 해를 넘긴 부상도 그 기간 몫은 센다(검수 11-09zy) */
+function injDays2(p){ const H=p.injHist||[], active=injEpisode(p), s0=dnum(G.year-1,1,1), L=[];let legacy=0;for(const h of H){if(h.d==null){if(h.y>=G.year-1)legacy+=h.days||0;continue;}const e=h.bk??(h===active&&p.injOut>0?G.day:h.ret??h.d+h.days),a=Math.max(h.d,s0),b=Math.min(e,G.day);if(b>a)L.push([a,b]);}L.sort((a,b)=>a[0]-b[0]);let n=legacy,end=-Infinity;for(const [a,b]of L){n+=Math.max(0,b-Math.max(a,end));end=Math.max(end,b);}return n; } /* 겹친 재활도 같은 달력 하루는 한 번만 센다. */
 /* 부상 당시 구단: 옛 저장(t 없음)은 이적 기록(tLog)에서 그날 소속을 찾는다(검수 11-09zy) */
 function injTm(p,h){ if(h.t!=null)return h.t; const m=h.d!=null&&(p.tLog||[]).find(x=>x.d>h.d); return m?m.f:p.team; } /* 실제 복귀일(bk)·지금 재활 중이면 오늘까지로 센다: 진단 일수와 다른 조기 복귀·재활 연장(검수 11-09t) */ /* 이미 빠진 날만(앞으로 남은 재활은 아직 결장 이력이 아님, 검수 11-08) */
 function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];
@@ -24373,7 +24413,7 @@ function medRisky(p){ return medTradeF(p)<.82; }
 /* 선발 빌드업(사용자 11-11: 많이 던진다고 체력이 느는 게 아니라 선발의 몸을 만들어야 한다): 최근 30일 가장 긴 등판이 90구 미만이면 이번 선발은 그보다 18구 많은 데까지(최소 60구). 보통 60→80→95처럼 세 번쯤 걸려 정상 투구 수가 된다.
    시즌 첫 35일의 선발 보직 투수는 스프링캠프에서 몸을 만든 것으로 본다. 1군·퓨처스 등판을 같이 센다. 제한이 없으면 null */
 function spRampCap(p,day){ if(!p||!p.isP)return null; const open=G.cal&&G.cal.open; if(open!=null&&day-open<35&&day>=open&&isSPr(p))return null;
-  const L=(p.ld||[]).filter(x=>x[0]<day&&x[0]>=day-30); const mx=L.reduce((a,x)=>Math.max(a,x[1]||0),0); if(mx>=90)return null; return Math.max(60,mx+18); }
+  const L=(p.ld||[]).filter(x=>x[0]<day&&x[0]>=day-30); const mx=L.reduce((a,x)=>Math.max(a,...loadApps(x,p.lsD||[]).map(v=>v[0]||0)),0); if(mx>=90)return null; return Math.max(60,mx+18); }
 function spRampText(p){ try{ const c=spRampCap(p,G.day+1); return c==null?'':`선발 빌드업 중: 다음 선발은 약 ${Math.round(c)}구까지(최근 30일 가장 긴 등판 기준)`; }catch(e){ return ''; } }
 /* ===== 타구 모델: 인플레이 타구의 유형과 방향을 먼저 정하고, 그 방향을 맡은 야수의 수비로 안타·아웃을 가른다 =====
  - 유형: 땅볼·라인드라이브·뜬공·팝플라이. 타자 파워가 높을수록 뜬공, 컨택이 높을수록 라인드라이브, 투수 땅볼 성향(gbT)이 클수록 땅볼.
@@ -24532,7 +24572,7 @@ function futEligibleDay(p,t,d){if(!p||p.team!==t||p.prospect||p.joinY>G.year||!h
 function futBat(p,t,pos,games){ games=games||3; if(futUpToday(p))return;const days=Array.from({length:games},(_,i)=>G.day-games+1+i).filter(d=>futEligibleDay(p,t,d));if(!days.length)return;games=days.length;const pa=games>=3?ri(9,14):games===2?ri(6,10):ri(3,6);
   const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games,{mil:milServing(p)&&milPeriod(p).unit==='상무',days}); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
   if(p.injFx)injRecover(p,pa);
-  if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1}); }
+  if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1,hbp:o.hbp||0}); }
 function futPit(p,t){ const sp=isSPr(p);
   const had=d=>(p.ld||[]).some(x=>x[0]===d); /* 그날 이미(1군 등) 던졌으면 퓨처스 등판을 겹쳐 넣지 않는다(검수 11-07) */
   const days=sp?[G.day]:(p.downDay!=null&&p.downDay>G.day-2)?[G.day]:[G.day-2,G.day]; /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */
@@ -24674,6 +24714,7 @@ function moveSalary(p,from){ { const C=G.contract; if(C&&!C.done&&from!=null&&fr
 function mvLog(type,p,from,to,note,amt,tr){ if(!p)return; if(to!==from)offerDropMoved([p.id]); if(to!=null&&to!==from)p.mvD=G.day; /* 새 구단 합류일: AI가 막 데려온 선수를 바로 매물로 내놓지 않게(일고회장 11-12) */ if(/트레이드|FA/.test(type||''))try{ rivalMove(p,from,to,type); }catch(e){} try{ if((from!=null||to!=null)&&from!==to)plogMove(p,from,to,type); }catch(e){} G.mvN=(G.mvN||0)+1; if((from!=null||to!=null)&&from!==to&&!p.foreign){ /* 방출·무적 영입도 남긴다: 시즌 마지막 날 방출해도 그해 연봉은 그날까지 낸다 */ const L=p.tLog=(p.tLog||[]).filter(x=>x.y>=G.year-1); L.push({y:G.year,d:G.day,f:from,t:to,s:p.sal}); } /* s: 떠나기 전 연봉(옛 구단 몫은 그 연봉으로, 검수 11-08) */ /* 구단 사이 이동: 그해 연봉을 소속 기간대로 나눈다(payYear) */ /* 선수 이동 횟수: 전력표 캐시를 다시 계산하는 기준 */
   if(to!==from)moveSalary(p,from); if(to!==from){ p.e1=false; delete p.downDay; /* 1군 등록은 새 구단이 다시 정한다(엔트리 한도 초과 방지). 말소 10일 규정은 같은 구단 재등록이라 새 구단은 바로 올릴 수 있다 */
     delete p.noTrade; delete p.extCounter; delete p.extNg; delete p.ntcOk; delete p.listed; delete p.lw; delete p.urgent; delete p.promise; delete p.pconv; delete p.treq; delete p.aiListed; if(p.grv)p.grv={}; delete p.pd; delete p.upW; /* 전 구단에서 쌓인 출전·콜업 불만은 새 구단으로 가져가지 않는다(커뮤니티 11-13) */ /* 옛 구단·단장이 건 표시는 끝난다 */
+    if(to!=null)hospAcquire(p,to); /* 합류한 날부터 새 구단 병원에서 남은 재활을 받는다. */
     if(G.trnI&&from===G.user)delete G.trnI[p.id]; /* 우리가 내린 훈련 강도 건의는 떠난 선수에게 남지 않는다(돌아와도 옛 지시가 되살아나지 않게, PR #4 검수) */
     if(p.extNext&&p.extNext.terms&&type!=='방출'){ /* 방출은 toFree가 웨이버 기록에 계약을 복사한 뒤 지운다(검수 11-08b: 승계할 조항이 먼저 사라짐) */ if(type==='2차 드래프트'||type==='웨이버 양수')delete p.extNext.terms.role; else p.extNext.terms=null; } /* 트레이드·방출이면 미리 맺은 다년계약의 구단 한정 조건은 끝난다. 계약을 통째로 승계하는 2차 드래프트·웨이버는 옵션·거부권을 잇고 주전 약속만 끝(검수 11-07) */
     if(from===G.user&&(G.ovs||[]).some(x=>x.pid===p.id&&!x.go))try{ setOvs(p.id,null); }catch(e){} } try{ if(to!=null&&to!==from&&ACQ_K[type]&&type!=='2차 드래프트')acqStamp(p,type,to,{from:from??null}); /* 2차 드래프트는 지명 때 라운드와 함께 한 번 남긴다(검수 11-07: 두 번 기록·라운드 덮어씀) */ }catch(e){} const L=G.moves=G.moves||[], m={seq:G.mvN,y:G.year,d:G.day,t:type,pid:p.id,n:p.name,pos:posLabel(p),age:p.age,o:Math.round(ovr(p)),sal:p.sal??null,yrs:p.yrs||0,from:from??null,to:to??null,note:note||'',amt:amt||0,...(tr?{tr}:{})}; L.unshift(m); mvChron(m); if(L.length>600)L.length=600; }
@@ -25591,6 +25632,7 @@ cb:{
   scan(byT){ for(const t of G.teams)for(const p of byT[t.id]||[]){ if(!(p.injOut>=45)||p.ys||ovr(p)<46)continue; if(!slCan('cb',t.id,[p.id]))continue; const h=(p.injHist||[]).slice(-1)[0]; const tot=Math.max(p.injOut,h&&h.days||0);
       slStart('cb',t.id,[p.id],'rehab',{tot,d0:G.day-Math.max(0,tot-p.injOut),ik:p.injK||h&&h.k||null}); story(p,`${G.year} 긴 재활 시작`,'sl'); } },
   week(s){ const p=slP(s.p[0]); const nm=injName(s.x.ik);
+    if(s.st==='back'&&p.injOut>0){ slEnd(s,'reinjured'); return; } /* 다시 다친 날에는 이전 한 달 성적으로 재기 성공을 발표하지 않는다(검수 11-18 #448). */
     if(s.st==='rehab'&&p.injOut>0&&p.injOut<=Math.max(7,s.x.tot*.3)&&G.day-s.d>=14){ s.st='late'; initPers(p);
       const q=slPick('cb.q',[p.pers.pro>=14&&'"하루도 빼먹지 않고 재활했습니다. 몸은 준비됐습니다."',p.pers.amb>=14&&'"빨리 돌아가서 제 자리를 되찾고 싶습니다."','"동료들이 뛰는 걸 TV로만 보는 게 제일 힘들었습니다."','"조급해하지 않으려고 합니다. 완전히 나아서 돌아가겠습니다."'],p.id);
       if(slMe(s.t)||ovr(p)>=56)slNews(s,p,slPick('cb.t',[`${tshort(s.t)} ${p.name}, 긴 재활 끝 보인다`,`${p.name}, 재활 막바지… 복귀 시계 빨라진다`,`'${nm}' 이겨 낸 ${p.name}, 실전 감각 끌어올리는 중`],p.id),`${slR(nm)} 빠졌던 ${slI(p.name)} 재활 마지막 단계에 들어갔습니다. ${q}`,0); }
@@ -28400,7 +28442,7 @@ function fDramaUser(p,k){ const m=G.mgr[G.user], mn=m&&!m.interim?`${m.name} 감
     :k==='slack'?[['talk','면담으로 동기를 다시 심어 준다','성격에 따라 효과가 갈립니다.'],['fine','벌금을 매긴다','태업이 멈출 가능성이 크지만 기분이 크게 떨어집니다. 예민한 선수는 귀국을 말할 수 있습니다.'],['release','방출한다','남은 연봉은 그대로 지급하고 새 외국인 선수를 찾아야 합니다.'],['ignore','모른 척한다','태업이 한 달 더 이어집니다.']]
     :[['exam','정밀 검진(약 1천만)','진짜 부상인지 확인합니다. 의료진이 좋을수록 정확합니다.'],['rest','며칠 쉬게 한다','3~6일 빠지고 기분이 조금 오릅니다.'],['play','출전을 지시한다','기분이 떨어지고, 실제로 아팠다면 다칠 수 있습니다.']];
   const def=k==='fake'?1:O.length-1;
-  evNew('fdrama',`외국인 선수 ${FD_T[k]}: ${p.name}`,sit,O.map(o=>({l:o[1],fx:o[2]})),{def,data:{pid:p.id,t:k,keys:O.map(o=>o[0])},ref:p.id,face:p.id,from:k==='slack'?'코치진':k==='fake'?'의무팀':'운영팀',exp:4});
+  evNew('fdrama',`외국인 선수 ${FD_T[k]}: ${p.name}`,sit,O.map(o=>({l:o[1],fx:o[2]})),{def,data:{pid:p.id,t:k,keys:O.map(o=>o[0]),injId:injToken(p),n:(p.injHist||[]).length},ref:p.id,face:p.id,from:k==='slack'?'코치진':k==='fake'?'의무팀':'운영팀',exp:4});
   if(R()<.5)try{ ivRequest('fdrama',{pid:p.id,t:k}); }catch(e){} }
 EVH.fdrama={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; const c=e.data.keys[i], t=team(G.user), m=G.mgr[G.user]; initPers(p);
   const mor=d=>{ p.mor=clamp((p.mor??60)+d,0,100); }, ad=d=>{ p.adapt=clamp((p.adapt??50)+d,15,85); }, pay=a=>{ G.spend.etc=(G.spend.etc||0)+a; }, rel=d=>{ if(m&&!m.interim)m.rel=clamp(m.rel+d,0,100); };
@@ -28417,9 +28459,9 @@ EVH.fdrama={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)re
     case 'talk': if(R()<clamp(.35+(p.pers.pro-8)*.05+((p.adapt??50)-50)/100,.15,.85)){ delete p.fslk; mor(5); return `${p.name}이(가) "다시 집중하겠다"고 약속했습니다.`; } if(p.fslk)p.fslk.until=G.day+14; return `${p.name}은(는) 고개만 끄덕였습니다. 달라질지는 지켜봐야 합니다.`;
     case 'fine': mor(-14); if(R()<.65)delete p.fslk; if(p.pers.temp>=14&&R()<.35){ p.fhome=G.day+30; return `벌금을 매겼습니다. ${p.name}이(가) 크게 반발하며 "이럴 거면 집에 가겠다"고 했습니다.`; } return `벌금을 매겼습니다. ${p.name}은(는) 불만스럽지만 훈련에는 나옵니다.`;
     case 'ignore': if(p.fslk)p.fslk.until=G.day+30; return '모른 척하기로 했습니다. 코치진은 답답해합니다.';
-    case 'exam': { pay(Math.round(10*ecoIdx())); const real=R()<.35; const sure=R()<(G.med&&G.med.hosp==='a'?.9:.7); if(real){ p.injOut=ri(5,12); p.injK='blister'; (p.injHist=p.injHist||[]).push({y:G.year,days:p.injOut,d:G.day,t:p.team,k:'blister'}); return `검진 결과 실제로 가벼운 부상이 있었습니다. ${p.injOut}일 쉽니다.`; } if(sure){ mor(-3); return `검진 결과 이상이 없었습니다. ${p.name}은(는) 머쓱해하며 경기에 나갑니다.`; } p.fLeave=G.day+ri(2,4); return '검진으로도 확실히 가리지 못했습니다. 며칠 쉬게 했습니다.'; }
+    case 'exam': { if(p.injOut>0||!injMatches(p,{...e.data,day:e.day}))return '이미 새 진단으로 재활 중입니다. 이전 검진 요청은 적용하지 않았습니다.';pay(Math.round(10*ecoIdx())); const real=R()<.35; const sure=R()<(G.med&&G.med.hosp==='a'?.9:.7); if(real){ const days=ri(5,12);injStart(p,{days,k:'blister'});return `검진 결과 실제로 가벼운 부상이 있었습니다. ${p.injOut}일 쉽니다.`; } if(sure){ mor(-3); return `검진 결과 이상이 없었습니다. ${p.name}은(는) 머쓱해하며 경기에 나갑니다.`; } p.fLeave=G.day+ri(2,4); return '검진으로도 확실히 가리지 못했습니다. 며칠 쉬게 했습니다.'; }
     case 'rest': p.fLeave=G.day+ri(3,6); mor(4); return `${p.name}에게 휴식을 줬습니다. ${dmd(p.fLeave)}부터 다시 뜁니다.`;
-    case 'play': mor(-8); p.fslk={until:G.day+14,b:-1.5}; if(R()<.12){ try{ injure(p,G.day); }catch(err){} return `출전을 지시했습니다. 그런데 ${p.name}이(가) 경기 중 다쳤습니다. 진짜 아팠던 것으로 보입니다.`; } return `출전을 지시했습니다. ${p.name}은(는) 마지못해 나섰습니다.`; }
+    case 'play': mor(-8); p.fslk={until:G.day+14,b:-1.5}; if(R()<.12)p.fPlayInj={until:G.day+4,injId:injToken(p)};return `출전을 지시했습니다. ${p.name}은(는) 마지못해 준비합니다. 실제 경기에 나설 때 몸 상태를 다시 확인합니다.`; }
   return ''; } };
 const fMgrN=m=>m&&!m.interim?`${m.name} 감독`:'감독';
 /* 기자 질문(52_interviews.js의 Q에 덧붙인다) */
@@ -30339,7 +30381,7 @@ function ntPlayGame(T,g,N,d){ g.hc=ntRef(T,g.h); g.ac=ntRef(T,g.a); if(!g.hc||!g
           if(isP&&p.isP){ const q=T.ps[key]||(T.ps[key]={}); q.la=d; q.lpc=x.pc||0; if(id===s.sp.id)q.ls=d; }
           /* 한국 실제 선수: 피로·투구 부하·작은 부상 위험이 소속 팀으로 돌아간다 */
           if(!p.ntTmp&&p.team!=null){ if(isP&&p.isP){ const sp=id===s.sp.id; try{ pitchApp(p,d,x.pc||0,sp); }catch(e){} p.fat=clamp((p.fat||0)+pitFatGain(p,x.pc||0,sp),0,100); if(!(p.injOut>0)&&R()<(p.inj||.03)*(sp?.06*(x.pc||0)/95:.02*(x.pc||0)/17)*injMult(p))try{ injure(p,d,{nt:1}); }catch(e){} }
-            else { const pos=s.posOf[id]; p.fat=clamp((p.fat||0)+((pos==='C'?12:pos==='DH'?4:8)-(p.r.vit||52)*.04),0,100); if(!(p.injOut>0)&&R()<(p.inj||.03)*.02*injMult(p))try{ injure(p,d,{nt:1}); }catch(e){} } } } }
+            else { const pos=s.posOf[id]; p.fat=clamp((p.fat||0)+((pos==='C'?12:pos==='DH'?4:8)-(p.r.vit||52)*.04),0,100); if(!(p.injOut>0)&&R()<(p.inj||.03)*.02*injMult(p))try{ injure(p,d,{nt:1,hbp:x.hbp||0}); }catch(e){} } } } }
       if(g.hc==='KR'||g.ac==='KR'||g.st!=='G'){ g.box={h:ntBoxOf(r.S.h,r.dec),a:ntBoxOf(r.S.a,r.dec),lh:r.line.h,la:r.line.a}; g.ev=(r.ev||[]).filter(x=>x&&x.t).slice(0,14).map(x=>x.t); }
       const key=id=>{ const p=G.players[id]; return p?ntKey(p):null; }; g.wp=r.dec.w!=null?key(r.dec.w):null; g.lp=r.dec.l!=null?key(r.dec.l):null; } }
   finally{ for(const id of NT_TMP)delete G.players[id]; NT_TMP=[]; }
@@ -32360,7 +32402,7 @@ function applyFarm(d,g){ const y=G.year;
         if(!(p.injOut>0)&&R()<p.inj*(sp?.075*(x.pc||0)/95:.026*(x.pc||0)/17)*injMult(p)*loadMult(p,cd,d)/LOAD_NORM)injure(p,d,{sp,pc:x.pc||0,farm:1}); }
       else { const h=lineFor(p,y,t,'퓨처스'); addTo(h,Object.assign({g:1},x)); const pos=s.posOf[id]||null; futUse(p,pos,1,{mil,days:[d]}); { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
         const inLn=s.order.some(q=>q.id===id); if(inLn)p.fat=clamp((p.fat||0)+((pos==='C'?12:pos==='DH'?4:8)-(p.r.vit||52)*.04),0,100);
-        if(p.injFx)injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); if(R()<p.inj*.026*injMult(p)*(inLn?1:.3))injure(p,d,{farm:1}); } } } }
+        if(p.injFx)injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); if(R()<p.inj*.026*injMult(p)*(inLn?1:.3))injure(p,d,{farm:1,hbp:x.hbp||0}); } } } }
 function flRecord(F,d,h,a,g){ const hs=g.score.h, as=g.score.a; const R0=F.rec; const add=(t,w,l,tt,rs,ra)=>{ const r=R0[t]||(R0[t]={w:0,l:0,d:0,rs:0,ra:0}); r.w+=w; r.l+=l; r.d+=tt; r.rs+=rs; r.ra+=ra; };
   if(hs>as){ add(h,1,0,0,hs,as); add(a,0,1,0,as,hs); } else if(as>hs){ add(a,1,0,0,as,hs); add(h,0,1,0,hs,as); } else { add(h,0,0,1,hs,as); add(a,0,0,1,as,hs); }
   const nm=id=>(G.players[id]||{}).name||''; const x={d,h,a,hs,as,inn:g.inn,w:g.dec.w??null,l:g.dec.l??null,sv:g.dec.sv??null,hr:[]};
@@ -40161,7 +40203,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   /* 코치 구단 지원 연수: 원지원 구단의 실제 파견 기간과 귀국일을 표시한다. */
   { const S=G.sis||{},seen=new Set(); for(const T of [S.ct,...(S.ctq||[])]){ if(!T||T.tid!==G.user||seen.has(T.key||T.id+':'+T.to))continue; seen.add(T.key||T.id+':'+T.to); const n=T.name||'코치'; if(Number.isFinite(T.from)&&d===T.from)out.push({k:'me',t:`${n} 코치 연수 출발`}); if(d===T.to)out.push({k:'me',t:`${n} 코치 연수 복귀${T.done?'':' 예정'}`}); else if(Number.isFinite(T.from)&&d>T.from&&d<T.to)out.push({k:'me',span:true,t:`${n} 코치 연수 중`}); } }
   /* 우리 선수: 부상 복귀 예정, 전역 */
-  if(d>G.day&&d-G.day<=120)for(const p of ownedOf(G.user)){ /* 대표팀 차출 중 재활 선수도(검수 11-09t) */ if(p.injOut>0&&G.day+p.injOut===d)out.push({k:'pl',t:`${p.name} 복귀 예정(${injNow(p)})`}); }
+  if(d>G.day)for(const p of ownedOf(G.user)){ /* 확정된 복귀일은 장기 재활도 처음부터 표시(검수 11-18 #447). */ if(p.injOut>0&&G.day+p.injOut===d)out.push({k:'pl',t:`${p.name} 복귀 예정(${injNow(p)})`}); }
   for(const p of Object.values(G.players)){ if(p.team!==G.user&&!(p.mil&&p.mil.tid===G.user))continue; const m=p.mil; if(!m)continue; if(m.until&&m.from===d||m.pf===d)out.push({k:'pl',t:`${p.name} ${m.unit||'군'} 입대`}); if(m.until===d||m.pu===d)out.push({k:'pl',t:`${p.name} 전역${m.exempt?'(병역 특례 조기 전역)':''}`}); } /* 예약 입대와 지난 전역(특례 조기 전역 포함)도(검수 11-09zk) */
   try{ out.push(...promoCalEv(d)); }catch(e){} /* 프로모션 데이(44c_promotions) */
   return [...calPhases(d),...out]; }
@@ -42619,7 +42661,8 @@ function detailPageSync(el){
 /* 단장 실무 교육(개인 생활)에서 얻은 판단 참고: 관리 탭은 계약, 육성 탭은 훈련·연수 */
 function personalAdviceBox(p,kind){const L=personalAdvice(p,kind);return L.length?`<section class="card note"><h3 class="sec">실무 교육 · 판단 참고</h3>${L.map(x=>`<p class="small">${esc(x)}</p>`).join('')}</section>`:'';}
 /* 결과를 숨긴 중계 경기: 그 경기에 나온 선수의 상세 화면은 그 경기 기록을 뺀 시즌 기록으로 그린다(검수 11-07: 1회인데 그 경기 뒤 타석 홈런이 합계에 보임) */
-function spoilMask(){ const g=UI.sheet!=null&&spoilG(), p=g&&G.players[UI.sheet]; if(!p||!g.box)return ()=>{}; { const S=typeof SPOIL_SNAP!=='undefined'&&SPOIL_SNAP, o=S&&S.day===g.day&&S.y===dobj(g.day).y&&S.P[p.id]; if(o){ const cur={}; for(const k of SPOIL_K){ cur[k]=p[k]; p[k]=o[k]; } return ()=>{ for(const k of SPOIL_K)p[k]=cur[k]; }; } } { const H=G.castHold, o=H&&H.ps&&H.gid===g.gid&&H.ps[p.id]; if(o){ const cur={}, L=SPOIL_K.filter(spoilLite); for(const k of L){ cur[k]=p[k]; p[k]=o[k]; } const un=spoilMask0(g,p,true); return ()=>{ un(); for(const k of L)p[k]=cur[k]; }; } } /* 새로고침 뒤: 저장한 경기 전 등판·부하·부상 상태(검수 11-09zzc #3) */ return spoilMask0(g,p); }
+function spoilMaskKeys(o){ return SPOIL_K.filter(k=>!['r','velo','pot'].includes(k)||Object.prototype.hasOwnProperty.call(o,k)); } /* 옛 중계 저장에 없던 필수 능력값을 undefined로 덮지 않는다. */
+function spoilMask(){ const g=UI.sheet!=null&&spoilG(), p=g&&G.players[UI.sheet]; if(!p||!g.box)return ()=>{}; { const S=typeof SPOIL_SNAP!=='undefined'&&SPOIL_SNAP, o=S&&S.day===g.day&&S.y===dobj(g.day).y&&S.P[p.id]; if(o){ const cur={}, L=spoilMaskKeys(o); for(const k of L){ cur[k]=p[k]; p[k]=o[k]; } return ()=>{ for(const k of L)p[k]=cur[k]; }; } } { const H=G.castHold, o=H&&H.ps&&H.gid===g.gid&&H.ps[p.id]; if(o){ const cur={}, L=spoilMaskKeys(o).filter(spoilLite); for(const k of L){ cur[k]=p[k]; p[k]=o[k]; } const un=spoilMask0(g,p,true); return ()=>{ un(); for(const k of L)p[k]=cur[k]; }; } } /* 새로고침 뒤: 저장한 경기 전 등판·부하·부상 상태(검수 11-09zzc #3) */ return spoilMask0(g,p); }
 function spoilMask0(g,p,keepDetail=false){ /* 경기 직전 사본이 있으면 통째로 그 시점(세이브·선발·상대 타자·좌우·타구 분포·최근 등판까지, 검수 11-08) */ if(/차전/.test(g.kind||''))return ()=>{}; const q=['h','a'].map(sd=>g.box[sd]&&(g.box[sd][p.isP?'pit':'bat']||[]).find(x=>x.id===p.id)).find(Boolean); if(!q)return ()=>{};
   const details=keepDetail?null:Object.fromEntries(['spl','spr','splP','sprP'].map(k=>[k,p[k]]));if(details)for(const k in details)p[k]=undefined; /* 옛 저장에 경기 전 분포가 없으면 최종 경기 분포를 노출하지 않는다. */
   const y=dobj(g.day).y, i=p.hist.map((h,j)=>[h,j]).filter(([h])=>h.y===y&&h.lvl==='1군'&&!h.y2).map(x=>x[1]).pop(); const H0=p.hist, GL0=p.gl; if(i!=null){ const h=Object.assign({},H0[i]); for(const k in q)if(k!=='id'&&typeof q[k]==='number'&&typeof h[k]==='number')h[k]=Math.max(0,h[k]-q[k]); if(typeof h.g==='number')h.g=Math.max(0,h.g-1); if(p.isP&&typeof h.w==='number'&&q.d==='승')h.w--; if(p.isP&&typeof h.l==='number'&&q.d==='패')h.l--; if(p.isP){ if(h.sv&&q.d==='세')h.sv--; if(h.hld&&q.d==='홀')h.hld--; if(h.gs&&['h','a'].some(sd=>g.box[sd]&&g.box[sd].pit&&g.box[sd].pit[0]&&g.box[sd].pit[0].id===p.id))h.gs--; } p.hist=H0.slice(); p.hist[i]=h; }
