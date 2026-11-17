@@ -41,7 +41,11 @@ function tryAnnounce(y){ const T=tryInit(y); if(T.ann!=null)return T; T.ann=G.da
   for(const id of T.ids){ const p=G.players[id]; const kd=tryKindOf(p); T.n[kd]=(T.n[kd]||0)+1; }
   if(!G.unemp){ const n=T.n; mail('스카우트팀장',`KBO 공개 트라이아웃 명단 · ${T.ids.length}명`,`${dmd(T.day)} 테스트에 ${T.ids.length}명이 나옵니다(${Object.keys(TRY_K).filter(k=>n[k]).map(k=>TRY_K[k]+' '+n[k]).join(' · ')}). 달력에서 그날 단장 일정으로 직접 참관을 잡을 수 있습니다.`,{kind:'스카우트',acts:[{l:'트라이아웃',a:'go',v:'transfer:tryout'}]}); }
   return T; }
-function tryKindOf(p){ if(!p)return 'vet'; if(p.ovsWait&&p.ovsWait>((G.tryout&&G.tryout.y)||G.year)&&p.team==null)return 'ovs'; return p.tryK==='ud'?'ud':p.tryK==='indie'?'indie':'vet'; }
+/* 드래프트로만 들어올 수 있는 선수(사람·AI 같은 규칙): 2년 유예 중(ovsWait)이거나 이미 올해 신인 드래프트 명단에 오른 선수(prospect, 해외파 신인 포함).
+   카페 11-17(ddddddd): 1월 1일 드래프트 명단을 만들 때 유예가 끝난 해외파는 ovsWait가 지워지고 prospect가 되는데, 트라이아웃 계약 마감(1월 20일) 전이라 '방출 선수'로 읽혀 계약되고 그해 드래프트에도 그대로 나왔다 */
+function tryDraftOnly(p){ return !!p&&p.team==null&&!p.retired&&(!!p.ovsWait||!!p.prospect); }
+function tryDraftY(p){ return (p&&p.ovsWait)||G.year; }
+function tryKindOf(p){ if(!p)return 'vet'; if(tryDraftOnly(p))return 'ovs'; return p.tryK==='ud'?'ud':p.tryK==='indie'?'indie':'vet'; }
 /* 공개 측정(모두에게 같은 정보): 투수 최고 구속, 야수 홈→1루 */
 function tryMeasure(p,y){ if(p.isP)return `최고 ${clamp(veloOf(p)+Math.round((relU('tryv'+y,p.id)-.5)*4),128,158)}km/h`; return `1루까지 ${(+runOf(p)+(relU('tryr'+y,p.id)-.5)*.12).toFixed(2)}초`; }
 /* 테스트(12월 2일): 측정 기록을 남기고 직접 온 단장을 기록한다 */
@@ -67,7 +71,7 @@ const tryNextY=()=>dobj(G.day).m>=9; /* 9월 뒤 계약은 다음 시즌부터(�
 function tryRegN(tid){ return rosterN(tid)+Object.values(G.players).filter(p=>p.team===tid&&!p.ys&&p.joinY>G.year).length; }
 /* 계약 가능 여부(사람·AI 같은 규칙). ys: 육성선수 계약 */
 function tryWhy(p,tid,ys){ const T=tryCur(); if(!T||!p||!T.ids.includes(p.id))return '트라이아웃 대상이 아닙니다.'; if(p.team!=null)return '이미 다른 구단과 계약했습니다.';
-  const k=tryKindOf(p); if(k==='ovs')return `해외 복귀 2년 유예 중이라 ${p.ovsWait}년 신인 드래프트로만 데려올 수 있습니다.`;
+  const k=tryKindOf(p); if(k==='ovs')return p.ovsWait?`해외 복귀 2년 유예 중이라 ${p.ovsWait}년 신인 드래프트로만 데려올 수 있습니다.`:`${tryDraftY(p)}년 신인 드래프트 참가 선수라 드래프트로만 데려올 수 있습니다.`;
   if(k!=='ud'&&!(T.ran&&G.day>=T.day))return `${dmd(T.day)} 테스트가 끝나야 계약할 수 있습니다.`; if(k==='ud'&&!ys)return '미지명 신인은 육성선수로만 계약할 수 있습니다.';
   if(G.day>T.close)return '계약 기간이 끝났습니다.';
   if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return '방출한 구단은 1년 동안 다시 계약할 수 없습니다.';
@@ -79,7 +83,7 @@ function trySal(p,ys){ return tryKindOf(p)==='vet'?(ys?Math.max(MIN_SAL,Math.min
 function trySign(id,tid,ys){ tid=tid??G.user; const p=G.players[id]; const why=tryWhy(p,tid,!!ys); if(why)return why; const T=tryCur(), k=tryKindOf(p), sal=trySal(p,!!ys);
   if(tid===G.user&&sal>MIN_SAL){ const s=sponSeason(); const cc=capOwnerCheck(capPayWith(G.user,p.id,sal,s).tot,capPayWith(G.user,null,null,s).tot,s,'try'+p.id); if(cc&&!cc.ok)return cc.msg; if(cc)capOwnerOk(cc,`트라이아웃 ${p.name} 영입`); }
   p.team=tid; p.sal=sal; p.yrs=1; p.ys=!!ys; p.e1=false; delete p.freeSince; delete p.freeDay; delete p.udY; if(tryNextY())p.joinY=G.year+1; else delete p.joinY; p.mor=clamp((p.mor??55)+8,0,100);
-  p.tryS={y:T.y,k,ys:!!ys,tid,d:G.day}; delete p.tryK;
+  p.tryS={y:T.y,k,ys:!!ys,tid,d:G.day}; delete p.tryK; try{ draftClassPrune(); }catch(e){} /* 계약한 선수는 어떤 길이든 드래프트 명단에 남지 않는다 */
   mvLog('트라이아웃',p,null,tid,`${ys?'육성선수':'정식 선수'} · 연 ${money(sal)}`,sal); story(p,`${T.y} ${k==='ud'?'드래프트 미지명 뒤':'KBO 공개 트라이아웃'} · ${tname(tid)} ${ys?'육성선수':'정식'} 계약`,'move');
   try{ milLate(p,tid); }catch(e){}
   (G.tryLog=G.tryLog||[]).push({y:T.y,id:p.id,tid,k,ys:!!ys,d:G.day,pos:p.isP?'P':p.pos,age:p.age}); if(G.tryLog.length>300)G.tryLog.shift();

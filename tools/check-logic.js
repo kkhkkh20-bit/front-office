@@ -5196,6 +5196,19 @@ T('[트라이아웃 일정] 11월 24일 명단 공개·12월 2일 테스트 전�
   const p=ind[0]; ok(tryWhy(p,G.user,true).includes('테스트'),'테스트 전에 계약됨'); ok(tryWhy(ov,G.user,true).includes('유예'),'유예 중 선수 계약 가능'); const sd0=trySd(p,G.user);
   gmPlanSet(tryDayD(y),'tryout',''); ok(gmPlanAt(tryDayD(y))&&gmPlanAt(tryDayD(y)).k==='tryout','단장 일정을 잡지 못함'); G.day=tryDayD(y); tryDaily(G.day); ok(T0.ran===G.day&&T0.att[G.user]===1,'참관 기록이 없음'); ok(trySd(p,G.user)<sd0*.6,'참관해도 오차가 그대로 '+sd0.toFixed(2)+' '+trySd(p,G.user).toFixed(2)); ok(T0.res[p.id],'측정 기록이 없음');
   ok(tryWhy(p,G.user,true)===''||tryWhy(p,G.user,true).includes('꽉'),'테스트 뒤에도 계약 불가: '+tryWhy(p,G.user,true)); ok(tryWhy(ov,G.user,true).includes('유예'),'테스트 뒤 유예 선수 계약 가능'); G.day=tryCloseD(y)+1; ok(!tryCur(),'마감 뒤에도 열려 있음'); });
+T('[카페 11-17 트라이아웃 해외 드래프트] 유예가 끝나 1월 드래프트 명단에 오른 해외파는 트라이아웃 마감 전이라도 사람·AI 모두 계약할 수 없고, 드래프트로만 들어온다',()=>{ fresh(); const y=G.year; const ov=newPlayer({age:24,base:44,pot:52}); ov.ovsWait=y+1;
+  G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0.ids.includes(ov.id),'해외 복귀 선수가 명단에 없음'); G.day=tryDayD(y); tryDaily(G.day);
+  G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(ov.id)&&ov.prospect&&ov.ovsRet&&!ov.ovsWait,'준비 실패: 유예가 끝난 해외파가 드래프트 명단에 없음'); ok(tryCur()===T0,'준비 실패: 트라이아웃 계약 기간이 아님');
+  ok(tryKindOf(ov)==='ovs','드래프트 참가 해외파가 '+tryKindOf(ov)+'로 읽힘'); const w=tryWhy(ov,G.user,false); ok(w.includes('드래프트'),'정식 계약이 열려 있음: '+w); ok(tryWhy(ov,G.user,true).includes('드래프트'),'육성 계약이 열려 있음');
+  const op=G.teams.find(t=>t.id!==G.user).id; ok(tryWhy(ov,op,false).includes('드래프트'),'AI 구단은 계약 가능(같은 규칙 아님)'); ok(trySign(ov.id,G.user,false).includes('드래프트')&&ov.team==null,'사람 단장이 계약함');
+  for(let d=0;d<8;d++){ G.day=T0.ran+1+d; try{ tryAiDay(false); }catch(e){} } ok(ov.team==null,'AI가 드래프트 참가 해외파와 계약함');
+  ok(!isFree(ov)&&!freeList().includes(ov),'무적 선수로도 계약 가능'); });
+T('[카페 11-17 드래프트 계약 선수] 어느 구단과든 계약한 선수는 드래프트 명단에 남지 않는다: 계약 시 빠지고, 옛 저장은 난수 없이 고쳐지고, 지명 시작·지명에서 막힌다(사람·AI 공통)',()=>{ fresh(); makeDraftClass(); const L=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect); ok(L.length>5,'준비 실패: 후보 부족');
+  const a=L[0], b=L[1], c=L[2], op=G.teams.find(t=>t.id!==G.user).id; a.team=G.user; b.team=op; /* 옛 저장: 트라이아웃 등으로 계약했는데 명단·신인 표시가 남은 선수 */
+  const r0=__rngState(); migrateDraftPool(); ok(__rngState()===r0,'저장 수리가 난수를 씀'); ok(!G.draftClass.includes(a.id)&&!G.draftClass.includes(b.id),'계약한 선수가 드래프트 명단에 남음'); ok(!a.prospect&&!b.prospect&&a.team===G.user&&b.team===op,'계약 상태가 바뀌거나 신인 표시가 남음'); ok(G.draftClass.includes(c.id),'계약 안 한 후보까지 빠짐');
+  const n0=G.draftClass.length; migrateDraftPool(); ok(G.draftClass.length===n0,'다시 불러오면 명단이 또 바뀜');
+  c.team=op; startDraft(); ok(!G.draft.cls.includes(c.id),'지명 시작 때 계약한 선수가 명단에 남음'); ok(!c.prospect,'계약 선수 신인 표시가 남음');
+  const d=G.draft, e=G.players[d.cls.find(id=>G.players[id]&&G.players[id].prospect)]; e.team=op; ok(!aiDraftPick(d.picks[d.cur].tid)||aiDraftPick(d.picks[d.cur].tid)!==e.id,'AI가 계약한 선수를 고름'); ok(doPick(e.id)===false&&e.team===op,'계약한 선수가 지명됨'); e.team=null; });
 T('[트라이아웃 육성] 독립리그 후보의 포수·유격수는 드물고 약하며(희소성 유지) 늦게 피는 선수가 가끔 섞인다',()=>{ fresh(); const L=[]; for(let i=0;i<1500;i++)L.push(tryIndieMake(G.year)); const H=L.filter(p=>!p.isP), C=H.filter(p=>p.pos==='C'), S=H.filter(p=>p.pos==='SS'), O=H.filter(p=>p.pos!=='C'&&p.pos!=='SS');
   ok(C.length/H.length<=.08&&C.length>0,'포수 비율 '+(C.length/H.length).toFixed(3)); ok(S.length/H.length<=.07&&S.length>0,'유격수 비율 '+(S.length/H.length).toFixed(3)); const av=a=>a.reduce((s,p)=>s+ovr(p),0)/a.length; ok(av(C)<av(O)&&av(S)<av(O),'포수·유격수가 약하지 않음');
   ok(Math.max(...C.map(ovr),...S.map(ovr))<=46,'1군 주전급 포수·유격수가 나옴'); const late=L.filter(p=>p.dt==='late'&&p.pot-ovr(p)>=8).length/L.length; ok(late>=.03&&late<=.12,'늦게 피는 유형 비율 '+late.toFixed(3)); ok(L.every(p=>ovr(p)<=48),'독립리그 선수가 너무 강함'); for(const p of L)delete G.players[p.id]; });
