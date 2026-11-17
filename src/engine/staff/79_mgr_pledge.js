@@ -11,8 +11,10 @@ function mplStance(m,k){ mgrAttr(m); mgrFix(m); const e=m.ego;
   return v<55?'ok':v<78?'pay':'no'; }
 const MPL_ST={ok:'수용',pay:'연봉 10% 더 주면 수용',no:'거절'};
 function mplOn(k){ const m=G.mgr&&G.mgr[G.user]; return !!(m&&!m.interim&&m.pl&&m.pl[k]); }
+/* 약속 할증을 더한 실제 연봉: 결재 문서와 계약이 같은 계산을 쓴다(검수 11-17 #251) */
+function mplSal(m,ks){ ks=[...new Set(ks||[])].filter(k=>MPL[k]); const pay=ks.filter(k=>mplStance(m,k)==='pay').length; return pay?round5(m.sal*(1+.1*pay)):m.sal; }
 function mplApply(m,ks){ ks=[...new Set(ks||[])].filter(k=>MPL[k]); if(!ks.length)return ''; const bad=ks.filter(k=>mplStance(m,k)==='no'); if(bad.length)return `${m.name} 감독은 '${bad.map(k=>MPL[k].l).join("', '")}' 약속을 받아들이지 않습니다.`;
-  const pay=ks.filter(k=>mplStance(m,k)==='pay').length; if(pay)m.sal=round5(m.sal*(1+.1*pay)); m.pl={}; for(const k of ks)m.pl[k]=true;
+  m.sal=mplSal(m,ks); m.pl={}; for(const k of ks)m.pl[k]=true;
   const d=mgrDir(); for(const k of ks)if(k==='arm'||k==='rest')d[k]={ok:true,mid:m.id,day:G.day}; G._push=null; return ''; }
 /* 1군에 올려 달라는 2군 선수: 2군에서 잘 치거나 잘 던지고, 1군 같은 자리와 비교해 해볼 만하며, 욕심이 있거나 나이가 찬 선수 */
 function callWish(p,rk){ if(!entryOn()||p.team!==G.user||p.prospect||p.foreign||!canUp(p))return null; if(p.isP&&rpPlanOf(G.user,p)==='sp2')return null; if(p.downDay!=null&&G.day-p.downDay<10)return null; /* 재등록 가능일 전에는 요청하지 않는다(검수 11-09) */

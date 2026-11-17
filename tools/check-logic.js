@@ -4740,6 +4740,40 @@ T('[커뮤니티 11-13] 해외 스카우트 포지션 지정: 그 지역 우리 
 
 T('[감독 갈등 11-12] 면담 관계 상승은 자주 할수록·관계가 높을수록 줄어든다',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=50; m.tkD=[G.day]; const a=mcfRelGain(m,4); m.tkD=[G.day-3,G.day-2,G.day-1,G.day]; const b=mcfRelGain(m,4); m.rel=85; const c=mcfRelGain(m,4);
   ok(a===4,'첫 면담 상승이 줄어듦 '+a); ok(b<a,'자주 해도 같은 상승 '+b); ok(c<b,'관계 높아도 같은 상승 '+c); ok(mcfRelGain(m,-3)===-3,'하락은 그대로여야 함'); });
+T('[검수 11-17 #244] 구단주가 경질을 반대하면 새 감독 선임(현 감독 경질)이 막히고, 동의·대행 체제에서는 열린다',()=>{ fresh(); const m=G.mgr[G.user]; m.hD=G.day-10; team(G.user).trust=50; const r=mgrFireAsk(); ok(r.k==='no','준비 실패: '+r.k);
+  ok(/반대/.test(mgrHireBlk()),'반대 뒤 선임이 막히지 않음: '+mgrHireBlk()); G.mcf.fire=null; ok(mgrHireBlk().length>0,'동의를 구하지 않았는데 선임 가능');
+  mcf().fire={k:'ok',day:G.day,until:G.day+14,msg:'동의'}; ok(mgrHireBlk()==='','동의했는데 선임이 막힘'); G.mcf.fire.until=G.day-1; ok(mgrHireBlk().length>0,'동의 기한이 지났는데 선임 가능');
+  mcf().fire={k:'ok',day:G.day,until:G.day+14}; fireMgr(); ok(G.mgr[G.user].interim,'준비 실패: 대행 아님'); ok(mgrHireBlk()==='','대행 체제인데 선임이 막힘'); });
+T('[검수 11-17 #245] 경질 동의 뒤 후임을 선임하면 동의 상태가 후임에게 남지 않는다(불러오기 정리 포함)',()=>{ fresh(); const A=G.mgr[G.user]; mcf().fire={k:'ok',day:G.day,until:G.day+14,msg:'동의'}; ok(mgrFireOk(),'준비 실패');
+  const c=G.mmarket.find(x=>x.id!==A.id); hireMgr(c.id,2); const B=G.mgr[G.user]; ok(B.id===c.id,'준비 실패: 선임'); ok(!mgrFireOk(),'후임에게 전임 경질 동의가 남음'); ok(mgrHireBlk().length>0,'후임도 동의 없이 바로 교체 가능');
+  ok(G.mcf&&G.mcf.mid===A.id,'준비 실패: 옛 상태'); mcfMigrate(); ok(!G.mcf,'불러오기 정리 뒤에도 전임 상태가 남음'); mcfMigrate(); ok(!G.mcf,'정리가 멱등이 아님'); });
+T('[검수 11-17 #246] 전임 감독과 합의한 기용 가산은 감독대행·후임에게 넘어가지 않는다',()=>{ fresh(); const p=depth(G.user).start[0]; const S=mcf(); S.fav[p.id]={v:5,until:G.day+60,half:false,why:'force'}; ok(mcfB(G.user,p)>=5,'준비 실패: 가산 '+mcfB(G.user,p));
+  fireMgr(); ok(G.mgr[G.user].interim,'준비 실패: 대행'); ok(mcfB(G.user,p)===0,'대행에게 전임 기용 가산이 남음: '+mcfB(G.user,p)); hireMgr(G.mmarket[0].id,2); ok(mcfB(G.user,p)<=0,'후임에게 전임 기용 가산이 남음: '+mcfB(G.user,p)); });
+T('[검수 11-17 #247] 전임 감독의 시즌 구상 결정은 같은 해 후임 구상에 적용되지 않는다',()=>{ fresh(); G.day=G.cal.exh+1; G.evs=[]; mcfPlan(); const e=G.evs.find(x=>x.k==='mplan'); ok(e&&e.data.mid===G.mgr[G.user].id,'구상 결정에 감독 id 없음');
+  hireMgr(G.mmarket[0].id,2); const B=G.mgr[G.user]; mcfPlan(); const P=G.mcf.plan; ok(P&&P.y===G.year,'준비 실패: 후임 구상'); const r0=B.rel; const res=evPick(e.id,0);
+  ok(res.includes('무효'),'전임 구상 결정이 무효 처리되지 않음: '+res); ok(B.rel===r0,'후임 관계가 바뀜 '+r0+'→'+B.rel); ok(P.st==='open','후임 구상이 대신 합의됨: '+P.st);
+  const e2=G.evs.find(x=>x.k==='mplan'&&!x.done); ok(e2,'후임 구상 결정 없음'); delete e2.data.mid; e2.day=P.day; ok(!evPick(e2.id,0).includes('무효'),'옛 결정(감독 id 없음)이 같은 날 구상인데 무효'); });
+T('[검수 11-17 #248] 조건부 경질 승인은 그날 경기 뒤 판정한다: 정규시즌 마지막 경기로 채운 조건도 승인된다',()=>{ fresh(); const r=G.sea.rec[G.user]; Object.assign(r,{w:60,l:70,t:4}); G.day=G.cal.end-1; const S=mcf();
+  S.fire={k:'cond',y:G.year,day:G.day-20,g0:r.w+r.l+r.t-9,gt:1,w0:r.w-3,n:10,maxW:4,msg:''}; const pd=playDay; playDay=d=>{ r.w++; }; try{ processDay(); }finally{ playDay=pd; }
+  ok(G.day===G.cal.end,'준비 실패: 날짜 '+G.day); ok(S.fire.k==='ok'&&mgrFireOk(),'마지막 날 경기로 채운 조건이 승인되지 않음: '+JSON.stringify(S.fire).slice(0,160)); });
+T('[검수 11-17 #249] 조건부 경질 승인은 무승부도 경기로 센다(4승 5패 1무 = 10경기), 옛 조건은 불러올 때 경기 수 기준으로 옮긴다',()=>{ fresh(); G.day=G.cal.open+60; const r=G.sea.rec[G.user]; Object.assign(r,{w:20,l:30,t:1}); const S=mcf();
+  S.fire={k:'cond',y:G.year,day:G.day,g0:51,gt:1,w0:20,n:10,maxW:4,msg:''}; r.w+=4; r.l+=5; r.t+=1; mcfDaily(); ok(S.fire.k==='ok','4승 5패 1무인데 판정을 미룸: '+JSON.stringify(S.fire).slice(0,120));
+  Object.assign(r,{w:20,l:30,t:3}); S.fire={k:'cond',y:G.year,day:G.day,g0:50,w0:20,n:10,maxW:4,msg:''}; mcfMigrate(); ok(G.mcf===S&&S.fire.gt===1&&S.fire.g0===53,'옛 조건 정리: '+JSON.stringify(S.fire)); mcfMigrate(); ok(S.fire.g0===53,'정리가 멱등이 아님'); });
+T('[검수 11-17 #250] 조건부 경질 승인은 남은 경기보다 긴 조건을 걸지 않는다(132경기 리그·5경기 남음)',()=>{ fresh(); const sg=seasonG, ur=uRank; seasonG=()=>132; uRank=()=>6; /* 다른 구단 기록이 비어 우리가 1위로 잡히지 않게 */ try{ G.day=G.cal.end-3; const r=G.sea.rec[G.user]; const m=G.mgr[G.user]; m.hD=G.day-400; m.fame=0; const t=team(G.user);
+  const find=(w,l)=>{ Object.assign(r,{w,l,t:0}); for(let tr=0;tr<=100;tr+=2){ G.mcf=null; t.trust=tr; const x=mgrFireAsk(); if(x.k==='cond')return x; } return null; };
+  const c=find(60,67); ok(c,'5경기 남았을 때 조건부 승인이 나오지 않음'); ok(c.n===5&&c.maxW===2&&c.msg.includes('5경기'),'남은 경기보다 긴 조건: '+JSON.stringify(c).slice(0,200));
+  ok(!find(60,68),'4경기 남았는데 조건부 승인'); }finally{ seasonG=sg; uRank=ur; } });
+T('[검수 11-17 #251] 영입 약속 할증 연봉은 결재 계산(mplSal)과 실제 계약이 같다',()=>{ fresh(); const m=G.mmarket[0]; m.ego=65; ok(mplStance(m,'listen')==='pay','준비 실패: '+mplStance(m,'listen')); const base=m.sal, want=mplSal(m,['listen']); ok(want>base,'할증이 계산되지 않음');
+  G.mgr[G.user].interim=true; ok(!hireMgr(m.id,3,false,['listen']),'선임 실패'); ok(G.mgr[G.user].sal===want,'계약 연봉 '+G.mgr[G.user].sal+' / 결재 계산 '+want); });
+T('[검수 11-17 #252] 수석코치 자리가 비어 다른 코치가 대행을 맡으면 경질 소식도 그 코치를 말한다',()=>{ fresh(); const C=G.coach[G.user]; C.hc=null; if(!C.fm)C.fm=mkCoach('fm',{}); fireMgr(); const I=G.mgr[G.user]; ok(I.interim&&I.cid===C.fm.id,'준비 실패: 대행 '+I.name);
+  const ml=G.mail.find(x=>/경질했습니다/.test(x.body||'')); ok(ml,'경질 소식 없음'); ok(ml.body.includes('2군 감독')&&ml.body.includes(C.fm.name)&&!ml.body.includes('수석코치가'),'대행 안내가 실제와 다름: '+ml.body); });
+T('[검수 11-17 #253] 구단주 비용 절감 지시는 감독이 바뀌어도 같은 시즌에 다시 내리지 않는다(옛 저장 정리 포함)',()=>{ fresh(); G.day=G.cal.open+60; G.evs=[]; const t=team(G.user); t.owner='profit'; t.trust=30; t.indie=false; const ur=uRank, ey=expYr; uRank=()=>9; expYr=()=>false;
+  try{ for(let i=0;i<200&&!G.evs.some(e=>e.k==='owncut');i++){ __seed(500+i); ownMeddle(); } const e=G.evs.find(x=>x.k==='owncut'); ok(e,'준비 실패: 지시 없음'); evPick(e.id,0);
+    G.mgr[G.user].interim=true; hireMgr(G.mmarket[0].id,2); G.day+=7; for(let i=0;i<60;i++){ __seed(900+i); ownMeddle(); } ok(G.evs.filter(x=>x.k==='owncut'||x.k==='ownfav').length===1,'감독 교체 뒤 같은 시즌 지시 반복');
+    delete t.ownMed; G.mcf={mid:G.mgr[G.user].id,fav:{},ag:{},media:{},own:{y:G.year,k:'cut'}}; mcfMigrate(); ok(t.ownMed&&t.ownMed.y===G.year,'옛 저장의 지시 기록이 구단에 옮겨지지 않음'); }finally{ uRank=ur; expYr=ey; } });
+T('[검수 11-17 #254] 비용 절감 재확인 예약은 단장이 구단을 옮겨도 남고, 그 구단 회장이 같은 기준으로 평가한다',()=>{ fresh(); const A=G.user; const e=evNew('owncut','비용 절감 지시','테스트',[{l:'정리'},{l:'삭감'},{l:'거절'}],{from:'구단주실',def:1,exp:5,data:{pay0:capPay(A)}}); evPick(e.id,0);
+  ok((G.evf||[]).some(f=>f.k==='owncut'&&f.tid===A),'준비 실패: 예약 없음'); const B=G.teams.find(t=>t.id!==A).id; switchTeam(B); ok(G.user===B,'준비 실패: 이직'); ok((G.evf||[]).some(f=>f.k==='owncut'&&f.tid===A),'이직하자 전 구단 재확인 예약이 사라짐');
+  const tr0=team(A).trust, trB=team(B).trust, m0=(G.mailSeq||0); G.day+=31; evDaily(); ok(team(A).trust===clamp(tr0-6,0,100),'전 구단 회장 평가가 없음 '+tr0+'→'+team(A).trust); ok(team(B).trust===trB,'지금 구단 신뢰가 바뀜'); ok(!G.mail.some(x=>+String(x.id).slice(1)>m0&&/비용 절감/.test(x.subj||'')),'떠난 구단 평가가 지금 단장 소식함에 옴'); });
 
 /* 창단 구단(카페 11-13: 원주 신생 구단 '미확인', 창단 첫해 7위 목표·3주 5할 지시로 1년 만에 경질) */
 const expMake=(user,city)=>{ fresh(); expPropose(); const E=G.exp; const C=CI_CITY.find(c=>c.city===(city||'원주')); if(C)Object.assign(E,{city:C.city,region:C.region,market:C.market}); E.stage='approved'; E.ay=G.year; E.userGm=!!user; const tid=expDraft(); G.cal=buildCalendar(G.year); team(tid).born=G.year; /* 이번 시즌이 창단 1년차 */ return tid; };
