@@ -21,7 +21,7 @@
    - 대시보드: Cloudflare › Workers & Pages › `fronttime` › Settings › Variables and Secrets › Add › 종류 **Secret**, 이름 `CUP_ADMIN`, 값 입력 › Deploy.
    - (또는 명령: `npx wrangler secret put CUP_ADMIN`)
    - KV는 기기 옮기기와 같은 `SAVE_KV`를 씁니다. `wrangler.jsonc`는 고치지 않습니다.
-3. **게임에 같은 키를 넣습니다.** 웹 사이트에서 게임 › 설정 › 정보(PC는 설정 오른쪽 아래) 맨 아래 작은 글자 **관리자** → 키 입력 → 확인.
+3. **게임에 같은 키를 넣습니다.** 웹 사이트에서 게임 › 설정 › 정보 탭 맨 아래 작은 글자 **관리자** → 키 입력 → 확인.
    처음 화면 › 설정 맨 아래에서도 됩니다. 키는 이 기기 브라우저에만 남습니다. 키가 틀리면 관리자 메뉴가 나오지 않습니다.
    다 쓴 기기에서는 '관리자 키 지우기'를 누릅니다.
 

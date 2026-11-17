@@ -225,3 +225,17 @@ a.cafe-go:hover,a.cafe-go:focus-visible{background:color-mix(in srgb,#03c75a 28%
 .cfm.advm .advm-b .small{flex:none}
 /* 자매구단 표: 휴대폰에서 '결연' 열이 칸 밖으로 잘리던 것. 구단 이름은 두 줄까지, 표는 칸 폭에 맞춘다(UI 3단계 3-9) */
 @media(max-width:699px){.scm-tbl{width:100%;table-layout:fixed}.scm-tbl td,.scm-tbl th{white-space:normal;word-break:keep-all}.scm-tbl th:nth-child(2),.scm-tbl td:nth-child(2){width:30%}.scm-tbl th:nth-child(3),.scm-tbl td:nth-child(3){width:22%}}
+/* 설정 정리(사용자 11-17): 하위 탭마다 같은 폭 세 칸, PC는 칸 안에서만 스크롤(페이지는 내려가지 않음). 카페 카드는 칸 안 세로 배치 */
+.set-cafe{border:1px solid color-mix(in srgb,#03c75a 45%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,#03c75a 20%,var(--panel)) 0%,var(--panel) 70%)}
+.setp .set-cafe{display:grid;gap:12px}.setp .set-cafe-b{justify-content:flex-start}.setp .set-cafe h2{font-size:18px}
+.setp .pn-card{margin:0}.setp .credits{margin:0}.setp .adm-link{margin:2px 4px;text-align:left}
+@media(min-width:1100px){.setx.setp{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr);overflow:hidden;align-content:stretch}
+ .setx.setp>.setc{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}}
+/* 업무 권한(사용자 11-17): 권한 목록 넓게·처리 기록 좁게, 버튼 칸은 폭 고정·한 줄 */
+.authx{display:grid;gap:10px;align-content:start}.authc{display:grid;gap:10px;align-content:start;min-width:0}.authc>.card{margin:0}
+.authi>.auth-b{flex:0 0 auto;min-width:7.5em;justify-content:flex-end;flex-wrap:nowrap}.authi .btn{white-space:nowrap;min-width:6em;justify-content:center}
+.authlog .item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start}.authlog .auth-d{white-space:nowrap}.authlog .item>.row{flex-wrap:wrap;justify-content:flex-end}
+main.ws-frame>.authx.ws-own{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+@media(min-width:1100px){.authx{grid-template-columns:minmax(0,2fr) minmax(300px,1fr);grid-template-rows:minmax(0,1fr);height:100%;min-height:0;overflow:hidden;align-content:stretch}
+ .authx>.authc{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}}
+@media(max-width:699px){.authi>.auth-b{min-width:0}.authi .btn{min-width:5em}}

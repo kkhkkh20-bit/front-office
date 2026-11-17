@@ -47,7 +47,7 @@ const { chromium } = require('playwright');
     const hall = { v: 1, cups: [{ id: 'cup1', title: '제1회 프런트컵', format: 'league', date: '2026-12-06', n: 7, ai: 3, champ: { name: '새벽별', year: 2027, ovr: deck.ovr, wh: 'deadbeef', roster: ros, deck }, runner: { name: 'AI 하운즈', year: 2026, ai: true, ovr: { t: 65, p: 69, b: 62 }, wh: null, roster: ros },
       stand: [{ rank: 1, name: '새벽별 2027', w: 20, l: 7, t: 0, pct: '.741' }, { rank: 2, name: 'AI 하운즈', ai: true, w: 14, l: 12, t: 1, pct: '.538' }], post: [{ id: 'KS', name: '한국시리즈', a: '새벽별 2027', b: 'AI 하운즈', w: [4, 2], win: '새벽별 2027' }], titles: [{ k: '타율', name: '이연우', team: '미르 2026', v: '.383' }] }] };
     await kv.put('cup:results', JSON.stringify(hall));
-    await p.evaluate(() => { HOF.st = ''; HOF.data = null; A.go('cfg:set'); }); await p.waitForFunction(() => /프런트컵 명예의 전당/.test(document.body.innerText), null, { timeout: 20000 });
+    await p.evaluate(() => { HOF.st = ''; HOF.data = null; A.go('cfg:info'); }); await p.waitForFunction(() => /프런트컵 명예의 전당/.test(document.body.innerText), null, { timeout: 20000 });
     await p.evaluate(() => { const d = [...document.querySelectorAll('details.mfold')].find(x => /프런트컵 명예의 전당/.test(x.querySelector('summary').innerText)); d.open = true; });
     await p.waitForFunction(() => /우승 단장 새벽별 2027/.test(document.querySelector('.cuphof').innerText), null, { timeout: 20000 }); console.log('설정 명예의 전당 통과');
     /* 처음 화면(게임을 열지 않은 새 탭) → 메뉴 → 명예의 전당. 서버를 끊어도 남은 결과를 보여 준다 */
@@ -60,8 +60,8 @@ const { chromium } = require('playwright');
     const sw = await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1); assert.ok(sw, '휴대폰 폭에서 가로 스크롤'); console.log('처음 화면 명예의 전당 통과');
     await p2.route('**/api/cup/results', r => r.abort()); await p2.reload(); await p2.click('[data-a="tsGo"][data-v="cuphof"]');
     await p2.waitForFunction(() => /마지막으로 받은 결과/.test(document.body.innerText) && /우승 단장 새벽별 2027/.test(document.body.innerText), null, { timeout: 20000 }); console.log('연결 끊김 때 남은 결과 통과');
-    /* 관리자 페이지: 설정 맨 아래 '관리자' → 틀린 키는 거절 → 맞는 키 → 대회 열기 → 참가 파일 올리기 → 돌리기 → 1~7일차 공개 → 명예의 전당 등록 */
-    await p.evaluate(() => { A.go('cfg:set'); }); await p.click('[data-a="admAsk"]'); await p.fill('#admKey', 'wrong-key'); await p.click('[data-a="admKeyOk"]');
+    /* 관리자 페이지: 설정 › 정보 맨 아래 '관리자' → 틀린 키는 거절 → 맞는 키 → 대회 열기 → 참가 파일 올리기 → 돌리기 → 1~7일차 공개 → 명예의 전당 등록 */
+    await p.evaluate(() => { A.go('cfg:info'); }); await p.click('[data-a="admAsk"]'); await p.fill('#admKey', 'wrong-key'); await p.click('[data-a="admKeyOk"]');
     await p.waitForFunction(() => /키가 맞지 않습니다/.test(document.body.innerText), null, { timeout: 10000 }); assert.equal(await p.evaluate(() => !!document.querySelector('[data-a="admOpen"]')), false, '틀린 키인데 관리자 메뉴');
     await p.fill('#admKey', 'test-admin'); await p.click('[data-a="admKeyOk"]'); await p.waitForSelector('[data-a="admOpen"]', { timeout: 10000 }); await p.click('[data-a="admOpen"]');
     p.on('dialog', d => d.accept());
