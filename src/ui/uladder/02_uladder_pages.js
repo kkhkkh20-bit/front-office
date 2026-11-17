@@ -24,17 +24,18 @@ function ulSeasonNow(U){ const se=FrontOfficeCore.ulSeason(Date.now()); return {
 function ulLobby(U){ const C=FrontOfficeCore, L=U.league, t=U.tier|0, {se,SS}=ulSeasonNow(U), S=C.ulSummary(U.hist,U.tier), M=ulV1On()&&UL.sv.me, E=M&&M.entry; if(ulV1On()&&ulNet().signedIn())ulSvMe();
   const st=L?ulStand(L):null, me=st&&st.find(x=>x.key===0), prog=L?Math.round(L.next/L.sched.length*100):0;
   const snap=[E?['시즌 포인트',E.points]:['시즌 리그',SS?SS.n:0],E?['단계 순위',E.rank?E.rank+'위':'-']:['시즌 최고 점수',SS?SS.top:0],['우승',E?E.wins:SS?SS.win:0],['치른 리그',S.leagues]];
-  const act=!U.deck?`<button class="btn primary ul-big" data-a="ulReg"${UL.busy?' disabled':''}>지금 1군으로 덱 등록</button>`:L?`<button class="btn primary ul-big" data-a="ulGoPg" data-v="league">이어 하기 · ${L.sched[L.next]?L.sched[L.next].r:9}/9라운드</button>`:`<button class="btn primary ul-big" data-a="ulStartGo"${UL.busy?' disabled':''}>${C.ulTierName(t)} 리그 시작</button>`;
+  const cg=U.deck&&!L?C.ulCapGate(U.deck.e,t,Date.now()):null; /* 연봉 상한(사용자 11-17): 승격으로 상한을 넘거나 유예가 끝난 예전 덱이면 '덱'으로 */
+  const act=!U.deck?`<button class="btn primary ul-big" data-a="ulReg"${UL.busy?' disabled':''}>지금 1군으로 덱 등록</button>`:cg&&!cg.ok?`<button class="btn primary ul-big" data-a="ulGoPg" data-v="deck">연봉 상한 맞추고 다시 등록</button>`:L?`<button class="btn primary ul-big" data-a="ulGoPg" data-v="league">이어 하기 · ${L.sched[L.next]?L.sched[L.next].r:9}/9라운드</button>`:`<button class="btn primary ul-big" data-a="ulStartGo"${UL.busy?' disabled':''}>${C.ulTierName(t)} 리그 시작</button>`;
   const hero=`<section class="card ul-hero ul-ht${t}"><div class="ul-hero-in">${ulEmblem(t,96)}<div class="ul-hero-t"><span class="eyebrow">래더 · ${esc(C.ulTierName(t))}</span><h2>${U.deck?esc(U.deck.e.name):'아직 덱이 없습니다'}</h2>
       <p class="small">${U.deck?`OVR <b class="num">${C.cupOvrTxt(U.deck.e.ovr)}</b> · `:''}최고 ${C.ulTierName(S.best)}${S.stay&&S.stay.n>1?` · 이 덱 ${C.ulTierName(S.stay.tier)} ${S.stay.n}리그째`:''}</p>
       <p class="small ul-cd">시즌 ${esc(se.label)} · 끝까지 <b>${ulLeft(se.end-Date.now())}</b></p></div></div>
     <div class="ul-sc">${snap.map(([a,b])=>`<div><span>${a}</span><b class="num">${b}</b></div>`).join('')}</div>
     ${L?`<div class="ul-prog"><div class="ul-pbar"><i style="width:${prog}%"></i></div><p class="small"><b>${me.rank}위</b> · ${me.w}승 ${me.l}패 ${me.t}무 · ${L.next}/${L.sched.length}연전</p></div>`:''}
-    <div class="btns">${act}</div>${!U.deck?UL_GUIDE:''}${ulMsgHtml()}</section>`;
+    <div class="btns">${act}</div>${cg&&(!cg.ok||cg.grace)?`<div class="note${cg.ok?'':' bad'}">${esc(cg.msg)}</div>`:''}${!U.deck?UL_GUIDE:''}${ulMsgHtml()}</section>`;
   /* 승강 사다리: 레전드부터 루키까지, 내 자리와 이번 리그 승강선 */
   const line=L&&me?(()=>{ const n=L.teams.length, gap=(a,b)=>((a.w-b.w)+(b.l-a.l))/2; return me.rank<=2?`<b class="ul-up">승격권</b> · 3위와 ${gap(me,st[2]).toFixed(1)}경기 차`:me.rank>=n-1?`<b class="ul-dn">강등권</b> · 잔류까지 ${gap(st[n-3],me).toFixed(1)}경기`:`승격권까지 ${gap(st[1],me).toFixed(1)}경기 · 강등권과 ${gap(me,st[n-2]).toFixed(1)}경기`; })():'';
   ulTiersLoad(); const MT=ulV1On()?ulMetaFor('all'):null, TC=MT&&MT.tiers?MT.tiers.map(x=>x.n):UL.tiers; /* 등록 덱 수: 서버 v1 집계, 없으면 예전 KV */
-  const lad=`<section class="card"><h2 class="sec">승강 사다리</h2><div class="ul-lad">${C.UL_TIERS.map((n,i)=>i).reverse().map(i=>`<div class="ul-lr${i===t?' on':''}${i<t?' past':''}">${ulEmblem(i,28)}<b>${esc(C.UL_TIERS[i])}</b><span class="small muted">${i===t?(L?`지금 ${me.rank}위`:'내 자리'):i===t+1?'1·2위면 여기로':i===t-1&&t>0?'9·10위면 여기로':`AI 기준 OVR ${C.UL_TIER_OVR[i]}`}${TC?` · 등록 덱 ${TC[i]|0}`:''}</span>${i===t?'<em>◀</em>':''}</div>`).join('')}</div>
+  const lad=`<section class="card"><h2 class="sec">승강 사다리</h2><div class="ul-lad">${C.UL_TIERS.map((n,i)=>i).reverse().map(i=>`<div class="ul-lr${i===t?' on':''}${i<t?' past':''}">${ulEmblem(i,28)}<b>${esc(C.UL_TIERS[i])}</b><span class="small muted">${i===t?(L?`지금 ${me.rank}위`:'내 자리'):i===t+1?'1·2위면 여기로':i===t-1&&t>0?'9·10위면 여기로':`AI 기준 OVR ${C.UL_TIER_OVR[i]}`} · 연봉 ${C.ulCapX(i)}배${TC?` · 등록 덱 ${TC[i]|0}`:''}</span>${i===t?'<em>◀</em>':''}</div>`).join('')}</div>
     ${line?`<p class="small ul-lineinfo">${line}</p>`:'<p class="small muted">10팀 리그 · 팀당 27경기. 1·2위 승격, 9·10위 강등, 나머지 잔류.</p>'}</section>`;
   const MS=C.ulMissions(U.seas,U.hist,se.id,t), md=MS.filter(m=>m.done).length;
   const mis=`<section class="card"><h2 class="sec">시즌 목표 <small> ${''}${md}/${MS.length}</small></h2><div class="ul-ms">${MS.map(m=>`<div class="ul-m${m.done?' done':''}"><span>${m.done?'✔':'○'}</span><b>${esc(m.n)}</b><em class="num">${m.pts?m.cur:m.cur+'/'+m.goal}</em><i class="ul-pbar"><i style="width:${Math.round(Math.min(1,m.cur/m.goal)*100)}%"></i></i></div>`).join('')}</div><p class="small muted">이번 시즌(${esc(se.label)}) 기록으로 정해집니다. 시즌이 바뀌면 새로 셉니다.</p></section>`;
@@ -96,12 +97,28 @@ function ulResultCols(U,R){ const C=FrontOfficeCore, S=C.ulSummary(U.hist,U.tier
   return [a,b,R.rec?ulRecHtml(R):'']; }
 /* ---- 덱: 등록 + 타순·선발·불펜 카드(선수마다 래더 기록) + 덱 성향 ---- */
 function ulPsMap(U,k,season){ const m=new Map(); for(const x of FrontOfficeCore.ulPsRows(U.ps||{},k,season?{season}:{}))m.set(String(x.id),x); return m; }
-function ulDeckPage(U){ const C=FrontOfficeCore, cur=U.deck, src=ulSrcOpts(), pre=(()=>{ try{ return ulSrcEntry(UL.src); }catch(e){ return null; } })();
+/* 연봉 상한 칸(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 상한·덱 연봉·여유(초과), 넘으면 뺄 선수 추천과 빼기 단추 */
+function ulCapHtml(e,t){ const C=FrontOfficeCore; if(!e)return ''; const c=C.ulCap(e,t), D=ulDropIds(), byId=new Map(e.P.map(p=>[p.id,p]));
+  if(!c.known)return `<div class="ul-cap ul-cap-over"><p class="dk-t">연봉 상한 · ${esc(C.ulTierName(t))}</p><p class="small">이 로스터에는 연봉 기록이 없습니다(예전에 저장한 앨범 시즌). 지금 1군이나 새로 저장한 앨범 시즌을 골라 주세요.</p></div>`;
+  const over=!c.ok, pct=Math.min(100,Math.round(c.pay/Math.max(1,c.cap)*100)), sg=over?C.ulCapSuggest(e,t):{ids:[]};
+  const pr=(p,on)=>`<div class="ul-cr"><b>${esc(p.name)}</b><span class="small muted">${p.isP?'투수':CUP_POSK[p.pos]||p.pos} · OVR ${cupPOvr(p)}</span><em class="num">${money(p.sal||0)}</em><button class="btn small" data-a="ulCapDrop" data-v="${p.id}">${on?'되돌리기':'빼기'}</button></div>`;
+  const src=ulSrcEntry(UL.src), gone=D.map(id=>src&&src.P.find(p=>p.id===id)).filter(Boolean), top=e.P.slice().sort((a,b)=>(b.sal||0)-(a.sal||0)).slice(0,8);
+  return `<div class="ul-cap${over?' ul-cap-over':''}"><p class="dk-t">연봉 상한 · ${esc(C.ulTierName(t))} <b>리그 평균의 ${c.x}배</b></p>
+    <div class="ul-sc ul-cap-n"><div><span>상한</span><b class="num">${money(c.cap)}</b></div><div><span>덱 연봉</span><b class="num">${money(c.pay)}</b></div><div><span>${over?'초과':'여유'}</span><b class="num ${over?'ul-dn':'ul-up'}">${money(Math.abs(c.room))}</b></div><div><span>배수</span><b class="num">${c.r}</b></div></div>
+    <i class="ul-pbar ul-cap-bar"><i style="width:${pct}%"></i></i>
+    ${over?`<p class="small"><b class="ul-dn">상한을 넘어 등록할 수 없습니다.</b> ${sg.ids.length?`${sg.ok?'이 선수를 빼면 들어갑니다':'이 선수를 빼도 모자랍니다(본게임에서 1군을 바꿔 주세요)'}(넘는 만큼을 OVR 손해가 가장 적게):`:'뺄 수 있는 선수가 없습니다. 본게임에서 1군을 바꿔 주세요.'}</p>
+      <div class="ul-crs">${sg.ids.map(id=>pr(byId.get(id),false)).join('')}</div>${sg.ids.length?'<div class="btns"><button class="btn small primary" data-a="ulCapAuto">추천대로 빼기</button></div>':''}`:''}
+    ${gone.length?`<p class="small">뺀 선수 ${gone.length}명 <button class="lnk small" data-a="ulCapReset">모두 되돌리기</button></p><div class="ul-crs">${gone.map(p=>pr(p,true)).join('')}</div>`:''}
+    <details class="hof-d"><summary class="small">연봉 상위 8명 · 직접 빼기</summary><div class="ul-crs">${top.map(p=>pr(p,false)).join('')}</div></details>
+    <p class="small muted">리그 평균 ${money(c.ref)} = 우리 구단을 뺀 구단마다 연봉 상위 26명 합의 평균(이 저장 기준). 세계·시대가 달라도 같은 배수로 겨룹니다. 루키 ${C.UL_CAP[0]}배 · 마이너 ${C.UL_CAP[1]}배 · 1부부터 ${C.UL_CAP[2]}배. AI 구단은 연봉이 없는 가상 구단이라 상한을 보지 않습니다.</p></div>`; }
+function ulDeckPage(U){ const C=FrontOfficeCore, cur=U.deck, src=ulSrcOpts(), R=(()=>{ try{ return ulRegEntry(); }catch(e){ return {e:null,err:''}; } })(), pre=R.e, t=U.tier|0, pc=pre?C.ulCap(pre,t):null, blk=!pre||!pc.ok;
+  const cg=cur?C.ulCapGate(cur.e,t,Date.now()):null;
   const reg=`<section class="card"><h2 class="sec">덱 등록</h2><p class="small muted">지금 1군이나 앨범의 지난 시즌 로스터를 덱으로 올립니다. 언제든 다시 등록할 수 있고, 같은 단계 유저들이 이 덱을 상대로 만납니다.</p>
     <label class="cup-in"><span>팀명(12자)</span><input id="ulName" maxlength="12" value="${esc(UL.name||(cur&&cur.e.name)||team(G.user).nick)}" autocomplete="off"></label>
     <label class="cup-in"><span>로스터</span><select data-a="ulSrc">${src.map(([k,l])=>`<option value="${esc(k)}"${k===UL.src?' selected':''}>${esc(l)}</option>`).join('')}</select></label>
-    ${pre?`<p class="small">고른 로스터 OVR <b class="num">${C.cupOvrTxt(pre.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:''}
-    <div class="btns"><button class="btn primary" data-a="ulReg"${UL.busy?' disabled':''}>${cur?'덱 갱신':'내 덱으로 등록'}</button></div>
+    ${pre?`<p class="small">고른 로스터 ${pre.P.length}명 · OVR <b class="num">${C.cupOvrTxt(pre.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:R.err?`<div class="note bad">${esc(R.err)}</div>`:''}${ulCapHtml(pre,t)}
+    ${cg&&(!cg.ok||cg.grace)?`<div class="note${cg.ok?'':' bad'}">지금 등록한 덱: ${esc(cg.msg)}</div>`:''}
+    <div class="btns"><button class="btn primary" data-a="ulReg"${UL.busy||blk?' disabled':''}>${cur?'덱 갱신':'내 덱으로 등록'}</button></div>
     <p class="small muted">${!xfAvail()?'내려받은 게임에서는 이 기기에서만 리그를 엽니다(상대는 AI·가져온 덱).':UL.srv==='off'?'지금은 래더 서버에 연결할 수 없습니다. 이 기기 리그는 할 수 있습니다.':UL.me?`서버 등록: ${esc(UL.me.name)} · ${C.ulTierName(UL.me.tier)}${UL.me.v1?' · 새 래더 서버':''}`:'아직 서버에 등록하지 않았습니다.'}${ulV1On()&&ulNet().signedIn()?' <button class="lnk small muted" data-a="ulSvDel">서버 기록 지우기</button>':''}</p>${ulMsgHtml()}</section>`;
   if(!cur)return [reg,'<section class="card"><h2 class="sec">내 덱</h2><p class="small muted">아직 등록한 덱이 없습니다.</p></section>',ulChalHtml()];
   const e=U.league?U.league.teams[0].e:cur.e, P=new Map(e.P.map(p=>[p.id,p])), sc=UL.dsc==='s'?C.ulSeason(Date.now()).id:'', B=ulPsMap(U,'b',sc), Pm=ulPsMap(U,'p',sc);

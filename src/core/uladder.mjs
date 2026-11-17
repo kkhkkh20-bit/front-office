@@ -2,11 +2,59 @@
    덱 = 프런트컵 엔트리 형식(src/core/cup.mjs) 그대로. 리그 = 내 덱 + 같은 단계 덱 9개, 짝마다 3연전(팀당 27경기). 1·2위 승격, 9·10위 강등.
    리그는 유저 기기에서 돈다(평범한 난수). 결과 조작은 신경 쓰지 않는다(구단주: 래더는 덱 전력을 재는 곳) */
 import { dv } from './ratings.mjs';
+import { cupPayCheck, cupValidate, cupWon } from './cup.mjs';
 export const UL_V = 2; /* 2: 래더 v2(선수·상대 누적 기록, 사용자 11-17) */
 export const UL_TIERS = Object.freeze(['루키', '마이너', '1부', '챔피언스', '레전드']);
 export const UL_TEAMS = 10, UL_UP = 2, UL_DOWN = 2;
-/* 단계별 AI 덱 기준 OVR(총): 그 단계 등록 덱이 모자랄 때 채우는 AI 구단 전력. 서버가 그 단계 평균을 주면 그 값을 쓴다 */
-export const UL_TIER_OVR = Object.freeze([60, 63, 66, 69, 72]);
+/* 단계별 AI 덱 기준 OVR(총): 그 단계 등록 덱이 모자랄 때 채우는 AI 구단 전력(사용자 11-17 "레더 ai 도 챔피언스 이런곳은 고 오버롤로").
+   예전 60·63·66·69·72는 실제 등록 덱(서버 11-17: 루키 평균 74.3, 레전드 77.5~82.5)보다 한참 약해 윗단계가 쉬웠다.
+   새 게임 1군 63~68(시드 6개)이 루키·마이너를 넘고, 1부부터는 덱을 다듬어야 하며, 챔피언스·레전드는 상한 안에서 잘 짠 덱(실제 서버의 78~79 덱 1군 연봉 합 104억~128억: 상한 안에서도 짤 수 있는 수준으로 추정)이라야 이긴다.
+   서버가 그 단계 평균(등록 덱 3개 이상)을 주면 기준 ~ 기준+3 안에서 그 값을 쓴다(ulAiTarget) */
+export const UL_TIER_OVR = Object.freeze([62, 66, 70, 75, 79]);
+export const ulAiTarget = (tier, avg, count) => { const b = UL_TIER_OVR[Math.max(0, Math.min(UL_TIER_OVR.length - 1, tier | 0))]; return avg && count >= 3 ? Math.max(b, Math.min(b + 3, Math.round(avg))) : b; };
+/* 한 리그 AI 9팀의 OVR 벌림(평균 0): 모두 같은 전력이면 순위표가 밋밋하다 */
+export const UL_AI_SPREAD = Object.freeze([2, -2, 1, -1, 1, -1, 0, 0, 0]);
+/* ===== 연봉 상한(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게") =====
+   덱 연봉 합 ≤ 단계 배수 × 그 세계 리그 평균(cupPay: 우리 구단을 뺀 구단마다 연봉 상위 26명 합의 평균). 세계·시대가 달라도 같은 잣대.
+   루키 2배 · 마이너 1.5배 · 1부부터 모두 1.25배. 창단 드래프트 뒤 새 게임 1군 120구단(세계 12개, 11-17 측정): 평균 0.97배, 90% 1.36배, 최대 1.79배
+   → 루키는 어느 구단이든 바로 시작(2배 넘는 구단 0), 마이너는 97.5%가 그대로, 1부(1.25배)는 76%가 그대로이고 나머지는 1~2명을 빼면 들어간다.
+   윗단계는 모두 같은 예산 안에서 덱 짜는 실력 싸움(공평하게). 단계마다 다르면 승격 때 상한이 줄어 덱을 다시 맞춰야 한다(로비·덱 화면이 알려 준다).
+   AI 구단은 연봉이 없는 가상 구단이라 상한을 보지 않는다(단계 난이도 기준일 뿐, 시즌 포인트·칭호를 받지 않는다).
+   예전 덱(연봉 기록 없음)은 다음 시즌(UL_CAP_FROM: 11.30 0시 한국시간, S23)이 시작될 때까지 그대로 쓴다. 그 뒤에는 다시 등록해야 리그를 시작하고 상대로 나온다 */
+export const UL_CAP = Object.freeze([2, 1.5, 1.25, 1.25, 1.25]);
+export const ulCapX = t => UL_CAP[Math.max(0, Math.min(UL_CAP.length - 1, t | 0))];
+export const ulCap = (e, tier) => Object.assign(cupPayCheck(e, ulCapX(tier)), { tier: tier | 0 });
+/* 이 덱으로 이 단계 리그에 나갈 수 있나: 상한 안 → ok. 연봉 기록이 없는 예전 덱 → 유예 기간(UL_CAP_FROM 전)만 ok(grace). AI 덱은 언제나 ok */
+export function ulCapGate(e, tier, now) {
+  if (e && e.ai) return { ok: true, ai: true };
+  const c = ulCap(e, tier), name = ulTierName(tier);
+  if (!c.known) { const g = (now == null ? Date.now() : now) < UL_CAP_FROM; return Object.assign(c, { ok: g, grace: g, msg: g ? `연봉 기록이 없는 예전 덱입니다. ${ulSeason(UL_CAP_FROM).label.split('~')[0]} 시즌부터는 다시 등록해야 리그를 시작할 수 있습니다.` : '연봉 기록이 없는 예전 덱입니다. 덱을 다시 등록해 주세요.' }); }
+  return Object.assign(c, { msg: c.ok ? '' : `덱 연봉 ${cupWon(c.pay)}이 ${name} 상한 ${cupWon(c.cap)}(리그 평균의 ${c.x}배)을 ${cupWon(-c.room)} 넘습니다.` });
+}
+/* 덱에서 선수 빼기(상한 맞추기): 타순에서 빠지면 그 자리에 벤치 야수(같은 포지션 먼저, 그다음 OVR 높은 순), 선발에서 빠지면 불펜 투수(OVR 높은 순)가 들어간다.
+   {e(새 엔트리), err}. 검증(20명·투수 9명·타순 9명)에 걸리면 err */
+export function ulCapDrop(e, ids) {
+  const x = JSON.parse(JSON.stringify(e || {})), no = new Set((ids || []).map(Number)); if (!Array.isArray(x.P)) return { e: x, err: '덱이 없습니다.' };
+  x.P = x.P.filter(p => !no.has(p.id)); const P = new Map(x.P.map(p => [p.id, p])), O = p => ulPOvr(p);
+  x.bn = (x.bn || []).filter(id => P.has(id)); x.pen = (x.pen || []).filter(id => P.has(id));
+  for (const s of x.ln || []) { if (P.has(s[0])) continue; const c = x.bn.map(id => P.get(id)).filter(p => p && !p.isP && !(p.injOut > 0)).sort((a, b) => (b.pos === s[1]) - (a.pos === s[1]) || O(b) - O(a))[0];
+    if (!c) return { e: x, err: '타순을 채울 벤치 야수가 없습니다.' }; s[0] = c.id; x.bn = x.bn.filter(id => id !== c.id); }
+  x.rot = (x.rot || []).map(id => { if (P.has(id)) return id; const c = x.pen.map(i => P.get(i)).filter(p => p && p.isP).sort((a, b) => O(b) - O(a))[0]; if (!c) return null; x.pen = x.pen.filter(i => i !== c.id); return c.id; }).filter(id => id != null);
+  if (x.bp) for (const k in x.bp) if (!P.has(+k)) delete x.bp[k];
+  x.pay = Math.round(x.P.reduce((a, p) => a + (+p.sal || 0), 0)); delete x.h;
+  const v = cupValidate(x, {}); return { e: x, err: v.ok ? '' : v.errors[0].msg };
+}
+/* 상한에 맞추려면 뺄 선수(추천): 넘는 돈을 한 명으로 메울 수 있으면 그중 OVR이 가장 낮은 선수, 아니면 연봉 대비 OVR이 가장 낮은(연봉 ÷ (OVR − 35)이 큰) 선수부터.
+   빼도 덱 규칙(20명·투수 9명·타순)이 지켜지는 선수만 고른다. 6명까지. {ids, ok(빼면 들어가는지)} */
+export function ulCapSuggest(e, tier) {
+  let c = ulCap(e, tier); if (!c.known || c.ok) return { ids: [], ok: c.ok }; const ids = [];
+  for (let k = 0; k < 6 && !c.ok; k++) {
+    const can = e.P.filter(p => !ids.includes(p.id) && !ulCapDrop(e, ids.concat(p.id)).err), over = -c.room; if (!can.length) break;
+    const one = can.filter(p => (+p.sal || 0) >= over).sort((a, b) => ulPOvr(a) - ulPOvr(b) || a.sal - b.sal)[0];
+    const p = one || can.slice().sort((a, b) => (b.sal || 0) / Math.max(1, ulPOvr(b) - 35) - (a.sal || 0) / Math.max(1, ulPOvr(a) - 35))[0];
+    ids.push(p.id); c = ulCap(ulCapDrop(e, ids).e, tier); }
+  return { ids, ok: c.ok };
+}
 export const ulTierName = t => UL_TIERS[Math.max(0, Math.min(UL_TIERS.length - 1, t | 0))];
 /* 승강: 1·2위 한 단계 위(레전드는 그대로), 9·10위 한 단계 아래(루키는 그대로), 나머지 그대로 */
 export function ulTierAfter(tier, rank, n) {
@@ -42,6 +90,7 @@ export const UL_SEASON_MS = 14 * 864e5, UL_SEASON_0 = Date.UTC(2026, 0, 11, 15);
 export function ulSeason(ms) { const n = Math.floor(((ms == null ? Date.now() : ms) - UL_SEASON_0) / UL_SEASON_MS), start = UL_SEASON_0 + n * UL_SEASON_MS;
   const md = t => { const d = new Date(t + 9 * 3600e3); return `${d.getUTCMonth() + 1}.${d.getUTCDate()}`; };
   return { id: 'S' + n, n, start, end: start + UL_SEASON_MS, label: `${md(start)}~${md(start + UL_SEASON_MS - 864e5)}` }; }
+export const UL_CAP_FROM = UL_SEASON_0 + 23 * UL_SEASON_MS; /* 연봉 상한 유예 끝(사용자 11-17): S23 시작 = 2026-11-30 0시 한국시간 */
 /* 시즌 기록에 리그 하나 더하기(새 객체). s: {id, label, n(리그 수), best(최고 단계: 승격 뒤 단계 포함), top(최고 리그 점수), sum(점수 합), win, up} */
 export function ulSeasonAdd(s, sid, label, x) { const o = s && s.id === sid ? Object.assign({}, s) : { id: sid, label, n: 0, best: 0, top: 0, sum: 0, win: 0, up: 0 };
   const p = ulPts(x.tier, x.rank); o.n++; o.best = Math.max(o.best, x.tier | 0, x.to | 0); o.top = Math.max(o.top, p); o.sum += p; if (x.rank === 1) o.win++; if (x.move === 'up') o.up++; return o; }

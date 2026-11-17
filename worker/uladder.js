@@ -16,7 +16,7 @@
  *   옛 단계 색인 키(ulT:단계:WID)는 더 쓰지 않는다. 남아 있어도 읽지 않는다.
  * 서버 v1(worker/v1)이 쓰는 읽기 도우미(사용자 11-17): ladderKvPool(D1 덱이 모자랄 때 상대 채우기), ladderKvTier(옮겨 올 때 시작 단계 상한). 둘 다 KV에 쓰지 않는다. */
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../src/core/cup.mjs';
-import { UL_TIERS, ulPick, ulSlim } from '../src/core/uladder.mjs';
+import { UL_TIERS, ulPick, ulSlim, ulCap, ulCapGate } from '../src/core/uladder.mjs';
 import { cached, cacheGet, cachePut, cacheBust, memLimited, utcDay, shortHash } from './kvcache.js';
 
 export const UL_MAX_BYTES = 120 * 1024, UL_DECK_MAX = 40 * 1024;
@@ -28,7 +28,7 @@ export const UL_TTL = 60;               // 공개 GET 캐시(초)
 export const UL_REBUILD_MS = 86400e3;   // 색인 다시 만들기 주기(놓친 갱신 바로잡기)
 const IDX = 'ulIdx';
 const WID = /^w[0-9a-f]{16}$/;
-const MSG = { bad_wid: '세계 id가 올바르지 않습니다.', bad_deck: '덱 형식이 아닙니다.', bad_name: '팀명에 쓸 수 없는 말이 들어 있습니다.', too_large: '덱이 너무 큽니다.', not_found: '등록한 덱이 없습니다.', auth: '관리자 인증이 필요합니다.', method: '지원하지 않는 요청입니다.', rate_limited: '오늘은 더 등록할 수 없습니다. 내일 다시 시도해 주세요. 이 기기 리그는 그대로 할 수 있습니다.' };
+const MSG = { bad_wid: '세계 id가 올바르지 않습니다.', bad_deck: '덱 형식이 아닙니다.', bad_name: '팀명에 쓸 수 없는 말이 들어 있습니다.', too_large: '덱이 너무 큽니다.', over_cap: '덱 연봉이 이 단계 상한을 넘습니다.', no_pay: '연봉 기록이 없는 덱입니다. 게임을 새로 고친 뒤 다시 등록해 주세요.', not_found: '등록한 덱이 없습니다.', auth: '관리자 인증이 필요합니다.', method: '지원하지 않는 요청입니다.', rate_limited: '오늘은 더 등록할 수 없습니다. 내일 다시 시도해 주세요. 이 기기 리그는 그대로 할 수 있습니다.' };
 function json(status, body) { return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } }); }
 const err = (s, e, x) => json(s, Object.assign({ error: e, message: MSG[e] || '' }, x || {}));
 const tierOf = t => Math.max(0, Math.min(UL_TIERS.length - 1, (+t) | 0));
@@ -97,12 +97,12 @@ export async function ladderKvPool(env, url, now, tier, ovr, n, o = {}) {
   tier = tierOf(tier); const no = new Set(o.skip || []);
   const L = (await idxRead(kv, url, now, false)).T[tier].filter(x => !no.has(x.wid) && (x.at || 0) >= (o.since || 0));
   const avg = L.length ? L.reduce((a, x) => a + ((x.ovr && x.ovr.t) || 0), 0) / L.length : 0;
-  let pick = ulPick(L, ovr, n * 2, []);
+  let pick = ulPick(L, ovr, n * 3, []);
   if (o.drop && pick.length) { const d = await o.drop(pick.map(x => x.wid)); pick = pick.filter(x => !d.has(x.wid)); }
   const decks = [];
-  for (const m of pick.slice(0, n)) { const r = await kv.getWithMetadata('ulD:' + m.wid); const mt = r.metadata;
+  for (const m of pick) { if (decks.length >= n) break; const r = await kv.getWithMetadata('ulD:' + m.wid); const mt = r.metadata;
     if (!r.value || (mt && (mt.hide || tierOf(mt.tier) !== tier))) continue;
-    try { decks.push({ wid: m.wid, name: m.name, year: m.year, ovr: m.ovr, at: m.at, e: JSON.parse(r.value) }); } catch (x) {} }
+    try { const e = JSON.parse(r.value); if (ulCapGate(e, tier, now).ok) decks.push({ wid: m.wid, name: m.name, year: m.year, ovr: m.ovr, at: m.at, e }); } catch (x) {} } /* 연봉 상한(사용자 11-17): 넘는 덱·유예 끝난 예전 덱은 뺀다 */
   return { count: L.length, avg: Math.round(avg * 10) / 10, decks };
 }
 /* 서버 v1 첫 덱의 시작 단계 상한(사용자 11-17): 같은 세계 id로 KV에 올린 덱이 있으면 그 단계까지, 없으면 루키. KV가 없는 배포면 null(상한 없음) */
@@ -136,6 +136,7 @@ export async function handleLadder(req, env, url, now) {
     if (!b || !WID.test(String(b.wid || ''))) return err(400, 'bad_wid');
     if (!b.e || cupBadName(b.e.name)) return err(400, b.e ? 'bad_name' : 'bad_deck');
     const e = ulSlim(b.e); e.name = cupName(e.name); const v = cupValidate(e, {}); if (!v.ok) return err(400, 'bad_deck', { errors: v.errors.map(x => x.msg) });
+    { const c = ulCap(e, tierOf(b.tier)); if (!c.known || !c.each) return err(400, 'no_pay', { errors: [MSG.no_pay] }); if (!c.ok) return err(400, 'over_cap', { errors: [ulCapGate(e, tierOf(b.tier), now).msg] }); } /* 연봉 상한(사용자 11-17): 화면과 같은 공용 규칙 */
     e.h = cupEntryHash(e); const body = JSON.stringify(e); if (body.length > UL_DECK_MAX) return err(413, 'too_large');
     const bh = await shortHash(body), prev = (await kv.getWithMetadata('ulD:' + b.wid)).metadata || null, tier = tierOf(b.tier), day = utcDay(now);
     /* 그대로면 쓰지 않는다(색인에서 빠져 있을 때만 색인을 채운다) */
@@ -164,10 +165,10 @@ export async function handleLadder(req, env, url, now) {
     const tier = tierOf(url.searchParams.get('tier')), wid = String(url.searchParams.get('wid') || ''), ovr = +url.searchParams.get('ovr') || 0, n = Math.max(1, Math.min(9, +url.searchParams.get('n') || 9));
     const L = (await idxRead(kv, url, now, false)).T[tier];
     const all = L.filter(x => x.wid !== wid), avg = all.length ? all.reduce((a, x) => a + ((x.ovr && x.ovr.t) || 0), 0) / all.length : 0;
-    const pick = ulPick(all, ovr, n, [wid]), decks = [];
-    for (const m of pick) { const r = await kv.getWithMetadata('ulD:' + m.wid); const mt = r.metadata;
+    const pick = ulPick(all, ovr, n * 2, [wid]), decks = [];
+    for (const m of pick) { if (decks.length >= n) break; const r = await kv.getWithMetadata('ulD:' + m.wid); const mt = r.metadata;
       if (!r.value || (mt && (mt.hide || tierOf(mt.tier) !== tier))) continue; // 색인이 늦은 경우: 숨김·다른 단계는 건너뛴다
-      try { const e = JSON.parse(r.value); decks.push({ name: m.name, year: m.year, ovr: m.ovr, at: m.at, e }); } catch (x) {} }
+      try { const e = JSON.parse(r.value); if (ulCapGate(e, tier, now).ok) decks.push({ name: m.name, year: m.year, ovr: m.ovr, at: m.at, e }); } catch (x) {} } /* 연봉 상한(사용자 11-17) */
     return new Response(JSON.stringify({ ok: true, tier, count: all.length, avg: Math.round(avg * 10) / 10, decks }), { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
   }
   const mm = rest.match(/^(me|deck)\/(.+)$/);

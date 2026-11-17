@@ -44,7 +44,7 @@ async function cfgCached(kv, url, now) { const k = url.origin + '/api/cup/__cfg'
   const t = await kv.get('cup:cfg'); await cachePut(kv, k, { status: 200, body: t || '', headers: {} }, 60, now); return cfgParse(t); }
 const CK = (url, p) => url.origin + '/api/cup' + p;
 const bust = (kv, url, ps) => cacheBust(kv, ps.map(p => CK(url, p)));
-const pub = c => ({ id: c.id, title: c.title, format: c.format || 'knockout', teams: c.teams, deadline: c.deadline, size: c.size, best: c.best, minSeasons: c.minSeasons, payCap: c.payCap, open: c.open !== false, note: c.note || '' });
+const pub = c => ({ id: c.id, title: c.title, format: c.format || 'knockout', teams: c.teams, deadline: c.deadline, size: c.size, best: c.best, minSeasons: c.minSeasons, payCap: c.payCap, payCapX: +c.payCapX || 0, open: c.open !== false, note: c.note || '' });
 function admin(req, env) { const a = req.headers.get('Authorization') || ''; return !!env.CUP_ADMIN && a === 'Bearer ' + env.CUP_ADMIN; }
 async function listEntries(kv, id, full) {
   const out = []; let cursor;

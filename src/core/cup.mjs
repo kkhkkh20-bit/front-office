@@ -22,6 +22,7 @@ export const CUP_DEFAULT = Object.freeze({
   shuffleTop: 0,         /* 8이면 Top-8 시드 자리를 추첨으로 섞는다 */
   blocks: 0,             /* 대진표를 블록(A·B…)으로 나눠 보여 준다(0이면 없음) */
   minSeasons: 0, payCap: 0, deadline: '', /* 접수 마감(한국시간 'YYYY-MM-DD HH:mm') */
+  payCapX: 0,            /* 연봉 상한(리그 평균 배수, 사용자 11-17 "대회마다 연봉에 제약… 공평하게"): 0이면 없음. 1.25면 덱 연봉 합 ≤ 그 세계 리그 평균 × 1.25(cupPay) */
 });
 const NUM = x => (typeof x === 'number' && isFinite(x) ? x : 0);
 /* 해시(16진 8자리): FNV-1a + 섞기. 엔트리·경기 키 */
@@ -59,6 +60,25 @@ export function cupKstMs(s) {
 }
 export const cupKstDay = ms => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);
 
+/* ===== 연봉 상한(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게") =====
+   세계마다(시대·물가·이사회 상한이 달라) 돈 액수를 그대로 비교하지 않는다. 엔트리를 만들 때 그 세계 기준(payRef)을 함께 적는다:
+   payRef = 우리 구단을 뺀 KBO 구단마다 '연봉 상위 26명 합'의 평균(엔진 cupPayRef, 단위 백만원). 덱 연봉 = 덱 선수(P)마다 그 순간 연봉(sal) 합.
+   배수 r = 덱 연봉 ÷ payRef. 새 게임 10구단 1군은 r 0.5~1.35(평균 약 0.93, 시드 6개 60구단 측정 11-17).
+   P에 연봉이 없으면(예전 엔트리) 예전 값 e.pay(1군 연봉 합)를 쓴다. payRef가 없거나 말이 안 되면 r을 모른다(null) */
+/* 돈 표시(엔진 money와 같은 모양, 단위 백만원 → '12.5억'·'3,000만') */
+export const cupWon = v => { const n = v < 0; v = Math.abs(Math.round(NUM(v))); const s = !v ? '0원' : v >= 100 ? (v / 100).toFixed(2).replace(/\.?0+$/, '') + '억' : (v * 100).toLocaleString('ko-KR') + '만'; return (n && v ? '-' : '') + s; };
+export const CUP_REF_MIN = 1000, CUP_REF_MAX = 5e6, CUP_SAL_MAX = 1e5;
+export function cupPay(e) {
+  const P = (e && Array.isArray(e.P)) ? e.P : [], each = P.length > 0 && P.every(p => p && typeof p.sal === 'number' && isFinite(p.sal) && p.sal >= 0 && p.sal <= CUP_SAL_MAX);
+  const pay = each ? Math.round(P.reduce((a, p) => a + p.sal, 0)) : NUM(e && e.pay) > 0 ? Math.round(e.pay) : 0;
+  const ref = NUM(e && e.payRef) >= CUP_REF_MIN && NUM(e && e.payRef) <= CUP_REF_MAX ? Math.round(e.payRef) : 0;
+  return { pay, ref, r: ref && (each || pay) ? Math.round(pay / ref * 1000) / 1000 : null, each };
+}
+/* 배수 x의 상한 판정: {ok, known, pay, ref, cap(금액), room(남는 돈, 넘으면 음수), r} */
+export function cupPayCheck(e, x) {
+  const o = cupPay(e), cap = o.ref ? Math.floor(o.ref * x) : 0;
+  return Object.assign(o, { x, cap, known: o.r != null, room: o.ref ? cap - o.pay : 0, ok: o.r != null && o.pay <= cap });
+}
 /* 엔트리 검증. errors: 받지 않음(형식·인원·타순). flags: 받되 주최자가 볼 이상치(능력 상한·나이·잠재력). elig: 대회 자격(시즌 수·연봉 합) */
 export function cupValidate(e, cfg) {
   const R = CUP_RULES, err = [], flags = [], add = (k, msg) => err.push({ k, msg }), flag = (k, msg) => flags.push({ k, msg });
@@ -91,6 +111,9 @@ export function cupValidate(e, cfg) {
   const elig = [];
   if (cfg.minSeasons && NUM(e.seasons) < cfg.minSeasons) elig.push({ k: 'seasons', msg: `최소 ${cfg.minSeasons}시즌을 치른 저장만 참가할 수 있습니다(지금 ${NUM(e.seasons)}시즌).` });
   if (cfg.payCap && NUM(e.pay) > cfg.payCap) elig.push({ k: 'pay', msg: `1군 연봉 합이 상한(${cfg.payCap})을 넘습니다(${Math.round(NUM(e.pay))}).` });
+  if (cfg.payCapX > 0 && !e.ai) { const c = cupPayCheck(e, cfg.payCapX); /* AI 구단은 연봉이 없는 가상 구단이라 빼고 본다 */
+    if (!c.known) elig.push({ k: 'payx', msg: '연봉 기준이 없는 엔트리입니다. 게임을 새로 고친 뒤 다시 신청해 주세요.' });
+    else if (!c.ok) elig.push({ k: 'payx', msg: `덱 연봉이 상한(리그 평균의 ${cfg.payCapX}배)을 넘습니다: 지금 ${c.r}배, ${cupWon(-c.room)} 초과.` }); }
   if (e.h && e.h !== cupEntryHash(e)) flag('hash', '엔트리 해시가 맞지 않습니다(손으로 고친 파일일 수 있습니다).');
   const errors = err.filter((x, i) => err.findIndex(y => y.msg === x.msg) === i);
   return { ok: !errors.length, errors, flags, elig };
