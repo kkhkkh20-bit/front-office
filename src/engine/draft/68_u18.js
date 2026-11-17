@@ -26,8 +26,8 @@ function u18Play(y){ const U=G.u18; if(!U||U.y!==y||U.res||!U.L.length)return nu
   for(let i=opp.length-1;i>0;i--){ const j=Math.floor(rr()*(i+1)); [opp[i],opp[j]]=[opp[j],opp[i]]; }
   const game=(o,st)=>{ const pw=1/(1+Math.exp(-(K-o[1])/6)); const w=rr()<pw; const a=1+Math.floor(rr()*7), b=Math.max(0,a-1-Math.floor(rr()*4)); return {o:o[0],st,w,s:w?[a,b]:[b,a]}; };
   const G0=[]; const grp=opp.slice(0,5); for(const o of grp)G0.push(game(o,'조별'));
-  const gw=G0.filter(g=>g.w).length; let rank, sup=[]; if(gw>=3){ const S=[...opp.slice(5,7),...grp.filter(()=>rr()<.5)].slice(0,3); while(S.length<3)S.push(opp[S.length]); for(const o of S)sup.push(game(o,'슈퍼 라운드'));
-    const sw=gw+sup.filter(g=>g.w).length; const fin=sw>=6?game(opp.find(o=>o[0]==='일본')||opp[0],'결승'):game(opp[0],'3·4위전'); sup.push(fin); rank=fin.st==='결승'?(fin.w?1:2):(fin.w?3:4); } else rank=gw>=2?5:6;
+  const gw=G0.filter(g=>g.w).length; let rank, sup=[]; if(gw>=3){ const S=[...opp.slice(5),...grp.slice().sort((a,b)=>b[1]-a[1])].slice(0,3); /* 다른 조 팀 먼저, 모자라면 같은 조 강팀 */ for(const o of S)sup.push(game(o,'슈퍼 라운드'));
+    const sw=gw+sup.filter(g=>g.w).length; const best=opp.slice().sort((a,b)=>b[1]-a[1]); const fin=sw>=6?game(best[0],'결승'):game(best[2]||best[0],'3·4위전'); sup.push(fin); rank=fin.st==='결승'?(fin.w?1:2):(fin.w?3:4); } else rank=gw>=2?5:6;
   /* 눈에 띈 선수: 대표 선수 중 기량이 좋을수록 자주(공개되는 것은 한 줄뿐) */
   const W=U.L.map(x=>{ const o=u18Src(x); const r=o?(o.amR||o.r):((amDepE(x.id,y)||{}).r||{}); return Math.exp((amOvr(!!x.isP,r)-18)/6); }); let t=rr()*W.reduce((a,b)=>a+b,0), k=0; while(k<W.length-1&&(t-=W[k])>0)k++;
   const st=U.L[k]; const line=st.isP?`${2+Math.floor(rr()*2)}경기 ${8+Math.floor(rr()*8)}이닝 ${Math.floor(rr()*3)}실점 ${8+Math.floor(rr()*10)}탈삼진`:`타율 .${380+Math.floor(rr()*180)} ${Math.floor(rr()*3)}홈런`;

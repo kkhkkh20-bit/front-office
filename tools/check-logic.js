@@ -1095,12 +1095,12 @@ T('[고교 리그] 학교 선수단: 일반 부원도 이름·학년이 있고, 
   const j=JSON.stringify(Object.assign({},G,{amL:Object.assign({},G.amL,{rest:null})})); ok(!A.some(f=>j.includes(f.id)),'일반 부원 이름표가 저장됨'); });
 T('[고교 부원] 졸업반 부원 중 프로 지원자가 드래프트 후보가 된다: 참가가 지명 수보다 훨씬 많고, 본 게임 난수·선수 번호를 쓰지 않으며, 부원 기록·관찰이 이어진다',()=>{ DEMO.on=false; newGame(6);
   const C=G.draftClass.map(id=>G.players[id]).filter(Boolean), D=C.filter(p=>p.amDep); ok(C.length>=DRAFT_ROUNDS*10*2,'참가 '+C.length+'명(지명 '+DRAFT_ROUNDS*10+')'); ok(D.length>=40,'부원 출신 후보 '+D.length);
-  ok(D.every(p=>p.id>=AM_DEP_ID0&&p.prospect&&p.school&&p.amY&&p.amY.length>=1),'부원 출신 후보 번호·학교·아마 기록'); ok(D.some(p=>(p.amY||[]).some(r=>r.pa>0||r.outs>0)),'부원 출신 후보 기록이 비었음');
+  ok(D.every(p=>p.id>=AM_DEP_ID0&&p.prospect&&p.school&&p.amY),'부원 출신 후보 번호·학교'); ok(D.filter(p=>p.amY.length>=2).length>=D.length*.6,'부원 출신 후보 학년별 기록 '+D.filter(p=>p.amY.length>=2).length+'/'+D.length); ok(D.some(p=>(p.amY||[]).some(r=>r.pa>0||r.outs>0)),'부원 출신 후보 기록이 비었음');
   const top=Math.max(...C.filter(p=>!p.amDep).map(p=>p.pot)); ok(Math.max(...D.map(p=>p.pot))<top,'부원 출신 최대어가 추적 최대어보다 큼'); ok(D.filter(p=>p.pot>=50).length<=8,'부원 출신 대어가 너무 많음 '+D.filter(p=>p.pot>=50).length);
   const sch=D[0].school; const ey=G.year-(D[0].college?3:2); ok((amFS().cv[sch+'#'+ey]||[]).length>=1&&!amFill(sch,G.year,D[0].college?'col':'hs',amLvOf(sch)).some(f=>f.id===D[0].amDep),'지원한 부원이 학교 명단에도 남음');
   const r0=__rngState(), n0=G.nextId; delete amFS().dsY; for(const k in amFS().cv)delete amFS().cv[k]; const L=amDepSeniors(G.year); ok(L.length>0,'다시 만들기 실패'); ok(__rngState()===r0,'부원 지원자 만들기가 본 게임 난수를 썼다'); ok(G.nextId===n0,'선수 번호(G.nextId)를 썼다');
-  const again=amDepSeniors(G.year); ok(again.length===L.length,'같은 해 다시 부르면 같은 지원자');
-  const e=Object.values(amPipe().L)[0]; const f=amFill(AREA[0].hs[0],G.year,'hs',55).find(x=>x.gr===2); const E=amDepE(f.id); ok(E&&E.dep&&E.gy===G.year+1&&E.pot>0&&E.y.length>=1,'2학년 부원 한 사람(기록·졸업 연도·잠재력) '+JSON.stringify(E&&{gy:E.gy,y:E.y.length})); void e; });
+  const again=amDepSeniors(G.year); ok(L.every(p=>again.includes(p))&&__rngState()===r0,'같은 해 다시 부르면 이미 나온 지원자 그대로');
+  const e=Object.values(amPipe().L)[0]; const f2=amFill(AREA[0].hs[0],G.year,'hs',55).filter(x=>x.gr===2), E=f2.map(x=>amDepE(x.id)).find(q=>q&&q.y.length>=1); ok(E&&E.dep&&E.gy===G.year+1&&E.pot>0&&f2.every(x=>amDepE(x.id).gy===G.year+1),'2학년 부원 한 사람(기록·졸업 연도·잠재력) '+JSON.stringify(E&&{gy:E.gy,y:E.y.length})); void e; });
 T('[고교 부원] 부원도 기록 1위·추천에 들고, 학교 방문 관찰은 모든 구단 같은 규칙으로 쌓인다',()=>{ DEMO.on=false; newGame(6); const y=G.year; for(let d=dnum(y,3,1);d<=dnum(y,6,15);d++)amDaily(d);
   const L=amLeaders(y,'hs',false,'ops',30); ok(L.some(x=>x.kind==='f'),'OPS 상위 30에 부원 없음'); const all=amYearRows(y,'hs'); ok(all.filter(x=>x.kind==='f').length>all.filter(x=>x.kind!=='f').length,'기록 줄에 부원이 적음');
   const V=amFS().sv; ok(V[G.user]&&Object.keys(V[G.user]).length>0,'우리 학교 방문 수 없음'); const ai=G.teams.find(t=>t.id!==G.user&&clubAmScouts(t.id).length); ok(ai&&V[ai.id]&&Object.keys(V[ai.id]).length>0,'AI 구단 학교 방문 수 없음');

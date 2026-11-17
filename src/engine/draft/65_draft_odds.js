@@ -39,12 +39,12 @@ function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; cons
       else for(const b of base){ if(!left.has(b.p.id))continue; const v=T.get(b.p.id)+gn()*DO_CLUB_SD+(b.cur-35)*cw[k.tid]+(need[k.tid][b.g]||0)+b.adj+(RB[k.tid+':'+b.p.id]||0); if(v>bs){ bs=v; best=b.p.id; } }
       if(best==null)break; left.delete(best); if(k.tid!==tid){ const o=P[best].by; o[k.tid]=(o[k.tid]||0)+1; if(k.rd===1)P[best].r1++; } slot[i][best]=(slot[i][best]||0)+1; } }
   for(const id in P){ const o=P[id]; o.av/=DO_N; o.av2/=DO_N; o.r1/=DO_N; const b=Object.entries(o.by).sort((a,b)=>b[1]-a[1])[0]; o.top=b?{tid:+b[0],s:b[1]/DO_N}:null; delete o.by; }
-  const r={at:G.day,tid,live,pick:myIdx.length?picks[myIdx[0]]:null,pick2:myIdx.length>1?picks[myIdx[1]]:null,picks,slot:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1])[0]).map(x=>x?{id:+x[0],s:x[1]/DO_N}:null),P,rum};
+  const r={at:G.day,tid,live,pick:myIdx.length?picks[myIdx[0]]:null,pick2:myIdx.length>1?picks[myIdx[1]]:null,picks,slot:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1])[0]).map(x=>x?{id:+x[0],s:x[1]/DO_N}:null),slotL:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>({id:+x[0],s:x[1]/DO_N}))),P,rum};
   _doc={g:G,k:key,r}; return r; }
 /* '1라운드에 남을 확률 40%' 같은 말 */
 const doPct=v=>v>=.995?'99%':v<=.005?'1% 미만':Math.round(v*100)+'%';
 /* 예전 모의 지명 자리(드래프트 센터): 순번마다 가장 자주 나온 이름(확률 표시용). 우리 다음 차례까지 */
-function mockDraft(n){ const O=draftOdds(G.user); const out=[]; const used=new Set(); for(let i=0;i<O.picks.length&&out.length<(n||12);i++){ const k=O.picks[i]; if(O.live&&k.tid===G.user)break; if(!O.live&&k.rd>1)break; const s=O.slot[i]; if(!s||used.has(s.id))continue; used.add(s.id); out.push({pk:k,id:s.id,mine:k.tid===G.user,s:s.s}); } return out; }
+function mockDraft(n){ const O=draftOdds(G.user); const out=[]; const used=new Set(); for(let i=0;i<O.picks.length&&out.length<(n||12);i++){ const k=O.picks[i]; if(O.live&&k.tid===G.user)break; if(!O.live&&k.rd>1)break; const s=(O.slotL&&O.slotL[i]||[O.slot[i]]).find(x=>x&&!used.has(x.id)); if(!s)continue; used.add(s.id); /* 앞 순번에 이미 나온 이름이면 그 순번 다음 후보(사용자 11-17 모의 지명) */ out.push({pk:k,id:s.id,mine:k.tid===G.user,s:s.s}); } return out; }
 /* 보정 측정: 드래프트 시작 때 우리 첫 순번에 남을 확률을 남기고, 끝나면 실제와 견준다(브라이어 점수·구간별 적중) */
 function draftOddsSnap(){ try{ if(G.unemp)return; const O=draftOdds(G.user); if(!O.pick)return; const top=Object.entries(O.P).filter(([,v])=>v.av>.02&&v.av<.98).map(([id,v])=>[+id,Math.round(v.av*1000)/1000]); G.dOddsS={y:G.year,no:O.pick.no,rd:O.pick.rd,L:top}; }catch(e){} }
 function draftOddsCal(){ const S=G.dOddsS, d=G.draft; if(!S||!d||S.y!==(d.y||G.year))return null; const i0=d.picks.findIndex(k=>k.rd===S.rd&&k.no===S.no); if(i0<0)return null;

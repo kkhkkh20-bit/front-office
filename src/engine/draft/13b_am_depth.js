@@ -44,9 +44,10 @@ function amDepE(id,Y){ Y=Y??G.year; const q=amFId(id); if(!q)return null; const 
 /* 졸업한(그해 명단에 없는) 부원: 졸업 학년 기준으로 다시 만든다 */
 function amFillAt(sch,ey,Y,lvl,id){ const nG=lvl==='hs'?3:4, y=Math.min(Y,ey+nG-1); if(y<ey)return null; return amFill(sch,y,lvl,amLvOf(sch),true).find(x=>x.id===id)||null; }
 /* 그해 부원 기록 줄(기록 순위·추천·학교 화면): amYearRows 모양 */
-function amFYearRows(y,lvl){ const out=[]; for(const a of AREA)for(const [n,lv] of [...a.hs.map(x=>[x,'hs']),...a.un.map(x=>[x,'col'])]){ if(lvl&&lv!==lvl)continue;
+let _amFYR=null; /* 같은 날 같은 연도는 한 번만(기록 순위 카드 여러 장·AI 관심 명단) */
+function amFYearRows(y,lvl){ const S=G.amL&&G.amL.y===y?G.amL:null, k=y+':'+(lvl||'')+':'+G.day+':'+(S?S.tot.hs.g+S.tot.col.g:-1)+':'+Object.keys(amFS().cv).length; if(_amFYR&&_amFYR.g===G&&_amFYR.k===k)return _amFYR.r.slice(); const out=[]; for(const a of AREA)for(const [n,lv] of [...a.hs.map(x=>[x,'hs']),...a.un.map(x=>[x,'col'])]){ if(lvl&&lv!==lvl)continue;
     for(const f of amFill(n,y,lv,amLvOf(n))){ const h=amFRow(n,f.ey,f.isP,f.i,y); if(h)out.push({id:f.id,n:f.n,sch:n,gr:f.gr,isP:f.isP,kind:'f',row:h}); } }
-  return out; }
+  _amFYR={g:G,k,r:out}; return out.slice(); }
 /* 지원한 부원 표시: 그해 명단(amFill)에서 빠지고 드래프트 후보(kind p)로 뛴다 */
 const amFConv=(sch,ey,isP,i)=>{ const L=amFS().cv[sch+'#'+ey]; return !!L&&L.includes((isP?'p':'b')+i); };
 /* 졸업 학년 1월 1일: 프로 지원 부원 → 드래프트 후보. 지원 확률은 그 선수 기량(잠재력)으로: 30 이하 5% … 42 이상 90%. 어느 구단에도 같은 명단 */
