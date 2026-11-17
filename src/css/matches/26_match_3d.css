@@ -346,7 +346,8 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 .cs-stage.has-3d>.cs-faces{display:block;position:absolute;inset:0;pointer-events:none;z-index:4}
 .match-dashboard[data-faces="closed"] .cs-stage.has-3d>.cs-faces{display:none}
 .cs-face{position:absolute;display:grid;grid-template-columns:56px minmax(0,1fr);gap:8px;align-items:start;width:252px;padding:7px 9px;border:1px solid #ffffff1c;border-radius:6px;background:#0b17208c;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);color:#e9f0f4;text-align:left;pointer-events:auto;cursor:pointer;box-shadow:0 3px 10px #0004;text-shadow:0 1px 2px #000a} /* 투명도(사용자 11-16): 뒤 경기장이 비쳐 보이게 */
-.cs-face.l{left:10px;bottom:64px;border-left:3px solid #cc6674}.cs-face.r{right:10px;bottom:190px;border-left:3px solid #6ab5d4}
+.cs-face.l{left:10px;bottom:190px;border-left:3px solid var(--tc,#cc6674)}.cs-face.r{right:10px;bottom:190px;border-left:3px solid var(--tc,#6ab5d4)} /* 타자·투수 카드: 같은 높이·같은 크기(사용자 11-17) */
+.cs-face{height:var(--cf-h,264px);min-height:0;align-content:start;overflow:hidden;grid-template-columns:44px minmax(0,1fr)!important;row-gap:5px!important}.cs-face .cs-face-ph,.cs-face .cs-face-ph img{width:44px;height:44px}.cs-face .cs-face-tx>b{font-size:17px}
 .cs-face-ph .av{width:56px;height:56px;border-radius:5px;object-fit:cover}.cs-face-tx{display:grid;gap:1px;min-width:0}.cs-face-tx>i{font-style:normal;font-size:10.5px;color:#9fb6c3}.cs-face-tx>b{font-size:16px;line-height:1.2}.cs-face-tx>em{font-style:normal;font-size:11px;color:#b9ccd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-face-tx>small{font-size:11px;color:#f0d890}
 .cs-face .md-duel-more small{font-size:10.5px}.cs-face .md-stam{width:100%}
 .cs-faces-view{display:none;position:absolute;right:12px;top:84px;z-index:9;padding:6px 10px;background:#102431dd;border:1px solid #91aab777;border-radius:4px;color:#e1edf1;font-size:11px;cursor:pointer}
@@ -418,3 +419,26 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
   :is(.detail-page-open,body) .cast.match-dashboard[data-view="field"][data-dugout="closed"]:has(.has-3d):has(>.md-ticker:not(:empty)){grid-template-rows:44px minmax(0,1fr) 30px 26px 28px}
   .match-dashboard[data-view="field"]:has(.has-3d)>.md-ticker{margin:3px 0 0;padding:2px 10px;min-height:0;height:26px;box-sizing:border-box;white-space:nowrap}
 }
+/* 하이라이트 장면 자막(사용자 11-17: 실제 하이라이트처럼). 경기장을 덮지 않는 하단 자막(해설 자막 바로 위) + 장면 번호. 오프닝은 가운데 */
+.match-dashboard .cs-bn.hl{background:none;display:block;inset:0;padding:0;z-index:30}
+.match-dashboard .cs-bn.hl>div.cs-hl{position:absolute;left:16px;bottom:92px;transform:none;margin:0;display:flex;align-items:center;gap:12px;justify-items:initial;padding:8px 18px 8px 10px;width:max-content;max-width:calc(100% - 32px);background:linear-gradient(90deg,#0b1720f5,#0b1720e0);border-radius:10px;box-shadow:inset 4px 0 0 var(--tc,#c84),0 6px 18px #0006;animation:hlin .35s ease-out}
+.cs-hl>i{display:grid;justify-items:center;font:700 normal 18px/1 var(--f-ui);color:#fff;min-width:30px;padding-left:4px}.cs-hl>i>small{font-size:10px;font-weight:400;color:#9fb6c3;margin-top:2px}
+.cs-hl>p{display:grid;gap:3px;margin:0;min-width:0}
+.match-dashboard .cs-hl>p>b{font:400 22px/1.05 'Black Han Sans',var(--f-ui)!important;color:#fff}
+.match-dashboard .cs-hl>p>span{border:0;background:none;padding:0;border-radius:0;font-size:13px;color:#e9f0f4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-hl>em{display:flex;align-items:center;gap:6px;margin-left:8px;padding-left:12px;border-left:1px solid #ffffff26;font:700 normal 18px/1 var(--f-ui);font-variant-numeric:tabular-nums;color:#f0d890;white-space:nowrap}.cs-hl>em>small{font-size:12px;font-weight:400;color:#cfdbe2}
+@keyframes hlin{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+.cs-hlo{display:grid;justify-items:center;gap:8px;animation:bnin .4s ease-out}.cs-hlo>small{font-size:12px;letter-spacing:.08em;color:#f0d890}
+.cs-hlo>p{display:flex;align-items:center;gap:14px;margin:0}.cs-hlo>p>b{font:400 clamp(24px,6cqw,40px)/1 'Black Han Sans',var(--f-ui);color:#fff}.cs-hlo>p>i{font-style:normal;color:#9fb6c3}
+.cs-hlo>span{font-size:13px;color:#cfdbe2}
+.cs-wipe::after{content:'';position:absolute;inset:0;z-index:8;pointer-events:none;background:linear-gradient(105deg,transparent 30%,#0b1720e6 42%,#0b1720e6 58%,transparent 70%);background-size:300% 100%;animation:hlwipe .6s ease-in-out}
+@keyframes hlwipe{from{background-position:100% 0}to{background-position:0 0}}
+/* 3D 경기 화면 좌우 라인업: 이름이 잘리지 않게 한 줄(번호·이름·타석·포지션·시즌). 오늘 기록은 하단 선수단 줄에 있어 여기서는 뺀다(사용자 11-17) */
+@media(min-width:1001px){
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-layout{grid-template-columns:226px minmax(0,1fr) 226px}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-lineup-row{grid-template-columns:13px max-content auto minmax(0,1fr);gap:5px}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-lineup-row>span{overflow:visible;text-overflow:clip}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-lineup-row>small{display:inline;justify-self:end;overflow:hidden;text-overflow:ellipsis}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-lineup-row>b{display:none}
+}
+.cs-face>.cf-al{position:absolute;top:7px;right:8px;max-width:118px}.cs-face>.cf-al .cs-alerts{display:grid;justify-items:end;gap:3px}.cs-face>.cf-al .cs-alerts>i{font-size:10px;padding:1px 6px;white-space:nowrap}.cs-face:has(>.cf-al) .cs-face-tx{padding-right:112px}
