@@ -7116,6 +7116,12 @@ header.ibm-h>.ph-w>.av{width:76px;height:76px;border-radius:10px}
 @media(min-width:1100px){.ulx.ul-wide2{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}.ulx .ul-c2 .ul-tw{max-height:calc(100vh - 300px)}}
 @media(max-width:640px){.ulx .ul-hero-t h2{font-size:18px}.ulx .ul-hero-in .ul-emb{width:72px;height:77px}.ulx .ul-lr{grid-template-columns:26px 4.8em minmax(0,1fr) auto;padding:4px 6px}.ulx .ul-flt{gap:6px}.ulx .ul-fl select{min-width:0}}
 .ulx h2.sec small{margin-left:6px;font-weight:600;color:var(--muted)}.ulx .ul-dt td,.ulx .ul-dt td:nth-child(2){white-space:nowrap}
+/* 연봉 상한(사용자 11-17 "공평하게"): 덱 등록 칸 */
+.ulx .ul-cap{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px}.ulx .ul-cap.ul-cap-over{border-color:var(--bad,#d9534f);background:color-mix(in srgb,var(--bad,#d9534f) 7%,transparent)}.ulx .ul-cap .dk-t b{margin-left:4px}
+.ulx .ul-cap-n b{font-size:15px}.ulx .ul-cap-bar{margin:2px 0 6px}.ulx .ul-cap-over .ul-cap-bar>i{background:var(--bad,#d9534f)}
+.ulx .ul-crs{display:grid;gap:3px;margin:4px 0}.ulx .ul-cr{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:8px;align-items:center;padding:3px 0;border-bottom:1px solid var(--line);font-size:13px}.ulx .ul-cr b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ulx .ul-cap-n b{white-space:nowrap}
+@media(max-width:640px){.ulx .ul-cr{grid-template-columns:minmax(0,1fr) auto auto}.ulx .ul-cr>span.small{display:none}.ulx .ul-cap-n b{font-size:13px}.ulx .ul-cap-n{gap:3px}.ulx .ul-cap-n>div{padding:5px 2px}}
 </style>
 </head>
 <body>
@@ -12006,10 +12012,15 @@ var FrontOfficeCore = (() => {
   // src/core/index.mjs
   var index_exports = {};
   __export(index_exports, {
+    CUP_AVG_PER_CAP: () => CUP_AVG_PER_CAP,
+    CUP_CAP_WON: () => CUP_CAP_WON,
     CUP_DEFAULT: () => CUP_DEFAULT,
     CUP_POST: () => CUP_POST,
     CUP_PTS: () => CUP_PTS,
+    CUP_REF_MAX: () => CUP_REF_MAX,
+    CUP_REF_MIN: () => CUP_REF_MIN,
     CUP_RULES: () => CUP_RULES,
+    CUP_SAL_MAX: () => CUP_SAL_MAX,
     CUP_V: () => CUP_V,
     D0: () => D0,
     DV_PTS: () => DV_PTS,
@@ -12023,10 +12034,13 @@ var FrontOfficeCore = (() => {
     NET_TOKEN: () => NET_TOKEN,
     NET_V: () => NET_V,
     UL_AGE_BK: () => UL_AGE_BK,
+    UL_AI_SPREAD: () => UL_AI_SPREAD,
     UL_ARCH: () => UL_ARCH,
     UL_ARCH_BASE: () => UL_ARCH_BASE,
     UL_BADGES: () => UL_BADGES,
     UL_BF: () => UL_BF,
+    UL_CAP: () => UL_CAP,
+    UL_CAP_FROM: () => UL_CAP_FROM,
     UL_DOWN: () => UL_DOWN,
     UL_OPP_MAX: () => UL_OPP_MAX,
     UL_OVR_BK: () => UL_OVR_BK,
@@ -12069,6 +12083,8 @@ var FrontOfficeCore = (() => {
     cupName: () => cupName,
     cupNext: () => cupNext,
     cupOvrTxt: () => cupOvrTxt,
+    cupPay: () => cupPay,
+    cupPayCheck: () => cupPayCheck,
     cupPower: () => cupPower,
     cupQual: () => cupQual,
     cupResolve: () => cupResolve,
@@ -12079,6 +12095,7 @@ var FrontOfficeCore = (() => {
     cupStandings: () => cupStandings,
     cupTitles: () => cupTitles,
     cupValidate: () => cupValidate,
+    cupWon: () => cupWon,
     dmd: () => dmd,
     dnum: () => dnum,
     dobj: () => dobj,
@@ -12107,8 +12124,14 @@ var FrontOfficeCore = (() => {
     r5: () => r5,
     sum: () => sum,
     throwTime: () => throwTime,
+    ulAiTarget: () => ulAiTarget,
     ulBadges: () => ulBadges,
     ulBatRates: () => ulBatRates,
+    ulCap: () => ulCap,
+    ulCapDrop: () => ulCapDrop,
+    ulCapGate: () => ulCapGate,
+    ulCapSuggest: () => ulCapSuggest,
+    ulCapX: () => ulCapX,
     ulCsv: () => ulCsv,
     ulDeckMeta: () => ulDeckMeta,
     ulMetaAgg: () => ulMetaAgg,
@@ -12515,8 +12538,10 @@ var FrontOfficeCore = (() => {
     /* 대진표를 블록(A·B…)으로 나눠 보여 준다(0이면 없음) */
     minSeasons: 0,
     payCap: 0,
-    deadline: ""
+    deadline: "",
     /* 접수 마감(한국시간 'YYYY-MM-DD HH:mm') */
+    payCapX: 0
+    /* 연봉 상한(리그 평균 배수, 사용자 11-17 "대회마다 연봉에 제약… 공평하게"): 0이면 없음. 1.25면 덱 연봉 합 ≤ 그 세계 리그 평균 × 1.25(cupPay) */
   });
   var NUM = (x) => typeof x === "number" && isFinite(x) ? x : 0;
   function cupHashStr(s) {
@@ -12567,6 +12592,28 @@ var FrontOfficeCore = (() => {
     return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) - 9 * 36e5;
   }
   var cupKstDay = (ms) => new Date(ms + 9 * 36e5).toISOString().slice(0, 10);
+  var cupWon = (v) => {
+    const n = v < 0;
+    v = Math.abs(Math.round(NUM(v)));
+    const s = !v ? "0원" : v >= 100 ? (v / 100).toFixed(2).replace(/\.?0+$/, "") + "억" : (v * 100).toLocaleString("ko-KR") + "만";
+    return (n && v ? "-" : "") + s;
+  };
+  var CUP_AVG_PER_CAP = 0.74;
+  var CUP_REF_MIN = 1e3;
+  var CUP_REF_MAX = 5e6;
+  var CUP_SAL_MAX = 1e5;
+  function cupPay(e) {
+    const P = e && Array.isArray(e.P) ? e.P : [], each = P.length > 0 && P.every((p) => p && typeof p.sal === "number" && isFinite(p.sal) && p.sal >= 0 && p.sal <= CUP_SAL_MAX);
+    const pay = each ? Math.round(P.reduce((a, p) => a + p.sal, 0)) : NUM(e && e.pay) > 0 ? Math.round(e.pay) : 0;
+    const okR = (v) => NUM(v) >= CUP_REF_MIN && NUM(v) <= CUP_REF_MAX;
+    const ref = okR(e && e.capRef) ? Math.round(e.capRef) : okR(e && e.payRef) ? Math.round(e.payRef / CUP_AVG_PER_CAP) : 0;
+    return { pay, ref, r: ref && (each || pay) ? Math.round(pay / ref * 1e3) / 1e3 : null, each };
+  }
+  var CUP_CAP_WON = 14397;
+  function cupPayCheck(e, x) {
+    const o = cupPay(e), cap = Math.floor(CUP_CAP_WON * (x || 1)), known = !!o.each;
+    return Object.assign(o, { x: x || 1, ref: CUP_CAP_WON, cap, r: known ? Math.round(o.pay / CUP_CAP_WON * 1e3) / 1e3 : null, known, room: cap - o.pay, ok: known && o.pay <= cap });
+  }
   function cupValidate(e, cfg) {
     const R = CUP_RULES, err = [], flags = [], add = (k, msg) => err.push({ k, msg }), flag = (k, msg) => flags.push({ k, msg });
     cfg = Object.assign({}, CUP_DEFAULT, cfg || {});
@@ -12621,6 +12668,11 @@ var FrontOfficeCore = (() => {
     const elig = [];
     if (cfg.minSeasons && NUM(e.seasons) < cfg.minSeasons) elig.push({ k: "seasons", msg: `최소 ${cfg.minSeasons}시즌을 치른 저장만 참가할 수 있습니다(지금 ${NUM(e.seasons)}시즌).` });
     if (cfg.payCap && NUM(e.pay) > cfg.payCap) elig.push({ k: "pay", msg: `1군 연봉 합이 상한(${cfg.payCap})을 넘습니다(${Math.round(NUM(e.pay))}).` });
+    if (cfg.payCapX > 0 && !e.ai) {
+      const c = cupPayCheck(e, cfg.payCapX);
+      if (!c.known) elig.push({ k: "payx", msg: "연봉 기준이 없는 엔트리입니다. 게임을 새로 고친 뒤 다시 신청해 주세요." });
+      else if (!c.ok) elig.push({ k: "payx", msg: `1군 연봉 ${cupWon(c.pay)}이 상한 ${cupWon(c.cap)}을 ${cupWon(-c.room)} 넘습니다.` });
+    }
     if (e.h && e.h !== cupEntryHash(e)) flag("hash", "엔트리 해시가 맞지 않습니다(손으로 고친 파일일 수 있습니다).");
     const errors = err.filter((x, i) => err.findIndex((y) => y.msg === x.msg) === i);
     return { ok: !errors.length, errors, flags, elig };
@@ -12962,7 +13014,67 @@ var FrontOfficeCore = (() => {
   var UL_TEAMS = 10;
   var UL_UP = 2;
   var UL_DOWN = 2;
-  var UL_TIER_OVR = Object.freeze([60, 63, 66, 69, 72]);
+  var UL_TIER_OVR = Object.freeze([62, 66, 70, 75, 79]);
+  var ulAiTarget = (tier, avg2, count) => {
+    const b = UL_TIER_OVR[Math.max(0, Math.min(UL_TIER_OVR.length - 1, tier | 0))];
+    return avg2 && count >= 3 ? Math.max(b, Math.min(b + 3, Math.round(avg2))) : b;
+  };
+  var UL_AI_SPREAD = Object.freeze([2, -2, 1, -1, 1, -1, 0, 0, 0]);
+  var UL_CAP = Object.freeze([1, 1, 1, 1, 1]);
+  var ulCapX = (t) => UL_CAP[Math.max(0, Math.min(UL_CAP.length - 1, t | 0))];
+  var ulCap = (e, tier) => Object.assign(cupPayCheck(e, ulCapX(tier)), { tier: tier | 0 });
+  function ulCapGate(e, tier, now) {
+    if (e && e.ai) return { ok: true, ai: true };
+    const c = ulCap(e, tier), name = ulTierName(tier);
+    if (!c.known) {
+      const g2 = (now == null ? Date.now() : now) < UL_CAP_FROM;
+      return Object.assign(c, { ok: g2, grace: g2, msg: g2 ? `연봉 기록이 없는 예전 덱입니다. ${ulSeason(UL_CAP_FROM).label.split("~")[0]} 시즌부터는 다시 등록해야 리그를 시작할 수 있습니다.` : "연봉 기록이 없는 예전 덱입니다. 덱을 다시 등록해 주세요." });
+    }
+    return Object.assign(c, { msg: c.ok ? "" : `덱 연봉 ${cupWon(c.pay)}이 ${name} 상한 ${cupWon(c.cap)}을 ${cupWon(-c.room)} 넘습니다.` });
+  }
+  function ulCapDrop(e, ids) {
+    const x = JSON.parse(JSON.stringify(e || {})), no = new Set((ids || []).map(Number));
+    if (!Array.isArray(x.P)) return { e: x, err: "덱이 없습니다." };
+    x.P = x.P.filter((p) => !no.has(p.id));
+    const P = new Map(x.P.map((p) => [p.id, p])), O = (p) => ulPOvr(p);
+    x.bn = (x.bn || []).filter((id) => P.has(id));
+    x.pen = (x.pen || []).filter((id) => P.has(id));
+    for (const s of x.ln || []) {
+      if (P.has(s[0])) continue;
+      const c = x.bn.map((id) => P.get(id)).filter((p) => p && !p.isP && !(p.injOut > 0)).sort((a, b) => (b.pos === s[1]) - (a.pos === s[1]) || O(b) - O(a))[0];
+      if (!c) return { e: x, err: "타순을 채울 벤치 야수가 없습니다." };
+      s[0] = c.id;
+      x.bn = x.bn.filter((id) => id !== c.id);
+    }
+    x.rot = (x.rot || []).map((id) => {
+      if (P.has(id)) return id;
+      const c = x.pen.map((i) => P.get(i)).filter((p) => p && p.isP).sort((a, b) => O(b) - O(a))[0];
+      if (!c) return null;
+      x.pen = x.pen.filter((i) => i !== c.id);
+      return c.id;
+    }).filter((id) => id != null);
+    if (x.bp) {
+      for (const k in x.bp) if (!P.has(+k)) delete x.bp[k];
+    }
+    x.pay = Math.round(x.P.reduce((a, p) => a + (+p.sal || 0), 0));
+    delete x.h;
+    const v = cupValidate(x, {});
+    return { e: x, err: v.ok ? "" : v.errors[0].msg };
+  }
+  function ulCapSuggest(e, tier) {
+    let c = ulCap(e, tier);
+    if (!c.known || c.ok) return { ids: [], ok: c.ok };
+    const ids = [];
+    for (let k = 0; k < 6 && !c.ok; k++) {
+      const can = e.P.filter((p2) => !ids.includes(p2.id) && !ulCapDrop(e, ids.concat(p2.id)).err), over = -c.room;
+      if (!can.length) break;
+      const one = can.filter((p2) => (+p2.sal || 0) >= over).sort((a, b) => ulPOvr(a) - ulPOvr(b) || a.sal - b.sal)[0];
+      const p = one || can.slice().sort((a, b) => (b.sal || 0) / Math.max(1, ulPOvr(b) - 35) - (a.sal || 0) / Math.max(1, ulPOvr(a) - 35))[0];
+      ids.push(p.id);
+      c = ulCap(ulCapDrop(e, ids).e, tier);
+    }
+    return { ids, ok: c.ok };
+  }
   var ulTierName = (t) => UL_TIERS[Math.max(0, Math.min(UL_TIERS.length - 1, t | 0))];
   function ulTierAfter(tier, rank, n) {
     n = n || UL_TEAMS;
@@ -13016,6 +13128,7 @@ var FrontOfficeCore = (() => {
     };
     return { id: "S" + n, n, start, end: start + UL_SEASON_MS, label: `${md(start)}~${md(start + UL_SEASON_MS - 864e5)}` };
   }
+  var UL_CAP_FROM = UL_SEASON_0 + 23 * UL_SEASON_MS;
   function ulSeasonAdd(s, sid, label, x) {
     const o = s && s.id === sid ? Object.assign({}, s) : { id: sid, label, n: 0, best: 0, top: 0, sum: 0, win: 0, up: 0 };
     const p = ulPts(x.tier, x.rank);
@@ -32972,7 +33085,10 @@ const r1=x=>typeof x==='number'?Math.round(x*10)/10:x;
 /* 세계 id: 저장마다 하나(새 게임이면 새로). 대회 신청 때 처음 만든다(엔진 난수를 쓰지 않는다) */
 function cupWid(){ if(!G.wid){ let s=''; try{ const a=new Uint8Array(8); crypto.getRandomValues(a); s=[...a].map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){ s=(Date.now().toString(16)+String(Math.random()).slice(2)).slice(0,16); } G.wid='w'+s; } return G.wid; }
 function cupPSnap(p){ const q={}; for(const k of CUP_PK)if(p[k]!=null)q[k]=k==='r'?Object.fromEntries(Object.entries(p.r).map(([a,v])=>[a,r1(v)])):k==='pot'?r1(p[k]):k==='inj'||k==='velo'?Math.round(p[k]*1000)/1000:JSON.parse(JSON.stringify(p[k]));
-  q.fat=p.isP?0:Math.round(p.fat||0); const n=typeof jno==='function'?jno(p):p.no; if(n!=null)q.no=n; return q; }
+  q.fat=p.isP?0:Math.round(p.fat||0); const n=typeof jno==='function'?jno(p):p.no; if(n!=null)q.no=n; q.sal=Math.round(p.sal||0); /* 연봉(백만원): 래더·대회 연봉 상한(사용자 11-17) */ return q; }
+/* 연봉 상한 기준(사용자 11-17 "공평하게"): 우리 구단(tid)을 뺀 KBO 구단마다 연봉 상위 26명 합의 평균(백만원). 세계·시대가 달라도 덱 연봉을 이 값으로 나눠 비교한다(공용 cupPay) */
+function cupPayRef(tid){ const by=new Map(G.teams.filter(t=>t.id!==tid&&!t.indie).map(t=>[t.id,[]])); for(const p of Object.values(G.players)){ const L=by.get(p.team); if(L&&!(p.joinY>G.year)&&!isAway(p))L.push(p.sal||0); }
+  const T=[...by.values()].filter(L=>L.length).map(L=>L.sort((a,b)=>b-a).slice(0,26).reduce((a,b)=>a+b,0)); return T.length?Math.round(T.reduce((a,b)=>a+b,0)/T.length):0; }
 /* 지금 우리 1군으로 엔트리. o: {name(팀명), cup(대회 id)} */
 function cupEntryNow(o){ o=o||{}; const tid=o.tid??G.user, t=team(tid); if(!t)return null;
   const d=depth(tid), act=actOf(tid); /* act: 1군 등록 */ const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
@@ -32986,7 +33102,7 @@ function cupEntryNow(o){ o=o||{}; const tid=o.tid??G.user, t=team(tid); if(!t)re
   const m=G.mgr[tid]||{}, mgr={}; for(const k of CUP_MK)if(m[k]!=null)mgr[k]=m[k];
   const hist=(G.history||[]).filter(h=>h.user); const last=o.res||null;
   const e={v:FrontOfficeCore.CUP_V,kind:'cup-entry',cup:String(o.cup||''),wid:o.wid||G.wid||'',name:FrontOfficeCore.cupName(o.name||t.nick),
-    club:{tid,city:t.city||'',nick:t.nick||'',code:t.code||'',hue:t.hue??0,pal:(()=>{ try{ return tpal(t).slice(0,4); }catch(x){ return null; } })()},year:G.year,seasons:hist.length,pay:Math.round(P.reduce((a,p)=>a+((G.players[p.id]||{}).sal||0),0)),
+    club:{tid,city:t.city||'',nick:t.nick||'',code:t.code||'',hue:t.hue??0,pal:(()=>{ try{ return tpal(t).slice(0,4); }catch(x){ return null; } })()},year:G.year,seasons:hist.length,pay:Math.round(P.reduce((a,p)=>a+(p.sal||0),0)),payRef:cupPayRef(tid),capRef:(()=>{ try{ return capOf(G.year); }catch(x){ return 0; } })(), /* 사용자 11-17: 기준은 그 해 샐러리캡 */
     mgr,P,ln,bn,rot,pen,bp,...(last?{res:last}:{}),ts:o.ts||0};
   e.h=FrontOfficeCore.cupEntryHash(e); e.ovr=cupOvr(e); return e; }
 /* 팀 OVR(표시 척도): 총 = 본게임 teamRating과 같은 식(공격 .4 · 투수 .45 · 수비 .15), 투수 = 선발 .65 + 불펜 .35, 타자 = 공격·수비만 */
@@ -33123,28 +33239,33 @@ function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],dec
 const UL_ME='me';
 /* 덱 등록(이 저장의 내 덱). src: 'now'(지금 1군) | 'alb:번호'(앨범 시즌). 가져온 남의 덱(ro)은 등록할 수 없다 */
 function ulSetDeck(e,src){ const C=FrontOfficeCore; if(!e||e.ro)return '가져온 덱은 내 덱으로 등록할 수 없습니다.'; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x);
-  const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const U=uld(); U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:String(src||'now'),at:G.day,y:G.year,e:x}; return ''; }
-/* 단계 기준 AI 덱: 리그 평균 AI 구단을 만들고 능력치를 고르게 올리거나 내려 기준 OVR(총)에 맞춘다 */
+  const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const U=uld(); const cg=C.ulCapGate(x,U.tier|0,Date.now()); if(!cg.ok||cg.grace)return cg.known?cg.msg+' 덱에서 선수를 빼 상한에 맞춰 주세요.':'연봉 기록이 없는 로스터입니다(게임을 새로 고친 뒤 다시 골라 주세요).'; /* 연봉 상한(사용자 11-17 "공평하게"): 새로 등록하는 덱은 유예 없이 지금 단계 상한 안이어야 한다 */ U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:String(src||'now'),at:G.day,y:G.year,e:x}; return ''; }
+/* 단계 기준 AI 덱: 리그 평균 AI 구단을 만들고 능력치를 올리거나 내려 기준 OVR(총)에 맞춘다.
+   타자·투수를 따로 맞춘다(사용자 11-17 "고 오버롤", 포지션 균형): 타자 OVR을 기준−1로 먼저 맞추고, 투수로 총 OVR을 맞춘다. 실제 등록 덱(투수 ≈ 총+1.5, 타자 ≈ 총−1)과 비슷한 모양.
+   예전처럼 모두 같이 올리면 레전드 AI가 투수만 98인 덱이 됐다(선발 98·타자 74). 능력치는 20~85 안 */
 let UL_AI_BASE=null;
-function ulScale(e,target){ const base=JSON.parse(JSON.stringify(e)); const at=d=>{ const x=JSON.parse(JSON.stringify(base)); for(const p of x.P)for(const k in p.r)if(k!=='vit')p.r[k]=Math.round(clamp(p.r[k]+d,20,85)*10)/10; x.ovr=cupOvr(x); return x; };
-  let lo=-25, hi=25, best=at(0); for(let i=0;i<14;i++){ const mid=(lo+hi)/2, x=at(mid); if(Math.abs(x.ovr.t-target)<Math.abs(best.ovr.t-target))best=x; if(x.ovr.t<target)lo=mid; else hi=mid; if(x.ovr.t===target){ best=x; break; } }
+function ulScale(e,target){ const base=JSON.parse(JSON.stringify(e)); const at=(db,dp)=>{ const x=JSON.parse(JSON.stringify(base)); for(const p of x.P){ const d=p.isP?dp:db; for(const k in p.r)if(k!=='vit')p.r[k]=Math.round(clamp(p.r[k]+d,20,85)*10)/10; } x.ovr=cupOvr(x); return x; };
+  const fit=(f,key,goal)=>{ let lo=-25, hi=25, bd=0, bv=null; for(let i=0;i<16;i++){ const mid=(lo+hi)/2, v=f(mid).ovr[key]; if(bv==null||Math.abs(v-goal)<Math.abs(bv-goal)){ bv=v; bd=mid; } if(v===goal){ bd=mid; break; } if(v<goal)lo=mid; else hi=mid; } return bd; };
+  const db=fit(d=>at(d,0),'b',target-1), dp=fit(d=>at(db,d),'t',target), best=at(db,dp);
   best.h=FrontOfficeCore.cupEntryHash(best); return best; }
 function ulAiDecks(n,target,tag){ if(n<=0)return []; if(!UL_AI_BASE||UL_AI_BASE.length<n)UL_AI_BASE=cupAiEntries(Math.max(9,n),'ul');
-  const nick=['하운즈','파이터스','스톰','로열스','마린스','레이븐스','타이탄스','팬서스','블레이즈','코메츠'];
-  return UL_AI_BASE.slice(0,n).map((e,i)=>{ const x=ulScale(e,target); x.name=FrontOfficeCore.cupName(`AI ${nick[i%nick.length]}`); x.ai=1; x.h=FrontOfficeCore.cupEntryHash(x); return x; }); }
+  const nick=['하운즈','파이터스','스톰','로열스','마린스','레이븐스','타이탄스','팬서스','블레이즈','코메츠'], SP=FrontOfficeCore.UL_AI_SPREAD;
+  return UL_AI_BASE.slice(0,n).map((e,i)=>{ const x=ulScale(e,target+(n>=3?SP[i%SP.length]:0)); /* 한 리그 AI끼리 ±2 벌림(사용자 11-17) */ x.name=FrontOfficeCore.cupName(`AI ${nick[i%nick.length]}`); x.ai=1; x.h=FrontOfficeCore.cupEntryHash(x); return x; }); }
 /* 리그 만들기: 서버에서 받은 덱(fetched) → 가져온 우승 덱(cup, 최대 2) → 모자라면 단계 기준 AI. 상대는 사본으로 잠근다.
    fetched는 엔트리 그대로 또는 서버 v1 모양 {e, pid, nick}(사용자 11-17: 상대 플레이어 id·닉네임을 리그 팀에 붙여 두고 리그가 끝나면 맞대결로 보낸다) */
 function ulMakeLeague(o){ o=o||{}; const C=FrontOfficeCore, U=uld(); if(!U||!U.deck)return {ok:false,msg:'먼저 내 덱을 등록해 주세요.'};
+  const now=o.now??Date.now(), cg=C.ulCapGate(U.deck.e,U.tier|0,now); if(!cg.ok)return {ok:false,msg:cg.msg+" '덱'에서 다시 등록해 주세요.",cap:1}; /* 연봉 상한(사용자 11-17): 승격으로 상한이 바뀌었거나 유예가 끝난 예전 덱 */
   const tier=U.tier|0, mine=U.deck.e, seen=new Set([mine.h]), T=[{key:UL_ME,kind:'me',name:mine.name,e:JSON.parse(JSON.stringify(mine))}];
-  const add=(e,kind,m)=>{ if(T.length>=C.UL_TEAMS||!e||!Array.isArray(e.P))return; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); if(seen.has(x.h)||!C.cupValidate(x,{}).ok)return; x.ovr=x.ovr||cupOvr(x); seen.add(x.h); const t={key:'t'+T.length,kind,name:x.name,e:x}; if(m&&m.pid){ t.pid=String(m.pid); t.nick=String(m.nick||''); } T.push(t); };
+  const add=(e,kind,m)=>{ if(T.length>=C.UL_TEAMS||!e||!Array.isArray(e.P))return; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); if(seen.has(x.h)||!C.cupValidate(x,{}).ok)return; if(kind==='user'&&!C.ulCapGate(x,tier,now).ok)return; /* 상한을 넘는 유저 덱은 상대로 쓰지 않는다(서버도 거른다) */ x.ovr=x.ovr||cupOvr(x); seen.add(x.h); const t={key:'t'+T.length,kind,name:x.name,e:x}; if(m&&m.pid){ t.pid=String(m.pid); t.nick=String(m.nick||''); } T.push(t); };
   for(const d of o.fetched||[]){ if(d&&d.e&&!Array.isArray(d.P))add(d.e,'user',d); else add(d,'user'); } let nc=0; for(const e of o.cup||[]){ if(nc>=2)break; const k=T.length; add(e,'cup'); if(T.length>k)nc++; }
-  const need=C.UL_TEAMS-T.length, avg=o.avg&&o.count>=3?Math.round(o.avg):C.UL_TIER_OVR[tier]; for(const e of ulAiDecks(need,avg))add(e,'ai');
+  const need=C.UL_TEAMS-T.length, avg=C.ulAiTarget(tier,o.avg,o.count); for(const e of ulAiDecks(need,avg))add(e,'ai');
   const sched=C.cupLeagueSched(T.length,3);
   U.league={v:1,id:(U.lid=(U.lid||0)+1),tier,deck:U.deck.id,at:G.day,y:G.year,teams:T,sched,next:0,series:[],cnt:T.map(()=>0),bat:{},pit:{},edits:[],src:{user:T.filter(t=>t.kind==='user').length,cup:T.filter(t=>t.kind==='cup').length,ai:T.filter(t=>t.kind==='ai').length},avg};
   return {ok:true,league:U.league}; }
 /* 리그 중 내 덱 고치기: 다음 연전부터 */
 function ulEditDeck(e){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L)return '진행 중인 리그가 없습니다.'; if(e&&e.ro)return '가져온 덱은 쓸 수 없습니다.';
   const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x); const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg;
+  if(C.cupPay(x).pay!==C.cupPay(L.teams[0].e).pay){ const cg=C.ulCapGate(x,L.tier,Date.now()); if(!cg.ok)return cg.msg; } /* 리그 중 통째로 바꾸면(연봉이 달라지면) 그 단계 상한을 다시 본다(사용자 11-17) */
   L.teams[0].e=x; L.teams[0].name=x.name; L.edits.push({at:L.next,h:x.h}); if(U.deck){ U.deck.e=JSON.parse(JSON.stringify(x)); } return ''; }
 /* 연전 하나 */
 function ulRunSeries(L){ const s=L.sched[L.next]; if(!s)return null; const A=L.teams[s.a], B=L.teams[s.b];
@@ -45529,6 +45650,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-ladcap',d:'11월 17일',t:'래더·대회 연봉 상한 · 윗단계 AI가 강해집니다',items:[
+    '래더 덱에 연봉 상한이 생깁니다. 덱 선수 연봉 합이 143.97억(첫 시즌 샐러리캡)을 넘으면 등록할 수 없습니다. 모든 단계가 같은 금액입니다.',
+    '\'덱\' 화면에서 상한·덱 연봉·여유(또는 초과)를 보여 줍니다. 넘으면 등록할 수 없고, 넘는 만큼을 가장 적은 OVR 손해로 메울 선수를 추천합니다. \'추천대로 빼기\'나 선수마다 \'빼기\'로 덱에서 뺀 뒤 등록하면 됩니다. 서버도 같은 규칙으로 다시 확인합니다.',
+    '이미 등록한 덱은 다음 시즌(11월 30일)이 시작될 때까지 그대로 쓸 수 있고, 그 뒤에는 한 번 다시 등록해야 합니다.',
+    '단계별 AI 구단 OVR을 루키 62·마이너 66·1부 70·챔피언스 75·레전드 79로 올립니다. 타자와 투수를 고르게 올리고, 한 리그 안에서도 ±2씩 전력이 다릅니다. AI 구단은 연봉이 없는 가상 구단이라 상한을 보지 않습니다.',
+    '프런트컵 주최자는 대회마다 연봉 상한(첫 시즌 샐러리캡 143.97억 기준)을 정할 수 있습니다. 신청 화면에 상한과 지금 1군 연봉이 나오고, 넘으면 신청할 수 없습니다.']},
   {id:'2026-11-17-settings',d:'11월 17일',t:'설정을 탭 넷으로 정리',items:[
     '설정 위 줄 탭이 게임 설정·업무 권한·저장·기기·정보 넷으로 나뉩니다. 저장 슬롯·내보내기·기기 옮기기는 저장·기기에, 공식 카페·제보용 정보 복사·버전·패치 노트·프런트컵 명예의 전당·크레딧·플레이 기록·관리자는 정보에 모았습니다.',
     'PC에서는 탭마다 같은 폭의 세 칸으로 놓이고 칸 안에서만 내려 봅니다. 업무 권한은 권한 목록을 넓게, 위임으로 처리한 일을 옆 칸에 좁게 둡니다.']},
@@ -47910,10 +48037,10 @@ function cupView(){ if(!G)return ''; cupProbe(); const C=FrontOfficeCore, t=team
   let now=null; try{ if(!G.unemp)now=cupEntryNow({name:CUP.name||t.nick}); }catch(e){ console.error(e); }
   const title=(G.cupTt||[]).map(x=>`<span class="cup-tt">${esc(x.t)}</span>`).join('');
   const st=!on?'<p class="small muted">서버 신청은 웹 사이트에서 할 수 있습니다. 내려받은 게임에서는 \'참가 파일 저장\'으로 받은 파일을 주최자에게 보내 주세요.</p>':!CUP.st?'<p class="small muted">대회 정보를 불러오는 중입니다.</p>':CUP.st==='off'?'<p class="small muted">지금은 대회 서버에 연결할 수 없습니다.</p>':!cfg?'<p class="small muted">지금 열린 대회가 없습니다.</p>':
-    `<p class="cup-h"><b>${esc(cfg.title)}</b>${cfg.deadline?` · 접수 마감 ${esc(cfg.deadline)}`:''}</p>${cfg.format==='league'?`<p class="small muted">이번 한 번 여는 대회입니다. ${cfg.teams||10}팀 리그(팀당 ${((cfg.teams||10)-1)*3}경기) 뒤 와일드카드·준플레이오프·플레이오프·한국시리즈로 우승을 가립니다. 모자란 자리는 리그 평균 AI 구단이 채웁니다.</p>`:''}${cfg.minSeasons||cfg.payCap?`<p class="small muted">참가 자격: ${[cfg.minSeasons?`${cfg.minSeasons}시즌 이상 치른 저장`:'',cfg.payCap?`1군 연봉 합 ${money(cfg.payCap)} 이하`:''].filter(Boolean).join(' · ')}</p>`:''}
+    `<p class="cup-h"><b>${esc(cfg.title)}</b>${cfg.deadline?` · 접수 마감 ${esc(cfg.deadline)}`:''}</p>${cfg.format==='league'?`<p class="small muted">이번 한 번 여는 대회입니다. ${cfg.teams||10}팀 리그(팀당 ${((cfg.teams||10)-1)*3}경기) 뒤 와일드카드·준플레이오프·플레이오프·한국시리즈로 우승을 가립니다. 모자란 자리는 리그 평균 AI 구단이 채웁니다.</p>`:''}${cfg.minSeasons||cfg.payCap||cfg.payCapX?`<p class="small muted">참가 자격: ${[cfg.minSeasons?`${cfg.minSeasons}시즌 이상 치른 저장`:'',cfg.payCap?`1군 연봉 합 ${money(cfg.payCap)} 이하`:'',cfg.payCapX?`1군 연봉 합이 리그 평균의 ${cfg.payCapX}배 이하`:''].filter(Boolean).join(' · ')}</p>`:''}
     <p class="cup-my">${CUP.my?`내 신청: <b>${esc(CUP.my.name)} ${CUP.my.year}</b> · OVR ${C.cupOvrTxt(CUP.my.ovr)} · ${cupDate(CUP.my.at)} 신청`:'아직 신청하지 않았습니다.'}</p>`;
   const form=G.unemp?'<p class="small muted">구단을 맡고 있을 때 신청할 수 있습니다.</p>':`<label class="cup-in"><span>팀명(12자)</span><input id="cupName" maxlength="12" value="${esc(CUP.name||t.nick)}" autocomplete="off"></label>
-    ${now?`<p class="small">지금 1군 ${now.P.length}명 · OVR <b class="num">${C.cupOvrTxt(now.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:''}
+    ${now?`<p class="small">지금 1군 ${now.P.length}명 · OVR <b class="num">${C.cupOvrTxt(now.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:''}${now&&cfg&&cfg.payCapX?(()=>{ const c=C.cupPayCheck(now,cfg.payCapX); /* 대회 연봉 상한(사용자 11-17) */ return `<p class="small cup-cap${c.ok?'':' bad'}">연봉 상한 <b>${money(c.cap)}</b> · 지금 1군 <b>${money(c.pay)}</b> · ${c.ok?`여유 ${money(c.room)}`:`<b>${money(-c.room)} 초과: 본게임에서 1군을 바꿔야 신청할 수 있습니다</b>`}</p>`; })():''}
     <div class="btns">${on&&cfg?`<button class="btn primary" data-a="cupApply"${CUP.busy?' disabled':''}>대회 참가 신청</button>`:''}<button class="btn" data-a="cupFileNow">참가 파일 저장</button>${CUP.my?`<button class="btn" data-a="cupWithdraw"${CUP.busy?' disabled':''}>신청 취소</button>`:''}</div>
     <p class="small muted">신청하면 그 순간의 타순·선발·불펜·부상 상태가 그대로 들어갑니다(투수 피로만 0). 다시 신청하면 덮어쓰고, 하루에 한 번 할 수 있습니다. 신청이 안 되면 '참가 파일 저장'으로 받은 파일을 주최자에게 보내 주세요.</p>`;
   const apply=`<section class="card"><h2 class="sec">프런트컵 참가</h2>${title?`<p class="cup-tts">${title}</p>`:''}${st}${form}${CUP.msg?`<div class="note${CUP.bad?' bad':''}">${esc(CUP.msg)}</div>`:''}</section>`;
@@ -48037,11 +48164,11 @@ Object.assign(A,{
   admOpen(){ if(ADM.chk==='ok')admUsage(); if(G&&!UI.title)return A.go('club:cupadm'); UI.sstep='cupadmin'; render(); },
   /* 1) 대회 만들기·열기·닫기 */
   async admCfg(v){ if(v==='close'&&ADM.cup&&ADM.cup.open!==false&&!confirm('접수를 닫습니다. 닫은 뒤에는 게임에서 신청할 수 없습니다(다시 열 수는 있습니다).'))return; const q=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-    const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(4,Math.min(10,+q('admTeams')||10)), minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0;
+    const id=q('admId')||'cup1', title=q('admTitle')||'제1회 프런트컵', deadline=q('admDl'), teams=Math.max(4,Math.min(10,+q('admTeams')||10)), minSeasons=+q('admMinS')||0, payCap=+q('admPay')||0, payCapX=Math.max(0,Math.round((+q('admPayX')||0)*100)/100); /* 연봉 상한 배수(사용자 11-17 "대회마다 연봉에 제약… 공평하게") */
     if(!/^[A-Za-z0-9_-]{1,32}$/.test(id))return admSay('대회 id는 영문·숫자로 적어 주세요(예: cup1).',true);
     if(deadline&&FrontOfficeCore.cupKstMs(deadline)==null)return admSay('마감은 2026-12-05 21:00 형식(한국시간)으로 적어 주세요.',true);
     const prev=ADM.cup&&ADM.cup.id===id?ADM.cup:{}; const open=v==='open'?true:v==='close'?false:prev.open!==false&&v!=='new'?prev.open:false;
-    const c=Object.assign({},FrontOfficeCore.CUP_DEFAULT,{id,title,deadline,format:'league',teams,meet:3,minSeasons,payCap,open});
+    const c=Object.assign({},FrontOfficeCore.CUP_DEFAULT,{id,title,deadline,format:'league',teams,meet:3,minSeasons,payCap,payCapX,open});
     ADM.busy=true; const {r,j}=await admApi('/admin/config',{method:'PUT',body:JSON.stringify(c)}).catch(()=>({r:{ok:false},j:{}})); ADM.busy=false;
     if(!r.ok)return admSay(j.message||'저장하지 못했습니다.',true); ADM.cup=Object.assign({},c); CUP.st=''; ADM.ents=null; ADM.entsAuto=0; ADM.seedOk=false; ADM.run=null; ADM.runSt=''; admSay(open?'접수를 열었습니다. 게임의 프런트컵 화면에 신청 버튼이 보입니다.':'저장했습니다. 접수는 닫혀 있습니다.'); },
   /* 2) 접수 현황 */
@@ -48189,7 +48316,7 @@ function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"
   const inp=(id,lab,v,ph,w)=>`<label class="adm-in"><span>${lab}</span><input id="${id}" value="${esc(v??'')}" placeholder="${esc(ph||'')}" autocomplete="off"${w?` style="max-width:${w}"`:''}></label>`;
   const s1=`<section class="card"><h2 class="sec">1. 대회 만들기·열기</h2>${c.id?`<p class="small">지금: <b>${esc(c.title)}</b> (${esc(c.id)}) · ${c.open!==false?'<b>접수 중</b>':'접수 닫힘'}${c.deadline?` · 마감 ${esc(c.deadline)}`:''}</p>`:'<p class="small muted">아직 만든 대회가 없습니다.</p>'}
     ${inp('admId','대회 id',c.id||'cup1','cup1','8em')}${inp('admTitle','대회 이름',c.title||'제1회 프런트컵')}${inp('admDl','접수 마감(한국시간)',c.deadline||'','2026-12-05 21:00','12em')}
-    ${inp('admTeams','팀 수(리그 + KBO식 가을야구)',cfg.teams||10,'10','5em')}${inp('admMinS','자격: 최소 시즌',c.minSeasons||'','0','5em')}${inp('admPay','자격: 1군 연봉 합 상한',c.payCap||'','0','8em')}
+    ${inp('admTeams','팀 수(리그 + KBO식 가을야구)',cfg.teams||10,'10','5em')}${inp('admMinS','자격: 최소 시즌',c.minSeasons||'','0','5em')}${inp('admPay','자격: 1군 연봉 합 상한(금액, 백만원)',c.payCap||'','0','8em')}${inp('admPayX','자격: 연봉 상한(첫 시즌 샐러리캡 143.97억의 배수, 1 = 143.97억 권장)',c.payCapX||'','0','6em')}<p class="small muted">연봉 상한 배수: 덱 연봉 합 ÷ 그 저장의 리그 평균(다른 구단마다 연봉 상위 26명 합의 평균). 세계·시대가 달라도 공평합니다. 래더 1부 이상은 1.25배, 비우면 없음.</p>
     <div class="btns"><button class="btn" data-a="admCfg" data-v="save"${ADM.busy?' disabled':''}>저장</button><button class="btn primary" data-a="admCfg" data-v="open"${ADM.busy?' disabled':''}>접수 열기</button><button class="btn" data-a="admCfg" data-v="close"${ADM.busy?' disabled':''}>접수 닫기</button></div></section>`;
   const E=ADM.ents, drop=ADM.drop||[];
   const s2=`<section class="card"><h2 class="sec">2. 접수 현황</h2><div class="btns"><button class="btn small" data-a="admEnts"${ADM.busy||!c.id?' disabled':''}>신청 목록 받기</button></div>
@@ -48355,6 +48482,10 @@ async function ulUpload(){ const U=uld(); if(!U||!U.deck||!xfAvail())return fals
 function ulSrcEntry(src){ const name=FrontOfficeCore.cupName(UL.name||(uld()&&uld().deck&&uld().deck.e.name)||team(G.user).nick);
   if(src==='now'){ if(G.unemp)return null; return cupEntryNow({name}); }
   const x=cupAlbum().find(a=>'alb:'+a.id===src); if(!x)return null; const e=JSON.parse(JSON.stringify(x.e)); e.name=name; e.ovr=cupOvr(e); return e; }
+/* 등록할 덱 = 고른 로스터 − 상한 맞추려고 뺀 선수(사용자 11-17 "연봉에 제약… 공평하게"). UL.drop = {src, ids}: 로스터를 바꾸면 비운다. {e, err} */
+function ulRegEntry(){ const e=ulSrcEntry(UL.src); if(!e)return {e:null,err:''}; const D=UL.drop&&UL.drop.src===UL.src?UL.drop.ids:[]; if(!D.length)return {e,err:''};
+  const r=FrontOfficeCore.ulCapDrop(e,D); if(r.err)return {e:null,err:r.err}; r.e.ovr=cupOvr(r.e); return {e:r.e,err:''}; }
+const ulDropIds=()=>UL.drop&&UL.drop.src===UL.src?UL.drop.ids:[];
 const ulSrcOpts=()=>[['now','지금 1군'],...cupAlbum().slice().reverse().map(a=>['alb:'+a.id,`${a.y} ${a.k==='auto'?'시즌 종료':'직접 저장'}${a.e.res&&a.e.res.rank?` ${a.e.res.rank}위`:''} · OVR ${FrontOfficeCore.cupOvrTxt(a.e.ovr)}`])];
 /* 리그 시작: 서버에서 같은 단계 덱 받기(한 번) → 가져온 우승 덱(이 기기·명예의 전당) → AI */
 async function ulStart(){ const U=uld(), C=FrontOfficeCore; if(!U||!U.deck||UL.busy)return; UL.busy=true; ulSay('같은 단계 덱을 받는 중입니다.');
@@ -48380,10 +48511,15 @@ async function ulSim(all){ const U=uld(), L=U&&U.league; if(!L||UL.busy)return; 
     else render(); }
   catch(e){ console.error(e); UL.busy=false; UL.prog=''; ulSay('경기를 돌리지 못했습니다.',true); } }
 Object.assign(A,{
-  ulSrc(v){ UL.src=v; render(); },
+  ulSrc(v){ UL.src=v; UL.drop=null; render(); },
+  /* 연봉 상한 맞추기(사용자 11-17): 선수 빼기·되돌리기·추천대로 빼기 */
+  ulCapDrop(v){ const id=+v, was=ulDropIds().slice(), D=was.includes(id)?was.filter(x=>x!==id):was.concat(id); UL.drop={src:UL.src,ids:D};
+    const r=ulRegEntry(); if(!r.e){ UL.drop={src:UL.src,ids:was}; return ulSay(r.err||'이 선수는 뺄 수 없습니다.',true); } UL.msg=''; render(); },
+  ulCapAuto(){ const r=ulRegEntry(); if(!r.e)return; const s=FrontOfficeCore.ulCapSuggest(r.e,uld().tier|0); if(!s.ids.length)return ulSay('뺄 선수를 찾지 못했습니다. 본게임에서 1군을 바꿔 주세요.',true); UL.drop={src:UL.src,ids:ulDropIds().concat(s.ids)}; ulSay(s.ok?`${s.ids.length}명을 빼면 상한 안에 들어갑니다.`:`${s.ids.length}명을 빼도 상한을 넘습니다. 본게임에서 1군을 바꿔 주세요.`,!s.ok); },
+  ulCapReset(){ UL.drop=null; UL.msg=''; render(); },
   ulPick(){ UL.pick=!UL.pick; render(); },
   async ulReg(){ if(UL.busy)return; const el=document.getElementById('ulName'); if(el)UL.name=el.value; const n=FrontOfficeCore.cupName(UL.name||team(G.user).nick); if(FrontOfficeCore.cupBadName(n))return ulSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true);
-    const e=ulSrcEntry(UL.src); if(!e)return ulSay('이 덱을 만들 수 없습니다(구단을 맡고 있을 때 지금 1군을 등록합니다).',true); const m=ulSetDeck(e,UL.src); if(m)return ulSay(m,true);
+    const R=ulRegEntry(), e=R.e; if(!e)return ulSay(R.err||'이 덱을 만들 수 없습니다(구단을 맡고 있을 때 지금 1군을 등록합니다).',true); const m=ulSetDeck(e,UL.src); if(m)return ulSay(m,true); UL.drop=null;
     const U=uld(); let tail=''; if(U.league){ ulEditDeck(U.deck.e); tail=' 진행 중인 리그에는 다음 연전부터 이 덱으로 나갑니다.'; }
     UL.busy=true; render(); const up=await ulUpload(); UL.busy=false; if(up||!xfAvail())ulSay(`${U.deck.e.name} 덱을 등록했습니다(OVR ${FrontOfficeCore.cupOvrTxt(U.deck.e.ovr)}).${up?' 같은 단계 유저들이 이 덱을 상대로 만납니다.':''}${tail}`); },
   ulStart(){ return ulStart(); }, ulNext(){ return ulSim(false); }, ulAll(){ return ulSim(true); },
@@ -48508,17 +48644,18 @@ function ulSeasonNow(U){ const se=FrontOfficeCore.ulSeason(Date.now()); return {
 function ulLobby(U){ const C=FrontOfficeCore, L=U.league, t=U.tier|0, {se,SS}=ulSeasonNow(U), S=C.ulSummary(U.hist,U.tier), M=ulV1On()&&UL.sv.me, E=M&&M.entry; if(ulV1On()&&ulNet().signedIn())ulSvMe();
   const st=L?ulStand(L):null, me=st&&st.find(x=>x.key===0), prog=L?Math.round(L.next/L.sched.length*100):0;
   const snap=[E?['시즌 포인트',E.points]:['시즌 리그',SS?SS.n:0],E?['단계 순위',E.rank?E.rank+'위':'-']:['시즌 최고 점수',SS?SS.top:0],['우승',E?E.wins:SS?SS.win:0],['치른 리그',S.leagues]];
-  const act=!U.deck?`<button class="btn primary ul-big" data-a="ulReg"${UL.busy?' disabled':''}>지금 1군으로 덱 등록</button>`:L?`<button class="btn primary ul-big" data-a="ulGoPg" data-v="league">이어 하기 · ${L.sched[L.next]?L.sched[L.next].r:9}/9라운드</button>`:`<button class="btn primary ul-big" data-a="ulStartGo"${UL.busy?' disabled':''}>${C.ulTierName(t)} 리그 시작</button>`;
+  const cg=U.deck&&!L?C.ulCapGate(U.deck.e,t,Date.now()):null; /* 연봉 상한(사용자 11-17): 승격으로 상한을 넘거나 유예가 끝난 예전 덱이면 '덱'으로 */
+  const act=!U.deck?`<button class="btn primary ul-big" data-a="ulReg"${UL.busy?' disabled':''}>지금 1군으로 덱 등록</button>`:cg&&!cg.ok?`<button class="btn primary ul-big" data-a="ulGoPg" data-v="deck">연봉 상한 맞추고 다시 등록</button>`:L?`<button class="btn primary ul-big" data-a="ulGoPg" data-v="league">이어 하기 · ${L.sched[L.next]?L.sched[L.next].r:9}/9라운드</button>`:`<button class="btn primary ul-big" data-a="ulStartGo"${UL.busy?' disabled':''}>${C.ulTierName(t)} 리그 시작</button>`;
   const hero=`<section class="card ul-hero ul-ht${t}"><div class="ul-hero-in">${ulEmblem(t,96)}<div class="ul-hero-t"><span class="eyebrow">래더 · ${esc(C.ulTierName(t))}</span><h2>${U.deck?esc(U.deck.e.name):'아직 덱이 없습니다'}</h2>
       <p class="small">${U.deck?`OVR <b class="num">${C.cupOvrTxt(U.deck.e.ovr)}</b> · `:''}최고 ${C.ulTierName(S.best)}${S.stay&&S.stay.n>1?` · 이 덱 ${C.ulTierName(S.stay.tier)} ${S.stay.n}리그째`:''}</p>
       <p class="small ul-cd">시즌 ${esc(se.label)} · 끝까지 <b>${ulLeft(se.end-Date.now())}</b></p></div></div>
     <div class="ul-sc">${snap.map(([a,b])=>`<div><span>${a}</span><b class="num">${b}</b></div>`).join('')}</div>
     ${L?`<div class="ul-prog"><div class="ul-pbar"><i style="width:${prog}%"></i></div><p class="small"><b>${me.rank}위</b> · ${me.w}승 ${me.l}패 ${me.t}무 · ${L.next}/${L.sched.length}연전</p></div>`:''}
-    <div class="btns">${act}</div>${!U.deck?UL_GUIDE:''}${ulMsgHtml()}</section>`;
+    <div class="btns">${act}</div>${cg&&(!cg.ok||cg.grace)?`<div class="note${cg.ok?'':' bad'}">${esc(cg.msg)}</div>`:''}${!U.deck?UL_GUIDE:''}${ulMsgHtml()}</section>`;
   /* 승강 사다리: 레전드부터 루키까지, 내 자리와 이번 리그 승강선 */
   const line=L&&me?(()=>{ const n=L.teams.length, gap=(a,b)=>((a.w-b.w)+(b.l-a.l))/2; return me.rank<=2?`<b class="ul-up">승격권</b> · 3위와 ${gap(me,st[2]).toFixed(1)}경기 차`:me.rank>=n-1?`<b class="ul-dn">강등권</b> · 잔류까지 ${gap(st[n-3],me).toFixed(1)}경기`:`승격권까지 ${gap(st[1],me).toFixed(1)}경기 · 강등권과 ${gap(me,st[n-2]).toFixed(1)}경기`; })():'';
   ulTiersLoad(); const MT=ulV1On()?ulMetaFor('all'):null, TC=MT&&MT.tiers?MT.tiers.map(x=>x.n):UL.tiers; /* 등록 덱 수: 서버 v1 집계, 없으면 예전 KV */
-  const lad=`<section class="card"><h2 class="sec">승강 사다리</h2><div class="ul-lad">${C.UL_TIERS.map((n,i)=>i).reverse().map(i=>`<div class="ul-lr${i===t?' on':''}${i<t?' past':''}">${ulEmblem(i,28)}<b>${esc(C.UL_TIERS[i])}</b><span class="small muted">${i===t?(L?`지금 ${me.rank}위`:'내 자리'):i===t+1?'1·2위면 여기로':i===t-1&&t>0?'9·10위면 여기로':`AI 기준 OVR ${C.UL_TIER_OVR[i]}`}${TC?` · 등록 덱 ${TC[i]|0}`:''}</span>${i===t?'<em>◀</em>':''}</div>`).join('')}</div>
+  const lad=`<section class="card"><h2 class="sec">승강 사다리</h2><div class="ul-lad">${C.UL_TIERS.map((n,i)=>i).reverse().map(i=>`<div class="ul-lr${i===t?' on':''}${i<t?' past':''}">${ulEmblem(i,28)}<b>${esc(C.UL_TIERS[i])}</b><span class="small muted">${i===t?(L?`지금 ${me.rank}위`:'내 자리'):i===t+1?'1·2위면 여기로':i===t-1&&t>0?'9·10위면 여기로':`AI 기준 OVR ${C.UL_TIER_OVR[i]}`} · 연봉 상한 ${money(C.CUP_CAP_WON)}${TC?` · 등록 덱 ${TC[i]|0}`:''}</span>${i===t?'<em>◀</em>':''}</div>`).join('')}</div>
     ${line?`<p class="small ul-lineinfo">${line}</p>`:'<p class="small muted">10팀 리그 · 팀당 27경기. 1·2위 승격, 9·10위 강등, 나머지 잔류.</p>'}</section>`;
   const MS=C.ulMissions(U.seas,U.hist,se.id,t), md=MS.filter(m=>m.done).length;
   const mis=`<section class="card"><h2 class="sec">시즌 목표 <small> ${''}${md}/${MS.length}</small></h2><div class="ul-ms">${MS.map(m=>`<div class="ul-m${m.done?' done':''}"><span>${m.done?'✔':'○'}</span><b>${esc(m.n)}</b><em class="num">${m.pts?m.cur:m.cur+'/'+m.goal}</em><i class="ul-pbar"><i style="width:${Math.round(Math.min(1,m.cur/m.goal)*100)}%"></i></i></div>`).join('')}</div><p class="small muted">이번 시즌(${esc(se.label)}) 기록으로 정해집니다. 시즌이 바뀌면 새로 셉니다.</p></section>`;
@@ -48580,12 +48717,28 @@ function ulResultCols(U,R){ const C=FrontOfficeCore, S=C.ulSummary(U.hist,U.tier
   return [a,b,R.rec?ulRecHtml(R):'']; }
 /* ---- 덱: 등록 + 타순·선발·불펜 카드(선수마다 래더 기록) + 덱 성향 ---- */
 function ulPsMap(U,k,season){ const m=new Map(); for(const x of FrontOfficeCore.ulPsRows(U.ps||{},k,season?{season}:{}))m.set(String(x.id),x); return m; }
-function ulDeckPage(U){ const C=FrontOfficeCore, cur=U.deck, src=ulSrcOpts(), pre=(()=>{ try{ return ulSrcEntry(UL.src); }catch(e){ return null; } })();
+/* 연봉 상한 칸(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 상한·덱 연봉·여유(초과), 넘으면 뺄 선수 추천과 빼기 단추 */
+function ulCapHtml(e,t){ const C=FrontOfficeCore; if(!e)return ''; const c=C.ulCap(e,t), D=ulDropIds(), byId=new Map(e.P.map(p=>[p.id,p]));
+  if(!c.known)return `<div class="ul-cap ul-cap-over"><p class="dk-t">연봉 상한 · ${esc(C.ulTierName(t))}</p><p class="small">이 로스터에는 연봉 기록이 없습니다(예전에 저장한 앨범 시즌). 지금 1군이나 새로 저장한 앨범 시즌을 골라 주세요.</p></div>`;
+  const over=!c.ok, pct=Math.min(100,Math.round(c.pay/Math.max(1,c.cap)*100)), sg=over?C.ulCapSuggest(e,t):{ids:[]};
+  const pr=(p,on)=>`<div class="ul-cr"><b>${esc(p.name)}</b><span class="small muted">${p.isP?'투수':CUP_POSK[p.pos]||p.pos} · OVR ${cupPOvr(p)}</span><em class="num">${money(p.sal||0)}</em><button class="btn small" data-a="ulCapDrop" data-v="${p.id}">${on?'되돌리기':'빼기'}</button></div>`;
+  const src=ulSrcEntry(UL.src), gone=D.map(id=>src&&src.P.find(p=>p.id===id)).filter(Boolean), top=e.P.slice().sort((a,b)=>(b.sal||0)-(a.sal||0)).slice(0,8);
+  return `<div class="ul-cap${over?' ul-cap-over':''}"><p class="dk-t">연봉 상한 · ${esc(C.ulTierName(t))} <b>${money(c.cap)}</b></p>
+    <div class="ul-sc ul-cap-n"><div><span>상한</span><b class="num">${money(c.cap)}</b></div><div><span>덱 연봉</span><b class="num">${money(c.pay)}</b></div><div><span>${over?'초과':'여유'}</span><b class="num ${over?'ul-dn':'ul-up'}">${money(Math.abs(c.room))}</b></div><div><span>상한 대비</span><b class="num">${Math.round(c.r*100)}%</b></div></div>
+    <i class="ul-pbar ul-cap-bar"><i style="width:${pct}%"></i></i>
+    ${over?`<p class="small"><b class="ul-dn">상한을 넘어 등록할 수 없습니다.</b> ${sg.ids.length?`${sg.ok?'이 선수를 빼면 들어갑니다':'이 선수를 빼도 모자랍니다(본게임에서 1군을 바꿔 주세요)'}(넘는 만큼을 OVR 손해가 가장 적게):`:'뺄 수 있는 선수가 없습니다. 본게임에서 1군을 바꿔 주세요.'}</p>
+      <div class="ul-crs">${sg.ids.map(id=>pr(byId.get(id),false)).join('')}</div>${sg.ids.length?'<div class="btns"><button class="btn small primary" data-a="ulCapAuto">추천대로 빼기</button></div>':''}`:''}
+    ${gone.length?`<p class="small">뺀 선수 ${gone.length}명 <button class="lnk small" data-a="ulCapReset">모두 되돌리기</button></p><div class="ul-crs">${gone.map(p=>pr(p,true)).join('')}</div>`:''}
+    <details class="hof-d"><summary class="small">연봉 상위 8명 · 직접 빼기</summary><div class="ul-crs">${top.map(p=>pr(p,false)).join('')}</div></details>
+    <p class="small muted">모든 단계 같은 금액(첫 시즌 샐러리캡 ${money(c.cap)})입니다. 저장의 연도·물가와 관계없이 같은 금액으로 겨룹니다. AI 구단은 연봉이 없는 가상 구단이라 상한을 보지 않습니다.</p></div>`; }
+function ulDeckPage(U){ const C=FrontOfficeCore, cur=U.deck, src=ulSrcOpts(), R=(()=>{ try{ return ulRegEntry(); }catch(e){ return {e:null,err:''}; } })(), pre=R.e, t=U.tier|0, pc=pre?C.ulCap(pre,t):null, blk=!pre||!pc.ok;
+  const cg=cur?C.ulCapGate(cur.e,t,Date.now()):null;
   const reg=`<section class="card"><h2 class="sec">덱 등록</h2><p class="small muted">지금 1군이나 앨범의 지난 시즌 로스터를 덱으로 올립니다. 언제든 다시 등록할 수 있고, 같은 단계 유저들이 이 덱을 상대로 만납니다.</p>
     <label class="cup-in"><span>팀명(12자)</span><input id="ulName" maxlength="12" value="${esc(UL.name||(cur&&cur.e.name)||team(G.user).nick)}" autocomplete="off"></label>
     <label class="cup-in"><span>로스터</span><select data-a="ulSrc">${src.map(([k,l])=>`<option value="${esc(k)}"${k===UL.src?' selected':''}>${esc(l)}</option>`).join('')}</select></label>
-    ${pre?`<p class="small">고른 로스터 OVR <b class="num">${C.cupOvrTxt(pre.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:''}
-    <div class="btns"><button class="btn primary" data-a="ulReg"${UL.busy?' disabled':''}>${cur?'덱 갱신':'내 덱으로 등록'}</button></div>
+    ${pre?`<p class="small">고른 로스터 ${pre.P.length}명 · OVR <b class="num">${C.cupOvrTxt(pre.ovr)}</b> <span class="muted">(총|투수 타자)</span></p>`:R.err?`<div class="note bad">${esc(R.err)}</div>`:''}${ulCapHtml(pre,t)}
+    ${cg&&(!cg.ok||cg.grace)?`<div class="note${cg.ok?'':' bad'}">지금 등록한 덱: ${esc(cg.msg)}</div>`:''}
+    <div class="btns"><button class="btn primary" data-a="ulReg"${UL.busy||blk?' disabled':''}>${cur?'덱 갱신':'내 덱으로 등록'}</button></div>
     <p class="small muted">${!xfAvail()?'내려받은 게임에서는 이 기기에서만 리그를 엽니다(상대는 AI·가져온 덱).':UL.srv==='off'?'지금은 래더 서버에 연결할 수 없습니다. 이 기기 리그는 할 수 있습니다.':UL.me?`서버 등록: ${esc(UL.me.name)} · ${C.ulTierName(UL.me.tier)}${UL.me.v1?' · 새 래더 서버':''}`:'아직 서버에 등록하지 않았습니다.'}${ulV1On()&&ulNet().signedIn()?' <button class="lnk small muted" data-a="ulSvDel">서버 기록 지우기</button>':''}</p>${ulMsgHtml()}</section>`;
   if(!cur)return [reg,'<section class="card"><h2 class="sec">내 덱</h2><p class="small muted">아직 등록한 덱이 없습니다.</p></section>',ulChalHtml()];
   const e=U.league?U.league.teams[0].e:cur.e, P=new Map(e.P.map(p=>[p.id,p])), sc=UL.dsc==='s'?C.ulSeason(Date.now()).id:'', B=ulPsMap(U,'b',sc), Pm=ulPsMap(U,'p',sc);

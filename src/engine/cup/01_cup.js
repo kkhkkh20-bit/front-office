@@ -10,7 +10,10 @@ const r1=x=>typeof x==='number'?Math.round(x*10)/10:x;
 /* 세계 id: 저장마다 하나(새 게임이면 새로). 대회 신청 때 처음 만든다(엔진 난수를 쓰지 않는다) */
 function cupWid(){ if(!G.wid){ let s=''; try{ const a=new Uint8Array(8); crypto.getRandomValues(a); s=[...a].map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){ s=(Date.now().toString(16)+String(Math.random()).slice(2)).slice(0,16); } G.wid='w'+s; } return G.wid; }
 function cupPSnap(p){ const q={}; for(const k of CUP_PK)if(p[k]!=null)q[k]=k==='r'?Object.fromEntries(Object.entries(p.r).map(([a,v])=>[a,r1(v)])):k==='pot'?r1(p[k]):k==='inj'||k==='velo'?Math.round(p[k]*1000)/1000:JSON.parse(JSON.stringify(p[k]));
-  q.fat=p.isP?0:Math.round(p.fat||0); const n=typeof jno==='function'?jno(p):p.no; if(n!=null)q.no=n; return q; }
+  q.fat=p.isP?0:Math.round(p.fat||0); const n=typeof jno==='function'?jno(p):p.no; if(n!=null)q.no=n; q.sal=Math.round(p.sal||0); /* 연봉(백만원): 래더·대회 연봉 상한(사용자 11-17) */ return q; }
+/* 연봉 상한 기준(사용자 11-17 "공평하게"): 우리 구단(tid)을 뺀 KBO 구단마다 연봉 상위 26명 합의 평균(백만원). 세계·시대가 달라도 덱 연봉을 이 값으로 나눠 비교한다(공용 cupPay) */
+function cupPayRef(tid){ const by=new Map(G.teams.filter(t=>t.id!==tid&&!t.indie).map(t=>[t.id,[]])); for(const p of Object.values(G.players)){ const L=by.get(p.team); if(L&&!(p.joinY>G.year)&&!isAway(p))L.push(p.sal||0); }
+  const T=[...by.values()].filter(L=>L.length).map(L=>L.sort((a,b)=>b-a).slice(0,26).reduce((a,b)=>a+b,0)); return T.length?Math.round(T.reduce((a,b)=>a+b,0)/T.length):0; }
 /* 지금 우리 1군으로 엔트리. o: {name(팀명), cup(대회 id)} */
 function cupEntryNow(o){ o=o||{}; const tid=o.tid??G.user, t=team(tid); if(!t)return null;
   const d=depth(tid), act=actOf(tid); /* act: 1군 등록 */ const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
@@ -24,7 +27,7 @@ function cupEntryNow(o){ o=o||{}; const tid=o.tid??G.user, t=team(tid); if(!t)re
   const m=G.mgr[tid]||{}, mgr={}; for(const k of CUP_MK)if(m[k]!=null)mgr[k]=m[k];
   const hist=(G.history||[]).filter(h=>h.user); const last=o.res||null;
   const e={v:FrontOfficeCore.CUP_V,kind:'cup-entry',cup:String(o.cup||''),wid:o.wid||G.wid||'',name:FrontOfficeCore.cupName(o.name||t.nick),
-    club:{tid,city:t.city||'',nick:t.nick||'',code:t.code||'',hue:t.hue??0,pal:(()=>{ try{ return tpal(t).slice(0,4); }catch(x){ return null; } })()},year:G.year,seasons:hist.length,pay:Math.round(P.reduce((a,p)=>a+((G.players[p.id]||{}).sal||0),0)),
+    club:{tid,city:t.city||'',nick:t.nick||'',code:t.code||'',hue:t.hue??0,pal:(()=>{ try{ return tpal(t).slice(0,4); }catch(x){ return null; } })()},year:G.year,seasons:hist.length,pay:Math.round(P.reduce((a,p)=>a+(p.sal||0),0)),payRef:cupPayRef(tid),capRef:(()=>{ try{ return capOf(G.year); }catch(x){ return 0; } })(), /* 사용자 11-17: 기준은 그 해 샐러리캡 */
     mgr,P,ln,bn,rot,pen,bp,...(last?{res:last}:{}),ts:o.ts||0};
   e.h=FrontOfficeCore.cupEntryHash(e); e.ovr=cupOvr(e); return e; }
 /* 팀 OVR(표시 척도): 총 = 본게임 teamRating과 같은 식(공격 .4 · 투수 .45 · 수비 .15), 투수 = 선발 .65 + 불펜 .35, 타자 = 공격·수비만 */

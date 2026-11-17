@@ -14,9 +14,9 @@ const ORIGIN='https://fronttime.example.workers.dev';
 const req=(method,p,body,h={})=>new Request(ORIGIN+p,{method,body,headers:Object.assign({'Origin':ORIGIN},h)});
 const wid=i=>'w'+String(i).padStart(16,'0');
 function deck(o={}){ const P=[]; const POS=['C','1B','2B','3B','SS','LF','CF','RF','C','SS','LF','1B'];
- POS.forEach((pos,i)=>P.push({id:i+1,name:'타자'+i,age:27,isP:false,pos,th:'우',bt:'우',r:{con:50,pow:50,eye:50,spd:50,def:50,vit:60},pot:55,f:'data:image/webp;base64,'+'A'.repeat(3000)}));
- for(let i=0;i<12;i++)P.push({id:100+i,name:'투수'+i,age:28,isP:true,pos:'P',th:'우',bt:'우',r:{stf:50,ctl:50,sta:i<5?60:40},pot:55,role:i<5?'SP':'RP'});
- return Object.assign({v:1,kind:'cup-entry',name:'와이',year:2035,club:{},mgr:{},P,ln:[[1,'C'],[2,'1B'],[3,'2B'],[4,'3B'],[5,'SS'],[6,'LF'],[7,'CF'],[8,'RF'],[10,'DH']],bn:[9,11,12],rot:[100,101,102,103,104],pen:[105,106,107,108,109,110,111],bp:{},ovr:{t:60,p:61,b:59}},o); }
+ POS.forEach((pos,i)=>P.push({id:i+1,name:'타자'+i,age:27,isP:false,pos,th:'우',bt:'우',r:{con:50,pow:50,eye:50,spd:50,def:50,vit:60},pot:55,sal:300,f:'data:image/webp;base64,'+'A'.repeat(3000)}));
+ for(let i=0;i<12;i++)P.push({id:100+i,name:'투수'+i,age:28,isP:true,pos:'P',th:'우',bt:'우',r:{stf:50,ctl:50,sta:i<5?60:40},pot:55,role:i<5?'SP':'RP',sal:300});
+ return Object.assign({v:1,kind:'cup-entry',name:'와이',year:2035,club:{},mgr:{},P,ln:[[1,'C'],[2,'1B'],[3,'2B'],[4,'3B'],[5,'SS'],[6,'LF'],[7,'CF'],[8,'RF'],[10,'DH']],bn:[9,11,12],rot:[100,101,102,103,104],pen:[105,106,107,108,109,110,111],bp:{},ovr:{t:60,p:61,b:59},payRef:9000},o); } /* 0.8배(사용자 11-17 연봉 상한) */
 async function setup(){ const {handle}=await W; fakeCaches(); const env={SAVE_KV:fakeKV(),CUP_ADMIN:'s3cret'}; const clock={now:Date.UTC(2026,10,20)}; return {env,clock,H:(m,p,b,h)=>handle(req(m,p,b==null?undefined:JSON.stringify(b),h),env,clock.now++)}; }
 test('덱 등록: 세계 id당 하나, 덮어쓰기, 사진은 빼고 작게, 금칙어·형식 거절',async()=>{ const {env,H}=await setup();
  const r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:2,e:deck()}); assert.equal(r.status,200); const j=await r.json(); assert.equal(j.tier,2); assert.ok(j.bytes<12000,'덱 크기 '+j.bytes);
@@ -79,4 +79,14 @@ test('횟수 제한: 세계 id당 하루 등록 수, 다음 날 풀림, IP당 �
  assert.equal((await H('PUT','/api/ladder/tier',{wid:wid(1),tier:0},{'CF-Connecting-IP':'198.51.100.10'})).status,200,'다른 IP');
  const o=ops(env); const h=await H('GET','/api/health'); assert.equal(h.status,200); const j=await h.json(); assert.equal(j.ok,true); assert.ok(j.build); assert.deepEqual(dOps(o,ops(env)),{read:0,write:0,del:0,list:0});
  const {handle}=await W; assert.equal((await (await handle(req('GET','/api/health'),{},clock.now)).json()).kv,false);
+});
+test('연봉 상한(사용자 11-17 "공평하게"): KV 덱 등록도 같은 규칙(넘으면 over_cap, 연봉 없으면 no_pay), 상대 고르기는 넘는 덱·유예 끝난 예전 덱을 뺀다',async()=>{ const {env,H,clock}=await setup(); const C=await import(path.join(root,'src/core/uladder.mjs'));
+ const pricey=o=>{ const e=deck(o); for(const p of e.P)p.sal=700; return e; }; /* 168억 > 143.97억 */ let r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:pricey()}); assert.equal(r.status,400); let j=await r.json(); assert.equal(j.error,'over_cap'); assert.ok(/챔피언스 상한/.test(j.errors[0]),j.errors[0]);
+ const nosal=deck(); for(const p of nosal.P)delete p.sal; r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:0,e:nosal}); assert.equal((await r.json()).error,'no_pay');
+ assert.ok(![...env.SAVE_KV.m.keys()].some(k=>k.startsWith('ulD:')),'거절한 덱은 쓰지 않는다');
+ assert.equal((await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:deck({name:'알뜰'})})).status,200);
+ assert.equal((await H('PUT','/api/ladder/deck',{wid:wid(2),tier:3,e:deck({name:'예전',ovr:{t:61,p:60,b:60}})})).status,200);
+ const k='ulD:'+wid(2), was=env.SAVE_KV.m.get(k), old=JSON.parse(was.v); for(const p of old.P)delete p.sal; delete old.payRef; env.SAVE_KV.m.set(k,{v:JSON.stringify(old),meta:was.meta}); /* 상한 전에 올린 예전 덱 */
+ let o=await (await H('GET',`/api/ladder/opp?wid=${wid(9)}&tier=3&ovr=60&n=9`)).json(); assert.deepEqual(o.decks.map(x=>x.name).sort(),['알뜰','예전'],'유예 중에는 예전 덱도');
+ clock.now=C.UL_CAP_FROM+1000; o=await (await H('GET',`/api/ladder/opp?wid=${wid(9)}&tier=3&ovr=60&n=9`)).json(); assert.deepEqual(o.decks.map(x=>x.name),['알뜰'],'유예가 끝나면 예전 덱은 빠짐');
 });
