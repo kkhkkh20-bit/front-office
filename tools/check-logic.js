@@ -6505,6 +6505,36 @@ T('[트레이드 위임 필터] 필터는 우리에게 오는 제안에만 쓴�
   autoSet('tro',false); G.auto.troF={bal:2,pos:true,core:true,pros:true,sal:0,dir:'win'}; const o={id:9201,from:a[0],give:[],get:[domestic(G.user)[0].id],exp:G.day+3}; G.offers=[o]; ok(autoTradeOffer(o)===false&&G.offers.length===1,'위임하지 않았는데 필터가 제안을 거절');
   const S=JSON.stringify(G); const run=f=>{ G=JSON.parse(S); if(f)G.auto.troF=f; else delete G.auto.troF; G.auto.tro='good'; globalThis.__seed(4242); for(const id of a)try{ aiTradeTry(id); }catch(e){} return JSON.stringify((G.lgTrades||[]).filter(t=>t.y===G.year))+'|'+globalThis.__rngState(); };
   ok(run(null)===run({bal:2,pos:true,core:true,pros:true,sal:0,dir:'reb'}),'필터에 따라 AI끼리 트레이드가 달라짐'); });
+T('[카페 11-17 프로 선수 아마 기록] 여러 시즌: 지명·계약한 선수(사람·AI 구단)는 다음 아마 시즌에 아마 경기를 뛰지 않고 학년별 기록·통산이 그대로다',()=>{ fresh(); const y0=G.year;
+  simTo(()=>G.draft&&G.draft.done&&G.draft.y===y0); const dr=Object.values(G.players).filter(p=>p.draft&&p.draft.y===y0&&p.team!=null&&p.amSim);
+  ok(dr.some(p=>p.team===G.user)&&dr.some(p=>p.team!==G.user),'준비 실패: 사람·AI 구단 지명 선수 '+dr.length);
+  const snap=p=>JSON.stringify([p.amY||null,p.am||null]), S0=new Map(dr.map(p=>[p.id,snap(p)]));
+  simTo(()=>G.year===y0+1&&G.day>=KD(4,20)&&G.amL&&G.amL.tot.hs.g>50);
+  const op=G.teams.find(t=>t.id!==G.user).id, cand=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.amSim&&p.team==null&&(p.amY||[]).some(r=>r.y===G.year&&r.g>0));
+  ok(cand.length>=3,'준비 실패: 올해 경기에 나온 후보 '+cand.length); const [a,b,c]=cand;
+  for(const [p,tid] of [[a,G.user],[b,op]]){ p.team=tid; p.prospect=false; p.joinY=G.year; } /* 명단 정리 전 계약(같은 명단 캐시)도 막히는지 */
+  const sa=snap(a), sb=snap(b), gc=c.amY.find(r=>r.y===G.year).g;
+  simTo(()=>G.day>=KD(6,30)); const R0=amRosters(G.year), ids=new Set(); for(const n in R0)for(const u of R0[n].B.concat(R0[n].P))ids.add(u.id);
+  ok(snap(a)===sa&&snap(b)===sb,'계약한 후보가 계속 아마 경기를 뛰었다');
+  ok(!ids.has(a.id)&&!ids.has(b.id),'계약한 후보가 학교 명단에 남음');
+  ok(c.amY.find(r=>r.y===G.year).g>gc,'대조군: 계약하지 않은 후보 기록이 늘지 않음(시즌이 안 돌았다)');
+  const moved=dr.filter(p=>G.players[p.id]&&snap(p)!==S0.get(p.id)); ok(!moved.length,'지명 선수 아마 기록이 바뀜: '+moved.slice(0,3).map(p=>p.name+' '+JSON.stringify((p.amY||[]).map(r=>[r.y,r.g]))).join(' / '));
+  const bad=Object.values(G.players).filter(p=>p.team!=null&&!p.prospect&&(p.amY||[]).some(r=>r.y!=null&&r.y>amProY(p)));
+  ok(!bad.length,'프로 선수에 지명 뒤 연도 아마 줄: '+bad.slice(0,3).map(p=>p.name).join(', ')); });
+T('[카페 11-17 프로 선수 아마 기록] 예전 저장 수리: 지명 뒤 연도 아마 줄만 지우고 통산을 다시 세며(사람·AI 구단), 난수 없이 두 번 불러도 같다',()=>{ fresh(); const y=G.year;
+  const op=G.teams.find(t=>t.id!==G.user).id, pk=tid=>playersOf(tid).filter(p=>!p.foreign&&!p.isP)[0];
+  const mk=(p,dy)=>{ p.draft={y:dy,rd:1,no:1,tid:p.team}; p.prospect=false; p.amSim=1; const row=(yy,gr,g,pa)=>{ const r={y:yy,gr}; for(const k of AM_BK)r[k]=0; Object.assign(r,{g,pa,ab:pa-20,h:Math.round(pa*.3),bb:15,so:30}); return r; };
+    p.amY=[row(dy-2,1,15,40),row(dy-1,2,20,70),row(dy,3,22,85),row(y,3,80,290)]; amTotFix(p); };
+  const A=pk(G.user), B=pk(op); mk(A,y-4); mk(B,y-3);
+  const C=playersOf(op).filter(p=>!p.foreign&&!p.isP)[1]; C.prospect=false; C.amSim=undefined; C.amY=[{gr:1,g:20,pa:60},{gr:2,g:30,pa:110},{gr:3,g:30,pa:120}]; C.am={g:80,pa:290,ab:250,h:70}; const c0=JSON.stringify([C.amY,C.am]); /* 예전 합성 기록(연도 없음): 진짜 아마 통산이라 그대로 */
+  const D=(G.draftClass||[]).map(id=>G.players[id]).find(p=>p&&p.prospect&&p.team==null&&(p.amY||[]).length); const d0=D?JSON.stringify([D.amY,D.am]):null;
+  const r0=__rngState(), n=amProLeakFix(); ok(__rngState()===r0,'수리가 난수를 썼다'); ok(n===2,'수리 건수 '+n);
+  for(const p of [A,B]){ ok(p.amY.length===3&&p.amY.every(r=>r.y<=p.draft.y),'지명 뒤 줄이 남음: '+p.name); ok(p.am.g===57&&p.am.pa===195,'통산을 다시 세지 않음: '+JSON.stringify(p.am)); }
+  ok(JSON.stringify([C.amY,C.am])===c0,'연도 없는 예전 아마 기록을 건드림'); if(D)ok(JSON.stringify([D.amY,D.am])===d0,'아직 아마추어인 후보 기록을 건드림');
+  const s1=JSON.stringify([A.amY,A.am,B.amY,B.am]); ok(amProLeakFix()===0&&JSON.stringify([A.amY,A.am,B.amY,B.am])===s1,'두 번째 수리에서 바뀜');
+  A.amY.push(Object.assign({},A.amY[2],{y:y,g:80})); amTotFix(A); migrateDraft(); ok(A.amY.length===3&&A.am.g===57,'불러오기(migrateDraft)에서 수리하지 않음');
+  ok(amRowObj&&typeof amPlayable==='function'&&!amPlayable(A,y)&&!amPlayable(Object.assign({},D||{prospect:true,team:null},{team:G.user}),y),'계약 선수가 아마 경기 대상'); });
+
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
