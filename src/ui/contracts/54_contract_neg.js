@@ -121,10 +121,15 @@ function ngtReport(N,D){ const p=G.players[N.id]; const T=N.T; const b=budget();
     <div><i>시장 가치(운영팀 추정)</i><b class="num">연 ${money(lo)}~${money(hi)}</b><em>${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:'예상 FA 시장가 기준'}</em></div>
     <div><i>지금 연봉 · 계약</i><b class="num">${money(p.faPrevSal&&N.k==='fa'?p.faPrevSal:p.sal)}</b><em>${N.k==='fa'?`원소속 ${esc(tshort(p.faFrom))}`:esc(ctText(p))}</em></div>${stars}
     <div><i>적용 시즌 · 보장 총액</i><b class="num">${ngtSeasons(N).join('~')} · ${money(tot)}</b><em>${T.opt?`옵션 포함 최대 ${money(tot+T.opt*(T.years||1))}`:'옵션 없음'}</em></div>
+    ${ngtCashRow(T,s0,p.foreign?null:capAvg)}
     <div><i>${W.s}시즌 상한 합계(계약 후)</i><b class="num ${over>0?'bad':''}">${money(W.tot)}</b><em>상한 ${money(W.cap)}${over>0?` · ${money(over)} 초과`:` · 여유 ${money(-over)}`} · 상한 반영 연 ${money(capAvg)}</em></div>
     ${over>0?`<div><i>${cc?(cc.hard?'구단주 허용 한도 초과':'구단주 결재 필요'):'넘겨도 계약할 수 있습니다'}</i><b class="num ${cc&&cc.hard?'bad':'warn'}">${cc?(cc.hard?'승인 불가':`승인 가능성 ${capPLabel(cc.p)}`):`제재금 약 ${money(X.tax)}`}</b><em>시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(X.n)*100)}%를 냅니다(${X.n}회 연속). 트레이드 마감 전에 줄이면 내지 않습니다.</em></div>`:''}
     <div><i>예산 여유</i><b class="num">${money(b.roomGoal)}</b><em class="${T.bonus>b.roomGoal?'bad':''}">${T.bonus?`계약금 ${money(T.bonus)} 즉시 지급${T.bonus>b.roomGoal?' · 예산 여유를 넘습니다':''}`:'계약금 없음'}</em></div>
     ${N.k==='fa'&&faCompTxt(p)?`<div><i>영입 보상</i><em>${esc(faCompTxt(p))}</em></div>`:''}</div></aside>`; }
+/* 연도별 현금 지출(접는 줄): 계약금은 합의 때 바로(지금 결산 연도), 연봉은 계약 시즌마다, 옵션은 달성할 때만. 상한 반영액(연봉 + 계약금 ÷ 기간)은 따로 적는다(외부 검수 11-17: 3칸 협상 화면에서 빠짐) */
+function ngtCashRow(T,s0,capAvg){ if(!T||(T.years||1)<2&&!(T.bonus>0))return ''; let cy=[]; try{ cy=ctCashYears(T,s0); }catch(e){ return ''; } if(!cy.length)return '';
+  const row=x=>`<li><span class="num">${x.y}</span><b class="num">${money(x.v)}</b><em>${[x.bon?`계약금 ${money(x.bon)}`:'',x.sal?`연봉 ${money(x.sal)}`:'',T.opt>0&&x.sal?`옵션(달성 시) 최대 +${money(T.opt)}`:'',capAvg!=null&&x.y>=s0?`상한 반영 ${money(capAvg)}`:''].filter(Boolean).join(' · ')}</em></li>`;
+  return `<details class="ng-cash"><summary><i>연도별 지출</i><b class="num">${cy.map(x=>money(x.v)).join(' / ')}</b></summary><ul>${cy.map(row).join('')}</ul><p class="small muted">${T.bonus>0?`계약금은 합의 때 바로 지급(${sponSeason()} 결산) · `:''}연봉은 ${s0}시즌부터${T.opt>0?' · 옵션은 달성한 해에만 더 나갑니다':''}${capAvg!=null?' · 상한 반영액은 연봉에 계약금을 기간으로 나눠 더한 값':''}</p></details>`; }
 /* 오른쪽 에이전트 칸 */
 function ngtChat(N,D){ const p=G.players[N.id]; const ag=hasAgent(p)||N.k==='fa'?agentOf(p):null; const fn=N.k==='fa'&&G.fa&&G.fa.neg?G.fa.neg[p.id]:null; const R=ngtRound(N); const C=ngtCtr(N);
   const expr=fn?(fn.counter?'flat':fn.hot||fn.deal?'smile':fn.mood<40?'angry':null):null; const st=ag?(AG_STYLE[ag.style]||AG_STYLE.rel):null; const pf=ag?agPref(ag):null;

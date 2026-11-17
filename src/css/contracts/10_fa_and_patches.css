@@ -330,3 +330,12 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 /* 에이전트 명단(영입·계약 > 에이전트) */
 .ag-h4{margin:10px 0 4px;font-size:12.5px;color:var(--team-hi,#4fa3ff)}.ag-h4 em{font-style:normal;color:var(--muted);font-weight:500;margin-left:4px}
 .ag-hd{margin-bottom:6px}.tf-ag .pm-n{display:inline-flex;gap:6px;align-items:center}
+/* 협상 보고서: 연도별 지출 접는 줄(외부 검수 11-17) */
+.ng-cash{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:8px 10px}
+.ng-cash summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;cursor:pointer;list-style:none}
+.ng-cash summary i{font-style:normal;font-size:var(--ui-caption);color:var(--muted)}.ng-cash summary b{font-size:var(--ui-body)}
+.ng-cash ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.ng-cash li{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:2px 8px;align-items:baseline}
+.ng-cash li em{font-style:normal;font-size:var(--ui-caption);color:var(--muted);grid-column:1/-1}
+.ng-cash p{margin:6px 0 0}
+.ng-cash summary::-webkit-details-marker{display:none}.ng-cash summary::after{content:'▸';margin-left:auto;color:var(--muted)}.ng-cash[open] summary::after{content:'▾'}

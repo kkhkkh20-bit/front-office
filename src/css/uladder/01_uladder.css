@@ -16,3 +16,17 @@
 .ulx .ul-badge{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 4px;padding:10px;border-radius:10px;font-size:18px}.ulx .ul-b-up{background:color-mix(in srgb,#4a9d5b 22%,transparent);animation:ulIn .5s ease-out}.ulx .ul-b-down{background:color-mix(in srgb,#c84a4a 18%,transparent)}.ulx .ul-b-stay{background:var(--panel2,rgba(127,127,127,.1))}.ulx .ul-badge b{font-size:22px}
 .ulx .ul-here{color:var(--accent,#3b7dd8)}
 @media (max-width:640px){.ulx .ul-big{width:100%}}
+/* 재미 1단계: 시즌·점수, 상대 덱 비교 막대, 명경기 보기, 리그 하이라이트, 배지 */
+.ulx .ul-seas{margin:0 0 6px}.ulx .ul-pts{margin:2px 0 6px;font-size:14px}.ulx .ul-pts b{font-size:18px}
+.ulx .ul-vs{margin:6px 0 2px;display:grid;gap:2px}.ulx .ul-vr{display:grid;grid-template-columns:3em 2.2em minmax(0,1fr) 2.2em;gap:6px;align-items:center;font-size:12px}.ulx .ul-vr b{text-align:center}.ulx .ul-vh b{font-size:11px;color:var(--muted)}
+.ulx .ul-vb{position:relative;height:8px;border-radius:4px;background:var(--line)}.ulx .ul-vb::after{content:'';position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted)}
+.ulx .ul-vb em{position:absolute;top:0;bottom:0;border-radius:4px}.ulx .ul-vb em.op{background:#c84a4a}.ulx .ul-vb em.me{background:#4a9d5b}
+.ulx .ul-keys{margin:8px 0}.ulx .ul-keys .chips button{font-size:12px}.ulx .ul-gv{margin-top:6px;display:grid;gap:6px}
+.ulx .ul-pre{max-height:min(50vh,420px);overflow:auto;white-space:pre-wrap;font:12px/1.5 var(--f-num,monospace);background:var(--panel2,rgba(127,127,127,.08));padding:8px;border-radius:6px;margin:0;tab-size:6}
+.ulx .ul-rcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:4px;margin:4px 0 8px}.ulx .ul-rc{display:grid;grid-template-columns:auto 1fr auto;gap:0 6px;align-items:baseline;padding:6px 8px;border-radius:8px;border:1px solid var(--line)}
+.ulx .ul-rc>span:first-child{font-size:11px;color:var(--muted)}.ulx .ul-rc em{font-style:normal;font-weight:800}.ulx .ul-rc .small{grid-column:1/-1}.ulx .ul-rc.me{border-color:var(--accent,#3b7dd8);background:color-mix(in srgb,var(--accent,#3b7dd8) 8%,transparent)}
+.ulx .ul-h2s,.ulx .ul-bgs{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 8px}.ulx .ul-h2{font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line)}.ulx .ul-h2.w{border-color:#4a9d5b}.ulx .ul-h2.l{border-color:#c84a4a}
+.ulx .ul-bg{font-size:12px;padding:2px 9px;border-radius:999px;border:1px dashed var(--line);color:var(--muted)}.ulx .ul-bg.on{border:1px solid #d4a017;color:inherit;background:color-mix(in srgb,#d4a017 18%,transparent);font-weight:700}.ulx .ul-newb{margin:4px 0}
+.ulx .ul-sc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:4px 0 6px}.ulx .ul-sc>div{display:grid;padding:6px;border-radius:8px;border:1px solid var(--line);text-align:center}.ulx .ul-sc span{font-size:11px;color:var(--muted)}.ulx .ul-sc b{font-size:18px}
+/* 서버 v1 조각(사용자 11-17): 내 시즌 카드·순위표·소식·맞대결 */
+.ulx .ul-bt{margin:0 0 6px}.ulx .ul-lb td:nth-child(2){white-space:normal}.ulx .ul-news p{margin:2px 0;padding:3px 0;border-bottom:1px solid var(--line)}.ulx .ul-hh{margin:4px 0;padding:4px 8px;border-radius:6px;background:var(--panel2,rgba(127,127,127,.08))}.ulx .ul-srv{margin:2px 0 6px}
