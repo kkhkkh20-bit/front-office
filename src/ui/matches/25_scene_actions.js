@@ -63,7 +63,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  batter.catch(()=>{});
  const leap=!!(airOut&&!arc&&f&&pcH(g,k,'leap')<.3); /* 직선타 아웃 열에 셋은 뛰어올라 잡는다(기록은 그대로, 보이는 동작만) */
  sfx('crack',1,1);Match3D.batted(o,(isHR?1500:650)/cSpd(),leap); /* 홈런은 타석 화면을 1.5초 잡아 빠던을 보여 준 뒤 타구로 넘어간다 */
- const short=!path&&!outPlay&&!isHR&&f?[50+(spot[0]-50)*(UI.cast.gb?.7:.8),88+(spot[1]-88)*(UI.cast.gb?.7:.8)]:null,rollWait=short?Math.max(450,Match3D.distance(short,spot)/18*1000,timing.reaction+timing.run-timing.flight):0; /* 떨어진 뒤 굴러가는 시간: 구르는 공은 초속 18m를 넘지 않게(예전에는 0.45초에 20m 넘게 굴러 공이 떨어진 뒤 더 빨라 보였다) */ /* 안타: 야수 앞에 떨어져 야수 쪽으로 굴러간다(떨어진 자리에 멈춰 있지 않게, 사용자 11-13) */
+ const landF=UI.cast.gb?.7:.6+.15*(((spot[0]*12.9898+spot[1]*78.233)%1+1)%1), short=!path&&!outPlay&&!isHR&&f?[50+(spot[0]-50)*landF,88+(spot[1]-88)*landF]:null,rollWait=short?Math.max(450,Match3D.distance(short,spot)/20*1000,timing.reaction+timing.run-timing.flight):0; /* 떨어지는 자리: 직선타·텍사스 안타는 야수까지 거리의 60~75%에 떨어져 더 길게 구른다(사용자 11-17: 잔디에서 얼마 못 감) */ /* 떨어진 뒤 굴러가는 시간: 구르는 공은 초속 18m를 넘지 않게(예전에는 0.45초에 20m 넘게 굴러 공이 떨어진 뒤 더 빨라 보였다) */ /* 안타: 야수 앞에 떨어져 야수 쪽으로 굴러간다(떨어진 자리에 멈춰 있지 않게, 사용자 11-13) */
  const ball=cBall([50,88],path?path.land:short||spot,timing.flight,arc,!!UI.cast.gb);if(airOut&&arc&&Match3D.distance(CHM,spot)>62)sfx('ooh',x[0]%2===1?.75:.4); /* 깊은 뜬공: 관중이 기대했다가 잡히면 아쉬워한다(녹음 한 덩어리) */
  if(f&&!isHR){
   cSpeak(g,k,'flight',{fielder:`${POSK[f.pos]||f.pos} ${c3DName(f)}`,arc,ground:!!UI.cast.gb});
