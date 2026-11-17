@@ -49,7 +49,7 @@ function staffTalkBulk(targets,topic,expectedTid=G.user){const rows=staffTalkBul
 function coachToolV(p,k){
   if(p.team==null||!G.coach)return 55;const tid=p.team,C=coachesOf(tid),a=seasonTotal(p,G.year,'1군'),f=seasonTotal(p,G.year,'퓨처스'),n=p.isP?'outs':'pa';
   const share=(a?.[n]||0)+(f?.[n]||0)>0?oneShare(p):p.e1?1:0;
-  const v=(role,tool)=>{const c=C[role];if(!c)return 45;const M=staffProfile(c,'coach').mental;return trnCoachV(c,tid,tool)+(p.age<=25?(M.pat-50)*.025:0);};
+  const v=(role,tool)=>{const c=C[role];if(!coachActiveNow(c))return 45; /* 합류 전·교육 중 코치는 성격 보정도 없이 빈자리(검수 11-17 #269) */const M=staffProfile(c,'coach').mental;return trnCoachV(c,tid,tool)+(p.age<=25?(M.pat-50)*.025:0);};
   let first,farm;
   if(p.isP){first=k==='ctl'?v('pc',k)*.75+v('cc',k)*.25:v('pc',k);farm=v('fp',k)*.75+v('fm',k)*.25;}
   else if(k==='def'){first=p.pos==='C'?v('cc','cat')*.8+v('dc','def')*.2:v('dc','def');farm=p.pos==='C'?v('cc','cat')*.5+v('fm','def')*.5:v('fm','def');}

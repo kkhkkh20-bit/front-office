@@ -117,7 +117,7 @@ function pwatchBox(){ const L=(G.pwatch||[]).map(id=>G.players[id]).filter(p=>p&
 
 /* 타 구단 관심 선수 명단(커뮤니티 건의 11-11): 포지션별로 계약·이적 가능 여부를 한눈에 */
 function pwStatus(p){ const L=[]; if(p.team==null){ if(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id))L.push(['FA 시장','good']); else if(p.retired)L.push(['은퇴','bad']); else L.push(['무적','warn']); }
-  if((G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year))L.push(['포스팅','acc']); if(p.aiListed)L.push([p.aiUrg?'급매':'트레이드 매물','good']);
+  if(pwPostOn(p))L.push(['포스팅','acc']); /* 무효가 된 신청은 빼고(검수 11-17 #200) */ if(p.aiListed)L.push([p.aiUrg?'급매':'트레이드 매물','good']);
   try{ if(p.team!=null&&!p.foreign&&faLeft(p)<=1)L.push(['FA 예정','warn']); }catch(e){} if(p.foreign)L.push(['외국인','']); return L; }
 function pwatchTable(inner){ const L=(G.pwatch||[]).map(id=>G.players[id]).filter(p=>p&&p.team!==G.user); const grp=p=>p.isP?(isSPr(p)?0:1):p.pos==='C'?2:['1B','2B','3B','SS'].includes(p.pos)?3:4, GN=['선발','불펜','포수','내야수','외야수·지명'];
   L.sort((a,b)=>grp(a)-grp(b)||ovr(b)-ovr(a));

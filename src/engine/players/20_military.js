@@ -58,16 +58,20 @@ function milRetAge(p){ const f=p.mil?.app?sangmuFrom(p.mil.app):sangmuPeriod().f
 /* 상무 지원 안내(카페 11-17 "상무 지원 안내가 이제 안 와요"): 예전에는 3월 1일·9월 1일 그날에만, 27세 이하 미필 선수가 있을 때만 보냈다.
    그날 야인이었다가 접수 기간 중 취임했거나, 그날 처리 중 예외가 나면 그 기수 안내가 통째로 빠졌고, 대상 선수가 없으면 아무 말 없이 건너뛰었다.
    지금: 접수 기간(3/1~4/14, 9/1~10/14) 안에서 구단·기수마다 한 번, 아직 안 보냈으면 그날 보낸다. 대상이 없어도 '지원할 선수가 없다'고 알린다. 난수를 쓰지 않는다 */
-function sangmuNotice(d=G.day){ if(G.unemp||G.user==null)return null; const W=sangmuPeriod(d); if(!W.open)return null; const key=W.year+':'+W.wave+':'+G.user; if(G.smMail===key)return null;
+function sangmuNotice(d=G.day){ if(G.unemp||G.user==null)return null; const W=sangmuPeriod(d); if(!W.open)return null; const key=W.year+':'+W.wave+':'+G.user; const legacy=G.smMail==null; smMailFix(); if((G.smMail||[]).includes(key))return null; /* 구단·기수마다 한 번: A→B→A로 돌아와도 다시 보내지 않는다(검수 11-17 #243) */
   const w=W.wave, subj=`상무 지원 기간입니다 (${w==='dec'?'12월':'6월'} 입대)`;
-  if(G.smMail==null&&(G.mail||[]).some(m=>m&&m.subj&&m.subj.startsWith(subj)&&!(m.ctx&&m.ctx.tid!=null&&m.ctx.tid!==G.user)&&(m.day0??m.day)>=W.start&&(m.day0??m.day)<=W.end)){ G.smMail=key; return null; } /* 옛 저장: 이번 기수 안내를 이미 받았다 */
+  if(legacy&&(G.mail||[]).some(m=>m&&m.subj&&m.subj.startsWith(subj)&&!(m.ctx&&m.ctx.tid!=null&&m.ctx.tid!==G.user)&&(m.day0??m.day)>=W.start&&(m.day0??m.day)<=W.end)){ smMailAdd(key); return null; } /* 옛 저장: 이번 기수 안내를 이미 받았다 */
   const mine=domPayOf(G.user).filter(p=>milFree(p)&&sangmuEntryAge(p,W)<=27); /* 지원 승인 조건(sangmuApply)과 같게: 입대 연도 27세 이하 전부, 대표팀 차출 중인 선수도(검수 11-09zk) */
   const late=d>W.start?`(접수는 ${dmd(W.start)}부터 열려 있었습니다) `:'';
   let m;
   if(!mine.length)m=mail('운영팀',`${subj} · 지원할 선수 없음`,`${late}상무(국군체육부대) 야구단 ${w==='dec'?'12월':'6월'} 입대 기수 지원을 ${dmd(W.end)}까지 받습니다.\n\n지금 우리 구단에는 지원할 수 있는 미필 선수(입대 연도 27세 이하)가 없습니다. 트레이드·영입으로 미필 선수를 데려오면 마감 전까지 병역 관리에서 지원할 수 있습니다.`,{kind:'병역',acts:[{l:'병역 관리',a:'go',v:'staff:mil'}]});
   else { let adv=''; try{ adv=milAdviceTxt(mine); }catch(e){ console.error(e); adv=''; } /* 추천 문구가 실패해도 안내는 보낸다 */
     m=mail('운영팀',subj,`${late}상무(국군체육부대) 야구단 지원을 받습니다. 복무는 1년 6개월이고, 복무 중에도 퓨처스리그에서 뛰며 기량을 유지할 수 있습니다. 현역으로 가면 1년 6개월 동안 야구를 거의 못 해 기량이 떨어집니다.\n\n${adv?adv+'\n\n':''}우리 구단 미필 선수: ${mine.map(p=>`${p.name}(${p.age}세)`).join(', ')}\n\n${p28(mine)}지원은 ${dmd(W.end)}까지입니다(다음 날 합격자 발표).`,{imp:true,kind:'병역',acts:[{l:'병역 관리',a:'go',v:'staff:mil'}]}); }
-  G.smMail=key; return m; }
+  smMailAdd(key); return m; }
+/* 상무 안내 표시: 예전에는 마지막 한 건(문자열)만 남겨 다른 구단을 거쳐 돌아오면 같은 기수 안내가 또 갔다. 구단·기수별 목록으로 바꾸고 이직해도 지우지 않는다.
+   옛 저장의 문자열은 목록으로 옮긴다(두 번 불러도 같다). 지난 기수 표시는 최근 몇 해만 남긴다 */
+function smMailFix(){ if(!G||G.smMail==null)return; if(typeof G.smMail==='string')G.smMail=[G.smMail]; else if(!Array.isArray(G.smMail))G.smMail=[]; } /* 표시가 없는 옛 저장은 그대로(받은 안내 메일로 판단) */
+function smMailAdd(key){ smMailFix(); if(!G.smMail)G.smMail=[]; if(!G.smMail.includes(key))G.smMail.push(key); const y0=G.year-2; G.smMail=G.smMail.filter(k=>+String(k).split(':')[0]>=y0); }
 function milDaily(){ const d=G.day;
   if(d===KD(9,1)||d===KD(3,1)){ const w=d===KD(9,1)?'dec':'jun';
     try{ for(const p of Object.values(G.players)){ if(p.team==null||p.team===ME()||!milFree(p)||p.mil&&p.mil.app)continue; /* 야인 기간에는 전 구단도 AI(검수 11-09g) */ if(milWait(p))continue; /* 대표 후보(특례 대회 노림)·주전은 미룬다 */ if(p.age>=24&&p.age<=27&&R()<(p.age>=26?.7:.25))p.mil={app:w}; else if(p.age>=22&&p.age<=23&&(p.pot||0)>=MIL_KEEP_POT&&ovr(p)>=38&&R()<.2)p.mil={app:w}; /* 유망주는 이르게 상무 지원(합격선은 같은 규칙) */ } }catch(e){ console.error(e); } /* AI 지원 판단이 실패해도 우리 구단 안내·합격 처리는 계속한다 */

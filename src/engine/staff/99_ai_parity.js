@@ -28,7 +28,7 @@ function aiMedPlan(t,ex,W){ const pl=planOf(t)||'next', cash=t.cash||0; let m={p
 /* --- 응원단·서포터즈(가벼운 판): 계획의 팬 몫 안에서. 우리가 운영하던 구단은 남긴 운영 그대로(fanAway) --- */
 function aiFanPlan(t,left,W,pay){ if(G.fanYrT&&G.fanYrT[t.id])return 0; const F=t.fanOps=t.fanOps||{cheer:0}; const bud=Math.max(0,left*((W&&W.fan)||0)); let lv=0;
   for(let i=FAN_OPS.cheer.m.length-1;i>=1;i--)if(FAN_OPS.cheer.m[i]*12<=bud*.6){ lv=i; break; }
-  F.cheer=lv; const y=FAN_OPS.cheer.m[lv]*12, sy=sponSeason(); if(F.sup!==sy&&bud-y>=FAN_EV.sup.c*2){ pay(FAN_EV.sup.c); F.sup=sy; } return y; }
+  F.cheer=lv; const y=FAN_OPS.cheer.m[lv]*12, sy=sponSeason(); if(F.sup!==sy&&!fanSupShut()&&bud-y>=FAN_EV.sup.c*2){ pay(FAN_EV.sup.c); F.sup=sy; } return y; }
 function aiFanAttM(day,tid){ const t=G.teams&&G.teams[tid], F=t&&t.fanOps; if(!F)return 1; const nx=typeof _stY!=='undefined'&&_stY!=null; return (1+(FAN_OPS.cheer.att[F.cheer||0]||0))*(F.sup===(nx?_stY:G.year)?1.03:1); }
 
 /* --- 겨울(11월 20일) 운영 결정: aiSpend가 남는 돈(ex)을 나누기 전에 부른다. 돌려주는 값: 바로 쓴 현금, 응원단 연 운영비 --- */
@@ -42,7 +42,7 @@ function aiOpsPlan(t,ex,W){ const out={cash:0,fanY:0}; const pl=planOf(t)||'next
 /* 운영 비용 연간 단가(우리 구단과 같은 값): 부상 방지·병원·보조 코치 연봉·응원단. 다음 시즌부터인 코치 계약은 빼고(coachSal now와 같은 기준) */
 function aiOpsCost(t){ const M=medOf(t.id), L=[['부상 방지 프로그램',PREV[M.prev].c],['병원 제휴',HOSP[M.hosp].c]];
   { const af=acadFee(t.id); if(af>0)L.push(['특수 아카데미 제휴비',af]); } /* 우리와 같은 연 제휴비 */
-  L.push(['보조 코치 연봉',Math.round(sum(axOf(t.id).filter(c=>c&&!(c.cs!=null&&c.cs>G.year)).map(c=>c.sal||0))+pcSalOf(t.id))]); /* 플레잉코치 수당 포함 */
+  L.push(['보조 코치 연봉',Math.round(sum(axOf(t.id).filter(c=>c&&!(c.cs!=null&&c.cs>G.year)).map(c=>c.sal||0))+pcSalOf(t.id,true))]); /* 플레잉코치 수당 포함 */
   const F=t.fanOps; if(F&&!(G.fanYrT&&G.fanYrT[t.id]))L.push(['팬 마케팅·구단 이벤트',(FAN_OPS.cheer.m[F.cheer||0]||0)*12]);
   return L; }
 /* 매일(dailyCost): 사람 단장이 날마다 1/365씩 내는 것처럼, AI가 맡은 날만 쌓는다(t.opsA, 결산 연도 fy별).
