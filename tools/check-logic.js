@@ -5375,14 +5375,15 @@ T('[해외 활성화 11-17] AI 관찰 명단: 영입이 필요한 구단은 자�
   const other=G.teams.find(t=>t.id!==G.user&&t.id!==tid).id; (G.fwAI[other]=G.fwAI[other]||[]).push({id:q2.id,since:G.day-30,k:0}); ok(fWatchers(q2).length===2,'두 구단 소문');
   const B=fwAiWeek; fwAiWeek=()=>{}; try{ q2.ask=round5(foCap(q2)*.6); q2.ask0=q2.ask; const a0=q2.ask; fBidWeek(); ok(!G.players[q2.id]||q2.team!=null||q2.ask>a0,'두 구단이 3주 넘게 본 후보 요구액이 오르지 않음 '+a0+'→'+q2.ask); } finally{ fwAiWeek=B; }
   G.unemp={y:G.year}; ok(!fWatchers(q2).includes(G.user),'단장이 아닐 때 우리 관찰이 소문'); delete G.unemp; });
-T('[해외 활성화 11-17] 포스팅 신청 빈도: 빅리그급 스타(국내 능력 62 이상)는 메이저리그 의지가 낮아도 포스팅을 원하고, 61 이하는 예전 기준이며, 우리와 AI 구단 선수가 같은 식이다',()=>{ fresh();
+T('[해외 활성화 11-17] 포스팅 신청 빈도: 빅리그급 스타(국내 능력 60 이상, 65면 최대)는 메이저리그 의지가 낮아도 포스팅을 원하고, 59 이하는 예전 기준이며, 비FA 다년계약 중인 스타도 요청하고, 우리와 AI 구단 선수가 같은 식이다',()=>{ fresh();
   const u=domestic(G.user).find(q=>!q.foreign&&!q.prospect), a=domestic(otherT()).find(q=>!q.foreign&&!q.prospect);
   for(const p of [u,a]){ p.mlb=8; setOvr(p,65); } ok(postWant(u)&&postWant(a),'능력 65 스타가 의지 8로 포스팅을 원하지 않음');
-  for(const p of [u,a]){ setOvr(p,61); } ok(!postWant(u)&&!postWant(a),'능력 61·의지 8인데 원함(예전 기준이 바뀜)'); u.mlb=a.mlb=32; ok(postWant(u)===postWant(a)&&postWant(u),'능력 61 문턱이 예전과 다름(의지 32면 원함)');
+  for(const p of [u,a]){ setOvr(p,61); } ok(!postWant(u)&&!postWant(a),'능력 61·의지 8인데 원함'); u.mlb=a.mlb=24; ok(postWant(u)&&postWant(a),'능력 61·의지 24인데 원하지 않음'); u.mlb=a.mlb=20; ok(!postWant(u)&&!postWant(a),'능력 61·의지 20인데 원함');
+  for(const p of [u,a]){ setOvr(p,59); p.mlb=38; } ok(!postWant(u)&&!postWant(a),'능력 59 문턱이 예전과 다름(의지 38)'); u.mlb=a.mlb=42; ok(postWant(u)&&postWant(a),'능력 59 문턱이 예전과 다름(의지 42)');
   for(const p of [u,a]){ p.mlb=0; setOvr(p,63); } ok(!postWant(u)&&!postWant(a),'의지 0·능력 63인데 원함(스타 몫이 너무 큼)');
   G.day=KD(11,20); G.rolled=G.year; G.posting=[]; G.evs=[]; const mk=(p,o)=>{ delete p.mil; p.svc=8; p.age=28; p.faC=true; p.ext=true; p.yrs=4; p.cyrs=5; p.faN=0; delete p.lastFA; delete p.postPromise; delete p.postPromiseT; p.joinY=G.year-8; p.mlb=60; setOvr(p,o); return p; };
-  const T2=otherT(), s1=mk(domestic(T2).find(q=>!q.foreign&&!q.prospect&&q!==a),66), s0=mk(domestic(T2).find(q=>!q.foreign&&!q.prospect&&q!==a&&q!==s1),60), us=mk(u,66);
-  postingSeason(); ok((G.posting||[]).some(x=>x.pid===s1.id)||s1.postPromise===G.year+1,'비FA 다년계약 중인 AI 구단 스타가 포스팅을 요청하지 않음'); ok(!(G.posting||[]).some(x=>x.pid===s0.id)&&s0.postPromise==null,'능력 60 비FA 다년계약 선수가 요청함(스타만)');
+  const T2=otherT(), s1=mk(domestic(T2).find(q=>!q.foreign&&!q.prospect&&q!==a),66), s0=mk(domestic(T2).find(q=>!q.foreign&&!q.prospect&&q!==a&&q!==s1),58), us=mk(u,66);
+  postingSeason(); ok((G.posting||[]).some(x=>x.pid===s1.id)||s1.postPromise===G.year+1,'비FA 다년계약 중인 AI 구단 스타가 포스팅을 요청하지 않음'); ok(!(G.posting||[]).some(x=>x.pid===s0.id)&&s0.postPromise==null,'능력 58 비FA 다년계약 선수가 요청함(스타만)');
   ok((G.evs||[]).some(e=>e.k==='post'&&e.data.pid===us.id),'비FA 다년계약 중인 우리 스타의 포스팅 요청이 없음(AI 구단 선수와 다름)'); });
 T('[해외 활성화 11-17] 해외파 소식: 주별 기록을 다 더하면 시즌 기록이고, 콜업·올스타·홈런·무실점 소식이 쌓이며(40건 한도), 7월 올스타 발표를 시즌 뒤 시상이 따르고, 본게임 난수 순서는 그대로다',()=>{ fresh(); const K=(G.abroad||[]).filter(a=>!a.foreign&&!a.cand&&a.cur&&a.cur.y===G.year); ok(K.length>=2,'준비 실패: 시작 해외파 '+K.length);
   for(const a of K){ const L=a.cur, c=ovfCum(a,L,OVF.nw-1e-9); for(const k of ['pa','hr','outs','er','so'])if(L[k]!=null)ok((c[k]||0)+(c.x&&c.x[k]||0)===L[k]+(L.x&&L.x[k]||0),a.name+' '+k+' 합이 시즌 기록과 다름'); let h0=-1; for(let t=0;t<=OVF.nw;t+=1){ const z=ovfCum(a,L,t), s=ovsParts(z).reduce((v,q)=>v+(q.pa||0)+(q.outs||0),0); ok(s>=h0,'누적 기록이 줄어듦'); h0=s; } ok(ovsCurPart(a,1)===L,'시즌 끝 기록이 확정 기록과 다름'); }
