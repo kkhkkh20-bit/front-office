@@ -106,6 +106,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   stadXpTalk(v){ UI.stadMsg=stadXpTalk(G.user,v); save(); render(); },
   stadXpStart(){ UI.stadMsg=stadXpStart(G.user); save(); render(); },
   nsPick(v){ UI.stadMsg=newStadPick(v); save(); render(); },
+  nsDrop(){ UI.stadMsg=newStadDrop(); save(); render(); },
   retireGM(){ retireGM(); save(); render(); },
   dhy(v){ UI.dhy=+v; render(); },
   dealOpen(v){ UI.dealOpen=+v; render(); },
@@ -149,7 +150,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   setIntl(v){ const [r,l]=v.split(':'); G.intl[r]=+l; addLog(`${IREG[r].l} 스카우트망을 ${INET[+l].l} 단계로 조정했습니다.`); save(); render(); },
   signFc(v){ const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg2=err;render();return;} UI.fmsg2=''; signForeign(G.user,p.id); save(); render(); },
   tutSkip(){ tutSkip(); save(); render(); },
-  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.mgrCandidate=null; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
+  hireMgr(v){ const [id,y,c]=v.split(':'); { const blk=mgrHireBlk(); if(blk){ UI.mgrMsg=blk; toast(blk); render(); return; } } /* 현 감독 경질을 뜻하는 선임은 구단주 동의가 먼저(검수 11-17 #244) */ const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.mgrCandidate=null; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
   fireAsk(){ const r=mgrFireAsk(); if(r.k==='ok')UI.confirmFire=true; else { UI.confirmFire=false; try{ toast(r.msg); }catch(e){} } save(); render(); }, fireCancel(){ UI.confirmFire=false; render(); }, /* 감독 경질은 구단주 동의가 먼저(11-12) */
   fireMgr(){ if(!mgrFireOk()){ UI.confirmFire=false; try{ toast('구단주 동의가 있어야 경질할 수 있습니다.'); }catch(e){} render(); return; } fireMgr(); if(G.mcf)G.mcf.fire=null; UI.confirmFire=false; save(); render(); },
   renewMgr(v){ const [y,tid,mid]=String(v||2).split(':'); const r=renewMgr(+y,tid,mid); if(r)toast(r); save(); render(); },

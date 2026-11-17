@@ -14,7 +14,7 @@ function cvacOk(c,tid,k,win){ if(!c||c.role!==k)return false; if(typeof schMarke
   return cmCanPay(team(tid),c,null); }
 const cvacSeed=(...a)=>rngHash('cvac',G.year,G.day,G.nextId,...a);
 /* tid 구단의 k 자리에 데려올 코치(시장 후보, 없으면 새 후보를 시장에 올려서). 고르기만 하고 계약은 cvacHire */
-function cvacPick(tid,k,win){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,tid,k,win)).sort((a,b)=>cvacVal(b,tid)-cvacVal(a,tid)||(a.sal||0)-(b.sal||0));
+function cvacPick(tid,k,win){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,tid,k,win)).map(c=>[c,cvacVal(c,tid)]).sort((a,b)=>b[1]-a[1]||(a[0].sal||0)-(b[0].sal||0)).map(x=>x[0]); /* 값은 후보마다 한 번만(정렬 비교마다 effC 두 번을 다시 계산하던 것, 카페 11-17 렉). 순서는 같다 */
   if(L.length)return L[0];
   let c=null; withRng(cvacSeed('new',tid,k),()=>{ for(let i=0;i<6&&!c;i++){ const x=mkCandCoach(k); if(x&&x.role===k&&cmCanPay(team(tid),x,null))c=x; } if(!c){ c=mkCoach(k,{boost:-ri(2,6)}); c.sal=round5(Math.min(c.sal,140)); } }); /* 형편 안 새 후보가 끝내 없으면 젊은 지도자 수준(시장의 낮은 쪽) */
   (G.cmarket=G.cmarket||[]).push(c); return c; }

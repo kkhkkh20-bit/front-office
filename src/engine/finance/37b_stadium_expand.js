@@ -14,16 +14,19 @@ const STADX=[
 const STADX_K=Object.fromEntries(STADX.map(x=>[x.k,x]));
 const STADX_RULE={max:25000,domeMax:19000,megaMax:30000,n:2,occ:.85,so:.3,city:.4,talk:45,retry:180,trust:40,minAge:3};
 function stadXpSeats(S,d){ let x=S.xp||0; const q=S.xq, X=q&&STADX_K[q.k]; if(X&&q.stage==='build'){ if(d>=q.done)x+=X.seats; else if(d>=q.pm)x-=X.close; } return x; } /* 완공일부터 늘고, 인허가가 끝나 공사하는 동안은 그 구역을 막는다 */
+function stadXpUpAt(S,d){ const q=S&&S.xq, X=q&&STADX_K[q.k]; return X&&q.stage==='build'&&d>=q.done?X.up:0; } /* 검수 170: 공사 중인 증설은 좌석을 세는 날(완공일)부터 유지비도 센다 */
 function stadXpRefund(t,S){ const q=S&&S.xq; if(q&&q.esc>0&&q.stage!=='build'){ t.cash=(t.cash||0)+q.esc; q.esc=0; } } /* AI가 협의 때 떼어 둔 부담분을 돌려준다(결렬·만료·신구장) */
 function stadXpReset(S){ { const t=G.teams.find(x=>x.stad===S); if(t)stadXpRefund(t,S); } S.xp=0; S.xpN=0; S.xpUp=0; S.xq=null; delete S.xpRetry; delete S.xd; } /* 신구장 개장: 옛 구장 증설 기록은 이력에만 */
 function stadXpRaw(tid){ const S=stadOf(tid); return (S.cap||STAD_CAP[tid])+(S.xp||0); }
 function stadXpMax(tid){ const S=stadOf(tid); return S.dome?STADX_RULE.domeMax:S.mega?STADX_RULE.megaMax:STADX_RULE.max; } /* 초대형으로 지은 구장만 3만 석까지 */
 function stadXpCost(k){ const X=STADX_K[k]; const c=Math.round(X.c*ecoIdx()/10)*10, club=Math.round(c*(1-STADX_RULE.city)/10)*10; return {c,club,city:c-club}; }
 /* 증설 명분: 끝난 시즌 기록(S.xd) 또는 올해 홈 36경기 이상 치른 기록 */
-function stadXpDem(tid){ const S=stadOf(tid), A=G.sea&&G.sea.att&&G.sea.att[tid]; if(A&&A.n>=36&&A.cap)return {y:G.year,occ:A.sum/A.cap,so:A.so||0,n:A.n,cur:true}; return S.xd||null; }
+function stadXpDem(tid){ const S=stadOf(tid), A=G.sea&&G.sea.att&&G.sea.att[tid], C=A&&A.n>=36&&A.cap?{y:G.year,occ:A.sum/A.cap,so:A.so||0,n:A.n,cur:true}:null, P=S.xd&&S.xd.y<G.year?S.xd:null; /* 끝난 시즌 기록(올해 시즌이 끝나 xd가 올해 것이면 C와 같은 시즌) */
+  if(!C)return S.xd||null; if(!P)return C; const sc=D=>(stadXpDemOk(D)?2:0)+Math.max(D.occ,D.so/Math.max(1,D.n)); return sc(C)>=sc(P)?C:P; } /* 검수 173: 지난 시즌과 올해(홈 36경기 이상) 중 나은 기록. 안내 문구(둘 중 하나)와 같게 */
+function stadXpPct(x){ return String(Math.floor(x*1000+1e-9)/10); } /* 검수 171: 점유율은 버림으로 보여 준다(84.99%가 '85%'로 보여 85% 기준과 어긋나지 않게) */
 function stadXpDemOk(D){ return !!D&&(D.occ>=STADX_RULE.occ||D.so/Math.max(1,D.n)>=STADX_RULE.so); }
 /* 시즌이 끝나면 모든 구단 관중 기록을 구장에 남긴다(새해에 시즌 기록이 지워져도 비시즌 내내 명분으로 쓴다) */
-function stadXpRec(){ const c=G.cal; if(!c||!G.sea||!G.sea.att||G.day<=c.end)return; for(const t of G.teams){ const A=G.sea.att[t.id], S=t.stad; if(!S||!A||!A.n||A.n<20||!A.cap)continue; if(S.xd&&S.xd.y>=G.year)continue; const H0=stadOccHist(S).filter(x=>x.y<G.year); S.xd={y:G.year,occ:Math.round(A.sum/A.cap*1000)/1000,so:A.so||0,n:A.n}; S.xdh=H0.concat(S.xd).slice(-5); } }
+function stadXpRec(){ const c=G.cal; if(!c||!G.sea||!G.sea.att||G.day<=c.end)return; for(const t of G.teams){ const A=G.sea.att[t.id], S=t.stad; if(!S||!A||!A.n||A.n<20||!A.cap)continue; if(S.xd&&S.xd.y>=G.year)continue; const H0=stadOccHist(S).filter(x=>x.y<G.year); S.xd={y:G.year,occ:Math.floor(A.sum/A.cap*1000)/1000,so:A.so||0,n:A.n}; S.xdh=H0.concat(S.xd).slice(-5); } }
 /* 시즌별 관중 기록(최근 5시즌, 초대형 신구장 명분). 기록이 없던 예전 저장은 지난 시즌 기록(xd) 하나에서 시작한다 */
 function stadOccHist(S){ return S.xdh&&S.xdh.length?S.xdh:S.xd?[S.xd]:[]; }
 /* 추진할 수 없는 이유(빈 문자열이면 가능). 사람·AI 같은 조건 */
@@ -34,7 +37,7 @@ function stadXpWhy(tid,k){ const X=STADX_K[k]; if(!X)return '없는 공사입니
   const raw=stadXpRaw(tid), mx=stadXpMax(tid); if(raw+X.seats>mx)return `${S.dome?'돔 지붕 구조상 ':''}이 구장은 ${mx.toLocaleString('ko-KR')}석까지만 늘릴 수 있습니다(지금 ${raw.toLocaleString('ko-KR')}석).`;
   if(S.xpRetry>G.day)return `시와 다시 협의하려면 ${dmd(S.xpRetry)}까지 기다려야 합니다.`;
   const D=stadXpDem(tid); if(!D)return '증설 명분이 될 관중 기록이 아직 없습니다(홈 36경기 이상 또는 지난 시즌 기록).';
-  if(!stadXpDemOk(D))return `좌석 점유율 ${Math.round(D.occ*100)}%, 매진 ${D.so}회로는 시가 증설을 검토하지 않습니다. 점유율 85% 이상이거나 매진이 잦아야 합니다.`;
+  if(!stadXpDemOk(D))return `좌석 점유율 ${stadXpPct(D.occ)}%, 매진 ${D.so}회로는 시가 증설을 검토하지 않습니다. 점유율 85% 이상이거나 매진이 잦아야 합니다.`;
   if(t.trust<STADX_RULE.trust)return `구단주 신뢰(${t.trust})가 ${STADX_RULE.trust} 이상이어야 구단주가 증설을 허락합니다.`;
   const cc=stadXpCost(k).club; if(spendable(tid)<cc)return `구단 부담분 ${money(cc)}을(를) 낼 여력이 없어 구단주가 미룹니다(쓸 수 있는 돈 ${money(Math.max(0,spendable(tid)))}).`;
   return ''; }
@@ -57,6 +60,7 @@ function stadXpStart(tid){ const S=stadOf(tid), q=S.xq; if(!q||q.stage!=='ok')re
   return ''; }
 /* 매일: 시즌 기록 보관, 협의 결과, 합의 만료, 완공(모든 구단) */
 function stadXpDaily(){ if(!G||!G.teams)return; try{ stadXpRec(); }catch(e){} for(const t of G.teams){ const S=t.stad, q=S&&S.xq; if(!q)continue; const me=t.id===ME(), X=STADX_K[q.k]; if(!X){ S.xq=null; continue; }
+    if(S.proj&&q.stage!=='build'){ stadXpRefund(t,S); S.xq=null; if(me)mail('운영팀','관중석 증설 합의 취소',`${t.city}시와 신구장 사업을 진행하게 돼 ${X.l} ${q.stage==='ok'?'합의':'협의'}를 거뒀습니다. 낸 공사비는 없습니다.`,{kind:'구장'}); continue; } /* 검수 174: 예전 저장에서 신구장 협상이 먼저 열린 경우 증설을 분명히 취소한다(사람·AI 같은 규칙, 떼어 둔 부담분은 돌려준다) */
     if(q.stage==='talk'&&G.day>=q.res){ if(R()<(q.p??stadXpOdds(t.id))){ q.stage='ok'; q.exp=stadXpExp(); cityRelAdd(t.id,1);
         if(me){ stop('구장',`${t.city}시가 ${X.l}에 합의했습니다. 공사비의 40%를 시가 냅니다. ${dmd(q.exp)}까지 구장 관리 → 구장 시설에서 착공하세요.`); news('구단',`${t.city}시-${tnick(t)}, 관중석 증설 합의`,`${stadName(t.id)}에 ${X.seats.toLocaleString('ko-KR')}석이 늘어납니다.`,2); } }
       else { stadXpRefund(t,S); S.xq=null; S.xpRetry=G.day+STADX_RULE.retry; if(me)stop('구장',`${t.city}시가 ${X.l}을(를) 올해 예산에 넣기 어렵다고 합니다. ${dmd(S.xpRetry)} 뒤 다시 협의할 수 있습니다. 지역 관계가 좋을수록 잘 됩니다.`); }

@@ -59,7 +59,7 @@ function refreshMgrMarket(){ G.mmarket=[1,2,3,4,5].map(mkMgr); if(!G.mmarket.som
 function mgrSevPay(cur){ const n=new Set((cur.plv||[]).map((x,i)=>x.d==null?i:x.y+'|'+x.d+'|'+x.k+'|'+x.t)).size; /* 같은 날 같은 위반 중복은 한 번(검수 11-09m) */ const brk=n>=2; return {pay:Math.round(cur.sal*staffLeft(cur)*(brk?.5:1)),brk,n}; } /* 남은 지급분 기준(시즌 뒤 경질이면 끝난 시즌 몫은 빼고, 다음 시즌부터인 계약은 전액, 검수 11-07) */
 /* 감독대행: 수석코치(없으면 다른 코치)가 맡고 코치 연봉 그대로. 코치가 아무도 없으면 외부 대행(연 1.5억). 경질된 감독의 기조 수용도는 넘기지 않는다 */
 /* 대행마다 id가 달라 직원 관계(staffRel 'mgr:'+id)가 새로 시작한다(검수 11-09zw #29) */
-function mkInterim(){ const C=(G.coach&&G.coach[G.user])||{}; const active=c=>c&&!staffPending(c)&&!(c.sisAway>G.day); const c=[C.hc,C.fm,...Object.values(C)].find(active); if(G.policy)G.policy={k:G.policy.k,day:-99,follow:.9}; return {id:`interim:${c?c.id:'-'}:${G.day}`,cid:c?c.id:null,name:c?`${c.name}(감독대행)`:'감독대행',age:c?c.age:50,small:50,pen:50,youth:50,disc:42,tac:45,sal:c?0:150,yrs:1,career:'감독대행',interim:true}; }
+function mkInterim(tid){ tid=tid??G.user; const C=(G.coach&&G.coach[tid])||{}; const active=c=>c&&!staffPending(c)&&!(c.sisAway>G.day); const c=[C.hc,C.fm,...Object.values(C)].find(active); if(G.policy&&tid===G.user)G.policy={k:G.policy.k,day:-99,follow:.9}; /* 운영 방침은 우리 구단 것: AI 구단 대행(coachInterimLeft)은 건드리지 않는다 */ return {id:`interim:${c?c.id:'-'}:${G.day}`,cid:c?c.id:null,name:c?`${c.name}(감독대행)`:'감독대행',age:c?c.age:50,small:50,pen:50,youth:50,disc:42,tac:45,sal:c?0:150,yrs:1,career:'감독대행',interim:true}; }
 function hireMgr(id,years,withClan,pl){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; years=Math.round(+years); if(!(years>=1&&years<=5))return '계약 기간은 1~5년입니다.';
   const m=(G.mmarket||[]).find(x=>x.id===id); if(!m)return '후보가 없습니다.';
   if(pl&&pl.length){ if(pl.some(k=>mplStance(m,k)==='no'))return mplApply(m,pl); }
@@ -82,7 +82,9 @@ function fireMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.int
   if(!brk)for(const p of playersOf(G.user))p.mor=clamp(p.mor-4,0,100);
   wire('감독',`${tname(G.user)}, ${cur.name} 감독 경질`,{tid:G.user,x:{fire:1,nm:cur.name}});
   try{ ivRequest('mgr_fire',{nm:cur.name}); }catch(e){}
-  stop('감독',`${cur.name} 감독을 경질했습니다. 남은 기간은 수석코치가 감독대행을 맡습니다. 새 감독은 스태프·육성 → 감독에서 선임하세요.`); }
+  stop('감독',`${cur.name} 감독을 경질했습니다. 남은 기간은 ${interimWho(G.mgr[G.user])}이(가) 감독대행을 맡습니다. 새 감독은 스태프·육성 → 감독에서 선임하세요.`); }
+/* 실제 대행이 누구인지(검수 11-17 #252: 수석코치 자리가 비면 2군 감독 등 다른 코치가 맡는다) */
+function interimWho(I){ const C=(G.coach&&G.coach[G.user])||{}; const k=I&&I.cid!=null?Object.keys(C).find(x=>C[x]&&C[x].id===I.cid):null; return k?`${(CROLE[k]||{l:'코치'}).l} ${C[k].name}`:'외부에서 데려온 감독대행'; }
 /* 감독 자진 사퇴: 잔여 연봉·경질 기사·선수 기분 하락 없이 감독대행 체제로 */
 function resignMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; if(G.coach){ const gone=clanLeave(cur,G.user,'resign'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
   addLog(`${cur.name} 감독이 자진 사퇴했습니다. 잔여 연봉은 없습니다.`); staffHistory('mgr',cur,'자진 사퇴',G.user);

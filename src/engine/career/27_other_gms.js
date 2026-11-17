@@ -163,7 +163,7 @@ function aiTradeTryRun(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>
       const up=slotGain(k,p)-base+(p.aiListed?(p.aiUrg?4:2.5):0); if(up>=(o.swap?2:3))cands.push({B,p,up}); } }
   cands.sort((a,b)=>b.up-a.up);
   for(const c of cands.slice(0,8)){ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue;
-    const DX=domTradeTax(B,A.id,startersOf(B.id).has(p.id)&&!p.aiListed); if(DX.refuse){ domLog('ref',B.id+':'+p.id); domRumor(B.id,A.id); continue; } if(DX.k>=.1)domLog('over',B.id+':'+p.id); /* 독주 견제(86b_dynasty) */
+    const DX=domTradeTax(B,A.id,startersOf(B.id).has(p.id)&&!p.aiListed,trBenchOnly(B.id,[p.id])); /* 비주전만 내주면 견제 웃돈 1/4(우리 구단과의 거래와 같은 식, 11-18) */ if(DX.refuse){ domLog('ref',B.id+':'+p.id); domRumor(B.id,A.id); continue; } if(DX.k>=.1)domLog('over',B.id+':'+p.id); /* 독주 견제(86b_dynasty) */
     if(relTradeRefuse(B.id,A.id))continue; /* 사이가 아주 나쁜 단장과는 거래하지 않는다(84b_person_rels) */ const relB=relAsRel(B.id,A.id), relA=relAsRel(A.id,B.id);
     const needB=tradeNeed(B,vOut,relB)+Math.max(1.5,vOut)*DX.k;
     /* 2대2: B의 블록 선수 한 명을 끼워 함께 받는 경우 */
@@ -197,7 +197,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     const B=best.B, p=best.p; const vOut=tval(B,p,'out'), vin=tval(A,p,'in'); const core=new Set(domestic(A.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id));
     /* 리빌딩 구단은 서른 안팎 베테랑의 남은 계약 가치보다 젊은 선수를 받는 것을 앞세운다: 남은 가치의 30%만 채워도 판다(AI끼리만. 우리 구단과의 트레이드는 평소 기준) */
     if(relTradeRefuse(B.id,A.id))continue; /* 사이가 아주 나쁜 단장과는 거래하지 않는다(aiTradeTry와 같게, 84b_person_rels) */
-    const DX=domTradeTax(B,A.id,false); if(DX.k>=.1)domLog('over',B.id+':'+p.id); const want0=vOut*(nx?.6:o.wantF||.3)+1+Math.max(1.5,vOut)*DX.k; /* 독주 구단에는 리빌딩 구단도 비싸게 판다 */
+    const DX=domTradeTax(B,A.id,false,trBenchOnly(B.id,[p.id])); if(DX.k>=.1)domLog('over',B.id+':'+p.id); const want0=vOut*(nx?.6:o.wantF||.3)+1+Math.max(1.5,vOut)*DX.k; /* 독주 구단에는 리빌딩 구단도 비싸게 판다 */
     const want=Math.max(want0*.5,want0+relNeedAdj(B.id,A.id)), needA=Math.max(0,relNeedAdj(A.id,B.id)); /* 두 단장 사이 친분(tradeNeed와 같은 몫): 친하면 덜, 나쁘면 더 받으려 한다. 사는 쪽도 사이가 나쁘면 남는 거래만 */ const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
     let pay=null, pkGive=null;
     /* 유망주 수집 구단에 파는 쪽이면 지명권으로 값을 치른다(지명권만, 또는 어린 선수 한 명 + 지명권). 사는 쪽이 우승 도전이면 지명권을 싸게 보고 파는 쪽은 비싸게 봐서 거래가 선다. 1라운드는 특급(종합 60 이상)을 살 때만 */
@@ -291,7 +291,7 @@ function leaveTeamState(old,rehire){
   for(const m of (G.mail||[]))if(m.acts)m.acts=m.acts.filter(a=>a.a!=='renewMgr'); /* 소속을 떠나면 옛 재계약 요청의 실행 권한도 끝난다 */
   if(G.fa){ G.fa.offers={}; G.fa.neg={}; G.fa.warned={}; } /* 옛 구단 이름으로 낸 FA 제안·협상 */
   if(G.faFund&&!G.faFund.done)G.faFund.tid=G.faFund.tid??old; else G.faFund=null; /* 우승 FA 특별자금 상환 의무는 구단에 남는다(검수 11-09zn) */ for(const g of (G.grants||[]))if(g.st==='open'){ g.st='void'; g.vd=1; } /* vd: 이직으로 멈춘 건. 같은 시즌 복귀하면 다시 연다(검수 11-09zzd) */ for(const r of (G.mreq||[]))if(r.st==='open'||r.st==='ask'){ r.st='void'; }
-  G.ownOrder=null; G.watchPlanned=null; G.simPlanned=null; G.matchAwait=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=(G.evf||[]).filter(f=>f.k==='scandal'&&f.data&&f.data.c>=2); /* 후원사 복귀는 구단 몫이라 남긴다(검수 11-09za) */ G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
+  G.ownOrder=null; G.watchPlanned=null; G.simPlanned=null; G.matchAwait=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=(G.evf||[]).filter(f=>f.k==='scandal'&&f.data&&f.data.c>=2||f.k==='owncut'); for(const f of G.evf)if(f.tid==null)f.tid=old; /* 후원사 복귀는 구단 몫이라 남긴다(검수 11-09za). 구단주 비용 절감 재확인도 그 구단 회장이 같은 기준으로 본다(검수 11-17 #254) */ G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
   if(!rehire){ const T=G.trnT=G.trnT||{}; T[old]={pol:G.trnPol||'bal',I:G.trnI||{},y:G.year}; } /* 육성 방침·선수별 강도 건의는 그 구단 것: 같은 해 돌아오면 이어받는다(PR #4 검수) */
   G.trn={}; G.trnI={}; G.trnPol='bal'; G.trnIS={}; /* 훈련 지시는 그 구단 선수에게 내린 것 */
   { const T=G.trnT, B=T&&!G.unemp&&G.user!==old?T[G.user]:null; if(B&&B.y===G.year){ G.trnPol=B.pol; G.trnI=Object.fromEntries(Object.entries(B.I).filter(([id])=>G.players[id]&&G.players[id].team===G.user)); } if(B)delete T[G.user]; }

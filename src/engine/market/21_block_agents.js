@@ -26,7 +26,7 @@ function offerRevert(id){ const o=(G.offers||[]).find(x=>x.id===id); if(!o||!o.p
   o.give=o.prev.give; if(o.prev.adv!==undefined)o.adv=o.prev.adv; else delete o.adv; if(o.prev.pot!==undefined)o.pot=o.prev.pot; else delete o.pot; delete o.prev;
   return `${tfull(t)} 단장: 알겠습니다. 처음 제안한 조건대로 하죠.`; }
 /* 다른 구단 트레이드 매물: 이유가 있는 선수를 올리고 6주까지 둔다. 압박받는 단장·연봉 초과 구단은 급매 */
-const BLKWHY={reb:'리빌딩 정리',room:'자리 없음',dup:'중복 자원',sal:'연봉 정리',fa:'FA 앞둔 주전'};
+const BLKWHY={reb:'리빌딩 정리',room:'자리 없음',dup:'중복 자원',sal:'연봉 정리',fa:'FA 앞둔 주전',cut:'백업 정리'};
 /* FA를 앞둔 주전의 처리(11-12, 사용자 "AI도 유저처럼 머리를 쓰게"): 재계약할 수 있으면 지키고, FA 보상(A·B등급 보상선수·보상금)이 쏠쏠하면 기다리고,
    가을야구가 멀고 재계약도 어려우면 시즌 중에 제값 받고 판다. 예전에는 연봉 정리 때 FA 직전 고액 주전을 급매로 내놓아 다른 구단이 싸게 데려갔다 */
 function aiCY(p){ return !!p&&!p.foreign&&(preFA(p)||(p.faC&&(p.yrs||0)<=1&&!p.extNext)); }
@@ -48,7 +48,12 @@ function aiBlockWeekly(){ if(!tradeOpen())return;
       if(!pk&&R()<.5){ pk=ds.filter(p=>p.age<=25&&!st.has(p.id)&&p.pot-ovr(p)>=6&&!p.aiListed).sort((x,y)=>ovr(y)-ovr(x))[0]; why='room'; }
       if(!pk){ const rk=slotRanks(t.id); pk=ds.filter(p=>!st.has(p.id)&&!top3.has(p.id)&&ovr(p)>=48&&!p.aiListed&&rk[pSlot(p)]&&rk[pSlot(p)].rank<=4).sort((x,y)=>ovr(y)-ovr(x))[0]; why='dup'; }
       if(pk){ pk.aiListed=true; pk.aiWhy=why; pk.aiLd=G.day; } }
-    for(const p of ds.filter(q=>q.aiListed)){ p.aiUrg=p.aiWhy==='fa'?(G.day>=tradeDL()-7):(p.aiWhy==='sal'&&ci.pay>ci.cap||heat>=.6||(G.day-(p.aiLd||G.day)>35)); /* FA 앞둔 주전은 마감 직전 주에만 급해진다 */ } } }
+    /* 급매 늘리기(피드백 11-18: 급매 매물이 너무 드물다). 규칙: 위 정기 매물과 따로, 구단마다 주 20% 확률(해시라 본 난수를 쓰지 않는다)로
+       매물이 3명(유망주 수집 구단 4명) 미만이면 자리가 없는 백업 한 명을 급매로 내놓는다. 대상은 주전(startersOf)·상위 6명(tvCore6)이 아닌 24세 이상 종합 44 이상이고,
+       잠재력이 큰 25세 이하 유망주는 뺀다. 그래서 스타·유망주 급매는 생기지 않고, 급매 할인은 선수 값에 비례한다(16_trade, 11-11) */
+    { const n=ds.filter(p=>p.aiListed).length; if(n<(pl==='build'?4:3)&&rngHash('aiFire',G.year,G.day,t.id)%100<20){ const S=startersOf(t.id), C6=tvCore6(t.id);
+      const q=ds.filter(p=>!p.aiListed&&!S.has(p.id)&&!C6.has(p.id)&&p.age>=24&&ovr(p)>=44&&!(p.age<=25&&p.pot-ovr(p)>=6)).sort((x,y)=>ovr(y)-ovr(x)||x.id-y.id)[0]; if(q){ q.aiListed=true; q.aiWhy='cut'; q.aiLd=G.day; } } }
+    for(const p of ds.filter(q=>q.aiListed)){ p.aiUrg=p.aiWhy==='cut'?true:p.aiWhy==='fa'?(G.day>=tradeDL()-7):(p.aiWhy==='sal'&&ci.pay>ci.cap||heat>=.6||(G.day-(p.aiLd||G.day)>21)); /* FA 앞둔 주전은 마감 직전 주에만 급해진다. 다른 매물은 3주가 지나도 안 팔리면 급매(11-18, 예전 5주) */ } } }
 /* FA 에이전트 */
 function faMood0(p){ const ag=p?agentOf(p):null; return clamp(Math.round(50+(agRel(ag)-50)*.6+agMemMood(ag,G.user)),25,85); } /* 첫 분위기: 친분 + 지난 협상 기억(계약 2단계) */
 function negOf(id){ const F=G.fa; F.neg=F.neg||{}; if(!F.neg[id]){ F.neg[id]={rounds:0,mood:faMood0(G.players[id]),log:[],counter:null,closed:false,warned:false}; } return F.neg[id]; }
