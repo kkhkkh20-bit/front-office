@@ -142,10 +142,19 @@ async function cBanner(g,half){ const el=document.getElementById('cs-bn'); if(!e
 /* 볼 수 있는 장면 고르기 */
 function cKeep(g,k,mode){ if((g.incidents||[]).some(e=>e.k===k))return true;if(mode==='all'||pcRecords(g,k).length)return true; const L=g.pbp; const x=L[k]; if(typeof x[1]!=='number')return false; const b=cBefore(g,k); const risp=!!(b.bases[1]||b.bases[2]);
   if(mode==='risp')return risp; return x[6]>0||['HR','3B','2B','DP','HBP'].includes(x[3])||(x[3]==='K'&&risp)||k===L.length-1||(x[4]>=3&&b.half>=16&&Math.abs(x[7]-x[8])<=1); }
+/* 상황별 수비 위치(사용자 11-17: 실제 야구 수비처럼). 기록은 바꾸지 않는 화면 연출. 반환: 포지션→자리(기본은 CFP) */
+function cAlign(g,st,oT){ const A={}, b=st.bases||[0,0,0], outs=st.outs||0, half=st.half||0, top=half%2===0, defLead=top?(st.sh||0)-(st.sa||0):(st.sa||0)-(st.sh||0), late=half>=12, small=typeof mgrOf==='function'?(mgrOf(oT)||{}).small??50:50;
+  if(b[2]&&outs<2&&late&&Math.abs(defLead)<=2){ A['3B']=[29,71]; A.SS=[40,60]; A['2B']=[60,60]; A['1B']=[71,71]; return A; } /* 전진 수비: 3루 주자를 홈에서 막는다 */
+  if(outs===0&&(b[0]||b[1])&&!b[2]&&small>=60){ A['3B']=[31,76]; A['1B']=[69,76]; } /* 번트 수비: 작전을 즐기는 감독(공격 팀)이면 1·3루수가 앞으로 */
+  else if(b[0]&&!b[1])A['1B']=[67,71]; /* 1루 주자 견제: 1루수가 베이스에 붙는다 */
+  if(b[0]&&outs<2){ A.SS=[42,54]; A['2B']=[58,54]; } /* 병살 수비: 키스톤이 2루 쪽으로 */
+  if(half>=16&&defLead>=1&&defLead<=3){ A.LF=[15,27]; A.CF=[50,13]; A.RF=[85,27]; } /* 장타 방지: 9회 이후 근소하게 앞설 때 외야가 물러난다 */
+  return A; }
 function cTargets(g,k,st){ const L=g.pbp; const half=st.half; const top=half%2===0; const dT=top?g.home:g.away, oT=top?g.away:g.home;
   const dc=cTeamCol(dT), oc=cTeamCol(oT); const T=[]; const dU=cUni(g,dT), oU=cUni(g,oT);
   const gl=id=>{ const q=mdPlayer(g,id); return q&&q.th==='좌'?'R':'L'; };
-  for(const f of cFielders(g,half,k))T.push({k:'d'+f.id,id:f.id,pt:CFP[f.pos],cls:'df'+(f.pos==='C'?' ctch':''),lab:POSS[f.pos],col:dc,u:{...dU,glove:gl(f.id)},rot:f.pos==='C'?-90:cAng(CFP[f.pos],CHM)});
+  const AL=cAlign(g,st,oT);
+  for(const f of cFielders(g,half,k))T.push({k:'d'+f.id,id:f.id,pt:AL[f.pos]||CFP[f.pos],cls:'df'+(f.pos==='C'?' ctch':''),lab:POSS[f.pos],col:dc,u:{...dU,glove:gl(f.id)},rot:f.pos==='C'?-90:cAng(CFP[f.pos],CHM)});
   const pid=cPit(g,k); const pp=pid&&mdPlayer(g,pid); if(pid)T.push({k:'d'+pid,id:pid,pt:CFP.P,cls:'df pit'+(pp&&pp.th==='좌'?' lhp':''),lab:pp&&pp.th==='좌'?'좌투':'우투',col:dc,u:{...dU,glove:gl(pid),pose:'set'},rot:90});
   st.bases.forEach((id,i)=>{ if(id)T.push({k:'o'+id,id,pt:CBS[i],cls:'of run',lab:['1루','2루','3루'][i],col:oc,u:{...oU,helm:oU.H},rot:cAng(CBS[i],CPATH[i+2])}); });
   const x=L[k]; if(x&&typeof x[1]==='number'&&x[0]===half){ const bp=mdPlayer(g,x[1]); const side=bSide(bp,pp); T.push({k:'o'+x[1],id:x[1],pt:side==='L'?CBATL:CBAT,cls:'of bat '+(side==='L'?'lhb':'rhb'),lab:side==='L'?'좌타':'우타',col:oc,u:{...oU,helm:oU.H,bat:side},rot:0}); }
