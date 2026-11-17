@@ -4767,7 +4767,7 @@ T('[창단 단장] 수락 뒤 11월 20일 전에는 취소할 수 있고, 취소
     const m=G.mail.find(x=>x.id===e.mid); ok(m&&(m.acts||[]).some(a=>a.a==='expGmCancel'),'소식함 결과에 수락 취소 버튼 없음');
     if(cancel){ const r=expGmCancel(); ok(!E.userGm&&!expGmCanCancel()&&r.includes('취소'),'취소 처리 안 됨: '+r); ok(G.rep===rep0-1,'모기업 관계 비용(명성 -1) 없음 '+G.rep); ok(G.mail.some(x=>(x.subj||'').includes('수락 취소 확인')),'취소 확인 메일 없음'); }
     const tid=expDraft(); return {old,tid,E}; };
-  let {old,tid,E}=go(true); ok(G.user===old&&!G.unemp,'취소했는데 신생 구단으로 옮김'); ok(G.myC&&G.myC.tid===old,'취소했는데 단장 계약이 바뀜'); const g=gmOf(tid); ok(g&&g.name,'신생 구단에 AI 단장이 없음'); ok(E.stage==='done'&&!expGmCanCancel()&&expGmCancel().includes('되돌릴 수 없습니다'),'부임 뒤에도 취소 가능');
+  let {old,tid,E}=go(true); ok(G.user===old&&!G.unemp,'취소했는데 신생 구단으로 옮김'); ok(G.myC&&G.myC.tid===old,'취소했는데 단장 계약이 바뀜'); const g=gmOf(tid); ok(g&&g.name,'신생 구단에 AI 단장이 없음'); ok(E.stage==='idle'&&!expGmCanCancel()&&expGmCancel().includes('되돌릴 수 없습니다'),'부임 뒤에도 취소 가능');
   ({old,tid}=go(false)); ok(G.user===tid&&tid!==old,'취소하지 않았는데 신생 구단으로 옮기지 않음'); ok(!expGmCanCancel(),'부임 뒤에도 취소 가능'); });
 T('[창단 구단] 강원(원주) 연고 신생 구단 선수도 수도권 프로 담당 스카우트가 평가한다',()=>{ const tid=expMake(false,'원주'); ok(team(tid).region==='강원','준비 실패: 강원 연고 아님');
   ok(teamScoutReg(tid)==='수도권','스카우트 지역 '+teamScoutReg(tid)); for(const s of G.scouts)if(s.role==='pro')s.region='영남';
@@ -4775,6 +4775,42 @@ T('[창단 구단] 강원(원주) 연고 신생 구단 선수도 수도권 프�
   const seen0=ps.filter(p=>scoutReport(p).ofp!=null).length;
   sc.region='수도권'; sc.skill=4; const seen=ps.filter(p=>scoutReport(p).ofp!=null).length; ok(seen>seen0,'수도권 담당을 둬도 더 보이지 않음 '+seen0+'→'+seen); ok(seen>=ps.length*.9,'수도권 담당이 있어도 원주 구단 선수 잠재력 미확인 '+(ps.length-seen)+'/'+ps.length);
   ok(scoutSlots().some(x=>x.role==='pro'&&x.key==='수도권'&&x.why.includes('구단')),'스카우트 배치 후보에 수도권 프로 담당이 없음'); });
+/* 검수 11-17 리그 확장(158~164). 11월 20일, 정규시즌·가을야구가 끝난 겨울에 신생 구단을 들인다 */
+const expNov=(user,city)=>{ fresh(); G.day=dnum(G.year,11,20); G.rep=70; expPropose(); const E=G.exp; const C=CI_CITY.find(c=>c.city===(city||'원주')); if(C)Object.assign(E,{city:C.city,region:C.region,market:C.market}); E.stage='approved'; E.ay=G.year; E.userGm=!!user; const tid=expDraft(); return tid; };
+const expAddOne=city=>{ expPropose(); const E=G.exp; const C=CI_CITY.find(c=>c.city===city); if(C)Object.assign(E,{city:C.city,region:C.region,market:C.market}); E.stage='approved'; E.ay=G.year; E.userGm=false; return expDraft(); };
+const calStat=c=>{ const g={}, h={}; let conf=0; const confD=[]; const sh=calStadGroups(); for(const d in c.sched){ const home=new Set(); for(const [a,b] of c.sched[d]){ g[a]=(g[a]||0)+1; g[b]=(g[b]||0)+1; h[a]=(h[a]||0)+1; home.add(a); } for(const grp of sh)if(grp.filter(x=>home.has(x)).length>1){ conf++; confD.push(dmd(+d)); } } return {g,h,conf,confD}; };
+T('[검수 11-17 #158] 11구단 창단을 마치면 확장 단계가 다시 검토(idle)로 돌아가 12구단 추진이 시작되고, 지난 창단 단장 수락은 넘어가지 않는다(예전 저장 done도 수리)',()=>{ const tid=expNov(true); const E=G.exp; ok(G.teams.length===11&&G.user===tid,'준비 실패: 11구단 창단 단장 부임 안 됨');
+  ok(E.stage==='idle'&&E.last===G.year,'창단 뒤 단계가 검토로 돌아가지 않음: '+E.stage); ok(E.hist.some(h=>h.ok&&h.tid===tid),'창단 기록 없음');
+  const y00=G.year; let started=null; for(let y=y00+1;y<=y00+15&&!started;y++){ G.year=y; const day=dnum(y,12,20); for(let s=1;s<400&&E.stage==='idle';s++)withRng(s,()=>expDaily(day)); if(E.stage==='talk')started=y; }
+  ok(started&&started-E.last>=6,'15년 동안 추첨을 통과시켜도 12구단 추진이 시작되지 않음(또는 6년 쉼을 어김): '+started);
+  ok(!E.userGm&&E.gmAsk==null,'지난 창단 단장 수락이 다음 창단으로 넘어감');
+  E.stage='approved'; E.ay=G.year; const t12=expDraft(); ok(G.teams.length===12&&G.user===tid,'12구단 창단 때 사용자가 묻지도 않고 옮김: '+G.user+'/'+t12);
+  E.stage='done'; expMigrate(); expMigrate(); ok(E.stage==='idle','예전 저장의 done이 수리되지 않음'); });
+T('[검수 11-17 #159] 신생 구단 모기업은 창단 기사와 구단 운영 화면(소유 구조)이 같은 이름이다(예전 저장 수리)',()=>{ const tid=expNov(false,'전주'); const E=G.exp; const v=ownershipView(tid);
+  ok(E.parent&&v.parent===E.parent,'창단 기사 모기업 '+E.parent+' / 운영 화면 '+v.parent);
+  const s=G.ownership.clubs[tid]; s.parent={...s.parent,name:'푸른길유통'}; delete E.hist[E.hist.length-1].parent; expMigrate(); expMigrate(); ok(ownershipView(tid).parent===E.parent,'예전 저장 모기업 이름이 수리되지 않음: '+ownershipView(tid).parent);
+  s.generation=1; s.parent={...s.parent,id:'parent:'+tid+':1',name:'인수기업'}; expMigrate(); ok(ownershipView(tid).parent==='인수기업','인수로 바뀐 모기업까지 창단 이름으로 되돌림'); });
+T('[검수 11-17 #160] 11월에 창단 단장이 되면 다음 시즌 관중·입장 수입 전망이 새 리그 규모의 홈경기 수(70경기)로 나온다',()=>{ const tid=expNov(true); ok(G.user===tid,'준비 실패');
+  const r0=__rngState(); const P=stadProj(tid,true); ok(__rngState()===r0,'전망이 본 난수를 씀');
+  ok(P.n===70&&P.att>0&&P.ticket>0,'신생 구단 다음 시즌 전망: 홈 '+P.n+'경기 · 관중 '+P.att); const o=G.teams.find(t=>t.id!==tid).id, Q=stadProj(o,true); ok(Q.n===70,'기존 구단도 다음 시즌(140경기)의 홈 70경기여야 함: '+Q.n);
+  G.cal=buildCalendar(G.year+1); const st=calStat(G.cal); ok(st.h[tid]===70,'실제 다음 일정 홈경기 '+st.h[tid]); });
+T('[검수 11-17 #161] 11월 특별지명으로 들어온 신생 구단은 이번 시즌 순위·경기 수 기준(144)에 들지 않고 다음 시즌부터 든다',()=>{ const tid=expNov(false); ok(G.teams.length===11,'준비 실패');
+  ok(seasonG()===144,'이번 시즌 경기 수 기준이 바뀜: '+seasonG()); const st=standingsNow(); ok(st.length===10&&!st.some(o=>o.tid===tid),'이번 시즌 순위에 0승 0패 신생 구단: '+st.length);
+  ok(calNT(G.cal)===10,'이번 일정 구단 수 '+calNT(G.cal));
+  G.year++; G.cal=buildCalendar(G.year); G.sea={y:G.year,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[]}; ok(seasonG()===140&&standingsNow().length===11,'다음 시즌에도 신생 구단이 빠짐: '+seasonG()+'/'+standingsNow().length);
+  const cs=calStat(G.cal); ok(G.teams.every(t=>cs.g[t.id]===140),'11구단 일정 경기 수: '+JSON.stringify(cs.g)); });
+T('[검수 11-17 #162] 12구단 일정도 개막일(토요일)에 경기가 있고, 구단마다 132경기·홈 66경기다',()=>{ fresh(); expAddOne('원주'); expAddOne('전주'); ok(G.teams.length===12,'준비 실패: 12구단 아님');
+  const c=buildCalendar(G.year+1); ok(dobj(c.open).w===6,'개막일이 토요일이 아님'); ok((c.sched[c.open]||[]).length===6,'개막일 경기 '+(c.sched[c.open]||[]).length);
+  const days=Object.keys(c.sched).map(Number).sort((a,b)=>a-b); ok(days[0]===c.open,'첫 경기가 개막일이 아님: '+dmd(days[0])+' / 개막 '+dmd(c.open));
+  const st=calStat(c); ok(G.teams.every(t=>st.g[t.id]===132&&st.h[t.id]===66),'경기·홈 수: '+JSON.stringify(st.g)+' '+JSON.stringify(st.h)); ok(days.every(d=>dobj(d).w!==1),'월요일 경기'); });
+T('[검수 11-17 #163] 같은 구장(서울 종합야구장)을 쓰는 두 구단은 같은 날 함께 홈경기를 하지 않는다(10·11·12구단)',()=>{ fresh(); ok(calStadGroups().some(g=>g.includes(0)&&g.includes(1)),'준비 실패: 공동 구장 묶음 없음');
+  for(const k of [10,11,12]){ if(k>10)expAddOne(k===11?'원주':'전주'); ok(G.teams.length===k,'준비 실패: '+k+'구단 아님');
+    for(let s=1;s<=4;s++){ const c=withRng(s*97+k,()=>buildCalendar(G.year+1)); const st=calStat(c); ok(st.conf===0,k+'구단 일정에서 공동 구장 홈경기가 겹침 '+st.conf+'일: '+st.confD.slice(0,5).join(',')); const G0=k===10?144:k===11?140:132; ok(G.teams.every(t=>st.g[t.id]===G0&&st.h[t.id]===G0/2),k+'구단 경기·홈 수가 어긋남 '+JSON.stringify(st.h)); } } });
+T('[검수 11-17 #164] 창단 단장으로 부임하면 다른 구단의 남은 단장 제의는 끝나고, 눌러도 다시 이직하지 않는다(예전 저장 수리)',()=>{ fresh(); G.day=dnum(G.year,11,10); G.jobs=[]; const others=G.teams.filter(t=>t.id!==G.user).slice(0,2).map(t=>t.id); for(const o of others)jobOffer(o,false);
+  ok(G.jobs.filter(j=>!j.done).length===2,'준비 실패: 제의 없음'); G.day=dnum(G.year,11,20); G.rep=70; expPropose(); const E=G.exp; E.stage='approved'; E.ay=G.year; E.userGm=true; const tid=expDraft(); ok(G.user===tid,'준비 실패: 창단 단장 부임 안 됨');
+  ok(G.jobs.every(j=>j.done),'창단 단장 부임 뒤에도 다른 구단 제의가 남음'); const r=jobAnswer(others[0],true); ok(G.user===tid&&r.includes('제의가 없습니다'),'남은 제의를 누르자 다시 이직: '+r);
+  G.jobs.push({tid:others[1],exp:G.gmSinceD+5,fired:false,done:false,terms:{sal:500,yrs:2}}); G.jobs.push({tid:others[0],exp:G.gmSinceD+15,fired:false,done:false,terms:{sal:500,yrs:2}}); expMigrate(); expMigrate();
+  ok(G.jobs[G.jobs.length-2].done,'예전 저장: 부임 전에 온 제의가 그대로'); ok(!G.jobs[G.jobs.length-1].done,'부임 뒤에 온 제의까지 끝냄'); ok(G.user===tid,'수리 중 이직'); });
 T('[단장 돈·시설] 사비 활동: 같은 활동을 거듭하면 효과가 줄고, 사비로 올리는 명성은 한 해 상한, 한 주 유료 일정은 두 개까지',()=>{ fresh(); const S=personalState(); S.cash=5000; prInit();
   G.rep=50; const r=[]; for(let i=0;i<6;i++){ S.last.community=null; S.wk=null; personalActivity('community'); r.push(G.rep); } ok(G.rep-50<=PL_REP_CAP,'사비 명성 상한 넘음 '+r.join(','));
   G.pr.fan=40; S.last.fan=null; S.wk=null; personalActivity('fan'); const d1=G.pr.fan-40; G.pr.fan=40; S.last.fan=null; S.wk=null; personalActivity('fan'); const d2=G.pr.fan-40; G.pr.fan=40; S.last.fan=null; S.wk=null; personalActivity('fan'); const d3=G.pr.fan-40;

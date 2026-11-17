@@ -22,6 +22,7 @@ function expDaily(day){ const E=expInit(); const o=dobj(day);
   if(o.m===11&&o.d===20&&E.stage==='approved'&&E.ay===G.year)expDraft(); }
 function expPropose(){ const E=expInit(); const C=(typeof ciCityPool==='function'?ciCityPool():[]).filter(c=>!G.teams.some(t=>t.city===c.city)); if(!C.length)return; const c=pick(C);
   const used=new Set(G.teams.map(t=>t.nick)); const nick=pick(EXP_NICK.filter(n=>!used.has(n)))||'뉴스타즈'; const par=(typeof ownershipParent==='function'?ownershipParent({id:G.teams.length,indie:false},7).name:'새 기업');
+  for(const k of ['userGm','gmAsk','gmBack','votes','comp','ay'])delete E[k]; /* 지난 창단의 단장 수락·표결이 다음 창단으로 넘어가지 않게(검수 11-17 #158) */
   Object.assign(E,{stage:'talk',y0:G.year,city:c.city,region:c.region,market:c.market,nick,parent:par});
   news('리그',`${ASSOC.s}, ${G.teams.length+1}번째 구단 창단 추진`,`${par}이(가) ${c.city}를 연고로 하는 신생 구단 창단을 신청했습니다. 내년 6월 30일 구단 표결로 승인 여부를 정합니다.`,2,{});
   if(!G.unemp)mail(ASSOC.s,`${G.teams.length+1}번째 구단 창단 추진 안내`,`${c.city} 연고, ${par} 운영 예정. 승인되면 그해 11월 특별지명(구단마다 보호 20명 밖 1명, 보상금 10억)을 거쳐 다음 시즌 1군에 들어옵니다.`,{kind:'리그'}); }
@@ -45,6 +46,14 @@ function expAddTeam(){ const E=expInit(), id=G.teams.length; const t={id,city:E.
   G.teams.push(t); const S=stadOf(id); S.name=`${E.city} 야구장`; S.cap=17000; S.built=G.year-ri(5,25); S.dim={lf:98,cf:121,rf:98,wl:3,wc:3,wr:3};
   G.mgr[id]=mkMgr(); G.mgr[id].yrs=3; try{ coachInit(); }catch(e){} if(G.sea&&G.sea.rec&&!G.sea.rec[id])G.sea.rec[id]={w:0,l:0,t:0}; try{ ownershipInit(); }catch(e){} try{ if(G.lgStaff&&!G.lgStaff[id]){ G.lgStaff[id]=stMakeTeam(t); stSync(id); } }catch(e){} /* 스카우트·분석원 */
   try{ chron('found',`${tfull(E)} 창단 · ${G.year+1}시즌 1군 진입`,null,id,{source:'found:'+id}); }catch(e){} return id; }
+/* 모기업은 창단 추진 기사에 나온 이름 하나로(검수 11-17 #159: 기사는 E.parent, 운영 화면은 ownershipParent(g=0)라 이름이 달랐다) */
+function expParentSync(){ const E=G.exp, O=G.ownership; if(!E||!O||!O.clubs)return; for(const h of E.hist||[]){ if(!h.ok||h.tid==null)continue; const nm=h.parent||(h.tid===E.tid?E.parent:null), s=O.clubs[h.tid], t=G.teams[h.tid];
+    if(!nm||!s||!s.parent||!t||(s.generation||0)>0||s.parent.name===nm||s.parent.id!=='parent:'+h.tid+':0')continue; /* 인수로 바뀐 모기업은 그대로 */ s.parent={...s.parent,name:nm}; } }
+/* 예전 저장 수리(불러올 때, 여러 번 해도 같음): 창단을 마친 'done' → 'idle'(#158), 모기업 이름(#159), 창단 단장 부임 전에 온 다른 구단 제의(#164) */
+function expMigrate(){ const E=G&&G.exp; if(!E)return; if(E.stage==='done')E.stage='idle';
+  if(E.tid!=null&&E.parent)for(const h of E.hist||[])if(h.ok&&h.tid===E.tid&&!h.parent)h.parent=E.parent;
+  try{ expParentSync(); }catch(e){}
+  if(E.tid!=null&&E.last!=null&&G.user===E.tid&&!G.unemp&&G.gmSinceD===dnum(E.last,11,20))for(const o of [...(G.jobs||[])])if(!o.done&&o.tid!==E.tid&&o.exp<G.gmSinceD+12)try{ jobAnswer(o.tid,false,true); }catch(e){} } /* 제의 기한은 12일 이상: 부임일+12 전에 끝나는 제의는 부임 전에 온 것 */
 /* 특별지명 */
 function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid); const L=[]; let pay=0;
   for(const o of G.teams){ if(o.id===tid)continue; const pool=domestic(o.id).filter(p=>!p.prospect&&!(p.joinY>G.year)&&!(p.mil&&p.mil.until>G.day));
@@ -54,9 +63,10 @@ function expDraft(){ const E=expInit(); const tid=expAddTeam(); const t=team(tid
   /* 나머지: 독립리그·신인급으로 국내 선수 50명까지 */
   const bpos=['C','C','C','1B','2B','2B','3B','SS','SS','LF','CF','CF','RF']; let i=0; while(domestic(tid).length<50&&i<80){ const isP=domestic(tid).filter(p=>p.isP).length<26; const age=ri(20,31), b=clamp(N(41,5),28,56);
     const p=newPlayer({age,isP,pos:isP?undefined:bpos[i%bpos.length],base:b,pot:b+ri(0,age<=25?12:4),team:tid,svc:clamp(age-20,0,8)}); p.sal=round5(Math.max(MIN_SAL,marketSal(ovr(p))*.5)); i++; }
-  E.stage='done'; E.last=G.year; E.tid=tid; E.hist.push({y:G.year,city:E.city,ok:true,tid});
+  E.stage='idle'; E.last=G.year; E.tid=tid; E.hist.push({y:G.year,city:E.city,ok:true,tid,parent:E.parent}); try{ expParentSync(); }catch(e){} /* 창단을 마치면 다시 '검토' 단계로: 예전에는 'done'에 머물러 12구단 추진이 영영 시작되지 않았다(검수 11-17 #158). 6년 쉼은 E.last로 */
   news('리그',`${tshort(tid)} 특별지명 결과`,`구단마다 보호선수 20명 밖에서 1명씩 지명했습니다(보상금 구단당 10억, ${E.parent} 창단 출자금으로 지급).\n`+L.join('\n'),2,{tid});
   if(E.userGm&&!G.gameOver){ try{ const wasU=!!G.unemp, old=G.user; let loyL=[]; if(!wasU)try{ loyL=meLoyalLeave(old,'move'); }catch(e){} if(!wasU&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); myCRenewClose(); } G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid); if(loyL.length)try{ aiCoachFill(old,'단장을 따라 떠난 코치 후임',loyRoles(loyL)); }catch(e){} try{ meLoyalOffer(tid); }catch(e){}
+      for(const o of [...(G.jobs||[])])if(!o.done&&o.tid!==tid)try{ jobAnswer(o.tid,false,true); }catch(e){} /* 다른 구단 단장 제의는 끝낸다(검수 11-17 #164: 보통 이직처럼. 남아 있으면 누르자마자 또 이직) */
       try{ myCStart(tid,{sal:Math.max(myCBase(tid),wasU?0:(G.myC&&G.myC.sal)||0),yrs:EXP_GRACE+1},'창단 단장'); }catch(e){} /* 단장 계약도 새 구단으로(창단 테스트 11-13: 옛 구단 계약이 남아 유예 중 계약 만료 판정) */ mail(E.parent,`${tshort(tid)} 창단 단장 부임`,`특별지명으로 ${L.length}명을 데려왔습니다. 외국인 선수와 코칭스태프를 채우고 첫 시즌을 준비해 주십시오.\n\n당장 성적을 바라지는 않습니다. ${G.year+1}~${G.year+EXP_GRACE}시즌(창단 ${EXP_GRACE}년차까지)은 순위보다 선수 육성과 팬 기반을 보겠습니다. 첫해 순위 목표는 두지 않고, 2년차 탈꼴찌, 3년차부터 조금씩 올려 가겠습니다.\n\n`+L.join('\n'),{kind:'구단',imp:true}); }catch(e){} }
   return tid; }
 
