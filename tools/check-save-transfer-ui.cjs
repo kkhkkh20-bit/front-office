@@ -38,7 +38,9 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
   console.log('틀린 코드: 대기 안내·형식 안내 통과');
   /* 4) 받기: 빈 슬롯에 들어가고 서버에서 지워진다 */
   await pg.fill('#xfIn',shown.toLowerCase()); if(cap){ await pg.locator('.xf').scrollIntoViewIfNeeded(); await pg.screenshot({path:path.join(cap,'download-390.png')}); }
-  await pg.click('[data-a="xfGet"]'); await pg.waitForFunction(()=>!UI.title,{},{timeout:30000});
+  await pg.click('[data-a="xfGet"]'); await pg.waitForSelector('.xf-ask',{timeout:30000}); /* 같은 게임(세계 번호)·같은 날짜: 묻고, 새 슬롯이 먼저(11-17 기기 옮기기 비교) */
+  { const t=await pg.locator('.xf-ask').innerText(); assert.match(t,/같은 날짜입니다/); assert.match(t,/새 슬롯에 넣기/); assert.equal(await pg.locator('.xf-ask .btn.primary').getAttribute('data-v'),'empty','같은 날짜면 새 슬롯이 기본'); }
+  await pg.click('.xf-ask [data-a="xfImp"][data-v="empty"]'); await pg.waitForFunction(()=>!UI.title,{},{timeout:30000});
   const after=await pg.evaluate(()=>({slot:curSlot(),user:G.user,day:G.day,year:G.year,n:Object.keys(G.players).length,used:SLOT_IDS.filter(n=>slotUsed(n,meta())).length,active:meta().active,tab:UI.tab}));
   assert.notEqual(after.slot,before.slot,'새 슬롯'); assert.deepEqual([after.user,after.day,after.year,after.n],[before.user,before.day,before.year,before.n],'같은 게임'); assert.equal(after.used,before.used+1); assert.equal(after.active,after.slot); assert.equal(after.tab,'home');
   assert.ok(![...env.SAVE_KV.m.keys()].some(k=>k.startsWith('x:')),'한 번 받으면 서버에서 삭제');
@@ -47,7 +49,7 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
   await pg.evaluate(()=>{ closeSheets(); A.go('cfg:save'); }); await pg.click('[data-a="xfUp"]'); await pg.waitForSelector('.xf-code'); const c2=(await pg.locator('.xf-code').innerText()).trim();
   await pg.click('[data-a="xfDel"]'); await pg.waitForFunction(()=>/지웠습니다/.test(document.querySelector('.xf').innerText)); assert.ok(![...env.SAVE_KV.m.keys()].some(k=>k.startsWith('x:')),'미리 지우기');
   await pg.click('[data-a="xfUp"]'); await pg.waitForSelector('.xf-code'); const c3=(await pg.locator('.xf-code').innerText()).trim(); assert.notEqual(c3,c2);
-  const s0=await pg.evaluate(()=>curSlot()); await pg.fill('#xfIn',c3); await pg.click('[data-a="xfGet"]'); await pg.waitForFunction(s=>curSlot()!==s,s0,{timeout:30000});
+  const s0=await pg.evaluate(()=>curSlot()); await pg.fill('#xfIn',c3); await pg.click('[data-a="xfGet"]'); await pg.waitForSelector('.xf-ask',{timeout:30000}); await pg.click('.xf-ask [data-a="xfImp"][data-v="empty"]'); await pg.waitForFunction(s=>curSlot()!==s,s0,{timeout:30000});
   assert.equal(await pg.evaluate(()=>SLOT_IDS.filter(n=>slotUsed(n,meta())).length),before.used+2,'게임 중에도 빈 슬롯으로');
   console.log('게임 중 옮겨 오기(빈 슬롯)·코드 지우기 통과', calls.length,'번 요청');
   assert.deepEqual(errs,[]);

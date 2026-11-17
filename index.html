@@ -34911,7 +34911,7 @@ function slotBadCurrent(n,m){ if(!SLOT_BAD[n])return false; const old=SLOT_BAD_A
 /* 이어하기 대상: 활성 슬롯에 본문이 있으면 그것, 없으면(지워짐·첫 저장 실패·목록 유실) 본문이 남은 다른 슬롯(검수 11-09 #9·#11·#12) */
 function contSlot(m){ m=m||meta(); return [m.active,...SLOT_IDS].find(n=>SLOT_IDS.includes(n)&&!slotBadCurrent(n,m)&&slotHas(n))??null; }
 function setActive(n){ const m=meta(); m.active=n; return setMeta(m); } /* 목록을 새로 읽어 활성 번호만 바꾼다(검수 11-09 #4: 예전에 읽은 목록 전체를 다시 써 다른 탭 판번호를 되돌림) */
-function slotInfoOf(g){ const t=(g.teams||[]).find(x=>x.id===g.user); return {tid:g.user,name:t?`${tfull(t)}`:'',date:Number.isFinite(g.day)?dstr(g.day):'',day:g.day,y:g.year,at:Date.now()}; }
+function slotInfoOf(g){ const t=(g.teams||[]).find(x=>x.id===g.user); return {tid:g.user,name:t?`${tfull(t)}`:'',date:Number.isFinite(g.day)?dstr(g.day):'',day:g.day,y:g.year,at:Date.now(),...(g.wid?{wid:g.wid}:{})}; }
 /* 다른 탭과 겹쳐 저장하지 못한 진행을 버리기 전 한 번 묻는다(불러오기와 같은 방식). 같은 것을 다시 누르면 true(검수 11-09zr #5: 새 게임 준비만 열어도 진행이 사라짐) */
 function confDrop(k){ if(!G||!SAVE_CONFL||UI.confDrop===k){ UI.confDrop=null; return true; } UI.confDrop=k; UI.slotMsg=`이 탭의 진행(${dstr(G.day)})은 다른 탭과 겹쳐 저장되지 않았습니다. 새 게임을 시작하면 이 진행은 사라집니다. 남기려면 먼저 "빈 슬롯에 따로 저장"을 누르세요. 그래도 시작하려면 한 번 더 누르세요.`; try{ toast(UI.slotMsg); }catch(e){} try{ render(); }catch(e){} return false; }
 /* 화면을 옮기기 전 저장: 다른 탭과 겹쳐 저장을 막은 상태면 이미 안내했으니 그대로 옮긴다 */
@@ -34950,7 +34950,7 @@ function saveFlush(){ const h0=G&&JSON.stringify(G.castHold||null); try{ castHol
 try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')saveFlush(); }); window.addEventListener('beforeunload',saveFlush); }catch(e){}
 /* 저장 순번: 늦게 끝난 몰아 저장(비동기)이 그사이 바로 저장한 더 새 상태를 덮지 않게 한다 */
 let _svSeq=0, _svBusy=false, _svFail=false;
-function slotInfo(){ return {tid:G.user,name:tname(G.user),date:dstr(G.day),y:G.year,at:Date.now(),over:!!G.gameOver}; }
+function slotInfo(){ return Object.assign({tid:G.user,name:tname(G.user),date:dstr(G.day),day:G.day,y:G.year,at:Date.now(),over:!!G.gameOver},G.wid?{wid:G.wid}:{}); } /* day·wid: 기기 옮기기로 받은 저장이 같은 게임의 어느 슬롯보다 앞인지 비교(카페 11-17 계정 연동 문의) */
 /* 성공(true)은 같은 슬롯을 다시 읽어 방금 쓴 내용과 같을 때만(검수 11-06: 저장 실패인데 성공 안내)
    exp: 쓰기 직전 기대하는 판번호. 이 탭이 연 슬롯이면 SLOT_REV, 빈 슬롯에 새로 쓰는 복사는 0.
    순서(검수 11-09 #3: 두 탭이 같은 판번호를 확인하고 둘 다 성공): 목록을 새로 읽어 판번호 확인 → 목록에 새 판번호를 먼저 적어 슬롯을 차지 → 본문 쓰기 → 목록·본문이 여전히 이 탭 것인지 다시 확인.
@@ -35306,9 +35306,9 @@ function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+s
     return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s&&s.nobody?`${esc(s.name||'')} · 저장 본문 없음(불러올 수 없음)`:s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.lock?' · <b>보관</b>':''}${s.over?' · 경질됨':''}${s.fail?' · <b class="bad">마지막 저장 실패(내보내기로 백업하세요)</b>':''} · ${slotSize(n)}KB${s.at?` · 저장 ${new Date(s.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`:''}`:'비어 있음'}</div>${s?`<input class="slot-memo" data-a="slotMemo" data-v="${n}" maxlength="30" placeholder="메모(예: 외국인 교체 전)" value="${esc(s.memo||'')}" aria-label="슬롯 ${n} 메모">`:''}</div>
       <div class="row">${s&&cur?`<button class="btn small" data-a="slotCopy" title="지금 진행 상황을 빈 슬롯에 따로 저장해 둡니다. 계속 진행하는 곳은 이 슬롯입니다">빈 슬롯에 따로 저장</button>`:''}${s&&cur&&SAVE_CONFL&&has[n]?`<button class="btn small" data-a="slotLoad" data-v="${n}" title="다른 탭이 저장한 최신 진행을 엽니다">최신 저장 다시 열기</button>`:''}${s&&!cur&&has[n]&&!s.lock?`<button class="btn small primary" data-a="slotLoad" data-v="${n}" title="이 슬롯을 열고 앞으로의 자동 저장도 이 슬롯에 합니다">이 슬롯에 이어서 저장</button>`:''}${s&&!cur&&has[n]?`<button class="btn small${s.lock?' primary':''}" data-a="slotLoadNew" data-v="${n}" title="이 슬롯은 그대로 두고, 빈 슬롯에 사본을 만들어 그 사본으로 이어 합니다">새 슬롯에 이어하기</button>`:''}${s&&!cur&&has[n]?`<button class="btn small" data-a="slotLock" data-v="${n}" title="보관한 슬롯은 자동 저장·덮어쓰기·삭제로 바뀌지 않습니다">${s.lock?'보관 풀기':'보관'}</button>`:''}${s&&!cur&&!start&&G&&curSlot()!=null&&!s.lock?`<button class="btn small${UI.overAsk===n?' danger':''}" data-a="slotOver" data-v="${n}" title="지금 진행을 이 슬롯에 덮어 저장합니다. 계속 진행하는 곳은 지금 슬롯입니다">${UI.overAsk===n?'한 번 더 눌러 덮어쓰기':'여기에 덮어 저장'}</button>`:''}${start?`<button class="btn small" data-a="slotNew" data-v="${n}">${s?'덮어쓰고 새 게임':'새 게임'}</button>`:''}${s&&!cur&&!s.lock?`<button class="btn small danger" data-a="slotDel" data-v="${n}">삭제</button>`:''}</div></div>`; }).join('');
   const filled=SLOT_IDS.filter(n=>sv(n)).length;
-  return `<section class="card"><div class="row between"><h2 class="sec">저장 슬롯</h2><span class="small muted">${filled}/${SLOTS} 사용 · 약 ${(used/1024).toFixed(1)}MB</span></div><div class="slots">${rows}</div>${filled+1<SLOTS?`<button class="btn small" data-a="slotAll">${UI.slotAll?'빈 슬롯 숨기기':'빈 슬롯 모두 보기'}</button>`:''}<p class="small muted">브라우저 데이터를 지우면 저장도 사라집니다. 중요한 세이브는 "파일로 내보내기"로도 보관하세요. ${hiI(`슬롯은 ${SLOTS}개까지입니다. 기본 저장 공간(보통 5MB 안팎)이 차면 진행 중이 아닌 슬롯부터 브라우저의 보조 저장소(IndexedDB, 훨씬 큼)로 자동으로 옮겨 계속 저장합니다. 브라우저 데이터를 지우면 둘 다 사라집니다.`)}</p>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
+  return `<section class="card"><div class="row between"><h2 class="sec">저장 슬롯</h2><span class="small muted">${filled}/${SLOTS} 사용 · 약 ${(used/1024).toFixed(1)}MB</span></div><div class="slots">${rows}</div>${filled+1<SLOTS?`<button class="btn small" data-a="slotAll">${UI.slotAll?'빈 슬롯 숨기기':'빈 슬롯 모두 보기'}</button>`:''}<p class="small muted sv-dev"><b>저장은 이 기기·이 브라우저에만 남습니다.</b> 계정(itch.io 계정 포함)과 연결되지 않아 다른 기기에서 자동으로 이어지지 않습니다. 다른 기기에서 이어 하려면 마지막으로 플레이한 기기에서 <b>기기 옮기기</b> 코드를 만들어 옮겨 오세요. 원래 기기로 돌아갈 때도 같습니다.</p><p class="small muted">브라우저 데이터를 지우면 저장도 사라집니다. 중요한 세이브는 "파일로 내보내기"로도 보관하세요. ${hiI(`슬롯은 ${SLOTS}개까지입니다. 기본 저장 공간(보통 5MB 안팎)이 차면 진행 중이 아닌 슬롯부터 브라우저의 보조 저장소(IndexedDB, 훨씬 큼)로 자동으로 옮겨 계속 저장합니다. 브라우저 데이터를 지우면 둘 다 사라집니다.`)}</p>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
 function exportCard(noXf){ /* noXf: 설정 › 저장·기기는 기기 옮기기를 옆 칸에 따로 둔다(사용자 11-17) */ return `<section class="card"><h2 class="sec">내보내기 · 불러오기</h2>
-  <p class="small muted">진행 상황은 이 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니, 가끔 내보내 두세요. 다른 기기에서는 내보낸 코드를 붙여 넣어 이어 할 수 있습니다.</p>
+  <p class="small muted">진행 상황은 이 기기·이 브라우저에만 저장되고 계정과 연결되지 않습니다. 브라우저 데이터를 지우면 사라지니, 가끔 내보내 두세요. 다른 기기에서 이어 하려면 기기 옮기기(코드 8자리)나 내보낸 파일을 쓰세요.</p>
   <div class="row"><button class="btn" data-a="expFile">파일로 내보내기</button><button class="btn" data-a="expCode">코드 만들기</button><label class="btn">파일 불러오기<input type="file" accept=".txt,.json" data-a="impFile" style="display:none"></label></div>
   ${UI.expCode?`<textarea class="code" id="expCodeBox" readonly>${UI.expCode}</textarea><div class="row"><button class="btn" data-a="expCopy">코드 복사하기</button><span class="small muted">길이 ${Math.round(UI.expCode.length/1024)}KB · 복사해서 메모장·메신저 '나에게 보내기' 등에 보관하세요.</span></div>`:''}
   <textarea class="code" id="impCode" placeholder="내보낸 코드를 여기에 붙여 넣으세요"></textarea>
@@ -35333,7 +35333,7 @@ let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; if(typeof ulGameSwi
   UI.wkres=G&&G.wkHold?Object.assign({},G.wkHold):null; /* 확인 전의 경기 요약 창은 그 세이브 것으로 다시 연다(검수 11-09zzc #20) */
   if(G&&Array.isArray(G.stops)&&Array.isArray(G.mail)){ const M=[...G.mail,...(G._mh||[])]; G.stops=G.stops.filter(x=>!(x&&/^m\d+$/.test(x.id||''))||M.some(m=>m.id===x.id)).map(x=>x&&x.id&&M.find(m=>m.id===x.id)||x); } } /* 저장하면 정지 알림이 원본 소식의 복사본이 된다: 원본으로 다시 잇고, 지워진 소식은 뺀다(검수 11-09zzc #25·#27) */
 /* to: 파일을 고른 시점의 대상({title,slot,g}). 읽는 사이 슬롯이 바뀌면 가져오지 않는다(검수 11-09: 다른 슬롯에 덮어씀) */
-function importText(t,to,opt){ /* opt.empty: 게임 중에도 지금 슬롯 대신 빈 슬롯으로(기기 옮기기) */
+function importText(t,to,opt){ /* opt.empty: 게임 중에도 지금 슬롯 대신 빈 슬롯으로(기기 옮기기). opt.slot: 고른 슬롯을 바꾼다(기기 옮기기로 받은 같은 게임의 더 최근 저장, 사용자가 고른 뒤에만). opt.rev: 고를 때 본 그 슬롯의 판번호. 그사이 바뀌었으면 쓰지 않는다 */
  let g=null;t=String(t||'').trim().replace(/^\uFEFF/,'');
  /* 메신저·메모 앱이 긴 코드에 줄바꿈·띄어쓰기를 넣거나 '+'를 띄어쓰기로 바꾸는 경우가 있다: 차례로 고쳐 본다 */
  if(t[0]==='{'){try{g=JSON.parse(t);}catch(e){}}
@@ -35341,13 +35341,15 @@ function importText(t,to,opt){ /* opt.empty: 게임 중에도 지금 슬롯 대�
  if(!g||g.ver!==4||!Array.isArray(g.teams)||!g.players){UI.impMsg=t&&t[0]!=='{'&&t.length>100?`코드를 읽지 못했습니다(붙여 넣은 길이 ${t.length.toLocaleString()}자). 코드가 끝까지 복사되지 않았을 가능성이 큽니다. 저장 코드는 수십만 자라 메신저로 보내면 잘리기 쉽습니다. 기기를 옮길 때는 '파일로 내보내기'로 받은 .txt 파일을 불러오기에 넣어 주세요.`:'저장 파일을 읽지 못했습니다. 게임에서 내보낸 .txt 또는 .json 파일인지 확인해 주세요.';render();return;}
  { const bad=saveCheck(g); if(bad){ UI.impMsg=`백업의 ${bad}이(가) 없거나 손상돼 가져오지 않았습니다. 기존 세이브와 진행 중인 게임은 그대로입니다.`; render(); return; } }
  if(to&&(to.title!==!!UI.title||to.g!==G||(!to.title&&to.slot!==curSlot()))){ UI.impMsg='파일을 읽는 사이 슬롯(게임)이 바뀌어 가져오지 않았습니다. 가져올 곳에서 파일을 다시 골라 주세요.'; render(); return; }
- const m=meta(),fromTitle=!!UI.title||!!(opt&&opt.empty),slot=fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot();
+ const m=meta(),pick=opt&&SLOT_IDS.includes(opt.slot)?opt.slot:null,fromTitle=!!UI.title||!!(opt&&(opt.empty||pick)),slot=pick||(fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot());
+ if(pick&&(m.slots[pick]||{}).lock){UI.impMsg=`슬롯 ${pick}은(는) 보관 슬롯이라 바꾸지 않았습니다.`;render();return;}
  if(fromTitle&&!slot){UI.impMsg='빈 저장 슬롯이 없습니다. 보관할 저장을 내보내고 슬롯을 비운 뒤 불러와 주세요.';render();return;}
  if(G){ try{ saveFlush(); }catch(e){} } /* 기다리던 저장을 먼저 끝낸다: 가져오기를 되돌릴 때 그 진행이 사라지지 않게 */
  const old=G, cur0=CUR_SLOT, rev0=SLOT_REV, cf0=SAVE_CONFL, nw0=SLOT_NEW, err0=SAVE_ERR, stage0=_saveGStage; /* 저장을 끝낸 뒤의 판번호를 기억한다(검수 11-09zr #3: 먼저 기억하면 되돌릴 때 이 탭 저장을 다른 탭 충돌로 오인) */
  const back=()=>{ _saveGStage=stage0; G=old; CUR_SLOT=cur0; SLOT_REV=rev0; SAVE_CONFL=cf0; SLOT_NEW=nw0; if(!fromTitle)SAVE_ERR=err0; try{ worldReset(); syncMinSal(); }catch(e){} }; /* 기존 게임은 다시 고치지 않고 그대로 돌려놓고, 연도별 기준(최저 연봉)·캐시만 다시 맞춘다(검수 11-09) */
  try{ _saveGStage=true; G=g; migrateDraft(); slotInfo(); }catch(e){ back(); UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.'; render(); return; } /* 복원과 저장 정보 생성까지 확인한 뒤에만 저장한다 */
- CUR_SLOT=slot; if(fromTitle)slotRevSync(slot,m); SLOT_NEW=true; /* 가져온 게임은 새 슬롯에만 쓴다. 활성 슬롯은 저장이 성공한 뒤에만 바꾼다(검수 11-07: 실패하면 빈 슬롯이 활성으로 남아 이어하기가 사라짐) */
+ if(pick){ const m1=meta(); if(opt.rev!=null&&revOf(m1,pick)!==opt.rev){ back(); UI.impMsg=`슬롯 ${pick}이(가) 그사이 다시 저장돼 바꾸지 않았습니다. 다시 비교해 고르세요.`; render(); return; } } /* 비교해 보여 준 뒤 이 탭·다른 탭이 그 슬롯을 저장했으면 덮지 않는다 */
+ CUR_SLOT=slot; if(fromTitle)slotRevSync(slot,pick?meta():m); SLOT_NEW=true; /* 가져온 게임은 새 슬롯에만 쓴다. 활성 슬롯은 저장이 성공한 뒤에만 바꾼다(검수 11-07: 실패하면 빈 슬롯이 활성으로 남아 이어하기가 사라짐) */
  let ok=false; try{ ok=saveNow(); }catch(e){ ok=false; }
  const confl=!ok&&SAVE_CONFL, body=!ok&&!confl&&(()=>{ try{ const h=unpack(sbGet(slot)); return !!h&&JSON.stringify(h)===prepG(); }catch(e){ return false; } })(); /* 본문은 쓰이고 목록만 실패한 경우: 다시 읽은 내용 전체가 같을 때만(검수 11-09: 같은 구단·날짜의 기존 본문을 새 본문으로 착각) */
  let act=true;
@@ -35429,7 +35431,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
       <nav class="fb-menu" aria-label="시작 메뉴">
         ${canCont?`<button class="fb-button primary" data-a="tsCont"><b>이어하기</b><span>${tn?esc(tn):`슬롯 ${cs}`}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
         <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다</span>'}</button>
-        <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b></button>${LADDER_ON?`<button class="fb-button" data-a="ladOpen"><b>단장 대전</b><span>같은 선수 풀로 구단을 만들어 다른 단장과 겨룹니다</span></button>`:''}
+        <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b><span>저장은 이 기기에만 · 다른 기기는 기기 옮기기</span></button>${LADDER_ON?`<button class="fb-button" data-a="ladOpen"><b>단장 대전</b><span>같은 선수 풀로 구단을 만들어 다른 단장과 겨룹니다</span></button>`:''}
         <button class="fb-button" data-a="tsGo" data-v="cuphof"><b>프런트컵 명예의 전당</b><span>유저 대회 역대 우승 팀과 로스터</span></button>
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}
@@ -43237,8 +43239,10 @@ Object.assign(A,{ psy(v){ UI.psy=+v; render(); } }); /* 리그 역사 > 포스�
 Object.assign(A,{attrHelp(){ UI.attrHelpOpen=!UI.attrHelpOpen; render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} }});
 /* 기기 옮기기: 저장을 게임 서버(worker/index.js, /api/transfer)에 잠시 올리고 8자리 코드로 다른 기기에서 받는다.
    서버가 준비되지 않았거나(503 not_configured·정적 호스팅의 404) 내려받은 index.html(file://)이면 카드를 숨기거나 짧게 안내만 한다.
-   올리는 내용은 '코드 만들기'와 같은 LZString base64, 받은 내용은 importText(같은 검사·같은 저장 절차)로 가져온다. docs/save-transfer.md */
-const XF={st:'',probing:false,busy:false,out:null,inData:null,fail:0,until:0,msg:'',bad:false,overAsk:false};
+   올리는 내용은 '코드 만들기'와 같은 LZString base64, 받은 내용은 importText(같은 검사·같은 저장 절차)로 가져온다. docs/save-transfer.md
+   저장은 계정이 아니라 기기·브라우저마다 따로 남는다(카페 11-17: A→B→A로 돌아오면 A의 옛 저장이 열림). 그래서 받은 저장이 이 기기의 같은 게임(세계 번호 G.wid) 슬롯과 겹치면
+   게임 날짜·저장 시각을 나란히 보여 주고 고르게 한다: 받은 쪽이 더 나중이면 '그 슬롯을 받은 저장으로 바꾸기'를 먼저, 같거나 앞이면 경고하고 '새 슬롯에 넣기'를 먼저. 말없이 덮어쓰지 않는다 */
+const XF={st:'',probing:false,busy:false,out:null,inData:null,inAt:null,ask:null,fail:0,until:0,msg:'',bad:false,overAsk:false};
 const XF_ABC='ABCDEFGHJKMNPQRSTUVWXYZ23456789', XF_MAX=8*1024*1024;
 function xfAvail(){ try{ return /^https?:$/.test(location.protocol)&&typeof fetch==='function'; }catch(e){ return false; } }
 function xfNorm(s){ const c=String(s||'').toUpperCase().replace(/[\s-]/g,''); return c.length===8&&[...c].every(ch=>XF_ABC.includes(ch))?c:''; }
@@ -43252,14 +43256,14 @@ function transferCard(){ if(!xfAvail())return ''; xfProbe(); if(!XF.st)return ''
   const inGame=!!G&&!UI.title, out=XF.out&&XF.out.g===G?XF.out:null, m=meta(), empty=SLOT_IDS.find(n=>!slotUsed(n,m)), wait=Math.max(0,Math.ceil((XF.until-Date.now())/1000));
   const up=inGame?`<h3 class="small"><b>이 기기에서 보내기</b></h3>${out?`<div class="xf-out" style="margin:6px 0"><b class="xf-code" style="display:block;font:700 28px/1.2 var(--f-num,monospace);letter-spacing:.12em">${xfFmt(out.code)}</b><span class="small muted">7일 뒤 자동 삭제 · 한 번 불러오면 바로 삭제</span></div>
     <div class="row"><button class="btn primary" data-a="xfCopy">코드 복사</button><button class="btn" data-a="xfDel">코드 지우기</button></div>`:`<div class="row"><button class="btn" data-a="xfUp"${XF.busy?' disabled':''}>기기 옮기기 코드 만들기</button></div>`}`:'';
-  const pend=XF.inData?`<div class="note">받은 저장이 아직 슬롯에 들어가지 않았습니다. 서버에서는 이미 지워졌으니 아래에서 넣을 곳을 고르세요.</div><div class="row">${empty?`<button class="btn primary" data-a="xfImp" data-v="empty">빈 슬롯 ${empty}에 불러오기</button>`:''}${inGame&&!(m.slots[curSlot()]||{}).lock?`<button class="btn${XF.overAsk?' danger':''}" data-a="xfImp" data-v="cur">${XF.overAsk?'한 번 더 눌러 덮어쓰기':`지금 슬롯 ${curSlot()}에 덮어쓰기`}</button>`:''}<button class="btn" data-a="xfFile">파일로 받아 두기</button></div>${empty?'':`<div class="small muted xf-t">빈 슬롯이 없습니다. ${inGame?'지금 슬롯에 덮어쓰거나, ':''}저장 슬롯에서 하나를 지운 뒤 다시 누르세요.</div>`}`:'';
-  return `<section class="card xf"><h2 class="sec">기기 옮기기</h2><div class="small muted xf-t">PC와 휴대폰 사이에 저장을 8자리 코드로 옮깁니다. 저장은 게임 서버에 잠시 보관됩니다.</div>${up}
+  const pend=XF.inData&&XF.ask?xfAskHtml(XF.ask,m,empty,inGame):XF.inData?`<div class="note">받은 저장이 아직 슬롯에 들어가지 않았습니다. 서버에서는 이미 지워졌으니 아래에서 넣을 곳을 고르세요.</div><div class="row">${empty?`<button class="btn primary" data-a="xfImp" data-v="empty">빈 슬롯 ${empty}에 불러오기</button>`:''}${inGame&&!(m.slots[curSlot()]||{}).lock?`<button class="btn${XF.overAsk?' danger':''}" data-a="xfImp" data-v="cur">${XF.overAsk?'한 번 더 눌러 덮어쓰기':`지금 슬롯 ${curSlot()}에 덮어쓰기`}</button>`:''}<button class="btn" data-a="xfFile">파일로 받아 두기</button></div>${empty?'':`<div class="small muted xf-t">빈 슬롯이 없습니다. ${inGame?'지금 슬롯에 덮어쓰거나, ':''}저장 슬롯에서 하나를 지운 뒤 다시 누르세요.</div>`}`:'';
+  return `<section class="card xf"><h2 class="sec">기기 옮기기</h2><div class="small muted xf-t">PC와 휴대폰 사이에 저장을 8자리 코드로 옮깁니다. 저장은 게임 서버에 잠시 보관됩니다.</div><div class="small muted xf-t xf-dev">저장은 기기·브라우저마다 따로 남고 계정(itch.io 계정 포함)과 연결되지 않습니다. 다른 기기에서 이어 하려면, 마지막으로 플레이한 기기에서 코드를 만들어 지금 기기로 옮겨 오세요. 원래 기기로 돌아갈 때도 같습니다.</div>${up}
   <h3 class="small" style="margin-top:10px"><b>다른 기기에서 옮겨 오기</b></h3>${pend}
   <div class="row"><input type="text" id="xfIn" maxlength="12" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX" value="${esc(XF.typed||'')}" aria-label="기기 옮기기 코드" style="width:9.5em;letter-spacing:.08em;text-transform:uppercase"><button class="btn primary" data-a="xfGet"${XF.busy?' disabled':''}>옮겨 오기</button></div>
   <div class="small muted xf-t">빈 슬롯이 있으면 빈 슬롯에, 없으면 넣을 곳을 묻습니다.${wait?` 코드가 틀려 ${wait}초 뒤 다시 시도할 수 있습니다.`:''}</div>
   ${XF.msg?`<div class="note${XF.bad?' bad':''}">${esc(XF.msg)}</div>`:''}</section>`; }
 Object.assign(A,{
-  async xfUp(){ if(XF.busy||!G)return; let t; try{ t=LZString.compressToBase64(prepG()); }catch(e){ return xfSay('저장을 준비하지 못했습니다. 파일로 내보내기를 써 주세요.',true); }
+  async xfUp(){ if(XF.busy||!G)return; let t; try{ if(!G.wid&&typeof cupWid==='function'){ cupWid(); save(); } /* 세계 번호: 받는 기기·돌아온 기기에서 같은 게임 슬롯을 알아보게(이 기기 슬롯에도 저장) */ t=LZString.compressToBase64(prepG()); }catch(e){ return xfSay('저장을 준비하지 못했습니다. 파일로 내보내기를 써 주세요.',true); }
     if(t.length>XF_MAX)return xfSay('저장이 너무 커서 올릴 수 없습니다(8MB 이하). 파일로 내보내기를 써 주세요.',true);
     const g0=G; XF.busy=true; xfSay('코드를 만드는 중입니다.');
     try{ const r=await fetch('/api/transfer',{method:'POST',body:t,headers:{'Content-Type':'text/plain'},cache:'no-store',credentials:'same-origin'}), j=await xfJson(r);
@@ -43276,20 +43280,47 @@ Object.assign(A,{
     if(XF.inData)return xfSay('먼저 받은 저장을 슬롯에 넣거나 파일로 받아 두세요.',true);
     XF.busy=true; xfSay('저장을 받는 중입니다.');
     try{ const r=await fetch('/api/transfer/'+c,{cache:'no-store',credentials:'same-origin'}), j=await xfJson(r); XF.busy=false;
-      if(r.ok&&typeof j.data==='string'){ XF.fail=0; XF.until=0; XF.inData=j.data; XF.msg=''; XF.typed=''; return xfPlace(); }
+      if(r.ok&&typeof j.data==='string'){ XF.fail=0; XF.until=0; XF.inData=j.data; XF.inAt=Number.isFinite(j.createdAt)?j.createdAt:null; XF.ask=null; XF.msg=''; XF.typed=''; return xfPlace(); }
       if(r.status===404){ XF.fail++; const s=Math.min(60,2**XF.fail); XF.until=Date.now()+s*1000; setTimeout(()=>{ try{ render(); }catch(e){} },s*1000+50); return xfSay(`${j.message||'코드를 찾지 못했습니다.'} 코드를 확인하고 ${s}초 뒤 다시 시도해 주세요.`,true); }
       if(r.status===503)XF.st='off'; xfSay(j.message||'저장을 받지 못했습니다. 잠시 뒤 다시 시도해 주세요.',true); }
     catch(e){ XF.busy=false; xfSay('서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.',true); } },
-  xfImp(v){ if(!XF.inData)return; if(v==='cur'&&!XF.overAsk){ XF.overAsk=true; render(); return; } XF.overAsk=false; xfPlace(v==='cur'?'cur':'empty'); },
+  xfImp(v){ if(!XF.inData)return;
+    if(v==='rep'){ const k=XF.ask; if(!k)return; try{ if(G)saveFlush(); }catch(e){} const now=xfMatch(XF.inData); /* 고른 사이 슬롯이 다시 저장됐으면 다시 비교해 묻는다 */
+      if(!now||now.slot!==k.slot||now.rev!==k.rev||now.lDay!==k.lDay){ XF.ask=now; XF.overAsk=false; return xfSay(now?'그사이 이 기기 저장이 바뀌어 다시 비교했습니다. 다시 골라 주세요.':'같은 게임 슬롯이 사라졌습니다. 빈 슬롯에 넣어 주세요.',true); }
+      if(!k.newer&&XF.overAsk!=='rep'){ XF.overAsk='rep'; render(); return; } XF.overAsk=false; return xfPlace('rep'); }
+    if(v==='cur'&&XF.overAsk!==true){ XF.overAsk=true; render(); return; } XF.overAsk=false; xfPlace(v==='cur'?'cur':'empty'); },
   xfFile(){ const t=XF.inData; if(!t)return; try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'})); a.download='danjang-transfer.txt'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); xfSay('파일로 받았습니다. "파일 불러오기"로 언제든 넣을 수 있습니다.'); }catch(e){ xfSay('파일로 받지 못했습니다.',true); } },
 });
 /* 받은 저장 넣기: 빈 슬롯이 있으면 바로 빈 슬롯에. 없으면 넣을 곳을 묻는다(카드의 버튼). 지금 슬롯 덮어쓰기는 기존 '코드로 불러오기'와 같은 경로 */
 function xfPlace(how){ const t=XF.inData; if(!t)return; const m=meta(), empty=SLOT_IDS.find(n=>!slotUsed(n,m));
-  if(!how){ if(!empty){ xfSay('받은 저장을 넣을 빈 슬롯이 없습니다. 넣을 곳을 골라 주세요.'); return; } how='empty'; }
+  if(!how){ const k=xfMatch(t); if(k){ XF.ask=k; XF.overAsk=false; xfSay(''); return; } if(!empty){ xfSay('받은 저장을 넣을 빈 슬롯이 없습니다. 넣을 곳을 골라 주세요.'); return; } how='empty'; }
+  if(how==='rep'){ const k=XF.ask; if(!k)return; const g0=G; UI.impMsg=''; importText(t,null,{slot:k.slot,rev:k.rev});
+    if(G!==g0&&!UI.title&&curSlot()===k.slot){ XF.inData=null; XF.ask=null; XF.msg=''; toast(`슬롯 ${k.slot}을(를) 받은 저장(${xfD(k.rDay)})으로 바꿨습니다. 이어하기도 이 슬롯을 엽니다.`); }
+    else xfSay(UI.impMsg||'바꾸지 못했습니다.',true); return; }
   if(how==='empty'&&!empty){ xfSay('빈 슬롯이 없습니다. 저장 슬롯에서 하나를 지운 뒤 다시 누르세요.',true); return; }
   const g0=G; UI.impMsg=''; importText(t,null,how==='empty'?{empty:true}:null);
-  if(G!==g0&&!UI.title){ XF.inData=null; XF.msg=''; const s=curSlot(); toast(`다른 기기의 저장을 슬롯 ${s}에 불러왔습니다.`); }
+  if(G!==g0&&!UI.title){ XF.inData=null; XF.ask=null; XF.msg=''; const s=curSlot(); toast(`다른 기기의 저장을 슬롯 ${s}에 불러왔습니다.`); }
   else xfSay(UI.impMsg||'불러오지 못했습니다.',true); }
+/* 받은 저장과 같은 게임인 이 기기 슬롯 찾기. 세계 번호(G.wid)가 둘 다 있으면 그것으로만 맞춘다.
+   한쪽에 없으면(번호가 생기기 전의 저장) 단장 이름·취임 해·시작 해가 모두 같을 때 '같은 게임으로 보이는' 슬롯으로 본다(바꾸기는 늘 사용자가 고르므로 잘못 맞춰도 말없이 덮지 않는다).
+   여러 슬롯이 맞으면 게임 날짜가 가장 나중인 슬롯(같으면 이어하기 대상)과 비교한다 */
+function xfKey(g){ const p=g&&g.gmP||{}; return p.name&&(p.y0!=null||g.startY!=null)?[p.name,p.y0,g.startY].join('|'):''; }
+function xfD(day){ try{ const o=FrontOfficeCore.dobj(day); return `${o.y}년 ${o.m}월 ${o.d}일`; }catch(e){ return ''; } }
+function xfT(ms){ return Number.isFinite(ms)?new Date(ms).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'알 수 없음'; }
+function xfMatch(t){ let r=null; try{ const j=LZString.decompressFromBase64(String(t||'').trim()); r=j&&JSON.parse(j); }catch(e){ r=null; } if(!r||!Number.isFinite(r.day))return null;
+  const m=meta(), rk=xfKey(r), hit=[];
+  for(const n of SLOT_IDS){ if(!slotHas(n))continue; const s=m.slots[n]||{}; let wid=s.wid, day=s.day, key='';
+    if(!wid||!Number.isFinite(day)||!r.wid){ const h=unpack(sbGet(n)); if(!h)continue; wid=h.wid; day=h.day; key=xfKey(h); }
+    const same=wid&&r.wid?wid===r.wid:!!rk&&key===rk; if(same&&Number.isFinite(day))hit.push({n,day,s,guess:!(wid&&r.wid)}); }
+  if(!hit.length)return null; hit.sort((a,b)=>b.day-a.day||(b.n===m.active)-(a.n===m.active)); const h=hit[0];
+  return {slot:h.n,rev:revOf(m,h.n),lDay:h.day,lAt:h.s.at,name:h.s.name||'',lock:!!h.s.lock,rDay:r.day,rAt:XF.inAt,newer:r.day>h.day,same:r.day===h.day,guess:h.guess,more:hit.length-1}; }
+function xfAskHtml(k,m,empty,inGame){ const L=xfD(k.lDay), R=xfD(k.rDay), rep=!k.lock;
+  const tbl=`<div class="xf-cmp small" style="margin:6px 0"><div>이 기기 슬롯 ${k.slot}${k.name?` (${esc(k.name)})`:''}: <b>${L}</b> · 저장 ${xfT(k.lAt)}</div><div>받은 저장: <b>${R}</b> · 다른 기기에서 보낸 시각 ${xfT(k.rAt)}</div></div>`;
+  const head=k.newer?`<div class="note">받은 저장이 이 기기의 같은 게임보다 더 나중 날짜입니다${k.guess?'(같은 단장·같은 시작 해로 보아 같은 게임으로 판단)':''}. 슬롯 ${k.slot}을(를) 받은 저장으로 바꾸면 이어하기가 ${R}부터 열립니다.</div>`
+    :`<div class="note bad">받은 저장(${R})이 이 기기 슬롯 ${k.slot}(${L})${k.same?'과 같은 날짜입니다':'보다 앞 날짜입니다'}. 바꾸면 이 기기의 진행${k.same?'':`(${L}까지)`}이 사라집니다. 그대로 두려면 새 슬롯에 넣으세요.</div>`;
+  const repBtn=rep?`<button class="btn${k.newer?' primary':XF.overAsk==='rep'?' danger':''}" data-a="xfImp" data-v="rep">${!k.newer&&XF.overAsk==='rep'?'한 번 더 눌러 바꾸기':`이 슬롯(${L})을 받은 저장(${R})으로 바꾸기`}</button>`:'';
+  const newBtn=empty?`<button class="btn${k.newer&&rep?'':' primary'}" data-a="xfImp" data-v="empty">새 슬롯에 넣기(슬롯 ${empty})</button>`:'';
+  return `<div class="xf-ask">${head}${tbl}<div class="row">${k.newer?repBtn+newBtn:newBtn+repBtn}<button class="btn" data-a="xfFile">파일로 받아 두기</button></div>${k.lock?`<div class="small muted xf-t">슬롯 ${k.slot}은(는) 보관 슬롯이라 바꿀 수 없습니다.</div>`:''}${empty?'':`<div class="small muted xf-t">빈 슬롯이 없습니다.${rep?' 바꾸거나, ':' '}저장 슬롯에서 하나를 지운 뒤 다시 누르세요.</div>`}<div class="small muted xf-t">서버에서는 이미 지워졌으니 새로고침 전에 고르세요.</div></div>`; }
 /* 개인 생활·인맥 화면 */
 /* 개인 생활 카드: 효과는 엔진의 fx 데이터(PERSONAL_ACT·FOUND·TOUR_FX·LIFE_FX·PRESS_CAUGHT)에서 칩으로 만든다 */
 const plTag=(t,c)=>`<span class="plfx ${c}">${t}</span>`;
@@ -47198,6 +47229,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-xfer',d:'11월 17일',t:'기기 옮기기: 같은 게임의 더 최근 저장으로 바꾸기',items:[
+    '저장은 계정(itch.io 계정 포함)이 아니라 기기·브라우저마다 따로 남는다는 안내를 처음 화면 불러오기, 설정 › 저장·기기, 기기 옮기기 카드에 적었습니다. 다른 기기에서 이어 하려면 마지막으로 플레이한 기기에서 기기 옮기기 코드를 만들어 옮겨 오면 됩니다.',
+    '기기 옮기기로 받은 저장이 이 기기에 있는 같은 게임 슬롯과 겹치면 두 저장의 게임 날짜와 저장 시각을 나란히 보여 주고 어떻게 넣을지 묻습니다. 말없이 덮어쓰지 않습니다.',
+    '받은 저장이 더 나중 날짜이면 \'이 슬롯을 받은 저장으로 바꾸기\'를 먼저 보여 줍니다. 바꾸면 그 슬롯이 이어하기 대상이 되어, A기기 → B기기 → A기기로 돌아와도 B기기에서 진행한 날짜부터 이어집니다. \'새 슬롯에 넣기\'를 고르면 이 기기의 저장은 그대로 둡니다.',
+    '받은 저장이 같거나 앞 날짜이면 이 기기의 진행이 사라진다고 경고하고 \'새 슬롯에 넣기\'를 먼저 보여 줍니다. 그래도 바꾸려면 버튼을 한 번 더 눌러야 합니다.']},
   {id:'2026-11-17-casthud',d:'11월 17일',t:'휴대폰 세로 중계: 주자·볼카운트·투구 수 상황판',items:[
     '휴대폰을 세로로 들고 중계를 보면 경기장 왼쪽 위 상황판에 주자 다이아몬드(누가 어느 루에 있는지), B·S·O 볼카운트, 현재 투수 이름과 투구 수가 함께 나옵니다. 점수와 이닝은 위 점수 막대에 그대로 있습니다.',
     '경기장 아래 타자·투수 줄은 한 사람에 한 줄씩 놓아 이름, 오늘 기록(투수는 이닝·삼진·투구 수), 시즌 기록을 끝까지 보여 줍니다. 화면이 좁으면 말줄임 대신 다음 줄로 넘깁니다.',

@@ -88,6 +88,7 @@ step "저장 실패 뒤 다시 저장·보조 저장소 위치 표시"; node too
 step "백업 가져오기·슬롯 전환·itch 이전"; node tools/check-save-import.cjs || fail=1
 step "다년계약 협상 연도별 지출 줄"; node tools/check-contract-cash-ui.cjs || fail=1
 step "기기 옮기기(코드로 저장 옮기기) 화면 왕복"; node tools/check-save-transfer-ui.cjs || fail=1
+step "기기 옮기기 A→B→A 왕복(같은 게임 슬롯 비교·바꾸기)"; node tools/check-xfer-roundtrip.cjs || fail=1
 step "개인 활동 상대·검색·빠른 설정 변경"; node tools/check-career-review.cjs || fail=1
 step "인물 이전·다음·연속 면담"; node tools/check-people-navigation.cjs || fail=1
 step "사진·소식함·코치 표시·시즌 행사·영구결번"; node tools/check-community-ui.cjs || fail=1
