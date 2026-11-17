@@ -21,10 +21,11 @@ const DSUB_PW={SS:{rng:.45,arm:.3,fld:.25},'2B':{rng:.45,arm:.15,fld:.4},'3B':{r
 /* 리그 주전의 나이 몫 평균(새 리그 측정): 경기의 '그 자리 보통 수준'에 더해 리그 평균 기록을 그대로 둔다 */
 const DSUB_CAL={rng:-1.1,arm:.73,fld:.75}; /* 11-17 측정: 새 리그 4개 주전(실책 무게 가중, 평균 27.6세) */
 const DSUB_SD=4;
-function dsubBase(p){ if(!p||p.isP)return null; if(p.dsb&&p.dsb.rng!=null)return p.dsb;
+const _dsbM=new WeakMap(); /* 리그 밖 선수 사본(대회·래더 덱 등)은 저장 객체를 바꾸지 않고 여기에만 둔다 */
+function dsubBase(p){ if(!p||p.isP)return null; if(p.dsb&&p.dsb.rng!=null)return p.dsb; { const m=_dsbM.get(p); if(m)return m; }
   const A=DSUB_ARCH[p.pos]||DSUB_ARCH.DH; const h={}; for(const k of DSUB_K)h[k]=hn('dt'+k,p.id)*DSUB_SD; /* 예전 고정 성향(trt)과 같은 잡음: 범위가 좋던 선수는 그대로 범위가 좋다 */
   let m=0; for(const k of DSUB_K)m+=DSUB_W[k]*h[k]; const o={}; for(const k of DSUB_K)o[k]=Math.round((A[k]+h[k]-m)*10)/10;
-  p.dsb=o; return o; }
+  if(typeof G!=='undefined'&&G&&G.players&&G.players[p.id]===p)p.dsb=o; else _dsbM.set(p,o); return o; }
 /* 나이 몫: 범위 하락은 성장 유형 하락 나이 5년 전부터(정상형 28세), 1년에 .8, 하락 나이 - 1부터 1.1. 그만큼 송구 40%·포구 60%가 버틴다 */
 function dsubAge(p){ const a=p.age||27; const T=typeof DT!=='undefined'&&DT[p.dt]||{fall:33}; const s=T.fall-5;
   const r=a<=22?1.5:a<26?1.5*(26-a)/4:a<=s?0:-(Math.min(a,T.fall-1)-s)*.8-Math.max(0,a-(T.fall-1))*1.1;

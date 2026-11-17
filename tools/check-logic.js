@@ -6228,6 +6228,18 @@ T('[다년 실제화] 비FA 다년 계약금 없음·연 연봉 하락 다년 �
   const v=domestic(G.user).find(x=>canExtend(x)&&!x.faC&&x!==p); ok(v,'준비 실패: 베테랑'); const a0=v.age; v.age=36; ok(extFloor(v)===salCutFloor(v,true)&&extFloor(v)<v.sal,'하락세 베테랑 예외가 감액 한도가 아님'); v.age=a0;
   const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).find(x=>!x.foreign&&!x.ys&&!x.faC&&!x.ext&&x.age<=30&&x.sal>=100); ok(q,'준비 실패: AI 선수');
   const J=extJudge(q,round5(q.sal*.9),4,t.id,false); ok(J.st==='cut','AI 판정에서 연봉 하락 다년을 막지 않음: '+J.st); const n=aiExtNeg(q,t,4,99999); ok(!n||n.a>=q.sal,'AI가 연봉 하락 다년계약을 맺음: '+(n&&n.a)); });
+T('[수비 세부 11-17] 세부 수비 능력(범위·송구·포구): 주 난수를 쓰지 않고 같은 값, 무게 평균이 종합 수비, 범위가 먼저 늙음, 화면·포지션 적합·경기가 같은 값',()=>{ fresh();
+  const B=domestic(G.user).filter(p=>!p.isP); ok(B.length>10,'준비 실패: 야수');
+  const s0=__rngState(); const snap=B.map(p=>JSON.stringify(p.dsb)); for(const p of B){ delete p.dsb; dsubBase(p); } dsubMigrate(); ok(__rngState()===s0,'세부 수비 계산이 주 난수를 씀');
+  ok(B.every((p,i)=>JSON.stringify(p.dsb)===snap[i]),'다시 계산한 세부 수비가 저장 값과 다름(옛 저장 이전이 불안정)');
+  for(const p of B){ const o=dsubOf(p); const m=DSUB_W.rng*o.rng+DSUB_W.arm*o.arm+DSUB_W.fld*o.fld; ok(Math.abs(m)<.08,p.name+' 세부 무게 평균이 종합 수비와 다름 '+m.toFixed(3)); }
+  const p=B[0], a0=p.age; p.age=25; const y=dsubOf(p); p.age=36; const o=dsubOf(p); p.age=a0; ok(o.rng<y.rng-4&&o.arm>y.arm&&o.fld>y.fld,'나이 들면 범위가 송구·포구보다 먼저 떨어져야 함 '+JSON.stringify({y,o}));
+  const C=B.filter(q=>q.pos==='C'), F=B.filter(q=>q.pos==='1B'); if(C.length&&F.length)ok(Math.max(...C.map(q=>dsubOf(q).arm))>Math.min(...F.map(q=>dsubOf(q).arm)),'포수 어깨 전형이 1루보다 약함');
+  const q=B.find(x=>x.pos==='SS')||B[0]; const sv=Object.assign({},q.dsb); q.dsb=Object.assign({},sv,{arm:sv.arm+6,rng:sv.rng-4.5}); const hiArm=defAt(q,'SS')-defAt(q,'1B'); q.dsb=Object.assign({},sv,{arm:sv.arm-6,rng:sv.rng+4.5}); const loArm=defAt(q,'SS')-defAt(q,'1B'); q.dsb=sv; ok(hiArm>loArm,'유격 적합이 어깨를 보지 않음');
+  ok(Math.abs(defAt(q,q.pos)-q.r.def-dsubFit(q,q.pos))<1e-9,'포지션 적합(AI)이 세부 수비 적합을 쓰지 않음');
+  const ds=dsubVals(q); ok(DSUB_K.every(k=>Math.abs(ds[k]-clamp(q.r.def+dsubOf(q)[k],20,80))<1e-9),'화면용 세부 수비가 종합 수비 + 세부 차이가 아님');
+  ok(Math.abs(rngV(q,q.pos)-(q.r.def+ds.rng-q.r.def-DSUB_ARCH[q.pos].rng-DSUB_CAL.rng))<1e-6||ds.rng===20||ds.rng===80,'경기 수비 범위가 세부 능력을 쓰지 않음');
+  const f0=DEF_SPLIT; DEF_SPLIT=0; const old=defAt(q,q.pos); DEF_SPLIT=f0; ok(old===q.r.def,'DEF_SPLIT=0이면 예전 포지션 수비로 돌아가야 함'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
