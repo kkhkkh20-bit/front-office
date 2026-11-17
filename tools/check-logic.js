@@ -13,11 +13,11 @@ globalThis.__faceSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','
 globalThis.__fcSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8'), ui=R('77_assets_ui.js'); return R('00j2_face_centers_data.js')+'\n'+ui.slice(ui.indexOf('function fcAt('),ui.indexOf('function face6Cut('))+'\n;({FACECTR,fcAt,fcWin})'; };
 /* [얼굴 아마추어] 시나리오용: FACE6 번호표와 배정 함수(face6Idx·amIdx). pre: 앞에 붙일 코드(시험용 FACE21 번호표) */
 globalThis.__amSrc=pre=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
-  return (pre||'')+'\n'+R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n'+ui.slice(ui.indexOf('function amFaceOn('),ui.indexOf('function amLoad('))+'\n;({FACE6,face6Idx,amIdx,amVar})'; };
+  return (pre||'')+'\n'+R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n'+ui.slice(ui.indexOf('function amFaceOn('),ui.indexOf('function face8Role('))+'\n;({FACE6,face6Idx,amIdx,amVar})'; };
 globalThis.__amNoInterim=()=>{ const dir=path.join(__dirname,'..','src','ui','assets'); return !fs.readdirSync(dir).some(f=>/amateur/.test(f))&&!fs.existsSync(path.join(__dirname,'..','assets','v6','batch01c','production100','amateur_interim'))&&!/FACEAM/.test(fs.readFileSync(path.join(dir,'77_assets_ui.js'),'utf8')); };
 /* [비서 v19] 시나리오용: FACE8(사진 빼고)·FACE19 번호표와 비서 배정 함수(secCands·secIdx) */
 globalThis.__secSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
-  return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function face19Load('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
+  return R('00f_people_faces_data.js')+'\n'+R('00k_people_v19_data.js')+'\n'+ui.slice(ui.indexOf('const SEC8='),ui.indexOf('function secPickHtml('))+'\n;({FACE8,FACE19,SEC8,secCands,secIdx})'; };
 globalThis.__pfCss=()=>fs.readFileSync(path.join(__dirname,'..','src','css','players','22_full_player_profile.css'),'utf8'); /* [제보 11-16 해외 복귀 기록] 선수 화면 시즌 통계 줄 숨김 점검 */
 /* [스카우트 표시] 시나리오용: 소식함 첨부·선수 정보 화면 소스(같은 표시 함수를 쓰는지) */
 globalThis.__uiSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'); return {inbox:R('media/19_inbox.js'),prof:R('players/35_full_player_profile.js')}; };
