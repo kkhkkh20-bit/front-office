@@ -35,6 +35,7 @@ function mailActionStatus(m,a){
   if(a.a==='jobYes'||a.a==='jobNo'){const j=(G.jobs||[]).find(x=>x.tid===+a.v&&(c.job!=null?x.exp===c.job:x.exp>d&&x.exp<=d+20));return !j||j.done?mailEnd('이미 답했거나 끝난 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='goalTalk'){const g=G.goals;return !g||g.y!==G.year||!g.pre||g.talk?mailEnd(g&&g.talk?'올해 목표는 구단주와 상의를 마쳤습니다.':'목표 상의 기간이 끝났습니다.'):null;} /* 플레이 테스트 11-13: 수락한 뒤에도 버튼이 살아 있었다 */
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 끝났습니다.'):null;}
+  if(a.a==='easyMode'&&typeof guideEasy==='function'&&guideEasy())return mailEnd('쉬운 진행을 켰습니다. 설정 · 권한에서 하나씩 다시 가져올 수 있습니다.'); /* 첫 시즌 안내(55_guide_bar.js) */
   if(a.a==='handOff'&&typeof autoOn==='function'&&autoOn(a.v))return mailEnd(`${AUTO_WHO[a.v]||'비서'}에게 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`); /* 사용자 11-17 */
   if(a.a==='tripPlanGo'){ if(tripAutoOn())return mailEnd('스카우트팀장에게 출장을 맡겼습니다. 따로 승인하지 않아도 됩니다.'); const T=G.tripPend; if(a.v&&(!T||String(T.w0)!==String(a.v)))return T&&T.w0>+a.v?mailEnd('새 출장 안이 왔습니다.',true):mailEnd('이 주 출장 안은 처리했거나 지났습니다.'); if(!a.v&&!T)return mailEnd('이미 처리한 출장 안입니다.'); return null; }
   if(a.a==='scoutPlanGo'){

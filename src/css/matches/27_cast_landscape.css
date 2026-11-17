@@ -1,0 +1,87 @@
+/* ===== 휴대폰 가로 중계(사용자 'ddddddd' 11-17: "가로로 플레이하는데 주자도 안 보이고 투구 수가 사라진다") =====
+   세로에 맞춘 배치를 가로에 그대로 쓰면 경기장이 150px 안팎으로 납작해지고, 대결 카드가 아래 절반을 차지했다.
+   가로(높이 600px 미만)에서는 왼쪽에 경기장(3D·2D)을 꽉 채우고, 오른쪽 좁은 칸에 현재 타자·투수(투구 수)·투구 위치를 세로로 둔다.
+   점수·이닝·주자 다이아몬드·볼카운트는 경기장 왼쪽 위 점수판에 크게, 위 막대는 한 줄로. 버튼은 손가락 크기(36px 이상).
+   세로 휴대폰·태블릿·PC는 바꾸지 않는다. */
+.md-back-field{display:none}
+/* 기록·선수단 화면에서 경기 화면으로 돌아가는 길을 늘 보이게(더보기를 다시 열지 않아도) */
+@media(max-width:1000px){
+ .cast.match-dashboard:not([data-view="field"]) .cs-top>.md-back-field{display:inline-flex;align-items:center;background:#2f6fb0;border-color:#7cbcff;color:#fff;font-weight:700;min-height:36px!important;padding-inline:12px}
+ .cast.match-dashboard:not([data-view="field"]) .md-mobile-nav{display:flex}
+ .cast.match-dashboard:not([data-view="field"]) .md-mobile-nav button{min-height:36px}
+}
+@media(max-width:1000px) and (max-height:599px) and (orientation:landscape){
+ html.cast-page-open #sheet .cast.match-dashboard{padding:3px max(6px,env(safe-area-inset-right)) max(3px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));gap:4px}
+ /* 위 막대: 점수 + 재생·배속·더보기·나가기 한 줄. 하이라이트/전체·소리·박스스코어·화면 전환은 더보기 안에 */
+ html.cast-page-open #sheet .cast.match-dashboard .cs-top{flex-wrap:nowrap;align-items:center;gap:4px;padding:2px 4px;min-height:40px;box-sizing:border-box}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-board{flex:0 1 auto;flex-basis:auto;margin-right:auto;justify-content:flex-start;gap:8px;min-width:0}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-top .cs-tm b{font-size:20px}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-top>.md-control,html.cast-page-open #sheet .cast.match-dashboard .cs-top .cs-mode button,html.cast-page-open #sheet .cast.match-dashboard .md-mobile-nav button{min-height:36px!important;padding:4px 10px;font-size:12px!important}
+ html.cast-page-open #sheet .cast.match-dashboard .md-more-btn{display:inline-flex}
+ html.cast-page-open #sheet .cast.match-dashboard:not([data-more]) .cs-top>:is(.cs-mode,[data-a="castSnd"],[data-a="castBox"]){display:none}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"]:not([data-more]) .md-mobile-nav{display:none}
+ html.cast-page-open #sheet .cast.match-dashboard[data-more] .cs-top{flex-wrap:wrap}
+ html.cast-page-open #sheet .cast.match-dashboard[data-more] .cs-top>:is(.cs-mode,.md-mobile-nav){display:flex}
+ html.cast-page-open #sheet .cast.match-dashboard[data-more] .cs-top>:is([data-a="castSnd"],[data-a="castBox"]){display:inline-flex}
+ html.cast-page-open #sheet .cast.match-dashboard[data-more] .md-mobile-nav{flex-basis:auto;margin-left:auto}
+ html.cast-page-open #sheet .cast.match-dashboard[data-more] .md-more-btn{background:#2f6fb0;border-color:#7cbcff;color:#fff}
+ html.cast-page-open #sheet .cast.match-dashboard:not([data-view="field"]) .md-mobile-nav{flex-basis:auto;margin:0}
+ html.cast-page-open #sheet .cast.match-dashboard:not([data-view="field"]) .cs-top>:is(.md-more-btn,[data-a="castSpd"],.cs-mode,[data-a="castSnd"],[data-a="castBox"]){display:none!important}
+ html.cast-page-open #sheet .cast.match-dashboard:not([data-view="field"]) .cs-board{flex:none}
+ /* 경기 화면: 위 막대 · 본문 · 재생 막대 세 줄. 자막 줄·라인스코어·선수단 줄·타구장 소식은 경기장 안 자막과 오른쪽 칸이 대신한다 */
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"]{grid-template-rows:auto minmax(0,1fr) auto!important}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"]>:is(.md-ticker,.md-comment,.md-linescore,.md-dugout){display:none!important}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] :is(.md-layout,.md-center){display:block!important;height:100%;min-height:0}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-layout>.md-team-panel,html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] :is(.md-top-grid,.md-charts){display:none!important}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-play-grid{display:grid!important;height:100%;min-height:0;grid-template-columns:minmax(0,1fr) clamp(196px,29vw,250px)!important;grid-template-rows:auto minmax(0,1fr)!important;gap:4px}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-field-panel{display:contents}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-field-panel>header{display:none}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-field-body{grid-column:1;grid-row:1/3;position:relative;height:100%;min-height:0;border:1px solid var(--md-line);border-radius:5px;overflow:hidden}
+ /* 오른쪽 칸 1: 현재 타자·투수. 투구 수는 굵게 */
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-duel{grid-column:2;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr);gap:3px;padding:3px;border:1px solid var(--md-line);border-radius:5px;min-width:0}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-duel-player{display:flex;align-items:center;gap:6px;min-height:40px;padding:2px 4px 2px 6px;min-width:0;text-align:left}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-duel-player .av{display:block;width:28px;height:28px;flex:none}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-duel-player>span{display:grid;gap:0;min-width:0;white-space:nowrap;overflow:hidden}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-duel-player>span>i{display:block;font-size:10px;font-style:normal;color:#9fb4c1;overflow:hidden;text-overflow:ellipsis}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-duel-player b{font-size:13px;overflow:hidden;text-overflow:ellipsis}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-duel-player small{display:block;font-size:11px;overflow:hidden;text-overflow:ellipsis}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] #cs-pitcher-count{font-style:normal;font-weight:800;color:#ffd27a}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-duel :is(.md-duel-more,.cs-mu,.cs-mix,.cs-alerts,.ab-res,.md-story){display:none}
+ /* 오른쪽 칸 2: 투구 위치(포수 시점)와 이번 투구 */
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-pitch-dock{grid-column:2;grid-row:2;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;gap:3px;height:auto!important;max-height:none!important;min-height:0;padding:3px;overflow:hidden;box-sizing:border-box}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-pitch-dock>:is(header,.md-pitch-history,.md-count-panel){display:none!important}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-pitch-dock>.md-zone-map{grid-column:1;grid-row:1;display:block;justify-self:center;align-self:center;height:100%;width:auto;max-width:100%;min-height:0;max-height:100%;aspect-ratio:1/1.1;margin:0}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="field"] .md-pitch-dock>.cs-pitch{grid-column:1;grid-row:2;margin:0;padding:3px 6px;display:flex;flex-wrap:wrap;align-items:baseline;gap:1px 6px;white-space:nowrap;overflow:hidden;min-height:0}
+ /* 경기장 왼쪽 위 점수판: 점수·이닝·주자·볼카운트에 타자와 투수(투구 수)까지 */
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel{display:grid!important;left:5px;top:5px;right:auto;bottom:auto;max-width:min(250px,48%);opacity:.97;z-index:9}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-who{display:flex;font-size:11px;padding:1px 6px;line-height:1.35}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-who em{font-size:11px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel #md-bug-pc{color:#ffd27a;font-weight:800}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-main{grid-template-columns:auto 24px 36px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-t{height:19px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-t :is(span,b){line-height:19px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-dia i{width:10px;height:10px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-dia .b1{left:13px;top:5px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-dia .b0{left:23px;top:16px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .mb-dia .b2{left:3px;top:16px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .cs-bso>div{height:13px;line-height:13px}
+ html.cast-page-open #sheet .cast.match-dashboard #cs-stage>.md-count-panel .cs-bso i{width:8px;height:8px}
+ /* 점수판을 가리던 2D 대체 안내·경기장 안 작은 상황판은 아래로 작게 */
+ html.cast-page-open #sheet .cast.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:auto;bottom:4px;left:auto;right:4px;max-width:46%;min-height:0;padding:3px 8px;font-size:10px;line-height:1.35;opacity:.85}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-retry{display:none}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-stage>.cs-sit{display:none!important}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-stage[data-renderer="ready"]>:is(.cs-board-view,.cs-cam-view){min-height:30px;padding:4px 8px}
+ html.cast-page-open #sheet .cast.match-dashboard .cs-stage[data-renderer="ready"]>.cs-cam-view{top:40px}
+ /* 아래 재생 막대 */
+ html.cast-page-open #sheet .cast.match-dashboard .md-replay .md-control{min-height:36px!important;padding:4px 10px;font-size:12px!important}
+ html.cast-page-open #sheet .cast.match-dashboard .md-replay input{height:28px}
+ /* 기록·선수단 화면: 칸이 납작해지지 않게 위 칸 높이를 줄이고 차트는 옆으로 */
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="data"]>:is(.md-ticker,.md-linescore,.md-dugout){display:none!important}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="data"]{grid-template-rows:auto minmax(0,1fr) auto auto!important}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-center{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr)!important;gap:4px;height:100%}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-top-grid{display:grid!important;grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) minmax(0,1fr);min-height:0}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-top-grid>.md-panel{min-height:0;overflow:auto}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-play-grid{display:block!important;min-height:0;height:100%}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-charts{display:grid!important;height:100%;grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;gap:4px}
+ html.cast-page-open #sheet .cast.match-dashboard[data-view="data"] .md-comment{min-height:0}
+}
