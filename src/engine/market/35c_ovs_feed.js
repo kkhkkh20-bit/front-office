@@ -32,7 +32,7 @@ function ovfCum(a,L,t){ const P=ovfPlan(a,L), nw=OVF.nw; if(t>=nw)return L;
   if(L.x&&!((M.pa||0)+(M.outs||0))&&M.x){ const X=M.x; delete M.x; return Object.assign(X,{y:L.y,live:1}); } /* 아직 본 수준에서 뛰지 않았다: 지금 뛰는 수준을 앞에 */
   return M; }
 /* 진행 중인 해외파 기록(화면용, ovsPart 대신): f = 해외 리그 진행 비율 */
-function ovsCurPart(a,f){ const L=a&&a.cur; if(!L)return null; if(f>=1)return L; if(a.foreign||a.cand)return ovsPart(L,f); return ovfCum(a,L,f*OVF.nw); }
+function ovsCurPart(a,f){ const L=a&&a.cur; if(!L)return null; if(f>=1)return L; if(a.foreign||a.cand)return ovsPart(L,f); const M=ovfCum(a,L,f*OVF.nw); return a.asY===L.y&&M!==L?Object.assign({},M,{aw:['AS']}):M; } /* 7월에 뽑힌 올스타는 진행 중 줄에도 */
 /* 올스타(빅리그만): 시즌 기록 가치로 정한다. 확률은 시즌 뒤 시상(ovsAwards)과 같은 식, 뽑기는 해시. 7월 초에 발표하고 시즌 뒤 시상도 그 결과를 따른다 */
 function ovsAsP(L,isP){ if(!L||!ovsBig(L.lvl))return 0; const v=ovsVal(L,isP); return isP&&L.rp?(v>=1.6?clamp((v-1.4)/2.5,0,.5):0):clamp((v-3)/3,0,.85); }
 const ovsKr=a=>a&&!a.foreign&&!a.cand&&!a.back&&a.end==null;
