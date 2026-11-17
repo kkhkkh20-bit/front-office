@@ -16637,6 +16637,7 @@ function makeDraftClass(){
     if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; if(milFree(p)&&!p.foreign){ p.mil={done:true,wait:G.year}; story(p,'유예 기간 2년 동안 병역 이행(군필로 드래프트 참가)','mil'); } /* 실제 해외 유턴파는 2년 유예 기간에 병역을 마치고 나온다(카페 11-15: 지명 뒤 현역 입대로 능력 하락) */ p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
     try{ wire('드래프트',`해외파 ${p.name}(${p.age}세), ${G.year} 신인 드래프트 참가`,{ref:p.id}); }catch(e){} }
   try{ for(const p of amDepSeniors(G.year))if(!cls.includes(p.id))cls.push(p.id); }catch(e){ console.error(e); } /* 프로 지원한 부원 졸업반(13b_am_depth, 사용자 11-17): 시드 난수만 쓴다 */
+  for(let i=cls.length-1;i>=0;i--){ const p=G.players[cls[i]]; if(!p||p.team!=null)cls.splice(i,1); } /* 어느 구단과든 계약한 선수는 드래프트 명단에 넣지 않는다(카페 11-17). 정상 세계에선 아무도 빠지지 않아 난수 순서 그대로 */
   amClass(cls); /* 해외 복귀자는 출국 전 아마 기록이 없을 때만 새로 만든다(검수 11-09ze) */
   pressRank(cls);
   G.draftClass=cls;
@@ -16670,6 +16671,14 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
   recoverDraftLogs();
 }
+/* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.
+   계약했는데 신인 후보(prospect) 표시가 남은 선수는 표시를 푼다(1월 1일 명단 정리 때 지워지지 않게). 난수를 쓰지 않는다. 사람·AI 구단 공통 */
+function draftClassPrune(){ if(!G)return 0; let n=0; const out=new Set();
+  const drafted=p=>!!(p.draft&&p.draft.y===G.year); /* 이번 드래프트에서 지명된 선수는 진행 중 명단에 남긴다(지명 결과 표시) */
+  const prune=L=>{ if(!Array.isArray(L))return; for(let i=L.length-1;i>=0;i--){ const p=G.players[L[i]]; if(!p||(p.team!=null&&!drafted(p))){ if(p)out.add(p.id); L.splice(i,1); n++; } } }; /* 제자리에서 지운다: G.draft.cls와 G.draftClass가 같은 배열일 수 있다 */
+  prune(G.draftClass); const d=G.draft; if(d&&!d.done&&d.cls!==G.draftClass)prune(d.cls);
+  for(const id of out){ const p=G.players[id]; if(p&&p.prospect){ p.prospect=false; if(G.dmemo)delete G.dmemo[id]; } }
+  return n; }
 /* 예전 후보는 인물·능력·관찰·메모를 그대로 두고 학교/권역 표시만 보완한다. */
 function migrateDraftPool(){
   const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&d.y===G.year);
@@ -16677,6 +16686,7 @@ function migrateDraftPool(){
   const prospects=Object.values(G.players).filter(p=>p&&p.prospect).map(p=>p.id);
   const source=Array.isArray(G.draftClass)&&G.draftClass.length?G.draftClass:live&&Array.isArray(d.cls)?d.cls:prospects;
   G.draftClass=valid(source);
+  try{ draftClassPrune(); }catch(e){ console.error(e); } /* 옛 저장 수리: 트라이아웃 등으로 계약했는데 명단에 남은 선수(카페 11-17) */
   if(!G.draftClass.length&&!live&&!done){ if(prospects.length)G.draftClass=valid(prospects); else makeDraftClass(); }
   if(live)d.cls=valid(Array.isArray(d.cls)?d.cls:G.draftClass);
   for(const id of new Set([...G.draftClass,...(live?d.cls:[])])){ const p=G.players[id]; if(!p||!p.prospect)continue;
@@ -16712,6 +16722,7 @@ function startDraft(){ try{ draftOddsSnap(); }catch(e){} /* 예상 확률 보정
   const D=draftOrders(); const order=D.r2, o1=D.r1;
   if(D.pen.includes(G.user)){ const a=D.r2.indexOf(G.user)+1, b=D.r1.indexOf(G.user)+1; if(b!==a)note('드래프트',`경쟁균형세 3회 연속 초과로 1라운드 지명 순서가 ${a}순위에서 ${b}순위로 내려갔습니다.`); } /* 실제로 바뀐 만큼만(검수 11-07) */
   pkClean(); const picks=draftPlan(); void order; void o1; /* 트레이드로 넘겨받은 지명권은 원래 구단 순번에 쓴다 */
+  try{ draftClassPrune(); }catch(e){ console.error(e); } /* 지명 시작 전: 계약한 선수는 명단에서 뺀다(카페 11-17) */
   G.draft={cls:G.draftClass||[],picks,cur:0,done:false,y:G.year}; { const P=draftRestPre(); if(P)G.draft.rest={mode:P.mode,min:P.min,tid:P.tid}; delete G.drestPre; } /* 준비 화면에서 정해 둔 자동 지명 기준 */
   stop('드래프트',`${G.year} 신인 드래프트가 열립니다. 참가 ${G.draft.cls.length}명, ${DRAFT_ROUNDS}라운드 지명 순번은 ${picks.length}개입니다(어느 라운드든 지명을 건너뛸 수 있어 실제 지명 인원은 더 적을 수 있습니다). 순서는 지난 시즌 성적의 역순이고, ${(()=>{ const f=picks.find(k=>k.tid===G.user); return f?`우리 첫 지명은 ${f.rd}라운드 ${f.no}순위입니다.`:'우리 구단은 이번 드래프트 지명권이 없습니다.'; })()}`);
 }
@@ -16987,12 +16998,12 @@ function aiDraftChoose(tid,ids,rd,proj){ const t=team(tid); const need=draftNeed
   const L=ids.map(id=>({id,s:aiDraftScore(tid,G.players[id],need)})).sort((a,b)=>b.s-a.s); if(!L.length)return null;
   if(!(rd>=3&&proj>=ROSTER_MAX-2))return L[0].id;
   const worst=Math.min(...domestic(tid).map(keepScore)); const f=L.find(x=>keepScore(G.players[x.id])+hn('ak'+tid,x.id)*t.scoutSd*.5>=worst+1); return f?f.id:-1; }
-function aiDraftPick(tid){ const d=G.draft; return aiDraftChoose(tid,d.cls.filter(id=>G.players[id]&&G.players[id].prospect),d.picks[d.cur].rd,rosterProj(tid)); }
+function aiDraftPick(tid){ const d=G.draft; return aiDraftChoose(tid,d.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null),d.picks[d.cur].rd,rosterProj(tid)); }
 function passCurrent(){ const d=G.draft; const pk=d.picks[d.cur]; pk.pid=-1; pk.pass=true; d.cur++; if(pk.tid===G.user&&!G.unemp)addLog(`${pk.rd}라운드 ${pk.no}순위 지명을 건너뛰었습니다.`); if(d.cur>=d.picks.length)finishDraft(); }
 /* 우리 지명 요청: 우리 차례일 때만(검수 11-06) */
 function userPick(pid){ const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return '지금은 우리 차례가 아닙니다.'; return doPick(pid)?'':'지명할 수 없는 선수입니다.'; }
 function doPick(pid){
-  const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; const p=G.players[pid]; if(!pk||!p||!p.prospect||!d.cls.includes(pid))return false; /* 이미 지명된 선수·후보 아닌 선수는 다시 뽑지 않는다(검수 11-06) */
+  const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; const p=G.players[pid]; if(!pk||!p||!p.prospect||p.team!=null||!d.cls.includes(pid))return false; /* 어느 구단과든 계약한 선수는 지명할 수 없다(카페 11-17) */ /* 이미 지명된 선수·후보 아닌 선수는 다시 뽑지 않는다(검수 11-06) */
   const mine=pk.tid===G.user&&!G.unemp; let rp0=null; /* 지명 직전 우리 스카우트 추정: 지명 뒤 다시 읽으면 우리 선수 기준이라 값이 달라진다(검수 11-09d) */
   if(mine){ try{ rp0=scoutReport(p); if(rp0.ofp!=null)p.dEst={ofp:rp0.ofp,sd:rp0.sd,who:rp0.who,tid:G.user,y:G.year,d:G.day}; }catch(e){} }
   p.prospect=false; p.team=pk.tid; p.joinY=G.year+1; p.sal=MIN_SAL; p.svc=0; p.draft={y:G.year,rd:pk.rd,no:pk.no,tid:pk.tid,bonus:bonusOf(pk.rd,pk.no,p),...(pk.from!=null?{from:pk.from}:{})}; /* from: 넘겨받은 지명권의 원래 구단(거래 성과 집계) */ acqStamp(p,'draft',pk.tid,Object.assign({rd:pk.rd,no:pk.no},mine?{how:pk.rule?'rule':pk.auto?'auto':'gm'}:{})); if(mine&&rp0)try{ p.acq.e0=rp0.cur; if(rp0.ofp!=null)p.acq.ep=rp0.ofp; }catch(e){} story(p,`${G.year} 신인 드래프트 ${pk.rd}라운드 ${pk.no}순위 · ${tname(pk.tid)} 지명 (${p.school||''})`,'draft');
@@ -17023,7 +17034,7 @@ function draftRestPre(){ const P=G.drestPre; return P&&P.y===G.year&&P.tid===G.u
 function draftRestOf(){ const d=G.draft; return d&&!d.done&&d.rest&&d.rest.tid===G.user&&!G.unemp?d.rest:null; }
 function draftCondSummary(min){ const d=G.draft, ids=d&&!d.done?d.cls:G.draftClass||[]; let total=0,fit=0,unknown=0;for(const id of ids){const p=G.players[id];if(!p?.prospect)continue;total++;const T=potTierP(scoutReport(p),p);if(!T)unknown++;else if(T.n>=min)fit++;}return {total,fit,unknown,full:rosterProj(G.user)>=ROSTER_MAX}; }
 /* 우리 보드 맡기기(사용자 11-17 드래프트 전 전략): 남은 후보 중 우리 보드(관심 목록 순서) 맨 위. AI 구단도 자기 평가 순서로 고르니 같은 방식이다 */
-function draftBoardTop(){ const d=G.draft; if(!d||d.done)return null; const av=new Set(d.cls.filter(id=>G.players[id]&&G.players[id].prospect)); return (G.shortlist||[]).find(id=>av.has(id))??null; }
+function draftBoardTop(){ const d=G.draft; if(!d||d.done)return null; const av=new Set(d.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null)); return (G.shortlist||[]).find(id=>av.has(id))??null; }
 function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null;
   if(R0.mode==='board'){ const id=rosterProj(G.user)<ROSTER_MAX?draftBoardTop():null; if(id){ pk.rule=true; pk.board=true; doPick(id); return {pk,pid:id,me:true}; }
     if(rosterProj(G.user)>=ROSTER_MAX){ pk.passReason=`정식 로스터 한도 ${ROSTER_MAX}명`; passCurrent(); return {pk,pass:true}; }
@@ -17036,7 +17047,7 @@ function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&
   if(ok){ pk.rule=true; doPick(id); return {pk,pid:id,me:true}; }
   pk.passReason=!cond?'직접 설정: 남은 지명 건너뛰기':S.full?`정식 로스터 한도 ${ROSTER_MAX}명`:'잠재력 추정 기준을 충족한 후보 없음';
   passCurrent(); return {pk,pass:true}; }
-function userAutoPick(ok){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect&&(!ok||ok(G.players[id]))); let best=null,bs=-1; /* ok: 조건(등급 등)을 채운 후보 중에서만 */ const pol=draftPolK();
+function userAutoPick(ok){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null&&(!ok||ok(G.players[id]))); let best=null,bs=-1; /* ok: 조건(등급 등)을 채운 후보 중에서만 */ const pol=draftPolK();
   for(const id of av){ const rp=scoutReport(G.players[id]); const v=draftVal(rp,G.players[id])+(pol&&draftFit(G.players[id],pol)?4:0)+dplanBonus(G.players[id]); /* 빅보드 라운드 목표(스카우트 1단계) */ if(v>bs){bs=v;best=id;} } return best; }
 
 
@@ -23934,7 +23945,7 @@ function retireOut(p,why){ if(!p)return; try{ legendRetire(p); }catch(e){} /* �
 function toFree(p,why,paid,noWv){ if(!p)return; try{ if(p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ optPaid(p.team,p.opt.a); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 방출과 함께 지급합니다.`); } }catch(e){} /* 방출해도 달성한 옵션은 준다(국내, 검수 11-06) */ if(p.team!=null){ try{ capDeadAdd(p,p.team); }catch(e){} /* 시즌 중 방출은 그해 상한 산정에 남는다(01_rules) */ mvLog('방출',p,p.team,null,why||''); if(!noWv)try{ wvStart(p,paid); }catch(e){} /* 웨이버 공시: 계약을 지우기 전에 남겨 둔다 */ p.relT=p.team; p.relD=G.day; const B=p.relBan=Object.assign({},p.relBan||{}); for(const k in B)if(B[k]<=G.day)delete B[k]; B[p.team]=G.day+365; } /* 구단별 재계약 제한 종료일: 다른 구단에서 다시 방출돼도 앞 구단 제한은 만료일까지 남는다 */ termsClear(p); /* 방출되면 계약 조건(상한 반영·옵션·약속·거부권)도 끝난다: 같은 구단에 다시 와도 되살아나지 않게 */ p.team=null; if(p.freeSince==null)p.freeSince=G.year; p.freeDay=G.day; p.faC=false; p.ext=false; p.yrs=0; delete p.newSal; if(G.contract){ if(G.contract.neg)delete G.contract.neg[p.id]; if(G.contract.ended)G.contract.ended=G.contract.ended.filter(x=>x!==p.id); } /* 옛 구단과의 연봉 협상(미확정 산정안)도 끝난다: 새 구단 계약이 옛 협상 금액을 읽지 않게 */
   delete p.cyrs; delete p.extNext; delete p.ys; delete p.role; delete p.faFrom; delete p.ask; delete p.listed; delete p.aiListed; delete p.hold; /* 옛 구단과의 미계약 상태도 끝난다(검수 11-08: 새 구단 계약을 덮어씀) */ if(p.mil&&p.mil.app)p.mil=null; /* 구단을 통해 낸 상무 지원도 무효: 새 구단에서 다시 지원해야 한다(검수 11-09zx) */ if(!p.injK)p.injOut=Math.min(p.injOut||0,60);
   if(why)story(p,why,'move'); }
-function isFree(p){ return !!p&&p.team==null&&p.freeSince!=null&&!p.foreign&&!p.prospect&&!(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id)); }
+function isFree(p){ return !!p&&p.team==null&&p.freeSince!=null&&!p.foreign&&!p.prospect&&!p.ovsWait&&!(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id)); }
 function freeList(){ return Object.values(G.players).filter(p=>isFree(p)&&!p.wv); } /* 웨이버 공시 중(7일)인 선수는 아직 자유계약이 아니다 */
 /* 무적 선수의 요구 연봉: 시장가의 35%와 직전 연봉의 60% 중 낮은 쪽, 최저연봉 이상 */
 function freeAsk(p){ const rm=p.retMin&&p.retMin.until>=G.day?p.retMin.sal:0; /* 해외 복귀 우선협상이 불발된 선수: 복귀 요구액에 가깝게 */ const mv=marketSal(ovr(p)+pvShift(p)), star=p.age<=33?clamp((ovr(p)-52)*.06,0,.7):0; return round5(Math.max(MIN_SAL,rm,Math.min(mv*.35,(p.sal||MIN_SAL)*.6),mv*star)); } /* 주전급 이상은 무적이 돼도 시장가의 일정 몫 아래로 내려가지 않는다: 보상금을 부풀려 FA를 막은 뒤 헐값에 다시 데려오는 우회 방지(커뮤니티 피드백 11-11) */
@@ -33797,7 +33808,11 @@ function tryAnnounce(y){ const T=tryInit(y); if(T.ann!=null)return T; T.ann=G.da
   for(const id of T.ids){ const p=G.players[id]; const kd=tryKindOf(p); T.n[kd]=(T.n[kd]||0)+1; }
   if(!G.unemp){ const n=T.n; mail('스카우트팀장',`KBO 공개 트라이아웃 명단 · ${T.ids.length}명`,`${dmd(T.day)} 테스트에 ${T.ids.length}명이 나옵니다(${Object.keys(TRY_K).filter(k=>n[k]).map(k=>TRY_K[k]+' '+n[k]).join(' · ')}). 달력에서 그날 단장 일정으로 직접 참관을 잡을 수 있습니다.`,{kind:'스카우트',acts:[{l:'트라이아웃',a:'go',v:'transfer:tryout'}]}); }
   return T; }
-function tryKindOf(p){ if(!p)return 'vet'; if(p.ovsWait&&p.ovsWait>((G.tryout&&G.tryout.y)||G.year)&&p.team==null)return 'ovs'; return p.tryK==='ud'?'ud':p.tryK==='indie'?'indie':'vet'; }
+/* 드래프트로만 들어올 수 있는 선수(사람·AI 같은 규칙): 2년 유예 중(ovsWait)이거나 이미 올해 신인 드래프트 명단에 오른 선수(prospect, 해외파 신인 포함).
+   카페 11-17(ddddddd): 1월 1일 드래프트 명단을 만들 때 유예가 끝난 해외파는 ovsWait가 지워지고 prospect가 되는데, 트라이아웃 계약 마감(1월 20일) 전이라 '방출 선수'로 읽혀 계약되고 그해 드래프트에도 그대로 나왔다 */
+function tryDraftOnly(p){ return !!p&&p.team==null&&!p.retired&&(!!p.ovsWait||!!p.prospect); }
+function tryDraftY(p){ return (p&&p.ovsWait)||G.year; }
+function tryKindOf(p){ if(!p)return 'vet'; if(tryDraftOnly(p))return 'ovs'; return p.tryK==='ud'?'ud':p.tryK==='indie'?'indie':'vet'; }
 /* 공개 측정(모두에게 같은 정보): 투수 최고 구속, 야수 홈→1루 */
 function tryMeasure(p,y){ if(p.isP)return `최고 ${clamp(veloOf(p)+Math.round((relU('tryv'+y,p.id)-.5)*4),128,158)}km/h`; return `1루까지 ${(+runOf(p)+(relU('tryr'+y,p.id)-.5)*.12).toFixed(2)}초`; }
 /* 테스트(12월 2일): 측정 기록을 남기고 직접 온 단장을 기록한다 */
@@ -33823,7 +33838,7 @@ const tryNextY=()=>dobj(G.day).m>=9; /* 9월 뒤 계약은 다음 시즌부터(�
 function tryRegN(tid){ return rosterN(tid)+Object.values(G.players).filter(p=>p.team===tid&&!p.ys&&p.joinY>G.year).length; }
 /* 계약 가능 여부(사람·AI 같은 규칙). ys: 육성선수 계약 */
 function tryWhy(p,tid,ys){ const T=tryCur(); if(!T||!p||!T.ids.includes(p.id))return '트라이아웃 대상이 아닙니다.'; if(p.team!=null)return '이미 다른 구단과 계약했습니다.';
-  const k=tryKindOf(p); if(k==='ovs')return `해외 복귀 2년 유예 중이라 ${p.ovsWait}년 신인 드래프트로만 데려올 수 있습니다.`;
+  const k=tryKindOf(p); if(k==='ovs')return p.ovsWait?`해외 복귀 2년 유예 중이라 ${p.ovsWait}년 신인 드래프트로만 데려올 수 있습니다.`:`${tryDraftY(p)}년 신인 드래프트 참가 선수라 드래프트로만 데려올 수 있습니다.`;
   if(k!=='ud'&&!(T.ran&&G.day>=T.day))return `${dmd(T.day)} 테스트가 끝나야 계약할 수 있습니다.`; if(k==='ud'&&!ys)return '미지명 신인은 육성선수로만 계약할 수 있습니다.';
   if(G.day>T.close)return '계약 기간이 끝났습니다.';
   if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return '방출한 구단은 1년 동안 다시 계약할 수 없습니다.';
@@ -33835,7 +33850,7 @@ function trySal(p,ys){ return tryKindOf(p)==='vet'?(ys?Math.max(MIN_SAL,Math.min
 function trySign(id,tid,ys){ tid=tid??G.user; const p=G.players[id]; const why=tryWhy(p,tid,!!ys); if(why)return why; const T=tryCur(), k=tryKindOf(p), sal=trySal(p,!!ys);
   if(tid===G.user&&sal>MIN_SAL){ const s=sponSeason(); const cc=capOwnerCheck(capPayWith(G.user,p.id,sal,s).tot,capPayWith(G.user,null,null,s).tot,s,'try'+p.id); if(cc&&!cc.ok)return cc.msg; if(cc)capOwnerOk(cc,`트라이아웃 ${p.name} 영입`); }
   p.team=tid; p.sal=sal; p.yrs=1; p.ys=!!ys; p.e1=false; delete p.freeSince; delete p.freeDay; delete p.udY; if(tryNextY())p.joinY=G.year+1; else delete p.joinY; p.mor=clamp((p.mor??55)+8,0,100);
-  p.tryS={y:T.y,k,ys:!!ys,tid,d:G.day}; delete p.tryK;
+  p.tryS={y:T.y,k,ys:!!ys,tid,d:G.day}; delete p.tryK; try{ draftClassPrune(); }catch(e){} /* 계약한 선수는 어떤 길이든 드래프트 명단에 남지 않는다 */
   mvLog('트라이아웃',p,null,tid,`${ys?'육성선수':'정식 선수'} · 연 ${money(sal)}`,sal); story(p,`${T.y} ${k==='ud'?'드래프트 미지명 뒤':'KBO 공개 트라이아웃'} · ${tname(tid)} ${ys?'육성선수':'정식'} 계약`,'move');
   try{ milLate(p,tid); }catch(e){}
   (G.tryLog=G.tryLog||[]).push({y:T.y,id:p.id,tid,k,ys:!!ys,d:G.day,pos:p.isP?'P':p.pos,age:p.age}); if(G.tryLog.length>300)G.tryLog.shift();
@@ -43937,7 +43952,7 @@ function tryView(){ const T=tryCur(), y=T?T.y:G.year, d0=tryAnnD(y), d1=tryDayD(
   if(!T||!T.ids.length)return csec('트라이아웃',head+emptyState('지금은 참가 선수가 없습니다.'))+lastBox;
   const R=tryRows(T), F=UI.tryF||'all';
   const chips=`<div class="chips">${[['all','전체'],['P','투수'],['H','야수'],['ud','미지명'],['indie','독립리그'],['vet','방출'],['ovs','해외 복귀']].map(([k,l])=>`<button class="${F===k?'on':''}" data-a="tryF" data-v="${k}">${l}</button>`).join('')}</div>`;
-  const rows=R.map(({p,k,e})=>`<tr><td>${tfP(p,`${esc(posLabel(p))} · ${p.age}세 · ${TRY_K[k]}`)}</td><td class="tc-a">${k==='ovs'?`<span class="small muted">${p.ovsWait}년 드래프트</span>`:k==='ud'?tryBtn(p,true):tryBtn(p,true)+' '+tryBtn(p,false)}</td><td class="small">${esc(e.cw)}</td><td class="small">${esc(e.pw)}</td><td class="small muted">${esc(e.conf)}</td><td class="small">${esc(T.res[p.id]||'-')}</td><td class="small muted">${k==='indie'&&p.indieT?esc(p.indieT):p.school?esc(p.school):p.relT!=null?'전 '+esc(tshort(p.relT)):'-'}</td></tr>`);
+  const rows=R.map(({p,k,e})=>`<tr><td>${tfP(p,`${esc(posLabel(p))} · ${p.age}세 · ${TRY_K[k]}`)}</td><td class="tc-a">${k==='ovs'?`<span class="small muted">${tryDraftY(p)}년 드래프트로만</span>`:k==='ud'?tryBtn(p,true):tryBtn(p,true)+' '+tryBtn(p,false)}</td><td class="small">${esc(e.cw)}</td><td class="small">${esc(e.pw)}</td><td class="small muted">${esc(e.conf)}</td><td class="small">${esc(T.res[p.id]||'-')}</td><td class="small muted">${k==='indie'&&p.indieT?esc(p.indieT):p.school?esc(p.school):p.relT!=null?'전 '+esc(tshort(p.relT)):'-'}</td></tr>`);
   return csec(`트라이아웃 · ${R.length}명`,head+chips+`<div class="sf-tw"><table class="sf-t tf-t"><thead><tr><th>선수</th><th>계약</th><th>지금</th><th>성장</th><th>확신</th><th>측정</th><th>소속·학교</th></tr></thead><tbody>${rows.join('')||'<tr><td colspan="7" class="muted">조건에 맞는 선수가 없습니다.</td></tr>'}</tbody></table></div>`)+lastBox; }
 /* ---------- 시상식 연출: 후보 소개 → 수상자 발표(득표 막대) → 소감 → 전체 결과 ---------- */
 function cerStages(A,k){ if(k==='mvp')return [['MVP',A.cand.mvp||[],1,'mvp'],['신인왕',A.cand.roy||[],1,'roy']].filter(s=>s[1].length);
@@ -47034,6 +47049,9 @@ const PATCH=[
     '‘3D 다시 시도’를 누르면 기본 중계를 계속 보여 주면서 3D 파일을 처음부터 다시 받고, 준비되면 같은 장면에서 3D로 넘어갑니다.',
     '게임이 새 버전으로 업데이트된 직후라 3D 파일을 찾지 못하면 ‘새로고침’ 버튼이 함께 나옵니다. 누르면 저장한 뒤 페이지를 새로 엽니다.',
     '사이트에서 3D를 준비하는 동안 받은 양(MB)을 함께 보여 줍니다. ‘제보용 정보 복사’에는 3D가 멈춘 단계와 이유가 함께 실립니다.']},
+  {id:'2026-11-17-tryout',d:'11월 17일',t:'해외파 신인은 드래프트로만 · 계약한 선수는 드래프트 명단에서 빠집니다',items:[
+    '해외 구단에서 돌아와 2년 유예를 마친 해외파 신인은 그해 신인 드래프트로만 입단합니다. 트라이아웃 계약 기간(1월 20일까지)과 겹쳐도 트라이아웃·무적 선수 계약으로는 데려올 수 없고, 트라이아웃 목록에 \'○○년 드래프트로만\'으로 표시됩니다. 사람 단장과 AI 구단 모두 같습니다.',
+    '어느 구단과든 계약한 선수는 신인 드래프트 명단에 나오지 않습니다. 명단을 만들 때, 지명이 시작될 때, 지명할 때마다 확인합니다. 이전 저장에서 계약했는데 명단에 남아 있던 선수는 불러올 때 명단에서 빠지고 계약은 그대로 유지됩니다.']},
   {id:'2026-11-17-cosm',d:'11월 17일',t:'선수 이름·얼굴 바꾸기 · 일괄 수정',items:[
     '모든 선수(다른 구단·외국인 후보·드래프트 대상 포함)의 이름과 얼굴 사진을 바꿀 수 있습니다. 선수 화면 이름 옆 \'고치기\'나 ⋯ 메뉴의 \'이름·얼굴 바꾸기\'에서 이름·등번호를 고치고, 그 선수에게 맞는 템플릿 사진(국내·외국인·아시아쿼터 묶음, 나이 가까운 순)을 고릅니다. 사진의 연필 버튼으로 직접 사진도 넣을 수 있습니다.',
     '은퇴해 기록만 남은 선수도 기록 화면에서 이름을 바꿀 수 있습니다. 바꾼 이름은 명단·기록·영구결번·OB 기록에 이어지고, 이미 나온 기사·소식 문장은 그때 이름 그대로 남습니다.',
