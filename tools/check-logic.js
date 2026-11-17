@@ -6541,6 +6541,32 @@ T('[카페 11-17 프로 선수 아마 기록] 예전 저장 수리: 지명 뒤 �
   A.amY.push(Object.assign({},A.amY[2],{y:y,g:80})); amTotFix(A); migrateDraft(); ok(A.amY.length===3&&A.am.g===57,'불러오기(migrateDraft)에서 수리하지 않음');
   ok(amRowObj&&typeof amPlayable==='function'&&!amPlayable(A,y)&&!amPlayable(Object.assign({},D||{prospect:true,team:null},{team:G.user}),y),'계약 선수가 아마 경기 대상'); });
 
+T('[검수 11-17 #202] 매각 뒤 새 구단주 이름 제안: 시즌 중에 새 이름을 고르면 이번 시즌은 지금 이름, 결산 뒤 다음 시즌부터 새 이름(AI 구단도 같다)',()=>{ fresh(); G.day=G.cal.open+40; ok(ciMidSeason(),'준비 실패: 시즌 중 아님'); const t=team(G.user), id=G.user, n0=tshort(id), y=G.year;
+  ciOnSale(id); const e=(G.evs||[]).find(x=>x.k==='rebrand'&&!x.done); ok(e,'이름 제안 결정 없음'); ok(/결산 뒤 다음 시즌부터 새 이름/.test(e.opts[0].fx),'선택지 안내: '+e.opts[0].fx); const nk=e.data.a;
+  evPick(e.id,0); ok(tshort(id)===n0&&t.nick!==nk,'시즌 중인데 바로 이름이 바뀜: '+tshort(id)); ok(t.ciPend&&t.ciPend.nick===nk,'이름 변경 대기 없음'); ok(tshort(id,y)===n0,'올해 이름이 바뀜'); ok(!ciNickPool().includes(nk),'대기 중인 별칭을 다른 구단이 쓸 수 있음');
+  ciPendApply(); ok(t.nick!==nk,'결산 전에 적용됨'); G.last=Object.assign({},G.last||{},{y}); ciPendApply(); ok(tshort(id)===t.city+' '+nk&&!t.ciPend,'결산 뒤 새 이름이 아님: '+tshort(id)); ok(tshort(id,y)===n0&&tshort(id,y+1)===t.city+' '+nk,'올해 기록 이름 '+tshort(id,y)+' / 다음 시즌 '+tshort(id,y+1));
+  const n1=G.tnames[id].length; ciPendApply(); ciMigrate(); ok(G.tnames[id].length===n1,'두 번 적용됨');
+  fresh(); G.day=G.cal.open+40; const a=G.teams.find(x=>x.id!==G.user), a0=tshort(a.id), ak=ciNickPool()[0]; ok(ciSched(a.id,{nick:ak},'점검')==='pend'&&tshort(a.id)===a0,'AI 구단은 시즌 중에 바로 바뀜'); G.last=Object.assign({},G.last||{},{y:G.year}); ciMigrate(); ok(a.nick===ak&&tshort(a.id,G.year)===a0,'불러오기에서 결산 뒤 대기 이름이 적용되지 않음'); });
+T('[검수 11-17 #203] 매각 뒤 이름 제안에서 지금 이름을 지키면 안내대로 팬 여론이 오르고 구단주 신뢰는 내려간다',()=>{ fresh(); const t=team(G.user); prInit(); G.pr.fan=55; t.trust=55; const n0=tshort(G.user);
+  ciOnSale(G.user); const e=(G.evs||[]).find(x=>x.k==='rebrand'&&!x.done); ok(e,'이름 제안 결정 없음'); ok(e.opts[2].fx.includes('팬 여론 +3')&&e.opts[2].fx.includes('구단주 신뢰 -4'),'선택지 안내: '+e.opts[2].fx);
+  evPick(e.id,2); ok(t.trust===51,'구단주 신뢰 '+t.trust); ok(G.pr.fan===58,'팬 여론 '+G.pr.fan); ok(tshort(G.user)===n0&&!t.ciPend,'이름이 바뀜'); });
+T('[검수 11-17 #204·#205] 연고 이전: 새 연고지 기본 구장(지붕 없음·새 개장 연도·지역 관계 초기화·새 도시 우천)으로 옮기고, 옛 구장 증설·시설 공사·신구장 사업은 정산 뒤 취소한다',()=>{ fresh(); G.noRain=false; const t=G.teams.find(x=>x.id!==G.user&&x.city==='대전')||G.teams.find(x=>x.id!==G.user&&x.region!=='수도권'), tid=t.id, S=stadOf(tid), c0=t.city;
+  S.dome=true; S.built=2025; t.cityRel=90; S.xp=0; S.xq={k:'of',stage:'build',c:4200,total:7000,st:G.day-20,pm:G.day+10,done:G.day+120}; const k=Object.keys(S.lv)[0], lv=S.lv[k]+1; S.build=[{k,lv,st:G.day-10,done:G.day+STAD_DAYS[lv]-10,c:1000}];
+  S.proj={stage:'build',k:'big',cap:25000,cost:16000,paid:5333,start:G.day-400,done:G.day+500}; const cash0=t.cash, cap0=S.cap||STAD_CAP[tid]; let w=''; const w0=wire; try{ wire=(a,b)=>{ w+=b+' / '; }; ok(clubRebrand(tid,{city:'제주'},'점검'),'연고 이전 실패'); }finally{ wire=w0; }
+  ok(t.city==='제주'&&stadName(tid)==='제주 야구장','구장 이름 '+stadName(tid)); ok(S.dome===false,'대전 돔 효과가 남음'); ok(stadBuilt(tid)===sponSeason(),'개장 연도가 옛 구장 그대로: '+stadBuilt(tid)); ok(cityRel(tid)===50,'지역 관계가 옛 도시 그대로: '+cityRel(tid));
+  const jul=dnum(G.year+1,7,10); ok(rainZone(tid)==='s'&&rainP(tid,jul)>0,'제주 홈 우천 취소 확률 '+rainP(tid,jul)); ok(S.reloc&&S.reloc.from===c0&&S.reloc.to==='제주','이전 기록 없음');
+  ok(!S.xq&&!S.proj&&!(S.build||[]).length&&!S.debt,'옛 구장 사업이 새 구장으로 넘어감 '+JSON.stringify({xq:S.xq,proj:S.proj,b:S.build})); const r=Math.round(1000*clamp((STAD_DAYS[lv]-10)/STAD_DAYS[lv],0,1)); ok(t.cash===cash0+4200+r,'환급 '+(t.cash-cash0)+' 기대 '+(4200+r));
+  ok(/사업 정리/.test(w)&&/공사 취소/.test(w)&&/신구장 공사 중단/.test(w)&&/돌려받지 않/.test(w),'정산 안내 없음: '+w); const capA=stadCap(tid); G.day+=130; stadXpDaily(); newStadDaily(); ok(stadCap(tid)===capA&&!(S.xp>0),'옛 증설이 제주 구장에서 완공됨'); ok(newStadDue(tid)===0,'옛 분담금이 남음');
+  const u=G.teams.find(x=>x.id!==G.user&&x.id!==tid&&x.region!=='수도권'), U=stadOf(u.id); U.build=[]; U.xq=null; U.proj=null; U.debt={cost:9000,paid:3000}; const uc=u.cash; clubRebrand(u.id,{city:'포항'},'점검'); ok(u.cash===uc-6000&&!U.debt&&newStadDue(u.id)===0,'개장 구장 남은 분담금 정산 '+(u.cash-uc)); });
+T('[검수 11-17 #204·#205] 연고 이전 옛 저장 수리: 옛 구장 지붕·개장 연도·지역 관계를 들고 간 구단을 불러오기에서 한 번만 바로잡고, 이전 전에 시작한 증설을 정리한다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user&&x.region!=='수도권'), tid=t.id, S=stadOf(tid), c0=t.city, nk=t.nick, y=G.year, d=G.day-30;
+  G.tnames=G.tnames||{}; G.tnames[tid]=[{y0:-Infinity,y1:y-1,city:c0,nick:nk},{y0:y,y1:null,city:'제주',nick:nk}]; t.city='제주'; S.names=[{n:c0+' 구장',until:d}]; S.name='제주 야구장'; S.dome=true; S.built=2015; t.cityRel=90; S.build=[]; S.proj=null; delete S.debt; G.tnames[tid][1].d0=d; S.xq={k:'of',stage:'build',c:4200,total:7000,st:d-20,pm:G.day+5,done:G.day+100};
+  const cash0=t.cash; ciMigrate(); ok(S.dome===false&&stadBuilt(tid)===y&&cityRel(tid)===50,'수리 안 됨 '+JSON.stringify({dome:S.dome,b:stadBuilt(tid),r:cityRel(tid)})); ok(!S.xq&&t.cash===cash0+4200,'이전 전 증설 정리 '+(t.cash-cash0)); ok(S.name==='제주 야구장'&&S.names.length===1,'구장 이름 이력이 바뀜');
+  t.cityRel=61; ciMigrate(); ok(cityRel(tid)===61&&t.cash===cash0+4200,'두 번 수리됨'); });
+T('[검수 11-17 #206] 연대기: 옛 이적 장부로 다시 만든 거래는 그 날의 구단 이름으로(11월 이름 변경 전 7월 거래는 옛 이름)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user), tid=t.id, y=G.year, n0=tshort(tid), o=G.teams.find(x=>x.id!==G.user&&x.id!==tid);
+  const jul=dnum(y,7,10), dec=dnum(y,12,10); G.moves=(G.moves||[]).concat([{d:jul,y,pid:-901,n:'점검선수',t:'트레이드',from:tid,to:o.id},{d:dec,y,pid:-902,n:'점검선수2',t:'트레이드',from:o.id,to:tid}]);
+  G.day=dnum(y,11,20); G.last=Object.assign({},G.last||{},{y}); const nk=ciNickPool()[0]; ok(clubRebrand(tid,{nick:nk},'점검'),'이름 바꾸기 실패'); const n1=tshort(tid);
+  const row=pid=>legacyClubChron(tid,[]).find(x=>x.k==='move'&&x.ref===pid); ok(row(-901)&&row(-901).t.includes(n0+' →')&&!row(-901).t.includes(n1),'7월 거래 이름: '+(row(-901)||{}).t); ok(row(-902)&&row(-902).t.includes('→ '+n1),'12월 거래 이름: '+(row(-902)||{}).t);
+  const L=G.tnames[tid]; L[1].y0=y; L[0].y1=y-1; delete L[1].d0; const c=clubChron(tid).find(x=>x.k==='rebrand'); ok(c,'이름 변경 연대기 없음'); c.source='rebrand:'+tid+':'+y; ciMigrate(); ok(L[1].d0===c.d,'옛 저장 이름 이력 날짜를 채우지 못함'); ok(row(-901).t.includes(n0+' →'),'옛 저장(시즌 중 이름 변경)에서 7월 거래 이름: '+row(-901).t); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
