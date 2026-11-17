@@ -39,7 +39,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   prepPage(){const el=document.querySelector('.cs-prep');if(!el)return;el.dataset.page=el.dataset.page==='0'?'1':'0';const b=el.querySelector('[data-a="prepPage"]');if(b)b.textContent=el.dataset.page==='0'?'6~9번 보기':'1~5번 보기';},
   homePanel(v){UI.homePanel=v;UI.homePage=0;UI.homeFocus=null;render();},
   homeNews(v){UI.homeNews=+v;render();},
-  detailBack(){if(UI.fmKeys){UI.fmKeys=false;render();return;}if(closeTop())return;if(UI.meet){A.meetClose();return;}if(UI.ngt){UI.ngt=null;renderSheet();render();return;}if(UI.negWin){UI.negWin=null;renderSheet();render();return;}if(UI.castRet&&!UI.castRet.parked&&UI.sheet!=null){const c=UI.castRet;UI.sheet=null;UI.castRet=null;UI.cast=c;c.play=!!c.wasPlay&&c.k<G.games[c.g].pbp.length;renderSheet();return;}closeSheets();},
+  detailBack(){if(UI.fmKeys){UI.fmKeys=false;render();return;}if(UI.cosm&&UI.sheet==null&&typeof A.cosmClose==='function'){A.cosmClose();return;} /* 이름·얼굴 일괄 수정 창(72_cosmetic.js): 뒤로·Esc로 닫는다 */if(closeTop())return;if(UI.meet){A.meetClose();return;}if(UI.ngt){UI.ngt=null;renderSheet();render();return;}if(UI.negWin){UI.negWin=null;renderSheet();render();return;}if(UI.castRet&&!UI.castRet.parked&&UI.sheet!=null){const c=UI.castRet;UI.sheet=null;UI.castRet=null;UI.cast=c;c.play=!!c.wasPlay&&c.k<G.games[c.g].pbp.length;renderSheet();return;}closeSheets();},
   mgrCandidate(v){UI.mgrCandidate=v;UI.mgrMsg=null;renderSheet();},
   analysisY(v){ UI.analysisY=+v; renderSheet(); },
   smkGo(v){ UI.smkK=v; UI.smkSrc='free'; A.go('staff:smkt'); }, smkK(v){ UI.smkK=v; render(); }, smkSrc(v){ UI.smkSrc=v; render(); }, /* 스태프 시장 */

@@ -29,7 +29,7 @@ const setup=()=>{ DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let n=
       await page.screenshot({path:path.join(OUT,`${w}-bulk.png`)});
       const geo=await page.evaluate(()=>({doc:document.scrollingElement.scrollHeight-innerHeight,wide:document.documentElement.scrollWidth-innerWidth,sheet:(e=>e&&e.scrollWidth-e.clientWidth)(document.querySelector('#sheet .cosm-sheet'))}));
       if(w>=1100)assert.ok(geo.doc<=1,'PC 페이지 스크롤 '+geo.doc); assert.ok(geo.wide<=1,'가로 넘침 '+geo.wide);
-      await page.click('#sheet [data-a="cosmSave"]'); const fid=await page.evaluate(()=>+document.querySelector('#sheet .cosm-nm').dataset.id); assert.equal(await page.evaluate(id=>G.players[id].name,fid),'일괄이름');
+      const fid=await page.evaluate(()=>+document.querySelector('#sheet .cosm-nm').dataset.id); await page.click('#sheet [data-a="cosmSave"]'); assert.equal(await page.evaluate(id=>G.players[id].name,fid),'일괄이름');
       /* 얼굴 고르기(줄의 얼굴 버튼) */
       await page.locator('#sheet .cosm-avb').nth(1).click(); await page.waitForSelector('#sheet .cosm-pick .pe-face'); await page.screenshot({path:path.join(OUT,`${w}-bulk-face.png`)});
       await page.click('#sheet .cosm-pick [data-a="cosmPick"]');
@@ -43,7 +43,7 @@ const setup=()=>{ DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let n=
       await page.screenshot({path:path.join(OUT,`${w}-import-preview.png`)});
       const geo2=await page.evaluate(()=>({doc:document.scrollingElement.scrollHeight-innerHeight,wide:document.documentElement.scrollWidth-innerWidth})); if(w>=1100)assert.ok(geo2.doc<=1,'PC 페이지 스크롤(미리보기) '+geo2.doc); assert.ok(geo2.wide<=1,'가로 넘침(미리보기) '+geo2.wide);
       await page.click('#sheet [data-a="cosmApply"]'); assert.equal(await page.evaluate(id=>G.players[id].name,+c1[0]),'가져온선수'); assert.match(await page.locator('#sheet .cosm-sheet [role=status]').innerText(),/이름 1명/);
-      await page.click('#sheet .cosm-sheet .x'); assert.equal(await page.locator('#sheet .cosm-sheet').count(),0);
+      await page.keyboard.press('Escape'); assert.equal(await page.locator('#sheet .cosm-sheet').count(),0,'Esc·뒤로로 닫히지 않음');
       /* 4) 사진 연필 창에 템플릿 칸 */
       await page.evaluate(id=>{ UI.sheet=id; UI.ptab='sum'; renderSheet(); A.phMenu('p:'+id); },pid); await page.waitForSelector('#phdlg .pe-face'); await page.screenshot({path:path.join(OUT,`${w}-photo-dialog.png`)}); await page.evaluate(()=>A.phClose());
       assert.deepEqual(errs,[],'페이지 오류: '+errs.join(' | ')); console.log(`통과  ${w}px: 고치기 상자(능력 칸 없음·얼굴 ${box.faces}장)·일괄 창(${n0}줄)·가져오기 미리보기·적용·사진 창 템플릿, 페이지 스크롤 ${geo.doc}·가로 ${geo.wide}`);

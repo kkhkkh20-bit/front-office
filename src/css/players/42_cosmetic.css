@@ -43,3 +43,7 @@
   .cosm-q input{width:8em}
   .cosm-pick,.cosm-io{max-height:none}
 }
+.cosm-t th,.cosm-t td,.cosm-pvt th,.cosm-pvt td{text-align:left}
+.cosm-t th.num,.cosm-t td.num,.cosm-pvt th.num,.cosm-pvt td.num{text-align:right;white-space:nowrap}
+.cosm-t td:nth-child(2){width:40%}
+.cosm-pvt td:nth-child(3){width:60%}
