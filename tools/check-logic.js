@@ -4641,6 +4641,47 @@ T('[검수 11-06] 육성: 합류 전 신인 보직 요청 불가, 다른 구단�
 T('[공통 점검] 부상 대체 외국인 정식 전환 직후에도 외국인 총액 한도를 넘지 않는다',()=>{ fresh(); const yb=foreignOf(G.user).filter(x=>x.foreign==='용병'); const o=yb[0]; o.rsy=3; const q=newForeign(o.isP?'용병':'용병',{}); q.isP=o.isP; q.team=G.user; q.ftmp={o:o.id,d:G.day,paid:30,fee:0}; o.frehab=q.id;
   const others=yb.filter(x=>x!==o), capAfter=F_TOTAL_CAP+10*USD*sum(others.map(x=>x.rsy||0)); q.sal=capAfter-sum(others.map(fCommit))+50; ok(q.sal>0,'준비 실패');
   const err=fTmpConvert(q); ok(err&&/한도/.test(err),'한도 초과 정식 전환이 통과: '+err); ok(o.team===G.user&&q.ftmp,'실패했는데 원 선수가 방출됨'); });
+/* 외부 검수 11-17 #228~#236: 부상 대체 외국인 정리 경로. ft17: 구단 일반 외국인을 types(true=투수) 구성·연봉 sal로 맞춘다, ft17Tmp: 원 선수 o 대신 대체 선수 등록 */
+const ft17=(tid,types,sal)=>{ let yb=foreignOf(tid).filter(x=>x.foreign==='용병'); while(yb.length<types.length)yb.push(newForeign('용병',{team:tid})); for(const p of yb.slice(types.length))dropP(p.id); yb=yb.slice(0,types.length); yb.forEach((p,i)=>{ termsClear(p); p.team=tid; p.isP=types[i]; p.rsy=0; p.sal=sal; p.injOut=0; delete p.frehab; delete p.ftmp; }); return yb; };
+const ft17Tmp=(tid,o,sal)=>{ o.injOut=60; o.injHist=[]; const q=newForeign('용병',{isP:o.isP,market:true}); q.ask=sal; G.fmarket.push(q.id); const e=signTempForeign(tid,o.id,q.id); ok(!e,'준비 실패: 대체 등록 '+e); q.sal=sal; return q; };
+const ybTot=tid=>sum(foreignOf(tid).filter(x=>x.foreign==='용병').map(x=>fCommit(x)));
+const ftEv=(k,q)=>G.evs.find(x=>x.k===k&&!x.done&&x.data&&x.data.qid===q.id);
+T('[검수 11-17 #228] 대체 선수가 뛰는 사이 총액이 늘었으면 원 선수 복귀도 총액 한도를 지킨다(넘으면 재활 명단에 남고, 다른 외국인을 정리하면 복귀)',()=>{ fresh(); G.day=G.cal.open+20; const t=G.user; const [o,a,b]=ft17(t,[true,true,false],1000); o.sal=1400;
+  const q=ft17Tmp(t,o,1000); a.sal=b.sal=Math.floor((fCap(t)-1000)/2); /* 대체 등록 뒤 추가 영입으로 총액이 한도 바로 아래 */ ok(ybTot(t)<=fCap(t),'준비 실패');
+  ok(/한도/.test(fBackErr(o,q)),'복귀 총액 초과를 못 잡음: '+fBackErr(o,q));
+  o.injOut=0; fTmpDaily(); const e=ftEv('ftmp',q); ok(e&&/한도/.test(e.opts[0].fx),'복귀 안내에 총액 초과가 없음: '+(e&&e.opts[0].fx));
+  const r=evPick(e.id,0); ok(!G.players[q.id],'대체 선수가 남음'); ok(o.team===t&&o.frehab==='hold','원 선수가 한도를 넘겨 복귀함: '+r); ok(/한도/.test(r),'결과에 이유가 없음: '+r); ok(ybTot(t)<=fCap(t),'등록 총액이 한도 초과 '+ybTot(t));
+  fTmpDaily(); ok(o.frehab==='hold','한도가 그대로인데 복귀'); releaseForeign(b.id); fTmpDaily(); ok(!o.frehab,'정리한 뒤에도 복귀하지 않음'); ok(ybTot(t)<=fCap(t),'복귀 뒤 한도 초과'); });
+T('[검수 11-17 #229] 신생 구단(일반 외국인 4명)은 투수 2·타자 2 구성이면 원 선수가 복귀하고, 구성 판정이 구단 유형을 따른다',()=>{ fresh(); G.day=G.cal.open+20; const t=G.user; team(t).born=G.year; ok(fMaxYB(t)===4,'준비 실패: 신생 혜택');
+  const [o]=ft17(t,[true,true,false,false],500); const q=ft17Tmp(t,o,500); ok(!fBackErr(o,q),'2투 2타 복귀를 막음: '+fBackErr(o,q));
+  o.injOut=0; fTmpDaily(); const e=ftEv('ftmp',q); ok(e&&!/모두/.test(e.opts[0].fx),'복귀 안내가 같은 유형 충돌로 나옴: '+(e&&e.opts[0].fx)); const r=evPick(e.id,0);
+  ok(!o.frehab&&foreignOf(t).filter(x=>x.foreign==='용병').length===4,'원 선수가 재활 명단에 남음: '+r);
+  const L=a=>a.map(v=>({isP:!!v})); ok(!fYBMixErr(t,L([1,1,1,0])),'신생 구단 투수 3·타자 1을 막음'); ok(/4명이 모두 투수/.test(fYBMixErr(t,L([1,1,1,1]))),'신생 구단 투수 4명을 허용'); ok(/5명/.test(fYBMixErr(t,L([1,1,0,0,0]))),'신생 구단 5명을 허용');
+  team(t).born=null; ok(/3명이 모두 투수/.test(fYBMixErr(t,L([1,1,1]))),'일반 구단 투수 3명 판정'); ok(/3명까지/.test(fYBMixErr(t,L([1,1,0,0]))),'일반 구단 4명 판정'); ok(!fYBMixErr(t,L([1,1,0])),'일반 구단 2투 1타를 막음'); });
+T('[검수 11-17 #230] AI 신생 구단은 교체 횟수가 없어도 원 선수 복귀로 외국인 4명을 지키고, 복귀가 정말 막혀도 두 선수를 다 잃지 않는다',()=>{ fresh(); G.day=G.cal.open+20; const t=G.teams.find(x=>x.id!==G.user).id; team(t).born=G.year;
+  const [o]=ft17(t,[true,true,false,false],500); const q=ft17Tmp(t,o,500); G.sea.repl=G.sea.repl||{}; G.sea.repl[t]=F_REPL_MAX; o.injOut=0; fTmpDaily();
+  ok(G.players[o.id]&&o.team===t&&!o.frehab,'원 선수가 사라지거나 재활 명단에 남음'); ok(!(G.players[q.id]&&G.players[q.id].ftmp),'대체 선수가 남음'); ok(foreignOf(t).filter(x=>x.foreign==='용병').length===4,'외국인이 4명이 아님');
+  team(t).born=null; const [o2,,b2]=ft17(t,[true,true,false],500); const q2=ft17Tmp(t,o2,500); b2.isP=true; /* 그사이 타자를 투수로 바꿔 복귀하면 투수 3명 */ ok(fBackErr(o2,q2),'준비 실패: 충돌 아님'); o2.injOut=0; fTmpDaily();
+  ok(G.players[o2.id]&&o2.team===t&&o2.frehab==='hold','교체 횟수가 없을 때 원 선수까지 잃음'); ok(!G.players[q2.id],'대체 선수가 남음'); });
+T('[검수 11-17 #231] 정식 전환 총액 검사는 신생 구단 가산을 넣은 실제 한도로 본다',()=>{ fresh(); G.day=G.cal.open+20; const t=G.user; team(t).born=G.year; const [o,a,b,c]=ft17(t,[true,true,false,false],500); const q=ft17Tmp(t,o,1000);
+  ok(fCap(t,o.id)===fTotCap()+100*USD,'준비 실패: 한도 '+fCap(t,o.id)); const tgt=fTotCap()+200; for(const x of [a,b,c])x.sal=Math.ceil((tgt-q.sal)/3); /* 전환 뒤 총액이 기본 한도보다 2억 많지만 신생 구단 한도 안 */
+  ok(!fTmpConvertErr(q),'실제 한도 안인데 막힘: '+fTmpConvertErr(q)); ok(!fTmpConvert(q)&&!q.ftmp&&!G.players[o.id],'정식 전환 실패'); });
+T('[검수 11-17 #232] 정식 전환 한도는 원 선수 재계약 가산만 빼고 다른 재활 명단 외국인의 가산은 남긴다',()=>{ fresh(); G.day=G.cal.open+20; const t=G.user; const [o,o2,x]=ft17(t,[true,false,true],500); o.rsy=2; o2.rsy=3; const q2=ft17Tmp(t,o2,500); const q=ft17Tmp(t,o,500);
+  const cap=fTotCap()+10*USD*3; ok(fCap(t,o.id)===cap,'준비 실패 '+fCap(t,o.id)+' '+cap); x.sal=cap-q2.sal-q.sal-50; ok(!fTmpConvertErr(q),'실제 한도 안인데 막힘: '+fTmpConvertErr(q)); x.sal+=100; ok(/한도/.test(fTmpConvertErr(q)),'한도 초과를 못 잡음'); });
+T('[검수 11-17 #233] 마감 안내 뒤 원 선수 복귀·대체 선수 방출로 정리하면 마감 결정도 닫힌다',()=>{ fresh(); const t=G.user; const [o]=ft17(t,[true,true,false],500); G.day=foreignDL()-7; const q=ft17Tmp(t,o,500); fTmpDLWarn(); const d=ftEv('ftmp3',q); ok(d,'마감 안내 없음');
+  o.injOut=0; fTmpDaily(); const e=ftEv('ftmp',q); ok(e,'복귀 결정 없음'); evPick(e.id,0); ok(d.done&&!G.mail.find(m=>m.id===d.mid).acts.length,'복귀 뒤 마감 결정 버튼이 남음');
+  const q2=ft17Tmp(t,o,500); fTmpDLWarn(); const d2=ftEv('ftmp3',q2); ok(d2,'두 번째 안내 없음'); releaseForeign(q2.id); ok(d2.done&&!G.mail.find(m=>m.id===d2.mid).acts.length,'방출 뒤 마감 결정 버튼이 남음'); ok(/이미 정한/.test(evPick(d2.id,0)),'닫힌 결정이 다시 실행됨'); });
+T('[검수 11-17 #234] 마감 안내와 복귀 결정이 함께 열려 있을 때 정식 전환하면 두 결정이 모두 닫힌다',()=>{ fresh(); const t=G.user; const [o]=ft17(t,[true,true,false],500); G.day=foreignDL()-7; const q=ft17Tmp(t,o,500); fTmpDLWarn(); o.injOut=0; fTmpDaily();
+  const d=ftEv('ftmp3',q), e=ftEv('ftmp',q); ok(d&&e,'준비 실패'); const r=evPick(d.id,0); ok(!q.ftmp&&q.team===t,'정식 전환 실패: '+r); ok(e.done&&!G.mail.find(m=>m.id===e.mid).acts.length,'복귀 결정 버튼이 남음'); });
+T('[검수 11-17 #235] 복귀 결정을 보낸 뒤 원 선수가 다시 다치면 누를 때 막고 결정을 닫으며, 회복하면 다시 묻는다(옛 저장 수리 포함)',()=>{ fresh(); G.day=G.cal.open+20; const t=G.user; const [o]=ft17(t,[true,true,false],500); const q=ft17Tmp(t,o,500); o.injOut=0; fTmpDaily(); const e=ftEv('ftmp',q); ok(e,'준비 실패');
+  o.injOut=20; const r=evPick(e.id,0); ok(/다시 다쳐/.test(r),'이유 없이 처리: '+r); ok(q.ftmp&&G.players[q.id]&&o.frehab===q.id,'다시 다친 원 선수를 복귀시키고 대체 선수를 내보냄'); ok(e.done&&!G.mail.find(m=>m.id===e.mid).acts.length,'결정 버튼이 남음');
+  o.injOut=0; fTmpDaily(); const e2=ftEv('ftmp',q); ok(e2&&e2!==e,'회복 뒤 다시 묻지 않음');
+  o.injOut=15; fTmpDaily(); ok(e2.done&&q.ftmp,'진행 중 재부상을 결정에 반영하지 않음'); o.injOut=0; fTmpDaily(); const e3=ftEv('ftmp',q); ok(e3,'세 번째 결정 없음'); o.injOut=9; evPick(e3.id,0,true); ok(q.ftmp&&o.frehab===q.id,'기한 자동 처리가 다시 다친 원 선수를 복귀시킴');
+  o.injOut=0; fTmpDaily(); const e5=ftEv('ftmp',q); o.injOut=7; const e4=evNew('ftmp','t','s',[{l:'a'},{l:'b'}],{data:{qid:-12345},def:0}); ok(fTmpStaleFix()===2&&e4.done&&e5.done,'옛 저장 수리가 닫지 않음'); ok(fTmpStaleFix()===0,'두 번째 수리에서 또 바뀜'); });
+T('[검수 11-17 #236] 복귀·거취 안내 메일의 정식 전환 항목은 실제 판정(총액 한도)을 보여 준다',()=>{ fresh(); G.day=G.cal.open+20; const t=G.user; const [o,a,b]=ft17(t,[true,true,false],500); const q=ft17Tmp(t,o,1000); a.sal=fCap(t,o.id)-q.sal-b.sal+100; /* 전환하면 1억 초과 */
+  o.injOut=0; fTmpDaily(); const e=ftEv('ftmp',q); ok(e&&/할 수 없습니다/.test(e.opts[1].fx)&&/한도/.test(e.opts[1].fx),'메일이 전환 가능으로 안내: '+(e&&e.opts[1].fx));
+  ok(/한도/.test(evPick(e.id,1))&&!e.done&&q.ftmp,'막힌 전환 처리');
+  releaseForeign(o.id); fTmpDaily(); const e2=ftEv('ftmp2',q); ok(e2&&/불가/.test(e2.opts[0].l)&&/한도/.test(e2.opts[0].fx),'거취 메일이 전환 가능으로 안내: '+(e2&&JSON.stringify(e2.opts[0]))); });
 T('[공통 점검] 이직 등으로 결정 메일이 닫혀도 대체 외국인 복귀 결정을 다시 묻는다',()=>{ fresh(); const o=foreignOf(G.user).find(x=>x.foreign==='용병'); const q=newForeign('용병',{}); q.isP=o.isP; q.team=G.user; q.ftmp={o:o.id,d:G.day-40,paid:60,fee:0,ask:G.day-8}; o.frehab=q.id; o.injOut=0;
   const pr=period; try{ period=()=>'season'; fTmpDaily(); }finally{ period=pr; } ok((G.evs||[]).some(e=>!e.done&&e.k==='ftmp'&&e.data&&e.data.qid===q.id),'복귀 결정을 다시 묻지 않음(재활 명단에 묶임)'); });
 T('[공통 점검] 실패한 외국인 계약 시도 전후 선수 상태(요구액·소속)가 같다',()=>{ fresh(); const p=newForeign('용병',{market:true}); p.team=null; p.ask=fNewCap()+400; const a0=p.ask; G.sea=G.sea||{}; G.sea.repl={[G.user]:99}; const pr=period; let e1='',e2='';
