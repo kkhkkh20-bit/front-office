@@ -7,9 +7,9 @@ const W = import(path.join(root, 'worker/index.js')), V = import(path.join(root,
   SE = import(path.join(root, 'worker/v1/season.js')), SC = import(path.join(root, 'worker/v1/schema.js')), US = import(path.join(root, 'worker/v1/usage.js')), LD = import(path.join(root, 'worker/v1/ladder.js'));
 const ORIGIN = 'https://fronttime.example.workers.dev', DAY = 86400e3;
 function deck(o = {}) { const P = []; const POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'C', 'SS', 'LF', '1B'];
-  POS.forEach((pos, i) => P.push({ id: i + 1, name: '타자' + i, age: 27, isP: false, pos, th: '우', bt: '우', r: { con: 50, pow: 50, eye: 50, spd: 50, def: 50, vit: 60 }, pot: 55 }));
-  for (let i = 0; i < 12; i++) P.push({ id: 100 + i, name: '투수' + i, age: 28, isP: true, pos: 'P', th: '우', bt: '우', r: { stf: 50, ctl: 50, sta: i < 5 ? 60 : 40 }, pot: 55, role: i < 5 ? 'SP' : 'RP' });
-  return Object.assign({ v: 1, kind: 'cup-entry', name: '와이', year: 2035, club: {}, mgr: {}, P, ln: [[1, 'C'], [2, '1B'], [3, '2B'], [4, '3B'], [5, 'SS'], [6, 'LF'], [7, 'CF'], [8, 'RF'], [10, 'DH']], bn: [9, 11, 12], rot: [100, 101, 102, 103, 104], pen: [105, 106, 107, 108, 109, 110, 111], bp: {}, ovr: { t: 60, p: 61, b: 59 } }, o); }
+  POS.forEach((pos, i) => P.push({ id: i + 1, name: '타자' + i, age: 27, isP: false, pos, th: '우', bt: '우', r: { con: 50, pow: 50, eye: 50, spd: 50, def: 50, vit: 60 }, pot: 55, sal: 300 }));
+  for (let i = 0; i < 12; i++) P.push({ id: 100 + i, name: '투수' + i, age: 28, isP: true, pos: 'P', th: '우', bt: '우', r: { stf: 50, ctl: 50, sta: i < 5 ? 60 : 40 }, pot: 55, role: i < 5 ? 'SP' : 'RP', sal: 300 });
+  return Object.assign({ v: 1, kind: 'cup-entry', name: '와이', year: 2035, club: {}, mgr: {}, P, ln: [[1, 'C'], [2, '1B'], [3, '2B'], [4, '3B'], [5, 'SS'], [6, 'LF'], [7, 'CF'], [8, 'RF'], [10, 'DH']], bn: [9, 11, 12], rot: [100, 101, 102, 103, 104], pen: [105, 106, 107, 108, 109, 110, 111], bp: {}, ovr: { t: 60, p: 61, b: 59 }, payRef: 9000 }, o); } /* 연봉 300 × 24명 = 7200, 리그 평균 9000 → 0.8배(사용자 11-17 연봉 상한) */
 async function setup(o = {}) {
   const { handle } = await W; (await V)._v1Reset(); (await RL)._resetRL(); (await SE)._resetSeason(); (await US)._resetUsage(); (await LD)._metaReset();
   const DB = o.noDb ? undefined : makeD1(), env = { DB, CUP_ADMIN: 's3cret' };
@@ -222,4 +222,28 @@ dbTest('래더 v2: 전체 순위(높은 단계 먼저)와 관리자 내보내기
   assert.equal((await J('GET', '/api/v1/admin/export?kind=decks'))._s, 401);
   const d = await J('GET', '/api/v1/admin/export?kind=decks', null, AK); assert.equal(d.rows.length, 2); assert.ok(d.rows[0].meta && d.rows[0].meta.v === 1, '덱 요약');
   const r = await J('GET', '/api/v1/admin/export?kind=results', null, AK); assert.equal(r.rows.length, 2); assert.ok(r.rows.every(x => x.nickname && x.lkey));
+});
+dbTest('연봉 상한(사용자 11-17 "공평하게"): 덱 연봉 ÷ 그 세계 리그 평균이 단계 배수(루키·마이너 1.5, 1부~ 1.25)를 넘으면 400 over_cap, 연봉 기록 없으면 no_pay, 승격으로 넘게 된 덱·유예 끝난 예전 덱은 상대로 안 나온다', async () => {
+  const { J, mk, env, clock } = await setup(); const C = await import(path.join(root, 'src/core/uladder.mjs'));
+  const a = await mk('상한일', '10.1.0.1'), b = await mk('상한이', '10.1.0.2'), c = await mk('상한삼', '10.1.0.3'), d = await mk('상한사', '10.1.0.4');
+  let j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ payRef: 4000 }), tier: 0 }, a.A); /* 7200 ÷ 4000 = 1.8배 > 루키 1.5배 */
+  assert.equal(j._s, 400); assert.equal(j.error, 'over_cap'); assert.ok(/루키 상한/.test(j.errors[0]) && j.cap.x === 1.5 && j.cap.pay === 7200, JSON.stringify(j));
+  const nosal = deck(); delete nosal.P[3].sal; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: nosal, tier: 0 }, a.A)).error, 'no_pay', '선수 연봉이 빠짐');
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ payRef: 0 }), tier: 0 }, a.A)).error, 'no_pay', '리그 평균이 없음');
+  const fake = deck({ pay: 100, payRef: 9000 }); fake.P[0].sal = 9000; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'over_cap', '합(pay)을 줄여 적어도 서버는 선수마다 연봉으로 다시 센다');
+  assert.equal(env.DB._sqlite.prepare('SELECT COUNT(*) AS n FROM decks').get().n, 0, '거절한 덱은 쓰지 않는다');
+  j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '꽉참', payRef: 5000 }), tier: 1 }, a.A); assert.equal(j._s, 200, '1.44배는 마이너 안'); assert.equal(j.tier, 1);
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '넘침', payRef: 5000 }), tier: 2 }, b.A)).error, 'over_cap', '1.44배는 1부 1.25배를 넘음');
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '알뜰', payRef: 6000, ovr: { t: 62, p: 60, b: 60 } }), tier: 2 }, b.A))._s, 200, '1.2배는 1부 안');
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '예전', ovr: { t: 61, p: 60, b: 60 } }), tier: 2 }, c.A))._s, 200);
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '나', ovr: { t: 61, p: 60, b: 60 } }), tier: 2 }, d.A))._s, 200);
+  /* 예전 덱(연봉 기록 없음)처럼 본문을 바꿔 둔다 */
+  const sq = env.DB._sqlite, old = JSON.parse(sq.prepare('SELECT body FROM decks WHERE player_id = ?').get(c.id).body); for (const p of old.P) delete p.sal; delete old.payRef;
+  sq.prepare('UPDATE decks SET body = ? WHERE player_id = ?').run(JSON.stringify(old), c.id);
+  const res = await J('POST', '/api/v1/ladder/result', { key: 'cap-up-1', rank: 1, teams: 10, w: 20, l: 7, d: 0 }, a.A); assert.equal(res.tier, 2, '마이너 1위 → 1부 승격');
+  let o = await J('GET', '/api/v1/ladder/opponents?n=9', null, d.A); const names = o.decks.map(x => x.name);
+  assert.ok(names.includes('알뜰') && names.includes('예전'), '상한 안 덱·유예 중 예전 덱은 나옴 ' + names); assert.ok(!names.includes('꽉참'), '승격 뒤 1부 상한을 넘는 덱이 나옴');
+  clock.now = C.UL_CAP_FROM + 1000; o = await J('GET', '/api/v1/ladder/opponents?tier=2&n=9', null, d.A); /* 이 시각에 서버 시즌도 바뀐다(단계 -1): 1부를 직접 본다 */
+  assert.deepEqual(o.decks.map(x => x.name), ['알뜰'], '유예가 끝나면 예전 덱도 빠짐');
+  for (const x of o.decks) assert.ok(C.ulCap(x.e, 2).ok, '내보낸 덱은 모두 상한 안');
 });

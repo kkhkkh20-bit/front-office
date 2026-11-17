@@ -80,3 +80,12 @@ test('공개 GET 캐시: 결과·연재·명단은 두 번째부터 KV를 읽지
  assert.equal((await H('POST','/api/cup/entry',JSON.stringify(entry()))).status,201); assert.equal((await (await H('GET','/api/cup/entries')).json()).n,1,'신청 뒤 명단');
  await H('GET','/api/cup'); reads=0; await H('GET','/api/cup'); assert.equal(reads,0,'대회 설정 캐시');
 });
+test('대회 연봉 상한(사용자 11-17 "대회마다 연봉에 제약… 공평하게"): payCapX(리그 평균 배수)를 공개 설정에 싣고, 넘는 신청·연봉 기준 없는 신청은 403 not_eligible, 안이면 받는다',async()=>{
+ const clock={now:Date.UTC(2026,10,20,3)}; const {H}=await setup(clock); const AK={Authorization:'Bearer s3cret',Origin:''};
+ assert.equal((await H('PUT','/api/cup/admin/config',JSON.stringify(Object.assign({},cfg,{payCap:0,payCapX:1.25})),AK)).status,200);
+ const pub=await (await H('GET','/api/cup')).json(); assert.equal((pub.cup||pub).payCapX,1.25,JSON.stringify(pub));
+ const sal=o=>{ const e=entry(o); for(const p of e.P)p.sal=300; return e; }; /* 24명 × 300 = 7200 */
+ let r=await H('POST','/api/cup/entry',JSON.stringify(sal({payRef:5000}))); assert.equal(r.status,403); let j=await r.json(); assert.ok(/상한/.test(j.errors[0])&&/1\.44배/.test(j.errors[0]),j.errors[0]);
+ r=await H('POST','/api/cup/entry',JSON.stringify(entry())); assert.equal(r.status,403,'리그 평균(payRef)이 없는 예전 엔트리'); assert.ok(/연봉 기준/.test((await r.json()).errors[0]));
+ assert.equal((await H('POST','/api/cup/entry',JSON.stringify(sal({payRef:9000})))).status,201,'0.8배는 받는다');
+});

@@ -1,7 +1,7 @@
 /* v1 래더: 덱 등록·상대 받기·리그 결과(포인트·단계·맞대결·소식)·순위표·소식·내 기록·라이벌.
    리그는 지금처럼 유저 기기에서 돈다. 서버는 결과 요약만 받는다(조작은 신경 쓰지 않는다: src/core/uladder.mjs 머리말). 단계 계산은 서버가 공용 규칙(ulTierAfter)으로 한다 */
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../../src/core/cup.mjs';
-import { UL_TIERS, UL_TEAMS, ulTierAfter, ulSlim, ulDeckMeta, ulMetaAgg } from '../../src/core/uladder.mjs';
+import { UL_TIERS, UL_TEAMS, ulTierAfter, ulSlim, ulDeckMeta, ulMetaAgg, ulCap, ulCapGate } from '../../src/core/uladder.mjs';
 import { json, err, pub, readJson, cached, kstHour } from './http.js';
 import { PID } from './auth.js';
 import { currentSeason, entryFor } from './season.js';
@@ -27,6 +27,7 @@ export async function putDeck(req, db, me, now, env) {
   const s = await currentSeason(db, now);
   const anyEntry = await db.prepare('SELECT 1 AS x FROM ladder_entries WHERE player_id = ? LIMIT 1').bind(me.id).first();
   let first = 0; if (!anyEntry) { first = clampTier(b.tier); const cap = await ladderKvTier(env, String(b.wid || me.wid || '')); if (cap != null) first = Math.min(first, cap); }
+  const bad = capErr(e, (await entryFor(db, s.id, me.id, now, first, false)).tier); if (bad) return bad; /* 연봉 상한(사용자 11-17): 쓰기 전에 그 단계 상한을 본다 */
   const en = await entryFor(db, s.id, me.id, now, first);
   const had = await db.prepare('SELECT 1 AS x FROM decks WHERE player_id = ?').bind(me.id).first();
   const ovr = e.ovr && typeof e.ovr === 'object' ? e.ovr : null;
@@ -40,6 +41,13 @@ export async function putDeck(req, db, me, now, env) {
   return json(200, { ok: true, season: s.id, name: e.name, ovr, tier: en.tier, bytes: body.length, h: e.h });
 }
 
+/* 연봉 상한 검사(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 화면과 같은 공용 규칙(ulCap).
+   서버는 덱 선수(P)마다 적힌 연봉(sal)으로 합을 다시 세고, 그 세계 기준(payRef)으로 나눈다. 연봉이 없는 새 덱은 받지 않는다(예전 덱은 상대 고르기에서 유예) */
+export function capErr(e, tier) {
+  const c = ulCap(e, tier); if (!c.known || !c.each) return err(400, 'no_pay', { errors: ['연봉 기록이 없는 덱입니다. 게임을 새로 고친 뒤 다시 등록해 주세요.'] });
+  if (!c.ok) return err(400, 'over_cap', { errors: [ulCapGate(e, tier).msg], cap: { x: c.x, pay: c.pay, ref: c.ref, cap: c.cap, r: c.r } });
+  return null;
+}
 /* 상대: 같은 단계, 내 OVR 위·아래로 가까운 덱(색인 (tier, ovr) 범위 읽기 두 번: 읽는 줄 수 ≈ 2n). 숨긴 플레이어·나·45일 넘게 안 고친 덱은 뺀다.
    D1 덱이 n개보다 모자라면 예전 KV 래더 덱(같은 단계)으로 채운다(사용자 11-17: 옮겨 가는 첫날에도 상대가 비지 않게). KV 덱은 pid가 없다(맞대결 기록 없음, kv:1).
    이미 v1로 옮겨 온 유저의 KV 덱(players.wid가 같은 것)과 내 세계 id는 뺀다. D1 덱이 충분해지면 KV는 읽지 않는다 */
@@ -52,11 +60,12 @@ export async function opponents(url, db, me, now, env) {
   const n = Math.max(1, Math.min(OPP_MAX, +url.searchParams.get('n') || OPP_MAX)), lim = n * 2, since = now - STALE;
   const q = dir => db.prepare(`SELECT d.player_id, d.name, d.year, d.ovr, d.ovr_json, d.at, d.body, p.nickname FROM decks d JOIN players p ON p.id = d.player_id WHERE d.tier = ? AND d.ovr ${dir === 'up' ? '>=' : '<'} ? AND d.player_id != ? AND p.hidden = 0 AND d.at >= ? ORDER BY d.ovr ${dir === 'up' ? 'ASC' : 'DESC'} LIMIT ?`).bind(tier, ovr, me.id, since, lim).all();
   const [up, dn] = await Promise.all([q('up'), q('dn')]);
-  const all = [...(up.results || []), ...(dn.results || [])];
+  /* 연봉 상한(사용자 11-17): 그 단계 상한을 넘는 덱(승격 뒤 그대로인 덱)·유예가 끝난 예전 덱(연봉 기록 없음)은 상대로 내보내지 않는다 */
+  const all = [...(up.results || []), ...(dn.results || [])].map(x => { try { x.e = JSON.parse(x.body); } catch (e) { return null; } return ulCapGate(x.e, tier, now).ok ? x : null; }).filter(Boolean);
   const pick = all.map(x => [Math.abs(x.ovr - ovr), x]).sort((a, b) => a[0] - b[0] || b[1].at - a[1].at).slice(0, n).map(x => x[1]);
   const avg = all.length ? Math.round(all.reduce((a, x) => a + x.ovr, 0) / all.length * 10) / 10 : 0;
   const decks = [];
-  for (const x of pick) { try { decks.push({ pid: x.player_id, nickname: x.nickname, name: x.name, year: x.year, ovr: x.ovr_json ? JSON.parse(x.ovr_json) : { t: x.ovr }, at: x.at, e: JSON.parse(x.body) }); } catch (e) {} }
+  for (const x of pick) decks.push({ pid: x.player_id, nickname: x.nickname, name: x.name, year: x.year, ovr: x.ovr_json ? JSON.parse(x.ovr_json) : { t: x.ovr }, at: x.at, e: x.e });
   let kv = 0, near = all.length, av = avg;
   if (decks.length < n && env && env.SAVE_KV) {
     const hs = new Set(decks.map(d => d.e && d.e.h));
