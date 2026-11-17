@@ -4,7 +4,8 @@
  - 이름·얼굴·저장 내용은 보내지 않는다. 기기마다 무작위 익명 번호만 쓴다. 세션 녹화에서는 입력칸을 가린다.
  - 설정 > 게임 설정에서 언제든 끌 수 있다.
  기록하는 것
- 1) 시작 퍼널: title_view → team_list → team_pick → gm_created → draft_begin → draft_done → season_open → season_end(몇 년 차) → gm_out
+ 0) 로딩(사이트판만, tools/lib/site-runtime.cjs): boot_start → title_view(load_s 여는 데 걸린 초) / boot_fail(파일 못 받음)·boot_error(여는 중 오류)·boot_slow(20초 넘음)·boot_leave(열리기 전에 떠남)
+ 1) 시작 퍼널: title_view → team_list → team_pick → gm_created(mode 시작 방식 take/fd, diff, easy, guide) → draft_begin(드래프트 게임만) → draft_done → season_open → season_end(몇 년 차) → gm_out
  2) 기능: trade_propose · trade_offer_answer · fa_negotiate · fa_accept_counter · fa_signed · foreign_sign · draft_pick · train_set · role_set · pos_conv
           mgr_request · mgr_hire · mgr_fire · interview_done · interview_skip · press_play · scoop · overseas_program · mail_action · advance
  3) 화면: screen(어느 화면에서 어느 화면으로, 머문 초)
@@ -21,7 +22,7 @@ function teleLoad(){ if(window._teleL||!teleOn())return; window._teleL=1;
   if(TELE.ph){ try{ const s=document.createElement('script'); s.async=true; s.crossOrigin='anonymous'; s.src=TELE.lib;
       s.onload=()=>{ try{ window.posthog.init(TELE.ph,{api_host:TELE.phHost,person_profiles:'always',autocapture:false,capture_pageview:false,capture_pageleave:false,persistence:'localStorage',disable_session_recording:!TELE.replay,session_recording:{maskAllInputs:true},loaded:ph=>{ try{ ph.identify(teleUid()); }catch(e){} TS.ready=true; teleFlush(); }}); }catch(e){ TS.fail=true; teleFlush(); } };
       s.onerror=()=>{ TS.fail=true; teleFlush(); }; document.head.appendChild(s); setTimeout(()=>{ if(!TS.ready){ TS.fail=true; teleFlush(); } },8000); }catch(e){ TS.fail=true; } }
-  if(TELE.ga){ try{ window.dataLayer=window.dataLayer||[]; window.gtag=function(){ dataLayer.push(arguments); }; gtag('js',new Date()); gtag('config',TELE.ga,{user_id:teleUid(),send_page_view:true,page_title:'프런트타임',cookie_flags:'SameSite=None;Secure'}); /* 처음 한 번 페이지뷰를 보내야 유입 경로(첫 사용자 소스)와 페이지 보고서가 채워진다 */ const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(TELE.ga); document.head.appendChild(s); }catch(e){} } }
+  if(TELE.ga){ try{ const pre=!!window._gaBoot; /* 사이트 첫 페이지가 로딩 기록용으로 gtag를 먼저 불렀다(tools/lib/site-runtime.cjs) */ window.dataLayer=window.dataLayer||[]; if(!pre){ window.gtag=function(){ dataLayer.push(arguments); }; gtag('js',new Date()); } gtag('config',TELE.ga,{user_id:teleUid(),send_page_view:true,page_title:'프런트타임',cookie_flags:'SameSite=None;Secure'}); /* 처음 한 번 페이지뷰를 보내야 유입 경로(첫 사용자 소스)와 페이지 보고서가 채워진다 */ if(pre)return; const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(TELE.ga); document.head.appendChild(s); }catch(e){} } }
 /* PostHog 스크립트를 못 불러오면 직접 묶어 보낸다 */
 function telePost(evs,beacon){ if(!TELE.ph||!evs.length)return; const body=JSON.stringify({api_key:TELE.ph,batch:evs.map(e=>({event:e.n,timestamp:e.ts,properties:Object.assign({distinct_id:teleUid(),$lib:'dsj-lite'},e.p)}))});
   try{ if(beacon&&navigator.sendBeacon){ navigator.sendBeacon(TELE.phHost+'/batch/',new Blob([body],{type:'application/json'})); return; } fetch(TELE.phHost+'/batch/',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true}).catch(()=>{}); }catch(e){} }
@@ -56,7 +57,7 @@ function teleHooks(){ if(window._teleH)return; window._teleH=1; const ev=teleEv,
   teleWrap('fdFinish',()=>{ const F=G.fd; ev('draft_done',{manual:F?F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length:0}); });
   teleWrap('openingDay',()=>ev('season_open',{}));
   teleActWrap('fdPick',Object.assign((a,r,pre)=>{ if(pre!=null&&G.fd&&G.fd.cur>pre)ev('draft_pick',{rd:G.fd.picks[G.fd.cur-1].rd}); },{pre:()=>G.fd?G.fd.cur:null}));
-  teleActWrap('fdBegin',()=>ev('draft_begin',{}));
+  teleActWrap('fdBegin',Object.assign((a,r,pre)=>{ if(pre&&!G.fdWait)ev('draft_begin',{}); },{pre:()=>!!(G&&G.fdWait)})); /* 이미 시작한 뒤 다시 눌러도 기록하지 않는다(1인당 최대 29.7회로 부풀던 문제, 11-17 대시보드) */
   teleActWrap('mailAct',(a)=>{ TS.acts++; const [id,i]=String(a[0]).split(':'); const m=G.mail.find(x=>x.id===id); const ac=m&&m.acts&&m.acts[+i]; ev('mail_action',{act:ac?ac.a:'',kind:m?m.kind:''}); });
   teleActWrap('mailJump',()=>{ TS.reads++; });
   teleActWrap('adv',Object.assign((a,r,pre)=>{ if(!pre)return; const d=G.day-pre.d; if(d>0){ TS.adv++; ev('advance',{mode:a[0],days:d,stopped:!!(G.stops&&G.stops.length)}); } },{pre:()=>G?{d:G.day}:null}));
@@ -70,11 +71,11 @@ function teleHooks(){ if(window._teleH)return; window._teleH=1; const ev=teleEv,
   /* 세션 끝: 창을 닫거나 다른 탭으로 갈 때 */
   const end=()=>{ if(!teleOn()||TS.ended)return; TS.ended=true; ev('session_end',{dur_s:Math.round((Date.now()-TS.t0)/1000),reads:TS.reads,advances:TS.adv,mail_actions:TS.acts,last_screen:TS.scr||''},true); teleFlush(true); };
   window.addEventListener('pagehide',end); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')end(); else if(TS.ended){ TS.ended=false; TS.t0=Date.now(); TS.reads=TS.adv=TS.acts=0; } });
-  teleSession(); ev('title_view',{returning:!!(G||(typeof anySave==='function'&&anySave()))}); }
+  teleSession(); ev('title_view',{returning:!!(G||(typeof anySave==='function'&&anySave())),load_s:Math.round(performance.now()/100)/10}); }
 function teleSession(){ if(TS.sess)return; TS.sess=1; teleEv('session_start',{}); }
 /* 개인정보 처리 안내(설정 카드·크레딧 공용). 보내는 항목이 바뀌면 이 문구와 docs/privacy.md를 같이 고친다 */
 function telePrivacyTxt(){ const by=[TELE.ga&&'Google Analytics(Google)',TELE.ph&&'PostHog'].filter(Boolean).join('와 ');
-  return `웹판은 게임을 다듬기 위해 ${by}로 플레이 기록을 보냅니다: 기기마다 무작위로 만든 번호, 화면 이동과 머문 시간, 기능 사용(트레이드·FA 금액 같은 게임 수치 포함), 게임 날짜·연차·구단, 오류 메시지. ${TELE.ga?'Google은 접속 IP·쿠키·브라우저 정보를 함께 처리합니다. ':''}이름·얼굴·저장 내용은 보내지 않습니다.${TELE.ph&&TELE.replay?' 화면 녹화에서는 입력칸을 가립니다.':''} 내려받은 파일이나 내 컴퓨터에서 실행하면 보내지 않습니다. 설정의 '플레이 기록' 카드에서 언제든 끌 수 있습니다.`; }
+  return `웹판은 게임을 다듬기 위해 ${by}로 플레이 기록을 보냅니다: 기기마다 무작위로 만든 번호, 화면 이동과 머문 시간, 기능 사용(트레이드·FA 금액 같은 게임 수치 포함), 게임 날짜·연차·구단과 시작 방식, 오류 메시지와 게임을 여는 데 걸린 시간. ${TELE.ga?'Google은 접속 IP·쿠키·브라우저 정보를 함께 처리합니다. ':''}이름·얼굴·저장 내용은 보내지 않습니다.${TELE.ph&&TELE.replay?' 화면 녹화에서는 입력칸을 가립니다.':''} 내려받은 파일이나 내 컴퓨터에서 실행하면 보내지 않습니다. 설정의 '플레이 기록' 카드에서 언제든 끌 수 있습니다.`; }
 function teleCard(){ if(!TELE.ph&&!TELE.ga)return ''; const on=teleOn();
   return `<section class="card"><div class="row between"><h2 class="sec">플레이 기록</h2><button class="btn small" data-a="teleTog">${on?'끄기':'켜기'}</button></div><p class="small muted">${telePrivacyTxt()} 지금: <b>${on?'켜짐':'꺼짐'}</b></p></section>`; }
 Object.assign(A,{ licShow(){ UI.licOpen=!UI.licOpen; render(); }, teleTog(){ const m=meta(); m.tele=!teleOn(); setMeta(m); try{ if(!m.tele&&window.posthog&&window.posthog.opt_out_capturing)window.posthog.opt_out_capturing(); }catch(e){} render(); } });
