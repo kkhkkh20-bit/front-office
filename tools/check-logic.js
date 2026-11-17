@@ -6580,7 +6580,6 @@ T('[카페 11-17 프로 선수 아마 기록] 예전 저장 수리: 지명 뒤 �
   A.amY.push(Object.assign({},A.amY[2],{y:y,g:80})); amTotFix(A); migrateDraft(); ok(A.amY.length===3&&A.am.g===57,'불러오기(migrateDraft)에서 수리하지 않음');
   ok(amRowObj&&typeof amPlayable==='function'&&!amPlayable(A,y)&&!amPlayable(Object.assign({},D||{prospect:true,team:null},{team:G.user}),y),'계약 선수가 아마 경기 대상'); });
 
-<<<<<<< HEAD
 /* [검수 11-17] 국제대회 경기·기록·투수 운용(84b_nt_tour). ntMk: 프리미어12(2027) 명단 발표 → (pre로 명단 손보기) → 소집일 대진 */
 const ntMk=pre=>{ fresh(); G.year=2027; const e=NT_EV.p12; G.day=KD(e.ann[0],e.ann[1]); ntAnnounce('p12'); const N=G.nt; if(pre)pre(N); G.day=KD(e.from[0],e.from[1]); ntTourInit(N); return {N,T:N.tour,e}; };
 const ntTmpClr=()=>{ for(const id of NT_TMP)delete G.players[id]; NT_TMP=[]; };
@@ -6660,7 +6659,6 @@ T('[검수 11-17 #240] 아시안게임 구단당 1명: 한 자리씩 바꿔서�
   x0.injOut=30; ntMedCheck(N,true);
   ok(!N.ids.includes(x0.id),'다친 포수 제외'); ok(TT.every(t=>cnt(t)>=1),'0명 구단 남음 '+TT.filter(t=>cnt(t)<1).map(tshort)); ok(TT.every(t=>cnt(t)<=3),'구단당 3명 넘음'); ok(N.ids.includes(xo.id),'그 구단 외야수 발탁');
   ok(new Set(N.ids).size===N.ids.length&&N.ids.every(id=>G.players[id]&&healthy(G.players[id])),'명단 중복·부상'); ok((N.wild||[]).length<=NT_WILD,'와일드카드 '+N.wild.length); });
-=======
 T('[검수 11-17 #177] 트라이아웃 계약 마감일(1월 20일) 당일에도 사람·AI가 계약할 수 있고, 그다음 날 닫힌다',()=>{ fresh(); const y=G.year; G.day=tryAnnD(y); tryDaily(G.day); G.day=tryDayD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&T0.ran,'준비 실패: 테스트 안 함');
   const p=T0.ids.map(id=>G.players[id]).find(q=>q&&q.team==null&&tryKindOf(q)==='indie'); ok(p,'준비 실패: 독립리그 후보');
   G.day=T0.close; tryDaily(G.day); ok(!T0.done&&tryCur()===T0,'마감일 당일에 닫힘'); while(ysN(G.user)>=YS_MAX)ysList(G.user)[0].ys=false; const w=tryWhy(p,G.user,true); ok(w==='','마감일 계약이 막힘: '+w); ok(trySign(p.id,G.user,true)===''&&p.team===G.user,'마감일 계약 실패');
@@ -6705,7 +6703,6 @@ T('[검수 11-17 #184] 래더 주간 목표는 그 주 첫 단계로 고정: 주
 T('[검수 11-17 #185] 앨범: 보관 고정한 시즌 자동 저장은 같은 해 자동 저장이 또 와도 지우지 않고, 새 칸은 고정 없이 따로 담기며 그다음 자동 저장은 고정 안 한 칸만 바꾼다',()=>{ fresh(); G.cupAlb=[]; G.cupAlbN=0;
   const a=cupAlbumAdd('auto',{rank:3}); cupAlbumPin(a.id); const b=cupAlbumAdd('auto',{rank:2}); ok(cupAlbum().some(x=>x.id===a.id&&x.pin)&&b&&!b.pin&&cupAlbum().length===2,'고정한 자동 저장이 지워짐 '+JSON.stringify(cupAlbum().map(x=>[x.id,x.pin])));
   const c=cupAlbumAdd('auto',{rank:1}); ok(cupAlbum().length===2&&cupAlbum().some(x=>x.id===a.id)&&!cupAlbum().some(x=>x.id===b.id)&&cupAlbum().some(x=>x.id===c.id),'두 번째 자동 저장이 고정 안 한 칸만 바꾸지 않음'); });
->>>>>>> origin/claude/rev-lad-1117
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
