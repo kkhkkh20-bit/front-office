@@ -262,7 +262,7 @@ const QUICK=process.env.QUICK==='1';
       const me=document.querySelector('.mst tr.me .rk'); const sv=me?me.textContent.trim():null;
       const tyN=Object.values(MTYPE).map(x=>x[0]); const clash=Object.values(MV).map(x=>x.l).filter(l=>tyN.includes(l)||/형$/.test(l));
       const s0=G.mailSeq||0; const c=(G.mmarket||[]).find(x=>!(x.clan||[]).length)||(G.mmarket||[])[0]; let n=-1, subj=[];
-      if(c){ UI.cfm=null; A.hireMgr(c.id+':2:1'); if(UI.cfm)A.cfmOk(); closeSheets(); const nw=G.mail.filter(m=>+String(m.id).slice(1)>s0&&!/인터뷰/.test(m.subj)); n=nw.length; subj=nw.map(m=>m.subj); }
+      if(c){ UI.cfm=null; if(mgrHireBlk())mcf().fire={k:'ok',day:G.day,until:G.day+14}; /* 현 감독 경질 동의(검수 11-17 #244) */ A.hireMgr(c.id+':2:1'); if(UI.cfm)A.cfmOk(); closeSheets(); const nw=G.mail.filter(m=>+String(m.id).slice(1)>s0&&!/인터뷰/.test(m.subj)); n=nw.length; subj=nw.map(m=>m.subj); }
       render(); return {tv,sv,clash,n,subj}; });
     if(r){ if(r.tv&&r.sv&&r.tv!==r.sv)add('전력 예상',`홈 상단 ${r.tv}위 · 오른쪽 전력 예상 ${r.sv}위`); if(r.clash.length)add('감독 표시','운영 유형과 헷갈리는 말투 이름: '+r.clash.join(', '));
       if(r.n>1)add('소식 묶기',`감독 선임 한 번에 소식 ${r.n}건: ${r.subj.join(' / ')}`); } }
@@ -604,7 +604,7 @@ const QUICK=process.env.QUICK==='1';
   { where='확인창 계산'; const r=await ev(()=>{ const out={}; const keepC=G.contract; const ps=playersOf(G.user).filter(p=>!p.foreign&&!p.faC).slice(0,2); const [a,b]=ps; const ka=a.newSal, kb=b.newSal; a.newSal=a.sal+50; b.newSal=b.sal;
       G.contract={y:G.year,tid:G.user,ended:ps.map(p=>p.id),foreignEnd:[],foreignDrop:[],released:[],done:false,neg:{[b.id]:{st:'arb',arb:{club:200,player:1000},ask:1000,off:200}}};
       const dd=G.day; G.day=dnum(G.year+1,1,21); /* 1월 20일 전 조정 중이면 결재 문서 대신 막힘 안내(검수 11-09s) */ const cf=GUARD.confirmContracts(); G.day=dd; out.arb=!!cf&&cf.lines.some(l=>/구단안/.test(l)&&/선수안/.test(l))&&cf.lines.some(l=>/연봉조정 중/.test(l)); G.contract=keepC; a.newSal=ka; b.newSal=kb; if(ka==null)delete a.newSal; if(kb==null)delete b.newSal;
-      const cur=G.mgr[G.user]; if(cur&&!cur.interim&&(G.mmarket||[]).length){ const k={plv:cur.plv,yrs:cur.yrs}; cur.plv=[{y:G.year},{y:G.year}]; cur.yrs=Math.max(2,cur.yrs||0); const c2=GUARD.hireMgr?GUARD.hireMgr(G.mmarket[0].id+":2:0"):null; const txt=c2?c2.lines.join(' '):''; out.sev=!c2||txt.includes(money(mgrSevPay(cur).pay)); cur.plv=k.plv; cur.yrs=k.yrs; } else out.sev=true;
+      const cur=G.mgr[G.user]; if(cur&&!cur.interim&&(G.mmarket||[]).length){ const k={plv:cur.plv,yrs:cur.yrs}; cur.plv=[{y:G.year},{y:G.year}]; cur.yrs=Math.max(2,cur.yrs||0); const f0=mcf().fire; G.mcf.fire={k:"ok",day:G.day,until:G.day+14}; const c2=GUARD.hireMgr?GUARD.hireMgr(G.mmarket[0].id+":2:0"):null; const txt=c2?c2.lines.join(' '):''; out.sev=!!c2&&txt.includes(money(mgrSevPay(cur).pay)); G.mcf.fire=f0; cur.plv=k.plv; cur.yrs=k.yrs; } else out.sev=true;
       return out; });
     if(r){ if(!r.arb)add('확인창','연봉조정 중 선수를 구단안/선수안으로 나눠 보여 주지 않음'); if(!r.sev)add('확인창','감독 교체 정산금이 실제 경질 계산과 다름'); } }
   /* PC: 왼쪽 주 메뉴 + 상단 현재 위치·세부 탭·단축키 */
