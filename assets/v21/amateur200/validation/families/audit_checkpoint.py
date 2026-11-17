@@ -24,10 +24,13 @@ for prefix in ['production','atlas']:
     families=np.array([p.split('__')[0] for p in ids]);same=families[:,None]==families[None,:];upper=np.triu(np.ones(same.shape,dtype=bool),1)
     failures=0;summary={}
     for size,e in es.items():
+        atlas_cache={}
         for pid in ids:
             if prefix=='production':im=Image.open(R/photos[pid]['photos'][str(size)]['path']).convert('RGB')
             else:
-                p=rects[pid,size];x,y,w,h=p['rect'];im=Image.open(R/p['atlas']).convert('RGB').crop((x,y,x+w,y+h))
+                p=rects[pid,size];x,y,w,h=p['rect'];path=p['atlas']
+                if path not in atlas_cache:atlas_cache[path]=Image.open(R/path).convert('RGB')
+                im=atlas_cache[path].crop((x,y,x+w,y+h))
             assert im.size==(size,size)
             assert hashlib.sha256(im.tobytes()).hexdigest()==records[pid]['details'][str(size)]['pixel_sha256'],(prefix,pid,size)
         matrix=e@e.T;old=e@refs[min(size,256)].T

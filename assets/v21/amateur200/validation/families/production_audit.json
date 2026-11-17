@@ -1,5 +1,5 @@
 {
-  "photo_count": 270,
+  "photo_count": 390,
   "family_count": 30,
   "complete_13_variant_families": [
     "c000_p00",
@@ -21,33 +21,43 @@
     "c001_p06",
     "c001_p07",
     "c001_p08",
-    "c001_p09"
+    "c001_p09",
+    "c002_p00",
+    "c002_p01",
+    "c002_p02",
+    "c002_p03",
+    "c002_p04",
+    "c002_p05",
+    "c002_p06",
+    "c002_p07",
+    "c002_p08",
+    "c002_p09"
   ],
-  "all_13_families_generated": false,
+  "all_13_families_generated": true,
   "raw_measurements": {
     "128": {
-      "same_comparisons": 1560,
+      "same_comparisons": 2340,
       "same_min": 0.6500513553619385,
-      "different_comparisons": 34755,
-      "different_max": 0.43272119760513306,
-      "old_comparisons": 131220,
-      "old_max": 0.35142844915390015
+      "different_comparisons": 73515,
+      "different_max": 0.4789188504219055,
+      "old_comparisons": 189540,
+      "old_max": 0.37414711713790894
     },
     "256": {
-      "same_comparisons": 1560,
+      "same_comparisons": 2340,
       "same_min": 0.7095468044281006,
-      "different_comparisons": 34755,
-      "different_max": 0.4295417070388794,
-      "old_comparisons": 131220,
-      "old_max": 0.3508354127407074
+      "different_comparisons": 73515,
+      "different_max": 0.4529281258583069,
+      "old_comparisons": 189540,
+      "old_max": 0.3771689534187317
     },
     "384": {
-      "same_comparisons": 1560,
+      "same_comparisons": 2340,
       "same_min": 0.7150029540061951,
-      "different_comparisons": 34755,
+      "different_comparisons": 73515,
       "different_max": 0.4542233943939209,
-      "old_comparisons": 131220,
-      "old_max": 0.35346102714538574
+      "old_comparisons": 189540,
+      "old_max": 0.3927382826805115
     }
   },
   "failures": [
@@ -130,6 +140,13 @@
     },
     {
       "kind": "different_person",
+      "a": "c000_p04__daegu_thunders",
+      "b": "c002_p05__incheon_seagulls",
+      "cosine": 0.41094887256622314,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
       "a": "c000_p02__gwangju_blazes",
       "b": "c001_p04__goyang_storm",
       "cosine": 0.41251981258392334,
@@ -151,6 +168,55 @@
     },
     {
       "kind": "different_person",
+      "a": "c000_p04__changwon_anchors",
+      "b": "c002_p05__incheon_seagulls",
+      "cosine": 0.4030439853668213,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p00__hs_home",
+      "b": "c002_p09__daejeon_redfox",
+      "cosine": 0.4071004390716553,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p00__hs_home",
+      "b": "c002_p09__suwon_sparks",
+      "cosine": 0.41484183073043823,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__busan_waves",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4023612141609192,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p02__busan_waves",
+      "b": "c002_p01__goyang_storm",
+      "cosine": 0.40587300062179565,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p02__busan_waves",
+      "b": "c002_p01__hs_away",
+      "cosine": 0.4002584218978882,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p02__busan_waves",
+      "b": "c002_p01__univ",
+      "cosine": 0.41886892914772034,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
       "a": "c001_p00__changwon_anchors",
       "b": "c001_p02__seoul_hounds",
       "cosine": 0.4112839102745056,
@@ -158,9 +224,58 @@
     },
     {
       "kind": "different_person",
+      "a": "c001_p00__changwon_anchors",
+      "b": "c002_p09__daejeon_redfox",
+      "cosine": 0.4132291078567505,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p00__changwon_anchors",
+      "b": "c002_p09__seoul_comets",
+      "cosine": 0.4041973352432251,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p00__changwon_anchors",
+      "b": "c002_p09__suwon_sparks",
+      "cosine": 0.402002215385437,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__changwon_anchors",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4102064371109009,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__changwon_anchors",
+      "b": "c002_p01__daejeon_redfox",
+      "cosine": 0.40436506271362305,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__changwon_anchors",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.41191616654396057,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
       "a": "c001_p04__daegu_thunders",
       "b": "c001_p01__seoul_comets",
       "cosine": 0.41180241107940674,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p00__daejeon_redfox",
+      "b": "c002_p09__suwon_sparks",
+      "cosine": 0.40068572759628296,
       "size": 128
     },
     {
@@ -179,6 +294,41 @@
     },
     {
       "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4134422540664673,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__daejeon_redfox",
+      "cosine": 0.4080207943916321,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__hs_away",
+      "cosine": 0.4103415012359619,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.41031521558761597,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.42942649126052856,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
       "a": "c001_p07__daejeon_redfox",
       "b": "c002_p01__hs_home",
       "cosine": 0.4316736161708832,
@@ -186,9 +336,107 @@
     },
     {
       "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__busan_waves",
+      "cosine": 0.4512447118759155,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__changwon_anchors",
+      "cosine": 0.4679853916168213,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.418246328830719,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__goyang_storm",
+      "cosine": 0.4443276524543762,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__gwangju_blazes",
+      "cosine": 0.4391518235206604,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.4044337570667267,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4789188504219055,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__univ",
+      "cosine": 0.4178287386894226,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
       "a": "c001_p09__daejeon_redfox",
       "b": "c001_p04__univ",
       "cosine": 0.4010385572910309,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p00__goyang_storm",
+      "b": "c002_p09__daejeon_redfox",
+      "cosine": 0.40921175479888916,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p00__goyang_storm",
+      "b": "c002_p09__seoul_comets",
+      "cosine": 0.4111974239349365,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p00__goyang_storm",
+      "b": "c002_p09__suwon_sparks",
+      "cosine": 0.4125698208808899,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__goyang_storm",
+      "b": "c002_p07__incheon_seagulls",
+      "cosine": 0.40790438652038574,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__hs_away",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4179877042770386,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__hs_away",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.40271392464637756,
       "size": 128
     },
     {
@@ -203,6 +451,27 @@
       "a": "c001_p01__incheon_seagulls",
       "b": "c001_p04__suwon_sparks",
       "cosine": 0.40071579813957214,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__incheon_seagulls",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.41404470801353455,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__incheon_seagulls",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.40824031829833984,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__incheon_seagulls",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4054408073425293,
       "size": 128
     },
     {
@@ -228,9 +497,261 @@
     },
     {
       "kind": "different_person",
+      "a": "c001_p07__seoul_hounds",
+      "b": "c002_p01__changwon_anchors",
+      "cosine": 0.41507941484451294,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__seoul_hounds",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4339081048965454,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
       "a": "c001_p01__suwon_sparks",
       "b": "c001_p04__suwon_sparks",
       "cosine": 0.40181583166122437,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4408055543899536,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__daejeon_redfox",
+      "cosine": 0.4401698708534241,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__goyang_storm",
+      "cosine": 0.40581631660461426,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__hs_away",
+      "cosine": 0.4069039523601532,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4004668593406677,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.43761247396469116,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.43425869941711426,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.40197962522506714,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__univ",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.40377217531204224,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.40319961309432983,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.4027293026447296,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4123290777206421,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p07__seoul_comets",
+      "cosine": 0.40517953038215637,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.42515701055526733,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4133361876010895,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.4031517803668976,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__univ",
+      "cosine": 0.43432381749153137,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.400077760219574,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.40381890535354614,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__univ",
+      "cosine": 0.40760910511016846,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.41640982031822205,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4092751145362854,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__univ",
+      "cosine": 0.44498342275619507,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p01__daegu_thunders",
+      "b": "c002_p00__daejeon_redfox",
+      "cosine": 0.40819865465164185,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p01__daegu_thunders",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.418809175491333,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daejeon_redfox",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.40902280807495117,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daejeon_redfox",
+      "b": "c002_p07__univ",
+      "cosine": 0.42757105827331543,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__gwangju_blazes",
+      "b": "c002_p07__univ",
+      "cosine": 0.40337395668029785,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__incheon_seagulls",
+      "cosine": 0.42195093631744385,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__seoul_comets",
+      "cosine": 0.4104048013687134,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.4078191816806793,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__incheon_seagulls",
+      "cosine": 0.4077754318714142,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__incheon_seagulls",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.4010426700115204,
+      "size": 128
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__incheon_seagulls",
+      "b": "c002_p07__univ",
+      "cosine": 0.4178507328033447,
       "size": 128
     },
     {
@@ -298,9 +819,632 @@
     },
     {
       "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__busan_waves",
+      "cosine": 0.41885435581207275,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__changwon_anchors",
+      "cosine": 0.41062337160110474,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__daejeon_redfox",
+      "cosine": 0.4153227210044861,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__goyang_storm",
+      "cosine": 0.40322738885879517,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__gwangju_blazes",
+      "cosine": 0.40873605012893677,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.4287877082824707,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4529281258583069,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__suwon_sparks",
+      "cosine": 0.4061087369918823,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__busan_waves",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.426860511302948,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__changwon_anchors",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4153693616390228,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__changwon_anchors",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4099779427051544,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daegu_thunders",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4141175150871277,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daegu_thunders",
+      "b": "c002_p01__busan_waves",
+      "cosine": 0.40962135791778564,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daegu_thunders",
+      "b": "c002_p08__busan_waves",
+      "cosine": 0.41086363792419434,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daegu_thunders",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.40438348054885864,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daegu_thunders",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4182712435722351,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
       "a": "c001_p01__daejeon_redfox",
       "b": "c001_p04__suwon_sparks",
       "cosine": 0.4011823236942291,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.40733084082603455,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.40900546312332153,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__goyang_storm",
+      "cosine": 0.4089462161064148,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.401349812746048,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.41470158100128174,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__busan_waves",
+      "cosine": 0.4290647506713867,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__gwangju_blazes",
+      "cosine": 0.42711177468299866,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.41589778661727905,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.45138317346572876,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__seoul_hounds",
+      "cosine": 0.4030683636665344,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__goyang_storm",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.40566539764404297,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__hs_away",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.41983309388160706,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_away",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4170258641242981,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__incheon_seagulls",
+      "b": "c002_p08__busan_waves",
+      "cosine": 0.40742969512939453,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__seoul_comets",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4139583110809326,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__seoul_hounds",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.4090000092983246,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__seoul_hounds",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4356048107147217,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__seoul_hounds",
+      "b": "c002_p07__daejeon_redfox",
+      "cosine": 0.40778467059135437,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__seoul_hounds",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.40152478218078613,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__seoul_hounds",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.41284799575805664,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.4096279740333557,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4293860197067261,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.4116757810115814,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__univ",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.40499740839004517,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__univ",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4064949154853821,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p04__hs_away",
+      "b": "c002_p05__busan_waves",
+      "cosine": 0.41834771633148193,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p04__hs_away",
+      "b": "c002_p05__hs_away",
+      "cosine": 0.4072611331939697,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.40583154559135437,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_home",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.4063590466976166,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_home",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.40430116653442383,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.41589829325675964,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4189613163471222,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__univ",
+      "cosine": 0.4045472741127014,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__daejeon_redfox",
+      "cosine": 0.40690141916275024,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.44694799184799194,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.44609665870666504,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__incheon_seagulls",
+      "cosine": 0.41474413871765137,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.41459208726882935,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__univ",
+      "cosine": 0.43781769275665283,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.42807140946388245,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4262712001800537,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__incheon_seagulls",
+      "cosine": 0.4011158347129822,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.4014011025428772,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__univ",
+      "cosine": 0.42594480514526367,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p05__daegu_thunders",
+      "b": "c002_p03__daejeon_redfox",
+      "cosine": 0.4048668146133423,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__goyang_storm",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.4152598977088928,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__goyang_storm",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4041500985622406,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__goyang_storm",
+      "b": "c002_p07__univ",
+      "cosine": 0.4087959825992584,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__gwangju_blazes",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.4172576069831848,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__gwangju_blazes",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.42215055227279663,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__gwangju_blazes",
+      "b": "c002_p07__incheon_seagulls",
+      "cosine": 0.40264859795570374,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__gwangju_blazes",
+      "b": "c002_p07__univ",
+      "cosine": 0.4089864492416382,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__hs_away",
+      "cosine": 0.4387438893318176,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__incheon_seagulls",
+      "cosine": 0.4268808662891388,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__seoul_comets",
+      "cosine": 0.42487648129463196,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__seoul_hounds",
+      "cosine": 0.41290584206581116,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.41826391220092773,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_away",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4512177109718323,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_away",
+      "b": "c002_p07__incheon_seagulls",
+      "cosine": 0.41598427295684814,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_away",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.4022982716560364,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_away",
+      "b": "c002_p07__univ",
+      "cosine": 0.42741650342941284,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__incheon_seagulls",
+      "cosine": 0.42972537875175476,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__seoul_comets",
+      "cosine": 0.41817694902420044,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__seoul_hounds",
+      "cosine": 0.41804587841033936,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.4236891269683838,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__incheon_seagulls",
+      "b": "c002_p07__incheon_seagulls",
+      "cosine": 0.41127049922943115,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__incheon_seagulls",
+      "b": "c002_p07__univ",
+      "cosine": 0.41901904344558716,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__incheon_seagulls",
+      "b": "c002_p00__seoul_comets",
+      "cosine": 0.40105700492858887,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__incheon_seagulls",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.4207979440689087,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__seoul_comets",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.4030640721321106,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__seoul_comets",
+      "b": "c002_p07__univ",
+      "cosine": 0.41050636768341064,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__seoul_hounds",
+      "b": "c002_p07__univ",
+      "cosine": 0.40385299921035767,
+      "size": 256
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__suwon_sparks",
+      "b": "c002_p07__univ",
+      "cosine": 0.4026139974594116,
       "size": 256
     },
     {
@@ -319,6 +1463,13 @@
     },
     {
       "kind": "different_person",
+      "a": "c000_p05__hs_away",
+      "b": "c002_p05__daejeon_redfox",
+      "cosine": 0.41701602935791016,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
       "a": "c000_p03__seoul_comets",
       "b": "c001_p09__daegu_thunders",
       "cosine": 0.4000266194343567,
@@ -329,6 +1480,13 @@
       "a": "c000_p03__seoul_comets",
       "b": "c001_p09__gwangju_blazes",
       "cosine": 0.40574491024017334,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p05__seoul_comets",
+      "b": "c002_p05__daejeon_redfox",
+      "cosine": 0.4037327170372009,
       "size": 384
     },
     {
@@ -350,6 +1508,20 @@
       "a": "c000_p02__univ",
       "b": "c001_p05__goyang_storm",
       "cosine": 0.4017913341522217,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p05__incheon_seagulls",
+      "b": "c002_p05__busan_waves",
+      "cosine": 0.4052751660346985,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p05__incheon_seagulls",
+      "b": "c002_p05__daejeon_redfox",
+      "cosine": 0.4106817841529846,
       "size": 384
     },
     {
@@ -424,6 +1596,132 @@
     },
     {
       "kind": "different_person",
+      "a": "c001_p01__hs_home",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.40144968032836914,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__hs_home",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4034549295902252,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__changwon_anchors",
+      "cosine": 0.40651971101760864,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.41421443223953247,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_home",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.40765732526779175,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__busan_waves",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.4127938747406006,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__busan_waves",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4065261781215668,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__busan_waves",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.44043785333633423,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p02__busan_waves",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4153803586959839,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__changwon_anchors",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.40595757961273193,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__changwon_anchors",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.41743314266204834,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__changwon_anchors",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4205750823020935,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__changwon_anchors",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4033012390136719,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daegu_thunders",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4043707251548767,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p02__daegu_thunders",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4080650210380554,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daegu_thunders",
+      "b": "c002_p01__changwon_anchors",
+      "cosine": 0.4038037657737732,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daegu_thunders",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4112665057182312,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daegu_thunders",
+      "b": "c002_p08__daejeon_redfox",
+      "cosine": 0.4050237238407135,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
       "a": "c001_p01__daejeon_redfox",
       "b": "c001_p04__suwon_sparks",
       "cosine": 0.40407466888427734,
@@ -438,9 +1736,212 @@
     },
     {
       "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.41756969690322876,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4479394555091858,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4329943358898163,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__daejeon_redfox",
+      "cosine": 0.40305179357528687,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p07__daejeon_redfox",
+      "cosine": 0.40798598527908325,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__goyang_storm",
+      "cosine": 0.41545534133911133,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__gwangju_blazes",
+      "cosine": 0.41534659266471863,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.4046255052089691,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__hs_away",
+      "cosine": 0.43569403886795044,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.42089664936065674,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4414859116077423,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__daejeon_redfox",
+      "b": "c002_p01__univ",
+      "cosine": 0.4041372835636139,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__busan_waves",
+      "cosine": 0.4122399687767029,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__changwon_anchors",
+      "cosine": 0.42155787348747253,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4356060028076172,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__gwangju_blazes",
+      "cosine": 0.4179331660270691,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.40905696153640747,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__daejeon_redfox",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4264877736568451,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__goyang_storm",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.40872257947921753,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__hs_away",
+      "b": "c002_p01__changwon_anchors",
+      "cosine": 0.40188711881637573,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__incheon_seagulls",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.41519421339035034,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__incheon_seagulls",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4007216691970825,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__incheon_seagulls",
+      "b": "c002_p08__busan_waves",
+      "cosine": 0.4022808074951172,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__incheon_seagulls",
+      "b": "c002_p08__seoul_comets",
+      "cosine": 0.40407198667526245,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p07__incheon_seagulls",
+      "b": "c002_p08__seoul_hounds",
+      "cosine": 0.4059019684791565,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__seoul_comets",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.40083765983581543,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
       "a": "c001_p01__seoul_hounds",
       "b": "c002_p07__hs_home",
       "cosine": 0.40035876631736755,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__seoul_hounds",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.42264389991760254,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__seoul_hounds",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4410833418369293,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__seoul_hounds",
+      "b": "c002_p07__daejeon_redfox",
+      "cosine": 0.4146277606487274,
       "size": 384
     },
     {
@@ -449,9 +1950,436 @@
       "b": "c002_p07__hs_home",
       "cosine": 0.4143080711364746,
       "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.42902225255966187,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__changwon_anchors",
+      "cosine": 0.4056406617164612,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4364740252494812,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.43493056297302246,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p09__daegu_thunders",
+      "cosine": 0.4109577238559723,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__daejeon_redfox",
+      "cosine": 0.41462406516075134,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__daejeon_redfox",
+      "cosine": 0.4104304909706116,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__goyang_storm",
+      "cosine": 0.4079563021659851,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__gwangju_blazes",
+      "cosine": 0.40717536211013794,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.4040670394897461,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__hs_away",
+      "cosine": 0.4128636121749878,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__incheon_seagulls",
+      "cosine": 0.40215709805488586,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.42130109667778015,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__suwon_sparks",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.41399192810058594,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__univ",
+      "b": "c002_p07__busan_waves",
+      "cosine": 0.4214799702167511,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__univ",
+      "b": "c002_p07__changwon_anchors",
+      "cosine": 0.4007593095302582,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__univ",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.4159291982650757,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__univ",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4097798764705658,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p04__hs_away",
+      "b": "c002_p05__busan_waves",
+      "cosine": 0.4177173376083374,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p04__hs_away",
+      "b": "c002_p05__daejeon_redfox",
+      "cosine": 0.4051907956600189,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c000_p04__hs_away",
+      "b": "c002_p05__hs_away",
+      "cosine": 0.4036128520965576,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p01__daegu_thunders",
+      "cosine": 0.41896283626556396,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p07__daegu_thunders",
+      "cosine": 0.4140506386756897,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p01__gwangju_blazes",
+      "cosine": 0.4003487229347229,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p01__hs_away",
+      "cosine": 0.40618497133255005,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c001_p01__gwangju_blazes",
+      "b": "c002_p01__seoul_comets",
+      "cosine": 0.4053756892681122,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_home",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.4097921848297119,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_home",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.41299429535865784,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_home",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.4001469910144806,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.42424631118774414,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4345357418060303,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.40128186345100403,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__busan_waves",
+      "b": "c002_p07__univ",
+      "cosine": 0.41289615631103516,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.42980068922042847,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4389284551143646,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__suwon_sparks",
+      "cosine": 0.40125155448913574,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__changwon_anchors",
+      "b": "c002_p07__univ",
+      "cosine": 0.4092905521392822,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__changwon_anchors",
+      "b": "c002_p00__daegu_thunders",
+      "cosine": 0.40438807010650635,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__changwon_anchors",
+      "b": "c002_p00__hs_away",
+      "cosine": 0.4003390073776245,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__changwon_anchors",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.4163050055503845,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.41888904571533203,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.42861610651016235,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__daegu_thunders",
+      "b": "c002_p07__univ",
+      "cosine": 0.41666287183761597,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__goyang_storm",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.4097682535648346,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__goyang_storm",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.41801562905311584,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__gwangju_blazes",
+      "b": "c002_p07__gwangju_blazes",
+      "cosine": 0.4167729616165161,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__gwangju_blazes",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.42576080560684204,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__hs_away",
+      "cosine": 0.42389804124832153,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__incheon_seagulls",
+      "cosine": 0.4123513102531433,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__seoul_comets",
+      "cosine": 0.4010661840438843,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__gwangju_blazes",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.4292033314704895,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_away",
+      "b": "c002_p07__hs_away",
+      "cosine": 0.4352259635925293,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_away",
+      "b": "c002_p07__incheon_seagulls",
+      "cosine": 0.40709251165390015,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__hs_away",
+      "b": "c002_p07__univ",
+      "cosine": 0.4101257622241974,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__incheon_seagulls",
+      "cosine": 0.42431801557540894,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__seoul_comets",
+      "cosine": 0.40644294023513794,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__seoul_hounds",
+      "cosine": 0.4020087718963623,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.4336295425891876,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__hs_away",
+      "b": "c002_p00__univ",
+      "cosine": 0.4020228385925293,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p07__incheon_seagulls",
+      "b": "c002_p00__suwon_sparks",
+      "cosine": 0.41706934571266174,
+      "size": 384
+    },
+    {
+      "kind": "different_person",
+      "a": "c002_p00__suwon_sparks",
+      "b": "c002_p07__univ",
+      "cosine": 0.4013178050518036,
+      "size": 384
     }
   ],
-  "failure_count": 57,
+  "failure_count": 331,
   "status": "FINAL_ATLAS_AND_HUMAN_AGE_REVIEW_STILL_PENDING",
   "measurement_scope": "individual prescreen WebPs, not final atlas pixels"
 }

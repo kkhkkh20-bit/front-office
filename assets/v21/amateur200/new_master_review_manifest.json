@@ -1,0 +1,2594 @@
+{
+  "status": "SINGLE_PHOTO_REVIEW_ONLY",
+  "production_complete": false,
+  "candidate_count": 60,
+  "human_age_review": "pending",
+  "candidates": [
+    {
+      "candidate_id": "d2base_pool_0207_1",
+      "seed_id": "pool_0207_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 0,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          2,
+          2,
+          394,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0207_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0207_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0207_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0217_1",
+      "seed_id": "pool_0217_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 1,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          398,
+          2,
+          790,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0217_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0217_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0217_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0219_1",
+      "seed_id": "pool_0219_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 2,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          2,
+          398,
+          394,
+          790
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0219_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0219_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0219_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0221_0",
+      "seed_id": "pool_0221_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": true
+      },
+      "batch": 3,
+      "cell": 3,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          398,
+          398,
+          791,
+          791
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0221_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0221_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0221_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0227_0",
+      "seed_id": "pool_0227_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 4,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          2,
+          795,
+          394,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0227_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0227_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0227_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0238_2",
+      "seed_id": "pool_0238_2",
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 5,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          398,
+          795,
+          790,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0238_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0238_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0238_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0240_2",
+      "seed_id": "pool_0240_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 6,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          2,
+          1191,
+          394,
+          1583
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0240_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0240_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0240_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0273_1",
+      "seed_id": "pool_0273_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 7,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          398,
+          1191,
+          791,
+          1584
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0273_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0273_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0273_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0285_0",
+      "seed_id": "pool_0285_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 8,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          2,
+          1588,
+          394,
+          1980
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0285_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0285_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0285_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0293_0",
+      "seed_id": "pool_0293_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 3,
+      "cell": 9,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_003.png",
+        "original_filename": "exec-ebce383d-0fad-4df9-b1f3-62b5b80f3061.png",
+        "sha256": "65abf4264e2a2cf42fe21272a179fd098258c45b3506af469819902125aa2d9a",
+        "crop_xyxy": [
+          398,
+          1588,
+          791,
+          1981
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0293_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0293_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0293_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0214_3",
+      "seed_id": "pool_0214_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 0,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          2,
+          2,
+          394,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0214_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0214_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0214_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0223_3",
+      "seed_id": "pool_0223_3",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 1,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          398,
+          2,
+          790,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0223_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0223_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0223_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0227_1",
+      "seed_id": "pool_0227_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 2,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          2,
+          398,
+          394,
+          790
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0227_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0227_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0227_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0229_1",
+      "seed_id": "pool_0229_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 3,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          398,
+          398,
+          791,
+          791
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0229_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0229_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0229_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0244_2",
+      "seed_id": "pool_0244_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 4,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          2,
+          795,
+          394,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0244_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0244_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0244_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0246_0",
+      "seed_id": "pool_0246_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": true
+      },
+      "batch": 4,
+      "cell": 5,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          398,
+          795,
+          790,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0246_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0246_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0246_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0248_1",
+      "seed_id": "pool_0248_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 6,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          2,
+          1191,
+          394,
+          1583
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0248_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0248_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0248_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0260_2",
+      "seed_id": "pool_0260_2",
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 7,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          398,
+          1191,
+          791,
+          1584
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0260_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0260_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0260_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0276_2",
+      "seed_id": "pool_0276_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 8,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          2,
+          1588,
+          394,
+          1980
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0276_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0276_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0276_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0286_0",
+      "seed_id": "pool_0286_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 4,
+      "cell": 9,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_004.png",
+        "original_filename": "exec-db9d1ff6-302e-47c1-82c7-dee89f38b87c.png",
+        "sha256": "3e74f504fbf2c544e492c0962ffdc76f3307e6e427907e8f33a0f771bd83112a",
+        "crop_xyxy": [
+          398,
+          1588,
+          791,
+          1981
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0286_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0286_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0286_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0213_0",
+      "seed_id": "pool_0213_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 0,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          2,
+          2,
+          394,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0213_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0213_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0213_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0219_0",
+      "seed_id": "pool_0219_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 1,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          398,
+          2,
+          790,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0219_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0219_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0219_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0221_2",
+      "seed_id": "pool_0221_2",
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 2,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          2,
+          398,
+          394,
+          790
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0221_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0221_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0221_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0231_1",
+      "seed_id": "pool_0231_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 3,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          398,
+          398,
+          791,
+          791
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0231_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0231_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0231_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0244_0",
+      "seed_id": "pool_0244_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 4,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "hold_visual_or_age",
+        "reason": "missing cap",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          2,
+          795,
+          394,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0244_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0244_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0244_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0257_2",
+      "seed_id": "pool_0257_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 5,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          398,
+          795,
+          790,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0257_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0257_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0257_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0259_1",
+      "seed_id": "pool_0259_1",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 6,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          2,
+          1191,
+          394,
+          1583
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0259_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0259_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0259_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0267_3",
+      "seed_id": "pool_0267_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 7,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          398,
+          1191,
+          791,
+          1584
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0267_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0267_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0267_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0287_2",
+      "seed_id": "pool_0287_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 8,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "hold_visual_or_age",
+        "reason": "appears older than target",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          2,
+          1588,
+          394,
+          1980
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0287_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0287_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0287_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0290_3",
+      "seed_id": "pool_0290_3",
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 5,
+      "cell": 9,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "original_filename": "exec-475a2ce3-e07a-4c73-8fb6-f59a8023d0ed.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde",
+        "crop_xyxy": [
+          398,
+          1588,
+          791,
+          1981
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0290_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0290_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0290_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0228_1",
+      "seed_id": "pool_0228_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 0,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          2,
+          2,
+          394,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0228_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0228_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0228_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0229_3",
+      "seed_id": "pool_0229_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 1,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          398,
+          2,
+          790,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0229_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0229_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0229_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0240_0",
+      "seed_id": "pool_0240_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 2,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          2,
+          398,
+          394,
+          790
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0240_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0240_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0240_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0245_3",
+      "seed_id": "pool_0245_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 3,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          398,
+          398,
+          791,
+          791
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0245_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0245_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0245_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0249_1",
+      "seed_id": "pool_0249_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 4,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          2,
+          795,
+          394,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0249_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0249_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0249_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0250_3",
+      "seed_id": "pool_0250_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 5,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          398,
+          795,
+          790,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0250_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0250_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0250_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0267_1",
+      "seed_id": "pool_0267_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 6,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          2,
+          1191,
+          394,
+          1583
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0267_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0267_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0267_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0278_3",
+      "seed_id": "pool_0278_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": true
+      },
+      "batch": 6,
+      "cell": 7,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          398,
+          1191,
+          791,
+          1584
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0278_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0278_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0278_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0282_3",
+      "seed_id": "pool_0282_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 8,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          2,
+          1588,
+          394,
+          1980
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0282_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0282_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0282_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0287_0",
+      "seed_id": "pool_0287_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 6,
+      "cell": 9,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "hold_visual_or_age",
+        "reason": "appears older than target",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "original_filename": "exec-43dd1d4a-41be-4d49-8124-04fb487f0ea1.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d",
+        "crop_xyxy": [
+          398,
+          1588,
+          791,
+          1981
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0287_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0287_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0287_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0210_2",
+      "seed_id": "pool_0210_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": true
+      },
+      "batch": 7,
+      "cell": 0,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          2,
+          2,
+          394,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0210_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0210_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0210_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0236_2",
+      "seed_id": "pool_0236_2",
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 1,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          398,
+          2,
+          790,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0236_2.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0236_2.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0236_2.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0244_3",
+      "seed_id": "pool_0244_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 2,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          2,
+          398,
+          394,
+          790
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0244_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0244_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0244_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0245_0",
+      "seed_id": "pool_0245_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 3,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          398,
+          398,
+          791,
+          791
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0245_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0245_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0245_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0249_3",
+      "seed_id": "pool_0249_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 4,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          2,
+          795,
+          394,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0249_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0249_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0249_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0266_0",
+      "seed_id": "pool_0266_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 5,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          398,
+          795,
+          790,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0266_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0266_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0266_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0268_0",
+      "seed_id": "pool_0268_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 6,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          2,
+          1191,
+          394,
+          1583
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0268_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0268_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0268_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0272_0",
+      "seed_id": "pool_0272_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 7,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          398,
+          1191,
+          791,
+          1584
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0272_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0272_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0272_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0276_0",
+      "seed_id": "pool_0276_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 8,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          2,
+          1588,
+          394,
+          1980
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0276_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0276_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0276_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0291_1",
+      "seed_id": "pool_0291_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 7,
+      "cell": 9,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_007.png",
+        "original_filename": "exec-b8cf433b-e3e4-4367-b9c5-c0c0a8f915fe.png",
+        "sha256": "8fab3ad873de521982fa9253090970d9f4ab8fcae1de71f3b49e76335128cf94",
+        "crop_xyxy": [
+          398,
+          1588,
+          791,
+          1981
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0291_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0291_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0291_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0208_0",
+      "seed_id": "pool_0208_0",
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 0,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          2,
+          2,
+          394,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0208_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0208_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0208_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0233_0",
+      "seed_id": "pool_0233_0",
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 1,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "hold_visual_or_age",
+        "reason": "appears older than target",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          398,
+          2,
+          790,
+          394
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0233_0.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0233_0.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0233_0.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0262_1",
+      "seed_id": "pool_0262_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 2,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          2,
+          398,
+          394,
+          790
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0262_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0262_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0262_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0268_3",
+      "seed_id": "pool_0268_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 3,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          398,
+          398,
+          791,
+          791
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0268_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0268_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0268_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0272_1",
+      "seed_id": "pool_0272_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 4,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "hold_visual_or_age",
+        "reason": "appears older than target",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          2,
+          795,
+          394,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0272_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0272_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0272_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0276_3",
+      "seed_id": "pool_0276_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 5,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          398,
+          795,
+          790,
+          1187
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0276_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0276_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0276_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0282_1",
+      "seed_id": "pool_0282_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 6,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          2,
+          1191,
+          394,
+          1583
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0282_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0282_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0282_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0284_1",
+      "seed_id": "pool_0284_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 7,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          398,
+          1191,
+          791,
+          1584
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0284_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0284_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0284_1.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0284_3",
+      "seed_id": "pool_0284_3",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 8,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          2,
+          1588,
+          394,
+          1980
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 392
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0284_3.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0284_3.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0284_3.webp"
+        }
+      }
+    },
+    {
+      "candidate_id": "d2base_pool_0292_1",
+      "seed_id": "pool_0292_1",
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "tags": {
+        "glasses": false
+      },
+      "batch": 8,
+      "cell": 9,
+      "human_age_review": "pending",
+      "assistant_visual_review": {
+        "status": "assistant_base_screen_pass",
+        "human_age_review": "pending"
+      },
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "original_filename": "exec-b7911d7e-ceb9-4f5c-8f73-d2ee42875901.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354",
+        "crop_xyxy": [
+          398,
+          1588,
+          791,
+          1981
+        ],
+        "dimensions": [
+          793,
+          1983
+        ],
+        "minimum_native_crop_edge": 393
+      },
+      "photos": {
+        "128": {
+          "path": "review/new_masters/128/d2base_pool_0292_1.webp"
+        },
+        "256": {
+          "path": "review/new_masters/256/d2base_pool_0292_1.webp"
+        },
+        "384": {
+          "path": "review/new_masters/384/d2base_pool_0292_1.webp"
+        }
+      }
+    }
+  ],
+  "note": "Additional masters are candidates, not 13-variant deliveries. Five visible age/kit holds are recorded. No runtime assignment."
+}
