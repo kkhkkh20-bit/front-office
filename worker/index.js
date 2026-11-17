@@ -5,9 +5,16 @@
  *   DELETE /api/transfer/CODE     올린 사람이 미리 지우기 → 200 {ok:true}
  * 보관하는 것: 저장 본문과 올린 시각(metadata.t)뿐. 요청 횟수 제한 키에는 IP의 해시만 두고 1시간 뒤 사라진다.
  * SAVE_KV 바인딩이 없으면(아직 설정 전) 모든 API가 503 not_configured를 돌려준다. docs/save-transfer.md 참고.
- * 유저 대회(/api/cup/*)는 worker/cup.js, 유저 래더(/api/ladder/*)는 worker/uladder.js. 같은 KV를 쓰고, 관리자 호출에는 비밀값 CUP_ADMIN이 필요하다. */
+ * 유저 대회(/api/cup/*)는 worker/cup.js, 유저 래더(/api/ladder/*)는 worker/uladder.js. 같은 KV를 쓰고, 관리자 호출에는 비밀값 CUP_ADMIN이 필요하다.
+ *   GET /api/health        KV를 쓰지 않는 상태 확인 {ok, build, kv}
+ *   GET /api/admin/usage   (CUP_ADMIN) 오늘 래더 쓰기 추정·단계별 덱 수. 운영 메모: docs/design/ladder-server-ops.md */
 import { handleCup } from './cup.js';
-import { handleLadder } from './uladder.js';
+import { handleLadder, ladderUsage } from './uladder.js';
+
+/* /api/health에 내보내는 빌드 표시. 배포 버전 메타데이터(CF_VERSION_METADATA)나 BUILD 변수가 있으면 그것을 쓴다 */
+export const WORKER_BUILD = 'kv2-2026-11-17';
+import { handleV1, scheduledV1 } from './v1/index.js';
+import { countKV } from './v1/usage.js';
 
 export const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // 0·O·1·I·L 없음, 31자 → 8자리 약 39.6비트
 export const CODE_LEN = 8;
@@ -82,6 +89,16 @@ async function rateLimited(req, env, now) {
 export async function handle(req, env, now = Date.now()) {
   const url = new URL(req.url);
   if (!url.pathname.startsWith('/api/')) return env.ASSETS ? env.ASSETS.fetch(req) : new Response('Not found', { status: 404 });
+  if (url.pathname === '/api/health') return json(200, { ok: true, build: (env.CF_VERSION_METADATA && env.CF_VERSION_METADATA.id) || env.BUILD || WORKER_BUILD, kv: !!env.SAVE_KV });
+  if (url.pathname.replace(/\/+$/, '') === '/api/admin/usage') {
+    if (!env.SAVE_KV) return err(503, 'not_configured');
+    if (!env.CUP_ADMIN || (req.headers.get('Authorization') || '') !== 'Bearer ' + env.CUP_ADMIN) return json(401, { error: 'auth', message: '관리자 인증이 필요합니다.' });
+    if (req.method !== 'GET') return err(405, 'method', { Allow: 'GET' });
+    try { return json(200, Object.assign(await ladderUsage(env, url, now), { build: (env.CF_VERSION_METADATA && env.CF_VERSION_METADATA.id) || env.BUILD || WORKER_BUILD })); } catch (e) { return err(500, 'server'); }
+  }
+  /* 서버 v1(D1): env.DB가 없으면 503 not_configured. 있으면 KV 쓰기 횟수도 세어 관리자 '래더 현황'에 보인다(worker/v1/usage.js) */
+  if (/^\/api\/v1(\/|$)/.test(url.pathname)) { try { return await handleV1(req, env, url, now); } catch (e) { return err(500, 'server'); } }
+  if (env.DB && env.SAVE_KV) { const kv = countKV(env.SAVE_KV), raw = env; env = new Proxy(raw, { get: (t, k) => k === 'SAVE_KV' ? kv : t[k] }); }
   if (/^\/api\/cup(\/|$)/.test(url.pathname)) {
     if (!env.SAVE_KV) return err(503, 'not_configured');
     if (req.method !== 'GET' && !sameOrigin(req, url) && !(req.headers.get('Authorization') || '').startsWith('Bearer ')) return err(403, 'cross_origin');
@@ -130,4 +147,8 @@ export async function handle(req, env, now = Date.now()) {
   }
 }
 
-export default { fetch: (req, env) => handle(req, env) };
+export default {
+  fetch: (req, env) => handle(req, env),
+  /* Cron Trigger를 켰을 때만 불린다(wrangler.jsonc 주석). 없으면 요청 때 시즌을 바꾼다 */
+  scheduled: (ev, env, ctx) => ctx.waitUntil(scheduledV1(env, Date.now()).catch(() => {})),
+};

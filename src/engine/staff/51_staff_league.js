@@ -152,12 +152,14 @@ function stDaily(){ try{ stBidExpire(); }catch(e){} try{ stBidMailsDone(null); }
   for(const r of (G.stRaid||[]).filter(r=>r.exp<G.day)){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(s&&stScore(s,G.user,s.sal,true)>=stScore(s,r.tid,r.sal,false)){ G.stRaid=G.stRaid.filter(x=>x!==r); note('스태프',`${s.name}은(는) 고민 끝에 남기로 했습니다.`); } else note('스태프',stLeave(r)); } }
 /* 새해: 경험이 쌓여 성장(젊을수록), 노장은 감각이 떨어지고 은퇴, 충성도 상승, 연봉은 실력에 맞춰 재계약 */
 function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...anaList().map(a=>['an',a,G.user])]; for(const tid in G.lgStaff){ for(const s of G.lgStaff[tid].sc)all.push(['sc',s,+tid]); for(const a of G.lgStaff[tid].an)all.push(['an',a,+tid]); }
-  const grew=[], gone=[];
-  for(const [k,s,tid] of all){ stAttr(s); s.age++; s.loy=clamp(s.loy+12,0,100); const up=(s.age<=40?.2:s.age<=50?.1:.03)*(s.skill>=4?.5:1); if(s.skill<5&&R()<up){ s.skill++; if(tid===ME())grew.push(s.name); } /* 4·5단계로 올라가기는 더 어렵다 */
-    if(s.skill>1&&R()<(s.age>=58?.25:s.age>=52?.1:.03))s.skill--; /* 감이 떨어지거나 현장과 멀어진다 */ s.sal=Math.max(s.sal,(k==='sc'?SCOUT_SAL:ANA_SAL)[s.skill]);
-    if(s.age>=66||(s.age>=60&&R()<.15)){ staffHistory(k==='sc'?'scout':'analyst',s,'은퇴',tid,`${s.age}세`); if(tid===ME()){ /* 무직이면 전 구단 명단은 lgStaff에 있다(검수 11-09zv #5) */ if(k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s); gone.push(s.name); } else { const L=G.lgStaff[tid]; if(k==='sc')L.sc=L.sc.filter(x=>x!==s); else L.an=L.an.filter(x=>x!==s); } } }
+  const grew=[], gone=[], out=new Set(); let fell=[];
+  for(const [k,s,tid] of all){ stAttr(s); s.age++; s.loy=clamp(s.loy+12,0,100); const sk0=s.skill; const up=(s.age<=40?.2:s.age<=50?.1:.03)*(s.skill>=4?.5:1); if(s.skill<5&&R()<up)s.skill++; /* 4·5단계로 올라가기는 더 어렵다 */
+    if(s.skill>1&&R()<(s.age>=58?.25:s.age>=52?.1:.03))s.skill--; /* 감이 떨어지거나 현장과 멀어진다 */
+    if(tid===ME()){ if(s.skill>sk0)grew.push(s.name); else if(s.skill<sk0)fell.push([s,`${s.name}(${k==='sc'?'스카우트':'전력분석원'} · ${s.age}세 · 별 ${s.skill}개)`]); } /* 떨어진 사람도 메일에 알린다(제보 11-17) */ s.sal=Math.max(s.sal,(k==='sc'?SCOUT_SAL:ANA_SAL)[s.skill]);
+    if(s.age>=66||(s.age>=60&&R()<.15)){ out.add(s); staffHistory(k==='sc'?'scout':'analyst',s,'은퇴',tid,`${s.age}세`); if(tid===ME()){ /* 무직이면 전 구단 명단은 lgStaff에 있다(검수 11-09zv #5) */ if(k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s); gone.push(s.name); } else { const L=G.lgStaff[tid]; if(k==='sc')L.sc=L.sc.filter(x=>x!==s); else L.an=L.an.filter(x=>x!==s); } } }
   for(const tid in G.lgStaff)stSync(+tid);
-  if(grew.length||gone.length)mail('운영팀','스태프 연간 변동',`${grew.length?`경험이 쌓여 실력이 오른 스태프: ${grew.join(', ')}`:''}${gone.length?`\n은퇴한 스태프: ${gone.join(', ')}`:''}\n\n오래 함께한 스태프일수록 충성도가 올라 다른 구단 제안에 잘 흔들리지 않습니다.`,{kind:'스태프'}); }
+  fell=fell.filter(([s])=>!out.has(s)).map(x=>x[1]); /* 같은 해 은퇴한 사람은 은퇴 줄에만 */
+  if(grew.length||gone.length||fell.length)mail('운영팀','스태프 연간 변동',`${[grew.length?`경험이 쌓여 실력이 오른 스태프: ${grew.join(', ')}`:'',fell.length?`나이·감각 저하로 실력이 내려간 스태프: ${fell.join(', ')}`:'',gone.length?`은퇴한 스태프: ${gone.join(', ')}`:''].filter(Boolean).join('\n')}${fell.length?'\n스태프는 나이가 들수록 실력이 떨어질 수 있습니다(52세부터 더 자주, 58세부터 크게).':''}\n\n오래 함께한 스태프일수록 충성도가 올라 다른 구단 제안에 잘 흔들리지 않습니다.`,{kind:'스태프'}); }
 
 /* AI 구단 스태프 운영(매달 1일): 우리와 같은 시장(스카우트·분석원 영입 후보)에서 뽑는다. 좋은 후보를 먼저 데려가면 우리 몫이 줄어든다.
    목표 인원·수준은 구단 재정(보유 현금)·시장 규모·전략으로 정한다. 빈자리는 아무 달에나 채우고, 사람 바꾸기(약한 사람 내보내고 더 나은 사람)는 11~2월에.
