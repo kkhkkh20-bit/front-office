@@ -1,0 +1,12 @@
+{
+  "scope": "actual progress_256 grid and native photos",
+  "numeric_candidates": 11,
+  "visual_preliminary_clear": 8,
+  "visual_holds": {
+    "v22_navy_04_a40": "HOLD_PHOTOREALISM: overly smooth CG-like face and light gray irises; re-render as natural real-camera Korean adult with dark brown eyes.",
+    "v22_black_04_a00": "HOLD_VISIBLE_AGE: looks older than the requested20–26 member range in the comparison grid.",
+    "v22_red_06_a62": "HOLD_TEETH: upper/lower teeth appear unnaturally aligned; correct dental realism while preserving face."
+  },
+  "human_approval_required": false,
+  "production_ready": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "v22_red_02",
+  "index": 1,
+  "r": "cheer22",
+  "a": 26,
+  "f": 1,
+  "uc": "red",
+  "hair": "bob",
+  "smile": "big",
+  "pose": "front",
+  "brief": "short HEART-SHAPED face, wider forehead and narrower chin, wide-set gently downturned almond eyes with subtle crease, high fine curved brows, straight broad nose with slightly longer tip, wide friendly mouth with thinner lips. Fair neutral natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/red.png",
+  "generation_attempt": 50,
+  "features": "Indonesian-Korean ancestry, warm medium olive complexion, broad square adult jaw and strong cheekbones, small deeply hooded dark eyes, thick arched brows, broad low nose and very full smiling lips",
+  "prompt": "Create ONE candid-realism professional 85mm CAMERA PHOTOGRAPH of a beautiful fictional ADULT26-year-old female baseball cheerleader. Her individual facial anatomy: Indonesian-Korean ancestry, warm medium olive complexion, broad square adult jaw and strong cheekbones, small deeply hooded dark eyes, thick arched brows, broad low nose and very full smiling lips. Distinct original person, attractive charismatic real young ADULT, natural asymmetry, adult facial bone structure and normal head/neck/eyes proportions. Beaming genuine BIG tooth-showing smile, natural realistic teeth, bright stage eyeliner and rosy lipstick with healthy real skin texture/pores. Hair short dark bob. Hands outside frame. ONLY REFERENCE is exact costume design: wear IDENTICAL red garment as reference1, same collar/sleeves/white-silver panels/colors/cut, opaque and fully covering chest/torso, no low neckline/midriff or body-emphasis. ONE native square1254x1254 or larger, wide head+shoulders+upperchest framing. Complete hair top16% of frame, eyeline43%, faceheight33% of frame, generous navy stadium background above hair and visible shoulder width. NIGHT baseball cheer platform, blurred navy audience with no recognizable faces, warm-white floodlight bokeh. Front-above soft flattering keylight and subtle rear cool rimlight. No logo, numbers, words, emblem, hat, glasses, doll/child/cartoon look, waxy/plastic skin, oversized eyes, celebrity resemblance. Authentic youthful ADULT26 appearance, polished but believable photographic cheerleader.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-b91bfacf-bec9-4214-a028-79e815939baa.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "HOLD_USER_KOREAN_REALISM_CRITERION",
+  "hold_reason": "User clarified all portraits must look like plausible Korean adults while these ethnicity-experiment generations were already pending; excluded from final casting."
+}

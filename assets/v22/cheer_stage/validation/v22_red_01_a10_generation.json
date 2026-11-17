@@ -1,0 +1,29 @@
+{
+  "id": "v22_red_01",
+  "index": 0,
+  "r": "cheer22",
+  "a": 20,
+  "f": 1,
+  "uc": "red",
+  "hair": "pony",
+  "smile": "big",
+  "pose": "front",
+  "brief": "softly rounded BROAD OVAL face with full natural cheeks and rounded chin, gently upturned MONOLID eyes, low straight brows, short softly broad nose with rounded tip, full round lower lip with thin upper lip. Warm light-medium natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/red.png",
+  "generation_attempt": 10,
+  "prompt": "A single very beautiful but distinctly individual fictional Korean adult female professional baseball cheerleader, age20. softly rounded BROAD OVAL face with full natural cheeks and rounded chin, gently upturned MONOLID eyes, low straight brows, short softly broad nose with rounded tip, full round lower lip with thin upper lip. Warm light-medium natural Korean complexion. Hair:black high ponytail with a small matching red ribbon. Expression:bright radiant smile showing natural teeth. Tasteful defined stage eye makeup and natural rosy lips, realistic healthy fresh20s skin with subtle fine pores. Wearing exactly a deep red modest opaque short cap-sleeve cheer top, white high crew neckline, broad white upper-chest V chevron and narrow silver side piping, full opaque chest and abdomen coverage, entirely plain geometric costume without logos, letters or numbers. Realistic85mm DSLR photograph on a NIGHT baseball stadium cheer platform; dark navy blurred crowd without readable faces, warm-white floodlight bokeh, soft flattering front-above keylight and subtle cool stage rimlight. Square medium head/shoulders and upper-chest portrait with camera pulled BACK: complete hairstyle top16percent below top border, eyes43percent down, face only32percent of square height, shoulders in lower portion. Relaxed arms outside frame. Normal human proportions, authentic beautiful adult face, no glasses or hat, no cleavage or midriff, no doll skin, no real celebrity likeness.",
+  "hint": "Generated source saved as /workspace/generated_images/v22_flux_schnell_b0e823a8-b3c6-4cd2-a960-8335c24ccfc7.webp",
+  "native_file": "/workspace/generated_images/v22_flux_schnell_b0e823a8-b3c6-4cd2-a960-8335c24ccfc7.webp",
+  "native_sha256": "b9556b106539dbe377f179635e04ab8c8462f691fea2ac2841b82cd131112b6c",
+  "provider": "official public black-forest-labs/FLUX.1-schnell Space",
+  "model": "FLUX.1-schnell",
+  "model_license": "Apache-2.0",
+  "seed": 21171117,
+  "steps": 4,
+  "native_size": [
+    1024,
+    1024
+  ],
+  "status": "GENERATED_NOT_YET_VALIDATED",
+  "purpose": "identity-guide model test only; not approved final photo"
+}

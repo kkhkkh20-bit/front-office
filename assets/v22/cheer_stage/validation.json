@@ -1,0 +1,67 @@
+{
+  "status": "CHECKPOINT_NOT_RUNTIME_ASSETS",
+  "asset_validation_passed": false,
+  "production_complete": false,
+  "requested_total": 48,
+  "numeric_compatible_candidates": 11,
+  "runtime_ready": 0,
+  "generated_at_kst": "2026-11-17T23:34:38.845598+09:00",
+  "identity_check": {
+    "threshold": 0.4,
+    "strict_less_than": true,
+    "reference_count": 116,
+    "reference_groups": {
+      "v15_cheer15": 40,
+      "v12_ccap": 16,
+      "v10_women": 40,
+      "v19_secretary": 20
+    },
+    "protocol": "SCRFD640/threshold.55, LMEDS5point112, w600k_r50, raw normalized cosine; all actual128/256/512 decoded individual WebPs; legacy highest native256 or128 for512 without enlargement",
+    "resolutions": {
+      "128": {
+        "within_max": 0.3739006519317627,
+        "within_nearest": [
+          "v22_navy_04_a40",
+          "v22_black_01_a65"
+        ],
+        "legacy_max": 0.3481866121292114,
+        "legacy_nearest": [
+          "v22_navy_02_a62",
+          "v15_cheer_young_018"
+        ],
+        "within_pair_count": 55,
+        "legacy_pair_count": 1276
+      },
+      "256": {
+        "within_max": 0.3783312737941742,
+        "within_nearest": [
+          "v22_blue_01_a61",
+          "v22_orange_01_a64"
+        ],
+        "legacy_max": 0.38706254959106445,
+        "legacy_nearest": [
+          "v22_black_04_a00",
+          "v15_cheer_young_016"
+        ],
+        "within_pair_count": 55,
+        "legacy_pair_count": 1276
+      },
+      "512": {
+        "within_max": 0.3930729031562805,
+        "within_nearest": [
+          "v22_blue_01_a61",
+          "v22_orange_01_a64"
+        ],
+        "legacy_max": 0.39498409628868103,
+        "legacy_nearest": [
+          "v22_black_04_a00",
+          "v15_cheer_young_016"
+        ],
+        "within_pair_count": 55,
+        "legacy_pair_count": 1276
+      }
+    }
+  },
+  "composition_check": "actual decoded RGB512 face36–42%, eyes38–42%; native silhouette headroom6–10% projected through same whole-photo crop; final atlas checks still pending",
+  "final_atlases_created": false
+}

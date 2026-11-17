@@ -1,0 +1,19 @@
+{
+  "id": "v22_orange_01",
+  "index": 24,
+  "r": "cheer22",
+  "a": 26,
+  "f": 1,
+  "uc": "orange",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "front",
+  "brief": "elongated RECTANGULAR face, gentle angular jaw and long chin, narrow expressive hooded eyes, thick relaxed straight brows, short gently upturned nose and soft bridge, broad smile and asymmetric dimple on one cheek. Warm light-medium natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/orange.png",
+  "generation_attempt": 64,
+  "prompt": "OUTPAINT this ONE real-style photograph only: replace ALL gray outer canvas with a seamless continuation of the SAME night baseball stadium background and lower orange uniform/arms. Preserve the ENTIRE existing photograph inside as-is, especially the EXACT fictional ADULT26yo KOREAN woman's face/identity/expression, eyes/nose/lips, hair, collar, lighting, camera scale and location. Do not zoom in: keep generous EXTRA background ABOVE her complete hairstyle, match this reference canvas composition. ONE coherent seamless wide-framed SQUARE natural CAMERA photograph. No gray borders, rectangle seams, collage, writing, new people, hats, glasses, logos, numbers or emblems. Keep SAME natural joyful tooth-showing smile, fine real skin texture, healthy youthful adult26 appearance, normal real adult proportions. Head+shoulders+covered upperchest portrait, no exposed cleavage or torso/body emphasis.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-20740a9f-9436-4295-ab94-da25f2a52551.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/v22_lcm_cast_c4089cca-c7ae-404e-ae05-16c23dca5392.webp",
+  "source_photo": "/workspace/generated_images/exec-7cafc97b-bf4c-4050-87ce-c40c606357e4.png",
+  "status": "PENDING_VALIDATION"
+}

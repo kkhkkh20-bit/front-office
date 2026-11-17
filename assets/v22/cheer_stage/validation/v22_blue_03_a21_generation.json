@@ -1,0 +1,18 @@
+{
+  "id": "v22_blue_03",
+  "index": 14,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "blue",
+  "hair": "pony",
+  "smile": "soft",
+  "pose": "front",
+  "brief": "softly rounded BROAD OVAL face with full natural cheeks and rounded chin, gently upturned MONOLID eyes, low straight brows, short softly broad nose with rounded tip, broad smile and asymmetric dimple on one cheek. Warm light-medium natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/blue.png",
+  "generation_attempt": 21,
+  "prompt": "Create ONE photorealistic camera portrait of the EXACT SAME fictional ADULT25-year-old woman shown in reference1. Preserve her distinctive identity precisely: same face outline, cheek fullness, brow shape, eyes/eyelids/orientation, nose bridge and tip, mouth/lip shape and the SAME subtle CLOSED-LIP soft smile. Make skin/hair photographic with fine visible skin texture and real strands, tasteful eyeliner and rosy lips, normal adult human proportions. Do not substitute a generic pretty face or reinterpret her features. Adult25 with healthy realistic skin, not a child or doll. Reference1 is a composition card containing her original concept; use its face as exact identity, not its gray rectangle or illustration style. Reference2 is the EXACT blue cheer uniform: royal-blue fully zipped stand collar short-sleeve top, white side panels, silver shoulder piping; completely opaque covered chest/torso. Reference3 sets WIDE square camera framing only: full hair top16%, eyes43%, face about33% of native imageheight; shoulders+covered upperchest visible, hands outside frame. Natural black tied-back ponytail with side fringe. Match adult identity faithfully. Night baseball cheer platform with distant blurred navy audience and warm-white stadium light bokeh, front-above key light and fine cool rim light,85mm camera. ONE coherent square1254x1254 or larger real photograph, no collage, illustration, plastic skin, borders, writing, logos, numbers, emblems, hats or glasses, no revealing neckline/midriff.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-5ca1cce7-c492-4c21-b9fb-276985473251.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/v22_lcm_prototype_20261117.webp",
+  "status": "PENDING_VALIDATION"
+}
