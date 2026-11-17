@@ -110,6 +110,8 @@ function capOverOwner(u,y){ const ci=capInfo(u.id); if(!(ci.over>0)||u.indie||G.
   const pen=-clamp(Math.round(r*60*nm),2,20);
   const cutR=clamp(.5+r*2.5,.5,1.5)*(n>=2?1.2:1); const cut=Math.round(ci.over*cutR); const prev=u.supCut&&u.supCut.y===y+1?u.supCut.amt:0; u.supCut={y:y+1,amt:prev+cut};
   mail('구단주실',`상한 초과: 다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`상위 40명 연봉이 상한을 ${money(ci.over)}(${Math.round(r*100)}%) 넘었습니다${n>=2?`(${n}년 연속)`:''}. 경쟁균형세와 별도로, 모기업은 "규정을 넘겨 가며 쓴 돈은 구단이 책임지라"며 ${y+1}시즌 지원 한도를 초과분의 ${Math.round(cutR*100)}%인 ${money(cut)} 줄입니다. 구단주 신뢰 ${pen}.`,{kind:'구단주'}); return pen; }
+function financeSeasonOwner(tid,y){ const t=team(tid),S=t.finOwner&&t.finOwner.y===y?t.finOwner:null,g=tid===G.user?G.goals:G.clubT&&G.clubT[tid]&&G.clubT[tid].goals;return {owner:g&&g.y===y&&g.owner||S&&S.owner||t.owner,ownerId:S&&S.ownerId||G.boss&&G.boss[tid]&&G.boss[tid].own.id||'own'+tid,plan:S&&S.plan||planOf(t)}; }
+function financeHistoryOwner(tid,h){const f=h.fins&&h.fins[tid];if(f&&f.owner)return f;const next=Number.isFinite(h.d)&&(((G.ownership||{}).clubs||{})[tid]||{}).history?.filter(x=>x.d>h.d&&x.from&&x.from.policy).sort((a,b)=>a.d-b.d)[0],base=financeSeasonOwner(tid,h.y);return next?{...base,owner:next.from.policy,ownerId:next.from.ownerId}:base;}
 function settlement(){
   try{ asSnap(); }catch(e){} /* 시즌 연봉 규모 기록: 실행위원회 소집 요건은 시즌을 치른 연봉으로 본다 */
   const y=G.year; const P=G.ps; const prePop=G.teams.map(t=>t.pop);
@@ -129,7 +131,8 @@ function settlement(){
     const ci=capInfo(t.id);
     let tax=0; if(ci.over>0){ const n=(t.capOver||0)+1; tax=Math.round(ci.over*capRate(n)); t.capOver=n; if(n>=3)t.pickPen=G.year+1; /* KBO 규정: 3회 연속 초과면 다음 해 1라운드 지명 순서 9단계 하락 */ } else t.capOver=0;
     let flo=0; if(G.year>=2027){ const under=ci.floor-ci.pay; if(under>0){ const n=(t.floorUnder||0)+1; flo=Math.round(under*floorRate(n)); t.floorUnder=n; } else t.floorUnder=0; }
-    const champBonus=(ps.champ===t.id&&!t.indie)?Math.round(pool*.5*(t.owner==='profit'?.6:1)):0;
+    const ownerBasis=financeSeasonOwner(t.id,y),capital=financeCapitalYear(t.id,y);
+    const champBonus=(ps.champ===t.id&&!t.indie)?Math.round(pool*.5*(ownerBasis.owner==='profit'?.6:1)):0;
     const EI=ecoIdx(y); const inc=[['입장 수입',SPj.att?SPj.ticket:Math.round(att*TICKET*EI*PRICE[S.price].m)] /* 경기마다 그때 가격으로 쌓은 수입(stadGame) */ /* 경기별로 그때 시설 단계로 쌓은 값(예산 전망 stadProj와 같은 장부, 검수 11-07). 돔구장 비시즌 대관(예산 전망 stadProj와 같은 값: 6단계 이상은 stadPower로 체감) */,['중계권 배분',Math.round(9000*EI*asRev())],['광고·상품',Math.round((2200*EI+mkt*1.6)*t.market*t.pop*adM)]]; { const sx=Math.max(0,SPj.att?SPj.fnb:Math.round(att*.0003*(S.lv.fnb-2)))+SPj.prem+SPj.ad; if(sx>0)inc.splice(1,0,['구장 부대 수입',sx]); } /* 기본 시설(매점·프리미엄석·전광판 2단계)은 추가 수입이 없다: 0원 줄을 결산에 남기지 않는다(플레이 테스트 3차) */ { const si=starIncome(t.id); if(si>0)inc.push(['스타 마케팅',si]); } { const ct=G.sea.cut&&G.sea.cut[t.id]; if(ct>0)inc.push(['연봉 감액(고액 연봉 선수 2군 체류)',Math.round(ct)]); } /* KBO: 연봉 3억 이상 선수가 1군에 없으면 하루 1/600 감액 */
     { const me=t.id===ME(), S0=me?(G.spon||null):sponLeft(t.id); /* 스폰서: 사용자 구단·떠난 구단·AI 구단 모두 sponPay 하나로(계약은 계약대로, 빈자리는 AI 기본 후원, 하드 모드 감액은 지금 맡은 구단만, 검수 11-17 #277~#283) */
       const sp=S0?sponSettle(y,ps,t.id,me?undefined:S0):sponPay(t.id,y,{S:null,ps,settle:true});
@@ -154,7 +157,7 @@ function settlement(){
     try{ promoSettle(t.id,inc,exp); }catch(e){} /* 프로모션 데이 장부(38_promotions, 모든 구단 같은 식) */
     try{ for(const [l,v] of aiOpsDue(t,y)){ const r=exp.find(x=>x[0]===l); if(r)r[1]+=v; else exp.push([l,v]); } }catch(e){} /* 그해 AI가 맡은 기간의 운영 비용(99_ai_parity): 지금 우리 구단이어도 부임 전 몫은 이 구단이 낸다 */
     if(HO){ const add=(A,o)=>{ for(const [l,v] of Object.entries(o)){ const r=A.find(x=>x[0]===l); if(r)r[1]+=v; else A.push([l,v]); } }; add(inc,HO.inc); add(exp,HO.exp); }
-    const gap=sum(exp.map(x=>x[1]))-sum(inc.map(x=>x[1]));
+    const gap=sum(exp.map(x=>x[1]))-sum(inc.map(x=>x[1]))+capital;
     let support=0; const supCap=supportCap(t);
     /* 구단 보유 현금이 30억을 넘으면 적자의 일부(초과분의 절반까지)를 먼저 자체 자금으로 메운다 */
     const selfC=gap>0?Math.min(gap,Math.max(0,t.cash-3000)*.5):0;
@@ -162,18 +165,19 @@ function settlement(){
     if(selfC>0)fins_self[t.id]=Math.round(selfC);
     /* AI 구단 부채 정리: 지원이 적자만 메우면 FA 보상금·방출 위약금으로 생긴 마이너스 현금이 영영 회복되지 않는다.
        모기업이 부채의 45%를 갚아 준다(남은 지원 한도 + 30억까지, 독립구단은 투자사 증자 60억까지). 빚이 깊으면 FA 영입을 끊고 고액 선수를 넘기므로(aiDebtDump) 2~4년이면 0 근처로 돌아온다 */
-    let relief=0; if(t.id!==ME()&&t.cash+sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]))<0){ const debt=-(t.cash+sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1])));
+    let relief=0; if(t.id!==ME()&&t.cash+sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]))-capital<0){ const debt=-(t.cash+sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]))-capital);
       relief=Math.round(t.indie?Math.min(debt*.45,6000):Math.min(debt*.45,Math.max(0,supCap-support)+3000)); if(relief>0){ inc.push([t.indie?'투자사 증자(부채 정리)':'모기업 지원(부채 정리)',relief]); support+=t.indie?0:relief; } }
     /* 흑자 조정(사용자 11-12, 실제 KBO: 구단 자체 수익이 늘면 모기업 광고·지원금을 줄인다. 2024년 9개 모기업 구단 지원금 2,312억→2,215억, 자체 매출 3,835억→4,610억).
        시즌 흑자가 나면 모기업이 그만큼 광고·후원을 덜 집행한다(수익 우선 60%·홍보 50%·성적 우선 40%). 독립구단은 투자사가 흑자의 50%를 배당으로 가져간다.
        예전에는 흑자가 모두 구단 현금으로 쌓여 수십 년 플레이에서 한 해 수백억 흑자·현금이 생겼다 */
-    { const all=sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1])), pre=all-relief; if(pre>0){ const r=(t.indie?.5:t.owner==='profit'?.6:t.owner==='pr'?.5:.4)+(t.id===ME()&&HARD()?.1:0); const back=Math.min(Math.round(pre*r),Math.max(0,Math.round(t.cash+all))); /* 흑자는 모기업이 갚아 준 부채 정리금을 빼고 센다(예전엔 정리금의 절반을 흑자로 보고 도로 가져가 빚이 줄지 않았다). 빚이 남은 구단은 흑자로 먼저 빚을 갚는다(안정화 점검: 몇 년째 현금 -70억 이상에 묶인 구단) */ if(back>0){ exp.push([t.indie?'투자사 배당(시즌 흑자의 50%)':`모기업 광고·후원 조정(흑자의 ${Math.round(r*100)}%)`,back]); t._back=back; } } }
+    const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0,returns=financeCashReturns(t.id,y,t.cash,sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1])),{relief,capital,ear,owner:ownerBasis.owner});
+    if(returns.back>0){exp.push([t.indie?`투자사 배당(시즌 흑자의 ${Math.round(returns.rate*100)}%)`:`모기업 광고·후원 조정(흑자의 ${Math.round(returns.rate*100)}%)`,returns.back]);t._back=returns.back;}
     const net=sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]));
     t.cash+=net;
     /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(INDIE_DIV_T 초과분의 INDIE_DIV_R, 49_sponsors) */
-    let div=0; if(t.indie&&t.cash>Math.round(INDIE_DIV_T*EI)){ div=Math.round((t.cash-Math.round(INDIE_DIV_T*EI))*INDIE_DIV_R); t.cash-=div; if(t.id!==ME())wire('구단',`${tfull(t)} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
+    const div=returns.div;if(div>0){t.cash-=div;if(t.id!==ME())wire('구단',`${tfull(t)} 투자사, 배당 ${money(div)} 회수`,{tid:t.id});}
     /* 유보금 상한(11-12, 재정 시뮬 11-13에 60억·60%로 조임: 잘 굴러가는 구단은 해마다 60~90억이 남아 100억 넘는 현금을 늘 들고 있었다): 모기업 구단도 현금이 60억(경제 지수 반영)을 넘으면 넘은 돈의 60%를 모기업이 회수한다(실제 구단은 수백억을 쌓아 두지 않는다) */
-    let sweep=0; if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0; /* 우승 포상 FA 특별자금은 용도가 정해진 돈이라 회수 대상에서 뺀다(플레이 테스트 11-13) */ const T=Math.round(RES_CAP*EI)+ear; if(t.cash>T){ sweep=Math.round((t.cash-T)*RES_RATE); t.cash-=sweep; if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 60%(${money(sweep)})를 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.`,{kind:'구단주'}); } }
+    const sweep=returns.sweep;if(sweep>0){const T=Math.round(RES_CAP*EI)+ear+capital;t.cash-=sweep;if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 60%(${money(sweep)})를 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.`,{kind:'구단주'});}
     /* 모기업 지원 조정: 구단에 쓰지 않은 돈이 쌓여 있으면, 다음 시즌 모기업 지원 한도를 그만큼 줄인다(돈을 가져가지는 않는다).
        50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 줄인다. 쌓인 돈은 구단이 그대로 쓸 수 있다 */
     let cut0=t.supCut&&t.supCut.y===y?t.supCut.amt:0;
@@ -182,14 +186,14 @@ function settlement(){
     /* 시설 관리: 빚이 크면 유지·보수를 미뤄 시설 하나가 한 단계 낡는다(30%) */
     if(t.cash<-3000&&R()<.3){ try{ facNeglect(t); }catch(e){} }
     t.pop=clamp(1+(t.pop-1)*.85+(wp-.5)*.5+(mkt-2000)/45000+(ps.champ===t.id?.06:0)+(G.mgr[t.id]&&G.mgr[t.id].fame>=70?.03:0)+localStarPop(t.id),.7,1.45);
-    fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,supCut:cut0,selfC:fins_self[t.id]||0,div,sweep,back:t._back||0}; delete t._back;
+    fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,supCut:cut0,selfC:fins_self[t.id]||0,div,sweep,back:t._back||0,capital,...ownerBasis}; delete t._back;
   }
   if(G.hoL)for(const k of Object.keys(G.hoL))if(+k.split(':')[0]<=y)delete G.hoL[k];
   const u=team(G.user); const uo=order.find(x=>x.tid===G.user); const wp=uo.w/Math.max(1,uo.w+uo.l);
   const made=[ps.champ,ps.runner,ps.poLose,ps.spoLose,ps.wcLose].includes(G.user);
   const psPart=ps.champ===G.user?10:ps.runner===G.user?6:ps.poLose===G.user?4:made?2:-1;
   const w=OWNER[(G.goals&&G.goals.y===y&&G.goals.owner)||u.owner].w; const fin=fins[G.user];
-  const finScore=clamp((fin.net+(fin.back||0))/2500,-8,5) /* 흑자 조정·배당은 구단주 쪽이 가져간 돈이라 단장 평가에서는 흑자로 본다 */-(fin.supCap?(fin.support/fin.supCap-.5)*4:0);
+  const finScore=clamp((fin.net+(fin.back||0)-(fin.capital||0))/2500,-8,5) /* 출자는 영업 성과가 아니며, 흑자 조정·배당은 평가에서 돌려 더한다. */-(fin.supCap?(fin.support/fin.supCap-.5)*4:0);
   /* 공개된 순위 목표를 달성했으면 기대 승률 대비 평가로 깎지 않는다. 창단 첫해는 폭을 줄인다 */
   const rkNow=rankOf(G.user); /* 목표 화면(goalStatus)과 같은 순위 함수(검수 11-09zzd) */ let perf=(wp-u.expW)*150*w[0]; if(G.goals&&G.goals.y===y&&rkNow<=G.goals.rank)perf=Math.max(perf,0); if(G.startY===y)perf=clamp(perf,-3,6);
   const ex=expYr(G.user,y); if(ex)perf=clamp(perf,-2,6); /* 창단 유예(89_league_expansion): 성적 감점은 작게, 가을야구 못 간 감점은 없다 */
@@ -294,7 +298,7 @@ function ownershipInit(){
   }
   return O;
 }
-function ownershipSetSupport(tid,pct,fy){const s=G.ownership.clubs[tid],t=team(tid);pct=t.indie?0:pct;const x=s.support.find(x=>x.fy===fy);if(x)x.pct=pct;else s.support.push({fy,pct});
+function ownershipSetSupport(tid,pct,fy){const s=G.ownership.clubs[tid],t=team(tid);pct=t.indie?0:pct;if(ownershipSupportPct(t,fy)===pct)return;const x=s.support.find(x=>x.fy===fy);if(x)x.pct=pct;else s.support.push({fy,pct});
   /* 지원 정책이 바뀌는 회계연도의 해당 구단 예산만 다시 확정한다. */
   if(G.bLocks&&G.bLocks[tid]&&G.bLocks[tid].fy===fy)delete G.bLocks[tid];if(G.bLock&&G.bLock.tid===tid&&G.bLock.fy===fy)delete G.bLock;
 }
@@ -313,6 +317,7 @@ function ownershipReplace(tid,q,buyer){
   /* 이미 합의한 시즌 목표·평가 가중치는 전임 기준을 유지한다. */
   if(tid===G.user&&G.goals&&G.goals.y===G.year&&!G.goals.owner)G.goals.owner=t.owner;
   const savedGoals=G.clubT&&G.clubT[tid]&&G.clubT[tid].goals;if(savedGoals&&savedGoals.y===G.year&&!savedGoals.owner)savedGoals.owner=t.owner;
+  if(!(G.last&&G.last.y>=G.year)&&!(t.finOwner&&t.finOwner.y===G.year))t.finOwner={y:G.year,...financeSeasonOwner(tid,G.year)}; /* 진행 중인 시즌의 약속은 인수 뒤에도 같은 기준으로 결산한다. */
   G.boss[tid]={own,ceo};if(buyer)s.parent={...ownershipParent(t,g),health:75,since:G.year};
   t.owner=['win','pr','profit'][Math.floor(seededRand(seed+':policy')()*3)];t.trust=60;s.ownerSince=G.year;
   if(typeof ownershipPeopleChanged==='function')ownershipPeopleChanged(tid,old,G.boss[tid],{ownerChanged:true,ceoChanged:buyer});
