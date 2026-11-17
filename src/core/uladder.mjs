@@ -115,8 +115,8 @@ export function ulMissions(seas, hist, sid, tier) {
 export const ulPOvr = p => { const r = (p && p.r) || {}; return dv(p && p.isP ? (r.stf || 0) * .44 + (r.ctl || 0) * .44 + (r.sta || 0) * .12 : (r.con || 0) * .3 + (r.pow || 0) * .25 + (r.eye || 0) * .15 + (r.spd || 0) * .1 + (r.def || 0) * .2); };
 export const UL_POS = Object.freeze(['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH']);
 export const UL_ARCH = Object.freeze({ pow: '거포형', con: '교타형', spd: '기동력형', def: '수비형', sp: '선발 왕국', pen: '불펜 야구', bal: '균형형' });
-/* 갈래별 기준(표시 척도, AI 덱 평균 부근). 덱 성향 = 기준보다 가장 크게 앞선 갈래(3 미만이면 균형형) */
-export const UL_ARCH_BASE = Object.freeze({ pow: 58, con: 58, spd: 56, def: 58, sp: 60, pen: 58 });
+/* 갈래별 기준(표시 척도, 리그 평균 수준 덱·AI 덱 15개로 맞춤 11-17). 덱 성향 = 기준보다 가장 크게 앞선 갈래(3 미만이면 균형형) */
+export const UL_ARCH_BASE = Object.freeze({ pow: 63, con: 62, spd: 64, def: 67, sp: 69, pen: 63 });
 export const UL_OVR_BK = Object.freeze([50, 55, 60, 65, 70, 75]); /* 칸: ~49 · 50~54 · … · 75~ */
 export const UL_AGE_BK = Object.freeze([25, 29, 33]); /* ~24 · 25~28 · 29~32 · 33~ */
 const bk = (v, B) => { let i = 0; while (i < B.length && v >= B[i]) i++; return i; };

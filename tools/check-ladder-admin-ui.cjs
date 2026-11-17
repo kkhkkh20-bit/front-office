@@ -61,6 +61,13 @@ function deck(o = {}) { const P = []; const POS = ['C', '1B', '2B', '3B', 'SS', 
     const pid = await p.evaluate(() => LDA.d.decks[0].pid); await p.click(`[data-a="ldaHide"][data-v="${pid}"]`);
     await p.waitForFunction(() => /숨겼습니다/.test(document.body.innerText), null, { timeout: 10000 });
     assert.equal(env.DB._sqlite.prepare('SELECT hidden FROM players WHERE id = ?').get(pid).hidden, 1); console.log('숨기기 통과');
+    /* 래더 v2(사용자 11-17): 덱 구성(메타) 칸과 CSV 내보내기(등록 덱·리그 결과) */
+    { const mt = await p.evaluate(() => ({ n: LDA.meta && LDA.meta.agg && LDA.meta.agg.n, t: document.querySelector('.ldax').innerText }));
+      assert.equal(mt.n, 24, '메타 집계 덱 수 ' + mt.n); assert.match(mt.t, /덱 구성\(메타\)[\s\S]*등록 덱 24개/); assert.match(mt.t, /균형형|거포형|교타형|기동력형|수비형|선발 왕국|불펜 야구/);
+      await p.click('[data-a="ldaCsv"][data-v="decks"]'); await p.waitForFunction(() => /줄을 CSV로 받았습니다/.test(document.body.innerText), null, { timeout: 10000 });
+      const dc = await p.evaluate(() => LDA.csv.split('\r\n')); assert.equal(dc.length, 25, '덱 CSV 줄(머리글 + 24)'); assert.match(dc[0], /^닉네임,플레이어,플랫폼,숨김,덱,연도,단계,OVR/);
+      await p.click('[data-a="ldaCsv"][data-v="results"]'); await p.waitForFunction(() => /^닉네임,플레이어,시즌/.test(LDA.csv || ''), null, { timeout: 10000 });
+      assert.equal(await p.evaluate(() => LDA.csv.split('\r\n').length), k + 1, '결과 CSV 줄'); console.log('덱 구성(메타)·CSV 내보내기 통과'); }
     const ph = await open(390, 844);
     await ph.waitForFunction(() => LDA.st === 'd1' && document.querySelector('.lda-t'), null, { timeout: 15000 });
     assert.ok(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '휴대폰 폭에서 가로 스크롤');

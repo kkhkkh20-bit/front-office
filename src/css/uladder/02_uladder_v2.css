@@ -30,3 +30,4 @@
 .ulx .lda-tiers{display:grid;gap:4px;margin:4px 0 8px}.ulx .lda-tiers>div{display:grid;grid-template-columns:6.5em minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12px}.ulx .lda-hb{position:relative;height:9px;border-radius:5px;background:var(--line);overflow:hidden}.ulx .lda-hb i{position:absolute;left:0;top:0;bottom:0;background:var(--team-hi,#3d7cc7);border-radius:5px}.ulx .lda-tiers>div.ul-on{color:var(--acc,#3d8bfd);font-weight:700}
 @media(min-width:1100px){.ulx.ul-wide2{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}.ulx .ul-c2 .ul-tw{max-height:calc(100vh - 300px)}}
 @media(max-width:640px){.ulx .ul-hero-t h2{font-size:18px}.ulx .ul-hero-in .ul-emb{width:72px;height:77px}.ulx .ul-lr{grid-template-columns:26px 4.8em minmax(0,1fr) auto;padding:4px 6px}.ulx .ul-flt{gap:6px}.ulx .ul-fl select{min-width:0}}
+.ulx h2.sec small{margin-left:6px;font-weight:600;color:var(--muted)}.ulx .ul-dt td,.ulx .ul-dt td:nth-child(2){white-space:nowrap}
