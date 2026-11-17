@@ -361,6 +361,7 @@
       "src/css/matches/24_match_dashboard.css",
       "src/css/matches/25_match_broadcast.css",
       "src/css/matches/26_match_3d.css",
+      "src/css/matches/27_cast_landscape.css",
       "src/css/home/25_home_workspace.css",
       "src/css/players/26_compact_profile.css",
       "src/css/staff/27_staff_cards.css",
