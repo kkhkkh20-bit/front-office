@@ -18,9 +18,9 @@ const R=await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false
    if(L!==nm(x[1]))bad.push({gi,k,t:'batter card',got:L,want:nm(x[1])}); if(Rr!==nm(pid))bad.push({gi,k,t:'pitcher card',got:Rr,want:nm(pid)});
    // today line brute
    let ab=0,h=0;for(let i=0;i<k;i++){const y=g.pbp[i];if(typeof y[1]!=='number'||y[1]!==x[1])continue;if(!['BB','HBP','SAC'].includes(y[3])&&!y[13])ab++;if(['1B','2B','3B','HR'].includes(y[3]))h++;}
-   const sm=document.querySelector('.cs-face.l small')?.textContent||'';if(!sm.includes(`오늘 ${ab}타수 ${h}안타`))bad.push({gi,k,t:'batter today',got:sm.slice(0,30),want:`${ab}타수 ${h}안타`});
+   const sm=document.querySelector('.cs-face.l .cf-today')?.textContent||'';if(!sm.includes(`${ab}타수 ${h}안타`))bad.push({gi,k,t:'batter today',got:sm.slice(0,30),want:`${ab}타수 ${h}안타`});
    let so=0,pc=0,ok=true;for(let i=0;i<k;i++){const y=g.pbp[i];if(typeof y[1]!=='number'||y[2]!==pid)continue;if(y[3]==='K')so++;const q=storedPitchSequence(y);if(q)pc+=q.length;else ok=false;}
-   const ps=document.querySelector('.cs-face.r small')?.textContent||'';if(!ps.includes(`${so}K`)||ok&&!ps.includes(`${pc}구`))bad.push({gi,k,t:'pitcher today',got:ps.slice(0,40),want:`${so}K ${pc}구`});
+   const ps=document.querySelector('.cs-face.r .cf-today')?.textContent||'';if(!ps.includes(`${so}삼진`)||ok&&!ps.includes(`${pc}구`))bad.push({gi,k,t:'pitcher today',got:ps.slice(0,40),want:`${so}삼진 ${pc}구`});
    cnt.faces++;
    // score bug
    { const rows=[...document.querySelectorAll('.mb-teams > *')].map(e=>{const m=(e.textContent||'').match(/(\d+)\s*$/);return m?+m[1]:null;}); const dia=[...document.querySelectorAll('.mb-dia i')].map(e=>e.classList.contains('on')); const inn=+(document.querySelector('.mb-inn b')?.textContent||-1);
