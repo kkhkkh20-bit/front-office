@@ -401,3 +401,5 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 /* 불펜 휴식(사용자 11-16) */
 .md-pen .md-rest{display:block;font-size:10px;color:#9fb3bd;font-weight:600;line-height:1.1}.md-pen .md-rest.y{color:#f3d77a}.md-pen .md-rest.r{color:#ff9a90}
 .cs-face .cs-mu>i{white-space:normal;max-width:100%;line-height:1.25} /* 칩이 카드 밖으로 나가지 않게 */
+/* 하이라이트 표시(사용자 11-17) */
+.cs-fx.hl{color:#ffd24d;font-size:clamp(30px,10cqw,64px);letter-spacing:.02em;text-shadow:0 3px 0 #7a5200,0 0 26px rgba(255,210,77,.85)}
