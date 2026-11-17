@@ -3146,7 +3146,7 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
   .ibx-read:has(.ibx-fm,.ibx-dash){overflow:hidden!important}
   .ibx-lw:has(>.ibs-from){display:flex;flex-direction:column;gap:8px;min-height:0}.ibx-lw:has(>.ibs-from)>.ibx-list{flex:1;min-height:0;max-height:none}
   .ibx-lw>.ibs-from{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px 4px;text-align:center;flex:none}
-  .ibs-face .av{width:120px;height:120px;font-size:34px;border:0;background:none}.ibs-from b{font-size:16px}.ibs-from span{font-size:12px;color:var(--muted)}
+  .ibs-face .av,.ibs-face .av.big{width:120px;height:120px;font-size:34px;border:0;background:none}.ibs-from b{font-size:16px}.ibs-from span{font-size:12px;color:var(--muted)}
   .ibx-fm{display:block;height:100%;min-height:0}
   .ibx-fm>.ibm{height:100%;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:12px;overflow:auto;scrollbar-width:thin;padding:18px 24px 14px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
   .ibx-fm .ibm-h{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:start;padding:0 0 10px;border-bottom:1px solid var(--line)}
@@ -15615,7 +15615,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   prInit(); if(!G.goals&&period()==='season')setGoals();
   if((period()==='season'||period()==='post')&&G.entryY!==G.year){ G.entryY=G.year; for(const t of G.teams)setEntry(t.id); }
   if(!G.intl)G.intl={us:1,la:0,jp:0,tw:0,au:0}; if(!G.data)G.data={lv:1}; if(G.spend&&G.spend.intl==null)G.spend.intl=0; if(!G.fac)G.fac={lv:2,build:null}; try{ facInit(); }catch(e){} if(G.spend.fac==null)G.spend.fac=0;
-  for(const t of G.teams)if(t.fac==null)t.fac=ri(2,4); try{ aiFacAll(); }catch(e){} try{ facOverdueFix(); }catch(e){} try{ extStaleFix(); }catch(e){}
+  for(const t of G.teams)if(t.fac==null)t.fac=ri(2,4); try{ aiFacAll(); }catch(e){} try{ facOverdueFix(); }catch(e){} try{ extStaleFix(); }catch(e){} try{ ovsPostFix(); }catch(e){} /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */
   for(const p of Object.values(G.players)){ if(!p.dt)p.dt=rollDT(); if(!p.isP&&p.r.vit==null)p.r.vit=Math.round(clamp(N(55-(p.inj-.14)*90,8),25,80)); if(p.fat==null)p.fat=0; }
   if(G.formY!==G.year&&G.day>=G.cal.camp)rollForm();
   for(const p of Object.values(G.players)) if(p.foreign){ if(!p.orig)p.orig=origOf(p); if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80)); }
@@ -17088,6 +17088,7 @@ function ctInfo(p){ if(!p||!p.faC)return null; const left=Math.max(1,p.yrs||1); 
 /* FA 자격까지 남은 시즌 수(이번 시즌 포함): 등록 연수와 재자격(직전 FA 회차 후 4시즌) 중 늦은 쪽. 계약 만료와는 다르다(FA 계약은 ctInfo) */
 function faLeft(p){ const n=Math.max(0,faSvc(p)-(p.svc||0)); const re=p.lastFA!=null?p.lastFA+4-ctSeason()+1:0; return Math.max(1,n,re); }
 function ctText(p){ if(G.fa&&(G.fa.pool||[]).includes(p.id)&&!p.faC&&!p.ext&&(p.team==null||!G.fa.closed))return p.team==null?'FA 미계약':'FA 신분 · 협상 중'; /* 지금 FA인 선수를 다음·올 시즌 뒤 FA로 보이던 것(사용자 피드백 11-05) */ const c=ctInfo(p); if(c){ const kind=p.ext?'다년':'FA'; const ox=(ctOn(p)&&p.cOpt&&!p.cOpt.used?` · 구단 옵션 ${p.cOpt.y}년`:'')+(ctOn(p)&&p.pOut&&!p.pOut.used?` · ${p.pOut.y}시즌 뒤 옵트아웃`:''); return (c.tot===1?`${kind} 1년 계약`:c.last?`${kind} ${c.tot}년 중 마지막 해`:`${kind} ${c.tot}년 중 ${c.k}년차`)+ox; }
+  if(p.retAsk&&p.retFrom!=null&&p.team==null)return `해외 복귀 · ${tshort(p.retFrom)} ${typeof ovsRetPost==='function'&&ovsRetPost(p)?'보류(원소속 구단과만 계약, FA 아님)':'우선협상 중'}`; /* 포스팅 복귀 선수는 FA가 아니다(카페 11-17) */
   if(p.extNext)return `다년 ${p.extNext.years}년 합의`; if(p.foreign)return '1년 계약';
   if(typeof milServing==='function'&&milServing(p)){ const m=milPeriod(p); return `군 복무 중(FA 연차 정지${m&&m.until?` · ${dmdY(m.until)} 전역`:''})`; } /* 복무 중에는 FA 연차가 쌓이지 않고 FA 신청도 못 한다(플레이 테스트 11-13) */
   const n=Math.max(0,faSvc(p)-(p.svc||0)); const off=G.rolled===G.year;
@@ -20853,9 +20854,9 @@ function ovsPregen(){ for(const a of G.abroad||[]){ if(a.back||a.end!=null)conti
     if(a.foreign){ if(!a.fr)continue; a.cur=ovsLine(a.fr,a.lg,{ci:a.ci,av:a.half&&G.year===y1?.6:1}); continue; }
     let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue; if(a.ci==null)a.ci=ovlIdx(a.lg,a.club); a.cur=ovsLine(p,a.lg,{ci:a.ci,av:ovsAv(a,p),gt:ovsGt(a)});
     if(G.year-y1+1>=a.yrs&&!(a.bn&&a.bn.y===G.year)){ a.bn={y:G.year,v:ovsBackRoll(a,p,a.cur.lvl===a.lg)?1:0}; /* 계약 마지막 해: 복귀 여부를 새해에 미리 정해 두고 시즌을 마치면 그대로 쓴다(해외 활성화 1-4). 계약 연수는 공개라 우리와 AI 원소속 구단이 같은 값을 본다 */
-      if(a.bn.v&&a.from===G.user&&!G.unemp)mail('스카우트팀',`${a.name}, 내년 복귀 가능 · 우선협상권 우리`,`${a.name}(${a.pos})의 ${a.lg} 계약이 올 시즌으로 끝납니다. 시즌을 마치면 국내 복귀를 추진할 것으로 보입니다. 원소속 구단인 우리가 먼저 협상합니다. 로스터와 샐러리캡 여유를 미리 챙겨 두세요.`,{kind:'선수',acts:[{l:`${a.name} 보기`,a:'person',v:'abr:'+a.id}]}); } } }
+      if(a.bn.v&&a.from===G.user&&!G.unemp)mail('스카우트팀',`${a.name}, 내년 복귀 가능 · ${a.how==='포스팅'?'보류권':'우선협상권'} 우리`,`${a.name}(${a.pos})의 ${a.lg} 계약이 올 시즌으로 끝납니다. 시즌을 마치면 국내 복귀를 추진할 것으로 보입니다. ${a.how==='포스팅'?'포스팅으로 나간 선수라 FA가 아니고, 국내로 오면 보류권을 가진 우리하고만 계약할 수 있습니다(카페 11-17).':'원소속 구단인 우리가 먼저 협상합니다.'} 로스터와 샐러리캡 여유를 미리 챙겨 두세요.`,{kind:'선수',acts:[{l:`${a.name} 보기`,a:'person',v:'abr:'+a.id}]}); } } }
 /* 해외파 줄·카드에 붙이는 복귀 예고(계약 마지막 해에 돌아올 것으로 정해진 선수) */
-const ovsBackTag=a=>a&&!a.back&&a.end==null&&a.from!=null&&!a.foreign&&a.bn&&a.bn.y===G.year&&a.bn.v?`내년 복귀 가능 · 우선협상권 ${a.from===G.user?'우리':tshort(a.from)}`:'';
+const ovsBackTag=a=>a&&!a.back&&a.end==null&&a.from!=null&&!a.foreign&&a.bn&&a.bn.y===G.year&&a.bn.v?`내년 복귀 가능 · ${a.how==='포스팅'?'보류권':'우선협상권'} ${a.from===G.user?'우리':tshort(a.from)}`:'';
 /* 미리 만든 기록을 쓸 수 있으면 쓰고(능력이 같을 때), 아니면 새로 만든다 */
 function ovsTake(a,p,o){ const c=a.cur; delete a.cur; const L=c&&c.y===G.year&&Math.abs((c.o??-99)-ovr(p))<.6?c:ovsLine(p,a.lg,o); delete L.o; L.y=G.year; if(L.c==null&&a.ci!=null&&a.ci>=0&&OVL_C[ovlKey(L.lvl)])L.c=a.ci; /* 예전 저장에서 미리 만든 기록(구단 없음) */ return L; }
 /* 그 구단·그 시즌의 KBO 출신 선수 */
@@ -21081,11 +21082,11 @@ function abroadYear(){ const NW=[]; for(const a of G.abroad||[]){ if(a.back)cont
     const am=a.from==null, early=yrsIn<a.yrs&&!ok&&yrsIn>=(am?2:1)&&R()<(am?.15:.35); /* 자리를 못 잡은 선수는 계약 중에도 방출돼 일찍 돌아온다(커뮤니티 제안 11-11). 아마추어 직행 선수는 마이너에서 크는 게 계약이라 2년째부터, 드물게(해외 활성화 2-1: 실제로 심준석·장현석 등은 몇 해 마이너에 남는다) */
     const due=yrsIn>=a.yrs&&(a.bn&&a.bn.y===G.year?!!a.bn.v||!ok:ovsBackRoll(a,p,ok)); delete a.bn; /* 계약 마지막 해: 새해에 미리 정한 값(해외 활성화 1-4). 남기로 했어도 시즌 중 자리를 잃으면(능력 하락) 돌아온다 */
     if(!early){ let mv=null; try{ mv=ovsMoveKr(a,p,ok,yrsIn,due,NW); }catch(e){} if(mv&&mv!=='re')continue; } /* 해외 활성화 3-2: NPB→MLB 이적, 국내 대신 NPB, 남는 선수는 같은 리그 재계약 */
-    if(early||due){ if(early)a.early=1; a.why=ovsBackWhy(a,p,early,ok); a.back=true; a.backY=G.year; a.age=p.age; a.pj=null; /* 돌아온 선수는 새해에 국내 선수와 같이 나이를 먹는다 */ p.svc=(p.svc||0)+(a.lines||[]).filter(l=>l.y>=y1&&((l.pa||0)+(l.outs||0))>0).length; /* 해외에서 실제로 뛴 시즌만 연차(검수 11-07: 0타석 시즌도 더함) */ G.players[p.id]=p; if(p.mil&&!p.mil.done&&p.mil.until&&p.mil.until<=G.day)p.mil={done:true,unit:p.mil.unit,pf:p.mil.from,pu:p.mil.until}; /* 해외에 있는 동안 지난 전역일: 복귀 때 전역 처리(검수 11-06) */ p.joinY=undefined; p.mor=70; delete p.ovsOffer;
+    if(early||due){ if(early)a.early=1; a.why=ovsBackWhy(a,p,early,ok); a.back=true; a.backY=G.year; a.age=p.age; a.pj=null; /* 돌아온 선수는 새해에 국내 선수와 같이 나이를 먹는다 */ if(a.from==null)p.svc=(p.svc||0)+(a.lines||[]).filter(l=>l.y>=y1&&((l.pa||0)+(l.outs||0))>0).length; else a.nsv=1; /* 아마추어 직행만 해외에서 실제로 뛴 시즌을 연차로(검수 11-07). 국내 구단을 거쳐 나간 선수의 FA 연차는 KBO 1군 등록일수라 해외 시즌은 들지 않고 출국 전 연차가 이어진다(카페 11-17: 포스팅 7년차가 MLB 1년 뒤 8년차로 돌아와 바로 FA). nsv: 불러오기 수리(ovsPostFix) 표시 */ G.players[p.id]=p; if(p.mil&&!p.mil.done&&p.mil.until&&p.mil.until<=G.day)p.mil={done:true,unit:p.mil.unit,pf:p.mil.from,pu:p.mil.until}; /* 해외에 있는 동안 지난 전역일: 복귀 때 전역 처리(검수 11-06) */ p.joinY=undefined; p.mor=70; delete p.ovsOffer;
       /* 복귀 권리와 계약은 나눈다: 원소속 구단이 우선협상(요구 연봉·기간을 보고 계약하거나 거절), 거절하면 자유계약 선수 */
       if(a.from==null){ p.team=null; p.faC=false; p.ext=false; p.ovsWait=G.year+2; story(p,`${a.lg} ${yrsIn}년 마치고 귀국 · ${G.year+2}년 신인 드래프트 도전 예정`,'move'); wire('해외',`${p.name}, ${a.lg} ${yrsIn}년 마치고 귀국 · 2년 유예 뒤 국내 드래프트 도전`,{ref:p.id}); continue; } /* KBO 규약 107조: 국내 구단을 거치지 않고 해외 구단과 계약한 선수는 계약이 끝나고 2년 뒤에 신인 드래프트로만 들어온다(2026 최지만 사례) */
-      p.team=null; p.faC=false; p.ext=false; p.retFrom=a.from; p.retAsk={sal:round5(Math.max(marketSal(ovr(p)),p.sal)*ovsAskMul(a)),yrs:ri(1,3),lg:a.lg,n:yrsIn,exp:G.day+14,why:a.why}; /* 해외 성적이 좋으면 요구액도 오른다: 우리와 AI 구단이 같은 요구액을 본다 */
-      wire('해외',`${p.name}, ${a.lg} ${yrsIn}년 마치고 국내 복귀 추진(${a.why}) · 원소속 ${tshort(a.from)} 우선협상`,{tid:a.from,ref:p.id});
+      p.team=null; p.faC=false; p.ext=false; p.retFrom=a.from; p.retAsk={sal:round5(Math.max(marketSal(ovr(p)),p.sal)*ovsAskMul(a)),yrs:ri(1,3),lg:a.lg,n:yrsIn,exp:G.day+14,why:a.why,post:a.how==='포스팅'?1:0}; /* post: 포스팅 복귀(카페 11-17). 난수는 예전과 같은 순서 */ /* 해외 성적이 좋으면 요구액도 오른다: 우리와 AI 구단이 같은 요구액을 본다 */
+      wire('해외',`${p.name}, ${a.lg} ${yrsIn}년 마치고 국내 복귀 추진(${a.why}) · 원소속 ${tshort(a.from)} ${a.how==='포스팅'?'보류권(원소속 구단과만 계약)':'우선협상'}`,{tid:a.from,ref:p.id});
       if(a.from===G.user&&!G.unemp)ovsBackAsk(p); else ovsBackAI(p); } }
   try{ ovpYear(); }catch(e){} /* 해외 활성화 3-3: 상주 외국인 후보군도 한 시즌 */ try{ ovsWires(NW); }catch(e){} }
 /* 계약을 마친 해외파가 돌아오는가: 자리를 못 잡았거나 33세 이상이면 돌아오고, 잘할수록 더 남는다(최대 90%) */
@@ -21098,17 +21099,30 @@ function abroadDev(){ try{ ovpAge(); }catch(e){} for(const a of G.abroad||[]){ i
 function ovsClubShort(a){ const c=String((a&&a.club)||'').split(' ')[0]; return c||((a&&a.lg)||'해외')+' 구단'; }
 const ovsWa=s=>{ const c=String(s).charCodeAt(String(s).length-1); return c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?'과':'와'; };
 function ovsBackWhy(a,p,early,ok){ const c=ovsClubShort(a), w=c+ovsWa(c); if(early)return `${c}에서 방출된 뒤 복귀`; if(!ok)return `${w} 계약 만료 · 빅리그 자리를 잃고 복귀`; if(p&&p.age>=33)return `${w} 계약 만료 · ${p.age}세라 재계약 없이 복귀`; return `${w} 계약 만료 후 재계약하지 않고 복귀`; }
+/* 포스팅으로 나갔다 돌아오는 선수인가(카페 11-17): 새 저장은 retAsk.post, 예전 저장은 해외 기록(how)으로 */
+function ovsRetPost(p){ const q=p&&p.retAsk; if(q&&q.post!=null)return !!q.post; const a=(G.abroad||[]).find(x=>x.id===(p&&p.id)&&!x.foreign); return !!(a&&a.how==='포스팅'); }
+/* 불러오기 수리(카페 11-17): 예전 저장의 포스팅 복귀 선수는 해외 시즌이 FA 연차에 더해지고 복귀 계약이 FA 계약으로 남아, 계약이 끝나면 FA 시장에 나갔다. 우리·AI 구단 선수 같게 고친다(난수 없음).
+   ① 더해진 해외 시즌 연차를 뺀다 ② 아직 복귀 계약 중이면 비FA 다년(1년이면 보류 연봉 계약)으로 ③ 그 계약이 끝나 열린 FA 시장에 나와 있고 연차가 모자라면 원소속 구단 보류 선수로 되돌린다(아직 아무 데도 계약하지 않았을 때만) */
+function ovsPostFix(){ let n=0; const F=G.fa, lastR=G.rolled===G.year?G.year:G.year-1;
+  for(const a of G.abroad||[]){ if(!a||!a.back||a.nsv||a.foreign||a.from==null)continue; a.nsv=1; if(a.how!=='포스팅')continue; const p=G.players[a.id]; if(!p||p.foreign)continue; const y1=a.y1??a.y+1;
+    p.svc=Math.max(0,(p.svc||0)-(a.lines||[]).filter(l=>l.y>=y1&&((l.pa||0)+(l.outs||0))>0).length); n++;
+    const ret=(p.story||[]).some(e=>e&&e.y===a.backY&&String(e.t||'').includes('생활을 마치고')), noFA=p.lastFA==null||p.lastFA<a.backY; if(!ret||!noFA)continue; /* 복귀 뒤 FA 계약을 새로 했으면 그대로 */
+    if(p.team!=null&&p.faC&&!p.ext&&(p.cyrs||0)>=1&&p.cyrs<=3&&p.cyrs-(p.yrs||0)===lastR-a.backY){ if(p.cyrs>1)p.ext=true; else { p.faC=false; p.yrs=1; delete p.cyrs; } continue; }
+    if(p.team==null&&F&&!F.closed&&(F.pool||[]).includes(p.id)&&p.ctFree===F.y0&&p.faFrom===a.from&&F.y0-a.backY<=3&&(p.svc||0)<faSvc(p)&&G.teams.some(t=>t.id===a.from)&&rosterN(a.from)<ROSTER_MAX){
+      F.pool=F.pool.filter(x=>x!==p.id); for(const k of ['offers','ai','neg'])if(F[k])delete F[k][p.id]; p.team=a.from; p.faC=false; p.ext=false; p.yrs=1; delete p.cyrs; delete p.faFrom; delete p.faGrade; delete p.faPrevSal; delete p.ctFree; delete p.ask;
+      story(p,'포스팅 복귀 선수라 FA가 아님 · 원소속 보류 선수로 정정','move'); if(a.from===G.user&&!G.unemp)note('FA',`${p.name}은(는) 포스팅으로 나갔다 돌아온 선수라 FA 자격(등록 ${faSvc(p)}시즌)이 아직 없습니다. FA 명단에서 빼고 우리 보류 선수로 되돌렸습니다.`,p.id); } }
+  return n; }
 /* 해외 복귀 선수: 원소속 구단 우선협상 */
-function ovsBackSign(p){ const q=p.retAsk; if(!q||p.retFrom==null)return ''; const tid=p.retFrom; p.team=tid; p.sal=q.sal; p.yrs=q.yrs; p.cyrs=q.yrs; p.faC=true; p.ext=false; p.relT=null; p.ctT=tid; p.e1=false; /* 예전 저장본 보관 데이터의 1군 등록 상태도 지운다: 복귀 뒤 등록은 엔트리 조정이 정한다 */ story(p,`${q.lg} 생활을 마치고 ${tname(tid)} 복귀(${q.why?q.why+' · ':''}${q.yrs}년 연 ${money(q.sal)})`,'move');
+function ovsBackSign(p){ const q=p.retAsk; if(!q||p.retFrom==null)return ''; const tid=p.retFrom, post=ovsRetPost(p); p.team=tid; p.sal=q.sal; p.yrs=q.yrs; p.cyrs=q.yrs; p.faC=true; p.ext=post; if(post&&q.yrs<=1){ p.faC=false; p.yrs=1; delete p.cyrs; } /* 포스팅 복귀는 FA가 아니다(카페 11-17): 원소속 구단과 비FA 다년계약(류현진 2024 한화 8년·김광현 2022 SSG 4년), 1년이면 보류 선수 연봉 계약. 계약이 끝나면 FA 연차(등록 연수)로 FA인지 정한다. 해외 FA 복귀는 예전처럼 FA 계약 */ p.relT=null; p.ctT=tid; p.e1=false; /* 예전 저장본 보관 데이터의 1군 등록 상태도 지운다: 복귀 뒤 등록은 엔트리 조정이 정한다 */ story(p,`${q.lg} 생활을 마치고 ${tname(tid)} 복귀(${q.why?q.why+' · ':''}${post?(q.yrs>1?'비FA 다년계약 ':'연봉 계약 '):''}${q.yrs}년 연 ${money(q.sal)})`,'move');
   mvLog('해외 복귀',p,null,tid,`${q.lg} ${q.n}년 뒤 복귀${q.why?'('+q.why+')':''} · ${q.yrs}년 연 ${money(q.sal)}`,q.sal*q.yrs); wire('해외',`${p.name}, ${tshort(tid)}와 ${q.yrs}년 연 ${money(q.sal)} 복귀 계약`,{tid,ref:p.id}); if(tid===G.user)news('선수',`${p.name}, 친정 복귀`,`${q.lg}에서 ${q.n}년을 뛰고 돌아왔습니다.${q.why?` ${q.why}했습니다.`:''} 연봉 ${money(q.sal)} · ${q.yrs}년 계약.`,2,{ref:p.id,fanW:1.5});
   delete p.retAsk; delete p.retFrom; return `${p.name}과(와) ${q.yrs}년 연 ${money(q.sal)}에 복귀 계약을 했습니다.`; }
-function ovsBackFree(p,why){ const tid=p.retFrom; p._retQ=p.retAsk; delete p.retAsk; delete p.retFrom; p.team=null; if(tid!=null){ const B=p.relBan=Object.assign({},p.relBan||{}); B[tid]=G.day+365; } /* 우선협상을 거절한 원소속 구단은 1년 동안 헐값 재계약 불가(우선협상 우회 방지) */ if(p.isP==null)return; const q0=p._retQ; wire('해외',`${p.name}, ${tshort(tid)}와 복귀 계약 불발 · 자유계약 선수로`,{tid,ref:p.id}); try{ toFree(p,why||'해외 복귀 우선협상 불발'); }catch(e){} if(q0){ p.sal=Math.max(p.sal||0,Math.round(q0.sal*.85)); p.retMin={sal:Math.round(q0.sal*.85),until:G.day+120}; } delete p._retQ; } /* 다른 구단도 복귀 요구액에 가깝게 줘야 한다(검수 11-07: 최저연봉 근처 영입) */
+function ovsBackFree(p,why){ const tid=p.retFrom, post=ovsRetPost(p); p._retQ=p.retAsk; delete p.retAsk; delete p.retFrom; p.team=null; if(tid!=null){ const B=p.relBan=Object.assign({},p.relBan||{}); B[tid]=G.day+365; } /* 우선협상을 거절한 원소속 구단은 1년 동안 헐값 재계약 불가(우선협상 우회 방지) */ if(p.isP==null)return; const q0=p._retQ; wire('해외',`${p.name}, ${tshort(tid)}와 복귀 계약 불발 · ${post?'보류권을 풀어 ':''}자유계약 선수로`,{tid,ref:p.id}); /* 포스팅 복귀 선수는 원소속 구단이 보류권을 풀어 줘야(방출) 다른 구단과 계약할 수 있다(카페 11-17) */ try{ toFree(p,why||'해외 복귀 우선협상 불발'); }catch(e){} if(q0){ p.sal=Math.max(p.sal||0,Math.round(q0.sal*.85)); p.retMin={sal:Math.round(q0.sal*.85),until:G.day+120}; } delete p._retQ; } /* 다른 구단도 복귀 요구액에 가깝게 줘야 한다(검수 11-07: 최저연봉 근처 영입) */
 function ovsBackAI(p){ const tid=p.retFrom, t=team(tid), q=p.retAsk; const ok=t&&(t.cash||0)>-3000&&aiVal(t,p)>=Math.max(.6,q.sal/450)&&(()=>{ const s0=p.sal; p.sal=q.sal; const v=capPayAs(tid,[p.id],[]); p.sal=s0; return v; })()<=capOf(sponSeason())*aiCapMul(t); /* 복귀 연봉으로 상위 40명을 다시 센다(옛 연봉을 빼면 40명 밖 선수도 빠졌다, 검수 11-08) */ if(ok){ ovsBackSign(p); if(rosterN(tid)>ROSTER_MAX)trimRoster(tid,ROSTER_MAX); } else ovsBackFree(p); } /* 정원이 차 있으면 우리처럼 한 명을 정리하고 데려온다(해외 활성화 1-4: 예전 AI는 정원이 차면 복귀 선수를 놓쳤다) */
 /* 해외 복귀 우선협상의 상한 결재(13_roster capOwnerCheck) */
 function ovsCapCheck(p){ const q=p.retAsk; if(!q||G.unemp)return null; const s=sponSeason(); return capOwnerCheck(capPayWith(G.user,p.id,q.sal,s).tot,capPayWith(G.user,null,null,s).tot,s,'ovs'+p.id); }
-function ovsBackAsk(p){ const q=p.retAsk; const n=rosterN(G.user); let room=''; try{ room=` · 지금 예산 여유 ${money(budget().roomGoal)}`; }catch(e){}
-  evNew('ovsback',`${p.name} 해외 복귀: 우선협상`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) ${q.lg} ${q.n}년을 마치고 국내 복귀를 원합니다${q.why?`(${q.why})`:''}. 우리 구단이 원소속이라 먼저 협상합니다. 요구: ${q.yrs}년 연 ${money(q.sal)}(현재 능력 ${dv(Math.round(ovr(p)))}). 계약하지 않으면 자유계약 선수가 되어 다른 구단도 데려갈 수 있습니다.`,
-    [{l:`계약: ${q.yrs}년 연 ${money(q.sal)}`,fx:`선수단 ${n}/${ROSTER_MAX}명${n>=ROSTER_MAX?' · 정원을 넘어 진행 전에 한 명을 정리해야 합니다':''}${room}${(()=>{ const cc=ovsCapCheck(p); return cc?` · 샐러리캡: ${capOwnerTxt(cc)}`:''; })()}`},{l:'계약하지 않음',fx:'자유계약 선수로 풀립니다. 비용은 없습니다.'}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id},def:1,exp:14}); }
+function ovsBackAsk(p){ const q=p.retAsk, post=ovsRetPost(p); const n=rosterN(G.user); let room=''; try{ room=` · 지금 예산 여유 ${money(budget().roomGoal)}`; }catch(e){}
+  evNew('ovsback',`${p.name} 해외 복귀: ${post?'원소속 단독 협상':'우선협상'}`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) ${q.lg} ${q.n}년을 마치고 국내 복귀를 원합니다${q.why?`(${q.why})`:''}. ${post?'포스팅으로 나간 선수라 FA가 아니고, 보류권을 가진 우리 구단하고만 계약할 수 있습니다':'우리 구단이 원소속이라 먼저 협상합니다'}. 요구: ${q.yrs}년 연 ${money(q.sal)}${post?(q.yrs>1?' 비FA 다년계약':' 연봉 계약'):''}(현재 능력 ${dv(Math.round(ovr(p)))}). ${post?'계약하지 않으면 보류권을 풀어 자유계약 선수가 되고, 다른 구단도 데려갈 수 있습니다.':'계약하지 않으면 자유계약 선수가 되어 다른 구단도 데려갈 수 있습니다.'}`, /* 포스팅 복귀는 FA 협상이 아니라 원소속 단독 협상(카페 11-17) */
+    [{l:`계약: ${q.yrs}년 연 ${money(q.sal)}${post&&q.yrs>1?' 비FA 다년':''}`,fx:`선수단 ${n}/${ROSTER_MAX}명${n>=ROSTER_MAX?' · 정원을 넘어 진행 전에 한 명을 정리해야 합니다':''}${room}${(()=>{ const cc=ovsCapCheck(p); return cc?` · 샐러리캡: ${capOwnerTxt(cc)}`:''; })()}`},{l:post?'계약하지 않음(보류권 풀기)':'계약하지 않음',fx:'자유계약 선수로 풀립니다. 비용은 없습니다.'}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id},def:1,exp:14}); }
 EVH.ovsback={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.retAsk)return '이미 정리된 일입니다.'; if(G.unemp||p.retFrom!==G.user){ ovsBackAI(p); return ''; } if(i===0){ const cc=ovsCapCheck(p); if(cc&&!cc.ok){ ovsBackFree(p,'해외 복귀 우선협상: 구단주 결재 거절'); return `${cc.msg} ${p.name}은(는) 자유계약 선수로 풀립니다.`; } const r=ovsBackSign(p); capOwnerOk(cc,`해외 복귀 ${p.name} 계약`); return r; } ovsBackFree(p,'해외 복귀 우선협상: 구단이 계약하지 않음'); return `${p.name}과(와) 계약하지 않았습니다. 자유계약 선수로 풀립니다.`; } };
 /* 대체 외국인 관찰 명단 */
 function fwatchOn(id){ G.fwatch=G.fwatch||[]; return G.fwatch.some(w=>w.id===id); }
@@ -33943,7 +33957,7 @@ const PERSONA={'구단주실':['own',63,false],'재무팀':['staff',41,false],'�
 function personaOf(from){ if(!G)return null; if(from&&from.startsWith('팀 닥터'))return {persona:'staff',pid:'doc'+G.user,team:G.user,age:49}; /* 팀 닥터: 의무실 화면과 같은 v8 실사 사진(persona 'doc'는 사진 묶음이 없어 그림 얼굴로 나왔다, 사용자 11-11) */ if(from&&from.startsWith('비서'))return {persona:'staff',pid:'st:비서:'+G.user,team:G.user,age:29,female:true}; /* 비서도 직원 실사 사진(그림 얼굴과 섞이지 않게) */ if(from==='감독실'){ const m=G.mgr[G.user]; return m?{persona:'mgr',pid:m.id,team:G.user,age:m.age}:null; }
   if(from==='수석코치'||from==='코칭스태프'){ const c=G.coach&&coachesOf(G.user).hc; if(c)return {persona:'coach',pid:c.id,team:G.user,age:c.age}; }
   const x=PERSONA[from]||(from&&/팀|실$|본부|사무국/.test(from)&&!/구단주|감독/.test(from)?['staff',40,false]:null); return x?{persona:x[0],pid:'st:'+from+':'+G.user,team:G.user,age:x[1],female:x[2]}:null; } /* 목록에 없는 부서 발신자도 직원 실사 사진(글자 대신) */
-function senderAv(m){ if(typeof m.face==='string'&&m.face.startsWith('ob:')){ const o=obOf(m.face.slice(3)); if(o)return obAv(o,{k:'free'}); } if(m.face!=='sec'&&typeof m.face!=='number'&&!(m.kind==='부상'&&m.ref!=null&&G.players[m.ref])){ const pz=personaOf(m.from); if(pz)return avImg(pz); } if(m.face==='sec')return avImg(personaOf('비서')); if(typeof m.face==='number'&&G.players[m.face])return avImg(G.players[m.face]); if(m.kind==='부상'&&m.ref!=null&&G.players[m.ref])return avImg(G.players[m.ref]); return `<span class="av ini">${esc((m.from||'?').replace('비서 ','').slice(0,1))}</span>`; }
+function senderAv(m,big){ /* big: 소식함 발신자 큰 사진(사용자 11-17 "화질 깨진다": 작은 128px 사진을 크게 늘려 흐렸다) */ if(typeof m.face==='string'&&m.face.startsWith('ob:')){ const o=obOf(m.face.slice(3)); if(o)return obAv(o,{k:'free'}); } if(m.face!=='sec'&&typeof m.face!=='number'&&!(m.kind==='부상'&&m.ref!=null&&G.players[m.ref])){ const pz=personaOf(m.from); if(pz)return avImg(pz,big); } if(m.face==='sec')return avImg(personaOf('비서'),big); if(typeof m.face==='number'&&G.players[m.face])return avImg(G.players[m.face],big); if(m.kind==='부상'&&m.ref!=null&&G.players[m.ref])return avImg(G.players[m.ref],big); return `<span class="av ini">${esc((m.from||'?').replace('비서 ','').slice(0,1))}</span>`; }
 function senderPhotoKey(m){ if(m.face==='sec')return cimgKey(personaOf('비서')); if(typeof m.face==='number'||typeof m.face==='string'&&m.face.startsWith('ob:')||m.kind==='부상'&&m.ref!=null&&G.players[m.ref])return null; return cimgKey(personaOf(m.from)); }
 function tutCard(){ const t=G.tut; if(!t||t.done)return ''; if(guideOn()&&homeStartPanel())return ''; /* 첫 시즌에는 홈 '이번 시즌 할 일' 카드 한 곳에서 안내(UI 3단계 3-7) */ const s=TUT[t.step]; if(!s||s.k==='welcome')return '';
   /* 같은 일이 '처리할 일'에 이미 있으면 안내 카드는 접는다 */
@@ -36383,7 +36397,7 @@ function inboxView(){
 }
 /* PC(FM식): 목록 칸 위에 보낸 사람 큰 얼굴, 소식 본문 아래에 첨부 자료 상자들(관련 선수·능력·기록·같은 사람의 소식) */
 function ibPid(m){ return typeof m.face==='number'&&G.players[m.face]?m.face:m.ref!=null&&G.players[m.ref]?m.ref:null; }
-function ibFrom(m){ return `<div class="ibs-from"><div class="ibs-face">${senderAv(m)}${cimgBtns(senderPhotoKey(m))}</div><b>${esc(m.from)}</b><span>${IB_CATN[ibCat(m)]||'소식'} · ${dmd(m.day)} ${WD[dobj(m.day).w]}요일</span></div>`; }
+function ibFrom(m){ return `<div class="ibs-from"><div class="ibs-face">${senderAv(m,true)}${cimgBtns(senderPhotoKey(m))}</div><b>${esc(m.from)}</b><span>${IB_CATN[ibCat(m)]||'소식'} · ${dmd(m.day)} ${WD[dobj(m.day).w]}요일</span></div>`; }
 /* 소식 안에 들어가는 자료(FM처럼 본문 아래 같은 문서 안에): 내용 종류에 따라 다른 구성 */
 function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`, S=[];
   const sec=(t,body,cls='')=>`<section class="ibd-sec ${cls}"><h3>${t}</h3>${body}</section>`;
@@ -45004,6 +45018,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-17-postret',d:'11월 17일',t:'포스팅 복귀 선수는 FA가 아닙니다',items:[
+    '포스팅으로 해외에 나갔다 돌아오는 선수는 FA가 아닙니다. 보류권을 가진 원소속 구단하고만 계약할 수 있고, 복귀 계약은 비FA 다년계약(1년이면 연봉 계약)입니다. 원소속 구단이 보류권을 풀어 줘야 다른 구단이 데려갈 수 있습니다. 우리 구단과 AI 구단이 같은 규칙을 따릅니다.',
+    '해외에서 보낸 시즌은 FA 연차(등록 연수)에 들지 않고, 떠나기 전 연차가 이어집니다. 복귀 결정·선수 계약 표시·해외파 예고에 \'보류권\'과 \'원소속 단독 협상\'으로 나옵니다.',
+    '예전 저장은 불러올 때 고칩니다: 더해진 해외 연차를 빼고, 복귀 계약을 비FA 계약으로 바꾸며, 연차가 모자란데 FA 시장에 나와 있던 포스팅 복귀 선수는 아직 계약 전이면 원소속 구단 보류 선수로 되돌립니다.']},
   {id:'2026-11-17-ladv1',d:'11월 17일',t:'유저 래더: 새 서버·순위표·소식',items:[
     '유저 래더가 새 래더 서버를 씁니다. 이미 덱을 올려 둔 분은 래더 화면을 열면 덱과 지금 단계가 그대로 옮겨집니다. 서버에 연결되지 않을 때는 예전처럼 이 기기에서 리그를 할 수 있습니다.',
     '새 \'순위\' 탭: 이번 시즌 내 포인트·단계 순위·칭호·라이벌, 단계별 순위표(상위 20명), 승격·우승 소식을 봅니다. 리그 1위 30점부터 10위 1점까지, 할수록 쌓입니다.',
