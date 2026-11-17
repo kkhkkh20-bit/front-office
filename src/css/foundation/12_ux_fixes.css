@@ -794,3 +794,4 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 
 /* 한 구역의 ⓘ를 하나로 합친 뒤(mergeHints) 말풍선이 길어질 수 있어 화면 안에서 스크롤 */
 #tipb{max-height:min(60vh,440px);overflow:auto}
+.cfm[tabindex="-1"]:focus{outline:none}

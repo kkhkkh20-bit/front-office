@@ -117,7 +117,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const more=UI.fdMore||60; const shown=L.slice(0,more);
   const hd=z=>`<th><button data-a="fdS" data-v="${z.k}" class="${so2===z.k?'on':''}"${z.tip?` title="${esc(z.tip)}"`:''}>${z.h}${so2===z.k?(dir?'▲':'▼'):''}</button></th>`; /* 열 설명은 제목 옆 i 대신 목록 위 i 한 곳에 모은다(휴대폰에서 칸을 아끼려고) */
   const trow=x=>{ const p=x.p; const lv=x.s&&x.s.lvl===2; const t=x.t; const me=t&&t.tid===G.user; const r=RK[p.id]||0;
-    const lead=t?`<span class="fdtk">${badge(t.tid,18)}</span>`:`<button class="fds${sl.has(p.id)?' on':''}" data-a="star" data-v="${p.id}" aria-label="관심">${sl.has(p.id)?'★':'☆'}</button>`;
+    const lead=t?`<span class="fdtk">${badge(t.tid,18)}</span>`:`<button class="fds${sl.has(p.id)?' on':''}" data-a="star" data-v="${p.id}" aria-label="관심" aria-pressed="${sl.has(p.id)}">${sl.has(p.id)?'★':'☆'}</button>`;
     const tail=t?`<span class="fdtk2"><i>${me?'우리':esc(tshort(t.tid))} ${t.rd}-${t.no}</i>${fdChip(p)}</span>`:mine?`<button class="fdgo" data-a="fdPick" data-v="${p.id}">지명</button>`:'';
     return `<tr class="${lv?'f2':''}${!t&&sl.has(p.id)?' st':''}${t?(me?' gone me':' gone'):''}"><th><div class="fdn">${lead}<button class="fdnm" data-a="player" data-v="${p.id}"><b>${esc(p.name)}${!t&&r>=.1?`<em class="rkp ${r>=.6?'r3':r>=.3?'r2':'r1'}" title="다음 우리 차례 전에 다른 구단이 지명할 확률">${Math.round(r*100)}%</em>`:''}</b><i>${p.age}세·${p.isP?(isSPr(p)?'선발':'불펜'):SLK[p.pos]||posLabel(p)}·<span class="${!t&&MM&&p.sal>MM.room-MM.W?'lo':''}">${money(p.sal)}</span>${lv?'·2군':''}${isAway(p)?'·군':''}</i></button>${tail}</div></th>${COL.map(z=>z.td(x)).join('')}</tr>`; };
   const mob=fdCompact(); /* 휴대폰: 조작 줄을 한 줄로 모아 선수 목록을 넓게 */
