@@ -6071,7 +6071,7 @@ T('[계약 2단계] AI 연봉 협상: 사용자와 같은 요구·판정·요구
 T('[계약 2단계] AI 비FA 다년계약(연장): 사용자와 같은 판정(extJudge)·라운드로 협상하고, 시장 평가를 원하는 대어는 한도가 모자라면 묶지 않는다',()=>{ fresh(); const U=domestic(G.user).filter(x=>canExtend(x)&&hasAgent(x)&&!agExtTestMarket(x)).sort((a,b)=>b.sal-a.sal);
   ok(U.length,'준비 실패: 에이전트 있는 연장 대상 없음'); const p=U[0]; const y=Math.max(3,extMinY(p)); const d=extDemandAll(p,y); let n=0;
   for(const k of [.7,.93,1.0]){ delete p.extNg; delete p.extCounter; delete p.extLast; const a=round5(d*k); const J=extJudge(p,a,y,G.user,false); const r=offerExtension(p.id,a,y); n++;
-    const map={counter:'counter',no:'no',ok:'ok',market:'market',min:'no'}; ok(r.st===map[J.st]||(J.st==='ok'&&r.ok),'사용자 판정과 공통 판정이 다름 k='+k+': '+r.st+'/'+J.st); if(r.ok)break; }
+    const map={counter:'counter',no:'no',ok:'ok',market:'market',min:'no',cut:'no'}; ok(r.st===map[J.st]||(J.st==='ok'&&r.ok),'사용자 판정과 공통 판정이 다름 k='+k+': '+r.st+'/'+J.st); if(r.ok)break; }
   const t=G.teams.find(x=>x.id!==G.user); const C=domestic(t.id).filter(x=>!x.foreign&&!x.ys&&!x.faC&&!x.ext&&!x.extNext&&x.age<=33); ok(C.length,'준비 실패');
   let tried=0; for(const q of C.slice(0,10)){ const yy=Math.max(3,extMinY(q)); const r=aiExtNeg(q,t,yy,99999); if(!r)continue; tried++; const dd=extDemandAll(q,yy,t.id); ok(r.ctr?r.a>=dd&&hasAgent(q):extJudge(q,r.a,yy,t.id,false).st==='ok','AI가 공통 판정을 통과하지 않은 금액으로 계약: '+r.a+'/'+dd);
     ok(r.a<=round5(extDemand(q,yy)*(hasAgent(q)?agExtMul(q,t.id):1)*1.05*1.03)+5,'AI가 낼 수 있는 한도를 넘김'); }
@@ -6081,16 +6081,24 @@ T('[계약 2단계] AI 비FA 다년계약(연장): 사용자와 같은 판정(ex
 T('[제보 11-17 다년 감액] 4억 비FA 선수에게 3,500만 원 다년계약은 거절하고, 한도 안 제안은 평소대로 판단하며, 연봉 협상·AI 구단과 같은 하한을 쓴다',()=>{ fresh(); const p=domestic(G.user).find(x=>canExtend(x)&&!x.faC&&!x.ext&&!x.foreign); ok(p,'준비 실패');
   p.sal=400; ok(!salReset(p),'준비 실패: 계약 끝난 선수'); ok(salCutFloor(p)===240&&salCutFloor(p,true)===240,'감액 한도가 40%(다년도 같음)가 아님: '+salCutFloor(p)+'/'+salCutFloor(p,true));
   const q={...p,sal:150}; ok(salCutFloor(q)===105,'1억~2억 30% 아님'); const r0={...p,sal:80}; ok(salCutFloor(r0)===60,'1억 미만 25% 아님');
-  for(const y of [3,4]){ delete p.extNg; delete p.extCounter; const r=offerExtension(p.id,35,y); ok(!r.ok&&r.cut&&r.msg.includes('감액 한도'),'3,500만 원 다년계약을 감액 한도로 거절하지 않음: '+r.st+' '+r.msg); }
+  for(const y of [3,4]){ delete p.extNg; delete p.extCounter; const r=offerExtension(p.id,35,y); ok(!r.ok&&r.cut,'3,500만 원 다년계약을 감액 한도로 거절하지 않음: '+r.st+' '+r.msg); }
   delete p.extNg; const rT=offerExtension(p.id,35,3,false,{years:3,bonus:0,annual:35,opt:300,optC:'b',role:null,ntc:false}); ok(!rT.ok&&rT.cut,'옵션으로 감액 한도를 우회함: '+rT.msg);
   ok(extDemandAll(p,3)>=240&&extDemandAll(p,5)>=240,'요구가 감액 한도 아래: '+extDemandAll(p,3));
   const n={off:240,ask:240,cur:null,st:'open',wk:-1}; ok(!salAccepts(p,n,235)&&salAccepts(p,n,240),'연봉 협상 하한이 다년계약과 다름'); ok(newSalary(p)>=240,'구단 산정안이 감액 한도 아래: '+newSalary(p));
-  delete p.extNg; delete p.extCounter; const r1=offerExtension(p.id,245,3); ok(!r1.cut&&!r1.msg.includes('감액 한도'),'한도 안 제안을 감액 한도로 거절함: '+r1.msg); ok(['ok','counter','no','market'].includes(r1.st),'한도 안 제안의 판단이 이상함: '+r1.st);
+  delete p.extNg; delete p.extCounter; const r1=offerExtension(p.id,Math.max(245,extFloor(p)),3); /* 다년 실제화: 다년은 지금 연봉 이상(하락세 베테랑만 감액 한도) */ ok(!r1.cut&&!r1.msg.includes('감액 한도'),'한도 안 제안을 감액 한도로 거절함: '+r1.msg); ok(['ok','counter','no','market'].includes(r1.st),'한도 안 제안의 판단이 이상함: '+r1.st);
   const fit=extCutFit({years:3,bonus:0,annual:100,opt:500},240,3,[]); ok(fit.annual>=240,'역제안이 감액 한도를 지키지 않음'); ok(extCutFit({years:3,bonus:0,annual:100},240,3,['annual','bonus'])===null,'다 잠갔는데 한도 아래 역제안을 만듦'); });
 T('[제보 11-17 다년 감액] 같은 총액이면 짧고 높은 연봉을 더 잘 받아들인다(젊은 선수) · 다년 보장으로 연봉을 깎아 주지 않고, 30대 중반·부상·하락세만 조금 깎는다',()=>{ fresh(); const p=domestic(G.user).find(x=>canExtend(x)&&x.age<=27&&!x.faC); ok(p,'준비 실패');
   const tot=round5(extDemandAll(p,4)*4); const r=y=>(tot/y)/extDemandAll(p,y); ok(r(3)>r(5),'젊은 선수가 같은 총액에서 긴 계약을 더 좋게 봄: 3년 '+r(3).toFixed(3)+' / 5년 '+r(5).toFixed(3));
   const x=extParts(p,4); ok(!x.why.some(w=>w.includes('깎아 줌'))&&x.why[0].includes('깎아 주지 않습니다'),'다년 할인이 남아 있음: '+x.why.join('·'));
   const o=domestic(G.user).find(x=>canExtend(x)&&x.age>=30&&!x.faC); if(o){ const a0=o.age, i0=o.inj; o.age=35; o.inj=.3; const xs=extParts(o,3); ok(xs.why.some(w=>w.includes('30대 중반'))&&xs.why.some(w=>w.includes('부상')),'30대 중반·부상 이력 예외가 없음'); ok(extDemandAll(o,3)>=salCutFloor(o,true),'예외도 감액 한도 아래로 내려감'); o.age=a0; o.inj=i0; } });
+T('[다년 실제화] 비FA 다년 계약금 없음·연 연봉 하락 다년 거절·기간 늘면 요구 총액 증가·AI 제안 규칙 동일',()=>{ fresh(); const p=domestic(G.user).find(x=>canExtend(x)&&!x.faC&&!x.ext&&x.age<=30&&x.sal>=100); ok(p,'준비 실패');
+  ok(termsDemand(p,'ext',{annual:500,years:4}).bonus===0,'비FA 다년 요구에 계약금이 있음'); ok(extFloor(p)===p.sal,'젊은 선수 다년 하한이 지금 연봉이 아님: '+extFloor(p));
+  ok(extDemandAll(p,3)>=p.sal&&extDemandAll(p,5)>=p.sal,'요구가 지금 연봉 아래'); const tot=y=>extDemandAll(p,y)*y; ok(tot(3)<tot(4)&&tot(4)<tot(5),'기간이 늘어도 요구 총액이 늘지 않음');
+  delete p.extNg; const r=offerExtension(p.id,round5(p.sal*.9),4); ok(!r.ok&&r.cut&&r.msg.includes('지금보다'),'연봉이 내려가는 다년계약을 거절하지 않음: '+r.msg);
+  delete p.extNg; const rb=offerExtension(p.id,round5(p.sal*.9),4,false,{years:4,bonus:round5(p.sal*2),annual:round5(p.sal*.9),opt:0,role:null,ntc:false}); ok(!rb.ok&&rb.cut,'계약금으로 연봉 하락을 메움: '+rb.msg);
+  const v=domestic(G.user).find(x=>canExtend(x)&&!x.faC&&x!==p); ok(v,'준비 실패: 베테랑'); const a0=v.age; v.age=36; ok(extFloor(v)===salCutFloor(v,true)&&extFloor(v)<v.sal,'하락세 베테랑 예외가 감액 한도가 아님'); v.age=a0;
+  const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).find(x=>!x.foreign&&!x.ys&&!x.faC&&!x.ext&&x.age<=30&&x.sal>=100); ok(q,'준비 실패: AI 선수');
+  const J=extJudge(q,round5(q.sal*.9),4,t.id,false); ok(J.st==='cut','AI 판정에서 연봉 하락 다년을 막지 않음: '+J.st); const n=aiExtNeg(q,t,4,99999); ok(!n||n.a>=q.sal,'AI가 연봉 하락 다년계약을 맺음: '+(n&&n.a)); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
