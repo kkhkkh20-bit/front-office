@@ -22,7 +22,7 @@ const proxy=process.env.HTTPS_PROXY||process.env.https_proxy;
   await pc.waitForSelector('[data-a="tsGo"][data-v="mode"]',{timeout:120000});
   await pc.click('[data-a="tsGo"][data-v="mode"]'); await pc.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pc.waitForSelector('.tmk',{timeout:120000});
   await pc.click('.tmk [data-a="start"].btn'); await pc.fill('#gp-name','옮기기점검'); await pc.click('[data-a="gpStart"]'); await pc.waitForFunction(()=>typeof G!=='undefined'&&G&&!UI.title,{},{timeout:180000});
-  const before=await pc.evaluate(()=>{ saveNow(); G.tut={done:true,step:99}; closeSheets(); A.go('club:set'); return {user:G.user,day:G.day,year:G.year,n:Object.keys(G.players).length,gm:(G.gmP&&G.gmP.name)||null,team:tfull(team(G.user))}; });
+  const before=await pc.evaluate(()=>{ saveNow(); G.tut={done:true,step:99}; closeSheets(); A.go('cfg:save'); return {user:G.user,day:G.day,year:G.year,n:Object.keys(G.players).length,gm:(G.gmP&&G.gmP.name)||null,team:tfull(team(G.user))}; });
   await pc.waitForSelector('[data-a="xfUp"]',{timeout:60000}); await pc.click('[data-a="xfUp"]'); await pc.waitForSelector('.xf-code',{timeout:60000});
   const shown=(await pc.locator('.xf-code').innerText()).trim(); assert.match(shown,/^[A-HJKMNP-Z2-9]{4}-[A-HJKMNP-Z2-9]{4}$/,'코드 형식 '+shown); code=shown.replace('-','');
   if(cap){ await pc.locator('.xf').scrollIntoViewIfNeeded(); await pc.screenshot({path:path.join(cap,'live-pc-upload.png')}); }
