@@ -109,14 +109,19 @@ function amFillAdd(S,u,b){ const f=u.src; if(f.ey==null)return; const F=S.fr||(S
   const r=L[f.i]||(L[f.i]=new Array(K.length).fill(0)); r[0]++; for(let k=1;k<K.length;k++)r[k]+=b[K[k]]||0; }
 function amFillRow(S,sch,ey,isP,i){ const r=S&&S.fr&&S.fr[sch]&&S.fr[sch][ey]&&S.fr[sch][ey][isP?'p':'b'][i]; if(!r)return null; const K=isP?AM_FPK:AM_FBK, o={}; K.forEach((k,j)=>o[k]=r[j]||0); return o; }
 /* 그해 학교별 선수단(경기 단위). 진행 중 시즌은 메모리에 한 번만 만든다 */
-function amRosters(y){ const key=y+':'+(G.draftClass||[]).length+':'+Object.keys(amPipe().L).length+':'+Object.keys(amFS().cv).length; if(_amRos&&_amRos.k===key&&_amRos.g===G)return _amRos.m;
+/* 아마 경기에 나갈 수 있는 후보(카페 11-17 프로 선수 아마 기록): 어느 구단과도 계약하지 않은 올해 후보만. 지명·트라이아웃·육성 계약·해외 복귀 계약을 한 선수는 그날부터 아마 경기에 나오지 않는다(모든 구단 같다) */
+const amPlayable=(p,y)=>!!p&&!!p.prospect&&p.team==null&&!(p.draft&&p.draft.y<y);
+function amRosters(y){ const key=y+':'+(G.draftClass||[]).length+':'+Object.keys(amPipe().L).length+':'+Object.keys(amFS().cv).length;
+  if(_amRos&&_amRos.k===key&&_amRos.g===G){ const m0=_amRos.m; if(_amRos.pu.every(u=>amPlayable(u.src,y)))return m0; /* 같은 날 사이에 계약한 후보는 명단에서 뺀다(명단 길이가 같아도) */
+    for(const n in m0)for(const k of ['B','P'])m0[n][k]=m0[n][k].filter(u=>u.kind!=='p'||amPlayable(u.src,y)); _amRos.pu=_amRos.pu.filter(u=>amPlayable(u.src,y)); return m0; }
   const m={}; const add=(sch,lvl,u)=>{ const R0=m[sch]||(m[sch]={lvl,B:[],P:[]}); (u.isP?R0.P:R0.B).push(u); };
   const known=n=>AREA.some(a=>a.hs.includes(n)||a.un.includes(n));
   for(const e of Object.values(amPipe().L)){ const g=amGrade(e,y); if(g<1||g>(e.c?4:3)||!known(e.s))continue; add(e.s,e.c?'col':'hs',amUnit(e,'e',e.s,e.c?'col':'hs',y)); }
-  if(y===G.year)for(const id of G.draftClass||[]){ const p=G.players[id]; if(!p||!p.prospect||p.ovsRet||!p.school||p.team!=null||!known(p.school))continue; const lvl=p.college?'col':'hs'; add(p.school,lvl,amUnit(p,'p',p.school,lvl,y)); }
+  if(y===G.year)for(const id of G.draftClass||[]){ const p=G.players[id]; if(!amPlayable(p,y)||p.ovsRet||!p.school||!known(p.school))continue; const lvl=p.college?'col':'hs'; add(p.school,lvl,amUnit(p,'p',p.school,lvl,y)); }
   const all=[...AREA.flatMap(a=>a.hs.map(n=>[n,'hs'])),...AREA.flatMap(a=>a.un.map(n=>[n,'col']))];
   for(const [n,lvl] of all){ const R0=m[n]||(m[n]={lvl,B:[],P:[]}); for(const f of amFill(n,y,lvl,amLvOf(n),false,true))(f.isP?R0.P:R0.B).push(amUnit(f,'f',n,lvl,y)); }
-  _amRos={k:key,g:G,m}; return m; }
+  const pu=[]; for(const n in m)for(const u of m[n].B.concat(m[n].P))if(u.kind==='p')pu.push(u);
+  _amRos={k:key,g:G,m,pu}; return m; }
 /* ---------- 시즌 상태 ---------- */
 function amEnv(y){ const r=seededRand('amenv:'+y), n=()=>{ let u=0; while(!u)u=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r()); };
   return {hr:+clamp(1+n()*.16,.65,1.4).toFixed(3),bab:+clamp(n()*.01,-.025,.025).toFixed(4),bb:+clamp(1+n()*.07,.85,1.18).toFixed(3),k:+clamp(1+n()*.06,.86,1.15).toFixed(3)}; } /* 공 반발력·날씨·존 경향 */
@@ -216,7 +221,7 @@ function amGame(S,g,d,R0){ const rnd0=seededRand('amg:'+S.y+':'+d+':'+g.h+':'+g.
   return {h:g.h,a:g.a,hs:sc.h,as:sc.a,inn,w:w?(w==='h'?g.h:g.a):null,M,line:{h:H.line,a:A.line},H,A}; }
 /* ---------- 기록 반영 ---------- */
 function amRowOf(u,y){ const s=u.src; if(u.kind==='e'){ let r=s.y.find(x=>x[0]===y); if(!r){ r=[y,amGrade(s,y)].concat(new Array(s.P?AM_PK.length:AM_BK.length).fill(0)); s.y.push(r); } return {a:r}; }
-  if(u.kind==='p'&&s.amSim){ s.amY=s.amY||[]; let r=s.amY.find(x=>x.y===y); if(!r){ r={y,gr:s.college?4:3}; for(const k of s.isP?AM_PK:AM_BK)r[k]=0; s.amY.push(r); } return {o:r}; } return null; }
+  if(u.kind==='p'&&s.amSim&&amPlayable(s,y)){ s.amY=s.amY||[]; let r=s.amY.find(x=>x.y===y); if(!r){ r={y,gr:s.college?4:3}; for(const k of s.isP?AM_PK:AM_BK)r[k]=0; s.amY.push(r); } return {o:r}; } return null; }
 function amAdd(u,y,b,isP){ const R0=amRowOf(u,y); if(!R0)return; const K=isP?AM_PK:AM_BK;
   if(R0.a){ for(let i=1;i<K.length;i++)R0.a[2+i]+=b[K[i]]||0; R0.a[2]+=1; } else { for(let i=1;i<K.length;i++)R0.o[K[i]]+=b[K[i]]||0; R0.o.g+=1; amTotFix(u.src); } }
 function amTotFix(p){ const K=p.isP?AM_PK:AM_BK, t={}; for(const k of K)t[k]=0; for(const r of p.amY||[])for(const k of K)t[k]+=r[k]||0; p.am=t; }
@@ -385,6 +390,13 @@ function amMonthNews(o){ const S=G.amL; if(!S||!S.live||G.unemp)return; const y=
   if(o.m>=5&&o.m<=8&&amCap(S,'big',4)){ const L=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.press).sort((a,b)=>a.press-b.press).slice(0,2); if(L.length===2)wire('아마',`고교 최대어 경쟁: ${L[0].name}(${L[0].school}) · ${L[1].name}(${L[1].school}) — ${amShortLine(L[0])} / ${amShortLine(L[1])}`,{ref:L[0].id}); }
   if((o.m===6||o.m===8)&&amCap(S,'fr',2)){ const b=amLeaders(y,'hs',false,'ops',1,1)[0], p=amLeaders(y,'hs',true,'era',1,1)[0]; const x=b&&b.v>=1.0?b:p&&p.v<1.5?p:null; if(x)wire('아마',`1학년 돌풍: ${x.n}(${x.sch}) ${x.isP?`평균자책점 ${x.v.toFixed(2)}`:`OPS ${fmt3(x.v)}`}`); } }
 function amShortLine(p){ const h=(p.amY||[]).find(r=>r.y===G.year); if(!h)return '기록 없음'; if(p.isP)return h.outs?`ERA ${(h.er*27/h.outs).toFixed(2)}`:'등판 없음'; return h.ab?`타율 ${fmt3(h.h/h.ab)}`:'출전 없음'; }
+/* 예전 저장 수리(카페 11-17 프로 선수 아마 기록): 프로 계약 선수의 아마 학년별 기록 가운데 지명 연도(지명 없이 계약했으면 입단 연도) 뒤 줄을 지우고 통산을 다시 센다.
+   진짜 아마 시절 기록(연도 없는 예전 합성 기록 포함)은 그대로. 난수를 쓰지 않고 두 번 불러도 같다. 사람·AI 구단 공통 */
+function amProY(p){ if(p.draft&&+p.draft.y)return +p.draft.y; if(p.joinY)return +p.joinY; const h=(p.hist||[]).map(r=>+r.y).filter(Boolean); return h.length?Math.min(...h):null; } /* 지명 없이 계약(트라이아웃·육성)한 해는 계약 전 아마 경기가 있을 수 있어 그해까지 둔다 */
+function amProLeakFix(){ if(!G||!G.players)return 0; let n=0;
+  for(const p of Object.values(G.players)){ if(!p||p.prospect||!Array.isArray(p.amY)||!p.amY.length)continue; if(p.team==null&&!p.draft&&!(p.hist||[]).length)continue; /* 아직 아마추어(미지명·미계약) */
+    const cut=amProY(p); if(cut==null)continue; const L=p.amY.filter(r=>!(r&&r.y!=null&&+r.y>cut)); if(L.length===p.amY.length)continue; p.amY=L; amTotFix(p); n++; }
+  _amRos=null; return n; }
 /* ---------- 예전 저장: 저학년 파이프라인을 만들고(지난 3년 경기 실제로), 올해 후보의 옛 기록은 그대로 둔다 ---------- */
 function amLeagueMigrate(){ if(!G||!G.teams||!amOn())return; const U=amPipe(); if(U.yr!=null)return; amBoot(G.year,G.year+1);
   for(const id of G.draftClass||[]){ const p=G.players[id]; if(p&&p.amY&&!p.amSim)for(const r of p.amY)r.syn=1; } /* 시뮬레이션 전에 만든 기록(합성)임을 표시 */ }
