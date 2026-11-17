@@ -60,7 +60,7 @@ function pbpCall(g,k){
   case 'HBP':c=m.loaded?`아, 몸에 맞았어요! ${name}, 밀어내기 사구!`:`아, 몸에 맞았습니다! ${name}, 사구로 1루에 나갑니다.`;break;
   case 'BB':c=m.loaded?`${name}, 밀어내기 볼넷! ${storedPitchSequence(x)?.length===4?'공 네 개로 한 점!':'한 점을 거저 얻습니다!'}`:`${name}, 볼넷! 기다림 끝에 1루를 얻습니다.`;break;
   case 'K':{const q=storedPitchSequence(x)?.at(-1);c=q?`${name}, ${q.t}에 ${q.res==='루킹 삼진'?'루킹':'헛스윙'} 삼진!`:`${name}, 삼진! 마운드가 웃습니다!`;break;}
-  case 'DP':c=`${raw.c.replace(/\s*$/,'')} ${x[4]===3?'이닝이 끝납니다!':'아웃 두 개가 한꺼번에 올라갑니다!'}`;break; /* 어느 수비수 정면, 어떤 경로의 병살인지(42_commentary, 화면과 같은 dpPats) */
+  case 'DP':c=`${raw.c.replace(/\s*$/,'')}${/이닝 종료|이닝이 끝/.test(raw.c)?'':x[4]===3?' 이닝이 끝납니다!':' 아웃 두 개가 한꺼번에 올라갑니다!'}`;break; /* 어느 수비수 정면, 어떤 경로의 병살인지(42_commentary, 화면과 같은 dpPats) */
   case 'SAC':c=`${name}, 짧게 댔습니다! 희생번트로 주자를 보냅니다.`;break;
   default:c=x[16]?`${name}, 번트 실패! 앞선 주자가 포스아웃됩니다!`:x[9]?`아, 이게 뭔가요! 수비 실책! ${name}, 살아 나갑니다!`:x[5].includes(x[1])?`${name}, 1루에서 살아남습니다!`:raw.c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');
  }
