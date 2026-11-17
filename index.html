@@ -1486,7 +1486,7 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
   .drf-c .dfilt>p{margin:0}.drf-c .dfilt .row{gap:4px 10px}
   .drf-c>.candidate-list{flex:1 1 auto;min-height:200px;display:flex;flex-direction:column;padding:0;border:0;overflow:hidden}.drf-c>.candidate-list>.tw{flex:1;min-height:0;overflow:auto;margin:0;width:auto;max-width:100%}
   .drf-c>.candidate-list .candidate-table td{padding-block:4px}
-  .drf .tf-r>.dhead{overflow:auto;scrollbar-width:thin}.drf .dhead .dnow{font-size:20px}.drf .dhead .row{flex-wrap:wrap;gap:6px}.drf .dhead .cap-line{display:block;font-size:12px}
+  .drf .tf-r>.drf-hd{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:auto;scrollbar-width:thin}.drf .drf-hd>*{flex:none;margin:0} /* 드래프트 오른쪽 첫 칸: 머리 카드와 안내 줄을 한 칸에(줄 배치 밀림으로 버튼이 가려지던 문제) */.drf .tf-r>.dhead,.drf .drf-hd>.dhead{overflow:auto;scrollbar-width:thin}.drf .dhead .dnow{font-size:20px}.drf .dhead .row{flex-wrap:wrap;gap:6px}.drf .dhead .cap-line{display:block;font-size:12px}
 }
 /* 좁은 PC(1100~1599px): 외국인 후보 표는 칸 안에서 줄바꿈해 버튼 열까지 한 화면에 */
 @media(min-width:1100px) and (max-width:1599px){ .foreign-candidates .tf-t td:nth-child(n+2):not(:last-child){white-space:normal;min-width:110px}.foreign-candidates .tf-t td:nth-child(3){max-width:230px}.foreign-candidates .tf-t td:nth-child(4){max-width:160px}.foreign-candidates .tf-t td:nth-child(5){max-width:170px} }
@@ -1602,7 +1602,7 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .ng-agc{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center}.ng-agc>.av{width:44px;height:44px}.ng-agc>div{display:grid;gap:2px;min-width:0}.ng-fee{line-height:1.45}
 .ng-rdw{display:grid;gap:4px}
 .ng-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:4px 0}.ng-kp{display:grid;gap:2px;padding:7px 9px;border:1px solid var(--line);border-left:3px solid var(--line);border-radius:6px;background:var(--panel);min-width:0}
-.ng-kp i{font-style:normal;font-size:var(--ui-caption);color:var(--muted)}.ng-kp b{font-size:18px;line-height:1.25}.ng-kp em{font-style:normal;font-size:var(--ui-caption);color:var(--muted);line-height:1.35}.ng-kp .gauge{margin-top:2px}
+.ng-kp i{font-style:normal;font-size:var(--ui-caption);color:var(--muted)}.ng-kp b{font-size:20px;line-height:1.25} /* 공통 글꼴 단계(12·13·16·20·24) */.ng-kp em{font-style:normal;font-size:var(--ui-caption);color:var(--muted);line-height:1.35}.ng-kp .gauge{margin-top:2px}
 .ng-kp.good{border-left-color:var(--good)}.ng-kp.good b{color:var(--good)}.ng-kp.warn{border-left-color:var(--warn)}.ng-kp.warn b{color:var(--warn)}.ng-kp.bad{border-left-color:var(--bad)}.ng-kp.bad b{color:var(--bad)}.ng-rd{display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--muted)}.ng-rd .warn{color:var(--warn)}.ng-rd .bad{color:var(--bad)}
 .ng-msgs{display:grid;gap:6px;align-content:start;overflow:auto;min-height:0;scrollbar-width:thin}
 .ngm{font-size:var(--ui-body);line-height:1.5;padding:6px 10px;border-radius:8px;background:#ffffff08;color:var(--ink)}.ngm i{display:block;font-style:normal;font-weight:600;font-size:var(--ui-caption);color:var(--muted)}.ngm s{text-decoration:none;font-weight:400;margin-left:4px}
@@ -1644,6 +1644,8 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .ng-cash p{margin:6px 0 0}
 .ng-cash summary::-webkit-details-marker{display:none}.ng-cash summary::after{content:'▸';margin-left:auto;color:var(--muted)}.ng-cash[open] summary::after{content:'▾'}
 @media(min-width:1441px){#app .foreign-candidates .tf-t td.fo-act .tc-i{display:inline-block;width:auto;margin:0 0 0 4px!important}#app .foreign-candidates .tf-t td.fo-act .tc-i:first-child{margin-left:0!important}} /* 넓은 PC: '관찰'을 협상 왼쪽에 나란히(카페 11-17) */
+.ag-cl{white-space:nowrap} /* 고객 이름·(구단)이 줄바꿈으로 갈라지면 구단 링크가 두 줄에 걸쳐 눌리는 자리가 겹친다(화면 비율 점검) */
+#app .ag-tw .sf-tw{overflow-x:auto;max-width:100%} /* 휴대폰 에이전트 표: 넓은 표를 칸 안에서 옆으로 밀어 본다(잘림 방지) */
 /* 읽기·누르기 개선: 작은 글씨 11px, 버튼 높이 30px 이상 */
 .tc-rt span,.tc-tools span,.tc-tools i,.teamc-top i,.fsq em,.sbr .small,.pc-l,.cnd,table.rt i.f,.trend,.rd,.tp-r i,.tp-g i,.posfit i,table.tcmp td i,.cmp-k i,.sl span,.growth span,.prchart span{font-size:var(--ui-caption)}
 button.pill,.pill[data-a]{min-height:30px;display:inline-flex;align-items:center;padding-top:0;padding-bottom:0}
@@ -3375,7 +3377,7 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .dtier-h{font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);margin:8px 0 2px;padding-bottom:2px}
 .dbr .chips button.done{color:var(--good)}
 .dbr-a{margin:2px 0;color:var(--muted)}
-.dunseen{margin:6px 0 0}
+.dunseen{margin:6px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-height:max-content;flex:none} /* 안에 든 버튼(32px)이 한 줄 높이 글줄 밖으로 넘쳐 아래 칸 제목에 가리던 문제(화면 비율 1280×600) */
 .dc-bet{display:grid;gap:6px;margin-top:10px}
 .do-chip{align-self:flex-start;width:fit-content;max-width:100%}
 .fx-wr .av.ini{white-space:nowrap;overflow:hidden;font-size:8px;letter-spacing:-.5px} /* 소속 없는 소식의 협회 표시가 세로로 쪼개지지 않게 */
@@ -4779,7 +4781,7 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
   .cast.match-dashboard{position:relative;min-height:0;overflow:hidden;padding:5px;gap:5px;grid-template-rows:auto minmax(0,1fr) 33px 63px 28px}
   .match-dashboard .cs-top{padding:4px;gap:3px}.match-dashboard .cs-board{gap:7px;flex-basis:100%;justify-content:center}.match-dashboard .cs-tm b{font-size:24px}.match-dashboard .cs-tm i{font-size:11px}.match-dashboard .cs-mode{margin-right:auto}.match-dashboard .md-mobile-nav{flex-basis:100%;justify-content:center;margin:0;gap:4px}.match-dashboard .md-mobile-nav button{padding:2px 16px;min-height:23px;font-size:var(--ui-micro)}
   .match-dashboard .md-layout,.match-dashboard .md-center{display:block;height:100%}.match-dashboard .md-play-grid{display:grid;height:100%;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 142px;gap:5px}
-  .match-dashboard .md-field-panel{height:100%;grid-template-rows:23px minmax(0,1fr) 54px}.match-dashboard .md-field-panel>header{font-size:var(--ui-micro);min-height:23px;padding:4px 7px}.match-dashboard .md-field-panel>header>span{font-size:var(--ui-tiny)}.match-dashboard .cc,.match-dashboard .cc.of.bat{width:10%;max-width:42px}.match-dashboard .cc.ctch{width:8%;max-width:32px}.match-dashboard .cc-n{font-size:var(--ui-micro)}.match-dashboard .cs-sit{padding:2px 5px;font-size:var(--ui-tiny);top:4px;left:5px}.match-dashboard .cs-cap{font-size:11px;padding:4px 8px}
+  .match-dashboard .md-field-panel{height:100%;grid-template-rows:23px minmax(0,1fr) auto} /* 대결 칸은 내용 높이(11-16 시즌 성적·핵심 능력 줄이 붙어 54px 고정이면 태블릿 세로에서 잘림) */.match-dashboard .md-field-panel>header{font-size:var(--ui-micro);min-height:23px;padding:4px 7px}.match-dashboard .md-field-panel>header>span{font-size:var(--ui-tiny)}.match-dashboard .cc,.match-dashboard .cc.of.bat{width:10%;max-width:42px}.match-dashboard .cc.ctch{width:8%;max-width:32px}.match-dashboard .cc-n{font-size:var(--ui-micro)}.match-dashboard .cs-sit{padding:2px 5px;font-size:var(--ui-tiny);top:4px;left:5px}.match-dashboard .cs-cap{font-size:11px;padding:4px 8px}
   .match-dashboard .md-duel{padding:4px;gap:4px}.match-dashboard .md-duel-player{gap:5px;padding-left:4px;border-left-width:2px}.match-dashboard .md-duel-player .av{width:34px;height:34px}.match-dashboard .md-duel-player b{font-size:14px}.match-dashboard .md-duel-player i{font-size:var(--ui-tiny)}.match-dashboard .md-duel-player small{font-size:var(--ui-tiny)}.match-dashboard .md-duel-player .ab-res{display:none}
   .md-pitch-dock{display:grid;grid-template-columns:125px minmax(0,1fr);grid-template-rows:24px minmax(0,1fr) 47px;gap:0;height:142px;box-sizing:border-box}
   .md-pitch-dock>header{grid-column:1/-1;min-height:23px;font-size:11px;padding:4px 8px}.md-pitch-dock>header>span{font-size:var(--ui-tiny);padding:0 4px}
@@ -7167,9 +7169,9 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .loading-state>i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:ldot 1s infinite ease-in-out}.loading-state>i:nth-child(2){animation-delay:.15s}.loading-state>i:nth-child(3){animation-delay:.3s}.loading-state>span{margin-left:6px}
 @keyframes ldot{0%,80%,100%{opacity:.25}40%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.loading-state>i{animation:none;opacity:.6}}
-/* 펼친 필터(inline): 넓은 화면은 조건 칩을 목록 위에 바로 둔다. 휴대폰(700px 이하)은 기존 필터 버튼과 바텀시트 */
+/* 펼친 필터(inline): 넓은 화면은 조건 칩을 목록 위에 바로 둔다. 휴대폰(700px 이하)과 낮은 가로 화면(높이 520px 이하, 휴대폰·태블릿 가로)은 기존 필터 버튼과 시트: 펼친 줄이 목록 칸을 다 먹어 표가 한 줄만 보였다(터치 점검 android 가로) */
 .fbar-inl{display:none}
-@media(min-width:701px){
+@media(min-width:701px) and (min-height:521px){
   .fbar-inline .fbar-inl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;min-width:0;margin-top:6px}
   .fbar-inline .fbar-ig{display:inline-flex;align-items:center;gap:6px;min-width:0}
   .fbar-inline .fbar-ig .chips,.fbar-inline .fbar-ig .seg{flex-wrap:wrap;margin:0;overflow:visible}
@@ -36908,7 +36910,7 @@ function agDetail(a){ if(!a)return '<p class="small muted">왼쪽에서 에이�
   return `<div class="tgm ag-hd">${agAv(a,relEx(agRel(a)))}<div><b><button class="lnk" data-a="person" data-v="agt:${a.id}">${esc(a.name)}</button> <span class="small muted">${a.age||''}세 · 경력 ${a.exp||1}년</span></b><span class="agl">${agLine(a)}</span><span class="small muted">${esc(a.firm)} · ${AG_SIZE[a.size]} · 평판 ${agRepOf(a)}${F0&&F0.spec?` · ${AG_SPEC[F0.spec]}`:''} · 수수료 ${agFee(a)}%</span></div></div>
     <p class="small muted">${esc(st.d)}${F0?` ${esc(F0.d)}`:''}</p>
     <h4 class="ag-h4">우리 선수 고객 <em>${ours.length}/${AG_MAX_CLUB}명</em></h4>${ours.length?`<div class="fl">${ours.map(p=>`<div class="flr"${rowTap('player',p.id)}>${rowQuiet(pMini(p))}<span class="small muted">${money(p.sal)} · ${esc(ctText(p))}</span></div>`).join('')}</div>`:'<p class="small muted">우리 선수 중 이 에이전트 고객은 없습니다.</p>'}
-    <h4 class="ag-h4">전체 고객 <em>${all.length}/${AG_MAX_CL}명</em></h4><p class="small">${all.length?all.slice(0,15).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="muted">(${p.team!=null?esc(tshort(p.team)):'FA'})</span>`).join(' · '):'<span class="muted">없음</span>'}</p>
+    <h4 class="ag-h4">전체 고객 <em>${all.length}/${AG_MAX_CL}명</em></h4><p class="small">${all.length?all.slice(0,15).map(p=>`<span class="ag-cl"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="muted">(${p.team!=null?esc(tshort(p.team)):'FA'})</span></span>`).join(' · '):'<span class="muted">없음</span>'}</p>
     <h4 class="ag-h4">최근 계약</h4>${H.length?`<ul class="tf-ul">${H.slice(0,6).map(h=>`<li>${h.y} ${esc(h.n)} → ${esc(tshort(h.tid))}${h.a?` · 연 ${money(h.a)}`:''}</li>`).join('')}</ul>`:'<p class="small muted">아직 계약 기록이 없습니다.</p>'}
     ${lg.length?`<h4 class="ag-h4">우리와 친분 변화</h4><p class="small muted">${lg.map(x=>`${esc(x.t)} ${x.v>0?'↑':'↓'}`).join(' · ')}</p>`:''}`; }
 function agRuleNote(){ return `<details class="frule"><summary class="small">에이전트 제도(실제 KBO 기준)</summary><ul class="small muted"><li>선수대리인 제도는 2018년 2월 시작했습니다. 선수협 자격시험에 합격해야 공인되고, 2026년부터 시험은 2년마다 열립니다.</li><li>공인 대리인은 90명 안팎이지만 실제로 선수를 맡은 사람은 30% 정도(약 27명)입니다. 게임에도 활동 담당자 ${agActive().length}명만 둡니다.</li><li>대리인 한 명이 맡을 수 있는 선수는 ${AG_MAX_CL}명, 한 구단 선수는 ${AG_MAX_CLUB}명까지입니다. 수수료는 선수가 내고 계약 규모의 ${AG_FEE_CAP}%를 넘을 수 없습니다.</li><li>에이전트를 둔 선수 비율은 공식 통계가 없어 추정했습니다. FA 자격·고연봉·국가대표 선수는 대부분, 1군 주전은 절반쯤, 2군·신인은 거의 없습니다.</li><li>에이전트가 없는 선수는 본인이 직접 협상합니다. 요구가 소박하고 원소속 구단 정을 크게 보며, 수수료가 없습니다.</li><li>친분은 담당자에게 쌓이고 같은 회사 동료에게 조금 번집니다. 협상이 크게 틀어진 선수는 다음 겨울 회사를 바꾸기도 합니다.</li></ul></details>`; }
@@ -36917,7 +36919,7 @@ function agentsView(){ const R=agRows(), u=agUsage(), ours=domestic(G.user).filt
   const tbl=tfT(['에이전트','에이전시','성향','경력','고객','우리 선수','친분','우리와 계약'],R.map(x=>{ const a=x.a; return `<tr class="${sel===a?'sel':''}"${rowTap('agSel',a.id,a.name+' 보기')}><td><span class="pm-n">${agAv(a)}<span><b>${esc(a.name)}</b><i>${a.age||''}세</i></span></span></td><td>${esc(a.firm)}<span class="scn-s">${AG_SIZE[a.size]}</span></td><td>${(AG_STYLE[a.style]||AG_STYLE.rel).l}</td><td>${a.exp||1}년</td><td>${x.n}/${AG_MAX_CL}</td><td class="${x.m?'good':''}">${x.m}/${AG_MAX_CLUB}</td><td class="${x.r>=60?'good':x.r<40?'bad':''}">${agRelLab(x.r)}</td><td>${x.dl?x.dl+'건':'-'}</td></tr>`; }),'활동 중인 에이전트가 없습니다.');
   if(fmOn()){ const top=tfKpi([['활동 에이전트',`${R.length}명`,'',`에이전시 ${AG_FIRMS.length}곳`],['리그 이용률',agPct(u.r),'',`국내 선수 ${u.k}/${u.n}명`],['FA 자격 선수',agPct(u.fr),'',`${u.fk}/${u.fn}명이 에이전트`],['우리 선수',`${ok}/${ours.length}명`,'','에이전트를 둔 선수'],['규정',`${AG_MAX_CL}명 · 구단당 ${AG_MAX_CLUB}명`,'',`수수료 상한 ${AG_FEE_CAP}%`]]);
     return tfWrap(top,tfBox('tf-ag','에이전트',`${R.length}명 · 우리 선수 고객순`,`<div class="tf-scroll">${tbl}</div>`),tfBox('tf-agd',sel?esc(sel.name):'에이전트','',`<div class="tf-scroll">${agDetail(sel)}${agRuleNote()}</div>`)); }
-  return `<section class="card"><h2 class="sec">에이전트</h2><p class="small muted">활동 에이전트 ${R.length}명(에이전시 ${AG_FIRMS.length}곳) · 리그 이용률 ${agPct(u.r)} · FA 자격 선수 ${agPct(u.fr)} · 우리 선수 ${ok}/${ours.length}명</p>${tbl}${agRuleNote()}</section>${sel?`<section class="card">${agDetail(sel)}</section>`:''}`; }
+  return `<section class="card"><h2 class="sec">에이전트</h2><p class="small muted">활동 에이전트 ${R.length}명(에이전시 ${AG_FIRMS.length}곳) · 리그 이용률 ${agPct(u.r)} · FA 자격 선수 ${agPct(u.fr)} · 우리 선수 ${ok}/${ours.length}명</p><div class="tw ag-tw">${tbl}</div>${agRuleNote()}</section>${sel?`<section class="card">${agDetail(sel)}</section>`:''}`; }
 /* ---------- 인물 관계도 ---------- */
 const relEx=r=>r==null?null:r>=65?'smile':r<35?'angry':'flat';
 const relCol=r=>r==null?'#5b6675':r>=65?'#3fbf6a':r>=45?'#e6b93b':'#e0564f';
@@ -41255,7 +41257,7 @@ function draftFM(head,seg,content,all,mine,live){ const d=G.draft, SL=(G.shortli
     third=tfBox('drf-my','우리 지명',`${P.filter(x=>x.pid>0).length}명`,tfT(['순번','선수','잠재력'],P.map(x=>{ const q=x.pid>0?G.players[x.pid]:null; return `<tr><td>${x.rd}-${x.no}</td><td>${q?tfP(q,`${esc(posLabel(q))} · ${esc(q.school||'')}`):`<span class="muted">건너뜀${x.passReason?` · ${esc(x.passReason)}`:''}</span>`}</td><td>${q?dpotChip(scoutReport(q)):''}</td></tr>`; }),'아직 지명하지 않았습니다.')); }
   else third=tfBox('drf-reg','지역별 담당 스카우트',`${REG.length}개 지역`,tfT(['지역','담당 스카우트','후보','상위 30위 안'],REG.map(r=>{ const sc=scoutOf('am',r), L=all.filter(x=>x.p.region===r), gm=L.filter(x=>x.p.gmSeen===G.year).length;
       return `<tr class="${sc?'':'miss'}"><td>${esc(r)}</td><td>${sc?`${esc(sc.name)} ${sfStars(sc.skill||0)}`:`없음 · 잠재력 ?${gm?` (단장 관찰 ${gm}명은 평가)`:''}`}</td><td>${L.length}명</td><td>${L.filter(x=>x.rk<=30).length}명</td></tr>`; }))+'<p class="small muted tipme">담당 스카우트가 없는 지역 후보는 단장이 직접 본 선수만 잠재력을 판단합니다.</p>',`<button class="btn small" data-a="go" data-v="staff:scouts">스카우트 배치</button>`);
-  return `<div class="drf ws-own"><section class="card drf-main draft-candidate-body">${seg}<div class="drf-c">${content}</div></section><div class="tf-r" style="grid-template-rows:minmax(0,auto) minmax(0,1fr) minmax(0,1fr)">${head}${board}${third}</div></div>`; }
+  return `<div class="drf ws-own"><section class="card drf-main draft-candidate-body">${seg}<div class="drf-c">${content}</div></section><div class="tf-r" style="grid-template-rows:minmax(0,auto) minmax(110px,1fr) minmax(110px,1fr)"><div class="drf-hd">${head}</div>${board}${third}</div></div>`; }
 /* 관찰 소문(사용자 11-17): 다른 구단 스카우트가 3주 넘게 지켜본 후보. AI 관찰도 우리 관찰도 같은 규칙으로 몸값에 실린다 */
 const fRumPill=p=>{ const n=fRumorN(p,G.user); return n?`<span class="pill warn" title="다른 구단 스카우트가 3주 넘게 지켜본 후보입니다(${n}개 구단). 관심이 몰리면 요구액과 경쟁 제시액이 오릅니다. 우리 관찰도 3주가 넘으면 다른 구단에 같은 소문이 납니다.">다른 구단 관심(관찰 ${n})</span>`:''; };
 /* 외국인 후보 카드의 계약 불가 사유를 짧게: 자리 없음 / 포지션 / 총액 한도 / 기간 */
@@ -45243,7 +45245,7 @@ function workspaceFit(host){
       else panel.append(scroller);
     }
     scroller.classList.add('ws-scroll');scroller.tabIndex=0;scroller.setAttribute('role','region');scroller.setAttribute('aria-label',label(panel)+' 내용');
-    scroller.addEventListener('scroll',()=>{if(!panel.hidden)positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true});
+    scroller.addEventListener('scroll',()=>{if(!panel.hidden&&!document.querySelector('#sheet .sheet'))positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true}); /* 상세 창이 떠 있는 동안 뒤 목록이 다시 그려지며 생긴 스크롤(0으로 줄어듦)은 기억하지 않는다: 뒤로 오면 보던 자리로(터치 점검 큰 태블릿 가로) */
     if(workspaceCompact()&&!panel.matches('.roster-list')){
       const before=[...panel.children].slice(0,[...panel.children].indexOf(scroller));
       const controls=before.filter(el=>!el.matches('h1,h2,h3,header,.row:first-child,.itabs,.ws-tab-row,nav,.staff-market-modes')&&el.matches('.chips,.seg,.row:has(input,select,button),label:has(input,select),input,select,.rcp,.trade-search-main,.trade-pool-options'));
@@ -45269,7 +45271,7 @@ function workspaceFit(host){
     const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');
     const ordered=[...panel.children].filter(el=>el===scroll||content.includes(el));ordered[0].before(body);
     scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');ordered.forEach(el=>body.append(el));
-    body.addEventListener('scroll',()=>{positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
+    body.addEventListener('scroll',()=>{if(!document.querySelector('#sheet .sheet'))positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
   }
   panels.forEach((panel,index)=>panel._workspaceFit=()=>fitPanel(panel,index));
   const show=()=>{panels.forEach((panel,i)=>{panel.hidden=pageOf[i]!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
@@ -45620,9 +45622,9 @@ function guideItems(){ const ph=guidePhase(); let L=[];
        {k:'sal',t:'국내 연봉 협상',why:'1월 5일에 확정됩니다. 맡기면 운영팀이 산정안과 요구액 중간쯤에서 합의합니다.',ok:guideAuto('sal')||!!(Cy&&Cy.done),go:['goWork','연봉협상'],prog:Cy?'1월 5일 확정':'12월 1일 시작',deleg:['sal']}]; }
   for(const x of L)if(x.deleg)x.deleg=x.deleg.filter(k=>!guideAuto(k)); return L; }
 function guideRoute(){ try{ return UI.tab+':'+(typeof curSub==='function'?curSub(UI.tab)||'':''); }catch(e){ return UI.tab; } }
-/* 홈 카드 아랫줄: 쉬운 진행 켜기·끄기 */
+/* 홈 카드 아랫줄: 쉬운 진행 켜기·끄기 */ /* 강조(primary) 버튼은 화면당 하나: 홈은 경기 버튼이 맡는다(디자인 점검) */
 function guideEasyLine(){ if(typeof AUTO_AREAS==='undefined')return ''; const on=guideEasy();
-  return `<div class="hw-easy${on?' on':''}"><span>${on?'<b>쉬운 진행</b> 켜짐 · 반복 업무는 비서와 팀장이 맡습니다':'<b>어렵다면</b> 반복 업무(연봉·재계약·일상 결정·감독 요청·스카우트 배치·코치 빈자리)를 비서에게'}</span><button class="btn small${on?'':' primary'}" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다. 설정 › 권한에서 하나씩 바꿀 수도 있습니다.':'드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다. 설정 › 권한에서 언제든 다시 가져옵니다.'}">${on?'끄기':'쉬운 진행 켜기'}</button></div>`; }
+  return `<div class="hw-easy${on?' on':''}"><span>${on?'<b>쉬운 진행</b> 켜짐 · 반복 업무는 비서와 팀장이 맡습니다':'<b>어렵다면</b> 반복 업무(연봉·재계약·일상 결정·감독 요청·스카우트 배치·코치 빈자리)를 비서에게'}</span><button class="btn small" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다. 설정 › 권한에서 하나씩 바꿀 수도 있습니다.':'드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다. 설정 › 권한에서 언제든 다시 가져옵니다.'}">${on?'끄기':'쉬운 진행 켜기'}</button></div>`; }
 /* '하기'로 간 화면 맨 위 한 줄 띠 */
 function guideBar(){ const g=UI.guide; if(!g||!guideOn()||UI.sheet!=null||UI.person||UI.teamSh!=null)return ''; if(g.route!==guideRoute())return '';
   const L=guideItems(), x=L.find(i=>i.k===g.k); if(!x)return ''; const next=L.find(i=>!i.ok&&i.k!==x.k);
@@ -46161,7 +46163,7 @@ function fdEvalView(){ const F=G.fd; if(!F||!F.done)return csec('창단 지명 �
   return csec('창단 지명 평가',`<p class="small sdesc">${head}</p>${sum}${st}<div class="fde-l">${L.map(row).join('')}</div>`); }
 
 Object.assign(A,{
-  fdEvalGo(){ UI.it=UI.it||{}; UI.it.dr='fd'; A.go('transfer:draft'); }
+  fdEvalGo(){ UI.drv='fd'; A.go('transfer:draft'); } /* 드래프트 보기 메뉴(UI.drv, 11-16 '보기 ▾')로 연다: 예전 UI.it.dr은 더 이상 읽지 않아 성적표 대신 후보 목록이 열렸다 */
 });
 /* ---------- 다음 시즌 준비표: 포스트시즌이 끝난 뒤부터 개막 전까지 홈에 한 장으로 ----------
    스폰서 만료·코치 빈자리·외국인 재계약·신인 합류 후 로스터·내년 보장 지출과 예산 여유를 한 줄씩 보이고, 각 줄에서 해당 화면으로 간다 */

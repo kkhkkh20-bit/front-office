@@ -63,7 +63,7 @@
 .dtier-h{font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);margin:8px 0 2px;padding-bottom:2px}
 .dbr .chips button.done{color:var(--good)}
 .dbr-a{margin:2px 0;color:var(--muted)}
-.dunseen{margin:6px 0 0}
+.dunseen{margin:6px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-height:max-content;flex:none} /* 안에 든 버튼(32px)이 한 줄 높이 글줄 밖으로 넘쳐 아래 칸 제목에 가리던 문제(화면 비율 1280×600) */
 .dc-bet{display:grid;gap:6px;margin-top:10px}
 .do-chip{align-self:flex-start;width:fit-content;max-width:100%}
 .fx-wr .av.ini{white-space:nowrap;overflow:hidden;font-size:8px;letter-spacing:-.5px} /* 소속 없는 소식의 협회 표시가 세로로 쪼개지지 않게 */

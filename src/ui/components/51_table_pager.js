@@ -111,7 +111,7 @@ function workspaceFit(host){
       else panel.append(scroller);
     }
     scroller.classList.add('ws-scroll');scroller.tabIndex=0;scroller.setAttribute('role','region');scroller.setAttribute('aria-label',label(panel)+' 내용');
-    scroller.addEventListener('scroll',()=>{if(!panel.hidden)positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true});
+    scroller.addEventListener('scroll',()=>{if(!panel.hidden&&!document.querySelector('#sheet .sheet'))positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true}); /* 상세 창이 떠 있는 동안 뒤 목록이 다시 그려지며 생긴 스크롤(0으로 줄어듦)은 기억하지 않는다: 뒤로 오면 보던 자리로(터치 점검 큰 태블릿 가로) */
     if(workspaceCompact()&&!panel.matches('.roster-list')){
       const before=[...panel.children].slice(0,[...panel.children].indexOf(scroller));
       const controls=before.filter(el=>!el.matches('h1,h2,h3,header,.row:first-child,.itabs,.ws-tab-row,nav,.staff-market-modes')&&el.matches('.chips,.seg,.row:has(input,select,button),label:has(input,select),input,select,.rcp,.trade-search-main,.trade-pool-options'));
@@ -137,7 +137,7 @@ function workspaceFit(host){
     const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');
     const ordered=[...panel.children].filter(el=>el===scroll||content.includes(el));ordered[0].before(body);
     scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');ordered.forEach(el=>body.append(el));
-    body.addEventListener('scroll',()=>{positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
+    body.addEventListener('scroll',()=>{if(!document.querySelector('#sheet .sheet'))positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
   }
   panels.forEach((panel,index)=>panel._workspaceFit=()=>fitPanel(panel,index));
   const show=()=>{panels.forEach((panel,i)=>{panel.hidden=pageOf[i]!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();

@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),built=require('./build.cjs').build({root,write:false});
 let seed=7;const control={seed:n=>{seed=n;},random:()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;}};
-const engine=built.engine.replace('createRandom(Math.random)','createRandom(random)');
+const engine=built.engine.replace('createRandom(Math.random)','createRandom(random)').replace('const FO_RNG0=Math.random;','const FO_RNG0=random;') /* 본 난수원은 FO_RNG0(11-16 해외 활성화 3단계부터) */;
 const ui=fs.readFileSync(path.join(root,'src/ui/league/97_spring_camp_ui.js'),'utf8');
 new Function('assert','random','control',engine+`\nconst UI={},A={},GUARD={};const esc=s=>String(s??'');const csec=(h,b)=>'<section><h2>'+h+'</h2>'+b+'</section>';\n`+ui+`
 {
