@@ -1,0 +1,33 @@
+{
+  "id": "v22_orange_06",
+  "index": 29,
+  "r": "ccap22",
+  "a": 24,
+  "f": 1,
+  "uc": "orange",
+  "hair": "bob",
+  "smile": "big",
+  "pose": "front",
+  "brief": "short HEART-SHAPED face, wider forehead and narrower chin, wide-set gently downturned almond eyes with subtle crease, high fine curved brows, straight broad nose with slightly longer tip, defined cupid-bow upper lip and medium lower lip. Fair neutral natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/orange.png",
+  "generation_attempt": 85,
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_c60e5dea-89a4-4b29-b2f1-1aa257487446.webp",
+  "source_guide_id": "rv3_24",
+  "prompt": "Edit reference 1 into a photoreal professional Korean baseball cheerleader portrait contact sheet, EXACTLY 2 columns by 2 rows, square canvas native 1254x1254 or larger, no gaps/borders/text. Each quadrant is its OWN complete independent photograph. Preserve the four DIFFERENT fictional adult Korean women's exact individual faces from corresponding quadrants, all age 24; do not average faces or use a common beauty template. Keep natural Korean facial anatomy, normal eye size, natural facial asymmetry, realistic pores and fine skin texture, plausible real adult people photographed with a real 85mm camera. Ref1 is a technical whole-photo placement guide with gray missing areas: fill all gray with coherent photographic background/own shoulders and garment. Maintain each quadrant's face scale and eye position rather than zooming in. In EACH tile: full hair crown 6-10% below top, eyes at 38-42% height, face height 36-42%, shoulders at bottom, chest-up modest framing. Complete or restyle crown slightly as needed for this framing, without changing face identity.\nReplace gray casual shirts in ALL FOUR with exactly the SAME orange short-sleeve stand-collar fully zipped cheer stage jacket shown in reference2: saturated orange body, broad white shoulder yoke, thin graphite piping, silver center zipper fully closed, covered chest, no lettering/logos/numbers. All four identical garment pattern, collar and trim.\nReplace studio backgrounds with matching NIGHT baseball cheer-platform lights, blurred indistinct grandstand spectators and warm/cool light bokeh. Same front-above key light and subtle rear stage rim light in every tile. Realistic flattering but restrained stage makeup and styled healthy black/dark-brown hair, never glossy plastic skin, no face paint or blue/gray/purple cheek blotches/artifacts.\nTop-left: same woman, shoulder-length loose waves, bright natural toothy smile, hands outside frame. Top-right: same woman, neat ponytail, warm soft closed-lip smile, hands outside frame. Bottom-left: same woman, bob hairstyle with a thin orange headband, bright natural toothy smile, ONE anatomically correct hand making a V beside cheek without covering face. Bottom-right: same woman, tidy bob, bright natural toothy smile, hands outside frame. Normal individual teeth and natural cheek movement. Attractive real Korean women in their mid twenties, no childlike faces. No hats/glasses, no exaggerated anatomy, no common-body face paste, no cleavage/crop tops or body-emphasis pose. Keep full 2x2 quadrant layout and consistent per-tile camera framing.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-97c3ac3f-7e58-4518-ac8a-7fe4fda0af38.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_orange_06_a85.png",
+  "original_sheet": "/workspace/generated_images/exec-97c3ac3f-7e58-4518-ac8a-7fe4fda0af38.png",
+  "original_sheet_sha256": "097b065da37abbd3cd653ee984802a082e81620d6fc41bfaa3bcad01ed28c5c2",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    627,
+    627,
+    1254,
+    1254
+  ],
+  "operation": "independent four-portrait photographic wardrobe/background edit from technical identity guides"
+}

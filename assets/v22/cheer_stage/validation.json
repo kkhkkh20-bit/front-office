@@ -3,9 +3,9 @@
   "asset_validation_passed": false,
   "production_complete": false,
   "requested_total": 48,
-  "numeric_compatible_candidates": 11,
+  "numeric_compatible_candidates": 23,
   "runtime_ready": 0,
-  "generated_at_kst": "2026-11-17T23:34:38.845598+09:00",
+  "generated_at_kst": "2026-11-18T02:01:12.358142+09:00",
   "identity_check": {
     "threshold": 0.4,
     "strict_less_than": true,
@@ -19,32 +19,32 @@
     "protocol": "SCRFD640/threshold.55, LMEDS5point112, w600k_r50, raw normalized cosine; all actual128/256/512 decoded individual WebPs; legacy highest native256 or128 for512 without enlargement",
     "resolutions": {
       "128": {
-        "within_max": 0.3739006519317627,
+        "within_max": 0.3997451663017273,
         "within_nearest": [
-          "v22_navy_04_a40",
-          "v22_black_01_a65"
+          "v22_purple_04_a88",
+          "v22_navy_03_a95"
         ],
         "legacy_max": 0.3481866121292114,
         "legacy_nearest": [
           "v22_navy_02_a62",
           "v15_cheer_young_018"
         ],
-        "within_pair_count": 55,
-        "legacy_pair_count": 1276
+        "within_pair_count": 253,
+        "legacy_pair_count": 2668
       },
       "256": {
-        "within_max": 0.3783312737941742,
+        "within_max": 0.382339209318161,
         "within_nearest": [
-          "v22_blue_01_a61",
-          "v22_orange_01_a64"
+          "v22_purple_04_a88",
+          "v22_navy_03_a95"
         ],
         "legacy_max": 0.38706254959106445,
         "legacy_nearest": [
-          "v22_black_04_a00",
+          "v22_black_06_a71",
           "v15_cheer_young_016"
         ],
-        "within_pair_count": 55,
-        "legacy_pair_count": 1276
+        "within_pair_count": 253,
+        "legacy_pair_count": 2668
       },
       "512": {
         "within_max": 0.3930729031562805,
@@ -54,11 +54,11 @@
         ],
         "legacy_max": 0.39498409628868103,
         "legacy_nearest": [
-          "v22_black_04_a00",
+          "v22_black_06_a71",
           "v15_cheer_young_016"
         ],
-        "within_pair_count": 55,
-        "legacy_pair_count": 1276
+        "within_pair_count": 253,
+        "legacy_pair_count": 2668
       }
     }
   },

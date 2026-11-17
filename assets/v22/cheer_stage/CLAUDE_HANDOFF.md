@@ -1,6 +1,6 @@
 # v22 중간 인계 — 아직 게임 연결 금지
 
-브랜치 assets/v22-cheer-review, 경로 assets/v22/cheer_stage/. 현재는48명 최종 납품이 아닌 캐스팅 중간 저장입니다. checkpoints/casting_001/manifest.json 의 production_complete=false, runtime_ready=0 을 확인하세요. 최종판 전에는 이 중간 사진 번호를 게임 저장 데이터에 연결하지 마세요.
+브랜치 assets/v22-cheer-review, 경로 assets/v22/cheer_stage/. 현재는48명 최종 납품이 아닌 캐스팅 중간 저장입니다. checkpoints/casting_002/manifest.json 의 production_complete=false, runtime_ready=0 을 확인하세요. 최종판 전에는 이 중간 사진 번호를 게임 저장 데이터에 연결하지 마세요.
 
 완료 시 예정 규격:512 시트8열×6행,256/128 시트10열×10행. 같은 index라도 해상도별 열 수가 다릅니다.512 rect=[(index%8)*512,floor(index/8)*512,512,512],256/128 rect=[(index%10)*n,floor(index/10)*n,n,n]. 여백·패딩0.48칸 이후는 검정.
 
