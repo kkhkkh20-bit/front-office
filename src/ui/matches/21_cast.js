@@ -236,7 +236,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   else if(o==='OUT'||o==='DP'){ /* 해설과 같은 결정(어느 야수 쪽, 땅볼·뜬공·직선타)을 그대로 쓴다 */
     const pk=(t,a)=>{ try{ return pcPick(g,k,t,a); }catch(e){ return a[0]; } }; const H=t=>{ try{ return pcH(g,k,t); }catch(e){ return rnd(); } };
     const half=x[0]; const ePos=(()=>{ try{ return pcErrPos(g,k); }catch(e){ return null; } })(); const batSafe0=x[5].includes(x[1]);
-    let typ='gb'; if(o==='DP'){ opos=pk('dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']])[0]; }
+    let typ='gb'; if(o==='DP'){ opos=pk('dp',dpPats())[0]; }
     else if(x[16]){ opos=pk('bp',['P','3B','1B']); typ='gb'; } /* 번트 실패 포스아웃: 실책이 아니다(검수 11-08) */
     else if(batSafe0){ opos=ePos||pk('ep',['SS','3B','2B']); typ='err'; }
     else if(x[6]>0&&(x[13]||x.length<=10)){ opos=pk('sf',['LF','CF','RF']); typ='fly'; }

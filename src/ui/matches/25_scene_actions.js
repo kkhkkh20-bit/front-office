@@ -19,6 +19,7 @@ function cRunNeed(id,base,ballAt,apply,est){ const c=CRUN&&CRUN.get(id); if(!c&&
 function cBaseOf(pt){ const B=[null,CBS[0],CBS[1],CBS[2],CHM]; for(let i=1;i<=4;i++)if(B[i]&&Math.hypot(B[i][0]-pt[0],B[i][1]-pt[1])<1.2)return i; return 0; } /* 공이 실제 베이스로 가는지(중계 위치로 가는 공은 아님) */
 function cRunFitBase(toPt,ballAt){ const b=cBaseOf(toPt); if(!b||!CRUN)return; CRUNB[b]=ballAt; for(const [id,c] of CRUN)if(c.to===b&&!c.done)cRunNeed(id,b,ballAt,true); }
 const RUN_FIT_MIN=.62, RUN_PLAN_MIN=.72; /* 이보다 더 빨리 뛰어야 하면 그 베이스로 던지지 않는다(중계·송구 포기) */
+function c3DDpPat(g,k,f,spot){ const p=pcPick(g,k,'dp',dpPats()); return {pivot:p[1],first:p[3],label:p[2]}; } /* 해설·타구 방향과 같은 경로(dpPats, 42_commentary) */
 async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
  const receiver=c3DFielder(g,k,toPos);if(!from||!receiver)return;
  const arm=G.players[from.id]?.r.arm??G.players[from.id]?.r.stf??50;let travel=FrontOfficeCore.throwTime(Match3D.distance(fromPt,toPt),arm);
@@ -49,7 +50,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  const direct=!!f&&!isHR&&!outPlay&&!UI.cast.errPos&&['LF','CF','RF'].includes(f.pos)&&!moves.some(m=>m.out)&&(typeof pcH==='function'?pcH(g,k,'direct'):1)<(path?(Match3D.distance(chase2,base)<60?.3:.1):.5)+(armF-50)*.006;
  const directPos=path?basePos:lead3?'3B':basePos,directPt=path?base:lead3?CBS[2]:CBS[1];
  const cover=(pos,target)=>{target=c3DBeside(target,chase2);const receiver=c3DFielder(g,k,pos);if(receiver&&receiver.id!==f?.id)Match3D.move('d'+receiver.id,target,Match3D.distance(CFP[pos],target)/8.5*1000/cSpd());};
- if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);cover(pat[1],CBS[1]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else if(UI.cast.infHit)cover('1B',CBS[0]);else{if(direct)cover(directPos,directPt);else cover(relayPos,relayPt2);if(path)cover(basePos,base);}}}
+ if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const dp=c3DDpPat(g,k,f,spot);if(dp.pivot)cover(dp.pivot,CBS[1]);if(dp.first!==f.pos)cover(dp.first,CBS[0]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else if(UI.cast.infHit)cover('1B',CBS[0]);else{if(direct)cover(directPos,directPt);else cover(relayPos,relayPt2);if(path)cover(basePos,base);}}}
 
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');if(typeof Match3D.leave==='function')Match3D.leave('o'+id,3200/cSpd());else Match3D.hide('o'+id);}; /* 아웃된 주자는 사라지지 않고 뛰어 나간다 */
  const t0=performance.now(), arrive=(id,legs,start)=>{const c=CRUN&&CRUN.get(id);return c?cRunAt(id,c.from+legs):t0+(start||0)+legs*c3DRunTime(id)/cSpd();};CRUN=new Map();CRUNB={}; /* 아웃 판정: 주자는 끝까지 전력으로 뛰고, 송구가 그보다 먼저 도착하게 맞춘다(사용자 피드백 11-07) */
@@ -73,7 +74,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
   if(UI.cast.errPos)await c3DError(g,k,f,spot); else Match3D.caught('d'+f.id,airOut?'포구 · 아웃':'포구');
   if(outPlay&&!UI.cast.errPos){
    if(airOut){cCap(`${POSK[f.pos]||f.pos} ${c3DName(f)} 포구 · 아웃`,'bad');cFx('아웃','out');}
-   else if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);{ const fm=moves.find(m=>m.out); await c3DThrow(g,k,f,spot,pat[1],CBS[1],'포스 아웃',fm?arrive(fm.id,fm.to-fm.from):0); }for(const m of moves)if(m.out)retire(m.id);await c3DThrow(g,k,c3DFielder(g,k,pat[1]),CBS[1],'1B',CBS[0],'병살 · 아웃',arrive(x[1],1,620));cFx(pat[2]+' 병살','bad');if(x[0]%2===1)sfx('sigh',.6); /* 홈 팀 병살: 관중 탄식 */}
+   else if(o==='DP'){const dp=c3DDpPat(g,k,f,spot),fm=moves.find(m=>m.out);let piv=null;if(dp.pivot){await c3DThrow(g,k,f,spot,dp.pivot,CBS[1],'포스 아웃',fm?arrive(fm.id,fm.to-fm.from):0);piv=c3DFielder(g,k,dp.pivot);}else{const run=Math.max(250,Match3D.distance(spot,CBS[1])/7*1000);Match3D.move('d'+f.id,CBS[1],run/cSpd());await cSleep(run);Match3D.focus('d'+f.id,'2루 직접 터치');cCap(`${POSK[f.pos]||f.pos} ${c3DName(f)}, 직접 2루를 밟고`);piv=f;}for(const m of moves)if(m.out)retire(m.id);await c3DThrow(g,k,piv,CBS[1],dp.first,CBS[0],'병살 · 아웃',arrive(x[1],1,620));cFx(dp.label+' 병살','bad');if(x[0]%2===1)sfx('sigh',.6); /* 홈 팀 병살: 관중 탄식 */}
    else if(f.pos==='1B'){const cover=Math.min(Math.max(180,Match3D.distance(spot,CBS[0])/7*1000),Math.max(150,(arrive(x[1],1,620)-performance.now())*cSpd()-120));Match3D.move('d'+f.id,CBS[0],cover/cSpd());await cSleep(cover);Match3D.focus('d'+f.id,'베이스 터치 · 아웃');cCap(`1루수 ${c3DName(f)} 직접 베이스 터치 · 아웃`,'bad');cFx('아웃','out');}
    else await c3DThrow(g,k,f,spot,'1B',CBS[0],'아웃',arrive(x[1],1,620));
    if(!after.includes(x[1])&&bat)retire(x[1]);

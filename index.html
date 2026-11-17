@@ -36851,7 +36851,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   else if(o==='OUT'||o==='DP'){ /* 해설과 같은 결정(어느 야수 쪽, 땅볼·뜬공·직선타)을 그대로 쓴다 */
     const pk=(t,a)=>{ try{ return pcPick(g,k,t,a); }catch(e){ return a[0]; } }; const H=t=>{ try{ return pcH(g,k,t); }catch(e){ return rnd(); } };
     const half=x[0]; const ePos=(()=>{ try{ return pcErrPos(g,k); }catch(e){ return null; } })(); const batSafe0=x[5].includes(x[1]);
-    let typ='gb'; if(o==='DP'){ opos=pk('dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']])[0]; }
+    let typ='gb'; if(o==='DP'){ opos=pk('dp',dpPats())[0]; }
     else if(x[16]){ opos=pk('bp',['P','3B','1B']); typ='gb'; } /* 번트 실패 포스아웃: 실책이 아니다(검수 11-08) */
     else if(batSafe0){ opos=ePos||pk('ep',['SS','3B','2B']); typ='err'; }
     else if(x[6]>0&&(x[13]||x.length<=10)){ opos=pk('sf',['LF','CF','RF']); typ='fly'; }
@@ -37286,6 +37286,7 @@ function cRunNeed(id,base,ballAt,apply,est){ const c=CRUN&&CRUN.get(id); if(!c&&
 function cBaseOf(pt){ const B=[null,CBS[0],CBS[1],CBS[2],CHM]; for(let i=1;i<=4;i++)if(B[i]&&Math.hypot(B[i][0]-pt[0],B[i][1]-pt[1])<1.2)return i; return 0; } /* 공이 실제 베이스로 가는지(중계 위치로 가는 공은 아님) */
 function cRunFitBase(toPt,ballAt){ const b=cBaseOf(toPt); if(!b||!CRUN)return; CRUNB[b]=ballAt; for(const [id,c] of CRUN)if(c.to===b&&!c.done)cRunNeed(id,b,ballAt,true); }
 const RUN_FIT_MIN=.62, RUN_PLAN_MIN=.72; /* 이보다 더 빨리 뛰어야 하면 그 베이스로 던지지 않는다(중계·송구 포기) */
+function c3DDpPat(g,k,f,spot){ const p=pcPick(g,k,'dp',dpPats()); return {pivot:p[1],first:p[3],label:p[2]}; } /* 해설·타구 방향과 같은 경로(dpPats, 42_commentary) */
 async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
  const receiver=c3DFielder(g,k,toPos);if(!from||!receiver)return;
  const arm=G.players[from.id]?.r.arm??G.players[from.id]?.r.stf??50;let travel=FrontOfficeCore.throwTime(Match3D.distance(fromPt,toPt),arm);
@@ -37316,7 +37317,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  const direct=!!f&&!isHR&&!outPlay&&!UI.cast.errPos&&['LF','CF','RF'].includes(f.pos)&&!moves.some(m=>m.out)&&(typeof pcH==='function'?pcH(g,k,'direct'):1)<(path?(Match3D.distance(chase2,base)<60?.3:.1):.5)+(armF-50)*.006;
  const directPos=path?basePos:lead3?'3B':basePos,directPt=path?base:lead3?CBS[2]:CBS[1];
  const cover=(pos,target)=>{target=c3DBeside(target,chase2);const receiver=c3DFielder(g,k,pos);if(receiver&&receiver.id!==f?.id)Match3D.move('d'+receiver.id,target,Match3D.distance(CFP[pos],target)/8.5*1000/cSpd());};
- if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);cover(pat[1],CBS[1]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else if(UI.cast.infHit)cover('1B',CBS[0]);else{if(direct)cover(directPos,directPt);else cover(relayPos,relayPt2);if(path)cover(basePos,base);}}}
+ if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const dp=c3DDpPat(g,k,f,spot);if(dp.pivot)cover(dp.pivot,CBS[1]);if(dp.first!==f.pos)cover(dp.first,CBS[0]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else if(UI.cast.infHit)cover('1B',CBS[0]);else{if(direct)cover(directPos,directPt);else cover(relayPos,relayPt2);if(path)cover(basePos,base);}}}
 
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');if(typeof Match3D.leave==='function')Match3D.leave('o'+id,3200/cSpd());else Match3D.hide('o'+id);}; /* 아웃된 주자는 사라지지 않고 뛰어 나간다 */
  const t0=performance.now(), arrive=(id,legs,start)=>{const c=CRUN&&CRUN.get(id);return c?cRunAt(id,c.from+legs):t0+(start||0)+legs*c3DRunTime(id)/cSpd();};CRUN=new Map();CRUNB={}; /* 아웃 판정: 주자는 끝까지 전력으로 뛰고, 송구가 그보다 먼저 도착하게 맞춘다(사용자 피드백 11-07) */
@@ -37340,7 +37341,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
   if(UI.cast.errPos)await c3DError(g,k,f,spot); else Match3D.caught('d'+f.id,airOut?'포구 · 아웃':'포구');
   if(outPlay&&!UI.cast.errPos){
    if(airOut){cCap(`${POSK[f.pos]||f.pos} ${c3DName(f)} 포구 · 아웃`,'bad');cFx('아웃','out');}
-   else if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);{ const fm=moves.find(m=>m.out); await c3DThrow(g,k,f,spot,pat[1],CBS[1],'포스 아웃',fm?arrive(fm.id,fm.to-fm.from):0); }for(const m of moves)if(m.out)retire(m.id);await c3DThrow(g,k,c3DFielder(g,k,pat[1]),CBS[1],'1B',CBS[0],'병살 · 아웃',arrive(x[1],1,620));cFx(pat[2]+' 병살','bad');if(x[0]%2===1)sfx('sigh',.6); /* 홈 팀 병살: 관중 탄식 */}
+   else if(o==='DP'){const dp=c3DDpPat(g,k,f,spot),fm=moves.find(m=>m.out);let piv=null;if(dp.pivot){await c3DThrow(g,k,f,spot,dp.pivot,CBS[1],'포스 아웃',fm?arrive(fm.id,fm.to-fm.from):0);piv=c3DFielder(g,k,dp.pivot);}else{const run=Math.max(250,Match3D.distance(spot,CBS[1])/7*1000);Match3D.move('d'+f.id,CBS[1],run/cSpd());await cSleep(run);Match3D.focus('d'+f.id,'2루 직접 터치');cCap(`${POSK[f.pos]||f.pos} ${c3DName(f)}, 직접 2루를 밟고`);piv=f;}for(const m of moves)if(m.out)retire(m.id);await c3DThrow(g,k,piv,CBS[1],dp.first,CBS[0],'병살 · 아웃',arrive(x[1],1,620));cFx(dp.label+' 병살','bad');if(x[0]%2===1)sfx('sigh',.6); /* 홈 팀 병살: 관중 탄식 */}
    else if(f.pos==='1B'){const cover=Math.min(Math.max(180,Match3D.distance(spot,CBS[0])/7*1000),Math.max(150,(arrive(x[1],1,620)-performance.now())*cSpd()-120));Match3D.move('d'+f.id,CBS[0],cover/cSpd());await cSleep(cover);Match3D.focus('d'+f.id,'베이스 터치 · 아웃');cCap(`1루수 ${c3DName(f)} 직접 베이스 터치 · 아웃`,'bad');cFx('아웃','out');}
    else await c3DThrow(g,k,f,spot,'1B',CBS[0],'아웃',arrive(x[1],1,620));
    if(!after.includes(x[1])&&bat)retire(x[1]);
@@ -41706,6 +41707,8 @@ if(typeof addEventListener!=='undefined'&&typeof document!=='undefined'){ let x0
    타구 방향, 수비수 이름, 상황(선두 타자·득점권·만루·역전·동점·끝내기), 오늘 기록, 시즌 기록, 결정구, 좌우 대결,
    감독 성향을 섞어 같은 결과도 매번 다르게 말한다. 같은 경기·같은 타석이면 항상 같은 멘트가 나온다 */
 function pcH(g,k,s){ const t='pc'+g.day+':'+g.home+':'+k+':'+s; let h=2166136261; for(let i=0;i<t.length;i++){ h^=t.charCodeAt(i); h=Math.imul(h,16777619); } h^=h>>>13; h=Math.imul(h,1274126177); h^=h>>>16; return (h>>>0)/4294967296; } /* 고르게 퍼진 고정 난수 */
+/* 병살 경로(사용자 11-17: 여러 병살 코스). [잡은 수비수, 2루 중계(없으면 직접 밟음), 표기, 1루 받는 선수]. 같은 항목을 여러 번 넣어 흔한 경로를 자주 */
+function dpPats(){ return [['SS','2B','6-4-3','1B'],['SS','2B','6-4-3','1B'],['SS','2B','6-4-3','1B'],['SS',null,'6-3','1B'],['2B','SS','4-6-3','1B'],['2B','SS','4-6-3','1B'],['2B',null,'4-3','1B'],['3B','2B','5-4-3','1B'],['3B','2B','5-4-3','1B'],['1B','SS','3-6-3','1B'],['1B','SS','3-6-1','P'],['P','SS','1-6-3','1B']]; }
 function pcPick(g,k,s,arr){ return arr[Math.floor(pcH(g,k,s)*arr.length)]; }
 const PC_POS={P:'투수','C':'포수','1B':'1루수','2B':'2루수','3B':'3루수',SS:'유격수',LF:'좌익수',CF:'중견수',RF:'우익수'};
 function pcFielder(g,half,pos,k){const side=half%2?'a':'h',def=g.box[side];if(!def)return '';k=k??g.pbp.length;if(pos==='P'){const id=typeof cPit==='function'?cPit(g,k):def.pit?.[0]?.id;return def.pit?.find(p=>p.id===id)?.n||G.players[id]?.name||'';}const rows=typeof castLineup==='function'?castLineup(g,side,k):def.bat;const player=rows.find(p=>p.pos===pos);return player?(player.n||G.players[player.id]?.name||''):'';} /* 경기 당시 이름 먼저(개명, 검수 11-09zu) */
@@ -41751,7 +41754,7 @@ function pbpCallBase(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; cons
     case 'BB': if(lastPitch){c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pitches.length===4?'스트레이트 볼넷.':lastPitch.s===2?'풀카운트 끝에 볼넷.':'볼넷으로 걸어 나갑니다.'}`;if(loaded)a='투수에게 가장 뼈아픈 실점입니다.';break;}c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pk('bb',['볼넷으로 걸어 나갑니다.','풀카운트 끝에 볼넷.','공 네 개가 모두 빠집니다. 스트레이트 볼넷.','끈질기게 커트하더니 볼넷을 얻어 냅니다.'])}`; if(loaded)a='투수에게 가장 뼈아픈 실점입니다.'; break;
     case 'K':{ const best=p?pcBest(p):''; const look=lastPitch?lastPitch.res==='루킹 삼진':pcH(g,k,'kl')<.28; c=lastPitch?`${BN}, ${lastPitch.t}에 ${look?'루킹':'헛스윙'} 삼진!`:look?`${BN}, ${pk('kl2',['바깥쪽 꽉 찬 공에 그대로 서서 삼진!','몸쪽 꽉 찬 직구에 루킹 삼진!'])}`:`${BN}, ${best&&pcH(g,k,'kb')<.6?`결정구 ${best}에 `:''}헛스윙 삼진!`;
       const pt=pcPitToday(g,k,x[2]); if(pt.so+1>=6)a=`${PN}, 오늘 벌써 ${pt.so+1}번째 탈삼진입니다.`; else if(pcHand(b,p)&&pcH(g,k,'hh')<.5)a=`${pcHand(b,p)} 승부, 타자가 불리한 싸움이었습니다.`; break; }
-    case 'DP':{ const pat=pk('dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]); c=`${BN}, ${fld(pat[0])} 정면 땅볼! ${pcFielder(g,half,pat[1],k)||PC_POS[pat[1]]}에서 1루까지, ${pat[2]} 병살!`; a=p&&gbT(p)>.6?`${PN}은(는) 땅볼 유도형 투수입니다. 원하던 그림이 나왔습니다.`:pk('dpa',['한 번에 불이 꺼집니다.','공격 흐름이 완전히 끊겼습니다.']); break; }
+    case 'DP':{ const pat=pk('dp',dpPats()); c=`${BN}, ${fld(pat[0])} 정면 땅볼! ${pat[1]?`${pcFielder(g,half,pat[1],k)||PC_POS[pat[1]]}에서 ${pat[3]==='P'?'1루 커버한 투수에게':'1루까지'}`:'직접 2루를 밟고 1루로'}, ${pat[2]} 병살!`; a=p&&gbT(p)>.6?`${PN}은(는) 땅볼 유도형 투수입니다. 원하던 그림이 나왔습니다.`:pk('dpa',['한 번에 불이 꺼집니다.','공격 흐름이 완전히 끊겼습니다.']); break; }
     case 'SAC':{ c=`${BN}, 희생번트! 주자를 ${pre.bases[1]?'2·3루':'2루'}로 보냅니다.`; const m=mgrOf(atT); if(m&&!m.interim&&m.small>=62)a=`${m.name} 감독다운 작전입니다. 한 점을 짜내겠다는 뜻입니다.`; break; }
     case 'OUT':{ if(x[16]){ const fm=(x[14]||[])[0]; c=`${BN}, 번트 실패! ${pcName(g,x[16])}, ${fm?fm.to:2}루에서 포스아웃. 타자는 1루에 남습니다.`; a='작전이 어긋났습니다.'; break; } /* 번트 실패 포스아웃(검수 11-08) */ if(batAfter){ const ep=pcErrPos(g,k)||pk('ep',['SS','3B','2B']); c=`${BN}, ${fld(ep)}의 실책! 타자 주자 1루에 살아 나갑니다.`; a='수비에서 나온 실수가 아쉽습니다.'; break; }
       if(runs>0&&(x[13]||x.length<=10)){ c=`${BN}, ${fld(pk('sf',['LF','CF','RF']))} 쪽 뜬공, 3루 주자 홈인! 희생플라이로 ${runs}점.`; break; }
