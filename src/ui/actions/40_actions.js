@@ -106,6 +106,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   stadXpTalk(v){ UI.stadMsg=stadXpTalk(G.user,v); save(); render(); },
   stadXpStart(){ UI.stadMsg=stadXpStart(G.user); save(); render(); },
   nsPick(v){ UI.stadMsg=newStadPick(v); save(); render(); },
+  nsDrop(){ UI.stadMsg=newStadDrop(); save(); render(); },
   retireGM(){ retireGM(); save(); render(); },
   dhy(v){ UI.dhy=+v; render(); },
   dealOpen(v){ UI.dealOpen=+v; render(); },
