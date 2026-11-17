@@ -27,7 +27,7 @@ const { chromium } = require('playwright');
     /* 같은 단계(루키)에 다른 유저 덱 4개: 다른 구단 1군을 서버에 올린다 */
     await p.evaluate(async () => { for (let k = 1; k <= 4; k++) { const e = cupEntryNow({ tid: (G.user + k) % 10, name: '유저' + k }); await fetch('/api/ladder/deck', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wid: 'w' + String(k).padStart(16, '0'), tier: 0, e }) }); } });
     await p.click('[data-a="ulPick"]'); await p.fill('#ulName', '와이'); await p.click('[data-a="ulReg"]'); await p.waitForFunction(() => /덱을 등록했습니다/.test(document.body.innerText), null, { timeout: 30000 });
-    const mine = [...m.entries()].find(([k, v]) => k.startsWith('ulD:') && JSON.parse(v.v).name === '와이'); assert.ok(mine, '서버에 내 덱이 없음'); assert.ok(m.has('ulT:0:' + mine[0].slice(4)), '단계 색인'); assert.ok(mine[1].v.length < 15000, '덱 크기 ' + mine[1].v.length);
+    const mine = [...m.entries()].find(([k, v]) => k.startsWith('ulD:') && JSON.parse(v.v).name === '와이'); assert.ok(mine, '서버에 내 덱이 없음'); assert.ok(JSON.parse(m.get('ulIdx').v).T[0].some(x => x.wid === mine[0].slice(4)), '단계 색인'); assert.ok(mine[1].v.length < 15000, '덱 크기 ' + mine[1].v.length);
     const deckFaces = await p.evaluate(() => document.querySelectorAll('.dk img.dk-f').length); console.log(`덱 등록 통과(서버 ${Math.round(mine[1].v.length / 1024)}KB, 얼굴 ${deckFaces}장)`);
     await p.evaluate(() => { UI.it.uld = 'lg'; render(); }); await p.click('[data-a="ulStart"]'); await p.waitForFunction(() => /리그를 시작했습니다/.test(document.body.innerText), null, { timeout: 60000 });
     assert.match(await p.evaluate(() => document.body.innerText), /AI 구단 5팀이 채웠습니다/); assert.ok(await p.evaluate(() => [...document.querySelectorAll('.ul-k-ai')].some(x => x.innerText === 'AI 구단')), 'AI 구단 표시');
@@ -57,8 +57,9 @@ const { chromium } = require('playwright');
     const tc = await p.evaluate(() => UL.tiers); assert.equal(tc.reduce((a, b) => a + b, 0), 5, '단계별 등록 덱 수 ' + tc); assert.match(await p.evaluate(() => document.querySelector('.ulx').innerText), /치른 리그 1[\s\S]*/); console.log('단계표(서버 등록 덱 수·내 위치) 통과');
     /* 관리자: 래더 덱 검색·숨김 */
     await p.evaluate(() => { localStorage.setItem('fo-cup-admin', 'test-admin'); ADM.chk = ''; A.go('club:cupadm'); }); await p.waitForSelector('#admLdQ', { timeout: 20000 });
+    await p.waitForFunction(() => /래더 덱 5개 · 오늘 쓰기 약 \d+회/.test(document.querySelector('.adm-now').innerText), null, { timeout: 10000 }); console.log('관리자 상태 줄(래더 덱 수·오늘 쓰기) 통과');
     await p.fill('#admLdQ', '유저2'); await p.click('[data-a="admLdFind"]'); await p.waitForFunction(() => /래더 덱 1개/.test(document.body.innerText), null, { timeout: 10000 });
-    await p.click('[data-a="admLdHide"]'); await p.waitForFunction(() => /숨겼습니다/.test(document.body.innerText), null, { timeout: 10000 }); assert.ok(!m.has('ulT:' + 0 + ':w0000000000000002') && !m.has('ulT:1:w0000000000000002'), '숨긴 덱 색인'); console.log('관리자 래더 숨김 통과');
+    await p.click('[data-a="admLdHide"]'); await p.waitForFunction(() => /숨겼습니다/.test(document.body.innerText), null, { timeout: 10000 }); assert.ok(!JSON.parse(m.get('ulIdx').v).T.some(L => L.some(x => x.wid === 'w0000000000000002')), '숨긴 덱 색인'); console.log('관리자 래더 숨김 통과');
     assert.deepEqual(errs, []);
   } catch (e) { try { const ps = b.contexts().flatMap(c => c.pages()); console.error('화면: ' + await ps[0].evaluate(() => [...document.querySelectorAll('.note')].map(x => x.innerText).join(' / ') + ' | ' + (UL.msg || ''))); } catch (x) {} throw e; } finally { await b?.close(); server.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

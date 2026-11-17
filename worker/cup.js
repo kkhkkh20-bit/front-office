@@ -12,8 +12,10 @@
  *   PUT /api/cup/admin/drop {h, undo}(제외·복구) · POST /api/cup/admin/entry(참가 파일 올리기) · GET·PUT /api/cup/admin/run(돌린 결과 전체, 공개 전 비공개)
  *   PUT /api/cup/admin/pub(연재 공개분 → GET /api/cup/pub) · PUT /api/cup/admin/results(명예의 전당) · PUT /api/cup/admin/game/ID(경기 기록)
  *   GET /api/cup/pub                    연재로 공개된 대회 진행(날짜별 결과·순위). 누구나
- * 보관: 엔트리 본문과 메타데이터(이름·연도·OVR·시각). IP는 기기 옮기기와 같이 해시로만 횟수를 센다. */
+ * 보관: 엔트리 본문과 메타데이터(이름·연도·OVR·시각). IP는 기기 옮기기와 같이 해시로만 횟수를 센다.
+ * 공개 GET(대회 설정·명단·결과·연재·경기 기록)은 worker/kvcache.js로 짧게(60~600초) 담아 둔다. 관리자·신청 쓰기 뒤에는 같은 인스턴스·데이터센터 캐시를 비운다. */
 import { CUP_DEFAULT, cupValidate, cupName, cupBadName, cupKstMs, cupKstDay, cupEntryHash, cupSeed, cupOvrTxt } from '../src/core/cup.mjs';
+import { cached, cacheGet, cachePut, cacheBust } from './kvcache.js';
 
 export const CUP_MAX_BYTES = 400 * 1024;
 export const CUP_RUN_MAX = 12 * 1024 * 1024; /* 돌린 결과 전체(경기 기록 포함) */
@@ -35,7 +37,13 @@ const GID = /^[A-Za-z0-9_-]{1,64}$/;
 function json(status, body) { return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } }); }
 const err = (status, error, extra) => json(status, Object.assign({ error, message: MSG[error] || '' }, extra || {}));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-async function cfgOf(kv) { const t = await kv.get('cup:cfg'); if (!t) return null; try { return Object.assign({}, CUP_DEFAULT, JSON.parse(t)); } catch (e) { return null; } }
+const cfgParse = t => { if (!t) return null; try { return Object.assign({}, CUP_DEFAULT, JSON.parse(t)); } catch (e) { return null; } };
+async function cfgOf(kv) { return cfgParse(await kv.get('cup:cfg')); }
+/* 공개 읽기용 대회 설정: 60초 캐시(신청·관리자 쓰기는 cfgOf로 KV를 바로 읽는다) */
+async function cfgCached(kv, url, now) { const k = url.origin + '/api/cup/__cfg'; const c = await cacheGet(kv, k, now); if (c) return cfgParse(c.body);
+  const t = await kv.get('cup:cfg'); await cachePut(kv, k, { status: 200, body: t || '', headers: {} }, 60, now); return cfgParse(t); }
+const CK = (url, p) => url.origin + '/api/cup' + p;
+const bust = (kv, url, ps) => cacheBust(kv, ps.map(p => CK(url, p)));
 const pub = c => ({ id: c.id, title: c.title, format: c.format || 'knockout', teams: c.teams, deadline: c.deadline, size: c.size, best: c.best, minSeasons: c.minSeasons, payCap: c.payCap, open: c.open !== false, note: c.note || '' });
 function admin(req, env) { const a = req.headers.get('Authorization') || ''; return !!env.CUP_ADMIN && a === 'Bearer ' + env.CUP_ADMIN; }
 async function listEntries(kv, id, full) {
@@ -59,29 +67,30 @@ export async function handleCup(req, env, url, now, rateLimited) {
     const sub = rest.slice(6);
     if (sub === 'check' && req.method === 'GET') { const c = await cfgOf(kv); return json(200, { ok: true, cup: c ? Object.assign(pub(c), { open: c.open !== false }) : null }); }
     if (sub === 'drop' && req.method === 'PUT') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); const b = JSON.parse(await req.text()); if (!b || !/^[0-9a-f]{8}$/.test(String(b.h || ''))) return err(400, 'bad_entry');
-      const k = 'cupX:' + c.id; let L = []; try { L = JSON.parse(await kv.get(k) || '[]'); } catch (e) {} L = L.filter(x => x !== b.h); if (!b.undo) L.push(b.h); await kv.put(k, JSON.stringify(L)); return json(200, { ok: true, drop: L }); }
+      const k = 'cupX:' + c.id; let L = []; try { L = JSON.parse(await kv.get(k) || '[]'); } catch (e) {} L = L.filter(x => x !== b.h); if (!b.undo) L.push(b.h); await kv.put(k, JSON.stringify(L)); await bust(kv, url, ['/entries', '/entries.html']); return json(200, { ok: true, drop: L }); }
     if (sub === 'entry' && req.method === 'POST') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); const t = await req.text(); if (t.length > CUP_MAX_BYTES) return err(413, 'too_large');
       let e; try { e = JSON.parse(t); } catch (x) { return err(400, 'bad_entry'); } if (!e) return err(400, 'bad_entry'); e.name = cupName(e.name); e.cup = c.id;
       const v = cupValidate(Object.assign({}, e, { h: undefined }), c); if (!v.ok) return err(400, 'bad_entry', { errors: v.errors.map(x => x.msg) });
       e.h = cupEntryHash(e); e.at = e.at || now; const key = WID.test(String(e.wid || '')) ? e.wid : 'f' + e.h; const meta = { name: e.name, year: e.year, ovr: e.ovr || null, seasons: e.seasons || 0, h: e.h, at: e.at, flags: v.flags.length, file: 1 };
-      await kv.put(`cupE:${c.id}:${key}`, JSON.stringify(e), { metadata: meta }); return json(201, Object.assign({ ok: true, elig: v.elig.map(x => x.msg) }, meta)); }
+      await kv.put(`cupE:${c.id}:${key}`, JSON.stringify(e), { metadata: meta }); await bust(kv, url, ['/entries', '/entries.html']); return json(201, Object.assign({ ok: true, elig: v.elig.map(x => x.msg) }, meta)); }
     if (sub === 'run') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); const k = 'cupRun:' + c.id;
       if (req.method === 'GET') { const t = await kv.get(k); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } }) : err(404, 'not_found'); }
       if (req.method === 'PUT') { const t = await req.text(); if (t.length > CUP_RUN_MAX) return err(413, 'too_large'); JSON.parse(t); await kv.put(k, t); return json(200, { ok: true }); }
       if (req.method === 'DELETE') { await kv.delete(k); return json(200, { ok: true }); } }
-    if (sub === 'pub' && req.method === 'PUT') { const t = await req.text(); if (t.length > 4 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cup:pub', t); return json(200, { ok: true }); }
-    if (sub === 'config' && req.method === 'PUT') { const c = JSON.parse(await req.text()); if (!c || !GID.test(String(c.id || ''))) return err(400, 'bad_entry'); await kv.put('cup:cfg', JSON.stringify(c)); return json(200, { ok: true }); }
+    if (sub === 'pub' && req.method === 'PUT') { const t = await req.text(); if (t.length > 4 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cup:pub', t); await bust(kv, url, ['/pub']); return json(200, { ok: true }); }
+    if (sub === 'config' && req.method === 'PUT') { const c = JSON.parse(await req.text()); if (!c || !GID.test(String(c.id || ''))) return err(400, 'bad_entry'); await kv.put('cup:cfg', JSON.stringify(c)); await bust(kv, url, ['/__cfg', '/entries', '/entries.html']); return json(200, { ok: true }); }
     if (sub === 'entries' && req.method === 'GET') { const c = await cfgOf(kv); if (!c) return err(404, 'no_cup'); let drop = []; try { drop = JSON.parse(await kv.get('cupX:' + c.id) || '[]'); } catch (e) {} return json(200, { cup: c, entries: await listEntries(kv, c.id, true), drop }); }
-    if (sub === 'results' && req.method === 'PUT') { const t = await req.text(); JSON.parse(t); await kv.put('cup:results', t); return json(200, { ok: true }); }
-    const g = sub.match(/^game\/(.+)$/); if (g && req.method === 'PUT' && GID.test(g[1])) { const t = await req.text(); if (t.length > 2 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cupG:' + g[1], t); return json(200, { ok: true }); }
+    if (sub === 'results' && req.method === 'PUT') { const t = await req.text(); JSON.parse(t); await kv.put('cup:results', t); await bust(kv, url, ['/results']); return json(200, { ok: true }); }
+    const g = sub.match(/^game\/(.+)$/); if (g && req.method === 'PUT' && GID.test(g[1])) { const t = await req.text(); if (t.length > 2 * CUP_MAX_BYTES) return err(413, 'too_large'); JSON.parse(t); await kv.put('cupG:' + g[1], t); await bust(kv, url, ['/game/' + g[1]]); return json(200, { ok: true }); }
     return err(405, 'method');
   }
-  if (rest === '' && req.method === 'GET') { const c = await cfgOf(kv); return c ? json(200, { ok: true, cup: pub(c), now }) : err(404, 'no_cup'); }
-  if (rest === 'pub' && req.method === 'GET') { const t = await kv.get('cup:pub'); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } }) : err(404, 'not_found'); }
-  if (rest === 'results' && req.method === 'GET') { const t = await kv.get('cup:results'); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=300' } }) : err(404, 'not_found'); }
-  const gm = rest.match(/^game\/(.+)$/); if (gm && req.method === 'GET') { if (!GID.test(gm[1])) return err(400, 'bad_entry'); const t = await kv.get('cupG:' + gm[1]); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } }) : err(404, 'not_found'); }
+  if (rest === '' && req.method === 'GET') { const c = await cfgCached(kv, url, now); return c ? json(200, { ok: true, cup: pub(c), now }) : err(404, 'no_cup'); }
+  if (rest === 'pub' && req.method === 'GET') return cached(kv, CK(url, '/pub'), 60, now, async () => { const t = await kv.get('cup:pub'); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } }) : err(404, 'not_found'); });
+  if (rest === 'results' && req.method === 'GET') return cached(kv, CK(url, '/results'), 120, now, async () => { const t = await kv.get('cup:results'); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=300' } }) : err(404, 'not_found'); });
+  const gm = rest.match(/^game\/(.+)$/); if (gm && req.method === 'GET') { if (!GID.test(gm[1])) return err(400, 'bad_entry'); return cached(kv, CK(url, '/game/' + gm[1]), 600, now, async () => { const t = await kv.get('cupG:' + gm[1]); return t ? new Response(t, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } }) : err(404, 'not_found'); }); }
   if (rest === 'entries' || rest === 'entries.html') {
     if (req.method !== 'GET') return err(405, 'method');
+    return cached(kv, CK(url, '/' + rest), 60, now, async () => {
     const c = await cfgOf(kv); if (!c) return err(404, 'no_cup');
     const L = seeded(await listEntries(kv, c.id, false));
     if (rest === 'entries') return json(200, { cup: pub(c), n: L.length, entries: L });
@@ -91,6 +100,7 @@ export async function handleCup(req, env, url, now, rateLimited) {
 <h1>${esc(c.title)} 참가팀 ${L.length}팀</h1><p>시드 순입니다. OVR은 총|투수 타자입니다.${c.deadline ? ` 접수 마감 ${esc(c.deadline)}(한국시간).` : ''}</p>
 <table><tr><th>시드</th><th>팀</th><th>OVR</th></tr>${rows}</table></html>`;
     return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
+    });
   }
   const em = rest.match(/^entry(?:\/([^/]*))?$/);
   if (!em) return err(404, 'not_found');
@@ -99,7 +109,7 @@ export async function handleCup(req, env, url, now, rateLimited) {
     const wid = decodeURIComponent(em[1]); if (!WID.test(wid)) return err(400, 'bad_wid');
     const key = `cupE:${c.id}:${wid}`;
     if (req.method === 'GET') { const r = await kv.getWithMetadata(key); if (r.value == null) return json(200, { entered: false, cup: pub(c) }); return json(200, Object.assign({ entered: true, cup: pub(c) }, r.metadata || {})); }
-    if (req.method === 'DELETE') { const dl = cupKstMs(c.deadline); if (dl != null && now > dl) return err(403, 'closed'); await kv.delete(key); return json(200, { ok: true }); }
+    if (req.method === 'DELETE') { const dl = cupKstMs(c.deadline); if (dl != null && now > dl) return err(403, 'closed'); await kv.delete(key); await bust(kv, url, ['/entries', '/entries.html']); return json(200, { ok: true }); }
     return err(405, 'method');
   }
   if (req.method !== 'POST') return err(405, 'method');
@@ -122,5 +132,6 @@ export async function handleCup(req, env, url, now, rateLimited) {
   await kv.put(`cupE:${c.id}:${e.wid}`, JSON.stringify(e), { metadata: meta });
   await kv.put(day, '1', { expirationTtl: 2 * 86400 });
   if (rl && rl.key) await kv.put(rl.key, String(rl.n + 1), { expirationTtl: 3660 });
+  await bust(kv, url, ['/entries', '/entries.html']);
   return json(201, Object.assign({ ok: true }, meta));
 }
