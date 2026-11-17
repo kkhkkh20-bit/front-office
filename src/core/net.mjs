@@ -15,7 +15,7 @@ export const netResultKind = r => r.ok ? 'ok' : r.status === 401 ? 'auth' : r.st
 const g = () => (typeof globalThis !== 'undefined' ? globalThis : {});
 function store(s) {
   s = s || (() => { try { return g().localStorage || null; } catch (e) { return null; } })();
-  return { get: k => { try { return s ? s.getItem(k) : null; } catch (e) { return null; } }, set: (k, v) => { try { if (s) v == null ? s.removeItem(k) : s.setItem(k, v); } catch (e) {} } };
+  return { get: k => { try { return s ? s.getItem(k) : null; } catch (e) { return null; } }, set: (k, v) => { try { if (!s) return false; v == null ? s.removeItem(k) : s.setItem(k, v); return true; } catch (e) { return false; } } }; /* 쓰기 성공 여부(외부 검수 11-17 #46) */
 }
 export function netEnabled(storage, search) {
   try { search = String((search ?? (g().location ? g().location.search : '')) || ''); } catch (e) { search = ''; }
@@ -70,7 +70,9 @@ export function netCreate(o) {
   };
   N.probe = async () => { const r = await N.call('GET', '/health', null, { auth: false, retries: 0 }); if (r.ok) N.season = r.data.season; return N.status; };
   /* 처음이면 익명 플레이어를 만든다. 닉네임은 처음 한 번 */
-  N.ensurePlayer = async (nickname, extra) => {
+  let ep = null; /* 동시에 불려도 플레이어는 하나만 만든다(외부 검수 11-17 #45) */
+  N.ensurePlayer = (nickname, extra) => { if (token()) return Promise.resolve({ ok: true, data: { player: N.player() } }); if (ep) return ep; const p = ep = mkPlayer(nickname, extra); const clr = () => { if (ep === p) ep = null; }; p.then(clr, clr); return p; };
+  const mkPlayer = async (nickname, extra) => {
     if (token()) return { ok: true, data: { player: N.player() } };
     const r = await N.call('POST', '/player', Object.assign({ nickname, platform }, extra || {}), { auth: false, retries: 1 });
     if (r.ok && r.data && r.data.token) { st.set(NET_TOKEN, r.data.token); st.set(NET_PLAYER, JSON.stringify(r.data.player)); }
@@ -87,10 +89,12 @@ export function netCreate(o) {
   N.h2h = pid => N.call('GET', '/ladder/h2h/' + encodeURIComponent(pid));
   /* 서버 기록 지우기(DELETE /player): 플레이어·덱·시즌·결과·맞대결·소식 전부. 지우면 이 기기 토큰도 버린다 */
   N.deleteMe = async () => { if (!token()) return { ok: true, status: 200, data: { ok: true, none: true } }; const r = await N.call('DELETE', '/player', null, { retries: 1 }); if (r.ok || r.status === 401) N.forget(true); return r; };
-  N.queue = () => { try { return JSON.parse(st.get(NET_QUEUE) || '[]'); } catch (e) { return []; } };
+  N.queue = () => { if (memQ) return memQ.slice(); try { return JSON.parse(st.get(NET_QUEUE) || '[]'); } catch (e) { return []; } };
   /* 결과 줄: 늘 지금 저장된 줄을 읽고 고쳐 쓴다(오래된 사본으로 덮지 않는다) */
-  const qSet = f => { const q = f(N.queue()); st.set(NET_QUEUE, q.length ? JSON.stringify(q.slice(-NET_QMAX)) : null); };
-  N.enqueue = sum => { if (!sum || !sum.key) return; qSet(q => q.some(x => x.key === sum.key) ? q : q.concat([sum])); };
+  /* 저장 공간이 모자라 못 쓰면(외부 검수 11-17 #46) 이번 실행 동안 메모리 줄(memQ)에 들고, N.storeFail을 세운다 */
+  let memQ = null; N.storeFail = false;
+  const qSet = f => { const q = f(N.queue()).slice(-NET_QMAX); const ok = st.set(NET_QUEUE, q.length ? JSON.stringify(q) : null); if (ok) { memQ = null; N.storeFail = false; } else { memQ = q; N.storeFail = true; } return ok; };
+  N.enqueue = sum => { if (!sum || !sum.key) return false; return qSet(q => q.some(x => x.key === sum.key) ? q : q.concat([sum])); };
   N.done = {}; N.authNeeded = false; N.waitUntil = 0; let fl = null, backoff = 0;
   const clock = o.now || (() => Date.now());
   /* 줄 보내기(한 번에 하나만 돈다): 맨 앞부터. 막히면(401·429·연결) 멈추고 뒤 결과도 기다린다 → {sent, left, stop} */
@@ -105,6 +109,6 @@ export function netCreate(o) {
     return { sent, left: N.queue().length, stop }; })(); fl = p; const clr = () => { if (fl === p) fl = null; }; p.then(clr, clr); return p; }; /* 줄이 비어 바로 끝나도 다음 flush가 막히지 않게 */
   /* 리그 결과: {key, rank, teams, w, l, d, opps}. 먼저 줄에 넣고, 앞의 결과부터 보낸다. 이 key가 끝났으면 그 응답, 아니면 queued */
   N.result = async sum => { N.enqueue(sum); if (fl) await fl; const f = await N.flush(); const d = N.done[sum.key];
-    if (d) { delete N.done[sum.key]; return d; } return { ok: false, status: 0, queued: true, stop: f.stop, data: null }; };
+    if (d) { delete N.done[sum.key]; return d; } return { ok: false, status: 0, queued: true, memOnly: N.storeFail, stop: f.stop, data: null }; };
   return N;
 }

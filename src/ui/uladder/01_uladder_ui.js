@@ -36,7 +36,10 @@ async function ulV1Sync(){ const U=uld(), N=ulNet(), C=FrontOfficeCore, tk=ulTok
     if(!U.deck){ if(N.signedIn())await ulSvMe(true); return; }
     if(!(await ulV1Player())){ if(ulSame(tk))UL.v1sync=''; return; }
     let m=await ulV1Call(()=>N.me()); if(!ulSame(tk))return; if(!m.ok){ UL.v1sync=''; return; } let d=m.data, moved=false;
-    if(!d.deck||d.deck.h!==U.deck.e.h){ const r=await N.putDeck(U.deck.e,U.tier|0,wid); if(r.ok){ moved=!d.deck; const m2=await N.me(); if(m2.ok)d=m2.data; } }
+    if(!d.deck||d.deck.h!==U.deck.e.h){ const r=await N.putDeck(U.deck.e,U.tier|0,wid); if(!ulSame(tk))return;
+      if(r.ok){ moved=!d.deck; const m2=await N.me(); if(m2.ok)d=m2.data; }
+      else { UL.v1sync=''; UL.syncSt='failed'; UL.syncErr=(r.data&&((r.data.errors&&r.data.errors[0])||r.data.message))||(r.offline?'연결 끊김':'HTTP '+r.status); return; } } /* 첫 덱 올리기가 실패하면 '맞춤'으로 두지 않는다(외부 검수 11-17 #57) */
+    UL.syncSt='done'; UL.syncErr='';
     if(!ulSame(tk))return; UL.sv.me=d; UL.sv.meSt='ok'; UL.sv.meAt=Date.now(); UL.me=d.deck?{registered:true,name:d.deck.name,tier:d.entry.tier,v1:1}:null;
     if(!U.league&&d.entry&&(d.entry.tier|0)!==(U.tier|0)){ const was=U.tier|0; U.tier=d.entry.tier|0; ulSave(); ulSay(`${moved?'새 래더 서버로 옮겼습니다. ':''}서버 단계 ${C.ulTierName(U.tier)}로 맞췄습니다(이 기기 ${C.ulTierName(was)}).`); }
     else if(moved)ulSay(`새 래더 서버로 옮겼습니다. ${C.ulTierName(U.tier)} 단계 그대로입니다.`);
@@ -52,11 +55,11 @@ function ulSvStale(){ Object.assign(UL.sv,{meSt:'',board:{},feedSt:'',h2h:{}}); 
 /* 결과 보내기(외부 검수 11-17 P1): 먼저 기기 줄에 넣고(플레이어 만들기가 실패해도 남는다) → 플레이어·토큰 확인 → 앞 결과부터 차례로. 401이면 토큰을 다시 만들고 한 번 더 */
 async function ulV1Result(L,res){ const N=ulNet(), U=uld(), tk=ulTok(); try{
     const opps=((res.rec&&res.rec.h2h)||[]).map(x=>({pid:L.teams[x.i]&&L.teams[x.i].pid,w:x.w,l:x.l,d:x.t})).filter(x=>x.pid), sum={key:L.nk||(cupWid()+'.'+L.id),rank:res.rank,teams:L.teams.length,w:res.w,l:res.l,d:res.t,opps};
-    N.enqueue(sum);
-    if(!(await ulV1Player())){ res.srv={queued:1}; if(ulSame(tk))ulSave(); return; }
+    const stored=N.enqueue(sum);
+    if(!(await ulV1Player())){ res.srv={queued:1,mem:stored?0:1}; if(ulSame(tk)){ ulSave(); render(); } return; }
     let r=await N.result(sum); if(!r.ok&&N.authNeeded){ N.forget(); N.authNeeded=false; if(await ulV1Player())r=await N.result(sum); }
-    if(r.ok&&r.data){ const d=r.data; res.srv={tier:d.tier|0,delta:d.delta|0,points:d.points|0,move:d.move,dup:!!d.dup}; if(!ulSame(tk))return; if(!U.league)U.tier=d.tier|0; ulSvStale(); ulSave(); }
-    else if(r.queued){ res.srv={queued:1}; if(ulSame(tk))ulSave(); }
+    if(r.ok&&r.data){ const d=r.data; res.srv={tier:d.tier|0,delta:d.delta|0,points:d.points!=null?+d.points:(res.srv&&res.srv.points)||null,move:d.move,dup:!!d.dup}; if(d.points==null&&ulSame(tk))ulSvMe(true); /* 서버 값이 없으면 0으로 덮지 않고 다시 받는다(#39) */ if(!ulSame(tk))return; if(!U.league)U.tier=d.tier|0; ulSvStale(); ulSave(); }
+    else if(r.queued){ res.srv={queued:1,mem:r.memOnly?1:0}; if(ulSame(tk))ulSave(); }
   }catch(e){} if(ulSame(tk))try{ render(); }catch(e){} }
 /* 내 등록 상태(서버): v1이면 v1, 아니면 KV */
 function ulProbe(){ if(UL.srv||!xfAvail()||!G)return; UL.srv='loading'; const tk=ulTok();

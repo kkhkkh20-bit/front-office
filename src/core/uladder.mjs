@@ -132,7 +132,8 @@ const sidN = s => +String(s || '').slice(1) || 0;
 export function ulPsAdd(ps, x) {
   const info = new Map((x.P || []).map(p => [String(p.id), p])), key = `${x.sid}|${x.tier | 0}`;
   const slot = (id, isP) => { id = String(id); const p = info.get(id) || {}; const o = ps[id] || (ps[id] = { n: p.name || '', pos: p.pos || '', P: isP ? 1 : 0, s: {} });
-    if (p.name) o.n = p.name; if (p.pos) o.pos = p.pos; if (p.age != null) o.age = p.age; if (p.foreign) o.fr = 1; if (isP) o.P = 1; o.at = x.lid | 0; return o.s[key] || (o.s[key] = {}); };
+    if (p.name) o.n = p.name; if (p.pos) o.pos = p.pos; if (p.age != null) o.age = p.age; if (p.foreign) o.fr = 1; if (isP) o.P = 1; o.at = x.lid | 0;
+    const sp = o.s[key] || (o.s[key] = {}); if (p.name && sp.nm == null) { sp.nm = p.name; sp.ps = p.pos || ''; if (p.age != null) sp.ag = p.age; } return sp; }; /* 그 시즌·단계 칸에 그때 이름·포지션·나이(외부 검수 11-17 #48: 지난 시즌 줄이 지금 값으로 바뀌던 것) */
   for (const b of x.bat || []) { const s = slot(b.id, 0); s.b = addArr(s.b || UL_BF.map(() => 0), arrOf(b, UL_BF)); }
   for (const p of x.pit || []) { const s = slot(p.id, 1); s.p = addArr(s.p || UL_PF.map(() => 0), arrOf(p, UL_PF)); }
   /* 한도: 시즌 칸은 오래된 시즌부터, 선수는 가장 오래 안 나온 선수부터 뺀다 */
@@ -148,11 +149,14 @@ export function ulPitRates(t) { const o = t.outs || 0; return { ip: `${Math.floo
 export function ulPsRows(ps, kind, f) {
   f = f || {}; const k = kind === 'p' ? 'p' : 'b', F = k === 'p' ? UL_PF : UL_BF, rate = k === 'p' ? ulPitRates : ulBatRates, out = [];
   for (const id in ps || {}) { const o = ps[id], tot = F.map(() => 0), by = {};
-    for (const sk in o.s) { const [sid, t] = sk.split('|'); if (f.season && sid !== f.season) continue; if (f.tier != null && f.tier >= 0 && +t !== +f.tier) continue; const a = o.s[sk][k]; if (!a) continue; addArr(tot, a); addArr(by[sid] || (by[sid] = F.map(() => 0)), a); }
+    const snap = {}, byT = {};
+    for (const sk in o.s) { const [sid, t] = sk.split('|'); if (f.season && sid !== f.season) continue; if (f.tier != null && f.tier >= 0 && +t !== +f.tier) continue; const a = o.s[sk][k]; if (!a) continue; addArr(tot, a); addArr(by[sid] || (by[sid] = F.map(() => 0)), a); byT[sk] = a;
+      if (o.s[sk].nm && !snap[sid]) snap[sid] = { name: o.s[sk].nm, pos: o.s[sk].ps, age: o.s[sk].ag }; }
     if (!tot[0]) continue; const t = objOf(tot, F), pos = k === 'p' ? (t.gs * 2 >= t.g ? 'SP' : 'RP') : o.pos;
     if (f.pos && f.pos !== pos) continue;
     out.push(Object.assign({ id, name: o.n, pos, age: o.age, fr: o.fr ? 1 : 0, at: o.at || 0 }, t, rate(t),
-      { splits: Object.keys(by).sort((a, b) => sidN(b) - sidN(a)).map(sid => { const x = objOf(by[sid], F); return Object.assign({ sid }, x, rate(x)); }) })); }
+      { splits: Object.keys(by).sort((a, b) => sidN(b) - sidN(a)).map(sid => { const x = objOf(by[sid], F); return Object.assign({ sid }, snap[sid] || {}, x, rate(x)); }),
+        tsplits: Object.keys(byT).sort((a, b) => sidN(b.split('|')[0]) - sidN(a.split('|')[0]) || +a.split('|')[1] - +b.split('|')[1]).map(sk => { const [sid, t] = sk.split('|'), x = objOf(byT[sk], F); return Object.assign({ sid, tier: +t }, snap[sid] || {}, x, rate(x)); }) })); } /* 시즌·단계별 나눔(CSV 단계 열, #51) */
   return out;
 }
 /* 팀 시즌 칸(ulSeasonAdd 확장): 승·패·무·득점·실점·강등·순위 합. 예전 칸에 없는 값은 0으로 본다 */
@@ -165,7 +169,7 @@ export function ulMissions(seas, hist, sid, tier) {
     { k: 'play', n: '리그 3번 치르기', cur: Math.min(3, S.n | 0), goal: 3 },
     { k: 'top3', n: '3위 안에 들기', cur: Math.min(1, H.filter(x => x.rank <= 3).length), goal: 1 },
     { k: 'plus', n: '승률 5할 넘긴 리그 2번', cur: Math.min(2, H.filter(x => (x.w || 0) > (x.l || 0)).length), goal: 2 },
-    tier >= top ? { k: 'up', n: '레전드 리그 우승', cur: Math.min(1, S.win | 0), goal: 1 } : { k: 'up', n: `${ulTierName(goal)} 승격`, cur: (S.best | 0) >= goal ? 1 : 0, goal: 1 },
+    tier >= top ? { k: 'up', n: '레전드 리그 우승', cur: Math.min(1, H.filter(x => (x.tier | 0) === top && x.rank === 1).length), goal: 1 } /* 레전드에서 1위 한 리그만(외부 검수 11-17 #41) */ : { k: 'up', n: `${ulTierName(goal)} 승격`, cur: (S.best | 0) >= goal ? 1 : 0, goal: 1 },
     { k: 'pts', n: `리그 점수 ${pts}점`, cur: Math.min(pts, S.top | 0), goal: pts },
   ].map(m => Object.assign(m, { done: m.cur >= m.goal }));
 }
@@ -204,7 +208,8 @@ export function ulMetaAgg(list) {
     fr: pl ? Math.round(list.reduce((s, x) => s + (x.fr || 0), 0) / pl * 1000) / 1000 : 0, frDeck: Math.round(mean(list.map(x => x.fr || 0)) * 10) / 10, age, aa: Math.round(mean(list.map(x => x.aa || 0)) * 10) / 10, arch, pf };
 }
 /* CSV 한 덩어리(엑셀에서 한글이 깨지지 않게 화면이 앞에 BOM을 붙인다). cols: [[키 또는 함수, 제목], …] */
-export function ulCsv(rows, cols) { const q = v => { const s = v == null ? '' : String(v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+/* 칸 앞이 = + - @ 탭·CR이면 엑셀이 식으로 읽는다(외부 검수 11-17 #42): 숫자가 아닌 글이면 ' 를 붙인다(음수 득실 같은 숫자는 그대로) */
+export function ulCsv(rows, cols) { const q = v => { let s = v == null ? '' : String(v); if (typeof v !== 'number' && /^[=+\-@\t\r]/.test(s) && !/^[+-]?\d+(\.\d+)?$/.test(s)) s = "'" + s; return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
   return [cols.map(c => q(c[1])).join(','), ...(rows || []).map(r => cols.map(c => q(typeof c[0] === 'function' ? c[0](r) : r[c[0]])).join(','))].join('\r\n'); }
 /* 예전 저장(G.uld v1) → v2: 선수 기록(ps)·상대 기록(opp) 칸을 만들고, 마지막 리그 결과의 승패를 기록 줄에 채운다. 여러 번 해도 같다(난수 없음) */
 export function ulMigrate(U) {
