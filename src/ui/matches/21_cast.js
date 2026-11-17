@@ -242,7 +242,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
     else if(x[6]>0&&(x[13]||x.length<=10)){ opos=pk('sf',['LF','CF','RF']); typ='fly'; }
     else if(x[6]>0){ opos=pk('gp',['SS','2B','3B','1B']); typ='gb'; } /* 득점 땅볼(검수 11-08) */
     else { const pp=G.players[x[2]]; const r=H('ot'), gbB=pp?gbT(pp)*.08:0; if(r<.45+gbB)opos=pk('gp',['SS','2B','3B','1B','SS','2B','P']); else if(r<.85){ opos=pk('fp',['LF','CF','RF','CF']); typ='fly'; } else { opos=pk('lp',['SS','2B','3B','1B']); typ='ld'; } }
-    const base=CFP[opos]||CFP.SS; spot=[base[0]+rnd()*6-3,base[1]+rnd()*5-2.5]; const ofE=typ==='err'&&['LF','CF','RF'].includes(opos); arc=typ==='fly'||ofE; c.gb=typ==='gb'||(typ==='err'&&!ofE); c.errPos=typ==='err'?opos:null; flight=arc?950:typ==='ld'?380:560;
+    const base=CFP[opos]||CFP.SS; spot=[base[0]+rnd()*6-3,base[1]+rnd()*5-2.5]; const ofE=typ==='err'&&['LF','CF','RF'].includes(opos); arc=typ==='fly'||(ofE&&pcH(g,k,'ofe')<.5); c.gb=typ==='gb'||(typ==='err'&&!arc); /* 외야 실책: 절반은 뜬공 낙구, 절반은 땅으로 온 타구를 빠뜨림(사용자 11-17) */ c.errPos=typ==='err'?opos:null; flight=arc?950:typ==='ld'?380:560;
     kind=typ==='fly'?(x[6]>0?'희생플라이':'뜬공 아웃'):typ==='gb'&&x[6]>0&&o!=='DP'?(x[12]>0?'땅볼 타점':'땅볼 득점'):typ==='ld'?'직선타 아웃':typ==='err'?'실책':x[16]?'번트 실패 · 포스아웃':(o==='DP'?'병살타':'땅볼 아웃'); }
   if(spot)spot=cFair(spot); /* 인플레이 타구는 늘 페어 지역에 떨어진다 */
   const cam=false,scene3d=c3DActive();
