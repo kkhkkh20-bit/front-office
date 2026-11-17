@@ -112,7 +112,7 @@ function gmInvMonth(){ if(G.unemp||G.gameOver||G.user==null||!G.teams||gmInvOpen
   return gmInvite(x.t.id,x.meal&&relU('ginvk'+G.day,x.t.id)<(x.want||(x.t.rel??50)>=60?.7:.35)?'meal':'call',x.want); }
 function gmInvite(tid,kind,want){ const t=team(tid), g=gmOf(tid); if(!g||g.interim)return null; G.gmInvD=G.day; const nm=`${tshort(tid)} ${g.name} 단장`;
   const sit=kind==='meal'?`${nm}이 저녁 식사를 하자고 연락해 왔습니다.${want?' 우리 선수 이야기를 꺼내고 싶은 눈치입니다.':' 시즌 이야기나 하자고 합니다.'}${aiQ(tid,'hello')}`:`${nm}이 통화하자고 연락해 왔습니다.${want?' 거래 이야기를 슬쩍 떠보려는 것 같습니다.':' 안부를 묻고 싶다고 합니다.'}`;
-  const e=evNew('gmInv',kind==='meal'?`${nm}의 식사 초대`:`${nm}의 연락`,sit,[{l:kind==='meal'?'식사 자리에 나간다':'통화한다',fx:kind==='meal'?'우리가 청한 식사와 같습니다. 구단 운영비 1천만 원이 들고 친분이 오릅니다.':'우리가 건 안부 연락과 같습니다. 친분이 조금 오릅니다.'},{l:'정중히 거절',fx:'친분이 조금 식습니다.'}],{from:nm,data:{tid,gid:g.id,kind},def:1,exp:7});
+  const e=evNew('gmInv',kind==='meal'?`${nm}의 식사 초대`:`${nm}의 연락`,sit,[{l:kind==='meal'?'식사 자리에 나간다':'통화한다',fx:kind==='meal'?'우리가 청한 식사와 같습니다. 구단 운영비 1천만 원이 들고 친분이 오릅니다.':'우리가 건 안부 연락과 같습니다. 친분이 조금 오릅니다.'},{l:'정중히 거절',fx:'친분이 조금 식습니다.'}],{from:nm,cat:'gm',data:{tid,gid:g.id,kind},def:1,exp:7}); /* 진행 멈춤 분류를 '다른 구단 단장 초대'로 따로(예전엔 선수단 사건으로 묶였다) */
   return e; }
 EVH.gmInv={ can(e,i){ if(i!==0)return ''; try{ const w=personalAway(); if(w)return w; }catch(x){} return ''; },
   pick(e,i){ const D=e.data||{}, tid=D.tid, g=team(tid)&&team(tid).gm; if(G.unemp||tid===G.user||!g||g.id!==D.gid)return '그 단장은 이미 자리를 떠났습니다.'; const t=team(tid), k=relKeyOf(g,'gm');
