@@ -3248,6 +3248,10 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibm-acts>.ibm-deleg-d{flex:1 0 100%;margin:0;line-height:1.45;text-align:right;color:var(--muted)}
 @media(max-width:1099px){ .ibm-acts>.ibm-deleg-d{text-align:left} }
 .ibx-handall{margin-left:6px;min-height:0!important;padding:0 2px!important}
+/* PC 맨 위 줄 분류 탭(사용자 11-17 "전체·확인할 소식 한단계 위로") */
+.ib-subtabs .ibs{display:none}.ib-subtabs button{display:inline-flex;align-items:center;gap:6px}
+.ib-subtabs button i{font-style:normal;font-size:var(--ui-caption);font-weight:600;min-width:18px;padding:0 5px;line-height:17px;border-radius:9px;background:#ffffff14;color:var(--ink);text-align:center}
+.ib-subtabs button.hot i{background:var(--warn);color:#1a1405}
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%)}
 .fde-ts{display:flex;flex-wrap:wrap;gap:6px}
@@ -34436,7 +34440,7 @@ function fmBack(){ if(UI.meet){A.detailBack();return;}if(document.documentElemen
 function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)return; UI.navI++; fmGoKey(H[UI.navI]); }
 /* 카드가 세로로 길게 쌓이는 화면은 PC에서 두 칸으로(FM 대시보드처럼). 표가 넓은 화면에는 쓰지 않는다 */
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
-const FM_SUBROW={roster:()=>rosterSubRow()};
+const FM_SUBROW={roster:()=>rosterSubRow(),inbox:()=>inboxSubRow()};
 function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;if(UI.cast)return '<span class="fm-ttl">경기 중계</span>'; /* 중계 중에는 홈 하위 탭(눌러도 중계가 그대로)을 숨긴다 */ const tab=UI.tab; if(tab==='club'&&UI.clubInspect!=null)return '<span class="fm-ttl">'+esc(tname(UI.clubInspect))+' · 공개 구단 기록</span>'; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
   if(SUBS[tab])return back+subTabsRaw(tab);
   { const f=FM_SUBROW[tab], h=f&&f(); if(h)return back+h; } /* 화면이 자기 하위 탭(UI.it)을 이 줄에 건다(사용자 11-17: 선수단 탭이 본문 아래에 묻혔다) */
@@ -36972,13 +36976,17 @@ function ibPsLadder(){ if(!G.ps||G.ps.done||typeof bkData!=='function')return ''
     return `<div class="ipl-c${cur?' on':''}${[S.hi,S.lo].includes(G.user)?' my':''}"><div class="ipl-h"><b>${nm[r[0]]}</b><i>${st}</i></div><div class="ipl-t">${t(S.lo)}<em>${S.wl??0}</em></div><div class="ipl-t">${t(S.hi)}<em>${S.wh??0}</em></div>${gs?`<div class="ipl-gs">${gs}</div>`:''}</div>`; }).join('<span class="ipl-ar">›</span>');
   const c=G.ps.cur; const head=c&&c.round==='tb'?'순위 결정전 진행 중':c?`${ROUNDK[c.round]} ${c.gi+1}차전 예정`:'';
   return `<section class="ipl"><header><span class="eyebrow">${psYearOf(G.ps)} 가을야구</span><b>${esc(head)}</b><button class="lnk" data-a="psOpen">대진표 ›</button></header><div class="ipl-r">${cols}</div></section>`; }catch(e){ return ''; } }
+/* 분류 탭 버튼(본문·맨 위 줄 공용) */
+function ibTabBtns(f,cnt){ return IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join(''); }
+function inboxSubRow(){ if(!G||!G.mail)return ''; const f=['all','task','squad','move','club','media'].includes(UI.mf)?UI.mf:'all'; const cnt=k=>k==='task'?ibNeedList().length:mailFilter(k).filter(m=>!m.read).length; return `<nav class="subtabs ib-subtabs" role="tablist" aria-label="소식 분류">${ibTabBtns(f,cnt)}</nav>`; }
 function inboxView(){
   if(!['all','task','squad','move','club','media'].includes(UI.mf))UI.mf='all'; const f=UI.mf;
   const list=ibList(f); const unread=G.mail.filter(m=>!m.read).length; const need=ibNeedList().length;
   const cnt=k=>k==='task'?ibNeedList().length:mailFilter(k).filter(m=>!m.read).length; /* 확인할 소식은 읽었어도 결정 전이면 센다: 상단 배지와 같은 수(리뷰 11-08) */ const F=ibFolds();
   const days=[...new Set(list.map(m=>m.day))]; const foldN=days.filter(d=>F[d]).length;
   const W0=wide(); /* '확인할 소식 N건'은 탭 숫자와 같아 뺐고, PC는 '안 읽음 N'도 목록 맨 위 '안 읽은 소식' 머리와 같아 뺐다(UI 검수 2026-11-15 1-5) */
-  let bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
+  /* PC: 분류 탭은 맨 위 줄(inboxSubRow, 사용자 11-17 "한단계위로") */
+  let bar=`<div class="ibx-bar">${fmOn()?'':`<div class="ibx-tabs" role="tablist">${ibTabBtns(f,cnt)}</div>`}
     <div class="ibx-meta">${W0?'':unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${(()=>{ const D=ibDecideList(); return D.length?`<button class="lnk ibx-need" data-a="ibDecideGo" title="읽었어도 아직 답하지 않은 일(마감 빠른 순)">결정할 일 ${D.length}건${ibDue(D[0])!=null?` · ${W0?'가장 빠른 마감 ':''}D-${Math.max(0,ibDue(D[0])-G.day)}`:''}</button>`:''; })()}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · ↑/↓ 또는 K/J: 이전/다음">↑↓ 소식 이동 · Space 다음 소식·진행</span>':''}</div></div>`;
   const lad=ibPsLadder(); if(lad)bar+=lad;
   if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
