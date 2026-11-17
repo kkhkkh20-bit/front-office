@@ -2,7 +2,7 @@
    내 덱(지금 1군 또는 앨범 시즌을 등록·갱신, 서버에 올림) · 리그(순위·다음 연전·덱 고치기·연전 돌리기/끝까지) · 결과(승강·MVP) · 단계표(기록).
    리그를 시작할 때 서버에서 같은 단계 덱을 한 번 받는다(/api/ladder/opp). 모자라면 가져온 우승 덱, 그다음 단계 기준 AI 덱으로 채운다(엔진 src/engine/uladder).
    서버가 없거나 연결이 안 되면 이 기기에서 AI 덱으로 리그를 연다. 덱 고치기는 연전 사이 언제든, 다음 연전부터 적용된다 */
-const UL={feed:[],tiers:null,tiersSt:'',busy:false,msg:'',bad:false,srv:'',me:null,edit:null,src:'now',name:'',prog:'',opp:null};
+const UL={view:null,feed:[],tiers:null,tiersSt:'',busy:false,msg:'',bad:false,srv:'',me:null,edit:null,src:'now',name:'',prog:'',opp:null};
 const ulApi=(p,o)=>fetch('/api/ladder'+p,Object.assign({cache:'no-store',credentials:'same-origin'},o||{})).then(async r=>{ const j=await cupJson(r); return {r,j}; });
 function ulSay(m,bad){ UL.msg=m; UL.bad=!!bad; try{ render(); }catch(e){} }
 /* 내 등록 상태(서버) */
@@ -26,8 +26,9 @@ async function ulStart(){ const U=uld(), C=FrontOfficeCore; if(!U||!U.deck||UL.b
 /* 연전 돌리기: 한 라운드 또는 끝까지(연전마다 화면을 돌려준다) */
 /* 연전 결과 한 줄(진행 표시) */
 function ulFeedLine(L,x){ const A=L.teams[x.a], B=L.teams[x.b], wa=x.g.filter(g=>g[0]>g[1]).length, wb=x.g.filter(g=>g[1]>g[0]).length, me=x.a===0||x.b===0;
-  return {me,t:`${x.r}R ${A.name} ${wa}-${wb}${x.g.length-wa-wb?`(${x.g.length-wa-wb}무)`:''} ${B.name} · ${x.g.map(g=>g[0]+':'+g[1]).join(' ')}`}; }
-async function ulSim(all){ const U=uld(), L=U&&U.league; if(!L||UL.busy)return; UL.busy=true; UL.edit=null; const tick=()=>new Promise(r=>setTimeout(r,all?0:140));
+  const hot=me?x.g.map(g=>g[3]?'끝내기':g[2]>9?`${g[2]}회 연장`:'').filter(Boolean)[0]:'';
+  return {me,t:`${x.r}R ${A.name} ${wa}-${wb}${x.g.length-wa-wb?`(${x.g.length-wa-wb}무)`:''} ${B.name} · ${x.g.map(g=>g[0]+':'+g[1]).join(' ')}${hot?` · ${hot}!`:''}`}; }
+async function ulSim(all){ const U=uld(), L=U&&U.league; if(!L||UL.busy)return; UL.busy=true; UL.edit=null; if(UL.view&&UL.view.k==='lg')UL.view=null; const tick=()=>new Promise(r=>setTimeout(r,all?0:140));
   try{ const r0=L.sched[L.next]&&L.sched[L.next].r; while(L.next<L.sched.length){ const r=L.sched[L.next].r; if(!all&&r!==r0)break; const x=ulRunSeries(L); const f=ulFeedLine(L,x); if(!all||f.me){ UL.feed.unshift(f); UL.feed.length=Math.min(UL.feed.length,8); } UL.prog=`${r}/9라운드 · ${L.next}/${L.sched.length}연전`; render(); await tick(); }
     UL.prog=''; UL.busy=false; if(L.next>=L.sched.length){ const res=ulFinish(); (UI.it=UI.it||{}).uld='res'; ulSay(`리그가 끝났습니다. ${res.rank}위 · ${res.move==='up'?`${FrontOfficeCore.ulTierName(res.to)} 승격`:res.move==='down'?`${FrontOfficeCore.ulTierName(res.to)} 강등`:`${FrontOfficeCore.ulTierName(res.to)} 잔류`}.`);
       if(xfAvail()&&UL.me)ulApi('/tier',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({wid:cupWid(),tier:res.to})}).catch(()=>{}); }
@@ -51,6 +52,8 @@ Object.assign(A,{
   ulEditSave(){ const E=UL.edit; if(!E)return; const m=ulEditDeck(E); if(m)return ulSay(m,true); UL.edit=null; ulSay('덱을 고쳤습니다. 다음 연전부터 이 덱으로 나갑니다.'); },
   ulSwap(v){ const e=ulSrcEntry(v||UL.src); if(!e)return ulSay('이 덱을 만들 수 없습니다.',true); const L=uld().league; e.name=L.teams[0].name; UL.edit=JSON.parse(JSON.stringify(FrontOfficeCore.ulSlim(e))); ulSay(`${v==='now'?'지금 1군':'앨범 시즌'}을 불러왔습니다. '저장'을 누르면 다음 연전부터 나갑니다.`); },
   ulOpp(v){ UL.opp=UL.opp===+v?null:+v; render(); },
+  ulKey(v,el){ const k=el&&el.dataset.k||'lg', i=+v; UL.view=UL.view&&UL.view.k===k&&UL.view.i===i?null:{k,i,tab:'log'}; render(); },
+  ulKeyT(v){ if(UL.view){ UL.view.tab=v; render(); } },
   ulQuit(){ const U=uld(); if(!U||!U.league)return; if(!confirm('이 리그를 그만둡니다. 기록과 승강 없이 지워집니다.'))return; U.league=null; UL.edit=null; ulSay('리그를 그만두었습니다.'); },
 });
 const UL_KIND={me:'내 덱',user:'유저',cup:'우승 덱',ai:'AI 구단'};
@@ -59,6 +62,23 @@ function ulStandHtml(L,st){ const n=L.teams.length; return `<table class="ul-st"
 /* 단계별 등록 덱 수(서버) */
 function ulTiersLoad(){ if(UL.tiersSt||!xfAvail())return; UL.tiersSt='loading'; ulApi('/tiers').then(({r,j})=>{ UL.tiers=r.ok&&Array.isArray(j.counts)?j.counts:null; UL.tiersSt='ok'; },()=>{ UL.tiersSt='off'; }).finally(()=>{ try{ render(); }catch(e){} }); }
 const UL_GUIDE=`<ol class="ul-guide"><li><b>내 덱 등록</b> 지금 1군이나 앨범의 지난 시즌 로스터를 덱으로 올립니다.</li><li><b>리그 시작</b> 같은 단계 덱 9개와 짝마다 3연전, 팀당 27경기를 치릅니다.</li><li><b>승격</b> 1·2위는 한 단계 위로, 9·10위는 아래로. 루키에서 레전드까지 올라갑니다.</li></ol>`;
+/* 상대 덱 미리보기: 여섯 갈래 비교 막대(가운데 기준, 오른쪽이 상대 우위) + 한 줄 요약 */
+function ulVsHtml(me,op){ const V=ulVs(me,op); if(!V)return ''; const bar=x=>{ const w=Math.min(50,Math.abs(x.d)*5); return `<div class="ul-vr"><span>${x.n}</span><b class="num">${x.me}</b><i class="ul-vb"><em class="${x.d>0?'op':'me'}" style="${x.d>0?'left:50%':'right:50%'};width:${w}%"></em></i><b class="num">${x.op}</b></div>`; };
+  const t=(L,who)=>L.length?`${who} ${L.map(x=>`${x.n} +${Math.abs(x.d)}`).join(' · ')}`:'';
+  const sum=[t(V.opBest,'상대 우위'),t(V.meBest,'우리 우위')].filter(Boolean).join(' / ')||'두 덱이 고르게 비슷합니다.';
+  return `<div class="ul-vs"><div class="ul-vr ul-vh"><span></span><b>우리</b><i></i><b>상대</b></div>${V.rows.map(bar).join('')}<p class="small">${esc(sum)}</p></div>`; }
+/* 명경기 칩 + 고른 경기 중계·박스·줄 점수(이 기기에 남긴 기록을 그대로 보여 준다) */
+function ulKeysHtml(K,k){ if(!K||!K.length)return ''; const V=UL.view&&UL.view.k===k?UL.view:null, g=V&&K[V.i];
+  const chip=(x,i)=>`<button data-a="ulKey" data-k="${k}" data-v="${i}" class="${V&&V.i===i?'on':''}" aria-pressed="${!!(V&&V.i===i)}"><b>${esc(x.tag)}</b> ${x.sa}:${x.sb} vs ${esc(x.opp)} <span class="muted">${x.r}R</span></button>`;
+  return `<div class="ul-keys"><p class="dk-t">명경기 · 이 경기 보기</p><div class="chips">${K.map(chip).join('')}</div>${g?`<div class="ul-gv">${g.mvp?`<p class="small">경기 MVP ${esc(g.mvp)}</p>`:''}<div class="chips">${[['log','중계'],['line','점수'],['bat','타자'],['pit','투수']].map(([a,b])=>`<button data-a="ulKeyT" data-v="${a}" class="${V.tab===a?'on':''}">${b}</button>`).join('')}<button data-a="ulKey" data-k="${k}" data-v="${V.i}">닫기</button></div><pre class="ul-pre">${esc(g[V.tab]||'')}</pre></div>`:''}</div>`; }
+/* 리그 기록 카드(결과) */
+function ulRecHtml(R){ const X=R.rec; if(!X)return ''; const C=FrontOfficeCore;
+  const lead=X.lead.map(x=>`<div class="ul-rc${x.me?' me':''}"><span>${esc(x.k)}</span><b>${esc(x.name)}</b><em class="num">${esc(String(x.v))}</em><span class="small muted">${esc(x.team)}</span></div>`).join('');
+  const h2h=X.h2h.slice().sort((a,b)=>(b.w-b.l)-(a.w-a.l)).map(x=>`<span class="ul-h2${x.w>x.l?' w':x.l>x.w?' l':''}">${esc(x.name)} ${x.w}-${x.l}${x.t?`-${x.t}`:''}</span>`).join('');
+  const more=[X.streak>=3?`최다 연승 <b>${X.streak}</b>`:'',X.big?`최다 점수 차 승 <b>${X.big.sa}:${X.big.sb}</b> vs ${esc(X.big.opp)}`:'',X.nem?`천적 <b class="ul-dn">${esc(X.nem.name)}</b> ${X.nem.w}-${X.nem.l}`:'',X.prey?`싹쓸이 <b class="ul-up">${esc(X.prey.name)}</b> 3-0`:''].filter(Boolean).join(' · ');
+  return `<section class="card"><h2 class="sec">리그 하이라이트</h2><p class="dk-t">리그 1위 기록</p><div class="ul-rcs">${lead}</div>
+    ${more?`<p class="small">${more}</p>`:''}<p class="dk-t">상대별 전적(승-패)</p><div class="ul-h2s">${h2h}</div>${ulKeysHtml(R.keys,'res')}
+    <p class="small muted">리그 점수 = 단계 × 100 + 아래에 둔 팀 수 × 10. ${C.ulTierName(R.tier)} ${R.rank}위는 ${R.pts}점입니다.</p></section>`; }
 /* 덱 고치기: 타순(선수·순서), 선발 5, 불펜 역할 */
 function ulEditHtml(){ const E=UL.edit, P=new Map(E.P.map(p=>[p.id,p])), C=FrontOfficeCore; const bats=E.P.filter(p=>!p.isP), pits=E.P.filter(p=>p.isP), O=p=>cupPOvr(p);
   const v=C.cupValidate(Object.assign({},E,{h:undefined}),{}); const ov=cupOvr(E);
@@ -70,10 +90,18 @@ function ulEditHtml(){ const E=UL.edit, P=new Map(E.P.map(p=>[p.id,p])), C=Front
     <div class="ul-ec"><div><p class="dk-t">타순</p>${ln}</div><div><p class="dk-t">선발</p>${rot}<p class="dk-t">불펜 역할</p>${pen}</div></div>
     <div class="btns"><button class="btn primary" data-a="ulEditSave"${v.ok?'':' disabled'}>저장</button><button class="btn" data-a="ulEditClose">취소</button></div>
     <p class="small muted">통째로 바꾸기</p><div class="btns">${ulSrcOpts().slice(0,6).map(([k,l])=>`<button class="btn small" data-a="ulSwap" data-v="${esc(k)}">${esc(l)}</button>`).join('')}</div></section>`; }
+/* 배지: 기록으로 정해지는 칭호(본게임 영향 없음). 받은 배지는 밝게 */
+function ulBadgeHtml(U){ const B=FrontOfficeCore.ulBadges(U.hist); return `<p class="dk-t">배지 <small>${B.filter(x=>x.on).length}/${B.length}</small></p><div class="ul-bgs">${B.map(x=>`<span class="ul-bg${x.on?' on':''}" title="${esc(x.d)}">${esc(x.n)}</span>`).join('')}</div>`; }
+/* 이번 리그로 새로 받은 배지(결과 화면) */
+function ulNewBadges(U){ const C=FrontOfficeCore, a=C.ulBadges(U.hist), b=C.ulBadges(U.hist.slice(0,-1)), n=a.filter((x,i)=>x.on&&!b[i].on); return n.length?`<p class="ul-newb">새 배지 ${n.map(x=>`<span class="ul-bg on" title="${esc(x.d)}">${esc(x.n)}</span>`).join(' ')}</p>`:''; }
+function ulSeasonsHtml(U){ const C=FrontOfficeCore, L=[...(U.seasons||[]),...(U.seas?[U.seas]:[])].slice(-6).reverse(); if(!L.length)return '';
+  return `<p class="dk-t">시즌 기록</p>${L.map(x=>`<p class="small">${esc(x.label)} · 최고 <b>${C.ulTierName(x.best)}</b> · 최고 점수 <b class="num">${x.top}</b> · ${x.n}리그${x.win?` · 우승 ${x.win}`:''}${x.up?` · 승격 ${x.up}`:''}</p>`).join('')}`; }
 function ulView(){ if(!G)return ''; ulProbe(); const C=FrontOfficeCore, U=uld(), L=U.league, S=C.ulSummary(U.hist,U.tier), T=C.ulTierName(U.tier);
   const it=inTabs('uld',[['deck','내 덱'],['lg','리그'],['res','결과'],['tier','단계표']],L?'lg':'deck');
   const msg=(UL.msg?`<div class="note${UL.bad?' bad':''}">${esc(UL.msg)}</div>`:'')+(UL.prog?`<p class="small">${esc(UL.prog)}</p>`:'');
-  const head=`<p class="ul-head"><span class="ul-tier ul-t${U.tier|0}">${T}</span> <span class="small muted">최고 ${C.ulTierName(S.best)} · ${S.leagues}리그${S.stay&&S.stay.n>1?` · 이 덱 ${C.ulTierName(S.stay.tier)} ${S.stay.n}리그째`:''}</span></p>`;
+  const se=C.ulSeason(Date.now()), SS=U.seas&&U.seas.id===se.id?U.seas:null;
+  const head=`<p class="ul-head"><span class="ul-tier ul-t${U.tier|0}">${T}</span> <span class="small muted">최고 ${C.ulTierName(S.best)} · ${S.leagues}리그${S.stay&&S.stay.n>1?` · 이 덱 ${C.ulTierName(S.stay.tier)} ${S.stay.n}리그째`:''}</span></p>
+    <p class="small ul-seas">시즌 ${se.label} · ${SS?`시즌 최고 <b>${C.ulTierName(SS.best)}</b> · 최고 점수 <b class="num">${SS.top}</b> · ${SS.n}리그`:'이번 시즌 기록 없음'}</p>`;
   let body='';
   if(it.cur==='deck'){ const cur=U.deck; const src=ulSrcOpts(); const pre=(()=>{ try{ return ulSrcEntry(UL.src); }catch(e){ return null; } })();
     const pickF=`<label class="cup-in"><span>팀명(12자)</span><input id="ulName" maxlength="12" value="${esc(UL.name||(cur&&cur.e.name)||team(G.user).nick)}" autocomplete="off"></label>
@@ -98,12 +126,12 @@ function ulView(){ if(!G)return ''; ulProbe(); const C=FrontOfficeCore, U=uld(),
       const left=L.sched.slice(L.next).filter(x=>x.a===0||x.b===0).length, st2=st[1], st8=st[L.teams.length-3];
       const gap=(a,b)=>((a.w-b.w)+(b.l-a.l))/2; const line=me.rank<=2?`승격권 · 3위와 ${gap(me,st[2]).toFixed(1)}경기 차`:me.rank>=L.teams.length-1?`강등권 · 잔류까지 ${gap(st8,me).toFixed(1)}경기`:`승격권까지 ${gap(st2,me).toFixed(1)}경기 · 강등권과 ${gap(me,st[L.teams.length-2]).toFixed(1)}경기`;
       const opI=myNext?(myNext.a===0?myNext.b:myNext.a):null, op=opI!=null?L.teams[opI]:null, opS=op?st.find(x=>x.key===opI):null;
-      const prevw=op?`<div class="ul-next"><p class="dk-t">다음 상대 · ${myNext.r}라운드</p><p><b>${esc(op.name)}</b> <span class="ul-k ul-k-${op.kind}">${UL_KIND[op.kind]}</span></p><p class="small">${opS.rank}위 · ${opS.w}승 ${opS.l}패 ${opS.t}무 · OVR <b class="num">${C.cupOvrTxt(op.e.ovr)}</b> <span class="muted">(우리 ${C.cupOvrTxt(L.teams[0].e.ovr)})</span></p><p class="small"><button class="lnk small" data-a="ulOpp" data-v="${opI}">상대 덱 보기</button></p></div>`:'';
+      const prevw=op?`<div class="ul-next"><p class="dk-t">다음 상대 · ${myNext.r}라운드</p><p><b>${esc(op.name)}</b> <span class="ul-k ul-k-${op.kind}">${UL_KIND[op.kind]}</span></p><p class="small">${opS.rank}위 · ${opS.w}승 ${opS.l}패 ${opS.t}무 · OVR <b class="num">${C.cupOvrTxt(op.e.ovr)}</b> <span class="muted">(우리 ${C.cupOvrTxt(L.teams[0].e.ovr)})</span></p>${ulVsHtml(L.teams[0].e,op.e)}<p class="small"><button class="lnk small" data-a="ulOpp" data-v="${opI}">상대 덱 보기</button></p></div>`:'';
       const feed=UL.feed.length?`<div class="ul-feed">${UL.feed.map((f,i)=>`<p class="${f.me?'me':''}${i===0?' new':''}">${esc(f.t)}</p>`).join('')}</div>`:'';
       const nx=`<section class="card ul-lg"><div class="ul-act"><div class="ul-sum"><span class="ul-tier ul-t${L.tier}">${C.ulTierName(L.tier)}</span> <b class="ul-rank">${me.rank}위</b> <span class="small">${me.w}승 ${me.l}패 ${me.t}무 · 남은 연전 ${left} · ${s?`${s.r}/9라운드`:'끝'}</span></div>
         <p class="small ul-lineinfo ${me.rank<=2?'ul-up':me.rank>=L.teams.length-1?'ul-dn':''}">${line}</p>
         <div class="btns"><button class="btn primary" data-a="ulNext"${UL.busy?' disabled':''}>다음 연전</button><button class="btn" data-a="ulAll"${UL.busy?' disabled':''}>끝까지</button><button class="btn" data-a="ulEditOpen"${UL.busy?' disabled':''}>덱 고치기</button></div></div>
-        ${msg}${feed}${prevw}${recent?`<p class="dk-t">최근 우리 연전</p>${recent}`:''}${L.edits.length?`<p class="small muted">이 리그에서 덱을 ${L.edits.length}번 고쳤습니다.</p>`:''}<p class="small"><button class="lnk small muted" data-a="ulQuit">리그 그만두기</button></p></section>`;
+        ${msg}${feed}${prevw}${recent?`<p class="dk-t">최근 우리 연전</p>${recent}`:''}${ulKeysHtml(L.keys,'lg')}${L.edits.length?`<p class="small muted">이 리그에서 덱을 ${L.edits.length}번 고쳤습니다.</p>`:''}<p class="small"><button class="lnk small muted" data-a="ulQuit">리그 그만두기</button></p></section>`;
       const o=UL.opp!=null&&L.teams[UL.opp]?L.teams[UL.opp]:L.teams[myNext?(myNext.a===0?myNext.b:myNext.a):0];
       const side=UL.edit?ulEditHtml():`<section class="card"><h2 class="sec">${o.key===UL_ME?'내 덱':'상대 덱'}</h2>${cupDeckHtml(o.e,{head:`<b>${esc(o.name)}</b> <span class="ul-k ul-k-${o.kind}">${UL_KIND[o.kind]}</span>`})}</section>`;
       body=`<div class="setc">${nx}</div><div class="setc"><section class="card"><h2 class="sec">순위</h2>${ulStandHtml(L,st)}</section></div><div class="setc">${side}</div>`; } }
@@ -111,14 +139,14 @@ function ulView(){ if(!G)return ''; ulProbe(); const C=FrontOfficeCore, U=uld(),
     if(!R)body=`<div class="setc"><section class="card"><h2 class="sec">결과</h2><p class="small muted">아직 끝난 리그가 없습니다.</p>${msg}</section></div>`;
     else { const mv=R.move==='up'?`<b class="ul-up">${C.ulTierName(R.to)} 승격</b>`:R.move==='down'?`<b class="ul-dn">${C.ulTierName(R.to)} 강등</b>`:`${C.ulTierName(R.to)} 잔류`;
       const badge=`<div class="ul-badge ul-b-${R.move}"><span class="ul-tier ul-t${R.tier}">${C.ulTierName(R.tier)}</span><b>${R.move==='up'?'승격!':R.move==='down'?'강등':'잔류'}</b>${R.move!=='stay'?`<span class="ul-arrow">${R.move==='up'?'▲':'▼'}</span><span class="ul-tier ul-t${R.to}">${C.ulTierName(R.to)}</span>`:''}</div>`;
-      body=`<div class="setc"><section class="card"><h2 class="sec">${C.ulTierName(R.tier)} 리그 결과</h2>${badge}<p class="ul-res"><b>${R.rank}위</b> · ${R.w}승 ${R.l}패 ${R.t}무 · ${mv}${R.rank===1?' · <b>리그 우승</b>':''}</p>
+      body=`<div class="setc"><section class="card"><h2 class="sec">${C.ulTierName(R.tier)} 리그 결과</h2>${badge}<p class="ul-res"><b>${R.rank}위</b> · ${R.w}승 ${R.l}패 ${R.t}무 · ${mv}${R.rank===1?' · <b>리그 우승</b>':''}</p>${R.pts!=null?`<p class="ul-pts">리그 점수 <b class="num">${R.pts}</b>${SS&&R.season===SS.id?` <span class="small muted">시즌 최고 ${SS.top} · 시즌 합 ${SS.sum}</span>`:''}</p>`:''}${ulNewBadges(U)}
         <p class="small">내 최고 단계 <b>${C.ulTierName(S.best)}</b>${S.stay?` · 이 덱 ${C.ulTierName(S.stay.tier)} ${S.stay.n}리그째`:''} · 지금까지 ${S.leagues}리그</p>
         ${R.mvp?`<p class="small">시즌 MVP <b>${esc(R.mvp.name)}</b>(${esc(R.mvp.team)}) ${esc(R.mvp.txt)}</p>`:''}${R.myMvp?`<p class="small">우리 MVP <b>${esc(R.myMvp.name)}</b> ${esc(R.myMvp.txt)}</p>`:''}
         <p class="small muted">상대: 유저 ${R.src.user} · 우승 덱 ${R.src.cup} · AI 구단 ${R.src.ai}${R.edits?` · 덱 고침 ${R.edits}번`:''}</p>${msg}
         <div class="btns"><button class="btn primary" data-a="ulStart"${UL.busy||!U.deck||L?' disabled':''}>${T} 리그 시작</button></div></section></div>
-        <div class="setc"><section class="card"><h2 class="sec">최종 순위</h2><table class="ul-st"><tr><th>순위</th><th>팀</th><th>승</th><th>패</th><th>무</th><th>OVR</th></tr>${R.stand.map(x=>`<tr class="${x.kind==='me'?'me':''}${x.rank<=2?' up':x.rank>=R.stand.length-1?' dn':''}"><td class="num">${x.rank}</td><td>${esc(x.name)} <span class="ul-k ul-k-${x.kind}">${UL_KIND[x.kind]}</span></td><td class="num">${x.w}</td><td class="num">${x.l}</td><td class="num">${x.t}</td><td class="num">${esc(C.cupOvrTxt(x.ovr))}</td></tr>`).join('')}</table></section></div>`; } }
+        <div class="setc"><section class="card"><h2 class="sec">최종 순위</h2><table class="ul-st"><tr><th>순위</th><th>팀</th><th>승</th><th>패</th><th>무</th><th>OVR</th></tr>${R.stand.map(x=>`<tr class="${x.kind==='me'?'me':''}${x.rank<=2?' up':x.rank>=R.stand.length-1?' dn':''}"><td class="num">${x.rank}</td><td>${esc(x.name)} <span class="ul-k ul-k-${x.kind}">${UL_KIND[x.kind]}</span></td><td class="num">${x.w}</td><td class="num">${x.l}</td><td class="num">${x.t}</td><td class="num">${esc(C.cupOvrTxt(x.ovr))}</td></tr>`).join('')}</table></section></div>${R.rec?`<div class="setc">${ulRecHtml(R)}</div>`:''}`; } }
   else { ulTiersLoad(); const TC=UL.tiers; const rows=C.UL_TIERS.map((n,i)=>({n,i})).reverse().map(({n,i})=>{ const b=S.by[i]; return `<div class="ul-trow${i===(U.tier|0)?' on':''}"><span class="ul-tier ul-t${i}">${n}</span><span class="small">등록 덱 <b class="num">${TC?TC[i]:'-'}</b>개 · 내 기록 ${b.n}리그 · 우승 ${b.win} · 승격 ${b.up} · 강등 ${b.down}</span>${i===(U.tier|0)?'<b class="small ul-here">◀ 내 위치</b>':''}</div>`; }).join('');
     const hist=U.hist.slice(-30).reverse().map(x=>`<p class="small">${x.y}년 ${C.ulTierName(x.tier)} ${x.rank}위 → ${x.move==='up'?'<b class="ul-up">승격</b>':x.move==='down'?'<b class="ul-dn">강등</b>':'잔류'} <span class="muted">${esc(x.name||'')}</span></p>`).join('');
     body=`<div class="setc"><section class="card"><h2 class="sec">단계표</h2>${head}<div class="ul-tiers">${rows}</div><p class="small muted">1·2위 승격 · 9·10위 강등 · 나머지 잔류. 높은 단계일수록 강한 덱을 만납니다.${TC?'':UL.tiersSt==='loading'?' 단계별 등록 덱 수를 받는 중입니다.':' 등록 덱 수는 래더 서버에 연결될 때 보입니다.'}</p></section></div>
-      <div class="setc"><section class="card"><h2 class="sec">내 기록</h2><p class="small">치른 리그 <b>${S.leagues}</b> · 최고 단계 <b>${C.ulTierName(S.best)}</b> · 우승 <b>${S.by.reduce((a,b)=>a+b.win,0)}</b></p>${S.stay?`<p class="small">이 덱(${esc(S.stay.name||'')})은 ${C.ulTierName(S.stay.tier)}에서 ${S.stay.n}리그를 치렀습니다.</p>`:''}${hist||'<p class="small muted">아직 기록이 없습니다.</p>'}</section></div>`; }
+      <div class="setc"><section class="card"><h2 class="sec">내 기록</h2><p class="small">치른 리그 <b>${S.leagues}</b> · 최고 단계 <b>${C.ulTierName(S.best)}</b> · 우승 <b>${S.by.reduce((a,b)=>a+b.win,0)}</b></p>${S.stay?`<p class="small">이 덱(${esc(S.stay.name||'')})은 ${C.ulTierName(S.stay.tier)}에서 ${S.stay.n}리그를 치렀습니다.</p>`:''}${ulBadgeHtml(U)}${ulSeasonsHtml(U)}<p class="dk-t">지난 리그</p>${hist||'<p class="small muted">아직 기록이 없습니다.</p>'}</section></div>`; }
   return `${it.bar}<div class="setx ws-own ulx">${body}</div>`; }
