@@ -342,7 +342,7 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 @media(max-width:600px){
  .match-dashboard:not([data-more]) .cs-top>.cs-mode,.match-dashboard:not([data-more]) .cs-top>#cs-snd{display:none}
  .match-dashboard .cs-top>.md-control{white-space:nowrap}
- .match-dashboard .cs-stage .md-bug{display:none!important}
+ /* 경기장 안 점수판에서 위 점수 막대와 겹치는 점수·이닝만 뺀다. 주자 다이아몬드·투구 수는 28_cast_portrait.css(사용자 ddddddd 11-17) */
  .match-dashboard .cs-bn{place-items:end center}.match-dashboard .cs-bn>div{margin-bottom:22%}
  .match-dashboard .cs-nameplate b,.match-dashboard .cs-nameplate span,.match-dashboard .cs-stage[data-renderer="ready"]>.cs-board-view,.match-dashboard .cs-cam-view{font-size:10px}
  .match-dashboard .cs-cap .cs-voice>b{font-size:var(--ui-caption)}
