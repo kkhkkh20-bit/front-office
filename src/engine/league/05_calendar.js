@@ -16,16 +16,30 @@ const tradeDL=()=>KD(7,31), foreignDL=()=>KD(8,15);
 
 /* ===== 시즌 일정: 3연전·2연전, 월요일 휴식, 올스타 휴식기 ===== */
 /* 구단당 정규시즌 경기 수(구단 수에 따라) */
-function seasonG(){ const n=typeof G!=='undefined'&&G&&G.teams?G.teams.length:10; return n<=10?144:n===11?140:132; }
+function seasonG(){ const n=typeof G!=='undefined'&&G&&G.teams?seaTeams().length:10; return n<=10?144:n===11?140:132; }
+/* 이번 시즌 일정에 든 구단(검수 11-17 #161): 11월 특별지명으로 들어온 신생 구단은 다음 시즌(t.born)부터 순위·경기 수 기준에 넣는다 */
+function seaTeams(y){ y=y??(G.sea&&G.sea.y)??G.year; return G.teams.filter(t=>!(t.born>y)); }
+/* 일정에 든 구단 수: 새로 만든 일정은 nt로 적어 두고, 예전 일정은 경기에서 센다 */
+function calNT(c){ if(!c||!c.sched)return 0; if(c.nt!=null)return c.nt; const s=new Set(); for(const k in c.sched)for(const [a,b] of c.sched[k]){ s.add(a); s.add(b); } return s.size; }
+/* 다음 시즌 구단 수가 지금 일정과 다를 때(신생 구단 창단) 다음 시즌 홈경기 예상(검수 11-17 #160): 본 난수를 쓰지 않는 가상 일정으로 [날짜, 상대] 목록. 같으면 null */
+let _calNx=null;
+function calNextHome(tid,y){ const c=G.cal; if(!c||!c.sched||calNT(c)===G.teams.length)return null; const k=y+':'+G.teams.length;
+  if(!_calNx||_calNx.g!==G||_calNx.k!==k)_calNx={g:G,k,c:withRng(rngHash('calNext',y,G.teams.length),()=>buildCalendar(y))}; const L=[], S=_calNx.c.sched;
+  for(const d of Object.keys(S).map(Number).sort((a,b)=>a-b))for(const [h,a] of S[d])if(h===tid)L.push([d,a]); return L; }
+/* 같은 구장을 쓰는 구단 묶음(검수 11-17 #163: 서울 두 구단이 같은 날 홈경기). 구장 이름이 같으면 같은 구장 */
+function calStadGroups(){ const by={}; for(const t of G.teams){ const n=(t.stad&&t.stad.name)||(typeof STAD_NM!=='undefined'&&STAD_NM[t.id])||t.city+' 야구장'; (by[n]=by[n]||[]).push(t.id); } return Object.values(by).filter(g=>g.length>1); }
 function buildCalendar(y){
   const open=onOrAfter(y,3,25,6);
   const asg=onOrAfter(y,7,8,6);
   /* 시리즈 일정(KBO 방식, 사용자 11-11: 시리즈가 요일과 어긋나 2연전이 아무 때나 끼던 문제): 월요일 휴식, 3연전은 화~목·금~일, 2연전은 화·수/목·금/토·일.
      개막은 토·일 2연전, 2연전 주간은 주로 시즌 후반(올스타 뒤), 올스타 주간(화~일)은 쉰다. 시즌 중 임의 휴식일은 두지 않는다(우천 취소는 따로 재편성).
      구단 수에 따라(리그 확장): 10개 구단 상대별 16경기(144), 11개 구단 14경기(140, 라운드마다 한 구단 휴식), 12개 구단 12경기(132) */
-  const NT=typeof G!=='undefined'&&G&&G.teams&&G.teams.length?G.teams.length:10, LEN=NT<=10?[3,3,3,3,2,2]:NT===11?[3,3,2,2,2,2]:[3,3,3,3];
+  const NT=typeof G!=='undefined'&&G&&G.teams&&G.teams.length?G.teams.length:10, LEN=NT<=10?[3,3,3,3,2,2]:NT===11?[3,3,2,2,2,2]:[3,3,2,2,2]; /* 12구단도 2연전을 둔다: 3연전만이면 개막 토·일 2연전이 없어 개막일에 경기가 없었다(검수 11-17 #162) */
   const T=NT%2?NT+1:NT; let arr=[...Array(T).keys()]; const rounds=[];
   for(let r=0;r<T-1;r++){ const pr=[]; for(let i=0;i<T/2;i++){ const x=arr[i], z=arr[T-1-i]; if(x<NT&&z<NT)pr.push([x,z]); } rounds.push(pr); arr=[arr[0],arr[T-1],...arr.slice(1,T-1)]; } /* 홀수면 가짜 구단(NT)과 짝지어진 구단이 그 라운드에 쉰다 */
+  /* 같은 구장을 쓰는 두 구단은 같은 날 함께 홈경기를 하지 않는다(검수 11-17 #163): 라운드마다 두 구단 중 하나만 기본 홈이 되게 뒤집는다. 그날 쓰는 라운드는 모든 짝이 함께 뒤집히므로 어느 날도 겹치지 않는다 */
+  try{ const ids=typeof G!=='undefined'&&G&&G.teams?G.teams.map(t=>t.id):[]; for(const grp of (typeof G!=='undefined'&&G&&G.teams?calStadGroups():[])){ const [s1,s2]=grp.map(id=>ids.indexOf(id)); if(s1<0||s2<0)continue;
+    for(const pr of rounds){ const i1=pr.findIndex(p=>p.includes(s1)), i2=pr.findIndex(p=>p.includes(s2)); if(i1<0||i2<0||i1===i2)continue; if((pr[i1][0]===s1)===(pr[i2][0]===s2))pr[i2]=[pr[i2][1],pr[i2][0]]; } } }catch(e){}
   const n3=LEN.filter(x=>x===3).length*rounds.length, n2=LEN.filter(x=>x===2).length*rounds.length;
   /* 주 단위 틀: A=3연전 2개, B=2연전 3개. 개막 주말(토·일)은 2연전 하나 */
   const open2=n2>0?1:0; let s3=n3, s2=n2-open2; const nA=Math.floor(s3/2), nB=Math.floor(s2/3); const tail=[...(s3%2?[3]:[]),...Array(s2%3).fill(2)];
@@ -41,11 +55,11 @@ function buildCalendar(y){
   if(tail.length){ if(w<=asg&&asg<=w+5)w+=7; take(tail); }
   /* 라운드 배정: 같은 상대 시리즈가 연달아 오지 않게, 3연전·2연전 묶음별로 라운드를 나눠 쓴다. 홈·원정은 같은 라운드·길이가 나올 때마다 번갈아 */
   const pool={3:[],2:[]}; for(let r=0;r<rounds.length;r++)LEN.forEach(len=>pool[len].push(r)); shuffle(pool[3]); shuffle(pool[2]);
-  const cnt={}; const sched={}; let l1=-1,l2=-1;
-  for(const sl of slots){ const P=pool[sl.len]; let i=P.findIndex(r=>r!==l1&&r!==l2); if(i<0)i=P.findIndex(r=>r!==l1); if(i<0)i=0; const r=P.splice(i,1)[0]; const ck=r+':'+sl.len; const flip=(cnt[ck]=(cnt[ck]||0)+1)%2===0;
+  const cnt={}; const sched={}; let l1=-1,l2=-1; const oddL=LEN.some(len=>LEN.filter(x=>x===len).length%2);
+  for(const sl of slots){ const P=pool[sl.len]; let i=P.findIndex(r=>r!==l1&&r!==l2); if(i<0)i=P.findIndex(r=>r!==l1); if(i<0)i=0; const r=P.splice(i,1)[0]; const ck=r+':'+sl.len; const flip=oddL?LEN.filter(x=>x===sl.len).length%2===1:(cnt[ck]=(cnt[ck]||0)+1)%2===0; /* 라운드마다 같은 길이 시리즈가 홀수 개면(12구단 2연전 3개) 번갈아 두면 한쪽이 홈을 더 갖는다: 3연전 둘은 한 구단, 2연전 셋은 다른 구단이 모두 홈(6경기씩) */
     for(const d of sl.days)sched[d]=rounds[r].map(([a,b])=>flip?[b,a]:[a,b]); l2=l1; l1=r; }
   const days=Object.keys(sched).map(Number).sort((a,b)=>a-b);
-  return {y,open,asg,end:days[days.length-1],sched,draft:onOrAfter(y,9,14,3),camp:dnum(y,1,25),campEnd:dnum(y,3,5),exh:dnum(y,3,12)};
+  return {y,nt:NT,open,asg,end:days[days.length-1],sched,draft:onOrAfter(y,9,14,3),camp:dnum(y,1,25),campEnd:dnum(y,3,5),exh:dnum(y,3,12)};
 }
 function period(){
   const c=G.cal, d=G.day;
