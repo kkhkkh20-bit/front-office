@@ -30658,13 +30658,14 @@ EVH.loyFol={ can(e,i){ return i===0?loyFolWhy(e.data||{}):''; },
  - 시장에 맞는 후보가 없으면 시장과 같은 생성(mkCandCoach)으로 새 후보를 데려온다. 시장보다 좋은 공짜 코치는 없다.
  - 난수: 계약 연수·새 후보·구단 순서는 따로 씨앗을 둔 난수(withRng)라 본 난수 흐름을 쓰지 않는다. */
 const cvacVal=(c,tid)=>{ const x={...c,clan:null}; return effC(x,tid,'sk',1)+effC(x,tid,'dv',1); }; /* 코치 시장 '종합순'(34_staff coachMarket)과 같은 값 */
-function cvacOk(c,tid,k){ if(!c||c.role!==k)return false; if(typeof schMarketWhy==='function'&&schMarketWhy(c))return false;
+function cvacOk(c,tid,k,win){ if(!c||c.role!==k)return false; if(typeof schMarketWhy==='function'&&schMarketWhy(c))return false;
   if(c.age>=66||(c.from===tid&&c.fromY===G.year)||(c.bid&&c.bid.exp>=G.day))return false;
+  if(win&&c.fromY===G.year)return false; /* 겨울 정리 때는 이번 겨울 계약이 끝난 코치를 바로 데려가지 않는다(예전 겨울 후임 규칙 x.fromY!==G.year와 같게): 원소속 구단(우리 포함)이 다음 달 시장까지 다시 데려올 수 있게. 우리·AI 같음 */
   if(c.res!=null&&c.res!==tid)return false; /* 우선 협상 후보는 그 구단만 */
   return cmCanPay(team(tid),c,null); }
 const cvacSeed=(...a)=>rngHash('cvac',G.year,G.day,G.nextId,...a);
 /* tid 구단의 k 자리에 데려올 코치(시장 후보, 없으면 새 후보를 시장에 올려서). 고르기만 하고 계약은 cvacHire */
-function cvacPick(tid,k){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,tid,k)).sort((a,b)=>cvacVal(b,tid)-cvacVal(a,tid)||(a.sal||0)-(b.sal||0));
+function cvacPick(tid,k,win){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,tid,k,win)).sort((a,b)=>cvacVal(b,tid)-cvacVal(a,tid)||(a.sal||0)-(b.sal||0));
   if(L.length)return L[0];
   let c=null; withRng(cvacSeed('new',tid,k),()=>{ for(let i=0;i<6&&!c;i++){ const x=mkCandCoach(k); if(x&&x.role===k&&cmCanPay(team(tid),x,null))c=x; } if(!c){ c=mkCoach(k,{boost:-ri(2,6)}); c.sal=round5(Math.min(c.sal,140)); } }); /* 형편 안 새 후보가 끝내 없으면 젊은 지도자 수준(시장의 낮은 쪽) */
   (G.cmarket=G.cmarket||[]).push(c); return c; }
@@ -30678,7 +30679,7 @@ function cvacHire(tid,c,why,start){ const yrs=cvacYears(tid,c), k=c.role;
   if(c.star)try{ wire('코치',`${tshort(tid)}, ${CROLE[k].l}(으)로 ${c.name} 영입 (스타 코치)`,{tid}); }catch(e){} return c; }
 /* 한 구단의 빈자리 채우기. why: 문자열 또는 자리별 {k:문자열}. start: 합류 시즌(겨울 정리 때 다음 시즌). 채운 코치 목록 */
 function coachVacFill(tid,why,roles,start){ if(!G.coach||!G.coach[tid]||!team(tid))return []; if(tid===ME()&&G.unemp)return []; const C=G.coach[tid], got=[];
-  for(const k of roles||CKEYS){ if(C[k])continue; const w=why&&typeof why==='object'?why[k]:why; const c=cvacPick(tid,k); const h=c&&cvacHire(tid,c,w,start); if(h)got.push(h); }
+  for(const k of roles||CKEYS){ if(C[k])continue; const w=why&&typeof why==='object'?why[k]:why; const c=cvacPick(tid,k,start!=null); const h=c&&cvacHire(tid,c,w,start); if(h)got.push(h); }
   return got; }
 /* 리그 한 바퀴: AI 구단과 (맡겼으면) 우리 구단을 따로 씨앗을 둔 무작위 순서로. 매달 1일·겨울 정리 뒤 */
 function coachVacRound(why,start){ if(!G.coach)return []; const ids=G.teams.map(t=>t.id).filter(id=>id!==ME()||autoOn('cvac'));
@@ -42132,11 +42133,13 @@ function psTable(p){ const Y=p.psY; if(!Y)return ''; const ys=Object.keys(Y).map
 /* 통산 기록 범위(국사왕 11-15 #7): 1군만 · 2군 포함 · 2군만. 기본 1군만, 고른 값은 이번 접속 동안 UI에 남긴다. 2군 기록이 없는 선수는 고를 것이 없어 그대로 */
 function statLvl(p){ const v=UI.cLvl||'1'; return p&&p.hist&&p.hist.some(h=>h.lvl==='퓨처스')?v:'all'; }
 function statLvlBar(p){ if(!p||!p.hist||!p.hist.some(h=>h.lvl==='퓨처스'))return ''; return `<div class="st-lvl" role="group" aria-label="기록 범위">${optRow('cLvl',UI.cLvl||'1',[['1','1군만'],['all','2군 포함'],['2','2군만']])}</div>`; }
+/* 아마 통산 줄의 연도(국사왕 11-17): 지명된 선수는 지명 연도(그해 9월 지명 → 다음 해 데뷔), 아직 아마추어면 올해. 예전에는 늘 올해로 찍혀 연도순 정렬 뒤 프로 선수의 올해 기록 사이에 끼었다 */
+function amRowY(p){ if(p.prospect||p.team==null&&!(p.hist||[]).length)return G.year; const d=p.draft&&+p.draft.y; if(d)return d; const Y=(p.amY||[]).map(r=>+r.y).filter(Boolean); if(Y.length)return Math.max(...Y); const h=(p.hist||[]).map(r=>+r.y).filter(Boolean); return h.length?Math.min(...h)-1:G.year; }
 function statTable0(p){
   const lv=statLvl(p), fut=h=>h.lvl==='퓨처스';
   const rows=[...p.hist].filter(h=>lv==='all'||(lv==='2')===fut(h)).sort((a,b)=>b.y-a.y||(a.lvl<b.lvl?-1:1));
   const nowR=p.now&&p.now.y===G.year&&p.team==null?[Object.assign({},p.now,{y:G.year,pre:'올해 '+ovlCandLvl(p,p.now.lvl||p.prevLvl||'',1)})]:[];
-  const pre=lv==='2'?[]:p.fkbo?nowR:p.prev?[...nowR,Object.assign({y:G.year-1,pre:ovlCandLvl(p,p.prev.lvl,1)},p.prev),...(p.prev2?[Object.assign({y:G.year-2,pre:ovlCandLvl(p,p.prev2.lvl,1)},p.prev2)]:[])]:p.am?[Object.assign({y:G.year,pre:'아마'},p.am)]:[];
+  const pre=lv==='2'?[]:p.fkbo?nowR:p.prev?[...nowR,Object.assign({y:G.year-1,pre:ovlCandLvl(p,p.prev.lvl,1)},p.prev),...(p.prev2?[Object.assign({y:G.year-2,pre:ovlCandLvl(p,p.prev2.lvl,1)},p.prev2)]:[])]:p.am?[Object.assign({y:amRowY(p),pre:'아마'},p.am)]:[];
   if(lv!=='2'){ try{ pre.push(...ovsStatRows(p)); }catch(e){} } /* 해외에서 뛴 시즌(복귀 선수·KBO를 떠났다 돌아온 선수) */
   /* 합계는 고른 범위대로 다시 센다(국사왕 11-15 #7): 1군만 → 1군 합계, 2군만 → 2군 합계, 2군 포함 → 둘 다 */
   const one=p.hist.filter(h=>!fut(h)), two=p.hist.filter(fut);

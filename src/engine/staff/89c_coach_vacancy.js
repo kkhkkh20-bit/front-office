@@ -7,13 +7,14 @@
  - 시장에 맞는 후보가 없으면 시장과 같은 생성(mkCandCoach)으로 새 후보를 데려온다. 시장보다 좋은 공짜 코치는 없다.
  - 난수: 계약 연수·새 후보·구단 순서는 따로 씨앗을 둔 난수(withRng)라 본 난수 흐름을 쓰지 않는다. */
 const cvacVal=(c,tid)=>{ const x={...c,clan:null}; return effC(x,tid,'sk',1)+effC(x,tid,'dv',1); }; /* 코치 시장 '종합순'(34_staff coachMarket)과 같은 값 */
-function cvacOk(c,tid,k){ if(!c||c.role!==k)return false; if(typeof schMarketWhy==='function'&&schMarketWhy(c))return false;
+function cvacOk(c,tid,k,win){ if(!c||c.role!==k)return false; if(typeof schMarketWhy==='function'&&schMarketWhy(c))return false;
   if(c.age>=66||(c.from===tid&&c.fromY===G.year)||(c.bid&&c.bid.exp>=G.day))return false;
+  if(win&&c.fromY===G.year)return false; /* 겨울 정리 때는 이번 겨울 계약이 끝난 코치를 바로 데려가지 않는다(예전 겨울 후임 규칙 x.fromY!==G.year와 같게): 원소속 구단(우리 포함)이 다음 달 시장까지 다시 데려올 수 있게. 우리·AI 같음 */
   if(c.res!=null&&c.res!==tid)return false; /* 우선 협상 후보는 그 구단만 */
   return cmCanPay(team(tid),c,null); }
 const cvacSeed=(...a)=>rngHash('cvac',G.year,G.day,G.nextId,...a);
 /* tid 구단의 k 자리에 데려올 코치(시장 후보, 없으면 새 후보를 시장에 올려서). 고르기만 하고 계약은 cvacHire */
-function cvacPick(tid,k){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,tid,k)).sort((a,b)=>cvacVal(b,tid)-cvacVal(a,tid)||(a.sal||0)-(b.sal||0));
+function cvacPick(tid,k,win){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,tid,k,win)).sort((a,b)=>cvacVal(b,tid)-cvacVal(a,tid)||(a.sal||0)-(b.sal||0));
   if(L.length)return L[0];
   let c=null; withRng(cvacSeed('new',tid,k),()=>{ for(let i=0;i<6&&!c;i++){ const x=mkCandCoach(k); if(x&&x.role===k&&cmCanPay(team(tid),x,null))c=x; } if(!c){ c=mkCoach(k,{boost:-ri(2,6)}); c.sal=round5(Math.min(c.sal,140)); } }); /* 형편 안 새 후보가 끝내 없으면 젊은 지도자 수준(시장의 낮은 쪽) */
   (G.cmarket=G.cmarket||[]).push(c); return c; }
@@ -27,7 +28,7 @@ function cvacHire(tid,c,why,start){ const yrs=cvacYears(tid,c), k=c.role;
   if(c.star)try{ wire('코치',`${tshort(tid)}, ${CROLE[k].l}(으)로 ${c.name} 영입 (스타 코치)`,{tid}); }catch(e){} return c; }
 /* 한 구단의 빈자리 채우기. why: 문자열 또는 자리별 {k:문자열}. start: 합류 시즌(겨울 정리 때 다음 시즌). 채운 코치 목록 */
 function coachVacFill(tid,why,roles,start){ if(!G.coach||!G.coach[tid]||!team(tid))return []; if(tid===ME()&&G.unemp)return []; const C=G.coach[tid], got=[];
-  for(const k of roles||CKEYS){ if(C[k])continue; const w=why&&typeof why==='object'?why[k]:why; const c=cvacPick(tid,k); const h=c&&cvacHire(tid,c,w,start); if(h)got.push(h); }
+  for(const k of roles||CKEYS){ if(C[k])continue; const w=why&&typeof why==='object'?why[k]:why; const c=cvacPick(tid,k,start!=null); const h=c&&cvacHire(tid,c,w,start); if(h)got.push(h); }
   return got; }
 /* 리그 한 바퀴: AI 구단과 (맡겼으면) 우리 구단을 따로 씨앗을 둔 무작위 순서로. 매달 1일·겨울 정리 뒤 */
 function coachVacRound(why,start){ if(!G.coach)return []; const ids=G.teams.map(t=>t.id).filter(id=>id!==ME()||autoOn('cvac'));
