@@ -41,7 +41,7 @@ function ovlStandView(lg){ const ys=ovlYears(lg), nm=OVL_LBL[lg]; if(!ys.length)
 /* KBO 출신 해외파: 지금 해외에 있는 선수(국내 선수·KBO를 떠난 외국인·관찰하던 후보) */
 function ovlAlumView(){ const FT=inTabs('ovla',[['all','전체'],['mine','우리 구단 출신'],['kr','국내 선수'],['fo','외국인']],'all'), f=FT.cur, ft=FT.bar;
   const A=(G.abroad||[]).filter(a=>!a.back&&a.end==null&&(f==='all'||f==='mine'&&a.from===G.user||f==='kr'&&!a.foreign&&!a.cand||f==='fo'&&(a.foreign||a.cand)));
-  const fr=ovlFrac(G.year), cur=a=>a.cur&&a.cur.y===G.year&&fr>0?ovsPart(a.cur,fr):null;
+  const fr=ovlFrac(G.year), cur=a=>a.cur&&a.cur.y===G.year&&fr>0?ovsCurPart(a,fr):null;
   const rk=a=>(a.from===G.user?0:10)+(a.lg==='MLB'?0:a.lg==='NPB'?1:3)+(a.foreign||a.cand?4:0);
   const L=A.map(a=>({a,c:cur(a),l:(a.lines||[]).slice(-1)[0]})).sort((x,y)=>rk(x.a)-rk(y.a)||(y.l?ovsVal(y.l,y.a.isP):0)-(x.l?ovsVal(x.l,x.a.isP):0));
   const row=({a,c,l})=>{ const y1=a.y1??a.y+1, h=c||l, hc=h&&h.c!=null&&h.c>=0&&OVL_C[ovlKey(h.lvl)];
