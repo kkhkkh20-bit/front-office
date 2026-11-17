@@ -19278,12 +19278,12 @@ function clanCount(tid){ const m=G.mgr[tid]; if(!m)return 0; return Object.value
 /* 옛 저장: 새로 생긴 코치 자리(불펜·보조 타격·컨디셔닝·2군 수비주루·2군 배터리)를 채운다. undefined만 채우고, 사용자가 비워 둔 자리(null)는 그대로 둔다 */
 function coachFill(){ if(!G.coach)return 0; let n=0; for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue; for(const k of CKEYS){ if(C[k]!==undefined)continue; const c=mkCoach(k,t.id===G.user?{boost:-2}:{}); staffCt(c,ri(1,2),G.year); C[k]=c; n++; } }
   if(G.cmarket&&CKEYS.some(k=>!G.cmarket.some(c=>c.role===k)))for(const k of CKEYS)if(!G.cmarket.some(c=>c.role===k))for(let i=0;i<4;i++)G.cmarket.push(mkCandCoach(k)); return n; }
-const COACH_VAC0=.35, COACH_VAC0_AI=true; /* 새 게임: 코치 자리마다 35% 확률로 빈자리. 우리·AI 같음(구단주 승인 11-17) */
+/* 새 게임 코치진: 우리도 AI처럼 19자리를 모두 채워 시작한다(구단주 승인 11-17, 검수 11-17 §5).
+   전에는 우리 구단만 자리마다 35% 확률로 비어 시작했다. AI에도 같은 규칙을 넣어 재 보니(리그 4개·auto/proR) 승률은 비슷했지만, 'KBO 편제로 모든 구단이 채워진다'(피드백 11-08c)와 맞지 않아 둘 다 없앴다 */
 function coachInit(){ G.coach=G.coach||{}; G.cmarket=G.cmarket||[];
   for(const t of G.teams){ if(G.coach[t.id])continue; const C={}; const m=G.mgr[t.id]; const clan=m&&t.id!==ME()?(m.clan||(m.clan=mkClan(m))):[];
     for(const k of CKEYS){ const cl=clan.find(c=>c.role===k); C[k]=cl||mkCoach(k); C[k].yrs=ri(1,3); }
-    if(t.id===G.user){ for(const k of CKEYS)if(R()<COACH_VAC0)C[k]=null; }
-    else if(COACH_VAC0_AI)withRng(rngHash('cvac0',t.id,G.nextId),()=>{ for(const k of CKEYS)if(!clan.includes(C[k])&&R()<COACH_VAC0)C[k]=null; }); /* AI도 같은 확률로 빈자리(감독 사단 코치는 남는다). 따로 씨앗을 둔 난수라 시작 세계가 그대로. 빈자리는 매달 1일 시장에서 채운다 */
+    if(t.id===G.user){ for(const k of CKEYS)R(); } /* 예전 빈자리 추첨(35%) 자리: 본 난수 순서를 그대로 두려고 한 번씩 뽑기만 한다(시작 세계·시드 고정 점검이 같게) */
     G.coach[t.id]=C; }
   for(const k in G.mgr){ const m=G.mgr[k]; if(m&&!m.interim&&!m.clan)m.clan=mkClan(m); }
   (G.mmarket||[]).forEach(m=>{ if(!m.clan)m.clan=mkClan(m); });
@@ -21279,9 +21279,10 @@ function obHireBonus(obid,role){ if(!obid||!G.ob)return; const ob=G.ob.find(o=>o
 
 /* 한 사람은 한 자리에만(검수 11-06: 다른 구단 현직 코치를 감독으로 데려와도 코치 자리가 남고, AI가 데려간 OB 감독이 시장에 남아 두 구단 감독이 됐다).
  OB 지도자가 새 자리에 앉으면 다른 구단 코치 자리와 감독·코치 시장 후보에서 같은 사람을 지운다 */
-function obTaken(obid,keep){ try{ schLeave(keep); }catch(e){} if(!obid)return; for(const t of G.teams){ const C=G.coach&&G.coach[t.id]; if(C)for(const k of CKEYS){ const c=C[k]; if(c&&c.ob===obid&&c!==keep){ C[k]=null; if(t.id!==G.user)try{ coachVacFill(t.id,`${c.name} 코치 감독 선임에 따른 후임`,[k]); }catch(e){} /* AI 후임도 시장에서(89c_coach_vacancy) */ if(t.id===G.user)cvacMail(mail('운영팀',`${c.name} ${CROLE[k].l}, 감독으로 떠남`,`${c.name} 코치가 다른 자리의 감독을 맡게 돼 ${CROLE[k].l} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요.`,{kind:'감독'})); } }
+function obTaken(obid,keep){ try{ schLeave(keep); }catch(e){} if(!obid)return; const refill=[]; for(const t of G.teams){ const C=G.coach&&G.coach[t.id]; if(C)for(const k of CKEYS){ const c=C[k]; if(c&&c.ob===obid&&c!==keep){ C[k]=null; if(t.id!==G.user)refill.push([t.id,k,c.name]); /* AI 후임도 시장에서(89c_coach_vacancy). 같은 사람의 시장 후보를 지운 뒤에 */ if(t.id===G.user)cvacMail(mail('운영팀',`${c.name} ${CROLE[k].l}, 감독으로 떠남`,`${c.name} 코치가 다른 자리의 감독을 맡게 돼 ${CROLE[k].l} 자리가 비었습니다. 스태프·육성 → 코치진에서 채워 주세요.`,{kind:'감독'})); } }
     const m=G.mgr&&G.mgr[t.id]; if(m&&m.ob===obid&&m!==keep&&t.id!==G.user){ const n=mkMgr(); staffCt(n,ri(2,3)); G.mgr[t.id]=n; } }
   G.mmarket=(G.mmarket||[]).filter(x=>x.ob!==obid||x===keep); G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==obid||x===keep);
+  for(const [tid,k,nm] of refill)try{ coachVacFill(tid,`${nm} 코치 이동에 따른 후임`,[k]); }catch(e){}
   /* 한 사람은 한 곳에만(검수 11-09e #15): 스카우트(우리·다른 구단)·보조 코치·고교 감독 자리도 비운다. 학교 감독을 바로 데려간 경우는 schLeave가 먼저 비우고 소식은 schDaily가 낸다 */
   const drop=L=>(L||[]).filter(x=>x.ob!==obid||x===keep); const gone=(G.scouts||[]).filter(s=>s.ob===obid&&s!==keep);
   if(gone.length){ G.scouts=drop(G.scouts); for(const s of gone)mail('스카우트팀',`${s.name} 스카우트, 다른 자리로 떠남`,`${s.name} 스카우트가 다른 자리를 맡게 돼 팀을 떠났습니다.`,{kind:'스카우트'}); }
@@ -46064,9 +46065,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
-  {id:'2026-11-17-coach',d:'11월 17일',t:'코치 빈자리: AI 구단도 시장에서 · 코치 빈자리 보강 위임',items:[
+  {id:'2026-11-17-coach',d:'11월 17일',t:'코치 빈자리: AI 구단도 시장에서 · 새 게임 코치진 · 코치 빈자리 보강 위임',items:[
     'AI 구단도 빈 코치 자리를 코치 시장에서 채웁니다. 우리와 같은 후보 가운데 연봉 여력 안에서 고르고, 연봉·계약 기간·합류 시즌 규칙도 같습니다. 시장에 맞는 후보가 없을 때만 새 후보를 데려옵니다.',
-    '새 게임에서 AI 구단 코치 자리도 우리처럼 자리마다 35% 확률로 비어서 시작합니다(감독 사단 코치는 남습니다). AI 구단은 2월 1일부터 매달 1일에 시장에서 채웁니다. 그 전에 우리가 먼저 고를 수 있습니다.',
+    '새 게임에서 우리 구단 코치진도 AI 구단처럼 19자리를 모두 채워 시작합니다. 전에는 우리 구단만 자리마다 35% 확률로 비어 있었습니다.',
     '설정 › 권한에 \'코치 빈자리 보강\'이 생깁니다. 맡기면 운영팀이 AI 구단과 같은 기준으로 빈 코치 자리를 채우고, \'위임에 따라 처리한 일\'에 남깁니다. 코치 빈자리 소식에도 위임하기 버튼이 붙습니다. 쉬운 진행에도 들어갑니다.']},
   {id:'2026-11-17-hs2',d:'11월 17일',t:'고교 모든 부원이 실제 선수 · 모의 지명 · U-18 청소년 대표',items:[
     '고교·대학 야구부의 모든 부원이 한 사람으로 삽니다. 학년마다 자라는 빠르기가 사람마다 다르고, 학년별 기록이 남으며, 스카우트가 학교를 찾으면 관찰이 쌓입니다. 학교 선수단에서 부원 이름을 누르면 기록과 우리 스카우트 평가를 봅니다.',

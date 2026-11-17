@@ -38,12 +38,12 @@ function clanCount(tid){ const m=G.mgr[tid]; if(!m)return 0; return Object.value
 /* 옛 저장: 새로 생긴 코치 자리(불펜·보조 타격·컨디셔닝·2군 수비주루·2군 배터리)를 채운다. undefined만 채우고, 사용자가 비워 둔 자리(null)는 그대로 둔다 */
 function coachFill(){ if(!G.coach)return 0; let n=0; for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue; for(const k of CKEYS){ if(C[k]!==undefined)continue; const c=mkCoach(k,t.id===G.user?{boost:-2}:{}); staffCt(c,ri(1,2),G.year); C[k]=c; n++; } }
   if(G.cmarket&&CKEYS.some(k=>!G.cmarket.some(c=>c.role===k)))for(const k of CKEYS)if(!G.cmarket.some(c=>c.role===k))for(let i=0;i<4;i++)G.cmarket.push(mkCandCoach(k)); return n; }
-const COACH_VAC0=.35, COACH_VAC0_AI=true; /* 새 게임: 코치 자리마다 35% 확률로 빈자리. 우리·AI 같음(구단주 승인 11-17) */
+/* 새 게임 코치진: 우리도 AI처럼 19자리를 모두 채워 시작한다(구단주 승인 11-17, 검수 11-17 §5).
+   전에는 우리 구단만 자리마다 35% 확률로 비어 시작했다. AI에도 같은 규칙을 넣어 재 보니(리그 4개·auto/proR) 승률은 비슷했지만, 'KBO 편제로 모든 구단이 채워진다'(피드백 11-08c)와 맞지 않아 둘 다 없앴다 */
 function coachInit(){ G.coach=G.coach||{}; G.cmarket=G.cmarket||[];
   for(const t of G.teams){ if(G.coach[t.id])continue; const C={}; const m=G.mgr[t.id]; const clan=m&&t.id!==ME()?(m.clan||(m.clan=mkClan(m))):[];
     for(const k of CKEYS){ const cl=clan.find(c=>c.role===k); C[k]=cl||mkCoach(k); C[k].yrs=ri(1,3); }
-    if(t.id===G.user){ for(const k of CKEYS)if(R()<COACH_VAC0)C[k]=null; }
-    else if(COACH_VAC0_AI)withRng(rngHash('cvac0',t.id,G.nextId),()=>{ for(const k of CKEYS)if(!clan.includes(C[k])&&R()<COACH_VAC0)C[k]=null; }); /* AI도 같은 확률로 빈자리(감독 사단 코치는 남는다). 따로 씨앗을 둔 난수라 시작 세계가 그대로. 빈자리는 매달 1일 시장에서 채운다 */
+    if(t.id===G.user){ for(const k of CKEYS)R(); } /* 예전 빈자리 추첨(35%) 자리: 본 난수 순서를 그대로 두려고 한 번씩 뽑기만 한다(시작 세계·시드 고정 점검이 같게) */
     G.coach[t.id]=C; }
   for(const k in G.mgr){ const m=G.mgr[k]; if(m&&!m.interim&&!m.clan)m.clan=mkClan(m); }
   (G.mmarket||[]).forEach(m=>{ if(!m.clan)m.clan=mkClan(m); });

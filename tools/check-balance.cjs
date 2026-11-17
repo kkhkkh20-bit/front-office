@@ -11,9 +11,9 @@ const fs=require('fs'), path=require('path');
 const ENGINE=path.join(__dirname,'..','dist','engine.js'); if(!fs.existsSync(ENGINE)){ console.error('dist/engine.js가 없습니다. bash build.sh를 먼저 실행하세요.'); process.exit(2); }
 let seed=1; Math.random=()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
 const setSeed=v=>{ seed=v; };
-const NL=+process.argv[2]||4, MODES=(process.argv[3]||'auto,pro').split(','), NS=+process.env.NS||1; /* NS: 이어서 돌릴 시즌 수(독주 확인) */
+const CVAC=process.env.CVAC!=='0'; const NL=+process.argv[2]||4, MODES=(process.argv[3]||'auto,pro').split(','), NS=+process.env.NS||1; /* NS: 이어서 돌릴 시즌 수(독주 확인) */
 const oe=console.error; console.error=()=>{};
-const run=new Function('setSeed','NL','MODES','NS','log',fs.readFileSync(ENGINE,'utf8')+`
+const run=new Function('setSeed','NL','MODES','NS','log','CVAC',fs.readFileSync(ENGINE,'utf8')+`
 
 /* 고수 지명: 실제 능력(ovr)과 젊은 선수 성장 여지, 포지션 필요, 상한 100% 안에서 */
 let REAL=false, EQ=false; const FL=[]; /* eq: 실험용. AI도 고수와 같은 방식으로 지명하면 차이가 사라지는지 */ /* proR: 고수가 실제로 볼 수 있는 기록(분석팀·스카우트 추정)만으로 고른다 */
@@ -26,7 +26,7 @@ function season(mode){ REAL=mode==='proR'||mode==='eq'; EQ=mode==='eq'; if(EQ)mo
   let g=0; while(!G.fd.done&&g++<700){ const pk=G.fd.picks[G.fd.cur]; if(!pk){ fdFinish(); break; } const id=pk.tid===G.user?((mode==='pro'||mode==='proD'||mode==='proR')?proPick():fdBest(G.user,true)):(EQ?proPick(pk.tid):fdBest(pk.tid,false)); if(id==null){ fdFinish(); break; } fdPick(id); } if(!G.fd.done)fdFinish();
   G.tut={done:true,step:99}; try{ hireMgr(G.mmarket[0].id,3); }catch(e){} G.medSet=true;
   if(mode==='pro'||mode==='proF'||mode==='proR')proForeign(); for(let i=0;i<3;i++)try{ aiForeignFill(G.user); }catch(e){}
-  G.auto={sal:true,fre:true,mgr:true,tro:true,raid:true}; G.scoutAuto=true; try{ G.deleg=Object.fromEntries(Object.keys(EV_NAME).map(k=>[k,1])); }catch(e){}
+  G.auto={sal:true,fre:true,mgr:true,tro:true,raid:true,cvac:CVAC}; /* cvac: 코치 빈자리 보강(사람이 맡기기로 시작해도 하는 일, 검수 11-17 §5). CVAC=0이면 끈다 */ G.scoutAuto=true; try{ G.deleg=Object.fromEntries(Object.keys(EV_NAME).map(k=>[k,1])); }catch(e){}
   const Rt=G.teams.map(t=>({t:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r); const pre={rRank:Rt.findIndex(x=>x.t===G.user)+1,gap:teamRating(G.user)-avg(Rt.filter(x=>x.t!==G.user).map(x=>x.r)),pay:capPay(G.user)/capOf(G.year),aiPay:avg(G.teams.filter(t=>t.id!==G.user).map(t=>capPay(t.id)))/capOf(G.year),aiF:avg(G.teams.filter(t=>t.id!==G.user).flatMap(t=>foreignOf(t.id).filter(x=>x.foreign==='용병').map(ovr))),myF:avg(foreignOf(G.user).filter(x=>x.foreign==='용병').map(ovr))};
   const RS={},RA={}; const ag=applyGame; applyGame=function(day,h,a,gm,ps){ if(!ps&&gm&&gm.score){ RS[h]=(RS[h]||0)+gm.score.h; RA[h]=(RA[h]||0)+gm.score.a; RS[a]=(RS[a]||0)+gm.score.a; RA[a]=(RA[a]||0)+gm.score.h; } return ag.apply(this,arguments); };
   /* 겨울마다 사람 단장이 하는 일(맡기기로는 안 되는 큰 결정): 외국인 빈자리 채우기, 고수는 FA도 상한 90%까지 */
@@ -51,4 +51,4 @@ if(FL.length)log('고수가 상한까지 불렀는데 놓친 외국인 후보: �
 for(const m of MODES){ const L=RES[m]; for(let k=0;k<NS-1;k++){ const X=L.map(x=>x.later[k]).filter(Boolean); if(X.length)log('   '+m+' '+(k+2)+'년차: 전력 '+avg(X.map(x=>x.rR)).toFixed(1)+'위 · 국내 상위20 '+avg(X.map(x=>x.dom)).toFixed(1)+'(AI '+avg(X.map(x=>x.aiDom)).toFixed(1)+') · 외국인 '+avg(X.map(x=>x.fN)).toFixed(1)+'명 '+avg(X.map(x=>x.fO)).toFixed(1)+' · 연봉 '+Math.round(avg(X.map(x=>x.pay))*100)+'% · 승률 '+avg(X.map(x=>x.w/(x.w+x.l))).toFixed(3)+' · 평균 '+avg(X.map(x=>x.rank)).toFixed(1)+'위 · 1위 '+X.filter(x=>x.rank===1).length+'/'+X.length+' · 득실 평균 '+Math.round(avg(X.map(x=>x.rd)))); } }
 for(const m of MODES){ const L=RES[m]; log('== '+m+': 승률 '+avg(L.map(x=>x.w/(x.w+x.l))).toFixed(3)+' · 평균 '+avg(L.map(x=>x.rank)).toFixed(1)+'위 · 1위 '+L.filter(x=>x.rank===1).length+'/'+L.length+' · 득실 평균 '+Math.round(avg(L.map(x=>x.rd)))+' · 시작 전력 평균 '+avg(L.map(x=>x.rRank)).toFixed(1)+'위 · 개막 전력 평균 '+avg(L.map(x=>x.oRank)).toFixed(1)+'위'+(L[0].oC?' · 개막 코치 우리 '+avg(L.map(x=>x.oC.v)).toFixed(1)+'(빈 '+avg(L.map(x=>x.oC.e)).toFixed(1)+') / AI '+avg(L.map(x=>x.oCai.v)).toFixed(1)+'(빈 '+avg(L.map(x=>x.oCai.e)).toFixed(1)+')':'')+' · 연봉 평균 '+Math.round(avg(L.map(x=>x.pay))*100)+'% / AI '+Math.round(avg(L.map(x=>x.aiPay))*100)+'%'); }
 `);
-try{ run(setSeed,NL,MODES,NS,(...a)=>console.log(...a)); }catch(e){ console.error=oe; console.log('실행 실패: '+(e.stack||e).toString().slice(0,600)); process.exit(1); }
+try{ run(setSeed,NL,MODES,NS,(...a)=>console.log(...a),CVAC); }catch(e){ console.error=oe; console.log('실행 실패: '+(e.stack||e).toString().slice(0,600)); process.exit(1); }
