@@ -43,7 +43,7 @@ function matchPrepTalk(g){const facts=prepTeamFacts(g),A=g.broadcast?.teams?.a||
   const h=facts.h2h;out.push(h.w+h.l+h.t?`올 시즌 상대 전적은 ${A} 기준 ${recStr(h)}입니다.`:'올 시즌 두 팀의 첫 맞대결입니다.');}
  if(pa&&ph)out.push(`선발 투수는 ${pa}, ${ph}입니다.`);return out;}
 /* 3D 로딩 진행(fo3d-progress)을 경기 전 화면 막대·문구에 반영. 뒤로 가지 않게 최댓값만 */
-function cPrepProgress(p){const c=UI.cast,el=document.querySelector('#cs-3d[data-pre] .cs-prep-go');if(!c||!el)return;c.preAt=c.preAt||Date.now();c.prog=Math.max(c.prog||0,p);el.querySelector('.cs-prep-bar i').style.width=Math.round(c.prog*100)+'%';el.querySelector('.cs-prep-stage').textContent=c.prog>=1?'경기 준비를 마쳤습니다':c.prog>=.85?'그라운드 정비를 마치고 있습니다':c.prog>=.3?'선수들이 몸을 풀고 있습니다':'선수들이 경기장에 도착하고 있습니다';}
+function cPrepProgress(p){const c=UI.cast,el=document.querySelector('#cs-3d[data-pre] .cs-prep-go');if(!c||!el)return;c.preAt=c.preAt||Date.now();c.prog=Math.max(c.prog||0,p);el.querySelector('.cs-prep-bar i').style.width=Math.round(c.prog*100)+'%';const mb=c.prog<.6&&globalThis.__fo3d?.mb; /* 사이트판: 받은 양(MB)도 함께 */el.querySelector('.cs-prep-stage').textContent=(c.prog>=1?'경기 준비를 마쳤습니다':c.prog>=.85?'그라운드 정비를 마치고 있습니다':c.prog>=.3?'선수들이 몸을 풀고 있습니다':'선수들이 경기장에 도착하고 있습니다')+(mb?` · ${mb}`:'');}
 document.addEventListener('fo3d-progress',e=>cPrepProgress(e.detail));
 /* 3D 준비 결과: 성공이면 '경기 시작' 활성(FM처럼 눌러야 시작), 실패(2D 대체)면 경기 전 화면을 닫고 기존처럼 바로 재생 */
 function cPrepDone(ok){const c=UI.cast;if(!c?.pre)return;if(!ok){cPrepClose(c);return;}cPrepProgress(1);const b=document.querySelector('.cs-prep-start');if(b)b.disabled=false;
@@ -58,4 +58,4 @@ function castFit(){ try{ const el=document.querySelector('.cast.match-dashboard'
 addEventListener('resize',castFit); setInterval(castFit,400);
 
 /* 3D가 늦으면 기다리지 않고 기본 중계로 먼저 시작한다(사용자 11-06: 재생을 누르지 않아도 재생). 3D 준비가 끝나면 그때부터 3D로 바뀐다 */
-function castStart2D(c){ if(!c||UI.cast!==c||!c.pre)return; const host=document.getElementById('cs-3d'); if(host&&host.dataset.state!=='ready'){ host.dataset.state='fallback'; if(host.parentElement){ host.parentElement.dataset.renderer='fallback'; host.parentElement.classList.remove('has-3d'); } } A.castStart(); }
+function castStart2D(c){ if(!c||UI.cast!==c||!c.pre)return; const host=document.getElementById('cs-3d'); if(host&&host.dataset.state!=='ready'){ if(['pending','loading'].includes(host.dataset.state))host.dataset.bg='1'; /* 아직 받는 중: 진행 문구는 계속 보이고 준비되면 3D로 넘어간다 */ host.dataset.state='fallback'; if(host.parentElement){ host.parentElement.dataset.renderer='fallback'; host.parentElement.classList.remove('has-3d'); } } A.castStart(); }
