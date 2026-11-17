@@ -160,11 +160,23 @@ function draftClassPrune(){ if(!G)return 0; let n=0; const out=new Set();
   const prune=L=>{ if(!Array.isArray(L))return; for(let i=L.length-1;i>=0;i--){ const p=G.players[L[i]]; if(!p||(p.team!=null&&!drafted(p))){ if(p)out.add(p.id); L.splice(i,1); n++; } } }; /* 제자리에서 지운다: G.draft.cls와 G.draftClass가 같은 배열일 수 있다 */
   prune(G.draftClass); const d=G.draft; if(d&&!d.done&&d.cls!==G.draftClass)prune(d.cls);
   for(const id of out){ const p=G.players[id]; if(p&&p.prospect){ p.prospect=false; if(G.dmemo)delete G.dmemo[id]; } }
+  n+=proStaleFix(); return n; }
+/* 계약한 선수의 아마추어 표시 정리(카페 11-17 "트라이아웃에서 영입했는데 선수 화면이 드래프트 대상으로 나와요"):
+   명단(G.draftClass)에 없더라도 어느 구단과든 계약한 선수에 남은 신인 후보(prospect)·창단 드래프트 후보(fdPool)·해외 복귀 유예(ovsWait) 표시를 지운다.
+   선수 화면은 prospect를 보고 '드래프트 대상'·아마추어 프로필로 그렸다. 지명된 선수는 doPick에서 이미 prospect가 꺼져 있어 건드리지 않는다.
+   계약 직후(trySign 등)·드래프트 시작·불러오기·매일 진행에서 부른다. 난수를 쓰지 않고, 두 번 불러도 같다. 사람·AI 구단 공통 */
+function proStaleFix(){ if(!G||!G.players)return 0; let n=0; const fdLive=!!(G.fd&&!G.fd.done);
+  for(const p of Object.values(G.players)){ if(!p||p.team==null)continue; let f=false;
+    if(p.prospect){ p.prospect=false; f=true; if(G.dmemo)delete G.dmemo[p.id]; }
+    if(p.fdPool&&!fdLive){ p.fdPool=false; f=true; }
+    if(p.ovsWait){ delete p.ovsWait; f=true; }
+    if(f)n++; }
   return n; }
 /* 예전 후보는 인물·능력·관찰·메모를 그대로 두고 학교/권역 표시만 보완한다. */
 function migrateDraftPool(){
   const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&d.y===G.year);
   const valid=L=>[...new Set((Array.isArray(L)?L:[]).filter(id=>G.players[id]&&typeof G.players[id]==='object').map(id=>G.players[id].id??id))];
+  try{ proStaleFix(); }catch(e){ console.error(e); } /* 계약한 선수를 후보로 세지 않는다: 명단이 비었을 때 prospect로 명단을 다시 세우며 계약 선수가 되돌아왔다(카페 11-17) */
   const prospects=Object.values(G.players).filter(p=>p&&p.prospect).map(p=>p.id);
   const source=Array.isArray(G.draftClass)&&G.draftClass.length?G.draftClass:live&&Array.isArray(d.cls)?d.cls:prospects;
   G.draftClass=valid(source);
