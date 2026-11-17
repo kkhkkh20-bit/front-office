@@ -27,7 +27,7 @@ function meTradeStats(){ const T=meTrades(); let net=0, best=null, worst=null, y
     for(const id of t.gi){ const p=G.players[id]; if(!p)continue; const a=p.age-(G.year-t.y); aIn++; if(a<=24)yIn++; else if(a>=30)oIn++; } }
   return {n:T.length,net,best,worst,yIn,oIn,aIn}; }
 function meStats(){ const M=meInit(); const S=meSeasons(); const T=meTradeStats(); const m=G.unemp?null:G.mgr[G.user];
-  const autos=typeof AUTO_AREAS!=='undefined'?AUTO_AREAS.filter(([k])=>k!=='trip'&&autoOn(k)).length:0; /* 출장 맡기기는 처음부터 켜져 있어 성향으로 세지 않는다(사용자 11-17) */
+  const autos=typeof AUTO_AREAS!=='undefined'?AUTO_AREAS.filter(([k])=>autoOn(k)).length:0;
   return {S,M,T,mrel:m&&!m.interim?m.rel:null,trust:G.unemp?null:team(G.user).trust,autos,ppS:M.pp/S,trS:T.n/S}; }
 /* 스타일 태그: 조건을 넘은 것만, 강한 순 */
 function meTags(){ const s=meStats(), M=s.M, T=s.T; const L=[];

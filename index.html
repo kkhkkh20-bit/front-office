@@ -25132,12 +25132,12 @@ function amSlumpNews(o){ const S=G.amL; if(!S||!S.live||(o.m!==6&&o.m!==7))retur
      관심 선수는 한 경기 1회(+집중 0.5·보통 0.25), 그 밖의 선수는 0.35회. 같은 선수를 우리 스카우트 둘이 보면 두 번째 의견이 생긴다(오차 0.9배).
    - 출장이 없는 주(학교 방문·전지훈련)에만 학교 방문(obsVisitWeek)을 한다.
    - 매주 월요일 스카우트팀장이 앞으로 4주 출장 안을 낸다. 팀장 맡기기(기본 켬)면 그대로 보낸다(메일 없음). 끄면 출장 안 메일 한 통([그대로]·[팀장에게 맡기기]·[바꾸기]).
-     맡기기는 설정 › 권한의 '스카우트 출장'(autoOn('trip'))과 같은 값 G.tripAuto. 출장 안은 해시(u01)만 써서 맡기든 말든 R() 소비는 같다(사용자 11-17).
+     설정 › 권한의 '스카우트 배치'(G.scoutAuto)를 맡기면 출장도 팀장이 정한다(G.tripAuto와 무관). 출장 안은 해시(u01)만 써서 맡기든 말든 R() 소비는 같다(사용자 11-17).
    - 다른 구단도 같은 함수로 같은 출장 안을 만들어 그대로 보낸다(같은 관찰 함수).
    - 우리 구단은 일요일마다 '현장 보고' 한 통(그 주에 본 경기·눈에 띈 선수 3명·집중 선수 소식, 출장이 있던 주만).
    - 옛 저장: 출장 기록이 없으면 처음 맞는 날 바로 출장 안을 만든다(그 주부터 적용) */
 const TRIP_OTHER=.35, TRIP_PB=[0,.25,.5], TRIP_GAMES=3, TRIP_TWO=.9;
-const tripAutoOn=()=>G.tripAuto!==false; /* 기본 켬 */
+const tripAutoOn=()=>!!G.scoutAuto||G.tripAuto!==false; /* 기본 켬. 설정 › 권한의 '스카우트 배치'를 팀장에게 맡겼으면 출장도 늘 팀장이 정한다(사용자 11-17: 배치를 맡겼는데 출장 결정 메일이 계속 왔다 — 출장 따로 끈 G.tripAuto=false가 남아 있었다) */
 const tripWk0=d=>d-((dobj(d).w+6)%7); /* 그 주 월요일 */
 function amGroupReg(g){ return /서울|경기·강원/.test(g)?'수도권':/충청|호남/.test(g)?'호남·충청':/경상/.test(g)?'영남':null; }
 /* 그 주에 열리는 대회(출장 후보) */
@@ -25167,7 +25167,7 @@ const tripOf=s=>s&&s.trip&&s.trip.to>=G.day&&s.trip.from<=G.day?s.trip.k:'sch';
 function tripWeekly(day,force){ const w0=tripWk0(day); for(const t of G.teams||[]){ const tid=t.id; if(tid===G.user&&G.unemp)continue; if(!clubAmScouts(tid).length)continue; const P=tripPlanWeek(tid,w0);
     if(tid!==G.user||tripAutoOn()){ tripApply(tid,P,w0); continue; }
     G.tripPend={w0,P}; const sc=clubAmScouts(tid); const now=sc.filter(s=>tripOf(s)!==P[s.id]);
-    if(!force&&now.length)mail('스카우트팀',`다음 주 출장 안: ${now.length}명 바꿈`,sc.map(s=>`${s.name}: ${tripName(tripOf(s))} → ${tripName(P[s.id])}`).join('\n')+'\n\n그대로 두면 지금 출장을 이어 갑니다.',{kind:'스카우트',acts:[{l:'그대로',a:'tripPlanGo',v:String(w0)},{l:'팀장에게 맡기기',a:'handOff',v:'trip'},{l:'바꾸기',a:'go',v:'staff:scouts'}]}); } } /* 팀장에게 맡기기: 권한 화면의 '스카우트 출장'과 같은 설정(사용자 11-17) */
+    if(!force&&now.length)mail('스카우트팀',`다음 주 출장 안: ${now.length}명 바꿈`,sc.map(s=>`${s.name}: ${tripName(tripOf(s))} → ${tripName(P[s.id])}`).join('\n')+'\n\n그대로 두면 지금 출장을 이어 갑니다.',{kind:'스카우트',acts:[{l:'그대로',a:'tripPlanGo',v:String(w0)},{l:'팀장에게 맡기기',a:'handOff',v:'scout'},{l:'바꾸기',a:'go',v:'staff:scouts'}]}); } } /* 팀장에게 맡기기: 권한 화면의 '스카우트 배치'(G.scoutAuto)를 켠다 — 배치와 출장을 함께 맡김(사용자 11-17) */
 function tripPlanGo(){ const T=G.tripPend; if(!T)return '출장 안이 없습니다.'; tripApply(G.user,T.P,T.w0); delete G.tripPend; return '팀장 출장 안대로 보냈습니다.'; }
 function tripSet(sid,k){ const s=(G.scouts||[]).find(x=>String(x.id)===String(sid)); if(!s)return '스카우트가 없습니다.'; const w0=tripWk0(G.day); s.trip={k,from:G.day,to:w0+6,man:true}; return `${s.name} 스카우트를 ${tripName(k)}(으)로 보냅니다. 이번 주 일요일까지입니다.`; }
 /* 경기 날: 출장 중인 스카우트가 그 대회 경기를 본다(모든 구단 같은 식) */
@@ -26532,8 +26532,7 @@ const AUTO_AREAS=[
   ['fre','외국인 재계약','운영팀이 지난 시즌 WAR 1.5 이상이거나 종합 능력 {55} 이상(선수 화면과 같은 척도)인 선수만 잡습니다. 제시액은 선수가 받아들이는 재계약 하한보다 4% 더(보통 수만 달러)이고, 나머지는 보류권을 쥔 채 결별합니다. 외국인 총액 한도를 넘으면 능력이 낮은 선수부터 정리합니다.'],
   ['ev','일상 결정','기강·면담·콜업 여론·팬 행사 같은 일상 결정을 비서가 기본안으로 처리합니다(감독 갈등·징계 같은 핵심 결정은 계속 직접).'],
   ['mgr','감독 요청','감독이 올리는 영입·기용·드래프트 방향 요청에 비서가 기본안으로 답합니다. 직접 답하면 감독과의 관계를 더 잘 챙길 수 있습니다.'],
-  ['scout','스카우트 배치','스카우트팀장이 시기에 맞게 배치합니다.'],
-  ['trip','스카우트 출장','스카우트팀장이 매주 월요일 출장 안(주말리그·전국대회·학교 방문)을 내고 그대로 보냅니다. 출장 안 메일은 오지 않고 일요일 현장 보고만 옵니다. 이번 주에 직접 고른 출장은 바꾸지 않습니다.'], /* 사용자 11-17: 출장 안 메일 위임 */
+  ['scout','스카우트 배치','스카우트팀장이 시기에 맞게 배치하고, 매주 월요일 출장(주말리그·전국대회·학교 방문)도 정해 보냅니다. 출장 안 메일은 오지 않고 일요일 현장 보고만 옵니다.'], /* 출장도 함께(사용자 11-17) */
   ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다. 모두 거절하거나, 우리 평가로 공정에 가까운 제안(손해 1 이내)만 올립니다. 주간 요약에 남깁니다.'],
   ['raid','스태프 빼가기 대응','별 4개 이상(★★★★, 5개 만점) 스카우트·분석원은 상대 제시액에 맞춰 붙잡고, 그 아래는 보내 줍니다. 상대 제시액이 지금 연봉의 1.5배를 넘으면 붙잡기 전에 단장 승인을 받습니다.'],
   ['schg','고교 야구부 후원','고른 권역에서 올해 후원하지 않은 학교를 매주 월요일 후원합니다. 학교마다 한 해 한 번, 곳당 1,000만 원으로 직접 할 때와 같습니다. 권역은 스카우트 > 지역 정보망에서 고릅니다.'],
@@ -26556,11 +26555,11 @@ function autoRoutine(keys,only){ if(G.unemp)return ''; const L=[], D=[];
   if(!L.length)return ''; const t=L.join(' · '); autoLogAdd('정기 업무(운영팀)',t);
   mail('운영팀',`자동 처리: ${L.length===1?L[0]:L.length+'건'}`,`맡기신 정기 업무를 처리했습니다.\n${L.join('\n')}${D.length?`\n\n대상: ${D.join(', ')}`:''}\n\n비용과 횟수 제한은 직접 할 때와 같습니다. 설정 > 권한에서 끌 수 있습니다.`,{kind:'운영',acts:[{l:'권한 설정',a:'go',v:'cfg:auth'}]});
   return t; }
-function autoOn(k){ if(!G)return false; if(k==='scout')return !!G.scoutAuto; if(k==='trip')return tripAutoOn(); if(AUTO_SCOPE[k])return autoScope(k).length>0; if(k==='ev')return !!(G.deleg&&Object.keys(EV_NAME).every(e=>G.deleg[e])); return !!(G.auto&&G.auto[k]); }
+function autoOn(k){ if(!G)return false; if(k==='scout')return !!G.scoutAuto; if(AUTO_SCOPE[k])return autoScope(k).length>0; if(k==='ev')return !!(G.deleg&&Object.keys(EV_NAME).every(e=>G.deleg[e])); return !!(G.auto&&G.auto[k]); }
 function autoSet(k,v){ G.auto=G.auto||{}; if(AUTO_SCOPE[k]){ G.auto[k]=v===true?AUTO_SCOPE[k]():Array.isArray(v)?v:[]; return; } const prev=G.auto[k]; G.auto[k]=k==='tro'&&v==='good'?'good':!!v; if(k==='tro'&&G.auto.tro&&prev!==G.auto.tro)for(const o of [...(G.offers||[])])try{ autoTradeOffer(o); }catch(e){} /* 새 필터는 이미 받은 제안에도 적용한다. */
   if(k==='ev'){ G.deleg=G.deleg||{}; for(const e in EV_NAME)G.deleg[e]=!!v; }
-  if(k==='trip'){ G.tripAuto=!!v; if(v)try{ if(G.tripPend)tripPlanGo(); else tripApply(G.user,tripPlanWeek(G.user,tripWk0(G.day)),tripWk0(G.day)); }catch(e){ console.error(e); } else delete G.tripPend; return; } /* 맡기면 걸린 출장 안을 바로 보낸다(사용자 11-17) */
-  if(k==='scout'){ G.scoutAuto=!!v; G._scErr=null; if(v)try{ scoutPlanApply(true); }catch(e){ G._scErr=String(e&&e.message||e); } } }
+  if(k==='scout'){ G.scoutAuto=!!v; G._scErr=null; if(v)try{ scoutPlanApply(true); }catch(e){ G._scErr=String(e&&e.message||e); }
+    G.tripAuto=!!v; if(v)try{ const w0=G.tripPend?G.tripPend.w0:tripWk0(G.day); tripApply(G.user,tripPlanWeek(G.user,w0),w0); delete G.tripPend; }catch(e){ console.error(e); } } } /* 출장도 함께: 맡기면 걸린 출장 안을 (바뀐 배치로 다시 짜서) 바로 보내고, 가져오면 출장 안 메일로 직접 정한다(사용자 11-17). 해시만 써서 난수 소비 없음 */
 function autoAll(v){ for(const [k] of AUTO_AREAS)if(!AUTO_OPTIN.has(k)||!v)autoSet(k,v); G.autoMode=v?'easy':'self'; }
 function autoLogAdd(t,c,r){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t,c,r:r||'',k:'auto'}); if(G.autoLog.length>20)G.autoLog.length=20; }
 
@@ -26611,15 +26610,14 @@ function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[]
 
 /* ===== 비서에게 넘기기: 알림마다 '비서에게 넘기기' 버튼. 누르면 그 업무를 앞으로 비서·팀장이 맡고, 지금 걸린 일도 바로 처리한다.
    설정 · 권한 탭에서 언제든 다시 가져올 수 있다 ===== */
-const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',scout:'스카우트팀장',trip:'스카우트팀장',tro:'부단장',raid:'운영팀',schg:'운영팀',sisv:'운영팀',stalk:'운영팀'};
+const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀',schg:'운영팀',sisv:'운영팀',stalk:'운영팀'};
 function autoNow(k){ const C=G.contract; const out=[];
   if(k==='sal'&&C&&!C.done&&!C.salR1&&G.day>=dnum(C.y,12,5)){ autoSalRound(true); out.push('연봉 협상 1차 제시를 마쳤습니다'); } /* 1차는 한 번만(예약 처리와 겹치지 않게). 12월 5일 전에 맡기면 그날 제시 */ /* 맡기기를 반복해도 강제 제시는 주 1회 */
   if(k==='fre'&&C&&!C.done){ const d0=C.foreignDrop.length; if(C.freTry!==G.day)autoFre(); /* 하루 한 번만 제시(가져왔다 다시 넘겨도 같은 날 재시도를 다 쓰지 않게, 검수 11-07) */ const cut=C.foreignDrop.slice(d0).map(id=>G.players[id]).filter(Boolean); out.push(`외국인 재계약을 처리했습니다${cut.length?`(결별: ${cut.map(p=>p.name).join(', ')})`:''}`); }
   if(k==='tro'){ for(const o of [...(G.offers||[])])autoTradeOffer(o); out.push('받은 트레이드 제안을 정리했습니다'); }
   if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }
   if(AUTO_OPTIN.has(k)){ const r=autoRoutine([k]); out.push(r?'오늘 '+r:'오늘은 처리할 대상이 없습니다'); }
-  if(k==='trip')out.push('이번 주 출장은 팀장 안대로 보냈고, 다음 주부터 출장 안 메일 없이 팀장이 정합니다');
-  if(k==='scout'){ out.push(G._scErr?`스카우트 배치는 맡았지만 지금 배치 조정에 실패했습니다(${G._scErr.slice(0,40)}). 다음 달 다시 시도합니다`:'스카우트 배치를 맡았습니다'); } /* 실제 결과대로 안내(검수 11-07) */
+  if(k==='scout'){ out.push(G._scErr?`스카우트 배치는 맡았지만 지금 배치 조정에 실패했습니다(${G._scErr.slice(0,40)}). 다음 달 다시 시도합니다`:'스카우트 배치와 출장을 맡았습니다. 이번 주 출장은 팀장 안대로 보냈고, 다음 주부터 출장 안 메일 없이 팀장이 정합니다'); } /* 실제 결과대로 안내(검수 11-07) */
   if(k==='ev'||k==='mgr'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))){ e.deleg=true; evPick(e.id,e.def,true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }
   if(C&&!C.done&&autoOn('sal')&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
   return out.filter(Boolean).join('. '); }
@@ -26827,7 +26825,7 @@ function meTradeStats(){ const T=meTrades(); let net=0, best=null, worst=null, y
     for(const id of t.gi){ const p=G.players[id]; if(!p)continue; const a=p.age-(G.year-t.y); aIn++; if(a<=24)yIn++; else if(a>=30)oIn++; } }
   return {n:T.length,net,best,worst,yIn,oIn,aIn}; }
 function meStats(){ const M=meInit(); const S=meSeasons(); const T=meTradeStats(); const m=G.unemp?null:G.mgr[G.user];
-  const autos=typeof AUTO_AREAS!=='undefined'?AUTO_AREAS.filter(([k])=>k!=='trip'&&autoOn(k)).length:0; /* 출장 맡기기는 처음부터 켜져 있어 성향으로 세지 않는다(사용자 11-17) */
+  const autos=typeof AUTO_AREAS!=='undefined'?AUTO_AREAS.filter(([k])=>autoOn(k)).length:0;
   return {S,M,T,mrel:m&&!m.interim?m.rel:null,trust:G.unemp?null:team(G.user).trust,autos,ppS:M.pp/S,trS:T.n/S}; }
 /* 스타일 태그: 조건을 넘은 것만, 강한 순 */
 function meTags(){ const s=meStats(), M=s.M, T=s.T; const L=[];
@@ -43601,7 +43599,7 @@ function scoutChiefBox(){ const c=scoutChief(); if(!c)return ''; const P=scoutPl
     <p class="small">${sea}</p>
     ${G.scoutAuto?'<p class="small muted">팀장이 시기에 맞게 배치하고 있습니다. 매달 1일 알아서 조정하므로 따로 승인하지 않아도 됩니다.</p>':mv.length?`<ul class="small">${mv.map(x=>{ const or=x.s.role||'am', ok=x.s.region; const still=G.scouts.some(o=>o!==x.s&&(o.role||'am')===or&&o.region===ok&&!mv.some(m=>m.s===o))||mv.some(m=>m.role===or&&m.key===ok);
       return `<li>${esc(x.s.name)}: ${esc(scoutSlotTxt(or,ok))} → <b>${esc(scoutSlotTxt(x.role,x.key))}</b> <span class="muted">${esc(x.why)}</span><br><span class="muted">비는 곳: ${still?'없음(다른 스카우트가 맡음)':`${esc(scoutSlotTxt(or,ok))} 관찰 공백`} · 적응: ${dmd(G.day+30)}까지 정확도 한 단계 낮게 일함</span></li>`; }).join('')}</ul><button class="btn small primary" data-a="scoutPlanGo">제안대로 배치(${mv.length}명)</button>`:'<p class="small muted">지금 배치가 팀장 생각과 같습니다.</p>'}</div>`; }
-Object.assign(A,{ scoutPlanGo(v){ if(v){ for(const x of String(v).split('|')){ const [id,r,k]=x.split(':'); assignScout(id,r,k); } } else scoutPlanApply(false); save(); render(); } /* 메일 승인은 메일에 적힌 사람만 옮긴다(검수 11-09e #21) */, scoutAuto(v,el){ G.scoutAuto=!G.scoutAuto; if(G.scoutAuto)scoutPlanApply(true); save(); render(); },
+Object.assign(A,{ scoutPlanGo(v){ if(v){ for(const x of String(v).split('|')){ const [id,r,k]=x.split(':'); assignScout(id,r,k); } } else scoutPlanApply(false); save(); render(); } /* 메일 승인은 메일에 적힌 사람만 옮긴다(검수 11-09e #21) */, scoutAuto(v,el){ autoSet('scout',!G.scoutAuto); save(); render(); }, /* 권한 화면과 같은 길: 배치와 출장을 함께(사용자 11-17) */
   /* PC 스카우팅 센터·데이터 허브(34b_staff_fm.js): 선택 상자 대신 버튼으로 배치·역할을 바꾼다 */
   scSel(v){ UI.scSel=UI.scSel===v?null:v; render(); }, scMove(v){ const [id,r,k]=String(v).split(':'); assignScout(id,r,k); UI.scSel=null; save(); render(); },
   anaRoleB(v){ const [id,r]=String(v).split(':'); setAnaRole(id,r); save(); render(); } });
@@ -44004,11 +44002,11 @@ function tripBox(){ if(G.unemp)return ''; const sc=clubAmScouts(G.user); if(!sc.
   const pick=s=>sel!==String(s.id)?'':`<tr class="trip-pick"><td colspan="5"><div class="chips">${tripOptions(w0,s.region).map(o=>`<button data-a="tripSet" data-v="${s.id}|${esc(o.k)}" class="${tripOf(s)===o.k?'on':''}">${esc(o.n)}${o.days?` · ${o.days}일`:''}</button>`).join('')}</div></td></tr>`;
   const head=`<tr><th>스카우트</th>${W.map((w,i)=>`<th>${i?dmd(w.w0)+' 주':'이번 주'}</th>`).join('')}</tr>`;
   const rows=sc.map(s=>`<tr><td><button class="lnk" data-a="person" data-v="sc:${s.id}">${esc(s.name)}</button><small class="block muted">${esc(s.region)} ${'★'.repeat(effSkill(s))}</small></td>${W.map((w,i)=>cellT(s,i)).join('')}</tr>${pick(s)}`).join('');
-  return `<div class="trip"><div class="row between wrapr"><b>출장 일정</b><span class="row"><span class="pill${tripAutoOn()?' acc':''}">${tripAutoOn()?'스카우트팀장 담당':'단장 직접'}</span><button class="btn small${tripAutoOn()?'':' primary'}" data-a="tripAuto" aria-pressed="${tripAutoOn()}" title="설정 · 권한의 '스카우트 출장'과 같은 설정입니다">${tripAutoOn()?'직접 정하기':'팀장에게 맡기기'}</button>${!tripAutoOn()&&G.tripPend?'<button class="btn small" data-a="tripPlanGo">팀장 안대로</button>':''}</span></div>
+  return `<div class="trip"><div class="row between wrapr"><b>출장 일정</b><span class="row"><span class="pill${tripAutoOn()?' acc':''}">${tripAutoOn()?'스카우트팀장 담당':'단장 직접'}</span><button class="btn small${tripAutoOn()?'':' primary'}" data-a="tripAuto" aria-pressed="${tripAutoOn()}" title="${G.scoutAuto?'설정 · 권한의 스카우트 배치를 팀장에게 맡겨 출장도 팀장이 정합니다':'출장만 팀장에게 맡기거나 직접 정합니다'}">${tripAutoOn()?'직접 정하기':'팀장에게 맡기기'}</button>${!tripAutoOn()&&G.tripPend?'<button class="btn small" data-a="tripPlanGo">팀장 안대로</button>':''}</span></div>
     <p class="small trip-cal">${esc(tripCalLine(w0))}</p><div class="tw"><table class="sqt trip-t"><thead>${head}</thead><tbody>${rows}</tbody></table></div>
     <p class="small muted">출장한 대회 경기에 나온 선수만 관찰이 쌓입니다. 출장이 없는 주에는 학교를 찾아 1~3학년을 봅니다. ${tripAutoOn()?'팀장이 매주 월요일 출장을 정해 보냅니다(출장 안 메일 없음, 일요일 현장 보고만).':'매주 월요일 팀장 출장 안이 메일로 옵니다. [팀장에게 맡기기]를 누르면 메일 없이 팀장이 정합니다.'}</p></div>`; }
 Object.assign(A,{ tripSel(v){ UI.tripSel=UI.tripSel===String(v)?null:String(v); render(); }, tripSet(v){ const [id,k]=String(v).split('|'); toast(tripSet(id,k)); UI.tripSel=null; save(); render(); },
-  tripAuto(){ const on=!tripAutoOn(); toast(on?handOff('trip'):takeBack('trip')); save(); render(); } /* 권한 화면과 같은 길(사용자 11-17) */, tripPlanGo(){ toast(tripPlanGo()); save(); render(); } });
+  tripAuto(){ if(tripAutoOn()){ if(G.scoutAuto)toast(takeBack('scout')+' 출장 안은 매주 메일로 옵니다.'); else { G.tripAuto=false; toast('출장을 직접 정합니다. 매주 월요일 팀장 출장 안이 메일로 옵니다.'); } } else { G.tripAuto=true; const w0=G.tripPend?G.tripPend.w0:tripWk0(G.day); tripApply(G.user,tripPlanWeek(G.user,w0),w0); delete G.tripPend; toast('출장을 팀장에게 맡겼습니다. 출장 안 메일 없이 팀장이 정합니다.'); } save(); render(); } /* 배치를 맡긴 상태에서 출장만 끄는 길은 없앤다: 끄면 배치도 가져온다(사용자 11-17: 두 설정이 어긋나 결정 메일이 왔다) */, tripPlanGo(){ toast(tripPlanGo()); save(); render(); } });
 /* ===== 아마추어 야구 화면(13_amateur_league): 시즌 요약·주말리그·전국대회·대학·선수·학교 =====
    스카우트 화면의 하위 탭. 학교를 누르면 학교 페이지, 저학년 선수를 누르면 선수 카드(능력 수치 없이 기록과 말)로 간다 */
 function amSeasonOf(){ const y=G.year; if(G.amL&&G.amL.y===y)return G.amL; if(G.amLp)return G.amLp; return null; }
@@ -44832,7 +44830,8 @@ const PATCH=[
   {id:'2026-11-17-amui',d:'11월 17일',t:'아마추어 야구 화면 정리 · 출장 안 팀장에게 맡기기',items:[
     '스카우트 › 아마추어 야구의 기록 1위를 부문마다 작은 카드(위 5명)로 한 화면에 모아 보입니다. 타율·OPS·홈런·도루·평균자책점·탈삼진·승리·타점 8부문이고, 요약 탭에서 고교와 대학을 바꿔 봅니다.',
     '주말리그·U-리그 순위, 전국대회 대진, 학교 목록도 작은 카드로 나란히 놓아 넓은 표가 화면 끝까지 퍼지지 않습니다. 학교 페이지에서 학년별 선수단을 오른쪽에 함께 봅니다.',
-    "매주 오는 '다음 주 출장 안' 메일에 [팀장에게 맡기기]를 넣었습니다. 맡기면 그 주 안을 바로 보내고, 다음 주부터는 메일 없이 스카우트팀장이 출장을 정합니다(일요일 현장 보고는 그대로). 설정 › 권한의 '스카우트 출장'이나 스카우트 팀 화면의 출장 일정에서 다시 직접 정할 수 있습니다."]},
+    "매주 오는 '다음 주 출장 안' 메일에 [팀장에게 맡기기]를 넣었습니다. 누르면 설정 › 권한의 '스카우트 배치'를 스카우트팀장에게 맡기고, 그 주 출장 안을 바로 보냅니다. 다음 주부터는 메일 없이 팀장이 출장을 정합니다(일요일 현장 보고는 그대로).",
+    "스카우트 배치를 팀장에게 맡겨 두었으면 출장 안 결정 메일이 더 오지 않습니다. 배치를 맡겼는데도 출장 메일이 오던 문제를 고쳤습니다. 권한 화면에서 가져오면 다시 매주 출장 안을 받아 직접 정합니다."]},
   {id:'2026-11-17-uladder-fun',d:'11월 17일',t:'유저 래더: 시즌·리그 점수·명경기',items:[
     '유저 래더에 2주 시즌이 생겼습니다(한국 시간 월요일 0시 시작). 단계는 그대로이고, 시즌마다 최고 단계·최고 리그 점수를 따로 셉니다. 리그 점수는 단계 × 100 + 아래에 둔 팀 수 × 10입니다.',
     '리그 화면의 다음 상대 칸에서 타격·장타·컨택·수비·선발·불펜을 우리 덱과 막대로 비교합니다. 상대가 앞선 곳과 우리가 앞선 곳을 한 줄로 알려 줍니다.',
