@@ -6257,6 +6257,20 @@ T('[리뷰② 11-17] 골든글러브 옵션: 시상식 전에 계약이 이어�
     G.awards[Y].pend.gg=true; awardCeremony('gg'); ok(T.optDue===250,mode+': 시상식을 다시 열면 또 냄 '+T.optDue); };
   for(const m of ['keep','ext','fa']){ run(G.user,m); run(ai,m); }
   G=JSON.parse(base); G.day=G.cal.open+30; const p=domestic(G.user).find(z=>!z.isP&&!z.foreign&&!z.prospect); p.ctT=G.user; p.opt={a:250,from:Y,until:Y,c:'gg'}; termsClear(p); ok(!(G.optLed||[]).length,'시즌 중 계약 정리까지 수상 옵션을 남김'); });
+T('[카페 11-17 수딧] 샐러리캡 프랜차이즈 예외(래리 버드 룰): 지정 선수 보수 절반만 상한에, 7시즌 미만은 지정 불가, 시즌 중 잠금, AI는 가장 많이 받는 대상자(난수 무관)',()=>{ fresh(); const u=G.user, ai=G.teams.find(t=>t.id!==u).id, Y=G.year; ok(Y>=FRAN_Y,'준비: 2026시즌 이후');
+  const hist=(p,tid,n)=>{ p.hist=(p.hist||[]).filter(h=>h.t!==tid); for(let k=1;k<=n;k++)p.hist.push({y:Y-k,t:tid,lvl:'1군',g:1}); };
+  const D=domestic(u).filter(p=>!isRookie(p)&&!p.ys&&!milServing(p)); ok(D.length>=3,'준비: 선수'); for(const p of D)hist(p,u,0); const [a,b,c]=D; hist(a,u,8); hist(b,u,7); hist(c,u,6); a.sal=5000; b.sal=4000; c.sal=4500; for(const p of [a,b,c]){ delete p.capB; delete p.newSal; delete p.extNext; }
+  const r0=__rngState(); ok(franId(u)===a.id,'자동 지정이 가장 많이 받는 대상자가 아님'); const pa=capPay(u), pn=capPayNext(u);
+  ok(franSet(c.id).includes('대상이 아닙니다'),'6시즌 선수를 지정함'); ok(franId(u)===a.id,'거절했는데 지정이 바뀜');
+  const msg=franSet(b.id); ok(msg.includes(b.name),'지정 실패: '+msg); ok(franId(u)===b.id&&franNow(u)===b.id,'지정한 선수가 예외가 아님'); const pb=capPay(u); ok(Math.abs((pb-pa)-500)<1,'상한 합계 차이 '+(pb-pa)+' (기대 500 = 5000/2 - 4000/2)');
+  const pnb=capPayNext(u); ok(Math.abs((pnb-pn)-500)<1,'겨울 전망(capPayNext) 차이 '+(pnb-pn)); ok(capInfo(u).pay===(preSeason(sponSeason())?pnb:pb),'상한 표시가 지정을 반영하지 않음');
+  const sum40=sum(domPayOf(u).filter(p=>!isRookie(p)).map(p=>p.id===b.id?p.sal*.5:p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0)).concat(capDeadA(u)).sort((x,y)=>y-x).slice(0,40)); ok(Math.abs(sum40-pb)<1,'상위 40명 절반 계산이 틀림 '+sum40+'/'+pb);
+  const A=domestic(ai).filter(p=>!isRookie(p)&&!p.ys&&!milServing(p)); for(const p of A)hist(p,ai,0); const [x,y2]=A; hist(x,ai,7); hist(y2,ai,6); x.sal=6000; y2.sal=7000; delete x.capB; delete y2.capB; ok(franId(ai)===x.id,'AI가 가장 많이 받는 대상자(7시즌 이상)를 지정하지 않음'); ok(franSelOf(ai,Y)==null,'AI에 사람 지정이 생김');
+  G=JSON.parse(JSON.stringify(G)); ok(franId(u)===b.id,'저장·불러오기 뒤 지정이 사라짐'); ok(franSelOf(u,Y+1)&&franSelOf(u,Y+1).pid===b.id,'다음 시즌으로 지정이 이어지지 않음');
+  const B=G.players[b.id]; G.day=G.cal.open+30; ok(!preSeason(sponSeason()),'준비: 시즌 중'); ok(franLockWhy(u)!=='','시즌 중에 지정을 바꿀 수 있음'); ok(franSet(a.id).includes('시즌 중'),'시즌 중 변경이 통과함'); ok(franId(u)===b.id,'시즌 중 지정이 바뀜');
+  B.team=ai; ok(franLockWhy(u)==='','지정 선수가 떠났는데 다시 지정할 수 없음'); ok(franId(u)===a.id,'지정 선수가 떠나면 자동으로 돌아가야 함'); B.team=u;
+  ok(__rngState()===r0,'프랜차이즈 지정·상한 계산이 난수를 씀');
+  G.franNews=null; const n0=G.mail.length, r1=__rngState(); franIntro(); ok(G.mail.length===n0+1&&G.mail[0].subj.includes('프랜차이즈'),'규정 변경 안내 메일 없음'); ok((G.news||[]).some(n=>n.t.includes('리그 규정 변경')&&n.t.includes('프랜차이즈')),'규정 변경 기사 없음'); franIntro(); ok(G.mail.length===n0+1,'안내가 두 번 옴'); ok(__rngState()===r1,'안내가 난수를 씀'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
