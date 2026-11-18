@@ -8,13 +8,13 @@ function promoCalEv(d){ if(G.unemp||!G.sea||!G.sea.promo)return []; const P=G.se
   const L=P.log.find(x=>x.d===d); return L?[{k:'me',t:`프로모션: ${PROMO_EV[L.k].l} +${promoN(L.xa)}명`}]:[]; }
 function promoEstLine(e){ return `예상 +${promoN(e.xa)}명 · ${promoSign(e.net)}${e.fan?` · 여론 +${Math.round(e.fan*10)/10}`:''}`; }
 /* 날짜 상세(27_calendar calDetail): 홈경기 날 행사 예약·결과 */
-function promoBox(d){ if(G.unemp||!G.sea||G.sea.y!==G.year)return ''; const a=promoHomeOpp(G.user,d); const P=promoOf(G.user); if(a==null||!P)return '';
+function promoBox(d){ if(G.unemp||!G.sea||G.sea.y!==G.year)return ''; const booked=G.sea.promo?.[G.user]?.bk?.[d],a=booked?.a??promoHomeOpp(G.user,d); const P=promoOf(G.user); if(a==null||!P)return '';
   const L=P.log.find(x=>x.d===d);
   if(L)return `<div class="gpl promo"><div class="row between"><span class="eyebrow">프로모션 결과</span>${promoTip(promoReport(L))}</div><div class="small"><b>${esc(PROMO_EV[L.k].l)}</b> · 관중 ${promoN(L.att)}명${L.so?'(매진)':''} · 효과 +${promoN(L.xa)}명 · 손익 ${promoSign(L.net)}</div></div>`;
   if(!(d>G.day))return '';
   const B=P.bk[d], used=promoUsed(G.user), full=!B&&used>=PROMO_MAX;
   const ks=Object.keys(PROMO_EV).filter(k=>!promoWhyNot(G.user,d,k)); const fv=PROMO_FANV*ecoIdx();
-  const E=ks.map(k=>promoEst(G.user,d,k,a)).filter(Boolean).sort((x,y)=>(y.net+y.fan*fv)-(x.net+x.fan*fv));
+  const E=ks.map(k=>promoEst(G.user,d,k,a,B?.gk)).filter(Boolean).sort((x,y)=>(y.net+y.fan*fv)-(x.net+x.fan*fv));
   const cur=B?E.find(e=>e.k===B.k):null;
   const chip=e=>`<button class="btn small${B&&B.k===e.k?' primary':''}" data-a="promoBook" data-v="${d}:${e.k}" title="${esc(PROMO_EV[e.k].d)}"${full?' disabled':''}>${esc(PROMO_EV[e.k].l)} <i class="muted">${promoSign(e.net)}</i></button>`;
   const top=E.slice(0,4), rest=E.slice(4);
@@ -26,7 +26,7 @@ function promoBox(d){ if(G.unemp||!G.sea||G.sea.y!==G.year)return ''; const a=pr
 function promoCard(){ if(G.unemp||!G.sea||!G.cal)return ''; const P=promoOf(G.user); if(!P)return ''; const used=promoUsed(G.user);
   const bk=Object.keys(P.bk).map(Number).filter(d=>!P.bk[d].done).sort((x,y)=>x-y);
   const row=(d,k,txt,btn)=>`<div class="promo-r"><span class="promo-d">${dmd(d)} ${WD[dobj(d).w]}</span><b>${esc(PROMO_EV[k].l)}</b><span class="small muted">${txt}</span>${btn||''}</div>`;
-  const bkH=bk.map(d=>{ const e=promoEst(G.user,d,P.bk[d].k); return row(d,P.bk[d].k,`${e?tshort(e.a)+'전 · '+promoEstLine(e):''}`,`<button class="btn small" data-a="promoCancel" data-v="${d}">취소</button>`); }).join('');
+  const bkH=bk.map(d=>{ const e=promoEst(G.user,d,P.bk[d].k,P.bk[d].a,P.bk[d].gk); return row(d,P.bk[d].k,`${e?tshort(e.a)+'전 · '+promoEstLine(e):''}`,`<button class="btn small" data-a="promoCancel" data-v="${d}">취소</button>`); }).join('');
   const lgH=P.log.slice().reverse().slice(0,6).map(L=>row(L.d,L.k,`${tshort(L.a)}전 · +${promoN(L.xa)}명 · ${promoSign(L.net)}`,promoTip(promoReport(L)))).join('');
   const net=P.xtk+P.inc-P.cost; const left=PROMO_MAX-used;
   const per=period(), can=(per==='season'||per==='pre')&&G.day<G.cal.end;
