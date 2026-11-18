@@ -17269,7 +17269,11 @@ function faSign(p,offers){if(!p||!G.fa||!(G.fa.pool||[]).includes(p.id))return;c
   try{const r=faSignRun(p,offers),rec=(G.fa.results||[]).find(x=>x.id===p.id&&x.to===p.team);if(rec&&!(G.fa.pool||[]).includes(p.id)&&typeof champFundUse==='function')champFundUse(rec.to);book.delete(p.id);if(!book.size)FA_SIGN_RETRY.delete(game);return r;}
   catch(e){undo();worldReset();_chronGame=null;_chronIds=null;_chronSources=null;book.set(p.id,{market:G.fa,source,signature,values});FA_SIGN_RETRY.set(game,book);throw e;}
   finally{FO_RNG=source;if(C){C.k=null;_faPC=C;}}}  /* 계약 중에는 입찰 캐시를 끄고, 끝나면 비운다 */
+/* 우리 제안이 지금 실제로 계약까지 갈 수 있는지: 사인 관문(faSignRun)과 같은 검사(외부 FA 한도·정원·계약 자금). 막히면 그 이유, 아니면 ''.
+   시장 보고·우선 제안·라스트 룩·사인 관문이 같은 판정을 쓴다(제보 11-19: 보고는 '가장 좋다'인데 관문에서 말없이 빠져 계약도 안내도 없었다) */
+function faUserBlock(p,o){ if(!p||!o||G.unemp)return ''; if(faOutBlocked(G.user,p))return `외부 FA 영입 한도(${faCapN()}명)를 채웠습니다.`; if(faRosterFull(G.user))return `정식 선수와 입단 예정 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`; const f=faFundsCheck(p,o,G.user); return f?f.msg:''; }
 function faSignRun(p,offers){
+  { const uo=G.unemp?null:offers.find(o=>o.tid===G.user), why=uo?faUserBlock(p,uo):''; if(why){ offers=offers.filter(o=>o!==uo); if(G.fa.offers[p.id]){ delete G.fa.offers[p.id]; stop('FA',`${p.name} 측이 계약을 결정하는 날 우리 제안은 계약할 수 없는 상태여서 비교에서 빠졌고, 제안을 거둬들였습니다. ${why} 사정이 풀리면 협상실에서 다시 제안할 수 있습니다.`,p.id); } } } /* 막힌 우리 제안을 말없이 빼면 선수가 '제시함'으로 남아 기다리다 계약 실패로 끝났다(제보 11-19). AI 제안은 faPruneAi가 같은 검사로 정리한다 */
   offers=offers.filter(o=>!faOutBlocked(o.tid,p)&&!faRosterFull(o.tid)&&!faFundsCheck(p,o,o.tid)&&(o.tid===ME()||faAiCapOk(o.tid,p,o))); if(!offers.length)return; /* 정식 선수가 꽉 찬 구단은 계약할 수 없다(검수 11-09r) */
   let capC=null; { const uo=G.unemp?null:offers.find(o=>o.tid===G.user); if(uo){ capC=faCapCheck(p,uo); if(capC&&!capC.ok){ offers=offers.filter(o=>o!==uo); delete G.fa.offers[p.id]; stop('FA',`${p.name} 측이 우리 조건에 사인하려 했지만 구단주 결재가 나지 않아 제안을 거둬들였습니다. ${capC.msg}`,p.id); capC=null; if(!offers.length)return; } } } /* 사인 직전에 구단주가 그때 연봉 합계로 다시 본다: 여러 FA에게 동시에 낸 제안이 하나씩은 통과해도 합치면 한도를 넘는다(사용자 11-13) */
   let best=null,bs=-1; const shop=agShopN(p)>0; const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id]; const U=ME(); /* 야인이면 G.user는 전 구단(이제 AI) 번호: 사용자 몫 처리·소식은 ME() 기준(검수 11-14) */
@@ -20506,6 +20510,7 @@ function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; if(!F||F.closed
   const lk=Array.isArray(o.lock)?o.lock.filter(k=>typeof k==='string').slice(0,8):[];
   const T=o.terms?{...o.terms}:null; if(T)delete T.ov; const D=T?termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}):null; if(T)o={annual:Math.round(termsVal(T,D)),years:T.years,terms:T};
   if(faOutBlocked(G.user,p))return {msg:`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조). 이미 ${faOutN(G.user)}명을 데려왔습니다.`};
+  if(faRosterFull(G.user))return {msg:`정식 선수와 입단 예정 선수가 ${ROSTER_MAX}명으로 꽉 차 ${p.name}에게 제안할 수 없습니다. 먼저 한 명을 정리하세요.`}; /* 역제안 수락·사인 관문과 같은 정원 검사(제보 11-19) */
   { const cc=faCapCheck(p,o); if(cc&&!cc.ok)return {msg:cc.msg,owner:true}; } /* 구단주 결재가 안 나면 에이전트에게 내밀지 못한다(협상 횟수·분위기 그대로) */
   { const cc=faFundsCheck(p,o); if(cc)return {msg:cc.msg,owner:true,funds:true}; }
   const RM=agRoundsMax(p); /* 오래 팀을 찾지 못한 FA(시장 개장 45일 뒤, 마지막 협상 14일 뒤): 에이전트가 협상을 다시 연다(요구액도 그동안 내려갔다) */
@@ -25885,10 +25890,11 @@ function agYear(){ for(const a of agInit()){ const R0=agRels(a); for(const k of 
 /* 우선 제안: 친하거나 거래를 많이 한 에이전트는 협상 시작 전에 고객 한 명을 먼저 보여 준다. 경매형은 하지 않는다 */
 function agPitch(){ const F=G.fa; if(!F||G.unemp)return; F.pitch={};
   for(const ag of agInit()){ if(ag.style==='auction')continue; const r=agRel(ag), dl=(ag.deals&&ag.deals[G.user])||0; if(r<65&&!(dl>=2&&r>=50))continue;
-    const c=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom!==G.user&&agentOf(p)===ag&&!faOutBlocked(G.user,p)&&ovr(p)>=50).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!c)continue;
+    const c=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom!==G.user&&agentOf(p)===ag&&!faOutBlocked(G.user,p)&&ovr(p)>=50&&!faUserBlock(p,{tid:G.user,annual:p.ask.annual,years:p.ask.years})).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!c)continue;
     const disc=r>=80?.94:r>=65?.97:1; const o={annual:round5(c.ask.annual*disc),years:c.ask.years,until:F.openDay+1,ag:ag.id,tid:G.user}; F.pitch[c.id]=o;
     mail(`${ag.name} 에이전트`,`[우선 제안] ${c.name} 건`,`${ag.firm} ${ag.name}입니다. 협상이 열리기 전에 단장님께 먼저 말씀드립니다.\n\n${c.name}(${posLabel(c)}, ${c.age}세, ${c.faGrade}등급, 원소속 ${tshort(c.faFrom)})\n${o.years}년 연 ${money(o.annual)}이면 시장에 내놓지 않고 바로 사인하겠습니다. ${disc<1?`요구액(연 ${money(c.ask.annual)})보다 낮춘 조건입니다. `:''}${dstr(o.until)}까지만 유효합니다.\n\n${r>=65?'그동안의 관계를 생각해서 드리는 기회입니다.':'저희와 거래를 많이 해 주셔서 먼저 연락드립니다.'}`,{imp:true,kind:'FA',ref:c.id,face:null,acts:[{l:'이 조건으로 계약',a:'agPitchOk',v:c.id},{l:'선수 보기',a:'player',v:c.id}]}); } }
 function agPitchOk(id){ const F=G.fa; const p=G.players[id]; const o=F&&F.pitch&&F.pitch[id]; if(!p||!o||p.team!=null)return '이미 끝난 제안입니다.'; if(G.day>o.until)return '우선 제안 기한이 지났습니다.'; if(o.tid!=null&&o.tid!==G.user){ delete F.pitch[id]; return '전 구단에 온 우선 제안이라 지금 구단에서는 쓸 수 없습니다.'; } if(faOutBlocked(G.user,p))return `다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다.`;
+  { const o2={tid:G.user,annual:o.annual,years:o.years}, why=faUserBlock(p,o2); if(why)return `${p.name}과(와) 지금은 계약할 수 없습니다. ${why} 우선 제안은 ${dstr(o.until)}까지 그대로 남아 있습니다.`; const cc=faCapCheck(p,o2); if(cc&&!cc.ok)return `${cc.msg} 우선 제안은 그대로 남아 있습니다.`; } /* 사인 관문과 같은 검사를 먼저: 막힌 이유를 그대로 알린다(제보 11-19) */
   faSign(p,[{tid:G.user,annual:o.annual,years:o.years}]); if(p.team!==G.user)return `${p.name}과(와) 계약이 성사되지 않았습니다. 우선 제안은 그대로 남아 있습니다.`; /* 협상 결렬 등으로 faSign이 사인하지 않으면 제안·보상 유지 */
   delete F.pitch[id]; agRelAdd(agById(o.ag),3,'우선 제안 수락'); return `${p.name}과(와) ${o.years}년 연 ${money(o.annual)}에 계약했습니다.`; }
 /* 시장 확인 라운드: 대어는 바로 사인하지 않는다. 4~6일마다 다른 구단 제안을 모아 다시 묻고, 라운드를 다 돌면 가장 좋은 조건과 계약한다 */
@@ -25910,9 +25916,9 @@ function agShopTick(p,mk,ai,day){ const F=G.fa; const id=p.id;
   for(const o of offs){ const t=team(o.tid); if(!t||top0.tid===o.tid)continue; if(R()<(faTgt(t,p)?.9:ag.style==='auction'?.6:.45)){ const A0=ai[o.tid]; if(offScore(A0)>=faWantFor(p,o.tid)*.97)ctReset(A0); /* 요구를 채운 제안은 사용자처럼 라운드가 끝난 것으로 본다 */ const g=ctGate(A0,ctRoundsMax(ag)); if(g){ if(g!=='cool')ctFold(A0); continue; } /* AI 구단의 인상도 사용자와 같은 라운드·기간 한도(계약 1단계): 한도를 넘기면 접고, 걸어 둔 제안만 남는다 */ const cap=faWorth(t,p)*1.12; /* 구단주가 찍은 선수는 거의 늘 따라 올린다 */ const na=round5(Math.min(cap,Math.max(o.annual,top0.annual*(top0.years>o.years?1.04:1.01)*rnd(1,1.05)))); if(na>o.annual){ ctStep(A0); ai[o.tid].annual=na; if(top0.years>o.years&&R()<.5)ai[o.tid].years=Math.min(o.years+1,top0.years); } } }
   const best=faBestOf(p,Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})))||null;
   const last=mk.round>=mk.need; const uoRaw=F.offers[id]; const mine=uoRaw||p.faFrom===G.user;
-  const myO=uo?{tid:G.user,...uo}:null; const ahead=!!myO&&(!best||faScore(p,myO)>=faScore(p,best)); const tell=agTell(ag,best)+(best&&best.tid===p.faFrom?' 원소속 구단이라 선수 마음도 그쪽으로 조금 기웁니다.':'');
+  const uoWhy=uo?faUserBlock(p,{tid:G.user,...uo}):''; const myO=uo&&!uoWhy?{tid:G.user,...uo}:null; const ahead=!!myO&&(!best||faScore(p,myO)>=faScore(p,best)); const tell=agTell(ag,best)+(best&&best.tid===p.faFrom?' 원소속 구단이라 선수 마음도 그쪽으로 조금 기웁니다.':'');
   if(mine&&!G.unemp){
-    const n=negOf(id); const body=`${ag.firm} ${ag.name}입니다. ${p.name} 건 시장 보고(${mk.round}/${mk.need}라운드)입니다.\n\n${ahead?'지금은 단장님 제안이 가장 좋습니다.':tell}\n${uo?`우리 구단 제안: ${uo.terms?termsTxt(uo.terms):`${uo.years}년 총 ${money(uo.annual*uo.years)}(연 ${money(uo.annual)})`}`:uoRaw?(uoRaw.rej?'단장님 제안은 선수가 이미 거절한 조건이라 비교에서 뺐습니다. 조건을 올려 다시 제안해 주십시오.':'단장님 구단은 외부 FA 영입 한도를 채워 제안이 효력이 없습니다.'):'우리 구단은 아직 제안하지 않았습니다.'}\n\n${last?(ahead?'선수와 상의해 곧 결정하겠습니다.':'이번이 마지막 라운드입니다. 곧 결정합니다.'):(ahead?'다른 구단 반응을 한 번 더 보겠습니다. 조건을 지키시면 유리합니다.':`다음 보고는 ${dsh(mk.next)}입니다. 조건을 올리실지 알려 주십시오.`)}`;
+    const n=negOf(id); const body=`${ag.firm} ${ag.name}입니다. ${p.name} 건 시장 보고(${mk.round}/${mk.need}라운드)입니다.\n\n${ahead?'지금은 단장님 제안이 가장 좋습니다.':tell}\n${uo?`우리 구단 제안: ${uo.terms?termsTxt(uo.terms):`${uo.years}년 총 ${money(uo.annual*uo.years)}(연 ${money(uo.annual)})`}${uoWhy?`\n다만 지금 그대로는 계약할 수 없어 비교에서 뺐습니다. ${uoWhy}`:''}`:uoRaw?(uoRaw.rej?'단장님 제안은 선수가 이미 거절한 조건이라 비교에서 뺐습니다. 조건을 올려 다시 제안해 주십시오.':'단장님 구단은 외부 FA 영입 한도를 채워 제안이 효력이 없습니다.'):'우리 구단은 아직 제안하지 않았습니다.'}\n\n${last?(ahead?'선수와 상의해 곧 결정하겠습니다.':'이번이 마지막 라운드입니다. 곧 결정합니다.'):(ahead?'다른 구단 반응을 한 번 더 보겠습니다. 조건을 지키시면 유리합니다.':`다음 보고는 ${dsh(mk.next)}입니다. 조건을 올리실지 알려 주십시오.`)}`;
     n.log.push({d:day,w:'에이전트',t:`시장 보고 ${mk.round}/${mk.need}: ${ahead?'우리 제안이 가장 좋음':tell}`});
     const acts=[{l:'협상실 열기',a:'faOpen',v:id}]; if(!ahead&&best&&agRel(ag)>=40)acts.push({l:'최고 조건에 맞추기',a:'faMatch',v:id});
     mail(`${ag.name} 에이전트`,`${p.name} 건: 시장 보고 ${mk.round}/${mk.need}`,body,{imp:!ahead,kind:'FA',ref:id,acts}); }
@@ -25925,6 +25931,7 @@ function agShopTick(p,mk,ai,day){ const F=G.fa; const id=p.id;
 /* 라스트 룩 수락 */
 function agLastLook(id){ const F=G.fa; const p=G.players[id]; const mk=F&&F.mk&&F.mk[id]; if(!p||p.team!=null||!mk||!mk.ll)return '이미 끝난 제안입니다.'; if(mk.ll.tid!=null&&mk.ll.tid!==G.user)return '이전 구단에서 받은 라스트 룩입니다. 지금 구단에는 효력이 없습니다.'; /* 검수 11-08 */ if(G.day>mk.ll.until)return '기한이 지났습니다.';
   if(faOutBlocked(G.user,p))return `다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다.`;
+  { const why=faUserBlock(p,{tid:G.user,annual:mk.ll.annual,years:mk.ll.years}); if(why)return `${p.name}과(와) 지금은 계약할 수 없습니다. ${why} 라스트 룩 조건은 그대로 남아 있습니다.`; const cc=faCapCheck(p,{annual:mk.ll.annual,years:mk.ll.years}); if(cc&&!cc.ok)return `${cc.msg} 라스트 룩 조건은 그대로 남아 있습니다.`; }
   const o={annual:mk.ll.annual,years:mk.ll.years}, o0=F.offers[id]; F.offers[id]=o; faSign(p,[{tid:G.user,...o}]); if(p.team!==G.user){ if(o0)F.offers[id]=o0; else delete F.offers[id]; return `${p.name}과(와) 계약이 성사되지 않았습니다. 라스트 룩 조건은 그대로 남아 있습니다.`; } delete mk.ll; mk.done=true; agRelAdd(agentOf(p),2,'라스트 룩 수용'); return `${p.name}과(와) ${o.years}년 연 ${money(o.annual)}에 계약했습니다.`; }
 /* 지금 최고 조건에 맞추기: 다른 구단 최고 제안보다 조금 높게(같은 기간) 다시 제시한다 */
 function agMatchOffer(id){ const p=G.players[id]; { const n0=G.fa&&G.fa.neg&&G.fa.neg[id]; if(n0&&n0.closed)return null; } /* 결렬된 협상은 맞출 수 없다(점수 음수로 터무니없는 금액, 검수 11-08) */ const L=p?Object.entries(G.fa.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).filter(o=>faAiOk(o.tid,p,o)):[]; const rv=faBestOf(p,L); /* 정원·한도로 더 계약할 수 없는 구단 제안은 맞출 대상이 아니다(검수 11-09r) */ if(!p||!rv)return null;
@@ -51520,6 +51527,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-19-fa-sign-gate',d:'11월 19일',t:'FA 시장 보고와 우선 제안이 실제로 계약할 수 있는지까지 알려 줍니다',items:[
+    '시장 보고: 우리 제안이 지금 그대로는 계약할 수 없으면(계약 자금 부족·정원 초과·외부 FA 한도) 가장 좋은 제안으로 보지 않고, 보고에 그 이유를 적습니다.',
+    '선수가 결정하는 날 우리 제안이 계약할 수 없는 상태면, 이유를 알리고 제안을 거둬들입니다. 사정이 풀리면 협상실에서 다시 제안할 수 있습니다.',
+    '우선 제안·라스트 룩: 계약할 수 없으면 무엇이 막혔는지 알려 주고 제안은 남겨 둡니다. 에이전트는 지금 계약할 수 없는 선수를 우선 제안으로 보내지 않습니다.',
+    '정식 선수와 입단 예정 선수가 가득 찼으면 FA 제안을 내기 전에 알려 줍니다.'
+  ]},
   {id:'2026-11-19-world-players',d:'11월 19일',t:'해외 리그에 구단마다 주목 선수가 생겼고, 스카우트 지식만큼 보입니다',items:[
     '해외 리그 > 세계 선수 탭: MLB·트리플A·NPB·CPBL·멕시코리그 구단마다 눈여겨볼 선수 3~6명(전체 약 400~450명)이 있습니다. 해마다 기록을 쌓고 나이를 먹으며 은퇴·승격·강등·이적합니다. 노장·유망주·부상·부상 후 부진·부진 꼬리표와 알려진 계약(남은 해·연봉)도 보입니다.',
     '보이는 정도는 리그마다 스카우트 지식 %로 정합니다. 해외망 단계, 그 지역에 파견한 스카우트가 머문 날, 리그가 얼마나 알려졌는지로 오릅니다. 낮으면 이름난 선수만 기록으로 보이고, 45% 이상이면 대략적인 능력(넓은 범위), 70% 이상이면 좁은 범위와 심층 보고서가 열립니다. 다른 구단도 같은 식으로 봅니다.',

@@ -132,6 +132,16 @@ const simTo=cond=>{ let n=0; while(n++<800&&!cond()){ G.live=null; G.res=null; G
   (G.comp||[]).forEach(c=>{ try{ if(c.stage!=='done')compAuto(c); }catch(x){} }); try{ if(rosterN(G.user)>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX); }catch(x){} const d0=G.day; try{ advance('day'); }catch(e){ throw new Error('simTo: '+dmd(G.day)+' 하루 진행 중 오류 — '+e.message); } if(G.day===d0&&!cond()&&n>=799)break; }
   if(!cond())throw new Error('simTo: 목표 조건에 도달하지 못함(멈춘 날 '+dmd(G.day)+(blocker&&blocker()?' · 진행 막힘: '+String(blocker()).slice(0,80):'')+')'); }; /* 예외를 날짜만 넘겨 숨기지 않고, 조건에 못 가면 실패(거짓 통과 방지) */
 
+T('[제보 11-19 FA 사인 관문] 시장 보고·우선 제안·사인 관문이 같은 계약 가능 판정을 쓴다: 막힌 우리 제안을 가장 좋다고 보고하거나 말없이 빼지 않고, 이유를 알리고 거둬들인다. 막힘이 없으면 그대로 계약한다',()=>{ fresh(); simTo(()=>{ const u=team(G.user); if(u&&!G.unemp&&(u.trust??50)<40)u.trust=40; return G.fa&&!G.fa.closed&&G.day>=G.fa.openDay; }); const F=G.fa, t=team(G.user);
+  const p=F.pool.map(id=>G.players[id]).find(q=>q&&q.team==null&&q.faFrom!==G.user&&q.ask&&!q.foreign&&agentOf(q)&&agShopN(q)>0); ok(p,'준비 실패: 시장 보고를 하는 다른 구단 FA 없음'); ok(!faOutBlocked(G.user,p),'준비 실패: 외부 FA 한도');
+  while(faRosterFull(G.user))toFree(domestic(G.user).sort((x,y)=>ovr(x)-ovr(y))[0],'테스트');
+  F.ai[p.id]={}; p.faGrade='A'; p.faPrevSal=1000; const o={annual:p.ask.annual,years:p.ask.years}; ok(!faCapCheck(p,o)||faCapCheck(p,o).ok,'준비 실패: 상한 결재');
+  t.cash+=3000+500-spendable(G.user); ok(!faFundsCheck(p,o),'준비 실패: 제안할 때 자금 부족'); F.offers[p.id]={...o}; t.cash-=2000; ok(faFundsCheck(p,o),'준비 실패: 자금이 줄지 않음');
+  const mk=agMk(p); mk.round=mk.need-1; mk.next=G.day; mk.done=false; delete mk.ll; agShopTick(p,mk,F.ai[p.id],G.day); const m=G.mail.find(x=>x.ref===p.id&&x.subj.includes('시장 보고'));
+  ok(m&&!m.body.includes('단장님 제안이 가장 좋습니다'),'계약할 수 없는 우리 제안을 가장 좋다고 보고: '+(m&&m.body.slice(0,120))); ok(m.body.includes('계약할 수 없어'),'보고에 막힌 이유가 없음'); ok(!mk.ll,'계약할 수 없는 제안에 라스트 룩');
+  faSign(p,[{tid:G.user,...F.offers[p.id]}]); ok(p.team==null,'자금이 모자란데 계약됨'); ok(!F.offers[p.id],'막힌 우리 제안이 제시함으로 남음'); ok(G.mail.some(x=>x.ref===p.id&&x.body.includes('거둬들였습니다')&&x.body.includes('자금')),'막힌 이유를 알리지 않음');
+  F.pitch=F.pitch||{}; F.pitch[p.id]={annual:o.annual,years:o.years,until:G.day+3,ag:agentOf(p).id,tid:G.user}; const r=agPitchOk(p.id); ok(p.team==null&&/자금/.test(r),'우선 제안 실패 이유가 없음: '+r); ok(F.pitch[p.id],'우선 제안이 사라짐');
+  t.cash+=2000; ok(!faUserBlock(p,{tid:G.user,...o}),'자금을 채웠는데 막힘'); const r2=agPitchOk(p.id); ok(p.team===G.user,'막힘이 없는데 우선 제안 계약이 안 됨: '+r2); });
 T('[피드백 11-18 FA 지원금] 구단주가 영입 자금을 낸 FA는 요구 조건(계약금·보상금)대로 제안할 수 있다: 예산 여유가 마이너스여도 지원금이 구멍에 묻히지 않고, 상한 결재도 막지 않는다',()=>{ fresh(); const t=team(G.user); t.owner='pr'; t.trust=70; G.grants=[]; const s=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; s.faFrom=s.team; s.team=null; s.faGrade='A'; s.age=29; s.faPrevSal=500; s.ask={annual:3000,years:5};
   G.fa={pool:[s.id],offers:{},ai:{},neg:{},open:true,openDay:G.day,closed:false,results:[],cap:2,outN:{},y0:G.year}; t.cash=3500; G.spend.etc=(G.spend.etc||0)+Math.max(0,budget().roomGoal+1500); const sp0=spendable(G.user); ok(budget().roomGoal<0,'준비 실패: 예산 여유가 마이너스가 아님 '+budget().roomGoal);
   for(let k=0;k<60&&!grants().some(g=>g.by==='own'&&g.kind==='fa');k++)ownerPush(); const g=grants().find(g=>g.by==='own'&&g.kind==='fa'); ok(g&&g.pur.pid===s.id,'준비 실패: 구단주 FA 주문 없음');
