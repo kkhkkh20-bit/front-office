@@ -20,7 +20,7 @@ const { chromium } = require('playwright');
   let b; try {
     b = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium' }); const p = await b.newPage(); await p.setViewportSize({ width: 1280, height: 720 });
     const errs = []; p.on('pageerror', e => errs.push(String(e)));
-    await p.goto(url); await p.evaluate(() => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; A.go('club:cup'); });
+    await p.goto(url); await p.waitForFunction(() => typeof newGame === 'function' && UI.title === true, null, { timeout: 60000 }); await p.evaluate(() => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; A.go('club:cup'); });
     await p.waitForSelector('[data-a="cupApply"]', { timeout: 20000 });
     await p.fill('#cupName', '와이'); await p.click('[data-a="cupApply"]'); await p.waitForFunction(() => /신청했습니다/.test(document.body.innerText), null, { timeout: 30000 });
     const my = await p.evaluate(() => document.querySelector('.cup-mine').innerText); assert.match(my, /접수됨 와이 \d{4} · OVR \d+\|\d+ \d+/, my); /* 내 신청 카드(래더 v3) */
@@ -51,14 +51,14 @@ const { chromium } = require('playwright');
     await p.evaluate(() => { const d = [...document.querySelectorAll('details.mfold')].find(x => /프런트컵 명예의 전당/.test(x.querySelector('summary').innerText)); d.open = true; });
     await p.waitForFunction(() => /우승 단장 새벽별 2027/.test(document.querySelector('.cuphof').innerText), null, { timeout: 20000 }); console.log('설정 명예의 전당 통과');
     /* 처음 화면(게임을 열지 않은 새 탭) → 메뉴 → 명예의 전당. 서버를 끊어도 남은 결과를 보여 준다 */
-    const p2 = await b.newPage(); await p2.setViewportSize({ width: 390, height: 844 }); p2.on('pageerror', e => errs.push(String(e))); await p2.goto(url);
+    const p2 = await b.newPage(); await p2.setViewportSize({ width: 390, height: 844 }); p2.on('pageerror', e => errs.push(String(e))); await p2.goto(url); await p2.waitForFunction(() => typeof UI !== 'undefined' && UI.title === true, null, { timeout: 60000 });
     await p2.click('[data-a="tsGo"][data-v="cuphof"]'); await p2.waitForFunction(() => /우승 단장 새벽별 2027/.test(document.body.innerText) && /준우승 AI 하운즈/.test(document.body.innerText) && document.querySelector('.hof-badge'), null, { timeout: 20000 });
     await p2.click('.cuphof .hof-win .hof-d summary'); const dk = await p2.evaluate(() => { const d = document.querySelector('.cuphof .hof-win .dk'); return { t: d.innerText, rows: d.querySelectorAll('.dk-r').length, faces: d.querySelectorAll('img.dk-f').length }; });
     assert.match(dk.t, /OVR 총 \d+ \| 투 \d+ \| 타 \d+/); assert.match(dk.t, /선발1/); assert.match(dk.t, /마무리/); assert.ok(dk.rows >= 9 + 5 + 5, '덱 줄 수 ' + dk.rows); assert.ok(await p2.evaluate(() => !!localStorage.getItem('fo-cup-hof')));
     await p2.click('[data-a="cupDeckGet"]'); const got = await p2.evaluate(() => JSON.parse(localStorage.getItem('fo-ul-decks') || '[]')); assert.equal(got.length, 1); assert.equal(got[0].ro, 1); assert.equal(got[0].name, '새벽별'); assert.ok(!got[0].e.wid);
     await p2.waitForFunction(() => /가져온 덱에 있습니다/.test(document.body.innerText), null, { timeout: 5000 }); console.log(`우승 덱 보기(${dk.rows}줄, 얼굴 ${dk.faces}장)·이 덱 가져오기 통과`);
     const sw = await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1); assert.ok(sw, '휴대폰 폭에서 가로 스크롤'); console.log('처음 화면 명예의 전당 통과');
-    await p2.route('**/api/cup/results', r => r.abort()); await p2.reload(); await p2.click('[data-a="tsGo"][data-v="cuphof"]');
+    await p2.route('**/api/cup/results', r => r.abort()); await p2.reload(); await p2.waitForFunction(() => typeof UI !== 'undefined' && UI.title === true, null, { timeout: 60000 }); await p2.click('[data-a="tsGo"][data-v="cuphof"]');
     await p2.waitForFunction(() => /마지막으로 받은 결과/.test(document.body.innerText) && /우승 단장 새벽별 2027/.test(document.body.innerText), null, { timeout: 20000 }); console.log('연결 끊김 때 남은 결과 통과');
     /* 관리자 페이지: 설정 › 정보 맨 아래 '관리자' → 틀린 키는 거절 → 맞는 키 → 대회 열기 → 참가 파일 올리기 → 돌리기 → 1~7일차 공개 → 명예의 전당 등록 */
     await p.evaluate(() => { A.go('cfg:info'); }); await p.click('[data-a="admAsk"]'); await p.fill('#admKey', 'wrong-key'); await p.click('[data-a="admKeyOk"]');

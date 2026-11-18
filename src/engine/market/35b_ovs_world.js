@@ -94,14 +94,14 @@ function ovpBack(p){ const O=G.ovp; if(!O||!p||!p.foreign||p.team!=null||p.fkbo|
   if(O.L.length>=OVP.max){ const old=O.L.reduce((m,e)=>e.a>m.a?e:m,O.L[0]); if(old.a<=p.age)return false; O.L.splice(O.L.indexOf(old),1); } /* 가득 차면 가장 나이 많은 선수를 내보낸다 */
   const y=p.ovpY??ovpPrevY(p.fday),L=JSON.parse(JSON.stringify(p.ovpL||[]));const put=(h,yy)=>{const q=ovpLineE(h,h.y??yy),i=L.findIndex(l=>l.y===q.y&&l.l===q.l&&(l.c??'')===(q.c??'')&&(l.stint??'')===(q.stint??''));if(i<0)L.push(q);else L[i]=q;};if(p.prev2&&p.prev2.lvl===p.prevLvl)put(p.prev2,y-1);put(p.prev,y); const e=ovpE(p,L),cur=ovpCarryCur(p);if(cur){e.cur=cur;e.l=cur.l;if(e.l!=='트리플A')delete e.c;} const obs=ovpObservation(p,cur);if(obs)e.obs=obs;e.s=p.ovp||1; e.cy=ovpWk(); O.L.push(e); return true; }
 /* 시즌을 마치면(abroadYear): 후보군 모두 한 시즌 기록을 쌓고, 일부는 MLB 콜업·리그 이동·은퇴, 빈자리는 새 선수로 */
-function ovpYear(){ const O=G.ovp||ovpInit(); if(O.y===G.year)return; O.y=G.year; const out=[], NW=[];
-  for(const e of O.L){ if((e.L||[]).some(l=>l.y===G.year&&l.l===e.l))continue; const fr=ovpFr(e), lv=e.l; const c=ovpCurrent(e,1);delete e.cur;delete e.obs;(e.L=e.L||[]).push(c&&c.y===G.year&&c.l===lv?c:ovpGen(e,G.year)); e.L=ovsKeepSeasons(e.L,OVP.keep);
+function ovpYear(){ const O=G.ovp||ovpInit(); if(O.y===G.year)return; O.y=G.year; const out=[],auxOut=[],NW=[];
+  for(const e of O.L){ if((e.L||[]).some(l=>l.y===G.year&&l.l===e.l))continue;const extra=(e.L||[]).some(l=>l.y===G.year),run=()=>{const fr=ovpFr(e), lv=e.l; const c=ovpCurrent(e,1);delete e.cur;delete e.obs;(e.L=e.L||[]).push(c&&c.y===G.year&&c.l===lv?c:ovpGen(e,G.year)); e.L=ovsKeepSeasons(e.L,OVP.keep);
     const o=ovr(fr); if(lv==='트리플A'||lv==='MLB')e.m=(e.m||0)+(lv==='MLB'?(fr.isP?ri(10,30):ri(30,90)):o>=56&&R()<.3?ri(5,30):0); /* 트리플A 선수도 짧게 콜업된다(MLB 통산 경기 수) */
-    if(e.a>=36?R()<.6:e.a>=34?R()<.25:o<44?R()<.3:R()<.05){ out.push(e); continue; }
-    if(lv==='트리플A'&&o>=58.5&&e.a<=31&&R()<.2){ out.push(e); if(e.s)NW.push(`예전 외국인 후보 ${e.n}, MLB 콜업 뒤 빅리그에 자리`); continue; } /* 빅리그에 자리 잡으면 후보군을 떠난다 */
+    if(e.a>=36?R()<.6:e.a>=34?R()<.25:o<44?R()<.3:R()<.05){ out.push(e);return; }
+    if(lv==='트리플A'&&o>=58.5&&e.a<=31&&R()<.2){ out.push(e); if(e.s)NW.push(`예전 외국인 후보 ${e.n}, MLB 콜업 뒤 빅리그에 자리`);return; } /* 빅리그에 자리 잡으면 후보군을 떠난다 */
     if(lv==='NPB 2군'&&o>=55&&R()<.3)e.l='NPB 1군'; else if(lv==='NPB 1군'&&o<52&&R()<.5)e.l='NPB 2군'; else if(lv==='트리플A'&&e.a>=32&&o<50&&R()<.3){ e.l='멕시코리그'; delete e.c; } else if(lv==='더블A'&&o>=54&&R()<.4){ e.l='트리플A'; e.c=ovlHashIdx('aaa',e.i,OVL_C.AAA.length); }
-    if(lv==='NPB 1군'&&e.l==='NPB 1군'&&o>=60&&e.a<=31&&R()<.15){ out.push(e); if(e.s)NW.push(`예전 외국인 후보 ${e.n}, NPB 활약 뒤 MLB 계약`); } }
-  O.L=O.L.filter(e=>!out.includes(e)); let g=0; while(O.L.length<OVP.n&&g++<OVP.n){ const e=ovpFresh(); if(e)O.L.push(e); }
+    if(lv==='NPB 1군'&&e.l==='NPB 1군'&&o>=60&&e.a<=31&&R()<.15){ out.push(e); if(e.s)NW.push(`예전 외국인 후보 ${e.n}, NPB 활약 뒤 MLB 계약`); }};if(extra){withRng(rngHash('ovpExtraYear',e.i,G.year,e.l),run);if(out.includes(e))auxOut.push(e);}else run();}
+  O.L=O.L.filter(e=>!out.includes(e));let g=0;/* 새 추가 재임의 이탈 자리는 기존 보충 난수 슬롯에 포함하지 않는다. */while(O.L.length+auxOut.length<OVP.n&&g++<OVP.n){const e=ovpFresh();if(e)O.L.push(e);}for(const left of auxOut){if(O.L.length>=OVP.n)break;const target=Math.min(OVP.n,O.L.length+1);withRng(rngHash('ovpExtraFill',left.i,G.year),()=>{let n=0;while(O.L.length<target&&n++<OVP.n){const e=ovpFresh();if(e)O.L.push(e);}});}
   for(const t of NW.slice(0,2))wire('해외',t,{}); return out.length; }
 const ovpFr=e=>({id:e.i,isP:!!e.P,age:e.a,r:e.r,role:e.ro,velo:e.v,th:e.th,bt:e.bt,pos:e.ps,addP:e.ap});
 /* 한 시즌 기록(그 리그 수준·환경 편차, 시장 후보의 지난 시즌 기록과 같은 식) */
