@@ -62,10 +62,13 @@ function coachOther(role,srt){ const C=coachesOf(G.user); const SF={tot:c=>-(c.s
       ${coachAbBox(c)}${staffBioBox(c,'coach',t.id)}<div class="pcb">${b(T1,'같은 자리로 영입')}${T2?b(T2,`${CROLE[pr].l}(으)로 승격 제의`):''}${pending?'<p class="small muted keep csl-note">아직 합류 전인 코치는 합류 시즌부터 영입을 제의할 수 있습니다.</p>':''}${cd?`<p class="small muted keep csl-note">${dmd(G.poachCd[c.id])}까지 다시 만나 주지 않습니다.</p>`:''}</div></div>`; };
   return `<p class="small muted tipme">다른 구단 코치는 연봉을 올려 주거나 한 단계 높은 자리를 주면 옮겨 옵니다. 높은 자리 제안이 더 잘 통합니다. ${poachOff()?'지금은 비시즌이라 계약이 1년 이하 남은 코치는 보상금 없이 데려올 수 있습니다.':'시즌 중에는 남은 계약에 대한 보상금을 원 소속 구단에 냅니다.'} 감독 사단 코치는 감독 곁을 잘 떠나지 않고, 우리 구단 출신은 잘 돌아옵니다. 빼 오면 그 구단 단장과 친분이 떨어집니다. 거절당하면 30일 동안 다시 제의할 수 없습니다.</p>
     ${(()=>{ const P=pager('cpo',L.slice(0,40),cardPageSize()); return `<div class="cgrid" data-pg="cpo">${P.items.map(card).join('')}</div>${P.bar}`; })()}`; }
+/* 코치 시장 후보 목록(보직·이름·정렬). 비교 표는 이 목록을 CMK_ROWS명씩 쪽으로 나눠 보여 준다(순서는 그대로) */
+const CMK_ROWS=20, CMK_SF={tot:c=>-(c.sk+c.dv),sk:c=>-c.sk,dv:c=>-c.dv,sal:c=>c.sal};
+function cmkList(M,role,cq,srt){ const f=CMK_SF[srt]||CMK_SF.tot; return (M||[]).filter(c=>(role==='all'||c.role===role)&&(!cq||c.name.includes(cq))).sort((a,b)=>f(a)-f(b)); }
 function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); const mode=UI.cmode||'free';
-  const srt=UI.csort||'tot'; const SF={tot:c=>-(c.sk+c.dv),sk:c=>-c.sk,dv:c=>-c.dv,sal:c=>c.sal}; const otherN=G.teams.filter(t=>t.id!==G.user).reduce((a,t)=>a+CKEYS.filter(k=>G.coach&&G.coach[t.id]&&G.coach[t.id][k]).length,0);
+  const srt=UI.csort||'tot'; const otherN=G.teams.filter(t=>t.id!==G.user).reduce((a,t)=>a+CKEYS.filter(k=>G.coach&&G.coach[t.id]&&G.coach[t.id][k]).length,0);
   const modeBar=''; const _mb=`<div class="seg"><button data-a="cmode" data-v="free" class="${mode==='free'?'on':''}">채용 후보 ${(G.cmarket||[]).length}</button><button data-a="cmode" data-v="other" class="${mode==='other'?'on':''}">다른 구단 코치 ${otherN}</button></div>`;
-  const M=G.cmarket||[]; const cq=String(UI.cmkQ||'').trim(); const L=M.filter(c=>(role==='all'||c.role===role)&&(!cq||c.name.includes(cq))).sort((a,b)=>SF[srt](a)-SF[srt](b));
+  const M=G.cmarket||[]; const cq=String(UI.cmkQ||'').trim(); const L=cmkList(M,role,cq,srt);
   const vw=`<span class="fbar-side"><span class="seg smk-vw"><button data-a="cmkView" data-v="t" class="${UI.cmkView!=='c'?'on':''}">비교 표</button><button data-a="cmkView" data-v="c" class="${UI.cmkView==='c'?'on':''}">카드</button></span></span>`;
   const fb=(other,side)=>filterBar({id:'cmk',inline:true,cls:'cmk-fbar',q:{k:'cmkQ',v:cq,ph:'이름 검색',label:'코치 이름 검색'},side,groups:[{l:'후보',a:'smkSrc',cur:other?'oth':'free',def:'free',opts:[['free','자유 계약 후보'],['oth','다른 구단 소속']]},{l:'보직',a:'crole',cls:'coach-role-buttons',cur:role,def:'all',opts:[['all','전체'],...CKEYS.map(k=>[k,CROLE[k].l])].map(([k,l])=>[k,`${l}${other?'':` <i class="cnt">${k==='all'?M.length:M.filter(c=>c.role===k).length}</i>`}${k!=='all'&&!C[k]?' <i class="cnt" style="background:var(--bad);color:#fff">빈자리</i>':''}`])},{l:'정렬',a:'csort',cur:srt,def:'tot',nochip:true,opts:[['tot','종합순'],['sk','지도력순'],['dv','육성력순'],['sal','연봉 낮은 순']]}]});
   const chips=fb(false,vw)+`<p class="small muted">자리마다 4~5명이 있고, 매달 초 새 후보가 들어오고 일부는 떠납니다. 겨울에는 다른 구단에서 정리된 코치도 시장에 나옵니다.</p>`;
@@ -83,9 +86,10 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
   if(!L.length)return modeBar+chips+'<p class="small muted">이 자리 후보가 없습니다. 겨울에 새 후보가 나옵니다.</p>';
   if(UI.cmkView==='c'){ const P=pager('cmk'+role+srt,L,cardPageSize()); return modeBar+chips+cmkCmp(role,`<div class="cgrid" data-pg="${'cmk'+role+srt}">${P.items.map(card).join('')}</div>${P.bar}`); }
   /* 비교 목록: 한 줄에 후보·지도·육성·연봉·계약 버튼, 아래 줄에 이 자리 핵심 능력. 이름을 누르면 그 줄 아래에 상세 카드 */
-  const rows=L.map(c=>stRow({c,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null},sub:`${c.ob?obTag(c.ob).trim()+' ':''}${CROLE[c.role].l} · ${c.age}세${c.star?' · 스타':''}${cmRivTxt(c)}` /* 은퇴 선수 출신은 이름이 잘리지 않게 둘째 줄 앞에(카페 11-09c) */,tag:C[c.role]?'':'<span class="pill bad">빈자리</span>',cur:C[c.role],open:String(UI.cmkOpen)===String(c.id),openA:'cmkOpen',
+  const TP=pager('cmt'+role+srt,L,CMK_ROWS); /* 겨울 '전체' 후보는 100명이 넘는다: 한 쪽 20명씩(카페 11-17 코치 채용 렉 — 줄마다 화면 계산이 커서 누를 때마다 끊겼다) */
+  const rows=TP.items.map(c=>stRow({c,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null},sub:`${c.ob?obTag(c.ob).trim()+' ':''}${CROLE[c.role].l} · ${c.age}세${c.star?' · 스타':''}${cmRivTxt(c)}` /* 은퇴 선수 출신은 이름이 잘리지 않게 둘째 줄 앞에(카페 11-09c) */,tag:C[c.role]?'':'<span class="pill bad">빈자리</span>',cur:C[c.role],open:String(UI.cmkOpen)===String(c.id),openA:'cmkOpen',
     acts:`<button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약</button>`,detail:()=>candDetail(c)})).join('');
-  return modeBar+chips+cmkCmp(role,`<div class="st-list">${stHead()}${rows}</div>`)+`${role==='all'?'<p class="small muted">보직을 고르면 지금 우리 코치 카드가 왼쪽에 고정돼 후보와 바로 비교할 수 있습니다.</p>':''}<p class="small muted">지도·육성 옆 숫자는 지금 그 자리 코치와의 차이(우리 팀에서 일할 때 기준). 줄을 누르면 능력 카드와 2년 계약이 열립니다.</p>`+joinTip; }
+  return modeBar+chips+cmkCmp(role,`<div class="st-list" data-pg="${'cmt'+role+srt}">${stHead()}${rows}</div>${TP.bar}`)+`${role==='all'?'<p class="small muted">보직을 고르면 지금 우리 코치 카드가 왼쪽에 고정돼 후보와 바로 비교할 수 있습니다.</p>':''}<p class="small muted">지도·육성 옆 숫자는 지금 그 자리 코치와의 차이(우리 팀에서 일할 때 기준). 줄을 누르면 능력 카드와 2년 계약이 열립니다.</p>`+joinTip; }
 /* 스태프 한 줄(시장·우리 코치진 공용) */
 const stHead=()=>`<div class="st-r st-h"><span>코치</span><span>지도</span><span>육성</span><span>연봉</span><span>이 자리 핵심 능력</span></div>`;
 function stRow(o){ const c=o.c, a=cAb(c), cur=o.cur;
