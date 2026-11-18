@@ -6,6 +6,7 @@ import { PID, PLATFORMS } from './auth.js';
 import { currentSeason, rollSeason } from './season.js';
 import { statStmts, takeUsage } from './usage.js';
 import { SCHEMA_VERSION, schemaStatements } from './schema.js';
+import { cloudStatements, cloudStats, deleteCloud } from './cloud.js';
 import { ensureMeta, META_SQL, RANK_ORDER, bumpCache, bumpStmt, GEN_SEC, _genReset } from './ladder.js';
 
 /* 무료 한도(2026-11 Cloudflare 문서 기준. 바뀔 수 있다) */
@@ -14,7 +15,7 @@ export const PAID_MONTH = Object.freeze({ d1_r: 25e9, d1_w: 5e7, kv_w: 1e6, req:
 const DAY = 86400e3;
 const KEYS = ['active', 'players_new', 'decks_new', 'decks_upd', 'leagues', 'promos', 'demos', 'd1_r', 'd1_w', 'kv_w'];
 
-export async function stats(db, now) {
+export async function stats(db, now, env) {
   /* 지금까지 모은 사용량을 먼저 적는다 */
   const u = takeUsage(); if (u.d1_r || u.d1_w || u.kv_w) await db.batch(statStmts(db, now, u));
   const s = await currentSeason(db, now);
@@ -40,7 +41,8 @@ export async function stats(db, now) {
   const totals = { players: await cnt('SELECT COUNT(*) AS n FROM players'), decks: await cnt('SELECT COUNT(*) AS n FROM decks'), hidden: await cnt('SELECT COUNT(*) AS n FROM players WHERE hidden = 1') };
   const today = by[days[days.length - 1]];
   const usage = { day: days[days.length - 1], d1_r: today.d1_r || 0, d1_w: today.d1_w || 0, kv_w: today.kv_w || 0, free: FREE, pct: { d1_r: pct(today.d1_r, FREE.d1_r), d1_w: pct(today.d1_w, FREE.d1_w), kv_w: pct(today.kv_w, FREE.kv_w) }, note: '이 서버 인스턴스가 센 추정치입니다. 정확한 값은 Cloudflare 대시보드 › D1 › 측정항목.' };
-  return json(200, { ok: true, source: 'd1', at: now, season: s, windows, tiers, hours, platforms, trend, top, feed, decks, totals, usage, cache: CACHE_NOTE });
+  const cloud = await cloudStats(env, db, now); /* 클라우드 저장: 슬롯 수·용량·오늘 올리기(본문은 읽지 않는다) */
+  return json(200, { ok: true, source: 'd1', at: now, season: s, windows, tiers, hours, platforms, trend, top, feed, decks, totals, usage, cloud, cache: CACHE_NOTE });
 }
 const pct = (v, max) => Math.round((v || 0) / max * 1000) / 10;
 /* 숨김·삭제 뒤 공개 화면에 남는 시간(srv2 #62). 관리자 화면이 그대로 보여 준다 */
@@ -76,8 +78,8 @@ async function exportRows(url, db) {
   return { kind, total, returned: rows.length, truncated: more, next: more && rows.length ? String(rows[rows.length - 1].id) : null, rows };
 }
 
-export async function handleAdmin(rest, req, url, db, now) {
-  if (rest === 'stats' && req.method === 'GET') return stats(db, now);
+export async function handleAdmin(rest, req, url, db, now, env) {
+  if (rest === 'stats' && req.method === 'GET') return stats(db, now, env);
   if (rest === 'players' && req.method === 'GET') {
     const q = String(url.searchParams.get('q') || '').trim().slice(0, 20);
     const r = q ? await db.prepare("SELECT id, nickname, platform, created, last_seen, hidden FROM players WHERE nickname LIKE ? OR id = ? ORDER BY last_seen DESC LIMIT 100").bind('%' + q.replace(/[%_]/g, '') + '%', q).all()
@@ -93,7 +95,7 @@ export async function handleAdmin(rest, req, url, db, now) {
     return json(200, { ok: true, pid: b.pid, hide: b.hide ? 1 : 0, cache: CACHE_NOTE });
   }
   const dm = rest.match(/^player\/(p[0-9a-f]{16})$/);
-  if (dm && req.method === 'DELETE') { await deletePlayer(db, dm[1]); return json(200, { ok: true, cache: CACHE_NOTE }); }
+  if (dm && req.method === 'DELETE') { await deletePlayer(db, dm[1], env); return json(200, { ok: true, cache: CACHE_NOTE }); }
   const dd = rest.match(/^deck\/(p[0-9a-f]{16})$/);
   if (dd && req.method === 'DELETE') { await deleteDeck(db, dd[1]); return json(200, { ok: true, cache: CACHE_NOTE }); }
   /* CSV 내보내기용 줄(래더 v2, 사용자 11-17; srv2 #52 페이지): ?kind=decks|results&n=(최대 2000)&cursor=&from=&to= → {rows, total, returned, truncated, next}. 화면이 CSV로 바꾼다 */
@@ -103,7 +105,8 @@ export async function handleAdmin(rest, req, url, db, now) {
 }
 /* 플레이어와 그 기록 전부 지우기(본인 요청 DELETE /player, 관리자 삭제). 다른 사람 h2h에 남은 상대 기록도 지운다.
    한 batch(트랜잭션)라 동시에 온 결과·덱 등록과 섞여도 반쯤 지워진 상태가 없다(그쪽 쓰기는 플레이어가 있을 때만 들어간다: srv2 #61). 공개 캐시 세대도 올린다 */
-export async function deletePlayer(db, pid) {
+export async function deletePlayer(db, pid, env) {
+  await deleteCloud(env, db, pid); /* 클라우드 저장: R2 본문과 cloud_* 줄(먼저: 실패하면 플레이어도 남아 다시 지울 수 있다) */
   const meta = await ensureMeta(db);
   await db.batch((meta ? [db.prepare('DELETE FROM deck_meta WHERE player_id = ?').bind(pid)] : [])
     .concat(['devices', 'identities', 'decks', 'ladder_entries', 'league_results', 'events'].map(t => db.prepare(`DELETE FROM ${t} WHERE player_id = ?`).bind(pid)))
@@ -118,6 +121,6 @@ export async function deleteDeck(db, pid) {
 }
 /* 표 만들기: 같은 SQL을 문장별로(여러 번 해도 안전) */
 export async function migrate(db) {
-  const L = schemaStatements().concat([META_SQL]); await db.batch(L.map(q => db.prepare(q))); /* deck_meta: migrations/0002_deck_meta.sql(래더 v2) */
+  const L = schemaStatements().concat([META_SQL], cloudStatements()); await db.batch(L.map(q => db.prepare(q))); /* deck_meta: migrations/0002_deck_meta.sql(래더 v2), cloud_*: migrations/0003_cloud_saves.sql(클라우드 저장) */
   return json(200, { ok: true, schema: SCHEMA_VERSION, statements: L.length });
 }
