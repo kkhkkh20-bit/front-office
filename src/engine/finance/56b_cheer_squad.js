@@ -20,6 +20,9 @@ function cheerMk(S,rook){ const q=CHEER_AG[S.ag].q, g=(b)=>clamp(Math.round(N(b+
   const yrs=rook?0:ri(1,7), m={id:(S.nid=(S.nid||0)+1),name,age:rook?ri(20,23):clamp(20+yrs+ri(0,2),21,27) /* 사진 풀(v15)이 20~26세라 단원 나이도 젊게 */,yrs,vis:g(11),pop:g(rook?7:10),svc:g(10),dance:g(rook?9:11),sta:g(11),dil:g(11),fat:0,on:true,inj:0,sl:0,app:0};
   m.fol=Math.round(m.pop*m.pop*rnd(300,700)); return m; }
 function cheerFee(m,ag){ return Math.max(1,Math.round(CHEER_AG[ag||'han'].fee*(.5+(m.pop+m.dance)/20))); } /* 월 수수료(100만 원 단위, 대행사에 낸다) */
+/* 단원 배정 전에 확정할 수 있는 최대 월 요금으로 자금만 확인한다. 실제 청구는 배정된 단원 요금이다. */
+function cheerReserve(ag,lv,S,replace){ const n=CHEER_N[lv], max=cheerFee({pop:20,dance:20},ag), F=G.fanOps||{}, fixed=FAN_OPS.cheer.m[Math.max(lv,F.mx?.cheer||0)]; let fee=replace?n*max:0; if(S&&!replace){ const kept=[...S.L].sort((a,b)=>(a.pop+a.dance)-(b.pop+b.dance)).slice(Math.max(0,S.L.length-n)); fee=sum(kept.map(m=>cheerFee(m,ag)))+Math.max(0,n-kept.length)*max; } return fixed+Math.max(fee,S?.payPeak||0,S?sum(S.L.map(m=>cheerFee(m,S.ag))):0); }
+function cheerFundsWhy(ag,lv,S,replace){ const why=fanCashWhy(cheerReserve(ag,lv,S,replace)); return why?(replace||S&&S.L.length<CHEER_N[lv]?'신규 단원 배정 전 최대 월 수수료 기준으로 운영 자금을 확보해야 합니다. ':'')+why:''; }
 function cheerTrackFee(S){ const fee=sum((S.L||[]).map(m=>cheerFee(m,S.ag))); S.payPeak=Math.max(S.payPeak||0,fee); } /* 이미 쓴 월 계약 요금은 대행사·정원 변경 뒤에도 보존 */
 function cheerNeed(){ return CHEER_STAGE[(G.fanOps&&G.fanOps.cheer)||0]; }
 /* 단원 수를 응원단 단계에 맞춘다: 모자라면 대행사가 보내고(신인 위주), 넘치면 인기·댄스가 낮은 단원부터 계약 종료 */
@@ -27,7 +30,7 @@ function cheerFill(S,pr){ cheerTrackFee(S); const n=CHEER_N[(G.fanOps&&G.fanOps.
   while(S.L.length<n){ const m=cheerMk(S,R()<(pr??.6)); S.L.push(m); add.push(m.name); }
   if(S.L.length>n){ const L=[...S.L].sort((a,b)=>(a.pop+a.dance)-(b.pop+b.dance)), x=new Set(L.slice(0,S.L.length-n).map(m=>m.id)); for(const m of S.L)if(x.has(m.id))out.push(m.name); S.L=S.L.filter(m=>!x.has(m.id)); } /* 동명이인이 있어도 정원만큼만(검수 11-09zza) */
   cheerTrackFee(S); return {add,out}; }
-function cheerSq(ag){ const F=fanOps(); if(!F.cs){ F.cs={ag:ag||'han',L:[],nid:0,auto:true,ev:null,last:null}; cheerFill(F.cs); } return F.cs; }
+function cheerSq(ag){ const F=fanOps(); if(!F.cs){ F.cs={ag:ag||'han',L:[],nid:0,auto:true,ev:null,last:null,d0:G.day,payFrom:G.day}; cheerFill(F.cs); } return F.cs; }
 function cheerPay(){ const S=!G.unemp&&G.fanOps&&G.fanOps.cs; return S?sum(S.L.map(m=>cheerFee(m,S.ag))):0; }
 /* 오늘(다음) 홈경기 무대: 자동이면 덜 지친 단원부터, 직접이면 선발로 둔 단원 중 덜 지친 순 */
 function cheerStage(S){ const L=S.L.filter(m=>!m.inj&&(S.auto||m.on)); return L.sort((a,b)=>a.fat-b.fat||b.pop-a.pop).slice(0,cheerNeed()); }
@@ -42,7 +45,7 @@ function cheerAtt(day,gid){ if(G.unemp||!G.fanOps||!G.fanOps.cs)return 0; const 
 /* 매일(그날 경기를 다 치른 뒤): 부상·슬럼프가 풀리고, 오늘 무대에 서지 않은 단원은 쉰다. 떠난 구단 응원단도 그 구단이 운영한다(검수 11-09zza) */
 function cheerDaily(){ if(!G._away){ try{ fanBkDaily(); }catch(e){} for(const k of Object.keys(G.fanYrT||{}))if(+k!==G.user||G.unemp){ fanAway(+k,fanBkDaily,true); fanAway(+k,cheerDaily); } } /* 잡아 둔 행사 우천 순연·환불(검수 11-17 #292): 떠난 구단은 그 구단 장부로 */
   if(G.unemp||!G.fanOps||!G.fanOps.cs)return; const S=G.fanOps.cs; /* 대행사와 계약한 응원단만(유튜브만 켜도 만들어지지 않게, 검수 11-09j) */ const hg=!!(S.last&&S.last.d===G.day);
-  for(const m of S.L){ if(m.inj>0){ m.inj--; m.fat=Math.max(0,m.fat-12); } else if(m.sl>0)m.sl--; if(m.inj||m.pd===G.day)continue; m.fat=Math.max(0,Math.round(m.fat-(hg?6:10)-m.sta*.3)); } }
+  for(const m of S.L){ if(m.inj>0){ if(m.injD!==G.day)m.inj--; m.fat=Math.max(0,m.fat-12); } else if(m.sl>0)m.sl--; if(m.inj||m.pd===G.day)continue; m.fat=Math.max(0,Math.round(m.fat-(hg?6:10)-m.sta*.3)); } }
 const cheerNews=(t,b,tone)=>fanNews(t,b,tone,1); /* 떠난 구단 대리 처리 중엔 리그 소식으로(검수 11-09zza), 기사 효과는 그 구단 여론에 똑같이(검수 11-17 #298) */
 /* 단원 사진 키는 구단별: 단원 번호는 구단 응원단마다 1부터라 다른 구단 단원과 겹친다(검수 11-17 #302) */
 const cheerKey=(m,tid)=>'P:cheerm:'+(tid??G.user)+':'+m.id;
@@ -53,15 +56,17 @@ function cheerGame(day,h){ if(h!==G.user||G.unemp){ if(!G._away&&(G.fanYrT||{})[
     m.fat=clamp(Math.round(m.fat+14-m.sta*.4),0,100); m.app++; m.fol+=Math.round(m.pop*rnd(20,60)*(1+(m.svc-10)/20));
     if(R()<(m.dance+m.svc)/800)m.pop=Math.min(20,m.pop+1);
     const risk=m.fat>=70?(m.fat-65)/250*(1.3-m.dil/30):0;
-    if(R()<risk*.4){ m.inj=ri(7,20); m.fat=Math.max(m.fat,60); mail('마케팅팀',`치어리더 ${m.name} 부상`,`연속 무대로 지친 ${m.name}이(가) 공연 중 발목을 다쳤습니다. ${m.inj}일 동안 무대에 서지 못합니다. 피로가 높은 단원은 휴식을 주세요.`,{kind:'구단'}); fanLog(`치어리더 ${m.name} 부상(${m.inj}일)`); }
+    if(R()<risk*.4){ m.inj=ri(7,20); m.injD=day; m.fat=Math.max(m.fat,60); mail('마케팅팀',`치어리더 ${m.name} 부상`,`연속 무대로 지친 ${m.name}이(가) 공연 중 발목을 다쳤습니다. ${m.inj}일 동안 무대에 서지 못합니다. 피로가 높은 단원은 휴식을 주세요.`,{kind:'구단'}); fanLog(`치어리더 ${m.name} 부상(${m.inj}일)`); }
     else if(R()<risk)m.sl=ri(5,12);
     else if(!viral&&!m.sl&&R()<.004*(1+(m.vis+m.dance+m.pop-30)/30))viral=m; }
   if(viral){ const m=viral; m.pop=Math.min(20,m.pop+ri(1,2)); m.fol=Math.round(m.fol*rnd(1.2,1.5)); G.pr.fan=clamp(G.pr.fan+1,0,100);
     cheerNews(`${tshort(G.user)} 치어리더 ${m.name}, 응원 영상 SNS 화제`,`${m.name}이(가) 홈경기에서 선보인 응원 동작 영상이 SNS에서 빠르게 퍼졌습니다. 팔로워가 ${Math.round(m.fol/1000)}천 명을 넘었습니다.`,1); fanLog(`치어리더 ${m.name} 응원 영상 화제`); }
   const gid=cheerGid(day), g=S.last&&S.last.d===day&&S.last.g?S.last.g:{}; g[gid]=pw; S.last={d:day,n:U.length,need:cheerNeed(),pw,g}; } /* 그날 경기마다 따로 남긴다(더블헤더 1·2경기, #303) */
+/* 신규 대행사는 계약일부터 청구한다. 시작일 없는 옛 계약은 기존 한 달 요금을 유지한다. */
+function cheerMonthPay(S){ const o=dobj(G.day-1), from=dnum(o.y,o.m,1), n=Math.max(1,G.day-from), d=Math.max(from,S.payFrom??S.d0??from), fee=Math.max(cheerPay(),S.payPeak||0); return Math.round(fee*clamp((G.day-d)/n,0,1)*10)/10; }
 /* 매달 1일: 대행사 수수료, 팬서비스 → 팬 여론, 인기 단원 → 상품 수입, 팔로워 기사. 1월에는 한 해 정리 */
 function cheerMonthly(){ if(G.unemp||!G.fanOps||!G.fanOps.cs)return; const S=G.fanOps.cs; prInit(); cheerFill(S);
-  const pay=Math.max(cheerPay(),S.payPeak||0); S.payPeak=0; G.spend.fan=(G.spend.fan||0)+pay;
+  const pay=cheerMonthPay(S); S.payPeak=0; S.payFrom=G.day; G.spend.fan=(G.spend.fan||0)+pay;
   if(period()==='season')G.pr.fan=clamp(G.pr.fan+(avg(S.L.map(m=>m.svc))-10)*.03,0,100);
   const inc=Math.round(sum(S.L.map(m=>Math.max(0,m.pop-12)))*.6); if(inc)G.spend.fanIn=(G.spend.fanIn||0)+inc;
   for(const m of S.L){ const k=m.fol>=300000?3:m.fol>=100000?1:0; if(k>(m.fm||0)){ m.fm=k; cheerNews(`${tshort(G.user)} 치어리더 ${m.name}, SNS 팔로워 ${k===3?'30만':'10만'} 돌파`,`${m.name}의 응원 영상과 팬서비스가 꾸준히 사랑받고 있습니다. 구단 상품 매장에서도 관련 굿즈 문의가 늘었습니다.`,1); /* 이직 중 달성도 리그 소식으로(검수 11-09zza) */ } }
@@ -69,12 +74,13 @@ function cheerMonthly(){ if(G.unemp||!G.fanOps||!G.fanOps.cs)return; const S=G.f
 function cheerYear(S){ const L=[];
   for(const m of [...S.L]){ m.age++; m.yrs++; m.app=0; m.fat=0; /* 부상·슬럼프는 일일 회복으로만 끝난다 */ m.dance=clamp(m.dance+(m.age<=24?ri(0,2):m.age>=28?-ri(0,1):ri(-1,1)),3,20);
     if(R()<(m.age>=27?(m.age-26)*.15:0)+(m.yrs>=8?.2:0)){ S.L=S.L.filter(x=>x!==m); L.push(`${m.name}(${m.age}세, ${m.yrs}년 차) 은퇴`); continue; }
-    if(m.pop>=15&&R()<.35-(m.dil-10)*.02){ S.L=S.L.filter(x=>x!==m); L.push(`${m.name} 다른 구단 대행사로 이적(인기 ${m.pop})`); if(m.pop>=17)news('구단',`인기 치어리더 ${m.name}, 다른 구단 응원단으로`,`${tshort(G.user)} 응원단의 간판 ${m.name}이(가) 다른 구단 대행사와 계약했습니다. 팬들의 아쉬움이 큽니다.`,-1); } }
+    if(m.pop>=15&&R()<.35-(m.dil-10)*.02){ S.L=S.L.filter(x=>x!==m); L.push(`${m.name} 다른 구단 대행사로 이적(인기 ${m.pop})`); if(m.pop>=17)cheerNews(`인기 치어리더 ${m.name}, 다른 구단 응원단으로`,`${tshort(G.user)} 응원단의 간판 ${m.name}이(가) 다른 구단 대행사와 계약했습니다. 팬들의 아쉬움이 큽니다.`,-1); } }
   const f=cheerFill(S); if(f.add.length)L.push(`신인·새 단원 합류: ${f.add.join(', ')}`);
   mail('마케팅팀',`${CHEER_AG[S.ag].l} 응원단 재계약`,`대행사와 ${G.year} 시즌 응원단 계약을 이어 갑니다. 단원 ${S.L.length}명, 월 수수료 ${money(cheerPay())}.\n${L.length?L.join('\n'):'떠난 단원은 없습니다.'}\n대행사를 바꾸려면 개막 전에 응원단 화면에서 고르세요(단원이 모두 바뀝니다).`,{kind:'구단',acts:[{l:'응원단',a:'go',v:'club:crew'}]}); }
 function cheerAg(k){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; if(!CHEER_AG[k])return '없는 대행사입니다.';
-  if(!fanOps().cs){ const S=cheerSq(k); fanLog(`응원단 대행사 계약: ${CHEER_AG[k].l}`); return `${CHEER_AG[k].l}과(와) 응원단 계약을 맺었습니다. 단원 ${S.L.length}명, 월 수수료 ${money(cheerPay())}.`; } /* 응원단은 계약할 때 생긴다(화면을 보기만 해서는 안 생김, 검수 11-09j) */ const S=cheerSq(); if(S.ag===k)return `이미 ${CHEER_AG[k].l}과(와) 계약 중입니다.`;
+  if(!fanOps().cs){ const why=cheerFundsWhy(k,fanOps().cheer||0,null,true); if(why)return why; const S=cheerSq(k); fanLog(`응원단 대행사 계약: ${CHEER_AG[k].l}`); return `${CHEER_AG[k].l}과(와) 응원단 계약을 맺었습니다. 단원 ${S.L.length}명, 월 수수료 ${money(cheerPay())}.`; } /* 응원단은 계약할 때 생긴다(화면을 보기만 해서는 안 생김, 검수 11-09j) */ const S=cheerSq(); if(S.ag===k)return `이미 ${CHEER_AG[k].l}과(와) 계약 중입니다.`;
   if(period()==='season'||period()==='post')return '시즌 중에는 대행사를 바꿀 수 없습니다. 시즌이 끝난 뒤 바꾸세요.';
+  const why=cheerFundsWhy(k,fanOps().cheer||0,S,true); if(why)return why;
   cheerTrackFee(S); S.ag=k; S.L=[]; cheerFill(S,.3); /* 새 대행사 단원: 경력 단원 위주 */
   fanLog(`응원단 대행사 변경: ${CHEER_AG[k].l}`); return `${CHEER_AG[k].l}과(와) 계약했습니다. 단원 ${S.L.length}명이 새로 왔습니다. 월 수수료 ${money(cheerPay())}.`; }
 function cheerOn(id){ if(!(G.fanOps&&G.fanOps.cs))return '먼저 응원단 대행사와 계약하세요.'; const S=cheerSq(); const m=S.L.find(x=>x.id===+id); if(!m)return '없는 단원입니다.'; if(S.auto){ const U=new Set(cheerStage(S).map(x=>x.id)); for(const x of S.L)x.on=U.has(x.id); S.auto=false; } /* 자동에서 넘어오면 지금 무대 명단에서 시작 */ m.on=!m.on; return `${m.name}: ${m.on?'선발':'휴식'}.`; }
@@ -83,6 +89,7 @@ function cheerAuto(){ if(!(G.fanOps&&G.fanOps.cs))return '먼저 응원단 대�
 function cheerMeetLeft(){ const S=cheerSq(); return S.ev!=null&&G.day-S.ev<14?`${14-(G.day-S.ev)}일 뒤 다시 열 수 있습니다.`:''; }
 function cheerMeet(){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; if(!(G.fanOps&&G.fanOps.cs))return '먼저 응원단 대행사와 계약하세요.'; const S=cheerSq(), left=cheerMeetLeft(); if(left)return '치어리더 팬 사인회: '+left;
   const U=S.L.filter(m=>!m.inj&&m.fat<85).sort((a,b)=>b.pop-a.pop).slice(0,4); if(U.length<2)return '나설 수 있는 단원이 모자랍니다(부상·피로).';
+  const why=fanCashWhy(5); if(why)return '치어리더 팬 사인회: '+why;
   prInit(); S.ev=G.day; G.spend.fan=(G.spend.fan||0)+5; const sv=avg(U.map(m=>m.svc)), up=sv>=13?2:1; G.pr.fan=clamp(G.pr.fan+up,0,100);
   for(const m of U){ m.fat=Math.min(100,m.fat+18); m.fol+=Math.round(m.pop*rnd(200,400)*(1+(m.svc-10)/20)); if(R()<m.svc/40)m.pop=Math.min(20,m.pop+1); }
   const msg=`치어리더 팬 사인회를 열었습니다(${U.map(m=>m.name).join(', ')}). 팬 여론 호전, 참가 단원 피로 증가.`; fanLog(msg); return msg; }

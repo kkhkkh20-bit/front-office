@@ -47,10 +47,10 @@ function parkHRM(tid,side){ if(tid==null||!G||!G.teams)return 1; return parkRaw(
 function parkHRDir(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; const w=[.6*parkSideF(D,pl),.28*parkSideF(D,'c'),.12*parkSideF(D,op)]; let x=R()*(w[0]+w[1]+w[2]); return x<w[0]?'pull':x<w[0]+w[1]?'mid':'oppo'; }
 const turfM=lv=>Math.max(.7,1-(stadPower(lv)-2)*.05); /* 하한 .7: 12단계(.7225)까지 실제로 줄어든다(검수 11-06: 11→12단계가 .75 하한에 막힘) */
 function stadTurfM(tid){ return turfM(stadOf(tid).lv.turf); }
-function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h,day), base=stadDemCap(h), rc=cap/base; const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
+function attOf(h,a,day,noise,ordinal){ const t=team(h), S=stadOf(h), cap=stadCap(h,day), base=stadDemCap(h), rc=cap/base; const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
   const o=dobj(day); const dow=o.w===6||o.w===0?1.28:o.w===5?1.08:.88; const opp=1+(team(a).market-1)*.35;
   const P=prOf(h), fan=P?(.9+P.fan/500):1; /* 떠난 구단도 그 구단 여론으로(검수 11-09zza) */ const late=o.m>=8&&wp<.44?.9:1;
-  const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(stadPower(S.lv.seat)-2)*.04)*(1+(stadPower(S.lv.vis)-2)*.015)*stadAgeF(h)*(S.dome?1.06:1)*fanAttM(day,h)*starAttM(h)*rivalAttM(h,a)*promoAttM(h,a,day)*visStarM(a)*rainAttM(h,day); /* 라이벌전(91_league_events), 프로모션 데이·원정 스타(38_promotions), 더블헤더 따로 입장(93_rain) */ /* 응원단·테마 데이·서포터즈·스타 선수 */
+  const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(stadPower(S.lv.seat)-2)*.04)*(1+(stadPower(S.lv.vis)-2)*.015)*stadAgeF(h)*(S.dome?1.06:1)*fanAttM(day,h,a,ordinal)*starAttM(h)*rivalAttM(h,a)*promoAttM(h,a,day,ordinal)*visStarM(a)*rainAttM(h,day); /* 라이벌전(91_league_events), 프로모션 데이·원정 스타(38_promotions), 더블헤더 따로 입장(93_rain) */ /* 응원단·테마 데이·서포터즈·스타 선수 */
   if(noise===null){ /* 기대 관중: 3점 가우스-에르미트 근사로 매진 상한까지 반영 */ const z=1.732*.2; return Math.round(base*(Math.min(rc,f*Math.exp(-z))/6+Math.min(rc,f)*2/3+Math.min(rc,f*Math.exp(z))/6)); }
   const n=Math.exp(N(0,.2)); return Math.min(cap,Math.round(base*f*n)); } /* 수요는 원래 좌석(base) 기준, 상한은 지금 좌석(cap). 증설이 없으면 base=cap이라 예전과 같다 */
 /* 스타 효과(사용자 11-09: 스타가 관중을 부른다): 구단 상위 3명 스타 파워 합이 클수록 수요 최대 +5%, 정규시즌 중 대기록 도전(시즌 42홈런·180안타 이상, 25경기 연속 안타 이상)이면 +8% 더.

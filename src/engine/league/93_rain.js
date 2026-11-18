@@ -93,9 +93,9 @@ function rainMovePlans(day,to,op,meta){ const P=G.gmPlan||{}, q=P[day]; let msg=
 function gamePlansInsert(to,h,a,ordinal,retry){ if(!retry||retry.bookingRebased===to)return false; retry.bookingRebased=to;
   const rebase=p=>{ if(p&&p.gk&&p.gk.d===to&&p.gk.h===h&&p.gk.a===a&&p.gk.i>=ordinal)p.gk={...p.gk,i:p.gk.i+1}; };
   rebase((G.gmPlan||{})[to]); rebase(G.sea&&G.sea.promo&&G.sea.promo[h]&&G.sea.promo[h].bk[to]);
-  for(const k of ['watchPlanned','simPlanned'])if(G[k]&&G[k].day===to)rebase(G[k]); return true; }
+  for(const k of ['watchPlanned','simPlanned'])if(G[k]&&G[k].day===to)rebase(G[k]);if(typeof fanBookingRebase==='function')fanBookingRebase(to,h,a,ordinal); return true; }
 function gamePlansMove(day,to,h,a,meta={}){ const m={...meta,h,a}; const result=typeof promoRainout==='function'?promoRainout(h,day,to,m):0;
-  const text=(h===G.user||a===G.user)?rainMovePlans(day,to,h===G.user?a:h,m):''; if(text&&meta.reason)note('일정',`${meta.reason}: ${text}`); return {promo:result,text}; }
+  if(typeof fanBookingMove==='function')fanBookingMove(h,day,to,m); const text=(h===G.user||a===G.user)?rainMovePlans(day,to,h===G.user?a:h,m):''; if(text&&meta.reason)note('일정',`${meta.reason}: ${text}`); return {promo:result,text}; }
 /* 그날 경기가 더블헤더(같은 대진 두 경기)인가, 몇 번째 경기인가: playDay 순서와 같은 목록 */
 function rainGameInfo(day,h,a,i){ const rows=rainGames(day).filter(x=>!x.overflow&&x.h===h&&x.a===a), x=rows.find(x=>x.ordinal===i); return {dh:rows.length>=2?i:0,mk:x?x.from:null}; }
 /* 더블헤더 관중: 경기마다 따로 입장. 37_stadium attOf가 경기 중에만 곱한다(관중 전망·예산에는 안 곱한다) */

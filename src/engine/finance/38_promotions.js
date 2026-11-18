@@ -27,7 +27,7 @@ let _promoOff=false, _visOff=false;
 function promoOf(tid){ const S=G.sea; if(!S)return null; const P=S.promo=S.promo||{}; return P[tid]||(P[tid]={bk:{},log:[],cost:0,inc:0,xatt:0,xtk:0}); }
 function promoHomeOpp(tid,d){ const c=G.cal; if(!c||!c.sched||d<c.open||d>c.end)return null; const g=gmGamePick(d,tid,true); return g?g.a:null; }
 /* 예약이 붙은 경기: 날짜만이 아니라 상대까지(같은 날 미룬 다른 상대 경기에 붙지 않게, #305). 옛 예약(상대 없음)은 그날 아무 경기 */
-const promoFor=(B,a,d,h)=>{ if(!B||B.done||B.a!=null&&a!=null&&B.a!==a)return false; if(d==null||h==null)return true; const gi=typeof RAIN_GI==='object'&&RAIN_GI; if(gi&&gi.day===d&&gi.h===h&&gi.a===a)return gmGameMatches(B,d,h,a,gi.i||1); return !B.gk||B.gk.d===d&&B.gk.h===h&&B.gk.a===a; };
+const promoFor=(B,a,d,h,ordinal)=>{ if(!B||B.done||B.a!=null&&a!=null&&B.a!==a)return false; if(d==null||h==null)return true;if(ordinal!=null)return gmGameMatches(B,d,h,a,ordinal); const gi=typeof RAIN_GI==='object'&&RAIN_GI; if(gi&&gi.day===d&&gi.h===h&&gi.a===a)return gmGameMatches(B,d,h,a,gi.i||1); return !B.gk||B.gk.d===d&&B.gk.h===h&&B.gk.a===a; };
 function promoUsed(tid){ const P=promoOf(tid); return P?P.log.length+Object.values(P.bk).filter(b=>!b.done).length:0; }
 let _promoSC={k:null};
 function promoStar(tid){ const k=G.year+':'+G.day; if(_promoSC.k!==k||_promoSC.g!==G)_promoSC={k,g:G,v:{}}; if(tid in _promoSC.v)return _promoSC.v[tid]; const x=teamStar(tid).L[0]; return _promoSC.v[tid]=x&&x.s>=15?x:null; } /* 하루 한 번만 잰다(추천 예약이 수천 번 묻는다) */
@@ -78,23 +78,23 @@ function promoLift(tid,a,d,k){ const E=PROMO_EV[k], o=dobj(d), why=[]; const S=s
   const near=P.log.some(x=>x.d<d&&d-x.d<=2)||Object.keys(P.bk).some(dd=>+dd<d&&d-dd<=2&&!P.bk[dd].done); const nf=near?.85:1; if(near)why.push('행사가 연달아 있어 조금 약합니다');
   return {m:1+b*f*fat*nf,fat:fat*nf,why,sp}; }
 /* 관중 수요 배율(37_stadium attOf): 그날 잡힌 행사. 다음 시즌 전망·효과 비교 중이면 빼고 본다 */
-function promoAttM(h,a,day){ if(_promoOff||(typeof _stY!=='undefined'&&_stY!=null))return 1; const P=G.sea&&G.sea.promo&&G.sea.promo[h]; const B=P&&P.bk[day]; if(!promoFor(B,a,day,h)||promoExecWhy(h,B.k))return 1; return promoLift(h,a,day,B.k).m; }
+function promoAttM(h,a,day,ordinal){ if(_promoOff||(typeof _stY!=='undefined'&&_stY!=null))return 1; const P=G.sea&&G.sea.promo&&G.sea.promo[h]; const B=P&&P.bk[day]; if(!promoFor(B,a,day,h,ordinal)||promoExecWhy(h,B.k))return 1; return promoLift(h,a,day,B.k).m; }
 /* 원정 스타가 부르는 관중: 원정 팀 상위 3명 이름값(최대 +4%)과 대기록 도전(+3%). 리그 평균으로 나눠 리그 전체 관중은 그대로 */
 let _promoVC={k:null};
 function visStarX(tid){ let x=Math.min(.04,teamStar(tid).v/2500); const c=G.cal; if(c&&G.day>=c.open&&G.day<=c.end&&playersOf(tid).some(p=>{ if((p.hstk||0)>=25)return true; const s=seasonTotal(p,G.year,'1군'); return !!s&&((s.hr||0)>=42||(s.h||0)>=180); }))x+=.03; return x; }
 function visStarM(a){ if(_visOff||a==null||!G.teams||!G.teams[a])return 1; const k=G.year+':'+G.day; if(_promoVC.k!==k||_promoVC.g!==G){ const X=G.teams.map(t=>visStarX(t.id)); _promoVC={k,g:G,X,mean:X.reduce((s,v)=>s+v,0)/X.length}; } const x=_promoVC.X[a]; return x==null?1:(1+x)/(1+_promoVC.mean); }
 /* 기대값(예약 화면·추천·다른 구단 선택): 늘어날 관중, 표값, 행사 수입, 비용, 팬 여론, 손익 */
-function promoEst(tid,d,k,a){ if(a==null)a=promoHomeOpp(tid,d); if(a==null)return null; const E=PROMO_EV[k], S=stadOf(tid), P=promoOf(tid);
-  const keep=P.bk[d], game=gmGamePick(d,tid,true,a); P.bk[d]={k,a,...(keep&&keep.gk?{gk:keep.gk}:game?{gk:gmGameKey(d,tid,a,game.ordinal)}:{})}; let w0,w1; try{ w1=attOf(tid,a,d,null); _promoOff=true; w0=attOf(tid,a,d,null); } finally{ _promoOff=false; if(keep)P.bk[d]=keep; else delete P.bk[d]; }
+function promoEst(tid,d,k,a,gk){ if(a==null)a=promoHomeOpp(tid,d); if(a==null)return null; const E=PROMO_EV[k], S=stadOf(tid), P=promoOf(tid);
+  const keep=P.bk[d], game=gmGamePick(d,tid,true,a), key=gk&&gk.d===d&&gk.h===tid&&gk.a===a?gk:keep?.gk&&keep.gk.d===d&&keep.gk.h===tid&&keep.gk.a===a?keep.gk:game?gmGameKey(d,tid,a,game.ordinal):null; P.bk[d]={k,a,...(key?{gk:key}:{})}; let w0,w1; try{ w1=attOf(tid,a,d,null,key?.i); _promoOff=true; w0=attOf(tid,a,d,null,key?.i); } finally{ _promoOff=false; if(keep)P.bk[d]=keep; else delete P.bk[d]; }
   const L=promoLift(tid,a,d,k), eco=ecoIdx(), tk1=TICKET*eco*PRICE[S.price].m; const xa=Math.max(0,w1-w0), cap=stadCap(tid);
   const tk=xa*tk1, conc=(E.conc||0)*w1*eco*L.fat, mg=(E.mg||0)*w1*eco*L.fat*(L.sp?1+L.sp.s/50:1), disc=(E.disc||0)*w1*tk1, cost=E.c*eco+disc;
   const why=[...L.why]; if(w0>=cap*.97)why.unshift('원래 매진이라 더 들어올 자리가 없습니다'); else if(w1>=cap*.97)why.push('매진에 막혀 효과가 줄었습니다'); if(tid===G.user&&!G.unemp&&G.fanOps&&G.fanOps.boost&&d>=(G.fanOps.boost.from??0)&&d<=G.fanOps.boost.until)why.push('테마 데이 기간이라 둘 중 큰 효과만 납니다');
   return {k,d,a,w0,w1,xa,tk,inc:conc+mg,conc,mg,disc,cost,fan:E.fan*L.fat,net:tk+conc+mg-cost,why,sp:L.sp}; }
 /* 예약·취소: 사람 단장과 다른 구단이 같은 함수를 쓴다 */
-function promoBook(tid,d,k){ d=+d; if(!PROMO_EV[k])return '없는 행사입니다.'; if(!(d>G.day))return '지난 날짜에는 잡을 수 없습니다.'; const a=promoHomeOpp(tid,d); if(a==null)return '그날은 정규시즌 홈경기가 없습니다.';
+function promoBook(tid,d,k){ d=+d; if(!PROMO_EV[k])return '없는 행사입니다.'; if(!(d>G.day))return '지난 날짜에는 잡을 수 없습니다.'; const booked=G.sea?.promo?.[tid]?.bk?.[d],a=booked&&!booked.done&&booked.a!=null?booked.a:promoHomeOpp(tid,d); if(a==null)return '그날은 정규시즌 홈경기가 없습니다.';
   const w=promoWhyNot(tid,d,k); if(w)return w; const P=promoOf(tid); const cur=P.bk[d];
   if(!cur&&promoUsed(tid)>=PROMO_MAX)return `올해 프로모션은 ${PROMO_MAX}번까지입니다.`; if(cur&&cur.k===k)return `이미 ${PROMO_EV[k].l}을(를) 잡아 두었습니다.`;
-  const game=gmGamePick(d,tid,true,a); P.bk[d]={k,a,gk:gmGameKey(d,tid,a,game.ordinal)}; return `${dmd(d)} ${tshort(a)}전에 ${PROMO_EV[k].l}을(를) 잡았습니다. 행사비 ${money(PROMO_EV[k].c*ecoIdx())}은 경기 날 듭니다.`; }
+  const game=gmGamePick(d,tid,true,a); P.bk[d]={...(cur&&!cur.done?cur:{}),k,a,gk:cur&&!cur.done&&cur.gk?cur.gk:gmGameKey(d,tid,a,game.ordinal)}; return `${dmd(d)} ${tshort(a)}전에 ${PROMO_EV[k].l}을(를) 잡았습니다. 행사비 ${money(PROMO_EV[k].c*ecoIdx())}은 경기 날 듭니다.`; }
 function promoCancel(tid,d){ const P=promoOf(tid); const B=P&&P.bk[+d]; if(!B||B.done)return '잡힌 행사가 없습니다.'; delete P.bk[+d]; return `${dmd(+d)} ${PROMO_EV[B.k].l}을(를) 취소했습니다. 비용은 들지 않습니다.`; }
 /* 추천 예약(사람 단장 일괄 예약·다른 구단): 남은 홈경기에서 기대값이 좋은 순서로 n개까지. 한 번 고를 때마다 반복 피로를 다시 계산한다 */
 function promoAuto(tid,n,until){ const c=G.cal; if(!c||!c.sched||G.sea.y!==G.year)return 0; const P=promoOf(tid); n=Math.min(n??PROMO_MAX,PROMO_MAX-promoUsed(tid)); if(n<=0)return 0;
@@ -133,7 +133,7 @@ function visDrawRec(day,h,a){ const m=visStarM(a); if(!(m>1.003))return; const w
 function promoSettle(tid,inc,exp){ const P=G.sea&&G.sea.promo&&G.sea.promo[tid]; if(!P)return; if(P.inc>0)inc.push(['프로모션 부대 수입',Math.round(P.inc)]); if(P.cost>0)exp.push(['프로모션 데이 비용',Math.round(P.cost)]); }
 /* 올해 예산(19_budget, 우리 구단): 치른 행사 + 잡아 둔 행사 기대값 */
 function promoBudget(inc,exp){ if(G.unemp||(G.last&&G.last.y>=G.year))return; const P=G.sea&&G.sea.promo&&G.sea.promo[G.user]; if(!P)return; let c=P.cost, i=P.inc;
-  for(const d of Object.keys(P.bk)){ const B=P.bk[d]; if(B.done)continue; const e=promoEst(G.user,+d,B.k); if(e){ c+=e.cost; i+=e.inc; } }
+  for(const d of Object.keys(P.bk)){ const B=P.bk[d]; if(B.done)continue; const e=promoEst(G.user,+d,B.k,B.a,B.gk); if(e){ c+=e.cost; i+=e.inc; } }
   if(i>0)inc.push(['프로모션 부대 수입',Math.round(i)]); if(c>0)exp.push(['프로모션 데이 비용',Math.round(c),'ops']); }
 /* 관중 요인 설명(구장 화면): 스타 효과를 말로 */
 function starDrawLines(tid){ const L=[]; const T=teamStar(tid); const hm=starAttM(tid); const V=(G.sea&&G.sea.vdraw||{})[tid];
