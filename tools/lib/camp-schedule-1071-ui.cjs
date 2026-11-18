@@ -1,0 +1,2 @@
+const fs=require('node:fs'),path=require('node:path');
+module.exports=root=>{const shell=fs.readFileSync(path.join(root,'src/ui/shell/02_work_tabs.js'),'utf8'),card=shell.slice(shell.indexOf('function campCard(){'),shell.indexOf('function avImg(',shell.indexOf('function campCard(){')));return '(()=>{const UI={},A={},GUARD={},esc=String,csec=(t,b)=>`<section><h2>${t}</h2>${b}</section>`,toast=()=>{},save=()=>{},render=()=>{};\n'+card+fs.readFileSync(path.join(root,'src/ui/league/97_spring_camp_ui.js'),'utf8')+'\nreturn {UI,A,sprcView,sprcSiteBtns,sprcStatTable};})()';};
