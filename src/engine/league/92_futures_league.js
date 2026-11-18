@@ -30,12 +30,17 @@ function flPairsR(F,r){ const all=flTeams(); const cyc=all.length+5, i=r%cyc; le
   if(i<all.length)P=flRR(all,Math.floor(r/cyc)*3+i); else { const j=i-all.length; P=flRR(F.div.N,j).concat(flRR(F.div.S,j)); }
   return P.map(([h,a])=>h===FL_SM?[a,h]:[h,a]); } /* 상무는 원정 */
 /* 그날 퓨처스 경기가 열리는 날인지(flPlayDay와 같은 조건) */
-function flOpenOn(d){ const c=G.cal; return G.flOn!==false&&!!c&&d>=c.open&&d<=c.end&&flDay(d)&&!!(c.sched&&c.sched[d]); }
+function flOpenOn(d){ const c=G.cal; if(G.flOn===false||!c||d<c.open||!flDay(d))return false;
+  /* 원래 편성일을 고정한다. 1군 우천 취소·예비일 재편성은 퓨처스 라운드를 없애거나 추가하지 않는다. */
+  if(!c.flDays){ const incoming={}, dates=new Set([...Object.keys(c.sched||{}),...Object.keys(c.rain||{})]); for(const rows of Object.values(c.rain||{}))for(const r of rows)if(r.to!=null){ incoming[r.to]=(incoming[r.to]||0)+1; dates.add(String(r.to)); }
+    const end=c.rE0??c.end0??c.end; c.flDays=[...dates].map(Number).filter(day=>day>=c.open&&day<=end&&(c.sched?.[day]||[]).length+(c.rain?.[day]||[]).filter(r=>r.origin!=='retry').length>Math.max(incoming[day]||0,(c.mk?.[day]||[]).length)); }
+  return c.flDays.includes(+d); }
 /* 앞날 그 구단 2군 경기: {op,home} 또는 null. 오늘까지 치른 라운드에서 열리는 날만큼 센다(우천·인원 부족 취소는 당일에 확인) */
 function flGameOn(tid,d){ d=+d; if(!flOpenOn(d)||d<=G.day)return null; const y=dobj(d).y; const F0=G.fl&&G.fl.y===y?G.fl:null; let F=F0;
   if(!F){ const ids=G.teams.map(t=>t.id); F={div:{N:ids.filter(id=>FL_NORTH_REG.has(team(id).region)),S:ids.filter(id=>!FL_NORTH_REG.has(team(id).region)).concat([FL_SM])},round:0}; }
   let r=F.round; for(let i=F0?G.day+1:G.cal.open;i<d;i++)if(flOpenOn(i))r++;
-  const m=flPairsR(F,r).find(x=>x[0]===tid||x[1]===tid); return m?{op:m[0]===tid?m[1]:m[0],home:m[0]===tid}:null; }
+  const m=flPairsR(F,r).find(x=>x[0]===tid||x[1]===tid); return m?{op:m[0]===tid?m[1]:m[0],home:m[0]===tid,r}:null; }
+function flPlanMatches(p,g){ return p.op!=null&&p.op===(g.h===G.user?g.a:g.h)&&p.home!=null&&p.home===(g.h===G.user)&&(p.fr==null||p.fr===g.r); }
 /* 오늘 치른 우리 2군 경기(박스스코어 포함) */
 function flOurGame(d){ const F=G.fl; if(!F||F.y!==dobj(d).y)return null; for(let i=F.games.length-1;i>=0;i--){ const x=F.games[i]; if(x.d===d&&(x.h===G.user||x.a===G.user)&&x.box)return x; if(x.d<d)break; } return null; }
 /* 그날 나갈 수 있는 2군 선수 */
@@ -75,12 +80,12 @@ function applyFarm(d,g){ const y=G.year;
         if(p.injFx)injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); if(R()<p.inj*.026*injMult(p)*(inLn?1:.3))injure(p,d,{farm:1}); } } } }
 function flRecord(F,d,h,a,g){ const hs=g.score.h, as=g.score.a; const R0=F.rec; const add=(t,w,l,tt,rs,ra)=>{ const r=R0[t]||(R0[t]={w:0,l:0,d:0,rs:0,ra:0}); r.w+=w; r.l+=l; r.d+=tt; r.rs+=rs; r.ra+=ra; };
   if(hs>as){ add(h,1,0,0,hs,as); add(a,0,1,0,as,hs); } else if(as>hs){ add(a,1,0,0,as,hs); add(h,0,1,0,hs,as); } else { add(h,0,0,1,hs,as); add(a,0,0,1,as,hs); }
-  const nm=id=>(G.players[id]||{}).name||''; const x={d,h,a,hs,as,inn:g.inn,w:g.dec.w??null,l:g.dec.l??null,sv:g.dec.sv??null,hr:[]};
+  const nm=id=>(G.players[id]||{}).name||''; const x={d,h,a,r:F.round-1,hs,as,inn:g.inn,w:g.dec.w??null,l:g.dec.l??null,sv:g.dec.sv??null,hr:[]};
   for(const k of ['h','a'])for(const [id,b] of g.S[k].box)if(!G.players[id]?.isP&&!G.players[id]?.flTemp&&b.hr)x.hr.push([id,b.hr,k]);
   const mine=h===G.user||a===G.user; if(mine){ const S=k=>{ const s=g.S[k]; return {sp:s.sp.id,bat:s.order.map(p=>p.id).concat(s.bench.filter(p=>s.box.has(p.id)).map(p=>p.id)).filter((v,i,A)=>A.indexOf(v)===i).map(id=>{ const b=s.box.get(id)||bz(); return [id,s.posOf[id]||'',b.ab,b.r,b.h,b.rbi,b.hr,b.bb,b.so,(G.players[id]||{}).name||'']; }),pit:s.pitchers.map(id=>{ const b=s.box.get(id)||pz(); return [id,b.outs,b.h,b.r,b.er,b.bb,b.so,b.pc||0,(G.players[id]||{}).name||'']; }),line:g.line[k]}; }; x.box={h:S('h'),a:S('a')}; }
   F.games.push(x); { let n=0; for(let i=F.games.length-1;i>=0;i--){ const q=F.games[i]; if(q.box){ n++; if(n>40)delete q.box; } } } void nm; }
 /* 하루치 퓨처스 경기 */
-function flPlayDay(d){ if(!flLive()||!flDay(d)||!G.cal.sched[d])return; const F=flInit(); const P=flPairs(F); let n=0;
+function flPlayDay(d){ if(!flLive()||!flOpenOn(d))return; const F=flInit(),done=F.playedDays=F.playedDays||{}; if(done[d])return 0; done[d]=1; const P=flPairs(F); let n=0;
   for(const [h,a] of P){ let sh=null, sa=null; FL_TMP=[]; try{ sh=flSide(h,d); sa=flSide(a,d); }catch(e){ for(const id of FL_TMP)delete G.players[id]; FL_TMP=[]; (G.flErr=(G.flErr||[]).slice(-9)).push(String(e&&e.message).slice(0,80)); continue; } if(!sh||!sa){ for(const id of FL_TMP)delete G.players[id]; FL_TMP=[]; (G.flSkip=G.flSkip||{})[sh?a:h]=((G.flSkip||{})[sh?a:h]||0)+1; continue; }
     let g=null; try{ g=simGame(d,h,a,false,{sides:{h:sh,a:sa},pitchRecords:false}); }catch(e){ (G.flErr=(G.flErr||[]).slice(-9)).push(String(e&&e.message).slice(0,80)); }
     if(g){ try{ applyFarm(d,g); }catch(e){ console.error(e); } try{ flRecord(F,d,h,a,g); n++; }catch(e){ console.error(e); } }
