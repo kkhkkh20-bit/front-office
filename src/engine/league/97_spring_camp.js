@@ -42,10 +42,10 @@ function sprcOdds(tid,lvl,k){ const D=(lvl===1?SPRC1:SPRC2)[k]; if(!D)return {q:
   const q=k==='home'?1:clamp(.62+(rep-50)/100+(pv?.2:0)-sprcTaken(lvl,k)/D.sl*.25-late+(sb?.25:0),.25,.97);
   const c=Math.max(0,Math.round(D.c*(1-(rep-50)/250+late)*(sb?.8:1)/10)*10); return {q,c,pv,sb}; }
 /* 같은 장부의 예약은 지출 취소, 이직·결산을 거친 예약은 돈을 낸 구단 현금으로 환급. */
-function sprcRefund(tid,P,lvl){ const old=P['c'+lvl]||0,back=Math.round(old*.7),pay=P['pay'+lvl]; if(!back)return 0; let ledger=0;
-  if(pay&&pay.mode==='ledger'&&pay.ep===G.spEp&&tid===ME()){ ledger=Math.min(back,G.spend.etc||0); G.spend.etc-=ledger; }
-  if(back>ledger){ team(tid).cash+=back-ledger; if(typeof hoBook==='function')hoBook(tid,[['캠프 예약 환급',back-ledger]],[]); } return back; }
-function sprcCharge(tid,P,lvl,k,c){ const user=tid===ME(); if(user)G.spend.etc=(G.spend.etc||0)+c; else { team(tid).cash-=c; if(c&&typeof hoBook==='function')hoBook(tid,[],[['스프링캠프 예약',c]]); } P['s'+lvl]=k; P['c'+lvl]=c; P['pay'+lvl]={tid,ep:G.spEp,mode:user?'ledger':'cash'}; P.c=(P.c1||0)+(P.c2||0); }
+function sprcRefund(tid,P,lvl){ const old=P['c'+lvl]||0,back=Math.round(old*.7),pay=P['pay'+lvl]; if(!back)return 0; let led=0;
+  if(pay&&pay.mode==='ledger'&&pay.ep===G.spEp&&tid===ME()){ led=Math.min(back,G.spend.etc||0); if(led)ledgerMe('etc',-led); }
+  if(back>led)ledger(tid,'etc',-(back-led),{me:false,ho:[[['캠프 예약 환급',back-led]],[]]}); return back; }
+function sprcCharge(tid,P,lvl,k,c){ const user=ledger(tid,'etc',c,{ho:c?'스프링캠프 예약':null}); P['s'+lvl]=k; P['c'+lvl]=c; P['pay'+lvl]={tid,ep:G.spEp,mode:user?'ledger':'cash'}; P.c=(P.c1||0)+(P.c2||0); }
 /* 예약: 성공하면 비용을 내고 자리를 잡는다. 이미 잡은 자리를 바꾸면 위약금 30%를 뺀 나머지를 돌려받는다 */
 function sprcBook(lvl,k){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!sprcOpen())return '캠프 장소는 11월부터 1월 24일까지 정합니다.'; lvl=+lvl; const D=(lvl===1?SPRC1:SPRC2)[k]; if(!D)return '없는 장소입니다.';
   const P=sprcPlan(G.user), key=lvl===1?'s1':'s2'; if(P[key]===k)return ''; if(sprcTaken(lvl,k)>=D.sl&&!sisSite(G.user,lvl,k))return `${D.l}은(는) 이미 다른 구단으로 꽉 찼습니다.`; /* 자매구단이 자리를 마련해 준다 */

@@ -56,7 +56,7 @@ function sisCan(cid){ const c=OCL_BY[cid]; if(!c)return '없는 구단입니다.
   if(sisRel(G.user,cid)<55)return '아직 관계가 가깝지 않아 제안할 수 없습니다.'; const f=S.cd[G.user+':'+cid]; if(f!=null&&G.day-f<30)return `거절당한 지 얼마 안 됐습니다. ${30-(G.day-f)}일 뒤 다시 제안할 수 있습니다.`; return ''; }
 function sisPropose(cid){ const no=sisCan(cid); if(no)return no; const c=OCL_BY[cid], S=sisInit(); const o=sisOdds(cid);
   if(R()>=o.q){ S.cd[G.user+':'+cid]=G.day; sisAdd(G.user,cid,-2); return `${c.n} 측이 결연 제안을 정중히 거절했습니다. 관계를 더 쌓거나 단장 명성이 오르면 다시 제안해 보세요.`; }
-  const fee=sisFee(c); S.p[cid]={tid:G.user,y:G.year,d:G.day}; G.spend.etc=(G.spend.etc||0)+fee; sisAdd(G.user,cid,5);
+  const fee=sisFee(c); S.p[cid]={tid:G.user,y:G.year,d:G.day}; ledgerMe('etc',fee); sisAdd(G.user,cid,5);
   mail(c.n,`${c.n}와(과) 자매결연 체결`,`${c.n}(${c.city}, ${c.st})와(과) 자매결연을 맺었습니다. 첫해 연회비 ${money(fee)}를 냈고, 해마다 11월 1일 갱신합니다.\n\n혜택: ${c.s[1]==='oki'?'오키나와':c.s[1]==='miy'?'미야자키':c.s[1]==='jk'?'가고시마':c.s[1]==='az'?'애리조나':'플로리다'} 캠프지 예약 우선·할인, 연습경기 주선, 가을 교육리그 파견(최대 4명), 코치 연수, 선수 정보 교환.\n관계가 멀어지면 상대가 결연을 끝낼 수 있습니다.`,{kind:'캠프'});
   news('구단',`${tshort(G.user)}, ${OCN[c.c]} ${c.n}와(과) 자매결연`,`${tname(G.user)}이(가) ${c.n}와(과) 자매결연을 맺었습니다. 캠프 협조와 교육리그·코치 연수 교류를 함께 하기로 했습니다.`,1); return ''; }
 function sisEnd(cid,why){ const S=sisInit(), x=S.p[cid], c=OCL_BY[cid]; if(!x)return '결연 중인 구단이 아닙니다.'; const tid=x.tid; delete S.p[cid];
@@ -66,7 +66,7 @@ function sisEnd(cid,why){ const S=sisInit(), x=S.p[cid], c=OCL_BY[cid]; if(!x)re
   news('구단',`${tshort(tid)}·${c.n} 자매결연 종료`,`${tname(tid)}과(와) ${c.n}의 자매결연이 끝났습니다.`,0); return ''; }
 /* 교류 방문단: 구단 돈으로 프런트·코치진을 보내 인사를 다닌다. 구단마다 60일에 한 번 */
 function sisVisit(cid){ const c=OCL_BY[cid]; if(!c||G.unemp)return '지금은 할 수 없습니다.'; const S=sisInit(); const v=S.vis[G.user+':'+cid]; if(v!=null&&G.day-v<60)return `${60-(G.day-v)}일 뒤 다시 보낼 수 있습니다.`;
-  S.vis[G.user+':'+cid]=G.day; G.spend.etc=(G.spend.etc||0)+SIS_VIS; const d=6+((G.rep??50)>=70?2:0); sisAdd(G.user,cid,d); addLog(`${c.n}에 교류 방문단을 보냈습니다(${money(SIS_VIS)}, 관계 개선).`); return ''; }
+  S.vis[G.user+':'+cid]=G.day; ledgerMe('etc',SIS_VIS); const d=6+((G.rep??50)>=70?2:0); sisAdd(G.user,cid,d); addLog(`${c.n}에 교류 방문단을 보냈습니다(${money(SIS_VIS)}, 관계 개선).`); return ''; }
 /* 단장 해외 프런트 견학(83_personal_life.js): 그 나라 구단들과 관계 +5 */
 /* 자매구단 관계를 말로(숫자는 보이지 않는다) */
 function sisRelWord(r){return r>=75?'아주 가까움':r>=55?'가까움':r>=45?'무난함':r>=30?'서먹함':'멀어짐';}
@@ -81,8 +81,8 @@ function sisFlAll(){ const S=sisInit(), by=Object.assign({},S.flT); if(S.fl&&!by
 function sisFlStore(F){ const S=sisInit(); (S.flT=S.flT||{})[F.tid]=F; S.fl=F; return F; }
 function sisFlDrop(F){ const S=sisInit(); if(S.flT)delete S.flT[F.tid]; if(S.fl&&S.fl.tid===F.tid)S.fl=null; }
 function sisFlRefund(F,n){ const c=SIS_FL[OCL_BY[F.cid].c].c, paid=F.paid??F.ids.length*c, amount=Math.min(paid,n); if(!(amount>0))return 0; F.paid=paid-amount;
-  if(F.tid===G.user&&!G.unemp&&(F.ep==null||F.ep===(G.spEp||0))){ G.spend=G.spend||{}; if(F.fy==null||F.fy===fyNow())G.spend.dev=Math.max(0,(G.spend.dev||0)-amount); else G.spend.devRef=(G.spend.devRef||0)+amount; }
-  else { const t=team(F.tid); if(t){t.cash+=amount;hoBook(F.tid,[['교육리그 참가비 환급',amount]],[]);} } return amount; }
+  if(F.tid===G.user&&!G.unemp&&(F.ep==null||F.ep===(G.spEp||0))){ G.spend=G.spend||{}; if(F.fy==null||F.fy===fyNow())G.spend.dev=Math.max(0,(G.spend.dev||0)-amount); else ledgerMe('devRef',amount); }
+  else if(team(F.tid))ledger(F.tid,'dev',-amount,{me:false,ho:[[['교육리그 참가비 환급',amount]],[]]}); return amount; }
 const sisFlElig=p=>sisFlCan(p,G.user);
 function sisFlCan(p,tid){ return !!p&&p.team===tid&&!p.foreign&&p.age<=25&&!p.hold&&!(p.joinY>G.year)&&!(p.injOut>0)&&!isAway(p)&&!ovsAbroad(p); }
 function sisFlToggle(cid,pid){ const c=OCL_BY[cid]; if(!c||sisPtn(cid)!==G.user)return '자매구단에만 보낼 수 있습니다.'; if(!fallOpen())return '교육리그 신청은 9월 1일~10월 10일입니다.'; let F=sisFlOf(G.user);
@@ -90,7 +90,7 @@ function sisFlToggle(cid,pid){ const c=OCL_BY[cid]; if(!c||sisPtn(cid)!==G.user)
   if(!F||F.y!==G.year||F.cid!==cid)F=sisFlStore({y:G.year,cid,tid:G.user,ids:[],names:{},go:false,paid:0,fy:fyNow(),ep:G.spEp||0}); if(F.go)return '이미 출국한 파견은 취소할 수 없습니다.'; const i=F.ids.indexOf(pid), cost=SIS_FL[c.c].c;
   if(i>=0){ sisFlRefund(F,cost); F.ids.splice(i,1); sisFlStore(F); return ''; }
   const p=G.players[pid]; if(!sisFlElig(p))return '보낼 수 없는 선수입니다(25세 이하 국내 선수, 부상·복무·미계약·해외 파견 제외).'; if(F.ids.length>=4)return '최대 4명까지 보낼 수 있습니다.';
-  F.paid=(F.paid??F.ids.length*cost)+cost; F.ids.push(pid); (F.names=F.names||{})[pid]=p.name; sisFlStore(F); G.spend.dev=(G.spend.dev||0)+cost; return ''; }
+  F.paid=(F.paid??F.ids.length*cost)+cost; F.ids.push(pid); (F.names=F.names||{})[pid]=p.name; sisFlStore(F); ledgerMe('dev',cost); return ''; }
 function sisFlDepart(F){ if(!F||F.y!==G.year||F.go)return; const ids=F.ids.filter(id=>sisFlCan(G.players[id],F.tid)), lost=F.ids.length-ids.length; if(lost)sisFlRefund(F,lost*SIS_FL[OCL_BY[F.cid].c].c); F.ids=ids;
   if(!ids.length){sisFlDrop(F);return;} F.go=true; F.from=dnum(F.y,10,11); F.until=dnum(F.y,11,15); for(const id of ids)G.players[id].sisFlAway={from:F.from,until:F.until,tid:F.tid,cid:F.cid}; sisFlStore(F); }
 function sisFlRun(F=sisFlOf(G.user)){ const S=sisInit(); if(!F||F.y!==G.year||!F.go)return; sisFlDrop(F); for(const id of F.ids){const p=G.players[id];if(p&&p.sisFlAway&&p.sisFlAway.tid===F.tid&&p.sisFlAway.cid===F.cid)delete p.sisFlAway;} const c=OCL_BY[F.cid]; const b=(55-c.f2)/5; /* 상대 2군이 강할수록 기록이 덜 나온다 */ const L=[];
@@ -146,7 +146,7 @@ function sisYear(){ const S=sisInit(); const L=[];
     const riv=G.teams.filter(t=>t.id!==x.tid&&t.id!==G.user&&!sisMine(t.id,c.c)).map(t=>({tid:t.id,r:sisRel(t.id,cid)})).sort((a,b)=>b.r-a.r)[0];
     if(rel<30){ sisEnd(cid,`${c.n}이(가) 관계가 소원해졌다며 자매결연을 끝내자고 알려 왔습니다. 캠프·교류로 관계를 다시 쌓으면 다시 맺을 수 있습니다.`); continue; }
     if(riv&&riv.r>=60&&riv.r>=rel+20){ sisEnd(cid,`${c.n}이(가) ${tname(riv.tid)}과(와) 새로 결연하기로 했다며 우리와의 결연을 끝냈습니다. 그 구단과 더 가까웠습니다.`); S.p[cid]={tid:riv.tid,y:G.year}; team(riv.tid).cash-=sisFee(c); L.push(`${tshort(riv.tid)}-${c.n}`); continue; }
-    const fee=sisFee(c); if(x.tid===G.user&&!G.unemp){ G.spend.etc=(G.spend.etc||0)+fee; mail(c.n,`${c.n} 자매결연 갱신`,`올해도 결연을 이어 갑니다. 연회비 ${money(fee)}. 지금 관계는 ${sisRelWord(rel)}입니다.${rel<45?' 관계가 많이 식었습니다. 더 멀어지면 상대가 결연을 끝낼 수 있습니다.':''}`,{kind:'캠프'}); } else { const t=team(x.tid); if(t)t.cash-=fee; } }
+    const fee=sisFee(c), mine=x.tid===G.user&&!G.unemp; if(mine||team(x.tid))ledger(x.tid,'etc',fee,{me:mine}); if(mine){ mail(c.n,`${c.n} 자매결연 갱신`,`올해도 결연을 이어 갑니다. 연회비 ${money(fee)}. 지금 관계는 ${sisRelWord(rel)}입니다.${rel<45?' 관계가 많이 식었습니다. 더 멀어지면 상대가 결연을 끝낼 수 있습니다.':''}`,{kind:'캠프'}); } }
   for(const t of G.teams){ if(t.id===G.user&&!G.unemp)continue; for(const cn of ['jp','us']){ if(sisMine(t.id,cn)||R()>=.5)continue; const b=OCL.filter(c=>c.c===cn&&sisPtn(c.id)==null).map(c=>({c,r:sisRel(t.id,c.id)})).filter(x=>x.r>=50).sort((a,b)=>b.r-a.r)[0];
     if(b){ S.p[b.c.id]={tid:t.id,y:G.year}; t.cash-=sisFee(b.c); L.push(`${tshort(t.id)}-${b.c.n}`); } } }
   if(L.length)news('리그','국내 구단 해외 자매결연 소식',`새로 맺은 자매결연: ${L.join(', ')}.`,0); }
