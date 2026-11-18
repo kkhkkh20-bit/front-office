@@ -112,9 +112,9 @@ const ovsAdj=lvl=>OVS_ADJ[lvl]||LG_ADJ[lvl]||[0,0];
 /* 리그 평균 선수 기준(그 수준에서 자리 잡은 선수의 기록): [OPS, ERA] */
 const OVS_NORM={MLB:[.735,4.2],'트리플A':[.82,3.9],NPB:[.735,4.25],'NPB 2군':[.78,3.6],CPBL:[.82,3.9],ABL:[.82,3.8],'멕시코리그':[.83,4.6]};
 const ovsBig=l=>l==='MLB'||l==='NPB';
-/* 해외파 기록용 최소 사본: 능력치·보직만(외국인 선수는 리그를 떠나면 원본이 지워진다) */
-function ovsSlim(p){ const o={id:p.id,isP:!!p.isP,age:p.age,r:Object.assign({},p.r)}; if(p.role)o.role=p.role; if(p.velo)o.velo=p.velo; if(p.addP&&p.addP.length)o.addP=p.addP; if(!p.isP&&p.pos)o.pos=p.pos;
-  for(const k of ['nat','orig','adapt','sx','th','bt','inj','mlbG'])if(p[k]!=null)o[k]=p[k]; /* KBO 경력 후보로 다시 나올 때 같은 사람으로(해외 활성화 1-1) */ return o; }
+/* 해외파 최소 사본: 능력치·보직과 원구단 재계약 연차(외국인 선수는 리그를 떠나면 원본이 지워진다) */
+function ovsSlim(p,tid){ const o={id:p.id,isP:!!p.isP,age:p.age,r:Object.assign({},p.r)}; if(p.role)o.role=p.role; if(p.velo)o.velo=p.velo; if(p.addP&&p.addP.length)o.addP=p.addP; if(!p.isP&&p.pos)o.pos=p.pos;
+  for(const k of ['nat','orig','adapt','sx','th','bt','inj','mlbG'])if(p[k]!=null)o[k]=p[k]; /* KBO 경력 후보로 다시 나올 때 같은 사람으로(해외 활성화 1-1) */ const home=tid??p.team; if(p.foreign&&home!=null&&Number.isFinite(p.rsy)){o.rsy=Math.max(0,Math.floor(p.rsy));o.rsyT=home;} return o; }
 /* 한 시즌 기록. lg: 계약한 리그(MLB·NPB·CPBL·ABL·멕시코리그). 능력이 기준에 못 미치면 MLB는 산하 트리플A, NPB는 2군에서 뛴다(경계선이면 한 시즌을 MLB·트리플A로 나눈다). 약한 구단은 기회를 조금 더 준다 */
 function ovsLine(p,lg,o){ o=o||{}; const av=clamp(o.av??1,0,1), thr=OVS_THR[lg]!=null?OVS_THR[lg]-(o.gt===true?2:(+o.gt||0)):null, hasC=!!OVL_C[ovlKey(lg)]&&o.ci!=null&&o.ci>=0; const ob=ovr(p); let m=thr==null?4:ob-thr; if(thr!=null&&hasC){ const s=ovlStr(lg,o.ci); m+=s<-.03?1:s>.04?-.7:0; }
   const sp=p.isP&&isSPr(p);
@@ -207,7 +207,7 @@ function ovsTrackGone(p){ if(!p||!p.foreign||p._rt||p.ftmp&&!(p.hist||[]).length
   if(p._ovsLg)lg=p._ovsLg; else if(p.foreign==='아시아')lg=p.orig==='tw'?'CPBL':p.orig==='au'?'ABL':'NPB';
   else { const u=R(); lg=o>=58&&age<=33&&u<.4?'NPB':age<=33&&u<.85?'MLB':o<52||age>=33?pick(['멕시코리그','CPBL']):'MLB'; }
   const CL=OVL_C[ovlKey(lg)], ci=CL?Math.floor(R()*CL.length):-1; const from=p.team??H[H.length-1].t; const m=dobj(G.day).m;
-  const rec={id:p.id,name:p.name,isP:!!p.isP,pos:posLabel(p),foreign:p.foreign,from,lg,club:ci>=0?ovlNm(lg,ci):lg,ci,how:'KBO 퇴단',yrs:0,amt:0,y:G.year,y1:m>=6?G.year+1:G.year,age,lines:[],fee:0,back:false,d:G.day,pj:null,fr:ovsSlim(p),mlb0:old?.mlb0??Math.max(0,(p.mlbG||0)-ovsMlbGames(old?.lines,!!p.isP))}; if(m<6)rec.half=1;
+  const rec={id:p.id,name:p.name,isP:!!p.isP,pos:posLabel(p),foreign:p.foreign,from,lg,club:ci>=0?ovlNm(lg,ci):lg,ci,how:'KBO 퇴단',yrs:0,amt:0,y:G.year,y1:m>=6?G.year+1:G.year,age,lines:[],fee:0,back:false,d:G.day,pj:null,fr:ovsSlim(p,from),mlb0:old?.mlb0??Math.max(0,(p.mlbG||0)-ovsMlbGames(old?.lines,!!p.isP))}; if(m<6)rec.half=1;
   if(old){ rec.lines=old.lines||[]; rec.how='KBO 재퇴단'; if(old.rv!=null)rec.rv=old.rv; G.abroad=G.abroad.filter(a=>a!==old); }
   G.abroad=G.abroad||[]; G.abroad.unshift(rec); ovsTrim(); }
 /* 관찰하던 외국인 후보가 MLB 콜업·NPB 계약으로 빠지면 우리 해외파 화면에서 계속 본다(놓친 후보가 어떻게 됐는지) */
@@ -225,11 +225,19 @@ function ovsRetChance(a){ const fr=a&&a.fr; if(!fr||!a.foreign||a.cand||a.back||
   const reg=(l.pa||0)>=300||(l.outs||0)>=(l.rp?150:300); if(ovsParts(l).some(q=>q.lvl==='MLB'&&((q.pa||0)>=300||(q.outs||0)>=(q.rp?150:300))))return 0; /* 보조 기록에 있는 빅리그 주전도 돌아오지 않는다. */
   const lv=(OVS_RLV[l.lvl]||1)*(l.lvl==='NPB'&&reg?.6:1), aw=[0,.8,1.1,1,.7][away], ag=fr.age>=34?.6:1;
   return clamp((.15+clamp(ovsKboWar(a.id)-1,0,3)*.05)*lv*aw*ag,0,.4); }
+/* 유효한 원구단 보류권의 연차만 되살린다. 옛 사본은 마지막 연속 원구단 시즌으로 확인된 최소 연차만 사용한다. */
+function ovsRenewYears(a,p){ const h=foResFor(p),fr=a&&a.fr; if(!h||h.tid!==a.from)return 0; const norm=x=>Math.max(0,Math.floor(x));
+  if(fr&&fr.rsyT===h.tid&&Number.isFinite(fr.rsy))return norm(fr.rsy); if(Number.isFinite(h.rsy))return norm(h.rsy);
+  const by=new Map(); for(const r of p.hist||[]){ if(!Number.isFinite(r.y)||r.y>a.y||r.t==null||r.y2||!['1군','2군'].includes(r.lvl)||!((r.g||0)+(r.pa||0)+(r.outs||0)))continue; if(!by.has(r.y))by.set(r.y,new Set());by.get(r.y).add(r.t); }
+  const last=by.size?Math.max(...by.keys()):null; if(last==null||last<a.y-1)return 0; let n=0; for(let y=last;by.has(y);y--){const T=by.get(y);if(T.size!==1||!T.has(h.tid))break;n++;} return Math.max(0,n-1); }
+/* 이미 복귀 후보나 원구단 선수가 된 옛 저장도 유효한 원구단 권리와 실제 과거 기록으로 입증되는 연차만 보완한다. */
+function ovsRenewFix(){ let n=0; for(const a of G.abroad||[]){const p=G.players[a.id];if(!a.foreign||!a.back||a.from==null||!p?.foreign||(p.team!=null&&p.team!==a.from))continue;const v=ovsRenewYears(a,p);if(v>(p.rsy||0)){p.rsy=v;n++;}}return n; }
 function ovsRevive(a){ const fr=a.fr, L=a.lines, l=L[L.length-1], l2=L[L.length-2]; if(G.players[a.id])return null;
   const p=newPlayer({age:fr.age,isP:fr.isP,base:50,pos:fr.pos,foreign:a.foreign,nat:fr.nat||null,name:a.name}); delete G.players[p.id]; p.id=a.id; G.players[p.id]=p;
   p.r=Object.assign({},fr.r); if(fr.role)p.role=fr.role; if(fr.velo!=null)p.velo=fr.velo; if(fr.addP)p.addP=fr.addP.slice(); for(const k of ['th','bt','inj'])if(fr[k]!=null)p[k]=fr[k]; if(p.isP){ delete p.delivery; p.delivery=pitchDelivery(p); }
   p.pot=Math.max(ovr(p),p.pot||0); p.orig=fr.orig||origOf(p); p.adapt=fr.adapt??Math.round(clamp(N(55,10),20,80)); p.sx=fr.sx||0;
   const A=G.arch&&G.arch[a.id]; if(A&&A.rows)p.hist=archP(A).hist.filter(h=>h.lvl==='1군').map(h=>{ const {war,wn,up,...o}=h; return o; }); /* KBO 1군 기록을 되살린다(보관 기록은 그대로: 선수가 있으면 보관 기록은 건너뛴다) */
+  p.rsy=ovsRenewYears(a,p);
   const pr=x=>{ const {y,c,o,live,x:_,aw,...h}=x; h.lvl=ovsCandLvlOf(x.lvl); h.g=ovsGamesPlayed(x,p.isP); return h; };
   p.prevLvl=ovsCandLvlOf(l.lvl); p.prev=pr(l); if(l2&&ovsCandLvlOf(l2.lvl)===p.prevLvl)p.prev2=pr(l2);
   a.mlb0=a.mlb0??(fr.mlbG||0);p.mlbG=a.mlb0+ovsMlbGames(L,p.isP);

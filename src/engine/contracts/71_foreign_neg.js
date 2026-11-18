@@ -64,7 +64,7 @@ function foOffer(id,g,i,rel){ rel=!!rel; const q=G.players[id]; if(!q||q.team!=n
 /* 계약 반영: 보장은 연봉, 인센티브는 계약 옵션(규정 출전을 채우면 시즌 결산에 지급) */
 function signForeignT(tid,id,g,i){ const p=G.players[id]; if(!p)return '외국인 계약 대상이 아닙니다.';
   const a0=p.ask; p.ask=g+i; const check=foreignCheck(tid,p); p.ask=a0; if(check)return check;
-  p.ask=g; const err=signForeign(tid,id); p.ask=a0; if(err)return err; p.sal=g; if(i>0){ const fr=period()==='season'?remainFrac():1; p.ctT=p.team; p.opt={a:Math.round(i*fr),from:p.fy,until:p.fy,c:optCrit(p)}; /* 시즌 중 계약은 인센티브도 남은 기간분(안내와 같게, 검수 11-06) */ /* 달성 기준은 계약 때 보직으로 고정(검수 11-05) */ }
+  p.ask=g; const err=signForeign(tid,id); p.ask=a0; if(err)return err; p.sal=g; if(i>0){ const fr=period()==='season'?remainFrac():1; p.ctT=p.team; p.opt={a:Math.round(i*fr),from:p.fy,until:p.fy,c:optCrit(p),fr}; /* 시즌 중 계약은 인센티브도 남은 기간분(안내와 같게, 검수 11-06) */ /* 달성 기준은 계약 때 보직으로 고정(검수 11-05) */ }
   if(tid===G.user)story(p,`계약 조건: 보장 ${money(g)}${i?` + 인센티브 ${money(i)}(규정 출전 시)`:''}`,'move'); return ''; }
 /* 기다려 준 기한이 지나면 가장 강한 경쟁 구단으로 간다 */
 function foDaily(){ for(const id of [...(G.fmarket||[])]){ const q=G.players[id]; if(!q||q.team!=null||!q.fneg||!q.fneg.dl||q.fneg.dl>=G.day)continue; const dl=q.fneg.dl; delete q.fneg.dl;
@@ -105,9 +105,18 @@ function foReOffer(id,g,i){ const C=G.contract; const p=G.players[id]; if(!C||C.
   let need=Math.ceil((target/f-i*FO_INC_W)/USD)*USD, ii=i; if(p.foreign==='아시아'&&need+i>asiaReCap(p)){ const n0=Math.ceil(target/f/USD)*USD; if(n0>asiaReCap(p))return {ok:false,msg:`${p.name} 측: 아시아쿼터 재계약 상한 ${usdT(asiaReCap(p))} 안에서는 사인할 조건이 없다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; need=n0; ii=0; } /* 상한을 넘는 금액은 조건으로 내놓지 않는다(검수 11-09s) */
   return {ok:false,need,msg:`${p.name} 측: 보장 ${usdT(need)}(${money(need)})${ii?` + 인센티브 ${usdT(ii)}`:i?'(인센티브 없이)':''} 이상이면 사인하겠다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; }
 /* 보류 명단: 보류권을 쥐고 결별한 외국인(5년간 국내 다른 구단 입단 불가) */
-function foResFor(p){ if(!p)return null; return (G.fRes||[]).find(x=>x.until>=G.year&&(x.pid!=null?x.pid===p.id:x.name===p.name&&x.nat===p.nat))||null; }
-function foResAdd(p,tid){ G.fRes=(G.fRes||[]).filter(x=>x.until>=G.year); if(G.fRes.some(x=>x.tid===tid&&(x.pid!=null?x.pid===p.id:x.name===p.name&&x.nat===p.nat)))return;
-  G.fRes.unshift({pid:p.id,name:p.name,pos:posLabel(p),nat:p.nat,tid,y:G.year,until:G.year+5}); } /* 유효한 권리는 화면 표시 개수와 무관하게 모두 유지 */
+const foResMatch=(p,x)=>!!p&&(x.pid!=null?x.pid===p.id:x.name===p.name&&x.nat===p.nat);
+function foResFor(p){ if(!p)return null; return (G.fRes||[]).find(x=>x.until>=G.year&&foResMatch(p,x))||null; }
+/* 현재 구단이 해제하면 같은 선수의 옛 중복 권리도 끝난다. 명시된 다른 선수 ID는 동명이인이어도 보존한다. */
+function foResRelease(p,tid){ if(!p||!G.fRes||(p.team!=null&&tid!=null&&p.team!==tid))return 0; const n=G.fRes.length; G.fRes=G.fRes.filter(x=>!foResMatch(p,x)); return n-G.fRes.length; }
+function foResAdd(p,tid){ if(!p)return; const prior=(G.fRes||[]).find(x=>x.until>=G.year&&x.tid===tid&&foResMatch(p,x)), rsy=Number.isFinite(p.rsy)&&p.team===tid?p.rsy:prior&&prior.rsy;
+  G.fRes=(G.fRes||[]).filter(x=>x.until>=G.year&&!foResMatch(p,x));
+  G.fRes.unshift({pid:p.id,name:p.name,pos:posLabel(p),nat:p.nat,tid,y:G.year,d:G.day,until:G.year+5,...(Number.isFinite(rsy)?{rsy:Math.max(0,Math.floor(rsy))}:{})}); } /* 새 결별의 권리와 해당 구단 재계약 연차를 한 건으로 보존한다. */
+/* 이미 해제한 옛 시장 후보는 실제 마지막 이동 기록으로 확인되는 경우만 정리한다. */
+function foResFix(){ if(!G||!G.fRes?.length)return 0; let n=0; for(const id of G.fmarket||[]){ const p=G.players[id]; if(!p?.foreign||p.team!=null)continue;
+  const m=(G.moves||[]).filter(x=>x.pid===p.id).sort((a,b)=>(b.y??0)-(a.y??0)||(b.d??-1)-(a.d??-1)||(b.seq??0)-(a.seq??0))[0], H=G.fRes.filter(x=>foResMatch(p,x));
+  if(m&&m.t==='외국인 계약 종료'&&m.to==null&&(m.note||'').includes('보류권 해제')&&H.length&&H.every(x=>Number.isFinite(x.y)&&x.y<=m.y))n+=foResRelease(p,m.from);
+  } return n; }
 
 /* 외국인 2년 계약(커뮤니티 요청 11-07, KBO도 재계약 외국인 다년 계약을 허용): 재계약에 합의한 뒤 2년으로 묶으면 연봉 5%를 더 주고, 다음 겨울 재계약 협상 없이 같은 연봉으로 한 해 더 뛴다 */
 function fReMulti(id){ const C=G.contract; const p=G.players[id]; if(!C||C.done||!p||p.team!==G.user||!C.foreignEnd.includes(id))return '재계약 기간이 아닙니다.'; const N=(C.fre||{})[id]; if(!(N&&N.ok))return '먼저 1년 재계약에 합의해야 합니다.'; if(p.fMulti>C.y)return '이미 2년 계약입니다.'; if(p.age>=35)return `${p.age}세라 다년 계약은 하지 않습니다.`;
