@@ -81,7 +81,7 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
   console.log('A2: 새 슬롯에 넣기를 고르면 이 기기 저장(',await dlabel(A2,D1),') 그대로 통과');
 
   /* 세계 번호가 없는 옛 저장: 단장 이름·취임 해·시작 해로 같은 게임으로 보이는 슬롯 */
-  { const r=await A2.evaluate(()=>{ const g=JSON.parse(prepG()); delete g.wid; g.day+=3; const k=xfMatch(LZString.compressToBase64(JSON.stringify(g))); g.gmP=Object.assign({},g.gmP,{name:'다른단장'}); const k2=xfMatch(LZString.compressToBase64(JSON.stringify(g))); return {k,k2}; });
+  { const r=await A2.evaluate(async()=>{ const g=JSON.parse(prepG()); delete g.wid; g.day+=3; const k=await xfMatch(LZString.compressToBase64(JSON.stringify(g))); g.gmP=Object.assign({},g.gmP,{name:'다른단장'}); const k2=await xfMatch(LZString.compressToBase64(JSON.stringify(g))); return {k,k2}; });
     assert.ok(r.k&&r.k.guess&&r.k.newer,'번호 없는 옛 저장도 같은 게임으로 봄'); assert.equal(r.k2,null,'단장이 다르면 다른 게임'); }
   console.log('세계 번호 없는 옛 저장: 단장·해로 맞추기 통과');
   assert.deepEqual(errs,[]);

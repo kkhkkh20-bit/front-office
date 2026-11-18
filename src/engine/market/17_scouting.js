@@ -32,7 +32,9 @@ function roleOf(ofp,p){
 function potZ(p){ return clamp(hn('pz'+G.user,p.id),-2.2,2.2); }
 const sdConf=sd=>sd<=2.5?'매우 높음':sd<=4.5?'높음':sd<=7?'보통':'낮음';
 function halfK(){ return dobj(G.day).m>=7?'h':''; }
-function ownObs(p){ const y0=G.startY??G.year,Y=new Map();for(const h of p.hist||[])if(h.t===G.user&&h.y>=y0){const z=Y.get(h.y)||{pa:0,outs:0};z.pa+=h.pa||0;z.outs+=h.outs||0;Y.set(h.y,z);}return [...Y.values()].filter(h=>p.isP?h.outs>=90:h.pa>=100).length; }
+/* 합산 줄은 실제 출전했던 연도만 남긴다. 옛 합산 줄의 빈 연도를 추측해 관찰을 만들지 않는다. */
+function histObsYears(h){if(!(h.pa||h.outs))return [];return [...new Set((Array.isArray(h.obsY)?h.obsY:[h.y]).filter(y=>Number.isInteger(y)&&y>=h.y&&y<=(h.y2??h.y)))];}
+function ownObs(p){ const y0=G.startY??G.year,Y=new Map();for(const h of p.hist||[])if(h.t===G.user){const ys=histObsYears(h).filter(y=>y>=y0);if(!ys.length)continue;const n=(h.y2??h.y)>h.y?histObsYears(h).length:1;for(const y of ys){const z=Y.get(y)||{pa:0,outs:0};z.pa+=(h.pa||0)/n;z.outs+=(h.outs||0)/n;Y.set(y,z);}}return [...Y.values()].filter(h=>p.isP?h.outs>=90:h.pa>=100).length; } /* 검수 644~675: 한 해 100타석·90아웃 이상 관찰한 해만 센다. 검수 676~708: 합산 줄은 실제 출전 연도에 나눠 센다 */
 /* 우리 팀을 떠난 지 며칠(2년 안이면), 아니면 null. 이적 기록(tLog)의 마지막 '우리 팀에서 나감' 기준 */
 function exOwnD(p){ const x=[...(p.tLog||[])].reverse().find(z=>z.f===G.user),day=x?.d??p.proScoutPast?.[G.user]?.d;if(day==null)return null;const d=G.day-day;return d>=0&&d<=730?d:null; }
 /* 떠난 뒤의 평가는 숨은 현재 능력을 다시 읽지 않고, 실제 떠날 때 구단이 알던 평가만 보관한다. */

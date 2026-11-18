@@ -200,7 +200,7 @@ function selApply(el,e){ const a=el.dataset.a;
   if(a==='findTeam'){UI.findTeam=el.value;render();}
   if(a==='findSort'){UI.findSort=el.value;render();}
   if(a==='lrfT'){UI.lrf=Object.assign({q:true,t:'all'},UI.lrf,{t:el.value});render();}
-  if(a==='impFile'){ const f=el.files&&el.files[0]; if(f){ const to={title:!!UI.title,slot:curSlot(),g:G}; /* 고른 시점의 대상(검수 11-09) */ const r=new FileReader(); r.onload=()=>importText(String(r.result).trim(),to);r.onerror=()=>{UI.impMsg='파일을 읽지 못했습니다. 다시 선택해 주세요.';render();};r.readAsText(f); } }
+  if(a==='impFile'){ const f=el.files&&el.files[0]; if(f){ const to={title:!!UI.title,slot:curSlot(),g:G,rev:SLOT_REV,j:G?prepG():null}; /* 파일 읽기를 시작한 게임·진행에만 가져온다 */ const r=new FileReader(); r.onload=()=>importText(String(r.result).trim(),to);r.onerror=()=>{UI.impMsg='파일을 읽지 못했습니다. 다시 선택해 주세요.';render();};r.readAsText(f); } }
   if(a==='blkWant'){ const p=G.players[+el.dataset.v]; if(p){p.lw=el.value; save(); render();} }
   if(a==='sAssign'){ const [r,k]=el.value.split(':'); assignScout(el.dataset.v,r,k); save(); render(); }
   if(a==='rosterTeam'){UI.rosterTeam=+el.value;render();window.scrollTo(0,0);}

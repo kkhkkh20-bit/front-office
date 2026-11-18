@@ -75,7 +75,7 @@ function tripPlanGo(key){ const why=tripGoWhy(key); if(why)return why; const T=G
 const tripPendNow=()=>!tripGoWhy()?G.tripPend:null;
 function tripSet(sid,k){ const s=clubAmScouts(G.user).find(x=>String(x.id)===String(sid)); if(!s)return '출장할 아마추어 스카우트가 없습니다.';const w0=tripWk0(G.day);if(!tripAllowed(k,s.region,w0))return '담당 권역 또는 이번 주 일정에 맞지 않는 출장입니다.';s.trip={k,from:G.day,to:w0+6,man:true,tid:G.user,reg:s.region};return `${s.name} 스카우트를 ${tripName(k)}(으)로 보냅니다. 이번 주 일요일까지입니다.`; }
 /* 경기 날: 출장 중인 스카우트가 그 대회 경기를 본다(모든 구단 같은 식) */
-function tripWatchDaily(d){ if(_amToday.d!==d||!_amToday.L.length)return; const games={}; for(const x of _amToday.L){ if(!x.ev)continue; (games[x.ev+'|'+x.gk]=games[x.ev+'|'+x.gk]||{ev:x.ev,L:[]}).L.push(x); }
+function tripWatchDaily(d){ if(!amTodayOk(d)||!_amToday.L.length)return; const games={}; for(const x of _amToday.L){ if(!x.ev)continue; (games[x.ev+'|'+x.gk]=games[x.ev+'|'+x.gk]||{ev:x.ev,L:[]}).L.push(x); }
   const GL=Object.values(games); if(!GL.length)return;
   for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; const F=obsFollowSet(tid), P=obsPriL(tid); const seenBy={};
     for(const s of clubAmScouts(tid)){ const k=tripOf(s); if(k==='sch'||k==='camp')continue; const mine=GL.filter(g=>g.ev===k); if(!mine.length)continue;

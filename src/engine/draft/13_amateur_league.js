@@ -26,7 +26,8 @@ const AM_WALL=.8; /* 가정: 홈런이 줄어든 만큼의 큰 타구 가운데 
 const AM_SL_P=.08, AM_SL_D=6; /* 졸업 학년 부진 확률·그해 아마 척도 감소(1군 척도 점수) */
 const AM_STY_GROW={육성형:.55,엄격형:.1,데이터형:.2,자율형:0}; /* 겨울 성장 가산(능력 점수) */
 let AM_TRACE=null; /* 점검용: 배열을 넣으면 경기마다 박스스코어를 쌓는다 */
-let _amRos=null, _amToday={d:-1,L:[]};
+let _amRos=null, _amToday={g:null,d:-1,L:[]};
+const amTodayOk=d=>_amToday.g===G&&_amToday.d===d;
 const amOn=()=>G&&G.amOff!==true;
 function amPipe(){ return G.amU||(G.amU={yr:null,L:{}}); }
 const amGrade=(e,y)=>(e.c?4:3)-(e.gy-y);
@@ -231,7 +232,7 @@ function amRecord(S,g,d,meta){ const y=S.y, live=S.live;
   S.tot[meta.lvl].g++;
   if(meta.g){ const upd=(a,b)=>{ if(g.hs>g.as){ a[0]++; b[1]++; } else if(g.as>g.hs){ b[0]++; a[1]++; } else { a[2]++; b[2]++; } a[3]+=g.hs; a[4]+=g.as; b[3]+=g.as; b[4]+=g.hs; }; const G0=S.rec[meta.g]; if(G0&&G0[g.h]&&G0[g.a]){ upd(G0[g.h],G0[g.a]);
       if(meta.h2){ const R2=(S.rec2||(S.rec2={}))[meta.g]||(S.rec2[meta.g]={}); upd(R2[g.h]||(R2[g.h]=[0,0,0,0,0]),R2[g.a]||(R2[g.a]=[0,0,0,0,0])); } } } /* 후반기 성적은 따로(전반기 = 시즌 합 - 후반기) */
-  if(live){ const tag=meta.g?0:meta.t; for(const [n,o,rs,ra] of [[g.h,g.a,g.hs,g.as],[g.a,g.h,g.as,g.hs]]){ const L=S.res[n]||(S.res[n]=[]); L.push([d,o,rs,ra,tag,g.inn]); if(L.length>12)L.shift(); }
+  if(live){ if(!amTodayOk(d))_amToday={g:G,d,L:[]}; const tag=meta.g?0:meta.t; for(const [n,o,rs,ra] of [[g.h,g.a,g.hs,g.as],[g.a,g.h,g.as,g.hs]]){ const L=S.res[n]||(S.res[n]=[]); L.push([d,o,rs,ra,tag,g.inn]); if(L.length>12)L.shift(); }
     for(const b of g.M.values()){ const u=b.u; if(u.kind!=='p'&&u.kind!=='e')continue; _amToday.L.push({id:u.id,kind:u.kind,sch:u.sch,b:amBoxTxt(b,u.isP),ev:meta.g?(meta.lvl==='col'?'ul:':'wl:')+meta.g:meta.t,gk:g.h+'-'+g.a}); } /* ev·gk: 출장 대회·경기(67_scout_trip) */
     try{ amGameNews(S,g,d,meta); }catch(e){} }
   try{ amPubRec(S,g,d,meta); }catch(e){ console.error(e); } /* 공개 측정 구속·대회별 기록·소식(66_am_public) */
@@ -244,7 +245,7 @@ function amPlayDay(S,d){ if(d<=S.last||d<S.from)return 0; S.last=d; const L=amDa
 /* 지난 시즌을 처음부터 끝까지(처음 세계 만들 때) */
 function amSimYear(y,quiet){ const S=amNewSeason(y,false); const a=dnum(y,3,1), b=dnum(y,8,31); _amRos=null; for(let d=a;d<=b;d++)amPlayDay(S,d); if(!quiet){ amHistPush(S); amFKeep(S); } _amRos=null; return S; }
 /* 매일(07_daily): 3~8월 경기, 9월 1일 시즌 정리, 월요일마다 아마 성적 표준점수 갱신 */
-function amDaily(day){ if(!amOn()||!G.amU)return; const o=dobj(day); if(_amToday.d!==day)_amToday={d:day,L:[]};
+function amDaily(day){ if(!amOn()||!G.amU)return; const o=dobj(day); if(!amTodayOk(day))_amToday={g:G,d:day,L:[]};
   if(o.m>=3&&o.m<=8){ const S=amLive(); try{ amPlayDay(S,day); }catch(e){ console.error(e); } if(o.w===1||o.d===1)try{ amZSet((G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&(p.prospect||p.amV))); }catch(e){} if(o.d===1&&o.m>=4)try{ pressRank(G.draftClass||[]); }catch(e){}
     try{ tripWatchDaily(day); }catch(e){ console.error(e); } /* 경기장 관찰은 출장한 대회에서만(스카우트 2단계, 예전 amWatchDaily) */ if(o.d===1)try{ amMonthNews(o); }catch(e){} }
   if(o.d===1)try{ amAiFollow(o); }catch(e){} /* 1·4·7월(1월은 시즌 밖) */
@@ -336,7 +337,7 @@ function amFollow(id,on,tid){ tid=tid??G.user; id=amFollowId(id); const L=amFoll
   else if(i<0){ L.push(id); while(L.length>AM_FW_MAX){ const gone=L.shift(),SL=amFollowBoard(tid); for(let j=SL.length-1;j>=0;j--)if(amFollowId(SL[j])===gone)SL.splice(j,1); if(G.amPr?.[tid])delete G.amPr[tid][gone]; } }
   amFollowFix(tid); return !off; }
 /* 경기가 열린 날: 스카우트를 둔 지역의 경기에 나온 선수, 관심 선수·관심 학교 선수는 그 구단의 관찰 횟수가 쌓인다(평가 오차 감소, 최대 15%) */
-function amWatchDaily(d){ if(_amToday.d!==d||!_amToday.L.length)return; const regOf=n=>{ const a=AREA.find(x=>x.hs.includes(n)||x.un.includes(n)); return a?a.reg:null; };
+function amWatchDaily(d){ if(!amTodayOk(d)||!_amToday.L.length)return; const regOf=n=>{ const a=AREA.find(x=>x.hs.includes(n)||x.un.includes(n)); return a?a.reg:null; };
   for(const t of G.teams){ const tid=t.id; if(tid===G.user&&G.unemp)continue; obsFocusFix(tid); const regs=amClubRegs(tid), F=obsFollowSet(tid), P=obsPriL(tid); const seen=new Set();
     for(const x of _amToday.L){ if(seen.has(x.id))continue; const fol=F.has(x.id); const here=regs.includes(regOf(x.sch))||F.has('s:'+x.sch); if(!fol&&!(here&&u01('amw'+d+':'+tid,x.id)<.25))continue; if(fol&&u01('amwf'+d+':'+tid,x.id)>=OBS_SP[P[x.id]??1])continue; seen.add(x.id);
       const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(!s)continue; obsAdd(s,tid,fol?1:.5); if(fol&&tid===G.user)try{ obsLogGame(s,x,regOf(x.sch),d); }catch(e){} } } } /* 관심 선수 경기는 우선순위만큼 더 자주 본다(집중 30%·보통 20%·참고 10% 경기, 스카우트 1단계) */
@@ -368,7 +369,7 @@ function amSuggest(y,regs,n,tid){ const reg=x=>{ const a=AREA.find(z=>z.hs.inclu
   if(tid!=null){ /* 기록 상위 안에서 그 구단 스카우트 평가 등급을 더한다(우리 추천·AI 관심 선수 같은 식) */ R0=R0.slice(0,n*3).map(x=>{ const est=x.kind==='e'&&x.e?amEstU(x.e,tid):x.p&&x.p.prospect?amEstP(x.p,tid):null; return Object.assign(x,{s:x.s+(est?(est.v-46)*.05:0)}); }).sort((a,b)=>b.s-a.s); }
   return R0.slice(0,n); }
 /* 단장 대회 관전: 그날 그 지역 학교가 치른 경기에서 본 선수(실제 경기 기록 한 줄) */
-function amTripSeen(reg){ if(_amToday.d!==G.day)return null; const regOf=n=>{ const a=AREA.find(x=>x.hs.includes(n)); return a?a.reg:null; }; const L=_amToday.L.filter(x=>regOf(x.sch)===reg); return L.length?L:null; }
+function amTripSeen(reg){ if(!amTodayOk(G.day))return null; const regOf=n=>{ const a=AREA.find(x=>x.hs.includes(n)); return a?a.reg:null; }; const L=_amToday.L.filter(x=>regOf(x.sch)===reg); return L.length?L:null; }
 /* ---------- 학년별 흐름·3학년 부진(공개 기록만, 모든 구단이 같은 기록을 본다) ---------- */
 const AM_SL_MIN={pa:40,outs:45}, AM_SL_OPS=.15, AM_SL_ERA=1.5, AM_SL_OBS=5;
 /* 학년별 기록 행(저학년 G.amU·후보 공통): [{y,gr,...}] 학년 순 */
