@@ -14853,7 +14853,7 @@ function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p
   if(up&&!canUp(p))return upWhy(p);
   if(!up&&!p.e1)return '이미 1군에 없습니다.';
   if(!up&&!p.isP&&healthy(p)&&playersOf(G.user).filter(x=>x.e1&&!x.isP&&healthy(x)).length<=9&&!playersOf(G.user).some(x=>!x.isP&&canUp(x)))return '1군의 건강한 야수가 9명뿐이고 2군에서 바로 올릴 야수가 없어(재등록 대기·부상) 말소하면 타순을 채울 수 없습니다.'; /* 검수 11-09zx */
-  if(!up&&mreqs().some(r=>r.k==='out'&&['open','ask'].includes(r.st)&&r.data&&r.data.pid===p.id)){ for(const r of mreqs())if(r.k==='out'&&r.data&&r.data.pid===p.id&&['open','ask'].includes(r.st))r.st='done'; for(const e of (G.evs||[]))if(e.k==='mreq'&&!e.done&&mreqs().find(x=>x.id===e.data?.rid&&x.data?.pid===p.id))e.done=true; m.rel=clamp(m.rel+2,0,100); p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); addLog(`${p.name}이(가) 단장 요청으로 1군에서 말소되었습니다.`); return `${m.name} 감독이 정리를 요청했던 선수라 바로 받아들였습니다. ${p.name} 말소(${dmd(G.day+10)}부터 재등록 가능). 감독 관계 조금 개선.`; } /* 감독 스스로 정리해 달라던 선수를 '필요한 선수'라며 거절하지 않게(카페 11-08) */
+  if(!up&&mgrOutReq(p)){ mgrOutGrant(p,'down'); p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); addLog(`${p.name}이(가) 단장 요청으로 1군에서 말소되었습니다.`); return `${m.name} 감독이 정리를 요청했던 선수라 바로 받아들였습니다. ${p.name} 말소(${dmd(G.day+10)}부터 재등록 가능). 감독 관계 조금 개선.`; } /* 감독 스스로 정리해 달라던 선수를 '필요한 선수'라며 거절하지 않게(카페 11-08) */
   { const br=mplBreakListen(`${p.name} ${up?'콜업':'말소'}`); if(br){ m.rel=clamp(m.rel,0,100); return br; } }
   mgrFix(m); const a=clamp(.78-(m.ego-50)/70+(m.rel-60)/120+(mplOn('listen')?.3:0),.15,mplOn('listen')?.98:.95); /* 영입 면담에서 '단장 건의 존중'을 약속받았으면 거의 받아들인다 */ const ok=hn('req'+G.day,id)>-1.2&&R()<a;
   if(!ok){ m.rel=clamp(m.rel-2,0,100); mail('감독실',`${p.name} ${up?'콜업':'말소'} 요청 거절`,`${m.name} 감독: ${up?`${p.name}은(는) 아직 1군에 올릴 때가 아니라고 봅니다.`:`${p.name}은(는) 지금 팀에 필요한 선수입니다.`} 엔트리는 제가 판단하겠습니다.`,{kind:'감독'}); return `${m.name} 감독이 요청을 받아들이지 않았습니다.`; }
@@ -23545,14 +23545,21 @@ function mreqMake(k,d){ const m=G.mgr[G.user]; if(mreqGate(k,d))return;const nm=
 function mreqCloseOld(){ const m=G.mgr[G.user]; const mid=m&&!m.interim?m.id:null; if(G.dirFr&&G.dirFr.mid!==mid)G.dirFr=null; /* 지시 충돌 횟수도 감독마다 */ const end=e=>{ e.done=true; e.res='요청한 감독이 팀을 떠나 종료'; const ml=(G.mail||[]).find(x=>x.id===e.mid); if(ml){ ml.acts=[]; ml.imp=false; ml.body+='\n\n[종료] 요청한 감독이 팀을 떠나 이 요청은 끝났습니다.'; } };
   for(const r of mreqs())if((r.st==='ask'||r.st==='open')&&r.mid!==mid){ r.st='void'; const e=(G.evs||[]).find(x=>x.k==='mreq'&&!x.done&&x.data&&x.data.rid===r.id); if(e)end(e); } /* 수락해 진행 중인 요청도 전임 감독 것(검수 11-09m: 전임 정리 요청을 새 감독 요청처럼 처리) */
   for(const e of (G.evs||[]))if(e.k==='mpick'&&!e.done&&(e.data||{}).mid!==mid)end(e); }
+/* 감독이 이 선수를 정리하고 싶어 하는지(피드백 11-18): 지금 감독이 45일 안에 정리 요청을 했으면(대기·수락·거절·기한 넘김 모두) 그 뜻은 그대로다.
+ 정리 요청 메일·주간 회의 안건·엔트리 말소 건의가 모두 이 판정으로 감독 반응을 정한다: 감독이 원한 쪽(말소·방출)을 고르면 관계가 떨어지지 않는다 */
+const MGR_OUT_WIN=45;
+function mgrOutReq(p){ const m=G.mgr[G.user]; if(!p||!m||m.interim||p.team!==G.user)return null; return mreqs().find(r=>r.k==='out'&&r.data&&r.data.pid===p.id&&(r.mid==null||r.mid===m.id)&&(r.tid==null||r.tid===G.user)&&['ask','open','no','half'].includes(r.st)&&G.day-(r.day??G.day)<=MGR_OUT_WIN)||null; }
+/* 감독이 정리를 원하던 선수를 정리했다: 요청을 끝내고(대기 중인 요청 결정도 닫는다) 관계를 올린다. how: down(말소)·rel(방출) */
+function mgrOutGrant(p,how){ const m=G.mgr[G.user]; if(!m)return 0; const ids=new Set(); for(const r of mreqs())if(r.k==='out'&&r.data&&r.data.pid===p.id&&['ask','open','no','half'].includes(r.st)){ r.st='done'; r.end=G.day; ids.add(r.id); }
+  for(const e of (G.evs||[]))if(e.k==='mreq'&&!e.done&&e.data&&ids.has(e.data.rid))e.done=true; const d=how==='rel'?4:2; m.rel=clamp(m.rel+d,0,100); return d; }
 EVH.mreq={ pick(e,i){ const r=mreqs().find(x=>x.id===e.data.rid); const m=G.mgr[G.user]; if(!r||!m)return ''; if((r.mid!=null&&r.mid!==m.id)||(r.tid!=null&&r.tid!==G.user)){ r.st='void'; return '요청한 감독·구단이 달라 이 요청은 끝났습니다. 아무것도 바꾸지 않았습니다.'; }if(r.st!=='ask')return '이미 처리한 감독 요청입니다.';const gate=mreqGate(r.k,r.data,r);if(gate){r.st='void';return gate+' 감독 관계 변화는 없습니다.';} /* 응답 때도 요청한 감독인지 다시 본다 */ const L=e.opts.length;
     const neg=d=>{ m.rel=clamp(m.rel-d,0,100); return `감독 관계 악화.`; };
     if(r.k==='fit'){ if(i===0){ r.st='open'; return `${dmd(r.until)}까지 ${MROLE[r.data.role].l}을(를) 찾기로 했습니다.`; } r.st='no'; return neg(m.ego>=70?4:2); }
     if(r.k==='slot'){ if(i===0){ r.st='open'; return `${dmd(r.until)}까지 ${SLOTK[r.data.sk]} 보강을 약속했습니다.`; } r.st='no'; return neg(m.ego>=70?5:3); }
     if(r.k==='out'){ const p=G.players[r.data.pid]; if(!p||p.team!==G.user){ r.st='done'; return ''; }
       if(i===0){r.until=Math.min(r.until,tradeDL()); p.listed=true; p.mor=clamp((p.mor??60)-4,0,100); r.st='open'; m.rel=clamp(m.rel+1,0,100); return `${p.name}을(를) 트레이드 매물로 내놓았습니다. 감독 관계 조금 개선.`; }
-      if(i===1){ const nm=p.name; releasePlayer(p.id); r.st='done'; m.rel=clamp(m.rel+4,0,100); for(const q of playersOf(G.user))q.mor=clamp((q.mor??60)-1,0,100); return `${nm}을(를) 방출했습니다. 감독 관계 개선.`; }
-      if(i===2){ r.st='done'; m.rel=clamp(m.rel+2,0,100); p.mor=clamp((p.mor??60)-2,0,100); if(p.e1){ p.e1=false; p.downDay=G.day; try{ entryManage(G.user,false,true); }catch(e){} } return `${p.name}을(를) 2군으로 내렸습니다(${dmd(G.day+10)}부터 재등록 가능). 감독 관계 조금 개선.`; } /* 감독이 정리를 요청한 선수는 말소로도 요청을 들어준다(카페 11-08) */
+      if(i===1){ const nm=p.name; r.st='no'; mgrOutGrant(p,'rel'); releasePlayer(p.id); for(const q of playersOf(G.user))q.mor=clamp((q.mor??60)-1,0,100); return `${nm}을(를) 방출했습니다. 감독 관계 개선.`; }
+      if(i===2){ r.st='no'; mgrOutGrant(p,'down'); p.mor=clamp((p.mor??60)-2,0,100); if(p.e1){ p.e1=false; p.downDay=G.day; try{ entryManage(G.user,false,true); }catch(e){} } return `${p.name}을(를) 2군으로 내렸습니다(${dmd(G.day+10)}부터 재등록 가능). 감독 관계 조금 개선.`; } /* 감독이 정리를 요청한 선수는 말소로도 요청을 들어준다(카페 11-08) */
       r.st='no'; p.mor=clamp((p.mor??60)+5,0,100); return `${p.name}에게 기회를 더 줍니다. 기분 상승. `+neg(m.ego>=70?5:3); }
     if(r.k==='frep'){ if(i===0){ r.st='open'; return `${dmd(r.until)}까지 교체를 추진합니다(기존 선수 정리 + 새 외국인 영입). 외국인 시장과 관찰 명단을 확인하세요.`; } r.st='no'; return neg(3); }
     if(r.k==='fa'){ if(i===0){ r.st='open'; return 'FA 협상에 나섭니다.'; } r.st='no'; return neg(2); }
@@ -33078,8 +33085,8 @@ function mcfWantsUp(){ const L=playersOf(G.user).filter(p=>!p.e1&&(typeof canUp!
   if(typeof playerWantsUp==='function'){ let W=[]; try{ W=(playerWantsUp(G.user)||[]).map(x=>x&&x.p).filter(Boolean); }catch(e){} const ids=new Set(W.map(p=>p.id)); return L.filter(p=>ids.has(p.id)&&seasonTotal(p,G.year,'퓨처스')); } /* 선수 쪽 훅: playerWantsUp(tid) → [{p,t,gap,why,weeks,heat}] */
   return L.filter(p=>{ const h=seasonTotal(p,G.year,'퓨처스'); return h&&(p.isP?h.outs>=60&&pRate(h).era<=3.0:h.pa>=60&&bRate(h).ops>=.85); }); }
 function mcfAgenda(){ const m=G.mgr[G.user]; const S=mcf(); const X=mgrSit(); const d=depth(G.user); const A=[]; const nm=`${m.name} 감독`; mgrAttr(m);
-  /* 주전 부진 */ { const c=X.cold&&X.cold[0]; if(c&&c.h.pa>=80&&bRate(c.h).ops<.6){ const p=c.p, ops=bRate(c.h).ops; const keep=p.age>=30||m.ego>=60; A.push({k:'slump:'+p.id,sc:(.64-ops)*25+1,pid:p.id,t:`${p.name} 부진(OPS ${fmt3(ops)}, ${c.h.pa}타석)`,
-      s:`${nm}: "${keep?`${p.name}은(는) 해 온 선수입니다. 곧 올라옵니다. 빼면 더 무너집니다.`:`${p.name} 고민입니다. 단장님 생각은 어떻습니까?`}"`,o:[{l:'2군에서 재정비시키십시오',fx:'말소 지시. 감독이 반발할 수 있습니다',a:'down'},{l:'선발 출전을 줄이십시오',fx:'2주간 기용 순위를 낮춥니다',a:'less'},{l:'감독님 판단대로',fx:'그대로 기용',a:'none'}]}); } }
+  /* 주전 부진 */ { const c=X.cold&&X.cold[0]; if(c&&c.h.pa>=80&&bRate(c.h).ops<.6){ const p=c.p, ops=bRate(c.h).ops; const oq=mgrOutReq(p); const keep=!oq&&(p.age>=30||m.ego>=60); /* 감독이 정리를 요청한 선수면 감독 입장은 '정리'다(피드백 11-18). 아직 답하지 않은 요청이 있으면 같은 질문을 또 하지 않는다 */ if(!(oq&&oq.st==='ask'))A.push({k:'slump:'+p.id,sc:(.64-ops)*25+1,pid:p.id,t:`${p.name} 부진(OPS ${fmt3(ops)}, ${c.h.pa}타석)`,
+      s:`${nm}: "${oq?`${p.name}은(는) 이미 정리를 말씀드린 선수입니다. 이번에는 내려 주십시오.`:keep?`${p.name}은(는) 해 온 선수입니다. 곧 올라옵니다. 빼면 더 무너집니다.`:`${p.name} 고민입니다. 단장님 생각은 어떻습니까?`}"`,o:[{l:'2군에서 재정비시키십시오',fx:oq?'말소 지시. 감독이 원하던 일입니다':'말소 지시. 감독이 반발할 수 있습니다',a:'down'},{l:'선발 출전을 줄이십시오',fx:'2주간 기용 순위를 낮춥니다',a:'less'},{l:'감독님 판단대로',fx:'그대로 기용',a:'none'}]}); } }
   /* 2군 콜업 요구 */ { const W=mcfWantsUp().sort((a,b)=>ovr(b)-ovr(a))[0]; if(W){ const h=seasonTotal(W,G.year,'퓨처스'); const want=(m.youth||50)>=62||mcfStake()===0; const line=W.isP?`2군 ${ipStr(h.outs)}이닝 ERA ${pRate(h).era.toFixed(2)}`:`2군 ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`;
       A.push({k:'up:'+W.id,sc:1.2+(W.age<=24?.4:0),pid:W.id,t:`${W.name} 콜업 요구(${line})`,s:`${W.name} 측이 1군 기회를 원합니다. ${nm}: "${want?'저도 한번 보고 싶습니다.':'지금 1군 자리는 성적 내는 선수 몫입니다. 2군 성적만으로는 모릅니다.'}"`,
         o:[{l:'콜업하십시오',fx:want?'감독도 원하던 일':'감독 뜻을 꺾는 지시. 관계가 떨어질 수 있습니다',a:'up'},{l:'한 주 더 지켜봅시다',fx:'선수 기분이 조금 떨어집니다',a:'wait'},{l:'감독님 판단대로',fx:'감독이 정합니다',a:'none'}]}); } }
@@ -33103,6 +33110,8 @@ function mcfAgdPick(e,i){ const m=G.mgr[G.user]; const S=mcf(); if(!m||m.interim
   if(o.a==='none'||o.a==='wait'){ if(o.a==='wait'&&p){ p.mor=clamp((p.mor??60)-2,0,100); } if(o.coach){ return `${nm}이 그대로 씁니다. 투수코치 ${o.coach}은(는) 말을 아꼈습니다.`; } m.rel=clamp(m.rel+.5,0,100); return o.a==='wait'?`${p?p.name+' ':''}기분 조금 하락. 다음 주에 다시 봅니다.`:`${nm}: "맡겨 주십시오."`; }
   if(o.a==='shop'){ const L=Object.values(G.players).filter(q=>q.team!=null&&q.team!==G.user&&q.aiListed&&q.isP&&isSPr(q)).sort((a,b)=>spV(b)-spV(a)).slice(0,3); return L.length?`시장에 나온 선발: ${L.map(q=>`${q.name}(${tshort(q.team)})`).join(', ')}. 트레이드 화면에서 확인하세요.`:'지금 매물로 나온 선발은 없습니다. 직접 문의해야 합니다.'; }
   if(!p||p.team!==G.user)return '선수가 우리 구단에 없습니다.';
+  if((o.a==='down'||o.a==='less')&&mgrOutReq(p)){ /* 감독이 정리를 원하던 선수: 같은 방향 지시는 그대로 받아들인다(피드백 11-18, 요청 메일·말소 건의와 같은 판정) */ if(o.a==='less'){ S.fav[p.id]={v:-3,until:G.day+14,half:false,why:'agd'}; return `${nm}: "저도 그렇게 생각합니다." ${p.name} 2주간 선발 출전 축소.`; }
+    if(p.e1){ p.e1=false; p.downDay=G.day; try{ entryManage(G.user,false,true); }catch(x){} } mgrOutGrant(p,'down'); return `${nm}: "제가 말씀드린 대로입니다." ${p.name} 말소(${dmd(G.day+10)}부터 재등록 가능). 감독 관계 조금 개선.`; }
   const push=o.a==='force'?2:o.a==='rest'&&((m.pen||50)>=58||(m.arm||50)>=58)?1.2:o.a==='up'&&!((m.youth||50)>=62||mcfStake()===0)?1:o.a==='down'&&(p.age>=30||m.ego>=60)?1:.5;
   const r=mcfOrder(m,push); const tag=r==='no'?'거절':r==='half'?'마지못해 수용':'수용';
   if(r==='no'){ if(o.a==='force'){ const it=e.data.k&&S.plan&&S.plan.items.find(x=>'plan:'+x.pid===e.data.k); if(it)it.esc=(it.esc||0)+1; } return `${nm}: "${o.a==='rest'?'선수 상태는 제가 봅니다.':o.a==='up'?'지금 올릴 선수는 없습니다.':'제 판단은 다릅니다.'}" 지시를 거절했습니다. 감독 관계 악화. 이런 일이 쌓이면 밖에서 말이 나옵니다.`; }
@@ -49159,6 +49168,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-18-mgr-out',d:'11월 18일',t:'감독의 정리 요청과 회의 안건이 같은 기준입니다',items:[
+    '감독이 정리를 요청한 선수는 45일 동안 감독의 뜻이 "정리"로 남습니다. 요청을 거절했더라도 주간 회의나 엔트리 말소 건의에서 그 선수를 내리면 감독은 반발하지 않고 받아들이며, 회의 안건도 감독이 원하는 쪽으로 올라옵니다. 아직 답하지 않은 정리 요청이 있는 선수는 회의 안건으로 다시 묻지 않습니다.']},
   {id:'2026-11-18-budget-chip',d:'11월 18일',t:'예산 여유가 늘 보입니다',items:[
     '휴대폰·좁은 화면에서도 하위 탭 줄 오른쪽 위(? 옆)에 "여유 ○억"이 늘 보입니다. 누르면 재정 화면으로 갑니다. 스태프·육성·시설·재정·영입·트레이드·선수단 등 모든 게임 화면에서 같은 자리입니다(홈 제외). 코치 연수처럼 창 안에서 돈을 써도 숫자가 바로 바뀝니다.']},
   {id:'2026-11-18-trade3',d:'11월 18일',t:'트레이드 조정: 상위 팀의 작은 거래 · 주전 거래 웃돈 상한 · 유망주·지명권 · 매물',items:[
