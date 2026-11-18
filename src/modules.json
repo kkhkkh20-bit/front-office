@@ -30,6 +30,7 @@
       "src/engine/contracts/14_salary.js",
       "src/engine/runtime/15_newgame.js",
       "src/engine/market/16_trade.js",
+      "src/engine/market/16b_trade_rules.js",
       "src/engine/market/17_scouting.js",
       "src/engine/media/18_media.js",
       "src/engine/finance/19_budget.js",
