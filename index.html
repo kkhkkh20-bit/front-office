@@ -7390,6 +7390,65 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
   .card .jump-bar{background:var(--panel)}
   .trn-bar{position:sticky;top:0;z-index:3;background:var(--panel);padding:6px 0}
 }
+/* 경기장 라인업(58_lineup_field.js): 골든글러브 보드(.ggf)와 같은 밤 경기장 + 카드. 금색 대신 구단색(--tc) */
+.lf{position:relative;width:100%;container-type:inline-size;margin:0 auto}
+.lf-box{position:relative;width:100%;aspect-ratio:16/10;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 2px 0 color-mix(in srgb,var(--tc,#c33) 45%,transparent);background:radial-gradient(70% 45% at 50% 30%,#2a3a5c66,transparent 70%),radial-gradient(120% 90% at 50% 100%,#14284a,#070d1c 75%)}
+.lf-bg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 14px #0009)}
+/* 카드(구단주 11-18: 빨강이 두껍고 진하다 → 반투명 유리): 어두운 반투명 바탕 + 1px 머리카락 선, 구단색은 위쪽 얇은 띠와 얼굴 테 은은하게 */
+.lf-hd{position:absolute;left:2%;top:3%;z-index:2;display:flex;align-items:center;gap:7px;max-width:30%;padding:5px 9px 5px 7px;border-radius:8px;background:rgba(10,14,22,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);box-shadow:inset 2px 0 0 color-mix(in srgb,var(--tc,#c33) 60%,transparent);color:#fff}
+.lf-hd>span{display:grid;min-width:0}.lf-hd b{font-size:clamp(11px,1.8cqw,15px);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lf-hd small{font-size:clamp(9px,1.25cqw,11.5px);opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lf-hd .badge,.lf-hd img,.lf-hd svg{width:clamp(18px,3.4cqw,30px);height:clamp(18px,3.4cqw,30px);flex:none}
+.lf-avg{position:absolute;right:2%;top:3%;z-index:2;display:flex;align-items:center;gap:6px;padding:4px 6px 4px 9px;border-radius:8px;background:rgba(10,14,22,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:clamp(9px,1.25cqw,12px)}
+.lf-note{position:absolute;right:2%;bottom:3%;z-index:2;max-width:32%;padding:4px 8px;border-radius:6px;background:rgba(10,14,22,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:clamp(9px,1.25cqw,12px);line-height:1.35}
+.lf-m{all:unset;box-sizing:border-box;position:absolute;z-index:1;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;width:clamp(54px,13.5cqw,118px);padding:0 0 3px;text-align:center;color:#fff;border-radius:12px;background:rgba(10,14,22,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 2px 0 color-mix(in srgb,var(--tc,#c33) 60%,transparent),0 4px 12px rgba(0,0,0,.35)}
+button.lf-m{cursor:pointer}button.lf-m:hover{background:rgba(18,24,36,.74);border-color:rgba(255,255,255,.26)}button.lf-m:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.lf-m.sp{box-shadow:inset 0 2px 0 rgba(240,198,74,.7),0 4px 12px rgba(0,0,0,.35)}
+.lf-ph{position:relative;margin:4px 0 2px}
+.lf-m .av{display:grid;place-items:center;width:clamp(30px,9.4cqw,64px);height:clamp(30px,9.4cqw,64px);border-radius:50%;border:1px solid rgba(255,255,255,.22);background:#1b2430;object-fit:cover;font-size:clamp(12px,3cqw,22px);box-shadow:0 0 0 2px color-mix(in srgb,var(--tc,#c33) 45%,transparent)}
+.lf-m.sp .av{box-shadow:0 0 0 2px rgba(240,198,74,.55)}
+.lf-no{position:absolute;left:-10%;top:-4%;display:grid;place-items:center;min-width:clamp(14px,2.6cqw,19px);height:clamp(14px,2.6cqw,19px);padding:0 3px;border-radius:999px;background:rgba(10,14,22,.82);color:#e8edf2;font:700 clamp(8.5px,1.45cqw,11px)/1 var(--f-num);font-style:normal;border:1px solid rgba(255,255,255,.3);white-space:nowrap}
+.lf-m.sp .lf-no{color:#f0c64a;border-color:rgba(240,198,74,.55);font-family:inherit;font-size:clamp(8px,1.3cqw,10.5px)}
+.lf-ov{position:absolute;right:-14%;bottom:-4%}.lf-ov .rc{min-width:clamp(18px,3.2cqw,25px);font-size:clamp(9.5px,1.55cqw,12.5px);line-height:clamp(13px,2.3cqw,17px);padding:0 3px;border-radius:3px;box-shadow:none;border:0}
+.lf-nb{align-self:stretch;margin:0 4px;padding:1px 2px;border-radius:4px;background:rgba(255,255,255,.06);color:#fff;display:flex;flex-direction:column;min-width:0}
+.lf-m b{font-size:clamp(10px,1.9cqw,15px);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.lf-m em{font-style:normal;font-size:clamp(8.5px,1.35cqw,11.5px);font-weight:500;opacity:.68;line-height:1.15;white-space:nowrap}
+@container (max-width:759px){.lf-m em{display:none}}
+@container (max-width:520px){.lf-note{display:none}.lf-hd small{display:none}.lf-avg>span{display:none}}
+/* 경기장 보기 아래 벤치·투수진 요약 */
+.lf-panel{display:grid;gap:8px;min-width:0}
+.lf-tabs{display:flex;gap:6px;flex-wrap:wrap}.lf-tabs small{opacity:.7;font-size:var(--ui-micro)}
+.lf-sum{display:grid;gap:4px}.lf-sum .gl-chips{display:flex;flex-wrap:wrap;gap:4px 10px}
+.lf-seg{flex:none}.lf-seg button{min-height:28px;padding:3px 10px;font-size:12px;white-space:nowrap}
+
+/* 경기 전 라인업 소개(중계): 경기장 보기가 기본. 목록 보기는 기존 배치 그림 + 타순 표 */
+.cs-prep-heading .cs-prep-view{margin-left:auto}
+.cs-prep-heading .cs-prep-view+.cs-prep-side{margin-left:8px}
+.cs-pcard>.cs-lfw{display:none;min-width:0;min-height:0;container-type:size;align-items:center;justify-content:center}
+.cs-lfw>.lf{width:min(100cqw,160cqh)}
+.cs-prep[data-view=field] .cs-pcard>.cs-lfw{display:flex}
+.cs-prep[data-view=field] .cs-pcard>.cs-pf,.cs-prep[data-view=field] .cs-pcard>.cs-pl{display:none}
+body .cs-prep[data-view=field] .cs-prep-teams>section.cs-pcard{grid-template-columns:minmax(0,1fr);width:100%;max-height:none;background:none;box-shadow:none;border-radius:0;overflow:visible}
+/* PC 경기장 보기: 원정·홈 두 장을 나란히(높이가 그림 크기를 정하므로 옆자리가 남는다). 팀 전환 버튼은 목록 보기에서만 */
+body .cs-prep[data-view=field] .cs-prep-teams{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+body .cs-prep[data-view=field] .cs-prep-teams>section.cs-pcard[hidden]{display:grid}
+.cs-prep[data-view=field] .cs-prep-side{display:none}
+.cs-prep[data-view=field] .cs-pcard>.cs-lfw{justify-content:flex-end}.cs-prep[data-view=field] .cs-pcard+.cs-pcard>.cs-lfw{justify-content:flex-start}
+@media(max-width:700px){.cs-prep-heading .cs-prep-view{margin-left:auto}body .cs-prep .cs-prep-view button{padding:3px 8px;font-size:11px;min-height:26px}.cs-prep-view button>span{display:none}}
+/* 휴대폰: 두 팀을 위아래로(목록과 같은 틀). 머리글은 보기 전환만 */
+@media(max-width:700px){
+ body .cs-prep .cs-prep-heading{display:flex;flex-wrap:nowrap}
+ .cs-prep-heading>b{font-size:12px}
+ body .cs-prep .cs-prep-heading>.cs-prep-view{display:inline-flex;flex:none}
+ .cs-prep[data-view=field] .cs-prep-heading>b{display:none}
+ .cs-prep[data-view=field] .cs-prep-side{margin-left:6px!important;min-width:0}.cs-prep[data-view=field] .cs-prep-side button{padding:3px 6px;gap:3px;min-width:0;white-space:nowrap}
+ /* 경기장 보기는 한 팀씩(위 버튼·자동 전환) 크게: 세로를 늘린 그림(16:12) */
+ body .cs-prep[data-view=field] .cs-prep-side{display:inline-flex;margin-left:auto}
+ body .cs-prep[data-view=field] .cs-prep-teams{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:0}
+ body .cs-prep[data-view=field] .cs-prep-teams>section.cs-pcard[hidden]{display:none}
+ .cs-prep[data-view=field] .cs-pcard>.cs-lfw,.cs-prep[data-view=field] .cs-pcard+.cs-pcard>.cs-lfw{height:100%;justify-content:center}
+ .cs-lfw>.lf{width:min(100cqw,133cqh)}.lf-box{aspect-ratio:16/12}
+ body .cs-prep[data-view=field] .cs-prep-teams>section.cs-pcard{border-radius:0}
+}
 /* 사진 고치기·자르기(71b_photo_edit.js). 연필 버튼은 얼굴 사진 오른쪽 아래 모서리에 붙는다 */
 .ph-w{position:relative;display:inline-block;flex:none;line-height:0;align-self:start}
 .ph-pen{position:absolute;right:-6px;bottom:-6px;z-index:3;width:26px;height:26px;min-height:0;padding:0;border-radius:50%;display:grid;place-items:center;background:var(--panel2,#1d2833);color:var(--ink);border:1px solid var(--line2,var(--line));box-shadow:0 1px 4px rgba(0,0,0,.45);cursor:pointer;line-height:0}
@@ -42036,14 +42095,17 @@ function prepTeamFacts(g){if(g.broadcast?.pregame?.teams)return g.broadcast.preg
 const prepPitchText=st=>st?.unknown?'당시 시즌 기록 미보관':st?`${st.rec} · 평균자책점 ${st.era} · ${st.ip}이닝`:'시즌 첫 등판';
 function matchPrepLineups(g){UI.prepAt=Date.now();if(UI.prepSideG!==g.day){UI.prepManual=false;UI.prepSide=null;}const me=G.user,def=g.home===me?'h':'a',cur=UI.prepSide&&UI.prepSideG===g.day?UI.prepSide:def;
  const card=side=>{const tid=side==='a'?g.away:g.home,rows=castLineup(g,side,0).slice(0,9),pit=g.box[side].pit[0],col=cTeamCol(tid);
-  const chip=(p,label,pos,n)=>{const xy=PREP_XY[pos]||PREP_XY.DH;return `<div class="cs-pc" style="left:${xy[0]/1.2}%;top:${xy[1]}%">${p?avImg(p):'<span class="av ini">?</span>'}<b><em>${label}</em>${esc(p?.name||n||'')}</b></div>`;};
+  const chip=(p,label,pos,n)=>{const xy=PREP_XY[pos]||PREP_XY.DH;return `<div class="cs-pc" style="left:${xy[0]/1.2}%;top:${xy[1]}%"${p?` data-fpid="${p.id}"`:''}>${p?avImg(p):'<span class="av ini">?</span>'}<b><em>${label}</em>${esc(p?.name||n||'')}</b></div>`;};
   const bl=id=>g.box[side].bat.find(b=>b.id===id),ps=pit?prepSeason(g,pit.id,pit,true):null,pp=pit&&G.players[pit.id];
   const recT=(()=>{const r=prepTeamFacts(g)?.teams?.[tid]?.rec;return !r?'당시 전적 미보관':r.w+r.l+r.t?recStr(r):'시즌 첫 경기';})();
   const list=`<div class="cs-pl" style="--tc:${col}"><header>${badge(tid,40)}<div><b>${esc(tname(tid))}</b><small>${side==='a'?'원정':'홈'} · ${esc(recT)}</small></div></header><div class="cs-pl-h"><span>#</span><span>선수</span><span>포지션</span><span>타율</span><span>홈런</span><span>타점</span></div><ol>${rows.map((r,i)=>{const st=prepSeason(g,r.id,bl(r.id));const q=G.players[r.id];return `<li><i>${i+1}</i><b>${esc(q?.name||r.n||'')}<small>${q?esc(q.bt+'타'):''}</small></b><span>${esc(r.pos==='DH'?'지명':POSK[r.pos]||r.pos)}</span><em>${st&&!st.unknown?st.avg:'-'}</em><em>${st&&!st.unknown?st.hr:'-'}</em><em>${st&&!st.unknown?(st.rbi??'-'):'-'}</em></li>`;}).join('')}</ol>${pit?`<div class="cs-pl-sp"><span>선발투수</span><b>${esc(pp?.name||pit.n||'')}<small>${pp?esc(pp.th+'투'):''}</small></b><em>${prepPitchText(ps)}</em></div>`:''}</div>`;
 
   const field=`<div class="cs-pf" style="--tc:${col}"><div class="cs-pfi"><svg viewBox="0 0 120 100" aria-hidden="true"><defs><pattern id="pfs" width="10" height="100" patternUnits="userSpaceOnUse"><rect width="5" height="100" fill="#ffffff0d"/></pattern></defs><path d="M60 92 L7.7 39.7 A74 74 0 0 1 112.3 39.7 Z" class="gr"/><path d="M60 92 L7.7 39.7 A74 74 0 0 1 112.3 39.7 Z" fill="url(#pfs)"/><path d="M60 95 L35.5 68.5 A34.6 34.6 0 0 1 84.5 68.5 Z" class="dt"/><path d="M60 88 L76 72 L60 56.5 L44 72 Z" class="ig"/><path d="M60 92 L7.7 39.7 M60 92 L112.3 39.7" class="ln"/><circle cx="60" cy="73.5" r="3.2" class="md"/><rect x="58.9" y="72.4" width="2.2" height=".6" class="bs"/>${[[77,75],[60,58],[43,75]].map(([x,y])=>`<rect x="${x-1.3}" y="${y-1.3}" width="2.6" height="2.6" transform="rotate(45 ${x} ${y})" class="bs"/>`).join('')}<path d="M58.6 91.2 h2.8 v1.3 l-1.4 1.3 l-1.4 -1.3 z" class="bs"/></svg><div class="cs-pfx tl"><b>${esc(tshort(tid))}</b><span>${esc(recT)}</span></div>${pit?`<div class="cs-pfx bl"><span>선발</span><b>${esc(pp?.name||pit.n||'')}</b><span>${ps?.unknown?'당시 기록 미보관':ps?`${ps.rec} · ${ps.era}`:'시즌 첫 등판'}</span></div>`:''}${rows.map((r,i)=>chip(G.players[r.id],i+1,r.pos,r.n)).join('')}${pit?chip(G.players[pit.id],'P','P',pit.n):''}</div></div>`;
-  return `<section class="cs-pcard" data-side="${side}"${side===cur?'':' hidden'}>${field}${list}</section>`;};
- return `<div class="cs-prep"><div class="cs-prep-heading"><b>선발 라인업</b><span>${esc(stadName(g.home))} · ${dstr(g.day)} · ${[0,6].includes(dobj(g.day).w)?'주간':'야간'} 경기</span><span class="chips optrow cs-prep-side" role="group">${['a','h'].map(sd=>`<button type="button" data-a="prepSide" data-v="${sd}:${g.day}" class="${sd===cur?'on':''}" aria-pressed="${sd===cur}">${badge(sd==='a'?g.away:g.home,14)} ${esc(tshort(sd==='a'?g.away:g.home))}</button>`).join('')}</span></div><div class="cs-prep-teams">${card('a')}${card('h')}</div><div class="cs-prep-foot"><div class="cs-prep-talk"><span>해설</span>${matchPrepTalk(g).map(t=>`<p>${esc(t)}</p>`).join('')}</div><div class="cs-prep-go"><span class="cs-prep-stage">선수들이 경기장에 도착하고 있습니다</span><span class="cs-prep-bar"><i></i></span><button class="btn primary cs-prep-start" data-a="castStart" disabled>경기 시작</button></div></div></div>`;}
+  /* 경기장 보기(사용자 11-18): 골든글러브 보드처럼 포지션마다 얼굴·이름·타순·현재 능력. 옛 경기라 선수가 없으면 이름만 */
+  const lf=typeof lineupField==='function'?`<div class="cs-lfw">${lineupField({tid,sub:`${side==='a'?'원정':'홈'} · ${recT}`,rows:rows.map((r,i)=>({p:G.players[r.id],name:r.n,pos:r.pos,no:i+1})),sp:pit?{p:pp,name:pit.n}:null,note:pit?`선발 <b>${esc(pp?.name||pit.n||'')}</b> · ${esc(ps?.unknown?'당시 기록 미보관':ps?`${ps.rec} · ${ps.era}`:'시즌 첫 등판')}`:''})}</div>`:'';
+  return `<section class="cs-pcard" data-side="${side}"${side===cur?'':' hidden'}>${lf}${field}${list}</section>`;};
+ const view=UI.prepView==='list'?'list':'field';
+ return `<div class="cs-prep" data-view="${view}"><div class="cs-prep-heading"><b>선발 라인업</b><span>${esc(stadName(g.home))} · ${dstr(g.day)} · ${[0,6].includes(dobj(g.day).w)?'주간':'야간'} 경기</span><span class="chips optrow cs-prep-view" role="group" aria-label="라인업 보기 방식">${[['field','경기장'],['list','목록']].map(([k,l])=>`<button type="button" data-a="prepView" data-v="${k}" class="${k===view?'on':''}" aria-pressed="${k===view}">${l}<span> 보기</span></button>`).join('')}</span><span class="chips optrow cs-prep-side" role="group">${['a','h'].map(sd=>`<button type="button" data-a="prepSide" data-v="${sd}:${g.day}" class="${sd===cur?'on':''}" aria-pressed="${sd===cur}">${badge(sd==='a'?g.away:g.home,14)} ${esc(tshort(sd==='a'?g.away:g.home))}</button>`).join('')}</span></div><div class="cs-prep-teams">${card('a')}${card('h')}</div><div class="cs-prep-foot"><div class="cs-prep-talk"><span>해설</span>${matchPrepTalk(g).map(t=>`<p>${esc(t)}</p>`).join('')}</div><div class="cs-prep-go"><span class="cs-prep-stage">선수들이 경기장에 도착하고 있습니다</span><span class="cs-prep-bar"><i></i></span><button class="btn primary cs-prep-start" data-a="castStart" disabled>경기 시작</button></div></div></div>`;}
 /* 경기 전 화면: 우리 팀 라인업을 보여 준 뒤 5초마다 상대 팀과 번갈아 띄운다(FM처럼). 단장이 버튼을 직접 누르면 멈춘다 */
 setInterval(()=>{ try{ const c=UI.cast; if(!c||!c.pre||UI.prepManual||Date.now()-(UI.prepAt||0)<4800)return; const el=document.querySelector('#cs-3d[data-pre] .cs-pcard:not([hidden])'); const b=el&&document.querySelector(`.cs-prep-side button:not(.on)`); if(b)A.prepSide(b.dataset.v,null,null,true); }catch(e){} },500);
 /* 경기 전 해설: 결과가 미리 계산돼 있으므로 이 경기 날짜 이전 기록만 쓴다(점수·결과·이날 성적 금지) */
@@ -42545,9 +42607,9 @@ function lineupCard(tid){
   const row=(p,i)=>{ const pos=posOf[p.id]; const off=pos!=='DH'&&pos!==p.pos;
     return `<div class="lu" data-a="player" data-v="${p.id}" role="button" tabindex="0"><span class="lu-n">${i+1}</span>${avImg(p)}<div class="lu-m"><b>${esc(p.name)}${condChip(p)}</b><span class="lu-p"><span class="pp main${off?' off':''}">${POSS[pos]}</span>${off?`<i>본래 ${POSS[p.pos]}</i>`:''} <i>${hand(p)}</i></span><span class="lu-s">${bLine(p)}</span><span class="lu-u">${l10Text(p)?l10Text(p)+' · ':''}${useText(p)}</span></div>${tid===G.user?fatBar(p):(()=>{const r=scoutReport(p); return r.cur!=null?rchip(r.cur):'<span></span>';})()}</div>`; };
   const bench=d.bench.map(p=>`<div class="lu sm" data-a="player" data-v="${p.id}" role="button" tabindex="0">${avImg(p)}<div class="lu-m"><b>${esc(p.name)}${condChip(p)}</b><span class="lu-p">${posChips(p)}</span><span class="lu-s">${bLine(p)}</span><span class="lu-u">${useText(p)}</span></div></div>`).join('');
-  return `<section class="card"><div class="row between"><h2 class="sec">${tid===G.user?'감독 라인업':'예상 라인업'}</h2><span class="small muted">${m?esc(m.name)+' 감독 · ':''}${tid===G.user&&G.policy?POL[G.policy.k].l+' 지시 · ':''}다음 경기 기준</span></div>
-    <div class="lus">${order.map(row).join('')}</div>
-    ${bench?`<div class="eyebrow">벤치</div><div class="lus two">${bench}</div>`:''}
+  return `<section class="card"><div class="row between"><h2 class="sec">${tid===G.user?'감독 라인업':'예상 라인업'}</h2><span class="small muted">${m?esc(m.name)+' 감독 · ':''}${tid===G.user&&G.policy?POL[G.policy.k].l+' 지시 · ':''}다음 경기 기준</span>${typeof lineupFieldToggle==='function'?lineupFieldToggle():''}</div>
+    ${UI.lufView==='field'&&typeof lineupFieldPanel==='function'?lineupFieldPanel(tid):`<div class="lus">${order.map(row).join('')}</div>
+    ${bench?`<div class="eyebrow">벤치</div><div class="lus two">${bench}</div>`:''}`}
     <p class="small muted">타순과 수비 위치는 감독이 타격·수비 적합도로 정합니다. 노란 위치는 본래 포지션이 아닌 자리입니다. 출장 기록은 이번 시즌 실제 선발 기록입니다.</p></section>`;
 }
 function staffCard(tid){
@@ -44408,7 +44470,7 @@ function rosterView(){
   const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small rh-tools"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small tipme fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
   if(it.cur==='depth'){ const FS=futSquadView(tid); /* PC 세 칸 묶음: [배치도 | 1군 | 부상·재활] [2군 야수 | 2군 투수 | 육성선수](카페 국사왕 11-17) */
-    return head+bar+fmCols(fieldC.replace('<section class="card">','<section class="card" data-wsl="포지션 배치도">')+csec(`1군 야수 · 벤치 · 투수진 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,glancePitch(tid)).replace('<section class="card">','<section class="card" data-wsl="1군 야수·투수진">'))+FS.injC+FS.farm; }
+    return head+bar+fmCols(fieldC.replace('<section class="card">','<section class="card" data-wsl="포지션 배치도">')+csec(`1군 야수 · 벤치 · 투수진 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,UI.lufView==='field'?lineupFieldPanel(tid):glancePitch(tid),lineupFieldToggle()).replace('<section class="card">','<section class="card" data-wsl="1군 야수·투수진">'))+FS.injC+FS.farm; }
   if(it.cur==='plan'&&own)return head+bar+(fmOn()?planFM():plannerCard()); /* PC: FM식 선수단 계획표(25_squad_glance.js) */
   if(it.cur==='ent'&&own)return head+bar+entView();
   if(it.cur==='st'&&own)return head+bar+teamStatusView();
@@ -48193,6 +48255,57 @@ function fpObs(){ if(_fpRO||typeof ResizeObserver==='undefined')return _fpRO; _f
 /* 숨은 쪽에 있는 줄을 보여 준다(검색·바로 가기·검사용 workspaceReveal) */
 function fitPagesReveal(el){ const row=el&&el.closest('.fp-off'); if(!row)return; const c=row.closest('.fp-on'); if(!c||!c._fpPages)return; const i=(c._fpRows||[]).indexOf(row); if(i<0)return; const p=c._fpPages.findIndex(([a,z])=>i>=a&&i<z); if(p>=0){ UI.fpPg[c._fpKey]=p; fitPages(); } }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ try{ fitPages(); }catch(e){} cancelAnimationFrame(t); t=requestAnimationFrame(()=>{ try{ fitPages(); }catch(e){} }); }); } /* 크기가 바뀌는 그 자리에서 다시 나눈다(이전 크기의 쪽이 남아 줄이 잘려 보이지 않게) */
+/* ---------- 경기장 라인업(사용자 11-18): 골든글러브 보드(ggField)처럼 야구장 그림 위 포지션마다 얼굴·이름·타순·현재 능력(OVR)
+   경기 전 라인업 소개(중계)와 선수단 → 전력 구성이 함께 쓴다. 지명타자는 옆(왼쪽 아래), 선발투수는 마운드.
+   능력 숫자는 scoutReport(공개 범위·20-80 표시 설정 그대로)라 상대 2군처럼 모르는 선수는 '-' */
+const LF_W=160, LF_H=100; /* 넓은 그림(16:10): PC 중계 패널 높이에 맞춰 카드가 겹치지 않게 */
+const LF_SPOT={CF:[80,15],LF:[35,26],RF:[125,26],SS:[57,45],'2B':[103,45],'3B':[45,67],'1B':[115,67],P:[80,64],C:[80,88],DH:[18,87]};
+/* 야구장 그림: 홈(80,92)에서 45° 파울라인, 담장은 양 폴과 중견수 쪽을 지나는 원호. 색은 골든글러브 보드와 같은 잔디·흙 */
+let lfSeq=0; /* 그림마다 그라디언트 id를 따로(숨긴 쪽 id를 참조하면 잔디가 안 그려진다) */
+function lfParkSVG(){ const u='lf'+(++lfSeq), hx=80,hy=93,L=76,q=L/Math.SQRT2,lx=hx-q,ly=hy-q,rx=hx+q,top=5,cy=((hx-lx)**2+ly*ly-top*top)/(2*(ly-top)),r=cy-top,d=21,dl=d*1.5;
+  const base=(x,y)=>`<rect x="${(x-1.4).toFixed(1)}" y="${(y-1.4).toFixed(1)}" width="2.8" height="2.8" fill="#fff" transform="rotate(45 ${x} ${y})"/>`;
+  return `<svg class="lf-bg" viewBox="0 0 ${LF_W} ${LF_H}" preserveAspectRatio="none" aria-hidden="true"><defs><radialGradient id="${u}G" cx="50%" cy="85%" r="80%"><stop offset="0" stop-color="#3f9a4e"/><stop offset="1" stop-color="#1c4d2a"/></radialGradient><linearGradient id="${u}D" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b98450"/><stop offset="1" stop-color="#7e5229"/></linearGradient><pattern id="${u}S" width="10" height="${LF_H}" patternUnits="userSpaceOnUse"><rect width="5" height="${LF_H}" fill="#fff" opacity=".05"/></pattern></defs>
+    <path d="M${hx} ${hy+2} L${lx-2.5} ${ly-1} A${r+3} ${r+3} 0 0 1 ${rx+2.5} ${ly-1} Z" fill="#6b4a2a" opacity=".9"/><path d="M${hx} ${hy} L${lx} ${ly} A${r} ${r} 0 0 1 ${rx} ${ly} Z" fill="url(#${u}G)"/><path d="M${hx} ${hy} L${lx} ${ly} A${r} ${r} 0 0 1 ${rx} ${ly} Z" fill="url(#${u}S)"/>
+    <path d="M${hx} ${hy+3} L${hx-dl} ${hy-dl+3} Q${hx} ${hy-2*dl} ${hx+dl} ${hy-dl+3} Z" fill="url(#${u}D)"/><path d="M${hx} ${hy-3} L${hx+d-3} ${hy-d} L${hx} ${hy-2*d+3} L${hx-d+3} ${hy-d} Z" fill="#3a8a47"/><ellipse cx="${hx}" cy="${hy-d-1}" rx="3.4" ry="2.6" fill="#a9733f"/>
+    <path d="M${hx} ${hy} L${lx} ${ly} M${hx} ${hy} L${rx} ${ly}" stroke="#f3f1e4" stroke-width=".5"/>${base(hx+d,hy-d)}${base(hx,hy-2*d)}${base(hx-d,hy-d)}<path d="M${hx-1.4} ${hy-.6} h2.8 v1.3 l-1.4 1.3 l-1.4 -1.3 z" fill="#fff"/></svg>`; }
+const lfOvr=p=>{ if(!p)return null; try{ const r=scoutReport(p); return r&&r.cur!=null?r.cur:null; }catch(e){ return null; } };
+/* 카드 하나: 얼굴(타순 원·OVR 칩) + 이름표(이름·포지션). act면 눌러서 선수 화면 */
+function lfCard(x,act){ const [sx,sy]=LF_SPOT[x.pos]||LF_SPOT.DH, p=x.p, nm=p?p.name:x.name||'', ov=lfOvr(p), tag=x.pos==='P'?'선발':x.no||'', pk=x.pos==='P'?'선발투수':x.pos==='DH'?'지명타자':POSK[x.pos]||x.pos;
+  const at=act&&p?`button type="button" data-a="player" data-v="${p.id}"`:'div';
+  return `<${at} class="lf-m${x.pos==='P'?' sp':''}${x.me?' me':''}" style="left:${(sx/LF_W*100).toFixed(2)}%;top:${(sy/LF_H*100).toFixed(2)}%" data-pos="${x.pos}" title="${esc(pk)} ${esc(nm)}${ov!=null?' · 현재 능력 '+dv(ov):''}"><span class="lf-ph"${p?` data-fpid="${p.id}" data-fbig="1"`:''}>${p?avImg(p,true):`<span class="av ini big">${esc(nm.slice(0,1)||'?')}</span>`}<i class="lf-no">${tag}</i><span class="lf-ov">${rchip(ov)}</span></span><span class="lf-nb"><b>${esc(nm)}</b><em>${esc(x.pos==='P'?'선발':POSS[x.pos]||x.pos)}</em></span></${at.split(' ')[0]}>`; }
+/* o={tid, rows:[{p,name,pos,no}], sp:{p,name}, sub, act, note} → 경기장 보드 한 장 */
+function lineupField(o){ const tid=o.tid, col=typeof cTeamCol==='function'?cTeamCol(tid):'#c33';
+  const cards=(o.rows||[]).map(r=>lfCard(r,o.act)).join('')+(o.sp?lfCard({...o.sp,pos:'P'},o.act):'');
+  const ovs=(o.rows||[]).map(r=>lfOvr(r.p)).filter(v=>v!=null), avg=ovs.length===(o.rows||[]).length&&ovs.length?Math.round(ovs.reduce((a,b)=>a+b,0)/ovs.length):null;
+  return `<div class="lf" style="--tc:${col}"><div class="lf-box">${lfParkSVG()}<div class="lf-hd">${badge(tid,30)}<span><b>${esc(tname(tid))}</b>${o.sub?`<small>${esc(o.sub)}</small>`:''}</span></div>${avg!=null?`<div class="lf-avg" title="선발 타자 9명 현재 능력 평균"><span>야수 평균</span>${rchip(avg)}</div>`:''}${cards}${o.note?`<div class="lf-note">${o.note}</div>`:''}</div></div>`; }
+/* 다음 경기 기준 감독 라인업(전력 구성): 타순·수비 위치(depth)와 예상 선발(projStarters) */
+function lineupFieldTeam(tid,act){ const d=depth(tid), order=orderList(d.start,tid), posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
+  let sp=null; try{ sp=(projStarters(tid,1)[0]||{}).sp||null; }catch(e){}
+  return lineupField({tid,act,sub:`${G.mgr[tid]?G.mgr[tid].name+' 감독 · ':''}${tid===G.user?'감독 라인업':'예상 라인업'}`,rows:order.map((p,i)=>({p,pos:posOf[p.id]||p.pos,no:i+1,me:false})),sp:sp?{p:sp}:null}); }
+/* 벤치·투수진 요약(경기장 보기 아래): 이름 + 자리 + 능력 칩 */
+function lineupFieldBench(tid){ const d=depth(tid), chip=(p,l)=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${l} ${rchip(lfOvr(p))}</i></button>`, roles=['마무리','필승조','필승조','추격조','추격조','롱릴리프','롱릴리프'];
+  let next=null; try{ next=(projStarters(tid,1)[0]||{}).sp||null; }catch(e){}
+  return `<div class="lf-sum">${d.bench.length?`<div><div class="eyebrow">벤치 ${d.bench.length}명</div><div class="gl-chips">${d.bench.map(p=>chip(p,SLK[pSlot(p)]||posLabel(p))).join('')}</div></div>`:''}<div><div class="eyebrow">선발 로테이션</div><div class="gl-chips">${d.sp.filter(p=>p!==next).map((p,i)=>chip(p,`${d.sp.indexOf(p)+1}선발`)).join('')}</div></div><div><div class="eyebrow">불펜</div><div class="gl-chips">${d.pen.slice(0,7).map((p,i)=>chip(p,roles[i]||'불펜')).join('')}</div></div></div>`; }
+/* 전력 구성 오른쪽 카드: '목록 보기 / 경기장 보기' 전환(기본 목록) + 경기장 보기는 우리 팀·다음 상대 탭 */
+function lineupFieldToggle(){ const v=UI.lufView==='field'?'field':'list'; return `<div class="seg lf-seg" role="group" aria-label="라인업 보기 방식"><button type="button" data-a="lufView" data-v="list" class="${v==='list'?'on':''}" aria-pressed="${v==='list'}">목록 보기</button><button type="button" data-a="lufView" data-v="field" class="${v==='field'?'on':''}" aria-pressed="${v==='field'}">경기장 보기</button></div>`; }
+function lineupFieldPanel(tid){ let op=null; if(tid===G.user){ try{ const x=nextGames(1)[0]; op=x&&x.op!=null&&G.teams[x.op]?x.op:null; }catch(e){} }
+  const cur=op!=null&&UI.lufTeam===op?op:tid;
+  const tabs=op!=null?`<div class="chips optrow lf-tabs" role="group" aria-label="구단">${[tid,op].map(t=>`<button type="button" data-a="lufTeam" data-v="${t}" class="${t===cur?'on':''}" aria-pressed="${t===cur}">${badge(t,14)} ${esc(tshort(t))}${t===op?' <small>다음 상대</small>':''}</button>`).join('')}</div>`:'';
+  return `<div class="lf-panel">${tabs}${lineupFieldTeam(cur,true)}${lineupFieldBench(cur)}</div>`; }
+/* 경기 전 화면은 3D 로딩 중이라 다시 그리지 않는다: 얼굴 사진이 늦게 도착하면 실루엣 자리만 제자리에서 바꾼다(사용자 11-18).
+   faceSVG는 사진을 받기 전엔 실루엣(F6WAIT), 받은 뒤엔 실제 주소를 돌려준다. 다를 때만 그 칸의 이미지를 교체 */
+function prepFaceSync(){ const root=document.querySelector('.cs-prep'); if(!root||typeof G==='undefined'||!G||!G.players)return;
+  for(const el of root.querySelectorAll('[data-fpid]')){ const p=G.players[el.dataset.fpid]; if(!p)continue; const big=el.dataset.fbig==='1';
+    let src=null; try{ src=p.img||(big?faceBust(faceSVG(p)):faceSVG(p)); }catch(e){} if(!src)continue;
+    const cur=el.querySelector(':scope>.av'); if(cur&&cur.tagName==='IMG'&&cur.getAttribute('src')===src)continue;
+    const t=document.createElement('span'); t.innerHTML=avImg(p,big); const n=t.firstElementChild; if(!n)continue; if(cur)cur.replaceWith(n); else el.prepend(n); } }
+setInterval(()=>{ try{ prepFaceSync(); }catch(e){} },600);
+Object.assign(A,{
+  lufView(v){ UI.lufView=v==='field'?'field':'list'; render(); },
+  lufTeam(v){ UI.lufTeam=+v; render(); },
+  /* 경기 전 화면: 경기장 보기 ↔ 목록 보기(다시 그리지 않고 표시만 바꾼다. 3D 로딩 중이라) */
+  prepView(v){ UI.prepView=v==='list'?'list':'field'; UI.prepAt=Date.now(); const el=document.querySelector('.cs-prep'); if(el)el.dataset.view=UI.prepView; document.querySelectorAll('.cs-prep-view button').forEach(b=>{ const on=b.dataset.v===UI.prepView; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); }); }
+});
 /* ---------- 우승 순간 카드(홈 맨 위). 확인을 누를 때까지 남는다 ---------- */
 function trophySvg(){ return `<svg class="trophy" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 8h24v10c0 9-5 16-12 16S20 27 20 18z" fill="#f2c14e"/><path d="M20 12H10c0 9 5 13 11 13M44 12h10c0 9-5 13-11 13" fill="none" stroke="#f2c14e" stroke-width="3"/><rect x="29" y="33" width="6" height="11" fill="#d9a630"/><rect x="21" y="44" width="22" height="6" rx="1" fill="#d9a630"/><rect x="17" y="50" width="30" height="6" rx="1" fill="#b8871f"/></svg>`; }
 function champHomeCard(){ const c=G.champNew; if(!c||c.seen||G.unemp||(c.tid!=null&&c.tid!==G.user))return ''; const t=team(G.user); const ev=(G.evs||[]).find(e=>e.k==='champGift'&&!e.done);
@@ -50389,6 +50502,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-18-lineup-field',d:'11월 18일',t:'경기장 라인업 보기',items:[
+    '중계 경기 전 선발 라인업이 골든글러브 보드처럼 경기장 그림으로 나옵니다. 포지션마다 얼굴·이름·타순·현재 능력(OVR)이 보이고, 지명타자는 옆에, 선발투수는 마운드에 섭니다. PC에서는 원정·홈을 나란히, 휴대폰에서는 한 팀씩 보여 줍니다. \'목록 보기\'로 기존 타순 표도 볼 수 있습니다.',
+    '선수단 › 전력 구성의 1군 야수·투수진 칸에서 \'경기장 보기\'로 감독 라인업과 예상 선발을 경기장 그림으로 보고, 다음 상대의 예상 라인업과 비교할 수 있습니다. 벤치·선발 로테이션·불펜은 아래에 요약합니다.',
+    '상대 선수 능력은 스카우트로 파악한 만큼만 보입니다(모르면 \'-\').']},
   {id:'2026-11-18-postgame-board',d:'11월 18일',t:'경기 후 전광판',items:[
     '경기가 끝나면 전광판으로 결과를 보여 줍니다. 이닝별 점수(득점한 이닝은 불이 켜지고, 연장·9회말 X 포함)와 R·H·E·B, 승·패·세이브·홀드 투수와 시즌 성적, 결승타, 홈런(시즌 몇 호), 경기 MVP, 구장·관중을 한눈에 봅니다.',
     '그래픽 중계 마지막 화면, 문자 중계 끝, 경기 결과 정리 창, 박스스코어 맨 위(다른 구단끼리 경기 포함)에 나옵니다.']},
