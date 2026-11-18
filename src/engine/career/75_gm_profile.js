@@ -62,33 +62,48 @@ function meCall(){ let n=''; try{ n=meNick(); }catch(e){} return n?`'${n}' ${tsh
 /* ===== 단장 세대 교체(100년 플레이): 단장도 나이를 먹는다. 물러날 때 구단·세계는 그대로 두고 후임 단장으로 이어 한다.
  물러난 단장은 G.gmLine(단장 계보)에 남는다. 65세부터 구단주가 해마다 세대 교체를 묻고, 78세가 되는 해 1월 1일에는 구단이 정한 후임에게 넘어간다 */
 const GM_SUCC_ASK=65, GM_SUCC_FORCE=78;
-function gmSuccInfo(){ const P=G.gmP||{}; const from=Math.min(G.gmSince??(G.myC&&G.myC.y0)??P.y0??G.year,G.year); /* 이 구단 첫 부임 해(재계약 시작 해가 아님, 검수 11-07) */ const H=(G.history||[]).filter(h=>h.y>=from&&h.y<G.year+1);
+function gmRetired(){ const a=meAge(); return a!=null&&a>=GM_SUCC_FORCE; }
+function gmSuccInfo(){ const P=G.gmP||{}, C=G.myC||{}; const from=Math.min(G.year,...[G.gmSince,C.y0,P.y0,...(C.seas||[]).map(s=>s.y),...(C.stints||[]).map(s=>s.y0)].filter(Number.isFinite)); /* 계보의 기간은 마지막 구단이 아니라 이 사람의 전체 경력이다. */ const H=(G.history||[]).filter(h=>h.y>=from&&h.y<G.year+1);
   return {name:P.name||'단장',face:P.face||null,female:!!P.female,mod:P.mod||null,bg:P.bg||null,tid:G.user,from,to:G.year,age:meAge(),champ:H.filter(h=>h.champ===G.user).length,seas:H.length,rep:G.rep??50}; }
-function gmSucceed(np,why){ if(G.unemp||G.user==null||!G.gmP)return '지금은 넘길 수 없습니다.'; if(period()==='season'||period()==='post')return '시즌이 끝난 뒤(10월 말~3월)에 넘길 수 있습니다.';
+function gmSucceed(np,why){ if(G.user==null||!G.gmP)return '지금은 넘길 수 없습니다.'; const wasU=!!G.unemp; if(!wasU&&(period()==='season'||period()==='post'))return '시즌이 끝난 뒤(10월 말~3월)에 넘길 수 있습니다.';
   if(!np||!np.name||String(np.name).length<2)return '후임 이름을 두 글자 이상 적어 주세요.';
+  gmClubMigrate(); /* 구형 저장의 전임 경기 수도 새 사람을 만들기 전에 구단에 남긴다. */
+  try{ legStadEnd(); }catch(e){} /* 전임의 이름을 기리는 제안은 새 사람에게 넘기지 않는다. */
   const r0=G.sea&&G.sea.rec&&G.sea.rec[G.user], over=myCOver(); try{ myCClose(); }catch(e){} /* 전임 몫(그해 승패·연봉·성과급·이미 받은 월급)을 먼저 닫는다(검수 11-09zb) */ myCRenewClose(); /* 전임에게 온 재계약 제안은 후임이 받을 수 없다 */
   const old=gmSuccInfo(); if(G.myC){ try{ const S0=myCStats(); old.w=S0.w; old.l=S0.l; old.n=S0.n; old.champ=S0.ch; old.seas=S0.n; /* 계보도 개인 경력(직접 치른 시즌·우승)으로(검수 11-08: 결산 뒤 부임한 해 우승이 붙음) */ }catch(e){} } try{ const C=G.myC||{}; old.seasL=JSON.parse(JSON.stringify(C.seas||[])); old.stintL=JSON.parse(JSON.stringify(C.stints||[])); old.earn=C.earn||0; old.repEnd=G.rep??null; }catch(e){} /* 전임 단장의 시즌별 성적·거친 구단을 계보에 통째로 남긴다(사용자 11-12: 후임으로 바뀌면 기록이 사라짐) */ (G.gmLine=G.gmLine||[]).push(old); for(const t of (G.trades||[]))t.pre=1;
-  for(const j of [...(G.jobs||[])])if(!j.done)try{ jobAnswer(j.tid,false,true); }catch(e){} /* 전임에게 온 단장직 제의는 끝낸다(검수 11-07) */
+  for(const j of [...(G.jobs||[])])if(!j.done)try{ jobAnswer(typeof jobRef==='function'?jobRef(j):j.tid,false,true); }catch(e){} /* 전임에게 온 각 제의를 고유 번호로 끝낸다. */
   G.gmP={name:np.name,age:clamp(+np.age||42,30,65),bg:np.bg||'corp',female:!!np.female,face:np.face||('gm'+Math.floor(R()*1e6)),mod:np.mod||null,voice:GMV[np.voice]?np.voice:null,img:np.img||null /* 후임 양식의 말투·사진도(검수 11-09zc) */,y0:G.year,d0:G.day,bgDone:false};
   G.me=null; G.gmSince=G.year; G.gmSinceD=G.day; try{ tbTakeSnap(); }catch(e){} /* 후임의 영입 판정·취임 당시 비교는 후임 취임일부터(검수 11-07) */ meInit(); G.personal=null; G.rep=Math.round(clamp(35+((G.rep??50)-50)*.3,30,55)); /* 명성은 사람을 따른다: 후임은 전임 덕을 조금만 본다 */
+  if(wasU){ G.gmP.bgOnJoin=true;G.myC={tid:null,sal:myCBase(G.user),y0:G.year,y1:G.year,earn:0,stints:[],seas:[]}; G.gmJoin=null;G.gmTen=null;G.unemp={y:G.year,d:G.day,k:'succession',from:null};
+    chron('gm',`${old.name} 단장 은퇴 · ${G.gmP.name} 단장 경력 시작`,null,G.user);
+    mail('경력 관리',`${G.gmP.name} 단장으로 경력을 이어갑니다`,`${old.name} 단장의 ${old.from}~${old.to}년 기록은 단장 계보에 남습니다. ${G.gmP.name} 단장(${G.gmP.age}세)은 소속 구단 없이 새 제의를 기다립니다. 전임 단장에게 온 제의는 종료됐습니다.`,{imp:true,kind:'경력'});return ''; }
   const st=(G.myC&&G.myC.stints)||[]; st.unshift({tid:G.user,y0:old.from,y1:G.year,how:`${old.name} 단장 용퇴(${why||'세대 교체'})`}); myCStart(G.user,{yrs:3},'후임 단장 취임'); G.myC.stints=[]; G.myC.seas=[]; G.myC.earn=0; G.gmJoin=over&&r0?{y:G.year,tid:G.user,w:r0.w||0,l:r0.l||0,t:r0.t||0,psDone:true,rec:true}:null; G.gmTen=null; /* 한국시리즈 뒤 넘기면 그해 성적·우승은 전임 것, 재임 경기 수도 새로 센다(검수 11-09zb) */ void st; /* 새 사람의 경력은 새로 시작(검수 11-07: 전임 승패·우승을 물려받음). 전임 기록은 단장 계보에 */
   gmBgApply(); const t=team(G.user); t.trust=clamp(Math.round(((t.trust??55)+60)/2),0,100);
   chron('join',`${old.name} 단장 퇴임(${old.from}~${old.to}, 우승 ${old.champ}회) · ${G.gmP.name} 단장 취임`,null,G.user);
-  try{ news('구단',`${tshort(G.user)}, ${old.name} 단장 용퇴… 후임 ${G.gmP.name}`,`${old.from}년부터 ${old.seas}시즌 동안 구단을 이끈 ${old.name} 단장이 물러났습니다(한국시리즈 우승 ${old.champ}회). 구단은 ${G.gmP.name} 단장에게 다음 시대를 맡깁니다.`,3); }catch(e){}
+  try{ news('구단',`${tshort(G.user)}, ${old.name} 단장 용퇴… 후임 ${G.gmP.name}`,`${old.from}년부터 ${old.seas}시즌의 경력을 쌓은 ${old.name} 단장이 물러났습니다(한국시리즈 우승 ${old.champ}회). 구단은 ${G.gmP.name} 단장에게 다음 시대를 맡깁니다.`,3); }catch(e){}
   mail('구단주실',`${G.gmP.name} 단장 취임`,`${old.name} 단장이 ${old.from}~${old.to}년 ${old.seas}시즌을 마치고 물러났습니다. 이제 ${G.gmP.name} 단장(${G.gmP.age}세)이 구단을 맡습니다.\n선수단·시설·재정·코치진은 그대로 이어집니다. 명성은 새로 쌓아야 합니다(지금 ${G.rep}). 단장 계약은 ${G.myC.y0}~${G.myC.y1}년.\n물러난 단장은 단장 화면의 '단장 계보'에 남습니다.`,{imp:true,kind:'경력'});
   return ''; }
 function gmAutoSucc(){ return {name:(()=>{ try{ return genName(); }catch(e){ return '김단장'; } })(),age:ri(40,48),bg:pick(['player','scout','data','corp']),female:R()<.15}; }
 /* 1월 1일: 65세부터 해마다 묻고, 78세면 구단이 정한 후임에게 넘긴다(시즌 밖이라 바로 넘길 수 있다) */
-function gmAgeYear(){ if(G.unemp||!G.gmP)return; const a=meAge(); if(a==null)return;
-  if(a>=GM_SUCC_FORCE){ const r=gmSucceed(gmAutoSucc(),'정년'); if(!r)return; }
-  if(a===GM_SUCC_FORCE-1)stop('구단',`단장님은 내년 1월 1일(${GM_SUCC_FORCE}세)에 정년으로 물러나고, 구단이 정한 후임 단장이 이어받습니다. 단장 개인 경력 화면은 후임 기준으로 새로 시작하고, 지금 단장의 재임 기록(시즌·우승)은 단장 > 세대 교체의 단장 계보에 남습니다. 후임을 직접 정하려면 이번 겨울 3월 개막 전까지 정하세요. 지금 상태를 남기려면 빈 슬롯에 따로 저장해 두세요.`); /* 정년 한 해 전 알림(커뮤니티 11-12: 예고 없이 후임으로 바뀌어 기록이 사라진 줄 앎) */
-  if(a>=GM_SUCC_ASK)mail('구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 이번 겨울(3월 개막 전까지) 후임을 직접 정하고 물러날 수 있습니다. 선수단·시설·재정은 그대로 후임에게 이어집니다.\n${GM_SUCC_FORCE}세가 되는 해에는 구단이 정한 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
+function gmAgeYear(){ if(!G.gmP)return; const a=meAge(); if(a==null)return;
+  if(a>=GM_SUCC_FORCE){ const run=()=>gmSucceed(gmAutoSucc(),'정년'),r=G.unemp?withRng(G.year*1009+(G.gmLine||[]).length*31,run):run(); if(!r)return; }
+  if(a===GM_SUCC_FORCE-1)stop('구단',`단장님은 내년 1월 1일(${GM_SUCC_FORCE}세)에 정년으로 물러나고, 후임 단장이 이어받습니다. 단장 개인 경력 화면은 후임 기준으로 새로 시작하고, 지금 단장의 재임 기록(시즌·우승)은 단장 > 세대 교체의 단장 계보에 남습니다. 후임을 직접 정하려면 올해 12월 31일까지 정하세요. 지금 상태를 남기려면 빈 슬롯에 따로 저장해 두세요.`); /* 실제 자동 교체일 이전의 선택 기한을 안내한다. */
+  if(a>=GM_SUCC_ASK)mail(G.unemp?'경력 관리':'구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 ${a>=GM_SUCC_FORCE-1?'올해 12월 31일까지':'시즌이 끝난 뒤'} 후임을 직접 정하고 물러날 수 있습니다. ${G.unemp?'후임도 소속 구단 없이 새 제의를 기다립니다.':'선수단·시설·재정은 그대로 후임에게 이어집니다.'}\n${GM_SUCC_FORCE}세가 되는 해 1월 1일에는 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
+
+/* 구단별 누적 경기는 이직·복귀와 세대 교체를 거쳐 보존한다. 옛 저장은 상세 시즌·현재 재임 카운터로 복원한다. */
+function gmClubMigrate(beforeGame=false){ if(!G||G.user==null)return; const M=G.gmClubGames=G.gmClubGames||{}, totals={}, add=(tid,n)=>{if(tid!=null)totals[tid]=(totals[tid]||0)+Math.max(0,n||0);}, count=s=>(s.w||0)+(s.l||0)+(s.t||0);
+  for(const x of G.gmLine||[])if(x.seasL&&x.seasL.length)for(const s of x.seasL)add(s.tid,count(s));else add(x.tid,count(x));
+  const C=G.myC; for(const s of C?.seas||[])add(s.tid,count(s));
+  if(C&&C.tid===G.user&&!G.unemp&&G.sea?.y===G.year){const J=G.gmJoin?.y===G.year&&G.gmJoin.tid===G.user?G.gmJoin:null,r=G.sea.rec?.[G.user],justRegular=beforeGame&&typeof RAIN_GI!=='undefined'&&RAIN_GI&&(RAIN_GI.h===G.user||RAIN_GI.a===G.user);if(r&&!J?.rec&&!J?.psDone&&!(C.seas||[]).some(s=>s.y===G.year&&s.tid===G.user&&!s.part))add(G.user,Math.max(0,count(r)-(J?count(J):0)-(justRegular?1:0)));}
+  for(const [tid,n] of Object.entries(totals))M[tid]=Math.max(M[tid]||0,n);
+  for(const x of [G.gmClub,G.gmTen])if(x&&x.tid!=null)M[x.tid]=Math.max(M[x.tid]||0,x.g||0);
+  G.gmClub={tid:G.user,g:M[G.user]||0}; return G.gmClub; }
 
 /* 단장 재임 이정표(사용자 11-08): 이 구단에서 지휘한 경기 수(500·1000·1500…)와 재임 햇수(5·10·15…년). 구단 연대기·뉴스에 남는다 */
 function gmTenTick(){ if(G.unemp||G.user==null||!G.gmP)return; const T=G.gmTen=G.gmTen&&G.gmTen.tid===G.user?G.gmTen:{tid:G.user,g:0}; T.g++;
   /* 구단 기준 누적 경기(도전과제 1000·3000경기용): 세대 교체로 후임이 이어 가도 같은 구단이면 이어서 센다(펨코 11-13 울브즈: 세대 교체하면 초기화).
-     처음 만들 때는 계보(G.gmLine)에 남은 같은 구단 전임들의 승패 합으로 채운다. 구단을 옮기면 0부터 */
-  { let C=G.gmClub; if(!C){ let b=T.g-1; try{ for(const x of (G.gmLine||[]))if(x&&x.tid===G.user)b+=(x.w||0)+(x.l||0); }catch(e){} C=G.gmClub={tid:G.user,g:b}; } else if(C.tid!==G.user)C=G.gmClub={tid:G.user,g:0}; C.g++; }
+     구단마다 누적을 따로 보관하고, 복귀하면 그 구단에서 치른 경기 수를 이어 센다. */
+  { const n=T.g;T.g--;gmClubMigrate(true);T.g=n;G.gmClub.g++;G.gmClubGames[G.user]=G.gmClub.g; }
   try{ achProg(); }catch(e){} /* 1000·3000경기 업적은 그 경기에서 바로(검수 149) */
   if(T.g%500===0){ const nm=G.gmP.name, r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; chron('gm',`${nm} 단장 ${T.g}경기째`); news('구단',`${nm} 단장, ${tshort(G.user)}에서 ${T.g}경기째`,`${tname(G.user)} 단장을 맡은 뒤 ${T.g}번째 경기를 치렀습니다. ${G.gmSince!=null?`${G.gmSince}년 취임 뒤 `:''}구단의 얼굴로 자리 잡았다는 평가입니다.`,1); if(T.g>=1000)G.rep=clamp((G.rep??50)+1,0,100); } }
 function gmTenYear(){ if(G.unemp||G.user==null||!G.gmP||G.gmSince==null)return; const n=G.year-G.gmSince; if(n>0&&n%5===0){ const nm=G.gmP.name; chron('gm',`${nm} 단장 재임 ${n}년째`); news('구단',`${nm} 단장, ${tshort(G.user)} ${n}년째`,`${G.gmSince}년 취임한 ${nm} 단장이 올해로 ${n}년째 구단을 이끕니다.`,1); } }

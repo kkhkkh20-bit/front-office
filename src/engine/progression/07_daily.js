@@ -86,7 +86,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }
   if((o.m===9||o.m===10)&&o.d===1&&period()==='season'){ try{ staffExpNote(); }catch(e){} } /* 8월 1일(coachMarketMonth)에 이어, 그 뒤 새로 생긴 만료 대상만 */
   if(o.d===1&&o.m!==1)try{ rmSnap(); }catch(e){} /* 우리 선수 월별 능력치 기록(1월은 겨울 성장 뒤에) */
-  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ rhSnap(); rmSnap(); }catch(e){} try{ gmTenYear(); }catch(e){} try{ facAgeYear(); }catch(e){} try{ projSet(); G.projJan={y:G.year,L:G.proj.slice()}; }catch(e){} /* 언더독 업적용 1월 1일 전망. G.proj도 새 시즌 예상으로 바꾼다(검수 11-14: 시범경기 전까지 지난 개막 예상이 남아 이직 목표·구단 전망에 쓰였다) */ try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} }
+  if(o.m===1&&o.d===1)yearTurn(); /* 미결산 시즌이 있으면 새해 처리는 결산 뒤로 미룬다(검수 11-18 #566). */
   else if(o.d===1&&foreignOpen())refreshFMarket(12,3);
   if(o.d===1)try{ freeAiMonthly(); sponMonthly(); }catch(e){}
   if(o.d===1)try{ scoutAutoMonthly(); }catch(e){}
@@ -138,7 +138,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   if(day===tradeDL())stop('일정','오늘 자정 트레이드가 마감됩니다. 남은 제안과 협상을 오늘 안에 정리하세요.');
   if(day===KD(6,1))try{ declApply(); }catch(e){} if(day===KD(8,8)){ const n=foreignOf(G.user).filter(p=>p.foreign==='용병'&&healthy(p)).length; (n<3?stop:note)('일정',`외국인 선수 포스트시즌 등록 마감(8월 15일)까지 7일 남았습니다. 건강한 외국인 선수 ${n}명.`); }
   if(o.d===1&&o.m>=5&&o.m<=9&&period()==='season'){ try{ futuresReport(); }catch(e){} }
-  if(o.d===1){ try{ personalMonthlyPay(); }catch(e){} try{ personalMonth(); }catch(e){ console.error(e); } try{ growSnap(); }catch(e){} } /* 월급 다음에 생활비·재테크·장학재단(11-09) */
+  if(o.d===1){ try{ if(o.y===G.year)personalMonthlyPay(); }catch(e){} try{ personalMonth(); }catch(e){ console.error(e); } try{ growSnap(); }catch(e){} } /* 미결산으로 새해가 늦으면 1월 급여도 새해 처리 뒤 지급한다. */
   allStarDaily(); ggVotingDaily();
   if(day===KD(3,1)&&day<c.draft)try{ draftSeasonMail(); }catch(e){}
   if(day===c.draft-14&&!G.unemp&&!(G.scouts||[]).some(s=>(s.role||'am')==='am'))try{ mail('스카우트팀','신인 드래프트 2주 전: 아마추어 스카우트가 없습니다','지금은 아마추어 담당 스카우트가 한 명도 없어 드래프트 후보의 잠재력이 모두 \'?\'로 나옵니다. 지역 아마추어 담당을 배치하면 그 지역 후보부터 잠재력 추정이 보입니다. 배치하지 않으면 자동 지명은 스카우트·언론 순위로만 고릅니다.',{kind:'스카우트',imp:true,acts:[{l:'스카우트 배치',a:'go',v:'staff:scouts'}]}); }catch(e){} /* 플레이 테스트 11-13: 드래프트 당일에야 스카우트가 없다는 걸 알았다 */
@@ -155,7 +155,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   try{ if(cwOn()&&G.cal)cwOrdDaily(); }catch(e){}
   if(day===KD(10,1)&&!G.unemp){ try{ const t=team(G.user); if(!t.indie){ const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===t.id?(G.faFund.amt||0):0, T=Math.round(RES_CAP*ecoIdx(sponSeason()))+ear; if(t.cash>T)mail('재무팀','결산 때 유보금 회수 예정',`보유 현금 ${money(t.cash)}이(가) 유보금 상한 ${money(T)}을(를) 넘습니다. 시즌 결산 때 모기업이 넘은 돈의 60%를 회수합니다. 결산 전에 시설·선수 투자에 쓰면 회수되지 않습니다.`,{kind:'재정',imp:true}); } }catch(e){} } /* 회수 전에 미리 알린다(플레이 테스트 11-13) */ /* 구단주 지시 판정은 그날 경기를 치른 뒤: 기한 당일 경기 결과·관중·타석까지 넣는다(검수 11-09zzd) */
   try{ cheerDaily(); }catch(e){} /* 응원단 휴식은 그날 경기(무대)를 다 치른 뒤(검수 11-09zza) */
-  if(G.ps&&G.ps.done&&G.ps.finDay===day){ settlement(); try{ relsSeason(G.last&&G.last.y||G.year); }catch(e){} try{ cpromSeason(G.last&&G.last.y||G.year); }catch(e){} /* 계약 약속 확인(계약 2단계) */ try{ stadSeasonNote(); }catch(e){} try{ draftRetro(); }catch(e){} }
+  if(G.ps&&G.ps.done&&G.ps.finDay<=day&&!(G.last&&G.last.y===G.year)){ settlement(); try{ relsSeason(G.last&&G.last.y||G.year); }catch(e){} try{ cpromSeason(G.last&&G.last.y||G.year); }catch(e){} /* 지난 결산일의 저장도 한 번 마친다(검수 11-18 #566). */ try{ stadSeasonNote(); }catch(e){} try{ draftRetro(); }catch(e){} }
   /* 스토브리그는 결산이 끝난 뒤에만 연다(포스트시즌이 길어져 결산이 11월로 밀려도 순서가 뒤집히지 않게) */
   if(day>=KD(11,1)&&dobj(day).m>=11&&G.rolled!==G.year&&G.last&&G.last.y===G.year){ offseason(); offseasonMgr(); try{ stadAI(); }catch(e){} }
   if(day>=KD(11,2)&&G.rolled===G.year&&G.fa&&!G.fa.open&&!G.fa.closed&&G.faAnnY!==G.year){ G.faAnnY=G.year; faAnnounce(); } /* 결산(스토브리그 시작)이 11월 2일보다 늦어도 공시한다 */
@@ -173,6 +173,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   if(day===c.end){ const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(c.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 정규시즌 마지막 날 남은 달을 바로 마감 */
   offerDropCool(); G.offers=(G.offers||[]).filter(x=>{ if(x.exp<day||!tradeOpen()){ addLog(`${tname(x.from)}의 트레이드 제안이 ${x.exp<day?'만료':'트레이드 마감으로 무효가'}되었습니다.`); offerMailDone(x.id); return false;}
     const why=offerBlockMsg(x); if(why){ note('트레이드',`${tname(x.from)}이(가) 트레이드 제안을 철회했습니다. ${why}`); offerMailDone(x.id); return false; } /* 그사이 성사될 수 없게 된 제안은 자동 철회 */ return true; });
+  lateYearTurn();
 }
 function specialKind(day,hid,aid){
   if(hid!==G.user&&aid!==G.user)return null;
