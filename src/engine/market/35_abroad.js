@@ -204,8 +204,11 @@ function ovsBackAsk(p){ const q=p.retAsk, post=ovsRetPost(p); const n=rosterN(G.
     [{l:`계약: ${q.yrs}년 연 ${money(q.sal)}${post&&q.yrs>1?' 비FA 다년':''}`,fx:`선수단 ${n}/${ROSTER_MAX}명${n>=ROSTER_MAX?' · 정원을 넘어 진행 전에 한 명을 정리해야 합니다':''}${room}${(()=>{ const cc=ovsCapCheck(p); return cc?` · 샐러리캡: ${capOwnerTxt(cc)}`:''; })()}`},{l:post?'계약하지 않음(보류권 풀기)':'계약하지 않음',fx:'자유계약 선수로 풀립니다. 비용은 없습니다.'}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id},def:1,exp:14}); }
 EVH.ovsback={canAuto:true,can(e,i){const p=G.players[e.data.pid];if(i!==0||!p?.retAsk||p.team!=null||ovsBackExpired(p)||G.unemp||p.retFrom!==G.user)return '';const cc=ovsCapCheck(p);return cc&&!cc.ok?`${cc.msg} 협상과 보류권은 유지됩니다. 선수단 연봉을 조정한 뒤 다시 계약할 수 있습니다.`:'';},pick(e,i){ const p=G.players[e.data.pid]; if(!ovsBackReady(p))return '이미 정리되었거나 기한이 지난 복귀 요청입니다.'; if(G.unemp||p.retFrom!==G.user){ ovsBackAI(p); return ''; } if(i===0){ const cc=ovsCapCheck(p); if(cc&&!cc.ok)return `${cc.msg} 협상과 보류권은 유지됩니다. 선수단 연봉을 조정한 뒤 다시 계약할 수 있습니다.`;const r=ovsBackSign(p); capOwnerOk(cc,`해외 복귀 ${p.name} 계약`); return r; } ovsBackFree(p,'해외 복귀 우선협상: 구단이 계약하지 않음'); return `${p.name}과(와) 계약하지 않았습니다. 자유계약 선수로 풀립니다.`; } };
 /* 대체 외국인 관찰 명단 */
-function fwatchOn(id){ G.fwatch=G.fwatch||[]; return G.fwatch.some(w=>w.id===id); }
-function fwatchToggle(id){ G.fwatch=G.fwatch||[]; if(fwatchOn(id)){ G.fwNo=[...new Set([...(G.fwNo||[]),id])]; G.fwatch=G.fwatch.filter(x=>x.id!==id); return '관찰 명단에서 뺐습니다.'; } if(G.fwatch.length>=8)return '관찰 명단은 8명까지입니다.'; G.fwNo=(G.fwNo||[]).filter(x=>x!==id); G.fwatch.push({id,since:G.day,k:0}); return '관찰 명단에 올렸습니다. 매주 스카우트 보고가 쌓여 평가가 정확해집니다.'; }
+function fwatchOn(id){ return (G.fwatch||[]).some(w=>String(w.id)===String(id)); }
+/* 화면의 관찰 의도와 실제 시장 조사 회원은 다르다: 이전 대기는 해외 추적으로 남는다. */
+function fwatchIntent(id){ return fwatchOn(id)||(typeof ovwOn==='function'&&ovwOn(id)); }
+function fwatchToggle(id){ if(fwatchIntent(id)){ G.fwNo=[...new Set([...(G.fwNo||[]),id])]; G.fwatch=(G.fwatch||[]).filter(x=>String(x.id)!==String(id)); if(typeof ovwForget==='function')ovwForget(id); return '관찰 명단에서 뺐습니다.'; }
+  if((G.fwatch||[]).length>=8)return '관찰 명단은 8명까지입니다.'; G.fwNo=(G.fwNo||[]).filter(x=>String(x)!==String(id)); (G.fwatch=G.fwatch||[]).push({id,since:G.day,k:0}); if(typeof ovwForget==='function')ovwForget(id); return '관찰 명단에 올렸습니다. 매주 스카우트 보고가 쌓여 평가가 정확해집니다.'; }
 /* 파악 완료(100%)까지 남은 주: 지금의 망·파견 인력으로 다음 주에 늘어날 양을 쓴다. dk는 지난 보고 기록이다. */
 function fwatchRate(p){ const r=origOf(p), isc=intlScoutFor(r); return 3+intlLv(r)*3+(isc?isc.skill*2:0); }
 function fwatchEta(w){ if(!w||w.k>=100)return 0; const p=G.players[w.id]; return p?Math.ceil((100-w.k)/fwatchRate(p)):null; }
