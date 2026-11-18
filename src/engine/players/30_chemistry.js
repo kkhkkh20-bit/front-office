@@ -29,7 +29,7 @@ function chemCalc(tid){ const t=team(tid), f={}; if(!t)return {T:50,f}; const pe
   tr.sort((x,y)=>y[1]-x[1]); f.trb=-chR1(clamp(sum(tr.map(x=>x[1]))*damp,0,12)); if(tr.length)f.trbP=tr.slice(0,2).map(x=>x[0]);
   if(live&&G.sea&&G.sea.rec){ const r=G.sea.rec[tid], g=r?r.w+r.l:0; let x=g>=10?(r.w/g-.5)*18:0; const l5=(((G.sea.tl)||[])[tid]||[]).slice(-5); if(l5.length===5){ if(l5.every(z=>z[0]>0))x+=1.5; else if(l5.every(z=>z[0]<0))x-=1.5; } f.res=chR1(clamp(x,-5,5)); }
   const nw=L.filter(p=>p.mvD!=null&&G.day-p.mvD<=45).length; f.chn=-chR1(clamp((nw-(live?3:5))*.8,0,6));
-  const m=G.mgr&&G.mgr[tid]; if(!m||m.interim)f.mgr=-2; else { let b='ok'; try{ b=climateOf(tid).band; }catch(e){} f.mgr={good:2.5,ok:0,loose:-3,rigid:-2}[b]||0; f.cl=b; }
+  const m=G.mgr&&G.mgr[tid];if(!m||m.interim){f.mgr=-2;f.mgrState=m?'acting':'vacant';}else{let b='ok';try{b=climateOf(tid).band;}catch(e){}f.mgr={good:2.5,ok:0,loose:-3,rigid:-2}[b]||0;f.cl=b;}
   let ds=0; for(const p of L){ const h=p.grv?grvHeat(p):0; ds+=h>=12?2:h>=6?1:0; } f.dsp=-clamp(ds,0,5);
   const M=core.length?sum(core.map(p=>p.mor??60))/core.length:60; f.mood=chR1(clamp((M-65)*.15,-3,3)); /* 리그 평균 기분(65 안팎)을 기준으로 */
   const T=clamp(50+f.lead+f.trb+(f.res||0)+f.chn+f.mgr+f.dsp+f.mood,5,95); return {T:chR1(T),f}; }
@@ -51,7 +51,7 @@ function chemWhy(tid,me){ const c=clubChem(tid), f=c.f||{}, L=[]; const add=(k,v
   if(f.trb<=-1){ const nm=me&&(f.trbP||[]).map(id=>G.players[id]).filter(p=>p&&p.team===tid).map(p=>p.name); L.push({k:'trb',v:f.trb,t:`분위기를 흐리는 선수가 있습니다${nm&&nm.length?`(${nm.join(', ')})`:''}`}); }
   add('res',f.res,'최근 성적이 좋습니다','최근 성적이 나쁩니다');
   if(f.chn<=-1)L.push({k:'chn',v:f.chn,t:'새 얼굴이 많아 아직 어색합니다'});
-  if(f.mgr)L.push({k:'mgr',v:f.mgr,t:f.cl==null?'감독 자리가 비어 있습니다':f.cl==='good'?'기강이 알맞습니다':f.cl==='loose'?'기강이 느슨합니다':'기강이 너무 엄격합니다'});
+  if(f.mgr)L.push({k:'mgr',v:f.mgr,t:f.cl==null?(G.mgr?.[tid]?.interim?'감독대행 체제로 선수단을 이끌고 있습니다':G.mgr?.[tid]?'감독 선임 뒤 선수단이 적응하고 있습니다':'감독 자리가 비어 있습니다'):f.cl==='good'?'기강이 알맞습니다':f.cl==='loose'?'기강이 느슨합니다':'기강이 너무 엄격합니다'});
   if(f.dsp<=-1)L.push({k:'dsp',v:f.dsp,t:'출전 시간 불만이 쌓여 있습니다'});
   add('mood',f.mood,'주축 선수들 기분이 좋습니다','주축 선수들 기분이 처져 있습니다');
   return L.sort((a,b)=>Math.abs(b.v)-Math.abs(a.v)); }
@@ -102,15 +102,15 @@ const MOR_EV={'talk:praise':['칭찬 면담이 힘이 됐습니다','칭찬이 �
   fdr:['구단이 사정을 챙겨 줬습니다','한국 생활과 팀 적응이 힘듭니다'],title:['개인 타이틀을 받았습니다','개인 타이틀을 놓쳤습니다'],ext:['다년계약으로 마음이 놓입니다','계약 문제로 마음이 쓰입니다'],abroad:['해외 진출 기대가 커졌습니다','해외 진출이 막혀 실망했습니다'],
   dorm:['숙소 생활이 편합니다','숙소 생활이 불편합니다'],mreq:['감독 요청이 정리됐습니다','감독 요청 건으로 마음이 쓰입니다'],ev:['구단 결정이 마음에 듭니다','구단 결정에 서운합니다']};
 function moraleList(p){ if(!p||p.team==null)return []; const P=p.morP||{}, out=[]; const add=(k,t,v,wk,o)=>out.push({k,t,v:chR1(v||0),big:Math.abs(v||0)>=(wk?2:5),...(o||{})});
-  if(p.promise&&p.promise.until>=G.day)add('wait','출전 기회 약속을 기다리고 있습니다',0,1,{wait:true});
+  if(p.promise&&p.promise.until>=G.day&&!playPromKept(p))add('wait','출전 기회 약속을 기다리고 있습니다',0,1,{wait:true});
   if(P.pt){ let r=''; try{ r=squadRole(p); }catch(e){} add('pt',P.pt>0?`${r||'지금'} 역할에 만족합니다`:P.pt<=-2?'주전으로 뛰지 못해 답답합니다':'1군 기회가 더 필요합니다',P.pt,1); }
   if(P.res)add('res',P.res>0?'팀 성적이 좋아 즐겁습니다':'팀 성적이 나빠 마음이 무겁습니다',P.res,1);
   if(P.chem){ const v=clubChem(p.team).v; if(chemBand(v)!==2)add('chem',`팀 분위기가 ${chemPred(v)}`,P.chem,1); }
-  if(P.cap){ let c=null; try{ c=captainOf(p.team); }catch(e){} add('cap',c===p?'주장으로서 책임감을 느낍니다':`주장${c?' '+c.name+'이(가)':'이'} 선수단을 잘 이끕니다`,P.cap,1); }
+  if(P.cap){const s=P.capSrc,k=s?.acting?'주장 대행':'주장',club=s&&s.t!==p.team?`${tshort(s.t)}에서 `:'';add('cap',s?club+(s.id===p.id?`${k}으로서 책임감을 느낍니다`:`${k} ${s.n}이(가) 선수단을 잘 이끕니다`):'당시 주장의 리더십으로 사기가 올랐습니다',P.cap,1);}
   if(Math.abs(P.hc||0)>=.15)add('hc',P.hc>0?'수석코치와 말이 잘 통합니다':'수석코치와 말이 잘 안 통합니다',P.hc,1); else if(P.hc&&P.hc<0&&!(G.coach&&coachesOf(p.team).hc))add('hc','기댈 수석코치가 없습니다',P.hc,1);
   for(const k in p.morW||{}){ const [d,v]=p.morW[k]; if(G.day-d<=8&&Math.abs(v)>=.05)add(k,MOR_EV[k][v>0?0:1],v,1); }
   const J=new Map(); for(const [d,k,v,lab] of p.morL||[]){ if(G.day-d>MOR_KEEP)continue; const id=k+'|'+(lab||''), x=J.get(id); if(x)x.v+=v; else J.set(id,{d,k,v,lab}); } /* 몇 주에 걸친 같은 일은 한 줄로 */
-  for(const {d,k,v,lab} of J.values()){ if(!(Math.abs(v)>=.05))continue; const E=MOR_EV[k]||MOR_EV.ev; let t=v>0?E[0]:E[1]; if(k==='ev'&&lab)t=`‘${lab.length>22?lab.slice(0,21)+'…':lab}’ 결정${v>0?'이 마음에 듭니다':'에 서운합니다'}`; add(k,t,v,0,{d}); }
+  for(const {d,k,v,lab} of J.values()){ if(!(Math.abs(v)>=.05))continue; const E=MOR_EV[k]||MOR_EV.ev; let t=v>0?E[0]:E[1]; if(k==='ev'&&lab)t=`‘${lab.length>22?lab.slice(0,21)+'…':lab}’ 결정${v>0?'이 마음에 듭니다':'에 서운합니다'}`;if(k==='prom'&&/^club:\d+$/.test(lab||'')){const tid=+lab.slice(5);t=`${tid!==p.team?'이전 구단 ':''}${tshort(tid)}: ${t}`;}else if(k==='prom')t=`과거 출전 약속(당시 구단 미기록): ${t}`; add(k,t,v,0,{d}); }
   const g=p.grv&&grvTop(p); if(g&&p.grv[g]>=4)add('grv',`쌓인 불만: ${GRV_L[g]}`,0,0,{grv:true});
   return out.sort((a,b)=>(b.wait?1:0)-(a.wait?1:0)||(b.grv?0:1)-(a.grv?0:1)||Math.abs(b.v)-Math.abs(a.v)).slice(0,8); }
 /* 다른 구단 선수: 스카우트가 들을 수 있는 것만(출전 상황·팀 성적·팀 분위기·공개된 일), 세 줄까지, '~라는 이야기' */

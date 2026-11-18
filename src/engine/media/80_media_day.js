@@ -7,8 +7,7 @@
  단장이 직접 질문에 답하는 일은 FA 영입·이탈, 트레이드, 감독 선임·경질 직후, 시즌 결산 인터뷰로 따로 온다. */
 /* 미디어데이 주장 = 선수단 투표로 뽑은 주장(t.cap). 없거나 떠났으면 그때 선출한다 */
 function mdAvailable(p,tid){ return !!(p&&p.team===tid&&healthy(p)&&!isAway(p)&&!(p.joinY>G.year)); }
-function mdCaptain(tid){ const t=team(tid); delete t.capt; let c=t.cap!=null?G.players[t.cap]:null; if(c&&c.team===tid&&!c.foreign){ if(mdAvailable(c,tid))return c; return domestic(tid).filter(p=>!p.prospect&&mdAvailable(p,tid)).sort((a,b)=>b.age-a.age)[0]||null; }
-  try{ c=electCaptain(tid,'미디어데이를 앞두고'); }catch(e){ c=null; } return c||domestic(tid).filter(p=>!p.prospect&&mdAvailable(p,tid)).sort((a,b)=>b.age-a.age)[0]||null; }
+function mdCaptain(tid){return captainOf(tid);}
 function mdScore(tid,p){ const m=mgrOf(tid); return ovr(p)+Math.min(starPower(p),20)*.5+(p.age<=25?((m.youth??50)-50)*.12:0)+(p.e1?2:0); }
 function mdRepPool(tid){ const cap=mdCaptain(tid); return domestic(tid).filter(p=>p!==cap&&!p.prospect&&mdAvailable(p,tid)&&(p.e1||ovr(p)>=50||p.age<=24)).sort((a,b)=>mdScore(tid,b)-mdScore(tid,a)); }
 function mdWhy(p){ const h=seasonTotal(p,G.year-1,'1군'); if(!h)return p.age<=24?'기대주':'주축 선수';

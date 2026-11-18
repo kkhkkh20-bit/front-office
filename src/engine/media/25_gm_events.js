@@ -81,19 +81,19 @@ const EVH={
       const reg=new Set((()=>{ const d=depth(G.user); return [...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id); })());
       const regs=playersOf(G.user).filter(p=>reg.has(p.id)); const bar=regs.length?avg(regs.map(ovr))-4:50;
       const L=playersOf(G.user).filter(p=>{ initPers(p); return healthy(p)&&!reg.has(p.id)&&!p.ys&&(ovr(p)>=bar||p.sal>=400||(p.age>=27&&ovr(p)>=bar-3))&&p.mor<66&&!p.promise&&!p.listed&&p.age>=22&&!(p.ptDay>G.day-60); }).sort((a,b)=>ovr(b)-ovr(a)); return L[0]||null; },
-    make(p){ p.ptDay=G.day; const m=G.mgr[G.user]; const tn=tshort(G.user);
+    make(p){const m=G.mgr[G.user];if(!m||evOpen().some(e=>e.k==='pt'))return null;const tn=tshort(G.user);
       if(R()<clamp((70-m.ego)/100,.1,.45)){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+5,0,100);
-        news('선수',`${tn} ${p.name}, ${m.name} 감독과 면담 뒤 "기회 받겠다"`,`출전 시간 문제로 감독실을 찾은 ${p.name}에게 ${m.name} 감독이 남은 시즌 기회를 약속했습니다. 감독이 직접 수습한 일이라 프런트 개입은 없었습니다.`,0,{ref:p.id}); return; }
+        news('선수',`${tn} ${p.name}, ${m.name} 감독과 면담 뒤 "기회 받겠다"`,`출전 시간 문제로 감독실을 찾은 ${p.name}에게 ${m.name} 감독이 남은 시즌 기회를 약속했습니다. 감독이 직접 수습한 일이라 프런트 개입은 없었습니다.`,0,{ref:p.id});p.ptDay=G.day;return true;}
       const hot=m.ego>=65; news('선수',`${tn} ${p.name}, ${m.name} 감독과 출전 문제로 ${hot?'언쟁':'충돌'}`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) 출전 시간 문제로 ${m.name} 감독을 찾아갔다가 ${hot?'고성이 오갔다는 이야기가 나옵니다':'서로 입장 차이만 확인했습니다'}. 올해 기록: ${evLine(p)}.`,-1,{ref:p.id});
-      evNew('pt',`${p.name}-${m.name} 감독 갈등: 후속 조치`,`[기사] ${tn} ${p.name}이(가) 출전 시간 문제로 ${m.name} 감독과 ${hot?'언쟁을 벌였다':'부딪쳤다'}는 기사가 났습니다.\n선수 말: "${moraleWhy(p)}"\n감독 쪽: "${hot?'기용은 감독이 정합니다. 선수가 감독실에 와서 따질 일은 아닙니다.':'팀 사정상 지금은 어렵다고 설명했습니다.'}"\n올해 기록: ${evLine(p)}`,
+      const made=evNew('pt',`${p.name}-${m.name} 감독 갈등: 후속 조치`,`[기사] ${tn} ${p.name}이(가) 출전 시간 문제로 ${m.name} 감독과 ${hot?'언쟁을 벌였다':'부딪쳤다'}는 기사가 났습니다.\n선수 말: "${moraleWhy(p)}"\n감독 쪽: "${hot?'기용은 감독이 정합니다. 선수가 감독실에 와서 따질 일은 아닙니다.':'팀 사정상 지금은 어렵다고 설명했습니다.'}"\n올해 기록: ${evLine(p)}`,
       [{l:'감독 편에 서기',fx:'감독 관계가 오르고 기강이 섭니다. 선수 기분은 크게 떨어집니다.'},
        {l:'선수 면담 뒤 감독에게 기용 건의',fx:'선수 기분이 오르고 감독 관계는 내려갑니다. 한 달 안에 기회를 못 얻으면 선수가 크게 실망합니다.'},
        p.foreign?{l:'통역과 함께 따로 면담하기',fx:'선수 기분이 조금 오릅니다. 출전은 그대로입니다. 외국인 선수는 트레이드 명단에 올릴 수 없어 교체는 외국인 화면에서 직접 정합니다.'}
         :{l:'트레이드 명단에 올리기',fx:tradeOpen()?'선수 기분이 조금 오르고, 다른 구단 제안이 올 수 있습니다.':'선수 기분이 조금 오릅니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'},
-       {l:'지켜보기',fx:'둘이 알아서 풀게 둡니다. 선수 기분이 조금 떨어지고 언론은 프런트가 손 놓았다고 봅니다.'}],{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,hot},def:3}); },
+       {l:'지켜보기',fx:'둘이 알아서 풀게 둡니다. 선수 기분이 조금 떨어지고 언론은 프런트가 손 놓았다고 봅니다.'}],{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,hot,promN:p.playPromN||0},def:3});if(made)p.ptDay=G.day;return made;},
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; const m=G.mgr[G.user];
-      if(i===0){ if(m)m.rel=clamp(m.rel+4,0,100); p.mor=clamp(p.mor-9,0,100); return `감독 관계 개선. ${p.name} 기분 크게 하락. 선수단에는 감독 권한을 존중한다는 메시지가 갔습니다.`; }
-      if(i===1){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 크게 상승, 감독 관계 악화. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
+      if(i===0){if(m)m.rel=clamp(m.rel+4,0,100);p.mor=clamp(p.mor-9,0,100);leadAdjBoost(G.user,3,30);return `감독 관계 개선. ${p.name} 기분 크게 하락. 감독 권한을 존중한다는 메시지로 선수단 기강이 잡혔습니다.`;}
+      if(i===1){playPromiseFix(p);const stale=e.data.promN!=null?e.data.promN!==(p.playPromN||0):p.playPromLast&&p.playPromLast.tid===p.team&&e.day!=null&&e.day<=p.playPromLast.d;if(p.promise||stale)return `${p.name}의 출전 약속이 이미 진행되었거나 끝났습니다. 이전 갈등으로 출전 기준과 기한을 다시 시작하지 않았습니다.`;p.promise=mkPromise(p,30); p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 크게 상승, 감독 관계 악화. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
       if(i===2&&p.foreign){ p.mor=clamp(p.mor+3,0,100); return `${p.name}과(와) 통역을 두고 따로 이야기했습니다. 기분 상승. 출전은 감독 결정 그대로입니다.`; } /* 외국인은 트레이드 명단에 오르지 않는데 '올렸다'고만 나오던 문제(꺼끼꺼 11-12) */
       if(i===2){ listPlayer(p.id); p.mor=clamp(p.mor+3,0,100); return `${p.name}을(를) 트레이드 명단에 올렸습니다. 기분 상승.`; }
       p.mor=clamp(p.mor-4,0,100); prInit(); G.pr.press=clamp(G.pr.press-1,0,100); return `${p.name} 기분 하락, 언론 조금 악화.`; } },
