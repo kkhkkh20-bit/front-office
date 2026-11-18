@@ -6,12 +6,15 @@
  노드 시뮬레이션에서도 돌도록 저장소가 없으면 메모리에만 둔다. */
 const ACH_KEY='danjang-ach';
 const ACH_CAP={rep:15,trust:8,cash:2000}; /* 새 게임 혜택 상한: 시작 명성 +15, 첫 시즌 구단주 신뢰 +8, 창단 자금 +20억 */
-let _achMem=null, _achChamp0={};
+let _achMem=null, _achChamp0={}, _achTxn=null;
+/* 결산 중 공용 업적은 이 탭의 임시 사본에만 쌓는다. 성공 때 기존 합집합 저장을 한 번 실행하며, 다른 탭 저장소를 되감지 않는다. */
+function achSettleTxn(){ const mem=_achMem,champ=_achChamp0,parent=_achTxn,state={save:false,title:false};if(mem)_achMem=JSON.parse(JSON.stringify(mem));_achChamp0={...champ};_achTxn=state;let closed=false;
+  return ok=>{if(closed)return;closed=true;_achTxn=parent;if(!ok){_achMem=mem;_achChamp0=champ;return;}if(state.save){if(parent){parent.save=true;parent.title=parent.title||state.title;}else achMetaSave(state.title);}}; }
 function achMetaFix(m){ m=(m&&typeof m==='object')?m:{}; m.u=m.u||{}; m.champ=m.champ||{}; if(m.title===undefined)m.title=null; return m; }
 function achMetaRead(){ let m=null; try{ if(typeof localStorage!=='undefined')m=JSON.parse(localStorage.getItem(ACH_KEY)||'null'); }catch(e){} return achMetaFix(m); }
 function achMeta(){ if(_achMem)return _achMem; _achMem=achMetaRead(); _achChamp0={..._achMem.champ}; return _achMem; }
 /* 저장 직전에 저장소를 다시 읽어 합친다: 다른 탭이 그사이 깬 과제를 지우지 않는다(검수 130). 과제는 합집합, 구단별 우승 수는 이 탭에서 늘어난 만큼만 더한다 */
-function achMetaSave(titleChange=false){ try{ if(typeof localStorage==='undefined')return; const M=achMeta(), S=achMetaRead();
+function achMetaSave(titleChange=false){ if(_achTxn){_achTxn.save=true;_achTxn.title=_achTxn.title||titleChange;return;}try{ if(typeof localStorage==='undefined')return; const M=achMeta(), S=achMetaRead();
   for(const id in M.u)if(!S.u[id])S.u[id]=M.u[id]; for(const k of new Set([...Object.keys(S.champ),...Object.keys(M.champ)]))S.champ[k]=(S.champ[k]||0)+Math.max(0,(M.champ[k]||0)-(_achChamp0[k]||0)); if(titleChange)S.title=M.title;
   localStorage.setItem(ACH_KEY,JSON.stringify(S)); M.u=S.u; M.champ=S.champ; M.title=S.title; _achChamp0={...S.champ}; }catch(e){} }
 
@@ -190,7 +193,7 @@ function achSetTitle(t){ const M=achMeta(); M.title=t&&achTitles().includes(t)?t
   /* 새 게임: 구단을 맡는 순간 혜택을 얹는다 */
   wrap('claimTeam',(r,args)=>{ const P=achPerks(); const t=team(args[0]); G.rep=clamp(Math.round((G.rep??50)+P.rep),0,100); t.trust=clamp((t.trust??55)+P.trust,0,100); t.cash=(t.cash||0)+P.cash; G.achPerk=P; G.ach={}; G.achT=null; achT(); });
   /* 결산 직후(우승·성적·재정) */
-  wrap('settlement',()=>achCheck({k:'season'}));
+  wrap('settlementCore',()=>achCheck({k:'season'}));
   /* 시상식(MVP·신인왕, 골든글러브) */
   wrap('awardCeremony',(r,args,pend)=>{ if(pend)achCheck({k:'award',a:args[0],y:args[1]??G.year}); },(k,y=G.year)=>{ const A=G.awards&&G.awards[y]; return !!(A&&A.pend&&A.pend[k]); });
   /* 영구결번 */

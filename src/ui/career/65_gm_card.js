@@ -9,8 +9,8 @@ function gmCardView(){ if(G.unemp)return ''; const C=myCInit(); if(!C)return '';
       <div><span class="muted">명성</span><b>${G.rep??50}</b><i class="small muted">${esc(repLabel(G.rep??50))}</i></div>
       <div><span class="muted">통산(마친 시즌)</span><b>${S.n}시즌</b><i class="small muted">${S.w}승 ${S.l}패${S.t?` ${S.t}무`:''} · 승률 ${fmt3(S.pct)}${S.now?` · 올해 ${S.now.w}승 ${S.now.l}패${S.now.t?` ${S.now.t}무`:''} 진행 중`:''}</i></div>
       <div><span class="muted">우승</span><b>${S.ch}회</b><i class="small muted">준우승 ${S.ru} · 가을야구 ${S.ps}</i></div>
-      <div><span class="muted">통산 연봉</span><b>${money(C.earn)}</b><i class="small muted">맡은 구단 ${Math.max(1,S.teams)}곳</i></div>
-      <div><span class="muted">개인 잔액</span><b>${pmoney(personalState().cash)}</b><i class="small muted">월급 ${money(Math.round(C.sal/12))} · ${esc(PERSONAL_LIFE[personalState().life||0].l)}</i></div>
+      <div><span class="muted">통산 보수</span><b>${money(C.earn)}</b><i class="small muted">맡은 구단 ${Math.max(1,S.teams)}곳</i></div>
+      <div><span class="muted">개인 잔액</span><b>${pmoney(personalState().cash)}</b><i class="small muted">월급 ${money(Math.round(myCSalaryAt(C)/12))} · ${esc(PERSONAL_LIFE[personalState().life||0].l)}</i></div>
       <div><span class="muted">말투</span><b>${myVoice()?esc(GMV[myVoice()].l):'담백'}</b><i class="small muted">${myVoice()?esc(GMV[myVoice()].d):'단장 정보 고치기에서 정합니다'}</i></div>
     </div>${chT}
     <p class="small muted">계약 마지막 해 시즌이 끝나면 구단주가 재계약 여부를 정합니다(구단주 신뢰 45 이상이면 제안). 명성 58 이상이면 그때 다른 구단 제의도 올 수 있습니다. 경질되면 남은 기간 연봉은 구단이 정산합니다. 연봉은 매달 개인 지갑으로 들어오고, 우승하면 연봉의 30%, 준우승 15%, 가을야구 5%를 성과급으로 받습니다.</p>

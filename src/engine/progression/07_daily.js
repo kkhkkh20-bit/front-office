@@ -140,7 +140,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   if(day===KD(7,24)||day===KD(7,28)){ try{ deadlineRumors(day===KD(7,28)); }catch(e){} }
   if(day===KD(7,24))stop('일정','트레이드 마감까지 7일 남았습니다. 7월 31일 이후 포스트시즌이 끝날 때까지 트레이드할 수 없습니다. 다른 구단 제안이 몰리는 시기입니다.');
   if(day===tradeDL())stop('일정','오늘 자정 트레이드가 마감됩니다. 남은 제안과 협상을 오늘 안에 정리하세요.');
-  if(day===KD(6,1))try{ declApply(); }catch(e){} if(day===KD(8,8)){ const n=foreignOf(G.user).filter(p=>p.foreign==='용병'&&healthy(p)).length; (n<3?stop:note)('일정',`외국인 선수 포스트시즌 등록 마감(8월 15일)까지 7일 남았습니다. 건강한 외국인 선수 ${n}명.`); }
+  if(day===KD(6,1))try{ declApply(); }catch(e){} if(day===KD(8,8)){ const n=foreignOf(G.user).filter(p=>p.foreign==='용병'&&!p.ftmp&&healthy(p)).length; (n<fMaxYB(G.user,G.year)?stop:note)('일정',`외국인 선수 포스트시즌 등록 마감(8월 15일)까지 7일 남았습니다. 건강한 외국인 선수 ${n}명.`); }
   if(o.d===1&&o.m>=5&&o.m<=9&&period()==='season'){ try{ futuresReport(); }catch(e){} }
   if(o.d===1){ try{ if(o.y===G.year)personalMonthlyPay(); }catch(e){} try{ personalMonth(); }catch(e){ console.error(e); } try{ growSnap(); }catch(e){} } /* 미결산으로 새해가 늦으면 1월 급여도 새해 처리 뒤 지급한다. */
   allStarDaily(); ggVotingDaily();
@@ -200,7 +200,7 @@ function boxSnap(g){
   const nodes=new Map(), roots=[];
   const take=o=>{ if(!o||typeof o!=='object'||nodes.has(o))return; const row={v:Object.entries(o),len:Array.isArray(o)?o.length:null}; nodes.set(o,row); for(const [,v] of row.v)take(v); };
   const watch=(o,keys)=>{ if(!o)return; for(const k of keys){ roots.push([o,k,Object.prototype.hasOwnProperty.call(o,k),o[k]]); take(o[k]); } };
-  watch(G,['mail','stops','mailSeq','evs','evf','evlog','evRecent','evSeq','news','newsSeq','pr','wire','ownerLog','iv','ivSeq','reporters','feats','featN','featSeq','gbest','spend','memoL','autoLog']);
+  watch(G,['mail','stops','mailSeq','evs','evf','evlog','evRecent','evSeq','news','newsSeq','pr','wire','ownerLog','iv','ivSeq','reporters','feats','featN','featSeq','gbest','spend','memoL','autoLog','relPlay']);
   watch(G.sea,['rec','tl']);
   for(const k of ['h','a']){ const s=g.S[k]; take(team(s.tid)); for(const id of s.box.keys())take(G.players[id]); }
   return ()=>{ for(const [o,row] of nodes){ const keys=new Set(row.v.map(x=>x[0])); for(const k of Object.keys(o))if(!keys.has(k))delete o[k]; for(const [k,v] of row.v)o[k]=v; if(row.len!=null)o.length=row.len; } for(const [o,k,had,v] of roots)if(had)o[k]=v; else delete o[k]; };

@@ -87,7 +87,7 @@ function gmReformPick(t,run){ const C=[]; const n=3+Math.min(3,run||0); for(let 
   const ex=(G.exGM||[]).find(x=>x.g===b); if(ex){ G.exGM=G.exGM.filter(x=>x!==ex); b.since=G.year; b.tid=t.id; delete b.c; delete b.inner; /* 다른 구단에서 온 단장은 내부 승격이 아니다(검수 11-14) */ b.car=`${String(b.car||'프런트 출신').replace(/ · 내부 승격/g,'')} · 전 ${tshort(ex.tid)} 단장`; }
   try{ const c=gmCon(b,t.id); if(c&&run)c.sal=Math.round(clamp(c.sal*(1+.08*Math.min(4,run)),150,500)/10)*10; }catch(e){} return b; }
 /* 물러난 단장은 몇 해 동안 다른 구단 후보로 남는다 */
-function gmExAdd(g,tid){ if(!g||g.interim||g.ob||g.age>=62)return; G.exGM=(G.exGM||[]).filter(x=>G.year-x.y<4&&x.g.id!==g.id); G.exGM.push({g,tid,y:G.year}); if(G.exGM.length>12)G.exGM.shift(); }
+function gmExAdd(g,tid){ if(!g||g.interim||g.ob||g.age>=62)return; try{ personNetworkEnsure(g,'gm'); }catch(e){} /* 구단 별칭이 바뀌기 전에 같은 인물 키의 교류 기록을 보존한다. */ G.exGM=(G.exGM||[]).filter(x=>G.year-x.y<4&&x.g.id!==g.id); G.exGM.push({g,tid,y:G.year}); if(G.exGM.length>12)G.exGM.shift(); }
 /* 개혁: 새 단장은 대개 감독을 바꾸고(새 감독은 코치진을 데려온다) 계획을 새로 짠다 */
 function gmReformStaff(t,run){ const m=G.mgr&&G.mgr[t.id]; if(!m||m.hireY===G.year||R()>=.7)return; const old=m.name; try{ staffHistory('mgr',m,'경질',t.id,'새 단장 체제 개편'); }catch(e){} t.cash=(t.cash||0)-Math.round((m.sal||0)*Math.max(0,(m.yrs||1)-1));
   const n=mgrNew(t.id,false); n.yrs=(n.yrs||2)+1; n.hireY=G.year; try{ domLog('reformMgr'); }catch(e){}
