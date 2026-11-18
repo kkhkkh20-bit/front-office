@@ -5297,6 +5297,39 @@ T('[피드백 11-18 트레이드] AI끼리도 같은 규칙: 독주 AI 구단에
   ok(domOf(X.id)<DOM_REFUSE&&!domTradeTax(riv,X.id,true).refuse,'우승 1회 AI 구단에 주전 통거절'); mkDyn(X.id); const D=domTradeTax(riv,X.id,true); ok(D.refuse&&D.k<=DOM_KMAX+1e-9,'3연패 AI 구단 견제가 다름 '+JSON.stringify(D));
   const B=G.teams.find(t=>t.id!==G.user&&t.id!==X.id); X.cash=Math.max(X.cash||0,100000); const gap=CASH_SHARE*2.5; ok(aiCashTop(X,B,gap,.4,false)===0,'예전 한도(0.33)보다 큰 차이를 현금으로 메움'); ok(aiCashTop(X,B,gap,.4,true)>0,'AI끼리 비주전 거래 현금 한도가 0.66이 아님');
   ok(Math.abs(aiCashTop(X,B,.2,.4,true)-cashFor(B,.2,trCashCap(.4,true)))<1e-9,'AI 현금 계산이 우리와 다름'); const n0=tradeNeed(B,.4,60); if(n0>0)ok(Math.abs(trNeedAs(B,.4,true,60)-n0*trNeedK(.4,true))<1e-9,'AI끼리 요구치 배율이 다름'); });
+/* [피드백 11-18 트레이드 4차] 소유자 지시: 유망주·지명권 값 올림, 중간급끼리 거래 쉽게, 주전 거래는 빈 자리를 메우면 요구치 할인, 매물·급매는 같은 값이면 대부분 넘긴다(헐값 방지는 그대로) */
+const tuneOff=(keys,f)=>{ const sv={}; for(const [k,v] of Object.entries(keys)){ sv[k]=TR_TUNE[k]; TR_TUNE[k]=v; } _tcC.k=null; try{ return f(); } finally { Object.assign(TR_TUNE,sv); _tcC.k=null; } };
+T('[피드백 11-18 트레이드] 유망주·지명권: AI는 고잠재 24세 이하 유망주를 받을 때도 지킬 때도 더 비싸게 보고, 1라운드 지명권은 1.15배로 본다',()=>{ fresh(); const t=team(otherT());
+  const p=domestic(G.user).filter(q=>!q.foreign&&q.age<=22&&ovr(q)>=40).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패: 어린 선수 없음'); p.pot=ovr(p)+20;
+  ok(Math.abs(trProsMul(p,0)-1.15)<1e-9,'잠재 폭 20이 1.15배가 아님 '+trProsMul(p,0)); p.pot=ovr(p)+10; ok(Math.abs(trProsMul(p,0)-1.05)<1e-9,'잠재 폭 10이 1.05배가 아님'); p.pot=ovr(p)+9; ok(trProsMul(p,0)===1,'잠재 폭 9에도 붙음');
+  const a0=p.age; p.age=25; p.pot=ovr(p)+20; ok(trProsMul(p,0)===1,'25세에도 붙음'); p.age=a0;
+  const off={prosW:0,prosLo:0,prosHi:0}; const vi=tval(t,p,'in'), vi0=tuneOff(off,()=>tval(t,p,'in')); ok(vi>vi0&&vi0>0,'받을 때 유망주 값이 안 오름 '+vi0.toFixed(2)+'→'+vi.toFixed(2));
+  const q=domestic(t.id).filter(x=>!x.foreign&&x.age<=22&&ovr(x)>=40)[0]; if(q){ q.pot=ovr(q)+18; const vo=tval(t,q,'out'), vo0=tuneOff(off,()=>tval(t,q,'out')); ok(vo>=vo0,'지킬 때 유망주 값이 내려감'); }
+  const k=(pkHeld(G.user)||[]).find(x=>x.startsWith('1:')); ok(k,'준비 실패: 1라운드 지명권'); const pv=pkVal(t,k), pv0=tuneOff({pk:1},()=>pkVal(t,k)); ok(Math.abs(pv/pv0-1.15)<1e-9,'지명권 배율 '+(pv/pv0)); });
+T('[피드백 11-18 트레이드] 중간급끼리: 성장 여지 적은 비주전을 내주는 거래는 요구치 ×0.75·최소 마진 1%(최소 0.1), 같은 자리 백업을 받으면 그 자리를 채운다(0.9)',()=>{ fresh(); let n=0;
+  for(const t of G.teams){ if(t.id===G.user)continue; const S=startersOf(t.id), C=tvCore6(t.id); const th=domestic(t.id).find(p=>!p.foreign&&!p.ys&&!S.has(p.id)&&!C.has(p.id)&&!p.aiListed&&!hasNtc(p)&&!faLock(p)&&trMid(t.id,p)&&ovr(p)>=35); if(!th)continue;
+    const m=domestic(G.user).find(q=>!q.foreign&&!q.ys&&!hasNtc(q)&&!faLock(q)&&pSlot(q)===pSlot(th)&&!startersOf(G.user).has(q.id)); if(!m)continue;
+    const e=evalTrade(t.id,[m.id],[th.id]); ok(e.parts.bench&&e.parts.mid,'중간급 거래로 안 봄 '+th.name); n++;
+    ok(e.need>=Math.max(e.outV*TR_TUNE.midMargin,TR_TUNE.midMin)-1e-9,'최소 마진이 없음 '+e.need); const n1=trNeedAs(t,e.outV,true), n2=trNeedAs(t,e.outV,true,undefined,true); if(n1>0)ok(Math.abs(n2-n1*.75)<1e-9,'요구치 배율이 0.75가 아님');
+    const rf0=roleFactor(t,m,'in'); _evOutB=new Set([pSlot(th)]); const rf1=roleFactor(t,m,'in'); _evOutB=null; if(rf0<1)ok(rf1===TR_TUNE.midSlot,'같은 자리 백업을 채우는 값이 아님 '+rf0+'/'+rf1);
+    if(e.ok)ok(e.gain>0,'받는 값이 내주는 값 이하인데 수락'); const y=domestic(t.id).find(p=>p.age<=22&&p.pot-ovr(p)>=10&&!S.has(p.id)&&!C.has(p.id)); if(y)ok(!trMid(t.id,y),'젊은 유망주를 중간급으로 봄'); }
+  ok(n>=4,'준비 실패: 중간급 후보 '+n); });
+T('[피드백 11-18 트레이드] 주전을 내주는 거래: 받는 선수가 그 구단 빈 자리를 메우면 기본 요구치·견제 웃돈을 덜 붙이지만, 받는 값이 내주는 값보다 커야 하는 조건(3%)은 그대로다',()=>{ fresh(); mkDyn(G.user); let n=0, cut=0;
+  for(const t of G.teams){ if(t.id===G.user)continue; const S=startersOf(t.id), C=tvCore6(t.id); for(const id of [...S]){ const st=G.players[id]; if(!st||st.foreign||hasNtc(st)||faLock(st)||C.has(id)||st.aiListed)continue;
+      const m=domestic(G.user).find(q=>!q.foreign&&!q.ys&&!hasNtc(q)&&!faLock(q)&&trFills(t.id,q,new Set([pSlot(st)]))); if(!m)continue; const e=evalTrade(t.id,[m.id],[id]); ok(e.parts.fit,'빈 자리 메움으로 안 봄'); n++;
+      const e0=tuneOff({fitNeed:1,fitDom:1},()=>evalTrade(t.id,[m.id],[id])); ok(e.need<=e0.need+1e-9,'요구치가 오히려 큼'); if(e.need<e0.need-1e-9)cut++; ok(e.need>=Math.max(0,e.outV)*.03-1e-9,'최소 마진(3%)이 없어짐');
+      const same=domestic(G.user).find(q=>!q.foreign&&!q.ys&&pSlot(q)===pSlot(st)); if(same)ok(!trFills(t.id,same,new Set([pSlot(st)])),'내주는 주전 자리를 빈 자리로 봄'); break; } }
+  ok(n>=3,'준비 실패: 후보 '+n); ok(cut>=1,'요구치 할인이 한 번도 안 붙음'); });
+T('[피드백 11-18 트레이드] 매물·급매는 받는 값이 같으면(동률) 넘긴다: 독주 견제·반복 거래 웃돈이 막지 않고, 값이 크게 모자라면(60%) 여전히 거절. AI끼리도 같은 양보',()=>{ fresh(); mkDyn(G.user); let eq=0, eqOk=0, lo=0, loOk=0;
+  const mine=domestic(G.user).filter(p=>!p.foreign&&!p.ys&&!hasNtc(p)&&!faLock(p)&&healthy(p));
+  for(const t of G.teams){ if(t.id===G.user)continue; G.trades=[{y:G.year,d:G.day-40,with:t.id,give:[],get:[],me:G.user}]; const C=tvCore6(t.id);
+    for(const [i,p] of domestic(t.id).filter(p=>!p.foreign&&!p.ys&&!hasNtc(p)&&!faLock(p)&&healthy(p)&&!C.has(p.id)).slice(0,14).entries()){ const urg=i%2===1; p.aiListed=true; p.aiWhy='cut'; if(urg){ p.aiUrg=true; p.aiLd=G.day; }
+      let b=null, w=null; for(const m of mine){ const e=evalTrade(t.id,[m.id],[p.id]); if(e.outV<.3)continue; const r=e.inV/e.outV; if(r>=1&&r<=1.08&&(!b||r<b.r))b={r,e}; if(r>=.5&&r<=.65&&!w)w={r,e}; } /* 동률: 상대 눈에 받는 값이 내주는 값의 100~108% */
+      if(b){ eq++; if(b.e.ok)eqOk++; ok(b.e.parts.lst&&!b.e.parts.repV&&!b.e.parts.domV,'매물 거래에 견제·반복 웃돈이 붙음 '+JSON.stringify(b.e.parts)); } if(w){ lo++; if(w.e.ok)loOk++; }
+      const A=G.teams.find(x=>x.id!==G.user&&x.id!==t.id); const vOut=tval(t,p,'out'); const D={k:.2,refuse:false}; const r=aiNeedB(t,p,vOut,trBenchOnly(t.id,[p.id]),50,D);
+      ok(r.needB<=1e-9&&r.needBf<=1e-9,'AI끼리 매물에 웃돈이 붙음 '+JSON.stringify(r)); ok(r.needB<=(urg?-Math.min(.9,vOut*.3):-Math.min(.3,vOut*.12))+1e-9,'AI끼리 양보 폭이 우리와 다름(evalTrade와 같은 양보)');
+      delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } }
+  ok(eq>=8,'준비 실패: 동률 후보 '+eq); ok(eqOk>=eq*.9,'동률인데 매물·급매를 안 넘김 '+eqOk+'/'+eq); ok(lo>=5,'준비 실패: 낮은 값 후보 '+lo); ok(loOk===0,'값 60%로 매물·급매를 넘김 '+loOk+'/'+lo); });
 
 T('[인물 관계] AI 단장끼리 한 시즌 동안 식사·연락으로 관계를 쌓고, 가까울수록 같은 만남의 효과가 준다(우리 식사와 같은 식)',()=>{ fresh(); G.rels={}; const L=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim); const K=new Set(L.map(t=>relKeyOf(t.gm,'gm')));
   const r0=globalThis.__rngState(); for(let i=0;i<12;i++){ G.day+=30; relNetMonth(); } ok(globalThis.__rngState()===r0,'AI 단장 교류가 경기 난수를 썼다');
