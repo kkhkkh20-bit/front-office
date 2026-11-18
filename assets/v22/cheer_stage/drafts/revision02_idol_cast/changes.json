@@ -1,0 +1,296 @@
+{
+  "baseline_commit": "1fd20b3d1933e95b3d6ff7f46245b720506ff288",
+  "new_fictional_casts": 3,
+  "preserved_original_photos_and_crops": 45,
+  "fixed_runtime_ids_indices_roles_colors": true,
+  "checks": [
+    {
+      "id": "v22_cheer22_red_01",
+      "index": 0,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_red_02",
+      "index": 1,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_red_03",
+      "index": 2,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_red_04",
+      "index": 3,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_red_05",
+      "index": 4,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_ccap22_red_06",
+      "index": 5,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_navy_01",
+      "index": 6,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_navy_02",
+      "index": 7,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_navy_03",
+      "index": 8,
+      "new_fictional_cast": true,
+      "original_photo_and_crop_preserved": false
+    },
+    {
+      "id": "v22_cheer22_navy_04",
+      "index": 9,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_navy_05",
+      "index": 10,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_ccap22_navy_06",
+      "index": 11,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_blue_01",
+      "index": 12,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_blue_02",
+      "index": 13,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_blue_03",
+      "index": 14,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_blue_04",
+      "index": 15,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_blue_05",
+      "index": 16,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_ccap22_blue_06",
+      "index": 17,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_black_01",
+      "index": 18,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_black_02",
+      "index": 19,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_black_03",
+      "index": 20,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_black_04",
+      "index": 21,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_black_05",
+      "index": 22,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_ccap22_black_06",
+      "index": 23,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_orange_01",
+      "index": 24,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_orange_02",
+      "index": 25,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_orange_03",
+      "index": 26,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_orange_04",
+      "index": 27,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_orange_05",
+      "index": 28,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_ccap22_orange_06",
+      "index": 29,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_green_01",
+      "index": 30,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_green_02",
+      "index": 31,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_green_03",
+      "index": 32,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_green_04",
+      "index": 33,
+      "new_fictional_cast": true,
+      "original_photo_and_crop_preserved": false
+    },
+    {
+      "id": "v22_cheer22_green_05",
+      "index": 34,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_ccap22_green_06",
+      "index": 35,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_purple_01",
+      "index": 36,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_purple_02",
+      "index": 37,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_purple_03",
+      "index": 38,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_purple_04",
+      "index": 39,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_purple_05",
+      "index": 40,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_ccap22_purple_06",
+      "index": 41,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_sky_01",
+      "index": 42,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_sky_02",
+      "index": 43,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_sky_03",
+      "index": 44,
+      "new_fictional_cast": true,
+      "original_photo_and_crop_preserved": false
+    },
+    {
+      "id": "v22_cheer22_sky_04",
+      "index": 45,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_cheer22_sky_05",
+      "index": 46,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    },
+    {
+      "id": "v22_ccap22_sky_06",
+      "index": 47,
+      "new_fictional_cast": false,
+      "original_photo_and_crop_preserved": true
+    }
+  ]
+}
