@@ -30,7 +30,7 @@ function scoutMax(){ const l=typeof facOf==='function'?facOf('lab'):0; return SC
 const SROLE={am:'아마추어',pro:'프로',intl:'해외'};
 function effSkill(s){ return Math.max(1,s.skill-(G.day-(s.since??-999)<30?1:0)); }
 function scoutOf(role,key){ const s=G.scouts.filter(x=>(x.role||'am')===role&&x.region===key).sort((a,b)=>effSkill(b)-effSkill(a))[0]; return s?Object.assign({},s,{skill:effSkill(s)}):null; }
-function assignScout(id,role,key){ const s=G.scouts.find(x=>x.id===id); if(!s)return; if(!SROLE[role]||(role==='intl'&&!IREG[key]))return '지원하지 않는 배치입니다.'; /* 값 검사를 먼저 해 기존 담당을 잃지 않게(검수 11-07) */ if((s.role||'am')===role&&s.region===key)return; staffAttach(s,'scout');s.role=role; s.region=key; s.since=G.day; addLog(`${s.name} 스카우트를 ${SROLE[role]} ${role==='intl'?IREG[key].l:key} 담당으로 바꿨습니다.`); }
+function assignScout(id,role,key){ const s=G.scouts.find(x=>x.id===id); if(!s)return; if(!SROLE[role]||(role==='intl'&&!IREG[key]))return '지원하지 않는 배치입니다.'; /* 값 검사를 먼저 해 기존 담당을 잃지 않게(검수 11-07) */ if((s.role||'am')===role&&s.region===key)return; staffAttach(s,'scout');s.role=role; s.region=key; s.since=G.day; delete s.trip; try{obsFocusFix(G.user);}catch(e){} addLog(`${s.name} 스카우트를 ${SROLE[role]} ${role==='intl'?IREG[key].l:key} 담당으로 바꿨습니다.`); }
 function scoutLoad(){ const c={}; for(const s of G.scouts)c[(s.role||'am')+':'+s.region]=(c[(s.role||'am')+':'+s.region]||0)+1; return c; }
 /* 스카우트 후보 12명. 매달 일부가 다른 구단으로 가고 새 후보가 들어온다 */
 const SC_MKT=12; function scSkillRoll(){ return clamp(Math.round(N(2.45,1.0)),1,5); }

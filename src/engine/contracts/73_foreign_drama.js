@@ -50,7 +50,7 @@ function fDramaUser(p,k){ const m=G.mgr[G.user], mn=m&&!m.interim?`${m.name} 감
     :k==='slack'?[['talk','면담으로 동기를 다시 심어 준다','성격에 따라 효과가 갈립니다.'],['fine','벌금을 매긴다','태업이 멈출 가능성이 크지만 기분이 크게 떨어집니다. 예민한 선수는 귀국을 말할 수 있습니다.'],['release','방출한다','남은 연봉은 그대로 지급하고 새 외국인 선수를 찾아야 합니다.'],['ignore','모른 척한다','태업이 한 달 더 이어집니다.']]
     :[['exam','정밀 검진(약 1천만)','진짜 부상인지 확인합니다. 의료진이 좋을수록 정확합니다.'],['rest','며칠 쉬게 한다','3~6일 빠지고 기분이 조금 오릅니다.'],['play','출전을 지시한다','기분이 떨어지고, 실제로 아팠다면 다칠 수 있습니다.']];
   const def=k==='fake'?1:O.length-1;
-  evNew('fdrama',`외국인 선수 ${FD_T[k]}: ${p.name}`,sit,O.map(o=>({l:o[1],fx:o[2]})),{def,data:{pid:p.id,t:k,keys:O.map(o=>o[0])},ref:p.id,face:p.id,from:k==='slack'?'코치진':k==='fake'?'의무팀':'운영팀',exp:4});
+  evNew('fdrama',`외국인 선수 ${FD_T[k]}: ${p.name}`,sit,O.map(o=>({l:o[1],fx:o[2]})),{def,data:{pid:p.id,t:k,keys:O.map(o=>o[0]),injId:injToken(p),n:(p.injHist||[]).length},ref:p.id,face:p.id,from:k==='slack'?'코치진':k==='fake'?'의무팀':'운영팀',exp:4});
   if(R()<.5)try{ ivRequest('fdrama',{pid:p.id,t:k}); }catch(e){} }
 EVH.fdrama={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; const c=e.data.keys[i], t=team(G.user), m=G.mgr[G.user]; initPers(p);
   const mor=d=>{ p.mor=clamp((p.mor??60)+d,0,100); }, ad=d=>{ p.adapt=clamp((p.adapt??50)+d,15,85); }, pay=a=>{ G.spend.etc=(G.spend.etc||0)+a; }, rel=d=>{ if(m&&!m.interim)m.rel=clamp(m.rel+d,0,100); };
@@ -67,9 +67,9 @@ EVH.fdrama={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)re
     case 'talk': if(R()<clamp(.35+(p.pers.pro-8)*.05+((p.adapt??50)-50)/100,.15,.85)){ delete p.fslk; mor(5); return `${p.name}이(가) "다시 집중하겠다"고 약속했습니다.`; } if(p.fslk)p.fslk.until=G.day+14; return `${p.name}은(는) 고개만 끄덕였습니다. 달라질지는 지켜봐야 합니다.`;
     case 'fine': mor(-14); if(R()<.65)delete p.fslk; if(p.pers.temp>=14&&R()<.35){ p.fhome=G.day+30; return `벌금을 매겼습니다. ${p.name}이(가) 크게 반발하며 "이럴 거면 집에 가겠다"고 했습니다.`; } return `벌금을 매겼습니다. ${p.name}은(는) 불만스럽지만 훈련에는 나옵니다.`;
     case 'ignore': if(p.fslk)p.fslk.until=G.day+30; return '모른 척하기로 했습니다. 코치진은 답답해합니다.';
-    case 'exam': { pay(Math.round(10*ecoIdx())); const real=R()<.35; const sure=R()<(G.med&&G.med.hosp==='a'?.9:.7); if(real){ p.injOut=ri(5,12); p.injK='blister'; (p.injHist=p.injHist||[]).push({y:G.year,days:p.injOut,d:G.day,t:p.team,k:'blister'}); return `검진 결과 실제로 가벼운 부상이 있었습니다. ${p.injOut}일 쉽니다.`; } if(sure){ mor(-3); return `검진 결과 이상이 없었습니다. ${p.name}은(는) 머쓱해하며 경기에 나갑니다.`; } p.fLeave=G.day+ri(2,4); return '검진으로도 확실히 가리지 못했습니다. 며칠 쉬게 했습니다.'; }
+    case 'exam': { if(p.injOut>0||!injMatches(p,{...e.data,day:e.day}))return '이미 새 진단으로 재활 중입니다. 이전 검진 요청은 적용하지 않았습니다.';pay(Math.round(10*ecoIdx())); const real=R()<.35; const sure=R()<(G.med&&G.med.hosp==='a'?.9:.7); if(real){ const days=ri(5,12);injStart(p,{days,k:'blister'});return `검진 결과 실제로 가벼운 부상이 있었습니다. ${p.injOut}일 쉽니다.`; } if(sure){ mor(-3); return `검진 결과 이상이 없었습니다. ${p.name}은(는) 머쓱해하며 경기에 나갑니다.`; } p.fLeave=G.day+ri(2,4); return '검진으로도 확실히 가리지 못했습니다. 며칠 쉬게 했습니다.'; }
     case 'rest': p.fLeave=G.day+ri(3,6); mor(4); return `${p.name}에게 휴식을 줬습니다. ${dmd(p.fLeave)}부터 다시 뜁니다.`;
-    case 'play': mor(-8); p.fslk={until:G.day+14,b:-1.5}; if(R()<.12){ try{ injure(p,G.day); }catch(err){} return `출전을 지시했습니다. 그런데 ${p.name}이(가) 경기 중 다쳤습니다. 진짜 아팠던 것으로 보입니다.`; } return `출전을 지시했습니다. ${p.name}은(는) 마지못해 나섰습니다.`; }
+    case 'play': mor(-8); p.fslk={until:G.day+14,b:-1.5}; if(R()<.12)p.fPlayInj={until:G.day+4,injId:injToken(p)};return `출전을 지시했습니다. ${p.name}은(는) 마지못해 준비합니다. 실제 경기에 나설 때 몸 상태를 다시 확인합니다.`; }
   return ''; } };
 const fMgrN=m=>m&&!m.interim?`${m.name} 감독`:'감독';
 /* 기자 질문(52_interviews.js의 Q에 덧붙인다) */

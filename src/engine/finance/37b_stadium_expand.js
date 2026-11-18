@@ -21,12 +21,13 @@ function stadXpRaw(tid){ const S=stadOf(tid); return (S.cap||STAD_CAP[tid])+(S.x
 function stadXpMax(tid){ const S=stadOf(tid); return S.dome?STADX_RULE.domeMax:S.mega?STADX_RULE.megaMax:STADX_RULE.max; } /* 초대형으로 지은 구장만 3만 석까지 */
 function stadXpCost(k){ const X=STADX_K[k]; const c=Math.round(X.c*ecoIdx()/10)*10, club=Math.round(c*(1-STADX_RULE.city)/10)*10; return {c,club,city:c-club}; }
 /* 증설 명분: 끝난 시즌 기록(S.xd) 또는 올해 홈 36경기 이상 치른 기록 */
-function stadXpDem(tid){ const S=stadOf(tid), A=G.sea&&G.sea.att&&G.sea.att[tid], C=A&&A.n>=36&&A.cap?{y:G.year,occ:A.sum/A.cap,so:A.so||0,n:A.n,cur:true}:null, P=S.xd&&S.xd.y<G.year?S.xd:null; /* 끝난 시즌 기록(올해 시즌이 끝나 xd가 올해 것이면 C와 같은 시즌) */
+function stadVenueAtt(tid){ const S=stadOf(tid), A=G.sea&&G.sea.att&&G.sea.att[tid], B=S.attStart; if(!A||!B||B.y!==G.year)return A; return {...A,n:Math.max(0,A.n-B.n),sum:Math.max(0,A.sum-B.sum),cap:Math.max(0,(A.cap||0)-B.cap),so:Math.max(0,(A.so||0)-B.so)}; } /* 시즌 재정 합계는 유지하고, 현 구장의 명분은 이전 뒤 실제 홈경기만 센다 */
+function stadXpDem(tid){ const S=stadOf(tid), A=stadVenueAtt(tid), C=A&&A.n>=36&&A.cap?{y:G.year,occ:A.sum/A.cap,so:A.so||0,n:A.n,cur:true}:null, P=S.xd&&S.xd.y<G.year?S.xd:null; /* 끝난 시즌 기록(올해 시즌이 끝나 xd가 올해 것이면 C와 같은 시즌) */
   if(!C)return S.xd||null; if(!P)return C; const sc=D=>(stadXpDemOk(D)?2:0)+Math.max(D.occ,D.so/Math.max(1,D.n)); return sc(C)>=sc(P)?C:P; } /* 검수 173: 지난 시즌과 올해(홈 36경기 이상) 중 나은 기록. 안내 문구(둘 중 하나)와 같게 */
 function stadXpPct(x){ return String(Math.floor(x*1000+1e-9)/10); } /* 검수 171: 점유율은 버림으로 보여 준다(84.99%가 '85%'로 보여 85% 기준과 어긋나지 않게) */
 function stadXpDemOk(D){ return !!D&&(D.occ>=STADX_RULE.occ||D.so/Math.max(1,D.n)>=STADX_RULE.so); }
 /* 시즌이 끝나면 모든 구단 관중 기록을 구장에 남긴다(새해에 시즌 기록이 지워져도 비시즌 내내 명분으로 쓴다) */
-function stadXpRec(){ const c=G.cal; if(!c||!G.sea||!G.sea.att||G.day<=c.end)return; for(const t of G.teams){ const A=G.sea.att[t.id], S=t.stad; if(!S||!A||!A.n||A.n<20||!A.cap)continue; if(S.xd&&S.xd.y>=G.year)continue; const H0=stadOccHist(S).filter(x=>x.y<G.year); S.xd={y:G.year,occ:Math.floor(A.sum/A.cap*1000)/1000,so:A.so||0,n:A.n}; S.xdh=H0.concat(S.xd).slice(-5); } }
+function stadXpRec(){ const c=G.cal; if(!c||!G.sea||!G.sea.att||G.day<=c.end)return; for(const t of G.teams){ const S=t.stad; if(!S)continue; const A=stadVenueAtt(t.id); if(!A||!A.n||A.n<20||!A.cap)continue; if(S.xd&&S.xd.y>=G.year)continue; const H0=stadOccHist(S).filter(x=>x.y<G.year); S.xd={y:G.year,occ:Math.floor(A.sum/A.cap*1000)/1000,so:A.so||0,n:A.n}; S.xdh=H0.concat(S.xd).slice(-5); } }
 /* 시즌별 관중 기록(최근 5시즌, 초대형 신구장 명분). 기록이 없던 예전 저장은 지난 시즌 기록(xd) 하나에서 시작한다 */
 function stadOccHist(S){ return S.xdh&&S.xdh.length?S.xdh:S.xd?[S.xd]:[]; }
 /* 추진할 수 없는 이유(빈 문자열이면 가능). 사람·AI 같은 조건 */

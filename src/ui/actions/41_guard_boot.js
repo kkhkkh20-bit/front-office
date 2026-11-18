@@ -40,7 +40,7 @@ const GUARD={
     const c=STAD_COST[lv+1]; if(spendable(G.user)<c)return null; return {subj:`${it.l} ${lv+1}단계 공사`,kind:'구장',lines:[`공사비 ${money(c)} · ${spendTxt()}`,`공사 ${STAD_DAYS[lv+1]}일 · 유지비 연 +${money(STAD_UP[lv+1]-STAD_UP[lv])}`],warn:'공사비는 바로 나가고 되돌릴 수 없습니다.',ok:'공사 시작'}; },
   protSubmit(v){ if(G.unemp)return null; const c=(G.comp||[]).find(x=>x.id===v); if(!c)return null; const g=COMP[c.grade]; const ids=protOf(c); if(ids.length>g.prot)return null; const out=compPool(G.user).filter(q=>!ids.includes(q.id)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4);
     return {subj:`보호선수 ${ids.length}명 명단 제출`,kind:'FA',lines:[`${tshort(c.from)}이(가) 명단 밖에서 1명을 데려가거나 보상금을 받습니다.`,`명단 밖 주요 선수: ${out.map(q=>`${q.name}(${posLabel(q)}, ${dvo(q)})`).join(', ')||'없음'}`],warn:'제출하면 바꿀 수 없습니다.'}; },
-  jobYes(v){ const tid=+v; const t=team(tid); const o=G.last&&G.last.order?G.last.order.findIndex(x=>x.tid===tid)+1:0; return {subj:`${tfull(t)} 단장 취임`,kind:'경력',lines:[`지난 시즌 ${o||'-'}위 · ${needText(tid)}`,...jobBrief(tid),'선수단·감독·코치진·재정은 이 구단 것을 그대로 이어받습니다.'],warn:'취임하면 되돌릴 수 없습니다.'}; },
+  jobYes(v){const j=jobGet(v);if(!j||j.done||G.day>=j.exp)return null;const tid=j.tid,t=team(tid),o=G.last&&G.last.order?G.last.order.findIndex(x=>x.tid===tid)+1:0;return {subj:`${tfull(t)} 단장 취임`,kind:'경력',lines:[j.terms?`제시 조건: 연봉 ${money(j.terms.sal)}, ${j.terms.yrs}년`:'제시 조건은 제의 소식에서 확인해 주세요.',`지난 시즌 ${o||'-'}위 · ${needText(tid)}`,...jobBrief(tid),'선수단·감독·코치진·재정은 이 구단 것을 그대로 이어받습니다.'],warn:'취임하면 되돌릴 수 없습니다.'}; },
   /* 단장 재계약: 거절(구단을 떠남)과, 신뢰가 낮을 때 인상 요구(제안을 거둘 수 있음)는 결재로 한 번 더 묻는다. 버튼이 밀려 잘못 누르는 일이 있었다 */
   evPick(v){ const [id,i0]=String(v).split(':'); const i=+i0; const e=(G.evs||[]).find(x=>String(x.id)===id); if(!e||e.done)return null;
     if(e.k==='expGm'&&i===0){ const E=G.exp||{}; return {subj:'창단 단장 수락',kind:'경력',lines:[G.unemp?`11월 20일 ${tfull(E)} 단장으로 부임합니다.`:`11월 20일 ${tname(G.user)}을(를) 떠나 ${tfull(E)} 단장으로 부임합니다.`,G.unemp?'':'지금 구단과의 단장 계약은 그날 끝납니다.','그 전에는 단장 정보나 소식함에서 수락을 취소할 수 있습니다.'].filter(Boolean),warn:'11월 20일 부임 뒤에는 되돌릴 수 없습니다.',ok:'수락합니다'}; } /* 카페 11-17: 창단 수락인 줄 모르고 눌렀다 */
@@ -200,7 +200,7 @@ function selApply(el,e){ const a=el.dataset.a;
   if(a==='findTeam'){UI.findTeam=el.value;render();}
   if(a==='findSort'){UI.findSort=el.value;render();}
   if(a==='lrfT'){UI.lrf=Object.assign({q:true,t:'all'},UI.lrf,{t:el.value});render();}
-  if(a==='impFile'){ const f=el.files&&el.files[0]; if(f){ const to={title:!!UI.title,slot:curSlot(),g:G}; /* 고른 시점의 대상(검수 11-09) */ const r=new FileReader(); r.onload=()=>importText(String(r.result).trim(),to);r.onerror=()=>{UI.impMsg='파일을 읽지 못했습니다. 다시 선택해 주세요.';render();};r.readAsText(f); } }
+  if(a==='impFile'){ const f=el.files&&el.files[0]; if(f){ const to={title:!!UI.title,slot:curSlot(),g:G,rev:SLOT_REV,j:G?prepG():null}; /* 파일 읽기를 시작한 게임·진행에만 가져온다 */ const r=new FileReader(); r.onload=()=>importText(String(r.result).trim(),to);r.onerror=()=>{UI.impMsg='파일을 읽지 못했습니다. 다시 선택해 주세요.';render();};r.readAsText(f); } }
   if(a==='blkWant'){ const p=G.players[+el.dataset.v]; if(p){p.lw=el.value; save(); render();} }
   if(a==='sAssign'){ const [r,k]=el.value.split(':'); assignScout(el.dataset.v,r,k); save(); render(); }
   if(a==='rosterTeam'){UI.rosterTeam=+el.value;render();window.scrollTo(0,0);}

@@ -96,4 +96,5 @@ function faAppeal(p,tid){ const C=faCtx(); const P=[]; const t=team(tid);
   { const ft=typeof foundTie==='function'?foundTie(p,tid):0; if(ft)P.push(['단장 장학재단과의 인연',ft]); } /* 오래 운영한 장학재단은 연고 출신 FA에게 조금 끌린다(11-13) */
   const f=1+sum(P.map(x=>x[1])); return {f:clamp(f,.8,1.3),parts:P.filter(x=>Math.abs(x[1])>=.005)}; }
 /* 연고 출신 스타: 구단 연고 지역 출신 주전급(능력 64 이상)이 있으면 팬 인기가 더 오른다(최대 +0.03) */
-function localStarPop(tid){ const t=team(tid); if(!t.region)return 0; const n=playersOf(tid).filter(p=>!p.foreign&&p.region===t.region&&ovr(p)>=64).length; return Math.min(.03,n*.008); }
+function c476Region(region){ return region==='호남'||region==='충청'?'호남·충청':region; }
+function localStarPop(tid){ const t=team(tid); if(!t||!t.region)return 0; const n=playersOf(tid).filter(p=>!p.foreign&&c476Region(p.region)===c476Region(t.region)&&ovr(p)>=64).length; return Math.min(.03,n*.008); }

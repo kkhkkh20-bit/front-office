@@ -73,7 +73,7 @@ function regAdd(R,tid){ if(!R.tm){ if(R.n)R.n0=R.n; R.tm={}; } R.n++; R.tm[tid]=
 function regDaily(){ const c=G.cal; if(!c||G.day<c.open||G.day>c.end)return; if(G.day===c.open)G.regTrk=G.year; if(G.regTrk!==G.year||!entryOn())return; G.sea.cut=G.sea.cut||{};
   for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year)continue; const R=p.regD&&p.regD.y===G.year?p.regD:(p.regD={y:G.year,n:0,il:0});
     const nt=p.ntAway>G.day&&p.ntFrom<=G.day; if(milServing(p))continue; /* 복무 중이면 1군 표시가 남아 있어도 등록일 없음(검수 11-07) */ if(p.e1){ regAdd(R,p.team); p.e1L=G.day; p.e1T=p.team; continue; } if(p.ys)continue; /* 육성선수(정식 등록 전)·입대한 선수는 대표 차출·재활 인정 없음 */ if(nt){ regAdd(R,p.team); continue; }
-    if(p.injOut>0){ const lh=(p.injHist||[]).slice(-1)[0]; if(lh&&p.e1L!=null&&p.e1L>=lh.d-1&&(p.e1T??p.team)===p.team&&R.il<30){ /* 부상자 등록 인정은 그 구단에서 1군이었다가 다친 경우만(검수 11-07) */ regAdd(R,p.team); R.il++; } continue; }
+    if(p.injOut>0){ const active=injEpisode(p), credited=(p.injHist||[]).some(h=>!h.farm&&(h.t??p.team)===p.team&&(h.bk==null||h.bk>G.day)&&(h.ret!=null?h.ret>G.day:h===active||h.d+(h.days||0)>G.day)&&p.e1L!=null&&p.e1L>=h.d-1&&(p.e1T??p.team)===p.team); if(credited&&R.il<30){ /* 실제 1군 부상의 열린 재활 기간만 인정한다. 더 짧은 2군 겹진단이 기존 인정을 지우거나 연장하지 않는다(검수 11-18 #453). */ regAdd(R,p.team); R.il++; } continue; }
     if(!p.foreign&&p.sal>=300&&!milServing(p)&&!p.ys&&(!p.isP||G.day>=c.open+8)){ G.sea.cut[p.team]=(G.sea.cut[p.team]||0)+p.sal/600; R.cut=(R.cut||0)+1; } } }
 /* 그 구단 소속으로 쌓은 등록일수(2차 드래프트 의무 등록) */
 function regNT(p,tid){ const R=p.regD&&p.regD.y===G.year?p.regD:null; return R?(R.tm?(R.tm[tid]||0):(p.team===tid&&!(p.tLog||[]).some(x=>x.y===G.year&&G.cal&&x.d>=G.cal.open&&x.d<=G.cal.end)?R.n:0)):0; } /* 구단별 기록이 없는 옛 저장: 그 정규시즌 중 이적이 없을 때만 전부 그 구단 몫(검수 11-07) */
@@ -408,8 +408,8 @@ function confirmContracts(force){ /* force: 1월 31일 마감·이직 정리(조
 function compactPlayers(){ const y=G.year; let n=0; try{ futAggFix(); }catch(e){}
   for(const p of Object.values(G.players)){
     if(p.hist&&p.hist.length>3){ const old=p.hist.filter(h=>h.lvl==='퓨처스'&&!h.y2&&h.y<y-2); if(old.length>=2){ const by={};
-        for(const h of old){ const k=h.t; const m=by[k]=by[k]||Object.assign({},p.isP?ZP:ZB,{y:h.y,y2:h.y,t:h.t,lvl:'퓨처스'}); for(const f in (p.isP?ZP:ZB))m[f]=(m[f]||0)+(h[f]||0); m.y=Math.min(m.y,h.y); m.y2=Math.max(m.y2,h.y); m.agg=futAggAdd(m.agg||{},futAggRow(p,h)); }
-        const prevAgg=p.hist.filter(h=>h.lvl==='퓨처스'&&h.y2); for(const a of prevAgg){ const m=by[a.t]; if(m){ for(const f in (p.isP?ZP:ZB))m[f]+=(a[f]||0); m.y=Math.min(m.y,a.y); m.y2=Math.max(m.y2,a.y2); m.agg=futAggAdd(m.agg,futAggRow(p,a)); if(a.agg&&a.agg.est)m.agg.est=1; } }
+        for(const h of old){ const k=h.t; const m=by[k]=by[k]||Object.assign({},p.isP?ZP:ZB,{y:h.y,y2:h.y,t:h.t,lvl:'퓨처스',obsY:[]}); for(const f in (p.isP?ZP:ZB))m[f]=(m[f]||0)+(h[f]||0); m.obsY=[...new Set(m.obsY.concat(histObsYears(h)))].sort((a,b)=>a-b); m.y=Math.min(m.y,h.y); m.y2=Math.max(m.y2,h.y); m.agg=futAggAdd(m.agg||{},futAggRow(p,h)); }
+        const prevAgg=p.hist.filter(h=>h.lvl==='퓨처스'&&h.y2); for(const a of prevAgg){ const m=by[a.t]; if(m){ for(const f in (p.isP?ZP:ZB))m[f]+=(a[f]||0); m.obsY=[...new Set(m.obsY.concat(histObsYears(a)))].sort((a,b)=>a-b); m.y=Math.min(m.y,a.y); m.y2=Math.max(m.y2,a.y2); m.agg=futAggAdd(m.agg,futAggRow(p,a)); if(a.agg&&a.agg.est)m.agg.est=1; } }
         /* 연도별 WAR·wRC+×타석을 그해 기준으로 더해 둔다(합친 줄을 한 해 기준으로 다시 재면 통산이 바뀌었다, 검수 11-17 #209·#210) */
         futLeagueCarry(p,old); /* 원본 연도 행을 없애기 전에 리그 평균의 분자·분모를 보존한다. */
         p.hist=p.hist.filter(h=>!(h.lvl==='퓨처스'&&(old.includes(h)||(h.y2&&by[h.t])))).concat(Object.values(by)); n++; } }
@@ -417,7 +417,18 @@ function compactPlayers(){ const y=G.year; let n=0; try{ futAggFix(); }catch(e){
     if(p.story&&p.story.length>45)p.story.splice(1,p.story.length-45);
   }
   return n; }
+/* 결산이 달력 새해로 밀렸으면 이전 시즌의 선수·회계·가을야구를 먼저 닫는다. */
+function seasonYearPending(){ return !!(G.ps&&G.sea&&G.sea.y===G.year&&!(G.last&&G.last.y>=G.year)); }
+function yearTurn(){ if(seasonYearPending())return false; newYear(); planSup(); ovrSnap(); try{ rhSnap(); rmSnap(); }catch(e){} try{ gmTenYear(); }catch(e){} try{ facAgeYear(); }catch(e){} try{ projSet(); G.projJan={y:G.year,L:G.proj.slice()}; }catch(e){} try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} return true; }
+function lateYearTurn(){ if(dobj(G.day).y<=G.year||seasonYearPending())return;
+  if(G.last&&G.last.y===G.year){if(G.rolled!==G.year){offseason();offseasonMgr();try{stadAI();}catch(e){}}
+    if(G.fa&&!G.fa.open&&!G.fa.closed){G.faAnnY=G.year;faAnnounce();}
+    if(!G.contract||G.contract.y<G.year){contractStart();aiCapAll();try{aiDebtDump();}catch(e){}capWarnUser();}
+  }
+  yearTurn();try{personalMonthlyPay();}catch(e){} /* 미뤄진 1월 급여도 새 회계연도에서 한 번 지급한다. */
+}
 function newYear(){
+  if(seasonYearPending())return false;
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){} try{ relsYear(); }catch(e){} /* 인물 관계도 같은 비율로 되돌림(84b_person_rels) */
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
@@ -429,6 +440,7 @@ function newYear(){
   try{ trnYearNote(G.year); }catch(e){} /* 집중훈련 회고는 겨울 성장·노화 전 능력으로 */
   for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)){ if(p.devQ)for(let j=p.devQ.i;j<3;j++)devQApply(p,j); /* 지난 시즌 남은 분기 몫 정리 */ const B={...p.r}; develop(p); try{ devSplit(p,B); }catch(e){} } } /* 분기 성장: 겨울엔 일부, 나머지는 시즌 중 세 번(04_growth) */ /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
   if(G.draftClass)for(const id of G.draftClass){ const p=G.players[id]; if(p&&p.prospect)dropP(id); }
+  draftRefsPrune();
   G.year++; try{ ovlNewYear(); }catch(e){} /* 해외 리그 새 시즌·해외파 올해 기록 미리 만들기 */ try{ trnNewYear(); }catch(e){} try{ posYear(); }catch(e){} syncMinSal(); for(const p of Object.values(G.players))if(!p.foreign&&p.sal>0&&p.sal<MIN_SAL)p.sal=MIN_SAL; /* 군 복무·해외 등 소속이 잠시 비어 있는 선수도 함께 올린다 */
   milNewYear(); delete G.futLn; /* 지난 시즌 2군 라인업을 새 시즌에 보여 주지 않는다(검수 11-09zi) */
   for(const p of Object.values(G.players)){ if(!(p.injOut>0))delete p.injK; delete p.lastStart; delete p.lastApp; delete p.prevApp; } /* 남은 재활 기간은 새해로 그대로 넘긴다(매일 줄어 0이 되면 평소처럼 복귀·재발 위험 처리). 예전에는 45일 이하를 1월 1일에 한꺼번에 지웠다 */

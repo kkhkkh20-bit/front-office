@@ -10,7 +10,7 @@ function cOrderNo(g,half,id){ const s=g.box[half%2?'h':'a']; const i=s.bat.findI
 /* 대기 타자: 그 타석 시점의 타순(경기 끝 타순이 아니라). 선발 라인업에 그 시점까지의 교체를 반영한 타순(검수 11-06, 수비 교체 뒤 빠진 선수가 남던 문제 11-09zu) */
 function cNext(g,half,id,k){ const cur=castLineup(g,half%2?'h':'a',k??(g.pbp||[]).length); const i=cur.findIndex(b=>b.id===id); if(i<0)return []; return [cur[(i+1)%cur.length],cur[(i+2)%cur.length]].filter(Boolean); }
 const PAK={'1B':['안타','h'],'2B':['2루타','h'],'3B':['3루타','h'],HR:['홈런','hr'],HBP:['사구','bb'],BB:['볼넷','bb'],K:['삼진','k'],OUT:['범타','o'],DP:['병살','o'],SAC:['희생번트','o']};
-function paK(x){ if(!x)return ['','']; if(x[3]==='OUT'&&x[16])return ['번트 실패','o']; if(x[3]==='OUT'&&x[13])return ['희생플라이','o']; if(x[3]==='OUT'&&x[9]&&Array.isArray(x[5])&&x[5].includes(x[1]))return ['실책 출루','h']; return PAK[x[3]]||['?','o']; } /* 실책 출루·번트 실패는 OUT 코드만으로 '범타'가 아니다(검수 11-08) */
+function paK(x){ if(!x)return ['','']; const f=gamePA(x); if(f.bunt==='hit')return ['번트 안타','h']; if(f.bunt==='out')return ['번트 실패','o']; if(f.bunt==='fc')return ['번트 실패 · 포스아웃','o']; if(f.bunt==='sac')return ['희생번트','o']; if(f.sf)return ['희생플라이','o']; if(f.error)return ['실책 출루','h']; if(f.fc)return ['야수선택','o']; return PAK[x[3]]||['?','o']; } /* 결과·송구·타수는 같은 타석 기록을 읽는다. */
 function cChips(g,k,id){ const L=g.pbp; const out=[]; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[1]===id){ const r=paK(x); out.push(`<i class="pk ${r[1]}">${cHalfTxt(x[0]).replace('회초','').replace('회말','')}${r[0]}</i>`); } } return out.join('')||'<i class="pk n">첫 타석</i>'; }
 function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const bid=k<L.length&&typeof x[1]==='number'?x[1]:null; const pid=cPit(g,Math.min(k,L.length-1));
   const b=bid&&G.players[bid], p=pid&&G.players[pid]; if(!bid||!pid)return ''; if(!b||!p){ const B=mdPlayer(g,bid), Pp=mdPlayer(g,pid), r=batAt(g,k,bid); return `<div class="ab"><div class="ab-b"><span class="ab-t"><em>타자${B.bt?` · ${B.bt}타`:''}</em><b>${esc(B.name)}</b><span class="ab-s">${r?`타율 <strong>${fmt3(r.avg)}</strong> · ${r.hr}홈런 · OPS ${fmt3(r.ops)}`:'시즌 기록 없음'}</span></span></div><div class="ab-p"><span><em>투수 · ${Pp.th==='좌'?'좌완':'우완'}</em><b>${esc(Pp.name)}</b><span>ERA ${eraAt(g,k,pid)}</span></span></div></div>`; } /* 리그를 떠난 선수가 나온 옛 경기: 박스스코어 이름·손잡이로 대결 카드를 남긴다(검수 11-08) */
@@ -128,12 +128,13 @@ function pwatchTable(inner){ const L=(G.pwatch||[]).map(id=>G.players[id]).filte
 
 /* 타석 스토리(경기 화면 연출 11-11): 이 투수와 올 시즌 맞대결, 득점권이면 시즌 득점권 타율. 저장된 시즌 누계에서 이번 경기 전체 몫을 빼고 이 타석 전까지만 더해 결과를 미리 보여 주지 않는다.
    가장 최근 경기(그 뒤 다른 경기 기록이 쌓이지 않은 경기)에서만 보여 준다 */
-function cStory(g,k,b,p,risp){ if(!g||!g.pbp||(G.games||[])[0]!==g||g.kind&&/차전/.test(g.kind))return ''; const L=g.pbp, y=dobj(g.day).y; const HIT={'1B':1,'2B':1,'3B':1,HR:1}, NOAB={BB:1,HBP:1,SAC:1};
-  const rows=(lim,f)=>{ const a=[0,0,0,0,0,0]; for(let i=0;i<lim&&i<L.length;i++){ const x=L[i]; if(typeof x[1]!=='number'||!f(x,i))continue; a[0]++; if(!NOAB[x[3]]&&!x[16])a[1]++; if(HIT[x[3]])a[2]++; if(x[3]==='HR')a[3]++; if(x[3]==='BB'||x[3]==='HBP')a[4]++; if(x[3]==='K')a[5]++; } return a; };
+function cVsWalks(a){if(!a)return '';if(a.length<9)return a[4]?`볼넷·사구 ${a[4]} (구분 기록 없음)`:'';const bb=Math.min(a[4]||0,a[6]||0),hbp=Math.min(Math.max(0,(a[4]||0)-bb),a[7]||0),unknown=Math.max(0,(a[4]||0)-bb-hbp);return [bb?`볼넷 ${bb}`:'',hbp?`사구 ${hbp}`:'',unknown?`볼넷·사구 ${unknown} (구분 기록 없음)`:''].filter(Boolean).join(' · ');}
+function cStory(g,k,b,p,risp){ if(!g||!g.pbp||(G.games||[])[0]!==g||g.kind&&/차전/.test(g.kind))return ''; const L=g.pbp, y=dobj(g.day).y; const HIT={'1B':1,'2B':1,'3B':1,HR:1};
+  const rows=(lim,f)=>{ const a=[0,0,0,0,0,0,0,0,0]; for(let i=0;i<lim&&i<L.length;i++){ const x=L[i]; if(typeof x[1]!=='number'||!f(x,i))continue; a[0]++; if(gamePA(x).ab)a[1]++; if(HIT[x[3]])a[2]++; if(x[3]==='HR')a[3]++; if(x[3]==='BB'||x[3]==='HBP')a[4]++; if(x[3]==='BB')a[6]++; if(x[3]==='HBP')a[7]++; if(x[3]==='K')a[5]++; } return a; };
   const adj=(tot,f)=>{ const all=rows(L.length,f), now=rows(k,f); return tot.map((v,i)=>Math.max(0,(v||0)-all[i]+now[i])); };
   const out=[];
   const V=b.vs&&b.vs.y===y&&b.vs.m[p.id]; const vs=adj(V||[0,0,0,0,0,0],x=>x[1]===b.id&&x[2]===p.id);
-  if(vs[0]>0)out.push(`<span><em>${esc(fname(p))} 상대 올 시즌</em><b>${vs[1]}타수 ${vs[2]}안타</b>${vs[3]?` ${vs[3]}홈런`:''}${vs[4]?` · 볼넷 ${vs[4]}`:''}${vs[5]?` · 삼진 ${vs[5]}`:''}</span>`);
+  if(vs[0]>0)out.push(`<span><em>${esc(fname(p))} 상대 올 시즌</em><b>${vs[1]}타수 ${vs[2]}안타</b>${vs[3]?` ${vs[3]}홈런`:''}${cVsWalks(vs)?` · ${cVsWalks(vs)}`:''}${vs[5]?` · 삼진 ${vs[5]}`:''}</span>`);
   else out.push(`<span><em>${esc(fname(p))} 상대</em><b>올 시즌 첫 대결</b></span>`);
   if(risp){ const S=b.spl&&b.spl.y===y&&b.spl.RS; const rs=adj(S?[S[0],S[1],S[2],0,0,0]:[0,0,0,0,0,0],(x,i)=>x[1]===b.id&&(()=>{ const st=cBefore(g,i); return !!(st.bases[1]||st.bases[2]); })());
     if(rs[1]>=5)out.push(`<span><em>시즌 득점권</em><b>타율 ${fmt3(rs[2]/rs[1])}</b> (${rs[1]}타수 ${rs[2]}안타)</span>`); }

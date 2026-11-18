@@ -83,7 +83,7 @@ function futEligibleDay(p,t,d){if(!p||p.team!==t||p.prospect||p.joinY>G.year||!h
 function futBat(p,t,pos,games){ games=games||3; if(futUpToday(p))return;const days=Array.from({length:games},(_,i)=>G.day-games+1+i).filter(d=>futEligibleDay(p,t,d));if(!days.length)return;games=days.length;const pa=games>=3?ri(9,14):games===2?ri(6,10):ri(3,6);
   const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games,{mil:milServing(p)&&milPeriod(p).unit==='상무',days}); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
   if(p.injFx)injRecover(p,pa);
-  if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1}); }
+  if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1,hbp:o.hbp||0}); }
 function futPit(p,t){ const sp=isSPr(p);
   const had=d=>(p.ld||[]).some(x=>x[0]===d); /* 그날 이미(1군 등) 던졌으면 퓨처스 등판을 겹쳐 넣지 않는다(검수 11-07) */
   const days=sp?[G.day]:(p.downDay!=null&&p.downDay>G.day-2)?[G.day]:[G.day-2,G.day]; /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */

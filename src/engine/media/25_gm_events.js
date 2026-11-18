@@ -25,7 +25,7 @@ function evExpired(e){ return !!e&&!e.done&&e.exp!=null&&G.day>e.exp; }
 function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(!auto&&evExpired(e))return '결정 답변 기한이 지났습니다. 다음 날 기본안으로 처리됩니다.';
   if(!Number.isInteger(i)||i<0||i>=e.opts.length)return '선택할 수 없는 항목입니다.';
   if(e.pt!=null){ const q=G.players[e.data.pid]; if(!q||q.team!==e.pt||G.user!==e.pt){ e.done=true; e.void=true; e.res='선수가 우리 구단을 떠나 결정이 끝났습니다.'; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.read=true; m.imp=false; m.body+=`\n\n[종료] ${q?q.name:'선수'}이(가) 우리 구단을 떠나 이 결정은 적용하지 않았습니다.`; } return e.res; } } /* 실행 시점 소속 재검사: 떠난 선수에게 옛 결정(징계·면담 등)을 적용하지 않는다 */
-  if(!auto&&EVH[e.k]&&EVH[e.k].can){ const why=EVH[e.k].can(e,i); if(why)return why; } /* 지금 고를 수 없는 선택은 결정으로 남기지 않고 이유를 알린다(검수 11-06) */
+  if((!auto||EVH[e.k]?.canAuto)&&EVH[e.k]&&EVH[e.k].can){ const why=EVH[e.k].can(e,i); if(why)return why; } /* 지금 고를 수 없는 선택은 결정으로 남기지 않고 이유를 알린다. canAuto 종류는 자동 실행도 같은 사전 검사를 한다. */
   e.done=true; e.pick=i; if(auto)e.auto=true;
   let r=''; try{ r=(EVH[e.k]&&EVH[e.k].pick(e,i))||''; }catch(err){ r=''; } if(Number.isInteger(e.pick)&&e.pick!==i&&e.opts[e.pick])i=e.pick; /* 처리 중 실제로 바뀐 선택(정원이 차 복귀 불가 등)으로 기록(검수 11-07) */
   e.res=r; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; try{ if(EVH[e.k]&&EVH[e.k].acts)m.acts=EVH[e.k].acts(e,i)||[]; }catch(err){} /* 결정 뒤에도 남는 버튼(창단 단장 수락 취소) */ m.read=true; m.imp=false; m.body+=`\n\n[결정] ${e.opts[i].l}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${r?`\n${r}`:''}`; }
@@ -81,19 +81,19 @@ const EVH={
       const reg=new Set((()=>{ const d=depth(G.user); return [...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id); })());
       const regs=playersOf(G.user).filter(p=>reg.has(p.id)); const bar=regs.length?avg(regs.map(ovr))-4:50;
       const L=playersOf(G.user).filter(p=>{ initPers(p); return healthy(p)&&!reg.has(p.id)&&!p.ys&&(ovr(p)>=bar||p.sal>=400||(p.age>=27&&ovr(p)>=bar-3))&&p.mor<66&&!p.promise&&!p.listed&&p.age>=22&&!(p.ptDay>G.day-60); }).sort((a,b)=>ovr(b)-ovr(a)); return L[0]||null; },
-    make(p){ p.ptDay=G.day; const m=G.mgr[G.user]; const tn=tshort(G.user);
+    make(p){const m=G.mgr[G.user];if(!m||evOpen().some(e=>e.k==='pt'))return null;const tn=tshort(G.user);
       if(R()<clamp((70-m.ego)/100,.1,.45)){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+5,0,100);
-        news('선수',`${tn} ${p.name}, ${m.name} 감독과 면담 뒤 "기회 받겠다"`,`출전 시간 문제로 감독실을 찾은 ${p.name}에게 ${m.name} 감독이 남은 시즌 기회를 약속했습니다. 감독이 직접 수습한 일이라 프런트 개입은 없었습니다.`,0,{ref:p.id}); return; }
+        news('선수',`${tn} ${p.name}, ${m.name} 감독과 면담 뒤 "기회 받겠다"`,`출전 시간 문제로 감독실을 찾은 ${p.name}에게 ${m.name} 감독이 남은 시즌 기회를 약속했습니다. 감독이 직접 수습한 일이라 프런트 개입은 없었습니다.`,0,{ref:p.id});p.ptDay=G.day;return true;}
       const hot=m.ego>=65; news('선수',`${tn} ${p.name}, ${m.name} 감독과 출전 문제로 ${hot?'언쟁':'충돌'}`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) 출전 시간 문제로 ${m.name} 감독을 찾아갔다가 ${hot?'고성이 오갔다는 이야기가 나옵니다':'서로 입장 차이만 확인했습니다'}. 올해 기록: ${evLine(p)}.`,-1,{ref:p.id});
-      evNew('pt',`${p.name}-${m.name} 감독 갈등: 후속 조치`,`[기사] ${tn} ${p.name}이(가) 출전 시간 문제로 ${m.name} 감독과 ${hot?'언쟁을 벌였다':'부딪쳤다'}는 기사가 났습니다.\n선수 말: "${moraleWhy(p)}"\n감독 쪽: "${hot?'기용은 감독이 정합니다. 선수가 감독실에 와서 따질 일은 아닙니다.':'팀 사정상 지금은 어렵다고 설명했습니다.'}"\n올해 기록: ${evLine(p)}`,
+      const made=evNew('pt',`${p.name}-${m.name} 감독 갈등: 후속 조치`,`[기사] ${tn} ${p.name}이(가) 출전 시간 문제로 ${m.name} 감독과 ${hot?'언쟁을 벌였다':'부딪쳤다'}는 기사가 났습니다.\n선수 말: "${moraleWhy(p)}"\n감독 쪽: "${hot?'기용은 감독이 정합니다. 선수가 감독실에 와서 따질 일은 아닙니다.':'팀 사정상 지금은 어렵다고 설명했습니다.'}"\n올해 기록: ${evLine(p)}`,
       [{l:'감독 편에 서기',fx:'감독 관계가 오르고 기강이 섭니다. 선수 기분은 크게 떨어집니다.'},
        {l:'선수 면담 뒤 감독에게 기용 건의',fx:'선수 기분이 오르고 감독 관계는 내려갑니다. 한 달 안에 기회를 못 얻으면 선수가 크게 실망합니다.'},
        p.foreign?{l:'통역과 함께 따로 면담하기',fx:'선수 기분이 조금 오릅니다. 출전은 그대로입니다. 외국인 선수는 트레이드 명단에 올릴 수 없어 교체는 외국인 화면에서 직접 정합니다.'}
         :{l:'트레이드 명단에 올리기',fx:tradeOpen()?'선수 기분이 조금 오르고, 다른 구단 제안이 올 수 있습니다.':'선수 기분이 조금 오릅니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'},
-       {l:'지켜보기',fx:'둘이 알아서 풀게 둡니다. 선수 기분이 조금 떨어지고 언론은 프런트가 손 놓았다고 봅니다.'}],{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,hot},def:3}); },
+       {l:'지켜보기',fx:'둘이 알아서 풀게 둡니다. 선수 기분이 조금 떨어지고 언론은 프런트가 손 놓았다고 봅니다.'}],{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,hot,promN:p.playPromN||0},def:3});if(made)p.ptDay=G.day;return made;},
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; const m=G.mgr[G.user];
-      if(i===0){ if(m)m.rel=clamp(m.rel+4,0,100); p.mor=clamp(p.mor-9,0,100); return `감독 관계 개선. ${p.name} 기분 크게 하락. 선수단에는 감독 권한을 존중한다는 메시지가 갔습니다.`; }
-      if(i===1){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 크게 상승, 감독 관계 악화. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
+      if(i===0){if(m)m.rel=clamp(m.rel+4,0,100);p.mor=clamp(p.mor-9,0,100);leadAdjBoost(G.user,3,30);return `감독 관계 개선. ${p.name} 기분 크게 하락. 감독 권한을 존중한다는 메시지로 선수단 기강이 잡혔습니다.`;}
+      if(i===1){playPromiseFix(p);const stale=e.data.promN!=null?e.data.promN!==(p.playPromN||0):p.playPromLast&&p.playPromLast.tid===p.team&&e.day!=null&&e.day<=p.playPromLast.d;if(p.promise||stale)return `${p.name}의 출전 약속이 이미 진행되었거나 끝났습니다. 이전 갈등으로 출전 기준과 기한을 다시 시작하지 않았습니다.`;p.promise=mkPromise(p,30); p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 크게 상승, 감독 관계 악화. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
       if(i===2&&p.foreign){ p.mor=clamp(p.mor+3,0,100); return `${p.name}과(와) 통역을 두고 따로 이야기했습니다. 기분 상승. 출전은 감독 결정 그대로입니다.`; } /* 외국인은 트레이드 명단에 오르지 않는데 '올렸다'고만 나오던 문제(꺼끼꺼 11-12) */
       if(i===2){ listPlayer(p.id); p.mor=clamp(p.mor+3,0,100); return `${p.name}을(를) 트레이드 명단에 올렸습니다. 기분 상승.`; }
       p.mor=clamp(p.mor-4,0,100); prInit(); G.pr.press=clamp(G.pr.press-1,0,100); return `${p.name} 기분 하락, 언론 조금 악화.`; } },
@@ -195,11 +195,11 @@ const EVH={
     pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0)return '외국인 시장에서 교체 후보를 확인하세요.'; const h=seasonTotal(p,G.year,'1군'); evFollow(30,'fx',{pid:p.id,ev:e.id}); return '한 달 뒤 다시 보고합니다.'; },
     follow(d){ const p=evP(d.pid); if(!p||p.team!==G.user)return; const h=seasonTotal(p,G.year,'1군'); const t=`${p.name} 한 달 뒤: ${h?statLine(h,p):'기록 없음'}.`; evResult(d.ev,t); note('경기',t,p.id); } },
   /* 부상 조기 복귀 (부상 순간에 발생) */
-  inj:{ pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0&&p.injOut>0){ const before=p.injOut; p.injOut=Math.max(2,Math.round(p.injOut*.6)); p.rush=G.day+p.injOut+30; p.rushRet=1; /* 위험 기간은 실제 복귀일부터 다시 잡는다(07_daily, 검수 11-09t) */ evFollow(p.injOut+30,'inj',{pid:p.id,n:p.injHist.length,ev:e.id}); return `복귀 예정 ${before}일 → ${p.injOut}일. 복귀 후 한 달은 부상 위험 3배.`; } return '예정대로 재활합니다.'; },
-    follow(d){ const p=evP(d.pid); if(!p)return; if(p.team===G.user&&p.injHist.length===d.n&&(p.rushRet||p.rush>G.day)){ evFollow(p.rushRet?p.injOut+30:p.rush-G.day,'inj',d); return; } /* 병원 변경 등으로 복귀가 늦어지면 실제 위험 기간이 끝날 때 보고(검수 11-09zy) */ const t=p.injHist.length>d.n||p.injOut>0?`${p.name} 조기 복귀 뒤 다시 다쳤습니다.`:p.team!==G.user?`${p.name}은(는) 조기 복귀 뒤 팀을 떠났습니다.`:`${p.name} 조기 복귀 뒤 한 달 동안 탈 없이 지냈습니다.`; /* 검수 11-07 */ evResult(d.ev,t); note('복귀',t,p.id); } }
+  inj:{ pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(!injMatches(p,{...e.data,day:e.day}))return '이 결정 이후 새 진단이 있어 이전 복귀 계획은 적용하지 않았습니다.'; if(i===0&&p.injOut>0){ const before=p.injOut; injSetRemaining(p,Math.max(2,Math.round(p.injOut*.6))); p.rush=G.day+p.injOut+30; p.rushRet=1;p.rushId=injToken(p);delete p.injB;injSync(p);evFollow(p.injOut+30,'inj',{pid:p.id,n:p.injHist.length,injId:injToken(p),ev:e.id}); return `복귀 예정 ${before}일 → ${p.injOut}일. 예상 복귀 ${injRetTxt(p)}. 복귀 후 한 달은 부상 위험 3배.`; } return '예정대로 재활합니다.'; },
+    follow(d,tid){ const p=evP(d.pid); if(!p){evResult(d.ev,'조기 복귀 뒤 선수가 리그를 떠났습니다.');return;} if(injMatches(p,d)&&(p.rushRet||p.rush>G.day)){ (G.evf=G.evf||[]).push({day:G.day+(p.rushRet?p.injOut+30:p.rush-G.day),k:'inj',data:d,tid:tid??G.user}); return; } const t=!injMatches(p,d)||p.injOut>0?`${p.name} 조기 복귀 뒤 다시 다쳤습니다.`:p.team!==(tid??G.user)?`${p.name}은(는) 조기 복귀 뒤 팀을 떠났습니다.`:`${p.name} 조기 복귀 뒤 한 달 동안 탈 없이 지냈습니다.`;evResult(d.ev,t);if(!G.unemp&&tid===G.user)note('복귀',t,p.id); } }
 };
-function evInjury(p,days,reg){ if(p.team!==G.user||period()!=='season'||days<12||days>70||evOpen().some(e=>e.k==='inj'))return; if(!(reg??isRegular(p)))return; /* reg: 다치기 전 주전 여부(검수 11-09t) */
+function evInjury(p,days,reg){ if(p.team!==G.user||period()!=='season'||days<12||days>70||evOpen().some(e=>e.k==='inj'&&e.data.pid===p.id&&injMatches(p,{...e.data,day:e.day})))return; if(!(reg??isRegular(p)))return; /* 각 주전·진단마다 한 결정 */
   evNew('inj',`${p.name} 복귀 시점`,`${p.name}이(가) 부상으로 약 ${days}일 빠집니다. 의무팀은 무리하면 일찍 돌아올 수 있다고 합니다.`,
     [{l:'조기 복귀',fx:'빨리 돌아오지만, 복귀 후 한 달 동안 부상 위험이 3배입니다.'},
-     {l:'정상 재활',fx:'예정대로 복귀합니다.'}],{ref:p.id,face:p.id,from:'팀 닥터 · 의무팀',data:{pid:p.id},def:1,exp:2}); }
+     {l:'정상 재활',fx:'예정대로 복귀합니다.'}],{ref:p.id,face:p.id,from:'팀 닥터 · 의무팀',data:{pid:p.id,injId:injToken(p),n:(p.injHist||[]).length},def:1,exp:2}); injSync(p); }
 

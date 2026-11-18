@@ -26,12 +26,12 @@ function ggPublicRace(A){
   return Object.entries(A.cand.gg||{}).map(([pos,C])=>({pos,candidates:[...C].sort((a,b)=>(b.s+u01('ggPreview'+A.y,b.id)*.6)-(a.s+u01('ggPreview'+A.y,a.id)*.6)||a.id-b.id).slice(0,pos==='OF'?5:2).map(c=>({id:c.id,name:c.name,t:c.t,line:c.line,milestones:c.milestones||[]}))}));
 }
 function ggVotingDaily(){
-  const A=G.awards&&G.awards[G.year];if(!A||!A.ggVote||!A.pend||!A.pend.gg)return;
-  const V=A.ggVote;if(G.day<V.start||G.day>dnum(A.y,12,9))return;
+  for(const y of Object.keys(G.awards||{}).map(Number).sort((a,b)=>a-b)){const A=G.awards[y];if(!A||!A.pend?.gg)continue;awardScheduleFix(A,y);const V=A.ggVote;if(!V||G.day<V.start)continue;
   V.received=Math.min(V.voters,Math.max(0,Math.floor(V.voters*(G.day-V.start+1)/(V.end-V.start+1))));
-  const stage=G.day>=V.end?'closed':G.day>=V.start+5?'mid':'start';V.news=V.news||{};if(V.news[stage])return;
+  V.news=V.news||{};const stages=[];if(!V.news.start)stages.push('start');if(G.day>=V.end&&!V.news.closed)stages.push('closed');else if(G.day<V.end&&G.day>=V.start+5&&!V.news.mid)stages.push('mid');for(const stage of stages){
   V.news[stage]=G.day;const race=ggPublicRace(A);
   const text=race.map(x=>`${x.pos==='P'?'투수':x.pos==='OF'?'외야수':POSS[x.pos]||x.pos}: ${x.candidates.map(c=>`${c.name}(${tshort(c.t)})${c.milestones.length?' · '+c.milestones.join('·'):''}`).join(', ')}`).join('\n');
   const title=stage==='closed'?`${A.y} 골든글러브 기자단 투표 마감`:stage==='mid'?`${A.y} 골든글러브 기자단 투표 진행 중… 유력 후보는`: `${A.y} 골든글러브 기자단 투표 시작`;
-  news('분석',title,`기자 ${V.voters}명이 포지션별로 투표합니다. 외야수는 기자 한 명이 서로 다른 세 명을 고릅니다. 수상자는 ${dmd(dnum(A.y,12,9))}에 발표합니다.\n\n유력 후보 전망\n${text}\n\nWAR와 주요 타격·투구 기록, 200안타·20승 같은 이정표, 팀 성적을 함께 본 전망입니다. 실제 득표와 다를 수 있습니다.`,0,{tid:G.user});
+  const publish=()=>news('분석',title,`기자 ${V.voters}명이 포지션별로 투표합니다. 외야수는 기자 한 명이 서로 다른 세 명을 고릅니다. 수상자는 ${awDateText(A.days.gg,A.y)}에 발표합니다.\n\n유력 후보 전망\n${text}\n\nWAR와 주요 타격·투구 기록, 200안타·20승 같은 이정표, 팀 성적을 함께 본 전망입니다. 실제 득표와 다를 수 있습니다.`,0,{tid:G.user});if(A.days.gg>dnum(A.y,12,9))withRng(A.y*1009+({start:1,mid:2,closed:3})[stage],publish);else publish();
+  }}
 }

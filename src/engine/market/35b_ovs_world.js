@@ -36,16 +36,16 @@ function ovsSeedKr(){ G.abroad=G.abroad||[]; const T=G.teams.map(t=>t.id); const
     p.age=age; setOvr(p,o); p.team=from; rec.age=age; rec.pj=ovsPj(p); G.abroad.unshift(rec); } }
 /* ----- 3-2 리그 사이 이동 ----- */
 /* 이동 한 번: 리그·구단을 바꾸고 이동 기록을 남긴다(지난 줄은 그 시즌 리그·구단 그대로) */
-function ovsMove(a,lg,yrs,amt,NW,why){ const f=a.lg, fc=a.club; const CL=OVL_C[ovlKey(lg)]; const ci=Math.floor(R()*CL.length);
+function ovsMove(a,lg,yrs,amt,NW,why,stay){ const f=a.lg, fc=a.club; const CL=OVL_C[ovlKey(lg)]; const ci=Math.floor(R()*CL.length);if(stay)return null; /* 복귀 예고로 거절한 이적도 기존 제안 추첨 슬롯은 유지한다. */
   (a.mv=a.mv||[]).push({y:G.year,f,t:lg}); if(a.mv.length>4)a.mv.splice(0,a.mv.length-4); a.lg=lg; a.ci=ci; a.club=ovlNm(lg,ci); delete a.bn; delete a.cur;
   if(!a.foreign&&!a.cand){ const y1=a.y1??a.y+1; a.yrs=G.year-y1+1+yrs; a.amt=amt; }
   const t=`${a.foreign?'KBO 출신 ':''}${a.name}, ${f} ${String(fc||f).split(' ')[0]}에서 ${lg} ${a.club}로 이적${yrs?` · ${yrs}년 연 ${usdKw(amt)}`:''}${why?`(${why})`:''}`;
   if(NW)NW.push({pr:(lg==='MLB'?6:4)+(a.from===G.user?2:0)+(a.foreign||a.cand?-2:0),t,a}); return t; }
 /* 국내 선수: 계약이 끝난 해(또는 NPB에서 2년 넘게 잘한 해) 다음 행선지. 돌아오기로 한 선수는 home 그대로 */
-function ovsMoveKr(a,p,ok,yrsIn,home,NW){ const o=ovr(p), A=ovsAgeT(p.age);
-  if(a.lg==='NPB'&&ok&&p.age<=31&&o>=61&&(yrsIn>=a.yrs||yrsIn>=2)&&R()<(o>=64?.6:.4)){ const Y=postYrs(o); const yrs=Math.min(A.y,ri(Y[0],Y[1])); return ovsMove(a,'MLB',yrs,Math.round(clamp(postAmt0(o)*A.f+N(0,60),100,2500)),NW,yrsIn>=a.yrs?'계약 만료':'포스팅'); }
+function ovsMoveKr(a,p,ok,yrsIn,home,NW,promised=!!(a.bn&&a.bn.y===G.year&&a.bn.v)){ const o=ovr(p), A=ovsAgeT(p.age);
+  if(a.lg==='NPB'&&ok&&p.age<=31&&o>=61&&(yrsIn>=a.yrs||yrsIn>=2)&&R()<(o>=64?.6:.4)){ const Y=postYrs(o); const yrs=Math.min(A.y,ri(Y[0],Y[1])); return ovsMove(a,'MLB',yrs,Math.round(clamp(postAmt0(o)*A.f+N(0,60),100,2500)),NW,yrsIn>=a.yrs?'계약 만료':'포스팅',home&&promised); }
   if(yrsIn<a.yrs)return null;
-  if(a.lg==='MLB'&&home&&!ok&&p.age<=33&&o>=56&&R()<.4)return ovsMove(a,'NPB',Math.min(A.y,ri(1,2)),Math.round(clamp((o-55)*45+N(0,30),80,600)),NW,'빅리그 자리를 잃고');
+  if(a.lg==='MLB'&&home&&!ok&&p.age<=33&&o>=56&&R()<.4)return ovsMove(a,'NPB',Math.min(A.y,ri(1,2)),Math.round(clamp((o-55)*45+N(0,30),80,600)),NW,'빅리그 자리를 잃고',home&&promised);
   if(!home){ const yrs=p.age<=30?ri(2,4):p.age<=32?ri(1,2):1; a.yrs=yrsIn+yrs; a.amt=Math.round(clamp(a.lg==='MLB'?postAmt0(o)*A.f:(o-55)*45,80,2500)); delete a.bn; return 're'; } /* 남는 선수: 같은 리그 재계약 */
   return null; }
 /* KBO를 떠난 외국인·놓친 후보: 트리플A로 밀린 MLB 계약 선수는 가끔 NPB로, NPB에서 잘한 선수는 가끔 MLB로 */
@@ -78,16 +78,17 @@ function ovpP(e){ const O=G.ovp; if(O)O.L=O.L.filter(x=>x!==e);
   const L=e.L||[], l=L[L.length-1], l2=L[L.length-2]; const st=x=>{ const {y,l:lv,...h}=x; h.lvl=lv; ovpFill(h,p.isP); if(h.g==null)h.g=p.isP?Math.max(1,Math.round((h.outs||0)/(isSPr(p)?17:3.5))):Math.max(1,Math.round((h.pa||0)/4.1)); return h; };
   if(l){ p.prevLvl=l.l; p.prev=st(l); if(l2&&l2.l===l.l)p.prev2=st(l2); } p.ovpY=l?l.y:null;
   p.ask=fAsk(p,ovr(p)+N(0,3.5)+(p.mlbG>=30?1.5:p.mlbG>0?.7:0)); if(p.orig==='la'||p.orig==='ve')p.ask=round5(p.ask*.8); if(p.flaw)p.ask=round5(p.ask*.88); p.sal=p.ask;
-  if(e.cur&&e.cur.y===G.year&&e.cur.l===p.prevLvl&&period()==='season'){ const f=ovlFrac(G.year); if(f>0){ const {y,l:lv,live,...h}=ovsPart(e.cur,f); p.now=ovpFill(Object.assign({y:G.year,lvl:lv},h),p.isP); } } /* 올해 이 리그에서 치른 만큼(공개 기록) */
+  if(e.cur&&e.cur.y===G.year){p.ovpCur=JSON.parse(JSON.stringify(e.cur));if(period()==='season'){ const f=ovlFrac(G.year); if(f>0){ const {y,l:lv,live,...h}=ovsPart(e.cur,f); p.now=ovpFill(Object.assign({y:G.year,lvl:lv},h),p.isP); } }} /* 작년과 다른 리그라도 올해 공개 기록과 원래 시즌 사본을 함께 잇는다. */
   p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ovp=(e.s||0)+1; return p; }
 /* 시장 새 후보: 후보군에서 조건에 맞는 사람을 먼저(확률 OVP.p), 없으면 예전처럼 새로 만든다 */
 function fCandNew(kind,o){ o=o||{}; const e=ovpPick(kind,o); if(e)return ovpP(e); const n=Object.assign({market:true},o); delete n.amin; delete n.amax; return newForeign(kind,n); }
 function ovpPick(kind,o){ const O=G.ovp; if(!O||!O.L.length||R()>=OVP.p)return null; const wk=ovpWk(), k=kind==='아시아'?1:0;
   const C=O.L.filter(e=>e.k===k&&(o.isP==null||!!e.P===o.isP)&&(!o.lvl||e.l===o.lvl)&&(!o.pos||e.ps===o.pos)&&(o.amin==null||e.a>=o.amin)&&(o.amax==null||e.a<=o.amax)&&e.cy!==wk); return C.length?pick(C):null; }
 /* 팔리지 않고 시장을 떠나는 후보: KBO 기록이 없고 34세 이하면 후보군으로 돌아간다(다음 겨울 같은 사람으로 다시 나온다) */
+function ovpCarryCur(p){const now=p.now?.y===G.year?p.now:null,c=p.ovpCur?.y===G.year?JSON.parse(JSON.stringify(p.ovpCur)):now?ovpLineE(now,G.year):null;if(!c||!now)return c;const f=ovlFrac(G.year),lv=now.lvl||c.l;if(c.l!==lv){for(const k of Object.keys(c))if(k!=='y'&&k!=='l')delete c[k];c.l=lv;}for(const k of p.isP?OVP_ZP:OVP_ZB)if(typeof now[k]==='number'){if(f>0&&f<1){if(Math.round((c[k]||0)*f)!==now[k])c[k]=Math.round(now[k]/f);}else c[k]=now[k];}return c;}
 function ovpBack(p){ const O=G.ovp; if(!O||!p||!p.foreign||p.team!=null||p.fkbo||(p.hist||[]).length||p.age>34||!p.prev||!OVP_LV.has(p.prevLvl))return false; if(O.L.some(e=>e.i===p.id))return false;
   if(O.L.length>=OVP.max){ const old=O.L.reduce((m,e)=>e.a>m.a?e:m,O.L[0]); if(old.a<=p.age)return false; O.L.splice(O.L.indexOf(old),1); } /* 가득 차면 가장 나이 많은 선수를 내보낸다 */
-  const y=p.ovpY??ovpPrevY(p.fday); const L=[]; if(p.prev2&&p.prev2.lvl===p.prevLvl)L.push(ovpLineE(p.prev2,y-1)); L.push(ovpLineE(p.prev,y)); const e=ovpE(p,L); e.s=p.ovp||1; e.cy=ovpWk(); O.L.push(e); return true; }
+  const y=p.ovpY??ovpPrevY(p.fday); const L=[]; if(p.prev2&&p.prev2.lvl===p.prevLvl)L.push(ovpLineE(p.prev2,y-1)); L.push(ovpLineE(p.prev,y)); const e=ovpE(p,L),cur=ovpCarryCur(p);if(cur){e.cur=cur;e.l=cur.l;if(e.l!=='트리플A')delete e.c;} e.s=p.ovp||1; e.cy=ovpWk(); O.L.push(e); return true; }
 /* 시즌을 마치면(abroadYear): 후보군 모두 한 시즌 기록을 쌓고, 일부는 MLB 콜업·리그 이동·은퇴, 빈자리는 새 선수로 */
 function ovpYear(){ const O=G.ovp||ovpInit(); if(O.y===G.year)return; O.y=G.year; const out=[], NW=[];
   for(const e of O.L){ if((e.L||[]).some(l=>l.y===G.year))continue; const fr=ovpFr(e), lv=e.l; const c=e.cur; delete e.cur; (e.L=e.L||[]).push(c&&c.y===G.year&&c.l===lv?c:ovpGen(e,G.year)); if(e.L.length>OVP.keep)e.L.splice(0,e.L.length-OVP.keep);
