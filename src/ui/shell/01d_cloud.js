@@ -45,10 +45,11 @@ function clBytes(body){ let u; if(body[0]===ZMK)u=unz15(body); else { const txt=
 /* 올리기. force: 날짜·시간 조건 없이(직접·떠날 때). opt.over: 사용자가 본 서버 판번호로 덮기(고른 뒤에만) → 'ok'|'same'|'conflict'|'' */
 async function clUpload(force,opt){ opt=opt||{}; if(CL.upBusy||!G||UI.title||!clOn()||CL.st!=='ok'||!clTok())return ''; if(typeof SAVE_CONFL!=='undefined'&&SAVE_CONFL)return '';
   if(Date.now()<CL.waitUntil&&!opt.manual)return ''; if(!G.wid){ try{ cupWid(); saveNow(); }catch(e){ return ''; } }
-  const wid=G.wid, n=curSlot(), m=meta(), s=m.slots[n]; if(!s||savePend())return ''; const body=sbGet(n); if(!body)return '';
+  const wid=G.wid, n=curSlot(), m=meta(), s=m.slots[n]; if(!s||savePend())return '';
   if(CL.confl[wid]&&opt.over==null)return 'conflict';
-  const lrev=revOf(m,n), b=clBase()[wid], line=b&&b.n===n; if(opt.over==null&&line&&b.lrev===lrev)return 'same';
-  if(!force&&opt.over==null&&!(s.day!==CL.upDay&&Date.now()-CL.upAt>=600e3))return '';
+  const lrev=revOf(m,n), b=clBase()[wid], line=b&&b.n===n; if(opt.over==null&&line&&b.lrev===lrev){ if(!sbGet(n))return ''; return 'same'; }
+  if(!force&&opt.over==null&&!(s.day!==CL.upDay&&Date.now()-CL.upAt>=600e3))return ''; /* 1분 확인은 시간 조건부터 본다: 본문(수 MB)을 매분 읽지 않게(성능 11-18) */
+  const body=sbGet(n); if(!body)return '';
   let bytes; try{ bytes=clBytes(body); }catch(e){ if(opt.manual)clSay('저장을 준비하지 못했습니다. 파일로 내보내기를 써 주세요.',true); return ''; }
   const base=opt.over!=null?opt.over:line?b.rev:0, ver=String(typeof GAME_VER!=='undefined'?GAME_VER:'').replace(/[^\w.-]/g,'').slice(0,24);
   const h={'Content-Type':'application/octet-stream','X-Save-Wid':wid,'X-Save-Day':String(s.day==null?G.day:s.day),'X-Save-Date':encodeURIComponent(s.date||''),'X-Save-Team':encodeURIComponent(s.name||''),'X-Save-At':String(s.at||Date.now())};
