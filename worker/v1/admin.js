@@ -7,6 +7,7 @@ import { currentSeason, rollSeason } from './season.js';
 import { statStmts, takeUsage } from './usage.js';
 import { SCHEMA_VERSION, schemaStatements } from './schema.js';
 import { cloudStatements, cloudStats, deleteCloud } from './cloud.js';
+import { ensureRec, recDelete, recStatements } from './records.js';
 import { ensureMeta, META_SQL, RANK_ORDER, bumpCache, bumpStmt, GEN_SEC, _genReset } from './ladder.js';
 
 /* 무료 한도(2026-11 Cloudflare 문서 기준. 바뀔 수 있다) */
@@ -107,8 +108,8 @@ export async function handleAdmin(rest, req, url, db, now, env) {
    한 batch(트랜잭션)라 동시에 온 결과·덱 등록과 섞여도 반쯤 지워진 상태가 없다(그쪽 쓰기는 플레이어가 있을 때만 들어간다: srv2 #61). 공개 캐시 세대도 올린다 */
 export async function deletePlayer(db, pid, env) {
   await deleteCloud(env, db, pid); /* 클라우드 저장: R2 본문과 cloud_* 줄(먼저: 실패하면 플레이어도 남아 다시 지울 수 있다) */
-  const meta = await ensureMeta(db);
-  await db.batch((meta ? [db.prepare('DELETE FROM deck_meta WHERE player_id = ?').bind(pid)] : [])
+  const meta = await ensureMeta(db), rec = await ensureRec(db); /* 기록실 줄도 지운다(사용자 11-18) */
+  await db.batch((meta ? [db.prepare('DELETE FROM deck_meta WHERE player_id = ?').bind(pid)] : []).concat(rec ? recDelete(db, pid) : [])
     .concat(['devices', 'identities', 'decks', 'ladder_entries', 'league_results', 'events'].map(t => db.prepare(`DELETE FROM ${t} WHERE player_id = ?`).bind(pid)))
     .concat([db.prepare('DELETE FROM h2h WHERE player_id = ? OR opp_id = ?').bind(pid, pid), db.prepare('DELETE FROM players WHERE id = ?').bind(pid), bumpStmt(db)]));
   _genReset();
@@ -121,6 +122,6 @@ export async function deleteDeck(db, pid) {
 }
 /* 표 만들기: 같은 SQL을 문장별로(여러 번 해도 안전) */
 export async function migrate(db) {
-  const L = schemaStatements().concat([META_SQL], cloudStatements()); await db.batch(L.map(q => db.prepare(q))); /* deck_meta: migrations/0002_deck_meta.sql(래더 v2), cloud_*: migrations/0003_cloud_saves.sql(클라우드 저장) */
+  const L = schemaStatements().concat([META_SQL], cloudStatements(), recStatements()); await db.batch(L.map(q => db.prepare(q))); /* ladder_lines·ladder_teams: migrations/0004_ladder_records.sql(래더 기록실) */ /* deck_meta: migrations/0002_deck_meta.sql(래더 v2), cloud_*: migrations/0003_cloud_saves.sql(클라우드 저장) */
   return json(200, { ok: true, schema: SCHEMA_VERSION, statements: L.length });
 }

@@ -1,0 +1,56 @@
+/* 3연전 리그(사용자 11-18): 순위표(최근 5·연속·기대승) · 박스 스코어 · 팀 기록 · 개인 순위 · 포스트시즌 대진 · 소식 · 시상 · 기록실. 본게임 표(table.ls · table.box · .ltiles) 위에 칸 맞춤만 */
+.ulx .ul-mid{container-type:inline-size}.ulx .ul-mid .itabs{margin-bottom:8px}
+.ulx .ul-stx{font-size:12px}.ulx .ul-stx th{white-space:nowrap;font-size:11px;color:var(--muted)}.ulx .ul-stx td small{font-size:10px}.ulx .ul-stx td:nth-child(2){white-space:nowrap}.ulx .ul-stx td:nth-child(2) .lnk{display:inline-block;max-width:8em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}.ulx .ul-stx td,.ulx .ul-stx th{padding:3px 4px}
+@container (max-width:600px){.ulx .ul-stx .o1,.ulx .ul-stx td:nth-child(2) .ul-k{display:none}}@container (max-width:420px){.ulx .ul-stx .o2{display:none}.ulx .ul-stx td:nth-child(2) .lnk{max-width:6.5em}}
+.ulx .ul-stx tr.ul-pscut td{border-bottom:2px dashed color-mix(in srgb,var(--warn,#e3b44c) 70%,transparent)}
+.ulx .ul-l5{display:inline-flex;gap:2px;vertical-align:middle}.ulx .ul-l5 i{width:7px;height:7px;border-radius:50%;background:var(--line)}.ulx .ul-l5 i.w{background:var(--good,#4fc27c)}.ulx .ul-l5 i.l{background:var(--bad,#ef6b5e)}.ulx .ul-l5 i.t{background:var(--muted,#8aa)}
+.ulx .ul-gs{all:unset;cursor:pointer;display:inline-block;margin:0 3px 2px 0;padding:0 6px;border-radius:999px;border:1px solid var(--line);font:600 11px/1.6 var(--f-num,monospace);color:var(--ink,#e2e8ed)}
+.ulx .ul-gs:hover,.ulx .ul-gs.on{border-color:var(--acc,#3d8bfd);background:color-mix(in srgb,var(--acc,#3d8bfd) 16%,transparent)}.ulx .ul-gs:disabled{cursor:default;opacity:.55}
+.ulx .ul-gs:focus-visible{outline:2px solid var(--acc,#3d8bfd);outline-offset:1px}
+.ulx .ul-sr>em{display:flex;flex-wrap:wrap;align-items:center}
+/* 박스 스코어 */
+.ulx .ul-bxv .eyebrow{margin:10px 0 4px}.ulx .ul-bxh2{margin:2px 0 6px;font-size:15px}.ulx .ul-bxh2 .num{margin:0 6px;font-size:18px}
+.ulx .ul-bxv table.ls{font-size:12px}.ulx .ul-bxv table.ls td,.ulx .ul-bxv table.ls th{min-width:18px;padding:4px 2px}.ulx .ul-bxv table.ls tr.me td{font-weight:800;color:var(--acc,#3d8bfd)}
+.ulx .ul-bxv .hl{display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0;font-size:12px}.ulx .ul-bxv table.box{font-size:12px}
+/* 팀 기록 */
+.ulx .ul-ts td small{display:block;font-size:9.5px;line-height:1;color:var(--muted)}.ulx .ul-ts td.t-hi{color:var(--good,#4fc27c)}.ulx .ul-ts td.t-lo{color:var(--bad,#ef6b5e)}.ulx .ul-ts tr.tot td{font-weight:700;border-top:1px solid var(--line2,var(--line))}
+.ulx .ul-vsas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,92px),1fr));gap:4px;margin:2px 0 8px}
+.ulx .ul-vsa{display:grid;gap:0;padding:5px 8px;border-radius:8px;border:1px solid var(--line);text-align:center}.ulx .ul-vsa small{font-size:10px;color:var(--muted)}.ulx .ul-vsa b{font-size:15px}.ulx .ul-vsa em{font-style:normal;font-size:10px;color:var(--muted)}
+.ulx .ul-vsa.good{border-color:var(--good,#4fc27c)}.ulx .ul-vsa.good b{color:var(--good,#4fc27c)}.ulx .ul-vsa.bad{border-color:var(--bad,#ef6b5e)}.ulx .ul-vsa.bad b{color:var(--bad,#ef6b5e)}
+/* 개인 순위: 본게임 부문 1위 타일을 칸 폭에 맞춘다 */
+.ulx .ul-lt{grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr))}.ulx .ul-lt .l1{grid-template-columns:minmax(0,1fr) auto}.ulx .ul-lt .l1 span{display:grid;min-width:0}.ulx .ul-lt .l1 i{font-style:normal;font-size:11px;color:var(--muted)}
+.ulx .ul-lt .l1 em{font-style:normal;font-size:18px;font-weight:800}.ulx .ul-lt .me,.ulx .ul-lt .me b{color:var(--acc,#3d8bfd);font-weight:800}
+/* 포스트시즌 대진 */
+.ulx .ul-bk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;margin:4px 0}.ulx .ul-bksf,.ulx .ul-bkfw{display:grid;gap:8px}
+.ulx .ul-bkc{padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--panel2,rgba(127,127,127,.06));min-width:0}.ulx .ul-bkc.nx{border-color:var(--acc,#3d8bfd);box-shadow:0 0 0 1px color-mix(in srgb,var(--acc,#3d8bfd) 40%,transparent)}
+.ulx .ul-bkf{border-color:color-mix(in srgb,#f3cf63 55%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,#f3cf63 12%,var(--panel)) 0%,var(--panel2,var(--panel)) 70%)}
+.ulx .ul-bkc .dk-t{margin:0 0 4px}.ulx .ul-bks{display:grid;grid-template-columns:1.4em minmax(0,1fr) auto;gap:6px;align-items:center;padding:3px 4px;border-radius:6px}.ulx .ul-bks b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ulx .ul-bks i{font-style:normal;font-size:11px;color:var(--muted)}
+.ulx .ul-bks em{font-style:normal;font-weight:800;font-size:16px}.ulx .ul-bks.win{background:color-mix(in srgb,var(--good,#4fc27c) 14%,transparent)}.ulx .ul-bks.out{opacity:.55}.ulx .ul-bks.me b{color:var(--acc,#3d8bfd)}
+.ulx .ul-bk0 .ul-bkc{max-width:420px}
+.ulx .ul-champ{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;border:1px solid #d4a017;background:color-mix(in srgb,#d4a017 14%,transparent)}.ulx .ul-champ p{margin:0}.ulx .ul-champ.me{box-shadow:0 0 0 2px color-mix(in srgb,var(--acc,#3d8bfd) 60%,transparent)}
+.ulx .ul-trophy{flex:none;display:inline-flex}.ulx .ul-trophy.silver{filter:grayscale(1) brightness(1.15)}
+/* 소식 */
+.ulx .ul-news2{display:grid;gap:4px}.ulx .ul-nw{display:grid;grid-template-columns:5.2em minmax(0,1fr);gap:8px;padding:4px 0;border-bottom:1px solid var(--line)}.ulx .ul-nw p{margin:0 0 2px}.ulx .ul-nwr{font-size:12px;color:var(--muted)}.ulx .ul-nw.ps .ul-nwr{color:#d4a017}
+.ulx .ul-nwl{margin:6px 0;padding:6px 8px;border-radius:8px;border-left:3px solid var(--acc,#3d8bfd);background:var(--panel2,rgba(127,127,127,.06))}.ulx .ul-nwl p{margin:1px 0}
+/* 팀 페이지 */
+.ulx .ul-ros2{font-size:12px}.ulx .ul-ros2 td:first-child{white-space:nowrap}.ulx .ul-team .chips{margin:0 0 6px}
+.ulx .ul-rr{grid-template-columns:1.6em minmax(0,1fr) auto auto auto}.ulx .ul-rr em{font-style:normal}.ulx .ul-expv{margin:2px 0 6px}
+.ulx .ul-psl{border-left:3px solid #d4a017}
+/* 결과: 포스트시즌 · 시상 */
+.ulx .ul-psr{display:flex;gap:10px;align-items:center;margin:8px 0;padding:8px 10px;border-radius:10px;border:1px solid var(--line)}.ulx .ul-psr p{margin:0}.ulx .ul-psr-c{border-color:#d4a017;background:color-mix(in srgb,#d4a017 16%,transparent)}.ulx .ul-psr-r{border-color:color-mix(in srgb,#c0c8d0 70%,transparent)}
+.ulx .ul-aws{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:4px;margin:4px 0 8px}
+.ulx .ul-aw1{display:grid;gap:1px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);min-width:0}.ulx .ul-aw1>span{font-size:11px;color:#d4a017;font-weight:700}.ulx .ul-aw1 b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ulx .ul-aw1 em{font-style:normal;color:var(--muted)}.ulx .ul-aw1.me{border-color:var(--acc,#3d8bfd);background:color-mix(in srgb,var(--acc,#3d8bfd) 8%,transparent)}
+/* 기록실 알림 띠(로비) */
+.ulx .ul-banner{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;margin:0 0 8px;padding:8px 12px;border-radius:10px;border:1px solid color-mix(in srgb,#f3cf63 55%,var(--line));background:linear-gradient(90deg,color-mix(in srgb,#f3cf63 18%,var(--panel)) 0%,var(--panel) 80%);font-size:13px;min-width:0}
+.ulx .ul-banner:hover{border-color:#f3cf63}.ulx .ul-banner:focus-visible{outline:2px solid var(--acc,#3d8bfd);outline-offset:2px}
+.ulx .ul-bn-t{flex:none;font-size:11px;font-weight:800;padding:1px 8px;border-radius:999px;background:#d4a017;color:#1b1400}.ulx .ul-bn-i{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center}.ulx .ul-bn-i>i{font-style:normal;color:var(--muted)}.ulx .ul-bn-go{flex:none;font-size:18px;color:var(--muted)}
+/* 기록실 */
+.ulx .ul-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:6px;margin:4px 0 8px}
+.ulx .ul-wc{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px;border-radius:10px;border:1px solid var(--line);background:linear-gradient(135deg,color-mix(in srgb,var(--ul-glow,rgba(91,156,240,.22)) 60%,var(--panel)) 0%,var(--panel) 75%)}
+.ulx .ul-wc>div{display:grid;min-width:0}.ulx .ul-wc b,.ulx .ul-wc small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ulx .ul-wc.me{border-color:var(--acc,#3d8bfd)}
+.ulx .ul-rbs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px}
+.ulx .ul-rb{border:1px solid var(--line);border-radius:8px;padding:4px 8px;min-width:0}.ulx .ul-rb .dk-t{margin:2px 0 4px}.ulx .ul-rb ol{list-style:none;margin:0;padding:0}
+.ulx .ul-rb li{display:grid;grid-template-columns:1.5em minmax(0,1fr) auto;gap:6px;align-items:center;padding:2px 0;border-bottom:1px dashed var(--line);font-size:12px}.ulx .ul-rb li:last-child{border-bottom:0}
+.ulx .ul-rb li>span{display:grid;min-width:0}.ulx .ul-rb li b,.ulx .ul-rb li small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ulx .ul-rb li small{color:var(--muted);font-size:10.5px}.ulx .ul-rb li em{font-style:normal;font-weight:800}
+.ulx .ul-rb li.top em{color:#d4a017;font-size:14px}.ulx .ul-rb li.me{background:color-mix(in srgb,var(--acc,#3d8bfd) 12%,transparent);border-radius:6px}.ulx .ul-rb li i{font-style:normal;color:var(--muted)}
+@media(max-width:640px){.ulx .ul-bk{grid-template-columns:minmax(0,1fr)}.ulx .ul-nw{grid-template-columns:4.2em minmax(0,1fr)}.ulx .ul-banner{align-items:flex-start}.ulx .ul-rr{grid-template-columns:1.4em minmax(0,1fr) auto auto}.ulx .ul-rr em{grid-column:2/-1}}
