@@ -34,7 +34,7 @@ function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); 
     ${(()=>{ /* 한 화면에(UI 3단계 3-0): 개요·사람들·우승 트로피를 탭으로. 아래 동작 버튼 줄은 늘 보인다 */
       const ppl=teamPeople(tid), T=[['main','개요'],['pos','포지션 순위'],...(ppl?[['ppl','구단 사람들']]:[]),['tro','우승 트로피']], cur=T.some(x=>x[0]===UI.tsTab)?UI.tsTab:'main';
       const body=cur==='ppl'?ppl:cur==='tro'?trophyCase(tid,true):cur==='pos'?`<div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}${startAvgBox(tid)}`:`${teamCard(t).replace(/ data-a="[a-zA-Z]+" data-v="[^"]*" role="button" tabindex="0"/,'').replace(/<button[^>]*data-a="tpartnerGo"[^>]*>[^<]*<\/button>/g,'')}
-    <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${relLabel(t.rel)}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd><dt>팀 분위기</dt><dd>${chemLine(tid)}</dd></dl>`;
+    <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${relLabel(t.rel)}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd><dt>팀 분위기</dt><dd>${chemLine(tid)}</dd><dt>신인 지명권</dt><dd>${esc(pkSummary(tid))}</dd></dl>`;
       return `<div class="chips ps-tabs" role="tablist" aria-label="구단 정보 구역">${T.map(([k,l])=>`<button type="button" role="tab" data-a="tsTab" data-v="${k}" class="${k===cur?'on':''}" aria-selected="${k===cur}">${l}</button>`).join('')}</div><div class="ts-body ts-${cur}">${body}</div>`; })()}
     <div class="row" style="margin-top:10px"><button class="btn primary" data-a="teamInspect" data-v="${tid}">구단 정보·연대기</button><button class="btn" data-a="lteam" data-v="${tid}">선수단 보기</button>${tradeOpen()?`<button class="btn" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button>`:''}</div>
   </div></div>`; }

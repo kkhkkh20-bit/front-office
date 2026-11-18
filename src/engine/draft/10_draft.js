@@ -158,7 +158,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
   recoverDraftLogs(); draftClubInit(); try{ draftBoardSortMigrate(); }catch(e){} rchkInit(); sdObFix(); ctMilClauseFix(); sdContractFix(); salMilFix(); migrateMoveContracts(); faClosedFix(); aiBlockDates();
   /* 검수 11-18 #731~750: 실제 구단·복무 상태를 복원한 뒤 소속별 기록을 조용히 정리한다. */
-  captainMigrate(); leadAdjMigrate(); playPromiseFix(); try{ faGrantMigrate(); }catch(e){} try{ trainingDelegationMigrate(); }catch(e){} try{ mentorStateMigrate(); }catch(e){} try{ retOutcomeMigrate(); }catch(e){} goalSupportFix(); foResFix(); ovsRenewFix(); try{ ovsSlimFix(); }catch(e){} optProrationFix(); fovsMigrate(); facDealsMigrate(); newStadMigrate(); mreqDoneFix(); fTmpRecordFix(); flMigrate(); meTradeAgeMigrate();
+  pkMigrate(); captainMigrate(); leadAdjMigrate(); playPromiseFix(); try{ faGrantMigrate(); }catch(e){} try{ trainingDelegationMigrate(); }catch(e){} try{ mentorStateMigrate(); }catch(e){} try{ retOutcomeMigrate(); }catch(e){} goalSupportFix(); foResFix(); ovsRenewFix(); try{ ovsSlimFix(); }catch(e){} optProrationFix(); fovsMigrate(); facDealsMigrate(); newStadMigrate(); mreqDoneFix(); fTmpRecordFix(); flMigrate(); meTradeAgeMigrate();
   try{ psArchiveRainMigrate(); }catch(e){} try{ champGiftMigrate(); }catch(e){} try{ champFundMigrate(); }catch(e){} try{ archPsMigrate(); }catch(e){} try{ champArchiveMvpMigrate(); }catch(e){}
 }
 /* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.

@@ -4,7 +4,7 @@
    - 구단 이름은 실제 도시 + 가상 별칭(상표를 피하고 KBO 별칭과 겹치지 않게). 예전 저장의 도시 이름만 있는 구단(뉴욕 등)은 그 도시 첫 구단으로 본다.
    - 트리플A(사용자 11-15: "미국도 메이저와 트리플A 정도는 나와야"): 30개 구단이 번호 그대로 MLB 구단 하나의 산하(i번 MLB 구단 ↔ i번 트리플A 구단). 인터내셔널리그 20·퍼시픽코스트리그 10.
    - CPBL·멕시코리그(LMB)는 같은 가벼운 모델로 순위·우승만(나중에 더 키운다)
-   - 선수는 KBO와 이어진 선수만(해외파·KBO를 떠난 외국인·관찰하던 후보): ovsLine이 리그 수준(LG_ADJ)·나이·구단 사정으로 한 시즌 기록을 만든다 */
+   - 선수는 KBO와 이어진 선수만(해외파·KBO를 떠난 외국인·관찰하던 후보): ovsLine이 리그 수준(LEAGUE_LV)·나이·구단 사정으로 한 시즌 기록을 만든다 */
 const OVL_LGS=['MLB','AAA','NPB','CPBL','LMB'];
 const OVL_C={MLB:[['뉴욕','나이츠',0],['보스턴','하버스',0],['토론토','노스스타',0],['볼티모어','클리퍼스',0],['탬파베이','선샤인',0],
   ['시카고','윈디스',1],['클리블랜드','랜턴스',1],['디트로이트','모터스',1],['캔자스시티','스카우츠',1],['미네소타','노스맨',1],
@@ -104,11 +104,7 @@ function ovlCandLvl(p,lvl,short){ lvl=lvl||(p&&p.prevLvl)||''; const i=lvl==='�
 const OVS_THR={MLB:62,NPB:57}; /* 이 능력(국내 기준)이면 그 리그 1군(빅리그)에서 자리를 잡는다 */
 const ovsGt=a=>!!a&&!a.foreign&&!a.cand&&a.from!=null&&a.lg==='MLB'&&(a.amt||0)>=300?((a.amt||0)>=450?3:2):0; /* 보장 연 300만 달러 이상 MLB 계약(포스팅·해외 FA): 구단이 투자한 만큼 기회를 줘 빅리그 문턱이 2 낮다(해외 활성화 2-1: 김혜성·김하성은 첫해부터 주로 빅리그). 연 450만 달러 이상은 3 낮다(11-17: 보장 계약 포스팅 선수가 트리플A에 오래 묶여 MLB 국내 선수가 1~2명으로 떨어졌다. 고우석급 연 200만 달러대는 그대로 마이너) */
 const OVS_MINOR={MLB:'트리플A',NPB:'NPB 2군'};
-/* 리그 수준 보정 [타자, 투수]. 마이너·대만·호주·멕시코는 외국인 후보 이전 리그 기록과 같은 표(LG_ADJ).
-   빅리그는 KBO 출신 실제 성적에 맞춰 따로(같은 국내 능력 기준: MLB 62 타자 OPS 약 .73·투수 ERA 약 4.2, 66이면 .78·3.8 / NPB는 투고타저라 57 타자 .73·투수 4.3).
-   외국인 후보 MLB 기록(LG_ADJ)은 콜업·백업 선수의 짧은 기록이라 더 가혹하게 둔다 */
-const OVS_ADJ={MLB:[-19,-18],NPB:[-10,-8]};
-const ovsAdj=lvl=>OVS_ADJ[lvl]||LG_ADJ[lvl]||[0,0];
+/* 리그 수준 보정 [타자, 투수]은 LEAGUE_LV의 ovsAdj(01b_league_lv.js): 빅리그(MLB·NPB)는 KBO 출신 실제 성적에 맞춘 해외 시즌 값, 마이너·대만·호주·멕시코는 외국인 후보 기록과 같은 값 */
 /* 리그 평균 선수 기준(그 수준에서 자리 잡은 선수의 기록): [OPS, ERA] */
 const OVS_NORM={MLB:[.735,4.2],'트리플A':[.82,3.9],NPB:[.735,4.25],'NPB 2군':[.78,3.6],CPBL:[.82,3.9],ABL:[.82,3.8],'멕시코리그':[.83,4.6]};
 const ovsBig=l=>l==='MLB'||l==='NPB';
@@ -220,7 +216,7 @@ function ovsTrackCand(p,lg){ if(!p||(G.abroad||[]).some(a=>a.id===p.id))return; 
    빅리그 주전·35세 초과·은퇴·기량이 떨어진 선수는 오지 않는다. 같은 사람(같은 번호)으로 시장에 되살려 KBO 1군 기록과 해외 기록을 함께 보인다.
    시장 후보라 모든 구단이 같은 공개 기록(fRecEst는 해외 기록 줄, KBO 시절 기록)을 본다. 보류권(5년)이 남아 있으면 그 구단만 계약할 수 있다 */
 const OVS_RLV={MLB:.8,'트리플A':1.3,NPB:.5,'NPB 2군':1.2,CPBL:1.1,ABL:1.1,'멕시코리그':1.1};
-const ovsCandLvlOf=l=>l==='NPB'?'NPB 1군':l; /* 해외 기록 줄 수준 → 외국인 후보 리그 이름(LG_ADJ·FREC) */
+const ovsCandLvlOf=l=>l==='NPB'?'NPB 1군':l; /* 해외 기록 줄 수준 → 외국인 후보 리그 이름(LEAGUE_LV·FREC) */
 function ovsKboWar(id){ const A=G.arch&&G.arch[id], R=(A&&A.rows)||[]; const ys=new Set(R.map(r=>r.y)).size; return ys?R.reduce((s,r)=>s+(r.war||0),0)/ys:0; } /* KBO 시즌당 WAR(보관 기록) */
 function ovsRetChance(a){ const fr=a&&a.fr; if(!fr||!a.foreign||a.cand||a.back||a.end!=null||G.players[a.id])return 0; const L=a.lines||[], l=L[L.length-1]; if(!l)return 0;
   const away=G.year-(a.y1??a.y+1)+1; if(away<1||away>4||fr.age>35||ovr(fr)<47)return 0; if(a.rv!=null&&G.year-a.rv<2)return 0; /* 지난겨울 돌아왔다가 계약하지 못한 선수는 한 해 쉰다 */

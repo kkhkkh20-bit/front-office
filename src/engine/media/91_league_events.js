@@ -120,6 +120,6 @@ function rivalHeat(a,b){ const S=G.rivalries; const r=S&&S.pairs[rivalPair(a,b)]
   return clamp(.3+(r.post||0)*.05+(r.close||0)*.004+(r.heat||0),0,1); }
 function rivalAttM(h,a){ try{ return 1+.12*rivalHeat(h,a); }catch(e){ return 1; } } /* 라이벌전은 관중이 최대 12% 더 온다 */
 /* 주전급 선수가 두 구단 사이를 직접 옮기면(트레이드·FA) 맞대결 열기가 오른다 */
-function rivalMove(p,from,to,type){ if(from==null||to==null||from===to||!team(from)||!team(to)||!p)return; if(dv(ovr(p))<68)return; const S=G.rivalries=G.rivalries||{pairs:{}}, key=rivalPair(from,to);
+function rivalMove(p,from,to,type){ if(from==null||to==null||from===to||!team(from)||!team(to)||!p)return; if(dvLegacy(ovr(p))<68)return; const S=G.rivalries=G.rivalries||{pairs:{}}, key=rivalPair(from,to);
   const r=S.pairs[key]=S.pairs[key]||{a:Math.min(from,to),b:Math.max(from,to),label:'',games:0,close:0,post:0,seasons:[],wins:{},seen:[]}; r.inc=(r.inc||0)+1; r.heat=Math.min(.3,(r.heat||0)+.1); r.hy=G.year;
   if(r.label)news('구단',`${r.label} 열기 고조: ${p.name}, ${tshort(from)}에서 ${tshort(to)}(으)로`,`${type||'이적'}으로 ${p.name}(${posLabel(p)})이(가) 라이벌 구단 유니폼을 입습니다. 다음 맞대결 관중이 더 몰릴 전망입니다.`,0,{tid:[from,to].includes(G.user)?G.user:to,ref:p.id}); }
