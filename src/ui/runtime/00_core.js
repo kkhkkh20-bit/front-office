@@ -174,7 +174,7 @@ let ZERR=''; const ZOK=typeof fflate!=='undefined'&&typeof TextEncoder!=='undefi
 /* 결과를 숨긴 채 보던 중계 상태(로컬 저장·내보내기 공용): 장면·투구·재생/일시정지·배속·모드·경기 전 화면·동석 연결, 경기 전 선수 상태(가벼운 항목)까지(검수 11-09zzc #3~#8·#10) */
 function castHoldSync(){ const c=UI.cast||UI.castRet, g=G&&c&&c.hold&&G.games[c.g]; if(!g)return; if(c.fin||(c.k||0)>=(g.pbp||[]).length){ delete G.castHold; return; }
   const H0=G.castHold, S=typeof SPOIL_SNAP!=='undefined'&&SPOIL_SNAP, ids=['h','a'].flatMap(sd=>['bat','pit'].flatMap(k=>((g.box&&g.box[sd]&&g.box[sd][k])||[]).map(x=>x.id)));
-  const ps=S&&S.day===g.day&&S.y===dobj(g.day).y?Object.fromEntries(ids.filter(id=>S.P[id]).map(id=>[id,Object.fromEntries(SPOIL_K.filter(spoilLite).map(k=>[k,S.P[id][k]]))])):H0&&H0.gid===g.gid&&H0.ps||null;
+  const ps=S&&S.day===g.day&&S.y===spoilYear(g)?Object.fromEntries(ids.filter(id=>S.P[id]).map(id=>[id,Object.fromEntries(SPOIL_K.filter(spoilLite).map(k=>[k,S.P[id][k]]))])):H0&&H0.gid===g.gid&&H0.ps||null;
   G.castHold={g:c.g,gid:g.gid,k:c.k||0,play:UI.cast===c?!!c.play:!!c.wasPlay,pre:c.pre?1:0,spd:c.spd||1,mode:c.mode==='all'?'all':'hl',...(c.pitch&&c.pitch.k===c.k&&c.pitch.shown>0?{pi:c.pitch.shown}:{}),...(UI.cwAfter?{cw:UI.cwAfter}:{}),...(ps?{ps}:{})}; }
 /* 저장 전 화면 상태가 이 세이브(G) 것인지 먼저 맞춘다(검수 11-09zzc #1: 가져온 백업에 이전 게임의 중계 위치가 저장됨) */
 let _saveGStage=false; /* 가져오기 저장 확인 전에는 현재 화면 상태를 건드리거나 새 게임에 섞지 않는다 */

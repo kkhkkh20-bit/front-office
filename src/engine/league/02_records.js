@@ -149,12 +149,12 @@ function pwrWeek(){ if(period()!=='season'||!G.sea||!G.sea.rec)return; const TL=
   G.pwr={y:G.year,d:G.day,rows}; }
 /* ===== 포스트시즌 기록(모든 구단): 정규시즌 시즌 기록(hist)과 섞지 않고 따로 남긴다.
    G.psSer[y][라운드][선수] = 시리즈 합계(한국시리즈 최우수선수·포스트시즌 기록 화면), p.psY[y] = 그해 포스트시즌 합계(선수 카드). 25년치만 */
-const PS_BK=['pa','ab','h','d','tr','hr','bb','hbp','sf','sh','so','r','rbi','sb'], /* 희생플라이·번트도 쌓는다: 출루율 분모(검수 11-17 #208) */ PS_PK=['outs','h','hr','bb','hbp','bf','so','er'];
+const PS_BK=['pa','ab','h','d','tr','hr','bb','hbp','sf','sh','so','r','rbi','sb','cs','e'], /* 희생플라이·번트도 쌓는다: 출루율 분모(검수 11-17 #208) */ PS_PK=['outs','h','hr','r','bb','hbp','so','er','bf','e'];
 function psRec(round,g){ const y=G.year; G.psSer=G.psSer||{}; const Y=G.psSer[y]=G.psSer[y]||{}; const S=Y[round]=Y[round]||{};
   for(const k of ['h','a']){ const s=g.S[k]; for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue; const isP=s.pitchers.includes(id); const K=isP?PS_PK:PS_BK;
       const o=S[id]=S[id]||{t:s.tid,n:p.name,isP,g:0}; o.g++; for(const f of K)o[f]=(o[f]||0)+(x[f]||0);
-      if(isP){ if(g.dec.w===id)o.w=(o.w||0)+1; if(g.dec.l===id)o.l=(o.l||0)+1; if(g.dec.sv===id)o.sv=(o.sv||0)+1; if((g.dec.hld||[]).includes(id))o.hld=(o.hld||0)+1; }
-      const P=p.psY=p.psY||{}; const t=P[y]=P[y]||{t:s.tid,g:0,isP}; t.g++; for(const f of K)t[f]=(t[f]||0)+(x[f]||0); if(isP){ if(g.dec.w===id)t.w=(t.w||0)+1; if(g.dec.l===id)t.l=(t.l||0)+1; if(g.dec.sv===id)t.sv=(t.sv||0)+1; if((g.dec.hld||[]).includes(id))t.hld=(t.hld||0)+1; }
+      if(isP){if(id===(s.sp?.id??s.pitchers[0]))o.gs=(o.gs||0)+1; if(g.dec.w===id)o.w=(o.w||0)+1; if(g.dec.l===id)o.l=(o.l||0)+1; if(g.dec.sv===id)o.sv=(o.sv||0)+1; if((g.dec.hld||[]).includes(id))o.hld=(o.hld||0)+1; }
+      const P=p.psY=p.psY||{}; const t=P[y]=P[y]||{t:s.tid,g:0,isP}; t.g++; for(const f of K)t[f]=(t[f]||0)+(x[f]||0); if(isP){if(id===(s.sp?.id??s.pitchers[0]))t.gs=(t.gs||0)+1; if(g.dec.w===id)t.w=(t.w||0)+1; if(g.dec.l===id)t.l=(t.l||0)+1; if(g.dec.sv===id)t.sv=(t.sv||0)+1;if((g.dec.hld||[]).includes(id))t.hld=(t.hld||0)+1; }
       const ys=Object.keys(P); if(ys.length>25)delete P[Math.min(...ys.map(Number))]; } }
   const ys=Object.keys(G.psSer); if(ys.length>25)delete G.psSer[Math.min(...ys.map(Number))]; }
 /* 기존 라운드 합계와 보관 박스가 온전히 남은 경우에만 개인 PS 합계의 누락 항목을 복원한다. */

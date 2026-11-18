@@ -2,15 +2,15 @@
 function blocker(){
   if(G.demoEnd)return '체험판은 여기까지입니다.';
   if(G.gameOver)return '경질되었습니다.';
-  if(G.live)return '경기를 먼저 끝까지 보세요.';
-  if(G.res)return '방금 끝난 경기 결과를 확인하세요.';
+  if(G.live&&!G.unemp)return '경기를 먼저 끝까지 보세요.';
+  if(G.res&&!G.unemp)return '방금 끝난 경기 결과를 확인하세요.'; /* 옛 저장에 남은 전 구단 결과도 야인 진행을 막지 않는다. */
   if(G.fdWait)return '창단 드래프트를 시작하세요.';
   if(G.fd&&!G.fd.done)return '창단 드래프트를 먼저 마치세요.';
   if(G.draft&&!G.draft.done)return '신인 드래프트를 먼저 마치세요.';
   const cp=(G.comp||[]).find(c=>((c.stage==='protect'&&c.to===ME())||(c.stage==='pick'&&c.from===ME()))&&G.day>c.exp); /* 기한 전에는 진행할 수 있고, 기한 날 자동 처리(compDaily)된다 */
   if(cp)return cp.stage==='protect'?`${cp.name} 영입 보상: 보호선수 명단을 먼저 제출하세요.`:`${cp.name} 이적 보상: 보상선수(또는 보상금)를 먼저 고르세요.`;
   { const sa=typeof stAccBlock==='function'?stAccBlock():''; if(sa)return sa; } /* 정원이 찬 상태에서 수락한 스태프 후보: 바로 정한다 */
-  if(!G.unemp&&ysN(G.user)>YS_MAX)return `육성선수가 ${ysN(G.user)}명입니다. ${YS_MAX}명 이하로 줄여야 진행할 수 있습니다.`;
+  {const n=ysList(G.user).filter(p=>!(p.joinY>G.year)).length;if(!G.unemp&&n>YS_MAX)return `육성선수가 ${n}명입니다. ${YS_MAX}명 이하로 줄여야 진행할 수 있습니다.`;} /* 다음 해 합류 선수의 예약 자리는 계약 한도에만 반영하고, 올해 경기 진행을 막지 않는다. */
   const per=period();
   if(per==='pre'&&!G.unemp&&G.day>=G.cal.open-1&&!G.mgr[G.user])return '감독이 없습니다. 스태프·육성 → 감독에서 감독을 선임해야 개막할 수 있습니다.';
   if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done&&((G.ps.seeds||[]).includes(G.user)||(G.ps.cur&&G.ps.cur.round==='tb'&&(G.ps.cur.hi===G.user||G.ps.cur.lo===G.user))||(G.ps.tbq||[]).some(q=>q[1]===G.user||q[2]===G.user))&&!Object.values(G.ps.res||{}).some(r=>r&&r[1]===G.user))){ const n=rosterN(G.user); /* 포스트시즌은 아직 남은 경기가 있는 팀만(탈락한 팀 정원 때문에 한국시리즈가 막히지 않게, 검수 11-07) */ /* 포스트시즌도 같은 등록 규정 */
@@ -189,7 +189,8 @@ function specialKind(day,hid,aid){
   return null;
 }
 /* 중계로 볼 우리 경기 직전 선수 기록(저장하지 않는 메모리 사본): 중계 중 선수 화면에서 그 경기 결과(투구 수·세이브·좌우·타구 분포)가 먼저 보이지 않게(검수 11-08) */
-let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','armw','loadWarnDay','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','splP','sprP','fat','l10','hist','r','velo','pot','injOut','injK','injB','injC','injHist','injId','injTick','injFx','inj','ucl','reInj','rush','rushRet','rushId','fPlayInj']; /* 부상·실전 회복으로 바뀐 구속·능력과 누적 팔 부하도 경기 직전 값으로 표시한다(검수 11-18 #463). 같은 목록을 중계 저장에도 쓴다. */
+let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','armw','loadWarnDay','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','splP','sprP','fat','l10','hist','psY','r','velo','pot','injOut','injK','injB','injC','injHist','injId','injTick','injFx','inj','ucl','reInj','rush','rushRet','rushId','fPlayInj']; /* 부상·실전 회복으로 바뀐 구속·능력과 누적 팔 부하도 경기 직전 값으로 표시한다(검수 11-18 #463). 같은 목록을 중계 저장에도 쓴다. */
+function spoilYear(g){return g.season??(/차전/.test(g.kind||'')?(G.ps?.y??G.sea?.y??G.year):dobj(g.day).y);}
 const spoilLite=k=>!['gl','hist','l10'].includes(k); /* 좌우·타구 분포는 박스에서 역산할 수 없어 경기 전 사본을 함께 저장한다. 시즌·경기 로그는 박스로 빼 준다. */
 function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of (entryOn()?actOf(t):playersOf(t))){ /* 성능: 경기에 나올 수 있는 1군만 사본을 뜬다(2군 선수는 그 경기로 바뀌지 않고, 사본이 없으면 화면은 박스 기준으로 가린다) */ const o={}; for(const k of SPOIL_K)o[k]=p[k]===undefined?undefined:JSON.parse(JSON.stringify(p[k])); P[p.id]=o; } SPOIL_SNAP={day,y:G.year,P}; }
 /* 경기 반영(applyGame) 도중 오류가 나면 그 경기에 나온 선수 상태(투구 부하·기록·피로)를 경기 전으로 되돌린다: 다시 치를 때 부하가 두 번 쌓이지 않게(검수 11-09zn) */

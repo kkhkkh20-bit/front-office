@@ -30,7 +30,7 @@ function relAvail(p,day,ps){ const ae=mgrPush(p.team)+(ps?18:0); /* 가을야구
 function psStarter(tid,d,day,ps){ const rest=p=>p.lastStart==null?99:day-p.lastStart; const top=[...d.sp].filter(healthy).sort((a,b)=>spV(b)-spV(a)); const need=(ps.elimT?ps.elimT.includes(tid):ps.elim)?3:4;
   const ok=p=>p.lastApp!==day&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&day-p.lastApp<2); /* 어제 불펜으로 던진 투수는 쉬어 온 선발 뒤로(정규시즌과 같은 기준, 검수 11-08) */ return top.slice(0,3).find(p=>ok(p)&&rest(p)>=need)||top.find(p=>ok(p)&&rest(p)>=4)||null; }
 /* 최종전 접전 7회 이후: 오늘 선발이 아닌 에이스(선발 상위 2명, 2일 이상 쉼)를 불펜으로 */
-function psAceRelief(fs,inn,lead,day,ps){ if(!ps||!(ps.fin||(ps.elimT?ps.elimT.includes(fs.tid):ps.elim))||inn<7||Math.abs(lead)>3||!fs.spAll)return null; const top=[...fs.spAll].filter(p=>healthy(p)&&p!==fs.sp&&!fs.used.has(p.id)).sort((a,b)=>spV(b)-spV(a)).slice(0,2);
+function psAceRelief(fs,inn,lead,day,ps){ if(!ps||!(ps.fin||(ps.elimT?ps.elimT.includes(fs.tid):ps.elim))||inn<7||Math.abs(lead)>3||!fs.spAll)return null; const top=[...fs.spAll].filter(p=>p!==fs.sp&&!fs.used.has(p.id)&&relAvail(p,day,ps)).sort((a,b)=>spV(b)-spV(a)).slice(0,2);
   return top.find(p=>p.lastApp==null||day-p.lastApp>=2)||null; } /* '2일 이상 쉼'은 구원 등판까지 센 마지막 등판일 기준(검수 11-09zh) */
 function pickStarter(tid,d,day,ps,o){
   const t=team(tid); const sp=d.sp; if(ps&&sp.length){ const c=psStarter(tid,d,day,ps); if(c)return c; }
@@ -306,6 +306,6 @@ function gameRecord(day,hid,aid,g,kind){
   return {gid:G.gSeq=(G.gSeq||0)+1,day,kind,home:hid,away:aid,hs:g.score.h,as:g.score.a,line:g.line,hits:g.hits,ev:g.ev,pbp:g.pbp,broadcast:g.broadcast,incidents:gameIncidents(day,hid,aid,g),box:{h:side('h'),a:side('a')},res:ms>os?'승':ms<os?'패':'무',inn:g.inn,min:gameMin(g)}; /* 경기 시간(95_game_rules: 피치 클락) */
 }
 function keepGame(rec){ G.games.unshift(rec); G.games=G.games.slice(0,25); G.games.forEach((g,i)=>{ if(i>=8&&g.pbp)delete g.pbp; }); }
-function ulog(r){ (G.sea.ulog=G.sea.ulog||[]).push({gid:r.gid,d:r.day,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||'',...(r.dh?{dh:r.dh}:{})}); } /* dh: 더블헤더 몇 차전(93_rain) */
+function ulog(r){ (G.sea.ulog=G.sea.ulog||[]).push({gid:r.gid,d:r.day,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||'',...(r.dh?{dh:r.dh}:{})});if(r.gid!=null&&!/차전/.test(r.kind||''))for(const tid of [r.home,r.away]){const L=G.sea.tl?.[tid]||[],home=tid===r.home,z=L.find(z=>z[8]===r.gid)||L.find(z=>z[8]==null&&z[5]===r.day&&!!z[3]===home&&z[4]===(home?r.away:r.home)&&z[1]===(home?r.hs:r.as)&&z[2]===(home?r.as:r.hs));if(z){z[8]=r.gid;z[9]=r.dh||0;}} } /* tl 8·9: 이직 뒤에도 경기ID·더블헤더 차전을 복원할 수 있게 남긴다. */
 
 
