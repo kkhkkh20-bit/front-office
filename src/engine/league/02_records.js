@@ -142,18 +142,25 @@ function updateLg(y){
 function pwrWeek(){ if(period()!=='season'||!G.sea||!G.sea.rec)return; const TL=(G.sea.tl)||[]; const P=G.pwr&&G.pwr.y===G.year?G.pwr:null; const prev={}; if(P)for(const r of P.rows)prev[r.tid]=r.rk;
   const rat=G.teams.map(t=>{ try{ return teamRating(t.id); }catch(e){ return 0; } }), lo=Math.min(...rat), hi=Math.max(...rat);
   const rows=G.teams.map((t,i)=>{ const r=G.sea.rec[t.id]||{w:0,l:0}, gp=(r.w||0)+(r.l||0), L=TL[t.id]||[]; const rs=sum(L.map(x=>x[1]||0)), ra=sum(L.map(x=>x[2]||0));
-    const pct=gp?r.w/gp:.5, py=rs+ra>0?Math.pow(rs,1.83)/(Math.pow(rs,1.83)+Math.pow(ra,1.83)):.5, l10=L.slice(-10), r10=l10.length?l10.filter(x=>x[0]>0).length/Math.max(1,l10.filter(x=>x[0]!==0).length||1):.5, rn=hi>lo?(rat[i]-lo)/(hi-lo):.5;
+    const pct=gp?r.w/gp:.5, py=rs+ra>0?Math.pow(rs,1.83)/(Math.pow(rs,1.83)+Math.pow(ra,1.83)):.5, l10=L.slice(-10), decided=l10.filter(x=>x[0]!==0).length, r10=decided?l10.filter(x=>x[0]>0).length/decided:.5, rn=hi>lo?(rat[i]-lo)/(hi-lo):.5;
     const wr=gp<10?.55:gp<40?.25:.12; const s=(pct*.42+py*.28+r10*.18)*(1-wr)/.88+rn*wr;
     return {tid:t.id,s:Math.round(s*1000)/10,w:r.w||0,l:r.l||0,t:r.t||0,rd:rs-ra,r10:l10.length?`${l10.filter(x=>x[0]>0).length}-${l10.filter(x=>x[0]<0).length}`:'-',py:Math.round(py*1000)/1000}; });
   rows.sort((a,b)=>b.s-a.s).forEach((r,i)=>{ r.rk=i+1; r.prev=prev[r.tid]??null; });
   G.pwr={y:G.year,d:G.day,rows}; }
 /* ===== 포스트시즌 기록(모든 구단): 정규시즌 시즌 기록(hist)과 섞지 않고 따로 남긴다.
    G.psSer[y][라운드][선수] = 시리즈 합계(한국시리즈 최우수선수·포스트시즌 기록 화면), p.psY[y] = 그해 포스트시즌 합계(선수 카드). 25년치만 */
-const PS_BK=['pa','ab','h','d','tr','hr','bb','hbp','sf','sh','so','r','rbi','sb'], /* 희생플라이·번트도 쌓는다: 출루율 분모(검수 11-17 #208) */ PS_PK=['outs','h','hr','bb','so','er'];
+const PS_BK=['pa','ab','h','d','tr','hr','bb','hbp','sf','sh','so','r','rbi','sb'], /* 희생플라이·번트도 쌓는다: 출루율 분모(검수 11-17 #208) */ PS_PK=['outs','h','hr','bb','hbp','bf','so','er'];
 function psRec(round,g){ const y=G.year; G.psSer=G.psSer||{}; const Y=G.psSer[y]=G.psSer[y]||{}; const S=Y[round]=Y[round]||{};
   for(const k of ['h','a']){ const s=g.S[k]; for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue; const isP=s.pitchers.includes(id); const K=isP?PS_PK:PS_BK;
       const o=S[id]=S[id]||{t:s.tid,n:p.name,isP,g:0}; o.g++; for(const f of K)o[f]=(o[f]||0)+(x[f]||0);
       if(isP){ if(g.dec.w===id)o.w=(o.w||0)+1; if(g.dec.l===id)o.l=(o.l||0)+1; if(g.dec.sv===id)o.sv=(o.sv||0)+1; if((g.dec.hld||[]).includes(id))o.hld=(o.hld||0)+1; }
-      const P=p.psY=p.psY||{}; const t=P[y]=P[y]||{t:s.tid,g:0,isP}; t.g++; for(const f of K)t[f]=(t[f]||0)+(x[f]||0); if(isP){ if(g.dec.w===id)t.w=(t.w||0)+1; if(g.dec.l===id)t.l=(t.l||0)+1; if(g.dec.sv===id)t.sv=(t.sv||0)+1; }
+      const P=p.psY=p.psY||{}; const t=P[y]=P[y]||{t:s.tid,g:0,isP}; t.g++; for(const f of K)t[f]=(t[f]||0)+(x[f]||0); if(isP){ if(g.dec.w===id)t.w=(t.w||0)+1; if(g.dec.l===id)t.l=(t.l||0)+1; if(g.dec.sv===id)t.sv=(t.sv||0)+1; if((g.dec.hld||[]).includes(id))t.hld=(t.hld||0)+1; }
       const ys=Object.keys(P); if(ys.length>25)delete P[Math.min(...ys.map(Number))]; } }
   const ys=Object.keys(G.psSer); if(ys.length>25)delete G.psSer[Math.min(...ys.map(Number))]; }
+/* 기존 라운드 합계와 보관 박스가 온전히 남은 경우에만 개인 PS 합계의 누락 항목을 복원한다. */
+function psRecordMigrate(){ if(!G.psSer)return;const boxes=new Map(),seen=new Set(),round=k=>k.includes('한국시리즈')?'ks':k.includes('준플레이오프')?'spo':k.includes('플레이오프')?'po':k.includes('와일드카드')?'wc':k.includes('결정전')?'tb':null;
+  for(const g of [...(G.games||[]),...(G.gamesOff||[])]){const rd=round(g.kind||'');if(!rd||!g.box||g.day==null)continue;const key=g.gid??[g.day,g.home,g.away,g.kind].join(':');if(seen.has(key))continue;seen.add(key);const y=dobj(g.day).y-(dobj(g.day).m<3?1:0);
+    for(const side of ['h','a'])for(const p of g.box[side]?.pit||[]){const k=[y,rd,p.id].join(':'),a=boxes.get(k)||{g:0,hbp:0,bf:0,hbpOK:true,bfOK:true};a.g++;for(const f of ['hbp','bf']){if(!Number.isFinite(p[f]))a[f+'OK']=false;else a[f]+=p[f];}boxes.set(k,a);}}
+  for(const [y,R] of Object.entries(G.psSer)){const totals={};for(const [rd,S] of Object.entries(R||{}))for(const [id,o] of Object.entries(S||{})){if(!o.isP)continue;const b=boxes.get([y,rd,id].join(':'));if(b&&b.g===o.g)for(const f of ['hbp','bf'])if(b[f+'OK'])o[f]=b[f];const a=totals[id]=totals[id]||{g:0,hld:0,hbp:0,bf:0,hbpOK:true,bfOK:true};a.g+=o.g||0;a.hld+=o.hld||0;for(const f of ['hbp','bf']){if(!Number.isFinite(o[f]))a[f+'OK']=false;else a[f]+=o[f];}}
+    for(const [id,a] of Object.entries(totals)){const p=G.players[id]||G.arch?.[id],t=p?.psY?.[y];if(!t||t.g!==a.g)continue;t.hld=a.hld;for(const f of ['hbp','bf'])if(a[f+'OK'])t[f]=a[f];}}
+}

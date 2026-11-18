@@ -115,8 +115,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   try{ ivDaily(); }catch(e){}
   try{ fanPulseDaily(); }catch(e){} try{ truckWeekly(); }catch(e){}
   try{ cwDaily(); }catch(e){} try{ aiPlanDaily(); }catch(e){} try{ gmAiFieldDaily(); }catch(e){} try{ achFirstDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}
-  if(day>=KD(11,24)&&day<=KD(12,31))try{ awardCeremony('mvp'); }catch(e){} /* 결산이 늦어 후보가 늦게 나와도 놓치지 않게 그 뒤 첫날 발표(검수 11-08) */
-  if(day>=KD(12,9)&&day<=KD(12,31))try{ awardCeremony('gg'); }catch(e){}
+  try{ awardsDaily(); }catch(e){} /* 미결 시상은 발표 연도와 실제 날짜로 처리한다. 연말에 정한 작년 시상도 다음 해에 이어진다. */
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{ promoDaily(); }catch(e){} try{evDaily();}catch(e){} try{ fPubDaily(); }catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ wvDaily(); }catch(e){} try{ sd2Daily(day); }catch(e){} try{ tryDaily(day); }catch(e){ console.error(e); } /* 미지명 육성 계약·공개 트라이아웃(94_tryout) */ try{ proStaleFix(); }catch(e){ console.error(e); } /* 어떤 길로 계약했든 신인 후보 표시가 남지 않게(카페 11-17, 난수 없음) */ try{ gameRulesMail(day); }catch(e){} try{ marketDaily(); }catch(e){}
   milDaily();
   recoverAll(1);
