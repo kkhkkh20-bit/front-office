@@ -1,0 +1,58 @@
+/* 경기장 라인업(58_lineup_field.js): 골든글러브 보드(.ggf)와 같은 밤 경기장 + 카드. 금색 대신 구단색(--tc) */
+.lf{position:relative;width:100%;container-type:inline-size;margin:0 auto}
+.lf-box{position:relative;width:100%;aspect-ratio:16/10;border-radius:10px;overflow:hidden;border:1px solid color-mix(in srgb,var(--tc,#c33) 55%,#ffffff22);background:radial-gradient(70% 45% at 50% 30%,#2a3a5c66,transparent 70%),radial-gradient(120% 90% at 50% 100%,#14284a,#070d1c 75%)}
+.lf-bg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 14px #0009)}
+.lf-hd{position:absolute;left:2%;top:3%;z-index:2;display:flex;align-items:center;gap:7px;max-width:30%;padding:5px 9px 5px 6px;border-radius:8px;background:#0b1222d9;border-left:3px solid var(--tc,#c33);color:#fff;box-shadow:0 3px 10px #0008}
+.lf-hd>span{display:grid;min-width:0}.lf-hd b{font-size:clamp(11px,1.8cqw,15px);font-weight:800;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lf-hd small{font-size:clamp(9px,1.25cqw,11.5px);opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lf-hd .badge,.lf-hd img,.lf-hd svg{width:clamp(18px,3.4cqw,30px);height:clamp(18px,3.4cqw,30px);flex:none}
+.lf-avg{position:absolute;right:2%;top:3%;z-index:2;display:flex;align-items:center;gap:6px;padding:4px 6px 4px 9px;border-radius:8px;background:#0b1222d9;color:#fff;font-size:clamp(9px,1.25cqw,12px);box-shadow:0 3px 10px #0008}
+.lf-note{position:absolute;right:2%;bottom:3%;z-index:2;max-width:32%;padding:4px 8px;border-radius:6px;background:#0b1222cc;color:#fff;font-size:clamp(9px,1.25cqw,12px);line-height:1.35}
+.lf-m{all:unset;box-sizing:border-box;position:absolute;z-index:1;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;width:clamp(54px,13.5cqw,118px);padding:0 0 3px;text-align:center;color:#fff;border-radius:50% 50% 8px 8px / 30% 30% 8px 8px;background:linear-gradient(180deg,#1d2a48,#0b1222 70%);border:2px solid var(--tc,#c33);box-shadow:0 4px 12px #000c}
+button.lf-m{cursor:pointer}button.lf-m:hover{filter:brightness(1.15)}button.lf-m:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.lf-m.sp{border-color:#f0c64a}
+.lf-ph{position:relative;margin:3px 0 2px}
+.lf-m .av{display:grid;place-items:center;width:clamp(30px,9.4cqw,64px);height:clamp(30px,9.4cqw,64px);border-radius:50%;border:2px solid color-mix(in srgb,var(--tc,#c33) 70%,#fff);background:#1b2430;object-fit:cover;font-size:clamp(12px,3cqw,22px);box-shadow:0 2px 6px #000a}
+.lf-no{position:absolute;left:-12%;top:-6%;display:grid;place-items:center;min-width:clamp(15px,3cqw,22px);height:clamp(15px,3cqw,22px);padding:0 3px;border-radius:999px;background:var(--tc,#c33);color:#fff;font:800 clamp(9px,1.6cqw,12.5px)/1 var(--f-num);font-style:normal;border:1.5px solid #fff;box-shadow:0 1px 4px #0009;white-space:nowrap}
+.lf-m.sp .lf-no{background:#f0c64a;color:#211600;font-family:inherit;font-size:clamp(8px,1.35cqw,11px)}
+.lf-ov{position:absolute;right:-16%;bottom:-6%}.lf-ov .rc{min-width:clamp(20px,3.6cqw,28px);font-size:clamp(10px,1.75cqw,14px);line-height:clamp(14px,2.6cqw,20px);padding:0 3px;border-radius:4px;box-shadow:0 1px 4px #000a;border:1px solid #0b1222}
+.lf-nb{align-self:stretch;margin:0 3px;padding:1px 2px;border-radius:3px;background:linear-gradient(180deg,color-mix(in srgb,var(--tc,#c33) 85%,#fff),color-mix(in srgb,var(--tc,#c33) 80%,#000));color:#fff;display:flex;flex-direction:column;min-width:0}
+.lf-m.sp .lf-nb{background:linear-gradient(180deg,#f6d46a,#c8921c);color:#211600}
+.lf-m b{font-size:clamp(10px,1.9cqw,15px);font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lf-m em{font-style:normal;font-size:clamp(8.5px,1.35cqw,11.5px);font-weight:700;opacity:.88;line-height:1.15;white-space:nowrap}
+@container (max-width:759px){.lf-m em{display:none}}
+@container (max-width:520px){.lf-note{display:none}.lf-hd small{display:none}.lf-avg>span{display:none}}
+/* 경기장 보기 아래 벤치·투수진 요약 */
+.lf-panel{display:grid;gap:8px;min-width:0}
+.lf-tabs{display:flex;gap:6px;flex-wrap:wrap}.lf-tabs small{opacity:.7;font-size:var(--ui-micro)}
+.lf-sum{display:grid;gap:4px}.lf-sum .gl-chips{display:flex;flex-wrap:wrap;gap:4px 10px}
+.lf-seg{flex:none}.lf-seg button{min-height:28px;padding:3px 10px;font-size:12px;white-space:nowrap}
+
+/* 경기 전 라인업 소개(중계): 경기장 보기가 기본. 목록 보기는 기존 배치 그림 + 타순 표 */
+.cs-prep-heading .cs-prep-view{margin-left:auto}
+.cs-prep-heading .cs-prep-view+.cs-prep-side{margin-left:8px}
+.cs-pcard>.cs-lfw{display:none;min-width:0;min-height:0;container-type:size;align-items:center;justify-content:center}
+.cs-lfw>.lf{width:min(100cqw,160cqh)}
+.cs-prep[data-view=field] .cs-pcard>.cs-lfw{display:flex}
+.cs-prep[data-view=field] .cs-pcard>.cs-pf,.cs-prep[data-view=field] .cs-pcard>.cs-pl{display:none}
+body .cs-prep[data-view=field] .cs-prep-teams>section.cs-pcard{grid-template-columns:minmax(0,1fr);width:100%;max-height:none;background:none;box-shadow:none;border-radius:0;overflow:visible}
+/* PC 경기장 보기: 원정·홈 두 장을 나란히(높이가 그림 크기를 정하므로 옆자리가 남는다). 팀 전환 버튼은 목록 보기에서만 */
+body .cs-prep[data-view=field] .cs-prep-teams{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+body .cs-prep[data-view=field] .cs-prep-teams>section.cs-pcard[hidden]{display:grid}
+.cs-prep[data-view=field] .cs-prep-side{display:none}
+.cs-prep[data-view=field] .cs-pcard>.cs-lfw{justify-content:flex-end}.cs-prep[data-view=field] .cs-pcard+.cs-pcard>.cs-lfw{justify-content:flex-start}
+@media(max-width:700px){.cs-prep-heading .cs-prep-view{margin-left:auto}body .cs-prep .cs-prep-view button{padding:3px 8px;font-size:11px;min-height:26px}.cs-prep-view button>span{display:none}}
+/* 휴대폰: 두 팀을 위아래로(목록과 같은 틀). 머리글은 보기 전환만 */
+@media(max-width:700px){
+ body .cs-prep .cs-prep-heading{display:flex;flex-wrap:nowrap}
+ .cs-prep-heading>b{font-size:12px}
+ body .cs-prep .cs-prep-heading>.cs-prep-view{display:inline-flex;flex:none}
+ .cs-prep[data-view=field] .cs-prep-heading>b{display:none}
+ .cs-prep[data-view=field] .cs-prep-side{margin-left:6px!important;min-width:0}.cs-prep[data-view=field] .cs-prep-side button{padding:3px 6px;gap:3px;min-width:0;white-space:nowrap}
+ /* 경기장 보기는 한 팀씩(위 버튼·자동 전환) 크게: 세로를 늘린 그림(16:12) */
+ body .cs-prep[data-view=field] .cs-prep-side{display:inline-flex;margin-left:auto}
+ body .cs-prep[data-view=field] .cs-prep-teams{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:0}
+ body .cs-prep[data-view=field] .cs-prep-teams>section.cs-pcard[hidden]{display:none}
+ .cs-prep[data-view=field] .cs-pcard>.cs-lfw,.cs-prep[data-view=field] .cs-pcard+.cs-pcard>.cs-lfw{height:100%;justify-content:center}
+ .cs-lfw>.lf{width:min(100cqw,133cqh)}.lf-box{aspect-ratio:16/12}
+ body .cs-prep[data-view=field] .cs-prep-teams>section.cs-pcard{border-radius:0}
+}
