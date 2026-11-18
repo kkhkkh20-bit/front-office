@@ -161,7 +161,7 @@ function ibTop(){ const t=document.querySelector('.top'); return t?t.offsetHeigh
 /* 넓은 화면: 소식함이 창 아래 끝까지 딱 맞게(목록·본문이 각자 스크롤). 목록이 창 밖으로 잘려 보이지 않게 실제 위치로 높이를 잰다 */
 function ibFit(){ const main=document.querySelector('#app main.content');if(UI.tab!=='inbox'||!main)return;main.classList.add('inbox-workspace');const X=main.querySelector('.ibx');if(X)X.style.height=''; }
 if(!window._ibFitOn){ window._ibFitOn=1; window.addEventListener('resize',()=>{ if(UI&&UI.tab==='inbox'&&wide())ibFit(); }); }
-function inboxWire(){ ibFit();document.documentElement.style.setProperty('--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
+function inboxWire(){ ibFit();cssVarSet(document.documentElement,'--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
   const L=document.querySelector('.ibx-list'); if(!L)return; const n=G.mail.length;
   { /* 목록 칸 스크롤: 휴대폰도 페이지 대신 목록 안에서 이동하고 돌아오면 그 위치를 지킨다. */
     const atTop=UI._ibAtTop!==false; if(UI._ibFirst||(atTop&&UI._ibCnt!==n)){ L.scrollTop=0; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;

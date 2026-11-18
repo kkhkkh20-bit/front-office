@@ -14867,12 +14867,12 @@ const fUnproven=p=>!!p&&!!p.foreign&&(()=>{ const L=(p.hist||[]).filter(h=>h.lvl
 /* 성능(11-18): 세계를 바꾸지 않는 평가 구간(AI 트레이드 후보 계산 등)에서는 구단 명단을 한 번만 걸러 쓴다. 구간 밖에서는 늘 새로 거른다(결과 동일). 돌려줄 때는 사본이라 호출한 쪽이 정렬·수정해도 기억이 바뀌지 않는다 */
 let _rosM=null; function rosterMemoOn(){ _rosM=new Map(); } function rosterMemoOff(){ _rosM=null; }
 function rosterMemo(k,f){ if(!_rosM)return f(); let v=_rosM.get(k); if(v===undefined){ v=f(); _rosM.set(k,v); } return Array.isArray(v)?v.slice():v; }
-const playersOf=tid=>rosterMemo('p'+tid+':'+(PROJ_LENS?1:0)+(PROJ_FX?1:0),()=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); return Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p))); }); /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
+const playersOf=tid=>rosterMemo('p'+tid+':'+(PROJ_LENS?1:0)+(PROJ_FX?1:0),()=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); const P=G.players, L=[]; for(const k in P){ const p=P[k]; if(p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p)))L.push(p); } return L; }); /* 전체 배열을 만들지 않고 한 번에 거른다(순서는 Object.values와 같다) */ /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
 const awayOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&isAway(p));
 const domestic=tid=>playersOf(tid).filter(p=>!p.foreign);
 /* 구단이 돈을 주는 선수(계약 기준): 국가대표 차출로 잠시 빠진 선수도 소속 선수로 연봉·샐러리캡·선수 수에 넣는다. 군 복무 중인 선수만 지급에서 뺀다.
    playersOf·domestic은 '지금 경기에 뛸 수 있는 선수'라 계약·돈 계산에는 쓰지 않는다 */
-const ownedOf=(tid,d=G.day)=>rosterMemo('o'+tid+':'+d,()=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!milOn(p,d))); /* d: 그날 병역 처리(입대·전역)를 마친 뒤 기준 */
+const ownedOf=(tid,d=G.day)=>rosterMemo('o'+tid+':'+d,()=>{ const P=G.players, L=[]; for(const k in P){ const p=P[k]; if(p.team===tid&&!(p.joinY>G.year)&&!milOn(p,d))L.push(p); } return L; }); /* d: 그날 병역 처리(입대·전역)를 마친 뒤 기준 */
 const domPayOf=tid=>ownedOf(tid).filter(p=>!p.foreign);
 /* 다음 시즌(s) 상한 전망: 그 시즌 정규시즌에 연봉을 받는 선수만(시즌 전체 복무·시즌 뒤 전역은 빼고, 개막 전 전역은 넣는다, 검수 11-09zk) */
 const milCapOut=(p,s)=>payFrac(p,s)<=0;
@@ -14922,7 +14922,8 @@ function capPayWith(tid,pid,amt,s){ const y0=sponSeason(); s=s??y0; const nxt=s>
    AI 구단은 늘 가장 많이 받는 대상자를 지정한다(우리 구단의 기본값과 같은 규칙). 지정은 개막 전(결산 뒤 겨울 포함)에만 바꿀 수 있고 한 번 정하면 다음 시즌에도 이어진다 */
 const FRAN_Y=2026, FRAN_YRS=7;
 /* 그 구단 소속 1군 등록 시즌: 1군 기록이 있는 시즌 + 올해 그 구단 1군 등록일. 2군(퓨처스) 기록만 있는 시즌은 세지 않는다(검수 11-17 #188) */
-function franYrsSet(p,tid){ const S=new Set(); for(const h of p.hist||[])if(h.t===tid&&h.lvl==='1군'&&!h.y2)S.add(h.y); if(p.regD&&p.regD.y===G.year&&!S.has(G.year)&&regNT(p,tid)>0)S.add(G.year); return S; }
+function franYrsSet(p,tid){ return _rosM?rosterMemo('fy'+p.id+':'+tid,()=>franYrsSet0(p,tid)):franYrsSet0(p,tid); } /* 평가 구간에서는 선수 기록을 한 번만 훑는다 */
+function franYrsSet0(p,tid){ const S=new Set(); for(const h of p.hist||[])if(h.t===tid&&h.lvl==='1군'&&!h.y2)S.add(h.y); if(p.regD&&p.regD.y===G.year&&!S.has(G.year)&&regNT(p,tid)>0)S.add(G.year); return S; }
 const franYrs=(p,tid)=>franYrsSet(p,tid).size;
 const franOk=(p,tid)=>!!p&&!p.foreign&&franYrs(p,tid)>=FRAN_YRS;
 /* s시즌에 적용되는 구단 지정(없으면 null) */
@@ -19373,7 +19374,8 @@ function roleFactor(t,p,dir){ const L=leagueSlots()[t.id]; if(!L)return 1;
 /* 구단 상위 6명(국내, 육성 제외): 성능을 위해 AI 작업 하나(slotsHold) 동안은 구단마다 한 번만 고른다. 그 사이 트레이드·이동(mvN)이 있으면 다시(26_trade_ai leagueSlots와 같은 기준) */
 function tvCore6(tid){ const pick6=()=>new Set(domestic(tid).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id)); const H=typeof _slHold!=='undefined'?_slHold:null; if(!H)return pick6();
   const k0=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.mvN||0); if(!H.c6||H.c6.k0!==k0||H.c6.g!==G)H.c6={k0,g:G,m:{}}; return H.c6.m[tid]||(H.c6.m[tid]=pick6()); }
-function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p); let v=0; const sd=seenDelta(t,p), dp=dir==='in'?potSeenIn(t,p):potSeenD(t,p); /* 사 오는 쪽은 좋게 본 몫을 크게 깎는다: 파는 구단이 자기 선수를 더 잘 안다(사람 단장도 남이 내놓는 유망주는 의심한다). 공략 방지 */ const cur=ovr(p)+sd; /* sd: AI 단장 눈에 보이는 능력(성적의 운 반영), dp: 남의 선수 잠재력은 스카우트 추정 */
+function tval(t,p,dir){ if(!_rosM||!p||!t||!_rosM.get('tvOK')||t.id===G.user)return tval0(t,p,dir); let W=_rosM.get('tv'); if(!W){ W=new WeakMap(); _rosM.set('tv',W); } let M=W.get(t); if(!M){ M=new Map(); W.set(t,M); } const k=p.id+':'+dir; let v=M.get(k); if(v===undefined){ v=tval0(t,p,dir); M.set(k,v); } return v; } /* AI끼리 트레이드 평가 구간(aiTradeTryRun)에서만 같은 구단·선수·방향 값을 한 번만 계산(성능 11-18). 우리 구단이 끼는 평가(묶음 찾기)는 계산 중 값이 바뀔 수 있어 기억하지 않는다 */
+function tval0(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p); let v=0; const sd=seenDelta(t,p), dp=dir==='in'?potSeenIn(t,p):potSeenD(t,p); /* 사 오는 쪽은 좋게 본 몫을 크게 깎는다: 파는 구단이 자기 선수를 더 잘 안다(사람 단장도 남이 내놓는 유망주는 의심한다). 공략 방지 */ const cur=ovr(p)+sd; /* sd: AI 단장 눈에 보이는 능력(성적의 운 반영), dp: 남의 선수 잠재력은 스카우트 추정 */
   const pw=trProsMul(p,dp)>1?TR_TUNE.prosW:0; /* 11-18 4차: 고잠재 유망주는 성장 반영을 +0.1, 내다보는 기간 +1년 */ for(let i=0;i<c.H+(pw?1:0);i++){ let o=projO(p,i,dp)+sd; if(o>cur){ const rb=t.mode==='rebuild'; o=cur+(o-cur)*Math.min(1,(i===0?(rb?.85:.8):i<=1?(rb?.7:.62):(rb?.6:.5))+pw); } /* 먼 미래 성장일수록 더 불확실하다 */ const d=Math.pow(.85,i); const w=seasonWorth(o)*(i===0?c.now:1)*d; /* KBO 구단은 먼 미래보다 지금을 더 친다 */
     if(i>=ny){ v+=w*.55; continue; }
     const sal=p.faC||p.foreign?p.sal/100:Math.min(seasonWorth(o),p.sal/100*Math.pow(1.3,i)); v+=w-sal*c.money*d; }
@@ -21670,7 +21672,7 @@ function aiTradeTryRun(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>
   const cands=[]; for(const B of teams){ if(B.id===A.id||(o.swap&&!bNeed[B.id]))continue; for(const p of domestic(B.id)){ if(p.ys||!healthy(p)||hasNtc(p)||faLock(p)||recentTr(p))continue; if(k==='SP'||k==='RP'){ if(pSlot(p)!==k)continue; } else if(p.isP||(p.pos!==k&&!subsOf(p).includes(k)))continue;
       const up=slotGain(k,p)-base+(p.aiListed?(p.aiUrg?4:2.5):0); if(up>=(o.swap?2:3))cands.push({B,p,up}); } }
   cands.sort((a,b)=>b.up-a.up);
-  try{ for(const c of cands.slice(0,8)){ rosterMemoOn(); /* 후보 평가(이적 전)는 명단이 바뀌지 않는다: 명단 거르기를 한 번만(성능 11-18). 실제 이적 직전에 끈다 */ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue;
+  try{ for(const c of cands.slice(0,8)){ rosterMemoOn(); if(_rosM)_rosM.set('tvOK',1); /* 후보 평가(이적 전)는 명단이 바뀌지 않는다: 명단 거르기를 한 번만(성능 11-18). 실제 이적 직전에 끈다 */ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue;
     const DX=domTradeTax(B,A.id,startersOf(B.id).has(p.id)&&!p.aiListed,trBenchOnly(B.id,[p.id])); /* 비주전만 내주면 견제 웃돈 1/4(우리 구단과의 거래와 같은 식, 11-18) */ if(DX.refuse){ domLog('ref',B.id+':'+p.id); domRumor(B.id,A.id); continue; } if(DX.k>=.1)domLog('over',B.id+':'+p.id); /* 독주 견제(86b_dynasty) */
     if(relTradeRefuse(B.id,A.id))continue; /* 사이가 아주 나쁜 단장과는 거래하지 않는다(84b_person_rels) */ const relB=relAsRel(B.id,A.id), relA=relAsRel(A.id,B.id);
     /* 2대2: B의 블록 선수 한 명을 끼워 함께 받는 경우 */
@@ -22698,7 +22700,8 @@ function addR(p,k,a){ const t=a*10, f=Math.floor(t); const n=f+(R()<t-f?1:0); co
 const TB_YCAP=2, TB_K=.0035; /* 시즌 중 훈련은 몸을 유지하는 정도. 크게 바뀌는 건 스프링·마무리캠프(79_camps.js) */
 function tbFactors(p,regSet){ const room=Math.max(0,p.pot-ovr(p)); initPers(p); const m=p.team!=null?mgrOf(p.team):null;
   return {play:regSet&&regSet.has(p.id)?.5:1, room:room>0?clamp(room/8,.2,1):.1, will:persGrowF(p), fac:p.team!=null?facEff(p).g:1, coach:G.coach?coachDevMult(p):1, mgr:m?1+((m.youth||50)-50)/150:1, age:p.age<=23?1:p.age<=25?.8:.5}; }
-function trnBase(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};
+function trnBase(){ if(_rosM)return trnBase0(); rosterMemoOn(); try{ return trnBase0(); } finally { rosterMemoOff(); } } /* 기본 훈련은 능력치만 바꾸고 소속·부상·나이·성격은 바꾸지 않는다: 구단 명단·리더 계산을 한 번만(성능 11-18) */
+function trnBase0(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};
   for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.joinY>G.year||p.hold||isAway(p)||p.age>28||p.injOut>0||ovsAbroad(p)|| /* 해외 연수 중에는 국내 기본 훈련도 없다(검수 11-09o) */ /* 대표팀 차출 중에는 구단 기본 훈련도 없다 */ /* 내년 합류·연봉 미계약 선수는 훈련하지 않는다(검수 11-05) */(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
     if(!regs[p.team]){ const d=depth(p.team); regs[p.team]=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }
     if(!p.tg||p.tg.y!==G.year)p.tg={y:G.year,s:0}; if(p.tg.s>=TB_YCAP)continue;
@@ -37787,18 +37790,27 @@ function castHoldSync(){ const c=UI.cast||UI.castRet, g=G&&c&&c.hold&&G.games[c.
   G.castHold={g:c.g,gid:g.gid,k:c.k||0,play:UI.cast===c?!!c.play:!!c.wasPlay,pre:c.pre?1:0,spd:c.spd||1,mode:c.mode==='all'?'all':'hl',...(c.pitch&&c.pitch.k===c.k&&c.pitch.shown>0?{pi:c.pitch.shown}:{}),...(UI.cwAfter?{cw:UI.cwAfter}:{}),...(ps?{ps}:{})}; }
 /* 저장 전 화면 상태가 이 세이브(G) 것인지 먼저 맞춘다(검수 11-09zzc #1: 가져온 백업에 이전 게임의 중계 위치가 저장됨) */
 let _saveGStage=false; /* 가져오기 저장 확인 전에는 현재 화면 상태를 건드리거나 새 게임에 섞지 않는다 */
-function prepG(){ if(_saveGStage)return JSON.stringify(G); try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } return JSON.stringify(G); } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
+function prepG(){ if(_saveGStage)return JSON.stringify(G); try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } const P=prepImg(); _svParts=P; return P?prepJoin(P):JSON.stringify(G); }
+/* 직접 넣은 사진(G.cimg·cimgO, base64 수백 KB~수 MB)은 거의 바뀌지 않는다: 사진 묶음 JSON은 바뀔 때만 다시 만들고, 나머지만 문자열화해 뒤에 잇는다(성능 11-18, IndexedDB로 가는 큰 세이브).
+   사진이 작으면(256KB 미만) 예전처럼 한 번에. 사진 키가 JSON 맨 뒤로 갈 뿐 내용은 같다 */
+const IMG_KS=['cimg','cimgO']; let _imgC={g:null,v:0,o:{},s:''}, _svParts=null;
+function prepImg(){ if(!G)return null; const C=_imgC; let n=0; for(const k of IMG_KS){ const M=G[k]; if(M&&typeof M==='object')for(const x in M){ const v=M[x]; n+=typeof v==='string'?v.length:0; } } if(n<262144)return null;
+  let same=C.g===G; if(same)for(const k of IMG_KS){ const M=G[k], O=C.o[k]; if(!M!==!O){ same=false; break; } if(!M)continue; const ks=Object.keys(M); if(ks.length!==Object.keys(O).length||ks.some(x=>M[x]!==O[x])){ same=false; break; } }
+  if(!same){ const o={}; let t=''; for(const k of IMG_KS){ const M=G[k]; if(M===undefined)continue; o[k]=M&&typeof M==='object'?{...M}:M; t+=','+JSON.stringify(k)+':'+JSON.stringify(M); } _imgC={g:G,v:C.v+1,o,s:t}; }
+  const R={}; for(const k in G)if(!IMG_KS.includes(k))R[k]=G[k]; return {rest:JSON.stringify(R),img:_imgC.s,iv:_imgC.v}; }
+function prepJoin(P){ return P.rest.length>2?P.rest.slice(0,-1)+P.img+'}':'{'+P.img.slice(1)+'}'; } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
 function packJ(j){ if(ZOK){ try{ return z15(fflate.deflateSync(new TextEncoder().encode(j),{level:6})); }catch(e){ ZERR=String(e&&e.message||e); } } return LZString.compressToUTF16(j); } /* deflate가 실패하면 예전 LZ로 저장 */
 /* 자동 저장 압축은 별도 스레드(Worker)에서: 큰 세이브(JSON 수십 MB)를 UTF-8로 바꾸고 deflate한 뒤 15비트 글자로 담는 일이 화면 스레드를 0.5초 넘게 막았다(성능 11-18). 같은 알고리즘(deflate-raw + z15)이라 결과 문자열은 같다. 못 쓰면 예전처럼 화면 스레드에서 */
 let _zW=null, _zN=0; const _zP=new Map();
 function zWorker(){ if(_zW!==null)return _zW; _zW=false; try{ if(typeof Worker==='undefined'||typeof CompressionStream==='undefined'||typeof URL==='undefined'||!URL.createObjectURL)return false;
-    const src='const ZMK='+JSON.stringify(ZMK)+';\n'+z15.toString()+'\nonmessage=async e=>{ const {id,j}=e.data; try{ const cs=new Blob([j]).stream().pipeThrough(new CompressionStream("deflate-raw")); const u=new Uint8Array(await new Response(cs).arrayBuffer()); postMessage({id,s:z15(u)}); }catch(err){ postMessage({id,err:String(err&&err.message||err)}); } };';
+    const src='const ZMK='+JSON.stringify(ZMK)+';\n'+z15.toString()+'\nlet IV=-1,IMG="";onmessage=async e=>{ let {id,j,rest,img,iv}=e.data; try{ if(rest!=null){ if(img!=null){ IMG=img; IV=iv; } else if(iv!==IV)throw new Error("img"); j=rest.length>2?rest.slice(0,-1)+IMG+"}":"{"+IMG.slice(1)+"}"; } const cs=new Blob([j]).stream().pipeThrough(new CompressionStream("deflate-raw")); const u=new Uint8Array(await new Response(cs).arrayBuffer()); postMessage({id,s:z15(u)}); }catch(err){ postMessage({id,err:String(err&&err.message||err)}); } };';
     const w=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})));
     w.onmessage=e=>{ const r=_zP.get(e.data&&e.data.id); if(!r)return; _zP.delete(e.data.id); if(e.data.err!=null)r.rej(new Error(e.data.err)); else r.res(e.data.s); };
     w.onerror=()=>{ _zW=false; for(const r of _zP.values())r.rej(new Error('worker')); _zP.clear(); try{ w.terminate(); }catch(x){} };
     _zW=w; }catch(e){ _zW=false; } return _zW; }
-function packJWorker(j){ const w=zWorker(); if(!w)return null; return new Promise((res,rej)=>{ const id=++_zN; _zP.set(id,{res,rej}); try{ w.postMessage({id,j}); }catch(e){ _zP.delete(id); rej(e); } }); }
-async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); { const P=packJWorker(j); if(P)try{ const s=await P; if(typeof s==='string'&&s[0]===ZMK)return s; }catch(e){} } const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
+let _zIV=-1; /* Worker가 들고 있는 사진 묶음 판번호: 같으면 사진 JSON을 다시 보내지 않는다 */
+function packJWorker(j,P){ const w=zWorker(); if(!w)return null; return new Promise((res,rej)=>{ const id=++_zN; _zP.set(id,{res,rej}); try{ if(P&&P.rest!=null){ const send=P.iv!==_zIV; w.postMessage({id,rest:P.rest,img:send?P.img:null,iv:P.iv}); _zIV=P.iv; } else w.postMessage({id,j}); }catch(e){ _zP.delete(id); _zIV=-1; rej(e); } }); }
+async function packJAsync(j,parts){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); { const P=packJWorker(j,parts); if(P)try{ const s=await P; if(typeof s==='string'&&s[0]===ZMK)return s; }catch(e){ _zIV=-1; } } const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
 function packG(){ return packJ(prepG()); }
 function unpack(s){ if(!s)return null; try{ const txt=s[0]==='{'?s:s[0]===ZMK?new TextDecoder().decode(fflate.inflateSync(unz15(s))):LZString.decompressFromUTF16(s); const g=JSON.parse(txt); return g&&!saveCheck(g)?g:null; }catch(e){ return null; } }
 let SAVE_ERR='';
@@ -37863,7 +37875,7 @@ function saveHold(fn,what){ if(!savePend())return false; if(UI._svHold)return tr
   sbSettle(n).then(end,()=>end(false)); setTimeout(()=>end(false),8000); return true; }
 function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; const j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } const ok=writeSlot(n,packJ(j),slotInfo()); if(ok)svDone(n,j); _svFail=!ok; return ok; }
 async function saveStoreAsync(){ if(!G)return; const t0=performance.now(); const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(), j=prepG(); let tm=performance.now()-t0; if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } _svBusy=true; let data=null;
-  try{ data=await packJAsync(j); }catch(e){ data=null; }
+  const parts=_svParts; try{ data=await packJAsync(j,parts); }catch(e){ data=null; }
   if(SB_PEND.has(n)){ try{ await sbSettle(n); }catch(e){} } /* 앞 저장(IndexedDB 확정)이 끝나길 기다렸다 쓴다: 겹치면 '확정되지 않았습니다'로 실패해 실패 안내와 동기 저장이 뒤따랐다(성능 11-18) */
   if(seq!==_svSeq||G!==g)return; _svBusy=false; let ok; const t1=performance.now(); if(data==null)ok=saveStore(); else if((ok=writeSlot(n,data,info)))svDone(n,j); tm+=performance.now()-t1; _svCost=_svCost?_svCost*.5+tm*.5:tm; /* 화면 스레드에서 쓴 시간(문자열화·쓰기) */
   _svFail=!ok; if(ok)_svWarn=false; else if(!SAVE_CONFL&&!_svWarn){ _svWarn=true; try{ toast(`자동 저장에 실패했습니다. ${SAVE_ERR}`); }catch(e){} } } /* 자동 저장 실패를 바로 알린다(검수 11-09 #10). 실패가 이어지는 동안은 한 번만 */
@@ -38091,7 +38103,7 @@ function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenE
 if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
-function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));try{return render0();}finally{try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{ fitPages(); }catch(e){}try{ guideMount(); }catch(e){}try{ homeStandFit(); }catch(e){}try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
+function render(){const app=document.getElementById('app');try{uiSaveSync();}catch(e){}try{ if(G&&UI._msgDay!==G.day){ if(UI._msgDay!=null){ UI.deskMsg=null; UI.deskOk=null; UI.stamp=null; if(UI.trade){ UI.trade.msg=null; } /* 역제안 카드는 각자 유효 기한(7일)까지 남긴다(UI 리뷰 11-13) */ } UI._msgDay=G.day; } }catch(e){} /* 지난 날의 거래·영입 결과 안내는 날짜가 바뀌면 지운다(플레이 테스트 11-13: 1월 결과가 7월 화면에 남음) */try{spoilNews();}catch(e){}rememberReading(app);const _rv=new Set([...document.querySelectorAll('.rv-w>.rv,.rv-w>div')].map(e=>e.className.replace(/ ?still/,'')));UI._rendering=(UI._rendering||0)+1;try{return render0();}finally{UI._rendering--;try{ document.querySelectorAll('.rv-w>.rv,.rv-w>div').forEach(e=>{ if(_rv.has(e.className))e.classList.add('still'); }); }catch(e){} /* 이미 떠 있던 창은 다시 그려도 등장 효과를 되풀이하지 않는다(사용자 11-08: 첫 화면 팝업이 두 번 뜨듯 깜박임) */restoreReading(app);workspaceRefit();try{ fitPages(); }catch(e){}try{ guideMount(); }catch(e){}try{ homeStandFit(); }catch(e){}try{champSceneShow();}catch(e){} try{ if(dayTick._until>Date.now()){ const bt=document.querySelector('.fmtop .goset>button.continue,.top .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child,.top .goset>button:last-child'); if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',(dayTick._until-Date.now())+'ms'); } } }catch(e){}}} /* 날짜 넘김 중에 결과 창이 열려 다시 그려도 진행 막대 유지(화면 점검 11-08) */
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
@@ -38135,7 +38147,9 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); }
 }
 /* 휴대폰·좁은 화면: 탭 줄 오른쪽 위에 떠 있는 [여유 ○억][?] 폭만큼 탭 줄을 비워 둔다(카페 11-18: 예산 여유가 늘 보이게) */
-function metaFit(){ if(typeof document==='undefined')return; const app=document.getElementById('app'); if(!app)return; const m=app.querySelector('.subhead.notitle>.meta'); const w=m&&m.offsetWidth; if(w)app.style.setProperty('--metaw',(w+8)+'px'); else app.style.removeProperty('--metaw'); }
+/* CSS 변수는 값이 바뀔 때만 쓴다: 같은 값을 다시 써도 화면 전체 스타일을 다시 계산해 다음 위치 읽기가 배치를 처음부터 다시 했다(성능 11-18) */
+function cssVarSet(el,k,v){ if(!el)return; if(v==null){ if(el.style.getPropertyValue(k)!=='')el.style.removeProperty(k); return; } if(el.style.getPropertyValue(k)!==v)el.style.setProperty(k,v); }
+function metaFit(){ if(typeof document==='undefined')return; const app=document.getElementById('app'); if(!app)return; const m=app.querySelector('.subhead.notitle>.meta'); const w=m&&m.offsetWidth; cssVarSet(app,'--metaw',w?(w+8)+'px':null); }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ metaFit(); }catch(e){} },160); }); }
 /* 위 예산 여유 칩을 그 자리에서 다시 쓴다: 코치 연수·인물 카드 영입처럼 창(시트)만 다시 그리는 지출에도 바로 바뀌게(카페 11-18). 첫 호출은 방금 그린 값을 기억만 한다 */
 function metaSync(){ if(typeof document==='undefined'||!G||UI.title||G.gameOver)return; const m=document.querySelector('#app .fm-meta,#app .subhead>.meta'); if(!m||(UI.tab==='club'&&UI.clubInspect!=null))return; const h=metaChips(); if(m._mh===undefined){ m._mh=h; return; } if(m._mh===h)return; m._mh=h; [...m.children].filter(e=>!e.classList.contains('helpbtn')).forEach(e=>e.remove()); const hb=m.querySelector('.helpbtn'); if(hb)hb.insertAdjacentHTML('beforebegin',h); else m.insertAdjacentHTML('beforeend',h); metaFit(); }
@@ -41125,7 +41139,7 @@ function ibTop(){ const t=document.querySelector('.top'); return t?t.offsetHeigh
 /* 넓은 화면: 소식함이 창 아래 끝까지 딱 맞게(목록·본문이 각자 스크롤). 목록이 창 밖으로 잘려 보이지 않게 실제 위치로 높이를 잰다 */
 function ibFit(){ const main=document.querySelector('#app main.content');if(UI.tab!=='inbox'||!main)return;main.classList.add('inbox-workspace');const X=main.querySelector('.ibx');if(X)X.style.height=''; }
 if(!window._ibFitOn){ window._ibFitOn=1; window.addEventListener('resize',()=>{ if(UI&&UI.tab==='inbox'&&wide())ibFit(); }); }
-function inboxWire(){ ibFit();document.documentElement.style.setProperty('--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
+function inboxWire(){ ibFit();cssVarSet(document.documentElement,'--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
   const L=document.querySelector('.ibx-list'); if(!L)return; const n=G.mail.length;
   { /* 목록 칸 스크롤: 휴대폰도 페이지 대신 목록 안에서 이동하고 돌아오면 그 위치를 지킨다. */
     const atTop=UI._ibAtTop!==false; if(UI._ibFirst||(atTop&&UI._ibCnt!==n)){ L.scrollTop=0; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;
@@ -45398,7 +45412,7 @@ function archSheet(a){ const tw=a.rows.reduce((s,r)=>s+(r.war||0),0); const f3=v
     <div class="tw"><table class="mst"><thead><tr>${a.isP?'<th>시즌</th><th>구단</th><th>경기</th><th>이닝</th><th>ERA</th><th>승-패</th><th>탈삼진</th><th>WAR</th>':'<th>시즌</th><th>구단</th><th>타석</th><th>타율</th><th>홈런</th><th>OPS</th><th>도루</th><th>WAR</th>'}</tr></thead><tbody>${a.rows.slice().sort((x,y)=>x.y-y.y).map(row).join('')}</tbody></table></div>${psTable({isP:!!a.isP,psY:a.psY})}</div></div>`; }
 /* 상단바와 메뉴를 남긴 채 상세 본문에 사용할 실제 영역을 계산한다. */
 let _appFrameObserver=null,_appFrameHeader=null;
-function appFrameSync(){const root=document.documentElement,head=document.querySelector('#app .fmtop,#app .top,#app .dtop'),nav=document.querySelector('#app .bnav'),side=document.querySelector('#app .fmside,#app .rail');const visible=e=>e&&getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().height>0;const top=visible(head)?Math.max(0,head.getBoundingClientRect().bottom):0,bottom=visible(nav)?Math.max(0,innerHeight-nav.getBoundingClientRect().top):0,left=visible(side)?Math.max(0,side.getBoundingClientRect().right):0;const z=uiZ();root.style.setProperty('--app-header-h',top/z+'px');root.style.setProperty('--app-footer-h',bottom/z+'px');root.style.setProperty('--app-side-w',left/z+'px');root.style.setProperty('--detail-height',Math.max(160,(innerHeight-top-bottom)/z)+'px');
+function appFrameSync(){const root=document.documentElement,head=document.querySelector('#app .fmtop,#app .top,#app .dtop'),nav=document.querySelector('#app .bnav'),side=document.querySelector('#app .fmside,#app .rail');const visible=e=>e&&getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().height>0;const top=visible(head)?Math.max(0,head.getBoundingClientRect().bottom):0,bottom=visible(nav)?Math.max(0,innerHeight-nav.getBoundingClientRect().top):0,left=visible(side)?Math.max(0,side.getBoundingClientRect().right):0;const z=uiZ();cssVarSet(root,'--app-header-h',top/z+'px');cssVarSet(root,'--app-footer-h',bottom/z+'px');cssVarSet(root,'--app-side-w',left/z+'px');cssVarSet(root,'--detail-height',Math.max(160,(innerHeight-top-bottom)/z)+'px');
   if(head!==_appFrameHeader&&typeof ResizeObserver!=='undefined'){_appFrameObserver?.disconnect();_appFrameHeader=head;_appFrameObserver=new ResizeObserver(()=>appFrameSync());if(head)_appFrameObserver.observe(head);}}
 function sheetScrollHost(){const host=$('#sheet'),sheet=host?.querySelector('.sheet');return document.documentElement.classList.contains('detail-page-open')&&innerWidth<1100?host:sheet||host;}
 function sheetScrollY(){return sheetScrollHost()?.scrollTop||0;}
@@ -45449,7 +45463,7 @@ function spoilMask0(g,p,keepDetail=false,knownPs=false){ /* 경기 직전 사본
 /* 창을 다시 그려도 키보드 초점이 남게(외부 검수 11-17: 일괄 수정 창에서 그림이 늦게 와 다시 그리면 '파일 불러오기' 초점이 사라짐). 초점이 창 안 단추·입력칸이었고 다시 그린 뒤 body로 떨어졌을 때만 같은 칸에 돌려준다 */
 function sheetFocusKey(el){ try{ const a=document.activeElement; if(!el||!a||a===document.body||!el.contains(a))return null; const d=a.dataset||{}, E=v=>CSS.escape(String(v)); const k=a.id?'#'+E(a.id):d.a?`[data-a="${E(d.a)}"]`+(d.v!=null?`[data-v="${E(d.v)}"]`:''):d.cosm?`[data-cosm="${E(d.cosm)}"]`:a.classList.contains('cosm-nm')&&d.id!=null?`.cosm-nm[data-id="${E(d.id)}"]`:null; if(!k)return null; let s=null; try{ if(typeof a.selectionStart==='number')s=[a.selectionStart,a.selectionEnd]; }catch(e){} return {k,s}; }catch(e){ return null; } }
 function sheetFocusBack(el,f){ try{ if(!f||!el||(document.activeElement&&document.activeElement!==document.body))return; const n=el.querySelector(f.k); if(!n)return; n.focus({preventScroll:true}); if(f.s)try{ n.setSelectionRange(f.s[0],f.s[1]); }catch(e){} }catch(e){} }
-function renderSheet(){ const el=$('#sheet');rememberReading(el); const _fk=sheetFocusKey(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ topTitleSync(); }catch(e){} try{ metaSync(); }catch(e){} try{ const ng=el&&el.querySelector('.sheet.ngt'); if(ng){ const k=[...ng.children].filter(c=>getComputedStyle(c).display!=='none'); ng.style.setProperty('--ng-pre',Math.max(1,k.findIndex(c=>c.classList.contains('ng-rows')))); } }catch(e){} /* 협상실 PC: 조건 줄 칸이 남은 높이를 채우게(UI 3단계 3-4) */ try{ twPager(); rosterHeadFit(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} sheetFocusBack(el,_fk); }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const _fk=sheetFocusKey(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ topTitleSync(); }catch(e){} try{ metaSync(); }catch(e){} try{ const ng=el&&el.querySelector('.sheet.ngt'); if(ng){ const k=[...ng.children].filter(c=>getComputedStyle(c).display!=='none'); ng.style.setProperty('--ng-pre',Math.max(1,k.findIndex(c=>c.classList.contains('ng-rows')))); } }catch(e){} /* 협상실 PC: 조건 줄 칸이 남은 높이를 채우게(UI 3단계 3-4) */ if(had||UI._rendering||el&&el.querySelector('.sheet,.cast,.scrim'))try{ twPager(); rosterHeadFit(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} /* 창이 없었고 지금도 없으면(화면을 닫기만 하는 closeSheets) 본 화면 배치는 그대로다: 표 나누기·칸 맞추기를 다시 하지 않는다(성능 11-18) */ if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} sheetFocusBack(el,_fk); }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -47824,10 +47838,12 @@ function wsStack(h){ return typeof innerWidth!=='undefined'&&innerWidth<700?`<di
 function jumpBar(L){ L=L.filter(Boolean); return L.length>1?`<nav class="jump-bar" aria-label="바로 가기">${L.map(([id,l])=>`<button type="button" data-a="jumpTo" data-v="${id}">${l}</button>`).join('')}</nav>`:''; }
 function workspaceCompact(){return matchMedia('(max-width:699px), (max-height:599px), (max-width:1099px) and (pointer:coarse)').matches;}
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
+  const TL=[]; /* 성능(11-18): 먼저 모든 표를 원래대로 되돌리고(쓰기), 넘치는지 한꺼번에 잰 뒤(읽기 한 번), 넘치는 표만 나눈다. 표마다 쓰기·읽기를 번갈아 화면 배치를 여러 번 다시 계산했다 */
   document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg,.pf-season-table'))return; /* 선수 상황판 시즌 통계는 열을 넘기지 않고 옆으로 스크롤 */ const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
     tw.querySelectorAll(':scope > .twpg').forEach(x=>x.remove()); tw.closest('.roster-list')?.querySelectorAll('.roster-tools>.twpg').forEach(x=>x.remove()); if(tw.previousElementSibling&&tw.previousElementSibling.classList.contains('twpg'))tw.previousElementSibling.remove(); tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tb.querySelectorAll('[data-cs0]').forEach(c=>{ c.colSpan=+c.dataset.cs0; c.classList.remove('twspan'); delete c.dataset.cs0; }); tw.classList.remove('twp');
-    if(!narrow&&tw.closest('.roster-list,.candidate-list,.fdl-main'))return;
-    if(tb.scrollWidth<=tw.clientWidth+4)return; void narrow; /* 넓은 화면도 표가 넘치면 같은 방식으로 넘긴다 */
+    if(!narrow&&tw.closest('.roster-list,.candidate-list,.fdl-main'))return; TL.push([tw,ix,tb]); });
+  const TO=TL.map(([tw,,tb])=>tb.scrollWidth>tw.clientWidth+4);
+  TL.forEach(([tw,ix,tb],j)=>{ if(!TO[j])return; void narrow; /* 넓은 화면도 표가 넘치면 같은 방식으로 넘긴다 */
     const hr=tb.tHead.rows[tb.tHead.rows.length-1]; const H=[...hr.cells]; const n=H.length; if(n<3||H.some(c=>c.colSpan>1))return;
     tw.classList.add('twp'); /* 줄인 이름 칸 기준으로 폭을 잰다 */
     const rows=[...tb.rows].filter(r=>r.cells.length===n); /* 그룹 제목처럼 칸이 합쳐진 줄은 그대로 둔다 */
@@ -47853,7 +47869,7 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     bar.innerHTML=`<button type="button" ${pg>0?'':'disabled'} aria-label="앞 열">◀</button><span><b>${pg+1}/${pages.length}</b> ${esc(lab(pg))}</span><button type="button" ${pg<pages.length-1?'':'disabled'} aria-label="다음 열">▶</button>`;
     const [bp,bn]=bar.querySelectorAll('button'); tw._twpg=bar; const go=d=>{ const had=bar.contains(document.activeElement); UI.twPg[key]=pg+d; twPager(); if(had)twPagerFocus(tw,d); }; /* 버튼을 다시 만들어도 키보드 초점은 같은 쪽 버튼에(검수 11-17 #7) */
     bp.onclick=()=>go(-1); bn.onclick=()=>go(1); const rtools=matchMedia('(max-width:699px) and (min-height:600px)').matches?tw.closest('.roster-list')?.querySelector('.roster-tools'):null; /* 30_mobile_workspace.css의 세로 휴대폰 조건과 같게 */ if(tw.matches('.fdl-main .fdt-w')&&fdCompact())tw.before(bar); else if(rtools)rtools.append(bar); /* 선수 명단: 필터 줄 옆 */ else tw.insertBefore(bar,tb); /* 휴대폰 드래프트: 표 스크롤 밖에 두어 늘 보이게 */ tw._twGo=d=>{ if(pg+d>=0&&pg+d<pages.length)go(d); }; });
-  document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); try{ tabRowHints(); }catch(e){} }
+  cssVarSet(document.documentElement,'--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); try{ tabRowHints(); }catch(e){} }
 function twPagerFocus(tw,d){ const bar=tw._twpg; if(!bar||!bar.isConnected)return; const B=[...bar.querySelectorAll('button')]; const t=B[d<0?0:1]; const f=t&&!t.disabled?t:B.find(b=>!b.disabled); if(f)try{ f.focus({preventScroll:true}); }catch(e){} }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
 
@@ -50632,6 +50648,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-18-perf2',d:'11월 18일',t:'주간 진행·화면 전환 한 번 더 가볍게',items:[
+    '다른 구단끼리 트레이드를 따질 때 선수 값·연봉 상한 합계·프랜차이즈 연차를 한 번만 계산하고, 기본 훈련도 구단 명단을 한 번만 거릅니다. 주간 진행일이 또 절반 가까이 빨라졌습니다(결과는 그대로).',
+    '창을 닫기만 할 때는 본 화면 표 나누기·칸 맞추기를 다시 하지 않고, 화면 크기 값은 바뀔 때만 다시 씁니다. 휴대폰에서 탭을 오갈 때 멈춤이 줄었습니다.',
+    '직접 넣은 사진이 많은 큰 세이브는 사진 묶음을 바뀔 때만 다시 문자열로 만들고, 압축 스레드에도 바뀔 때만 보냅니다.']},
   {id:'2026-11-18-dbsort',d:'11월 18일',t:'내 드래프트 보드를 스카우트 추천순으로 정렬합니다',items:[
     '내 드래프트 보드에 \'스카우트 추천순 정렬\' 버튼을 넣었습니다. 관심 후보를 화면의 스카우트 순위(#) 순서로 한 번 정렬하고, \'되돌리기\'로 정렬 전 순서로 돌아갈 수 있습니다. \'자동 정렬 유지\'를 켜면 스카우트 보고가 바뀔 때마다 추천순으로 맞추며, 기본은 꺼져 있어 직접 정한 순서를 그대로 둡니다. ▲▼로 바꾼 순서는 날짜가 지나도 그대로 유지합니다.']},
   {id:'2026-11-18-ovs-act5',d:'11월 18일',t:'해외 리그에서 직접 움직입니다',items:[
