@@ -56,7 +56,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   try{ ovsFA(pool); }catch(e){}
   G.fa={pool,offers:{},ai:{},open:false,openDay:KD(11,6),closed:false,results:[],cap:pool.length<=20?2:3,outN:{},y0:G.year}; try{ agSeasonTick(); }catch(e){ console.error(e); } /* 에이전트: 은퇴·새 대리인·고객 얻고 잃기·정원(42_agents) */ try{ aiPlanOff(); }catch(e){} /* 시즌 결과를 보고 운영 전략을 다시 정한 뒤 FA 시장을 연다 */ try{ allInPick(); }catch(e){}
   if(G._faSkip&&G._faSkip.length){ note('FA',`FA 자격이 있지만 신청하지 않고 남은 우리 선수: ${G._faSkip.join(', ')}. 내년에도 자격은 유지됩니다.`); } G._faSkip=null;
-  G.retired=retired; G.rolled=G.year; try{ obRetireEvents(obs); }catch(e){} try{ ovlSeasonEnd(); }catch(e){} /* 해외 리그 시즌 마감(35a_ovs_league) */ try{ abroadYear(); }catch(e){} try{ ovlChampWire(); }catch(e){} try{ fOverseas(); }catch(e){} try{ postingSeason(); }catch(e){}
+  G.retired=retired; G.rolled=G.year; try{ obRetireEvents(obs); }catch(e){} try{ ovlSeasonEnd(); }catch(e){} /* 해외 리그 시즌 마감(35a_ovs_league) */ try{ abroadYear(); }catch(e){} try{ wpsSeasonEnd(); }catch(e){} /* 세계 주목 선수 시즌 마감(세계척도 P2, 씨앗 난수) */ try{ ovlChampWire(); }catch(e){} try{ fOverseas(); }catch(e){} try{ postingSeason(); }catch(e){}
   try{ leaveSweep(); }catch(e){} /* 은퇴·FA·해외 진출로 떠난 선수에게 남은 출전 약속·매물 표시를 바로 정리(다음 날 처리 첫머리를 기다리지 않게) */
   /* 요구액은 FA 명단·해외 진출이 다 정리된 뒤에 한 번에 매긴다: 하나씩 매기면 먼저 나온 FA가 아직 원소속 구단 주전으로 남아 뒤 FA의 수요·시장가가 처리 순서에 따라 달라진다 */
   _mkD.k=null; _mkP.k=null; for(const id of G.fa.pool){ const p=G.players[id]; if(p&&p.team==null){ p.ask=faAsk(p); p.ask0=p.ask.annual; } }

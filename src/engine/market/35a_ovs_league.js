@@ -74,7 +74,7 @@ function ovlFrac(y,day=G.day){ if(y<G.year)return 1; if(y>G.year)return 0; const
 /* 새해(G.year가 오른 뒤): 지난 시즌을 아직 못 닫았으면 닫고, 전력을 움직여 올 시즌 승수를 미리 만든다 */
 function ovlNewYear(){ const O=ovlInit(); for(const lg of OVL_LGS){ const L=O[lg]; if(L.cur&&L.cur.y<G.year&&!L.h.some(h=>h.y===L.cur.y))ovlClose(lg,L,L.cur.y);
     if(!L.cur||L.cur.y!==G.year){ ovlDrift(lg,L); L.cur={y:G.year,w:ovlWins(lg,L)}; } }
-  try{ ovsPregen(); }catch(e){} try{ ovpPregen(); }catch(e){} }
+  try{ ovsPregen(); }catch(e){} try{ ovpPregen(); }catch(e){} try{ wpsNewYear(); }catch(e){} }
 function ovlClose(lg,L,y){ const w=L.cur&&L.cur.y===y?L.cur.w:ovlWins(lg,L); const H=ovlPlay(lg,L,y,w); L.h=L.h.filter(h=>h.y!==y); L.h.unshift(H); L.h.sort((a,b)=>b.y-a.y); if(L.h.length>OVL_KEEP)L.h.length=OVL_KEEP; if(L.cur&&L.cur.y===y)delete L.cur; return H; }
 /* KBO 시즌을 마무리할 때(스토브리그 시작): 해외 리그도 그 시즌을 닫는다 */
 function ovlSeasonEnd(){ const O=ovlInit(); const out=[]; for(const lg of OVL_LGS){ const L=O[lg]; if(L.h.some(h=>h.y===G.year))continue; const H=ovlClose(lg,L,G.year); out.push([lg,H]); } O.wy=out.length?G.year:O.wy; return out; }

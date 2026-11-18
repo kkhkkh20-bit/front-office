@@ -5,7 +5,7 @@
      같은 사람(같은 번호)으로 나오고 KBO 기록·해외 기록이 공개 기록이 된다. 계약은 기존 외국인 영입 협상(정원·구성·총액 한도·보류권·교체 횟수)을 그대로 거친다.
      우리 구단과 AI 구단이 같은 함수·같은 조건(기간·횟수·대상)이다. AI는 영입이 필요한 자리(fNeed)에 공개 기록(KBO WAR·해외 기록 가치)이 좋은 옛 외국인을 가끔 문의한다.
    - 본게임 난수(R)는 쓰지 않는다: 문의로 만드는 사람은 사람·날짜로 씨앗을 둔 난수(withRng), AI 판단은 해시(rngHash). 선수 번호 흐름(G.nextId)도 그대로 둔다. */
-const OVQ={per:3,ageMax:35,aiP:.22,aiMin:1.8,keep:30,wMax:10};
+const OVQ={per:3,ageMax:35,aiP:.22,aiMin:1.8,keep:30,wMax:20}; /* wMax: 해외 관찰 명단 한도(세계척도 P2 11-19: 해외 구단 주목 선수까지 관찰하게 10 → 20) */
 const OVQ_LV=new Set(['트리플A','더블A','NPB','NPB 1군','NPB 2군','CPBL','멕시코리그','ABL']); /* 문의할 수 있는 리그(빅리그 MLB만 뺀다) */
 const ovqH=(...a)=>rngHash(...a)/4294967296;
 /* 해외 관찰 명단. 시장에 나왔어도 정원·야인 사유로 이전을 못 하면 개인 추적은 남긴다. */
@@ -14,7 +14,7 @@ function ovwForget(id){ if(G.ovw)G.ovw=G.ovw.filter(w=>String(w.id)!==String(id)
 function ovwToggle(id){ const t=ovqTarget(id); if(fwatchIntent(id))return fwatchToggle(t&&t.k==='mkt'?t.p.id:id);
   if(t&&t.k==='mkt')return fwatchToggle(t.p.id);
   if(!t)return '지금 해외에서 뛰는 선수가 아니라 관찰할 수 없습니다.'; if((G.ovw||[]).length>=OVQ.wMax)return `해외 관찰 명단은 ${OVQ.wMax}명까지입니다.`;
-  G.fwNo=(G.fwNo||[]).filter(x=>String(x)!==String(id)); (G.ovw=G.ovw||[]).push({id:t.id,since:G.day}); return '해외 관찰 명단에 올렸습니다. 해외 소식에 먼저 오르고, 외국인 시장에 나오면 시장 관찰 명단으로 옮깁니다.'; }
+  G.fwNo=(G.fwNo||[]).filter(x=>String(x)!==String(id)); const w={id:t.id,since:G.day}; if(t.k==='wps'){ w.y0=G.year; w.h=[]; w.nm=t.name; } (G.ovw=G.ovw||[]).push(w); if(t.k==='wps'){ for(const l of t.w.L)wpsWatchLog(t.w,l); return '해외 관찰 명단에 올렸습니다. 해마다 기록을 따로 남기고, 관찰한 주만큼 능력 범위가 좁아집니다.'; } return '해외 관찰 명단에 올렸습니다. 해외 소식에 먼저 오르고, 외국인 시장에 나오면 시장 관찰 명단으로 옮깁니다.'; }
 /* 직접 문의·다른 구단 문의 뒤 주간 처리의 이전 규칙. 알려 준 대기 사유는 저장해 재처리 때 같은 등장 메일을 반복하지 않는다. */
 function ovwMarket(p){ const w=(G.ovw||[]).find(w=>String(w.id)===String(p.id)); if(!w)return 0;
   if((G.fwNo||[]).some(id=>String(id)===String(p.id))){ ovwForget(p.id); return 1; }
@@ -25,11 +25,12 @@ function ovwMarket(p){ const w=(G.ovw||[]).find(w=>String(w.id)===String(p.id));
   (G.fwatch=G.fwatch||[]).push({id:p.id,since:G.day,k:0}); ovwForget(p.id);
   mail('스카우트팀장','해외 관찰 선수 시장 이전',`${p.name}이(가) 외국인 시장에 나와 관찰 명단으로 옮겼습니다. 관찰 날짜는 오늘부터 셉니다.`,{kind:'외국인',ref:p.id,acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); return 1; }
 /* 시장 후보를 찾을 수 없을 때만 끝난 추적을 정리한다. 본게임 난수 없음. */
-function ovwSync(){ if(!G.ovw||!G.ovw.length)return 0; let n=0; for(const w of [...G.ovw]){ const t=ovqTarget(w.id); if(t&&t.k==='mkt')n+=ovwMarket(t.p); else if(!t){ ovwForget(w.id); n++; } } return n; }
+function ovwSync(){ if(!G.ovw||!G.ovw.length)return 0; let n=0; for(const w of [...G.ovw]){ const t=ovqTarget(w.id); if(t&&t.k==='mkt')n+=ovwMarket(t.p); else if(!t){ if(w.h&&w.h.length){ if(w.gone==null){ w.gone=G.day; n++; } continue; } ovwForget(w.id); n++; } } return n; } /* 세계 주목 선수: 은퇴·명단에서 빠져도 관찰 기록(h)은 남긴다(관찰 해제로 지운다) */
 /* 대상 찾기: 시장 후보(mkt) · 해외파 기록(abr: KBO 출신 외국인·관찰했던 후보) · 해외 후보군(pool) */
 function ovqTarget(id){ const s=String(id); const p=G.players[id]; if(p&&p.foreign&&p.team==null&&(G.fmarket||[]).includes(p.id))return {k:'mkt',p,id:p.id,name:p.name,kind:p.foreign};
   const a=(G.abroad||[]).find(x=>String(x.id)===s&&(x.foreign||x.cand)&&!x.back&&x.end==null&&x.fr); if(a)return {k:'abr',a,id:a.id,name:a.name,kind:a.foreign||'용병'};
-  const e=((G.ovp&&G.ovp.L)||[]).find(x=>String(x.i)===s); if(e)return {k:'pool',e,id:e.i,name:e.n,kind:e.k?'아시아':'용병'}; return null; }
+  const e=((G.ovp&&G.ovp.L)||[]).find(x=>String(x.i)===s); if(e)return {k:'pool',e,id:e.i,name:e.n,kind:e.k?'아시아':'용병'};
+  const w=typeof wpsGet==='function'?wpsGet(id):null; if(w)return {k:'wps',w,id:w.i,name:w.n,kind:w.o==='jp'||w.o==='tw'?'아시아':'용병'}; /* 세계 주목 선수(세계척도 P2): 관찰만, 문의는 P4 */ return null; }
 /* 지금 뛰는 수준(시즌 중이면 진행 중 기록, 아니면 지난 시즌 줄) */
 function ovqLine(a){ const f=ovlFrac(G.year); if(a.cur&&a.cur.y===G.year&&f>0)return ovsCurPart(a,f); return (a.lines||[]).slice(-1)[0]||null; }
 function ovqLvl(t){ if(!t)return ''; if(t.k==='pool')return t.e.l||''; if(t.k==='mkt')return t.p.prevLvl||''; const l=ovqLine(t.a); return l?l.lvl:t.a.lg==='NPB'?'NPB':t.a.lg; }
@@ -40,7 +41,7 @@ function ovqWindowWhy(tid,kind){ const per=period();
   if(per==='season'){ if(G.day>foreignDL())return '8월 15일 외국인 등록 마감이 지났습니다. 12월 1일 겨울 시장이 열리면 다시 문의할 수 있습니다.'; if(fReplLeft(tid,kind)<=0)return `이번 시즌 ${kind==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(kind)}회를 다 썼습니다. 12월 1일 겨울 시장이 열리면 다시 문의할 수 있습니다.`; return ''; }
   if(!foreignOpen())return per==='post'?'포스트시즌 중에는 외국인 영입 기간이 아닙니다. 12월 1일 겨울 시장이 열리면 문의할 수 있습니다.':'지금은 외국인 영입 기간이 아닙니다. 12월 1일 겨울 시장이 열리면 문의할 수 있습니다.'; return ''; }
 /* 문의할 수 있는가: '' 이면 가능, 아니면 까닭(언제 열리는지 포함) */
-function ovqWhy(tid,id){ const t=ovqTarget(id); if(!t)return '지금 해외에서 뛰는 문의 대상 선수가 아닙니다.'; if(tid==null||!G.teams[tid])return '구단 단장만 문의할 수 있습니다.'; if(tid===G.user&&G.unemp)return '구단 단장만 문의할 수 있습니다.';
+function ovqWhy(tid,id){ const t=ovqTarget(id); if(!t)return '지금 해외에서 뛰는 문의 대상 선수가 아닙니다.'; if(t.k==='wps')return `${t.name}은(는) 해외 구단 소속 주목 선수라 아직 데려올 길이 없습니다. 관찰만 할 수 있습니다.`; if(tid==null||!G.teams[tid])return '구단 단장만 문의할 수 있습니다.'; if(tid===G.user&&G.unemp)return '구단 단장만 문의할 수 있습니다.';
   const w=ovqWindowWhy(tid,t.kind); if(w)return w; if(t.k==='mkt')return '';
   if(t.k==='abr'&&G.players[t.id]&&!ovsInquiryOrphan(t.a,G.players[t.id]))return '같은 선수 번호의 국내 선수 기록이 있어 지금은 시장에 부를 수 없습니다.';
   const lv=ovqLvl(t); if(lv==='MLB')return `${t.name}은(는) 지금 MLB에서 뛰고 있어 한국행을 생각하지 않습니다. 트리플A로 내려가거나 다른 리그로 옮기면 문의할 수 있습니다.`; if(!OVQ_LV.has(lv))return `${t.name}이(가) 뛰는 리그(${lv||'미정'})는 문의 대상이 아닙니다.`;
@@ -99,7 +100,7 @@ function ovqAiScore(a){ const l=(a.lines||[]).slice(-1)[0]; return ovsKboWar(a.i
 function ovqAiWeek(){ const me=ME(); let n=0; for(const t of G.teams){ if(t.id===me)continue; const nd=fNeed(t.id); if(!nd||nd.up)continue; if(ovqWindowWhy(t.id,nd.kind))continue; if(ovqH('ovqAi',t.id,G.day)>=OVQ.aiP)continue;
     const C=(G.abroad||[]).filter(a=>a.foreign===nd.kind&&!a.cand&&!a.back&&a.end==null&&a.fr&&(nd.isP==null||!!a.isP===nd.isP)&&!ovqWhy(t.id,a.id)).map(a=>({a,s:ovqAiScore(a)})).filter(x=>x.s>=OVQ.aiMin).sort((x,y)=>y.s-x.s||String(x.a.id).localeCompare(String(y.a.id)));
     if(!C.length)continue; const r=ovsInquire(t.id,C[0].a.id); if(r.p&&!r.why)n++; } return n; }
-function ovqWeek(){ try{ ovwSync(); }catch(e){} try{ ovqAiWeek(); }catch(e){} }
+function ovqWeek(){ try{ ovwSync(); }catch(e){} try{ ovqAiWeek(); }catch(e){} try{ wkDigestWeek(); }catch(e){} }
 /* ===== 저장 정리(해외 활성화 8-7): G.abroad가 시즌마다 커진다. 난수 없이 몇 번 불러도 같은 결과 =====
    - 돌아오거나(back) 은퇴한(end) 기록의 보관본(pj)·능력 사본(fr)·진행 중 줄(cur)은 다시 쓰지 않는다(돌아온 선수는 G.players에 있다).
    - 끝난 외국인·후보 기록은 최근 3시즌 줄만 남긴다(주목 선수·인물 카드는 최근 시즌만 본다). 국내 선수 기록 줄은 모두 남긴다(선수 기록 표).
