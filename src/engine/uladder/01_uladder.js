@@ -5,7 +5,8 @@
 function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],deck:null,league:null,last:null,dn:0,ps:{},opp:{}}); if((U.v|0)<2)FrontOfficeCore.ulMigrate(U); if(!U.car)U.car=FrontOfficeCore.ulCareerInit(U.hist,U.best); if(typeof U.seenS==='number'){ if(Number.isFinite(U.seenS))U.seenS='S'+U.seenS; else delete U.seenS; } if(U.league)ulLgMig(U.league); /* 3연전 리그(사용자 11-18): 예전 리그는 빈 칸만 더해 이어 간다(난수 없음) */ /* 예전 저장: 숫자로 남긴 시즌 확인 표시(NaN은 버린다 → 결산 카드가 한 번 더 보임, 외부 검수 11-17) */ return U; } /* 통산 칸(외부 검수 11-17): 없으면 남은 기록 줄로 한 번 만든다 */ /* v2: 예전 저장은 처음 열 때 옮긴다(선수·상대 기록 칸, 사용자 11-17) */
 const UL_ME='me';
 /* 실제 경기와 같은 건강 벤치 대체. 입력·커리어 세계·난수를 바꾸지 않는다. */
-function ulReadyLineup(e){ if(!e||!Array.isArray(e.P)||!Array.isArray(e.ln)||!Array.isArray(e.bn))return null; const P=new Map(e.P.map(p=>[p.id,p]));
+function ulMatchPlayers(e,taken){ const off=cupIdBase(e,taken)*1e6; return new Map(e.P.map(p=>[p.id,Object.assign({},p,{id:p.id+off,team:0,mor:60,injOut:p.injOut||0,fat:p.fat||0,sal:p.sal||MIN_SAL})])); }
+function ulReadyLineup(e,taken,P){ if(!e||!Array.isArray(e.P)||!Array.isArray(e.ln)||!Array.isArray(e.bn))return null; P=P||ulMatchPlayers(e,taken);
   try{ const b=ladderBatting({lineup:e.ln.map(([id,pos])=>[P.get(id),pos]),bench:e.bn.map(id=>P.get(id)).filter(Boolean)}); return b.order.map(p=>[p,b.posOf[p.id]]); }catch(err){ return null; } }
 function ulDeckReady(e){ const ln=ulReadyLineup(e); if(!ln||ln.length!==9)return '건강한 야수 9명 이상이 필요합니다. 부상 선수를 대신할 벤치 야수를 덱에 넣어 주세요.';
   const P=new Map(e.P.map(p=>[p.id,p])); if(![...(e.rot||[]),...(e.pen||[])].some(id=>{const p=P.get(id);return p&&p.isP&&!(p.injOut>0);}))return '등판 가능한 건강한 투수가 필요합니다.'; return ''; }
@@ -46,7 +47,7 @@ function ulEditDeck(e){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L)r
   if(C.cupPay(x).pay!==C.cupPay(L.teams[0].e).pay){ const cg=C.ulCapGate(x,L.tier,Date.now()); if(!cg.ok)return cg.msg; } /* 리그 중 통째로 바꾸면(연봉이 달라지면) 그 단계 상한을 다시 본다(사용자 11-17) */
   L.teams[0].e=x; L.teams[0].name=x.name; L.edits.push({at:L.next,h:x.h}); if(U.deck){ U.deck.e=registered; } return ''; }
 /* 연전 하나 */
-function ulRunSeries(L){ulNewsRepair(L,true);const s=L.sched[L.next];if(!s)return null;const A=L.teams[s.a],B=L.teams[s.b],enc=s.a===0||s.b===0?[ulProfile(A.e),ulProfile(B.e)]:null;
+function ulRunSeries(L){ulNewsRepair(L,true);const s=L.sched[L.next];if(!s)return null;const A=L.teams[s.a],B=L.teams[s.b],enc=s.a===0||s.b===0?[ulProfile(A.e),ulProfile(B.e,cupIdBase(A.e))]:null;
   const res=ulRng(L,s.id,()=>cupMatch(A.e,B.e,{cup:'ul',round:'L'+s.r,match:s.id,best:3,all:1,tie:1,home:s.home,ri:[L.cnt[s.a],L.cnt[s.b]]})); if(!res.ok)throw new Error('경기 실패: '+((res.errors&&res.errors[0]&&res.errors[0].msg)||'')); /* 씨앗 난수(3연전 리그, 사용자 11-18): 본게임 난수 흐름을 쓰지 않는다 */
   ulStatAdd(L,L.bat,L.pit,res,s.a,s.b); /* 검수 11-17 #182: 우리 선수는 기록할 때의 포지션·나이를 같이 남긴다(02_uladder_series.js) */
   L.cnt[s.a]+=res.games.length; L.cnt[s.b]+=res.games.length;
@@ -65,12 +66,12 @@ function ulKeep(L,s,games){ const me=s.a===0?'A':'B', op=L.teams[s.a===0?s.b:s.a
   K.sort((a,b)=>b.dr-a.dr||a.r-b.r||a.i-b.i); K.length=Math.min(K.length,UL_KEEP); }
 /* 덱 성향(상대 덱 미리보기): 타격·장타·컨택·수비·선발·불펜을 표시 척도(dv)로 */
 const UL_PROF=[['off','타격'],['pow','장타'],['con','컨택'],['def','수비'],['sp','선발'],['pen','불펜']];
-function ulProfile(e){ if(!e||!Array.isArray(e.P))return null; const D=FrontOfficeCore.dv, P=new Map(e.P.map(p=>[p.id,p])), ok=p=>p&&!(p.injOut>0);
-  const L=ulReadyLineup(e)||[], bats=L.map(x=>x[0]);
+function ulProfile(e,taken){ if(!e||!Array.isArray(e.P))return null; const D=FrontOfficeCore.dv, P=ulMatchPlayers(e,taken), ok=p=>p&&!(p.injOut>0);
+  const L=ulReadyLineup(e,taken,P)||[], bats=L.map(x=>x[0]);
   const rot=(e.rot||[]).map(id=>P.get(id)).filter(ok), pen=(e.pen||[]).map(id=>P.get(id)).filter(ok).map(penV).sort((a,b)=>b-a).slice(0,5);
   return {off:D(avg(bats.map(offV))),pow:D(avg(bats.map(p=>p.r.pow))),con:D(avg(bats.map(p=>p.r.con))),def:D(avg(L.filter(x=>x[1]!=='DH').map(x=>defAt(x[0],x[1])))),sp:D(avg(rot.map(spV))),pen:D(pen.length?avg(pen):0)}; }
 /* 두 덱 비교: 상대가 앞선 곳·우리가 앞선 곳(3 이상 차이) */
-function ulVs(me,op){ const a=ulProfile(me), b=ulProfile(op); if(!a||!b)return null; const rows=UL_PROF.map(([k,n])=>({k,n,me:a[k],op:b[k],d:b[k]-a[k]}));
+function ulVs(me,op,meSecond){ const first=meSecond?op:me, a=ulProfile(me,meSecond?cupIdBase(first):undefined), b=ulProfile(op,meSecond?undefined:cupIdBase(first)); if(!a||!b)return null; const rows=UL_PROF.map(([k,n])=>({k,n,me:a[k],op:b[k],d:b[k]-a[k]}));
   const by=rows.slice().sort((x,y)=>y.d-x.d); return {rows,opBest:by.filter(x=>x.d>=3).slice(0,2),meBest:by.slice().reverse().filter(x=>x.d<=-3).slice(0,2)}; }
 /* 정규·PS 각각의 실제 기록 경기 수를 두 기록 화면이 공유한다. 조회는 저장·난수를 바꾸지 않는다. */
 function ulQualifiers(D){const gp=Math.max(1,...(D.teams||[]).map((t,i)=>(D.series||[]).reduce((n,s)=>n+(s.a===i||s.b===i?(s.g||[]).length:0),0)));return{gp,qpa:FrontOfficeCore.ulQualPa(gp),qo:FrontOfficeCore.ulQualOuts(gp)};}

@@ -38,7 +38,7 @@ function ulStandX(D){ const C=FrontOfficeCore, flat=[]; for(const s of D.series|
   return st.map(x=>{ const f=C.ulForm(RS[x.key]), g=x.w+x.l+x.t; return Object.assign(x,{l5:f.l5,strk:f.strk,run:f.run,py:C.ulPyth(x.rs,x.ra),pyw:Math.round(C.ulPyth(x.rs,x.ra)*g*10)/10,exw:Math.round(ex.w[x.key]*done/all*10)/10,exr:ex.rank[x.key]}); }); }
 /* 팀 기록(타격·투구·수비) + 리그 평균. 정규 L.bat·L.pit 합, 실책은 박스(L.te) */
 /* 집계 전 경기가 있는 옛 리그의 시즌 전체 실책은 알 수 없다. 새 관측분과 전체값을 분리한다. 조회는 저장·난수를 바꾸지 않는다. */
-function ulErrorCoverage(D){const from=Math.max(0,Number.isFinite(+D.teP)?Math.floor(+D.teP):0),games=D.teams.map(()=>0);for(const s of (D.series||[]).slice(from)){const n=Array.isArray(s.g)?s.g.length:0;if(games[s.a]!=null)games[s.a]+=n;if(games[s.b]!=null)games[s.b]+=n;}return games.map((n,i)=>{const v=Array.isArray(D.te)&&Number.isFinite(D.te[i])&&D.te[i]>=0?D.te[i]:null,observed=v!=null&&(n>0||v>0)?v:null;return {e:from>0?null:observed,observed,games:n};});}
+function ulErrorCoverage(D){const from=Math.max(0,Number.isFinite(+D.teP)?Math.floor(+D.teP):0),games=D.teams.map(()=>0);for(const s of (D.series||[]).slice(from)){const n=Array.isArray(s.g)?s.g.length:0;if(games[s.a]!=null)games[s.a]+=n;if(games[s.b]!=null)games[s.b]+=n;}return games.map((n,i)=>{const v=Array.isArray(D.te)&&Number.isFinite(D.te[i])&&D.te[i]>=0?D.te[i]:null,observed=v!=null&&(from===0||n>0||v>0)?v:null;return {e:from>0?null:observed,observed,games:n};});}
 function ulTeamStats(D){ const C=FrontOfficeCore, B=Object.values(D.bat||{}), P=Object.values(D.pit||{}), LB={},LP={},E=ulErrorCoverage(D);
   const T=D.teams.map((t,i)=>{ const pre=t.key+':', b={}, p={}; for(const x of B)if(String(x.key).startsWith(pre))for(const f of C.UL_BF)b[f]=(b[f]||0)+(x[f]||0); for(const x of P)if(String(x.key).startsWith(pre)){ for(const f of C.UL_PF)p[f]=(p[f]||0)+(x[f]||0); if(x.bbMixed)p.bbMixed=true; }
     for(const f of C.UL_BF)LB[f]=(LB[f]||0)+(b[f]||0); for(const f of C.UL_PF)LP[f]=(LP[f]||0)+(p[f]||0); if(p.bbMixed)LP.bbMixed=true; const br=C.ulBatRates(b), pr=C.ulPitRates(p); return {i,key:t.key,name:t.name,kind:t.kind,avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,hr:b.hr||0,sb:b.sb||0,r:b.r||0,h:b.h||0,pa:b.pa||0,
@@ -71,7 +71,7 @@ function ulPostInit(L){ if(L.post||L.next<L.sched.length)return L.post||null; co
 function ulPostLeft(L){ const P=L&&ulPostInit(L); return !!P&&P.next<P.S.length; }
 function ulRunPost(L){ const C=FrontOfficeCore, P=ulPostInit(L); if(!P||P.next>=P.S.length)return null; const s=P.S[P.next];
   if(s.k==='f'&&s.a==null){ const [a,b]=C.ulPsFinal(P.seeds,P.S[0].w,P.S[1].w); s.a=a; s.b=b; }
-  const A=L.teams[s.a],B=L.teams[s.b],enc=s.a===0||s.b===0?[ulProfile(A.e),ulProfile(B.e)]:null,res=ulRng(L,'P'+s.id,()=>cupMatch(A.e,B.e,{cup:'ul',round:'PS',match:s.id,best:s.best,ri:[L.cnt[s.a],L.cnt[s.b]]}));
+  const A=L.teams[s.a],B=L.teams[s.b],enc=s.a===0||s.b===0?[ulProfile(A.e),ulProfile(B.e,cupIdBase(A.e))]:null,res=ulRng(L,'P'+s.id,()=>cupMatch(A.e,B.e,{cup:'ul',round:'PS',match:s.id,best:s.best,ri:[L.cnt[s.a],L.cnt[s.b]]}));
   if(!res.ok)throw new Error('경기 실패: '+((res.errors&&res.errors[0]&&res.errors[0].msg)||''));
   ulStatAdd(L,L.pbat||(L.pbat={}),L.ppit||(L.ppit={}),res,s.a,s.b);
   if(enc)s.pr=enc;s.nm=[A.name,B.name]; s.g=res.games.map(g=>[g.sa,g.sb,g.inn||9,g.walk?1:0]); s.bx=res.games.map(g=>ulBox(g,true)); const wa=C.ulPsWin(s.g,s.best)||(res.win==='B'?'b':'a'); s.w=wa==='a'?s.a:s.b;
