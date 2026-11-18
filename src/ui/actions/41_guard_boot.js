@@ -72,6 +72,8 @@ const GUARD={
   anaFire(v){ const a=anaList().find(x=>x.id===v); if(!a)return null; return {subj:`분석원 ${a.name} 계약 해지`,kind:'전력분석',lines:[`${AROLE[a.role].l} · 능력 ${a.skill}`],warn:'해지하면 되돌릴 수 없습니다.'}; },
   relBatch(){ const L=relPick(UI.trimSel||[]); if(!L.length)return null; const cost=L.reduce((s,p)=>s+relCost(p).tot,0), n=rosterN(G.user);
     return {subj:`선수 ${L.length}명 방출`,kind:'선수',lines:[...L.slice(0,12).map(p=>pnm(p.id)+(relCost(p).tot?` · 정산 ${money(relCost(p).tot)}`:'')),L.length>12?`외 ${L.length-12}명`:'',`방출 정산금 합계 ${money(cost)}${cost?'(FA·다년 계약의 남은 보장액 50%)':''}`,`정식 로스터 ${n}명 → ${n-L.length}명`],warn:'방출하면 되돌릴 수 없습니다. 웨이버 공시 기간에 다른 구단이 데려가면 남은 계약을 이어받습니다.'}; },
+  ysRelBatch(){ const L=(UI.trimYsSel||[]).map(id=>G.players[id]).filter(p=>p&&p.ys&&p.team===G.user); if(!L.length)return null; const cost=L.reduce((s,p)=>s+relCost(p).tot,0);
+    return {subj:`육성선수 ${L.length}명 방출`,kind:'선수',lines:[...L.slice(0,12).map(p=>pnm(p.id)+(relCost(p).tot?` · 정산 ${money(relCost(p).tot)}`:'')),L.length>12?`외 ${L.length-12}명`:'',cost?`방출 정산금 합계 ${money(cost)}`:'',`육성선수 ${ysN(G.user)}명 → ${ysN(G.user)-L.length}명 · 정식 로스터 ${rosterN(G.user)}명 그대로`].filter(Boolean),warn:'방출하면 되돌릴 수 없습니다.'}; },
   autoTrim(){ const n=rosterN(G.user)-ROSTER_MAX; if(n<=0)return null; const L=trimCands(n); return {subj:`로스터 정리 ${L.length}명`,kind:'선수',lines:L.slice(0,12).map(p=>pnm(p.id)),warn:'정리 대상은 방출되거나 육성선수로 돌아갑니다. 되돌릴 수 없습니다.'}; },
 };
 /* 영입 발표: 새로 온 선수가 왜 필요한지, 무엇을 맡고, 무엇을 감수하는지 한 장으로 */
