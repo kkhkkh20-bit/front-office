@@ -198,3 +198,46 @@ https://fronttime.kkhkkh-20.workers.dev/api/v1/health
 - **매일 시즌 확인(Cron Trigger, 무료)**: `wrangler.jsonc`의 `"triggers"` 주석을 풀면 됩니다. 없어도 요청이 들어올 때 시즌을 바꿉니다.
 - **백업**: D1은 Time Travel로 무료 7일(유료 30일) 안의 어느 시점으로든 되돌릴 수 있습니다. `npx wrangler d1 time-travel restore fronttime-db --timestamp=<유닉스 시각>`.
 - **앱(안드로이드·스팀)을 낼 때**: Worker 변수 `V1_ORIGINS`(앱 출처), 비밀값 `STEAM_WEB_API_KEY`·변수 `STEAM_APP_ID`, 비밀값 `GPGS_CLIENT_SECRET`·변수 `GPGS_CLIENT_ID`. 설계 문서 6절 참고.
+
+## 7. 클라우드 저장 켜기 (R2, 11-18)
+
+클라우드 저장(설정 › 저장의 '클라우드 저장 켜기', 설계 `docs/design/cloud-save-2026-11-17.md`)은 저장 본문을 Cloudflare **R2** 버킷에, 목록·판번호·연결 코드를 D1에 둡니다. 코드: `worker/v1/cloud.js`, 화면: `src/ui/shell/01d_cloud.js`.
+
+R2 바인딩 `SAVES`가 없으면 클라우드 저장 API만 `503 not_configured`를 돌려주고, 게임 화면은 클라우드 카드를 숨기고 설정에 "준비 중" 한 줄만 보입니다. 나머지(래더·기기 옮기기·로컬 저장)는 그대로입니다.
+
+### 7-1. R2 버킷과 바인딩
+
+1. 대시보드 → **Storage & databases → R2 Object Storage → Create bucket**. 이름 `fronttime-saves`, 위치 힌트는 **Asia-Pacific**(선택). 공개 접근(Public access)은 켜지 않습니다. *(11-18 운영자가 만들었습니다.)*
+2. `wrangler.jsonc`에 바인딩이 들어 있습니다(Worker와 같은 계정의 버킷이어야 합니다).
+
+   ```jsonc
+   "r2_buckets": [{ "binding": "SAVES", "bucket_name": "fronttime-saves" }],
+   ```
+
+   main에 합치면 자동 배포가 바인딩까지 올립니다. 대시보드 Worker(`fronttime`) → Settings → Bindings에 `SAVES`(R2)가 보이면 됩니다. 버킷이 없는 계정에 이 줄을 넣으면 배포가 실패하므로, 버킷을 지우거나 이름을 바꿨으면 이 줄도 고치거나 주석(`//`)으로 돌리세요.
+
+### 7-2. D1 표(migrations/0003)
+
+서버가 클라우드 요청을 처음 받을 때 표를 스스로 만들므로(같은 SQL, `IF NOT EXISTS`) 꼭 할 필요는 없습니다. 미리 만들어 두려면 둘 중 하나를 합니다(여러 번 해도 안전).
+
+- D1 콘솔(`fronttime-db` → **Console**)에 `migrations/0003_cloud_saves.sql` 전체를 붙여 넣고 **Execute**. `cloud_saves`, `cloud_codes`, `cloud_devices`, `cloud_usage` 4개 표가 생깁니다.
+- 또는 배포 뒤 게임 사이트의 개발자 도구 Console에서 관리자 마이그레이션(0001·0002·0003을 모두 실행합니다):
+
+  ```js
+  fetch('/api/v1/admin/migrate',{method:'POST',headers:{Authorization:'Bearer 관리자키'}}).then(r=>r.json()).then(console.log)
+  ```
+
+  `{ok: true, schema: 1, statements: 29}`처럼 나오면 됩니다.
+
+### 7-3. 확인
+
+- `https://fronttime.kkhkkh-20.workers.dev/api/v1/cloud` → `{"ok":true,"max_slots":3,...}`이면 켜진 것입니다. `{"error":"not_configured",...}`이면 `SAVES` 바인딩이 없습니다(7-1).
+- 게임 설정 › 저장·기기 › **클라우드 저장** 카드에 '클라우드 저장 켜기'가 보입니다.
+- 관리자 '래더 현황' 응답(`GET /api/v1/admin/stats`)의 `cloud`에 슬롯 수·용량·오늘 올리기 수가 나옵니다(본문은 읽지 않습니다).
+
+### 7-4. 한도와 비용
+
+- 플레이어당 클라우드 슬롯 3개(게임 세계 번호마다 하나), 슬롯마다 최근 3판 보관, 본문 16MB 이하.
+- 올리기는 플레이어당 분당 6번·하루 200번, 받기는 분당 30번, 기기 연결 코드·복구 코드 입력은 IP당 시간당 10번. 넘으면 429.
+- R2 무료: 저장 10GB, 쓰기(Class A) 월 100만 회, 읽기 월 1,000만 회. 하루 활성 1,000명까지는 무료 범위로 봅니다(설계 문서 2절). 사용량은 대시보드 **R2 → fronttime-saves → Metrics**.
+- 플레이어가 래더의 **서버 기록 지우기**(`DELETE /api/v1/player`)를 하거나 관리자가 플레이어를 지우면 그 플레이어의 R2 본문과 클라우드 표 줄도 함께 지웁니다.
