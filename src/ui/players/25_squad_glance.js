@@ -204,9 +204,9 @@ function lineupCard(tid){
   const row=(p,i)=>{ const pos=posOf[p.id]; const off=pos!=='DH'&&pos!==p.pos;
     return `<div class="lu" data-a="player" data-v="${p.id}" role="button" tabindex="0"><span class="lu-n">${i+1}</span>${avImg(p)}<div class="lu-m"><b>${esc(p.name)}${condChip(p)}</b><span class="lu-p"><span class="pp main${off?' off':''}">${POSS[pos]}</span>${off?`<i>본래 ${POSS[p.pos]}</i>`:''} <i>${hand(p)}</i></span><span class="lu-s">${bLine(p)}</span><span class="lu-u">${l10Text(p)?l10Text(p)+' · ':''}${useText(p)}</span></div>${tid===G.user?fatBar(p):(()=>{const r=scoutReport(p); return r.cur!=null?rchip(r.cur):'<span></span>';})()}</div>`; };
   const bench=d.bench.map(p=>`<div class="lu sm" data-a="player" data-v="${p.id}" role="button" tabindex="0">${avImg(p)}<div class="lu-m"><b>${esc(p.name)}${condChip(p)}</b><span class="lu-p">${posChips(p)}</span><span class="lu-s">${bLine(p)}</span><span class="lu-u">${useText(p)}</span></div></div>`).join('');
-  return `<section class="card"><div class="row between"><h2 class="sec">${tid===G.user?'감독 라인업':'예상 라인업'}</h2><span class="small muted">${m?esc(m.name)+' 감독 · ':''}${tid===G.user&&G.policy?POL[G.policy.k].l+' 지시 · ':''}다음 경기 기준</span></div>
-    <div class="lus">${order.map(row).join('')}</div>
-    ${bench?`<div class="eyebrow">벤치</div><div class="lus two">${bench}</div>`:''}
+  return `<section class="card"><div class="row between"><h2 class="sec">${tid===G.user?'감독 라인업':'예상 라인업'}</h2><span class="small muted">${m?esc(m.name)+' 감독 · ':''}${tid===G.user&&G.policy?POL[G.policy.k].l+' 지시 · ':''}다음 경기 기준</span>${typeof lineupFieldToggle==='function'?lineupFieldToggle():''}</div>
+    ${UI.lufView==='field'&&typeof lineupFieldPanel==='function'?lineupFieldPanel(tid):`<div class="lus">${order.map(row).join('')}</div>
+    ${bench?`<div class="eyebrow">벤치</div><div class="lus two">${bench}</div>`:''}`}
     <p class="small muted">타순과 수비 위치는 감독이 타격·수비 적합도로 정합니다. 노란 위치는 본래 포지션이 아닌 자리입니다. 출장 기록은 이번 시즌 실제 선발 기록입니다.</p></section>`;
 }
 function staffCard(tid){
