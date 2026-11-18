@@ -132,19 +132,23 @@ function storySeason(y){ // 시즌이 끝나면: 커리어 하이와 규정 이�
 /* ===== 가을야구 확률(남은 일정 모의 진행) ===== */
 let _poC={k:null};
 function mulberry(a){ return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const poWinP=(home,away)=>home*(1-away)/(home*(1-away)+away*(1-home))+.015;
 function playoffOdds(){
-  if(period()!=='season')return null; const k=G.year+':'+G.day+':'+G.teams.map(t=>{ const r=G.sea.rec[t.id]; return r.w+'-'+r.l; }).join(',')+':'+(G.makeup||[]).length; if(_poC.k===k&&_poC.g===G)return _poC.v; /* 세이브가 바뀌어도 같은 날짜면 재사용하던 캐시(검수 11-07) */
-  const rec=G.sea.rec; if(sum(G.teams.map(t=>rec[t.id].w+rec[t.id].l+(rec[t.id].t||0)))/G.teams.length<20){ _poC={k,v:null,g:G}; return null; } /* 20경기 전에는 확률을 내지 않는다(무승부도 치른 경기, 검수 11-06) */
-  const str0=G.teams.map(t=>{ const r=rec[t.id]; return (r.w+(t.expW||.5)*60)/(r.w+r.l+60); });
-  const rem=(G.makeup||[]).filter(x=>x.y===G.year).map(x=>[x.h,x.a]); for(const d in G.cal.sched){ if(+d>G.day)for(const m of G.cal.sched[d])rem.push(m); } /* 연기 경기도 남은 경기(검수 11-09k) */
-  const n=G.teams.length, N=400, top5=new Array(n).fill(0), first=new Array(n).fill(0), rnd=mulberry(G.day*7919+G.year);
-  const w0=G.teams.map(t=>rec[t.id].w), l0=G.teams.map(t=>rec[t.id].l); const bi=[]; standingsNow().forEach((o,i)=>bi[o.tid]=i); const H0=G.teams.map(()=>new Array(n).fill(0)); G.teams.forEach(t=>{ for(const x of ((G.sea.tl||[])[t.id]||[]))if(x[0]>0)H0[t.id][x[4]]++; }); /* 맞대결 승수: 동률 묶음 순위를 남은 경기 결과까지 넣어 다시 정한다(실제 순위 standingsNow와 같은 기준, 검수 11-09zn) */
+  if(period()!=='season')return null;const teams=seaTeams(),n=teams.length;if(!n)return null;const ids=teams.map(t=>t.id),ix=new Map(ids.map((id,i)=>[id,i])),y=G.sea.y??G.year,rec=teams.map(t=>G.sea.rec[t.id]||{w:0,l:0,t:0});
+  const rem0=(G.makeup||[]).filter(x=>x.y===y).map(x=>[x.d??null,x.h,x.a]);for(const d in G.cal.sched)if(+d>G.day)for(const m of G.cal.sched[d])rem0.push([+d,m[0],m[1]]);
+  const pending=rem0.filter(m=>m[1]!==m[2]&&ix.has(m[1])&&ix.has(m[2])),rem=pending.map(m=>[ix.get(m[1]),ix.get(m[2])]);
+  const H0=teams.map(()=>new Array(n).fill(0)),Q0=teams.map(()=>new Array(n).fill(0)),bi=new Array(n).fill(99);teams.forEach((t,i)=>{for(const x of G.sea.tl?.[t.id]||[]){const j=ix.get(x[4]);if(j==null||j===i)continue;if(x[0]>0)H0[i][j]++;Q0[i][j]+=x[1]||0;}});standingsNow().forEach((o,i)=>{const j=ix.get(o.tid);if(j!=null)bi[j]=i;});
+  /* 경기 수(무승부 포함), 실제 남은 대진·홈, 맞대결과 전력이 모두 캐시의 입력이다. 내년 참가 구단은 올해 계산에 넣지 않는다. */
+  const k=JSON.stringify([G.year,G.day,y,teams.map((t,i)=>[t.id,rec[i].w,rec[i].l,rec[i].t||0,t.expW??.5]),pending,H0,Q0,bi]);if(_poC.k===k&&_poC.g===G)return _poC.v;
+  if(sum(rec.map(r=>r.w+r.l+(r.t||0)))/n<20){_poC={k,v:null,g:G};return null;}
+  const str0=teams.map((t,i)=>{const r=rec[i];return (r.w+(t.expW??.5)*60)/(r.w+r.l+60);}),N=400,top5=new Array(n).fill(0),first=new Array(n).fill(0),rnd=mulberry(G.day*7919+G.year),w0=rec.map(r=>r.w),l0=rec.map(r=>r.l);
   for(let s=0;s<N;s++){ const w=w0.slice(), l=l0.slice(), H=H0.map(r=>r.slice()); const str=str0.map(x=>clamp(x+(rnd()+rnd()+rnd()-1.5)*.06,.25,.75)); /* 팀 실력 자체의 불확실성 */
-    for(const [h,a] of rem){ const ph=str[h], pa=str[a]; const p=ph*(1-pa)/(ph*(1-pa)+pa*(1-ph))+.015; if(rnd()<p){w[h]++;l[a]++;H[h][a]++;} else {w[a]++;l[h]++;H[a][h]++;} }
-    const pc=i=>w[i]+l[i]?w[i]/(w[i]+l[i]):.5; const ord=[...Array(n).keys()].sort((x,y)=>pc(y)-pc(x)||bi[x]-bi[y]); for(let i=0;i<n;){ let j=i; while(j<n&&Math.abs(pc(ord[j])-pc(ord[i]))<1e-12)j++; if(j-i>1){ const g=ord.slice(i,j), gp=x=>{ let a=0,b=0; for(const y of g)if(y!==x){ a+=H[x][y]; b+=H[y][x]; } return a+b?a/(a+b):.5; }; g.sort((x,y)=>gp(y)-gp(x)||bi[x]-bi[y]); ord.splice(i,j-i,...g); } i=j; } /* 동률은 실제 순위 규정(상대 전적·맞대결 득점)으로 정한 지금 순서대로(검수 11-08: 탈락 확정 팀이 가장 높게 나옴) */
-    const eq=(a,b)=>a!=null&&b!=null&&Math.abs(pc(a)-pc(b))<1e-12; for(const i of [0,4])if(eq(ord[i],ord[i+1])&&!eq(ord[i-1],ord[i])&&!eq(ord[i+1],ord[i+2])&&rnd()<.5)[ord[i],ord[i+1]]=[ord[i+1],ord[i]]; /* 두 팀 동률은 결정전 한 경기 */ /* 동률은 팀마다 한 번 뽑은 값으로 가른다(정렬 중 난수 비교는 한쪽으로 치우쳤다, 검수 11-06) */
-    for(let i=0;i<5;i++)top5[ord[i]]++; first[ord[0]]++; }
-  const v=G.teams.map(t=>({tid:t.id,ps:top5[t.id]/N,first:first[t.id]/N,str:str0[t.id]})); _poC={k,v,g:G}; return v; } /* g: 다른 세이브의 확률을 쓰지 않게(검수 11-08) */
+    for(const [h,a] of rem)if(rnd()<poWinP(str[h],str[a])){w[h]++;l[a]++;H[h][a]++;}else{w[a]++;l[h]++;H[a][h]++;}
+    const pc=i=>w[i]+l[i]?w[i]/(w[i]+l[i]):.5; const ord=[...Array(n).keys()].sort((x,y)=>pc(y)-pc(x)||bi[x]-bi[y]); for(let i=0;i<n;){ let j=i; while(j<n&&Math.abs(pc(ord[j])-pc(ord[i]))<1e-12)j++; if(j-i>1){ const g=ord.slice(i,j), gp=x=>{ let a=0,b=0; for(const y of g)if(y!==x){ a+=H[x][y]; b+=H[y][x]; } return a+b?a/(a+b):.5; },gr=x=>sum(g.filter(y=>y!==x).map(y=>Q0[x][y])); g.sort((x,y)=>gp(y)-gp(x)||gr(y)-gr(x)||bi[x]-bi[y]); ord.splice(i,j-i,...g); } i=j; }
+    /* 두 팀 동률 결정전도 같은 전력 모형으로 예상한다. 맞대결 우위로 앞선 팀이 홈이다. */
+    const eq=(a,b)=>a!=null&&b!=null&&Math.abs(pc(a)-pc(b))<1e-12;for(const i of [0,4])if(eq(ord[i],ord[i+1])&&!eq(ord[i-1],ord[i])&&!eq(ord[i+1],ord[i+2])&&rnd()>=poWinP(str[ord[i]],str[ord[i+1]]))[ord[i],ord[i+1]]=[ord[i+1],ord[i]];
+    for(let i=0;i<Math.min(5,n);i++)top5[ord[i]]++; first[ord[0]]++; }
+  const v=teams.map((t,i)=>({tid:t.id,ps:top5[i]/N,first:first[i]/N,str:str0[i]})); _poC={k,v,g:G}; return v; }
 
 /* ===== 기록으로 보는 메모(능력치가 아니라 눈에 보이는 성적 기준) ===== */
 const babipOf=h=>{ const d=(h.ab||0)-(h.so||0)-(h.hr||0)+(h.sf||0); return d>0?(h.h-h.hr)/d:null; }; /* (H-HR)/(AB-K-HR+SF), 검수 11-09l */

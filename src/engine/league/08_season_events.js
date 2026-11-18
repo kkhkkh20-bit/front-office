@@ -36,7 +36,7 @@ function seasonEnd(){ for(const p of Object.values(G.players))if(p.team==null&&p
   updateLg(G.year); try{ rainSeasonEnd(); }catch(e){} try{ warFreeze(G.year); }catch(e){} /* 정규시즌 끝: 시상·기록과 같은 WAR로 고정(마무리캠프 능력 변화로 바뀌지 않게, 검수 11-08) */ try{ _pjC={}; projFit(true); projFit(false); }catch(e){} /* 올 시즌 능력→성적 식을 시즌 끝 상태로 남긴다(다음 시즌 초 예측용) */ try{ cOptAsk(); }catch(e){} /* 구단 연장 옵션 결정(스토브리그 전) */
   const st=standingsNow(); const s=st.map(x=>x.tid); const two0=pctEq(st[0],st[1])&&!(st[2]&&pctEq(st[1],st[2]));
   stop('일정',`정규시즌이 끝났습니다. 우리 구단 ${tieRank(st,G.user)}위. ${two0?`1위는 ${tname(s[0])}·${tname(s[1])} 결정전으로 정합니다.`:`1위 ${tname(s[0])}.`}`); /* 공동 1위면 결정전 전에 1위를 발표하지 않는다(검수 11-07) */
-  G.ps={seeds:s.slice(0,5),order:st,res:{},round:'wc',done:false};
+  G.ps={y:G.year,names:psNameSnapshot(G.year),seeds:s.slice(0,5),order:st,res:{},round:'wc',done:false};
   G.ps.upg=[]; for(const x of s.slice(0,st.length>5&&pctEq(st[4],st[5])&&!(st[3]&&pctEq(st[3],st[4]))&&!(st[6]&&pctEq(st[5],st[6]))?6:5)){ /* 5위 결정전에 들어가는 6위도 같은 날 최정예 엔트리(검수 11-07) */ G.ps.upg.push(x.tid??x); try{ entryUpgrade(x.tid??x,playersOf(x.tid??x).filter(canUp),'포스트시즌 최정예'); }catch(e){} } /* 가을야구는 가장 강한 엔트리로 */
   /* KBO: 1위·5위가 승률 같으면 결정전 한 경기(상대 전적 우위 팀 홈). 그 밖의 순위는 상대 전적·다득점으로 정한다 */
   const two=i=>pctEq(st[i],st[i+1])&&!(st[i-1]&&pctEq(st[i-1],st[i]))&&!(st[i+2]&&pctEq(st[i+1],st[i+2])); /* KBO: 결정전은 두 팀 동률일 때만. 세 팀 이상이면 상대 전적·상대 경기 다득점·전년도 순위로 정한다(검수 11-08) */
@@ -48,6 +48,10 @@ function seasonEnd(){ for(const p of Object.values(G.players))if(p.team==null&&p
 }
 /* 순위 결정전이 남아 있으면 그 자리 시드는 아직 비운다(잠정 순위 팀을 진출팀처럼 보이지 않게, 검수 11-09l. 스폰서 전망·구단 화면도 같은 기준, 11-09zn) */
 function psSeedsNow(P){ const c=P.cur&&P.cur.round==='tb'?[P.tbPos,...(P.tbq||[]).map(q=>q[0])]:[]; return (P.seeds||[]).map((t,i)=>c.some(k=>i===k||i===k+1)?null:t); }
+/* 대진 기록은 시즌 연도와 당시 명칭을 보관한다. 1월 순연도 다음 시즌 기록으로 옮기지 않는다. */
+function psNameSnapshot(y){const out={};for(const t of G.teams||[]){const L=(G.tnames&&G.tnames[t.id])||[],h=L.filter(x=>x.y0<=y&&(x.y1==null||x.y1>=y)).slice(-1)[0]||t;out[t.id]={city:h.city,nick:h.nick,...(h.disp?{disp:h.disp}:{}),...(h.abbr?{abbr:h.abbr}:{})};}return out;}
+function psArchiveSnapshot(P,y){const r=P.res||P;return JSON.parse(JSON.stringify({y:P.y??y,names:P.names||psNameSnapshot(y),wc:r.wc,spo:r.spo,po:r.po,ks:r.ks,days:P.days||{},resD:P.resD||{},tbRes:P.tbRes||[]}));}
+function psArchiveMetaMigrate(){let n=0;const fix=(P,y)=>{if(!P)return;if(P.y==null){P.y=y;n++;}if(!P.names){P.names=psNameSnapshot(P.y);n++;}};fix(G.ps,G.sea&&G.sea.y||G.year);for(const h of G.history||[])fix(h.ps,h.y);if(G.last)fix(G.last.ps,G.last.y);return n;}
 function mkSeries(round,hi,lo,start){
   const off={tb:[0],wc:[0,1],spo:[0,1,3,4,6],po:[0,1,3,4,6],ks:[0,1,3,4,5,7,8]}[round];
   const homes={tb:[hi],wc:[hi,hi],spo:[hi,hi,lo,lo,hi],po:[hi,hi,lo,lo,hi],ks:[hi,hi,lo,lo,lo,hi,hi]}[round];
@@ -55,9 +59,9 @@ function mkSeries(round,hi,lo,start){
   return {round,hi,lo,wh:0,wl:0,days:off.map(x=>start+x),homes,need,gi:0};
 }
 const PS_MAXG=40;
-function psOursOn(d){ const P=G.ps; const s=P&&!P.done&&P.cur; return !!(s&&s.days[s.gi]===d&&(s.hi===G.user||s.lo===G.user)); }
+function psOursOn(d){ const P=G.ps; const s=P&&!P.done&&P.cur; return !!(!G.unemp&&s&&s.days[s.gi]===d&&(s.hi===G.user||s.lo===G.user)); }
 /* 앞으로 열릴 우리 포스트시즌 경기(지금 시리즈의 남은 날짜). 시리즈가 일찍 끝나면 그 뒤 날짜는 빠진다. 반환: {home, op, n(차전)} */
-function psOursAt(d){ const P=G.ps; const s=P&&!P.done&&P.cur; if(!s||!(s.hi===G.user||s.lo===G.user)||!s.days)return null; const i=s.days.indexOf(d); if(i<s.gi||i<0)return null; const h=s.homes?s.homes[i]:s.hi; return {home:h===G.user,op:s.hi===G.user?s.lo:s.hi,n:i+1,round:s.round}; }
+function psOursAt(d){ const P=G.ps; const s=P&&!P.done&&P.cur; if(G.unemp||!s||!(s.hi===G.user||s.lo===G.user)||!s.days)return null; const i=s.days.indexOf(d); if(i<s.gi||i<0)return null; const h=s.homes?s.homes[i]:s.hi; return {home:h===G.user,op:s.hi===G.user?s.lo:s.hi,n:i+1,round:s.round}; }
 function psOursTxt(){ const s=G.ps&&G.ps.cur; if(!s)return '우리 경기'; const op=s.hi===G.user?s.lo:s.hi; return `${ROUNDK[s.round]} ${s.gi+1}차전(${tshort(op)}전)`; }
 const ROUNDK={tb:'순위 결정전',wc:'와일드카드 결정전',spo:'준플레이오프',po:'플레이오프',ks:'한국시리즈'};
 /* 오류·저장 상태로 지나간 차전은 다음 진행일부터 다시 잡는다(검수 11-09k). 진행 전에 미리 옮겨 두어 경기 전 확인·중계 대기·일정 화면이 그 날짜를 본다(검수 11-09zo) */
@@ -75,33 +79,36 @@ function psShiftDays(s,sh){ if(!s||!sh)return; const old=s.days.slice(s.gi), op=
   }
   for(const k of planned)G[k]={...G[k],day:G[k].day+sh};
 }
+/* 조기 종료된 시리즈의 미래 차전만 취소한다. 같은 날 다른 경기·상대의 예약은 그대로 둔다. */
+function psSeriesPlansDone(s,sgid){if(G.unemp||!(s.hi===G.user||s.lo===G.user))return;const dates=new Set(s.days.slice(s.gi)),op=s.hi===G.user?s.lo:s.hi,booked=(d,q)=>{if(!dates.has(+d)||!q||q.done||q.tid!=null&&q.tid!==G.user)return false;const games=dayGames(+d).filter(g=>g.includes(G.user)),chosen=q.op??(games.length?(games[0][0]===G.user?games[0][1]:games[0][0]):op);return chosen===op&&!games.some(g=>g.includes(op));},planned=['watchPlanned','simPlanned','matchAwait'].filter(k=>G[k]&&booked(G[k].day,G[k]));for(const [d,q] of Object.entries(G.gmPlan||{}))if(q.k==='attend'&&booked(d,q)){q.done=true;q.miss=true;q.cancelled='시리즈 종료';if(q.mid){G.mail=(G.mail||[]).filter(m=>m.id!==q.mid);G.stops=(G.stops||[]).filter(m=>m.id!==q.mid);}const m=note('일정',`${dmd(+d)} 직관하려던 경기가 시리즈 종료로 열리지 않아 직관 일정을 취소했습니다.`);if(m&&sgid!=null)m.sgid=sgid;}for(const k of planned)G[k]=null;}
 function psCatchUp(day){ const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&s.days&&s.days[s.gi]<day)psShiftDays(s,day-s.days[s.gi]); }
 function psDay(day){
   psCatchUp(day); const P=G.ps, s=P.cur; if(!s||s.days[s.gi]!==day)return;
   const h=s.homes[s.gi], a=h===s.hi?s.lo:s.hi;
   const hiL=s.need[0]-s.wh, loL=s.need[1]-s.wl; /* 남은 승수: 한쪽이 1승만 남으면 다른 쪽은 탈락 위기, 둘 다 1승이면 최종전 */
-  const gx={elim:hiL===1||loL===1,fin:hiL===1&&loL===1,elimT:[...(hiL===1?[s.lo]:[]),...(loL===1?[s.hi]:[])],noTie:s.round!=='wc'&&s.gi+hiL+loL-1>=PS_MAXG}; /* 남은 경기를 모두 승부로 치러도 40경기를 넘을 수 있으면 이 경기부터 무승부 없이: 필요한 승수(한국시리즈 4승)를 채운 팀만 이기고 40경기 안에서 끝난다(검수 11-09zo) */ /* 탈락 위기는 팀마다(검수 11-07) */ { let wet=false; try{ wet=rainPS(day,h,s); }catch(e){} if(wet){ psShiftDays(s,1); wire('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전 우천 취소 · ${dmd(s.days[s.gi])}로`,{}); if((h===G.user||a===G.user)&&!G.unemp)note('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전이 비로 취소돼 ${dmd(s.days[s.gi])}에 열립니다. 남은 차전도 하루씩 밀립니다.`); return; } } /* 포스트시즌 비(93_rain): 하루씩 민다 */ if(h===G.user||a===G.user)try{ spoilSnapTake(day,[h,a]); }catch(e){} /* 중계 전 선수 화면은 경기 직전 기록으로(정규시즌과 같게, 검수 11-09zo) */ let g; try{ g=simGame(day,h,a,gx); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,gx); }catch(e2){ psShiftDays(s,1); console.error('포스트시즌 경기 처리 실패, 하루 미룸',dmd(day),h,a,e2); if(h===G.user||a===G.user)note('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전이 사정으로 하루 미뤄져 ${dmd(s.days[s.gi])}에 열립니다.`); return; } } /* 한 경기 오류로 시리즈가 멈추지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 남은 차전을 하루씩 미룬다(검수 11-09k) */ { const back=boxSnap(g); try{ applyGame(day,h,a,g,true); }catch(e){ back(); psShiftDays(s,1); console.error('포스트시즌 경기 반영 실패, 되돌리고 하루 미룸',dmd(day),h,a,e); return; } } try{ rivalAfterGame(day,h,a,g,true); }catch(e){ console.error(e); } /* 반영 실패: 등판 부하를 되돌린 뒤 다음 날 같은 차전을 다시(검수 11-09zn) */
+  const gx={elim:hiL===1||loL===1,fin:hiL===1&&loL===1,elimT:[...(hiL===1?[s.lo]:[]),...(loL===1?[s.hi]:[])],noTie:s.round!=='wc'&&s.gi+hiL+loL-1>=PS_MAXG}; /* 남은 경기를 모두 승부로 치러도 40경기를 넘을 수 있으면 이 경기부터 무승부 없이: 필요한 승수(한국시리즈 4승)를 채운 팀만 이기고 40경기 안에서 끝난다(검수 11-09zo) */ /* 탈락 위기는 팀마다(검수 11-07) */ { let wet=false; try{ wet=rainPS(day,h,s); }catch(e){} if(wet){ psShiftDays(s,1); wire('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전 우천 취소 · ${dmd(s.days[s.gi])}로`,{}); if((h===G.user||a===G.user)&&!G.unemp)note('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전이 비로 취소돼 ${dmd(s.days[s.gi])}에 열립니다. 남은 차전도 하루씩 밀립니다.`); return; } } /* 포스트시즌 비(93_rain): 하루씩 민다 */ if(!G.unemp&&(h===G.user||a===G.user))try{ spoilSnapTake(day,[h,a]); }catch(e){} /* 중계 전 선수 화면은 경기 직전 기록으로(정규시즌과 같게, 검수 11-09zo) */ let g; try{ g=simGame(day,h,a,gx); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,gx); }catch(e2){ psShiftDays(s,1); console.error('포스트시즌 경기 처리 실패, 하루 미룸',dmd(day),h,a,e2); if(h===G.user||a===G.user)note('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전이 사정으로 하루 미뤄져 ${dmd(s.days[s.gi])}에 열립니다.`); return; } } /* 한 경기 오류로 시리즈가 멈추지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 남은 차전을 하루씩 미룬다(검수 11-09k) */ { const back=boxSnap(g); try{ applyGame(day,h,a,g,true); }catch(e){ back(); psShiftDays(s,1); console.error('포스트시즌 경기 반영 실패, 되돌리고 하루 미룸',dmd(day),h,a,e); return; } } try{ rivalAfterGame(day,h,a,g,true); }catch(e){ console.error(e); } /* 반영 실패: 등판 부하를 되돌린 뒤 다음 날 같은 차전을 다시(검수 11-09zn) */
   try{ cheerGame(day,h); }catch(e){} /* 포스트시즌 홈경기도 응원단 무대(검수 11-09zza) */
   let win=g.score.h>g.score.a?h:g.score.a>g.score.h?a:null;
   if(win===s.hi)s.wh++; else if(win===s.lo)s.wl++;
   if(!s.gi)s.pts=[]; if(s.pts)s.pts.push([g.score.h,g.score.a]); /* 차전별 점수(홈:원정, 대진표). 1차전부터 센 시리즈만 남겨 옛 저장과 어긋나지 않게 */
   s.gi++;
   try{ psRec(s.round,g); }catch(e){} /* 포스트시즌 기록은 모든 구단 선수에게(정규시즌 기록과 따로) */
-  if(h===G.user||a===G.user){ const rec=gameRecord(day,h,a,g,`${ROUNDK[s.round]} ${s.gi}차전`); try{ gmTenTick(); }catch(e){} /* 포스트시즌 경기도 단장 재임 경기(검수 148) */ keepGame(rec); ulog(rec); G.res={i:0}; prAfterGame(rec); try{ gmAttendResult(rec); }catch(e){} }
+  let ownRec=null;
+  if(h===G.user||a===G.user){ const rec=gameRecord(day,h,a,g,`${ROUNDK[s.round]} ${s.gi}차전`); rec.season=P.y??G.year; if(!G.unemp)ownRec=rec; try{ gmTenTick(); }catch(e){} /* 포스트시즌 경기도 단장 재임 경기(검수 148) */ keepGame(rec); ulog(rec); if(!G.unemp)G.res={i:0}; prAfterGame(rec); try{ gmAttendResult(rec); }catch(e){} }
   let done=null; if(s.wh>=s.need[0])done=[s.hi,s.lo]; else if(s.wl>=s.need[1])done=[s.lo,s.hi];
   else if(s.round==='wc'&&s.wl+(s.days.length-s.gi)<s.need[1])done=[s.hi,s.lo]; /* 와일드카드: 5위가 남은 경기를 다 이겨도 2승이 안 되면(무승부 포함) 1승을 안고 시작한 4위가 올라간다 */
   else if(s.gi>=s.days.length){ /* 무승부로 일정이 끝났는데 아무도 필요한 승수에 못 닿으면: 와일드카드는 1승을 안고 시작한 상위 팀이 올라가고, 나머지 시리즈는 다음 날 한 경기 더 한다(무승부는 승수에 넣지 않는다) */
     if(s.round==='wc')done=[s.hi,s.lo]; /* 필요한 승수(한국시리즈 4승)를 채울 때까지 더 한다. 40경기 안에서 끝나게 막판은 무승부 없이(noTie) */ /* 승수가 같으면(0승 0패 포함) 상위 시드에게 주지 않고 승부가 날 때까지 한 경기씩 더 한다(검수 11-06) */
     else { const first=s.n0==null; if(first)s.n0=s.days.length; const ties=s.gi-s.wh-s.wl; s.days.push(s.days[s.days.length-1]+(first&&ties>=2?2:1)); s.homes.push(s.homes[s.homes.length-1]); /* KBO 포스트시즌 규정: 무승부 재경기는 시리즈 최종전 뒤 같은 구장에서 이동일 없이 연전, 한 시리즈 무승부가 2경기 이상이면 하루 쉬고 연전 */ if(h===G.user||a===G.user)note('포스트시즌',`${ROUNDK[s.round]}: ${win==null?'무승부로 ':'앞선 무승부 때문에 '}${s.wh}승 ${s.wl}패. ${dmd(s.days[s.days.length-1])}에 ${s.gi+1}차전을 더 합니다.`); } }
-  if(done){ P.res[s.round]=[done[0],done[1],done[0]===s.hi?s.wh:s.wl,done[0]===s.hi?s.wl:s.wh]; (P.resD=P.resD||{})[s.round]=day; (P.days=P.days||{})[s.round==='tb'?'tb'+P.tbPos:s.round]={d:s.days.slice(0,s.gi),h:s.homes.slice(0,s.gi),...(s.pts?{p:s.pts.slice(0,s.gi)}:{})}; /* 치른 차전 날짜·홈(대진표) */ /* 시리즈가 끝난 날(팬 게시판 등) */
+  if(done){psSeriesPlansDone(s,ownRec?.gid); P.res[s.round]=[done[0],done[1],done[0]===s.hi?s.wh:s.wl,done[0]===s.hi?s.wl:s.wh]; (P.resD=P.resD||{})[s.round]=day; (P.days=P.days||{})[s.round==='tb'?'tb'+P.tbPos:s.round]={d:s.days.slice(0,s.gi),h:s.homes.slice(0,s.gi),...(s.pts?{p:s.pts.slice(0,s.gi)}:{})}; /* 치른 차전 날짜·홈(대진표) */ /* 시리즈가 끝난 날(팬 게시판 등) */
     const msg=s.round==='wc'&&!P.res.wc[2]&&!P.res.wc[3]?`${ROUNDK.wc}: 무승부로 끝나 1승을 안고 시작한 ${tname(done[0])}이(가) 준플레이오프에 올랐습니다.`:s.round==='wc'&&P.res.wc[2]<=P.res.wc[3]?`${ROUNDK.wc}: ${P.res.wc[2]}승 ${P.res.wc[3]}패${s.gi-s.wh-s.wl?` ${s.gi-s.wh-s.wl}무`:''}로 맞서 1승을 안고 시작한 ${tname(done[0])}이(가) 준플레이오프에 올랐습니다.`:`${ROUNDK[s.round]}: ${tname(done[0])}이(가) ${P.res[s.round][2]}승 ${P.res[s.round][3]}패로 이겼습니다.`; /* 와일드카드 무승부 진출(검수 11-07) */
-    (done.includes(G.user)?stop:note)('포스트시즌',s.round==='tb'?`${P.tbPos+1}위 결정전: ${tname(done[0])}이(가) 이겨 ${P.tbPos+1}위, ${tname(done[1])}은(는) ${P.tbPos+2}위입니다.${P.tbPos===4&&done[1]===G.user?' 우리 구단은 가을야구에 나가지 못합니다.':''}`:msg+(done[1]===G.user?' 우리 구단의 포스트시즌은 여기서 끝났습니다.':done[0]===G.user&&s.round!=='ks'?' 우리 구단이 다음 시리즈에 올랐습니다.':''));
+    const resultMail=(!G.unemp&&done.includes(G.user)?stop:note)('포스트시즌',s.round==='tb'?`${P.tbPos+1}위 결정전: ${tname(done[0])}이(가) 이겨 ${P.tbPos+1}위, ${tname(done[1])}은(는) ${P.tbPos+2}위입니다.${P.tbPos===4&&done[1]===G.user?' 우리 구단은 가을야구에 나가지 못합니다.':''}`:msg+(done[1]===G.user?' 우리 구단의 포스트시즌은 여기서 끝났습니다.':done[0]===G.user&&s.round!=='ks'?' 우리 구단이 다음 시리즈에 올랐습니다.':'')); if(ownRec&&resultMail)resultMail.sgid=ownRec.gid;
     if(s.round==='tb'){ const i=P.tbPos, h0=P.order[i].tid; if(done[0]!==P.order[i].tid){ const a=P.order[i]; P.order[i]=P.order[i+1]; P.order[i+1]=a; } P.seeds=P.order.slice(0,5).map(x=>x.tid); delete P.res.tb; { const dk=P.days&&P.days['tb'+i]; (P.tbRes=P.tbRes||[]).push({pos:i+1,h:h0 /* 결정전 전 순위 앞 팀(중계 전 대진표가 시드를 되돌려 보인다) */,w:done[0],l:done[1],d:dk&&dk.d?dk.d.slice(-1)[0]:G.day,p:dk&&dk.p?dk.p.slice(-1)[0]:null}); } /* 대진표에서 결정전 날짜·점수를 보여 준다(검수 11-07) */ if(i===4&&P.seeds.includes(done[0])){ P.upg=P.upg||[]; if(!P.upg.includes(done[0])){ P.upg.push(done[0]); try{ entryUpgrade(done[0],playersOf(done[0]).filter(canUp),'포스트시즌 최정예'); }catch(e){} } } /* 5위 결정전 승자도 가을야구 엔트리 보강(검수 11-06) */
       if((P.tbq||[]).length){ const q=P.tbq.shift(); const hi=P.order[q[0]].tid, lo=P.order[q[0]+1].tid; P.tbPos=q[0]; P.cur=mkSeries('tb',hi,lo,day+1); } else { P.round='wc'; P.cur=mkSeries('wc',P.seeds[3],P.seeds[4],day+2); try{ psSeedNews(); }catch(e){ console.error(e); } } return; } /* 결정전 승자가 그 순위를 갖는다 */
     const nx={wc:['spo',P.seeds[2]],spo:['po',P.seeds[1]],po:['ks',P.seeds[0]]}[s.round];
     try{ psOutNews(s.round,P.res[s.round]); }catch(e){ console.error(e); }
     if(nx){ P.round=nx[0]; P.cur=mkSeries(nx[0],nx[1],done[0],day+2); }
-    else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; if(done[0]===G.user&&!G.unemp){ G.champScene={y:G.year,day,op:done[1],w:P.res.ks[2],l:P.res.ks[3]}; if(g&&g.walk&&h===G.user)(G.champWo=G.champWo||{})[G.year]=1; } /* 끝내기 우승은 우승 순간 첫 장면을 '끝내기'로(카페 11-11 안토) */ /* 우승 장면을 한 번 띄운다(사용자 11-08) */ stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); try{ champCelebrate(); }catch(e){ console.error(e); } try{ titleNews(done[0],done[1]); }catch(e){ console.error(e); } }
+    else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; if(done[0]===G.user&&!G.unemp){ G.champScene={y:G.year,day,op:done[1],w:P.res.ks[2],l:P.res.ks[3]}; if(g&&g.walk&&h===G.user)(G.champWo=G.champWo||{})[G.year]=1; } /* 끝내기 우승은 우승 순간 첫 장면을 '끝내기'로(카페 11-11 안토) */ /* 우승 장면을 한 번 띄운다(사용자 11-08) */ const titleMail=stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); if(ownRec&&titleMail)titleMail.sgid=ownRec.gid; try{ champCelebrate(); }catch(e){ console.error(e); } try{ titleNews(done[0],done[1]); }catch(e){ console.error(e); } }
   }
 }
 /* 상한 초과(경쟁균형세)는 세금과 별개로 구단주가 부담으로 본다. 초과 폭과 연속 초과 횟수만큼 커진다(사용자 11-13 "셀캡 깨는 유저": 예전에는 신뢰 -10·지원 축소 초과분의 50%에서 멈춰 상한의 60%를 넘겨도 부담이 같았다).
@@ -114,7 +121,7 @@ function settlement(){
   try{ asSnap(); }catch(e){} /* 시즌 연봉 규모 기록: 실행위원회 소집 요건은 시즌을 치른 연봉으로 본다 */
   const y=G.year; const P=G.ps; const prePop=G.teams.map(t=>t.pop);
   const order=P.order.map(x=>({tid:x.tid,w:G.sea.rec[x.tid].w,l:G.sea.rec[x.tid].l,t:G.sea.rec[x.tid].t||0}));
-  const ps={wc:P.res.wc,spo:P.res.spo,po:P.res.po,ks:P.res.ks,champ:P.champ,runner:P.runner,poLose:P.res.po[1],spoLose:P.res.spo[1],wcLose:P.res.wc[1],first:order[0].tid};
+  const ps={...psArchiveSnapshot(P,y),champ:P.champ,runner:P.runner,poLose:P.res.po[1],spoLose:P.res.spo[1],wcLose:P.res.wc[1],first:order[0].tid};
   const gate=Math.round(rnd(128,162)*100), pool=Math.round(gate*.6);
   const share={}; G.teams.forEach(t=>share[t.id]=0);
   share[ps.first]+=Math.round(pool*.2); const rest=pool*.8;
@@ -227,7 +234,7 @@ function settlement(){
   try{ franchiseCheck(); }catch(e){}
   try{ if(!G.unemp)seasonReview(y); }catch(e){}
   storySeason(y); const awards=seasonAwards(y); try{ seasonTitles(y); }catch(e){} try{ featSeason(y); mgrEyeReport(); }catch(e){} try{ ivPromCheck('season'); }catch(e){}
-  G.history.push({y,d:G.day,fins:JSON.parse(JSON.stringify(fins)),order,champ:ps.champ,runner:ps.runner,ps:{wc:ps.wc,spo:ps.spo,po:ps.po,ks:ps.ks,days:P.days,tbRes:P.tbRes} /* 순위 결정전도 지난 대진표에 남긴다(검수 11-08) */,user:{w:uo.w,l:uo.l,t:uo.t,rank,net:fin.net,trust:u.trust}});
+  G.history.push({y,d:G.day,fins:JSON.parse(JSON.stringify(fins)),order,champ:ps.champ,runner:ps.runner,ps:psArchiveSnapshot(P,y),user:{w:uo.w,l:uo.l,t:uo.t,rank,net:fin.net,trust:u.trust}});
   try{ histSnapSeason(G.history[G.history.length-1]); }catch(e){} /* 우승팀 명단·감독 시즌 기록(OOTP 참고) */
   try{ cupAlbumAuto(y,rank,ps.champ===G.user,uo); }catch(e){} /* 출전 로스터 앨범(유저 대회, 99_cup) */
   for(const t of G.teams){const f=fins[t.id];if(f)chron('finance',`${y} 결산 · 수입 ${money(sum(f.inc.map(x=>x[1])))} · 지출 ${money(sum(f.exp.map(x=>x[1])))} · 손익 ${money(f.net)} · 기말 현금 ${money(f.cash)}`,null,t.id,{source:'finance:'+y});}
