@@ -566,7 +566,7 @@ function answerOffer(id,yes){
   const diff=sum(o.give.map(id=>trueVal(G.players[id])))-sum(o.get.map(id=>trueVal(G.players[id])))-cashVal(t,cash)+cashCost(t,cash);
   try{ frBacklash(o.get); }catch(e){}
   G.trades.push({me:G.user,y:G.year,d:G.day,with:o.from,gw:(team(o.from).gm||{}).id,give:o.get.map(id=>G.players[id].name),get:o.give.map(id=>G.players[id].name),diff,revealed:false,gi:[...o.give],go:[...o.get],snap,grade,...(cash?{cash}:{})});
-  if(cash>0){payOut(G.user,cash,'etc');payIn(o.from,cash);G.spend.trC=(G.spend.trC||0)+cash;}else if(cash<0){payOut(o.from,-cash,'etc');payIn(G.user,-cash,'tradeIn');}
+  if(cash>0)tradeCashPay(G.user,o.from,cash);else if(cash<0)tradeCashPay(o.from,G.user,-cash);
   if(pk.give.length||pk.get.length){pkMove(pk,o.from);const T=G.trades[G.trades.length-1];T.pk={give:pk.give.map(pkName),get:pk.get.map(pkName)};T.pkk={y:pk.y,give:[...pk.give],get:[...pk.get]};}
   t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); const tr=mvTr(),trNote=mvTradeNote(G.user,o.from,cash,pk); o.give.forEach(id=>mvLog('트레이드',G.players[id],o.from,G.user,trNote,0,tr)); try{ if(o.get.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} o.get.forEach(id=>mvLog('트레이드',G.players[id],G.user,o.from,trNote,0,tr)); offerDropMoved([...o.get,...o.give]);
   mgrTradeApply(mv); churnCheck(); mpickTraded(o.get); addLog(`${tname(o.from)}의 제안을 받아들였습니다: ${o.get.map(id=>G.players[id].name).join(', ')} ↔ ${o.give.map(id=>G.players[id].name).join(', ')}`);
