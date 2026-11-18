@@ -14866,7 +14866,8 @@ function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; { con
 /* 웨이버로 이어받을 계약의 s시즌 상한 반영액: 양수 뒤 실제 집계(salNext+capBAt)와 같게. 다음 시즌 다년계약은 그 계약금의 연 반영액(검수 11-17 #194), 연봉은 그 시즌 최저 연봉 이상(양수 때 올려 준다, 검수 11-17 #195) */
 function wvCapAmt(wc,s,nx){ const x=nx&&wc.extNext, b=x&&x.terms&&x.terms.bonus; const sal=x?x.annual:Math.max(minSalOf(s),wc.sal||0); const cb=x&&b>0&&s>G.year?Math.round(b/Math.max(1,x.years)):wc.capB&&wc.capB.until>=s?wc.capB.a:0; return sal+cb; }
 /* 트레이드 뒤 상위 40명 연봉 합계(받는 선수는 옛 계약 조건의 상한 반영액이 끝난다) */
-function capPayAs(tid,inIds,outIds){ const y=sponSeason(), nx=y>G.year||preSeason(y), inS=new Set(inIds||[]), out=new Set(outIds||[]); /* 겨울(개막 전 1월 포함)은 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06·11-08) */
+function capPayAs(tid,inIds,outIds){ return _rosM?rosterMemo('C'+tid+'|'+(inIds||[]).join(',')+'|'+(outIds||[]).join(','),()=>capPayAs0(tid,inIds,outIds)):capPayAs0(tid,inIds,outIds); } /* 평가 구간에서는 같은 거래 합계를 한 번만(성능 11-18) */
+function capPayAs0(tid,inIds,outIds){ const y=sponSeason(), nx=y>G.year||preSeason(y), inS=new Set(inIds||[]), out=new Set(outIds||[]); /* 겨울(개막 전 1월 포함)은 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06·11-08) */
   const amt=(p,inn=inS.has(p.id))=>{ const wc=inn&&p.wv&&p.team==null?p.wv.c:null; /* 웨이버 양수: 승계하는 계약과 계약금 반영액(검수 11-06·11-07·11-08) */ if(nx)return wc?wvCapAmt(wc,y,true):inn?salNext(p):salNext(p)+capBAt(p,y); return wc?wvCapAmt(wc,G.year):inn?p.newSal??p.sal:p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0); }; /* 받는 선수는 옛 계약 조건의 상한 반영액이 끝난다. 재계약 합의 연봉은 이적 때 확정(mvLog) */
   const fid=franId(tid,outIds,inIds,amt,nx?y:null); /* 예외 대상도 합계와 같은 금액으로 고른다(웨이버 양수 선수가 방출 뒤 연봉으로 뽑혔다, 검수 11-09zzb) */
   const L=(nx?domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)):domPayOf(tid).filter(p=>!isRookie(p))).filter(p=>!out.has(p.id)).map(p=>capAmt(p,tid,amt(p,false),fid));
@@ -37835,7 +37836,7 @@ const wide=()=>typeof matchMedia!=='undefined'&&matchMedia('(min-width:980px)').
 function rcol(v){ return v>=75?'var(--r75)':v>=65?'var(--r65)':v>=55?'var(--r55)':v>=50?'var(--r50)':v>=45?'var(--r45)':v>=35?'var(--r35)':'var(--r20)'; }
 /* 글 속 선수·구단 이름을 누를 수 있게 */
 let _lk={k:null};
-function linkMap(){ const ps=Object.values(G.players); const k0=(typeof UI!=='undefined'?UI._rN:0)+':'+G.year+':'+G.day+':'+(G.mvN||0)+':'+ps.length+':'+G.user; if(_lk.g===G&&_lk.k0===k0)return _lk; /* 성능: 한 화면(UI._rN)에서 날짜·이동 기록·선수 수·구단이 같으면 전체 열쇠를 다시 만들지 않는다 */ const k=G.year+':'+G.day+':'+G.user+':'+JSON.stringify(G.teams.map(t=>[t.id,t.city,t.nick,t.disp||"",t.abbr||""]))+':'+JSON.stringify(ps.map(p=>[p.id,p.name,p.team,!!p.prospect])); if(_lk.g===G&&_lk.k===k){ _lk.k0=k0; return _lk; }
+function linkMap(){ const ps=Object.values(G.players); const k0=(typeof UI!=='undefined'?UI._rN:0)+':'+G.year+':'+G.day+':'+(G.mvN||0)+':'+ps.length+':'+G.user; if(_lk.g===G&&_lk.k0===k0)return _lk; /* 성능: 한 화면(UI._rN)에서 날짜·이동 기록·선수 수·구단이 같으면 전체 열쇠를 다시 만들지 않는다 */ let h1=2166136261>>>0, h2=5381; const mix=v=>{ const t=String(v); for(let i=0;i<t.length;i++){ const c=t.charCodeAt(i); h1=Math.imul(h1^c,16777619)>>>0; h2=(Math.imul(h2,33)+c)>>>0; } h1=Math.imul(h1^124,16777619)>>>0; }; for(const p of ps){ mix(p.id); mix(p.name); mix(p.team); mix(p.prospect?1:0); } /* 성능: 선수 전체를 JSON으로 잇는 대신 두 개의 32비트 해시(slotsRosterKey와 같은 방식) */ const k=G.year+':'+G.day+':'+G.user+':'+JSON.stringify(G.teams.map(t=>[t.id,t.city,t.nick,t.disp||"",t.abbr||""]))+':'+ps.length+'#'+h1.toString(36)+'.'+h2.toString(36); if(_lk.g===G&&_lk.k===k){ _lk.k0=k0; return _lk; }
   const names={}; const sc=p=>(p.team===G.user?3:p.team!=null?2:p.foreign?1:0);
   for(const p of Object.values(G.players)){ if(!p.name||p.name.length<2||p.prospect&&!(G.draft&&!G.draft.done))continue; const c=names[p.name]; if(c==null||sc(p)>sc(G.players[c]))names[p.name]=p.id; }
   const teams={}; for(const t of G.teams){ teams[tfull(t)]=t.id; teams[t.nick]=t.id; teams[tnick(t)]=t.id; }
@@ -41057,7 +41058,7 @@ function inboxWire(){ ibFit();document.documentElement.style.setProperty('--ibto
   { /* 목록 칸 스크롤: 휴대폰도 페이지 대신 목록 안에서 이동하고 돌아오면 그 위치를 지킨다. */
     const atTop=UI._ibAtTop!==false; if(UI._ibFirst||(atTop&&UI._ibCnt!==n)){ L.scrollTop=0; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;
     const c=L.querySelector('.ibr.cur'); if(c&&(f||UI._ibToCur)){ UI._ibToCur=false; ibShowCur(L,c,true); }
-    const up=document.querySelector('.ibx-up'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibAtTop=L.scrollTop<=24; if(up){ up.style.top=(L.offsetTop+8)+'px'; /* PC: 위의 보낸 사람 얼굴을 가리지 않게 목록 칸 위쪽에 */ const lt=L.getBoundingClientRect().top; const k=[...L.querySelectorAll('.ibr.unread')].filter(r=>r.getBoundingClientRect().bottom<lt+4).length; up.hidden=L.scrollTop<200&&!k; up.textContent=k?`안 읽은 소식 ${k}건 ↑`:'맨 위로 ↑'; } }; L.onscroll=upd; upd();
+    const up=document.querySelector('.ibx-up'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibAtTop=L.scrollTop<=24; if(up){ up.style.top=(L.offsetTop+8)+'px'; /* PC: 위의 보낸 사람 얼굴을 가리지 않게 목록 칸 위쪽에 */ const lt=L.scrollTop>4?L.getBoundingClientRect().top:0; const k=L.scrollTop>4?[...L.querySelectorAll('.ibr.unread')].filter(r=>r.getBoundingClientRect().bottom<lt+4).length:0; /* 맨 위면 위로 지나간 줄이 없다: 줄마다 위치를 재지 않는다(성능 11-18) */ up.hidden=L.scrollTop<200&&!k; up.textContent=k?`안 읽은 소식 ${k}건 ↑`:'맨 위로 ↑'; } }; L.onscroll=upd; upd();
   }
   UI._ibFirst=false; UI._ibCnt=n; }
 function ibStep(d){ const rows=[...document.querySelectorAll('.ibx-list .ibr')],visible=new Set(rows.map(el=>el.dataset.mid)); const ids=(UI._ibOrder||ibList(UI.mf||'all').map(m=>m.id)).filter(id=>!rows.length||visible.has(String(id))||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
@@ -42247,7 +42248,8 @@ function castStart2D(c){ if(!c||UI.cast!==c||!c.pre)return; const host=document.
    이닝 점수(연장·치르지 않은 9회말 X) · R/H/E/B · 승·패·세·홀 · 결승타 · 홈런(시즌 n호) · 경기 MVP · 구장·관중.
    기록은 경기 기록(g.line·g.hits·박스스코어·g.pg)만 읽는다. g.pg가 없는 옛 기록은 남은 타석 기록에서 다시 계산한다. */
 const PGB_KIND={'1B':'안타','2B':'2루타','3B':'3루타','HR':'홈런','BB':'볼넷','HBP':'몸에 맞는 공','SF':'희생플라이','SAC':'희생번트','GB':'땅볼','FB':'뜬공','LD':'직선타','PU':'뜬공','OUT':'타점'};
-function pgbFacts(g){ let s=g.pg; if(!s||(!s.hr&&!s.gw)){ try{ s=Object.assign({},s||{},pgSum(g,false)); }catch(e){ s=s||{}; } } return s; }
+const _pgbC=new WeakMap(); /* 경기마다 한 번만 요약(같은 경기·같은 장면 수면 다시 계산하지 않는다, 성능 11-18) */
+function pgbFacts(g){ let s=g.pg; if(!s||(!s.hr&&!s.gw)){ const n=(g.pbp||[]).length, c=_pgbC.get(g); if(c&&c.pg===g.pg&&c.n===n)return c.s; try{ s=Object.assign({},s||{},pgSum(g,false)); }catch(e){ s=s||{}; } _pgbC.set(g,{pg:g.pg,n,s}); } return s; }
 function pgbName(g,id){ try{ const q=['h','a'].map(k=>g.box[k]).flatMap(B=>[...(B.bat||[]),...(B.pit||[])]).find(x=>x.id===id); return (q&&q.n)||G.players[id]?.name||''; }catch(e){ return G.players[id]?.name||''; } }
 function pgbSideOf(g,id){ return (g.box.a.bat||[]).some(x=>x.id===id)||(g.box.a.pit||[]).some(x=>x.id===id)?'a':'h'; }
 function pgbInn(h){ return `${Math.floor(h/2)+1}회${h%2?'말':'초'}`; }
