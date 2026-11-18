@@ -178,7 +178,7 @@ function talk(id,kind){
   if(kind==='ask'){ try{ const t=pvAsk(p,ev,contactRecord('pl:'+p.id).bond??30); if(t)line=t; }catch(e){} }
   if(out)line=pvTalk(p,kind,out,rep,line,ex); /* 같은 결과도 선수 말투·지금 상황에 맞춰 다른 문장(효과는 그대로) */
   line=personalTalkReply(p,kind,line);{const C=contactRecord('pl:'+p.id);C.seen=G.day;/* 대화도 교류: 친분이 식는 시계를 멈춘다(83_personal_life) */if(d)C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
-  return {msg:`${p.name}: "${line}"`,d};
+  return {msg:`${p.name}: "${line}"`,d,ext:kind==='contract'&&out==='ct_fa_loy'}; /* ext: 다년계약 제안이면 듣겠다고 함 → 화면이 연장 협상 버튼(또는 열 수 없는 이유)을 보인다(피드백 11-17 연장) */
 }
 /* 면담 결과(효과)만 정한다: 기분 변화 d(아직 적용 전)·출전 약속·분발(form)·2군 기용 요청·칭찬 체감 감소 기록(tkH).
    문장(out·rep·ex는 말투 문장 고르기용 결과 이름, line은 기본 문장)은 talk()가 고른다. AI 구단 면담도 같은 결과 계산을 쓸 수 있게 나눠 둔다.

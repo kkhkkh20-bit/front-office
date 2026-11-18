@@ -227,7 +227,7 @@ function renderSheet0(){
   if(UI.matchPreview){el.innerHTML=matchEntrySheet();return;}
   if(UI.fmKeys){el.innerHTML=fmKeysSheet();return;}
   if(!UI.menu&&!UI.title&&G.stAcc&&stAccBlock()){el.innerHTML=stAccSheet();return;} /* 정원이 찬 상태에서 수락한 스태프 후보: 누구 대신 데려올지 */
-  if(UI.meet&&!UI.menu&&!meetOver()){el.innerHTML='';return;}
+  if(UI.meet&&!UI.menu&&!meetOver()&&!UI.ngt){el.innerHTML='';return;} /* 면담 중 연 연장 협상 창은 면담 위에 그리고, 닫으면 면담으로 돌아온다(피드백 11-17 연장) */
   if(UI.mgrCandidate&&!UI.menu){ el.innerHTML=mgrCandidatePage(); return; }
   if(UI.ngt&&!UI.menu){ const sc=el.querySelector('.ng-rows'); const top=sc?sc.scrollTop:0; el.innerHTML=ngtSheet(); const s2=el.querySelector('.sheet.ngt'); if(s2&&UI._ngtY!=null)s2.scrollTop=UI._ngtY; const r2=el.querySelector('.ng-rows'); if(r2)r2.scrollTop=top; const lg=el.querySelector('.ng-msgs'); if(lg)lg.scrollTop=lg.scrollHeight; return; } /* 조건 줄 스크롤은 그대로, 대화 기록은 맨 아래(계약 1단계) */
   if(UI.negWin&&!UI.menu&&G.players[UI.negWin.id]){ const sc=el.querySelector('.sheet.negw'); const y=sc?sc.scrollTop:0; el.innerHTML=negWinSheet(); const s2=el.querySelector('.sheet.negw'); if(s2&&sc)s2.scrollTop=y; return; }

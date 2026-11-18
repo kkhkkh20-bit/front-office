@@ -30,6 +30,7 @@ globalThis.__sheetSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..',
 /* [코치 채용 성능] 시나리오용: 코치 시장 후보 목록(34_staff: cmkList)과 쪽 나누기(23_trade_compare: pager) 소스. UI는 빈 객체 */
 globalThis.__cmkSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'), st=R('staff/34_staff.js'), tc=R('market/23_trade_compare.js'); const cut=(t,a,b)=>t.slice(t.indexOf(a),t.indexOf(b));
   return 'const UI={};\n'+cut(tc,'function pager(','function cardPageSize(')+'\n'+cut(st,'const CMK_ROWS=','function coachMarket(')+'\n;({UI,pager,cmkList,CMK_ROWS})'; };
+globalThis.__extAskSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'); return {act:R('actions/40_actions.js'),meet:R('career/53_meeting.js'),sheet:R('players/39_player_sheet.js')}; }; /* [피드백 11-17 연장] 연장 요구·면담 → 연장 협상 화면 연결 */
 globalThis.__milRosterPlanSrc=()=>fs.readFileSync(path.join(__dirname,'..','src/ui/players/25_squad_glance.js'),'utf8');
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
@@ -7473,6 +7474,20 @@ T('[피드백 11-18 잠재력] 드래프트 선수 잠재력 평가는 시즌마
   ok(!ysD.length,'육성 등록 전환만으로 별이 바뀜: '+ysD.slice(0,3).join(', '));
   /* 관찰이 쌓이면 오차가 줄어든다: 처음보다 마지막 추정이 진짜 잠재력에서 더 멀어지지 않는다 */
   const far=mine.filter(p=>{ const L=S.get(p.id); return L&&Math.abs(L[L.length-1]-potStarN(p.pot))>Math.abs(L[0]-potStarN(p.pot))+.5; }); ok(!far.length,'관찰이 쌓였는데 실제에서 더 멀어짐 '+far.map(p=>p.name+' '+S.get(p.id).join(' ')).slice(0,3).join(' / ')); });
+/* 피드백 11-17 연장: 다년계약 요구를 받아들여도 협상 버튼이 없던 문제(요구는 35세 이상에게도 왔지만 협상은 34세까지) · 면담 계약 이야기에서 바로 연장 협상 */
+const extAskP=()=>{ fresh(); G.day=G.cal.open+40; const L=playersOf(G.user).filter(p=>!p.foreign&&!p.ys&&!p.prospect&&!(p.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a)); for(const q of playersOf(G.user)){ if(q.svc===faSvc(q)-1)q.svc=Math.max(0,faSvc(q)-3); q.agentY=G.year; } const p=L[0]; p.svc=faSvc(p)-1; p.faC=false; p.yrs=1; delete p.extNext; delete p.agentY; delete p.extNg; delete p.extCounter; p.age=30; ok(canExtend(p),'준비: 연장 가능 선수'); return p; };
+T('[피드백 11-17 연장] 다년계약 요구는 연장 협상을 할 수 있는 선수에게만 온다(35세 이상·육성선수 제외)',()=>{ const p=extAskP(); ok(EVH.agent.check()===p,'협상 가능한 주축에게 요구가 오지 않음');
+  p.age=36; ok(!canExtend(p)&&EVH.agent.check()!==p,'협상할 수 없는 35세 이상 선수에게 다년계약 요구가 옴'); p.age=30; p.ys=true; ok(EVH.agent.check()!==p,'육성선수에게 다년계약 요구가 옴'); });
+T('[피드백 11-17 연장] 요구를 받아들이면 연장 협상을 열 수 있고, 소식에 연장 협상 열기 버튼이 남는다',()=>{ const p=extAskP(); EVH.agent.make(p); const e=G.evs.find(x=>x.k==='agent'&&!x.done&&x.data.pid===p.id); ok(e,'요구 결정 없음'); const r=evPick(e.id,0);
+  ok(extWhy(p)===''&&canExtend(p),'받아들인 뒤에도 협상 가능해야 함'); ok(!r.includes('관리 탭'),'없는 관리 탭으로 안내: '+r); const m=G.mail.find(x=>x.id===e.mid); ok(m&&(m.acts||[]).some(a=>a.a==='extNgt'&&+a.v===p.id),'소식에 연장 협상 버튼이 없음: '+JSON.stringify(m&&m.acts));
+  const S=__extAskSrc(); ok(/k==='agent'&&\\+i===0[^;]*A\\.extNgt\\(/.test(S.act),'받아들이면 연장 협상 창(extNgt)을 열지 않음'); ok(/extNgt\\(v\\)\\{[^\\n]*extWhy\\([^\\n]*toast\\([^\\n]*ngtOpen\\('ext'/.test(S.act),'열 수 없으면 이유를 알리고, 열 수 있으면 협상 창을 여는 동작이 없음'); });
+T('[피드백 11-17 연장] 협상할 수 없는 선수의 예전 요구를 받아들이면 이유를 알리고 기분은 그대로다',()=>{ const p=extAskP(); p.age=36; EVH.agent.make(p); const e=G.evs.find(x=>x.k==='agent'&&!x.done&&x.data.pid===p.id); const m0=p.mor; const r=evPick(e.id,0);
+  ok(r.includes('연장 협상을 열 수 없습니다')&&r.includes('34세까지'),'이유 안내 없음: '+r); ok(p.mor===m0,'기분이 바뀜'); const m=G.mail.find(x=>x.id===e.mid); ok(!(m.acts||[]).some(a=>a.a==='extNgt'),'열 수 없는데 협상 버튼이 남음'); ok(m.body.includes('34세까지'),'소식 본문에 이유가 없음'); });
+T('[피드백 11-17 연장] 연장 협상 불가 이유(extWhy)는 연장 협상 버튼 조건(canExtend)과 같다',()=>{ fresh(); const L=Object.values(G.players).filter(p=>p.team!=null); for(const p of L.slice(0,400)){ ok((extWhy(p)==='')===!!canExtend(p),p.name+': '+extWhy(p)+' / '+canExtend(p)); }
+  const p=domestic(G.user).find(canExtend); p.faC=true; p.yrs=3; ok(extWhy(p).includes('3년 남아'),'FA 계약 남은 기간 이유: '+extWhy(p)); p.yrs=1; p.extNext={years:4,annual:500}; ok(extWhy(p).includes('이미'),'합의한 다년계약 이유'); });
+T('[피드백 11-17 연장] 면담 계약 이야기에서 다년계약을 듣겠다고 하면 연장 협상 버튼(또는 이유)이 생긴다',()=>{ const p=extAskP(); initPers(p); p.pers.loy=16; const r=talk(p.id,'contract'); ok(r.ext===true,'다년계약에 응했는데 협상 연결 표시 없음: '+r.msg);
+  const q=domestic(G.user).find(x=>x!==p&&canExtend(x)); initPers(q); q.svc=faSvc(q)-1; q.faC=false; q.pers.loy=5; ok(!talk(q.id,'contract').ext,'시장 평가를 원한다는 선수에게도 협상 버튼'); delete p.tk; p.age=36; const r2=talk(p.id,'contract'); ok(r2.ext===true&&extWhy(p).includes('34세까지'),'열 수 없는 선수는 이유를 보여야 함');
+  const S=__extAskSrc(); ok(/if\\(r\\.ext\\)\\{[^\\n]*extWhy\\(p\\)[^\\n]*M\\.ext=p\\.id/.test(S.meet),'면담 화면이 협상 버튼·이유를 보이지 않음'); ok(S.meet.includes('data-a="extNgt"'),'면담 화면 연장 협상 버튼 없음'); ok(S.sheet.includes('!meetOver()&&!UI.ngt'),'면담 위에 협상 창이 그려지지 않음'); ok(S.act.includes('UI.talkMsg.ext?extTalkBtn('),'선수 화면 면담 결과에 협상 버튼 없음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

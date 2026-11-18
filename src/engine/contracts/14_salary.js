@@ -103,6 +103,15 @@ function extParts(p,years){ const ytf=Math.max(0,faSvc(p)-(p.svc||0)); const age
   return {ytf,mkt,expFA:round5(expFA),disc,elite,yadj,mood,why}; }
 function extDemand(p,years){ const x=extParts(p,years); const d=x.expFA*x.disc*x.yadj*x.mood; return round5(x.elite?d:Math.min(d,faAsk(p).annual*1.1)); }
 function canExtend(p){ return p&&p.team===G.user&&!p.foreign&&!p.ys&&!p.extNext&&!(p.joinY>G.year)&&(!p.faC||p.yrs<=1)&&p.age<=34&&!p.prospect; } /* 연봉 협상 기간에도 다년계약은 따로 제안할 수 있다 */
+/* 다년계약(연장 협상)을 지금 열 수 없는 이유. 열 수 있으면 ''(canExtend와 같은 조건). 연장 요구 결정·면담 계약 이야기에서 버튼 대신 이유를 보여 준다(피드백 11-17 연장) */
+function extWhy(p){ if(!p)return '선수가 없습니다.'; if(G.unemp||p.team!==G.user)return `${p.name}은(는) 우리 구단 선수가 아닙니다.`;
+  if(p.foreign)return '외국인 선수는 비FA 다년계약 대상이 아닙니다. 재계약은 시즌 뒤 외국인 재계약에서 정합니다.';
+  if(p.prospect||p.joinY>G.year)return '아직 입단하지 않은 선수입니다. 입단한 뒤 협상할 수 있습니다.';
+  if(p.ys)return '육성선수는 다년계약을 맺을 수 없습니다. 정식 선수로 등록한 뒤 제안하세요.';
+  if(p.extNext)return `이미 다음 시즌부터 ${p.extNext.years}년 연 ${money(p.extNext.annual)} 다년계약에 합의했습니다.`;
+  if(p.faC&&p.yrs>1)return `FA 계약이 ${p.yrs}년 남아 있습니다. 계약 마지막 해부터 연장 협상을 할 수 있습니다.`;
+  if(p.age>34)return `${p.age}세 선수는 비FA 다년계약 대상이 아닙니다(34세까지). 계약이 끝나면 시즌 뒤 FA·재계약 협상에서 정합니다.`;
+  return canExtend(p)?'':'지금은 다년계약을 제안할 수 없는 선수입니다.'; }
 /* 다년계약 제안 결과: st = ok(합의) · counter(역제안, 7일 안에 수락 가능) · no(거절) · market(FA 시장을 보겠다며 거절) · locked(이번 주 협상 끝) · na(대상 아님).
    결과는 선수에게 남겨(p.extLast) 협상 창을 닫았다 열어도, 선수 정보에서도 볼 수 있게 한다 */
 function offerExtension(id,annual,years,acc,T,lock){ const r=offerExtension0(id,annual,years,acc,T,lock); const p=G.players[id];
