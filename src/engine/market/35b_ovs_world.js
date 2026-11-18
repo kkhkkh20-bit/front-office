@@ -101,7 +101,7 @@ function ovpYear(){ const O=G.ovp||ovpInit(); if(O.y===G.year)return; O.y=G.year
   for(const t of NW.slice(0,2))wire('해외',t,{}); return out.length; }
 const ovpFr=e=>({id:e.i,isP:!!e.P,age:e.a,r:e.r,role:e.ro,velo:e.v,th:e.th,bt:e.bt,pos:e.ps,addP:e.ap});
 /* 한 시즌 기록(그 리그 수준·환경 편차, 시장 후보의 지난 시즌 기록과 같은 식) */
-function ovpGen(e,y){ const fr=ovpFr(e), lv=e.l, A=LG_ADJ[lv]||[0,0], env=N(0,FENV[lv]??2), sp=fr.isP&&isSPr(fr);
+function ovpGen(e,y){ const fr=ovpFr(e), lv=e.l, A=lgAdjF(lv)||[0,0], env=N(0,lgEnv(lv)??2), sp=fr.isP&&isSPr(fr);
   const n=fr.isP?(sp?ri(240,450):ri(120,220)):ri(300,540); const h=fr.isP?simPit(fr,n,A[1]+env*1.6):simBat(fr,n,A[0]+env); h.lvl=lv; h.g=fr.isP?Math.max(1,Math.round(n/(sp?17:3.5))):Math.round(n/4.1); return ovpLineE(h,y); }
 /* 새해: 올 시즌 기록을 미리 만든다(시즌 중 화면에는 치른 만큼만, 시즌을 마치면 그대로 확정. 해외파 ovsPregen과 같은 방식) */
 function ovpPregen(){ for(const e of (G.ovp&&G.ovp.L)||[])if(!(e.cur&&e.cur.y===G.year))e.cur=ovpGen(e,G.year); }
