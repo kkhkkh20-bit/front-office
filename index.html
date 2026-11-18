@@ -15990,7 +15990,13 @@ function capOverOwner(u,y){ const ci=capInfo(u.id); if(!(ci.over>0)||u.indie||G.
   const pen=-clamp(Math.round(r*60*nm),2,20);
   const cutR=clamp(.5+r*2.5,.5,1.5)*(n>=2?1.2:1); const cut=Math.round(ci.over*cutR); const prev=u.supCut&&u.supCut.y===y+1?u.supCut.amt:0; u.supCut={y:y+1,amt:prev+cut};
   mail('구단주실',`상한 초과: 다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`상위 40명 연봉이 상한을 ${money(ci.over)}(${Math.round(r*100)}%) 넘었습니다${n>=2?`(${n}년 연속)`:''}. 경쟁균형세와 별도로, 모기업은 "규정을 넘겨 가며 쓴 돈은 구단이 책임지라"며 ${y+1}시즌 지원 한도를 초과분의 ${Math.round(cutR*100)}%인 ${money(cut)} 줄입니다. 구단주 신뢰 ${pen}.`,{kind:'구단주'}); return pen; }
-function financeSeasonOwner(tid,y){ const t=team(tid),S=t.finOwner&&t.finOwner.y===y?t.finOwner:null,g=tid===G.user?G.goals:G.clubT&&G.clubT[tid]&&G.clubT[tid].goals;return {owner:g&&g.y===y&&g.owner||S&&S.owner||t.owner,ownerId:S&&S.ownerId||G.boss&&G.boss[tid]&&G.boss[tid].own.id||'own'+tid,plan:S&&S.plan||planOf(t)}; }
+/* 개막 전에 그 시즌부터 적용한다고 발표한 승계·인수 기록만 금융 정책의 근거로 쓴다.
+   옛 저장도 이력에 실제 일자·적용 연도·후임이 남은 경우에만 보정하며, 이미 끝난 결산은 바꾸지 않는다. */
+function financePreopenOwner(tid,y){ if(y!==G.year||G.last&&G.last.y>=y)return null; const open=G.cal&&G.cal.open; if(!Number.isFinite(open))return null;
+  const H=(((G.ownership||{}).clubs||{})[tid]||{}).history||[]; let hit=null;
+  for(const h of H)if(['acquired','succeeded'].includes(h.kind)&&h.y===y&&Number.isFinite(h.d)&&h.d<open&&h.to&&h.to.effectiveYear===y&&OWNER[h.to.policy]&&h.to.ownerId&&(!hit||h.d>=hit.d))hit=h;
+  return hit?{owner:hit.to.policy,ownerId:hit.to.ownerId}:null; }
+function financeSeasonOwner(tid,y){ const t=team(tid),S=t.finOwner&&t.finOwner.y===y?t.finOwner:null,g=tid===G.user?G.goals:G.clubT&&G.clubT[tid]&&G.clubT[tid].goals,P=financePreopenOwner(tid,y);return {owner:P&&P.owner||S&&S.owner||g&&g.y===y&&g.owner||t.owner,ownerId:P&&P.ownerId||S&&S.ownerId||G.boss&&G.boss[tid]&&G.boss[tid].own.id||'own'+tid,plan:S&&S.plan||planOf(t)}; }
 function financeHistoryOwner(tid,h){const f=h.fins&&h.fins[tid];if(f&&f.owner)return f;const next=Number.isFinite(h.d)&&(((G.ownership||{}).clubs||{})[tid]||{}).history?.filter(x=>x.d>h.d&&x.from&&x.from.policy).sort((a,b)=>a.d-b.d)[0],base=financeSeasonOwner(tid,h.y);return next?{...base,owner:next.from.policy,ownerId:next.from.ownerId}:base;}
 function settlement(){
   try{ asSnap(); }catch(e){} /* 시즌 연봉 규모 기록: 실행위원회 소집 요건은 시즌을 치른 연봉으로 본다 */
@@ -16004,7 +16010,7 @@ function settlement(){
   const fins={}; const fins_self={};
   for(const t of G.teams){
     const o=order.find(x=>x.tid===t.id); const wp=o.w/Math.max(1,o.w+o.l);
-    const fanM=t.id===G.user&&G.pr?(0.9+G.pr.fan/500):1, adM=(t.id===G.user&&G.pr?(0.85+G.pr.fan/333)*(0.95+G.pr.press/1000):1)*(t.id===ME()&&HARD()?.9:1); /* 하드 모드: 광고·상품 수입 -10% */
+    const P=prOf(t.id), fanM=t.id===G.user&&G.pr?(0.9+G.pr.fan/500):1, adM=(P?(0.85+P.fan/333)*(0.95+P.press/1000):1)*(t.id===ME()&&HARD()?.9:1); /* 하드 모드: 광고·상품 수입 -10% */
     const AT=G.sea.att&&G.sea.att[t.id]; const S=stadOf(t.id); const SPj=stadProj(t.id); const att=SPj.att||Math.round(1e6*t.market*(.62+t.pop*.38+(wp-.5)*1.4)*fanM);
     const MK=G.mktT&&G.mktT[t.id], mkt=t.id===ME()?G.marketing:MK&&MK.fy===y?MK.v:2000; /* 야인 기간 전 소속 구단은 AI 구단과 같은 방식(스폰서·마케팅)으로 결산한다. 그해 단장이 정해 두고 떠난 마케팅 예산은 그해 결산까지 유지(검수 11-09h) */
     const HO=G.hoL&&G.hoL[y+':'+t.id]; if(HO)t.cash-=HO.net; /* 이직 때 먼저 넣은 현금은 되돌리고 아래 명세로 다시 넣는다(검수 11-09h) */
@@ -16202,6 +16208,7 @@ function ownershipReplace(tid,q,buyer){
   t.owner=['win','pr','profit'][Math.floor(seededRand(seed+':policy')()*3)];t.trust=60;s.ownerSince=G.year;
   if(typeof ownershipPeopleChanged==='function')ownershipPeopleChanged(tid,old,G.boss[tid],{ownerChanged:true,ceoChanged:buyer});
   const fy=ownershipFY(q),pct={win:110,pr:100,profit:90}[t.owner];ownershipSetSupport(tid,pct,fy);
+  if(fy===G.year&&G.cal&&G.day<G.cal.open&&!(G.last&&G.last.y>=G.year))t.finOwner={y:G.year,owner:t.owner,ownerId:own.id,plan:planOf(t)};
   const capital=buyer?ownershipCapital(tid,q.id+':buyer',Math.max(1500*ecoIdx(),-t.cash+1500*ecoIdx()),'인수기업 운영자금'):null;
   s.lastEventY=G.year;s.pending=null;s.debtYears=0;t.debtY=0;
   const to=ownershipSnapshot(tid);
@@ -17011,7 +17018,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
   recoverDraftLogs(); draftClubInit(); rchkInit(); sdObFix(); ctMilClauseFix(); sdContractFix(); salMilFix(); migrateMoveContracts(); faClosedFix(); aiBlockDates();
   /* 검수 11-18 #731~750: 실제 구단·복무 상태를 복원한 뒤 소속별 기록을 조용히 정리한다. */
-  captainMigrate(); leadAdjMigrate(); playPromiseFix(); goalSupportFix(); foResFix(); ovsRenewFix(); optProrationFix(); fovsMigrate(); facDealsMigrate();
+  captainMigrate(); leadAdjMigrate(); playPromiseFix(); goalSupportFix(); foResFix(); ovsRenewFix(); optProrationFix(); fovsMigrate(); facDealsMigrate(); newStadMigrate();
 }
 /* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.
    계약했는데 신인 후보(prospect) 표시가 남은 선수는 표시를 푼다(1월 1일 명단 정리 때 지워지지 않게). 난수를 쓰지 않는다. 사람·AI 구단 공통 */
@@ -19824,10 +19831,14 @@ function addAward(p,label,tid){const aw=p.aw=p.aw||[],added=!aw.includes(label);
 /* ===== 구단 연대기: 구단마다 해마다 일어난 일을 쌓는다 ===== */
 /* 최근 소식과 영구 연대기를 분리한다. 화면 조회는 게임·난수·저장 상태를 바꾸지 않는다. */
 let _chronGame=null,_chronIds=null,_chronSources=null;
-const chronIdentity=x=>x.source?'s:'+x.tid+':'+x.source:x.id?'i:'+x.id:'l:'+JSON.stringify([x.tid,x.y,x.d,x.k,x.t,x.ref??null]);
+const chronIdentity=x=>x.source?'s:'+x.tid+':'+x.source+(x.k==='rebrand'&&/^rebrand:\d+:\d+$/.test(x.source)?':'+JSON.stringify([x.d,x.t]):''):x.id?'i:'+x.id:'l:'+JSON.stringify([x.tid,x.y,x.d,x.k,x.t,x.ref??null]);
 function clubSeasonResult(h,tid){if(h.champ===tid)return '한국시리즈 우승';if(h.runner===tid)return '한국시리즈 준우승';let known=false;for(const [k,l] of [['ks','한국시리즈'],['po','플레이오프'],['spo','준플레이오프'],['wc','와일드카드']]){const r=h.ps&&h.ps[k];if(!Array.isArray(r))continue;known=true;if(r.slice(0,2).includes(tid))return l+' 진출';}return known?'정규시즌 종료':'포스트시즌 기록 없음';}
+/* 이름 전이는 같은 시즌에도 여러 번 생긴다. 보존된 실제 일자와 전이만 복원하고 알 수 없는 날짜는 만들지 않는다. */
+function legacyClubIdentityChron(tid,existing=[]){ const H=(G.tnames||{})[tid]||[],L=[]; for(let i=1;i<H.length;i++){ const a=H[i-1],b=H[i]; if(!Number.isFinite(b.d0)||a.city===b.city&&a.nick===b.nick)continue;
+  const transition=tfull(a)+' → '+tfull(b); if([...existing,...L].some(x=>x.k==='rebrand'&&x.d===b.d0&&(x.t===transition||String(x.t||'').startsWith(transition+' · '))))continue;
+  L.push({tid,y:dobj(b.d0).y,d:b.d0,k:'rebrand',t:transition+(a.city!==b.city?' · 연고 이전':'')+(b.why?' · '+b.why:''),ref:null,source:'legacy-rebrand:'+JSON.stringify([tid,i,b.d0,a.city,a.nick,b.city,b.nick]),basis:'구단 이름 변경 이력',gm:0,imported:true}); } return L; }
 function legacyClubRescueChron(tid,existing=[]){const L=[];for(const r of G.rescues||[]){if(r.tid!==tid||!Number.isInteger(r.y))continue;const d=Number.isFinite(r.d)?r.d:null,oldTitle=tfull(team(tid))+' '+(r.k==='re'?'재창단':'매각')+'(누적 적자 ',oldRows=existing.filter(e=>e.k==='lg'&&e.y===r.y&&(d==null||e.d===d)&&typeof e.t==='string'&&e.t.startsWith(oldTitle)&&e.t.endsWith(')'));if(oldRows.length===1&&(G.rescues||[]).filter(x=>x.tid===tid&&x.y===r.y&&(d==null||x.d===d)).length===1)continue;const source='legacy-rescue:'+JSON.stringify([tid,r.y,d,r.k,r.old??null,r.nw??null]);if([...existing,...L].some(e=>e.source===source||e.k==='owner'&&e.y===r.y&&(d==null||e.d===d)&&r.old&&r.nw&&e.t.includes(r.old)&&e.t.includes(r.nw)))continue;L.push({tid,y:r.y,d,dateUnknown:d==null,k:'owner',t:`${r.k==='re'?'운영 법인 변경':'구단 매각'} · ${r.old||'전임 이름 기록 없음'} → ${r.nw||'후임 이름 기록 없음'}${d==null?' (일자 기록 없음)':''}`,ref:null,source,basis:'구단 매각 장부',gm:0,imported:true});}return L;}
-function legacyClubChron(tid,existing=[]){const L=legacyClubRescueChron(tid,existing),add=x=>{if(!existing.some(e=>e.y===x.y&&e.k===x.k&&e.t===x.t&&e.d===x.d))L.push({...x,tid,gm:0,imported:true});};
+function legacyClubChron(tid,existing=[]){const L=[...legacyClubRescueChron(tid,existing),...legacyClubIdentityChron(tid,existing)],add=x=>{if(!existing.some(e=>e.y===x.y&&e.k===x.k&&e.t===x.t&&e.d===x.d))L.push({...x,tid,gm:0,imported:true});};
   for(const h of G.history||[]){const i=(h.order||[]).findIndex(x=>x.tid===tid);if(i<0||existing.some(x=>x.k==='season'&&x.y===h.y))continue;const r=h.order[i];if(!Number.isFinite(r.w)||!Number.isFinite(r.l)||!Number.isInteger(h.y))continue;const result=' · '+clubSeasonResult(h,tid);add({y:h.y,d:h.d??null,dateUnknown:h.d==null,k:'season',t:`${r.w||0}승 ${r.l||0}패${r.t?` ${r.t}무`:''} ${i+1}위${result}`,ref:null,source:'season:'+h.y,basis:'시즌 결산'});}
   const books=new Map((G.history||[]).filter(h=>h.fins&&h.fins[tid]).map(h=>[h.y,{y:h.y,d:h.d,f:h.fins[tid]}]));if(G.last?.fins?.[tid]&&!books.has(G.last.y))books.set(G.last.y,{y:G.last.y,d:G.last.d,f:G.last.fins[tid]});for(const {y,d,f} of books.values()){if(existing.some(x=>x.k==='finance'&&x.y===y)||!Array.isArray(f.inc)||!Array.isArray(f.exp)||!Number.isFinite(f.net))continue;add({y,d:d??null,dateUnknown:d==null,k:'finance',t:`${y} 결산 · 수입 ${money(sum(f.inc.map(x=>x[1])))} · 지출 ${money(sum(f.exp.map(x=>x[1])))} · 손익 ${money(f.net)}${Number.isFinite(f.cash)?` · 기말 현금 ${money(f.cash)}`:''}`,ref:null,source:'finance:'+y,basis:'보존된 결산 장부'});}
   for(const m of G.moves||[]){if(m.from!==tid&&m.to!==tid)continue;if(existing.some(x=>x.d===m.d&&x.ref===m.pid&&['move','trade','fa','draft'].includes(x.k)))continue;const from=m.from==null?(/해외 복귀/.test(m.t)?'해외 구단':m.t==='외국인'?'외국인 선수 시장':'무소속'):tnameOn(m.from,m.d),to=m.to==null?(/해외 진출|포스팅/.test(m.t)?'해외 구단':'무소속'):tnameOn(m.to,m.d); /* 거래 날의 이름(검수 11-17 #206) */add({y:m.y??dobj(m.d).y,d:m.d,k:'move',t:`${m.n} · ${m.t} · ${from} → ${to}${m.note?' · '+m.note:''}`,ref:m.pid,source:'legacy-move:'+JSON.stringify([m.d,m.pid,m.t,m.from,m.to,m.note]),basis:'이적 장부'});}
@@ -19835,13 +19846,13 @@ function legacyClubChron(tid,existing=[]){const L=legacyClubRescueChron(tid,exis
   for(const w of G.wire||[]){const k=kinds[w.k];if(w.tid!==tid||!k||existing.some(x=>x.d===w.d&&x.k===k&&(x.ref??null)===(w.ref??null)))continue;add({y:dobj(w.d).y,d:w.d,k,t:w.t,ref:w.ref??null,source:'legacy-wire:'+JSON.stringify([w.d,w.k,w.t,w.ref]),basis:'보존된 리그 소식'});}
   for(const r of retNosOf(tid)){if(!Number.isInteger(r.y))continue;if(existing.some(x=>x.k==='retNo'&&x.y===r.y&&(x.ref===r.pid||x.t.includes(r.name))))continue;add({y:r.y,d:null,k:'retNo',t:`${r.name} ${r.no}번 영구결번 · 지정 연도 ${r.y}년 (지정일 기록 없음)`,ref:r.pid??null,source:'retNo:'+r.y+':'+r.no,basis:'영구결번 장부',dateUnknown:true});}
   return L; }
-function clubChron(tid){const A=[...((G.clubHist||{})[tid]||[]),...(G.chron||[]).filter(x=>x.tid===tid)],M=new Map();A.push(...(G.clubHistV?legacyClubRescueChron(tid,A):legacyClubChron(tid,A)));for(const x of A)M.set(chronIdentity(x),x);return [...M.values()].sort((a,b)=>(a.y-b.y)||((a.d??Infinity)-(b.d??Infinity))||String(a.id||'').localeCompare(String(b.id||''),undefined,{numeric:true}));}
+function clubChron(tid){const A=[...((G.clubHist||{})[tid]||[]),...(G.chron||[]).filter(x=>x.tid===tid)],M=new Map();A.push(...(G.clubHistV?[...legacyClubRescueChron(tid,A),...legacyClubIdentityChron(tid,A)]:legacyClubChron(tid,A)));for(const x of A)M.set(chronIdentity(x),x);return [...M.values()].sort((a,b)=>(a.y-b.y)||((a.d??Infinity)-(b.d??Infinity))||String(a.id||'').localeCompare(String(b.id||''),undefined,{numeric:true}));}
 function chronArchiveInit(){if(_chronGame===G)return;const B=G.clubHist=G.clubHist||{};_chronIds=new Set();_chronSources=new Map();let seq=G.chronN||0;
   for(const [tid,L] of Object.entries(B))for(const x of L){if(x.id){_chronIds.add(x.id);const n=+String(x.id).replace(/^ch/,'');if(Number.isFinite(n))seq=Math.max(seq,n);}if(x.source)_chronSources.set(tid+':'+x.source,x);}
   const put=x=>{if(!x.id)x.id='ch'+(++seq);if(!_chronIds.has(x.id)){(B[x.tid]=B[x.tid]||[]).push(x);_chronIds.add(x.id);}if(x.source)_chronSources.set(x.tid+':'+x.source,x);};
   for(const x of G.chron||[])put(x);
   if(!G.clubHistV){for(const t of G.teams||[]){const A=B[t.id]||[];for(const x of legacyClubChron(t.id,A))put(x);}G.clubHistV=1;}
-  for(const t of G.teams||[])for(const x of legacyClubRescueChron(t.id,B[t.id]||[]))put(x);
+  for(const t of G.teams||[])for(const x of [...legacyClubRescueChron(t.id,B[t.id]||[]),...legacyClubIdentityChron(t.id,B[t.id]||[])])put(x);
   G.chronN=seq;_chronGame=G; }
 function chron(k,t,ref,tid,opts={}){tid=tid??G.user;if(tid==null)return null;chronArchiveInit();const source=opts.source||(k==='season'?'season:'+G.year:null),old=source&&_chronSources.get(tid+':'+source);if(old)return old;
   const x={id:'ch'+(++G.chronN),y:G.year,d:G.day,tid,k,t,ref:ref??null,gm:opts.gm??(!G.unemp&&tid===G.user?1:0),...(source?{source}:{})};(G.clubHist[tid]=G.clubHist[tid]||[]).push(x);_chronIds.add(x.id);if(source)_chronSources.set(tid+':'+source,x);(G.chron=G.chron||[]).push(x);
@@ -23850,7 +23861,7 @@ function stadOpenDays(S,tid){ if(!S)return []; tid=tid??(G.teams||[]).find(t=>t.
 let _stY=null, _stOff=0; /* 다음 시즌 전망을 낼 때 그 해 기준, 지난 일정을 다음 시즌 날짜로 옮긴 만큼 */
 function stadAgeF(tid){ const S=stadOf(tid); const age=(_stY??G.year)-stadBuilt(tid); let f=age>=30?.96:1; if(age<3)f*=1+.12*(3-age)/3+.04; const N=S.proj; if(N&&N.stage==='build')f*=.98; return f; }
 /* 그날 열린 구장 이름: 신구장 개장 전 경기는 옛 구장으로(검수 11-06). 이름 기록이 없는 예전 저장은 개장한 해 전 경기를 기본 구장으로 본다 */
-function stadNameAt(tid,d){ const S=stadOf(tid); for(const x of S.names||[])if(d<x.until)return x.n; if(!(S.names&&S.names.length)&&S.name&&S.built&&dobj(d).y<S.built)return STAD_NM[tid]||`${team(tid).city} 야구장`; return stadName(tid); }
+function stadNameAt(tid,d){ const S=stadOf(tid); let next=null; for(const x of S.names||[])if(d<x.until&&(!next||x.until<next.until))next=x; if(next)return next.n; if(!(S.names&&S.names.length)&&S.name&&S.built&&dobj(d).y<S.built)return STAD_NM[tid]||`${team(tid).city} 야구장`; return stadName(tid); }
 function stadName(tid){ const S=stadOf(tid); return S.name||STAD_NM[tid]||`${team(tid).city} 야구장`; }
 /* 구장 치수(m): 좌·중·우 담장 거리와 높이. 실제 한국 구장 규모를 참고한 가상 구장의 기본값(새 구장·공사로 바뀔 수 있음) */
 const STAD_DIM=[{lf:100,cf:125,rf:100,wl:2.6,wc:2.6,wr:2.6},{lf:100,cf:125,rf:100,wl:2.6,wc:2.6,wr:2.6},{lf:95,cf:120,rf:95,wl:2.4,wc:2.4,wr:2.4},{lf:98,cf:120,rf:98,wl:4,wc:4,wr:4},{lf:99,cf:122,rf:99,wl:4,wc:4,wr:4},
@@ -23894,7 +23905,7 @@ function stadLvAt(S,d,base){ const L={...(base||S.lv)}; for(const b of S.build||
 /* 시즌 관중·구장 수입 전망: 지금까지 실제 + 남은 홈경기 예상 */
 function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal; if(!next&&c&&c.sched&&G.day<c.open&&S.proj&&S.proj.stage==='build'&&S.proj.done<=c.open)return stadProj(tid,true); /* 개막 전 새해: 개막 전에 문을 여는 신구장은 그 구장 기준(검수 11-08) */
   /* 시즌이 끝난 뒤 예산 전망(next): 지난 일정에 지금 가격·시설을 넣어 다음 시즌 기대 관중을 낸다 */
-  if(next&&c&&c.sched){ const N=S.proj, y1=dobj(G.day).m>=10?G.year+1:G.year; const nw=N&&N.stage==='build'&&N.done<=dnum(y1,4,1); /* 다음 시즌 전에 문을 여는 신구장: 그 구장 기준으로 본다(검수 11-06) */
+  if(next&&c&&c.sched){ const N=S.proj, y1=Math.max(sponSeason(),G.day>c.end?G.year+1:G.year); const nw=N&&N.stage==='build'&&N.done<=dnum(y1,4,1); /* 다음 시즌 전에 문을 여는 신구장: 그 구장 기준으로 본다(검수 11-06) */
     const keep={cap:S.cap,dome:S.dome,mega:S.mega,mx:S.mx,lv:S.lv,built:S.built,proj:S.proj,xp:S.xp,xpUp:S.xpUp,xq:S.xq}; S.lv={...S.lv}; if(nw){ S.lv=Object.fromEntries(Object.entries(S.lv).map(([k,v])=>[k,Math.max(v,4)])); S.cap=N.cap+(stadPower(S.lv.prem)-2)*300; S.dome=N.k==='dome'; newStadMegaSet(S,N.k); S.built=y1; S.proj=null; S.xp=0; S.xpUp=0; S.xq=null; } /* 옛 구장 증설은 새 구장에 없다 */ /* 개장 연도 기준 구장 나이(검수 11-07) */ /* 개장 첫해와 같은 구장 나이(0년)·공사 중 감소 없음 */
     const alt=calNextHome(tid,y1); /* 신생 구단이 들어와 구단 수가 바뀌면 지난 일정 대신 다음 시즌 구단 수의 가상 일정으로(검수 11-17 #160: 신생 구단 홈 0경기) */ const off=alt?0:(c.open>G.day&&dobj(c.open).y===y1?c.open:onOrAfter(y1,3,25,6))-c.open; /* 지난 일정을 다음 시즌 개막일(buildCalendar와 같은 식)로 옮겨 공사 완공일과 맞춘다(검수 11-09y: 개막 뒤 완공도 개막 전처럼 셈) */ const lv0=S.lv;
     try{ _stY=y1; _stOff=off; let att=0,n=0,fb=0,pm=0,ad=0,up=0; for(const [d,a] of alt||homeGames(tid,c.open,c.end)){ S.lv=stadLvAt(S,d+off,lv0); const x=attOf(tid,a,d,null), v=stadYr(S,d+off); att+=x; fb+=x*.0003*(stadPower(S.lv.fnb)-2); pm+=v.prem; ad+=v.ad; up+=v.up; n++; } att=Math.round(att);
@@ -23989,14 +24000,15 @@ function newStadTalk(){ const S=stadOf(G.user); { const w=newStadXpWhy(G.user); 
 function newStadDaily(){ for(const t of G.teams){ if(t.stad&&t.stad.proj)try{ newStadTeam(t.id); }catch(e){} } }
 function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; const t=team(tid); const me=tid===ME();
   if(N.stage==='plan'&&N.mr){ if(G.day<N.mr)return; const ok=R()<(N.mp??newStadMegaOdds(tid)); delete N.mr; delete N.mp; /* 초대형 시 검토 결과 */
-    if(ok){ newStadGo(tid,'mega'); if(me){ stop('구장',`${t.city}시가 초대형 신구장(3만 석)을 승인했습니다. ${dmd(N.done)} ${dobj(N.done).y}년 개장 예정입니다.`); news('구단',`${t.city}시, 3만 석 초대형 야구장 승인`,`관중이 몇 해째 넘친 ${tfull(t)}의 새 구장이 국내 최대 규모로 지어집니다.`,2); } else wire('구장',`${tfull(t)}, 3만 석 초대형 신구장 착공`,{tid}); return; }
+    if(ok){ N.megaOk=true; const why=newStadGo(tid,'mega'); if(why){ if(me)stop('구장',`초대형 규모는 승인됐지만 아직 착공하지 않았습니다. ${why}`); else wire('구장',`${tfull(t)}, 초대형 신구장 승인 후 착공 자금 확보 대기`,{tid}); return; } if(me){ stop('구장',`${t.city}시가 초대형 신구장(3만 석)을 승인했습니다. ${dmd(N.done)} ${dobj(N.done).y}년 개장 예정입니다.`); news('구단',`${t.city}시, 3만 석 초대형 야구장 승인`,`관중이 몇 해째 넘친 ${tfull(t)}의 새 구장이 국내 최대 규모로 지어집니다.`,2); } else wire('구장',`${tfull(t)}, 3만 석 초대형 신구장 착공`,{tid}); return; }
     N.noMega=true; if(me){ stop('구장',`${t.city}시가 초대형 규모는 부담이 크다며 거절했습니다. 신구장 합의는 그대로입니다. 다른 규모를 고르세요.`); return; } }
+  if(!me&&N.stage==='plan'&&N.megaOk){ if(!newStadGo(tid,'mega'))wire('구장',`${tfull(t)}, 자금 확보 후 3만 석 초대형 신구장 착공`,{tid}); return; }
   if(!me&&N.stage==='plan'){ const k=newStadAIPick(tid); if(k==='mega'&&!N.noMega){ newStadPick(k,tid); return; } const o=k==='mega'?(newStadSame(tid,'big')?null:NEWSTAD[1]):NEWSTAD.find(x=>x.k===k)||null; if(!o){ S.proj=null; S.retry=G.year+1; return; } /* 지금과 달라지는 규모가 없으면 사업을 접는다(카페 11-17, 돈은 아직 나가지 않았다) */ if(t.indie&&spendable(tid)<Math.round(o.cost/3)){ S.proj=null; S.retry=G.year+1; wire('구장',`${tfull(t)}, 신구장 착공 자금 부족으로 보류`,{tid}); return; } /* 독립구단은 단장이 있든 없든 첫 분담금을 낼 현금이 있어야 착공(검수 11-06) */ newStadGo(tid,o.k); wire('구장',`${tfull(t)}, 신구장 ${o.l} 규모로 착공`,{tid}); return; } /* 단장이 없는 구단도 관중 기록·시장·현금으로 규모를 고른다(newStadAIPick) */
   if(N.stage==='talk'&&G.day>=N.res){ const pr=clamp(.35+(t.trust-50)/100+(t.market-1)*.6+((me?G.rep:50)-50)/200,.15,.85);
     if(!me){ if(R()<pr)N.stage='plan'; else { S.proj=null; S.retry=G.year+1; } return; }
     if(R()<pr){ N.stage='plan'; stop('구장',`${t.city}시가 신구장 건립에 합의했습니다. 시가 공사비 대부분을 내고 구단이 일부를 분담합니다. 구단·재정 → 시설 투자 → 신구장에서 규모를 고르세요.`); news('구단',`${t.city}시-${tfull(t)}, 신구장 건립 합의`,'새 야구장 시대가 열립니다.',2); }
     else { S.proj=null; S.retry=G.year+1; stop('구장',`${t.city}시와의 신구장 협상이 결렬됐습니다. 시 재정 여건이 이유입니다. 내년에 다시 시도할 수 있습니다.`); } }
-  if(N.stage==='build'&&G.day>=N.done){ S.opens=[...new Set([...stadOpenDays(S,t.id),G.day])]; S.cap=N.cap; S.built=G.year; S.opened=G.day; (S.names=S.names||[]).push({until:G.day,n:stadName(t.id),open:1}); /* 옛 구장 이름: 지난 경기 장소 표시용. 실제 개장은 별도로 남긴다. */ S.name=N.k==='dome'?`${t.city} 돔구장`:`${t.city} 새 야구장`; { const H=G.gmLeg&&G.gmLeg.stad; if(H&&H.n&&H.tid===t.id)S.name=H.n; } /* 단장 이름을 붙인 구장은 신구장도 그 이름을 잇는다 */ S.dome=N.k==='dome'; S.nk=N.k; S.ncap=N.cap; /* 지금 구장 규모(같은 규모 신구장 막기, 카페 11-17) */ newStadMegaSet(S,N.k); /* 돔이 아닌 신구장으로 바꾸면 돔 효과도 끝 */ for(const k of Object.keys(S.lv))S.lv[k]=Math.max(S.lv[k],4);
+  if(N.stage==='build'&&G.day>=N.done){ stadAttBegin(tid,stadName(tid),G.day,false); delete S.dim; delete S.fenceY; _pkN={k:null}; /* 옛 담장 공사는 이력만 남기고 새 홈구장은 기본 규격으로 시작한다. */ S.opens=[...new Set([...stadOpenDays(S,t.id),G.day])]; S.cap=N.cap; S.built=G.year; S.opened=G.day; (S.names=S.names||[]).push({until:G.day,n:stadName(t.id),open:1}); /* 옛 구장 이름: 지난 경기 장소 표시용. 실제 개장은 별도로 남긴다. */ S.name=N.k==='dome'?`${t.city} 돔구장`:`${t.city} 새 야구장`; { const H=G.gmLeg&&G.gmLeg.stad; if(H&&H.n&&H.tid===t.id)S.name=H.n; } /* 단장 이름을 붙인 구장은 신구장도 그 이름을 잇는다 */ S.dome=N.k==='dome'; S.nk=N.k; S.ncap=N.cap; /* 지금 구장 규모(같은 규모 신구장 막기, 카페 11-17) */ newStadMegaSet(S,N.k); /* 돔이 아닌 신구장으로 바꾸면 돔 효과도 끝 */ for(const k of Object.keys(S.lv))S.lv[k]=Math.max(S.lv[k],4);
     /* 옛 구장에서 진행 중이던 시설 공사: 새 구장 기본 단계(4) 이하가 목표면 취소하고 남은 공사 기간만큼 환급, 그보다 높으면 새 구장에서 이어서 진행 */
     { const can=[], go=[]; S.build=(S.build||[]).filter(b=>{ if(b.lv>S.lv[b.k]){ go.push(b); return true; } const c=b.c??STAD_COST[b.lv]; const r=Math.round(c*clamp((b.done-G.day)/Math.max(1,STAD_DAYS[b.lv]),0,1)); stadRefund(t,b,r); can.push([b,r]); return false; });
       if(me&&(can.length||go.length)){ const nm=b=>STAD_ITEMS.find(x=>x.k===b.k).l; mail('운영팀','신구장 개장: 옛 구장 공사 정리',`${can.length?`새 구장 시설(4단계 이상)에 포함돼 취소한 공사: ${can.map(([b,r])=>`${nm(b)} ${b.lv}단계(남은 공사분 ${money(r)} 환급)`).join(', ')}.`:''}${go.length?`${can.length?'\n':''}새 구장에서 이어서 진행하는 공사: ${go.map(b=>`${nm(b)} ${b.lv}단계(${dmd(b.done)} 완공)`).join(', ')}.`:''}`,{kind:'구장'}); } }
@@ -24005,16 +24017,30 @@ function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; co
     stop('구장',`${S.name}이(가) 문을 열었습니다. ${N.cap.toLocaleString('ko-KR')}석, 시설은 모두 4단계 이상입니다. 개장 첫 몇 해는 관중이 크게 늡니다.`); news('구단',`${S.name} 개장`,`${tfull(t)}의 새 홈구장이 문을 열었습니다.`,3); } }
 /* 취소한 공사 환급: 지원 예산으로 낸 몫은 아직 결산 전 같은 장부면 장부에서 빼고, 나머지만 현금으로(검수 11-09zza: 지원 예산 공사를 취소하면 현금이 생기던 것) */
 function stadRefund(t,b,r){ const sr=b.sup>0&&t.id===ME()&&b.ep===G.spEp?Math.min(G.spend.etc||0,Math.round(r*b.sup/Math.max(1,b.c))):0; if(sr)G.spend.etc-=sr; t.cash+=r-sr; if(t.id===ME()&&G.spend&&G.spend.stad>0)G.spend.stad=Math.max(0,G.spend.stad-Math.min(r-sr,Math.round(r*(1-(b.sup||0)/Math.max(1,b.c))))); } /* 현금으로 돌려받은 몫은 재정 화면의 현금 투자액에서도 뺀다(검수 151) */
-function newStadPick(k,tid){ tid=tid??G.user; const me=tid===ME(); const S=stadOf(tid); const N=S.proj; const o=NEWSTAD.find(x=>x.k===k); if(!N||N.stage!=='plan'||!o)return '선택할 수 없습니다.'; if(N.mr)return '시가 초대형 규모를 검토하고 있습니다.'; { const w=newStadWhy(tid,k); if(w)return w; } /* 초대형 조건·지금과 같은 규모(카페 11-17) */ { const t=team(tid), first=Math.round(o.cost/3); if(me&&t.indie&&spendable(tid)<first)return `모기업 출자가 없는 독립구단은 첫 회차 분담금 ${money(first)}을(를) 구단 현금으로 낼 수 있어야 착공할 수 있습니다(${spendTxt()}). 분담금은 결산 때 3년에 나눠 냅니다.`; } /* 검수 11-06 */
-  if(o.mega){ N.mr=G.day+NEWSTAD_MEGA.rv; N.mp=newStadMegaOdds(tid); if(me)addLog(`${team(tid).city}시에 초대형 신구장(3만 석)을 요청했습니다. 시 검토 결과는 ${dmd(N.mr)}쯤 나옵니다.`); return ''; } /* 초대형은 시가 한 번 더 검토(협상보다 어렵다). 거절되면 다른 규모를 고른다 */
-  newStadGo(tid,k); if(me)addLog(`신구장 ${o.l} 규모로 착공했습니다. ${dmd(N.done)} ${dobj(N.done).y}년 개장 예정.`); return ''; }
+function newStadPick(k,tid){ tid=tid??G.user; const me=tid===ME(); const S=stadOf(tid); const N=S.proj; const o=NEWSTAD.find(x=>x.k===k); if(!N||N.stage!=='plan'||!o)return '선택할 수 없습니다.'; if(N.mr)return '시가 초대형 규모를 검토하고 있습니다.'; { const w=newStadWhy(tid,k); if(w)return w; } /* 초대형 조건·지금과 같은 규모(카페 11-17) */ { const w=newStadStartWhy(tid,k); if(w)return w; } /* 검수 11-06 */
+  if(o.mega&&!N.megaOk){ N.mr=G.day+NEWSTAD_MEGA.rv; N.mp=newStadMegaOdds(tid); if(me)addLog(`${team(tid).city}시에 초대형 신구장(3만 석)을 요청했습니다. 시 검토 결과는 ${dmd(N.mr)}쯤 나옵니다.`); return ''; } /* 초대형은 시가 한 번 더 검토(협상보다 어렵다). 거절되면 다른 규모를 고른다 */
+  const why=newStadGo(tid,k); if(why)return why; if(me)addLog(`신구장 ${o.l} 규모로 착공했습니다. ${dmd(N.done)} ${dobj(N.done).y}년 개장 예정.`); return ''; }
 /* 합의한 신구장 사업 접기(규모 고르기 전, 분담금은 착공 뒤 결산부터라 낸 돈이 없다). 다시 하려면 내년에 새로 협상 */
 function newStadDrop(){ const S=stadOf(G.user), N=S.proj; if(!N||N.stage!=='plan')return '접을 신구장 합의가 없습니다.'; if(N.mr)return '시가 초대형 규모를 검토하고 있습니다. 결과가 나온 뒤 접을 수 있습니다.'; S.proj=null; S.retry=G.year+1; addLog(`${team(G.user).city}시와의 신구장 합의를 거뒀습니다. ${S.retry}년에 다시 협상할 수 있습니다.`); return ''; }
-function newStadGo(tid,k){ const N=stadOf(tid).proj, o=NEWSTAD.find(x=>x.k===k); N.stage='build'; N.k=k; N.cap=o.cap; N.cost=o.cost; N.paid=N.paid||0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); clubFacilityHistory('stad',tid,`신구장 ${o.l}`,'착공',{c:N.cost,costLabel:'구단 분담금',done:N.done,cap:N.cap}); }
+/* 승인 결과와 실제 착공 모두 지금의 첫 회차 납부 권한을 확인한다. */
+function newStadStartWhy(tid,k){ const t=team(tid), o=NEWSTAD.find(x=>x.k===k); if(!t||!o)return '없는 신구장 규모입니다.'; const first=Math.round(o.cost/3);
+  return t.indie&&spendable(tid)<first?`모기업 출자가 없는 독립구단은 첫 회차 분담금 ${money(first)}을(를) 구단 현금으로 낼 수 있어야 착공할 수 있습니다. 현재 가용 자금은 ${money(Math.max(0,spendable(tid)))}입니다.`:''; }
+function newStadGo(tid,k){ const N=stadOf(tid).proj, o=NEWSTAD.find(x=>x.k===k); if(!N||N.stage!=='plan'||!o)return '착공할 신구장 합의가 없습니다.'; if(o.mega&&!N.megaOk)return '초대형 규모는 시 승인이 완료된 뒤 착공할 수 있습니다.'; const why=newStadStartWhy(tid,k); if(why)return why;
+  N.stage='build'; N.k=k; N.cap=o.cap; N.cost=o.cost; N.paid=N.paid||0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); clubFacilityHistory('stad',tid,`신구장 ${o.l}`,'착공',{c:N.cost,costLabel:'구단 분담금',done:N.done,cap:N.cap}); return ''; }
 /* 분담금은 결산 때 3년에 나눠 낸다 */
-function newStadAcct(tid){ const S=stadOf(tid); const N=S.proj; return N&&N.stage==='build'?N:S.debt&&S.debt.paid<S.debt.cost?S.debt:null; }
-function newStadDue(tid){ const N=newStadAcct(tid); if(!N)return 0; const n=Math.round(N.cost/3), left=N.cost-(N.paid||0); return left<=n*1.5?left:n; } /* 마지막 회차는 반올림 잔액까지(검수 11-06: 160억 중 100만 원이 남아 사라졌다) */
+function newStadPaid(N){ return N&&Number.isFinite(N.paid)?Math.max(0,N.paid):0; }
+function newStadLeft(N){ return Math.max(0,((N&&N.cost)||0)-newStadPaid(N)); }
+function newStadAcct(tid){ const S=stadOf(tid); const N=S.proj; return N&&N.stage==='build'?N:newStadLeft(S.debt)>0?S.debt:null; }
+function newStadDue(tid){ const N=newStadAcct(tid); if(!N)return 0; const n=Math.round(N.cost/3), left=newStadLeft(N); return left<=n*1.5?left:n; } /* 마지막 회차는 반올림 잔액까지(검수 11-06: 160억 중 100만 원이 남아 사라졌다) */
 
+/* 납부액 누락은 기존 분납 산식과 같은 0으로 복구한다. 담장 공사가 개장 전 기록일 때만 새 구장에 남은 옛 규격을 정리한다. */
+function newStadMigrate(){ let n=0; for(const t of G.teams||[]){ const S=t.stad; if(!S)continue;
+    for(const N of [S.proj&&S.proj.stage==='build'?S.proj:null,S.debt])if(N&&Number.isFinite(N.cost)&&N.cost>0&&N.paid==null){ N.paid=0; n++; }
+    if(!S.nk||!Number.isFinite(S.opened))continue; const H=(S.fenceH||[]).filter(h=>Number.isFinite(h.d)).sort((a,b)=>a.d-b.d), h=H[H.length-1]; if(!h||h.d>=S.opened)continue;
+    if(S.dim&&(!h.to||!Object.keys(FENCE_LIM).every(k=>S.dim[k]===h.to[k])))continue;
+    if(S.dim){ delete S.dim; n++; _pkN={k:null}; }
+    if(S.fenceY!=null&&S.fenceY>=dobj(h.d).y&&S.fenceY<=dobj(h.d).y+1){ delete S.fenceY; n++; }
+  } return n; }
 /* AI 구단: 돈이 넉넉하면 비시즌에 시설 하나를 손본다 */
 function stadAI(){ for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간 전 구단도 AI가 운영(검수 11-09zza) */ try{ stadXpAI(t); }catch(e){} /* 관중석 증설: 우리와 같은 조건(37b) */ const S=stadOf(t.id), cash=spendable(t.id); /* 독립구단은 결산 때 낼 신구장 분담금을 남긴다(검수 11-09zza) */ if(cash<6000||R()>.35)continue; const k=pick(['seat','fnb','vis','prem','turf']); if((S.build||[]).some(b=>b.k===k))continue; /* 진행 중인 공사가 있으면 같은 시설은 다시 발주하지 않는다 */ const lv=S.lv[k]; if(lv>=(cash>=15000?8:cash>=9000?6:4))continue; /* 돈이 많은 구단은 더 높게(우리 상한 12) */ const c=STAD_COST[lv+1]; if(cash-c<0)continue; t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c}); clubFacilityHistory('stad',t.id,`${stadName(t.id)} ${STAD_ITEMS.find(x=>x.k===k).l}`,'착공',S.build[S.build.length-1]); } }
 function starIncome(tid){ return Math.round(teamStar(tid).v*14*team(tid??G.user).market)+smBonus(tid??G.user); } /* 스타 마케팅 캠페인 몫 포함 */
@@ -24049,6 +24075,21 @@ function stadXpRaw(tid){ const S=stadOf(tid); return (S.cap||STAD_CAP[tid])+(S.x
 function stadXpMax(tid){ const S=stadOf(tid); return S.dome?STADX_RULE.domeMax:S.mega?STADX_RULE.megaMax:STADX_RULE.max; } /* 초대형으로 지은 구장만 3만 석까지 */
 function stadXpCost(k){ const X=STADX_K[k]; const c=Math.round(X.c*ecoIdx()/10)*10, club=Math.round(c*(1-STADX_RULE.city)/10)*10; return {c,club,city:c-club}; }
 /* 증설 명분: 끝난 시즌 기록(S.xd) 또는 올해 홈 36경기 이상 치른 기록 */
+/* 시설 변경의 관중 경계. 팀 재정 합계는 보존하고 현 구장 실적만 분리한다.
+   수리 때는 명시된 장소별 누적 자료로만 옛 구장 몫을 복원한다. 장소 구분이 없으면 새 실적을 추측하지 않는다. */
+function stadAttBegin(tid,oldName,d,repair){ const S=stadOf(tid), A=G.sea&&G.sea.att&&G.sea.att[tid], y=dobj(d).y;
+  if(y<G.year){ if(S.attStart&&S.attStart.y<=y)delete S.attStart; return; }
+  if(y!==G.year)return;
+  const keys=['n','sum','cap','so'], snap=x=>Object.fromEntries(keys.map(k=>[k,Math.max(0,Number(x&&x[k])||0)])); let B=snap(A);
+  if(repair){ const prior=S.attStart, valid=prior&&prior.y===G.year&&keys.every(k=>Number.isFinite(prior[k])&&prior[k]>=0&&prior[k]<=(B[k]||0));
+    if(valid&&Number.isFinite(prior.d)&&prior.d>=d)return;
+    let proven=null; const V=A&&A.venues;
+    if(Array.isArray(V)){ let end=-1; for(let i=0;i<V.length;i++)if(V[i].name===oldName)end=i;
+      if(end>=0&&V.slice(0,end+1).every(x=>keys.every(k=>Number.isFinite(x[k])&&x[k]>=0))){ const P=Object.fromEntries(keys.map(k=>[k,sum(V.slice(0,end+1).map(x=>x[k]))])); if(keys.every(k=>P[k]<=B[k]))proven=P; } }
+    if(proven)B=proven; else if(valid)B=snap(prior);
+  } else if(A&&A.n&&!A.venues){ A.venues=[{name:oldName,...B}]; }
+  S.attStart={y:G.year,d,...B};
+}
 function stadVenueAtt(tid){ const S=stadOf(tid), A=G.sea&&G.sea.att&&G.sea.att[tid], B=S.attStart; if(!A||!B||B.y!==G.year)return A; return {...A,n:Math.max(0,A.n-B.n),sum:Math.max(0,A.sum-B.sum),cap:Math.max(0,(A.cap||0)-B.cap),so:Math.max(0,(A.so||0)-B.so)}; } /* 시즌 재정 합계는 유지하고, 현 구장의 명분은 이전 뒤 실제 홈경기만 센다 */
 function stadXpDem(tid){ const S=stadOf(tid), A=stadVenueAtt(tid), C=A&&A.n>=36&&A.cap?{y:G.year,occ:A.sum/A.cap,so:A.so||0,n:A.n,cur:true}:null, P=S.xd&&S.xd.y<G.year?S.xd:null; /* 끝난 시즌 기록(올해 시즌이 끝나 xd가 올해 것이면 C와 같은 시즌) */
   if(!C)return S.xd||null; if(!P)return C; const sc=D=>(stadXpDemOk(D)?2:0)+Math.max(D.occ,D.so/Math.max(1,D.n)); return sc(C)>=sc(P)?C:P; } /* 검수 173: 지난 시즌과 올해(홈 36경기 이상) 중 나은 기록. 안내 문구(둘 중 하나)와 같게 */
@@ -28351,7 +28392,7 @@ function facDealsYear(t){ const me=t.id===G.user&&!G.unemp, y=G.last&&G.last.y; 
       if(me){ if(full)news('구단',`${D.n} 명명권 계약 만료`,`${D.n}과 함께한 ${FACI[D.k].l} 후원이 약속대로 끝났습니다. 다른 기업들도 구단을 다시 보고 있습니다.`,1);
         else news('구단',`${D.n} 명명권 계약 종료`,`${D.n}과의 ${FACI[D.k].l} 명명권 계약이 기간을 채우고 끝났습니다. ${ok?'마지막 해에는 조건을 지켰지만, ':'마지막 해에도 성적·관중 조건(${FAC_SPON.rk}위 안, 관중 ${Math.round(FAC_SPON.occ*100)}%)을 지키지 못해 '}조건을 못 지킨 해의 후원금${lost?` ${money(lost)}`:''}은 받지 못했습니다. 후원사와는 아쉽게 헤어졌습니다.`,0); } }
     else if(me&&!ok)mail('마케팅팀',`${D.n}: "이대로면 곤란합니다"`,`명명권 후원사가 올해 성적과 관중에 실망했습니다. 한 번 더 기대에 못 미치면 후원을 거두고 일부를 돌려받으려 합니다.`,{kind:'시설'}); }
-  const L=t.cityOb||[]; for(const o of [...L]){ const city=c476GrantCity(t,o), here=city===t.city; if(y>o.y1){ facCityEnd(t,o,city); continue; } if(o.lastY>=y)continue; o.lastY=y; try{
+  const L=t.cityOb||[]; for(const o of [...L]){ const city=c476GrantCity(t,o), here=city===t.city; if(y>o.y1){ facCityEnd(t,o,city); continue; } if(!facCityActive(o,y)||o.lastY>=y)continue; o.lastY=y; try{
     if((t.cash||0)-o.prog<-2000){ o.miss++; if(here)cityRelAdd(t.id,-8); if(o.miss>=2&&o.help){ const back=Math.round(o.help*FAC_SPON.back); t.cash-=back; t.cityOb=(t.cityOb||[]).filter(x=>x!==o); if(me)mail('운영팀',`${city}시, 시설 보조금 회수`,`약속한 지역 야구 교실을 두 해 열지 못해 ${city}시가 보조금 대부분(${money(back)})을 돌려받았습니다.`,{kind:'시설',imp:true}); continue; } /* 약속을 두 번 어기면 지급 지자체가 돌려받는다 */ if(me)mail('운영팀','지역 야구 교실을 열지 못했습니다',`돈이 모자라 ${city}시와 약속한 지역 야구 교실을 올해 열지 못했습니다. 시와의 관계가 나빠졌습니다.`,{kind:'시설'}); continue; }
     if(me){ const k0=spendPay(o.prog); G.spend.fac=(G.spend.fac||0)+k0; } else t.cash-=o.prog; if(here)cityRelAdd(t.id,2); } finally{ if(y>=o.y1)facCityEnd(t,o,city); } } }
 
@@ -28635,15 +28676,15 @@ function cwOrdIssue(who){ if(cwOrd())return null; const L=cwOrdCands(); if(!L.le
 function cwOrdSay(k){ const ow=team(G.user).owner; return {win:(()=>{ const x=cwWinTxt(cwWinTg()); return ow==='win'?`이기는 게 먼저예요. 앞으로 3주는 승률 ${x} 밑으로 떨어지지 마세요.`:`성적도 좀 챙기세요. 3주 동안 승률 ${x}는 하세요.`; })(),att:'관중석이 차야 그룹 체면이 서요. 홈 관중을 늘려 보세요.',cut:'적자는 줄이세요. 한 달 뒤에 숫자로 봅시다.',keep:'지금처럼 예산 안에서 운영하세요. 적자는 안 돼요.',young:'젊은 선수 하나쯤은 1군에서 크는 걸 보고 싶어요. 한 명 써 보세요.',ext:'저런 선수는 놓치면 안 돼요. 계약을 매듭지으세요.'}[k]||''; }
 function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
   if(O.k==='win'){ const A0=cwUlog().filter(u=>u.d>O.d0&&u.d<=O.until), L=A0.filter(u=>u.res!=='무'), t=A0.length-L.length; const w=L.filter(u=>u.res==='승').length; const ok=L.length?w/L.length>=((O.base&&O.base.tg)??.5)-1e-9:false; return {done:end,ok,txt:`${w}승 ${L.length-w}패${t?` ${t}무`:''}`}; } /* 무승부도 적는다: 기한 당일 무승부를 '경기 전 판정'처럼 보이게 하지 않게 */
-  if(O.k==='att'){ const H=(G.games||[]).filter(g=>g.day>O.d0&&g.home===G.user&&g.att); const r=H.length?sum(H.map(g=>g.att))/sum(H.map(g=>g.cap||stadCap(G.user))):0; /* 경기 당시 좌석 수 기준 */ const tg=O.base.tg??Math.min(1,O.base.ratio+.03); return {done:end,ok:H.length>0&&r>=tg,txt:H.length?`홈 ${H.length}경기 점유율 ${cwPct(r)}(목표 ${cwPct(tg)})`:'아직 홈경기 없음'}; }
+  if(O.k==='att'){ const H=(G.games||[]).filter(g=>g.day>O.d0&&g.day<=O.until&&g.home===G.user&&g.att); const r=H.length?sum(H.map(g=>g.att))/sum(H.map(g=>g.cap||stadCap(G.user))):0; /* 경기 당시 좌석 수 기준 */ const tg=O.base.tg??Math.min(1,O.base.ratio+.03); return {done:end,ok:H.length>0&&r>=tg,txt:H.length?`홈 ${H.length}경기 점유율 ${cwPct(r)}(목표 ${cwPct(tg)})`:'아직 홈경기 없음'}; }
   if(O.k==='cut'||O.k==='keep'){ let b=null; try{ b=budget(); }catch(e){} const v=b?b.roomGoal:O.base.room; if(O.k==='keep')O.lo=Math.min(O.lo??O.base.room,v); const ok=O.k==='cut'?v>=O.base.room+300:O.lo>=0; return {done:end||(O.k==='cut'&&ok),ok,txt:`예산 여유 ${money(v)}${O.k==='keep'&&O.lo<v?`(기간 중 최저 ${money(O.lo)})`:''}`}; } /* 개선 지시는 말한 3억 그대로, 유지 지시는 기간 중 한 번이라도 적자면 미달(검수 11-09zzd) */
   if(O.k==='young'){ let best=null; for(const id in O.base.snap){ const p=G.players[id]; const s=O.base.snap[id]; if(!p)continue; /* 지시 때 23세 이하였던 선수만. 대표팀 소집 중이어도 센다 */ const h=seasonTotalT(p,G.year,'1군',G.user); /* 우리 팀에서 쌓은 기록만(검수 11-09zzd) */ const pa=((h&&h.pa)||0)-s[0], ou=((h&&h.outs)||0)-s[1]; const sc=Math.max(pa/30,ou/24); if(!best||sc>best.sc)best={p,pa,ou,sc}; }
     const ok=!!best&&best.sc>=1; return {done:ok||end,ok,txt:best&&best.sc>0?`${best.p.name} ${best.p.isP&&best.ou>=best.pa?`${ipStr(best.ou)}이닝`:`${best.pa}타석`}`:'아직 없음'}; }
   if(O.k==='ext'){ const p=G.players[O.base.pid]; const gone=!p||p.team!==G.user; const ok=!!(p&&p.extNext)&&!gone; /* 합의 뒤 트레이드로 보냈으면 붙잡은 게 아니다(검수 11-09zzd) */ return {done:ok||end||gone,ok,txt:ok?'다년계약 합의':gone?'팀을 떠났습니다':'아직 합의 전'}; }
   void C; return {done:true,ok:false,txt:''}; }
-function cwOrdDaily(){ const O=cwOrd(); if(!O)return; if(!cwActorMatches(O.who,O.tid,O.person)){O.st='cancelled';O.end=G.day;O.txt='지시한 사람이 자리를 떠나 취소';return;} const e=cwOrdEval(O); if(!e.done)return; const t=team(G.user); O.st=e.ok?'ok':'fail'; O.end=G.day; O.txt=e.txt;
-  if(e.ok){ t.trust=clamp(t.trust+2,0,100); cwRapAdd('own',3); mail('구단주실',`구단주 지시 달성: ${O.t}`,`${cwNm('own')}: "말한 대로 해냈군요. 그런 단장이 좋아요."\n\n${e.txt}. 구단주 신뢰 조금 상승 · 구단주 친밀도 상승.`,{kind:'구단주'}); }
-  else { t.trust=clamp(t.trust-1,0,100); mail('구단주실',`구단주 지시 미달: ${O.t}`,`${cwNm('own')}: "지난번에 한 말, 잊지는 않았겠지요."\n\n${e.txt}. 구단주 신뢰 조금 하락.`,{kind:'구단주'}); }
+function cwOrdDaily(){ const O=cwOrd(); if(!O)return; if(!cwActorMatches(O.who,O.tid,O.person)){O.st='cancelled';O.end=G.day;O.txt='지시한 사람이 자리를 떠나 취소';return;} const e=cwOrdEval(O); if(!e.done)return; const t=team(G.user),who=O.who==='ceo'?'ceo':'own',label=who==='ceo'?'사장':'구단주'; O.st=e.ok?'ok':'fail'; O.end=G.day; O.txt=e.txt;
+  if(e.ok){ t.trust=clamp(t.trust+2,0,100); cwRapAdd(who,3); mail(cwFrom(who),`${label} 지시 달성: ${O.t}`,`${cwNm(who)}: "말한 대로 해냈군요. 그런 단장이 좋아요."\n\n${e.txt}. 구단주 신뢰 조금 상승 · ${label} 친밀도 상승.`,{kind:'구단주'}); }
+  else { t.trust=clamp(t.trust-1,0,100); mail(cwFrom(who),`${label} 지시 미달: ${O.t}`,`${cwNm(who)}: "지난번에 한 말, 잊지는 않았겠지요."\n\n${e.txt}. 구단주 신뢰 조금 하락.`,{kind:'구단주'}); }
   const h=cwSt().hist.find(z=>z.d===O.d0); if(h)h.ordRes=O.st; }
 /* 홈 신뢰 설명용 한 줄 */
 function cwOrdLine(){ const O=cwOrd(); if(!O)return ''; let e=null; try{ e=cwOrdEval(O); }catch(err){ return ''; } return `구단주 지시: ${O.t}(${dmd(O.until)}까지, 지금 ${e.txt})`; }
@@ -33642,25 +33683,31 @@ function ciCityPool(){ const used=new Set(G.teams.map(t=>t.city)); for(const t o
 function tnameOn(tid,d){ if(tid==null)return '-'; const L=G.tnames&&G.tnames[tid]; if(!L||d==null)return tname(tid); const y=dobj(d).y; let x=null; for(const e of L)if(e.d0!=null?e.d0<=d:e.y0<=y)x=e; return !x||x===L[L.length-1]?tname(tid):tfull(x); }
 /* 시즌 중(개막 뒤·결산 전)에 정한 이름·연고 변경은 이번 시즌 결산 뒤에 적용한다(검수 11-17 #202: '다음 시즌부터'인데 그날 바로 바뀜). 사람·AI 구단 공통 */
 function ciMidSeason(){ const c=G.cal; return !(G.last&&G.last.y>=G.year)&&!!c&&G.day>=c.open; }
-function ciSched(tid,o,why){ const t=team(tid); if(!t)return false; if(!ciMidSeason())return clubRebrand(tid,o,why); t.ciPend={nick:o.nick||null,city:o.city||null,why:why||'',y:G.year,d:G.day}; return 'pend'; }
+function ciNameWhy(tid,o){ if(!team(tid))return '구단을 찾을 수 없습니다.'; const other=G.teams.filter(t=>t.id!==tid);
+  if(o.nick&&other.some(t=>t.nick===o.nick||t.ciPend&&t.ciPend.nick===o.nick))return '다른 구단이 이미 사용하거나 예약한 이름입니다.';
+  if(o.city&&o.city!==team(tid).city&&other.some(t=>t.city===o.city||t.ciPend&&t.ciPend.city===o.city))return '다른 구단이 이미 연고로 사용하거나 이전을 예약한 도시입니다.'; return ''; }
+function ciSched(tid,o,why){ const t=team(tid); if(!t||ciNameWhy(tid,o))return false; if(!ciMidSeason())return clubRebrand(tid,o,why); const P=t.ciPend||{}, nick=o.nick||P.nick||null, city=o.city||P.city||null;
+  if((nick||t.nick)===(P.nick||t.nick)&&(city||t.city)===(P.city||t.city))return false;
+  t.ciPend={...P,nick,city,why:[...new Set([P.why,why].filter(Boolean))].join(' · '),y:P.y??G.year,d:P.d??G.day}; return 'pend'; }
 function ciPendApply(){ for(const t of G.teams||[]){ const P=t.ciPend; if(!P||(P.y>=G.year&&!(G.last&&G.last.y>=P.y)))continue; delete t.ciPend; clubRebrand(t.id,{nick:P.nick,city:P.city},P.why); } } /* 결산 직후(08_season_events)·불러오기 때. 두 번 불러도 같다 */
 /* 이름·연고 바꾸기: 이 시즌까지는 옛 이름(시즌 중 바뀌면 다음 시즌부터 새 이름 기록) */
-function clubRebrand(tid,o,why){ const t=team(tid); if(!t)return false; const L=ciHist(tid), cur=L[L.length-1]; const nick=o.nick||t.nick, city=o.city||t.city; if(nick===t.nick&&city===t.city)return false;
+function clubRebrand(tid,o,why){ const t=team(tid); if(!t||ciNameWhy(tid,o))return false; const L=ciHist(tid), cur=L[L.length-1]; const nick=o.nick||t.nick, city=o.city||t.city; if(nick===t.nick&&city===t.city)return false;
+  try{ chronArchiveInit(); }catch(e){} /* 먼저 옛 이력을 복구한 뒤 이번 전이를 저장해 같은 사건을 이중 복구하지 않는다. */
   const old=tshort(tid), y=sponSeason(); cur.y1=y-1; L.push({y0:y,y1:null,d0:G.day,city,nick,why:why||''}); /* 결산 뒤면 다음 시즌부터 새 이름. d0: 이름이 바뀐 날(#206) */
   if(o.city&&o.city!==t.city){ const C=CI_CITY.find(c=>c.city===o.city); ciRelocStad(tid,t.city,o.city,y); if(C){ t.market=C.market; t.region=C.region; } }
   t.city=city; t.nick=nick; delete t.disp; delete t.abbr; const nw=tshort(tid); /* 새 이름이 생기면 플레이어가 붙인 표시 이름·약칭은 옛 이름 이력(G.tnames)에만 남는다 */
-  try{ chron('rebrand',`${old} → ${nw}${o.city?' · 연고 이전':''}${why?' · '+why:''}`,null,tid,{source:'rebrand:'+tid+':'+y}); }catch(e){}
+  try{ chron('rebrand',`${old} → ${nw}${o.city?' · 연고 이전':''}${why?' · '+why:''}`,null,tid,{source:'rebrand:'+tid+':'+y+':'+G.day+':'+(L.length-1)}); }catch(e){}
   try{ wire('구단',`${old}, ${y}시즌부터 ${nw}(으)로${o.city?' 연고를 옮겨':' 이름을 바꿔'} 새 출발`,{tid}); }catch(e){} return true; }
 /* 인수 완료 뒤 호출: AI 구단은 확률로, 우리 구단은 단장에게 묻는다 */
 function ciOnSale(tid){ const t=team(tid); if(!t)return; const N=ciNickPool();
   if(tid===G.user&&!G.unemp){ if(!N.length)return; const a=pick(N), b=pick(N.filter(x=>x!==a))||a, own=bossOf(tid).own.name;
     const when=ciMidSeason()?'이번 시즌은 지금 이름, 결산 뒤 다음 시즌부터 새 이름':'다음 시즌부터 새 이름';
     evNew('rebrand',`새 구단주가 구단 이름을 바꾸고 싶어 합니다`,`새 구단주 ${own}: "새 출발을 알리고 싶습니다. 연고와 기록은 그대로 두고 이름만 바꾸면 어떻겠습니까?"`,[{l:`${t.city} ${a}`,fx:when+'. 구단주 신뢰 +3'},{l:`${t.city} ${b}`,fx:when+'. 구단주 신뢰 +3'},{l:'지금 이름 유지',fx:'팬 여론 +3(팬들이 반김) · 구단주 신뢰 -4'}],{def:2,exp:14,data:{tid,a,b},from:'구단주'}); return; }
-  if(tid===G.user)return; const C=ciCityPool(); const small=(t.market||1)<=1&&t.region!=='수도권'&&!t.indie;
+  const C=ciCityPool(); const small=(t.market||1)<=1&&t.region!=='수도권'&&!t.indie;
   if(small&&C.length&&R()<.12){ const c=pick(C); ciSched(tid,{city:c.city,nick:R()<.6&&N.length?pick(N):null},'새 운영 주체의 연고 이전'); return; }
   if(N.length&&R()<.55)ciSched(tid,{nick:pick(N)},'새 운영 주체');
 }
-EVH.rebrand={ pick(e,i){ const t=team(e.data.tid); if(!t||e.data.tid!==G.user)return ''; if(i<2){ const nk=i===0?e.data.a:e.data.b, r=ciSched(e.data.tid,{nick:nk},'새 구단주'); t.trust=clamp((t.trust??50)+3,0,100); return r==='pend'?`이번 시즌은 ${tshort(e.data.tid)}(으)로 치르고, 결산 뒤 ${t.city} ${nk}(으)로 새 출발합니다.`:`${tshort(e.data.tid)}(으)로 새 출발합니다.`; }
+EVH.rebrand={ pick(e,i){ const t=team(e.data.tid); if(!t||G.unemp||e.data.tid!==G.user)return ''; if(i<2){ const nk=i===0?e.data.a:e.data.b, err=ciNameWhy(e.data.tid,{nick:nk}); if(err)return err; const r=ciSched(e.data.tid,{nick:nk},'새 구단주'); if(!r)return '이미 반영된 이름이라 변경하지 않았습니다.'; t.trust=clamp((t.trust??50)+3,0,100); return r==='pend'?`이번 시즌은 ${tshort(e.data.tid)}(으)로 치르고, 결산 뒤 ${t.ciPend&&t.ciPend.city||t.city} ${nk}(으)로 새 출발합니다.`:`${tshort(e.data.tid)}(으)로 새 출발합니다.`; }
   t.trust=clamp((t.trust??50)-4,0,100); prInit(); G.pr.fan=clamp(G.pr.fan+3,0,100); return '지금 이름을 지키기로 했습니다. 팬들은 반기지만 구단주는 아쉬워합니다.'; } }; /* 선택지 안내와 같은 효과(검수 11-17 #203: 팬 여론이 그대로였다) */
 /* 구단을 떠날 때 미답변 이름 안건은 이름 유지로 명시적으로 종료한다. 선택하지 않은 팬·신뢰 효과는 적용하지 않는다(#481). */
 function ciDecisionLeave(tid,closedOnly){ for(const e of G.evs||[]){ if(e.k!=='rebrand'||!e.data||e.data.tid!==tid||e.done&&e.res||closedOnly&&(!e.done||e.pick!=null))continue;
@@ -33683,29 +33730,30 @@ function ciLaterStad(S,city,y,d){ if(S.opened!=null)return S.opened>d; if(S.debt
   if(S.built>=y&&(S.names||[]).some(x=>x.until>d))return true; /* 명명권·단장 헌정도 names를 쓰므로 개장 연도 증거가 함께 있어야 한다 */
   if(S.debt&&S.debt.city===city&&S.debt.name&&S.debt.name===S.name)return true;
   return S.built===y&&!!S.name&&(S.name===`${city} 새 야구장`||S.name===`${city} 돔구장`||!!S.nk&&S.name.startsWith(city+' ')); }
-function ciRelocAtt(tid,S,oldN,d,oldCap){ const moveY=dobj(d).y; if(moveY<G.year){ delete S.attStart; if(S.xd&&S.xd.y<=moveY)delete S.xd; if(S.xdh)S.xdh=S.xdh.filter(x=>x.y>moveY); return; } /* 몇 시즌 뒤 불러온 저장의 새 구장 관중은 보존 */
-  const A=G.sea&&G.sea.att&&G.sea.att[tid]; if(A&&A.n){ if(A.cap==null)A.cap=A.n*oldCap; if(!A.venues)A.venues=[{name:oldN,n:A.n,sum:A.sum,cap:A.cap||0,so:A.so||0}]; S.attStart={y:G.year,n:A.n,sum:A.sum,cap:A.cap||0,so:A.so||0}; } else S.attStart={y:G.year,n:0,sum:0,cap:0,so:0}; delete S.xd; delete S.xdh; }
+function ciRelocAtt(tid,S,oldN,d,oldCap,fix){ const moveY=dobj(d).y; stadAttBegin(tid,oldN,d,!!fix);
+  if(S.xd&&S.xd.y<=moveY)delete S.xd; if(S.xdh)S.xdh=S.xdh.filter(x=>x.y>moveY); }
+
 function ciRelocStad(tid,from,city,y,d,fix){ const t=team(tid), S=stadOf(tid); d=d??G.day; const L=[], oldN=fix?((S.names||[]).find(x=>x.until===d)||{}).n||S.name||`${from} 야구장`:stadName(tid), oldCap=stadCap(tid), C=CI_CITY.find(c=>c.city===city)||{};
   if(typeof ciCityRelocate==='function')ciCityRelocate(tid,from,city,d,fix);
   S.build=(S.build||[]).filter(b=>{ if((b.st??b.done-STAD_DAYS[b.lv])>d)return true; const c=b.c??STAD_COST[b.lv], r=Math.round(c*clamp((b.done-d)/Math.max(1,STAD_DAYS[b.lv]),0,1)); if(r>0)ciRelocRefund(t,b,r); L.push(`${(STAD_ITEMS.find(x=>x.k===b.k)||{l:b.k}).l} ${b.lv}단계 공사 취소(남은 공사분 ${money(r)} 환급)`); return false; });
   const q=S.xq, X=q&&STADX_K[q.k]; if(q&&X&&!(q.st>d)){ if(q.stage==='build'){ const r=d<q.pm?(q.c||0):Math.round((q.c||0)*clamp((q.done-d)/Math.max(1,q.done-q.pm),0,1)); if(r>0)ciRelocRefund(t,{c:q.c||0,sup:q.sup,ep:q.ep},r); L.push(`${X.l} 공사 취소(구단 부담분 중 ${money(r)} 환급, 시 부담분은 ${from}시 몫)`); } else { const e=q.esc||0, cash=t.cash; stadXpRefund(t,S); if(t.cash>cash)hoBook(tid,[['연고 이전 증설 부담분 반환',t.cash-cash]],[]); L.push(`${X.l} 협의 취소${e?`(떼어 둔 부담분 ${money(e)} 반환)`:''}`); } S.xq=null; }
   const N=S.proj; if(N&&!(N.start>d)){ L.push(N.stage==='build'?`신구장 공사 중단(낸 분담금 ${money(N.paid||0)}은 ${from} 구장 몫으로 돌려받지 않고, 남은 분담금 ${money(Math.max(0,(N.cost||0)-(N.paid||0)))}은 내지 않음)`:`${from}시와의 신구장 협상 종료`); S.proj=null; }
-  if(S.debt&&(!fix||(S.debt.opened??(S.built<y?d-1:Infinity))<=d)&&S.debt.paid<S.debt.cost){ const left=S.debt.cost-S.debt.paid, sup=t.indie?0:Math.round(left*.7); t.cash+=sup-left; hoBook(tid,sup?[['모기업 신구장 출자(이전 정산 70%)',sup]]:[],[['옛 구장 남은 분담금 일시 정산',left]]); L.push(`${oldN} 남은 분담금 ${money(left)} 일시 정산${sup?`(모기업 출자 ${money(sup)})`:''}`); delete S.debt; } delete S.retry;
-  if(S.debt&&S.debt.paid>=S.debt.cost)delete S.debt;
+  if(S.debt&&(!fix||(S.debt.opened??(S.built<y?d-1:Infinity))<=d)&&newStadLeft(S.debt)>0){ const left=newStadLeft(S.debt), sup=t.indie?0:Math.round(left*.7); t.cash+=sup-left; hoBook(tid,sup?[['모기업 신구장 출자(이전 정산 70%)',sup]]:[],[['옛 구장 남은 분담금 일시 정산',left]]); L.push(`${oldN} 남은 분담금 ${money(left)} 일시 정산${sup?`(모기업 출자 ${money(sup)})`:''}`); delete S.debt; } delete S.retry;
+  if(S.debt&&Number.isFinite(S.debt.cost)&&newStadLeft(S.debt)===0)delete S.debt;
   if(fix){ const H=(S.xh||[]).filter(e=>STADX_K[e.k]&&e.d-STADX_K[e.k].days>=d); S.xp=sum(H.map(e=>e.seats||0)); S.xpN=H.length; S.xpUp=sum(H.map(e=>STADX_K[e.k].up)); } /* 이전 뒤 새 구장에서 시작한 증설만 남긴다 */
   else { stadXpReset(S); S.cap=C.cap||17000; for(const k of Object.keys(S.lv))S.lv[k]=2; }
-  if(!(S.names||[]).some(x=>x.until===d))(S.names=S.names||[]).push({n:oldN,until:d});
+  if(!(S.names||[]).some(x=>x.until===d))(S.names=S.names||[]).push({n:oldN,until:d}); S.names.sort((a,b)=>a.until-b.until);
   if(!fix||!S.name||S.name.includes(from))S.name=C.stad||`${city} 야구장`;
   delete S.nk; delete S.ncap; newStadMegaSet(S,null); S.dome=!!C.dome; S.built=y; S.opened=d;
   const FH=(S.fenceH||[]).filter(x=>x.d!=null&&x.d>=d); if(!fix||!FH.length){ S.dim={...CI_DIM}; delete S.fenceY; } else if(FH[FH.length-1].to)S.dim={...FH[FH.length-1].to};
-  if(!fix)t.cityRel=50; ciRelocAtt(tid,S,oldN,d,oldCap); S.reloc={y,d,from,to:city,...(fix?{fix:1}:{})};
+  if(!fix)t.cityRel=50; ciRelocAtt(tid,S,oldN,d,oldCap,fix); S.reloc={y,d,from,to:city,...(fix?{fix:1}:{})};
   if(L.length)try{ const msg=`연고 이전으로 ${oldN} 사업 정리: ${L.join(' · ')}`; if(tid===ME())mail('운영팀','연고 이전: 옛 구장 사업 정리',msg,{kind:'구장'}); else wire('구장',`${tfull(t)}, ${msg}`,{tid}); }catch(e){}
   return L; }
 /* 불러오기(migrateDraft): 결산이 끝났는데 남은 이름 변경 적용, 이름 이력 시작일(d0) 채우기(연대기의 이름 변경 날짜), 옛 구장 속성을 그대로 들고 간 연고 이전 구단 수리. 두 번 불러도 같다 */
 function ciMigrate(){ if(!G||!G.teams)return; try{ ciPendApply(); civicMigrate(); for(const t of G.teams)ciDecisionLeave(t.id,true); }catch(e){ console.error(e); }
   for(const k in (G.tnames||{})){ const tid=+k, L=G.tnames[k], t=team(tid); if(!t||!Array.isArray(L))continue; let C=null;
-    for(let i=1;i<L.length;i++){ const e=L[i]; if(e.d0!=null)continue; if(!C){ C=[]; try{ C=clubChron(tid); }catch(err){} } const c=C.find(x=>x.k==='rebrand'&&x.source==='rebrand:'+tid+':'+e.y0); if(c&&Number.isFinite(c.d))e.d0=c.d; }
-    let i=L.length-1; while(i>0&&L[i].city===L[i-1].city)i--; const S=t.stad; if(i<1||!S||S.reloc||L[i].city!==t.city)continue; /* 이전 뒤 별칭만 바꾼 경우에도 마지막 도시 변경을 찾는다 */
+    for(let i=1;i<L.length;i++){ const e=L[i]; if(e.d0!=null)continue; if(!C){ C=[]; try{ C=clubChron(tid); }catch(err){} } const transition=tfull(L[i-1])+' → '+tfull(e), match=C.filter(x=>x.k==='rebrand'&&(x.t===transition||String(x.t||'').startsWith(transition+' · '))), c=match.length===1?match[0]:L.filter(x=>x.y0===e.y0).length===1?C.find(x=>x.k==='rebrand'&&x.source==='rebrand:'+tid+':'+e.y0):null; if(c&&Number.isFinite(c.d))e.d0=c.d; }
+    let i=L.length-1; while(i>0&&L[i].city===L[i-1].city)i--; const S=t.stad; if(i<1||!S||L[i].city!==t.city)continue; const city=CI_CITY.find(c=>c.city===t.city); if(city){ t.market=city.market; t.region=city.region; } if(S.reloc){ if(S.reloc.to===t.city&&Number.isFinite(S.reloc.d)){ const old=((S.names||[]).find(x=>x.until===S.reloc.d)||{}).n||S.reloc.from+' 야구장'; stadAttBegin(tid,old,S.reloc.d,true); } continue; } /* 이전 뒤 별칭만 바꾼 경우에도 마지막 도시 변경을 찾는다 */
     const d=L[i].d0??dnum(L[i].y0-1,11,1); if(ciLaterStad(S,t.city,L[i].y0,d)){ if(typeof ciCityRelocate==='function')ciCityRelocate(tid,L[i-1].city,t.city,d,true); S.reloc={y:L[i].y0,d,from:L[i-1].city,to:t.city,fix:1}; continue; } /* 이전한 뒤 새 구장을 지었으면 그 구장 그대로 */
     ciRelocStad(tid,L[i-1].city,t.city,L[i].y0,d,true); } }
 /* ===== 협회 규정 변화·시대 변화 (장기 기획 11-11) =====
@@ -42973,7 +43021,7 @@ function stadView(part){ const tid=G.user, S=stadOf(tid), cap=stadCap(tid), P=st
         return head+`<p class="small sdesc expl">시와 협상해 새 구장을 짓습니다. 시가 공사비 대부분을 내고 구단은 분담금(${NSB.map(o=>money(o.cost)).join('·')})을 3년에 나눠 냅니다. ${team(G.user).indie?'<b>독립구단이라 모기업 출자가 없어 분담금 전액을 구단 현금으로 냅니다.</b> 착공하려면 첫 회차 분담금을 낼 현금이 있어야 합니다.':`<b>모기업 출연(70%)을 빼면 구단 실부담은 약 ${NSB.map(o=>money(Math.round(o.cost*.3))).join('·')}, 해마다 ${NSB.map(o=>money(Math.round(o.cost*.1))).join('·')}</b>입니다. 분담금의 70%는 모기업이 출자합니다.`} 협상은 6개월 걸리고, 구단주 신뢰·연고 시장 크기·단장 명성에 따라 성사 가능성이 달라집니다. 구단주 신뢰가 45 이상이어야 합니다. 관중이 몇 해째 넘치는 큰 시장 구단은 3만 석 초대형도 고를 수 있습니다. 지금 구장과 같은 규모는 고를 수 없습니다.</p><p class="small keep">${esc(newStadLimTxt(tid))}</p>${newStadOpen(tid).length?'<button class="btn primary" data-a="nsTalk">시에 신구장 협상 제안</button>':'<p class="small keep bad">지금 구장과 달라지는 규모가 없어 신구장을 추진할 수 없습니다.</p><button class="btn" disabled>시에 신구장 협상 제안</button>'}`; }
       if(N.stage==='talk')return head+`<div class="note">협상 중 · ${dmd(N.res)}쯤 결과</div>`;
       if(N.stage==='plan'&&N.mr)return head+`<div class="note">${esc(team(tid).city)}시가 초대형 규모(3만 석)를 검토하고 있습니다 · ${dmd(N.mr)}쯤 결과 · ${oddsShort(N.mp??newStadMegaOdds(tid))}</div><p class="small muted">거절되면 신구장 합의는 그대로이고 다른 규모를 고르면 됩니다.</p>`;
-      if(N.stage==='plan')return head+`<div class="note good">시와 합의했습니다. 규모를 고르세요.</div><p class="small keep">${esc(newStadLimTxt(tid))}. 지금 구장과 같은 규모나 좌석이 늘지 않는 규모는 고를 수 없습니다.</p><div class="stad-l">${NEWSTAD.map(o=>{ const why=newStadWhy(tid,o.k); return `<div class="stad-i" id="ns-${o.k}"><b>${o.l} · ${o.cap.toLocaleString('ko-KR')}석${o.mega?` <button type="button" class="hi-i" aria-label="초대형 조건 보기" data-tip="${esc(newStadMegaTip())}">i</button>`:''}</b><p class="small sdesc">${o.d} 공사 3년, 개장 후 시설은 모두 4단계 이상.</p><p class="small">구단 분담금 <b>${money(o.cost)}</b> · 결산 때 3년에 나눠 냄(첫 회차 ${money(Math.round(o.cost/3))}) · 지금 구단 현금 ${money(team(G.user).cash||0)}</p>${why?`<p class="small keep bad">${esc(why)}</p>`:''}<button class="btn small${why?'':' primary'}" data-a="nsPick" data-v="${o.k}" ${why?'disabled':''}>${o.mega?'시에 초대형 요청':o.l+'으로 착공'}</button></div>`; }).join('')}</div><p class="small muted">고를 규모가 마땅치 않으면 사업을 접을 수 있습니다. 분담금은 착공 뒤 결산 때부터 내므로 아직 낸 돈은 없습니다.</p><button class="btn small" data-a="nsDrop">신구장 사업 접기</button>`;
+      if(N.stage==='plan')return head+`<div class="note good">${N.megaOk?'초대형 규모 승인이 완료됐습니다. 자금을 확보하면 다시 심사받지 않고 착공할 수 있습니다.':'시와 합의했습니다. 규모를 고르세요.'}</div><p class="small keep">${esc(newStadLimTxt(tid))}. 지금 구장과 같은 규모나 좌석이 늘지 않는 규모는 고를 수 없습니다.</p><div class="stad-l">${NEWSTAD.map(o=>{ const why=newStadWhy(tid,o.k); return `<div class="stad-i" id="ns-${o.k}"><b>${o.l} · ${o.cap.toLocaleString('ko-KR')}석${o.mega?` <button type="button" class="hi-i" aria-label="초대형 조건 보기" data-tip="${esc(newStadMegaTip())}">i</button>`:''}</b><p class="small sdesc">${o.d} 공사 3년, 개장 후 시설은 모두 4단계 이상.</p><p class="small">구단 분담금 <b>${money(o.cost)}</b> · 결산 때 3년에 나눠 냄(첫 회차 ${money(Math.round(o.cost/3))}) · 지금 구단 현금 ${money(team(G.user).cash||0)}</p>${why?`<p class="small keep bad">${esc(why)}</p>`:''}<button class="btn small${why?'':' primary'}" data-a="nsPick" data-v="${o.k}" ${why?'disabled':''}>${o.mega&&!N.megaOk?'시에 초대형 요청':o.l+'으로 착공'}</button></div>`; }).join('')}</div><p class="small muted">고를 규모가 마땅치 않으면 사업을 접을 수 있습니다. 분담금은 착공 뒤 결산 때부터 내므로 아직 낸 돈은 없습니다.</p><button class="btn small" data-a="nsDrop">신구장 사업 접기</button>`;
       return head+`<div class="note">${NEWSTAD.find(o=>o.k===N.k).l} 신구장 공사 중 · ${dmd(N.done)} ${dobj(N.done).y}년 개장 예정 · 분담금 ${money(N.paid||0)} / ${money(N.cost)} 납부 · 공사 기간 관중 수요 -2%</div>`; })());
   return sv.bar+csec('리그 관중',lgT+'<p class="small muted">2025년 실제 한국 프로야구는 경기당 평균 17,101명, 좌석 점유율 82.9%였습니다.</p>');
 }
@@ -45424,7 +45472,7 @@ const GUARD={
   expGmCancel(){ const E=G.exp; if(!expGmCanCancel())return null; return {subj:'창단 단장 수락 취소',kind:'경력',lines:[`${tfull(E)} 창단 단장은 ${E.parent}이(가) 다른 사람에게 맡깁니다.`,G.unemp?'야인으로 남습니다.':`${tname(G.user)} 단장으로 그대로 남고, 지금 계약도 그대로입니다.`,`${E.parent}과(와)의 관계가 조금 상합니다(명성 -1).`],warn:'취소하면 이번 창단 단장 제안은 다시 받을 수 없습니다.',ok:'수락 취소'}; },
   retireGM(){ return G.unemp?{subj:'단장 경력 마치기',kind:'경력',lines:[`단장 명성 ${G.rep} · 야인 ${Math.floor((G.day-(G.unemp.since??G.day))/30)}개월`],warn:'경력을 마치면 이 게임은 끝납니다. 새 게임은 시작 화면에서 할 수 있습니다.'}:null; },
   nsDrop(){ const N=stadOf(G.user).proj; if(!N||N.stage!=='plan'||N.mr)return null; return {subj:'신구장 사업 접기',kind:'구장',lines:[`${team(G.user).city}시와 맺은 신구장 합의를 거둡니다. 아직 낸 분담금은 없습니다.`,'다시 추진하려면 내년에 시와 새로 협상해야 합니다.'],warn:'접으면 이번 합의는 되돌릴 수 없습니다.',ok:'사업 접기'}; },
-  nsPick(v){ const o=NEWSTAD.find(x=>x.k===v); if(!o||newStadWhy(G.user,v))return null; if(o.mega)return {subj:`시에 초대형 신구장(${o.cap.toLocaleString('ko-KR')}석) 요청`,kind:'구장',lines:[`시가 ${NEWSTAD_MEGA.rv}일 동안 검토합니다. 승인되면 바로 착공하고, 거절되면 다른 규모를 고릅니다.`,`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자). 유지비 연 ${money(NEWSTAD_MEGA.up)}.`],warn:'승인되면 착공을 되돌릴 수 없습니다.'}; return {subj:`신구장 ${o.l}(${o.cap.toLocaleString('ko-KR')}석) 착공`,kind:'구장',lines:[`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자).`,'공사 3년 · 개장 후 시설 4단계 이상 · 개장 초 관중 크게 증가'],warn:'착공하면 되돌릴 수 없습니다.'}; },
+  nsPick(v){ const o=NEWSTAD.find(x=>x.k===v); if(!o||newStadWhy(G.user,v))return null; if(o.mega){ const approved=!!stadOf(G.user).proj?.megaOk, indie=!!team(G.user).indie; return {subj:approved?`승인된 초대형 신구장(${o.cap.toLocaleString('ko-KR')}석) 착공`:`시에 초대형 신구장(${o.cap.toLocaleString('ko-KR')}석) 요청`,kind:'구장',lines:[approved?'이미 시 승인이 완료됐습니다. 다시 심사하지 않고 현재 착공 자금을 확인합니다.':`시가 ${NEWSTAD_MEGA.rv}일 동안 검토합니다. 거절되면 다른 규모를 고릅니다.`,indie?`착공일에 첫 분담금 ${money(Math.round(o.cost/3))}을 낼 가용 현금이 필요합니다. 승인 후 자금이 부족하면 착공을 보류하고, 자금을 확보한 뒤 같은 승인으로 착공할 수 있습니다.`:'시 승인 후 착공합니다.',`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}${indie?', 독립구단 전액 부담':', 그중 70%는 모기업 출자'}). 유지비 연 ${money(NEWSTAD_MEGA.up)}.`],warn:'착공하면 되돌릴 수 없습니다.'}; } return {subj:`신구장 ${o.l}(${o.cap.toLocaleString('ko-KR')}석) 착공`,kind:'구장',lines:[`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자).`,'공사 3년 · 개장 후 시설 4단계 이상 · 개장 초 관중 크게 증가'],warn:'착공하면 되돌릴 수 없습니다.'}; },
   relNow(v){ const p=G.players[+v]; if(!p)return null; const rc=relCost(p), cost=rc.tot; return {subj:`${p.name} 방출`,kind:'선수',lines:[pnm(p.id),...(p.foreign&&period()==='season'?[G.day>foreignDL()?`대체 외국인 등록 마감(${dsh(foreignDL())})이 지나 올해는 대체 선수를 데려올 수 없습니다.`:fReplLeft(G.user,p.foreign)<=0?`이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 써서 대체 선수를 데려올 수 없습니다.`:`대체 외국인을 데려올 수 있습니다(남은 교체 ${fReplLeft(G.user,p.foreign)}회, ${dsh(foreignDL())}까지).`]:[]),...(p.foreign?[period()==='season'?`남은 연봉 약 ${money(Math.round(p.sal*(()=>{ try{ return tradeYrFrac(); }catch(e){ return 1; } })()))}(올해 연봉 ${money(p.sal)} 중 남은 기간 몫)은 이미 지출로 잡혀 있어 돌려받지 못합니다.`:`정규시즌이 끝나 올해 연봉은 정산을 마쳤습니다. 다음 시즌 계약은 시작 전이라 추가 비용 없이 외국인 예산에서 빠집니다(${money(p.sal)}).`] /* 시즌 뒤 방출: 안내와 예산 계산을 맞춤(플레이 테스트 11-13) */:cost?[`현재 계약 정산금 ${money(rc.cur)}(이번 시즌 남은 연봉 전액${rc.fut?' · 남은 보장 연수 대부분':''})`,...(rc.next?[`다음 시즌 확정 계약 정산금 ${money(rc.next)}(${p.extNext.years}년 보장액 대부분)`]:[]),`방출해도 상한 산정에는 그 몫이 남습니다`,`총 방출 비용 ${money(cost)}`]:['정산금 없음'])],warn:'방출하면 되돌릴 수 없습니다.'}; },
   advTo(){ return UI.advRun?null:pendDoc(); }, matchSim(v,el){ return el?pendDoc():null; }, watchNext(v,el){ return el?pendDoc():null; }, /* 달력 진행·결과만 보기·다음 경기 관전도 미결 결정을 확인(검수 11-08) */
   adv(v,el){ if(UI.advRun)return null;if(el&&G.advAsk&&!advBlk())return advAskDoc(v); /* '매번 묻기'는 버튼 진행에도(검수 11-09z) */ const pd=pendDoc(); if(pd)return pd; if(G.fOkY===G.year||period()!=='pre'||G.day<G.cal.open-35||blocker()||!G.mgr[G.user])return null; const f=foreignOf(G.user); const m=f.filter(p=>p.foreign==='용병').length, as=f.filter(p=>p.foreign==='아시아').length; if(m>=3&&as>=1)return null;
