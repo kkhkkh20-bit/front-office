@@ -7445,6 +7445,23 @@ T('[검수 11-17 #287] 떠난 구단에 남은 스폰서 영업은 지시한 날
   switchTeam(G.teams.find(t=>t.id!==old&&!t.indie).id); G.rep=100; const P=G.sponT[old].pitch[0]; P.due=G.day; const seen=[]; const f0=sponPitchP; sponPitchP=(t,r)=>{ seen.push(r); return f0(t,r); }; try{ sponPitchOld(); } finally{ sponPitchP=f0; }
   ok(seen.length===1&&seen[0]===20,'판정 평판 '+JSON.stringify(seen)); ok(sponPitchP(old,20)<sponPitchP(old,100),'평판이 확률에 반영 안 됨');
   G.sponT[old].pitch.push({slot:'helmet',day:G.day,due:G.day+5,done:false}); sponMigrate(); ok(G.sponT[old].pitch[1].rep===50,'옛 저장 영업 평판 '+G.sponT[old].pitch[1].rep); });
+T('[피드백 11-18 잠재력] 드래프트 선수 잠재력 평가는 시즌마다 크게 오가지 않는다(육성 등록 전환과도 무관)',()=>{ fresh(); const y0=G.year, s0=G.startY??G.year;
+  /* 진짜 잠재력은 그대로 두고 6시즌·반기마다(2월·8월) 우리 평가 별을 다시 본다. 우리 선수는 해마다 2군에서 뛰어 관찰이 쌓이고, 남의 구단 선수는 1군 기록이 있어 프로 담당 스카우트가 본다 */
+  const st=p=>{ const T0=potTierP(scoutReport(p),p); return T0?T0.st:null; };
+  const mine=domestic(G.user).filter(p=>!p.foreign&&p.age<=24).slice(0,25); ok(mine.length>=8,'준비: 젊은 우리 선수 '+mine.length);
+  const theirs=G.teams.filter(t=>t.id!==G.user&&coverOf(t.id).sc).flatMap(t=>domestic(t.id).filter(p=>!p.foreign&&p.age<=24).slice(0,4)).slice(0,25); ok(theirs.length>=4,'준비: 담당 스카우트가 보는 남의 젊은 선수 '+theirs.length);
+  for(const p of mine){ delete p.dEst; p.hist=(p.hist||[]).filter(h=>h.t!==G.user||h.y<s0); }
+  const S=new Map(), ysD=[]; const age=new Map([...mine,...theirs].map(p=>[p.id,p.age]));
+  for(let k=0;k<6;k++)for(const m of [2,8]){ G.year=y0+k; G.day=dnum(G.year,m,1);
+    if(m===2){ for(const p of mine)p.hist.push({...ZB,y:G.year-1,lvl:'퓨처스',t:G.user,g:30,pa:p.isP?0:100,outs:p.isP?90:0}); for(const p of theirs)p.hist.push({...ZB,y:G.year-1,lvl:'1군',t:p.team,g:20,pa:p.isP?0:40,outs:p.isP?40:0}); }
+    for(const p of [...mine,...theirs]){ p.age=age.get(p.id); const v=st(p); if(v!=null)(S.get(p.id)||S.set(p.id,[]).get(p.id)).push(v);
+      if(p.team===G.user){ const y=p.ys; p.ys=!y; const v2=st(p); p.ys=y; if(v2!==v)ysD.push(p.name+' '+v+'→'+v2); } } }
+  const osc=[]; for(const [id,L] of S){ let big=0, rev=0, dir=0; for(let i=1;i<L.length;i++){ const d=L[i]-L[i-1]; if(Math.abs(d)>=1.5)big++; if(Math.abs(d)>=1){ if(dir&&Math.sign(d)!==dir)rev++; dir=Math.sign(d); } } if(big>=2||rev>=1)osc.push(G.players[id].name+'('+(G.players[id].team===G.user?'우리':'타 구단')+') '+L.join(' ')); }
+  ok(S.size>=mine.length,'평가된 선수 '+S.size);
+  ok(!osc.length,'잠재력 추정 별이 오르내림 '+osc.length+'명: '+osc.slice(0,4).join(' / '));
+  ok(!ysD.length,'육성 등록 전환만으로 별이 바뀜: '+ysD.slice(0,3).join(', '));
+  /* 관찰이 쌓이면 오차가 줄어든다: 처음보다 마지막 추정이 진짜 잠재력에서 더 멀어지지 않는다 */
+  const far=mine.filter(p=>{ const L=S.get(p.id); return L&&Math.abs(L[L.length-1]-potStarN(p.pot))>Math.abs(L[0]-potStarN(p.pot))+.5; }); ok(!far.length,'관찰이 쌓였는데 실제에서 더 멀어짐 '+far.map(p=>p.name+' '+S.get(p.id).join(' ')).slice(0,3).join(' / ')); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
