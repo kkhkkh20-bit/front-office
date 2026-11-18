@@ -111,8 +111,6 @@ function gmMemo(g){ const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!m
   return H?`<div class="gm-memo"><div class="gm-ttl">단장 메모</div>${H}</div>`:''; }
 /* 다른 구단 관심 선수 목록 */
 function pwatchToggle(id){ G.pwatch=G.pwatch||[]; const i=G.pwatch.indexOf(id); if(i>=0){ G.pwatch.splice(i,1); return false; } G.pwatch.unshift(id); G.pwatch=G.pwatch.slice(0,30); return true; } /* 30명까지(커뮤니티 건의 11-11) */
-function pwatchBox(){ const L=(G.pwatch||[]).map(id=>G.players[id]).filter(p=>p&&p.team!=null&&p.team!==G.user); if(!L.length)return '';
-  return `<section class="card"><div class="row between"><h2 class="sec">관심 선수</h2><span class="small muted">경기·선수 정보에서 표시</span></div><div class="pwl">${L.map(p=>`<div class="pwr"><div class="pwm">${pMini(p)}<span class="small muted">${badge(p.team,14)} ${tshort(p.team)}${potChipP(p)} · ${l10Text(p)||'최근 기록 없음'}</span></div><span class="pwb"><button class="tc-i" data-a="findT" data-v="${p.id}">얻을 조건 보기</button><button class="tc-i" data-a="pwatch" data-v="${p.id}">빼기</button></span></div>`).join('')}</div></section>`; }
 
 
 /* 타 구단 관심 선수 명단(커뮤니티 건의 11-11): 포지션별로 계약·이적 가능 여부를 한눈에 */

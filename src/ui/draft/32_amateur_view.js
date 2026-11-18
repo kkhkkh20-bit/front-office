@@ -3,7 +3,6 @@
 function amSeasonOf(){ const y=G.year; if(G.amL&&G.amL.y===y)return G.amL; if(G.amLp)return G.amLp; return null; }
 const amLnkS=n=>`<button class="lnk" data-a="amSch" data-v="${esc(n)}">${esc(n)}</button>`;
 function amLnkP(x){ if(x.kind==='p'&&G.players[x.id])return `<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.n)}</button>`; return `<button class="lnk" data-a="amP" data-v="${x.id}">${esc(x.n)}</button>`; }
-const amTw=h=>`<div class="tw">${h}</div>`;
 function amEnvLine(y){ const w=amEnvWord(y,'hs'); if(!w)return ''; const c=w.c, m=w.m; return `<p><b>${y} 고교야구: ${esc(w.w)}</b></p><p class="small">타율 ${fmt3(c.avg)}${m?` (최근 평균 ${fmt3(m.avg)})`:''} · 평균자책점 ${c.era.toFixed(2)}${m?` (${m.era.toFixed(2)})`:''} · 타석당 홈런 ${c.hr.toFixed(2)}%${m?` (${m.hr.toFixed(2)}%)`:''} · ${c.g}경기</p>`; }
 /* 기록 1위: 부문마다 작은 카드(위 5명)를 격자로(사용자 11-17: 넓은 표에 순위·이름·값이 화면 끝까지 퍼져 길게 이어졌다). keys로 부문을 고른다 */
 const AM_LCATS=[['타율',0,'avg',x=>fmt3(x.v)],['OPS',0,'ops',x=>fmt3(x.v)],['홈런',0,'hr',x=>x.v],['도루',0,'sb',x=>x.v],['평균자책점',1,'era',x=>x.v.toFixed(2)],['탈삼진',1,'so',x=>x.v],['승리',1,'w',x=>x.v],['타점',0,'rbi',x=>x.v]];

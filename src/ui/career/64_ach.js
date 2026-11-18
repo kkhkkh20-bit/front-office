@@ -1,5 +1,4 @@
 /* ---------- 구단 > 연대기 > 도전과제 ---------- */
-function achTitleTag(){ const t=achTitle(); return t?`<span class="achtt">${esc(t)}</span>`:''; }
 function achView(){ const T=achT(); const M=achMeta(); const N=ACH.length; const here=ACH.filter(a=>achHas(a.id)).length, all=ACH.filter(a=>achHasMeta(a.id)).length;
   const P=achPerks(); const ts=achTitles(); const cur=achTitle();
   const perk=[P.rep?`시작 명성 상승`:'',P.trust?`첫 시즌 구단주 신뢰 상승`:'',P.cash?`창단 자금 +${money(P.cash)}`:''].filter(Boolean).join(' · ')||'아직 없습니다';

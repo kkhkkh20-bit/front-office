@@ -17,6 +17,4 @@ Object.assign(A,{ repScoop(v){ toast(repScoop(v)); save(); render(); },
   goStar(){ if(fmOn()){ UI.it=UI.it||{}; UI.it.fin='star'; A.go('club:fin'); } else A.go('club:owner'); }, /* PC 구단주 화면에는 선수 홍보 카드가 없어 재정 > 선수 홍보로(유저 제보 11-07) */
   smGo(v){ const [id,k]=String(v).split(':'); UI.smMsg=smStart(+id,k); save(); render(); }, /* 스타 마케팅 캠페인(구단주 화면) */
   ppHype(v){ const [r,pid]=String(v).split(':'); UI.ppMsg=pressPlay(r,'hype',+pid); if(UI.ppr)UI.ppr.k=null; save(); render(); },
-  ppInvest(v){ UI.ppMsg=pressPlay(v,'invest'); if(UI.ppr)UI.ppr.k=null; save(); render(); },
-  ppK(v){ UI.pp=UI.pp||{}; UI.pp.k=v; UI.ppMsg=''; render(); },
-  ppGo(){ const S=UI.pp||{}; if(S.k==='sign'&&!S.pid){ UI.ppMsg='데려오겠다고 밝힐 선수를 고르세요.'; render(); return; } UI.ppMsg=pressPlay(S.rep,S.k,+S.pid); save(); render(); } });
+  ppInvest(v){ UI.ppMsg=pressPlay(v,'invest'); if(UI.ppr)UI.ppr.k=null; save(); render(); } });

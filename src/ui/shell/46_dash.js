@@ -21,8 +21,6 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
   return `<div class="dtiles">${U.join('')}${N.join('')}</div>`; }
 /* 핵심 선수: 능력 상위 13명(부상자도 포함해서 본다) */
 function coreIds(){ return playersOf(G.user).filter(p=>!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,13).map(p=>p.id); }
-/* FM식 별점: 100점 척도 → 별 5개(반 개 단위) */
-function starsH(v){ if(v==null||isNaN(v))return ''; const n=clamp(Math.round((v-30)/14*2)/2,.5,5); return `<span class="stars" title="별 ${n}개" aria-label="별 ${n}개"><span class="st-b">★★★★★</span><span class="st-f" style="width:${n/5*100}%">★★★★★</span></span>`; }
 
 /* 홈 순위 띠: 10개 구단 순위를 한 줄(좁으면 두 줄)로. 점선 앞 5개 팀이 가을야구 */
 function stBand(){ const {order,live}=standOrder(); if(!live||!order||!order.length)return ''; const top=order[0]; const me=order.findIndex(o=>o.tid===G.user);

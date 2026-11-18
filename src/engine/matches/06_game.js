@@ -13,8 +13,6 @@ function errLoc(fs){ const L=[]; let t=0; for(const p of fs.order){ const k=fs.p
    11-15 전에는 모든 자리가 같아 3루 실책이 시즌 5개로 2루(13개)의 절반도 안 됐다. 땅볼 기회 수로 가중한 평균이 1이라 리그 실책 수는 그대로 */
 const EPOS={'3B':1.6,SS:1.15,'2B':.75,'1B':.6};
 const errChance=(e,gb)=>.022*(e&&EPOS[e[1]]||1)*(e&&(ERRN[e[1]]||e[1]==='P')?clamp(1+((ERRN[e[1]]||DEF0)-errV(e[0],e[1],gb))/20,.4,2.2):1); /* 그 자리 보통 수비력(ERRN)보다 20 낮으면 실책 2배. 투수는 수비 능력치가 없어 기본 확률 */
-function errFielder(fs){ const L=[]; let t=0; for(const p of fs.order){ const k=fs.posOf[p.id]; if(!k||!ERRW[k])continue; const w=ERRW[k]*clamp(1+(ERRN[k]-fieldV(p,k))/12,.35,3); L.push([p,k,w]); t+=w; }
-  let x=R()*t; for(const e of L){ x-=e[2]; if(x<=0)return e; } return L[L.length-1]||null; }
 const pz=()=>({outs:0,h:0,hr:0,bb:0,hbp:0,so:0,r:0,er:0,pc:0,bf:0,e:0});
 /* 체력 배수: 체력 45를 1로, 높을수록 피로가 덜 쌓이고 부상 위험이 낮다(0.8~1.2) */
 const staF=p=>clamp(1+(45-(p.r.sta||45))*.006,.8,1.2);
