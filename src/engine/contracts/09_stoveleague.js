@@ -265,12 +265,23 @@ function aiFaBonus(p,best){ const y=Math.max(1,best.years||1), B=aiFaSplit(p,bes
 /* 지급할 수 있는 최대 현금보상액을 정산될 때까지 묶는다. 구버전 prev 누락은 선수에서 읽되 상태를 바꾸지 않는다. */
 function faCompReserve(tid){ return sum((G.comp||[]).filter(c=>c.to===tid&&c.stage!=='done').map(c=>{ const p=G.players[c.pid], prev=Number.isFinite(c.prev)?c.prev:p?(p.faPrevSal??p.sal??0):0; return Math.round(prev*((COMP[c.grade]||{}).cash||0)); })); }
 function faRosterFull(tid){ return rosterN(tid)>=ROSTER_MAX||rosterProj(tid)>=ROSTER_MAX; }
-function faFundsCheck(p,o,tid=G.user){ const t=team(tid); if(!t||!p||!o||tid!==ME()&&!t.indie)return null; const bonus=o.terms?(o.terms.bonus||0):tid!==ME()?aiFaSplit(p,o).bonus:0; const comp=tid!==p.faFrom?Math.round((p.faPrevSal??p.sal??0)*((COMP[p.faGrade]||{}).cash||0)):0; const need=bonus+comp; const cash=spendable(tid); if(need<=0||cash>=need)return null;
-  return {ok:false,need,cash,msg:`FA 계약 자금 부족 · 계약금 ${money(bonus)}과 보상금 ${money(comp)}(최대 현금 보상)에 ${money(need)}이 필요하지만 가용자금은 ${money(cash)}입니다. 미결 보상금은 정산될 때까지 유보합니다.`}; }
+function faFundsCheck(p,o,tid=G.user){ const t=team(tid); if(!t||!p||!o||tid!==ME()&&!t.indie)return null; const bonus=o.terms?(o.terms.bonus||0):tid!==ME()?aiFaSplit(p,o).bonus:0; const comp=tid!==p.faFrom?Math.round((p.faPrevSal??p.sal??0)*((COMP[p.faGrade]||{}).cash||0)):0; const need=bonus+comp; const ear=tid===ME()&&!t.indie?faGrantGap(p.id):0, cash=spendable(tid)+ear+(p.faFrom!==tid&&typeof champFundReserve==='function'?champFundReserve(tid):0); if(need<=0||cash>=need)return null; /* 구단주가 이 선수 몫으로 낸 영입 자금은 전액 이 선수에게 쓸 수 있다: 예산 여유가 마이너스면 지원 한도에 더한 돈이 그 구멍에 먼저 묻혀 가용자금이 반만 늘었다(피드백 11-18) */
+  const gr=tid===ME()?faGrantOpen(p.id):0; return {ok:false,funds:true,need,cash,msg:`FA 계약 자금 부족 · 계약금 ${money(bonus)}과 보상금 ${money(comp)}(최대 현금 보상)에 ${money(need)}이 필요하지만 가용자금은 ${money(cash)}입니다${gr?`(구단주 영입 자금 ${money(gr)} 포함)`:''}. 계약금을 줄이고 연봉으로 돌리면 당장 필요한 돈이 줄어듭니다. 미결 보상금은 정산될 때까지 유보합니다.`}; }
+/* 이 선수 몫으로 받은 구단주 FA 영입 자금(주문·요청 승인, 아직 목적 미달성) */
+function faGrantOpen(pid,tid=G.user){ if(G.unemp||typeof grants!=='function')return 0; const sy=sponSeason(); return sum(grants().filter(g=>g.ok&&g.st==='open'&&g.pur&&g.pur.k==='fa'&&g.pur.pid===pid&&(g.tid??G.user)===tid&&g.y===sy).map(g=>g.amt||0)); }
+/* 영입 자금 가운데 가용자금에 아직 안 잡힌 몫: 지원금은 지원 한도·목표에 더해지는데, 예산 여유가 마이너스면 그 구멍을 먼저 메워 spendable()이 덜 늘어난다 */
+function faGrantGap(pid){ const e=faGrantOpen(pid); if(!(e>0))return 0; const b=budget(), rg=b.roomGoal, rc=b.roomCap; const got=(Math.max(0,rg)-Math.max(0,rg-e))+(Math.min(0,rc)-Math.min(0,rc-e)); return Math.max(0,Math.round(e-got)); }
+/* 구단주 FA 영입 자금 액수: 연봉 기준(base)에 더해, 요구 조건(계약금 + 최대 현금 보상금)을 지금 가용자금으로 못 내는 만큼까지(연봉 기준의 두 배까지). 주문해 놓고 계약금을 못 내 결재가 막히던 문제(피드백 11-18) */
+function faGrantAmt(p,base){ let short=0; try{ const comp=p.faFrom!==G.user?Math.round((p.faPrevSal??p.sal??0)*((COMP[p.faGrade]||{}).cash||0)):0; short=faBonusDemand(p,p.ask.annual,p.ask.years)+comp-spendable(G.user); }catch(e){} return round5(clamp(Math.max(base,short),base,base*2)); }
 function faAiCapOk(tid,p,o){ if(!o)return true; const B=o.terms?{annual:o.terms.annual,bonus:o.terms.bonus||0}:aiFaSplit(p,o), a=B.annual+Math.round(B.bonus/Math.max(1,o.years||1)), s=sponSeason(); const c=aiCapTake(tid,capPayWith(tid,p.id,a,s).tot,capPayWith(tid,null,null,s).tot); return !c||!c.hard; }
 /* FA 보상 기준 연봉: 직전 연봉 협상에서 요구액을 넘겨 올려 준 몫은 빼고(41_salary_talks salCompCap) */
 function faCompBase(p){ return p.salCompCap&&p.salCompCap.y===G.year?Math.min(p.sal,p.salCompCap.a):p.sal; }
-function faSign(p,offers){ const C=_faPC; _faPC=null; try{ return faSignRun(p,offers); }finally{ if(C){ C.k=null; _faPC=C; } } } /* 계약 중에는 입찰 캐시를 끄고, 끝나면 비운다 */
+const FA_SIGN_RETRY=new WeakMap();
+function faSign(p,offers){if(!p||!G.fa||!(G.fa.pool||[]).includes(p.id))return;const C=_faPC,game=G,source=FO_RNG,signature=JSON.stringify([G.day,offers]),book=FA_SIGN_RETRY.get(game)||new Map(),prior=book.get(p.id),values=prior&&prior.market===G.fa&&prior.source===source&&prior.signature===signature?prior.values.slice():[],undo=settlementUndo();let i=0;_faPC=null;
+  FO_RNG=()=>{if(i<values.length)return values[i++];const v=(source||FO_RNG0)();values.push(v);i++;return v;};
+  try{const r=faSignRun(p,offers),rec=(G.fa.results||[]).find(x=>x.id===p.id&&x.to===p.team);if(rec&&!(G.fa.pool||[]).includes(p.id)&&typeof champFundUse==='function')champFundUse(rec.to);book.delete(p.id);if(!book.size)FA_SIGN_RETRY.delete(game);return r;}
+  catch(e){undo();worldReset();_chronGame=null;_chronIds=null;_chronSources=null;book.set(p.id,{market:G.fa,source,signature,values});FA_SIGN_RETRY.set(game,book);throw e;}
+  finally{FO_RNG=source;if(C){C.k=null;_faPC=C;}}}  /* 계약 중에는 입찰 캐시를 끄고, 끝나면 비운다 */
 function faSignRun(p,offers){
   offers=offers.filter(o=>!faOutBlocked(o.tid,p)&&!faRosterFull(o.tid)&&!faFundsCheck(p,o,o.tid)&&(o.tid===ME()||faAiCapOk(o.tid,p,o))); if(!offers.length)return; /* 정식 선수가 꽉 찬 구단은 계약할 수 없다(검수 11-09r) */
   let capC=null; { const uo=G.unemp?null:offers.find(o=>o.tid===G.user); if(uo){ capC=faCapCheck(p,uo); if(capC&&!capC.ok){ offers=offers.filter(o=>o!==uo); delete G.fa.offers[p.id]; stop('FA',`${p.name} 측이 우리 조건에 사인하려 했지만 구단주 결재가 나지 않아 제안을 거둬들였습니다. ${capC.msg}`,p.id); capC=null; if(!offers.length)return; } } } /* 사인 직전에 구단주가 그때 연봉 합계로 다시 본다: 여러 FA에게 동시에 낸 제안이 하나씩은 통과해도 합치면 한도를 넘는다(사용자 11-13) */
@@ -278,7 +289,6 @@ function faSignRun(p,offers){
   for(const o of offers){ if(o.tid===U&&ng&&ng.closed)continue; const sc=faScore(p,o)*(shop?1:rnd(.96,1.04)); if(sc>bs){bs=sc;best=o;} } /* 대어는 시장 보고 결과대로 결정한다 */
   if(!best)best=offers.find(o=>o.tid!==U); if(!best)return; /* 우리와 협상을 접은 선수는 우리 제안만 남아 있어도 사인하지 않는다 */
   try{ agDealAdd(p,best.tid,best.annual); if(p.ask0&&best.annual<p.ask0*.8)p.agBad=G.year; const ag=agentOf(p); agRelAdd(ag,5,`${p.name} 계약`,best.tid); agMemSet(ag,best.tid,'ok',p.id); for(const o of offers)if(o.tid!==best.tid)agRelAdd(ag,1,`${p.name} 끝까지 경쟁`,o.tid); }catch(e){} /* 계약한 구단 +5, 끝까지 제안한 구단 +1: 사용자·AI 같은 규칙 */
-  if(G.faFund&&!G.faFund.done&&best.tid===(G.faFund.tid??G.user)&&p.faFrom!==best.tid)G.faFund.used=true; /* 받은 구단 기준(이직 뒤에도, 검수 11-09zn) */
   try{ const L=domLead(); if(L&&best.tid!==L.tid&&(p.faFrom===L.tid||offers.some(o=>o.tid===L.tid))&&domFaMul(team(best.tid),p)>1)domLog('outbid',p.id); }catch(e){} /* 독주 구단의 FA·노린 FA를 경쟁 구단이 가져감 */
   let ht=null; try{ ht=homeTie(p,best.tid); }catch(e){} const from=p.faFrom; p.team=best.tid; p.sal=Math.max(MIN_SAL,best.annual); p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.faN=faPriorN(p)+1; p.lastFA=stoveY(); /* 같은 겨울 계약은 1월에 해도 그 시즌 회차 */ p.faPrevGrade=p.faGrade;
   termsClear(p); { const per=period(); p.faTrY=per==='season'||per==='post'?G.year+1:sponSeason(); } /* 다음 시즌 개막까지 트레이드 금지(faSignLock) */ const BT=best.tid===U&&best.terms?best.terms:null; if(BT){ p.sal=Math.max(MIN_SAL,BT.annual); termsApply(p,BT,'fa',ctSeason()); } else if(best.tid!==U)aiFaBonus(p,best); /* 야인 때 전 구단 계약도 AI처럼 계약금으로 나눈다 */

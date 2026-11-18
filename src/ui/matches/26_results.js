@@ -37,7 +37,8 @@ function fullBox(g,openOpp){
   if(star&&star.h)hl.push(`${esc(star.n)} ${star.ab}타수 ${star.h}안타${star.hr?` ${star.hr}홈런`:''}${star.rbi?` ${star.rbi}타점`:''}`);
   const sp=ms.pit[0]; if(sp)hl.push(`선발 ${esc(sp.n)} ${ipStr(sp.outs)}이닝 ${sp.er}자책 ${sp.so}탈삼진${sp.d?` (${sp.d})`:''}`);
   const sv=ms.pit.find(q=>q.d==='세'); if(sv)hl.push(`${esc(sv.n)} 세이브`);
-  return `${lineScore(g,null)}
+  { const m=gameMvpOf(g); if(m)hl.unshift(`<b class="gm-mvp">경기 MVP</b> ${esc(m.n)}(${esc(tshort(m.t))}) ${esc(m.line)}`); } /* 포스트시즌 경기 MVP(93_award_race) */
+  return `${pgBoard(g)}
     ${hl.length?`<div class="hl">${hl.map(x=>`<span>${x}</span>`).join('')}</div>`:''}
     <details class="evs"><summary class="eyebrow">득점 상황 ${g.ev.filter(e=>e.run).length}건</summary><div class="log">${g.ev.filter(e=>e.run).map(e=>`<p><span class="ticker">${Math.floor(e.h/2)+1}회${e.h%2?'말':'초'}</span> ${esc(e.t)}</p>`).join('')||'<p class="small muted">득점이 없었습니다.</p>'}</div></details>
     <div class="eyebrow">${badge(ms.tid,16)} ${tname(ms.tid)} 타자</div>${batBox(ms,true)}

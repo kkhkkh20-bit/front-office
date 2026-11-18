@@ -149,17 +149,26 @@ function pwrWeek(){ if(period()!=='season'||!G.sea||!G.sea.rec)return; const TL=
   G.pwr={y:G.year,d:G.day,rows}; }
 /* ===== 포스트시즌 기록(모든 구단): 정규시즌 시즌 기록(hist)과 섞지 않고 따로 남긴다.
    G.psSer[y][라운드][선수] = 시리즈 합계(한국시리즈 최우수선수·포스트시즌 기록 화면), p.psY[y] = 그해 포스트시즌 합계(선수 카드). 25년치만 */
+/* 경기의 표시 날짜와 소속 시즌은 다르다. 명시 시즌을 우선하고, 옛 박스는 유일한 보관 대진 근거를 사용한다. */
+function psRoundOf(k){k=String(k||'');return k.includes('한국시리즈')?'ks':k.includes('준플레이오프')?'spo':k.includes('플레이오프')?'po':k.includes('와일드카드')?'wc':k.includes('결정전')?'tb':null;}
+function psGameSeason(g){if(g.season!=null)return Number.isInteger(g.season)?g.season:null;const rd=psRoundOf(g.kind),Y=new Set(),check=(P,y)=>{if(!P||!Number.isInteger(y))return;const S=P.days&&P.days[rd],D=S&&S.d,H=S&&S.h,pair=(P.res||P)[rd];if(!Array.isArray(D))return;for(let i=0;i<D.length;i++){if(D[i]!==g.day||H&&H[i]!=null&&H[i]!==g.home)continue;if(Array.isArray(pair)&&(!pair.slice(0,2).includes(g.home)||!pair.slice(0,2).includes(g.away)))continue;if(!H&&!Array.isArray(pair))continue;Y.add(y);}};
+  if(rd){check(G.ps,G.ps&&G.ps.y);for(const h of G.history||[])check(h.ps,h.y);if(G.last)check(G.last.ps,G.last.y);if(Y.size===1)return [...Y][0];if(Y.size>1)return null;}if(!Number.isFinite(g.day))return null;const d=dobj(g.day);return d.y-(rd&&d.m<3?1:0);}
+/* 현재·별도 보관함의 같은 박스는 한 경기다. 실측 항목이 더 온전한 사본을 사용한다. */
+function psStoredGames(){const M=new Map(),score=g=>sum(['h','a'].map(k=>sum(['bat','pit'].map(t=>sum((Array.isArray(g.box&&g.box[k]&&g.box[k][t])?g.box[k][t]:[]).map(p=>p?Object.values(p).filter(Number.isFinite).length:0))))));
+  for(const g of [...(G.games||[]),...(G.gamesOff||[])]){if(!g)continue;const key=JSON.stringify(g.gid!=null?[psGameSeason(g),String(g.gid)]:[psGameSeason(g),g.day,g.home,g.away,g.kind,g.dh||0]),old=M.get(key);if(!old||score(g)>score(old))M.set(key,g);}return [...M.values()];}
 const PS_BK=['pa','ab','h','d','tr','hr','bb','hbp','sf','sh','so','r','rbi','sb','cs','e'], /* 희생플라이·번트도 쌓는다: 출루율 분모(검수 11-17 #208) */ PS_PK=['outs','h','hr','r','bb','hbp','so','er','bf','e'];
-function psRec(round,g){ const y=G.year; G.psSer=G.psSer||{}; const Y=G.psSer[y]=G.psSer[y]||{}; const S=Y[round]=Y[round]||{};
+function psRec(round,g){ const y=G.year,copy=o=>o&&typeof o==='object'&&!Array.isArray(o)?{...o}:{},all=copy(G.psSer),Y=copy(all[y]),S=copy(Y[round]),personal=new Map();
   for(const k of ['h','a']){ const s=g.S[k]; for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue; const isP=s.pitchers.includes(id); const K=isP?PS_PK:PS_BK;
-      const o=S[id]=S[id]||{t:s.tid,n:p.name,isP,g:0}; o.g++; for(const f of K)o[f]=(o[f]||0)+(x[f]||0);
+      const prev=copy(S[id]),o=S[id]=Object.keys(prev).length?prev:{t:s.tid,n:p.name,isP,g:0}; o.g=(o.g||0)+1; for(const f of K)o[f]=(o[f]||0)+(x[f]||0);
       if(isP){if(id===(s.sp?.id??s.pitchers[0]))o.gs=(o.gs||0)+1; if(g.dec.w===id)o.w=(o.w||0)+1; if(g.dec.l===id)o.l=(o.l||0)+1; if(g.dec.sv===id)o.sv=(o.sv||0)+1; if((g.dec.hld||[]).includes(id))o.hld=(o.hld||0)+1; }
-      const P=p.psY=p.psY||{}; const t=P[y]=P[y]||{t:s.tid,g:0,isP}; t.g++; for(const f of K)t[f]=(t[f]||0)+(x[f]||0); if(isP){if(id===(s.sp?.id??s.pitchers[0]))t.gs=(t.gs||0)+1; if(g.dec.w===id)t.w=(t.w||0)+1; if(g.dec.l===id)t.l=(t.l||0)+1; if(g.dec.sv===id)t.sv=(t.sv||0)+1;if((g.dec.hld||[]).includes(id))t.hld=(t.hld||0)+1; }
+      const P=personal.get(p)||copy(p.psY),old=copy(P[y]),t=P[y]=Object.keys(old).length?old:{t:s.tid,g:0,isP};t.g=(t.g||0)+1; for(const f of K)t[f]=(t[f]||0)+(x[f]||0); if(isP){if(id===(s.sp?.id??s.pitchers[0]))t.gs=(t.gs||0)+1; if(g.dec.w===id)t.w=(t.w||0)+1; if(g.dec.l===id)t.l=(t.l||0)+1; if(g.dec.sv===id)t.sv=(t.sv||0)+1;if((g.dec.hld||[]).includes(id))t.hld=(t.hld||0)+1; }
+      personal.set(p,P);
       const ys=Object.keys(P); if(ys.length>25)delete P[Math.min(...ys.map(Number))]; } }
-  const ys=Object.keys(G.psSer); if(ys.length>25)delete G.psSer[Math.min(...ys.map(Number))]; }
+  /* 양 팀을 모두 계산한 뒤에만 저장한다. 손상된 옛 개인 컨테이너는 빈 기록으로 시작한다. */
+  Y[round]=S;all[y]=Y;const ys=Object.keys(all);if(ys.length>25)delete all[Math.min(...ys.map(Number))];G.psSer=all;for(const[p,P]of personal)p.psY=P; }
 /* 기존 라운드 합계와 보관 박스가 온전히 남은 경우에만 개인 PS 합계의 누락 항목을 복원한다. */
 function psRecordMigrate(){ if(!G.psSer)return;const boxes=new Map(),seen=new Set(),round=k=>k.includes('한국시리즈')?'ks':k.includes('준플레이오프')?'spo':k.includes('플레이오프')?'po':k.includes('와일드카드')?'wc':k.includes('결정전')?'tb':null;
-  for(const g of [...(G.games||[]),...(G.gamesOff||[])]){const rd=round(g.kind||'');if(!rd||!g.box||g.day==null)continue;const key=g.gid??[g.day,g.home,g.away,g.kind].join(':');if(seen.has(key))continue;seen.add(key);const y=dobj(g.day).y-(dobj(g.day).m<3?1:0);
+  for(const g of psStoredGames()){const rd=round(g.kind||'');if(!rd||!g.box||g.day==null)continue;const key=g.gid??[g.day,g.home,g.away,g.kind].join(':');if(seen.has(key))continue;seen.add(key);const y=psGameSeason(g);if(!Number.isInteger(y))continue;
     for(const side of ['h','a'])for(const p of g.box[side]?.pit||[]){const k=[y,rd,p.id].join(':'),a=boxes.get(k)||{g:0,hbp:0,bf:0,hbpOK:true,bfOK:true};a.g++;for(const f of ['hbp','bf']){if(!Number.isFinite(p[f]))a[f+'OK']=false;else a[f]+=p[f];}boxes.set(k,a);}}
   for(const [y,R] of Object.entries(G.psSer)){const totals={};for(const [rd,S] of Object.entries(R||{}))for(const [id,o] of Object.entries(S||{})){if(!o.isP)continue;const b=boxes.get([y,rd,id].join(':'));if(b&&b.g===o.g)for(const f of ['hbp','bf'])if(b[f+'OK'])o[f]=b[f];const a=totals[id]=totals[id]||{g:0,hld:0,hbp:0,bf:0,hbpOK:true,bfOK:true};a.g+=o.g||0;a.hld+=o.hld||0;for(const f of ['hbp','bf']){if(!Number.isFinite(o[f]))a[f+'OK']=false;else a[f]+=o[f];}}
     for(const [id,a] of Object.entries(totals)){const p=G.players[id]||G.arch?.[id],t=p?.psY?.[y];if(!t||t.g!==a.g)continue;t.hld=a.hld;for(const f of ['hbp','bf'])if(a[f+'OK'])t[f]=a[f];}}

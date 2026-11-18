@@ -7,6 +7,8 @@ import { PID } from './auth.js';
 import { currentSeason, entryFor } from './season.js';
 import { statStmts, takeUsage, addUsage } from './usage.js';
 import { ladderKvPool, ladderKvTier } from '../uladder.js';
+import { ensureRec, recParse, recStmts, PS_BONUS } from './records.js';
+import { ensureAuto, regCheck, regStmt, leagueStmts } from './ladauto.js';
 
 export const DECK_MAX = 40 * 1024, OPP_MAX = 9, BOARD_N = 20, FEED_N = 30, STALE = 45 * 86400e3;
 /* 순위 규칙 하나(srv2 #36): 포인트 많은 순 → 우승(리그 1위) 많은 순 → 그 점수에 먼저 도달한 순(updated 이른 순) → 플레이어 id.
@@ -55,18 +57,22 @@ export async function putDeck(req, db, me, now, env) {
   const s = await currentSeason(db, now);
   const anyEntry = await db.prepare('SELECT 1 AS x FROM ladder_entries WHERE player_id = ? LIMIT 1').bind(me.id).first();
   let first = 0; if (!anyEntry) { first = clampTier(b.tier); const cap = await ladderKvTier(env, String(b.wid || me.wid || '')); if (cap != null) first = Math.min(first, cap); }
-  const bad = capErr(e, (await entryFor(db, s.id, me.id, now, first, false)).tier); if (bad) return bad; /* 연봉 상한(사용자 11-17): 쓰기 전에 그 단계 상한을 본다 */
-  const en = await entryFor(db, s.id, me.id, now, first); if (!en) return err(401, 'auth'); /* 그 사이 지운 플레이어 */
   const had = await db.prepare('SELECT 1 AS x FROM decks WHERE player_id = ?').bind(me.id).first();
+  const tier0 = (await entryFor(db, s.id, me.id, now, first, false)).tier;
+  /* 래더 v4(구단주 11-18 §1): auto 자동 등록(자동 참가를 끈 플레이어는 409) · man 직접 등록(하루 1회, 이미 덱이 있으면 429 reg_wait). 표를 못 만들면 예전처럼 */
+  const rg = (await ensureAuto(db)) ? await regCheck(db, me, b, e, tier0, had, now) : null; if (rg && rg.error) return rg.error;
+  const bad = capErr(e, tier0); if (bad && !(rg && rg.auto && rg.cap.known && rg.cap.each)) return bad; /* 연봉 상한(사용자 11-17): 쓰기 전에 그 단계 상한을 본다. 자동 등록은 넘어도 받고 그 단계 리그에서만 막는다(상대 고르기·리그 시작) */
+  const en = await entryFor(db, s.id, me.id, now, first); if (!en) return err(401, 'auth'); /* 그 사이 지운 플레이어 */
   const ovr = e.ovr && typeof e.ovr === 'object' ? e.ovr : null;
   await db.batch([
+    ...(rg ? [regStmt(db, me.id, rg, now)] : []),
     db.prepare(`INSERT INTO decks (player_id, name, year, ovr, ovr_json, tier, h, body, bytes, created, at) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${live} ON CONFLICT (player_id) DO UPDATE SET name = excluded.name, year = excluded.year, ovr = excluded.ovr, ovr_json = excluded.ovr_json, tier = excluded.tier, h = excluded.h, body = excluded.body, bytes = excluded.bytes, at = excluded.at`)
       .bind(me.id, e.name, e.year | 0, ovr ? (ovr.t | 0) : 0, ovr ? JSON.stringify(ovr) : null, en.tier, e.h, body, bytes, now, now, me.id),
     ...(String(b.wid || '').match(/^w[0-9a-f]{16}$/) ? [db.prepare('UPDATE players SET wid = ? WHERE id = ?').bind(b.wid, me.id)] : []),
     ...statStmts(db, now, Object.assign(had ? { decks_upd: 1 } : { decks_new: 1 }, takeUsage())),
   ]);
   await metaPut(db, me.id, e, now); /* 덱 구성 요약(래더 v2 메타, 사용자 11-17): 실패해도 덱 등록은 된다 */
-  return json(200, { ok: true, season: s.id, name: e.name, ovr, tier: en.tier, bytes, h: e.h });
+  return json(200, { ok: true, season: s.id, name: e.name, ovr, tier: en.tier, bytes, h: e.h, auto: rg ? rg.auto : null, cap_ok: rg ? rg.capOk : !bad, pay_x: rg ? rg.payX : null });
 }
 
 /* 연봉 상한 검사(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 화면과 같은 공용 규칙(ulCap).
@@ -107,7 +113,7 @@ export async function opponents(url, db, me, now, env) {
   return json(200, { ok: true, season: s.id, tier, avg: av, near, kv, decks });
 }
 
-/* 리그 결과 요약. 본문 {key(리그 id, 같은 key는 한 번만), rank, teams, w, l, d, opps:[{pid, w, l, d}]} */
+/* 리그 결과 요약. 본문 {key(리그 id, 같은 key는 한 번만), rank, teams, w, l, d, opps:[{pid, w, l, d}], ps?('c'|'r'|'s'), rec?(기록실: records.js recParse)} */
 export async function postResult(req, db, me, now) {
   const { body: b, error } = await readJson(req, 16 * 1024); if (error) return err(error === 'too_large' ? 413 : 400, error);
   const key = String(b.key || ''), teams = int(b.teams ?? UL_TEAMS, 2, 20), rank = teams && int(b.rank, 1, teams);
@@ -120,6 +126,9 @@ export async function postResult(req, db, me, now) {
     if (!PID.test(pid) || pid === me.id || seen.has(pid) || ow == null || ol == null || od == null || ow + ol + od === 0) continue;
     seen.add(pid); opps.push({ pid, w: ow, l: ol, d: od });
   }
+  const ps = teams >= 4 && (b.ps === 'c' || b.ps === 'r' || b.ps === 's') ? b.ps : ''; /* 포스트시즌(3연전 리그, 사용자 11-18): c 우승 · r 준우승 · s 4강 */
+  const rec = recParse(b.rec), recOn = !!rec && await ensureRec(db); /* 기록실 줄(사용자 11-18). 표를 못 만들면 결과만 넣는다 */
+  const lgOn = await ensureAuto(db); /* 래더 v4 관리자 한눈 보기: 끝난 리그 요약(순위표·우승·이상 표시)·진행 중 줄 지우기 */
   const s = await currentSeason(db, now);
   const deck = await db.prepare('SELECT tier FROM decks WHERE player_id = ?').bind(me.id).first();
   /* 동시에 온 결과(srv2 #58): 칸(tier·leagues)을 읽고 계산한 뒤, 읽은 값 그대로일 때만 바꾼다(compare-and-set). 다른 요청이 먼저 바꿨으면 batch 전체를 되돌리고 다시 읽어 계산한다.
@@ -128,7 +137,7 @@ export async function postResult(req, db, me, now) {
     const dup = await db.prepare('SELECT season, tier, to_tier, rank, teams, delta FROM league_results WHERE player_id = ? AND lkey = ?').bind(me.id, key).first();
     if (dup) return dupReply(db, me, dup, s);
     const en = await entryFor(db, s.id, me.id, now, deck ? deck.tier : 0); if (!en) return err(401, 'auth'); /* 그 사이 지운 플레이어 */
-    const mv = ulTierAfter(en.tier, rank, teams), delta = rankPoints(rank, teams), crown = rank === 1 && en.tier === TOP;
+    const mv = ulTierAfter(en.tier, rank, teams, ps), delta = rankPoints(rank, teams) + (PS_BONUS[ps] || 0), crown = rank === 1 && en.tier === TOP; /* 포스트시즌 우승·준우승 보너스(사용자 11-18). 단계는 정규 순위, 래더 v4(구단주 11-18 §3): 우승팀은 순위와 무관하게 승격 */
     const up = mv.move === 'up' ? 1 : 0, down = mv.move === 'down' ? 1 : 0, win = rank === 1 ? 1 : 0;
     const st = [
       db.prepare(`UPDATE ladder_entries SET tier = ?, best_tier = MAX(best_tier, ?), points = points + ?, leagues = leagues + 1, wins = wins + ?, ups = ups + ?, downs = downs + ?, updated = ? WHERE season = ? AND player_id = ? AND tier = ? AND leagues = ? AND ${live}`)
@@ -140,6 +149,8 @@ export async function postResult(req, db, me, now) {
     ];
     for (const o of opps) st.push(db.prepare('INSERT INTO h2h (player_id, opp_id, n, w, l, d, at) SELECT ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM players WHERE id = ?) ON CONFLICT (player_id, opp_id) DO UPDATE SET n = n + excluded.n, w = w + excluded.w, l = l + excluded.l, d = d + excluded.d, at = excluded.at')
       .bind(me.id, o.pid, o.w + o.l + o.d, o.w, o.l, o.d, now, o.pid));
+    if (recOn) st.push(...recStmts(db, { pid: me.id, season: s.id, tier: en.tier, key, rank, w, l, d, ps, rec, now }));
+    if (lgOn) st.push(...leagueStmts(db, { pid: me.id, season: s.id, tier: en.tier, key, rank, teams, w, l, d, ps, st: b.st, champ: b.champ, runner: b.runner, now }));
     const ev = crown ? 'crown' : up ? 'promo' : down ? 'demote' : '';
     if (ev) st.push(db.prepare('INSERT INTO events (season, kind, player_id, nickname, tier_from, tier_to, info, at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').bind(s.id, ev, me.id, me.nickname, en.tier, mv.tier, JSON.stringify({ rank, teams }), now));
     const hh = String(kstHour(now)).padStart(2, '0'), use = takeUsage();
@@ -147,7 +158,7 @@ export async function postResult(req, db, me, now) {
     try { await db.batch(st); }
     catch (e) { if (isCas(e) || isDupKey(e)) { addUsage(use); continue; } throw e; }
     const after = Object.assign({}, en, { tier: mv.tier, best_tier: Math.max(en.best_tier, mv.tier), points: en.points + delta, leagues: en.leagues + 1, wins: en.wins + win, ups: en.ups + up, downs: en.downs + down, updated: now });
-    return json(200, { ok: true, season: s.id, tier_from: en.tier, tier: mv.tier, move: mv.move, rank, delta, points: after.points, best_tier: after.best_tier, crown, entry: await entryView(db, after, me) });
+    return json(200, { ok: true, season: s.id, tier_from: en.tier, tier: mv.tier, move: mv.move, rank, delta, ps, rec: recOn ? rec.b.length + rec.p.length : 0, points: after.points, best_tier: after.best_tier, crown, entry: await entryView(db, after, me) });
   }
   return err(503, 'busy', null, { 'Retry-After': '2' }); /* 계속 겹치면(거의 없음) 잠시 뒤 다시: 5xx라 앱이 줄에 남겨 다시 보낸다 */
 }

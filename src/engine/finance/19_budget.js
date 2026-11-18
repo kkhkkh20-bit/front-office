@@ -2,9 +2,10 @@
 function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; if(y===G.year&&G.ps&&G.ps.finDay!=null)return G.ps.finDay; if(y===G.year&&G.cal&&G.cal.end)return Math.min(dnum(y,11,5),G.cal.end+30); return dnum(y,11,5); } /* 결산은 한국시리즈 이틀 뒤: 알면 그날, 모르면 정규시즌 끝 +30일로 어림 */
 /* 이미 현금에 반영한 인수 출자는 영업 흑자·지원 필요액과 구분한다. 결산과 예산 전망이 같은 회수 식을 쓴다. */
 function financeCapitalYear(tid,y){ return sum(((G.ownership||{}).capital||[]).filter(x=>x.tid===tid&&(x.fy??x.y)===y).map(x=>x.amount||0)); }
+function financeReserveLimit(tid,y,ear=0){const base=Math.round(RES_CAP*ecoIdx(y));return {base,ear,total:base+ear};}
 function financeCashReturns(tid,y,cash,net,o={}){ const t=team(tid),capital=o.capital||0,rate=(t.indie?.5:(o.owner||t.owner)==='profit'?.6:(o.owner||t.owner)==='pr'?.5:.4)+(tid===ME()&&HARD()?.1:0),operating=net-capital-(o.relief||0),available=cash+net-capital;
   const back=operating>0?Math.min(Math.round(operating*rate),Math.max(0,Math.round(available))):0,after=available-back,EI=ecoIdx(y);
-  const div=t.indie?Math.round(Math.max(0,after-Math.round(INDIE_DIV_T*EI))*INDIE_DIV_R):0,sweep=t.indie?0:Math.round(Math.max(0,after-Math.round(RES_CAP*EI)-(o.ear||0))*RES_RATE);
+  const div=t.indie?Math.round(Math.max(0,after-Math.round(INDIE_DIV_T*EI))*INDIE_DIV_R):0,sweep=t.indie?0:Math.round(Math.max(0,after-financeReserveLimit(tid,y,o.ear||0).total)*RES_RATE);
   return {rate,back,div,sweep,endCash:after-div-sweep+capital}; }
 function goalSupportBase(t,g,fy){ if(g.baseSup==null){const lock=G.bLocks&&G.bLocks[t.id]&&G.bLocks[t.id].fy===fy?G.bLocks[t.id]:G.bLock&&G.bLock.tid===t.id&&G.bLock.fy===fy?G.bLock:null,cap=supportCap(t),grant=t.grant&&t.grant.y===fy?t.grant.amt:0;g.baseSup=lock?lock.gf:cap>grant?clamp((g.sup*cap-grant)/(cap-grant),0,1.5):g.sup;}return g.baseSup; }
 /* 목표 생성·저장 복원에서 기본 지원율을 확정한다. 예산 조회의 구형 저장 폴백도 같은 계산을 쓴다. */
@@ -16,8 +17,8 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   const fR=settled?fNextReserve(fRe):(G.cal&&G.day>=G.cal.open&&G.sea&&G.sea.y===G.year)?0:fReserve(); const fsB=Math.max(fs,fR);
   const intlA=sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c));
   const tax=ci.over>0?Math.round(ci.over*capRate((t.capOver||0)+1)):0; const flo=sponSeason()>=2027&&ci.floor>ci.pay?Math.round((ci.floor-ci.pay)*floorRate((t.floorUnder||0)+1)):0;
-  const exp=[['국내 선수 연봉',ci.all,'pay'],[fR>fs?'외국인 선수 연봉(배정 예산)':'외국인 선수 연봉',fsB,'for'],['감독 연봉',settled&&m&&(m.interim||(G.rolled===G.year&&m.yrs<=0))?Math.round((S.mgr||0)+(m.sal||0)*Math.max(0,dnum(G.year+1,1,1)-G.day)/365):acc(S.mgr,m&&!(m.cs!=null&&m.cs>EY)?m.sal:0),'mgr'] /* 다음 시즌부터 일하는 감독은 올해 전망에 넣지 않는다(검수 11-08). 계약이 끝난 감독·대행은 연말까지만(검수 11-09x) */,['코치진 연봉',acc(S.coach,G.coach?coachSal(G.user,!settled):0),'mgr'] /* 결산 전에는 다음 시즌부터인 코치를 빼고(검수 11-09x) */,['단장 연봉',(()=>{ const C=G.unemp?null:myCInit(); return C&&C.tid===G.user&&C.y0<=EY?C.sal:0; })(),'mgr'], /* 결산 때 한 해 치를 낸다(myCPay) */
-    ['구단 운영비',Math.round((t.indie?19000:24000)*ecoIdx(EY)),'ops'],['스카우트 운영',Math.round(scoutSpent()+sum(G.scouts.map(s=>s.sal))*rem)+600,'ops'] /* 이미 쌓인 몫 + 남은 기간 */,['마케팅',G.marketing,'ops'],
+  const exp=[['국내 선수 연봉',ci.all,'pay'],[fR>fs?'외국인 선수 연봉(배정 예산)':'외국인 선수 연봉',fsB,'for'],['감독 연봉',settled&&m&&(m.interim||(G.rolled===G.year&&m.yrs<=0))?Math.round((S.mgr||0)+(m.sal||0)*Math.max(0,dnum(G.year+1,1,1)-G.day)/365):acc(S.mgr,m&&!(m.cs!=null&&m.cs>EY)?m.sal:0),'mgr'] /* 다음 시즌부터 일하는 감독은 올해 전망에 넣지 않는다(검수 11-08). 계약이 끝난 감독·대행은 연말까지만(검수 11-09x) */,['코치진 연봉',acc(S.coach,G.coach?coachSal(G.user,!settled):0),'mgr'] /* 결산 전에는 다음 시즌부터인 코치를 빼고(검수 11-09x) */,['단장 연봉',(()=>{ const C=G.unemp?null:myCInit(); return myCSalaryAt(C,EY)+gmSeasonAIPay(G.user,EY); })(),'mgr'], /* 결산 때 한 해 치를 낸다(myCPay) */
+    ['구단 운영비',Math.round((t.indie?19000:24000)*ecoIdx(EY))-gmSeasonAIPay(G.user,EY),'ops'],['스카우트 운영',Math.round(scoutSpent()+sum(G.scouts.map(s=>s.sal))*rem)+600,'ops'] /* 이미 쌓인 몫 + 남은 기간 */,['마케팅',G.marketing,'ops'],
     ['부상 방지·병원',acc((S.med||0)+(S.hosp||0),PREV[G.med.prev].c+HOSP[G.med.hosp].c),'ops'],['해외 스카우트망',acc(S.intl,intlA),'ops'],['전력분석원 연봉',acc(S.data,anaSal()),'ops'],['훈련 시설 유지비',acc(S.fac,facUpkeep()+acadFee(G.user)),'ops'],
     ['해외 연수',S.dev||0,'ops'],['구장 시설 유지비',SPj.up,'ops'],['신인 계약금',settled?0:((G.sea.bonus&&G.sea.bonus[G.user])||0),'pay'],['신구장 분담금',newStadDue(G.user),'ops'],['단장 결정 지출',S.etc||0,'ops'],['팬 마케팅·구단 이벤트',Math.round((S.fan||0)+fanMonthCost()*Math.max(0,Math.round(rem*12))+fanPeakExtra()+fanPlanCost()),'ops'] /* 응원단·채널 월 운영비는 남은 달만큼(검수 11-08) */,['FA 보상금·양도금',S.comp||0,'pay'],['FA·다년 계약금',S.faB||0,'pay'],['계약 옵션(예상)',optProj(G.user,settled?G.year+1:G.year),'pay'],['방출 정산금',S.rel||0,'pay'],['경쟁균형세',tax,'pay'],['하한 미달 발전기금',flo,'pay']].filter(x=>x[1]>0||x[0]==='팬 마케팅·구단 이벤트'&&x[1]<0);
   const r=G.sea&&G.sea.rec&&!settled?G.sea.rec[G.user]:null; const wp=r&&r.w+r.l>=10?r.w/(r.w+r.l):.5;
@@ -39,7 +40,7 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   /* 독립구단은 모기업이 없어 늘어난 수입이 곧 쓸 수 있는 돈이다: 스폰서 계약·관중 증가가 예산 여유에 바로 들어간다(플레이 테스트 11-13: 연 77억 스폰서 뒤에도 두 달 그대로) */
   const IL=t.indie?I:(lock?lock.I:I), capL=lock?lock.capB+grantNow:cap, goalL=t.indie?0:(lock?Math.round(lock.gf*lock.capB)+grantNow:goalSup);
   const gapL=E-IL, selfCL=gapL>0?Math.min(gapL,Math.max(0,cash-3000)*.5):0, needL=gapL-selfCL;
-  const ear=G.faFund&&!G.faFund.done&&!G.faFund.used&&G.faFund.tid===G.user?(G.faFund.amt||0):0,returns=financeCashReturns(G.user,EY,cash,I+support-E,{capital,ear,owner:financeSeasonOwner(G.user,EY).owner});
+  const ear=champFundEarmark(G.user),returns=financeCashReturns(G.user,EY,cash,I+support-E,{capital,ear,owner:financeSeasonOwner(G.user,EY).owner});
   return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,grant:t.indie?0:grantNow,cash:t.cash,endCash:returns.endCash,divEst:returns.div,sweepEst:returns.sweep,backEst:returns.back,capital, /* 결산과 같은 흑자 조정·유보금·배당을 거친 기말 현금이다. */
     lockI:IL, selfCL, extra:Math.round(I-IL), lockD:lock?lock.d:null, capLock:capL, goalLive:goalSup,
     roomGoal:goalL-needL, roomCap:capL-needL, roomMax:capL-gapL+Math.max(0,cash), rem, indie:!!t.indie, trust:t.trust,

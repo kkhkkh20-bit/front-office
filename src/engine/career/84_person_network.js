@@ -40,6 +40,7 @@ function personalNetworkView(){
   for(const [tid,C] of Object.entries(G.coach||{}))for(const c of Object.values(C||{}))push(c,'coach',+tid,{active:true});
   for(const [tid,m] of Object.entries(G.mgr||{}))if(m&&!m.interim)push(m,'mgr',+tid,{active:true});
   for(const t of G.teams||[])if(t.gm&&!t.gm.interim)push(t.gm,'gm',t.id,{active:true});
+  for(const x of G.exGM||[])if(x.g)push(x.g,'gm',null,{roleLabel:'전 단장 · 구직 중'});
   for(const c of G.coachX||[])push(c,'coach',G.user,{active:true,roleLabel:'보조 코치'});
   for(const [tid,o] of Object.entries(G.orgT||{}))for(const c of o&&o.coachX||[])push(c,'coach',+tid,{active:true,roleLabel:'보조 코치'});
   for(const [kind,L] of [['scout',G.scouts],['analyst',G.analysts]])for(const s of L||[])push(s,kind,G.user,{active:true});

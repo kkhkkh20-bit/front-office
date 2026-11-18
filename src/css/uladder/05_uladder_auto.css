@@ -1,0 +1,21 @@
+/* 래더 v4(구단주 11-18): 설정 › 래더(자동 참가·닉네임·다시 등록)와 관리자 '래더 현황' 한눈 보기(등록 현황·이상 감지·리그 상황·시즌 판·덱 목록) */
+.ul-auto .chips{margin:4px 0 8px}.ul-auto .ul-auto-new{color:var(--accent,#3b7dd8)}
+.ul-nick .ul-nick-now{margin:2px 0 8px;font-size:15px;overflow-wrap:anywhere}
+.ul-nick .cup-in input{max-width:100%}
+.ldax .ldb-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:6px;margin:4px 0 8px}
+.ldax .ldb-kpi>div{display:grid;gap:2px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;min-width:0}
+.ldax .ldb-kpi span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ldax .ldb-kpi b{font-size:18px}
+.ldax .ldb-t th[scope=row]{font-weight:600;text-align:left;overflow-wrap:anywhere}.ldax .ldb-t td{white-space:nowrap}
+.ldax .ldb-warn{color:#e0603a}.ldax .pill.ldb-warn{border-color:#e0603a}
+.ldax .ldb-hot{border-color:color-mix(in srgb,#e0603a 60%,var(--line))}
+.ldax .ldb-fl li,.ldax .ldb-rc li{overflow-wrap:anywhere;margin:2px 0}
+.ldax .ldb-lgv{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}.ldax .ldb-me th,.ldax .ldb-me td{background:color-mix(in srgb,var(--accent,#3b7dd8) 14%,transparent)}
+.ldax .ldb-lead{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 10px}
+.ldax .ldb-lead>div{display:flex;gap:6px;align-items:baseline;font-size:13px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.ldax .ldb-lead span:first-child{color:var(--muted);flex:none}.ldax .ldb-lead em{font-style:normal;margin-left:auto}
+.ldax .ldb-season .chips{flex-wrap:wrap}
+.ldax .ldb-find{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}.ldax .ldb-find input{flex:1 1 140px;min-width:0}.ldax .ldb-find select{flex:0 1 auto;min-width:0}
+.ldax .ldb-dl{display:grid;gap:6px}
+.ldax .ldb-dk{display:grid;gap:3px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;min-width:0}.ldax .ldb-dk.hid{opacity:.6}
+.ldax .ldb-dn{overflow-wrap:anywhere}.ldax .ldb-dk .btns{margin:0}
+/* 처음 화면에서 연 관리자(게임 밖, main 없음): PC에서 페이지 대신 세 칸이 안에서만 스크롤되게 높이를 화면에 맞춘다 */
+@media(min-width:1100px){.wrap>.ldax.setx{height:calc(100vh - 60px);height:calc(100dvh - 60px)}}

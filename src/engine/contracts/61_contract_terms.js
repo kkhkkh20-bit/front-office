@@ -15,9 +15,10 @@ function termsMul(t,d){ let m=1; if(t.role!=null&&d&&d.role!=null){ const g=t.ro
   return m; }
 function termsVal(t,d){ return termsEq(t,d)*termsMul(t,d); }
 /* 요구 묶음: 환산 연봉 요구액(base)을 계약금·연봉으로 나눈다. 대형 FA일수록 계약금 비중이 크다(KBO 관행) */
+/* FA 요구 계약금: 등급·나이에 따른 총액 비율(요구 조건·구단주 FA 자금이 같은 식을 쓴다) */
+function faBonusDemand(p,annual,years){ const bs=(p.faGrade==='A'?.42:p.faGrade==='B'?.32:.15)*(p.age>=34?.6:p.age>=32?.8:1); return bs>0?round5(annual*Math.max(1,years||1)*bs):0; }
 function termsDemand(p,kind,base){ const y=Math.max(1,base.years||1); const o=ovr(p);
-  const bs=kind==='fa'?(p.faGrade==='A'?.42:p.faGrade==='B'?.32:.15)*(p.age>=34?.6:p.age>=32?.8:1):0; /* 비FA 다년계약·연봉 협상은 계약금 없음(KBO 규약 제81조, 실제화 11-17) */
-  const bonus=bs>0?round5(base.annual*y*bs):0; const annual=Math.max(MIN_SAL,Math.ceil((base.annual-bonus*CT_BON/y)/5)*5);
+  const bonus=kind==='fa'?faBonusDemand(p,base.annual,y):0; /* 비FA 다년계약·연봉 협상은 계약금 없음(KBO 규약 제81조, 실제화 11-17) */ const annual=Math.max(MIN_SAL,Math.ceil((base.annual-bonus*CT_BON/y)/5)*5);
   const role=kind==='fa'?(o>=58?0:o>=50?1:2):null; const ntc=kind!=='sal'&&o>=64&&p.age>=29&&hasAgent(p)&&(agentOf(p).size==='big'||agentOf(p).style==='hard');
   const ag=hasAgent(p)?agentOf(p):null; return {years:y,bonus,annual,opt:0,role,ntc,ov:agOptV(ag),...(kind!=='sal'?{pv:pmVals(p,kind)}:{})}; }
 /* FA 실제 요구(환산 연봉): 에이전트 성향·경쟁 구단 수·원소속 할인을 반영한 금액. 이만큼이면 '요구 충족'(다른 구단과의 비교는 별도) */
@@ -57,7 +58,7 @@ function tradeTerms(p){ if(p){ moveSalary(p,p.team); p.trD=G.day; } try{ if(p&&p
 /* 끝나지 않은 수상 옵션 장부(리뷰② 11-17): 정규시즌 뒤 시상식 전에 계약이 바뀌거나(재계약·다년 시작·트레이드·방출) FA가 되면 p.opt가 지워져
    12월 골든글러브 옵션이 사라졌다. 지우기 전에 {pid,y 시즌,tid 계약 구단,a 금액,paid}를 G.optLed에 남기고 시상식에서 그 시즌 수상이면 원래 구단이 한 번만 낸다. 사용자·AI 같은 규칙 */
 function optLedKeep(p){ try{ const o=p&&p.opt, y=G.year; if(!o||(o.c)!=='gg'||!(o.a>0)||o.from>y||o.until<y||o.paidY===y||p.ctT==null)return; if(!(G.cal&&G.day>=G.cal.end))return; /* 그 시즌을 마친 뒤만 */
-  const A=G.awards&&G.awards[y]; if(A&&A.cd&&A.cd.gg!=null)return; /* 이미 시상식을 열었다 */ const L=G.optLed=G.optLed||[]; if(L.some(x=>x.pid===p.id&&x.y===y))return; L.push({pid:p.id,y,tid:p.ctT,a:o.a,paid:false}); }catch(e){} }
+  const A=G.awards&&G.awards[y]; if(A&&A.cd&&A.cd.gg!=null&&!A.pend?.gg)return; /* 시상을 마친 뒤만. 재개 중인 옵션 의무는 원계약 장부에 남긴다. */ const L=G.optLed=G.optLed||[]; if(L.some(x=>x.pid===p.id&&x.y===y))return; L.push({pid:p.id,y,tid:p.ctT,a:o.a,paid:false}); }catch(e){} }
 function optLedPay(pid,y,name){ const L=G.optLed; if(!L)return false; let n=false; for(const x of L){ if(x.pid!==pid||x.y!==y||x.paid)continue; const t=team(x.tid); if(!t)continue; x.paid=true; n=true; t.optDue=(t.optDue||0)+x.a; const p=G.players[pid]; if(p)story(p,`계약 옵션 달성: 골든글러브 (${money(x.a)}, ${tshort(x.tid)} 계약)`,'move'); if(x.tid===G.user&&!G.unemp)note('운영팀',`${name||(p&&p.name)||'선수'} 골든글러브 옵션 ${money(x.a)}을(를) 다음 결산에 지급합니다(지난 계약 옵션).`); } return n; }
 function optLedDone(y){ if(G.optLed)G.optLed=G.optLed.filter(x=>x.y>y||(x.paid&&x.y>=y-1)); if(G.optLed&&!G.optLed.length)delete G.optLed; } /* 시상식이 끝난 시즌의 못 받은 몫은 지우고, 지급 기록은 한 해만 남긴다 */
 /* 계약을 승계하는 2차 지명·복귀: 선지급 계약금과 지난 시즌 수상 옵션은 낸 구단에 남긴다. */

@@ -255,3 +255,74 @@ body .ltile .l1>span>i{display:flex;align-items:center;gap:4px;white-space:nowra
 .ovq-row{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-top:2px;min-width:0}.ovq-row .small{word-break:keep-all}
 .ovq-td{text-align:left!important}.ovq-tbl{flex-wrap:nowrap}.ovq-tm{padding:0;font-size:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:2px}
 .ovq-back{display:grid;gap:6px;margin:0 0 8px}.ovq-back .abr{border-color:var(--acc)}
+/* 시즌 시상 보드(45b_award_board): MVP·신인왕 카드, 골든글러브 그림 + 수상자 표, 포스트시즌 MVP */
+.awb{display:flex;flex-direction:column;gap:14px;min-width:0}
+.awb-sec{display:flex;flex-direction:column;gap:8px;min-width:0}
+.awb-t{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;font-size:16px}.awb-t small{font-size:12px;font-weight:400}.awb-t .btn{margin-left:auto}
+.awb-hs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:12px}
+.awb-h{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:12px;border:2px solid #d4a017;background:radial-gradient(120% 140% at 0% 0%,#d4a01726,var(--panel,#151a20) 60%);min-width:0}
+.awb-h.me{box-shadow:0 0 0 3px var(--team-hi)}
+.awb-hm{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;background:none;border:0;padding:0;color:inherit;text-align:left;font:inherit;cursor:pointer;min-width:0}
+.awb-hm .av{width:120px;height:120px;border-radius:50%;border:3px solid #e8b923}.awb-hm .cer-tro{top:-6px;left:86px;right:auto}
+.awb-hi{display:flex;flex-direction:column;gap:2px;min-width:0}.awb-hi .eyebrow{color:#e8b923}.awb-hi>b{font-size:24px;line-height:1.15}.awb-hi>span{font-size:13px}.awb-hi>em{font-style:normal;font-size:13px;color:var(--muted)}
+.awb-mg{margin:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.awb-ru{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted)}.awb-ru b{color:var(--ink,#fff);font-weight:600}.awb-ru em{font-style:normal}
+.awb-gg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:12px;align-items:start;min-width:0}
+.awb-fld .ggf{margin:0;max-width:none}
+.awb-list,.awb-race>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.awb-r,.awb-ps{display:grid;grid-template-columns:4.6em 52px minmax(6.5em,8.5em) minmax(0,1fr) minmax(8.5em,10em) auto;gap:8px;align-items:center;padding:5px 10px;border-radius:8px;background:var(--panel2,#1d232b);border:1px solid transparent;color:inherit;font:inherit;font-size:13px;text-align:left;min-width:0;width:100%}
+button.awb-r,button.awb-ps{cursor:pointer}button.awb-r:hover,button.awb-ps:hover{border-color:#d4a01788}
+.awb-r.me,.awb-ps.me{border-color:var(--team-hi);box-shadow:inset 3px 0 0 var(--team-hi)}
+.awb-r>i,.awb-ps>i{font-style:normal;font-weight:700;color:#e8b923;white-space:nowrap}
+.awb-r .av,.awb-ps .av{width:52px;height:52px;border-radius:50%}
+.awb-n{display:flex;flex-direction:column;min-width:0}.awb-n b,.awb-n em{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.awb-n em{font-style:normal;font-size:12px;color:var(--muted)}
+.awb-l{min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.awb-v{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 6px;align-items:center;min-width:0}.awb-v .cer-bar{height:8px}.awb-v em{grid-column:1/-1;font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.awb-r .cer-bar i{background:linear-gradient(90deg,#8a6400,#e8b923)}
+.awb-p{white-space:nowrap;font-size:12px}
+.awb-rc{grid-template-columns:3em 52px minmax(6.5em,8.5em) minmax(0,1fr) 6em}
+.awb-race{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.awb-pss{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:6px}
+.awb-ps{grid-template-columns:52px minmax(0,1fr);gap:2px 10px;align-items:start}.awb-ps>i{grid-column:1/-1}.awb-ps .av{grid-row:2/4}.awb-ps .awb-l{white-space:normal}
+.awb-votes{margin-top:4px}.awb-votes .cer-rank{gap:4px}.awb-votes .cer-r{padding:3px 10px}.awb-votes .cer-r .av{width:40px;height:40px}.cer-end .awb-ru{display:none}
+.awb-gm summary{cursor:pointer}.awb-gml{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:4px 12px;margin-top:6px}
+.awb-g{display:flex;gap:6px;align-items:baseline;font-size:13px;min-width:0;padding:2px 6px;border-radius:6px}.awb-g.me{background:color-mix(in srgb,var(--team-hi) 14%,transparent)}.awb-g i{font-style:normal;color:var(--muted);white-space:nowrap}.awb-g em{font-style:normal;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.awb-g .lnk{padding:0;white-space:nowrap}
+.cer-end .awb-gg{flex:1;min-height:0}.cer-end .awb-hs{align-content:start}
+.gm-mvp{color:#e8b923}
+.news-act{margin-top:6px}
+@media (min-width:1100px){
+  .cer-end .awb-gg{grid-template-columns:minmax(0,1fr) minmax(520px,.95fr);align-items:stretch}
+  .cer-end .awb-fld{display:flex;align-items:center;justify-content:center;min-height:0}
+  .cer-end .awb-fld .ggf{height:100%;width:auto;max-height:calc(var(--detail-height,100dvh) - 210px);aspect-ratio:10/8}
+  .cer-end .awb-list{overflow:auto;min-height:0;align-self:center}
+  .cer-end .awb-h .av{width:120px;height:120px}.cer-end .awb-hm .cer-tro{left:92px}.cer-end .awb-hi>b{font-size:24px}
+}
+@media (max-width:1099px){.awb-gg{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){
+  .awb-r,.awb-rc{grid-template-columns:4.2em 30px minmax(0,1fr) auto;gap:2px 8px}
+  .awb-r .av,.awb-ps .av{width:30px;height:30px}
+  .awb-r .awb-l{grid-column:3/-1;grid-row:2;font-size:12px}
+  .awb-v{grid-column:3/-1;grid-row:3}
+  .awb-p{grid-column:4;grid-row:1}
+  .awb-rc .awb-v{grid-column:4;grid-row:1;display:flex;flex-direction:column;align-items:flex-end}
+  .awb-race{grid-template-columns:minmax(0,1fr)}
+  .awb-hm .av{width:64px;height:64px}.awb-hm .cer-tro{left:42px}.awb-hi>b{font-size:20px}
+}
+
+/* 올스타 행사 카드·시상·올스타 역대(45c_allstar_history) */
+.asg-evs{display:flex;flex-direction:column;gap:10px}
+.asg-ev{display:flex;flex-direction:column;gap:6px;min-width:0}
+.asg-sc{font-size:20px;color:#e8b923}
+.asg-w{display:inline-flex;align-items:center;gap:6px;padding:0;min-width:0;max-width:100%;text-align:left}.asg-w .av{width:24px;height:24px;border-radius:50%}.asg-w em{font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap}
+.asg-hrd{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:6px}
+.asg-hr{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 10px;border-radius:8px;background:var(--panel2,#1d232b);border:1px solid transparent;font-size:13px;min-width:0}.asg-hr.win{border-color:#d4a017}.asg-hr.me{box-shadow:inset 3px 0 0 var(--team-hi)}
+.asg-mvp{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px}
+.asg-bxs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:6px}.asg-bx{width:100%;font-size:13px}.asg-bx td,.asg-bx th{padding:3px 6px}
+.asg-vote{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:6px}.asg-vote p{margin:2px 0}
+.awh{display:flex;flex-direction:column;gap:6px}
+.awh-y{border:1px solid var(--line,#333);border-radius:10px;background:var(--panel2,#1d232b);padding:6px 10px}
+.awh-y>summary{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;cursor:pointer;font-size:13px}.awh-yr{font-size:16px;color:#e8b923;min-width:3em}
+.awh-b{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px;margin-top:8px;align-items:start}.awh-b p{margin:0;line-height:1.55}.awh-b .btn{margin-top:6px}.awh-b p.me{color:var(--team-hi)}
+@media (max-width:760px){.asg-bxs,.asg-vote{grid-template-columns:minmax(0,1fr)}}
+.asg-bx{table-layout:fixed}.asg-bx th:first-child,.asg-bx td:first-child{width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:699px){.awb-hm .av{width:96px;height:96px}.awb-hm .cer-tro{left:68px}}

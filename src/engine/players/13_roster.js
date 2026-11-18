@@ -100,7 +100,7 @@ function capOwnerCheck(pay,before,s,key){ if(G.unemp)return null; const t=team(G
   const p=capOwnerP(t,r), ok=capRoll(key)<p;
   return {...base,ok,p,msg:ok?'':`구단주 결재 거절 · ${why}. ${who}: "${n>=3?'3년 연속 초과면 신인 1라운드 지명까지 밀립니다. ':n===2?'2년 연속이면 세금이 초과분의 절반입니다. ':''}${t.owner==='profit'?'세금까지 내 가며 쓸 돈은 없습니다.':t.owner==='pr'?'규정을 넘겨 가며 쓰는 건 그룹 이미지에 좋지 않습니다.':'상한을 넘길 만큼의 선수인지 아직 확신이 서지 않습니다.'}" 초과 폭을 줄이면 다시 결재를 올릴 수 있습니다.`}; }
 /* 화면 미리보기: 제출 전에 결재가 필요한지·허락하는 범위인지 */
-function capOwnerTxt(c){ if(!c)return ''; if(c.small)return `상한 ${money(c.over)} 초과 · 소폭이라 구단주가 승인합니다`; if(c.hard)return `구단주 허용 한도 ${money(c.lim)} 초과 · 구단주가 승인하지 않습니다`; return `상한 ${money(c.over)} 초과 · 구단주 결재 필요 · 승인 가능성 ${capPLabel(c.p)}`; } /* 결재 결과(고정값)는 미리 알려 주지 않는다: 올려 봐야 안다 */
+function capOwnerTxt(c){ if(!c)return ''; if(c.grant)return `상한 ${money(c.over)} 초과 · 구단주가 영입 자금을 낸 선수라 승인합니다`; if(c.small)return `상한 ${money(c.over)} 초과 · 소폭이라 구단주가 승인합니다`; if(c.hard)return `구단주 허용 한도 ${money(c.lim)} 초과 · 구단주가 승인하지 않습니다`; return `상한 ${money(c.over)} 초과 · 구단주 결재 필요 · 승인 가능성 ${capPLabel(c.p)}`; } /* 결재 결과(고정값)는 미리 알려 주지 않는다: 올려 봐야 안다 */
 /* 결재 통과: 구단주 신뢰가 초과 폭만큼 깎인다(5% 넘으면 -2, 10% 넘으면 -3) */
 function capOwnerOk(c,what){ if(!c||!c.ok)return; const t=team(G.user); const d=c.r>.1?3:c.r>.05?2:1; t.trust=clamp(t.trust-d,0,100);
   try{ mail('구단주실',`구단주: 상한 초과 결재 (${what})`,`${c.who}: "${what}로 ${c.s}시즌 상위 40명 연봉이 상한을 ${money(c.over)}(${Math.round(c.r*100)}%) 넘지만 이번만 승인하겠습니다. 시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(c.n)*100)}%를 야구발전기금으로 내고, 모기업 지원도 그만큼 줄어듭니다." 구단주 신뢰 하락.`,{kind:'구단주'}); }catch(e){} }

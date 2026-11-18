@@ -23,7 +23,7 @@ function cerSheet(){ const C=UI.cer; const A=G.awards&&G.awards[C.y]; if(!A)retu
   const prog=`<div class="cer-prog">${S.map((st,i)=>`<span class="${i===C.i?'on':i<C.i?'done':''}">${st[0]}</span>`).join('')}<span class="${C.i>=S.length?'on':''}">결과</span></div>`;
   let body;
   if(C.i>=S.length){ /* 전체 결과: 골든글러브는 야구장 그림, MVP·신인왕은 두 수상자 무대 */
-    body=`<div class="cer-stage cer-end">${C.k==='gg'?'':'<h3 class="cer-ttl">MVP · 신인왕</h3>'}${C.k==='gg'?ggField(A,true):`<div class="cer-stars">${S.map(st=>st[1][0]?cerStar(st[1][0],st[0],C.k,totOf(st),false):'').join('')}</div>`}
+    body=`<div class="cer-stage cer-end">${C.k==='gg'?awbGG(A):`<h3 class="cer-ttl">MVP · 신인왕</h3><div class="awb-hs">${awbHero(A,'mvp','MVP',A.mvp)}${awbHero(A,'roy','신인왕',A.roy)}</div><div class="awb-hs awb-votes">${S.map(st=>`<div class="cer-rank"><h4>${esc(st[0])} 득표 · 기자 ${totOf(st)}명</h4>${st[1].slice(0,5).map((c,i)=>cerRow(c,i,i<st[2],totOf(st))).join('')}</div>`).join('')}</div>`}
       <div class="cer-ft"><span></span><button class="btn primary" data-a="closeSheet">닫기</button></div></div>`; }
   else { const st=S[C.i], tot=totOf(st), rev=!!C.rev, n=st[1].length;
     const L=[...st[1]].sort((a,b)=>a.name.localeCompare(b.name)), W=st[1].slice(0,st[2]);
