@@ -163,10 +163,10 @@ function scoutFindWeek(silent){ const o=dobj(G.day); if(!(foreignOpen()||o.m===1
   return found; }
 function refreshFMarket(n,drop){
   /* 에이전트 공용 후보를 최소 인원으로 유지하고, 오래 팔리지 않은 후보는 시장을 떠난다(관찰 중이면 남김) */
-  G.fmarket=(G.fmarket||[]).filter(id=>G.players[id]&&G.players[id].team==null); const W=new Set((G.fwatch||[]).concat(...Object.values(G.fwatchT||{})).map(w=>w&&w.id)); /* 이직 전 구단에 남겨 둔 관찰 명단도 보호(검수 11-09b) */ for(const id of G.fmarket){ const q=G.players[id]; if(q&&((q.fneg&&q.fneg.dl)||q.fExitD===G.day))W.add(id); } /* 우리 답을 기다리는(협상 기한이 남았거나, 지났지만 아직 결과를 처리하지 않은) 후보도 정리·교체에서 뺀다(검수 11-09zl: 월초 정리가 마감 처리보다 먼저 돌아 삭제) */
-  for(const id of [...G.fmarket]){ const q=G.players[id]; if(q.fday==null)q.fday=G.day; if(!W.has(id)&&G.day-q.fday>80){ G.fmarket=G.fmarket.filter(x=>x!==id); try{ ovpBack(q); }catch(e){} dropP(id); } } /* 팔리지 않은 후보는 해외 후보군으로 돌아간다(해외 활성화 3-3) */
+  G.fmarket=(G.fmarket||[]).filter(id=>G.players[id]&&G.players[id].team==null); const W=new Set((G.fwatch||[]).concat(...Object.values(G.fwatchT||{})).map(w=>String(w&&w.id)));for(const w of G.ovw||[])if(!(G.fwNo||[]).some(id=>String(id)===String(w.id)))W.add(String(w.id)); /* 이직 전 구단에 남겨 둔 관찰 명단도 보호(검수 11-09b) */ for(const id of G.fmarket){ const q=G.players[id]; if(q&&((q.fneg&&q.fneg.dl)||q.fExitD===G.day))W.add(String(id)); } /* 우리 답을 기다리는(협상 기한이 남았거나, 지났지만 아직 결과를 처리하지 않은) 후보도 정리·교체에서 뺀다(검수 11-09zl: 월초 정리가 마감 처리보다 먼저 돌아 삭제) */
+  for(const id of [...G.fmarket]){ const q=G.players[id]; if(q.fday==null)q.fday=G.day; if(!W.has(String(id))&&G.day-q.fday>80){ G.fmarket=G.fmarket.filter(x=>x!==id); try{ ovpBack(q); }catch(e){} dropP(id); } } /* 팔리지 않은 후보는 해외 후보군으로 돌아간다(해외 활성화 3-3) */
   const ag=()=>G.fmarket.map(id=>G.players[id]).filter(q=>q&&q.fsrc!=='scout');
-  for(let i=0;i<(drop||0);i++){ const old=ag().filter(q=>!W.has(q.id)).sort((a,b)=>a.fday-b.fday)[0]; if(!old)break; G.fmarket=G.fmarket.filter(x=>x!==old.id); try{ ovpBack(old); }catch(e){} dropP(old.id); }
+  for(let i=0;i<(drop||0);i++){ const old=ag().filter(q=>!W.has(String(q.id))).sort((a,b)=>a.fday-b.fday)[0]; if(!old)break; G.fmarket=G.fmarket.filter(x=>x!==old.id); try{ ovpBack(old); }catch(e){} dropP(old.id); }
   /* 비시즌에는 후보가 넉넉해야 고르는 재미가 있다. 창단 첫해 겨울은 10개 구단이 한꺼번에 찾으므로 더 많이 */
   const fd0=G.startY===G.year&&period()!=='season'; const min=period()==='season'?12:fd0?54:32; /* 풀을 넉넉히(사용자 피드백 11-09f) */ let g=0;
   while(ag().length<min&&g++<40){ const ps=ag(); const asiaN=ps.filter(p=>p.foreign==='아시아').length; const yb=ps.filter(p=>p.foreign==='용병'); const batN=yb.filter(p=>!p.isP).length, pitN=yb.filter(p=>p.isP).length;

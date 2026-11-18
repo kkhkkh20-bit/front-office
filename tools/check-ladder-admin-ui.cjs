@@ -46,7 +46,7 @@ function deck(o = {}) { const P = []; const POS = ['C', '1B', '2B', '3B', 'SS', 
       await p.addInitScript(() => { try { localStorage.setItem('fo-cup-admin', 'test-admin'); } catch (e) {} }); await p.goto(url);
       await p.waitForFunction(() => typeof A === 'object' && typeof ADM === 'object', null, { timeout: 30000 });
       await p.evaluate(() => { ADM.chk = ''; admCheck(); }); await p.waitForFunction(() => ADM.chk === 'ok', null, { timeout: 10000 });
-      await p.evaluate(() => { A.admOpen(); }); await p.waitForSelector('[data-a="admTab"][data-v="ld"]', { timeout: 10000 }); await p.click('[data-a="admTab"][data-v="ld"]'); return p; };
+      await p.evaluate(() => { A.admOpen(); }); await p.waitForSelector('[data-a="admTab"][data-v="ld"]', { timeout: 10000 }); await p.click('[data-a="admTab"][data-v="ld"]'); await p.evaluate(() => A.ldxTab('ops')); /* 예전 래더 현황 화면 = 대시보드의 '운영' 탭(구단주 11-18) */ return p; };
     const p = await open(1440, 900);
     await p.waitForFunction(() => LDA.st === 'd1' && document.querySelector('.lda-t'), null, { timeout: 15000 });
     const t = await p.evaluate(() => ({ text: document.querySelector('.ldax').innerText, bars: document.querySelectorAll('.lda-trend>span').length, hours: document.querySelectorAll('.lda-hours>span').length, decks: document.querySelectorAll('[data-a="ldaHide"]').length, d: LDA.d }));

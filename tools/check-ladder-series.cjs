@@ -51,7 +51,7 @@ const { chromium } = require('playwright');
     await p.evaluate(() => { UI.it.ulg2 = 'ts'; render(); });
     { const r = await p.evaluate(() => ({ n: document.querySelectorAll('.ul-ts').length, rows: document.querySelectorAll('.ul-ts tbody tr').length, vs: document.querySelectorAll('.ul-vsa').length, rank: /\d+위/.test(document.querySelector('.ul-ts').innerText) }));
       assert.equal(r.n, 2, '팀 타격·투구 표'); assert.equal(r.rows, 22, '10팀 + 리그 평균 × 2'); assert.ok(r.vs >= 5 && r.rank, '리그 평균 대비·리그 순위'); }
-    await p.evaluate(() => { UI.it.ulg2 = 'ld'; render(); }); assert.equal(await p.evaluate(() => document.querySelectorAll('.ul-lt .ltile').length), 10, '개인 순위 10부문');
+    await p.evaluate(() => { UI.it.ulg2 = 'ld'; render(); }); assert.equal(await p.evaluate(() => document.querySelectorAll('.ul-lt .ltile').length), 19, '개인 순위 19부문(래더 기록 세분화 11-18)');
     await p.click('.ul-lt .ltile .l1'); await p.waitForSelector('.ul-team .ul-ros2'); { const t = await p.evaluate(() => document.querySelector('.ul-team').innerText); assert.match(t, /타자[\s\S]*OPS[\s\S]*투수[\s\S]*ERA/, '팀 선수 기록'); }
     await p.evaluate(() => { UI.it.ulg2 = 'st'; UL.opp = null; render(); }); await p.click('.ul-stx [data-a="ulOpp"][data-v="3"]'); await p.waitForFunction(() => /팀 기록/.test(document.querySelector('.ul-team').innerText) && document.querySelector('.ul-team').innerText.includes(G.uld.league.teams[3].name));
     await p.click('.ul-team [data-a="ulTmT"][data-v="deck"]'); await p.waitForFunction(() => !!document.querySelector('.setc .dk')); await p.click('[data-a="ulTmT"][data-v="st"]');
@@ -78,11 +78,27 @@ const { chromium } = require('playwright');
       await p.click(`[data-a="ulBx"][data-v="r:${si}:2"]`); await p.waitForSelector('.ul-bxv table.box'); assert.match(await p.evaluate(() => document.querySelector('.ul-bxv').innerText), /9라운드 3차전/, '끝난 리그 박스'); await p.click('.ul-bxv [data-a="ulBx"][data-v=""]'); }
     for (const k of ['st', 'ts', 'ld', 'ps', 'nw']) { await p.evaluate(k => { UI.it.ulg2 = k; render(); }, k); await p.waitForTimeout(60); await fit('PC 1600 결과 ' + k); }
     if (shot) { await p.evaluate(() => { UI.it.ulg2 = 'ps'; render(); }); await p.screenshot({ path: shot + '_result_1600.png' }); }
+    /* 래더 기록 세분화(구단주 11-18): 팀 기록 BB%·K%·K/9·BB/9·HR/9·FIP, 개인 순위 19부문, 팀 페이지 시즌 전체 줄(정렬), 서버 세분화 칸 */
+    { await p.evaluate(() => { UI.it.ulg2 = 'ts'; UL.opp = null; UL.bx = null; render(); }); const t = await p.evaluate(() => document.querySelector('.ul-mid').innerText);
+      for (const h of ['BB%', 'K%', 'K/9', 'BB/9', 'HR/9', 'FIP']) assert.ok(t.includes(h), '팀 기록 ' + h); assert.match(t, /우리 덱 vs 리그 평균[\s\S]*출루율[\s\S]*FIP/);
+      await p.evaluate(() => { UI.it.ulg2 = 'ld'; render(); }); assert.equal(await p.evaluate(() => document.querySelectorAll('.ul-lt .ltile').length), 19, '개인 순위 19부문');
+      await p.evaluate(() => { UI.it.ulg2 = 'ts'; UL.opp = 0; render(); }); await p.waitForSelector('.ul-team .ul-srt');
+      const hd = await p.evaluate(() => [...document.querySelectorAll('.ul-team .ul-srt')].map(t => [...t.querySelectorAll('th')].map(x => x.innerText.replace(/[ ▼▲]/g, '')).join(',')));
+      assert.equal(hd[0], '타자,포지션,G,PA,AB,H,2B,3B,HR,RBI,R,SB,BB,K,AVG,OBP,SLG,OPS'); assert.equal(hd[1], '투수,G,GS,W,L,SV,HLD,IP,H,ER,BB,K,ERA,WHIP,K/9');
+      await p.click('.ul-team [data-a="ulSrt"][data-v="tb:hr"]'); const hr = await p.evaluate(() => [...document.querySelectorAll('.ul-team .ul-srt[data-t="tb"] tbody tr')].map(r => +r.children[8].innerText)); assert.deepEqual(hr, hr.slice().sort((a, b) => b - a), '홈런 정렬');
+      await fit('PC 1600 팀 기록 세분화'); if (shot) await p.screenshot({ path: shot + '_stats_1600.png' });
+      const me = sql("SELECT id FROM players")[0].id, X = sql("SELECT SUM(d2) AS d2, SUM(r) AS r, SUM(so) AS so FROM ladder_lines WHERE player_id = ? AND kind = 'b'", me)[0]; assert.ok(X.d2 > 0 && X.r > 0 && X.so > 0, '서버 세분화 칸 ' + JSON.stringify(X)); }
+    /* 내 덱 래더 통산·라이벌(기록·데이터 › 팀 기록) */
+    { await p.evaluate(() => { UI.it.uldata = 'team'; A.ulGoPg('data'); }); await p.waitForSelector('.ul-car'); const t = await p.evaluate(() => document.querySelector('.ul-car').innerText);
+      assert.match(t, /내 덱 래더 통산[\s\S]*우승[\s\S]*준우승[\s\S]*정규 1위[\s\S]*승격 · 강등[\s\S]*최고 단계[\s\S]*라이벌/); await fit('PC 1600 통산'); }
     /* 기록실 */
     await p.evaluate(() => A.go('uld:rec')); await p.waitForSelector('.ul-recw .ul-rb', { timeout: 20000 }).catch(() => {}); await wait(() => document.querySelectorAll('.ul-rb li').length > 0, null, 20000);
     { const r = await p.evaluate(() => ({ t: document.querySelector('.ulx').innerText, me: document.querySelectorAll('.ul-rb li.me').length, wall: !!document.querySelector('.ul-wall') }));
       assert.match(r.t, /래더 기록실[\s\S]*우승 벽[\s\S]*홈런[\s\S]*평균자책점[\s\S]*최다 우승/, '기록실 칸'); assert.ok(r.me >= 3, '내 기록 강조 ' + r.me); assert.ok(r.wall);
       if (R.ps.my === 'c') assert.ok(await p.evaluate(() => document.querySelectorAll('.ul-wc').length === 1), '우승 벽에 우리 팀'); }
+    for (const sc of ['league', 'career']) { await p.click(`[data-a="ulRecC"][data-v="${sc}"]`); await wait(sc => { const k = Object.keys(UL.rec || {}).find(x => x.endsWith('|' + sc)); return k && UL.rec[k].data && UL.rec[k].data.scope === sc; }, sc, 20000); }
+    { const t = await p.evaluate(() => document.querySelector('.ulx').textContent); assert.match(t.replace(/\s+/g, ' '), /통산 = 모든 시즌[\s\S]*출루율[\s\S]*2루타[\s\S]*홀드[\s\S]*한 리그 최다 득점/, '기록실 세분화 ' + t.replace(/\s+/g, ' ').slice(0, 1500)); }
+    await p.click('[data-a="ulRecC"][data-v="season"]');
     await p.click('[data-a="ulRecT"][data-v="4"]'); await wait(() => /아직/.test(document.querySelector('.ul-recb').innerText)); await p.click('[data-a="ulRecT"][data-v="all"]');
     await fit('PC 1600 기록실'); if (shot) await p.screenshot({ path: shot + '_rec_1600.png' });
     await p.setViewportSize({ width: 1366, height: 768 }); await p.waitForTimeout(200); await fit('PC 1366 기록실');

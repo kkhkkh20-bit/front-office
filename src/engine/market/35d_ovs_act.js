@@ -49,7 +49,7 @@ function ovqWhy(tid,id){ const t=ovqTarget(id); if(!t)return '지금 해외에�
     if(G.year<y1||!(a.lines||[]).length&&!(a.cur&&a.cur.y===G.year&&ovlFrac(G.year)>0))return `${t.name}은(는) 해외 구단과 막 계약해 아직 해외 시즌을 치르지 않았습니다. ${Math.max(y1,G.year)} 시즌을 마친 뒤 겨울(12월 1일)부터 문의할 수 있습니다.`;
     if(a.rv!=null&&G.year-a.rv<2)return `${t.name}은(는) 지난겨울 한국행을 알아봤다가 계약하지 못해 올해는 해외에 남습니다. ${a.rv+2}년부터 다시 문의할 수 있습니다.`;
     if(age>OVQ.ageMax)return `${t.name}은(는) ${age}세라 한국행을 생각하지 않습니다.`;
-    const l=(a.lines||[]).slice(-1)[0]; if(l&&ovsParts(l).some(q=>q.lvl==='MLB'&&((q.pa||0)>=300||(q.outs||0)>=(q.rp?150:300))))return `${t.name}은(는) 지난 시즌 MLB 주전으로 뛰어 한국행을 생각하지 않습니다.`;
+    if(ovsMlbRegular(a.lines))return `${t.name}은(는) 지난 시즌 MLB 주전으로 뛰어 한국행을 생각하지 않습니다.`;
     const h=foResFor({id:a.id,name:a.name,nat:a.fr.nat}); if(h&&h.tid!==tid)return `${tname(h.tid)}의 보류권이 ${h.until}년까지 남아 다른 구단은 계약할 수 없습니다.`; }
   else { const e=t.e; if(e.a>OVQ.ageMax)return `${t.name}은(는) ${e.a}세라 한국행을 생각하지 않습니다.`; if(e.cy===ovpWk())return `${t.name}은(는) 이번 겨울 한국행을 알아봤다가 계약하지 못했습니다. 다음 겨울(12월 1일)에 다시 문의할 수 있습니다.`; }
   if(ovqUsed(tid)>=OVQ.per)return `이번 ${period()==='season'?'시즌 교체 기간':'겨울 시장'}에는 해외 영입 문의를 ${OVQ.per}번 모두 했습니다. ${period()==='season'?'12월 1일 겨울 시장':'시즌 중 교체 기간(개막 뒤)'}에 다시 문의할 수 있습니다.`;
@@ -108,8 +108,20 @@ function ovqWeek(){ try{ ovwSync(); }catch(e){} try{ ovqAiWeek(); }catch(e){} tr
 function ovsSlimFix(){ if(!G||!Array.isArray(G.abroad))return 0; let n=0;
   for(const a of G.abroad){ if(!a)continue; const done=a.back||a.end!=null;
     if(done){ if(a.pj!=null){ a.pj=null; n++; } if(a.cur){ delete a.cur; n++; } if(a.fr&&a.end!=null){ delete a.fr; n++; } }
-    if(done&&(a.foreign||a.cand)&&(a.lines||[]).length>3){ a.lines.splice(0,a.lines.length-3); n++; }
+    if(done&&(a.foreign||a.cand)){const L=ovsKeepSeasons(a.lines||[],3);if(L.length!==(a.lines||[]).length){a.lines=L;n++;}}
     if(!done&&a.pj&&!a.foreign){ let p=null; try{ p=JSON.parse(a.pj); }catch(e){} if(p){ let ch=0; if(Array.isArray(p.story)&&p.story.length>30){ p.story.splice(1,p.story.length-30); ch=1; } for(const k of OVS_PJ_DROP)if(k in p){ delete p[k]; ch=1; } if(ch){ a.pj=JSON.stringify(p); n++; } } } }
   if(G.ovsInq&&Array.isArray(G.ovsInq.L)&&G.ovsInq.L.length>OVQ.keep){ G.ovsInq.L.length=OVQ.keep; n++; }
   for(const p of Object.values(G.players||{}))if(p.postRetry!=null&&p.postRetry<G.year-1){ delete p.postRetry; n++; }
   return n; }
+
+/* 증명되는 옛 해외 연도·경기 수만 복원한다. 사라진 시즌/원본 표본을 새로 만들지 않는다. */
+function ovsSeasonRecordFix(){let n=0;const games=(q,isP,sp)=>{if(!q)return;const count=isP?q.outs||0:q.pa||0;if((q.g==null||q.g===0&&count>0)&&count>0){q.g=Math.max(1,Math.round(count/(isP?(q.rp?3.5:sp===false?3.5:17):4.1)));n++;}};
+  for(const a of G.abroad||[])for(const l of [...(a.lines||[]),...(a.cur?[a.cur]:[])])for(const q of ovsParts(l))games(q,a.isP??a.fr?.isP,!(q.rp));
+  for(const e of G.ovp?.L||[])for(const l of [...(e.L||[]),...(e.cur?[e.cur]:[])])games(l,!!e.P,e.ro!=='RP');
+  for(const p of Object.values(G.players||{})){if(!p.foreign)continue;for(const q of [p.prev,p.prev2,p.now,p.ovpCur,...(p.ovpL||[])])games(q,!!p.isP,isSPr(p));
+    const a=(G.abroad||[]).find(a=>String(a.id)===String(p.id)),counts=['pa','ab','h','d','tr','hr','bb','hbp','sf','so','r','rbi','sb','cs','outs','er','w','l','sv','hd','bf','gs','cg','sho'],sample=p.isP?'outs':'pa',proof=new Map(),conflict=(x,z)=>counts.some(k=>Number.isFinite(x[k])&&Number.isFinite(z[k])&&x[k]!==z[k]);
+    for(const l of [...(a?.lines||[]),...(p.ovpL||[])])for(const q of ovsParts(l)){const z={...q,y:l.y,lvl:q.lvl||q.l,...(q.stint==null&&l.stint!=null?{stint:l.stint}:{})},key=[z.y,ovsCandLvlOf(z.lvl),z.c??'',z.stint??l.stint??''].join(':'),old=proof.get(key);if(!old||(z[sample]||0)>(old[sample]||0))proof.set(key,z);else if((z[sample]||0)===(old[sample]||0)){if(conflict(old,z))proof.set(key,{...old,ambiguous:1});else proof.set(key,{...old,...z});}}
+    const match=q=>{if(!q||!(q[sample]>0))return null;const L=[...proof.values()].filter(z=>!z.ambiguous&&ovsCandLvlOf(z.lvl)===ovsCandLvlOf(q.lvl||p.prevLvl)&&(q.c==null||z.c===q.c)&&(q.stint==null||z.stint===q.stint)&&(q.y==null||z.y===q.y)&&q[sample]===z[sample]&&!conflict(q,z));return new Set(L.map(l=>l.y)).size===1?L[L.length-1]:null;};
+    const first=match(p.prev),second=match(p.prev2);if(first&&p.prev.y==null){p.prev.y=first.y;n++;}if(first&&p.ovpY==null){p.ovpY=first.y;n++;}
+    if(second&&first&&second.y===first.y){delete p.prev2;n++;}else if(second&&p.prev2.y==null){p.prev2.y=second.y;n++;}
+  }return n;}

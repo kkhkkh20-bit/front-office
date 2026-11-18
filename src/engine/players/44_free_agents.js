@@ -28,9 +28,17 @@ function freeList(){ return Object.values(G.players).filter(p=>isFree(p)&&!p.wv)
 /* 무적 선수의 요구 연봉: 시장가의 35%와 직전 연봉의 60% 중 낮은 쪽, 최저연봉 이상 */
 function freeAsk(p){ const rm=p.retMin&&p.retMin.until>=G.day?p.retMin.sal:0; /* 해외 복귀 우선협상이 불발된 선수: 복귀 요구액에 가깝게 */ const mv=marketSal(ovr(p)+pvShift(p)), star=p.age<=33?clamp((ovr(p)-52)*.06,0,.7):0; return round5(Math.max(MIN_SAL,rm,Math.min(mv*.35,(p.sal||MIN_SAL)*.6),mv*star)); } /* 주전급 이상은 무적이 돼도 시장가의 일정 몫 아래로 내려가지 않는다: 보상금을 부풀려 FA를 막은 뒤 헐값에 다시 데려오는 우회 방지(커뮤니티 피드백 11-11) */
 function freeOpen(){ return period()!=='post'&&!preSettle(); } /* 국내 무적 선수는 정규시즌 종료일까지. 외국인 마감일과 PS 신규 등록 제한은 별개다. */
-function signFree(id,tid){ tid=tid??G.user; const p=G.players[id]; if(!isFree(p))return '계약할 수 없는 선수입니다.'; if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return `방출한 구단은 1년 동안 ${p.name}과(와) 다시 계약할 수 없습니다.`; /* 방출 후 헐값 재계약 반복 방지 */ if(p.wv)return `${p.name}은(는) ${dmd(p.wv.end-1)}까지 웨이버 공시 중입니다. 영입·계약 → 웨이버·2차에서 양수를 신청하세요.`; if(!freeOpen())return '포스트시즌과 결산 전에는 국내 무적 선수를 새로 등록할 수 없습니다. 결산 후 다시 계약할 수 있습니다.';
-  if(rosterN(tid)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`;
-  const sal=freeAsk(p); let cc=null; if(tid===G.user&&!G.unemp){ const s=sponSeason(); cc=capOwnerCheck(capPayWith(G.user,p.id,sal,s).tot,capPayWith(G.user,null,null,s).tot,s,'free'+p.id); if(cc&&!cc.ok)return cc.msg; } /* 상한 결재(13_roster capOwnerCheck) */ p.team=tid; p.sal=sal; p.yrs=1; p.joinY=undefined; delete p.tryK; const yrs=G.year-p.freeSince; delete p.freeSince; delete p.freeDay; p.mor=clamp((p.mor??55)+8,0,100); mvLog('무적 영입',p,null,tid,`연 ${money(sal)}`,sal);
+/* 국내 신규 계약은 현재 정원과 다음 개막의 입단 예정·군 복귀를 함께 확인한다. */
+function domesticRegN(tid,nextOnly=false){ return nextOnly?rosterProj(tid):Math.max(rosterN(tid),rosterProj(tid)); }
+function domesticRosterWhy(tid,nextOnly=false){ const now=rosterN(tid), next=rosterProj(tid); return (nextOnly?next:Math.max(now,next))>=ROSTER_MAX?`정식 선수 자리가 없습니다(현재 ${now}명 · 다음 개막 ${next}명 / ${ROSTER_MAX}명, 입단 예정·전역 복귀 포함). 먼저 한 명을 정리하세요.`:''; }
+/* 같은 금액·적용 시즌의 상한 검사를 화면·직접 계약·AI 후보 선정이 함께 사용한다. 조회는 결재 효과를 적용하지 않는다. */
+function domesticCapCheck(p,tid,sal,key,s=sponSeason()){ const after=capPayWith(tid,p.id,sal,s).tot, before=capPayWith(tid,null,null,s).tot; return tid===ME()?capOwnerCheck(after,before,s,key):aiCapTake(tid,after,before,s); }
+function domesticCapWhy(c){ return c&&(c.hard||c.ok===false)?(c.msg||'구단주 허용 한도를 넘거나 긴축 중이라 이 연봉으로 계약할 수 없습니다.'):''; }
+function freeWhy(p,tid=G.user){ if(!isFree(p))return '계약할 수 없는 선수입니다.'; if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return `방출한 구단은 1년 동안 ${p.name}과(와) 다시 계약할 수 없습니다.`;
+  if(p.wv)return `${p.name}은(는) ${dmd(p.wv.end-1)}까지 웨이버 공시 중입니다. 영입·계약 → 웨이버·2차에서 양수를 신청하세요.`; if(!freeOpen())return '포스트시즌과 결산 전에는 국내 무적 선수를 새로 등록할 수 없습니다. 결산 후 다시 계약할 수 있습니다.';
+  return domesticRosterWhy(tid)||domesticCapWhy(domesticCapCheck(p,tid,freeAsk(p),'free'+p.id)); }
+function signFree(id,tid){ tid=tid??G.user; const p=G.players[id], why=freeWhy(p,tid); if(why)return why;
+  const sal=freeAsk(p), cc=domesticCapCheck(p,tid,sal,'free'+p.id); /* 상한 결재(13_roster capOwnerCheck) */ p.team=tid; p.sal=sal; p.yrs=1; p.joinY=undefined; delete p.tryK; const yrs=G.year-p.freeSince; delete p.freeSince; delete p.freeDay; p.mor=clamp((p.mor??55)+8,0,100); mvLog('무적 영입',p,null,tid,`연 ${money(sal)}`,sal);
   story(p,`${tname(tid)}와(과) 계약 (무적 선수, 연 ${money(sal)})`,'move');
   milLate(p,tid); /* 무적으로 해를 넘겨 새해 입대 검사를 피한 선수(검수 11-08) */
   if(cc)capOwnerOk(cc,`무적 선수 ${p.name} 영입`);
@@ -51,7 +59,8 @@ function freeIndie(){ const k=Math.max(FREE_NEW,FREE_MIN-freeList().length);
 function freeAiMonthly(){ if(!freeOpen())return; const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); if(!L.length)return;
   for(const t of G.teams){ if(t.id===ME())continue; const n=rosterN(t.id); if(n>=ROSTER_MAX-1)continue; const hurt=playersOf(t.id).filter(p=>p.injOut>14).length;
     if(n>=ROSTER_MAX-6&&hurt<3)continue; const own=domestic(t.id).map(ovr).sort((a,b)=>b-a); const bar=own[Math.min(own.length-1,35)]||35;
-    const c=L.find(p=>p.team==null&&ovr(p)>=bar&&p.age<=35); if(!c)continue; R(); /* 예전 무작위(50%) 자리: 난수 순서만 지킨다 */
+    const basic=p=>p.team==null&&ovr(p)>=bar&&p.age<=35; if(!L.some(basic))continue; R(); /* 예전 무작위(50%) 자리: 후보별로 다시 뽑지 않고 한 번만 소비한다 */
+    const c=L.find(p=>basic(p)&&!freeWhy(p,t.id)); if(!c)continue;
     /* AI 판단 점검 #14: 그 자리(투수/야수)가 실제로 비었을 때만 데려온다. 같은 쪽 부상자가 둘 이상이거나, 정원 여유가 많고 같은 쪽 국내 선수가 46%에 못 미치거나, 확실히 나은 선수(기준선 +4)일 때 */
     const side=playersOf(t.id).filter(p=>p.isP===c.isP), hs=side.filter(p=>p.injOut>14).length, D=domestic(t.id).filter(p=>!p.ys), thin=D.filter(p=>p.isP===c.isP).length<D.length*.46;
     if(hs>=2||(n<ROSTER_MAX-6&&thin)||ovr(c)>=bar+4)signFree(c.id,t.id); } }
