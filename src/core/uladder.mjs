@@ -2,7 +2,7 @@
    덱 = 프런트컵 엔트리 형식(src/core/cup.mjs) 그대로. 리그 = 내 덱 + 같은 단계 덱 9개, 짝마다 3연전(팀당 27경기). 1·2위 승격, 9·10위 강등.
    리그는 유저 기기에서 돈다(평범한 난수). 결과 조작은 신경 쓰지 않는다(구단주: 래더는 덱 전력을 재는 곳) */
 import { dv } from './ratings.mjs';
-import { cupPayCheck, cupValidate, cupWon } from './cup.mjs';
+import { cupPayCheck, cupValidate, cupWon, cupName, cupBadName } from './cup.mjs';
 export const UL_V = 2; /* 2: 래더 v2(선수·상대 누적 기록, 사용자 11-17) */
 export const UL_TIERS = Object.freeze(['루키', '마이너', '1부', '챔피언스', '레전드']);
 export const UL_TEAMS = 10, UL_UP = 2, UL_DOWN = 2;
@@ -58,10 +58,12 @@ export function ulCapSuggestX(e, x) { const cap = d => cupPayCheck(d, x);
   return { ids, ok: c.ok };
 }
 export const ulTierName = t => UL_TIERS[Math.max(0, Math.min(UL_TIERS.length - 1, t | 0))];
-/* 승강: 1·2위 한 단계 위(레전드는 그대로), 9·10위 한 단계 아래(루키는 그대로), 나머지 그대로 */
-export function ulTierAfter(tier, rank, n) {
+/* 승강: 1·2위 한 단계 위(레전드는 그대로), 9·10위 한 단계 아래(루키는 그대로), 나머지 그대로.
+   래더 v4(구단주 11-18 §3): 리그 우승팀(ps 'c')은 정규 순위와 무관하게 승격. 이미 승격권(1·2위)이면 추가 효과 없음(한 단계만). champ: 우승으로 올라간 경우 1 */
+export function ulTierAfter(tier, rank, n, ps) {
   n = n || UL_TEAMS; tier = Math.max(0, Math.min(UL_TIERS.length - 1, tier | 0));
   if (rank <= UL_UP) return { tier: Math.min(UL_TIERS.length - 1, tier + 1), move: tier < UL_TIERS.length - 1 ? 'up' : 'stay' };
+  if (ps === 'c') return tier < UL_TIERS.length - 1 ? { tier: tier + 1, move: 'up', champ: 1 } : { tier, move: 'stay' };
   if (rank > n - UL_DOWN) return { tier: Math.max(0, tier - 1), move: tier > 0 ? 'down' : 'stay' };
   return { tier, move: 'stay' };
 }
@@ -297,3 +299,26 @@ export function ulForm(res) { const L = res || [], l5 = L.slice(-5); let n = 0; 
 /* 개인 순위 규정(27경기에 맞춤): 규정 타석 = 경기 × 3.1, 규정 이닝 = 경기 × 1.0 */
 export const ulQualPa = g => Math.round((g || 27) * 3.1), ulQualOuts = g => Math.round((g || 27) * 3);
 
+
+/* ===== 래더 v4 자동 등록(구단주 11-18, docs/design/ladder-v4-2026-11-18.md §1) =====
+   모든 유저의 지금 구단 1군을 래더 덱으로 자동 등록한다. 갱신: 하루 한 번(그날 처음 켜거나 날짜를 넘길 때)과 시즌이 끝날 때, 바뀐 게 없으면 올리지 않는다.
+   이름: 닉네임을 정하지 않았으면 '구단명#4자리 태그'(단장 이름은 쓰지 않는다). 아래는 G·화면을 모르는 순수 함수 */
+export const UL_TAG_LEN = 4, UL_NICK_MAX = 12;
+/* '구단명#태그': 닉네임 한도(12자) 안에 태그가 늘 들어가게 구단명을 줄인다. 구단명이 쓸 수 없으면 '구단' */
+export function ulAutoName(club, tag) {
+  const t = String(tag == null ? '' : tag).replace(/\D/g, '').padStart(UL_TAG_LEN, '0').slice(-UL_TAG_LEN);
+  let c = [...cupName(String(club || '').replace(/#/g, ''))].slice(0, UL_NICK_MAX - UL_TAG_LEN - 1).join('').trim();
+  if ([...c].length < 2 || cupBadName(c)) c = '구단';
+  return c + '#' + t;
+}
+/* 보이는 이름: 직접 정한 닉네임(set) → 그것, 아니면 자동 이름 */
+export const ulShowName = (nick, set, club, tag) => set && nick ? String(nick) : ulAutoName(club, tag);
+/* 자동 갱신을 지금 할지. A = 이 저장의 자동 등록 상태 {day(마지막으로 본 날), h(올린 덱 해시), alb(본 시즌 종료 앨범 번호), pend(못 올려 기다림)}.
+   → {due(지금 볼 차례), why('first'|'season'|'pend'|'day'|''), upload(올릴 것: 덱이 바뀌었거나 기다리던 것), day} */
+export function ulAutoDue(A, now, h, alb) {
+  A = A || {}; const day = ulDayId(now), season = !!alb && alb !== (A.alb || 0);
+  const why = !A.day ? 'first' : season ? 'season' : A.pend ? 'pend' : A.day !== day ? 'day' : '';
+  return { due: !!why, why, day, upload: !!why && (h !== A.h || !!A.pend) };
+}
+/* 직접 '지금 덱으로 다시 등록': 하루 한 번(한국시간 날짜) */
+export const ulManOk = (A, now) => !A || A.man !== ulDayId(now);

@@ -41,7 +41,7 @@ function ulSeriesHtml(L){ const x=L.series.filter(s=>s.a===0||s.b===0).slice(-1)
     <p class="ul-serr"><b>${w}승 ${l}패${G3.length-w-l?` ${G3.length-w-l}무`:''}</b> ${w===3?'· 싹쓸이!':w>l?'· 위닝 시리즈':l===3?'· 스윕패':l>w?'· 루징 시리즈':''}</p></div>`; }
 /* 결과 공개 카드(리그 탭, 리그가 끝난 뒤): 순위 · 승강 · 점수 · MVP · 목표 진척 · 다음 리그 */
 function ulResultCard(U,R){ const C=FrontOfficeCore, S=C.ulSummary(U.hist,U.tier,U.car), L=U.league, T=C.ulTierName(U.tier), an=UL.reveal===R.id?' ul-anim':'', se=C.ulSeason(Date.now());
-  const lab=R.move==='up'?'승격!':R.move==='down'?'강등':'잔류', mv=R.move==='up'?`<b class="ul-up">${C.ulTierName(R.to)} 승격</b>`:R.move==='down'?`<b class="ul-dn">${C.ulTierName(R.to)} 강등</b>`:`${C.ulTierName(R.to)} 잔류`;
+  const lab=R.move==='up'?'승격!':R.move==='down'?'강등':'잔류', mv=R.move==='up'?`<b class="ul-up">${C.ulTierName(R.to)} 승격</b>${R.chp?' <span class="small">(우승 승격)</span>':''}`:R.move==='down'?`<b class="ul-dn">${C.ulTierName(R.to)} 강등</b>`:`${C.ulTierName(R.to)} 잔류`;
   const badge=`<div class="ul-badge ul-b-${R.move}"><span class="ul-rvf">${ulEmblem(R.tier,44)}</span>${R.move!=='stay'?`<span class="ul-arrow">${R.move==='up'?'▲':'▼'}</span><span class="ul-rvt">${ulEmblem(R.to,52)}</span>`:''}<span class="ul-rvl"><b>${lab}</b><span class="small">${esc(C.ulTierName(R.tier))}${R.move!=='stay'?` → ${esc(C.ulTierName(R.to))}`:''}</span></span></div>`;
   const pts=R.pts!=null?`<span class="ul-chip"><small>리그 점수</small><b class="num">${R.pts}</b></span>`:'', sp=R.srv&&!R.srv.queued?`<span class="ul-chip"><small>서버 시즌 포인트</small><b class="num">+${R.srv.delta}</b></span>`:'';
   const SS=U.seas&&U.seas.id===R.season?U.seas:null, best=SS&&R.pts!=null&&R.pts>=SS.top?'<span class="ul-chip hot"><small>시즌 최고</small><b>갱신</b></span>':'';
