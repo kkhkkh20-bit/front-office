@@ -485,7 +485,7 @@ function newYear(){
 function aiWeekly(){
   const per=period();
   if(per==='season'&&G.day<=foreignDL()) for(const t of G.teams) if(t.id!==ME()) aiForeignReview(t.id);
-  blockDaily(); aiBlockWeekly(); try{ marketWeek(); }catch(e){} try{ fBidWeek(); }catch(e){} try{ mlbHype(); }catch(e){} try{ fwatchWeek(); }catch(e){} try{ ovsFeedWeek(); }catch(e){} /* 해외파 소식(사용자 11-17): 해시만 써서 난수 순서 그대로 */ try{ facWeek(); }catch(e){} try{ climateWeek(); }catch(e){} try{ mreqWeek(); }catch(e){} try{ mcfWeek(); }catch(e){} try{ mgrRelWeek(); if(period()==='season'&&G.day>=G.cal.open+7)mpickPlan(); }catch(e){} try{ grantCheck(); ownerPush(); }catch(e){}
+  blockDaily(); aiBlockWeekly(); try{ marketWeek(); }catch(e){} try{ fBidWeek(); }catch(e){} try{ mlbHype(); }catch(e){} try{ fwatchWeek(); }catch(e){} try{ ovsFeedWeek(); }catch(e){} /* 해외파 소식(사용자 11-17): 해시만 써서 난수 순서 그대로 */ try{ ovqWeek(); }catch(e){} /* 해외 활성화 5: 해외 관찰 정리·AI 영입 문의(해시·씨앗 난수만) */ try{ facWeek(); }catch(e){} try{ climateWeek(); }catch(e){} try{ mreqWeek(); }catch(e){} try{ mcfWeek(); }catch(e){} try{ mgrRelWeek(); if(period()==='season'&&G.day>=G.cal.open+7)mpickPlan(); }catch(e){} try{ grantCheck(); ownerPush(); }catch(e){}
   const dl=per==='season'&&G.day>=KD(7,1)&&G.day<=tradeDL(); if(tradeOpen()&&per!=='post'&&!G.unemp){ const pr=domestic(G.user).some(p=>p.listed)?.65:dl?.7:per==='season'?.45:.25; for(let i=0;i<(dl?2:1);i++)if(R()<pr&&(G.offers||[]).length<3)aiOffer(); }
 }
 /* 단장의 압박: 예상보다 성적이 나쁘거나 승부사 기질이면 트레이드로 살길을 찾는다 (0~1) */

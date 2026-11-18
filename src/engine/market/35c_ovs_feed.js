@@ -33,16 +33,24 @@ function ovfCum(a,L,t){ const P=ovfPlan(a,L), nw=OVF.nw; if(t>=nw)return L;
   if(L.x&&!((M.pa||0)+(M.outs||0))&&M.x){ const X=M.x; delete M.x; return Object.assign(X,{y:L.y,live:1}); } /* 아직 본 수준에서 뛰지 않았다: 지금 뛰는 수준을 앞에 */
   return M; }
 /* 진행 중인 해외파 기록(화면용, ovsPart 대신): f = 해외 리그 진행 비율 */
-function ovsCurPart(a,f){ const L=a&&a.cur; if(!L)return null; const M=f>=1?L:a.foreign||a.cand?ovsPart(L,f):ovfCum(a,L,f*OVF.nw); return a.asY===L.y?Object.assign({},M,{aw:[...new Set([...(M.aw||[]),'AS'])]}):M; } /* 7월에 뽑힌 올스타는 100% 마감 직전에도 유지한다. 조회는 원본을 바꾸지 않는다. */
+function ovsCurPart(a,f){ const L=a&&a.cur; if(!L)return null; const M=f>=1?L:ovfCum(a,L,f*OVF.nw); /* 해외 활성화 5: KBO 출신 외국인·관찰했던 후보도 같은 주별 값(소식과 화면이 같은 숫자) */ return a.asY===L.y?Object.assign({},M,{aw:[...new Set([...(M.aw||[]),'AS'])]}):M; } /* 7월에 뽑힌 올스타는 100% 마감 직전에도 유지한다. 조회는 원본을 바꾸지 않는다. */
 /* 올스타(빅리그만): 시즌 기록 가치로 정한다. 확률은 시즌 뒤 시상(ovsAwards)과 같은 식, 뽑기는 해시. 7월 초에 발표하고 시즌 뒤 시상도 그 결과를 따른다 */
 function ovsAsP(L,isP){ if(!L||!ovsBig(L.lvl))return 0; const v=ovsVal(L,isP); return isP&&L.rp?(v>=1.6?clamp((v-1.4)/2.5,0,.5):0):clamp((v-3)/3,0,.85); }
 const ovsKr=a=>a&&!a.foreign&&!a.cand&&!a.back&&a.end==null;
+/* 해외 활성화 5: 소식에 오르는 KBO 출신 외국인·관찰했던 후보(해외 관찰 명단 포함). 국내 선수보다 한 단계 낮게 올린다(주 4건·40건 한도는 그대로) */
+const ovsFoF=a=>a&&(a.foreign&&a.from!=null||a.cand)&&!a.back&&a.end==null;
+const ovfFoAdj=a=>ovwOn(a.id)?1:a.from===G.user?0:-2;
 function ovfPush(a,t,pr,d){ const F=G.ovsFeed=G.ovsFeed||[]; F.unshift({y:G.year,d:d??G.day,id:a.id,t,p:pr+(a.from===G.user?2:0)}); if(F.length>OVF.keep)F.length=OVF.keep; }
 const ovfClub=(a,q)=>{ const c=ovsClubNm(q)||a.club||a.lg; return String(c).split(' ').slice(-1)[0]; };
 /* 매주(aiWeekly): 지난번부터 이번 주까지 해외파의 눈에 띄는 일. 주 4건까지, 중요한 것부터(우리 구단 출신 우선) */
 function ovsFeedWeek(){ const d1=G.day, d0=G.ovfD!=null&&G.ovfD<d1&&d1-G.ovfD<=21?G.ovfD:d1-7; G.ovfD=d1; const t0=ovfWeek(d0), t1=ovfWeek(d1); if(t1<=t0)return;
   const out=[], y=G.year, asD=KD(7,6);
-  for(const a of G.abroad||[]){ if(!ovsKr(a)||!a.cur||a.cur.y!==y)continue; const L=a.cur, P=ovfPlan(a,L), A=ovfCum(a,L,t0), B=ovfCum(a,L,t1), nm=a.name;
+  for(const a of G.abroad||[]){ const fo=ovsFoF(a); if(!(ovsKr(a)||fo)||!a.cur||a.cur.y!==y)continue; const L=a.cur, P=ovfPlan(a,L), A=ovfCum(a,L,t0), B=ovfCum(a,L,t1), nm=fo?(a.cand?'관찰했던 후보 ':'KBO 출신 ')+a.name:a.name;
+    if(fo){ const adj=ovfFoAdj(a); for(const e of P.ev)if(e.k==='up'&&e.j>t0&&e.j<=t1)out.push({a,pr:7+adj,t:`${nm}(${ovfClub(a,B)}) ${e.t}`}); /* 외국인은 콜업·홈런 고지·무실점·탈삼진 고지만 */
+      if(!a.isP){ const H=ovsParts(B).reduce((s,q)=>s+(q.hr||0),0), H0=ovsParts(A).reduce((s,q)=>s+(q.hr||0),0), ms=[10,20,30,40].find(m=>H>=m&&H0<m); if(ms)out.push({a,pr:4+adj+(ovsBig(B.lvl)?1:0),t:`${nm}(${ovfClub(a,B)}), 시즌 ${ms}호 홈런`}); }
+      else { const K=ovsParts(B).reduce((s,q)=>s+(q.so||0),0), K0=ovsParts(A).reduce((s,q)=>s+(q.so||0),0), ms=[100,150,200].find(m=>K>=m&&K0<m), o=ovsParts(B).reduce((s,q)=>s+(q.outs||0),0)-ovsParts(A).reduce((s,q)=>s+(q.outs||0),0), er=ovsParts(B).reduce((s,q)=>s+(q.er||0),0)-ovsParts(A).reduce((s,q)=>s+(q.er||0),0);
+        if(ms)out.push({a,pr:3+adj+(ovsBig(B.lvl)?1:0),t:`${nm}(${ovfClub(a,B)}), 시즌 ${ms}탈삼진`}); else if(!L.rp&&o>=15&&er===0)out.push({a,pr:3+adj,t:`${nm}(${ovfClub(a,B)}), 이번 주 ${ipStr(o)}이닝 무실점`}); }
+      continue; }
     const parts=Q=>ovsParts(Q), sumK=(Q,k)=>parts(Q).reduce((s,q)=>s+(q[k]||0),0), dK=k=>sumK(B,k)-sumK(A,k), big=ovsBig(B.lvl)?(B.lvl==='MLB'?2:1):0, cl=ovfClub(a,B);
     for(const e of P.ev)if(e.j>t0&&e.j<=t1)out.push({a,pr:e.k==='up'?7:e.k==='il'?4:3,t:`${nm}(${cl}) ${e.t}`});
     if(d0<asD&&d1>=asD){ const pAS=ovsAsP(L,a.isP), hit=pAS>0&&ovfH('oas',a.id,y)<pAS; a.asY=hit?y:-y; if(hit)out.push({a,pr:8,t:`${nm}(${cl}), ${ovsAwNm('AS',L.lvl)} 선정`}); }
@@ -54,7 +62,8 @@ function ovsFeedWeek(){ const d1=G.day, d0=G.ovfD!=null&&G.ovfD<d1&&d1-G.ovfD<=2
       if(ms)out.push({a,pr:4+big,t:`${nm}(${cl}), 시즌 ${ms}탈삼진`}); else if(sp&&so>=10)out.push({a,pr:2+big,t:`${nm}(${cl}), 이번 주 탈삼진 ${so}개`}); } }
   out.sort((x,z)=>(z.pr+(z.a.from===G.user?2:0))-(x.pr+(x.a.from===G.user?2:0))); for(const x of out.slice(0,OVF.perWk).reverse())ovfPush(x.a,x.t,x.pr); }
 /* 시즌을 마친 해외파의 시상·첫 시즌(abroadYear의 소식 후보): 국내 선수만 */
-function ovsFeedSeason(N){ for(const x of (N||[]).slice().sort((p,q)=>p.pr-q.pr))if(x.a&&!x.a.foreign&&!x.a.cand)ovfPush(x.a,x.t,x.pr); }
+function ovsFeedSeason(N){ const L=(N||[]).filter(x=>x.a&&(!x.a.foreign&&!x.a.cand||x.a.foreign&&x.a.from!=null||x.a.cand)); const kr=L.filter(x=>!x.a.foreign&&!x.a.cand), fo=L.filter(x=>x.a.foreign||x.a.cand).sort((p,q)=>(q.pr+ovfFoAdj(q.a))-(p.pr+ovfFoAdj(p.a))).slice(0,4); /* 해외 활성화 5: KBO 출신 외국인·관찰했던 후보의 큰 시즌·이적도 4건까지 */
+  for(const x of [...kr,...fo].sort((p,q)=>p.pr-q.pr))ovfPush(x.a,x.t,x.pr); }
 /* 해외파 시즌 요약(화면): 올해(시즌 전이면 지난해) 국내 선수 해외 기록. 리그별 인원, 팀 성적, 부문 1위 */
 function ovsSeasonSum(){ const fr=ovlFrac(G.year), y=fr>0?G.year:G.year-1, R=[];
   for(const a of G.abroad||[]){ if(a.foreign||a.cand)continue; let l=(a.lines||[]).find(z=>z.y===y); if(!l&&y===G.year&&a.cur&&a.cur.y===y&&!a.back&&a.end==null)l=ovsCurPart(a,fr); if(!l)continue;
