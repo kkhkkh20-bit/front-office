@@ -12,7 +12,7 @@ function ulAutoEntry(info){ if(!G||G.unemp||G.user==null||!team(G.user))return n
   const K=['no','noT','noBy'], keep=Object.values(G.players).filter(p=>p&&p.team===G.user).map(p=>[p,K.map(k=>k in p?[1,k==='noBy'&&p[k]?JSON.stringify(p[k]):p[k]]:[0])]);
   try{ e=cupEntryNow({name:nm}); } finally { for(const [p,v] of keep)K.forEach((k,i)=>{ if(v[i][0])p[k]=k==='noBy'&&v[i][1]?JSON.parse(v[i][1]):v[i][1]; else delete p[k]; }); }
   if(!e){ if(info)info.msg='현재 1군 명단을 만들 수 없습니다. 1군 등록 인원을 확인해 주세요.'; return null; }
-  if(Array.isArray(A.drop)&&A.drop.length){ const ids=A.drop.filter(id=>e.P.some(p=>p.id===id)); if(ids.length){ const r=C.ulCapDrop(e,ids); if(!r.err&&r.e)e=r.e; } }
+  /* 래더 연봉 상한 없음(구단주 11-18): 예전에 상한을 맞추려고 뺀 선수(ar.drop)는 더 이상 빼지 않는다(1군 그대로) */
   const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x); const v=C.cupValidate(x,{}); if(!v.ok&&info)info.msg=v.errors&&v.errors[0]&&v.errors[0].msg||'현재 1군 덱의 선수 구성을 확인해 주세요.'; return v.ok?x:null; }
 /* 지금 볼 차례인지 정하고, 차례면 이 저장의 내 덱(U.deck)을 지금 1군으로 바꾼다(바뀐 경우만). 연봉 상한을 넘어도 덱은 등록한다(그 단계 리그 시작이 '상한 초과'로 막는다).
    앨범 시즌 덱을 직접 골라 등록했으면 자동 갱신을 멈춘다(지금 1군으로 다시 등록하면 이어진다). force: 날짜와 상관없이(설정의 '지금 덱으로 다시 등록').

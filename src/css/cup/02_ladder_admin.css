@@ -13,3 +13,46 @@
 .ldax .lda-list{margin:4px 0;padding-left:1.4em;display:grid;gap:3px;font-size:13px}.ldax ul.lda-list{list-style:none;padding-left:0}.ldax .lda-kv{border:1px dashed color-mix(in srgb,var(--accent,#3b7dd8) 50%,transparent)}
 .ldax .lda-head .row{gap:8px;align-items:center}
 .ldax .adm-day .btns{flex-wrap:nowrap}.ldax .adm-day>span:first-child{min-width:0}
+/* 래더 현황 대시보드(구단주 11-18, src/ui/cup/04_ladder_dash.js): 맨 위 줄(범위·탭) + 넓은 칸(2칸) + 오른쪽 칸. GA4 대시보드 구조(카드 = 큰 숫자 + 한 줄 설명) */
+.ldax>.ldx-top{grid-column:1/-1;display:grid;gap:6px;min-width:0}
+.ldax>.ldx-top .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ldax>.ldx-top h2{margin:0;flex:1 1 auto}
+.ldax .ldx-rg{display:flex;gap:4px;flex-wrap:wrap}
+.ldax .ldx-tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:thin}
+.ldax .ldx-tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:6px 10px;font:inherit;font-size:14px;white-space:nowrap;cursor:pointer}
+.ldax .ldx-tabs button.on{color:var(--ink);border-bottom-color:var(--accent,#3b7dd8);font-weight:600}
+@media(min-width:1100px){.ldax:has(>.ldx-top){grid-template-rows:auto auto minmax(0,1fr)}.ldax>.ldx-c2{grid-column:span 2}}
+.ldax .ldx-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.ldax .ldx-k2{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+.ldax .ldx-kpi{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel2,transparent);display:grid;gap:2px;align-content:start;min-width:0}
+.ldax .ldx-kpi.warn{border-color:color-mix(in srgb,var(--warn,#e3b44c) 60%,var(--line))}.ldax .ldx-kpi.bad{border-color:color-mix(in srgb,var(--bad,#ef6b5e) 70%,var(--line))}
+.ldax .ldx-kl{font-size:12px;color:var(--muted)}.ldax .ldx-kv{font-family:Georgia,'Noto Serif KR',serif;font-weight:400;font-size:28px;line-height:1.15}.ldax .ldx-kv small{font-size:13px;margin-left:2px;color:var(--muted)}
+.ldax .ldx-kn{margin:2px 0 0;font-size:12px;color:var(--muted);line-height:1.45}
+.ldax .ldx-dl{font-size:12px}.ldax .ldx-dl.up{color:var(--good,#4fc27c)}.ldax .ldx-dl.dn{color:var(--bad,#ef6b5e)}.ldax .ldx-dl small{color:var(--muted)}
+.ldax .ldx-find ul,.ldax .ldx-anom ul{list-style:none;margin:4px 0;padding:0;display:grid;gap:4px}
+.ldax .ldx-find li{border-left:3px solid var(--accent,#3b7dd8);padding:4px 8px;font-size:13px;background:color-mix(in srgb,var(--accent,#3b7dd8) 8%,transparent)}
+.ldax .ldx-find li.bad{border-color:var(--bad,#ef6b5e);background:color-mix(in srgb,var(--bad,#ef6b5e) 10%,transparent)}.ldax .ldx-find li.warn{border-color:var(--warn,#e3b44c);background:color-mix(in srgb,var(--warn,#e3b44c) 10%,transparent)}
+.ldax .ldx-anom li{font-size:13px}.ldax .ldx-anom .up{color:var(--good,#4fc27c)}.ldax .ldx-anom .dn{color:var(--bad,#ef6b5e)}
+.ldax .ldx-svg{overflow-x:auto;max-width:100%;scrollbar-width:thin}.ldax .ldx-svg svg{width:100%;min-width:420px;height:auto;display:block}
+.ldax .ldx-gr{stroke:var(--line);stroke-width:1}.ldax .ldx-ref{stroke:var(--muted);stroke-dasharray:3 3;opacity:.6}.ldax .ldx-ax{fill:var(--muted);font-size:10px}
+.ldax .s1{stroke:#5b9cf0;fill:#5b9cf0;color:#5b9cf0}.ldax .s2{stroke:#f0a06a;fill:#f0a06a;color:#f0a06a}.ldax .s3{stroke:#5cc4a1;fill:#5cc4a1;color:#5cc4a1}.ldax .s4{stroke:#ef6b5e;fill:#ef6b5e;color:#ef6b5e}
+.ldax polyline.ldx-ln{fill:none;stroke-width:2}
+.ldax .ldx-patch line{stroke:var(--muted);stroke-dasharray:4 3;stroke-width:1}.ldax .ldx-patch circle{fill:var(--muted)}.ldax .ldx-patch{cursor:help}
+.ldax .ldx-lg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin:2px 0 4px}.ldax .ldx-lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px;background:currentColor}
+.ldax .ldx-lg>span{color:var(--muted)}.ldax .ldx-lg>span.s1 i{background:#5b9cf0}.ldax .ldx-lg>span.s2 i{background:#f0a06a}.ldax .ldx-lg>span.s3 i{background:#5cc4a1}.ldax .ldx-lg>span.s4 i{background:#ef6b5e}
+.ldax .ldx-lg .ldx-pk i{background:none;border-left:2px dashed var(--muted);width:0;height:10px}
+.ldax .ldx-heat,.ldax .ldx-coh{border-collapse:separate;border-spacing:2px;font-size:11px}.ldax .ldx-heat th{font-weight:400;color:var(--muted);text-align:right;padding:0 3px;white-space:nowrap}
+.ldax .ldx-heat td{width:16px;min-width:14px;height:14px;border-radius:2px;background:color-mix(in srgb,var(--accent,#3b7dd8) calc(var(--a) * 100%),var(--panel2,#1a232c))}
+.ldax .ldx-coh th{font-weight:400;color:var(--muted);white-space:nowrap;padding:0 4px}.ldax .ldx-coh td{min-width:46px;text-align:center;padding:3px 4px;border-radius:3px;background:color-mix(in srgb,#5cc4a1 calc(var(--a,0) * 90%),var(--panel2,#1a232c))}
+.ldax .ldx-coh td.n{background:none}.ldax .ldx-coh td.thin{opacity:.45}.ldax .ldx-coh td.na{color:var(--muted);background:none}
+.ldax .ldx-fun{display:grid;gap:6px}.ldax .ldx-fun>div{display:grid;grid-template-columns:7.5em minmax(0,1fr) 3.5em;gap:2px 8px;align-items:center;font-size:13px}.ldax .ldx-fun small{grid-column:2/4;color:var(--muted);font-size:11px}
+.ldax .ldx-fb{height:14px;border-radius:3px;background:color-mix(in srgb,var(--line) 60%,transparent);overflow:hidden}.ldax .ldx-fb i{display:block;height:100%;background:var(--accent,#3b7dd8)}
+.ldax .ldx-fun>.bad .ldx-fb i{background:var(--bad,#ef6b5e)}.ldax .ldx-fun>.bad span:first-child,.ldax .ldx-bad{color:var(--bad,#ef6b5e)}
+.ldax .ldx-stk{display:flex;height:10px;min-width:90px;border-radius:3px;overflow:hidden;background:var(--line)}.ldax .ldx-stk .up{background:var(--good,#4fc27c)}.ldax .ldx-stk .st{background:color-mix(in srgb,var(--muted) 50%,transparent)}.ldax .ldx-stk .dn{background:var(--bad,#ef6b5e)}
+.ldax .ldx-dot{opacity:.85;stroke:var(--bg,#0d1217);stroke-width:1}.ldax .ldx-dot.thin{opacity:.35}
+.ldax .ldx-t0{fill:#5fbf7f;color:#5fbf7f}.ldax .ldx-t1{fill:#4fc0b6;color:#4fc0b6}.ldax .ldx-t2{fill:#5b9cf0;color:#5b9cf0}.ldax .ldx-t3{fill:#b07cf0;color:#b07cf0}.ldax .ldx-t4{fill:#f3cf63;color:#f3cf63}
+.ldax .ldx-lg>span[class^=ldx-t] i{background:currentColor}
+.ldax .ldx-pf{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}.ldax .ldx-pf input{flex:1 1 10em;min-width:0}
+.ldax .ldx-pt tbody tr{cursor:pointer}.ldax .ldx-pt tbody tr.on td,.ldax .ldx-pt tbody tr:hover td{background:color-mix(in srgb,var(--accent,#3b7dd8) 10%,transparent)}.ldax .ldx-pt td,.ldax .ldx-pt th{white-space:nowrap}.ldax .ldx-pt td:first-child{text-align:left}
+.ldax .ldx-warn{color:var(--warn,#e3b44c)}
+.ldax .ldx-gl summary{cursor:pointer;font-weight:600}.ldax .ldx-gl dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;margin:6px 0 0;font-size:12px}.ldax .ldx-gl dt{font-weight:600}.ldax .ldx-gl dd{margin:0;color:var(--muted)}
+/* 래더 화면 정렬 표(기록 세분화 11-18): 휴대폰에서는 칸 안에서 가로 스크롤 */
+.ul-srt th button.lnk{white-space:nowrap}

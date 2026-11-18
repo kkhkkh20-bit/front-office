@@ -69,9 +69,14 @@ function sprcAutoUser(){ if(G.unemp)return; const P=sprcPlan(G.user); const L=[]
 function sprcGrowMul(tid){ const S=G.scp; const P=S&&S.y===G.year&&S.t[tid]; if(!P||!P.eff)return 1; return P.eff; }
 /* 연습경기 일정: 1차 장소 2월 8~18일, 2차 장소 2월 21일~3월 4일. 잡을 수 있는 수는 장소에 따라 다르고, 경기마다 성사 여부를 굴린다 */
 function sprcPgCap(P){ const a=SPRC1[P.s1], b=SPRC2[P.s2]; return (a?a.pg:0)+(b?b.pg*2:0); }
-function sprcSchedule(tid){ const P=sprcPlan(tid); const a=SPRC1[P.s1], b=SPRC2[P.s2]; const want=Math.min(P.pgN||0,sprcPgCap(P)); const n2=Math.min(want,b?b.pg*2:0), n1=Math.min(want-n2,a?a.pg:0);
+/* 상대 구단의 요청을 받는 경기에도 같은 차수별 장소 한도를 적용한다. */
+const sprcPgPhase=d=>d<KD(2,20)?1:2;
+function sprcPgRoom(P,d){ const lvl=sprcPgPhase(d),D=(lvl===1?SPRC1:SPRC2)[P['s'+lvl]],cap=D?D.pg*(lvl===2?2:1):0;
+  return (P.pg||[]).filter(g=>sprcPgPhase(g.d)===lvl).length<cap; }
+const sprcSiteLabel=(P,lvl)=>((lvl===1?SPRC1:SPRC2)[P['s'+lvl]]||{}).l||'국내 잔류 · 일반 훈련';
+function sprcSchedule(tid,P=sprcPlan(tid),plans=G.scp.t){ const a=SPRC1[P.s1], b=SPRC2[P.s2]; const want=Math.min(P.pgN||0,sprcPgCap(P)); const n2=Math.min(want,b?b.pg*2:0), n1=Math.min(want-n2,a?a.pg:0);
   const rep=tid===G.user?(G.rep??50):50; const rel=avg(G.teams.filter(t=>t.id!==tid).map(t=>t.rel??50)); const odds=lvl=>clamp(.62+(rep-50)/120+(rel-50)/200+(sisSite(tid,lvl,lvl===1?P.s1:P.s2)?.1:0),.35,.95); /* 해당 단계 캠프지의 자매구단만 주선 */
-  const mates=lvl=>G.teams.filter(t=>t.id!==tid&&(G.scp.t[t.id]||{})[lvl===1?'s1':'s2']===(lvl===1?P.s1:P.s2)).map(t=>t.id);
+  const mates=lvl=>G.teams.filter(t=>t.id!==tid&&(plans[t.id]||{})[lvl===1?'s1':'s2']===(lvl===1?P.s1:P.s2)).map(t=>t.id);
   const oppOf=(lvl,D)=>{ const M=mates(lvl); const r=R(); if(D.opp==='npb'){ const lv=P.pgLv; if(M.length&&r<(lv==='hard'?.2:lv==='mix'?.35:.45))return {k:'kbo',tid:pick(M)}; return {k:R()<(lv==='hard'?.8:lv==='mix'?.5:.15)?'npb1':'npb2'}; } if(M.length&&r<.35)return {k:'kbo',tid:pick(M)}; return D.opp?{k:D.opp}:null; };
   const days=(d0,d1,n)=>{ const L=[]; for(let d=d0;d<=d1;d++)L.push(d); shuffle(L); return L.slice(0,n).sort((x,y)=>x-y); };
   const out=[]; let miss=0;
@@ -81,8 +86,8 @@ function sprcSchedule(tid){ const P=sprcPlan(tid); const a=SPRC1[P.s1], b=SPRC2[
 function sprcPairSchedules(){ const S=G.scp,rows=[]; for(const t of G.teams){ const P=S.t[t.id]; for(const g of P.pg||[])rows.push({tid:t.id,g}); P.pg=[]; }
   rows.sort((a,b)=>a.g.d-b.g.d||a.tid-b.tid); const busy=new Map();
   for(const {tid,g} of rows){ const P=S.t[tid],key=tid+':'+g.d,used=busy.get(key); if(used){ if(!(g.k==='kbo'&&used.k==='kbo'&&used.tid===g.tid))P.pgMiss++; continue; }
-    if(P.pg.length>=Math.min(P.pgN||0,sprcPgCap(P))){P.pgMiss++;continue;}
-    if(g.k==='kbo'){const Q=S.t[g.tid],other=g.tid+':'+g.d;if(!Q||busy.has(other)||Q.pg.length>=Math.min(Q.pgN||0,sprcPgCap(Q))){P.pgMiss++;continue;}const mirror={d:g.d,k:'kbo',tid};Q.pg.push(mirror);busy.set(other,mirror);}
+    if(P.pg.length>=Math.min(P.pgN||0,sprcPgCap(P))||!sprcPgRoom(P,g.d)){P.pgMiss++;continue;}
+    if(g.k==='kbo'){const Q=S.t[g.tid],other=g.tid+':'+g.d;if(!Q||g.tid===tid||busy.has(other)||Q.pg.length>=Math.min(Q.pgN||0,sprcPgCap(Q))||!sprcPgRoom(Q,g.d)){P.pgMiss++;continue;}const mirror={d:g.d,k:'kbo',tid};Q.pg.push(mirror);busy.set(other,mirror);}
     P.pg.push(g);busy.set(key,g);
   }
 }
@@ -112,19 +117,27 @@ function sprcDaily(day){ const c=G.cal; if(!c)return;
   if(day===c.open-1)try{ sprcOpenCond(); }catch(e){ console.error(e); }
   if(G.exh&&G.exh.y===G.year&&G.exh.days[day])try{ exhDay(day); }catch(e){ console.error(e); }
   if(G.exh&&G.exh.y===G.year&&!G.exh.done&&day===G.exh.last)try{ exhEnd(); }catch(e){ console.error(e); } }
-function sprcCampStart(){ sprcInit(); const messages=[]; for(const t of G.teams){ const P=sprcPlan(t.id); if(!P.s1)P.s1='tw'; if(!P.s2)P.s2='home'; const a=SPRC1[P.s1], b=SPRC2[P.s2]||SPRC2.home;
-    P.wx1=clamp(a.wx+N(0,a.wv),.8,1.15); P.wx2=clamp(b.wx+N(0,b.wv),.75,1.12); const m=G.mgr[t.id]; const pref=sprcMgrPref(m); const gap=Math.abs(SPRC_INTK.indexOf(P.int)-SPRC_INTK.indexOf(pref)); P.pref=pref; P.gap=gap;
-    P.eff=Math.round((P.wx1*a.fq*.65+P.wx2*b.fq*.35)*SPRC_INT[P.int].g*(gap?.93:1)*1000)/1000; sprcSchedule(t.id);
+function sprcCampStart(){ const S=sprcInit(); for(const t of G.teams)sprcPlan(t.id); const fallback=G.teams.some(t=>!SPRC1[S.t[t.id].s1]||!SPRC2[S.t[t.id].s2]); let shadow;
+  if(fallback){/* 이전 강제 배정의 날씨·대진 결정 슬롯만 지역 계획에 재현한다. 비용·소식·선수 상태는 건드리지 않는다. */
+    sisInit(); shadow=Object.fromEntries(Object.entries(S.t).map(([id,P])=>[id,{...P}]));
+    for(const t of G.teams){const Q=shadow[t.id];if(!SPRC1[Q.s1])Q.s1='tw';if(!SPRC2[Q.s2])Q.s2='home';const a=SPRC1[Q.s1],b=SPRC2[Q.s2];Q.wx1=clamp(a.wx+N(0,a.wv),.8,1.15);Q.wx2=clamp(b.wx+N(0,b.wv),.75,1.12);sprcSchedule(t.id,Q,shadow);}
+  }
+  const messages=[]; for(const t of G.teams){ const P=sprcPlan(t.id), a=SPRC1[P.s1], b=SPRC2[P.s2];
+    /* 예약을 못 잡은 차수는 구단에서 일반 훈련한다. 만석 해외 장소에 억지로 넣거나 비용을 새로 청구하지 않는다. */
+    if(!a)P.dom1=true; else delete P.dom1; if(!b)P.dom2=true; else delete P.dom2;
+    P.wx1=a?(shadow?shadow[t.id].wx1:clamp(a.wx+N(0,a.wv),.8,1.15)):1; P.wx2=b?(shadow?shadow[t.id].wx2:clamp(b.wx+N(0,b.wv),.75,1.12)):1; const m=G.mgr[t.id]; const pref=sprcMgrPref(m); const gap=Math.abs(SPRC_INTK.indexOf(P.int)-SPRC_INTK.indexOf(pref)); P.pref=pref; P.gap=gap;
+    P.eff=a&&b?Math.round((P.wx1*a.fq*.65+P.wx2*b.fq*.35)*SPRC_INT[P.int].g*(gap?.93:1)*1000)/1000:1; if(shadow)withRng(rngHash('sprcFallbackPlan',G.year,t.id),()=>sprcSchedule(t.id));else sprcSchedule(t.id);
     if(t.id===G.user&&!G.unemp&&m&&!m.interim){ messages.push(()=>{ m.rel=clamp((m.rel??50)+(gap?-3*gap:1),0,100);
-      const wx=P.wx1<a.wx-.04?` 1차 ${a.l}은(는) 올해 날씨가 좋지 않다고 합니다.`:P.wx1>a.wx+.04?` 1차 ${a.l} 날씨가 아주 좋습니다.`:'';
-      mail(`${m.name} 감독`,gap?`캠프 강도, 제 생각과는 다릅니다`:'캠프 출발합니다',gap?`단장님이 정한 ${SPRC_INT[P.int].l}로 갑니다. 다만 저는 ${SPRC_INT[pref].l}이(가) 맞다고 봤습니다. 선수들 앞에서는 티 내지 않겠지만, 제 방식이 아니라 코치진도 손에 덜 익을 겁니다. 감독 관계 악화, 캠프 효과 조금 감소.${wx}`:`말씀 나눈 대로 ${SPRC_INT[P.int].l}로 갑니다. 1차 ${a.l}, 2차 ${b.l}. 연습경기는 ${P.pg.length}경기 잡혔습니다${P.pgMiss?`(원한 ${P.pg.length+P.pgMiss}경기 중 ${P.pgMiss}경기는 상대를 못 구함)`:''}.${wx} (감독 관계 조금 개선)`,{kind:'감독',acts:[{l:'캠프 계획',a:'goWork',v:'스프링캠프'}]}); }); } }
-  sprcPairSchedules(); for(const send of messages)send(); const L={}; for(const t of G.teams){ const P=G.scp.t[t.id]; (L[P.s1]=L[P.s1]||[]).push(tshort(t.id)); }
+      const wx=a?(P.wx1<a.wx-.04?` 1차 ${a.l}은(는) 올해 날씨가 좋지 않다고 합니다.`:P.wx1>a.wx+.04?` 1차 ${a.l} 날씨가 아주 좋습니다.`:''):'';
+      const fallback=P.dom1||P.dom2?`\n예약 가능한 장소와 예산을 확보하지 못한 차수는 국내에 남아 일반 훈련합니다. 해당 차수의 해외 캠프 추가 효과·비용·연습경기는 없습니다.`:'';
+      mail(`${m.name} 감독`,gap?`캠프 강도, 제 생각과는 다릅니다`:'캠프 출발합니다',gap?`단장님이 정한 ${SPRC_INT[P.int].l}로 갑니다. 다만 저는 ${SPRC_INT[pref].l}이(가) 맞다고 봤습니다. 선수들 앞에서는 티 내지 않겠지만, 제 방식이 아니라 코치진도 손에 덜 익을 겁니다. ${P.dom1||P.dom2?'감독 관계 악화.':'감독 관계 악화, 캠프 효과 조금 감소.'}${wx}${fallback}`:`말씀 나눈 대로 ${SPRC_INT[P.int].l}로 갑니다. 1차 ${sprcSiteLabel(P,1)}, 2차 ${sprcSiteLabel(P,2)}. 연습경기는 ${P.pg.length}경기 잡혔습니다${P.pgMiss?`(원한 ${P.pg.length+P.pgMiss}경기 중 ${P.pgMiss}경기는 상대를 못 구함)`:''}.${wx} (감독 관계 조금 개선)${fallback}`,{kind:'감독',acts:[{l:'캠프 계획',a:'goWork',v:'스프링캠프'}]}); }); } }
+  sprcPairSchedules(); for(const send of messages)send(); const L={}; for(const t of G.teams){ const P=G.scp.t[t.id],k=sprcSiteLabel(P,1); (L[k]=L[k]||[]).push(tshort(t.id)); }
   try{ sisCampStart(); }catch(e){ console.error(e); }
-  news('리그',`${G.year} 스프링캠프 출국`,Object.entries(L).map(([k,v])=>`${SPRC1[k].l}: ${v.join(', ')}`).join('\n'),0); }
+  news('리그',`${G.year} 스프링캠프 출국`,Object.entries(L).map(([k,v])=>`${k}: ${v.join(', ')}`).join('\n'),0); }
 /* 캠프 기간: 강도·이동 부담에 따른 캠프 부상(캠프 동안 고르게) · 우리 연습경기 */
 function sprcCampDay(day){ const c=G.cal; const len=Math.max(20,c.campEnd-c.camp);
   for(const t of G.teams){ const P=G.scp&&G.scp.t[t.id]; if(!P||!P.int)continue; const rate=(SPRC_INT[P.int].inj+((SPRC1[P.s1]||{}).tr||0)*.002)/len;
-    for(const p of campWho(t.id,'spring'))if(healthy(p)&&!isAway(p)&&R()<rate*(p.inj||.15)/.15)try{ injure(p,day,{}); }catch(e){} }
+    campInjuryDay(t.id,rate,day); }
   const S=G.scp;if(!S||S.y!==G.year)return; for(const t of G.teams){const P=S.t[t.id];if(!P||(P.pgR||[]).some(r=>r.d===day))continue;const g=(P.pg||[]).find(x=>x.d===day);if(!g)continue;
     const me=lightSide(t.id,g.k==='kbo'?0:SPRC_OPP[g.k].b,6,'pg',S.pgS);let them;
     if(g.k==='kbo')them=lightSide(g.tid,0,6,'pg',S.pgS);else{const b=SPRC_OPP[g.k].b;them={r:Math.max(0,4.4-b*.35+N(0,1.6)),er:Math.max(0,4.4-b*.35+N(0,1.6))};}
@@ -138,7 +151,7 @@ function sprcCampEnd(){ const S=G.scp; if(!S||S.y!==G.year)return;
     P.cond=Math.round(cond*100)/100; }
   const P=S.t[G.user], m=G.mgr[G.user]; if(G.unemp||!P||!m||m.interim)return; const R0=P.pgR||[]; const w=R0.filter(x=>x.us>x.op).length, l=R0.filter(x=>x.us<x.op).length;
   const top=exhLeaders(S.pgS,G.user,8,9); const cd=P.cond>=.2?'몸이 일찍 올라왔습니다. 개막 초반 컨디션이 좋을 겁니다.':P.cond<=-.3?'훈련량이 많았고 이동도 길어 선수들 몸이 무겁습니다. 4월 초반엔 감이 늦게 올라올 수 있습니다.':'개막에 맞춰 몸 상태는 무난합니다.';
-  mail(`${m.name} 감독`,`캠프 총평: 연습경기 ${w}승 ${l}패${R0.length-w-l?` ${R0.length-w-l}무`:''}`,`${SPRC1[P.s1].l} · ${SPRC2[P.s2].l} 캠프를 마쳤습니다. 훈련 강도 ${SPRC_INT[P.int].l}.\n${cd}\n\n${R0.length?`연습경기\n${R0.map(x=>`${dmd(x.d)} ${x.o} ${x.us}:${x.op}`).join('\n')}\n\n`:'연습경기는 없었습니다.\n\n'}${top.b.length?`방망이가 좋았던 선수: ${top.b.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}${top.p.length?`공이 좋았던 투수: ${top.p.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''}`,{kind:'감독',acts:[{l:'캠프·시범경기',a:'goWork',v:'스프링캠프'}]}); }
+  mail(`${m.name} 감독`,`캠프 총평: 연습경기 ${w}승 ${l}패${R0.length-w-l?` ${R0.length-w-l}무`:''}`,`${sprcSiteLabel(P,1)} · ${sprcSiteLabel(P,2)} 캠프를 마쳤습니다. 훈련 강도 ${SPRC_INT[P.int].l}.\n${cd}\n\n${R0.length?`연습경기\n${R0.map(x=>`${dmd(x.d)} ${x.o} ${x.us}:${x.op}`).join('\n')}\n\n`:'연습경기는 없었습니다.\n\n'}${top.b.length?`방망이가 좋았던 선수: ${top.b.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}${top.p.length?`공이 좋았던 투수: ${top.p.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''}`,{kind:'감독',acts:[{l:'캠프·시범경기',a:'goWork',v:'스프링캠프'}]}); }
 /* 개막 전날: 캠프에서 만든 몸 상태를 개막 컨디션(주간 기세 sf.m)에 싣는다. 몇 주 지나면 원래대로 돌아온다 */
 function sprcOpenCond(){ const S=G.scp; if(!S||S.y!==G.year||S.condY===G.year)return; S.condY=G.year; for(const t of G.teams){ const P=S.t[t.id]; if(!P||P.cond==null)continue; for(const p of playersOf(t.id))if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)+P.cond+N(0,.2),-2.5,2.5); } }
 /* 기록 정리: 타자 [경기,타석,타수,안타,홈런,볼넷,삼진,루타], 투수 [경기,아웃,피안타,자책,볼넷,삼진] */
@@ -146,20 +159,24 @@ const exhOps=a=>{ const obp=(a[3]+a[5])/Math.max(1,a[2]+a[5]); return obp+a[7]/M
 const exhEra=a=>a[1]?a[3]*27/a[1]:99;
 const exhAvg=a=>a[2]?a[3]/a[2]:0;
 const exhF3=v=>v.toFixed(3).replace(/^0/,'');
-function exhLeaders(st,tid,minPa,minOuts){ const rows=lightRows(st,tid);
+function exhLeaders(st,tid,minPa,minOuts,current=false){ const rows=current?lightRows(st,tid).map(x=>({p:G.players[x.p.id],a:x.a})).filter(x=>x.p&&x.p.team===tid&&healthy(x.p)&&!isAway(x.p)&&!ovsAbroad(x.p)&&!(x.p.joinY>G.year)):lightRows(st,tid);
   const b=rows.filter(x=>!x.p.isP&&x.a.length===8&&x.a[1]>=minPa).sort((x,y)=>exhOps(y.a)-exhOps(x.a)), p=rows.filter(x=>x.p.isP&&x.a.length===6&&x.a[1]>=minOuts).sort((x,y)=>exhEra(x.a)-exhEra(y.a));
   const tb=x=>`타율 ${exhF3(exhAvg(x.a))} ${x.a[4]}홈런 OPS ${exhF3(exhOps(x.a))}`, tp=x=>`${Math.floor(x.a[1]/3)}${x.a[1]%3?'.'+x.a[1]%3:''}이닝 평균자책 ${exhEra(x.a).toFixed(2)} 삼진 ${x.a[5]}`;
   return {b:b.slice(0,3).map(x=>({p:x.p,t:tb(x),a:x.a})),p:p.slice(0,3).map(x=>({p:x.p,t:tp(x),a:x.a})),bw:b.slice(-3).reverse().map(x=>({p:x.p,t:tb(x),a:x.a})),pw:p.slice(-3).reverse().map(x=>({p:x.p,t:tp(x),a:x.a}))}; }
 /* 시범경기 일정: 3월 12일부터 월요일 쉬고, 개막 사흘 전까지 최대 12일. 같은 상대와 2연전(같은 구장) 6번 = 팀당 12경기 */
 function exhBuild(){ const c=G.cal; const days=[]; for(let d=c.exh;d<=c.open-3&&days.length<12;d++)if(dobj(d).w!==1)days.push(d);
-  const T=G.teams.length, ids=G.teams.map(t=>t.id); let arr=[...ids.keys()]; const rounds=[]; for(let r=0;r<T-1;r++){ const pr=[]; for(let i=0;i<T/2;i++)pr.push([ids[arr[i]],ids[arr[T-1-i]]]); rounds.push(pr); arr=[arr[0],arr[T-1],...arr.slice(1,T-1)]; }
-  shuffle(rounds); const sched={}; days.forEach((d,i)=>{ const pr=rounds[Math.floor(i/2)%rounds.length]; sched[d]=pr.map(([a,b])=>R()<.5?[a,b]:[b,a]); }); for(let i=1;i<days.length;i+=2)sched[days[i]]=sched[days[i-1]].map(x=>x.slice()); /* 2연전은 같은 구장 */
+  const ids=G.teams.map(t=>t.id);
+  const make=(T,bye)=>{let arr=[...Array(T).keys()];const rounds=[];for(let r=0;r<T-1;r++){const pr=[];for(let i=0;i<T/2;i++){const a=ids[arr[i]],b=ids[arr[T-1-i]];if(!bye||a!=null&&b!=null)pr.push([a,b]);}rounds.push(pr);arr=[arr[0],arr[T-1],...arr.slice(1,T-1)];}
+    shuffle(rounds);const sched={};days.forEach((d,i)=>{const pr=rounds[Math.floor(i/2)%rounds.length];sched[d]=pr.map(([a,b])=>R()<.5?[a,b]:[b,a]);});for(let i=1;i<days.length;i+=2)sched[days[i]]=sched[days[i-1]].map(x=>x.slice());return sched;};
+  let sched;if(ids.length%2){make(ids.length,false);/* 기존 홀수 편성의 shuffle·홈 배정 난수 슬롯은 결과를 저장하지 않고 그대로 소모한다. */sched=withRng(rngHash('exhBye',G.year,ids.join(','),days.join(',')),()=>make(ids.length+1,true));}else sched=make(ids.length,false);
   G.exh={y:G.year,days:sched,last:days[days.length-1],rec:Object.fromEntries(ids.map(id=>[id,[0,0,0]])),ps:{},res:[],done:false}; G.exhRot={}; }
+/* 홀수 구단 리그에는 쉬는 구단이 있으므로 날짜 수를 팀 경기 수로 안내하지 않는다. */
+function exhCountText(E){ const n=Object.keys(E.rec||{}).map(id=>Object.values(E.days||{}).reduce((v,L)=>v+L.filter(([h,a])=>h===+id||a===+id).length,0)); if(!n.length)return '0'; const lo=Math.min(...n),hi=Math.max(...n); return lo===hi?String(lo):`${lo}~${hi}`; }
 function exhDay(day){ const E=G.exh; const gi=Object.keys(E.days).map(Number).sort((a,b)=>a-b).indexOf(day); const spOuts=Math.min(15,9+gi); /* 시범경기 선발은 3이닝에서 5이닝까지 늘린다 */
   for(const [h,a] of E.days[day]){ const H=lightSide(h,0,spOuts,'ex',E.ps), A=lightSide(a,0,spOuts,'ex',E.ps); const hs=lightRuns(H,A), as=lightRuns(A,H); E.res.push({d:day,h,a,hs,as});
     const k=hs>as?[0,1]:hs<as?[1,0]:[2,2]; E.rec[h][k[0]]++; E.rec[a][k[1]]++;
     if(!G.unemp&&(h===G.user||a===G.user)){ const me=h===G.user, us=me?hs:as, op=me?as:hs; addLog(`시범경기 ${tshort(me?a:h)}전 ${us}:${op} ${us>op?'승':us<op?'패':'무'}`); } }
-  if(gi===0&&!G.unemp)note('일정',`시범경기가 시작됩니다. 팀당 ${Object.keys(E.days).length}경기, 연장·더블헤더 없이 치르고 순위에는 들어가지 않습니다. 개막(${dmd(G.cal.open)})까지 선수 상태를 점검하세요.`); }
+  if(gi===0&&!G.unemp)note('일정',`시범경기가 시작됩니다. 팀당 ${exhCountText(E)}경기, 연장·더블헤더 없이 치르고 순위에는 들어가지 않습니다. 개막(${dmd(G.cal.open)})까지 선수 상태를 점검하세요.`); }
 const exhPct=r=>(r[0]+r[1])?r[0]/(r[0]+r[1]):.5;
 function exhStand(){ const E=G.exh; return E?Object.entries(E.rec).map(([id,r])=>({tid:+id,r})).sort((x,y)=>exhPct(y.r)-exhPct(x.r)||y.r[0]-x.r[0]):[]; }
 /* 시범경기 끝: 감독이 기록을 보고 개막 엔트리·타순을 건의, 리그·팬 반응 */
@@ -168,7 +185,7 @@ function exhEnd(){ const E=G.exh; E.done=true; const st=exhStand(); const top=st
   if(G.unemp)return; const rk=st.findIndex(x=>x.tid===G.user)+1, my=E.rec[G.user]; const L=exhLeaders(E.ps,G.user,12,12);
   news('팬',rk<=3?`시범경기 ${rk}위, "올해는 다르다?"`:rk>=8?`시범경기 ${rk}위에 팬들 한숨`:`시범경기 ${rk}위, 팬들 "본게임은 지금부터"`,rk<=3?`"시범경기 성적은 의미 없다지만 그래도 기분은 좋다." ${L.b[0]?`${L.b[0].p.name} 타격감에 기대가 크다는 글이 많습니다.`:''}`:rk>=8?`"시범경기니까 괜찮다"는 글과 "이대로면 큰일"이라는 글이 엇갈립니다.${L.bw[0]?` ${L.bw[0].p.name} 부진을 걱정하는 글이 많습니다.`:''}`:'성적보다 주전 경쟁 결과에 관심이 쏠립니다.',rk<=3?1:rk>=8?-1:0);
   const m=G.mgr[G.user]; if(!m||m.interim)return; const d=depth(G.user); const reg=new Set([...d.start,...d.sp].map(p=>p.id));
-  const up=L.b.filter(x=>!reg.has(x.p.id)).concat(L.p.filter(x=>!reg.has(x.p.id))).slice(0,2), dn=L.bw.filter(x=>reg.has(x.p.id)).concat(L.pw.filter(x=>reg.has(x.p.id))).slice(0,2);
+  const C=exhLeaders(E.ps,G.user,12,12,true); const up=C.b.filter(x=>!reg.has(x.p.id)).concat(C.p.filter(x=>!reg.has(x.p.id))).slice(0,2), dn=C.bw.filter(x=>reg.has(x.p.id)).concat(C.pw.filter(x=>reg.has(x.p.id))).slice(0,2);
   const tone=m.disc>=62?'결과로 말하는 겁니다.':m.disc<=38?'시범경기는 시범경기입니다. 너무 신경 쓰지 않으려 합니다.':'숫자만 보지는 않겠지만 참고는 하겠습니다.';
   const sug=[...up.map(x=>`${x.p.name}(${posLabel(x.p)}): ${x.t}. 개막 엔트리에 넣고 ${x.p.isP?'초반 계투로 써 보고 싶습니다':'선발 출전 기회를 주고 싶습니다'}.`),...dn.map(x=>`${x.p.name}(${posLabel(x.p)}): ${x.t}. ${x.p.isP?'감이 안 올라와 첫 턴은 뒤로 미루겠습니다':'감이 늦게 올라와 개막 초반엔 하위 타순에 두겠습니다'}.`)];
   mail(`${m.name} 감독`,`시범경기 ${my[0]}승 ${my[1]}패${my[2]?` ${my[2]}무`:''}(${rk}위) — 개막 엔트리 건의`,`시범경기를 마쳤습니다. ${tone}\n\n${L.b.length?`잘 친 선수: ${L.b.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}${L.p.length?`잘 던진 투수: ${L.p.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}${L.bw.length?`안 맞은 선수: ${L.bw.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}\n${sug.length?`개막 엔트리·타순 건의\n${sug.join('\n')}`:'개막 엔트리는 지금 구상대로 가겠습니다.'}\n\n개막 엔트리는 ${dmd(G.cal.open-1)}에 정해집니다.`,{kind:'감독',acts:[{l:'선수단 보기',a:'go',v:'roster:glance'},{l:'시범경기 기록',a:'goWork',v:'스프링캠프'}]}); }

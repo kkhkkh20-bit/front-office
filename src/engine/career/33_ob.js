@@ -103,9 +103,9 @@ function obRetireEvents(list){ const L=list.filter(o=>o&&o.mine&&(o.ys>=3)).sort
 /* 은퇴 결정의 기본안(기한·비서): 영구결번 대상·레전드 급(우리 구단 8시즌 이상 또는 WAR 12 이상)과 우리 구단 5시즌 이상은 은퇴식(결번 대상이면 결번 포함), 그보다 짧으면 조용히 보내 주기.
    5시즌 이상·레전드 급은 비서에게 넘어가지 않는다(evOwn·key). 자금이 모자라면 은퇴식 처리에서 결번→은퇴식만→조용히 순서로 물러난다(피드백 11-18) */
 function retDef(ob,leg,rn,opts){ return rn||leg||ob.ys>=5?0:opts.length-1; }
-EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)return ''; if(e.data.combo){ if(i===1){ const a=EVH.ret.pick({...e,data:{...e.data,combo:false}},0), b=EVH.ret.pick({...e,data:{...e.data,combo:false}},1); if(ob.ceremony!==G.year)e.pick=2; /* 자금이 모자라 은퇴식을 못 열면 구단에 남기기만 */ return a+' '+b; } if(i>=2)i--; } const t=team(G.user); const L=e.opts.length;
+EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)return ''; if(e.data.combo){ if(i===1){ const ce={...e,data:{...e.data,combo:false}},a=EVH.ret.pick(ce,0), b=EVH.ret.pick({...e,data:{...e.data,combo:false}},1); if(ob.ceremony!==G.year)e.pick=2; else e.actualChoice={i:1,l:evChoiceLabel(ce,0)+' + '+e.opts[2].l,cost:ce.retOutcome?.cost??0,retNo:!!ob.retNo}; /* 자금이 모자라 은퇴식을 못 열면 구단에 남기기만 */ return a+' '+b; } if(i>=2)i--; } const t=team(G.user); const L=e.opts.length;
     if(i===0){ const cw=fanCashWhy(e.data.leg?50:20); if(cw){ if(e.opts&&e.opts.length)e.pick=e.opts.length-1; return `은퇴식을 열지 못해 조용히 보내 드렸습니다. ${cw}`; } /* 자금 부족(독립구단): 조용히 보내 주기로 */
-      let r='', note=''; const n0=(G.retNos||[]).length; if(e.data.rn!=null){ const cw2=fanCashWhy(100); if(cw2)note=`영구결번 행사까지 열 자금이 부족해 은퇴식만 열었습니다(결번은 구단 역사에서 따로 지정할 수 있습니다). `; else r=retireNumber(e.data.rn); } const rn=(G.retNos||[]).length>n0; /* 지정이 거절되면(이미 쓰인 번호 등) 일반 은퇴식 비용만, 결번 표시 없이(검수 11-09zz) */ const cost=rn?100:e.data.leg?50:20; ledgerMe('etc',cost); ob.bond+=rn?30:20; ob.ceremony=G.year;
+      let r='', note=''; const n0=(G.retNos||[]).length; if(e.data.rn!=null){ const cw2=fanCashWhy(100); if(cw2)note=`영구결번 행사까지 열 자금이 부족해 은퇴식만 열었습니다(결번은 구단 역사에서 따로 지정할 수 있습니다). `; else r=retireNumber(e.data.rn); } const rn=(G.retNos||[]).length>n0; /* 지정이 거절되면(이미 쓰인 번호 등) 일반 은퇴식 비용만, 결번 표시 없이(검수 11-09zz) */ const cost=rn?100:e.data.leg?50:20; e.retOutcome={cost,retNo:rn,ceremony:true}; if(e.data.rn!=null&&!rn)e.actualChoice={i:0,l:`${e.data.leg?'레전드 은퇴식':'은퇴식'} (${money(cost)})`,cost,retNo:false}; ledgerMe('etc',cost); ob.bond+=rn?30:20; ob.ceremony=G.year;
       if(rn)ob.retNo=true; const f=rn?5:e.data.leg?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);
       const lg=rn||e.data.leg; news('선수',`${tfull(t)} ${ob.name} ${lg?'레전드 ':''}은퇴식${rn?`, ${ob.no}번 영구결번`:''}`,lg?`만원 관중이 홈구장을 채운 가운데 ${ob.ys}시즌 동안 뛴 ${ob.name}의 레전드 은퇴식이 열렸습니다. 동료들의 헹가래와 은퇴 기념 영상, 가족과 함께한 시구 속에 마지막 인사를 했습니다.`:`${ob.ys}시즌 동안 뛴 ${ob.name}이(가) 팬들 앞에서 마지막 인사를 했습니다.`,rn?3:2,{fanW:1}); if(lg)try{ chron('honor',`${ob.name} 레전드 은퇴식${rn?` · ${ob.no}번 영구결번`:''}`,null,G.user,{source:'legcer:'+ob.id}); }catch(x){} /* 레전드 급은 제대로(사용자 11-11) */
       return `${r?r+' ':''}${note}은퇴식 비용 ${money(cost)}. 팬 여론 호전.`; }
@@ -165,3 +165,13 @@ function obTaken(obid,keep){ try{ schLeave(keep); }catch(e){} if(!obid)return; c
   G.coachX=G.coachX&&drop(G.coachX); G.scoutMarket=G.scoutMarket&&drop(G.scoutMarket); for(const o of Object.values(G.orgT||{}))if(o&&o.coachX)o.coachX=drop(o.coachX); /* 떠난 구단 보조 코치 자리도(검수 11-09zv #2) */
   for(const tid in (G.lgStaff||{})){ const L=G.lgStaff[tid]; if(L.sc&&L.sc.some(s=>s.ob===obid&&s!==keep)){ L.sc=drop(L.sc); try{ stSync(+tid); }catch(e){} } }
   for(const S of Object.values(G.schools||{}))if(S.coach&&S.coach.ob===obid)schSetCoach(S,schNewCoach(S,false,obid)); }
+/* 실제 비용이 결과에 명시된 옛 완료 기록만 보정한다. 제안 원문·정산·선수 상태는 보존한다. */
+function retOutcomeMigrate(){ for(const e of G.evs||[]){ if(!e||!e.done||e.k!=='ret'||e.data?.rn==null||typeof e.res!=='string'||!Array.isArray(e.opts))continue;
+  const m=e.res.match(/은퇴식 비용\s*(5,?000만|5천만|2,?000만|2천만)(?:[.\s]|$)/); if(!m)continue; const cost=/^5/.test(m[1])?50:20; if(cost!==(e.data.leg?50:20))continue;
+  const combo=!!e.data.combo&&e.pick===1; if(e.pick!==0&&!combo)continue; if(combo&&(!e.opts[2]||!/코치 후보|스카우트|프런트/.test(e.res)))continue;
+  const old=e.opts[e.pick]?.l; if(!old)continue; const base=(e.data.leg?'레전드 은퇴식':'은퇴식')+' ('+money(cost)+')',label=combo?base+' + '+e.opts[2].l:base;
+  e.actualChoice={i:e.pick,l:label,cost,retNo:false};
+  const rows=(G.evlog||[]).filter(x=>x.id===e.id&&x.k==='ret'&&x.r===e.res); for(const x of rows)if(x.c===old)x.c=label;
+  const logs=(G.autoLog||[]).filter(x=>x.k==='ret'&&x.t===e.title&&x.r===e.res&&x.c===old&&(!rows.length||rows.some(r=>r.d===x.d))); if(logs.length===1)logs[0].c=label;
+  const mail=(G.mail||[]).filter(x=>x.id===e.mid&&typeof x.body==='string'&&x.body.includes(e.res)); if(mail.length===1)mail[0].body=mail[0].body.split('\n').map(line=>{const suffix=line.slice(5+old.length);return line.startsWith('[결정] '+old)&&(!suffix||suffix===' (비서가 맡은 일)'||suffix===' (기한이 지나 자동 처리)')?'[결정] '+label+suffix:line;}).join('\n');
+} }

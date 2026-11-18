@@ -38,7 +38,7 @@ async function schemaVersion(db) {
 
 export async function handleV1(req, env, url, now) {
   if (req.method === 'OPTIONS') return cors(req, url, env, new Response(null, { status: originOk(req, url, env) ? 204 : 403 }));
-  let res; try { res = await route(req, env, url, now); } catch (e) { res = err(500, 'server'); } /* 어떤 오류든 CORS를 붙여 돌려준다 */
+  let res; try { res = await route(req, env, url, now); } catch (e) { res = err(500, 'server'); try { if (env.DB) await env.DB.batch(statStmts(env.DB, now, { err5: 1 })); } catch (x) {} } /* 어떤 오류든 CORS를 붙여 돌려준다. 500은 daily_stats err5로 센다(관리자 대시보드 상태 칸) */
   return cors(req, url, env, res);
 }
 

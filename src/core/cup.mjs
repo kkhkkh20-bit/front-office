@@ -373,6 +373,8 @@ export const CUP_ELITE_DV = 80, CUP_TOP_DV = 95, CUP_ELITE_MAX = 10, CUP_TOP_MAX
 export const CUP_CHEAP_SAL = 30, CUP_CHEAP_MAX = 3; /* 최저 연봉 3,000만(엔진 MIN_SAL) 미만은 게임에서 나오지 않는다 */
 /* 선수 OVR(내부 척도): 엔진 ovr()(src/engine/league/01_rules.js)와 같은 식 */
 export function cupPOvr(p) { const r = (p && p.r) || {}, n = k => NUM(r[k]); return p && p.isP ? n('stf') * .44 + n('ctl') * .44 + n('sta') * .12 : n('con') * .3 + n('pow') * .25 + n('eye') * .15 + n('spd') * .1 + n('def') * .2; }
+/* x.strict === false(래더, 구단주 11-18 "래더는 일단 상한을 두지 말고 자유롭게"): OVR 분포(bad_ovr)·연봉 일관성(bad_pay)을 보지 않는다.
+   편집 표시(edited)·능력치 범위(bad_rating)는 그대로. 프런트컵은 기본값(엄격)을 그대로 쓴다 */
 export function cupAnomaly(e, x) {
   const out = (code, errors, n) => ({ ok: !code, code: code || '', errors: errors || [], n: n || null });
   if ((x && x.edited) || (e && e.edited)) return out('edited', ['편집 기능을 쓴 저장의 덱은 받지 않습니다.']);
@@ -381,6 +383,7 @@ export function cupAnomaly(e, x) {
     for (const [k, v] of Object.entries(p.r)) if (typeof v !== 'number' || !(v >= CUP_R_LO - CUP_R_EPS && v <= CUP_R_HI + CUP_R_EPS)) bad.push(`${String(p.name || p.id).slice(0, 12)} ${String(k).slice(0, 6)} ${typeof v === 'number' ? Math.round(v * 10) / 10 : '?'}`);
     if (p.pot != null && (typeof p.pot !== 'number' || !(p.pot >= CUP_R_LO - CUP_R_EPS && p.pot <= CUP_R_HI + CUP_R_EPS))) bad.push(`${String(p.name || p.id).slice(0, 12)} 잠재력 ${Math.round(NUM(p.pot))}`); }
   if (bad.length) return out('bad_rating', [`능력치가 게임 범위(${CUP_R_LO}~${CUP_R_HI})를 벗어난 선수가 있습니다(${bad.slice(0, 3).join(', ')}${bad.length > 3 ? ` 외 ${bad.length - 3}건` : ''}).`]);
+  if (x && x.strict === false) return out('', [], null);
   const D = P.map(p => dv(cupPOvr(p))), n = { elite: D.filter(v => v >= CUP_ELITE_DV).length, top: D.filter(v => v >= CUP_TOP_DV).length };
   if (n.elite > CUP_ELITE_MAX || n.top > CUP_TOP_MAX) return out('bad_ovr', [`덱 전력 분포가 게임에서 나올 수 없는 수준입니다(OVR ${CUP_ELITE_DV} 이상 ${n.elite}명·${CUP_TOP_DV} 이상 ${n.top}명, 한도 ${CUP_ELITE_MAX}명·${CUP_TOP_MAX}명).`], n);
   const each = P.length > 0 && P.every(p => p && typeof p.sal === 'number' && isFinite(p.sal));

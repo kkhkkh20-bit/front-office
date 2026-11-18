@@ -10,6 +10,7 @@ import { cloudStatements, cloudStats, deleteCloud } from './cloud.js';
 import { ensureRec, recDelete, recStatements } from './records.js';
 import { ensureMeta, META_SQL, RANK_ORDER, bumpCache, bumpStmt, GEN_SEC, _genReset } from './ladder.js';
 import { ensureAuto, autoDelete, autoStatements, adminDash, adminDecks, adminLeague } from './ladauto.js';
+import { ladderStats, ladderPlayers, ladderPlayer } from './ladstats.js';
 
 /* 무료 한도(2026-11 Cloudflare 문서 기준. 바뀔 수 있다) */
 export const FREE = Object.freeze({ d1_r: 5e6, d1_w: 1e5, kv_w: 1000, req: 1e5 });
@@ -86,6 +87,10 @@ export async function handleAdmin(rest, req, url, db, now, env) {
   if (rest === 'dash' && req.method === 'GET') return adminDash(db, now, await currentSeason(db, now));
   if (rest === 'decks' && req.method === 'GET') return adminDecks(url, db, now);
   if (rest === 'league' && req.method === 'GET') return adminLeague(url, db);
+  /* 래더 관리자 대시보드(구단주 11-18, docs/design/ladder-admin-dashboard-2026-11-18.md): 집계·플레이어 표·플레이어 한 명 */
+  if (rest === 'lstats' && req.method === 'GET') return ladderStats(url, db, now, env);
+  if (rest === 'lplayers' && req.method === 'GET') return ladderPlayers(url, db, now);
+  if (rest === 'lplayer' && req.method === 'GET') return ladderPlayer(url, db);
   if (rest === 'players' && req.method === 'GET') {
     const q = String(url.searchParams.get('q') || '').trim().slice(0, 20);
     const r = q ? await db.prepare("SELECT id, nickname, platform, created, last_seen, hidden FROM players WHERE nickname LIKE ? OR id = ? ORDER BY last_seen DESC LIMIT 100").bind('%' + q.replace(/[%_]/g, '') + '%', q).all()

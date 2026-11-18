@@ -46,7 +46,7 @@ function facMoveTeam(oldTid,newTid){ if(oldTid===newTid)return; const ot=team(ol
   const N=aiFacInit(nt); delete nt.fi; N.build=null; G.fac=N; G.bus=nt.bus!=null?nt.bus:1; delete nt.bus; facInit(); }
 /* 완공과 투자 결정(매일). 야인일 때 전 소속 구단 시설도 그 구단(AI)이 운영한다 */
 /* 다른 구단 공사 완공: 우리 구단(facDaily)과 같은 판정(facDue) */
-function aiFacDone(t,S){ for(const k of Object.keys(S.bld)){ const b=S.bld[k]; if(!FACI[k]){ delete S.bld[k]; continue; } if(!facDue(b))continue; const lv=Math.min(FAC_MAX,b.lv>0?b.lv:(S.it[k]||0)+1); S.it[k]=Math.max(S.it[k]||0,lv); S.dn[k]=G.day; delete S.bld[k]; S.lv=facCalcLv(S.it); t.fac=S.lv;
+function aiFacDone(t,S){ for(const k of Object.keys(S.bld)){ const b=S.bld[k]; if(!FACI[k]){ delete S.bld[k]; continue; } if(!facDue(b))continue; const old=S.it[k]||0,lv=Math.min(FAC_MAX,b.lv>0?b.lv:old+1); S.it[k]=Math.max(old,lv); S.dn[k]=G.day; if(S.it[k]>old)facAgeComplete(t.id,k,S.it[k]); delete S.bld[k]; S.lv=facCalcLv(S.it); t.fac=S.lv;
   clubFacilityHistory('fac',t.id,FACI[k].l,'완공',b); wire('시설',`${t.city} ${FAC_NEWS[k][lv]} ${lv>=4?'개관':'완공'}`,{tid:t.id}); } }
 /* 불러오기 수리(제보 11-16): 완공일이 지났는데 남은 공사는 우리·다른 구단 모두 바로 완공한다 */
 function facOverdueFix(){ try{ facDaily(); }catch(e){} for(const t of G.teams||[]){ if(t.id===G.user)continue; const S=t.fi&&t.fi.it?aiFacInit(t):null; if(S)try{ aiFacDone(t,S); }catch(e){} } }
@@ -97,14 +97,35 @@ function facNeglect(t){ const mine=t.id===G.user; const it=mine?(G.fac&&G.fac.it
    항목마다 마지막으로 짓거나 고친 해를 기억한다. 10년이 넘으면 해마다 30% 확률로 한 단계 낡는다(2단계 아래로는 내려가지 않음).
    우리 구단은 9년째에 미리 알리고, 보수 공사(지금 단계 공사비의 25%)로 연식을 새로 시작할 수 있다. AI 구단은 현금이 넉넉하면 스스로 보수한다 */
 const FAC_AGE={warn:9,old:10,p:.3,fix:.25};
+/* 저장 위치(G.fac/t.fi)와 실제 운영 주체(ME)는 다르다. 완료 기록은 연식 조회 전에 남긴다. */
+function facAgeBox(tid){ return tid===G.user?G.fac:team(tid)?.fi; }
+function facAgeComplete(tid,k,lv){const S=facAgeBox(tid);if(!S)return;(S.ageProof=S.ageProof||{})[k]={lv,d:G.day};if(S.age&&S.age[k])S.age[k]={lv,y:dobj(G.day).y,d:G.day,why:'build'};}
+function facAgeAnchor(tid,S,k,lv){const valid=d=>Number.isFinite(d)&&d<=G.day&&d>=dnum(1900,1,1),p=S.ageProof&&S.ageProof[k],prefix='facility:fac:완공:'+FACI[k].l+':'+lv+':',D=[];if(p&&p.lv===lv&&valid(p.d))D.push(p.d);for(const r of S.refurbs||[])if(r.tid===tid&&r.k===k&&r.lv===lv&&valid(r.d)&&Number.isFinite(r.paid))D.push(r.d);for(const h of [...(G.clubHist?.[tid]||[]).map(h=>({...h,tid:h.tid??tid})),...(G.chron||[])])if(h&&h.tid===tid&&String(h.source||'').startsWith(prefix)&&valid(h.d))D.push(h.d);if(D.length)return Math.max(...D);const a=S.age&&S.age[k],d=S.dn&&S.dn[k];return a&&a.lv<lv&&valid(d)&&dobj(d).y>=a.y?d:null;}
+
+/* 불러오기에서는 난수·현금을 건드리지 않는다. 완공 증빙과 지급이 확실한 보수비만 보정한다. */
+function facStateMigrate(){
+  for(const t of G.teams||[]){const S=facAgeBox(t.id);if(!S?.it)continue;for(const k of FACK){const a=S.age?.[k],lv=S.it[k]||0;if(!a||a.lv===lv)continue;const d=facAgeAnchor(t.id,S,k,lv);if(d!=null)S.age[k]={lv,y:dobj(d).y,d,why:'build'};}}
+  const t=team(G.user),S=G.fac,B=G.spend;if(!t||G.unemp||!t.indie||!S?.it||!B||!(B.fac>0))return;
+  const H=[...Object.entries(G.clubHist||{}).flatMap(([tid,L])=>(L||[]).map(h=>({...h,tid:h.tid??+tid}))),...(G.chron||[])].filter(Boolean),join=H.filter(h=>h.k==='join'&&h.gm===1&&Number.isFinite(h.d)&&h.d<=G.day).sort((a,b)=>b.d-a.d)[0];
+  if(!join||join.tid!==G.user||!Number.isFinite(G.last?.d))return;
+  const rows=[];for(const [i,l] of (G.log||[]).entries()){
+    if(!l||l.facRefurb||l.d<=Math.max(join.d,G.last.d)||l.d>G.day||l.y!==dobj(l.d).y||(H.some(h=>h.tid===G.user&&h.k==='owner'&&h.d>=l.d)||G.ownership?.clubs?.[G.user]?.history?.some(h=>h.d>=l.d)))continue;
+    /* 옛 본문에는 지급 내역이 없다. 독립구단의 같은 재임·결산 기간만 전액 현금 지급으로 확인한다. */
+    const ec=l.y<=2028?capOf(l.y):G.ecoFix;if(!Number.isFinite(ec))continue;
+    for(const k of FACK){const lv=S.it[k]||0,a=S.age?.[k];if(lv<2||a?.lv!==lv||a.y!==l.y||S.dn?.[k]>l.d)continue;const c=Math.round(FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix*Math.max(1,ec/14397)/10)*10;if(l.t===FACI[k].l+' 보수 공사('+money(c)+'). 연식을 새로 셉니다.')rows.push({l,k,lv,c,i});}
+  }
+  const total=sum(rows.map(r=>r.c));if(!total||B.fac<total)return;
+  B.fac-=total;B.facB=(B.facB||0)+total;for(const r of rows){const id='legacy:'+r.k+':'+r.l.d+':'+r.i;r.l.facRefurb=id;r.l.tid=G.user;r.l.paid=r.c;(S.refurbs=S.refurbs||[]).push({id,tid:G.user,d:r.l.d,y:r.l.y,fy:fyNow(),k:r.k,lv:r.lv,c:r.c,paid:r.c,sup:0,account:'facB',bookEp:G.spEp||0,legacy:true});}
+}
 function facAgeStore(t){ const mine=t.id===G.user; const it=mine?(G.fac&&G.fac.it):(t.fi&&t.fi.it); if(!it)return null; const box=mine?G.fac:t.fi; const A=box.age=box.age||{};
-  for(const k of FACK){ const lv=it[k]||0; if(!A[k])A[k]={lv,y:G.year-ri(0,6)}; else if(A[k].lv!==lv)A[k]={lv,y:G.year}; } return {it,A,bld:box.bld||{},mine}; }
-function facAgeOf(tid,k){ const t=team(tid); const S=t&&facAgeStore(t); return S?G.year-S.A[k].y:0; }
-function facRefurbCost(k){ const lv=(G.fac&&G.fac.it&&G.fac.it[k])||0; return Math.round(FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix*ecoIdx()/10)*10; }
+  for(const k of FACK){ const lv=it[k]||0; if(!A[k]){const fallback=G.year-ri(0,6),d=facAgeAnchor(t.id,box,k,lv);A[k]=d==null?{lv,y:fallback}:{lv,y:dobj(d).y,d,why:'build'};}else if(A[k].lv!==lv){const d=facAgeAnchor(t.id,box,k,lv);A[k]=d==null?{lv,y:G.year}:{lv,y:dobj(d).y,d,why:'build'};} } return {it,A,bld:box.bld||{},mine}; }
+function facAgeOf(tid,k){ const t=team(tid); const S=t&&facAgeStore(t); return S?Math.max(0,G.year-S.A[k].y):0; }
+function facRefurbCost(k,tid=G.user){ const F=FACI[k],S=facAgeBox(tid),lv=S?.it?.[k]||0; return F?Math.round(F.c[Math.min(lv,F.c.length-1)]*FAC_AGE.fix*ecoIdx()/10)*10:0; }
+function facRefurbCommit(t,S,k,c){const box=facAgeBox(t.id),id=k+':'+G.day+':'+S.it[k];if((box.refurbs||[]).some(r=>r.id===id))return false;const undo=settlementUndo();try{const me=t.id===ME(),paid=ledgerPay(t.id,'facB',c,{me});S.A[k]={lv:S.it[k],y:G.year,d:G.day,why:'refurb'};const h={id,tid:t.id,d:G.day,y:G.year,fy:fyNow(),k,lv:S.it[k],c,paid,sup:c-paid,account:me?'facB':'cash',bookEp:G.spEp||0};(box.refurbs=box.refurbs||[]).push(h);if(box.refurbs.length>80)box.refurbs.shift();clubFacilityHistory('fac',t.id,FACI[k].l,'보수',{lv:S.it[k],c,costLabel:'보수비',source:'facility:fac:보수:'+id});if(me){addLog(`${FACI[k].l} 보수 공사(${money(c)}). 연식을 새로 셉니다.`);Object.assign(G.log[0],{tid:t.id,facRefurb:id,paid});}return true;}catch(e){undo();worldReset();_chronGame=null;_chronIds=null;_chronSources=null;throw e;}}
 function facRefurb(k){ if(G.unemp)return '맡은 구단이 없습니다.'; const S=facAgeStore(team(G.user)); if(!S||!FACI[k])return '없는 시설입니다.'; if((S.it[k]||0)<2)return '보수할 시설이 없습니다.'; if(S.bld[k])return '공사 중입니다.';
-  const c=facRefurbCost(k); if(spendable(G.user)<c)return `자금이 부족합니다(${spendTxt()}). 보수비 ${money(c)}이 필요합니다.`; ledgerPay(G.user,'fac',c,{me:true}); S.A[k].y=G.year; addLog(`${FACI[k].l} 보수 공사(${money(c)}). 연식을 새로 셉니다.`); return ''; }
+  const id=k+':'+G.day+':'+S.it[k];if((G.fac.refurbs||[]).some(r=>r.id===id))return '오늘 이 시설의 보수 공사를 이미 마쳤습니다.';const c=facRefurbCost(k); if(spendable(G.user)<c)return `자금이 부족합니다(${spendTxt()}). 보수비 ${money(c)}이 필요합니다.`;facRefurbCommit(team(G.user),S,k,c);return ''; }
 function facAgeYear(){ for(const t of G.teams){ const S=facAgeStore(t); if(!S)continue;
   for(const k of FACK){ const lv=S.it[k]||0; if(lv<3||S.bld[k])continue; const age=G.year-S.A[k].y;
-    if(!S.mine&&age>=FAC_AGE.warn&&(t.cash||0)>Math.max(3000,FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix*2)){ t.cash-=Math.round(FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix); S.A[k].y=G.year; continue; } /* 여유 있는 AI 구단은 보수 */
+    const raw=FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix,wasRepair=!S.mine&&age>=FAC_AGE.warn&&(t.cash||0)>Math.max(3000,raw*2),oldRoll=age>=FAC_AGE.old&&!wasRepair,candidate=t.id!==ME()&&age>=FAC_AGE.warn,c=candidate?facRefurbCost(k,t.id):0,repair=candidate&&(t.cash||0)>Math.max(3000,c*2);let draw;if(oldRoll)draw=R();if(repair){facRefurbCommit(t,S,k,c);continue;} /* 사임 뒤 전 구단도 AI가 보수한다. 옛 노후 굴림 슬롯은 그대로 소비한다. */
     if(S.mine&&age===FAC_AGE.warn&&!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 오래됐습니다`,`${FACI[k].l}을(를) 짓거나 고친 지 ${age}년입니다. 10년이 넘으면 해마다 낡아 한 단계씩 내려갈 수 있습니다. 시설 화면에서 보수 공사(${money(facRefurbCost(k))})를 하면 연식을 새로 셉니다.`,{kind:'시설',acts:[{l:'시설 화면',a:'cpFacGo',v:k}]});
-    if(age>=FAC_AGE.old&&R()<FAC_AGE.p){ S.it[k]=lv-1; S.A[k]={lv:lv-1,y:G.year-5}; if(S.mine){ try{ facRecalc(); }catch(e){} if(!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 낡아 한 단계 내려갔습니다`,`${FACI[k].l}이(가) ${FACI[k].lv[Math.min(lv-1,FACI[k].lv.length-1)]||''} 수준으로 내려갔습니다. 다시 공사하면 회복됩니다.`,{kind:'시설'}); } else { try{ t.fi.lv=facCalcLv(S.it); t.fac=t.fi.lv; }catch(e){} } } } } }
+    if(age>=FAC_AGE.old&&(oldRoll?draw:withRng(rngHash('facAgeNew',facWK(),t.id,k,G.year,age),()=>R()))<FAC_AGE.p){ S.it[k]=lv-1; S.A[k]={lv:lv-1,y:G.year-5}; if(S.mine){ try{ facRecalc(); }catch(e){} if(!G.unemp)mail('운영팀',`${FACI[k].l} 시설이 낡아 한 단계 내려갔습니다`,`${FACI[k].l}이(가) ${FACI[k].lv[Math.min(lv-1,FACI[k].lv.length-1)]||''} 수준으로 내려갔습니다. 다시 공사하면 회복됩니다.`,{kind:'시설'}); } else { try{ t.fi.lv=facCalcLv(S.it); t.fac=t.fi.lv; }catch(e){} } } } } }

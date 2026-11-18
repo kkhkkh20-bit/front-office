@@ -14,22 +14,24 @@ const { chromium } = require('playwright');
     async put(k, v, o = {}) { m.set(k, { v: String(v), meta: o.metadata || null }); }, async delete(k) { m.delete(k); }, async list({ prefix }) { return { keys: [...m.keys()].filter(k => k.startsWith(prefix)).map(name => ({ name, metadata: m.get(name).meta })), list_complete: true }; } };
   const DB = makeD1(), env = { SAVE_KV: kv, CUP_ADMIN: 'test-admin', DB }, envNoDb = { SAVE_KV: kv, CUP_ADMIN: 'test-admin' }, html = fs.readFileSync(path.resolve(__dirname, '../index.html'));
   const sql = (q, ...a) => DB._sqlite.prepare(q).all(...a);
-  let opp = 0, v1opp = 0, dbDown = true;
-  const call = async (method, p, body, h = {}) => { const r = await handle(new Request('http://seed.local' + p, { method, body: body == null ? undefined : JSON.stringify(body), headers: Object.assign({ 'CF-Connecting-IP': h.ip || '10.0.0.1' }, h.auth ? { Authorization: h.auth } : {}) }), env, Date.now()); return r.json(); };
+  let opp = 0, v1opp = 0, dbDown = true, testOffset = 0;
+  const testNow = () => Date.now() + testOffset;
+  const initClock = async page => page.addInitScript(() => { const realNow = Date.now.bind(Date); window.__uladderTestOffset = 0; Date.now = () => realNow() + window.__uladderTestOffset; });
+  const call = async (method, p, body, h = {}) => { const r = await handle(new Request('http://seed.local' + p, { method, body: body == null ? undefined : JSON.stringify(body), headers: Object.assign({ 'CF-Connecting-IP': h.ip || '10.0.0.1' }, h.auth ? { Authorization: h.auth } : {}) }), env, testNow()); return r.json(); };
   const server = http.createServer(async (q, r) => {
     if (q.url === '/') { r.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); return r.end(html); }
     if (!q.url.startsWith('/api/')) { r.writeHead(404); return r.end(); }
     if (q.url.startsWith('/api/ladder/opp')) opp++; if (q.url.startsWith('/api/v1/ladder/opponents')) v1opp++;
     const body = await new Promise(ok => { const c = []; q.on('data', x => c.push(x)); q.on('end', () => ok(Buffer.concat(c))); });
-    const res = await handle(new Request('http://' + q.headers.host + q.url, { method: q.method, headers: q.headers, body: ['GET', 'HEAD'].includes(q.method) ? undefined : body }), dbDown ? envNoDb : env, Date.now());
+    const res = await handle(new Request('http://' + q.headers.host + q.url, { method: q.method, headers: q.headers, body: ['GET', 'HEAD'].includes(q.method) ? undefined : body }), dbDown ? envNoDb : env, testNow());
     r.writeHead(res.status, Object.fromEntries(res.headers)); r.end(Buffer.from(await res.arrayBuffer()));
   });
   await new Promise(ok => server.listen(0, '127.0.0.1', ok)); const url = `http://127.0.0.1:${server.address().port}/`;
   assert.ok((await call('POST', '/api/v1/admin/migrate', null, { auth: 'Bearer test-admin' })).ok);
   let b; try {
     b = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium' }); const p = await b.newPage(); await p.setViewportSize({ width: 1440, height: 900 });
-    const errs = []; p.on('pageerror', e => errs.push(String(e))); p.on('dialog', d => d.accept());
-    await p.goto(url); await p.evaluate(() => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; A.go('club:uld'); });
+    await initClock(p); const errs = []; p.on('pageerror', e => errs.push(String(e))); p.on('dialog', d => d.accept());
+    await p.goto(url); await p.waitForFunction(() => typeof newGame === 'function' && UI.title === true, null, { timeout: 60000 }); await p.evaluate(() => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; A.go('club:uld'); });
     await p.waitForSelector('.ul-hero .ul-big[data-a="ulReg"]', { timeout: 20000 }); { const t = await p.evaluate(() => document.querySelector('.ul-hero').innerText);
       assert.equal(await p.evaluate(() => UI.tab), 'uld', '예전 자리(구단 › 유저 래더)는 래더 주 메뉴로'); assert.ok(await p.evaluate(() => !!document.querySelector('.fm-r .fm-i[data-a="tab"][data-v="uld"].on') && !document.querySelector('.fmside [data-v="uld"]') && document.querySelectorAll('.fm-sub [data-a="sub"][data-v^="uld:"]').length === 6), 'PC 위 오른쪽 래더 아이콘(왼쪽 메뉴에는 없음) + 하위 탭 여섯');
       assert.ok(await p.evaluate(() => document.querySelectorAll('.ul-hero svg.ul-emb').length === 1 && document.querySelectorAll('.ul-lad .ul-lr').length === 5), '단계 문장·승강 사다리'); assert.match(await p.evaluate(() => document.querySelector('.ulx').innerText), /시즌 목표[\s\S]*리그 3번 치르기/); assert.match(t, /내 덱 등록[\s\S]*리그 시작[\s\S]*승격/, '첫 안내 3줄'); assert.match(t, /지금 1군으로 덱 등록/); assert.equal(await p.evaluate(() => !!document.getElementById('ulName')), false, '처음엔 등록 버튼만'); }
@@ -82,10 +84,14 @@ const { chromium } = require('playwright');
     /* 휴대폰: 같은 기기 토큰(기기 옮기기와 같은 모양)으로 */
     const tok = await p.evaluate(() => [localStorage.getItem('fo-net-v1-token'), localStorage.getItem('fo-net-v1-player')]); assert.match(tok[0] || '', /^ft1\./, '기기 토큰');
     const ctx2 = await b.newContext({ viewport: { width: 390, height: 844 } }); await ctx2.addInitScript(t => { try { localStorage.setItem('fo-net-v1-token', t[0]); localStorage.setItem('fo-net-v1-player', t[1]); } catch (e) {} }, tok);
-    const p2 = await ctx2.newPage(); p2.on('pageerror', e => errs.push(String(e)));
-    const save = await p.evaluate(() => JSON.stringify(G)); await p2.goto(url); await p2.evaluate(s => { G = JSON.parse(s); migrateDraft(); UI.title = false; A.go('uld:league'); }, save);
+    const p2 = await ctx2.newPage(); await initClock(p2); p2.on('pageerror', e => errs.push(String(e)));
+    const save = await p.evaluate(() => JSON.stringify(G)); await p2.goto(url); await p2.waitForFunction(() => typeof newGame === 'function' && UI.title === true, null, { timeout: 60000 }); await p2.evaluate(s => { G = JSON.parse(s); migrateDraft(); UI.title = false; A.go('uld:league'); }, save);
     await p2.waitForSelector('[data-a="ulNext"]', { timeout: 20000 }); const sw = await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1); assert.ok(sw, '휴대폰 폭에서 가로 스크롤');
     if (shot) { await p2.waitForTimeout(1500); await p2.evaluate(() => render()); await p2.screenshot({ path: shot + '_390.png', fullPage: false }); } console.log('PC 한 화면·휴대폰 폭 통과');
+    /* 첫 직접 등록과 다음 직접 등록은 실제 날짜를 하루 넘긴다. 클라이언트 표를 지우지 않고 Worker도 같은 시간을 본다. */
+    assert.equal(await p.evaluate(() => FrontOfficeCore.ulManOk(G.uld.ar, Date.now())), false, '첫 직접 등록의 당일 제한 유지');
+    testOffset += 86400e3; for (const page of [p, p2]) await page.evaluate(offset => { window.__uladderTestOffset = offset; render(); }, testOffset);
+    assert.equal(await p.evaluate(() => FrontOfficeCore.ulManOk(G.uld.ar, Date.now())), true, '다음 날 직접 등록 가능');
     await p.click('[data-a="ulAll"]'); await p.waitForFunction(() => /리그가 끝났습니다/.test(document.body.innerText), null, { timeout: 120000 }).catch(async e => { console.log('DBG', await p.evaluate(() => JSON.stringify({ n: G.uld.league && G.uld.league.next, busy: UL.busy, last: !!G.uld.last, msg: UL.msg, tab: UI.tab, gen: UL.gen })), errs); throw e; });
     await p.waitForFunction(() => G.uld.last && G.uld.last.srv, null, { timeout: 20000 });
     const res = await p.evaluate(() => ({ last: G.uld.last, tier: G.uld.tier, hist: G.uld.hist.length, t: document.body.innerText }));
@@ -115,30 +121,20 @@ const { chromium } = require('playwright');
     assert.ok(await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '휴대폰 순위 탭 가로 스크롤'); if (shot) await p2.screenshot({ path: shot + '_rank_390.png' }); console.log('순위 탭(내 시즌·순위표·소식) 통과');
     await p.evaluate(() => { UL.tiersSt = ''; A.ulGoPg('lobby'); }); await p.waitForFunction(() => UL.tiers && /등록 덱 \d/.test(document.querySelector('.ul-lad').innerText), null, { timeout: 10000 });
     const tc = await p.evaluate(() => UL.tiers); assert.equal(tc.reduce((a, b) => a + b, 0), 7, '단계별 등록 덱 수(KV) ' + tc);
-    { const t = await p.evaluate(() => document.querySelector('.ulx').innerText); assert.match(t, /승강 사다리[\s\S]*최근 리그[\s\S]*이번 시즌 우리 선수/); assert.match(t, /시즌 목표\s*\d\/5/); assert.match(await p.evaluate(() => document.querySelector('.ul-lad').innerText), /레전드\s*AI 기준 OVR 79 · 연봉 상한 143\.97억/, '사다리 AI 기준·연봉 상한(사용자 11-17)'); assert.ok(await p.evaluate(() => document.querySelectorAll('.ul-strip .ul-rs').length === 1), '최근 리그 띠');
+    { const t = await p.evaluate(() => document.querySelector('.ulx').innerText); assert.match(t, /승강 사다리[\s\S]*최근 리그[\s\S]*이번 시즌 우리 선수/); assert.match(t, /시즌 목표\s*\d\/5/); const ladderText = await p.evaluate(() => document.querySelector('.ul-lad').innerText); assert.match(ladderText, /레전드\s*AI 기준 OVR 79/, '사다리 AI 기준'); assert.doesNotMatch(ladderText, /연봉 상한/, 'PR242 래더 사다리에 연봉 상한 표시 없음'); assert.ok(await p.evaluate(() => document.querySelectorAll('.ul-strip .ul-rs').length === 1), '최근 리그 띠');
       const fit = await fitNow(); assert.ok(fit.scroll === 0, 'PC 로비 통째 스크롤 ' + JSON.stringify(fit)); } if (shot) await p.screenshot({ path: shot + '_lobby_1440.png' }); console.log('로비 통과');
     /* 덱: 선수 카드마다 래더 기록 */
     await p.evaluate(() => A.ulGoPg('deck')); { const d = await p.evaluate(() => ({ n: document.querySelectorAll('.ulp').length, st: [...document.querySelectorAll('.ulp-s')].filter(x => /경기/.test(x.innerText)).length, arch: (document.querySelector('.ul-arch') || {}).innerText }));
       assert.ok(d.n >= 24 && d.st >= 14, '덱 선수 카드·래더 기록 ' + JSON.stringify(d)); assert.ok(d.arch, '덱 성향'); } console.log('덱 화면 통과');
-    /* 연봉 상한(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 덱 칸에 상한·덱 연봉·여유, 넘으면 등록이 막히고 뺄 선수 추천 → 추천대로 빼면 등록(서버도 상한 안) */
-    { const cs = process.env.CAPSHOT, snapCap = async (pg, name) => { if (!cs) return; await pg.evaluate(() => { render(); const el = document.querySelector('.ul-cap'); if (el) el.scrollIntoView({ block: 'center' }); }); await pg.waitForTimeout(600); await pg.screenshot({ path: path.join(cs, name) }); };
-      const toP2 = async () => { await p2.evaluate(s => { G = JSON.parse(s); UL.src = 'now'; UL.drop = null; A.go('uld:deck'); }, await p.evaluate(() => JSON.stringify(G))); await p2.waitForSelector('.ul-cap'); assert.ok(await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '휴대폰 덱(상한) 가로 스크롤'); };
-      let c = await p.evaluate(() => { const t = document.querySelector('.ul-cap'); return t && { txt: t.innerText, all: t.textContent, over: t.classList.contains('ul-cap-over'), dis: document.querySelector('[data-a="ulReg"]').disabled, tier: G.uld.tier, x: FrontOfficeCore.ulCapX(G.uld.tier) }; });
-      assert.ok(c && !c.over && !c.dis, '상한 안 덱 등록 칸 ' + JSON.stringify(c)); assert.match(c.txt, new RegExp(`연봉 상한 · \\S+ 143\\.97억[\\s\\S]*상한[\\s\\S]*덱 연봉[\\s\\S]*여유[\\s\\S]*상한 대비`)); assert.match(c.all, /모든 단계 같은 금액\(첫 시즌 샐러리캡 143\.97억\)/, '설명(ⓘ 도움말)');
-      await snapCap(p, 'deck_under_1440.png'); await toP2(); await snapCap(p2, 'deck_under_390.png');
-      /* 우리 구단 최고 연봉 선수 연봉을 상한보다 5억 넘게 올린다(리그 평균은 다른 구단 기준이라 그대로) → 넘침 */
+    /* 래더 연봉 상한 없음(구단주 11-18 "래더는 일단 상한을 두지 말고 자유롭게"): 상한 칸·선수 빼기가 없고, 예전 상한을 넘는 1군도 그대로 등록된다(서버 D1도 받음) */
+    { assert.equal(await p.evaluate(() => document.querySelectorAll('.ul-cap,[data-a="ulCapDrop"],[data-a="ulCapAuto"]').length), 0, '상한 칸 없음'); assert.match(await p.evaluate(() => document.querySelector('.ul-free').innerText), /연봉 상한이 없습니다/);
       const h0 = await p.evaluate(() => { const e = ulRegEntry().e, c = FrontOfficeCore.ulCap(e, G.uld.tier), top = e.P.slice().sort((a, b) => b.sal - a.sal)[0], q = G.players[top.id]; UL.capT = [q.id, q.sal]; q.sal += c.room + 500; render(); return G.uld.deck.e.h; });
-      c = await p.evaluate(() => { const t = document.querySelector('.ul-cap'); return { txt: t.innerText, over: t.classList.contains('ul-cap-over'), dis: document.querySelector('[data-a="ulReg"]').disabled, sug: t.querySelectorAll('.ul-crs')[0].querySelectorAll('.ul-cr').length }; });
-      assert.ok(c.over && c.dis && c.sug >= 1, '넘는 덱: 빨간 칸·등록 막힘·뺄 선수 ' + JSON.stringify(c)); assert.match(c.txt, /초과[\s\S]*상한을 넘어 등록할 수 없습니다[\s\S]*이 선수를 빼면 들어갑니다/);
-      await snapCap(p, 'deck_over_1440.png'); await toP2(); assert.ok(await p2.evaluate(() => { const x = document.querySelector('.ul-cap .ul-cr [data-a="ulCapDrop"]'); return document.querySelector('.ul-cap.ul-cap-over') && document.querySelector('[data-a="ulReg"]').disabled && x && x.offsetWidth > 0; }), '휴대폰도 막힘·빼기 단추 보임'); await snapCap(p2, 'deck_over_390.png');
-      await p.evaluate(() => A.ulReg()); await p.waitForFunction(() => /상한/.test(UL.msg) && UL.bad, null, { timeout: 10000 }); assert.equal(await p.evaluate(() => G.uld.deck.e.h), h0, '단추를 건너뛰어도(직접 호출) 넘는 덱은 등록 안 됨');
-      await p.click('[data-a="ulCapAuto"]'); await p.waitForFunction(() => !document.querySelector('.ul-cap.ul-cap-over') && !document.querySelector('[data-a="ulReg"]').disabled, null, { timeout: 10000 });
-      assert.match(await p.evaluate(() => document.querySelector('.ul-cap').innerText), /뺀 선수 \d명[\s\S]*되돌리기/); await snapCap(p, 'deck_fixed_1440.png');
+      assert.equal(await p.evaluate(() => document.querySelector('[data-a="ulReg"]').disabled), false, '예전 상한을 넘어도 등록 단추가 열림');
       await p.click('[data-a="ulReg"]'); await p.waitForFunction(h => /덱을 등록했습니다/.test(document.body.innerText) && G.uld.deck.e.h !== h, h0, { timeout: 30000 });
-      const sv = await p.evaluate(() => { const e = G.uld.deck.e; return { n: e.P.length, ok: FrontOfficeCore.ulCap(e, G.uld.tier).ok }; }); assert.ok(sv.ok && sv.n < 26, '줄인 덱 ' + JSON.stringify(sv));
-      const body = JSON.parse(sql('SELECT d.body FROM decks d JOIN players p ON p.id = d.player_id WHERE p.wid = ?', myWid)[0].body), tierNow = await p.evaluate(() => G.uld.tier);
-      const Cm = await import(path.resolve(__dirname, '../src/core/uladder.mjs')); assert.ok(Cm.ulCap(body, tierNow).ok && body.P.every(q => typeof q.sal === 'number') && body.payRef > 0, '서버(D1)에 상한 안 덱·선수 연봉·리그 평균');
-      await p.evaluate(() => { G.players[UL.capT[0]].sal = UL.capT[1]; UL.msg = ''; render(); }); console.log('연봉 상한(덱 칸·등록 막기·추천대로 빼기·서버 저장) 통과'); }
+      const sv = await p.evaluate(() => { const e = G.uld.deck.e; return { n: e.P.length, ok: FrontOfficeCore.ulCap(e, G.uld.tier).ok }; }); assert.ok(!sv.ok && sv.n >= 24, '1군 그대로(예전 상한 초과) ' + JSON.stringify(sv));
+      const body = JSON.parse(sql('SELECT d.body FROM decks d JOIN players p ON p.id = d.player_id WHERE p.wid = ?', myWid)[0].body);
+      assert.ok(body.P.length >= 24, '서버(D1)에 그대로 저장');
+      await p.evaluate(() => { G.players[UL.capT[0]].sal = UL.capT[1]; UL.msg = ''; render(); }); console.log('래더 연봉 상한 없음(상한 칸 없음·넘는 덱 등록·서버 저장) 통과'); }
     /* 기록·데이터: 우리 선수(정렬·거르기·시즌별)·팀·선수 구성(서버 집계)·상대 분석·CSV */
     await p.evaluate(() => { UI.it.uldata = 'pl'; A.ulGoPg('data'); }); await p.waitForSelector('.ul-dt tbody tr');
     { const n0 = await p.evaluate(() => document.querySelectorAll('.ul-dt tbody tr').length); assert.ok(n0 >= 9, '타자 줄 ' + n0); await p.click('.ul-dt [data-a="ulDsSort"][data-v="hr"]');
@@ -158,11 +154,11 @@ const { chromium } = require('playwright');
     await p2.evaluate(s => { G = JSON.parse(s); UI.it.uldata = 'pl'; A.go('uld:data'); }, await p.evaluate(() => JSON.stringify(G))); await p2.waitForSelector('.ul-dt'); assert.ok(await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '휴대폰 데이터 가로 스크롤');
     for (const pg of ['lobby', 'deck']) { await p2.evaluate(pg => A.go('uld:' + pg), pg); await p2.waitForTimeout(300); assert.ok(await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '휴대폰 가로 스크롤 ' + pg); }
     /* 관리자: 예전 KV 래더 덱 검색·숨김, 래더 현황은 D1 숫자 */
-    await p.evaluate(() => { localStorage.setItem('fo-cup-admin', 'test-admin'); ADM.chk = ''; A.go('club:cupadm'); }); await p.waitForSelector('#admLdQ', { timeout: 20000 });
+    await p.evaluate(() => { localStorage.setItem('fo-cup-admin', 'test-admin'); ADM.chk = ''; A.go('club:cupadm'); }); await p.waitForSelector('[data-a="admTab"][data-v="cup"]', { timeout: 20000 }); assert.equal(await p.evaluate(() => document.querySelector('.adm-tabs button').dataset.v), 'ld', '관리자 기본 첫 탭은 래더'); await p.click('[data-a="admTab"][data-v="cup"]'); await p.waitForSelector('#admLdQ', { timeout: 20000 });
     await p.waitForFunction(() => /래더 덱 7개 · 오늘 쓰기 약 \d+회/.test(document.querySelector('.adm-now').innerText), null, { timeout: 10000 }); console.log('관리자 상태 줄(래더 덱 수·오늘 쓰기) 통과');
     await p.fill('#admLdQ', '유저2'); await p.click('[data-a="admLdFind"]'); await p.waitForFunction(() => /래더 덱 1개/.test(document.body.innerText), null, { timeout: 10000 });
     await p.click('[data-a="admLdHide"]'); await p.waitForFunction(() => /숨겼습니다/.test(document.body.innerText), null, { timeout: 10000 }); assert.ok(!JSON.parse(m.get('ulIdx').v).T.some(L => L.some(x => x.wid === 'w0000000000000002')), '숨긴 덱 색인'); console.log('관리자 래더 숨김 통과');
-    await p.click('[data-a="admTab"][data-v="ld"]'); await p.waitForFunction(() => LDA.st === 'd1' && document.querySelector('.lda-t'), null, { timeout: 15000 });
+    await p.click('[data-a="admTab"][data-v="ld"]'); await p.evaluate(() => A.ldxTab('ops')); await p.waitForFunction(() => LDA.st === 'd1' && document.querySelector('.lda-t'), null, { timeout: 15000 });
     { const d = await p.evaluate(() => LDA.d), t = await p.evaluate(() => document.querySelector('.ldax').innerText);
       assert.equal(d.totals.players, 3, '플레이어(감독5·6 + 나)'); assert.equal(d.totals.decks, 3); assert.equal(d.windows.today.leagues, 1, '오늘 완료한 리그'); assert.equal(d.tiers.reduce((a, x) => a + x.players, 0), 3);
       assert.equal(d.windows.today.promos + d.windows.today.demos, res.last.move === 'stay' ? 0 : 1); assert.ok(d.top.some(x => x.leagues === 1), '상위 플레이어'); assert.match(t, /완료한 리그/); console.log('관리자 래더 현황(D1 숫자) 통과'); }

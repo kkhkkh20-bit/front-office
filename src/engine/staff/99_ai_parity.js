@@ -92,11 +92,23 @@ function aiMpickMult(p){ const t=G.teams[p.team], P=t&&t.mpick, m=G.mgr[p.team];
 /* --- 멘토: 시즌마다 한 번, 33세 이상 프로의식 높은 베테랑(우리 구단 제안과 같은 조건)을 젊은 선수 멘토로. 수당 5천만 --- */
 /* 멘토 지정 판단(우리 구단 비서 '자동 판단'과 AI 구단이 같은 함수, 국사왕 11-18): 긴축 중이 아니고, 수당 5천만을 낼 돈이 있고, 24세 이하 선수가 있으면 맡긴다. 빈 문자열이면 맡긴다.
    쓸 수 있는 돈: 우리 구단은 다른 지출과 같은 spendable(구단주 지원 여유 포함), AI 구단은 구단 현금 */
+function mentorStored(tid){ return tid===ME()?G.mentor:((G.clubT||{})[tid]||{}).mentor; }
+function activeMentor(tid){ const M=mentorStored(tid),p=M&&G.players[M.id]; return M&&M.y===G.year&&p&&p.team===tid?M:null; }
+function mentorWasPaid(tid){ const M=mentorStored(tid); return team(tid)?.mentorDoneY===G.year||!!(M&&M.y===G.year); }
+function mentorClubSave(tid,M){ if(!M||tid==null||tid<0)return; const K=G.clubT=G.clubT||{},fy=sponSeason(); if(!K[tid]||K[tid].fy!==fy)K[tid]={fy,ai:1}; K[tid].mentor={...M}; }
+function mentorRemember(tid,M){ if(tid===ME())G.mentor=M; else mentorClubSave(tid,M); }
+function mentorLeave(tid){ if(G.mentor){ mentorClubSave(tid,G.mentor); if(G.mentor.y===G.year&&team(tid))team(tid).mentorDoneY=G.year; } G.mentor=null; }
+function vetProposalYear(tid){ const y=G.vetAskByClub?.[tid]; if(y!=null)return y; const old=G.vetAsk; if(!Number.isInteger(old))return null; return (G.evs||[]).some(e=>e.k==='vet'&&dobj(e.day).y===old&&(e.pt??(G.mail||[]).find(m=>m.id===e.mid)?.ctx?.tid)===tid)?old:null; }
+function mentorStateMigrate(){ if(!G)return;
+  /* A saved mentor is payment evidence even after that player leaves. A reviewed-year flag alone is not. */
+  if(G.unemp&&G.mentor){ const tid=G.unemp.from??G.user; mentorClubSave(tid,G.mentor); G.mentor=null; }
+  for(const t of G.teams||[]){ const M=mentorStored(t.id); if(M&&Number.isInteger(M.y))t.mentorDoneY=Math.max(t.mentorDoneY||0,M.y); }
+  if(Number.isInteger(G.vetAsk)){ const old=G.vetAsk; let proven=false; for(const e of G.evs||[]){ if(e.k!=='vet'||dobj(e.day).y!==old)continue; const tid=e.pt??(G.mail||[]).find(m=>m.id===e.mid)?.ctx?.tid; if(!(G.teams||[]).some(t=>t.id===tid))continue; const B=G.vetAskByClub=G.vetAskByClub||{}; B[tid]=Math.max(B[tid]||0,old); proven=true; } if(!proven)G.vetAskLegacy=old; delete G.vetAsk; }
+}
 function mentorWhy(tid){ const t=team(tid); if(!t)return '구단 없음'; if(planOf(t)==='tight')return '긴축 운영 중'; const cash=tid===ME()?spendable(tid):(t.cash||0); if(cash<50)return '수당 5천만을 낼 돈이 부족함'; if(!domestic(tid).some(q=>q.age<=24))return '성장 효과를 볼 24세 이하 선수가 없음'; return ''; }
-function aiMentorPick(){ if(period()!=='season')return; for(const t of G.teams){ if(t.id===ME()||t.mentorY===G.year)continue; t.mentorY=G.year;
-    const cur=t.id===G.user?G.mentor:((G.clubT||{})[t.id]||{}).mentor; if(cur&&cur.y===G.year)continue; if(mentorWhy(t.id))continue;
+function aiMentorPick(){ if(period()!=='season')return; for(const t of G.teams){ if(t.id===ME())continue; if(mentorWasPaid(t.id)){t.mentorDoneY=G.year;continue;} if(mentorWhy(t.id))continue;
     const p=playersOf(t.id).filter(q=>{ initPers(q); return q.age>=33&&q.pers.pro>=13&&!q.foreign; }).sort((a,b)=>b.age-a.age)[0]; if(!p)continue;
-    ledger(t.id,'etc',50); p.mor=clamp((p.mor??60)+8,0,100); const M={id:p.id,y:G.year}; if(t.id===G.user)G.mentor=M; else { const K=G.clubT=G.clubT||{}, fy=sponSeason(); if(!K[t.id]||K[t.id].fy!==fy)K[t.id]={fy,ai:1}; /* fy가 있어야 그 구단으로 부임한 단장이 멘토를 이어받는다(검수 11-14). ai: 사람 단장이 남긴 기록이 아님(구단주 신뢰 등은 이어받지 않는다) */ K[t.id].mentor=M; } } }
+    ledger(t.id,'etc',50); p.mor=clamp((p.mor??60)+8,0,100); t.mentorY=G.year; t.mentorDoneY=G.year; mentorRemember(t.id,{id:p.id,y:G.year}); } }
 
 /* --- 보조 코치: 매달 1일 코치 시장(cmAiMonthly 끝). 시설이 줄어 정원을 넘으면 정리(잔여 연봉 절반) --- */
 function aiAsstMonthly(tid,off){ const t=team(tid); if(!t||tid===ME())return; const O=orgOf(tid); const X=O.coachX=O.coachX||[]; pcTrim(tid); const n=axSlots(tid)-pcN(tid); /* 플레잉코치가 쓰는 자리는 뺀다(99c_playing_coach) */
