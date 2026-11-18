@@ -18,7 +18,7 @@
 import { readText, byteLen } from './v1/http.js';
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../src/core/cup.mjs';
 import { deckGuard, guardStatus, GUARD_MSG } from './v1/guard.js';
-import { UL_TIERS, ulPick, ulSlim, ulCap, ulCapGate } from '../src/core/uladder.mjs';
+import { UL_TIERS, ulPick, ulSlim, ulCapGate } from '../src/core/uladder.mjs';
 import { cached, cacheGet, cachePut, cacheBust, memLimited, utcDay, shortHash } from './kvcache.js';
 
 export const UL_MAX_BYTES = 120 * 1024, UL_DECK_MAX = 40 * 1024;
@@ -139,7 +139,7 @@ export async function handleLadder(req, env, url, now) {
     if (!b.e || cupBadName(b.e.name)) return err(400, b.e ? 'bad_name' : 'bad_deck');
     const e = ulSlim(b.e); e.name = cupName(e.name); const v = cupValidate(e, {}); if (!v.ok) return err(400, 'bad_deck', { errors: v.errors.map(x => x.msg) });
     { const an = deckGuard(e, b, 'kv', b.wid); if (an) return err(guardStatus(an), an.code, { errors: an.errors }); delete e.edited; } /* 편집 표시·이상치 거절(구단주 11-18 §8) */
-    { const c = ulCap(e, tierOf(b.tier)); if (!c.known || !c.each) return err(400, 'no_pay', { errors: [MSG.no_pay] }); if (!c.ok) return err(400, 'over_cap', { errors: [ulCapGate(e, tierOf(b.tier), now).msg] }); } /* 연봉 상한(사용자 11-17): 화면과 같은 공용 규칙 */
+    /* 연봉 상한 없음(구단주 11-18 "래더는 일단 상한을 두지 말고 자유롭게"): 예전 no_pay·over_cap 검사는 하지 않는다 */
     e.h = cupEntryHash(e); const body = JSON.stringify(e); if (byteLen(body) > UL_DECK_MAX) return err(413, 'too_large');
     const bh = await shortHash(body), prev = (await kv.getWithMetadata('ulD:' + b.wid)).metadata || null, tier = tierOf(b.tier), day = utcDay(now);
     /* 그대로면 쓰지 않는다(색인에서 빠져 있을 때만 색인을 채운다) */

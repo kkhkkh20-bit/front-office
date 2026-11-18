@@ -37,3 +37,5 @@
 .ulx .ul-crs{display:grid;gap:3px;margin:4px 0}.ulx .ul-cr{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:8px;align-items:center;padding:3px 0;border-bottom:1px solid var(--line);font-size:13px}.ulx .ul-cr b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ulx .ul-cap-n b{white-space:nowrap}
 @media(max-width:640px){.ulx .ul-cr{grid-template-columns:minmax(0,1fr) auto auto}.ulx .ul-cr>span.small{display:none}.ulx .ul-cap-n b{font-size:13px}.ulx .ul-cap-n{gap:3px}.ulx .ul-cap-n>div{padding:5px 2px}}
+/* 래더 기록 세분화(11-18): 칸이 늘어난 팀 기록·선수 줄 표는 줄바꿈 없이 칸 안에서 가로 스크롤 */
+.ul-ts td,.ul-ts th,.ul-srt td,.ul-srt th{white-space:nowrap}.ul-ts td small{display:block}

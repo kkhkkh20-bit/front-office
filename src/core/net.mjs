@@ -91,7 +91,7 @@ export function netCreate(o) {
   N.leaderboard = (tier, season) => N.call('GET', `/ladder/leaderboard?tier=${tier === 'all' ? 'all' : tier | 0}${season ? '&season=' + (season | 0) : ''}`, null, { auth: false });
   N.meta = tier => N.call('GET', `/ladder/meta?tier=${tier === 'all' || tier == null ? 'all' : tier | 0}`, null, { auth: false }); /* 덱 구성 집계(래더 v2, 10분 캐시) */
   N.feed = () => N.call('GET', '/ladder/feed', null, { auth: false });
-  N.records = (tier, season) => N.call('GET', `/ladder/records?tier=${tier === 'all' || tier == null ? 'all' : tier | 0}${season ? '&season=' + (season | 0) : ''}`, null, { auth: false }); /* 래더 기록실(사용자 11-18) */
+  N.records = (tier, season, scope) => N.call('GET', `/ladder/records?tier=${tier === 'all' || tier == null ? 'all' : tier | 0}${season ? '&season=' + (season | 0) : ''}${scope === 'league' || scope === 'career' ? '&scope=' + scope : ''}`, null, { auth: false }); /* 래더 기록실(사용자 11-18) · scope 한 리그/통산(래더 기록 세분화 11-18) */
   N.me = () => N.call('GET', '/ladder/me');
   N.rivals = () => N.call('GET', '/ladder/rivals');
   N.h2h = pid => N.call('GET', '/ladder/h2h/' + encodeURIComponent(pid));

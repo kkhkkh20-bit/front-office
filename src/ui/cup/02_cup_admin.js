@@ -7,7 +7,7 @@
 const ADM_KEY='fo-cup-admin';
 /* 고른 참가 파일은 따로 들고 있는다: 대회를 연 직후 신청 목록 자동 받기 등으로 화면을 다시 그리면 파일 칸이 비어 [올리기]에 '파일을 골라 주세요'가 나왔다(11-17 점검) */
 try{ document.addEventListener('change',e=>{ const t=e.target; if(t&&t.id==='admFiles')ADM.pick=t.files&&t.files.length?[...t.files]:null; },true); }catch(e){}
-const ADM={key:'',chk:'',cup:null,ents:null,drop:[],run:null,runSt:'',busy:false,prog:'',msg:'',bad:false,ask:false,f:null,hof:null};
+const ADM={tab:'ld',key:'',chk:'',cup:null,ents:null,drop:[],run:null,runSt:'',busy:false,prog:'',msg:'',bad:false,ask:false,f:null,hof:null};
 function admKeyGet(){ try{ return localStorage.getItem(ADM_KEY)||''; }catch(e){ return ''; } }
 function admKeySet(k){ try{ if(k)localStorage.setItem(ADM_KEY,k); else localStorage.removeItem(ADM_KEY); }catch(e){} }
 const admApi=(p,o)=>{ o=o||{}; const h=Object.assign({Authorization:'Bearer '+ADM.key},o.body!=null?{'Content-Type':'application/json'}:{},o.headers||{});
@@ -188,8 +188,9 @@ function admStepCard(cfg){ const k=admStage(), R=ADM.run, n=(ADM.ents||[]).lengt
   return `<section class="card adm-now"><h2 class="sec">지금 할 일 <small>${k<7?`${ADM_STEP_OF[k]}/7단계`:'끝'}</small></h2>${admStatusLine()}${bar}<p class="adm-what">${what}</p>${btn?`<div class="btns">${btn}${extra}</div>`:extra?`<div class="btns">${extra}</div>`:''}${ADM.prog?`<p class="small">${esc(ADM.prog)}</p>`:''}</section>`; }
 function cupAdminView(){ admCheck(); if(!xfAvail())return '<section class="card"><p class="small muted">관리자 페이지는 웹 사이트에서만 쓸 수 있습니다.</p></section>';
   if(ADM.chk!=='ok')return `<section class="card"><h2 class="sec">프런트컵 관리자</h2>${ADM.chk==='checking'?'<p class="small muted">관리자 키를 확인하는 중입니다.</p>':'<p class="small muted">설정 › 정보 맨 아래 \'관리자\'에서 관리자 키를 넣어 주세요.</p>'}</section>`;
-  const tabs=`<nav class="adm-tabs" role="tablist"><button class="btn small${ADM.tab!=='ld'?' on':''}" role="tab" aria-selected="${ADM.tab!=='ld'}" data-a="admTab" data-v="cup">프런트컵</button><button class="btn small${ADM.tab==='ld'?' on':''}" role="tab" aria-selected="${ADM.tab==='ld'}" data-a="admTab" data-v="ld">래더 현황</button></nav>`;
-  if(ADM.tab==='ld')return `<div class="setx ws-own cupx admx ldax">${tabs}${ladderAdminView()}</div>`; /* 래더 현황: 03_ladder_admin.js */
+  /* 래더를 앞 탭·기본으로(구단주 11-18 "관리자에 래더를 좀 더 앞의 탭으로") */
+  const ld=ADM.tab!=='cup', tabs=`<nav class="adm-tabs" role="tablist"><button class="btn small${ld?' on':''}" role="tab" aria-selected="${ld}" data-a="admTab" data-v="ld">래더 현황</button><button class="btn small${!ld?' on':''}" role="tab" aria-selected="${!ld}" data-a="admTab" data-v="cup">프런트컵</button></nav>`;
+  if(ld)return `<div class="setx ws-own cupx admx ldax">${tabs}${ladderAdminView()}</div>`; /* 래더 현황: 03_ladder_admin.js */
   if(ADM.cup&&!ADM.runSt)A.admRunLoad(); if(ADM.cup&&ADM.cup.id&&ADM.ents==null&&!ADM.entsAuto&&!ADM.busy){ ADM.entsAuto=1; setTimeout(()=>A.admEnts('auto'),0); } const C=FrontOfficeCore, c=ADM.cup||{}, cfg=Object.assign({},C.CUP_DEFAULT,c), R=ADM.run;
   const inp=(id,lab,v,ph,w)=>`<label class="adm-in"><span>${lab}</span><input id="${id}" value="${esc(v??'')}" placeholder="${esc(ph||'')}" autocomplete="off"${w?` style="max-width:${w}"`:''}></label>`;
   const stg=admStage(), cur=x=>ADM_SEC_OF[stg]===x?' adm-cur':'', now=x=>ADM_SEC_OF[stg]===x?' <span class="pill adm-pill">지금 단계</span>':'';

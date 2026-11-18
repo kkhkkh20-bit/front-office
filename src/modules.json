@@ -343,6 +343,7 @@
       "src/ui/cup/01_cup_ui.js",
       "src/ui/cup/02_cup_admin.js",
       "src/ui/cup/03_ladder_admin.js",
+      "src/ui/cup/04_ladder_dash.js",
       "src/ui/uladder/01_uladder_ui.js",
       "src/ui/uladder/02_uladder_pages.js",
       "src/ui/uladder/03_uladder_v3.js",

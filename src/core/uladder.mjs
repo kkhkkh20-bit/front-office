@@ -25,8 +25,12 @@ export const UL_CAP = Object.freeze([1, 1, 1, 1, 1]); /* 모든 단계 같은 �
 export const ulCapX = t => UL_CAP[Math.max(0, Math.min(UL_CAP.length - 1, t | 0))];
 export const ulCap = (e, tier) => Object.assign(cupPayCheck(e, ulCapX(tier)), { tier: tier | 0 });
 /* 이 덱으로 이 단계 리그에 나갈 수 있나: 상한 안 → ok. 연봉 기록이 없는 예전 덱 → 유예 기간(UL_CAP_FROM 전)만 ok(grace). AI 덱은 언제나 ok */
+/* 래더 연봉 상한 없음(구단주 11-18 "래더는 일단 상한을 두지 말고 자유롭게"): UL_CAP_ON = false면 어떤 덱이든(연봉 기록이 없는 예전 덱도) 나간다.
+   상한 계산(ulCap)은 정보로만 남긴다. 프런트컵 상한(cupPayCheck·payCapX)은 따로라 그대로 */
+export const UL_CAP_ON = false;
 export function ulCapGate(e, tier, now) {
   if (e && e.ai) return { ok: true, ai: true };
+  if (!UL_CAP_ON) return { ok: true, free: true, msg: '' };
   const c = ulCap(e, tier), name = ulTierName(tier);
   if (!c.known) { const g = (now == null ? Date.now() : now) < UL_CAP_FROM; return Object.assign(c, { ok: g, grace: g, msg: g ? `연봉 기록이 없는 예전 덱입니다. ${ulSeason(UL_CAP_FROM).label.split('~')[0]} 시즌부터는 다시 등록해야 리그를 시작할 수 있습니다.` : '연봉 기록이 없는 예전 덱입니다. 덱을 다시 등록해 주세요.' }); }
   return Object.assign(c, { msg: c.ok ? '' : `덱 연봉 ${cupWon(c.pay)}이 ${name} 상한 ${cupWon(c.cap)}을 ${cupWon(-c.room)} 넘습니다.` });
@@ -129,7 +133,8 @@ export function ulBadges(hist, car) { hist = hist || []; const got = new Set((ca
    모두 게임 상태(G)를 모르는 순수 함수. 저장(G.uld)에는 묶음 합계만 둔다(선수 120명 × 시즌·단계 칸 24개까지). 서버 v1 메타 집계(worker/v1/ladder.js)도 같은 함수를 쓴다 */
 export const UL_BF = Object.freeze(['g', 'pa', 'ab', 'h', 'd', 'tr', 'hr', 'bb', 'hbp', 'sf', 'rbi', 'r', 'sb', 'so']);
 /* hbp is appended: existing packed pitching columns retain their positions. */
-export const UL_PF = Object.freeze(['g', 'gs', 'outs', 'h', 'bb', 'so', 'r', 'er', 'hr', 'w', 'l', 'sv', 'hbp']);
+export const UL_PF = Object.freeze(['g', 'gs', 'outs', 'h', 'bb', 'so', 'r', 'er', 'hr', 'w', 'l', 'sv', 'hbp', 'hld']); /* hld(홀드)도 끝에 붙였다(래더 기록 세분화 11-18): 예전 칸은 0 */
+const UL_PF_HBP = 13; /* 사구(hbp)까지 있는 칸 길이: 이보다 짧으면 볼넷·사구가 합쳐진 예전 칸 */
 export const UL_PS_MAX = 120, UL_SPLIT_MAX = 24, UL_OPP_MAX = 60;
 const arrOf = (o, F) => F.map(f => +(o && o[f]) || 0), objOf = (a, F) => { const o = {}; F.forEach((f, i) => { o[f] = (a && a[i]) || 0; }); return o; };
 const addArr = (a, b) => { for (let i = 0; i < b.length; i++) a[i] = (a[i] || 0) + (b[i] || 0); return a; };
@@ -143,7 +148,7 @@ export function ulPsAdd(ps, x) {
     else if (sp.nm != null) { if (!sp.ps && p.pos) sp.ps = p.pos; if (sp.ag == null && p.age != null) sp.ag = p.age; } /* 예전에 빈 포지션으로 남은 칸은 기록 때 값으로 채운다(검수 11-17 #182) */
     sp.l = x.lid | 0; return sp; }; /* sp.l: 이 칸에 마지막으로 더한 리그 번호(가장 최근 칸 고르기, #180) */ /* 그 시즌·단계 칸에 그때 이름·포지션·나이(외부 검수 11-17 #48: 지난 시즌 줄이 지금 값으로 바뀌던 것) */
   for (const b of x.bat || []) { const s = slot(b.id, 0); s.b = addArr(s.b || UL_BF.map(() => 0), arrOf(b, UL_BF)); }
-  for (const p of x.pit || []) { const s = slot(p.id, 1); if (s.p && s.p.length < UL_PF.length || p.bbMixed) s.pm = 1; s.p = addArr(s.p || UL_PF.map(() => 0), arrOf(p, UL_PF)); }
+  for (const p of x.pit || []) { const s = slot(p.id, 1); if (s.p && s.p.length < UL_PF_HBP || p.bbMixed) s.pm = 1; s.p = addArr(s.p || UL_PF.map(() => 0), arrOf(p, UL_PF)); }
   /* 한도: 시즌 칸은 오래된 시즌부터, 선수는 가장 오래 안 나온 선수부터 뺀다 */
   for (const id in ps) { const S = ps[id].s, ks = Object.keys(S); if (ks.length > UL_SPLIT_MAX) ks.sort((a, b) => sidN(a.split('|')[0]) - sidN(b.split('|')[0])).slice(0, ks.length - UL_SPLIT_MAX).forEach(k => delete S[k]); }
   const ids = Object.keys(ps); if (ids.length > UL_PS_MAX) ids.sort((a, b) => (ps[a].at || 0) - (ps[b].at || 0)).slice(0, ids.length - UL_PS_MAX).forEach(id => delete ps[id]);
@@ -151,8 +156,15 @@ export function ulPsAdd(ps, x) {
 }
 const r3 = x => Math.round(x * 1000) / 1000, r2 = x => Math.round(x * 100) / 100;
 export function ulBatRates(t) { const ab = t.ab || 0, ob = ab + (t.bb || 0) + (t.hbp || 0) + (t.sf || 0), tb = (t.h || 0) + (t.d || 0) + 2 * (t.tr || 0) + 3 * (t.hr || 0);
-  const obp = ob ? ((t.h || 0) + (t.bb || 0) + (t.hbp || 0)) / ob : 0, slg = ab ? tb / ab : 0; return { avg: ab ? r3(t.h / ab) : 0, obp: r3(obp), slg: r3(slg), ops: r3(obp + slg) }; }
-export function ulPitRates(t) { const o = t.outs || 0; return { ip: `${Math.floor(o / 3)}${o % 3 ? '.' + (o % 3) : ''}`, ipn: o / 3, era: o ? r2((t.er || 0) * 27 / o) : null, whip: o && !t.bbMixed ? r2(((t.h || 0) + (t.bb || 0)) * 3 / o) : null, k9: o ? r2((t.so || 0) * 27 / o) : null }; }
+  const obp = ob ? ((t.h || 0) + (t.bb || 0) + (t.hbp || 0)) / ob : 0, slg = ab ? tb / ab : 0, pa = t.pa || 0;
+  /* 래더 기록 세분화(구단주 11-18): BB%(볼넷+사구 ÷ 타석) · K%(삼진 ÷ 타석) · 루타 */
+  return { avg: ab ? r3(t.h / ab) : 0, obp: r3(obp), slg: r3(slg), ops: r3(obp + slg), tb, bbp: pa ? r3(((t.bb || 0) + (t.hbp || 0)) / pa) : null, kp: pa ? r3((t.so || 0) / pa) : null }; }
+export function ulPitRates(t) { const o = t.outs || 0; return { ip: `${Math.floor(o / 3)}${o % 3 ? '.' + (o % 3) : ''}`, ipn: o / 3, era: o ? r2((t.er || 0) * 27 / o) : null, whip: o && !t.bbMixed ? r2(((t.h || 0) + (t.bb || 0)) * 3 / o) : null, k9: o ? r2((t.so || 0) * 27 / o) : null,
+  bb9: o && !t.bbMixed ? r2(((t.bb || 0) + (t.hbp || 0)) * 27 / o) : null, hr9: o ? r2((t.hr || 0) * 27 / o) : null }; }
+/* FIP 비슷한 값(래더 기록 세분화 11-18): (13×피홈런 + 3×(볼넷+사구) − 2×탈삼진) ÷ 이닝 + 리그 상수(리그 ERA에 맞춘다). 예전 칸(볼넷·사구 합침)도 합으로 쓴다 */
+export const ulFipRaw = t => { const ip = (t.outs || 0) / 3; return ip ? (13 * (t.hr || 0) + 3 * ((t.bb || 0) + (t.hbp || 0)) - 2 * (t.so || 0)) / ip : null; };
+export function ulFipC(lg) { const raw = ulFipRaw(lg), ip = (lg.outs || 0) / 3; return raw == null || !ip ? 3.1 : (lg.er || 0) * 9 / ip - raw; }
+export const ulFip = (t, c) => { const raw = ulFipRaw(t); return raw == null ? null : r2(raw + (c == null ? 3.1 : c)); };
 /* 표 줄: kind 'b'(타자)·'p'(투수), f: {season:'S12'|'', tier:-1|0~4, pos:''|'C'|…|'SP'|'RP'}. 줄마다 시즌별 나눔(splits)도 붙인다 */
 export function ulPsRows(ps, kind, f) {
   f = f || {}; const k = kind === 'p' ? 'p' : 'b', F = k === 'p' ? UL_PF : UL_BF, rate = k === 'p' ? ulPitRates : ulBatRates, out = [];
@@ -163,7 +175,7 @@ export function ulPsRows(ps, kind, f) {
     for (const sk in o.s) { const [sid, t] = sk.split('|'); if (f.season && sid !== f.season) continue; if (f.tier != null && f.tier >= 0 && +t !== +f.tier) continue; const c = o.s[sk], a = c[k]; if (!a) continue;
       const sn = { name: c.nm || o.n || '', pos: c.ps || o.pos || '', age: c.ag != null ? c.ag : o.age };
       if (k === 'b' && f.pos && sn.pos !== f.pos) continue;
-      const unknown = k === 'p' && (!!c.pm || a.length < UL_PF.length); if (unknown) { mixed = true; mixS[sid] = true; mixT[sk] = true; }
+      const unknown = k === 'p' && (!!c.pm || a.length < UL_PF_HBP); if (unknown) { mixed = true; mixS[sid] = true; mixT[sk] = true; }
       addArr(tot, a); addArr(by[sid] || (by[sid] = F.map(() => 0)), a); byT[sk] = a; snapT[sk] = sn;
       const rk = [c.l | 0, sidN(sid), +t]; if (!snapS[sid] || isNewer(rk, snapS[sid].rk)) snapS[sid] = { sn, rk }; if (!last || isNewer(rk, last.rk)) last = { sn, rk }; }
     if (!tot[0]) continue; const t = objOf(tot, F); if (mixed) t.bbMixed = true; const cur = last ? last.sn : { pos: o.pos, age: o.age }, pos = k === 'p' ? (t.gs * 2 >= t.g ? 'SP' : 'RP') : cur.pos;

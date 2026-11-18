@@ -1,7 +1,7 @@
 /* 래더 v4 화면 점검(구단주 11-18, docs/design/ladder-v4-2026-11-18.md §1·§10): 실제 Worker(worker/index.js) + 가짜 D1(node:sqlite).
    1) 게임: 등록 단추 없이 자동 등록(구단명#태그 닉네임·auto 덱) → 설정 › 래더 '자동 참가 끄기'(서버 덱 지움)·다시 켜기 → 닉네임 저장 → '지금 덱으로 다시 등록' 하루 1회.
       v1이 꺼진 서버(503)에서도 오류 없이 이 기기 덱만. PC 1366 페이지 스크롤 없음, 휴대폰 390 가로 넘침 없음.
-   2) 관리자 '래더 현황' 한눈 보기: 등록 현황(자동/직접·상한 초과·끔)·이상 감지(결과 불일치·비정상 승률·같은 기기)·리그 상황(진행 중·끝난 리그, 눌러서 순위표)·시즌 판·덱 목록(검색·단계·숨기기)·30초 새로고침.
+   2) 관리자 '래더 현황' 한눈 보기: 등록 현황(자동/직접·끔)·이상 감지(결과 불일치·비정상 승률·같은 기기)·리그 상황(진행 중·끝난 리그, 눌러서 순위표)·시즌 판·덱 목록(검색·단계·숨기기)·30초 새로고침.
       PC 1440·1366 한 화면(칸 안 스크롤), 휴대폰 390 가로 넘침 없음.
    사용: bash build.sh 후 node tools/check-ladder-auto-ui.cjs (CHROMIUM_EXECUTABLE_PATH 필요할 수 있음). SHOT_DIR=폴더면 그림. 노드 22.5 미만이면 건너뛴다 */
 const assert = require('node:assert/strict'), path = require('node:path'), http = require('node:http'), fs = require('node:fs');
@@ -84,12 +84,12 @@ function deck(o = {}) { const P = [], POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 
       await q.addInitScript(() => { try { localStorage.setItem('fo-cup-admin', 'test-admin'); } catch (e) {} }); await q.goto(url);
       await q.waitForFunction(() => typeof A === 'object' && typeof ADM === 'object', null, { timeout: 30000 });
       await q.evaluate(() => { ADM.chk = ''; admCheck(); }); await q.waitForFunction(() => ADM.chk === 'ok', null, { timeout: 30000 });
-      await q.waitForFunction(() => { if (document.querySelector('[data-a="admTab"][data-v="ld"]')) return true; try { A.admOpen(); } catch (e) {} return false; }, null, { timeout: 30000, polling: 700 }); await q.click('[data-a="admTab"][data-v="ld"]');
+      await q.waitForFunction(() => { if (document.querySelector('[data-a="admTab"][data-v="ld"]')) return true; try { A.admOpen(); } catch (e) {} return false; }, null, { timeout: 30000, polling: 700 }); await q.click('[data-a="admTab"][data-v="ld"]'); await q.evaluate(() => A.ldxTab('ops')); /* 예전 한눈 보기 = 대시보드 '운영' 탭(구단주 11-18) */
       await q.waitForFunction(() => LDA.st === 'd1' && LDB.dash && document.querySelector('.ldb-reg .ldb-kpi'), null, { timeout: 15000 }); return q; };
     const q = await open(1440, 900);
     t = await q.evaluate(() => document.querySelector('.ldax').innerText);
     for (const k of ['등록 현황', '이상 감지', '리그 상황', '시즌 판', '덱 목록', '참여도', '서버 사용량']) assert.ok(t.includes(k), k + ' 칸');
-    const D = await q.evaluate(() => LDB.dash); assert.equal(D.reg.total, 8, '등록 덱(게임 1 + 씨앗 7)'); assert.equal(D.reg.off, 1); assert.equal(D.reg.over, 1); assert.ok(D.reg.manual >= 3);
+    const D = await q.evaluate(() => LDB.dash); assert.equal(D.reg.total, 8, '등록 덱(게임 1 + 씨앗 7)'); assert.equal(D.reg.off, 1); assert.ok(!('over' in D.reg), '상한 초과 집계 없음(래더 상한 없음)'); assert.ok(D.reg.manual >= 3);
     assert.match(t, /결과 불일치/); assert.match(t, /비정상 승률/); assert.match(t, /같은 기기에서 여러 덱[\s\S]*2덱/); assert.match(t, /4\/9라운드/); assert.match(t, /우승 팀3/); assert.match(t, /일 남음/);
     f = await fit(q); assert.equal(f.y, 0, 'PC 1440 관리자 페이지 스크롤'); assert.ok(f.sw);
     if (shots) await q.screenshot({ path: path.join(shots, 'ladder-dash-1440.png') });

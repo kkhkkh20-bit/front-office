@@ -261,28 +261,19 @@ dbTest('래더 v2: 전체 순위(높은 단계 먼저)와 관리자 내보내기
   const d = await J('GET', '/api/v1/admin/export?kind=decks', null, AK); assert.equal(d.rows.length, 2); assert.ok(d.rows[0].meta && d.rows[0].meta.v === 1, '덱 요약');
   const r = await J('GET', '/api/v1/admin/export?kind=results', null, AK); assert.equal(r.rows.length, 2); assert.ok(r.rows.every(x => x.nickname && x.lkey));
 });
-dbTest('연봉 상한(사용자 11-17 "공평하게"): 덱 연봉 합이 고정 상한 143.97억(모든 단계 같음)을 넘으면 400 over_cap, 연봉 기록 없으면 no_pay, 승격으로 넘게 된 덱·유예 끝난 예전 덱은 상대로 안 나온다', async () => {
+dbTest('래더 연봉 상한 없음(구단주 11-18 "래더는 일단 상한을 두지 말고 자유롭게"): 비싼 덱·연봉 기록 없는 덱·합이 안 맞는 덱도 받고, 상대 목록에도 나온다. 능력치 범위·편집 표시는 그대로 거절', async () => {
   const { J, mk, env, clock } = await setup(); const C = await import(path.join(root, 'src/core/uladder.mjs'));
+  assert.equal(C.UL_CAP_ON, false); assert.ok(C.ulCapGate({ P: [] }, 4, Date.now()).ok, '공용 규칙도 언제나 통과');
   const a = await mk('상한일', '10.1.0.1'), b = await mk('상한이', '10.1.0.2'), c = await mk('상한삼', '10.1.0.3'), d = await mk('상한사', '10.1.0.4');
-  const pricey = o => { const e = deck(o); for (const p of e.P) p.sal = 700; return e; }; /* 700 × 24 = 168억 > 143.97억 */
-  let j = await J('PUT', '/api/v1/ladder/deck', { e: pricey(), tier: 0 }, a.A);
-  assert.equal(j._s, 400); assert.equal(j.error, 'over_cap'); assert.ok(/루키 상한/.test(j.errors[0]) && j.cap.cap === 14397 && j.cap.pay === 16800, JSON.stringify(j));
-  const nosal = deck(); delete nosal.P[3].sal; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: nosal, tier: 0 }, a.A)).error, 'no_pay', '선수 연봉이 빠짐');
-  const fake = deck(); fake.P[0].sal = 9000; /* 9000 + 23 × 300 = 159억 */ assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'over_cap', '서버는 선수마다 연봉으로 다시 센다');
-  { const w = console.warn; console.warn = () => {}; try { fake.pay = 100; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'bad_pay', '합(pay)을 줄여 적은 덱은 이상치로 거절(구단주 11-18 §8)'); } finally { console.warn = w; } }
-  assert.equal(env.DB._sqlite.prepare('SELECT COUNT(*) AS n FROM decks').get().n, 0, '거절한 덱은 쓰지 않는다');
-  j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '꽉참' }), tier: 1 }, a.A); assert.equal(j._s, 200, '72억은 상한 안'); assert.equal(j.tier, 1);
-  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: pricey({ name: '넘침' }), tier: 2 }, b.A)).error, 'over_cap', '168억은 상한을 넘음');
-  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '알뜰', ovr: { t: 62, p: 60, b: 60 } }), tier: 2 }, b.A))._s, 200, '상한 안');
-  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '예전', ovr: { t: 61, p: 60, b: 60 } }), tier: 2 }, c.A))._s, 200);
-  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '나', ovr: { t: 61, p: 60, b: 60 } }), tier: 2 }, d.A))._s, 200);
-  /* 예전 덱(연봉 기록 없음)처럼 본문을 바꿔 둔다 */
-  const sq = env.DB._sqlite, old = JSON.parse(sq.prepare('SELECT body FROM decks WHERE player_id = ?').get(c.id).body); for (const p of old.P) delete p.sal; delete old.payRef;
-  sq.prepare('UPDATE decks SET body = ? WHERE player_id = ?').run(JSON.stringify(old), c.id);
-  const res = await J('POST', '/api/v1/ladder/result', { key: 'cap-up-1', rank: 1, teams: 10, w: 20, l: 7, d: 0 }, a.A); assert.equal(res.tier, 2, '마이너 1위 → 1부 승격');
-  let o = await J('GET', '/api/v1/ladder/opponents?n=9', null, d.A); const names = o.decks.map(x => x.name);
-  assert.ok(names.includes('알뜰') && names.includes('예전'), '상한 안 덱·유예 중 예전 덱은 나옴 ' + names); assert.ok(names.includes('꽉참'), '승격해도 상한은 같은 금액이라 그대로 나옴 ' + names);
-  clock.now = C.UL_CAP_FROM + 1000; o = await J('GET', '/api/v1/ladder/opponents?tier=2&n=9', null, d.A); /* 이 시각에 서버 시즌도 바뀐다(단계 -1): 1부를 직접 본다 */
-  { const nm = o.decks.map(x => x.name); assert.ok(nm.includes('알뜰') && !nm.includes('예전') && !nm.includes('넘침'), '유예가 끝나면 예전 덱도 빠짐 ' + nm); }
-  for (const x of o.decks) assert.ok(C.ulCap(x.e, 2).ok, '내보낸 덱은 모두 상한 안');
+  const pricey = o => { const e = deck(o); for (const p of e.P) p.sal = 700; return e; }; /* 700 × 24 = 168억: 예전 상한(143.97억)을 넘는다 */
+  let j = await J('PUT', '/api/v1/ladder/deck', { e: pricey({ name: '넘침' }), tier: 0 }, a.A); assert.equal(j._s, 200, JSON.stringify(j)); assert.equal(j.cap_ok, true); assert.equal(j.pay_x, null);
+  const nosal = deck({ name: '예전' }); delete nosal.P[3].sal; j = await J('PUT', '/api/v1/ladder/deck', { e: nosal, tier: 0 }, b.A); assert.equal(j._s, 200, '연봉 기록이 빠져도 받음(no_pay 없음)');
+  const fake = deck({ name: '합틀림' }); fake.P[0].sal = 9000; fake.pay = 100; j = await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 0 }, c.A); assert.equal(j._s, 200, '연봉 합 불일치(bad_pay)도 래더에서는 받음');
+  { const w = console.warn; console.warn = () => {}; try { const bad = deck({ name: '범위밖' }); bad.P[0].r.con = 95; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: bad, tier: 0 }, d.A)).error, 'bad_rating', '능력치 20~80 밖은 그대로 거절');
+    assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck(), tier: 0, edited: true }, d.A)).error, 'edited', '편집 표시는 그대로 거절'); } finally { console.warn = w; } }
+  assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '나' }), tier: 0 }, d.A))._s, 200);
+  let o = await J('GET', '/api/v1/ladder/opponents?n=9', null, d.A); let names = o.decks.map(x => x.name);
+  assert.ok(['넘침', '예전', '합틀림'].every(n => names.includes(n)), '모든 덱이 상대로 나옴 ' + names);
+  clock.now = C.UL_CAP_FROM + 1000; o = await J('GET', '/api/v1/ladder/opponents?tier=0&n=9', null, d.A); names = o.decks.map(x => x.name);
+  assert.ok(names.includes('예전'), '예전 유예 기간이 끝나도 연봉 기록 없는 덱이 나옴 ' + names);
 });
