@@ -8651,6 +8651,21 @@ T('[피드백 11-17 연장] 연장 협상 불가 이유(extWhy)는 연장 협상
 T('[피드백 11-17 연장] 면담 계약 이야기에서 다년계약을 듣겠다고 하면 연장 협상 버튼(또는 이유)이 생긴다',()=>{ const p=extAskP(); initPers(p); p.pers.loy=16; const r=talk(p.id,'contract'); ok(r.ext===true,'다년계약에 응했는데 협상 연결 표시 없음: '+r.msg);
   const q=domestic(G.user).find(x=>x!==p&&canExtend(x)); initPers(q); q.svc=faSvc(q)-1; q.faC=false; q.pers.loy=5; ok(!talk(q.id,'contract').ext,'시장 평가를 원한다는 선수에게도 협상 버튼'); delete p.tk; p.age=36; const r2=talk(p.id,'contract'); ok(r2.ext===true&&extWhy(p).includes('34세까지'),'열 수 없는 선수는 이유를 보여야 함');
   const S=__extAskSrc(); ok(/if\\(r\\.ext\\)\\{[^\\n]*extWhy\\(p\\)[^\\n]*M\\.ext=p\\.id/.test(S.meet),'면담 화면이 협상 버튼·이유를 보이지 않음'); ok(S.meet.includes('data-a="extNgt"'),'면담 화면 연장 협상 버튼 없음'); ok(S.sheet.includes('!meetOver()&&!UI.ngt'),'면담 위에 협상 창이 그려지지 않음'); ok(S.act.includes('UI.talkMsg.ext?extTalkBtn('),'선수 화면 면담 결과에 협상 버튼 없음'); });
+T('[피드백 11-18 은퇴 결정] 레전드 은퇴 결정: 비서 위임 중에도 자동 처리되지 않고 기본안은 은퇴식+영구결번',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign&&!q.prospect); const pid=p.id; G.retNos=[]; G.legends=(G.legends||[]).concat([{name:p.name,pid,tid:G.user,canRetNo:true,no:18,y:G.year}]);
+  const ob={id:'ob-1118a',fid:pid,name:'윤종수',pos:'유격수',age:38,no:18,mine:true,team:G.user,ys:14,mineWar:63.3,bond:0,path:'coach',log:[],retY:G.year,canRetNo:'p'+pid}; G.ob=(G.ob||[]).concat([ob]); G.deleg={ret:true}; ok(evDelegOn('ret'),'준비 실패: 위임');
+  obRetireEvents([ob]); const e=G.evs.filter(x=>x.k==='ret'&&x.data.ob===ob.id).pop(); ok(e&&!e.done,'비서가 레전드 은퇴 결정을 처리함: '+(e&&e.opts[e.pick]&&e.opts[e.pick].l));
+  ok(/영구결번/.test(e.opts[e.def].l),'기본안이 은퇴식+영구결번이 아님: '+e.opts[e.def].l); const e0=G.spend.etc||0; evPick(e.id,e.def,true);
+  ok(G.retNos.length===1&&ob.ceremony===G.year&&(G.spend.etc||0)-e0===100,'기한 처리 결과: 결번 '+G.retNos.length+' 비용 '+((G.spend.etc||0)-e0)); });
+T('[피드백 11-18 은퇴 결정] 5시즌 미만 선수는 그대로 비서가 조용히 보내 준다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign&&!q.prospect);
+  const ob={id:'ob-1118b',fid:p.id,name:'박보통',pos:'좌익수',age:35,no:33,mine:true,team:G.user,ys:4,mineWar:3,bond:0,path:'front',log:[],retY:G.year}; G.ob=(G.ob||[]).concat([ob]); G.deleg={ret:true};
+  obRetireEvents([ob]); const e=G.evs.filter(x=>x.k==='ret'&&x.data.ob===ob.id).pop(); ok(e&&e.done&&e.deleg&&/조용히/.test(e.opts[e.pick].l),'짧게 뛴 선수 처리가 바뀜'); ok(!ob.ceremony,'은퇴식이 열림'); });
+T('[피드백 11-18 은퇴 결정] 조용히 보낸 레전드도 그 겨울에 같은 비용으로 은퇴식을 한 번 열 수 있다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign&&!q.prospect);
+  const ob={id:'ob-1118c',fid:p.id,name:'윤종수',pos:'유격수',age:38,no:7,mine:true,team:G.user,ys:9,mineWar:20,bond:0,path:'front',log:[],retY:G.year}; G.ob=(G.ob||[]).concat([ob]);
+  G.day=G.cal.end+20; if(G.ps)G.ps.done=true; ok(period()==='off','준비 실패: 스토브리그 '+period());
+  obRetireEvents([ob]); const e=G.evs.filter(x=>x.k==='ret'&&x.data.ob===ob.id).pop(); ok(!obLateCerOk(ob),'결정 전인데 뒤늦은 은퇴식 버튼'); evPick(e.id,e.opts.length-1); ok(/조용히/.test(e.opts[e.pick].l)&&!ob.ceremony,'준비 실패: 조용히');
+  delete ob.retEv; /* 예전 저장: 이 패치 전에 처리된 결정도 남은 결정 기록으로 연다 */  const f0=G.pr.fan; ok(obLateCerOk(ob),'조용히 보낸 뒤 은퇴식을 열 수 없음'); ok(obLateCerCost(ob)===50,'비용이 원래 선택과 다름: '+obLateCerCost(ob)); const e0=G.spend.etc||0; const r=obLateCer(ob.id);
+  ok(ob.ceremony===G.year&&(G.spend.etc||0)-e0===50&&G.pr.fan>=f0,'뒤늦은 은퇴식: '+r+' 비용 '+((G.spend.etc||0)-e0)); const e1=G.spend.etc; const r2=obLateCer(ob.id); ok(G.spend.etc===e1&&!obLateCerOk(ob),'두 번 열림: '+r2);
+  const ob2={...ob,id:'ob-1118d',ceremony:undefined,retY:G.year-1}; delete ob2.ceremony; G.ob.push(ob2); ok(!obLateCerOk(ob2),'지난 겨울 은퇴 선수가 스토브리그에 열림'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
