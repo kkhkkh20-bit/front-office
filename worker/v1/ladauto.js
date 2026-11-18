@@ -60,7 +60,23 @@ CREATE TABLE IF NOT EXISTS ladder_leagues (
 );
 CREATE INDEX IF NOT EXISTS leagues_at ON ladder_leagues (at);
 `;
-export const autoStatements = () => AUTO_SQL.split('\n').filter(l => !/^\s*--/.test(l)).join('\n').split(';').map(x => x.trim()).filter(Boolean);
+export const LIVE_SQL = `-- 래더 진행 보고(검수 1019~1020): 종료한 리그의 늦은 보고를 막고, 보고된 포스트시즌 단계만 보관합니다.
+CREATE TABLE IF NOT EXISTS ladder_live_state (
+  player_id TEXT NOT NULL,
+  lkey TEXT NOT NULL,
+  ended INTEGER NOT NULL DEFAULT 0,
+  stage TEXT NOT NULL DEFAULT '',
+  post_done INTEGER,
+  post_total INTEGER,
+  revision INTEGER NOT NULL DEFAULT 0,
+  progress INTEGER NOT NULL DEFAULT 0,
+  opened INTEGER NOT NULL,
+  at INTEGER NOT NULL,
+  PRIMARY KEY (player_id, lkey)
+);
+CREATE INDEX IF NOT EXISTS live_state_player ON ladder_live_state (player_id, opened);
+`;
+export const autoStatements = () => (AUTO_SQL + LIVE_SQL).split('\n').filter(l => !/^\s*--/.test(l)).join('\n').split(';').map(x => x.trim()).filter(Boolean);
 let autoOk = false; export function _autoReset() { autoOk = false; }
 export async function ensureAuto(db) { if (autoOk) return true; try { await db.batch(autoStatements().map(q => db.prepare(q))); autoOk = true; } catch (e) { autoOk = false; } return autoOk; }
 
@@ -75,15 +91,15 @@ export async function regGet(db, pid) { if (!(await ensureAuto(db))) return null
 /* 덱 등록(putDeck)과 같은 batch에 넣는 줄. auto: 1 자동 · 0 직접 · null(맞추기: 지금 값 그대로). man: 직접 등록이면 그날 */
 export function regStmt(db, pid, o, now) {
   const a = o.auto == null ? 0 : o.auto ? 1 : 0, keep = o.auto == null ? 1 : 0;
-  return db.prepare(`INSERT INTO ladder_reg (player_id, auto, off, cap_ok, pay_x, dev, man_day, created, at) SELECT ?, ?, 0, ?, ?, ?, ?, ?, ? WHERE ${live}
+  return db.prepare(`INSERT INTO ladder_reg (player_id, auto, off, cap_ok, pay_x, dev, man_day, created, at) SELECT ?, ?, 0, ?, ?, ?, ?, ?, ? WHERE ${live} AND NOT EXISTS (SELECT 1 FROM ladder_reg WHERE player_id = ? AND off = 1)
     ON CONFLICT (player_id) DO UPDATE SET auto = CASE WHEN ? THEN auto ELSE excluded.auto END, cap_ok = excluded.cap_ok, pay_x = excluded.pay_x, dev = COALESCE(excluded.dev, dev), man_day = COALESCE(excluded.man_day, man_day), at = excluded.at`)
-    .bind(pid, a, o.capOk ? 1 : 0, o.payX, o.dev, o.man ? kstDay(now) : null, now, now, pid, keep);
+    .bind(pid, a, o.capOk ? 1 : 0, o.payX, o.dev, o.man ? kstDay(now) : null, now, now, pid, pid, keep);
 }
 /* 덱 등록 전 검사: {auto, man, dev, capOk, payX} 또는 {error: Response}. 자동 등록은 상한을 넘어도 받는다(그 단계 리그에는 못 나감: 상대 고르기·리그 시작이 거른다) */
 export async function regCheck(db, me, b, e, tier, had, now) {
   const auto = b.auto ? 1 : b.man ? 0 : null, man = b.man ? 1 : 0, reg = await regGet(db, me.id);
-  if (auto && reg && reg.off) return { error: err(409, 'auto_off') };
-  if (man && had && reg && reg.man_day === kstDay(now)) return { error: err(429, 'reg_wait') };
+  if (reg && reg.off) return { error: err(409, 'auto_off') };
+  if (man && had && reg && reg.man_day === kstDay(now)) return { error: err(429, 'reg_wait', {at:now,man_day:reg.man_day}) };
   const c = ulCap(e, tier); return { auto, man, dev: await devHash(b.dev), capOk: !!c.ok, payX: c.r, cap: c };
 }
 /* PUT /ladder/auto {on}: 끄면 서버 덱(덱·구성 요약·진행 중 리그)을 지우고 off=1. 켜면 off=0(덱은 다음 자동 갱신 때 다시 올라온다) */
@@ -104,16 +120,43 @@ function stParse(x) {
   }
   return out;
 }
-/* POST /ladder/live {key, tier, round, post, teams:[[이름, pid?, 종류]], st?:[[이름, 승, 패, 무, 종류]]}: 진행 중 리그 한 줄(덮어쓰기). 끊겨도 게임에는 영향 없음 */
+/* 진행 보고는 인증된 플레이어·리그 키에 귀속합니다. 종료 표는 같은 키의 늦은 보고만 막습니다.
+   자동 참가 끄기는 일시 중단이므로 종료 표를 만들지 않습니다. 구형 보고에는 단계를 추측해 붙이지 않습니다. */
+const LIVE_STAGES = ['regular', 'regular-done', 'semi-ready', 'semi-one-done', 'final-ready', 'complete'];
+function livePhase(b, post) {
+  if (b.stage == null && b.postDone == null && b.postTotal == null) return { stage: '', done: null, total: null };
+  const done = int(b.postDone, 0, 3), total = int(b.postTotal, 3, 3), stage = String(b.stage || '');
+  const expected = post ? ['semi-ready', 'semi-one-done', 'final-ready', 'complete'][done] : stage === 'regular-done' ? 'regular-done' : 'regular';
+  return done == null || total == null || !LIVE_STAGES.includes(stage) || stage !== expected || (!post && done !== 0) ? null : { stage, done, total };
+}
 export async function livePut(req, db, me, now) {
   const { body: b, error } = await readJson(req, LIVE_MAX); if (error) return err(error === 'too_large' ? 413 : 400, error);
-  const key = String(b.key || ''), tier = int(b.tier, 0, TOP), round = int(b.round ?? 0, 0, 99), post = b.post ? 1 : 0;
-  if (!/^[\w.:-]{4,64}$/.test(key) || tier == null || round == null || !Array.isArray(b.teams)) return err(400, 'bad_result');
-  const teams = b.teams.slice(0, ST_MAX).filter(Array.isArray).map(t => [nm(t[0]), PID.test(String(t[1] || '')) ? String(t[1]) : null, ['me', 'user', 'cup', 'ai'].includes(t[2]) ? t[2] : 'user']);
+  const key = String(b.key || ''); if (!/^[\w.:-]{4,64}$/.test(key)) return err(400, 'bad_result');
   if (!(await ensureAuto(db))) return err(503, 'schema_missing');
-  await db.prepare(`INSERT INTO ladder_live (player_id, lkey, tier, round, post, teams, st, started, at) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${live}
-    ON CONFLICT (player_id) DO UPDATE SET started = CASE WHEN lkey = excluded.lkey THEN started ELSE excluded.started END, lkey = excluded.lkey, tier = excluded.tier, round = excluded.round, post = excluded.post, teams = excluded.teams, st = excluded.st, at = excluded.at`)
-    .bind(me.id, key, tier, round, post, JSON.stringify(teams), JSON.stringify(stParse(b.st)), now, now, me.id).run();
+  if (b.ended === 1 || b.ended === true) {
+    await db.batch([db.prepare(`INSERT INTO ladder_live_state (player_id, lkey, ended, opened, at) SELECT ?, ?, 1, ?, ? WHERE ${live}
+      ON CONFLICT (player_id, lkey) DO UPDATE SET ended = 1, at = excluded.at`).bind(me.id, key, 0, now, me.id),
+      db.prepare('DELETE FROM ladder_live WHERE player_id = ? AND lkey = ?').bind(me.id, key)]);
+    return json(200, { ok: true, ended: true });
+  }
+  const tier = int(b.tier, 0, TOP), round = int(b.round ?? 0, 0, 99), post = b.post ? 1 : 0, phase = livePhase(b, post);
+  const revision = b.revision == null ? now * 1024 : int(b.revision, 0, Math.min(Number.MAX_SAFE_INTEGER, (now + 300e3) * 1024)), opened = b.opened == null ? now : int(b.opened, 1, now + 300e3);
+  if (tier == null || round == null || !Array.isArray(b.teams) || !phase || revision == null || opened == null) return err(400, 'bad_result');
+  const teams = b.teams.slice(0, ST_MAX).filter(Array.isArray).map(t => [nm(t[0]), PID.test(String(t[1] || '')) ? String(t[1]) : null, ['me', 'user', 'cup', 'ai'].includes(t[2]) ? t[2] : 'user']);
+  const reg = await regGet(db, me.id); if (reg && reg.off) return err(409, 'auto_off');
+  const progress = round * 4 + (post ? (phase.done || 0) + 1 : 0);
+  await db.batch([db.prepare(`INSERT INTO ladder_live_state (player_id, lkey, stage, post_done, post_total, revision, progress, opened, at)
+    SELECT ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${live} AND NOT EXISTS (SELECT 1 FROM ladder_reg WHERE player_id = ? AND off = 1)
+    ON CONFLICT (player_id, lkey) DO UPDATE SET stage = excluded.stage, post_done = excluded.post_done, post_total = excluded.post_total, revision = excluded.revision, progress = excluded.progress, at = excluded.at
+    WHERE ended = 0 AND excluded.revision > revision AND excluded.progress >= progress`)
+    .bind(me.id, key, phase.stage, phase.done, phase.total, revision, progress, opened, now, me.id, me.id),
+    db.prepare(`INSERT INTO ladder_live (player_id, lkey, tier, round, post, teams, st, started, at)
+      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${live}
+      AND NOT EXISTS (SELECT 1 FROM ladder_reg WHERE player_id = ? AND off = 1)
+      AND EXISTS (SELECT 1 FROM ladder_live_state WHERE player_id = ? AND lkey = ? AND ended = 0 AND revision = ?)
+      AND NOT EXISTS (SELECT 1 FROM ladder_live_state WHERE player_id = ? AND revision > ?)
+      ON CONFLICT (player_id) DO UPDATE SET started = CASE WHEN lkey = excluded.lkey THEN started ELSE excluded.started END, lkey = excluded.lkey, tier = excluded.tier, round = excluded.round, post = excluded.post, teams = excluded.teams, st = excluded.st, at = excluded.at`)
+      .bind(me.id, key, tier, round, post, JSON.stringify(teams), JSON.stringify(stParse(b.st)), opened, now, me.id, me.id, me.id, key, revision, me.id, revision)]);
   return json(200, { ok: true });
 }
 /* 결과 대조(§10 이상 감지): mismatch = 보낸 순위표와 결과 줄(순위·승패무)이 다르거나, 승 합 ≠ 패 합, 10팀인데 경기 수가 27이 아니거나, 4위 밖 우승.
@@ -134,15 +177,16 @@ export function leagueStmts(db, o) {
   const flag = leagueFlags({ rank: o.rank, teams: o.teams, w: o.w, l: o.l, d: o.d, ps: o.ps, st });
   return [db.prepare(`INSERT INTO ladder_leagues (player_id, lkey, season, tier, rank, teams, w, l, d, ps, champ, runner, top, st, flag, at) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${live}`)
     .bind(o.pid, o.key, o.season, o.tier, o.rank, o.teams, o.w, o.l, o.d, o.ps || '', champ, runner, top, JSON.stringify(st), flag, o.now, o.pid),
-  db.prepare('DELETE FROM ladder_live WHERE player_id = ?').bind(o.pid)];
+  db.prepare(`INSERT INTO ladder_live_state (player_id, lkey, ended, stage, opened, at) SELECT ?, ?, 1, 'complete', ?, ? WHERE ${live} ON CONFLICT (player_id, lkey) DO UPDATE SET ended = 1, stage = 'complete', at = excluded.at`).bind(o.pid, o.key, 0, o.now, o.pid),
+  db.prepare('DELETE FROM ladder_live WHERE player_id = ? AND lkey = ?').bind(o.pid, o.key)];
 }
-export const autoDelete = (db, pid) => ['ladder_reg', 'ladder_live', 'ladder_leagues'].map(t => db.prepare(`DELETE FROM ${t} WHERE player_id = ?`).bind(pid));
+export const autoDelete = (db, pid) => ['ladder_reg', 'ladder_live', 'ladder_live_state', 'ladder_leagues'].map(t => db.prepare(`DELETE FROM ${t} WHERE player_id = ?`).bind(pid));
 
 /* ===== 관리자 한눈 보기(§10) ===== */
 const DAY = 86400e3, j = s => { try { return JSON.parse(s || '[]'); } catch (e) { return []; } };
 const dayStart = now => Date.parse(kstDay(now) + 'T00:00:00+09:00');
 /* 진행 중 리그(최근 3일 안에 소식이 온 것) */
-async function liveRows(db, now) { return ((await db.prepare('SELECT l.player_id AS pid, p.nickname, p.hidden, l.lkey, l.tier, l.round, l.post, l.teams, l.st, l.started, l.at FROM ladder_live l LEFT JOIN players p ON p.id = l.player_id WHERE l.at >= ? ORDER BY l.at DESC LIMIT 200').bind(now - LIVE_SEC).all()).results || []).map(x => Object.assign(x, { teams: j(x.teams), st: j(x.st) })); }
+async function liveRows(db, now) { return ((await db.prepare('SELECT l.player_id AS pid, p.nickname, p.hidden, l.lkey, l.tier, l.round, l.post, s.stage, s.post_done, s.post_total, l.teams, l.st, l.started, l.at FROM ladder_live l LEFT JOIN ladder_live_state s ON s.player_id = l.player_id AND s.lkey = l.lkey LEFT JOIN players p ON p.id = l.player_id WHERE l.at >= ? ORDER BY l.at DESC LIMIT 200').bind(now - LIVE_SEC).all()).results || []).map(x => Object.assign(x, { teams: j(x.teams), st: j(x.st) })); }
 /* 덱마다 나가 있는 진행 중 리그 수(주인 리그 + 상대로 들어간 리그) */
 const activeBy = L => { const m = new Map(); for (const x of L) { const s = new Set([x.pid, ...x.teams.map(t => t[1]).filter(Boolean)]); for (const p of s) m.set(p, (m.get(p) || 0) + 1); } return m; };
 export async function adminDash(db, now, s) {
@@ -152,7 +196,7 @@ export async function adminDash(db, now, s) {
   const reg = { tiers, total: tiers.reduce((a, x) => a + x.n, 0), auto: tiers.reduce((a, x) => a + x.auto, 0), manual: tiers.reduce((a, x) => a + x.manual, 0), over: tiers.reduce((a, x) => a + x.over, 0),
     new_today: await cnt('SELECT COUNT(*) AS n FROM decks WHERE created >= ?', t0), new_7d: await cnt('SELECT COUNT(*) AS n FROM decks WHERE created >= ?', t0 - 6 * DAY), off: await cnt('SELECT COUNT(*) AS n FROM ladder_reg WHERE off = 1') };
   const L = await liveRows(db, now);
-  const live = L.slice(0, 40).map(x => ({ pid: x.pid, nickname: x.nickname, hidden: x.hidden, key: x.lkey, tier: x.tier, round: x.round, post: x.post, decks: x.teams.length, users: x.teams.filter(t => t[2] === 'user').length, at: x.at, started: x.started }));
+  const live = L.slice(0, 40).map(x => ({ pid: x.pid, nickname: x.nickname, hidden: x.hidden, key: x.lkey, tier: x.tier, round: x.round, post: x.post, stage: x.stage || null, postDone: x.post_done, postTotal: x.post_total, decks: x.teams.length, users: x.teams.filter(t => t[2] === 'user').length, at: x.at, started: x.started }));
   const recent = (await db.prepare('SELECT g.id, g.player_id AS pid, p.nickname, g.lkey, g.season, g.tier, g.rank, g.teams, g.w, g.l, g.d, g.ps, g.champ, g.runner, g.top, g.flag, g.at FROM ladder_leagues g LEFT JOIN players p ON p.id = g.player_id ORDER BY g.id DESC LIMIT 20').all()).results || [];
   const br = (await db.prepare(`SELECT pid, nickname, team, tier, points, leagues, wins, rn FROM (SELECT e.player_id AS pid, p.nickname, d.name AS team, e.tier, e.points, e.leagues, e.wins, ROW_NUMBER() OVER (PARTITION BY e.tier ORDER BY ${RANK_ORDER}) AS rn FROM ladder_entries e JOIN players p ON p.id = e.player_id LEFT JOIN decks d ON d.player_id = e.player_id WHERE e.season = ? AND p.hidden = 0 AND e.leagues > 0) WHERE rn <= 10 ORDER BY tier DESC, rn`).bind(s.id).all()).results || [];
   const board = UL_TIERS.map((name, t) => ({ tier: t, name, rows: br.filter(x => x.tier === t).map(x => ({ rank: x.rn, pid: x.pid, nickname: x.nickname, team: x.team, points: x.points, leagues: x.leagues, wins: x.wins })) })).reverse();
@@ -176,8 +220,8 @@ export async function adminDecks(url, db, now) {
 /* 리그 들여다보기: ?id=(끝난 리그) 순위표·팀 기록·선수 줄 | ?live=PID 진행 중 리그 순위·팀 */
 export async function adminLeague(url, db) {
   await ensureAuto(db); const lp = String(url.searchParams.get('live') || '');
-  if (lp) { if (!PID.test(lp)) return err(400, 'bad_json'); const x = await db.prepare('SELECT l.*, p.nickname FROM ladder_live l LEFT JOIN players p ON p.id = l.player_id WHERE l.player_id = ?').bind(lp).first(); if (!x) return err(404, 'not_found');
-    return json(200, { ok: true, live: true, league: { pid: x.player_id, nickname: x.nickname, key: x.lkey, tier: x.tier, round: x.round, post: x.post, teams: j(x.teams), st: j(x.st), started: x.started, at: x.at } }); }
+  if (lp) { if (!PID.test(lp)) return err(400, 'bad_json'); const x = await db.prepare('SELECT l.*, p.nickname, s.stage, s.post_done, s.post_total FROM ladder_live l LEFT JOIN ladder_live_state s ON s.player_id = l.player_id AND s.lkey = l.lkey LEFT JOIN players p ON p.id = l.player_id WHERE l.player_id = ?').bind(lp).first(); if (!x) return err(404, 'not_found');
+    return json(200, { ok: true, live: true, league: { pid: x.player_id, nickname: x.nickname, key: x.lkey, tier: x.tier, round: x.round, post: x.post, stage: x.stage || null, postDone: x.post_done, postTotal: x.post_total, teams: j(x.teams), st: j(x.st), started: x.started, at: x.at } }); }
   const id = qInt(url.searchParams.get('id'), null, 1, 9e15); if (id == null) return err(400, 'bad_json');
   const g = await db.prepare('SELECT g.*, p.nickname FROM ladder_leagues g LEFT JOIN players p ON p.id = g.player_id WHERE g.id = ?').bind(id).first(); if (!g) return err(404, 'not_found');
   let team = null, lines = []; if (await ensureRec(db)) { team = await db.prepare('SELECT team, rank, w, l, d, rs, ra, hr, ps FROM ladder_teams WHERE player_id = ? AND lkey = ?').bind(g.player_id, g.lkey).first(); lines = (await db.prepare('SELECT kind, name, g, pa, ab, h, tb, hr, rbi, sb, ob, sf, outs, er, so, sv, w, wh FROM ladder_lines WHERE player_id = ? AND lkey = ? ORDER BY kind, id').bind(g.player_id, g.lkey).all()).results || []; }

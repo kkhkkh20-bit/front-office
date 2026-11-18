@@ -2,13 +2,13 @@
    리그는 지금처럼 유저 기기에서 돈다. 서버는 결과 요약만 받는다(조작은 신경 쓰지 않는다: src/core/uladder.mjs 머리말). 단계 계산은 서버가 공용 규칙(ulTierAfter)으로 한다 */
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../../src/core/cup.mjs';
 import { UL_TIERS, UL_TEAMS, ulTierAfter, ulSlim, ulDeckMeta, ulMetaAgg, ulCap, ulCapGate } from '../../src/core/uladder.mjs';
-import { json, err, pub, readJson, cached, kstHour, qInt, byteLen } from './http.js';
+import { json, err, pub, readJson, cached, kstHour, kstDay, qInt, byteLen } from './http.js';
 import { PID } from './auth.js';
 import { currentSeason, entryFor } from './season.js';
 import { statStmts, takeUsage, addUsage } from './usage.js';
 import { ladderKvPool, ladderKvTier } from '../uladder.js';
 import { ensureRec, recParse, recStmts, PS_BONUS } from './records.js';
-import { ensureAuto, regCheck, regStmt, leagueStmts } from './ladauto.js';
+import { ensureAuto, regGet, regCheck, regStmt, leagueStmts } from './ladauto.js';
 
 export const DECK_MAX = 40 * 1024, OPP_MAX = 9, BOARD_N = 20, FEED_N = 30, STALE = 45 * 86400e3;
 /* 순위 규칙 하나(srv2 #36): 포인트 많은 순 → 우승(리그 1위) 많은 순 → 그 점수에 먼저 도달한 순(updated 이른 순) → 플레이어 id.
@@ -64,15 +64,18 @@ export async function putDeck(req, db, me, now, env) {
   const bad = capErr(e, tier0); if (bad && !(rg && rg.auto && rg.cap.known && rg.cap.each)) return bad; /* 연봉 상한(사용자 11-17): 쓰기 전에 그 단계 상한을 본다. 자동 등록은 넘어도 받고 그 단계 리그에서만 막는다(상대 고르기·리그 시작) */
   const en = await entryFor(db, s.id, me.id, now, first); if (!en) return err(401, 'auth'); /* 그 사이 지운 플레이어 */
   const ovr = e.ovr && typeof e.ovr === 'object' ? e.ovr : null;
-  await db.batch([
+  const consent = rg ? " AND NOT EXISTS (SELECT 1 FROM ladder_reg WHERE player_id = ? AND off = 1)" : "";
+  const wrote = await db.batch([
     ...(rg ? [regStmt(db, me.id, rg, now)] : []),
-    db.prepare(`INSERT INTO decks (player_id, name, year, ovr, ovr_json, tier, h, body, bytes, created, at) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${live} ON CONFLICT (player_id) DO UPDATE SET name = excluded.name, year = excluded.year, ovr = excluded.ovr, ovr_json = excluded.ovr_json, tier = excluded.tier, h = excluded.h, body = excluded.body, bytes = excluded.bytes, at = excluded.at`)
-      .bind(me.id, e.name, e.year | 0, ovr ? (ovr.t | 0) : 0, ovr ? JSON.stringify(ovr) : null, en.tier, e.h, body, bytes, now, now, me.id),
-    ...(String(b.wid || '').match(/^w[0-9a-f]{16}$/) ? [db.prepare('UPDATE players SET wid = ? WHERE id = ?').bind(b.wid, me.id)] : []),
+    db.prepare(`INSERT INTO decks (player_id, name, year, ovr, ovr_json, tier, h, body, bytes, created, at) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${live}${consent} ON CONFLICT (player_id) DO UPDATE SET name = excluded.name, year = excluded.year, ovr = excluded.ovr, ovr_json = excluded.ovr_json, tier = excluded.tier, h = excluded.h, body = excluded.body, bytes = excluded.bytes, at = excluded.at`)
+      .bind(me.id, e.name, e.year | 0, ovr ? (ovr.t | 0) : 0, ovr ? JSON.stringify(ovr) : null, en.tier, e.h, body, bytes, now, now, me.id, ...(rg ? [me.id] : [])),
+    ...(String(b.wid || '').match(/^w[0-9a-f]{16}$/) ? [db.prepare('UPDATE players SET wid = ? WHERE id = ?'+consent).bind(b.wid, me.id, ...(rg ? [me.id] : []))] : []),
     ...statStmts(db, now, Object.assign(had ? { decks_upd: 1 } : { decks_new: 1 }, takeUsage())),
   ]);
+  /* 검사 뒤 끄기 요청이 먼저 확정되면 같은 batch의 쓰기도 막는다. 거절된 덱을 성공으로 알리거나 구성 요약을 되살리지 않는다. */
+  if (!wrote[rg ? 1 : 0]?.meta?.changes) { const stopped = await regGet(db, me.id); return err(stopped?.off ? 409 : 401, stopped?.off ? 'auto_off' : 'auth'); }
   await metaPut(db, me.id, e, now); /* 덱 구성 요약(래더 v2 메타, 사용자 11-17): 실패해도 덱 등록은 된다 */
-  return json(200, { ok: true, season: s.id, name: e.name, ovr, tier: en.tier, bytes, h: e.h, auto: rg ? rg.auto : null, cap_ok: rg ? rg.capOk : !bad, pay_x: rg ? rg.payX : null });
+  return json(200, { ok: true, at: now, man_day: rg&&rg.man ? kstDay(now) : null, season: s.id, name: e.name, ovr, tier: en.tier, bytes, h: e.h, auto: rg ? rg.auto : null, cap_ok: rg ? rg.capOk : !bad, pay_x: rg ? rg.payX : null });
 }
 
 /* 연봉 상한 검사(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 화면과 같은 공용 규칙(ulCap).
@@ -208,9 +211,9 @@ export async function meView(db, me, now) {
   const entry = await entryView(db, en, me); entry.fresh = !!en.fresh; /* 순위(srv2 #36·#37): 순위표와 같은 규칙. 리그를 안 마쳤거나 숨김이면 rank null(화면은 '순위 없음') */
   const past = (await db.prepare("SELECT season, tier, best_tier, points, leagues, titles FROM ladder_entries WHERE player_id = ? AND season < ? ORDER BY season DESC LIMIT 10").bind(me.id, s.id).all()).results || [];
   const recent = (await db.prepare('SELECT lkey AS key, season, tier, to_tier, rank, teams, w, l, d, delta, at FROM league_results WHERE player_id = ? ORDER BY id DESC LIMIT 10').bind(me.id).all()).results || [];
-  const titles = past.flatMap(x => JSON.parse(x.titles || '[]'));
+  const titles = past.flatMap(x => JSON.parse(x.titles || '[]')), reg = await regGet(db, me.id);
   return json(200, { ok: true, player: { id: me.id, nickname: me.nickname, hidden: !!me.hidden }, season: { id: s.id, starts: s.starts, ends: s.ends },
-    entry,
+    entry, reg: reg ? {man_day:reg.man_day,at:reg.at,off:reg.off,auto:reg.auto} : null,
     deck: deck ? { name: deck.name, year: deck.year, ovr: deck.ovr_json ? JSON.parse(deck.ovr_json) : null, tier: deck.tier, h: deck.h, at: deck.at } : null,
     past: past.map(x => ({ season: x.season, tier: x.tier, best_tier: x.best_tier, points: x.points, leagues: x.leagues })), titles, recent });
 }
@@ -239,7 +242,7 @@ let metaOk = false; export function _metaReset() { metaOk = false; }
 /* 표가 없으면(0002 SQL을 아직 안 돌린 서버) 한 번 만든다. 같은 문장(IF NOT EXISTS)이라 여러 번 해도 안전 */
 export async function ensureMeta(db) { if (metaOk) return true; try { await db.prepare(META_SQL).run(); metaOk = true; } catch (e) { metaOk = false; } return metaOk; }
 export async function metaPut(db, pid, e, now) { try { if (!(await ensureMeta(db))) return; const m = ulDeckMeta(e); if (!m) return;
-  await db.prepare(`INSERT INTO deck_meta (player_id, sum, at) SELECT ?, ?, ? WHERE ${live} ON CONFLICT (player_id) DO UPDATE SET sum = excluded.sum, at = excluded.at`).bind(pid, JSON.stringify(m), now, pid).run(); } catch (x) {} }
+  await db.prepare(`INSERT INTO deck_meta (player_id, sum, at) SELECT ?, ?, ? WHERE ${live} AND EXISTS (SELECT 1 FROM decks WHERE player_id = ? AND h = ?) ON CONFLICT (player_id) DO UPDATE SET sum = excluded.sum, at = excluded.at`).bind(pid, JSON.stringify(m), now, pid, pid, cupEntryHash(e)).run(); } catch (x) {} }
 export async function meta(url, db, now) {
   const q = url.searchParams.get('tier'), all = q == null || q === 'all', tier = all ? null : qInt(q, 0, 0, TOP), since = now - STALE, g = await cacheGen(db, now);
   return cached(url, `meta/g${g}/${all ? 'all' : tier}/${Math.floor(now / (META_SEC * 1000))}`, META_SEC, async () => {

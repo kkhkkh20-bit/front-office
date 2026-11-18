@@ -1,7 +1,7 @@
 /* 3연전 리그(사용자 11-18): 순위표(최근 5·연속·기대승) · 박스 스코어 · 팀 기록 · 개인 순위 · 포스트시즌 대진 · 소식 · 시상 · 기록실. 본게임 표(table.ls · table.box · .ltiles) 위에 칸 맞춤만 */
 .ulx .ul-mid{container-type:inline-size}.ulx .ul-mid .itabs{margin-bottom:8px}
 .ulx .ul-stx{font-size:12px}.ulx .ul-stx th{white-space:nowrap;font-size:11px;color:var(--muted)}.ulx .ul-stx td small{font-size:10px}.ulx .ul-stx td:nth-child(2){white-space:nowrap}.ulx .ul-stx td:nth-child(2) .lnk{display:inline-block;max-width:8em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}.ulx .ul-stx td,.ulx .ul-stx th{padding:3px 4px}
-@container (max-width:600px){.ulx .ul-stx .o1,.ulx .ul-stx td:nth-child(2) .ul-k{display:none}}@container (max-width:420px){.ulx .ul-stx .o2{display:none}.ulx .ul-stx td:nth-child(2) .lnk{max-width:6.5em}}
+@container (max-width:600px){.ulx .ul-stx .o1,.ulx .ul-stx td:nth-child(2) .ul-k:not(.ul-k-cup):not(.ul-k-up){display:none}}@container (max-width:420px){.ulx .ul-stx .o2{display:none}.ulx .ul-stx td:nth-child(2) .lnk{max-width:6.5em}}
 .ulx .ul-stx tr.ul-pscut td{border-bottom:2px dashed color-mix(in srgb,var(--warn,#e3b44c) 70%,transparent)}
 .ulx .ul-l5{display:inline-flex;gap:2px;vertical-align:middle}.ulx .ul-l5 i{width:7px;height:7px;border-radius:50%;background:var(--line)}.ulx .ul-l5 i.w{background:var(--good,#4fc27c)}.ulx .ul-l5 i.l{background:var(--bad,#ef6b5e)}.ulx .ul-l5 i.t{background:var(--muted,#8aa)}
 .ulx .ul-gs{all:unset;cursor:pointer;display:inline-block;margin:0 3px 2px 0;padding:0 6px;border-radius:999px;border:1px solid var(--line);font:600 11px/1.6 var(--f-num,monospace);color:var(--ink,#e2e8ed)}

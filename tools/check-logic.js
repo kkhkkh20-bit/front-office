@@ -3,6 +3,10 @@
  사용: node tools/check-logic.js   (dist/engine.js 필요: bash build.sh). 일부만: ONLY=감사 node tools/check-logic.js
  주의: 시나리오는 큰 백틱 문자열 안에 있다. 안쪽에서 백틱을 쓰지 말고, 정규식의 \[ 같은 역슬래시는 두 번 써야 한다(한 번이면 사라져 엉뚱한 정규식이 된다). 가능하면 includes·startsWith를 쓴다. */
 const fs=require('fs'), path=require('path');
+globalThis.__promotion1021Ui=()=>{const s=fs.readFileSync(path.join(__dirname,'..','src/ui/uladder/04_uladder_series_ui.js'),'utf8');return 'const esc=x=>String(x??""),ulKind=t=>t.kind,ulPct=n=>n.toFixed(3),ulSg=n=>String(n);\n'+s.slice(s.indexOf('function ulL5Html('),s.indexOf('/* ---- 일정·결과'))+'\n;({ulStandXHtml})';};
+
+globalThis.__ladderLive1019Ui=()=>fs.readFileSync(path.join(__dirname,'../src/ui/uladder/01_uladder_ui.js'),'utf8');
+globalThis.__ladderPhase1020Ui=()=>fs.readFileSync(path.join(__dirname,'../src/ui/uladder/05_uladder_auto.js'),'utf8');
 const ENGINE=path.join(__dirname,'..','dist','engine.js'); if(!fs.existsSync(ENGINE)){ console.error('dist/engine.js가 없습니다. bash build.sh를 먼저 실행하세요.'); process.exit(2); }
 { let a=11; globalThis.__seed=v=>{ a=v; }; globalThis.__rngState=()=>a; /* 통계 시나리오가 같은 난수로 비교할 수 있게 */ Math.random=()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 /* check-logic.js host preamble; __dirname there is the repository tools directory. */
@@ -44,7 +48,7 @@ globalThis.__ladder988Ui=()=>{const a=fs.readFileSync(path.join(__dirname,'..','
 /* END valuation-978-host.js */
 
 /* contracts-978-host.js */
-globalThis.__contracts978KeySrc=()=>{const s=fs.readFileSync(path.join(__dirname,'..','src/ui/uladder/01_uladder_ui.js'),'utf8');return s.slice(s.indexOf('function ulV1DeckKey('),s.indexOf('async function ulV1Sync('))+'\nulV1DeckKey';};
+globalThis.__contracts978KeySrc=()=>{const s=fs.readFileSync(path.join(__dirname,'..','src/ui/uladder/01_uladder_ui.js'),'utf8'),a=fs.readFileSync(path.join(__dirname,'..','src/ui/uladder/05_uladder_auto.js'),'utf8');return a.split('\n').find(l=>l.startsWith('const ulAutoIntentKey='))+'\n'+s.slice(s.indexOf('function ulV1DeckKey('),s.indexOf('async function ulV1Sync('))+'\nulV1DeckKey';};
 
 /* END contracts-978-host.js */
 
@@ -1770,7 +1774,7 @@ T('[래더계약검수 #982] 실제 정규 경기의 구단명은 재등록과 J
 T('[래더계약검수 #982] 실제 포스트시즌 구단명도 다음 덱 편집으로 바뀌지 않는다',()=>{const L=lc982Setup();L.next=L.sched.length;L.post={seeds:[0,1,2,3],S:[{id:'SF1',k:'s',a:0,b:1,best:3,g:[],bx:[],w:null}],next:0,champ:null,runner:null};const s=ulRunPost(L);ok(s.nm?.[0]==='봄 구단','PS 당시 이름 없음');const score=JSON.stringify(s.g),e=JSON.parse(JSON.stringify(uld().deck.e));e.name='가을 구단';ok(!ulEditDeck(e),'PS 뒤 편집');const pack=JSON.parse(JSON.stringify(ulLgPack(L)));ok(pack.post.S[0].nm[0]==='봄 구단'&&JSON.stringify(s.g)===score,'PS 이름/점수 변경');});
 T('[래더계약검수 #982] 옛 이름 자료가 없는 이력 pack은 추정하거나 상태 난수를 바꾸지 않는다',()=>{const L=lc982Setup();ulRunSeries(L);delete L.series[0].nm;const raw=JSON.stringify(G),rng=__rngState(),a=JSON.stringify(ulLgPack(L)),b=JSON.stringify(ulLgPack(L));ok(a===b&&JSON.stringify(G)===raw&&__rngState()===rng,'옛 pack 조회 변경');ok(!JSON.parse(a).series[0].nm,'옛 이름 추정');});
 T('[래더계약검수 #982] 경기 이름 이력 사본은 원본과 분리되고 본게임 난수를 소비하지 않는다',()=>{const L=lc982Setup(),rng=__rngState();const s=ulRunSeries(L),pack=ulLgPack(L);ok(__rngState()===rng,'정규 경기 본게임 난수 소비');ok(Array.isArray(s.nm),'원본 당시 이름');const n=s.nm[0];pack.series[0].nm[0]='다른 사본';ok(s.nm[0]===n,'pack 이름 alias');});
-T('[래더계약검수 #991] 실제 서버 확인 키는 전송 덱과 세계 자동 참가를 구분하고 본 상태를 바꾸지 않는다',()=>{const L=lc982Setup(),U=uld();let enabled=true;const ulAutoOn=()=>enabled,key=eval(__contracts978KeySrc());const k=key(U),raw=JSON.stringify(G),rng=__rngState();ok(key(U)===k&&JSON.stringify(G)===raw&&__rngState()===rng,'동일 키/조회 부작용');U.deck.e.h='오래된 hash';ok(key(U)===k,'저장 hash를 실제 payload보다 신뢰');const e=JSON.parse(JSON.stringify(U.deck.e));[e.ln[0],e.ln[1]]=[e.ln[1],e.ln[0]];ok(key(U,e)!==k,'실제 수정 payload 무시');const w=G.wid;G.wid=w+'-다른세계';ok(key(U)!==k,'다른 세계 무시');G.wid=w;U.deck.auto=1;const on=key(U);enabled=false;ok(key(U)!==on,'자동 참가 끄기 무시');});
+T('[래더계약검수 #991] 실제 서버 확인 키는 전송 덱과 세계 자동 참가를 구분하고 본 상태를 바꾸지 않는다',()=>{const L=lc982Setup(),U=uld();let enabled=true,intent='0';const UL_INTENT_K='fo-ul-auto-intent',ulLs=()=>intent,ulAutoOn=()=>enabled,key=eval(__contracts978KeySrc());const k=key(U),raw=JSON.stringify(G),rng=__rngState();ok(key(U)===k&&JSON.stringify(G)===raw&&__rngState()===rng,'동일 키/조회 부작용');U.deck.e.h='오래된 hash';ok(key(U)===k,'저장 hash를 실제 payload보다 신뢰');const e=JSON.parse(JSON.stringify(U.deck.e));[e.ln[0],e.ln[1]]=[e.ln[1],e.ln[0]];ok(key(U,e)!==k,'실제 수정 payload 무시');const w=G.wid;G.wid=w+'-다른세계';ok(key(U)!==k,'다른 세계 무시');G.wid=w;U.deck.auto=1;const on=key(U);enabled=false;ok(key(U)!==on,'자동 참가 끄기 무시');enabled=true;const prior=key(U);intent='새참가의사';ok(key(U)!==prior,'같은 ON의 새 참가 의사 무시');});
 
 
 /* 미래978~992: 제품 편집 없이 4df4 고정 엔진과 실제 UI 함수/액션을 재현한다. */
@@ -9496,6 +9500,18 @@ T('[올스타] 시상·올스타 역대는 해마다 MVP·신인왕·골든글�
   const s=JSON.stringify(G), r=__rngState(); const R=awardHistoryRows(); ok(JSON.stringify(G)===s&&__rngState()===r,'역대 조회가 상태·난수를 바꿈');
   const a=R.find(o=>o.y===y), b=R.find(o=>o.y===y-1); ok(R[0].y===y&&a&&b,'연도별 줄 없음'); ok(a.as&&a.as.st['나눔'].length>=10&&a.as.game&&a.as.hrd,'올해 올스타 줄 '+JSON.stringify(a.as&&{n:a.as.n,g:!!a.as.game}));
   ok(b.mvp.id===p.id&&b.roy.id===q.id&&b.gg.length===2&&b.gg[0].k==='C','지난해 시상 줄'); ok(b.ps&&b.ps.po.id===p.id,'시리즈 MVP 줄'); ok(!a.mvp&&!a.gg,'발표 전 시상이 보임'); });
+function pr1021Fixture(tier,champ){const e=cupAiEntries(1,'ul')[0],teams=Array.from({length:10},(_,i)=>({key:'test'+i,name:'순위팀'+i,kind:i?'ai':'me',e})),series=[];for(let a=0;a<10;a++)for(let b=a+1;b<10;b++)series.push({r:1,a,b,g:[[5,2,9],[5,2,9],[5,2,9]]});return {tier,teams,series,post:{seeds:[0,1,2,3],champ,runner:champ===2?0:2},bat:{},pit:{},te:teams.map(()=>0),news:[],exp:FrontOfficeCore.ulExpect(teams.map(t=>t.e.ovr.t))};}
+T('[추가검수 #1021] 정규3위 우승팀 최종순위에도 실제 승격과 같은 표시가 나온다',()=>{const D=pr1021Fixture(1,2),ui=eval(__promotion1021Ui()),before=JSON.stringify(D),rng=__rngState(),h=ui.ulStandXHtml(D),row=h.match(/<tr class="[^\\"]*"><td class="num">3<\\/td>[\\s\\S]*?<\\/tr>/)[0];ok(FrontOfficeCore.ulTierAfter(1,3,10,'c').move==='up','실제 승격 규칙');ok(row.includes(' up')&&row.includes('우승')&&row.includes('승격'),'우승팀 행 승격 표시 없음');ok(h.includes('우승팀')&&h.includes('승격'),'우승 승격 안내 없음');ok(JSON.stringify(D)===before&&__rngState()===rng,'조회 상태/난수 변경');});
+T('[추가검수 #1021] 레전드 우승은 잔류하고 루키 강등선은 표시하지 않는다',()=>{const ui=eval(__promotion1021Ui()),D=pr1021Fixture(4,2),h=ui.ulStandXHtml(D),row=h.match(/<tr class="[^\\"]*"><td class="num">3<\\/td>[\\s\\S]*?<\\/tr>/)[0];ok(!row.includes(' up')&&!row.includes('>승격<')&&row.includes('우승'),'최고 단계 우승 오표시');ok(h.includes('레전드')&&h.includes('잔류'),'레전드 잔류 안내');const low=ui.ulStandXHtml(pr1021Fixture(0,0));ok(!low.includes('class="ul-line dn"'),'루키 실제 강등 없음');});
+T('[추가검수 #1021] 옛 완료리그는 결과의 당시 단계로 판정하며 원본 저장은 바꾸지 않는다',()=>{const ui=eval(__promotion1021Ui()),D=pr1021Fixture(4,2);delete D.tier;const before=JSON.stringify(D),h=ui.ulStandXHtml(D,4);ok(!h.includes('>승격<')&&h.includes('레전드'),'옛 레전드 결과 단계 유실');ok(JSON.stringify(D)===before,'옛 자료 조회 변경');});
+
+// Sync regression block intended for parent's check-logic integration.
+T('[검수 #1017] 현재1군 생성실패는 기존덱·진행리그를 보존하고 원인을 저장한다 [래더자동후속검수]',()=>{fresh();uld();const t=Date.UTC(2026,10,20,3),p=ulAutoPlan(t,true);ok(p.x,'준비현재1군실패');ulAutoDone(p,'ok','',t);const U=G.uld,before=JSON.stringify(U.deck),league=JSON.stringify(U.league),rng=__rngState(),old=ulAutoEntry;let q;try{ulAutoEntry=()=>null;q=ulAutoPlan(t+864e5);}finally{ulAutoEntry=old;}ok(q.skip==='roster'&&!!U.ar.rosterErr,'현재구단을noteam으로오인/실패사유누락');ok(JSON.stringify(U.deck)===before&&JSON.stringify(U.league)===league&&__rngState()===rng,'실패가덱/리그/난수변경');});
+T('[검수 #1018] 정상기기갱신은 지난서버거절을 지우고 연결실패는 대기한다 [래더자동후속검수]',()=>{fresh();const t=Date.UTC(2026,10,20,3),p=ulAutoPlan(t,true),U=G.uld;ulAutoDone(p,'reject','지난날거절',t);ok(U.ar.err==='지난날거절','준비거절');ulAutoDone(p,'same','',t+864e5);ok(!U.ar.err&&!U.ar.pend,'정상기기갱신후지난거절잔류');ulAutoDone(p,'fail','',t+864e5);ok(U.ar.pend===1,'연결실패대기누락');});
+
+T('[검수 #1019] 실제 그만두기 동작은 해당 리그 종료를 알리고 로컬 경력은 보존한다 [래더자동추가검수]',()=>{const src=__ladderLive1019Ui(),A0={},L={net:1,nk:'world.quit1019'},U={league:L,car:{w:83,l:59},hist:[{id:1}],last:{id:0}},raw=JSON.stringify([U.car,U.hist,U.last]),calls=[];const api=new Function('A','uld','confirm','ulLiveEnd','save','render','G',src+';return A;')(A0,()=>U,()=>true,x=>{calls.push(x);return true;},()=>{},()=>{},{});api.ulQuit();ok(calls.length===1&&calls[0]===L&&!U.league,'실제 그만두기의 종료 통지 또는 리그 정리가 누락');ok(JSON.stringify([U.car,U.hist,U.last])===raw,'그만두기가 기존 경력과 결과를 변경');});
+T('[검수 #1020] 진행 보고 단계는 준결승 전과 1차 준결승 완료 결승 전 결승 완료를 구분한다 [래더자동추가검수]',()=>{const src=__ladderPhase1020Ui(),phase=new Function('A','setInterval','setTimeout','document',src+';return ulLivePhase;')({},()=>{},()=>{},{addEventListener(){}}),L={next:45,sched:Array(45),post:{next:0}},got=[];for(let n=0;n<4;n++){L.post.next=n;got.push(phase(L));}ok(got.map(x=>x.stage).join(',')==='semi-ready,semi-one-done,final-ready,complete','완료한 시리즈별 진행 단계가 같음');ok(got.every((x,i)=>x.postDone===i&&x.postTotal===3),'시리즈 진행 수가 잘못됨');L.post=null;ok(phase(L).stage==='regular-done','정규 완료/준결승 전 단계가 빠짐');});
+
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
