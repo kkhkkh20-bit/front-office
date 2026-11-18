@@ -1,10 +1,10 @@
 /* ---------- 역사·시상 ---------- */
 function histView(){
-  const ys=Object.keys(G.awards||{}).map(Number).sort((a,b)=>b-a); const y=UI.hy&&G.awards&&G.awards[UI.hy]?UI.hy:ys[0];
-  const A=y?G.awards[y]:null;
+  const ys=[...new Set([...Object.keys(G.awards||{}),...Object.keys(G.psMvp||{}),...awardHistoryRows().filter(r=>r.ps).map(r=>r.y)].map(Number).filter(Number.isInteger))].sort((a,b)=>b-a); const y=ys.includes(+UI.hy)?+UI.hy:ys[0];
+  const A=y?(G.awards||{})[y]:null;
   const ggName=k=>k.startsWith('OF')?'외야수':k==='P'?'투수':POSK[k];
   const race=G.sea&&G.sea.y===G.year&&!(G.awards||{})[G.year]?awbRace(G.year):''; /* 시즌 중 MVP 레이스·신인왕 경쟁 */
-  const aw2=race+(A?`<div class="chips">${ys.map(v=>`<button data-a="hy" data-v="${v}" class="${v===y?'on':''}">${v}</button>`).join('')}</div>${awBoard(A,y)}`:race?'':'<p class="small muted">첫 시즌이 끝나면 시상 결과가 쌓입니다.</p>'); /* 시상 보드(45b_award_board) */
+  const aw2=race+(y?`<div class="chips">${ys.map(v=>`<button data-a="hy" data-v="${v}" class="${v===y?'on':''}">${v}</button>`).join('')}</div>${A?awBoard(A,y):awbPS(y)}`:race?'':'<p class="small muted">첫 시즌이 끝나면 시상 결과가 쌓입니다.</p>'); /* 시상 보드(45b_award_board) */
   const all=careerBoard(); /* 현역·FA·무적·해외·은퇴를 한 기준으로(검수 11-09zp) */ const open=x=>G.players[x.id]||(G.arch&&G.arch[x.id]);
   const board=(label,f,fmt,flt)=>`<div class="ldr"><div class="eyebrow">${label}</div>${all.filter(flt||(()=>true)).sort((a,b)=>f(b)-f(a)).slice(0,8).map((x,i)=>`<div class="ldr-r"><i>${i+1}</i><span>${open(x)?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.name)}</button>`:esc(x.name)} <span class="small muted">${x.act?tshort(x.t):x.lab}</span></span><b class="num">${fmt(f(x))}</b></div>`).join('')}</div>`;
   const hof=hofList();

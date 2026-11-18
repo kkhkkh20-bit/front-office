@@ -25,10 +25,11 @@ function rivalAfterGame(day,h,a,g,post){
   const it=news('경기',title,`${intro}\n이번 경기 ${tname(h)} ${g.score.h}:${g.score.a} ${tname(a)}. 두 구단은 지금까지 ${r.games}번 맞붙었습니다.`,0,{tid:[h,a].includes(G.user)?G.user:h});
   if(it)r.lastNews=day;
 }
+const ASPOS=Object.freeze(['SP','MR','CP','C','1B','2B','3B','SS','OF','OF','OF','DH']);
 function allStarPool(y){
   const L=[];
   for(const p of Object.values(G.players)){
-    if(p.team==null||p.prospect||p.ys||p.joinY>y||p.injOut>0||p.susp>G.day||isAway(p)||p.frehab)continue; /* 재활 명단(부상 대체 복귀 대기)도 출전 불가(검수 11-08) */ /* 육성선수는 1군 등록이 안 돼 올스타에 못 나간다(검수 11-09u) */
+    if(!asgCanPlay(p,null,G.day,y))continue; /* 재활 명단(부상 대체 복귀 대기)도 출전 불가(검수 11-08) */ /* 육성선수는 1군 등록이 안 돼 올스타에 못 나간다(검수 11-09u) */
     const h=seasonTotal(p,y,'1군');if(!h||(p.isP?(h.outs||0)<30:(h.pa||0)<50))continue;
     const w=warOf(h,p),rate=p.isP?pRate(h):bRate(h);
     const stats=p.isP?w*.8+(h.w||0)*.04+(h.sv||0)*.025+clamp(5-rate.era,-2,3)*.15:w*.8+(h.hr||0)*.035+(h.h||0)*.005+(h.sb||0)*.01;
@@ -47,7 +48,7 @@ function allStarSelect(){
   for(const side of ['나눔','드림']){
     const P=pool.filter(x=>allStarSide(x.p.team)===side),L=[],used=new Set();
     const add=(x,starter,reason,slot)=>{if(!x||used.has(x.p.id))return;used.add(x.p.id);L.push(allStarSnapshot(x,starter,reason,slot));};
-    const SL=['SP','MR','CP','C','1B','2B','3B','SS','OF','OF','OF','DH'];
+    const SL=ASPOS;
     SL.forEach((slot,i)=>{ const later=SL.slice(i+1), fp=P.filter(x=>x.p.isP&&!used.has(x.p.id));
       const x=P.find(x=>!used.has(x.p.id)&&x.slot===slot)||(['SP','MR','CP'].includes(slot)?fp.find(x=>!later.includes(x.slot))||fp[0]:slot==='DH'?P.find(x=>!x.p.isP&&!used.has(x.p.id)):null); /* 빈 투수 자리는 뒤 자리(마무리 등)에 쓸 후보를 남기고 채운다(검수 11-09zq) */
       add(x,true,'팬·선수 평가를 합친 베스트12',x&&x.slot!==slot?slot:null); /* 다른 자리로 채우면 맡은 역할로 기록(지명타자 검수 11-08, 투수 검수 11-09zq) */
@@ -67,24 +68,25 @@ function allStarSelect(){
 }
 function allStarDaily(){
   try{ asgVoteDaily(); }catch(e){ console.error(e); } /* 팬 투표 중간 발표(93b_all_star_game) */
-  if(!G.cal||!G.sea||G.sea.y!==G.year||G.day<G.cal.asg-14||G.day>G.cal.asg+1)return;
-  const A=allStarSelect();
-  if(!A.played)for(const side of ['나눔','드림'])for(const x of A.teams[side]){ const p=G.players[x.id]; if(p&&p.team!=null&&allStarSide(p.team)===side&&x.t!==p.team)x.t=p.team; } /* 같은 진영 안 이적: 다음 날부터 지금 구단으로(검수 11-06, 11-09zq) */
-  if(G.day>=G.cal.asg-1&&!A.played){ /* 행사가 끝나면 명단·수상 이력은 확정 */
+  if(!G.cal||!G.sea||G.sea.y!==G.year||G.day<G.cal.asg-14)return; const prior=(G.allStars||{})[G.year];if(G.day>G.cal.asg+1&&!asgRetryDue(prior))return;
+  const A=allStarSelect();A.withdrawn=A.withdrawn||[];if(asgRetryDue(A)){A.evAttempt=A.evAttempt??G.day;if(!A.game){A.played=false;delete A.evDone;}}
+  if(!A.game&&!A.played)for(const side of ['나눔','드림'])for(const x of A.teams[side]){ const p=G.players[x.id]; if(p&&p.team!=null&&allStarSide(p.team)===side&&x.t!==p.team)x.t=p.team; } /* 같은 진영 안 이적: 다음 날부터 지금 구단으로(검수 11-06, 11-09zq) */
+  if(G.day>=G.cal.asg-1&&!A.game&&!A.played){ /* 행사가 끝나면 명단·수상 이력은 확정 */
     const pool=allStarPool(G.year), left=Math.max(0,G.cal.asg-G.day), ev=Math.max(G.day,G.cal.asg); /* 자격은 행사 당일 기준: 그날 돌아오는 선수는 출전(검수 11-09zq) */
     for(const side of ['나눔','드림'])for(let i=0;i<A.teams[side].length;i++){
       const old=A.teams[side][i],p=G.players[old.id];
-      if(p&&p.team!=null&&!p.ys&&allStarSide(p.team)===side&&!(p.injOut>left)&&!(p.susp>ev)&&!isAway(p)&&!p.frehab)continue;
+      if(asgCanPlay(p,side,ev,A.y))continue;
       const used=new Set([...Object.values(A.teams).flat(),...A.withdrawn].map(x=>x.id)); /* 한 해 올스타 선정은 한 번: 앞서 빠진 선수는 다른 진영 대체로도 뽑지 않는다(검수 11-09zq) */
-      const F=f=>pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&f(x)), needRep=allStarSide(old.t)===side&&!A.teams[side].some((y,j)=>j!==i&&y.t===old.t);
+      const F=f=>pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&asgCanPlay(x.p,side,ev,A.y)&&f(x)), needRep=allStarSide(old.t)===side&&!A.teams[side].some((y,j)=>j!==i&&y.t===old.t);
       const x=(needRep&&(F(x=>x.p.team===old.t&&x.slot===old.slot)||F(x=>x.p.team===old.t&&!!x.p.isP===old.isP)||F(x=>x.p.team===old.t)))||F(x=>x.slot===old.slot)||F(x=>!!x.p.isP===old.isP); /* 구단 대표가 0명이 되면 같은 구단 후보 먼저(검수 11-09zq) */
-      if(!x){ A.withdrawn.push({...old,replacement:null,day:G.day}); A.teams[side].splice(i,1); i--; continue; } /* 대체 후보가 없어도 출전 불가 선수는 확정 명단에서 뺀다(검수 11-06) */
+      if(!x){ A.withdrawn.push({...old,replacement:null,day:G.day,pending:true}); A.teams[side].splice(i,1); i--; continue; } /* 대체 후보가 없어도 출전 불가 선수는 확정 명단에서 뺀다(검수 11-06) */
       const next=allStarSnapshot(x,old.starter,'출전 불가 선수의 대체 추천',old.slot,G.day);A.withdrawn.push({...old,replacement:next.id,day:G.day});A.teams[side][i]=next;
       const label=`${G.year} 올스타(${side})`;if(!(x.p.aw||[]).includes(label))addAward(x.p,label);
-      news('선수',`${side} 올스타 ${next.name}, ${old.name} 대신 선정`,`${old.name}의 출전이 어려워 ${tshort(next.t)} ${next.name}을 대체 선수로 선정했습니다.`,0,{tid:next.t,ref:next.id});
+
     }
+    asgFillPending(A,pool,ev);
   }
-  if(G.day>=G.cal.asg&&!A.played){const resume=Object.keys(G.cal.sched).map(Number).filter(d=>d>G.cal.asg+1).sort((a,b)=>a-b)[0];A.played=true;try{ asgEvent(A); }catch(e){ console.error(e); } /* 홈런 더비·올스타전(따로 씨앗을 둔 난수, 시즌 기록 밖) */note('일정',`${G.year} 나눔·드림 올스타 행사가 열렸습니다.${resume?' '+dmd(resume)+'부터 정규시즌 일정이 재개됩니다.':''}`);}
+  asgReplacementNews(A);if(asgRetryDue(A))try{asgEvent(A);}catch(e){console.error(e);}
 }
 /* ===== 우승·가을야구 순간 기사 =====
    횟수·연도는 G.history(이 리그에서 치른 시즌, 올해는 아직 들어가기 전)에서만 센다. 우리 구단 우승 기사는 champCelebrate가 쓴다. */
