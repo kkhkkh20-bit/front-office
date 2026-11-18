@@ -3901,6 +3901,14 @@ T('[카페 11-08] 감독이 정리 요청한 선수는 2군 말소로도 들어�
   const p=playersOf(G.user).find(x=>x.e1&&!x.foreign); const r=mreqAdd('out',{pid:p.id},G.day+30); r.st='open'; const msg=reqEntry(p.id,false); ok(!p.e1&&r.st==='done','정리 요청 선수 말소 거절: '+msg);
   const q=playersOf(G.user).find(x=>x.e1&&!x.foreign&&x!==p); mreqAsk(mreqAdd('out',{pid:q.id},G.day+30),'정리','',[{l:'a'},{l:'b'},{l:'c'},{l:'d'}],3,q.id); const e=G.evs.find(x=>x.k==='mreq'&&!x.done); const rr=evPick(e.id,2,true); ok(!q.e1,'2군으로 내린다 선택이 말소하지 않음: '+rr);
   const op=G.teams.find(t=>t.id!==G.user).id; const pool=sdPool(op); if(pool.length>SD_PROT){ const star=pool.sort((a,b)=>ovr(b)-ovr(a))[0]; star.sal=150000; ok(sdProtAI(op).includes(star.id),'연봉이 비싼 최고 선수를 보호하지 않음'); } });
+T('[피드백 11-18 감독 안건] 감독이 정리를 요청한 선수를 회의에서 말소하면 관계가 떨어지지 않는다(요청 거절 뒤에도 같은 기준)',()=>{ fresh(); G.day=G.cal.open+40; G.entryY=G.year; for(const t of G.teams)setEntry(t.id); const m=G.mgr[G.user]; m.interim=false; m.ego=95; m.rel=20; mmem(m).forced=5;
+  const H=playersOf(G.user).filter(x=>x.e1&&!x.foreign&&!x.isP); const p=H[0], q=H[1];
+  mreqAsk(mreqAdd('out',{pid:p.id},G.day+30),'정리','',[{l:'a'},{l:'b'},{l:'c'},{l:'d'}],3,p.id); const e=G.evs.find(x=>x.k==='mreq'&&!x.done); const r0=m.rel; evPick(e.id,3,true); ok(m.rel<r0,'정리 요청 거절인데 관계 변화 없음');
+  ok(mgrOutReq(p)&&mgrOutReq(p).st==='no','거절한 요청도 감독 입장으로 남아야 함');
+  const S=mcf(); const ag=()=>evNew('magd','주간 회의 안건','s',[{l:'down'},{l:'less'},{l:'none'}],{from:'감독실',def:2,exp:3,data:{a:[{a:'down'},{a:'less'},{a:'none'}],pid:p.id,k:'slump:'+p.id,mid:S.mid}});
+  for(let k=0;k<6;k++){ p.e1=true; for(const r of mreqs())if(r.data&&r.data.pid===p.id)r.st='no'; const r1=m.rel; G.day++; const a=ag(); const res=evPick(a.id,0,true); ok(m.rel>=r1,'감독이 정리를 원한 선수 말소에 관계 하락: '+r1+'→'+m.rel+' '+res); ok(!p.e1,'말소되지 않음: '+res); }
+  p.e1=true; const r2=m.rel; for(const r of mreqs())if(r.data&&r.data.pid===p.id)r.st='no'; const msg=reqEntry(p.id,false); ok(!p.e1&&m.rel>=r2,'거절 뒤 말소 건의를 감독이 거절하거나 관계 하락: '+msg);
+  ok(!mgrOutReq(q),'요청하지 않은 선수에게 감독 입장이 생김'); const old=mreqAdd('out',{pid:q.id},G.day); old.st='no'; old.day=G.day-60; ok(!mgrOutReq(q),'오래된 요청은 기준에서 빠져야 함'); });
 T('[검수 11-08b] 외국인·트레이드·부상·퓨처스: 전환 불가 결정 보류, 아시아 2년 상한, 옵션 이중 지급, 현금 검사, 부상 일수, 짧은 휴식 부하 순서, 퓨처스 중복',()=>{ fresh(); G.day=G.cal.open+30;
   const f=foreignOf(G.user).find(x=>x.foreign==='용병'); const q=newForeign('용병',{isP:f.isP}); q.team=G.user; q.ftmp={o:f.id,d:G.day-42,fee:500,paid:72}; f.frehab=q.id; G.sea.repl[G.user]=99; const e=evNew('ftmp','t','s',[{l:'a'},{l:'b'}],{data:{qid:q.id},def:0}); const r=evPick(e.id,1); ok(q.team===G.user&&q.ftmp&&!e.done,'전환 불가인데 대체 선수가 방출되거나 결정이 닫힘: '+r); G.sea.repl[G.user]=0;
   G.sea.fspend[G.user]=1000; const exp=1000-500+Math.round(q.sal*remainFrac()); fTmpConvertDo(q,G.user); ok(Math.abs(G.sea.fspend[G.user]-exp)<=1,'선납 연장료를 돌려받지 않음 '+G.sea.fspend[G.user]+' 기대 '+exp);
