@@ -11,6 +11,9 @@ function ledger(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME();
   return false; }
 /* 지금 단장이 맡은 구단의 결산 장부에만 적는 일회성 지출·수입(이벤트 비용 등). 호출부가 이미 우리 구단 일로 정한 곳 */
 function ledgerMe(key,amt){ return ledger(G.user,key,amt,{me:true}); }
+/* 공사·보수처럼 그 자리에서 치르는 지출: 우리 구단은 현금에서 낼 수 있는 만큼(spendPay)만 그 항목에 적고 모자란 몫은 spendPay가 기타 지출로 넘긴다.
+ AI 구단은 현금에서 전액. 돌려주는 값: 현금에서 낸 몫(AI는 전액) */
+function ledgerPay(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME(); if(me){ const k0=spendPay(amt); ledger(tid,key,k0,{me:true}); return k0; } ledger(tid,key,amt,Object.assign({},o,{me:false})); return amt; }
 /* ===== 올해 예산(다음 결산까지 연간 예상) ===== */
 function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; if(y===G.year&&G.ps&&G.ps.finDay!=null)return G.ps.finDay; if(y===G.year&&G.cal&&G.cal.end)return Math.min(dnum(y,11,5),G.cal.end+30); return dnum(y,11,5); } /* 결산은 한국시리즈 이틀 뒤: 알면 그날, 모르면 정규시즌 끝 +30일로 어림 */
 /* 이미 현금에 반영한 인수 출자는 영업 흑자·지원 필요액과 구분한다. 결산과 예산 전망이 같은 회수 식을 쓴다. */

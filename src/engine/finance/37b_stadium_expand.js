@@ -72,7 +72,7 @@ function stadXpExpire(tid){ const S=stadOf(tid), q=S.xq; if(!q||q.stage!=='ok'||
 function stadXpStart(tid){ const S=stadOf(tid), q=S.xq; if(!q||q.stage!=='ok')return '시와 합의한 증설이 없습니다.'; if(stadXpExpire(tid))return '증설 합의의 착공 기한이 지났습니다. 시와 다시 협의해야 합니다.'; if(!stadWindow())return '증설 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.'; if(S.proj)return '신구장 사업 중에는 옛 구장을 늘리지 않습니다.';
   const X=STADX_K[q.k], C=stadXpCost(q.k), t=team(tid), me=tid===ME(); if((q.esc||0)<C.club&&spendable(tid)+(q.esc||0)<C.club)return `구단 부담분 ${money(C.club)}이 필요합니다(${me?spendTxt():'쓸 수 있는 돈 '+money(Math.max(0,spendable(tid)))}).`;
   const esc=Math.min(C.club,q.esc||0), due=C.club-esc; /* AI가 협의 때 떼어 둔 몫은 이미 낸 돈 */
-  let sup=0; if(me){ const k0=due>0?spendPay(due):0; sup=due-k0; G.spend.stad=(G.spend.stad||0)+k0; } else t.cash-=due; if(esc<(q.esc||0))t.cash+=(q.esc-esc); q.esc=0;
+  let sup=0; if(me){ const k0=due>0?spendPay(due):0; sup=due-k0; ledgerMe('stad',k0); } else ledger(tid,'stad',due,{me:false}); if(esc<(q.esc||0))t.cash+=(q.esc-esc); q.esc=0;
   q.stage='build'; q.c=C.club; q.total=C.c; q.sup=sup; q.ep=me?G.spEp:null; q.st=G.day; q.pm=G.day+facPermitDays(tid); q.done=q.pm+X.days;
   clubFacilityHistory('stad',tid,`${stadName(tid)} ${X.l}`,'착공',{c:C.c,src:`구단 ${money(C.club)} · 지자체 ${money(C.city)}`,done:q.done});
   if(me)addLog(`${stadName(tid)} ${X.l} 공사를 시작했습니다(구단 ${money(C.club)} · ${t.city}시 ${money(C.city)}). 시 인허가 뒤 ${dmd(q.pm)}쯤 첫 삽, ${dmd(q.done)} 완공 예정.`);

@@ -102,7 +102,7 @@ function facAgeStore(t){ const mine=t.id===G.user; const it=mine?(G.fac&&G.fac.i
 function facAgeOf(tid,k){ const t=team(tid); const S=t&&facAgeStore(t); return S?G.year-S.A[k].y:0; }
 function facRefurbCost(k){ const lv=(G.fac&&G.fac.it&&G.fac.it[k])||0; return Math.round(FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix*ecoIdx()/10)*10; }
 function facRefurb(k){ if(G.unemp)return '맡은 구단이 없습니다.'; const S=facAgeStore(team(G.user)); if(!S||!FACI[k])return '없는 시설입니다.'; if((S.it[k]||0)<2)return '보수할 시설이 없습니다.'; if(S.bld[k])return '공사 중입니다.';
-  const c=facRefurbCost(k); if(spendable(G.user)<c)return `자금이 부족합니다(${spendTxt()}). 보수비 ${money(c)}이 필요합니다.`; const k0=spendPay(c); G.spend.fac=(G.spend.fac||0)+k0; S.A[k].y=G.year; addLog(`${FACI[k].l} 보수 공사(${money(c)}). 연식을 새로 셉니다.`); return ''; }
+  const c=facRefurbCost(k); if(spendable(G.user)<c)return `자금이 부족합니다(${spendTxt()}). 보수비 ${money(c)}이 필요합니다.`; ledgerPay(G.user,'fac',c,{me:true}); S.A[k].y=G.year; addLog(`${FACI[k].l} 보수 공사(${money(c)}). 연식을 새로 셉니다.`); return ''; }
 function facAgeYear(){ for(const t of G.teams){ const S=facAgeStore(t); if(!S)continue;
   for(const k of FACK){ const lv=S.it[k]||0; if(lv<3||S.bld[k])continue; const age=G.year-S.A[k].y;
     if(!S.mine&&age>=FAC_AGE.warn&&(t.cash||0)>Math.max(3000,FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix*2)){ t.cash-=Math.round(FACI[k].c[Math.min(lv,FACI[k].c.length-1)]*FAC_AGE.fix); S.A[k].y=G.year; continue; } /* 여유 있는 AI 구단은 보수 */
