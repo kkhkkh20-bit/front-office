@@ -9564,6 +9564,43 @@ T('[국사왕 11-18 교육리그] 가을 교육리그 자동 신청: 직접 켜�
   const t=G.teams.find(x=>x.id!==G.user), c0=t.cash; t.cash=100; ok(fallFit(t.id,'jp')==='ul','미야자키 비용이 모자라면 울산'); t.cash=10; ok(fallFit(t.id,'ul')===null&&fallFit(t.id,'jp')===null,'돈이 모자라도 신청'); t.cash=5000; ok(fallFit(t.id,'jp')==='jp','돈이 넉넉하면 원하는 쪽'); t.cash=c0;
   ok(String(ovsAiPlan).includes('fallFit('),'AI 교육리그 신청이 같은 함수를 쓰지 않음'); ok(String(fallRoll).includes('fallPool('),'결과 계산과 안내 명단이 다름');
   takeBack('fall'); ok(!autoOn('fall'),'끄기 실패'); });
+/* [카페 11-18 지명권 트레이드] 1순위 지명권(소유자: 1순위는 진짜 희귀, AI는 줘봤자 6순위 이하)·미래 지명권. 실제 KBO 사례 기준은 96_pick_trade 주석 */
+const pk1118Top=()=>{ const D=draftOrders(); return D.r1[0]===G.user?D.r1[1]:D.r1[0]; };
+const pk1118Move=(p,f)=>{ const sv={team:p.team,age:p.age,pot:p.pot}; p.team=G.user; _tcC.k=null; try{ return f(); } finally{ Object.assign(p,sv); _tcC.k=null; } };
+T('[카페 11-18 지명권 트레이드] 1순위 지명권은 28세 종합 78 주전 + 현금 30억이면 기준선(특급 + 필요한 자리) 이유로 거절한다(값 비교 전, 주 난수 없음)',()=>{ fresh(); const top=pk1118Top(), k='1:'+top;
+  const p=Object.values(G.players).filter(q=>q.team!=null&&q.team!==top&&q.team!==G.user&&!q.foreign&&!q.ys&&healthy(q)&&dv(ovr(q))>=76&&dv(ovr(q))<=79).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패: 78 안팎 선수');
+  const r=__rngState(); const e=pk1118Move(p,()=>{ p.age=28; return evalTrade(top,[p.id],[],3000,{get:[k]}); }); ok(!e.ok,'1순위 지명권을 78 + 30억에 내줌'); ok(String(e.pkGate).includes('최정상급')&&String(e.pkGate).includes('필요할 때만'),'기준선 이유가 없음: '+e.pkGate);
+  ok(__rngState()===r,'평가가 주 난수를 씀'); ok(pkTopSlot(k)&&!pkTopSlot('1:'+draftOrders().r1[6]),'기준선 순번(1~5) 판정이 다름');
+  const avg=Object.values(G.players).filter(q=>q.team!=null&&q.team!==top&&q.team!==G.user&&!q.foreign&&!q.ys&&healthy(q)&&dv(ovr(q))>=66&&dv(ovr(q))<=70)[0]; ok(avg,'준비 실패: 평균 주전'); ok(!pk1118Move(avg,()=>evalTrade(top,[avg.id],[],3000,{get:[k]})).ok,'평균 주전 + 현금으로 1순위를 삼'); });
+T('[카페 11-18 지명권 트레이드] 1순위 지명권도 필요한 자리의 연봉 싼 특급 선수면 내준다("정말 류현진이면"), 3순위는 A급이어도 자리가 필요 없으면 거절, AI끼리도 같은 기준선',()=>{ fresh(); const top=pk1118Top(), t=team(top), k='1:'+top;
+  aiPlanSet(t,'win','',true); t.mode='contend'; _tcC.k=null; const L=Object.values(G.players).filter(q=>q.team!=null&&q.team!==top&&q.team!==G.user&&!q.foreign&&!q.ys&&healthy(q)&&dv(ovr(q))>=80&&q.age<=33);
+  let acc=null; for(const q of L){ const ok1=pk1118Move(q,()=>{ q.age=27; q.sal=Math.min(q.sal,400); return pkAce(q)&&pkNeedFor(t,q)&&evalTrade(top,[q.id],[],0,{get:[k]}).ok; }); if(ok1){ acc=q; break; } }
+  ok(acc,'필요한 자리 특급(연봉 4억)을 줘도 1순위를 안 줌: 후보 '+L.length);
+  const D=draftOrders(), o3=D.r1[2]===G.user?D.r1[3]:D.r1[2], t3=team(o3); const A=Object.values(G.players).filter(q=>q.team!=null&&q.team!==o3&&q.team!==G.user&&!q.foreign&&pkGrade(q)>=1);
+  const nn=A.find(q=>pk1118Move(q,()=>!pkNeedFor(t3,q))); ok(nn,'준비 실패: 자리가 필요 없는 A급'); const e3=pk1118Move(nn,()=>evalTrade(o3,[nn.id],[],0,{get:['1:'+o3]})); ok(!e3.ok&&String(e3.pkGate).includes('급하지 않습니다'),'자리가 필요 없는 A급에 3순위를 줌 '+e3.pkGate);
+  const B=G.teams.find(x=>x.id!==G.user&&x.id!==top); const q=domestic(B.id).filter(x=>!x.ys&&healthy(x)&&!pkAce(x)&&!hasNtc(x)&&!faLock(x)).sort((a,b)=>ovr(b)-ovr(a))[0];
+  const z=aiTradePackage(B,t,[q.id],[],0,{y:pkYear(),give:[],get:[k]}); ok(!z.ok&&z.b&&z.b.pkGate,'AI끼리는 1순위 지명권 기준선이 없음'); });
+T('[카페 11-18 지명권 트레이드] 1라운드 7순번 + 3라운드는 22세 주전 내야수와 바꾼다(2024 김휘집 사례), 순번 곡선은 가파르고 2라운드는 1라운드 끝보다 싸다',()=>{ fresh(); const D=draftOrders(), U=G.user; const o7=D.r1[6]===U?D.r1[7]:D.r1[6], t=team(o7); aiPlanSet(t,'win','',true); t.mode='contend'; _tcC.k=null;
+  ok(!pkTopSlot('1:'+o7),'7순번이 관문에 걸림'); const S=new Set(); for(const x of G.teams)for(const id of startersOf(x.id))S.add(id);
+  const L=Object.values(G.players).filter(p=>p.team!=null&&p.team!==o7&&p.team!==U&&!p.isP&&['2B','3B','SS'].includes(p.pos)&&S.has(p.id)&&!p.foreign&&healthy(p)&&dv(ovr(p))>=66&&dv(ovr(p))<=76&&!pkAce(p)); ok(L.length>=2,'준비 실패: 주전 내야수 '+L.length);
+  let a=0; for(const p of L)if(pk1118Move(p,()=>{ p.age=22; p.pot=Math.max(p.pot,ovr(p)+4); return evalTrade(o7,[p.id],[],0,{get:['1:'+o7,'3:'+o7]}).ok; }))a++; ok(a*2>=L.length,'7순번+3라운드로 젊은 주전 내야수를 거의 못 삼 '+a+'/'+L.length);
+  const v=D.r1.map(o=>pkVal(t,'1:'+o)); for(let i=1;i<v.length;i++)if(D.r1[i]!==o7&&D.r1[i-1]!==o7)ok(v[i]<v[i-1],'순번 곡선이 가파르지 않음 '+v.map(x=>x.toFixed(1)));
+  ok(pkVal(t,'2:'+o7)<pkVal(t,'1:'+D.r1[9]),'2라운드가 1라운드 끝보다 비쌈'); });
+T('[카페 11-18 지명권 트레이드] 미래 지명권: 그다음 드래프트 지명권도 오가고, 순번·시간 불확실성만큼 싸며, 구단당 2장까지만 내준다(우리·AI 같은 함수)',()=>{ fresh(); const y1=pkYear()+1, U=G.user; const D=draftOrders(), lo=D.r1.find(o=>o!==U), B=team(lo);
+  const H=pkHeldF(U); ok(H.includes('1:'+U)&&H.includes('1:'+U+':'+y1)&&!H.includes('1:'+U+':'+(y1+1)),'보유 목록 연도 '+H.slice(0,3)); ok(pkName('1:'+lo+':'+y1)===tshort(lo)+' '+y1+' 1라운드','이름 '+pkName('1:'+lo+':'+y1));
+  ok(pkVal(B,'1:'+lo+':'+y1)<pkVal(B,'1:'+lo),'미래 1순번 지명권이 올해 것보다 비쌈'); ok(pkSlotY(lo,1,y1)>pkSlot(lo,1),'미래 예상 순번을 가운데로 당기지 않음');
+  const p=domestic(U).find(x=>!x.ys&&!x.foreign), q=domestic(lo).find(x=>!x.ys&&!x.foreign); const g=['1:'+U+':'+y1,'2:'+U+':'+y1,'3:'+U+':'+y1];
+  ok(pkCheck(lo,[p.id],[q.id],{give:g.slice(0,2)})==='','두 장은 넘길 수 있어야 함'); ok(/2장까지/.test(pkCheck(lo,[p.id],[q.id],{give:g})),'세 장째 한도가 없음');
+  pkMove({give:g.slice(0,2),get:[]},lo); ok(pkOwner(y1,1,U)===lo&&pkFutOut(U)===2,'장부 '+JSON.stringify(G.pkOwn)); ok(/2장까지/.test(pkCheck(lo,[p.id],[q.id],{give:[g[2]]})),'이미 두 장 넘겼는데 더 넘김');
+  ok(pkFutWhy(lo,['1:'+lo+':'+y1])===''&&String(fdStrengthen).includes('pkHeldF(A.id)')&&String(fdStrengthen).includes('pkFutWhy(A.id'),'AI 보강 거래가 미래 지명권·같은 한도를 쓰지 않음'); });
+T('[카페 11-18 지명권 트레이드] 넘긴 미래 지명권은 그해 드래프트 순서에 새 구단으로 들어가고, 거래 기록·소식에 연도와 함께 남는다',()=>{ fresh(); const U=G.user, y1=pkYear()+1; const lo=draftOrders().r1.find(o=>o!==U); const p=domestic(U).find(x=>!x.ys&&!x.foreign&&healthy(x)&&!hasNtc(x)), q=domestic(lo).find(x=>!x.ys&&!x.foreign&&healthy(x));
+  const k='2:'+lo+':'+y1; const r=evOK(()=>proposeTrade(lo,[p.id],[q.id],0,{get:[k]})); ok(r.ok,'거래 실패: '+r.msg); ok(pkOwner(y1,2,lo)===U,'보유 구단 안 바뀜');
+  const T0=G.trades[G.trades.length-1]; ok(T0.pk&&T0.pk.get[0]===tshort(lo)+' '+y1+' 2라운드','거래 기록 이름 '+JSON.stringify(T0.pk)); ok((G.wire||[]).some(w=>String(w.t).includes(tshort(lo)+' '+y1+' 2라운드')),'소식에 지명권 연도 없음');
+  const y0=G.year; try{ G.year=y1; G.draft=null; pkClean(); ok(pkOwner(y1,2,lo)===U,'드래프트 정리 때 미래 장부가 지워짐'); const P=draftPlan(); const x=P&&P.find(z=>z.rd===2&&z.from===lo); ok(x&&x.tid===U,'그해 지명 순서에 받은 지명권이 없음'); ok(pkHeld(U).includes('2:'+lo),'다음 드래프트 보유 목록에 없음'); } finally{ G.year=y0; } });
+T('[카페 11-18 지명권 트레이드] 예전 저장: 지명권 장부 정리는 여러 번 해도 같고 주 난수를 쓰지 않으며, 원래 구단 줄·깨진 줄만 지운다 [드래프트]',()=>{ fresh(); const U=G.user, o=G.teams.find(t=>t.id!==U).id, y=G.year+1;
+  delete G.pkOwn; delete G.pkV; const r=__rngState(); pkMigrate(); ok(G.pkOwn&&typeof G.pkOwn==='object'&&!Object.keys(G.pkOwn).length,'기본 장부 없음'); ok(pkOwner(y,1,o)===o,'기본 보유가 원래 구단이 아님');
+  G.pkOwn={[y+':1:'+o]:U,[y+':2:'+o]:o,'x:1:2':U,[y+':3:'+o]:99}; pkMigrate(); const a=JSON.stringify(G.pkOwn); pkMigrate(); ok(JSON.stringify(G.pkOwn)===a,'두 번 하면 달라짐'); ok(a===JSON.stringify({[y+':1:'+o]:U}),'정리 결과 '+a); ok(__rngState()===r,'주 난수를 씀');
+  G.pkOwn={[y+':1:'+o]:o}; delete G.pkV; migrateDraft(); ok(G.pkV===1&&!Object.keys(G.pkOwn).length,'불러오기에서 장부를 정리하지 않음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
