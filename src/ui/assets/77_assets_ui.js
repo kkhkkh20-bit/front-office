@@ -163,7 +163,7 @@ function obPhotoSrc(o){ if(!G||G.f6off||!o||o.pid==null||typeof FACE6==='undefin
    더 선명한 시트를 아직 받는 중이면 결과를 캐시하지 않고, 받으면 다시 그린다(소식함 큰 사진이 128px를 늘린 채로 남지 않게). 아무 시트도 아직 없으면 작은 자리는 실루엣(F6WAIT), 큰 자리는 null(작은 사진을 그대로)
  - 작은 자리 결과는 F6B(그림 → 주소)에 남겨, 큰 자리(faceBust: 32_people.js)가 같은 주소의 흉상을 찾는다 */
 function faceImg(k,src,o){ if(F6IMG[k])return F6IMG[k]; if(!src)return null; const im=new Image(); F6IMG[k]=im; f6Retry(im); if(o&&o.f6)im.f6=true; if(o&&o.pitch){ im.pitch=o.pitch; im.off=8; }
-  im.onload=()=>{ im.ok=true; if(o&&o.big)F6C.clear(); clearTimeout(faceImg.t); faceImg.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=src; return im; }
+  im.onload=()=>{ im.ok=true; clearTimeout(faceImg.t); /* 캐시는 어느 시트로 잘랐는지 함께 적어 두므로(faceCut) 더 선명한 시트가 오면 그 얼굴만 다시 자른다: 전부 지우지 않는다(성능 11-18) */ faceImg.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=src; return im; }
 function faceSheets(a,b){ const L=[], add=(im,cs,cell,x,y,w,o,pad,fc)=>{ if(im)L.push({im,cs,cell,cr:[x,y,w,o,pad||0],fc:fc??null}); }, s=a.s, c=a.c;
   if(s==='p'){ const tid=a.t, T=String(tid);
     if(c>=160){ const V=FACE6.v18; if(!V||!V.teams[T])return L; const r=c-V.o, sh=r<100?'A':'B', cc=r%100, fc=fcAt('v18',sh+tid,cc), ld=cs=>{ const h=V.h&&V.h[sh+cs]; return faceImg('18'+sh+cs+':'+tid,V.base+sh+'/'+cs+'/'+V.teams[T]+'.webp'+(h?'?v='+h:''),{f6:1,pitch:V.pitch&&V.pitch[cs],big:cs>128}); };
@@ -187,9 +187,13 @@ function faceSheets(a,b){ const L=[], add=(im,cs,cell,x,y,w,o,pad,fc)=>{ if(im)L
     if(b){ add(ld(256),256,c,8,0,240,464,0); add(ld(128),128,c,4,0,120,232,0); } else add(ld(128),128,c,20,2,88,128,0); /* 작은 자리 머리~어깨 위, 큰 자리 거의 칸 전체 */ return L; }
   return L; }
 const faceKeyOf=a=>a.s+(a.v||'')+':'+(a.t??'')+':'+a.c;
-function faceCut(a,b){ if(!a)return null; b=!!b; const k=(b?'B':'S')+faceKeyOf(a); if(F6C.has(k))return F6C.get(k); let L; try{ L=faceSheets(a,b); }catch(e){ return null; }
-  let wait=false; for(const x of L){ const im=x.im; if(!im.ok){ if(!im.bad)wait=true; continue; } /* 더 선명한 시트를 받는 중: 지금 것으로 그리고 캐시하지 않는다(받으면 다시 그림) */
-    try{ const u=face6Cut(im,x.cs,x.cell,...x.cr,b,x.fc); if(!wait)F6C.set(k,u); if(!b)F6B.set(u,a); return u; }catch(e){ return null; } }
+/* 자른 얼굴 캐시: {u: 그림, im: 자른 시트}. 지금 받아진 가장 선명한 시트가 그대로면 다시 자르지 않는다(더 선명한 시트를 받는 중이어도). 더 선명한 시트가 오면 그 얼굴만 다시 자른다.
+   예전에는 받는 중이면 캐시하지 않아 화면을 그릴 때마다 보이는 얼굴 전부를 캔버스로 다시 잘랐고(toDataURL), 큰 시트가 올 때마다 캐시를 통째로 비웠다(성능 11-18). 오래 안 쓴 것부터 F6_MAX개까지만 둔다 */
+const F6_MAX=2000; function f6Put(M,k,v){ if(M.has(k))M.delete(k); M.set(k,v); if(M.size>F6_MAX)M.delete(M.keys().next().value); }
+function faceCut(a,b){ if(!a)return null; b=!!b; const k=(b?'B':'S')+faceKeyOf(a); const c=F6C.get(k); if(c&&c.done){ if(!b&&!F6B.has(c.u))f6Put(F6B,c.u,a); return c.u; } let L; try{ L=faceSheets(a,b); }catch(e){ return null; }
+  let wait=false; for(const x of L){ const im=x.im; if(!im.ok){ if(!im.bad)wait=true; continue; }
+    if(c&&c.im===im){ if(!wait)c.done=1; if(!b&&!F6B.has(c.u))f6Put(F6B,c.u,a); return c.u; }
+    try{ const u=face6Cut(im,x.cs,x.cell,...x.cr,b,x.fc); f6Put(F6C,k,{u,im,done:wait?0:1}); if(!b)f6Put(F6B,u,a); return u; }catch(e){ return null; } }
   return wait&&!b?F6WAIT:null; }
 /* 큰 자리(흉상): 작은 자리에서 만든 그림의 주소로 같은 사람을 다시 자른다(32_people.js faceBust) */
 function face6Bust(a){ return faceCut(a,true); }

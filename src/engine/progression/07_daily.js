@@ -201,11 +201,11 @@ function boxSnap(g){
   /* 경기 반영이 바꾸는 가지들만 보관한다. 원래 객체 참조까지 복구해 메일·멈춤 목록과 시리즈의 지역 참조도 함께 유지한다. */
   const nodes=new Map(), roots=[];
   const take=o=>{ if(!o||typeof o!=='object'||nodes.has(o))return; const row={v:Object.entries(o),len:Array.isArray(o)?o.length:null}; nodes.set(o,row); for(const [,v] of row.v)take(v); };
-  const watch=(o,keys)=>{ if(!o)return; for(const k of keys){ roots.push([o,k,Object.prototype.hasOwnProperty.call(o,k),o[k]]); take(o[k]); } };
+  const watch=(o,keys)=>{ if(!o)return; for(const k of keys){ const v=o[k]; roots.push([o,k,Object.prototype.hasOwnProperty.call(o,k),v]); if(Array.isArray(v)&&v.length>60&&!nodes.has(v)){ nodes.set(v,{v:Object.entries(v),len:v.length}); for(let i=0;i<30;i++)take(v[i]); for(let i=v.length-30;i<v.length;i++)take(v[i]); } else take(v); } }; /* 긴 기록(소식함·기사·이벤트)은 목록 순서·길이와 앞뒤 30건(새로 붙거나 고쳐지는 쪽)만 깊이 보관한다(성능 11-18) */
   watch(G,['mail','stops','mailSeq','evs','evf','evlog','evRecent','evSeq','news','newsSeq','pr','wire','ownerLog','iv','ivSeq','reporters','feats','featN','featSeq','gbest','spend','memoL','autoLog','relPlay']);
   watch(G.sea,['rec','tl']);
-  for(const k of ['h','a']){ const s=g.S[k]; take(team(s.tid)); for(const id of s.box.keys())take(G.players[id]); }
-  return ()=>{ for(const [o,row] of nodes){ const keys=new Set(row.v.map(x=>x[0])); for(const k of Object.keys(o))if(!keys.has(k))delete o[k]; for(const [k,v] of row.v)o[k]=v; if(row.len!=null)o.length=row.len; } for(const [o,k,had,v] of roots)if(had)o[k]=v; else delete o[k]; };
+  const PJ=[]; for(const k of ['h','a']){ const s=g.S[k]; take(team(s.tid)); for(const id of s.box.keys()){ const p=G.players[id]; if(p&&!nodes.has(p))PJ.push([p,JSON.stringify(p)]); } } /* 선수는 JSON 사본으로(성능 11-18: 한 경기 50명 × 수백 가지를 하나씩 걷던 비용이 하루 1초를 넘었다). 선수 객체 자체는 그대로 두고 내용만 되돌린다 */
+  return ()=>{ for(const [o,row] of nodes){ const keys=new Set(row.v.map(x=>x[0])); for(const k of Object.keys(o))if(!keys.has(k))delete o[k]; for(const [k,v] of row.v)o[k]=v; if(row.len!=null)o.length=row.len; } for(const [o,k,had,v] of roots)if(had)o[k]=v; else delete o[k]; for(const [p,j] of PJ){ for(const k of Object.keys(p))delete p[k]; Object.assign(p,JSON.parse(j)); } };
 }
 function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
   let userRec=null; const others=[], matches=rainGames(day); /* 타구장 소식(중계): 같은 날 다른 경기의 이닝별 득점 */ G.makeup=(G.makeup||[]).filter(x=>x.y===G.year&&x.d>=day); /* 오늘 미룬 경기는 오늘 다시 치르지 않고 다음 경기일에 */

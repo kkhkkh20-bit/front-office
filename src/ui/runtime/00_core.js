@@ -101,7 +101,9 @@ function sbFinish(c,idb){const m=meta();if(!sbOwn(c,m))return false;const info={
   if(idb){info.idb=true;info.idbKey=c.key;info.idbCommit=c.commit;}else{delete info.idb;delete info.idbKey;delete info.idbCommit;}
   m.slots[c.n]=info;if(c.activate)m.active=c.n;return setMeta(m);}
 async function sbClean(n){if(!sbOk())return;try{const keys=await SaveStore.big.keys();for(const k of keys){if(k!==n&&!String(k).startsWith(sbPrefix(n)))continue;const it=meta().slots[n];if(!it)continue;const refs=[it.idbKey,it.idbCommit,it.pending?.key,it.pending?.commit,it.pending?.old?.idbKey,it.pending?.old?.idbCommit];if(it.idb&&!it.idbKey||it.pending?.old?.idb&&!it.pending.old.idbKey)refs.push(n);if(!refs.includes(k))await sbDrop(k);}}catch(e){}}
-function sbSet(n,data,c){let ls=false;if(!c.options.forceIDB)try{c.lsTouched=true;SaveStore.set(slotKey(n),data);ls=sbLsGet(n)===data;}catch(e){}
+/* localStorage에 못 들어간 크기는 기억해 두고(10분), 그보다 큰 본문은 바로 IndexedDB로: 수 MB를 매번 써 보다 실패하는 비용을 줄인다(성능 11-18) */
+let _lsFail=null;
+function sbSet(n,data,c){let ls=false;const skip=_lsFail&&data.length>=_lsFail.n&&Date.now()-_lsFail.t<600e3;if(!c.options.forceIDB&&!skip){try{c.lsTouched=true;SaveStore.set(slotKey(n),data);ls=sbLsGet(n)===data;}catch(e){} if(!ls&&data.length>500000)_lsFail={n:data.length,t:Date.now()};}
   if(ls){if(!sbFinish(c,false)){sbUndo(c,true);return false;}sbForget(n);SB_WAIT.delete(n);SB_CTX.delete(n);saveReserve();sbClean(n);return true;}
   if(!sbOk()){sbUndo(c,true);return false;}
   const m=meta();if(!sbOwn(c,m))return false;m.slots[n].idb=true;
@@ -180,7 +182,16 @@ function castHoldSync(){ const c=UI.cast||UI.castRet, g=G&&c&&c.hold&&G.games[c.
 let _saveGStage=false; /* 가져오기 저장 확인 전에는 현재 화면 상태를 건드리거나 새 게임에 섞지 않는다 */
 function prepG(){ if(_saveGStage)return JSON.stringify(G); try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } return JSON.stringify(G); } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
 function packJ(j){ if(ZOK){ try{ return z15(fflate.deflateSync(new TextEncoder().encode(j),{level:6})); }catch(e){ ZERR=String(e&&e.message||e); } } return LZString.compressToUTF16(j); } /* deflate가 실패하면 예전 LZ로 저장 */
-async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
+/* 자동 저장 압축은 별도 스레드(Worker)에서: 큰 세이브(JSON 수십 MB)를 UTF-8로 바꾸고 deflate한 뒤 15비트 글자로 담는 일이 화면 스레드를 0.5초 넘게 막았다(성능 11-18). 같은 알고리즘(deflate-raw + z15)이라 결과 문자열은 같다. 못 쓰면 예전처럼 화면 스레드에서 */
+let _zW=null, _zN=0; const _zP=new Map();
+function zWorker(){ if(_zW!==null)return _zW; _zW=false; try{ if(typeof Worker==='undefined'||typeof CompressionStream==='undefined'||typeof URL==='undefined'||!URL.createObjectURL)return false;
+    const src='const ZMK='+JSON.stringify(ZMK)+';\n'+z15.toString()+'\nonmessage=async e=>{ const {id,j}=e.data; try{ const cs=new Blob([j]).stream().pipeThrough(new CompressionStream("deflate-raw")); const u=new Uint8Array(await new Response(cs).arrayBuffer()); postMessage({id,s:z15(u)}); }catch(err){ postMessage({id,err:String(err&&err.message||err)}); } };';
+    const w=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})));
+    w.onmessage=e=>{ const r=_zP.get(e.data&&e.data.id); if(!r)return; _zP.delete(e.data.id); if(e.data.err!=null)r.rej(new Error(e.data.err)); else r.res(e.data.s); };
+    w.onerror=()=>{ _zW=false; for(const r of _zP.values())r.rej(new Error('worker')); _zP.clear(); try{ w.terminate(); }catch(x){} };
+    _zW=w; }catch(e){ _zW=false; } return _zW; }
+function packJWorker(j){ const w=zWorker(); if(!w)return null; return new Promise((res,rej)=>{ const id=++_zN; _zP.set(id,{res,rej}); try{ w.postMessage({id,j}); }catch(e){ _zP.delete(id); rej(e); } }); }
+async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); { const P=packJWorker(j); if(P)try{ const s=await P; if(typeof s==='string'&&s[0]===ZMK)return s; }catch(e){} } const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
 function packG(){ return packJ(prepG()); }
 function unpack(s){ if(!s)return null; try{ const txt=s[0]==='{'?s:s[0]===ZMK?new TextDecoder().decode(fflate.inflateSync(unz15(s))):LZString.decompressFromUTF16(s); const g=JSON.parse(txt); return g&&!saveCheck(g)?g:null; }catch(e){ return null; } }
 let SAVE_ERR='';
@@ -188,8 +199,12 @@ let SAVE_ERR='';
    save()는 0.7초 안에 들어온 요청을 한 번으로 묶고, 슬롯 바꾸기·내보내기·처음 화면 같은 곳은 saveNow()로 바로 저장한다.
    탭을 닫거나 숨기면(pagehide·visibilitychange) 남은 저장을 바로 끝낸다 */
 let _svT=null;
-function save(){ if(G){ G.stops=G.stops||[]; tutTick(); try{ guideMailTick(); }catch(e){} } if(!G)return; if(_svT)clearTimeout(_svT); _svT=setTimeout(()=>{ _svT=null; saveStoreAsync(); },700); }
-function saveNow(){ if(G&&!_saveGStage){ G.stops=G.stops||[]; tutTick(); } if(_svT){ clearTimeout(_svT); _svT=null; } return saveStore(); } /* 저장 성공 여부를 돌려준다 */
+/* 자동 저장 시점(성능 11-18): 마지막 요청 뒤 SV_IDLE만큼 조용하면(버튼을 연달아 누르는 동안은 미룬다), 그래도 처음 요청 뒤 SV_MAX가 지나면 바로. 브라우저가 한가할 때(requestIdleCallback) 시작한다.
+   예전에는 0.7초마다 세이브 전체(JSON 문자열화·압축·쓰기)를 다시 해 큰 세이브에서 누를 때마다 화면이 멈췄다. 탭을 닫거나 숨기면 saveFlush가 바로 끝낸다 */
+const SV_MAX=12000; let _svFirst=0, _svCost=0; const svIdle=()=>Math.round(Math.min(3000,Math.max(700,_svCost*5))); /* 조용히 기다리는 시간: 작은 세이브는 예전처럼 0.7초, 저장 한 번이 화면 스레드를 오래 쓰는 큰 세이브일수록 길게(최대 3초) */
+function svKick(){ _svT=null; _svFirst=0; const go=()=>saveStoreAsync(); try{ if(typeof requestIdleCallback==='function'){ _svT=-1; requestIdleCallback(()=>{ if(_svT===-1)_svT=null; else return; go(); },{timeout:1500}); return; } }catch(e){} go(); }
+function save(){ if(G){ G.stops=G.stops||[]; tutTick(); try{ guideMailTick(); }catch(e){} } if(!G)return; const now=Date.now(); if(!_svFirst)_svFirst=now; if(_svT&&_svT!==-1)clearTimeout(_svT); if(_svT===-1)return; const wait=Math.max(0,Math.min(svIdle(),_svFirst+SV_MAX-now)); _svT=setTimeout(svKick,wait); }
+function saveNow(){ if(G&&!_saveGStage){ G.stops=G.stops||[]; tutTick(); } _svFirst=0; if(_svT){ clearTimeout(_svT); _svT=null; } return saveStore(); } /* 저장 성공 여부를 돌려준다 */
 function saveFlush(){ const h0=G&&JSON.stringify(G.castHold||null); try{ castHoldSync(); }catch(e){} if(_svT||_svBusy||_svFail||(G&&JSON.stringify(G.castHold||null)!==h0)){ /* 자동 재생으로 지나간 중계 장면도 탭을 숨길 때 저장(검수 11-09zzc #4·#5) */ if(_svT)clearTimeout(_svT); _svT=null; saveStore(); } } /* 몰아 저장이 압축 중이어도 탭을 닫을 땐 바로 저장한다. 실패한 저장은 다음 마감 때 다시 시도한다(검수 11-09zr #8) */
 try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')saveFlush(); }); window.addEventListener('beforeunload',saveFlush); }catch(e){}
 /* 저장 순번: 늦게 끝난 몰아 저장(비동기)이 그사이 바로 저장한 더 새 상태를 덮지 않게 한다 */
@@ -240,9 +255,10 @@ function saveHold(fn,what){ if(!savePend())return false; if(UI._svHold)return tr
   const end=ok=>{ if(fin)return; fin=true; UI._svHold=false; if(ok&&!SB_PEND.has(n)){ fn(); return; } if(!ok&&!SAVE_ERR)SAVE_ERR='보조 저장소(IndexedDB) 저장이 끝나지 않았습니다. 잠시 뒤 다시 시도하거나 파일로 내보내기로 백업하세요.'; const msg=`지금 게임(${G?dstr(G.day):''})의 저장이 확정되지 않아 ${what||'넘어가지'} 않았습니다. ${SAVE_ERR||''}`.trim(); UI.slotMsg=msg; try{ toast(msg); }catch(e){} try{ render(); }catch(e){} };
   sbSettle(n).then(end,()=>end(false)); setTimeout(()=>end(false),8000); return true; }
 function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; const j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } const ok=writeSlot(n,packJ(j),slotInfo()); if(ok)svDone(n,j); _svFail=!ok; return ok; }
-async function saveStoreAsync(){ if(!G)return; const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(), j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } _svBusy=true; let data=null;
+async function saveStoreAsync(){ if(!G)return; const t0=performance.now(); const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(), j=prepG(); let tm=performance.now()-t0; if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } _svBusy=true; let data=null;
   try{ data=await packJAsync(j); }catch(e){ data=null; }
-  if(seq!==_svSeq||G!==g)return; _svBusy=false; let ok; if(data==null)ok=saveStore(); else if((ok=writeSlot(n,data,info)))svDone(n,j);
+  if(SB_PEND.has(n)){ try{ await sbSettle(n); }catch(e){} } /* 앞 저장(IndexedDB 확정)이 끝나길 기다렸다 쓴다: 겹치면 '확정되지 않았습니다'로 실패해 실패 안내와 동기 저장이 뒤따랐다(성능 11-18) */
+  if(seq!==_svSeq||G!==g)return; _svBusy=false; let ok; const t1=performance.now(); if(data==null)ok=saveStore(); else if((ok=writeSlot(n,data,info)))svDone(n,j); tm+=performance.now()-t1; _svCost=_svCost?_svCost*.5+tm*.5:tm; /* 화면 스레드에서 쓴 시간(문자열화·쓰기) */
   _svFail=!ok; if(ok)_svWarn=false; else if(!SAVE_CONFL&&!_svWarn){ _svWarn=true; try{ toast(`자동 저장에 실패했습니다. ${SAVE_ERR}`); }catch(e){} } } /* 자동 저장 실패를 바로 알린다(검수 11-09 #10). 실패가 이어지는 동안은 한 번만 */
 function slotRecover(n,g,body,m0){ if(m0.slots[n])return m0; try{ const m=meta(); if(m.slots[n]||sbGet(n)!==body)return m0;
   const r=revNext(0); m.slots[n]=Object.assign(slotInfoOf(g),{rev:r}); if(!slotHas(m.active))m.active=n;

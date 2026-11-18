@@ -120,6 +120,16 @@ T('[피드백 11-18 FA 지원금] 구단주가 영입 자금을 낸 FA는 요구
   const D=termsDemand(s,'fa',{annual:s.ask.annual,years:s.ask.years}); const o={annual:Math.round(termsVal(D,D)),years:D.years,terms:D}; const need=D.bonus+1500; ok(need>sp0,'준비 실패: 지원 없이도 낼 수 있는 조건 '+need+' / '+sp0);
   const f=faFundsCheck(s,o); ok(!f,'구단주가 영입 자금 '+g.amt+'을 냈는데 자금 부족: '+(f&&f.msg)); const c=faCapCheck(s,o); ok(!c||c.ok,'영입 자금을 낸 선수의 상한 결재 거절: '+(c&&c.msg)); const r=faNegotiate(s.id,o); ok(!r.owner,'협상실 제안이 막힘: '+r.msg);
   G.grants=[]; ok(faFundsCheck(s,o),'지원금이 없으면 같은 조건은 자금 부족이어야 함(점검 설정 확인)'); });
+T('[성능 11-18] AI 트레이드·묶음 찾기의 명단 기억은 평가 구간 안에서만 쓰고, 기억을 끈 계산과 결과가 같다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+5);
+  const other=G.teams.find(t=>t.id!==G.user), p=domestic(other.id).slice().sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패');
+  const a=JSON.stringify(findPackages(p.id)); ok(_rosM===null,'묶음 찾기 뒤 명단 기억이 켜진 채'); const b=JSON.stringify(findPackages0(p.id)); ok(a===b,'명단 기억을 쓴 묶음과 안 쓴 묶음이 다름');
+  const s0=JSON.stringify(G), r0=__rngState(); const x=aiTradeTry(); const s1=JSON.stringify(G), r1=__rngState(); ok(_rosM===null,'AI 트레이드 뒤 명단 기억이 켜진 채');
+  G=JSON.parse(s0); worldReset(); __seed(r0); const on=rosterMemoOn; rosterMemoOn=()=>{}; let y; try{ y=aiTradeTry(); } finally { rosterMemoOn=on; } ok(JSON.stringify(G)===s1&&__rngState()===r1&&String(x)===String(y),'명단 기억 없이 다시 한 AI 트레이드 결과가 다름');
+  rosterMemoOn(); try{ const t=domestic(other.id)[0], t0=t.team; const n0=playersOf(other.id).length; mgrPlanPos(t); roomAfter([],[t.id]); ok(t.team===t0&&playersOf(other.id).length===n0,'잠시 옮겨 보는 계산 뒤 명단이 달라짐'); } finally { rosterMemoOff(); } });
+T('[성능 11-18] 래더 자동 등록은 확인할 차례가 아니면 덱(1군 사본)을 만들지 않는다',()=>{ fresh(); const t0=Date.UTC(2026,10,20,3); let p=ulAutoPlan(t0); ok(p.due,'준비 실패: 처음 확인'); ulAutoDone(p,'ok',null,t0); const e0=ulAutoEntry; let n=0; ulAutoEntry=(...a)=>{ n++; return e0(...a); }; try{ p=ulAutoPlan(t0+3600e3); ok(!p.due&&!p.upload,'같은 날 다시 봄'); ok(n===0,'차례가 아닌데 덱을 만듦 '+n); p=ulAutoPlan(t0+86400e3); ok(p.due&&n===1,'다음 날에는 덱을 만들어 봐야 함 '+n); } finally { ulAutoEntry=e0; } });
+T('[성능 11-18] 경기 반영 원복(boxSnap): 긴 소식함·기사 목록과 선수 상태를 경기 전으로 되돌린다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const [h,a]=(G.cal.sched[G.day]||G.cal.sched[G.day+1]||[])[0]||[G.teams[0].id,G.teams[1].id];
+  for(let i=0;i<120;i++)mail('운영팀','긴 목록 '+i,'x',{kind:'재정'}); const g=simGame(G.day,h,a,false); const keep=G.mail[50]; const before=JSON.stringify([G.mail,G.news,G.evs,G.sea.rec,[...g.S.h.box.keys()].map(id=>G.players[id])]); const back=boxSnap(g);
+  try{ applyGame(G.day,h,a,g,false); }catch(e){} mail('운영팀','경기 뒤 소식','y',{kind:'재정'}); G.mail.splice(60,3); back(); ok(JSON.stringify([G.mail,G.news,G.evs,G.sea.rec,[...g.S.h.box.keys()].map(id=>G.players[id])])===before,'원복 뒤 상태가 경기 전과 다름'); ok(G.mail[50]===keep,'소식 객체 참조가 바뀜'); });
 /* 검수 11-17 #308~338: 지명·구단 이직·계약 정산 회귀 시나리오 */
 const revPool=()=>{ fresh(); return G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null); };
 const revLive=(L,picks)=>{ G.draft={y:G.year,cls:L.map(p=>p.id),picks,cur:0,done:false}; };

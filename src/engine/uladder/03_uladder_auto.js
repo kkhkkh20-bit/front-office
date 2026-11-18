@@ -19,6 +19,7 @@ function ulAutoEntry(){ if(!G||G.unemp||G.user==null||!team(G.user))return null;
    → {skip:'album'|'noteam'} | {due, why, upload, day, alb, x, cap} */
 function ulAutoPlan(now,force){ const U=uld(), C=FrontOfficeCore; if(!U)return {skip:'noteam'}; const A=U.ar||(U.ar={}); now=now??Date.now();
   if(U.deck&&U.deck.src&&U.deck.src!=='now')return {skip:'album'};
+  if(!force&&G&&!G.unemp&&G.user!=null&&team(G.user)){ const alb0=ulAutoAlb(), d0=C.ulAutoDue(A,now,null,alb0); if(!d0.due)return {...d0,upload:false,alb:alb0}; } /* 차례가 아니면 덱(1군 26명 사본)을 만들지 않는다: 1분마다 확인할 때 무거웠다(성능 11-18). 차례 판정(날·시즌 앨범·재전송)은 덱 해시와 무관 */
   const x=ulAutoEntry(); if(!x)return {skip:'noteam'}; const why=ulDeckReady(x); if(why)return {skip:'roster',msg:why};
   const alb=ulAutoAlb(), d=C.ulAutoDue(A,now,x.h,alb); if(force){ d.due=true; d.why='force'; d.upload=true; }
   d.alb=alb; d.x=x; d.cap=C.ulCapGate(x,U.tier|0,now).ok?0:1; if(!d.due)return d;

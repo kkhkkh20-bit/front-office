@@ -90,7 +90,8 @@ function electCaptain(tid,why,quiet){ const L=captainPool(tid,why);if(!L.length)
    젊은 선수일수록 문화를 따라간다: 성장 의지·사고 확률은 '문화가 반영된 프로의식'으로 보고, 해마다 실제 프로의식도 조금씩 문화 쪽으로 옮겨 간다.
    프로의식이 낮은 고참이 리더면 반대로 끌어내린다 */
 const _ldC=new Map();
-function teamLeaders(tid){const ps=domestic(tid).filter(p=>captainAvailable(p,tid)&&p.age>=27),cap=captainOf(tid),sig=ps.map(p=>{initPers(p);return [p.id,p.age,p.pers.pro,leadOf(p).cha,p.hist?.length,p.draft?.y,p.acq?.d];}),k=JSON.stringify([G.day,G.mvN||0,cap?.id,sig]),c=_ldC.get(tid);if(c&&c.g===G&&c.k===k&&c.L.every(p=>captainAvailable(p,tid)&&G.players[p.id]===p))return c.L;
+function teamLeaders(tid){ return rosterMemo('L'+tid,()=>teamLeaders0(tid)); } /* 평가 구간에서는 한 번만(01_rules rosterMemo) */
+function teamLeaders0(tid){const ps=domestic(tid).filter(p=>captainAvailable(p,tid)&&p.age>=27),cap=captainOf(tid),sig=ps.map(p=>{initPers(p);return [p.id,p.age,p.pers.pro,leadOf(p).cha,p.hist?.length,p.draft?.y,p.acq?.d];}),k=JSON.stringify([G.day,G.mvN||0,cap?.id,sig]),c=_ldC.get(tid);if(c&&c.g===G&&c.k===k&&c.L.every(p=>captainAvailable(p,tid)&&G.players[p.id]===p))return c.L;
   const vs=p=>p.pers.pro*1.2+Math.min(teamTenure(p,tid).n,8)*1.2+leadOf(p).cha*.8+(p.age>=30?3:0),V=new Map(ps.map(p=>[p,vs(p)])),L=[cap,...ps.filter(p=>p!==cap).sort((a,b)=>V.get(b)-V.get(a)||a.id-b.id).slice(0,2)].filter(Boolean);_ldC.set(tid,{g:G,k,L});return L;}
 function teamCulture(tid){ const L=teamLeaders(tid); if(!L.length)return {pro:10,w:0,L}; let s=0,ws=0; L.forEach((p,i)=>{ const w=(i===0?1:.5)*clamp(leadOf(p).cha/12,.4,1.5); s+=p.pers.pro*w; ws+=w; }); return {pro:s/ws,w:clamp(ws/1.6,.25,1.2),L}; }
 function effPro(p){ initPers(p); if(p.team==null||p.foreign||p.prospect)return p.pers.pro; const c=teamCulture(p.team); if(c.L.includes(p))return p.pers.pro; const sus=p.age<=24?.4:p.age<=28?.25:.12; return clamp(p.pers.pro+(c.pro-p.pers.pro)*sus*c.w,1,20); }

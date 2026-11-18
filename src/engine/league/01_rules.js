@@ -181,12 +181,15 @@ function newPlayer(o){
 }
 let PROJ_FX=0; /* 1이면 KBO 1군 실적이 없는 외국인을 빼고 본다(예상 전력의 외국인 불확실성, 03_depth projRating) */
 const fUnproven=p=>!!p&&!!p.foreign&&(()=>{ const L=(p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2); return sum(L.map(h=>h.pa||0))<100&&sum(L.map(h=>h.outs||0))<90; })(); /* KBO 1군 100타석·30이닝 미만 */
-const playersOf=tid=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); return Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p))); }; /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
+/* 성능(11-18): 세계를 바꾸지 않는 평가 구간(AI 트레이드 후보 계산 등)에서는 구단 명단을 한 번만 걸러 쓴다. 구간 밖에서는 늘 새로 거른다(결과 동일). 돌려줄 때는 사본이라 호출한 쪽이 정렬·수정해도 기억이 바뀌지 않는다 */
+let _rosM=null; function rosterMemoOn(){ _rosM=new Map(); } function rosterMemoOff(){ _rosM=null; }
+function rosterMemo(k,f){ if(!_rosM)return f(); let v=_rosM.get(k); if(v===undefined){ v=f(); _rosM.set(k,v); } return Array.isArray(v)?v.slice():v; }
+const playersOf=tid=>rosterMemo('p'+tid+':'+(PROJ_LENS?1:0)+(PROJ_FX?1:0),()=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); return Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p))); }); /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
 const awayOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&isAway(p));
 const domestic=tid=>playersOf(tid).filter(p=>!p.foreign);
 /* 구단이 돈을 주는 선수(계약 기준): 국가대표 차출로 잠시 빠진 선수도 소속 선수로 연봉·샐러리캡·선수 수에 넣는다. 군 복무 중인 선수만 지급에서 뺀다.
    playersOf·domestic은 '지금 경기에 뛸 수 있는 선수'라 계약·돈 계산에는 쓰지 않는다 */
-const ownedOf=(tid,d=G.day)=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!milOn(p,d)); /* d: 그날 병역 처리(입대·전역)를 마친 뒤 기준 */
+const ownedOf=(tid,d=G.day)=>rosterMemo('o'+tid+':'+d,()=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!milOn(p,d))); /* d: 그날 병역 처리(입대·전역)를 마친 뒤 기준 */
 const domPayOf=tid=>ownedOf(tid).filter(p=>!p.foreign);
 /* 다음 시즌(s) 상한 전망: 그 시즌 정규시즌에 연봉을 받는 선수만(시즌 전체 복무·시즌 뒤 전역은 빼고, 개막 전 전역은 넣는다, 검수 11-09zk) */
 const milCapOut=(p,s)=>payFrac(p,s)<=0;
