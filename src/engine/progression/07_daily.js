@@ -174,6 +174,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   if(day===c.end){ const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(c.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 정규시즌 마지막 날 남은 달을 바로 마감 */
   offerDropCool(); G.offers=(G.offers||[]).filter(x=>{ if(x.exp<day||!tradeOpen()){ addLog(`${tname(x.from)}의 트레이드 제안이 ${x.exp<day?'만료':'트레이드 마감으로 무효가'}되었습니다.`); offerMailDone(x.id); return false;}
     const why=offerBlockMsg(x); if(why){ note('트레이드',`${tname(x.from)}이(가) 트레이드 제안을 철회했습니다. ${why}`); offerMailDone(x.id); return false; } /* 그사이 성사될 수 없게 된 제안은 자동 철회 */ return true; });
+  playPromiseTick(); /* 그날 실제 출전을 반영한 약속은 소속 구단·연도와 함께 즉시 이행한다(#746·747·749). */
 }
 function specialKind(day,hid,aid){
   if(hid!==G.user&&aid!==G.user)return null;

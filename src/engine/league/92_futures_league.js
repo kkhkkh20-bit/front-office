@@ -50,7 +50,9 @@ let FL_TMP=[];
 function flSmGames(p){ const u=p.flSmUse,m=milPeriod(p); return u&&m&&u.y===G.year&&u.from===m.from?u.g||0:0; }
 function flTemp(t,isP,pos){ const p=newPlayer({isP,pos,age:ri(19,23)}); for(const k in p.r)if(typeof p.r[k]==="number")p.r[k]=clamp(Math.round(N(44,4)),36,52); /* 2군 하위권 수준 */ p.team=t===FL_SM?null:t; p.flTemp=1; p.name='육성 '+p.name; FL_TMP.push(p.id); return p; }
 function flSide(t,d){ const F=G.fl, {B,P}=flPool(t,d); if(B.length<6||P.length<2)return null; /* 그래도 너무 적으면(6명·2명 미만) 경기 취소 */
-  const W=t!==FL_SM&&G.futLn&&G.futLn[t]; let ln=null;
+  const cached=t!==FL_SM&&G.futLn&&G.futLn[t],requests=t===FL_SM?[]:futReqList(t),ids=cached?[...Object.values(cached.ln||{}),...(cached.rot||[])]:[];
+  const stale=!!cached&&(requests.some(p=>!(p.isP?cached.rot||[]:Object.values(cached.ln||{})).includes(p.id))||playersOf(t).some(p=>{const r=p.futReq;return r&&ids.includes(p.id)&&(r.d??r.until-42)<=cached.d&&r.until>=cached.d&&!futReqOn(p);}));
+  const W=stale?null:cached; let ln=null;
   if(W&&W.ln){ const L={}; let ok=true; for(const k in W.ln){ const p=B.find(q=>q.id===W.ln[k]); if(!p){ ok=false; break; } L[k]=p; } if(ok&&Object.keys(L).length>=9)ln=L; } /* 2군 감독의 주간 라인업 그대로 */
   if(!ln&&t===FL_SM&&B.length>10){ const gp=flSmGames; const S=B.slice().sort((x,y)=>gp(y)-gp(x)); const rest=new Set(S.slice(0,B.length-10)); const B2=B.filter(q=>!rest.has(q)); if(B2.length>=9)ln=futLineupE(t,B2); } /* 상무: 복무 선수가 고르게 뛰도록 많이 뛴 선수부터 번갈아 쉰다 */
   if(!ln)ln=futLineupE(t,B);
@@ -58,7 +60,7 @@ function flSide(t,d){ const F=G.fl, {B,P}=flPool(t,d); if(B.length<6||P.length<2
     if(low&&gp(low)<=lo-3){ ln.DH=low; } } /* 상무: 오래 못 뛴 선수는 지명타자로라도 내보낸다 */
   for(const k of FGPOS)if(!ln[k])ln[k]=flTemp(t,false,k==='DH'?'1B':k); /* 빈 자리는 임시 육성 선수 */
   const posOf={}; for(const k in ln)posOf[ln[k].id]=k; const start=Object.values(ln); const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),t===FL_SM?null:t);
-  const rotIds=(W&&W.rot)||P.slice().sort((a,b)=>spV(b)-spV(a)).slice(0,5).map(p=>p.id); const rot=rotIds.map(id=>P.find(p=>p.id===id)).filter(Boolean);
+  const requested=stale||requests.some(p=>p.isP),rotIds=(W&&W.rot)||P.slice().sort((a,b)=>requested?Number(futReqOn(b))-Number(futReqOn(a))||(rpPlanOf(t,b)==='sp2')-(rpPlanOf(t,a)==='sp2')||(spV(b)+roleBias(t,b))-(spV(a)+roleBias(t,a)):spV(b)-spV(a)).slice(0,requested?Math.max(5,P.filter(p=>rpPlanOf(t,p)==='sp2'||futReqOn(p)).length):5).map(p=>p.id); const rot=rotIds.map(id=>P.find(p=>p.id===id)).filter(Boolean);
   const ri0=F.rot[t]||0; let sp=null; for(let i=0;i<rot.length&&!sp;i++){ const p=rot[(ri0+i)%rot.length]; if(flRested(p,d)&&(p.fat||0)<70){ sp=p; F.rot[t]=(ri0+i+1)%rot.length; } }
   if(!sp)sp=P.filter(p=>flRested(p,d)).sort((a,b)=>spV(b)-spV(a))[0]||null; if(!sp)sp=flTemp(t,true);
   const pen=P.filter(p=>p!==sp&&!rot.includes(p)&&(p.fat||0)<80).sort((a,b)=>penV(b)-penV(a)).slice(0,8); if(pen.length<2)pen.push(...rot.filter(p=>p!==sp&&flRested(p,d)).slice(0,2)); while(pen.length<4)pen.push(flTemp(t,true));

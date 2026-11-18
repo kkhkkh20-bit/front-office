@@ -59,33 +59,36 @@ function legendRetire(p){const tids=new Set([p.team,p.fr&&p.fr.tid,...(p.hist||[
    너무 느슨하면(40 미만) 집중력이 떨어지고 기행이 잦아지며, 너무 세면(70 초과) 경직된 플레이와 젊은 선수 불만이 생긴다 */
 function leadOf(p){ initPers(p); if(!p.lead){ const pr=p.pers.pro, tp=p.pers.temp; p.lead={str:clamp(Math.round(pr*.55+tp*.35+hn('lead:str',p.id)*2.5),1,20),cha:clamp(Math.round(p.pers.loy*.3+(p.age-22)*.45+ovr(p)/8+hn('lead:cha',p.id)*2),1,20)}; } return p.lead; } /* 처음 읽을 때 정하되 난수 대신 선수 번호 잡음: 리더 조회 순서가 세계를 바꾸지 않게(안정화 11-14) */
 const LEADSTY=s=>s>=15?'엄격한 원칙주의':s>=11?'단호한 편':s>=7?'부드러운 형님형':'자유방임형';
-function electCaptain(tid,why){ const all=domestic(tid).filter(p=>!p.ys&&healthy(p)&&!(p.joinY>G.year)&&p.age>=25); if(!all.length)return null;
-  /* 주장은 적어도 주전급에서: 주전(라인업·선발·필승조) 또는 팀 국내 선수 상위 12명 안 */ let reg=new Set(); try{ const d=depth(tid); reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }catch(e){} const top=new Set([...domestic(tid)].filter(p=>!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12).map(p=>p.id));
+/* 현장 리더는 예상 전력 보기(PROJ_LENS)와 무관하게 오늘 실제로 구단에 있는 선수여야 한다. */
+function captainAvailable(p,tid){return !!(p&&p.team===tid&&!p.foreign&&!p.prospect&&!p.ys&&!(p.joinY>G.year)&&!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold&&!(p.fLeave>G.day)&&!(p.boy>G.day)&&!milServing(p)&&!(p.ntAway>G.day&&p.ntFrom<=G.day)&&!(typeof sisFlAwayOn==='function'&&sisFlAwayOn(p)));}
+function captainPool(tid,why,deputy){ const all=domestic(tid).filter(p=>captainAvailable(p,tid)&&p.age>=25); if(!all.length)return [];
+  /* 주장은 적어도 주전급에서: 주전(라인업·선발·필승조) 또는 팀 국내 선수 상위 12명 안. 현장 대행 조회는 라인업을 다시 계산하지 않는다. */ let reg=new Set(); if(!deputy)try{ const d=depth(tid); reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }catch(e){} const top=new Set([...domestic(tid)].filter(p=>captainAvailable(p,tid)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12).map(p=>p.id));
   const ps0=all.filter(p=>reg.has(p.id)||top.has(p.id)); const ps=ps0.length>=3?ps0:all;
   /* 선수들은 자기 관리가 되는(프로의식) 고참을 주장으로 뽑는다: 프로의식·연차·나이(29~34세가 가장 많이 뽑힘)·영향력·실력 */
   const ageB=a=>a>=29&&a<=34?6:a>=27?3:a>=35?3:0;
   const sc=p=>teamTenure(p,tid).n*2+ovr(p)*.3+leadOf(p).cha*1.1+((p.pers&&p.pers.loy)||10)*.3+((p.pers&&p.pers.pro)||10)*1.3+(((p.pers&&p.pers.pro)||10)<=7?-(8-((p.pers&&p.pers.pro)||10))*3:0)+ageB(p.age)+ /* 자기 관리가 안 되는 선수(프로의식 7 이하)는 주장 표를 거의 못 받는다 */hn('el'+G.year+(why||''),p.id)*4;
-  const L=ps.map(p=>({p,v:Math.max(1,sc(p))})).sort((a,b)=>b.v-a.v).slice(0,3); const c=L[0].p; const t=team(tid); const old=t.cap; let S0=null, S1=null; try{ G._cl=null; S0=climateOf(tid).S; }catch(e){} t.cap=c.id; try{ G._cl=null; S1=climateOf(tid).S; }catch(e){}
-  if(tid===G.user&&!G.unemp){ const n=domestic(tid).filter(p=>!p.ys).length; const w=L.map(x=>Math.pow(x.v,4)); const tot=sum(w); const votes=w.map(x=>Math.round(n*x/tot)); const ld=leadOf(c);
+  return ps.map(p=>({p,v:Math.max(1,sc(p))})).sort((a,b)=>b.v-a.v||a.p.id-b.p.id).slice(0,3); }
+function captainVotes(L,n){const w=L.map(x=>Math.pow(x.v,4)),tot=sum(w),raw=w.map(x=>n*x/tot),v=raw.map(Math.floor);raw.map((x,i)=>({i,r:x-v[i]})).sort((a,b)=>b.r-a.r||L[a.i].p.id-L[b.i].p.id).slice(0,n-sum(v)).forEach(x=>v[x.i]++);return v;}
+function electCaptain(tid,why,quiet){ const L=captainPool(tid,why);if(!L.length)return null;const c=L[0].p; const t=team(tid); const old=t.cap; let S0=null, S1=null; try{ G._cl=null; S0=climateOf(tid).S; }catch(e){} t.cap=c.id;t.capName=c.name; try{ G._cl=null; S1=climateOf(tid).S; }catch(e){}
+  if(!quiet&&tid===G.user&&!G.unemp){ const n=domestic(tid).filter(p=>captainAvailable(p,tid)).length; const votes=captainVotes(L,n); const ld=leadOf(c);
 
     mail('선수단','주장 선출 결과',`선수단 투표로 ${c.name}(${posLabel(c)}, ${c.age}세)이(가) 주장이 됐습니다${why?`(${why})`:''}.\n\n${L.map((x,i)=>`${x.p.name} ${votes[i]}표`).join(' · ')}\n\n리더십 성향: ${LEADSTY(ld.str)} · 선수단 영향력 ${ld.cha>=14?'큼':ld.cha>=9?'보통':'작음'}.${(()=>{ const c=teamCulture(tid); const L=c.L.slice(1).map(x=>x.name); return `\n고참 리더: ${L.join(', ')||'없음'} · 선수단 문화(리더들의 자기 관리) ${c.pro>=14?'좋음 — 젊은 선수들이 따라 배웁니다':c.pro<=8?'느슨함 — 젊은 선수들이 나쁜 습관을 배울 수 있습니다':'보통'}`; })()} ${old!=null&&old!==c.id&&G.players[old]&&G.players[old].team===tid?`전임 ${G.players[old].name}은(는) 주장에서 물러났습니다.`:''}\n\n주장은 선수들이 직접 뽑습니다. 기강이 지나치게 느슨하거나 세면 주장과 면담해 방향을 바꿔 달라고 요청할 수 있습니다.`,{kind:'선수',ref:c.id,face:c.id,acts:[{l:'선수단 리더십',a:'go',v:'train:lead'}]}); }
-  if(old!==c.id){const op=old!=null&&G.players[old];chron('cap',`선수단 투표로 ${c.name} 주장 선출${why?` (${why})`:''}${op?` · 전임 ${op.name}`:''}${S0!=null&&S1!=null?` · 기강 ${S0}→${S1}`:''}`,c.id,tid,{source:'captain:'+G.day+':'+c.id});}
+  if(!quiet&&old!==c.id){const op=old!=null&&G.players[old];chron('cap',`선수단 투표로 ${c.name} 주장 선출${why?` (${why})`:''}${op?` · 전임 ${op.name}`:''}${S0!=null&&S1!=null?` · 기강 ${S0}→${S1}`:''}`,c.id,tid,{source:'captain:'+G.day+':'+c.id});}
   return c; }
 /* ===== 리더의 프로의식이 선수단에 퍼진다 =====
    리더 = 주장 + 고참 리더 2명(프로의식·연차·영향력이 높은 27세 이상). 리더들의 프로의식(영향력만큼 가중)이 선수단 문화가 된다.
    젊은 선수일수록 문화를 따라간다: 성장 의지·사고 확률은 '문화가 반영된 프로의식'으로 보고, 해마다 실제 프로의식도 조금씩 문화 쪽으로 옮겨 간다.
    프로의식이 낮은 고참이 리더면 반대로 끌어내린다 */
 const _ldC=new Map();
-function teamLeaders(tid){ const k=G.day+':'+(team(tid)||{}).cap; const c=_ldC.get(tid); if(c&&c.k===k&&c.L.every(p=>p.team===tid&&G.players[p.id]===p))return c.L; /* 같은 날 방출·이적한 리더는 다시 계산 */ const t=team(tid); const ps=domestic(tid).filter(p=>!p.ys&&!(p.joinY>G.year)&&p.age>=27);
-  const cap=t&&t.cap!=null&&G.players[t.cap]&&G.players[t.cap].team===tid?G.players[t.cap]:null; const vs=p=>{ initPers(p); return p.pers.pro*1.2+Math.min(teamTenure(p,tid).n,8)*1.2+leadOf(p).cha*.8+(p.age>=30?3:0); };
-  const L=[cap,...ps.filter(p=>p!==cap).sort((a,b)=>vs(b)-vs(a)).slice(0,2)].filter(Boolean); _ldC.set(tid,{k,L}); return L; }
+function teamLeaders(tid){const ps=domestic(tid).filter(p=>captainAvailable(p,tid)&&p.age>=27),cap=captainOf(tid),sig=ps.map(p=>{initPers(p);return [p.id,p.age,p.pers.pro,leadOf(p).cha,p.hist?.length,p.draft?.y,p.acq?.d];}),k=JSON.stringify([G.day,G.mvN||0,cap?.id,sig]),c=_ldC.get(tid);if(c&&c.g===G&&c.k===k&&c.L.every(p=>captainAvailable(p,tid)&&G.players[p.id]===p))return c.L;
+  const vs=p=>p.pers.pro*1.2+Math.min(teamTenure(p,tid).n,8)*1.2+leadOf(p).cha*.8+(p.age>=30?3:0),V=new Map(ps.map(p=>[p,vs(p)])),L=[cap,...ps.filter(p=>p!==cap).sort((a,b)=>V.get(b)-V.get(a)||a.id-b.id).slice(0,2)].filter(Boolean);_ldC.set(tid,{g:G,k,L});return L;}
 function teamCulture(tid){ const L=teamLeaders(tid); if(!L.length)return {pro:10,w:0,L}; let s=0,ws=0; L.forEach((p,i)=>{ const w=(i===0?1:.5)*clamp(leadOf(p).cha/12,.4,1.5); s+=p.pers.pro*w; ws+=w; }); return {pro:s/ws,w:clamp(ws/1.6,.25,1.2),L}; }
 function effPro(p){ initPers(p); if(p.team==null||p.foreign||p.prospect)return p.pers.pro; const c=teamCulture(p.team); if(c.L.includes(p))return p.pers.pro; const sus=p.age<=24?.4:p.age<=28?.25:.12; return clamp(p.pers.pro+(c.pro-p.pers.pro)*sus*c.w,1,20); }
 /* 해마다(1월 1일 성장 때): 27세 이하는 실제 프로의식이 문화 쪽으로 한 칸씩 옮겨 갈 수 있다 */
 function proDrift(p){ if(p.team==null||p.foreign||p.age>27)return 0; initPers(p); const c=teamCulture(p.team); if(c.L.includes(p))return 0; const d=c.pro-p.pers.pro;
   if(d>=3&&R()<.3*c.w){ p.pers.pro++; return 1; } if(d<=-3&&R()<.22*c.w){ p.pers.pro--; return -1; } return 0; }
 function climateOf(tid){ if(!G._cl||G._cl.d!==G.day)G._cl={d:G.day,v:{}}; const C=G._cl.v;
-  const t=team(tid); const c=t&&t.cap!=null&&G.players[t.cap]&&G.players[t.cap].team===tid?G.players[t.cap]:null; const m=G.mgr[tid]; const md=m&&m.disc!=null?m.disc:45;
+  const t=team(tid); const c=captainOf(tid); const m=G.mgr[tid]; const md=m&&m.disc!=null?m.disc:45;
   const L=c?leadOf(c):{str:9,cha:6}; const adj=(leadAdjOf(tid)||{v:0}).v; /* 구단 징계로 잡힌 기강: 모든 구단 같은 식(AI는 G.leadAdjT) */
   const tc=t&&t.cap, mid=m&&m.id; { const x=C[tid]; if(x&&x.cap===c&&x.k&&x.k[0]===tc&&x.k[1]===(c&&c.team)&&x.k[2]===L.str&&x.k[3]===L.cha&&x.k[4]===mid&&x.k[5]===md&&x.k[6]===adj)return x; } /* 성능: 타석마다 불리므로 열쇠 문자열을 만들지 않고 값을 그대로 견준다(조건은 예전 열쇠와 같다) */
   const key=[tc,c&&c.id,c&&c.team,L.str,L.cha,mid,md,adj].join(':');
@@ -94,8 +97,11 @@ function climateOf(tid){ if(!G._cl||G._cl.d!==G.day)G._cl={d:G.day,v:{}}; const 
   const o={S,w,boost,cap:c,band:S<40?'loose':S>70?'rigid':S>=45&&S<=65?'good':'ok',key}; Object.defineProperty(o,'k',{value:[tc,c&&c.team,L.str,L.cha,mid,md,adj]}); /* 비교용 값은 저장하지 않는다 */ return C[tid]=o; }
 /* 주간: 느슨하면 기행, 너무 세면 젊은 선수 불만. 모든 구단 같은 규칙(사용자 11-14 "AI도 공평하게").
    우리 구단 사고는 단장 결정으로 오고, 다른 구단은 AI 단장이 같은 세 가지 징계 가운데 고른다(aiLeadPick) */
-function leadAdjOf(tid){ const A=tid===ME()?G.leadAdj:(G.leadAdjT||{})[tid]; return A&&A.until>G.day?A:null; }
-function leadAdjSet(tid,a){ if(tid===ME())G.leadAdj=a; else (G.leadAdjT=G.leadAdjT||{})[tid]=a; G._cl=null; }
+function leadAdjOf(tid){const owner=G.leadAdjTid??G.user,A=tid===owner&&G.leadAdj?G.leadAdj:(G.leadAdjT||{})[tid];return A&&A.until>G.day?A:null;}
+function leadAdjSet(tid,a){(G.leadAdjT=G.leadAdjT||{})[tid]=a;if(tid===G.user&&!G.unemp){G.leadAdj=a;G.leadAdjTid=tid;}G._cl=null;}
+function leadAdjMigrate(){const T=G.leadAdjT=G.leadAdjT||{},owner=G.leadAdjTid??G.user;if(G.leadAdj&&owner!=null)T[owner]=G.leadAdj;G.leadAdjTid=G.user;G.leadAdj=G.unemp?null:T[G.user]||null;G._cl=null;}
+function leadAdjLeave(old){const T=G.leadAdjT=G.leadAdjT||{},owner=G.leadAdjTid??old;if(G.leadAdj&&owner===old)T[old]=G.leadAdj;G.leadAdjTid=G.user;G.leadAdj=G.unemp?null:T[G.user]||null;G._cl=null;}
+function leadAdjBoost(tid,v,days){const a=leadAdjOf(tid);leadAdjSet(tid,{v:Math.min(12,Math.max(0,a?.v||0)+v),until:Math.max(a?.until||0,G.day+days)});}
 function climateWeek(){ if(period()==='off'||!G.teams)return; if(G.leadAdjT)for(const k of Object.keys(G.leadAdjT))if(!(G.leadAdjT[k]&&G.leadAdjT[k].until>G.day))delete G.leadAdjT[k];
   for(const t of G.teams){ try{ climateWeekT(t.id); }catch(e){} } }
 function climateWeekT(tid){ const me=tid===ME(); const cl=climateOf(tid); const ps=domestic(tid).filter(p=>!p.ys&&healthy(p)&&!isAway(p)); if(!ps.length)return;
@@ -108,20 +114,27 @@ function climateWeekT(tid){ const me=tid===ME(); const cl=climateOf(tid); const 
   const m=G.mgr[tid]; const mr=m&&!m.interim?(m.disc>=65?`${m.name} 감독은 엄하게 다스려야 한다는 입장입니다.`:m.disc<40?`${m.name} 감독은 선수를 감싸고 싶어 합니다.`:`${m.name} 감독은 구단 판단에 따르겠다고 합니다.`):'';
   evNew('lead',`${p.name} ${k}`,`${p.name}(${posLabel(p)})이(가) ${d}. 선수단 기강이 느슨하다는 말이 나옵니다(기강 지수 ${cl.S}). ${mr} 구단 차원의 징계를 정해 주세요.`,[{l:'구단 징계: 출장 정지 5일',fx:'선수 기분이 크게 내려가고 그 기간 못 뜁니다. 선수단이 한동안 바짝 긴장합니다.'},{l:'구단 징계: 벌금',fx:'선수 기분이 내려가고 한동안 기강이 조금 잡힙니다.'},{l:'선처하고 감독에게 맡기기',fx:'선수 기분은 지킵니다. 감독이 엄한 편이면 감독이 직접 다잡습니다.'}],{ref:p.id,data:{pid:p.id},from:'운영팀',def:1}); }
 /* 징계 효과(우리·다른 구단 같은 값). 0 출장 정지 5일, 1 벌금, 2 선처(감독 규율 60 이상이면 감독이 다잡는다) */
-function leadDisc(tid,p,i){ const cur=Math.max(0,(leadAdjOf(tid)||{v:0}).v); const m=G.mgr[tid];
-  if(i===0){ p.mor=clamp((p.mor??60)-12,0,100); p.susp=G.day+5; leadAdjSet(tid,{v:Math.min(12,cur+6),until:G.day+45}); return 'susp'; }
-  if(i===1){ p.mor=clamp((p.mor??60)-6,0,100); leadAdjSet(tid,{v:Math.min(12,cur+3),until:G.day+30}); return 'fine'; }
-  p.mor=clamp((p.mor??60)+2,0,100); if(m&&!m.interim&&m.disc>=60){ leadAdjSet(tid,{v:Math.min(12,cur+3),until:G.day+30}); return 'mgr'; } return 'free'; }
+function leadDisc(tid,p,i){const m=G.mgr[tid];
+  if(i===0){ p.mor=clamp((p.mor??60)-12,0,100);p.susp=Math.max(p.susp||0,G.day+5);leadAdjBoost(tid,6,45);return 'susp'; }
+  if(i===1){ p.mor=clamp((p.mor??60)-6,0,100);leadAdjBoost(tid,3,30);pdDiscipline(p,'lead:'+G.day+':'+p.id,{fine:true});return 'fine'; }
+  p.mor=clamp((p.mor??60)+2,0,100);if(m&&!m.interim&&m.disc>=60){leadAdjBoost(tid,3,30);return 'mgr';}return 'free';}
 /* AI 단장의 징계 선택: 사람 단장이 화면에서 보는 것(기강 지수·감독 규율 성향·주전 여부)만으로.
    감독이 엄하면 선처해도 기강이 잡히니 선처, 기강이 많이 무너졌고 주전이 아니면 출장 정지, 그 밖에는 벌금 */
 function aiLeadPick(tid,p,cl){ const m=G.mgr[tid]; if(m&&!m.interim&&m.disc>=60)return 2; let reg=false; try{ reg=isRegular(p); }catch(e){}
   return cl.S<30&&!reg?0:1; }
 const EVH_LEAD={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; const r=leadDisc(G.user,p,i);
-    if(r==='susp'){ news('구단',`${tshort(G.user)}, ${p.name} 출장 정지 5일 징계`,`구단이 ${p.name}에게 자체 징계를 내렸습니다.`,0,{ref:p.id}); return `${p.name}에게 출장 정지 5일 징계를 내렸습니다. 선수단이 바짝 긴장했습니다.`; }
-    if(r==='fine')return `${p.name}에게 벌금을 물렸습니다. 기강이 조금 잡혔습니다.`;
+    if(r==='susp'){news('구단',`${tshort(G.user)}, ${p.name} 출장 정지 자체 징계`,`구단이 ${p.name}에게 자체 징계를 내렸습니다. 출장 정지는 ${dmd(p.susp)}까지입니다.`,0,{ref:p.id});return `${p.name}에게 자체 징계를 내렸습니다. 출장 정지는 ${dmd(p.susp)}까지이며 기존의 더 긴 정지 기간은 유지합니다. 선수단이 바짝 긴장했습니다.`;}
+    if(r==='fine')return `${p.name}에게 벌금 ${money(pdDiscFine(p))}을 물렸습니다. 기강이 조금 잡혔습니다.`;
     const m=G.mgr[G.user]; if(r==='mgr')return `구단은 선처했고, ${m.name} 감독이 선수단 미팅을 열어 직접 다잡았습니다.`; return `${p.name}을(를) 선처했습니다. 감독도 크게 문제 삼지 않았습니다.`; } };
-function captainOf(tid){ const t=team(tid); const p=t.cap!=null?G.players[t.cap]:null; if(p&&p.team===tid)return p;
-  if(t.cap!=null&&tid===G.user&&!G.unemp){ const was=G.players[t.cap]; if(was)news('구단',`${tshort(tid)} 주장 ${was.name} 떠나… 선수단 술렁`,'주장이 팀을 떠나 더그아웃 분위기가 가라앉았습니다.',-1); for(const q of playersOf(tid))q.mor=clamp((q.mor??60)-2,0,100); t.cap=null; } const a=electCaptain(tid,tid===G.user&&!G.unemp?'전임 주장 이탈':''); return a; }
+/* 조회는 현재 현장 대표만 반환한다. 선출·이탈 처리는 이적/복무/하루 진행의 변경 경로에서 한다. */
+const _capC=new Map();
+function captainOf(tid){const t=team(tid);if(!t||t.cap==null)return null;const p=G.players[t.cap];if(captainAvailable(p,tid))return p;const old=_capC.get(tid),mv=G.mvN||0;if(old&&old.g===G&&old.d===G.day&&old.cap===t.cap&&old.mv===mv){if(old.p&&captainAvailable(old.p,tid))return old.p;if(!old.p&&!domestic(tid).some(p=>p.age>=25&&captainAvailable(p,tid)))return null;}const acting=captainPool(tid,'현장 주장 대행',true)[0]?.p||null;_capC.set(tid,{g:G,d:G.day,cap:t.cap,mv,p:acting});return acting;}
+function captainTitle(tid,p=captainOf(tid)){const t=team(tid);return p&&t&&t.cap!=null&&t.cap!==p.id?'주장 대행':'주장';}
+function captainReconcile(tid,quiet){if(tid==null)return null;const t=team(tid);if(!t||t.cap==null)return null;const old=G.players[t.cap],gone=!old||old.team!==tid||old.foreign;if(!gone&&!milServing(old))return captainOf(tid);const name=old?.name||t.capName||'전임 주장';
+  if(gone&&!quiet){for(const p of playersOf(tid))p.mor=clamp((p.mor??60)-2,0,100);if(tid===G.user&&!G.unemp)news('구단',`${tshort(tid)} 주장 ${name} 떠나… 선수단 술렁`,'주장이 팀을 떠나 더그아웃 분위기가 가라앉았습니다.',-1);}
+  const next=electCaptain(tid,gone?'전임 주장 이탈':'주장 군 복무',quiet);if(!next)t.cap=null;G._cl=null;_ldC.delete(tid);return next;}
+function captainReconcileAll(quiet,fill){for(const t of G.teams||[])if(fill&&t.cap==null)electCaptain(t.id,'선수단 주장 선출',quiet);else captainReconcile(t.id,quiet);}
+function captainMigrate(){captainReconcileAll(true,true);for(const t of G.teams||[]){const p=G.players[t.cap];if(p&&p.team===t.id)t.capName=p.name;delete t.capt;}}
 
 /* ===== 시상: 정규시즌이 끝나면 후보와 투표를 정하고, 발표는 실제 일정대로 한다
    MVP·신인왕은 11월 24일 KBO 시상식(기자단 125명 투표), 골든글러브는 12월 9일(288명 투표).
