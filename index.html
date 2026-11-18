@@ -20738,10 +20738,11 @@ function trStintFix(){ let n=0; for(const tr of G.trades||[]){ if(!tr.gi)continu
     if(e!=null){ (tr.end=tr.end||{})[id]=e; n++; } } } return n; }
 /* 지명권 원구단은 당시 명시된 메타만 쓴다. 옛 저장에 원구단이 없으면 추정 연결하지 않는다. */
 function pkDrafted(y,k){ const [rd,o]=k.split(':').map(Number), picks=G.draft&&G.draft.y===y?G.draft.picks||[]:[], rows=(G.dlog||{})[y]||[];
-  const ids=new Map(); for(const p of Object.values(G.players).concat(Object.values(G.arch||{})))if(p&&p.draft&&p.draft.y===y)ids.set(p.id,{id:p.id,rd:p.draft.rd,from:p.draft.from,tid:p.draft.tid});
-  for(const r of rows){ const old=ids.get(r.id)||{}; ids.set(r.id,{...old,id:r.id,rd:r.rd,from:r.from??old.from,tid:r.t}); }
-  for(const p of picks)if(p.pid>0){ const old=ids.get(p.pid)||{}; ids.set(p.pid,{...old,id:p.pid,rd:p.rd,from:p.from??old.from,tid:p.tid}); }
-  const hit=[...ids.values()].find(d=>d.rd===rd&&(d.from??d.tid)===o); return hit?hit.id:null; }
+  const ids=new Map(); for(const p of Object.values(G.players).concat(Object.values(G.arch||{})))if(p&&p.draft&&p.draft.y===y)ids.set(p.id,{id:p.id,rd:p.draft.rd,from:p.draft.from,tid:p.draft.tid,meta:true});
+  for(const r of rows){ const old=ids.get(r.id); ids.set(r.id,{...(old||{}),id:r.id,rd:r.rd,from:r.from??(old&&old.from),tid:r.t,meta:!!(old&&old.meta)}); }
+  for(const p of picks)if(p.pid>0){ const old=ids.get(p.pid)||{}; ids.set(p.pid,{...old,id:p.pid,rd:p.rd,from:p.from??old.from,tid:p.tid,meta:true}); }
+  /* 원구단이 비면 지명 구단으로 보는 건 선수 draft 메타·진행 중 지명 행이 있을 때만. 원구단 없는 옛 dlog 행만으로는 연결하지 않는다(검수 11-10 회귀 방지) */
+  const hit=[...ids.values()].find(d=>d.rd===rd&&(d.from!=null?d.from:d.meta?d.tid:undefined)===o); return hit?hit.id:null; }
 function tradeReport(tr){ if(!tr.gi)return null; const me=tr.me??G.user; const K=tr.pkk||{}; const dp=L=>(L||[]).map(k=>pkDrafted(K.y,k)).filter(id=>id!=null);
   const E=id=>tr.end&&tr.end[id]!=null?tr.end[id]:null; const got=sum([...tr.gi,...dp(K.get)].map(id=>warSince(id,tr.y,tr.snap,me,E(id)))), gave=sum([...tr.go,...dp(K.give)].map(id=>warSince(id,tr.y,tr.snap,tr.with,E(id)))); return {got,gave,net:got-gave}; } /* 받은·준 지명권으로 뽑은 신인도 성과에(검수 11-09w) */
 function tradeGrade(tid,give,get,cash,pk){ const U=team(G.user); pk=pkNorm(pk); const d=stackIn(get.map(id=>tval(U,G.players[id],'in')))-sum(give.map(id=>tval(U,G.players[id],'out')))-(cash||0)/250+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); /* 지명권도 등급에(검수 11-06) */ /* cash: 우리가 낸 현금(+) 받은 현금(-). 10억이면 4점 */ return d>=8?'A':d>=3?'B':d>=-3?'C':d>=-8?'D':'F'; }
