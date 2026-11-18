@@ -11,7 +11,6 @@ function myCSalaryAt(C=myCInit(),y=fyNow()){return C&&!G.unemp&&C.tid===G.user&&
 /* 시즌을 마친 사람의 AI 급여를 고정한다. 뒤늦은 부임으로 급여를 새 사람에게 넘기지 않는다. */
 function gmSeasonPayCapture(tid,g){if(!myCOver())return;const y=G.year,B=G.gmSeasonPay&&G.gmSeasonPay.y===y?G.gmSeasonPay:(G.gmSeasonPay={y,by:{}});if(B.by[tid])return;const c=g&&gmCon(g,tid);B.by[tid]={id:g&&g.id||null,ai:!!g,sal:c&&(c.y0??g.since??y)<=y&&(c.y1??y)>=y?c.sal||0:0,d:G.day};}
 function gmSeasonAIPay(tid,y){const x=G.gmSeasonPay&&G.gmSeasonPay.y===y&&G.gmSeasonPay.by[tid];if(x)return x.ai?x.sal:0;if(tid===ME())return 0;const g=team(tid).gm,c=gmCon(g,tid);return c&&(c.y0??g.since??y)<=y&&(c.y1??y)>=y?c.sal||0:0;}
-function myCLeft(){ const C=myCInit(); return C?Math.max(0,C.y1-G.year):0; }
 /* 새 계약 시작(취임·이직·재계약) */
 function myCStart(tid,terms,why){ const old=G.myC; const sal=terms&&terms.sal||myCBase(tid), yrs=terms&&terms.yrs||3;
   const y0=myCOver()||G.last&&G.last.y>=G.year?G.year+1:period()==='season'||period()==='post'?G.year:(dobj(G.day).m>=10?G.year+1:G.year);

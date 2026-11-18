@@ -3,6 +3,7 @@
     나중 선언이 앞 선언을 조용히 덮어쓴다(예: originOf가 화면 쪽 같은 이름 함수에 덮여 '내가 꾸린 팀'이 0명으로 나왔던 일).
     일부러 덮어쓰는 경우는 tools/dup-allow.txt에 이름을 적는다.
     상수(const/let)가 두 스크립트에 걸쳐 같은 이름이면 두 번째 스크립트 전체가 실행되지 않으므로 오류.
+ 1-2) 액션 키 중복: 버튼 액션 A의 같은 키를 두 파일(또는 한 객체)에서 정의하면 오류. 일부러 덮어쓰는 키만 A_DUP_ALLOW에 이유와 함께 적는다.
  2) 초기화 전 사용: 파일 맨 위에서 바로 실행되는 코드가 뒤 번호 파일의 상수(const/let)를 쓰면 'before initialization' 오류.
     (예: 첫 화면이 TELE를 읽어 화면이 비었던 일, 앞 파일에서 Object.assign(A, …)를 부른 일)
  사용: node tools/check-static.js  (acorn, acorn-walk 필요: cd tools && npm i) */
@@ -31,6 +32,20 @@ for(const [name,L] of Object.entries(by)){ if(L.length<2)continue; const where=L
   const lex=L.filter(d=>d.kind!=='function'&&d.kind!=='var');
   if(lex.length&&L.length>1){ errors.push(`[이름 충돌·상수] ${name}: ${where} — 같은 이름의 상수가 있으면 뒤 스크립트가 통째로 실행되지 않거나 덮어쓰기가 됩니다`); continue; }
   if(!allow.has(name))errors.push(`[이름 충돌] ${name}: ${where} — 나중 선언이 앞을 덮어씁니다. 일부러라면 tools/dup-allow.txt에 추가`); }
+/* 1-2) 액션 키 중복: 버튼 액션 A는 const A={…}·A.x=…·Object.assign(A,{…})로 여러 파일에 흩어져 있다.
+   같은 키를 두 번 정의하면 빌드 순서상 뒤 정의가 조용히 이기고 앞 정의는 죽은 코드가 된다(예: 40_actions의 evDeleg가 67_delegate에 덮였던 일).
+   일부러 덮어쓰는 경우만 아래 목록에 '키: 이유'로 적는다(지금은 없음) */
+const A_DUP_ALLOW={};
+parsed.forEach((P,gi)=>{ const seen={}; const add=(k,node)=>{ if(k==null)return; (seen[k]=seen[k]||[]).push(P.fileOf(node.start)); };
+  const objKeys=o=>{ for(const p of o.properties)if(p.type==='Property'&&!p.computed)add(p.key.name??p.key.value,p); };
+  const asg=e=>{ if(e.type==='AssignmentExpression'&&e.operator==='='&&e.left.type==='MemberExpression'&&!e.left.computed&&e.left.object.type==='Identifier'&&e.left.object.name==='A')add(e.left.property.name,e); };
+  for(const n of P.ast.body){
+    if(n.type==='VariableDeclaration'){ for(const d of n.declarations)if(d.id.type==='Identifier'&&d.id.name==='A'&&d.init&&d.init.type==='ObjectExpression')objKeys(d.init); continue; }
+    if(n.type!=='ExpressionStatement')continue; const e=n.expression;
+    (e.type==='SequenceExpression'?e.expressions:[e]).forEach(x=>{ asg(x);
+      if(x.type==='CallExpression'&&x.callee.type==='MemberExpression'&&x.callee.object.name==='Object'&&x.callee.property.name==='assign'&&x.arguments[0]&&x.arguments[0].type==='Identifier'&&x.arguments[0].name==='A')
+        for(const o of x.arguments.slice(1))if(o.type==='ObjectExpression')objKeys(o); }); }
+  for(const [k,L] of Object.entries(seen))if(L.length>1&&!A_DUP_ALLOW[k])errors.push(`[액션 중복] A.${k}: ${L.join(', ')} — 뒤 정의가 앞을 덮어씁니다. 일부러라면 check-static.js의 A_DUP_ALLOW에 이유와 함께 추가`); });
 /* 2) 초기화 전 사용: 맨 위 실행 코드(함수 선언 몸통·나중에 부르는 함수 몸통 제외)가 같은 스크립트의 뒤쪽 상수를 쓰는지 */
 parsed.forEach((P,gi)=>{ const lexPos={}; for(const d of decls)if(d.g===gi&&(d.kind==='const'||d.kind==='let'||d.kind==='class'))lexPos[d.name]=d.pos;
   for(const n of P.ast.body){ if(n.type==='FunctionDeclaration')continue;

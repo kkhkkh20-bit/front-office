@@ -117,7 +117,6 @@ function coachStudySend(ref,program,focus,tid=G.user,cid,automatic=false){const 
   team(tid).cash-=P.cost;hoBook(tid,[],[['코치 교육·연수',P.cost]]);if(S.ct&&!S.ct.done)(S.ctq=S.ctq||[]).push(S.ct);S.ct=T;(S.ctUsed=S.ctUsed||{})[tid+':'+y]=coachStudyQuota(tid,y);c.sisAway=T.to;
   (c.studyHist=Array.isArray(c.studyHist)?c.studyHist:[]).push({key,id:c.id,y,tid,program,focus,from:T.from,to:T.to,cost:P.cost,status:'away',name:c.name});
   chron('coach',`${c.name} ${P.l} 출발 · ${CAB[focus]} · ${P.days}일 · 구단 지원 ${money(P.cost)} · ${dmd(T.to)} 복귀 예정`,null,tid,{source:key+':start'});if(tid===G.user&&!G.unemp)addLog(`${c.name} 코치의 ${P.l}를 구단에서 지원했습니다(${money(P.cost)}). ${dmd(T.to)}까지 보직은 빈자리로 운영합니다.`);return '';}
-function sisCoachUsed(tid,y){return coachStudyQuota(tid,y)>=2;}
 function sisCoachOf(tid){return coachStudyOf(tid);}
 function sisCoachSend(cid,role){const country=OCL_BY[cid]?.c;if(!country||G.sis?.p?.[cid]?.tid!==G.user)return '자매구단에만 보낼 수 있습니다.';return coachStudySend(role,country,'yng',G.user,cid);}
 function coachStudyTarget(T){const all=[...Object.values(G.coach||{}).flatMap(C=>Object.values(C||{})),...(G.coachX||[]),...Object.values(G.orgT||{}).flatMap(o=>o.coachX||[]),...(G.cmarket||[])],c=all.find(c=>c&&c.id===T.id);if(c)return {person:c,coach:c};const m=Object.values(G.mgr||{}).find(m=>m&&(m.cid===T.id||(T.ob!=null&&m.ob===T.ob)));if(m)return {person:m,coach:m.coachStudySnapshot||T.coachSnapshot||null};return {person:null,coach:T.coachSnapshot||null};}

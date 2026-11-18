@@ -32,7 +32,6 @@ function pcToday(g,k,id){ let pa=0,h=0,hr=0,so=0; for(let i=0;i<k;i++){ const y=
 function pcPitToday(g,k,id){ let so=0,bf=0; for(let i=0;i<k;i++){ const y=g.pbp[i]; if(typeof y[1]!=='number'||y[2]!==id)continue; bf++; if(y[3]==='K')so++; } return {so,bf}; }
 function pcBest(p){ try{ const a=arsenal(p,p.r.stf).filter(x=>x[0]!=='직구').sort((x,z)=>z[1]-x[1])[0]; return a?a[0]:''; }catch(e){ return ''; } }
 function pcHand(b,p){ if(!b||!p||b.bt==='양')return ''; return b.bt===p.th?(b.bt==='좌'?'좌 대 좌':'우 대 우'):''; }
-function pcNum(n){ return n>0?n:0; }
 /* 메인: {c:캐스터, a:해설} */
 /* 실책한 야수의 자리(기록에 남은 경우) */
 function pcFAt(g,half,pos,k){ const r=castLineup(g,half%2?'a':'h',k??g.pbp.length).find(z=>z.pos===pos); return r?G.players[r.id]:null; } /* 그 타석 시점의 수비수(경기 끝 배치가 아니라, 검수 11-08) */

@@ -5,7 +5,6 @@
    4) 고민 묻기는 실제 상태에서 고민을 꺼낸다(출전·약속·트레이드 명단·다른 구단 관심·군 문제·FA·이적 적응·부상·피로·타격감·자리 경쟁).
       친분이 낮고 말수가 적은 선수는 같은 고민을 두루뭉술하게 말한다(사실은 같다). 숨은 능력치는 숫자로 말하지 않는다.
    효과(기분 변화·약속·분발)는 29_mood.js talk()가 정하고, 여기서는 문장만 고른다. 고르는 데 경기 난수(R)는 쓰지 않는다 */
-const PV_LABEL={rookie:'신인(긴장)',leader:'베테랑 리더',vet:'베테랑',bold:'자신감형',touchy:'예민형',quiet:'과묵형',foreign:'외국인',plain:'성실형'};
 function pvVoice(p){ const s=p&&p.pers||{}, a=p&&p.age||25;
   if(p.foreign)return 'foreign';
   if(a<=22||(a<=24&&(p.svc||0)<=1))return 'rookie';

@@ -16,7 +16,6 @@ function mentalRead(p,k){ if(!p||!p.pers)return {t:'알 수 없음',src:'',sd:99
 function mentalSum(p){ const r=mentalRead(p,'pro'), t=mentalRead(p,'temp'); if(r.sd>=99)return '성향 정보 없음'; const a=mentalRead(p,'amb'); return `${r.src}: 프로의식 ${r.t} · 야망 ${a.t} · 예민도 ${t.t}`; }
 const moodLabel=m=>m>=80?'매우 좋음':m>=65?'좋음':m>=45?'보통':m>=30?'불만':'매우 불만';
 const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';
-function persText(p){ const s=p.pers; const t=[]; if(s.pro>=15)t.push('프로의식이 강함'); if(s.pro<=7)t.push('훈련 태도가 들쭉날쭉'); if(s.amb>=15)t.push('야망이 큼'); if(s.loy>=15)t.push('구단 충성심이 높음'); if(s.loy<=6)t.push('시장 평가를 중시'); if(s.temp>=15)t.push('예민한 편'); if(s.temp<=6)t.push('무던한 편'); return t.length?t.join(' · '):'평범한 성향'; }
 /* 출전 약속: 약속한 날의 출전량(타석·아웃·경기)을 기준으로 저장하고, 그 뒤 늘어난 만큼으로 판정한다(약속 전 기록은 세지 않는다) */
 function playPromNow(p,y=G.year,tid=p.team){ const h=seasonTotalT(p,y,'1군',tid)||{}; return {y,tid,pa:h.pa||0,outs:h.outs||0,g:h.g||0}; }
 function mkPromise(p,days){if(p.promise&&(p.promise.tid??p.team)===p.team)return p.promise;const n=p.playPromN=(p.playPromN||0)+1;return {until:G.day+(days||30),b:playPromNow(p),tid:p.team,d:G.day,n};}

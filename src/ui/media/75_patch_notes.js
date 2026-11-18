@@ -9,6 +9,13 @@ const PATCH=[
     '해외에서 돌아오는 국내 선수의 복귀 협상, 구단 이름을 눌러 그 리그 순위로 가는 링크도 같은 화면에 있습니다.',
     '해외파 소식에 KBO를 떠난 외국인과 관찰했던 후보의 콜업·홈런·큰 시즌·한국행 추진도 오릅니다.',
     '포스팅이 무산된 선수는 이듬해 한 번 더 도전하고, 빅리그급 스타는 해외 FA 때도 미국행을 더 원합니다.']},
+  {id:'2026-11-18-perf',d:'11월 18일',t:'진행·화면이 가벼워졌습니다(오래 한 세이브·휴대폰)',items:[
+    '다른 구단끼리 트레이드를 따지는 주간 시장, 외국인 시장 관심도, 트레이드 묶음 찾기가 구단 명단을 한 번만 걸러 씁니다. 오래 한 세이브에서 주간 진행일이 몇 배 빨라집니다(결과는 그대로).',
+    '경기 반영 중 오류에 대비한 경기 전 사본을 가볍게 뜹니다. 퓨처스까지 하루 열 경기 남짓에 드는 시간이 1/3 정도로 줄었습니다.',
+    '자동 저장은 버튼을 연달아 누르는 동안 미뤘다가 한 번에 하고(세이브가 클수록 조금 더 기다림), 압축은 화면과 다른 스레드에서 합니다. 저장할 때 화면이 멈추는 시간이 1/3 정도로 줄었습니다. 탭을 닫거나 숨기면 남은 저장을 바로 끝냅니다.',
+    '선수 얼굴 사진은 한 번 자른 그림을 기억해 두고, 더 선명한 사진이 도착한 얼굴만 다시 자릅니다. 화면을 다시 그릴 때마다 보이는 얼굴 전부를 다시 자르던 일이 없어졌습니다.',
+    '입단한 선수에게 남아 있던 아마추어 시절 스카우트 관찰 사본을 지웁니다(관찰 기록은 그대로). 오래 한 세이브 크기가 20% 가까이 줄어듭니다.',
+    '래더 자동 등록·클라우드 저장의 1분 확인은 할 차례인지부터 보고, 차례가 아니면 덱 만들기·세이브 읽기를 하지 않습니다.']},
   {id:'2026-11-18-fa-grant',d:'11월 18일',t:'구단주 FA 영입 자금',items:[
     '구단주가 "이 선수를 잡으라"며 내는 FA 영입 자금(구단주 주문·자금 요청 승인)은 그 선수 계약에 전액 쓸 수 있습니다. 예산 여유가 마이너스여도 지원금이 그 구멍에 먼저 묻히지 않고, 영입 자금 액수도 그 선수가 요구하는 계약금·보상금을 지금 가용자금으로 못 내는 만큼까지(연봉 기준의 두 배까지) 잡힙니다.',
     '영입 자금을 낸 선수는 상한(경쟁균형세) 초과 결재도 구단주가 승인합니다. 상한의 10%(15%)를 넘는 절대 한도는 그대로입니다.',
@@ -2013,4 +2020,4 @@ function patchPop(){ if(!G||UI.title||!PATCH.length)return ''; if(navigator.webd
   return `<div class="rv-w pn-w"><div class="rv pn"><div class="pn-top"><span class="eyebrow">업데이트 소식</span><span class="small muted">새 업데이트 ${L.length}개 · 위에서부터 최신</span></div><div class="pn-body">${L.map((x,i)=>patchBlock(x,i>=3)).join('')}</div><a class="pn-cafe" href="${FEEDBACK_URL}" target="_blank" rel="noopener">${cafeMark(34)}<b>공식 카페 · 프런트야구</b><span>질문·건의·버그 제보는 네이버 카페에 남겨 주세요. 다음 업데이트에 반영합니다.</span><i>카페 가기 ›</i></a><div class="pn-foot"><button class="btn primary block" data-a="patchOk">확인</button></div></div></div>`; }
 /* 처음 화면·게임 설정용 카드 */
 function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map((x,i)=>patchBlock(x,all&&i>=3)).join('')}</section>`; }
-Object.assign(A,{ patchOk(){ patchMark(); UI.patchClosed=true; render(); }, patchAll(){ UI.patchAll=!UI.patchAll; render(); }, patchShow(){ UI.patchClosed=false; try{ localStorage.removeItem(PATCH_KEY); }catch(e){ UI.patchSeenMem=''; } render(); } });
+Object.assign(A,{ patchOk(){ patchMark(); UI.patchClosed=true; render(); }, patchAll(){ UI.patchAll=!UI.patchAll; render(); } });

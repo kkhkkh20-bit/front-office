@@ -50,7 +50,7 @@ function mgrPlayStat(tid,m){ const y=G.year; let sb=0,cs=0,hr=0,pa=0; for(const 
   const L=mgrRolesOf(m); if(L.includes('runSPD'))return `올 시즌 도루 ${sb}개 · 실패 ${cs}개(성공률 ${sb+cs?Math.round(sb/(sb+cs)*100):0}%)`; if(L.includes('pow'))return `올 시즌 팀 홈런 ${hr}개`; return ''; }
 
 /* 영입 전 미리 보기: 이 선수가 지금 우리 팀에 오면 감독이 어디에 쓰는가(1군 등록 가정). 계산 뒤 소속은 그대로 되돌린다 */
-function mgrPlanPos(p){ if(!p||G.unemp||p.team===G.user||!G.mgr[G.user])return ''; const t0=p.team, e0=p.e1; p.team=G.user; p.e1=true;
+function mgrPlanPos(p){ if(!p||G.unemp||p.team===G.user||!G.mgr[G.user])return ''; const t0=p.team, e0=p.e1, rm=_rosM; _rosM=null; p.team=G.user; p.e1=true; /* 잠시 옮겨 보는 동안 명단 기억을 쓰지 않는다(01_rules rosterMemo) */
   try{ const d=depth(G.user); if(p.isP){ const i=d.sp.findIndex(x=>x.id===p.id); if(i>=0)return `${i+1}선발`; const j=d.pen.findIndex(x=>x.id===p.id); return j<0?'2군':j===0?'마무리':j<=3?'필승조':'불펜'; }
     const k=Object.keys(d.ln||{}).find(x=>d.ln[x]&&d.ln[x].id===p.id); return k?`주전 ${POSK[k]||k}`:d.start.some(x=>x.id===p.id)?'주전':`백업 ${POSK[p.pos]||p.pos}`; }
-  catch(e){ return ''; } finally{ p.team=t0; p.e1=e0; } }
+  catch(e){ return ''; } finally{ p.team=t0; p.e1=e0; _rosM=rm; } }

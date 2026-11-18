@@ -89,14 +89,6 @@ function careerHub(p){
     <section class="card ch-feats"><h3>대기록 <span class="small muted">${fe.length}건</span></h3>${featBox}</section>
     <section class="card ch-side"><h3>통산 이정표</h3>${mile}<h3>소속 구단</h3>${clubs||'<p class="small muted keep">소속 기록이 없습니다.</p>'}${mvT?`<div class="ch-mvl">${mvT}</div>`:''}${dr?`<h3>입단</h3>${dr}`:''}</section></div>`; }
 
-/* 능력 변화 기준 고르기 + 핵심 능력 월별 흐름(FM 능력치 기록 그래프처럼, 사용자 11-08) */
-function attrCmpBar(p,m,dl){ const opts=[['1m','최근 1개월'],['sea','올해'],['1y','1년'],['off','끄기']];
-  const keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit']; const L=(p.rm||[]).concat([{d:G.day,r:p.r}]);
-  const spark=k=>{ const v=L.map(x=>dv(x.r[k]??p.r[k])); if(v.length<2)return ''; const lo=Math.min(...v)-1, hi=Math.max(...v)+1, W=64, H=18; const pts=v.map((y,i)=>`${(i/(v.length-1)*W).toFixed(1)},${(H-(y-lo)/(hi-lo)*H).toFixed(1)}`).join(' '); const up=v[v.length-1]-v[0]; return `<svg class="pf-spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="${up>0?'var(--good)':up<0?'var(--bad)':'var(--muted)'}" stroke-width="1.6"/></svg>`; };
-  const ch=dl?keys.map(k=>{ const x=dv(p.r[k])-dv(dl.r[k]??p.r[k]); return {k,x}; }):[]; const sum=ch.length?ch.reduce((a,c)=>a+c.x,0):0;
-  return `<div class="pf-cmp"><div class="row" style="gap:4px;flex-wrap:wrap"><span class="small muted">능력 변화</span>${opts.map(([k,l])=>`<button class="chipn${m===k?' on':''}" data-a="attrCmp" data-v="${k}">${l}</button>`).join('')}${dl?`<span class="small muted">${dmd(dl.from)} 대비 · 핵심 합계 <b class="${sum>0?'good':sum<0?'bad':''}">${sum>0?'+':''}${sum}</b></span>`:m!=='off'?'<span class="small muted">비교할 기록이 아직 없습니다</span>':''}</div>
-    ${L.length>=2?`<div class="pf-trend">${keys.map(k=>`<span><i>${TOOLK[k]}</i>${spark(k)}<b>${dv(p.r[k])}</b></span>`).join('')}</div>`:''}</div>`; }
-
 /* 선수 상황판 PC 맞춤(UI 3단계 3-0): 화면 전체가 넘치면 낮은 순서부터 상자를 접는다. 접힌 내용은 위 탭에 그대로 있다. 상자 안은 스크롤해도 된다.
    그래도 넘치면(아주 낮은 창) 상자를 자르지 않고 화면 전체를 한 번에 내린다(.pf-scroll). */
 /* 능력 탭 보고서 아래 성격(카페 11-17): 관리 탭(선수와의 관계 · 성향)과 같은 정보·같은 공개 범위. 우리 선수만, 감독·코치진이 본 훈련 태도로(평판 · 오차 있음) */

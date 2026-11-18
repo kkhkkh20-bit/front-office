@@ -26,12 +26,14 @@ function ladderInstall(tid,snap,pool){ const off=tid*LADDER_B_OFF; /* 자리마�
   const rest=snap.roster.filter(id=>P.get(id).isP&&!snap.rot.includes(id)&&!roles.includes(id)).map(get).sort((a,b)=>penV(b)-penV(a)||(a.id-b.id));
   return {tid,snap,lineup,bench,rot,pen:[...roles.map(get),...rest],ri:0}; }
 /* 한 경기 명단(06_game gameSide와 같은 모양). 다친 선수는 그 자리에 가장 맞는 벤치 선수로, 선발은 순번대로(지친 선발은 건너뜀) */
-function ladderSide(C,day){ const ok=p=>p&&!(p.injOut>0);
+function ladderBatting(C){ const ok=p=>p&&!(p.injOut>0);
   const ln={}, order=[], used=new Set(), bench=C.bench.filter(ok);
   for(const [p,pos] of C.lineup){ let q=ok(p)?p:null;
     if(!q){ const L=bench.filter(b=>!used.has(b.id)&&(pos!=='C'||b.pos==='C')); q=L.sort((a,b)=>posScore(b,pos)-posScore(a,pos)||(a.id-b.id))[0]||bench.filter(b=>!used.has(b.id))[0]||null; }
     if(!q)throw new Error('건강한 야수 9명 미만'); ln[pos]=q; used.add(q.id); order.push(q); }
   const posOf={}; for(const k in ln)posOf[ln[k].id]=k;
+  return {ln,order,used,bench,posOf}; }
+function ladderSide(C,day){ const ok=p=>p&&!(p.injOut>0), {ln,order,used,bench,posOf}=ladderBatting(C);
   let sp=null; for(let i=0;i<C.rot.length&&!sp;i++){ const p=C.rot[(C.ri+i)%C.rot.length]; if(ok(p)&&(p.lastStart==null||day-p.lastStart>=4)&&(p.fat||0)<70){ sp=p; C.ri=(C.ri+i+1)%C.rot.length; } }
   if(!sp)sp=[...C.rot,...C.pen].filter(ok).sort((a,b)=>(a.fat||0)-(b.fat||0)||(a.id-b.id))[0];
   const pen=C.pen.filter(p=>p!==sp&&ok(p));
