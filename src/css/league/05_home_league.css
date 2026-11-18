@@ -250,6 +250,11 @@ body .ltile .l1>span>i{display:flex;align-items:center;gap:4px;white-space:nowra
 .ovs-lds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px;margin:4px 0 8px}.ovs-ld{display:flex;align-items:baseline;gap:6px;min-width:0;font-size:13px}.ovs-ld .lnk{padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ovs-ld b{margin-left:auto}
 .ovs-st{width:100%}.ovs-st td,.ovs-st th{text-align:left;font-size:12px;vertical-align:top}.ovs-st td:first-child{width:38px;white-space:nowrap}.ovs-st td:nth-child(3){white-space:nowrap;width:52px}.ovs-cl{white-space:normal;word-break:keep-all}.ovs-cl span{display:block}.ovs-cl .lnk{padding:0;margin-right:6px;font-size:12px}.ovs-rk{white-space:normal;word-break:keep-all}
 .ovs-feed{list-style:none;margin:0;padding:0;display:grid;gap:4px}.ovs-feed li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;align-items:baseline;padding:5px 8px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);cursor:pointer;font-size:13px;word-break:keep-all}.ovs-feed li.hot{border-color:var(--warn,#e6b93b)}
+/* 해외 활성화 5: 해외 리그 줄마다 관찰 등록·영입 문의·복귀 협상 단추, 구단 이름은 순위로 가는 링크 */
+.ovq-acts{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center}.ovq-acts .ovq-b,.ovq-row .ovq-b{min-height:26px;padding:0 8px;margin:0;font-size:12px;white-space:nowrap}.ovq-b.on{border-color:var(--good);color:var(--good)}.ovq-b.off{opacity:.6}
+.ovq-row{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-top:2px;min-width:0}.ovq-row .small{word-break:keep-all}
+.ovq-td{text-align:left!important}.ovq-tbl{flex-wrap:nowrap}.ovq-tm{padding:0;font-size:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:2px}
+.ovq-back{display:grid;gap:6px;margin:0 0 8px}.ovq-back .abr{border-color:var(--acc)}
 /* 시즌 시상 보드(45b_award_board): MVP·신인왕 카드, 골든글러브 그림 + 수상자 표, 포스트시즌 MVP */
 .awb{display:flex;flex-direction:column;gap:14px;min-width:0}
 .awb-sec{display:flex;flex-direction:column;gap:8px;min-width:0}
