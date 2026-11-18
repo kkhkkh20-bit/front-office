@@ -332,7 +332,7 @@ function campInjLeave(old){ const t=team(old); if(!t)return; if(G.campInj>0)t.ca
 /* 새 구단의 시즌 효과를 이어받는다 */
 function campInjJoin(nt){ G.campInj=nt.campInj>0?nt.campInj:null; G.form=nt.form&&G.day<=nt.form.until?nt.form:null; G.mpick=nt.mpick&&nt.mpick.y===G.year?nt.mpick:null; }
 /* rehire: 야인에서 부임할 때 다시 부른다. 경질 때 남긴 그 구단 몫(훈련 방침 등)을 기본값으로 덮어쓰지 않는다 */
-function leaveTeamState(old,rehire){playPromiseFix();
+function leaveTeamState(old,rehire){playPromiseFix();champGiftHandOff(old);
   fovsHandOff(old);
   ciDecisionLeave(old);
   gmPlanLeave(old); draftClubLeave(old,rehire);
@@ -425,6 +425,7 @@ function faSwitchNote(old,cancel){ const F=G.fa; if(!F||F.closed)return; F.prevU
   const b=C.length?`${tname(old)} 이름으로 낸 FA 제안 ${C.length}건은 이직으로 효력이 끝나 거둬들였습니다: ${C.map(p=>p.name).join(', ')}. 새 구단 조건으로 다시 제안하려면 FA 시장을 여세요.`:'';
   mail('운영팀',L.length?`전 소속 구단 FA ${L.length}명: 보상은 ${tshort(old)} 몫`:`FA 제안 ${C.length}건 효력 종료`,[a,b].filter(Boolean).join('\n\n'),{imp:true,kind:'FA',acts:[{l:'FA 시장',a:'goWork',v:'FA시장'}]}); }
 function switchTeam(tid){ try{ gmClubMigrate(); }catch(e){} draftClubInit(); rchkInit(); champEventsInit(); const old=G.user,oldActive=!G.unemp,oldName=meName()||'단장';let oldNewGM=null; G.unemp0=!!G.unemp; /* 야인에서 부임: 사임 때 옛 구단에 남긴 스태프를 덮어쓰지 않는다 */ const faW=G.fa&&!G.fa.closed?{cancel:oldActive?Object.keys(G.fa.offers||{}).map(Number).filter(id=>G.players[id]&&G.players[id].team==null):[]}:null; /* FA 기간 이직: 거둬지는 제안을 먼저 적어 둔다(검수 11-14) */ if(G.spon)G.spon.press=G.pr?G.pr.press:50; /* 떠나는 구단 언론 지수를 초기화 전에 계약서에 남긴다(검수 11-07) */ const ot=team(old), nt=team(tid),previousGM=nt.gm; if(myCOver()){gmSeasonPayCapture(old,oldActive?null:ot.gm);gmSeasonPayCapture(tid,previousGM);} sponBeforeJoin(tid); if(oldActive)campInjLeave(old); try{ contractHandOff(old); }catch(e){} try{ if(G.franSel&&G.franSel[old]){ delete G.franSel[old]; _franC={k:null}; } }catch(e){} /* 떠난 구단은 AI가 맡아 프랜차이즈 지정이 자동으로(검수 11-17 #189) */ spendHandOff(old); /* 옛 구단에서 쓴 돈은 옛 구단이 내고, 새 구단 결산에 섞이지 않게 */ { const I=G.invT&&G.invT[tid]; if(I){ if(I.fy===fyNow()){ G.spend.stad=I.stad; G.spend.facB=I.facB; } delete G.invT[tid]; } }
+  champGiftHandOff(old);
   facMoveTeam(old,tid); /* 시설·공사·버스는 구단에 남는다: 떠나는 구단은 그대로 갖고, 가는 구단 것을 그대로 이어받는다 */
   /* 부상 방지 프로그램·병원 제휴·해외 스카우트망·전력분석 수준·영구결번도 구단 것이다: 옛 구단에 두고, 새 구단 것(처음이면 기본 수준)을 이어받는다 */
   { const O=G.orgT=G.orgT||{}; O[old]={med:G.med,intl:G.intl,data:G.data,acad:G.acad||null,retNos:G.retNos||[],capex:G.capex||null,truck:G.truck||null,coachX:G.unemp&&O[old]&&O[old].coachX?O[old].coachX:(G.coachX||[])}; /* 야인이면 사임 때 남겨 둔 보조 코치 */ const n=O[tid]; delete O[tid]; G.coachX=n&&n.coachX?n.coachX:[]; /* 보조 코치도 구단 것(검수 11-07) */ G.retNos=n&&n.retNos?n.retNos:[]; G._capexN=n?n.capex:null; G.truck=n&&n.truck?n.truck:null; /* 시설 투자 요청 제한·트럭 시위 이력도 구단 것 */ /* 영구결번도 그 구단 것 */
@@ -439,7 +440,7 @@ function switchTeam(tid){ try{ gmClubMigrate(); }catch(e){} draftClubInit(); rch
     mail('코칭스태프',`마무리캠프 합류 (${dmd(KD(11,25))}까지)`,`${tname(tid)} 마무리캠프는 이미 진행 중입니다. 훈련 방향은 ${fk==='skill'?'기본(기술 훈련)으로':`전에 정해 둔 ${FCAMP[fk]}(으)로`} 이어지며, 성장 결산은 오늘(${dmd(G.day)}) 기준으로 비교합니다. 방향을 바꾸려면 아래에서 고르세요.`,{kind:'캠프',acts:Object.entries(FCAMP).map(([k,l])=>({l,a:'fcampSet',v:k}))}); }
   for(const e of (G.evs||[]))if(!e.done){ if(e.k==='ovsback'){ const q=G.players[e.data&&e.data.pid]; if(q&&q.retAsk)try{ ovsBackAI(q); }catch(x){} } if(e.k==='sd2back'){ const q=G.players[e.data&&e.data.pid], o=e.data&&e.data.o; if(q&&o&&q.team===o.to)try{ sdBackDo(q,o,sdBackAI(q,o)); }catch(x){} } /* 2차 드래프트 복귀 결정 대기 중 이직: 옛 구단(이제 AI)이 한 번 정한다(검수 11-06) */ e.done=true; } /* 미결 해외 복귀 협상은 옛 구단(이제 AI)이 계약하거나 거절하고 닫는다 */ { const MK=G.mktT=G.mktT||{}, fy=sponSeason(); if(!G.unemp)MK[old]={fy,v:G.marketing}; const n=MK[tid]; G.marketing=n&&n.fy===fy?n.v:2000; delete MK[tid]; } /* 결산 뒤 겨울에 떠났다 돌아와도 다음 시즌 마케팅 설정을 이어받는다(검수 11-09x) */ /* 마케팅 예산도 그 구단 그해 설정: 떠난 구단 결산에 남고, 같은 해 돌아오면 이어받는다(검수 11-09h) */ G.pr=KB&&KB.pr?KB.pr:{fan:55,press:50,hist:[]};
   for(const p of Object.values(G.players)){ if(p.team===old)delete p.listed; }
-  G.unemp=null; G.gameOver=null; G.stops=[]; if(G.contract&&G.contract.done)G.contract.tid=tid; if(G.day>G.cal.end&&G.rolled!==G.year)try{ cOptAsk(); }catch(e){} /* 정규시즌 뒤 부임: 새 구단(돌아온 구단 포함)의 아직 안 정한 구단 옵션을 다시 묻는다(검수 11-09zzb) */
+  G.unemp=null; G.gameOver=null; G.stops=[]; champGiftAdopt(tid); if(G.contract&&G.contract.done)G.contract.tid=tid; if(G.day>G.cal.end&&G.rolled!==G.year)try{ cOptAsk(); }catch(e){} /* 정규시즌 뒤 부임: 새 구단(돌아온 구단 포함)의 아직 안 정한 구단 옵션을 다시 묻는다(검수 11-09zzb) */
   { const r=G.sea&&G.sea.rec&&G.sea.rec[tid], per=period(); G.gmJoin=r&&(per==='season'||per==='post'||G.rolled!==G.year)?{y:G.year,tid,w:r.w||0,l:r.l||0,t:r.t||0,psDone:!!(G.ps&&G.ps.done&&G.ps.finDay!=null&&dobj(G.ps.finDay).y===G.year)}:null; } /* 결산 전이면(한국시리즈 뒤 포함) 부임 시점 승패를 빼고, 가을야구가 끝난 뒤 부임했으면 그해 우승·준우승도 남의 것(검수 11-08) */ /* 부임 시점 승패: 단장 통산에서 뺀다 */
   /* 스태프는 구단에 남는다: 우리 스카우트·분석원은 옛 구단 몫으로, 새 구단의 스태프를 이어받는다 */
   try{ const L=stInit(); if(!(G.unemp0&&L[old]))L[old]={sc:G.scouts||[],an:anaList()}; stSync(old); const nl=L[tid]||stMakeTeam(nt); delete L[tid]; G.scouts=nl.sc; G.analysts=nl.an; }catch(e){} delete G.unemp0;

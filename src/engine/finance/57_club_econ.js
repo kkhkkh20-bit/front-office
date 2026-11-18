@@ -160,7 +160,7 @@ function aiOwnerYear(h){ const ord=h.order||[]; const EI=ecoIdx(h.y);
    겨울(11월 20일)과 여름(7월 1일)에 남는 돈(현금 - 완충액)을 계획별 비율로 나눠 시설·구장·스태프·팬 행사에 쓴다. 비용과 규칙은 우리 구단과 같다 */
 const AI_SPEND={win:{fac:.45,stad:.15,st:.3,fan:.1},next:{fac:.5,stad:.2,st:.2,fan:.1},build:{fac:.7,stad:.05,st:.25,fan:0},star:{fac:.3,stad:.4,st:.1,fan:.2},tight:{fac:0,stad:0,st:0,fan:0}};
 const AI_STAD_PREF={win:['turf','seat','vis'],next:['seat','fnb','turf'],build:['fnb','seat'],star:['seat','vis','fnb','prem'],tight:[]};
-function aiBuffer(t){ const EI=ecoIdx(sponSeason()); return Math.round((1500+(t.owner==='profit'?1500:0)+(t.owner==='win'?-500:0))*EI)+(t.indie?2000+newStadDue(t.id):0); }
+function aiBuffer(t){ const EI=ecoIdx(sponSeason()); return Math.round((1500+(t.owner==='profit'?1500:0)+(t.owner==='win'?-500:0))*EI)+(t.indie?2000+newStadDue(t.id):0)+champFundReserve(t.id); }
 function aiSpend(t,winter){ if(t.id===ME())return null; const pl=planOf(t)||'next', W=AI_SPEND[pl]||AI_SPEND.next; const buf=aiBuffer(t); let ex=(t.cash||0)-buf-stadXpHold(t.id); /* 시와 협의 중인 관중석 증설 구단 부담분은 남겨 둔다(37b) */
   let ops=null; if(winter){ try{ ops=aiOpsPlan(t,ex,W); ex-=ops.cash; }catch(e){} } /* 겨울: 사람 단장이 쓰는 운영 수단(부상 방지·병원·육성 방침·아카데미·응원단·버스)부터 같은 값으로 정한다(99_ai_parity) */
   if(ex<800||pl==='tight')return null;

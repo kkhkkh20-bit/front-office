@@ -282,11 +282,14 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   { dec.hld=[]; for(const k of ['h','a']){ const s=S[k]; s.pitchers.slice(1).forEach(id=>{ if(id===dec.w||id===dec.l||id===dec.sv||id===s.pitchers[s.pitchers.length-1])return; /* 패전투수는 홀드 없음 */ const xl=s.exit[id]; if(svQ(s,id)&&xl!=null&&xl>=1&&!(s.blown&&s.blown[id]))dec.hld.push(id); }); } }
   CLUTCH=0; return {S,score,line,hits,ev,dec,inn,walk,pbp,broadcast,W}; /* W(좌우·타구 기록)는 applyGame에서 쓴다 */
 }
+/* 실제 수비 위치는 선발·교체표 전체에서 경기당 한 번씩 센다. 선발 g/pos/slot 장부는 그대로 둔다. */
+function gameFieldPositions(s){ const M=new Map(),add=(id,pos)=>{ const p=G.players[id]; if(!p||p.isP||!s.box.has(id)||!ORDER.includes(pos))return; if(!M.has(id))M.set(id,new Set()); M.get(id).add(pos); }; for(const x of s.start||[])add(x.id,x.pos); for(const c of s.changes||[])for(const x of c.lineup||[])add(x.id,x.pos); for(const p of s.order||[])add(p.id,s.posOf[p.id]); return M; }
+function gameFieldRecord(s,y){ for(const [id,positions] of gameFieldPositions(s)){ const p=G.players[id],u=p.use&&p.use.y===y?p.use:(p.use={y,g:0,pos:{},slot:{}}); if(!u.fpos){ u.fpos=Object.assign({},u.pos); u.fOf=['LF','CF','RF'].reduce((n,k)=>n+(u.pos[k]||0),0); } for(const pos of positions)u.fpos[pos]=(u.fpos[pos]||0)+1; if(['LF','CF','RF'].some(k=>positions.has(k)))u.fOf=(u.fOf||0)+1; } }
 function applyGame(day,hid,aid,g,ps){
   if(!ps)relPlayGame(g,day); /* 실제 정규시즌 기용은 당시 감독 개인에게만 귀속(검수 #933). */
   let turfM=1; try{ turfM=stadTurfM(hid); }catch(e){}
   const y=G.year;
-  for(const k of ['h','a']){ const s=g.S[k]; const bm=k==='a'?1+BUS[busLv(s.tid)].f:1; /* 원정 이동 피로 */
+  for(const k of ['h','a']){ const s=g.S[k]; if(!ps)gameFieldRecord(s,y); const bm=k==='a'?1+BUS[busLv(s.tid)].f:1; /* 원정 이동 피로 */
     for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue;
       if(!ps){if(!p.isP)broadcastFormUpdate(p,x);storyGame(p,x,day,g.S[k==='h'?'a':'h'].tid,g.dec,{runsAllowed:g.score[k==='h'?'a':'h'],solo:s.pitchers.length===1});}
       if(p.isP){ const cid=s.cId; if(cid!=null&&cid!==p.id){ const C=p.chem=p.chem||{}; C[cid]=(C[cid]||0)+1; const ks=Object.keys(C); if(ks.length>6){ ks.sort((a,b2)=>C[a]-C[b2]); delete C[ks[0]]; } } /* 배터리 호흡 기록 */ const cd=pitchApp(p,day,x.pc,id===s.sp?.id); const lm=loadMult(p,cd,day);

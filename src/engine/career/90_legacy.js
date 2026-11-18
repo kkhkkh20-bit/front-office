@@ -92,7 +92,7 @@ function legPeople(){ const M=new Map(); for(const x of legRec().L){ let p=M.get
   const wrap=(name,after,before)=>{ try{ const f=eval(name); if(typeof f!=='function')return; const g=function(){ let b; if(before)try{ b=before.apply(this,arguments); }catch(e){} const r=f.apply(this,arguments); if(after)try{ after.call(this,r,arguments,b); }catch(e){} return r; }; eval(name+'=g'); }catch(e){} };
   wrap('settlementCore',(r,a,b)=>legSeason(b),()=>{legEnsure();return legOwners();});
   /* 단장이 바뀐 날 경기 전에 재임 구간을 끊는다(사용자 결정은 날 사이에, AI 경질은 그날 일일 처리에서 일어난다) */
-  wrap('processDay',null,()=>legTrack()); wrap('playDay',null,()=>legTrack()); wrap('psDay',null,()=>legTrack());
+  wrap('processDay',null,()=>legTrack()); wrap('playDay',null,()=>legTrack()); wrap('psDayCore',null,()=>legTrack());
   wrap('switchTeam',()=>legTrack(),function(tid){legEnsure();if(myCOver()){const g=team(tid)?.gm;if(g&&!g.interim){const F=G.gmLegFinish?.y===G.year?G.gmLegFinish:(G.gmLegFinish={y:G.year,by:{}});legTrack();const st=G.gmSt?.[tid],from=st&&st.k===g.id?st:null;if(!F.by[tid])F.by[tid]={k:g.id,n:g.name,endD:G.day,w:from?.w0||0,l:from?.l0||0,ties:from?.t0||0};}}});
   wrap('archPlayer',(r,a)=>{const p=a[0],x=p&&G.arch?.[p.id];if(x&&p.fr)x.fr={...p.fr};if(x)meTradeAgeMigrate();});
   /* 맡은 구단을 떠나는 모든 길(이직·사임·경질·계약 만료·세대 교체)이 지나는 곳 */
