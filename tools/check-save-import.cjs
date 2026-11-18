@@ -10,21 +10,21 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
   const same=w=>{ if(G!==g0)bad.push(w+': 진행 중 게임이 바뀜'); if(localStorage.getItem(slotKey(s1))!==body0)bad.push(w+': 슬롯 본문이 바뀜'); if(localStorage.getItem(META)!==meta0)bad.push(w+': 저장 목록이 바뀜'); if(G&&G.user!==g0.user)bad.push(w+': 사용자 구단이 바뀜'); };
   const mk=f=>{ const g=JSON.parse(txt); f(g); return JSON.stringify(g); };
   /* #19·#20: 필수 항목이 빠진 백업 */
-  for(const [w,f] of [['시즌 기록 없음',g=>{ delete g.sea; }],['없는 사용자 구단',g=>{ g.user=999; }],['선수 없음',g=>{ g.players={}; }],['구단 기록 없음',g=>{ g.sea.rec=[]; }],['구단 순서 뒤바뀜(검수 11-09zr #12)',g=>{ g.teams.reverse(); }],['일정표 없음(11-09zr #12)',g=>{ delete g.cal.sched; }],['상대 구단 전적 없음(11-09zr #12)',g=>{ g.sea.rec[(g.user+1)%g.sea.rec.length]=null; }]]){ importText(mk(f)); same(w); if(!/가져오지 않았습니다/.test(UI.impMsg||''))bad.push(w+': 거절 안내 없음'); }
+  for(const [w,f] of [['시즌 기록 없음',g=>{ delete g.sea; }],['없는 사용자 구단',g=>{ g.user=999; }],['선수 없음',g=>{ g.players={}; }],['구단 기록 없음',g=>{ g.sea.rec=[]; }],['구단 순서 뒤바뀜(검수 11-09zr #12)',g=>{ g.teams.reverse(); }],['일정표 없음(11-09zr #12)',g=>{ delete g.cal.sched; }],['상대 구단 전적 없음(11-09zr #12)',g=>{ g.sea.rec[(g.user+1)%g.sea.rec.length]=null; }]]){ await importText(mk(f)); same(w); if(!/가져오지 않았습니다/.test(UI.impMsg||''))bad.push(w+': 거절 안내 없음'); }
   /* #21: 복원에 실패한 2027년 백업은 최저 연봉을 바꾸지 않는다 */
-  importText(mk(g=>{ g.year=2027; delete g.scouts; })); same('복원 실패'); if(MIN_SAL!==ms0)bad.push(`복원 실패 뒤 최저 연봉이 ${ms0}에서 ${MIN_SAL}(으)로 남음`);
+  await importText(mk(g=>{ const shift=dnum(2027,1,1)-dnum(g.year,1,1); g.year=2027; g.day+=shift; g.cal=withRng(2027,()=>buildCalendar(2027)); g.sea.y=2027; delete g.scouts; })); same('복원 실패'); if(MIN_SAL!==ms0)bad.push(`복원 실패 뒤 최저 연봉이 ${ms0}에서 ${MIN_SAL}(으)로 남음`);
   /* #22: 파일을 고른 뒤 슬롯이 바뀌면 거절 */
-  importText(txt,{title:false,slot:s1+1,g:G}); same('읽는 사이 슬롯 변경');
+  await importText(txt,{title:false,slot:s1+1,g:G}); same('읽는 사이 슬롯 변경');
   /* #17: 같은 날짜·구단이지만 내용이 다른 백업, 슬롯 쓰기가 막힘 */
-  block(k=>k===slotKey(s1)); importText(mk(g=>{ const p=Object.values(g.players)[0]; p.name=p.name+'가'; })); unblock();
+  block(k=>k===slotKey(s1)); await importText(mk(g=>{ const p=Object.values(g.players)[0]; p.name=p.name+'가'; })); unblock();
   if(localStorage.getItem(slotKey(s1))!==body0)bad.push('쓰기 실패인데 본문이 바뀜'); if(/다시 열어도 가져온 백업이 열립니다|^불러왔습니다/.test(UI.impMsg||''))bad.push('쓰기 실패인데 저장됐다고 안내: '+UI.impMsg);
-  importText(txt); if(UI.impMsg!=='불러왔습니다.')bad.push('정상 가져오기 실패: '+UI.impMsg);
+  await importText(txt); if(UI.impMsg!=='불러왔습니다.')bad.push('정상 가져오기 실패: '+UI.impMsg);
   /* #18: 처음 화면 가져오기에서 활성 슬롯 기록이 실패하면 알린다 */
-  UI.title=true; block(k=>k===META); importText(txt); unblock(); const s2=curSlot();
+  UI.title=true; block(k=>k===META); await importText(txt); unblock(); const s2=curSlot();
   if(s2===s1&&!/가져오지 않았습니다/.test(UI.impMsg||''))bad.push('처음 화면 가져오기가 기존 슬롯에 씀'); if(localStorage.getItem(slotKey(s1))==null)bad.push('기존 슬롯 본문이 사라짐'); if(!/슬롯 \d+을\(를\) 고르세요|가져오지 않았습니다/.test(UI.impMsg||''))bad.push('활성 슬롯 기록 실패를 알리지 않음: '+UI.impMsg); if(meta().active!==s1)bad.push('목록 기록이 막혔는데 활성 슬롯이 바뀜');
   /* #23~#26: 슬롯을 바꾸면 이전 게임의 화면 상태를 비운다 */
   let fired=0; UI.expCode='이전 코드'; UI.trnPend={1:'con'}; UI.pcmp=[1,2]; UI.dl={on:true,kind:'am',y:G.year,feed:[],t:setTimeout(()=>{ fired=1; },60)};
-  A.slotLoad(s1); await new Promise(z=>setTimeout(z,150));
+  await A.slotLoad(s1); await new Promise(z=>setTimeout(z,150));
   if(curSlot()!==s1)bad.push('슬롯 전환 실패: '+UI.slotMsg); if(UI.expCode)bad.push('이전 슬롯의 백업 코드가 남음'); if(Object.keys(UI.trnPend||{}).length)bad.push('적용 대기 훈련이 남음'); if((UI.pcmp||[]).length)bad.push('비교 목록이 남음'); if(fired||(UI.dl&&UI.dl.t))bad.push('이전 세이브의 드래프트 타이머가 남음');
   /* #30: 파일 저장을 취소하면 마지막 백업일을 바꾸지 않는다 */
   G.bkAt=G.day-61; const bk=G.bkAt; const dl0=DL; DL={save:async()=>{ throw {code:'declined'}; }}; await A.expFile(); if(G.bkAt!==bk)bad.push('파일 저장을 취소했는데 마지막 백업일이 바뀜');
@@ -50,8 +50,8 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
   const body=()=>unpack(localStorage.getItem(slotKey(curSlot())));
   /* #1: 다른 게임에서 16번째 장면을 보던 중 2번째 장면 백업을 가져온다 */
   const b2=JSON.parse(prepG()); b2.castHold={g:gi,gid:g.gid,k:2}; const b0=JSON.parse(prepG()); delete b0.castHold;
-  UI.cast={g:gi,k:16,play:true,pre:0,spd:1,mode:'hl',hold:1}; importText(JSON.stringify(b2)); if(!G.castHold||G.castHold.k!==2)bad.push('#1 가져온 중계 위치가 바뀜: '+JSON.stringify(G.castHold)); if((body().castHold||{}).k!==2)bad.push('#1 디스크의 중계 위치가 바뀜'); if(UI.cast&&UI.cast.k!==2)bad.push('#1 가져온 경기가 '+UI.cast.k+'번째 장면에서 열림');
-  UI.cast={g:gi,k:16,play:true,pre:0,spd:1,mode:'hl',hold:1}; importText(JSON.stringify(b0)); if(G.castHold||body().castHold)bad.push('#1 중계 정보 없는 백업에 이전 중계 위치가 생김'); if(UI.cast)bad.push('#1 중계 정보 없는 백업에서 중계가 열림');
+  UI.cast={g:gi,k:16,play:true,pre:0,spd:1,mode:'hl',hold:1}; await importText(JSON.stringify(b2)); if(!G.castHold||G.castHold.k!==2)bad.push('#1 가져온 중계 위치가 바뀜: '+JSON.stringify(G.castHold)); if((body().castHold||{}).k!==2)bad.push('#1 디스크의 중계 위치가 바뀜'); if(UI.cast&&UI.cast.k!==2)bad.push('#1 가져온 경기가 '+UI.cast.k+'번째 장면에서 열림');
+  UI.cast={g:gi,k:16,play:true,pre:0,spd:1,mode:'hl',hold:1}; await importText(JSON.stringify(b0)); if(G.castHold||body().castHold)bad.push('#1 중계 정보 없는 백업에 이전 중계 위치가 생김'); if(UI.cast)bad.push('#1 중계 정보 없는 백업에서 중계가 열림');
   /* #6·#7·#8·#9: 재개 상태 */
   UI.cast=null; G.castHold={g:gi,gid:g.gid,k:7,play:false,spd:3,mode:'all',pre:1,pi:2}; spoilG(); const c=UI.cast; if(!c||c.k!==7||c.play||c.spd!==3||c.mode!=='all'||!c.pre||!c.pitch||c.pitch.shown!==2)bad.push('#6~#8 재개 상태가 초기화됨: '+JSON.stringify(c));
   UI.cast=null; G.castHold={g:gi,gid:g.gid,k:-15}; if(spoilG()||UI.cast||G.castHold)bad.push('#9 잘못된 장면 번호를 받아들임');

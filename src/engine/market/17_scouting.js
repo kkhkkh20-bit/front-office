@@ -32,7 +32,9 @@ function roleOf(ofp,p){
 function potZ(p){ return clamp(hn('pz'+G.user,p.id),-2.2,2.2); }
 const sdConf=sd=>sd<=2.5?'매우 높음':sd<=4.5?'높음':sd<=7?'보통':'낮음';
 function halfK(){ return dobj(G.day).m>=7?'h':''; }
-function ownObs(p){ const y0=G.startY??G.year; return new Set((p.hist||[]).filter(h=>h.t===G.user&&h.y>=y0&&(h.pa||h.outs)).map(h=>h.y)).size; }
+/* 합산 줄은 실제 출전했던 연도만 남긴다. 옛 합산 줄의 빈 연도를 추측해 관찰을 만들지 않는다. */
+function histObsYears(h){if(!(h.pa||h.outs))return [];return [...new Set((Array.isArray(h.obsY)?h.obsY:[h.y]).filter(y=>Number.isInteger(y)&&y>=h.y&&y<=(h.y2??h.y)))];}
+function ownObs(p){ const y0=G.startY??G.year; return new Set((p.hist||[]).filter(h=>h.t===G.user).flatMap(histObsYears).filter(y=>y>=y0)).size; }
 /* 우리 팀을 떠난 지 며칠(2년 안이면), 아니면 null. 이적 기록(tLog)의 마지막 '우리 팀에서 나감' 기준 */
 function exOwnD(p){ const x=[...(p.tLog||[])].reverse().find(z=>z.f===G.user); if(!x||x.d==null)return null; const d=G.day-x.d; return d>=0&&d<=730?d:null; }
 function ownSd(p,sc){ const b=sc?scSd(sc,p):SCOUT_SD[0]; const fw=p.gmFw&&p.gmFw.y===G.year&&p.gmFw.t===G.user?1-.06*Math.min(3,p.gmFw.n||0):1; /* 단장이 2군 경기에서 직접 본 선수 */ return clamp(b*anaEff(G.user).sdm*(1-Math.min(.45,ownObs(p)*.15))*fw,1.5,8); }
