@@ -11,16 +11,16 @@ function statCells(p){ // 신인·외국인 후보: 능력치 대신 기록 5칸
   return `<div class="tc-tools sc5">${c('타구속도',ev+'',ev>=140?'gd':ev<130?'bd':'')}${c('OPS',fmt3(r.ops),r.ops>=.9?'gd':r.ops<.65?'bd':'')}${c('홈런',h.hr)}${c('볼삼비',h.so?bk.toFixed(2):'-',bk>=.8?'gd':bk<=.3?'bd':'')}${p.prospect?c('1루',(p.amRun||runOf(p))+''):(()=>{ const w=wrcPlus(h,h.y); return c('wRC+',w==null?'-':w+'',w>=130?'gd':w!=null&&w<80?'bd':''); })()}</div>`; }
 /* 선수 카드: 능력치와 성적이 핵심, 나머지는 한 줄 */
 function pcRec(p,hid){ // 성적 블록: 큰 숫자 하나 + 보조 한 줄
-  let h, tag='';
-  if(hid){ h=p.prospect?p.am:p.prev; tag=p.prospect?'아마추어 통산':(p.prevLvl?`${ovlCandLvl(p)}${lgLv(p.prevLvl)?` · ${lgLv(p.prevLvl)}`:''}`:'지난 시즌'); }
+  let h, tag='', kt='';
+  if(hid){ h=p.prospect?p.am:p.prev; if(!p.prospect&&p.prevLvl&&lgKboHint(p.prevLvl))kt=` title="${lgKboHint(p.prevLvl)}"`; tag=p.prospect?'아마추어 통산':(p.prevLvl?`${ovlCandLvl(p)}${lgLv(p.prevLvl)?` · ${lgLv(p.prevLvl)}`:''}`:'지난 시즌'); }
   else { h=curLine(p); if(h)tag=(h.y===G.year?'올해':h.y+'')+(h.lvl==='퓨처스'?' 2군':''); }
   if(!h||(p.isP?!h.outs:!h.pa))return `<div class="pc-rec"><span class="pc-l">성적</span><b class="pc-big muted">-</b><span class="pc-s">기록 없음</span></div>`;
   if(p.isP){ const o=h.outs, era=(h.er||0)*27/o, k9=h.so*27/o; const sm=o<30; const c=sm?'var(--ink)':era<=3.3?'var(--good)':era<=4.2?'var(--r50)':era>=5.8?'var(--bad)':'var(--ink)';
     const sub=sm?`${ipStr(o)}이닝 · 적은 표본`:hid?`${ipStr(o)}이닝 · K/9 ${k9.toFixed(1)}`:`${ipStr(o)}이닝${h.sv?` · ${h.sv}세이브`:h.hld?` · ${h.hld}홀드`:` · ${h.w||0}승`} · WAR ${wOf(h,p).toFixed(1)}`;
-    return `<div class="pc-rec"><span class="pc-l">${tag} ERA</span><b class="pc-big" style="color:${c}">${era.toFixed(2)}</b><span class="pc-s">${sub}</span></div>`; }
+    return `<div class="pc-rec"><span class="pc-l"${kt}>${tag} ERA</span><b class="pc-big" style="color:${c}">${era.toFixed(2)}</b><span class="pc-s">${sub}</span></div>`; }
   const r=bRate(h); const sm=h.pa<60; const c=sm?'var(--ink)':r.ops>=.9?'var(--good)':r.ops>=.78?'var(--r50)':r.ops<.62?'var(--bad)':'var(--ink)';
   const sub=sm?`${h.pa}타석 · 적은 표본 · ${fmt3(r.avg)}`:hid?`${fmt3(r.avg)} · ${h.hr}홈런 · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'}`:`${h.pa}타석 · ${fmt3(r.avg)} · ${h.hr}홈런 · WAR ${wOf(h,p).toFixed(1)}`;
-  return `<div class="pc-rec"><span class="pc-l">${tag} OPS</span><b class="pc-big" style="color:${c}">${fmt3(r.ops)}</b><span class="pc-s">${sub}</span></div>`; }
+  return `<div class="pc-rec"><span class="pc-l"${kt}>${tag} OPS</span><b class="pc-big" style="color:${c}">${fmt3(r.ops)}</b><span class="pc-s">${sub}</span></div>`; }
 function pcard(p,o){ o=o||{}; const rp=o.rp||scoutReport(p); const hid=hideOvr(p);
   const ab=hid?(o.est?`<div class="pc-ab"><span class="pc-l">예상</span><b class="pc-ov" style="--c:${rcol(o.est.raw)}">${o.est.v}</b><span class="pc-s">${o.est.lo}~${o.est.hi}</span></div>`:''):`<div class="pc-ab"><span class="pc-l">능력</span>${rp.cur==null?'<b class="pc-ov q">?</b>':`<b class="pc-ov" style="--c:${rcol(rp.cur)}">${dv(rp.cur)}</b>${condChip(p)}`}<span class="pc-s">${rp.ofp!=null?`잠재력 ${potChip(rp,p)}`:'잠재력 ?'}</span></div>`;
   const pos=p.isP?`<span class="pp main">${posLabel(p)}</span>`:`<span class="pp main"${p.team===G.user?` data-a="posSheet" data-v="${p.pos}"`:''}>${POSS[p.pos]}</span>`;

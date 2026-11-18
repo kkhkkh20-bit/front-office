@@ -3500,7 +3500,28 @@ T('[KBO ABS·피치 클락] 연도별 존·제한 시간, 정식 도입 뒤 경�
   G.gt=null; gtAdd(180); gtAdd(190); ok(gtAvg()===185,'리그 평균 '+gtAvg()); G.mail=[]; gameRulesMail(G.cal.open); const m=G.mail.find(x=>String(x.subj).includes('ABS'));
   ok(m&&String(m.body).includes('55.75')&&String(m.body).includes(pClock(G.year).none+'초'),'개막 규정 안내 없음'); });
 /*KBO-END*/
-T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
+T('[세계척도 P1 11-18] 리그 수준 표 통합(LEAGUE_LV): 외국인 후보 기록·해외 시즌·환경 편차·리그 수준 말이 예전 두 표(LG_ADJ·OVS_ADJ·FENV) 값 그대로다 [외국인][해외]',()=>{ fresh();
+  const OLD_F={'MLB':[-12,-26],'트리플A':[-1,-2],'더블A':[7,13],'독립리그':[8,15],'멕시코리그':[8,-4],'도미니카 윈터리그':[3,5],'베네수엘라 윈터리그':[3,5],'NPB 1군':[-7,-12],'NPB 2군':[-1,6],'일본 독립리그':[8,14],'CPBL':[7,2],'ABL':[9,11]};
+  const OLD_O={MLB:[-19,-18],NPB:[-10,-8]}, OLD_E={'MLB':1,'트리플A':1,'더블A':1.5,'독립리그':3,'멕시코리그':3.5,'도미니카 윈터리그':3.5,'베네수엘라 윈터리그':3.5,'NPB 1군':1.5,'NPB 2군':2,'일본 독립리그':2.5,'CPBL':2.5,'ABL':3};
+  const oldOvs=l=>OLD_O[l]||OLD_F[l]||[0,0], L=[...Object.keys(OLD_F),'NPB','KBO','퓨처스','없는리그'];
+  for(const l of L){ ok(JSON.stringify(lgAdjF(l))===JSON.stringify(OLD_F[l]),'후보 오프셋 다름 '+l); ok(JSON.stringify(ovsAdj(l))===JSON.stringify(oldOvs(l)),'해외 시즌 오프셋 다름 '+l); ok((lgEnv(l)??2)===(OLD_E[l]??2),'환경 편차 다름 '+l); }
+  ok(Object.keys(LG_LV).sort().join()===Object.keys(OLD_F).sort().join(),'리그 수준 말 목록이 바뀜');
+  ok(LEAGUE_LV.MLB.bat===-12&&LEAGUE_LV.MLB.pit===-26&&LEAGUE_LV.MLB.ovsBat===-19&&LEAGUE_LV.MLB.ovsPit===-18,'MLB 두 용도 값(후보 기록·해외 시즌)을 하나로 합침');
+  const bat=domestic(G.user).find(q=>!q.isP), pit=domestic(G.user).find(q=>q.isP), r0=__rngState();
+  for(const l of L){ const a=oldOvs(l), b=ovsAdj(l), f=OLD_F[l]||[0,0], g=lgAdjF(l)||[0,0];
+    const x=withRng(4242,()=>[simBat(bat,400,a[0]),simPit(pit,300,a[1]),simBat(bat,400,f[0]),simPit(pit,300,f[1])]), y=withRng(4242,()=>[simBat(bat,400,b[0]),simPit(pit,300,b[1]),simBat(bat,400,g[0]),simPit(pit,300,g[1])]);
+    ok(JSON.stringify(x)===JSON.stringify(y),'같은 난수에서 기록이 달라짐 '+l); }
+  for(const lg of ['MLB','NPB','CPBL','ABL','멕시코리그']){ const A=withRng(77,()=>ovsLine(bat,lg,{y:G.year})), B=withRng(77,()=>ovsLine(bat,lg,{y:G.year})); ok(JSON.stringify(A)===JSON.stringify(B)&&A.lvl,'해외 시즌 기록 재현 실패 '+lg); }
+  ok(__rngState()===r0,'표 조회·재현 계산이 본 난수를 씀'); });
+T('[세계척도 P1 11-18] 20-80 표기는 KBO 기준: 리그 주전 평균이 50 안팎으로 보이고 계산 값·100점 표기는 그대로다 [외국인][해외]',()=>{ fresh(); const cfg0=G.cfg; G.cfg=Object.assign({},G.cfg||{},{scale:'100'});
+  const raw=Object.values(G.players).filter(p=>p.team!=null).slice(0,30).map(ovr), d100=raw.map(dv); ok(dv(51)===63&&dv(65)===84,'100점 표기가 바뀜');
+  G.cfg.scale='2080'; const A=lgStartAvg().ALL;
+  ok(DV_K===52&&dv(DV_K)===50,'KBO 기준점이 50이 아님'); ok(Math.abs(dv(A)-50)<=2,'리그 주전 평균('+A.toFixed(2)+')이 20-80에서 '+dv(A)+'로 보임');
+  ok(dv(20)===20&&dv(80)===78&&dvKbo(5)===20&&dvKbo(95)===80,'20-80 표기 경계가 잘못됨');
+  for(const x of raw){ ok(dv(x)===Math.max(20,Math.min(80,Math.round(x)-DV_K+50)),'KBO 기준 표기 식이 다름 '+x); ok(Math.abs(dvInv(dv(x))-Math.round(x))<1e-9||dv(x)===20||dv(x)===80,'편집 입력 역변환이 어긋남 '+x); ok(dvLegacy(x)===Math.round(x),'판단용 예전 표기 식이 바뀜'); }
+  ok(dv(58)-dv(51)===7,'표기 차이(능력 차)가 바뀜'); ok(lgKboHint('MLB').includes(String(dv(LEAGUE_LV.MLB.st)))&&lgKboHint('KBO')==='','KBO 환산 도움말이 잘못됨');
+  G.cfg.scale='100'; ok(JSON.stringify(raw.map(dv))===JSON.stringify(d100)&&lgKboHint('MLB')==='','100점 표기로 돌아가지 않음'); G.cfg=cfg0; });
+T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,lgAdjF('트리플A')[0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,lgAdjF('트리플A')[1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('[리뷰 설계] 트레이드 확인은 우리 정식 인원과 정리해야 할 인원을 보여 준다(우리 쪽 초과는 막지 않는다)',()=>{ fresh(); const o=G.teams.find(t=>t.id!==G.user).id; const n=rosterN(G.user); const give=ownedOf(G.user).filter(p=>!p.ys&&!p.foreign).slice(0,1).map(p=>p.id); const pool=ownedOf(o).filter(p=>!p.ys&&!p.foreign).map(p=>p.id); const k=ROSTER_MAX-n+3; ok(pool.length>=k,'준비 실패: 상대 선수 부족');
   const tx=tradeRosterTxt(give,pool.slice(0,k)); ok(tx.includes('트레이드 후 정식 '+(ROSTER_MAX+2)+'/'+ROSTER_MAX+'명')&&tx.includes('2명 정리 필요'),'초과 안내 틀림: '+tx);

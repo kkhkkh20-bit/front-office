@@ -28,14 +28,21 @@ function effWord(x,big,mid){x=Math.abs(+x||0);return x>=big?'크게':x>=mid?'꽤
    1군 평균(51)=63, 상급(58)=73, 대박(65)=84, 초대형(72)=95, 유망주 평균(24)=42 */
 const DV_PTS=FrontOfficeCore.DV_PTS;
 const dvRaw=FrontOfficeCore.dvRaw;
-/* 능력치 표기 선택(설정, 사용자 11-12): 기본은 100점 척도, '20-80'이면 내부 스카우트 척도를 그대로 보여 준다(계산은 같다) */
+/* 능력치 표기 선택(설정, 사용자 11-12): 기본은 100점 척도, '20-80'이면 KBO 기준 20-80(계산은 같다).
+   KBO 기준(세계 척도 P1 11-18): 화면 = 50 + (내부 − DV_K), 20~80으로 자른다. DV_K는 KBO 1군 주전 평균(외국인 포함, lgStartAvg ALL)의 내부 값이라 리그 주전 평균이 50으로 보인다.
+   날마다 흔들리지 않게 고정 상수로 둔다: 시작 세계 50~52, 시즌 중 52~53.5, LV_UP(국내 상위 300명 +3)이 몇 해에 걸쳐 차면 더 오른다(설계 노트 docs/design/world-scale-plan-2026-11-18.md). 정수라 화면 차이(a−b)는 예전과 같다 */
 /* 하드 모드(11-12): 새 게임에서 고른다. AI에게 보너스를 주지 않고 우리 구단 환경을 까다롭게(거래 웃돈·FA 선호·수입·구단주 인내) */
 const HARD=()=>typeof G!=='undefined'&&!!G&&!!G.cfg&&!!G.cfg.hard;
 const dv20=()=>typeof G!=='undefined'&&!!G&&!!G.cfg&&G.cfg.scale==='2080';
-const dv=x=>dv20()?(typeof x==='number'&&isFinite(x)?Math.round(x):x):FrontOfficeCore.dv(x);
+const DV_K=52; /* 측정(11-18, 시드 3·5·11): 주전 평균 개막 전 50.4~52.1, 시즌 중 51.7~53.9(시드 평균 약 52.5). 52면 시즌 중 리그 주전 평균이 50~51로 보인다 */
+const dvKbo=x=>Math.max(20,Math.min(80,Math.round(50+x-DV_K)));
+const dv=x=>dv20()?(typeof x==='number'&&isFinite(x)?dvKbo(x):x):FrontOfficeCore.dv(x);
+/* 엔진 판단 두 곳(외국인 시장 새 후보 다시 뽑기·라이벌 이적 소식)이 예전부터 화면 표기에 따라 기준이 달랐다(20-80이면 내부 값 그대로 비교).
+   P1은 난수·밸런스를 바꾸지 않으므로 그 두 곳만 예전 식 그대로 둔다. 표기와 무관한 FrontOfficeCore.dv로 바꾸는 일은 따로(20-80 사용자 난수 흐름이 바뀐다) */
+const dvLegacy=x=>dv20()?(typeof x==='number'&&isFinite(x)?Math.round(x):x):FrontOfficeCore.dv(x);
 const dvSd=(c,sd)=>dv20()?Math.max(1,Math.round(sd||0)):FrontOfficeCore.dvSd(c,sd);
 function dvo(p){ return p?dv(ovr(p)):'-'; }
-function dvInv(d){ d=+d; if(!Number.isFinite(d))return null; if(dv20())return Math.max(20,Math.min(80,d)); const P=DV_PTS; if(d<=P[0][1])return P[0][0]; for(let i=1;i<P.length;i++){ const [a,b]=P[i-1],[c,e]=P[i]; if(d<=e)return a+(d-b)*(c-a)/(e-b); } return P[P.length-1][0]; } /* 화면 100점 척도 → 내부 20~80(에디터 입력용) */
+function dvInv(d){ d=+d; if(!Number.isFinite(d))return null; if(dv20())return Math.max(20,Math.min(80,d-50+DV_K)); const P=DV_PTS; if(d<=P[0][1])return P[0][0]; for(let i=1;i<P.length;i++){ const [a,b]=P[i-1],[c,e]=P[i]; if(d<=e)return a+(d-b)*(c-a)/(e-b); } return P[P.length-1][0]; } /* 화면 100점 척도 → 내부 20~80(에디터 입력용) */
 const hn=FrontOfficeCore.hn;
 
 
