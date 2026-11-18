@@ -41,8 +41,8 @@ function autoProt(q){ const sy=stoveY(); return !!(q.foreign||q.joinY>G.year||(q
 function compPool(tid){ return domestic(tid).concat(awayOf(tid).filter(q=>!q.foreign)).filter(q=>!autoProt(q)); }
 function aiProtect(tid,n){ const t=team(tid); return compPool(tid).sort((a,b)=>aiVal(t,b)-aiVal(t,a)).slice(0,n).map(q=>q.id); }
 /* 우리 구단의 일회성 현금 지출·수입은 결산 장부(G.spend)에 올려 예산 여유와 결산에 함께 반영한다 */
-function payOut(tid,amt,key){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } else team(tid).cash-=amt; }
-function payIn(tid,amt,key='compIn'){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } /* key: 장부 수입 항목(기본 보상금·양도금, 트레이드 현금은 tradeIn) */ else team(tid).cash+=amt; }
+function payOut(tid,amt,key){ if(!amt)return; ledger(tid,key,amt); } /* 재정 장부 공통 창구(ledger, 19_budget)의 얇은 포장 */
+function payIn(tid,amt,key='compIn'){ if(!amt)return; ledger(tid,key,amt,{inc:true}); } /* key: 장부 수입 항목(기본 보상금·양도금, 트레이드 현금은 tradeIn) */
 /* 영입 전에 보여 주는 보상 안내(플레이 테스트 11-13: 계약 뒤에야 보상금 통보). 원소속 구단에 줄 것: 등급별 보상선수·보상금 */
 function faCompTxt(p){ if(!p||!p.faGrade||p.faFrom==null||p.faFrom===G.user)return ''; const g=COMP[p.faGrade], prev=p.faPrevSal??p.sal??0; if(!g)return '';
   return p.faGrade==='C'?`${p.faGrade}등급 · ${tshort(p.faFrom)}에 보상금 ${money(Math.round(prev*g.cash))}(직전 연봉의 ${Math.round(g.cash*100)}%)만 줍니다.`
