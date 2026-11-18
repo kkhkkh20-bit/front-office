@@ -1,0 +1,19 @@
+{
+  "id": "v22_orange_02",
+  "index": 25,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "orange",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "v",
+  "brief": "moderately LONG HEART-OVAL face with prominent natural cheekbones, rounded medium eyes with visible upper lids, gently arched brows, gently convex medium nose bridge and small tip, medium lips with soft cupid bow, subtle dimple. Fair neutral natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/orange.png",
+  "generation_attempt": 82,
+  "n": 5,
+  "prompt": "Edit reference1 into ONE genuine-camera photograph of the EXACT SAME fictional ADULT25-year-old KOREAN woman. Preserve her EXACT distinctive identity and facial geometry: SAME eye/eyelid shape/orientation, nose bridge/tip, lips, cheeks/jaw, brows and a natural joyful tooth-showing BIG SMILE, changing only expression while keeping precisely her individual facial identity. Photorealize precisely, do not substitute a generic beauty face. Dark BROWN eyes, black/darkbrown hair in soft waves. Clearly adult Korean woman over20, youthful healthy25yo skin with fine photographic pores, natural asymmetry, normal adult head/neck/shoulder and eye proportions; tasteful stage eyeliner/rosy lips and realistic teeth. No child/doll look. Reference2 EXACTorange uniform design, identical collar/sleeves/white-silver panels/colors/cut, opaque covered upperchest and abdomen, no body-emphasis/cleavage. One relaxed anatomically correct V sign hand BESIDE cheek, fully separated from face, five normal fingers. Reference3 camera placement ONLY: native square1254x1254 or larger wide head+shoulders+covered upperchest portrait, complete hair top16% of frame with GENEROUS background ABOVE head, eyes43%, faceheight33%, shoulders low. Camera pulledback85mm perspective. NIGHT baseball cheer platform with blurred navy audience/unreadable background faces and warm-white floodlight bokeh. Front-above soft keylight and fine cool rear rimlight. ONE coherent REAL photograph. No illustration, CG/waxy/plastic skin, cartoon, labels/borders/logos/emblems/numbers, hat/glasses or collage. Believable naturally beautiful young adult Korean cheerleader. Make her naturally photogenic with tasteful professional stage makeup and authentic real skin texture; normal adult Korean face and normal-sized eyes, no beauty-filter/CG/doll finish. Correct any rough source rendering artifacts without substituting her face. Match the reference garment exactly. Night-game photo and generous background above the complete hairstyle.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-c5c7f2f4-2704-4dd3-bc56-67bce302135a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cast_7dccbe9f-5fcb-4625-88fa-f9c70b9445d9.webp",
+  "status": "PENDING_VALIDATION"
+}

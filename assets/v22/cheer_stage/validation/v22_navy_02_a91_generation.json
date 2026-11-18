@@ -1,0 +1,32 @@
+{
+  "id": "v22_navy_02",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "navy",
+  "hair": "bob",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_994fac62-296e-46c8-9c14-b71383962ca1.webp",
+  "source_guide_id": "rv3_08",
+  "costume_reference": "/dev/shm/v22_work/kits/navy.png",
+  "generation_attempt": 91,
+  "prompt": "Edit reference1 to FOUR independent real photographic Korean baseballcheerleader portraits, EXACT2x2 equal square grid, native1254x1254orhigher zero gaps/borders/text. Keep exact four DIFFERENT fictional adult Korean identities age24 from corresponding quadrants; preserve individual facial anatomy/shape/proportions, no common beautytemplate/faceaverage. Same exact per-tile face SIZE and eye POSITION as ref1, fill gray canvas rather than zoom. Each tile full hairstyle crown6-10%down,eyeheight38-42%,faceheight36-42%,shoulderslower. Attractive real Korean adults, normal eyes, real healthy pores/asymmetry, flattering natural stage makeup without plastic airbrush. Clean sourceartifacts/colorblotches, no bluegray/purplecheekpatches/facepaint.\nAll four exact SAME navy short bomber from ref2, white shoulder stripes, silverzip over FULL white high crewneck undershirt, covered chest. Same collar/cut/trim no logos/text/numbers. TLsame bobwoman soft warm closedlipSMILE no hands; TRsame bobwoman soft closedlipSMILE one correct Vhand beside cheek notcoveringface; BLsame longwavewoman soft warm closedlipSMILE no hands; BRsame bobwoman soft warm closedlipSMILE no hands. All clearly adult midtwenties, realistic understated friendly expressions. Matching NIGHT baseball cheer-platform backgrounds with blurred unrecognizablegrandstand/floodlightbokeh, same85mm/front-abovekey/rearrim. No hats/hoods/glasses, no cleavage/crop/bodyemphasis, no childlikefaces, no dollskin. Four separate coherent real photographs, fill all gray while retaining exact camera scale/layout.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-15dec5a1-30e5-47f6-80ab-b8fd043078f5.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_navy_02_a91.png",
+  "original_sheet": "/workspace/generated_images/exec-15dec5a1-30e5-47f6-80ab-b8fd043078f5.png",
+  "original_sheet_sha256": "922d6f2b2c6ccc7e327bb2086a31e2ed8fc8f70cf7aaa3e6e4beec8831aca46b",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    0,
+    0,
+    627,
+    627
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

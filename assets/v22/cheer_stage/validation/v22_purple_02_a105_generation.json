@@ -1,0 +1,35 @@
+{
+  "id": "v22_purple_02",
+  "index": 37,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "purple",
+  "hair": "pony",
+  "smile": "big",
+  "pose": "front",
+  "brief": "long NARROW OVAL face, higher cheekbones and small rounded chin, wide-set gently downturned almond eyes with subtle crease, high fine curved brows, straight broad nose with slightly longer tip, wide friendly mouth with thinner lips. Medium honey Korean complexion with a few faint freckles.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/purple.png",
+  "generation_attempt": 105,
+  "n": 9,
+  "prompt": "Complete this exact FOUR-PHOTO2x2 sheet by OUTPAINTING all gray missing canvas. Each quadrant is an independent photo of a DIFFERENT fictional adult Korean woman, keep exact own identity and face size/position, expression, hair, corresponding own garment and own handpose. Do NOT zoom/enlarge/move the people; keep medium camera distance and generous headroom. Extend corresponding NIGHT baseball stadium bokeh/own garment/shoulders coherently into gray, no gaps/borders/labels/text/gray remaining. Native full square1254x1254orhigher. DO NOT swap uniforms: TLpurple,TRorange,BLnavy,BRpurple.\nOnly necessary retouch exceptions: BOTTOM-RIGHT remove the unnatural bluegray patch on her cheek entirely, restore normal healthy skin color/texture consistent with rest of her face, nofacepaint. BOTTOM-LEFT ensure naturally dark-brown Korean irises and authentic photographic skin texture, no gray contact lenses/CGgloss; preserve her own exact facial bone structure/anatomy and facial features. All four plausible real Korean adult women mid/late twenties, normal eyes/proportions, real pores/asymmetry, tasteful natural stage eyemakeup/lip, no doll filters. TLgentlesoftsmile,nohands;TRbigsmile,Vhandbesidecheek;BLsoftsmile,nohands;BRbigsmile,nohands. No new people/hats/glasses/logos/letters/numbers/cleavage/crop/body emphasis. Keep original full2x2 composition precisely; gray is missing content to FILL, not border to crop.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-b8288233-34ee-4d6b-8181-2fe547066373.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cast_969bf226-c743-4530-acd6-f4167e964158.webp",
+  "status": "PENDING_VALIDATION",
+  "source_parent_candidate": "v22_purple_02_a82",
+  "source_photo_reference": "/workspace/generated_images/exec-3f7b4115-20b1-47f4-9155-d5a424c59b95.png",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_purple_02_a105.png",
+  "original_sheet": "/workspace/generated_images/exec-b8288233-34ee-4d6b-8181-2fe547066373.png",
+  "original_sheet_sha256": "49b1361f74ebc301acaff3a95827a0e75d1cfd667cea379b4f3da405b13263b7",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    627,
+    627,
+    1254,
+    1254
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

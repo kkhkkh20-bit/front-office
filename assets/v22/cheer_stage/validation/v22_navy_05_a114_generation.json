@@ -1,0 +1,32 @@
+{
+  "id": "v22_navy_05",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "navy",
+  "hair": "pony",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_c111c4c3-359a-445b-acc3-e893757d548f.webp",
+  "source_guide_id": "rv4_29",
+  "costume_reference": "/dev/shm/v22_work/kits/navy.png",
+  "generation_attempt": 114,
+  "prompt": "Faithful high-resolution real photographic reproduction of these exact FOUR portraits, filling ONLY gray missing strips with own corresponding uniform/nightstadium background. Preserve exact four distinct fictional Korean adult faces, individual features, expressions/teeth/hair/healthy fine skin texture and corresponding own uniforms/handposes. Keep exact face SCALE and eye POSITION within each quadrant, NO zoom/reframe or beautytemplate. Toprowtwo REDchevrontops, bottomrowtwo NAVYbombers overwhitecrewnecks. OnlyTR Vhand. All plausible real Korean adults midtwenties; do NOT add acne/freckles/skinmarks/wrinkles/exaggeratedpores or plastic airbrush. Native full square1254x1254orhigher, WHITE CROSS exactly CENTER defines four EQUAL SQUARE quadrants, keep thinwhitecross, never move rowboundary/mixphotos. No grayregions remain, no new people/logos/text/numbers/hats/glasses/cleavage/crop/bodyemphasis. Exact nightbokeh/frontkey/rearrim lighting, same fullcamera framing/headroom asreference.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-86a3648d-dc0e-4093-9a8c-f604e791b795.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_navy_05_a114.png",
+  "original_sheet": "/workspace/generated_images/exec-86a3648d-dc0e-4093-9a8c-f604e791b795.png",
+  "original_sheet_sha256": "4a66fe83c93a96d4e03debe7faa2936b78227a2a088a611ae6fe701f2c862b60",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    631,
+    631,
+    1250,
+    1250
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

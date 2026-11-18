@@ -1,0 +1,21 @@
+{
+  "id": "v22_sky_04",
+  "index": 45,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "sky",
+  "hair": "bob",
+  "smile": "soft",
+  "pose": "front",
+  "brief": "A real-world adult woman of mixed Korean and Central Asian/European heritage, fair warm skin with light freckles, softly squared long-oval face, high broad cheekbones, wider-set deep brown almond eyes, short dense straight eyebrows, high gently convex nose with rounded tip, wide mouth with naturally thin upper lip and fuller lower lip, a tiny beauty mark near her jaw. Clearly adult25, feminine stage charisma and realistic proportions.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/sky.png",
+  "generation_attempt": 0,
+  "prompt": "A realistic DSLR night-game professional cheer squad portrait of one distinctly individual fictional adult woman. ONE SINGLE complete coherent ultra-realistic roster portrait of a NEW entirely fictional attractive Korean adult female professional baseball cheerleader, age 25, clearly adult20+, no childlike face, no celebrity or real-person likeness. UNIQUE facial identity: A real-world adult woman of mixed Korean and Central Asian/European heritage, fair warm skin with light freckles, softly squared long-oval face, high broad cheekbones, wider-set deep brown almond eyes, short dense straight eyebrows, high gently convex nose with rounded tip, wide mouth with naturally thin upper lip and fuller lower lip, a tiny beauty mark near her jaw. Clearly adult25, feminine stage charisma and realistic proportions. Pretty stage charisma with realistic facial proportions, normal eyes, authentic skin pores and subtle asymmetry, flattering but not waxy/AI-plastic. Do not use a generic identical K-pop/idol face. Hair BLACK chin-length neat BOB. Warm charming closed-mouth soft smile. Tasteful professional stage makeup with defined eyes and natural rosy lips, realistic skin texture.\nThe image supplied is GARMENT DESIGN ONLY, no person. Wear this exact SKY cheer performance costume with exactly matching white/silver panels, collar, sleeves, cut and trim. Do not change its design. Completely modest opaque full chest/abdomen coverage, no cleavage, exposed midriff or figure-emphasis. No glasses, hat, text, number, logo or emblem.\nSame professional85mm camera view, nearly frontal or subtle three-quarter shoulders, NIGHT BASEBALL STADIUM cheer platform background, dark navy defocused audience with unreadable faces and warm-white stadium floodlight bokeh. Front-above soft keylight and subtle cool rimlight behind hair, evening only. No hands in frame, relaxed shoulders.\nVERY IMPORTANT CAMERA FRAMING: square native1254x1254 or larger, medium head-and-shoulders / upper-chest photo, camera pulled BACK with generous empty background around complete hairstyle. Top of entire hairstyle at about16% below top edge, eye line about43% down image, visible face forehead-to-chin only about32–33% of total image height. This is intentionally a slightly WIDER native frame for later whole-photo cropping; never a close-up filling the square. Include full head and shoulder width and covered upper chest, shoulders reach bottom portion; NO waist or full-body posing. Single photograph edge to edge, no borders/labels/contact sheet. Natural physical proportions. Preserve all these distinctive natural facial features, stage makeup accentuates them without idealizing facial shape. A believable person.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-f299442c-8b05-4cfe-83cf-ee2a954a3376.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "SUPERSEDED_BY_USER_REVIEW_REVISION01",
+  "exclude_from_casting": true,
+  "user_review_runtime_id": "v22_cheer22_sky_03",
+  "user_review_index": 44,
+  "revision01_action": "hair_only_identity_preserved"
+}

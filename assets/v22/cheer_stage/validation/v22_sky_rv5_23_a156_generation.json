@@ -1,0 +1,29 @@
+{
+  "id": "v22_sky_rv5_23",
+  "index": 15,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "sky",
+  "hair": "half",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_1e71f8bd-1df6-476a-bc6f-4436e75cc131.webp",
+  "source_guide_id": "rv5_23",
+  "source_guide_sha256": "01539432438987fa174b22090f27d23f44ca076420a40ab09a8a160aed73ca81",
+  "source_guide_native_size": [
+    384,
+    384
+  ],
+  "source_guide_dataset": "Locally generated RealisticVision fictional identity guide",
+  "costume_reference": "/dev/shm/v22_work/kits/sky.png",
+  "generation_attempt": 156,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photo canvas outpaint only; original face unchanged",
+  "composition_reference": "/dev/shm/v22_work/v22_sky_rv5_23_a149_border_reference.png",
+  "prompt": "SINGLE photographic image edit. Preserve the central EXISTING photograph in ref1 with extreme fidelity: same exact fictional ADULT KOREAN woman age25, exact individual face/eyes/irises/cheeks/nose/lips/teeth/smile/hairstyle, same natural skin and makeup, SAME uniform/cut/trim, same body and lighting. Only OUTPAINT the surrounding flat GRAY border into coherent blurred NIGHT baseball grandstand and stadium lighting, naturally continuing shoulders/hair if needed. Keep whole existing photo at exactly its reference scale and position, do NOT zoom in, do NOT crop off the added margin, no new camera angle, no common beautytemplate, no head/body compositing. It must still look like the exact original real photographic woman, with normal small dark brown irises and fine natural skin, not CGI. This is one whole coherent real photograph, no borders/grids/gray areas/text/logos. Generate new native square1254x1254 or larger, retain extra surrounding scene for a later ordinary whole-photo crop.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-da64af1f-7337-4f8b-8916-2c3c5b01e9bc.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_sky_rv5_23_a149",
+  "source_photo_reference": "/dev/shm/v22_work/native_tiles/v22_sky_rv5_23_a149.png",
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

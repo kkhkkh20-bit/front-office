@@ -1,0 +1,36 @@
+{
+  "id": "v22_orange_05",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "orange",
+  "hair": "bob",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_4b9a7fd2-6b8f-496b-985d-b594f31a2cb4.webp",
+  "source_guide_id": "rv4_20",
+  "costume_reference": "/dev/shm/v22_work/kits/orange.png",
+  "generation_attempt": 102,
+  "prompt": "OUTPAINT ONLY GRAY MISSING CANVAS of this exact2x2 sheet. Keep ALL existing photo content completely unchanged at exact position and scale. DO NOT zoom/enlarge people or crop away gray. Intentionally medium-distance portraits with generous headroom; KEEP that distance/headroom. Gray is missing content to FILL with corresponding person's garment/shoulders and NIGHT baseballstadium bokeh, NOTborder. Preserve all four distinct exact fictional adult Korean women, faces/expressions/hair/skin/identical orange uniforms and handposes. Do not move Vhands between people. No face/body swaps/beautification/facepaint. Full square native1254x1254orhigher four equal square quadrants no gutters/lines/text/gray regions. Natural photographic Korean adult midtwenties appearance normal proportions/realhealthy skin; no dollskin/filter/CG. Extend ONLY missing regions coherently and retain full original layout with same facial positions/sizes.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-960a12a2-261c-4978-a9a3-3c25b4cae2a7.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "SUPERSEDED_BY_USER_REVIEW_REVISION01",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_orange_05_a102.png",
+  "original_sheet": "/workspace/generated_images/exec-960a12a2-261c-4978-a9a3-3c25b4cae2a7.png",
+  "original_sheet_sha256": "8b1fee331d337816ed83270363760c54a0e772ca32b886a24a72d2659fb6aa27",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    627,
+    627,
+    1254,
+    1254
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint",
+  "exclude_from_casting": true,
+  "user_review_runtime_id": "v22_cheer22_orange_04",
+  "user_review_index": 27,
+  "revision01_action": "hair_only_identity_preserved"
+}

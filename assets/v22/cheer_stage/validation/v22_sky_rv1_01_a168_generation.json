@@ -1,0 +1,28 @@
+{
+  "id": "v22_sky_rv1_01",
+  "index": 26,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "sky",
+  "hair": "half",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cast_8ddf0475-b6f3-46df-a1d9-cef65cd883a8.webp",
+  "source_guide_id": "rv1_01",
+  "source_guide_sha256": "322ffd67a22c046a2da9900a6f9f855e65c36afa975608c5ee66a1486772de51",
+  "source_guide_native_size": [
+    512,
+    512
+  ],
+  "source_guide_dataset": "Locally generated RealisticVision fictional identity guide",
+  "costume_reference": "/dev/shm/v22_work/kits/sky.png",
+  "generation_attempt": 168,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photo canvas outpaint and tidy flyaway hair only",
+  "composition_reference": "/dev/shm/v22_work/v22_sky_rv1_01_a166_wideborder_reference.png",
+  "prompt": "SINGLE high-fidelity photographic edit. Keep EXACT same existing fictional adult KOREAN stage cheerleader age25 in central photo: preserve her distinct individual real face, normal small eyes/darkbrown irises, cheeks/nose/lips, EXACT smile/teeth and hand gesture, same makeup, hair character and outfit collar/trim/colors. Only fill surrounding GRAY border with coherent continuation of her NIGHT baseball grandstand scene and naturally continue cropped crown/shoulders. Tidy stray flyaway hairs with natural grooming; keep normal full hairstyle without tall isolated wisps, do NOT change skull/face. Existing central whole photograph must stay SAME relative scale/placement as supplied, do NOT zoom or discard margins. Natural fine skin, authentic real Korean adult25 stage professional, no CG beautytemplate/face shaping/oversizedeyes/plasticskin/artificialaging. No borders/graycanvas/text/logos/glasses/hats/cleavage, one coherent whole professional85mm photograph, new native square1254x1254orhigher.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-90406e10-5789-4e3f-b4f4-7cdbd5f4c9de.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_sky_rv1_01_a166",
+  "source_photo_reference": "/workspace/generated_images/exec-b8fbffc3-81a1-4be1-a75f-5e732242bc29.png"
+}

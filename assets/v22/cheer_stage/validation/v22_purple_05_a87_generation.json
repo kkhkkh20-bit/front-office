@@ -1,0 +1,32 @@
+{
+  "id": "v22_purple_05",
+  "index": 40,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "purple",
+  "hair": "pony",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_74e48f41-934b-4a65-b7b4-2de6a1b5115f.webp",
+  "source_guide_id": "rv3_25",
+  "costume_reference": "/dev/shm/v22_work/kits/purple.png",
+  "generation_attempt": 87,
+  "prompt": "Edit reference1 into a photoreal professional Korean baseball cheerleader portrait contact sheet EXACTLY2columns by2rows square native1254x1254 or larger, no gaps/borders/text. Each quadrant is its OWN complete independent photograph. Preserve the four DIFFERENT fictional adult KOREAN women's exact individual faces from corresponding quadrants, all age24; do not average faces or impose common beauty template. Natural Korean adult facial anatomy, normal eye size, facial asymmetry, healthy real pores and fine skin, plausible real people photographed85mm. Ref1 is a technical whole-photo placement guide with gray missing areas: fill all gray with coherent own photograph. MAINTAIN each quadrant's EXACT face scale and eye position; do not zoom in. Each tile full hairstyle crown6-10%belowtop, eyes38-42%, faceheight36-42%, shoulderslower, chest-up modest framing. Replace all casual clothes with EXACT SAME purple short windbreaker from reference2, white shoulder panels, silverzip, full white crewneck opaque underlayer, covered chest. All FOUR same precise collar/cut/trim, no logos/text/numbers. ALL matching NIGHT baseball cheer-platform lights, blurred unrecognizable grandstand crowd/lightbokeh, same front-above key and rear stage rim. Natural flattering professional stage makeup, realistic skin, NO blue/gray/purple cheek blotches or facepaint, no plastic smooth filter. All bright genuine tooth-showing smiles, realistic individual teeth. TL same woman high ponytail, handsout. TR same woman shoulderlength loose waves, one anatomically correct Vhand besidecheek notcoveringface. BL same woman ponytail handsout. BR same woman ponytail handsout. Attractivereal Korean adultwomen midtwenties, no children, no CG/doll beauty-template, no enlargedeyes, no hats/glasses, no body emphasis/cleavage/crop. Fill gray outsidephoto without zooming or changing face geometry. Preserve full exact2x2 layout.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-0f2bf22c-3142-42f5-81ad-ad25a622a16e.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_purple_05_a87.png",
+  "original_sheet": "/workspace/generated_images/exec-0f2bf22c-3142-42f5-81ad-ad25a622a16e.png",
+  "original_sheet_sha256": "85b6820fb7a4a8f4606aaed19bfa3dbc345443b1202a70f15fe6d228d960e1ac",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    627,
+    627,
+    1254,
+    1254
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

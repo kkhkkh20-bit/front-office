@@ -1,0 +1,29 @@
+{
+  "id": "v22_blue_04",
+  "index": 15,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "blue",
+  "hair": "bob",
+  "smile": "soft",
+  "pose": "front",
+  "brief": "short HEART-SHAPED face, wider forehead and narrower chin, wide-set gently downturned almond eyes with subtle crease, high fine curved brows, straight broad nose with slightly longer tip, medium lips with soft cupid bow, subtle dimple. Fair neutral natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/blue.png",
+  "generation_attempt": 10,
+  "prompt": "A single very beautiful but distinctly individual fictional Korean adult female professional baseball cheerleader, age25. short HEART-SHAPED face, wider forehead and narrower chin, wide-set gently downturned almond eyes with subtle crease, high fine curved brows, straight broad nose with slightly longer tip, medium lips with soft cupid bow, subtle dimple. Fair neutral natural Korean complexion. Hair:chin-length black bob. Expression:warm soft closed-mouth smile. Tasteful defined stage eye makeup and natural rosy lips, realistic healthy fresh20s skin with subtle fine pores. Wearing exactly a royal blue short-sleeve stand-collar performance zip top, white side panels and narrow silver shoulder piping, full opaque chest and abdomen coverage, entirely plain geometric costume without logos, letters or numbers. Realistic85mm DSLR photograph on a NIGHT baseball stadium cheer platform; dark navy blurred crowd without readable faces, warm-white floodlight bokeh, soft flattering front-above keylight and subtle cool stage rimlight. Square medium head/shoulders and upper-chest portrait with camera pulled BACK: complete hairstyle top16percent below top border, eyes43percent down, face only32percent of square height, shoulders in lower portion. Relaxed arms outside frame. Normal human proportions, authentic beautiful adult face, no glasses or hat, no cleavage or midriff, no doll skin, no real celebrity likeness.",
+  "hint": "Generated source saved as /workspace/generated_images/v22_flux_schnell_35961cea-f40c-46f9-95c2-871e4705fe69.webp",
+  "native_file": "/workspace/generated_images/v22_flux_schnell_35961cea-f40c-46f9-95c2-871e4705fe69.webp",
+  "native_sha256": "ef60778cc1fb0dc0150aff3fe3ad8d0f32a3a263e4b56bc62d987686705b25b8",
+  "provider": "official public black-forest-labs/FLUX.1-schnell Space",
+  "model": "FLUX.1-schnell",
+  "model_license": "Apache-2.0",
+  "seed": 21289902,
+  "steps": 4,
+  "native_size": [
+    1024,
+    1024
+  ],
+  "status": "GENERATED_NOT_YET_VALIDATED",
+  "purpose": "identity-guide model test only; not approved final photo"
+}

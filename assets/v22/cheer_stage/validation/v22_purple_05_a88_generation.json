@@ -1,0 +1,32 @@
+{
+  "id": "v22_purple_05",
+  "index": 40,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "purple",
+  "hair": "pony",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_74e48f41-934b-4a65-b7b4-2de6a1b5115f.webp",
+  "source_guide_id": "rv3_25",
+  "costume_reference": "/dev/shm/v22_work/kits/purple.png",
+  "generation_attempt": 88,
+  "prompt": "Complete this exact 2x2 contact sheet by OUTPAINTING all missing gray canvas to matching night stadium backgrounds/garments. Preserve all four distinct adult Korean women, faces, face size and eye position, expressions, skin textures, and identical purple team uniforms. Do NOT zoom/enlarge/move the existing faces. Each quadrant is independent coherent85mm real photograph. IMPORTANT top-left woman: restyle ONLY the enormous high hair bun/updo into a neat compact normal ponytail, so the complete highest crown is about8%below the top of her tile, keep her exact face and eyes unmodified at current position. Other three keep hair/face/skin naturally as-is, extend ONLY missing gray region. Each tile faceheight36-42%, eyelevel38-42%, highest hairstyle6-10%down. All full square1254x1254orhigher, equal square quadrants, zero gaps/borders/labels/text. No gray areas anywhere. No common beauty face template, no plastic skin or face paint. No logos/glasses/hats. Exact distinct Korean adult identities midtwenties, natural real appearance.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-8eb3ce10-db58-4935-8f90-0534fd56d2ba.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_purple_05_a88.png",
+  "original_sheet": "/workspace/generated_images/exec-8eb3ce10-db58-4935-8f90-0534fd56d2ba.png",
+  "original_sheet_sha256": "3b2e2d14097b9c2337244952acd302531ff75d05ef8b07cfc1b78bab0077938e",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    627,
+    627,
+    1254,
+    1254
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

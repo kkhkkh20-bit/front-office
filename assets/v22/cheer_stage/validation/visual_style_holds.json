@@ -1,0 +1,8 @@
+{
+  "rule": "Numeric pass alone is insufficient; plausible real Korean adult age and natural proportions required",
+  "held_candidates": {
+    "v22_blue_03_a22": "Eye/iris and skin rendering remain too doll-like for user realism criterion",
+    "v22_green_03_a66": "Face/skin shading remains too CG-like for user realism criterion",
+    "v22_black_06_a71": "Visual age reads above requested captain range; use a new younger adult replacement"
+  }
+}

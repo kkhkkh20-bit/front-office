@@ -1,0 +1,32 @@
+{
+  "id": "v22_red_03",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "red",
+  "hair": "bob",
+  "smile": "big",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_d90ad48f-be0c-4ecb-9eb3-f079c056b20d.webp",
+  "source_guide_id": "rv4_40",
+  "costume_reference": "/dev/shm/v22_work/kits/red.png",
+  "generation_attempt": 113,
+  "prompt": "Four independent REAL photographic Korean adult baseballcheerleader portraits in exact2x2 EQUAL SQUARE layout, native1254x1254orhigher. WHITE CROSS at exactCENTER defines separatequadrants; keep thinwhitecross. Preserve each corresponding ref1 woman's own DISTINCT fictional Korean face/bones/features and normal proportions, no common beautytemplate/no averaging. TOPLEFTage26longwaves, TOPRIGHTage24bob, BOTTOMLEFTage24bob, BOTTOMRIGHTage24ponytail. REMOVE both casual hood/headcoverings entirely, show complete natural hair. Both eyes naturally open, no wink. TLwarm friendly softCLOSEDLIPsmile handsout; TRbright natural toothysmile ONE correct Vhand besidecheek notcoveringface; BLwarm friendly softCLOSEDLIPsmile handsout; BRbright natural toothysmile handsout. Individual realistic teeth, no exaggeratedeyes/chin.\nExact wardrobe mapping: TOP TWO wear SAME RED highcrewneck shortsleeve stage top from reference2, broad WHITE chestCHEVRON/silversidepiping, fullycoveredchest. BOTTOM TWO wear SAME NAVY short bomber from reference3, WHITEshoulderstripes/silverzip over fullwhite opaque highcrewneck undershirt, fullycoveredchest. Exact correspondingcuts/collars/trim. No logos/text/numbers, no mixingcolors.\nPlausible actual Korean women midtwenties, real85mm photography, fine healthy natural skin, professional flattering stage eye/lip makeup. Do not add acne/freckles/newskinmarks/wrinkles or exaggeratedpores; no waxyairbrush/dollskin. Clean sourceblur/noise/colorcasts/bluegraycheekpatches. ALL NIGHT baseballcheer-platform background, blurred unrecognizablecrowds/floodlightbokeh, same front-abovekey/rearrim. Keep face camera scale/positions fromref1 and mediumupperbody framing, generousheadroom, nozoom. Fillgray withownscene/shoulders/garment, no cropping. Four separate coherent own photos/bodies. No hats/glasses/hoods/cleavage/croptops/body emphasis/childfaces/facepaste.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-9a4c0bc1-e885-4f45-bf1d-ca6def75e3d5.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_red_03_a113.png",
+  "original_sheet": "/workspace/generated_images/exec-9a4c0bc1-e885-4f45-bf1d-ca6def75e3d5.png",
+  "original_sheet_sha256": "ee384ce0f88b3f8171532d2237339ab44b49e8a73400b609858510586ef2524d",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    631,
+    4,
+    1250,
+    623
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

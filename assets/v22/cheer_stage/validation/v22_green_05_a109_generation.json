@@ -1,0 +1,32 @@
+{
+  "id": "v22_green_05",
+  "index": 0,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "green",
+  "hair": "pony",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_c706db70-adaf-4ae1-a53c-aa92196a7307.webp",
+  "source_guide_id": "rv5_01",
+  "costume_reference": "/dev/shm/v22_work/kits/green.png",
+  "generation_attempt": 109,
+  "prompt": "Produce a very faithful high-resolution REAL photographic reproduction of these exact four portrait photographs. FOUR different fictional ADULT KOREAN women midtwenties, each exact own face/anatomy/skin/expression/hair and identical green uniform. Do not beautify, alter features or substitute common template. Preserve exact CAMERA FRAMING: same face SCALE and eye POSITION inside each corresponding square quadrant. NO zoom/reframing/enlargement relative to tile. Natural skin pores/individual teeth/asymmetry, no dollskin/airbrush/facepaint. Fill only any gray missing strips with coherent own garment/night baseballstadium bokeh. Otherwise retain exact photographic appearance. Native square1254x1254orhigher. WHITE CROSS exactly at CENTER defines four EQUAL SQUARE quadrants; keep thinwhitecross, never move row boundary, never extend photo into another quadrant. No letters/logos/numbers/new people/hats/glasses. Each independent coherent real85mm photo of a plausible real adult Korean woman; keep own handpose in exactly corresponding quadrant. Maintain headroom and eye height shown in reference precisely.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-224374e7-b84f-4673-bf6c-dbe3f06165ac.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_green_05_a109.png",
+  "original_sheet": "/workspace/generated_images/exec-224374e7-b84f-4673-bf6c-dbe3f06165ac.png",
+  "original_sheet_sha256": "fcc4395936c68e8f4d96f2fced70cba85fcc81aae107ca2354171267c4f2ec30",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    631,
+    631,
+    1250,
+    1250
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

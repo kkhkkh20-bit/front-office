@@ -1,0 +1,11 @@
+{
+  "quality": 80,
+  "method": 6,
+  "segments": 1,
+  "sns": 0,
+  "filter_strength": 0,
+  "sharp_yuv": true,
+  "uniform_for_all_resolutions": true,
+  "selection_basis": "File size ONLY, selected before measuring any final atlas ArcFace scores. Method0 q80 produced638026bytes for256, exceeding600000 cap; method6 q80 chosen to preservequality80 and fitbytecap. No metrics were used to selectcodec.",
+  "method6_256_preflight_bytes": 433450
+}

@@ -1,0 +1,20 @@
+{
+  "id": "v22_navy_06",
+  "index": 11,
+  "r": "ccap22",
+  "a": 28,
+  "f": 1,
+  "uc": "navy",
+  "hair": "pony",
+  "smile": "big",
+  "pose": "front",
+  "brief": "softly rounded BROAD OVAL face with full natural cheeks and rounded chin, wide-set gently downturned almond eyes with subtle crease, high fine curved brows, medium low-bridge nose with wide natural nostrils, full round lower lip with thin upper lip. Warm light-medium natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/navy.png",
+  "generation_attempt": 83,
+  "n": 0,
+  "prompt": "Make ONE real-camera photograph of the EXACT SAME fictional ADULT KOREAN woman in reference1, age28. This is the SAME individual: preserve her exact face outline/jaw/cheeks, eyes and eyelid shapes, brows, nose bridge/tip, lip shapes, adult facial proportions and distinctive smile. Do not average or replace her face. Keep her genuine joyful tooth-showing BIG smile with normal realistic teeth. Remove only source grain/compression/color artifacts; retain real healthy skin pores and natural asymmetry. No blue/gray/purple blotches, cheek paint, wax/plastic skin, doll look or oversized eyes. Naturally beautiful believable Korean adult, tasteful flattering stage eyeliner and rosy lips. Hair dark neat ponytail tied at the back with compact crown. Wear EXACTLY reference2's navy cheer uniform, same garment cut/collar/sleeves/colors/white-silver panels, fully opaque covering chest and torso, no body emphasis or exposed abdomen/cleavage. Hands outside frame. Reference3 has CAMERA MEASUREMENT MARKERS ONLY and NO FACE SHAPE: follow its wide square composition, never draw markers/labels into photo. Complete hairstyle top16% of native square frame, eyes43%, faceheight32–33%, shoulders+covered upperchest lower down; camera pulled back85mm. Preserve the reference person's own natural face geometry. Native square1254x1254 or larger. NIGHT baseball cheer platform, blurred navy audience/unreadable people and warm-white stadium light bokeh, same front-above soft keylight plus cool rear hair rimlight. One seamless coherent real photograph, no text/logos/numbers/emblems/glasses/hat/hood/borders or collage.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-1d8b5f9f-c988-48b9-8c40-d440af7a5a13.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_6f93b8e6-0342-4eda-87fc-11ba92ab00d7.webp",
+  "framing_reference": "measurement markers only, no human/head silhouette",
+  "status": "PENDING_VALIDATION"
+}

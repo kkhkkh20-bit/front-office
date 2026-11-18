@@ -1,0 +1,1109 @@
+{
+  "reference_main_commit": "81e030a01235fe1ed854ba14112faa0e4026a8aa",
+  "reference_identity_count": 116,
+  "sets": {
+    "v15_cheer15": 40,
+    "v12_ccap": 16,
+    "v10_women": 40,
+    "v19_secretaries": 20
+  },
+  "identities": [
+    {
+      "id": "v15_cheer_young_001",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_002",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_003",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_004",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_005",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_006",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_007",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_008",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_009",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_010",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_011",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_012",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_013",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_014",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_015",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_016",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_017",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_018",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_019",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_020",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_021",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_022",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_023",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_024",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_025",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_026",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_027",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_028",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_029",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_030",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_031",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_032",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_033",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_034",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_035",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_036",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_037",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_038",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_039",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v15_cheer_young_040",
+      "set": "v15",
+      "role": "cheer",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_001",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_002",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_003",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_004",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_005",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_006",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_007",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_008",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_009",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_010",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_011",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_012",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_013",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_014",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_015",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_016",
+      "set": "v12",
+      "role": "ccap",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_001",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_002",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_003",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_004",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_005",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_006",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_007",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_008",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_009",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_010",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_011",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_012",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_013",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_014",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_015",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_front_016",
+      "set": "v10",
+      "role": "front",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_001",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_002",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_003",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_004",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_005",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_006",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_007",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_008",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_009",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_010",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_011",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_staff_012",
+      "set": "v10",
+      "role": "staff",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_001",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_002",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_003",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_004",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_005",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_006",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_007",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_008",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_009",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_010",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_011",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v10_women01_gm_012",
+      "set": "v10",
+      "role": "gm",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 128
+      }
+    },
+    {
+      "id": "v19_sec_01",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_02",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_03",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_04",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_05",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_06",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_07",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_08",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_09",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_10",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_11",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_12",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_13",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_14",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_15",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_16",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_17",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_18",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_19",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    },
+    {
+      "id": "v19_sec_20",
+      "set": "v19",
+      "role": "sec",
+      "native_input_sizes": {
+        "128": 128,
+        "256": 256
+      }
+    }
+  ],
+  "source_files": [
+    {
+      "path": "assets/v10/women01/manifest.json",
+      "sha256": "3dced2af30541e8b18fd7dfafbb7175e9a73032b55a335c541464eb00e6eed55",
+      "bytes": 52807
+    },
+    {
+      "path": "assets/v10/women01/sheets/128/women01.webp",
+      "sha256": "8277ac6d67b01a5872a3c861f41a79a698d98f9352431c7d3b0e7f015d8ef869",
+      "bytes": 667028
+    },
+    {
+      "path": "assets/v12/cheer01/manifest.json",
+      "sha256": "3b4eb9e166345b14d705993c8f5b6c0358ca13b2e8d70136dc41fcd128e0c260",
+      "bytes": 92533
+    },
+    {
+      "path": "assets/v12/cheer01/sheets/128/cheer01.webp",
+      "sha256": "ec191a91369f38e64f22a1d1b71bf4337e82aa5e8fe9f9605c0fd4d63e1c86c5",
+      "bytes": 881588
+    },
+    {
+      "path": "assets/v15/cheer_young/manifest.json",
+      "sha256": "d121b7701fd2d1560cf81501ab589d086c469a1264f7cedc6258fe0446258e8a",
+      "bytes": 63272
+    },
+    {
+      "path": "assets/v15/cheer_young/sheets/128/cheer_young.webp",
+      "sha256": "e87cc31f638ad4185970a8c21c04f354f8b0f764579938979df2aa9ddb1c0020",
+      "bytes": 180696
+    },
+    {
+      "path": "assets/v15/cheer_young/sheets/256/cheer_young.webp",
+      "sha256": "9b21efd933633c020ec913f30101a84aa76a0c9971a4bd7a0da8eaff65ba3ab9",
+      "bytes": 495350
+    },
+    {
+      "path": "assets/v19/secretary20/manifest.json",
+      "sha256": "4a08057b545d689648684c1483ff8071d0eb8ec2b9a2378c6e1c32104ea35b0a",
+      "bytes": 30849
+    },
+    {
+      "path": "assets/v19/secretary20/sheets/128.webp",
+      "sha256": "cf570e3cdca4a2ea93137174dd3b4b1430449f6ff876a57da57f3c052788afa8",
+      "bytes": 419354
+    },
+    {
+      "path": "assets/v19/secretary20/sheets/256.webp",
+      "sha256": "4f9cd9f2577c646d84c804a9bae29f9893e1f102b84e814c672b72b15fccab21",
+      "bytes": 1458780
+    }
+  ],
+  "missing256_reference_policy": "Use original128 pixels and raw features directly; never upsample legacy128 photos."
+}
